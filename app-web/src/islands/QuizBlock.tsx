@@ -22,11 +22,20 @@
  * - 选择题：比较选项索引
  * - 修正题：无法自动判断，结果为 null
  *
+ * 动效体系（Motion React + ark 设计原则）：
+ * - MotionProvider 包裹，reducedMotion="user" 自动降级
+ * - 题目卡片：staggerNormal 错峰容器 + enterUp 上滑入场
+ * - 选项按钮：whileHover 抬起、whileTap 按压（ark 微交互 150-250ms）
+ * - 反馈区域：AnimatePresence + enterScale 缩放揭示（提交后出现）
+ * - 对错标记：enterScale 入场强调
+ *
  * 使用场景：
  * - 在文档页面末尾嵌入知识检测，帮助学习者巩固所学内容
  * - 配合 Astro 岛屿架构，仅客户端交互
  */
 import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { MotionProvider, enterUp, staggerNormal, enterScale, revealViewport } from '@/motion';
 import '@/styles/islands/QuizBlock.css';
 
 // ========== 题目类型定义 ==========
@@ -142,7 +151,9 @@ export function QuizBlock({ quiz }: QuizBlockProps) {
   const submitAnswer = useCallback(
     (qi: number) => {
       setSubmitted((prev) => ({ ...prev, [qi]: true }));
+      // noUncheckedIndexedAccess：quiz[qi] 类型为 QuizItem | undefined，需显式校验
       const q = quiz[qi];
+      if (!q) return;
       if (q.type === 'fill') {
         // 填空题：忽略大小写比较，去除首尾空格
         setResults((prev) => {
@@ -173,7 +184,9 @@ export function QuizBlock({ quiz }: QuizBlockProps) {
       // 选中后立即提交判题（需在下一轮渲染后读取最新的 selectedOption）
       // 使用 setSubmitted + setResults 直接计算，避免依赖未更新的 state
       setSubmitted((prev) => ({ ...prev, [qi]: true }));
+      // noUncheckedIndexedAccess：quiz[qi] 类型为 QuizItem | undefined，需显式校验
       const q = quiz[qi];
+      if (!q) return;
       if (q.type === 'choice') {
         setResults((prev) => ({ ...prev, [qi]: oi === q.answer }));
       }
@@ -201,128 +214,187 @@ export function QuizBlock({ quiz }: QuizBlockProps) {
   if (quiz.length === 0) return null;
 
   return (
-    <div className="quiz-block">
-      <h3 className="quiz-title">知识检测</h3>
-      <div className="quiz-list">
-        {/* 遍历题目列表，每题一个卡片，通过 getResultClass 添加对错样式 */}
-        {quiz.map((q, i) => (
-          <div key={i} className={`quiz-item ${getResultClass(i)}`}>
-            {/* 题目行：序号圆圈 + 题型标签 + 题目文字 */}
-            <div className="quiz-question">
-              <span className="quiz-number">{i + 1}</span>
-              <span className="quiz-type-badge">{typeLabel(q.type)}</span>
-              {q.question}
-            </div>
-
-            {/* 填空题输入区：文本输入框 + 提交按钮 */}
-            {q.type === 'fill' && (
-              <div className="quiz-answer-area">
-                {/* 填空题答案输入框：aria-label 动态包含题号，提供可访问名 */}
-                <input
-                  value={answers[i] ?? ''}
-                  onChange={(e) =>
-                    setAnswers((prev) => ({ ...prev, [i]: e.target.value }))
-                  }
-                  className="quiz-input"
-                  placeholder="输入答案..."
-                  aria-label={`第 ${i + 1} 题填空答案输入`}
-                  disabled={!!submitted[i]}
-                  onKeyUp={(e) => {
-                    if (e.key === 'Enter') submitAnswer(i);
-                  }}
-                />
-                {/* 未提交时显示提交按钮 */}
-                {!submitted[i] && (
-                  <button className="quiz-submit-btn" onClick={() => submitAnswer(i)}>
-                    提交
-                  </button>
-                )}
+    <MotionProvider>
+      <div className="quiz-block">
+        <h3 className="quiz-title">知识检测</h3>
+        {/*
+          错峰容器：题目卡片依次上滑入场
+          ark 原则：列表入场使用 staggerNormal（60ms 间隔）+ enterUp（Y 位移 + opacity）
+          viewport 配置：进入视口 20% 时触发一次，不重复播放
+        */}
+        <motion.div
+          className="quiz-list"
+          variants={staggerNormal}
+          initial="hidden"
+          animate="visible"
+          viewport={revealViewport}
+        >
+          {/* 遍历题目列表，每题一个卡片，通过 getResultClass 添加对错样式 */}
+          {quiz.map((q, i) => (
+            <motion.div
+              key={i}
+              className={`quiz-item ${getResultClass(i)}`}
+              variants={enterUp}
+            >
+              {/* 题目行：序号圆圈 + 题型标签 + 题目文字 */}
+              <div className="quiz-question">
+                <span className="quiz-number">{i + 1}</span>
+                <span className="quiz-type-badge">{typeLabel(q.type)}</span>
+                {q.question}
               </div>
-            )}
 
-            {/* 选择题选项区：每个选项一个按钮，选中即提交 */}
-            {q.type === 'choice' && (
-              <div className="quiz-options">
-                {q.options.map((opt, oi) => {
-                  const isSelected = selectedOption[i] === oi;
-                  const isCorrect = submitted[i] && oi === q.answer;
-                  const isWrong = submitted[i] && selectedOption[i] === oi && oi !== q.answer;
-                  const optionClass = `quiz-option${isSelected ? ' selected' : ''}${
-                    isCorrect ? ' correct' : ''
-                  }${isWrong ? ' wrong' : ''}`;
-                  return (
-                    <button
-                      key={oi}
-                      className={optionClass}
-                      disabled={!!submitted[i]}
-                      onClick={() => selectOption(i, oi)}
+              {/* 填空题输入区：文本输入框 + 提交按钮 */}
+              {q.type === 'fill' && (
+                <div className="quiz-answer-area">
+                  {/* 填空题答案输入框：aria-label 动态包含题号，提供可访问名 */}
+                  <input
+                    value={answers[i] ?? ''}
+                    onChange={(e) =>
+                      setAnswers((prev) => ({ ...prev, [i]: e.target.value }))
+                    }
+                    className="quiz-input"
+                    placeholder="输入答案..."
+                    aria-label={`第 ${i + 1} 题填空答案输入`}
+                    disabled={!!submitted[i]}
+                    onKeyUp={(e) => {
+                      if (e.key === 'Enter') submitAnswer(i);
+                    }}
+                  />
+                  {/* 未提交时显示提交按钮，按压下沉微交互 */}
+                  {!submitted[i] && (
+                    <motion.button
+                      className="quiz-submit-btn"
+                      onClick={() => submitAnswer(i)}
+                      whileTap={{ scale: 0.96 }}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.15 }}
                     >
-                      {/* 选项字母标识 A/B/C/D，通过 ASCII 码计算 */}
-                      <span className="option-letter">{String.fromCharCode(65 + oi)}</span>
-                      {opt}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+                      提交
+                    </motion.button>
+                  )}
+                </div>
+              )}
 
-            {/* 代码修正题输入区：展示待修正代码 + 文本域 + 提交按钮 */}
-            {q.type === 'fix' && (
-              <div className="quiz-answer-area">
-                {/* 待修正的原始代码展示 */}
-                {q.code && <pre className="quiz-code">{q.code}</pre>}
-                {/* 修正题答案文本域：aria-label 动态包含题号，提供可访问名 */}
-                <textarea
-                  value={answers[i] ?? ''}
-                  onChange={(e) =>
-                    setAnswers((prev) => ({ ...prev, [i]: e.target.value }))
-                  }
-                  className="quiz-textarea"
-                  placeholder="输入修正后的代码或说明..."
-                  aria-label={`第 ${i + 1} 题代码修正输入`}
-                  disabled={!!submitted[i]}
-                  rows={2}
-                />
-                {/* 未提交时显示提交按钮 */}
-                {!submitted[i] && (
-                  <button className="quiz-submit-btn" onClick={() => submitAnswer(i)}>
-                    提交
-                  </button>
-                )}
-              </div>
-            )}
+              {/* 选择题选项区：每个选项一个按钮，选中即提交 */}
+              {q.type === 'choice' && (
+                <div className="quiz-options">
+                  {q.options.map((opt, oi) => {
+                    const isSelected = selectedOption[i] === oi;
+                    const isCorrect = submitted[i] && oi === q.answer;
+                    const isWrong = submitted[i] && selectedOption[i] === oi && oi !== q.answer;
+                    const optionClass = `quiz-option${isSelected ? ' selected' : ''}${
+                      isCorrect ? ' correct' : ''
+                    }${isWrong ? ' wrong' : ''}`;
+                    return (
+                      <motion.button
+                        key={oi}
+                        className={optionClass}
+                        disabled={!!submitted[i]}
+                        onClick={() => selectOption(i, oi)}
+                        whileTap={{ scale: 0.97 }}
+                        whileHover={submitted[i] ? { scale: 1 } : { x: 4, scale: 1.01 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        {/* 选项字母标识 A/B/C/D，通过 ASCII 码计算 */}
+                        <span className="option-letter">{String.fromCharCode(65 + oi)}</span>
+                        {opt}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              )}
 
-            {/* 提交后的反馈区域：对错标记 + 参考答案 + 解析 + 提示 */}
-            {submitted[i] && (
-              <div className="quiz-feedback">
-                {/* 对错标记 */}
-                {results[i] === true ? (
-                  <span className="feedback-correct">正确</span>
-                ) : (
-                  <span className="feedback-wrong">不正确</span>
+              {/* 代码修正题输入区：展示待修正代码 + 文本域 + 提交按钮 */}
+              {q.type === 'fix' && (
+                <div className="quiz-answer-area">
+                  {/* 待修正的原始代码展示 */}
+                  {q.code && <pre className="quiz-code">{q.code}</pre>}
+                  {/* 修正题答案文本域：aria-label 动态包含题号，提供可访问名 */}
+                  <textarea
+                    value={answers[i] ?? ''}
+                    onChange={(e) =>
+                      setAnswers((prev) => ({ ...prev, [i]: e.target.value }))
+                    }
+                    className="quiz-textarea"
+                    placeholder="输入修正后的代码或说明..."
+                    aria-label={`第 ${i + 1} 题代码修正输入`}
+                    disabled={!!submitted[i]}
+                    rows={2}
+                  />
+                  {/* 未提交时显示提交按钮，按压下沉微交互 */}
+                  {!submitted[i] && (
+                    <motion.button
+                      className="quiz-submit-btn"
+                      onClick={() => submitAnswer(i)}
+                      whileTap={{ scale: 0.96 }}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      提交
+                    </motion.button>
+                  )}
+                </div>
+              )}
+
+              {/*
+                提交后的反馈区域：对错标记 + 参考答案 + 解析 + 提示
+                AnimatePresence + enterScale：提交后缩放揭示，退场时缩小消失
+                ark 原则：弹层/反馈使用 spring 缓动 + scale 0.96→1
+              */}
+              <AnimatePresence>
+                {submitted[i] && (
+                  <motion.div
+                    className="quiz-feedback"
+                    variants={enterScale}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                  >
+                    {/* 对错标记：正确时缩放强调入场 */}
+                    {results[i] === true ? (
+                      <motion.span
+                        className="feedback-correct"
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                      >
+                        正确
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        className="feedback-wrong"
+                        initial={{ x: -8, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        不正确
+                      </motion.span>
+                    )}
+                    {/* 填空题显示参考答案 */}
+                    {q.type === 'fill' && (
+                      <span className="feedback-answer">参考答案: {q.answer}</span>
+                    )}
+                    {/* 修正题显示参考答案 */}
+                    {q.type === 'fix' && (
+                      <span className="feedback-answer">参考答案: {q.answer}</span>
+                    )}
+                    {/* 解析说明（选择题和修正题可能有，填空题无此字段） */}
+                    {/* 使用 'explanation' in q 类型守卫收窄联合类型，避免访问 FillQ 上不存在的字段 */}
+                    {'explanation' in q && q.explanation && (
+                      <span className="feedback-explanation">{q.explanation}</span>
+                    )}
+                    {/* 答错时显示提示 */}
+                    {q.type === 'fill' && q.hint && results[i] !== true && (
+                      <span className="feedback-hint">提示: {q.hint}</span>
+                    )}
+                  </motion.div>
                 )}
-                {/* 填空题显示参考答案 */}
-                {q.type === 'fill' && (
-                  <span className="feedback-answer">参考答案: {q.answer}</span>
-                )}
-                {/* 修正题显示参考答案 */}
-                {q.type === 'fix' && (
-                  <span className="feedback-answer">参考答案: {q.answer}</span>
-                )}
-                {/* 解析说明（选择题和修正题可能有） */}
-                {q.explanation && (
-                  <span className="feedback-explanation">{q.explanation}</span>
-                )}
-                {/* 答错时显示提示 */}
-                {q.type === 'fill' && q.hint && results[i] !== true && (
-                  <span className="feedback-hint">提示: {q.hint}</span>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+              </AnimatePresence>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
-    </div>
+    </MotionProvider>
   );
 }
 

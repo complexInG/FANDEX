@@ -4,4 +4,4 @@ Disallow: /api/
 Disallow: /search/
 Disallow: /dashboard/
 
-Sitemap: https://fanquanpp.github.io/FANDEX-exe/sitemap-index.xml
+Sitemap: https://fanquanpp.github.io/FANDEX/sitemap-index.xml

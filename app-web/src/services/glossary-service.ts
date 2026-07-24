@@ -218,4 +218,7 @@ export async function searchGlossary(
   }
 }
 
-export type { GlossaryEntry, GlossaryCollectionEntry };
+// re-export GlossaryEntry 类型供外部使用
+// 注：GlossaryCollectionEntry 已在上方第 161 行通过 `export type` 直接定义并导出，
+// 此处不再重复导出，避免 TS2484 "Export declaration conflicts with exported declaration"
+export type { GlossaryEntry };

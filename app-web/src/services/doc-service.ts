@@ -7,11 +7,20 @@
  * - 所有 getCollection 调用仅限本模块内部
  * - 所有 async 函数均通过 try-catch 包裹，异常时返回安全默认值
  * - 类型从 Content Schema 推导，不手动重复定义
+ *
+ * 偏差报备（dev 模式 OOM 优化）：
+ * - getDocStats() 原实现调用 getCollection('docs') 全量加载 2003 篇文档，
+ *   dev 模式下导致 12GB 堆内存 OOM 崩溃
+ * - 改为读取预构建的 JSON 缓存（scripts/build-stats.mjs 生成），
+ *   零文档内容加载，dev 模式下首页不再 OOM
+ * - build 模式下仍可使用原逻辑（但 JSON 缓存已足够，且性能更优）
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { docSlug } from '@/lib/modules';
 // 阅读时长估算为纯函数工具，从 reading-time.ts 引入避免重复定义
 import { computeReadingTime } from '@/lib/reading-time';
+// 预构建的文档统计缓存（由 scripts/build-stats.mjs 生成，避免 dev 模式 OOM）
+import docStatsCache from '@/data/doc-stats.json';
 
 /** 文档条目类型（从 Content Schema 推导） */
 type DocEntry = CollectionEntry<'docs'>;
@@ -109,24 +118,24 @@ export async function getDocNavigation(moduleId: string, slug: string): Promise<
 /**
  * 获取文档统计数据
  * 统计文档总数、模块数、分类数和标签数
- * @returns 文档统计对象；异常时返回零值
+ *
+ * 优化说明（dev 模式 OOM 修复）：
+ * - 原实现调用 getCollection('docs') 全量加载 2003 篇文档，
+ *   dev 模式下导致 12GB 堆内存 OOM
+ * - 改为读取预构建的 JSON 缓存（scripts/build-stats.mjs 生成），
+ *   零文档内容加载，dev 模式下首页不再 OOM
+ * - JSON 缓存由 dev / build 脚本启动前自动运行 build-stats.mjs 生成
+ *
+ * @returns 文档统计对象；缓存不可用时返回零值
  */
 export async function getDocStats(): Promise<DocStats> {
   try {
-    const docs = await getCollection('docs');
-    const moduleSet = new Set<string>();
-    const categorySet = new Set<string>();
-    const tagSet = new Set<string>();
-    docs.forEach((doc) => {
-      moduleSet.add(doc.data.module);
-      if (doc.data.category) categorySet.add(doc.data.category);
-      doc.data.tags.forEach((tag) => tagSet.add(tag));
-    });
+    // 直接返回预构建的统计缓存，避免 getCollection('docs') 全量加载
     return {
-      totalDocs: docs.length,
-      totalModules: moduleSet.size,
-      totalCategories: categorySet.size,
-      totalTags: tagSet.size,
+      totalDocs: docStatsCache.totalDocs,
+      totalModules: docStatsCache.totalModules,
+      totalCategories: docStatsCache.totalCategories,
+      totalTags: docStatsCache.totalTags,
     };
   } catch {
     return { totalDocs: 0, totalModules: 0, totalCategories: 0, totalTags: 0 };

@@ -1,8 +1,17 @@
 ---
+/**
+ * 搜索页
+ * 基于 Pagefind 静态搜索库提供全文搜索功能
+ *
+ * 样式与交互逻辑已拆分至独立文件：
+ * - styles/pages/search.css       页面级样式（容器、筛选器、Pagefind UI 主题映射）
+ * - lib/search-pagefind.ts        客户端脚本（Pagefind 加载、UI 初始化、筛选器绑定）
+ */
 import Layout from '@/components/Layout.astro';
 import SEO from '@/components/SEO.astro';
 import GeoBgDecor from '@/components/GeoBgDecor.astro';
 import { modules } from '@/lib/modules';
+import '@/styles/pages/search.css';
 ---
 
 <Layout title="搜索">
@@ -30,147 +39,7 @@ import { modules } from '@/lib/modules';
   </div>
 </Layout>
 
-<style>
-  .search-page {
-    position: relative;
-    max-width: var(--content-width);
-    margin: 0 auto;
-    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-2xl);
-  }
-
-  /* 确保内容层在几何装饰层之上 */
-  .search-page > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  .search-title {
-    font-family: var(--font-display);
-    font-size: 1.4em;
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .search-filters {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-  }
-
-  .search-filter-select {
-    padding: 6px 10px;
-    border: 1px solid var(--color-border);
-    border-radius: 0;
-    background: var(--color-bg-card);
-    color: var(--color-text);
-    font-family: var(--font-display);
-    font-size: 0.85em;
-    cursor: pointer;
-    appearance: auto;
-  }
-
-  .search-container {
-    min-height: 400px;
-  }
-
-  .search-noscript {
-    color: var(--color-text-tertiary);
-    text-align: center;
-    padding: var(--spacing-2xl);
-  }
-
-  :global(.pagefind-ui) {
-    --pagefind-ui-scale: 1;
-    --pagefind-ui-primary: var(--color-primary);
-    --pagefind-ui-text: var(--color-text);
-    --pagefind-ui-background: var(--color-bg);
-    --pagefind-ui-border: var(--color-border);
-    --pagefind-ui-tag: var(--color-bg-card);
-    --pagefind-ui-border-width: 1px;
-    --pagefind-ui-border-radius: 4px;
-    --pagefind-ui-image-border-radius: 4px;
-    --pagefind-ui-image-box-ratio: 3 / 2;
-    --pagefind-ui-font: var(--font-display);
-  }
-</style>
-
+<!-- 客户端交互脚本：Pagefind 初始化、筛选器绑定、View Transitions 兼容 -->
 <script>
-  // Pagefind 初始化守卫：避免 astro:page-load 与直接调用导致重复实例化
-  // astro:page-load 在首次加载和每次 SPA 切换后均会触发，无需再额外直接调用
-  let pagefindInitialized = false;
-  // 保存当前 filter change 监听器引用，便于 astro:before-swap 时移除
-  let filterCleanups: Array<() => void> = [];
-
-  async function initPagefind() {
-    // 已初始化则跳过，防止重复实例化造成 UI 重叠与内存泄漏
-    if (pagefindInitialized) return;
-    const base = import.meta.env.BASE_URL;
-    const searchEl = document.getElementById('search');
-    if (!searchEl) return;
-
-    if (import.meta.env.DEV) {
-      searchEl.innerHTML =
-        '<p style="color:var(--color-text-tertiary);text-align:center;padding:2em;">开发模式下未生成搜索索引，请运行 npm run build 后使用。</p>';
-      return;
-    }
-
-    try {
-      const pagefind = (await import(
-        /* @vite-ignore */ `${base}pagefind/pagefind.js`
-      )) as PagefindModule;
-      await pagefind.options({ baseUrl: base, basePath: `${base}pagefind/` });
-      await pagefind.init();
-
-      const ui = new pagefind.UI({
-        element: '#search',
-        showSubResults: true,
-        showImages: false,
-      });
-
-      const filterModule = document.getElementById('filter-module') as HTMLSelectElement;
-      const filterDifficulty = document.getElementById('filter-difficulty') as HTMLSelectElement;
-
-      function applyFilters() {
-        const filters: Record<string, string> = {};
-        if (filterModule?.value) filters.module = filterModule.value;
-        if (filterDifficulty?.value) filters.difficulty = filterDifficulty.value;
-        if (Object.keys(filters).length > 0) {
-          ui.filter(filters);
-        } else {
-          ui.filter({});
-        }
-      }
-
-      filterModule?.addEventListener('change', applyFilters);
-      filterDifficulty?.addEventListener('change', applyFilters);
-      // 记录清理函数：before-swap 时调用，移除 change 监听器避免孤立引用
-      filterCleanups = [
-        () => filterModule?.removeEventListener('change', applyFilters),
-        () => filterDifficulty?.removeEventListener('change', applyFilters),
-      ];
-
-      const params = new URLSearchParams(window.location.search);
-      const q = params.get('q');
-      if (q) {
-        ui.triggerSearch(q);
-      }
-      // 标记已初始化，防止 astro:page-load 二次触发重复构建 UI
-      pagefindInitialized = true;
-    } catch (e) {
-      searchEl.innerHTML =
-        '<p style="color:var(--color-text-tertiary);text-align:center;padding:2em;">搜索索引尚未构建，请先运行 npm run build</p>';
-    }
-  }
-
-  document.addEventListener('astro:page-load', initPagefind);
-  // 页面切换前清理：移除 filter 监听器与 pagefind 初始化标记，允许新页面重新初始化
-  document.addEventListener(
-    'astro:before-swap',
-    () => {
-      filterCleanups.forEach((cleanup) => cleanup());
-      filterCleanups = [];
-      pagefindInitialized = false;
-      document.removeEventListener('astro:page-load', initPagefind);
-    },
-    { once: true }
-  );
+  import '@/lib/search-pagefind';
 </script>

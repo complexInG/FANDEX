@@ -27,6 +27,8 @@
  */
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { MotionProvider, enterFade, enterDown, enterUp, enterScale } from '@/motion';
 import { loadMermaid, loadDOMPurify } from '@/lib/external-loader';
 import '@/styles/islands/KnowledgeMap.css';
 
@@ -68,7 +70,7 @@ interface KnowledgeMapProps {
   map: KnowledgeMapData;
   /** 服务端预生成的 Mermaid 语法字符串 */
   graphSource: string;
-  /** 站点基础路径（含尾部斜杠，如 /FANDEX-web/） */
+  /** 站点基础路径（含尾部斜杠，如 /FANDEX/） */
   baseUrl: string;
   /** 地图范围：'global' | 'module' | 'doc'，用于 a11y 与错误提示 */
   scope: 'global' | 'module' | 'doc';
@@ -441,162 +443,228 @@ export function KnowledgeMap({ map, graphSource, baseUrl, scope }: KnowledgeMapP
   }, [renderMap]);
 
   return (
-    <div className="kmap-root">
-      {/* 工具栏：缩放控制 + 重新渲染 */}
-      {status === 'rendered' && nodeCount > 0 && (
-        <div className="kmap-toolbar">
-          <button className="kmap-btn" onClick={zoomOut} aria-label="缩小" title="缩小">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
+    <MotionProvider>
+      <div className="kmap-root">
+        {/* 工具栏：缩放控制 + 重新渲染
+            ark 原则：工具栏从顶部落入（enterDown），按钮 whileTap 按压反馈 */}
+        <AnimatePresence>
+          {status === 'rendered' && nodeCount > 0 && (
+            <motion.div
+              className="kmap-toolbar"
+              variants={enterDown}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
             >
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          </button>
-          <span className="kmap-scale">{Math.round(scale * 100)}%</span>
-          <button className="kmap-btn" onClick={zoomIn} aria-label="放大" title="放大">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          </button>
-          <button
-            className="kmap-btn kmap-reset-btn"
-            onClick={zoomReset}
-            aria-label="重置视图"
-            title="重置视图"
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <polyline points="1 4 1 10 7 10" />
-              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-            </svg>
-          </button>
-        </div>
-      )}
+              <motion.button
+                className="kmap-btn"
+                onClick={zoomOut}
+                aria-label="缩小"
+                title="缩小"
+                whileTap={{ scale: 0.9 }}
+                transition={{ duration: 0.15 }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </motion.button>
+              <span className="kmap-scale">{Math.round(scale * 100)}%</span>
+              <motion.button
+                className="kmap-btn"
+                onClick={zoomIn}
+                aria-label="放大"
+                title="放大"
+                whileTap={{ scale: 0.9 }}
+                transition={{ duration: 0.15 }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </motion.button>
+              <motion.button
+                className="kmap-btn kmap-reset-btn"
+                onClick={zoomReset}
+                aria-label="重置视图"
+                title="重置视图"
+                whileTap={{ scale: 0.9 }}
+                transition={{ duration: 0.15 }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <polyline points="1 4 1 10 7 10" />
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                </svg>
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* 主渲染容器 */}
-      <div
-        className={`kmap-container${isDragging ? ' is-dragging' : ''}${
-          nodeCount === 0 ? ' is-empty' : ''
-        }`}
-        ref={containerRef}
-        onWheel={onWheel}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
-        onMouseLeave={onMouseLeave}
-      >
-        {/* 加载中 spinner */}
-        {status === 'loading' && (
-          <div className="kmap-loading">
-            <div className="kmap-spinner" aria-hidden="true"></div>
-            <p className="kmap-loading-text">正在加载知识地图...</p>
-          </div>
-        )}
-
-        {/* 错误状态 */}
-        {status === 'error' && (
-          <div className="kmap-error">
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <p className="kmap-error-title">知识地图渲染失败</p>
-            <p className="kmap-error-detail">{errorMsg}</p>
-            <button className="kmap-retry-btn" onClick={retryRender}>
-              重试
-            </button>
-          </div>
-        )}
-
-        {/* 空状态 */}
-        {status !== 'loading' && status !== 'error' && nodeCount === 0 && (
-          <div className="kmap-empty">
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-            </svg>
-            <p className="kmap-empty-text">{emptyText}</p>
-          </div>
-        )}
-
-        {/* SVG 渲染区（可缩放/拖拽） */}
+        {/* 主渲染容器 */}
         <div
-          style={{
-            display: status === 'rendered' && nodeCount > 0 ? undefined : 'none',
-            transform: transformStyle,
-          }}
-          className="kmap-svg-wrapper"
-          ref={svgWrapperRef}
-        ></div>
-      </div>
+          className={`kmap-container${isDragging ? ' is-dragging' : ''}${
+            nodeCount === 0 ? ' is-empty' : ''
+          }`}
+          ref={containerRef}
+          onWheel={onWheel}
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          onMouseLeave={onMouseLeave}
+        >
+          {/* 加载中 spinner：纯淡入避免布局位移 */}
+          <AnimatePresence>
+            {status === 'loading' && (
+              <motion.div
+                className="kmap-loading"
+                variants={enterFade}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <div className="kmap-spinner" aria-hidden="true"></div>
+                <p className="kmap-loading-text">正在加载知识地图...</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-      {/* 图例说明 */}
-      {status === 'rendered' && nodeCount > 0 && (
-        <div className="kmap-legend">
-          <div className="kmap-legend-item">
-            <span className="kmap-legend-swatch kmap-legend-module"></span>
-            <span>模块</span>
-          </div>
-          <div className="kmap-legend-item">
-            <span className="kmap-legend-swatch kmap-legend-beginner"></span>
-            <span>入门</span>
-          </div>
-          <div className="kmap-legend-item">
-            <span className="kmap-legend-swatch kmap-legend-intermediate"></span>
-            <span>中级</span>
-          </div>
-          <div className="kmap-legend-item">
-            <span className="kmap-legend-swatch kmap-legend-advanced"></span>
-            <span>进阶</span>
-          </div>
-          <div className="kmap-legend-item">
-            <span className="kmap-legend-line kmap-legend-line-solid"></span>
-            <span>前置依赖</span>
-          </div>
-          <div className="kmap-legend-item">
-            <span className="kmap-legend-line kmap-legend-line-dashed"></span>
-            <span>关联</span>
-          </div>
-          <div className="kmap-legend-tip">
-            <span>提示：滚轮缩放，拖拽平移，点击节点跳转</span>
-          </div>
+          {/* 错误状态：缩放入场 */}
+          <AnimatePresence>
+            {status === 'error' && (
+              <motion.div
+                className="kmap-error"
+                variants={enterScale}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <p className="kmap-error-title">知识地图渲染失败</p>
+                <p className="kmap-error-detail">{errorMsg}</p>
+                <motion.button
+                  className="kmap-retry-btn"
+                  onClick={retryRender}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  重试
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 空状态：缩放入场 */}
+          <AnimatePresence>
+            {status !== 'loading' && status !== 'error' && nodeCount === 0 && (
+              <motion.div
+                className="kmap-empty"
+                variants={enterScale}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                </svg>
+                <p className="kmap-empty-text">{emptyText}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* SVG 渲染区（可缩放/拖拽）
+              保持单一 ref 指向，避免 renderMap 注入 SVG 时的 ref 冲突。
+              入场动效由 CSS transition 配合 status 切换实现（.kmap-svg-wrapper.is-rendered） */}
+          <div
+            style={{
+              display: status === 'rendered' && nodeCount > 0 ? undefined : 'none',
+              transform: transformStyle,
+            }}
+            className={`kmap-svg-wrapper${status === 'rendered' ? ' is-rendered' : ''}`}
+            ref={svgWrapperRef}
+          ></div>
         </div>
-      )}
-    </div>
+
+        {/* 图例说明：从底部上滑入场 */}
+        <AnimatePresence>
+          {status === 'rendered' && nodeCount > 0 && (
+            <motion.div
+              className="kmap-legend"
+              variants={enterUp}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            >
+              <div className="kmap-legend-item">
+                <span className="kmap-legend-swatch kmap-legend-module"></span>
+                <span>模块</span>
+              </div>
+              <div className="kmap-legend-item">
+                <span className="kmap-legend-swatch kmap-legend-beginner"></span>
+                <span>入门</span>
+              </div>
+              <div className="kmap-legend-item">
+                <span className="kmap-legend-swatch kmap-legend-intermediate"></span>
+                <span>中级</span>
+              </div>
+              <div className="kmap-legend-item">
+                <span className="kmap-legend-swatch kmap-legend-advanced"></span>
+                <span>进阶</span>
+              </div>
+              <div className="kmap-legend-item">
+                <span className="kmap-legend-line kmap-legend-line-solid"></span>
+                <span>前置依赖</span>
+              </div>
+              <div className="kmap-legend-item">
+                <span className="kmap-legend-line kmap-legend-line-dashed"></span>
+                <span>关联</span>
+              </div>
+              <div className="kmap-legend-tip">
+                <span>提示：滚轮缩放，拖拽平移，点击节点跳转</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </MotionProvider>
   );
 }
 

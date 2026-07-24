@@ -30,6 +30,8 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'motion/react';
+import { MotionProvider, enterScale } from '@/motion';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/ui/components';
 import { lookup } from '@/services/glossary-service';
 import type { GlossaryEntry } from '@/types/glossary';
@@ -401,63 +403,70 @@ export function TermTooltip() {
   // ============================================================================
 
   return (
-    <>
+    <MotionProvider>
       {/*
         桌面端 Tooltip：固定定位浮层，由 tooltipVisible 控制显隐
         使用 createPortal 到 body 避免 z-index 与父容器裁剪问题
         视觉风格与 shadcn-vue Tooltip 对齐：elevated 背景、阴影、淡入动画
+        AnimatePresence + motion.div：进场缩放淡入，退场缩放淡出（ark: enterScale）
       */}
-      {tooltipVisible &&
-        activeEntry &&
-        createPortal(
-          <div
-            className={`term-tooltip-floating term-tooltip-placement-${tooltipPlacement}`}
-            style={tooltipStyle}
-            role="tooltip"
-            onMouseLeave={() =>
-              scheduleHoverHide(currentTriggerElRef.current ?? document.body)
-            }
-          >
-            <div className="term-tooltip-body">
-              {/* 头部：术语 + 英文 */}
-              <div className="term-tooltip-header">
-                <span className="term-tooltip-term">{activeEntry.term}</span>
-                {activeEntry.english && (
-                  <span className="term-tooltip-english">{activeEntry.english}</span>
+      {createPortal(
+        <AnimatePresence>
+          {tooltipVisible && activeEntry && (
+            <motion.div
+              className={`term-tooltip-floating term-tooltip-placement-${tooltipPlacement}`}
+              style={tooltipStyle}
+              role="tooltip"
+              onMouseLeave={() =>
+                scheduleHoverHide(currentTriggerElRef.current ?? document.body)
+              }
+              variants={enterScale}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            >
+              <div className="term-tooltip-body">
+                {/* 头部：术语 + 英文 */}
+                <div className="term-tooltip-header">
+                  <span className="term-tooltip-term">{activeEntry.term}</span>
+                  {activeEntry.english && (
+                    <span className="term-tooltip-english">{activeEntry.english}</span>
+                  )}
+                </div>
+                {/* 词源（可选） */}
+                {activeEntry.etymology && (
+                  <p className="term-tooltip-etymology">{activeEntry.etymology}</p>
+                )}
+                {/* 定义 */}
+                <p className="term-tooltip-definition">{activeEntry.definition}</p>
+                {/* 参考链接 */}
+                {activeEntry.references && activeEntry.references.length > 0 && (
+                  <div className="term-tooltip-refs">
+                    {activeEntry.references.map((ref, i) => (
+                      <a
+                        key={i}
+                        href={ref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="term-tooltip-ref-link"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink className="size-3" />
+                        <span>{ref}</span>
+                      </a>
+                    ))}
+                  </div>
                 )}
               </div>
-              {/* 词源（可选） */}
-              {activeEntry.etymology && (
-                <p className="term-tooltip-etymology">{activeEntry.etymology}</p>
-              )}
-              {/* 定义 */}
-              <p className="term-tooltip-definition">{activeEntry.definition}</p>
-              {/* 参考链接 */}
-              {activeEntry.references && activeEntry.references.length > 0 && (
-                <div className="term-tooltip-refs">
-                  {activeEntry.references.map((ref, i) => (
-                    <a
-                      key={i}
-                      href={ref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="term-tooltip-ref-link"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <ExternalLink className="size-3" />
-                      <span>{ref}</span>
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
-            {/* 小箭头（指向触发元素） */}
-            <span
-              className={`term-tooltip-arrow term-tooltip-arrow-${tooltipPlacement}`}
-            ></span>
-          </div>,
-          document.body
-        )}
+              {/* 小箭头（指向触发元素） */}
+              <span
+                className={`term-tooltip-arrow term-tooltip-arrow-${tooltipPlacement}`}
+              ></span>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       {/*
         移动端 Dialog：基于 shadcn Dialog
@@ -503,7 +512,7 @@ export function TermTooltip() {
           )}
         </DialogContent>
       </Dialog>
-    </>
+    </MotionProvider>
   );
 }
 

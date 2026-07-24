@@ -3,19 +3,13 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "FANDEX 共享层聚合包 — 统一导出 tokens/styles/utils/astro-components，三端共享",
+  "description": "FANDEX 共享层聚合包 — 统一导出 assets（tokens/utils 为独立 workspace 包，直接引用 @fandex/tokens @fandex/utils；美术样式与 Astro 组件已迁入各端独立维护）",
   "exports": {
-    "./tokens": "./tokens/index.ts",
-    "./styles/*": "./styles/*",
-    "./utils": "./utl-utils/index.ts",
-    "./astro-components/*": "./asc-astro-components/*",
     "./assets/*": "./assets/*"
   },
   "dependencies": {
     "@fandex/tokens": "workspace:*",
-    "@fandex/styles": "workspace:*",
     "@fandex/utils": "workspace:*",
-    "@fandex/astro-components": "workspace:*",
     "@fandex/shared-assets": "workspace:*"
   }
 }

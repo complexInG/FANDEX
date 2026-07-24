@@ -58,6 +58,8 @@
  */
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { MotionProvider, enterFade, enterDown, enterUp, enterScale } from '@/motion';
 import { loadForceGraph } from '@/lib/external-loader';
 import '@/styles/islands/KnowledgeGraph3D.css';
 
@@ -157,7 +159,7 @@ interface ForceGraphConstructor {
 interface KnowledgeGraph3DProps {
   /** 服务端预构建的完整知识地图数据 */
   map: KnowledgeMapData;
-  /** 站点基础路径（含尾部斜杠，如 /FANDEX-web/） */
+  /** 站点基础路径（含尾部斜杠，如 /FANDEX/） */
   baseUrl: string;
   /** 地图范围：仅用于 a11y 与错误提示，组件始终按全局模式渲染 */
   scope: 'global' | 'module' | 'doc';
@@ -267,7 +269,9 @@ export function KnowledgeGraph3D({ map, baseUrl }: KnowledgeGraph3DProps) {
    * @returns 颜色字符串
    */
   const getNodeColor = useCallback(
-    (node: { type?: string; difficulty?: string }): string => {
+    // 显式包含 undefined 以适配 exactOptionalPropertyTypes：
+    // 调用方传入 node.type/node.difficulty（string | undefined），需允许 undefined 显式赋值
+    (node: { type?: string | undefined; difficulty?: string | undefined }): string => {
       const isDark = currentThemeRef.current === 'dark';
       if (node.type === 'module') {
         return isDark ? '#60a5fa' : '#2563eb';
@@ -663,120 +667,170 @@ export function KnowledgeGraph3D({ map, baseUrl }: KnowledgeGraph3DProps) {
   }, []);
 
   return (
-    <div className="kg3d-root">
-      {/* 工具栏：视图控制 */}
-      {status === 'rendered' && (
-        <div className="kg3d-toolbar">
-          <button className="kg3d-btn" onClick={zoomToFit} aria-label="自适应视图" title="自适应视图">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+    <MotionProvider>
+      <div className="kg3d-root">
+        {/* 工具栏：视图控制
+            ark 原则：工具栏从顶部落入（enterDown），按钮 whileTap 按压反馈 */}
+        <AnimatePresence>
+          {status === 'rendered' && (
+            <motion.div
+              className="kg3d-toolbar"
+              variants={enterDown}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
             >
-              <polyline points="1 4 1 10 7 10" />
-              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-            </svg>
-          </button>
-          <button
-            className={`kg3d-btn${isPaused ? ' is-active' : ''}`}
-            onClick={togglePause}
-            aria-label={isPaused ? '恢复动画' : '暂停动画'}
-            title={isPaused ? '恢复动画' : '暂停动画'}
-          >
-            {isPaused ? (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="5 3 19 12 5 21 5 3" />
-              </svg>
-            ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="6" y="4" width="4" height="16" />
-                <rect x="14" y="4" width="4" height="16" />
-              </svg>
+              <motion.button
+                className="kg3d-btn"
+                onClick={zoomToFit}
+                aria-label="自适应视图"
+                title="自适应视图"
+                whileTap={{ scale: 0.9 }}
+                transition={{ duration: 0.15 }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <polyline points="1 4 1 10 7 10" />
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                </svg>
+              </motion.button>
+              <motion.button
+                className={`kg3d-btn${isPaused ? ' is-active' : ''}`}
+                onClick={togglePause}
+                aria-label={isPaused ? '恢复动画' : '暂停动画'}
+                title={isPaused ? '恢复动画' : '暂停动画'}
+                whileTap={{ scale: 0.9 }}
+                transition={{ duration: 0.15 }}
+              >
+                {isPaused ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="4" width="4" height="16" />
+                    <rect x="14" y="4" width="4" height="16" />
+                  </svg>
+                )}
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 渲染区包裹层：作为定位上下文，隔离 3d-force-graph 直接 DOM 操作与 React 渲染
+           关键：.kg3d-container 内部由 3d-force-graph 直接管理 canvas，
+                React 不在其内部渲染条件节点，避免 patch 冲突 */}
+        <div className="kg3d-canvas-wrap">
+          {/* 3d-force-graph 渲染容器：React 视为空，子节点完全由库管理 */}
+          <div className="kg3d-container" ref={containerRef}></div>
+
+          {/* 加载/错误覆盖层：与 .kg3d-container 平级，通过 position:absolute 覆盖其上
+              ark 原则：加载态纯淡入（enterFade）避免布局位移，错误态缩放入场（enterScale） */}
+          <AnimatePresence>
+            {status === 'loading' && (
+              <motion.div
+                className="kg3d-loading"
+                variants={enterFade}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <div className="kg3d-spinner" aria-hidden="true"></div>
+                <p className="kg3d-loading-text">
+                  正在加载 3D 知识图谱（{moduleCount} 模块 · {docCount} 文档 · {edgeCount} 关系）...
+                </p>
+              </motion.div>
             )}
-          </button>
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {status === 'error' && (
+              <motion.div
+                className="kg3d-error"
+                variants={enterScale}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <p className="kg3d-error-title">3D 知识图谱渲染失败</p>
+                <p className="kg3d-error-detail">{errorMsg}</p>
+                <motion.button
+                  className="kg3d-retry-btn"
+                  onClick={retryRender}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  重试
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      )}
 
-      {/* 渲染区包裹层：作为定位上下文，隔离 3d-force-graph 直接 DOM 操作与 React 渲染
-         关键：.kg3d-container 内部由 3d-force-graph 直接管理 canvas，
-              React 不在其内部渲染条件节点，避免 patch 冲突 */}
-      <div className="kg3d-canvas-wrap">
-        {/* 3d-force-graph 渲染容器：React 视为空，子节点完全由库管理 */}
-        <div className="kg3d-container" ref={containerRef}></div>
-
-        {/* 加载/错误覆盖层：与 .kg3d-container 平级，通过 position:absolute 覆盖其上 */}
-        {status === 'loading' && (
-          <div className="kg3d-loading">
-            <div className="kg3d-spinner" aria-hidden="true"></div>
-            <p className="kg3d-loading-text">
-              正在加载 3D 知识图谱（{moduleCount} 模块 · {docCount} 文档 · {edgeCount} 关系）...
-            </p>
-          </div>
-        )}
-
-        {status === 'error' && (
-          <div className="kg3d-error">
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+        {/* 图例说明：从底部上滑入场 */}
+        <AnimatePresence>
+          {status === 'rendered' && (
+            <motion.div
+              className="kg3d-legend"
+              variants={enterUp}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
             >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <p className="kg3d-error-title">3D 知识图谱渲染失败</p>
-            <p className="kg3d-error-detail">{errorMsg}</p>
-            <button className="kg3d-retry-btn" onClick={retryRender}>
-              重试
-            </button>
-          </div>
-        )}
+              <div className="kg3d-legend-item">
+                <span className="kg3d-legend-swatch kg3d-legend-module"></span>
+                <span>模块</span>
+              </div>
+              <div className="kg3d-legend-item">
+                <span className="kg3d-legend-swatch kg3d-legend-beginner"></span>
+                <span>入门</span>
+              </div>
+              <div className="kg3d-legend-item">
+                <span className="kg3d-legend-swatch kg3d-legend-intermediate"></span>
+                <span>中级</span>
+              </div>
+              <div className="kg3d-legend-item">
+                <span className="kg3d-legend-swatch kg3d-legend-advanced"></span>
+                <span>进阶</span>
+              </div>
+              <div className="kg3d-legend-item">
+                <span className="kg3d-legend-swatch kg3d-legend-default"></span>
+                <span>未分级</span>
+              </div>
+              <div className="kg3d-legend-item">
+                <span className="kg3d-legend-line kg3d-legend-line-solid"></span>
+                <span>前置依赖</span>
+              </div>
+              <div className="kg3d-legend-item">
+                <span className="kg3d-legend-line kg3d-legend-line-dashed"></span>
+                <span>关联</span>
+              </div>
+              <div className="kg3d-legend-tip">
+                <span>左键旋转 · 滚轮缩放 · 右键平移 · 点击节点跳转</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
-      {/* 图例说明 */}
-      {status === 'rendered' && (
-        <div className="kg3d-legend">
-          <div className="kg3d-legend-item">
-            <span className="kg3d-legend-swatch kg3d-legend-module"></span>
-            <span>模块</span>
-          </div>
-          <div className="kg3d-legend-item">
-            <span className="kg3d-legend-swatch kg3d-legend-beginner"></span>
-            <span>入门</span>
-          </div>
-          <div className="kg3d-legend-item">
-            <span className="kg3d-legend-swatch kg3d-legend-intermediate"></span>
-            <span>中级</span>
-          </div>
-          <div className="kg3d-legend-item">
-            <span className="kg3d-legend-swatch kg3d-legend-advanced"></span>
-            <span>进阶</span>
-          </div>
-          <div className="kg3d-legend-item">
-            <span className="kg3d-legend-swatch kg3d-legend-default"></span>
-            <span>未分级</span>
-          </div>
-          <div className="kg3d-legend-item">
-            <span className="kg3d-legend-line kg3d-legend-line-solid"></span>
-            <span>前置依赖</span>
-          </div>
-          <div className="kg3d-legend-item">
-            <span className="kg3d-legend-line kg3d-legend-line-dashed"></span>
-            <span>关联</span>
-          </div>
-          <div className="kg3d-legend-tip">
-            <span>左键旋转 · 滚轮缩放 · 右键平移 · 点击节点跳转</span>
-          </div>
-        </div>
-      )}
-    </div>
+    </MotionProvider>
   );
 }
 

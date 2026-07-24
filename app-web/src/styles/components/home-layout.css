@@ -1,0 +1,88 @@
+/**
+ * 首页布局样式
+ * -----------------------------------------------------------------------------
+ * 从 components/HomeLayout.astro 提取的布局样式，包含：
+ * - 首页导航栏（固定顶部、毛玻璃背景、sticky 定位）
+ * - 首页主内容区（撑满剩余视口高度）
+ * - 导航操作链接（方框风格）
+ * - 全屏按钮（移动端显示）
+ * - 移动端响应式适配（768px 断点）
+ */
+
+/* 首页导航栏：固定顶部，毛玻璃背景 */
+.home-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-md);
+  background: var(--color-nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nav-height);
+}
+
+/* 首页主内容区：撑满剩余视口高度 */
+.home-main {
+  min-height: calc(100vh - var(--nav-height));
+  min-height: calc(100dvh - var(--nav-height));
+  overflow-y: auto;
+}
+
+/* 导航操作链接：方框风格（知识地图等） */
+.nav-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: 0.82rem;
+  padding: 4px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+.nav-action-link:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-secondary);
+  background: var(--color-bg-hover, rgba(128, 128, 128, 0.06));
+}
+
+/* 移动端隐藏操作链接文字 */
+@media (max-width: 768px) {
+  .nav-action-text {
+    display: none;
+  }
+}
+
+/* 全屏按钮：默认隐藏，移动端显示 */
+.nav-fullscreen-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast);
+}
+.nav-fullscreen-btn:hover {
+  color: var(--color-text);
+}
+
+/* 移动端适配：显示全屏按钮，隐藏 GitHub 文字 */
+@media (max-width: 768px) {
+  .nav-fullscreen-btn {
+    display: flex;
+  }
+  .nav-github-text {
+    display: none;
+  }
+}

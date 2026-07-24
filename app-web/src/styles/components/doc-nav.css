@@ -1,0 +1,93 @@
+/**
+ * 文档底部导航样式
+ * -----------------------------------------------------------------------------
+ * 从 components/DocNav.astro 提取的组件样式，包含：
+ * - 底部导航容器（左右分布上一篇/下一篇）
+ * - 导航按钮（边框、悬停高亮）
+ * - 单按钮布局（仅有一篇时的对齐处理）
+ * - 标签与标题样式（单行省略）
+ * - 移动端响应式适配（768px 断点）
+ */
+
+/* 底部导航容器：左右分布上一篇/下一篇 */
+.doc-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border-light);
+  max-width: var(--content-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 导航按钮 */
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* 仅有一个按钮时的布局 */
+.doc-nav.single-btn {
+  justify-content: flex-start;
+}
+
+.doc-nav.single-btn .nav-btn {
+  flex: none;
+}
+
+/* "上一篇/下一篇"标签 */
+.nav-label {
+  font-size: 0.68em;
+  color: var(--color-text-tertiary);
+  display: block;
+}
+
+/* 文档标题：单行省略 */
+.nav-title {
+  font-size: 0.82em;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .doc-nav {
+    flex-direction: row;
+    gap: var(--spacing-sm);
+  }
+
+  .doc-nav.single-btn {
+    justify-content: flex-start;
+  }
+
+  .doc-nav.single-btn .nav-btn {
+    flex: none;
+  }
+
+  .nav-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    flex-direction: row;
+  }
+
+  .nav-title {
+    font-size: 0.75em;
+  }
+}

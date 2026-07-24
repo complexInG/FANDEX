@@ -253,8 +253,8 @@ const MODULE_REFERENCES = {
     authors: ['FANDEX Project'],
     year: 2026,
     title: 'FANDEX 自学知识体系',
-    venue: 'FANDEX-Web',
-    url: 'https://github.com/fanquanpp/FANDEX-Web',
+    venue: 'FANDEX',
+    url: 'https://github.com/fanquanpp/FANDEX',
   },
 };
 

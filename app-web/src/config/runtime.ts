@@ -30,7 +30,7 @@ function envNumber(key: string, fallback: number): number {
 /** 集中配置对象：所有可配置项的唯一来源 */
 export const RUNTIME = {
   /** 站点地址（用于 sitemap、canonical、RSS 等绝对链接生成） */
-  siteUrl: envString('PUBLIC_SITE_URL', 'https://fanquanpp.github.io/FANDEX-web'),
+  siteUrl: envString('PUBLIC_SITE_URL', 'https://fanquanpp.github.io/FANDEX'),
 
   /** Mermaid 图表库 CDN 地址（v11） */
   mermaidCdn: envString(

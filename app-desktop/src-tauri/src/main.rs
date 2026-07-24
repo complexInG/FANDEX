@@ -471,12 +471,12 @@ fn handle_menu_event(app: &tauri::AppHandle, event: MenuEvent) {
             );
         }
         "docs" => {
-            let _ = app.shell().open("https://github.com/fanquanpp/FANDEX-exe", None);
+            let _ = app.shell().open("https://github.com/fanquanpp/FANDEX", None);
         }
         "report_issue" => {
             let _ = app
                 .shell()
-                .open("https://github.com/fanquanpp/FANDEX-exe/issues", None);
+                .open("https://github.com/fanquanpp/FANDEX/issues", None);
         }
         _ => {
             log::debug!("未处理的菜单事件: {:?}", event.id());

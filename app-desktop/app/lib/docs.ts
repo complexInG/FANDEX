@@ -1,9 +1,16 @@
 /**
  * FANDEX 文档数据访问层 — Desktop 端（Expo/React Native）
  *
+ * FIXME: 待重构 — 文档冗余清理
+ * 原设计从 public/content/<module>/<slug>.md 加载文档 Markdown 原文，
+ * 该路径由 build-docs-content.mjs 从 cnt-content/full/ 同步生成。
+ * 已移除文档冗余同步机制（build-docs-content.mjs 已删除，public/content/ 已清理），
+ * Desktop 端文档访问层将在后续 Desktop 技术栈重构时重新设计，
+ * 届时将采用统一文档索引机制，不再在端内复制文档。
+ *
  * 功能概述：
  * - 从 public/data/module-docs-index.json 加载文档元数据索引
- * - 从 public/content/<module>/<slug>.md 加载文档 Markdown 原文
+ * - 从 public/content/<module>/<slug>.md 加载文档 Markdown 原文（已废弃，待重构）
  * - 解析 YAML frontmatter 提取标题、描述、难度等元信息
  * - 提供文档列表查询与单篇文档内容获取两类接口
  *

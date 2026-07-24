@@ -24,7 +24,7 @@ const DIST = 'dist';
 /** 源代码目录 */
 const SRC = 'src';
 /** GitHub Pages 部署基础路径 */
-const BASE = '/FANDEX-web/';
+const BASE = '/FANDEX/';
 /** 失败计数器 */
 let errors = 0;
 /** 警告计数器 */

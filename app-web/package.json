@@ -6,8 +6,8 @@
   "description": "FANDEX Web 端 — Astro 7 + React 19 + Tailwind 4",
   "license": "MIT",
   "scripts": {
-    "dev": "astro dev",
-    "build": "node scripts/build-glossary-index.mjs && node scripts/build-search-index.mjs && astro build",
+    "dev": "node scripts/build-stats.mjs && astro dev",
+    "build": "node scripts/build-glossary-index.mjs && node scripts/build-search-index.mjs && node scripts/build-stats.mjs && astro build",
     "preview": "astro preview",
     "qa": "node scripts/qa-check.mjs",
     "typecheck": "astro check"
@@ -17,9 +17,7 @@
     "@astrojs/react": "catalog:",
     "@astrojs/rss": "catalog:",
     "@astrojs/sitemap": "catalog:",
-    "@fandex/astro-components": "workspace:*",
     "@fandex/shared-assets": "workspace:*",
-    "@fandex/styles": "workspace:*",
     "@fandex/utils": "workspace:*",
     "@radix-ui/react-accordion": "catalog:",
     "@radix-ui/react-dialog": "catalog:",

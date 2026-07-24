@@ -21,6 +21,8 @@
  */
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { motion } from 'motion/react';
+import { MotionProvider, staggerFast, enterUp } from '@/motion';
 import {
   getExerciseProgress,
   getIncorrectExercises,
@@ -42,7 +44,18 @@ import {
   type ProgressRecord,
 } from '@/services/progress-service';
 import { getAllModules } from '@/services/module-service';
-import type { Module } from '@/types';
+// Module 类型从 @/lib/modules 引用（re-export 自 @fandex/utils/modules，三端统一数据源）
+// 不再使用 @/types 中的本地 Module 类型，避免与共享层字段（title/icon/categories）不匹配
+import type { Module } from '@/lib/modules';
+import {
+  typeLabel,
+  statusLabel,
+  extractSlug,
+  formatReadingTime,
+  formatDate,
+  formatRelativeTime,
+  getDocUrl,
+} from '@/lib/progress-utils';
 import '@/styles/islands/ProgressDashboard.css';
 
 // ============================================================================
@@ -177,105 +190,10 @@ export function ProgressDashboard() {
     [getModulePercent]
   );
 
-  // ========== 纯函数工具（无依赖闭包） ==========
-
-  /**
-   * 题型中文标签
-   * @param type - 习题类型
-   * @returns 中文标签
-   */
-  function typeLabel(type: string): string {
-    const map: Record<string, string> = {
-      'fill-blank': '填空',
-      choice: '选择',
-      'code-fix': '代码修正',
-      'open-ended': '开放性',
-    };
-    return map[type] ?? type;
-  }
-
-  /**
-   * 阅读状态中文标签
-   * @param status - 阅读状态
-   * @returns 中文标签
-   */
-  function statusLabel(status: string): string {
-    const map: Record<string, string> = {
-      completed: '已完成',
-      reading: '阅读中',
-      'not-started': '未开始',
-    };
-    return map[status] ?? status;
-  }
-
-  /**
-   * 从 docSlug 中提取 slug 部分（用于显示标题）
-   * @param docSlug - 文档唯一标识
-   * @returns slug 部分
-   */
-  function extractSlug(docSlug: string): string {
-    const idx = docSlug.indexOf('/');
-    return idx >= 0 ? docSlug.slice(idx + 1) : docSlug;
-  }
-
-  /**
-   * 格式化阅读时长（秒 → 可读字符串）
-   * @param seconds - 总秒数
-   * @returns 形如 "1h 23m" 或 "5m" 的字符串
-   */
-  function formatReadingTime(seconds: number): string {
-    if (seconds <= 0) return '0m';
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
-    return `${minutes}m`;
-  }
-
-  /**
-   * 格式化时间戳为可读日期
-   * @param timestamp - 时间戳（ms）；undefined 返回空字符串
-   * @returns YYYY-MM-DD 格式字符串
-   */
-  function formatDate(timestamp: number | undefined): string {
-    if (!timestamp) return '';
-    const d = new Date(timestamp);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  /**
-   * 格式化为相对时间（如 "3 天前"）
-   * @param timestamp - 时间戳（ms）
-   * @returns 相对时间字符串
-   */
-  function formatRelativeTime(timestamp: number | undefined): string {
-    if (!timestamp) return '';
-    const now = Date.now();
-    const diff = now - timestamp;
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days >= 30) return formatDate(timestamp);
-    if (days >= 1) return `${days} 天前`;
-    if (hours >= 1) return `${hours} 小时前`;
-    if (minutes >= 1) return `${minutes} 分钟前`;
-    return '刚刚';
-  }
-
-  /**
-   * 构造文档 URL
-   * @param moduleId - 模块 ID
-   * @param docSlug - 文档 slug（可为 "moduleId/slug" 格式或纯 slug）
-   * @returns 文档页面 URL
-   */
-  function getDocUrl(moduleId: string, docSlug: string): string {
-    const slug = extractSlug(docSlug);
-    return `${base}${moduleId}/${slug}/`;
-  }
+  // ========== 纯函数工具（已提取至 @/lib/progress-utils） ==========
+  // typeLabel / statusLabel / extractSlug / formatReadingTime /
+  // formatDate / formatRelativeTime / getDocUrl 均为无副作用纯函数，
+  // 提取至模块级别以利于 tree-shaking 与潜在复用。
 
   // ========== 数据加载 ==========
 
@@ -463,27 +381,46 @@ export function ProgressDashboard() {
 
   /**
    * 加载中状态
+   * MotionProvider 包裹，加载指示器使用 pulse 动效
    */
   if (loading) {
     return (
-      <div className="dashboard">
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
-          <p>加载进度数据...</p>
+      <MotionProvider>
+        <div className="dashboard">
+          <motion.div
+            className="dashboard-loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="loading-spinner"></div>
+            <p>加载进度数据...</p>
+          </motion.div>
         </div>
-      </div>
+      </MotionProvider>
     );
   }
 
   /**
    * 主内容渲染
+   * MotionProvider 包裹整个仪表盘，统一 reduced-motion 降级
+   * KPI 卡片使用 staggerFast 错峰入场（快速，适配顶部首屏）
+   * 各 section 使用 revealUp 滚动揭示
+   * 推荐卡片使用 hoverLift 悬停抬起
    */
   return (
-    <div className="dashboard">
-      <div className="dashboard-content">
-        {/* 顶部 KPI 卡片组（文档阅读维度） */}
-        <section className="kpi-grid">
-          <div className="kpi-card kpi-total">
+    <MotionProvider>
+      <div className="dashboard">
+        <div className="dashboard-content">
+          {/* 顶部 KPI 卡片组（文档阅读维度）
+              staggerFast：快速错峰入场（40ms 间隔），适配首屏 6 个卡片 */}
+          <motion.section
+            className="kpi-grid"
+            variants={staggerFast}
+            initial="hidden"
+            animate="visible"
+          >
+          <motion.div variants={enterUp} className="kpi-card kpi-total">
             <div className="kpi-icon">
               <svg
                 width="20"
@@ -499,9 +436,9 @@ export function ProgressDashboard() {
             </div>
             <div className="kpi-value">{readingStats.totalDocs}</div>
             <div className="kpi-label">总文档</div>
-          </div>
+          </motion.div>
 
-          <div className="kpi-card kpi-completed">
+          <motion.div variants={enterUp} className="kpi-card kpi-completed">
             <div className="kpi-icon">
               <svg
                 width="20"
@@ -516,9 +453,9 @@ export function ProgressDashboard() {
             </div>
             <div className="kpi-value">{readingStats.completed}</div>
             <div className="kpi-label">已完成</div>
-          </div>
+          </motion.div>
 
-          <div className="kpi-card kpi-in-progress">
+          <motion.div variants={enterUp} className="kpi-card kpi-in-progress">
             <div className="kpi-icon">
               <svg
                 width="20"
@@ -533,9 +470,9 @@ export function ProgressDashboard() {
             </div>
             <div className="kpi-value">{readingStats.inProgress}</div>
             <div className="kpi-label">进行中</div>
-          </div>
+          </motion.div>
 
-          <div className="kpi-card kpi-bookmarked">
+          <motion.div variants={enterUp} className="kpi-card kpi-bookmarked">
             <div className="kpi-icon">
               <svg
                 width="20"
@@ -550,9 +487,9 @@ export function ProgressDashboard() {
             </div>
             <div className="kpi-value">{readingStats.bookmarked}</div>
             <div className="kpi-label">收藏</div>
-          </div>
+          </motion.div>
 
-          <div className="kpi-card kpi-time">
+          <motion.div variants={enterUp} className="kpi-card kpi-time">
             <div className="kpi-icon">
               <svg
                 width="20"
@@ -568,9 +505,9 @@ export function ProgressDashboard() {
             </div>
             <div className="kpi-value">{formatReadingTime(readingStats.totalReadingTime)}</div>
             <div className="kpi-label">总阅读时长</div>
-          </div>
+          </motion.div>
 
-          <div className="kpi-card kpi-streak">
+          <motion.div variants={enterUp} className="kpi-card kpi-streak">
             <div className="kpi-icon">
               <svg
                 width="20"
@@ -585,11 +522,11 @@ export function ProgressDashboard() {
             </div>
             <div className="kpi-value">{readingStats.streakDays}</div>
             <div className="kpi-label">连续打卡（天）</div>
-          </div>
-        </section>
+          </motion.div>
+        </motion.section>
 
         {/* 习题作答统计 */}
-        <section className="dashboard-section">
+        <section className="dashboard-section fndx-scroll-reveal">
           <div className="section-header">
             <h3 className="section-title">习题作答统计</h3>
             <a href={`${base}dashboard/exercises/`} className="section-link">
@@ -622,7 +559,7 @@ export function ProgressDashboard() {
 
         {/* 各模块进度条形图（文档阅读进度） */}
         {moduleProgressList.length > 0 && (
-          <section className="dashboard-section">
+          <section className="dashboard-section fndx-scroll-reveal">
             <h3 className="section-title">各模块阅读进度</h3>
             <div className="module-chart">
               {moduleProgressList.map((mod) => (
@@ -631,10 +568,12 @@ export function ProgressDashboard() {
                     {getModuleLabel(mod.moduleId)}
                   </div>
                   <div className="module-bar-track">
-                    <div
+                    <motion.div
                       className={`module-bar-fill ${getProgressClass(mod)}`}
-                      style={{ width: `${getModulePercent(mod)}%` }}
-                    ></div>
+                      initial={{ width: 0 }}
+                      animate={{ width: `${getModulePercent(mod)}%` }}
+                      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                    />
                   </div>
                   <div className="module-bar-stats">
                     <span className="module-bar-percent">{getModulePercent(mod)}%</span>
@@ -650,7 +589,7 @@ export function ProgressDashboard() {
 
         {/* 最近阅读列表 */}
         {recentReading.length > 0 && (
-          <section className="dashboard-section">
+          <section className="dashboard-section fndx-scroll-reveal">
             <div className="section-header">
               <h3 className="section-title">最近阅读</h3>
             </div>
@@ -692,7 +631,7 @@ export function ProgressDashboard() {
 
         {/* 错题集快速访问 */}
         {incorrectExercises.length > 0 && (
-          <section className="dashboard-section">
+          <section className="dashboard-section fndx-scroll-reveal">
             <div className="section-header">
               <h3 className="section-title">
                 错题集（最近 {Math.min(incorrectExercises.length, 5)} 题）
@@ -729,7 +668,7 @@ export function ProgressDashboard() {
         )}
 
         {/* 推荐下一步学习 */}
-        <section className="dashboard-section">
+        <section className="dashboard-section fndx-scroll-reveal">
           <h3 className="section-title">推荐下一步学习</h3>
           <div className="recommendations">
             {recommendations.length === 0 && (
@@ -738,10 +677,13 @@ export function ProgressDashboard() {
               </div>
             )}
             {recommendations.map((rec, idx) => (
-              <a
+              <motion.a
                 key={idx}
                 href={getDocUrl(rec.moduleId, rec.docSlug)}
                 className="recommendation-card"
+                variants={enterUp}
+                whileHover={{ y: -4, scale: 1.01, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.99 }}
               >
                 <div className="rec-icon">
                   <svg
@@ -762,7 +704,7 @@ export function ProgressDashboard() {
                   </div>
                   <div className="rec-desc">{rec.reason}</div>
                 </div>
-              </a>
+              </motion.a>
             ))}
           </div>
         </section>
@@ -827,6 +769,7 @@ export function ProgressDashboard() {
         </section>
       </div>
     </div>
+    </MotionProvider>
   );
 }
 

@@ -94,7 +94,9 @@ export function WebVitalsTracker({}: WebVitalsTrackerProps = {}) {
     let cleanup: (() => void) | null = null;
     try {
       // 注册五项核心指标的采集回调
-      const unsubs: Array<() => void> = [];
+      // web-vitals 4.x 的 onLCP 等函数返回 UnsubscribeFn | void（兼容 SSR 场景），
+      // 此处使用 Array<void | (() => void)> 接纳两种返回类型，cleanup 时按函数类型判断
+      const unsubs: Array<void | (() => void)> = [];
       unsubs.push(onLCP(handleMetric));
       unsubs.push(onINP(handleMetric));
       unsubs.push(onCLS(handleMetric));
@@ -102,10 +104,12 @@ export function WebVitalsTracker({}: WebVitalsTrackerProps = {}) {
       unsubs.push(onFCP(handleMetric));
       cleanup = () => {
         for (const unsub of unsubs) {
-          try {
-            unsub();
-          } catch {
-            // 取消订阅异常时静默忽略
+          if (typeof unsub === 'function') {
+            try {
+              unsub();
+            } catch {
+              // 取消订阅异常时静默忽略
+            }
           }
         }
       };

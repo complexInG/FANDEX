@@ -38,7 +38,7 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
   <div class="module-page">
     <Breadcrumb items={breadcrumb} hasSidebar />
 
-    <div class="module-header">
+    <div class="module-header fndx-scroll-reveal">
       <span class="header-bar" style={`background:${categoryColors[getPrimaryCategory(meta)]}`}
       ></span>
       <div class="header-body">
@@ -47,7 +47,7 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
       </div>
     </div>
 
-    <ul class="doc-list">
+    <ul class="doc-list fndx-scroll-reveal-fade">
       {
         sortedDocs.map((doc, idx) => (
           <li class="doc-list-item">

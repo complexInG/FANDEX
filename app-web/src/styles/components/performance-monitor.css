@@ -1,0 +1,286 @@
+/**
+ * 性能监控面板样式
+ * -----------------------------------------------------------------------------
+ * 从 PerformanceMonitor.astro 提取的样式，包含：
+ * - 浮动面板容器（固定右下角，可折叠）
+ * - Web Vitals 指标卡片网格（good/needs-improvement/poor 三档色条）
+ * - 分位数汇总（p50/p75/p95）
+ * - 资源加载瀑布图（名称 + 时间条 + 耗时）
+ * - 操作按钮（导出/清空）
+ * - 暗色模式适配
+ *
+ * 注：外部 CSS 导入为全局样式，:global() 包裹已移除
+ */
+
+/* 性能监控面板：固定右下角浮动卡片 */
+.perf-monitor {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 360px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--color-text, #111827);
+  overflow: hidden;
+}
+
+/* 暗色模式适配：通过 data-theme 属性切换 */
+html[data-theme='dark'] .perf-monitor {
+  background: #1f2937;
+  color: #f9fafb;
+  border-color: #374151;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.perf-monitor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--color-primary, #3b82f6);
+  color: #ffffff;
+  cursor: default;
+}
+
+.perf-monitor-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.perf-monitor-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.perf-monitor-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 4px;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0;
+}
+
+.perf-monitor-actions button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.perf-monitor-body {
+  padding: 10px 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.perf-monitor.collapsed .perf-monitor-body {
+  display: none;
+}
+
+.perf-section {
+  margin-bottom: 12px;
+}
+
+.perf-section:last-child {
+  margin-bottom: 0;
+}
+
+.perf-section-title {
+  margin: 0 0 6px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+html[data-theme='dark'] .perf-section-title {
+  color: #9ca3af;
+}
+
+/* Web Vitals 指标卡片网格 */
+.perf-vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 6px;
+}
+
+.perf-vital-card {
+  padding: 6px 8px;
+  background: var(--color-bg-hover, rgba(0, 0, 0, 0.04));
+  border-radius: 4px;
+  border-left: 3px solid #6b7280;
+}
+
+.perf-vital-card.rating-good {
+  border-left-color: #10b981;
+}
+
+.perf-vital-card.rating-needs-improvement {
+  border-left-color: #f59e0b;
+}
+
+.perf-vital-card.rating-poor {
+  border-left-color: #ef4444;
+}
+
+html[data-theme='dark'] .perf-vital-card {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.perf-vital-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.perf-vital-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text, #111827);
+}
+
+html[data-theme='dark'] .perf-vital-value {
+  color: #f9fafb;
+}
+
+/* 汇总区域 */
+.perf-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  font-size: 11px;
+}
+
+.perf-summary-row {
+  display: contents;
+}
+
+.perf-summary-label {
+  font-weight: 600;
+}
+
+.perf-summary-values {
+  color: var(--color-text-secondary, #6b7280);
+}
+
+html[data-theme='dark'] .perf-summary-values {
+  color: #9ca3af;
+}
+
+/* 资源瀑布图 */
+.perf-waterfall {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.perf-waterfall-item {
+  display: grid;
+  grid-template-columns: 120px 1fr 60px;
+  gap: 6px;
+  align-items: center;
+  font-size: 10px;
+}
+
+.perf-waterfall-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.perf-waterfall-bar-container {
+  position: relative;
+  height: 8px;
+  background: var(--color-bg-hover, rgba(0, 0, 0, 0.04));
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+html[data-theme='dark'] .perf-waterfall-bar-container {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.perf-waterfall-bar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: var(--color-primary, #3b82f6);
+  border-radius: 2px;
+}
+
+.perf-waterfall-duration {
+  text-align: right;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+html[data-theme='dark'] .perf-waterfall-duration {
+  color: #9ca3af;
+}
+
+.perf-hint {
+  margin: 0;
+  font-size: 10px;
+  color: var(--color-text-secondary, #6b7280);
+  line-height: 1.4;
+}
+
+.perf-hint code {
+  background: var(--color-bg-hover, rgba(0, 0, 0, 0.06));
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 10px;
+}
+
+.perf-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.perf-btn {
+  flex: 1;
+  padding: 5px 8px;
+  background: var(--color-bg-hover, rgba(0, 0, 0, 0.04));
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 4px;
+  color: var(--color-text, #111827);
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.perf-btn:hover {
+  background: var(--color-bg-hover-strong, rgba(0, 0, 0, 0.08));
+}
+
+.perf-btn-danger {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.perf-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.perf-empty {
+  font-size: 11px;
+  color: var(--color-text-secondary, #6b7280);
+  font-style: italic;
+}
+
+html[data-theme='dark'] .perf-empty {
+  color: #9ca3af;
+}

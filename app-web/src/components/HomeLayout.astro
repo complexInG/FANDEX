@@ -2,12 +2,17 @@
 /**
  * 首页布局组件
  * 提供首页的整体结构：顶部导航栏和主内容区
- * 导航栏包含免责声明链接、GitHub 仓库链接、全屏按钮和主题切换
+ * 导航栏包含知识地图链接、GitHub 仓库链接、全屏按钮和主题切换
  * 继承 BaseLayout 的共享 head 与样式引入，仅保留首页特有的结构与脚本
+ *
+ * 样式与交互逻辑已拆分至独立文件：
+ * - styles/components/home-layout.css       布局样式（导航栏、主内容区、响应式）
+ * - lib/home-layout-interactions.ts          客户端脚本（全屏切换与持久化）
  */
 import BaseLayout from '@/components/BaseLayout.astro';
 import ThemeToggle from '@/islands/ThemeToggle';
 import { SITE } from '@/lib/constants';
+import '@/styles/components/home-layout.css';
 
 const { title } = Astro.props;
 const base = import.meta.env.BASE_URL;
@@ -46,7 +51,7 @@ const base = import.meta.env.BASE_URL;
       </a>
       <!-- GitHub 仓库链接 -->
       <a
-        href="https://github.com/fanquanpp/FANDEX-web"
+        href="https://github.com/fanquanpp/FANDEX"
         class="nav-github-link"
         target="_blank"
         rel="noopener noreferrer"
@@ -84,112 +89,7 @@ const base = import.meta.env.BASE_URL;
   </main>
 </BaseLayout>
 
-<style>
-  /* 首页导航栏：固定顶部，毛玻璃背景 */
-  .home-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 var(--spacing-md);
-    background: var(--color-nav-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--color-border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    height: var(--nav-height);
-  }
-
-  /* 首页主内容区：撑满剩余视口高度 */
-  .home-main {
-    min-height: calc(100vh - var(--nav-height));
-    min-height: calc(100dvh - var(--nav-height));
-    overflow-y: auto;
-  }
-
-  /* 导航操作链接：方框风格（APP 下载、免责声明） */
-  .nav-action-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    font-size: 0.82rem;
-    padding: 4px 10px;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    transition:
-      color var(--transition-fast),
-      border-color var(--transition-fast),
-      background var(--transition-fast);
-  }
-  .nav-action-link:hover {
-    color: var(--color-text);
-    border-color: var(--color-text-secondary);
-    background: var(--color-bg-hover, rgba(128, 128, 128, 0.06));
-  }
-
-  /* 移动端隐藏操作链接文字 */
-  @media (max-width: 768px) {
-    .nav-action-text {
-      display: none;
-    }
-  }
-
-  /* 全屏按钮：默认隐藏，移动端显示 */
-  .nav-fullscreen-btn {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    padding: 6px;
-    cursor: pointer;
-    color: var(--color-text-secondary);
-    transition: color var(--transition-fast);
-  }
-  .nav-fullscreen-btn:hover {
-    color: var(--color-text);
-  }
-
-  /* 移动端适配：显示全屏按钮，隐藏 GitHub 文字 */
-  @media (max-width: 768px) {
-    .nav-fullscreen-btn {
-      display: flex;
-    }
-    .nav-github-text {
-      display: none;
-    }
-  }
-</style>
-
+<!-- 客户端交互脚本：全屏模式切换与状态持久化 -->
 <script>
-  // ========== 全屏模式切换 ==========
-  const homeFsBtn = document.getElementById('home-fullscreen-btn');
-  if (homeFsBtn) {
-    homeFsBtn.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else {
-        document.exitFullscreen().catch(() => {});
-      }
-    });
-    // 监听全屏状态变化并持久化
-    document.addEventListener('fullscreenchange', () => {
-      if (document.fullscreenElement) {
-        try {
-          localStorage.setItem('fandex-fullscreen', 'true');
-        } catch {}
-      } else {
-        try {
-          localStorage.removeItem('fandex-fullscreen');
-        } catch {}
-      }
-    });
-    // 恢复全屏状态
-    if (localStorage.getItem('fandex-fullscreen') === 'true' && !document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }
-  }
+  import '@/lib/home-layout-interactions';
 </script>

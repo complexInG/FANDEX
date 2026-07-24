@@ -52,3 +52,6 @@ scripts/print-report.cjs
 # Code Wiki (generated)
 CODE_WIKI.md
 Code-Wiki.md
+
+# 构建统计缓存（build-stats.mjs 生成，避免 OOM）
+src/data/doc-stats.json

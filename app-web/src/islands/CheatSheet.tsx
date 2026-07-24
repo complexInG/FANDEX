@@ -14,6 +14,8 @@
  * 字段名与 Markdown 中的中文标题保持一致，便于维护。
  */
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
+import { MotionProvider, enterUp, staggerNormal } from '@/motion';
 import '@/styles/islands/CheatSheet.css';
 
 // ========== 类型定义 ==========
@@ -281,95 +283,108 @@ export function CheatSheet({
   void 模块名;
 
   return (
-    <div className="cheatsheet">
-      {/* 学习指引区域：展示前置知识和推荐学习顺序，使用 <details> 原生折叠 */}
-      {显示学习指引 && 数据.元数据 && (
-        <details className="learning-guide" open>
-          <summary>学习指引</summary>
-          {/* 前置知识列表：支持 HTML 内容（dangerouslySetInnerHTML 渲染） */}
-          {数据.元数据.前置知识?.length ? (
-            <div>
-              <p className="label">前置知识</p>
-              <ul>
-                {数据.元数据.前置知识.map((item, i) => (
-                  <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          {/* 推荐学习顺序：有序列表，纯文本渲染 */}
-          {数据.元数据.推荐学习顺序?.length ? (
-            <div>
-              <p className="label">推荐学习顺序</p>
-              <ol>
-                {数据.元数据.推荐学习顺序.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ol>
-            </div>
-          ) : null}
-        </details>
-      )}
+    <MotionProvider>
+      <div className="cheatsheet">
+        {/* 学习指引区域：展示前置知识和推荐学习顺序，使用 <details> 原生折叠 */}
+        {显示学习指引 && 数据.元数据 && (
+          <details className="learning-guide" open>
+            <summary>学习指引</summary>
+            {/* 前置知识列表：支持 HTML 内容（dangerouslySetInnerHTML 渲染） */}
+            {数据.元数据.前置知识?.length ? (
+              <div>
+                <p className="label">前置知识</p>
+                <ul>
+                  {数据.元数据.前置知识.map((item, i) => (
+                    <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {/* 推荐学习顺序：有序列表，纯文本渲染 */}
+            {数据.元数据.推荐学习顺序?.length ? (
+              <div>
+                <p className="label">推荐学习顺序</p>
+                <ol>
+                  {数据.元数据.推荐学习顺序.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
+          </details>
+        )}
 
-      {/* 搜索栏：输入搜索词实时过滤条目 */}
-      <div className="search-bar">
-        {/* 搜索输入框：通过 aria-label 暴露可访问名，placeholder 不作为可访问名替代 */}
-        <input
-          value={搜索词}
-          onChange={(e) => set搜索词(e.target.value)}
-          type="text"
-          placeholder={搜索框占位符}
-          aria-label="搜索速查表条目"
-        />
-        {/* 有搜索词时显示匹配条目总数 */}
-        {搜索词 && <span className="result-count">{匹配条目总数} 条结果</span>}
-      </div>
+        {/* 搜索栏：输入搜索词实时过滤条目 */}
+        <div className="search-bar">
+          {/* 搜索输入框：通过 aria-label 暴露可访问名，placeholder 不作为可访问名替代 */}
+          <input
+            value={搜索词}
+            onChange={(e) => set搜索词(e.target.value)}
+            type="text"
+            placeholder={搜索框占位符}
+            aria-label="搜索速查表条目"
+          />
+          {/* 有搜索词时显示匹配条目总数 */}
+          {搜索词 && <span className="result-count">{匹配条目总数} 条结果</span>}
+        </div>
 
-      {/* 分组列表：遍历过滤后的分组 */}
-      <div className="groups">
-        {过滤后分组.map((group) => (
-          <div key={group.分组名} className="group">
-            {/* 分组标题：当允许折叠时，点击标题切换折叠状态 */}
-            <div
-              className="group-header"
-              style={允许分组折叠 ? { cursor: 'pointer' } : undefined}
-              onClick={允许分组折叠 ? () => toggleGroup(group.分组名) : undefined}
-            >
-              {/* 折叠指示箭头：折叠时旋转90度 */}
-              {允许分组折叠 && (
-                <span
-                  className={`toggle-icon${折叠分组集合[group.分组名] ? ' collapsed' : ''}`}
-                >
-                  &#9660;
-                </span>
-              )}
-              <h3>{group.分组名}</h3>
-              {/* 分组说明：可选的分组描述文字 */}
-              {group.分组说明 && <span className="group-desc">{group.分组说明}</span>}
-            </div>
-            {/* 分组条目列表：折叠时隐藏（display:none 保留 DOM，避免重复渲染） */}
-            <div
-              className="group-items"
-              style={{ display: 折叠分组集合[group.分组名] ? 'none' : undefined }}
-            >
-              {group.条目.map((item, idx) => (
-                <div key={idx} className="item">
-                  {/* 条目描述：说明该代码片段的用途 */}
-                  <p className="item-desc">{item.描述}</p>
-                  {/* 代码块：优先使用预渲染的高亮 HTML，否则回退到转义后的纯文本。
-                       信任边界：高亮代码由构建时的高亮工具生成，代码源为静态 JSON，
-                       非用户输入；fallbackCode 对纯文本代码做 HTML 转义后输出，安全。 */}
-                  <div className="code-block">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: item.高亮代码 || fallbackCode(item.代码),
-                      }}
-                    />
-                    {/* 复制按钮：复制后短暂显示"已复制" */}
-                    <button className="copy-btn" onClick={() => copyCode(item, idx)}>
-                      {复制状态[idx] ? '已复制' : '复制'}
-                    </button>
-                  </div>
+        {/* 分组列表：遍历过滤后的分组
+            staggerNormal：分组错峰入场（60ms 间隔） */}
+        <motion.div
+          className="groups"
+          variants={staggerNormal}
+          initial="hidden"
+          animate="visible"
+        >
+          {过滤后分组.map((group) => (
+            <motion.div key={group.分组名} className="group" variants={enterUp}>
+              {/* 分组标题：当允许折叠时，点击标题切换折叠状态 */}
+              <div
+                className="group-header"
+                style={允许分组折叠 ? { cursor: 'pointer' } : undefined}
+                onClick={允许分组折叠 ? () => toggleGroup(group.分组名) : undefined}
+              >
+                {/* 折叠指示箭头：折叠时旋转90度 */}
+                {允许分组折叠 && (
+                  <span
+                    className={`toggle-icon${折叠分组集合[group.分组名] ? ' collapsed' : ''}`}
+                  >
+                    &#9660;
+                  </span>
+                )}
+                <h3>{group.分组名}</h3>
+                {/* 分组说明：可选的分组描述文字 */}
+                {group.分组说明 && <span className="group-desc">{group.分组说明}</span>}
+              </div>
+              {/* 分组条目列表：折叠时隐藏（display:none 保留 DOM，避免重复渲染） */}
+              <div
+                className="group-items"
+                style={{ display: 折叠分组集合[group.分组名] ? 'none' : undefined }}
+              >
+                {group.条目.map((item, idx) => (
+                  <div key={idx} className="item">
+                    {/* 条目描述：说明该代码片段的用途 */}
+                    <p className="item-desc">{item.描述}</p>
+                    {/* 代码块：优先使用预渲染的高亮 HTML，否则回退到转义后的纯文本。
+                         信任边界：高亮代码由构建时的高亮工具生成，代码源为静态 JSON，
+                         非用户输入；fallbackCode 对纯文本代码做 HTML 转义后输出，安全。 */}
+                    <div className="code-block">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: item.高亮代码 || fallbackCode(item.代码),
+                        }}
+                      />
+                      {/* 复制按钮：复制后短暂显示"已复制"
+                          whileTap 按压微交互（ark: 直接交互 150ms） */}
+                      <motion.button
+                        className="copy-btn"
+                        onClick={() => copyCode(item, idx)}
+                        whileTap={{ scale: 0.92 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        {复制状态[idx] ? '已复制' : '复制'}
+                      </motion.button>
+                    </div>
                   {/* 预期输出：展示代码运行后的期望结果 */}
                   {item.预期输出 && (
                     <div className="expected-output">
@@ -426,15 +441,16 @@ export function CheatSheet({
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* 搜索无结果提示：有搜索词但过滤后分组为空时显示 */}
       {过滤后分组.length === 0 && 搜索词 && (
         <div className="no-results">未找到匹配的条目</div>
       )}
     </div>
+    </MotionProvider>
   );
 }
 

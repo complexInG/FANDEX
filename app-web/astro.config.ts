@@ -22,12 +22,12 @@ import react from '@astrojs/react'; // React 集成：在 Astro 中使用 React 
 import pagefind from 'astro-pagefind'; // Pagefind 静态站点搜索集成：构建期生成索引至 dist/pagefind/
 import tailwindcss from '@tailwindcss/vite'; // Tailwind CSS v4 Vite 插件（CSS-first 配置，无需 tailwind.config.js）
 import { visualizer } from 'rollup-plugin-visualizer'; // Bundle 体积可视化分析：构建后生成 reports/bundle-stats.html
-import { remarkAdmonition } from './src/lib/remark-admonition'; // 自定义提示块解析器
-import { rehypeLazyImages } from './src/lib/rehype-lazy-images'; // 图片懒加载处理器
-import { rehypeWrapTables } from './src/lib/rehype-wrap-tables'; // 表格包裹处理器：将 table 包入 <div class="table-wrap"> 以承担横向滚动
+import { remarkAdmonition } from './src/plugins/remark-admonition'; // 自定义提示块解析器
+import { rehypeLazyImages } from './src/plugins/rehype-lazy-images'; // 图片懒加载处理器
+import { rehypeWrapTables } from './src/plugins/rehype-wrap-tables'; // 表格包裹处理器：将 table 包入 <div class="table-wrap"> 以承担横向滚动
 import { remarkCodeRunner } from './src/plugins/remark-code-runner'; // 代码运行器：识别 ```lang runnable 标记
 import { remarkTermTooltip } from './src/plugins/remark-term-tooltip'; // 术语悬浮：扫描文档中已知术语并包裹 data-term-tooltip 容器
-import { remarkExercise } from './src/plugins/remark-exercise'; // 习题与测验：识别 :::exercise / :::quiz 提示块并替换为 data-exercise / data-quiz 容器
+import { remarkExercise } from './src/plugins/exercise'; // 习题与测验：识别 :::exercise / :::quiz 提示块并替换为 data-exercise / data-quiz 容器
 import remarkMath from 'remark-math'; // 数学公式语法解析（LaTeX 语法）
 import rehypeKatex from 'rehype-katex'; // KaTeX 数学公式渲染
 import remarkGfm from 'remark-gfm'; // GitHub Flavored Markdown 支持（表格、删除线等）

@@ -8,19 +8,23 @@
  * - SSR 阶段渲染不可见占位按钮（保留布局空间避免 CLS），
  *   客户端挂载后填充实际图标，避免水合后布局偏移
  *
+ * 动效体系（Motion React）：
+ * - MotionProvider 包裹，reducedMotion="user" 自动降级
+ * - motion.button：whileTap 按压回弹、whileHover 轻微放大（ark 微交互）
+ * - AnimatePresence + motion.svg：日/月图标旋转交叉淡入淡出
+ *
  * 数据流：
  * - 挂载时从 localStorage 读取已保存的主题，无保存值时检测系统偏好
  * - 切换时同步更新：theme(state) → document.documentElement data-theme 属性 → localStorage
  * - 通过 data-theme 属性驱动全局 CSS 变量切换（在全局样式中定义）
  *
- * 事件处理：
- * - 点击按钮调用 toggle()，切换主题并持久化
- *
  * 使用场景：
  * - 放置在页面顶部导航栏，作为全局主题控制入口
- * - 配合 Astro 岛屿架构，仅客户端交互
+ * - 配合 Astro 群岛架构，仅客户端交互
  */
 import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { MotionProvider } from '@/motion';
 import '@/styles/islands/ThemeToggle.css';
 
 /**
@@ -99,53 +103,76 @@ export function ThemeToggle({}: ThemeToggleProps = {}) {
 
   return (
     /*
+     * MotionProvider 包裹：统一 reduced-motion 降级策略
      * 始终渲染按钮以保留布局空间（避免水合后 CLS）：
      * - SSR 阶段：按钮透明不可点击（mounted=false）
      * - 客户端挂载后：opacity 过渡到 1，pointer-events 启用
+     * - whileTap/whileHover 由 Motion 驱动微交互（ark: 直接交互 150ms）
      */
-    <button
-      className={`theme-toggle${mounted ? ' theme-toggle--ready' : ''}`}
-      onClick={mounted ? toggle : undefined}
-      title={theme === 'dark' ? '亮色模式' : '暗色模式'}
-      aria-label={theme === 'dark' ? '切换到亮色模式' : '切换到暗色模式'}
-      tabIndex={mounted ? 0 : -1}
-      aria-hidden={!mounted}
-    >
-      {/* 暗色模式下显示太阳图标（提示用户可切换到亮色） */}
-      {mounted && theme === 'dark' && (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-        >
-          <circle cx="12" cy="12" r="5" />
-          <line x1="12" y1="1" x2="12" y2="3" />
-          <line x1="12" y1="21" x2="12" y2="23" />
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-          <line x1="1" y1="12" x2="3" y2="12" />
-          <line x1="21" y1="12" x2="23" y2="12" />
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-        </svg>
-      )}
-      {/* 亮色模式下显示月亮图标（提示用户可切换到暗色） */}
-      {mounted && theme === 'light' && (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-        >
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-      )}
-    </button>
+    <MotionProvider>
+      <motion.button
+        className={`theme-toggle${mounted ? ' theme-toggle--ready' : ''}`}
+        onClick={mounted ? toggle : undefined}
+        title={theme === 'dark' ? '亮色模式' : '暗色模式'}
+        aria-label={theme === 'dark' ? '切换到亮色模式' : '切换到暗色模式'}
+        tabIndex={mounted ? 0 : -1}
+        aria-hidden={!mounted}
+        whileTap={{ scale: 0.85 }}
+        whileHover={{ scale: 1.08 }}
+      >
+        {/*
+          AnimatePresence mode="wait"：日/月图标依次旋转交叉切换
+          - 旧图标先旋转淡出，再淡入新图标，避免叠加错位
+          - initial={false}：首挂载不播放入场（由容器 CSS opacity 接管淡入）
+        */}
+        <AnimatePresence mode="wait" initial={false}>
+          {/* 暗色模式下显示太阳图标（提示用户可切换到亮色） */}
+          {mounted && theme === 'dark' && (
+            <motion.svg
+              key="sun"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
+              animate={{ opacity: 1, rotate: 0, scale: 1 }}
+              exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
+              transition={{ duration: 0.2, ease: [0, 0, 0.2, 1] }}
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </motion.svg>
+          )}
+          {/* 亮色模式下显示月亮图标（提示用户可切换到暗色） */}
+          {mounted && theme === 'light' && (
+            <motion.svg
+              key="moon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              initial={{ opacity: 0, rotate: 90, scale: 0.5 }}
+              animate={{ opacity: 1, rotate: 0, scale: 1 }}
+              exit={{ opacity: 0, rotate: -90, scale: 0.5 }}
+              transition={{ duration: 0.2, ease: [0, 0, 0.2, 1] }}
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </motion.svg>
+          )}
+        </AnimatePresence>
+      </motion.button>
+    </MotionProvider>
   );
 }
 

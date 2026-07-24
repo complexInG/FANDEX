@@ -7,7 +7,7 @@
 import Layout from '@/components/Layout.astro';
 import SEO from '@/components/SEO.astro';
 import Sidebar from '@/components/Sidebar.astro';
-import TableOfContents from '@fandex/astro-components/TableOfContents.astro';
+import TableOfContents from '@/components/TableOfContents.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import DocNav from '@/components/DocNav.astro';
 import GeoBgDecor from '@/components/GeoBgDecor.astro';
@@ -142,12 +142,12 @@ const breadcrumb = [
       style={`--module-color:${categoryColors[meta ? getPrimaryCategory(meta) : 'tools']}`}
     >
       <!-- 标题行：标题 + 进度追踪按钮 -->
-      <div class="doc-title-row">
+      <div class="doc-title-row fndx-scroll-reveal">
         <h1 class="doc-title">{doc.data.title}</h1>
         <ProgressToggle client:load slug={`${module}/${slug}`} />
       </div>
       <!-- 文档元信息：阅读时间、难度、更新日期 -->
-      <header class="doc-header">
+      <header class="doc-header fndx-scroll-reveal-fade">
         <div class="doc-meta">
           <span class="doc-meta-item doc-reading-time">
             <svg

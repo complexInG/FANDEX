@@ -1,0 +1,112 @@
+/**
+ * 面包屑导航样式
+ * -----------------------------------------------------------------------------
+ * 从 components/Breadcrumb.astro 提取的组件样式，包含：
+ * - 菜单切换按钮（默认隐藏，移动端 768px 以下显示）
+ * - 面包屑容器（分隔符、链接、当前层级）
+ * - 移动端折叠逻辑（超过 2 层时隐藏中间层级，显示省略号）
+ * - 粘性定位（移动端吸附于导航栏下方，z-index 低于导航栏避免覆盖）
+ */
+
+/* 菜单切换按钮：默认隐藏，移动端显示 */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-right: calc(var(--spacing-xs) * -1);
+}
+
+.nav-toggle:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text);
+}
+
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: inline-flex;
+  }
+}
+
+/* 面包屑容器 */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) 0;
+  margin-bottom: var(--spacing-lg);
+  font-size: 0.82em;
+  border-bottom: 1px solid var(--color-border-light);
+  max-width: var(--content-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 分隔符 */
+.bc-sep {
+  color: var(--color-text-tertiary);
+  opacity: 0.4;
+  font-family: var(--font-display);
+}
+
+/* 省略号：移动端折叠中间层级时显示 */
+.bc-ellipsis {
+  display: none;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-display);
+}
+
+/* 移动端分隔符 */
+.bc-sep-mobile {
+  display: none;
+}
+
+/* 面包屑链接 */
+.bc-link {
+  color: var(--color-text-secondary);
+}
+
+.bc-link:hover {
+  color: var(--color-primary);
+}
+
+/* 当前层级（不可点击） */
+.bc-current {
+  color: var(--color-text);
+  font-weight: 500;
+  font-family: var(--font-display);
+}
+
+/* 移动端适配：粘性定位，折叠中间层级 */
+/* 修复 z-index 冲突：面包屑粘在导航栏下方，层级低于导航栏(100)避免覆盖 */
+@media (max-width: 768px) {
+  .breadcrumb {
+    position: sticky;
+    top: var(--nav-height, 56px);
+    z-index: 90;
+    background: var(--color-bg);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: 0;
+  }
+
+  .bc-ellipsis {
+    display: inline;
+  }
+
+  .bc-sep-mobile {
+    display: inline;
+  }
+
+  /* 隐藏移动端被折叠的层级 */
+  .bc-mobile-hide {
+    display: none;
+  }
+}

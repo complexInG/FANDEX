@@ -25,6 +25,8 @@
  * - 配合 Astro 岛屿架构，仅客户端交互
  */
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { MotionProvider, enterScale } from '@/motion';
 /**
  * 进度管理：部分函数从 Service 层导入，部分保留从 lib 导入
  * - getProgress(slug)：获取指定文档的阅读状态（来自 progress-service）
@@ -197,115 +199,161 @@ export function ProgressToggle({ slug }: ProgressToggleProps) {
   );
 
   return (
+    // MotionProvider 包裹：统一 reduced-motion 降级策略
     // 进度追踪容器：通过 statusClass 动态添加状态类名，控制圆点颜色
-    <div className={`progress-toggle ${statusClass}`}>
-      {/* 主按钮：显示当前状态或保存中/已保存/失败等中间状态 */}
-      <button
-        className="progress-btn"
-        title={statusLabel}
-        aria-label={statusLabel}
-        aria-busy={busyState === 'saving'}
-        onClick={handleToggle}
-      >
-        {/* 保存中状态：旋转图标 + "保存中" 文字 */}
-        {busyState === 'saving' && (
-          <span className="progress-busy">
-            <svg width="14" height="14" viewBox="0 0 24 24" className="progress-spin-icon">
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeDasharray="31.4"
-                strokeDashoffset="10"
-              />
-            </svg>
-            <span className="progress-label">保存中</span>
-          </span>
-        )}
-        {/* 已保存状态：绿色勾选图标 + "已保存" 文字，0.8秒后淡出 */}
-        {busyState === 'saved' && (
-          <span className="progress-busy progress-saved">
-            <svg width="14" height="14" viewBox="0 0 24 24" style={{ color: '#10b981' }}>
-              <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-            </svg>
-            <span className="progress-label">已保存</span>
-          </span>
-        )}
-        {/* 保存失败状态：红色警告图标 + "失败" 文字 */}
-        {busyState === 'error' && (
-          <span className="progress-busy progress-error">
-            <svg width="14" height="14" viewBox="0 0 24 24">
-              <path
-                fill="currentColor"
-                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
-              />
-            </svg>
-            <span className="progress-label">失败</span>
-          </span>
-        )}
-        {/* 默认状态：状态圆点（颜色随阅读状态变化）+ 状态文字 */}
-        {busyState === 'idle' && (
-          <span className="progress-default">
-            <span className="progress-dot"></span>
-            <span className="progress-label">{statusLabel}</span>
-          </span>
-        )}
-      </button>
-      {/* 导出进度按钮：将所有文档进度导出为 JSON 文件 */}
-      <button
-        className="progress-export"
-        title="导出进度"
-        aria-label="导出进度"
-        onClick={handleExport}
-      >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+    <MotionProvider>
+      <div className={`progress-toggle ${statusClass}`}>
+        {/* 主按钮：显示当前状态或保存中/已保存/失败等中间状态
+            whileTap 按压回弹（ark 微交互 150ms） */}
+        <motion.button
+          className="progress-btn"
+          title={statusLabel}
+          aria-label={statusLabel}
+          aria-busy={busyState === 'saving'}
+          onClick={handleToggle}
+          whileTap={{ scale: 0.94 }}
+          transition={{ duration: 0.15 }}
         >
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="7 10 12 15 17 10" />
-          <line x1="12" y1="15" x2="12" y2="3" />
-        </svg>
-      </button>
-      {/* 导入进度按钮：点击触发隐藏的文件输入框 */}
-      <button
-        className="progress-import"
-        title="导入进度"
-        aria-label="导入进度"
-        onClick={triggerImport}
-      >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+          {/* AnimatePresence：busyState 切换时缩放交叉淡入淡出
+              ark 原则：状态切换使用 enterScale（scale 0.96→1 + opacity） */}
+          <AnimatePresence mode="wait">
+            {/* 保存中状态：旋转图标 + "保存中" 文字 */}
+            {busyState === 'saving' && (
+              <motion.span
+                key="saving"
+                className="progress-busy"
+                variants={enterScale}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" className="progress-spin-icon">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeDasharray="31.4"
+                    strokeDashoffset="10"
+                  />
+                </svg>
+                <span className="progress-label">保存中</span>
+              </motion.span>
+            )}
+            {/* 已保存状态：绿色勾选图标 + "已保存" 文字，0.8秒后淡出 */}
+            {busyState === 'saved' && (
+              <motion.span
+                key="saved"
+                className="progress-busy progress-saved"
+                variants={enterScale}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" style={{ color: '#10b981' }}>
+                  <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+                <span className="progress-label">已保存</span>
+              </motion.span>
+            )}
+            {/* 保存失败状态：红色警告图标 + "失败" 文字 */}
+            {busyState === 'error' && (
+              <motion.span
+                key="error"
+                className="progress-busy progress-error"
+                variants={enterScale}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                  />
+                </svg>
+                <span className="progress-label">失败</span>
+              </motion.span>
+            )}
+            {/* 默认状态：状态圆点（颜色随阅读状态变化）+ 状态文字 */}
+            {busyState === 'idle' && (
+              <motion.span
+                key="idle"
+                className="progress-default"
+                variants={enterScale}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <span className="progress-dot"></span>
+                <span className="progress-label">{statusLabel}</span>
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </motion.button>
+        {/* 导出进度按钮：将所有文档进度导出为 JSON 文件
+            whileTap 按压 + whileHover 轻微放大 */}
+        <motion.button
+          className="progress-export"
+          title="导出进度"
+          aria-label="导出进度"
+          onClick={handleExport}
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.15 }}
         >
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="17 8 12 3 7 8" />
-          <line x1="12" y1="3" x2="12" y2="15" />
-        </svg>
-      </button>
-      {/* 隐藏的文件输入，用于导入进度，仅接受 .json 文件
-           可访问性：display:none 使屏幕阅读器跳过此元素，无需 aria-label；
-           触发导入的按钮（上方 aria-label="导入进度"）已提供可访问名，
-           通过 triggerImport() 编程触发 click 事件实现文件选择。 */}
-      <input
-        ref={fileInput}
-        type="file"
-        accept=".json"
-        style={{ display: 'none' }}
-        onChange={handleImport}
-      />
-    </div>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </motion.button>
+        {/* 导入进度按钮：点击触发隐藏的文件输入框
+            whileTap 按压 + whileHover 轻微放大 */}
+        <motion.button
+          className="progress-import"
+          title="导入进度"
+          aria-label="导入进度"
+          onClick={triggerImport}
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.15 }}
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+        </motion.button>
+        {/* 隐藏的文件输入，用于导入进度，仅接受 .json 文件
+             可访问性：display:none 使屏幕阅读器跳过此元素，无需 aria-label；
+             触发导入的按钮（上方 aria-label="导入进度"）已提供可访问名，
+             通过 triggerImport() 编程触发 click 事件实现文件选择。 */}
+        <input
+          ref={fileInput}
+          type="file"
+          accept=".json"
+          style={{ display: 'none' }}
+          onChange={handleImport}
+        />
+      </div>
+    </MotionProvider>
   );
 }
 

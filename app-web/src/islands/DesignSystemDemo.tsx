@@ -13,6 +13,8 @@
  */
 
 import { useState } from 'react';
+import { motion } from 'motion/react';
+import { MotionProvider, revealUp, revealViewport } from '@/motion';
 import { Plus, Trash2, Settings } from 'lucide-react';
 import {
   Button,
@@ -77,17 +79,30 @@ export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
-    <div className="flex flex-col gap-12 p-8 max-w-6xl mx-auto">
-      {/* 页面标题 */}
-      <header className="flex flex-col gap-2 border-b border-border pb-6">
-        <h1 className="text-5xl font-bold tracking-tight text-text-primary">Design System</h1>
-        <p className="text-base text-text-secondary">
-          FANDEX 设计系统 · 8 个基础组件 · Tailwind v4 + shadcn + radix
-        </p>
-      </header>
+    <MotionProvider>
+      <div className="flex flex-col gap-12 p-8 max-w-6xl mx-auto">
+        {/* 页面标题 */}
+        <motion.header
+          className="flex flex-col gap-2 border-b border-border pb-6"
+          variants={revealUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={revealViewport}
+        >
+          <h1 className="text-5xl font-bold tracking-tight text-text-primary">Design System</h1>
+          <p className="text-base text-text-secondary">
+            FANDEX 设计系统 · 8 个基础组件 · Tailwind v4 + shadcn + radix
+          </p>
+        </motion.header>
 
       {/* 1. Button 组件展示 */}
-      <section className="flex flex-col gap-4">
+      <motion.section
+        className="flex flex-col gap-4"
+        variants={revealUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+      >
         <h2 className="text-2xl font-semibold text-text-primary border-l-4 border-primary-600 pl-3">
           Button 按钮
         </h2>
@@ -134,10 +149,16 @@ export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
             </div>
           </CardContent>
         </Card>
-      </section>
+      </motion.section>
 
       {/* 2. Card 组件展示 */}
-      <section className="flex flex-col gap-4">
+      <motion.section
+        className="flex flex-col gap-4"
+        variants={revealUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+      >
         <h2 className="text-2xl font-semibold text-text-primary border-l-4 border-primary-600 pl-3">
           Card 卡片
         </h2>
@@ -179,10 +200,16 @@ export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
             </CardContent>
           </Card>
         </div>
-      </section>
+      </motion.section>
 
       {/* 3. Badge 组件展示 */}
-      <section className="flex flex-col gap-4">
+      <motion.section
+        className="flex flex-col gap-4"
+        variants={revealUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+      >
         <h2 className="text-2xl font-semibold text-text-primary border-l-4 border-primary-600 pl-3">
           Badge 标签
         </h2>
@@ -195,10 +222,16 @@ export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
             ))}
           </CardContent>
         </Card>
-      </section>
+      </motion.section>
 
       {/* 4. Tooltip 组件展示 */}
-      <section className="flex flex-col gap-4">
+      <motion.section
+        className="flex flex-col gap-4"
+        variants={revealUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+      >
         <h2 className="text-2xl font-semibold text-text-primary border-l-4 border-primary-600 pl-3">
           Tooltip 工具提示
         </h2>
@@ -234,10 +267,16 @@ export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
             </TooltipProvider>
           </CardContent>
         </Card>
-      </section>
+      </motion.section>
 
       {/* 5. Dialog 组件展示 */}
-      <section className="flex flex-col gap-4">
+      <motion.section
+        className="flex flex-col gap-4"
+        variants={revealUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+      >
         <h2 className="text-2xl font-semibold text-text-primary border-l-4 border-primary-600 pl-3">
           Dialog 对话框
         </h2>
@@ -260,10 +299,16 @@ export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
             </Dialog>
           </CardContent>
         </Card>
-      </section>
+      </motion.section>
 
       {/* 6. Tabs 组件展示 */}
-      <section className="flex flex-col gap-4">
+      <motion.section
+        className="flex flex-col gap-4"
+        variants={revealUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+      >
         <h2 className="text-2xl font-semibold text-text-primary border-l-4 border-primary-600 pl-3">
           Tabs 标签页
         </h2>
@@ -287,10 +332,16 @@ export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
             </Tabs>
           </CardContent>
         </Card>
-      </section>
+      </motion.section>
 
       {/* 7. Accordion 组件展示 */}
-      <section className="flex flex-col gap-4">
+      <motion.section
+        className="flex flex-col gap-4"
+        variants={revealUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+      >
         <h2 className="text-2xl font-semibold text-text-primary border-l-4 border-primary-600 pl-3">
           Accordion 手风琴
         </h2>
@@ -318,10 +369,16 @@ export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
             </Accordion>
           </CardContent>
         </Card>
-      </section>
+      </motion.section>
 
       {/* 8. ScrollArea 组件展示 */}
-      <section className="flex flex-col gap-4">
+      <motion.section
+        className="flex flex-col gap-4"
+        variants={revealUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+      >
         <h2 className="text-2xl font-semibold text-text-primary border-l-4 border-primary-600 pl-3">
           ScrollArea 滚动区域
         </h2>
@@ -361,13 +418,20 @@ export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
             </div>
           </CardContent>
         </Card>
-      </section>
+      </motion.section>
 
       {/* 页脚 */}
-      <footer className="border-t border-border pt-6 pb-12 text-center text-sm text-text-tertiary">
+      <motion.footer
+        className="border-t border-border pt-6 pb-12 text-center text-sm text-text-tertiary"
+        variants={revealUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+      >
         FANDEX Design System · Phase 1.3 · 8 个基础组件已就绪
-      </footer>
-    </div>
+      </motion.footer>
+      </div>
+    </MotionProvider>
   );
 }
 

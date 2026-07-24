@@ -72,7 +72,9 @@ export function getPrimaryCategory(moduleId: string): string | undefined {
  * @returns 前置模块 ID 数组；无记录时返回空数组
  */
 export function getModulePrerequisites(moduleId: string): string[] {
-  return modulePrerequisites[moduleId] || [];
+  // 偏差报备：modulePrerequisites 类型为 Record<string, readonly string[]>（共享层冻结导出），
+  // 返回类型签名为 mutable string[]，使用 spread 创建新数组以解除 readonly 约束，避免 TS4104
+  return [...(modulePrerequisites[moduleId] ?? [])];
 }
 
 /**

@@ -14,7 +14,7 @@
  *   "generatedAt": "2026-07-20T12:00:00.000Z",
  *   "version": "v{timestamp}",
  *   "precacheList": [
- *     { "url": "/FANDEX-exe/index.html", "revision": "{md5前8位}" },
+ *     { "url": "/FANDEX/index.html", "revision": "{md5前8位}" },
  *     ...
  *   ],
  *   "totalFiles": N,
@@ -28,7 +28,7 @@
  *
  * 路径处理：
  *   - GitHub Pages 模式：从 manifest.webmanifest 的 start_url 检测 base path，
- *     URL 形如 "/FANDEX-exe/search/index.html"
+ *     URL 形如 "/FANDEX/search/index.html"
  *   - 离线包模式：start_url 为 "./"，URL 形如 "./search/index.html"
  *
  * revision 计算：
@@ -51,7 +51,7 @@ const DIST_DIR = join(PROJECT_ROOT, 'dist-web');
 const OUTPUT_FILE = join(DIST_DIR, 'sw-precache-manifest.json');
 
 /** GitHub Pages 默认基础路径 */
-const DEFAULT_BASE_PATH = '/FANDEX-exe/';
+const DEFAULT_BASE_PATH = '/FANDEX/';
 /** 离线包基础路径（相对路径） */
 const OFFLINE_BASE_PATH = './';
 
@@ -100,7 +100,7 @@ async function detectBasePath() {
     if (startUrl === './' || startUrl === '.') {
       return OFFLINE_BASE_PATH;
     }
-    /** 从 start_url 提取 base path，如 "/FANDEX-exe/" */
+    /** 从 start_url 提取 base path，如 "/FANDEX/" */
     const match = startUrl.match(/^(\/[^/]+\/)/);
     return match ? match[1] : DEFAULT_BASE_PATH;
   } catch {

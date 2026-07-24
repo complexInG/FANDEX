@@ -1,0 +1,72 @@
+/**
+ * 搜索页样式
+ * -----------------------------------------------------------------------------
+ * 从 pages/search.astro 提取的页面级样式，包含：
+ * - 搜索页容器（居中、最大宽度限制、z-index 层级）
+ * - 搜索标题与筛选器布局
+ * - 模块/难度筛选下拉框样式
+ * - 搜索结果容器最小高度
+ * - noscript 降级提示
+ * - Pagefind UI 主题变量映射（将 Pagefind 默认变量映射到项目设计令牌）
+ */
+
+.search-page {
+  position: relative;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-2xl);
+}
+
+/* 确保内容层在几何装饰层之上 */
+.search-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+.search-title {
+  font-family: var(--font-display);
+  font-size: 1.4em;
+  margin-bottom: var(--spacing-lg);
+}
+
+.search-filters {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.search-filter-select {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 0.85em;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.search-container {
+  min-height: 400px;
+}
+
+.search-noscript {
+  color: var(--color-text-tertiary);
+  text-align: center;
+  padding: var(--spacing-2xl);
+}
+
+:global(.pagefind-ui) {
+  --pagefind-ui-scale: 1;
+  --pagefind-ui-primary: var(--color-primary);
+  --pagefind-ui-text: var(--color-text);
+  --pagefind-ui-background: var(--color-bg);
+  --pagefind-ui-border: var(--color-border);
+  --pagefind-ui-tag: var(--color-bg-card);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 4px;
+  --pagefind-ui-image-border-radius: 4px;
+  --pagefind-ui-image-box-ratio: 3 / 2;
+  --pagefind-ui-font: var(--font-display);
+}

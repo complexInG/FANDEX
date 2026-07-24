@@ -73,14 +73,23 @@
   cursor: default;
 }
 
-/* SVG wrapper：可变换 */
+/* SVG wrapper：可变换
+   入场动效：opacity 淡入（transform 被 inline style 占用用于缩放/平移，此处仅用 opacity 避免冲突）
+   ark 原则：区域揭示使用 normal 时长 */
 .kmap-svg-wrapper {
   position: absolute;
   top: 50%;
   left: 50%;
   transform-origin: 0 0;
   /* 通过 inline style 设置实际 transform */
-  will-change: transform;
+  will-change: transform, opacity;
+  opacity: 0;
+  transition: opacity var(--motion-duration-normal, 0.25s) var(--motion-easing-out, ease-out);
+}
+
+/* 渲染成功后淡入显示 */
+.kmap-svg-wrapper.is-rendered {
+  opacity: 1;
 }
 
 /* 兼容暗色模式：SVG 文本颜色继承（原 Vue :deep() 已去除 scoped 修饰） */

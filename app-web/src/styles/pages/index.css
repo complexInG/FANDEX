@@ -1,0 +1,370 @@
+/**
+ * 首页样式
+ * -----------------------------------------------------------------------------
+ * 从 pages/index.astro 提取的页面级样式，包含：
+ * - 首页容器（作为装饰层定位上下文，保留 sticky 子元素行为）
+ * - Hero 区域：徽章、站点标题、描述、统计数据栏
+ * - 分类区域：分类标题栏与可折叠展开逻辑
+ * - 模块卡片网格（1px 间距形成分割线效果）
+ * - 移动端响应式适配（768px / 480px / 360px 三档断点）
+ */
+
+/* 首页容器：作为装饰层的定位上下文
+   注：不设置 overflow:hidden，避免破坏内部子元素的 sticky 定位行为；
+   装饰层的溢出裁切由 .geo-bg-decor 自身的 overflow:hidden 负责 */
+.home-page {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - var(--nav-height));
+  min-height: calc(100dvh - var(--nav-height));
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg) var(--spacing-2xl);
+}
+
+/* 确保首页内容层在几何装饰层之上 */
+.home-page > section,
+.home-page > footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero 区域：居中展示 */
+.hero {
+  text-align: center;
+  padding: var(--spacing-xl) 0 var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* "Zero to Mastery" 徽章 */
+.hero-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.65em;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: 3px 14px;
+  margin-bottom: var(--spacing-md);
+}
+
+/* 站点标题：FAN 部分使用主题色 */
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  margin: 0 0 var(--spacing-sm);
+  color: var(--color-text);
+}
+
+.hero-title-fan {
+  color: var(--color-primary);
+}
+
+/* 站点描述 */
+.hero-desc {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-md);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  /* 显式声明水平居中，避免被任何父级或继承样式覆盖，确保桌面端与移动端均居中显示 */
+  text-align: center;
+  margin-inline: auto;
+  max-width: 600px;
+}
+
+/* 统计数据栏 */
+.hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 4px;
+}
+
+.stat-num {
+  font-size: 1.3em;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.stat-label {
+  font-size: 0.78em;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.04em;
+}
+
+/* 统计项之间的分隔线 */
+.stat-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--color-border-light);
+}
+
+/* 快捷链接（学习路线、标签索引） */
+.stat-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity var(--transition-fast);
+}
+
+.stat-link:hover {
+  opacity: 0.8;
+}
+
+/* 分类区域 */
+.category-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+/* 分类标题栏：可点击折叠 */
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-bottom: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 分类标签文字 */
+.category-tag {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.05em;
+}
+
+.category-count {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  color: var(--color-text-tertiary);
+}
+
+/* 模块卡片网格：1px 间距形成分割线效果 */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--color-border-light);
+  border: 1px solid var(--color-border-light);
+  overflow: hidden;
+}
+
+.feature-grid.hidden {
+  display: none;
+}
+
+/* 折叠/展开按钮 */
+.category-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--color-text-tertiary);
+  transition: color var(--transition-fast);
+}
+
+.category-toggle:hover {
+  color: var(--color-text-secondary);
+}
+
+/* 折叠箭头旋转动画 */
+.toggle-icon {
+  transition: transform 0.2s ease;
+}
+
+.category-header.collapsed .toggle-icon {
+  transform: rotate(-90deg);
+}
+
+/* 折叠状态下隐藏网格 */
+.category-header.collapsed + .feature-grid {
+  display: none;
+}
+
+/* 注：旧 .home-footer / .footer-* 系列样式已废弃，
+ * 页脚由 @fandex/styles 的 .fndx-footer 命名规范统一控制。
+ * 见 components/Footer.astro 与 shd-shared/styles/layout-components.css
+ */
+
+/* 移动端适配（768px 以下） */
+@media (max-width: 768px) {
+  .home-page {
+    padding: 0 var(--spacing-md) var(--spacing-2xl);
+  }
+
+  .hero-badge {
+    font-size: 0.55em;
+    padding: 2px 10px;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .hero-title {
+    font-size: 1.5rem;
+    letter-spacing: 0.12em;
+    margin: 0;
+  }
+
+  .hero-stats {
+    gap: var(--spacing-sm);
+  }
+
+  .stat-num {
+    font-size: 1.1em;
+  }
+
+  .feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+  }
+
+  .module-card {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+
+  .card-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.65rem;
+  }
+
+  .card-title {
+    font-size: 0.82rem;
+  }
+
+  .card-desc {
+    font-size: 0.72rem;
+  }
+}
+
+/* 小屏幕适配（480px 以下） */
+@media (max-width: 480px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+  }
+
+  .module-card {
+    padding: var(--spacing-xs);
+    gap: 4px;
+  }
+
+  .card-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 0.6rem;
+  }
+
+  .card-title {
+    font-size: 0.75rem;
+  }
+
+  .card-desc {
+    font-size: 0.65rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* 小屏幕隐藏统计分隔线 */
+  .stat-divider {
+    display: none;
+  }
+
+  .hero-stats {
+    gap: var(--spacing-md);
+  }
+}
+
+/* 480px 以下超小屏：hero-stats 改为纵向堆叠，分隔线隐藏，避免统计项挤压错位 */
+@media (max-width: 480px) {
+  .hero-stats {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+}
+
+/* 超小屏幕回退（360px 以下）：单列布局，避免卡片过度挤压 */
+@media (max-width: 360px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =============================================================================
+ * 入场动效（CSS + motion 令牌，零 JS）
+ * -----------------------------------------------------------------------------
+ * 首屏 Hero 依次上滑揭示，模块卡片网格内错峰显现。
+ * 依据 ark-ui 设计语言：
+ * - 直接交互 / 入场 150-250ms（--motion-duration-normal）
+ * - 非纯 opacity，附 Y 方向位移（fndx-slide-up keyframe）
+ * - 错峰间隔 40ms（--motion-delay-stagger-short 对应）
+ * 可访问性：prefers-reduced-motion 启用时整体禁用，由 MotionProvider 在
+ * React 侧同步降级。
+ * ============================================================================= */
+
+/* Hero 区域：依次上滑入场（首屏即时播放，both 保持首尾态） */
+.hero-badge,
+.hero-title,
+.hero-desc,
+.hero-stats {
+  animation: fndx-slide-up var(--motion-duration-normal) var(--motion-easing-out) both;
+}
+.hero-badge  { animation-delay: 0s; }
+.hero-title  { animation-delay: 0.06s; }
+.hero-desc   { animation-delay: 0.12s; }
+.hero-stats  { animation-delay: 0.18s; }
+
+/* 模块卡片：网格内错峰入场（前 8 张依次显现，其余同步，避免长延迟） */
+.feature-grid .module-card {
+  animation: fndx-slide-up var(--motion-duration-normal) var(--motion-easing-out) both;
+}
+.feature-grid .module-card:nth-child(1) { animation-delay: 0.04s; }
+.feature-grid .module-card:nth-child(2) { animation-delay: 0.08s; }
+.feature-grid .module-card:nth-child(3) { animation-delay: 0.12s; }
+.feature-grid .module-card:nth-child(4) { animation-delay: 0.16s; }
+.feature-grid .module-card:nth-child(5) { animation-delay: 0.20s; }
+.feature-grid .module-card:nth-child(6) { animation-delay: 0.24s; }
+.feature-grid .module-card:nth-child(7) { animation-delay: 0.28s; }
+.feature-grid .module-card:nth-child(8) { animation-delay: 0.32s; }
+
+/* 可访问性：用户启用减少动效时禁用所有入场动画 */
+@media (prefers-reduced-motion: reduce) {
+  .hero-badge,
+  .hero-title,
+  .hero-desc,
+  .hero-stats,
+  .feature-grid .module-card {
+    animation: none;
+  }
+}
+

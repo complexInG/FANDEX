@@ -9,7 +9,6 @@
     "expo:start": "expo start",
     "expo:web": "expo start --web",
     "expo:build:web": "expo export --platform web --output-dir dist-web",
-    "build:docs-content": "node ./scripts/build-docs-content.mjs",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "typecheck": "tsc --noEmit",

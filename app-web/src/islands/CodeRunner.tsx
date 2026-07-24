@@ -17,6 +17,8 @@
  */
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { MotionProvider, enterScale, enterFade } from '@/motion';
 import { Play, Square, RotateCcw, Copy, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/ui/components';
 import {
@@ -235,121 +237,141 @@ export function CodeRunner({ lang, code, editable = true }: CodeRunnerProps) {
   }, []);
 
   return (
-    <div className="code-runner my-6 overflow-hidden rounded-lg border border-border bg-surface shadow-sm dark:border-border dark:bg-surface">
-      {/* 顶部工具栏 */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border bg-elevated px-4 py-2 dark:border-border dark:bg-elevated">
-        {/* 语言徽章 */}
-        <span
-          className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium ${langBadgeClass}`}
-        >
-          {langLabel}
-        </span>
-
-        {/* 工具栏按钮组（右侧） */}
-        <div className="ml-auto flex items-center gap-1">
-          {/* 复制按钮 */}
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={isRunning}
-            aria-label={isCopied ? '已复制' : '复制代码'}
-            onClick={handleCopy}
+    <MotionProvider>
+      <div className="code-runner my-6 overflow-hidden rounded-lg border border-border bg-surface shadow-sm dark:border-border dark:bg-surface">
+        {/* 顶部工具栏 */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-border bg-elevated px-4 py-2 dark:border-border dark:bg-elevated">
+          {/* 语言徽章 */}
+          <span
+            className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium ${langBadgeClass}`}
           >
-            {isCopied ? <Check className="size-4" /> : <Copy className="size-4" />}
-          </Button>
+            {langLabel}
+          </span>
 
-          {/* 重置按钮 */}
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={isRunning}
-            aria-label="重置代码"
-            onClick={handleReset}
-          >
-            <RotateCcw className="size-4" />
-          </Button>
-
-          {/* 停止按钮（仅运行中显示） */}
-          {isRunning ? (
-            <Button variant="destructive" size="sm" aria-label="停止运行" onClick={handleStop}>
-              <Square className="size-4" />
-              <span>停止</span>
-            </Button>
-          ) : (
-            /* 运行按钮 */
-            <Button variant="default" size="sm" aria-label="运行代码" onClick={handleRun}>
-              <Play className="size-4" />
-              <span>运行</span>
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* 代码编辑区 */}
-      <div className="relative">
-        <textarea
-          value={editorCode}
-          onChange={(e) => setEditorCode(e.target.value)}
-          readOnly={!editable || isRunning}
-          aria-label={`${langLabel} 代码编辑区`}
-          spellCheck={false}
-          className="block w-full resize-y border-0 bg-background p-4 font-mono text-sm leading-relaxed text-text-primary focus:outline-none focus:ring-1 focus:ring-ring dark:bg-background dark:text-text-primary"
-          rows={6}
-        />
-      </div>
-
-      {/* 加载状态条 */}
-      {isLoading && (
-        <div className="flex items-center gap-2 border-t border-border bg-info-bg px-4 py-2 text-sm text-info-dark dark:border-border dark:bg-info-bg dark:text-info-light">
-          <Loader2 className="size-4 animate-spin" />
-          <span>{loadingMessage || '正在准备运行环境...'}</span>
-        </div>
-      )}
-
-      {/* 输出区 */}
-      {result && (
-        <div className="border-t border-border dark:border-border">
-          {/* 输出区标题 */}
-          <div className="flex items-center justify-between border-b border-border bg-elevated px-4 py-2 dark:border-border dark:bg-elevated">
-            <span className="text-xs font-medium uppercase tracking-wider text-text-tertiary">
-              输出
-            </span>
-            <span
-              className={`text-xs font-medium ${
-                isSuccess
-                  ? 'text-success-dark dark:text-success-light'
-                  : 'text-error-dark dark:text-error-light'
-              }`}
+          {/* 工具栏按钮组（右侧） */}
+          <div className="ml-auto flex items-center gap-1">
+            {/* 复制按钮 */}
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={isRunning}
+              aria-label={isCopied ? '已复制' : '复制代码'}
+              onClick={handleCopy}
             >
-              {statusText}
-            </span>
+              {isCopied ? <Check className="size-4" /> : <Copy className="size-4" />}
+            </Button>
+
+            {/* 重置按钮 */}
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={isRunning}
+              aria-label="重置代码"
+              onClick={handleReset}
+            >
+              <RotateCcw className="size-4" />
+            </Button>
+
+            {/* 停止按钮（仅运行中显示） */}
+            {isRunning ? (
+              <Button variant="destructive" size="sm" aria-label="停止运行" onClick={handleStop}>
+                <Square className="size-4" />
+                <span>停止</span>
+              </Button>
+            ) : (
+              /* 运行按钮 */
+              <Button variant="default" size="sm" aria-label="运行代码" onClick={handleRun}>
+                <Play className="size-4" />
+                <span>运行</span>
+              </Button>
+            )}
           </div>
-
-          {/* stdout 标准输出 */}
-          {result.stdout.length > 0 && (
-            <pre className="m-0 max-h-80 overflow-auto bg-neutral-950 p-4 font-mono text-xs leading-relaxed text-neutral-100 dark:bg-neutral-950 dark:text-neutral-100">
-              <code>{result.stdout}</code>
-            </pre>
-          )}
-
-          {/* stderr 标准错误 */}
-          {hasError && (
-            <pre className="m-0 max-h-40 overflow-auto bg-error-bg p-4 font-mono text-xs leading-relaxed text-error-dark dark:bg-error-bg dark:text-error-light">
-              <code>
-                {result.stderr || (result.timedOut && !isStopped ? '运行超时' : '执行失败')}
-              </code>
-            </pre>
-          )}
-
-          {/* 空输出提示 */}
-          {result.stdout.length === 0 && !hasError && (
-            <div className="px-4 py-3 text-xs text-text-tertiary dark:text-text-tertiary">
-              (无输出)
-            </div>
-          )}
         </div>
-      )}
-    </div>
+
+        {/* 代码编辑区 */}
+        <div className="relative">
+          <textarea
+            value={editorCode}
+            onChange={(e) => setEditorCode(e.target.value)}
+            readOnly={!editable || isRunning}
+            aria-label={`${langLabel} 代码编辑区`}
+            spellCheck={false}
+            className="block w-full resize-y border-0 bg-background p-4 font-mono text-sm leading-relaxed text-text-primary focus:outline-none focus:ring-1 focus:ring-ring dark:bg-background dark:text-text-primary"
+            rows={6}
+          />
+        </div>
+
+        {/* 加载状态条：AnimatePresence + motion.div 淡入淡出
+            ark 原则：状态条使用 enterFade（纯 opacity，避免布局位移） */}
+        <AnimatePresence>
+          {isLoading && (
+            <motion.div
+              className="flex items-center gap-2 border-t border-border bg-info-bg px-4 py-2 text-sm text-info-dark dark:border-border dark:bg-info-bg dark:text-info-light"
+              variants={enterFade}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            >
+              <Loader2 className="size-4 animate-spin" />
+              <span>{loadingMessage || '正在准备运行环境...'}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 输出区：AnimatePresence + motion.div 缩放入场
+            ark 原则：结果区域使用 enterScale（scale 0.96→1 + opacity） */}
+        <AnimatePresence>
+          {result && (
+            <motion.div
+              className="border-t border-border dark:border-border"
+              variants={enterScale}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            >
+              {/* 输出区标题 */}
+              <div className="flex items-center justify-between border-b border-border bg-elevated px-4 py-2 dark:border-border dark:bg-elevated">
+                <span className="text-xs font-medium uppercase tracking-wider text-text-tertiary">
+                  输出
+                </span>
+                <span
+                  className={`text-xs font-medium ${
+                    isSuccess
+                      ? 'text-success-dark dark:text-success-light'
+                      : 'text-error-dark dark:text-error-light'
+                  }`}
+                >
+                  {statusText}
+                </span>
+              </div>
+
+              {/* stdout 标准输出 */}
+              {result.stdout.length > 0 && (
+                <pre className="m-0 max-h-80 overflow-auto bg-neutral-950 p-4 font-mono text-xs leading-relaxed text-neutral-100 dark:bg-neutral-950 dark:text-neutral-100">
+                  <code>{result.stdout}</code>
+                </pre>
+              )}
+
+              {/* stderr 标准错误 */}
+              {hasError && (
+                <pre className="m-0 max-h-40 overflow-auto bg-error-bg p-4 font-mono text-xs leading-relaxed text-error-dark dark:bg-error-bg dark:text-error-light">
+                  <code>
+                    {result.stderr || (result.timedOut && !isStopped ? '运行超时' : '执行失败')}
+                  </code>
+                </pre>
+              )}
+
+              {/* 空输出提示 */}
+              {result.stdout.length === 0 && !hasError && (
+                <div className="px-4 py-3 text-xs text-text-tertiary dark:text-text-tertiary">
+                  (无输出)
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </MotionProvider>
   );
 }
 
