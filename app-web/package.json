@@ -57,6 +57,7 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "glob": "catalog:",
+    "rollup-plugin-visualizer": "catalog:",
     "typescript": "catalog:"
   }
 }

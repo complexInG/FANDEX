@@ -98,6 +98,7 @@ catalog:
   tsx: ^4.19.2
   vite: ^6.0.0
   '@vitejs/plugin-react': ^4.3.0
+  rollup-plugin-visualizer: ^7.0.1
 
   # 类型定义
   '@types/node': '^22.0.0'
