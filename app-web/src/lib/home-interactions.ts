@@ -52,6 +52,11 @@ const INERTIA_MIN_VELOCITY = 2;
 /** 物理惯性：最小停止速度（速度低于此值时惯性终止） */
 const INERTIA_STOP_VELOCITY = 0.1;
 
+/** 拖拽阈值（像素）：移动超过此距离才认定为拖拽，未超过时保护 click 事件
+ *  修复：原实现按下即更新 transform，微小抖动导致卡片位移、click 不触发、无法跳转
+ *  引入阈值后，5px 以内的移动不更新 transform，浏览器正常派发 click 给 <a> */
+const DRAG_THRESHOLD = 5;
+
 /** 物理惯性：最大持续时间（毫秒），防止无限惯性 */
 const INERTIA_MAX_DURATION = 2500;
 
@@ -93,8 +98,12 @@ interface ScrollerState {
   speed: number;
   /** 是否暂停自动滚动（悬停或拖拽时） */
   isPaused: boolean;
-  /** 是否正在拖拽 */
+  /** 鼠标是否已按下（按压状态，不等同于实际拖拽）
+   *  实际拖拽以 hasDragStarted 为准，未越过阈值前不更新 transform */
   isDragging: boolean;
+  /** 是否已越过 DRAG_THRESHOLD，进入实际拖拽状态
+   *  为 false 时 onPointerMove 不更新 transform，保护 click 事件正常派发 */
+  hasDragStarted: boolean;
   /** requestAnimationFrame 的 ID，用于取消 */
   rafId: number | null;
   /** 物理惯性：当前惯性速度（px/帧，正负代表方向）
@@ -122,24 +131,46 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   const cards = Array.from(track.children) as HTMLElement[];
   if (cards.length === 0) return;
 
-  // 克隆原始卡片集（总宽度 2x，实现无缝循环）
-  cards.forEach((card) => {
-    const clone = card.cloneNode(true) as HTMLElement;
-    clone.setAttribute('aria-hidden', 'true');
-    clone.setAttribute('tabindex', '-1');
-    clone.style.animation = 'none';
-    track.appendChild(clone);
-  });
+  // 测量单份卡片集宽度（在克隆前使用原始卡片计算）
+  // 修复：原实现固定克隆 1 份（总宽度 2x），卡片少于 10 个时
+  // 单份宽度 < 视窗宽度，滚动回绕时视窗右侧出现空窗
+  // 改为根据视窗宽度动态计算份数，确保总宽度 ≥ 视窗 + 单份宽度
+  const gapStr = getComputedStyle(track).gap;
+  const gap = parseFloat(gapStr) || 16;
+  let originalCardSetWidth = 0;
+  for (const card of cards) {
+    originalCardSetWidth += card.getBoundingClientRect().width + gap;
+  }
+  const viewportWidth = scroller.clientWidth;
+
+  // 计算需要的份数：总宽度 ≥ 视窗宽度 + 单份宽度
+  // 保证 offset 从 0 回绕到 -cardSetWidth 时视窗始终有内容
+  // 最少 2 份（原始 + 1 份克隆），卡片少时自动增加至 3 份或更多
+  const neededCopies = Math.max(
+    2,
+    Math.ceil((viewportWidth + originalCardSetWidth) / originalCardSetWidth),
+  );
+
+  // 克隆 neededCopies - 1 份（原始已有 1 份），实现无缝循环
+  for (let i = 1; i < neededCopies; i++) {
+    cards.forEach((card) => {
+      const clone = card.cloneNode(true) as HTMLElement;
+      clone.setAttribute('aria-hidden', 'true');
+      clone.setAttribute('tabindex', '-1');
+      clone.style.animation = 'none';
+      track.appendChild(clone);
+    });
+  }
 
   track.dataset.initialized = 'true';
 
   // 确定滚动方向：rowIndex 0, 2, 4... 向左；1, 3, 5... 向右
   const direction: 'left' | 'right' = rowIndex % 2 === 0 ? 'left' : 'right';
 
-  // 计算单份卡片集宽度（克隆后总宽度的一半）
+  // 计算单份卡片集宽度（总宽度 / 份数）
+  // 无论克隆多少份，除以份数即为单份宽度，取模回绕逻辑不变
   const measureCardSetWidth = (): number => {
-    // track.scrollWidth 包含克隆集，除以 2 得到单份宽度
-    return track.scrollWidth / 2;
+    return track.scrollWidth / neededCopies;
   };
 
   // 计算滚动速度：卡片数量越少速度越快
@@ -160,6 +191,7 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     speed,
     isPaused: reduceMotion,
     isDragging: false,
+    hasDragStarted: false,
     rafId: null,
     inertiaVelocity: 0,
     isInertiaActive: false,
@@ -299,6 +331,8 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     state.isInertiaActive = false;
     state.inertiaVelocity = 0;
     state.isDragging = true;
+    // 重置拖拽启动标记：未越过 DRAG_THRESHOLD 前不更新 transform，保护 click
+    state.hasDragStarted = false;
     dragDistance = 0;
     startX = e.clientX;
     startOffset = state.offset;
@@ -310,13 +344,26 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     } catch {
       // 安全降级
     }
-    scroller.classList.add('is-dragging');
+    // 不立即添加 is-dragging 类：延迟到 onPointerMove 越过阈值后，
+    // 避免点击时光标立即变 grabbing 造成"不能点击"的视觉暗示
   };
 
   const onPointerMove = (e: PointerEvent) => {
     if (!state.isDragging || e.pointerId !== pointerId) return;
     const dx = e.clientX - startX;
     dragDistance = Math.abs(dx);
+
+    // 拖拽阈值闸门：未越过 DRAG_THRESHOLD 前不更新 transform，不添加 is-dragging 类
+    // 这是 click 事件得以正常派发的关键 —— 卡片不位移，浏览器判定为有效点击
+    if (!state.hasDragStarted) {
+      if (dragDistance <= DRAG_THRESHOLD) {
+        return;
+      }
+      // 首次越过阈值，进入实际拖拽：切换光标、标记启动
+      state.hasDragStarted = true;
+      scroller.classList.add('is-dragging');
+    }
+
     // 手动更新 offset，实时跟手
     let newOffset = startOffset + dx;
     // 取模回绕，保持 offset 在 [-cardSetWidth, 0] 范围内
@@ -346,15 +393,19 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     }
     pointerId = null;
     scroller.classList.remove('is-dragging');
-    // 拖拽距离超过阈值时抑制后续 click
-    if (dragDistance > 5) {
+
+    // 只有真正拖拽过（越过阈值）才抑制 click 并启动惯性
+    // 未拖拽时 hasDragStarted 为 false，不抑制 click，让 <a> 正常跳转
+    if (state.hasDragStarted) {
       suppressClick = true;
       window.setTimeout(() => {
         suppressClick = false;
       }, 120);
+      // Task 2.2：启动物理惯性（慢速 < 2px/帧 时无惯性，由 startInertia 内部判断）
+      startInertia(state.inertiaVelocity);
     }
-    // Task 2.2：启动物理惯性（慢速 < 2px/帧 时无惯性，由 startInertia 内部判断）
-    startInertia(state.inertiaVelocity);
+    state.hasDragStarted = false;
+
     // 若未启用惯性，恢复自动滚动
     if (!state.isInertiaActive) {
       state.isPaused = reduceMotion;
@@ -431,6 +482,23 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     });
   }
 
+  // ========== 触控板双指水平滑动 ==========
+  // 触控板双指水平滑动触发 wheel 事件（deltaX），而非 pointer 事件
+  // 当 deltaX 绝对值大于 deltaY 时认定为水平滑动，更新 offset 并暂停自动滚动
+  // 修复：原实现仅处理 pointerType === 'mouse'，触控板双指滑动无法触发拖拽
+  const onWheel = (e: WheelEvent) => {
+    // 仅处理水平为主的滑动（deltaX 绝对值大于 deltaY）
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+    if (Math.abs(e.deltaX) < 2) return;
+    e.preventDefault();
+    // 暂停自动滚动，让用户手动控制
+    state.isPaused = true;
+    // 更新 offset（deltaX 为正表示向右滑动，track 应向左移动）
+    state.offset = normalizeOffset(state.offset - e.deltaX);
+    track.style.transform = `translateX(${state.offset}px)`;
+  };
+  scroller.addEventListener('wheel', onWheel, { passive: false });
+
   // ========== 响应窗口大小变化 ==========
   // 窗口大小变化时重新计算 cardSetWidth
   const handleResize = (): void => {
@@ -448,6 +516,7 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
       cancelAnimationFrame(state.inertiaRafId);
     }
     window.removeEventListener('resize', handleResize);
+    scroller.removeEventListener('wheel', onWheel);
     document.removeEventListener('astro:before-swap', cleanup);
   };
   document.addEventListener('astro:before-swap', cleanup);

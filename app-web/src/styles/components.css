@@ -271,7 +271,10 @@
   grid-row: 2;
   grid-column: 2;
   overflow-y: auto;
-  min-height: 0; /* 允许 Grid 子元素正确收缩 */
+  min-height: 0; /* 允许 Grid 子元素纵向正确收缩 */
+  min-width: 0; /* 允许 Grid 子元素横向正确收缩
+    修复：缺少 min-width:0 时，宽内容（代码块/表格）撑开列宽，
+    侧边栏折叠后 1fr 列扩展挤压 TOC 列，导致三栏布局坍缩 */
   overflow-anchor: auto; /* 浏览器锚点滚动优化 */
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: none; /* 禁止纵向过度滚动传播 */
