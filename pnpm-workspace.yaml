@@ -116,20 +116,27 @@ catalog:
   web-vitals: ^5.3.0
 
 # -----------------------------------------------------------------------------
-# pnpm 11+ 设置（从子包 app-web/pnpm-workspace.yaml 迁移）
+# pnpm 11+ 设置（从 .npmrc 与 package.json pnpm 字段迁移）
 # -----------------------------------------------------------------------------
-# 允许执行 build scripts 的包白名单
-# - esbuild: 需要下载平台原生二进制文件
-# - sharp: desktop 端图像处理需要原生模块
-# - @tailwindcss/oxides: Tailwind 4 原生引擎
-onlyBuiltDependencies:
-  - esbuild
-  - sharp
-  - '@tailwindcss/oxides'
+# pnpm 11 变更：
+# - .npmrc 仅处理认证/注册表设置，其余设置必须在此文件配置
+# - package.json 的 pnpm 字段不再被读取
+# - onlyBuiltDependencies/neverBuiltDependencies 已移除，替换为 allowBuilds 映射
+# - strictDepBuilds 默认 true（未批准的构建脚本会导致安装失败）
 
-# -----------------------------------------------------------------------------
-# Catalog Protocols（预留）
-# -----------------------------------------------------------------------------
-# 使用 catalog: 协议引用版本，示例：
-#   "astro": "catalog:"
-# 等价于 "astro": "^7.1.1"
+# 依赖安装行为
+autoInstallPeers: true              # 自动安装 peer 依赖
+strictPeerDependencies: false        # 放宽 peer 冲突，避免版本组合时构建中断
+shamefullyHoist: false              # 不向上提升依赖，保持严格隔离安装
+nodeLinker: isolated                # 使用 isolated 链接器（pnpm 推荐做法）
+
+# 构建脚本批准列表（pnpm 11 新机制，替代旧 onlyBuiltDependencies）
+# 仅以下包允许执行 install/postinstall 脚本，其余包的构建脚本将被静默跳过
+allowBuilds:
+  esbuild: true                     # 需要下载平台原生二进制文件
+  sharp: true                       # desktop 端图像处理需要原生模块
+  '@tailwindcss/oxides': true       # Tailwind 4 原生引擎
+
+# 将未批准的构建脚本降级为警告（不阻断 CI 安装）
+# 配合 allowBuilds 使用：已批准的正常执行，未批准的静默跳过
+strictDepBuilds: false
