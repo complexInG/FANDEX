@@ -11,7 +11,6 @@ import TableOfContents from '@/components/TableOfContents.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import DocNav from '@/components/DocNav.astro';
 import GeoBgDecor from '@/components/GeoBgDecor.astro';
-import ProgressToggle from '@/islands/ProgressToggle';
 import QuizBlock from '@/islands/QuizBlock';
 import { render } from 'astro:content';
 import { getModule, modulePrerequisites, categoryColors, getPrimaryCategory } from '@/lib/modules';
@@ -82,7 +81,7 @@ const breadcrumb = [
   <!-- 目录大纲：通过 toc 插槽渲染到 Layout 右侧栏，由 TableOfContents 共享组件控制显隐 -->
   <TableOfContents slot="toc" headings={headings} />
 
-  <div class="doc-page">
+  <div class="doc-page" style={`--module-color:${categoryColors[meta ? getPrimaryCategory(meta) : 'tools']}`}>
     <!-- 几何背景装饰层 · docs 变体：网格底纹 + 品牌光晕 + 几何线条（克制 8 项） -->
     <GeoBgDecor variant="docs" />
     <!-- 面包屑导航 -->
@@ -139,12 +138,13 @@ const breadcrumb = [
       class="prose"
       data-pagefind-body
       data-pagefind-filter={`difficulty:${doc.data.difficulty || 'intermediate'}, module:${module}${doc.data.category ? ', category:' + doc.data.category : ''}`}
-      style={`--module-color:${categoryColors[meta ? getPrimaryCategory(meta) : 'tools']}`}
     >
-      <!-- 标题行：标题 + 进度追踪按钮 -->
+      <!-- 标题行：标题 + 功能扩展占位
+           偏差报备：原 ProgressToggle（已读/未读）按钮已删除
+           预留 data-slot="progress-future" 占位，供后续重新设计功能接入 -->
       <div class="doc-title-row fndx-scroll-reveal">
         <h1 class="doc-title">{doc.data.title}</h1>
-        <ProgressToggle client:load slug={`${module}/${slug}`} />
+        <div class="doc-actions-slot" data-slot="progress-future" aria-hidden="true"></div>
       </div>
       <!-- 文档元信息：阅读时间、难度、更新日期 -->
       <header class="doc-header fndx-scroll-reveal-fade">
@@ -196,18 +196,6 @@ const breadcrumb = [
             )
           }
         </div>
-        <!-- 标签列表 -->
-        {
-          doc.data.tags && doc.data.tags.length > 0 && (
-            <div class="doc-tags">
-              {doc.data.tags.map((tag: string) => (
-                <a href={`${import.meta.env.BASE_URL}tags/${tag}/`} class="doc-tag">
-                  {tag}
-                </a>
-              ))}
-            </div>
-          )
-        }
         <!-- 文档描述 -->
         {doc.data.description && <p class="doc-description">{doc.data.description}</p>}
       </header>
@@ -216,12 +204,23 @@ const breadcrumb = [
     </article>
     <!-- 知识检测组件：进入视口时加载 -->
     <QuizBlock client:visible quiz={doc.data.quiz || []} />
+    {/* Task 6.9：返回入门指南链接（当前模块非 getting-started 时显示，放在文档末尾引导用户返回目录） */}
+    {module !== 'getting-started' && (
+      <a href={`${import.meta.env.BASE_URL}getting-started/`} class="back-to-start-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="18 6 6 12 18 18" />
+        </svg>
+        返回入门指南
+      </a>
+    )}
     <!-- 上下篇导航：传递预计算的 prev/next，避免组件内部重复查询 -->
     <DocNav prev={navigation.prev} next={navigation.next} />
   </div>
 </Layout>
 
 <style>
+  /* 文档详情页样式 — 归入 @layer pages，避免未分层 CSS 覆盖 ark 令牌导致主题切换失效 */
+  @layer pages {
   /* 文档页面容器：作为装饰层的定位上下文
    注：不设置 overflow:hidden，以保留 .doc-title-row 的 sticky 定位 */
   .doc-page {
@@ -250,18 +249,19 @@ const breadcrumb = [
     margin-bottom: var(--spacing-md);
     background: var(--color-bg-card);
     border: 1px solid var(--color-border-light);
-    border-left: 3px solid #f59e0b;
+    border-left: 3px solid var(--color-warning);
     font-size: 0.85em;
     color: var(--color-text-secondary);
   }
 
   .prereq-notice svg {
     flex-shrink: 0;
-    color: #f59e0b;
+    color: var(--color-warning);
   }
 
   .prereq-notice a {
-    color: var(--color-primary);
+    /* Task 4.3：前置知识链接颜色改为模块分类主题色 */
+    color: var(--module-color, var(--color-primary));
     text-decoration: none;
   }
 
@@ -332,65 +332,22 @@ const breadcrumb = [
     letter-spacing: 0.02em;
   }
 
-  /* 入门级：绿色 */
+  /* 入门级：成功色（绿） */
   .diff-beginner {
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: color-mix(in srgb, var(--color-success) 15%, var(--color-bg));
+    color: var(--color-success);
   }
 
-  /* 中级：橙色 */
+  /* 中级：警告色（橙） */
   .diff-intermediate {
-    background: #fff3e0;
-    color: #e65100;
+    background: color-mix(in srgb, var(--color-warning) 15%, var(--color-bg));
+    color: var(--color-warning);
   }
 
-  /* 高级：红色 */
+  /* 高级：危险色（红） */
   .diff-advanced {
-    background: #fce4ec;
-    color: #c62828;
-  }
-
-  /* 暗色模式下的难度标签颜色 */
-  :root[data-theme='dark'] .diff-beginner {
-    background: #1b3a1b;
-    color: #81c784;
-  }
-
-  :root[data-theme='dark'] .diff-intermediate {
-    background: #3e2723;
-    color: #ffb74d;
-  }
-
-  :root[data-theme='dark'] .diff-advanced {
-    background: #3b1010;
-    color: #ef9a9a;
-  }
-
-  /* 标签列表 */
-  .doc-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: var(--spacing-sm);
-  }
-
-  /* 单个标签 */
-  .doc-tag {
-    display: inline-block;
-    padding: 2px 10px;
-    font-size: 0.72em;
-    font-family: var(--font-display);
-    color: var(--color-text-secondary);
-    background: var(--color-bg-card);
-    border: 1px solid var(--color-border-light);
-    text-decoration: none;
-    transition: all var(--transition-fast);
-  }
-
-  .doc-tag:hover {
-    color: var(--color-primary);
-    border-color: var(--color-primary);
-    background: var(--color-bg-hover);
+    background: color-mix(in srgb, var(--color-danger) 15%, var(--color-bg));
+    color: var(--color-danger);
   }
 
   /* 文档描述 */
@@ -399,6 +356,28 @@ const breadcrumb = [
     font-size: 0.92em;
     color: var(--color-text-secondary);
     line-height: 1.6;
+  }
+
+  /* Task 6.9：返回入门指南链接 — 统一按钮标准（直角边框、无悬停放大） */
+  .back-to-start-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    margin-top: var(--spacing-lg);
+    font-size: 0.82em;
+    font-family: var(--font-display);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border: 1px solid var(--color-border-light);
+    background: transparent;
+    transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .back-to-start-link:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    background: var(--color-bg-hover);
   }
 
   /* 移动端适配 */
@@ -415,4 +394,5 @@ const breadcrumb = [
       gap: 6px;
     }
   }
+  } /* end @layer pages */
 </style>

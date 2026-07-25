@@ -7,7 +7,6 @@
       "@ui/*": ["src/ui/*"],
       "@services/*": ["src/services/*"],
       "@data/*": ["src/data/*"],
-      "@utils/*": ["src/utils/*"],
       "@types/*": ["src/types/*"]
     },
     "resolveJsonModule": true,

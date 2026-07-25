@@ -9,6 +9,7 @@
  * - 移动端响应式适配（768px 断点）
  */
 
+@layer components {
 /* 底部导航容器：左右分布上一篇/下一篇 */
 .doc-nav {
   display: flex;
@@ -90,4 +91,5 @@
   .nav-title {
     font-size: 0.75em;
   }
+}
 }

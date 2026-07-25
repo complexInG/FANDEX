@@ -5,7 +5,12 @@
  * 定义项目所有 UI 组件的样式，包括应用布局（导航栏、侧边栏、主内容区）、
  * 面包屑导航、文件列表、模块卡片、文档上下导航、术语提示/弹窗、
  * 代码运行按钮、速查表等。支持移动端响应式和暗色主题适配。
+ *
+ * 层级归属：@layer components（避免未分层 CSS 覆盖 ark 令牌导致主题切换失效）
  */
+
+/* 归入 @layer components，确保优先级低于 tokens 层，主题切换正常工作 */
+@layer components {
 
 /* ========== 应用整体布局（CSS Grid） ========== */
 .app-layout {
@@ -14,6 +19,13 @@
   grid-template-columns: var(--sidebar-width) 1fr; /* 左侧边栏 + 右主内容 */
   height: 100vh;
   height: 100dvh; /* 动态视口高度，适配移动端 */
+  /* 列宽变化时平滑过渡，配合侧边栏折叠/展开动画 */
+  transition: grid-template-columns var(--motion-duration-normal) var(--motion-easing-out);
+}
+
+/* 侧边栏折叠态：grid 列宽归零，主内容区扩展填满（:has 选择器检测折叠状态） */
+.app-layout:has(.fndx-sidebar.is-collapsed) {
+  grid-template-columns: 0 1fr;
 }
 
 /* 无侧边栏时的布局：单列 */
@@ -31,6 +43,11 @@
  * 此处同步将 grid 转为双栏避免预留空白列 */
 .app-layout.has-toc {
   grid-template-columns: var(--sidebar-width) 1fr var(--toc-width, 16rem);
+}
+
+/* 三栏布局折叠态：侧边栏归零，主内容 + 目录大纲 */
+.app-layout.has-toc:has(.fndx-sidebar.is-collapsed) {
+  grid-template-columns: 0 1fr var(--toc-width, 16rem);
 }
 
 @media (max-width: 1023px) {
@@ -58,15 +75,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--spacing-md);
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-lg);
   background: var(--color-nav-bg);
-  backdrop-filter: blur(12px); /* 毛玻璃模糊效果 */
-  -webkit-backdrop-filter: blur(12px); /* Safari 前缀 */
-  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid var(--color-border-light);
   position: sticky;
   top: 0;
-  z-index: 100; /* 确保导航栏在最上层 */
+  z-index: 100;
   height: var(--nav-height);
+  /* Task 3.4：移除 overflow-x: auto，导航栏固定显示不滑动
+     内容超出时由 flex-shrink 和响应式隐藏控制，而非横向滚动 */
+  overflow: hidden;
 }
 
 /* 导航栏左侧区域：Logo + 侧边栏切换 */
@@ -74,32 +95,60 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  flex-shrink: 0; /* 防止被压缩导致内容重叠 */
+  min-width: 0;
 }
 
 /* Logo 容器 */
 .nav-logo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-text);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+  border-radius: var(--fandex-radius-sm, 2px);
   cursor: pointer;
+  transition:
+    color var(--motion-duration-fast) var(--motion-easing-out),
+    background-color var(--motion-duration-fast) var(--motion-easing-out);
 }
 
 .nav-logo:hover {
-  opacity: 0.85;
+  color: var(--color-primary);
+  background: var(--color-bg-hover);
 }
 
-/* Logo 标记：字母 F 方块，与 favicon 风格统一 */
+.nav-logo:hover .logo-mark {
+  /* Task 4.4：移除悬停放大 scale(1.05)，保留品牌趣味旋转 rotate(-8deg) */
+  transform: rotate(-8deg);
+  transition: transform var(--motion-duration-normal) var(--motion-easing-spring);
+}
+
+/* Logo 标记：渐变方块，与首页风格统一（消除旧版纯色残留） */
 .logo-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: var(--color-primary);
-  border-radius: 4px;
-  color: var(--color-bg);
+  background-image: linear-gradient(
+    135deg,
+    var(--color-accent-base) 0%,
+    var(--color-accent-hover) 100%
+  );
+  border-radius: var(--fandex-radius-sm);
+  color: var(--color-accent-fg);
   font-weight: 800;
-  font-size: 0.9em;
+  font-size: 0.85rem;
   font-family: var(--font-display);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-accent-base) 30%, transparent),
+    0 2px 8px color-mix(in srgb, var(--color-accent-base) 25%, transparent);
 }
 
 /* 字母 F 内容 */
@@ -107,25 +156,19 @@
   content: 'F';
 }
 
-/* Logo 文字：深色背景 + 浅色文字 */
+/* Logo 文字：透明背景，与首页风格统一（消除旧版深色背景残留） */
 .logo-text {
-  display: flex;
-  align-items: center;
-  height: 28px;
-  padding: 0 8px;
-  background: var(--color-text);
-  color: var(--color-bg);
-  font-weight: 700;
-  font-size: 0.8em;
+  display: inline-block;
+  white-space: nowrap;
+  background: transparent;
+  color: inherit;
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  font-size: 1.05rem;
+  font-weight: var(--font-weight-bold, 700);
   font-family: var(--font-display);
-  letter-spacing: 0.1em;
-}
-
-/* Logo 首页后缀（如 "DEX"） */
-.logo-home-suffix {
-  font-weight: 700;
-  opacity: 0.75;
-  margin-left: 1px;
+  letter-spacing: 0.04em;
 }
 
 /* 导航栏右侧区域 */
@@ -133,6 +176,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  flex-shrink: 0; /* 防止被压缩导致按钮重叠 */
 }
 
 /* GitHub 链接按钮 */
@@ -149,7 +193,7 @@
   font-weight: 500;
   text-decoration: none;
   letter-spacing: 0.02em;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .nav-github-link:hover {
@@ -168,49 +212,52 @@
   }
 }
 
-/* 回到顶部按钮 */
+/* 回到顶部按钮：统一描边图标按钮风格（纯图标，方形，与导航栏其他按钮统一边框） */
 .nav-back-to-top {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 0; /* 直角边框，保持极简风格 */
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--fandex-radius-sm);
   background: transparent;
   color: var(--color-text-secondary);
-  font-size: 0.8em;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  flex-shrink: 0;
 }
 
-.nav-back-to-top:hover:not(:focus) {
-  background: var(--color-primary);
-  color: #fff;
-  border-color: var(--color-primary);
+/* 悬停反馈：移除 :not(:focus) 限制
+   原实现 :hover:not(:focus) 导致点击后按钮保留 :focus 状态，
+   悬停特效被抑制。改用纯 :hover，点击后悬停正常工作 */
+.nav-back-to-top:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-secondary);
+  background: var(--color-bg-hover);
 }
 
-/* 键盘焦点可见状态（无障碍） */
+/* 键盘焦点可见状态（仅键盘导航触发，鼠标点击不触发） */
 .nav-back-to-top:focus-visible {
-  background: var(--color-primary);
-  color: #fff;
-  border-color: var(--color-primary);
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;
 }
 
+/* 鼠标点击后移除默认 focus 轮廓，避免残留焦点环 */
+.nav-back-to-top:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .nav-back-to-top svg {
-  flex-shrink: 0; /* 图标不收缩 */
+  flex-shrink: 0;
 }
 
 /* 移动端回到顶部按钮适配 */
 @media (max-width: 768px) {
-  .nav-back-to-top-text {
-    display: inline;
-    font-size: 0.75rem;
-  }
   .nav-back-to-top {
-    padding: 6px 10px;
+    width: 30px;
+    height: 30px;
   }
 }
 
@@ -376,16 +423,12 @@
 
 .module-card:hover {
   background: var(--color-bg-hover);
-  transform: translateY(-2px); /* 悬停上浮效果 */
+  /* Task 4.4：移除悬停上浮 transform: translateY(-2px)，统一为直角边框样式反馈 */
 }
 
 /* 模块卡片悬停阴影 */
 .module-card.card-hovered {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-[data-theme='dark'] .module-card.card-hovered {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 /* 注：旧 .sidebar-animated 动画类已废弃，侧边栏过渡由 .fndx-sidebar 的 transition 属性直接控制 */
@@ -486,7 +529,7 @@
   padding: 8px 12px;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-dropdown);
   font-size: 0.85em;
   line-height: 1.5;
   color: var(--color-text-secondary);
@@ -544,7 +587,7 @@
 .term-modal-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: color-mix(in srgb, var(--color-shadow-black) 50%, transparent);
 }
 
 /* 弹窗内容区域 */
@@ -556,7 +599,7 @@
   max-height: 80vh;
   overflow: auto;
   padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-modal);
   z-index: 1;
 }
 
@@ -631,7 +674,7 @@
   font-size: 0.8em;
   font-family: var(--font-display);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   z-index: 10;
   color: var(--color-text-secondary);
 }
@@ -661,14 +704,9 @@
 
 /* 运行失败结果 */
 .code-result-error {
-  background: #fce4ec;
-  border-left: 3px solid #c62828;
-  color: #c62828;
-}
-
-/* 暗色模式错误结果适配 */
-[data-theme='dark'] .code-result-error {
-  background: #3b1010;
+  background: var(--color-danger-bg);
+  border-left: 3px solid var(--color-danger);
+  color: var(--color-danger);
 }
 
 /* 代码运行中旋转动画 */
@@ -928,3 +966,5 @@
     width: 100%;
   }
 }
+
+} /* end @layer components */

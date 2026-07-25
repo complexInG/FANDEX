@@ -5,13 +5,12 @@
  * - HTML 页面：Stale While Revalidate（优先缓存，后台更新）
  * - JS/CSS（含 hash）：Cache First（缓存优先，回退网络）
  * - 图片/字体：Cache First + 7 天过期（LRU 淘汰）
- * - Pagefind 索引：Cache First（不更新，永久缓存）
  * - 导航请求：Cache First，回退网络，再回退离线页
  *
  * 缓存上限：100 个条目，LRU 淘汰
  *
  * 生命周期：
- * - install：预缓存核心资源（首页、仪表盘、搜索、路线、manifest、icons）
+ * - install：预缓存核心资源（首页、manifest、icons）
  * - activate：清理旧版本缓存
  * - fetch：根据请求类型路由到不同策略
  *
@@ -32,9 +31,6 @@ const CACHE_VERSION = 'fandex-v3.0.0';
 /** @type {string} 主缓存名（用于 HTML / JS / CSS / 图片 / 字体） */
 const CACHE_NAME = 'fandex-v3.0.0';
 
-/** @type {string} Pagefind 索引缓存名（独立缓存，不参与 LRU 淘汰） */
-const PAGEFIND_CACHE_NAME = 'fandex-pagefind-v3.0.0';
-
 /** @type {string} 站点基础路径（支持 GitHub Pages 与 Tauri） */
 const BASE = (typeof self !== 'undefined' && self.location && self.location.pathname
   ? self.location.pathname.replace(/\/sw\.js$/, '/')
@@ -43,9 +39,6 @@ const BASE = (typeof self !== 'undefined' && self.location && self.location.path
 /** @type {string[]} 预缓存核心资源列表 */
 const PRECACHE_URLS = [
   BASE,
-  BASE + 'dashboard/',
-  BASE + 'search/',
-  BASE + 'roadmap/',
   BASE + 'manifest.json',
   BASE + 'icons/icon-192.png',
   BASE + 'icons/icon-512.png',
@@ -67,9 +60,6 @@ const IMAGE_PATTERN = /\.(png|jpg|jpeg|gif|webp|avif|svg|ico)$/i;
 
 /** @type {RegExp} 字体资源模式 */
 const FONT_PATTERN = /\.(woff2|woff|ttf|otf|eot)$/i;
-
-/** @type {RegExp} Pagefind 索引模式 */
-const PAGEFIND_PATTERN = /\/pagefind\/|^pagefind\//;
 
 /** @type {number} 缓存最大条目数（LRU 淘汰） */
 const CACHE_MAX_ENTRIES = 100;
@@ -109,7 +99,7 @@ self.addEventListener('install', (event) => {
 /**
  * Service Worker 激活事件
  *
- * 清除旧版本缓存，立即接管所有客户端。
+ * 清除非当前版本的缓存，立即接管所有客户端。
  * 通知所有客户端有新版本可用。
  *
  * @param {ExtendableEvent} event
@@ -121,7 +111,7 @@ self.addEventListener('activate', (event) => {
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((k) => k !== CACHE_NAME && k !== PAGEFIND_CACHE_NAME)
+          .filter((k) => k !== CACHE_NAME)
           .map((k) => caches.delete(k)),
       );
       self.clients.claim();
@@ -164,17 +154,10 @@ self.addEventListener('fetch', (event) => {
   const isImage = IMAGE_PATTERN.test(url.pathname);
   const isFont = FONT_PATTERN.test(url.pathname);
   const isJSON = JSON_DATA_PATTERN.test(url.pathname);
-  const isPagefind = PAGEFIND_PATTERN.test(url.pathname);
 
   /** 导航请求：Cache First -> 网络 -> 离线页 */
   if (isNavigation) {
     event.respondWith(handleNavigation(request));
-    return;
-  }
-
-  /** Pagefind 索引：Cache First（不更新，永久缓存） */
-  if (isPagefind) {
-    event.respondWith(cacheFirstPagefind(request));
     return;
   }
 
@@ -346,31 +329,6 @@ async function cacheFirstWithExpiry(request, expiryMs) {
   } catch {
     /** 网络失败，返回过期缓存（如果有） */
     if (cached) return cached;
-    return new Response('', { status: 503 });
-  }
-}
-
-/**
- * Cache First 策略（Pagefind 索引）
- *
- * Pagefind 索引不更新（构建时已确定），永久缓存。
- * 使用独立的缓存名，不参与 LRU 淘汰。
- *
- * @param {Request} request
- * @returns {Promise<Response>}
- */
-async function cacheFirstPagefind(request) {
-  const cache = await caches.open(PAGEFIND_CACHE_NAME);
-  const cached = await cache.match(request);
-  if (cached) return cached;
-
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
-      await cache.put(request, response.clone());
-    }
-    return response;
-  } catch {
     return new Response('', { status: 503 });
   }
 }

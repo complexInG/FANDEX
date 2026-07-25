@@ -18,7 +18,7 @@
  * - 仅映射 Tailwind 原生识别的 token 命名空间（--color-*、--font-*、--radius-* 等）
  *
  * 主题切换机制：
- * - ark 令牌使用 CSS light-dark() 函数实现双主题
+ * - ark 令牌使用 [data-theme] 选择器实现双主题
  * - 由 :root 的 color-scheme 声明驱动（shd-shared/styles/theme.css 管理）
  * - [data-theme="dark"] 强制深色，[data-theme="light"] 强制浅色
  * - 本文件的 @custom-variant dark 用于支持 dark: 前缀工具类

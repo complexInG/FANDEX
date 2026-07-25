@@ -1,87 +1,260 @@
 /**
- * 模块卡片样式
+ * 模块卡片样式（ark-ui 设计语言）
  * -----------------------------------------------------------------------------
  * 从 components/ModuleCard.astro 提取的组件样式，包含：
- * - 卡片容器（纵向布局，悬停上浮）
- * - 模块图标（分类色背景，白色文字）
- * - 卡片标题（单行省略）与描述（两行省略）
+ * - 卡片容器（纵向布局、边框 + 微阴影、悬停上浮 + 阴影加深）
+ * - 模块图标（分类色背景、反色文字、圆角方块）
+ * - 卡片标题（单行省略、悬停主题色）与描述（两行省略）
  * - 移动端响应式适配（768px 断点）
+ *
+ * 设计语言（ark-ui）：
+ * - 卡片浮起感：1px 边框 + xs 阴影，悬停时阴影加深至 default
+ * - 直角偏小圆角（4px），工业信息系统风格
+ * - 位移微交互：hover 上浮 4px，active 下沉 2px
+ * - 边框转色：hover 时边框转为强调色，强化可点击感
+ * - 颜色全部引用 ark 语义令牌，支持 [data-theme] 双主题
+ *
+ * 归入 @layer components
+ * -----------------------------------------------------------------------------
  */
+@layer components {
 
-/* 卡片容器：纵向布局，悬停时上浮 */
-.module-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-lg);
-  text-decoration: none;
-  background: var(--color-bg);
-  /* 动效令牌驱动：hover/active 微交互过渡（ark: 直接交互 150ms） */
-  transition:
-    transform var(--motion-duration-fast) var(--motion-easing-out),
-    background var(--motion-duration-fast) var(--motion-easing-out);
-  min-width: 0;
-  overflow: hidden;
-}
-
-/* 悬停抬起：ark 微交互位移 4-16px，此处用 4px 克制上浮 */
-.module-card:hover {
-  background: var(--color-bg-hover);
-  transform: translateY(-4px);
-}
-
-/* 按压下沉：tap 反馈，配合 Motion tapPress 同语义 */
-.module-card:active {
-  transform: translateY(-2px) scale(0.99);
-}
-
-/* 模块图标：居中显示，白色文字 */
-.card-icon {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.75rem;
-}
-
-/* 卡片内容区 */
-.card-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-/* 卡片标题：单行省略 */
-.card-title {
-  font-family: var(--font-display);
-  font-size: 0.9rem;
-  color: var(--color-text);
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 卡片描述：最多显示两行，超出省略 */
-.card-desc {
-  font-size: 0.78rem;
-  color: var(--color-text-secondary);
-  margin: 0;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-/* 移动端卡片撑满宽度 */
-@media (max-width: 768px) {
+  /* ============================================================
+   * 1. 卡片容器
+   * ------------------------------------------------------------
+   * 纵向布局，1px 边框 + 微阴影
+   * 悬停时上浮 4px，阴影加深，边框转色
+   * ============================================================ */
   .module-card {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+    text-decoration: none;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--fandex-radius-md, 4px);
+    box-shadow: var(--shadow-xs);
+    /* 动效令牌驱动：hover/active 即时反馈（ark: 直接交互 75ms instant）
+       使用 instant 确保 hover 无迟钝卡顿感，跟手响应 */
+    transition:
+      transform var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      box-shadow var(--motion-duration-instant) var(--motion-easing-out);
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* 卡片顶部装饰线：悬停时从左展开，使用模块分类色（--module-color）
+     非 web 主题青色，确保每个模块分类的视觉色系统一 */
+  .module-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--module-color, var(--color-accent-base));
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--motion-duration-normal) var(--motion-easing-out);
+    z-index: 1;
+  }
+
+  /* 悬停反馈：ark 边框转色 + 阴影加深，边框转为模块分类色
+     Task 4.4：移除悬停上浮 transform: translateY(-4px)，统一为直角边框样式反馈 */
+  .module-card:hover {
+    background: var(--color-bg-hover);
+    border-color: color-mix(in srgb, var(--module-color, var(--color-accent-base)) 50%, transparent);
+    box-shadow: var(--shadow-md);
+  }
+
+  .module-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  /* 按压下沉：tap 反馈 */
+  .module-card:active {
+    transform: translateY(-2px) scale(0.99);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .module-card:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* ============================================================
+   * 2. 模块图标（几何科技风重构）
+   * ------------------------------------------------------------
+   * 设计理念：
+   * - 去卡通化：移除实心填色大方块，改用透明底 + 细边框
+   * - 几何感：近直角圆角(3px)、等宽字体、紧凑尺寸(28px)
+   * - 科技感：分类色作为文字与边框，背景为分类色微透(8%)
+   * - 分类色由 ModuleCard.astro 通过 --module-color CSS 变量注入
+   * ============================================================ */
+  .card-icon {
+    /* 精简尺寸：28px 替代原 36px，降低视觉权重 */
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* 几何感：极小圆角，近乎直角 */
+    border-radius: 3px;
+    /* 科技感：透明底 + 细边框 + 分类色文字
+       color-mix 使分类色以低透明度融入背景，避免实色卡通方块 */
+    background: color-mix(in srgb, var(--module-color, var(--color-accent-base)) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--module-color, var(--color-accent-base)) 38%, transparent);
+    color: var(--module-color, var(--color-accent-base));
+    /* 等宽字体强化代码/技术语义 */
+    font-family: var(--font-family-mono);
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0;
+    line-height: 1;
+    flex-shrink: 0;
+    /* 去除卡通投影，仅保留极细内高光强化几何边缘清晰度 */
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-fg-inverse) 6%, transparent);
+    /* 动效预留：hover 时背景/边框浓度提升 + 微缩放
+       使用 instant 确保即时反馈无卡顿 */
+    transition:
+      background-color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      transform var(--motion-duration-normal) var(--motion-easing-spring);
+    position: relative;
+    text-transform: uppercase;
+  }
+
+  /* 几何装饰：左上角小直角标记，强化技术坐标系视觉语义 */
+  .card-icon::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 5px;
+    height: 5px;
+    border-top: 1px solid var(--module-color, var(--color-accent-base));
+    border-left: 1px solid var(--module-color, var(--color-accent-base));
+    border-top-left-radius: 3px;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  /* 悬停：背景与边框浓度提升（Task 4.4：移除悬停放大 scale(1.06)，保持几何稳定） */
+  .module-card:hover .card-icon {
+    background: color-mix(in srgb, var(--module-color, var(--color-accent-base)) 16%, transparent);
+    border-color: color-mix(in srgb, var(--module-color, var(--color-accent-base)) 60%, transparent);
+  }
+
+  /* ============================================================
+   * 3. 卡片内容区
+   * ============================================================ */
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    min-width: 0;
+  }
+
+  /* 卡片标题：单行省略 */
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--color-text);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    transition: color var(--motion-duration-instant) var(--motion-easing-out);
+    /* Task 5.3：文本溢出时自动左右滚动（由 JS 添加 .is-overflow 类触发） */
+    position: relative;
+  }
+
+  /* Task 5.3：溢出文本 marquee 动画（ping-pong 模式，悬停暂停） */
+  .card-title.is-overflow {
+    text-overflow: clip;
+    animation: card-title-marquee 6s ease-in-out infinite alternate;
+  }
+
+  .card-title.is-overflow:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes card-title-marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(var(--marquee-offset, -20px)); }
+  }
+
+  /* 悬停时标题变为模块分类色（非 web 主题青色） */
+  .module-card:hover .card-title {
+    color: var(--module-color, var(--color-accent-base));
+  }
+
+  /* 卡片描述：最多显示两行，超出省略 */
+  .card-desc {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  /* ============================================================
+   * 4. 响应式适配
+   * ============================================================ */
+
+  /* 移动端卡片撑满宽度 */
+  @media (max-width: 768px) {
+    .module-card {
+      width: 100%;
+      padding: var(--spacing-md);
+    }
+
+    .card-icon {
+      width: 26px;
+      height: 26px;
+      font-size: 0.65rem;
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+    }
+
+    .card-desc {
+      font-size: 0.72rem;
+    }
+  }
+
+  /* 超小屏：进一步紧凑 */
+  @media (max-width: 480px) {
+    .module-card {
+      padding: var(--spacing-sm);
+      gap: 6px;
+    }
+
+    .card-icon {
+      width: 24px;
+      height: 24px;
+      font-size: 0.6rem;
+    }
+
+    .card-title {
+      font-size: 0.8rem;
+    }
+
+    .card-desc {
+      font-size: 0.68rem;
+      -webkit-line-clamp: 2;
+    }
   }
 }

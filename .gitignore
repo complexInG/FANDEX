@@ -122,8 +122,9 @@ coverage/
 public/pagefind/
 app-desktop/public/pagefind/
 
-# app-web/reports/baseline 构建基线报告（CI 产物，不入库）
+# app-web/reports 构建分析报告（CI 产物，不入库）
 app-web/reports/baseline/
+app-web/reports/bundle-stats.html
 
 # app-web/public/data 与 app-desktop/public/data 构建产物（由 scripts/ 生成，不入库）
 app-web/public/data/

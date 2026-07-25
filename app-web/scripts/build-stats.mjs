@@ -3,8 +3,8 @@
  * =============================================================================
  * 核心执行流程：
  *   1. 递归扫描 cnt-content/full 目录下所有 .md / .mdx 文件
- *   2. 解析每篇文档的 frontmatter，提取 module / category / tags 字段
- *   3. 聚合统计：文档总数、模块数、分类数、标签数
+ *   2. 解析每篇文档的 frontmatter，提取 module / category 字段
+ *   3. 聚合统计：文档总数、模块数、分类数
  *   4. 输出 JSON 到 app-web/src/data/doc-stats.json
  *
  * 设计目的：
@@ -12,6 +12,10 @@
  *     2003 篇文档导致 OOM（12GB 堆内存仍不足）
  *   - 预构建后首页直接读取 JSON 缓存，零文档内容加载
  *   - dev 脚本启动前自动运行，build 脚本也已包含
+ *
+ * 变更说明：
+ *   - 标签索引功能已移除（详见用户需求 item 22），不再统计 totalTags
+ *   - tags 字段在 frontmatter 中仍保留以供搜索索引使用，但不再聚合统计
  *
  * 性能：扫描 2003 篇文档约 1-2 秒（纯文件系统读取 + 正则解析）
  * =============================================================================
@@ -50,10 +54,10 @@ function collectMarkdownFiles(dir, result = []) {
  * 从 Markdown 文件内容中解析 frontmatter 字段
  * 使用正则提取，避免引入 gray-matter 等依赖
  * @param {string} content - 文件完整内容
- * @returns {{ module?: string, category?: string, tags: string[] }}
+ * @returns {{ module?: string, category?: string }}
  */
 function parseFrontmatter(content) {
-  const result = { module: undefined, category: undefined, tags: [] };
+  const result = { module: undefined, category: undefined };
   const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!fmMatch) return result;
   const fm = fmMatch[1];
@@ -70,24 +74,6 @@ function parseFrontmatter(content) {
     result.category = categoryMatch[1].trim().replace(/['"]/g, '');
   }
 
-  // tags 字段（数组，支持 inline [a, b, c] 和 block 格式）
-  const tagsInlineMatch = fm.match(/^tags:\s*\[([\s\S]*?)\]/m);
-  if (tagsInlineMatch) {
-    result.tags = tagsInlineMatch[1]
-      .split(',')
-      .map((t) => t.trim().replace(/['"]/g, ''))
-      .filter(Boolean);
-  } else {
-    // block 格式：tags:\n  - a\n  - b
-    const tagsBlockMatch = fm.match(/^tags:\s*\r?\n((?:\s+-\s+.+\r?\n?)+)/m);
-    if (tagsBlockMatch) {
-      result.tags = tagsBlockMatch[1]
-        .split('\n')
-        .map((line) => line.replace(/^\s+-\s+/, '').trim().replace(/['"]/g, ''))
-        .filter(Boolean);
-    }
-  }
-
   return result;
 }
 
@@ -101,7 +87,6 @@ function main() {
 
   const moduleSet = new Set();
   const categorySet = new Set();
-  const tagSet = new Set();
 
   for (const filePath of files) {
     try {
@@ -109,7 +94,6 @@ function main() {
       const fm = parseFrontmatter(content);
       if (fm.module) moduleSet.add(fm.module);
       if (fm.category) categorySet.add(fm.category);
-      for (const tag of fm.tags) tagSet.add(tag);
     } catch {
       // 读取失败时静默跳过
     }
@@ -119,7 +103,6 @@ function main() {
     totalDocs: files.length,
     totalModules: moduleSet.size,
     totalCategories: categorySet.size,
-    totalTags: tagSet.size,
     generatedAt: new Date().toISOString(),
   };
 

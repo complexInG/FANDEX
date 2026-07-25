@@ -19,14 +19,12 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx'; // MDX 支持：在 Markdown 中使用 JSX 组件
 import sitemap from '@astrojs/sitemap'; // 站点地图：自动生成 sitemap.xml
 import react from '@astrojs/react'; // React 集成：在 Astro 中使用 React 组件（三端统一 React 生态）
-import pagefind from 'astro-pagefind'; // Pagefind 静态站点搜索集成：构建期生成索引至 dist/pagefind/
 import tailwindcss from '@tailwindcss/vite'; // Tailwind CSS v4 Vite 插件（CSS-first 配置，无需 tailwind.config.js）
 import { visualizer } from 'rollup-plugin-visualizer'; // Bundle 体积可视化分析：构建后生成 reports/bundle-stats.html
 import { remarkAdmonition } from './src/plugins/remark-admonition'; // 自定义提示块解析器
 import { rehypeLazyImages } from './src/plugins/rehype-lazy-images'; // 图片懒加载处理器
 import { rehypeWrapTables } from './src/plugins/rehype-wrap-tables'; // 表格包裹处理器：将 table 包入 <div class="table-wrap"> 以承担横向滚动
 import { remarkCodeRunner } from './src/plugins/remark-code-runner'; // 代码运行器：识别 ```lang runnable 标记
-import { remarkTermTooltip } from './src/plugins/remark-term-tooltip'; // 术语悬浮：扫描文档中已知术语并包裹 data-term-tooltip 容器
 import { remarkExercise } from './src/plugins/exercise'; // 习题与测验：识别 :::exercise / :::quiz 提示块并替换为 data-exercise / data-quiz 容器
 import remarkMath from 'remark-math'; // 数学公式语法解析（LaTeX 语法）
 import rehypeKatex from 'rehype-katex'; // KaTeX 数学公式渲染
@@ -101,11 +99,10 @@ export default defineConfig({
     prefetchAll: false, // 不预取所有页面（节省带宽）
     defaultStrategy: 'hover', // 鼠标悬停时触发预取
   },
-  // 集成：MDX 支持、站点地图生成、React 组件支持、Pagefind 静态搜索索引
-  // pagefind() 在 astro build 阶段自动扫描 dist/ 生成搜索索引至 dist/pagefind/，
-  // 替代原 build 脚本中手动 `pagefind --site dist` 步骤；同时在 astro dev 模式下
-  // 自动复用上次构建的索引，便于本地开发调试搜索功能。
-  integrations: [mdx(), sitemap(), react(), pagefind()],
+  // 集成：MDX 支持、站点地图生成、React 组件支持
+  // 偏差报备：原含 pagefind() 静态搜索索引集成，搜索页（search.astro）已删除，
+  // astro-pagefind 集成及相关脚本已移除
+  integrations: [mdx(), sitemap(), react()],
   markdown: {
     // Remark 插件（Markdown → MDAST 转换阶段）
     remarkPlugins: [
@@ -114,7 +111,6 @@ export default defineConfig({
       remarkMath, // 数学公式语法解析（$...$ 和 $$...$$）
       remarkAdmonition, // 自定义提示块（:::note、:::tip 等）
       remarkCodeRunner, // 代码运行器：识别 ```lang runnable 标记并替换为容器
-      remarkTermTooltip, // 术语悬浮：扫描文档中已知术语并包裹 data-term-tooltip 容器
       remarkExercise, // 习题与测验：识别 :::exercise / :::quiz 提示块并替换为容器
     ],
     // Rehype 插件（MDAST → HAST → HTML 转换阶段）

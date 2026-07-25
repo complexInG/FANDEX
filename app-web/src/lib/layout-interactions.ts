@@ -6,24 +6,19 @@
  * 2. 返回顶部按钮：平滑滚动到顶部
  * 3. 全屏模式切换：按钮文字更新与状态持久化
  * 4. 代码块复制按钮：Clipboard API + execCommand 降级
- * 5. Mermaid 图表渲染：懒加载 mermaid-renderer
- * 6. 术语提示气泡：懒加载 term-tooltip
- * 7. 微交互动画：懒加载 animations
- * 8. 代码运行器：懒加载 code-runner
- * 9. 监听器清理：View Transitions 切换前移除所有监听器，避免累积
- * 10. Service Worker 注册：支持离线访问
+ * 5. 微交互动画：懒加载 animations
+ * 6. 代码运行器：懒加载 code-runner
+ * 7. 监听器清理：View Transitions 切换前移除所有监听器，避免累积
+ * 8. Service Worker 注册：支持离线访问
  *
  * 兼容 Astro ClientRouter：所有初始化函数监听 astro:page-load 重新执行
  */
 
 // ========== 侧边栏开关逻辑 ==========
-const backdrop = document.getElementById('sidebar-backdrop');
-const toggle = document.getElementById('nav-toggle');
-const mobileBtn = document.getElementById('mobile-sidebar-btn');
-const sidebarEl = document.getElementById('app-sidebar');
-
 /** 打开侧边栏并同步 URL 参数 */
 function openSidebar(): void {
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const sidebarEl = document.getElementById('app-sidebar');
   document.body.classList.add('sidebar-open');
   sidebarEl?.classList.add('is-open');
   backdrop?.classList.add('is-visible');
@@ -32,6 +27,8 @@ function openSidebar(): void {
 
 /** 关闭侧边栏并同步 URL 参数 */
 function closeSidebar(): void {
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const sidebarEl = document.getElementById('app-sidebar');
   document.body.classList.remove('sidebar-open');
   sidebarEl?.classList.remove('is-open');
   backdrop?.classList.remove('is-visible');
@@ -55,6 +52,8 @@ function syncSidebarUrl(): void {
 
 /** 从 URL 查询参数恢复侧边栏状态 */
 function restoreSidebarFromUrl(): void {
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const sidebarEl = document.getElementById('app-sidebar');
   const params = new URLSearchParams(window.location.search);
   if (params.get('sidebar') === '1') {
     document.body.classList.add('sidebar-open');
@@ -63,46 +62,67 @@ function restoreSidebarFromUrl(): void {
   }
 }
 
-restoreSidebarFromUrl();
+/**
+ * 初始化侧边栏开关、返回顶部按钮等 DOM 依赖交互
+ * 每次 View Transitions 页面切换后重新执行，确保新 DOM 元素绑定监听器
+ * 解决原实现监听器仅注册一次、页面切换后按钮失效的问题
+ */
+function initLayoutInteractions(): void {
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const toggle = document.getElementById('nav-toggle');
+  const mobileBtn = document.getElementById('mobile-sidebar-btn');
 
-// 顶部菜单按钮：切换章节视图并打开侧边栏
-if (toggle)
-  toggle.addEventListener('click', () => {
-    if (document.body.classList.contains('sidebar-open')) {
-      closeSidebar();
-    } else {
-      document.dispatchEvent(new CustomEvent('fandex-switch-chapters'));
+  restoreSidebarFromUrl();
+
+  // 顶部菜单按钮：切换章节视图并打开侧边栏
+  if (toggle && toggle.dataset.bound !== 'true') {
+    toggle.dataset.bound = 'true';
+    toggle.addEventListener('click', () => {
+      if (document.body.classList.contains('sidebar-open')) {
+        closeSidebar();
+      } else {
+        document.dispatchEvent(new CustomEvent('fandex-switch-chapters'));
+        openSidebar();
+      }
+    });
+  }
+
+  // 移动端模块按钮：切换模块视图并打开侧边栏
+  if (mobileBtn && mobileBtn.dataset.bound !== 'true') {
+    mobileBtn.dataset.bound = 'true';
+    mobileBtn.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('fandex-switch-modules'));
       openSidebar();
-    }
-  });
+    });
+  }
 
-// 移动端模块按钮：切换模块视图并打开侧边栏
-if (mobileBtn)
-  mobileBtn.addEventListener('click', () => {
-    document.dispatchEvent(new CustomEvent('fandex-switch-modules'));
-    openSidebar();
-  });
+  // 点击遮罩层关闭侧边栏
+  if (backdrop && backdrop.dataset.bound !== 'true') {
+    backdrop.dataset.bound = 'true';
+    backdrop.addEventListener('click', closeSidebar);
+  }
 
-// 点击遮罩层关闭侧边栏
-if (backdrop) backdrop.addEventListener('click', closeSidebar);
-
-// ========== 返回顶部按钮 ==========
-const backToTopBtn = document.getElementById('nav-back-to-top');
-const mainEl = document.getElementById('app-main');
-if (backToTopBtn && mainEl) {
-  backToTopBtn.addEventListener('click', () => {
-    mainEl.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  // 返回顶部按钮：每次页面切换后重新绑定（原实现仅注册一次，View Transitions 后失效）
+  const backToTopBtn = document.getElementById('nav-back-to-top');
+  const mainEl = document.getElementById('app-main');
+  if (backToTopBtn && mainEl && backToTopBtn.dataset.bound !== 'true') {
+    backToTopBtn.dataset.bound = 'true';
+    backToTopBtn.addEventListener('click', () => {
+      mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 }
-
-// 页面切换时自动关闭侧边栏
-document.addEventListener('astro:page-load', closeSidebar);
 
 // ========== 全屏模式切换 ==========
 // 注：onFullscreenChange 提升到外层作用域，便于在 astro:before-swap 时统一移除
 let onFullscreenChange: (() => void) | null = null;
-const fullscreenBtn = document.getElementById('mobile-fullscreen-btn');
-if (fullscreenBtn) {
+
+/** 初始化全屏模式切换按钮（每次页面切换后重新绑定） */
+function initFullscreenToggle(): void {
+  const fullscreenBtn = document.getElementById('mobile-fullscreen-btn');
+  if (!fullscreenBtn || fullscreenBtn.dataset.bound === 'true') return;
+  fullscreenBtn.dataset.bound = 'true';
+
   fullscreenBtn.addEventListener('click', () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
@@ -110,22 +130,27 @@ if (fullscreenBtn) {
       document.exitFullscreen().catch(() => {});
     }
   });
-  // 监听全屏状态变化，更新按钮文字和持久化状态
-  onFullscreenChange = () => {
-    const span = fullscreenBtn.querySelector('span');
-    if (document.fullscreenElement) {
-      span && (span.textContent = '退出');
-      try {
-        localStorage.setItem('fandex-fullscreen', 'true');
-      } catch {}
-    } else {
-      span && (span.textContent = '全屏');
-      try {
-        localStorage.removeItem('fandex-fullscreen');
-      } catch {}
-    }
-  };
-  document.addEventListener('fullscreenchange', onFullscreenChange);
+
+  // 监听全屏状态变化，更新按钮文字和持久化状态（仅注册一次）
+  if (onFullscreenChange === null) {
+    onFullscreenChange = () => {
+      const btn = document.getElementById('mobile-fullscreen-btn');
+      const span = btn?.querySelector('span');
+      if (document.fullscreenElement) {
+        span && (span.textContent = '退出');
+        try {
+          localStorage.setItem('fandex-fullscreen', 'true');
+        } catch {}
+      } else {
+        span && (span.textContent = '全屏');
+        try {
+          localStorage.removeItem('fandex-fullscreen');
+        } catch {}
+      }
+    };
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+  }
+
   // 恢复全屏状态
   if (localStorage.getItem('fandex-fullscreen') === 'true' && !document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(() => {});
@@ -136,7 +161,16 @@ if (fullscreenBtn) {
 function initCopyButtons(): void {
   document.querySelectorAll('pre > code').forEach((codeEl) => {
     const pre = codeEl.parentElement;
-    if (!pre || pre.querySelector('.copy-btn')) return;
+    if (!pre) return;
+
+    // 防止重复包装：检查 pre 是否已在 .code-block 容器内
+    // 原实现仅检查 pre.querySelector('.copy-btn')（子元素），
+    // 但复制按钮是 pre 的兄弟元素（同为 .code-block 子元素），导致检查失效，
+    // 多次执行时产生嵌套 .code-block + 重复按钮（堆叠重影 bug 根源）
+    const parent = pre.parentElement;
+    if (!parent) return;
+    if (parent.classList.contains('code-block')) return; // 已包装，跳过
+    if (parent.querySelector(':scope > .copy-btn')) return; // 兄弟已有按钮，跳过
 
     const wrapper = document.createElement('div');
     wrapper.className = 'code-block';
@@ -168,8 +202,6 @@ function initCopyButtons(): void {
         // Clipboard API 不可用时回退到 execCommand
         // 偏差报备：document.execCommand 已被标记为 deprecated（ts(6385) hint），
         // 但作为 file:// 协议下桌面端的降级方案保留（Tauri 桌面端环境）。
-        // 通过 Reflect.get 间接获取函数引用，绕过 TypeScript 属性访问的 @deprecated 追踪，
-        // 保留运行时行为的同时消除 hint。类型断言确保无 any 污染。
         const execCommandCopy = Reflect.get(document, 'execCommand') as (
           commandId: string,
           showUI?: boolean,
@@ -188,54 +220,30 @@ function initCopyButtons(): void {
     });
 
     // 将代码块包裹在容器中，并添加复制按钮
-    if (!pre.parentNode) return;
-    pre.parentNode.insertBefore(wrapper, pre);
+    // 空值检查：parentNode 在 DOM 标准中始终存在，但 TS 类型标注为可空
+    const parentNode = pre.parentNode;
+    if (!parentNode) return;
+    parentNode.insertBefore(wrapper, pre);
     wrapper.appendChild(pre);
     wrapper.appendChild(btn);
   });
 }
 
-document.addEventListener('astro:page-load', initCopyButtons);
+// ========== 初始化执行 + astro:page-load 注册 ==========
+// 所有 DOM 依赖的初始化函数都需在 astro:page-load 时重新执行，
+// 因为 View Transitions 会替换 DOM 元素，旧监听器绑定在已移除的元素上失效。
+// 使用 dataset.bound 标记防止同一元素重复绑定。
+initLayoutInteractions();
+initFullscreenToggle();
 initCopyButtons();
 
-// ========== Mermaid 图表渲染 ==========
-async function initMermaid(): Promise<void> {
-  const mermaidBlocks = document.querySelectorAll<HTMLElement>(
-    'pre[data-language="mermaid"] code, code.language-mermaid',
-  );
-  if (mermaidBlocks.length === 0) return;
-  try {
-    const { initMermaid: init, renderMermaid } = await import('@/lib/mermaid-renderer');
-    await init();
-    // 顺序执行渲染：forEach 不会等待 async 回调，改用 for...of 避免渲染竞态
-    const blocks = Array.from(mermaidBlocks);
-    for (let i = 0; i < blocks.length; i++) {
-      const block = blocks[i];
-      // noUncheckedIndexedAccess 下 blocks[i] 类型为 HTMLElement | undefined，需显式校验
-      if (!block) continue;
-      const pre = block.closest('pre');
-      if (!pre) continue;
-      await renderMermaid(pre, i);
-    }
-  } catch {
-    /* Mermaid 渲染失败时静默处理 */
-  }
-}
+document.addEventListener('astro:page-load', () => {
+  closeSidebar();
+  initLayoutInteractions();
+  initFullscreenToggle();
+});
 
-document.addEventListener('astro:page-load', initMermaid);
-void initMermaid();
-
-// ========== 术语提示气泡 ==========
-async function initTermTooltip(): Promise<void> {
-  const article = document.querySelector('article.prose');
-  if (!article) return;
-  try {
-    const { initTermTooltip: init } = await import('@/lib/term-tooltip');
-    await init();
-  } catch {
-    /* ignore */
-  }
-}
+document.addEventListener('astro:page-load', initCopyButtons);
 
 // ========== 微交互动画 ==========
 async function initAnimations(): Promise<void> {
@@ -258,10 +266,8 @@ async function initCodeRunners(): Promise<void> {
 }
 
 // 注册各功能模块的页面加载回调
-document.addEventListener('astro:page-load', initTermTooltip);
 document.addEventListener('astro:page-load', initAnimations);
 document.addEventListener('astro:page-load', initCodeRunners);
-void initTermTooltip();
 void initAnimations();
 void initCodeRunners();
 
@@ -269,10 +275,7 @@ void initCodeRunners();
 // 所有 astro:page-load 与 fullscreenchange 监听器需在 before-swap 时移除，
 // 否则每次页面切换都会重复注册，导致同一回调被多次执行、IntersectionObserver 泄漏。
 function onBeforeSwap(): void {
-  document.removeEventListener('astro:page-load', closeSidebar);
   document.removeEventListener('astro:page-load', initCopyButtons);
-  document.removeEventListener('astro:page-load', initMermaid);
-  document.removeEventListener('astro:page-load', initTermTooltip);
   document.removeEventListener('astro:page-load', initAnimations);
   document.removeEventListener('astro:page-load', initCodeRunners);
   onFullscreenChange && document.removeEventListener('fullscreenchange', onFullscreenChange);

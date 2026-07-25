@@ -12,8 +12,10 @@ const CACHE_NAME = 'fandex-v7';
 /** @type {string} 站点基础路径（与 astro.config.ts base 一致） */
 const BASE = '/FANDEX/';
 
-/** @type {string[]} 预缓存资源列表（仅静态资源，不含 HTML） */
-const PRECACHE_URLS = [BASE + 'data/glossary-index.json'];
+/** @type {string[]} 预缓存资源列表（仅静态资源，不含 HTML）
+ * 当前为空：所有静态资源均通过运行时缓存策略处理。
+ * 后续若新增需要预缓存的关键静态资源，可在此处追加。 */
+const PRECACHE_URLS = [];
 
 /** @type {Set<string>} 含 hash 的资源扩展名，可长期缓存 */
 const HASHED_EXTS = new Set(['.css', '.js', '.woff2', '.woff', '.ttf']);
@@ -24,7 +26,7 @@ const JSON_DATA_PATTERN = /\/data\/[^/]+\.json$/;
  * Service Worker 安装事件：预缓存关键资源，跳过等待立即激活
  * 容错策略：逐项 put 替代 cache.addAll，避免单个资源失败导致整体 install reject
  *   - addAll 是原子操作：任一资源 fetch 失败即整体回滚，SW 无法激活
- *   - 逐项 put 允许非关键资源（如 glossary-index.json）单独失败时仍完成安装
+ *   - 逐项 put 允许非关键资源单独失败时仍完成安装
  *   - 失败资源仅记录 warn，不阻断 SW 激活流程
  * @param {ExtendableEvent} event
  */

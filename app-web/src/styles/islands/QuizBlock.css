@@ -1,4 +1,5 @@
 /* 测验区域整体样式：与上方内容分隔 */
+@layer islands {
 .quiz-block {
   margin-top: var(--spacing-xl);
   padding-top: var(--spacing-lg);
@@ -29,12 +30,12 @@
 
 /* 答对时边框变绿 */
 .quiz-item.result-correct {
-  border-color: #10b981;
+  border-color: var(--color-success-base);
 }
 
 /* 答错时边框变红 */
 .quiz-item.result-wrong {
-  border-color: #ef4444;
+  border-color: var(--color-danger-base);
 }
 
 /* 题目文字：适当行高，便于阅读 */
@@ -52,7 +53,7 @@
   width: 20px;
   height: 20px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-fg-inverse);
   font-size: 0.75em;
   font-weight: 700;
   margin-right: 6px;
@@ -159,7 +160,7 @@
   font-size: 0.88em;
   cursor: pointer;
   text-align: left;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 /* 选项悬停效果：边框变为主题色 */
@@ -173,18 +174,18 @@
   background: var(--color-bg-hover);
 }
 
-/* 正确选项高亮：绿色边框和浅绿背景 */
+/* 正确选项高亮：绿色边框和浅绿背景（color-mix 主题自适应） */
 .quiz-option.correct {
-  border-color: #10b981;
-  background: rgba(16, 185, 129, 0.08);
-  color: #10b981;
+  border-color: var(--color-success-base);
+  background: color-mix(in srgb, var(--color-success-base) 8%, transparent);
+  color: var(--color-success-base);
 }
 
-/* 错误选项高亮：红色边框和浅红背景 */
+/* 错误选项高亮：红色边框和浅红背景（color-mix 主题自适应） */
 .quiz-option.wrong {
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.08);
-  color: #ef4444;
+  border-color: var(--color-danger-base);
+  background: color-mix(in srgb, var(--color-danger-base) 8%, transparent);
+  color: var(--color-danger-base);
 }
 
 /* 选项字母标识：小方框内显示 A/B/C/D */
@@ -212,13 +213,13 @@
 
 /* 正确标记：绿色加粗 */
 .feedback-correct {
-  color: #10b981;
+  color: var(--color-success-base);
   font-weight: 600;
 }
 
 /* 错误标记：红色加粗 */
 .feedback-wrong {
-  color: #ef4444;
+  color: var(--color-danger-base);
   font-weight: 600;
 }
 
@@ -234,5 +235,6 @@
 
 /* 提示文字：琥珀色，仅在答错时显示 */
 .feedback-hint {
-  color: #f59e0b;
+  color: var(--color-warning-base);
+}
 }

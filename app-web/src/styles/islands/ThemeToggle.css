@@ -1,31 +1,70 @@
-/* 主题切换按钮：方形图标按钮，居中对齐 */
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--color-border);
-  background: var(--color-bg-card);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  /* SSR 阶段透明占位，避免水合后图标突然出现造成 CLS */
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 200ms ease,
-    background 150ms ease,
-    color 150ms ease;
+/**
+ * 主题切换按钮（Islands 层）
+ * -----------------------------------------------------------------------------
+ * 与 theme.css 的 .fndx-theme-toggle 共享命名，本文件补充岛屿交互专属样式：
+ * - SSR 透明占位（避免水合后 CLS）
+ * - 客户端挂载淡入
+ * - 边框/背景使用 ark 语义令牌，[data-theme] 自动切换
+ * - View Transitions API 圆形扩散过渡动画（主题切换专用）
+ *
+ * 归入 @layer islands：低于 utilities、高于 components，
+ * 避免未分层 CSS 覆盖 @layer tokens 导致主题切换失效。
+ * -----------------------------------------------------------------------------
+ */
+@layer islands {
+  /* 主题切换按钮基础容器
+     复用 theme.css 的 .fndx-theme-toggle 通用样式，
+     此处补充 Islands 专属的 SSR 占位、挂载淡入、统一边框行为 */
+  .fndx-theme-toggle {
+    /* SSR 阶段透明占位，避免水合后图标突然出现造成 CLS */
+    opacity: 0;
+    pointer-events: none;
+    /* 统一导航栏按钮边框：与 .nav-back-to-top 保持一致的描边风格 */
+    border: 1px solid var(--color-border-light);
+    transition:
+      opacity var(--motion-duration-normal) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out),
+      color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  /* 客户端挂载完成：淡入并启用交互 */
+  .fndx-theme-toggle--ready {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 悬停效果：边框转为主题色，图标提亮 */
+  @media (hover: hover) {
+    .fndx-theme-toggle:hover {
+      background-color: var(--color-bg-hover);
+      color: var(--color-accent-base);
+      border-color: var(--color-border-focus);
+    }
+  }
+
+  /* 焦点可见：可访问性焦点环 */
+  .fndx-theme-toggle:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* ============================================================
+   * View Transitions 主题切换过渡动画
+   * ------------------------------------------------------------
+   * 仅在 html.theme-vt 类存在时生效（由 ThemeToggle.tsx 动态添加）
+   * 避免影响 Astro 页面导航的默认 View Transition 行为
+   *
+   * 原理：
+   * - 禁用默认交叉淡入动画（animation: none）
+   * - mix-blend-mode: normal 防止新旧快照混合
+   * - JS 对 ::view-transition-new(root) 执行 clipPath 圆形展开
+   *   从按钮位置向外扩散，覆盖整个视口
+   * ============================================================ */
+  html.theme-vt::view-transition-old(root),
+  html.theme-vt::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
 }
 
-/* 客户端挂载完成：淡入并启用交互 */
-.theme-toggle--ready {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* 悬停效果：背景变浅，图标变为主题色 */
-.theme-toggle:hover {
-  background: var(--color-bg-hover);
-  color: var(--color-primary);
-}

@@ -28,8 +28,8 @@
  *
  * 路径处理：
  *   - GitHub Pages 模式：从 manifest.webmanifest 的 start_url 检测 base path，
- *     URL 形如 "/FANDEX/search/index.html"
- *   - 离线包模式：start_url 为 "./"，URL 形如 "./search/index.html"
+ *     URL 形如 "/FANDEX/index.html"
+ *   - 离线包模式：start_url 为 "./"，URL 形如 "./index.html"
  *
  * revision 计算：
  *   使用文件内容的 MD5 哈希前 8 位作为版本号，

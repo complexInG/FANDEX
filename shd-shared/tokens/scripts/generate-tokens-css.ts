@@ -365,16 +365,30 @@ function generatePrimitiveVars(primitiveTokens: FlatToken[]): CssVarEntry[] {
   return entries;
 }
 
+/** 语义层 CSS 变量生成结果：root 为浅色默认值，dark 为深色覆盖值 */
+interface SemanticVarsResult {
+  /** 浅色模式变量（放入 :root） */
+  root: CssVarEntry[];
+  /** 深色模式覆盖变量（放入 [data-theme='dark']） */
+  dark: CssVarEntry[];
+}
+
 /**
  * 生成 semantic 层 CSS 变量
- * - 颜色令牌：合并 light/dark 为 light-dark()
- * - 非颜色令牌：解析引用为 var()
+ *
+ * 主题策略（不使用 light-dark()，改用 [data-theme] 选择器）：
+ * - 颜色令牌：light 值放入 :root，dark 值放入 [data-theme='dark'] 覆盖块
+ *   原因：Tailwind CSS v4 的 CSS 解析器不支持在 @theme 块外使用 light-dark()
+ *   与 var() 混合的写法，会报 "Invalid custom property, expected a value" 错误。
+ *   使用 [data-theme] 选择器是 Tailwind 社区推荐的双主题方案（见 #15083）。
+ * - 非颜色令牌：解析引用为 var()，仅放入 :root（无主题差异）
  */
 function generateSemanticVars(
   semanticTokens: Record<string, TokenNode>,
   tokenMap: Map<string, FlatToken>,
-): CssVarEntry[] {
-  const entries: CssVarEntry[] = [];
+): SemanticVarsResult {
+  const rootEntries: CssVarEntry[] = [];
+  const darkEntries: CssVarEntry[] = [];
 
   // 分离颜色 light/dark 与其他令牌
   const colorLight = semanticTokens['color.light'];
@@ -383,10 +397,8 @@ function generateSemanticVars(
     (k) => k !== 'color.light' && k !== 'color.dark',
   );
 
-  // 1. 处理颜色语义令牌（合并 light/dark）
+  // 1. 处理颜色语义令牌（light 放入 :root，dark 放入 [data-theme='dark']）
   if (colorLight && colorDark) {
-    // 使用空前缀扁平化：flattenTokens 会自动包含顶层 "color" 键
-    // 生成的路径如 "color.bg.primary"（与引用路径一致）
     const lightFlat = flattenTokens(colorLight, '');
     const darkFlat = flattenTokens(colorDark, '');
 
@@ -396,56 +408,36 @@ function generateSemanticVars(
       darkMap.set(t.path, t);
     }
 
+    // light 值全部放入 :root
     for (const lightToken of lightFlat) {
-      // lightToken.path 已是完整路径（如 "color.bg.primary"），无需补前缀
       const fullPath = lightToken.path;
-      const darkToken = darkMap.get(lightToken.path);
-
-      // 解析 light 值为 CSS（引用解析为 var()）
       const lightCss = resolveValueToCss(lightToken.value, tokenMap);
-
-      if (darkToken) {
-        // 合并为 light-dark(light, dark)
-        const darkCss = resolveValueToCss(darkToken.value, tokenMap);
-        entries.push({
-          name: pathToVarName(fullPath),
-          value: `light-dark(${lightCss}, ${darkCss})`,
-          description: lightToken.description,
-        });
-      } else {
-        // 仅 light 有定义（dark 未定义同名令牌）
-        entries.push({
-          name: pathToVarName(fullPath),
-          value: lightCss,
-          description: lightToken.description,
-        });
-      }
+      rootEntries.push({
+        name: pathToVarName(fullPath),
+        value: lightCss,
+        description: lightToken.description,
+      });
     }
 
-    // 检查 dark 中有但 light 中没有的令牌
-    const lightPaths = new Set(lightFlat.map((t) => t.path));
+    // dark 值放入 [data-theme='dark'] 覆盖块
     for (const darkToken of darkFlat) {
-      if (!lightPaths.has(darkToken.path)) {
-        const fullPath = darkToken.path;
-        const darkCss = resolveValueToCss(darkToken.value, tokenMap);
-        entries.push({
-          name: pathToVarName(fullPath),
-          value: darkCss,
-          description: darkToken.description,
-        });
-      }
+      const fullPath = darkToken.path;
+      const darkCss = resolveValueToCss(darkToken.value, tokenMap);
+      darkEntries.push({
+        name: pathToVarName(fullPath),
+        value: darkCss,
+        description: darkToken.description,
+      });
     }
   }
 
   // 2. 处理非颜色语义令牌（space/size/font/radius/shadow/motion）
-  // 使用空前缀扁平化：文件顶层键即作为路径首段（如 space.page.x）
+  // 仅放入 :root（无主题差异）
   for (const key of otherSemanticKeys) {
     const node = semanticTokens[key];
     const flat = flattenTokens(node, '');
     for (const token of flat) {
-      // 跳过自引用令牌：semantic 路径与 primitive 同名令牌路径相同时，
-      // 生成的 CSS 变量名（--size-icon-sm）与引用目标（var(--size-icon-sm)）相同，
-      // 自引用无意义，primitive 层已定义该变量，无需重复输出
+      // 跳过自引用令牌
       if (isReference(token.value)) {
         const refPath = extractRefPath(token.value as string);
         if (refPath === token.path) {
@@ -453,7 +445,7 @@ function generateSemanticVars(
         }
       }
       const cssValue = resolveValueToCss(token.value, tokenMap);
-      entries.push({
+      rootEntries.push({
         name: pathToVarName(token.path),
         value: cssValue,
         description: token.description,
@@ -461,7 +453,7 @@ function generateSemanticVars(
     }
   }
 
-  return entries;
+  return { root: rootEntries, dark: darkEntries };
 }
 
 /**
@@ -570,7 +562,7 @@ function main(): void {
   console.log(`[信息] primitive 层: ${primitiveVars.length} 个变量`);
 
   const semanticVars = generateSemanticVars(semanticRaw, tokenMap);
-  console.log(`[信息] semantic 层: ${semanticVars.length} 个变量`);
+  console.log(`[信息] semantic 层: ${semanticVars.root.length} 个根变量, ${semanticVars.dark.length} 个深色覆盖`);
 
   const componentVars = generateComponentVars(componentRaw, tokenMap);
   console.log(`[信息] component 层: ${componentVars.length} 个变量`);
@@ -590,17 +582,20 @@ function main(): void {
  * - semantic：语义层（引用 primitive，含 light/dark 主题）
  * - component：组件层（引用 semantic，定义组件专属令牌）
  *
- * 主题策略：
- * - 颜色语义令牌使用 CSS light-dark() 函数实现双主题
- * - 需在 :root 设置 color-scheme: light dark 以启用 light-dark()
- * - 通过 [data-theme="dark"] 覆盖 color-scheme 可强制深色模式
+ * 主题策略（[data-theme] 选择器方案，不使用 light-dark()）：
+ * - :root 定义浅色模式默认值（color-scheme: light）
+ * - [data-theme='dark'] 覆盖深色值（color-scheme: dark）
+ * - [data-theme='light'] 显式浅色（color-scheme: light）
+ * - 由 BaseLayout.astro 内联脚本在页面加载前设置 data-theme 属性
+ * - 不使用 CSS light-dark() 函数，因 Tailwind v4 解析器在 @theme 块外
+ *   不支持 light-dark() 与 var() 混合写法
  */
 
 `;
 
   const cssContent = `${header}@layer tokens {
   :root {
-    color-scheme: light dark;
+    color-scheme: light;
 
     /* ============================================================
        1. Primitive 层 — 原始令牌值
@@ -608,9 +603,9 @@ function main(): void {
 ${renderCssBlock(primitiveVars, '    ')}
 
     /* ============================================================
-       2. Semantic 层 — 语义令牌（含 light-dark() 主题合并）
+       2. Semantic 层 — 语义令牌（浅色默认值）
        ============================================================ */
-${renderCssBlock(semanticVars, '    ')}
+${renderCssBlock(semanticVars.root, '    ')}
 
     /* ============================================================
        3. Component 层 — 组件级令牌
@@ -618,12 +613,18 @@ ${renderCssBlock(semanticVars, '    ')}
 ${renderCssBlock(componentVars, '    ')}
   }
 
-  /* 强制深色模式：覆盖 color-scheme 使 light-dark() 取深色值 */
+  /* ============================================================
+     深色模式覆盖：[data-theme='dark'] 选择器
+     ------------------------------------------------------------
+     由 BaseLayout.astro 内联脚本设置 data-theme 属性触发。
+     仅覆盖颜色语义令牌，非颜色令牌（间距/字号/圆角等）无主题差异。
+     ============================================================ */
   [data-theme='dark'] {
     color-scheme: dark;
+${renderCssBlock(semanticVars.dark, '    ')}
   }
 
-  /* 强制浅色模式 */
+  /* 显式浅色模式（data-theme='light' 时无需覆盖值，仅声明 color-scheme） */
   [data-theme='light'] {
     color-scheme: light;
   }
@@ -639,8 +640,9 @@ ${renderCssBlock(componentVars, '    ')}
   }
   writeFileSync(CSS_OUTPUT, cssContent, 'utf-8');
   console.log(`[成功] CSS 令牌已生成: ${CSS_OUTPUT}`);
-  console.log(`[统计] primitive=${primitiveVars.length}, semantic=${semanticVars.length}, component=${componentVars.length}`);
-  console.log(`[总计] ${primitiveVars.length + semanticVars.length + componentVars.length} 个 CSS 变量\n`);
+  const semanticTotal = semanticVars.root.length + semanticVars.dark.length;
+  console.log(`[统计] primitive=${primitiveVars.length}, semantic=${semanticTotal} (root=${semanticVars.root.length}, dark=${semanticVars.dark.length}), component=${componentVars.length}`);
+  console.log(`[总计] ${primitiveVars.length + semanticTotal + componentVars.length} 个 CSS 变量\n`);
 }
 
 main();

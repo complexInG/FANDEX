@@ -8,14 +8,13 @@
  *
  * 检查项：
  *   1. 内容完整性：cnt-content/full/ 下文档数 > 1900
- *   2. 术语表完整性：shd-shared/metadata/glossary/ 下 27 个 JSON 文件
- *   3. 速查表完整性：shd-shared/metadata/cheatsheets/ 下 9 个 JSON 文件
- *   4. 模块定义：shd-shared/metadata/modules.json 含 51 个模块
- *   5. 索引文件存在：glossary-index.json、module-docs-index.json、tag-index.json、knowledge-graph.json
- *   6. 构建产物：./dist-web/ 目录存在且含 index.html（仅 post-build 检查）
- *   7. 无 Vue 残留：grep "from 'vue'" 或 ".vue" 在 app/ 下返回 0 结果
- *   8. Tauri 配置：src-tauri/tauri.conf.json 存在
- *   9. PWA 资源：manifest.json、sw.js、icons/ 存在
+ *   2. 速查表完整性：shd-shared/metadata/cheatsheets/ 下 9 个 JSON 文件
+ *   3. 模块定义：shd-shared/metadata/modules.json 含 51 个模块
+ *   4. 索引文件存在：module-docs-index.json
+ *   5. 构建产物：./dist-web/ 目录存在且含 index.html（仅 post-build 检查）
+ *   6. 无 Vue 残留：grep "from 'vue'" 或 ".vue" 在 app/ 下返回 0 结果
+ *   7. Tauri 配置：src-tauri/tauri.conf.json 存在
+ *   8. PWA 资源：manifest.json、sw.js、icons/ 存在
  */
 
 import { access, readdir, readFile } from 'node:fs/promises';
@@ -30,8 +29,6 @@ const PROJECT_ROOT = resolve(__dirname, '..');
 const MONO_ROOT = resolve(PROJECT_ROOT, '..');
 /** 文档源目录（仓库整理后 content/full 已迁移至 cnt-content/full） */
 const CONTENT_DIR = join(MONO_ROOT, 'cnt-content', 'full');
-/** 术语表目录（仓库整理后 src/content/glossary 已迁移至 shd-shared/metadata/glossary，且格式由 Markdown 改为 JSON） */
-const GLOSSARY_DIR = join(MONO_ROOT, 'shd-shared', 'metadata', 'glossary');
 /** 速查表目录（仓库整理后已迁移至 shd-shared/metadata/cheatsheets） */
 const CHEATSHEETS_DIR = join(MONO_ROOT, 'shd-shared', 'metadata', 'cheatsheets');
 /** 模块定义文件（仓库整理后 metadata/modules.json 已迁移至 shd-shared/metadata/modules.json） */
@@ -146,39 +143,10 @@ async function checkContentCompleteness() {
 }
 
 /**
- * 检查 2：术语表完整性（shd-shared/metadata/glossary/ 下 27 个 *.json 文件）
- *
- * 偏差报备：仓库整理后术语表数据源已从 src/content/glossary/<module>/glossary.md
- * 迁移至 shd-shared/metadata/glossary/<module>.json，格式由 Markdown 表格改为 JSON 数组。
- * 本检查同步更新为扫描 JSON 文件。
- */
-async function checkGlossaryCompleteness() {
-  console.log('[Dimension 2: Glossary Completeness]');
-  try {
-    if (!(await fileExists(GLOSSARY_DIR))) {
-      fail(`glossary/ 目录不存在: ${GLOSSARY_DIR}`);
-      return;
-    }
-    const entries = await readdir(GLOSSARY_DIR, { withFileTypes: true });
-    const jsonFiles = entries.filter((e) => e.isFile() && e.name.endsWith('.json'));
-    const validCount = jsonFiles.length;
-    if (validCount === 27) {
-      pass(`glossary/ 下 ${validCount}/27 个术语表 JSON 文件`);
-    } else if (validCount >= 25) {
-      warn(`glossary/ 下 ${validCount}/27 个术语表 JSON 文件（部分缺失）`);
-    } else {
-      fail(`glossary/ 下仅 ${validCount}/27 个术语表 JSON 文件（严重缺失）`);
-    }
-  } catch (err) {
-    fail(`扫描 glossary/ 失败: ${err.message}`);
-  }
-}
-
-/**
- * 检查 3：速查表完整性（cheatsheets/ 下 9 个 JSON）
+ * 检查 2：速查表完整性（cheatsheets/ 下 9 个 JSON）
  */
 async function checkCheatsheetsCompleteness() {
-  console.log('[Dimension 3: Cheatsheets Completeness]');
+  console.log('[Dimension 2: Cheatsheets Completeness]');
   try {
     if (!(await fileExists(CHEATSHEETS_DIR))) {
       fail(`cheatsheets/ 目录不存在: ${CHEATSHEETS_DIR}`);
@@ -199,10 +167,10 @@ async function checkCheatsheetsCompleteness() {
 }
 
 /**
- * 检查 4：模块定义（modules.json 含 51 个模块）
+ * 检查 3：模块定义（modules.json 含 51 个模块）
  */
 async function checkModulesDefinition() {
-  console.log('[Dimension 4: Modules Definition]');
+  console.log('[Dimension 3: Modules Definition]');
   try {
     if (!(await fileExists(MODULES_FILE))) {
       fail(`modules.json 不存在: ${MODULES_FILE}`);
@@ -224,15 +192,12 @@ async function checkModulesDefinition() {
 }
 
 /**
- * 检查 5：索引文件存在
+ * 检查 4：索引文件存在
  */
 async function checkIndexFiles() {
-  console.log('[Dimension 5: Index Files]');
+  console.log('[Dimension 4: Index Files]');
   const expectedIndexes = [
-    'glossary-index.json',
     'module-docs-index.json',
-    'tag-index.json',
-    'knowledge-graph.json',
   ];
   for (const name of expectedIndexes) {
     const filePath = join(DATA_DIR, name);
@@ -245,11 +210,11 @@ async function checkIndexFiles() {
 }
 
 /**
- * 检查 6：构建产物（dist/ 存在且含 index.html）
+ * 检查 5：构建产物（dist/ 存在且含 index.html）
  * 仅在 dist/ 存在时检查，缺失时仅警告不失败
  */
 async function checkBuildArtifacts() {
-  console.log('[Dimension 6: Build Artifacts]');
+  console.log('[Dimension 5: Build Artifacts]');
   if (!(await fileExists(DIST_DIR))) {
     warn(`dist-web/ 目录不存在（expo:build:web 可能尚未执行）`);
     return;
@@ -263,10 +228,10 @@ async function checkBuildArtifacts() {
 }
 
 /**
- * 检查 7：无 Vue 残留（app/ 下不应包含 .vue 文件或 from 'vue' 导入）
+ * 检查 6：无 Vue 残留（app/ 下不应包含 .vue 文件或 from 'vue' 导入）
  */
 async function checkNoVueResidue() {
-  console.log('[Dimension 7: No Vue Residue]');
+  console.log('[Dimension 6: No Vue Residue]');
   try {
     if (!(await fileExists(SRC_DIR))) {
       warn(`app/ 目录不存在: ${SRC_DIR}`);
@@ -322,10 +287,10 @@ async function checkNoVueResidue() {
 }
 
 /**
- * 检查 8：Tauri 配置
+ * 检查 7：Tauri 配置
  */
 async function checkTauriConfig() {
-  console.log('[Dimension 8: Tauri Config]');
+  console.log('[Dimension 7: Tauri Config]');
   const tauriConf = join(TAURI_DIR, 'tauri.conf.json');
   if (await fileExists(tauriConf)) {
     pass(`src-tauri/tauri.conf.json 存在`);
@@ -343,10 +308,10 @@ async function checkTauriConfig() {
 }
 
 /**
- * 检查 9：PWA 资源（manifest.json、sw.js、icons/）
+ * 检查 8：PWA 资源（manifest.json、sw.js、icons/）
  */
 async function checkPwaAssets() {
-  console.log('[Dimension 9: PWA Assets]');
+  console.log('[Dimension 8: PWA Assets]');
   const manifestFile = join(PUBLIC_DIR, 'manifest.json');
   const swFile = join(PUBLIC_DIR, 'sw.js');
   const iconsDir = join(PUBLIC_DIR, 'icons');
@@ -386,7 +351,6 @@ async function main() {
   console.log('+------------------------------------------+\n');
 
   await checkContentCompleteness();
-  await checkGlossaryCompleteness();
   await checkCheatsheetsCompleteness();
   await checkModulesDefinition();
   await checkIndexFiles();

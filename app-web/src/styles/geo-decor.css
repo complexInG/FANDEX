@@ -11,13 +11,22 @@
  *          螺旋 / 贝塞尔流 / 脉冲环 / 漂浮方块
  *
  * 适配来源：参考 KeMuONEXueKao 项目装饰系统，映射至 FANDEX 设计令牌
+ *
+ * 层级归属：@layer components（避免未分层 CSS 覆盖 ark 令牌导致主题切换失效）
  */
 
+/* 归入 @layer components，确保优先级低于 tokens 层 */
+@layer components {
+
 /* ===================================================================
-   装饰容器 · 绝对定位铺满父级定位上下文
+   装饰容器 · 固定定位铺满视口（不随页面滚动）
+   -------------------------------------------------------------------
+   使用 position: fixed 使背景装饰固定在视口，滚动时保持不动。
+   但内部装饰元素仍保留 CSS 动画（旋转/脉冲/漂浮），并非静态内容。
+   z-index: 0 确保装饰位于内容之下，pointer-events:none 不干扰交互。
    =================================================================== */
 .geo-bg-decor {
-  position: absolute;
+  position: fixed;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
@@ -25,11 +34,14 @@
 }
 
 /* ===================================================================
-   构成主义网格底纹 · 径向遮罩聚焦
+   构成主义网格底纹 · 径向遮罩聚焦 + 缓慢漂移
+   -------------------------------------------------------------------
+   网格底纹添加 60s 缓慢漂移动画，增强"非静态"感，
+   同时不分散阅读注意力（位移幅度小，周期长）。
    =================================================================== */
 .geo-bg-grid {
   position: absolute;
-  inset: 0;
+  inset: -64px;
   background-image:
     linear-gradient(to right, var(--geo-grid) 1px, transparent 1px),
     linear-gradient(to bottom, var(--geo-grid) 1px, transparent 1px);
@@ -37,6 +49,16 @@
   background-position: -1px -1px;
   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 30% 20%, #000 0%, transparent 75%);
   mask-image: radial-gradient(ellipse 80% 60% at 30% 20%, #000 0%, transparent 75%);
+  animation: geo-grid-drift 60s linear infinite;
+}
+
+@keyframes geo-grid-drift {
+  0% {
+    background-position: -1px -1px;
+  }
+  100% {
+    background-position: -65px -65px;
+  }
 }
 
 /* ===================================================================
@@ -701,6 +723,7 @@
    尊重用户运动偏好 · 关闭动画
    =================================================================== */
 @media (prefers-reduced-motion: reduce) {
+  .geo-bg-grid,
   .geo-spiral-ccw,
   .geo-bezier-flow,
   .geo-pulse-ring,
@@ -708,3 +731,5 @@
     animation: none;
   }
 }
+
+} /* end @layer components */

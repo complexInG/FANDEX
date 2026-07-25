@@ -2,7 +2,7 @@
 /**
  * 首页布局组件
  * 提供首页的整体结构：顶部导航栏和主内容区
- * 导航栏包含知识地图链接、GitHub 仓库链接、全屏按钮和主题切换
+ * 导航栏包含 GitHub 仓库链接、全屏按钮和主题切换
  * 继承 BaseLayout 的共享 head 与样式引入，仅保留首页特有的结构与脚本
  *
  * 样式与交互逻辑已拆分至独立文件：
@@ -21,41 +21,40 @@ const base = import.meta.env.BASE_URL;
 <BaseLayout title={title}>
   <slot name="head" slot="head" />
 
+  <!-- 首页滚动架构：body 禁止滚动，所有纵向滚动由 .home-main 内部容器处理
+       防止快速上下滑动时 body 扩展产生无限空页面（item 12 修复） -->
+  <style is:inline>
+    @layer base {
+    html {
+      height: 100%;
+      overscroll-behavior: none;
+    }
+    body {
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+    }
+  </style>
+
   <!-- 首页顶部导航栏 -->
   <header class="home-nav">
     <div class="nav-left">
       <a href={base} class="nav-logo">
         <span class="logo-mark"></span>
-        <span class="logo-text">{SITE.title}<span class="logo-home-suffix">-Index</span></span>
+        <span class="logo-text">{SITE.title}</span>
       </a>
     </div>
     <div class="nav-right">
-      <!-- 知识地图链接：指向全局知识地图页面，可视化模块依赖与文档关联关系 -->
-      <a href={`${base}map/`} class="nav-action-link" title="知识地图">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <circle cx="6" cy="6" r="2.5"></circle>
-          <circle cx="18" cy="6" r="2.5"></circle>
-          <circle cx="12" cy="18" r="2.5"></circle>
-          <line x1="7.5" y1="7" x2="10.5" y2="16"></line>
-          <line x1="16.5" y1="7" x2="13.5" y2="16"></line>
-          <line x1="8.5" y1="6" x2="15.5" y2="6"></line>
-        </svg>
-        <span class="nav-action-text">知识地图</span>
-      </a>
       <!-- GitHub 仓库链接 -->
       <a
         href="https://github.com/fanquanpp/FANDEX"
         class="nav-github-link"
         target="_blank"
         rel="noopener noreferrer"
-        title="GitHub 源仓库"
+        data-tooltip="GitHub 源仓库"
+        data-tooltip-pos="bottom"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
           ><path
@@ -65,7 +64,7 @@ const base = import.meta.env.BASE_URL;
         <span class="nav-github-text">GitHub 源仓库</span>
       </a>
       <!-- 全屏按钮：仅移动端显示 -->
-      <button class="nav-fullscreen-btn" id="home-fullscreen-btn" aria-label="全屏" title="全屏">
+      <button class="nav-fullscreen-btn" id="home-fullscreen-btn" aria-label="全屏" data-tooltip="全屏" data-tooltip-pos="bottom">
         <svg
           width="16"
           height="16"

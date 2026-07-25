@@ -56,8 +56,12 @@ const ReferenceTypeSchema = z.enum([
  * 偏差报备：volume/issue 原设计为 number，但学术文献中这些字段
  * 经常使用字符串（如 issue: "OOPSLA"、"Special Issue"）。
  * 临时改为 union(number, string) 以兼容存量数据。
+ *
+ * 扩展预留点：当前 docs collection 的 references 字段使用 z.any() 容错存量数据，
+ * 后续统一文档数据格式后，可恢复使用本 Schema。导出以消除 ts(6133) 警告，
+ * 同时作为未来 schema 严格化的接口预留点（未来留白未雨绸缪）。
  */
-const ReferenceSchema = z.object({
+export const ReferenceSchema = z.object({
   type: ReferenceTypeSchema,
   authors: z.array(z.string()).default([]),
   year: z.number(),
@@ -75,8 +79,11 @@ const ReferenceSchema = z.object({
 /**
  * 词源条目 Schema
  * 用于记录计算机术语的英文原词与词源说明
+ *
+ * 扩展预留点：同 ReferenceSchema，当前 docs collection 的 etymology 字段
+ * 使用 z.any() 容错存量数据。导出以消除 ts(6133) 警告，保留未来恢复接口。
  */
-const EtymologyEntrySchema = z.object({
+export const EtymologyEntrySchema = z.object({
   term: z.string(),
   english: z.string(),
   origin: z.string(),
@@ -194,8 +201,11 @@ const OpenEndedExerciseSchema = BaseExerciseSchema.extend({
 /**
  * 习题联合类型
  * 通过 type 字段做判别式联合，保证类型推导的精确性
+ *
+ * 扩展预留点：同 ReferenceSchema，当前 docs collection 的 exercises 字段
+ * 使用 z.any() 容错存量数据。导出以消除 ts(6133) 警告，保留未来恢复接口。
  */
-const ExerciseSchema = z.discriminatedUnion('type', [
+export const ExerciseSchema = z.discriminatedUnion('type', [
   FillBlankExerciseSchema,
   ChoiceExerciseSchema,
   CodeFixExerciseSchema,
@@ -276,32 +286,4 @@ const docs = defineCollection({
   }),
 });
 
-// ============================================================
-// glossary Collection
-// ============================================================
-
-// 偏差报备（仓库整理后路径与格式变更）：
-// 原：app-web/src/content/glossary/<module>/glossary.md（Markdown 表格格式）
-// 新：shd-shared/metadata/glossary/<module>.json（JSON 格式，顶层结构 { moduleId, terms[] }）
-//
-// 路径层级修正（Astro 7 glob loader base 相对项目根解析，非相对 content.config.ts 文件）：
-// - 原：`../../shd-shared/metadata/glossary`（多回退一级，解析为 FANDEX-pj/shd-shared/...，目录不存在）
-// - 新：`../shd-shared/metadata/glossary`（正确解析为 FANDEX/shd-shared/...）
-const glossary = defineCollection({
-  loader: glob({ pattern: '**/*.json', base: '../shd-shared/metadata/glossary' }),
-  schema: z.object({
-    moduleId: z.string().describe('模块 ID（如 javascript、react）'),
-    terms: z
-      .array(
-        z.object({
-          name: z.string().describe('术语名称'),
-          definition: z.string().describe('术语定义'),
-          slug: z.string().optional().describe('页面级 slug（如 javascript/glossary）'),
-        }),
-      )
-      .default([])
-      .describe('术语条目数组'),
-  }),
-});
-
-export const collections = { docs, glossary };
+export const collections = { docs };

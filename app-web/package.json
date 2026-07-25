@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "node scripts/build-stats.mjs && astro dev",
-    "build": "node scripts/build-glossary-index.mjs && node scripts/build-search-index.mjs && node scripts/build-stats.mjs && astro build",
+    "build": "node scripts/build-stats.mjs && astro build",
     "preview": "astro preview",
     "qa": "node scripts/qa-check.mjs",
     "typecheck": "astro check"
@@ -28,10 +28,8 @@
     "@tailwindcss/vite": "catalog:",
     "@tanstack/react-query": "catalog:",
     "astro": "catalog:",
-    "astro-pagefind": "catalog:",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
-    "fuse.js": "catalog:",
     "katex": "catalog:",
     "lucide-react": "catalog:",
     "motion": "catalog:",
@@ -59,7 +57,6 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "glob": "catalog:",
-    "pagefind": "catalog:",
     "typescript": "catalog:"
   }
 }

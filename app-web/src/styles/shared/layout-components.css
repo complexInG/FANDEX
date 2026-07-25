@@ -14,7 +14,7 @@
  * -----------------------------------------------------------------------------
  * 设计原则：
  * - 严格消费 tokens.css 中已定义的令牌，布局专用令牌在此文件 tokens 层扩展
- * - 双主题由 light-dark() 与 color-scheme 自动切换
+ * - 双主题由 [data-theme] 选择器与 color-scheme 自动切换
  * - 响应式：桌面三栏布局，移动端折叠为单栏 + 底部导航
  * - 可访问性：focus-visible 焦点环、aria-current 当前页标识、prefers-reduced-motion 降级
  * - 留白未来扩展：每个组件预留 __title / __action / __icon 子元素类
@@ -39,9 +39,12 @@
     --reading-progress-height: 3px;
 
     /* ---------- 侧边栏尺寸 ---------- */
-    /** 左侧 Sidebar 宽度（桌面 280px，大屏 320px） */
-    --sidebar-width: 17.5rem;
-    --sidebar-width-xl: 20rem;
+    /** 左侧 Sidebar 宽度（桌面 240px，大屏 260px — 紧凑化以扩大阅读区） */
+    --sidebar-width: 15rem;
+    --sidebar-width-xl: 16.25rem;
+
+    /** 侧边栏折叠态宽度（仅保留图标条 0px — 完全折叠以最大化阅读空间） */
+    --sidebar-collapsed-width: 0rem;
 
     /** 右侧 TOC 宽度（桌面 224px，大屏 256px） */
     --toc-width: 14rem;
@@ -66,18 +69,12 @@
     --z-toast: 300;
 
     /* ---------- 导航栏视觉令牌 ---------- */
-    --header-bg: light-dark(
-      color-mix(in oklch, var(--color-bg-primary) 85%, transparent),
-      color-mix(in oklch, var(--color-bg-primary) 80%, transparent)
-    );
+    --header-bg: color-mix(in oklch, var(--color-bg-primary) 85%, transparent);
     --header-border: var(--color-border-default);
     --header-blur: 12px;
 
     /** Sidebar 背景 */
-    --sidebar-bg: light-dark(
-      color-mix(in oklch, var(--color-bg-secondary) 50%, transparent),
-      color-mix(in oklch, var(--color-bg-secondary) 40%, transparent)
-    );
+    --sidebar-bg: color-mix(in oklch, var(--color-bg-secondary) 50%, transparent);
     --sidebar-border: var(--color-border-default);
 
     /** TOC 背景 */
@@ -85,10 +82,7 @@
     --toc-border: var(--color-border-subtle);
 
     /** 移动导航背景 */
-    --mobile-nav-bg: light-dark(
-      color-mix(in oklch, var(--color-bg-primary) 95%, transparent),
-      color-mix(in oklch, var(--color-bg-primary) 90%, transparent)
-    );
+    --mobile-nav-bg: color-mix(in oklch, var(--color-bg-primary) 95%, transparent);
 
     /** 阅读进度条渐变 */
     --reading-progress-gradient: linear-gradient(
@@ -96,6 +90,15 @@
       var(--color-accent-base),
       var(--color-secondary-base, var(--color-accent-hover))
     );
+  }
+
+  /* === 深色模式覆盖：导航栏 / 侧边栏 / 移动导航背景透明度调整 ===
+     原 light-dark() 已迁移为 [data-theme='dark'] 选择器方案，
+     因 Tailwind v4 解析器在 @theme 块外不支持 light-dark() 与 var() 混合写法 */
+  [data-theme='dark'] {
+    --header-bg: color-mix(in oklch, var(--color-bg-primary) 80%, transparent);
+    --sidebar-bg: color-mix(in oklch, var(--color-bg-secondary) 40%, transparent);
+    --mobile-nav-bg: color-mix(in oklch, var(--color-bg-primary) 90%, transparent);
   }
 }
 
@@ -297,6 +300,24 @@
     margin-top: auto;
   }
 
+  /* 极简模式修饰符：单行版权，无块状背景，呈现为网页底部简单信息行
+     移除背景色与上边框，避免形成独立视觉块（用户反馈：太突兀） */
+  .fndx-footer--minimal {
+    background-color: transparent;
+    border-top: none;
+    padding-block: var(--space-4) var(--space-3);
+  }
+
+  .fndx-footer--minimal .fndx-footer__container {
+    gap: 0;
+  }
+
+  /* 极简模式下底部版权区：移除上边框与额外内边距，保持单行紧凑 */
+  .fndx-footer--minimal .fndx-footer__bottom {
+    padding-top: 0;
+    border-top: none;
+  }
+
   .fndx-footer__container {
     width: 100%;
     max-width: var(--size-container-content);
@@ -472,17 +493,9 @@
   /* ============================================================
    * 3. 左侧文档导航 .fndx-sidebar
    * ------------------------------------------------------------
-   * 使用方式：
-   *   <aside class="fndx-sidebar" aria-label="文档导航">
-   *     <div class="fndx-sidebar__top">
-   *       <h2 class="fndx-sidebar__title">模块名</h2>
-   *     </div>
-   *     <nav class="fndx-sidebar__scroll">
-   *       <ul class="fndx-sidebar__list">
-   *         <li><a class="fndx-sidebar__link is-active" href="…">文档</a></li>
-   *       </ul>
-   *     </nav>
-   *   </aside>
+   * 紧凑现代风格：减小宽度、去除劣质装饰、支持整体折叠收纳
+   * 折叠状态由 .is-collapsed 类驱动，宽度过渡为 0 释放阅读空间
+   * 折叠后通过浮动展开按钮（.fndx-sidebar__expand-fab）恢复
    * ============================================================ */
   .fndx-sidebar {
     display: flex;
@@ -494,6 +507,8 @@
     -webkit-backdrop-filter: blur(8px);
     border-right: 1px solid var(--sidebar-border);
     overflow: hidden;
+    /* 折叠/展开过渡：宽度变化使用 ease-out 避免弹跳 */
+    transition: width var(--motion-duration-normal) var(--motion-easing-out);
   }
 
   @media (min-width: 1280px) {
@@ -502,23 +517,147 @@
     }
   }
 
-  /* 顶部标题区 */
+  /* 折叠态：宽度归零，内容隐藏，释放全部阅读空间 */
+  .fndx-sidebar.is-collapsed {
+    width: var(--sidebar-collapsed-width);
+    border-right: none;
+  }
+
+  .fndx-sidebar.is-collapsed .fndx-sidebar__panel,
+  .fndx-sidebar.is-collapsed .fndx-sidebar__top,
+  .fndx-sidebar.is-collapsed .fndx-sidebar__close {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  /* Task 7.1：首屏侧边栏折叠 FOUC 防护
+   * -------------------------------------------------------------------------
+   * 问题：SSR 渲染的 <aside> 无 is-collapsed 类，首屏为展开态；
+   *       hydration 后 sidebar-interactions.ts 才读取 localStorage 并应用折叠类，
+   *       导致"先展开后折叠"的视觉闪屏。
+   * 方案：BaseLayout.astro 内联脚本在 <head> 阶段同步读取 localStorage，
+   *       为 <html> 添加 sidebar-collapsed 标记类；
+   *       此处基于该标记类在首屏即应用折叠样式，与 .is-collapsed 等效。
+   * 同步：sidebar-interactions.ts 的 applyCollapsedState 会同步管理 <html> 上该类，
+   *       确保用户切换折叠状态时首屏标记类与实际状态一致。
+   * 注：html.sidebar-collapsed 选择器特异性高于 .fndx-sidebar.is-collapsed，
+   *     但两者样式声明完全相同，互不冲突；hydration 后两套规则同时生效，效果一致。 */
+  html.sidebar-collapsed .app-layout {
+    grid-template-columns: 0 1fr;
+  }
+
+  html.sidebar-collapsed .app-layout.has-toc {
+    grid-template-columns: 0 1fr var(--toc-width, 16rem);
+  }
+
+  html.sidebar-collapsed .fndx-sidebar {
+    width: var(--sidebar-collapsed-width);
+    border-right: none;
+  }
+
+  html.sidebar-collapsed .fndx-sidebar .fndx-sidebar__panel,
+  html.sidebar-collapsed .fndx-sidebar .fndx-sidebar__top,
+  html.sidebar-collapsed .fndx-sidebar .fndx-sidebar__close {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  html.sidebar-collapsed .fndx-sidebar__expand-fab {
+    display: flex;
+  }
+
+  /* 浮动展开按钮：侧边栏折叠时显示在左边缘，点击恢复侧边栏 */
+  .fndx-sidebar__expand-fab {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    z-index: var(--z-sidebar);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 48px;
+    border: 1px solid var(--color-border-default);
+    border-left: none;
+    border-radius: 0 var(--radius-control) var(--radius-control) 0;
+    background-color: var(--sidebar-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--color-fg-secondary);
+    cursor: pointer;
+    transition: background-color var(--motion-duration-instant) var(--motion-easing-out),
+                color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .fndx-sidebar.is-collapsed ~ .fndx-sidebar__expand-fab,
+  .fndx-sidebar__expand-fab.is-visible {
+    display: flex;
+  }
+
+  @media (hover: hover) {
+    .fndx-sidebar__expand-fab:hover {
+      background-color: var(--color-bg-hover);
+      color: var(--color-fg-primary);
+    }
+  }
+
+  .fndx-sidebar__expand-fab:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* 顶部标题区（紧凑现代风格：精简标题 + 折叠/返回图标按钮） */
   .fndx-sidebar__top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-inline-sm);
-    padding: var(--space-4) var(--space-page-x);
+    gap: var(--space-inline-xs);
+    padding: var(--space-1) var(--space-2);
     border-bottom: 1px solid var(--color-border-subtle);
     flex-shrink: 0;
   }
 
+  /* 折叠按钮：与返回按钮同风格，紧凑图标按钮 */
+  .fndx-sidebar__collapse {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-control);
+    color: var(--color-fg-tertiary);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color var(--motion-duration-instant) var(--motion-easing-out),
+                background-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  @media (hover: hover) {
+    .fndx-sidebar__collapse:hover {
+      color: var(--color-fg-primary);
+      background-color: var(--color-bg-hover);
+    }
+  }
+
+  .fndx-sidebar__collapse:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-control);
+  }
+
   .fndx-sidebar__title {
     margin: 0;
-    font-size: var(--font-size-body);
+    font-size: var(--font-size-caption);
     font-weight: var(--font-weight-emphasis);
     color: var(--color-fg-primary);
     font-family: var(--font-family-display);
+    letter-spacing: 0.02em;
+    line-height: 1.4;
   }
 
   /* 折叠/切换按钮 */
@@ -605,17 +744,19 @@
     display: none;
   }
 
-  /* 文档链接 */
+  /* 文档链接：紧凑化，去除劣质左边框线，改用模块分类色高亮 */
   .fndx-sidebar__link {
     display: flex;
     align-items: center;
     gap: var(--space-inline-xs);
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-1) var(--space-2);
     border-radius: var(--radius-control);
     color: var(--color-fg-secondary);
     text-decoration: none;
     font-size: var(--font-size-secondary);
     line-height: var(--font-line-height-body);
+    /* 激活态使用左侧 2px 实线，颜色由 --module-color 驱动（模块分类色）
+       默认透明，激活时显现；移除原弧度装饰，统一几何线条 */
     border-left: 2px solid transparent;
     transition: background-color var(--motion-duration-instant) var(--motion-easing-out),
                 color var(--motion-duration-instant) var(--motion-easing-out),
@@ -629,37 +770,19 @@
     }
   }
 
+  /* 激活态：使用模块分类色（--module-color）替代 web 主题青色
+     确保侧边栏与模块卡片、模块页的视觉色系统一 */
   .fndx-sidebar__link.is-active,
   .fndx-sidebar__link[aria-current='page'] {
-    background-color: var(--color-bg-hover);
-    color: var(--color-accent-base);
-    border-left-color: var(--color-accent-base);
+    background-color: color-mix(in oklch, var(--module-color, var(--color-accent-base)) 10%, transparent);
+    color: var(--module-color, var(--color-accent-base));
+    border-left-color: var(--module-color, var(--color-accent-base));
     font-weight: var(--font-weight-emphasis);
   }
 
   .fndx-sidebar__link:focus-visible {
     outline: 2px solid var(--color-border-focus);
     outline-offset: -2px;
-  }
-
-  /* 进度指示器 */
-  .fndx-sidebar__progress {
-    flex-shrink: 0;
-    width: var(--size-icon-xs);
-    height: var(--size-icon-xs);
-    border-radius: var(--radius-full);
-    border: 2px solid var(--color-border-default);
-  }
-
-  .fndx-sidebar__progress.is-completed {
-    background-color: var(--color-success-base);
-    border-color: var(--color-success-base);
-  }
-
-  /* 进度状态：阅读中（amber 实心） */
-  .fndx-sidebar__progress.is-reading {
-    background-color: var(--color-warning-base, #f59e0b);
-    border-color: var(--color-warning-base, #f59e0b);
   }
 
   /* 关闭按钮（移动端抽屉模式可见） */
@@ -700,16 +823,7 @@
     }
   }
 
-  /* 顶部标题行：颜色条 + 标题 + 视图切换 */
-  .fndx-sidebar__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-inline-sm);
-    min-width: 0;
-  }
-
-  /* 标题组：颜色条 + 标题文字 */
+  /* 标题组：小圆点 + 标题文字（紧凑横排） */
   .fndx-sidebar__title-group {
     display: flex;
     align-items: center;
@@ -718,11 +832,11 @@
     flex: 1 1 auto;
   }
 
-  /* 模块分类颜色条（左侧竖条） */
-  .fndx-sidebar__color-bar {
+  /* 模块分类颜色圆点（替代旧版竖条，更现代简洁） */
+  .fndx-sidebar__color-dot {
     flex-shrink: 0;
-    width: 3px;
-    height: var(--size-icon-md);
+    width: 6px;
+    height: 6px;
     border-radius: var(--radius-full);
     background-color: var(--color-accent-base);
   }
@@ -775,21 +889,25 @@
     outline-offset: -2px;
   }
 
-  /* 返回首页链接（顶部标题区底部） */
+  /* 返回首页（图标按钮，紧凑现代风格） */
   .fndx-sidebar__back {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-inline-xs);
-    margin-top: var(--space-2);
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-control);
     color: var(--color-fg-tertiary);
     text-decoration: none;
-    font-size: var(--font-size-caption);
-    transition: color var(--motion-duration-instant) var(--motion-easing-out);
+    transition: color var(--motion-duration-instant) var(--motion-easing-out),
+                background-color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
   @media (hover: hover) {
     .fndx-sidebar__back:hover {
       color: var(--color-accent-base);
+      background-color: var(--color-bg-hover);
     }
   }
 
@@ -811,17 +929,18 @@
     display: none;
   }
 
-  /* 面板内独立顶部（用于全部模块面板） */
+  /* 面板内独立顶部（用于全部模块面板，与主顶部风格一致） */
   .fndx-sidebar__panel-top {
     flex-shrink: 0;
-    padding: var(--space-3) var(--space-page-x);
+    padding: var(--space-2) var(--space-3);
     border-bottom: 1px solid var(--color-border-subtle);
   }
 
   .fndx-sidebar__subtitle {
     margin: var(--space-1) 0 0;
-    font-size: var(--font-size-caption);
+    font-size: 0.6875rem;
     color: var(--color-fg-tertiary);
+    letter-spacing: 0.02em;
   }
 
   /* 文档链接文本（与进度指示器并排） */
@@ -832,7 +951,7 @@
     min-width: 0;
   }
 
-  /* 图标链接变体（术语表 / 知识地图入口） */
+  /* 图标链接变体 */
   .fndx-sidebar__link--icon {
     padding: var(--space-2) var(--space-3);
   }
@@ -859,7 +978,7 @@
     font-size: var(--font-size-caption);
   }
 
-  /* 底部固定入口区（术语表 / 知识地图） */
+  /* 底部固定入口区 */
   .fndx-sidebar__footer-links {
     display: flex;
     flex-direction: column;
@@ -981,7 +1100,7 @@
     position: fixed;
     inset: 0;
     top: var(--nav-height);
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: color-mix(in srgb, var(--color-shadow-black) 40%, transparent);
     z-index: var(--z-backdrop);
     opacity: 0;
     visibility: hidden;
@@ -1411,7 +1530,7 @@
     .fndx-doc-nav__link:hover {
       border-color: var(--color-accent-base);
       background-color: var(--color-bg-hover);
-      transform: translateY(-1px);
+      /* Task 4.4：移除悬停上浮 transform: translateY(-1px)，统一为直角边框样式反馈 */
     }
   }
 
@@ -1511,5 +1630,129 @@
 
   .fndx-doc-layout--no-toc {
     /* TOC 隐藏时，内容区自动占满 */
+  }
+
+  /* ============================================================
+   * 11. 纯 CSS Tooltip（替代浏览器原生 title 属性）
+   * ------------------------------------------------------------
+   * Task 7.3：优化按钮悬停提示文本性能与样式
+   * -------------------------------------------------------------------------
+   * 问题：浏览器原生 title 属性存在显示延迟长（500ms+）、样式不可控、
+   *       触屏不可靠、快速移动鼠标时卡顿闪烁等问题。
+   * 方案：通过 data-tooltip 属性 + ::before/::after 伪元素实现纯 CSS tooltip
+   * 优势：零 JS、性能佳、样式统一（引用 ark 令牌）、支持键盘聚焦、延迟可控
+   *
+   * 用法：
+   *   <button data-tooltip="提示文本" aria-label="无障碍标签">...</button>
+   *   <button data-tooltip="提示" data-tooltip-pos="bottom">...</button>
+   *
+   * 位置变体（data-tooltip-pos）：
+   * - 默认/unset：上方显示
+   * - bottom：下方显示（用于导航栏按钮，避免被视口顶部裁剪）
+   * - right：右侧显示（用于侧边栏折叠按钮，避免被左边缘裁剪）
+   *
+   * 注意：data-tooltip 仅用于视觉提示，aria-label 用于屏幕阅读器
+   *       两者应同时存在，aria-label 值可与 data-tooltip 相同或更详细
+   * ============================================================ */
+  [data-tooltip] {
+    position: relative;
+  }
+
+  [data-tooltip]::before,
+  [data-tooltip]::after {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1000;
+    /* 延迟显示 300ms，避免鼠标快速划过时闪烁 */
+    transition: opacity var(--motion-duration-fast) var(--motion-easing-out);
+    transition-delay: 300ms;
+  }
+
+  [data-tooltip]::before {
+    content: attr(data-tooltip);
+    /* 默认定位：上方 */
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 6px;
+    /* 样式：引用 ark 语义令牌，与设计系统一致 */
+    padding: 4px 8px;
+    background-color: var(--color-bg-elevated);
+    color: var(--color-fg-primary);
+    font-size: var(--font-size-caption);
+    font-family: var(--font-family-body);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.4;
+    white-space: nowrap;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-default);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* 小三角箭头（默认上方） */
+  [data-tooltip]::after {
+    content: '';
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 2px;
+    border: 4px solid transparent;
+    border-top-color: var(--color-border-default);
+  }
+
+  /* 位置变体：下方（用于导航栏按钮） */
+  [data-tooltip-pos='bottom']::before {
+    bottom: auto;
+    top: 100%;
+    margin-bottom: 0;
+    margin-top: 6px;
+  }
+
+  [data-tooltip-pos='bottom']::after {
+    bottom: auto;
+    top: 100%;
+    margin-bottom: 0;
+    margin-top: 2px;
+    border-top-color: transparent;
+    border-bottom-color: var(--color-border-default);
+  }
+
+  /* 位置变体：右侧（用于侧边栏按钮） */
+  [data-tooltip-pos='right']::before {
+    bottom: auto;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    margin-bottom: 0;
+    margin-left: 6px;
+  }
+
+  [data-tooltip-pos='right']::after {
+    bottom: auto;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    margin-bottom: 0;
+    margin-left: 2px;
+    border-top-color: transparent;
+    border-left-color: var(--color-border-default);
+  }
+
+  /* 悬停或键盘聚焦时显示 */
+  [data-tooltip]:hover::before,
+  [data-tooltip]:hover::after,
+  [data-tooltip]:focus-visible::before,
+  [data-tooltip]:focus-visible::after {
+    opacity: 1;
+  }
+
+  /* 减少动效偏好：立即显示，无延迟和过渡 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-tooltip]::before,
+    [data-tooltip]::after {
+      transition: none;
+      transition-delay: 0;
+    }
   }
 }

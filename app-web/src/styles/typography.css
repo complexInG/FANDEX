@@ -12,7 +12,14 @@
  * - 新规则使用元素选择器（h1、p 等），特异性较低（0,0,0,1）
  * - .prose 规则使用 .prose 后代选择器，特异性较高（0,0,1,1），在 .prose 容器内优先
  * - 因此新规则不会影响现有 .prose 内容的渲染，仅作用于 .prose 外部的元素
+ *
+ * 层级归属：@layer base（避免未分层 CSS 覆盖 ark 令牌导致主题切换失效）
+ *   .prose 规则虽在 base 层，但其选择器特异性（0,0,1,1）高于全局元素排版（0,0,0,1），
+ *   同层内特异性高的规则仍优先，保证 .prose 容器内排版正确渲染。
  */
+
+/* 归入 @layer base，确保优先级低于 tokens 层，主题切换正常工作 */
+@layer base {
 
 /* ###################################################################
    第一部分：Design Tokens 全局排版规则（新增）
@@ -677,35 +684,35 @@ dfn {
   margin-bottom: 0;
 }
 
-/* 警告引用块：橙色左边框 + 暖色背景 */
+/* 警告引用块：橙色左边框 + 暖色背景（使用 color-mix 主题自适应） */
 .prose blockquote.warning {
-  border-left-color: var(--color-tertiary);
-  background: #fff8e1;
+  border-left-color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
 }
 
-/* 危险引用块：红色左边框 + 粉色背景 */
+/* 危险引用块：红色左边框 + 粉色背景（使用 color-mix 主题自适应） */
 .prose blockquote.danger {
-  border-left-color: #c62828;
-  background: #fce4ec;
+  border-left-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
 }
 
-/* 提示引用块：绿色左边框 + 浅绿背景 */
+/* 提示引用块：绿色左边框 + 浅绿背景（使用 color-mix 主题自适应） */
 .prose blockquote.tip {
   border-left-color: var(--color-success);
-  background: #e8f5e9;
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-bg-card));
 }
 
-/* 引用块暗色主题适配 */
+/* 引用块暗色主题适配：提高混合比例维持可见度 */
 [data-theme='dark'] .prose blockquote.warning {
-  background: #3e2723;
+  background: color-mix(in srgb, var(--color-warning) 16%, var(--color-bg-card));
 }
 
 [data-theme='dark'] .prose blockquote.danger {
-  background: #3b1010;
+  background: color-mix(in srgb, var(--color-danger) 16%, var(--color-bg-card));
 }
 
 [data-theme='dark'] .prose blockquote.tip {
-  background: #1b3a1b;
+  background: color-mix(in srgb, var(--color-success) 16%, var(--color-bg-card));
 }
 
 /* ========== 表格 ========== */
@@ -746,10 +753,10 @@ dfn {
   white-space: nowrap; /* 表头不换行 */
 }
 
-/* 暗色模式下表头使用深蓝色，避免过亮 */
+/* 暗色模式下表头使用深色主色背景，避免过亮 */
 [data-theme='dark'] .prose th {
-  background: #1a3a5c;
-  color: #b3d4fc;
+  background: var(--color-primary-700);
+  color: var(--color-primary-200);
 }
 
 /* 偶数行斑马纹 */
@@ -776,16 +783,20 @@ dfn {
 }
 
 /* ========== 强调文字 ========== */
+/* Task 4.2：加粗文字颜色改为模块分类主题色（--module-color 由 [slug].astro 注入到 article）
+   无模块上下文时回退到主品牌色 */
 .prose strong {
-  color: var(--color-primary); /* 加粗文字使用主色，增强视觉权重 */
+  color: var(--module-color, var(--color-primary));
   font-weight: 700;
 }
 
 /* ========== 高亮标记 ========== */
+/* Task 4.2：高亮标记背景改为模块分类主题色（半透明），文字保持深色确保对比度 */
 .prose mark {
-  background: var(--color-tertiary);
-  color: var(--color-text-inverse);
+  background: color-mix(in srgb, var(--module-color, var(--color-primary)) 20%, transparent);
+  color: var(--color-text);
   padding: 0.1em 0.3em;
+  border-radius: var(--fandex-radius-sm);
 }
 
 /* ========== 折叠面板（details/summary） ========== */
@@ -884,21 +895,21 @@ dfn {
   height: auto;
 }
 
-/* Mermaid 渲染错误提示 */
+/* Mermaid 渲染错误提示（使用语义令牌，主题自适应） */
 .prose .mermaid-error {
   margin: 1em 0;
   padding: var(--spacing-md);
-  border: 1px dashed #c62828;
-  background: #fce4ec;
-  color: #c62828;
+  border: 1px dashed var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
   font-family: var(--font-display);
   font-size: 0.85em;
   text-align: center;
 }
 
-/* Mermaid 错误暗色适配 */
+/* Mermaid 错误暗色适配：提高混合比例 */
 [data-theme='dark'] .prose .mermaid-error {
-  background: #3b1010;
+  background: color-mix(in srgb, var(--color-danger) 16%, var(--color-bg-card));
 }
 
 /* ========== 提示块（Admonition） ========== */
@@ -928,45 +939,45 @@ dfn {
   color: var(--color-primary);
 }
 
-/* --- tip 提示块：绿色 --- */
+/* --- tip 提示块：绿色（color-mix 主题自适应） --- */
 .prose .admonition-tip {
   border-left-color: var(--color-success);
-  background: #e8f5e9;
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-bg-card));
 }
 
 .prose .admonition-tip .admonition-title {
   color: var(--color-success);
 }
 
-/* --- warning 提示块：橙色 --- */
+/* --- warning 提示块：橙色（color-mix 主题自适应） --- */
 .prose .admonition-warning {
-  border-left-color: var(--color-tertiary);
-  background: #fff8e1;
+  border-left-color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
 }
 
 .prose .admonition-warning .admonition-title {
-  color: var(--color-tertiary);
+  color: var(--color-warning);
 }
 
-/* --- danger 提示块：红色 --- */
+/* --- danger 提示块：红色（color-mix 主题自适应） --- */
 .prose .admonition-danger {
-  border-left-color: #c62828;
-  background: #fce4ec;
+  border-left-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
 }
 
 .prose .admonition-danger .admonition-title {
-  color: #c62828;
+  color: var(--color-danger);
 }
 
-/* 提示块暗色主题适配 */
+/* 提示块暗色主题适配：提高混合比例维持可见度 */
 [data-theme='dark'] .prose .admonition-tip {
-  background: #1b3a1b;
+  background: color-mix(in srgb, var(--color-success) 16%, var(--color-bg-card));
 }
 [data-theme='dark'] .prose .admonition-warning {
-  background: #3e2723;
+  background: color-mix(in srgb, var(--color-warning) 16%, var(--color-bg-card));
 }
 [data-theme='dark'] .prose .admonition-danger {
-  background: #3b1010;
+  background: color-mix(in srgb, var(--color-danger) 16%, var(--color-bg-card));
 }
 
 /* ========== 移动端响应式适配 ========== */
@@ -1023,3 +1034,5 @@ dfn {
     font-size: 0.9em;
   }
 }
+
+} /* end @layer base */

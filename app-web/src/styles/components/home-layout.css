@@ -1,88 +1,326 @@
 /**
- * 首页布局样式
+ * 首页布局样式（ark-ui 设计语言）
  * -----------------------------------------------------------------------------
  * 从 components/HomeLayout.astro 提取的布局样式，包含：
- * - 首页导航栏（固定顶部、毛玻璃背景、sticky 定位）
+ * - 首页导航栏（固定顶部、毛玻璃背景、sticky 定位、品牌 Logo 标记）
  * - 首页主内容区（撑满剩余视口高度）
- * - 导航操作链接（方框风格）
+ * - 导航操作链接（方框风格、悬停浮起）
+ * - GitHub 链接（带品牌色悬停反馈）
  * - 全屏按钮（移动端显示）
  * - 移动端响应式适配（768px 断点）
+ *
+ * 设计语言（ark-ui）：
+ * - 毛玻璃导航栏，克制半透明（85% 不透明度 + 12px 模糊）
+ * - 直角偏小圆角（4px）的操作按钮，工业信息系统风格
+ * - 层次感通过背景色阶 + 边框 + 微阴影实现
+ * - 交互反馈通过位移、颜色变化、边框转色
+ * - 所有颜色引用 ark 语义令牌，[data-theme] 自动切换
+ *
+ * 归入 @layer components：低于 pages/islands/utilities，高于 base/tokens
+ * -----------------------------------------------------------------------------
  */
+@layer components {
 
-/* 首页导航栏：固定顶部，毛玻璃背景 */
-.home-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--spacing-md);
-  background: var(--color-nav-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: var(--nav-height);
-}
-
-/* 首页主内容区：撑满剩余视口高度 */
-.home-main {
-  min-height: calc(100vh - var(--nav-height));
-  min-height: calc(100dvh - var(--nav-height));
-  overflow-y: auto;
-}
-
-/* 导航操作链接：方框风格（知识地图等） */
-.nav-action-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--color-text-secondary);
-  text-decoration: none;
-  font-size: 0.82rem;
-  padding: 4px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  transition:
-    color var(--transition-fast),
-    border-color var(--transition-fast),
-    background var(--transition-fast);
-}
-.nav-action-link:hover {
-  color: var(--color-text);
-  border-color: var(--color-text-secondary);
-  background: var(--color-bg-hover, rgba(128, 128, 128, 0.06));
-}
-
-/* 移动端隐藏操作链接文字 */
-@media (max-width: 768px) {
-  .nav-action-text {
-    display: none;
-  }
-}
-
-/* 全屏按钮：默认隐藏，移动端显示 */
-.nav-fullscreen-btn {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  padding: 6px;
-  cursor: pointer;
-  color: var(--color-text-secondary);
-  transition: color var(--transition-fast);
-}
-.nav-fullscreen-btn:hover {
-  color: var(--color-text);
-}
-
-/* 移动端适配：显示全屏按钮，隐藏 GitHub 文字 */
-@media (max-width: 768px) {
-  .nav-fullscreen-btn {
+  /* ============================================================
+   * 1. 首页导航栏
+   * ------------------------------------------------------------
+   * sticky 顶部，毛玻璃背景，下方分隔线
+   * z-index 100 确保浮于内容之上
+   * ============================================================ */
+  .home-nav {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-inline-md);
+    padding: 0 var(--spacing-lg);
+    /* 毛玻璃背景：ark 头部令牌驱动 */
+    background: var(--header-bg, color-mix(in oklch, var(--color-bg-primary) 85%, transparent));
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border-bottom: 1px solid var(--color-border-light);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    /* Task 3.4：移除 overflow-x: auto，导航栏固定显示不滑动
+       内容超出时由 flex-shrink 和响应式隐藏控制，而非横向滚动 */
+    overflow: hidden;
+    transition:
+      background-color var(--motion-duration-fast) var(--motion-easing-out),
+      border-color var(--motion-duration-fast) var(--motion-easing-out);
   }
-  .nav-github-text {
+
+  /* 隐藏 webkit 滚动条 */
+  .home-nav::-webkit-scrollbar {
     display: none;
+  }
+
+  /* 左侧区域：Logo */
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-inline-sm);
+    min-width: 0;
+  }
+
+  /* 右侧区域：操作按钮组 */
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-inline-sm);
+    flex-shrink: 0;
+  }
+
+  /* ============================================================
+   * 2. Logo（品牌标记 + 文字）
+   * ------------------------------------------------------------
+   * ark 风格：渐变方块标记 + 字距收紧的字族
+   * 悬停时方块旋转 8°，文字提亮
+   * ============================================================ */
+  .nav-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-inline-sm);
+    color: var(--color-text);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-bold, 700);
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    padding: 4px 8px;
+    border-radius: var(--fandex-radius-sm, 2px);
+    transition:
+      color var(--motion-duration-fast) var(--motion-easing-out),
+      background-color var(--motion-duration-fast) var(--motion-easing-out);
+  }
+
+  /* Logo 标记：渐变方块（品牌青 → 深青） */
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--fandex-radius-sm, 2px);
+    background-image: linear-gradient(
+      135deg,
+      var(--color-accent-base) 0%,
+      var(--color-accent-hover) 100%
+    );
+    color: var(--color-accent-fg);
+    font-weight: var(--font-weight-extrabold, 800);
+    font-size: 0.85rem;
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-accent-base) 30%, transparent),
+      0 2px 8px color-mix(in srgb, var(--color-accent-base) 25%, transparent);
+    transition: transform var(--motion-duration-normal) var(--motion-easing-spring);
+  }
+
+  .nav-logo:hover {
+    color: var(--color-primary);
+    background: var(--color-bg-hover);
+  }
+
+  .nav-logo:hover .logo-mark {
+    /* Task 4.4：移除悬停放大 scale(1.05)，保留品牌趣味旋转 rotate(-8deg) */
+    transform: rotate(-8deg);
+  }
+
+  /* Logo 文字（-Index 后缀已移除，保持简洁品牌名）
+   * 注意：components.css 全局导入了同名 .logo-text 类（文档页导航栏使用），
+   * 此处必须显式覆盖 background/color/height/padding/border-radius 等属性，
+   * 否则 components.css 的深色背景样式会泄漏到首页，导致文字显示异常。 */
+  .logo-text {
+    display: inline-block;
+    white-space: nowrap;
+    background: transparent;
+    color: inherit;
+    height: auto;
+    padding: 0;
+    border-radius: 0;
+    font-size: 1.05rem;
+    font-weight: var(--font-weight-bold, 700);
+    letter-spacing: 0.04em;
+  }
+
+  /* ============================================================
+   * 3. 导航操作链接
+   * ------------------------------------------------------------
+   * 方框风格，克制边框，悬停时边框转色 + 背景提亮
+   * ============================================================ */
+  .nav-action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--fandex-radius-sm, 2px);
+    background: transparent;
+    transition:
+      color var(--motion-duration-fast) var(--motion-easing-out),
+      border-color var(--motion-duration-fast) var(--motion-easing-out),
+      background-color var(--motion-duration-fast) var(--motion-easing-out),
+      transform var(--motion-duration-fast) var(--motion-easing-out);
+  }
+
+  .nav-action-link:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-secondary);
+    background: var(--color-bg-hover);
+    /* Task 4.4：移除悬停上浮 transform: translateY(-1px)，统一为直角边框样式反馈 */
+  }
+
+  .nav-action-link:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* ============================================================
+   * 4. GitHub 链接按钮
+   * ------------------------------------------------------------
+   * 浮起卡片风格，悬停时品牌色边框 + 微光填充
+   * ============================================================ */
+  .nav-github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--fandex-radius-sm, 2px);
+    /* Task 6.8：背景透明，统一按钮标准 */
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition:
+      color var(--motion-duration-fast) var(--motion-easing-out),
+      border-color var(--motion-duration-fast) var(--motion-easing-out),
+      background-color var(--motion-duration-fast) var(--motion-easing-out);
+  }
+
+  .nav-github-link:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: var(--color-bg-hover);
+    /* Task 4.4：移除悬停上浮 transform: translateY(-1px)，统一为直角边框样式反馈 */
+  }
+
+  .nav-github-link:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* GitHub 文字（移动端隐藏） */
+  .nav-github-text {
+    white-space: nowrap;
+  }
+
+  /* ============================================================
+   * 5. 全屏按钮
+   * ------------------------------------------------------------
+   * 默认隐藏，移动端显示（与导航操作链接同风格）
+   * ============================================================ */
+  .nav-fullscreen-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--fandex-radius-sm, 2px);
+    padding: 5px;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition:
+      color var(--motion-duration-fast) var(--motion-easing-out),
+      border-color var(--motion-duration-fast) var(--motion-easing-out),
+      background-color var(--motion-duration-fast) var(--motion-easing-out);
+  }
+
+  .nav-fullscreen-btn:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-secondary);
+    background: var(--color-bg-hover);
+  }
+
+  .nav-fullscreen-btn:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* ============================================================
+   * 6. 首页主内容区
+   * ------------------------------------------------------------
+   * 固定高度撑满剩余视口，内部滚动
+   * 使用 height 而非 min-height 防止快速滑动时 body 扩展产生无限空页面
+   * ============================================================ */
+  .home-main {
+    height: calc(100vh - var(--nav-height));
+    height: calc(100dvh - var(--nav-height));
+    overflow-y: auto;
+    /* 禁止过度滚动传播，防止链式滚动导致空白区域 */
+    overscroll-behavior-y: none;
+  }
+
+  /* ============================================================
+   * 7. 响应式适配
+   * ============================================================ */
+
+  /* 移动端：隐藏操作链接文字，显示全屏按钮 */
+  @media (max-width: 768px) {
+    .home-nav {
+      padding: 0 var(--spacing-md);
+    }
+
+    .nav-action-text {
+      display: none;
+    }
+
+    .nav-fullscreen-btn {
+      display: flex;
+    }
+
+    .nav-github-text {
+      display: none;
+    }
+
+    /* 移动端 Logo 文字略小 */
+    .nav-logo {
+      font-size: 0.95rem;
+    }
+
+    .logo-mark {
+      width: 24px;
+      height: 24px;
+      font-size: 0.75rem;
+    }
+  }
+
+  /* 超小屏：进一步紧凑 */
+  @media (max-width: 480px) {
+    .home-nav {
+      padding: 0 var(--spacing-sm);
+      gap: var(--space-inline-xs);
+    }
+
+    .nav-right {
+      gap: 4px;
+    }
+
+    .nav-action-link,
+    .nav-github-link {
+      padding: 4px 8px;
+    }
   }
 }

@@ -39,13 +39,21 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     <Breadcrumb items={breadcrumb} hasSidebar />
 
     <div class="module-header fndx-scroll-reveal">
-      <span class="header-bar" style={`background:${categoryColors[getPrimaryCategory(meta)]}`}
-      ></span>
       <div class="header-body">
         <h1 class="header-title">{meta.title}</h1>
         <p class="header-desc">{meta.description}</p>
       </div>
     </div>
+
+    {/* Task 6.9：返回 getting-started 目录页链接（当前模块非 getting-started 时显示） */}
+    {module !== 'getting-started' && (
+      <a href={`${import.meta.env.BASE_URL}getting-started/`} class="back-to-start-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="18 6 6 12 18 18" />
+        </svg>
+        返回入门指南
+      </a>
+    )}
 
     <ul class="doc-list fndx-scroll-reveal-fade">
       {
@@ -64,7 +72,7 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
                   height="14"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="#fff"
+                  stroke="currentColor"
                   stroke-width="2.5"
                 >
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -92,37 +100,69 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
 </Layout>
 
 <style>
+  /* 模块文档列表页样式 — 归入 @layer pages，避免未分层 CSS 覆盖 ark 令牌
+   * 紧凑化重构：减小图标尺寸、优化间距、添加 max-width 防止大屏越界
+   * Task 3.1：宽度自适应桌面端 94vw，移除 48rem 限制 */
+  @layer pages {
   .module-page {
-    padding: var(--spacing-md) var(--spacing-lg);
-    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    width: 94vw;
+    max-width: 100%;
+    margin-inline: auto;
   }
 
   .module-header {
-    display: flex;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
     background: var(--color-bg-card);
     border: 1px solid var(--color-border-light);
-  }
-
-  .header-bar {
-    width: 5px;
-    flex-shrink: 0;
+    border-radius: var(--fandex-radius-md, 4px);
   }
 
   .header-body {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+
+  /* Task 5.1：已删除 .header-dot 点状装饰（去卡通化，几何科技风格） */
+
+  /* Task 6.9：返回入门指南链接 — 统一按钮标准（直角边框、无悬停放大） */
+  .back-to-start-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.78em;
+    font-family: var(--font-display);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border: 1px solid var(--color-border-light);
+    background: transparent;
+    transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .back-to-start-link:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    background: var(--color-bg-hover);
   }
 
   .header-title {
     font-family: var(--font-display);
-    font-size: 1.4em;
-    margin: 0 0 var(--spacing-xs);
+    font-size: 1.05em;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.01em;
   }
 
   .header-desc {
-    font-size: 0.88em;
+    font-size: 0.78em;
     color: var(--color-text-secondary);
     margin: 0;
+    flex-basis: 100%;
   }
 
   .doc-list {
@@ -143,8 +183,8 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
   .doc-list-link {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
     color: var(--color-text);
     text-decoration: none;
     transition: background var(--transition-fast);
@@ -154,26 +194,34 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     background: var(--color-bg-hover);
   }
 
+  /* 文档图标：紧凑化 24px，使用模块分类色而非青色 */
   .doc-list-icon {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    border-radius: 3px;
+    color: var(--color-text-inverse, #fff);
+  }
+
+  .doc-list-icon svg {
+    width: 12px;
+    height: 12px;
   }
 
   .doc-list-seq {
     font-family: var(--font-display);
-    font-size: 0.72em;
+    font-size: 0.68em;
     color: var(--color-text-tertiary);
     flex-shrink: 0;
-    min-width: 2em;
+    min-width: 1.8em;
   }
 
   .doc-list-title {
     font-family: var(--font-display);
-    font-size: 0.88em;
+    font-size: 0.82em;
     font-weight: 500;
     flex-shrink: 1;
     min-width: 0;
@@ -183,9 +231,9 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
   }
 
   .doc-list-difficulty {
-    font-size: 0.7em;
-    padding: 2px 8px;
-    border-radius: 3px;
+    font-size: 0.65em;
+    padding: 1px 6px;
+    border-radius: 2px;
     flex-shrink: 0;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -193,37 +241,22 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
   }
 
   .diff-beginner {
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: color-mix(in srgb, var(--color-success) 15%, var(--color-bg));
+    color: var(--color-success);
   }
 
   .diff-intermediate {
-    background: #fff3e0;
-    color: #e65100;
+    background: color-mix(in srgb, var(--color-warning) 15%, var(--color-bg));
+    color: var(--color-warning);
   }
 
   .diff-advanced {
-    background: #fce4ec;
-    color: #c62828;
-  }
-
-  :root[data-theme='dark'] .diff-beginner {
-    background: #1b3a1b;
-    color: #81c784;
-  }
-
-  :root[data-theme='dark'] .diff-intermediate {
-    background: #3e2723;
-    color: #ffb74d;
-  }
-
-  :root[data-theme='dark'] .diff-advanced {
-    background: #3b1010;
-    color: #ef9a9a;
+    background: color-mix(in srgb, var(--color-danger) 15%, var(--color-bg));
+    color: var(--color-danger);
   }
 
   .doc-list-desc {
-    font-size: 0.78em;
+    font-size: 0.72em;
     color: var(--color-text-tertiary);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -237,7 +270,8 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
 
     .doc-list-desc {
       width: 100%;
-      padding-left: 44px;
+      padding-left: 36px;
     }
   }
+  } /* end @layer pages */
 </style>

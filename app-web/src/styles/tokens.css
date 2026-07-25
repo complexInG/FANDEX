@@ -30,68 +30,71 @@
 /* ====================================================================
    兼容层令牌定义
    --------------------------------------------------------------------
-   所有令牌在 :root 中定义，值引用 ark 语义令牌或保留原值。
+   所有令牌在 @layer tokens 的 :root 中定义，值引用 ark 语义令牌或保留原值。
+   必须包裹在 @layer tokens 中，确保：
+   1. 优先级低于 unlayered CSS，但高于 @theme 层
+   2. Tailwind v4 解析器能正确处理 var() 引用链
+   3. 主题切换时 light-dark() 函数能正常工作
    无需 [data-theme='dark'] 覆盖，由 ark 的 light-dark() 自动处理。
    ==================================================================== */
+@layer tokens {
 :root {
   /* ============================================================
-     1.1 颜色 Tokens — 色阶层（保留原值，过渡期兼容）
+     1.1 颜色 Tokens — 色阶层（FANDEX 品牌色阶）
      ------------------------------------------------------------
-     说明：色阶令牌保留原硬编码值，确保使用 bg-primary-500 等工具类
-     的组件在迁移过渡期视觉一致。后续可逐步替换为 ark 语义令牌。
+     说明：色阶令牌使用 FANDEX 品牌设计系统色值（冷青-青绿色阶）。
+     浅色模式：primary #0E8C9C，深色模式：accent #00C8F0（主色反转）。
+     引用 shd-shared primitive 层令牌，确保三端色板一致。
      ============================================================ */
 
-  /* --- 基础色板：Primary（Sky 天蓝，过渡期保留） --- */
-  --fandex-color-primary-50: #f0f9ff;
-  --fandex-color-primary-100: #e0f2fe;
-  --fandex-color-primary-200: #bae6fd;
-  --fandex-color-primary-300: #7dd3fc;
-  --fandex-color-primary-400: #38bdf8;
-  --fandex-color-primary-500: #0ea5e9;
-  --fandex-color-primary-600: #0284c7;
-  --fandex-color-primary-700: #0369a1;
-  --fandex-color-primary-800: #075985;
-  --fandex-color-primary-900: #0c4a6e;
-  --fandex-color-primary-950: #082f49;
+  /* --- 基础色板：Primary（FANDEX 品牌青色，浅色模式主色） --- */
+  --fandex-color-primary-50: var(--color-primary-50, #E6FBFC);
+  --fandex-color-primary-100: var(--color-primary-100, #C6F3F5);
+  --fandex-color-primary-200: var(--color-primary-200, #99E8EC);
+  --fandex-color-primary-300: var(--color-primary-300, #66D8E0);
+  --fandex-color-primary-400: var(--color-primary-400, #33C5D1);
+  --fandex-color-primary-500: var(--color-primary-500, #14B0BE);
+  --fandex-color-primary-600: var(--color-primary-600, #0E8C9C);
+  --fandex-color-primary-700: var(--color-primary-700, #0B6E7E);
+  --fandex-color-primary-800: var(--color-primary-800, #085263);
+  --fandex-color-primary-900: var(--color-primary-900, #053645);
 
-  /* --- 基础色板：Secondary（Teal 蓝绿，过渡期保留） --- */
-  --fandex-color-secondary-50: #f0fdfa;
-  --fandex-color-secondary-100: #ccfbf1;
-  --fandex-color-secondary-200: #99f6e4;
-  --fandex-color-secondary-300: #5eead4;
-  --fandex-color-secondary-400: #2dd4bf;
-  --fandex-color-secondary-500: #14b8a6;
-  --fandex-color-secondary-600: #0d9488;
-  --fandex-color-secondary-700: #0f766e;
-  --fandex-color-secondary-800: #115e59;
-  --fandex-color-secondary-900: #134e4a;
-  --fandex-color-secondary-950: #042f2e;
+  /* --- 基础色板：Secondary（FANDEX accent 别名，与 accent 色阶同步） --- */
+  --fandex-color-secondary-50: var(--color-accent-50, #E5FBFF);
+  --fandex-color-secondary-100: var(--color-accent-100, #B8F2FF);
+  --fandex-color-secondary-200: var(--color-accent-200, #7EE9FF);
+  --fandex-color-secondary-300: var(--color-accent-300, #3DDDFF);
+  --fandex-color-secondary-400: var(--color-accent-400, #00C8F0);
+  --fandex-color-secondary-500: var(--color-accent-500, #00A6CC);
+  --fandex-color-secondary-600: var(--color-accent-600, #0085A6);
+  --fandex-color-secondary-700: var(--color-accent-700, #006680);
+  --fandex-color-secondary-800: var(--color-accent-800, #004859);
+  --fandex-color-secondary-900: var(--color-accent-900, #002D38);
 
-  /* --- 基础色板：Accent（Amber 琥珀，过渡期保留） --- */
-  --fandex-color-accent-50: #fffbeb;
-  --fandex-color-accent-100: #fef3c7;
-  --fandex-color-accent-200: #fde68a;
-  --fandex-color-accent-300: #fcd34d;
-  --fandex-color-accent-400: #fbbf24;
-  --fandex-color-accent-500: #f59e0b;
-  --fandex-color-accent-600: #d97706;
-  --fandex-color-accent-700: #b45309;
-  --fandex-color-accent-800: #92400e;
-  --fandex-color-accent-900: #78350f;
-  --fandex-color-accent-950: #451a03;
+  /* --- 基础色板：Accent（FANDEX 亮青色，深色模式主色） --- */
+  --fandex-color-accent-50: var(--color-accent-50, #E5FBFF);
+  --fandex-color-accent-100: var(--color-accent-100, #B8F2FF);
+  --fandex-color-accent-200: var(--color-accent-200, #7EE9FF);
+  --fandex-color-accent-300: var(--color-accent-300, #3DDDFF);
+  --fandex-color-accent-400: var(--color-accent-400, #00C8F0);
+  --fandex-color-accent-500: var(--color-accent-500, #00A6CC);
+  --fandex-color-accent-600: var(--color-accent-600, #0085A6);
+  --fandex-color-accent-700: var(--color-accent-700, #006680);
+  --fandex-color-accent-800: var(--color-accent-800, #004859);
+  --fandex-color-accent-900: var(--color-accent-900, #002D38);
 
-  /* --- 基础色板：Neutral（Slate 石板灰，过渡期保留） --- */
-  --fandex-color-neutral-50: #f8fafc;
-  --fandex-color-neutral-100: #f1f5f9;
-  --fandex-color-neutral-200: #e2e8f0;
-  --fandex-color-neutral-300: #cbd5e1;
-  --fandex-color-neutral-400: #94a3b8;
-  --fandex-color-neutral-500: #64748b;
-  --fandex-color-neutral-600: #475569;
-  --fandex-color-neutral-700: #334155;
-  --fandex-color-neutral-800: #1e293b;
-  --fandex-color-neutral-900: #0f172a;
-  --fandex-color-neutral-950: #020617;
+  /* --- 基础色板：Neutral（FANDEX 冷青底灰，替代 Slate 石板灰） --- */
+  --fandex-color-neutral-50: var(--color-neutral-1050, #F2F5F7);
+  --fandex-color-neutral-100: var(--color-neutral-1000, #E8EDF1);
+  --fandex-color-neutral-200: var(--color-neutral-950, #E2E8EC);
+  --fandex-color-neutral-300: var(--color-neutral-900, #D5DDE3);
+  --fandex-color-neutral-400: var(--color-neutral-800, #C5D0D8);
+  --fandex-color-neutral-500: var(--color-neutral-700, #9FADB9);
+  --fandex-color-neutral-600: var(--color-neutral-600, #6E7E8B);
+  --fandex-color-neutral-700: var(--color-neutral-500, #4E5E6B);
+  --fandex-color-neutral-800: var(--color-neutral-400, #3A4753);
+  --fandex-color-neutral-900: var(--color-neutral-300, #2A3547);
+  --fandex-color-neutral-950: var(--color-neutral-200, #1B2330);
 
   /* ============================================================
      1.2 颜色 Tokens — 语义层（映射 ark 语义令牌）
@@ -312,28 +315,31 @@
      1.10 过渡 Tokens（预定义组合，引用 ark 动效令牌）
      ============================================================ */
   --fandex-transition-colors:
-    color var(--motion-duration-fast) var(--motion-easing-out),
-    background-color var(--motion-duration-fast) var(--motion-easing-out),
-    border-color var(--motion-duration-fast) var(--motion-easing-out),
-    fill var(--motion-duration-fast) var(--motion-easing-out),
-    stroke var(--motion-duration-fast) var(--motion-easing-out);
-  --fandex-transition-opacity: opacity var(--motion-duration-fast) var(--motion-easing-out);
+    color var(--motion-duration-instant) var(--motion-easing-out),
+    background-color var(--motion-duration-instant) var(--motion-easing-out),
+    border-color var(--motion-duration-instant) var(--motion-easing-out),
+    fill var(--motion-duration-instant) var(--motion-easing-out),
+    stroke var(--motion-duration-instant) var(--motion-easing-out);
+  --fandex-transition-opacity: opacity var(--motion-duration-instant) var(--motion-easing-out);
   --fandex-transition-shadow: box-shadow var(--motion-duration-normal) var(--motion-easing-out);
   --fandex-transition-transform: transform var(--motion-duration-normal) var(--motion-easing-out);
-  --fandex-transition-all: all var(--motion-duration-normal) var(--motion-easing-out);
 }
+} /* end @layer tokens */
 
 /* ====================================================================
-   主题切换说明
+   暗色模式说明
    --------------------------------------------------------------------
-   本文件不再需要 [data-theme='dark'] 和 @media (prefers-color-scheme: dark)
-   的重复定义。主题切换由 ark 令牌的 light-dark() 函数自动处理：
+   色阶令牌（primary/secondary/accent/neutral）保留固定硬编码值，
+   不做暗色覆盖。原因：
 
-   1. shd-shared/styles/theme.css 在 :root 声明 color-scheme: light dark
-   2. ark 语义令牌使用 light-dark(lightVal, darkVal) 自动取值
-   3. [data-theme="dark"] 覆盖 color-scheme 为 dark，强制取深色值
-   4. [data-theme="light"] 覆盖 color-scheme 为 light，强制取浅色值
+   1. 实际 UI 主题切换由 ark 语义令牌（--color-fg-xxx / --color-bg-xxx 等）
+      通过 CSS [data-theme] 选择器自动处理，由 color-scheme 驱动
+   2. 色阶令牌仅供 Tailwind 工具类（bg-primary-500 等）过渡期兼容使用，
+      组件应优先使用语义令牌（var(--color-text)、var(--color-bg-card) 等）
+   3. 此前在此处定义 [data-theme='dark'] 覆盖块，由于本文件未归入 @layer，
+      其优先级高于 ark tokens 层，导致 --fandex-color-neutral-* 的暗色值
+      反向覆盖 ark 体系，造成主题切换后色彩混乱
 
-   因此本兼容层的所有语义令牌（text/bg/border/success/warning/error/info）
-   会自动响应主题切换，无需在此处重复定义暗色模式值。
+   代码语法高亮色保留固定值，由 code.css 中的 [data-theme='dark'] 选择器
+   单独管理，不在此处重复定义。
    ==================================================================== */

@@ -222,3 +222,56 @@ export const attentionPulse: Variants = {
     },
   },
 };
+
+// ---------------------------------------------------------------------------
+// 8. 扩展预设（预留动效扩展点 · P7）
+//    为后续多样化动效预留标准接口，避免临时硬编码导致重构困难。
+//    使用方式：import { revealMasked, pageFade, marqueeScroll, hoverGlow } from '@/motion';
+//    扩展原则：新增动效优先复用本节预设或在此追加，统一消费 motion 令牌。
+// ---------------------------------------------------------------------------
+
+/** 裁剪揭示：clip-path 从下向上揭开（图示、卡片聚焦、章节分隔）
+ *  非纯 opacity，附 clip-path 方向位移，符合 ark 非纯渐变原则 */
+export const revealMasked: Variants = {
+  hidden: { opacity: 0, clipPath: 'inset(0 0 100% 0)' },
+  visible: {
+    opacity: 1,
+    clipPath: 'inset(0 0 0% 0)',
+    transition: tReveal,
+  },
+};
+
+/** 页面过渡 · 淡入上滑：View Transitions 降级时的 JS 过渡备选
+ *  配合 AnimatePresence 在路由切换时使用 */
+export const pageFade: Variants = {
+  hidden: { opacity: 0, y: motionTravel.small },
+  visible: { opacity: 1, y: 0, transition: tNormal },
+  exit: { opacity: 0, y: -motionTravel.small, transition: tExit },
+};
+
+/** 跑马灯滚动：横向无限循环（横向滑动器自动播放预留）
+ *  预留给 .feature-track 后续接入 Motion 自动 marquee 滚动：
+ *  通过 animate 控制 x 位移，配合重复节点实现无缝循环 */
+export const marqueeScroll: Transition = {
+  duration: 40,
+  ease: 'linear',
+  repeat: Infinity,
+};
+
+/** 悬停光晕：hover 时 boxShadow 扩散品牌色微光（按钮、卡片聚焦）
+ *  与 hoverLift 组合使用，增强交互性强的动效反馈 */
+export const hoverGlow: Variants = {
+  rest: {
+    boxShadow: '0 0 0 0 color-mix(in srgb, var(--color-accent-base) 0%, transparent)',
+  },
+  hover: {
+    boxShadow: '0 0 0 4px color-mix(in srgb, var(--color-accent-base) 18%, transparent)',
+    transition: tFast,
+  },
+};
+
+/** 按钮按压涟漪：tap 时 scale 缩小 + 透明度变化（主按钮、操作按钮） */
+export const tapRipple: Variants = {
+  rest: { scale: 1 },
+  tap: { scale: 0.96, transition: tFast },
+};

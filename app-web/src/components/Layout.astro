@@ -2,7 +2,7 @@
 /**
  * 文档页主布局组件
  * 提供文档页面的整体结构：顶部导航栏、侧边栏、主内容区、移动端底部导航
- * 支持暗色模式切换、全屏模式、侧边栏状态持久化、代码复制、Mermaid 图表渲染等功能
+ * 支持暗色模式切换、全屏模式、侧边栏状态持久化、代码复制等功能
  * 继承 BaseLayout 的共享 head 与样式引入，仅保留文档页特有的结构与脚本
  */
 import BaseLayout from '@/components/BaseLayout.astro';
@@ -21,15 +21,23 @@ const hasToc = Astro.slots.has('toc');
 <BaseLayout title={title}>
   <slot name="head" slot="head" />
 
-  <!-- 确保页面撑满视口高度，body 使用 min-height 避免内容截断；滚动由 .app-main 内部容器控制 -->
+  <!-- 文档页滚动架构：body 禁止滚动，所有纵向滚动由 .app-main 内部容器处理
+       防止快速上下滑动时 body 扩展产生无限空页面（item 12 修复） -->
   <style is:inline>
+    @layer base {
     html {
       height: 100%;
+      /* 禁止 html 层级的过度滚动，防止链式滚动传播 */
+      overscroll-behavior: none;
     }
     body {
-      /* 渐进增强：iOS <15 不支持 100dvh 时回退到 100vh；min-height 允许内容超出时 body 自然扩展 */
-      min-height: 100vh;
-      min-height: 100dvh;
+      /* 固定高度而非 min-height，防止 body 扩展产生空白滚动区 */
+      height: 100vh;
+      height: 100dvh;
+      /* 禁止 body 滚动，所有滚动由 .app-main 处理 */
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
     }
   </style>
   <!-- 侧边栏遮罩层：移动端打开侧边栏时显示，点击关闭（使用共享 .fndx-sidebar-backdrop 样式） -->
@@ -46,12 +54,12 @@ const hasToc = Astro.slots.has('toc');
       <div class="nav-left">
         <a href={base} class="nav-logo">
           <span class="logo-mark"></span>
-          <span class="logo-text">{SITE.title}<span class="logo-home-suffix">-Index</span></span>
+          <span class="logo-text">{SITE.title}</span>
         </a>
       </div>
       <div class="nav-right">
-        <!-- 返回顶部按钮 -->
-        <button class="nav-back-to-top" id="nav-back-to-top" aria-label="返回顶部" title="返回顶部">
+        <!-- 返回顶部按钮：仅图标，统一描边风格（尾缀文字已移除） -->
+        <button class="nav-back-to-top" id="nav-back-to-top" aria-label="返回顶部" data-tooltip="返回顶部" data-tooltip-pos="bottom">
           <svg
             width="16"
             height="16"
@@ -62,9 +70,8 @@ const hasToc = Astro.slots.has('toc');
           >
             <polyline points="18 15 12 9 6 15"></polyline>
           </svg>
-          <span class="nav-back-to-top-text">返回顶部</span>
         </button>
-        <!-- 主题切换按钮（Vue 交互组件） -->
+        <!-- 主题切换按钮（React 岛屿组件） -->
         <ThemeToggle client:load />
       </div>
     </header>
@@ -133,14 +140,16 @@ const hasToc = Astro.slots.has('toc');
   <PerformanceMonitor />
 </BaseLayout>
 
-<!-- 客户端交互脚本：侧边栏开关、全屏切换、代码复制、Mermaid 渲染、SW 注册等 -->
+<!-- 客户端交互脚本：侧边栏开关、全屏切换、代码复制、SW 注册等 -->
 <script>
   import '@/lib/layout-interactions';
 </script>
 
 <style>
   /* 菜单切换按钮：默认隐藏，移动端显示
-   * 注：遮罩层样式已迁移至 @fandex/styles 的 .fndx-sidebar-backdrop */
+   * 注：遮罩层样式已迁移至 @fandex/styles 的 .fndx-sidebar-backdrop
+   * 归入 @layer components，避免未分层 CSS 覆盖 ark 令牌 */
+  @layer components {
   .nav-toggle {
     display: none;
   }
@@ -149,5 +158,6 @@ const hasToc = Astro.slots.has('toc');
     .nav-toggle {
       display: flex;
     }
+  }
   }
 </style>

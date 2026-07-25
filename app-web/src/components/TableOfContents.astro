@@ -15,7 +15,7 @@
  *
  * 设计原则：
  * - 严格消费 layout-components.css 中已定义的 .fndx-toc 令牌与样式
- * - 双主题由 light-dark() 与 color-scheme 自动切换
+ * - 双主题由 [data-theme] 选择器与 color-scheme 自动切换
  * - 响应式：桌面（lg+）显示，移动端由 CSS 隐藏（.fndx-toc 在 max-width:1023px 时 display:none）
  * - 可访问性：focus-visible 焦点环、aria-current 当前章节标识、aria-expanded 折叠状态
  *
@@ -315,8 +315,9 @@ const scrollConfig = JSON.stringify({ container: scrollContainer, offset: offset
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
 
         if (visible.length > 0) {
+          // noUncheckedIndexedAccess 下 visible[0] 为 possibly undefined，需显式收窄
           const target = visible[0];
-          if (target.target.id) {
+          if (target && target.target.id) {
             highlightActive(target.target.id);
           }
         }

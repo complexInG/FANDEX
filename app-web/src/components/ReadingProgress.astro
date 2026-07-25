@@ -12,7 +12,7 @@
  *
  * 设计原则：
  * - 严格消费 layout-components.css 中已定义的 .fndx-reading-progress 令牌与样式
- * - 双主题由 light-dark() 与 color-scheme 自动切换
+ * - 双主题由 [data-theme] 选择器与 color-scheme 自动切换
  * - 渐变色由 --reading-progress-gradient 令牌控制（accent → secondary）
  * - pointer-events: none 避免遮挡顶部交互
  *
@@ -88,8 +88,12 @@ const scrollConfig = JSON.stringify({ container: scrollContainer });
     const bar = progressEl.querySelector<HTMLElement>('.fndx-reading-progress__bar');
     if (!bar) return;
 
+    // 闭包内 TypeScript 无法维持 narrowing，提前断言非空
+    const progressElNonNull: HTMLElement = progressEl;
+    const barNonNull: HTMLElement = bar;
+
     /** 读取滚动容器配置 */
-    const containerSelector = readScrollConfig(progressEl);
+    const containerSelector = readScrollConfig(progressElNonNull);
     const scrollContainer =
       document.querySelector<HTMLElement>(containerSelector) || document.documentElement;
 
@@ -100,14 +104,14 @@ const scrollConfig = JSON.stringify({ container: scrollContainer });
 
       // 内容不足以滚动时，进度保持 0
       if (maxScroll <= 0) {
-        bar.style.width = '0%';
-        progressEl.setAttribute('aria-valuenow', '0');
+        barNonNull.style.width = '0%';
+        progressElNonNull.setAttribute('aria-valuenow', '0');
         return;
       }
 
       const percent = Math.min(100, Math.max(0, (scrollTop / maxScroll) * 100));
-      bar.style.width = `${percent}%`;
-      progressEl.setAttribute('aria-valuenow', String(Math.round(percent)));
+      barNonNull.style.width = `${percent}%`;
+      progressElNonNull.setAttribute('aria-valuenow', String(Math.round(percent)));
     }
 
     /** rAF 节流的 scroll 回调 */

@@ -2,7 +2,7 @@
  * FANDEX 主题切换样式 — tokens 层扩展
  * -----------------------------------------------------------------------------
  * 职责：管理 light/dark 主题切换的 CSS 机制
- * 1. color-scheme 声明（启用 CSS light-dark() 函数）
+ * 1. color-scheme 声明（启用浏览器原生控件主题）
  * 2. [data-theme] 属性选择器（用户手动切换主题）
  * 3. prefers-color-scheme 媒体查询（跟随系统主题）
  * 4. 主题切换过渡（平滑颜色变化）
@@ -12,7 +12,7 @@
  * - [data-theme="light"] 强制浅色
  * - [data-theme="dark"] 强制深色
  * - color-scheme 控制浏览器原生控件（滚动条、表单）主题
- * - light-dark() 函数控制自定义颜色令牌
+ * - [data-theme] 选择器控制自定义颜色令牌（原 light-dark() 已迁移）
  * -----------------------------------------------------------------------------
  * 引用：spec.md 第三章 3.2 主题策略 / 第三章 3.3.1 theme.css
  * =============================================================================
@@ -35,18 +35,41 @@
   }
 
   /* === 跟随系统：当未设置 data-theme 时，由 prefers-color-scheme 决定 === */
-  /* 注意：light-dark() 函数已内置响应 color-scheme，
-     此处仅用于需要 JS 无法覆盖的场景（极少使用） */
+  /* 注意：原 light-dark() 函数方案已迁移为 [data-theme] 选择器方案，
+     因 Tailwind v4 解析器在 @theme 块外不支持 light-dark() 与 var() 混合写法 */
 
   /* === 主题切换过渡 === */
-  /* 应用到所有元素，确保主题切换时颜色平滑过渡 */
-  /* 仅在未声明 prefers-reduced-motion 时生效 */
-  :root:not([data-no-transition]) * {
+  /* Task 7.2：过渡范围收窄，提升主题切换性能
+   * -------------------------------------------------------------------------
+   * 原方案：全局 * 选择器，所有元素颜色过渡 → 大面积重绘，性能差
+   * 新方案：仅 .doc-page 内的元素应用颜色过渡（文档阅读页内容区）
+   * 原因：
+   * - View Transitions API 已接管主题切换的视觉过渡（圆形扩散动画）
+   * - CSS 颜色过渡作为降级方案，仅需覆盖文档内容区
+   * - 大面积元素（.geo-bg-decor/.app-nav/.fndx-sidebar）的过渡会导致严重重绘
+   * - 非文档页（首页）的主题切换由 View Transitions 处理，无需 CSS 过渡
+   * 仅在未声明 prefers-reduced-motion 时生效 */
+  :root:not([data-no-transition]) .doc-page * {
     transition: background-color var(--motion-duration-fast) var(--motion-easing-out),
                 border-color var(--motion-duration-fast) var(--motion-easing-out),
                 color var(--motion-duration-fast) var(--motion-easing-out),
                 fill var(--motion-duration-fast) var(--motion-easing-out),
                 stroke var(--motion-duration-fast) var(--motion-easing-out);
+  }
+
+  /* Task 7.2：View Transitions 期间禁用大面积元素过渡
+   * -------------------------------------------------------------------------
+   * html.theme-vt 类由 ThemeToggle.tsx 在 VT 开始前添加、结束后移除
+   * 此期间禁用 .geo-bg-decor / .app-nav / .fndx-sidebar 及其子元素的过渡，
+   * 避免与 View Transitions 的快照动画叠加导致双重过渡和重绘性能问题
+   * VT 结束后移除该类，元素恢复正常交互过渡（hover 等） */
+  html.theme-vt .geo-bg-decor,
+  html.theme-vt .geo-bg-decor *,
+  html.theme-vt .app-nav,
+  html.theme-vt .app-nav *,
+  html.theme-vt .fndx-sidebar,
+  html.theme-vt .fndx-sidebar * {
+    transition: none !important;
   }
 
   /* === 主题切换瞬间禁用过渡（防止首次加载闪烁） === */
@@ -80,10 +103,20 @@
 
   /* 浅色模式下显示太阳图标，深色模式下显示月亮图标 */
   .fndx-theme-toggle__icon--sun {
-    display: light-dark(block, none);
+    display: block;
   }
 
   .fndx-theme-toggle__icon--moon {
-    display: light-dark(none, block);
+    display: none;
+  }
+
+  /* 深色模式覆盖：太阳图标隐藏，月亮图标显示
+     原 light-dark() 已迁移为 [data-theme='dark'] 选择器方案 */
+  [data-theme='dark'] .fndx-theme-toggle__icon--sun {
+    display: none;
+  }
+
+  [data-theme='dark'] .fndx-theme-toggle__icon--moon {
+    display: block;
   }
 }

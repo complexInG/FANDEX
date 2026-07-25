@@ -10,6 +10,7 @@
  * - 响应式适配（768px 断点）
  */
 
+@layer pages {
 .error-page {
   position: relative;
   min-height: 100vh;
@@ -161,4 +162,5 @@
   .error-code {
     font-size: 4em;
   }
+}
 }

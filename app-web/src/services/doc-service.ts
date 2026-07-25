@@ -41,8 +41,6 @@ interface DocStats {
   totalModules: number;
   /** 涉及的分类数 */
   totalCategories: number;
-  /** 标签总数（去重） */
-  totalTags: number;
 }
 
 /**
@@ -135,10 +133,9 @@ export async function getDocStats(): Promise<DocStats> {
       totalDocs: docStatsCache.totalDocs,
       totalModules: docStatsCache.totalModules,
       totalCategories: docStatsCache.totalCategories,
-      totalTags: docStatsCache.totalTags,
     };
   } catch {
-    return { totalDocs: 0, totalModules: 0, totalCategories: 0, totalTags: 0 };
+    return { totalDocs: 0, totalModules: 0, totalCategories: 0 };
   }
 }
 

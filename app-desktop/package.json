@@ -30,7 +30,6 @@
     "expo-linking": "latest",
     "expo-router": "latest",
     "expo-status-bar": "latest",
-    "fuse.js": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-native": "latest",

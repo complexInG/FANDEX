@@ -105,8 +105,8 @@
 
   /* === 选中文本配色（ark 家族青色强调） === */
   ::selection {
-    background: var(--color-accent-base, #00838F);
-    color: var(--color-accent-fg, #FFFFFF);
+    background: var(--color-accent-base);
+    color: var(--color-accent-fg);
   }
 
   /* === 滚动条美化（WebKit 内核） === */
@@ -120,12 +120,12 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--color-border-default, #E5E5E5);
+    background: var(--color-border-default);
     border-radius: var(--radius-default, 4px);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-border-strong, #D4D4D4);
+    background: var(--color-border-strong);
   }
 
   /* === 减少动画偏好：尊重无障碍设置 === */

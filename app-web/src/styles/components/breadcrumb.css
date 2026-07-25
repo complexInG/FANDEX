@@ -8,6 +8,7 @@
  * - 粘性定位（移动端吸附于导航栏下方，z-index 低于导航栏避免覆盖）
  */
 
+@layer components {
 /* 菜单切换按钮：默认隐藏，移动端显示 */
 .nav-toggle {
   display: none;
@@ -109,4 +110,5 @@
   .bc-mobile-hide {
     display: none;
   }
+}
 }

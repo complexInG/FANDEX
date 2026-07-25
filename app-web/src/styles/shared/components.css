@@ -11,7 +11,7 @@
  * -----------------------------------------------------------------------------
  * 设计原则：
  * - 严格消费 tokens.css 中已定义的 component 令牌，不重复硬编码颜色
- * - 双主题由 light-dark() 与 color-scheme 自动切换，无需手动 .dark 分支
+ * - 双主题由 [data-theme] 选择器与 color-scheme 自动切换，无需手动 .dark 分支
  * - 状态切换平滑（hover/active/focus/disabled 统一 transition 预设）
  * - 焦点环使用 :focus-visible，仅键盘导航时显示
  * - 触屏设备禁用 hover 状态，避免粘性 hover（@media (hover: hover)）
@@ -357,7 +357,7 @@
     .fndx-card:hover {
       border-color: var(--card-state-hover-border);
       box-shadow: var(--card-shadow-hover);
-      transform: translateY(-2px);
+      /* Task 4.4：移除悬停上浮 transform: translateY(-2px)，统一为直角边框样式反馈 */
     }
   }
 
@@ -449,7 +449,7 @@
   .fndx-input:focus {
     background-color: var(--input-focus-bg);
     border-color: var(--input-focus-border);
-    box-shadow: 0 0 0 3px light-dark(rgba(0, 131, 143, 0.18), rgba(0, 229, 255, 0.22));
+    box-shadow: 0 0 0 3px rgba(0, 131, 143, 0.18);
     outline: none;
   }
 
@@ -468,7 +468,7 @@
   .fndx-input-wrapper.has-error .fndx-input:focus,
   .fndx-input.has-error:focus {
     border-color: var(--input-error-focus-border);
-    box-shadow: 0 0 0 3px light-dark(rgba(220, 38, 38, 0.18), rgba(239, 68, 68, 0.22));
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18);
   }
 
   /* 状态：disabled */
@@ -651,27 +651,56 @@
   /* --- 形态：soft 软填充（低饱和度背景） --- */
   /* 使用 color-mix 派生软背景，现代浏览器支持；不支持时回退为透明 */
   .fndx-badge--soft.fndx-badge--primary {
-    background-color: light-dark(rgba(0, 131, 143, 0.12), rgba(0, 229, 255, 0.16));
+    background-color: rgba(0, 131, 143, 0.12);
     color: var(--color-accent-base);
     border-color: transparent;
   }
 
   .fndx-badge--soft.fndx-badge--success {
-    background-color: light-dark(rgba(22, 163, 74, 0.12), rgba(34, 197, 94, 0.16));
+    background-color: rgba(22, 163, 74, 0.12);
     color: var(--color-success-base);
     border-color: transparent;
   }
 
   .fndx-badge--soft.fndx-badge--warning {
-    background-color: light-dark(rgba(234, 88, 12, 0.12), rgba(249, 115, 22, 0.16));
+    background-color: rgba(234, 88, 12, 0.12);
     color: var(--color-warning-base);
     border-color: transparent;
   }
 
   .fndx-badge--soft.fndx-badge--danger {
-    background-color: light-dark(rgba(220, 38, 38, 0.12), rgba(239, 68, 68, 0.16));
+    background-color: rgba(220, 38, 38, 0.12);
     color: var(--color-danger-base);
     border-color: transparent;
+  }
+
+  /* 深色模式覆盖：soft 软填充背景透明度调整
+     原 light-dark() 已迁移为 [data-theme='dark'] 选择器方案 */
+  [data-theme='dark'] .fndx-badge--soft.fndx-badge--primary {
+    background-color: rgba(0, 229, 255, 0.16);
+  }
+
+  [data-theme='dark'] .fndx-badge--soft.fndx-badge--success {
+    background-color: rgba(34, 197, 94, 0.16);
+  }
+
+  [data-theme='dark'] .fndx-badge--soft.fndx-badge--warning {
+    background-color: rgba(249, 115, 22, 0.16);
+  }
+
+  [data-theme='dark'] .fndx-badge--soft.fndx-badge--danger {
+    background-color: rgba(239, 68, 68, 0.16);
+  }
+
+  /* 深色模式覆盖：输入框 focus 焦点环阴影
+     原 light-dark() 已迁移为 [data-theme='dark'] 选择器方案 */
+  [data-theme='dark'] .fndx-input:focus {
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.22);
+  }
+
+  [data-theme='dark'] .fndx-input-wrapper.has-error .fndx-input:focus,
+  [data-theme='dark'] .fndx-input.has-error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22);
   }
 
   /* --- 药丸形态（圆角变 full） --- */

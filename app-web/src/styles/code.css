@@ -5,7 +5,12 @@
  * 定义 Astro/Shiki 代码块（.astro-code）、行内代码、自定义代码块组件
  * （.code-block）、复制按钮、语言标签、以及暗色/亮色主题切换的代码
  * 高亮样式。支持移动端响应式适配。
+ *
+ * 层级归属：@layer components（避免未分层 CSS 覆盖 ark 令牌导致主题切换失效）
  */
+
+/* 归入 @layer components，确保优先级低于 tokens 层 */
+@layer components {
 
 /* ========== Astro/Shiki 代码块基础样式 ========== */
 .astro-code {
@@ -69,7 +74,7 @@
   font-family: var(--font-display);
   font-size: 0.78em;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: color var(--transition-base), background-color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 /* 复制按钮图标尺寸 */
@@ -83,7 +88,7 @@
   background: var(--color-primary);
   color: var(--color-text-inverse);
   border-color: var(--color-primary);
-  transform: scale(1.05); /* 轻微放大反馈 */
+  /* Task 4.4：移除悬停放大 transform: scale(1.05)，统一为直角边框样式反馈 */
 }
 
 /* 已复制状态：使用第三品牌色标识 */
@@ -103,7 +108,10 @@
   opacity: 0.6; /* 默认半透明，减少视觉干扰 */
   transition:
     opacity var(--transition-base),
-    all var(--transition-base);
+    color var(--transition-base),
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
   border-color: var(--color-border-light);
   color: var(--color-text-secondary);
   background: var(--color-bg-card);
@@ -130,6 +138,10 @@
   font-size: 0.875em;
   line-height: 1.6;
   background: var(--color-bg-code);
+  /* 移除 pre 自身边框，使用外层 .code-block 的边框
+     原实现保留 .astro-code 的 border 导致双重边框，内容与边框脱节 */
+  border: none;
+  border-radius: 0;
 }
 
 /* 代码块内 code 元素：去除独立样式 */
@@ -214,3 +226,5 @@ html[data-theme='light'] .astro-code span {
     padding: 0.15em 0.5em;
   }
 }
+
+} /* end @layer components */

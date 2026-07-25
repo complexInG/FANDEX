@@ -12,6 +12,7 @@
  * 注：外部 CSS 导入为全局样式，:global() 包裹已移除
  */
 
+@layer components {
 /* 性能监控面板：固定右下角浮动卡片 */
 .perf-monitor {
   position: fixed;
@@ -21,23 +22,15 @@
   max-height: 70vh;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg-card, #ffffff);
-  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   z-index: 9999;
   font-family: ui-monospace, 'JetBrains Mono', monospace;
   font-size: 12px;
-  color: var(--color-text, #111827);
+  color: var(--color-text);
   overflow: hidden;
-}
-
-/* 暗色模式适配：通过 data-theme 属性切换 */
-html[data-theme='dark'] .perf-monitor {
-  background: #1f2937;
-  color: #f9fafb;
-  border-color: #374151;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .perf-monitor-header {
@@ -45,8 +38,8 @@ html[data-theme='dark'] .perf-monitor {
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  background: var(--color-primary, #3b82f6);
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
   cursor: default;
 }
 
@@ -69,7 +62,7 @@ html[data-theme='dark'] .perf-monitor {
   background: rgba(255, 255, 255, 0.15);
   border: none;
   border-radius: 4px;
-  color: #ffffff;
+  color: var(--color-text-inverse);
   cursor: pointer;
   padding: 0;
 }
@@ -100,13 +93,9 @@ html[data-theme='dark'] .perf-monitor {
   margin: 0 0 6px 0;
   font-size: 11px;
   font-weight: 600;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-html[data-theme='dark'] .perf-section-title {
-  color: #9ca3af;
 }
 
 /* Web Vitals 指标卡片网格 */
@@ -118,41 +107,33 @@ html[data-theme='dark'] .perf-section-title {
 
 .perf-vital-card {
   padding: 6px 8px;
-  background: var(--color-bg-hover, rgba(0, 0, 0, 0.04));
+  background: var(--color-bg-hover);
   border-radius: 4px;
-  border-left: 3px solid #6b7280;
+  border-left: 3px solid var(--color-text-secondary);
 }
 
 .perf-vital-card.rating-good {
-  border-left-color: #10b981;
+  border-left-color: var(--color-success);
 }
 
 .perf-vital-card.rating-needs-improvement {
-  border-left-color: #f59e0b;
+  border-left-color: var(--color-warning);
 }
 
 .perf-vital-card.rating-poor {
-  border-left-color: #ef4444;
-}
-
-html[data-theme='dark'] .perf-vital-card {
-  background: rgba(255, 255, 255, 0.05);
+  border-left-color: var(--color-error);
 }
 
 .perf-vital-name {
   font-size: 10px;
   font-weight: 600;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
 }
 
 .perf-vital-value {
   font-size: 14px;
   font-weight: 700;
-  color: var(--color-text, #111827);
-}
-
-html[data-theme='dark'] .perf-vital-value {
-  color: #f9fafb;
+  color: var(--color-text);
 }
 
 /* 汇总区域 */
@@ -172,11 +153,7 @@ html[data-theme='dark'] .perf-vital-value {
 }
 
 .perf-summary-values {
-  color: var(--color-text-secondary, #6b7280);
-}
-
-html[data-theme='dark'] .perf-summary-values {
-  color: #9ca3af;
+  color: var(--color-text-secondary);
 }
 
 /* 资源瀑布图 */
@@ -205,41 +182,33 @@ html[data-theme='dark'] .perf-summary-values {
 .perf-waterfall-bar-container {
   position: relative;
   height: 8px;
-  background: var(--color-bg-hover, rgba(0, 0, 0, 0.04));
+  background: var(--color-bg-hover);
   border-radius: 2px;
   overflow: hidden;
-}
-
-html[data-theme='dark'] .perf-waterfall-bar-container {
-  background: rgba(255, 255, 255, 0.05);
 }
 
 .perf-waterfall-bar {
   position: absolute;
   top: 0;
   height: 100%;
-  background: var(--color-primary, #3b82f6);
+  background: var(--color-primary);
   border-radius: 2px;
 }
 
 .perf-waterfall-duration {
   text-align: right;
-  color: var(--color-text-secondary, #6b7280);
-}
-
-html[data-theme='dark'] .perf-waterfall-duration {
-  color: #9ca3af;
+  color: var(--color-text-secondary);
 }
 
 .perf-hint {
   margin: 0;
   font-size: 10px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   line-height: 1.4;
 }
 
 .perf-hint code {
-  background: var(--color-bg-hover, rgba(0, 0, 0, 0.06));
+  background: var(--color-bg-hover);
   padding: 1px 4px;
   border-radius: 2px;
   font-size: 10px;
@@ -253,10 +222,10 @@ html[data-theme='dark'] .perf-waterfall-duration {
 .perf-btn {
   flex: 1;
   padding: 5px 8px;
-  background: var(--color-bg-hover, rgba(0, 0, 0, 0.04));
-  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
-  color: var(--color-text, #111827);
+  color: var(--color-text);
   font-size: 11px;
   cursor: pointer;
   font-family: inherit;
@@ -267,20 +236,17 @@ html[data-theme='dark'] .perf-waterfall-duration {
 }
 
 .perf-btn-danger {
-  color: #ef4444;
-  border-color: #ef4444;
+  color: var(--color-danger);
+  border-color: var(--color-danger);
 }
 
 .perf-btn-danger:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: color-mix(in srgb, var(--color-danger-base) 10%, transparent);
 }
 
 .perf-empty {
   font-size: 11px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   font-style: italic;
 }
-
-html[data-theme='dark'] .perf-empty {
-  color: #9ca3af;
 }

@@ -3,11 +3,9 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "FANDEX L3 纯函数工具层 — 零框架依赖，三端共享（metadata/modules/roadmap 数据访问；search-history/favorites/keyboard-shortcuts 等端专属功能由各端独立实现）",
+  "description": "FANDEX L3 纯函数工具层 — 零框架依赖，三端共享（modules 数据访问；search-history/favorites/keyboard-shortcuts 等端专属功能由各端独立实现）",
   "exports": {
-    "./metadata": "./metadata.ts",
-    "./modules": "./modules.ts",
-    "./roadmap": "./roadmap.ts"
+    "./modules": "./modules.ts"
   },
   "dependencies": {
     "zod": "catalog:"

@@ -90,12 +90,7 @@ catalog:
   remark-math: ^6.0.0
   unist-util-visit: ^5.1.0
 
-  # 搜索
-  fuse.js: ^7.5.0
-  pagefind: ^1.5.2
-  astro-pagefind: ^2.0.1
-
-  # 图标
+  # 图标（偏差报备：搜索功能已删除，fuse.js/pagefind/astro-pagefind 一并移除）
   lucide-react: ^0.460.0
 
   # 工具链

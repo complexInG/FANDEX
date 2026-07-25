@@ -76,12 +76,6 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
-          name="roadmap"
-          options={{
-            title: '学习路线',
-          }}
-        />
-        <Stack.Screen
           name="module"
           options={{
             title: '模块详情',

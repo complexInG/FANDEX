@@ -12,7 +12,7 @@
 // CSS 引入顺序说明：
 // 1. styles/shared — ark 家族令牌体系（含 @layer 声明、reset、tokens、theme、base、typography）
 //    必须最先引入，确保 ark 令牌优先加载，后续兼容层才能正确引用（原 @fandex/styles 已迁入 app-web）
-// 2. variables.css — --color-* 兼容层（引用 ark 语义令牌，通过 light-dark() 自动切换主题）
+// 2. variables.css — --color-* 兼容层（引用 ark 语义令牌，通过 [data-theme] 自动切换主题）
 // 3. tokens.css — --fandex-* 兼容层（引用 ark 语义令牌，保留色阶过渡期兼容）
 // 4. tailwind.css — Tailwind 4 配置（@theme inline 映射 ark 令牌生成工具类）
 // 5. 业务样式 — global/typography/code/components/geo-decor（基于兼容层令牌）
@@ -30,8 +30,12 @@ import { MAIN_CSP } from '@/lib/csp';
 import { ClientRouter } from 'astro:transitions';
 import WebVitalsTracker from '@/islands/WebVitalsTracker';
 // 统一资产引用：favicon 从 @fandex/shared-assets 共享包导入，消除三端各自维护的硬编码图标
-import faviconUrl from '@fandex/shared-assets/icons/favicon.svg';
-import appleTouchIconUrl from '@fandex/shared-assets/icons/apple-touch-icon.png';
+// 偏差报备：Astro 静态导入 SVG/PNG 返回 ImageMetadata 类型（含 .src 字段），
+// 但 <link href> 属性期望 string | URL，此处提取 .src 字符串以匹配类型约束
+import faviconMeta from '@fandex/shared-assets/icons/favicon.svg';
+import appleTouchIconMeta from '@fandex/shared-assets/icons/apple-touch-icon.png';
+const faviconUrl: string = (faviconMeta as unknown as { src: string }).src;
+const appleTouchIconUrl: string = (appleTouchIconMeta as unknown as { src: string }).src;
 
 const base = import.meta.env.BASE_URL;
 ---
@@ -40,6 +44,10 @@ const base = import.meta.env.BASE_URL;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 移动端浏览器 UI 颜色：与主题同步，防止地址栏/状态栏白闪
+         初始值由下方内联脚本动态设置，此处提供 SSR 默认值
+         Task 4.1：浅色模式由纯白调整为类白色 #FAF9F6，与主背景令牌一致 -->
+    <meta name="theme-color" content="#FAF9F6" id="meta-theme-color" />
     <!-- View Transitions：Astro ClientRouter 驱动跨页过渡
          配合各交互脚本已使用的 astro:page-load / astro:before-swap 事件，
          路由切换时自动重绑交互、清理监听器，无累积泄漏 -->
@@ -55,7 +63,24 @@ const base = import.meta.env.BASE_URL;
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
 
-    <!-- 字体 CSS 异步加载：使用 media=print 技巧避免阻塞首屏渲染
+    <!-- FANDEX 品牌字体预连接：Chakra Petch（展示/标题）+ IBM Plex Sans（正文）
+         Google Fonts CDN 提供 woff2 格式，preconnect 提前建立 TLS 连接减少字体加载延迟 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- FANDEX 品牌字体加载：Chakra Petch 500/600/700 + IBM Plex Sans 400/500/600
+         使用 media=print 技巧异步加载，避免阻塞首屏渲染
+         font-display: swap 确保字体加载期间使用回退字体，消除 FOIT
+         注：astro check 会将 onload 内联事件中的 this.media 误报为未使用变量（ts(6133) hint），
+         属工具限制，不影响运行时行为 -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+
+    <!-- 自托管字体 CSS 异步加载：JetBrains Mono（代码专用）使用 media=print 技巧避免阻塞首屏渲染
          浏览器会以低优先级加载该样式表，加载完成后切换为 all 媒体应用样式
          配合下方 preload 提前获取字体文件，整体减少 FCP/LCP 阻塞 -->
     <link
@@ -79,16 +104,24 @@ const base = import.meta.env.BASE_URL;
       crossorigin
     />
     <!--
-      主题初始化脚本（渐进增强策略）
-      ==============================
+      主题初始化脚本（FOUC 四层防护 · 第一层）
+      ==========================================
       - 在 HTML 解析早期同步设置 data-theme，防止主题闪烁(FOUC)
       - 始终显式声明 data-theme 为 'light' 或 'dark'，避免 HTML 处于
         "无 data-theme 属性"的中间态（否则 tokens.css 的
         :root:not([data-theme]) 兜底逻辑在 prefers-color-scheme:dark
         下会错误覆盖用户已选择的 light，导致主题切换后刷新被强制回退）
-      - ThemeToggle Vue 岛屿通过 client:load 在 hydration 后接管交互
-      - 水合失败时页面仍可正常浏览，仅缺少交互式切换按钮
-        （用户主题偏好已通过 localStorage 持久化，刷新后保持）
+      - 同步更新 meta theme-color，防止移动端浏览器 UI 白闪
+      - ThemeToggle React 岛屿通过 client:load 在 hydration 后接管交互
+      - View Transitions 切换后的主题重应用由 lib/theme.ts 的
+        astro:after-swap 监听处理（第二层防护）
+
+      Task 7.1：侧边栏折叠状态同步读取（FOUC 防护）
+      - 同步读取 localStorage 的 fan dex-sidebar-collapsed 标记（实际键名无空格）
+      - 若为 '1' 则为 <html> 添加 sidebar-collapsed 类
+      - CSS 基于该标记类在首屏即应用折叠样式，避免 hydration 前的展开态闪屏
+      - hydration 后由 sidebar-interactions.ts 的 .is-collapsed 接管（两者等效）
+      - 同步逻辑：applyCollapsedState 会同步管理 <html> 上的该类，保持一致
     -->
     <script is:inline>
       (function () {
@@ -101,10 +134,25 @@ const base = import.meta.env.BASE_URL;
           theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
         // 始终显式设置 data-theme，消除"无属性"中间态
-        // 避免 tokens.css 的 :root:not([data-theme]) 兜底逻辑
-        // 在 prefers-color-scheme:dark 下错误覆盖用户已选择的 light 主题
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.style.colorScheme = theme;
+        // 同步更新 meta theme-color（移动端浏览器 UI 颜色）
+        // Task 4.1：浅色模式使用类白色 #FAF9F6 与主背景一致
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) {
+          meta.setAttribute('content', theme === 'dark' ? '#0a0e14' : '#FAF9F6');
+        }
+
+        // Task 7.1：侧边栏折叠状态同步读取，防止首屏展开态闪屏
+        // 仅在文档页（存在 .app-layout.has-toc 或 .fndx-sidebar 的页面）生效
+        // 内联脚本在 <head> 阶段执行，<aside> 尚未解析，通过 <html> 标记类传递状态
+        try {
+          if (localStorage.getItem('fandex-sidebar-collapsed') === '1') {
+            document.documentElement.classList.add('sidebar-collapsed');
+          }
+        } catch (e) {
+          /* localStorage 不可用时静默降级（如隐私模式） */
+        }
       })();
     </script>
     <slot name="head" />
@@ -122,4 +170,13 @@ const base = import.meta.env.BASE_URL;
   // 由 remark-code-runner 插件在 Markdown 渲染期生成容器，惰性加载 Vue 与 CodeRunner 组件
   import { initCodeRunnerMounting } from '@/lib/code-runner-mount';
   initCodeRunnerMounting();
+</script>
+
+<script>
+  // 主题持久化初始化（FOUC 四层防护 · 第二层）
+  // 监听 astro:after-swap 事件，在 View Transitions 切换页面后重新应用主题
+  // 解决 ClientRouter 替换 document.documentElement 时 data-theme 属性丢失导致的白闪
+  // 同时处理跨标签页主题同步与系统主题变化跟随
+  import { initThemePersistence } from '@/lib/theme';
+  initThemePersistence();
 </script>

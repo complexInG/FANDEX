@@ -16,12 +16,7 @@
  */
 
 /**
- * 3D Force Graph 全局类型声明
- *
- * vasturiano/3d-force-graph 通过 CDN script 标签加载，UMD 模式挂载到 window.ForceGraph3D
- * （注意：是 ForceGraph3D 而非 ForceGraph，与 npm 包 default export 名一致）
- * 此处使用 any 类型简化声明，避免引入完整类型依赖
- * 实际类型检查由组件内部通过最小接口契约保证
+ * FANDEX 自定义全局类型声明
  */
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,14 +28,6 @@ declare global {
      * @returns JSON 格式的 Web Vitals 数据字符串
      */
     __fandexExportVitals?: () => string;
-
-    /**
-     * 3D Force Graph 构造函数（vasturiano/3d-force-graph）
-     * 通过 external-loader 从 CDN 动态加载
-     * 调用方式：const graph = new window.ForceGraph3D(element, options)
-     */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ForceGraph3D?: any;
   }
 }
 

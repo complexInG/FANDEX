@@ -3,7 +3,7 @@
  * =============================================================================
  * 遍历 Markdown AST 中的 paragraph 节点，识别 `:::exercise` 与 `:::quiz`
  * 自定义提示块语法，将其替换为带 data 属性的容器 div，供客户端脚本
- * 扫描并动态挂载 Exercise.vue / QuizBlock.vue 组件。
+ * 扫描并渲染交互式练习组件。
  *
  * 支持格式：
  *   1. exercise 提示块（独立练习）
@@ -41,7 +41,7 @@
  *
  * 客户端扫描：
  *   客户端脚本扫描 [data-exercise] / [data-quiz] 元素，读取 dataset 属性，
- *   使用 Vue createApp 动态挂载 Exercise.vue / QuizBlock.vue 组件
+ *   渲染交互式练习与测验组件
  */
 
 import { visit, SKIP } from 'unist-util-visit';
