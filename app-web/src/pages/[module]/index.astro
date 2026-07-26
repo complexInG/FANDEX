@@ -154,22 +154,27 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
   }
 
   /* 文档链接：flex-wrap 允许标题与描述分行显示，增高卡片以容纳多行内容
-   * 布局：第一行 = 图标 + 序号 + 难度 + 标题；第二行 = 描述（flex-basis: 100% 强制换行） */
+   * 布局：第一行 = 图标 + 序号 + 难度 + 标题；第二行 = 描述（flex-basis: 100% 强制换行）
+   * 左侧竖线装饰统一 .fndx-sidebar__link 模式（需求3）：圆角 + 模块分类色驱动悬停 */
   .doc-list-link {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: var(--spacing-xs) var(--spacing-sm);
     padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-control);
     color: var(--color-text);
     text-decoration: none;
-    transition: background var(--transition-fast), border-color var(--transition-fast);
     border-left: 2px solid transparent;
+    transition: background-color var(--motion-duration-instant) var(--motion-easing-out),
+                color var(--motion-duration-instant) var(--motion-easing-out),
+                border-color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
+  /* 悬停：统一使用 --module-color 驱动背景与边框色（与 sidebar__link / toc__link 一致） */
   .doc-list-link:hover {
-    background: var(--color-bg-hover);
-    border-left-color: var(--module-color, var(--color-primary));
+    background-color: color-mix(in oklch, var(--module-color, var(--color-accent-base)) 8%, var(--color-bg-hover));
+    border-left-color: color-mix(in oklch, var(--module-color, var(--color-accent-base)) 60%, transparent);
   }
 
   /* 文档图标：紧凑化 24px，使用模块分类色而非青色 */

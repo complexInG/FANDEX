@@ -81,24 +81,11 @@
 
 /* === 主题指示器（components 层） === */
 @layer components {
-  /* 主题切换按钮容器 */
+  /* 主题切换按钮容器
+   * 基础按钮样式（尺寸/圆角/背景/悬停）由 .fndx-icon-btn 统一基类提供，
+   * 此处仅保留图标显隐逻辑（日/月切换） */
   .fndx-theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--size-control-sm);
-    height: var(--size-control-sm);
-    border-radius: var(--radius-control);
-    background-color: transparent;
-    color: var(--color-fg-secondary);
-    cursor: pointer;
-    transition: background-color var(--motion-duration-instant) var(--motion-easing-out),
-                color var(--motion-duration-instant) var(--motion-easing-out);
-  }
-
-  .fndx-theme-toggle:hover {
-    background-color: var(--color-bg-hover);
-    color: var(--color-fg-primary);
+    /* display/align/size/background/color/transition 均由 .fndx-icon-btn 提供 */
   }
 
   /* 浅色模式下显示太阳图标，深色模式下显示月亮图标 */

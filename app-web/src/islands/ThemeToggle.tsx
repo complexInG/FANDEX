@@ -212,7 +212,7 @@ export function ThemeToggle({}: ThemeToggleProps = {}) {
     <MotionProvider>
       <motion.button
         ref={buttonRef}
-        className={`fndx-theme-toggle${mounted ? ' fndx-theme-toggle--ready' : ''}`}
+        className={`fndx-theme-toggle fndx-icon-btn${mounted ? ' fndx-theme-toggle--ready' : ''}`}
         onClick={mounted ? toggle : undefined}
         data-tooltip={theme === 'dark' ? '亮色模式' : '暗色模式'}
         data-tooltip-pos="bottom"

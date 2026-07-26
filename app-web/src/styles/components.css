@@ -37,17 +37,31 @@
   grid-column: 1 / -1; /* 占满整行 */
 }
 
-/* 三栏布局：侧边栏 + 主内容 + 目录大纲（桌面端 lg+ 启用）
- * --toc-width 令牌默认 16rem，与 .fndx-toc 组件宽度保持一致
- * 目录大纲组件自身在 max-width:1023px 由 CSS display:none 隐藏，
- * 此处同步将 grid 转为双栏避免预留空白列 */
+/* 双栏布局（含 TOC）：侧边栏 + 主内容
+ * TOC 本页目录栏使用 position:fixed 固定在右侧，脱离 grid 流，
+ * 避免侧边栏折叠/展开时 grid 列宽变化导致 TOC 水平位移（需求2 修复）
+ * 主内容区通过 padding-right 预留 TOC 宽度，防止内容被遮挡 */
 .app-layout.has-toc {
-  grid-template-columns: var(--sidebar-width) 1fr var(--toc-width, 16rem);
+  grid-template-columns: var(--sidebar-width) 1fr;
 }
 
-/* 三栏布局折叠态：侧边栏归零，主内容 + 目录大纲 */
+/* 双栏布局折叠态：侧边栏归零，主内容占满 */
 .app-layout.has-toc:has(.fndx-sidebar.is-collapsed) {
-  grid-template-columns: 0 1fr var(--toc-width, 16rem);
+  grid-template-columns: 0 1fr;
+}
+
+/* 桌面端：主内容区预留 TOC 宽度的 padding，确保 fixed 定位的 TOC 不遮挡内容 */
+@media (min-width: 1024px) {
+  .app-layout.has-toc .app-main {
+    padding-right: var(--toc-width, 16rem);
+  }
+}
+
+/* 大屏端：TOC 宽度增大，同步调整 padding */
+@media (min-width: 1280px) {
+  .app-layout.has-toc .app-main {
+    padding-right: var(--toc-width-xl, 16rem);
+  }
 }
 
 @media (max-width: 1023px) {
@@ -179,26 +193,11 @@
   flex-shrink: 0; /* 防止被压缩导致按钮重叠 */
 }
 
-/* GitHub 链接按钮 */
+/* GitHub 链接按钮：基础样式由 .fndx-icon-btn--labeled 统一提供
+ * 此处仅保留移动端文字隐藏（home-layout.css 中有首页专用定义） */
 .nav-github-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border: 1px solid var(--color-border);
-  background: var(--color-bg-card);
-  color: var(--color-text-secondary);
-  font-family: var(--font-display);
-  font-size: 0.78em;
-  font-weight: 500;
+  /* display/align/size/background/color/border/transition/hover 均由 .fndx-icon-btn--labeled 提供 */
   text-decoration: none;
-  letter-spacing: 0.02em;
-  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.nav-github-link:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
 }
 
 /* GitHub 文字（移动端隐藏） */
@@ -212,62 +211,23 @@
   }
 }
 
-/* 回到顶部按钮：图标 + Top 文字标注（需求8），与导航栏其他按钮统一描边风格 */
+/* 回到顶部按钮：基础样式由 .fndx-icon-btn 提供（透明背景 + 无边框 + 统一悬停）
+ * 此处仅保留 Top 文字标注与移动端适配 */
 .nav-back-to-top {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  height: 32px;
-  padding: 0 10px;
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--fandex-radius-sm);
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  /* display/align/size/background/color/border/transition/hover 均由 .fndx-icon-btn--labeled 提供 */
   flex-shrink: 0;
 }
 
-/* Top 文字标注样式 */
+/* Top 文字标注样式：字号/字重/字距由 .fndx-icon-btn--labeled 统一控制，
+ * 此处仅保留 nowrap 防换行 */
 .nav-back-to-top-text {
-  font-family: var(--font-display);
-  font-size: 0.72em;
-  font-weight: 500;
-  letter-spacing: 0.02em;
   white-space: nowrap;
-}
-
-/* 悬停反馈：移除 :not(:focus) 限制
-   原实现 :hover:not(:focus) 导致点击后按钮保留 :focus 状态，
-   悬停特效被抑制。改用纯 :hover，点击后悬停正常工作 */
-.nav-back-to-top:hover {
-  color: var(--color-text);
-  border-color: var(--color-text-secondary);
-  background: var(--color-bg-hover);
-}
-
-/* 键盘焦点可见状态（仅键盘导航触发，鼠标点击不触发） */
-.nav-back-to-top:focus-visible {
-  outline: 2px solid var(--color-border-focus);
-  outline-offset: 2px;
-}
-
-/* 鼠标点击后移除默认 focus 轮廓，避免残留焦点环 */
-.nav-back-to-top:focus:not(:focus-visible) {
-  outline: none;
-}
-
-.nav-back-to-top svg {
-  flex-shrink: 0;
 }
 
 /* 移动端回到顶部按钮适配：窄屏隐藏文字仅保留图标 */
 @media (max-width: 768px) {
   .nav-back-to-top {
-    height: 30px;
     padding: 0;
-    width: 30px;
   }
 
   .nav-back-to-top-text {
@@ -481,26 +441,13 @@
   }
 }
 
-/* 导航按钮（上/下篇） */
+/* 导航按钮（上/下篇）：基础样式由 .fndx-icon-btn--labeled 提供，
+ * 此处仅保留 flex 布局与移动端适配（doc-nav.css 中有更具体的样式） */
 .nav-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-bg-card);
-  color: var(--color-text-secondary);
-  text-decoration: none;
+  /* display/align/size/background/color/border/transition/hover 均由 .fndx-icon-btn--labeled 提供 */
   flex: 1;
   min-width: 0; /* 允许 flex 子元素收缩 */
-  transition:
-    border-color var(--transition-fast),
-    color var(--transition-fast);
-}
-
-.nav-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  text-decoration: none;
 }
 
 @media (max-width: 768px) {

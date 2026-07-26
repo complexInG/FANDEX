@@ -59,6 +59,12 @@ const breadcrumb = [
   { label: meta?.title || module, href: `${import.meta.env.BASE_URL}${module}/` },
   { label: doc.data.title },
 ];
+
+/** 计算模块分类色对应的 --module-color 内联样式字符串
+ *  用于 .doc-page 容器与 TableOfContents 组件，统一链接装饰色（需求3）
+ *  仅在颜色非空时设置，避免空串导致 var() fallback 失效 */
+const moduleColor = categoryColors[meta ? getPrimaryCategory(meta) : 'tools'];
+const moduleColorStyle = moduleColor ? `--module-color:${moduleColor}` : undefined;
 ---
 
 <Layout title={doc.data.title}>
@@ -78,10 +84,11 @@ const breadcrumb = [
     sortedDocs={sortedDocs}
   />
 
-  <!-- 目录大纲：通过 toc 插槽渲染到 Layout 右侧栏，由 TableOfContents 共享组件控制显隐 -->
-  <TableOfContents slot="toc" headings={headings} />
+  <!-- 目录大纲：通过 toc 插槽渲染到 Layout 右侧栏，由 TableOfContents 共享组件控制显隐
+       注入 --module-color 统一 TOC 链接装饰色与侧边栏/文档列表一致（需求3） -->
+  <TableOfContents slot="toc" headings={headings} style={moduleColorStyle} />
 
-  <div class="doc-page" style={(() => { const c = categoryColors[meta ? getPrimaryCategory(meta) : 'tools']; return c ? `--module-color:${c}` : undefined; })()}>
+  <div class="doc-page" style={moduleColorStyle}>
     <!-- 几何背景装饰层 · docs 变体：网格底纹 + 品牌光晕 + 几何线条（克制 8 项） -->
     <GeoBgDecor variant="docs" />
     <!-- 面包屑导航 -->

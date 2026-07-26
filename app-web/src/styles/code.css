@@ -61,41 +61,18 @@
   font-weight: 700;
 }
 
-/* ========== 复制按钮 ========== */
+/* ========== 复制按钮 ==========
+ * 基础样式由 .fndx-icon-btn--labeled 统一提供（透明背景 + 无边框 + 统一悬停）
+ * 此处仅保留 .copied 状态与浮动定位变体 */
 .copy-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border: 1px solid var(--color-border);
-  background: var(--color-bg-card);
-  color: var(--color-text-secondary);
-  font-family: var(--font-display);
-  font-size: 0.78em;
+  /* display/align/size/background/color/border/transition/hover 均由 .fndx-icon-btn--labeled 提供 */
   cursor: pointer;
-  transition: color var(--transition-base), background-color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
-/* 复制按钮图标尺寸 */
-.copy-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-/* 复制按钮悬停：主色背景 + 反色文字 */
-.copy-btn:hover {
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  border-color: var(--color-primary);
-  /* 移除悬停放大 transform: scale(1.05)，统一为直角边框样式反馈 */
-}
-
-/* 已复制状态：使用第三品牌色标识 */
+/* 已复制状态：使用成功色标识（覆盖基类的悬停背景） */
 .copy-btn.copied {
-  background: var(--color-tertiary);
-  color: var(--color-text);
-  border-color: var(--color-tertiary);
+  background-color: color-mix(in oklch, var(--color-success) 20%, transparent);
+  color: var(--color-success);
 }
 
 /* ========== 代码块内浮动复制按钮 ========== */
@@ -108,25 +85,13 @@
   opacity: 0.6; /* 默认半透明，减少视觉干扰 */
   transition:
     opacity var(--transition-base),
-    color var(--transition-base),
-    background-color var(--transition-base),
-    border-color var(--transition-base),
-    box-shadow var(--transition-base);
-  border-color: var(--color-border-light);
-  color: var(--color-text-secondary);
-  background: var(--color-bg-card);
+    background-color var(--motion-duration-instant) var(--motion-easing-out),
+    color var(--motion-duration-instant) var(--motion-easing-out);
 }
 
 /* 代码块悬停时复制按钮完全显示 */
 .code-block:hover .copy-btn {
   opacity: 1;
-}
-
-/* 浮动复制按钮悬停效果 */
-.code-block:not(.code-block-header *) .copy-btn:hover {
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  border-color: var(--color-primary);
 }
 
 /* ========== 代码块内 pre 元素 ========== */

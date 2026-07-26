@@ -148,76 +148,21 @@
   /* ============================================================
    * 3. 导航操作链接
    * ------------------------------------------------------------
-   * 方框风格，克制边框，悬停时边框转色 + 背景提亮
+   * 基础样式由 .fndx-icon-btn--labeled 统一提供（透明背景 + 无边框）
    * ============================================================ */
   .nav-action-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--color-text-secondary);
+    /* display/align/size/background/color/border/transition/hover 均由 .fndx-icon-btn--labeled 提供 */
     text-decoration: none;
-    font-family: var(--font-display);
-    font-size: 0.82rem;
-    font-weight: 500;
-    padding: 5px 12px;
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--fandex-radius-sm, 2px);
-    background: transparent;
-    transition:
-      color var(--motion-duration-fast) var(--motion-easing-out),
-      border-color var(--motion-duration-fast) var(--motion-easing-out),
-      background-color var(--motion-duration-fast) var(--motion-easing-out),
-      transform var(--motion-duration-fast) var(--motion-easing-out);
-  }
-
-  .nav-action-link:hover {
-    color: var(--color-text);
-    border-color: var(--color-text-secondary);
-    background: var(--color-bg-hover);
-    /* 移除悬停上浮 transform: translateY(-1px)，统一为直角边框样式反馈 */
-  }
-
-  .nav-action-link:focus-visible {
-    outline: 2px solid var(--color-border-focus);
-    outline-offset: 2px;
   }
 
   /* ============================================================
    * 4. GitHub 链接按钮
    * ------------------------------------------------------------
-   * 浮起卡片风格，悬停时品牌色边框 + 微光填充
+   * 基础样式由 .fndx-icon-btn--labeled 统一提供（透明背景 + 无边框）
    * ============================================================ */
   .nav-github-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 12px;
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--fandex-radius-sm, 2px);
-    /* 背景透明，统一按钮标准 */
-    background: transparent;
-    color: var(--color-text-secondary);
-    font-family: var(--font-display);
-    font-size: 0.78rem;
-    font-weight: 500;
+    /* display/align/size/background/color/border/transition/hover 均由 .fndx-icon-btn--labeled 提供 */
     text-decoration: none;
-    letter-spacing: 0.02em;
-    transition:
-      color var(--motion-duration-fast) var(--motion-easing-out),
-      border-color var(--motion-duration-fast) var(--motion-easing-out),
-      background-color var(--motion-duration-fast) var(--motion-easing-out);
-  }
-
-  .nav-github-link:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-    background: var(--color-bg-hover);
-    /* 移除悬停上浮 transform: translateY(-1px)，统一为直角边框样式反馈 */
-  }
-
-  .nav-github-link:focus-visible {
-    outline: 2px solid var(--color-border-focus);
-    outline-offset: 2px;
   }
 
   /* GitHub 文字（移动端隐藏） */
@@ -228,35 +173,11 @@
   /* ============================================================
    * 5. 全屏按钮
    * ------------------------------------------------------------
-   * 默认隐藏，移动端显示（与导航操作链接同风格）
+   * 默认隐藏，移动端显示；基础样式由 .fndx-icon-btn 统一提供
    * ============================================================ */
   .nav-fullscreen-btn {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: transparent;
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--fandex-radius-sm, 2px);
-    padding: 5px;
-    cursor: pointer;
-    color: var(--color-text-secondary);
-    transition:
-      color var(--motion-duration-fast) var(--motion-easing-out),
-      border-color var(--motion-duration-fast) var(--motion-easing-out),
-      background-color var(--motion-duration-fast) var(--motion-easing-out);
-  }
-
-  .nav-fullscreen-btn:hover {
-    color: var(--color-text);
-    border-color: var(--color-text-secondary);
-    background: var(--color-bg-hover);
-  }
-
-  .nav-fullscreen-btn:focus-visible {
-    outline: 2px solid var(--color-border-focus);
-    outline-offset: 2px;
+    /* display/align/size/background/color/border/transition/hover 均由 .fndx-icon-btn 提供 */
+    display: none; /* 默认隐藏，移动端显示 */
   }
 
   /* ============================================================

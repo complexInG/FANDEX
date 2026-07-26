@@ -180,7 +180,8 @@ function initCopyButtons(): void {
     if (lang) wrapper.setAttribute('data-lang', lang);
 
     const btn = document.createElement('button');
-    btn.className = 'copy-btn';
+    // 统一 fndx-icon-btn 风格：透明背景 + 无边框 + 统一悬停效果
+    btn.className = 'copy-btn fndx-icon-btn fndx-icon-btn--labeled';
     btn.setAttribute('aria-label', 'Copy code');
     btn.innerHTML =
       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
