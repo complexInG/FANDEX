@@ -58,11 +58,11 @@ const hasToc = Astro.slots.has('toc');
         </a>
       </div>
       <div class="nav-right">
-        <!-- 返回顶部按钮：仅图标，统一描边风格（尾缀文字已移除） -->
+        <!-- 返回顶部按钮：图标 + Top 文字标注（需求8），统一描边风格 -->
         <button class="nav-back-to-top" id="nav-back-to-top" aria-label="返回顶部" data-tooltip="返回顶部" data-tooltip-pos="bottom">
           <svg
-            width="16"
-            height="16"
+            width="14"
+            height="14"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -70,6 +70,7 @@ const hasToc = Astro.slots.has('toc');
           >
             <polyline points="18 15 12 9 6 15"></polyline>
           </svg>
+          <span class="nav-back-to-top-text">Top</span>
         </button>
         <!-- 主题切换按钮（React 岛屿组件） -->
         <ThemeToggle client:load />

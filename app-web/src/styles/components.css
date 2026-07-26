@@ -212,14 +212,14 @@
   }
 }
 
-/* 回到顶部按钮：统一描边图标按钮风格（纯图标，方形，与导航栏其他按钮统一边框） */
+/* 回到顶部按钮：图标 + Top 文字标注（需求8），与导航栏其他按钮统一描边风格 */
 .nav-back-to-top {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
+  gap: 4px;
   height: 32px;
-  padding: 0;
+  padding: 0 10px;
   border: 1px solid var(--color-border-light);
   border-radius: var(--fandex-radius-sm);
   background: transparent;
@@ -227,6 +227,15 @@
   cursor: pointer;
   transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
   flex-shrink: 0;
+}
+
+/* Top 文字标注样式 */
+.nav-back-to-top-text {
+  font-family: var(--font-display);
+  font-size: 0.72em;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 /* 悬停反馈：移除 :not(:focus) 限制
@@ -253,11 +262,16 @@
   flex-shrink: 0;
 }
 
-/* 移动端回到顶部按钮适配 */
+/* 移动端回到顶部按钮适配：窄屏隐藏文字仅保留图标 */
 @media (max-width: 768px) {
   .nav-back-to-top {
-    width: 30px;
     height: 30px;
+    padding: 0;
+    width: 30px;
+  }
+
+  .nav-back-to-top-text {
+    display: none;
   }
 }
 

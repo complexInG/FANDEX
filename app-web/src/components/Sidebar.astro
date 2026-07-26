@@ -306,7 +306,8 @@ function moduleColor(m: Module | undefined): string {
   </nav>
 </aside>
 
-<!-- 浮动展开按钮：侧边栏折叠后显示在左边缘，点击恢复侧边栏 -->
+<!-- 浮动展开按钮：侧边栏折叠后显示在左边缘顶部，点击恢复侧边栏
+     含"展开"文字标注，避免单独 svg 图标语义不明（需求3） -->
 <button
   type="button"
   id="sidebar-expand-fab"
@@ -329,6 +330,7 @@ function moduleColor(m: Module | undefined): string {
   >
     <polyline points="9 18 15 12 9 6" />
   </svg>
+  <span class="fndx-sidebar__expand-fab-text">展开</span>
 </button>
 
 <!-- 客户端交互脚本：侧边栏滚动记忆、进度标记、模块折叠、视图切换、折叠收纳 -->

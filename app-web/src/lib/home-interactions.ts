@@ -7,7 +7,7 @@
  * - 真·双向无限循环（requestAnimationFrame 驱动，无 scroll 边界）
  * - 奇偶反向滚动 + 速度差异（模块数量越少越快）
  * - 悬停暂停（各模块独立）
- * - 鼠标拖拽 + 物理惯性 + 触控板水平滑动
+ * - 鼠标中键拖拽 + 物理惯性 + 触控板水平滑动
  * - 导航按钮控制（平移 2 张卡片宽度）
  * - 卡片标题溢出时 marquee 滚动
  *
@@ -15,6 +15,7 @@
  * - transform: translateX(offset) 驱动，offset 取模回绕实现无缝循环
  * - 克隆卡片集确保总宽度 ≥ 视窗 + 单份宽度，避免回绕空窗
  * - 悬停/拖拽时暂停自动滚动，由 mouseleave 恢复
+ * - 鼠标中键（button === 1）专用于拖拽滑动，左键保留给链接点击导航
  * ----------------------------------------------------------------------------- */
 import { initTextMarqueeWithResize } from '@/lib/text-overflow';
 
@@ -35,11 +36,6 @@ const INERTIA_MIN_VELOCITY = 2;
 
 /** 物理惯性：最小停止速度（速度低于此值时惯性终止） */
 const INERTIA_STOP_VELOCITY = 0.1;
-
-/** 拖拽阈值（像素）：移动超过此距离才认定为拖拽，未超过时保护 click 事件
- *  修复：原实现按下即更新 transform，微小抖动导致卡片位移、click 不触发、无法跳转
- *  引入阈值后，5px 以内的移动不更新 transform，浏览器正常派发 click 给 <a> */
-const DRAG_THRESHOLD = 5;
 
 /** 物理惯性：最大持续时间（毫秒），防止无限惯性 */
 const INERTIA_MAX_DURATION = 2500;
@@ -85,13 +81,10 @@ interface ScrollerState {
   /** 鼠标是否悬停在 scroller 内
    *  用于 onPointerUp / animateInertia 判断是否应保持暂停：
    *  鼠标在 scroller 内时由 mouseenter 设置为 true，pointerup 后不恢复自动滚动，
-   *  避免 track 在 click 事件前位移导致 <a> 跳转失败；mouseleave 时恢复 */
+   *  避免 track 位移导致 <a> 跳转失败；mouseleave 时恢复 */
   isHovering: boolean;
-  /** 鼠标是否已按下（按压状态，不等同于实际拖拽） */
+  /** 鼠标中键是否按下（中键专用于拖拽滑动，左键保留给链接导航） */
   isDragging: boolean;
-  /** 是否已越过 DRAG_THRESHOLD，进入实际拖拽状态
-   *  为 false 时 onPointerMove 不更新 transform，保护 click 事件派发 */
-  hasDragStarted: boolean;
   /** requestAnimationFrame 的 ID，用于取消 */
   rafId: number | null;
   /** 物理惯性：当前惯性速度（px/帧，正负代表方向） */
@@ -177,7 +170,6 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     isPaused: reduceMotion,
     isHovering: false,
     isDragging: false,
-    hasDragStarted: false,
     rafId: null,
     inertiaVelocity: 0,
     isInertiaActive: false,
@@ -245,12 +237,12 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     }
   });
 
-  // ========== 鼠标拖拽 + 物理惯性 ==========
+  // ========== 鼠标中键拖拽 + 物理惯性 ==========
+  // 中键（button === 1）专用于拖拽滑动，左键保留给 <a> 链接点击导航
+  // 因此无需 click 抑制逻辑与拖拽阈值：中键按下即开始拖拽，不会触发链接跳转
   let startX = 0;
   let startOffset = 0;
-  let dragDistance = 0;
   let pointerId: number | null = null;
-  let suppressClick = false;
   // 速度追踪：记录最近一次 move 的时间戳与位置，用于计算释放瞬时速度
   let lastMoveTime = 0;
   let lastMoveX = 0;
@@ -310,8 +302,15 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     state.inertiaRafId = requestAnimationFrame(animateInertia);
   };
 
+  /**
+   * 中键按下：开始拖拽
+   * 仅响应鼠标中键（button === 1），preventDefault 阻止浏览器默认自动滚动光标行为
+   * 立即捕获指针，确保拖拽中即使鼠标移出 scroller 仍能接收事件
+   */
   const onPointerDown = (e: PointerEvent) => {
-    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    if (e.pointerType !== 'mouse' || e.button !== 1) return;
+    // 阻止浏览器中键默认行为（自动滚动光标 / 新标签打开链接）
+    e.preventDefault();
     // 拖拽开始时取消任何进行中的惯性
     if (state.inertiaRafId !== null) {
       cancelAnimationFrame(state.inertiaRafId);
@@ -322,43 +321,25 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     state.isDragging = true;
     // pointerdown 时鼠标必然在 scroller 内，强制标记 isHovering = true
     // 防止页面加载时鼠标已在 scroller 内导致 mouseenter 未触发、isHovering 为 false
-    // 此时 pointerup 后 isPaused 被设为 false，track 在 click 前位移，click 不派发
     state.isHovering = true;
     state.isPaused = true;
-    state.hasDragStarted = false;
-    dragDistance = 0;
     startX = e.clientX;
     startOffset = state.offset;
     lastMoveTime = performance.now();
     lastMoveX = e.clientX;
     pointerId = e.pointerId;
-    // 不在按下时立即 setPointerCapture：会重定向 pointerup 到 scroller，
-    // 导致 pointerdown(<a>) 与 pointerup(scroller) 不在同一元素，click 不派发。
-    // 延迟到 onPointerMove 越过阈值后才捕获指针，保护普通点击的 click 派发。
+    scroller.classList.add('is-dragging');
+    // 中键专用于拖拽，立即捕获指针（无需像左键那样延迟以保护 click 派发）
+    try {
+      scroller.setPointerCapture(e.pointerId);
+    } catch {
+      // 安全降级
+    }
   };
 
   const onPointerMove = (e: PointerEvent) => {
     if (!state.isDragging || e.pointerId !== pointerId) return;
     const dx = e.clientX - startX;
-    dragDistance = Math.abs(dx);
-
-    // 拖拽阈值闸门：未越过 DRAG_THRESHOLD 前不更新 transform，不添加 is-dragging 类
-    // 这是 click 事件得以正常派发的关键 —— 卡片不位移，浏览器判定为有效点击
-    if (!state.hasDragStarted) {
-      if (dragDistance <= DRAG_THRESHOLD) {
-        return;
-      }
-      // 首次越过阈值，进入实际拖拽：切换光标、标记启动
-      state.hasDragStarted = true;
-      scroller.classList.add('is-dragging');
-      // 越过阈值后才捕获指针，确保拖拽中即使鼠标移出 scroller 仍能接收事件
-      // 此时 click 已被 suppressClick 抑制，不影响跳转
-      try {
-        scroller.setPointerCapture(e.pointerId);
-      } catch {
-        // 安全降级
-      }
-    }
 
     // 手动更新 offset，实时跟手
     let newOffset = startOffset + dx;
@@ -382,48 +363,34 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   const onPointerUp = (e: PointerEvent) => {
     if (!state.isDragging || e.pointerId !== pointerId) return;
     state.isDragging = false;
-    // 只有真正拖拽过（越过阈值）才释放指针捕获并抑制 click
-    // 未拖拽时未调用 setPointerCapture，无需 release，click 正常派发给 <a>
-    if (state.hasDragStarted) {
-      try {
-        scroller.releasePointerCapture(e.pointerId);
-      } catch {
-        // 安全降级
-      }
-      suppressClick = true;
-      window.setTimeout(() => {
-        suppressClick = false;
-      }, 120);
-      // 启动物理惯性（慢速 < 2px/帧 时无惯性，由 startInertia 内部判断）
-      startInertia(state.inertiaVelocity);
+    try {
+      scroller.releasePointerCapture(e.pointerId);
+    } catch {
+      // 安全降级
     }
     pointerId = null;
     scroller.classList.remove('is-dragging');
-    state.hasDragStarted = false;
+    // 启动物理惯性（慢速 < 2px/帧 时无惯性，由 startInertia 内部判断）
+    startInertia(state.inertiaVelocity);
 
     // 若未启用惯性，恢复自动滚动：鼠标仍在 scroller 内时保持暂停
-    // 由 mouseleave 在鼠标离开时恢复自动滚动，避免 click 前 track 位移
+    // 由 mouseleave 在鼠标离开时恢复自动滚动
     if (!state.isInertiaActive) {
       state.isPaused = state.isHovering || reduceMotion;
     }
   };
+
+  // 中键按下时阻止默认的 mousedown 行为（部分浏览器在 pointerdown 之外仍触发自动滚动）
+  scroller.addEventListener('mousedown', (e: MouseEvent) => {
+    if (e.button === 1) e.preventDefault();
+  });
 
   scroller.addEventListener('pointerdown', onPointerDown);
   scroller.addEventListener('pointermove', onPointerMove);
   scroller.addEventListener('pointerup', onPointerUp);
   scroller.addEventListener('pointercancel', onPointerUp);
 
-  // 捕获阶段抑制拖拽后的卡片链接点击
-  scroller.addEventListener(
-    'click',
-    (e) => {
-      if (suppressClick) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    },
-    true,
-  );
+  // 中键拖拽不会触发链接 click 跳转，无需 click 抑制逻辑（已移除 suppressClick）
 
   // ========== 导航按钮 ==========
   const section = scroller.closest('.category-section');

@@ -568,18 +568,19 @@
     display: flex;
   }
 
-  /* 浮动展开按钮：侧边栏折叠时显示在左边缘，点击恢复侧边栏 */
+  /* 浮动展开按钮：侧边栏折叠时显示在左边缘顶部，点击恢复侧边栏
+   * 位置与侧边栏顶部折叠按钮对齐（紧贴 header 下方），含"展开"文字标注（需求3） */
   .fndx-sidebar__expand-fab {
     position: fixed;
-    top: 50%;
+    top: var(--nav-height);
     left: 0;
-    transform: translateY(-50%);
     z-index: var(--z-sidebar);
     display: none;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 48px;
+    gap: var(--space-inline-xs);
+    padding: 0 var(--space-2);
+    height: 32px;
     border: 1px solid var(--color-border-default);
     border-left: none;
     border-radius: 0 var(--radius-control) var(--radius-control) 0;
@@ -588,8 +589,17 @@
     -webkit-backdrop-filter: blur(8px);
     color: var(--color-fg-secondary);
     cursor: pointer;
+    font-size: var(--font-size-caption);
+    font-family: var(--font-family-display);
     transition: background-color var(--motion-duration-instant) var(--motion-easing-out),
-                color var(--motion-duration-instant) var(--motion-easing-out);
+                color var(--motion-duration-instant) var(--motion-easing-out),
+                border-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  /* 展开按钮文字标注 */
+  .fndx-sidebar__expand-fab-text {
+    white-space: nowrap;
+    letter-spacing: 0.02em;
   }
 
   .fndx-sidebar.is-collapsed ~ .fndx-sidebar__expand-fab,
@@ -764,9 +774,11 @@
   }
 
   @media (hover: hover) {
+    /* 悬停特效（需求5）：强化背景色 + 模块分类色左边框 + 文字加色，视觉提示更明显 */
     .fndx-sidebar__link:hover {
-      background-color: var(--color-bg-hover);
+      background-color: color-mix(in oklch, var(--module-color, var(--color-accent-base)) 8%, var(--color-bg-hover));
       color: var(--color-fg-primary);
+      border-left-color: color-mix(in oklch, var(--module-color, var(--color-accent-base)) 60%, transparent);
     }
   }
 
@@ -1131,6 +1143,8 @@
     flex-direction: column;
     width: var(--toc-width);
     flex-shrink: 0;
+    /* min-width: 0 防止 grid 子元素内容撑破列宽导致三栏布局坍缩（需求9） */
+    min-width: 0;
     background-color: var(--toc-bg);
     overflow: hidden;
   }
@@ -1141,11 +1155,14 @@
     }
   }
 
-  /* 桌面端 sticky 定位 */
+  /* 桌面端 sticky 定位
+   * align-self: start 防止 grid 子元素拉伸填满行高，确保 sticky 在视口内正确生效
+   * max-height 约束 TOC 高度，超出部分由 .fndx-toc__nav 内部滚动（需求10） */
   @media (min-width: 1024px) {
     .fndx-toc {
       position: sticky;
       top: calc(var(--nav-height) + var(--space-6));
+      align-self: start;
       max-height: calc(100vh - var(--nav-height) - var(--space-12));
       max-height: calc(100dvh - var(--nav-height) - var(--space-12));
     }
@@ -1158,20 +1175,46 @@
     }
   }
 
+  /* TOC 导航容器：可纵向滚动（需求10），min-height:0 允许 flex 子元素收缩 */
   .fndx-toc__nav {
     display: flex;
     flex-direction: column;
     gap: var(--space-stack-sm);
     padding: var(--space-4) var(--space-page-x);
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
   }
 
+  /* WebKit 滚动条样式 */
+  .fndx-toc__nav::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .fndx-toc__nav::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-strong);
+    border-radius: 2px;
+  }
+
+  .fndx-toc__nav::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* TOC 标题：sticky 固定在 nav 顶部，滚动时保持可见 */
   .fndx-toc__title {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     margin: 0;
+    padding-bottom: var(--space-2);
     font-size: var(--font-size-caption);
     font-weight: var(--font-weight-emphasis);
     color: var(--color-fg-tertiary);
     text-transform: uppercase;
     letter-spacing: var(--font-letter-spacing-label);
+    background-color: var(--toc-bg);
   }
 
   .fndx-toc__list {
@@ -1198,8 +1241,11 @@
   }
 
   @media (hover: hover) {
+    /* TOC 链接悬停特效（需求5）：背景色 + 左边框 + 文字加色，视觉提示明显 */
     .fndx-toc__link:hover {
       color: var(--color-fg-primary);
+      background-color: var(--color-bg-hover);
+      border-left-color: color-mix(in oklch, var(--color-accent-base) 50%, transparent);
     }
   }
 

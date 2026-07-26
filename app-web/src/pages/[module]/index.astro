@@ -35,7 +35,7 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
   />
   <Sidebar slot="sidebar" moduleId={module} />
 
-  <div class="module-page">
+  <div class="module-page" style={`--module-color:${categoryColors[getPrimaryCategory(meta)]}`}>
     <Breadcrumb items={breadcrumb} hasSidebar />
 
     <div class="module-header fndx-scroll-reveal">
@@ -45,15 +45,8 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
       </div>
     </div>
 
-    {/* 返回 getting-started 目录页链接（当前模块非 getting-started 时显示） */}
-    {module !== 'getting-started' && (
-      <a href={`${import.meta.env.BASE_URL}getting-started/`} class="back-to-start-link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="18 6 6 12 18 18" />
-        </svg>
-        返回入门指南
-      </a>
-    )}
+    {/* 注：原"返回入门指南"按钮已移除 —— 侧边栏顶部已提供"返回首页"按钮，
+        该按钮在所有模块目录页重复且地址错误（指向 getting-started 而非首页） */}
 
     <ul class="doc-list fndx-scroll-reveal-fade">
       {
@@ -128,27 +121,7 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
 
   /* 已删除 .header-dot 点状装饰（去卡通化，几何科技风格） */
 
-  /* 返回入门指南链接 — 统一按钮标准（直角边框、无悬停放大） */
-  .back-to-start-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    margin-bottom: var(--spacing-sm);
-    font-size: 0.78em;
-    font-family: var(--font-display);
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    border: 1px solid var(--color-border-light);
-    background: transparent;
-    transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
-  }
-
-  .back-to-start-link:hover {
-    color: var(--color-primary);
-    border-color: var(--color-primary);
-    background: var(--color-bg-hover);
-  }
+  /* 注：原 .back-to-start-link 样式已随按钮移除 —— 侧边栏顶部"返回首页"按钮已承担返回功能 */
 
   .header-title {
     font-family: var(--font-display);
@@ -180,18 +153,23 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     border-bottom: none;
   }
 
+  /* 文档链接：flex-wrap 允许标题与描述分行显示，增高卡片以容纳多行内容
+   * 布局：第一行 = 图标 + 序号 + 难度 + 标题；第二行 = 描述（flex-basis: 100% 强制换行） */
   .doc-list-link {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    gap: var(--spacing-xs) var(--spacing-sm);
     padding: var(--spacing-xs) var(--spacing-sm);
     color: var(--color-text);
     text-decoration: none;
-    transition: background var(--transition-fast);
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+    border-left: 2px solid transparent;
   }
 
   .doc-list-link:hover {
     background: var(--color-bg-hover);
+    border-left-color: var(--module-color, var(--color-primary));
   }
 
   /* 文档图标：紧凑化 24px，使用模块分类色而非青色 */
@@ -219,15 +197,16 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     min-width: 1.8em;
   }
 
+  /* 标题：允许完整显示，超长时换行而非截断（需求6）
+   * 移除原 white-space:nowrap / overflow:hidden / text-overflow:ellipsis */
   .doc-list-title {
     font-family: var(--font-display);
     font-size: 0.82em;
     font-weight: 500;
-    flex-shrink: 1;
+    flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    word-break: break-word;
+    line-height: 1.4;
   }
 
   .doc-list-difficulty {
@@ -250,28 +229,22 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     color: var(--color-warning);
   }
 
+  /* 进阶难度标识：加强背景色强调（需求4）—— 由 15% 提升至 28%，并加粗字重 */
   .diff-advanced {
-    background: color-mix(in srgb, var(--color-danger) 15%, var(--color-bg));
+    background: color-mix(in srgb, var(--color-danger) 28%, var(--color-bg));
     color: var(--color-danger);
+    font-weight: 600;
   }
 
+  /* 描述：独占一行显示（需求7）—— flex-basis:100% 强制换行到新行
+   * 移除原 white-space:nowrap，允许长描述自然换行 */
   .doc-list-desc {
+    flex-basis: 100%;
+    padding-left: calc(24px + var(--spacing-sm));
     font-size: 0.72em;
     color: var(--color-text-tertiary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 768px) {
-    .doc-list-link {
-      flex-wrap: wrap;
-    }
-
-    .doc-list-desc {
-      width: 100%;
-      padding-left: 36px;
-    }
+    line-height: 1.5;
+    word-break: break-word;
   }
   } /* end @layer pages */
 </style>
