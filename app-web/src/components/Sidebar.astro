@@ -82,7 +82,7 @@ function moduleHref(id: string): string {
 }
 
 /** 获取模块的主分类颜色（用于色条/圆点）
- *  偏差报备：categoryColors[key] 在 noUncheckedIndexedAccess 下返回 string | undefined，
+ *  categoryColors[key] 在 noUncheckedIndexedAccess 下返回 string | undefined，
  *  此处通过 ?? '' 兜底确保返回 string，外层调用方已通过 --module-color CSS 变量提供默认色 */
 function moduleColor(m: Module | undefined): string {
   if (!m) return categoryColors.tools ?? ''

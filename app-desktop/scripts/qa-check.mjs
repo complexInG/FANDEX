@@ -8,13 +8,12 @@
  *
  * 检查项：
  *   1. 内容完整性：cnt-content/full/ 下文档数 > 1900
- *   2. 速查表完整性：shd-shared/metadata/cheatsheets/ 下 9 个 JSON 文件
- *   3. 模块定义：shd-shared/metadata/modules.json 含 51 个模块
- *   4. 索引文件存在：module-docs-index.json
- *   5. 构建产物：./dist-web/ 目录存在且含 index.html（仅 post-build 检查）
- *   6. 无 Vue 残留：grep "from 'vue'" 或 ".vue" 在 app/ 下返回 0 结果
- *   7. Tauri 配置：src-tauri/tauri.conf.json 存在
- *   8. PWA 资源：manifest.json、sw.js、icons/ 存在
+ *   2. 模块定义：shd-shared/metadata/modules.json 含 52 个模块
+ *   3. 索引文件存在：module-docs-index.json
+ *   4. 构建产物：./dist-web/ 目录存在且含 index.html（仅 post-build 检查）
+ *   5. 无 Vue 残留：grep "from 'vue'" 或 ".vue" 在 app/ 下返回 0 结果
+ *   6. Tauri 配置：src-tauri/tauri.conf.json 存在
+ *   7. PWA 资源：manifest.json、sw.js、icons/ 存在
  */
 
 import { access, readdir, readFile } from 'node:fs/promises';
@@ -29,8 +28,6 @@ const PROJECT_ROOT = resolve(__dirname, '..');
 const MONO_ROOT = resolve(PROJECT_ROOT, '..');
 /** 文档源目录（仓库整理后 content/full 已迁移至 cnt-content/full） */
 const CONTENT_DIR = join(MONO_ROOT, 'cnt-content', 'full');
-/** 速查表目录（仓库整理后已迁移至 shd-shared/metadata/cheatsheets） */
-const CHEATSHEETS_DIR = join(MONO_ROOT, 'shd-shared', 'metadata', 'cheatsheets');
 /** 模块定义文件（仓库整理后 metadata/modules.json 已迁移至 shd-shared/metadata/modules.json） */
 const MODULES_FILE = join(MONO_ROOT, 'shd-shared', 'metadata', 'modules.json');
 /** 索引输出目录 */
@@ -143,34 +140,10 @@ async function checkContentCompleteness() {
 }
 
 /**
- * 检查 2：速查表完整性（cheatsheets/ 下 9 个 JSON）
- */
-async function checkCheatsheetsCompleteness() {
-  console.log('[Dimension 2: Cheatsheets Completeness]');
-  try {
-    if (!(await fileExists(CHEATSHEETS_DIR))) {
-      fail(`cheatsheets/ 目录不存在: ${CHEATSHEETS_DIR}`);
-      return;
-    }
-    const files = await readdir(CHEATSHEETS_DIR);
-    const jsonFiles = files.filter((f) => f.endsWith('.json'));
-    if (jsonFiles.length === 9) {
-      pass(`cheatsheets/ 下 ${jsonFiles.length}/9 个 JSON 文件`);
-    } else if (jsonFiles.length >= 8) {
-      warn(`cheatsheets/ 下 ${jsonFiles.length}/9 个 JSON 文件（部分缺失）`);
-    } else {
-      fail(`cheatsheets/ 下仅 ${jsonFiles.length}/9 个 JSON 文件（严重缺失）`);
-    }
-  } catch (err) {
-    fail(`扫描 cheatsheets/ 失败: ${err.message}`);
-  }
-}
-
-/**
- * 检查 3：模块定义（modules.json 含 51 个模块）
+ * 检查 2：模块定义（modules.json 含 52 个模块）
  */
 async function checkModulesDefinition() {
-  console.log('[Dimension 3: Modules Definition]');
+  console.log('[Dimension 2: Modules Definition]');
   try {
     if (!(await fileExists(MODULES_FILE))) {
       fail(`modules.json 不存在: ${MODULES_FILE}`);
@@ -179,12 +152,12 @@ async function checkModulesDefinition() {
     const raw = await readFile(MODULES_FILE, 'utf-8');
     const data = JSON.parse(raw);
     const moduleCount = Array.isArray(data.modules) ? data.modules.length : 0;
-    if (moduleCount === 51) {
-      pass(`modules.json 含 ${moduleCount}/51 个模块`);
-    } else if (moduleCount >= 48) {
-      warn(`modules.json 含 ${moduleCount}/51 个模块（部分缺失）`);
+    if (moduleCount === 52) {
+      pass(`modules.json 含 ${moduleCount}/52 个模块`);
+    } else if (moduleCount >= 49) {
+      warn(`modules.json 含 ${moduleCount}/52 个模块（部分缺失）`);
     } else {
-      fail(`modules.json 仅含 ${moduleCount}/51 个模块（严重缺失）`);
+      fail(`modules.json 仅含 ${moduleCount}/52 个模块（严重缺失）`);
     }
   } catch (err) {
     fail(`读取 modules.json 失败: ${err.message}`);
@@ -192,10 +165,10 @@ async function checkModulesDefinition() {
 }
 
 /**
- * 检查 4：索引文件存在
+ * 检查 3：索引文件存在
  */
 async function checkIndexFiles() {
-  console.log('[Dimension 4: Index Files]');
+  console.log('[Dimension 3: Index Files]');
   const expectedIndexes = [
     'module-docs-index.json',
   ];
@@ -210,11 +183,11 @@ async function checkIndexFiles() {
 }
 
 /**
- * 检查 5：构建产物（dist/ 存在且含 index.html）
+ * 检查 4：构建产物（dist/ 存在且含 index.html）
  * 仅在 dist/ 存在时检查，缺失时仅警告不失败
  */
 async function checkBuildArtifacts() {
-  console.log('[Dimension 5: Build Artifacts]');
+  console.log('[Dimension 4: Build Artifacts]');
   if (!(await fileExists(DIST_DIR))) {
     warn(`dist-web/ 目录不存在（expo:build:web 可能尚未执行）`);
     return;
@@ -228,10 +201,10 @@ async function checkBuildArtifacts() {
 }
 
 /**
- * 检查 6：无 Vue 残留（app/ 下不应包含 .vue 文件或 from 'vue' 导入）
+ * 检查 5：无 Vue 残留（app/ 下不应包含 .vue 文件或 from 'vue' 导入）
  */
 async function checkNoVueResidue() {
-  console.log('[Dimension 6: No Vue Residue]');
+  console.log('[Dimension 5: No Vue Residue]');
   try {
     if (!(await fileExists(SRC_DIR))) {
       warn(`app/ 目录不存在: ${SRC_DIR}`);
@@ -287,10 +260,10 @@ async function checkNoVueResidue() {
 }
 
 /**
- * 检查 7：Tauri 配置
+ * 检查 6：Tauri 配置
  */
 async function checkTauriConfig() {
-  console.log('[Dimension 7: Tauri Config]');
+  console.log('[Dimension 6: Tauri Config]');
   const tauriConf = join(TAURI_DIR, 'tauri.conf.json');
   if (await fileExists(tauriConf)) {
     pass(`src-tauri/tauri.conf.json 存在`);
@@ -308,10 +281,10 @@ async function checkTauriConfig() {
 }
 
 /**
- * 检查 8：PWA 资源（manifest.json、sw.js、icons/）
+ * 检查 7：PWA 资源（manifest.json、sw.js、icons/）
  */
 async function checkPwaAssets() {
-  console.log('[Dimension 8: PWA Assets]');
+  console.log('[Dimension 7: PWA Assets]');
   const manifestFile = join(PUBLIC_DIR, 'manifest.json');
   const swFile = join(PUBLIC_DIR, 'sw.js');
   const iconsDir = join(PUBLIC_DIR, 'icons');
@@ -351,7 +324,6 @@ async function main() {
   console.log('+------------------------------------------+\n');
 
   await checkContentCompleteness();
-  await checkCheatsheetsCompleteness();
   await checkModulesDefinition();
   await checkIndexFiles();
   await checkBuildArtifacts();

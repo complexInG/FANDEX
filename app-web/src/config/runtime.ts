@@ -12,11 +12,6 @@
  *   import { RUNTIME } from '@/config/runtime';
  *   const timeout = RUNTIME.codeRunnerTimeoutMs;
  *
- * 偏差报备（DOMPurify 移除）：
- * - 原：包含 dompurifyCdn 字段，用于通过 CDN 加载 DOMPurify HTML 消毒库
- * - 新：全站未实际调用 window.DOMPurify.sanitize()，CDN 脚本从未被 .astro 文件加载
- * - 依据：经 rg 搜索确认 window.DOMPurify 与 DOMPurify.sanitize 在 src/ 下零引用
- * - 同时删除：src/types/dompurify.d.ts 全局类型声明
  */
 
 /** 从环境变量读取字符串值，未设置时返回 fallback */

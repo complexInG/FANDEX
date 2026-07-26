@@ -1,5 +1,5 @@
 import { defineCollection } from 'astro:content';
-// 偏差报备：Astro 7 同时弃用了从 'astro:content' 与 'astro:schema' 导出 z 的方式（ts(6385) 'z' is deprecated）。
+// Astro 7 同时弃用了从 'astro:content' 与 'astro:schema' 导出 z 的方式（ts(6385) 'z' is deprecated）。
 // 改为从 'zod' 直接导入（zod 4.x 已作为 astro 的传递依赖存在于 node_modules），
 // 并在 package.json 显式声明依赖以锁定版本，避免传递依赖变更导致构建失败。
 // 依据：https://docs.astro.build/en/upgrade-guides/v7/ + npm list zod 验证
@@ -53,7 +53,7 @@ const ReferenceTypeSchema = z.enum([
  * 参考文献条目 Schema
  * 遵循 ACM Reference Format 的字段划分
  *
- * 偏差报备：volume/issue 原设计为 number，但学术文献中这些字段
+ * volume/issue 原设计为 number，但学术文献中这些字段
  * 经常使用字符串（如 issue: "OOPSLA"、"Special Issue"）。
  * 临时改为 union(number, string) 以兼容存量数据。
  *
@@ -112,7 +112,7 @@ const CognitiveLevelSchema = z.enum([
  * 基础习题 Schema
  * 所有题型共享的公共字段，通过 type 字段区分子类型
  *
- * 偏差报备：difficulty 字段原设计为 1-5 数字字面量联合，
+ * difficulty 字段原设计为 1-5 数字字面量联合，
  * 但现有 63 篇文档的 frontmatter 普遍使用 'easy'/'medium'/'hard'/'advanced' 字符串。
  * 为避免破坏性修改数十篇文档数据，临时放宽为 string | number 联合。
  * 后续应统一数据格式后再收紧 schema。
@@ -145,7 +145,7 @@ const BaseExerciseSchema = z.object({
  * 填空题 Schema
  * 支持多空、大小写敏感配置
  *
- * 偏差报备：blankCount/answers 原为必填，但现有文档多使用单一 answer 字符串
+ * blankCount/answers 原为必填，但现有文档多使用单一 answer 字符串
  * 而非结构化 answers 数组。临时改为 optional 以兼容存量数据。
  */
 const FillBlankExerciseSchema = BaseExerciseSchema.extend({
@@ -159,7 +159,7 @@ const FillBlankExerciseSchema = BaseExerciseSchema.extend({
  * 选择题 Schema
  * 支持单选与多选（multiple=true 时使用 correctIndices）
  *
- * 偏差报备：options/correctIndex 原为必填，但现有文档多将选项写入 question 正文，
+ * options/correctIndex 原为必填，但现有文档多将选项写入 question 正文，
  * answer 字段直接存储选项字母（如 'B'）。临时改为 optional 以兼容存量数据。
  */
 const ChoiceExerciseSchema = BaseExerciseSchema.extend({
@@ -174,7 +174,7 @@ const ChoiceExerciseSchema = BaseExerciseSchema.extend({
  * 代码修正题 Schema
  * 提供有缺陷的代码片段，要求学习者修正
  *
- * 偏差报备：buggyCode/language/fixedCode/errorDescription 原为必填，
+ * buggyCode/language/fixedCode/errorDescription 原为必填，
  * 但现有文档多将缺陷代码写入 question，修复代码写入 answer。
  * 临时改为 optional 以兼容存量数据。
  */
@@ -190,7 +190,7 @@ const CodeFixExerciseSchema = BaseExerciseSchema.extend({
  * 开放性问题 Schema
  * 适用于设计、论述类题目，提供评分关键点
  *
- * 偏差报备：keyPoints 原为必填，但现有文档多未提供。临时改为 optional。
+ * keyPoints 原为必填，但现有文档多未提供。临时改为 optional。
  */
 const OpenEndedExerciseSchema = BaseExerciseSchema.extend({
   type: z.literal('open-ended'),
@@ -216,7 +216,7 @@ export const ExerciseSchema = z.discriminatedUnion('type', [
 // docs Collection
 // ============================================================
 
-// 偏差报备（仓库整理后路径变更）：
+// （仓库整理后路径变更）：
 // 原：app-web/src/content/docs（已删除）
 // 新：cnt-content/full（单仓库根目录下的统一内容源）
 // base 路径相对于 content.config.ts 所在的 app-web/src/ 目录
@@ -268,7 +268,7 @@ const docs = defineCollection({
       )
       .default([]),
     // === 新增字段（Phase 1.5） ===
-    // 偏差报备：以下扩展字段原使用严格 schema（ExerciseSchema/ReferenceSchema/EtymologyEntrySchema），
+    // 以下扩展字段原使用严格 schema（ExerciseSchema/ReferenceSchema/EtymologyEntrySchema），
     // 但存量文档数据格式高度多样：
     //   - exercises/references 有的文档缺字段或使用非枚举值；
     //   - etymology 在 Promise构造器.md 中为数组，在 事件循环.md 中为对象；

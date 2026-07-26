@@ -2,16 +2,6 @@
  * Service 层统一入口
  * UI 层（pages/components/islands）禁止直接导入 services 内部模块，必须从此文件导入
  * Data 层（getCollection 等）仅允许在 services 内部调用
- *
- * 偏差报备（ProgressToggle 功能删除）：
- * - 原：包含 progress-service 进度服务（getProgress/setProgress/getProgressStats 等）
- * - 新：ProgressToggle（已读/未读）功能已删除，progress-service 及相关类型已移除
- * - 依据：用户明确要求删除 ProgressToggle 及其相关的一切功能、代码、组件、服务
- *
- * 偏差报备（学习路径页删除）：
- * - 原：包含 learning-path-service 学习路径服务（getAllPaths/getPath/getPathProgress 等）
- * - 新：roadmap.astro 学习路径页已删除，learning-path-service 及相关类型已移除
- * - 依据：用户明确要求彻底删除 roadmap.astro 学习路径页及其相关内容
  */
 
 // ── 文档服务 ──

@@ -1,7 +1,7 @@
 {
   "name": "FANDEX - 渐进式自学平台",
   "short_name": "FANDEX",
-  "description": "FANDEX 是一个涵盖编程语言、前端、后端、计算机科学、人工智能、大数据、云计算、数据库、DevOps 等 51 个模块的渐进式自学平台，提供 1900+ 篇结构化文档与速查表。",
+  "description": "FANDEX 是一个涵盖编程语言、前端、后端、计算机科学、人工智能、大数据、云计算、数据库、DevOps 等 52 个模块的渐进式自学平台，提供 1900+ 篇结构化文档。",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

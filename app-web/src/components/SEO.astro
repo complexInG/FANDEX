@@ -21,7 +21,7 @@
  */
 import { SITE } from '@/lib/constants';
 // 统一资产引用：favicon 从 @fandex/shared-assets 共享包导入，用于 OG 图片缺省值
-// 偏差报备：Astro 静态导入 SVG 返回 SvgComponent & ImageMetadata 类型，
+// Astro 静态导入 SVG 返回 SvgComponent & ImageMetadata 类型，
 // 此处提取 .src 字符串以匹配 new URL() 的 string | URL 参数约束
 import faviconMeta from '@fandex/shared-assets/icons/favicon.svg';
 const faviconUrl: string = (faviconMeta as unknown as { src: string }).src;

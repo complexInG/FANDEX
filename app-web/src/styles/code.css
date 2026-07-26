@@ -88,7 +88,7 @@
   background: var(--color-primary);
   color: var(--color-text-inverse);
   border-color: var(--color-primary);
-  /* Task 4.4：移除悬停放大 transform: scale(1.05)，统一为直角边框样式反馈 */
+  /* 移除悬停放大 transform: scale(1.05)，统一为直角边框样式反馈 */
 }
 
 /* 已复制状态：使用第三品牌色标识 */

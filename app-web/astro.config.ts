@@ -48,22 +48,9 @@ export default defineConfig({
   },
   // Vite 构建选项：控制 Rollup 输出文件名格式
   vite: {
-    // 扩展名解析：三端统一 React 生态后，.tsx 为 Islands 主扩展名
-    // 使共享 mdx 文件中不带扩展名的 import '@/islands/CheatSheet'
-    // 能正确解析到 CheatSheet.tsx（web/desktop 统一）
+    // 扩展名解析：.tsx 为 Islands 主扩展名，使不带扩展名的 import 能正确解析
     resolve: {
       extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
-      alias: {
-        // cheatsheets 数据三端共享（仓库整理后已从 app-web/src/data/cheatsheets/ 迁移至 shd-shared/metadata/cheatsheets/）
-        // MDX 中通过 @/data/cheatsheets/<name>.json 引用，保持引用路径不变
-        '@/data/cheatsheets': resolve(
-          projectRoot,
-          '..',
-          'shd-shared',
-          'metadata',
-          'cheatsheets',
-        ),
-      },
     },
     plugins: [
       // Tailwind CSS v4 Vite 插件：CSS-first 配置，自动扫描源码生成工具类

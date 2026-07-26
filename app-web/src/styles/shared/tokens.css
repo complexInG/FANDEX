@@ -53,9 +53,9 @@
     /* 浅色次背景 */
     --color-neutral-1000: #F5F5F5;
     /* 类白色（Off-White #FAF9F6）
-     * Task 4.1：由纯白 #FFFFFF 调整为类白色，降低亮色模式眩光，提升长文阅读舒适度
+     * 由纯白 #FFFFFF 调整为类白色，降低亮色模式眩光，提升长文阅读舒适度
      * WCAG AA 对比度：与 #1a1a1a 文字组合约 16.5:1，远超 4.5:1 要求
-     * 偏差报备：tokens.css 头部标注"自动生成"，但本次为设计令牌手动调整，
+     * tokens.css 头部标注"自动生成"，但本次为设计令牌手动调整，
      *   需同步更新 shd-shared/tokens/ JSON 源文件以保持一致 */
     --color-neutral-1050: #FAF9F6;
     /* 深青（active 态） */

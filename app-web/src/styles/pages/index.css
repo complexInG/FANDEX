@@ -16,9 +16,9 @@
  * - 交互反馈通过位移和颜色变化
  * - 所有颜色消费 ark 语义令牌，主题切换自动跟随
  *
- * 横向滑动器设计要点（P6 重构）：
- * - 分类标题栏去除重型色条装饰，改用圆点指示器 + 计数药丸
- * - 卡片由 grid 网格改为 flex 横向排列，固定宽度，原生横向滚动
+ * 横向滑动器设计要点：
+ * - 分类标题栏使用圆点指示器 + 计数药丸
+ * - 卡片 flex 横向排列，固定宽度，原生横向滚动
  * - 边缘渐变遮罩实现"渐变层叠显现"效果
  * - JS 克隆卡片集实现前向无限循环（圆圈循环）
  * - 导航按钮控制左右滚动，悬停反馈即时（instant 75ms）
@@ -37,7 +37,7 @@
    */
   .home-page {
     position: relative;
-    /* Task 3.1：自适应桌面端宽度 94%，移除 max-width 限制 */
+    /* 自适应桌面端宽度 94% */
     width: 94vw;
     max-width: 100%;
     min-height: calc(100vh - var(--nav-height));
@@ -154,7 +154,7 @@
     );
   }
 
-  /* 快捷链接（学习路线、标签索引） — ark 描边按钮 */
+  /* 快捷链接 — ark 描边按钮 */
   .stat-link {
     display: inline-flex;
     align-items: center;
@@ -176,7 +176,6 @@
   .stat-link:hover {
     border-color: var(--color-accent-base);
     background: color-mix(in srgb, var(--color-accent-base) 12%, transparent);
-    /* Task 4.4：移除悬停上浮 transform: translateY(-1px)，统一为直角边框样式反馈 */
   }
 
   .stat-link:active {
@@ -184,14 +183,8 @@
   }
 
   /* ============================================================
-   * 3. 分类区域（P6 重构 · 极简现代横向滑动器）
+   * 3. 分类区域（极简现代横向滑动器）
    * ----------------------------------------------------------------
-   * 设计变更：
-   * - 去除旧版重型色条 + 填充背景 + 边框装饰（年代感来源）
-   * - 改用圆点指示器 + 标签 + 计数药丸 + 导航按钮 + 折叠箭头
-   * - 标题栏占用空间大幅缩减，视觉更简洁现代
-   * - 卡片网格改为横向无限滑动选择器
-   *
    * 结构：
    *   <section class="category-section">
    *     <div class="category-header">
@@ -213,7 +206,7 @@
    * ============================================================ */
   .category-section {
     margin-bottom: var(--spacing-xl);
-    /* Task 2.3/2.4：grid-template-rows 过渡实现折叠/展开顺滑动画
+    /* grid-template-rows 过渡实现折叠/展开顺滑动画
        - 默认 auto 1fr：标题栏自适应 + 内容区占据剩余空间
        - 折叠时 auto 0fr：内容行高度过渡到 0
        - 比 max-height 方案更精准（过渡到实际内容高度，无延迟）
@@ -317,7 +310,7 @@
   }
 
   /* 折叠状态下隐藏滑动器
-     Task 2.3：配合 grid-template-rows 过渡，改用 overflow + min-height
+     配合 grid-template-rows 过渡，改用 overflow + min-height
      保留 display 避免动画期间完全移除（display:none 无法过渡） */
   .feature-scroller {
     overflow: hidden;

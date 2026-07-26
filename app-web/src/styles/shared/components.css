@@ -357,7 +357,7 @@
     .fndx-card:hover {
       border-color: var(--card-state-hover-border);
       box-shadow: var(--card-shadow-hover);
-      /* Task 4.4：移除悬停上浮 transform: translateY(-2px)，统一为直角边框样式反馈 */
+      /* 移除悬停上浮 transform: translateY(-2px)，统一为直角边框样式反馈 */
     }
   }
 

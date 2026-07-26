@@ -200,7 +200,7 @@ function initCopyButtons(): void {
         }, 2000);
       } catch {
         // Clipboard API 不可用时回退到 execCommand
-        // 偏差报备：document.execCommand 已被标记为 deprecated（ts(6385) hint），
+        // document.execCommand 已被标记为 deprecated（ts(6385) hint），
         // 但作为 file:// 协议下桌面端的降级方案保留（Tauri 桌面端环境）。
         const execCommandCopy = Reflect.get(document, 'execCommand') as (
           commandId: string,

@@ -45,7 +45,7 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
       </div>
     </div>
 
-    {/* Task 6.9：返回 getting-started 目录页链接（当前模块非 getting-started 时显示） */}
+    {/* 返回 getting-started 目录页链接（当前模块非 getting-started 时显示） */}
     {module !== 'getting-started' && (
       <a href={`${import.meta.env.BASE_URL}getting-started/`} class="back-to-start-link">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -102,7 +102,7 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
 <style>
   /* 模块文档列表页样式 — 归入 @layer pages，避免未分层 CSS 覆盖 ark 令牌
    * 紧凑化重构：减小图标尺寸、优化间距、添加 max-width 防止大屏越界
-   * Task 3.1：宽度自适应桌面端 94vw，移除 48rem 限制 */
+   * 宽度自适应桌面端 94vw，移除 48rem 限制 */
   @layer pages {
   .module-page {
     padding: var(--spacing-sm) var(--spacing-md);
@@ -126,9 +126,9 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     flex-wrap: wrap;
   }
 
-  /* Task 5.1：已删除 .header-dot 点状装饰（去卡通化，几何科技风格） */
+  /* 已删除 .header-dot 点状装饰（去卡通化，几何科技风格） */
 
-  /* Task 6.9：返回入门指南链接 — 统一按钮标准（直角边框、无悬停放大） */
+  /* 返回入门指南链接 — 统一按钮标准（直角边框、无悬停放大） */
   .back-to-start-link {
     display: inline-flex;
     align-items: center;

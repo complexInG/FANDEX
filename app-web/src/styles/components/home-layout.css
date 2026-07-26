@@ -42,7 +42,7 @@
     top: 0;
     z-index: 100;
     height: var(--nav-height);
-    /* Task 3.4：移除 overflow-x: auto，导航栏固定显示不滑动
+    /* 移除 overflow-x: auto，导航栏固定显示不滑动
        内容超出时由 flex-shrink 和响应式隐藏控制，而非横向滚动 */
     overflow: hidden;
     transition:
@@ -124,7 +124,7 @@
   }
 
   .nav-logo:hover .logo-mark {
-    /* Task 4.4：移除悬停放大 scale(1.05)，保留品牌趣味旋转 rotate(-8deg) */
+    /* 移除悬停放大 scale(1.05)，保留品牌趣味旋转 rotate(-8deg) */
     transform: rotate(-8deg);
   }
 
@@ -174,7 +174,7 @@
     color: var(--color-text);
     border-color: var(--color-text-secondary);
     background: var(--color-bg-hover);
-    /* Task 4.4：移除悬停上浮 transform: translateY(-1px)，统一为直角边框样式反馈 */
+    /* 移除悬停上浮 transform: translateY(-1px)，统一为直角边框样式反馈 */
   }
 
   .nav-action-link:focus-visible {
@@ -194,7 +194,7 @@
     padding: 5px 12px;
     border: 1px solid var(--color-border-light);
     border-radius: var(--fandex-radius-sm, 2px);
-    /* Task 6.8：背景透明，统一按钮标准 */
+    /* 背景透明，统一按钮标准 */
     background: transparent;
     color: var(--color-text-secondary);
     font-family: var(--font-display);
@@ -212,7 +212,7 @@
     border-color: var(--color-primary);
     color: var(--color-primary);
     background: var(--color-bg-hover);
-    /* Task 4.4：移除悬停上浮 transform: translateY(-1px)，统一为直角边框样式反馈 */
+    /* 移除悬停上浮 transform: translateY(-1px)，统一为直角边框样式反馈 */
   }
 
   .nav-github-link:focus-visible {

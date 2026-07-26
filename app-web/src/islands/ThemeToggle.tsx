@@ -183,7 +183,7 @@ export function ThemeToggle({}: ThemeToggleProps = {}) {
           ],
         },
         {
-          // Task 7.2：duration 从 380ms 调至 250ms，提升主题切换响应感
+          // duration 从 380ms 调至 250ms，提升主题切换响应感
           // 380ms 偏长导致切换迟缓，250ms 接近 --motion-duration-normal，手感更跟手
           duration: 250,
           easing: 'cubic-bezier(0.4, 0, 0.2, 1)',

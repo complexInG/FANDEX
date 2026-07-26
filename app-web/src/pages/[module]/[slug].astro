@@ -140,7 +140,7 @@ const breadcrumb = [
       data-pagefind-filter={`difficulty:${doc.data.difficulty || 'intermediate'}, module:${module}${doc.data.category ? ', category:' + doc.data.category : ''}`}
     >
       <!-- 标题行：标题 + 功能扩展占位
-           偏差报备：原 ProgressToggle（已读/未读）按钮已删除
+           原 ProgressToggle（已读/未读）按钮已删除
            预留 data-slot="progress-future" 占位，供后续重新设计功能接入 -->
       <div class="doc-title-row fndx-scroll-reveal">
         <h1 class="doc-title">{doc.data.title}</h1>
@@ -204,7 +204,7 @@ const breadcrumb = [
     </article>
     <!-- 知识检测组件：进入视口时加载 -->
     <QuizBlock client:visible quiz={doc.data.quiz || []} />
-    {/* Task 6.9：返回入门指南链接（当前模块非 getting-started 时显示，放在文档末尾引导用户返回目录） */}
+    {/* 返回入门指南链接（当前模块非 getting-started 时显示，放在文档末尾引导用户返回目录） */}
     {module !== 'getting-started' && (
       <a href={`${import.meta.env.BASE_URL}getting-started/`} class="back-to-start-link">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -260,7 +260,7 @@ const breadcrumb = [
   }
 
   .prereq-notice a {
-    /* Task 4.3：前置知识链接颜色改为模块分类主题色 */
+    /* 前置知识链接颜色改为模块分类主题色 */
     color: var(--module-color, var(--color-primary));
     text-decoration: none;
   }
@@ -358,7 +358,7 @@ const breadcrumb = [
     line-height: 1.6;
   }
 
-  /* Task 6.9：返回入门指南链接 — 统一按钮标准（直角边框、无悬停放大） */
+  /* 返回入门指南链接 — 统一按钮标准（直角边框、无悬停放大） */
   .back-to-start-link {
     display: inline-flex;
     align-items: center;

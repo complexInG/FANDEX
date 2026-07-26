@@ -8,12 +8,10 @@
  * - 所有 async 函数均通过 try-catch 包裹，异常时返回安全默认值
  * - 类型从 Content Schema 推导，不手动重复定义
  *
- * 偏差报备（dev 模式 OOM 优化）：
- * - getDocStats() 原实现调用 getCollection('docs') 全量加载 2003 篇文档，
- *   dev 模式下导致 12GB 堆内存 OOM 崩溃
- * - 改为读取预构建的 JSON 缓存（scripts/build-stats.mjs 生成），
- *   零文档内容加载，dev 模式下首页不再 OOM
- * - build 模式下仍可使用原逻辑（但 JSON 缓存已足够，且性能更优）
+ * dev 模式 OOM 优化：
+ * - getDocStats() 读取预构建的 JSON 缓存（scripts/build-stats.mjs 生成），
+ *   避免全量加载 2003 篇文档导致 dev 模式 OOM 崩溃
+ * - build 模式下 JSON 缓存同样适用，性能优于原 getCollection 方案
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { docSlug } from '@/lib/modules';

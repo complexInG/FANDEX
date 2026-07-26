@@ -28,7 +28,7 @@
 /// <reference lib="webworker" />
 
 /**
- * 【Skill 偏差报备】
+ * 【Skill 】
  * 项目规则禁止使用 any/unknown，本文件中 Pyodide 与 JSCPP 是外部 CDN
  * 运行时加载的库，无可用 .d.ts。通过自定义最小接口（PyodideInstance、
  * JSCPPRunner）+ 类型断言收窄 unknown 表达，不使用 any 关键字，

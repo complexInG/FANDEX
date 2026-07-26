@@ -1,16 +1,11 @@
 /**
  * 侧边栏交互脚本（web 端）
  * -----------------------------------------------------------------------------
- * 从 Sidebar.astro 提取的客户端交互逻辑，负责：
+ * 负责：
  * 1. 滚动位置记忆：点击文档链接前保存到 sessionStorage，页面加载后恢复
  * 2. 模块折叠：点击展开按钮切换子文档列表显隐，状态持久化到 localStorage
  * 3. 全部模块视图切换：响应 Layout 的事件，切换章节/全部模块面板
  * 4. 侧边栏整体折叠/展开收纳
- *
- * 偏差报备（ProgressToggle 功能删除）：
- * - 原：包含 initProgressIndicators 函数，从 localStorage 读取进度数据更新圆点颜色
- * - 新：ProgressToggle（已读/未读）功能已删除，进度标记相关代码已移除
- * - 依据：用户明确要求删除 ProgressToggle 及其相关的一切功能
  *
  * 状态类约定（配合 @fandex/styles 的 .fndx-sidebar 样式）：
  * - .is-active   激活态（当前文档链接）
@@ -79,9 +74,7 @@ function initSidebarCollapse(): void {
 
   /** 应用折叠状态到 DOM */
   const applyCollapsedState = (collapsed: boolean): void => {
-    // Task 7.1：同步管理 <html> 上的 sidebar-collapsed 标记类
-    // 该类由 BaseLayout.astro 内联脚本在首屏根据 localStorage 设置，用于 FOUC 防护
-    // 此处切换状态时必须同步更新，避免首屏标记类与实际状态不一致
+    // 同步管理 <html> 上的 sidebar-collapsed 标记类（FOUC 防护，与 BaseLayout 内联脚本协同）
     document.documentElement.classList.toggle('sidebar-collapsed', collapsed);
     if (collapsed) {
       sidebar.classList.add('is-collapsed');

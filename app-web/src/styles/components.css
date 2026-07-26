@@ -4,7 +4,7 @@
  * 功能概述：
  * 定义项目所有 UI 组件的样式，包括应用布局（导航栏、侧边栏、主内容区）、
  * 面包屑导航、文件列表、模块卡片、文档上下导航、术语提示/弹窗、
- * 代码运行按钮、速查表等。支持移动端响应式和暗色主题适配。
+ * 代码运行按钮等。支持移动端响应式和暗色主题适配。
  *
  * 层级归属：@layer components（避免未分层 CSS 覆盖 ark 令牌导致主题切换失效）
  */
@@ -85,7 +85,7 @@
   top: 0;
   z-index: 100;
   height: var(--nav-height);
-  /* Task 3.4：移除 overflow-x: auto，导航栏固定显示不滑动
+  /* 移除 overflow-x: auto，导航栏固定显示不滑动
      内容超出时由 flex-shrink 和响应式隐藏控制，而非横向滚动 */
   overflow: hidden;
 }
@@ -124,7 +124,7 @@
 }
 
 .nav-logo:hover .logo-mark {
-  /* Task 4.4：移除悬停放大 scale(1.05)，保留品牌趣味旋转 rotate(-8deg) */
+  /* 移除悬停放大 scale(1.05)，保留品牌趣味旋转 rotate(-8deg) */
   transform: rotate(-8deg);
   transition: transform var(--motion-duration-normal) var(--motion-easing-spring);
 }
@@ -426,7 +426,7 @@
 
 .module-card:hover {
   background: var(--color-bg-hover);
-  /* Task 4.4：移除悬停上浮 transform: translateY(-2px)，统一为直角边框样式反馈 */
+  /* 移除悬停上浮 transform: translateY(-2px)，统一为直角边框样式反馈 */
 }
 
 /* 模块卡片悬停阴影 */
@@ -719,254 +719,6 @@
   }
   100% {
     transform: rotate(360deg);
-  }
-}
-
-/* ===== 速查表（Cheatsheet）组件 ===== */
-
-.cheatsheet {
-  max-width: var(--content-width);
-  margin: 0 auto;
-  padding: var(--spacing-lg) var(--spacing-md);
-  color: var(--cheatsheet-text);
-}
-
-/* 学习指南提示区 */
-.cheatsheet .learning-guide {
-  background: var(--cheatsheet-guide-bg);
-  border-left: 3px solid var(--cheatsheet-guide-border);
-  padding: var(--spacing-md) var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
-  font-size: 0.9em;
-  line-height: 1.7;
-  color: var(--cheatsheet-text);
-}
-
-/* 搜索栏 */
-.cheatsheet .search-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
-}
-
-/* 搜索输入框 */
-.cheatsheet .search-bar input {
-  flex: 1;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--cheatsheet-border);
-  background: var(--cheatsheet-bg);
-  color: var(--cheatsheet-text);
-  font-family: var(--font-body);
-  font-size: 0.9em;
-  outline: none;
-  transition: border-color var(--transition-fast);
-}
-
-.cheatsheet .search-bar input:focus {
-  border-color: var(--color-primary);
-}
-
-/* 分组列表容器 */
-.cheatsheet .groups {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-/* 单个分组卡片 */
-.cheatsheet .group {
-  background: var(--cheatsheet-bg);
-  border: 1px solid var(--cheatsheet-border);
-  overflow: hidden;
-}
-
-/* 分组标题栏 */
-.cheatsheet .group-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-md) var(--spacing-lg);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1em;
-  color: var(--cheatsheet-text);
-  border-bottom: 1px solid var(--cheatsheet-border);
-  user-select: none; /* 禁止选中标题 */
-}
-
-/* 可点击的分组标题（可折叠） */
-.cheatsheet .group-header[tabindex],
-.cheatsheet .group-header[role='button'] {
-  cursor: pointer;
-}
-
-/* 分组条目列表 */
-.cheatsheet .group-items {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-/* 单个条目 */
-.cheatsheet .item {
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--cheatsheet-border);
-}
-
-.cheatsheet .item:last-child {
-  border-bottom: none; /* 最后一个条目无需底边框 */
-}
-
-/* 条目描述文字 */
-.cheatsheet .item-desc {
-  font-size: 0.9em;
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-sm);
-  line-height: 1.6;
-}
-
-/* 速查表内代码块 */
-.cheatsheet .code-block {
-  position: relative;
-  background: var(--color-bg-code);
-  padding: var(--spacing-md);
-  overflow-x: auto;
-  font-family: var(--font-code);
-  font-size: 0.85em;
-  line-height: 1.6;
-}
-
-/* 速查表内复制按钮 */
-.cheatsheet .copy-btn {
-  position: absolute;
-  top: var(--spacing-sm);
-  right: var(--spacing-sm);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  background: var(--cheatsheet-copy-bg);
-  border: 1px solid var(--cheatsheet-copy-border);
-  color: var(--color-text-secondary);
-  font-family: var(--font-display);
-  font-size: 0.75em;
-  cursor: pointer;
-  opacity: 0; /* 默认隐藏 */
-  transition:
-    opacity var(--transition-fast),
-    border-color var(--transition-fast);
-}
-
-/* 代码块悬停时显示复制按钮 */
-.cheatsheet .code-block:hover .copy-btn {
-  opacity: 1;
-}
-
-.cheatsheet .copy-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-/* 预期输出区域 */
-.cheatsheet .expected-output {
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--color-bg-code);
-  font-family: var(--font-code);
-  font-size: 0.82em;
-  line-height: 1.5;
-  color: var(--color-text-secondary);
-}
-
-/* 使用场景说明 */
-.cheatsheet .scene {
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: 0.85em;
-  line-height: 1.6;
-  color: var(--color-text-secondary);
-  border-left: 2px solid var(--color-primary);
-}
-
-/* 常见错误提示 */
-.cheatsheet .common-errors {
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--cheatsheet-error-bg);
-  border-left: 3px solid var(--cheatsheet-error-border);
-  font-size: 0.85em;
-  line-height: 1.6;
-  color: var(--cheatsheet-text);
-}
-
-/* 进阶技巧提示 */
-.cheatsheet .advance-tip {
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--cheatsheet-guide-bg);
-  border-left: 2px solid var(--cheatsheet-guide-border);
-  font-size: 0.85em;
-  line-height: 1.6;
-  color: var(--cheatsheet-text);
-}
-
-/* 相关链接 */
-.cheatsheet .related-link {
-  display: inline-block;
-  margin-top: var(--spacing-sm);
-  color: var(--color-primary);
-  font-size: 0.85em;
-  text-decoration: none;
-}
-
-.cheatsheet .related-link:hover {
-  text-decoration: underline;
-}
-
-/* 搜索无结果提示 */
-.cheatsheet .no-results {
-  padding: var(--spacing-2xl) var(--spacing-md);
-  text-align: center;
-  color: var(--color-text-tertiary);
-  font-size: 0.95em;
-}
-
-/* 标签加粗 */
-.cheatsheet .label {
-  font-weight: 700;
-}
-
-/* 搜索结果计数 */
-.cheatsheet .result-count {
-  font-size: 0.82em;
-  color: var(--color-text-tertiary);
-  margin-left: var(--spacing-sm);
-}
-
-/* 折叠/展开图标 */
-.cheatsheet .toggle-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  transition: transform var(--transition-base);
-}
-
-/* 折叠状态：图标旋转 -90 度 */
-.cheatsheet .toggle-icon.collapsed {
-  transform: rotate(-90deg);
-}
-
-/* 小屏幕速查表适配 */
-@media (max-width: 640px) {
-  .cheatsheet .copy-btn {
-    opacity: 1; /* 小屏幕始终显示复制按钮 */
-  }
-
-  .cheatsheet .search-bar input {
-    width: 100%;
   }
 }
 

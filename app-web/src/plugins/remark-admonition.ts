@@ -37,7 +37,7 @@ export function remarkAdmonition() {
       }
 
       // 构建标题段落节点
-      // 偏差报备：mdast hProperties.className 类型为 string[]（非 string），
+      // mdast hProperties.className 类型为 string[]（非 string），
       // 此处使用数组形式以符合类型约束
       const titleNode: Paragraph = {
         type: 'paragraph',

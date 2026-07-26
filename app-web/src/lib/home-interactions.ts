@@ -1,46 +1,30 @@
 /**
- * 首页交互脚本（P7 重构 · 回转寿司式自动滚动 + 真·无限循环）
+ * 首页交互脚本（回转寿司式自动滚动 + 真·无限循环）
  * -----------------------------------------------------------------------------
- * 从 pages/index.astro 提取的客户端逻辑，负责：
- * - 分类区域折叠/展开（点击 .category-header__lead 切换 .collapsed 类名）
- * - 横向滑动器自动滚动（回转寿司式 conveyor belt 效果）
- * - 真·双向无限循环（requestAnimationFrame 驱动，无 scroll 边界限制）
- * - 奇偶反向滚动（奇数行向左，偶数行向右）
- * - 速度差异（模块数量越少越快，1.25 倍随机差距）
- * - 悬停暂停（鼠标悬停模块卡片时暂停该行自动滚动，各模块独立）
- * - 鼠标拖拽手动滑动（拖拽时暂停动画，释放后恢复）
- * - 导航按钮控制（点击平移 2 张卡片宽度）
- * - Task 5.3：卡片标题溢出时自动左右滚动（marquee）
+ * 负责：
+ * - 分类区域折叠/展开
+ * - 横向滑动器自动滚动（conveyor belt 效果）
+ * - 真·双向无限循环（requestAnimationFrame 驱动，无 scroll 边界）
+ * - 奇偶反向滚动 + 速度差异（模块数量越少越快）
+ * - 悬停暂停（各模块独立）
+ * - 鼠标拖拽 + 物理惯性 + 触控板水平滑动
+ * - 导航按钮控制（平移 2 张卡片宽度）
+ * - 卡片标题溢出时 marquee 滚动
  *
- * 回转寿司式自动滚动实现原理（requestAnimationFrame 驱动）：
- * - 每帧通过 transform: translateX(offset) 更新 track 位置
- * - offset 持续递减（向左）或递增（向右），实现连续滚动
- * - 当 offset 超过单份卡片集宽度时，取模回绕实现无缝循环
- * - 卡片集克隆一份（总宽度 2x），回绕时视觉无跳变
- * - 速度 = baseSpeed * (1 - random * 0.25)，模块数量越少 baseSpeed 越快
- *
- * 真·无限循环（无边界）实现：
- * - 不使用 scrollLeft（有边界限制），改用 transform 驱动
- * - offset 取模回绕，用户永远不会到达"开头"或"结尾"
- * - 鼠标拖拽时暂停自动滚动，手动调整 offset，释放后恢复
- *
- * 悬停暂停实现：
- * - mouseenter 时设置 isPaused = true，停止 offset 递增
- * - mouseleave 时设置 isPaused = false，恢复自动滚动
- * - 各模块独立：每个 scroller 实例维护自己的状态
- * -----------------------------------------------------------------------------
- */
+ * 核心实现：
+ * - transform: translateX(offset) 驱动，offset 取模回绕实现无缝循环
+ * - 克隆卡片集确保总宽度 ≥ 视窗 + 单份宽度，避免回绕空窗
+ * - 悬停/拖拽时暂停自动滚动，由 mouseleave 恢复
+ * ----------------------------------------------------------------------------- */
 import { initTextMarqueeWithResize } from '@/lib/text-overflow';
 
-/** 基础滚动速度（像素/帧），用于计算每个分类的滚动速度
- *  Task 2.1：由 0.6 减半至 0.3，降低自动滚动速度避免视觉疲劳与卡顿感 */
+/** 基础滚动速度（像素/帧），用于计算每个分类的滚动速度 */
 const BASE_SPEED_PX_PER_FRAME = 0.3;
 
 /** 速度随机加速因子上限（0.25 = 最多加速 25%） */
 const SPEED_RANDOM_FACTOR = 0.25;
 
-/** 物理惯性：摩擦系数（每帧速度衰减比例，0.95 = 每帧保留 95% 速度）
- *  Task 2.2：拖拽释放后根据释放速度施加指数衰减，模拟自然摩擦 */
+/** 物理惯性：摩擦系数（每帧速度衰减比例，0.95 = 每帧保留 95% 速度） */
 const INERTIA_FRICTION = 0.95;
 
 /** 物理惯性：悬停时加速衰减系数（用户悬停时惯性更快停止） */
@@ -98,16 +82,19 @@ interface ScrollerState {
   speed: number;
   /** 是否暂停自动滚动（悬停或拖拽时） */
   isPaused: boolean;
-  /** 鼠标是否已按下（按压状态，不等同于实际拖拽）
-   *  实际拖拽以 hasDragStarted 为准，未越过阈值前不更新 transform */
+  /** 鼠标是否悬停在 scroller 内
+   *  用于 onPointerUp / animateInertia 判断是否应保持暂停：
+   *  鼠标在 scroller 内时由 mouseenter 设置为 true，pointerup 后不恢复自动滚动，
+   *  避免 track 在 click 事件前位移导致 <a> 跳转失败；mouseleave 时恢复 */
+  isHovering: boolean;
+  /** 鼠标是否已按下（按压状态，不等同于实际拖拽） */
   isDragging: boolean;
   /** 是否已越过 DRAG_THRESHOLD，进入实际拖拽状态
-   *  为 false 时 onPointerMove 不更新 transform，保护 click 事件正常派发 */
+   *  为 false 时 onPointerMove 不更新 transform，保护 click 事件派发 */
   hasDragStarted: boolean;
   /** requestAnimationFrame 的 ID，用于取消 */
   rafId: number | null;
-  /** 物理惯性：当前惯性速度（px/帧，正负代表方向）
-   *  Task 2.2：拖拽释放后根据此值施加指数衰减，模拟自然摩擦 */
+  /** 物理惯性：当前惯性速度（px/帧，正负代表方向） */
   inertiaVelocity: number;
   /** 物理惯性：是否正在惯性滑动中
    *  惯性期间禁用自动滚动 animate，由 animateInertia 接管 offset 更新 */
@@ -132,9 +119,7 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   if (cards.length === 0) return;
 
   // 测量单份卡片集宽度（在克隆前使用原始卡片计算）
-  // 修复：原实现固定克隆 1 份（总宽度 2x），卡片少于 10 个时
-  // 单份宽度 < 视窗宽度，滚动回绕时视窗右侧出现空窗
-  // 改为根据视窗宽度动态计算份数，确保总宽度 ≥ 视窗 + 单份宽度
+  // 动态计算克隆份数，确保总宽度 ≥ 视窗 + 单份宽度，避免回绕时视窗右侧空窗
   const gapStr = getComputedStyle(track).gap;
   const gap = parseFloat(gapStr) || 16;
   let originalCardSetWidth = 0;
@@ -190,6 +175,7 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     direction,
     speed,
     isPaused: reduceMotion,
+    isHovering: false,
     isDragging: false,
     hasDragStarted: false,
     rafId: null,
@@ -217,9 +203,8 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
 
   /**
    * 自动滚动动画循环
-   * 每帧更新 offset 并应用到 transform
-   * 取模回绕实现无缝循环
-   * Task 2.2：惯性激活时跳过自动滚动，由 animateInertia 接管
+   * 每帧更新 offset 并应用到 transform，取模回绕实现无缝循环
+   * 惯性激活时跳过自动滚动，由 animateInertia 接管
    */
   const animate = (): void => {
     if (!state.isPaused && !state.isDragging && !state.isInertiaActive) {
@@ -247,16 +232,20 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   state.rafId = requestAnimationFrame(animate);
 
   // ========== 悬停暂停 ==========
+  // mouseenter/mouseleave 管理 isHovering 标志，供 onPointerUp / animateInertia 判断
+  // 鼠标在 scroller 内时保持暂停，避免 pointerup 后 track 位移导致 click 失效
   scroller.addEventListener('mouseenter', () => {
+    state.isHovering = true;
     state.isPaused = true;
   });
   scroller.addEventListener('mouseleave', () => {
+    state.isHovering = false;
     if (!state.isDragging) {
       state.isPaused = reduceMotion;
     }
   });
 
-  // ========== 鼠标拖拽 + 物理惯性（Task 2.2）==========
+  // ========== 鼠标拖拽 + 物理惯性 ==========
   let startX = 0;
   let startOffset = 0;
   let dragDistance = 0;
@@ -267,7 +256,7 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   let lastMoveX = 0;
 
   /**
-   * 物理惯性动画循环（Task 2.2）
+   * 物理惯性动画循环
    * - 每帧 offset += inertiaVelocity，并应用摩擦系数衰减
    * - 悬停时使用 INERTIA_HOVER_ACCELERATE 加速衰减，快速停止
    * - 速度低于 INERTIA_STOP_VELOCITY 或超过 INERTIA_MAX_DURATION 时终止
@@ -282,8 +271,8 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
       state.isInertiaActive = false;
       state.inertiaVelocity = 0;
       state.inertiaRafId = null;
-      // 惯性结束，恢复自动滚动（除非仍在悬停或 reduceMotion）
-      state.isPaused = state.isDragging ? true : reduceMotion;
+      // 惯性结束，恢复自动滚动：鼠标仍在 scroller 内时保持暂停（由 mouseleave 恢复）
+      state.isPaused = state.isDragging || state.isHovering || reduceMotion;
       return;
     }
 
@@ -301,7 +290,7 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   /**
    * 启动物理惯性滑动
    * @param releaseVelocity 释放时的瞬时速度（px/帧，正负代表方向）
-   * Task 2.2：速度低于 INERTIA_MIN_VELOCITY 不启用惯性
+   * 速度低于 INERTIA_MIN_VELOCITY 不启用惯性
    */
   const startInertia = (releaseVelocity: number): void => {
     if (Math.abs(releaseVelocity) < INERTIA_MIN_VELOCITY) {
@@ -331,7 +320,11 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     state.isInertiaActive = false;
     state.inertiaVelocity = 0;
     state.isDragging = true;
-    // 重置拖拽启动标记：未越过 DRAG_THRESHOLD 前不更新 transform，保护 click
+    // pointerdown 时鼠标必然在 scroller 内，强制标记 isHovering = true
+    // 防止页面加载时鼠标已在 scroller 内导致 mouseenter 未触发、isHovering 为 false
+    // 此时 pointerup 后 isPaused 被设为 false，track 在 click 前位移，click 不派发
+    state.isHovering = true;
+    state.isPaused = true;
     state.hasDragStarted = false;
     dragDistance = 0;
     startX = e.clientX;
@@ -339,13 +332,9 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     lastMoveTime = performance.now();
     lastMoveX = e.clientX;
     pointerId = e.pointerId;
-    try {
-      scroller.setPointerCapture(e.pointerId);
-    } catch {
-      // 安全降级
-    }
-    // 不立即添加 is-dragging 类：延迟到 onPointerMove 越过阈值后，
-    // 避免点击时光标立即变 grabbing 造成"不能点击"的视觉暗示
+    // 不在按下时立即 setPointerCapture：会重定向 pointerup 到 scroller，
+    // 导致 pointerdown(<a>) 与 pointerup(scroller) 不在同一元素，click 不派发。
+    // 延迟到 onPointerMove 越过阈值后才捕获指针，保护普通点击的 click 派发。
   };
 
   const onPointerMove = (e: PointerEvent) => {
@@ -362,6 +351,13 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
       // 首次越过阈值，进入实际拖拽：切换光标、标记启动
       state.hasDragStarted = true;
       scroller.classList.add('is-dragging');
+      // 越过阈值后才捕获指针，确保拖拽中即使鼠标移出 scroller 仍能接收事件
+      // 此时 click 已被 suppressClick 抑制，不影响跳转
+      try {
+        scroller.setPointerCapture(e.pointerId);
+      } catch {
+        // 安全降级
+      }
     }
 
     // 手动更新 offset，实时跟手
@@ -386,29 +382,29 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   const onPointerUp = (e: PointerEvent) => {
     if (!state.isDragging || e.pointerId !== pointerId) return;
     state.isDragging = false;
-    try {
-      scroller.releasePointerCapture(e.pointerId);
-    } catch {
-      // 安全降级
-    }
-    pointerId = null;
-    scroller.classList.remove('is-dragging');
-
-    // 只有真正拖拽过（越过阈值）才抑制 click 并启动惯性
-    // 未拖拽时 hasDragStarted 为 false，不抑制 click，让 <a> 正常跳转
+    // 只有真正拖拽过（越过阈值）才释放指针捕获并抑制 click
+    // 未拖拽时未调用 setPointerCapture，无需 release，click 正常派发给 <a>
     if (state.hasDragStarted) {
+      try {
+        scroller.releasePointerCapture(e.pointerId);
+      } catch {
+        // 安全降级
+      }
       suppressClick = true;
       window.setTimeout(() => {
         suppressClick = false;
       }, 120);
-      // Task 2.2：启动物理惯性（慢速 < 2px/帧 时无惯性，由 startInertia 内部判断）
+      // 启动物理惯性（慢速 < 2px/帧 时无惯性，由 startInertia 内部判断）
       startInertia(state.inertiaVelocity);
     }
+    pointerId = null;
+    scroller.classList.remove('is-dragging');
     state.hasDragStarted = false;
 
-    // 若未启用惯性，恢复自动滚动
+    // 若未启用惯性，恢复自动滚动：鼠标仍在 scroller 内时保持暂停
+    // 由 mouseleave 在鼠标离开时恢复自动滚动，避免 click 前 track 位移
     if (!state.isInertiaActive) {
-      state.isPaused = reduceMotion;
+      state.isPaused = state.isHovering || reduceMotion;
     }
   };
 
@@ -485,7 +481,6 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   // ========== 触控板双指水平滑动 ==========
   // 触控板双指水平滑动触发 wheel 事件（deltaX），而非 pointer 事件
   // 当 deltaX 绝对值大于 deltaY 时认定为水平滑动，更新 offset 并暂停自动滚动
-  // 修复：原实现仅处理 pointerType === 'mouse'，触控板双指滑动无法触发拖拽
   const onWheel = (e: WheelEvent) => {
     // 仅处理水平为主的滑动（deltaX 绝对值大于 deltaY）
     if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
@@ -535,12 +530,10 @@ function initScrollers(): void {
 // 初始化（首次加载与 View Transitions 后触发）
 initHomeInteractions();
 initScrollers();
-// Task 5.3：卡片标题溢出检测与 marquee 启用
-// 在 scroller 初始化（含卡片克隆）后执行，确保原始与克隆卡片均被检测
+// 卡片标题溢出检测与 marquee 启用（在 scroller 初始化含卡片克隆后执行）
 initTextMarqueeWithResize('.card-title');
 document.addEventListener('astro:page-load', () => {
   initHomeInteractions();
   initScrollers();
-  // Task 5.3：View Transitions 后重新检测溢出
   initTextMarqueeWithResize('.card-title');
 });

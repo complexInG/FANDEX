@@ -783,7 +783,7 @@ dfn {
 }
 
 /* ========== 强调文字 ========== */
-/* Task 4.2：加粗文字颜色改为模块分类主题色（--module-color 由 [slug].astro 注入到 article）
+/* 加粗文字颜色改为模块分类主题色（--module-color 由 [slug].astro 注入到 article）
    无模块上下文时回退到主品牌色 */
 .prose strong {
   color: var(--module-color, var(--color-primary));
@@ -791,7 +791,7 @@ dfn {
 }
 
 /* ========== 高亮标记 ========== */
-/* Task 4.2：高亮标记背景改为模块分类主题色（半透明），文字保持深色确保对比度 */
+/* 高亮标记背景改为模块分类主题色（半透明），文字保持深色确保对比度 */
 .prose mark {
   background: color-mix(in srgb, var(--module-color, var(--color-primary)) 20%, transparent);
   color: var(--color-text);
