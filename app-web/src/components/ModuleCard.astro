@@ -5,6 +5,12 @@
  * 包含模块图标、标题和描述，点击跳转到对应模块首页
  *
  * 样式已拆分至 styles/components/module-card.css
+ *
+ * --module-color 注入说明：
+ * - 通过 inline style 设置在卡片根元素，供 ::before 上边线、hover 边框色、
+ *   card-icon 背景与文字色统一消费
+ * - 仅在 color 非空时设置：空串会导致 var(--module-color, fallback) 返回空串
+ *   而非 fallback，使 color-mix() 失效、hover 边框特效失效
  */
 import '@/styles/components/module-card.css';
 
@@ -18,12 +24,15 @@ const { mod, color } = Astro.props as {
   };
   color: string;
 };
+
+/** 仅在 color 非空时生成 --module-color inline style，避免空串导致 var() fallback 失效 */
+const moduleColorStyle = color ? `--module-color:${color}` : undefined;
 ---
 
 <!-- 模块卡片：点击跳转到模块首页
      --module-color 注入到卡片根元素，使 ::before 上边线、hover 标题色、
      card-icon 均统一消费模块分类色（非 web 主题青色） -->
-<a href={`${import.meta.env.BASE_URL}${mod.id}/`} class="module-card" style={`--module-color:${color}`}>
+<a href={`${import.meta.env.BASE_URL}${mod.id}/`} class="module-card" style={moduleColorStyle}>
   <!-- 模块图标：几何科技风，透明底 + 细边框 + 分类色文字 -->
   <span class="card-icon">{mod.icon}</span>
   <div class="card-body">

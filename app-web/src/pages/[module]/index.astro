@@ -35,7 +35,7 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
   />
   <Sidebar slot="sidebar" moduleId={module} />
 
-  <div class="module-page" style={`--module-color:${categoryColors[getPrimaryCategory(meta)]}`}>
+  <div class="module-page" style={categoryColors[getPrimaryCategory(meta)] ? `--module-color:${categoryColors[getPrimaryCategory(meta)]}` : undefined}>
     <Breadcrumb items={breadcrumb} hasSidebar />
 
     <div class="module-header fndx-scroll-reveal">
@@ -229,10 +229,13 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     color: var(--color-warning);
   }
 
-  /* 进阶难度标识：加强背景色强调（需求4）—— 由 15% 提升至 28%，并加粗字重 */
+  /* 进阶难度标识：加强背景色强调（需求4）
+   * 修复：原 --color-danger 变量未在 variables.css 中定义，实际语义令牌为 --color-error
+   *        （--color-error 映射至 --color-danger-base，见 variables.css L72）
+   *  由 15% 提升至 28% 背景混合比例，并加粗字重以增强视觉强调 */
   .diff-advanced {
-    background: color-mix(in srgb, var(--color-danger) 28%, var(--color-bg));
-    color: var(--color-danger);
+    background: color-mix(in srgb, var(--color-error) 28%, var(--color-bg));
+    color: var(--color-error);
     font-weight: 600;
   }
 

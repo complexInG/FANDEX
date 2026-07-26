@@ -196,9 +196,27 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   /**
    * 自动滚动动画循环
    * 每帧更新 offset 并应用到 transform，取模回绕实现无缝循环
+   *
+   * 悬停暂停策略（修复方案）：
+   * - 原实现依赖 mouseenter/mouseleave 事件管理 isHovering 标志
+   * - 问题：页面加载时鼠标若已在 scroller 区域内，mouseenter 不触发，
+   *   但浏览器可能在渲染时合成 mouseenter，导致 isPaused 被设为 true 后
+   *   mouseleave 未触发，动画永久暂停
+   * - 修复：改用 scroller.matches(':hover') 在每帧检查实际悬停状态，
+   *   :hover 伪类始终反映浏览器真实的鼠标位置，无事件丢失风险
+   * - isHovering 供 onPointerUp / animateInertia 判断释放后是否恢复自动滚动
+   *
    * 惯性激活时跳过自动滚动，由 animateInertia 接管
    */
   const animate = (): void => {
+    // 每帧通过 :hover 伪类更新悬停状态（比 mouseenter/mouseleave 事件更可靠）
+    state.isHovering = scroller.matches(':hover');
+
+    // 非拖拽、非惯性期间，根据悬停状态动态调整 isPaused
+    if (!state.isDragging && !state.isInertiaActive) {
+      state.isPaused = state.isHovering || reduceMotion;
+    }
+
     if (!state.isPaused && !state.isDragging && !state.isInertiaActive) {
       // 更新偏移量
       if (state.direction === 'left') {
@@ -224,18 +242,10 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   state.rafId = requestAnimationFrame(animate);
 
   // ========== 悬停暂停 ==========
-  // mouseenter/mouseleave 管理 isHovering 标志，供 onPointerUp / animateInertia 判断
-  // 鼠标在 scroller 内时保持暂停，避免 pointerup 后 track 位移导致 click 失效
-  scroller.addEventListener('mouseenter', () => {
-    state.isHovering = true;
-    state.isPaused = true;
-  });
-  scroller.addEventListener('mouseleave', () => {
-    state.isHovering = false;
-    if (!state.isDragging) {
-      state.isPaused = reduceMotion;
-    }
-  });
+  // 原 mouseenter/mouseleave 事件监听已移除，改为在 animate 函数中通过
+  // scroller.matches(':hover') 每帧检查实际悬停状态。
+  // 原因：mouseenter 在页面加载时可能被浏览器合成触发，导致 isPaused=true
+  // 后 mouseleave 未触发，动画永久暂停。:hover 伪类无此问题。
 
   // ========== 鼠标中键拖拽 + 物理惯性 ==========
   // 中键（button === 1）专用于拖拽滑动，左键保留给 <a> 链接点击导航
@@ -263,7 +273,8 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
       state.isInertiaActive = false;
       state.inertiaVelocity = 0;
       state.inertiaRafId = null;
-      // 惯性结束，恢复自动滚动：鼠标仍在 scroller 内时保持暂停（由 mouseleave 恢复）
+      // 惯性结束，恢复自动滚动：鼠标仍在 scroller 内时保持暂停
+      // isHovering 由 animate 函数每帧通过 :hover 伪类更新，此处读取最近一帧的值
       state.isPaused = state.isDragging || state.isHovering || reduceMotion;
       return;
     }
@@ -374,7 +385,8 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
     startInertia(state.inertiaVelocity);
 
     // 若未启用惯性，恢复自动滚动：鼠标仍在 scroller 内时保持暂停
-    // 由 mouseleave 在鼠标离开时恢复自动滚动
+    // isHovering 由 animate 函数每帧通过 :hover 伪类更新，此处读取的是最近一帧的值
+    // 下一帧 animate 会再次更新 isPaused，确保状态最终一致
     if (!state.isInertiaActive) {
       state.isPaused = state.isHovering || reduceMotion;
     }

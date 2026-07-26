@@ -83,10 +83,21 @@ function moduleHref(id: string): string {
 
 /** 获取模块的主分类颜色（用于色条/圆点）
  *  categoryColors[key] 在 noUncheckedIndexedAccess 下返回 string | undefined，
- *  此处通过 ?? '' 兜底确保返回 string，外层调用方已通过 --module-color CSS 变量提供默认色 */
+ *  此处通过 ?? '' 兜底确保返回 string，外层调用方已通过 --module-color CSS 变量提供默认色
+ *
+ *  注意：返回空字符串时，调用方不应将 --module-color 设为空串，
+ *  因为 var(--module-color, fallback) 在变量值为空串时返回空串而非 fallback，
+ *  会导致 color-mix() 等函数失效。应通过 moduleColorStyle() 条件化设置。 */
 function moduleColor(m: Module | undefined): string {
   if (!m) return categoryColors.tools ?? ''
   return categoryColors[getPrimaryCategory(m)] ?? categoryColors.tools ?? ''
+}
+
+/** 生成 --module-color 的 inline style 字符串
+ *  仅在颜色非空时设置，避免空串导致 var() fallback 失效 */
+function moduleColorStyle(m: Module | undefined): string | undefined {
+  const color = moduleColor(m)
+  return color ? `--module-color:${color}` : undefined
 }
 ---
 
@@ -95,7 +106,7 @@ function moduleColor(m: Module | undefined): string {
   class="fndx-sidebar"
   aria-label="侧边栏"
   data-module={moduleId}
-  style={`--module-color:${moduleColor(meta)}`}
+  style={moduleColorStyle(meta)}
 >
   <!-- 移动端关闭按钮（抽屉模式可见） -->
   <button
@@ -229,7 +240,7 @@ function moduleColor(m: Module | undefined): string {
           if (modulesInCategory.length === 0) return null
           return (
             <div class="fndx-sidebar__group">
-              <h3 class="fndx-sidebar__group-title" style={`--module-color:${category.color}`}>
+              <h3 class="fndx-sidebar__group-title" style={category.color ? `--module-color:${category.color}` : undefined}>
                 {category.label}
               </h3>
               <ul class="fndx-sidebar__list">
@@ -242,7 +253,7 @@ function moduleColor(m: Module | undefined): string {
                         <a
                           href={moduleHref(m.id)}
                           class={`fndx-sidebar__link${m.id === moduleId ? ' is-active' : ''}`}
-                          style={`--module-color:${moduleColor(m)}`}
+                          style={moduleColorStyle(m)}
                           aria-current={m.id === moduleId ? 'page' : undefined}
                         >
                           <span class="fndx-sidebar__link-text">{m.title}</span>
@@ -284,7 +295,7 @@ function moduleColor(m: Module | undefined): string {
                                 <a
                                   href={`${base}${m.id}/${docSlugValue}/`}
                                   class={`fndx-sidebar__link fndx-sidebar__link--sub${docIsActive ? ' is-active' : ''}`}
-                                  style={`--module-color:${moduleColor(m)}`}
+                                  style={moduleColorStyle(m)}
                                   aria-current={docIsActive ? 'page' : undefined}
                                 >
                                   <span class="fndx-sidebar__link-text">{doc.data.title}</span>

@@ -81,7 +81,7 @@ const breadcrumb = [
   <!-- 目录大纲：通过 toc 插槽渲染到 Layout 右侧栏，由 TableOfContents 共享组件控制显隐 -->
   <TableOfContents slot="toc" headings={headings} />
 
-  <div class="doc-page" style={`--module-color:${categoryColors[meta ? getPrimaryCategory(meta) : 'tools']}`}>
+  <div class="doc-page" style={(() => { const c = categoryColors[meta ? getPrimaryCategory(meta) : 'tools']; return c ? `--module-color:${c}` : undefined; })()}>
     <!-- 几何背景装饰层 · docs 变体：网格底纹 + 品牌光晕 + 几何线条（克制 8 项） -->
     <GeoBgDecor variant="docs" />
     <!-- 面包屑导航 -->

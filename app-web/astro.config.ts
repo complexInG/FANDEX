@@ -13,8 +13,6 @@
  * - 集成：MDX 支持、站点地图生成、React 组件支持
  */
 
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx'; // MDX 支持：在 Markdown 中使用 JSX 组件
 import sitemap from '@astrojs/sitemap'; // 站点地图：自动生成 sitemap.xml
@@ -32,9 +30,6 @@ import remarkGfm from 'remark-gfm'; // GitHub Flavored Markdown 支持（表格�
 import remarkEmoji from 'remark-emoji'; // Emoji 短代码转换（如 :smile: → 😄）
 import rehypeSlug from 'rehype-slug'; // 为标题自动添加 id 属性
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'; // 为标题添加锚点链接
-
-/** 项目根目录（app-web 子项目根，用于定位 shd-shared 等共享资源） */
-const projectRoot = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   // 站点地址，用于生成 sitemap 和规范链接
