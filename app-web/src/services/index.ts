@@ -11,12 +11,13 @@ export {
   getDocBySlug,
   getDocNavigation,
   getDocStats,
+  getDocsIndex,
   getDocsByCategory,
   getRelatedDocs,
   computeReadingTime,
   docSlug,
 } from './doc-service';
-export type { DocEntry, DocNavigation, DocStats } from './doc-service';
+export type { DocEntry, DocNavigation, DocStats, DocIndexItem } from './doc-service';
 
 // ── 模块服务 ──
 export {

@@ -76,21 +76,24 @@ async function main(): Promise<void> {
   /* 子命令：分配新 module_id */
   program
     .command('module')
-    .description('分配新 module_id')
-    .requiredOption('--english-short <short>', '模块英文简称（小写字母+数字，首字符为字母）')
+    .description('分配新 module_id（不透明序号 M<NNN>）')
+    .requiredOption('--english-short <short>', '模块英文简称（小写字母开头，允许连字符）')
     .requiredOption('--name <name>', '模块显示名称（中文）')
+    .requiredOption('--folder-order <number>', '文件夹位置序号（1-999，来自文件夹 NNN 前缀）', (v: string) => parseInt(v, 10))
     .action(async (cmdOpts) => {
       const opts = program.opts();
-      await allocateModule(opts.registry, cmdOpts.englishShort, cmdOpts.name);
+      await allocateModule(opts.registry, cmdOpts.englishShort, cmdOpts.name, cmdOpts.folderOrder);
     });
 
   /* 子命令：分配新 doc_id */
   program
     .command('doc')
-    .description('分配新 doc_id')
-    .requiredOption('--module-id <id>', '所属模块 ID（如 Model_Java_00）')
+    .description('分配新 doc_id（不透明序号 D<NNNNN>）')
+    .requiredOption('--module-id <id>', '所属模块 ID（如 M001）')
     .requiredOption('--source-path <path>', '文档源路径（相对 content/{type}/）')
     .requiredOption('--title <title>', '文档标题')
+    .requiredOption('--doc-order <number>', '文档位置序号（1-999，来自文件名 NNN 前缀）', (v: string) => parseInt(v, 10))
+    .requiredOption('--english-name <name>', '文档英文名（PascalCase，来自文件名）')
     .requiredOption(
       '--manifest-type <type>',
       'manifest 类型（full 或 mobile，决定写入哪个 doc-id-map）',
@@ -102,6 +105,8 @@ async function main(): Promise<void> {
         cmdOpts.moduleId,
         cmdOpts.sourcePath,
         cmdOpts.title,
+        cmdOpts.docOrder,
+        cmdOpts.englishName,
         parseManifestType(cmdOpts.manifestType),
       );
     });
@@ -163,25 +168,28 @@ async function main(): Promise<void> {
  *
  * 流程：
  * 1. 加载 id-registry
- * 2. 调用 allocateModuleId 分配 ID（自动检测 english_short 未被占用）
+ * 2. 调用 allocateModuleId 分配 ID（构造 M<NNN>，含 folder_order）
  * 3. 保存 id-registry
  * 4. 输出分配结果
  *
  * @param registryPath - id-registry.json 路径
  * @param englishShort - 模块英文简称
  * @param name - 模块中文名
+ * @param folderOrder - 文件夹位置序号（1-999）
  */
 async function allocateModule(
   registryPath: string,
   englishShort: string,
   name: string,
+  folderOrder: number,
 ): Promise<void> {
   console.log('[allocate-id] 分配新 module_id');
   console.log(`[allocate-id]   english_short: ${englishShort}`);
   console.log(`[allocate-id]   name: ${name}`);
+  console.log(`[allocate-id]   folder_order: ${folderOrder}`);
 
   const registry = loadIdRegistry(registryPath);
-  const result = allocateModuleId(registry, englishShort, name);
+  const result = allocateModuleId(registry, englishShort, name, folderOrder);
   saveIdRegistry(registry, registryPath);
 
   console.log('[allocate-id] 分配成功');
@@ -195,7 +203,7 @@ async function allocateModule(
  *
  * 流程：
  * 1. 加载 id-registry
- * 2. 调用 allocateDocId 分配 ID（自动检测 module_id 存在且 active）
+ * 2. 调用 allocateDocId 分配 ID（构造 D<NNNNN>，含 doc_order 与 english_name）
  * 3. 加载 doc-id-map
  * 4. 在 doc-id-map 中添加 source_path → doc_id 映射
  * 5. 保存 id-registry 与 doc-id-map
@@ -205,6 +213,8 @@ async function allocateModule(
  * @param moduleId - 所属模块 ID
  * @param sourcePath - 文档源路径
  * @param title - 文档标题
+ * @param docOrder - 文档位置序号（1-999）
+ * @param englishName - 文档英文名（PascalCase）
  * @param manifestType - manifest 类型（决定写入哪个 doc-id-map）
  */
 async function allocateDoc(
@@ -212,16 +222,20 @@ async function allocateDoc(
   moduleId: string,
   sourcePath: string,
   title: string,
+  docOrder: number,
+  englishName: string,
   manifestType: ManifestType,
 ): Promise<void> {
   console.log('[allocate-id] 分配新 doc_id');
   console.log(`[allocate-id]   module_id: ${moduleId}`);
   console.log(`[allocate-id]   source_path: ${sourcePath}`);
   console.log(`[allocate-id]   title: ${title}`);
+  console.log(`[allocate-id]   doc_order: ${docOrder}`);
+  console.log(`[allocate-id]   english_name: ${englishName}`);
   console.log(`[allocate-id]   manifest_type: ${manifestType}`);
 
   const registry = loadIdRegistry(registryPath);
-  const result = allocateDocId(registry, moduleId, title);
+  const result = allocateDocId(registry, moduleId, title, docOrder, englishName);
 
   /* 同步更新 doc-id-map */
   const docIdMapPath = getDefaultMapPathForType(manifestType);

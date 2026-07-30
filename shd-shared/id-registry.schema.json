@@ -25,10 +25,17 @@
     },
     "next_module_sequence": {
       "type": "integer",
-      "description": "下一个待分配的模块编号（0-99）。allocate-id 工具从此值开始扫描首个未占用的编号。当此值达到 100 时，模块编号空间耗尽（需扩容编号位数或迁移到新 ID 体系）。",
-      "minimum": 0,
-      "maximum": 100,
-      "examples": [42]
+      "description": "下一个待分配的模块序号（1-999）。allocate-id 工具从此值开始扫描首个未占用的序号。当此值达到 1000 时，模块编号空间耗尽。",
+      "minimum": 1,
+      "maximum": 1000,
+      "examples": [53]
+    },
+    "next_doc_sequence": {
+      "type": "integer",
+      "description": "下一个待分配的文档序号（1-99999，全局递增）。allocate-id 工具从此值开始扫描首个未占用的序号。当此值达到 100000 时，文档编号空间耗尽。",
+      "minimum": 1,
+      "maximum": 100000,
+      "examples": [2003]
     },
     "modules": {
       "type": "array",
@@ -50,11 +57,12 @@
   "$defs": {
     "moduleRecord": {
       "type": "object",
-      "description": "模块 ID 记录。记录 module_id 的分配时间、当前状态与关联元数据。",
+      "description": "模块 ID 记录。记录 module_id 的分配时间、当前状态与关联元数据。ID 为不透明序号 M<NNN>，不嵌入 english_short。",
       "required": [
         "module_id",
         "english_short",
         "sequence",
+        "folder_order",
         "name",
         "allocated_at",
         "status"
@@ -63,21 +71,27 @@
       "properties": {
         "module_id": {
           "type": "string",
-          "description": "模块唯一标识符。格式：Model_<EnglishShort>_<NN>。",
-          "pattern": "^Model_[A-Za-z][A-Za-z0-9]*_\\d{2}$",
-          "examples": ["Model_Java_00"]
+          "description": "模块唯一标识符（不透明序号）。格式：M<NNN>。",
+          "pattern": "^M\\d{3}$",
+          "examples": ["M001"]
         },
         "english_short": {
           "type": "string",
-          "description": "模块英文简称（小写）。与 module_id 第二段一致。",
-          "pattern": "^[a-z][a-z0-9]*$",
-          "examples": ["java"]
+          "description": "模块英文简称（小写，可变匹配字段，不嵌入 ID）。允许连字符。",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "examples": ["java", "getting-started"]
         },
         "sequence": {
           "type": "integer",
-          "description": "模块两位数字编号（0-99）。与 module_id 第三段一致。",
-          "minimum": 0,
-          "maximum": 99
+          "description": "模块分配序号（1-999）。构成 module_id 数字段。",
+          "minimum": 1,
+          "maximum": 999
+        },
+        "folder_order": {
+          "type": "integer",
+          "description": "模块文件夹位置序号（1-999）。来自文件夹 NNN 前缀，用于排序展示。",
+          "minimum": 1,
+          "maximum": 999
         },
         "name": {
           "type": "string",
@@ -104,11 +118,13 @@
     },
     "docRecord": {
       "type": "object",
-      "description": "文档 ID 记录。记录 doc_id 的分配时间、当前状态、所属模块与编号。",
+      "description": "文档 ID 记录。记录 doc_id 的分配时间、当前状态、所属模块与编号。ID 为不透明序号 D<NNNNN>，全局递增。",
       "required": [
         "doc_id",
         "module_id",
         "sequence",
+        "doc_order",
+        "english_name",
         "title",
         "allocated_at",
         "status"
@@ -117,21 +133,33 @@
       "properties": {
         "doc_id": {
           "type": "string",
-          "description": "文档唯一标识符。格式：Doc_<EnglishShort>_<NN>_<NNN>。",
-          "pattern": "^Doc_[A-Za-z][A-Za-z0-9]*_\\d{2}_\\d{3}$",
-          "examples": ["Doc_Java_00_001"]
+          "description": "文档唯一标识符（不透明序号）。格式：D<NNNNN>。",
+          "pattern": "^D\\d{5}$",
+          "examples": ["D00001"]
         },
         "module_id": {
           "type": "string",
-          "description": "所属模块 ID。",
-          "pattern": "^Model_[A-Za-z][A-Za-z0-9]*_\\d{2}$",
-          "examples": ["Model_Java_00"]
+          "description": "所属模块 ID（M<NNN>）。",
+          "pattern": "^M\\d{3}$",
+          "examples": ["M001"]
         },
         "sequence": {
           "type": "integer",
-          "description": "文档三位数字编号（1-999）。与 doc_id 第四段一致。",
+          "description": "文档全局分配序号（1-99999，全局递增不复用）。构成 doc_id 数字段。",
+          "minimum": 1,
+          "maximum": 99999
+        },
+        "doc_order": {
+          "type": "integer",
+          "description": "文档在模块内的位置序号（1-999）。来自文件名 NNN 前缀。",
           "minimum": 1,
           "maximum": 999
+        },
+        "english_name": {
+          "type": "string",
+          "description": "文档英文名（PascalCase，来自文件名）。",
+          "pattern": "^[A-Za-z][A-Za-z0-9-]*$",
+          "examples": ["GettingStarted", "CompletableFutureAsync"]
         },
         "title": {
           "type": "string",

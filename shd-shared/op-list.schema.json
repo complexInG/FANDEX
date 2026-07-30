@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://fandex.local/schemas/op-list.schema.json",
   "title": "FANDEX Hot Update Operation List",
-  "description": "FANDEX 热更新操作列表 Schema（Desktop / Android 共享）。op-list 描述两个 manifest 版本之间的差异，客户端 updater 拉取最新 manifest 后，对比本地 manifest 生成 op-list（或由服务端预生成），按 op-list 顺序执行增量更新。op-list 同样需要 Ed25519 签名以防篡改。op-list 支持五种操作：add-module（新增模块）、modify-doc（修改文档，含改名）、add-doc（模块内新增文档）、remove-doc（删除文档）、remove-module（删除模块）。",
+  "description": "FANDEX 热更新操作列表 Schema（Desktop / Android 共享）。op-list 描述两个 manifest 版本之间的差异，客户端 updater 拉取最新 manifest 后，对比本地 manifest 生成 op-list（或由服务端预生成），按 op-list 顺序执行增量更新。op-list 支持五种操作：add-module（新增模块）、modify-doc（修改文档，含改名）、add-doc（模块内新增文档）、remove-doc（删除文档）、remove-module（删除模块）。",
   "type": "object",
   "required": [
     "op_list_version",
@@ -10,8 +10,7 @@
     "from_manifest_version",
     "to_manifest_version",
     "generated_at",
-    "ops",
-    "signature"
+    "ops"
   ],
   "additionalProperties": false,
   "properties": {
@@ -23,7 +22,7 @@
     },
     "manifest_type": {
       "type": "string",
-      "description": "对应 manifest 类型。full 类 op-list 操作 content/full/ 内容；mobile 类 op-list 操作 content/mobile/ 内容。两类 op-list 独立签名、独立分发。",
+      "description": "对应 manifest 类型。full 类 op-list 操作 content/full/ 内容；mobile 类 op-list 操作 content/mobile/ 内容。两类 op-list 独立分发。",
       "enum": ["full", "mobile"]
     },
     "from_manifest_version": {
@@ -50,11 +49,6 @@
         "$ref": "#/$defs/op"
       },
       "minItems": 0
-    },
-    "signature": {
-      "type": "object",
-      "description": "Ed25519 签名信息。签名对象为 op-list 中除 signature 字段外的所有字段，按 JSON key 字典序递归排序后序列化为紧凑 JSON（无空白），再对 UTF-8 字节流做 Ed25519 签名。客户端验签失败拒绝执行任何操作。",
-      "$ref": "#/$defs/signature"
     }
   },
   "$defs": {
@@ -108,7 +102,7 @@
             "doc_id": {
               "type": "string",
               "description": "待修改文档的 doc_id。必须已存在于客户端本地 manifest 中。",
-              "pattern": "^Doc_[A-Za-z][A-Za-z0-9]*_\\d{2}_\\d{3}$"
+              "pattern": "^D\\d{5}$"
             },
             "changes": {
               "type": "object",
@@ -178,7 +172,7 @@
             "doc_id": {
               "type": "string",
               "description": "待删除文档的 doc_id。",
-              "pattern": "^Doc_[A-Za-z][A-Za-z0-9]*_\\d{2}_\\d{3}$"
+              "pattern": "^D\\d{5}$"
             }
           }
         },
@@ -192,31 +186,11 @@
             "module_id": {
               "type": "string",
               "description": "待删除模块的 module_id。",
-              "pattern": "^Model_[A-Za-z][A-Za-z0-9]*_\\d{2}$"
+              "pattern": "^M\\d{3}$"
             }
           }
         }
       ]
-    },
-    "signature": {
-      "type": "object",
-      "description": "Ed25519 签名信息。结构与 manifest.schema.json 中 signature 一致。",
-      "required": ["algorithm", "public_key_fingerprint", "value"],
-      "additionalProperties": false,
-      "properties": {
-        "algorithm": {
-          "type": "string",
-          "enum": ["EdDSA"]
-        },
-        "public_key_fingerprint": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{16}$"
-        },
-        "value": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9+/]+={0,2}$"
-        }
-      }
     }
   }
 }

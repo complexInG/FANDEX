@@ -76,10 +76,18 @@ export default defineConfig({
       },
     },
   },
-  // 预取配置：悬停时预加载页面，提升页面切换速度
+  // 预取配置：视口内预加载页面，提升页面切换速度
+  // -------------------------------------------------------------------------
+  // 策略选择 viewport 而非 hover：
+  // - hover 策略在鼠标悬停时才触发预取，若用户快速点击（hover 时间不足），
+  //   页面尚未预取完成，导致首次点击响应延迟高（用户反馈：首次点击反应慢）
+  // - viewport 策略利用 IntersectionObserver 自动预取进入视口的链接，
+  //   用户滚动时链接已被预取缓存，点击时直接命中缓存，显著降低首点击延迟
+  // - 对 2000+ 页面安全：仅预取视口内可见链接，非全站预取，带宽与内存可控
+  // - 链接级覆盖：个别链接可通过 data-astro-prefetch="hover" 单独降级为 hover 策略
   prefetch: {
-    prefetchAll: false, // 不预取所有页面（节省带宽）
-    defaultStrategy: 'hover', // 鼠标悬停时触发预取
+    prefetchAll: false, // 不预取所有页面（视口策略已足够，避免带宽浪费）
+    defaultStrategy: 'viewport', // 视口内链接自动预取，点击时命中缓存
   },
   // 集成：MDX 支持、站点地图生成、React 组件支持
   // 偏差报备：原含 pagefind() 静态搜索索引集成，搜索页（search.astro）已删除，

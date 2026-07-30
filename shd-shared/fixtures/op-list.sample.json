@@ -9,10 +9,11 @@
       "op_type": "add-module",
       "op_id": "550e8400-e29b-41d4-a716-446655440001",
       "module": {
-        "module_id": "Model_React_02",
+        "module_id": "M003",
         "name": "React",
         "english_short": "react",
-        "sequence": 2,
+        "sequence": 3,
+        "folder_order": 11,
         "docs_count": 1,
         "icon": "react",
         "color": "#61DAFB",
@@ -20,10 +21,10 @@
       },
       "docs": [
         {
-          "doc_id": "Doc_React_02_001",
-          "module_id": "Model_React_02",
+          "doc_id": "D00005",
+          "module_id": "M003",
           "title": "状态与事件",
-          "source_path": "react/状态与事件.md",
+          "source_path": "011-react/001-StateAndEvent.md",
           "sha256": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
           "size": 11200,
           "updated_at": "2026-07-21T09:00:00.000Z",
@@ -34,10 +35,10 @@
     {
       "op_type": "modify-doc",
       "op_id": "550e8400-e29b-41d4-a716-446655440002",
-      "doc_id": "Doc_Java_00_001",
+      "doc_id": "D00001",
       "changes": {
         "title": "快速入门（2026 修订版）",
-        "source_path": "java/快速入门-2026.md",
+        "source_path": "013-java/001-QuickStart2026.md",
         "sha256": "f1e2d3c4b5a697887766554433221100ffeeddccbbaa99887766554433221100",
         "size": 13200,
         "updated_at": "2026-07-21T08:00:00.000Z",
@@ -47,7 +48,7 @@
     {
       "op_type": "modify-doc",
       "op_id": "550e8400-e29b-41d4-a716-446655440003",
-      "doc_id": "Doc_Python_01_001",
+      "doc_id": "D00003",
       "changes": {
         "sha256": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
         "size": 9100,
@@ -58,10 +59,10 @@
       "op_type": "add-doc",
       "op_id": "550e8400-e29b-41d4-a716-446655440004",
       "doc": {
-        "doc_id": "Doc_Java_00_003",
-        "module_id": "Model_Java_00",
+        "doc_id": "D00006",
+        "module_id": "M001",
         "title": "JVM 调优",
-        "source_path": "java/JVM调优.md",
+        "source_path": "013-java/003-JVMTuning.md",
         "sha256": "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
         "size": 28400,
         "updated_at": "2026-07-21T07:30:00.000Z",
@@ -72,17 +73,12 @@
     {
       "op_type": "remove-doc",
       "op_id": "550e8400-e29b-41d4-a716-446655440005",
-      "doc_id": "Doc_Python_01_002"
+      "doc_id": "D00004"
     },
     {
       "op_type": "remove-module",
       "op_id": "550e8400-e29b-41d4-a716-446655440006",
-      "module_id": "Model_Python_01"
+      "module_id": "M002"
     }
-  ],
-  "signature": {
-    "algorithm": "EdDSA",
-    "public_key_fingerprint": "a1b2c3d4e5f60718",
-    "value": "MEUCIQDSAMPLE_OP_LIST_SIGNATURE_VALUE_FOR_FIXTURE_TESTING_ONLY_NOT_REAL"
-  }
+  ]
 }

@@ -18,14 +18,16 @@ export type ManifestType = 'full' | 'mobile';
 
 /** 模块定义 */
 export interface Module {
-  /** 模块唯一标识符（Model_<EnglishShort>_<NN>） */
+  /** 模块唯一标识符（不透明序号，格式 M<NNN>，如 M001） */
   module_id: string;
   /** 模块显示名称（中文） */
   name: string;
-  /** 模块英文简称（小写） */
+  /** 模块英文简称（小写，可变匹配字段，不嵌入 ID） */
   english_short: string;
-  /** 模块两位数字编号（0-99） */
+  /** 模块分配序号（1-999，构成 module_id 数字段） */
   sequence: number;
+  /** 模块文件夹位置序号（1-999，来自文件夹 NNN 前缀，用于排序展示） */
+  folder_order: number;
   /** 此模块下的文档数量 */
   docs_count: number;
   /** 模块图标标识（可选） */
@@ -38,7 +40,7 @@ export interface Module {
 
 /** 单篇文档定义 */
 export interface Doc {
-  /** 文档唯一标识符（Doc_<EnglishShort>_<NN>_<NNN>） */
+  /** 文档唯一标识符（不透明序号，格式 D<NNNNN>，如 D00001） */
   doc_id: string;
   /** 所属模块 ID */
   module_id: string;
@@ -58,16 +60,6 @@ export interface Doc {
   tags?: string[];
 }
 
-/** 签名对象 */
-export interface SignatureObject {
-  /** 签名算法，固定为 EdDSA */
-  algorithm: 'EdDSA';
-  /** 公钥指纹（SHA-256 前 16 字符 hex） */
-  public_key_fingerprint: string;
-  /** 签名值（base64 编码） */
-  value: string;
-}
-
 /** 完整 manifest 结构 */
 export interface Manifest {
   /** Schema 版本号 */
@@ -84,8 +76,6 @@ export interface Manifest {
   docs: Doc[];
   /** 归档来源版本（仅归档 manifest 存在） */
   archive_of?: string;
-  /** Ed25519 签名信息 */
-  signature: SignatureObject;
 }
 
 /* ========== Op-List 类型 ========== */
@@ -180,20 +170,20 @@ export interface OpList {
   generated_at: string;
   /** 操作列表 */
   ops: Op[];
-  /** Ed25519 签名信息 */
-  signature: SignatureObject;
 }
 
 /* ========== ID-Registry 类型 ========== */
 
 /** 模块 ID 记录 */
 export interface ModuleRecord {
-  /** 模块唯一标识符 */
+  /** 模块唯一标识符（不透明序号，M<NNN>） */
   module_id: string;
-  /** 模块英文简称（小写） */
+  /** 模块英文简称（小写，可变匹配字段，不嵌入 ID） */
   english_short: string;
-  /** 模块两位数字编号（0-99） */
+  /** 模块分配序号（1-999，构成 module_id 数字段） */
   sequence: number;
+  /** 模块文件夹位置序号（1-999，来自文件夹 NNN 前缀） */
+  folder_order: number;
   /** 模块显示名称（中文） */
   name: string;
   /** module_id 分配时间（ISO 8601 UTC） */
@@ -206,13 +196,17 @@ export interface ModuleRecord {
 
 /** 文档 ID 记录 */
 export interface DocRecord {
-  /** 文档唯一标识符 */
+  /** 文档唯一标识符（不透明序号，D<NNNNN>） */
   doc_id: string;
-  /** 所属模块 ID */
+  /** 所属模块 ID（M<NNN>） */
   module_id: string;
-  /** 文档三位数字编号（1-999） */
+  /** 文档全局分配序号（1-99999，构成 doc_id 数字段，全局递增不复用） */
   sequence: number;
-  /** 文档标题（首次分配时的标题） */
+  /** 文档在模块内的位置序号（1-999，来自文件名 NNN 前缀） */
+  doc_order: number;
+  /** 文档英文名（PascalCase，来自文件名） */
+  english_name: string;
+  /** 文档标题（首次分配时的标题，可能随后续改名变化） */
   title: string;
   /** doc_id 分配时间（ISO 8601 UTC） */
   allocated_at: string;
@@ -228,8 +222,10 @@ export interface IdRegistry {
   registry_version: string;
   /** 注册表最后更新时间（ISO 8601 UTC） */
   updated_at: string;
-  /** 下一个待分配的模块编号（0-100） */
+  /** 下一个待分配的模块序号（1-999） */
   next_module_sequence?: number;
+  /** 下一个待分配的文档序号（1-99999） */
+  next_doc_sequence?: number;
   /** 已分配的模块 ID 完整列表 */
   modules: ModuleRecord[];
   /** 已分配的文档 ID 完整列表 */

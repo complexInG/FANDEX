@@ -3,13 +3,11 @@
  *
  * 功能概述：
  * 扫描 cnt-content/full/ 或 cnt-content/mobile/ 目录，结合 id-registry 与 doc-id-map，
- * 生成未签名 manifest（不含 signature 字段），输出到 dist/manifests/{type}.manifest.unsigned.json。
- * 后续由 sign-manifest CLI 读取未签名 manifest 并添加 Ed25519 签名。
+ * 生成内容索引 manifest，输出到 dist/manifests/{type}.manifest.json。
  *
  * 设计目的：
- * - 将"扫描物理文件"与"签名"解耦，便于本地预览与 CI 分阶段执行
  * - 通过 id-registry 与 doc-id-map 强制 ID 必须先分配，避免运行时分配导致 ID 漂移
- * - 未签名 manifest 不通过 Schema 验证（缺少 signature 字段），由 sign-manifest 完成后统一验证
+ * - 扫描物理文件并生成带 ID 的内容索引，供三端应用消费
  *
  * 使用方式：
  *   pnpm generate-manifest --type full
@@ -75,7 +73,7 @@ async function main(): Promise<void> {
 
   program
     .name('generate-manifest')
-    .description('扫描 cnt-content/ 目录生成未签名 manifest')
+    .description('扫描 cnt-content/ 目录生成 manifest')
     .option(
       '-t, --type <type>',
       'manifest 类型（full 或 mobile）',
@@ -87,7 +85,7 @@ async function main(): Promise<void> {
     )
     .option(
       '-o, --output <path>',
-      '输出文件路径（默认 dist/manifests/{type}.manifest.unsigned.json）',
+      '输出文件路径（默认 dist/manifests/{type}.manifest.json）',
     )
     .option(
       '--app-compat-version <version>',
@@ -140,8 +138,8 @@ interface CliOptions {
  * 3. 加载模块元数据覆盖（可选）
  * 4. 扫描内容目录
  * 5. 将扫描结果映射为带 ID 的 manifest 数据
- * 6. 组装 Manifest 对象（不含 signature）
- * 7. 输出未签名 manifest 文件
+ * 6. 组装 Manifest 对象
+ * 7. 输出 manifest 文件
  *
  * @param options - CLI 选项
  */
@@ -176,7 +174,7 @@ async function runGenerate(options: CliOptions): Promise<void> {
 
   const outputPath = options.output
     ? resolve(options.output)
-    : join(DEFAULT_OUTPUT_DIR, `${manifestType}.manifest.unsigned.json`);
+    : join(DEFAULT_OUTPUT_DIR, `${manifestType}.manifest.json`);
 
   const docIdMapPath = options.docIdMap
     ? resolve(options.docIdMap)
@@ -225,8 +223,8 @@ async function runGenerate(options: CliOptions): Promise<void> {
     process.exit(1);
   }
 
-  /* 组装 Manifest 对象（不含 signature） */
-  const manifest: Omit<Manifest, 'signature'> = {
+  /* 组装 Manifest 对象 */
+  const manifest: Manifest = {
     manifest_version: options.manifestVersion,
     manifest_type: manifestType,
     generated_at: new Date().toISOString(),
@@ -235,7 +233,7 @@ async function runGenerate(options: CliOptions): Promise<void> {
     docs,
   };
 
-  /* 输出未签名 manifest */
+  /* 输出 manifest */
   await mkdir(dirname(outputPath), { recursive: true });
   const json = JSON.stringify(manifest, null, 2);
   await writeFile(outputPath, `${json}\n`, 'utf-8');
@@ -246,7 +244,7 @@ async function runGenerate(options: CliOptions): Promise<void> {
   console.log(`[generate-manifest]   文档数: ${docs.length}`);
   console.log(`[generate-manifest]   文件大小: ${sizeKB} KB`);
   console.log(`[generate-manifest]   输出路径: ${outputPath}`);
-  console.log('[generate-manifest] 下一步：运行 sign-manifest 添加 Ed25519 签名');
+  console.log('[generate-manifest] manifest 生成完毕，可供三端应用消费');
 }
 
 /**
@@ -308,12 +306,13 @@ function mapScanResultToManifest(
     const override = metaOverrideMap.get(scannedModule.english_short);
     const moduleName = override?.name || moduleRecord.name || scannedModule.name;
 
-    /* 构造 Module 对象 */
+    /* 构造 Module 对象（含 folder_order，用于排序展示） */
     const module: Module = {
       module_id: moduleRecord.module_id,
       name: moduleName,
       english_short: moduleRecord.english_short,
       sequence: moduleRecord.sequence,
+      folder_order: moduleRecord.folder_order,
       docs_count: scannedModule.docs.length,
     };
     if (override?.icon) {

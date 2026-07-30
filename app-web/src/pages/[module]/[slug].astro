@@ -147,7 +147,6 @@ const moduleColorStyle = moduleColor ? `--module-color:${moduleColor}` : undefin
       data-pagefind-filter={`difficulty:${doc.data.difficulty || 'intermediate'}, module:${module}${doc.data.category ? ', category:' + doc.data.category : ''}`}
     >
       <!-- 标题行：标题 + 功能扩展占位
-           原 ProgressToggle（已读/未读）按钮已删除
            预留 data-slot="progress-future" 占位，供后续重新设计功能接入 -->
       <div class="doc-title-row fndx-scroll-reveal">
         <h1 class="doc-title">{doc.data.title}</h1>
@@ -211,8 +210,6 @@ const moduleColorStyle = moduleColor ? `--module-color:${moduleColor}` : undefin
     </article>
     <!-- 知识检测组件：进入视口时加载 -->
     <QuizBlock client:visible quiz={doc.data.quiz || []} />
-    {/* 注：原"返回入门指南"按钮已移除 —— 侧边栏顶部已提供"返回首页"按钮，
-        文档末尾的上下篇导航（DocNav）已承担文档间跳转引导功能 */}
     <!-- 上下篇导航：传递预计算的 prev/next，避免组件内部重复查询 -->
     <DocNav prev={navigation.prev} next={navigation.next} />
   </div>
@@ -357,8 +354,6 @@ const moduleColorStyle = moduleColor ? `--module-color:${moduleColor}` : undefin
     color: var(--color-text-secondary);
     line-height: 1.6;
   }
-
-  /* 注：原 .back-to-start-link 样式已随按钮移除 —— 侧边栏顶部"返回首页"按钮已承担返回功能 */
 
   /* 移动端适配 */
   @media (max-width: 768px) {

@@ -20,8 +20,6 @@
     "validate-ids": "pnpm --filter @fandex/tools validate-ids",
     "allocate-id": "pnpm --filter @fandex/tools allocate-id",
     "generate-manifest": "pnpm --filter @fandex/tools generate-manifest",
-    "sign-manifest": "pnpm --filter @fandex/tools sign-manifest",
-    "verify-manifest": "pnpm --filter @fandex/tools verify-manifest",
     "clean": "pnpm -r exec rm -rf dist .astro node_modules/.cache && rm -rf node_modules",
     "install:all": "pnpm install --frozen-lockfile"
   },

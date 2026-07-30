@@ -19,6 +19,9 @@ import { docSlug } from '@/lib/modules';
 import { computeReadingTime } from '@/lib/reading-time';
 // 预构建的文档统计缓存（由 scripts/build-stats.mjs 生成，避免 dev 模式 OOM）
 import docStatsCache from '@/data/doc-stats.json';
+// 预构建的文档索引缓存（由 scripts/build-stats.mjs 生成，避免 dev 模式 OOM）
+// 供侧边栏"全部模块"面板按模块分组渲染，替代运行时全量 getCollection('docs') 调用
+import docIndexCache from '@/data/doc-index.json';
 
 /** 文档条目类型（从 Content Schema 推导） */
 type DocEntry = CollectionEntry<'docs'>;
@@ -39,6 +42,30 @@ interface DocStats {
   totalModules: number;
   /** 涉及的分类数 */
   totalCategories: number;
+}
+
+/**
+ * 文档索引项（轻量结构，供侧边栏分组渲染）
+ *
+ * 与 DocEntry 的区别：
+ * - DocEntry 携带完整 CollectionEntry（含 body/render 等重字段），运行时全量加载易 OOM
+ * - DocIndexItem 仅含侧边栏渲染所需的 4 个字段，源自预构建 JSON 缓存，零文档内容加载
+ *
+ * 字段与 build-stats.mjs 输出的 doc-index.json 一一对应：
+ * - slug   文档 slug（等价于 web 端 docSlug(collectionEntry.id)）
+ * - module 所属模块 ID（frontmatter.module）
+ * - title  文档标题（frontmatter.title）
+ * - order  排序权重（frontmatter.order，缺省 0）
+ */
+interface DocIndexItem {
+  /** 文档 slug（用于构建路由 href：/{module}/{slug}/） */
+  slug: string;
+  /** 所属模块 ID */
+  module: string;
+  /** 文档标题 */
+  title: string;
+  /** 排序权重 */
+  order: number;
 }
 
 /**
@@ -138,6 +165,38 @@ export async function getDocStats(): Promise<DocStats> {
 }
 
 /**
+ * 获取文档索引（轻量结构，源自预构建 JSON 缓存）
+ *
+ * 返回扁平的 DocIndexItem 数组，已按 module 字母序 + order 升序排序
+ * （排序规则与 getAllDocs() 一致，保证数据源切换后侧边栏分组结果不变）。
+ *
+ * 供侧边栏"全部模块"面板等需要全量文档列表但不需文档正文的场景使用。
+ *
+ * 与 getAllDocs() 的核心区别：
+ * - getAllDocs() 运行时调用 getCollection('docs') 全量加载 2000+ 篇文档
+ *   （含 body/render 等重字段），dev 模式下导致 12GB 堆内存 OOM
+ * - getDocsIndex() 读取静态 import 的预构建 JSON，仅含 4 个轻量字段，
+ *   零文档内容加载，O(1) 内存占用，彻底消除 dev/build 模式 OOM 风险
+ *
+ * 同步函数说明：
+ * - 数据源自 import 静态导入的 JSON（build-stats.mjs 生成），无运行时 IO，无需 async
+ * - 与 doc-service 其他 async 函数风格不一致，但同步返回更高效且语义清晰
+ * - 扩展预留点：若未来需要运行时动态校验 JSON 结构，可在函数内补充 zod 校验
+ *
+ * @returns 排序后的文档索引数组；缓存不可用时返回空数组
+ */
+export function getDocsIndex(): DocIndexItem[] {
+  try {
+    // docIndexCache 为静态 import 的 JSON，TS 默认推导为字面量类型联合
+    // 此处通过 as 断言约束为 DocIndexItem[]，保证调用方类型安全
+    // 数据源自可信的构建脚本输出，无需运行时 schema 校验
+    return (docIndexCache as DocIndexItem[]) ?? [];
+  } catch {
+    return [];
+  }
+}
+
+/**
  * 按分类获取文档
  * @param categoryId - 分类 ID（对应 frontmatter 中的 category 字段）
  * @returns 匹配分类的文档数组（按 order 排序）；异常时返回空数组
@@ -175,5 +234,5 @@ export async function getRelatedDocs(moduleId: string, slug: string): Promise<Do
   }
 }
 
-export type { DocEntry, DocNavigation, DocStats };
+export type { DocEntry, DocNavigation, DocStats, DocIndexItem };
 export { computeReadingTime, docSlug };

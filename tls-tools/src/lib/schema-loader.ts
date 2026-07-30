@@ -2,13 +2,13 @@
  * Schema 加载与验证模块
  *
  * 功能概述：
- * 加载 shared/ 目录下的 JSON Schema 文件，提供 Ajv 验证器。
+ * 加载 shd-shared/ 目录下的 JSON Schema 文件，提供 Ajv 验证器。
  * 支持 manifest / op-list / id-registry 三类 Schema。
  *
  * 设计目的：
  * - 工具链在生成、签名、验证 manifest / op-list 时统一调用此模块做 Schema 校验
  * - 确保数据结构合法，避免后续处理因结构错误产生未定义行为
- * - Schema 文件位于 shared/，跨子项目共享，TS 工具链与 Android 端引用同一份 Schema
+ * - Schema 文件位于 shd-shared/，跨子项目共享，TS 工具链与 Android 端引用同一份 Schema
  */
 
 import { readFileSync } from 'node:fs';
@@ -20,8 +20,8 @@ import addFormats from 'ajv-formats';
 /** 当前模块所在目录（用于定位 shared/ 目录） */
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-/** shared/ 目录绝对路径（tools/src/lib/ → tools/ → FANDEX/ → shared/） */
-const SHARED_DIR = resolve(__dirname, '..', '..', '..', 'shared');
+/** shd-shared/ 目录绝对路径（tools/src/lib/ → tools/ → FANDEX/ → shd-shared/） */
+const SHARED_DIR = resolve(__dirname, '..', '..', '..', 'shd-shared');
 
 /** Schema 类型枚举 */
 export type SchemaType = 'manifest' | 'op-list' | 'id-registry';
@@ -73,7 +73,7 @@ function getAjv(): Ajv2020 {
  *
  * 输入：Schema 类型
  * 输出：Schema 对象（已解析的 JSON）
- * 流程：从 shared/ 目录读取对应 Schema 文件，解析为 JSON 并缓存
+ * 流程：从 shd-shared/ 目录读取对应 Schema 文件，解析为 JSON 并缓存
  *
  * @param type - Schema 类型
  * @returns Schema 对象

@@ -45,9 +45,6 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
       </div>
     </div>
 
-    {/* 注：原"返回入门指南"按钮已移除 —— 侧边栏顶部已提供"返回首页"按钮，
-        该按钮在所有模块目录页重复且地址错误（指向 getting-started 而非首页） */}
-
     <ul class="doc-list fndx-scroll-reveal-fade">
       {
         sortedDocs.map((doc, idx) => (
@@ -121,8 +118,6 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
 
   /* 已删除 .header-dot 点状装饰（去卡通化，几何科技风格） */
 
-  /* 注：原 .back-to-start-link 样式已随按钮移除 —— 侧边栏顶部"返回首页"按钮已承担返回功能 */
-
   .header-title {
     font-family: var(--font-display);
     font-size: 1.05em;
@@ -155,14 +150,15 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
 
   /* 文档链接：flex-wrap 允许标题与描述分行显示，增高卡片以容纳多行内容
    * 布局：第一行 = 图标 + 序号 + 难度 + 标题；第二行 = 描述（flex-basis: 100% 强制换行）
-   * 左侧竖线装饰统一 .fndx-sidebar__link 模式（需求3）：圆角 + 模块分类色驱动悬停 */
+   * 左侧竖线装饰：移除 border-radius 圆角，改为几何直角线条（需求：悬停左侧颜色条不要带有弧度）
+   * 与项目"几何科技风格"统一，确保左侧 border-left 不被圆角裁剪 */
   .doc-list-link {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: var(--spacing-xs) var(--spacing-sm);
     padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-control);
+    border-radius: 0;
     color: var(--color-text);
     text-decoration: none;
     border-left: 2px solid transparent;

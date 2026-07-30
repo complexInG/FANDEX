@@ -29,9 +29,12 @@ import {
   getDocsByModule,
   getCategories,
   getModulesByCategory,
-  getAllDocs,
+  // 全部模块面板改用预构建索引缓存（getDocsIndex），避免运行时全量 getCollection 导致 dev 模式 OOM
+  // 章节面板仍用 getDocsByModule（仅查询当前模块，文档量小无 OOM 风险）
+  getDocsIndex,
   docSlug,
   type DocEntry,
+  type DocIndexItem,
   type Module,
   type CategoryInfo,
 } from '@/services'
@@ -50,23 +53,25 @@ const meta = getModule(moduleId)
 const categories = getCategories()
 
 /**
- * 预加载所有文档并按 module 字段分组
+ * 预加载文档索引并按 module 字段分组
  *
  * 实现说明：
- * - 一次性查询所有文档，按 module 字段分组
- * - 每个 module 的文档按 order 升序排列
+ * - 读取预构建的 doc-index.json（由 scripts/build-stats.mjs 生成），
+ *   仅含 slug/module/title/order 四个轻量字段，避免运行时全量 getCollection('docs')
+ *   加载 2000+ 篇文档正文导致 dev 模式 OOM
+ * - 索引数组已在构建期按 module 字母序 + order 升序排序，分组后顺序保持不变，无需再次排序
  * - 渲染时内联到 HTML，客户端点击展开按钮切换显隐，无需网络请求
+ *
+ * 性能对比：
+ * - 旧方案 getAllDocs()：dev 模式每页请求全量加载 2000+ DocEntry（含 body/render），12GB 堆内存 OOM
+ * - 新方案 getDocsIndex()：读取静态 import JSON（~180KB），O(1) 内存占用，dev/build 模式均无 OOM 风险
  */
-const allDocs = await getAllDocs()
-const allDocsByModule: Map<string, DocEntry[]> = new Map()
-for (const doc of allDocs) {
-  const m = doc.data.module
-  if (!allDocsByModule.has(m)) allDocsByModule.set(m, [])
-  allDocsByModule.get(m)?.push(doc)
-}
-for (const [key, list] of allDocsByModule) {
-  list.sort((a, b) => (a.data.order || 0) - (b.data.order || 0))
-  allDocsByModule.set(key, list)
+const docsIndex = getDocsIndex()
+const docsByModule: Map<string, DocIndexItem[]> = new Map()
+for (const doc of docsIndex) {
+  const m = doc.module
+  if (!docsByModule.has(m)) docsByModule.set(m, [])
+  docsByModule.get(m)?.push(doc)
 }
 
 const base = import.meta.env.BASE_URL
@@ -132,69 +137,96 @@ function moduleColorStyle(m: Module | undefined): string | undefined {
     </svg>
   </button>
 
-  <!-- 章节导航面板（含章节列表 + 大纲视图） -->
+  <!-- 共享顶部固定区：折叠按钮 + 视图切换 tabs + 返回首页
+       独立于两个面板之外，确保切换视图时 tabs 与折叠按钮始终可见 -->
+  <div class="fndx-sidebar__top">
+    <!-- 折叠收纳按钮：点击后将整个侧边栏折叠，释放阅读空间 -->
+    <button
+      type="button"
+      id="sidebar-collapse-btn"
+      class="fndx-sidebar__collapse fndx-icon-btn"
+      aria-label="折叠侧边栏"
+      data-tooltip="折叠侧边栏"
+      data-tooltip-pos="right"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+    </button>
+
+    <!-- 视图切换 tabs：章节 / 全部模块
+         样式由 .fndx-sidebar__view-tabs / .fndx-sidebar__view-tab 提供（layout-components.css）
+         点击切换面板显隐，状态持久化到 localStorage -->
+    <div class="fndx-sidebar__view-tabs" role="tablist" aria-label="侧边栏视图切换">
+      <button
+        type="button"
+        class="fndx-sidebar__view-tab is-active"
+        data-view="chapters"
+        role="tab"
+        aria-selected="true"
+      >
+        章节
+      </button>
+      <button
+        type="button"
+        class="fndx-sidebar__view-tab"
+        data-view="modules"
+        role="tab"
+        aria-selected="false"
+      >
+        全部
+      </button>
+    </div>
+
+    <!-- 返回首页（图标按钮，hover 显现 tooltip 语义） -->
+    <a
+      href={base}
+      class="fndx-sidebar__back fndx-icon-btn"
+      aria-label="返回首页"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+    </a>
+  </div>
+
+  <!-- 章节导航面板：当前模块的文档列表 -->
   <nav
     id="sidebar-chapters-panel"
     class="fndx-sidebar__panel"
     aria-label="章节导航"
   >
-    <!-- 顶部固定区：模块标题 + 折叠按钮 + 返回首页（紧凑现代风格） -->
-    <div class="fndx-sidebar__top">
-      <!-- 折叠收纳按钮：点击后将整个侧边栏折叠，释放阅读空间；统一 fndx-icon-btn 风格 -->
-      <button
-        type="button"
-        id="sidebar-collapse-btn"
-        class="fndx-sidebar__collapse fndx-icon-btn"
-        aria-label="折叠侧边栏"
-        data-tooltip="折叠侧边栏"
-        data-tooltip-pos="right"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
-      </button>
-      <h2 class="fndx-sidebar__title">{meta?.title || moduleId}</h2>
-      <!-- 返回首页（图标按钮，hover 显现 tooltip 语义）；统一 fndx-icon-btn 风格 -->
-      <a
-        href={base}
-        class="fndx-sidebar__back fndx-icon-btn"
-        aria-label="返回首页"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-          <polyline points="9 22 9 12 15 12 15 22" />
-        </svg>
-      </a>
-    </div>
-
-    <!-- 可滚动内容区 -->
     <div
       id="sidebar-scroll"
       class="fndx-sidebar__scroll"
     >
-      <!-- 章节列表面板 -->
+      <!-- 模块标题（从顶部区移入滚动区，避免与 tabs 争抢空间） -->
+      <h2 class="fndx-sidebar__title fndx-sidebar__title--module">
+        {meta?.title || moduleId}
+      </h2>
       <ul
         id="sidebar-panel-chapters"
         class="fndx-sidebar__list"
@@ -220,16 +252,12 @@ function moduleColorStyle(m: Module | undefined): string | undefined {
     </div>
   </nav>
 
-  <!-- 全部模块面板（默认隐藏，移动端汉堡菜单切换时显示） -->
+  <!-- 全部模块面板（默认隐藏，点击 tabs 切换显示） -->
   <nav
     id="sidebar-all-modules-panel"
     class="fndx-sidebar__panel is-hidden"
     aria-label="全部模块"
   >
-    <div class="fndx-sidebar__panel-top">
-      <h2 class="fndx-sidebar__title">全部模块</h2>
-      <p class="fndx-sidebar__subtitle">按分类浏览学习模块</p>
-    </div>
     <div
       id="sidebar-all-modules-scroll"
       class="fndx-sidebar__scroll"
@@ -245,7 +273,7 @@ function moduleColorStyle(m: Module | undefined): string | undefined {
               </h3>
               <ul class="fndx-sidebar__list">
                 {modulesInCategory.map((m: Module) => {
-                  const moduleDocs = allDocsByModule.get(m.id) ?? []
+                  const moduleDocs = docsByModule.get(m.id) ?? []
                   const hasDocs = moduleDocs.length > 0
                   return (
                     <li class="fndx-sidebar__module" data-module={m.id}>
@@ -287,18 +315,18 @@ function moduleColorStyle(m: Module | undefined): string | undefined {
                           class="fndx-sidebar__module-docs is-collapsed"
                           data-module={m.id}
                         >
-                          {moduleDocs.map((doc: DocEntry) => {
-                            const docSlugValue = docSlug(doc.id)
-                            const docIsActive = m.id === moduleId && currentSlug === docSlugValue
+                          {moduleDocs.map((doc: DocIndexItem) => {
+                            // doc.slug 已是预构建期与 docSlug(collectionId) 等价的 slug，无需再次调用 docSlug
+                            const docIsActive = m.id === moduleId && currentSlug === doc.slug
                             return (
                               <li>
                                 <a
-                                  href={`${base}${m.id}/${docSlugValue}/`}
+                                  href={`${base}${m.id}/${doc.slug}/`}
                                   class={`fndx-sidebar__link fndx-sidebar__link--sub${docIsActive ? ' is-active' : ''}`}
                                   style={moduleColorStyle(m)}
                                   aria-current={docIsActive ? 'page' : undefined}
                                 >
-                                  <span class="fndx-sidebar__link-text">{doc.data.title}</span>
+                                  <span class="fndx-sidebar__link-text">{doc.title}</span>
                                 </a>
                               </li>
                             )

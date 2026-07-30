@@ -704,6 +704,21 @@
     line-height: 1.4;
   }
 
+  /* 模块标题在滚动区内的变体（从顶部区移入，需底部间距与分隔线区分标题与列表） */
+  .fndx-sidebar__title--module {
+    padding: var(--space-1) var(--space-2) var(--space-2);
+    margin-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  /* 视图切换 tabs 在共享顶部区中居中占据中间空间
+     替代原模块标题位置，flex:1 让 tabs 自适应中间剩余空间并居中 */
+  .fndx-sidebar__top .fndx-sidebar__view-tabs {
+    flex: 1 1 auto;
+    justify-content: center;
+    max-width: 12rem;
+  }
+
   /* 折叠/切换按钮 */
   .fndx-sidebar__toggle {
     display: inline-flex;
