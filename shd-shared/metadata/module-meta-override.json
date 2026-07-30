@@ -1,0 +1,366 @@
+[
+  {
+    "english_short": "getting-started",
+    "name": "入门指南",
+    "icon": "入门",
+    "color": "#4f5bd5",
+    "description": "零基础环境搭建与学习规划"
+  },
+  {
+    "english_short": "markdown",
+    "name": "Markdown",
+    "icon": "Md",
+    "color": "#4f5bd5",
+    "description": "文档标记与写作规范"
+  },
+  {
+    "english_short": "git",
+    "name": "Git",
+    "icon": "Git",
+    "color": "#4f5bd5",
+    "description": "版本控制与分支管理"
+  },
+  {
+    "english_short": "github",
+    "name": "GitHub",
+    "icon": "GH",
+    "color": "#4f5bd5",
+    "description": "代码协作与CI/CD"
+  },
+  {
+    "english_short": "english",
+    "name": "英语",
+    "icon": "En",
+    "color": "#4f5bd5",
+    "description": "应试英语与专业英语"
+  },
+  {
+    "english_short": "html5",
+    "name": "HTML5",
+    "icon": "H5",
+    "color": "#d63031",
+    "description": "Web结构与语义"
+  },
+  {
+    "english_short": "css",
+    "name": "CSS",
+    "icon": "CSS",
+    "color": "#d63031",
+    "description": "样式与视觉布局"
+  },
+  {
+    "english_short": "javascript",
+    "name": "JavaScript",
+    "icon": "JS",
+    "color": "#d63031",
+    "description": "动态类型脚本语言"
+  },
+  {
+    "english_short": "typescript",
+    "name": "TypeScript",
+    "icon": "TS",
+    "color": "#d63031",
+    "description": "静态类型JavaScript"
+  },
+  {
+    "english_short": "vue3",
+    "name": "Vue 3",
+    "icon": "V3",
+    "color": "#d63031",
+    "description": "响应式前端框架"
+  },
+  {
+    "english_short": "react",
+    "name": "React",
+    "icon": "Re",
+    "color": "#d63031",
+    "description": "组件化前端框架"
+  },
+  {
+    "english_short": "svg",
+    "name": "SVG",
+    "icon": "SVG",
+    "color": "#d63031",
+    "description": "矢量图形与动画"
+  },
+  {
+    "english_short": "java",
+    "name": "Java",
+    "icon": "Ja",
+    "color": "#e17055",
+    "description": "企业级应用开发"
+  },
+  {
+    "english_short": "kotlin",
+    "name": "Kotlin",
+    "icon": "Kt",
+    "color": "#e17055",
+    "description": "JVM现代编程语言"
+  },
+  {
+    "english_short": "csharp",
+    "name": "C#",
+    "icon": "C#",
+    "color": "#e17055",
+    "description": ".NET生态核心语言"
+  },
+  {
+    "english_short": "go",
+    "name": "Go",
+    "icon": "Go",
+    "color": "#e17055",
+    "description": "云原生系统编程"
+  },
+  {
+    "english_short": "lua",
+    "name": "Lua",
+    "icon": "Lua",
+    "color": "#e17055",
+    "description": "嵌入式脚本引擎"
+  },
+  {
+    "english_short": "harmonyos",
+    "name": "HarmonyOS",
+    "icon": "鸿蒙",
+    "color": "#e17055",
+    "description": "HarmonyOS应用开发"
+  },
+  {
+    "english_short": "sql",
+    "name": "SQL",
+    "icon": "SQL",
+    "color": "#00b894",
+    "description": "结构化查询语言"
+  },
+  {
+    "english_short": "mysql",
+    "name": "MySQL",
+    "icon": "My",
+    "color": "#00b894",
+    "description": "关系型数据存储"
+  },
+  {
+    "english_short": "postgresql",
+    "name": "PostgreSQL",
+    "icon": "PG",
+    "color": "#00b894",
+    "description": "高级关系型数据库"
+  },
+  {
+    "english_short": "redis",
+    "name": "Redis",
+    "icon": "Rd",
+    "color": "#00b894",
+    "description": "内存数据库与缓存"
+  },
+  {
+    "english_short": "algorithm",
+    "name": "算法与数据结构",
+    "icon": "算法",
+    "color": "#8854d0",
+    "description": "复杂度分析与算法设计"
+  },
+  {
+    "english_short": "cs-fundamentals",
+    "name": "计算机基础",
+    "icon": "计概",
+    "color": "#8854d0",
+    "description": "体系结构·操作系统·网络·编译"
+  },
+  {
+    "english_short": "c",
+    "name": "C",
+    "icon": "C",
+    "color": "#8854d0",
+    "description": "底层系统编程"
+  },
+  {
+    "english_short": "cpp",
+    "name": "C++",
+    "icon": "C+",
+    "color": "#8854d0",
+    "description": "高性能与泛型编程"
+  },
+  {
+    "english_short": "calculus",
+    "name": "高等数学",
+    "icon": "高数",
+    "color": "#6c5ce7",
+    "description": "微积分与数学分析"
+  },
+  {
+    "english_short": "discrete-math",
+    "name": "离散数学",
+    "icon": "离散",
+    "color": "#6c5ce7",
+    "description": "组合·图论·代数系统"
+  },
+  {
+    "english_short": "linear-algebra",
+    "name": "线性代数",
+    "icon": "线代",
+    "color": "#6c5ce7",
+    "description": "矩阵·向量空间·特征值"
+  },
+  {
+    "english_short": "probability-statistics",
+    "name": "概率论与数理统计",
+    "icon": "概率",
+    "color": "#6c5ce7",
+    "description": "概率模型与统计推断"
+  },
+  {
+    "english_short": "devops",
+    "name": "运维",
+    "icon": "运维",
+    "color": "#e05a2b",
+    "description": "运维与SRE实践"
+  },
+  {
+    "english_short": "networking",
+    "name": "Networking",
+    "icon": "网络",
+    "color": "#e05a2b",
+    "description": "协议·路由·系统管理"
+  },
+  {
+    "english_short": "cybersecurity",
+    "name": "网络安全",
+    "icon": "安全",
+    "color": "#e05a2b",
+    "description": "攻防·渗透·应急响应"
+  },
+  {
+    "english_short": "cloud-computing",
+    "name": "云计算",
+    "icon": "云",
+    "color": "#e05a2b",
+    "description": "云架构与容器编排"
+  },
+  {
+    "english_short": "iot",
+    "name": "物联网",
+    "icon": "物联",
+    "color": "#e05a2b",
+    "description": "嵌入式与边缘计算"
+  },
+  {
+    "english_short": "software-testing",
+    "name": "软件测试",
+    "icon": "测试",
+    "color": "#e05a2b",
+    "description": "质量保障与测试工程"
+  },
+  {
+    "english_short": "software-engineering",
+    "name": "软件工程",
+    "icon": "软工",
+    "color": "#e05a2b",
+    "description": "需求·设计·重构·度量"
+  },
+  {
+    "english_short": "software-architecture",
+    "name": "软件架构",
+    "icon": "架构",
+    "color": "#e05a2b",
+    "description": "架构风格·质量属性·领域驱动"
+  },
+  {
+    "english_short": "engineering-practices",
+    "name": "工程实践",
+    "icon": "实践",
+    "color": "#e05a2b",
+    "description": "Code Review·On-Call·事故复盘"
+  },
+  {
+    "english_short": "python",
+    "name": "Python",
+    "icon": "Py",
+    "color": "#f9a825",
+    "description": "通用编程与自动化"
+  },
+  {
+    "english_short": "agent",
+    "name": "AI Agent",
+    "icon": "AI",
+    "color": "#f9a825",
+    "description": "智能体架构与应用"
+  },
+  {
+    "english_short": "machine-learning",
+    "name": "机器学习",
+    "icon": "ML",
+    "color": "#f9a825",
+    "description": "监督·无监督·强化学习"
+  },
+  {
+    "english_short": "deep-learning",
+    "name": "深度学习",
+    "icon": "DL",
+    "color": "#f9a825",
+    "description": "CNN·RNN·Transformer"
+  },
+  {
+    "english_short": "ai-engineering",
+    "name": "AI工程",
+    "icon": "AIE",
+    "color": "#f9a825",
+    "description": "涵盖数学基础、机器学习与智能体工程"
+  },
+  {
+    "english_short": "computer-vision",
+    "name": "计算机视觉",
+    "icon": "CV",
+    "color": "#f9a825",
+    "description": "图像分类·目标检测·图像生成"
+  },
+  {
+    "english_short": "nlp",
+    "name": "自然语言处理",
+    "icon": "NLP",
+    "color": "#f9a825",
+    "description": "文本分类·信息抽取·对话系统"
+  },
+  {
+    "english_short": "llm",
+    "name": "大语言模型",
+    "icon": "LLM",
+    "color": "#f9a825",
+    "description": "Tokenizer·训练·微调·RLHF"
+  },
+  {
+    "english_short": "generative-ai",
+    "name": "生成式AI",
+    "icon": "Gen",
+    "color": "#f9a825",
+    "description": "VAE·GAN·Diffusion·视频生成"
+  },
+  {
+    "english_short": "multimodal",
+    "name": "多模态AI",
+    "icon": "MM",
+    "color": "#f9a825",
+    "description": "视觉-语言·音频-文本·跨模态"
+  },
+  {
+    "english_short": "ai-ethics",
+    "name": "AI伦理与安全",
+    "icon": "伦理",
+    "color": "#f9a825",
+    "description": "对齐·红队测试·双用风险"
+  },
+  {
+    "english_short": "data-analysis",
+    "name": "数据分析",
+    "icon": "数据",
+    "color": "#f9a825",
+    "description": "统计建模与可视化"
+  },
+  {
+    "english_short": "big-data",
+    "name": "大数据",
+    "icon": "大数据",
+    "color": "#f9a825",
+    "description": "HDFS·Spark·Kafka·Flink"
+  }
+]
