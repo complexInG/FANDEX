@@ -2810,15 +2810,3 @@ class Solution:
 | 传递归约 | transitive reduction | 保持传递闭包的最小边子图 |
 | 传递闭包 | transitive closure | 完整可达性图 |
 | 三色标记 | three-color marking | DFS 中白/灰/黑三色标记法 |
-
----
-
-## 15. 版本历史
-
-| 版本 | 日期 | 修改内容 | 修改者 |
-| --- | --- | --- | --- |
-| 1.0 | 2026-05-27 | 初始版本，Kahn 与 DFS 算法基础实现 | fanquanpp |
-| 1.1 | 2026-06-14 | 添加关键路径（CPM）章节、环检测小节 | fanquanpp |
-| 2.0 | 2026-07-20 | 升级至海外知名高校教学金标准（MIT/Stanford/CMU 级别），新增 12 项质量基准完整章节：学习目标（Bloom 分类法）、历史动机（Kahn 1962/Knuth TAOCP/Tarjan 1972/Aho-Garey-Ullman 1972/Kelly-Walker 1957/Malcolm-Roseboom-Clark-Fazar 1959/Kosaraju 1978）、形式化定义（DAG/偏序/线性扩张/后向边/SCC/关键路径）、理论推导（Kahn 正确性/DFS 后序正确性/拓扑序与偏序扩张等价性/字典序最小/最长路径/最短路径）、代码示例（Python/C++/Java + NetworkX/Boost + 变体 6 种）、对比分析（5 张表）、常见陷阱（9 个）、工程实践（NetworkX/BGL/Spark/Make/Ninja/Bazel/CI-CD）、案例研究（8 个：课程先修/编译器/Make/Spark/CPM 项目管理/UTXO/Excel/VLSI）、习题（26 题）、参考答案（含 LeetCode 题解）、参考文献（20 条含 DOI）、延伸阅读（6 个方向）、术语表（25 个术语）。frontmatter 完整字段含 learningObjectives/references/etymology。 | fanquanpp |
-
-> 本文档为 FANDEX 项目算法金标准文档 v2.0，遵循 12 项质量基准，对标 MIT 6.006、Stanford CS161、CMU 15-122/15-351 教学标准。最后审阅日期：2026-07-20。

@@ -1,21 +1,20 @@
 ---
 /**
- * Footer 组件 — 极简单行页脚
+ * Footer 组件 — 多区段页脚
  * -----------------------------------------------------------------------------
  * 职责：
- *   1. 渲染单行版权信息，保持页面底部轻量
- *   2. 预留扩展点（注释区块），后续可添加导航/统计/生态链接等
+ *   1. 渲染项目标识、生态联动链接、导航链接与版权信息
+ *   2. 消费 @fandex/styles 中 .fndx-footer 命名规范
  *
  * 设计原则：
- *   - 当前仅显示版权一行，避免占用过多垂直空间
- *   - 后续重新设计时在此处添加分区，不影响现有布局
- *   - 消费 @fandex/styles 中 .fndx-footer 命名规范
+ *   - 极简单列居中布局，与首页整体视觉风格统一
+ *   - 三端生态入口（Web / 桌面 / 移动）通过 .fndx-footer__eco-links 呈现
+ *   - 版权年份使用项目发布年份 2026（非 2024，避免时间错误）
  *
- * 扩展预留点：
- *   <!-- 扩展点 1：导航链接组 -->
- *   <!-- 扩展点 2：统计数据区 -->
- *   <!-- 扩展点 3：生态联动链接 -->
- *   <!-- 扩展点 4：注意事项/技术信息 -->
+ * 实时信息说明：
+ *   - 项目发布：2026-07（TRAE AI 创造力大赛参赛）
+ *   - 仓库构成：FANDEX-Web / FANDEX-exe / FANDEX-App
+ *   - 协议：MIT License（允许任意用途，含商业）
  */
 import { SITE } from '@/lib/constants';
 
@@ -25,7 +24,15 @@ interface Props {
 }
 
 const { currentPath: _currentPath } = Astro.props;
+
+/** 项目发布起始年份（2026-07 TRAE 大赛发布） */
+const PROJECT_START_YEAR = 2026;
 const currentYear = new Date().getFullYear();
+/** 年份范围：若当前年份与起始年份相同则单值，否则范围显示 */
+const yearRange =
+  currentYear > PROJECT_START_YEAR
+    ? `${PROJECT_START_YEAR}-${currentYear}`
+    : `${PROJECT_START_YEAR}`;
 
 /** 居中布局修饰符 */
 const footerClass = 'fndx-footer fndx-footer--centered fndx-footer--minimal';
@@ -33,20 +40,65 @@ const footerClass = 'fndx-footer fndx-footer--centered fndx-footer--minimal';
 
 <footer class={footerClass} role="contentinfo" aria-label="站点页脚">
   <div class="fndx-footer__container">
-    {/* 底部版权区（单行） */}
-    <div class="fndx-footer__bottom">
-      <p class="fndx-footer__copyright">
-        Copyright (c) 2024-{currentYear} {SITE.author || 'fanquanpp'} · MIT License
-      </p>
+    {/* 生态联动链接区：三端仓库入口 */}
+    <div class="fndx-footer__eco-links">
+      <a
+        href="https://github.com/fanquanpp/FANDEX"
+        class="fndx-footer__eco-link is-current"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="FANDEX-Web 线上学习平台（GitHub 仓库）"
+      >
+        Web
+      </a>
+      <span class="fndx-footer__eco-divider" aria-hidden="true">·</span>
+      <a
+        href="https://github.com/fanquanpp/FANDEX-exe"
+        class="fndx-footer__eco-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="FANDEX-exe Windows 桌面离线学习平台"
+      >
+        桌面端
+      </a>
+      <span class="fndx-footer__eco-divider" aria-hidden="true">·</span>
+      <a
+        href="https://github.com/fanquanpp/FANDEX-App"
+        class="fndx-footer__eco-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="FANDEX-App Android 离线语法速查应用"
+      >
+        移动端
+      </a>
     </div>
 
-    {/* ===== 扩展预留点 =====
-         后续重新设计页脚时，在此处添加以下分区：
-         - 导航链接组（nav.fndx-footer__nav）
-         - 统计数据区（div.fndx-footer__stats）
-         - 生态联动链接（div.fndx-footer__eco-links）
-         - 注意事项/技术信息（p.fndx-footer__notice）
-         样式类已在 layout-components.css 中定义，可直接使用。
-    ====================== */}
+    {/* 导航链接组 */}
+    <nav class="fndx-footer__nav" aria-label="页脚导航">
+      <a
+        href="https://github.com/fanquanpp/FANDEX"
+        class="fndx-footer__nav-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+      </a>
+      <span class="fndx-footer__nav-divider" aria-hidden="true">·</span>
+      <a
+        href="https://github.com/fanquanpp/FANDEX/blob/main/LICENSE"
+        class="fndx-footer__nav-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        MIT License
+      </a>
+    </nav>
+
+    {/* 底部版权区 */}
+    <div class="fndx-footer__bottom">
+      <p class="fndx-footer__copyright">
+        Copyright (c) {yearRange} {SITE.author || 'fanquanpp'} · MIT License · 计算机科学自学平台
+      </p>
+    </div>
   </div>
 </footer>

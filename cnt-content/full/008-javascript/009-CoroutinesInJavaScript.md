@@ -2769,25 +2769,6 @@ function* pipe(source, ...fns) {
 
 注:数据基于 V8 8.x 在 Node.js 14 上的典型表现,实际结果因环境而异。
 
----
-
-## 26. 版本历史与维护
-
-### 26.1 文档版本
-
-- v1.0(2026-06-14):初稿
-- v2.0(2026-07-20):金标准升级,新增形式语义、协程理论、co 库原理、案例研究等
-
-### 26.2 维护说明
-
-本文档由 FANDEX Content Engineering Team 维护,遵循 ECMA-262 最新规范。如有疑问或建议,请通过项目 issue 反馈。
-
-### 26.3 致谢
-
-感谢 ES6 规范作者、TC39 委员会、以及 TJ Holowaychuk、Dan Abramov、Axel Rauschmayer 等社区贡献者的研究与开源工作。
-
----
-
 ## 参考文献
 
 1. ECMA International. (2025). *ECMAScript 2025 Language Specification (ECMA-262, 16th Edition)*. ECMA Standard. https://tc39.es/ecma262/

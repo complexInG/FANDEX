@@ -2737,25 +2737,6 @@ const memoized = new Proxy(fn, {
 
 注:数据基于 V8 8.x 在 Node.js 14 上的典型表现。
 
----
-
-## 26. 版本历史与维护
-
-### 26.1 文档版本
-
-- v1.0(2026-06-14):初稿
-- v2.0(2026-07-20):金标准升级,新增形式语义、代理不变量、Vue 3 响应式源码分析、MobX 实现等
-
-### 26.2 维护说明
-
-本文档由 FANDEX Content Engineering Team 维护,遵循 ECMA-262 最新规范。如有疑问或建议,请通过项目 issue 反馈。
-
-### 26.3 致谢
-
-感谢 TC39 委员会、Tom Van Cutsem、Mark Miller、Evan You、Michel Weststrate 等的研究与开源工作。
-
----
-
 ## 参考文献
 
 1. ECMA International. (2025). *ECMAScript 2025 Language Specification (ECMA-262, 16th Edition)*. ECMA Standard. https://tc39.es/ecma262/

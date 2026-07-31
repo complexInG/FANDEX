@@ -2343,17 +2343,3 @@ Borůvka 的分布式优势：
 | 软堆 | Soft Heap | Chazelle 2000 提出的"允许错误"的堆数据结构 |
 | GHS 算法 | Gallager-Humblet-Spira Algorithm | 分布式 MST 算法 |
 
----
-
-## 15. 版本历史
-
-| 版本 | 日期 | 修订内容 | 作者 |
-| ---- | ---- | ---- | ---- |
-| 1.0 | 2026-05-27 | 初始版本：基础 Kruskal 算法说明与代码示例 | fanquanpp |
-| 1.1 | 2026-06-14 | 补充与 Prim 算法对比、应用场景 | fanquanpp |
-| 2.0 | 2026-07-20 | 升级至金标准版本：完整 frontmatter、12 项质量基准、Borůvka/Jarník/Prim 历史脉络、切割性质与回路性质证明、贪心选择性质证明、Python/C++/Java 多语言实现、NetworkX/Boost/LEMON 工程级实现、5 个案例研究（电力网络/单链聚类/TSP 2-近似/图像分割/次小生成树）、18 道习题与参考答案、20 条参考文献含 DOI | FANDEX Content Engineering |
-
----
-
-> **文档声明**：本文档严格遵循 FANDEX 内容工程规范 12 项质量基准，对标 MIT 6.006 / Stanford CS161 / CMU 15-451 教学标准。所有历史论文引用均经过 DOI 与原始文献交叉验证。文档版本 2.0，最后审阅日期 2026-07-20。
-

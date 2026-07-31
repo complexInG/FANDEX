@@ -540,9 +540,12 @@
   }
 
   /* 分隔符 */
-  .fndx-footer__divider {
+  .fndx-footer__divider,
+  .fndx-footer__eco-divider,
+  .fndx-footer__nav-divider {
     opacity: 0.4;
     color: var(--color-fg-tertiary);
+    user-select: none;
   }
 
   /* ============================================================

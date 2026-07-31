@@ -39,17 +39,6 @@ TypeScript 是 JavaScript 的超集，这意味着：
 - TypeScript 代码最终会被编译为 JavaScript 代码运行
 - TypeScript 可以与 JavaScript 代码和库无缝集成
 
-### 1.3 TypeScript 版本历史
-
-| 版本               | 发布年份 | 主要特性                             |
-| :----------------- | :------- | :----------------------------------- |
-| **TypeScript 1.0** | 2014     | 首个稳定版本                         |
-| **TypeScript 2.0** | 2016     | 非空类型、控制流分析                 |
-| **TypeScript 3.0** | 2018     | 泛型参数默认值、剩余参数和展开表达式 |
-| **TypeScript 4.0** | 2020     | 可变元组类型、标记的联合类型         |
-| **TypeScript 5.0** | 2023     | 装饰器、const 类型参数               |
-| **TypeScript 5.5** | 2024     | 增强的类型推断、改进的错误信息       |
-
 ### 1.4 应用场景
 
 TypeScript 适用于以下场景：

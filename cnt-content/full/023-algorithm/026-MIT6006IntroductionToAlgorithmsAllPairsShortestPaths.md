@@ -2045,12 +2045,3 @@ def reconstruct_path_fixed(nxt, i, j):
 | 循环不变式 | Loop Invariant | 循环每轮保持的性质，用于正确性证明 |
 | 摊还分析 | Amortized Analysis | 分析操作序列总代价的方法（并查集分析） |
 | 三角不等式 | Triangle Inequality | $\delta(u, v) \leq \delta(u, w) + \delta(w, v)$ |
-
----
-
-## 15. 版本历史
-
-| 版本 | 日期 | 修订内容 | 审阅者 |
-| ---- | ---- | ---- | ---- |
-| 1.0 | 2026-05-27 | 初始版本，130 行基础内容 | fanquanpp |
-| 2.0 | 2026-07-20 | 升级至金标准：补充 12 项质量基准，新增历史脉络（Floyd 1962、Warshall 1962、Roy 1959）、形式化定义、不变式证明、C++/Java 多语言实现、与 Johnson 算法对比、5 类常见陷阱、OSPF 与 NetworkX 案例研究、16 道习题与参考答案、18 条参考文献 | FANDEX Content Engineering |
