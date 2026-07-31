@@ -809,13 +809,14 @@
     align-items: center;
     gap: var(--space-inline-xs);
     padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-control);
+    /* 移除 border-radius，左侧颜色条保持直角（与 .doc-list-link 统一几何线条风格） */
+    border-radius: 0;
     color: var(--color-fg-secondary);
     text-decoration: none;
     font-size: var(--font-size-secondary);
     line-height: var(--font-line-height-body);
     /* 激活态使用左侧 2px 实线，颜色由 --module-color 驱动（模块分类色）
-       默认透明，激活时显现；移除原弧度装饰，统一几何线条 */
+       默认透明，激活时显现；统一几何直角线条 */
     border-left: 2px solid transparent;
     transition: background-color var(--motion-duration-instant) var(--motion-easing-out),
                 color var(--motion-duration-instant) var(--motion-easing-out),
@@ -953,13 +954,6 @@
 
   .fndx-sidebar__panel.is-hidden {
     display: none;
-  }
-
-  /* 面板内独立顶部（用于全部模块面板，与主顶部风格一致） */
-  .fndx-sidebar__panel-top {
-    flex-shrink: 0;
-    padding: var(--space-2) var(--space-3);
-    border-bottom: 1px solid var(--color-border-subtle);
   }
 
   .fndx-sidebar__subtitle {
@@ -1247,11 +1241,12 @@
   }
 
   /* TOC 链接：统一左侧竖线装饰与 .fndx-sidebar__link 一致（需求3）
-   * 圆角 + 模块分类色驱动悬停背景与边框 */
+   * 移除 border-radius，左侧颜色条保持直角（全项目颜色条统一几何直角风格） */
   .fndx-toc__link {
     display: block;
     padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-control);
+    /* 移除 border-radius，左侧颜色条保持直角 */
+    border-radius: 0;
     border-left: 2px solid transparent;
     margin-left: -1px;
     color: var(--color-fg-secondary);
