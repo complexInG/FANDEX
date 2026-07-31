@@ -40,7 +40,7 @@
 /* 双栏布局（含 TOC）：侧边栏 + 主内容
  * TOC 本页目录栏使用 position:fixed 固定在右侧，脱离 grid 流，
  * 避免侧边栏折叠/展开时 grid 列宽变化导致 TOC 水平位移（需求2 修复）
- * 主内容区通过 padding-right 预留 TOC 宽度，防止内容被遮挡 */
+ * 主内容区通过 margin-right 预留 TOC 宽度，防止内容被遮挡 */
 .app-layout.has-toc {
   grid-template-columns: var(--sidebar-width) 1fr;
 }
@@ -50,17 +50,25 @@
   grid-template-columns: 0 1fr;
 }
 
-/* 桌面端：主内容区预留 TOC 宽度的 padding，确保 fixed 定位的 TOC 不遮挡内容 */
+/* 桌面端：主内容区预留 TOC 宽度的 margin，确保 fixed 定位的 TOC 不遮挡内容
+ *
+ * 为何用 margin-right 而非 padding-right（滚动条重叠修复）：
+ * - .app-main 设有 overflow-y:auto，滚动条出现在盒子右边缘
+ * - padding-right 不改变盒子边缘位置，main 盒子仍延伸到视口最右侧
+ * - 导致 main 滚动条与 TOC 内部 .fndx-toc__nav 的滚动条在视口最右侧完全重叠
+ * - 改用 margin-right 让 main 盒子整体缩窄，盒子右边缘移至 TOC 左侧
+ * - main 滚动条出现在 TOC 左侧，与 TOC 滚动条分离，三栏滚动条各就各位
+ * - TOC fixed 覆盖在 main 的 margin 区域上（margin 区域透明不渲染内容），等效遮挡防护 */
 @media (min-width: 1024px) {
   .app-layout.has-toc .app-main {
-    padding-right: var(--toc-width, 16rem);
+    margin-right: var(--toc-width, 16rem);
   }
 }
 
-/* 大屏端：TOC 宽度增大，同步调整 padding */
+/* 大屏端：TOC 宽度增大，同步调整 margin */
 @media (min-width: 1280px) {
   .app-layout.has-toc .app-main {
-    padding-right: var(--toc-width-xl, 16rem);
+    margin-right: var(--toc-width-xl, 16rem);
   }
 }
 
