@@ -43,6 +43,46 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
         <h1 class="header-title">{meta.title}</h1>
         <p class="header-desc">{meta.description}</p>
       </div>
+      {
+        meta.officialDocs && meta.officialDocs.length > 0 && (
+          <div class="header-docs">
+            {meta.officialDocs.map((doc) => (
+              <a
+                href={doc.url}
+                class={`doc-chip doc-chip--${doc.type}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${doc.label}（在新标签页打开）`}
+              >
+                <span class="doc-chip-icon">
+                  {doc.type === 'api' ? (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="16 18 22 12 16 6" />
+                      <polyline points="8 6 2 12 8 18" />
+                    </svg>
+                  ) : doc.type === 'spec' ? (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                  ) : (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                  )}
+                </span>
+                <span class="doc-chip-label">{doc.label}</span>
+                <svg class="doc-chip-external" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            ))}
+          </div>
+        )
+      }
     </div>
 
     <ul class="doc-list fndx-scroll-reveal-fade">
@@ -131,6 +171,75 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     color: var(--color-text-secondary);
     margin: 0;
     flex-basis: 100%;
+  }
+
+  /* 官方文档链接区：紧贴 header-body 下方，顶部分隔线区分层级
+   * 仅在模块配置了 officialDocs 时渲染，几何科技风格、紧凑无装饰 */
+  .header-docs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  /* 文档链接 chip：透明底 + 细边框，悬停使用模块分类色
+   * 直角设计（border-radius: 2px）保持几何科技风格一致性 */
+  .doc-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    font-family: var(--font-display);
+    font-size: 0.68em;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    background: transparent;
+    transition: color var(--motion-duration-instant) var(--motion-easing-out),
+                border-color var(--motion-duration-instant) var(--motion-easing-out),
+                background-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .doc-chip:hover {
+    color: var(--module-color, var(--color-accent-base));
+    border-color: color-mix(in oklch, var(--module-color, var(--color-accent-base)) 50%, transparent);
+    background-color: color-mix(in oklch, var(--module-color, var(--color-accent-base)) 6%, transparent);
+  }
+
+  /* chip 前置图标：根据 type 区分（docs=书 / api=代码 / spec=文件） */
+  .doc-chip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--module-color, var(--color-accent-base));
+    opacity: 0.85;
+  }
+
+  /* chip 标签文本 */
+  .doc-chip-label {
+    letter-spacing: 0.01em;
+  }
+
+  /* 外链图标：默认弱化，悬停时显眼 */
+  .doc-chip-external {
+    opacity: 0.5;
+    transition: opacity var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .doc-chip:hover .doc-chip-external {
+    opacity: 1;
+  }
+
+  /* API 类型 chip：使用代码符号图标色调微调 */
+  .doc-chip--api .doc-chip-icon {
+    opacity: 1;
+  }
+
+  /* spec 类型 chip：规范文档，图标饱和度略高 */
+  .doc-chip--spec .doc-chip-icon {
+    opacity: 1;
   }
 
   .doc-list {

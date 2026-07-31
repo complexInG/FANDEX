@@ -27,6 +27,27 @@ import modulesData from '../metadata/modules.json';
 // ============================================================
 
 /**
+ * 官方文档链接类型
+ * - docs: 官方文档/教程
+ * - api: API 参考/标准库
+ * - spec: 语言规范/标准文档
+ */
+export type OfficialDocType = 'docs' | 'api' | 'spec';
+
+/**
+ * 官方文档链接条目
+ * 对应 modules.json 中模块 officialDocs 数组的单条记录
+ */
+export interface OfficialDoc {
+  /** 链接显示文本（如 "官方文档"、"API 参考"） */
+  readonly label: string;
+  /** 链接目标 URL */
+  readonly url: string;
+  /** 链接类型，用于分类显示与图标区分 */
+  readonly type: OfficialDocType;
+}
+
+/**
  * 模块定义结构
  * 对应 modules.json 中 modules 数组的单条记录
  */
@@ -41,6 +62,8 @@ export interface Module {
   readonly description: string;
   /** 所属分类列表（一个模块可属于多个分类） */
   readonly categories: readonly string[];
+  /** 官方文档/API/规范链接列表，仅编程语言模块填充 */
+  readonly officialDocs?: readonly OfficialDoc[];
 }
 
 /**

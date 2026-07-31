@@ -680,3 +680,6 @@ from functools import cache
 @cache
 def expensive_computation(n):
     return sum(i * i for i in range(n))
+```
+
+---

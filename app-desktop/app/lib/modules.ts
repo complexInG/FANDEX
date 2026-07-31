@@ -31,7 +31,7 @@ export {
 } from '@fandex/utils/modules';
 
 // 从共享包 re-export 类型定义，供 desktop 端组件使用
-export type { Module, ModuleMetadata } from '@fandex/utils/modules';
+export type { Module, ModuleMetadata, OfficialDoc, OfficialDocType } from '@fandex/utils/modules';
 
 // ============================================================
 // Desktop 端专属工具函数（未来扩展点）

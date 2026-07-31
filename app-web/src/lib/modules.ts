@@ -36,7 +36,7 @@ export {
 } from '@fandex/utils/modules';
 
 // 从共享包 re-export 类型定义，供 web 端业务代码使用
-export type { Module, ModuleMetadata } from '@fandex/utils/modules';
+export type { Module, ModuleMetadata, OfficialDoc, OfficialDocType } from '@fandex/utils/modules';
 
 // ============================================================
 // Web 端专属工具函数

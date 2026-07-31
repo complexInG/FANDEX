@@ -265,3 +265,11 @@ pnpm-debug.log*
 
 # Vitest 临时文件
 .vitest/
+
+# Obsidian 工作区配置（本地编辑器状态，不入库）
+.obsidian/
+
+# 根目录一次性内容生成脚本（批量生成文档的临时工具，不入库）
+/gen*.py
+/_gen*.py
+/gen_helper.py

@@ -585,3 +585,6 @@ print(next(squares))
 # 带条件的生成器表达式
 evens = (x for x in range(20) if x % 2 == 0)
 print(list(evens))
+```
+
+---

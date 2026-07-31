@@ -16,7 +16,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { ScrollView, View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Text, Pressable, StyleSheet, ActivityIndicator, Linking } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
@@ -143,6 +143,18 @@ export default function ModuleDetailScreen() {
     router.push(`/module/${id}/${encodeURIComponent(docName)}`);
   };
 
+  /**
+   * 打开外部链接（官方文档）
+   * 使用系统默认浏览器打开，失败时静默忽略（用户可能没有可用浏览器）
+   *
+   * @param url - 外部链接地址
+   */
+  const openExternalDoc = useCallback((url: string) => {
+    Linking.openURL(url).catch(() => {
+      // 静默处理：用户设备可能无可用浏览器，避免崩溃
+    });
+  }, []);
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -175,6 +187,45 @@ export default function ModuleDetailScreen() {
           {moduleInfo.description}
         </Text>
       </View>
+
+      {/* ========== 官方文档链接 ========== */}
+      {moduleInfo.officialDocs && moduleInfo.officialDocs.length > 0 && (
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>官方文档</Text>
+          <View style={styles.docChipsWrap}>
+            {moduleInfo.officialDocs.map((doc) => (
+              <Pressable
+                key={doc.url}
+                onPress={() => openExternalDoc(doc.url)}
+                style={[
+                  styles.docChip,
+                  {
+                    backgroundColor: colors.card,
+                    borderColor: colors.cardBorder,
+                  },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.docChipIcon,
+                    { backgroundColor: categoryColor },
+                  ]}
+                >
+                  <Text style={styles.docChipIconText}>
+                    {doc.type === 'api' ? 'API' : doc.type === 'spec' ? 'SPC' : 'DOC'}
+                  </Text>
+                </View>
+                <Text
+                  style={[styles.docChipLabel, { color: colors.text }]}
+                  numberOfLines={1}
+                >
+                  {doc.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      )}
 
       {/* ========== 前置依赖 ========== */}
       {prerequisites.length > 0 && (
@@ -467,6 +518,40 @@ const styles = StyleSheet.create({
   placeholderText: {
     fontSize: 14,
     color: '#6b7280',
+  },
+  // 官方文档链接 chip 样式
+  docChipsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  docChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    borderWidth: 1,
+    maxWidth: '100%',
+  },
+  docChipIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  docChipIconText: {
+    color: '#ffffff',
+    fontSize: 8,
+    fontWeight: '700' as const,
+    letterSpacing: 0.5,
+  },
+  docChipLabel: {
+    fontSize: 13,
+    fontWeight: '500' as const,
+    flexShrink: 1,
   },
   docList: {
     gap: 8,
