@@ -186,7 +186,6 @@
    *   <header class="fndx-header" role="banner">
    *     <div class="fndx-header__left">
    *       <a class="fndx-header__logo" href="/">
-   *         <span class="fndx-header__logo-mark">F</span>
    *         <span class="fndx-header__logo-text">FANDEX</span>
    *       </a>
    *     </div>
@@ -280,24 +279,6 @@
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-body-lg);
     letter-spacing: var(--font-letter-spacing-wide);
-  }
-
-  /* Logo 标记（渐变方块） */
-  .fndx-header__logo-mark {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--size-icon-md);
-    height: var(--size-icon-md);
-    border-radius: var(--radius-control);
-    background-image: linear-gradient(
-      135deg,
-      var(--color-accent-base),
-      var(--color-secondary-base, var(--color-accent-hover))
-    );
-    color: var(--color-accent-fg);
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-secondary);
   }
 
   /* 操作按钮（图标按钮） */

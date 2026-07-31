@@ -53,9 +53,6 @@ const hasToc = Astro.slots.has('toc');
     <header class="app-nav">
       <div class="nav-left">
         <a href={base} class="nav-logo">
-          {/* logo-mark 内填充 "F" 字母，与 favicon.svg 的白色 F 视觉一致
-              CSS 渐变方块 + accent-fg 文字色由 .logo-mark 样式提供（home-layout.css / components.css） */}
-          <span class="logo-mark">F</span>
           <span class="logo-text">{SITE.title}</span>
         </a>
       </div>

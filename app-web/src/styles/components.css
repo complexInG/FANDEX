@@ -145,39 +145,6 @@
   background: var(--color-bg-hover);
 }
 
-.nav-logo:hover .logo-mark {
-  /* 移除悬停放大 scale(1.05)，保留品牌趣味旋转 rotate(-8deg) */
-  transform: rotate(-8deg);
-  transition: transform var(--motion-duration-normal) var(--motion-easing-spring);
-}
-
-/* Logo 标记：渐变方块，与首页风格统一（消除旧版纯色残留） */
-.logo-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  background-image: linear-gradient(
-    135deg,
-    var(--color-accent-base) 0%,
-    var(--color-accent-hover) 100%
-  );
-  border-radius: var(--fandex-radius-sm);
-  color: var(--color-accent-fg);
-  font-weight: 800;
-  font-size: 0.85rem;
-  font-family: var(--font-display);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--color-accent-base) 30%, transparent),
-    0 2px 8px color-mix(in srgb, var(--color-accent-base) 25%, transparent);
-}
-
-/* 字母 F 内容 */
-.logo-mark::before {
-  content: 'F';
-}
-
 /* Logo 文字：透明背景，与首页风格统一（消除旧版深色背景残留） */
 .logo-text {
   display: inline-block;
