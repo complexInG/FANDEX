@@ -645,8 +645,16 @@
 
   /* 浮动展开按钮：侧边栏折叠时显示在左边缘顶部，点击恢复侧边栏
    * 位置与侧边栏顶部折叠按钮对齐（紧贴 header 下方），含"展开"文字标注
-   * 基础按钮样式由 .fndx-icon-btn--labeled 提供，此处仅保留定位与特殊边框形状 */
-  .fndx-sidebar__expand-fab {
+   * 基础按钮样式由 .fndx-icon-btn--labeled 提供，此处仅保留定位与特殊边框形状
+   *
+   * 选择器特异性说明：
+   * - 选择器附加 .fndx-icon-btn 将特异性提升至 (0,2,0)
+   * - 目的：覆盖 [data-tooltip] { position: relative } 的 (0,1,0)
+   * - 该按钮同时承载 data-tooltip 属性（用于悬浮提示），但不允许 relative
+   *   覆盖 position: fixed，否则按钮会被定位到文档流中而非视口左上角，
+   *   导致侧边栏折叠后用户看不到展开按钮
+   */
+  .fndx-sidebar__expand-fab.fndx-icon-btn {
     position: fixed;
     top: var(--nav-height);
     left: 0;
