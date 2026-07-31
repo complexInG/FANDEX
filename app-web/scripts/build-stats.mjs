@@ -10,7 +10,7 @@
  *
  * 设计目的：
  *   - 避免首页 getDocStats() 与侧边栏 getAllDocs() 在 dev 模式下调用
- *     getCollection('docs') 全量加载 2000+ 篇文档导致 OOM（12GB 堆内存仍不足）
+ *     getCollection('docs') 全量加载所有文档导致 OOM（12GB 堆内存仍不足）
  *   - 预构建后运行时直接读取 JSON 缓存，零文档内容加载
  *   - dev 脚本启动前自动运行，build 脚本也已包含
  *
@@ -26,7 +26,7 @@
  *   - tags 字段在 frontmatter 中仍保留以供搜索索引使用，但不再聚合统计
  *   - 新增 doc-index.json 输出，用于替代侧边栏运行时全量 getCollection 调用
  *
- * 性能：扫描 2000+ 篇文档约 1-2 秒（纯文件系统读取 + 正则解析）
+ * 性能：扫描所有文档约 1-2 秒（纯文件系统读取 + 正则解析）
  * =============================================================================
  */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -189,7 +189,7 @@ function main() {
   writeFileSync(statsOutputPath, JSON.stringify(stats, null, 2) + '\n', 'utf-8');
   console.log('[build-stats] Written stats to', statsOutputPath);
 
-  // 输出文档索引 JSON（紧凑格式减小体积，2000+ 条约 150-250KB）
+  // 输出文档索引 JSON（紧凑格式减小体积，全量条目约 150-250KB）
   writeFileSync(indexOutputPath, JSON.stringify(docIndex) + '\n', 'utf-8');
   console.log('[build-stats] Written index to', indexOutputPath);
 }

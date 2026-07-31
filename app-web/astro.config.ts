@@ -83,7 +83,7 @@ export default defineConfig({
   //   页面尚未预取完成，导致首次点击响应延迟高（用户反馈：首次点击反应慢）
   // - viewport 策略利用 IntersectionObserver 自动预取进入视口的链接，
   //   用户滚动时链接已被预取缓存，点击时直接命中缓存，显著降低首点击延迟
-  // - 对 2000+ 页面安全：仅预取视口内可见链接，非全站预取，带宽与内存可控
+  // - 对所有页面安全：仅预取视口内可见链接，非全站预取，带宽与内存可控
   // - 链接级覆盖：个别链接可通过 data-astro-prefetch="hover" 单独降级为 hover 策略
   prefetch: {
     prefetchAll: false, // 不预取所有页面（视口策略已足够，避免带宽浪费）

@@ -113,7 +113,7 @@ const CognitiveLevelSchema = z.enum([
  * 所有题型共享的公共字段，通过 type 字段区分子类型
  *
  * difficulty 字段原设计为 1-5 数字字面量联合，
- * 但现有 63 篇文档的 frontmatter 普遍使用 'easy'/'medium'/'hard'/'advanced' 字符串。
+ * 但存量文档的 frontmatter 普遍使用 'easy'/'medium'/'hard'/'advanced' 字符串。
  * 为避免破坏性修改数十篇文档数据，临时放宽为 string | number 联合。
  * 后续应统一数据格式后再收紧 schema。
  */

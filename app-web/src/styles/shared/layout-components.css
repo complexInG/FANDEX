@@ -467,35 +467,6 @@
     text-align: center;
   }
 
-  /* 生态联动链接区（跨平台入口） */
-  .fndx-footer__eco-links {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-inline-sm);
-    padding-bottom: var(--space-2);
-    border-bottom: 1px dashed var(--color-border-subtle);
-  }
-
-  .fndx-footer__eco-link {
-    font-family: var(--font-family-display);
-    font-size: var(--font-size-secondary);
-    font-weight: var(--font-weight-emphasis);
-    color: var(--color-fg-tertiary);
-    text-decoration: none;
-    transition: color var(--motion-duration-instant) var(--motion-easing-out);
-  }
-
-  @media (hover: hover) {
-    .fndx-footer__eco-link:hover {
-      color: var(--color-fg-secondary);
-    }
-  }
-
-  .fndx-footer__eco-link.is-current {
-    color: var(--color-accent-base);
-  }
-
   /* 导航链接组（居中布局） */
   .fndx-footer__nav {
     display: flex;
@@ -541,7 +512,6 @@
 
   /* 分隔符 */
   .fndx-footer__divider,
-  .fndx-footer__eco-divider,
   .fndx-footer__nav-divider {
     opacity: 0.4;
     color: var(--color-fg-tertiary);

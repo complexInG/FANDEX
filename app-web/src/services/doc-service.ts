@@ -10,7 +10,7 @@
  *
  * dev 模式 OOM 优化：
  * - getDocStats() 读取预构建的 JSON 缓存（scripts/build-stats.mjs 生成），
- *   避免全量加载 2003 篇文档导致 dev 模式 OOM 崩溃
+ *   避免全量加载所有文档导致 dev 模式 OOM 崩溃
  * - build 模式下 JSON 缓存同样适用，性能优于原 getCollection 方案
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
@@ -143,7 +143,7 @@ export async function getDocNavigation(moduleId: string, slug: string): Promise<
  * 统计文档总数、模块数、分类数和标签数
  *
  * 优化说明（dev 模式 OOM 修复）：
- * - 原实现调用 getCollection('docs') 全量加载 2003 篇文档，
+ * - 原实现调用 getCollection('docs') 全量加载所有文档，
  *   dev 模式下导致 12GB 堆内存 OOM
  * - 改为读取预构建的 JSON 缓存（scripts/build-stats.mjs 生成），
  *   零文档内容加载，dev 模式下首页不再 OOM
@@ -173,7 +173,7 @@ export async function getDocStats(): Promise<DocStats> {
  * 供侧边栏"全部模块"面板等需要全量文档列表但不需文档正文的场景使用。
  *
  * 与 getAllDocs() 的核心区别：
- * - getAllDocs() 运行时调用 getCollection('docs') 全量加载 2000+ 篇文档
+ * - getAllDocs() 运行时调用 getCollection('docs') 全量加载所有文档
  *   （含 body/render 等重字段），dev 模式下导致 12GB 堆内存 OOM
  * - getDocsIndex() 读取静态 import 的预构建 JSON，仅含 4 个轻量字段，
  *   零文档内容加载，O(1) 内存占用，彻底消除 dev/build 模式 OOM 风险

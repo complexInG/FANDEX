@@ -17,8 +17,17 @@ import HomeLayout from '@/components/HomeLayout.astro';
 import SEO from '@/components/SEO.astro';
 import DesignSystemDemo from '@/islands/DesignSystemDemo';
 import { SITE } from '@/lib/constants';
+import { getDocStats, getAllModules } from '@/services';
 
 const base = import.meta.env.BASE_URL;
+
+// 实时读取站点统计数据，注入岛屿组件避免硬编码
+const docStats = await getDocStats();
+const allModules = getAllModules();
+const stats = {
+  totalModules: allModules.length,
+  totalDocs: docStats.totalDocs,
+};
 ---
 
 <HomeLayout title="Design System">
@@ -30,5 +39,5 @@ const base = import.meta.env.BASE_URL;
     type="website"
   />
 
-  <DesignSystemDemo client:load />
+  <DesignSystemDemo client:load stats={stats} />
 </HomeLayout>

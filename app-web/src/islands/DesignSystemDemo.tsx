@@ -64,15 +64,25 @@ const scrollItems = Array.from({ length: 20 }, (_, i) => `第 ${i + 1} 项内容
 
 /**
  * 组件 props 接口
- * DesignSystemDemo 无外部 props，定义空接口以保持组件接口一致性
+ * stats：站点实时统计数据，由 design-system.astro 在 SSG 阶段从 Service 层
+ *   读取后注入，避免岛屿组件中硬编码过时数字
  */
-interface DesignSystemDemoProps {}
+interface DesignSystemDemoStats {
+  /** 模块总数 */
+  totalModules?: number;
+  /** 文档总数 */
+  totalDocs?: number;
+}
+
+interface DesignSystemDemoProps {
+  stats?: DesignSystemDemoStats;
+}
 
 /**
  * Design System 演示组件
  * 展示 8 个基础 UI 组件的全部变体与尺寸组合
  */
-export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
+export function DesignSystemDemo({ stats }: DesignSystemDemoProps = {}) {
   /**
    * Dialog 开关状态（受控模式）
    */
@@ -351,8 +361,9 @@ export function DesignSystemDemo({}: DesignSystemDemoProps = {}) {
               <AccordionItem value="item-1">
                 <AccordionTrigger>什么是 FANDEX？</AccordionTrigger>
                 <AccordionContent>
-                  FANDEX 是协助零基础学习者迈出计算机科学学习第一步的完整自学平台， 涵盖 51
-                  个模块、1995 篇文档。
+                  {`FANDEX 是协助零基础学习者迈出计算机科学学习第一步的完整自学平台， 涵盖 ${
+                    stats?.totalModules ?? '--'
+                  } 个模块、${stats?.totalDocs ?? '--'} 篇文档。`}
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2">

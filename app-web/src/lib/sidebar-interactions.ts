@@ -267,7 +267,7 @@ function initModuleToggle(): void {
  * - 若按页面 key 隔离会导致导航后模块折叠回默认态，破坏用户预期
  * - querySelectorAll('.fndx-sidebar__module') 仅匹配当前 DOM 存在的模块项，
  *   已删除的模块即使残留于集合也不会被恢复（无匹配 DOM 节点），无幽灵展开风险
- * - 集合体积上限为模块总数（约 52 个 ID，~1KB），不存在无限增长问题
+ * - 集合体积上限为模块总数（约 50+ 个 ID，~1KB），不存在无限增长问题
  */
 function restoreModuleExpandState(): void {
   const expandedSet = readExpandedSet();

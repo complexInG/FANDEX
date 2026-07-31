@@ -43,10 +43,22 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
         <h1 class="header-title">{meta.title}</h1>
         <p class="header-desc">{meta.description}</p>
       </div>
-      {
-        meta.officialDocs && meta.officialDocs.length > 0 && (
-          <div class="header-docs">
-            {meta.officialDocs.map((doc) => (
+      <div class="header-docs">
+        {/* 文档总数量 chip：实时读取当前模块文档数，非外部链接故无外链图标 */}
+        <span class="doc-chip doc-chip--count" aria-label={`本模块共 ${sortedDocs.length} 篇文档`}>
+          <span class="doc-chip-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+          </span>
+          <span class="doc-chip-label">共 {sortedDocs.length} 篇</span>
+        </span>
+        {
+          meta.officialDocs && meta.officialDocs.length > 0 && (
+            meta.officialDocs.map((doc) => (
               <a
                 href={doc.url}
                 class={`doc-chip doc-chip--${doc.type}`}
@@ -79,10 +91,10 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
                   <line x1="10" y1="14" x2="21" y2="3" />
                 </svg>
               </a>
-            ))}
-          </div>
-        )
-      }
+            ))
+          )
+        }
+      </div>
     </div>
 
     <ul class="doc-list fndx-scroll-reveal-fade">
@@ -271,6 +283,12 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     color: var(--color-text);
     text-decoration: none;
     border-left: 2px solid transparent;
+    /* 反光闪光动画基础：relative + overflow:hidden 约束光带不溢出
+     * isolation: isolate 创建独立堆叠上下文，让 ::before 的 z-index:-1
+     * 仅相对于本元素生效（位于背景之上、文字之下），不逃出到父级 */
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
     transition: background-color var(--motion-duration-instant) var(--motion-easing-out),
                 color var(--motion-duration-instant) var(--motion-easing-out),
                 border-color var(--motion-duration-instant) var(--motion-easing-out);
@@ -280,6 +298,47 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
   .doc-list-link:hover {
     background-color: color-mix(in oklch, var(--module-color, var(--color-accent-base)) 8%, var(--color-bg-hover));
     border-left-color: color-mix(in oklch, var(--module-color, var(--color-accent-base)) 60%, transparent);
+  }
+
+  /* 反光闪光脉冲滑动装饰动画（需求：悬停标识明显，顺畅不重复不影响阅读）
+   * -----------------------------------------------------------------------------
+   * 实现原理（参考 2026 CSS 动画最佳实践 — Shine Sweep 模式）：
+   * - ::before 伪元素作为斜向光带，linear-gradient 创建半透明高光
+   * - z-index: -1 让光带位于背景色之上、文字之下（依赖 isolation:isolate 约束）
+   * - transform: translateX() + skewX() 实现 GPU 加速滑动，仅动画 transform 避免 layout/paint
+   * - hover 时光带从左到右滑过一次，离开后自动复位，不循环不干扰阅读
+   * - 光带颜色使用 --module-color（模块分类色），与悬停背景/边框色统一
+   * - prefers-reduced-motion 用户禁用过渡，保留基础 hover 色变即可
+   * 性能：will-change: transform 提示浏览器提前创建合成层，确保 60fps */
+  .doc-list-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklch, var(--module-color, var(--color-accent-base)) 22%, transparent),
+      transparent
+    );
+    transform: translateX(-200%) skewX(-20deg);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: -1;
+    will-change: transform;
+  }
+
+  .doc-list-link:hover::before {
+    transform: translateX(300%) skewX(-20deg);
+  }
+
+  /* 尊重用户减少动效偏好：禁用光带滑动过渡，保留基础 hover 色变 */
+  @media (prefers-reduced-motion: reduce) {
+    .doc-list-link::before {
+      transition: none;
+    }
   }
 
   /* 文档图标：紧凑化 24px，使用模块分类色而非青色 */

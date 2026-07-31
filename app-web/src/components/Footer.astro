@@ -1,19 +1,18 @@
 ---
 /**
- * Footer 组件 — 多区段页脚
+ * Footer 组件 — 极简页脚
  * -----------------------------------------------------------------------------
  * 职责：
- *   1. 渲染项目标识、生态联动链接、导航链接与版权信息
+ *   1. 渲染项目版权与协议信息
  *   2. 消费 @fandex/styles 中 .fndx-footer 命名规范
  *
  * 设计原则：
  *   - 极简单列居中布局，与首页整体视觉风格统一
- *   - 三端生态入口（Web / 桌面 / 移动）通过 .fndx-footer__eco-links 呈现
- *   - 版权年份使用项目发布年份 2026（非 2024，避免时间错误）
+ *   - 版权年份使用项目发布年份 2026
  *
- * 实时信息说明：
- *   - 项目发布：2026-07（TRAE AI 创造力大赛参赛）
- *   - 仓库构成：FANDEX-Web / FANDEX-exe / FANDEX-App
+ * 仓库性质说明：
+ *   - 当前仓库为重构后的独立 FANDEX 仓库，与历史的 FANDEX-Web / FANDEX-exe / FANDEX-App
+ *     三端仓库无关联，页脚不再呈现三端生态联动链接
  *   - 协议：MIT License（允许任意用途，含商业）
  */
 import { SITE } from '@/lib/constants';
@@ -25,7 +24,7 @@ interface Props {
 
 const { currentPath: _currentPath } = Astro.props;
 
-/** 项目发布起始年份（2026-07 TRAE 大赛发布） */
+/** 项目发布起始年份 */
 const PROJECT_START_YEAR = 2026;
 const currentYear = new Date().getFullYear();
 /** 年份范围：若当前年份与起始年份相同则单值，否则范围显示 */
@@ -40,39 +39,6 @@ const footerClass = 'fndx-footer fndx-footer--centered fndx-footer--minimal';
 
 <footer class={footerClass} role="contentinfo" aria-label="站点页脚">
   <div class="fndx-footer__container">
-    {/* 生态联动链接区：三端仓库入口 */}
-    <div class="fndx-footer__eco-links">
-      <a
-        href="https://github.com/fanquanpp/FANDEX"
-        class="fndx-footer__eco-link is-current"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="FANDEX-Web 线上学习平台（GitHub 仓库）"
-      >
-        Web
-      </a>
-      <span class="fndx-footer__eco-divider" aria-hidden="true">·</span>
-      <a
-        href="https://github.com/fanquanpp/FANDEX-exe"
-        class="fndx-footer__eco-link"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="FANDEX-exe Windows 桌面离线学习平台"
-      >
-        桌面端
-      </a>
-      <span class="fndx-footer__eco-divider" aria-hidden="true">·</span>
-      <a
-        href="https://github.com/fanquanpp/FANDEX-App"
-        class="fndx-footer__eco-link"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="FANDEX-App Android 离线语法速查应用"
-      >
-        移动端
-      </a>
-    </div>
-
     {/* 导航链接组 */}
     <nav class="fndx-footer__nav" aria-label="页脚导航">
       <a

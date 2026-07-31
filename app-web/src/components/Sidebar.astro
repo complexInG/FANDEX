@@ -58,12 +58,12 @@ const categories = getCategories()
  * 实现说明：
  * - 读取预构建的 doc-index.json（由 scripts/build-stats.mjs 生成），
  *   仅含 slug/module/title/order 四个轻量字段，避免运行时全量 getCollection('docs')
- *   加载 2000+ 篇文档正文导致 dev 模式 OOM
+ *   加载所有文档正文导致 dev 模式 OOM
  * - 索引数组已在构建期按 module 字母序 + order 升序排序，分组后顺序保持不变，无需再次排序
  * - 渲染时内联到 HTML，客户端点击展开按钮切换显隐，无需网络请求
  *
  * 性能对比：
- * - 旧方案 getAllDocs()：dev 模式每页请求全量加载 2000+ DocEntry（含 body/render），12GB 堆内存 OOM
+ * - 旧方案 getAllDocs()：dev 模式每页请求全量加载所有 DocEntry（含 body/render），12GB 堆内存 OOM
  * - 新方案 getDocsIndex()：读取静态 import JSON（~180KB），O(1) 内存占用，dev/build 模式均无 OOM 风险
  */
 const docsIndex = getDocsIndex()
