@@ -105,6 +105,11 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
               href={`${import.meta.env.BASE_URL}${module}/${docSlug(doc.id)}/`}
               class="doc-list-link"
             >
+              {/* SVG border 描边动画：hover 时 rect 从隐藏到显示，实现描边效果
+                  preserveAspectRatio="none" 让 rect 拉伸适配链接尺寸 */}
+              <svg class="doc-list-border" aria-hidden="true" preserveAspectRatio="none">
+                <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)"></rect>
+              </svg>
               <span
                 class="doc-list-icon"
                 style={`background:${categoryColors[getPrimaryCategory(meta)]}`}
@@ -272,7 +277,9 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
   /* 文档链接：flex-wrap 允许标题与描述分行显示，增高卡片以容纳多行内容
    * 布局：第一行 = 图标 + 序号 + 难度 + 标题；第二行 = 描述（flex-basis: 100% 强制换行）
    * 左侧竖线装饰：移除 border-radius 圆角，改为几何直角线条（需求：悬停左侧颜色条不要带有弧度）
-   * 与项目"几何科技风格"统一，确保左侧 border-left 不被圆角裁剪 */
+   * 与项目"几何科技风格"统一，确保左侧 border-left 不被圆角裁剪
+   * SVG border 描边动画：相对定位 + .doc-list-border 绝对定位填满链接
+   *   rect 通过 stroke-dasharray + stroke-dashoffset 实现描边动画 */
   .doc-list-link {
     display: flex;
     align-items: center;
@@ -283,12 +290,9 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     color: var(--color-text);
     text-decoration: none;
     border-left: 2px solid transparent;
-    /* 反光闪光动画基础：relative + overflow:hidden 约束光带不溢出
-     * isolation: isolate 创建独立堆叠上下文，让 ::before 的 z-index:-1
-     * 仅相对于本元素生效（位于背景之上、文字之下），不逃出到父级 */
+    /* SVG border 动画基础：relative 为 .doc-list-border 提供定位上下文
+     * 移除 overflow:hidden 与 isolation（已删除脉冲闪光，不再需要约束） */
     position: relative;
-    overflow: hidden;
-    isolation: isolate;
     transition: background-color var(--motion-duration-instant) var(--motion-easing-out),
                 color var(--motion-duration-instant) var(--motion-easing-out),
                 border-color var(--motion-duration-instant) var(--motion-easing-out);
@@ -300,43 +304,44 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
     border-left-color: color-mix(in oklch, var(--module-color, var(--color-accent-base)) 60%, transparent);
   }
 
-  /* 反光闪光脉冲滑动装饰动画（需求：悬停标识明显，顺畅不重复不影响阅读）
+  /* SVG border 描边动画（替代已删除的脉冲闪光特效）
    * -----------------------------------------------------------------------------
-   * 实现原理（参考 2026 CSS 动画最佳实践 — Shine Sweep 模式）：
-   * - ::before 伪元素作为斜向光带，linear-gradient 创建半透明高光
-   * - z-index: -1 让光带位于背景色之上、文字之下（依赖 isolation:isolate 约束）
-   * - transform: translateX() + skewX() 实现 GPU 加速滑动，仅动画 transform 避免 layout/paint
-   * - hover 时光带从左到右滑过一次，离开后自动复位，不循环不干扰阅读
-   * - 光带颜色使用 --module-color（模块分类色），与悬停背景/边框色统一
-   * - prefers-reduced-motion 用户禁用过渡，保留基础 hover 色变即可
-   * 性能：will-change: transform 提示浏览器提前创建合成层，确保 60fps */
-  .doc-list-link::before {
-    content: '';
+   * 实现原理：
+   * - .doc-list-border 绝对定位填满链接，pointer-events:none 不干扰点击
+   * - rect 通过 stroke-dasharray + stroke-dashoffset 实现描边动画
+   * - 默认 offset:1000 完全隐藏（pathLength 等效），hover 时 offset:0 完全显示
+   * - 描边颜色使用 --module-color，与悬停背景/边框色统一
+   * - prefers-reduced-motion 用户禁用过渡，直接显示边框
+   * 性能：仅动画 stroke-dashoffset，GPU 加速，60fps */
+  .doc-list-border {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 50%;
+    inset: 0;
+    width: 100%;
     height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in oklch, var(--module-color, var(--color-accent-base)) 22%, transparent),
-      transparent
-    );
-    transform: translateX(-200%) skewX(-20deg);
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
-    z-index: -1;
-    will-change: transform;
+    overflow: visible;
   }
 
-  .doc-list-link:hover::before {
-    transform: translateX(300%) skewX(-20deg);
+  .doc-list-border rect {
+    fill: none;
+    stroke: var(--module-color, var(--color-accent-base));
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* pathLength 等效为 1000（通过 dasharray 设置），适配不同尺寸的列表项 */
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* 尊重用户减少动效偏好：禁用光带滑动过渡，保留基础 hover 色变 */
+  .doc-list-link:hover .doc-list-border rect {
+    stroke-dashoffset: 0;
+  }
+
+  /* 尊重用户减少动效偏好：禁用描边动画，直接显示边框 */
   @media (prefers-reduced-motion: reduce) {
-    .doc-list-link::before {
+    .doc-list-border rect {
+      stroke-dashoffset: 0;
       transition: none;
     }
   }

@@ -72,10 +72,11 @@
   }
 
   /* ============================================================
-   * 2. Logo（品牌标记 + 文字）
+   * 2. Logo（品牌文字 + 下划线动画）
    * ------------------------------------------------------------
-   * ark 风格：渐变方块标记 + 字距收紧的字族
-   * 悬停时方块旋转 8°，文字提亮
+   * 设计：纯文字 Logo，hover 时下划线从左到右展开
+   * 交互：相对定位 + ::after 伪元素实现下划线动画
+   * 移除原 hover 变色 + 背景色反馈，保持品牌文字克制
    * ============================================================ */
   .nav-logo {
     display: inline-flex;
@@ -89,14 +90,31 @@
     letter-spacing: 0.04em;
     padding: 4px 8px;
     border-radius: var(--fandex-radius-sm, 2px);
-    transition:
-      color var(--motion-duration-fast) var(--motion-easing-out),
-      background-color var(--motion-duration-fast) var(--motion-easing-out);
+    /* 相对定位：为 ::after 下划线提供定位上下文 */
+    position: relative;
+    /* 仅保留 color 过渡（移除 background 过渡）
+       下划线动画通过 ::after 的 width 过渡实现 */
+    transition: color var(--motion-duration-fast) var(--motion-easing-out);
   }
 
-  .nav-logo:hover {
-    color: var(--color-primary);
-    background: var(--color-bg-hover);
+  /* 下划线伪元素：默认 width:0，hover 时展开至 100%
+   * 位于文字底部，使用主题强调色，与 hero 风格统一
+   * 不使用 background-color 变化（需求：删除悬停变色） */
+  .nav-logo::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    width: 0;
+    background: var(--color-accent-base);
+    transition: width var(--motion-duration-normal) var(--motion-easing-out);
+    pointer-events: none;
+  }
+
+  .nav-logo:hover::after {
+    width: calc(100% - 16px);
   }
 
   /* Logo 文字（-Index 后缀已移除，保持简洁品牌名）

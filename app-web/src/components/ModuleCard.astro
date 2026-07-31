@@ -33,11 +33,12 @@ const moduleColorStyle = color ? `--module-color:${color}` : undefined;
      --module-color 注入到卡片根元素，使 ::before 上边线、hover 标题色、
      card-icon 均统一消费模块分类色（非 web 主题青色） -->
 <a href={`${import.meta.env.BASE_URL}${mod.id}/`} class="module-card" style={moduleColorStyle}>
-  <!-- 模块图标：几何科技风，透明底 + 细边框 + 分类色文字 -->
-  <span class="card-icon">{mod.icon}</span>
-  <div class="card-body">
+  <!-- 卡片头部：图标 + 标题同一行（紧凑布局，缩小整体卡片视觉权重） -->
+  <div class="card-header">
+    <!-- 模块图标：几何科技风，透明底 + 细边框 + 分类色文字 -->
+    <span class="card-icon">{mod.icon}</span>
     <h3 class="card-title">{mod.title}</h3>
-    <p class="card-desc">{mod.description}</p>
   </div>
+  <p class="card-desc">{mod.description}</p>
 </a>
 

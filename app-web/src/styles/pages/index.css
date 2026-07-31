@@ -79,19 +79,113 @@
     background-repeat: no-repeat;
   }
 
-  /* 站点标题：FAN 部分使用主题色，ark 大字号粗体 */
+  /* 站点标题：FAN/DEX 分离 + 渐变背景动效 + 残影伪元素
+   * ----------------------------------------------------------------
+   * 设计灵感（参考 para-mask + para-ghost 模式，自主重构）：
+   * - FAN 与 DEX 拆分为两个 span，独立控制渐变背景与色相
+   * - 渐变背景 + background-clip: text 实现文字渐变填充
+   * - bgPan keyframes 驱动背景位置缓慢移动，待机呼吸感
+   * - hover 时加速背景滚动 + 微缩放，强化交互反馈
+   * - ::after 残影伪元素使用 attr(data-text) 复制文字
+   *   通过 -webkit-text-stroke 形成轮廓残影，z-index:-1 位于本体之下
+   * - ghostIdle keyframes 让残影微小浮动，增加层次感
+   * - hover 时残影逆方向位移，形成视差效果
+   * 性能：仅动画 transform 与 background-position，GPU 加速，60fps */
   .hero-title {
     font-family: var(--font-display);
     font-size: 3rem;
     font-weight: 800;
     letter-spacing: 0.15em;
     margin: 0 0 var(--spacing-sm);
-    color: var(--color-fg-primary);
     line-height: 1.1;
+    display: inline-flex;
+    align-items: baseline;
+    cursor: default;
+    position: relative;
+    /* 渐变背景 + background-clip: text 实现文字渐变填充
+     * 使用 var(--color-accent-base) 与前景色组合，主题切换自动跟随 */
+    background: linear-gradient(
+      135deg,
+      var(--color-fg-primary) 0%,
+      var(--color-accent-base) 40%,
+      var(--color-fg-secondary) 60%,
+      var(--color-fg-primary) 100%
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* 待机动画：背景缓慢移动，呼吸感 */
+    animation: heroBgPan 12s linear infinite alternate;
+    transition: transform 0.4s ease, letter-spacing 0.4s ease;
   }
 
+  .hero-title:hover {
+    /* hover 时加速背景滚动 + 微缩放 + 字距微增 */
+    animation-duration: 4s;
+    transform: scale(1.02);
+    letter-spacing: 0.16em;
+  }
+
+  @keyframes heroBgPan {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+  }
+
+  /* 残影伪元素：通过 attr(data-text) 复制文字内容
+   * - 位于本体下方（z-index: -1），形成视觉层次
+   * - 仅显示轮廓（-webkit-text-stroke），无填充色
+   * - ghostIdle 动画微小浮动，增加残影呼吸感
+   * - hover 时残影逆方向位移，形成视差效果 */
+  .hero-title::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in oklch, var(--color-accent-base) 40%, transparent);
+    z-index: -1;
+    opacity: 0.5;
+    /* 残影待机动画：微小位移浮动 */
+    animation: heroGhostIdle 4s ease-in-out infinite alternate;
+    transition: transform 0.6s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.4s ease, -webkit-text-stroke 0.4s ease;
+    pointer-events: none;
+    /* 让残影稍微偏移到左上方，形成视觉错位 */
+    transform: translate(-3px, -3px);
+  }
+
+  .hero-title:hover::after {
+    animation: none;
+    transform: translate(-10px, -10px) scale(1.03);
+    opacity: 0.9;
+    -webkit-text-stroke: 1.5px color-mix(in oklch, var(--color-accent-base) 70%, transparent);
+  }
+
+  @keyframes heroGhostIdle {
+    0% { transform: translate(-2px, -2px); }
+    100% { transform: translate(-4px, -4px); }
+  }
+
+  /* 尊重用户减少动效偏好：禁用背景动画与残影浮动 */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-title,
+    .hero-title::after {
+      animation: none;
+      transition: none;
+    }
+  }
+
+  /* FAN 部分独立色相：使用主题强调色，强化品牌识别
+   * 通过单独 span 继承背景渐变，hover 时与本体同步动画 */
   .hero-title-fan {
-    color: var(--color-accent-base);
+    /* 父级已设置 background-clip: text，此处继承即可 */
+    display: inline-block;
+  }
+
+  /* DEX 部分独立色相：保持与 FAN 协调的渐变 */
+  .hero-title-dex {
+    display: inline-block;
   }
 
   /* 站点描述 */
@@ -105,6 +199,19 @@
     margin-inline: auto;
     max-width: 540px;
     line-height: 1.7;
+  }
+
+  /* 统计数据 + 功能入口同一行容器
+   * ----------------------------------------------------------------
+   * flex 布局：左侧统计数据，右侧功能入口按钮组
+   * 响应式：移动端自动换行堆叠 */
+  .hero-stats-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    margin-top: var(--spacing-sm);
   }
 
   /* 统计数据栏 — ark 风格：数字突出、标签克制 */
@@ -182,73 +289,96 @@
     transform: translateY(0);
   }
 
-  /* 功能入口区：三大学习工具快捷通道
+  /* 功能入口区：纯文字按钮 + SVG border 描边动画
    * ----------------------------------------------------------------
-   * 设计：横向三列等宽卡片，细线边框 + 功能强调色 + 几何图标
-   * 交互：hover 时边框/背景/图标使用 --entry-color 联动变色
-   * 响应式：移动端自适应换行，小屏单列堆叠 */
+   * 设计重构（与 hero-stats 同行，紧凑布局）：
+   * - 移除图标，仅保留文字（与 GitHub 导航按钮风格统一）
+   * - 背景透明，无边框（border 由 SVG rect 提供，实现描边动画）
+   * - SVG .entry-border 定位填满按钮，rect 使用 stroke-dasharray + stroke-dashoffset
+   * - hover 时 stroke-dashoffset 从 250 → 0，实现边框从无到有的描边动画
+   * - --entry-color 驱动每个按钮的强调色
+   * 性能：仅动画 stroke-dashoffset，GPU 加速 */
   .hero-entries {
     display: flex;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
     justify-content: center;
     flex-wrap: wrap;
-    margin-top: var(--spacing-lg);
   }
 
-  /* 入口卡片：ark 描边风格，--entry-color 驱动强调色 */
-  .entry-card {
+  /* 入口按钮：纯文字 + 透明背景 + 相对定位（为 SVG border 提供定位上下文） */
+  .entry-btn {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: var(--space-inline-sm);
-    padding: 10px 18px;
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--fandex-radius-sm, 2px);
-    background: var(--color-bg-elevated);
+    justify-content: center;
+    padding: 8px 16px;
+    background: transparent;
     color: var(--color-fg-secondary);
     text-decoration: none;
     font-family: var(--font-display);
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 500;
     letter-spacing: 0.02em;
+    cursor: pointer;
     transition:
-      color var(--motion-duration-instant) var(--motion-easing-out),
-      border-color var(--motion-duration-instant) var(--motion-easing-out),
-      background-color var(--motion-duration-instant) var(--motion-easing-out),
-      transform var(--motion-duration-instant) var(--motion-easing-out);
+      color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
-  .entry-card:hover {
+  .entry-btn:hover {
     color: var(--entry-color, var(--color-accent-base));
-    border-color: color-mix(in oklch, var(--entry-color, var(--color-accent-base)) 50%, transparent);
-    background-color: color-mix(in oklch, var(--entry-color, var(--color-accent-base)) 6%, transparent);
-    transform: translateY(-1px);
   }
 
-  .entry-card:active {
-    transform: translateY(0);
+  .entry-btn:active {
+    transform: scale(0.98);
   }
 
-  .entry-card:focus-visible {
+  .entry-btn:focus-visible {
     outline: 2px solid color-mix(in oklch, var(--entry-color, var(--color-accent-base)) 60%, transparent);
     outline-offset: 2px;
   }
 
-  /* 入口图标：默认次要色，hover 跟随卡片强调色 */
-  .entry-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-fg-tertiary);
-    transition: color var(--motion-duration-instant) var(--motion-easing-out);
+  /* SVG border：绝对定位填满按钮，pointer-events:none 不干扰点击
+   * preserveAspectRatio="none" 让 rect 拉伸适配按钮尺寸 */
+  .entry-border {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
   }
 
-  .entry-card:hover .entry-icon {
-    color: var(--entry-color, var(--color-accent-base));
+  /* rect 描边：stroke-dasharray + stroke-dashoffset 实现描边动画
+   * pathLength 等效为 250（通过 dasharray 设置）
+   * 默认 offset:250 完全隐藏，hover 时 offset:0 完全显示 */
+  .entry-border rect {
+    fill: none;
+    stroke: var(--entry-color, var(--color-accent-base));
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 250;
+    stroke-dashoffset: 250;
+    transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .entry-btn:hover .entry-border rect {
+    stroke-dashoffset: 0;
+  }
+
+  /* 尊重用户减少动效偏好：禁用描边动画，直接显示边框 */
+  @media (prefers-reduced-motion: reduce) {
+    .entry-border rect {
+      stroke-dashoffset: 0;
+      transition: none;
+    }
   }
 
   /* 入口名称 */
   .entry-name {
     white-space: nowrap;
+    position: relative;
+    z-index: 1;
   }
 
   /* ============================================================
@@ -454,9 +584,10 @@
   }
 
   /* 卡片在滑动器中固定宽度，不收缩
-     移除 scroll-snap-align：避免与拖拽和无限循环重置产生抖动 */
+     移除 scroll-snap-align：避免与拖拽和无限循环重置产生抖动
+     紧凑化：200px 适配缩小后的卡片整体视觉权重 */
   .feature-track .module-card {
-    flex: 0 0 240px;
+    flex: 0 0 200px;
   }
 
   /* 注：旧 .home-footer / .footer-* 系列样式已废弃，

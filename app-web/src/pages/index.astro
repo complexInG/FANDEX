@@ -42,41 +42,49 @@ const grouped = getCategories()
     <GeoBgDecor variant="home" />
     <!-- Hero 区域：站点标题和统计信息 -->
     <section class="hero">
-      <h1 class="hero-title"><span class="hero-title-fan">FAN</span>DEX</h1>
-      <!-- 统计数据栏 -->
-      <div class="hero-stats">
-        <div class="stat-item">
-          <span class="stat-num">{allModules.length}</span>
-          <span class="stat-label">模块</span>
+      <!-- Hero 标题：FAN/DEX 分离 + 渐变背景动效 + 残影伪元素
+           data-text 用于 ::after 残影伪元素通过 attr() 读取 -->
+      <h1 class="hero-title" data-text="FANDEX">
+        <span class="hero-title-fan">FAN</span><span class="hero-title-dex">DEX</span>
+      </h1>
+      <!-- 统计数据 + 功能入口同一行容器
+           左侧：模块/文档数统计；右侧：三大功能入口（纯文字 + SVG border 描边动画） -->
+      <div class="hero-stats-row">
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">{allModules.length}</span>
+            <span class="stat-label">模块</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">{stats.totalDocs}</span>
+            <span class="stat-label">文档</span>
+          </div>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-num">{stats.totalDocs}</span>
-          <span class="stat-label">文档</span>
-        </div>
+        <!-- 功能入口区：纯文字按钮 + SVG border 描边动画
+             背景透明，与 GitHub 导航按钮风格统一
+             暂为占位入口，点击进入对应 ComingSoon 页面 -->
+        <nav class="hero-entries" aria-label="功能入口">
+          <a href={`${import.meta.env.BASE_URL}playground/`} class="entry-btn" style="--entry-color:#10b981" data-tooltip="在线编程沙箱" data-tooltip-pos="bottom">
+            <svg class="entry-border" aria-hidden="true" preserveAspectRatio="none">
+              <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="2" ry="2"></rect>
+            </svg>
+            <span class="entry-name">在线编程</span>
+          </a>
+          <a href={`${import.meta.env.BASE_URL}syntax/`} class="entry-btn" style="--entry-color:#3b82f6" data-tooltip="语法快速查阅" data-tooltip-pos="bottom">
+            <svg class="entry-border" aria-hidden="true" preserveAspectRatio="none">
+              <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="2" ry="2"></rect>
+            </svg>
+            <span class="entry-name">语法速览</span>
+          </a>
+          <a href={`${import.meta.env.BASE_URL}learning-path/`} class="entry-btn" style="--entry-color:#8b5cf6" data-tooltip="系统化学习路径" data-tooltip-pos="bottom">
+            <svg class="entry-border" aria-hidden="true" preserveAspectRatio="none">
+              <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="2" ry="2"></rect>
+            </svg>
+            <span class="entry-name">学习路线</span>
+          </a>
+        </nav>
       </div>
-      <!-- 功能入口区：三大学习工具快捷通道
-           暂为占位入口，点击进入对应 ComingSoon 页面 -->
-      <nav class="hero-entries" aria-label="功能入口">
-        <a href={`${import.meta.env.BASE_URL}playground/`} class="entry-card" style="--entry-color:#10b981">
-          <span class="entry-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-          </span>
-          <span class="entry-name">在线编程</span>
-        </a>
-        <a href={`${import.meta.env.BASE_URL}syntax/`} class="entry-card" style="--entry-color:#3b82f6">
-          <span class="entry-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          </span>
-          <span class="entry-name">语法速览</span>
-        </a>
-        <a href={`${import.meta.env.BASE_URL}learning-path/`} class="entry-card" style="--entry-color:#8b5cf6">
-          <span class="entry-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M6 8v4a4 4 0 0 0 4 4h4"/></svg>
-          </span>
-          <span class="entry-name">学习路线</span>
-        </a>
-      </nav>
     </section>
 
     <!-- 按分类展示模块卡片（横向无限滑动选择器） -->
