@@ -182,6 +182,75 @@
     transform: translateY(0);
   }
 
+  /* 功能入口区：三大学习工具快捷通道
+   * ----------------------------------------------------------------
+   * 设计：横向三列等宽卡片，细线边框 + 功能强调色 + 几何图标
+   * 交互：hover 时边框/背景/图标使用 --entry-color 联动变色
+   * 响应式：移动端自适应换行，小屏单列堆叠 */
+  .hero-entries {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: var(--spacing-lg);
+  }
+
+  /* 入口卡片：ark 描边风格，--entry-color 驱动强调色 */
+  .entry-card {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-inline-sm);
+    padding: 10px 18px;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--fandex-radius-sm, 2px);
+    background: var(--color-bg-elevated);
+    color: var(--color-fg-secondary);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition:
+      color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out),
+      transform var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .entry-card:hover {
+    color: var(--entry-color, var(--color-accent-base));
+    border-color: color-mix(in oklch, var(--entry-color, var(--color-accent-base)) 50%, transparent);
+    background-color: color-mix(in oklch, var(--entry-color, var(--color-accent-base)) 6%, transparent);
+    transform: translateY(-1px);
+  }
+
+  .entry-card:active {
+    transform: translateY(0);
+  }
+
+  .entry-card:focus-visible {
+    outline: 2px solid color-mix(in oklch, var(--entry-color, var(--color-accent-base)) 60%, transparent);
+    outline-offset: 2px;
+  }
+
+  /* 入口图标：默认次要色，hover 跟随卡片强调色 */
+  .entry-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-fg-tertiary);
+    transition: color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .entry-card:hover .entry-icon {
+    color: var(--entry-color, var(--color-accent-base));
+  }
+
+  /* 入口名称 */
+  .entry-name {
+    white-space: nowrap;
+  }
+
   /* ============================================================
    * 3. 分类区域（极简现代横向滑动器）
    * ----------------------------------------------------------------
@@ -433,6 +502,17 @@
       height: 20px;
     }
 
+    /* 移动端功能入口：缩小内边距与字号 */
+    .hero-entries {
+      gap: var(--spacing-xs);
+      margin-top: var(--spacing-md);
+    }
+
+    .entry-card {
+      padding: 8px 14px;
+      font-size: 0.75rem;
+    }
+
     /* 滑动器卡片宽度收窄 */
     .feature-track .module-card {
       flex: 0 0 200px;
@@ -531,12 +611,14 @@
   /* Hero 区域：依次上滑入场（首屏即时播放，both 保持首尾态） */
   .hero-title,
   .hero-desc,
-  .hero-stats {
+  .hero-stats,
+  .hero-entries {
     animation: fndx-slide-up var(--motion-duration-normal) var(--motion-easing-out) both;
   }
   .hero-title { animation-delay: 0.06s; }
   .hero-desc { animation-delay: 0.12s; }
   .hero-stats { animation-delay: 0.18s; }
+  .hero-entries { animation-delay: 0.24s; }
 
   /* 模块卡片：滑动器内错峰入场（前 8 张依次显现，其余同步，避免长延迟）
    * 注：JS 克隆的卡片（aria-hidden）不参与入场动画 */
@@ -557,6 +639,7 @@
     .hero-title,
     .hero-desc,
     .hero-stats,
+    .hero-entries,
     .feature-track .module-card {
       animation: none;
     }

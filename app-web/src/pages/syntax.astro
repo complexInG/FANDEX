@@ -1,0 +1,36 @@
+---
+/**
+ * 语法速览页面（占位）
+ * -----------------------------------------------------------------------------
+ * 功能规划：
+ *   汇聚各编程语言语法要点，提供快速检索与对比速查卡片
+ *
+ * 当前状态：即将推出，使用 ComingSoon 组件呈现占位视图
+ * 后续实现：替换为交互式语法速查表 + 语言切换 + 搜索过滤
+ */
+import HomeLayout from '@/components/HomeLayout.astro'
+import SEO from '@/components/SEO.astro'
+import ComingSoon from '@/components/ComingSoon.astro'
+import { SITE } from '@/lib/constants'
+
+const base = import.meta.env.BASE_URL
+
+// 代码括号图标（几何 stroke 风格）
+const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`
+---
+
+<HomeLayout title="语法速览">
+  <SEO
+    slot="head"
+    title="语法速览 · FANDEX"
+    description="FANDEX 语法速览：汇聚各编程语言语法要点，快速检索与对比速查。"
+    canonical={`${SITE.url}${base}syntax/`}
+    type="website"
+  />
+  <ComingSoon
+    title="语法速览"
+    description="汇聚各编程语言语法要点，提供快速检索与对比速查卡片。"
+    icon={icon}
+    accentColor="#3b82f6"
+  />
+</HomeLayout>
