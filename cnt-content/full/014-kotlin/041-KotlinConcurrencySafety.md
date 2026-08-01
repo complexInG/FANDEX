@@ -21,27 +21,9 @@ prerequisites:
   - kotlin/协程基础
 ---
 
-
 # Kotlin 与并发安全（Concurrency Safety in Depth）
 
 > 本文档对标 MIT 6.005 Software Construction、Stanford CS110 Principles of Computer Systems、CMU 15-440 Distributed Systems、UC Berkeley CS162 Operating Systems 等海外名校课程的教学水准，系统讲解 Kotlin 在协程与多线程环境下的并发安全（Concurrency Safety）机制，从"为什么需要并发安全"出发，逐层深入到内存模型（Memory Model）、原子操作（Atomic Operations）、互斥锁（Mutex）、CAS（Compare-And-Swap）、Actor 模型（Actor Model）、Channel、线程限制（Thread Confinement）、`@Volatile` 等核心主题。本文不假设读者熟悉 Java Memory Model 或 Go 内存模型，所有概念均由浅入深、从形式化定义到字节码实现逐层展开。完成本文学习后，读者将能够独立设计线程安全的 Kotlin 协程代码、识别与修复数据竞争（Data Race）、选择合适的并发原语并理解其在 JVM 与 Native 平台的运行时行为差异。
-
-## 目录
-
-1. [学习目标](#1-学习目标)
-2. [历史动机与发展脉络](#2-历史动机与发展脉络)
-3. [形式化定义](#3-形式化定义)
-4. [理论推导与原理解析](#4-理论推导与原理解析)
-5. [代码示例](#5-代码示例)
-6. [对比分析](#6-对比分析)
-7. [常见陷阱与最佳实践](#7-常见陷阱与最佳实践)
-8. [工程实践](#8-工程实践)
-9. [案例研究](#9-案例研究)
-10. [习题](#10-习题)
-11. [参考文献](#11-参考文献)
-12. [延伸阅读](#12-延伸阅读)
-
----
 
 ## 1. 历史动机与发展脉络
 

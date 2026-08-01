@@ -16,27 +16,9 @@ prerequisites:
   - csharp/概述与环境配置
 ---
 
-
 # async/await 状态机：从语法糖到执行模型的全景解析
 
 > 本章对标 MIT 6.1020（Software Construction）与 Stanford CS110L（Safety in Systems Programming）的异步教学深度，结合 ECMA-334 规范、CLR RFC 与 .NET Runtime 源码，将 `async/await` 的语法糖层层剥开，揭示编译器生成的状态机、`AsyncMethodBuilder`、`IAsyncStateMachine`、`MoveNext`、`SynchronizationContext`、`TaskScheduler` 与 `ConfigureAwait` 之间的协作机制。
-
-## 目录
-
-1. [学习目标](#1-学习目标)
-2. [历史动机与发展脉络](#2-历史动机与发展脉络)
-3. [形式化定义](#3-形式化定义)
-4. [理论推导与原理解析](#4-理论推导与原理解析)
-5. [代码示例](#5-代码示例)
-6. [对比分析](#6-对比分析)
-7. [常见陷阱与最佳实践](#7-常见陷阱与最佳实践)
-8. [工程实践](#8-工程实践)
-9. [案例研究](#9-案例研究)
-10. [习题](#10-习题)
-11. [参考文献](#11-参考文献)
-12. [延伸阅读](#12-延伸阅读)
-
----
 
 ## 1. 历史动机与发展脉络
 

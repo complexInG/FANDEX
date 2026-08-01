@@ -20,27 +20,9 @@ prerequisites:
   - css/层叠上下文
 ---
 
-
 # 背景增强（Backgrounds & Borders Enhancement）
 
 > 本文以 W3C [CSS Backgrounds and Borders Module Level 3](https://www.w3.org/TR/css-backgrounds-3/) 与 [CSS Backgrounds Module Level 4](https://www.w3.org/TR/css-backgrounds-4/) 规范为基础，系统阐释 CSS 背景系统的层级模型（Layer Model）、`background-image` 多层叠加、`background-size` 缩放算法、`background-clip` 绘制区域、`background-origin` 定位上下文、`background-attachment` 滚动行为的几何与渲染机制，并对接 Bootstrap、Tailwind CSS、Material Design 等主流框架的实践范式。内容涵盖从 CSS 1（1996）到 CSS Backgrounds Level 4（2024）的演进，提供生产级代码示例与工程化解决方案。
-
----
-
-## 目录
-
-1. [学习目标](#1-学习目标)
-2. [历史动机与发展脉络](#2-历史动机与发展脉络)
-3. [形式化定义](#3-形式化定义)
-4. [理论推导与原理解析](#4-理论推导与原理解析)
-5. [代码示例](#5-代码示例)
-6. [对比分析](#6-对比分析)
-7. [常见陷阱与最佳实践](#7-常见陷阱与最佳实践)
-8. [工程实践](#8-工程实践)
-9. [案例研究](#9-案例研究)
-10. [习题](#10-习题)
-11. [参考文献](#11-参考文献)
-12. [延伸阅读](#12-延伸阅读)
 
 ---
 

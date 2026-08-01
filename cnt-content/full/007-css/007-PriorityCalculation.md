@@ -19,27 +19,9 @@ prerequisites:
   - css/层叠上下文
 ---
 
-
 # 优先级计算（Specificity & Cascade）
 
 > 本文以 W3C [CSS Cascading and Inheritance Level 4](https://www.w3.org/TR/css-cascade-4/)、[Selectors Level 4](https://www.w3.org/TR/selectors-4/) 规范为基础，系统阐释 CSS 优先级（Specificity）的计算算法、层叠顺序（Cascade Order）、`!important` 与 `@layer` 的工程意义、`:where()` / `:is()` / `:has()` 等现代选择器对优先级的影响，并对接 Bootstrap、Tailwind CSS、Material Design 等主流框架的实践范式。内容涵盖从 CSS 1 到 CSS Cascade Level 4 的演进，提供生产级代码示例与工程化解决方案。
-
----
-
-## 目录
-
-1. [学习目标](#1-学习目标)
-2. [历史动机与发展脉络](#2-历史动机与发展脉络)
-3. [形式化定义](#3-形式化定义)
-4. [理论推导与原理解析](#4-理论推导与原理解析)
-5. [代码示例](#5-代码示例)
-6. [对比分析](#6-对比分析)
-7. [常见陷阱与最佳实践](#7-常见陷阱与最佳实践)
-8. [工程实践](#8-工程实践)
-9. [案例研究](#9-案例研究)
-10. [习题](#10-习题)
-11. [参考文献](#11-参考文献)
-12. [延伸阅读](#12-延伸阅读)
 
 ---
 

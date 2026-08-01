@@ -16,27 +16,9 @@ prerequisites:
   - java/概述与开发环境
 ---
 
-
 # Java 注解处理器：编译时元编程的艺术
 
 > 本文档对标 MIT 6.031、Stanford CS242 (Programming Languages) 与 CMU 17-808 (Program Analysis) 教学水准，系统讲解 Java 注解处理器（Annotation Processor, JSR 269）的设计、原理与工程实践。从 JLS §9.6 / §9.7 注解规范到 javax.lang.model API，再到 Lombok、Dagger、MapStruct、Record 等真实开源项目的实现剖析，文档兼顾形式化定义、Javac 内部机制与企业级 production-ready 模板代码。
-
----
-
-## 目录
-
-1. [学习目标](#1-学习目标bloom-分类)
-2. [历史动机与发展脉络](#2-历史动机与发展脉络)
-3. [形式化定义](#3-形式化定义jls--jvms-规范)
-4. [理论推导与原理解析](#4-理论推导与原理解析)
-5. [代码示例](#5-代码示例企业级-production-ready)
-6. [对比分析](#6-对比分析)
-7. [常见陷阱与最佳实践](#7-常见陷阱与最佳实践)
-8. [工程实践](#8-工程实践构建jvm-调优性能调试)
-9. [案例研究](#9-案例研究springhibernatenetty)
-10. [习题](#10-习题)
-11. [参考文献](#11-参考文献acm-reference-format)
-12. [延伸阅读](#12-延伸阅读)
 
 ---
 

@@ -133,49 +133,6 @@ Markdown 原生不支持合并单元格，可使用 HTML：
 ```markdown
 ## 目录
 
-- [概述](#概述)
-- [安装](#安装)
-  - [npm 安装](#npm-安装)
-  - [yarn 安装](#yarn-安装)
-- [配置](#配置)
-- [API 参考](#api-参考)
-```
-
-锚点生成规则：
-
-- 标题文本转小写
-- 空格替换为 `-`
-- 特殊字符移除（除 `-`）
-- 中文标题直接使用中文作为锚点（部分渲染器支持）
-
-### 3.2 自动生成目录
-
-使用工具自动生成目录：
-
-```bash
-# 使用 markdown-toc
-npx markdown-toc README.md -i
-
-# 使用 doctoc
-npx doctoc README.md
-```
-
-### 3.3 Astro/VitePress 目录组件
-
-```astro
----
-// 在 Astro 中使用目录组件
-import TableOfContents from '../components/TableOfContents.astro';
----
-
-<TableOfContents headings={headings} />
-```
-
-VitePress 中使用 `[[_TOC_]]`：
-
-```markdown
-## 目录
-
 [[_TOC_]]
 
 ## 第一节

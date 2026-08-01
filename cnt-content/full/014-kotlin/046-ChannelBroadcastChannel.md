@@ -16,27 +16,9 @@ prerequisites:
   - kotlin/概述与环境配置
 ---
 
-
 # Channel 与 BroadcastChannel（Channel and BroadcastChannel）
 
 > 本文档对标 MIT 6.005、Stanford CS193P、CMU 15-410 教学水准，系统讲解 Kotlin 协程中的 `Channel<T>`、`SendChannel`/`ReceiveChannel`、`BroadcastChannel`（已废弃）、`SharedFlow` 替代方案、`produce`/`actor` 构建器以及 `select` 多路复用机制。内容覆盖 CSP（Communicating Sequential Processes）理论基础、Kotlin 1.0 至 2.0 的演进、JVM 字节码实现、跨语言对比、企业级生产代码与习题解析。
-
-## 目录
-
-1. [学习目标](#1-学习目标)
-2. [历史动机与发展脉络](#2-历史动机与发展脉络)
-3. [形式化定义](#3-形式化定义)
-4. [理论推导与原理解析](#4-理论推导与原理解析)
-5. [代码示例](#5-代码示例)
-6. [对比分析](#6-对比分析)
-7. [常见陷阱与最佳实践](#7-常见陷阱与最佳实践)
-8. [工程实践](#8-工程实践)
-9. [案例研究](#9-案例研究)
-10. [习题](#10-习题)
-11. [参考文献](#11-参考文献)
-12. [延伸阅读](#12-延伸阅读)
-
----
 
 ## 1. 历史动机与发展脉络
 

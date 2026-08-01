@@ -16,27 +16,9 @@ prerequisites:
   - vue3/语法速查
 ---
 
-
 # Provide 与 Inject | Dependency Injection in Vue 3
 
 > 本文档对标 MIT 6.170、Stanford CS142、CMU 17-437 软件工程课程水准，系统化阐述 Vue 3 中 `provide`/`inject` 依赖注入机制的原理、形式化定义、企业级实践与对比分析。涵盖响应式注入、`InjectionKey` 类型系统、跨层级通信、SSR 单例污染防护、插件架构设计等主题，并辅以数学建模、案例研究与习题。
-
----
-
-## 目录
-
-1. [学习目标](#1-学习目标--learning-objectives)
-2. [历史动机与发展脉络](#2-历史动机与发展脉络--historical-motivation-and-evolution)
-3. [形式化定义](#3-形式化定义--formal-definitions)
-4. [理论推导与原理解析](#4-理论推导与原理解析--theoretical-derivation)
-5. [代码示例](#5-代码示例--code-examples)
-6. [对比分析](#6-对比分析--comparative-analysis)
-7. [常见陷阱与最佳实践](#7-常见陷阱与最佳实践--pitfalls-and-best-practices)
-8. [工程实践](#8-工程实践--engineering-practice)
-9. [案例研究](#9-案例研究--case-studies)
-10. [习题](#10-习题--exercises)
-11. [参考文献](#11-参考文献--references)
-12. [延伸阅读](#12-延伸阅读--further-reading)
 
 ---
 

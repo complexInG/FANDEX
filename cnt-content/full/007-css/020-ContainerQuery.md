@@ -19,27 +19,9 @@ prerequisites:
   - css/CSS变量与自定义属性
 ---
 
-
 # 容器查询（Container Queries）
 
 > 本文以 W3C CSS Containment Module Level 3 与 Container Queries Level 3 规范为基础，系统阐释容器查询（Container Queries）的设计动机、语法体系、`container-type` 与 `container-name` 的语义、`@container` 规则的算法、style queries 的实验性能力，以及与媒体查询（Media Queries）的差异。内容对标 Bootstrap、Tailwind CSS、Material Design 等主流框架的响应式实践，提供生产级代码示例与工程化解决方案。
-
----
-
-## 目录
-
-1. [学习目标](#1-学习目标)
-2. [历史动机与发展脉络](#2-历史动机与发展脉络)
-3. [形式化定义](#3-形式化定义)
-4. [理论推导与原理解析](#4-理论推导与原理解析)
-5. [代码示例](#5-代码示例)
-6. [对比分析](#6-对比分析)
-7. [常见陷阱与最佳实践](#7-常见陷阱与最佳实践)
-8. [工程实践](#8-工程实践)
-9. [案例研究](#9-案例研究)
-10. [习题](#10-习题)
-11. [参考文献](#11-参考文献)
-12. [延伸阅读](#12-延伸阅读)
 
 ---
 

@@ -16,27 +16,9 @@ related:
 prerequisites: []
 ---
 
-
 # Java 快速入门：从 Hello World 到工程化实践
 
 > 本文档对标 MIT 6.031 (Software Construction)、Stanford CS106A (Programming Methodology) 与 CMU 15-214 (Software Engineering) 教学水准，覆盖从环境搭建、第一个程序到企业级工程化工作流的完整路径。文档采用 Bloom 教育目标分类法组织学习目标，结合 JLS (Java Language Specification) 与 JVMS (Java Virtual Machine Specification) 双规范视角，兼顾原理深度与工程可用性。
-
----
-
-## 目录
-
-1. [学习目标](#1-学习目标bloom-分类)
-2. [历史动机与发展脉络](#2-历史动机与发展脉络)
-3. [形式化定义](#3-形式化定义jls--jvms-规范)
-4. [理论推导与原理解析](#4-理论推导与原理解析)
-5. [代码示例](#5-代码示例企业级-production-ready)
-6. [对比分析](#6-对比分析)
-7. [常见陷阱与最佳实践](#7-常见陷阱与最佳实践)
-8. [工程实践](#8-工程实践构建jvm-调优性能调试)
-9. [案例研究](#9-案例研究springhibernatenetty)
-10. [习题](#10-习题)
-11. [参考文献](#11-参考文献acm-reference-format)
-12. [延伸阅读](#12-延伸阅读)
 
 ---
 

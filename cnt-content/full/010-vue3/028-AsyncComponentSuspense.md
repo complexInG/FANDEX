@@ -16,27 +16,9 @@ prerequisites:
   - vue3/语法速查
 ---
 
-
 # 异步组件与 Suspense | Async Components and Suspense in Vue 3
 
 > 本文档对标 MIT 6.170、Stanford CS142、CMU 17-437 软件工程课程水准，系统化阐述 Vue 3 异步组件（`defineAsyncComponent`）与 `Suspense` 机制的原理、形式化定义、企业级实践与对比分析。涵盖代码分割（Code Splitting）、动态导入（Dynamic Import）、异步依赖编排（Async Orchestration）、错误边界（Error Boundary）、加载状态管理、SSR 流式渲染等主题，并辅以数学建模、对比分析、案例研究与习题。
-
----
-
-## 目录
-
-1. [学习目标](#1-学习目标--learning-objectives)
-2. [历史动机与发展脉络](#2-历史动机与发展脉络--historical-motivation-and-evolution)
-3. [形式化定义](#3-形式化定义--formal-definitions)
-4. [理论推导与原理解析](#4-理论推导与原理解析--theoretical-derivation)
-5. [代码示例](#5-代码示例--code-examples)
-6. [对比分析](#6-对比分析--comparative-analysis)
-7. [常见陷阱与最佳实践](#7-常见陷阱与最佳实践--pitfalls-and-best-practices)
-8. [工程实践](#8-工程实践--engineering-practice)
-9. [案例研究](#9-案例研究--case-studies)
-10. [习题](#10-习题--exercises)
-11. [参考文献](#11-参考文献--references)
-12. [延伸阅读](#12-延伸阅读--further-reading)
 
 ---
 

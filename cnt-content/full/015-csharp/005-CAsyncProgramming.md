@@ -19,27 +19,9 @@ prerequisites:
   - csharp/基础语法
 ---
 
-
 # C# 异步编程
 
 > 本篇是 FANDEX C# 系列的第五篇。我们将系统讲解 C# 异步编程：从 APM/EAP/TAP 模型演化到 async/await，深入剖析状态机转换、SynchronizationContext、ConfigureAwait、ValueTask、Channel、IAsyncEnumerable 等。内容对标 MIT 6.005（Software Construction）、Stanford CS110（Principles of Computer Systems）、CMU 15-440（Distributed Systems）课程教学严谨度，支持 0 基础自学，同时覆盖企业级实战要点。
-
----
-
-## 目录
-
-1. [学习目标（Bloom 分类法）](#1-学习目标bloom-分类法)
-2. [历史动机与演化](#2-历史动机与演化)
-3. [形式化定义](#3-形式化定义)
-4. [理论推导与证明](#4-理论推导与证明)
-5. [代码示例](#5-代码示例)
-6. [对比分析](#6-对比分析)
-7. [常见陷阱与反模式](#7-常见陷阱与反模式)
-8. [工程实践与最佳实践](#8-工程实践与最佳实践)
-9. [案例研究](#9-案例研究)
-10. [习题与思考题](#10-习题与思考题)
-11. [参考文献](#11-参考文献)
-12. [延伸阅读](#12-延伸阅读)
 
 ---
 
