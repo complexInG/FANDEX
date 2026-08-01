@@ -30,6 +30,12 @@ export {
 } from './module-service';
 export type { Module, CategoryInfo } from './module-service';
 
+// ── 语法速览服务 ──
+// 语言索引来自预构建 JSON（scripts/build-syntax.mjs 生成），
+// 卡片数据由 SyntaxExplorer 岛按语言分块按需加载
+export { getSyntaxIndex, getSyntaxLanguages, getSyntaxStats } from './syntax-service';
+export type { SyntaxLanguage, SyntaxStats } from './syntax-service';
+
 // ── 代码运行服务 ──
 // 多语言代码沙箱（JS/TS/Python/C/C++），Web Worker 隔离 + 5 秒超时保护
 export { runCode, disposeCodeRunner } from './code-runner-service';
