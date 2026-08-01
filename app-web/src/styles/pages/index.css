@@ -289,14 +289,15 @@
     transform: translateY(0);
   }
 
-  /* 功能入口区：纯文字按钮 + SVG border 描边动画
+  /* 功能入口区：纯文字按钮 + SVG 路径签名动画
    * ----------------------------------------------------------------
    * 设计重构（与 hero-stats 同行，紧凑布局）：
    * - 移除图标，仅保留文字（与 GitHub 导航按钮风格统一）
-   * - 背景透明，无边框（border 由 SVG rect 提供，实现描边动画）
-   * - SVG .entry-border 定位填满按钮，rect 使用 stroke-dasharray + stroke-dashoffset
-   * - hover 时 stroke-dashoffset 从 250 → 0，实现边框从无到有的描边动画
-   * - --entry-color 驱动每个按钮的强调色
+   * - 背景透明，无边框（border 由 SVG path 提供，实现路径书写动画）
+   * - SVG .entry-border 使用二次贝塞尔曲线（Q 命令）绘制手绘风格波浪路径
+   * - preserveAspectRatio="none" 让路径拉伸适配按钮尺寸
+   * - hover 时 stroke-dashoffset 从 250 → 0，实现路径从无到有的书写动画
+   * - 三个按钮颜色统一使用项目标题主题色 var(--color-accent-base)
    * 性能：仅动画 stroke-dashoffset，GPU 加速 */
   .hero-entries {
     display: flex;
@@ -311,7 +312,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 8px 16px;
+    padding: 14px 36px;
     background: transparent;
     color: var(--color-fg-secondary);
     text-decoration: none;
@@ -325,7 +326,7 @@
   }
 
   .entry-btn:hover {
-    color: var(--entry-color, var(--color-accent-base));
+    color: var(--color-accent-base);
   }
 
   .entry-btn:active {
@@ -333,12 +334,12 @@
   }
 
   .entry-btn:focus-visible {
-    outline: 2px solid color-mix(in oklch, var(--entry-color, var(--color-accent-base)) 60%, transparent);
+    outline: 2px solid color-mix(in oklch, var(--color-accent-base) 60%, transparent);
     outline-offset: 2px;
   }
 
   /* SVG border：绝对定位填满按钮，pointer-events:none 不干扰点击
-   * preserveAspectRatio="none" 让 rect 拉伸适配按钮尺寸 */
+   * preserveAspectRatio="none" 让 path 拉伸适配按钮尺寸 */
   .entry-border {
     position: absolute;
     inset: 0;
@@ -348,27 +349,30 @@
     overflow: visible;
   }
 
-  /* rect 描边：stroke-dasharray + stroke-dashoffset 实现描边动画
+  /* path 路径签名动画：stroke-dasharray + stroke-dashoffset 实现书写效果
+   * 使用二次贝塞尔曲线（Q 命令）绘制手绘风格波浪路径
    * pathLength 等效为 250（通过 dasharray 设置）
-   * 默认 offset:250 完全隐藏，hover 时 offset:0 完全显示 */
-  .entry-border rect {
+   * 默认 offset:250 完全隐藏，hover 时 offset:0 完全显示
+   * stroke-width: 2 + stroke-linecap: round 营造手写笔触质感
+   * transition 0.8s cubic-bezier(0.4, 0, 0.2, 1) 模拟书写节奏 */
+  .entry-border path {
     fill: none;
-    stroke: var(--entry-color, var(--color-accent-base));
-    stroke-width: 1.5;
+    stroke: var(--color-accent-base);
+    stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: 250;
     stroke-dashoffset: 250;
-    transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .entry-btn:hover .entry-border rect {
+  .entry-btn:hover .entry-border path {
     stroke-dashoffset: 0;
   }
 
-  /* 尊重用户减少动效偏好：禁用描边动画，直接显示边框 */
+  /* 尊重用户减少动效偏好：禁用路径动画，直接显示边框 */
   @media (prefers-reduced-motion: reduce) {
-    .entry-border rect {
+    .entry-border path {
       stroke-dashoffset: 0;
       transition: none;
     }

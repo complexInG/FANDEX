@@ -61,25 +61,26 @@ const grouped = getCategories()
             <span class="stat-label">文档</span>
           </div>
         </div>
-        <!-- 功能入口区：纯文字按钮 + SVG border 描边动画
-             背景透明，与 GitHub 导航按钮风格统一
-             暂为占位入口，点击进入对应 ComingSoon 页面 -->
+        <!-- 功能入口区：纯文字按钮 + SVG 路径签名动画
+             使用二次贝塞尔曲线（Q 命令）绘制手绘风格波浪路径，
+             hover 时 stroke-dashoffset 从 250 → 0 实现路径书写动画
+             三个按钮颜色统一使用项目标题主题色 var(--color-accent-base) -->
         <nav class="hero-entries" aria-label="功能入口">
-          <a href={`${import.meta.env.BASE_URL}playground/`} class="entry-btn" style="--entry-color:#10b981" data-tooltip="在线编程沙箱" data-tooltip-pos="bottom">
-            <svg class="entry-border" aria-hidden="true" preserveAspectRatio="none">
-              <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="2" ry="2"></rect>
+          <a href={`${import.meta.env.BASE_URL}playground/`} class="entry-btn" data-tooltip="在线编程沙箱" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
             </svg>
             <span class="entry-name">在线编程</span>
           </a>
-          <a href={`${import.meta.env.BASE_URL}syntax/`} class="entry-btn" style="--entry-color:#3b82f6" data-tooltip="语法快速查阅" data-tooltip-pos="bottom">
-            <svg class="entry-border" aria-hidden="true" preserveAspectRatio="none">
-              <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="2" ry="2"></rect>
+          <a href={`${import.meta.env.BASE_URL}syntax/`} class="entry-btn" data-tooltip="语法快速查阅" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
             </svg>
             <span class="entry-name">语法速览</span>
           </a>
-          <a href={`${import.meta.env.BASE_URL}learning-path/`} class="entry-btn" style="--entry-color:#8b5cf6" data-tooltip="系统化学习路径" data-tooltip-pos="bottom">
-            <svg class="entry-border" aria-hidden="true" preserveAspectRatio="none">
-              <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="2" ry="2"></rect>
+          <a href={`${import.meta.env.BASE_URL}learning-path/`} class="entry-btn" data-tooltip="系统化学习路径" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
             </svg>
             <span class="entry-name">学习路线</span>
           </a>

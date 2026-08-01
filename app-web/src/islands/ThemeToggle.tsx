@@ -8,12 +8,16 @@
  * - SSR 阶段渲染不可见占位按钮（保留布局空间避免 CLS），
  *   客户端挂载后填充实际图标，避免水合后布局偏移
  *
- * 动效体系（Motion React + View Transitions API）：
+ * 动效体系（Motion React）：
  * - MotionProvider 包裹，reducedMotion="user" 自动降级
  * - motion.button：whileTap 按压回弹、whileHover 轻微放大（ark 微交互）
- * - AnimatePresence + motion.svg：日/月图标旋转交叉淡入淡出
- * - View Transitions API：主题切换时圆形扩散动画，从按钮位置向外展开
- *   不支持 VT 或 prefers-reduced-motion 时降级为直接切换
+ * - AnimatePresence + motion.svg：日/月图标旋转交叉淡入淡出（局部动画，性能开销小）
+ *
+ * 性能说明（View Transitions 移除原因）：
+ * - 原 impl 使用 startViewTransition 对整个 root 捕获快照 + clipPath 圆形扩散
+ * - FANDEX 页面 DOM 复杂（背景装饰 + 大量卡片），root 快照合成层成本巨大
+ * - flushSync 同步刷新 React 状态阻塞主线程，叠加 VT 合成导致严重卡顿
+ * - 现改为：CSS 变量即时切换 + Motion 图标旋转过渡，流畅无卡顿
  *
  * 数据流：
  * - 挂载时从 localStorage 读取已保存的主题，无保存值时检测系统偏好
@@ -25,26 +29,10 @@
  * - 配合 Astro 群岛架构，仅客户端交互
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { flushSync } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { MotionProvider } from '@/motion';
 import { getSavedTheme, prefersDarkMode, setTheme as persistTheme, type Theme } from '@/lib/theme';
 import '@/styles/islands/ThemeToggle.css';
-
-/**
- * View Transitions API 类型补充
- * 标准 DOM 类型库可能未包含此接口，此处声明用到的子集
- */
-interface ViewTransition {
-  readonly ready: Promise<void>;
-  readonly finished: Promise<void>;
-  readonly updateCallbackDone: Promise<void>;
-  skipTransition: () => void;
-}
-
-interface ViewTransitionDocument {
-  startViewTransition: (callback: () => void) => ViewTransition;
-}
 
 /**
  * 组件 props 接口
@@ -107,98 +95,17 @@ export function ThemeToggle({}: ThemeToggleProps = {}) {
   }, []);
 
   /**
-   * 切换主题并持久化到 localStorage
-   *
-   * View Transitions 过渡动画流程：
-   * 1. 检测浏览器支持 startViewTransition 且用户未启用 prefers-reduced-motion
-   * 2. 获取按钮位置作为圆形扩散起点
-   * 3. 启动 View Transition，在回调中同步更新 DOM 与 React 状态
-   *    （flushSync 确保 React 状态同步刷新，使图标变化被 VT 捕获）
-   * 4. transition.ready 后对 ::view-transition-new(root) 执行 clipPath 圆形展开动画
-   * 5. 动画完成后移除过渡标记类
-   *
-   * 降级策略：
-   * - 不支持 View Transitions API：直接切换 DOM 与状态，无过渡动画
-   * - prefers-reduced-motion: reduce：直接切换，避免触发动画
-   */
-  const toggle = useCallback(async () => {
+ * 切换主题并持久化到 localStorage
+ *
+ * 实现说明：
+ * - 直接调用 persistTheme 同步更新 DOM data-theme 属性与 localStorage
+ * - CSS 变量即时切换，Motion 驱动图标旋转交叉淡入淡出提供视觉过渡
+ * - 无 View Transitions 快照合成，避免复杂 DOM 场景下的合成层卡顿
+ */
+  const toggle = useCallback(() => {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
-
-    /**
-     * 应用主题到 DOM 与 localStorage
-     * 使用统一主题模块确保 meta theme-color 同步更新
-     */
-    const applyThemeFn = () => {
-      persistTheme(next);
-    };
-
-    // 检测 View Transitions API 支持与用户动效偏好
-    const vtDocument = document as Document & Partial<ViewTransitionDocument>;
-    const supportsVT = typeof vtDocument.startViewTransition === 'function';
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // 不支持 VT 或用户偏好减少动效：直接切换，无过渡
-    if (!supportsVT || reduceMotion) {
-      applyThemeFn();
-      setTheme(next);
-      return;
-    }
-
-    // 获取按钮位置作为圆形扩散动画起点
-    const button = buttonRef.current;
-    let cx = window.innerWidth / 2;
-    let cy = window.innerHeight / 2;
-    if (button) {
-      const rect = button.getBoundingClientRect();
-      cx = rect.left + rect.width / 2;
-      cy = rect.top + rect.height / 2;
-    }
-
-    // 计算圆形展开最大半径（到屏幕最远角的距离，确保完全覆盖视口）
-    const maxRadius = Math.hypot(
-      Math.max(cx, window.innerWidth - cx),
-      Math.max(cy, window.innerHeight - cy),
-    );
-
-    // 添加过渡标记类，使 CSS 中 ::view-transition-* 规则生效
-    document.documentElement.classList.add('theme-vt');
-
-    const transition = vtDocument.startViewTransition(() => {
-      applyThemeFn();
-      // flushSync 确保 React 状态同步更新，图标变化被 VT 捕获
-      flushSync(() => {
-        setTheme(next);
-      });
-    });
-
-    try {
-      // 等待 VT 伪元素就绪后执行自定义圆形展开动画
-      await transition.ready;
-
-      document.documentElement.animate(
-        {
-          clipPath: [
-            `circle(0px at ${cx}px ${cy}px)`,
-            `circle(${maxRadius}px at ${cx}px ${cy}px)`,
-          ],
-        },
-        {
-          // duration 从 380ms 调至 250ms，提升主题切换响应感
-          // 380ms 偏长导致切换迟缓，250ms 接近 --motion-duration-normal，手感更跟手
-          duration: 250,
-          easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-          pseudoElement: '::view-transition-new(root)',
-        },
-      );
-
-      await transition.finished;
-    } catch {
-      // 过渡被跳过或中断（如用户快速连续点击），安全降级
-      // 此时 DOM 已在回调中更新完毕，无需额外处理
-    } finally {
-      // 移除过渡标记类，恢复默认 VT 行为（避免影响 Astro 页面导航过渡）
-      document.documentElement.classList.remove('theme-vt');
-    }
+    persistTheme(next);
+    setTheme(next);
   }, [theme]);
 
   return (
