@@ -23,6 +23,8 @@ export interface SyntaxLanguage {
   id: string;
   /** 语言显示名称 */
   title: string;
+  /** 模块图标（共享元数据，与首页模块卡片同款 2-4 字符标识） */
+  icon: string;
   /** 分类主题色（用于徽标、卡片强调与切换态） */
   color: string;
   /** 语法点卡片总数 */

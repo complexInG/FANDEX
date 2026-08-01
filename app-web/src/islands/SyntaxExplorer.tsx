@@ -2,29 +2,36 @@
  * 语法速览交互岛（SyntaxExplorer）
  * =============================================================================
  * 功能概述：
- * - 语言切换：通过彩色语言 chip 过滤语法卡片（无搜索，遵循"速查做减法"）
+ * - 语言切换：通过彩色语言 chip 过滤语法卡片（无搜索）
  * - 按需加载：卡片数据按语言拆分到 public/syntax-data/<module>.json，
  *   切换语言时 fetch 对应分块并缓存，避免页面内嵌 2MB 数据
- * - 代码复制：卡片代码块提供复制按钮（Clipboard API，失败静默降级）
- * - 分批渲染：每批渲染 PAGE_SIZE 张卡片，"加载更多"增量展开，保证滚动流畅
+ * - 速查卡片：复用首页模块卡片体系（.module-card 特效），
+ *   缩小为"图标 + 小节 + 写法 + 公式"的紧凑入口
+ * - 悬浮面板：点击卡片后弹出详情面板（Radix Dialog），
+ *   展示完整公式、示例代码、复制按钮与完整文档入口
  *
  * 数据流：
  *   languages prop（页面内嵌索引）→ activeId state → fetch 语言分块
- *   → cards state → 过滤后分批渲染
+ *   → cards state → 网格渲染；点击卡片 → selected state → 悬浮面板
  *
  * 设计说明：
  * - 并发保护：请求序号 ref 保证快速切换语言时旧响应不会覆盖新状态
  * - 缓存：已加载语言分块存于 Map ref，再次切换零网络开销
- * - 无障碍：chip 使用 aria-pressed，状态区使用 aria-live 播报加载结果
+ * - 无障碍：chip 使用 aria-pressed；面板由 Radix Dialog 提供
+ *   焦点陷阱、Escape 关闭与 aria 语义
  */
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+// 复用首页模块卡片样式（顶部色条、hover 边框/阴影、几何图标、标题变色）
+import '@/styles/components/module-card.css';
 import '@/styles/islands/syntax-explorer.css';
 
 /** 语法速览语言元数据（与 syntax-service 类型一致） */
 interface SyntaxLanguage {
   id: string;
   title: string;
+  icon: string;
   color: string;
   count: number;
   docCount: number;
@@ -60,13 +67,14 @@ interface SyntaxExplorerProps {
 const PAGE_SIZE = 36;
 /** 复制成功提示持续时长（毫秒） */
 const COPIED_MS = 1600;
-
 /** 未指定语言时的默认选中项（优先常用语言） */
 const DEFAULT_LANGUAGE = 'javascript';
+/** 首页滚动容器选择器：面板打开时锁定滚动 */
+const HOME_MAIN_SELECTOR = '.home-main';
 
 /**
  * 语法速览交互岛
- * 提供语言切换、按需加载、卡片渲染与代码复制能力
+ * 提供语言切换、紧凑速查卡片、悬浮详情面板与代码复制能力
  */
 export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
   /** 当前选中的语言 ID */
@@ -84,6 +92,8 @@ export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
   const [error, setError] = useState('');
   /** 当前可见卡片数量（分批渲染） */
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  /** 悬浮面板当前展示的卡片；null 表示面板关闭 */
+  const [selected, setSelected] = useState<SyntaxCard | null>(null);
   /** 最近一次复制成功的卡片 ID，用于按钮反馈 */
   const [copiedId, setCopiedId] = useState('');
   /** 已加载语言分块缓存：切换回已访问语言时零网络开销 */
@@ -106,16 +116,17 @@ export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
   }
 
   /**
-   * 复制卡片代码到剪贴板
-   * @param card - 目标卡片（含代码与 ID）
+   * 复制代码到剪贴板
+   * @param cardId - 卡片 ID（用于复制按钮反馈）
+   * @param code - 待复制的代码文本
    */
-  async function copyCode(card: SyntaxCard): Promise<void> {
+  async function copyCode(cardId: string, code: string): Promise<void> {
     try {
-      await navigator.clipboard.writeText(card.code);
-      setCopiedId(card.id);
+      await navigator.clipboard.writeText(code);
+      setCopiedId(cardId);
       window.clearTimeout(copiedTimerRef.current);
       copiedTimerRef.current = window.setTimeout(() => {
-        setCopiedId((current) => (current === card.id ? '' : current));
+        setCopiedId((current) => (current === cardId ? '' : current));
       }, COPIED_MS);
     } catch {
       // 剪贴板权限不可用时静默降级，不打断用户操作
@@ -169,6 +180,18 @@ export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
     return () => window.clearTimeout(copiedTimerRef.current);
   }, [activeId]);
 
+  // 面板打开时锁定首页滚动容器，关闭后恢复
+  useEffect(() => {
+    const main = document.querySelector<HTMLElement>(HOME_MAIN_SELECTOR);
+    if (!main) return;
+    if (selected) {
+      main.classList.add('syntax-panel-open');
+    } else {
+      main.classList.remove('syntax-panel-open');
+    }
+    return () => main.classList.remove('syntax-panel-open');
+  }, [selected]);
+
   const visibleCards = cards?.slice(0, visibleCount) ?? [];
 
   return (
@@ -215,76 +238,32 @@ export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
         </div>
       )}
 
-      {/* 卡片网格：分批渲染，保持首屏与滚动性能 */}
+      {/* 速查卡片网格：复用首页模块卡片特效，点击打开悬浮面板 */}
       {cards && cards.length > 0 && (
         <>
           <div className="syntax-grid">
             {visibleCards.map((card, index) => (
-              <article
-                className="syntax-card"
+              <button
+                type="button"
+                className="module-card syntax-card"
                 key={card.id}
                 style={
                   {
-                    '--lang-color': activeColor,
-                    animationDelay: `${Math.min(index, 12) * 24}ms`,
+                    '--module-color': activeColor,
+                    animationDelay: `${Math.min(index, 7) * 40}ms`,
                   } as CSSProperties
                 }
+                onClick={() => setSelected(card)}
               >
-                {/* 卡片头部：语言徽标 + 来源文档 */}
-                <div className="syntax-card__top">
-                  <span className="syntax-card__badge" style={{ backgroundColor: activeColor }}>
-                    {active?.title}
+                <span className="card-header">
+                  <span className="card-icon">{active?.icon}</span>
+                  <span className="card-title" title={card.section}>
+                    {card.section}
                   </span>
-                  <span className="syntax-card__doc" title={card.docTitle}>
-                    {card.docTitle}
-                  </span>
-                </div>
-
-                {/* 语法要点：小节标题 + 写法名称 + 行内公式 */}
-                <h3 className="syntax-card__section">{card.section}</h3>
-                <p className="syntax-card__name">{card.name}</p>
+                </span>
+                <span className="card-desc">{card.name}</span>
                 {card.formula && <code className="syntax-card__formula">{card.formula}</code>}
-
-                {/* 示例代码：语言标签 + 复制按钮 + 代码区 */}
-                <div className="syntax-card__code">
-                  <div className="syntax-card__codebar">
-                    <span className="syntax-card__lang">{card.lang}</span>
-                    <button
-                      type="button"
-                      className="syntax-card__copy"
-                      aria-label={copiedId === card.id ? '已复制' : '复制代码'}
-                      onClick={() => void copyCode(card)}
-                    >
-                      {copiedId === card.id ? (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      ) : (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <rect x="9" y="9" width="13" height="13" rx="2" />
-                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                        </svg>
-                      )}
-                      <span>{copiedId === card.id ? '已复制' : '复制'}</span>
-                    </button>
-                  </div>
-                  <pre className="syntax-card__pre">
-                    <code>{card.code}</code>
-                  </pre>
-                  {card.truncated && (
-                    <div className="syntax-card__truncated">示例已省略，详见完整文档</div>
-                  )}
-                </div>
-
-                {/* 卡片底部：跳转完整模块文档 */}
-                <a className="syntax-card__link" href={`${base}${active?.id}/`}>
-                  <span>查看 {active?.title} 完整文档</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </a>
-              </article>
+              </button>
             ))}
           </div>
 
@@ -305,6 +284,85 @@ export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
       {!loading && !error && cards && cards.length === 0 && (
         <div className="syntax-empty">该语言暂无速查卡片</div>
       )}
+
+      {/* 悬浮详情面板：Radix Dialog 提供焦点陷阱与 Escape 关闭 */}
+      <DialogPrimitive.Root
+        open={selected !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelected(null);
+        }}
+      >
+        <DialogPrimitive.Portal>
+          <DialogPrimitive.Overlay className="syntax-panel-overlay" />
+          <DialogPrimitive.Content
+            className="syntax-panel"
+            style={{ '--lang-color': activeColor } as CSSProperties}
+            aria-label={`${active?.title} 语法详情`}
+          >
+            {/* 面板头部：语言徽标 + 来源文档 */}
+            <div className="syntax-panel__header">
+              <span className="syntax-panel__badge" style={{ backgroundColor: activeColor }}>
+                {active?.title}
+              </span>
+              <span className="syntax-panel__doc" title={selected?.docTitle}>
+                {selected?.docTitle}
+              </span>
+            </div>
+
+            {/* 语法要点：小节标题 + 写法名称 + 完整公式 */}
+            <h2 className="syntax-panel__section">{selected?.section}</h2>
+            <p className="syntax-panel__name">{selected?.name}</p>
+            {selected?.formula && (
+              <code className="syntax-panel__formula">{selected.formula}</code>
+            )}
+
+            {/* 示例代码：语言标签 + 复制按钮 + 代码区 */}
+            {selected && (
+              <div className="syntax-panel__code">
+                <div className="syntax-panel__codebar">
+                  <span className="syntax-panel__lang">{selected.lang}</span>
+                  <button
+                    type="button"
+                    className="syntax-panel__copy"
+                    aria-label={copiedId === selected.id ? '已复制' : '复制代码'}
+                    onClick={() => void copyCode(selected.id, selected.code)}
+                  >
+                    {copiedId === selected.id ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                    )}
+                    <span>{copiedId === selected.id ? '已复制' : '复制'}</span>
+                  </button>
+                </div>
+                <pre className="syntax-panel__pre">
+                  <code>{selected.code}</code>
+                </pre>
+                {selected.truncated && (
+                  <div className="syntax-panel__truncated">示例已省略，详见完整文档</div>
+                )}
+              </div>
+            )}
+
+            {/* 面板底部：完整文档入口 + 关闭按钮 */}
+            <div className="syntax-panel__footer">
+              <a className="syntax-panel__link" href={`${base}${active?.id}/`}>
+                <span>查看 {active?.title} 完整文档</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </a>
+              <DialogPrimitive.Close className="syntax-panel__close">关闭</DialogPrimitive.Close>
+            </div>
+          </DialogPrimitive.Content>
+        </DialogPrimitive.Portal>
+      </DialogPrimitive.Root>
     </div>
   );
 }

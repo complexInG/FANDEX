@@ -22,7 +22,7 @@
  *   {
  *     version: 1,
  *     generatedAt: "ISO 时间",
- *     languages: [{ id, title, color, count, docCount }],
+ *     languages: [{ id, title, icon, color, count, docCount }],
  *   }
  *   每个语言文件：{ module: "javascript", cards: [{ id, docTitle, section, name, formula, code, lang, truncated }] }
  * =============================================================================
@@ -169,7 +169,7 @@ function parseSyntaxPoints(filePath, moduleId) {
 function main() {
   console.log('[build-syntax] Scanning', mobileContentDir);
   const { byId, categoryColors } = loadModuleMetadata();
-  /** @type {Map<string, { id: string, title: string, color: string, order: number, count: number, docCount: number, cards: Array<object> }>} */
+  /** @type {Map<string, { id: string, title: string, icon: string, color: string, order: number, count: number, docCount: number, cards: Array<object> }>} */
   const languages = new Map();
 
   for (const [folder, moduleId] of Object.entries(LANGUAGE_FOLDERS)) {
@@ -184,6 +184,8 @@ function main() {
     languages.set(moduleId, {
       id: moduleId,
       title: meta.title || moduleId,
+      // 模块图标（共享元数据）：首页模块卡片同款 2-4 字符标识，缺失时回退模块 ID 大写
+      icon: meta.icon || moduleId.slice(0, 2).toUpperCase(),
       color,
       order: typeof meta.folder_order === 'number' ? meta.folder_order : Number(folder.split('-')[0]) || 999,
       count: 0,

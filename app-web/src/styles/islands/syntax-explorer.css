@@ -1,11 +1,11 @@
 /**
  * 语法速览岛样式（SyntaxExplorer）
  * -----------------------------------------------------------------------------
- * 设计语言：与全站一致的几何科技风
- * - 语言 chip：细线边框 + 分类主题色圆点 + 直切小圆角（2px）
- * - 速查卡片：细线边框 + 卡片背景 + 左侧主题色描边 hover + 轻微浮起
- * - 代码区：凹陷背景（--color-bg-code）+ 语言标签 + 复制按钮
- * - 全部颜色引用 ark 语义令牌，[data-theme] 自动切换明暗主题
+ * 设计说明：
+ * - 卡片特效复用首页模块卡片体系（module-card.css）：
+ *   顶部分类色条展开、hover 边框转色 + 阴影加深、几何图标角标、按下下沉
+ * - 本文件只补充语法卡片的按钮重置、公式行、网格、悬浮面板与状态提示
+ * - 悬浮面板沿用几何科技风：细线边框 + 直切圆角 + ark 语义令牌
  *
  * 归入 @layer islands：低于 pages 层，避免覆盖页面级布局
  */
@@ -117,200 +117,46 @@
   /* ============================================================
    * 3. 速查卡片网格
    * ------------------------------------------------------------
-   * auto-fill 自适应列数：宽屏三列、窄屏单列
+   * 卡片本体复用 .module-card 特效（module-card.css），
+   * 此处仅做按钮语义重置与紧凑网格布局
    * ============================================================ */
   .syntax-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
     gap: var(--spacing-md);
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) 0;
   }
 
-  /* 卡片入场：轻微上浮淡入，延迟由行内 animationDelay 控制 */
+  /* 按钮语义重置：继承字体、左对齐、整卡可点击 */
   .syntax-card {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    padding: var(--spacing-md);
-    background: var(--color-bg-card);
-    border: 1px solid var(--color-border-light);
-    border-left: 2px solid transparent;
-    border-radius: var(--fandex-radius-md, 4px);
-    animation: syntax-card-in 0.32s ease both;
-    transition:
-      border-color var(--motion-duration-instant) var(--motion-easing-out),
-      border-left-color var(--motion-duration-instant) var(--motion-easing-out),
-      transform var(--motion-duration-instant) var(--motion-easing-out);
+    width: 100%;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
   }
 
-  @keyframes syntax-card-in {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* 卡片入场：与首页卡片一致的上滑淡入，延迟由行内 animationDelay 控制 */
+  .syntax-grid .syntax-card {
+    animation: fndx-slide-up var(--motion-duration-normal) var(--motion-easing-out) both;
   }
 
-  /* hover：左侧主题色描边 + 轻微浮起，与文档列表交互一致 */
-  @media (hover: hover) {
-    .syntax-card:hover {
-      border-color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 38%, transparent);
-      border-left-color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 65%, transparent);
-      transform: translateY(-2px);
-    }
-  }
-
-  /* 卡片头部：语言徽标 + 来源文档标题 */
-  .syntax-card__top {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    min-width: 0;
-  }
-
-  .syntax-card__badge {
-    flex-shrink: 0;
-    padding: 2px 8px;
-    border-radius: 2px;
-    color: var(--color-text-inverse, #fff);
-    font-family: var(--font-display);
-    font-size: 0.66em;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-  }
-
-  .syntax-card__doc {
-    flex: 1 1 auto;
-    min-width: 0;
+  /* 公式行：等宽字体单行省略，保持卡片紧凑 */
+  .syntax-card__formula {
+    display: block;
+    margin: 0;
+    padding-top: 2px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 0.72em;
-    color: var(--color-text-tertiary);
-  }
-
-  /* 语法要点：小节标题 + 写法名称 */
-  .syntax-card__section {
-    margin: var(--spacing-sm) 0 2px;
-    font-family: var(--font-display);
-    font-size: 0.94em;
-    font-weight: 600;
-    line-height: 1.4;
-    color: var(--color-text);
-  }
-
-  .syntax-card__name {
-    margin: 0;
-    font-size: 0.76em;
-    color: var(--color-text-secondary);
-    line-height: 1.5;
-  }
-
-  /* 行内公式：等宽字体 + 语言色文字 + 淡色底 */
-  .syntax-card__formula {
-    display: block;
-    margin: var(--spacing-sm) 0;
-    padding: 6px 10px;
-    border: 1px solid var(--color-border-light);
-    border-radius: 2px;
-    background: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 6%, var(--color-bg-code));
-    color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 82%, var(--color-text));
     font-family: var(--font-code);
-    font-size: 0.76em;
-    line-height: 1.55;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  /* 示例代码区：凹陷背景 + 细线边框 */
-  .syntax-card__code {
-    border: 1px solid var(--color-border-light);
-    border-radius: 2px;
-    background: var(--color-bg-code);
-    overflow: hidden;
-  }
-
-  .syntax-card__codebar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-sm);
-    padding: 4px 8px;
-    border-bottom: 1px solid var(--color-border-light);
-  }
-
-  .syntax-card__lang {
-    font-family: var(--font-code);
-    font-size: 0.66em;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 0.66rem;
     color: var(--color-text-tertiary);
   }
 
-  /* 复制按钮：复用 fndx-icon-btn 统一图标按钮规范 */
-  .syntax-card__copy {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border: 1px solid transparent;
-    border-radius: 2px;
-    background: transparent;
-    color: var(--color-text-tertiary);
-    font-family: var(--font-display);
-    font-size: 0.68em;
-    cursor: pointer;
-    transition:
-      color var(--motion-duration-instant) var(--motion-easing-out),
-      border-color var(--motion-duration-instant) var(--motion-easing-out),
-      background-color var(--motion-duration-instant) var(--motion-easing-out);
-  }
-
-  .syntax-card__copy:hover {
-    color: var(--lang-color, var(--color-accent-base));
-    border-color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 40%, transparent);
-    background-color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 7%, transparent);
-  }
-
-  .syntax-card__pre {
-    margin: 0;
-    padding: var(--spacing-sm) var(--spacing-md);
-    max-height: 200px;
-    overflow: auto;
-    font-family: var(--font-code);
-    font-size: 0.74em;
-    line-height: 1.55;
-    color: var(--color-text);
-    tab-size: 2;
-  }
-
-  .syntax-card__truncated {
-    padding: 4px 10px;
-    border-top: 1px dashed var(--color-border-light);
-    font-size: 0.66em;
-    color: var(--color-text-tertiary);
-  }
-
-  /* 卡片底部：跳转完整文档，弱化但 hover 高亮 */
-  .syntax-card__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: auto;
-    padding-top: var(--spacing-sm);
-    border-top: 1px solid var(--color-border-light);
-    color: var(--color-text-secondary);
-    font-family: var(--font-display);
-    font-size: 0.72em;
-    text-decoration: none;
-    transition: color var(--motion-duration-instant) var(--motion-easing-out);
-  }
-
-  .syntax-card__link:hover {
-    color: var(--lang-color, var(--color-accent-base));
+  /* 卡片 hover 时公式行转为语言主题色（与标题变色节奏一致） */
+  .syntax-card:hover .syntax-card__formula {
+    color: color-mix(in srgb, var(--module-color, var(--color-accent-base)) 75%, var(--color-text));
   }
 
   /* ============================================================
@@ -340,8 +186,278 @@
   }
 
   /* ============================================================
-   * 5. 移动端与动效偏好适配
+   * 5. 悬浮详情面板
+   * ------------------------------------------------------------
+   * Radix Dialog 渲染到 body，fixed 居中；几何科技风：
+   * 细线边框 + 直切圆角 + 卡片背景 + 深色遮罩毛玻璃
    * ============================================================ */
+
+  /* 遮罩层：半透明深色 + 轻微模糊，聚焦面板内容 */
+  .syntax-panel-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal, 300);
+    background: color-mix(in oklch, var(--color-fg-primary) 35%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .syntax-panel-overlay[data-state='open'] {
+    animation: syntax-panel-fade-in 0.2s ease both;
+  }
+
+  .syntax-panel-overlay[data-state='closed'] {
+    animation: syntax-panel-fade-out 0.15s ease both;
+  }
+
+  /* 面板主体：居中卡片，宽度自适应，内容超高时内部滚动 */
+  .syntax-panel {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    z-index: calc(var(--z-modal, 300) + 1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: min(640px, calc(100vw - 32px));
+    max-height: min(78vh, 640px);
+    overflow: auto;
+    padding: var(--spacing-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--fandex-radius-md, 4px);
+    box-shadow: var(--shadow-lg);
+    transform: translate(-50%, -50%);
+  }
+
+  .syntax-panel[data-state='open'] {
+    animation: syntax-panel-in 0.22s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  }
+
+  .syntax-panel[data-state='closed'] {
+    animation: syntax-panel-out 0.15s ease both;
+  }
+
+  /* 面板头部：语言徽标 + 来源文档 */
+  .syntax-panel__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .syntax-panel__badge {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: 2px;
+    color: var(--color-text-inverse, #fff);
+    font-family: var(--font-display);
+    font-size: 0.68em;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .syntax-panel__doc {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.74em;
+    color: var(--color-text-tertiary);
+  }
+
+  /* 语法要点 */
+  .syntax-panel__section {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.2em;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--color-text);
+  }
+
+  .syntax-panel__name {
+    margin: 0;
+    font-size: 0.84em;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  /* 完整公式：等宽字体 + 语言色文字 + 淡色底，允许换行 */
+  .syntax-panel__formula {
+    display: block;
+    padding: 8px 10px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    background: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 6%, var(--color-bg-code));
+    color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 82%, var(--color-text));
+    font-family: var(--font-code);
+    font-size: 0.8em;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* 示例代码区 */
+  .syntax-panel__code {
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    background: var(--color-bg-code);
+    overflow: hidden;
+  }
+
+  .syntax-panel__codebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .syntax-panel__lang {
+    font-family: var(--font-code);
+    font-size: 0.66em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+  }
+
+  /* 复制按钮 */
+  .syntax-panel__copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    background: transparent;
+    color: var(--color-text-tertiary);
+    font-family: var(--font-display);
+    font-size: 0.68em;
+    cursor: pointer;
+    transition:
+      color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .syntax-panel__copy:hover {
+    color: var(--lang-color, var(--color-accent-base));
+    border-color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 40%, transparent);
+    background-color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 7%, transparent);
+  }
+
+  .syntax-panel__pre {
+    margin: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    max-height: 260px;
+    overflow: auto;
+    font-family: var(--font-code);
+    font-size: 0.78em;
+    line-height: 1.6;
+    color: var(--color-text);
+    tab-size: 2;
+  }
+
+  .syntax-panel__truncated {
+    padding: 4px 10px;
+    border-top: 1px dashed var(--color-border-light);
+    font-size: 0.66em;
+    color: var(--color-text-tertiary);
+  }
+
+  /* 面板底部：完整文档入口 + 关闭按钮 */
+  .syntax-panel__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .syntax-panel__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--color-accent-base);
+    font-family: var(--font-display);
+    font-size: 0.76em;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .syntax-panel__link:hover {
+    opacity: 0.8;
+  }
+
+  .syntax-panel__close {
+    padding: 5px 14px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-family: var(--font-display);
+    font-size: 0.72em;
+    cursor: pointer;
+    transition:
+      color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .syntax-panel__close:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-secondary);
+    background-color: var(--color-bg-hover);
+  }
+
+  /* 面板打开时锁定首页滚动容器 */
+  .syntax-panel-open {
+    overflow: hidden;
+  }
+
+  /* ============================================================
+   * 6. 动效关键帧与移动端适配
+   * ============================================================ */
+  @keyframes syntax-panel-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes syntax-panel-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes syntax-panel-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -48%) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  @keyframes syntax-panel-out {
+    from {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -48%) scale(0.97);
+    }
+  }
+
   @media (max-width: 768px) {
     .syntax-langs {
       margin: 0 calc(var(--spacing-sm) * -1);
@@ -349,25 +465,22 @@
     }
 
     .syntax-grid {
-      padding: var(--spacing-sm);
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
       gap: var(--spacing-sm);
+      padding: var(--spacing-sm) 0;
     }
 
-    .syntax-card {
-      padding: var(--spacing-sm);
+    .syntax-panel {
+      padding: var(--spacing-md);
     }
   }
 
-  /* 减少动效偏好：禁用入场动画与浮起 */
+  /* 减少动效偏好：禁用面板与卡片入场动画 */
   @media (prefers-reduced-motion: reduce) {
-    .syntax-card {
+    .syntax-grid .syntax-card,
+    .syntax-panel,
+    .syntax-panel-overlay {
       animation: none;
-    }
-
-    @media (hover: hover) {
-      .syntax-card:hover {
-        transform: none;
-      }
     }
   }
 }

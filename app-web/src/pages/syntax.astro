@@ -3,16 +3,16 @@
  * 语法速览页面
  * -----------------------------------------------------------------------------
  * 功能概述：
- * - 汇聚 mobile 文档中的编程语言/标记语言语法要点，提供语言切换 + 速查卡片
+ * - 汇聚 mobile 文档中的编程语言/数据库命令语言语法要点，
+ *   提供语言切换 + 紧凑速查卡片 + 悬浮详情面板
  * - 数据管线：scripts/build-syntax.mjs 解析 cnt-content/mobile，
  *   生成轻量语言索引（内嵌）与分语言卡片分块（按需 fetch）
- * - 交互岛：SyntaxExplorer 负责语言切换、卡片渲染、代码复制与增量加载
  *
- * 设计说明：
- * - 延续全站几何科技风：几何背景装饰 + 细线边框 + 分类主题色 + 明暗主题令牌
- * - 遵循"速查做减法"：每张卡片只展示一个语法点的公式与示例代码，
- *   完整内容通过模块文档入口延伸
- * - 语言范围：仅编程语言与数据库命令语言（运维/云计算/测试等不收录）
+ * 美术对齐：
+ * - 完全复用项目首页美术体系（styles/pages/index.css）：
+ *   Hero 渐变标题 + data-text 残影动效、统计行 + SVG 波浪描边功能入口
+ * - 卡片复用首页模块卡片特效（module-card.css）：
+ *   顶部分类色条展开、hover 边框转色 + 阴影加深、几何图标、按下下沉
  */
 import HomeLayout from '@/components/HomeLayout.astro'
 import SEO from '@/components/SEO.astro'
@@ -20,56 +20,81 @@ import GeoBgDecor from '@/components/GeoBgDecor.astro'
 import SyntaxExplorer from '@/islands/SyntaxExplorer'
 import { getSyntaxIndex, getSyntaxStats } from '@/services'
 import { SITE } from '@/lib/constants'
-import '@/styles/pages/syntax.css'
+// 复用首页 Hero / 统计 / 功能入口样式，保证美术完全一致
+import '@/styles/pages/index.css'
 
 // 语言索引与统计（预构建 JSON，轻量内嵌）
 const syntaxIndex = getSyntaxIndex()
 const syntaxStats = getSyntaxStats()
 const base = import.meta.env.BASE_URL
-
-// 代码括号图标（几何 stroke 风格），用于 Hero 强调
-const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`
 ---
 
 <HomeLayout title="语法速览">
   <SEO
     slot="head"
     title="语法速览 · FANDEX"
-    description="FANDEX 语法速览：汇聚各编程语言语法要点，语言切换快速查阅公式与示例代码。"
+    description="FANDEX 语法速览：汇聚各编程语言语法要点，切换语言快速查阅公式与示例代码。"
     canonical={`${SITE.url}${base}syntax/`}
     type="website"
   />
 
-  <div class="syntax-page">
-    <!-- 几何背景装饰：home 变体，与首页/占位页视觉统一 -->
+  <div class="home-page">
+    <!-- 几何背景装饰：home 变体，与首页视觉统一 -->
     <GeoBgDecor variant="home" />
 
-    <!-- Hero 区域：功能标题 + 描述 + 数据统计 -->
-    <section class="syntax-hero fndx-scroll-reveal">
-      <div class="syntax-hero__icon" aria-hidden="true" set:html={icon} />
-      <h1 class="syntax-hero__title">语法速览</h1>
-      <p class="syntax-hero__desc">
+    <!-- Hero 区域：复用首页美术（渐变残影标题 + 统计 + SVG 描边入口） -->
+    <section class="hero">
+      <h1 class="hero-title" data-text="语法速览">
+        <span class="hero-title-fan">语法</span><span class="hero-title-dex">速览</span>
+      </h1>
+      <p class="hero-desc">
         汇聚各编程语言语法要点，切换语言快速查阅公式与示例代码。
       </p>
-      <div class="syntax-hero__stats">
-        <span class="syntax-hero__stat">
-          <strong>{syntaxStats.totalLanguages}</strong>
-          <em>种语言</em>
-        </span>
-        <span class="syntax-hero__divider" aria-hidden="true"></span>
-        <span class="syntax-hero__stat">
-          <strong>{syntaxStats.totalCards}</strong>
-          <em>个语法点</em>
-        </span>
-        <span class="syntax-hero__divider" aria-hidden="true"></span>
-        <span class="syntax-hero__stat">
-          <strong>{syntaxStats.totalDocs}</strong>
-          <em>篇文档</em>
-        </span>
+
+      <!-- 统计 + 功能入口同一行容器（与首页 hero-stats-row 结构一致） -->
+      <div class="hero-stats-row">
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">{syntaxStats.totalLanguages}</span>
+            <span class="stat-label">语言</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">{syntaxStats.totalCards}</span>
+            <span class="stat-label">语法点</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">{syntaxStats.totalDocs}</span>
+            <span class="stat-label">文档</span>
+          </div>
+        </div>
+
+        <!-- 功能入口：首页同款纯文字按钮 + SVG 波浪描边动画 -->
+        <nav class="hero-entries" aria-label="功能入口">
+          <a href={base} class="entry-btn" data-tooltip="返回首页" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">首页</span>
+          </a>
+          <a href={`${base}playground/`} class="entry-btn" data-tooltip="在线编程沙箱" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">在线编程</span>
+          </a>
+          <a href={`${base}learning-path/`} class="entry-btn" data-tooltip="系统化学习路径" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">学习路线</span>
+          </a>
+        </nav>
       </div>
     </section>
 
-    <!-- 语法速查交互区：语言切换 + 卡片网格（按需加载） -->
+    <!-- 语法速查交互区：语言切换 + 紧凑卡片网格 + 悬浮面板 -->
     <SyntaxExplorer
       client:visible
       languages={syntaxIndex.languages}
