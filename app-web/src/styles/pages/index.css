@@ -5,7 +5,6 @@
  * - 首页容器（作为装饰层定位上下文，保留 sticky 子元素行为）
  * - Hero 区域：徽章、站点标题、描述、统计数据栏、快捷链接
  * - 分类区域：极简分类标题栏（圆点 + 标签 + 计数 + 导航按钮 + 折叠）
- * - 分类快捷入口：Hero 同款 SVG 描边动画，线条颜色跟随各分类主题色
  * - 模块卡片横向无限滑动选择器（边缘渐变层叠显现 + 克隆循环）
  * - 移动端响应式适配（768px / 480px / 360px 三档断点）
  * - 入场动效（CSS + motion 令牌，零 JS，prefers-reduced-motion 降级）
@@ -386,38 +385,6 @@
     z-index: 1;
   }
 
-  /* 分类快捷入口：Hero 功能入口的紧凑变体
-   * ----------------------------------------------------------------
-   * 复用 .hero-entries / .entry-btn / .entry-border 的 SVG 描边动画结构，
-   * 仅缩小尺寸，并通过 --entry-color 让线条与悬停文字颜色跟随分类主题色
-   * （颜色由 EntryNav 组件以 style="--entry-color:..." 注入） */
-  .category-entries {
-    justify-content: flex-start;
-    gap: var(--space-inline-sm);
-    margin-bottom: var(--spacing-sm);
-  }
-
-  /* 适中尺寸：内边距与字号均小于 Hero 入口，避免挤压标题栏与卡片区域 */
-  .category-entries .entry-btn {
-    padding: 7px 18px;
-    font-size: 0.72rem;
-  }
-
-  /* 描边颜色：使用分类主题色，缺省回退全局强调色 */
-  .category-entries .entry-border path {
-    stroke: var(--entry-color, var(--color-accent-base));
-  }
-
-  /* 悬停文字颜色与描边同步切换为分类主题色 */
-  .category-entries .entry-btn:hover {
-    color: var(--entry-color, var(--color-accent-base));
-  }
-
-  /* 键盘焦点轮廓同样跟随分类主题色 */
-  .category-entries .entry-btn:focus-visible {
-    outline-color: color-mix(in oklch, var(--entry-color, var(--color-accent-base)) 60%, transparent);
-  }
-
   /* ============================================================
    * 3. 分类区域（极简现代横向滑动器）
    * ----------------------------------------------------------------
@@ -435,11 +402,8 @@
    *         <button class="category-nav-btn" data-nav="1"></button>
    *       </div>
    *     </div>
-   *     <div class="category-body">
-   *       <nav class="hero-entries category-entries">...入口按钮...</nav>
-   *       <div class="feature-scroller" data-scroller>
-   *         <div class="feature-track" data-track>...</div>
-   *       </div>
+   *     <div class="feature-scroller" data-scroller>
+   *       <div class="feature-track" data-track>...</div>
    *     </div>
    *   </section>
    * ============================================================ */
@@ -473,6 +437,8 @@
 
   /* 标题栏左侧可点击区域（折叠/展开触发器） */
   .category-header__lead {
+    /* 相对定位：作为 .entry-border SVG 描边的定位上下文 */
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: var(--space-inline-sm);
@@ -490,6 +456,19 @@
 
   .category-header__lead:hover {
     background: var(--color-bg-hover);
+  }
+
+  /* 标题按钮同款 SVG 波浪描边（与 Hero 入口一致）
+   * ----------------------------------------------------------------
+   * .entry-border 复用 Hero 区的绝对定位描边结构；
+   * 描边颜色改为跟随分类主题色（--marker-color 已注入按钮内联样式），
+   * hover 时 stroke-dashoffset 从 250 → 0 执行路径书写动画 */
+  .category-header__lead .entry-border path {
+    stroke: var(--marker-color, var(--color-accent-base));
+  }
+
+  .category-header__lead:hover .entry-border path {
+    stroke-dashoffset: 0;
   }
 
   .category-header__lead:focus-visible {
@@ -546,18 +525,6 @@
   /* 折叠状态：箭头旋转 */
   .category-section.collapsed .toggle-icon {
     transform: rotate(-90deg);
-  }
-
-  /* 分类可折叠内容容器：快捷入口 + 横向滑动器
-   * ----------------------------------------------------------------
-   * 作为 .category-section 网格的第二行（1fr），内部再分两行：
-   * 快捷入口（auto）+ 滑动器（1fr）
-   * overflow:hidden + min-height:0 保证折叠时整块内容被顺滑裁切 */
-  .category-body {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    min-height: 0;
-    overflow: hidden;
   }
 
   /* 折叠状态下隐藏滑动器
@@ -685,9 +652,8 @@
       height: 20px;
     }
 
-    /* 移动端 Hero 功能入口：缩小内边距与字号
-       仅作用于 Hero 区，分类快捷入口保持自身紧凑尺寸 */
-    .hero .hero-entries {
+    /* 移动端功能入口：缩小内边距与字号 */
+    .hero-entries {
       gap: var(--spacing-xs);
       margin-top: var(--spacing-md);
     }
@@ -796,13 +762,13 @@
   .hero-title,
   .hero-desc,
   .hero-stats,
-  .hero .hero-entries {
+  .hero-entries {
     animation: fndx-slide-up var(--motion-duration-normal) var(--motion-easing-out) both;
   }
   .hero-title { animation-delay: 0.06s; }
   .hero-desc { animation-delay: 0.12s; }
   .hero-stats { animation-delay: 0.18s; }
-  .hero .hero-entries { animation-delay: 0.24s; }
+  .hero-entries { animation-delay: 0.24s; }
 
   /* 模块卡片：滑动器内错峰入场（前 8 张依次显现，其余同步，避免长延迟）
    * 注：JS 克隆的卡片（aria-hidden）不参与入场动画 */
@@ -823,7 +789,7 @@
     .hero-title,
     .hero-desc,
     .hero-stats,
-    .hero .hero-entries,
+    .hero-entries,
     .feature-track .module-card {
       animation: none;
     }

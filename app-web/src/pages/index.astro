@@ -11,7 +11,6 @@
 import HomeLayout from '@/components/HomeLayout.astro'
 import SEO from '@/components/SEO.astro'
 import ModuleCard from '@/components/ModuleCard.astro'
-import EntryNav from '@/components/EntryNav.astro'
 import GeoBgDecor from '@/components/GeoBgDecor.astro'
 import Footer from '@/components/Footer.astro'
 // 通过 Service 层获取数据，UI 层禁止直接调用 getCollection
@@ -62,8 +61,30 @@ const grouped = getCategories()
             <span class="stat-label">文档</span>
           </div>
         </div>
-        <!-- 功能入口区：纯文字按钮 + SVG 路径签名动画（EntryNav 组件统一渲染） -->
-        <EntryNav ariaLabel="功能入口" />
+        <!-- 功能入口区：纯文字按钮 + SVG 路径签名动画
+             使用二次贝塞尔曲线（Q 命令）绘制手绘风格波浪路径，
+             hover 时 stroke-dashoffset 从 250 → 0 实现路径书写动画
+             三个按钮颜色统一使用项目标题主题色 var(--color-accent-base) -->
+        <nav class="hero-entries" aria-label="功能入口">
+          <a href={`${import.meta.env.BASE_URL}playground/`} class="entry-btn" data-tooltip="在线编程沙箱" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">在线编程</span>
+          </a>
+          <a href={`${import.meta.env.BASE_URL}syntax/`} class="entry-btn" data-tooltip="语法快速查阅" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">语法速览</span>
+          </a>
+          <a href={`${import.meta.env.BASE_URL}learning-path/`} class="entry-btn" data-tooltip="系统化学习路径" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">学习路线</span>
+          </a>
+        </nav>
       </div>
     </section>
 
@@ -72,8 +93,14 @@ const grouped = getCategories()
       <section class="category-section fndx-scroll-reveal" data-category={group.key}>
         <div class="category-header">
           <!-- 左侧：几何色条 + 标签 + 计数 + 折叠箭头（整体可点击折叠） -->
-          <button class="category-header__lead" data-toggle type="button" aria-label={`折叠/展开 ${group.label} 分类`}>
-            <span class="category-marker" style={`--marker-color:${group.color}`}></span>
+          <!-- 标题按钮：与 Hero 入口同款 SVG 波浪描边悬停动画
+               分类主题色通过按钮上的 --marker-color 注入，
+               .entry-border 描边在 hover 时执行路径书写动画 -->
+          <button class="category-header__lead" data-toggle type="button" style={`--marker-color:${group.color}`} aria-label={`折叠/展开 ${group.label} 分类`}>
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="category-marker"></span>
             <span class="category-tag">{group.label}</span>
             <span class="category-count">{group.modules.length}</span>
             <svg class="toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
@@ -88,19 +115,12 @@ const grouped = getCategories()
             </button>
           </div>
         </div>
-        <!-- 可折叠内容区：分类快捷入口 + 横向无限滑动选择器
-             折叠动画由 .category-section 的 grid-template-rows 驱动，
-             category-body 作为第二行整体裁切，保证入口与卡片一起收起 -->
-        <div class="category-body">
-          <!-- 分类快捷入口：与 Hero 同款 SVG 描边动画，线条颜色跟随分类主题色 -->
-          <EntryNav ariaLabel={`${group.label} 功能入口`} entryColor={group.color} variant="category" />
-          <!-- 横向无限滑动选择器：JS 克隆卡片实现前向无限循环 -->
-          <div class="feature-scroller" data-scroller>
-            <div class="feature-track" data-track>
-              {group.modules.map(mod => (
-                <ModuleCard mod={mod} color={group.color} />
-              ))}
-            </div>
+        <!-- 横向无限滑动选择器：JS 克隆卡片实现前向无限循环 -->
+        <div class="feature-scroller" data-scroller>
+          <div class="feature-track" data-track>
+            {group.modules.map(mod => (
+              <ModuleCard mod={mod} color={group.color} />
+            ))}
           </div>
         </div>
       </section>
