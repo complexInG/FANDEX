@@ -16,85 +16,41 @@ prerequisites:
   - kotlin/概述与环境配置
 ---
 
-## 1. 学习目标（Bloom 分类）
-
-本节按照布鲁姆教育目标分类学组织学习路径。本文主题为《密封类与代数数据类型》，属于 Kotlin 模块，读者可以根据自身阶段选择阅读深度。
-
-记忆层面：能够准确复述本文的核心概念、术语与基本语法或操作步骤，并能够在提问或检索时快速定位对应知识点。能够说出 val/var、空安全操作符与 when 表达式的语法。
-
-理解层面：能够用自己的语言解释核心原理与工作机制，说明概念之间的因果关系，而不是机械记忆结论。能够解释 Kotlin 与 Java 互操作的机制与平台类型概念。
-
-应用层面：能够在真实项目或练习场景中运用本文知识解决具体问题，写出正确且可维护的实现。能够编写数据类、扩展函数与协程代码。
-
-分析层面：能够拆解复杂问题，比较本文主题与相邻概念的异同，识别边界条件与例外情况。能够分析空安全、智能转换与协程调度原理。
-
-评价层面：能够根据约束条件（性能、可读性、安全、成本）评价不同方案的优劣，做出有依据的技术决策。能够评价 Kotlin 在 Android、服务端与多平台场景的适用性。
-
-创造层面：能够把本文知识与其他模块知识组合，设计出新的解决方案或可复用的工程模式。能够组合 Compose 与协程设计跨平台应用。
-
-通过本节学习，读者应当能够把《密封类与代数数据类型》纳入自己的知识网络，并与 Kotlin 模块的其他主题（类型推断、空安全、协程、KMP）建立关联。
-
-## 2. 历史动机与发展脉络
-
-《密封类与代数数据类型》是 Kotlin 领域的重要主题。要真正理解它，需要先了解它解决的问题与演进过程。
-
-Kotlin 由 JetBrains 于 2010 年开始研发，2016 年发布 1.0，定位是“更现代的 JVM 语言”：减少样板代码、消灭空指针、增强函数式能力，同时与 Java 100% 互操作。
-2017 年 Google 宣布 Kotlin 成为 Android 一级语言，2019 年确立 Kotlin-first 政策；2023 年 Kotlin 2.0 的 K2 编译器显著提升编译速度与类型推导。
-Kotlin Multiplatform（KMP）支持 JVM、Android、iOS、WebAssembly 等目标，配合 Compose Multiplatform 实现共享 UI 与业务逻辑，是 JetBrains 的长期战略方向。
-
-回到本文主题：密封类与代数数据类型 的提出与成熟，正是上述技术背景下的必然产物。早期实现往往以简单可用为目标，随着工程规模扩大，社区逐渐沉淀出标准做法与最佳实践；理解这一脉络，可以帮助读者判断“为什么文档中的推荐写法是现在这个样子”，也能在遇到历史遗留代码时准确识别其设计年代与取舍。
-
-
-## 3. 形式化定义与核心概念精讲
-
-本节把《密封类与代数数据类型》涉及的核心概念以“定义 + 讲解”的形式展开。读者应把定义当作工具，把讲解当作理解路径；两者结合才能形成可迁移的知识。
-
-空安全：类型系统区分 `String` 与 `String?`，编译期强制处理可空值；`?.` 短路、`?:` 提供默认、`!!` 显式断言，三者覆盖所有空值处理模式。
-智能转换：`is` 检查后在不可变上下文中自动转换类型，减少显式强转；`as?` 安全转换失败返回 null。
-协程：挂起函数（suspend）与调度器（Dispatchers.Main/IO/Default）实现非阻塞并发，结构化并发保证作用域内任务可取消。
-
-### 3.1 原文章节逐一精讲
-
-原文档把主题拆分为 12 个小节，下面按顺序给出每一节的导读讲解，随后保留原文细节供精读。
-
-#### 原文精读（完整保留）
-
-
-#### 学习目标
+## 学习目标
 
 本章节基于 Bloom 分类法组织学习目标，按认知层级由低到高排列，读者可逐级检验自身掌握程度。
 
-##### 1. 记忆层（Remembering）
+### 1. 记忆层（Remembering）
 
 - 能复述 Kotlin `sealed class` 与 `sealed interface` 的语法形式与限制条件。
 - 能列举密封类与代数数据类型（ADT）的核心特征：有限子类型集合、编译期穷举、不可外部继承。
 - 能写出 `when` 表达式在密封类上的穷举性检查示例。
 
-##### 2. 理解层（Understanding）
+### 2. 理解层（Understanding）
 
 - 能解释密封类与 `abstract class`、`open class` 在子类型约束上的本质差异。
 - 能阐述 ADT 的数学基础——和类型（Sum Type）与积类型（Product Type）。
 - 能描述 Kotlin 1.5 引入密封接口的动机及其对函数式编程风格的支持。
 
-##### 3. 应用层（Applying）
+### 3. 应用层（Applying）
 
 - 能使用密封类建模领域事件的有限状态机，如订单状态、支付状态。
 - 能为密封类层级实现递归数据结构（如二叉树、表达式 AST）。
 - 能通过 `when` 表达式实现类型安全的模式匹配，避免遗漏分支。
 
-##### 4. 分析层（Analyzing）
+### 4. 分析层（Analyzing）
 
 - 能对比 Kotlin 密封类与 Scala `sealed trait`、Haskell `data`、Rust `enum` 的异同。
 - 能分析密封类在编译期与运行时的性能特征。
 - 能定位 `when` 表达式因新增子类而失效的回归风险。
 
-##### 5. 评价层（Evaluating）
+### 5. 评价层（Evaluating）
 
 - 能评估在大型工程中采用密封类 vs. 接口 + when 的成本与收益。
 - 能判定何时应使用密封接口而非密封类。
 - 能针对多模块工程的密封类设计提出架构层面的建议。
 
-##### 6. 创造层（Creating）
+### 6. 创造层（Creating）
 
 - 能设计一个完整的基于密封类的领域驱动设计（DDD）模型，覆盖聚合、值对象、领域事件。
 - 能为开源项目贡献基于密封类的类型安全 API。
@@ -102,9 +58,9 @@ Kotlin Multiplatform（KMP）支持 JVM、Android、iOS、WebAssembly 等目标�
 
 ---
 
-#### 历史动机与背景
+## 历史动机与背景
 
-##### 1. 代数数据类型（ADT）的数学起源
+### 1. 代数数据类型（ADT）的数学起源
 
 代数数据类型（Algebraic Data Type, ADT）起源于函数式编程语言，特别是 ML 系列（Standard ML、OCaml）与 Haskell。其数学基础是类型论（Type Theory）中的「和类型」（Sum Type）与「积类型」（Product Type）：
 
@@ -116,7 +72,7 @@ ADT 的「代数」之名来源于其满足代数运算法则：
 - 分配律：$A \times (B + C) \cong A \times B + A \times C$
 - 单位元：$A + 0 \cong A$，$A \times 1 \cong A$（其中 $0$ 是空类型，$1$ 是单位类型）
 
-##### 2. 密封类型在 OOP 中的演化
+### 2. 密封类型在 OOP 中的演化
 
 面向对象语言传统上不直接支持 ADT，而是通过继承体系模拟：
 
@@ -126,15 +82,15 @@ ADT 的「代数」之名来源于其满足代数运算法则：
 
 Kotlin 在 1.0（2016）即支持 `sealed class`，这是 Kotlin 在 JVM 平台对 ADT 的早期贡献。Kotlin 1.5（2021）进一步引入 `sealed interface`，使密封类型更灵活。
 
-##### 3. Kotlin 密封类的设计动机
+### 3. Kotlin 密封类的设计动机
 
 JetBrains 引入密封类的主要动机包括：
 
-###### 3.1 类型安全的模式匹配
+#### 3.1 类型安全的模式匹配
 
 在非密封继承体系中，`when` 表达式无法保证穷举性——新增子类可能导致遗漏分支的运行时错误。密封类通过限制子类集合于同一文件/包，使编译器能在编译期完成穷举性检查。
 
-###### 3.2 领域建模的表达力
+#### 3.2 领域建模的表达力
 
 许多业务领域的状态空间天然有限：
 
@@ -144,15 +100,15 @@ JetBrains 引入密封类的主要动机包括：
 
 密封类让这些有限状态空间的建模与代码高度一致。
 
-###### 3.3 与 `when` 表达式的协同
+#### 3.3 与 `when` 表达式的协同
 
 Kotlin 的 `when` 表达式（注意是「表达式」而非「语句」）可返回值，与密封类配合实现了类似 Haskell 模式匹配的表达力。这是 Kotlin 函数式编程风格的核心设施。
 
-###### 3.4 编译期优化
+#### 3.4 编译期优化
 
 由于子类集合封闭，编译器可将 `when` 编译为 `tableswitch`（字节码）而非 `lookupswitch`，提升运行时性能。
 
-##### 4. Kotlin 1.5 密封接口的引入
+### 4. Kotlin 1.5 密封接口的引入
 
 Kotlin 1.5 之前，密封类型只能是类，这意味着：
 
@@ -169,7 +125,7 @@ data class Rectangle(val width: Double, val height: Double) : Shape
 data class Triangle(val a: Double, val b: Double, val c: Double) : Shape
 ```
 
-##### 5. 工业界的采纳
+### 5. 工业界的采纳
 
 密封类已成为现代 Kotlin 代码的标志性构造：
 
@@ -180,9 +136,9 @@ data class Triangle(val a: Double, val b: Double, val c: Double) : Shape
 
 ---
 
-#### 形式化定义
+## 形式化定义
 
-##### 1. 和类型与积类型的形式化
+### 1. 和类型与积类型的形式化
 
 **和类型** $A + B$ 的 inhabitants（值）集合：
 
@@ -202,7 +158,7 @@ $$
 
 Kotlin 的 `data class` 是积类型，`sealed class` 是和类型。
 
-##### 2. Kotlin 密封类的形式化模型
+### 2. Kotlin 密封类的形式化模型
 
 设密封类 $S$ 的子类集合为 $\text{Sub}(S) = \{S_1, S_2, \ldots, S_n\}$，满足：
 
@@ -216,7 +172,7 @@ $$
 |S| = \sum_{i=1}^{n} |S_i|
 $$
 
-##### 3. `when` 表达式的穷举性
+### 3. `when` 表达式的穷举性
 
 `when` 表达式在密封类上的穷举性可形式化为：
 
@@ -228,7 +184,7 @@ $$
 
 若 $w$ 是表达式（有返回值），则编译器强制 $\text{Exhaustive}(w, S) = \text{true}$，否则编译失败。
 
-##### 4. 模式匹配的代数
+### 4. 模式匹配的代数
 
 设 $S = S_1 + S_2 + \ldots + S_n$，对 $S$ 的模式匹配 $f$ 可分解为：
 
@@ -238,7 +194,7 @@ $$
 
 即 $f = f_1 + f_2 + \ldots + f_n$（在类型代数意义上）。这是 ADT 与模式匹配的代数本质。
 
-##### 5. 递归类型的不动点
+### 5. 递归类型的不动点
 
 递归 ADT（如链表、树）可形式化为类型的不动点。以列表为例：
 
@@ -257,9 +213,9 @@ sealed interface List<out A> {
 
 ---
 
-#### 理论推导
+## 理论推导
 
-##### 1. 穷举性保证的正确性
+### 1. 穷举性保证的正确性
 
 **命题**：若 `when` 表达式 $w$ 在密封类 $S$ 上穷举，则 $w$ 对所有 $S$ 的实例都返回合法值，不会进入未定义分支。
 
@@ -275,7 +231,7 @@ sealed interface List<out A> {
 
 **推论**：新增子类 $S_{n+1}$ 时，若 $w$ 未更新，则编译失败（穷举性破坏），强制开发者更新所有相关 `when` 表达式。这是密封类对重构安全性的核心贡献。
 
-##### 2. 表达式 vs. 语句的语义差异
+### 2. 表达式 vs. 语句的语义差异
 
 **命题**：`when` 作为表达式时，编译器强制穷举；作为语句时，不强制穷举。
 
@@ -287,7 +243,7 @@ sealed interface List<out A> {
 
 `when` 语句不返回值，允许 fall-through（无匹配分支时无操作），因此不强制穷举。
 
-##### 3. 密封类的性能优势
+### 3. 密封类的性能优势
 
 **命题**：密封类的 `when` 表达式可编译为 `tableswitch`，性能优于非密封类的 `instanceof` 链。
 
@@ -305,7 +261,7 @@ sealed interface List<out A> {
 | 普通继承 + instanceof 链 | 4.8s |
 | 普通继承 + getClass() 链 | 3.5s |
 
-##### 4. 复杂度分析
+### 4. 复杂度分析
 
 | 操作 | 时间复杂度 | 备注 |
 |------|-----------|------|
@@ -316,9 +272,9 @@ sealed interface List<out A> {
 
 ---
 
-#### 代码示例
+## 代码示例
 
-##### 示例 1：基础密封类建模订单状态
+### 示例 1：基础密封类建模订单状态
 
 ```kotlin
 /**
@@ -384,7 +340,7 @@ sealed class OrderEvent {
 }
 ```
 
-##### 示例 2：递归 ADT 实现二叉树
+### 示例 2：递归 ADT 实现二叉树
 
 ```kotlin
 /**
@@ -459,7 +415,7 @@ fun main() {
 }
 ```
 
-##### 示例 3：表达式 AST 与求值
+### 示例 3：表达式 AST 与求值
 
 ```kotlin
 /**
@@ -522,7 +478,7 @@ fun main() {
 }
 ```
 
-##### 示例 4：网络请求状态建模
+### 示例 4：网络请求状态建模
 
 ```kotlin
 /**
@@ -574,7 +530,7 @@ fun main() {
 }
 ```
 
-##### 示例 5：使用密封接口建模领域事件
+### 示例 5：使用密封接口建模领域事件
 
 ```kotlin
 /**
@@ -645,7 +601,7 @@ fun handleEvent(event: DomainEvent): String = when (event) {
 }
 ```
 
-##### 示例 6：密封类的序列化
+### 示例 6：密封类的序列化
 
 ```kotlin
 import kotlinx.serialization.*
@@ -684,7 +640,7 @@ fun main() {
 }
 ```
 
-##### 示例 7：递归 ADT 实现自定义列表
+### 示例 7：递归 ADT 实现自定义列表
 
 ```kotlin
 /**
@@ -748,9 +704,9 @@ fun main() {
 
 ---
 
-#### 对比分析
+## 对比分析
 
-##### 1. Kotlin 密封类 vs. 其他语言的 ADT
+### 1. Kotlin 密封类 vs. 其他语言的 ADT
 
 | 语言 | ADT 构造 | 模式匹配 | 穷举性检查 | 备注 |
 |------|---------|---------|----------|------|
@@ -762,7 +718,7 @@ fun main() {
 | Java (15+) | `sealed class` + `record` | `switch` 表达式 | 是（JEP 394） | 较新支持 |
 | OCaml | `type` + `|` | `match` | 是 | 经典 ADT |
 
-##### 2. Kotlin 密封类 vs. Java 密封类
+### 2. Kotlin 密封类 vs. Java 密封类
 
 | 维度 | Kotlin | Java 15+ |
 |------|--------|---------|
@@ -774,7 +730,7 @@ fun main() {
 | 解构 | 不支持 | `record` 自动解构 |
 | 性能 | tableswitch | tableswitch |
 
-##### 3. 密封类 vs. 枚举
+### 3. 密封类 vs. 枚举
 
 | 维度 | `enum class` | `sealed class` |
 |------|------------|--------------|
@@ -786,7 +742,7 @@ fun main() {
 | 继承类 | 不可 | 可（受 sealed 约束） |
 | 适用场景 | 状态码、固定值 | 状态机、ADT、事件 |
 
-##### 4. 密封类 vs. 抽象类 + when
+### 4. 密封类 vs. 抽象类 + when
 
 | 维度 | `sealed class` | `abstract class` |
 |------|--------------|-----------------|
@@ -797,7 +753,7 @@ fun main() {
 | 灵活性 | 受限 | 高 |
 | 跨模块扩展 | 不支持 | 支持 |
 
-##### 5. 选型决策
+### 5. 选型决策
 
 ```mermaid
 flowchart TD
@@ -814,9 +770,9 @@ flowchart TD
 
 ---
 
-#### 常见陷阱与反模式
+## 常见陷阱与反模式
 
-##### 1. 反模式：在非同文件位置定义子类
+### 1. 反模式：在非同文件位置定义子类
 
 **事故场景**：Kotlin 1.5 之前，开发者尝试在不同文件中定义密封类子类，导致编译错误。
 
@@ -842,7 +798,7 @@ package com.other
 data class Rectangle(val w: Double, val h: Double) : com.example.Shape  // 编译错误
 ```
 
-##### 2. 反模式：用 `object` 表示带状态的子类
+### 2. 反模式：用 `object` 表示带状态的子类
 
 **事故场景**：某团队使用 `object` 表示订单状态，由于 `object` 是单例，无法携带每次不同的数据（如订单 ID、金额）。
 
@@ -862,7 +818,7 @@ sealed class OrderState {
 }
 ```
 
-##### 3. 反模式：在 `when` 语句中省略 `else` 分支
+### 3. 反模式：在 `when` 语句中省略 `else` 分支
 
 **事故场景**：使用 `when` 作为语句（非表达式）时省略 `else`，新增子类后无错误提示，导致遗漏处理逻辑。
 
@@ -873,7 +829,7 @@ sealed class OrderState {
 1. 优先使用 `when` 表达式（带返回值），强制穷举；
 2. 若必须用语句，显式写出所有分支并加注释提醒未来新增子类。
 
-##### 4. 反模式：密封类继承非密封类
+### 4. 反模式：密封类继承非密封类
 
 **事故场景**：定义 `sealed class Foo : Bar()`，但 `Bar` 是普通 `open class`，导致 `Foo` 的子类集合实际未封闭（兄弟类可能继承 `Bar`）。
 
@@ -881,7 +837,7 @@ sealed class OrderState {
 
 **解决方案**：避免密封类继承非密封类，或显式声明 `Bar` 为 `sealed`。
 
-##### 5. 反模式：滥用密封类替代枚举
+### 5. 反模式：滥用密封类替代枚举
 
 **事故场景**：用密封类表示简单状态码（如 HTTP 200/404/500），导致代码冗余。
 
@@ -905,7 +861,7 @@ enum class HttpStatus(val code: Int) {
 }
 ```
 
-##### 6. 反模式：递归 ADT 缺乏终止条件
+### 6. 反模式：递归 ADT 缺乏终止条件
 
 **事故场景**：定义递归 ADT 时未提供终止条件，导致 `when` 表达式无法穷举。
 
@@ -913,7 +869,7 @@ enum class HttpStatus(val code: Int) {
 
 **解决方案**：始终为基础情况定义独立子类。
 
-##### 7. 反模式：在密封类中暴露可变状态
+### 7. 反模式：在密封类中暴露可变状态
 
 **事故场景**：密封类的 `data class` 子类使用 `var` 字段，导致状态可变，破坏 ADT 的不可变性原则。
 
@@ -935,9 +891,9 @@ sealed class Point {
 
 ---
 
-#### 工程实践
+## 工程实践
 
-##### 1. 密封类建模领域状态机
+### 1. 密封类建模领域状态机
 
 ```kotlin
 /**
@@ -974,7 +930,7 @@ sealed class OrderStateMachine {
 }
 ```
 
-##### 2. 密封类与协程结合
+### 2. 密封类与协程结合
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1017,7 +973,7 @@ suspend fun main() {
 }
 ```
 
-##### 3. 密封类与 JSON 序列化
+### 3. 密封类与 JSON 序列化
 
 ```kotlin
 import kotlinx.serialization.*
@@ -1046,7 +1002,7 @@ fun main() {
 }
 ```
 
-##### 4. 密封类与函数式错误处理
+### 4. 密封类与函数式错误处理
 
 ```kotlin
 /**
@@ -1099,7 +1055,7 @@ fun main() {
 }
 ```
 
-##### 5. 多模块工程中的密封类设计
+### 5. 多模块工程中的密封类设计
 
 ```kotlin
 // core 模块：定义基础密封接口
@@ -1126,7 +1082,7 @@ fun handleEvent(event: DomainEvent) = when (event) {
 }
 ```
 
-##### 6. 测试策略
+### 6. 测试策略
 
 ```kotlin
 import org.junit.Test
@@ -1163,15 +1119,15 @@ class BinaryTreeTest {
 
 ---
 
-#### 案例研究
+## 案例研究
 
-##### 案例 1：Kotlin 协程中的 Job 状态机
+### 案例 1：Kotlin 协程中的 Job 状态机
 
-###### 背景
+#### 背景
 
 `kotlinx.coroutines` 的 `Job` 接口代表一个协程作业，其状态转换是典型的有限状态机：New → Active → Completed / Cancelled。
 
-###### 实现
+#### 实现
 
 协程内部使用密封类（实际是 `State` 枚举与节点的组合）表示状态：
 
@@ -1187,7 +1143,7 @@ sealed class JobState {
 }
 ```
 
-###### 启示
+#### 启示
 
 协程的状态机展示了密封类在并发原语中的应用：
 
@@ -1195,13 +1151,13 @@ sealed class JobState {
 - 新增状态时编译器强制更新所有处理逻辑；
 - 模式匹配避免了 `instanceof` 链的性能开销。
 
-##### 案例 2：Android MVI 架构中的 UiState
+### 案例 2：Android MVI 架构中的 UiState
 
-###### 背景
+#### 背景
 
 Android MVI（Model-View-Intent）架构强调单向数据流，UI 状态是不可变的。密封类是建模 UI 状态的理想工具。
 
-###### 实现
+#### 实现
 
 ```kotlin
 sealed class LoginUiState {
@@ -1246,19 +1202,19 @@ class LoginActivity : AppCompatActivity() {
 }
 ```
 
-###### 收益
+#### 收益
 
 - UI 状态变化集中、可追溯；
 - 编译器保证所有状态被处理；
 - 测试时只需验证状态转换，降低复杂度。
 
-##### 案例 3：Ktor 中的 HTTP 内容协商
+### 案例 3：Ktor 中的 HTTP 内容协商
 
-###### 背景
+#### 背景
 
 Ktor 在处理请求体时，需要根据 `Content-Type` 选择不同的解析器。密封类用于建模内容类型与解析结果。
 
-###### 实现
+#### 实现
 
 ```kotlin
 sealed interface ContentNegotiationResult {
@@ -1276,11 +1232,11 @@ fun handleResult(result: ContentNegotiationResult) = when (result) {
 
 ---
 
-#### 知识讲解与要点分析（原习题）
+## 知识讲解与要点分析（原习题）
 
-##### 基础题
+### 基础题
 
-###### 题 1
+#### 题 1
 
 简述密封类与抽象类在子类型约束上的区别。
 
@@ -1291,7 +1247,7 @@ fun handleResult(result: ContentNegotiationResult) = when (result) {
 - 密封类支持 `when` 穷举性检查，抽象类不支持；
 - 性能上密封类可编译为 `tableswitch`，抽象类需 `instanceof` 链。
 
-###### 题 2
+#### 题 2
 
 写出密封类的两个限制条件。
 
@@ -1300,7 +1256,7 @@ fun handleResult(result: ContentNegotiationResult) = when (result) {
 1. 子类必须定义在同一模块（Kotlin 1.5+）或同一文件（1.5 之前）；
 2. 密封类本身不能直接实例化（抽象性质）。
 
-###### 题 3
+#### 题 3
 
 解释 `when` 表达式与 `when` 语句的区别。
 
@@ -1309,9 +1265,9 @@ fun handleResult(result: ContentNegotiationResult) = when (result) {
 - `when` 表达式：返回值，强制穷举（密封类场景）；
 - `when` 语句：不返回值，不强制穷举，允许 fall-through。
 
-##### 进阶题
+### 进阶题
 
-###### 题 4
+#### 题 4
 
 使用密封类实现一个简单的 JSON 值类型。
 
@@ -1337,7 +1293,7 @@ fun JsonValue.stringify(): String = when (this) {
 }
 ```
 
-###### 题 5
+#### 题 5
 
 分析以下代码的问题：
 
@@ -1359,7 +1315,7 @@ fun handle(result: Result): String = when (result) {
 - 问题：`Success` 与 `Error` 应为 `data class` 而非普通 `class`，否则失去 `equals`/`hashCode` 自动生成；
 - 修复：将 `class Success` 改为 `data class Success`，`class Error` 改为 `data class Error`。
 
-###### 题 6
+#### 题 6
 
 解释密封接口相比密封类的优势，并给出一个适用场景。
 
@@ -1368,9 +1324,9 @@ fun handle(result: Result): String = when (result) {
 - 优势：允许 `data class` 实现多个密封接口，避免单继承限制；
 - 适用场景：多个独立的密封分类（如 `Readable` + `Closable`），或 `data class` 需要共享密封父类型。
 
-##### 挑战题
+### 挑战题
 
-###### 题 7
+#### 题 7
 
 设计一个基于密封类的解释器，支持：
 
@@ -1387,7 +1343,7 @@ fun handle(result: Result): String = when (result) {
 - 使用 `when` 模式匹配分发；
 - 关键挑战：闭包的环境捕获、尾递归优化。
 
-###### 题 8
+#### 题 8
 
 讨论密封类在大型 Monorepo 中的工程化挑战，并提出解决方案。
 
@@ -1404,7 +1360,7 @@ fun handle(result: Result): String = when (result) {
 
 ---
 
-#### 参考文献
+## 参考文献
 
 以下参考文献遵循 ACM Reference Format，包含 DOI 链接。
 
@@ -1440,9 +1396,9 @@ fun handle(result: Result): String = when (result) {
 
 ---
 
-#### 延伸阅读
+## 延伸阅读
 
-##### 官方文档
+### 官方文档
 
 - **Kotlin Sealed Classes**：https://kotlinlang.org/docs/sealed-classes.html
   - 官方权威教程，涵盖语法、限制、`when` 表达式。
@@ -1451,19 +1407,19 @@ fun handle(result: Result): String = when (result) {
 - **Java Sealed Classes (JEP 409)**：https://openjdk.org/jeps/409
   - Java 平台的对应方案，可对比理解。
 
-##### 经典教材
+### 经典教材
 
 - **《Types and Programming Languages》**：Benjamin Pierce 著，类型论与 ADT 的理论基础。
 - **《Haskell: The Craft of Functional Programming》**：Simon Thompson 著，ADT 在 Haskell 中的应用。
 - **《Modern Compiler Implementation in ML》**：Andrew Appel 著，ADT 在编译器实现中的角色。
 
-##### 前沿论文
+### 前沿论文
 
 - **Views: A way for pattern matching to cohabit with data abstraction**（POPL '87）：模式匹配与数据抽象的经典论文。
 - **Scalable component abstractions**（OOPSLA '05）：Scala 密封类型的设计哲学。
 - **The formulae-as-types notion of construction**（Curry-Howard 同构）：类型与逻辑的对应关系。
 
-##### 开源项目源码
+### 开源项目源码
 
 - **kotlinx.coroutines**：https://github.com/Kotlin/kotlinx.coroutines
   - `Job` 状态机的实现。
@@ -1474,7 +1430,7 @@ fun handle(result: Result): String = when (result) {
 - **kotlinx.serialization**：https://github.com/Kotlin/kotlinx.serialization
   - 密封类与多态序列化的集成。
 
-##### 社区资源
+### 社区资源
 
 - **Kotlin Slack #language 频道**：与 JetBrains 团队讨论语言设计。
 - **Kotlin Issue Tracker**：https://youtrack.jetbrains.com/issues/KT
@@ -1482,1487 +1438,7 @@ fun handle(result: Result): String = when (result) {
 - **Kotlin Discussions**：https://discuss.kotlinlang.org/
   - 社区讨论 ADT 最佳实践。
 
-
-### 3.2 概念关系图
-
-下面用 Mermaid 图表达本文核心概念之间的关系，帮助读者建立整体图景：
-
-```mermaid
-flowchart LR
-    A["密封类与代数数据类型"] --> B["核心概念"]
-    B --> C["原理机制"]
-    B --> D["代码实践"]
-    C --> E["工程应用"]
-    D --> E
-```
-
-图中展示的是本文知识的结构化关系：核心概念是入口，原理机制解释“为什么”，代码实践演示“怎么做”，工程应用回答“何时用”。读者学习时可以把每个小节的内容挂接到对应节点上。
-
-## 4. 理论推导与原理解析
-
-本节深入《密封类与代数数据类型》背后的原理。理论部分不求面面俱到，而是聚焦“能解释现象、能指导实践”的关键推导。
-
-空安全：类型系统区分 `String` 与 `String?`，编译期强制处理可空值；`?.` 短路、`?:` 提供默认、`!!` 显式断言，三者覆盖所有空值处理模式。
-智能转换：`is` 检查后在不可变上下文中自动转换类型，减少显式强转；`as?` 安全转换失败返回 null。
-协程：挂起函数（suspend）与调度器（Dispatchers.Main/IO/Default）实现非阻塞并发，结构化并发保证作用域内任务可取消。
-扩展函数与属性：在不修改原类的情况下为类添加行为，是 Kotlin 标准库（如集合操作）的基石。
-
-需要强调的是，理论推导与工程实践之间存在翻译层：理论给出的是理想化模型与边界条件，工程代码则必须处理真实环境中的例外。读者在学习时应先掌握理论的“标准情形”，再通过陷阱章节了解“非标准情形”。
-
-## 5. 代码示例与逐行讲解
-
-本节把原文中的代码示例系统整理，并为每个示例补充用途说明与讲解。读者不应只浏览代码，而应逐段对照讲解理解设计意图。
-
-### 5.1 示例：4. Kotlin 1.5 密封接口的引入
-
-该示例来自原文《4. Kotlin 1.5 密封接口的引入》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-sealed interface Shape
-
-data class Circle(val radius: Double) : Shape
-data class Rectangle(val width: Double, val height: Double) : Shape
-data class Triangle(val a: Double, val b: Double, val c: Double) : Shape
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 4 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.2 示例：5. 递归类型的不动点
-
-该示例来自原文《5. 递归类型的不动点》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-sealed interface List<out A> {
-    object Nil : List<Nothing>
-    data class Cons<A>(val head: A, val tail: List<A>) : List<A>
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 4 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.3 示例：示例 1：基础密封类建模订单状态
-
-该示例来自原文《示例 1：基础密封类建模订单状态》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-/**
- * 订单状态的有限状态机。
- * 每个子类对应一个状态，状态转换通过 when 表达式处理。
- */
-sealed class OrderState {
-    // 待支付：等待用户支付
-    object PendingPayment : OrderState()
-
-    // 已支付：等待商家发货
-    data class Paid(val paymentId: String, val amount: Long) : OrderState()
-
-    // 已发货：物流信息已生成
-    data class Shipped(val trackingNumber: String, val carrier: String) : OrderState()
-
-    // 已完成：用户确认收货
-    object Completed : OrderState()
-
-    // 已取消：用户主动取消或超时
-    data class Cancelled(val reason: String, val cancelledAt: Long) : OrderState()
-}
-
-/**
- * 处理订单状态转换。
- * 由于密封类穷举性保证，新增状态时编译器强制更新此函数。
- *
- * @param current 当前状态
- * @param event 触发事件
- * @return 新状态
- */
-fun handleOrderEvent(current: OrderState, event: OrderEvent): OrderState {
-    return when (current) {
-        is OrderState.PendingPayment -> when (event) {
-            is OrderEvent.Pay -> OrderState.Paid(event.paymentId, event.amount)
-            is OrderEvent.Cancel -> OrderState.Cancelled("用户取消", System.currentTimeMillis())
-            else -> current  // 其他事件不改变状态
-        }
-
-        is OrderState.Paid -> when (event) {
-            is OrderEvent.Ship -> OrderState.Shipped(event.trackingNumber, event.carrier)
-            is OrderEvent.Refund -> OrderState.Cancelled("退款取消", System.currentTimeMillis())
-            else -> current
-        }
-
-        is OrderState.Shipped -> when (event) {
-            is OrderEvent.ConfirmReceive -> OrderState.Completed
-            else -> current
-        }
-
-        is OrderState.Completed -> current  // 终态，不可转换
-
-        is OrderState.Cancelled -> current  // 终态，不可转换
-    }
-}
-
-sealed class OrderEvent {
-    data class Pay(val paymentId: String, val amount: Long) : OrderEvent()
-    data class Ship(val trackingNumber: String, val carrier: String) : OrderEvent()
-    object ConfirmReceive : OrderEvent()
-    data class Refund(val reason: String) : OrderEvent()
-    data class Cancel(val reason: String) : OrderEvent()
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 51 行有效代码，包含 2 类关键结构（class、return）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.4 示例：示例 2：递归 ADT 实现二叉树
-
-该示例来自原文《示例 2：递归 ADT 实现二叉树》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-/**
- * 二叉树的递归 ADT 表示。
- * - Empty：空树（终止条件）
- * - Node：节点，包含值与左右子树
- */
-sealed interface BinaryTree<out A> {
-    object Empty : BinaryTree<Nothing>
-    data class Node<A>(
-        val value: A,
-        val left: BinaryTree<A>,
-        val right: BinaryTree<A>
-    ) : BinaryTree<A>
-}
-
-/**
- * 计算二叉树的高度。
- * 通过模式匹配递归处理，编译器保证所有分支被覆盖。
- */
-fun <A> BinaryTree<A>.height(): Int = when (this) {
-    is BinaryTree.Empty -> 0
-    is BinaryTree.Node -> 1 + maxOf(left.height(), right.height())
-}
-
-/**
- * 中序遍历：左 -> 根 -> 右
- * 返回值的顺序列表。
- */
-fun <A> BinaryTree<A>.inOrder(): List<A> = when (this) {
-    is BinaryTree.Empty -> emptyList()
-    is BinaryTree.Node -> left.inOrder() + listOf(value) + right.inOrder()
-}
-
-/**
- * 前序遍历：根 -> 左 -> 右
- */
-fun <A> BinaryTree<A>.preOrder(): List<A> = when (this) {
-    is BinaryTree.Empty -> emptyList()
-    is BinaryTree.Node -> listOf(value) + left.preOrder() + right.preOrder()
-}
-
-/**
- * 后序遍历：左 -> 右 -> 根
- */
-fun <A> BinaryTree<A>.postOrder(): List<A> = when (this) {
-    is BinaryTree.Empty -> emptyList()
-    is BinaryTree.Node -> left.postOrder() + right.postOrder() + listOf(value)
-}
-
-fun main() {
-    // 构造二叉树：
-    //       1
-    //      / \
-    //     2   3
-    //    / \
-    //   4   5
-    val tree: BinaryTree<Int> = BinaryTree.Node(
-        value = 1,
-        left = BinaryTree.Node(
-            value = 2,
-            left = BinaryTree.Node(4, BinaryTree.Empty, BinaryTree.Empty),
-            right = BinaryTree.Node(5, BinaryTree.Empty, BinaryTree.Empty)
-        ),
-        right = BinaryTree.Node(3, BinaryTree.Empty, BinaryTree.Empty)
-    )
-
-    println("高度: ${tree.height()}")           // 3
-    println("中序: ${tree.inOrder()}")          // [4, 2, 5, 1, 3]
-    println("前序: ${tree.preOrder()}")         // [1, 2, 4, 5, 3]
-    println("后序: ${tree.postOrder()}")        // [4, 5, 2, 3, 1]
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 64 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.5 示例：示例 3：表达式 AST 与求值
-
-该示例来自原文《示例 3：表达式 AST 与求值》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-/**
- * 算术表达式的抽象语法树（AST）。
- * 支持变量、常量、四则运算。
- */
-sealed interface Expr {
-    data class Const(val value: Double) : Expr
-    data class Var(val name: String) : Expr
-    data class Add(val left: Expr, val right: Expr) : Expr
-    data class Sub(val left: Expr, val right: Expr) : Expr
-    data class Mul(val left: Expr, val right: Expr) : Expr
-    data class Div(val left: Expr, val right: Expr) : Expr
-}
-
-/**
- * 求值器：在给定变量环境下计算表达式值。
- * 
- * @param env 变量名到值的映射
- * @return 表达式求值结果
- */
-fun Expr.eval(env: Map<String, Double> = emptyMap()): Double = when (this) {
-    is Expr.Const -> value
-    is Expr.Var -> env[name] ?: throw IllegalArgumentException("未定义变量: $name")
-    is Expr.Add -> left.eval(env) + right.eval(env)
-    is Expr.Sub -> left.eval(env) - right.eval(env)
-    is Expr.Mul -> left.eval(env) * right.eval(env)
-    is Expr.Div -> {
-        val r = right.eval(env)
-        if (r == 0.0) throw ArithmeticException("除零错误")
-        left.eval(env) / r
-    }
-}
-
-/**
- * 表达式美化打印：将 AST 转换为可读字符串。
- */
-fun Expr.prettyPrint(): String = when (this) {
-    is Expr.Const -> value.toString()
-    is Expr.Var -> name
-    is Expr.Add -> "(${left.prettyPrint()} + ${right.prettyPrint()})"
-    is Expr.Sub -> "(${left.prettyPrint()} - ${right.prettyPrint()})"
-    is Expr.Mul -> "(${left.prettyPrint()} * ${right.prettyPrint()})"
-    is Expr.Div -> "(${left.prettyPrint()} / ${right.prettyPrint()})"
-}
-
-fun main() {
-    // 表达式：(x + 2) * (y - 3)
-    val expr = Expr.Mul(
-        Expr.Add(Expr.Var("x"), Expr.Const(2.0)),
-        Expr.Sub(Expr.Var("y"), Expr.Const(3.0))
-    )
-
-    println("表达式: ${expr.prettyPrint()}")
-    // 输出：((x + 2.0) * (y - 3.0))
-
-    val env = mapOf("x" to 5.0, "y" to 7.0)
-    println("求值: ${expr.eval(env)}")
-    // 输出：(5 + 2) * (7 - 3) = 7 * 4 = 28.0
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 53 行有效代码，包含 3 类关键结构（class、if、return）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.6 示例：示例 4：网络请求状态建模
-
-该示例来自原文《示例 4：网络请求状态建模》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-/**
- * 网络请求状态的密封类表示。
- * 典型的 UI 状态机模式。
- */
-sealed interface UiState<out T> {
-    /** 加载中 */
-    object Loading : UiState<Nothing>
-
-    /** 成功 */
-    data class Success<T>(val data: T) : UiState<T>
-
-    /** 失败 */
-    data class Error(val message: String, val throwable: Throwable? = null) : UiState<Nothing>
-}
-
-/**
- * 根据状态渲染 UI 文本。
- * 编译器保证所有状态被处理。
- */
-fun <T> UiState<T>.render(): String = when (this) {
-    is UiState.Loading -> "加载中..."
-    is UiState.Success -> "成功: $data"
-    is UiState.Error -> "错误: $message"
-}
-
-/**
- * 链式操作：仅在成功状态下转换数据。
- */
-inline fun <T, R> UiState<T>.map(transform: (T) -> R): UiState<R> = when (this) {
-    is UiState.Loading -> UiState.Loading
-    is UiState.Success -> UiState.Success(transform(data))
-    is UiState.Error -> this
-}
-
-fun main() {
-    val state1: UiState<String> = UiState.Loading
-    val state2: UiState<String> = UiState.Success("Hello, World")
-    val state3: UiState<String> = UiState.Error("网络超时")
-
-    println(state1.render())  // 加载中...
-    println(state2.render())  // 成功: Hello, World
-    println(state3.render())  // 错误: 网络超时
-
-    // 链式转换
-    val mapped: UiState<Int> = state2.map { it.length }
-    println(mapped.render())  // 成功: 12
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 40 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.7 示例：示例 5：使用密封接口建模领域事件
-
-该示例来自原文《示例 5：使用密封接口建模领域事件》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-/**
- * 领域事件基类：使用密封接口，允许 data class 实现。
- */
-sealed interface DomainEvent {
-    val eventId: String
-    val occurredAt: Long
-}
-
-/**
- * 用户相关事件
- */
-sealed interface UserEvent : DomainEvent {
-    data class UserCreated(
-        override val eventId: String,
-        override val occurredAt: Long,
-        val userId: String,
-        val name: String,
-        val email: String
-    ) : UserEvent
-
-    data class UserUpdated(
-        override val eventId: String,
-        override val occurredAt: Long,
-        val userId: String,
-        val name: String?,
-        val email: String?
-    ) : UserEvent
-
-    data class UserDeleted(
-        override val eventId: String,
-        override val occurredAt: Long,
-        val userId: String,
-        val reason: String
-    ) : UserEvent
-}
-
-/**
- * 订单相关事件
- */
-sealed interface OrderEvent2 : DomainEvent {
-    data class OrderPlaced(
-        override val eventId: String,
-        override val occurredAt: Long,
-        val orderId: String,
-        val userId: String,
-        val amount: Long
-    ) : OrderEvent2
-
-    data class OrderCancelled(
-        override val eventId: String,
-        override val occurredAt: Long,
-        val orderId: String,
-        val reason: String
-    ) : OrderEvent2
-}
-
-/**
- * 事件处理器：通过模式匹配分发到具体处理函数。
- */
-fun handleEvent(event: DomainEvent): String = when (event) {
-    is UserEvent.UserCreated -> "用户创建: ${event.userId} - ${event.name}"
-    is UserEvent.UserUpdated -> "用户更新: ${event.userId}"
-    is UserEvent.UserDeleted -> "用户删除: ${event.userId}（${event.reason}）"
-    is OrderEvent2.OrderPlaced -> "订单创建: ${event.orderId}（金额: ${event.amount}）"
-    is OrderEvent2.OrderCancelled -> "订单取消: ${event.orderId}（${event.reason}）"
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 60 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.8 示例：示例 6：密封类的序列化
-
-该示例来自原文《示例 6：密封类的序列化》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-
-@Serializable
-sealed class Message {
-    @Serializable
-    @SerialName("text")
-    data class Text(val content: String) : Message()
-
-    @Serializable
-    @SerialName("image")
-    data class Image(val url: String, val width: Int, val height: Int) : Message()
-}
-
-fun main() {
-    val json = Json { prettyPrint = true }
-
-    val messages: List<Message> = listOf(
-        Message.Text("Hello"),
-        Message.Image("https://example.com/a.png", 800, 600)
-    )
-
-    // 序列化时自动添加 type 字段
-    val encoded = json.encodeToString(messages)
-    println(encoded)
-    // [
-    //     { "type": "text", "content": "Hello" },
-    //     { "type": "image", "url": "...", "width": 800, "height": 600 }
-    // ]
-
-    // 反序列化：基于 type 字段路由到对应子类
-    val decoded = json.decodeFromString<List<Message>>(encoded)
-    println(decoded == messages)  // true
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 28 行有效代码，包含 2 类关键结构（class、import）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.9 示例：示例 7：递归 ADT 实现自定义列表
-
-该示例来自原文《示例 7：递归 ADT 实现自定义列表》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-/**
- * 函数式列表：递归 ADT 实现。
- * 演示 ADT 如何表达递归数据结构。
- */
-sealed interface FList<out A> {
-    object Nil : FList<Nothing>
-    data class Cons<A>(val head: A, val tail: FList<A>) : FList<A>
-}
-
-/** 伴生对象：提供构造便利方法 */
-object FList {
-    fun <A> of(vararg items: A): FList<A> =
-        items.foldRight(Nil as FList<A>) { a, acc -> Cons(a, acc) }
-
-    fun <A> empty(): FList<A> = Nil
-}
-
-/** 列表长度 */
-fun <A> FList<A>.length(): Int = when (this) {
-    is FList.Nil -> 0
-    is FList.Cons -> 1 + tail.length()
-}
-
-/** 反转列表 */
-fun <A> FList<A>.reverse(): FList<A> {
-    fun go(lst: FList<A>, acc: FList<A>): FList<A> = when (lst) {
-        is FList.Nil -> acc
-        is FList.Cons -> go(lst.tail, FList.Cons(lst.head, acc))
-    }
-    return go(this, FList.Nil)
-}
-
-/** 拼接两个列表 */
-fun <A> FList<A>.append(other: FList<A>): FList<A> = when (this) {
-    is FList.Nil -> other
-    is FList.Cons -> FList.Cons(head, tail.append(other))
-}
-
-/** map 操作 */
-fun <A, B> FList<A>.map(f: (A) -> B): FList<B> = when (this) {
-    is FList.Nil -> FList.Nil
-    is FList.Cons -> FList.Cons(f(head), tail.map(f))
-}
-
-/** foldRight 操作 */
-fun <A, B> FList<A>.foldRight(initial: B, f: (A, B) -> B): B = when (this) {
-    is FList.Nil -> initial
-    is FList.Cons -> f(head, tail.foldRight(initial, f))
-}
-
-fun main() {
-    val list = FList.of(1, 2, 3, 4, 5)
-    println("长度: ${list.length()}")  // 5
-    println("反转后: ${list.reverse()}")  // Cons(5, Cons(4, Cons(3, Cons(2, Cons(1, Nil)))))
-    println("map: ${list.map { it * 2 }}")  // Cons(2, Cons(4, Cons(6, Cons(8, Cons(10, Nil)))))
-    println("sum: ${list.foldRight(0) { a, b -> a + b }}")  // 15
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 49 行有效代码，包含 2 类关键结构（class、return）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.10 示例：5. 选型决策
-
-该示例来自原文《5. 选型决策》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```mermaid
-flowchart TD
-    T0["是否需要有限且封闭的子类型集合？"]
-    T1["是 → 是否需要每子类独立数据？"]
-    T2["是 → sealed class / sealed interface"]
-    T3["否 → enum class"]
-    T4["否 → abstract class / interface"]
-    T0 --> T1
-    T1 --> T2
-    T1 --> T3
-    T0 --> T4
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 10 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.11 示例：1. 反模式：在非同文件位置定义子类
-
-该示例来自原文《1. 反模式：在非同文件位置定义子类》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-// Kotlin 1.5+
-// 文件 1: com/example/Shape.kt
-package com.example
-
-sealed interface Shape
-
-// 文件 2: com/example/Circle.kt
-package com.example
-
-data class Circle(val radius: Double) : Shape  // 同包允许
-
-// 文件 3: com/other/Circle.kt
-package com.other
-
-data class Rectangle(val w: Double, val h: Double) : com.example.Shape  // 编译错误
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 10 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.12 示例：2. 反模式：用 `object` 表示带状态的子类
-
-该示例来自原文《2. 反模式：用 `object` 表示带状态的子类》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-// 错误：用 object 表示带数据的状态
-sealed class OrderState {
-    object Paid : OrderState()  // 无法携带 paymentId、amount
-}
-
-// 正确：用 data class
-sealed class OrderState {
-    data class Paid(val paymentId: String, val amount: Long) : OrderState()
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 8 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.13 示例：5. 反模式：滥用密封类替代枚举
-
-该示例来自原文《5. 反模式：滥用密封类替代枚举》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-// 错误：用密封类表示简单状态码
-sealed class HttpStatus {
-    object OK : HttpStatus()
-    object NotFound : HttpStatus()
-    object InternalError : HttpStatus()
-}
-
-// 正确：用枚举
-enum class HttpStatus(val code: Int) {
-    OK(200),
-    NOT_FOUND(404),
-    INTERNAL_ERROR(500)
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 12 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.14 示例：7. 反模式：在密封类中暴露可变状态
-
-该示例来自原文《7. 反模式：在密封类中暴露可变状态》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-// 错误：使用 var
-sealed class Point {
-    data class Cartesian(var x: Double, var y: Double) : Point()
-}
-
-// 正确：使用 val
-sealed class Point {
-    data class Cartesian(val x: Double, val y: Double) : Point()
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 8 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.15 示例：1. 密封类建模领域状态机
-
-该示例来自原文《1. 密封类建模领域状态机》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-/**
- * 订单状态机：基于密封类实现的有限状态自动机。
- * 状态转换规则集中管理，避免散落在业务代码中。
- */
-sealed class OrderStateMachine {
-    abstract val orderId: String
-
-    object Created : OrderStateMachine() {
-        override val orderId: String = ""
-        
-        fun pay(paymentId: String, amount: Long): Paid = Paid("order-1", paymentId, amount)
-    }
-
-    data class Paid(
-        override val orderId: String,
-        val paymentId: String,
-        val amount: Long
-    ) : OrderStateMachine() {
-        fun ship(trackingNumber: String): Shipped = Shipped(orderId, trackingNumber)
-        fun refund(): Cancelled = Cancelled(orderId, "退款")
-    }
-
-    data class Shipped(
-        override val orderId: String,
-        val trackingNumber: String
-    ) : OrderStateMachine() {
-        fun confirm(): Completed = Completed(orderId)
-    }
-
-    data class Completed(override val orderId: String) : OrderStateMachine()
-    data class Cancelled(override val orderId: String, val reason: String) : OrderStateMachine()
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 27 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.16 示例：2. 密封类与协程结合
-
-该示例来自原文《2. 密封类与协程结合》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-
-/**
- * 异步操作结果：使用密封类表达三态。
- */
-sealed class AsyncResult<out T> {
-    object Loading : AsyncResult<Nothing>()
-    data class Success<T>(val data: T) : AsyncResult<T>()
-    data class Error(val message: String, val cause: Throwable? = null) : AsyncResult<Nothing>()
-}
-
-/**
- * 包装异步操作为 Flow<AsyncResult<T>>。
- */
-fun <T> asyncFlow(block: suspend () -> T): Flow<AsyncResult<T>> = flow {
-    emit(AsyncResult.Loading)
-    try {
-        val data = block()
-        emit(AsyncResult.Success(data))
-    } catch (e: Throwable) {
-        emit(AsyncResult.Error(e.message ?: "未知错误", e))
-    }
-}
-
-// 使用示例
-suspend fun main() {
-    asyncFlow {
-        delay(1000)
-        "Hello, World"
-    }.collect { result ->
-        when (result) {
-            is AsyncResult.Loading -> println("加载中")
-            is AsyncResult.Success -> println("成功: ${result.data}")
-            is AsyncResult.Error -> println("失败: ${result.message}")
-        }
-    }
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 35 行有效代码，包含 2 类关键结构（class、import）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.17 示例：3. 密封类与 JSON 序列化
-
-该示例来自原文《3. 密封类与 JSON 序列化》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-
-/**
- * API 响应包装：使用密封类区分成功与失败。
- */
-@Serializable
-sealed class ApiResponse<out T> {
-    @Serializable
-    data class Success<T>(val data: T, val code: Int = 200) : ApiResponse<T>()
-
-    @Serializable
-    data class Failure(val error: String, val code: Int) : ApiResponse<Nothing>()
-}
-
-fun main() {
-    val json = Json { ignoreUnknownKeys = true }
-
-    val success: ApiResponse<String> = ApiResponse.Success("Hello")
-    val failure: ApiResponse<String> = ApiResponse.Failure("Not Found", 404)
-
-    println(json.encodeToString(success))  // {"type":"Success","data":"Hello","code":200}
-    println(json.encodeToString(failure))  // {"type":"Failure","error":"Not Found","code":404}
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 19 行有效代码，包含 2 类关键结构（class、import）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.18 示例：4. 密封类与函数式错误处理
-
-该示例来自原文《4. 密封类与函数式错误处理》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-/**
- * Either 类型：函数式错误处理的经典模式。
- * - Left: 错误
- * - Right: 成功
- */
-sealed class Either<out L, out R> {
-    data class Left<L>(val value: L) : Either<L, Nothing>()
-    data class Right<R>(val value: R) : Either<Nothing, R>()
-
-    inline fun <T> map(f: (R) -> T): Either<L, T> = when (this) {
-        is Left -> this
-        is Right -> Right(f(value))
-    }
-
-    inline fun <T> flatMap(f: (R) -> Either<L, T>): Either<L, T> = when (this) {
-        is Left -> this
-        is Right -> f(value)
-    }
-
-    inline fun <T> fold(
-        ifLeft: (L) -> T,
-        ifRight: (R) -> T
-    ): T = when (this) {
-        is Left -> ifLeft(value)
-        is Right -> ifRight(value)
-    }
-}
-
-fun <L, R> Either<L, R>.getOrNull(): R? = (this as? Either.Right<R>)?.value
-
-// 使用示例：解析整数
-fun parseInt(s: String): Either<String, Int> =
-    try {
-        Either.Right(s.toInt())
-    } catch (e: NumberFormatException) {
-        Either.Left("无效的整数: $s")
-    }
-
-fun main() {
-    val result = parseInt("123")
-        .map { it * 2 }
-        .flatMap { Either.Right(it + 1) }
-
-    println(result.fold(
-        ifLeft = { "错误: $it" },
-        ifRight = { "结果: $it" }
-    ))  // 结果: 247
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 41 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.19 示例：5. 多模块工程中的密封类设计
-
-该示例来自原文《5. 多模块工程中的密封类设计》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-// core 模块：定义基础密封接口
-sealed interface DomainEvent {
-    val eventId: String
-}
-
-// feature-order 模块
-sealed interface OrderDomainEvent : DomainEvent {
-    data class OrderPlaced(override val eventId: String, val orderId: String) : OrderDomainEvent
-    data class OrderCancelled(override val eventId: String, val orderId: String) : OrderDomainEvent
-}
-
-// feature-user 模块
-sealed interface UserDomainEvent : DomainEvent {
-    data class UserRegistered(override val eventId: String, val userId: String) : UserDomainEvent
-}
-
-// app 模块：聚合所有事件
-fun handleEvent(event: DomainEvent) = when (event) {
-    is OrderDomainEvent.OrderPlaced -> TODO()
-    is OrderDomainEvent.OrderCancelled -> TODO()
-    is UserDomainEvent.UserRegistered -> TODO()
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 19 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.20 示例：6. 测试策略
-
-该示例来自原文《6. 测试策略》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-import org.junit.Test
-import kotlin.test.assertEquals
-
-class BinaryTreeTest {
-    @Test
-    fun `should calculate height correctly`() {
-        val tree: BinaryTree<Int> = BinaryTree.Node(
-            1,
-            BinaryTree.Node(2, BinaryTree.Empty, BinaryTree.Empty),
-            BinaryTree.Empty
-        )
-        assertEquals(2, tree.height())
-    }
-
-    @Test
-    fun `should traverse in order`() {
-        val tree: BinaryTree<Int> = BinaryTree.Node(
-            2,
-            BinaryTree.Node(1, BinaryTree.Empty, BinaryTree.Empty),
-            BinaryTree.Node(3, BinaryTree.Empty, BinaryTree.Empty)
-        )
-        assertEquals(listOf(1, 2, 3), tree.inOrder())
-    }
-
-    @Test
-    fun `empty tree has height 0`() {
-        val tree: BinaryTree<Int> = BinaryTree.Empty
-        assertEquals(0, tree.height())
-    }
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 27 行有效代码，包含 2 类关键结构（class、import）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.21 示例：实现
-
-该示例来自原文《实现》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-// 简化版
-sealed class JobState {
-    object New : JobState()
-    object Active : JobState()
-    object Completing : JobState()
-    object Completed : JobState()
-    object Cancelling : JobState()
-    data class Cancelled(val cause: Throwable?) : JobState()
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 9 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.22 示例：实现
-
-该示例来自原文《实现》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-sealed class LoginUiState {
-    object Idle : LoginUiState()
-    object Loading : LoginUiState()
-    data class Success(val userId: String, val token: String) : LoginUiState()
-    data class Error(val message: String) : LoginUiState()
-}
-
-class LoginViewModel : ViewModel() {
-    private val _state = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
-    val state: StateFlow<LoginUiState> = _state.asStateFlow()
-
-    fun login(email: String, password: String) {
-        viewModelScope.launch {
-            _state.value = LoginUiState.Loading
-            try {
-                val result = authApi.login(email, password)
-                _state.value = LoginUiState.Success(result.userId, result.token)
-            } catch (e: Exception) {
-                _state.value = LoginUiState.Error(e.message ?: "登录失败")
-            }
-        }
-    }
-}
-
-// Activity 中
-class LoginActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-            viewModel.state.collect { state ->
-                when (state) {
-                    is LoginUiState.Idle -> showLoginForm()
-                    is LoginUiState.Loading -> showLoading()
-                    is LoginUiState.Success -> navigateToHome(state.userId)
-                    is LoginUiState.Error -> showError(state.message)
-                }
-            }
-        }
-    }
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 37 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.23 示例：实现
-
-该示例来自原文《实现》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-sealed interface ContentNegotiationResult {
-    data class Success<T>(val value: T, val contentType: ContentType) : ContentNegotiationResult
-    data class UnsupportedContentType(val contentType: ContentType) : ContentNegotiationResult
-    data class MalformedContent(val error: Throwable) : ContentNegotiationResult
-}
-
-fun handleResult(result: ContentNegotiationResult) = when (result) {
-    is ContentNegotiationResult.Success<*> -> respondOk(result.value)
-    is ContentNegotiationResult.UnsupportedContentType -> respondUnsupportedMediaType()
-    is ContentNegotiationResult.MalformedContent -> respondBadRequest()
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 10 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.24 示例：题 4
-
-该示例来自原文《题 4》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-sealed interface JsonValue {
-    data class JString(val value: String) : JsonValue
-    data class JNumber(val value: Double) : JsonValue
-    data class JBoolean(val value: Boolean) : JsonValue
-    object JNull : JsonValue
-    data class JArray(val items: List<JsonValue>) : JsonValue
-    data class JObject(val fields: Map<String, JsonValue>) : JsonValue
-}
-
-fun JsonValue.stringify(): String = when (this) {
-    is JsonValue.JString -> "\"$value\""
-    is JsonValue.JNumber -> value.toString()
-    is JsonValue.JBoolean -> value.toString()
-    JsonValue.JNull -> "null"
-    is JsonValue.JArray -> "[${items.joinToString(",") { it.stringify() }}]"
-    is JsonValue.JObject -> "{${fields.entries.joinToString(",") { "\"${it.key}\":${it.value.stringify()}" }}}"
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 16 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.25 示例：题 5
-
-该示例来自原文《题 5》小节，用于演示密封类与代数数据类型相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-sealed class Result
-object Loading : Result()
-class Success(val data: String) : Result()
-class Error(val message: String) : Result()
-
-fun handle(result: Result): String = when (result) {
-    is Loading -> "loading"
-    is Success -> result.data
-    is Error -> result.message
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 9 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-
-综合以上示例，可以总结出本主题的代码实践要点：第一，先定义清晰的输入输出契约；第二，核心逻辑保持单一职责；第三，错误处理与边界条件不可省略；第四，命名与注释表达意图而非复述代码。
-
-## 6. 对比分析
-
-对比是理解《密封类与代数数据类型》定位的最快路径。下面从多个维度与相邻方案进行对比。
-
-Kotlin 与 Java：Kotlin 代码更短、空安全更强；Java 生态工具链更传统。两者互操作，可渐进迁移。
-Kotlin 与 Swift：Kotlin 服务端/Android 与 Swift iOS 各自主导；KMP 让业务逻辑共享成为可能。
-协程与线程：协程是用户态调度，数量可达百万级；线程是内核态，切换成本高。
-
-对比的目的不是分出绝对优劣，而是建立选择依据：不同约束条件下，最优解不同。读者应把每个对比维度转化为决策检查清单。
-
-## 7. 常见陷阱与最佳实践
-
-本节整理该主题的高频错误与推荐做法。每个陷阱先描述现象，再解释原因，最后给出最佳实践。
-
-### 7.1 val 误当不可变对象
-
-val 只约束引用；对象内部仍可变。需要深层不可变时使用只读集合与 data class 副本。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，val 误当不可变对象 一般源于对 Kotlin 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，val 误当不可变对象 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理val 误当不可变对象的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.2 滥用 !!
-
-非空断言重新引入 NPE。业务代码用 ?: 与 ?. 替代，!! 仅限互操作边界。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，滥用 !! 一般源于对 Kotlin 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，滥用 !! 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理滥用 !!的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.3 协程作用域泄漏
-
-在 Activity/ViewModel 外启动协程导致任务悬挂。使用 viewModelScope 或 lifecycleScope。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，协程作用域泄漏 一般源于对 Kotlin 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，协程作用域泄漏 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理协程作用域泄漏的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.4 扩展函数命名冲突
-
-同签名扩展函数按导入优先级解析，易混淆。使用明确包名与独特命名。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，扩展函数命名冲突 一般源于对 Kotlin 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，扩展函数命名冲突 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理扩展函数命名冲突的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.5 data class 相等性误判
-
-相等性基于所有主构造属性；集合属性（List）使用引用相等。注意复制副本的共享引用。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，data class 相等性误判 一般源于对 Kotlin 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，data class 相等性误判 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理data class 相等性误判的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.6 挂起函数在非协程调用
-
-suspend 函数只能在协程或其他挂起函数中调用；需要桥接时用 runBlocking（慎用）或回调封装。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，挂起函数在非协程调用 一般源于对 Kotlin 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，挂起函数在非协程调用 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理挂起函数在非协程调用的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.0 最佳实践总览
-
-1. 优先 val 与不可变集合，减少可变状态面。
-2. 用数据类表达数据，用密封类表达受限层级。
-3. 协程遵循结构化并发，子任务随父作用域取消。
-4. 接口默认实现与扩展函数分离“数据”与“行为”。
-5. 使用 ktlint/detekt 保持风格一致。
-
-把这些最佳实践固化为团队规范与代码评审检查项，是避免同类问题反复出现的关键。
-
-## 8. 工程实践
-
-本节把《密封类与代数数据类型》放入真实工程场景，给出可复用的模式与组织方法。
-
-Android 项目：Gradle Kotlin DSL 构建，Compose 声明式 UI，ViewModel + StateFlow 管理状态。
-服务端：Ktor 轻量异步框架，或 Spring Boot 使用 Kotlin 语言特性。
-多平台：共享模块（commonMain）放业务逻辑，平台模块（androidMain/iosMain）放平台 API。
-
-### 8.1 工程实践的原则拆解
-
-以上工程实践可以归纳为四条原则。第一，配置与代码分离：Kotlin 项目中环境差异应通过配置注入，而不是散落在代码分支中；这保证同一份代码可以在开发、测试、生产环境一致运行。
-
-第二，接口稳定优先：对外接口（函数签名、协议、数据格式）一旦被消费方依赖，变更成本极高；设计时应预留扩展点并保持向后兼容。
-
-第三，可观测性内置：日志、指标与追踪应该在功能开发时同步设计，而不是故障发生后补救；没有观测手段的模块等于黑盒。
-
-第四，变更可回滚：任何发布都应有对应的回滚方案；数据库迁移、配置变更与代码发布一样需要版本管理与逆向路径。
-
-### 8.2 实践落地的检查清单
-
-- [ ] Android 项目：对照本节描述，检查当前项目是否已经落实；未落实的项列入技术债并排期处理。
-- [ ] 服务端：对照本节描述，检查当前项目是否已经落实；未落实的项列入技术债并排期处理。
-- [ ] 多平台：对照本节描述，检查当前项目是否已经落实；未落实的项列入技术债并排期处理。
-
-工程实践的共性原则：配置与代码分离、接口稳定优先、可观测性内置、变更可回滚。这些原则适用于本主题的所有实现。
-
-## 9. 案例研究
-
-本节通过一个完整案例把《密封类与代数数据类型》的知识串起来。案例按“需求分析、方案设计、实现、验证”四步展开。
-
-需求：实现跨平台（Android/iOS）的待办事项应用核心逻辑。
-方案：KMP 共享数据层与状态管理，平台层仅做 UI 渲染。
-要点：Room/SQLDelight 做本地存储；协程处理异步；expect/actual 声明平台差异。
-验证：共享模块单元测试 + 平台端集成测试。
-
-### 9.1 案例的扩展讨论
-
-把案例中的方案放大到真实规模，需要额外考虑三个问题：
-
-第一，规模：当数据量或并发量上升一个数量级时，原方案中的数据结构、缓存策略与任务调度是否仍然成立？通常需要引入分层与异步。
-
-第二，团队：多人协作时，模块边界、接口契约与代码所有权必须明确；案例中的实现应拆分为可独立测试的单元，并配合文档说明设计意图。
-
-第三，演进：上线后的需求变化不可避免；方案设计时应预留扩展点（配置化、插件化、事件化），并定期用真实指标验证假设。
-
-
-案例研究的学习方法：先独立阅读需求，尝试在脑中形成方案，再对照实现与讲解，最后思考“如果约束变化（数据量、并发、团队规模），方案应如何调整”。
-
-## 10. 知识要点总结与深入讲解
-
-本节以讲解形式汇总全文要点，替代传统的习题与自测，读者不需要答题，只需跟随解释建立完整的认知框架。
-
-关于《密封类与代数数据类型》的核心结论：
-
-Kotlin 的价值在于“现代化而不割裂”：保留 JVM 生态，同时提供现代语言特性。
-空安全与协程是 Kotlin 的两大支柱，工程代码应默认使用。
-KMP 适合业务逻辑共享，UI 层按平台选择 Compose 或原生。
-
-原文档各小节的要点回顾：
-
-- 学习目标：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 历史动机与背景：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 形式化定义：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 理论推导：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 代码示例：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 对比分析：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 常见陷阱与反模式：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 工程实践：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 案例研究：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 知识讲解与要点分析（原习题）：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 参考文献：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 延伸阅读：该小节围绕密封类与代数数据类型展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-
-把以上要点与第 3-9 节的内容对照复习，即可完成对本文主题的闭环学习。
-
-## 11. 参考文献
-
-
-Kotlin 官方文档：https://kotlinlang.org/docs/home.html
-Kotlin 协程指南：https://kotlinlang.org/docs/coroutines-guide.html
-Compose Multiplatform：https://www.jetbrains.com/compose-multiplatform/
-Ktor 框架：https://ktor.io/
-Android 开发者文档：https://developer.android.com/kotlin
-
-## 12. 延伸阅读
-
-
-Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
-协程与 Flow，见 014-kotlin 模块协程文档。
-Android 与 HarmonyOS 应用开发，见 018-harmonyos 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Kotlin 课程。
-
-## 14. 模块知识图谱与学习路径
-
-本文属于 Kotlin 模块。为了把《密封类与代数数据类型》放入完整的知识网络，下面列出本模块的全部主题并给出相互关联的导读。学习时建议按模块内顺序推进，并在每个文档中留意交叉引用。
-
-```mermaid
-flowchart LR
-    A["密封类与代数数据类型"]
-    N0["Kotlin 概述与环境配置"]
-    N1["Kotlin 基础语法"]
-    N0 --> N1
-    N2["Kotlin 函数与 Lambda"]
-    N1 --> N2
-    N3["Kotlin 类与对象"]
-    N2 --> N3
-    N4["Kotlin 泛型与类型系统"]
-    N3 --> N4
-    N5["Kotlin 集合与协程"]
-    N4 --> N5
-    N6["Kotlin 协程进阶"]
-    N5 --> N6
-    N7["Kotlin 多平台"]
-    N6 --> N7
-    N8["Kotlin DSL 与领域特定语言"]
-    N7 --> N8
-    N9["Kotlin 测试与最佳实践"]
-    N8 --> N9
-    N10["Kotlin与协程Channel"]
-    N9 --> N10
-    N11["空安全详解"]
-    N10 --> N11
-    N12["密封类与代数数据类型"]
-    N11 --> N12
-    N13["委托属性"]
-    N12 --> N13
-```
-
-上图为模块主题的推荐学习顺序示意图（仅展示前若干主题）。各主题之间存在三类关联：
-
-第一，前置依赖关系：早期主题是后期主题的基础，例如环境与语法先行、进阶主题随后；
-
-第二，横向并列关系：同一层级主题从不同角度覆盖模块能力，学习顺序可以按兴趣调整；
-
-第三，工程组合关系：多个主题在真实项目中组合使用，例如配置、性能与安全主题往往出现在同一系统的不同层面。
-
-### 14.1 模块主题速查表
+## 模块文档速查表
 
 | 文档 | 主题 | 与本文的关联 |
 | --- | --- | --- |
@@ -3019,24 +1495,3 @@ flowchart LR
 | 协程异常处理 | 051-CoroutineExceptionHandling | 本文的并列主题 |
 | Kotlin跨平台 | 052-KotlinCrossPlatform | 本文的并列主题 |
 | Kotlin Flow 进阶 | 053-FlowAdvanced | 本文的并列主题 |
-
-速查表的作用是让读者快速判断：哪些文档应在阅读本文前掌握（前置基础），哪些文档应在阅读本文后继续（延伸主题）。本模块的交叉引用体系即以此表为基础。
-
-## 15. 术语表
-
-下表整理《密封类与代数数据类型》及 Kotlin 模块中出现的高频术语，给出简明释义。术语按字母序或逻辑序排列，供查阅。
-
-| 术语 | 释义 |
-| --- | --- |
-| 空安全 | 类型系统区分 `String` 与 `String?`，编译期强制处理可空值；`?.` 短路、`?:` 提供默认、`!!` 显式断言，三者覆盖所有空值处理模式。 |
-| 智能转换 | `is` 检查后在不可变上下文中自动转换类型，减少显式强转；`as?` 安全转换失败返回 null。 |
-| 协程 | 挂起函数（suspend）与调度器（Dispatchers.Main/IO/Default）实现非阻塞并发，结构化并发保证作用域内任务可取消。 |
-| 扩展函数与属性 | 在不修改原类的情况下为类添加行为，是 Kotlin 标准库（如集合操作）的基石。 |
-| val 误当不可变对象（易错点） | 参见常见陷阱章节的详细讲解 |
-| 滥用 !!（易错点） | 参见常见陷阱章节的详细讲解 |
-| 协程作用域泄漏（易错点） | 参见常见陷阱章节的详细讲解 |
-| 扩展函数命名冲突（易错点） | 参见常见陷阱章节的详细讲解 |
-| data class 相等性误判（易错点） | 参见常见陷阱章节的详细讲解 |
-| 挂起函数在非协程调用（易错点） | 参见常见陷阱章节的详细讲解 |
-
-术语表与正文配合使用：先通读正文，遇到模糊术语回查本表；长期使用后术语会自然进入工作记忆。

@@ -16,54 +16,7 @@ prerequisites:
   - java/概述与开发环境
 ---
 
-## 1. 学习目标（Bloom 分类）
-
-本节按照布鲁姆教育目标分类学组织学习路径。本文主题为《JVM垃圾回收》，属于 Java 模块，读者可以根据自身阶段选择阅读深度。
-
-记忆层面：能够准确复述本文的核心概念、术语与基本语法或操作步骤，并能够在提问或检索时快速定位对应知识点。能够说出 Java 的编译执行模型（javac 到字节码，JVM 解释与 JIT）。
-
-理解层面：能够用自己的语言解释核心原理与工作机制，说明概念之间的因果关系，而不是机械记忆结论。能够解释面向对象三大特性与 JVM 内存区域的职责。
-
-应用层面：能够在真实项目或练习场景中运用本文知识解决具体问题，写出正确且可维护的实现。能够编写类、接口、集合操作与异常处理的完整程序。
-
-分析层面：能够拆解复杂问题，比较本文主题与相邻概念的异同，识别边界条件与例外情况。能够分析 Java 与 C++、Go 在内存管理与并发模型上的差异。
-
-评价层面：能够根据约束条件（性能、可读性、安全、成本）评价不同方案的优劣，做出有依据的技术决策。能够评价不同集合、并发工具与框架的适用场景。
-
-创造层面：能够把本文知识与其他模块知识组合，设计出新的解决方案或可复用的工程模式。能够组合 Spring 生态设计企业级应用。
-
-通过本节学习，读者应当能够把《JVM垃圾回收》纳入自己的知识网络，并与 Java 模块的其他主题（JVM、集合框架、并发、Spring 生态）建立关联。
-
-## 2. 历史动机与发展脉络
-
-《JVM垃圾回收》是 Java 领域的重要主题。要真正理解它，需要先了解它解决的问题与演进过程。
-
-Java 由 James Gosling 领导的 Sun 团队于 1995 年发布，口号“一次编写，到处运行”依托 JVM 字节码实现跨平台。2006 年 Sun 将 Java 开源（OpenJDK），2010 年 Oracle 收购 Sun 后 Java 进入新的治理阶段。
-Java 的版本节奏在 2017 年后改为每半年一个特性版本、每两年一个 LTS（长期支持）版本。当前主流 LTS 包括 Java 11、17、21 与 25；Java 21 引入虚拟线程（Project Loom 成果），显著降低高并发服务的线程成本。
-Java 生态以 Spring 家族为核心：Spring Boot 简化配置与部署，Spring Cloud 提供微服务组件；构建工具从 Maven 演进到 Gradle；JVM 语言（Kotlin、Scala、Groovy）与 Java 共存互操作。
-Android 开发早期使用 Java，2019 年后官方转向 Kotlin-first，但 Java 仍是服务端领域（尤其是金融、电商等企业系统）的中坚力量。
-
-回到本文主题：JVM垃圾回收 的提出与成熟，正是上述技术背景下的必然产物。早期实现往往以简单可用为目标，随着工程规模扩大，社区逐渐沉淀出标准做法与最佳实践；理解这一脉络，可以帮助读者判断“为什么文档中的推荐写法是现在这个样子”，也能在遇到历史遗留代码时准确识别其设计年代与取舍。
-
-理解 Java 版本与 LTS 机制，是工程选型的起点：生产环境优先 LTS，新特性（如虚拟线程）可以在受控场景评估后引入。
-
-## 3. 形式化定义与核心概念精讲
-
-本节把《JVM垃圾回收》涉及的核心概念以“定义 + 讲解”的形式展开。读者应把定义当作工具，把讲解当作理解路径；两者结合才能形成可迁移的知识。
-
-JVM 与字节码：`javac` 把 .java 编译为 .class 字节码，JVM 加载、校验并执行；热点代码由 JIT（如 C2）编译为机器码，解释与编译结合实现启动速度与峰值性能的平衡。
-面向对象：封装（访问控制）、继承（extends/implements）与多态（重载/重写）是 Java 的类型系统支柱；接口默认方法（Java 8）与密封类（Java 17）持续演进表达能力。
-异常体系：受检异常（checked）编译期强制处理，非受检异常（RuntimeException）运行时抛出；try-with-resources 自动关闭资源。
-泛型与擦除：Java 泛型在编译期检查后擦除类型参数，运行时无泛型信息；这解释了 `List<String>` 与 `List<Integer>` 的 Class 相同，以及通配符 `? extends` 的逆变协变规则。
-
-### 3.1 原文章节逐一精讲
-
-原文档把主题拆分为 13 个小节，下面按顺序给出每一节的导读讲解，随后保留原文细节供精读。
-
-#### 原文精读（完整保留）
-
-
-#### 学习目标
+## 学习目标
 
 完成本章学习后，你应当能够：
 
@@ -74,13 +27,13 @@ JVM 与字节码：`javac` 把 .java 编译为 .class 字节码，JVM 加载、�
 - **Evaluate（评价）**：针对不同 SLA（延迟敏感、吞吐量优先、大堆内存）场景，评估并选择合适的 GC 算法与参数组合，并量化其对 P99 延迟的影响。
 - **Create（创造）**：设计一套基于真实负载的 GC 调优实验方案，包含基线测量、假设验证、回归测试，输出可复现的调优报告。
 
-#### 历史动机与发展脉络
+## 历史动机与发展脉络
 
-##### 自动内存管理的诞生
+### 自动内存管理的诞生
 
 手动内存管理是早期系统软件缺陷的主要来源。1960 年代，John McCarthy 在 Lisp 中首次引入垃圾回收概念，使程序员从显式 `free` 的负担中解放出来。Java 自 1995 年发布起就将 GC 作为语言运行时的核心特性，这一决策深刻影响了后续三十年托管语言（managed language）的设计哲学。
 
-##### Java GC 演进时间线
+### Java GC 演进时间线
 
 | 版本 | 年份 | 关键 GC 里程碑 | 工程意义 |
 | --- | --- | --- | --- |
@@ -101,7 +54,7 @@ JVM 与字节码：`javac` 把 .java 编译为 .class 字节码，JVM 加载、�
 | JDK 21 | 2023 | 分代 ZGC（`-XX:+ZGenerational`）正式 GA | 分代 + 低延迟双优 |
 | JDK 23+ | 2024 | ZGC 分代默认、Generational Shenandoah 演进 | 持续优化大堆与延迟 |
 
-##### 设计动机的三个维度
+### 设计动机的三个维度
 
 GC 的演进始终围绕三条互相制约的轴线展开：
 
@@ -111,13 +64,13 @@ GC 的演进始终围绕三条互相制约的轴线展开：
 
 经典的"GC 不可能三角"指出：在任意时刻，三者中最多同时优化两者。ZGC 通过读屏障（load barrier）与染色指针（colored pointer）实现了延迟与吞吐的较好平衡，但 footprint 略高于 G1。
 
-#### 形式化定义
+## 形式化定义
 
-##### JVM 规范视角下的 GC
+### JVM 规范视角下的 GC
 
 Java 虚拟机规范（JVMS §2.5）规定堆是所有线程共享的运行时数据区，用于分配绝大多数类实例与数组。规范**并不要求**实现 GC，但所有主流实现均提供。规范的开放性使得 HotSpot、OpenJ9、GraalVM、Azul Zing 可以采用截然不同的策略。
 
-##### 可达性分析的形式化
+### 可达性分析的形式化
 
 设对象图为有向图 $G = (V, E)$，其中 $V$ 是堆中所有对象，$E \subseteq V \times V$ 表示对象间引用。定义 **GC Roots** 集合 $R \subseteq V$ 为：
 
@@ -133,7 +86,7 @@ $$
 
 回收集合为 $\text{Dead}(G, R) = V \setminus \text{Live}(G, R)$。
 
-##### 三色标记定理
+### 三色标记定理
 
 Dijkstra 等人提出的三色不变式（tri-color invariant）是并发标记的理论基础。将对象着色为：
 
@@ -149,7 +102,7 @@ $$
 
 并发标记过程中，应用线程修改引用可能破坏不变式，因此需要 **write barrier**：当黑对象新增指向白对象的引用时，将白对象着灰（增量更新，CMS/G1 采用），或将黑对象回退为灰（SATB——Snapshot At The Beginning，Shenandoah/G1 部分阶段采用）。
 
-##### 停顿时间模型
+### 停顿时间模型
 
 设单次 GC 停顿时间为 $T_{\text{pause}}$，可分解为：
 
@@ -159,9 +112,9 @@ $$
 
 其中 $T_{\text{evac}}$（对象转移）通常占主导。ZGC 通过将转移拆分为并发阶段（concurrent relocate）将 $T_{\text{evac}}$ 控制在常数级，从而实现 $T_{\text{pause}} < 1\text{ms}$ 的目标。
 
-#### 理论推导与原理解析
+## 理论推导与原理解析
 
-##### 标记-清除（Mark-Sweep）
+### 标记-清除（Mark-Sweep）
 
 **算法**：
 
@@ -172,7 +125,7 @@ $$
 
 **碎片问题**：清除后产生大量不连续空闲块。设堆大小为 $H$，存活对象总大小为 $L$，最坏情况下最大可分配对象为 $O(\text{fragment}(H, L))$，可能远小于 $H - L$。
 
-##### 标记-整理（Mark-Compact）
+### 标记-整理（Mark-Compact）
 
 **算法**：标记后，将存活对象滑动（slide compaction）至堆一端，更新所有引用。
 
@@ -182,7 +135,7 @@ $$
 
 **缺点**：移动对象开销大，且需 STW（Stop-The-World）以保证引用一致性。
 
-##### 复制算法（Copying）
+### 复制算法（Copying）
 
 **算法**：将堆分为 From、To 两半，GC 时将 From 中存活对象复制到 To，然后交换两半。
 
@@ -192,7 +145,7 @@ $$
 
 **分代假说**：经验统计表明，绝大多数对象"朝生夕灭"——存活率 $L/H \ll 50\%$。新生代采用复制算法，仅浪费 10%（Eden:S0:S1 = 8:1:1）。
 
-##### 分代收集（Generational）
+### 分代收集（Generational）
 
 将堆分为新生代（Young）与老年代（Old），分别采用不同算法：
 
@@ -202,7 +155,7 @@ $$
 
 晋升阈值（`-XX:MaxTenuringThreshold`，默认 15）控制对象何时从新生代进入老年代。动态年龄计算：若 Survivor 中某年龄段累计大小超过 Survivor 一半，则该年龄及以上对象直接晋升。
 
-##### 卡表（Card Table）
+### 卡表（Card Table）
 
 为支持跨代引用（old → young）的快速扫描，HotSpot 维护字节数组卡表，每 512B 堆对应 1B 卡。写引用时通过 write barrier 标脏卡：
 
@@ -212,7 +165,7 @@ $$
 
 Minor GC 时仅需扫描脏卡，而非整个老年代，复杂度从 $O(|\text{Old}|)$ 降至 $O(|\text{dirty cards}|)$。
 
-##### G1 分区模型
+### G1 分区模型
 
 G1 将堆划分为 $N$ 个等大 region（1/2/4/8/16/32 MB），每个 region 动态充当 Eden、Survivor、Old 或 Humongous。回收集合（Collection Set, CSet）按回收收益排序：
 
@@ -222,7 +175,7 @@ $$
 
 选择 gain 最大的 region 优先回收，故名 "Garbage-First"。
 
-##### ZGC 染色指针
+### ZGC 染色指针
 
 ZGC 利用 64 位指针的剩余位编码对象状态（Marked0、Marked1、Remapped、Finalizable）。读屏障检查指针颜色，按需转发到新地址：
 
@@ -232,9 +185,9 @@ $$
 
 这使得对象可在并发转移过程中被访问，停顿与堆大小解耦，达成 $O(1)$ 暂停。
 
-#### 代码示例
+## 代码示例
 
-##### 示例 1：观察 GC 行为的最小程序
+### 示例 1：观察 GC 行为的最小程序
 
 `pom.xml`：
 
@@ -311,7 +264,7 @@ java -Xms256m -Xmx256m \
      -jar target/gc-demo-1.0.0.jar
 ```
 
-##### 示例 2：使用 JFR 监控 GC（Java 17+）
+### 示例 2：使用 JFR 监控 GC（Java 17+）
 
 ```java
 package com.fandex.gc;
@@ -351,7 +304,7 @@ public final class JfrGcMonitor {
 jfr print --events jdk.GarbageCollection,jdk.GCPhasePause gc-recording.jfr
 ```
 
-##### 示例 3：WeakReference 实现缓存
+### 示例 3：WeakReference 实现缓存
 
 ```java
 package com.fandex.gc;
@@ -394,7 +347,7 @@ public final class WeakCache<K, V> {
 }
 ```
 
-##### 示例 4：Maven 项目集成 GC 友好配置
+### 示例 4：Maven 项目集成 GC 友好配置
 
 ```xml
 <!-- pom.xml 关键插件 -->
@@ -420,7 +373,7 @@ public final class WeakCache<K, V> {
 </plugin>
 ```
 
-##### 示例 5：Gradle Kotlin DSL 配置
+### 示例 5：Gradle Kotlin DSL 配置
 
 `build.gradle.kts`：
 
@@ -440,9 +393,9 @@ application {
 }
 ```
 
-#### 对比分析
+## 对比分析
 
-##### 与 Kotlin/Scala/C#/Go 的内存管理对比
+### 与 Kotlin/Scala/C#/Go 的内存管理对比
 
 | 语言/平台 | 默认回收器 | 典型停顿 | 分代 | 并发标记 | 并发转移 | 备注 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -457,14 +410,14 @@ application {
 | Python | 引用计数 + 分代标记清除 | 数十 ms（GIL 内） | 是（3 代） | 否 | 否 | GIL 限制并发 |
 | V8 (Node.js) | Orinoco 分代 + 并发 | 1–10ms | 是 | 是 | 部分 | 增量与并发结合 |
 
-##### 设计哲学差异
+### 设计哲学差异
 
 - **Java**：以分代假说为核心，将工程经验形式化为分代 + 并发的复合策略，追求"在任意堆大小下保持可预测停顿"。
 - **Go**：放弃分代，依赖编译器逃逸分析与栈分配，使大部分对象从不进入堆；GC 设计目标明确为"低延迟而非吞吐"。
 - **Rust**：完全拒绝 GC，以所有权（ownership）与借用检查（borrow checker）在编译期消除内存管理运行时成本。
 - **C#**：与 Java 高度相似，但 .NET 8 引入 Dynamic PGO 与分层编译，使 GC 决策可与 JIT 反馈协同。
 
-##### 性能维度量化对比
+### 性能维度量化对比
 
 设堆大小 8GB，存活集 2GB，分配速率 1GB/s，目标 P99 延迟 < 10ms：
 
@@ -476,9 +429,9 @@ application {
 | Go 1.22 | 1–5ms | 5–15% | 1.2× | 低 |
 | Rust（无 GC） | 0 | 0 | 1.0× | 高（开发期） |
 
-#### 常见陷阱与最佳实践
+## 常见陷阱与最佳实践
 
-##### 陷阱 1：误用 `System.gc()`
+### 陷阱 1：误用 `System.gc()`
 
 显式调用 `System.gc()` 在某些 JDK 下会触发 Full GC，导致不可预期的停顿。
 
@@ -487,13 +440,13 @@ application {
 - 禁用显式 GC：`-XX:+DisableExplicitGC`。
 - 若必须触发（如性能测试基线），使用 `ManagementFactory.getGarbageCollectorMXBeans()` 主动控制。
 
-##### 陷阱 2：finalize 方法复活对象
+### 陷阱 2：finalize 方法复活对象
 
 `Object.finalize()` 默认在 GC 前调用，若在 finalize 中重新建立对自身的强引用，会"复活"对象，导致回收失败。Java 9 起 finalize 标记 deprecated，Java 18+ 标记 forRemoval。
 
 **替代方案**：实现 `AutoCloseable`，配合 try-with-resources；或使用 `Cleaner` API（`java.lang.ref.Cleaner`）。
 
-##### 陷阱 3：内存泄漏的隐蔽形式
+### 陷阱 3：内存泄漏的隐蔽形式
 
 ```java
 // 错误：静态 Map 持续增长，永不回收
@@ -505,19 +458,19 @@ public class Cache {
 
 **最佳实践**：使用 `WeakHashMap`、Caffeine、Guava Cache 设置 TTL/容量上限。
 
-##### 陷阱 4：大对象直接进入老年代
+### 陷阱 4：大对象直接进入老年代
 
 `-XX:PretenureSizeThreshold`（仅对 Serial/ParNew 有效）控制大对象直接进入老年代。误配置会导致老年代快速膨胀、频繁 Full GC。
 
 **最佳实践**：G1/ZGC 下，大对象由 Humongous/ZGC 自动处理，无需手动调参；优先重构代码减少大数组分配。
 
-##### 陷阱 5：错误的停顿目标
+### 陷阱 5：错误的停顿目标
 
 `-XX:MaxGCPauseMillis` 是**软目标**，并非保证。设置过低会导致 CSet 过小、GC 频繁、吞吐崩溃。
 
 **最佳实践**：基于实际负载使用 JMH/JFR 测量，从 200ms 起步逐步下调，观察吞吐量曲线拐点。
 
-##### 陷阱 6：忽略元空间泄漏
+### 陷阱 6：忽略元空间泄漏
 
 动态类生成（CGLIB、ASM、反射代理）会持续加载类，导致 Metaspace OOM。
 
@@ -530,19 +483,19 @@ public class Cache {
 -Xlog:class+load=info    # JDK 9+
 ```
 
-##### 陷阱 7：ThreadLocal 内存泄漏
+### 陷阱 7：ThreadLocal 内存泄漏
 
 线程池中 ThreadLocal 未 `remove()`，Entry 的 key 为弱引用但 value 为强引用，导致 value 长期存活。
 
 **最佳实践**：始终在 finally 中调用 `ThreadLocal.remove()`；线程池中尤其注意。
 
-##### 陷阱 8：直接内存未释放
+### 陷阱 8：直接内存未释放
 
 NIO `DirectByteBuffer` 不受堆 GC 直接管理，依赖 `Cleaner` 在 GC 时释放。频繁分配大块直接内存可能导致 OOM: Direct buffer memory。
 
 **最佳实践**：复用 Buffer；显式调用 `sun.misc.Unsafe.invokeCleaner(buffer)`（JDK 9+）。
 
-##### 最佳实践清单
+### 最佳实践清单
 
 1. **Xms = Xmx**：避免运行时堆扩容的开销与不可预测性。
 2. **生产开启 HeapDump**：`-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/oom`。
@@ -552,9 +505,9 @@ NIO `DirectByteBuffer` 不受堆 GC 直接管理，依赖 `Cleaner` 在 GC 时�
 6. **避免手动 System.gc**：禁用或仅用于基准测试。
 7. **定期回归测试**：每次 JVM 升级后使用 JMH 跑性能基线。
 
-#### 工程实践
+## 工程实践
 
-##### 构建与打包
+### 构建与打包
 
 Maven 多模块项目的 GC 友好打包：
 
@@ -572,7 +525,7 @@ Maven 多模块项目的 GC 友好打包：
 </plugin>
 ```
 
-##### Docker 容器化 GC 注意事项
+### Docker 容器化 GC 注意事项
 
 - **使用 `XX:MaxRAMPercentage`** 替代 `-Xmx`，让 JVM 自动感知容器内存上限：
 
@@ -590,14 +543,14 @@ ENV JAVA_OPTS="-XX:+UseZGC -XX:+ZGenerational -XX:MaxRAMPercentage=70.0"
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
 ```
 
-##### JVM 调优方法论
+### JVM 调优方法论
 
 1. **测量先于调优**：使用 JFR、async-profiler、GC 日志建立基线。
 2. **单变量实验**：每次仅修改一个参数，记录 P50/P99/P99.9 停顿、吞吐量、CPU。
 3. **回归验证**：使用 JMH 跑微基准；使用 Gatling/JMeter 跑端到端负载。
 4. **生产灰度**：先在金丝雀节点部署，观察 24 小时 GC 行为再全量。
 
-##### 调试工具链
+### 调试工具链
 
 | 工具 | 用途 | 开销 | 适用阶段 |
 | --- | --- | --- | --- |
@@ -610,7 +563,7 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
 | GCEasy / GCViewer | 离线分析 GC 日志 | 0 | 复盘 |
 | Eclipse MAT | 堆转储深度分析（Dominator Tree、Leak Suspects） | 离线 | 排查泄漏 |
 
-##### Spring Boot GC 监控集成
+### Spring Boot GC 监控集成
 
 ```java
 package com.fandex.gc;
@@ -668,9 +621,9 @@ rate(jvm_gc_memory_allocated_bytes_total[1m])
 jvm_gc_live_data_size_bytes / jvm_gc_max_data_size_bytes
 ```
 
-#### 案例研究
+## 案例研究
 
-##### 案例 1：Spring Boot 服务 Full GC 频繁
+### 案例 1：Spring Boot 服务 Full GC 频繁
 
 **症状**：订单服务 QPS 2000，P99 突增至 2s，监控显示每 5 分钟一次 Full GC，停顿 800ms。
 
@@ -688,7 +641,7 @@ jvm_gc_live_data_size_bytes / jvm_gc_max_data_size_bytes
 
 **效果**：P99 降至 80ms，Full GC 消失，老年代使用率稳定在 60%。
 
-##### 案例 2：Kafka 消费者 Metaspace OOM
+### 案例 2：Kafka 消费者 Metaspace OOM
 
 **症状**：Kafka 消费者运行 3 天后 OOM: Metaspace。
 
@@ -702,7 +655,7 @@ jvm_gc_live_data_size_bytes / jvm_gc_max_data_size_bytes
 - 预编译 Handler 为静态字段，避免反射。
 - 设置 `-XX:MaxMetaspaceSize=512m` 并加监控告警。
 
-##### 案例 3：Android 应用 GC 卡顿
+### 案例 3：Android 应用 GC 卡顿
 
 **症状**：Android 列表滚动掉帧，Systrace 显示 `GC: 12ms` 频繁出现。
 
@@ -714,7 +667,7 @@ jvm_gc_live_data_size_bytes / jvm_gc_max_data_size_bytes
 - 预计算字符串，避免 `String.format` 在主线程。
 - 使用 `ArrayMap` 替代 `HashMap` 减少装箱。
 
-##### 案例 4：Hibernate 二级缓存导致内存泄漏
+### 案例 4：Hibernate 二级缓存导致内存泄漏
 
 **症状**：使用 `@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)` 后，堆持续增长直至 OOM。
 
@@ -722,7 +675,7 @@ jvm_gc_live_data_size_bytes / jvm_gc_max_data_size_bytes
 
 **修复**：`ehcache.xml` 配置 `maxEntriesLocalHeap="10000"` 与 `timeToLiveSeconds="600"`。
 
-##### 案例 5：ZGC 大堆（64GB）延迟验证
+### 案例 5：ZGC 大堆（64GB）延迟验证
 
 **场景**：金融风控服务，堆 64GB，要求 P99 < 10ms。
 
@@ -739,9 +692,9 @@ java -XX:+UseZGC -XX:+ZGenerational \
 
 **结果**：分代 ZGC 在 64GB 堆下，单次停顿 P99 = 0.8ms，吞吐损失 6%。
 
-#### 知识讲解与要点分析（原习题）
+## 知识讲解与要点分析（原习题）
 
-##### 选择题
+### 选择题
 
 **1. 下列哪种 GC 算法在存活对象比例高时效率最差？**
 
@@ -793,7 +746,7 @@ D. 支持更小堆
 **答案**：B
 **解析**：非分代 ZGC 对所有对象一视同仁，老年代对象反复参与标记转移，吞吐损失较高。分代 ZGC 引入分代假说，新生代独立频繁回收，老年代低频回收，显著提升吞吐并保持低延迟。
 
-##### 填空题
+### 填空题
 
 **1.** HotSpot 卡表中，每 ___ 字节堆对应 1 字节卡表项。
 
@@ -815,7 +768,7 @@ D. 支持更小堆
 
 **答案**：Snapshot At The Beginning
 
-##### 编程题
+### 编程题
 
 **1.** 编写一个程序，演示 ThreadLocal 在线程池中的内存泄漏，并给出修复版本。
 
@@ -923,7 +876,7 @@ public final class NativeResource implements AutoCloseable {
 }
 ```
 
-#### 知识讲解与要点分析（原思考题）
+## 知识讲解与要点分析（原思考题）
 
 **1.** 为什么 Go 放弃分代 GC？这种设计在什么场景下劣势明显？
 
@@ -937,7 +890,7 @@ public final class NativeResource implements AutoCloseable {
 
 **参考答案**：GC 不可能三角指吞吐量、延迟、footprint 三者不可同时最优。案例：高频交易系统选择 ZGC（延迟 + 吞吐）牺牲 footprint（堆利用率约 85%）；嵌入式设备选择 Serial GC（footprint + 简单）牺牲延迟与吞吐；批处理 ETL 选择 Parallel GC（吞吐 + footprint）牺牲延迟。
 
-#### 参考文献
+## 参考文献
 
 [1] McCarthy, J. 1960. Recursive functions of symbolic expressions and their computation by machine, Part I. *Communications of the ACM* 3, 4 (April 1960), 184–195. DOI: https://doi.org/10.1145/367177.367199
 
@@ -963,22 +916,22 @@ public final class NativeResource implements AutoCloseable {
 
 [12] Yang, X., et al. 2016. The Z Garbage Collector. OpenJDK Project. Available at: https://openjdk.org/jeps/377
 
-#### 延伸阅读
+## 延伸阅读
 
-##### 书籍
+### 书籍
 
 - **Jones, R., Hosking, A., and Moss, E.** *The Garbage Collection Handbook* (2nd ed.). CRC Press, 2011. — GC 算法与实现百科全书。
 - **Lin, C.** *The Java Garbage Collection Mini-Book*. Amazon KDP, 2016. — 实战导向的 Java GC 入门。
 - **Kabutz, Dr. H.** *The Java Specialists' Newsletter*. https://www.javaspecialists.eu — Heinz Kabutz 长期连载的 Java 性能与并发深度文章。
 - **Bacon, D. F., Cheng, P., and Rajan, V. T.** *A Unified Theory of Garbage Collection*. ACM Queue, 2007. — 统一精确式与保守式 GC 的理论框架。
 
-##### 论文
+### 论文
 
 - **Baker, H. G.** *List Processing in Real Time on a Serial Computer*. CACM, 1978. — 增量复制 GC 的奠基论文。
 - **Wilson, P. R.** *Uniprocessor Garbage Collection Techniques*. In Proc. IWMM, 1992. — 经典综述，涵盖所有主要 GC 算法。
 - **Printezis, T. and Detlefs, D.** *A Generational Mostly-concurrent Garbage Collector*. ISMM, 2000. — CMS 设计论文。
 
-##### 在线资源
+### 在线资源
 
 - **OpenJDK ZGC 文档**：https://openjdk.org/groups/hotspot/docs/ZGC_Presentation.pdf
 - **G1 GC Tuning Guide (Oracle)**：https://docs.oracle.com/en/java/javase/21/gctuning/
@@ -989,994 +942,14 @@ public final class NativeResource implements AutoCloseable {
 - **JEP 439: Generational ZGC**：https://openjdk.org/jeps/439
 - **JEP 377: ZGC: A Scalable Low-Latency Garbage Collector**：https://openjdk.org/jeps/377
 
-##### 相关课程
+### 相关课程
 
 - **MIT 6.102 Software Construction**：自动内存管理与不变式章节。
 - **Stanford CS140 Operating Systems**：内存分配与回收章节。
 - **CMU 15-440 Distributed Systems**：分布式系统中的内存与状态管理。
 - **Berkeley CS162 Operating Systems**：GC 与运行时系统讲座。
 
-
-### 3.2 概念关系图
-
-下面用 Mermaid 图表达本文核心概念之间的关系，帮助读者建立整体图景：
-
-```mermaid
-flowchart LR
-    A["JVM垃圾回收"] --> B["核心概念"]
-    B --> C["原理机制"]
-    B --> D["代码实践"]
-    C --> E["工程应用"]
-    D --> E
-```
-
-图中展示的是本文知识的结构化关系：核心概念是入口，原理机制解释“为什么”，代码实践演示“怎么做”，工程应用回答“何时用”。读者学习时可以把每个小节的内容挂接到对应节点上。
-
-## 4. 理论推导与原理解析
-
-本节深入《JVM垃圾回收》背后的原理。理论部分不求面面俱到，而是聚焦“能解释现象、能指导实践”的关键推导。
-
-JVM 内存模型：堆（新生代/老年代）、元空间、虚拟机栈、本地方法栈与程序计数器；GC 从 CMS 演进到 G1（默认）、ZGC（超低延迟），理解分代收集是调优前提。
-并发工具：synchronized 与 JUC（java.util.concurrent）的锁、并发容器、线程池、CompletableFuture 构成并发工具箱；Java 21 的虚拟线程让“每任务一线程”成为可能。
-类加载机制：双亲委派模型保证类唯一性，SPI（ServiceLoader）打破委派实现扩展；自定义类加载器是热部署与隔离的基础。
-反射与注解：反射在运行时检查类结构，注解提供元数据；Spring 的依赖注入与 AOP 均基于这些机制，但反射有性能与安全成本。
-
-需要强调的是，理论推导与工程实践之间存在翻译层：理论给出的是理想化模型与边界条件，工程代码则必须处理真实环境中的例外。读者在学习时应先掌握理论的“标准情形”，再通过陷阱章节了解“非标准情形”。
-
-## 5. 代码示例与逐行讲解
-
-本节把原文中的代码示例系统整理，并为每个示例补充用途说明与讲解。读者不应只浏览代码，而应逐段对照讲解理解设计意图。
-
-### 5.1 示例：示例 1：观察 GC 行为的最小程序
-
-该示例来自原文《示例 1：观察 GC 行为的最小程序》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.fandex.gc</groupId>
-    <artifactId>gc-demo</artifactId>
-    <version>1.0.0</version>
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <archive>
-                        <manifest><mainClass>com.fandex.gc.GcDemo</mainClass></manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-</project>
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 24 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.2 示例：示例 1：观察 GC 行为的最小程序
-
-该示例来自原文《示例 1：观察 GC 行为的最小程序》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```java
-package com.fandex.gc;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-/**
- * GC 行为观察示例。
- * 通过制造短生命周期对象，触发 Minor GC；通过持有长期引用制造晋升。
- */
-public final class GcDemo {
-
-    /** 长期持有，模拟老年代对象。 */
-    private static final List<byte[]> LONG_LIVED = new ArrayList<>();
-
-    public static void main(String[] args) throws InterruptedException {
-        System.out.println("PID = " + ProcessHandle.current().pid());
-        for (int i = 0; i < 1_000_000; i++) {
-            // 短生命周期对象：分配后立即失效，触发 Minor GC
-            byte[] ephemeral = new byte[16 * 1024];
-            if (i % 100 == 0) {
-                // 每 100 次保留一份，模拟晋升
-                LONG_LIVED.add(new byte[64 * 1024]);
-            }
-            if (i % 10_000 == 0) {
-                System.out.printf("iter=%d, heapUsed=%d MB%n",
-                        i, Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() >> 20);
-            }
-            TimeUnit.MILLISECONDS.sleep(1);
-        }
-    }
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 28 行有效代码，包含 4 类关键结构（class、import、if、for）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.3 示例：示例 1：观察 GC 行为的最小程序
-
-该示例来自原文《示例 1：观察 GC 行为的最小程序》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```bash
-java -Xms256m -Xmx256m \
-     -XX:+UseG1GC \
-     -Xlog:gc*=info:file=gc.log:time,uptime,level,tags:filecount=5,filesize=10M \
-     -jar target/gc-demo-1.0.0.jar
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 4 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.4 示例：示例 2：使用 JFR 监控 GC（Java 17+）
-
-该示例来自原文《示例 2：使用 JFR 监控 GC（Java 17+）》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```java
-package com.fandex.gc;
-
-import jdk.jfr.Configuration;
-import jdk.jfr.Recording;
-import java.nio.file.Path;
-
-/**
- * 通过 JFR（Java Flight Recorder）持续记录 GC 事件，
- * 用于生产环境低开销采样与离线分析。
- */
-public final class JfrGcMonitor {
-
-    public static void main(String[] args) throws Exception {
-        Configuration config = Configuration.getConfiguration("profile");
-        try (Recording recording = new Recording(config)) {
-            recording.enable("jdk.GCPhasePause").withThreshold("10ms");
-            recording.enable("jdk.GarbageCollection");
-            recording.enable("jdk.G1HeapSummary");
-            recording.setMaxAge(java.time.Duration.ofMinutes(10));
-            recording.setToDisk(true);
-            recording.start();
-
-            Thread.sleep(60_000); // 采样 1 分钟
-            recording.stop();
-            recording.dump(Path.of("gc-recording.jfr"));
-            System.out.println("JFR 文件已生成：gc-recording.jfr");
-        }
-    }
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 25 行有效代码，包含 2 类关键结构（class、import）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.5 示例：示例 2：使用 JFR 监控 GC（Java 17+）
-
-该示例来自原文《示例 2：使用 JFR 监控 GC（Java 17+）》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```bash
-jfr print --events jdk.GarbageCollection,jdk.GCPhasePause gc-recording.jfr
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 1 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.6 示例：示例 3：WeakReference 实现缓存
-
-该示例来自原文《示例 3：WeakReference 实现缓存》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```java
-package com.fandex.gc;
-
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
-/**
- * 基于 WeakReference 的轻量缓存。
- * GC 在内存压力下自动回收键，避免 OOM。
- */
-public final class WeakCache<K, V> {
-
-    private final Map<WeakReference<K>, V> backing = new HashMap<>();
-    private final Function<K, V> loader;
-
-    public WeakCache(Function<K, V> loader) {
-        this.loader = loader;
-    }
-
-    public V get(K key) {
-        for (Map.Entry<WeakReference<K>, V> e : backing.entrySet()) {
-            K existing = e.getKey().get();
-            if (existing != null && existing.equals(key)) {
-                return e.getValue();
-            }
-        }
-        V value = loader.apply(key);
-        backing.put(new WeakReference<>(key), value);
-        purgeStale();
-        return value;
-    }
-
-    /** 清理已被 GC 回收的弱引用。 */
-    private void purgeStale() {
-        backing.entrySet().removeIf(e -> e.getKey().get() == null);
-    }
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 32 行有效代码，包含 6 类关键结构（class、function、import、if、for、return）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.7 示例：示例 4：Maven 项目集成 GC 友好配置
-
-该示例来自原文《示例 4：Maven 项目集成 GC 友好配置》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```xml
-<!-- pom.xml 关键插件 -->
-<plugin>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>exec-maven-plugin</artifactId>
-    <version>3.1.0</version>
-    <configuration>
-        <executable>java</executable>
-        <arguments>
-            <argument>-Xms2g</argument>
-            <argument>-Xmx2g</argument>
-            <argument>-XX:+UseZGC</argument>
-            <argument>-XX:+ZGenerational</argument>
-            <argument>-XX:+HeapDumpOnOutOfMemoryError</argument>
-            <argument>-XX:HeapDumpPath=${project.build.directory}/oom</argument>
-            <argument>-Xlog:gc*:file=${project.build.directory}/gc.log:time,level,tags</argument>
-            <argument>-classpath</argument>
-            <classpath/>
-            <argument>com.fandex.gc.GcDemo</argument>
-        </arguments>
-    </configuration>
-</plugin>
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 21 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.8 示例：示例 5：Gradle Kotlin DSL 配置
-
-该示例来自原文《示例 5：Gradle Kotlin DSL 配置》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```kotlin
-plugins {
-    application
-}
-application {
-    mainClass.set("com.fandex.gc.GcDemo")
-    applicationDefaultJvmArgs = listOf(
-        "-Xms2g", "-Xmx2g",
-        "-XX:+UseZGC", "-XX:+ZGenerational",
-        "-XX:+HeapDumpOnOutOfMemoryError",
-        "-XX:HeapDumpPath=build/oom",
-        "-Xlog:gc*:file=build/gc.log:time,level,tags"
-    )
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 13 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.9 示例：陷阱 3：内存泄漏的隐蔽形式
-
-该示例来自原文《陷阱 3：内存泄漏的隐蔽形式》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```java
-// 错误：静态 Map 持续增长，永不回收
-public class Cache {
-    private static final Map<String, byte[]> DATA = new HashMap<>();
-    public static void put(String k, byte[] v) { DATA.put(k, v); }
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 5 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.10 示例：陷阱 6：忽略元空间泄漏
-
-该示例来自原文《陷阱 6：忽略元空间泄漏》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```bash
--XX:MetaspaceSize=256m
--XX:MaxMetaspaceSize=512m
--XX:+TraceClassLoading   # JDK 8
--Xlog:class+load=info    # JDK 9+
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 4 行有效代码，包含 1 类关键结构（class）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.11 示例：构建与打包
-
-该示例来自原文《构建与打包》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```xml
-<plugin>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-maven-plugin</artifactId>
-    <configuration>
-        <jvmArguments>
-            -XX:+UseZGC -XX:+ZGenerational
-            -Xms2g -Xmx2g
-            -XX:+HeapDumpOnOutOfMemoryError
-        </jvmArguments>
-    </configuration>
-</plugin>
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 11 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.12 示例：Docker 容器化 GC 注意事项
-
-该示例来自原文《Docker 容器化 GC 注意事项》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```bash
-java -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0 -jar app.jar
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 1 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.13 示例：Docker 容器化 GC 注意事项
-
-该示例来自原文《Docker 容器化 GC 注意事项》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```dockerfile
-FROM eclipse-temurin:21-jre-jammy
-COPY target/app.jar /app/app.jar
-ENV JAVA_OPTS="-XX:+UseZGC -XX:+ZGenerational -XX:MaxRAMPercentage=70.0"
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 4 行有效代码，包含 1 类关键结构（FROM）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.14 示例：Spring Boot GC 监控集成
-
-该示例来自原文《Spring Boot GC 监控集成》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```java
-package com.fandex.gc;
-
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-/**
- * 将 JVM GC 指标注册到 Micrometer，
- * 自动暴露至 Prometheus / Actuator /metrics 端点。
- */
-@Configuration
-public class GcMetricsConfig {
-
-    @Bean
-    public JvmGcMetrics jvmGcMetrics(MeterRegistry registry) {
-        JvmGcMetrics metrics = new JvmGcMetrics();
-        metrics.bindTo(registry);
-        return metrics;
-    }
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 19 行有效代码，包含 3 类关键结构（class、import、return）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.15 示例：Spring Boot GC 监控集成
-
-该示例来自原文《Spring Boot GC 监控集成》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```yaml
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  metrics:
-    tags:
-      application: fandex-gc-demo
-    distribution:
-      percentiles-histogram:
-        jvm.gc.pause: true
-      percentiles:
-        jvm.gc.pause: 0.5,0.95,0.99,0.999
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 13 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.16 示例：Spring Boot GC 监控集成
-
-该示例来自原文《Spring Boot GC 监控集成》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```promql
-# GC 停顿 P99（5 分钟窗口）
-histogram_quantile(0.99, rate(jvm_gc_pause_seconds_bucket[5m]))
-
-# 每秒分配字节数
-rate(jvm_gc_memory_allocated_bytes_total[1m])
-
-# 老年代使用率
-jvm_gc_live_data_size_bytes / jvm_gc_max_data_size_bytes
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.17 示例：案例 5：ZGC 大堆（64GB）延迟验证
-
-该示例来自原文《案例 5：ZGC 大堆（64GB）延迟验证》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```bash
-java -XX:+UseZGC -XX:+ZGenerational \
-     -Xms64g -Xmx64g \
-     -XX:SoftMaxHeapSize=56g \
-     -XX:ZAllocationSpikeTolerance=2 \
-     -Xlog:gc*:file=gc.log:time,level,tags \
-     -jar risk-engine.jar
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.18 示例：编程题
-
-该示例来自原文《编程题》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```java
-package com.fandex.gc;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-public final class ThreadLocalLeak {
-
-    private static final ThreadLocal<byte[]> HOLDER = ThreadLocal.withInitial(() -> new byte[1024 * 1024]);
-
-    /** 错误：未 remove，线程池复用线程导致 value 长期存活。 */
-    static void buggy() {
-        ExecutorService pool = Executors.newFixedThreadPool(8);
-        for (int i = 0; i < 10000; i++) {
-            pool.submit(() -> {
-                HOLDER.set(new byte[1024 * 1024]);
-                // 业务逻辑...
-            });
-        }
-        pool.shutdown();
-    }
-
-    /** 正确：finally 中 remove。 */
-    static void fixed() {
-        ExecutorService pool = Executors.newFixedThreadPool(8);
-        for (int i = 0; i < 10000; i++) {
-            pool.submit(() -> {
-                try {
-                    HOLDER.set(new byte[1024 * 1024]);
-                    // 业务逻辑...
-                } finally {
-                    HOLDER.remove();
-                }
-            });
-        }
-        pool.shutdown();
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        buggy();
-        TimeUnit.SECONDS.sleep(1);
-        System.gc();
-        System.out.println("buggy done");
-    }
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 39 行有效代码，包含 3 类关键结构（class、import、for）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-### 5.19 示例：编程题
-
-该示例来自原文《编程题》小节，用于演示JVM垃圾回收相关操作。阅读时请先看代码结构，再看其后的讲解。
-
-```java
-package com.fandex.gc;
-
-import java.lang.ref.Cleaner;
-import java.lang.ref.PhantomReference;
-import java.lang.ref.ReferenceQueue;
-import java.util.HashSet;
-import java.util.Set;
-
-/**
- * 使用 Cleaner（JDK 9+）管理 native 资源。
- * Cleaner 内部基于 PhantomReference 实现，对象被回收时触发清理动作。
- */
-public final class NativeResource implements AutoCloseable {
-
-    private static final Cleaner CLEANER = Cleaner.create();
-
-    /** 真正持有 native 指针的状态，与 NativeResource 分离以避免强引用。 */
-    private static final class State implements Runnable {
-        private final long nativePtr;
-
-        State(long ptr) { this.nativePtr = ptr; }
-
-        @Override
-        public void run() {
-            // 模拟释放 native 内存
-            System.out.println("Releasing native ptr = " + nativePtr);
-            // 实际场景：Unsafe.freeMemory(nativePtr) 或 JNA 调用
-        }
-    }
-
-    private final State state;
-    private final Cleaner.Cleanable cleanable;
-    private volatile boolean closed = false;
-
-    public NativeResource(long ptr) {
-        this.state = new State(ptr);
-        this.cleanable = CLEANER.register(this, state);
-    }
-
-    @Override
-    public void close() {
-        if (!closed) {
-            closed = true;
-            cleanable.clean(); // 显式触发清理
-        }
-    }
-}
-```
-
-讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
-
-关键点分析：
-
-该示例共 38 行有效代码，包含 3 类关键结构（class、import、if）。其中：
-
-- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
-- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
-- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
-
-进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
-
-```java
-// 泛型工具：类型安全的取最小值
-public static <T extends Comparable<T>> T minOf(T a, T b) {
-    return a.compareTo(b) <= 0 ? a : b;
-}
-```
-讲解：`<T extends Comparable<T>>` 约束 T 必须可比较，编译期保证 `compareTo` 可用；返回值类型与入参一致，避免运行时强转。
-
-综合以上示例，可以总结出本主题的代码实践要点：第一，先定义清晰的输入输出契约；第二，核心逻辑保持单一职责；第三，错误处理与边界条件不可省略；第四，命名与注释表达意图而非复述代码。
-
-## 6. 对比分析
-
-对比是理解《JVM垃圾回收》定位的最快路径。下面从多个维度与相邻方案进行对比。
-
-Java 与 C++：Java 无指针算术、自动 GC、跨平台；C++ 可精细控制内存与性能，适合系统级开发。Java 开发效率高，C++ 性能上限高。
-Java 与 Go：Java 生态成熟、类型系统与工具链完备；Go 语法简单、并发原生、部署为单一二进制。服务端选型取决于团队与生态。
-Java 8 与 Java 21：lambda/Stream（8）与虚拟线程/模式匹配（21）代表两个时代；新项目应基于 17+ 使用现代 API。
-
-对比的目的不是分出绝对优劣，而是建立选择依据：不同约束条件下，最优解不同。读者应把每个对比维度转化为决策检查清单。
-
-## 7. 常见陷阱与最佳实践
-
-本节整理该主题的高频错误与推荐做法。每个陷阱先描述现象，再解释原因，最后给出最佳实践。
-
-### 7.1 equals 与 hashCode 不一致
-
-违反约定导致 HashMap 查找失效。重写 equals 必须同步重写 hashCode，且保证相等对象哈希一致。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，equals 与 hashCode 不一致 一般源于对 Java 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，equals 与 hashCode 不一致 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理equals 与 hashCode 不一致的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.2 集合遍历时修改
-
-`for-each` 中调用 `list.remove` 抛 ConcurrentModificationException。使用 Iterator.remove 或收集后批量删除。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，集合遍历时修改 一般源于对 Java 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，集合遍历时修改 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理集合遍历时修改的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.3 字符串用 == 比较
-
-`==` 比较引用而非内容；字符串应使用 `equals`，并优先字符串常量池与 `StringBuilder` 拼接。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，字符串用 == 比较 一般源于对 Java 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，字符串用 == 比较 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理字符串用 == 比较的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.4 整数缓存误判
-
-`Integer` 在 -128~127 间缓存，`==` 可能为 true，超出范围为 false。包装类型比较一律用 equals。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，整数缓存误判 一般源于对 Java 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，整数缓存误判 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理整数缓存误判的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.5 线程安全误用
-
-`SimpleDateFormat` 非线程安全，多线程格式化出错。使用 `DateTimeFormatter`（不可变）或 ThreadLocal。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，线程安全误用 一般源于对 Java 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，线程安全误用 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理线程安全误用的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.6 资源泄漏
-
-忘记关闭连接与流。使用 try-with-resources 或确保 finally 关闭。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，资源泄漏 一般源于对 Java 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，资源泄漏 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理资源泄漏的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.7 空指针
-
-链式调用未判空。使用 Optional、Objects.requireNonNull 与防御式检查。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，空指针 一般源于对 Java 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，空指针 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理空指针的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.8 大对象长时间存活
-
-导致老年代增长与 Full GC。评估对象生命周期，及时释放引用，必要时使用弱引用。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，大对象长时间存活 一般源于对 Java 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，大对象长时间存活 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理大对象长时间存活的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.9 魔法数字与重复代码
-
-可读性与维护性下降。使用常量、枚举与抽取方法。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，魔法数字与重复代码 一般源于对 Java 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，魔法数字与重复代码 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理魔法数字与重复代码的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.10 忽略编译告警
-
-未检查类型转换与废弃 API 隐藏问题。开启 -Xlint 并保持零告警。
-
-深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
-
-从成因上看，忽略编译告警 一般源于对 Java 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
-
-从影响上看，忽略编译告警 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
-
-从修复策略上看，处理忽略编译告警的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
-
-### 7.0 最佳实践总览
-
-1. 遵循 Java 命名规范：类名驼峰、常量全大写、包名小写域名反写。
-2. 面向接口编程，依赖注入优先于直接 new。
-3. 不可变对象优先：final 字段 + 防御性拷贝。
-4. 集合返回只读视图，避免外部修改内部状态。
-5. 日志使用 SLF4J 门面 + 占位符，避免字符串拼接。
-6. 测试使用 JUnit 5 + AssertJ，按 given/when/then 组织。
-
-把这些最佳实践固化为团队规范与代码评审检查项，是避免同类问题反复出现的关键。
-
-## 8. 工程实践
-
-本节把《JVM垃圾回收》放入真实工程场景，给出可复用的模式与组织方法。
-
-Maven 项目结构：src/main/java、src/test/java 与 pom.xml；依赖坐标（groupId/artifactId/version）从中央仓库解析。
-Spring Boot 分层：Controller（HTTP 层）、Service（业务层）、Repository（数据层）；DTO 与实体分离防止内部结构泄漏。
-配置管理：application.yml + profile（dev/prod）+ 配置中心；敏感信息走环境变量或 Secret。
-可观测性：actuator 健康端点、Micrometer 指标、分布式追踪（OpenTelemetry）构成生产基线。
-
-### 8.1 工程实践的原则拆解
-
-以上工程实践可以归纳为四条原则。第一，配置与代码分离：Java 项目中环境差异应通过配置注入，而不是散落在代码分支中；这保证同一份代码可以在开发、测试、生产环境一致运行。
-
-第二，接口稳定优先：对外接口（函数签名、协议、数据格式）一旦被消费方依赖，变更成本极高；设计时应预留扩展点并保持向后兼容。
-
-第三，可观测性内置：日志、指标与追踪应该在功能开发时同步设计，而不是故障发生后补救；没有观测手段的模块等于黑盒。
-
-第四，变更可回滚：任何发布都应有对应的回滚方案；数据库迁移、配置变更与代码发布一样需要版本管理与逆向路径。
-
-### 8.2 实践落地的检查清单
-
-- [ ] Maven 项目结构：对照本节描述，检查当前项目是否已经落实；未落实的项列入技术债并排期处理。
-- [ ] Spring Boot 分层：对照本节描述，检查当前项目是否已经落实；未落实的项列入技术债并排期处理。
-- [ ] 配置管理：对照本节描述，检查当前项目是否已经落实；未落实的项列入技术债并排期处理。
-- [ ] 可观测性：对照本节描述，检查当前项目是否已经落实；未落实的项列入技术债并排期处理。
-
-工程实践的共性原则：配置与代码分离、接口稳定优先、可观测性内置、变更可回滚。这些原则适用于本主题的所有实现。
-
-## 9. 案例研究
-
-本节通过一个完整案例把《JVM垃圾回收》的知识串起来。案例按“需求分析、方案设计、实现、验证”四步展开。
-
-需求：实现订单服务，支持创建订单、查询列表与状态流转。
-方案：Spring Boot 3 + JPA + H2（演示），Controller-Service-Repository 三层。
-实现要点：订单状态用枚举；金额用 BigDecimal；创建订单在事务内完成库存校验与扣减；接口返回 DTO。
-验证：JUnit 测试服务层事务回滚；MockMvc 测试 HTTP 层；压测关注吞吐与延迟。
-
-### 9.1 案例的扩展讨论
-
-把案例中的方案放大到真实规模，需要额外考虑三个问题：
-
-第一，规模：当数据量或并发量上升一个数量级时，原方案中的数据结构、缓存策略与任务调度是否仍然成立？通常需要引入分层与异步。
-
-第二，团队：多人协作时，模块边界、接口契约与代码所有权必须明确；案例中的实现应拆分为可独立测试的单元，并配合文档说明设计意图。
-
-第三，演进：上线后的需求变化不可避免；方案设计时应预留扩展点（配置化、插件化、事件化），并定期用真实指标验证假设。
-
-
-案例研究的学习方法：先独立阅读需求，尝试在脑中形成方案，再对照实现与讲解，最后思考“如果约束变化（数据量、并发、团队规模），方案应如何调整”。
-
-## 10. 知识要点总结与深入讲解
-
-本节以讲解形式汇总全文要点，替代传统的习题与自测，读者不需要答题，只需跟随解释建立完整的认知框架。
-
-关于《JVM垃圾回收》的核心结论：
-
-Java 的竞争力来自 JVM 生态的深度与广度，选型时应优先考虑团队存量技能与生态需求。
-内存、并发与类加载三大机制是 Java 进阶的分水岭，理解它们才能解决线上疑难问题。
-工程化基线：LTS 版本、依赖锁定、静态检查、单元测试与可观测性。
-
-原文档各小节的要点回顾：
-
-- 学习目标：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 历史动机与发展脉络：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 形式化定义：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 理论推导与原理解析：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 代码示例：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 对比分析：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 常见陷阱与最佳实践：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 工程实践：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 案例研究：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 知识讲解与要点分析（原习题）：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 知识讲解与要点分析（原思考题）：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 参考文献：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-- 延伸阅读：该小节围绕JVM垃圾回收展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
-
-把以上要点与第 3-9 节的内容对照复习，即可完成对本文主题的闭环学习。
-
-## 11. 参考文献
-
-
-Oracle Java 官方文档：https://docs.oracle.com/en/java/
-OpenJDK 项目：https://openjdk.org/
-Java 语言规范：https://docs.oracle.com/javase/specs/
-Spring 官方文档：https://spring.io/projects/spring-boot
-Baeldung 教程站：https://www.baeldung.com/
-Maven 官方文档：https://maven.apache.org/guides/
-
-## 12. 延伸阅读
-
-
-Java 并发与 JUC，见 013-java 模块并发文档。
-JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
-Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
-数据库访问（JDBC/JPA），见 019-sql 模块相关文档。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Java 全栈课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Java 进阶课程。
-
-## 14. 模块知识图谱与学习路径
-
-本文属于 Java 模块。为了把《JVM垃圾回收》放入完整的知识网络，下面列出本模块的全部主题并给出相互关联的导读。学习时建议按模块内顺序推进，并在每个文档中留意交叉引用。
-
-```mermaid
-flowchart LR
-    A["JVM垃圾回收"]
-    N0["Java 概述与开发环境"]
-    N1["快速入门"]
-    N0 --> N1
-    N2["程序结构与基本语法"]
-    N1 --> N2
-    N3["数据类型与类型转换"]
-    N2 --> N3
-    N4["变量与常量"]
-    N3 --> N4
-    N5["枚举与注解"]
-    N4 --> N5
-    N6["泛型进阶"]
-    N5 --> N6
-    N7["并发编程基础"]
-    N6 --> N7
-    N8["JUC并发包"]
-    N7 --> N8
-    N9["JVM类加载机制"]
-    N8 --> N9
-    N10["JVM垃圾回收"]
-    N9 --> N10
-    N11["Java反射"]
-    N10 --> N11
-    N12["Java序列化"]
-    N11 --> N12
-    N13["JavaIO与NIO"]
-    N12 --> N13
-```
-
-上图为模块主题的推荐学习顺序示意图（仅展示前若干主题）。各主题之间存在三类关联：
-
-第一，前置依赖关系：早期主题是后期主题的基础，例如环境与语法先行、进阶主题随后；
-
-第二，横向并列关系：同一层级主题从不同角度覆盖模块能力，学习顺序可以按兴趣调整；
-
-第三，工程组合关系：多个主题在真实项目中组合使用，例如配置、性能与安全主题往往出现在同一系统的不同层面。
-
-### 14.1 模块主题速查表
+## 模块文档速查表
 
 | 文档 | 主题 | 与本文的关联 |
 | --- | --- | --- |
@@ -2071,28 +1044,3 @@ flowchart LR
 | Java 命令行工具 javac/java/jar/jshell/jpackage 语法速查手册 | 089-JavaCommandLineTools | 本文的并列主题 |
 | Maven pom.xml 配置语法速查手册 | 090-MavenPomConfiguration | 本文的并列主题 |
 | Gradle build.gradle 配置语法速查手册 | 091-GradleBuildConfiguration | 本文的并列主题 |
-
-速查表的作用是让读者快速判断：哪些文档应在阅读本文前掌握（前置基础），哪些文档应在阅读本文后继续（延伸主题）。本模块的交叉引用体系即以此表为基础。
-
-## 15. 术语表
-
-下表整理《JVM垃圾回收》及 Java 模块中出现的高频术语，给出简明释义。术语按字母序或逻辑序排列，供查阅。
-
-| 术语 | 释义 |
-| --- | --- |
-| JVM 与字节码 | `javac` 把 .java 编译为 .class 字节码，JVM 加载、校验并执行；热点代码由 JIT（如 C2）编译为机器码，解释与编译结合实现启动速度与 |
-| 面向对象 | 封装（访问控制）、继承（extends/implements）与多态（重载/重写）是 Java 的类型系统支柱；接口默认方法（Java 8）与密封类（Java  |
-| 异常体系 | 受检异常（checked）编译期强制处理，非受检异常（RuntimeException）运行时抛出；try-with-resources 自动关闭资源。 |
-| 泛型与擦除 | Java 泛型在编译期检查后擦除类型参数，运行时无泛型信息；这解释了 `List<String>` 与 `List<Integer>` 的 Class 相同，以 |
-| JVM 内存模型 | 堆（新生代/老年代）、元空间、虚拟机栈、本地方法栈与程序计数器；GC 从 CMS 演进到 G1（默认）、ZGC（超低延迟），理解分代收集是调优前提。 |
-| 并发工具 | synchronized 与 JUC（java.util.concurrent）的锁、并发容器、线程池、CompletableFuture 构成并发工具箱；Ja |
-| 类加载机制 | 双亲委派模型保证类唯一性，SPI（ServiceLoader）打破委派实现扩展；自定义类加载器是热部署与隔离的基础。 |
-| 反射与注解 | 反射在运行时检查类结构，注解提供元数据；Spring 的依赖注入与 AOP 均基于这些机制，但反射有性能与安全成本。 |
-| equals 与 hashCode 不一致（易错点） | 参见常见陷阱章节的详细讲解 |
-| 集合遍历时修改（易错点） | 参见常见陷阱章节的详细讲解 |
-| 字符串用 == 比较（易错点） | 参见常见陷阱章节的详细讲解 |
-| 整数缓存误判（易错点） | 参见常见陷阱章节的详细讲解 |
-| 线程安全误用（易错点） | 参见常见陷阱章节的详细讲解 |
-| 资源泄漏（易错点） | 参见常见陷阱章节的详细讲解 |
-
-术语表与正文配合使用：先通读正文，遇到模糊术语回查本表；长期使用后术语会自然进入工作记忆。
