@@ -202,12 +202,15 @@
     color: var(--module-color, var(--color-accent-base));
   }
 
-  /* 卡片描述：最多显示两行，超出省略 */
+  /* 卡片描述：最多显示两行，超出省略
+   * 统一高度：min-height 固定为两行空间（2 行 × 1.5 行高 = 3em），
+   * 短描述卡片与两行描述卡片高度一致；em 单位随各断点字号自动适配 */
   .card-desc {
     font-size: 0.72rem;
     color: var(--color-text-secondary);
     margin: 0;
     line-height: 1.5;
+    min-height: 3em;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
