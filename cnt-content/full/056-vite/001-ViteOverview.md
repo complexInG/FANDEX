@@ -227,9 +227,3 @@ HMR API：import.meta.hot.accept/decline；框架插件自动接入。
 资源优化：图片压缩、SVG 内联、字体子集。
 产物分析：rollup-plugin-visualizer 识别大块。
 缓存策略：文件哈希 + 长期缓存头。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| Vite 构建工具概述 | 001-ViteOverview | 本文自身 |

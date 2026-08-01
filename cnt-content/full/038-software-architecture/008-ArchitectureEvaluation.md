@@ -181,16 +181,3 @@ ADR 结构：背景（Context）、决策（Decision）、后果（Consequences�
 时机：每次重大技术选择记录；轻量 Markdown 入库。
 价值：新成员快速理解、避免重复争论、审计轨迹。
 维护：决策被推翻时新增 ADR 而非修改历史。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| 软件架构概述 | 001-SoftwareArchitectureOverview | 本文的前置基础 |
-| 分层架构 | 002-LayeredArchitecture | 本文的原理深化 |
-| 微服务架构 | 003-MicroserviceArchitecture | 本文的原理深化 |
-| 事件驱动架构 | 004-EventDrivenArchitecture | 本文的原理深化 |
-| 质量属性 | 005-QualityAttribute | 本文的并列主题 |
-| CAP理论与最终一致性 | 006-CAP | 本文的并列主题 |
-| 领域驱动设计 | 007-DDD | 本文的并列主题 |
-| 架构评估 | 008-ArchitectureEvaluation | 本文自身 |

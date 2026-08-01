@@ -139,15 +139,3 @@ pnpm workspace：catalog 统一版本、隔离依赖、高效安装。
 评审自动化：机器人摘要、安全扫描、依赖检查。
 人工聚焦：设计、边界、测试质量与可读性。
 度量：评审周期、缺陷逃逸率、门禁通过率。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| 工程实践概述 | 001-EngineeringPracticeOverview | 本文的前置基础 |
-| 设计文档规范 | 002-DesignDocumentStandard | 本文的并列主题 |
-| Code-Review-Checklist | 003-CodeReviewChecklist | 本文的并列主题 |
-| On-Call最佳实践 | 004-OnCallPractice | 本文的并列主题 |
-| 事故复盘方法论 | 005-IncidentRetrospectiveMethodology | 本文的并列主题 |
-| 技术方案评审 | 006-TechnicalReview | 本文自身 |
-| 知识管理 | 007-KnowledgeManagement | 本文的并列主题 |

@@ -236,9 +236,3 @@ async/await 基于 Future 与执行器；tokio 提供多线程运行时与任务
 异步陷阱：阻塞调用卡死执行器（用 spawn_blocking）；锁跨 await（用 tokio::sync）。
 Select 与流（Stream）组合并发任务；超时用 tokio::time::timeout。
 性能：任务数而非线程数；背压与缓冲设计。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| Rust 语言概述与学习路线 | 001-RustOverview | 本文自身 |

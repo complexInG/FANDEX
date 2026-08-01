@@ -242,9 +242,3 @@ hoist 选项：shamefully-hoist 模拟 npm 扁平结构（慎用）。
 缓存：turbo 按输入哈希缓存任务结果；远程缓存加速 CI。
 过滤器：--filter 精确选择任务范围；affected 模式只跑变更相关。
 并行与限制：--parallel 与 --concurrency 平衡资源。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| pnpm 与 Monorepo 工程化 | 001-PnpmMonorepoOverview | 本文自身 |

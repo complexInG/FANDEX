@@ -240,37 +240,3 @@ Testcontainers 起真实依赖（数据库/消息）兼顾真实与隔离。
 集成：Repository/API/外部服务，秒级。
 E2E：关键用户旅程，分钟级；冒烟集在发布前。
 度量与治理：失败分类、flake 治理、覆盖率趋势看板。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| 测试基础与方法 | 001-TestBasicsMethod | 本文的前置基础 |
-| 功能与自动化测试 | 002-FunctionalAndAutomatedTest | 本文的并列主题 |
-| 性能与接口测试 | 003-PerformanceInterfaceTest | 本文的性能延伸 |
-| 安全与移动测试 | 004-SecurityAndMobileTest | 本文的安全延伸 |
-| 测试概念与原则 | 005-TestConceptPrinciple | 本文的并列主题 |
-| 测试层级 | 006-TestLevels | 本文自身 |
-| 测试类型 | 007-TestType | 本文的并列主题 |
-| 等价类划分 | 008-EquivalenceClassPartition | 本文的并列主题 |
-| 边界值分析 | 009-BoundaryValueAnalysis | 本文的并列主题 |
-| Selenium | 010-Selenium | 本文的并列主题 |
-| pytest | 011-Pytest | 本文的并列主题 |
-| JUnit5 | 012-JUnit5 | 本文的并列主题 |
-| API自动化测试 | 013-APIAutomationTest | 本文的并列主题 |
-| JMeter | 014-JMeter | 本文的并列主题 |
-| 白盒测试覆盖度 | 015-WhiteBoxTestCoverage | 本文的并列主题 |
-| 自动化测试框架对比 | 016-AutomationTestFrameworkComparison | 本文的并列主题 |
-| API自动化测试详解 | 017-APIAutomationTestDetailed | 本文的并列主题 |
-| 压力测试与稳定性测试 | 018-StressAndStabilityTest | 本文的并列主题 |
-| 安全测试 | 019-SecurityTesting | 本文的安全延伸 |
-| 测试双 | 020-TestDouble | 本文的并列主题 |
-| TDD与BDD | 021-TDDBDD | 本文的并列主题 |
-| CI-CD测试门禁 | 022-CICDTest | 本文的并列主题 |
-| Jest 基础 API | 023-JestBasics | 本文的前置基础 |
-| Jest Mock 模拟 | 024-JestMock | 本文的并列主题 |
-| Jest 异步测试 | 025-JestAsync | 本文的并列主题 |
-| Jest 配置与快照 | 026-JestConfig | 本文的并列主题 |
-| Mockito 模拟 | 027-Mockito | 本文的并列主题 |
-| E2E 端到端测试 | 028-E2ETest | 本文的并列主题 |
-| 断言库 | 029-AssertionLibrary | 本文的并列主题 |

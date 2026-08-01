@@ -195,18 +195,3 @@ Scrum：Sprint（1-4 周）、三会议（计划/每日站会/回顾）、三工
 关注点：正确性、可读性、测试、边界、安全。
 沟通：提问式评论、代码建议、避免人身化。
 机制：必过门禁、多 Reviewer 轮换、评审 SLA。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| 软件工程概述 | 001-SoftwareEngineeringOverview | 本文的前置基础 |
-| 敏捷开发 | 002-AgileDevelopment | 本文的并列主题 |
-| 需求分析方法 | 003-RequirementAnalysisMethod | 本文的并列主题 |
-| UML图详解 | 004-UMLGraphDetailed | 本文的并列主题 |
-| 设计模式详解 | 005-DesignPatternDetailed | 本文的并列主题 |
-| 代码重构 | 006-Refactoring | 本文自身 |
-| 软件测试方法 | 007-SoftwareTestMethod | 本文的并列主题 |
-| 软件度量 | 008-SoftwareMetrics | 本文的并列主题 |
-| 技术债务管理 | 009-TechDebtManagement | 本文的并列主题 |
-| DevOps与CICD集成 | 010-DevOpsCICDIntegration | 本文的并列主题 |

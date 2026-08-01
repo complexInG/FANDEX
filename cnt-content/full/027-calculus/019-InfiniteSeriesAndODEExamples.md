@@ -244,27 +244,3 @@ Desmos：https://www.desmos.com/
 第二形式：定积分 = 原函数差。
 推论：面积、累积量、期望的积分表达。
 应用：FTC 是数值积分与微分方程求解的理论基础。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| 函数与极限 | 001-FunctionAndLimit | 本文的并列主题 |
-| 导数与微分 | 002-PhilosophiaeNaturalisPrincipiaMathematica | 本文的并列主题 |
-| 微分中值定理 | 003-AMeanValueTheorem | 本文的并列主题 |
-| 不定积分 | 004-IndefiniteIntegral | 本文的并列主题 |
-| 定积分与应用 | 005-DefiniteIntegralAndApplication | 本文的并列主题 |
-| 多元函数微分 | 006-MultivariateFunctionDifferential | 本文的并列主题 |
-| 重积分 | 007-MultipleIntegral | 本文的并列主题 |
-| 曲线积分与曲面积分 | 008-CurveAndSurfaceIntegral | 本文的并列主题 |
-| 公式速查表 | 009-FormulaQuickReference | 本文的并列主题 |
-| 无穷级数与常微分方程 | 010-InfiniteSeriesAndODE | 本文的并列主题 |
-| 函数与极限典型例题 | 011-FunctionAndLimitExamples | 本文的并列主题 |
-| 导数与微分典型例题 | 012-DerivativeAndDifferentialExamples | 本文的并列主题 |
-| 微分中值定理典型例题 | 013-DifferentialMeanValueTheoremExamples | 本文的并列主题 |
-| 不定积分典型例题 | 014-IndefiniteIntegralExamples | 本文的并列主题 |
-| 定积分与应用典型例题 | 015-DefiniteIntegralApplicationExamples | 本文的并列主题 |
-| 多元函数微分典型例题 | 016-MultivariateFunctionDifferentialExamples | 本文的并列主题 |
-| 重积分典型例题 | 017-MultipleIntegralExamples | 本文的并列主题 |
-| 曲线积分与曲面积分典型例题 | 018-CurveAndSurfaceIntegralExamples | 本文的并列主题 |
-| 无穷级数与常微分方程典型例题 | 019-InfiniteSeriesAndODEExamples | 本文自身 |

@@ -999,26 +999,3 @@ SVG 图形语法，见 012-svg 模块文档。
 CSS 样式与动画，见 007-css 模块。
 React/Vue 图标组件实践，见 011-react/010-vue3 模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供前端图形课程。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| SVG 概述与环境配置 | 001-SVGOverviewEnvSetup | 本文的前置基础 |
-| SVG 基础语法与文档结构 | 002-SVGBasicSyntaxDocStructure | 本文的前置基础 |
-| SVG 坐标系与 viewBox | 003-SVGCoordinateSystemViewBox | 本文的并列主题 |
-| SVG 基本图形详解 | 004-SVGBasicShapeDetailed | 本文的并列主题 |
-| SVG 路径 path 详解 | 005-SVGPathPathDetailed | 本文的并列主题 |
-| SVG 文本与排版 | 006-SVGTextTypography | 本文的并列主题 |
-| SVG 颜色与填充 | 007-SVGColorFill | 本文的并列主题 |
-| SVG 渐变与图案 | 008-SVGGradientPattern | 本文的并列主题 |
-| SVG 变换 transform | 009-SVGTransformTransform | 本文的并列主题 |
-| SVG 滤镜详解 | 010-SVGFilterDetailed | 本文的并列主题 |
-| SVG 裁剪与蒙版 | 011-SVGClipMask | 本文的并列主题 |
-| SVG 符号与复用 | 012-SVGSymbolReuse | 本文的并列主题 |
-| SVG 动画基础 | 013-SVGAnimationBasics | 本文的前置基础 |
-| SVG CSS 样式化 | 014-SVGCSSStyling | 本文的并列主题 |
-| SVG JavaScript 交互 | 015-SVGJavaScriptInteraction | 本文自身 |
-| SVG 响应式与性能 | 016-SVGResponsivePerformance | 本文的性能延伸 |
-| SVG 图标与可访问性 | 017-SVGIconAccessibility | 本文的并列主题 |
-| SVG 实战项目 | 018-SVGPracticeProject | 本文的综合应用 |

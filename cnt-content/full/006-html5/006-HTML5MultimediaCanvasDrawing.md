@@ -1263,38 +1263,3 @@ WHATWG HTML Living Standard：https://html.spec.whatwg.org/
 MDN HTML 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTML
 W3C Markup Validation Service：https://validator.w3.org/
 WebAIM 可访问性指南：https://webaim.org/
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| HTML5 概述与核心特性 | 001-HTML5OverviewCoreFeature | 本文的前置基础 |
-| HTML5 基础标签与全局属性 | 002-HTML5BasicTagGlobalAttribute | 本文的前置基础 |
-| 语义化标签 | 003-SemanticTag | 本文的并列主题 |
-| 无障碍访问 | 004-Accessibility | 本文的并列主题 |
-| HTML5 表单与验证 | 005-HTML5FormValidation | 本文的并列主题 |
-| HTML5 多媒体与 Canvas 绘图 | 006-HTML5MultimediaCanvasDrawing | 本文自身 |
-| 文档类型声明 | 007-DocTypeDeclaration | 本文的并列主题 |
-| HTML5 离线存储与 Web API | 008-HTML5OfflineStorageWebAPI | 本文的并列主题 |
-| 元数据与字符编码 | 009-MetadataCharacterEncoding | 本文的并列主题 |
-| 文本语义 | 010-TextSemantic | 本文的并列主题 |
-| 列表 | 011-List | 本文的并列主题 |
-| 链接与锚点 | 012-LinkageAnchor | 本文的并列主题 |
-| 图像与响应式图片 | 013-ImageResponsiveImage | 本文的并列主题 |
-| 音频与视频 | 014-AudioVideo | 本文的并列主题 |
-| SVG | 015-SVG | 本文的并列主题 |
-| 嵌入式内容 | 016-EmbeddedContent | 本文的并列主题 |
-| progress与meter | 017-ProgressMeter | 本文的并列主题 |
-| Web Components 与 PWA 开发 | 018-WebComponentsPWADevelopment | 本文的并列主题 |
-| 拖拽API | 019-DragAPI | 本文的并列主题 |
-| 地理位置定位 | 020-Geolocation | 本文的并列主题 |
-| Web-Workers | 021-WebWorkers | 本文的并列主题 |
-| Service-Worker与PWA | 022-ServiceWorkerPWA | 本文的并列主题 |
-| History-API | 023-HistoryAPI | 本文的并列主题 |
-| WebSocket | 024-WebSocket | 本文的并列主题 |
-| WebRTC | 025-WebRTC | 本文的并列主题 |
-| 微数据与JSON-LD | 026-MicrodataJSONLD | 本文的并列主题 |
-| 自定义数据属性 | 027-CustomDataAttribute | 本文的并列主题 |
-| 跨文档通信 | 028-CrossDocumentCommunication | 本文的并列主题 |
-| 视口配置与移动优先 | 029-ViewportConfigMobileFirst | 本文的并列主题 |
-| HTML5 项目示例：交互式表单应用 | 030-HTML5ProjectExampleInteractiveFormApplication | 本文的综合应用 |

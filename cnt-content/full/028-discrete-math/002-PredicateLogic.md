@@ -245,16 +245,3 @@ Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.c
 树的等价定义：连通无环、n-1 条边、任意两点唯一路径。
 欧拉回路条件：连通且所有顶点度数为偶。
 四色定理与平面图（了解层面）。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| 命题逻辑 | 001-PropositionalLogic | 本文的并列主题 |
-| 谓词逻辑 | 002-PredicateLogic | 本文自身 |
-| 集合与关系 | 003-SetAndRelation | 本文的并列主题 |
-| 函数与基数 | 004-FunctionAndNumber | 本文的并列主题 |
-| 图论基础 | 005-GraphTheoryBasics | 本文的前置基础 |
-| 图论进阶 | 006-GraphTheoryAdvanced | 本文的并列主题 |
-| 代数系统 | 007-AlgebraicSystem | 本文的并列主题 |
-| 组合数学 | 008-Combinatorics | 本文的并列主题 |

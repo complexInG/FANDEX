@@ -521,37 +521,3 @@ Redis 数据结构详解，见 022-redis 模块文档。
 Redis 持久化与集群，见 022-redis 模块相关文档。
 MySQL 与 Redis 缓存架构，见 020-mysql 模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Redis 课程。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| 概述与核心数据结构 | 001-OverviewCoreDataStructure | 本文的前置基础 |
-| 持久化与模块 | 002-PersistenceModule | 本文的并列主题 |
-| 集群与高可用 | 003-ClusterHA | 本文的并列主题 |
-| 缓存策略与高级特性 | 004-CacheStrategyAdvancedFeature | 本文的并列主题 |
-| 位图 | 005-BitGraph | 本文的并列主题 |
-| 基数统计 | 006-NumberStats | 本文的并列主题 |
-| 地理空间 | 007-GeoSpatial | 本文的并列主题 |
-| 流 | 008-Stream | 本文的并列主题 |
-| 向量集 | 009-VectorSet | 本文的并列主题 |
-| RDB快照持久化 | 010-RDBSnapshotPersistence | 本文的并列主题 |
-| AOF日志持久化 | 011-AOFLogPersistence | 本文的并列主题 |
-| 混合持久化 | 012-MixedPersistence | 本文的并列主题 |
-| 无盘复制 | 013-DisklessReplication | 本文的并列主题 |
-| 模块系统 | 014-ModuleSystem | 本文的并列主题 |
-| 字符串SDS结构 | 015-StringSDSStructure | 本文的并列主题 |
-| 跳表与有序集合 | 016-SkipListAndSortedSet | 本文的并列主题 |
-| 主从复制缓冲区 | 017-ReplicationBuffer | 本文的并列主题 |
-| 哨兵选举 | 018-SentinelElection | 本文的并列主题 |
-| Redis-Cluster哈希槽 | 019-RedisClusterHashSlot | 本文的并列主题 |
-| 管道与事务原子性 | 020-PipeTransactionAtomic | 本文的并列主题 |
-| Lua脚本原子执行 | 021-LuaScriptAtomicExecution | 本文自身 |
-| 缓存穿透击穿雪崩 | 022-CachePenetrationBreakdownAvalanche | 本文的并列主题 |
-| 内存淘汰策略 | 023-MemoryEvictionPolicy | 本文的并列主题 |
-| Redis Hash 命令速查 | 024-HashCommand | 本文的并列主题 |
-| Redis List/Set/ZSet 命令 | 025-ListSetZSetCommand | 本文的并列主题 |
-| Redis 发布订阅命令 | 026-PubSubCommand | 本文的并列主题 |
-| Redis Key 管理与过期命令速查手册 | 027-KeyManagement | 本文的并列主题 |
-| Redis 安全与 ACL 命令速查手册 | 028-ACL | 本文的安全延伸 |
-| Redis 7.0+ 新特性命令速查手册 | 029-NewFeatures7 | 本文的并列主题 |

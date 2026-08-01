@@ -358,21 +358,3 @@ BBC Learning English：https://www.bbc.co.uk/learningenglish
 语言：短句、主动语态、具体动词（run、build、deploy）。
 格式：Markdown、代码块、列表；与代码风格一致。
 练习：改写官方文档片段、写 README、PR 描述。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| 计算机专业英语词汇 | 001-ComputerProfessionalEnglishVocabulary | 本文的并列主题 |
-| 英语语法体系总览 | 002-EnglishGrammarSystemOverview | 本文的并列主题 |
-| 句子结构与成分分析 | 003-SentenceStructureAnalysis | 本文的并列主题 |
-| 复合句与从句 | 004-CompoundSentenceClause | 本文的并列主题 |
-| 长难句拆解技巧 | 005-LongDifficultSentenceBreakdownTechnique | 本文的并列主题 |
-| 常见语法错误汇总 | 006-CommonGrammarErrorSummary | 本文的并列主题 |
-| 技术文档阅读方法 | 007-TechDocReadingMethod | 本文的并列主题 |
-| 学术论文阅读指南 | 008-AcademicPaperReadingGuide | 本文的并列主题 |
-| 学术写作规范 | 009-AcademicWritingStandard | 本文的并列主题 |
-| 技术文档写作 | 010-TechDocWriting | 本文自身 |
-| 英译汉技巧 | 011-EnglishToChineseTechnique | 本文的并列主题 |
-| 汉译英技巧 | 012-ChineseToEnglishTechnique | 本文的并列主题 |
-| 技术翻译要点 | 013-TechTranslationPoints | 本文的并列主题 |

@@ -733,38 +733,3 @@ Visualgo 可视化：https://visualgo.net/zh
 数学基础（离散数学），见 028-discrete-math 模块。
 编程语言实现，见各语言模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供算法课程。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| 算法分析基础与学习路线 | 001-MIT6006IntroductionToAlgorithms | 本文的前置基础 |
-| 排序算法 | 002-SortAlgorithm | 本文的并列主题 |
-| 栈与队列 | 003-ConcurrencyInGoToolsAndTechniquesForDevelopers | 本文的并列主题 |
-| 搜索算法 | 004-SearchAlgorithm | 本文的并列主题 |
-| 链表 | 005-LinkedList | 本文自身 |
-| 哈希表 | 006-HashTable | 本文的并列主题 |
-| 树 | 007-TheUbiquitousBTree | 本文的并列主题 |
-| 图算法 | 008-GraphAlgorithmsCPAlgorithms | 本文的并列主题 |
-| 分治算法 | 009-GaussAndTheHistoryOfTheFastFourierTransform | 本文的并列主题 |
-| 贪心算法 | 010-GreedyAlgorithm | 本文的并列主题 |
-| 递归与回溯 | 011-NQueensBenchmarkBitManipulationApproach | 本文的并列主题 |
-| 字符串算法 | 012-RipgrepRecursivelySearchDirectoriesForARegexPattern | 本文的并列主题 |
-| 动态规划 | 013-ArtificialIntelligenceAModernApproach | 本文的并列主题 |
-| 数组与动态数组 | 014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats | 本文的并列主题 |
-| 平衡树与高级树 | 015-PostgreSQLBTreeIndexImplementation | 本文的并列主题 |
-| 堆与优先队列 | 016-HeapAndPriorityQueue | 本文的并列主题 |
-| 查找算法 | 017-CPythonBisectPyArrayBisectionAlgorithmImplementation | 本文的并列主题 |
-| LeetCode 刷题指南：从题型分类到面试策略的系统化路径 | 018-InternationalCollegiateProgrammingContestICPC | 本文的并列主题 |
-| 并查集 | 019-RedisClusterHashSlotAndConsistentHashingDesignNotes | 本文的并列主题 |
-| 线段树 | 020-AtCoderLibrarySegmentTree | 本文的并列主题 |
-| 树状数组 | 021-PostgreSQLStatisticsCollector | 本文的并列主题 |
-| 跳跃表 | 022-LevelDBREADMEMemTableImplementation | 本文的并列主题 |
-| 布隆过滤器 | 023-SquidCacheProxyCacheDigests | 本文的并列主题 |
-| KMP字符串匹配 | 024-LinuxKernelLibStringCStringMatchingRoutines | 本文的并列主题 |
-| 动态规划状态压缩 | 025-LeetCodeBitmaskDPProblemsCollection | 本文的并列主题 |
-| Floyd-Warshall 算法 | 026-MIT6006IntroductionToAlgorithmsAllPairsShortestPaths | 本文的并列主题 |
-| Kruskal 算法 | 027-BoostGraphLibrary1860KruskalMinimumSpanningTree | 本文的并列主题 |
-| 拓扑排序 | 028-MIT6006IntroductionToAlgorithmsDirectedGraphs | 本文的并列主题 |
-| 算法理论知识点 | 029-MillenniumPrizeProblemsPVersusNP | 本文的并列主题 |
-| 网络流 | 030-CS261AlgorithmsNetworkFlows | 本文的并列主题 |

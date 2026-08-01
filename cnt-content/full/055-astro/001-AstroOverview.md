@@ -269,9 +269,3 @@ Content Layer（Astro 5+）：从远程或本地数据源加载，缓存策略�
 指令：client:load（加载即水合）、client:idle（空闲）、client:visible（可见）、client:only（仅客户端）。
 水合成本：每个岛屿独立 JS 块，页面级状态传递用 store（nanostores）。
 性能分析：astro build 报告每页 JS 大小，按报告调整指令。
-
-## 模块文档速查表
-
-| 文档 | 主题 | 与本文的关联 |
-| --- | --- | --- |
-| Astro 框架概述与文档站实践 | 001-AstroOverview | 本文自身 |
