@@ -402,8 +402,6 @@ function initScroller(scroller: HTMLElement, rowIndex: number): void {
   scroller.addEventListener('pointerup', onPointerUp);
   scroller.addEventListener('pointercancel', onPointerUp);
 
-  // 中键拖拽不会触发链接 click 跳转，无需 click 抑制逻辑（已移除 suppressClick）
-
   // ========== 导航按钮 ==========
   const section = scroller.closest('.category-section');
   if (section) {

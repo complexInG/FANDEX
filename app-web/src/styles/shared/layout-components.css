@@ -1431,9 +1431,10 @@
     align-items: stretch;
     height: var(--mobile-nav-height);
     padding-bottom: env(safe-area-inset-bottom);
-    background-color: var(--mobile-nav-bg);
-    backdrop-filter: blur(var(--header-blur));
-    -webkit-backdrop-filter: blur(var(--header-blur));
+    /* 移动端纯色背景，避免 backdrop-filter 与 fixed 叠加导致每帧重绘卡顿 */
+    background-color: var(--color-bg-primary);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-top: 1px solid var(--header-border);
   }
 

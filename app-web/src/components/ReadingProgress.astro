@@ -61,12 +61,15 @@ const scrollConfig = JSON.stringify({ container: scrollContainer });
    * - 监听容器的 scroll 事件（passive + rAF 节流，避免阻塞主线程）
    * - 计算公式：scrollTop / (scrollHeight - clientHeight) * 100
    * - 更新进度条 width 与 aria-valuenow
-   * - 兼容 View Transitions：监听 astro:page-load 事件重新初始化
-   * - 支持多实例：通过 data 属性读取各组件的滚动配置
+   * - 兼容 View Transitions：每次 page-load 重新初始化前清理旧监听器，避免 window.resize 累积
    */
 
   /** rAF 句柄（用于节流） */
   let rafId: number | null = null;
+
+  /** 上一次绑定的 scroll 回调与滚动容器，用于 page-load 前清理旧监听器 */
+  let prevScrollHandler: (() => void) | null = null;
+  let prevScrollContainer: HTMLElement | null = null;
 
   /** 从 data-reading-progress-config 属性解析滚动配置 */
   function readScrollConfig(progressEl: HTMLElement): string {
@@ -82,6 +85,16 @@ const scrollConfig = JSON.stringify({ container: scrollContainer });
 
   /** 初始化阅读进度条 */
   function initReadingProgress(): void {
+    // 清理上一页残留的监听器，防止 window.resize 累积导致性能退化
+    if (prevScrollHandler && prevScrollContainer) {
+      prevScrollContainer.removeEventListener('scroll', prevScrollHandler);
+      window.removeEventListener('resize', prevScrollHandler);
+    }
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+
     const progressEl = document.querySelector<HTMLElement>('.fndx-reading-progress');
     if (!progressEl) return;
 
@@ -131,6 +144,10 @@ const scrollConfig = JSON.stringify({ container: scrollContainer });
 
     // 窗口尺寸变化时重新计算（响应式适配）
     window.addEventListener('resize', onScroll, { passive: true });
+
+    // 记录当前回调与容器，供下次 page-load 清理
+    prevScrollHandler = onScroll;
+    prevScrollContainer = scrollContainer;
   }
 
   // 初始化（首屏与 View Transitions 跳转后均触发）

@@ -272,17 +272,10 @@ document.addEventListener('astro:page-load', initCodeRunners);
 void initAnimations();
 void initCodeRunners();
 
-// ========== 监听器清理：避免 View Transitions 切换页面时累积监听器 ==========
-// 所有 astro:page-load 与 fullscreenchange 监听器需在 before-swap 时移除，
-// 否则每次页面切换都会重复注册，导致同一回调被多次执行、IntersectionObserver 泄漏。
-function onBeforeSwap(): void {
-  document.removeEventListener('astro:page-load', initCopyButtons);
-  document.removeEventListener('astro:page-load', initAnimations);
-  document.removeEventListener('astro:page-load', initCodeRunners);
-  onFullscreenChange && document.removeEventListener('fullscreenchange', onFullscreenChange);
-  document.removeEventListener('astro:before-swap', onBeforeSwap);
-}
-document.addEventListener('astro:before-swap', onBeforeSwap);
+// 注：原 onBeforeSwap 错误移除 astro:page-load 监听器，导致首次跳转后
+// 代码复制/动画/运行器永久失效。已删除该函数。
+// astro:page-load 监听器使用相同函数引用注册，addEventListener 自动去重，不会累积。
+// fullscreenchange 监听器由 initFullscreenToggle 通过 onFullscreenChange === null 守卫，仅注册一次。
 
 // 注册 Service Worker 以支持离线访问
 if ('serviceWorker' in navigator) {

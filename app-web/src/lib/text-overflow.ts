@@ -10,17 +10,19 @@
  *   未溢出 → 移除 .text-marquee 类
  *   window.resize → 防抖重新检测全部元素
  *
- * 使用方式：
- *   import { initTextMarqueeWithResize } from '@/lib/text-overflow';
- *   initTextMarqueeWithResize('.card-title');
- *
- * 依赖 CSS：
- *   .text-marquee 类需在对应样式文件中定义动画规则
- *   动画通常包含 translateX(0) → translateX(calc(-100% + container-width))
+ * 修复说明：
+ * - 原实现每次调用都注册新 resize 监听器，astro:page-load 后累积
+ * - 现使用 registeredSelectors 集合 + resizeRegistered 守卫，resize 仅注册一次
  */
 
 /** 防抖延迟（毫秒），避免 resize 事件频繁触发检测 */
 const RESIZE_DEBOUNCE_MS = 150;
+
+/** 已注册的选择器集合（支持多选择器场景） */
+const registeredSelectors = new Set<string>();
+
+/** resize 监听是否已注册（模块级单例，防止累积） */
+let resizeRegistered = false;
 
 /**
  * 检测单个元素是否文本溢出，并切换跑马灯类名
@@ -39,18 +41,26 @@ function checkOverflow(el: HTMLElement): void {
  * @param selector - CSS 选择器，匹配需要检测溢出的元素
  */
 export function initTextMarqueeWithResize(selector: string): void {
+  registeredSelectors.add(selector);
+
   const elements = document.querySelectorAll<HTMLElement>(selector);
   elements.forEach(checkOverflow);
 
-  // 防抖 resize 监听：窗口大小变化时重新检测所有匹配元素
+  // resize 监听仅注册一次，避免 View Transitions 后累积
+  if (resizeRegistered) return;
+  resizeRegistered = true;
+
   let resizeTimer: ReturnType<typeof setTimeout> | null = null;
   window.addEventListener(
     'resize',
     () => {
       if (resizeTimer) clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        const els = document.querySelectorAll<HTMLElement>(selector);
-        els.forEach(checkOverflow);
+        // 遍历所有已注册选择器，重新检测溢出状态
+        registeredSelectors.forEach((sel) => {
+          const els = document.querySelectorAll<HTMLElement>(sel);
+          els.forEach(checkOverflow);
+        });
       }, RESIZE_DEBOUNCE_MS);
     },
     { passive: true },

@@ -206,6 +206,9 @@ const scrollConfig = JSON.stringify({ container: scrollContainer, offset: offset
    * - 支持多实例：通过 data-toc-scroll-config 读取各组件的滚动配置
    */
 
+  /** 上一次创建的 IntersectionObserver，用于 page-load 前断开，防止累积泄漏 */
+  let prevObserver: IntersectionObserver | null = null;
+
   /** localStorage 键名前缀：TOC 折叠状态（按页面 URL 隔离） */
   const TOC_COLLAPSE_PREFIX = 'fandex-toc-collapsed:';
 
@@ -313,6 +316,11 @@ const scrollConfig = JSON.stringify({ container: scrollContainer, offset: offset
     });
 
     /** IntersectionObserver：监听标题可见性 */
+    // 断开上一页的 observer，防止每次 page-load 累积新 observer 导致内存泄漏
+    if (prevObserver) {
+      prevObserver.disconnect();
+      prevObserver = null;
+    }
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -335,6 +343,9 @@ const scrollConfig = JSON.stringify({ container: scrollContainer, offset: offset
     );
 
     headingElements.forEach((el) => observer.observe(el));
+
+    // 记录当前 observer，供下次 page-load 断开
+    prevObserver = observer;
 
     /** 初始化折叠按钮交互 */
     initTocCollapse();
