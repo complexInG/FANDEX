@@ -23,7 +23,9 @@
  * - style-src 允许 'unsafe-inline' 与 https://cdn.jsdelivr.net 与 https://fonts.googleapis.com：内联样式与 CDN 样式资源（含 Google Fonts CSS）
  * - font-src 允许 data: 与 https://fonts.gstatic.com：Base64 内嵌字体 + Google Fonts 字体文件（Chakra Petch / IBM Plex Sans）
  * - img-src 允许 data:：Base64 内嵌图片（如 SVG 数据 URI）
- * - connect-src 仅 'self'：XHR/Fetch 仅允许同源
+ * - connect-src 'self' + jsDelivr：XHR/Fetch 允许同源与代码沙箱 CDN；
+ *   Pyodide 引导后通过 fetch 下载 WASM/数据文件（code-runner-worker.ts），
+ *   若仅允许同源会导致 Playground 的 Python 运行时被 CSP 拦截。
  */
 export const MAIN_CSP = [
   "default-src 'self'",
@@ -31,7 +33,7 @@ export const MAIN_CSP = [
   "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data:",
-  "connect-src 'self'",
+  "connect-src 'self' https://cdn.jsdelivr.net",
 ].join('; ');
 
 /**

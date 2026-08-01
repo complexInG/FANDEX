@@ -1,7 +1,8 @@
 ---
 order: 500
 title: gh release 发布命令速查手册
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: gh release 发布命令速查手册 的完整教学讲解。

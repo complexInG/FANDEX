@@ -1,7 +1,8 @@
 ---
 order: 670
 title: 基础数据类型
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: 基础数据类型 的完整教学讲解。

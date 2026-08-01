@@ -1,7 +1,8 @@
 ---
 order: 410
 title: 云计算 Terraform 基础
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: 云计算 Terraform 基础 的完整教学讲解。

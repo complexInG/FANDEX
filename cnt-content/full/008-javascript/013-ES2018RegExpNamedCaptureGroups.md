@@ -4,96 +4,96 @@ title: 具名捕获组
 module: javascript
 category: JavaScript
 tags:
-  - JavaScript
-  - 正则表达式
-  - ES2018
-  - 模式匹配
-  - 代码可读性
+- JavaScript
+- 正则表达式
+- ES2018
+- 模式匹配
+- 代码可读性
 difficulty: intermediate
 description: 正则表达式具名捕获组的形式语义、工程实践与生产级应用
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - javascript/Object扩展
-  - javascript/事件循环
-  - javascript/断言
-  - javascript/Unicode属性转义
+- javascript/Object扩展
+- javascript/事件循环
+- javascript/断言
+- javascript/Unicode属性转义
 prerequisites:
-  - javascript/语法速查
-  - javascript/正则表达式
+- javascript/语法速查
+- javascript/正则表达式
 references:
-  - type: standard
-    authors:
-      - Ecma International
-    year: 2018
-    title: 'ECMAScript 2018 Language Specification (ECMA-262, 9th Edition)'
-    venue: Ecma International
-    doi: 10.1145/3178987
-    url: https://www.ecma-international.org/publications/standards/Ecma-262.htm
-  - type: technical-report
-    authors:
-      - Daniel Ehrenberg
-      - Brian Terlson
-    year: 2017
-    title: 'Proposal: RegExp Named Capture Groups (TC39 Stage 4)'
-    venue: TC39 ECMAScript Proposals
-    url: https://github.com/tc39/proposal-regexp-named-groups
-  - type: documentation
-    authors:
-      - MDN Web Docs
-    year: 2025
-    title: 'Named capture group: (?<name>...)'
-    venue: Mozilla Developer Network
-    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Named_capturing_group
-  - type: book
-    authors:
-      - Jeffrey E. F. Friedl
-    year: 2006
-    title: 'Mastering Regular Expressions (3rd Edition)'
-    venue: O'Reilly Media
-    pages: '1-542'
-    doi: 10.5555/1211414
-  - type: journal
-    authors:
-      - David M. Beazley
-      - Brian K. Jones
-    year: 2013
-    title: 'Python Cookbook: Recipes for Mastering Python 3'
-    venue: O'Reilly Media
-    pages: '1-806'
-  - type: standard
-    authors:
-      - ISO/IEC
-    year: 2022
-    title: 'ISO/IEC 9945:2009 Information technology — Programming languages — Regular expressions'
-    venue: ISO
-    url: https://www.iso.org/standard/50534.html
-  - type: conference
-    authors:
-      - David Mazières
-      - Eddie Kohler
-    year: 2015
-    title: 'The Case for Generic File System Semantics'
-    venue: Proceedings of the 2015 USENIX Annual Technical Conference
-    pages: '373-386'
-  - type: website
-    authors:
-      - Axel Rauschmayer
-    year: 2017
-    title: 'ES2018: RegExp named capture groups'
-    venue: 2ality - JavaScript and more
-    url: https://2ality.com/2017/05/regexp-named-capture-groups.html
-    accessedDate: '2026-07-20'
+- type: standard
+  authors:
+  - Ecma International
+  year: 2018
+  title: ECMAScript 2018 Language Specification (ECMA-262, 9th Edition)
+  venue: Ecma International
+  doi: 10.1145/3178987
+  url: https://www.ecma-international.org/publications/standards/Ecma-262.htm
+- type: technical-report
+  authors:
+  - Daniel Ehrenberg
+  - Brian Terlson
+  year: 2017
+  title: 'Proposal: RegExp Named Capture Groups (TC39 Stage 4)'
+  venue: TC39 ECMAScript Proposals
+  url: https://github.com/tc39/proposal-regexp-named-groups
+- type: documentation
+  authors:
+  - MDN Web Docs
+  year: 2025
+  title: 'Named capture group: (?<name>...)'
+  venue: Mozilla Developer Network
+  url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Named_capturing_group
+- type: book
+  authors:
+  - Jeffrey E. F. Friedl
+  year: 2006
+  title: Mastering Regular Expressions (3rd Edition)
+  venue: O'Reilly Media
+  pages: 1-542
+  doi: 10.5555/1211414
+- type: journal
+  authors:
+  - David M. Beazley
+  - Brian K. Jones
+  year: 2013
+  title: 'Python Cookbook: Recipes for Mastering Python 3'
+  venue: O'Reilly Media
+  pages: 1-806
+- type: standard
+  authors:
+  - ISO/IEC
+  year: 2022
+  title: ISO/IEC 9945:2009 Information technology — Programming languages — Regular expressions
+  venue: ISO
+  url: https://www.iso.org/standard/50534.html
+- type: conference
+  authors:
+  - David Mazières
+  - Eddie Kohler
+  year: 2015
+  title: The Case for Generic File System Semantics
+  venue: Proceedings of the 2015 USENIX Annual Technical Conference
+  pages: 373-386
+- type: website
+  authors:
+  - Axel Rauschmayer
+  year: 2017
+  title: 'ES2018: RegExp named capture groups'
+  venue: 2ality - JavaScript and more
+  url: https://2ality.com/2017/05/regexp-named-capture-groups.html
+  accessedDate: '2026-07-20'
 etymology:
-  - term: 具名捕获组
-    english: Named Capture Group
-    origin: 由 .NET Framework 2.0（2005）首次引入，后由 Python、Java、Perl 等语言采纳，ECMAScript 于 2018 年（ES2018）标准化
-  - term: 捕获组
-    english: Capture Group
-    origin: 源自正则表达式的分组机制，使用圆括号 (...) 标记，"capture" 指将匹配内容捕获保存以供后续引用
-  - term: 反向引用
-    english: Backreference
-    origin: 引用先前捕获组匹配的内容，传统使用 \1, \2 数字形式，具名版本使用 \k<name>
+- term: 具名捕获组
+  english: Named Capture Group
+  origin: 由 .NET Framework 2.0（2005）首次引入，后由 Python、Java、Perl 等语言采纳，ECMAScript 于 2018 年（ES2018）标准化
+- term: 捕获组
+  english: Capture Group
+  origin: 源自正则表达式的分组机制，使用圆括号 (...) 标记，"capture" 指将匹配内容捕获保存以供后续引用
+- term: 反向引用
+  english: Backreference
+  origin: 引用先前捕获组匹配的内容，传统使用 \1, \2 数字形式，具名版本使用 \k<name>
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 42

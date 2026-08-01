@@ -1,7 +1,8 @@
 ---
 order: 450
 title: GitHub 暂存与回退
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub 暂存与回退 的完整教学讲解。

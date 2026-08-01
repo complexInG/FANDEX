@@ -4,284 +4,284 @@ title: 算法分析基础与学习路线
 module: algorithm
 category: Algorithm/Overview
 difficulty: beginner
-description: '算法分析（Algorithm Analysis）的形式化定义、五类渐近记号（Bachmann 1894《Analytische Zahlentheorie》大 O 符号、Landau 1909《Handbuch》推广、Knuth 1976《Big Omicron and Big Omega and Big Theta》SIGACT News 12(3):36-44 系统化）、计算复杂性类（Hartmanis-Stearns 1965《On the Computational Complexity of Algorithms》Trans. AMS 117:285-306、Cobham 1964/Edmonds 1965 P 类、Cook 1971《The Complexity of Theorem-Proving Procedures》STOC、Karp 1972《Reducibility Among Combinatorial Problems》STOC 197-206）、主定理（Bentley-Haken-Saxe 1980 SIGACT News 12(3):36-44）、摊还分析（Sleator-Tarjan 1985《Amortized Efficiency of List Update and Paging Rules》CACM 28(2):202-208）、随机化分析（Rabin 1976）、时空权衡策略与系统化学习路线图，涵盖 Turing 1936《On Computable Numbers》Proc. LMS 42:230-265、Knuth 1968 TAOCP Vol.1、Cormen-Leiserson-Rivest 1990《Introduction to Algorithms》第 1 版的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 1-4 章、Kleinberg-Tardos 第 2-5 章、Sedgewick 第 1 章风格习题。'
+description: 算法分析（Algorithm Analysis）的形式化定义、五类渐近记号（Bachmann 1894《Analytische Zahlentheorie》大 O 符号、Landau 1909《Handbuch》推广、Knuth 1976《Big Omicron and Big Omega and Big Theta》SIGACT News 12(3):36-44 系统化）、计算复杂性类（Hartmanis-Stearns 1965《On the Computational Complexity of Algorithms》Trans. AMS 117:285-306、Cobham 1964/Edmonds 1965 P 类、Cook 1971《The Complexity of Theorem-Proving Procedures》STOC、Karp 1972《Reducibility Among Combinatorial Problems》STOC 197-206）、主定理（Bentley-Haken-Saxe 1980 SIGACT News 12(3):36-44）、摊还分析（Sleator-Tarjan 1985《Amortized Efficiency of List Update and Paging Rules》CACM 28(2):202-208）、随机化分析（Rabin 1976）、时空权衡策略与系统化学习路线图，涵盖 Turing 1936《On Computable Numbers》Proc. LMS 42:230-265、Knuth 1968 TAOCP Vol.1、Cormen-Leiserson-Rivest 1990《Introduction to Algorithms》第 1 版的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 1-4 章、Kleinberg-Tardos 第 2-5 章、Sedgewick 第 1 章风格习题。
 author: fanquanpp
 tags:
-  - algorithm
-  - algorithm-analysis
-  - algorithm-asymptotic
-  - algorithm-complexity
-  - algorithm-master-theorem
-  - algorithm-amortized
-  - algorithm-np
-  - algorithm-turing
-  - algorithm-bigo
-  - algorithm-recurrence
-  - algorithm-learning-path
-  - performance
+- algorithm
+- algorithm-analysis
+- algorithm-asymptotic
+- algorithm-complexity
+- algorithm-master-theorem
+- algorithm-amortized
+- algorithm-np
+- algorithm-turing
+- algorithm-bigo
+- algorithm-recurrence
+- algorithm-learning-path
+- performance
 created: 2026-05-27
 updated: 2026-07-20
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 120
 related:
-  - algorithm/排序算法
-  - algorithm/搜索算法
-  - algorithm/分治算法
-  - algorithm/递归与回溯
-  - algorithm/贪心算法
-  - algorithm/动态规划
-  - algorithm/图算法
-  - algorithm/树
+- algorithm/排序算法
+- algorithm/搜索算法
+- algorithm/分治算法
+- algorithm/递归与回溯
+- algorithm/贪心算法
+- algorithm/动态规划
+- algorithm/图算法
+- algorithm/树
 prerequisites: []
 references:
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'Chapter 1 (The Role of Algorithms), Chapter 2 (Getting Started), Chapter 3 (Characterizing Running Times), Chapter 4 (Divide-and-Conquer - Master Theorem), Chapter 17 (Amortized Analysis), ISBN 978-0262046305'
-  - type: book
-    authors:
-      - 'Kleinberg, Jon'
-      - 'Tardos, Eva'
-    year: 2006
-    title: 'Algorithm Design'
-    venue: 'Pearson'
-    pages: 'ISBN 978-0321295354, Chapter 2 (Algorithm Analysis), Chapter 3 (Graphs), Chapter 4 (Greedy), Chapter 5 (Divide and Conquer), Chapter 6 (Dynamic Programming)'
-  - type: book
-    authors:
-      - 'Sedgewick, Robert'
-      - 'Wayne, Kevin'
-    year: 2011
-    title: 'Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-    pages: 'ISBN 978-0321573513, Chapter 1 (Fundamentals - Analysis of Algorithms), Section 2.1 (Elementary Sorts), Section 2.2 (Mergesort), Section 2.3 (Quicksort)'
-  - type: book
-    authors:
-      - 'Skiena, Steven S.'
-    year: 2020
-    title: 'The Algorithm Design Manual'
-    venue: 'Springer'
-    version: '3rd edition'
-    pages: 'ISBN 978-3030542556, Chapter 1 (Introduction to Algorithm Design), Chapter 2 (Algorithm Analysis), Chapter 3 (Data Structures)'
-  - type: book
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1968
-    title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '3rd edition (1997)'
-    pages: 'ISBN 978-0201896831, Section 1.1 (Algorithms), Section 1.2 (Mathematical Preliminaries - Asymptotic Notation), Section 1.2.10 (Analysis of Algorithms)'
-  - type: book
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1973
-    title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-    venue: 'Addison-Wesley Professional'
-    version: '2nd edition (1998)'
-    pages: 'ISBN 978-0201896855, Section 5.1 (Combinatorial Properties of Permutations), Section 5.2 (Internal Sorting), Section 5.3 (External Sorting)'
-  - type: journal
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1976
-    title: 'Big Omicron and Big Omega and Big Theta'
-    venue: 'SIGACT News'
-    volume: 8
-    issue: 2
-    pages: '18-24'
-    doi: '10.1145/1008328.1008329'
-    pages_note: 'The paper that standardized the use of asymptotic notation in computer science. Knuth introduced big Theta as the tight bound and clarified the Bachmann-Landau notation. Originally published in SIGACT News 8(2):18-24, reprinted in 1976'
-  - type: journal
-    authors:
-      - 'Bentley, Jon L.'
-      - 'Haken, Dorothea'
-      - 'Saxe, James B.'
-    year: 1980
-    title: 'A general method for solving divide-and-conquer recurrences'
-    venue: 'SIGACT News'
-    volume: 12
-    issue: 3
-    pages: '36-44'
-    doi: '10.1145/1008861.1008865'
-    pages_note: 'The original derivation of what is now called the Master Theorem. Generalizes the recursion-tree method for T(n) = aT(n/b) + f(n)'
-  - type: journal
-    authors:
-      - 'Hartmanis, Juris'
-      - 'Stearns, Richard E.'
-    year: 1965
-    title: 'On the Computational Complexity of Algorithms'
-    venue: 'Transactions of the American Mathematical Society'
-    volume: 117
-    pages: '285-306'
-    doi: '10.1090/S0002-9947-1965-0170805-7'
-    pages_note: 'The foundational paper of computational complexity theory. Introduced the time complexity class TIME(f(n)) and the multi-tape Turing machine model. Both authors received the 1993 Turing Award for this work'
-  - type: journal
-    authors:
-      - 'Cobham, Alan'
-    year: 1965
-    title: 'The intrinsic computational difficulty of functions'
-    venue: 'Proceedings of the 1964 International Congress for Logic, Methodology and Philosophy of Science, Y. Bar-Hillel (ed.), North-Holland, Amsterdam, pp. 24-30'
-    pages: 'Original definition of the class P (polynomial time). Cobham 1964 and Edmonds 1965 independently identified polynomial time as the formalization of tractable computation'
-  - type: journal
-    authors:
-      - 'Edmonds, Jack'
-    year: 1965
-    title: 'Paths, trees, and flowers'
-    venue: 'Canadian Journal of Mathematics'
-    volume: 17
-    pages: '449-467'
-    doi: '10.4153/CJM-1965-045-4'
-    pages_note: 'Introduced the matching algorithm and identified polynomial-time algorithms as good algorithms. Edmonds 1965a (minimum spanning tree) and 1965b (matching) used polynomial time as the criterion for efficient algorithms'
-  - type: journal
-    authors:
-      - 'Cook, Stephen A.'
-    year: 1971
-    title: 'The Complexity of Theorem-Proving Procedures'
-    venue: 'Proceedings of the 3rd Annual ACM Symposium on Theory of Computing (STOC 71), pp. 151-158'
-    pages: 'The original Cook-Levin theorem. Proved that SAT is NP-complete. Cook received the 1982 Turing Award partly for this work. The paper introduced the notion of NP-completeness and showed that any NP problem can be reduced to SAT in polynomial time'
-    doi: '10.1145/800157.805047'
-  - type: journal
-    authors:
-      - 'Karp, Richard M.'
-    year: 1972
-    title: 'Reducibility Among Combinatorial Problems'
-    venue: 'Proceedings of the Symposium on the Complexity of Computer Computations, IBM Thomas J. Watson Research Center, March 20-22, 1972. Published in: R.E. Miller and J.W. Thatcher (eds.), The Complexity of Computer Computations, Plenum Press, New York, pp. 85-103'
-    pages: 'Showed that 21 canonical NP-complete problems (including 3-SAT, vertex cover, clique, Hamiltonian cycle, TSP decision) are all polynomially equivalent to SAT. Karp received the 1985 Turing Award partly for this work'
-  - type: journal
-    authors:
-      - 'Turing, Alan M.'
-    year: 1936
-    title: 'On Computable Numbers, with an Application to the Entscheidungsproblem'
-    venue: 'Proceedings of the London Mathematical Society'
-    volume: 42
-    issue: 1
-    pages: '230-265'
-    doi: '10.1112/plms/s2-42.1.230'
-    pages_note: 'The foundational paper of computability theory. Introduced the Turing machine as a formal model of computation and showed that the halting problem is undecidable. A correction appeared in s2-43:544-546 (1937). Turing received (posthumously) recognition as the father of computer science'
-  - type: journal
-    authors:
-      - 'Sleator, Daniel D.'
-      - 'Tarjan, Robert E.'
-    year: 1985
-    title: 'Amortized efficiency of list update and paging rules'
-    venue: 'Communications of the ACM'
-    volume: 28
-    issue: 2
-    pages: '202-208'
-    doi: '10.1145/2786.2793'
-    pages_note: 'Introduced the potential method of amortized analysis and the concept of competitive analysis for online algorithms. Tarjan received the 1986 Turing Award partly for this and related work on data structures'
-  - type: journal
-    authors:
-      - 'Tarjan, Robert E.'
-    year: 1985
-    title: 'Amortized computational complexity'
-    venue: 'SIAM Journal on Algebraic and Discrete Methods'
-    volume: 6
-    issue: 2
-    pages: '306-318'
-    doi: '10.1137/0606031'
-    pages_note: 'Comprehensive treatment of amortized analysis using the potential method. Applied to splay trees, union-find, and other data structures'
-  - type: book
-    authors:
-      - 'Bachmann, Paul'
-    year: 1894
-    title: 'Analytische Zahlentheorie (Analytic Number Theory)'
-    venue: 'B. G. Teubner, Leipzig'
-    pages: 'Volume 2, page 401 contains the first recorded use of the big-O notation (ordnung von) for the order of magnitude of functions. Bachmann used O(n) to denote a bound on the magnitude of an error term'
-  - type: book
-    authors:
-      - 'Landau, Edmund'
-    year: 1909
-    title: 'Handbuch der Lehre von der Verteilung der Primzahlen (Handbook of the Theory of the Distribution of Primes)'
-    venue: 'B. G. Teubner, Leipzig'
-    pages: 'Volume 2, page 883. Landau popularized and standardized Bachmann big-O notation. The notation is sometimes called the Bachmann-Landau notation'
-  - type: journal
-    authors:
-      - 'Rabin, Michael O.'
-    year: 1976
-    title: 'Probabilistic algorithms'
-    venue: 'In: J.F. Traub (ed.), Algorithms and Complexity: New Directions and Recent Results, Academic Press, New York, pp. 21-39'
-    pages: 'Introduced randomized algorithms as a formal paradigm, including the Miller-Rabin primality test. Rabin received the 1976 Turing Award jointly with Dana Scott for their work on nondeterministic finite automata'
-  - type: book
-    authors:
-      - 'Garey, Michael R.'
-      - 'Johnson, David S.'
-    year: 1979
-    title: 'Computers and Intractability: A Guide to the Theory of NP-Completeness'
-    venue: 'W. H. Freeman and Company'
-    pages: 'ISBN 978-0716710455, the standard reference for NP-completeness theory. Contains a catalog of over 300 NP-complete problems with reduction references'
-  - type: book
-    authors:
-      - 'Papadimitriou, Christos H.'
-    year: 1994
-    title: 'Computational Complexity'
-    venue: 'Addison-Wesley'
-    pages: 'ISBN 978-0201530827, the standard textbook on computational complexity theory. Covers complexity classes, hierarchy theorems, and the P vs NP question'
-  - type: website
-    authors:
-      - 'Stanford University'
-    year: 2026
-    title: 'CS 161: Design and Analysis of Algorithms'
-    venue: 'Stanford Computer Science Department'
-    url: 'https://web.stanford.edu/class/cs161/'
-    pages: 'Stanford undergraduate algorithms course covering asymptotic analysis, divide-and-conquer, dynamic programming, graph algorithms, NP-completeness'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'Massachusetts Institute of Technology'
-    year: 2026
-    title: 'MIT 6.006: Introduction to Algorithms'
-    venue: 'MIT OpenCourseWare'
-    url: 'https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/'
-    pages: 'MIT undergraduate algorithms course. Lecture videos and notes available free via OCW. Covers asymptotic analysis, data structures, graph algorithms, dynamic programming'
-    accessedDate: '2026-07-20'
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: Chapter 1 (The Role of Algorithms), Chapter 2 (Getting Started), Chapter 3 (Characterizing Running Times), Chapter 4 (Divide-and-Conquer - Master Theorem), Chapter 17 (Amortized Analysis), ISBN 978-0262046305
+- type: book
+  authors:
+  - Kleinberg, Jon
+  - Tardos, Eva
+  year: 2006
+  title: Algorithm Design
+  venue: Pearson
+  pages: ISBN 978-0321295354, Chapter 2 (Algorithm Analysis), Chapter 3 (Graphs), Chapter 4 (Greedy), Chapter 5 (Divide and Conquer), Chapter 6 (Dynamic Programming)
+- type: book
+  authors:
+  - Sedgewick, Robert
+  - Wayne, Kevin
+  year: 2011
+  title: Algorithms
+  venue: Addison-Wesley Professional
+  version: 4th edition
+  pages: ISBN 978-0321573513, Chapter 1 (Fundamentals - Analysis of Algorithms), Section 2.1 (Elementary Sorts), Section 2.2 (Mergesort), Section 2.3 (Quicksort)
+- type: book
+  authors:
+  - Skiena, Steven S.
+  year: 2020
+  title: The Algorithm Design Manual
+  venue: Springer
+  version: 3rd edition
+  pages: ISBN 978-3030542556, Chapter 1 (Introduction to Algorithm Design), Chapter 2 (Algorithm Analysis), Chapter 3 (Data Structures)
+- type: book
+  authors:
+  - Knuth, Donald E.
+  year: 1968
+  title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
+  venue: Addison-Wesley Professional
+  version: 3rd edition (1997)
+  pages: ISBN 978-0201896831, Section 1.1 (Algorithms), Section 1.2 (Mathematical Preliminaries - Asymptotic Notation), Section 1.2.10 (Analysis of Algorithms)
+- type: book
+  authors:
+  - Knuth, Donald E.
+  year: 1973
+  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
+  venue: Addison-Wesley Professional
+  version: 2nd edition (1998)
+  pages: ISBN 978-0201896855, Section 5.1 (Combinatorial Properties of Permutations), Section 5.2 (Internal Sorting), Section 5.3 (External Sorting)
+- type: journal
+  authors:
+  - Knuth, Donald E.
+  year: 1976
+  title: Big Omicron and Big Omega and Big Theta
+  venue: SIGACT News
+  volume: 8
+  issue: 2
+  pages: 18-24
+  doi: 10.1145/1008328.1008329
+  pagesNote: The paper that standardized the use of asymptotic notation in computer science. Knuth introduced big Theta as the tight bound and clarified the Bachmann-Landau notation. Originally published in SIGACT News 8(2):18-24, reprinted in 1976
+- type: journal
+  authors:
+  - Bentley, Jon L.
+  - Haken, Dorothea
+  - Saxe, James B.
+  year: 1980
+  title: A general method for solving divide-and-conquer recurrences
+  venue: SIGACT News
+  volume: 12
+  issue: 3
+  pages: 36-44
+  doi: 10.1145/1008861.1008865
+  pagesNote: The original derivation of what is now called the Master Theorem. Generalizes the recursion-tree method for T(n) = aT(n/b) + f(n)
+- type: journal
+  authors:
+  - Hartmanis, Juris
+  - Stearns, Richard E.
+  year: 1965
+  title: On the Computational Complexity of Algorithms
+  venue: Transactions of the American Mathematical Society
+  volume: 117
+  pages: 285-306
+  doi: 10.1090/S0002-9947-1965-0170805-7
+  pagesNote: The foundational paper of computational complexity theory. Introduced the time complexity class TIME(f(n)) and the multi-tape Turing machine model. Both authors received the 1993 Turing Award for this work
+- type: journal
+  authors:
+  - Cobham, Alan
+  year: 1965
+  title: The intrinsic computational difficulty of functions
+  venue: Proceedings of the 1964 International Congress for Logic, Methodology and Philosophy of Science, Y. Bar-Hillel (ed.), North-Holland, Amsterdam, pp. 24-30
+  pages: Original definition of the class P (polynomial time). Cobham 1964 and Edmonds 1965 independently identified polynomial time as the formalization of tractable computation
+- type: journal
+  authors:
+  - Edmonds, Jack
+  year: 1965
+  title: Paths, trees, and flowers
+  venue: Canadian Journal of Mathematics
+  volume: 17
+  pages: 449-467
+  doi: 10.4153/CJM-1965-045-4
+  pagesNote: Introduced the matching algorithm and identified polynomial-time algorithms as good algorithms. Edmonds 1965a (minimum spanning tree) and 1965b (matching) used polynomial time as the criterion for efficient algorithms
+- type: journal
+  authors:
+  - Cook, Stephen A.
+  year: 1971
+  title: The Complexity of Theorem-Proving Procedures
+  venue: Proceedings of the 3rd Annual ACM Symposium on Theory of Computing (STOC 71), pp. 151-158
+  pages: The original Cook-Levin theorem. Proved that SAT is NP-complete. Cook received the 1982 Turing Award partly for this work. The paper introduced the notion of NP-completeness and showed that any NP problem can be reduced to SAT in polynomial time
+  doi: 10.1145/800157.805047
+- type: journal
+  authors:
+  - Karp, Richard M.
+  year: 1972
+  title: Reducibility Among Combinatorial Problems
+  venue: 'Proceedings of the Symposium on the Complexity of Computer Computations, IBM Thomas J. Watson Research Center, March 20-22, 1972. Published in: R.E. Miller and J.W. Thatcher (eds.), The Complexity of Computer Computations, Plenum Press, New York, pp. 85-103'
+  pages: Showed that 21 canonical NP-complete problems (including 3-SAT, vertex cover, clique, Hamiltonian cycle, TSP decision) are all polynomially equivalent to SAT. Karp received the 1985 Turing Award partly for this work
+- type: journal
+  authors:
+  - Turing, Alan M.
+  year: 1936
+  title: On Computable Numbers, with an Application to the Entscheidungsproblem
+  venue: Proceedings of the London Mathematical Society
+  volume: 42
+  issue: 1
+  pages: 230-265
+  doi: 10.1112/plms/s2-42.1.230
+  pagesNote: The foundational paper of computability theory. Introduced the Turing machine as a formal model of computation and showed that the halting problem is undecidable. A correction appeared in s2-43:544-546 (1937). Turing received (posthumously) recognition as the father of computer science
+- type: journal
+  authors:
+  - Sleator, Daniel D.
+  - Tarjan, Robert E.
+  year: 1985
+  title: Amortized efficiency of list update and paging rules
+  venue: Communications of the ACM
+  volume: 28
+  issue: 2
+  pages: 202-208
+  doi: 10.1145/2786.2793
+  pagesNote: Introduced the potential method of amortized analysis and the concept of competitive analysis for online algorithms. Tarjan received the 1986 Turing Award partly for this and related work on data structures
+- type: journal
+  authors:
+  - Tarjan, Robert E.
+  year: 1985
+  title: Amortized computational complexity
+  venue: SIAM Journal on Algebraic and Discrete Methods
+  volume: 6
+  issue: 2
+  pages: 306-318
+  doi: 10.1137/0606031
+  pagesNote: Comprehensive treatment of amortized analysis using the potential method. Applied to splay trees, union-find, and other data structures
+- type: book
+  authors:
+  - Bachmann, Paul
+  year: 1894
+  title: Analytische Zahlentheorie (Analytic Number Theory)
+  venue: B. G. Teubner, Leipzig
+  pages: Volume 2, page 401 contains the first recorded use of the big-O notation (ordnung von) for the order of magnitude of functions. Bachmann used O(n) to denote a bound on the magnitude of an error term
+- type: book
+  authors:
+  - Landau, Edmund
+  year: 1909
+  title: Handbuch der Lehre von der Verteilung der Primzahlen (Handbook of the Theory of the Distribution of Primes)
+  venue: B. G. Teubner, Leipzig
+  pages: Volume 2, page 883. Landau popularized and standardized Bachmann big-O notation. The notation is sometimes called the Bachmann-Landau notation
+- type: journal
+  authors:
+  - Rabin, Michael O.
+  year: 1976
+  title: Probabilistic algorithms
+  venue: 'In: J.F. Traub (ed.), Algorithms and Complexity: New Directions and Recent Results, Academic Press, New York, pp. 21-39'
+  pages: Introduced randomized algorithms as a formal paradigm, including the Miller-Rabin primality test. Rabin received the 1976 Turing Award jointly with Dana Scott for their work on nondeterministic finite automata
+- type: book
+  authors:
+  - Garey, Michael R.
+  - Johnson, David S.
+  year: 1979
+  title: 'Computers and Intractability: A Guide to the Theory of NP-Completeness'
+  venue: W. H. Freeman and Company
+  pages: ISBN 978-0716710455, the standard reference for NP-completeness theory. Contains a catalog of over 300 NP-complete problems with reduction references
+- type: book
+  authors:
+  - Papadimitriou, Christos H.
+  year: 1994
+  title: Computational Complexity
+  venue: Addison-Wesley
+  pages: ISBN 978-0201530827, the standard textbook on computational complexity theory. Covers complexity classes, hierarchy theorems, and the P vs NP question
+- type: website
+  authors:
+  - Stanford University
+  year: 2026
+  title: 'CS 161: Design and Analysis of Algorithms'
+  venue: Stanford Computer Science Department
+  url: https://web.stanford.edu/class/cs161/
+  pages: Stanford undergraduate algorithms course covering asymptotic analysis, divide-and-conquer, dynamic programming, graph algorithms, NP-completeness
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - Massachusetts Institute of Technology
+  year: 2026
+  title: 'MIT 6.006: Introduction to Algorithms'
+  venue: MIT OpenCourseWare
+  url: https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/
+  pages: MIT undergraduate algorithms course. Lecture videos and notes available free via OCW. Covers asymptotic analysis, data structures, graph algorithms, dynamic programming
+  accessedDate: '2026-07-20'
 etymology:
-  - term: 算法
-    english: algorithm
-    origin: 'algorithm 源自 9 世纪波斯数学家 Muḥammad ibn Mūsā al-Khwārizmī（花剌子密）的名字拉丁化 Algoritmi。al-Khwārizmī 在《印度数字算术》(On the Calculation with Hindu Numerals, 825 CE) 中系统化印度-阿拉伯数字运算。12 世纪拉丁译本将 Algoritmi 作为人名译词，后渐指"按规则计算的程序"。中文"算法"古已有之，《周髀算经》《九章算术》皆有"术"或"法"指代计算方法。现代"算法"作为 algorithm 的对译，由清末数学家李善兰等在《代数学》(1859) 中确立'
-  - term: 渐近记号
-    english: asymptotic notation
-    origin: 'asymptotic 源自希腊语 a-（不）+ sympiptein（汇聚、相遇），指曲线无限趋近但不相交。Bachmann 1894《Analytische Zahlentheorie》卷二 401 页首次使用大 O 符号 (Ordnung von) 表示函数阶。Landau 1909《Handbuch der Lehre von der Verteilung der Primzahlen》卷二 883 页推广并标准化。Knuth 1976《Big Omicron and Big Omega and Big Theta》SIGACT News 8(2):18-24 系统化 $O/\Omega/\Theta/o/\omega$ 五类记号，引入大 Theta 作为紧界并推广至计算机科学。Bachmann-Landau 记号由此得名'
-  - term: 大 O 符号
-    english: big O notation
-    origin: 'O 源自德语 Ordnung（阶）。Paul Bachmann 1894 在解析数论中用 $O(n)$ 表示误差项阶。Edmund Landau 1909 推广至渐近分析，故又称 Landau 符号。Knuth 1976 SIGACT News 论文统一了 $O$（上界）、$\Omega$（下界）、$\Theta$（紧界）的用法'
-  - term: 时间复杂度
-    english: time complexity
-    origin: 'time complexity 由 Hartmanis-Stearns 1965《On the Computational Complexity of Algorithms》Trans. AMS 117:285-306 系统化定义。引入时间复杂性类 $\text{TIME}(f(n))$ = 可在 $O(f(n))$ 时间内被图灵机求解的判定问题集合。两人因此获 1993 年 Turing Award'
-  - term: 图灵机
-    english: Turing machine
-    origin: 'Turing machine 由 Alan Turing 1936《On Computable Numbers, with an Application to the Entscheidungsproblem》Proc. LMS s2-42(1):230-265 提出。原义为解决 Hilbert 判定问题（Entscheidungsproblem）而设计的抽象计算模型。Church-Turing 论题断言任何"有效计算"均可由图灵机完成。Turing 因此被尊为"计算机科学之父"。中文"图灵机"为音译+意译复合'
-  - term: P 类
-    english: class P
-    origin: 'P 即 Polynomial。Cobham 1964《The intrinsic computational difficulty of functions》和 Edmonds 1965《Paths, trees, and flowers》Canad. J. Math. 17:449-467 独立提出 P 类 = 多项式时间内可解的判定问题集合。Edmonds 称多项式时间算法为"good algorithm"（好算法）。P 类是 Cobham-Edmonds 论题中"易解"（tractable）问题的形式化'
-  - term: NP 类
-    english: class NP
-    origin: 'NP 即 Nondeterministic Polynomial time。NP 类 = 可在非确定图灵机上多项式时间内求解的判定问题集合。等价定义：存在多项式时间验证器的判定问题集合。Cook 1971 STOC 与 Levin 1973 独立证明 SAT 是 NP 完全的（Cook-Levin 定理）。Karp 1972《Reducibility Among Combinatorial Problems》将 21 个经典组合问题归约为 NP 完全。P vs NP 是 Clay 数学研究所千禧年七大难题之首'
-  - term: NP 完全
-    english: NP-complete
-    origin: 'NP-complete 由 Cook 1971 STOC《The Complexity of Theorem-Proving Procedures》隐含定义，Karp 1972 显式命名。NP-complete 问题 = NP 中最难的问题：自身属于 NP 且所有 NP 问题可多项式归约到它。SAT、3-SAT、顶点覆盖、团、Hamilton 回路、TSP 判定、子集和等 21 个经典问题被 Karp 1972 证明为 NP 完全。若任一 NP 完全问题有多项式算法则 P = NP'
-  - term: 主定理
-    english: Master Theorem
-    origin: 'Master Theorem 是求解形如 $T(n) = aT(n/b) + f(n)$ 递推关系的通用方法。Bentley、Haken、Saxe 1980 在《A general method for solving divide-and-conquer recurrences》SIGACT News 12(3):36-44 首次给出系统化证明。Cormen-Leiserson-Rivest《CLRS》第 4 章将其命名为 "Master Theorem"。三情况分类基于 $f(n)$ 与 $n^{\log_b a}$ 的渐近比较'
-  - term: 摊还分析
-    english: amortized analysis
-    origin: 'amortize 源自拉丁语 ad-（向）+ mortalis（死亡），原指分期偿还债务。在算法分析中，amortized analysis 关注 n 个操作的序列总代价而非单次最坏代价。Sleator-Tarjan 1985《Amortized Efficiency of List Update and Paging Rules》CACM 28(2):202-208 系统化并引入势能方法。CLRS 第 17 章将其分为聚合分析、核算方法、势能方法三种'
-  - term: 势能方法
-    english: potential method
-    origin: 'potential method 由 Sleator-Tarjan 1985 系统化。定义势能函数 $\Phi(D)$ 将数据结构状态映射为非负实数，操作 $i$ 的摊还代价 $\hat{c}_i = c_i + \Phi(D_i) - \Phi(D_{i-1})$。Sleator-Tarjan 1985 应用于 list update 与 paging。Tarjan 1985《Amortized computational complexity》SIAM J. Alg. Disc. Meth. 6(2):306-318 进一步系统化并应用于 Splay 树、并查集等。势能方法类比物理学势能：高代价操作"释放"势能，低代价操作"积累"势能'
-  - term: 递推关系
-    english: recurrence
-    origin: 'recurrence 源自拉丁语 recurrere（往回跑）。递推关系用自身较小规模定义 $T(n)$，是分治算法复杂度分析的标准工具。除主定理外，还有代入法（substitution method）、递归树法（recursion-tree method）、Akra-Bazzi 方法等更通用解法'
-  - term: 随机化算法
-    english: randomized algorithm
-    origin: 'randomized algorithm 由 Rabin 1976《Probabilistic algorithms》形式化。Miller-Rabin 1976 素性测试是首个著名的随机化算法。分类：Las Vegas 算法（总是正确，运行时间随机，如随机化快排）与 Monte Carlo 算法（运行时间确定，结果可能错误，如 Miller-Rabin）。随机化算法可显著改进最坏情况复杂度，如快速排序 $O(n^2)$ 最坏 → $O(n \log n)$ 期望'
+- term: 算法
+  english: algorithm
+  origin: algorithm 源自 9 世纪波斯数学家 Muḥammad ibn Mūsā al-Khwārizmī（花剌子密）的名字拉丁化 Algoritmi。al-Khwārizmī 在《印度数字算术》(On the Calculation with Hindu Numerals, 825 CE) 中系统化印度-阿拉伯数字运算。12 世纪拉丁译本将 Algoritmi 作为人名译词，后渐指"按规则计算的程序"。中文"算法"古已有之，《周髀算经》《九章算术》皆有"术"或"法"指代计算方法。现代"算法"作为 algorithm 的对译，由清末数学家李善兰等在《代数学》(1859) 中确立
+- term: 渐近记号
+  english: asymptotic notation
+  origin: asymptotic 源自希腊语 a-（不）+ sympiptein（汇聚、相遇），指曲线无限趋近但不相交。Bachmann 1894《Analytische Zahlentheorie》卷二 401 页首次使用大 O 符号 (Ordnung von) 表示函数阶。Landau 1909《Handbuch der Lehre von der Verteilung der Primzahlen》卷二 883 页推广并标准化。Knuth 1976《Big Omicron and Big Omega and Big Theta》SIGACT News 8(2):18-24 系统化 $O/\Omega/\Theta/o/\omega$ 五类记号，引入大 Theta 作为紧界并推广至计算机科学。Bachmann-Landau 记号由此得名
+- term: 大 O 符号
+  english: big O notation
+  origin: O 源自德语 Ordnung（阶）。Paul Bachmann 1894 在解析数论中用 $O(n)$ 表示误差项阶。Edmund Landau 1909 推广至渐近分析，故又称 Landau 符号。Knuth 1976 SIGACT News 论文统一了 $O$（上界）、$\Omega$（下界）、$\Theta$（紧界）的用法
+- term: 时间复杂度
+  english: time complexity
+  origin: time complexity 由 Hartmanis-Stearns 1965《On the Computational Complexity of Algorithms》Trans. AMS 117:285-306 系统化定义。引入时间复杂性类 $\text{TIME}(f(n))$ = 可在 $O(f(n))$ 时间内被图灵机求解的判定问题集合。两人因此获 1993 年 Turing Award
+- term: 图灵机
+  english: Turing machine
+  origin: Turing machine 由 Alan Turing 1936《On Computable Numbers, with an Application to the Entscheidungsproblem》Proc. LMS s2-42(1):230-265 提出。原义为解决 Hilbert 判定问题（Entscheidungsproblem）而设计的抽象计算模型。Church-Turing 论题断言任何"有效计算"均可由图灵机完成。Turing 因此被尊为"计算机科学之父"。中文"图灵机"为音译+意译复合
+- term: P 类
+  english: class P
+  origin: P 即 Polynomial。Cobham 1964《The intrinsic computational difficulty of functions》和 Edmonds 1965《Paths, trees, and flowers》Canad. J. Math. 17:449-467 独立提出 P 类 = 多项式时间内可解的判定问题集合。Edmonds 称多项式时间算法为"good algorithm"（好算法）。P 类是 Cobham-Edmonds 论题中"易解"（tractable）问题的形式化
+- term: NP 类
+  english: class NP
+  origin: NP 即 Nondeterministic Polynomial time。NP 类 = 可在非确定图灵机上多项式时间内求解的判定问题集合。等价定义：存在多项式时间验证器的判定问题集合。Cook 1971 STOC 与 Levin 1973 独立证明 SAT 是 NP 完全的（Cook-Levin 定理）。Karp 1972《Reducibility Among Combinatorial Problems》将 21 个经典组合问题归约为 NP 完全。P vs NP 是 Clay 数学研究所千禧年七大难题之首
+- term: NP 完全
+  english: NP-complete
+  origin: NP-complete 由 Cook 1971 STOC《The Complexity of Theorem-Proving Procedures》隐含定义，Karp 1972 显式命名。NP-complete 问题 = NP 中最难的问题：自身属于 NP 且所有 NP 问题可多项式归约到它。SAT、3-SAT、顶点覆盖、团、Hamilton 回路、TSP 判定、子集和等 21 个经典问题被 Karp 1972 证明为 NP 完全。若任一 NP 完全问题有多项式算法则 P = NP
+- term: 主定理
+  english: Master Theorem
+  origin: Master Theorem 是求解形如 $T(n) = aT(n/b) + f(n)$ 递推关系的通用方法。Bentley、Haken、Saxe 1980 在《A general method for solving divide-and-conquer recurrences》SIGACT News 12(3):36-44 首次给出系统化证明。Cormen-Leiserson-Rivest《CLRS》第 4 章将其命名为 "Master Theorem"。三情况分类基于 $f(n)$ 与 $n^{\log_b a}$ 的渐近比较
+- term: 摊还分析
+  english: amortized analysis
+  origin: amortize 源自拉丁语 ad-（向）+ mortalis（死亡），原指分期偿还债务。在算法分析中，amortized analysis 关注 n 个操作的序列总代价而非单次最坏代价。Sleator-Tarjan 1985《Amortized Efficiency of List Update and Paging Rules》CACM 28(2):202-208 系统化并引入势能方法。CLRS 第 17 章将其分为聚合分析、核算方法、势能方法三种
+- term: 势能方法
+  english: potential method
+  origin: potential method 由 Sleator-Tarjan 1985 系统化。定义势能函数 $\Phi(D)$ 将数据结构状态映射为非负实数，操作 $i$ 的摊还代价 $\hat{c}_i = c_i + \Phi(D_i) - \Phi(D_{i-1})$。Sleator-Tarjan 1985 应用于 list update 与 paging。Tarjan 1985《Amortized computational complexity》SIAM J. Alg. Disc. Meth. 6(2):306-318 进一步系统化并应用于 Splay 树、并查集等。势能方法类比物理学势能：高代价操作"释放"势能，低代价操作"积累"势能
+- term: 递推关系
+  english: recurrence
+  origin: recurrence 源自拉丁语 recurrere（往回跑）。递推关系用自身较小规模定义 $T(n)$，是分治算法复杂度分析的标准工具。除主定理外，还有代入法（substitution method）、递归树法（recursion-tree method）、Akra-Bazzi 方法等更通用解法
+- term: 随机化算法
+  english: randomized algorithm
+  origin: randomized algorithm 由 Rabin 1976《Probabilistic algorithms》形式化。Miller-Rabin 1976 素性测试是首个著名的随机化算法。分类：Las Vegas 算法（总是正确，运行时间随机，如随机化快排）与 Monte Carlo 算法（运行时间确定，结果可能错误，如 Miller-Rabin）。随机化算法可显著改进最坏情况复杂度，如快速排序 $O(n^2)$ 最坏 → $O(n \log n)$ 期望
 ---
 
 

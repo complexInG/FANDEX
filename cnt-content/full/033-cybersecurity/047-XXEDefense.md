@@ -1,7 +1,8 @@
 ---
 order: 470
 title: Cybersecurity XXE 防御与检测
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity XXE 防御与检测 的完整教学讲解。

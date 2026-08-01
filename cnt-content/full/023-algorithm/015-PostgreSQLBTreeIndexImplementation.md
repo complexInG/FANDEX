@@ -4,254 +4,254 @@ title: 平衡树与高级树
 module: algorithm
 category: 算法与数据结构
 difficulty: advanced
-description: '二叉搜索树（BST）、AVL 树（Adelson-Velsky-Landis 1962《An algorithm for the organization of information》Dokl. Akad. Nauk SSSR 146:263-266）、2-3 树（Hopcroft 1970）、红黑树（Bayer 1972 原始版对称二叉 B 树；Guibas-Sedgewick 1978《A Dichromatic Framework for Balanced Trees》FOCS 19th Annual Symposium 现代版；Sedgewick 2008 Left-Leaning Red-Black BST）、B 树（Bayer-McCreight 1972《Organization and Maintenance of Large Ordered Indexes》Acta Informatica 1(3):173-189）、B+ 树（Knuth 1973 TAOCP Vol.3 系统化；Comer 1979《The Ubiquitous B-Tree》Computing Surveys 11(2):121-137）、Splay 树（Sleator-Tarjan 1985《Self-Adjusting Binary Search Trees》JACM 32(3):652-686 DOI:10.1145/3828.3835）、Treap（Seidel-Aragon 1996）、AA 树（Andersson 1993）的形式化定义、旋转操作、平衡不变式与摊还分析、复杂度证明，覆盖 MySQL InnoDB B+ 树聚簇索引 / Linux CFS 红黑树 / Java TreeMap / C++ std::map / PostgreSQL B-tree 等工业案例，附 Python / C++ / Java 多语言实现与 CLRS / Sedgewick 风格习题。'
+description: 二叉搜索树（BST）、AVL 树（Adelson-Velsky-Landis 1962《An algorithm for the organization of information》Dokl. Akad. Nauk SSSR 146:263-266）、2-3 树（Hopcroft 1970）、红黑树（Bayer 1972 原始版对称二叉 B 树；Guibas-Sedgewick 1978《A Dichromatic Framework for Balanced Trees》FOCS 19th Annual Symposium 现代版；Sedgewick 2008 Left-Leaning Red-Black BST）、B 树（Bayer-McCreight 1972《Organization and Maintenance of Large Ordered Indexes》Acta Informatica 1(3):173-189）、B+ 树（Knuth 1973 TAOCP Vol.3 系统化；Comer 1979《The Ubiquitous B-Tree》Computing Surveys 11(2):121-137）、Splay 树（Sleator-Tarjan 1985《Self-Adjusting Binary Search Trees》JACM 32(3):652-686 DOI:10.1145/3828.3835）、Treap（Seidel-Aragon 1996）、AA 树（Andersson 1993）的形式化定义、旋转操作、平衡不变式与摊还分析、复杂度证明，覆盖 MySQL InnoDB B+ 树聚簇索引 / Linux CFS 红黑树 / Java TreeMap / C++ std::map / PostgreSQL B-tree 等工业案例，附 Python / C++ / Java 多语言实现与 CLRS / Sedgewick 风格习题。
 author: fanquanpp
 tags:
-  - algorithm
-  - algorithm-balanced-tree
-  - algorithm-avl-tree
-  - algorithm-red-black-tree
-  - algorithm-b-tree
-  - algorithm-bplus-tree
-  - algorithm-splay-tree
-  - algorithm-treap
-  - algorithm-datastructure
-  - algorithm-rotation
-  - algorithm-database-index
-  - performance
+- algorithm
+- algorithm-balanced-tree
+- algorithm-avl-tree
+- algorithm-red-black-tree
+- algorithm-b-tree
+- algorithm-bplus-tree
+- algorithm-splay-tree
+- algorithm-treap
+- algorithm-datastructure
+- algorithm-rotation
+- algorithm-database-index
+- performance
 created: 2026-06-14
 updated: 2026-07-20
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 180
 related:
-  - algorithm/树
-  - algorithm/树状数组
-  - algorithm/线段树
-  - algorithm/堆与优先队列
-  - algorithm/跳跃表
-  - algorithm/算法分析基础与学习路线
+- algorithm/树
+- algorithm/树状数组
+- algorithm/线段树
+- algorithm/堆与优先队列
+- algorithm/跳跃表
+- algorithm/算法分析基础与学习路线
 prerequisites:
-  - algorithm/树
-  - algorithm/算法分析基础与学习路线
-  - cs-fundamentals/离散数学
+- algorithm/树
+- algorithm/算法分析基础与学习路线
+- cs-fundamentals/离散数学
 references:
-  - type: journal
-    authors:
-      - 'Adelson-Velsky, Georgy M.'
-      - 'Landis, Evgenii M.'
-    year: 1962
-    title: 'An algorithm for the organization of information'
-    venue: 'Doklady Akademii Nauk SSSR'
-    volume: 146
-    pages: '263-266'
-    pages_note: 'The original AVL tree paper. Soviet mathematicians Adelson-Velsky and Landis introduced the first self-balancing BST. English translation appeared in Soviet Mathematics - Doklady 3:1259-1263. The AVL tree name derives from the authors initials. This is widely considered the foundational paper of balanced tree data structures'
-  - type: journal
-    authors:
-      - 'Bayer, Rudolf'
-      - 'McCreight, Edward M.'
-    year: 1972
-    title: 'Organization and Maintenance of Large Ordered Indices'
-    venue: 'Acta Informatica'
-    volume: 1
-    issue: 3
-    pages: '173-189'
-    doi: '10.1007/BF00288683'
-    pages_note: 'The original B-tree paper. Bayer and McCreight designed B-trees at Boeing Scientific Research Laboratories for efficient external memory indexing. The paper introduced the concept of multiway balanced search trees optimized for disk I/O. The "B" in B-tree has never been officially explained by the authors, with Bayer suggesting it stood for "Boeing", "Broad", or "Bayer" at different times'
-  - type: journal
-    authors:
-      - 'Bayer, Rudolf'
-    year: 1972
-    title: 'Symmetric binary B-trees: Data structure and maintenance algorithms'
-    venue: 'Acta Informatica'
-    volume: 1
-    issue: 4
-    pages: '290-306'
-    doi: '10.1007/BF00289509'
-    pages_note: 'The precursor to red-black trees. Bayer introduced symmetric binary B-trees as a binary representation of B-trees, which Guibas and Sedgewick later refined into modern red-black trees in 1978'
-  - type: journal
-    authors:
-      - 'Guibas, Leonidas J.'
-      - 'Sedgewick, Robert'
-    year: 1978
-    title: 'A Dichromatic Framework for Balanced Trees'
-    venue: 'Proceedings of the 19th Annual Symposium on Foundations of Computer Science (FOCS 78), pp. 8-21'
-    pages: 'The definitive paper on red-black trees as they are known today. Guibas and Sedgewick unified Bayer s symmetric binary B-trees, binary B-trees, and other balanced tree variants under a single dichromatic (two-color) framework. The color red was chosen because it was the best-looking color produced by the laser printer at Xerox PARC'
-    doi: '10.1109/SFCS.1978.3'
-  - type: journal
-    authors:
-      - 'Comer, Douglas'
-    year: 1979
-    title: 'The Ubiquitous B-Tree'
-    venue: 'ACM Computing Surveys'
-    volume: 11
-    issue: 2
-    pages: '121-137'
-    doi: '10.1145/356770.356776'
-    pages_note: 'The classic survey paper on B-trees that popularized them in the database community. Comer surveyed the many B-tree variants (B+, B*, prefix, count) and their applications in databases and file systems'
-  - type: journal
-    authors:
-      - 'Sleator, Daniel D.'
-      - 'Tarjan, Robert E.'
-    year: 1985
-    title: 'Self-Adjusting Binary Search Trees'
-    venue: 'Journal of the ACM (JACM)'
-    volume: 32
-    issue: 3
-    pages: '652-686'
-    doi: '10.1145/3828.3835'
-    pages_note: 'The original splay tree paper. Sleator and Tarjan introduced self-adjusting BSTs that require no balance information but achieve O(log n) amortized complexity. The paper won the 1986 JACM Paper of the Year Award and Tarjan received the 1986 Turing Award partly for this and related work on data structures'
-  - type: journal
-    authors:
-      - 'Andersson, Arne'
-    year: 1993
-    title: 'Balanced search trees made simple'
-    venue: 'Proceedings of the Third Workshop on Algorithms and Data Structures (WADS 93), LNCS 709, pp. 60-71'
-    pages: 'The AA tree paper. Andersson simplified red-black trees by enforcing a right-leaning invariant, eliminating several cases. AA trees are simpler to implement than standard red-black trees'
-    doi: '10.1007/BFb0021337'
-  - type: journal
-    authors:
-      - 'Sedgewick, Robert'
-    year: 2008
-    title: 'Left-Leaning Red-Black Trees'
-    venue: 'Department of Computer Science, Princeton University'
-    pages: 'Sedgewick introduced Left-Leaning Red-Black BSTs as a further simplification of red-black trees. By enforcing that red links lean left, Sedgewick reduced the implementation to just 30 lines of code, suitable for teaching. This is the basis for the red-black tree in his Algorithms textbook 4th edition'
-    url: 'https://sedgewick.io/wp-content/uploads/2022/03/2008-09LLRB.pdf'
-  - type: journal
-    authors:
-      - 'Seidel, Raimund'
-      - 'Aragon, Cecilia R.'
-    year: 1996
-    title: 'Randomized Search Trees'
-    venue: 'Algorithmica'
-    volume: 16
-    pages: '464-497'
-    doi: '10.1007/BF01940876'
-    pages_note: 'The treap paper. Seidel and Aragon introduced treaps (tree + heap), BSTs where each node has a random priority and the tree is heap-ordered by priority. This achieves O(log n) expected height without explicit balancing'
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'ISBN 978-0262046305, Chapter 12 (Binary Search Trees), Chapter 13 (Red-Black Trees), Chapter 18 (B-Trees), Chapter 17 (Amortized Analysis for splay trees)'
-  - type: book
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1998
-    title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-    venue: 'Addison-Wesley Professional'
-    version: '2nd edition'
-    pages: 'ISBN 978-0201896855, Section 6.2.2 (Tree Searching), Section 6.2.4 (Multiway Trees - B-trees)'
-  - type: book
-    authors:
-      - 'Sedgewick, Robert'
-      - 'Wayne, Kevin'
-    year: 2011
-    title: 'Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-    pages: 'ISBN 978-0321573513, Section 3.3 (Balanced Search Trees - Red-Black BSTs), Section 3.4 (Hash Tables)'
-  - type: book
-    authors:
-      - 'Tarjan, Robert E.'
-    year: 1983
-    title: 'Data Structures and Network Algorithms'
-    venue: 'SIAM (Society for Industrial and Applied Mathematics)'
-    pages: 'ISBN 978-0898711875, CBMS-NSF Regional Conference Series in Applied Mathematics 44. Tarjan s authoritative treatment of splay trees, union-find, and other amortized data structures'
-  - type: journal
-    authors:
-      - 'Lehman, Philip L.'
-      - 'Yao, S. Bing'
-    year: 1981
-    title: 'Efficient locking for concurrent operations on B-trees'
-    venue: 'ACM Transactions on Database Systems'
-    volume: 6
-    issue: 4
-    pages: '650-670'
-    doi: '10.1145/319628.319663'
-    pages_note: 'Introduced the Lehman-Yao B-link tree, the most widely used concurrent B-tree variant in modern databases including PostgreSQL and SQLite'
-  - type: book
-    authors:
-      - 'Garcia-Molina, Hector'
-      - 'Ullman, Jeffrey D.'
-      - 'Widom, Jennifer'
-    year: 2014
-    title: 'Database Systems: The Complete Book'
-    venue: 'Pearson'
-    version: '2nd edition'
-    pages: 'ISBN 978-0131873254, Chapter 8 (Indexing - B+ trees and hash indexes)'
-  - type: website
-    authors:
-      - 'MySQL AB / Oracle'
-    year: 2026
-    title: 'MySQL 8.0 InnoDB Storage Engine Architecture'
-    venue: 'MySQL Documentation'
-    url: 'https://dev.mysql.com/doc/refman/8.0/en/innodb-index-types.html'
-    pages: 'MySQL InnoDB uses clustered B+ tree index for primary key and secondary B+ tree indexes for non-primary keys. The leaf pages of clustered index store full rows while secondary indexes store primary key values requiring lookups'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'Linux Kernel Organization'
-    year: 2026
-    title: 'Linux Kernel CFS Scheduler - Red-Black Tree Usage'
-    venue: 'Linux Kernel Documentation'
-    url: 'https://www.kernel.org/doc/html/latest/scheduler/sched-design-CFS.html'
-    pages: 'The Completely Fair Scheduler (CFS) introduced in Linux 2.6.23 uses a red-black tree to maintain runnable tasks ordered by virtual runtime. The leftmost node is the next task to run'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'Oracle Corporation'
-    year: 2026
-    title: 'Java TreeMap Source Code'
-    venue: 'OpenJDK Source'
-    url: 'https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/TreeMap.java'
-    pages: 'Java TreeMap is implemented as a red-black tree. Provides O(log n) for containsKey, get, put, remove operations, with sorted iteration via in-order traversal'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'PostgreSQL Global Development Group'
-    year: 2026
-    title: 'PostgreSQL B-tree Index Implementation'
-    venue: 'PostgreSQL Documentation'
-    url: 'https://www.postgresql.org/docs/current/btree.html'
-    pages: 'PostgreSQL uses the Lehman-Yao high-concurrency B-tree variant. Supports equality, range, and prefix queries with O(log n) complexity'
-    accessedDate: '2026-07-20'
+- type: journal
+  authors:
+  - Adelson-Velsky, Georgy M.
+  - Landis, Evgenii M.
+  year: 1962
+  title: An algorithm for the organization of information
+  venue: Doklady Akademii Nauk SSSR
+  volume: 146
+  pages: 263-266
+  pagesNote: The original AVL tree paper. Soviet mathematicians Adelson-Velsky and Landis introduced the first self-balancing BST. English translation appeared in Soviet Mathematics - Doklady 3:1259-1263. The AVL tree name derives from the authors initials. This is widely considered the foundational paper of balanced tree data structures
+- type: journal
+  authors:
+  - Bayer, Rudolf
+  - McCreight, Edward M.
+  year: 1972
+  title: Organization and Maintenance of Large Ordered Indices
+  venue: Acta Informatica
+  volume: 1
+  issue: 3
+  pages: 173-189
+  doi: 10.1007/BF00288683
+  pagesNote: The original B-tree paper. Bayer and McCreight designed B-trees at Boeing Scientific Research Laboratories for efficient external memory indexing. The paper introduced the concept of multiway balanced search trees optimized for disk I/O. The "B" in B-tree has never been officially explained by the authors, with Bayer suggesting it stood for "Boeing", "Broad", or "Bayer" at different times
+- type: journal
+  authors:
+  - Bayer, Rudolf
+  year: 1972
+  title: 'Symmetric binary B-trees: Data structure and maintenance algorithms'
+  venue: Acta Informatica
+  volume: 1
+  issue: 4
+  pages: 290-306
+  doi: 10.1007/BF00289509
+  pagesNote: The precursor to red-black trees. Bayer introduced symmetric binary B-trees as a binary representation of B-trees, which Guibas and Sedgewick later refined into modern red-black trees in 1978
+- type: journal
+  authors:
+  - Guibas, Leonidas J.
+  - Sedgewick, Robert
+  year: 1978
+  title: A Dichromatic Framework for Balanced Trees
+  venue: Proceedings of the 19th Annual Symposium on Foundations of Computer Science (FOCS 78), pp. 8-21
+  pages: The definitive paper on red-black trees as they are known today. Guibas and Sedgewick unified Bayer s symmetric binary B-trees, binary B-trees, and other balanced tree variants under a single dichromatic (two-color) framework. The color red was chosen because it was the best-looking color produced by the laser printer at Xerox PARC
+  doi: 10.1109/SFCS.1978.3
+- type: journal
+  authors:
+  - Comer, Douglas
+  year: 1979
+  title: The Ubiquitous B-Tree
+  venue: ACM Computing Surveys
+  volume: 11
+  issue: 2
+  pages: 121-137
+  doi: 10.1145/356770.356776
+  pagesNote: The classic survey paper on B-trees that popularized them in the database community. Comer surveyed the many B-tree variants (B+, B*, prefix, count) and their applications in databases and file systems
+- type: journal
+  authors:
+  - Sleator, Daniel D.
+  - Tarjan, Robert E.
+  year: 1985
+  title: Self-Adjusting Binary Search Trees
+  venue: Journal of the ACM (JACM)
+  volume: 32
+  issue: 3
+  pages: 652-686
+  doi: 10.1145/3828.3835
+  pagesNote: The original splay tree paper. Sleator and Tarjan introduced self-adjusting BSTs that require no balance information but achieve O(log n) amortized complexity. The paper won the 1986 JACM Paper of the Year Award and Tarjan received the 1986 Turing Award partly for this and related work on data structures
+- type: journal
+  authors:
+  - Andersson, Arne
+  year: 1993
+  title: Balanced search trees made simple
+  venue: Proceedings of the Third Workshop on Algorithms and Data Structures (WADS 93), LNCS 709, pp. 60-71
+  pages: The AA tree paper. Andersson simplified red-black trees by enforcing a right-leaning invariant, eliminating several cases. AA trees are simpler to implement than standard red-black trees
+  doi: 10.1007/BFb0021337
+- type: journal
+  authors:
+  - Sedgewick, Robert
+  year: 2008
+  title: Left-Leaning Red-Black Trees
+  venue: Department of Computer Science, Princeton University
+  pages: Sedgewick introduced Left-Leaning Red-Black BSTs as a further simplification of red-black trees. By enforcing that red links lean left, Sedgewick reduced the implementation to just 30 lines of code, suitable for teaching. This is the basis for the red-black tree in his Algorithms textbook 4th edition
+  url: https://sedgewick.io/wp-content/uploads/2022/03/2008-09LLRB.pdf
+- type: journal
+  authors:
+  - Seidel, Raimund
+  - Aragon, Cecilia R.
+  year: 1996
+  title: Randomized Search Trees
+  venue: Algorithmica
+  volume: 16
+  pages: 464-497
+  doi: 10.1007/BF01940876
+  pagesNote: The treap paper. Seidel and Aragon introduced treaps (tree + heap), BSTs where each node has a random priority and the tree is heap-ordered by priority. This achieves O(log n) expected height without explicit balancing
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: ISBN 978-0262046305, Chapter 12 (Binary Search Trees), Chapter 13 (Red-Black Trees), Chapter 18 (B-Trees), Chapter 17 (Amortized Analysis for splay trees)
+- type: book
+  authors:
+  - Knuth, Donald E.
+  year: 1998
+  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
+  venue: Addison-Wesley Professional
+  version: 2nd edition
+  pages: ISBN 978-0201896855, Section 6.2.2 (Tree Searching), Section 6.2.4 (Multiway Trees - B-trees)
+- type: book
+  authors:
+  - Sedgewick, Robert
+  - Wayne, Kevin
+  year: 2011
+  title: Algorithms
+  venue: Addison-Wesley Professional
+  version: 4th edition
+  pages: ISBN 978-0321573513, Section 3.3 (Balanced Search Trees - Red-Black BSTs), Section 3.4 (Hash Tables)
+- type: book
+  authors:
+  - Tarjan, Robert E.
+  year: 1983
+  title: Data Structures and Network Algorithms
+  venue: SIAM (Society for Industrial and Applied Mathematics)
+  pages: ISBN 978-0898711875, CBMS-NSF Regional Conference Series in Applied Mathematics 44. Tarjan s authoritative treatment of splay trees, union-find, and other amortized data structures
+- type: journal
+  authors:
+  - Lehman, Philip L.
+  - Yao, S. Bing
+  year: 1981
+  title: Efficient locking for concurrent operations on B-trees
+  venue: ACM Transactions on Database Systems
+  volume: 6
+  issue: 4
+  pages: 650-670
+  doi: 10.1145/319628.319663
+  pagesNote: Introduced the Lehman-Yao B-link tree, the most widely used concurrent B-tree variant in modern databases including PostgreSQL and SQLite
+- type: book
+  authors:
+  - Garcia-Molina, Hector
+  - Ullman, Jeffrey D.
+  - Widom, Jennifer
+  year: 2014
+  title: 'Database Systems: The Complete Book'
+  venue: Pearson
+  version: 2nd edition
+  pages: ISBN 978-0131873254, Chapter 8 (Indexing - B+ trees and hash indexes)
+- type: website
+  authors:
+  - MySQL AB / Oracle
+  year: 2026
+  title: MySQL 8.0 InnoDB Storage Engine Architecture
+  venue: MySQL Documentation
+  url: https://dev.mysql.com/doc/refman/8.0/en/innodb-index-types.html
+  pages: MySQL InnoDB uses clustered B+ tree index for primary key and secondary B+ tree indexes for non-primary keys. The leaf pages of clustered index store full rows while secondary indexes store primary key values requiring lookups
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - Linux Kernel Organization
+  year: 2026
+  title: Linux Kernel CFS Scheduler - Red-Black Tree Usage
+  venue: Linux Kernel Documentation
+  url: https://www.kernel.org/doc/html/latest/scheduler/sched-design-CFS.html
+  pages: The Completely Fair Scheduler (CFS) introduced in Linux 2.6.23 uses a red-black tree to maintain runnable tasks ordered by virtual runtime. The leftmost node is the next task to run
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - Oracle Corporation
+  year: 2026
+  title: Java TreeMap Source Code
+  venue: OpenJDK Source
+  url: https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/TreeMap.java
+  pages: Java TreeMap is implemented as a red-black tree. Provides O(log n) for containsKey, get, put, remove operations, with sorted iteration via in-order traversal
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - PostgreSQL Global Development Group
+  year: 2026
+  title: PostgreSQL B-tree Index Implementation
+  venue: PostgreSQL Documentation
+  url: https://www.postgresql.org/docs/current/btree.html
+  pages: PostgreSQL uses the Lehman-Yao high-concurrency B-tree variant. Supports equality, range, and prefix queries with O(log n) complexity
+  accessedDate: '2026-07-20'
 etymology:
-  - term: 二叉搜索树
-    english: Binary Search Tree
-    origin: 'Binary Search Tree（BST）的概念可追溯到 Windley 1960 与 Booth-Laver 1960 等英国计算机科学家的工作，但作为正式数据结构由 Knuth 1968 TAOCP Vol.1 §2.3 系统化。BST 的核心思想是利用二分递归结构实现有序字典：左子树元素均小于根，右子树元素均大于根，中序遍历产生有序序列。"binary"源自拉丁语 bini（两个），"search"源自拉丁语 circare（绕行、搜寻）'
-  - term: AVL 树
-    english: AVL tree
-    origin: 'AVL 树由苏联数学家 Georgy M. Adelson-Velsky（Гео́ргий Ма́ркович Адельсо́н-Ве́льский，1922-2014）与 Evgenii M. Landis（Евге́ний Миха́йлович Ла́ндис，1921-1997）在 1962 年提出，论文《An algorithm for the organization of information》发表于 Doklady Akademii Nauk SSSR 146:263-266，英译 Soviet Mathematics - Doklady 3:1259-1263。"AVL"取自两位作者姓氏首字母。两人均来自莫斯科国立大学，在 Andrey Kolmogorov 团队工作。AVL 树是历史上第一个自平衡二叉搜索树，奠定了后续所有平衡树（红黑树、B 树、Splay 树）的设计范式'
-  - term: 红黑树
-    english: Red-Black Tree
-    origin: '红黑树起源于 Rudolf Bayer 1972《Symmetric binary B-trees: Data structure and maintenance algorithms》Acta Informatica 1(4):290-306 提出的对称二叉 B 树（Symmetric Binary B-tree）。Bayer 当时在 Boeing 科学研究实验室工作，对称二叉 B 树是 B 树的二叉表示。1978 年 Leonidas J. Guibas 与 Robert Sedgewick 在《A Dichromatic Framework for Balanced Trees》FOCS 19th Annual Symposium pp.8-21 中将 Bayer 的结构系统化为现代红黑树，引入红/黑二色着色机制。关于颜色选择：Sedgewick 在 2008 LLRB 论文中提到，红色是因为 Xerox PARC 当时的激光打印机输出的红色效果最显眼。Bayer 从未公开解释 B 在 B 树中代表什么，他自己半开玩笑地说过代表 Boeing、Bayer、Broad 或 Balanced'
-  - term: B 树
-    english: B-tree
-    origin: 'B 树由 Rudolf Bayer 与 Edward M. McCreight 在 1972 年提出，论文《Organization and Maintenance of Large Ordered Indices》发表于 Acta Informatica 1(3):173-189, DOI:10.1007/BF00288683。两人在 Boeing Scientific Research Laboratories 工作，原始动机是为大型数据库设计磁盘友好的有序索引结构。B 的含义至今未明确：Bayer 在不同场合说过代表 Boeing、Bayer、Broad、Balanced。Comer 1979《The Ubiquitous B-Tree》Computing Surveys 11(2):121-137 综述了 B 树在数据库与文件系统中的广泛应用，使其成为数据库索引的事实标准'
-  - term: B+ 树
-    english: B+ tree
-    origin: 'B+ 树是 B 树的变体，其特征是所有数据记录仅存储在叶子节点，内部节点仅存储索引关键字。叶子节点通过链表相连，支持高效范围查询。B+ 树的原始提出者争议较大：Knuth 1973 TAOCP Vol.3 §6.2.4 系统化记录，通常归功于 Bayer 与 McCreight。Bayer-Schkolnick 1977《Concurrency of Operations on B-Trees》Acta Informatica 9(1):1-21 进一步分析。B+ 树是 MySQL InnoDB、PostgreSQL、Oracle、SQL Server 等主流关系数据库的标准索引结构'
-  - term: Splay 树
-    english: Splay tree
-    origin: 'Splay 树（伸展树）由 Daniel D. K. Sleator 与 Robert E. Tarjan 在 1985 年提出，论文《Self-Adjusting Binary Search Trees》发表于 JACM 32(3):652-686, DOI:10.1145/3828.3835。"splay" 源自古英语 splegan（展开、张开），表示通过旋转将访问的节点"展开"到树根。Splay 树的核心创新是无需显式平衡信息（如颜色、高度），通过自适应调整使频繁访问的元素更靠近根，从而实现 $O(\log n)$ 摊还复杂度。论文获 1986 JACM 年度论文奖。Tarjan 凭此及并查集等摊还分析工作获 1986 Turing Award'
-  - term: Treap
-    english: Treap
-    origin: 'Treap（树堆）由 Raimund Seidel 与 Cecilia R. Aragon 在 1989 年提出，论文《Randomized Search Trees》发表于 Algorithmica 16(4-5):464-497, 1996, DOI:10.1007/BF01940876。名称 Treap 是 Tree（树）与 Heap（堆）的合成词，因为该数据结构同时满足 BST 性质（按键排序）与堆性质（按优先级堆序）。优先级随机生成，使期望树高为 $O(\log n)$。Aragon 当时在 UC Berkeley 攻读博士，后任 NASA 数据可视化主管。独立发明的 Vuillemin 1980《A Unifying Look at Trees》FOCS 也描述了类似结构'
-  - term: AA 树
-    english: AA tree
-    origin: 'AA 树由瑞典乌普萨拉大学 Arne Andersson 在 1993 年提出，论文《Balanced search trees made simple》发表于 WADS 93, LNCS 709:60-71, DOI:10.1007/BFb0021337。AA 树是红黑树的简化变体，通过强制所有红色链接向右倾斜（right-leaning），消除了标准红黑树中多个对称情况。Andersson 的设计目标是将红黑树实现简化至 30 行代码以内。"AA" 取自作者姓名首字母'
-  - term: 左倾红黑树
-    english: Left-Leaning Red-Black Tree (LLRB)
-    origin: 'LLRB 由 Princeton 大学 Robert Sedgewick 在 2008 年提出。Sedgewick 是红黑树原始 1978 论文合著者，LLRB 是其简化版：强制红色链接向左倾斜（与 AA 树方向相反），将红黑树实现简化至约 30 行代码。LLRB 已成为现代算法教材（如 Sedgewick-Wayne《Algorithms》4th ed）的标准教学版本'
-  - term: 旋转
-    english: rotation
-    origin: 'rotation（旋转）是平衡树维护平衡的核心操作，通过局部调整子树结构而不破坏 BST 性质。旋转分为左旋（left rotation）与右旋（right rotation），互为对偶。旋转操作由 Adelson-Velsky-Landis 1962 在 AVL 树原始论文中系统化，被后续所有平衡树（红黑树、B 树、Splay 树）采纳。其名称来源于几何旋转'
+- term: 二叉搜索树
+  english: Binary Search Tree
+  origin: Binary Search Tree（BST）的概念可追溯到 Windley 1960 与 Booth-Laver 1960 等英国计算机科学家的工作，但作为正式数据结构由 Knuth 1968 TAOCP Vol.1 §2.3 系统化。BST 的核心思想是利用二分递归结构实现有序字典：左子树元素均小于根，右子树元素均大于根，中序遍历产生有序序列。"binary"源自拉丁语 bini（两个），"search"源自拉丁语 circare（绕行、搜寻）
+- term: AVL 树
+  english: AVL tree
+  origin: AVL 树由苏联数学家 Georgy M. Adelson-Velsky（Гео́ргий Ма́ркович Адельсо́н-Ве́льский，1922-2014）与 Evgenii M. Landis（Евге́ний Миха́йлович Ла́ндис，1921-1997）在 1962 年提出，论文《An algorithm for the organization of information》发表于 Doklady Akademii Nauk SSSR 146:263-266，英译 Soviet Mathematics - Doklady 3:1259-1263。"AVL"取自两位作者姓氏首字母。两人均来自莫斯科国立大学，在 Andrey Kolmogorov 团队工作。AVL 树是历史上第一个自平衡二叉搜索树，奠定了后续所有平衡树（红黑树、B 树、Splay 树）的设计范式
+- term: 红黑树
+  english: Red-Black Tree
+  origin: '红黑树起源于 Rudolf Bayer 1972《Symmetric binary B-trees: Data structure and maintenance algorithms》Acta Informatica 1(4):290-306 提出的对称二叉 B 树（Symmetric Binary B-tree）。Bayer 当时在 Boeing 科学研究实验室工作，对称二叉 B 树是 B 树的二叉表示。1978 年 Leonidas J. Guibas 与 Robert Sedgewick 在《A Dichromatic Framework for Balanced Trees》FOCS 19th Annual Symposium pp.8-21 中将 Bayer 的结构系统化为现代红黑树，引入红/黑二色着色机制。关于颜色选择：Sedgewick 在 2008 LLRB 论文中提到，红色是因为 Xerox PARC 当时的激光打印机输出的红色效果最显眼。Bayer 从未公开解释 B 在 B 树中代表什么，他自己半开玩笑地说过代表 Boeing、Bayer、Broad 或 Balanced'
+- term: B 树
+  english: B-tree
+  origin: B 树由 Rudolf Bayer 与 Edward M. McCreight 在 1972 年提出，论文《Organization and Maintenance of Large Ordered Indices》发表于 Acta Informatica 1(3):173-189, DOI:10.1007/BF00288683。两人在 Boeing Scientific Research Laboratories 工作，原始动机是为大型数据库设计磁盘友好的有序索引结构。B 的含义至今未明确：Bayer 在不同场合说过代表 Boeing、Bayer、Broad、Balanced。Comer 1979《The Ubiquitous B-Tree》Computing Surveys 11(2):121-137 综述了 B 树在数据库与文件系统中的广泛应用，使其成为数据库索引的事实标准
+- term: B+ 树
+  english: B+ tree
+  origin: B+ 树是 B 树的变体，其特征是所有数据记录仅存储在叶子节点，内部节点仅存储索引关键字。叶子节点通过链表相连，支持高效范围查询。B+ 树的原始提出者争议较大：Knuth 1973 TAOCP Vol.3 §6.2.4 系统化记录，通常归功于 Bayer 与 McCreight。Bayer-Schkolnick 1977《Concurrency of Operations on B-Trees》Acta Informatica 9(1):1-21 进一步分析。B+ 树是 MySQL InnoDB、PostgreSQL、Oracle、SQL Server 等主流关系数据库的标准索引结构
+- term: Splay 树
+  english: Splay tree
+  origin: Splay 树（伸展树）由 Daniel D. K. Sleator 与 Robert E. Tarjan 在 1985 年提出，论文《Self-Adjusting Binary Search Trees》发表于 JACM 32(3):652-686, DOI:10.1145/3828.3835。"splay" 源自古英语 splegan（展开、张开），表示通过旋转将访问的节点"展开"到树根。Splay 树的核心创新是无需显式平衡信息（如颜色、高度），通过自适应调整使频繁访问的元素更靠近根，从而实现 $O(\log n)$ 摊还复杂度。论文获 1986 JACM 年度论文奖。Tarjan 凭此及并查集等摊还分析工作获 1986 Turing Award
+- term: Treap
+  english: Treap
+  origin: Treap（树堆）由 Raimund Seidel 与 Cecilia R. Aragon 在 1989 年提出，论文《Randomized Search Trees》发表于 Algorithmica 16(4-5):464-497, 1996, DOI:10.1007/BF01940876。名称 Treap 是 Tree（树）与 Heap（堆）的合成词，因为该数据结构同时满足 BST 性质（按键排序）与堆性质（按优先级堆序）。优先级随机生成，使期望树高为 $O(\log n)$。Aragon 当时在 UC Berkeley 攻读博士，后任 NASA 数据可视化主管。独立发明的 Vuillemin 1980《A Unifying Look at Trees》FOCS 也描述了类似结构
+- term: AA 树
+  english: AA tree
+  origin: AA 树由瑞典乌普萨拉大学 Arne Andersson 在 1993 年提出，论文《Balanced search trees made simple》发表于 WADS 93, LNCS 709:60-71, DOI:10.1007/BFb0021337。AA 树是红黑树的简化变体，通过强制所有红色链接向右倾斜（right-leaning），消除了标准红黑树中多个对称情况。Andersson 的设计目标是将红黑树实现简化至 30 行代码以内。"AA" 取自作者姓名首字母
+- term: 左倾红黑树
+  english: Left-Leaning Red-Black Tree (LLRB)
+  origin: LLRB 由 Princeton 大学 Robert Sedgewick 在 2008 年提出。Sedgewick 是红黑树原始 1978 论文合著者，LLRB 是其简化版：强制红色链接向左倾斜（与 AA 树方向相反），将红黑树实现简化至约 30 行代码。LLRB 已成为现代算法教材（如 Sedgewick-Wayne《Algorithms》4th ed）的标准教学版本
+- term: 旋转
+  english: rotation
+  origin: rotation（旋转）是平衡树维护平衡的核心操作，通过局部调整子树结构而不破坏 BST 性质。旋转分为左旋（left rotation）与右旋（right rotation），互为对偶。旋转操作由 Adelson-Velsky-Landis 1962 在 AVL 树原始论文中系统化，被后续所有平衡树（红黑树、B 树、Splay 树）采纳。其名称来源于几何旋转
 ---
 
 

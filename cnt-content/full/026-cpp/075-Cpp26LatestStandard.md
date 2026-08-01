@@ -1,7 +1,8 @@
 ---
 order: 750
 title: C++26 最新标准
-module: 026-cpp
+module: cpp
+
 category: '026-cpp'
 difficulty: beginner
 description: C++26 最新标准 的完整教学讲解。

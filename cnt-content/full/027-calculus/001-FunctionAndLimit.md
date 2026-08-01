@@ -4,7 +4,7 @@ title: 函数与极限
 module: calculus
 category: 高等数学
 difficulty: beginner
-description: '函数概念、基本初等函数、极限定义（ε-δ/ε-N）、极限运算法则、两个重要极限、无穷小与无穷大、连续与间断。本篇以 Spivak/Apostol/Rudin 风格的严格分析视角,系统阐述从穷竭法到 ε-δ 语言的微积分基础理论,配套 40+ Python/SymPy 代码示例与 10 道 Spivak 风格习题。'
+description: 函数概念、基本初等函数、极限定义（ε-δ/ε-N）、极限运算法则、两个重要极限、无穷小与无穷大、连续与间断。本篇以 Spivak/Apostol/Rudin 风格的严格分析视角,系统阐述从穷竭法到 ε-δ 语言的微积分基础理论,配套 40+ Python/SymPy 代码示例与 10 道 Spivak 风格习题。
 author: fanquanpp
 created: 2026-06-14
 updated: 2026-07-18
@@ -12,128 +12,128 @@ lastReviewed: 2026-07-18
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 95
 tags:
-  - calculus
-  - limits
-  - epsilon-delta
-  - real-analysis
-  - sequences
-  - continuity
+- calculus
+- limits
+- epsilon-delta
+- real-analysis
+- sequences
+- continuity
 related:
-  - calculus/导数与微分
-  - calculus/微分中值定理
-  - calculus/定积分与应用
-  - calculus/连续性与一致性
-  - math/实分析
-  - math/离散数学
+- calculus/导数与微分
+- calculus/微分中值定理
+- calculus/定积分与应用
+- calculus/连续性与一致性
+- math/实分析
+- math/离散数学
 prerequisites: []
 references:
-  - type: book
-    authors:
-      - 'Spivak, Michael'
-    year: 2008
-    title: 'Calculus'
-    venue: 'Publish or Perish, Inc.'
-    version: '4th edition'
-    doi: '10.1007/978-0-387-09469-9'
-  - type: book
-    authors:
-      - 'Apostol, Tom M.'
-    year: 1967
-    title: 'Calculus, Volume 1: One-Variable Calculus with an Introduction to Linear Algebra'
-    venue: 'John Wiley & Sons'
-    version: '2nd edition'
-  - type: book
-    authors:
-      - 'Rudin, Walter'
-    year: 1976
-    title: 'Principles of Mathematical Analysis'
-    venue: 'McGraw-Hill Education'
-    version: '3rd edition'
-  - type: book
-    authors:
-      - 'Tao, Terence'
-    year: 2016
-    title: 'Analysis I'
-    venue: 'Springer'
-    version: '3rd edition'
-    doi: '10.1007/978-981-10-1789-6'
-  - type: book
-    authors:
-      - 'Courant, Richard'
-      - 'John, Fritz'
-    year: 1999
-    title: 'Introduction to Calculus and Analysis I'
-    venue: 'Springer'
-  - type: book
-    authors:
-      - 'Munkres, James R.'
-    year: 1991
-    title: 'Analysis on Manifolds'
-    venue: 'Westview Press'
-  - type: book
-    authors:
-      - 'Pugh, Charles C.'
-    year: 2002
-    title: 'Real Mathematical Analysis'
-    venue: 'Springer'
-    doi: '10.1007/978-0-387-21668-2'
-  - type: book
-    authors:
-      - 'Hardy, G. H.'
-    year: 1952
-    title: 'A Course of Pure Mathematics'
-    venue: 'Cambridge University Press'
-    version: '10th edition'
-  - type: book
-    authors:
-      - 'Robinson, Abraham'
-    year: 1966
-    title: 'Non-standard Analysis'
-    venue: 'North-Holland Publishing Company'
-  - type: book
-    authors:
-      - 'Cauchy, Augustin-Louis'
-    year: 1821
-    title: "Cours d'Analyse de l'École Royale Polytechnique"
-    venue: 'Debure frères, Paris'
-  - type: journal
-    authors:
-      - 'Bellman, Richard'
-    year: 1952
-    title: 'On the Theory of Dynamic Programming'
-    venue: 'Proceedings of the National Academy of Sciences'
-    volume: 38
-    issue: 8
-    pages: '716-719'
-    doi: '10.1073/pnas.38.8.716'
-  - type: journal
-    authors:
-      - 'Weierstrass, Karl'
-    year: 1872
-    title: 'Über continuirliche Functionen eines reellen Arguments, die für keinen Werth des letzteren einen bestimmten Differentialquotienten besitzen'
-    venue: 'Gelesen in der Königl. Akademie der Wissenschaften zu Berlin'
+- type: book
+  authors:
+  - Spivak, Michael
+  year: 2008
+  title: Calculus
+  venue: Publish or Perish, Inc.
+  version: 4th edition
+  doi: 10.1007/978-0-387-09469-9
+- type: book
+  authors:
+  - Apostol, Tom M.
+  year: 1967
+  title: 'Calculus, Volume 1: One-Variable Calculus with an Introduction to Linear Algebra'
+  venue: John Wiley & Sons
+  version: 2nd edition
+- type: book
+  authors:
+  - Rudin, Walter
+  year: 1976
+  title: Principles of Mathematical Analysis
+  venue: McGraw-Hill Education
+  version: 3rd edition
+- type: book
+  authors:
+  - Tao, Terence
+  year: 2016
+  title: Analysis I
+  venue: Springer
+  version: 3rd edition
+  doi: 10.1007/978-981-10-1789-6
+- type: book
+  authors:
+  - Courant, Richard
+  - John, Fritz
+  year: 1999
+  title: Introduction to Calculus and Analysis I
+  venue: Springer
+- type: book
+  authors:
+  - Munkres, James R.
+  year: 1991
+  title: Analysis on Manifolds
+  venue: Westview Press
+- type: book
+  authors:
+  - Pugh, Charles C.
+  year: 2002
+  title: Real Mathematical Analysis
+  venue: Springer
+  doi: 10.1007/978-0-387-21668-2
+- type: book
+  authors:
+  - Hardy, G. H.
+  year: 1952
+  title: A Course of Pure Mathematics
+  venue: Cambridge University Press
+  version: 10th edition
+- type: book
+  authors:
+  - Robinson, Abraham
+  year: 1966
+  title: Non-standard Analysis
+  venue: North-Holland Publishing Company
+- type: book
+  authors:
+  - Cauchy, Augustin-Louis
+  year: 1821
+  title: Cours d'Analyse de l'École Royale Polytechnique
+  venue: Debure frères, Paris
+- type: journal
+  authors:
+  - Bellman, Richard
+  year: 1952
+  title: On the Theory of Dynamic Programming
+  venue: Proceedings of the National Academy of Sciences
+  volume: 38
+  issue: 8
+  pages: 716-719
+  doi: 10.1073/pnas.38.8.716
+- type: journal
+  authors:
+  - Weierstrass, Karl
+  year: 1872
+  title: Über continuirliche Functionen eines reellen Arguments, die für keinen Werth des letzteren einen bestimmten Differentialquotienten besitzen
+  venue: Gelesen in der Königl. Akademie der Wissenschaften zu Berlin
 etymology:
-  - term: 微积分
-    english: calculus
-    origin: 源自拉丁语 "calculus"（小石子）,古罗马人用小石子进行计数与运算;医学中也指"结石",隐喻计算的"颗粒性"
-  - term: 极限
-    english: limit
-    origin: 源自拉丁语 "limes"（边界、界限）,法语 "limite",由 Cauchy 在 1821 年《分析教程》中首次以严格形式引入数学
-  - term: 函数
-    english: function
-    origin: 源自拉丁语 "functio"（执行、活动）,Leibniz 于 1673 年首次用以表示与曲线上的点相关的量
-  - term: 无穷小
-    english: infinitesimal
-    origin: 拉丁语 "infinitus"（无限）+ "-esimus"（序数后缀）,意为"无限小的量";Newton 称其为 "moment",Leibniz 称其为 "differential"
-  - term: epsilon-delta
-    english: epsilon-delta
-    origin: 希腊字母 ε (epsilon) 与 δ (delta),由 Weierstrass 在 1860s 柏林讲座中系统化,取代了 Cauchy 的代数化极限描述
-  - term: 收敛
-    english: convergence
-    origin: 拉丁语 "convergere"（共同趋向）,由 James Gregory 在 1668 年首次以数学意义使用
-  - term: 上确界
-    english: supremum
-    origin: 拉丁语 "supremus"（最高的）,缩写为 sup;与 infimum（下确界）成对,由 Dedekind 在 1872 年的切割理论中严格化
+- term: 微积分
+  english: calculus
+  origin: 源自拉丁语 "calculus"（小石子）,古罗马人用小石子进行计数与运算;医学中也指"结石",隐喻计算的"颗粒性"
+- term: 极限
+  english: limit
+  origin: 源自拉丁语 "limes"（边界、界限）,法语 "limite",由 Cauchy 在 1821 年《分析教程》中首次以严格形式引入数学
+- term: 函数
+  english: function
+  origin: 源自拉丁语 "functio"（执行、活动）,Leibniz 于 1673 年首次用以表示与曲线上的点相关的量
+- term: 无穷小
+  english: infinitesimal
+  origin: 拉丁语 "infinitus"（无限）+ "-esimus"（序数后缀）,意为"无限小的量";Newton 称其为 "moment",Leibniz 称其为 "differential"
+- term: epsilon-delta
+  english: epsilon-delta
+  origin: 希腊字母 ε (epsilon) 与 δ (delta),由 Weierstrass 在 1860s 柏林讲座中系统化,取代了 Cauchy 的代数化极限描述
+- term: 收敛
+  english: convergence
+  origin: 拉丁语 "convergere"（共同趋向）,由 James Gregory 在 1668 年首次以数学意义使用
+- term: 上确界
+  english: supremum
+  origin: 拉丁语 "supremus"（最高的）,缩写为 sup;与 infimum（下确界）成对,由 Dedekind 在 1872 年的切割理论中严格化
 quiz: []
 ---
 
@@ -2277,7 +2277,7 @@ print(f"细分 8 次后顶点数: {len(xs_final)}, 网格间距: {xs_final[1] - 
 
 ## 第 16 章 习题与解答
 
-本章汇集 10 道 Spivak 风格习题,涵盖填空、选择、代码修正、开放性论述四类题型,按 Bloom 认知层级递进。这些习题的元数据已存储于 frontmatter 的 `exercises` 字段,可直接用于交互式练习系统;此处以文本形式展示,便于学习者离线研读。
+本章汇集 10 道 Spivak 风格习题,涵盖填空、选择、代码修正、开放性论述四类题型,按 Bloom 认知层级递进。此处以文本形式展示,便于学习者离线研读。
 
 ### 填空题知识点讲解
 
@@ -2548,4 +2548,3 @@ verify_sinc_limit([0.1, 0.01, 0.001, 0.0001])
 - **`algorithm/数值分析`**:Newton 迭代、共轭梯度等数值算法的收敛性理论。
 
 ---
-

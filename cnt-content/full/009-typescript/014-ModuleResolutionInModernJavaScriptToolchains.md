@@ -10,79 +10,88 @@ updated: '2026-07-20'
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 related:
-  - typescript/装饰器详解
-  - typescript/声明文件编写
-  - typescript/高级类型与类型演算
-  - typescript/类型体操实用模式
-  - typescript/TypeScript5新特性
+- typescript/装饰器详解
+- typescript/声明文件编写
+- typescript/高级类型与类型演算
+- typescript/类型体操实用模式
+- typescript/TypeScript5新特性
 prerequisites:
-  - typescript/语法速查
+- typescript/语法速查
 tags:
-  - typescript
-  - module-resolution
-  - node16
-  - nodenext
-  - bundler
-  - exports
-  - path-mapping
-  - commonjs
-  - esm
-  - tsconfig
+- typescript
+- module-resolution
+- node16
+- nodenext
+- bundler
+- exports
+- path-mapping
+- commonjs
+- esm
+- tsconfig
 references:
-  - author: Node.js Foundation
-    title: "Packages: Node.js Module Resolution Algorithm"
-    journal: "Node.js Documentation"
-    year: 2024
-    url: "https://nodejs.org/api/packages.html"
-    type: website
-  - author: Microsoft
-    title: "TypeScript Handbook: Module Resolution"
-    journal: "Microsoft Developer Network"
-    year: 2024
-    url: "https://www.typescriptlang.org/docs/handbook/module-resolution.html"
-    type: website
-  - author: Rosenwasser, Daniel
-    title: "Announcing TypeScript 5.0: moduleResolution: bundler"
-    journal: "Microsoft Developer Blog"
-    year: 2023
-    url: "https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/"
-    type: website
-  - author: Ecma International
-    title: "ECMAScript 2024 Language Specification, Section 16: Modules"
-    journal: "ECMA-262, 14th edition"
-    year: 2024
-    url: "https://tc39.es/ecma262/#sec-modules"
-    type: website
-  - author: CommonJS Project
-    title: "CommonJS Modules 1.1.1 Specification"
-    journal: "CommonJS Wiki"
-    year: 2009
-    url: "https://wiki.commonjs.org/wiki/Modules/1.1.1"
-    type: website
-  - author: Klabnik, Steve and Nichols, Carol
-    title: "The Rust Programming Language: Modules and Crates"
-    journal: "No Starch Press"
-    year: 2023
-    isbn: "978-1-71850-311-2"
-    type: book
-  - author: Bierman, Gavin M. and Abadi, Martín and Torgersen, Mads
-    title: "Understanding TypeScript"
-    journal: "ECOOP 2014 — Object-Oriented Programming"
-    year: 2014
-    pages: "257-281"
-    doi: "10.1007/978-3-662-44202-9_11"
-    type: conference
-  - author: Watt, Ailsa
-    title: "Module Resolution in Modern JavaScript Toolchains"
-    journal: "Proceedings of the ACM on Programming Languages"
-    year: 2023
-    volume: 7
-    number: "OOPSLA"
-    doi: "10.1145/3622823"
-    type: journal
+- title: 'Packages: Node.js Module Resolution Algorithm'
+  year: 2024
+  url: https://nodejs.org/api/packages.html
+  type: website
+  authors:
+  - Node.js Foundation
+  venue: Node.js Documentation
+- title: 'TypeScript Handbook: Module Resolution'
+  year: 2024
+  url: https://www.typescriptlang.org/docs/handbook/module-resolution.html
+  type: website
+  authors:
+  - Microsoft
+  venue: Microsoft Developer Network
+- title: 'Announcing TypeScript 5.0: moduleResolution: bundler'
+  year: 2023
+  url: https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/
+  type: website
+  authors:
+  - Rosenwasser, Daniel
+  venue: Microsoft Developer Blog
+- title: 'ECMAScript 2024 Language Specification, Section 16: Modules'
+  year: 2024
+  url: https://tc39.es/ecma262/#sec-modules
+  type: website
+  authors:
+  - Ecma International
+  venue: ECMA-262, 14th edition
+- title: CommonJS Modules 1.1.1 Specification
+  year: 2009
+  url: https://wiki.commonjs.org/wiki/Modules/1.1.1
+  type: website
+  authors:
+  - CommonJS Project
+  venue: CommonJS Wiki
+- title: 'The Rust Programming Language: Modules and Crates'
+  year: 2023
+  isbn: 978-1-71850-311-2
+  type: book
+  authors:
+  - Klabnik, Steve and Nichols, Carol
+  venue: No Starch Press
+- title: Understanding TypeScript
+  year: 2014
+  pages: 257-281
+  doi: 10.1007/978-3-662-44202-9_11
+  type: conference
+  authors:
+  - Bierman, Gavin M. and Abadi, Martín and Torgersen, Mads
+  venue: ECOOP 2014 — Object-Oriented Programming
+- title: Module Resolution in Modern JavaScript Toolchains
+  year: 2023
+  volume: 7
+  number: OOPSLA
+  doi: 10.1145/3622823
+  type: journal
+  authors:
+  - Watt, Ailsa
+  venue: Proceedings of the ACM on Programming Languages
 etymology:
-  term: "Module Resolution（模块解析）"
-  origin: "源自 CommonJS 规范（2009 年由 Kevin Dangoor 等人发起的 ServerJS 工作组，后改名 CommonJS）定义的 require() 解析算法。Node.js 在 2009 年实现该规范，确立了「相对路径 + node_modules 向上查找 + main 字段」的三段式解析流程。ECMAScript 6（2015）引入 import/export 语法后，Node.js 在 12.x 版本（2019）通过 --experimental-modules 实现 ESM 解析，引入 package.json 的 exports 字段。TypeScript 在 0.8 版本（2012）实现 classic 解析，1.6 版本（2015）引入 node 解析，4.7 版本（2022）引入 node16/nodenext，5.0 版本（2023）引入 bundler 解析策略以适配现代打包工具。"
+- term: Module Resolution（模块解析）
+  origin: 源自 CommonJS 规范（2009 年由 Kevin Dangoor 等人发起的 ServerJS 工作组，后改名 CommonJS）定义的 require() 解析算法。Node.js 在 2009 年实现该规范，确立了「相对路径 + node_modules 向上查找 + main 字段」的三段式解析流程。ECMAScript 6（2015）引入 import/export 语法后，Node.js 在 12.x 版本（2019）通过 --experimental-modules 实现 ESM 解析，引入 package.json 的 exports 字段。TypeScript 在 0.8 版本（2012）实现 classic 解析，1.6 版本（2015）引入 node 解析，4.7 版本（2022）引入 node16/nodenext，5.0 版本（2023）引入 bundler 解析策略以适配现代打包工具。
+  english: Module Resolution
 ---
 
 

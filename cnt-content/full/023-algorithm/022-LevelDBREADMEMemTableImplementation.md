@@ -4,138 +4,138 @@ title: 跳跃表
 module: algorithm
 category: Algorithm/SkipList
 difficulty: intermediate
-description: '跳跃表（Skip List）数据结构的形式化定义（多层索引概率结构）、期望 O(log n) 查找/插入/删除的随机化分析、与平衡树的对比、Redis Sorted Set / LevelDB MemTable / Apache Lucene 倒排索引等工程实现，附多语言实现与 CLRS 风格习题。'
+description: 跳跃表（Skip List）数据结构的形式化定义（多层索引概率结构）、期望 O(log n) 查找/插入/删除的随机化分析、与平衡树的对比、Redis Sorted Set / LevelDB MemTable / Apache Lucene 倒排索引等工程实现，附多语言实现与 CLRS 风格习题。
 author: fanquanpp
 tags:
-  - algorithm
-  - algorithm-skiplist
-  - algorithm-datastructure
-  - algorithm-probabilistic
+- algorithm
+- algorithm-skiplist
+- algorithm-datastructure
+- algorithm-probabilistic
 created: 2026-05-27
 updated: 2026-07-18
 lastReviewed: 2026-07-18
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 90
 related:
-  - algorithm/线段树
-  - algorithm/树状数组
-  - algorithm/平衡树与高级树
-  - algorithm/堆与优先队列
-  - algorithm/图算法
-  - redis/有序集合
-  - leveldb/源码剖析
+- algorithm/线段树
+- algorithm/树状数组
+- algorithm/平衡树与高级树
+- algorithm/堆与优先队列
+- algorithm/图算法
+- redis/有序集合
+- leveldb/源码剖析
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/链表
-  - algorithm/树
-  - cs-fundamentals/离散数学
-  - cs-fundamentals/概率论与数理统计
+- algorithm/算法分析基础与学习路线
+- algorithm/链表
+- algorithm/树
+- cs-fundamentals/离散数学
+- cs-fundamentals/概率论与数理统计
 references:
-  - type: journal
-    authors:
-      - 'Pugh, William'
-    year: 1990
-    title: 'Skip lists: A probabilistic alternative to balanced trees'
-    venue: 'Communications of the ACM'
-    volume: 33
-    issue: 6
-    pages: '668-676'
-    doi: '10.1145/78973.78979'
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'ISBN 978-0262046305'
-  - type: book
-    authors:
-      - 'Sedgewick, Robert'
-      - 'Wayne, Kevin'
-    year: 2011
-    title: 'Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-    pages: 'ISBN 978-0321573513'
-  - type: book
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1998
-    title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-    venue: 'Addison-Wesley Professional'
-    version: '2nd edition'
-    pages: 'ISBN 978-0201896855'
-  - type: book
-    authors:
-      - 'Skiena, Steven S.'
-    year: 2020
-    title: 'The Algorithm Design Manual'
-    venue: 'Springer'
-    version: '3rd edition'
-    pages: 'ISBN 978-3030542559'
-  - type: conference
-    authors:
-      - 'Munro, J. Ian'
-      - 'Papadakis, Thomas'
-      - 'Sedgewick, Robert'
-    year: 1992
-    title: 'Deterministic skip lists'
-    venue: 'Proceedings of the Third Annual ACM-SIAM Symposium on Discrete Algorithms (SODA)'
-    pages: '367-375'
-  - type: conference
-    authors:
-      - 'Fraser, Keir'
-      - 'Harris, Tim'
-    year: 2007
-    title: 'Concurrent programming without locks'
-    venue: 'ACM Transactions on Computer Systems'
-    volume: 25
-    issue: 2
-    pages: 'Article 6'
-    doi: '10.1145/1233307.1233309'
-  - type: book
-    authors:
-      - 'Carlson, Josiah L.'
-    year: 2017
-    title: 'Redis in Action'
-    venue: 'Manning Publications'
-    pages: 'ISBN 978-1617290855'
-  - type: website
-    authors:
-      - 'Redis Ltd.'
-    year: 2024
-    title: 'Redis Sorted Sets documentation'
-    venue: 'Redis Documentation'
-    url: 'https://redis.io/docs/data-types/sorted-sets/'
-    accessedDate: '2026-07-18'
-  - type: website
-    authors:
-      - 'Google Inc.'
-    year: 2024
-    title: 'LevelDB README - MemTable implementation'
-    venue: 'GitHub Repository'
-    url: 'https://github.com/google/leveldb/blob/main/doc/index.md'
-    accessedDate: '2026-07-18'
+- type: journal
+  authors:
+  - Pugh, William
+  year: 1990
+  title: 'Skip lists: A probabilistic alternative to balanced trees'
+  venue: Communications of the ACM
+  volume: 33
+  issue: 6
+  pages: 668-676
+  doi: 10.1145/78973.78979
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: ISBN 978-0262046305
+- type: book
+  authors:
+  - Sedgewick, Robert
+  - Wayne, Kevin
+  year: 2011
+  title: Algorithms
+  venue: Addison-Wesley Professional
+  version: 4th edition
+  pages: ISBN 978-0321573513
+- type: book
+  authors:
+  - Knuth, Donald E.
+  year: 1998
+  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
+  venue: Addison-Wesley Professional
+  version: 2nd edition
+  pages: ISBN 978-0201896855
+- type: book
+  authors:
+  - Skiena, Steven S.
+  year: 2020
+  title: The Algorithm Design Manual
+  venue: Springer
+  version: 3rd edition
+  pages: ISBN 978-3030542559
+- type: conference
+  authors:
+  - Munro, J. Ian
+  - Papadakis, Thomas
+  - Sedgewick, Robert
+  year: 1992
+  title: Deterministic skip lists
+  venue: Proceedings of the Third Annual ACM-SIAM Symposium on Discrete Algorithms (SODA)
+  pages: 367-375
+- type: conference
+  authors:
+  - Fraser, Keir
+  - Harris, Tim
+  year: 2007
+  title: Concurrent programming without locks
+  venue: ACM Transactions on Computer Systems
+  volume: 25
+  issue: 2
+  pages: Article 6
+  doi: 10.1145/1233307.1233309
+- type: book
+  authors:
+  - Carlson, Josiah L.
+  year: 2017
+  title: Redis in Action
+  venue: Manning Publications
+  pages: ISBN 978-1617290855
+- type: website
+  authors:
+  - Redis Ltd.
+  year: 2024
+  title: Redis Sorted Sets documentation
+  venue: Redis Documentation
+  url: https://redis.io/docs/data-types/sorted-sets/
+  accessedDate: '2026-07-18'
+- type: website
+  authors:
+  - Google Inc.
+  year: 2024
+  title: LevelDB README - MemTable implementation
+  venue: GitHub Repository
+  url: https://github.com/google/leveldb/blob/main/doc/index.md
+  accessedDate: '2026-07-18'
 etymology:
-  - term: 跳跃表
-    english: skip list
-    origin: '由 William Pugh 于 1989 年在 Workshop on Algorithms and Data Structures 提出，1990 年发表于 Communications of the ACM。"skip" 指其通过多层索引"跳过"中间节点加速查找；"list" 强调其本质仍是有序链表'
-  - term: 概率平衡
-    english: probabilistic balancing
-    origin: '相对 AVL/红黑树"确定性平衡"（deterministic balancing）的对比命名，依靠随机化而非旋转维护平衡'
-  - term: 期望复杂度
-    english: expected complexity
-    origin: '指对随机算法在所有可能随机选择上取平均的复杂度，区别于最坏情况与平均情况'
-  - term: 晋升概率
-    english: promotion probability
-    origin: '节点从第 k 层"晋升"到第 k+1 层的概率 p，Pugh 原论文取 p=1/2，工程实践中常用 p=1/4 以降低内存开销'
-  - term: MemTable
-    english: MemTable
-    origin: 'LevelDB/RocksDB 术语，Memory Table 缩写，指写入内存的有序数据结构，满后落盘为 SSTable；通常以跳跃表实现'
+- term: 跳跃表
+  english: skip list
+  origin: 由 William Pugh 于 1989 年在 Workshop on Algorithms and Data Structures 提出，1990 年发表于 Communications of the ACM。"skip" 指其通过多层索引"跳过"中间节点加速查找；"list" 强调其本质仍是有序链表
+- term: 概率平衡
+  english: probabilistic balancing
+  origin: 相对 AVL/红黑树"确定性平衡"（deterministic balancing）的对比命名，依靠随机化而非旋转维护平衡
+- term: 期望复杂度
+  english: expected complexity
+  origin: 指对随机算法在所有可能随机选择上取平均的复杂度，区别于最坏情况与平均情况
+- term: 晋升概率
+  english: promotion probability
+  origin: 节点从第 k 层"晋升"到第 k+1 层的概率 p，Pugh 原论文取 p=1/2，工程实践中常用 p=1/4 以降低内存开销
+- term: MemTable
+  english: MemTable
+  origin: LevelDB/RocksDB 术语，Memory Table 缩写，指写入内存的有序数据结构，满后落盘为 SSTable；通常以跳跃表实现
 ---
 
 

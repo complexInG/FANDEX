@@ -1,7 +1,8 @@
 ---
 order: 220
 title: 物联网 mosquitto_sub 订阅命令
-module: 035-iot
+module: iot
+
 category: '035-iot'
 difficulty: beginner
 description: 物联网 mosquitto_sub 订阅命令 的完整教学讲解。

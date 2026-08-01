@@ -1,7 +1,8 @@
 ---
 order: 520
 title: C 标准库函数速查
-module: 025-c
+module: c
+
 category: '025-c'
 difficulty: beginner
 description: C 标准库函数速查 的完整教学讲解。

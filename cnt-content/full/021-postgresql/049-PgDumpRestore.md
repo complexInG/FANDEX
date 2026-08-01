@@ -1,7 +1,8 @@
 ---
 order: 490
 title: pg_dump 与 pg_restore 语法速查手册
-module: 021-postgresql
+module: postgresql
+
 category: '021-postgresql'
 difficulty: beginner
 description: pg_dump 与 pg_restore 语法速查手册 的完整教学讲解。

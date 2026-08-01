@@ -1,7 +1,8 @@
 ---
 order: 460
 title: AWS SQS/SNS 消息队列命令
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: AWS SQS/SNS 消息队列命令 的完整教学讲解。

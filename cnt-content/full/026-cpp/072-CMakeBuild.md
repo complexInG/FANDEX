@@ -1,7 +1,8 @@
 ---
 order: 720
 title: C++ CMake 构建命令
-module: 026-cpp
+module: cpp
+
 category: '026-cpp'
 difficulty: beginner
 description: C++ CMake 构建命令 的完整教学讲解。

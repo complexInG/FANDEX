@@ -1,7 +1,8 @@
 ---
 order: 550
 title: JavaScript 包管理命令速查（npm/pnpm/yarn）
-module: 008-javascript
+module: javascript
+
 category: '008-javascript'
 difficulty: beginner
 description: JavaScript 包管理命令速查（npm/pnpm/yarn） 的完整教学讲解。

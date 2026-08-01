@@ -1,7 +1,8 @@
 ---
 order: 470
 title: GitHub CLI PR 管理
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub CLI PR 管理 的完整教学讲解。

@@ -4,7 +4,7 @@ title: 定积分与应用
 module: calculus
 category: 高等数学
 difficulty: intermediate
-description: '定积分的 Riemann/Darboux 形式化定义、Newton-Leibniz 公式与微积分基本定理、换元与分部、反常积分、面积/体积/弧长/功。本篇以 Spivak/Apostol/Rudin 风格的严格分析视角,系统阐述从穷竭法到 Riemann 严格化再到 Lebesgue 测度与 Henstock-Kurzweill 积分的演化,配套 40+ Python/SymPy/scipy 代码示例、6 个 Mermaid 图与 10 道 Spivak 风格习题。'
+description: 定积分的 Riemann/Darboux 形式化定义、Newton-Leibniz 公式与微积分基本定理、换元与分部、反常积分、面积/体积/弧长/功。本篇以 Spivak/Apostol/Rudin 风格的严格分析视角,系统阐述从穷竭法到 Riemann 严格化再到 Lebesgue 测度与 Henstock-Kurzweill 积分的演化,配套 40+ Python/SymPy/scipy 代码示例、6 个 Mermaid 图与 10 道 Spivak 风格习题。
 author: fanquanpp
 created: 2026-06-14
 updated: 2026-07-18
@@ -12,165 +12,165 @@ lastReviewed: '2026-07-18'
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 110
 tags:
-  - calculus
-  - riemann-integral
-  - darboux
-  - lebesgue
-  - newton-leibniz
-  - numerical-integration
-  - real-analysis
+- calculus
+- riemann-integral
+- darboux
+- lebesgue
+- newton-leibniz
+- numerical-integration
+- real-analysis
 related:
-  - calculus/微分中值定理
-  - calculus/不定积分
-  - calculus/多元函数微分
-  - calculus/重积分
-  - calculus/函数与极限
-  - calculus/导数与微分
-  - math/实分析
-  - math/测度论
+- calculus/微分中值定理
+- calculus/不定积分
+- calculus/多元函数微分
+- calculus/重积分
+- calculus/函数与极限
+- calculus/导数与微分
+- math/实分析
+- math/测度论
 prerequisites: []
 references:
-  - type: book
-    authors:
-      - 'Spivak, Michael'
-    year: 2008
-    title: 'Calculus'
-    venue: 'Publish or Perish, Inc.'
-    version: '4th edition'
-    doi: '10.1007/978-0-387-09469-9'
-  - type: book
-    authors:
-      - 'Apostol, Tom M.'
-    year: 1967
-    title: 'Calculus, Volume 1: One-Variable Calculus with an Introduction to Linear Algebra'
-    venue: 'John Wiley & Sons'
-    version: '2nd edition'
-  - type: book
-    authors:
-      - 'Apostol, Tom M.'
-    year: 1969
-    title: 'Calculus, Volume 2: Multi-Variable Calculus and Linear Algebra with Applications'
-    venue: 'John Wiley & Sons'
-    version: '2nd edition'
-  - type: book
-    authors:
-      - 'Rudin, Walter'
-    year: 1976
-    title: 'Principles of Mathematical Analysis'
-    venue: 'McGraw-Hill Education'
-    version: '3rd edition'
-  - type: book
-    authors:
-      - 'Rudin, Walter'
-    year: 1987
-    title: 'Real and Complex Analysis'
-    venue: 'McGraw-Hill Education'
-    version: '3rd edition'
-  - type: book
-    authors:
-      - 'Royden, H. L.'
-      - 'Fitzpatrick, Patrick M.'
-    year: 2010
-    title: 'Real Analysis'
-    venue: 'Pearson'
-    version: '4th edition'
-  - type: book
-    authors:
-      - 'Folland, Gerald B.'
-    year: 1999
-    title: 'Real Analysis: Modern Techniques and Their Applications'
-    venue: 'John Wiley & Sons'
-    version: '2nd edition'
-  - type: book
-    authors:
-      - 'Tao, Terence'
-    year: 2016
-    title: 'Analysis II'
-    venue: 'Springer'
-    version: '3rd edition'
-    doi: '10.1007/978-981-10-1804-6'
-  - type: book
-    authors:
-      - 'Courant, Richard'
-      - 'John, Fritz'
-    year: 1999
-    title: 'Introduction to Calculus and Analysis II/1'
-    venue: 'Springer'
-  - type: book
-    authors:
-      - 'Munkres, James R.'
-    year: 1991
-    title: 'Analysis on Manifolds'
-    venue: 'Westview Press'
-  - type: journal
-    authors:
-      - 'Lebesgue, Henri'
-    year: 1902
-    title: 'Intégrale, longueur, aire'
-    venue: 'Annali di Matematica Pura ed Applicata'
-    volume: 7
-    issue: 1
-    pages: '231-359'
-    doi: '10.1007/BF02420592'
-  - type: journal
-    authors:
-      - 'Riemann, Bernhard'
-    year: 1868
-    title: 'Über die Darstellbarkeit einer Function durch eine trigonometrische Reihe'
-    venue: 'Abhandlungen der Königlichen Gesellschaft der Wissenschaften zu Göttingen'
-    volume: 13
-    pages: '87-132'
-  - type: journal
-    authors:
-      - 'Darboux, Gaston'
-    year: 1875
-    title: 'Mémoire sur la théorie des fonctions discontinues'
-    venue: "Annales Scientifiques de l'École Normale Supérieure"
-    volume: 4
-    issue: 2
-    pages: '57-112'
-    doi: '10.24033/asens.83'
-  - type: book
-    authors:
-      - 'Henstock, Ralph'
-    year: 1988
-    title: 'Lectures on the Theory of Integration'
-    venue: 'World Scientific'
-    doi: '10.1142/0511'
-  - type: book
-    authors:
-      - 'Kurzweil, Jaroslav'
-    year: 2000
-    title: 'Henstock-Kurzweil Integration: Its Relation to Topological Vector Spaces'
-    venue: 'World Scientific'
+- type: book
+  authors:
+  - Spivak, Michael
+  year: 2008
+  title: Calculus
+  venue: Publish or Perish, Inc.
+  version: 4th edition
+  doi: 10.1007/978-0-387-09469-9
+- type: book
+  authors:
+  - Apostol, Tom M.
+  year: 1967
+  title: 'Calculus, Volume 1: One-Variable Calculus with an Introduction to Linear Algebra'
+  venue: John Wiley & Sons
+  version: 2nd edition
+- type: book
+  authors:
+  - Apostol, Tom M.
+  year: 1969
+  title: 'Calculus, Volume 2: Multi-Variable Calculus and Linear Algebra with Applications'
+  venue: John Wiley & Sons
+  version: 2nd edition
+- type: book
+  authors:
+  - Rudin, Walter
+  year: 1976
+  title: Principles of Mathematical Analysis
+  venue: McGraw-Hill Education
+  version: 3rd edition
+- type: book
+  authors:
+  - Rudin, Walter
+  year: 1987
+  title: Real and Complex Analysis
+  venue: McGraw-Hill Education
+  version: 3rd edition
+- type: book
+  authors:
+  - Royden, H. L.
+  - Fitzpatrick, Patrick M.
+  year: 2010
+  title: Real Analysis
+  venue: Pearson
+  version: 4th edition
+- type: book
+  authors:
+  - Folland, Gerald B.
+  year: 1999
+  title: 'Real Analysis: Modern Techniques and Their Applications'
+  venue: John Wiley & Sons
+  version: 2nd edition
+- type: book
+  authors:
+  - Tao, Terence
+  year: 2016
+  title: Analysis II
+  venue: Springer
+  version: 3rd edition
+  doi: 10.1007/978-981-10-1804-6
+- type: book
+  authors:
+  - Courant, Richard
+  - John, Fritz
+  year: 1999
+  title: Introduction to Calculus and Analysis II/1
+  venue: Springer
+- type: book
+  authors:
+  - Munkres, James R.
+  year: 1991
+  title: Analysis on Manifolds
+  venue: Westview Press
+- type: journal
+  authors:
+  - Lebesgue, Henri
+  year: 1902
+  title: Intégrale, longueur, aire
+  venue: Annali di Matematica Pura ed Applicata
+  volume: 7
+  issue: 1
+  pages: 231-359
+  doi: 10.1007/BF02420592
+- type: journal
+  authors:
+  - Riemann, Bernhard
+  year: 1868
+  title: Über die Darstellbarkeit einer Function durch eine trigonometrische Reihe
+  venue: Abhandlungen der Königlichen Gesellschaft der Wissenschaften zu Göttingen
+  volume: 13
+  pages: 87-132
+- type: journal
+  authors:
+  - Darboux, Gaston
+  year: 1875
+  title: Mémoire sur la théorie des fonctions discontinues
+  venue: Annales Scientifiques de l'École Normale Supérieure
+  volume: 4
+  issue: 2
+  pages: 57-112
+  doi: 10.24033/asens.83
+- type: book
+  authors:
+  - Henstock, Ralph
+  year: 1988
+  title: Lectures on the Theory of Integration
+  venue: World Scientific
+  doi: 10.1142/0511
+- type: book
+  authors:
+  - Kurzweil, Jaroslav
+  year: 2000
+  title: 'Henstock-Kurzweil Integration: Its Relation to Topological Vector Spaces'
+  venue: World Scientific
 etymology:
-  - term: 积分
-    english: integral
-    origin: 源自拉丁语 "integer"(整体的、未分的),由 Jacob Bernoulli 于 1696 年首次以 "integralis" 形式使用;Leibniz 在 1675 年的手稿中将求和符号 ∑ 拉长为 ∫,称为 "calculus summatorius",后改为 "calculus integralis"
-  - term: Riemann 和
-    english: Riemann sum
-    origin: 以德国数学家 Bernhard Riemann(1826-1866)命名,其 1854 年就职论文《论三角级数表示函数的可能性》首次以现代形式严格定义定积分
-  - term: Darboux 和
-    english: Darboux sum
-    origin: 以法国数学家 Jean-Gaston Darboux(1842-1917)命名,他在 1875 年引入上下和的简化方法,等价于 Riemann 积分但更便于教学
-  - term: Lebesgue 测度
-    english: Lebesgue measure
-    origin: 以法国数学家 Henri Lebesgue(1875-1941)命名,其 1902 年博士论文《Intégrale, longueur, aire》将"对 x 轴分割"改为"对 y 轴分割",突破了 Riemann 理论对不连续函数的限制
-  - term: 雅可比
-    english: Jacobian
-    origin: 以德国数学家 Carl Gustav Jacob Jacobi(1804-1851)命名,1841 年发表《De determinantibus functionalibus》,Jacobian 行列式刻画多元变量替换的体积伸缩
-  - term: 富比尼定理
-    english: Fubini theorem
-    origin: 以意大利数学家 Guido Fubini(1879-1943)命名,1907 年证明在可积条件下重积分可化为累次积分
-  - term: 被积函数
-    english: integrand
-    origin: 拉丁语 "integrandus"(待被积的),是 "integro"(整体化)的动形词形式,即"待被整体化的那个量"
-  - term: 分割的模
-    english: mesh (or norm of partition)
-    origin: 英文 "mesh" 原意为网眼大小,Riemann 用 "Feinheit"(细度)描述分割的最大子区间长度,英文文献多用 ||P|| 或 mesh(P) 表示
-  - term: 求积
-    english: quadrature
-    origin: 拉丁语 "quadratura"(化为方),古希腊求积法将曲边图形化为等积的正方形,如 "quadrature of the circle"(化圆为方)
+- term: 积分
+  english: integral
+  origin: 源自拉丁语 "integer"(整体的、未分的),由 Jacob Bernoulli 于 1696 年首次以 "integralis" 形式使用;Leibniz 在 1675 年的手稿中将求和符号 ∑ 拉长为 ∫,称为 "calculus summatorius",后改为 "calculus integralis"
+- term: Riemann 和
+  english: Riemann sum
+  origin: 以德国数学家 Bernhard Riemann(1826-1866)命名,其 1854 年就职论文《论三角级数表示函数的可能性》首次以现代形式严格定义定积分
+- term: Darboux 和
+  english: Darboux sum
+  origin: 以法国数学家 Jean-Gaston Darboux(1842-1917)命名,他在 1875 年引入上下和的简化方法,等价于 Riemann 积分但更便于教学
+- term: Lebesgue 测度
+  english: Lebesgue measure
+  origin: 以法国数学家 Henri Lebesgue(1875-1941)命名,其 1902 年博士论文《Intégrale, longueur, aire》将"对 x 轴分割"改为"对 y 轴分割",突破了 Riemann 理论对不连续函数的限制
+- term: 雅可比
+  english: Jacobian
+  origin: 以德国数学家 Carl Gustav Jacob Jacobi(1804-1851)命名,1841 年发表《De determinantibus functionalibus》,Jacobian 行列式刻画多元变量替换的体积伸缩
+- term: 富比尼定理
+  english: Fubini theorem
+  origin: 以意大利数学家 Guido Fubini(1879-1943)命名,1907 年证明在可积条件下重积分可化为累次积分
+- term: 被积函数
+  english: integrand
+  origin: 拉丁语 "integrandus"(待被积的),是 "integro"(整体化)的动形词形式,即"待被整体化的那个量"
+- term: 分割的模
+  english: mesh (or norm of partition)
+  origin: 英文 "mesh" 原意为网眼大小,Riemann 用 "Feinheit"(细度)描述分割的最大子区间长度,英文文献多用 ||P|| 或 mesh(P) 表示
+- term: 求积
+  english: quadrature
+  origin: 拉丁语 "quadratura"(化为方),古希腊求积法将曲边图形化为等积的正方形,如 "quadrature of the circle"(化圆为方)
 quiz: []
 ---
 

@@ -2,66 +2,161 @@
 order: 69
 title: 递归类型与深度操作
 module: typescript
-category: 'TypeScript Advanced'
+category: TypeScript Advanced
 tags:
-  - typescript
-  - recursive-types
-  - deep-types
-  - tail-recursion
-  - type-level-programming
-  - deep-readonly
-  - json-types
-  - circular-references
+- typescript
+- recursive-types
+- deep-types
+- tail-recursion
+- type-level-programming
+- deep-readonly
+- json-types
+- circular-references
 difficulty: advanced
-description: 'TypeScript 递归条件类型与深度类型操作的形式化定义、尾递归优化机制、DeepReadonly/DeepPartial/DeepRequired 实现原理、JSON 类型推导、循环引用处理与编译性能优化'
+description: TypeScript 递归条件类型与深度类型操作的形式化定义、尾递归优化机制、DeepReadonly/DeepPartial/DeepRequired 实现原理、JSON 类型推导、循环引用处理与编译性能优化
 author: fanquanpp
 related:
-  - typescript/条件类型分发
-  - typescript/类型推断infer扩展
-  - typescript/条件类型与映射类型
-  - typescript/类型声明与模块解析
-  - typescript/模板字面量类型
+- typescript/条件类型分发
+- typescript/类型推断infer扩展
+- typescript/条件类型与映射类型
+- typescript/类型声明与模块解析
+- typescript/模板字面量类型
 prerequisites:
-  - typescript/语法速查
+- typescript/语法速查
 references:
-  - |
-    Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In 28th European Conference on Object-Oriented Programming (ECOOP 2014). LIPIcs 33, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
-  - |
-    Rosenwasser, D. 2021. Announcing TypeScript 4.5. Microsoft Developer Blog. Available at: https://devblogs.microsoft.com/typescript/announcing-typescript-4-5/
-  - |
-    Pierce, B. C. 2002. Types and Programming Languages. MIT Press, Cambridge, MA, USA. Chapter 20: Recursive Types.
-  - |
-    Appel, A. W. and Felty, A. P. 2004. A semantic model of types and machine instructions for proof-carrying code. ACM Transactions on Programming Languages and Systems 26, 3 (May 2004), 551–582. DOI: https://doi.org/10.1145/982158.982163
-  - |
-    Xi, H. and Pfenning, F. 1999. Dependent types in practical programming. In Proceedings of the 26th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '99). ACM, 214–227. DOI: https://doi.org/10.1145/292540.292560
-  - |
-    Brandt, M. and Henglein, F. 1998. Coinductive axiomatization of recursive type equality and subtyping. Fundamenta Informaticae 33, 4 (1998), 309–344. DOI: https://doi.org/10.3233/FI-1998-33401
-  - |
-    TypeScript Team. 2024. TypeScript Handbook: Recursive Types. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html#type-aliases
-  - |
-    Danielsson, N. A. and Altenkirch, T. 2010. Subtyping, declaratively. In Proceedings of the 10th International Conference on Mathematics of Program Construction (MPC 2010). LNCS 6120, 100–118. DOI: https://doi.org/10.1007/978-3-642-13321-3_8
-  - |
-    Fu, P. and Komendantskaya, E. 2017. Type-based termination of recursion in Haskell. In Proceedings of the 26th European Symposium on Programming (ESOP 2017). LNCS 10201, 384–410. DOI: https://doi.org/10.1007/978-3-662-54434-1_15
-  - |
-    Cardelli, L. and Wegner, P. 1985. On understanding types, data abstraction, and polymorphism. ACM Computing Surveys 17, 4 (Dec. 1985), 471–523. DOI: https://doi.org/10.1145/6041.6042
-  - |
-    Amadio, R. M. and Cardelli, L. 1993. Subtyping recursive types. ACM Transactions on Programming Languages and Systems 15, 4 (Sept. 1993), 575–631. DOI: https://doi.org/10.1145/155183.155231
-  - |
-    Liskov, B. H. and Wing, J. M. 1994. A behavioral notion of subtyping. ACM Transactions on Programming Languages and Systems 16, 6 (Nov. 1994), 1811–1841. DOI: https://doi.org/10.1145/197320.197383
-  - |
-    Hosoya, H. and Pierce, B. C. 2003. Regular expression types for XML. ACM Transactions on Programming Languages and Systems 25, 4 (July 2003), 439–470. DOI: https://doi.org/10.1145/380796.380798
-  - |
-    Tabareau, N., Tanter, É., and Sozeau, M. 2018. Equations for the working Coq user. In Proceedings of the 7th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2018). ACM, 97–111. DOI: https://doi.org/10.1145/3167081
-  - |
-    Czajka, Ł. 2018. A new proof of the undecidability of the halting problem. arXiv preprint arXiv:1804.00215. Available at: https://arxiv.org/abs/1804.00215
+- type: conference
+  title: Understanding TypeScript
+  note: 'Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In 28th European Conference on Object-Oriented Programming (ECOOP 2014). LIPIcs 33, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257'
+  authors:
+  - Bierman, G., Abadi, M., and Torgersen, M
+  year: 2014
+  venue: 28th European Conference on Object-Oriented Programming (ECOOP 2014)
+  doi: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
+- type: website
+  title: Announcing TypeScript 4.5
+  note: 'Rosenwasser, D. 2021. Announcing TypeScript 4.5. Microsoft Developer Blog. Available at: https://devblogs.microsoft.com/typescript/announcing-typescript-4-5/'
+  authors:
+  - Rosenwasser, D
+  year: 2021
+  venue: Microsoft Developer Blog
+  url: https://devblogs.microsoft.com/typescript/announcing-typescript-4-5/
+- type: book
+  title: Types and Programming Languages
+  note: 'Pierce, B. C. 2002. Types and Programming Languages. MIT Press, Cambridge, MA, USA. Chapter 20: Recursive Types.'
+  authors:
+  - Pierce, B. C
+  year: 2002
+  venue: MIT Press, Cambridge, MA, USA
+- type: journal
+  title: A semantic model of types and machine instructions for proof-carrying code
+  note: 'Appel, A. W. and Felty, A. P. 2004. A semantic model of types and machine instructions for proof-carrying code. ACM Transactions on Programming Languages and Systems 26, 3 (May 2004), 551–582. DOI: https://doi.org/10.1145/982158.982163'
+  authors:
+  - Appel, A. W. and Felty, A. P
+  year: 2004
+  venue: ACM Transactions on Programming Languages and Systems 26, 3 (May 2004), 551–582
+  doi: https://doi.org/10.1145/982158.982163
+- type: conference
+  title: Dependent types in practical programming
+  note: 'Xi, H. and Pfenning, F. 1999. Dependent types in practical programming. In Proceedings of the 26th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL ''99). ACM, 214–227. DOI: https://doi.org/10.1145/292540.292560'
+  authors:
+  - Xi, H. and Pfenning, F
+  year: 1999
+  venue: Proceedings of the 26th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '99)
+  doi: https://doi.org/10.1145/292540.292560
+- type: website
+  title: Coinductive axiomatization of recursive type equality and subtyping. Fundamenta Informaticae 33, 4 (1998), 309–344
+  note: 'Brandt, M. and Henglein, F. 1998. Coinductive axiomatization of recursive type equality and subtyping. Fundamenta Informaticae 33, 4 (1998), 309–344. DOI: https://doi.org/10.3233/FI-1998-33401'
+  authors:
+  - Brandt, M. and Henglein, F
+  year: 1998
+  venue: 'DOI: https://doi.org/10.3233/FI-1998-33401'
+  doi: https://doi.org/10.3233/FI-1998-33401
+- type: documentation
+  title: 'TypeScript Handbook: Recursive Types'
+  note: 'TypeScript Team. 2024. TypeScript Handbook: Recursive Types. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html#type-aliases'
+  authors:
+  - TypeScript Team
+  year: 2024
+  venue: Microsoft
+  url: https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html#type-aliases
+- type: conference
+  title: Subtyping, declaratively
+  note: 'Danielsson, N. A. and Altenkirch, T. 2010. Subtyping, declaratively. In Proceedings of the 10th International Conference on Mathematics of Program Construction (MPC 2010). LNCS 6120, 100–118. DOI: https://doi.org/10.1007/978-3-642-13321-3_8'
+  authors:
+  - Danielsson, N. A. and Altenkirch, T
+  year: 2010
+  venue: Proceedings of the 10th International Conference on Mathematics of Program Construction (MPC 2010)
+  doi: https://doi.org/10.1007/978-3-642-13321-3_8
+- type: conference
+  title: Type-based termination of recursion in Haskell
+  note: 'Fu, P. and Komendantskaya, E. 2017. Type-based termination of recursion in Haskell. In Proceedings of the 26th European Symposium on Programming (ESOP 2017). LNCS 10201, 384–410. DOI: https://doi.org/10.1007/978-3-662-54434-1_15'
+  authors:
+  - Fu, P. and Komendantskaya, E
+  year: 2017
+  venue: Proceedings of the 26th European Symposium on Programming (ESOP 2017)
+  doi: https://doi.org/10.1007/978-3-662-54434-1_15
+- type: journal
+  title: On understanding types, data abstraction, and polymorphism
+  note: 'Cardelli, L. and Wegner, P. 1985. On understanding types, data abstraction, and polymorphism. ACM Computing Surveys 17, 4 (Dec. 1985), 471–523. DOI: https://doi.org/10.1145/6041.6042'
+  authors:
+  - Cardelli, L. and Wegner, P
+  year: 1985
+  venue: ACM Computing Surveys 17, 4 (Dec. 1985), 471–523
+  doi: https://doi.org/10.1145/6041.6042
+- type: journal
+  title: Subtyping recursive types
+  note: 'Amadio, R. M. and Cardelli, L. 1993. Subtyping recursive types. ACM Transactions on Programming Languages and Systems 15, 4 (Sept. 1993), 575–631. DOI: https://doi.org/10.1145/155183.155231'
+  authors:
+  - Amadio, R. M. and Cardelli, L
+  year: 1993
+  venue: ACM Transactions on Programming Languages and Systems 15, 4 (Sept. 1993), 575–631
+  doi: https://doi.org/10.1145/155183.155231
+- type: journal
+  title: A behavioral notion of subtyping
+  note: 'Liskov, B. H. and Wing, J. M. 1994. A behavioral notion of subtyping. ACM Transactions on Programming Languages and Systems 16, 6 (Nov. 1994), 1811–1841. DOI: https://doi.org/10.1145/197320.197383'
+  authors:
+  - Liskov, B. H. and Wing, J. M
+  year: 1994
+  venue: ACM Transactions on Programming Languages and Systems 16, 6 (Nov. 1994), 1811–1841
+  doi: https://doi.org/10.1145/197320.197383
+- type: book
+  title: Regular expression types for XML
+  note: 'Hosoya, H. and Pierce, B. C. 2003. Regular expression types for XML. ACM Transactions on Programming Languages and Systems 25, 4 (July 2003), 439–470. DOI: https://doi.org/10.1145/380796.380798'
+  authors:
+  - Hosoya, H. and Pierce, B. C
+  year: 2003
+  venue: ACM Transactions on Programming Languages and Systems 25, 4 (July 2003), 439–470
+  doi: https://doi.org/10.1145/380796.380798
+- type: conference
+  title: Equations for the working Coq user
+  note: 'Tabareau, N., Tanter, É., and Sozeau, M. 2018. Equations for the working Coq user. In Proceedings of the 7th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2018). ACM, 97–111. DOI: https://doi.org/10.1145/3167081'
+  authors:
+  - Tabareau, N., Tanter, É., and Sozeau, M
+  year: 2018
+  venue: Proceedings of the 7th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2018)
+  doi: https://doi.org/10.1145/3167081
+- type: website
+  title: A new proof of the undecidability of the halting problem. arXiv preprint arXiv:1804.00215
+  note: 'Czajka, Ł. 2018. A new proof of the undecidability of the halting problem. arXiv preprint arXiv:1804.00215. Available at: https://arxiv.org/abs/1804.00215'
+  authors:
+  - Czajka, Ł
+  year: 2018
+  venue: 'Available at: https://arxiv.org/abs/1804.00215'
+  url: https://arxiv.org/abs/1804.00215
 etymology:
-  term: 递归类型 (Recursive Type)
-  origin: |
-    "Recursive" 源自拉丁语 recurrere（跑回去、返回），由 re-（再次）+ currere（跑）组成，16 世纪进入英语。
+- term: 递归类型 (Recursive Type)
+  origin: '"Recursive" 源自拉丁语 recurrere（跑回去、返回），由 re-（再次）+ currere（跑）组成，16 世纪进入英语。
+
     在计算机科学中，"递归"指函数或数据类型自我引用的能力。
+
     递归类型（recursive type）的理论基础由 Robin Milner 在 1970 年代的 ML 语言中奠定，Gordon Plotkin 在 1977 年的论文《LCF considered as a programming language》中形式化了递归类型语义。
+
     TypeScript 4.1（2020 年 11 月）引入递归条件类型，4.5（2021 年 11 月）引入尾递归优化，使深度递归类型在工程中可用。
+
     "Deep"（深度）一词源自古英语 deop（深的），用于描述类型的嵌套层级，如 DeepReadonly、DeepPartial。
+
+    '
+  english: Recursive Type
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---

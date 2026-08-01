@@ -1,7 +1,8 @@
 ---
 order: 460
 title: React Vite 与工具链命令
-module: 011-react
+module: react
+
 category: '011-react'
 difficulty: beginner
 description: React Vite 与工具链命令 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 520
 title: ES2023/2024/2025 新特性
-module: 008-javascript
+module: javascript
+
 category: '008-javascript'
 difficulty: beginner
 description: ES2023/2024/2025 新特性 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 900
 title: Python array 与 bisect
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python array 与 bisect 的完整教学讲解。

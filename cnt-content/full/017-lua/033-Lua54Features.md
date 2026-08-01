@@ -1,7 +1,8 @@
 ---
 order: 330
 title: Lua 5.4 新特性
-module: 017-lua
+module: lua
+
 category: '017-lua'
 difficulty: beginner
 description: Lua 5.4 新特性 的完整教学讲解。

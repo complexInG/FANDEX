@@ -4,35 +4,37 @@ title: 媒体查询
 module: css
 category: CSS
 difficulty: intermediate
-description: 'CSS 媒体查询完整原理：@media 语法、媒体特性、响应式断点、深色模式与 matchMedia。'
+description: CSS 媒体查询完整原理：@media 语法、媒体特性、响应式断点、深色模式与 matchMedia。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/动画与过渡
-  - css/边框圆角
-  - css/容器查询
-  - css/移动端适配
+- css/动画与过渡
+- css/边框圆角
+- css/容器查询
+- css/移动端适配
 prerequisites:
-  - css/概述与基本语法
+- css/概述与基本语法
 references:
-  - type: standard
-    authors: ['W3C']
-    year: 2024
-    title: 'Media Queries Level 4/5'
-    venue: 'W3C'
-    url: https://www.w3.org/TR/mediaqueries-5/
-    accessedDate: '2026-08-01'
-  - type: documentation
-    authors: ['MDN Web Docs']
-    year: 2026
-    title: 'Using media queries'
-    venue: 'MDN Web Docs'
-    url: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries
-    accessedDate: '2026-08-01'
+- type: standard
+  authors:
+  - W3C
+  year: 2024
+  title: Media Queries Level 4/5
+  venue: W3C
+  url: https://www.w3.org/TR/mediaqueries-5/
+  accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - MDN Web Docs
+  year: 2026
+  title: Using media queries
+  venue: MDN Web Docs
+  url: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries
+  accessedDate: '2026-08-01'
 etymology:
-  - term: '媒体查询'
-    english: 'media query'
-    origin: '源自 print 样式表时代，后扩展为按设备能力查询条件应用样式。'
+- term: 媒体查询
+  english: media query
+  origin: 源自 print 样式表时代，后扩展为按设备能力查询条件应用样式。
 estimatedReadingTime: 30
 lastReviewed: '2026-08-01'
 reviewer: fanquanpp

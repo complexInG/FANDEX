@@ -1,7 +1,8 @@
 ---
 order: 540
 title: gh api 调用命令速查手册
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: gh api 调用命令速查手册 的完整教学讲解。

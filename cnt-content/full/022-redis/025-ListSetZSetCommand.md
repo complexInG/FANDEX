@@ -1,7 +1,8 @@
 ---
 order: 250
 title: Redis List/Set/ZSet 命令
-module: 022-redis
+module: redis
+
 category: '022-redis'
 difficulty: beginner
 description: Redis List/Set/ZSet 命令 的完整教学讲解。

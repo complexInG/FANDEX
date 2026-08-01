@@ -1,7 +1,8 @@
 ---
 order: 380
 title: GitHub 提交与推送
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub 提交与推送 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 340
 title: Lua LuaRocks 包管理
-module: 017-lua
+module: lua
+
 category: '017-lua'
 difficulty: beginner
 description: Lua LuaRocks 包管理 的完整教学讲解。

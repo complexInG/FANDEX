@@ -1,7 +1,8 @@
 ---
 order: 450
 title: AWS VPC 网络命令
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: AWS VPC 网络命令 的完整教学讲解。

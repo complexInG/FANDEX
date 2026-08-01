@@ -1,7 +1,8 @@
 ---
 order: 840
 title: Python enum 枚举
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python enum 枚举 的完整教学讲解。

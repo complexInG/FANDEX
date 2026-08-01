@@ -23,7 +23,6 @@ import { remarkAdmonition } from './src/plugins/remark-admonition'; // 自定义
 import { rehypeLazyImages } from './src/plugins/rehype-lazy-images'; // 图片懒加载处理器
 import { rehypeWrapTables } from './src/plugins/rehype-wrap-tables'; // 表格包裹处理器：将 table 包入 <div class="table-wrap"> 以承担横向滚动
 import { remarkCodeRunner } from './src/plugins/remark-code-runner'; // 代码运行器：识别 ```lang runnable 标记
-import { remarkExercise } from './src/plugins/exercise'; // 习题与测验：识别 :::exercise / :::quiz 提示块并替换为 data-exercise / data-quiz 容器
 import remarkMath from 'remark-math'; // 数学公式语法解析（LaTeX 语法）
 import rehypeKatex from 'rehype-katex'; // KaTeX 数学公式渲染
 import remarkGfm from 'remark-gfm'; // GitHub Flavored Markdown 支持（表格、删除线等）
@@ -101,7 +100,6 @@ export default defineConfig({
       remarkMath, // 数学公式语法解析（$...$ 和 $$...$$）
       remarkAdmonition, // 自定义提示块（:::note、:::tip 等）
       remarkCodeRunner, // 代码运行器：识别 ```lang runnable 标记并替换为容器
-      remarkExercise, // 习题与测验：识别 :::exercise / :::quiz 提示块并替换为容器
     ],
     // Rehype 插件（MDAST → HAST → HTML 转换阶段）
     rehypePlugins: [

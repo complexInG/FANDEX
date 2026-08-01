@@ -1,7 +1,8 @@
 ---
 order: 410
 title: C# 正则表达式
-module: 015-csharp
+module: csharp
+
 category: '015-csharp'
 difficulty: beginner
 description: C# 正则表达式 的完整教学讲解。

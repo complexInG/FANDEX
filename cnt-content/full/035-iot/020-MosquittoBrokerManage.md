@@ -1,7 +1,8 @@
 ---
 order: 200
 title: 物联网 Mosquitto Broker 管理
-module: 035-iot
+module: iot
+
 category: '035-iot'
 difficulty: beginner
 description: 物联网 Mosquitto Broker 管理 的完整教学讲解。

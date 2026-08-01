@@ -1,7 +1,8 @@
 ---
 order: 270
 title: Mockito 模拟
-module: 036-software-testing
+module: software-testing
+
 category: '036-software-testing'
 difficulty: beginner
 description: Mockito 模拟 的完整教学讲解。

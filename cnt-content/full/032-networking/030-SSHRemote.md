@@ -1,7 +1,8 @@
 ---
 order: 300
 title: Networking SSH 远程连接
-module: 032-networking
+module: networking
+
 category: '032-networking'
 difficulty: beginner
 description: Networking SSH 远程连接 的完整教学讲解。

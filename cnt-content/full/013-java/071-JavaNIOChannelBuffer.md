@@ -1,7 +1,8 @@
 ---
 order: 710
 title: Java NIO 通道与缓冲区
-module: 013-java
+module: java
+
 category: '013-java'
 difficulty: beginner
 description: Java NIO 通道与缓冲区 的完整教学讲解。

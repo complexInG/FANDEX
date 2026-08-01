@@ -4,213 +4,213 @@ title: 搜索算法
 module: algorithm
 category: Algorithm/Searching
 difficulty: intermediate
-description: '搜索（Search）算法的形式化定义、状态空间图模型、完备性与最优性证明、线性搜索 $O(n)$、二分搜索 $O(\log n)$、哈希查找 $O(1)$、BFS/DFS 图搜索 $O(V+E)$、双向 BFS、迭代深化 DFS（IDDFS）、A* 启发式搜索（Hart-Nilsson-Raphael 1968）、IDA* 内存受限搜索（Korf 1985）、Minimax + Alpha-Beta 剪枝博弈树搜索（Shannon 1950、Knuth-Moore 1975）的原理、实现与对比分析，涵盖 Shannon 1950 国际象棋程序、Dijkstra 1959 最短路径、Hart-Nilsson-Raphael 1968 A*、Korf 1985 IDA* 等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 22 章、Russell-Norvig 第 3 章风格习题。'
+description: 搜索（Search）算法的形式化定义、状态空间图模型、完备性与最优性证明、线性搜索 $O(n)$、二分搜索 $O(\log n)$、哈希查找 $O(1)$、BFS/DFS 图搜索 $O(V+E)$、双向 BFS、迭代深化 DFS（IDDFS）、A* 启发式搜索（Hart-Nilsson-Raphael 1968）、IDA* 内存受限搜索（Korf 1985）、Minimax + Alpha-Beta 剪枝博弈树搜索（Shannon 1950、Knuth-Moore 1975）的原理、实现与对比分析，涵盖 Shannon 1950 国际象棋程序、Dijkstra 1959 最短路径、Hart-Nilsson-Raphael 1968 A*、Korf 1985 IDA* 等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 22 章、Russell-Norvig 第 3 章风格习题。
 author: fanquanpp
 tags:
-  - algorithm
-  - algorithm-search
-  - algorithm-binary-search
-  - algorithm-hash
-  - algorithm-bfs
-  - algorithm-dfs
-  - algorithm-a-star
-  - algorithm-ida-star
-  - algorithm-iddfs
-  - algorithm-minimax
-  - algorithm-alpha-beta
-  - algorithm-heuristic-search
+- algorithm
+- algorithm-search
+- algorithm-binary-search
+- algorithm-hash
+- algorithm-bfs
+- algorithm-dfs
+- algorithm-a-star
+- algorithm-ida-star
+- algorithm-iddfs
+- algorithm-minimax
+- algorithm-alpha-beta
+- algorithm-heuristic-search
 created: 2026-05-27
 updated: 2026-07-20
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 115
 related:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/排序算法
-  - algorithm/查找算法
-  - algorithm/哈希表
-  - algorithm/树
-  - algorithm/图算法
-  - algorithm/递归与回溯
-  - algorithm/堆与优先队列
+- algorithm/算法分析基础与学习路线
+- algorithm/排序算法
+- algorithm/查找算法
+- algorithm/哈希表
+- algorithm/树
+- algorithm/图算法
+- algorithm/递归与回溯
+- algorithm/堆与优先队列
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/查找算法
-  - algorithm/递归与回溯
+- algorithm/算法分析基础与学习路线
+- algorithm/查找算法
+- algorithm/递归与回溯
 references:
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'Chapter 11 (Hash Tables), Chapter 22 (Elementary Graph Algorithms - BFS/DFS), Chapter 24 (Single-Source Shortest Paths - Dijkstra), ISBN 978-0262046305'
-  - type: book
-    authors:
-      - 'Russell, Stuart'
-      - 'Norvig, Peter'
-    year: 2020
-    title: 'Artificial Intelligence: A Modern Approach'
-    venue: 'Pearson'
-    version: '4th edition'
-    pages: 'ISBN 978-0134610993, Chapter 3 (Solving Problems by Searching - BFS/DFS/UCS/A*/IDA*), Chapter 5 (Adversarial Search - Minimax/Alpha-Beta)'
-  - type: book
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1998
-    title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-    venue: 'Addison-Wesley Professional'
-    version: '2nd edition'
-    pages: 'ISBN 978-0201896855, Section 6.1 (Sequential Searching), Section 6.2 (Searching by Comparison of Keys - Binary Search), Section 6.4 (Hashing)'
-  - type: book
-    authors:
-      - 'Sedgewick, Robert'
-      - 'Wayne, Kevin'
-    year: 2011
-    title: 'Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-    pages: 'ISBN 978-0321573513, Section 3.1-3.4 (Symbol Tables, BST, Hash Tables), Section 4.1-4.3 (Graphs - BFS/DFS/Dijkstra)'
-  - type: journal
-    authors:
-      - 'Dijkstra, Edsger W.'
-    year: 1959
-    title: 'A note on two problems in connexion with graphs'
-    venue: 'Numerische Mathematik'
-    volume: 1
-    issue: 1
-    pages: '269-271'
-    doi: '10.1007/BF01386390'
-  - type: journal
-    authors:
-      - 'Hart, Peter E.'
-      - 'Nilsson, Nils J.'
-      - 'Raphael, Bertram'
-    year: 1968
-    title: 'A Formal Basis for the Heuristic Determination of Minimum Cost Paths'
-    venue: 'IEEE Transactions on Systems Science and Cybernetics'
-    volume: 4
-    issue: 2
-    pages: '100-107'
-    doi: '10.1109/TSSC.1968.300136'
-  - type: journal
-    authors:
-      - 'Hart, Peter E.'
-      - 'Nilsson, Nils J.'
-      - 'Raphael, Bertram'
-    year: 1972
-    title: 'Correction to A Formal Basis for the Heuristic Determination of Minimum Cost Paths'
-    venue: 'SIGART Newsletter'
-    issue: 37
-    pages: '28-29'
-  - type: journal
-    authors:
-      - 'Korf, Richard E.'
-    year: 1985
-    title: 'Depth-first iterative-deepening: An optimal admissible tree search'
-    venue: 'Artificial Intelligence'
-    volume: 27
-    issue: 1
-    pages: '97-109'
-    doi: '10.1016/0004-3702(85)90084-0'
-  - type: journal
-    authors:
-      - 'Knuth, Donald E.'
-      - 'Moore, Ronald W.'
-    year: 1975
-    title: 'An analysis of alpha-beta pruning'
-    venue: 'Artificial Intelligence'
-    volume: 6
-    issue: 4
-    pages: '293-326'
-    doi: '10.1016/0004-3702(75)90019-3'
-  - type: journal
-    authors:
-      - 'Shannon, Claude E.'
-    year: 1950
-    title: 'Programming a Computer for Playing Chess'
-    venue: 'Philosophical Magazine'
-    volume: 41
-    issue: 314
-    pages: '256-275'
-    doi: '10.1080/14786445008521796'
-  - type: journal
-    authors:
-      - 'Pohl, Ira'
-    year: 1971
-    title: 'Bi-directional Search'
-    venue: 'Machine Intelligence'
-    volume: 6
-    pages: '127-140'
-  - type: journal
-    authors:
-      - 'Moore, Edward F.'
-    year: 1959
-    title: 'The shortest path through a maze'
-    venue: 'Proceedings of the International Symposium on the Theory of Switching'
-    pages: '285-292'
-  - type: website
-    authors:
-      - 'Bentley, Jon'
-    year: 2000
-    title: 'Pearls of Algorithm Design (Programming Pearls column on binary search)'
-    venue: 'Addison-Wesley Professional'
-    url: 'https://www.informit.com/store/programming-pearls-9780201657883'
-    pages: 'Column 4 (Writing Correct Programs) - 90% of professional programmers cannot implement binary search correctly'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'Bloch, Joshua'
-    year: 2006
-    title: 'Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken'
-    venue: 'Google Research Blog'
-    url: 'https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/'
-    pages: 'Bug report on integer overflow in Java Arrays.binarySearch mid = (low + high) / 2'
-    accessedDate: '2026-07-20'
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: Chapter 11 (Hash Tables), Chapter 22 (Elementary Graph Algorithms - BFS/DFS), Chapter 24 (Single-Source Shortest Paths - Dijkstra), ISBN 978-0262046305
+- type: book
+  authors:
+  - Russell, Stuart
+  - Norvig, Peter
+  year: 2020
+  title: 'Artificial Intelligence: A Modern Approach'
+  venue: Pearson
+  version: 4th edition
+  pages: ISBN 978-0134610993, Chapter 3 (Solving Problems by Searching - BFS/DFS/UCS/A*/IDA*), Chapter 5 (Adversarial Search - Minimax/Alpha-Beta)
+- type: book
+  authors:
+  - Knuth, Donald E.
+  year: 1998
+  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
+  venue: Addison-Wesley Professional
+  version: 2nd edition
+  pages: ISBN 978-0201896855, Section 6.1 (Sequential Searching), Section 6.2 (Searching by Comparison of Keys - Binary Search), Section 6.4 (Hashing)
+- type: book
+  authors:
+  - Sedgewick, Robert
+  - Wayne, Kevin
+  year: 2011
+  title: Algorithms
+  venue: Addison-Wesley Professional
+  version: 4th edition
+  pages: ISBN 978-0321573513, Section 3.1-3.4 (Symbol Tables, BST, Hash Tables), Section 4.1-4.3 (Graphs - BFS/DFS/Dijkstra)
+- type: journal
+  authors:
+  - Dijkstra, Edsger W.
+  year: 1959
+  title: A note on two problems in connexion with graphs
+  venue: Numerische Mathematik
+  volume: 1
+  issue: 1
+  pages: 269-271
+  doi: 10.1007/BF01386390
+- type: journal
+  authors:
+  - Hart, Peter E.
+  - Nilsson, Nils J.
+  - Raphael, Bertram
+  year: 1968
+  title: A Formal Basis for the Heuristic Determination of Minimum Cost Paths
+  venue: IEEE Transactions on Systems Science and Cybernetics
+  volume: 4
+  issue: 2
+  pages: 100-107
+  doi: 10.1109/TSSC.1968.300136
+- type: journal
+  authors:
+  - Hart, Peter E.
+  - Nilsson, Nils J.
+  - Raphael, Bertram
+  year: 1972
+  title: Correction to A Formal Basis for the Heuristic Determination of Minimum Cost Paths
+  venue: SIGART Newsletter
+  issue: 37
+  pages: 28-29
+- type: journal
+  authors:
+  - Korf, Richard E.
+  year: 1985
+  title: 'Depth-first iterative-deepening: An optimal admissible tree search'
+  venue: Artificial Intelligence
+  volume: 27
+  issue: 1
+  pages: 97-109
+  doi: 10.1016/0004-3702(85)90084-0
+- type: journal
+  authors:
+  - Knuth, Donald E.
+  - Moore, Ronald W.
+  year: 1975
+  title: An analysis of alpha-beta pruning
+  venue: Artificial Intelligence
+  volume: 6
+  issue: 4
+  pages: 293-326
+  doi: 10.1016/0004-3702(75)90019-3
+- type: journal
+  authors:
+  - Shannon, Claude E.
+  year: 1950
+  title: Programming a Computer for Playing Chess
+  venue: Philosophical Magazine
+  volume: 41
+  issue: 314
+  pages: 256-275
+  doi: 10.1080/14786445008521796
+- type: journal
+  authors:
+  - Pohl, Ira
+  year: 1971
+  title: Bi-directional Search
+  venue: Machine Intelligence
+  volume: 6
+  pages: 127-140
+- type: journal
+  authors:
+  - Moore, Edward F.
+  year: 1959
+  title: The shortest path through a maze
+  venue: Proceedings of the International Symposium on the Theory of Switching
+  pages: 285-292
+- type: website
+  authors:
+  - Bentley, Jon
+  year: 2000
+  title: Pearls of Algorithm Design (Programming Pearls column on binary search)
+  venue: Addison-Wesley Professional
+  url: https://www.informit.com/store/programming-pearls-9780201657883
+  pages: Column 4 (Writing Correct Programs) - 90% of professional programmers cannot implement binary search correctly
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - Bloch, Joshua
+  year: 2006
+  title: 'Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken'
+  venue: Google Research Blog
+  url: https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/
+  pages: Bug report on integer overflow in Java Arrays.binarySearch mid = (low + high) / 2
+  accessedDate: '2026-07-20'
 etymology:
-  - term: 搜索
-    english: search
-    origin: 'search 源自拉丁语 circare（绕圈行走），原指"四处搜寻"。在计算机科学中，search 指在状态空间中寻找满足特定条件的状态。Russell-Norvig《AIMA》第 3 章将搜索分为：无信息搜索（BFS/DFS/UCS/IDDFS）与有信息搜索（A*/IDA*/启发式）。中文"搜索"由"搜"（搜查）与"索"（绳索、寻觅）合成'
-  - term: 状态空间
-    english: state space
-    origin: 'state 源自拉丁语 status（状态、位置）。状态空间指问题所有可能状态的集合，搜索算法在状态空间中寻找从初始状态到目标状态的路径。形式化为 5 元组 $\langle S, s_0, A, G, \text{succ} \rangle$：状态集 $S$、初始状态 $s_0$、动作集 $A$、目标集 $G$、后继函数 $\text{succ}$'
-  - term: 启发式
-    english: heuristic
-    origin: 'heuristic 源自古希腊语 εὑρίσκω（heurisko，我找到），与 Archimedes 著名的 "Eureka！"（我找到了！）同根。在 AI 中，heuristic 指基于经验或直觉的近似规则，用于引导搜索。Pearl 1984《Heuristics》给出系统化理论。启发式函数 $h(n)$ 估算从状态 $n$ 到目标的代价'
-  - term: 可采纳性
-    english: admissibility
-    origin: 'admissible 源自拉丁语 admittere（允许进入）。在 A* 中，启发式 $h$ 可采纳指 $\forall n, h(n) \leq h^*(n)$（$h^*$ 为实际最优代价）。可采纳性保证 A* 找到最优解，是 A* 正确性的核心约束'
-  - term: 一致性
-    english: consistency / monotonicity
-    origin: 'consistent 源自拉丁语 consistere（共同站立）。启发式 $h$ 一致指 $\forall n, n\'', h(n) \leq c(n, n\'') + h(n\'')$（三角不等式）。一致性蕴含可采纳性，且保证 A* 无需重开闭表。Hart-Nilsson-Raphael 1968 原论文称此为 monotonicity'
-  - term: 完备性
-    english: completeness
-    origin: 'complete 源自拉丁语 complere（填满）。搜索算法完备指：若解存在则算法必能找到。BFS、UCS、A*（有限分支）完备；DFS 不完备（可能陷入无限分支）；IDDFS 完备'
-  - term: 最优性
-    english: optimality
-    origin: 'optimal 源自拉丁语 optimus（最好的）。搜索算法最优指：找到的解必为最优解。UCS、A*（可采纳启发式）最优；BFS 仅对无权图最优；DFS 不最优'
-  - term: 广度优先搜索
-    english: breadth-first search (BFS)
-    origin: 'breadth 源自古英语 brǣdu（宽度）。BFS 由 Edward F. Moore 1959 在《The shortest path through a maze》中独立提出，Lee 1961 在电路布线中独立再发现（故电路领域称 Lee 算法）。BFS 用 FIFO 队列按层扩展，无权图最短路径'
-  - term: 深度优先搜索
-    english: depth-first search (DFS)
-    origin: 'depth 源自古英语 dēop（深的）。DFS 的递归形式由 Tarjan 1972 系统化，但思想可追溯至 19 世纪迷宫探索算法。DFS 用 LIFO 栈或递归深入分支，是回溯算法、连通分量、拓扑排序的基础'
-  - term: A* 算法
-    english: A* algorithm
-    origin: 'A* 由 Peter Hart、Nils Nilsson、Bertram Raphael 1968 在 SRI International（斯坦福研究院）为 Shakey 机器人路径规划而设计。命名取自"最优算法"（A 加星号表示最优）。A* = Dijkstra + 启发式，即 $f(n) = g(n) + h(n)$。论文发表于 IEEE Trans. SSC-4(2):100-107。1972 年作者在 SIGART Newsletter 37:28-29 发表更正'
-  - term: IDA*
-    english: Iterative Deepening A*
-    origin: 'IDA* 由 Richard Korf 1985 在《Artificial Intelligence》27(1):97-109《Depth-first iterative-deepening: An optimal admissible tree search》中提出。结合 IDDFS 与 A*，用 $f(n) = g(n) + h(n)$ 作为深度阈值，空间 $O(d)$。Korf 还提出 WIDA*（加权 IDA*）与 DFBnB（深度优先分支定界）'
-  - term: Minimax
-    english: Minimax
-    origin: 'minimax 由 minimize + maximize 合成。von Neumann 1928 在《Zur Theorie der Gesellschaftsspiele》Mathematische Annalen 100:295-320 中证明极小极大定理，奠定博弈论基础。Shannon 1950 将其应用于国际象棋程序'
-  - term: Alpha-Beta 剪枝
-    english: Alpha-Beta pruning
-    origin: 'prune 源自古法语 proignier（修剪枝条）。Alpha-Beta 剪枝在 Minimax 基础上维护 $\alpha$（MAX 节点当前最佳下界）与 $\beta$（MIN 节点当前最佳上界），当 $\alpha \geq \beta$ 时剪枝。思想由 McCarthy 1956 在 Dartmouth 会议提出，Knuth-Moore 1975 给出严格分析：最优节点排序下复杂度 $O(b^{d/2})$'
+- term: 搜索
+  english: search
+  origin: search 源自拉丁语 circare（绕圈行走），原指"四处搜寻"。在计算机科学中，search 指在状态空间中寻找满足特定条件的状态。Russell-Norvig《AIMA》第 3 章将搜索分为：无信息搜索（BFS/DFS/UCS/IDDFS）与有信息搜索（A*/IDA*/启发式）。中文"搜索"由"搜"（搜查）与"索"（绳索、寻觅）合成
+- term: 状态空间
+  english: state space
+  origin: state 源自拉丁语 status（状态、位置）。状态空间指问题所有可能状态的集合，搜索算法在状态空间中寻找从初始状态到目标状态的路径。形式化为 5 元组 $\langle S, s_0, A, G, \text{succ} \rangle$：状态集 $S$、初始状态 $s_0$、动作集 $A$、目标集 $G$、后继函数 $\text{succ}$
+- term: 启发式
+  english: heuristic
+  origin: heuristic 源自古希腊语 εὑρίσκω（heurisko，我找到），与 Archimedes 著名的 "Eureka！"（我找到了！）同根。在 AI 中，heuristic 指基于经验或直觉的近似规则，用于引导搜索。Pearl 1984《Heuristics》给出系统化理论。启发式函数 $h(n)$ 估算从状态 $n$ 到目标的代价
+- term: 可采纳性
+  english: admissibility
+  origin: admissible 源自拉丁语 admittere（允许进入）。在 A* 中，启发式 $h$ 可采纳指 $\forall n, h(n) \leq h^*(n)$（$h^*$ 为实际最优代价）。可采纳性保证 A* 找到最优解，是 A* 正确性的核心约束
+- term: 一致性
+  english: consistency / monotonicity
+  origin: consistent 源自拉丁语 consistere（共同站立）。启发式 $h$ 一致指 $\forall n, n\', h(n) \leq c(n, n\') + h(n\')$（三角不等式）。一致性蕴含可采纳性，且保证 A* 无需重开闭表。Hart-Nilsson-Raphael 1968 原论文称此为 monotonicity
+- term: 完备性
+  english: completeness
+  origin: complete 源自拉丁语 complere（填满）。搜索算法完备指：若解存在则算法必能找到。BFS、UCS、A*（有限分支）完备；DFS 不完备（可能陷入无限分支）；IDDFS 完备
+- term: 最优性
+  english: optimality
+  origin: optimal 源自拉丁语 optimus（最好的）。搜索算法最优指：找到的解必为最优解。UCS、A*（可采纳启发式）最优；BFS 仅对无权图最优；DFS 不最优
+- term: 广度优先搜索
+  english: breadth-first search (BFS)
+  origin: breadth 源自古英语 brǣdu（宽度）。BFS 由 Edward F. Moore 1959 在《The shortest path through a maze》中独立提出，Lee 1961 在电路布线中独立再发现（故电路领域称 Lee 算法）。BFS 用 FIFO 队列按层扩展，无权图最短路径
+- term: 深度优先搜索
+  english: depth-first search (DFS)
+  origin: depth 源自古英语 dēop（深的）。DFS 的递归形式由 Tarjan 1972 系统化，但思想可追溯至 19 世纪迷宫探索算法。DFS 用 LIFO 栈或递归深入分支，是回溯算法、连通分量、拓扑排序的基础
+- term: A* 算法
+  english: A* algorithm
+  origin: A* 由 Peter Hart、Nils Nilsson、Bertram Raphael 1968 在 SRI International（斯坦福研究院）为 Shakey 机器人路径规划而设计。命名取自"最优算法"（A 加星号表示最优）。A* = Dijkstra + 启发式，即 $f(n) = g(n) + h(n)$。论文发表于 IEEE Trans. SSC-4(2):100-107。1972 年作者在 SIGART Newsletter 37:28-29 发表更正
+- term: IDA*
+  english: Iterative Deepening A*
+  origin: 'IDA* 由 Richard Korf 1985 在《Artificial Intelligence》27(1):97-109《Depth-first iterative-deepening: An optimal admissible tree search》中提出。结合 IDDFS 与 A*，用 $f(n) = g(n) + h(n)$ 作为深度阈值，空间 $O(d)$。Korf 还提出 WIDA*（加权 IDA*）与 DFBnB（深度优先分支定界）'
+- term: Minimax
+  english: Minimax
+  origin: minimax 由 minimize + maximize 合成。von Neumann 1928 在《Zur Theorie der Gesellschaftsspiele》Mathematische Annalen 100:295-320 中证明极小极大定理，奠定博弈论基础。Shannon 1950 将其应用于国际象棋程序
+- term: Alpha-Beta 剪枝
+  english: Alpha-Beta pruning
+  origin: prune 源自古法语 proignier（修剪枝条）。Alpha-Beta 剪枝在 Minimax 基础上维护 $\alpha$（MAX 节点当前最佳下界）与 $\beta$（MIN 节点当前最佳上界），当 $\alpha \geq \beta$ 时剪枝。思想由 McCarthy 1956 在 Dartmouth 会议提出，Knuth-Moore 1975 给出严格分析：最优节点排序下复杂度 $O(b^{d/2})$
 ---
 
 

@@ -1,7 +1,8 @@
 ---
 order: 510
 title: 模式（Schema）管理 语法速查手册
-module: 021-postgresql
+module: postgresql
+
 category: '021-postgresql'
 difficulty: beginner
 description: 模式（Schema）管理 语法速查手册 的完整教学讲解。

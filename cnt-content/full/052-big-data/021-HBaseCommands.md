@@ -1,7 +1,8 @@
 ---
 order: 210
 title: 大数据 HBase 命令
-module: 052-big-data
+module: big-data
+
 category: '052-big-data'
 difficulty: beginner
 description: 大数据 HBase 命令 的完整教学讲解。

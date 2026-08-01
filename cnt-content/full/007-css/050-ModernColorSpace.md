@@ -1,7 +1,8 @@
 ---
 order: 500
 title: CSS 现代色彩空间语法速查手册
-module: 007-css
+module: css
+
 category: '007-css'
 difficulty: beginner
 description: CSS 现代色彩空间语法速查手册 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 960
 title: Python httpx 与 requests
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python httpx 与 requests 的完整教学讲解。

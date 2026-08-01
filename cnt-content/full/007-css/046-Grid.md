@@ -1,7 +1,8 @@
 ---
 order: 460
 title: CSS Grid 布局速查
-module: 007-css
+module: css
+
 category: '007-css'
 difficulty: beginner
 description: CSS Grid 布局速查 的完整教学讲解。

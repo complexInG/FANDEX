@@ -1,7 +1,8 @@
 ---
 order: 310
 title: Networking nc 与 nmap
-module: 032-networking
+module: networking
+
 category: '032-networking'
 difficulty: beginner
 description: Networking nc 与 nmap 的完整教学讲解。

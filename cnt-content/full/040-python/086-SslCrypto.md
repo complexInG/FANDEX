@@ -1,7 +1,8 @@
 ---
 order: 860
 title: Python ssl 安全套接字
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python ssl 安全套接字 的完整教学讲解。

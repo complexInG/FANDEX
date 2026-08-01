@@ -4,7 +4,7 @@ title: 微分中值定理
 module: calculus
 category: 高等数学
 difficulty: intermediate
-description: '微分中值定理的严格理论体系：Rolle 定理、Lagrange 中值定理、Cauchy 中值定理、Taylor 定理（Peano/Lagrange/Cauchy/Schlomilch 四种余项）、Darboux 定理（导数介值定理）、积分中值定理（两种形式）、Flett 定理与 Pompeiu 定理。配套 40+ Python/SymPy/PyTorch 代码示例（数值验证、符号推导、Taylor 逼近、Newton 迭代、RK4 误差分析、autograd 梯度检查），6 个 Mermaid 图与 80+ KaTeX 块级公式，10 道 Spivak 风格习题与 14 条 ACM 格式参考文献。本篇以 Spivak Calculus 4th、Apostol Vol 1、Rudin PMA、Tao Analysis I 为标杆，采用严格分析风格。'
+description: 微分中值定理的严格理论体系：Rolle 定理、Lagrange 中值定理、Cauchy 中值定理、Taylor 定理（Peano/Lagrange/Cauchy/Schlomilch 四种余项）、Darboux 定理（导数介值定理）、积分中值定理（两种形式）、Flett 定理与 Pompeiu 定理。配套 40+ Python/SymPy/PyTorch 代码示例（数值验证、符号推导、Taylor 逼近、Newton 迭代、RK4 误差分析、autograd 梯度检查），6 个 Mermaid 图与 80+ KaTeX 块级公式，10 道 Spivak 风格习题与 14 条 ACM 格式参考文献。本篇以 Spivak Calculus 4th、Apostol Vol 1、Rudin PMA、Tao Analysis I 为标杆，采用严格分析风格。
 author: fanquanpp
 created: 2026-06-14
 updated: 2026-07-18
@@ -12,162 +12,162 @@ lastReviewed: '2026-07-18'
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 115
 tags:
-  - calculus
-  - real-analysis
-  - mean-value-theorem
-  - rolle-theorem
-  - lagrange-theorem
-  - cauchy-theorem
-  - taylor-theorem
-  - darboux-theorem
-  - integral-mean-value-theorem
-  - lhospital-rule
+- calculus
+- real-analysis
+- mean-value-theorem
+- rolle-theorem
+- lagrange-theorem
+- cauchy-theorem
+- taylor-theorem
+- darboux-theorem
+- integral-mean-value-theorem
+- lhospital-rule
 related:
-  - calculus/函数与极限
-  - calculus/导数与微分
-  - calculus/不定积分
-  - calculus/定积分与应用
-  - calculus/无穷级数与常微分方程
-  - math/实分析
-  - machine-learning/反向传播
+- calculus/函数与极限
+- calculus/导数与微分
+- calculus/不定积分
+- calculus/定积分与应用
+- calculus/无穷级数与常微分方程
+- math/实分析
+- machine-learning/反向传播
 prerequisites:
-  - calculus/函数与极限
-  - calculus/导数与微分
+- calculus/函数与极限
+- calculus/导数与微分
 references:
-  - type: book
-    authors:
-      - 'Spivak, Michael'
-    year: 2008
-    title: 'Calculus'
-    venue: 'Publish or Perish, Inc.'
-    version: '4th edition'
-    doi: '10.1007/978-0-387-09469-9'
-  - type: book
-    authors:
-      - 'Apostol, Tom M.'
-    year: 1967
-    title: 'Calculus, Volume 1: One-Variable Calculus with an Introduction to Linear Algebra'
-    venue: 'John Wiley & Sons'
-    version: '2nd edition'
-  - type: book
-    authors:
-      - 'Rudin, Walter'
-    year: 1976
-    title: 'Principles of Mathematical Analysis'
-    venue: 'McGraw-Hill Education'
-    version: '3rd edition'
-  - type: book
-    authors:
-      - 'Tao, Terence'
-    year: 2016
-    title: 'Analysis I'
-    venue: 'Springer'
-    version: '3rd edition'
-    doi: '10.1007/978-981-10-1789-6'
-  - type: book
-    authors:
-      - 'Courant, Richard'
-      - 'John, Fritz'
-    year: 1999
-    title: 'Introduction to Calculus and Analysis I'
-    venue: 'Springer'
-  - type: book
-    authors:
-      - 'Hardy, G. H.'
-    year: 1952
-    title: 'A Course of Pure Mathematics'
-    venue: 'Cambridge University Press'
-    version: '10th edition'
-  - type: book
-    authors:
-      - 'Pugh, Charles C.'
-    year: 2002
-    title: 'Real Mathematical Analysis'
-    venue: 'Springer'
-    doi: '10.1007/978-0-387-21668-2'
-  - type: book
-    authors:
-      - 'Bartle, Robert G.'
-      - 'Sherbert, Donald R.'
-    year: 2011
-    title: 'Introduction to Real Analysis'
-    venue: 'John Wiley & Sons'
-    version: '4th edition'
-  - type: book
-    authors:
-      - 'Burkill, J. C.'
-    year: 1962
-    title: 'A First Course in Mathematical Analysis'
-    venue: 'Cambridge University Press'
-  - type: journal
-    authors:
-      - 'Rolle, Michel'
-    year: 1691
-    title: "Démonstration d'une méthode pour résoudre les égalités de toutes les degrés suivant les coordonnées qui s'y trouvent"
-    venue: "Memoires de l'Academie Royale des Sciences"
-  - type: book
-    authors:
-      - 'Lagrange, Joseph-Louis'
-    year: 1797
-    title: "Théorie des fonctions analytiques, contenant les principes du calcul différentiel, dégagés de toute considération d'infiniment petits ou d'évanouissans, de limites ou de fluxions"
-    venue: 'Imprimerie de la République'
-  - type: book
-    authors:
-      - 'Cauchy, Augustin-Louis'
-    year: 1823
-    title: "Résumé des leçons données à l'École royale polytechnique sur le calcul infinitésimal"
-    venue: 'Imprimerie royale'
-  - type: journal
-    authors:
-      - 'Taylor, Brook'
-    year: 1715
-    title: 'Methodus Incrementorum Directa et Inversa'
-    venue: 'Philosophical Transactions of the Royal Society'
-  - type: journal
-    authors:
-      - 'Darboux, Gaston'
-    year: 1875
-    title: 'Mémoire sur les discontinuités des fonctions'
-    venue: 'Journal de Mathématiques Pures et Appliquées'
-    volume: 4
-    pages: '5-56'
-  - type: journal
-    authors:
-      - 'Flett, Thomas M.'
-    year: 1958
-    title: 'A mean value theorem'
-    venue: 'The Mathematical Gazette'
-    volume: 42
-    issue: 339
-    pages: '38-39'
+- type: book
+  authors:
+  - Spivak, Michael
+  year: 2008
+  title: Calculus
+  venue: Publish or Perish, Inc.
+  version: 4th edition
+  doi: 10.1007/978-0-387-09469-9
+- type: book
+  authors:
+  - Apostol, Tom M.
+  year: 1967
+  title: 'Calculus, Volume 1: One-Variable Calculus with an Introduction to Linear Algebra'
+  venue: John Wiley & Sons
+  version: 2nd edition
+- type: book
+  authors:
+  - Rudin, Walter
+  year: 1976
+  title: Principles of Mathematical Analysis
+  venue: McGraw-Hill Education
+  version: 3rd edition
+- type: book
+  authors:
+  - Tao, Terence
+  year: 2016
+  title: Analysis I
+  venue: Springer
+  version: 3rd edition
+  doi: 10.1007/978-981-10-1789-6
+- type: book
+  authors:
+  - Courant, Richard
+  - John, Fritz
+  year: 1999
+  title: Introduction to Calculus and Analysis I
+  venue: Springer
+- type: book
+  authors:
+  - Hardy, G. H.
+  year: 1952
+  title: A Course of Pure Mathematics
+  venue: Cambridge University Press
+  version: 10th edition
+- type: book
+  authors:
+  - Pugh, Charles C.
+  year: 2002
+  title: Real Mathematical Analysis
+  venue: Springer
+  doi: 10.1007/978-0-387-21668-2
+- type: book
+  authors:
+  - Bartle, Robert G.
+  - Sherbert, Donald R.
+  year: 2011
+  title: Introduction to Real Analysis
+  venue: John Wiley & Sons
+  version: 4th edition
+- type: book
+  authors:
+  - Burkill, J. C.
+  year: 1962
+  title: A First Course in Mathematical Analysis
+  venue: Cambridge University Press
+- type: journal
+  authors:
+  - Rolle, Michel
+  year: 1691
+  title: Démonstration d'une méthode pour résoudre les égalités de toutes les degrés suivant les coordonnées qui s'y trouvent
+  venue: Memoires de l'Academie Royale des Sciences
+- type: book
+  authors:
+  - Lagrange, Joseph-Louis
+  year: 1797
+  title: Théorie des fonctions analytiques, contenant les principes du calcul différentiel, dégagés de toute considération d'infiniment petits ou d'évanouissans, de limites ou de fluxions
+  venue: Imprimerie de la République
+- type: book
+  authors:
+  - Cauchy, Augustin-Louis
+  year: 1823
+  title: Résumé des leçons données à l'École royale polytechnique sur le calcul infinitésimal
+  venue: Imprimerie royale
+- type: journal
+  authors:
+  - Taylor, Brook
+  year: 1715
+  title: Methodus Incrementorum Directa et Inversa
+  venue: Philosophical Transactions of the Royal Society
+- type: journal
+  authors:
+  - Darboux, Gaston
+  year: 1875
+  title: Mémoire sur les discontinuités des fonctions
+  venue: Journal de Mathématiques Pures et Appliquées
+  volume: 4
+  pages: 5-56
+- type: journal
+  authors:
+  - Flett, Thomas M.
+  year: 1958
+  title: A mean value theorem
+  venue: The Mathematical Gazette
+  volume: 42
+  issue: 339
+  pages: 38-39
 etymology:
-  - term: 中值定理
-    english: mean value theorem
-    origin: 源自拉丁语 "valore medio"（中间值），由 Cauchy 于 1823 年在《Résumé des leçons》中首次以现代严格形式陈述，Lagrange 于 1797 年给出最早的有限增量形式 f(b)-f(a)=f'(ξ)(b-a)，中文译名承袭"介值"与"中值"的几何直观
-  - term: Rolle 定理
-    english: Rolle's theorem
-    origin: 以法国数学家 Michel Rolle（1652-1719）命名，1691 年发表于巴黎科学院院刊，原始形式仅针对多项式方程两相邻实根之间存在另一根的导数为零，并使用"级联法"（méthode des cascades）证明，与现代可微函数形式有较大差异
-  - term: Lagrange 中值定理
-    english: Lagrange mean value theorem
-    origin: 以意大利裔法国数学家 Joseph-Louis Lagrange（1736-1813）命名，1797 年《Théorie des fonctions analytiques》中给出有限增量公式，旨在摒弃 Newton 流数术与 Leibniz 无穷小的模糊性，建立纯代数化的"函数解析理论"
-  - term: Cauchy 中值定理
-    english: Cauchy mean value theorem
-    origin: 以法国数学家 Augustin-Louis Cauchy（1789-1857）命名，1823 年《Résumé des leçons sur le calcul infinitésimal》中给出参数化形式，奠定了 ε-δ 严格化分析的基石，是 L'Hôpital 法则的理论依据
-  - term: Taylor 级数
-    english: Taylor series
-    origin: 以英国数学家 Brook Taylor（1685-1731）命名，1715 年《Methodus Incrementorum Directa et Inversa》中首次系统陈述，但严格收敛性直至 1821 年 Cauchy 才完整建立；现代表述与余项估计归功于 Lagrange
-  - term: Maclaurin 级数
-    english: Maclaurin series
-    origin: 以苏格兰数学家 Colin Maclaurin（1698-1746）命名，1742 年《A Treatise of Fluxions》中系统使用 x0=0 处展开，并首次给出余项估计；Maclaurin 本人在书中明确将该公式归功于 Taylor 与 Stirling
-  - term: Darboux 定理
-    english: Darboux theorem
-    origin: 以法国数学家 Jean-Gaston Darboux（1842-1917）命名，1875 年论文《Mémoire sur les discontinuités des fonctions》中证明导函数（即便不连续）必满足介值性质，揭示了导数与连续函数的本质差异，是微分方程与实分析的关键工具
-  - term: 辅助函数
-    english: auxiliary function
-    origin: 源自拉丁语 "auxilium"（帮助、援助），由 Cauchy 系统化使用于极限与中值定理证明，是构造性证明的核心工具；在 Lagrange 中值定理证明中引入 φ(x)=f(x)-f(a)-[(f(b)-f(a))/(b-a)](x-a) 是典范范例
-  - term: 余项
-    english: remainder
-    origin: 源自拉丁语 "remanere"（剩余、留下），Taylor 余项由 Lagrange 1797 年首次以导数形式给出，Peano 1889 年以 o((x-x0)^n) 形式给出局部估计，Cauchy 与 Schlömilch 给出参数化形式，构成 Taylor 定理的误差理论核心
+- term: 中值定理
+  english: mean value theorem
+  origin: 源自拉丁语 "valore medio"（中间值），由 Cauchy 于 1823 年在《Résumé des leçons》中首次以现代严格形式陈述，Lagrange 于 1797 年给出最早的有限增量形式 f(b)-f(a)=f'(ξ)(b-a)，中文译名承袭"介值"与"中值"的几何直观
+- term: Rolle 定理
+  english: Rolle's theorem
+  origin: 以法国数学家 Michel Rolle（1652-1719）命名，1691 年发表于巴黎科学院院刊，原始形式仅针对多项式方程两相邻实根之间存在另一根的导数为零，并使用"级联法"（méthode des cascades）证明，与现代可微函数形式有较大差异
+- term: Lagrange 中值定理
+  english: Lagrange mean value theorem
+  origin: 以意大利裔法国数学家 Joseph-Louis Lagrange（1736-1813）命名，1797 年《Théorie des fonctions analytiques》中给出有限增量公式，旨在摒弃 Newton 流数术与 Leibniz 无穷小的模糊性，建立纯代数化的"函数解析理论"
+- term: Cauchy 中值定理
+  english: Cauchy mean value theorem
+  origin: 以法国数学家 Augustin-Louis Cauchy（1789-1857）命名，1823 年《Résumé des leçons sur le calcul infinitésimal》中给出参数化形式，奠定了 ε-δ 严格化分析的基石，是 L'Hôpital 法则的理论依据
+- term: Taylor 级数
+  english: Taylor series
+  origin: 以英国数学家 Brook Taylor（1685-1731）命名，1715 年《Methodus Incrementorum Directa et Inversa》中首次系统陈述，但严格收敛性直至 1821 年 Cauchy 才完整建立；现代表述与余项估计归功于 Lagrange
+- term: Maclaurin 级数
+  english: Maclaurin series
+  origin: 以苏格兰数学家 Colin Maclaurin（1698-1746）命名，1742 年《A Treatise of Fluxions》中系统使用 x0=0 处展开，并首次给出余项估计；Maclaurin 本人在书中明确将该公式归功于 Taylor 与 Stirling
+- term: Darboux 定理
+  english: Darboux theorem
+  origin: 以法国数学家 Jean-Gaston Darboux（1842-1917）命名，1875 年论文《Mémoire sur les discontinuités des fonctions》中证明导函数（即便不连续）必满足介值性质，揭示了导数与连续函数的本质差异，是微分方程与实分析的关键工具
+- term: 辅助函数
+  english: auxiliary function
+  origin: 源自拉丁语 "auxilium"（帮助、援助），由 Cauchy 系统化使用于极限与中值定理证明，是构造性证明的核心工具；在 Lagrange 中值定理证明中引入 φ(x)=f(x)-f(a)-[(f(b)-f(a))/(b-a)](x-a) 是典范范例
+- term: 余项
+  english: remainder
+  origin: 源自拉丁语 "remanere"（剩余、留下），Taylor 余项由 Lagrange 1797 年首次以导数形式给出，Peano 1889 年以 o((x-x0)^n) 形式给出局部估计，Cauchy 与 Schlömilch 给出参数化形式，构成 Taylor 定理的误差理论核心
 ---
 
 

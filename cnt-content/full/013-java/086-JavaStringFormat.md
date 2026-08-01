@@ -1,7 +1,8 @@
 ---
 order: 860
 title: Java String.format/printf/MessageFormat 语法速查手册
-module: 013-java
+module: java
+
 category: '013-java'
 difficulty: beginner
 description: Java String.format/printf/MessageFormat 语法速查手册 的完整教学讲解。

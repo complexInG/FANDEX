@@ -1,7 +1,8 @@
 ---
 order: 550
 title: Cybersecurity OpenVAS 漏洞扫描
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity OpenVAS 漏洞扫描 的完整教学讲解。

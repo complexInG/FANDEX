@@ -1,7 +1,8 @@
 ---
 order: 290
 title: Redis 7.0+ 新特性命令速查手册
-module: 022-redis
+module: redis
+
 category: '022-redis'
 difficulty: beginner
 description: Redis 7.0+ 新特性命令速查手册 的完整教学讲解。

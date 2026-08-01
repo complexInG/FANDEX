@@ -1,7 +1,8 @@
 ---
 order: 820
 title: Java 类型擦除与桥接方法语法速查手册
-module: 013-java
+module: java
+
 category: '013-java'
 difficulty: beginner
 description: Java 类型擦除与桥接方法语法速查手册 的完整教学讲解。

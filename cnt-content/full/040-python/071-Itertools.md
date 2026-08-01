@@ -1,7 +1,8 @@
 ---
 order: 710
 title: Python itertools 迭代工具
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python itertools 迭代工具 的完整教学讲解。

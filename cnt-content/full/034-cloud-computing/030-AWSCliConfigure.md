@@ -1,7 +1,8 @@
 ---
 order: 300
 title: 云计算 AWS CLI 配置
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: 云计算 AWS CLI 配置 的完整教学讲解。

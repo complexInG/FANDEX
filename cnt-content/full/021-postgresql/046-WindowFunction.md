@@ -1,7 +1,8 @@
 ---
 order: 460
 title: PostgreSQL 窗口函数
-module: 021-postgresql
+module: postgresql
+
 category: '021-postgresql'
 difficulty: beginner
 description: PostgreSQL 窗口函数 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 570
 title: Cybersecurity AIDE 文件完整性检查
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity AIDE 文件完整性检查 的完整教学讲解。

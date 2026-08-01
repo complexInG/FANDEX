@@ -1,7 +1,8 @@
 ---
 order: 230
 title: Networking ip 命令
-module: 032-networking
+module: networking
+
 category: '032-networking'
 difficulty: beginner
 description: Networking ip 命令 的完整教学讲解。

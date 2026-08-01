@@ -4,7 +4,7 @@ title: 导数与微分
 module: calculus
 category: 高等数学
 difficulty: beginner
-description: '导数与微分的严格理论体系：ε-δ 定义、Carathéodory 定义、链式法则证明、中值定理（Rolle/Lagrange/Cauchy）、Taylor 定理及余项、高阶导数与 Leibniz 公式。配套 40+ Python/SymPy/PyTorch 代码示例（数值求导、符号求导、自动求导、神经网络反向传播），4 个 Mermaid 图与 50+ KaTeX 公式，10 道 Spivak 风格习题与 12 条 ACM 格式参考文献。本篇以 Spivak Calculus 4th、Apostol Vol 1、Rudin PMA 与 Tao Analysis I 为标杆，采用严格分析风格。'
+description: 导数与微分的严格理论体系：ε-δ 定义、Carathéodory 定义、链式法则证明、中值定理（Rolle/Lagrange/Cauchy）、Taylor 定理及余项、高阶导数与 Leibniz 公式。配套 40+ Python/SymPy/PyTorch 代码示例（数值求导、符号求导、自动求导、神经网络反向传播），4 个 Mermaid 图与 50+ KaTeX 公式，10 道 Spivak 风格习题与 12 条 ACM 格式参考文献。本篇以 Spivak Calculus 4th、Apostol Vol 1、Rudin PMA 与 Tao Analysis I 为标杆，采用严格分析风格。
 author: fanquanpp
 created: 2026-06-14
 updated: 2026-07-18
@@ -12,138 +12,138 @@ lastReviewed: 2026-07-18
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 110
 tags:
-  - calculus
-  - derivative
-  - differentiation
-  - mean-value-theorem
-  - taylor-series
-  - automatic-differentiation
-  - numerical-differentiation
-  - real-analysis
+- calculus
+- derivative
+- differentiation
+- mean-value-theorem
+- taylor-series
+- automatic-differentiation
+- numerical-differentiation
+- real-analysis
 related:
-  - calculus/函数与极限
-  - calculus/微分中值定理
-  - calculus/不定积分
-  - calculus/定积分与应用
-  - calculus/重积分
-  - math/实分析
-  - machine-learning/反向传播
+- calculus/函数与极限
+- calculus/微分中值定理
+- calculus/不定积分
+- calculus/定积分与应用
+- calculus/重积分
+- math/实分析
+- machine-learning/反向传播
 prerequisites:
-  - calculus/函数与极限
+- calculus/函数与极限
 references:
-  - type: book
-    authors:
-      - 'Spivak, Michael'
-    year: 2008
-    title: 'Calculus'
-    venue: 'Publish or Perish, Inc.'
-    version: '4th edition'
-    doi: '10.1007/978-0-387-09469-9'
-  - type: book
-    authors:
-      - 'Apostol, Tom M.'
-    year: 1967
-    title: 'Calculus, Volume 1: One-Variable Calculus with an Introduction to Linear Algebra'
-    venue: 'John Wiley & Sons'
-    version: '2nd edition'
-  - type: book
-    authors:
-      - 'Rudin, Walter'
-    year: 1976
-    title: 'Principles of Mathematical Analysis'
-    venue: 'McGraw-Hill Education'
-    version: '3rd edition'
-  - type: book
-    authors:
-      - 'Tao, Terence'
-    year: 2016
-    title: 'Analysis I'
-    venue: 'Springer'
-    version: '3rd edition'
-    doi: '10.1007/978-981-10-1789-6'
-  - type: book
-    authors:
-      - 'Courant, Richard'
-      - 'John, Fritz'
-    year: 1999
-    title: 'Introduction to Calculus and Analysis I'
-    venue: 'Springer'
-  - type: book
-    authors:
-      - 'Hardy, G. H.'
-    year: 1952
-    title: 'A Course of Pure Mathematics'
-    venue: 'Cambridge University Press'
-    version: '10th edition'
-  - type: book
-    authors:
-      - 'Pugh, Charles C.'
-    year: 2002
-    title: 'Real Mathematical Analysis'
-    venue: 'Springer'
-    doi: '10.1007/978-0-387-21668-2'
-  - type: journal
-    authors:
-      - 'Carathéodory, Constantin'
-    year: 1950
-    title: 'Vorlesungen über reelle Funktionen'
-    venue: 'Chelsea Publishing Company'
-    version: '3rd edition'
-  - type: journal
-    authors:
-      - 'Baydin, Atilim Gunes'
-      - 'Pearlmutter, Barak A.'
-      - 'Radul, Alexey Andreyevich'
-      - 'Siskind, Jeffrey Mark'
-    year: 2018
-    title: 'Automatic Differentiation in Machine Learning: a Survey'
-    venue: 'Journal of Machine Learning Research'
-    volume: 18
-    issue: 153
-    pages: '1-43'
-  - type: journal
-    authors:
-      - 'Rumelhart, David E.'
-      - 'Hinton, Geoffrey E.'
-      - 'Williams, Ronald J.'
-    year: 1986
-    title: 'Learning representations by back-propagating errors'
-    venue: 'Nature'
-    volume: 323
-    issue: 6088
-    pages: '533-536'
-    doi: '10.1038/323533a0'
-  - type: book
-    authors:
-      - 'Leibniz, Gottfried Wilhelm'
-    year: 1684
-    title: 'Nova methodus pro maximis et minimis, itemque tangentibus, quae nec fractas, nec irrationales quantitates moratur, et singulare pro illis calculi genus'
-    venue: 'Acta Eruditorum'
-  - type: book
-    authors:
-      - 'Newton, Isaac'
-    year: 1687
-    title: 'Philosophiae Naturalis Principia Mathematica'
-    venue: 'Royal Society of London'
+- type: book
+  authors:
+  - Spivak, Michael
+  year: 2008
+  title: Calculus
+  venue: Publish or Perish, Inc.
+  version: 4th edition
+  doi: 10.1007/978-0-387-09469-9
+- type: book
+  authors:
+  - Apostol, Tom M.
+  year: 1967
+  title: 'Calculus, Volume 1: One-Variable Calculus with an Introduction to Linear Algebra'
+  venue: John Wiley & Sons
+  version: 2nd edition
+- type: book
+  authors:
+  - Rudin, Walter
+  year: 1976
+  title: Principles of Mathematical Analysis
+  venue: McGraw-Hill Education
+  version: 3rd edition
+- type: book
+  authors:
+  - Tao, Terence
+  year: 2016
+  title: Analysis I
+  venue: Springer
+  version: 3rd edition
+  doi: 10.1007/978-981-10-1789-6
+- type: book
+  authors:
+  - Courant, Richard
+  - John, Fritz
+  year: 1999
+  title: Introduction to Calculus and Analysis I
+  venue: Springer
+- type: book
+  authors:
+  - Hardy, G. H.
+  year: 1952
+  title: A Course of Pure Mathematics
+  venue: Cambridge University Press
+  version: 10th edition
+- type: book
+  authors:
+  - Pugh, Charles C.
+  year: 2002
+  title: Real Mathematical Analysis
+  venue: Springer
+  doi: 10.1007/978-0-387-21668-2
+- type: journal
+  authors:
+  - Carathéodory, Constantin
+  year: 1950
+  title: Vorlesungen über reelle Funktionen
+  venue: Chelsea Publishing Company
+  version: 3rd edition
+- type: journal
+  authors:
+  - Baydin, Atilim Gunes
+  - Pearlmutter, Barak A.
+  - Radul, Alexey Andreyevich
+  - Siskind, Jeffrey Mark
+  year: 2018
+  title: 'Automatic Differentiation in Machine Learning: a Survey'
+  venue: Journal of Machine Learning Research
+  volume: 18
+  issue: 153
+  pages: 1-43
+- type: journal
+  authors:
+  - Rumelhart, David E.
+  - Hinton, Geoffrey E.
+  - Williams, Ronald J.
+  year: 1986
+  title: Learning representations by back-propagating errors
+  venue: Nature
+  volume: 323
+  issue: 6088
+  pages: 533-536
+  doi: 10.1038/323533a0
+- type: book
+  authors:
+  - Leibniz, Gottfried Wilhelm
+  year: 1684
+  title: Nova methodus pro maximis et minimis, itemque tangentibus, quae nec fractas, nec irrationales quantitates moratur, et singulare pro illis calculi genus
+  venue: Acta Eruditorum
+- type: book
+  authors:
+  - Newton, Isaac
+  year: 1687
+  title: Philosophiae Naturalis Principia Mathematica
+  venue: Royal Society of London
 etymology:
-  - term: 导数
-    english: derivative
-    origin: 源自拉丁语 "derivare"（引开、引出），由 Joseph-Louis Lagrange 于 1797 年《Théorie des fonctions analytiques》中首次以 "fonction dérivée" 形式使用，意为"从原函数引出的函数"
-  - term: 微分
-    english: differential
-    origin: 源自拉丁语 "differentia"（差异、差分），由 Leibniz 于 1675 年手稿中引入记号 "dx" 与 "dy"，1684 年在《Acta Eruditorum》正式发表
-  - term: 流数
-    english: fluxion
-    origin: 源自拉丁语 "fluxus"（流动），Newton 在 1665-1666 年手稿中提出流数术（Method of Fluxions），将运动视为"流动量"（fluents），其变化率为"流数"（fluxion），记作 $\dot{x}$
-  - term: 切线
-    english: tangent
-    origin: 源自拉丁语 "tangere"（接触、相切），由 16 世纪数学家 Viète 与 Fermat 引入数学，Descartes 在 1637 年《La Géométrie》中给出代数方法求切线
-  - term: 牛顿法
-    english: Newton's method
-    origin: 由 Newton 在 1669 年手稿 "De analysi per aequationes numero terminorum infinitas" 中首次描述，1690 年 Joseph Raphson 简化为现代迭代形式，故又称 Newton-Raphson 方法
-  - term: 自动微分
-    english: automatic differentiation
-    origin: 由 IBM 的 Robert E. Wengert 于 1964 年在 "A Simple Automatic Derivative Evaluation Program" 中首次系统化提出，前向模式基于 dual numbers，反向模式（backpropagation）由 Seppo Linnainmaa 于 1970 年在硕士论文中首次实现
+- term: 导数
+  english: derivative
+  origin: 源自拉丁语 "derivare"（引开、引出），由 Joseph-Louis Lagrange 于 1797 年《Théorie des fonctions analytiques》中首次以 "fonction dérivée" 形式使用，意为"从原函数引出的函数"
+- term: 微分
+  english: differential
+  origin: 源自拉丁语 "differentia"（差异、差分），由 Leibniz 于 1675 年手稿中引入记号 "dx" 与 "dy"，1684 年在《Acta Eruditorum》正式发表
+- term: 流数
+  english: fluxion
+  origin: 源自拉丁语 "fluxus"（流动），Newton 在 1665-1666 年手稿中提出流数术（Method of Fluxions），将运动视为"流动量"（fluents），其变化率为"流数"（fluxion），记作 $\dot{x}$
+- term: 切线
+  english: tangent
+  origin: 源自拉丁语 "tangere"（接触、相切），由 16 世纪数学家 Viète 与 Fermat 引入数学，Descartes 在 1637 年《La Géométrie》中给出代数方法求切线
+- term: 牛顿法
+  english: Newton's method
+  origin: 由 Newton 在 1669 年手稿 "De analysi per aequationes numero terminorum infinitas" 中首次描述，1690 年 Joseph Raphson 简化为现代迭代形式，故又称 Newton-Raphson 方法
+- term: 自动微分
+  english: automatic differentiation
+  origin: 由 IBM 的 Robert E. Wengert 于 1964 年在 "A Simple Automatic Derivative Evaluation Program" 中首次系统化提出，前向模式基于 dual numbers，反向模式（backpropagation）由 Seppo Linnainmaa 于 1970 年在硕士论文中首次实现
 quiz: []
 ---
 
@@ -2450,7 +2450,7 @@ for epoch in range(1000):
 
 ## 第 16 章 习题与解答
 
-本章节汇总 frontmatter 中 10 道习题的参考答案要点，便于学习者快速查阅。完整题目与评分关键点见 frontmatter `exercises` 字段。
+本章节汇总 10 道习题的参考答案要点，便于学习者快速查阅。完整题目与评分关键点见本章正文。
 
 ### 填空题知识点讲解
 
@@ -2567,4 +2567,3 @@ for epoch in range(1000):
 本篇文档的写作受益于 Spivak《Calculus》4th edition、Apostol《Calculus Vol 1》、Rudin《Principles of Mathematical Analysis》3rd edition 与 Tao《Analysis I》3rd edition 的深刻启发。PyTorch autograd 与 TensorFlow GradientTape 的设计理念源自 Baydin et al. (2018) 的自动微分综述。反向传播算法的历史可追溯至 Rumelhart, Hinton & Williams (1986) 在 Nature 上发表的奠基性论文。谨向这些先驱者致以最深的敬意。
 
 ---
-

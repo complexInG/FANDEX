@@ -1,7 +1,8 @@
 ---
 order: 280
 title: 编程入门 pip 与 venv 包管理
-module: 001-getting-started
+module: getting-started
+
 category: '001-getting-started'
 difficulty: beginner
 description: 编程入门 pip 与 venv 包管理 的完整教学讲解。

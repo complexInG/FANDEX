@@ -4,7 +4,7 @@ title: 模板元编程
 module: cpp
 category: C++
 difficulty: advanced
-description: '系统阐述 C++ 模板元编程（Template Metaprogramming, TMP）的理论与实践：从 Cfront 1989 到 C++23 Deducing this 的演进史、模板图灵完备性的形式化定义、SFINAE 与 Concepts 的形式化语义、模板实例化复杂度与编译期递归深度分析、模板特化与偏特化、可变参数模板与折叠表达式、CRTP/Expression Templates/Policy-Based Design/Type Erasure 等工程范式、Eigen/Boost.MPL/fmt/std::ranges 案例剖析、与 Rust/Java/Haskell/Zig/D 的对比分析、常见陷阱与习题，覆盖生产级 C++ 模板工程的全部核心知识。'
+description: 系统阐述 C++ 模板元编程（Template Metaprogramming, TMP）的理论与实践：从 Cfront 1989 到 C++23 Deducing this 的演进史、模板图灵完备性的形式化定义、SFINAE 与 Concepts 的形式化语义、模板实例化复杂度与编译期递归深度分析、模板特化与偏特化、可变参数模板与折叠表达式、CRTP/Expression Templates/Policy-Based Design/Type Erasure 等工程范式、Eigen/Boost.MPL/fmt/std::ranges 案例剖析、与 Rust/Java/Haskell/Zig/D 的对比分析、常见陷阱与习题，覆盖生产级 C++ 模板工程的全部核心知识。
 author: fanquanpp
 created: 2026-06-14
 updated: 2026-07-18
@@ -13,190 +13,190 @@ reviewer: FANDEX Content Engineering
 readingTime: 115
 estimatedReadingTime: 115
 tags:
-  - cpp
-  - template-metaprogramming
-  - sfinae
-  - concepts
-  - crtp
-  - expression-templates
-  - policy-based-design
-  - type-traits
-  - c++11
-  - c++14
-  - c++17
-  - c++20
-  - c++23
+- cpp
+- template-metaprogramming
+- sfinae
+- concepts
+- crtp
+- expression-templates
+- policy-based-design
+- type-traits
+- c++11
+- c++14
+- c++17
+- c++20
+- c++23
 related:
-  - cpp/智能指针详解
-  - cpp/右值引用与移动语义
-  - cpp/RAII资源管理
-  - cpp/Lambda表达式
-  - cpp/C++20范围
-  - cpp/C++20模块
-  - cpp/STL容器与迭代器
-  - cpp/类型转换
+- cpp/智能指针详解
+- cpp/右值引用与移动语义
+- cpp/RAII资源管理
+- cpp/Lambda表达式
+- cpp/C++20范围
+- cpp/C++20模块
+- cpp/STL容器与迭代器
+- cpp/类型转换
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/基础语法
-  - cpp/数据类型详解
-  - cpp/指针
-  - cpp/引用
-  - cpp/面向对象基础
+- cpp/概述与现代标准
+- cpp/基础语法
+- cpp/数据类型详解
+- cpp/指针
+- cpp/引用
+- cpp/面向对象基础
 references:
-  - type: standard
-    authors:
-      - 'ISO/IEC'
-    year: 2023
-    title: 'Information technology — Programming languages — C++'
-    venue: 'ISO/IEC 14882:2023'
-    version: 'Eighth edition'
-  - type: book
-    authors:
-      - 'Stroustrup, Bjarne'
-    year: 2013
-    title: 'The C++ Programming Language'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-  - type: book
-    authors:
-      - 'Vandevoorde, David'
-      - 'Josuttis, Nicolai M.'
-      - 'Gregor, Douglas'
-    year: 2017
-    title: 'C++ Templates: The Complete Guide'
-    venue: 'Addison-Wesley Professional'
-    version: '2nd edition'
-  - type: book
-    authors:
-      - 'Alexandrescu, Andrei'
-    year: 2001
-    title: 'Modern C++ Design: Generic Programming and Design Patterns Applied'
-    venue: 'Addison-Wesley Professional'
-    version: '1st edition'
-  - type: book
-    authors:
-      - 'Czarnecki, Krzysztof'
-      - 'Eisenecker, Ulrich W.'
-    year: 2000
-    title: 'Generative Programming: Methods, Tools, and Applications'
-    venue: 'Addison-Wesley Professional'
-    version: '1st edition'
-  - type: book
-    authors:
-      - 'Meyers, Scott'
-    year: 2015
-    title: 'Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14'
-    venue: "O'Reilly Media"
-    version: '1st edition'
-  - type: book
-    authors:
-      - 'Sutter, Herb'
-      - 'Alexandrescu, Andrei'
-    year: 2004
-    title: 'C++ Coding Standards: 101 Rules, Guidelines, and Best Practices'
-    venue: 'Addison-Wesley Professional'
-    version: '1st edition'
-  - type: conference
-    authors:
-      - 'Stroustrup, Bjarne'
-    year: 2018
-    title: 'Concepts: The Future of Generic Programming (or, How to design good concepts and use them well)'
-    venue: 'CppCon 2018'
-  - type: conference
-    authors:
-      - 'Sutton, Andrew'
-      - 'Stroustrup, Bjarne'
-    year: 2011
-    title: 'Design of Concepts for C++'
-    venue: 'OOPSLA 2011'
-  - type: conference
-    authors:
-      - 'Veldhuizen, Todd'
-    year: 1995
-    title: 'Expression Templates'
-    venue: 'C++ Report'
-  - type: technical-report
-    authors:
-      - 'ISO/IEC WG21'
-    year: 2003
-    title: 'N1510: A Proposal for the Addition of Variadic Templates to the C++ Language'
-    venue: 'ISO C++ Committee'
-  - type: technical-report
-    authors:
-      - 'ISO/IEC WG21'
-    year: 2008
-    title: 'N2914: Working Draft, Standard for Programming Language C++'
-    venue: 'ISO C++ Committee'
-  - type: technical-report
-    authors:
-      - 'ISO/IEC WG21'
-    year: 2021
-    title: 'P0847R7: Deducing this'
-    venue: 'ISO C++ Committee'
-  - type: website
-    authors:
-      - 'cppreference.com'
-    year: 2024
-    title: 'Templates — cppreference.com'
-    url: 'https://en.cppreference.com/w/cpp/language/templates'
-    accessedDate: '2024-12-01'
-  - type: website
-    authors:
-      - 'cppreference.com'
-    year: 2024
-    title: 'Concepts library — cppreference.com'
-    url: 'https://en.cppreference.com/w/cpp/concepts'
-    accessedDate: '2024-12-01'
-  - type: documentation
-    authors:
-      - 'C++ Core Guidelines Contributors'
-    year: 2024
-    title: 'C++ Core Guidelines — Templates (T-series) and Concepts (C-series)'
-    venue: 'isocpp'
-    url: 'https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines'
-    accessedDate: '2024-12-01'
-  - type: journal
-    authors:
-      - 'Veldhuizen, Todd'
-    year: 2003
-    title: 'C++ Templates are Turing Complete'
-    venue: 'The C++ Source'
-  - type: website
-    authors:
-      - 'Stroustrup, Bjarne'
-    year: 2024
-    title: 'A Tour of C++ (3rd Edition) — online excerpts'
-    venue: 'stroustrup.com'
-    url: 'https://www.stroustrup.com/tour3.html'
-    accessedDate: '2024-12-01'
+- type: standard
+  authors:
+  - ISO/IEC
+  year: 2023
+  title: Information technology — Programming languages — C++
+  venue: ISO/IEC 14882:2023
+  version: Eighth edition
+- type: book
+  authors:
+  - Stroustrup, Bjarne
+  year: 2013
+  title: The C++ Programming Language
+  venue: Addison-Wesley Professional
+  version: 4th edition
+- type: book
+  authors:
+  - Vandevoorde, David
+  - Josuttis, Nicolai M.
+  - Gregor, Douglas
+  year: 2017
+  title: 'C++ Templates: The Complete Guide'
+  venue: Addison-Wesley Professional
+  version: 2nd edition
+- type: book
+  authors:
+  - Alexandrescu, Andrei
+  year: 2001
+  title: 'Modern C++ Design: Generic Programming and Design Patterns Applied'
+  venue: Addison-Wesley Professional
+  version: 1st edition
+- type: book
+  authors:
+  - Czarnecki, Krzysztof
+  - Eisenecker, Ulrich W.
+  year: 2000
+  title: 'Generative Programming: Methods, Tools, and Applications'
+  venue: Addison-Wesley Professional
+  version: 1st edition
+- type: book
+  authors:
+  - Meyers, Scott
+  year: 2015
+  title: 'Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14'
+  venue: O'Reilly Media
+  version: 1st edition
+- type: book
+  authors:
+  - Sutter, Herb
+  - Alexandrescu, Andrei
+  year: 2004
+  title: 'C++ Coding Standards: 101 Rules, Guidelines, and Best Practices'
+  venue: Addison-Wesley Professional
+  version: 1st edition
+- type: conference
+  authors:
+  - Stroustrup, Bjarne
+  year: 2018
+  title: 'Concepts: The Future of Generic Programming (or, How to design good concepts and use them well)'
+  venue: CppCon 2018
+- type: conference
+  authors:
+  - Sutton, Andrew
+  - Stroustrup, Bjarne
+  year: 2011
+  title: Design of Concepts for C++
+  venue: OOPSLA 2011
+- type: conference
+  authors:
+  - Veldhuizen, Todd
+  year: 1995
+  title: Expression Templates
+  venue: C++ Report
+- type: technical-report
+  authors:
+  - ISO/IEC WG21
+  year: 2003
+  title: 'N1510: A Proposal for the Addition of Variadic Templates to the C++ Language'
+  venue: ISO C++ Committee
+- type: technical-report
+  authors:
+  - ISO/IEC WG21
+  year: 2008
+  title: 'N2914: Working Draft, Standard for Programming Language C++'
+  venue: ISO C++ Committee
+- type: technical-report
+  authors:
+  - ISO/IEC WG21
+  year: 2021
+  title: 'P0847R7: Deducing this'
+  venue: ISO C++ Committee
+- type: website
+  authors:
+  - cppreference.com
+  year: 2024
+  title: Templates — cppreference.com
+  url: https://en.cppreference.com/w/cpp/language/templates
+  accessedDate: '2024-12-01'
+- type: website
+  authors:
+  - cppreference.com
+  year: 2024
+  title: Concepts library — cppreference.com
+  url: https://en.cppreference.com/w/cpp/concepts
+  accessedDate: '2024-12-01'
+- type: documentation
+  authors:
+  - C++ Core Guidelines Contributors
+  year: 2024
+  title: C++ Core Guidelines — Templates (T-series) and Concepts (C-series)
+  venue: isocpp
+  url: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
+  accessedDate: '2024-12-01'
+- type: journal
+  authors:
+  - Veldhuizen, Todd
+  year: 2003
+  title: C++ Templates are Turing Complete
+  venue: The C++ Source
+- type: website
+  authors:
+  - Stroustrup, Bjarne
+  year: 2024
+  title: A Tour of C++ (3rd Edition) — online excerpts
+  venue: stroustrup.com
+  url: https://www.stroustrup.com/tour3.html
+  accessedDate: '2024-12-01'
 etymology:
-  - term: 模板
-    english: template
-    origin: '源自拉丁语 templum，原指「木匠的规尺、量规」，后引申为「用于复制相同形状的模式」。C++ 选用该词表示「参数化类型与代码的模具」由 Stroustrup 在《The Design and Evolution of C++》(1994) 中确认，灵感来自 Ada 的 generic 与 Clu 的 parameterized modules'
-  - term: 泛型
-    english: generic
-    origin: '源自希腊语 genos（种族、类别），经拉丁语 genericus 进入英语，意为「与属或类相关的」。编程语言中「generic programming」由 Musser 与 Stepanov 在 1980s 的 STL 原型工作中正式定义，强调「算法对所操作类型的最低约束」'
-  - term: 替换失败不是错误
-    english: SFINAE
-    origin: '首字母缩写：Substitution Failure Is Not An Error。由 David Vandevoorde 在 2002 年左右体系化命名（参见《C++ Templates》1st Ed.），描述 [temp.deduct] 中「模板参数替换时的格式错误不立即报错，而是将候选从重载集中剔除」的规则'
-  - term: 概念
-    english: concept
-    origin: '源自拉丁语 conceptum（已构思的事物），是 concipere（共同捕获、构想）的过去分词中性形式。C++20 引入的 concept 关键字由 Sutton 与 Stroustrup 在 N2914（2009）提案中确立，用于命名「一组对模板参数的语法与语义约束」'
-  - term: 奇异递归模板模式
-    english: CRTP
-    origin: 'Curiously Recurring Template Pattern，由 James Coplien 于 1995 年在《C++ Report》正式命名（该现象更早被多处独立发现）。CRTP 描述「派生类将自身作为基类模板的参数」的形式：class Derived : public Base<Derived>。其名致敬 1968 年 E. T. Hoare 提出的「奇异递归」模式'
-  - term: 策略
-    english: policy
-    origin: '源自希腊语 politeia（公民身份、政体），经拉丁语 politia、中古法语 police 进入英语，意为「指导行动的原则」。Andrei Alexandrescu 在《Modern C++ Design》(2001) 中将「policy-based design」定义为「将设计决策编码为模板参数，由用户在实例化时选择」，与「trait」（被动描述）相对，policy 是「主动行为策略」'
-  - term: 特征
-    english: traits
-    origin: '源自拉丁语 tractus（拖曳、描绘），经古法语 trait 进入英语，意为「显著特征」。C++ 中「traits」技术由 Nathan Myers 在 1995 年提出（用于 std::iterator_traits），用于「将类型相关的属性与策略以模板特化方式集中描述」，与 policy 的「注入行为」不同，traits 是「查询属性」'
-  - term: 元编程
-    english: metaprogramming
-    origin: '前缀 meta- 源自希腊语 meta（超越、关于），与 programming 结合，意为「编写编写程序的程序」。术语最早可追溯到 1970s Lisp 宏系统；C++ TMP 由 Erwin Unruh 在 1994 年用模板编译期计算素数的程序无意中发现，并经 Todd Veldhuizen 的 Expression Templates（1995）系统化'
-  - term: 折叠表达式
-    english: fold expression
-    origin: 'fold 在函数式编程中指「将二元操作逐元素归约」（reduce / accumulate），源自将列表「折叠」成单值。C++17 引入的 fold expression 由 P0036（2015）提案提出，将参数包 Args... 上的递归展开简化为一元/二元折叠语法，等价于 foldr/foldl 语义'
+- term: 模板
+  english: template
+  origin: 源自拉丁语 templum，原指「木匠的规尺、量规」，后引申为「用于复制相同形状的模式」。C++ 选用该词表示「参数化类型与代码的模具」由 Stroustrup 在《The Design and Evolution of C++》(1994) 中确认，灵感来自 Ada 的 generic 与 Clu 的 parameterized modules
+- term: 泛型
+  english: generic
+  origin: 源自希腊语 genos（种族、类别），经拉丁语 genericus 进入英语，意为「与属或类相关的」。编程语言中「generic programming」由 Musser 与 Stepanov 在 1980s 的 STL 原型工作中正式定义，强调「算法对所操作类型的最低约束」
+- term: 替换失败不是错误
+  english: SFINAE
+  origin: 首字母缩写：Substitution Failure Is Not An Error。由 David Vandevoorde 在 2002 年左右体系化命名（参见《C++ Templates》1st Ed.），描述 [temp.deduct] 中「模板参数替换时的格式错误不立即报错，而是将候选从重载集中剔除」的规则
+- term: 概念
+  english: concept
+  origin: 源自拉丁语 conceptum（已构思的事物），是 concipere（共同捕获、构想）的过去分词中性形式。C++20 引入的 concept 关键字由 Sutton 与 Stroustrup 在 N2914（2009）提案中确立，用于命名「一组对模板参数的语法与语义约束」
+- term: 奇异递归模板模式
+  english: CRTP
+  origin: 'Curiously Recurring Template Pattern，由 James Coplien 于 1995 年在《C++ Report》正式命名（该现象更早被多处独立发现）。CRTP 描述「派生类将自身作为基类模板的参数」的形式：class Derived : public Base<Derived>。其名致敬 1968 年 E. T. Hoare 提出的「奇异递归」模式'
+- term: 策略
+  english: policy
+  origin: 源自希腊语 politeia（公民身份、政体），经拉丁语 politia、中古法语 police 进入英语，意为「指导行动的原则」。Andrei Alexandrescu 在《Modern C++ Design》(2001) 中将「policy-based design」定义为「将设计决策编码为模板参数，由用户在实例化时选择」，与「trait」（被动描述）相对，policy 是「主动行为策略」
+- term: 特征
+  english: traits
+  origin: 源自拉丁语 tractus（拖曳、描绘），经古法语 trait 进入英语，意为「显著特征」。C++ 中「traits」技术由 Nathan Myers 在 1995 年提出（用于 std::iterator_traits），用于「将类型相关的属性与策略以模板特化方式集中描述」，与 policy 的「注入行为」不同，traits 是「查询属性」
+- term: 元编程
+  english: metaprogramming
+  origin: 前缀 meta- 源自希腊语 meta（超越、关于），与 programming 结合，意为「编写编写程序的程序」。术语最早可追溯到 1970s Lisp 宏系统；C++ TMP 由 Erwin Unruh 在 1994 年用模板编译期计算素数的程序无意中发现，并经 Todd Veldhuizen 的 Expression Templates（1995）系统化
+- term: 折叠表达式
+  english: fold expression
+  origin: fold 在函数式编程中指「将二元操作逐元素归约」（reduce / accumulate），源自将列表「折叠」成单值。C++17 引入的 fold expression 由 P0036（2015）提案提出，将参数包 Args... 上的递归展开简化为一元/二元折叠语法，等价于 foldr/foldl 语义
 ---
 
 

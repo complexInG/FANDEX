@@ -1,7 +1,8 @@
 ---
 order: 270
 title: Redis Key 管理与过期命令速查手册
-module: 022-redis
+module: redis
+
 category: '022-redis'
 difficulty: beginner
 description: Redis Key 管理与过期命令速查手册 的完整教学讲解。

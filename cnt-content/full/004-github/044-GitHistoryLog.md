@@ -1,7 +1,8 @@
 ---
 order: 440
 title: GitHub 历史与日志
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub 历史与日志 的完整教学讲解。

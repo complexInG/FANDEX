@@ -2,241 +2,241 @@
 order: 110
 title: 网络流
 module: algorithm
-category: 'comp-sci'
+category: comp-sci
 difficulty: advanced
-description: '网络流算法：流网络形式化定义 (G,s,t,c,f)、最大流最小割定理、Ford-Fulkerson 方法 O(E·|f*|)、Edmonds-Karp 算法 O(VE²)、Dinic 算法 O(V²E)、Push-Relabel 算法 O(V²E)/O(V³)、ISAP、最小费用最大流、网络单纯形，覆盖二分图匹配、Project Selection、Image Segmentation、Baseball Elimination、Airline Scheduling 等工程应用，附多语言实现与 CLRS 风格习题。'
+description: 网络流算法：流网络形式化定义 (G,s,t,c,f)、最大流最小割定理、Ford-Fulkerson 方法 O(E·|f*|)、Edmonds-Karp 算法 O(VE²)、Dinic 算法 O(V²E)、Push-Relabel 算法 O(V²E)/O(V³)、ISAP、最小费用最大流、网络单纯形，覆盖二分图匹配、Project Selection、Image Segmentation、Baseball Elimination、Airline Scheduling 等工程应用，附多语言实现与 CLRS 风格习题。
 author: fanquanpp
 tags:
-  - algorithm
-  - 'algorithm-networkflow'
-  - 'algorithm-graph'
+- algorithm
+- algorithm-networkflow
+- algorithm-graph
 created: 2026-06-14
 updated: 2026-07-18
 lastReviewed: '2026-07-18'
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 210
 related:
-  - algorithm/图算法
-  - algorithm/拓扑排序
-  - algorithm/动态规划
-  - algorithm/算法理论知识点
-  - algorithm/线段树
-  - algorithm/并查集
+- algorithm/图算法
+- algorithm/拓扑排序
+- algorithm/动态规划
+- algorithm/算法理论知识点
+- algorithm/线段树
+- algorithm/并查集
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/图算法
-  - cs-fundamentals/离散数学
+- algorithm/算法分析基础与学习路线
+- algorithm/图算法
+- cs-fundamentals/离散数学
 references:
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'ISBN 978-0262046305'
-  - type: journal
-    authors:
-      - 'Ford, L. R.'
-      - 'Fulkerson, D. R.'
-    year: 1956
-    title: 'Maximal flow through a network'
-    venue: 'Canadian Journal of Mathematics'
-    volume: 8
-    issue: 3
-    pages: '399-404'
-    doi: '10.4153/CJM-1956-045-5'
-  - type: journal
-    authors:
-      - 'Edmonds, Jack'
-      - 'Karp, Richard M.'
-    year: 1972
-    title: 'Theoretical improvements in algorithmic efficiency for network flow problems'
-    venue: 'Journal of the ACM'
-    volume: 19
-    issue: 2
-    pages: '248-264'
-    doi: '10.1145/321694.321699'
-  - type: journal
-    authors:
-      - 'Dinitz, Yefim A.'
-    year: 1970
-    title: 'Algorithm for solution of a problem of maximum flow in a network with power estimation'
-    venue: 'Soviet Mathematics - Doklady'
-    volume: 11
-    issue: 5
-    pages: '1277-1280'
-  - type: journal
-    authors:
-      - 'Goldberg, Andrew V.'
-      - 'Tarjan, Robert E.'
-    year: 1988
-    title: 'A new approach to the maximum-flow problem'
-    venue: 'Journal of the ACM'
-    volume: 35
-    issue: 4
-    pages: '921-940'
-    doi: '10.1145/48014.61051'
-  - type: book
-    authors:
-      - 'Ahuja, Ravindra K.'
-      - 'Magnanti, Thomas L.'
-      - 'Orlin, James B.'
-    year: 1993
-    title: 'Network Flows: Theory, Algorithms, and Applications'
-    venue: 'Prentice Hall'
-    version: '1st edition'
-    pages: 'ISBN 978-0136175490'
-  - type: book
-    authors:
-      - 'Tarjan, Robert E.'
-    year: 1983
-    title: 'Data Structures and Network Algorithms'
-    venue: 'Society for Industrial and Applied Mathematics'
-    version: '1st edition'
-    pages: 'ISBN 978-0898711875'
-  - type: book
-    authors:
-      - 'Kleinberg, Jon'
-      - 'Tardos, Eva'
-    year: 2006
-    title: 'Algorithm Design'
-    venue: 'Pearson'
-    version: '1st edition'
-    pages: 'ISBN 978-0321295354'
-  - type: book
-    authors:
-      - 'Ford, L. R.'
-      - 'Fulkerson, D. R.'
-    year: 1962
-    title: 'Flows in Networks'
-    venue: 'Princeton University Press'
-    version: '1st edition'
-    pages: 'ISBN 978-0691079622'
-  - type: journal
-    authors:
-      - 'Hopcroft, John E.'
-      - 'Karp, Richard M.'
-    year: 1973
-    title: 'An n^{5/2} algorithm for maximum matchings in bipartite graphs'
-    venue: 'SIAM Journal on Computing'
-    volume: 2
-    issue: 4
-    pages: '225-231'
-    doi: '10.1137/0202019'
-  - type: journal
-    authors:
-      - 'Goldberg, Andrew V.'
-      - 'Rao, Satish'
-    year: 1998
-    title: 'Beyond the flow decomposition barrier'
-    venue: 'Journal of the ACM'
-    volume: 45
-    issue: 5
-    pages: '783-797'
-    doi: '10.1145/290179.290181'
-  - type: journal
-    authors:
-      - 'Orlin, James B.'
-    year: 2013
-    title: 'Max flows in O(nm) time, or better'
-    venue: 'Proceedings of the ACM Symposium on Theory of Computing'
-    pages: '765-774'
-    doi: '10.1145/2488608.2488705'
-  - type: journal
-    authors:
-      - 'Schrijver, Alexander'
-    year: 2002
-    title: 'On the history of the transportation and maximum flow problems'
-    venue: 'Mathematical Programming'
-    volume: 91
-    issue: 3
-    pages: '437-445'
-    doi: '10.1007/s101070100259'
-  - type: book
-    authors:
-      - 'Skiena, Steven S.'
-    year: 2020
-    title: 'The Algorithm Design Manual'
-    venue: 'Springer'
-    version: '3rd edition'
-    pages: 'ISBN 978-3030542559'
-  - type: book
-    authors:
-      - 'Halim, Steven'
-      - 'Halim, Felix'
-    year: 2013
-    title: 'Competitive Programming'
-    venue: 'Lulu Press'
-    version: '3rd edition'
-    pages: 'ISBN 978-0982999145'
-  - type: website
-    authors:
-      - 'CP-Algorithms Contributors'
-    year: 2024
-    title: 'Maximum flow - Ford-Fulkerson and Edmonds-Karp'
-    venue: 'CP-Algorithms'
-    pages: 'https://cp-algorithms.com/graph/edmonds_karp.html'
-  - type: website
-    authors:
-      - 'CP-Algorithms Contributors'
-    year: 2024
-    title: "Maximum flow - Dinic's algorithm"
-    venue: 'CP-Algorithms'
-    pages: 'https://cp-algorithms.com/graph/dinic.html'
-  - type: website
-    authors:
-      - 'CP-Algorithms Contributors'
-    year: 2024
-    title: 'Minimum cost maximum flow'
-    venue: 'CP-Algorithms'
-    pages: 'https://cp-algorithms.com/graph/min_cost_flow.html'
-  - type: course
-    authors:
-      - 'Demaine, Erik'
-      - 'Devadas, Srini'
-    year: 2024
-    title: '6.006 Introduction to Algorithms'
-    venue: 'MIT OpenCourseWare'
-    pages: 'https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2029/'
-  - type: course
-    authors:
-      - 'Roughgarden, Tim'
-    year: 2024
-    title: 'CS261 Algorithms: Network Flows'
-    venue: 'Stanford University'
-    pages: 'https://web.stanford.edu/class/cs261/'
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: ISBN 978-0262046305
+- type: journal
+  authors:
+  - Ford, L. R.
+  - Fulkerson, D. R.
+  year: 1956
+  title: Maximal flow through a network
+  venue: Canadian Journal of Mathematics
+  volume: 8
+  issue: 3
+  pages: 399-404
+  doi: 10.4153/CJM-1956-045-5
+- type: journal
+  authors:
+  - Edmonds, Jack
+  - Karp, Richard M.
+  year: 1972
+  title: Theoretical improvements in algorithmic efficiency for network flow problems
+  venue: Journal of the ACM
+  volume: 19
+  issue: 2
+  pages: 248-264
+  doi: 10.1145/321694.321699
+- type: journal
+  authors:
+  - Dinitz, Yefim A.
+  year: 1970
+  title: Algorithm for solution of a problem of maximum flow in a network with power estimation
+  venue: Soviet Mathematics - Doklady
+  volume: 11
+  issue: 5
+  pages: 1277-1280
+- type: journal
+  authors:
+  - Goldberg, Andrew V.
+  - Tarjan, Robert E.
+  year: 1988
+  title: A new approach to the maximum-flow problem
+  venue: Journal of the ACM
+  volume: 35
+  issue: 4
+  pages: 921-940
+  doi: 10.1145/48014.61051
+- type: book
+  authors:
+  - Ahuja, Ravindra K.
+  - Magnanti, Thomas L.
+  - Orlin, James B.
+  year: 1993
+  title: 'Network Flows: Theory, Algorithms, and Applications'
+  venue: Prentice Hall
+  version: 1st edition
+  pages: ISBN 978-0136175490
+- type: book
+  authors:
+  - Tarjan, Robert E.
+  year: 1983
+  title: Data Structures and Network Algorithms
+  venue: Society for Industrial and Applied Mathematics
+  version: 1st edition
+  pages: ISBN 978-0898711875
+- type: book
+  authors:
+  - Kleinberg, Jon
+  - Tardos, Eva
+  year: 2006
+  title: Algorithm Design
+  venue: Pearson
+  version: 1st edition
+  pages: ISBN 978-0321295354
+- type: book
+  authors:
+  - Ford, L. R.
+  - Fulkerson, D. R.
+  year: 1962
+  title: Flows in Networks
+  venue: Princeton University Press
+  version: 1st edition
+  pages: ISBN 978-0691079622
+- type: journal
+  authors:
+  - Hopcroft, John E.
+  - Karp, Richard M.
+  year: 1973
+  title: An n^{5/2} algorithm for maximum matchings in bipartite graphs
+  venue: SIAM Journal on Computing
+  volume: 2
+  issue: 4
+  pages: 225-231
+  doi: 10.1137/0202019
+- type: journal
+  authors:
+  - Goldberg, Andrew V.
+  - Rao, Satish
+  year: 1998
+  title: Beyond the flow decomposition barrier
+  venue: Journal of the ACM
+  volume: 45
+  issue: 5
+  pages: 783-797
+  doi: 10.1145/290179.290181
+- type: journal
+  authors:
+  - Orlin, James B.
+  year: 2013
+  title: Max flows in O(nm) time, or better
+  venue: Proceedings of the ACM Symposium on Theory of Computing
+  pages: 765-774
+  doi: 10.1145/2488608.2488705
+- type: journal
+  authors:
+  - Schrijver, Alexander
+  year: 2002
+  title: On the history of the transportation and maximum flow problems
+  venue: Mathematical Programming
+  volume: 91
+  issue: 3
+  pages: 437-445
+  doi: 10.1007/s101070100259
+- type: book
+  authors:
+  - Skiena, Steven S.
+  year: 2020
+  title: The Algorithm Design Manual
+  venue: Springer
+  version: 3rd edition
+  pages: ISBN 978-3030542559
+- type: book
+  authors:
+  - Halim, Steven
+  - Halim, Felix
+  year: 2013
+  title: Competitive Programming
+  venue: Lulu Press
+  version: 3rd edition
+  pages: ISBN 978-0982999145
+- type: website
+  authors:
+  - CP-Algorithms Contributors
+  year: 2024
+  title: Maximum flow - Ford-Fulkerson and Edmonds-Karp
+  venue: CP-Algorithms
+  pages: https://cp-algorithms.com/graph/edmonds_karp.html
+- type: website
+  authors:
+  - CP-Algorithms Contributors
+  year: 2024
+  title: Maximum flow - Dinic's algorithm
+  venue: CP-Algorithms
+  pages: https://cp-algorithms.com/graph/dinic.html
+- type: website
+  authors:
+  - CP-Algorithms Contributors
+  year: 2024
+  title: Minimum cost maximum flow
+  venue: CP-Algorithms
+  pages: https://cp-algorithms.com/graph/min_cost_flow.html
+- type: course
+  authors:
+  - Demaine, Erik
+  - Devadas, Srini
+  year: 2024
+  title: 6.006 Introduction to Algorithms
+  venue: MIT OpenCourseWare
+  pages: https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2029/
+- type: course
+  authors:
+  - Roughgarden, Tim
+  year: 2024
+  title: 'CS261 Algorithms: Network Flows'
+  venue: Stanford University
+  pages: https://web.stanford.edu/class/cs261/
 etymology:
-  - term: 流网络
-    english: flow network
-    origin: '由 L. R. Ford 与 D. R. Ford 于 1956 年在论文 "Maximal flow through a network"（Canadian Journal of Mathematics, 8(3):399-404）中正式定义。"network" 一词源于 1550s 的 "net-like work"，由 "net" + "work" 构成。Ford 与 Fulkerson 借用电网、铁路网、管道网的物理直觉将节点视为"中转站"、边视为"传输管道"、容量视为"管道最大吞吐量"，建立了"流"的数学形式化'
-  - term: 增广路径
-    english: augmenting path
-    origin: '"augment" 源自拉丁语 "augmentare"（增加），由词根 "augere"（使增长）派生。在 Ford-Fulkerson 方法中，augmenting path 指残量网络中从源 s 到汇 t 的有向路径，沿该路径可"增加"当前流值。术语最早见于 Ford-Fulkerson 1956 论文，后被 CLRS 教材规范化'
-  - term: 残量网络
-    english: residual network
-    origin: '"residual" 源自拉丁语 "residuus"（剩余的），由 "residere"（留下、剩余）派生。残量网络 G_f 记录每条边在当前流 f 之下"尚可承载"的额外流量 c(u,v) - f(u,v)，以及反向边上"已可撤销"的流量 f(u,v)。残量网络是 Ford-Fulkerson 方法的核心数据结构'
-  - term: 最大流最小割定理
-    english: max-flow min-cut theorem
-    origin: '由 Ford-Fulkerson 1956 论文证明，是网络流理论的奠基性结果。该定理断言：在任何流网络中，从源 s 到汇 t 的最大流量等于分隔 s 与 t 的最小割容量。1956 年的原始证明基于"增广路径存在性"的反证法，后被 Elias-Feinstein-Shannon (1956) 独立证明，并被 Edmonds-Karp (1972) 用于推导多项式算法'
-  - term: 预流推进
-    english: push-relabel
-    origin: '由 Andrew V. Goldberg 与 Robert E. Tarjan 于 1988 年在 JACM 论文 "A new approach to the maximum-flow problem" 中提出。"preflow"（预流）指允许中间节点暂时违反流量守恒的松弛流；"push"（推进）描述沿允许边将多余流量推向汇点；"relabel"（重标号）描述提升节点高度以激活新的允许边。该方法打破了"沿增广路径整体增广"的范式，实现局部操作并行化'
-  - term: 分层图
-    english: level graph
-    origin: '由 Yefim A. Dinitz 于 1970 年在苏联数学杂志 Doklady 论文 "Algorithm for solution of a problem of maximum flow in a network with power estimation" 中引入。level graph 是残量网络的子图，仅保留从源 s 出发的 BFS 最短路径上的边。"level" 取其"层次、级别"含义，对应每个节点到源点的最短距离。Dinic 算法在每轮迭代重建分层图，保证增广路径长度单调不减'
-  - term: 阻塞流
-    english: blocking flow
-    origin: '由 Dinitz 1970 论文定义。blocking flow 指在分层图中"无法再增广任何 s-t 路径"的流，即分层图中每条 s-t 路径都至少有一条饱和边。"block" 取其"阻塞、堵塞"含义。阻塞流不一定是分层图的最大流，但保证下一轮分层图的源汇距离严格增加，由此推出 Dinic 算法 O(V²E) 复杂度'
-  - term: 容量约束
-    english: capacity constraint
-    origin: '"capacity" 源自拉丁语 "capacitas"（容纳能力），由 "capax"（能容纳的）派生。在网络流中，容量约束 0 ≤ f(u,v) ≤ c(u,v) 限定每条边的流量不得超过其物理上限。该约束对应管道、铁路、电缆等真实场景的吞吐量限制，是流网络定义的两大公理之一'
-  - term: 网络单纯形
-    english: network simplex
-    origin: '由 George B. Dantzig 于 1951 年将线性规划单纯形法专门化至最小费用流问题。"simplex" 取其"具有 n+1 个顶点的 n 维凸多面体"含义，指线性规划可行域的几何结构。网络单纯形是网络流问题的工业级算法，对实际网络平均 O(m) 时间，被 CPLEX、Gurobi 等商业求解器采用'
+- term: 流网络
+  english: flow network
+  origin: 由 L. R. Ford 与 D. R. Ford 于 1956 年在论文 "Maximal flow through a network"（Canadian Journal of Mathematics, 8(3):399-404）中正式定义。"network" 一词源于 1550s 的 "net-like work"，由 "net" + "work" 构成。Ford 与 Fulkerson 借用电网、铁路网、管道网的物理直觉将节点视为"中转站"、边视为"传输管道"、容量视为"管道最大吞吐量"，建立了"流"的数学形式化
+- term: 增广路径
+  english: augmenting path
+  origin: '"augment" 源自拉丁语 "augmentare"（增加），由词根 "augere"（使增长）派生。在 Ford-Fulkerson 方法中，augmenting path 指残量网络中从源 s 到汇 t 的有向路径，沿该路径可"增加"当前流值。术语最早见于 Ford-Fulkerson 1956 论文，后被 CLRS 教材规范化'
+- term: 残量网络
+  english: residual network
+  origin: '"residual" 源自拉丁语 "residuus"（剩余的），由 "residere"（留下、剩余）派生。残量网络 G_f 记录每条边在当前流 f 之下"尚可承载"的额外流量 c(u,v) - f(u,v)，以及反向边上"已可撤销"的流量 f(u,v)。残量网络是 Ford-Fulkerson 方法的核心数据结构'
+- term: 最大流最小割定理
+  english: max-flow min-cut theorem
+  origin: 由 Ford-Fulkerson 1956 论文证明，是网络流理论的奠基性结果。该定理断言：在任何流网络中，从源 s 到汇 t 的最大流量等于分隔 s 与 t 的最小割容量。1956 年的原始证明基于"增广路径存在性"的反证法，后被 Elias-Feinstein-Shannon (1956) 独立证明，并被 Edmonds-Karp (1972) 用于推导多项式算法
+- term: 预流推进
+  english: push-relabel
+  origin: 由 Andrew V. Goldberg 与 Robert E. Tarjan 于 1988 年在 JACM 论文 "A new approach to the maximum-flow problem" 中提出。"preflow"（预流）指允许中间节点暂时违反流量守恒的松弛流；"push"（推进）描述沿允许边将多余流量推向汇点；"relabel"（重标号）描述提升节点高度以激活新的允许边。该方法打破了"沿增广路径整体增广"的范式，实现局部操作并行化
+- term: 分层图
+  english: level graph
+  origin: 由 Yefim A. Dinitz 于 1970 年在苏联数学杂志 Doklady 论文 "Algorithm for solution of a problem of maximum flow in a network with power estimation" 中引入。level graph 是残量网络的子图，仅保留从源 s 出发的 BFS 最短路径上的边。"level" 取其"层次、级别"含义，对应每个节点到源点的最短距离。Dinic 算法在每轮迭代重建分层图，保证增广路径长度单调不减
+- term: 阻塞流
+  english: blocking flow
+  origin: 由 Dinitz 1970 论文定义。blocking flow 指在分层图中"无法再增广任何 s-t 路径"的流，即分层图中每条 s-t 路径都至少有一条饱和边。"block" 取其"阻塞、堵塞"含义。阻塞流不一定是分层图的最大流，但保证下一轮分层图的源汇距离严格增加，由此推出 Dinic 算法 O(V²E) 复杂度
+- term: 容量约束
+  english: capacity constraint
+  origin: '"capacity" 源自拉丁语 "capacitas"（容纳能力），由 "capax"（能容纳的）派生。在网络流中，容量约束 0 ≤ f(u,v) ≤ c(u,v) 限定每条边的流量不得超过其物理上限。该约束对应管道、铁路、电缆等真实场景的吞吐量限制，是流网络定义的两大公理之一'
+- term: 网络单纯形
+  english: network simplex
+  origin: 由 George B. Dantzig 于 1951 年将线性规划单纯形法专门化至最小费用流问题。"simplex" 取其"具有 n+1 个顶点的 n 维凸多面体"含义，指线性规划可行域的几何结构。网络单纯形是网络流问题的工业级算法，对实际网络平均 O(m) 时间，被 CPLEX、Gurobi 等商业求解器采用
 ---
 
 

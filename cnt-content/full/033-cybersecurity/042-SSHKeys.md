@@ -1,7 +1,8 @@
 ---
 order: 420
 title: Cybersecurity SSH 密钥管理
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity SSH 密钥管理 的完整教学讲解。

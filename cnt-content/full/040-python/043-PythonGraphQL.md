@@ -4,35 +4,37 @@ title: Python与GraphQL
 module: python
 category: Python
 difficulty: intermediate
-description: 'Python GraphQL API 开发完整指南：Strawberry + FastAPI、Schema/Query/Mutation/Subscription、DataLoader 与工程实践。'
+description: Python GraphQL API 开发完整指南：Strawberry + FastAPI、Schema/Query/Mutation/Subscription、DataLoader 与工程实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与FastAPI
-  - python/Python与OAuth2
-  - python/Python与Redis
-  - python/Python与SQLAlchemy
+- python/Python与FastAPI
+- python/Python与OAuth2
+- python/Python与Redis
+- python/Python与SQLAlchemy
 prerequisites:
-  - python/语法速查
+- python/语法速查
 references:
-  - type: documentation
-    authors: ['GraphQL 基金会']
-    year: 2026
-    title: 'GraphQL Specification'
-    venue: 'spec.graphql.org'
-    url: https://spec.graphql.org/
-    accessedDate: '2026-08-01'
-  - type: documentation
-    authors: ['Strawberry GraphQL 团队']
-    year: 2026
-    title: 'Strawberry GraphQL - FastAPI Integration'
-    venue: 'strawberry.rocks'
-    url: https://strawberry.rocks/docs/integrations/fastapi
-    accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - GraphQL 基金会
+  year: 2026
+  title: GraphQL Specification
+  venue: spec.graphql.org
+  url: https://spec.graphql.org/
+  accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - Strawberry GraphQL 团队
+  year: 2026
+  title: Strawberry GraphQL - FastAPI Integration
+  venue: strawberry.rocks
+  url: https://strawberry.rocks/docs/integrations/fastapi
+  accessedDate: '2026-08-01'
 etymology:
-  - term: '图查询语言'
-    english: 'GraphQL'
-    origin: '由 Graph（图）与 QL（Query Language）组合，指基于数据图结构进行查询的语言。'
+- term: 图查询语言
+  english: GraphQL
+  origin: 由 Graph（图）与 QL（Query Language）组合，指基于数据图结构进行查询的语言。
 estimatedReadingTime: 30
 lastReviewed: '2026-08-01'
 reviewer: fanquanpp

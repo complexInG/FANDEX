@@ -1,7 +1,8 @@
 ---
 order: 400
 title: C# JSON 序列化
-module: 015-csharp
+module: csharp
+
 category: '015-csharp'
 difficulty: beginner
 description: C# JSON 序列化 的完整教学讲解。

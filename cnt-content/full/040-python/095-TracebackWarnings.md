@@ -1,7 +1,8 @@
 ---
 order: 950
 title: Python traceback 与 warnings
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python traceback 与 warnings 的完整教学讲解。

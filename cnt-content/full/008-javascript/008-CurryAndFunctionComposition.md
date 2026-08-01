@@ -4,111 +4,111 @@ title: 柯里化与偏函数
 module: javascript
 category: JavaScript
 tags:
-  - JavaScript
-  - 函数式编程
-  - 柯里化
-  - 偏函数
-  - 高阶函数
-  - 闭包
+- JavaScript
+- 函数式编程
+- 柯里化
+- 偏函数
+- 高阶函数
+- 闭包
 difficulty: intermediate
 description: 函数柯里化与偏函数应用的数学基础、形式语义、工程实现与生产级应用
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - javascript/高阶函数
-  - javascript/递归与尾调用优化
-  - javascript/生成器函数
-  - javascript/Proxy与Reflect
-  - javascript/箭头函数
-  - javascript/闭包
+- javascript/高阶函数
+- javascript/递归与尾调用优化
+- javascript/生成器函数
+- javascript/Proxy与Reflect
+- javascript/箭头函数
+- javascript/闭包
 prerequisites:
-  - javascript/语法速查
-  - javascript/函数基础
-  - javascript/闭包
+- javascript/语法速查
+- javascript/函数基础
+- javascript/闭包
 references:
-  - type: book
-    authors:
-      - Haskell Curry
-      - Robert Feys
-    year: 1958
-    title: 'Combinatory Logic, Volume I'
-    venue: North-Holland Publishing Company
-    pages: '1-416'
-  - type: journal
-    authors:
-      - Moses Schönfinkel
-    year: 1924
-    title: 'Über die Bausteine der mathematischen Logik'
-    venue: Mathematische Annalen
-    volume: 92
-    issue: 3
-    pages: '305-316'
-    doi: 10.1007/BF01448013
-  - type: book
-    authors:
-      - John C. Reynolds
-    year: 1972
-    title: 'Definitional Interpreters for Higher-Order Programming Languages'
-    venue: Proceedings of the ACM Annual Conference
-    pages: '717-740'
-    doi: 10.1145/800194.805852
-  - type: book
-    authors:
-      - Simon L. Peyton Jones
-    year: 1987
-    title: 'The Implementation of Functional Programming Languages'
-    venue: Prentice Hall International
-    pages: '1-492'
-  - type: book
-    authors:
-      - Martin Odersky
-      - Lex Spoon
-      - Bill Venners
-    year: 2016
-    title: 'Programming in Scala (3rd Edition)'
-    venue: Artima Press
-    pages: '1-582'
-  - type: standard
-    authors:
-      - Ecma International
-    year: 2026
-    title: 'ECMAScript 2026 Language Specification (ECMA-262, 16th Edition)'
-    venue: Ecma International
-    url: https://www.ecma-international.org/publications/standards/Ecma-262.htm
-  - type: book
-    authors:
-      - Dean Wampler
-      - Alex Payne
-    year: 2014
-    title: 'Programming Scala (2nd Edition)'
-    venue: O'Reilly Media
-    pages: '1-496'
-    doi: 10.5555/2618071
-  - type: documentation
-    authors:
-      - MDN Web Docs
-    year: 2025
-    title: 'Closures'
-    venue: Mozilla Developer Network
-    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
-  - type: website
-    authors:
-      - Eric Elliott
-    year: 2017
-    title: 'Curry and Function Composition'
-    venue: JavaScript Scene on Medium
-    url: https://medium.com/javascript-scene/curry-and-function-composition-2c208d774983
-    accessedDate: '2026-07-20'
+- type: book
+  authors:
+  - Haskell Curry
+  - Robert Feys
+  year: 1958
+  title: Combinatory Logic, Volume I
+  venue: North-Holland Publishing Company
+  pages: 1-416
+- type: journal
+  authors:
+  - Moses Schönfinkel
+  year: 1924
+  title: Über die Bausteine der mathematischen Logik
+  venue: Mathematische Annalen
+  volume: 92
+  issue: 3
+  pages: 305-316
+  doi: 10.1007/BF01448013
+- type: book
+  authors:
+  - John C. Reynolds
+  year: 1972
+  title: Definitional Interpreters for Higher-Order Programming Languages
+  venue: Proceedings of the ACM Annual Conference
+  pages: 717-740
+  doi: 10.1145/800194.805852
+- type: book
+  authors:
+  - Simon L. Peyton Jones
+  year: 1987
+  title: The Implementation of Functional Programming Languages
+  venue: Prentice Hall International
+  pages: 1-492
+- type: book
+  authors:
+  - Martin Odersky
+  - Lex Spoon
+  - Bill Venners
+  year: 2016
+  title: Programming in Scala (3rd Edition)
+  venue: Artima Press
+  pages: 1-582
+- type: standard
+  authors:
+  - Ecma International
+  year: 2026
+  title: ECMAScript 2026 Language Specification (ECMA-262, 16th Edition)
+  venue: Ecma International
+  url: https://www.ecma-international.org/publications/standards/Ecma-262.htm
+- type: book
+  authors:
+  - Dean Wampler
+  - Alex Payne
+  year: 2014
+  title: Programming Scala (2nd Edition)
+  venue: O'Reilly Media
+  pages: 1-496
+  doi: 10.5555/2618071
+- type: documentation
+  authors:
+  - MDN Web Docs
+  year: 2025
+  title: Closures
+  venue: Mozilla Developer Network
+  url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
+- type: website
+  authors:
+  - Eric Elliott
+  year: 2017
+  title: Curry and Function Composition
+  venue: JavaScript Scene on Medium
+  url: https://medium.com/javascript-scene/curry-and-function-composition-2c208d774983
+  accessedDate: '2026-07-20'
 etymology:
-  - term: 柯里化
-    english: Currying
-    origin: 以美国数学家 Haskell Brooks Curry（1900-1982）命名，其姓氏 Curry 亦启发了 Haskell 编程语言的命名。Curry 在 1958 年的《Combinatory Logic》中系统化了该技术，但最早由 Moses Schönfinkel 于 1924 年提出，故亦称 Schönfinkelisation
-  - term: 偏函数
-    english: Partial Application
-    origin: 源于函数式编程中的「部分求值」（partial evaluation）概念，指固定函数的部分参数生成新函数的过程。与数学中的「部分函数」（partial function，定义域子集上的函数）不同，二者需区分
-  - term: 闭包
-    english: Closure
-    origin: 由 Peter J. Landin 在 1964 年提出，指「闭包」是包含函数及其引用环境的复合实体。"close" 在此处指「封闭」——将自由变量与函数体绑定为一个不可分割的整体
+- term: 柯里化
+  english: Currying
+  origin: 以美国数学家 Haskell Brooks Curry（1900-1982）命名，其姓氏 Curry 亦启发了 Haskell 编程语言的命名。Curry 在 1958 年的《Combinatory Logic》中系统化了该技术，但最早由 Moses Schönfinkel 于 1924 年提出，故亦称 Schönfinkelisation
+- term: 偏函数
+  english: Partial Application
+  origin: 源于函数式编程中的「部分求值」（partial evaluation）概念，指固定函数的部分参数生成新函数的过程。与数学中的「部分函数」（partial function，定义域子集上的函数）不同，二者需区分
+- term: 闭包
+  english: Closure
+  origin: 由 Peter J. Landin 在 1964 年提出，指「闭包」是包含函数及其引用环境的复合实体。"close" 在此处指「封闭」——将自由变量与函数体绑定为一个不可分割的整体
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 45

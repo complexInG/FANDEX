@@ -1,7 +1,8 @@
 ---
 order: 720
 title: Python functools 函数工具
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python functools 函数工具 的完整教学讲解。

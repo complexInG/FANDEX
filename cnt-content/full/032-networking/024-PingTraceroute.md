@@ -1,7 +1,8 @@
 ---
 order: 240
 title: Networking 连通性检测
-module: 032-networking
+module: networking
+
 category: '032-networking'
 difficulty: beginner
 description: Networking 连通性检测 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 810
 title: Python 字符串格式化与方法
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python 字符串格式化与方法 的完整教学讲解。

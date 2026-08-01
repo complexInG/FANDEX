@@ -1,7 +1,8 @@
 ---
 order: 350
 title: DevOps Jenkins Pipeline
-module: 031-devops
+module: devops
+
 category: '031-devops'
 difficulty: beginner
 description: DevOps Jenkins Pipeline 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 530
 title: C POSIX 与系统调用速查
-module: 025-c
+module: c
+
 category: '025-c'
 difficulty: beginner
 description: C POSIX 与系统调用速查 的完整教学讲解。

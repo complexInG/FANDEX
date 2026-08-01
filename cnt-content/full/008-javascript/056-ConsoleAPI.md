@@ -1,7 +1,8 @@
 ---
 order: 560
 title: JavaScript console API 语法速查
-module: 008-javascript
+module: javascript
+
 category: '008-javascript'
 difficulty: beginner
 description: JavaScript console API 语法速查 的完整教学讲解。

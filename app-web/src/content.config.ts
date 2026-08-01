@@ -14,9 +14,7 @@ import { glob } from 'astro/loaders';
  * - type: 'content' 已替换为 glob loader（Astro 6+ 移除 legacy content collections）
  * - glob pattern 同时匹配 .md 与 .mdx 文件
  *
- * Phase 1.5 扩展字段（向后兼容，所有新增字段均 optional 或带 default）：
- * - learningObjectives：学习目标（Bloom 分类法，3-7 条）
- * - exercises：习题（四类题型：填空、选择、代码修正、开放性问题）
+ * Phase 2.0 结构化字段严格化：
  * - references：参考文献（ACM Reference Format）
  * - etymology：词源条目
  * - estimatedReadingTime：预估阅读时长（分钟）
@@ -24,9 +22,12 @@ import { glob } from 'astro/loaders';
  * - reviewer：审阅人
  *
  * 设计原则：
- * 1. 不破坏现有文档的 schema 校验
- * 2. 使用 z.discriminatedUnion 实现习题多态类型
- * 3. 保留 quiz 字段（向后兼容），exercises 为升级版
+ * 1. 存量数据已迁移归一化（references 两代格式合并、etymology 统一为数组），
+ *    因此 references/etymology 恢复严格 schema 校验；
+ * 2. learningObjectives / exercises 字段已随内容清理移除（存量 0 使用），
+ *    schema 不再为已废弃字段预留宽容；
+ * 3. 保留 quiz 字段（向后兼容，QuizBlock 仍消费该字段）；
+ * 4. 新增字段必须同时通过本 schema 与 content-audit 的覆盖审计，禁止再引入 z.any()。
  */
 
 // ============================================================
@@ -57,9 +58,9 @@ const ReferenceTypeSchema = z.enum([
  * 经常使用字符串（如 issue: "OOPSLA"、"Special Issue"）。
  * 临时改为 union(number, string) 以兼容存量数据。
  *
- * 扩展预留点：当前 docs collection 的 references 字段使用 z.any() 容错存量数据，
- * 后续统一文档数据格式后，可恢复使用本 Schema。导出以消除 ts(6133) 警告，
- * 同时作为未来 schema 严格化的接口预留点（未来留白未雨绸缪）。
+ * 存量数据中的历史键（isbn / publisher / edition / pagesNote / number）在
+ * 数据迁移时被保留为可选字段，避免恢复严格校验后静默丢字段；
+ * note 字段用于保存旧版纯文本引用（字符串条目）的原始全文，供追溯审计。
  */
 export const ReferenceSchema = z.object({
   type: ReferenceTypeSchema,
@@ -70,147 +71,29 @@ export const ReferenceSchema = z.object({
   volume: z.union([z.number(), z.string()]).optional(),
   issue: z.union([z.number(), z.string()]).optional(),
   pages: z.string().optional(),
+  pagesNote: z.string().optional(),
   doi: z.string().optional(),
   url: z.string().optional(),
   accessedDate: z.coerce.date().optional(),
   version: z.string().optional(),
+  // ISBN 在部分存量文档中未加引号，YAML 会解析为数字，故用 coerce 统一为字符串
+  isbn: z.coerce.string().optional(),
+  publisher: z.string().optional(),
+  edition: z.string().optional(),
+  number: z.union([z.number(), z.string()]).optional(),
+  note: z.string().optional(),
 });
 
 /**
  * 词源条目 Schema
  * 用于记录计算机术语的英文原词与词源说明
- *
- * 扩展预留点：同 ReferenceSchema，当前 docs collection 的 etymology 字段
- * 使用 z.any() 容错存量数据。导出以消除 ts(6133) 警告，保留未来恢复接口。
+ * 存量数据中的单对象形态已迁移为数组，english 缺失条目已按词源补全。
  */
 export const EtymologyEntrySchema = z.object({
   term: z.string(),
   english: z.string(),
   origin: z.string(),
 });
-
-/**
- * 习题类型枚举
- * 覆盖四类题型：填空、选择、代码修正、开放性问题
- */
-const ExerciseTypeSchema = z.enum(['fill-blank', 'choice', 'code-fix', 'open-ended']);
-
-/**
- * Bloom 认知层次枚举
- * 用于标注习题对应的学习目标层次
- */
-const CognitiveLevelSchema = z.enum([
-  'remember',
-  'understand',
-  'apply',
-  'analyze',
-  'evaluate',
-  'create',
-]);
-
-/**
- * 基础习题 Schema
- * 所有题型共享的公共字段，通过 type 字段区分子类型
- *
- * difficulty 字段原设计为 1-5 数字字面量联合，
- * 但存量文档的 frontmatter 普遍使用 'easy'/'medium'/'hard'/'advanced' 字符串。
- * 为避免破坏性修改数十篇文档数据，临时放宽为 string | number 联合。
- * 后续应统一数据格式后再收紧 schema。
- */
-const BaseExerciseSchema = z.object({
-  id: z.string(),
-  type: ExerciseTypeSchema,
-  cognitiveLevel: CognitiveLevelSchema,
-  question: z.string(),
-  hint: z.string().optional(),
-  answer: z.string(),
-  explanation: z.string().optional(),
-  difficulty: z
-    .union([
-      z.literal(1),
-      z.literal(2),
-      z.literal(3),
-      z.literal(4),
-      z.literal(5),
-      z.literal('easy'),
-      z.literal('medium'),
-      z.literal('hard'),
-      z.literal('advanced'),
-    ])
-    .default(3),
-  estimatedTime: z.number().optional(),
-});
-
-/**
- * 填空题 Schema
- * 支持多空、大小写敏感配置
- *
- * blankCount/answers 原为必填，但现有文档多使用单一 answer 字符串
- * 而非结构化 answers 数组。临时改为 optional 以兼容存量数据。
- */
-const FillBlankExerciseSchema = BaseExerciseSchema.extend({
-  type: z.literal('fill-blank'),
-  blankCount: z.number().optional(),
-  answers: z.array(z.string()).optional(),
-  caseSensitive: z.boolean().default(false),
-});
-
-/**
- * 选择题 Schema
- * 支持单选与多选（multiple=true 时使用 correctIndices）
- *
- * options/correctIndex 原为必填，但现有文档多将选项写入 question 正文，
- * answer 字段直接存储选项字母（如 'B'）。临时改为 optional 以兼容存量数据。
- */
-const ChoiceExerciseSchema = BaseExerciseSchema.extend({
-  type: z.literal('choice'),
-  options: z.array(z.string()).optional(),
-  correctIndex: z.number().optional(),
-  multiple: z.boolean().default(false),
-  correctIndices: z.array(z.number()).optional(),
-});
-
-/**
- * 代码修正题 Schema
- * 提供有缺陷的代码片段，要求学习者修正
- *
- * buggyCode/language/fixedCode/errorDescription 原为必填，
- * 但现有文档多将缺陷代码写入 question，修复代码写入 answer。
- * 临时改为 optional 以兼容存量数据。
- */
-const CodeFixExerciseSchema = BaseExerciseSchema.extend({
-  type: z.literal('code-fix'),
-  buggyCode: z.string().optional(),
-  language: z.string().optional(),
-  fixedCode: z.string().optional(),
-  errorDescription: z.string().optional(),
-});
-
-/**
- * 开放性问题 Schema
- * 适用于设计、论述类题目，提供评分关键点
- *
- * keyPoints 原为必填，但现有文档多未提供。临时改为 optional。
- */
-const OpenEndedExerciseSchema = BaseExerciseSchema.extend({
-  type: z.literal('open-ended'),
-  keyPoints: z.array(z.string()).optional(),
-  minWords: z.number().optional(),
-});
-
-/**
- * 习题联合类型
- * 通过 type 字段做判别式联合，保证类型推导的精确性
- *
- * 扩展预留点：同 ReferenceSchema，当前 docs collection 的 exercises 字段
- * 使用 z.any() 容错存量数据。导出以消除 ts(6133) 警告，保留未来恢复接口。
- */
-export const ExerciseSchema = z.discriminatedUnion('type', [
-  FillBlankExerciseSchema,
-  ChoiceExerciseSchema,
-  CodeFixExerciseSchema,
-  OpenEndedExerciseSchema,
-]);
 
 // ============================================================
 // docs Collection
@@ -270,19 +153,11 @@ const docs = defineCollection({
         ])
       )
       .default([]),
-    // === 新增字段（Phase 1.5） ===
-    // 以下扩展字段原使用严格 schema（ExerciseSchema/ReferenceSchema/EtymologyEntrySchema），
-    // 但存量文档数据格式高度多样：
-    //   - exercises/references 有的文档缺字段或使用非枚举值；
-    //   - etymology 在 Promise构造器.md 中为数组，在 事件循环.md 中为对象；
-    //   - learningObjectives 在部分文档中为字符串数组，在部分文档中为对象数组。
-    // 为不破坏性修改数十篇存量文档，临时改为最宽松类型 z.any()，
-    // 既接受 array 也接受 object 或其他格式。
-    // 后续应统一文档数据格式后，再恢复为 ExerciseSchema/ReferenceSchema/EtymologyEntrySchema。
-    learningObjectives: z.any().default([]).describe('学习目标，遵循 Bloom 分类法，3-7 条'),
-    exercises: z.any().default([]).describe('习题列表，覆盖四类题型'),
-    references: z.any().default([]).describe('参考文献列表，遵循 ACM Reference Format'),
-    etymology: z.any().default([]).describe('词源条目，计算机术语的英文原词与词源'),
+    // === 结构化字段（Phase 2.0，严格校验） ===
+    // references / etymology 已完成存量归一化迁移（2026-08-01），
+    // 此处直接使用严格 schema，任何新增字段缺失或格式漂移都会在构建期报错。
+    references: z.array(ReferenceSchema).default([]).describe('参考文献列表，遵循 ACM Reference Format'),
+    etymology: z.array(EtymologyEntrySchema).default([]).describe('词源条目，计算机术语的英文原词与词源'),
     estimatedReadingTime: z.number().optional().describe('预估阅读时长（分钟）'),
     lastReviewed: z.coerce.date().optional().describe('最后审阅日期'),
     reviewer: z.string().optional().describe('审阅人'),

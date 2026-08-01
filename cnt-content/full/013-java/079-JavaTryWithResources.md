@@ -1,7 +1,8 @@
 ---
 order: 790
 title: Java try-with-resources 与异常链语法速查手册
-module: 013-java
+module: java
+
 category: '013-java'
 difficulty: beginner
 description: Java try-with-resources 与异常链语法速查手册 的完整教学讲解。

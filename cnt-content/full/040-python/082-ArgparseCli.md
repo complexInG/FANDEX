@@ -1,7 +1,8 @@
 ---
 order: 820
 title: Python argparse 命令行参数解析
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python argparse 命令行参数解析 的完整教学讲解。

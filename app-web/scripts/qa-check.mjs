@@ -176,6 +176,72 @@ async function checkSitemap() {
 }
 
 /**
+ * 检查模块值一致性（前端门禁）
+ * 读取预构建的 doc-index.json 与 modules.json 规范 id 列表：
+ * - 文档 frontmatter.module 必须是 modules.json 中的规范短名；
+ * - 禁止编号前缀值（如 013-java），防止再次产生双 URL 命名空间。
+ */
+async function checkModuleConsistency() {
+  try {
+    const [indexRaw, modulesRaw] = await Promise.all([
+      readFile(join(SRC, 'data', 'doc-index.json'), 'utf-8'),
+      readFile(join('..', 'shd-shared', 'metadata', 'modules.json'), 'utf-8'),
+    ]);
+    const index = JSON.parse(indexRaw);
+    const modules = JSON.parse(modulesRaw);
+    const ids = new Set((modules.modules || []).map((m) => m.id));
+    const bad = new Map();
+    for (const doc of index) {
+      const mod = doc.module;
+      if (!ids.has(mod)) bad.set(mod, (bad.get(mod) || 0) + 1);
+    }
+    if (bad.size === 0) pass(`Module consistency: ${ids.size} modules, all docs matched`);
+    else {
+      const detail = [...bad.entries()].map(([k, n]) => `${k}(${n})`).join(', ');
+      fail(`Module consistency broken: ${detail}`);
+    }
+  } catch (err) {
+    fail(`Module consistency check error: ${err.message}`);
+  }
+}
+
+/**
+ * 检查构建产物中是否存在编号模块目录（幽灵页面门禁）
+ * 编号目录（/013-java/...）来自已废弃的编号 module 值，
+ * 若再次出现说明数据归一化失效或路由回归。
+ */
+async function checkNoNumberedModuleDirs() {
+  const entries = await readdir(DIST, { withFileTypes: true });
+  const ghosts = entries
+    .filter((e) => e.isDirectory() && /^\d{3}-/.test(e.name))
+    .map((e) => e.name);
+  if (ghosts.length === 0) pass('No numbered module dirs in dist');
+  else fail(`Ghost module dirs found: ${ghosts.join(', ')}`);
+}
+
+/**
+ * 检查超大单页 HTML（移动端体验门禁）
+ * 超过 1.5MB 的页面在低端移动设备上解析/渲染成本高，
+ * 与历史反馈的"移动端卡顿"直接相关，输出 WARN 提醒后续做分页/折叠。
+ */
+async function checkOversizedPages() {
+  const PAGE_THRESHOLD = 1536 * 1024; // 1.5MB
+  const big = [];
+  await walkDir(DIST, '.html', async (full) => {
+    const s = await stat(full);
+    if (s.size > PAGE_THRESHOLD) big.push({ path: full, size: s.size });
+  });
+  if (big.length === 0) pass('No HTML page over 1.5MB');
+  else {
+    big.sort((a, b) => b.size - a.size);
+    for (const f of big.slice(0, 10)) {
+      warn(`Oversized page: ${f.path} (${(f.size / 1024).toFixed(0)}KB)`);
+    }
+    if (big.length > 10) warn(`... and ${big.length - 10} more oversized pages`);
+  }
+}
+
+/**
  * 检查 robots.txt 是否存在
  * 确保搜索引擎爬虫配置可用
  */
@@ -383,8 +449,11 @@ await checkJsonLd();
 
 console.log('\n[Dimension 5: CI/CD]');
 await checkSitemap();
+await checkModuleConsistency();
+await checkNoNumberedModuleDirs();
 
 console.log('\n[Dimension 6: Quality Control]');
+await checkOversizedPages();
 await checkNo100vh();
 await checkNoConsoleLog();
 

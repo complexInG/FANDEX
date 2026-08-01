@@ -1,7 +1,8 @@
 ---
 order: 370
 title: C# LINQ 与异步速查
-module: 015-csharp
+module: csharp
+
 category: '015-csharp'
 difficulty: beginner
 description: C# LINQ 与异步速查 的完整教学讲解。

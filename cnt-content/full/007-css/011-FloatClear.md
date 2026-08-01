@@ -4,64 +4,64 @@ title: 浮动与清除
 module: css
 category: CSS
 difficulty: beginner
-description: 'CSS 浮动与清除的完整原理：float/clear 属性、BFC 与 flow-root、clearfix 演进与现代布局替代方案。'
+description: CSS 浮动与清除的完整原理：float/clear 属性、BFC 与 flow-root、clearfix 演进与现代布局替代方案。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/margin合并与塌陷
-  - css/定位详解
-  - css/层叠上下文
-  - css/渐变
+- css/margin合并与塌陷
+- css/定位详解
+- css/层叠上下文
+- css/渐变
 prerequisites:
-  - css/概述与基本语法
+- css/概述与基本语法
 references:
-  - type: documentation
-    authors:
-      - MDN Web Docs
-    year: 2026
-    title: 'float - CSS: Cascading Style Sheets'
-    venue: MDN Web Docs
-    url: https://developer.mozilla.org/en-US/docs/Web/CSS/float
-    accessedDate: '2026-08-01'
-  - type: documentation
-    authors:
-      - MDN Web Docs
-    year: 2026
-    title: 'clear - CSS: Cascading Style Sheets'
-    venue: MDN Web Docs
-    url: https://developer.mozilla.org/en-US/docs/Web/CSS/clear
-    accessedDate: '2026-08-01'
-  - type: documentation
-    authors:
-      - MDN Web Docs
-    year: 2026
-    title: Floats - Learn web development
-    venue: MDN Web Docs
-    url: https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Floats
-    accessedDate: '2026-08-01'
-  - type: standard
-    authors:
-      - W3C
-    year: 2023
-    title: 'CSS Display Module Level 3（display: flow-root）'
-    venue: W3C Candidate Recommendation
-    url: https://www.w3.org/TR/css-display-3/
-    accessedDate: '2026-08-01'
-  - type: documentation
-    authors:
-      - CSS-Tricks
-    year: 2021
-    title: All About Floats
-    venue: CSS-Tricks
-    url: https://css-tricks.com/all-about-floats/
-    accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - MDN Web Docs
+  year: 2026
+  title: 'float - CSS: Cascading Style Sheets'
+  venue: MDN Web Docs
+  url: https://developer.mozilla.org/en-US/docs/Web/CSS/float
+  accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - MDN Web Docs
+  year: 2026
+  title: 'clear - CSS: Cascading Style Sheets'
+  venue: MDN Web Docs
+  url: https://developer.mozilla.org/en-US/docs/Web/CSS/clear
+  accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - MDN Web Docs
+  year: 2026
+  title: Floats - Learn web development
+  venue: MDN Web Docs
+  url: https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Floats
+  accessedDate: '2026-08-01'
+- type: standard
+  authors:
+  - W3C
+  year: 2023
+  title: 'CSS Display Module Level 3（display: flow-root）'
+  venue: W3C Candidate Recommendation
+  url: https://www.w3.org/TR/css-display-3/
+  accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - CSS-Tricks
+  year: 2021
+  title: All About Floats
+  venue: CSS-Tricks
+  url: https://css-tricks.com/all-about-floats/
+  accessedDate: '2026-08-01'
 etymology:
-  - term: 浮动
-    english: float
-    origin: 源于报纸排版的图文混排思想，将图片"浮"到段落的左侧或右侧，文本沿其轮廓环绕。
-  - term: 块格式化上下文
-    english: Block Formatting Context (BFC)
-    origin: CSS 视觉格式化模型术语，指一块独立渲染区域，其内部布局不对外部元素产生影响。
+- term: 浮动
+  english: float
+  origin: 源于报纸排版的图文混排思想，将图片"浮"到段落的左侧或右侧，文本沿其轮廓环绕。
+- term: 块格式化上下文
+  english: Block Formatting Context (BFC)
+  origin: CSS 视觉格式化模型术语，指一块独立渲染区域，其内部布局不对外部元素产生影响。
 estimatedReadingTime: 25
 lastReviewed: '2026-08-01'
 reviewer: fanquanpp

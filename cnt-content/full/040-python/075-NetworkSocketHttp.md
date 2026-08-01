@@ -1,7 +1,8 @@
 ---
 order: 750
 title: Python 网络编程 socket/http
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python 网络编程 socket/http 的完整教学讲解。

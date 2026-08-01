@@ -1,7 +1,8 @@
 ---
 order: 840
 title: mysqladmin 管理命令 语法速查手册
-module: 020-mysql
+module: mysql
+
 category: '020-mysql'
 difficulty: beginner
 description: mysqladmin 管理命令 语法速查手册 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 280
 title: 物联网 ESP32 OTA 更新
-module: 035-iot
+module: iot
+
 category: '035-iot'
 difficulty: beginner
 description: 物联网 ESP32 OTA 更新 的完整教学讲解。

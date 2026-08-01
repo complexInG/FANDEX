@@ -1,7 +1,8 @@
 ---
 order: 340
 title: DevOps Helm 包管理命令
-module: 031-devops
+module: devops
+
 category: '031-devops'
 difficulty: beginner
 description: DevOps Helm 包管理命令 的完整教学讲解。

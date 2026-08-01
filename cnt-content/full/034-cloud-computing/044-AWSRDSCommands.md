@@ -1,7 +1,8 @@
 ---
 order: 440
 title: AWS RDS 数据库命令
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: AWS RDS 数据库命令 的完整教学讲解。

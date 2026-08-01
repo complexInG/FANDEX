@@ -1,7 +1,8 @@
 ---
 order: 490
 title: CSS 原生嵌套语法速查手册
-module: 007-css
+module: css
+
 category: '007-css'
 difficulty: beginner
 description: CSS 原生嵌套语法速查手册 的完整教学讲解。

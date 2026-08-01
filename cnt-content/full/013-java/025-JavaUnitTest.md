@@ -1795,7 +1795,7 @@ GitHub Copilot、JetBrains AI 等 IDE 工具已能根据被测代码生成测试
 
 ## 知识讲解与要点分析（原习题）
 
-> 习题已写入 frontmatter `exercises` 字段，此处仅展示题目，参考答案见下一节。
+> 本节以问答形式展示题目，参考答案见下一节。
 
 ## 知识讲解与要点分析（原习题 1（填空题 - remember））
 JUnit 5 由三个子项目组成：JUnit Platform、JUnit Jupiter 和 JUnit ____。其中后者提供基于 JUnit 3/4 风格的向后兼容引擎。

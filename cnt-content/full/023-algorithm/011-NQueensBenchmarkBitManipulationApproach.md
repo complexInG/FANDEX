@@ -4,239 +4,239 @@ title: 递归与回溯
 module: algorithm
 category: Algorithm Strategies
 difficulty: intermediate
-description: '递归（Recursion）的形式化定义、递归三要素（基线条件/递归条件/状态收缩）、递归树模型与主定理回顾、尾递归优化（TCO）、记忆化递归（Memoization）、回溯算法（Backtracking, Golomb-Baumert 1965 JACM 12(4):516-524）的系统化模板（选择-递归-撤销）、子集/排列/组合/N 皇后（Bezzel 1848）/数独/分割/括号生成/单词搜索的原理、实现与剪枝优化（排序剪枝/边界剪枝/条件剪枝/记忆化剪枝/位运算剪枝）、分支限界法（Land-Doig 1960）与 Dancing Links（Knuth 2000）的原理、对比分析与工程实践，涵盖 McCarthy 1960 LISP 递归系统化、Golomb-Baumert 1965 回溯法、Tarjan 1972 DFS、Bezzel 1848 N 皇后、Land-Doig 1960 分支限界、Knuth 2000 Dancing Links 的历史脉络，附 Python/C++/Java 多语言实现与 CLRS第4/22章、Kleinberg-Tardos第5章、Sedgewick第2章风格习题。'
+description: 递归（Recursion）的形式化定义、递归三要素（基线条件/递归条件/状态收缩）、递归树模型与主定理回顾、尾递归优化（TCO）、记忆化递归（Memoization）、回溯算法（Backtracking, Golomb-Baumert 1965 JACM 12(4):516-524）的系统化模板（选择-递归-撤销）、子集/排列/组合/N 皇后（Bezzel 1848）/数独/分割/括号生成/单词搜索的原理、实现与剪枝优化（排序剪枝/边界剪枝/条件剪枝/记忆化剪枝/位运算剪枝）、分支限界法（Land-Doig 1960）与 Dancing Links（Knuth 2000）的原理、对比分析与工程实践，涵盖 McCarthy 1960 LISP 递归系统化、Golomb-Baumert 1965 回溯法、Tarjan 1972 DFS、Bezzel 1848 N 皇后、Land-Doig 1960 分支限界、Knuth 2000 Dancing Links 的历史脉络，附 Python/C++/Java 多语言实现与 CLRS第4/22章、Kleinberg-Tardos第5章、Sedgewick第2章风格习题。
 author: fanquanpp
 tags:
-  - algorithm
-  - algorithm-recursion
-  - algorithm-backtracking
-  - algorithm-dfs
-  - algorithm-n-queens
-  - algorithm-sudoku
-  - algorithm-permutation
-  - algorithm-subset
-  - algorithm-combination
-  - algorithm-pruning
-  - algorithm-branch-and-bound
-  - algorithm-dancing-links
-  - algorithm-memoization
-  - algorithm-tail-recursion
+- algorithm
+- algorithm-recursion
+- algorithm-backtracking
+- algorithm-dfs
+- algorithm-n-queens
+- algorithm-sudoku
+- algorithm-permutation
+- algorithm-subset
+- algorithm-combination
+- algorithm-pruning
+- algorithm-branch-and-bound
+- algorithm-dancing-links
+- algorithm-memoization
+- algorithm-tail-recursion
 created: 2026-05-27
 updated: 2026-07-20
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 115
 related:
-  - algorithm/分治算法
-  - algorithm/贪心算法
-  - algorithm/动态规划
-  - algorithm/搜索算法
-  - algorithm/字符串算法
-  - algorithm/树
-  - algorithm/图算法
-  - algorithm/算法分析基础与学习路线
+- algorithm/分治算法
+- algorithm/贪心算法
+- algorithm/动态规划
+- algorithm/搜索算法
+- algorithm/字符串算法
+- algorithm/树
+- algorithm/图算法
+- algorithm/算法分析基础与学习路线
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/栈与队列
-  - algorithm/树
+- algorithm/算法分析基础与学习路线
+- algorithm/栈与队列
+- algorithm/树
 references:
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'Chapter 4 (Divide-and-Conquer - Recurrences), Chapter 22 (Elementary Graph Algorithms - DFS), Chapter 34 (NP-Completeness - Backtracking Reductions), ISBN 978-0262046305'
-  - type: book
-    authors:
-      - 'Kleinberg, Jon'
-      - 'Tardos, Eva'
-    year: 2006
-    title: 'Algorithm Design'
-    venue: 'Pearson'
-    pages: 'ISBN 978-0321295354, Chapter 5 (Divide and Conquer - Recurrences), Chapter 10 (Extending the Limits of Tractability - Backtracking for NP-Hard Problems)'
-  - type: book
-    authors:
-      - 'Sedgewick, Robert'
-      - 'Wayne, Kevin'
-    year: 2011
-    title: 'Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-    pages: 'ISBN 978-0321573513, Section 2.3 (Recursion - Quicksort), Section 2.4 (Priority Queues), Section 5.1 (String Sorts)'
-  - type: book
-    authors:
-      - 'Skiena, Steven S.'
-    year: 2020
-    title: 'The Algorithm Design Manual'
-    venue: 'Springer'
-    version: '3rd edition'
-    pages: 'ISBN 978-3030542556, Chapter 7 (Graph Traversal - Backtracking), Chapter 8 (Dynamic Programming), Chapter 12 (NP-Completeness - Backtracking and Heuristics)'
-  - type: book
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1968
-    title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '3rd edition (1997)'
-    pages: 'ISBN 978-0201896831, Section 1.1 (Algorithms), Section 2.3 (Trees - Recursion), Section 2.2.5 (Lists - Backtracking Examples)'
-  - type: journal
-    authors:
-      - 'McCarthy, John'
-    year: 1960
-    title: 'Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I'
-    venue: 'Communications of the ACM'
-    volume: 3
-    issue: 4
-    pages: '184-195'
-    doi: '10.1145/367177.367199'
-    pages_note: 'The foundational paper of LISP. Introduced recursion as a primary control structure in programming languages. McCarthy later received the 1971 Turing Award for his work on AI and LISP'
-  - type: journal
-    authors:
-      - 'Golomb, Solomon W.'
-      - 'Baumert, Leonard D.'
-    year: 1965
-    title: 'Backtrack Programming'
-    venue: 'Journal of the ACM (JACM)'
-    volume: 12
-    issue: 4
-    pages: '516-524'
-    doi: '10.1145/321376.321386'
-    pages_note: 'The seminal paper that systematized backtracking as a general problem-solving paradigm. Golomb is also famous for inventing Ches Graeco-Latin squares and polyominoes'
-  - type: journal
-    authors:
-      - 'Tarjan, Robert'
-    year: 1972
-    title: 'Depth-First Search and Linear Graph Algorithms'
-    venue: 'SIAM Journal on Computing'
-    volume: 1
-    issue: 2
-    pages: '146-160'
-    doi: '10.1137/0201010'
-    pages_note: 'Tarjan received the 1986 Turing Award partly for this work. DFS provides the foundation for backtracking on graphs'
-  - type: book
-    authors:
-      - 'Dijkstra, Edsger W.'
-    year: 1976
-    title: 'A Discipline of Programming'
-    venue: 'Prentice-Hall'
-    pages: 'ISBN 978-0132158718, Chapter 25 (Backtracking) - Systematic treatment of backtracking as program derivation'
-  - type: journal
-    authors:
-      - 'Land, Ailsa H.'
-      - 'Doig, Alison G.'
-    year: 1960
-    title: 'An automatic method of solving discrete programming problems'
-    venue: 'Econometrica'
-    volume: 28
-    issue: 3
-    pages: '497-520'
-    doi: '10.2307/1910129'
-    pages_note: 'The original Branch and Bound paper. Land and Doig worked at the London School of Economics. Later extended by Little et al. 1963 for TSP'
-  - type: journal
-    authors:
-      - 'Knuth, Donald E.'
-    year: 2000
-    title: 'Dancing Links'
-    venue: 'Millennium Perspectives in Computer Science, Springer (2000) pp. 187-214'
-    url: 'https://arxiv.org/abs/cs/0011047'
-    pages: 'Algorithm X with Dancing Links for exact cover problems. Knuth later extended this in TAOCP Vol. 4 Fascicle 5'
-    accessedDate: '2026-07-20'
-  - type: journal
-    authors:
-      - 'Bezzel, Max'
-    year: 1848
-    title: 'Proposal of the Eight Queens Problem'
-    venue: 'Berliner Schachzeitung 3:363 (September 1848)'
-    pages: 'The original statement of the 8-queens problem by German chess player Max Bezzel. First solution by Franz Nauck 1850. Generalized to N-queens in 1869'
-  - type: journal
-    authors:
-      - 'Nauck, Franz'
-    year: 1850
-    title: 'Lösung der Aufgabe 248 (Solution of problem 248)'
-    venue: 'Illustrierte Zeitung 14:351-352 (June 1, 1850)'
-    pages: 'First published solution to the 8-queens problem with all 12 fundamental solutions. Nauck was a German mathematician'
-  - type: journal
-    authors:
-      - 'Bitner, James R.'
-      - 'Reingold, Edward M.'
-    year: 1975
-    title: 'Backtrack programming techniques'
-    venue: 'Communications of the ACM'
-    volume: 18
-    issue: 11
-    pages: '651-656'
-    doi: '10.1145/361219.361224'
-    pages_note: 'Systematic treatment of backtracking implementation techniques including lexicographic ordering and pruning'
-  - type: journal
-    authors:
-      - 'Gaschnig, John'
-    year: 1979
-    title: 'Performance measurement and analysis of certain search algorithms'
-    venue: 'PhD Thesis, Carnegie Mellon University CMU-CS-79-124'
-    pages: 'Empirical study of backtracking performance with various heuristics. Foundation for constraint satisfaction research'
-  - type: book
-    authors:
-      - 'Russell, Stuart'
-      - 'Norvig, Peter'
-    year: 2020
-    title: 'Artificial Intelligence: A Modern Approach'
-    venue: 'Pearson'
-    version: '4th edition'
-    pages: 'ISBN 978-0134610993, Chapter 3 (Solving Problems by Searching - DFS/Backtracking), Chapter 6 (Constraint Satisfaction Problems - backtracking with MRV/LCV heuristics)'
-  - type: website
-    authors:
-      - 'Seward, Jeff'
-    year: 2017
-    title: 'N-Queens Benchmark - Bit Manipulation Approach'
-    venue: 'GitHub Reference Implementation'
-    url: 'https://github.com/shaunlebron/visual-n-queens'
-    pages: 'Visualization of N-Queens solver using bit-parallel pruning. Achieves 27-queens in seconds using bitmask techniques'
-    accessedDate: '2026-07-20'
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: Chapter 4 (Divide-and-Conquer - Recurrences), Chapter 22 (Elementary Graph Algorithms - DFS), Chapter 34 (NP-Completeness - Backtracking Reductions), ISBN 978-0262046305
+- type: book
+  authors:
+  - Kleinberg, Jon
+  - Tardos, Eva
+  year: 2006
+  title: Algorithm Design
+  venue: Pearson
+  pages: ISBN 978-0321295354, Chapter 5 (Divide and Conquer - Recurrences), Chapter 10 (Extending the Limits of Tractability - Backtracking for NP-Hard Problems)
+- type: book
+  authors:
+  - Sedgewick, Robert
+  - Wayne, Kevin
+  year: 2011
+  title: Algorithms
+  venue: Addison-Wesley Professional
+  version: 4th edition
+  pages: ISBN 978-0321573513, Section 2.3 (Recursion - Quicksort), Section 2.4 (Priority Queues), Section 5.1 (String Sorts)
+- type: book
+  authors:
+  - Skiena, Steven S.
+  year: 2020
+  title: The Algorithm Design Manual
+  venue: Springer
+  version: 3rd edition
+  pages: ISBN 978-3030542556, Chapter 7 (Graph Traversal - Backtracking), Chapter 8 (Dynamic Programming), Chapter 12 (NP-Completeness - Backtracking and Heuristics)
+- type: book
+  authors:
+  - Knuth, Donald E.
+  year: 1968
+  title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
+  venue: Addison-Wesley Professional
+  version: 3rd edition (1997)
+  pages: ISBN 978-0201896831, Section 1.1 (Algorithms), Section 2.3 (Trees - Recursion), Section 2.2.5 (Lists - Backtracking Examples)
+- type: journal
+  authors:
+  - McCarthy, John
+  year: 1960
+  title: Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I
+  venue: Communications of the ACM
+  volume: 3
+  issue: 4
+  pages: 184-195
+  doi: 10.1145/367177.367199
+  pagesNote: The foundational paper of LISP. Introduced recursion as a primary control structure in programming languages. McCarthy later received the 1971 Turing Award for his work on AI and LISP
+- type: journal
+  authors:
+  - Golomb, Solomon W.
+  - Baumert, Leonard D.
+  year: 1965
+  title: Backtrack Programming
+  venue: Journal of the ACM (JACM)
+  volume: 12
+  issue: 4
+  pages: 516-524
+  doi: 10.1145/321376.321386
+  pagesNote: The seminal paper that systematized backtracking as a general problem-solving paradigm. Golomb is also famous for inventing Ches Graeco-Latin squares and polyominoes
+- type: journal
+  authors:
+  - Tarjan, Robert
+  year: 1972
+  title: Depth-First Search and Linear Graph Algorithms
+  venue: SIAM Journal on Computing
+  volume: 1
+  issue: 2
+  pages: 146-160
+  doi: 10.1137/0201010
+  pagesNote: Tarjan received the 1986 Turing Award partly for this work. DFS provides the foundation for backtracking on graphs
+- type: book
+  authors:
+  - Dijkstra, Edsger W.
+  year: 1976
+  title: A Discipline of Programming
+  venue: Prentice-Hall
+  pages: ISBN 978-0132158718, Chapter 25 (Backtracking) - Systematic treatment of backtracking as program derivation
+- type: journal
+  authors:
+  - Land, Ailsa H.
+  - Doig, Alison G.
+  year: 1960
+  title: An automatic method of solving discrete programming problems
+  venue: Econometrica
+  volume: 28
+  issue: 3
+  pages: 497-520
+  doi: 10.2307/1910129
+  pagesNote: The original Branch and Bound paper. Land and Doig worked at the London School of Economics. Later extended by Little et al. 1963 for TSP
+- type: journal
+  authors:
+  - Knuth, Donald E.
+  year: 2000
+  title: Dancing Links
+  venue: Millennium Perspectives in Computer Science, Springer (2000) pp. 187-214
+  url: https://arxiv.org/abs/cs/0011047
+  pages: Algorithm X with Dancing Links for exact cover problems. Knuth later extended this in TAOCP Vol. 4 Fascicle 5
+  accessedDate: '2026-07-20'
+- type: journal
+  authors:
+  - Bezzel, Max
+  year: 1848
+  title: Proposal of the Eight Queens Problem
+  venue: Berliner Schachzeitung 3:363 (September 1848)
+  pages: The original statement of the 8-queens problem by German chess player Max Bezzel. First solution by Franz Nauck 1850. Generalized to N-queens in 1869
+- type: journal
+  authors:
+  - Nauck, Franz
+  year: 1850
+  title: Lösung der Aufgabe 248 (Solution of problem 248)
+  venue: Illustrierte Zeitung 14:351-352 (June 1, 1850)
+  pages: First published solution to the 8-queens problem with all 12 fundamental solutions. Nauck was a German mathematician
+- type: journal
+  authors:
+  - Bitner, James R.
+  - Reingold, Edward M.
+  year: 1975
+  title: Backtrack programming techniques
+  venue: Communications of the ACM
+  volume: 18
+  issue: 11
+  pages: 651-656
+  doi: 10.1145/361219.361224
+  pagesNote: Systematic treatment of backtracking implementation techniques including lexicographic ordering and pruning
+- type: journal
+  authors:
+  - Gaschnig, John
+  year: 1979
+  title: Performance measurement and analysis of certain search algorithms
+  venue: PhD Thesis, Carnegie Mellon University CMU-CS-79-124
+  pages: Empirical study of backtracking performance with various heuristics. Foundation for constraint satisfaction research
+- type: book
+  authors:
+  - Russell, Stuart
+  - Norvig, Peter
+  year: 2020
+  title: 'Artificial Intelligence: A Modern Approach'
+  venue: Pearson
+  version: 4th edition
+  pages: ISBN 978-0134610993, Chapter 3 (Solving Problems by Searching - DFS/Backtracking), Chapter 6 (Constraint Satisfaction Problems - backtracking with MRV/LCV heuristics)
+- type: website
+  authors:
+  - Seward, Jeff
+  year: 2017
+  title: N-Queens Benchmark - Bit Manipulation Approach
+  venue: GitHub Reference Implementation
+  url: https://github.com/shaunlebron/visual-n-queens
+  pages: Visualization of N-Queens solver using bit-parallel pruning. Achieves 27-queens in seconds using bitmask techniques
+  accessedDate: '2026-07-20'
 etymology:
-  - term: 递归
-    english: recursion
-    origin: 'recursion 源自拉丁语 recurrere（往回跑），与 recurrence（递推）同根。在计算机科学中，recursion 指函数直接或间接调用自身。John McCarthy 1960 在《Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I》CACM 3(4):184-195 中将递归作为 LISP 的核心控制结构，奠定递归在编程语言中的地位。中文"递归"由"递"（传递）与"归"（回归）合成，强调"层层递推、归回起点"的执行特征'
-  - term: 回溯
-    english: backtracking
-    origin: 'backtrack 源自 back（向后）+ track（轨迹），原义为"原路返回"。在算法中，backtracking 指系统化搜索解空间，发现当前路径不可行时回退一步重试。Solomon W. Golomb 与 Leonard D. Baumert 1965 在《Backtrack Programming》JACM 12(4):516-524 系统化回溯算法为通用问题求解范式。中文"回溯"由"回"（返回）与"溯"（逆流而上）合成，强调"逆向回溯"的搜索风格'
-  - term: 基线条件
-    english: base case
-    origin: 'base 源自拉丁语 basis（基础），case 源自拉丁语 casus（落下、事件）。基线条件是递归终止的最简情形，确保递归不会无限进行。CLRS《Introduction to Algorithms》第 2 章将分治的 base case 定义为"问题规模足够小可直接求解"。中文"基线"原为测绘学术语，指测量基准线'
-  - term: 递归条件
-    english: recursive case
-    origin: 'recursive case 指递归函数中调用自身的部分，将原问题分解为规模更小的同构子问题。与基线条件共同构成递归函数的两大要素'
-  - term: 递归树
-    english: recursion tree
-    origin: 'recursion tree 是分析递归复杂度的可视化工具：以原问题为根，每层按 $a$ 分支展开，叶节点为基线情况。CLRS 第 4.4 节系统化。递归树法虽不严格但直观，常与代入法配合使用'
-  - term: 尾递归
-    english: tail recursion
-    origin: 'tail recursion 指递归调用是函数的最后一步操作（无后续计算）。Guy Steele 1977 在《Debunking the "Expensive Procedure Call" Myth》系统化尾调用优化（TCO）。Scheme 标准 IEEE 1178-1990 强制要求 TCO，Python/Java 默认不支持 TCO。尾递归可被编译器优化为循环，空间复杂度 $O(n) \to O(1)$'
-  - term: 记忆化
-    english: memoization
-    origin: 'memoization 由 Donald Michie 1968 在《Memo Functions and Machine Learning》Nature 218:19-22 提出，源自 memorandum（备忘录）。Memoization 通过缓存已计算的子问题结果避免重复计算，将指数级递归（如斐波那契 $O(2^n)$）降为多项式级（$O(n)$）。与自底向上的动态规划（tabulation）等价但实现不同'
-  - term: 剪枝
-    english: pruning
-    origin: 'pruning 源自拉丁语 pruinare（修剪、割去），原指园艺修剪枝条。在回溯算法中，pruning 指提前判断当前分支不可能产生可行解或最优解时直接剪去。Gaschnig 1979 CMU 博士论文系统化剪枝启发式。常见剪枝策略：排序剪枝（跳过重复）、边界剪枝（剩余不足）、条件剪枝（约束冲突）、记忆化剪枝（已访问状态）'
-  - term: 分支限界
-    english: branch and bound
-    origin: 'branch and bound 由 Ailsa Land 与 Alison Doig 1960 在《An automatic method of solving discrete programming problems》Econometrica 28(3):497-520 提出。Branch（分支）指将问题分解为子问题，Bound（限界）指用松弛问题的界剪去不可能最优的子问题。广泛用于整数规划、TSP、VRP 等组合优化。Little-Murty-Sweeney-Karel 1963 扩展至 TSP。CLRS 第 12.4 节讨论 0-1 背包的分支限界'
-  - term: 精确覆盖
-    english: exact cover
-    origin: 'exact cover 由 Dana Scott 1958 在《A Symmetric Treatment of the Theory of Truth》中作为组合问题提出。给定 0-1 矩阵，找出若干行使每列恰好一个 1。Knuth 2000《Dancing Links》Millennium Essay 提出 Algorithm X + Dancing Links 双向十字链表高效实现。数独、N 皇后、Polyomino 拼图均可归约为精确覆盖'
-  - term: 蝶形回溯
-    english: dancing links
-    origin: 'dancing links 是 Knuth 2000 在《Dancing Links》中提出的双向十字链表（doubly-linked list）数据结构，用于 Algorithm X 精确覆盖的高效回溯。其核心是利用双向链表的 $O(1)$ 撤销特性，使"覆盖列"与"恢复列"操作对称进行。Knuth 形象地称为"舞动的指针"，因指针在覆盖/恢复时的舞蹈般移动'
-  - term: 约束传播
-    english: constraint propagation
-    origin: 'constraint propagation 由 David Waltz 1972 在《Generating semantic descriptions from drawings of scenes with shadows》MIT AI TR-271 系统化。在回溯前预先传播约束（如数独的"裸单""隐单"），减少搜索空间。Arc consistency（AC-3）由 Mackworth 1977 提出。约束传播 + 回溯是现代 CP 求解器（Google OR-Tools CP-SAT、Chuffed、Gecode）的核心'
-  - term: 选择-递归-撤销
-    english: choose-recurse-unchoose
-    origin: 'choose-recurse-unchoose 是回溯算法的通用三步范式，由斯坦福 CS106B/X 课程 Julie Zelenski 系统化教学。Choose（做选择）、Recurse（递归）、Unchoose（撤销选择）形成对称结构，确保状态在递归返回后恢复。中文社区常简称为"做选择-递归-撤销"模板'
+- term: 递归
+  english: recursion
+  origin: recursion 源自拉丁语 recurrere（往回跑），与 recurrence（递推）同根。在计算机科学中，recursion 指函数直接或间接调用自身。John McCarthy 1960 在《Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I》CACM 3(4):184-195 中将递归作为 LISP 的核心控制结构，奠定递归在编程语言中的地位。中文"递归"由"递"（传递）与"归"（回归）合成，强调"层层递推、归回起点"的执行特征
+- term: 回溯
+  english: backtracking
+  origin: backtrack 源自 back（向后）+ track（轨迹），原义为"原路返回"。在算法中，backtracking 指系统化搜索解空间，发现当前路径不可行时回退一步重试。Solomon W. Golomb 与 Leonard D. Baumert 1965 在《Backtrack Programming》JACM 12(4):516-524 系统化回溯算法为通用问题求解范式。中文"回溯"由"回"（返回）与"溯"（逆流而上）合成，强调"逆向回溯"的搜索风格
+- term: 基线条件
+  english: base case
+  origin: base 源自拉丁语 basis（基础），case 源自拉丁语 casus（落下、事件）。基线条件是递归终止的最简情形，确保递归不会无限进行。CLRS《Introduction to Algorithms》第 2 章将分治的 base case 定义为"问题规模足够小可直接求解"。中文"基线"原为测绘学术语，指测量基准线
+- term: 递归条件
+  english: recursive case
+  origin: recursive case 指递归函数中调用自身的部分，将原问题分解为规模更小的同构子问题。与基线条件共同构成递归函数的两大要素
+- term: 递归树
+  english: recursion tree
+  origin: recursion tree 是分析递归复杂度的可视化工具：以原问题为根，每层按 $a$ 分支展开，叶节点为基线情况。CLRS 第 4.4 节系统化。递归树法虽不严格但直观，常与代入法配合使用
+- term: 尾递归
+  english: tail recursion
+  origin: tail recursion 指递归调用是函数的最后一步操作（无后续计算）。Guy Steele 1977 在《Debunking the "Expensive Procedure Call" Myth》系统化尾调用优化（TCO）。Scheme 标准 IEEE 1178-1990 强制要求 TCO，Python/Java 默认不支持 TCO。尾递归可被编译器优化为循环，空间复杂度 $O(n) \to O(1)$
+- term: 记忆化
+  english: memoization
+  origin: memoization 由 Donald Michie 1968 在《Memo Functions and Machine Learning》Nature 218:19-22 提出，源自 memorandum（备忘录）。Memoization 通过缓存已计算的子问题结果避免重复计算，将指数级递归（如斐波那契 $O(2^n)$）降为多项式级（$O(n)$）。与自底向上的动态规划（tabulation）等价但实现不同
+- term: 剪枝
+  english: pruning
+  origin: pruning 源自拉丁语 pruinare（修剪、割去），原指园艺修剪枝条。在回溯算法中，pruning 指提前判断当前分支不可能产生可行解或最优解时直接剪去。Gaschnig 1979 CMU 博士论文系统化剪枝启发式。常见剪枝策略：排序剪枝（跳过重复）、边界剪枝（剩余不足）、条件剪枝（约束冲突）、记忆化剪枝（已访问状态）
+- term: 分支限界
+  english: branch and bound
+  origin: branch and bound 由 Ailsa Land 与 Alison Doig 1960 在《An automatic method of solving discrete programming problems》Econometrica 28(3):497-520 提出。Branch（分支）指将问题分解为子问题，Bound（限界）指用松弛问题的界剪去不可能最优的子问题。广泛用于整数规划、TSP、VRP 等组合优化。Little-Murty-Sweeney-Karel 1963 扩展至 TSP。CLRS 第 12.4 节讨论 0-1 背包的分支限界
+- term: 精确覆盖
+  english: exact cover
+  origin: exact cover 由 Dana Scott 1958 在《A Symmetric Treatment of the Theory of Truth》中作为组合问题提出。给定 0-1 矩阵，找出若干行使每列恰好一个 1。Knuth 2000《Dancing Links》Millennium Essay 提出 Algorithm X + Dancing Links 双向十字链表高效实现。数独、N 皇后、Polyomino 拼图均可归约为精确覆盖
+- term: 蝶形回溯
+  english: dancing links
+  origin: dancing links 是 Knuth 2000 在《Dancing Links》中提出的双向十字链表（doubly-linked list）数据结构，用于 Algorithm X 精确覆盖的高效回溯。其核心是利用双向链表的 $O(1)$ 撤销特性，使"覆盖列"与"恢复列"操作对称进行。Knuth 形象地称为"舞动的指针"，因指针在覆盖/恢复时的舞蹈般移动
+- term: 约束传播
+  english: constraint propagation
+  origin: constraint propagation 由 David Waltz 1972 在《Generating semantic descriptions from drawings of scenes with shadows》MIT AI TR-271 系统化。在回溯前预先传播约束（如数独的"裸单""隐单"），减少搜索空间。Arc consistency（AC-3）由 Mackworth 1977 提出。约束传播 + 回溯是现代 CP 求解器（Google OR-Tools CP-SAT、Chuffed、Gecode）的核心
+- term: 选择-递归-撤销
+  english: choose-recurse-unchoose
+  origin: choose-recurse-unchoose 是回溯算法的通用三步范式，由斯坦福 CS106B/X 课程 Julie Zelenski 系统化教学。Choose（做选择）、Recurse（递归）、Unchoose（撤销选择）形成对称结构，确保状态在递归返回后恢复。中文社区常简称为"做选择-递归-撤销"模板
 ---
 
 

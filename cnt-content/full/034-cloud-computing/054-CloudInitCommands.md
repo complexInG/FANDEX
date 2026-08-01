@@ -1,7 +1,8 @@
 ---
 order: 540
 title: cloud-init 云实例初始化
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: cloud-init 云实例初始化 的完整教学讲解。

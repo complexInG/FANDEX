@@ -68,6 +68,11 @@ jobs:
         # 该命令会先执行 build-stats.mjs 生成统计信息，再执行 astro build
         run: pnpm build:web
 
+      - name: Run web QA checks
+        # 构建产物质量门禁：模块值一致性、幽灵目录、超大页面等
+        # 任一 FAIL 项都会以非零退出码阻断部署
+        run: pnpm --filter @fandex/web qa
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

@@ -1,7 +1,8 @@
 ---
 order: 910
 title: Gradle build.gradle 配置语法速查手册
-module: 013-java
+module: java
+
 category: '013-java'
 difficulty: beginner
 description: Gradle build.gradle 配置语法速查手册 的完整教学讲解。

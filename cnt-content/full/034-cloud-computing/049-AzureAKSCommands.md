@@ -1,7 +1,8 @@
 ---
 order: 490
 title: Azure AKS Kubernetes 命令
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: Azure AKS Kubernetes 命令 的完整教学讲解。

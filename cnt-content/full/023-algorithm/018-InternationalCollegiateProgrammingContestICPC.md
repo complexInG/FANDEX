@@ -1,287 +1,287 @@
 ---
 order: 100
-title: 'LeetCode 刷题指南：从题型分类到面试策略的系统化路径'
+title: LeetCode 刷题指南：从题型分类到面试策略的系统化路径
 module: algorithm
-category: 'Algorithm Practice'
+category: Algorithm Practice
 difficulty: intermediate
-description: 'LeetCode 刷题指南系统化阐述在线算法评测平台的发展脉络（ACM ICPC 1970、Google Code Jam 2003-2023、Topcoder Open 2001、Meta Hacker Cup 2011、Codeforces 2009、AtCoder 2012、LeetCode 2015 by Winston Tang、LeetCode China 2018）、十大题型分类体系（数组/双指针、链表、树、图、二分查找、回溯、动态规划、贪心、滑动窗口、单调栈）、三遍刷题法与四步解题法、时间复杂度反推（$n \leq 20 \to O(2^n)$、$n \leq 100 \to O(n^3)$、$n \leq 10^4 \to O(n^2)$、$n \leq 10^6 \to O(n \log n)$、$n \leq 10^9 \to O(\log n)$）、高频题解模板（Python/C++/Java 三语言实现）、LeetCode Hot 100/Top Interview 150/Grind 75/NeetCode 150 学习路径对比、FAANG 与字节跳动/腾讯/阿里巴巴面试风格分析、LeetCode 题目到工业应用的映射（LRU Cache → Redis 淘汰策略、并查集 → Kubernetes 网络、单调栈 → Prometheus 监控）、LeetCode/LintCode/HackerRank/CodeSignal/牛客网五大平台对比。覆盖 100+ 经典题目索引（LC-1/11/15/42/72/200/300/1143 等），含 Bloom 分类法学习目标、ACM 格式参考文献（含 DOI）、四类习题与参考答案。'
+description: LeetCode 刷题指南系统化阐述在线算法评测平台的发展脉络（ACM ICPC 1970、Google Code Jam 2003-2023、Topcoder Open 2001、Meta Hacker Cup 2011、Codeforces 2009、AtCoder 2012、LeetCode 2015 by Winston Tang、LeetCode China 2018）、十大题型分类体系（数组/双指针、链表、树、图、二分查找、回溯、动态规划、贪心、滑动窗口、单调栈）、三遍刷题法与四步解题法、时间复杂度反推（$n \leq 20 \to O(2^n)$、$n \leq 100 \to O(n^3)$、$n \leq 10^4 \to O(n^2)$、$n \leq 10^6 \to O(n \log n)$、$n \leq 10^9 \to O(\log n)$）、高频题解模板（Python/C++/Java 三语言实现）、LeetCode Hot 100/Top Interview 150/Grind 75/NeetCode 150 学习路径对比、FAANG 与字节跳动/腾讯/阿里巴巴面试风格分析、LeetCode 题目到工业应用的映射（LRU Cache → Redis 淘汰策略、并查集 → Kubernetes 网络、单调栈 → Prometheus 监控）、LeetCode/LintCode/HackerRank/CodeSignal/牛客网五大平台对比。覆盖 100+ 经典题目索引（LC-1/11/15/42/72/200/300/1143 等），含 Bloom 分类法学习目标、ACM 格式参考文献（含 DOI）、四类习题与参考答案。
 author: fanquanpp
 tags:
-  - algorithm
-  - algorithm-leetcode
-  - algorithm-practice
-  - algorithm-interview
-  - algorithm-competitive-programming
-  - algorithm-template
-  - algorithm-two-pointer
-  - algorithm-sliding-window
-  - algorithm-binary-search
-  - algorithm-backtracking
-  - algorithm-dynamic-programming
-  - algorithm-monotonic-stack
-  - algorithm-prefix-sum
-  - algorithm-bit-manipulation
-  - faang-interview
+- algorithm
+- algorithm-leetcode
+- algorithm-practice
+- algorithm-interview
+- algorithm-competitive-programming
+- algorithm-template
+- algorithm-two-pointer
+- algorithm-sliding-window
+- algorithm-binary-search
+- algorithm-backtracking
+- algorithm-dynamic-programming
+- algorithm-monotonic-stack
+- algorithm-prefix-sum
+- algorithm-bit-manipulation
+- faang-interview
 created: 2026-05-27
 updated: 2026-07-20
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 150
 related:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/递归与回溯
-  - algorithm/排序算法
-  - algorithm/搜索算法
-  - algorithm/动态规划
-  - algorithm/贪心算法
-  - algorithm/图算法
-  - algorithm/树
-  - algorithm/堆与优先队列
-  - algorithm/并查集
-  - algorithm/线段树
+- algorithm/算法分析基础与学习路线
+- algorithm/递归与回溯
+- algorithm/排序算法
+- algorithm/搜索算法
+- algorithm/动态规划
+- algorithm/贪心算法
+- algorithm/图算法
+- algorithm/树
+- algorithm/堆与优先队列
+- algorithm/并查集
+- algorithm/线段树
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/递归与回溯
+- algorithm/算法分析基础与学习路线
+- algorithm/递归与回溯
 references:
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'ISBN 978-0262046305, Chapter 1 (The Role of Algorithms), Chapter 4 (Divide-and-Conquer), Chapter 15 (Dynamic Programming), Chapter 22 (Elementary Graph Algorithms)'
-  - type: book
-    authors:
-      - 'Skiena, Steven S.'
-    year: 2020
-    title: 'The Algorithm Design Manual'
-    venue: 'Springer'
-    version: '3rd edition'
-    pages: 'ISBN 978-3030542556, Chapter 1 (Introduction to Algorithm Design), Chapter 2 (Algorithm Analysis), Chapter 3 (Data Structures), Chapter 12 (P, NP, and NP-Completeness)'
-  - type: book
-    authors:
-      - 'Sedgewick, Robert'
-      - 'Wayne, Kevin'
-    year: 2011
-    title: 'Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-    pages: 'ISBN 978-0321573513, Chapter 1 (Fundamentals), Chapter 2 (Sorting), Chapter 3 (Searching), Chapter 4 (Graphs), Chapter 5 (Strings)'
-  - type: book
-    authors:
-      - '何海涛'
-    year: 2022
-    title: '剑指 Offer：名企面试官精讲典型编程题（第 2 版）'
-    venue: '电子工业出版社'
-    pages: 'ISBN 978-7121440263, 第 1-9 章覆盖数据结构、算法、面试软技能'
-  - type: book
-    authors:
-      - 'Gayle Laakmann McDowell'
-    year: 2015
-    title: 'Cracking the Coding Interview: 189 Programming Questions and Solutions'
-    venue: 'CareerCup'
-    version: '6th edition'
-    pages: 'ISBN 978-0984782857, Chapter 1 (Arrays and Strings), Chapter 2 (Linked Lists), Chapter 4 (Trees and Graphs), Chapter 8 (Recursion and Dynamic Programming)'
-  - type: book
-    authors:
-      - 'Adnan Aziz'
-      - 'Tsung-Hsien Lee'
-      - 'Amit Prakash'
-    year: 2019
-    title: 'Elements of Programming Interviews'
-    venue: 'EPI'
-    version: 'Java version 2nd edition'
-    pages: 'ISBN 978-1537713946, 300+ problems with detailed solutions covering arrays, linked lists, trees, graphs, DP, greedy, and system design'
-  - type: book
-    authors:
-      - 'Steven Halim'
-      - 'Felix Halim'
-    year: 2020
-    title: 'Competitive Programming 4'
-    venue: 'Lulu Press'
-    version: 'Book 1 (Chapters 1-5)'
-    pages: 'ISBN 978-1718035558, comprehensive guide for competitive programming with ICPC/IOI focus'
-  - type: journal
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1974
-    title: 'Computer programming as an art'
-    venue: 'Communications of the ACM'
-    volume: 17
-    issue: 12
-    pages: '667-673'
-    doi: '10.1145/361604.361612'
-    pages_note: 'Turing Award lecture discussing programming as both science and art, foundational for algorithmic problem-solving mindset'
-  - type: journal
-    authors:
-      - 'Sleator, Daniel D.'
-      - 'Tarjan, Robert E.'
-    year: 1985
-    title: 'Amortized efficiency of list update and paging rules'
-    venue: 'Communications of the ACM'
-    volume: 28
-    issue: 2
-    pages: '202-208'
-    doi: '10.1145/2786.2793'
-    pages_note: 'Foundational for LRU Cache (LeetCode 146). Introduced the potential method of amortized analysis and competitive analysis for online algorithms'
-  - type: journal
-    authors:
-      - 'Tarjan, Robert E.'
-    year: 1975
-    title: 'Efficiency of a good but not linear set union algorithm'
-    venue: 'Journal of the ACM'
-    volume: 22
-    issue: 2
-    pages: '215-225'
-    doi: '10.1145/321879.321884'
-    pages_note: 'Foundational for Union-Find (LeetCode 547, 684). Introduced the inverse-Ackermann near-constant time analysis'
-  - type: journal
-    authors:
-      - 'Boyer, Robert S.'
-      - 'Moore, J. Strother'
-    year: 1977
-    title: 'A fast string searching algorithm'
-    venue: 'Communications of the ACM'
-    volume: 20
-    issue: 10
-    pages: '762-772'
-    doi: '10.1145/359842.359859'
-    pages_note: 'Foundational for string matching algorithms covered in LeetCode 28 (Find the Index of the First Occurrence in a String)'
-  - type: journal
-    authors:
-      - 'Knuth, Donald E.'
-      - 'Morris, James H.'
-      - 'Pratt, Vaughan R.'
-    year: 1977
-    title: 'Fast pattern matching in strings'
-    venue: 'SIAM Journal on Computing'
-    volume: 6
-    issue: 2
-    pages: '323-350'
-    doi: '10.1137/0206024'
-    pages_note: 'KMP algorithm, linear-time string matching. Foundation for LeetCode 28, 214, 459'
-  - type: journal
-    authors:
-      - 'Dijkstra, Edsger W.'
-    year: 1959
-    title: 'A note on two problems in connexion with graphs'
-    venue: 'Numerische Mathematik'
-    volume: 1
-    issue: 1
-    pages: '269-271'
-    doi: '10.1007/BF01386390'
-    pages_note: 'Dijkstra shortest-path algorithm, foundation for LeetCode 743 (Network Delay Time), 1631 (Path With Minimum Effort)'
-  - type: journal
-    authors:
-      - 'Bellman, Richard'
-    year: 1952
-    title: 'On the theory of dynamic programming'
-    venue: 'Proceedings of the National Academy of Sciences'
-    volume: 38
-    issue: 8
-    pages: '716-719'
-    doi: '10.1073/pnas.38.8.716'
-    pages_note: 'Foundational paper for dynamic programming. LeetCode 70 (Climbing Stairs), 198 (House Robber), 322 (Coin Change), 72 (Edit Distance) all build on this paradigm'
-  - type: journal
-    authors:
-      - 'Bellman, Richard'
-    year: 1958
-    title: 'On a routing problem'
-    venue: 'Quarterly of Applied Mathematics'
-    volume: 16
-    issue: 1
-    pages: '87-90'
-    doi: '10.1090/qam/102435'
-    pages_note: 'Bellman-Ford algorithm for single-source shortest paths with negative weights. Foundation for LeetCode 787 (Cheapest Flights Within K Stops)'
-  - type: website
-    authors:
-      - 'LeetCode'
-    year: 2026
-    title: 'LeetCode Official Platform'
-    venue: 'LeetCode Inc.'
-    url: 'https://leetcode.com/'
-    pages: 'Founded 2015 by Winston Tang. Online judge with 3000+ algorithmic problems, weekly contests, and interview preparation tracks including Hot 100, Top Interview 150, and LeetCode 75'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'LeetCode China'
-    year: 2026
-    title: '力扣（LeetCode 中国版）'
-    venue: '领扣网络（上海）有限公司'
-    url: 'https://leetcode.cn/'
-    pages: 'Founded April 2018. LeetCode China subsidiary focusing on Chinese-speaking developers, with localized problem sets, 剑指 Offer, and 程序员面试金典 tracks'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'NeetCode'
-    year: 2026
-    title: 'NeetCode 150 - Comprehensive LeetCode Practice Tracker'
-    venue: 'NeetCode.io'
-    url: 'https://neetcode.io/'
-    pages: 'Curated 150-problem list expanding the Blind 75. Organized by topic with video solutions in Python. Created by Navdeep Singh in 2022'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'Tech Interview Handbook'
-    year: 2026
-    title: 'Grind 75 - LeetCode Practice Tracker'
-    venue: 'Yangshun Tay'
-    url: 'https://www.techinterviewhandbook.org/grind75'
-    pages: 'Successor to Blind 75 with 75-300 questions configurable by difficulty and time commitment. Created by Yangshun Tay (ex-Meta engineer)'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'Google Code Jam'
-    year: 2023
-    title: 'Google Code Jam Archive (2003-2023)'
-    venue: 'Google LLC'
-    url: 'https://codingcompetitions.withgoogle.com/codejam'
-    pages: 'Google premier algorithmic programming competition ran 2003-2023. Discontinued April 2023 after 21 editions. Featured 25,000+ participants annually in final years'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'ACM ICPC'
-    year: 2026
-    title: 'International Collegiate Programming Contest (ICPC)'
-    venue: 'ICPC Foundation'
-    url: 'https://icpc.global/'
-    pages: 'Oldest algorithmic contest, originated 1970 at Texas A&M. Multi-tier (Local→Regional→World Finals). Teams of 3 solve 10-15 problems in 5 hours using single computer'
-    accessedDate: '2026-07-20'
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: ISBN 978-0262046305, Chapter 1 (The Role of Algorithms), Chapter 4 (Divide-and-Conquer), Chapter 15 (Dynamic Programming), Chapter 22 (Elementary Graph Algorithms)
+- type: book
+  authors:
+  - Skiena, Steven S.
+  year: 2020
+  title: The Algorithm Design Manual
+  venue: Springer
+  version: 3rd edition
+  pages: ISBN 978-3030542556, Chapter 1 (Introduction to Algorithm Design), Chapter 2 (Algorithm Analysis), Chapter 3 (Data Structures), Chapter 12 (P, NP, and NP-Completeness)
+- type: book
+  authors:
+  - Sedgewick, Robert
+  - Wayne, Kevin
+  year: 2011
+  title: Algorithms
+  venue: Addison-Wesley Professional
+  version: 4th edition
+  pages: ISBN 978-0321573513, Chapter 1 (Fundamentals), Chapter 2 (Sorting), Chapter 3 (Searching), Chapter 4 (Graphs), Chapter 5 (Strings)
+- type: book
+  authors:
+  - 何海涛
+  year: 2022
+  title: 剑指 Offer：名企面试官精讲典型编程题（第 2 版）
+  venue: 电子工业出版社
+  pages: ISBN 978-7121440263, 第 1-9 章覆盖数据结构、算法、面试软技能
+- type: book
+  authors:
+  - Gayle Laakmann McDowell
+  year: 2015
+  title: 'Cracking the Coding Interview: 189 Programming Questions and Solutions'
+  venue: CareerCup
+  version: 6th edition
+  pages: ISBN 978-0984782857, Chapter 1 (Arrays and Strings), Chapter 2 (Linked Lists), Chapter 4 (Trees and Graphs), Chapter 8 (Recursion and Dynamic Programming)
+- type: book
+  authors:
+  - Adnan Aziz
+  - Tsung-Hsien Lee
+  - Amit Prakash
+  year: 2019
+  title: Elements of Programming Interviews
+  venue: EPI
+  version: Java version 2nd edition
+  pages: ISBN 978-1537713946, 300+ problems with detailed solutions covering arrays, linked lists, trees, graphs, DP, greedy, and system design
+- type: book
+  authors:
+  - Steven Halim
+  - Felix Halim
+  year: 2020
+  title: Competitive Programming 4
+  venue: Lulu Press
+  version: Book 1 (Chapters 1-5)
+  pages: ISBN 978-1718035558, comprehensive guide for competitive programming with ICPC/IOI focus
+- type: journal
+  authors:
+  - Knuth, Donald E.
+  year: 1974
+  title: Computer programming as an art
+  venue: Communications of the ACM
+  volume: 17
+  issue: 12
+  pages: 667-673
+  doi: 10.1145/361604.361612
+  pagesNote: Turing Award lecture discussing programming as both science and art, foundational for algorithmic problem-solving mindset
+- type: journal
+  authors:
+  - Sleator, Daniel D.
+  - Tarjan, Robert E.
+  year: 1985
+  title: Amortized efficiency of list update and paging rules
+  venue: Communications of the ACM
+  volume: 28
+  issue: 2
+  pages: 202-208
+  doi: 10.1145/2786.2793
+  pagesNote: Foundational for LRU Cache (LeetCode 146). Introduced the potential method of amortized analysis and competitive analysis for online algorithms
+- type: journal
+  authors:
+  - Tarjan, Robert E.
+  year: 1975
+  title: Efficiency of a good but not linear set union algorithm
+  venue: Journal of the ACM
+  volume: 22
+  issue: 2
+  pages: 215-225
+  doi: 10.1145/321879.321884
+  pagesNote: Foundational for Union-Find (LeetCode 547, 684). Introduced the inverse-Ackermann near-constant time analysis
+- type: journal
+  authors:
+  - Boyer, Robert S.
+  - Moore, J. Strother
+  year: 1977
+  title: A fast string searching algorithm
+  venue: Communications of the ACM
+  volume: 20
+  issue: 10
+  pages: 762-772
+  doi: 10.1145/359842.359859
+  pagesNote: Foundational for string matching algorithms covered in LeetCode 28 (Find the Index of the First Occurrence in a String)
+- type: journal
+  authors:
+  - Knuth, Donald E.
+  - Morris, James H.
+  - Pratt, Vaughan R.
+  year: 1977
+  title: Fast pattern matching in strings
+  venue: SIAM Journal on Computing
+  volume: 6
+  issue: 2
+  pages: 323-350
+  doi: 10.1137/0206024
+  pagesNote: KMP algorithm, linear-time string matching. Foundation for LeetCode 28, 214, 459
+- type: journal
+  authors:
+  - Dijkstra, Edsger W.
+  year: 1959
+  title: A note on two problems in connexion with graphs
+  venue: Numerische Mathematik
+  volume: 1
+  issue: 1
+  pages: 269-271
+  doi: 10.1007/BF01386390
+  pagesNote: Dijkstra shortest-path algorithm, foundation for LeetCode 743 (Network Delay Time), 1631 (Path With Minimum Effort)
+- type: journal
+  authors:
+  - Bellman, Richard
+  year: 1952
+  title: On the theory of dynamic programming
+  venue: Proceedings of the National Academy of Sciences
+  volume: 38
+  issue: 8
+  pages: 716-719
+  doi: 10.1073/pnas.38.8.716
+  pagesNote: Foundational paper for dynamic programming. LeetCode 70 (Climbing Stairs), 198 (House Robber), 322 (Coin Change), 72 (Edit Distance) all build on this paradigm
+- type: journal
+  authors:
+  - Bellman, Richard
+  year: 1958
+  title: On a routing problem
+  venue: Quarterly of Applied Mathematics
+  volume: 16
+  issue: 1
+  pages: 87-90
+  doi: 10.1090/qam/102435
+  pagesNote: Bellman-Ford algorithm for single-source shortest paths with negative weights. Foundation for LeetCode 787 (Cheapest Flights Within K Stops)
+- type: website
+  authors:
+  - LeetCode
+  year: 2026
+  title: LeetCode Official Platform
+  venue: LeetCode Inc.
+  url: https://leetcode.com/
+  pages: Founded 2015 by Winston Tang. Online judge with 3000+ algorithmic problems, weekly contests, and interview preparation tracks including Hot 100, Top Interview 150, and LeetCode 75
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - LeetCode China
+  year: 2026
+  title: 力扣（LeetCode 中国版）
+  venue: 领扣网络（上海）有限公司
+  url: https://leetcode.cn/
+  pages: Founded April 2018. LeetCode China subsidiary focusing on Chinese-speaking developers, with localized problem sets, 剑指 Offer, and 程序员面试金典 tracks
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - NeetCode
+  year: 2026
+  title: NeetCode 150 - Comprehensive LeetCode Practice Tracker
+  venue: NeetCode.io
+  url: https://neetcode.io/
+  pages: Curated 150-problem list expanding the Blind 75. Organized by topic with video solutions in Python. Created by Navdeep Singh in 2022
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - Tech Interview Handbook
+  year: 2026
+  title: Grind 75 - LeetCode Practice Tracker
+  venue: Yangshun Tay
+  url: https://www.techinterviewhandbook.org/grind75
+  pages: Successor to Blind 75 with 75-300 questions configurable by difficulty and time commitment. Created by Yangshun Tay (ex-Meta engineer)
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - Google Code Jam
+  year: 2023
+  title: Google Code Jam Archive (2003-2023)
+  venue: Google LLC
+  url: https://codingcompetitions.withgoogle.com/codejam
+  pages: Google premier algorithmic programming competition ran 2003-2023. Discontinued April 2023 after 21 editions. Featured 25,000+ participants annually in final years
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - ACM ICPC
+  year: 2026
+  title: International Collegiate Programming Contest (ICPC)
+  venue: ICPC Foundation
+  url: https://icpc.global/
+  pages: Oldest algorithmic contest, originated 1970 at Texas A&M. Multi-tier (Local→Regional→World Finals). Teams of 3 solve 10-15 problems in 5 hours using single computer
+  accessedDate: '2026-07-20'
 etymology:
-  - term: 在线评测系统
-    english: Online Judge
-    origin: 'Online Judge（OJ）概念源自 1990 年代西班牙 Valladolid 大学（UVa）的鲁伊兹·埃雷罗（Miguel A. Revilla）发起的在线编程评测系统。UVa OJ 于 1995-1996 年间上线，是世界上首个面向公众的算法题在线评测平台。术语 "Judge" 沿自 ACM ICPC 早期人工评测员的传统，"Online" 强调网络提交。中文"在线评测系统"为直译，简称 OJ。LeetCode（2015）、Codeforces（2009）、AtCoder（2012）均沿用此架构'
-  - term: LeetCode
-    english: LeetCode
-    origin: 'LeetCode 名称由 "Leet"（elite 缩写，黑客文化中对精英程序员的称呼，源自 1980 年代 BBS 时代的 leetspeak）与 "Code" 复合而成。2015 年由 Winston Tang（唐炜森）在美国创立。Leet 文化源自 1980 年代 phreaking 与 hacker 社区，使用字符替换（如 3 替代 E、7 替代 T）形成精英化书写。LeetCode 命名继承了这种"程序员精英"的文化暗示'
-  - term: 算法竞赛
-    english: Competitive Programming
-    origin: 'Competitive Programming 作为独立术语在 1990 年代 ACM ICPC 普及后逐渐成型。其形式可追溯至 1970 年首届 ACM ICPC（当时称 ACM-TCSCC Programming Contest）。2003 年 Google Code Jam、2009 年 Codeforces、2011 年 Meta Hacker Cup 等平台将竞技编程从校园推向互联网。中文"算法竞赛"或"竞技编程"为对译，特指在限定时间与资源下求解算法问题的竞赛形式'
-  - term: 刷题
-    english: grinding problems
-    origin: '刷题源自中文互联网文化，"刷"字本义为反复擦拭、清洗，引申为"反复练习"。"刷题"作为术语约在 2010 年代初随着 LeetCode、牛客网等平台的兴起而流行，指系统性地反复解答算法题以备战面试或竞赛。英文对应 "grinding LeetCode" 或 "LeetCode grinding"，grind 本义为磨削，引申为反复努力。Grind 75 刷题清单即得名于此'
-  - term: 三遍刷题法
-    english: three-pass problem solving
-    origin: '三遍刷题法源自中国 LeetCode 社区经验总结，2017-2019 年间在牛客网、知乎、CSDN 等平台被反复提炼。其核心思想：第一遍理解标准解法、第二遍独立求解、第三遍归纳模式。与苏格拉底式学习的"理解-应用-反思"三阶段契合，对应 Bloom 分类法的 Remember→Apply→Analyze 层级'
-  - term: 时间复杂度反推
-    english: complexity reverse engineering
-    origin: '从输入规模 $n$ 反推可行算法复杂度的技巧源自竞技编程社区（Topcoder、Codeforces）的经验积累。Codeforces 用户 Errichto、tourist 等顶级选手在博客中多次系统化。LeetCode 大陆社区 2018 年后引入并系统化为表格形式。其理论依据为：现代 CPU 每秒约 $10^8$-$10^9$ 次基本运算，给定题目时间限制（通常 1-2 秒）与 $n$ 的范围，可反推可行复杂度上界'
-  - term: LRU 缓存
-    english: LRU Cache
-    origin: 'LRU（Least Recently Used）缓存淘汰策略源自操作系统页面置换算法。Sleator-Tarjan 1985《Amortized Efficiency of List Update and Paging Rules》CACM 28(2):202-208 系统化分析 LRU 与 FIFO 的竞争比（competitive ratio）。LeetCode 146 LRU Cache 是其经典实现，要求 $O(1)$ 的 get/put 操作。Redis、Memcached、Linux Kernel Page Cache 均采用 LRU 变体'
-  - term: Blind 75
-    english: Blind 75
-    origin: 'Blind 75 是 Blind（匿名职场社交平台）用户 Yangshun Tay 于 2018 年在 Blind Teamblind 论坛发布的 75 道 LeetCode 高频题清单。其设计动机为"以最小题量覆盖面试最高频考点"。2022 年 Yangshun Tay 升级为 Grind 75，可自定义难度与题量。NeetCode 150（Navdeep Singh 2022）则将 Blind 75 扩展至 150 题并附视频讲解'
-  - term: FAANG
-    english: FAANG
-    origin: 'FAANG 由 Jim Cramer 2013 在 CNBC 节目 Mad Money 提出，指 Facebook（现 Meta）、Amazon、Apple、Netflix、Google 五大科技公司。后扩展为 FAANG+M（含 Microsoft）或 MANGA（Meta 重排）。LeetCode FAANG 面试准备指针对这五家公司的算法面试风格进行专题训练。中文互联网常扩展为"美国大厂"或"硅谷大厂"'
-  - term: 动态规划
-    english: Dynamic Programming
-    origin: 'Dynamic Programming 由 Bellman 1952《On the Theory of Dynamic Programming》PNAS 38(8):716-719 系统化。"Programming" 此处取 1940 年代数学优化术语含义"规划、表格化计算"，非"程序设计"。Bellman 在自传 Eye of the Hurricane 中解释：选 "dynamic" 一词是因为难以定义且具有威慑性，便于争取研究经费。LeetCode 70/198/300/322/72 等经典 DP 题目均基于 Bellman 范式'
+- term: 在线评测系统
+  english: Online Judge
+  origin: Online Judge（OJ）概念源自 1990 年代西班牙 Valladolid 大学（UVa）的鲁伊兹·埃雷罗（Miguel A. Revilla）发起的在线编程评测系统。UVa OJ 于 1995-1996 年间上线，是世界上首个面向公众的算法题在线评测平台。术语 "Judge" 沿自 ACM ICPC 早期人工评测员的传统，"Online" 强调网络提交。中文"在线评测系统"为直译，简称 OJ。LeetCode（2015）、Codeforces（2009）、AtCoder（2012）均沿用此架构
+- term: LeetCode
+  english: LeetCode
+  origin: LeetCode 名称由 "Leet"（elite 缩写，黑客文化中对精英程序员的称呼，源自 1980 年代 BBS 时代的 leetspeak）与 "Code" 复合而成。2015 年由 Winston Tang（唐炜森）在美国创立。Leet 文化源自 1980 年代 phreaking 与 hacker 社区，使用字符替换（如 3 替代 E、7 替代 T）形成精英化书写。LeetCode 命名继承了这种"程序员精英"的文化暗示
+- term: 算法竞赛
+  english: Competitive Programming
+  origin: Competitive Programming 作为独立术语在 1990 年代 ACM ICPC 普及后逐渐成型。其形式可追溯至 1970 年首届 ACM ICPC（当时称 ACM-TCSCC Programming Contest）。2003 年 Google Code Jam、2009 年 Codeforces、2011 年 Meta Hacker Cup 等平台将竞技编程从校园推向互联网。中文"算法竞赛"或"竞技编程"为对译，特指在限定时间与资源下求解算法问题的竞赛形式
+- term: 刷题
+  english: grinding problems
+  origin: 刷题源自中文互联网文化，"刷"字本义为反复擦拭、清洗，引申为"反复练习"。"刷题"作为术语约在 2010 年代初随着 LeetCode、牛客网等平台的兴起而流行，指系统性地反复解答算法题以备战面试或竞赛。英文对应 "grinding LeetCode" 或 "LeetCode grinding"，grind 本义为磨削，引申为反复努力。Grind 75 刷题清单即得名于此
+- term: 三遍刷题法
+  english: three-pass problem solving
+  origin: 三遍刷题法源自中国 LeetCode 社区经验总结，2017-2019 年间在牛客网、知乎、CSDN 等平台被反复提炼。其核心思想：第一遍理解标准解法、第二遍独立求解、第三遍归纳模式。与苏格拉底式学习的"理解-应用-反思"三阶段契合，对应 Bloom 分类法的 Remember→Apply→Analyze 层级
+- term: 时间复杂度反推
+  english: complexity reverse engineering
+  origin: 从输入规模 $n$ 反推可行算法复杂度的技巧源自竞技编程社区（Topcoder、Codeforces）的经验积累。Codeforces 用户 Errichto、tourist 等顶级选手在博客中多次系统化。LeetCode 大陆社区 2018 年后引入并系统化为表格形式。其理论依据为：现代 CPU 每秒约 $10^8$-$10^9$ 次基本运算，给定题目时间限制（通常 1-2 秒）与 $n$ 的范围，可反推可行复杂度上界
+- term: LRU 缓存
+  english: LRU Cache
+  origin: LRU（Least Recently Used）缓存淘汰策略源自操作系统页面置换算法。Sleator-Tarjan 1985《Amortized Efficiency of List Update and Paging Rules》CACM 28(2):202-208 系统化分析 LRU 与 FIFO 的竞争比（competitive ratio）。LeetCode 146 LRU Cache 是其经典实现，要求 $O(1)$ 的 get/put 操作。Redis、Memcached、Linux Kernel Page Cache 均采用 LRU 变体
+- term: Blind 75
+  english: Blind 75
+  origin: Blind 75 是 Blind（匿名职场社交平台）用户 Yangshun Tay 于 2018 年在 Blind Teamblind 论坛发布的 75 道 LeetCode 高频题清单。其设计动机为"以最小题量覆盖面试最高频考点"。2022 年 Yangshun Tay 升级为 Grind 75，可自定义难度与题量。NeetCode 150（Navdeep Singh 2022）则将 Blind 75 扩展至 150 题并附视频讲解
+- term: FAANG
+  english: FAANG
+  origin: FAANG 由 Jim Cramer 2013 在 CNBC 节目 Mad Money 提出，指 Facebook（现 Meta）、Amazon、Apple、Netflix、Google 五大科技公司。后扩展为 FAANG+M（含 Microsoft）或 MANGA（Meta 重排）。LeetCode FAANG 面试准备指针对这五家公司的算法面试风格进行专题训练。中文互联网常扩展为"美国大厂"或"硅谷大厂"
+- term: 动态规划
+  english: Dynamic Programming
+  origin: Dynamic Programming 由 Bellman 1952《On the Theory of Dynamic Programming》PNAS 38(8):716-719 系统化。"Programming" 此处取 1940 年代数学优化术语含义"规划、表格化计算"，非"程序设计"。Bellman 在自传 Eye of the Hurricane 中解释：选 "dynamic" 一词是因为难以定义且具有威慑性，便于争取研究经费。LeetCode 70/198/300/322/72 等经典 DP 题目均基于 Bellman 范式
 ---
 
 

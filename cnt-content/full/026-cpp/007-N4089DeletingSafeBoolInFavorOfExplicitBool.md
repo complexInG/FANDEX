@@ -4,7 +4,7 @@ title: 智能指针详解
 module: cpp
 category: C++
 difficulty: intermediate
-description: '深入解析 C++ 智能指针 unique_ptr、shared_ptr、weak_ptr 的所有权语义、引用计数模型、形式化定义、工程实践与跨语言对比，覆盖 RAII、自定义删除器、循环引用破解与生产级模式。'
+description: 深入解析 C++ 智能指针 unique_ptr、shared_ptr、weak_ptr 的所有权语义、引用计数模型、形式化定义、工程实践与跨语言对比，覆盖 RAII、自定义删除器、循环引用破解与生产级模式。
 author: fanquanpp
 created: 2026-05-30
 updated: 2026-07-18
@@ -13,120 +13,120 @@ reviewer: FANDEX Content Engineering
 readingTime: 95
 estimatedReadingTime: 95
 tags:
-  - cpp
-  - smart-pointer
-  - raii
-  - ownership
-  - memory-management
-  - c++11
-  - c++14
-  - c++17
+- cpp
+- smart-pointer
+- raii
+- ownership
+- memory-management
+- c++11
+- c++14
+- c++17
 related:
-  - cpp/右值引用与移动语义
-  - cpp/指针
-  - cpp/Lambda表达式
-  - cpp/模板元编程
-  - cpp/RAII资源管理
-  - cpp/引用
+- cpp/右值引用与移动语义
+- cpp/指针
+- cpp/Lambda表达式
+- cpp/模板元编程
+- cpp/RAII资源管理
+- cpp/引用
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/基础语法
-  - cpp/数据类型详解
-  - cpp/指针
-  - cpp/右值引用与移动语义
+- cpp/概述与现代标准
+- cpp/基础语法
+- cpp/数据类型详解
+- cpp/指针
+- cpp/右值引用与移动语义
 references:
-  - type: standard
-    authors:
-      - 'ISO/IEC'
-    year: 2023
-    title: 'Information technology — Programming languages — C++'
-    venue: 'ISO/IEC 14882:2023'
-    version: 'Eighth edition'
-  - type: book
-    authors:
-      - 'Stroustrup, Bjarne'
-    year: 2013
-    title: 'The C++ Programming Language'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-  - type: book
-    authors:
-      - 'Meyers, Scott'
-    year: 2015
-    title: 'Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14'
-    venue: "O'Reilly Media"
-    version: '1st edition'
-  - type: book
-    authors:
-      - 'Sutter, Herb'
-      - 'Alexandrescu, Andrei'
-    year: 2004
-    title: 'C++ Coding Standards: 101 Rules, Guidelines, and Best Practices'
-    venue: 'Addison-Wesley Professional'
-  - type: book
-    authors:
-      - 'Alexandrescu, Andrei'
-    year: 2001
-    title: 'Modern C++ Design: Generic Programming and Design Patterns Applied'
-    venue: 'Addison-Wesley Professional'
-    version: '1st edition'
-  - type: book
-    authors:
-      - 'Williams, Anthony'
-    year: 2019
-    title: 'C++ Concurrency in Action'
-    venue: 'Manning Publications'
-    version: '2nd edition'
-  - type: website
-    authors:
-      - 'cppreference.com'
-    year: 2024
-    title: 'Smart pointers — cppreference.com'
-    url: 'https://en.cppreference.com/w/cpp/memory'
-    accessedDate: '2024-12-01'
-  - type: website
-    authors:
-      - 'Sutter, Herb'
-    year: 2013
-    title: 'GotW #89 Solution: Smart Pointers'
-    url: 'https://herbsutter.com/2013/05/29/gotw-89-solution-smart-pointers/'
-    accessedDate: '2024-12-01'
-  - type: documentation
-    authors:
-      - 'C++ Core Guidelines Contributors'
-    year: 2024
-    title: 'C++ Core Guidelines — Resource Management (R-series)'
-    venue: 'isocpp'
-    url: 'https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines'
-    accessedDate: '2024-12-01'
-  - type: technical-report
-    authors:
-      - 'ISO/IEC WG21'
-    year: 2014
-    title: 'N4089 — Deleting safe_bool in favor of explicit bool'
-    venue: 'ISO C++ Committee'
+- type: standard
+  authors:
+  - ISO/IEC
+  year: 2023
+  title: Information technology — Programming languages — C++
+  venue: ISO/IEC 14882:2023
+  version: Eighth edition
+- type: book
+  authors:
+  - Stroustrup, Bjarne
+  year: 2013
+  title: The C++ Programming Language
+  venue: Addison-Wesley Professional
+  version: 4th edition
+- type: book
+  authors:
+  - Meyers, Scott
+  year: 2015
+  title: 'Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14'
+  venue: O'Reilly Media
+  version: 1st edition
+- type: book
+  authors:
+  - Sutter, Herb
+  - Alexandrescu, Andrei
+  year: 2004
+  title: 'C++ Coding Standards: 101 Rules, Guidelines, and Best Practices'
+  venue: Addison-Wesley Professional
+- type: book
+  authors:
+  - Alexandrescu, Andrei
+  year: 2001
+  title: 'Modern C++ Design: Generic Programming and Design Patterns Applied'
+  venue: Addison-Wesley Professional
+  version: 1st edition
+- type: book
+  authors:
+  - Williams, Anthony
+  year: 2019
+  title: C++ Concurrency in Action
+  venue: Manning Publications
+  version: 2nd edition
+- type: website
+  authors:
+  - cppreference.com
+  year: 2024
+  title: Smart pointers — cppreference.com
+  url: https://en.cppreference.com/w/cpp/memory
+  accessedDate: '2024-12-01'
+- type: website
+  authors:
+  - Sutter, Herb
+  year: 2013
+  title: 'GotW #89 Solution: Smart Pointers'
+  url: https://herbsutter.com/2013/05/29/gotw-89-solution-smart-pointers/
+  accessedDate: '2024-12-01'
+- type: documentation
+  authors:
+  - C++ Core Guidelines Contributors
+  year: 2024
+  title: C++ Core Guidelines — Resource Management (R-series)
+  venue: isocpp
+  url: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
+  accessedDate: '2024-12-01'
+- type: technical-report
+  authors:
+  - ISO/IEC WG21
+  year: 2014
+  title: N4089 — Deleting safe_bool in favor of explicit bool
+  venue: ISO C++ Committee
 etymology:
-  - term: 智能指针
-    english: smart pointer
-    origin: '由 David Klappholz 与 Peter Wegner 于 1987 年在面向对象编程文献中首次提出，"smart" 隐喻其具备自动管理资源的"智能"行为，与"哑指针（dumb pointer）"即裸指针相对'
-  - term: RAII
-    english: 'Resource Acquisition Is Initialization'
-    origin: 'Bjarne Stroustrup 于 1980s 在《The Design and Evolution of C++》中提出，将资源生命周期绑定到对象生命周期：构造函数获取资源，析构函数释放资源'
-  - term: 引用计数
-    english: reference counting
-    origin: 'George Collins 于 1960 年在 IBM 论文《A method for overlapping and erosion of pictures》中首次描述用于自动内存管理的引用计数技术'
-  - term: 悬垂指针
-    english: dangling pointer
-    origin: '"dangling" 意为"悬挂、悬空"，指指针指向的内存已释放但指针仍存活；与 "wild pointer"（未初始化的野指针）形成对比'
-  - term: 所有权语义
-    english: ownership semantics
-    origin: '借用日常语义"负责管理某资源生命周期"的责任归属；Rust 语言（2010, Mozilla）将所有权提升为类型系统核心规则'
-  - term: 控制块
-    english: control block
-    origin: 'shared_ptr 内部管理引用计数的元数据结构，包含 strong count 与 weak count 两个原子计数器'
-  - term: 别名构造
-    english: aliasing constructor
-    origin: 'C++11 引入的 shared_ptr 构造形式 `shared_ptr<T>(shared_ptr<U>, T*)`，"aliasing" 指针别名，共享控制块但指向不同对象'
+- term: 智能指针
+  english: smart pointer
+  origin: 由 David Klappholz 与 Peter Wegner 于 1987 年在面向对象编程文献中首次提出，"smart" 隐喻其具备自动管理资源的"智能"行为，与"哑指针（dumb pointer）"即裸指针相对
+- term: RAII
+  english: Resource Acquisition Is Initialization
+  origin: Bjarne Stroustrup 于 1980s 在《The Design and Evolution of C++》中提出，将资源生命周期绑定到对象生命周期：构造函数获取资源，析构函数释放资源
+- term: 引用计数
+  english: reference counting
+  origin: George Collins 于 1960 年在 IBM 论文《A method for overlapping and erosion of pictures》中首次描述用于自动内存管理的引用计数技术
+- term: 悬垂指针
+  english: dangling pointer
+  origin: '"dangling" 意为"悬挂、悬空"，指指针指向的内存已释放但指针仍存活；与 "wild pointer"（未初始化的野指针）形成对比'
+- term: 所有权语义
+  english: ownership semantics
+  origin: 借用日常语义"负责管理某资源生命周期"的责任归属；Rust 语言（2010, Mozilla）将所有权提升为类型系统核心规则
+- term: 控制块
+  english: control block
+  origin: shared_ptr 内部管理引用计数的元数据结构，包含 strong count 与 weak count 两个原子计数器
+- term: 别名构造
+  english: aliasing constructor
+  origin: C++11 引入的 shared_ptr 构造形式 `shared_ptr<T>(shared_ptr<U>, T*)`，"aliasing" 指针别名，共享控制块但指向不同对象
 ---
 
 

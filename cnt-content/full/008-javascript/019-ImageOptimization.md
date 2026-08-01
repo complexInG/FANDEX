@@ -4,14 +4,14 @@ title: 网络请求API
 module: javascript
 category: JavaScript
 tags:
-  - JavaScript
-  - Fetch
-  - AbortController
-  - Streams
-  - ServiceWorker
-  - GraphQL
-  - HTTP
-  - 异步编程
+- JavaScript
+- Fetch
+- AbortController
+- Streams
+- ServiceWorker
+- GraphQL
+- HTTP
+- 异步编程
 difficulty: advanced
 description: 深入解析 WHATWG Fetch 标准、AbortController 取消语义、Web Streams API、Service Worker 缓存策略、GraphQL 客户端实现等高级主题,涵盖 MIT 6.S081 / Stanford CS107 级别的工程实践
 author: fanquanpp
@@ -19,97 +19,97 @@ updated: '2026-07-20'
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 related:
-  - javascript/自定义Error
-  - javascript/浏览器对象模型
-  - javascript/Web存储API
-  - javascript/索引数据库
-  - javascript/Promise构造器
-  - javascript/生成器函数
+- javascript/自定义Error
+- javascript/浏览器对象模型
+- javascript/Web存储API
+- javascript/索引数据库
+- javascript/Promise构造器
+- javascript/生成器函数
 prerequisites:
-  - javascript/语法速查
-  - javascript/Promise构造器
-  - javascript/事件循环
+- javascript/语法速查
+- javascript/Promise构造器
+- javascript/事件循环
 references:
-  - type: standard
-    authors:
-      - WHATWG
-    year: 2025
-    title: 'Fetch Standard'
-    venue: WHATWG Living Standard
-    url: https://fetch.spec.whatwg.org/
-  - type: standard
-    authors:
-      - WHATWG
-    year: 2025
-    title: 'Streams Standard'
-    venue: WHATWG Living Standard
-    url: https://streams.spec.whatwg.org/
-  - type: standard
-    authors:
-      - W3C
-    year: 2024
-    title: 'Service Worker 1'
-    venue: W3C Candidate Recommendation
-    url: https://www.w3.org/TR/service-workers-1/
-  - type: standard
-    authors:
-      - ECMA International
-    year: 2025
-    title: 'ECMAScript 2025 Language Specification (ECMA-262, 16th Edition)'
-    venue: ECMA Standard
-    doi: 10.17445/ECMA-262
-    url: https://tc39.es/ecma262/
-  - type: journal
-    authors:
-      - Anne van Kesteren
-    year: 2015
-    title: 'Fetch: a modern replacement for XMLHttpRequest'
-    venue: 'WHATWG Blog'
-    url: https://blog.whatwg.org/fetching-resources
-  - type: journal
-    authors:
-      - Domenic Denicola
-    year: 2016
-    title: 'Streams API: The Web Stream API Explained'
-    venue: 'GitHub WICG/streams'
-    url: https://github.com/whatwg/streams/blob/main/FAQ.md
-  - type: journal
-    authors:
-      - Jake Archibald
-    year: 2015
-    title: 'Service Worker gotchas'
-    venue: 'Smashing Magazine'
-    url: https://www.smashingmagazine.com/2016/02/service-worker-going-beyond-offline/
-  - type: book
-    authors:
-      - Thomas Parisot
-    year: 2021
-    title: 'HTTP/2 in Action'
-    venue: Manning Publications
-    url: https://www.manning.com/books/http2-in-action
-  - type: book
-    authors:
-      - Addy Osmani
-    year: 2019
-    title: 'Image Optimization'
-    venue: O'Reilly Media
-    url: https://www.oreilly.com/library/view/image-optimization/9781492050278/
+- type: standard
+  authors:
+  - WHATWG
+  year: 2025
+  title: Fetch Standard
+  venue: WHATWG Living Standard
+  url: https://fetch.spec.whatwg.org/
+- type: standard
+  authors:
+  - WHATWG
+  year: 2025
+  title: Streams Standard
+  venue: WHATWG Living Standard
+  url: https://streams.spec.whatwg.org/
+- type: standard
+  authors:
+  - W3C
+  year: 2024
+  title: Service Worker 1
+  venue: W3C Candidate Recommendation
+  url: https://www.w3.org/TR/service-workers-1/
+- type: standard
+  authors:
+  - ECMA International
+  year: 2025
+  title: ECMAScript 2025 Language Specification (ECMA-262, 16th Edition)
+  venue: ECMA Standard
+  doi: 10.17445/ECMA-262
+  url: https://tc39.es/ecma262/
+- type: journal
+  authors:
+  - Anne van Kesteren
+  year: 2015
+  title: 'Fetch: a modern replacement for XMLHttpRequest'
+  venue: WHATWG Blog
+  url: https://blog.whatwg.org/fetching-resources
+- type: journal
+  authors:
+  - Domenic Denicola
+  year: 2016
+  title: 'Streams API: The Web Stream API Explained'
+  venue: GitHub WICG/streams
+  url: https://github.com/whatwg/streams/blob/main/FAQ.md
+- type: journal
+  authors:
+  - Jake Archibald
+  year: 2015
+  title: Service Worker gotchas
+  venue: Smashing Magazine
+  url: https://www.smashingmagazine.com/2016/02/service-worker-going-beyond-offline/
+- type: book
+  authors:
+  - Thomas Parisot
+  year: 2021
+  title: HTTP/2 in Action
+  venue: Manning Publications
+  url: https://www.manning.com/books/http2-in-action
+- type: book
+  authors:
+  - Addy Osmani
+  year: 2019
+  title: Image Optimization
+  venue: O'Reilly Media
+  url: https://www.oreilly.com/library/view/image-optimization/9781492050278/
 etymology:
-  - term: Fetch
-    english: Fetch
-    origin: 源自古英语 "feccan"(取来、获取),计算机网络语境下指"从远程资源获取数据",WHATWG 选用此名替代冗长的 XMLHttpRequest。
-  - term: AbortController
-    english: AbortController
-    origin: '"abort" 源自拉丁语 "aboriri"(流产、中途失败),Controller 即控制器。该 API 提供一种通用的取消机制,可中断 fetch、IndexedDB、Stream 等异步操作。'
-  - term: Stream
-    english: Stream
-    origin: 源自古英语 "strēam"(水流、河流),计算机科学中指"按顺序到达的数据序列",Web Streams API 模仿 Unix 管道,让数据分块流动。
-  - term: Service Worker
-    english: Service Worker
-    origin: '"Service" 指后台服务,"Worker" 指 Web Worker(独立线程的脚本)。Service Worker 是一种在浏览器后台运行的脚本,充当网页与网络之间的可编程代理。'
-  - term: Backpressure
-    english: Backpressure
-    origin: '"back"(反向)+ "pressure"(压力),源自流体力学,指管道中下游阻塞导致上游压力反向传导。在 Stream 中指消费者速度慢于生产者时,反向通知生产者减速的机制。'
+- term: Fetch
+  english: Fetch
+  origin: 源自古英语 "feccan"(取来、获取),计算机网络语境下指"从远程资源获取数据",WHATWG 选用此名替代冗长的 XMLHttpRequest。
+- term: AbortController
+  english: AbortController
+  origin: '"abort" 源自拉丁语 "aboriri"(流产、中途失败),Controller 即控制器。该 API 提供一种通用的取消机制,可中断 fetch、IndexedDB、Stream 等异步操作。'
+- term: Stream
+  english: Stream
+  origin: 源自古英语 "strēam"(水流、河流),计算机科学中指"按顺序到达的数据序列",Web Streams API 模仿 Unix 管道,让数据分块流动。
+- term: Service Worker
+  english: Service Worker
+  origin: '"Service" 指后台服务,"Worker" 指 Web Worker(独立线程的脚本)。Service Worker 是一种在浏览器后台运行的脚本,充当网页与网络之间的可编程代理。'
+- term: Backpressure
+  english: Backpressure
+  origin: '"back"(反向)+ "pressure"(压力),源自流体力学,指管道中下游阻塞导致上游压力反向传导。在 Stream 中指消费者速度慢于生产者时,反向通知生产者减速的机制。'
 ---
 
 

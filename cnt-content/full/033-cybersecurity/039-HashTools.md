@@ -1,7 +1,8 @@
 ---
 order: 390
 title: Cybersecurity 哈希工具
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity 哈希工具 的完整教学讲解。

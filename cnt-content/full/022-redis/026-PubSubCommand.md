@@ -1,7 +1,8 @@
 ---
 order: 260
 title: Redis 发布订阅命令
-module: 022-redis
+module: redis
+
 category: '022-redis'
 difficulty: beginner
 description: Redis 发布订阅命令 的完整教学讲解。

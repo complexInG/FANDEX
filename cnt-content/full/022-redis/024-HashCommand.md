@@ -1,7 +1,8 @@
 ---
 order: 240
 title: Redis Hash 命令速查
-module: 022-redis
+module: redis
+
 category: '022-redis'
 difficulty: beginner
 description: Redis Hash 命令速查 的完整教学讲解。

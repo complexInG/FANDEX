@@ -2,260 +2,260 @@
 order: 104
 title: 布隆过滤器
 module: algorithm
-category: 'Algorithm/Probabilistic'
+category: Algorithm/Probabilistic
 difficulty: intermediate
-description: '布隆过滤器（Bloom Filter）：一种空间高效的概率数据结构，由 Burton H. Bloom 1970《Space/Time Trade-offs in Hash Coding with Allowable Errors》Communications of the ACM 13(7):422-426 DOI:10.1145/362686.362692 提出。利用 k 个独立哈希函数将元素映射到 m 位的位数组，实现 O(k) 时间复杂度的成员查询，无假阴性但允许可控假阳性。本章涵盖 Bloom 原始动机、假阳性率 $P = (1 - e^{-kn/m})^k$ 的完整推导、最优哈希函数个数 $k_{\text{opt}} = (m/n)\ln 2$ 的极值分析、Counting Bloom Filter（Fan et al. 1998 USENIX Summary Cache）、Compressed Bloom Filter（Mitzenmacher 2002）、Cuckoo Filter（Fan et al. 2014 ACM TOCT）、Spectral Bloom Filter、Stable Bloom Filter 等变种；对比 Hash Set、Skip List、HyperLogLog、Cuckoo Filter 的空间/时间/精度权衡；附 Python/C++/Java 三语言实现、工业级应用（Cassandra、HBase、PostgreSQL、Chrome、Bitcoin SPV、Squid Proxy、Bigtable）、12 道习题含完整答案与 20 条 ACM 格式参考文献。'
+description: 布隆过滤器（Bloom Filter）：一种空间高效的概率数据结构，由 Burton H. Bloom 1970《Space/Time Trade-offs in Hash Coding with Allowable Errors》Communications of the ACM 13(7):422-426 DOI:10.1145/362686.362692 提出。利用 k 个独立哈希函数将元素映射到 m 位的位数组，实现 O(k) 时间复杂度的成员查询，无假阴性但允许可控假阳性。本章涵盖 Bloom 原始动机、假阳性率 $P = (1 - e^{-kn/m})^k$ 的完整推导、最优哈希函数个数 $k_{\text{opt}} = (m/n)\ln 2$ 的极值分析、Counting Bloom Filter（Fan et al. 1998 USENIX Summary Cache）、Compressed Bloom Filter（Mitzenmacher 2002）、Cuckoo Filter（Fan et al. 2014 ACM TOCT）、Spectral Bloom Filter、Stable Bloom Filter 等变种；对比 Hash Set、Skip List、HyperLogLog、Cuckoo Filter 的空间/时间/精度权衡；附 Python/C++/Java 三语言实现、工业级应用（Cassandra、HBase、PostgreSQL、Chrome、Bitcoin SPV、Squid Proxy、Bigtable）、12 道习题含完整答案与 20 条 ACM 格式参考文献。
 author: fanquanpp
 tags:
-  - algorithm
-  - algorithm-probabilistic
-  - algorithm-bloom-filter
-  - algorithm-hashing
-  - algorithm-data-structure
-  - algorithm-space-efficient
-  - algorithm-false-positive
-  - algorithm-cpp
-  - algorithm-python
-  - algorithm-java
+- algorithm
+- algorithm-probabilistic
+- algorithm-bloom-filter
+- algorithm-hashing
+- algorithm-data-structure
+- algorithm-space-efficient
+- algorithm-false-positive
+- algorithm-cpp
+- algorithm-python
+- algorithm-java
 created: 2026-06-14
 updated: 2026-07-20
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 110
 related:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/跳跃表
-  - algorithm/KMP字符串匹配
-  - algorithm/动态规划状态压缩
-  - algorithm/树状数组
+- algorithm/算法分析基础与学习路线
+- algorithm/跳跃表
+- algorithm/KMP字符串匹配
+- algorithm/动态规划状态压缩
+- algorithm/树状数组
 prerequisites:
-  - algorithm/算法分析基础与学习路线
+- algorithm/算法分析基础与学习路线
 references:
-  - type: journal
-    authors:
-      - 'Bloom, Burton H.'
-    year: 1970
-    title: 'Space/time trade-offs in hash coding with allowable errors'
-    venue: 'Communications of the ACM'
-    volume: 13
-    issue: 7
-    pages: '422-426'
-    doi: '10.1145/362686.362692'
-    pages_note: 'The original Bloom filter paper. Bloom proposed the data structure for a hyphenation program in the context of automatic hyphenation of English words. The structure uses k independent hash functions to map keys into a bit array of size m, allowing a controllable false positive rate in exchange for space savings of 10-100x over conventional hash tables'
-  - type: journal
-    authors:
-      - 'Fan, Li'
-      - 'Cao, Pei'
-      - 'Almeida, Jussara'
-      - 'Broder, Andrei Z.'
-    year: 1998
-    title: 'Summary cache: a scalable wide-area web cache sharing protocol'
-    venue: 'Proceedings of the SIGCOMM 98 Conference on Applications, Technologies, Architectures, and Protocols for Computer Communication, Vancouver, BC, Canada, August 31 - September 4, 1998, pp. 254-265'
-    pages: 'Introduced the Counting Bloom Filter (CBF) to support element deletion, where each bit is replaced by a 4-bit counter. The summary cache protocol uses CBFs to share cache summaries among cooperative web proxies. The implementation reduced cache miss rates by 30-50% in the NLANR cache hierarchy'
-    doi: '10.1145/285237.285287'
-  - type: journal
-    authors:
-      - 'Fan, Li'
-      - 'Cao, Pei'
-      - 'Almeida, Jussara'
-      - 'Broder, Andrei Z.'
-    year: 2000
-    title: 'Summary cache: a scalable wide-area web cache sharing protocol'
-    venue: 'IEEE/ACM Transactions on Networking'
-    volume: 8
-    issue: 3
-    pages: '281-293'
-    doi: '10.1109/90.851975'
-    pages_note: 'Journal version of the 1998 SIGCOMM paper. Provides detailed analysis of Counting Bloom Filter overflow probability and the optimal counter size (4 bits suffice for typical workloads)'
-  - type: journal
-    authors:
-      - 'Mitzenmacher, Michael'
-    year: 2002
-    title: 'Compressed Bloom filters'
-    venue: 'IEEE/ACM Transactions on Networking'
-    volume: 10
-    issue: 5
-    pages: '604-612'
-    doi: '10.1109/TNET.2002.803864'
-    pages_note: 'Introduced Compressed Bloom Filters for inter-host transmission. Showed that compressing the bit array before transmission can simultaneously reduce the transmitted size and the false positive rate, with the optimal compressed design using fewer hash functions than the uncompressed optimal'
-  - type: journal
-    authors:
-      - 'Fan, Bin'
-      - 'Andersen, David G.'
-      - 'Kaminsky, Michael'
-      - 'Kreitzberg, Mikhail D.'
-      - 'Plotnick, Brian J.'
-    year: 2014
-    title: 'Cuckoo filter: practically better than Bloom'
-    venue: 'Proceedings of the 10th ACM International on Conference on Emerging Networking Experiments and Technologies (CoNEXT 14), Sydney, Australia, December 1-4, 2014, pp. 75-88'
-    pages: 'Introduced the Cuckoo Filter, which uses cuckoo hashing with fingerprints to support dynamic deletion at lower space cost than Counting Bloom Filters. Achieves 95% load factor with 4-bit fingerprints for 1% false positive rate, vs 12 bits per element for Bloom filter'
-    doi: '10.1145/2674005.2674994'
-  - type: journal
-    authors:
-      - 'Pagh, Anna'
-      - 'Pagh, Rasmus'
-      - 'Ruzic, Milan'
-    year: 2005
-    title: 'Linear probing with constant independence'
-    venue: 'Proceedings of the 37th Annual ACM Symposium on Theory of Computing (STOC 05), Baltimore, MD, USA, May 22-24, 2005, pp. 318-327'
-    pages: 'Showed that linear probing with 5-wise independent hash functions achieves expected O(1) lookup time. Provides the theoretical foundation for using simple hash function families in Bloom filters and related structures'
-    doi: '10.1145/1060590.1060639'
-  - type: journal
-    authors:
-      - 'Carter, J. Lawrence'
-      - 'Wegman, Mark N.'
-    year: 1979
-    title: 'Universal classes of hash functions'
-    venue: 'Journal of Computer and System Sciences'
-    volume: 18
-    issue: 2
-    pages: '143-154'
-    doi: '10.1016/0022-0000(79)90044-8'
-    pages_note: 'Introduced universal hash functions, the theoretical foundation for the independence assumption in Bloom filter analysis. A universal family H satisfies Pr[h(x)=h(y)] ≤ 1/m for x≠y. Wegman received the 2024 Donald E. Knuth Prize partly for this work'
-  - type: journal
-    authors:
-      - 'Kirsch, Adam'
-      - 'Mitzenmacher, Michael'
-    year: 2006
-    title: 'Less hashing, same performance: building a better Bloom filter'
-    venue: 'Proceedings of the 14th Annual European Symposium on Algorithms (ESA 06), Zurich, Switzerland, September 11-13, 2006, Lecture Notes in Computer Science 4168, Springer, pp. 456-467'
-    pages: 'Showed that k hash functions can be derived from two independent base hash functions as g_i(x) = h_1(x) + i * h_2(x) mod m without significantly degrading the false positive rate. This reduces the number of hash computations from k to 2'
-    doi: '10.1007/11841036_42'
-  - type: journal
-    authors:
-      - 'Chazelle, Bernard'
-      - 'Kilian, Joe'
-      - 'Rubinfeld, Ronitt'
-      - 'Tal, Ayal'
-    year: 2004
-    title: 'The Bloomier filter: an efficient data structure for static support lookup tables'
-    venue: 'SIAM Journal on Computing'
-    volume: 33
-    issue: 6
-    pages: '1306-1331'
-    doi: '10.1137/S0097539703429196'
-    pages_note: 'Generalized the Bloom filter to store associated values (not just membership), using a sparse matrix approach over GF(2). Supports O(1) lookup with no false positives for keys in the table and no result for keys not in the table'
-  - type: journal
-    authors:
-      - 'Pang, Shanjun'
-      - 'Zhang, Yuanyuan'
-      - 'Wu, Jihong'
-      - 'Liu, Huili'
-    year: 2009
-    title: 'Stable Bloom filter for streaming data'
-    venue: 'Proceedings of the 2009 International Conference on Artificial Intelligence and Computational Intelligence, Shanghai, China, November 7-8, 2009, IEEE, pp. 74-78'
-    pages: 'Introduced Stable Bloom Filter (SBF) for unbounded data streams. SBF continuously decrements random counters to make room for new elements, achieving a steady-state false positive rate at the cost of a non-zero false negative rate'
-    doi: '10.1109/AICI.2009.22'
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'ISBN 978-0262046305. Chapter 11 (Hash Tables) provides the foundational material on universal hashing and collision resolution required for understanding Bloom filter analysis'
-  - type: book
-    authors:
-      - 'Mitzenmacher, Michael'
-      - 'Upfal, Eli'
-    year: 2017
-    title: 'Probability and Computing: Randomization and Probabilistic Techniques in Algorithms and Data Analysis'
-    venue: 'Cambridge University Press'
-    version: '2nd edition'
-    pages: 'ISBN 978-1107154889. Chapter 5 (Balls, Bins, and Random Graphs) provides the Poisson approximation framework used to derive the Bloom filter false positive rate. Section 5.1 derives the occupancy bound used in our analysis'
-  - type: book
-    authors:
-      - 'Broder, Andrei Z.'
-      - 'Mitzenmacher, Michael'
-    year: 2003
-    title: 'Network applications of Bloom filters: a survey'
-    venue: 'Internet Mathematics'
-    volume: 1
-    issue: 4
-    pages: '485-509'
-    doi: '10.1080/15427951.2004.10129096'
-    pages_note: 'Comprehensive survey of Bloom filter applications in network protocols, web caching, resource routing, and packet inspection. Co-authored by Broder, who also co-invented MinHash and contributed to the Counting Bloom Filter'
-  - type: book
-    authors:
-      - 'Lakshman, Avinash'
-      - 'Malik, Prashant'
-    year: 2010
-    title: 'Cassandra: a decentralized structured storage system'
-    venue: 'ACM SIGOPS Operating Systems Review'
-    volume: 44
-    issue: 2
-    pages: '35-40'
-    doi: '10.1145/1773912.1773922'
-    pages_note: 'Cassandra uses Bloom filters on each SSTable to determine whether a row key may exist before accessing the disk, reducing disk I/O by 90%+ for negative lookups. The original implementation used a standard Bloom filter, later replaced with a memory-optimized variant'
-  - type: website
-    authors:
-      - 'Apache Software Foundation'
-    year: 2026
-    title: 'HBase Reference Guide: Bloom Filters'
-    venue: 'Apache HBase Documentation'
-    url: 'https://hbase.apache.org/book.html#bloom.filters'
-    pages: 'HBase supports Bloom filters on row keys (ROW) and row key + column qualifier (ROWCOL). The Bloom filter is stored per HFile and checked before disk I/O. Default false positive rate is 1%'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'PostgreSQL Global Development Group'
-    year: 2026
-    title: 'PostgreSQL Documentation: BRIN and Bloom Indexes'
-    venue: 'PostgreSQL Documentation'
-    url: 'https://www.postgresql.org/docs/current/bloom.html'
-    pages: 'PostgreSQL 9.6+ provides a bloom index access method via the bloom extension. The index uses 4-32 hash functions and is particularly useful for columns with low selectivity where B-tree is inefficient'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'Google LLC'
-    year: 2026
-    title: 'Chromium Safe Browsing: Bloom Filter Implementation'
-    venue: 'Chromium Source'
-    url: 'https://chromium.googlesource.com/chromium/src/+/main/components/safe_browsing/'
-    pages: 'Chrome Safe Browsing uses Bloom filters to check URLs against a local blacklist before requesting the full hash from Google servers. The local filter reduces network requests by 99%+ for non-malicious URLs'
-    accessedDate: '2026-07-20'
-  - type: journal
-    authors:
-      - 'Nakamoto, Satoshi'
-    year: 2008
-    title: 'Bitcoin: a peer-to-peer electronic cash system'
-    venue: 'Self-published whitepaper, https://bitcoin.org/bitcoin.pdf'
-    pages: 'Bitcoin SPV (Simplified Payment Verification) clients use Bloom filters (BIP 37) to request only relevant transactions from full nodes. The filter is set on the peer connection, and the full node uses the filter to send Merkle blocks containing matching transactions'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'Wessels, Duane'
-    year: 2026
-    title: 'Squid Cache Proxy: Cache Digests'
-    venue: 'Squid Documentation'
-    url: 'http://www.squid-cache.org/Doc/FAQ/FAQ-16.html'
-    pages: 'Squid Proxy uses Cache Digests (compressed Bloom filters) to share cache contents among peer proxies. The digests are exchanged periodically and used to forward requests to the appropriate peer cache'
-    accessedDate: '2026-07-20'
+- type: journal
+  authors:
+  - Bloom, Burton H.
+  year: 1970
+  title: Space/time trade-offs in hash coding with allowable errors
+  venue: Communications of the ACM
+  volume: 13
+  issue: 7
+  pages: 422-426
+  doi: 10.1145/362686.362692
+  pagesNote: The original Bloom filter paper. Bloom proposed the data structure for a hyphenation program in the context of automatic hyphenation of English words. The structure uses k independent hash functions to map keys into a bit array of size m, allowing a controllable false positive rate in exchange for space savings of 10-100x over conventional hash tables
+- type: journal
+  authors:
+  - Fan, Li
+  - Cao, Pei
+  - Almeida, Jussara
+  - Broder, Andrei Z.
+  year: 1998
+  title: 'Summary cache: a scalable wide-area web cache sharing protocol'
+  venue: Proceedings of the SIGCOMM 98 Conference on Applications, Technologies, Architectures, and Protocols for Computer Communication, Vancouver, BC, Canada, August 31 - September 4, 1998, pp. 254-265
+  pages: Introduced the Counting Bloom Filter (CBF) to support element deletion, where each bit is replaced by a 4-bit counter. The summary cache protocol uses CBFs to share cache summaries among cooperative web proxies. The implementation reduced cache miss rates by 30-50% in the NLANR cache hierarchy
+  doi: 10.1145/285237.285287
+- type: journal
+  authors:
+  - Fan, Li
+  - Cao, Pei
+  - Almeida, Jussara
+  - Broder, Andrei Z.
+  year: 2000
+  title: 'Summary cache: a scalable wide-area web cache sharing protocol'
+  venue: IEEE/ACM Transactions on Networking
+  volume: 8
+  issue: 3
+  pages: 281-293
+  doi: 10.1109/90.851975
+  pagesNote: Journal version of the 1998 SIGCOMM paper. Provides detailed analysis of Counting Bloom Filter overflow probability and the optimal counter size (4 bits suffice for typical workloads)
+- type: journal
+  authors:
+  - Mitzenmacher, Michael
+  year: 2002
+  title: Compressed Bloom filters
+  venue: IEEE/ACM Transactions on Networking
+  volume: 10
+  issue: 5
+  pages: 604-612
+  doi: 10.1109/TNET.2002.803864
+  pagesNote: Introduced Compressed Bloom Filters for inter-host transmission. Showed that compressing the bit array before transmission can simultaneously reduce the transmitted size and the false positive rate, with the optimal compressed design using fewer hash functions than the uncompressed optimal
+- type: journal
+  authors:
+  - Fan, Bin
+  - Andersen, David G.
+  - Kaminsky, Michael
+  - Kreitzberg, Mikhail D.
+  - Plotnick, Brian J.
+  year: 2014
+  title: 'Cuckoo filter: practically better than Bloom'
+  venue: Proceedings of the 10th ACM International on Conference on Emerging Networking Experiments and Technologies (CoNEXT 14), Sydney, Australia, December 1-4, 2014, pp. 75-88
+  pages: Introduced the Cuckoo Filter, which uses cuckoo hashing with fingerprints to support dynamic deletion at lower space cost than Counting Bloom Filters. Achieves 95% load factor with 4-bit fingerprints for 1% false positive rate, vs 12 bits per element for Bloom filter
+  doi: 10.1145/2674005.2674994
+- type: journal
+  authors:
+  - Pagh, Anna
+  - Pagh, Rasmus
+  - Ruzic, Milan
+  year: 2005
+  title: Linear probing with constant independence
+  venue: Proceedings of the 37th Annual ACM Symposium on Theory of Computing (STOC 05), Baltimore, MD, USA, May 22-24, 2005, pp. 318-327
+  pages: Showed that linear probing with 5-wise independent hash functions achieves expected O(1) lookup time. Provides the theoretical foundation for using simple hash function families in Bloom filters and related structures
+  doi: 10.1145/1060590.1060639
+- type: journal
+  authors:
+  - Carter, J. Lawrence
+  - Wegman, Mark N.
+  year: 1979
+  title: Universal classes of hash functions
+  venue: Journal of Computer and System Sciences
+  volume: 18
+  issue: 2
+  pages: 143-154
+  doi: 10.1016/0022-0000(79)90044-8
+  pagesNote: Introduced universal hash functions, the theoretical foundation for the independence assumption in Bloom filter analysis. A universal family H satisfies Pr[h(x)=h(y)] ≤ 1/m for x≠y. Wegman received the 2024 Donald E. Knuth Prize partly for this work
+- type: journal
+  authors:
+  - Kirsch, Adam
+  - Mitzenmacher, Michael
+  year: 2006
+  title: 'Less hashing, same performance: building a better Bloom filter'
+  venue: Proceedings of the 14th Annual European Symposium on Algorithms (ESA 06), Zurich, Switzerland, September 11-13, 2006, Lecture Notes in Computer Science 4168, Springer, pp. 456-467
+  pages: Showed that k hash functions can be derived from two independent base hash functions as g_i(x) = h_1(x) + i * h_2(x) mod m without significantly degrading the false positive rate. This reduces the number of hash computations from k to 2
+  doi: 10.1007/11841036_42
+- type: journal
+  authors:
+  - Chazelle, Bernard
+  - Kilian, Joe
+  - Rubinfeld, Ronitt
+  - Tal, Ayal
+  year: 2004
+  title: 'The Bloomier filter: an efficient data structure for static support lookup tables'
+  venue: SIAM Journal on Computing
+  volume: 33
+  issue: 6
+  pages: 1306-1331
+  doi: 10.1137/S0097539703429196
+  pagesNote: Generalized the Bloom filter to store associated values (not just membership), using a sparse matrix approach over GF(2). Supports O(1) lookup with no false positives for keys in the table and no result for keys not in the table
+- type: journal
+  authors:
+  - Pang, Shanjun
+  - Zhang, Yuanyuan
+  - Wu, Jihong
+  - Liu, Huili
+  year: 2009
+  title: Stable Bloom filter for streaming data
+  venue: Proceedings of the 2009 International Conference on Artificial Intelligence and Computational Intelligence, Shanghai, China, November 7-8, 2009, IEEE, pp. 74-78
+  pages: Introduced Stable Bloom Filter (SBF) for unbounded data streams. SBF continuously decrements random counters to make room for new elements, achieving a steady-state false positive rate at the cost of a non-zero false negative rate
+  doi: 10.1109/AICI.2009.22
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: ISBN 978-0262046305. Chapter 11 (Hash Tables) provides the foundational material on universal hashing and collision resolution required for understanding Bloom filter analysis
+- type: book
+  authors:
+  - Mitzenmacher, Michael
+  - Upfal, Eli
+  year: 2017
+  title: 'Probability and Computing: Randomization and Probabilistic Techniques in Algorithms and Data Analysis'
+  venue: Cambridge University Press
+  version: 2nd edition
+  pages: ISBN 978-1107154889. Chapter 5 (Balls, Bins, and Random Graphs) provides the Poisson approximation framework used to derive the Bloom filter false positive rate. Section 5.1 derives the occupancy bound used in our analysis
+- type: book
+  authors:
+  - Broder, Andrei Z.
+  - Mitzenmacher, Michael
+  year: 2003
+  title: 'Network applications of Bloom filters: a survey'
+  venue: Internet Mathematics
+  volume: 1
+  issue: 4
+  pages: 485-509
+  doi: 10.1080/15427951.2004.10129096
+  pagesNote: Comprehensive survey of Bloom filter applications in network protocols, web caching, resource routing, and packet inspection. Co-authored by Broder, who also co-invented MinHash and contributed to the Counting Bloom Filter
+- type: book
+  authors:
+  - Lakshman, Avinash
+  - Malik, Prashant
+  year: 2010
+  title: 'Cassandra: a decentralized structured storage system'
+  venue: ACM SIGOPS Operating Systems Review
+  volume: 44
+  issue: 2
+  pages: 35-40
+  doi: 10.1145/1773912.1773922
+  pagesNote: Cassandra uses Bloom filters on each SSTable to determine whether a row key may exist before accessing the disk, reducing disk I/O by 90%+ for negative lookups. The original implementation used a standard Bloom filter, later replaced with a memory-optimized variant
+- type: website
+  authors:
+  - Apache Software Foundation
+  year: 2026
+  title: 'HBase Reference Guide: Bloom Filters'
+  venue: Apache HBase Documentation
+  url: https://hbase.apache.org/book.html#bloom.filters
+  pages: HBase supports Bloom filters on row keys (ROW) and row key + column qualifier (ROWCOL). The Bloom filter is stored per HFile and checked before disk I/O. Default false positive rate is 1%
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - PostgreSQL Global Development Group
+  year: 2026
+  title: 'PostgreSQL Documentation: BRIN and Bloom Indexes'
+  venue: PostgreSQL Documentation
+  url: https://www.postgresql.org/docs/current/bloom.html
+  pages: PostgreSQL 9.6+ provides a bloom index access method via the bloom extension. The index uses 4-32 hash functions and is particularly useful for columns with low selectivity where B-tree is inefficient
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - Google LLC
+  year: 2026
+  title: 'Chromium Safe Browsing: Bloom Filter Implementation'
+  venue: Chromium Source
+  url: https://chromium.googlesource.com/chromium/src/+/main/components/safe_browsing/
+  pages: Chrome Safe Browsing uses Bloom filters to check URLs against a local blacklist before requesting the full hash from Google servers. The local filter reduces network requests by 99%+ for non-malicious URLs
+  accessedDate: '2026-07-20'
+- type: journal
+  authors:
+  - Nakamoto, Satoshi
+  year: 2008
+  title: 'Bitcoin: a peer-to-peer electronic cash system'
+  venue: Self-published whitepaper, https://bitcoin.org/bitcoin.pdf
+  pages: Bitcoin SPV (Simplified Payment Verification) clients use Bloom filters (BIP 37) to request only relevant transactions from full nodes. The filter is set on the peer connection, and the full node uses the filter to send Merkle blocks containing matching transactions
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - Wessels, Duane
+  year: 2026
+  title: 'Squid Cache Proxy: Cache Digests'
+  venue: Squid Documentation
+  url: http://www.squid-cache.org/Doc/FAQ/FAQ-16.html
+  pages: Squid Proxy uses Cache Digests (compressed Bloom filters) to share cache contents among peer proxies. The digests are exchanged periodically and used to forward requests to the appropriate peer cache
+  accessedDate: '2026-07-20'
 etymology:
-  - term: 布隆过滤器
-    english: Bloom filter
-    origin: 'Bloom 取自作者 Burton Howard Bloom（1940-2018）的姓氏。Bloom 于 1970 年在 Computer Associates International 工作期间，为自动拼写检查器寻找空间高效的字符串集合表示法时，发明了这一数据结构。论文《Space/Time Trade-offs in Hash Coding with Allowable Errors》发表于 Communications of the ACM 13(7):422-426，原始动机是为自动断字器（hyphenation program）的字典查找节省内存。中文"布隆过滤器"为音译 + 意译，工业界普遍使用 Bloom Filter 英文原名'
-  - term: 位数组
-    english: bit array
-    origin: 'bit（位）是 binary digit（二进制位）的缩写，由 John W. Tukey 在 1946 年贝尔实验室内部备忘录中首次使用，后由 Shannon 1948《A Mathematical Theory of Communication》推广。array（数组）源自拉丁语 arrangere（排列）。位数组即由二进制位组成的数组，每个位仅占 1 bit 内存，是布隆过滤器空间高效性的根基'
-  - term: 假阳性
-    english: false positive
-    origin: 'false（错误）+ positive（阳性）。源自医学统计学的术语，指"被检测为阳性但实际为阴性"的错误。在布隆过滤器语境中，指"查询返回存在但实际不存在"的错误。相反，假阴性（false negative）指"查询返回不存在但实际存在"，布隆过滤器根据其结构特性保证无假阴性'
-  - term: 哈希函数
-    english: hash function
-    origin: 'hash 源自法语 hacher（切碎），词根可追溯至日耳曼语 *hakkōną（劈、砍）。在计算机科学中指将任意长度输入映射到固定长度输出的函数。术语由 Hans Peter Luhn 1953 年在 IBM 内部备忘录中使用，后由 Knuth 1973 TAOCP Vol.3 系统化。Bloom 1970 论文中使用的哈希函数为除留余数法（division method）'
-  - term: 计数布隆过滤器
-    english: Counting Bloom Filter (CBF)
-    origin: 'counting（计数）+ Bloom Filter。由 Li Fan、Pei Cao、Jussara Almeida、Andrei Broder 1998 年在 SIGCOMM《Summary Cache》论文中提出。将每个位替换为 4 位计数器，从而支持元素删除操作。计数器 4 位的依据是 Fan 等人证明计数器溢出概率为 $O(n^{-k})$，在典型工作负载下可忽略'
-  - term: 布谷鸟过滤器
-    english: Cuckoo Filter
-    origin: 'cuckoo（布谷鸟）源自古法语 cucu，模拟布谷鸟叫声。布谷鸟哈希（Cuckoo Hashing）由 Pagh-Pagh 2001 引入，因布谷鸟雏鸟将其他鸟蛋推出巢穴的习性得名（插入时踢出已有元素）。Cuckoo Filter 由 Bin Fan、David Andersen、Michael Kaminsky 等 2014 年在 ACM CoNEXT 提出，结合布谷鸟哈希与指纹（fingerprint）机制，实现支持删除且空间效率高于 Counting Bloom Filter 的概率数据结构'
-  - term: 假阳性率
-    english: false positive rate
-    origin: 'false positive（假阳性）+ rate（率）。布隆过滤器的假阳性率公式 $P = (1 - e^{-kn/m})^k$ 由 Bloom 1970 原始论文给出，后经 Broder-Mitzenmacher 2003《Network Applications of Bloom Filters: A Survey》Internet Mathematics 1(4):485-509 系统化推导。最优哈希函数个数 $k_{opt} = (m/n) \ln 2$ 通过对 $P$ 求导令其为零得到'
+- term: 布隆过滤器
+  english: Bloom filter
+  origin: Bloom 取自作者 Burton Howard Bloom（1940-2018）的姓氏。Bloom 于 1970 年在 Computer Associates International 工作期间，为自动拼写检查器寻找空间高效的字符串集合表示法时，发明了这一数据结构。论文《Space/Time Trade-offs in Hash Coding with Allowable Errors》发表于 Communications of the ACM 13(7):422-426，原始动机是为自动断字器（hyphenation program）的字典查找节省内存。中文"布隆过滤器"为音译 + 意译，工业界普遍使用 Bloom Filter 英文原名
+- term: 位数组
+  english: bit array
+  origin: bit（位）是 binary digit（二进制位）的缩写，由 John W. Tukey 在 1946 年贝尔实验室内部备忘录中首次使用，后由 Shannon 1948《A Mathematical Theory of Communication》推广。array（数组）源自拉丁语 arrangere（排列）。位数组即由二进制位组成的数组，每个位仅占 1 bit 内存，是布隆过滤器空间高效性的根基
+- term: 假阳性
+  english: false positive
+  origin: false（错误）+ positive（阳性）。源自医学统计学的术语，指"被检测为阳性但实际为阴性"的错误。在布隆过滤器语境中，指"查询返回存在但实际不存在"的错误。相反，假阴性（false negative）指"查询返回不存在但实际存在"，布隆过滤器根据其结构特性保证无假阴性
+- term: 哈希函数
+  english: hash function
+  origin: hash 源自法语 hacher（切碎），词根可追溯至日耳曼语 *hakkōną（劈、砍）。在计算机科学中指将任意长度输入映射到固定长度输出的函数。术语由 Hans Peter Luhn 1953 年在 IBM 内部备忘录中使用，后由 Knuth 1973 TAOCP Vol.3 系统化。Bloom 1970 论文中使用的哈希函数为除留余数法（division method）
+- term: 计数布隆过滤器
+  english: Counting Bloom Filter (CBF)
+  origin: counting（计数）+ Bloom Filter。由 Li Fan、Pei Cao、Jussara Almeida、Andrei Broder 1998 年在 SIGCOMM《Summary Cache》论文中提出。将每个位替换为 4 位计数器，从而支持元素删除操作。计数器 4 位的依据是 Fan 等人证明计数器溢出概率为 $O(n^{-k})$，在典型工作负载下可忽略
+- term: 布谷鸟过滤器
+  english: Cuckoo Filter
+  origin: cuckoo（布谷鸟）源自古法语 cucu，模拟布谷鸟叫声。布谷鸟哈希（Cuckoo Hashing）由 Pagh-Pagh 2001 引入，因布谷鸟雏鸟将其他鸟蛋推出巢穴的习性得名（插入时踢出已有元素）。Cuckoo Filter 由 Bin Fan、David Andersen、Michael Kaminsky 等 2014 年在 ACM CoNEXT 提出，结合布谷鸟哈希与指纹（fingerprint）机制，实现支持删除且空间效率高于 Counting Bloom Filter 的概率数据结构
+- term: 假阳性率
+  english: false positive rate
+  origin: 'false positive（假阳性）+ rate（率）。布隆过滤器的假阳性率公式 $P = (1 - e^{-kn/m})^k$ 由 Bloom 1970 原始论文给出，后经 Broder-Mitzenmacher 2003《Network Applications of Bloom Filters: A Survey》Internet Mathematics 1(4):485-509 系统化推导。最优哈希函数个数 $k_{opt} = (m/n) \ln 2$ 通过对 $P$ 求导令其为零得到'
 ---
 
 

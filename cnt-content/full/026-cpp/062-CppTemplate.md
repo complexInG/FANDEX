@@ -1,37 +1,41 @@
 ---
 order: 110
 tags:
-  - cpp
+- cpp
 difficulty: intermediate
-title: 'C++ 模板'
+title: C++ 模板
 module: cpp
-category: 'C++ Basics'
-description: 'C++ 模板完整解析：函数模板、类模板、模板特化、SFINAE、概念（concepts）与现代 C++ 泛型实践。'
+category: C++ Basics
+description: C++ 模板完整解析：函数模板、类模板、模板特化、SFINAE、概念（concepts）与现代 C++ 泛型实践。
 author: Anonymous
 related:
-  - cpp/C++20概念
-  - cpp/C++23新特性
-  - cpp/内存序与无锁编程
-  - cpp/异常处理与性能优化
+- cpp/C++20概念
+- cpp/C++23新特性
+- cpp/内存序与无锁编程
+- cpp/异常处理与性能优化
 prerequisites:
-  - cpp/概述与现代标准
+- cpp/概述与现代标准
 references:
-  - type: documentation
-    authors: ['cppreference']
-    year: 2026
-    title: 'Templates - cppreference.com'
-    venue: 'cppreference.com'
-    url: https://en.cppreference.com/w/cpp/language/templates
-    accessedDate: '2026-08-01'
-  - type: book
-    authors: ['Vandevoorde, D.', 'Josuttis, N. M.', 'Gregor, D.']
-    year: 2017
-    title: 'C++ Templates: The Complete Guide'
-    venue: 'Addison-Wesley'
+- type: documentation
+  authors:
+  - cppreference
+  year: 2026
+  title: Templates - cppreference.com
+  venue: cppreference.com
+  url: https://en.cppreference.com/w/cpp/language/templates
+  accessedDate: '2026-08-01'
+- type: book
+  authors:
+  - Vandevoorde, D.
+  - Josuttis, N. M.
+  - Gregor, D.
+  year: 2017
+  title: 'C++ Templates: The Complete Guide'
+  venue: Addison-Wesley
 etymology:
-  - term: '模板'
-    english: 'template'
-    origin: '源自模具意象，模板描述一类结构的模式，编译时按具体类型铸造实例。'
+- term: 模板
+  english: template
+  origin: 源自模具意象，模板描述一类结构的模式，编译时按具体类型铸造实例。
 estimatedReadingTime: 30
 lastReviewed: '2026-08-01'
 reviewer: fanquanpp

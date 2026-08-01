@@ -1,7 +1,8 @@
 ---
 order: 480
 title: GitHub CLI Issue 管理
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub CLI Issue 管理 的完整教学讲解。

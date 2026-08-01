@@ -15,7 +15,7 @@
  * - 长文档缺少前置知识/学习目标
  * - 内部链接格式（非 http/#/mailto 开头）
  * - Wiki 链接格式（[[...]]）
- * - [Phase 1.5] schema 完整性：检测新增字段缺失并统计覆盖率
+ * - [Phase 2.0] schema 完整性：检测结构化字段缺失并统计覆盖率
  *
  * 偏差报备（仓库整理后路径变更）：
  * - 原：app-web/src/content/docs（已删除）
@@ -40,10 +40,12 @@ const issues = [];
 // ============================================================
 
 /**
- * Phase 1.5 新增字段列表
- * 用于检测每篇文档是否已补全这些字段
+ * Phase 2.0 结构化字段列表
+ * 用于检测每篇文档是否已补全这些字段；
+ * 值级校验由 content.config.ts 的严格 schema（ReferenceSchema / EtymologyEntrySchema）
+ * 在构建期完成，本脚本负责覆盖率统计与缺失告警。
  */
-const SCHEMA_FIELDS = ['learningObjectives', 'references', 'lastReviewed', 'reviewer'];
+const SCHEMA_FIELDS = ['references', 'etymology', 'lastReviewed', 'reviewer'];
 
 /**
  * schema 缺失问题收集数组

@@ -1,7 +1,8 @@
 ---
 order: 740
 title: Java Executor 与 ForkJoin
-module: 013-java
+module: java
+
 category: '013-java'
 difficulty: beginner
 description: Java Executor 与 ForkJoin 的完整教学讲解。

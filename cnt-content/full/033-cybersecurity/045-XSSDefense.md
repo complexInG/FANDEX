@@ -1,7 +1,8 @@
 ---
 order: 450
 title: Cybersecurity XSS 防御
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity XSS 防御 的完整教学讲解。

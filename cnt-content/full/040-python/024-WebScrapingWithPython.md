@@ -2679,7 +2679,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 
 ## 知识讲解与要点分析（原习题）
 
-见 frontmatter 中的 `exercises` 字段，共 4 道，覆盖 Bloom 六个认知层次：
+本章共 4 道习题，覆盖 Bloom 六个认知层次：
 
 1. `ex-scraper-01`（remember）：Scrapy 引擎与 Twisted 框架；
 2. `ex-scraper-02`（understand）：HTTP 客户端并发性能；

@@ -1,7 +1,8 @@
 ---
 order: 410
 title: GitHub 冲突解决
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub 冲突解决 的完整教学讲解。

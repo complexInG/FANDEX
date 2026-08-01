@@ -1,7 +1,8 @@
 ---
 order: 290
 title: Markdown 提示框（admonition/callout）
-module: 002-markdown
+module: markdown
+
 category: '002-markdown'
 difficulty: beginner
 description: Markdown 提示框（admonition/callout） 的完整教学讲解。

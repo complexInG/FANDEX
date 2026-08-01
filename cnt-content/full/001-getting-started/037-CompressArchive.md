@@ -1,7 +1,8 @@
 ---
 order: 370
 title: 压缩解压命令速查手册
-module: 001-getting-started
+module: getting-started
+
 category: '001-getting-started'
 difficulty: beginner
 description: 压缩解压命令速查手册 的完整教学讲解。

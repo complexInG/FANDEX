@@ -10,72 +10,80 @@ updated: '2026-07-20'
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 related:
-  - typescript/条件类型与映射类型
-  - typescript/类型声明与模块解析
-  - typescript/类型安全的API客户端
-  - typescript/类型安全的状态管理
-  - typescript/类型体操实用模式
+- typescript/条件类型与映射类型
+- typescript/类型声明与模块解析
+- typescript/类型安全的API客户端
+- typescript/类型安全的状态管理
+- typescript/类型体操实用模式
 prerequisites:
-  - typescript/语法速查
+- typescript/语法速查
 tags:
-  - typescript
-  - event-emitter
-  - type-safety
-  - pub-sub
-  - reactive
-  - conditional-types
-  - mapped-types
-  - async
+- typescript
+- event-emitter
+- type-safety
+- pub-sub
+- reactive
+- conditional-types
+- mapped-types
+- async
 references:
-  - author: Pierce, Benjamin C.
-    title: "Types and Programming Languages"
-    journal: "MIT Press"
-    year: 2002
-    isbn: "978-0-262-16209-8"
-    type: book
-  - author: Bierman, Gavin M. and Abadi, Martín and Torgersen, Mads
-    title: "Understanding TypeScript"
-    journal: "ECOOP 2014 — Object-Oriented Programming"
-    year: 2014
-    pages: "257-281"
-    doi: "10.1007/978-3-662-44202-9_11"
-    type: conference
-  - author: Gamma, Erich and Helm, Richard and Johnson, Ralph and Vlissides, John
-    title: "Design Patterns: Elements of Reusable Object-Oriented Software"
-    journal: "Addison-Wesley Professional"
-    year: 1994
-    isbn: "978-0-201-63361-0"
-    type: book
-  - author: Rector, Mike
-    title: "Type-Safe Event Emitter Patterns in TypeScript"
-    journal: "Microsoft Build"
-    year: 2023
-    url: "https://learn.microsoft.com/en-us/shows/build-2023/"
-    type: website
-  - author: headwire.com Inc.
-    title: "Event-Driven Architecture: Patterns and Trade-offs"
-    journal: "O'Reilly Media"
-    year: 2022
-    isbn: "978-1-0981-0892-3"
-    type: book
-  - author: Meijer, Erik
-    title: "Your Mouse is a Database"
-    journal: "Communications of the ACM"
-    year: 2012
-    volume: 55
-    number: "5"
-    pages: "66-73"
-    doi: "10.1145/2160718.2160735"
-    type: journal
-  - author: Okasaki, Chris
-    title: "Purely Functional Data Structures"
-    journal: "Cambridge University Press"
-    year: 1999
-    isbn: "978-0-521-66350-2"
-    type: book
+- title: Types and Programming Languages
+  year: 2002
+  isbn: 978-0-262-16209-8
+  type: book
+  authors:
+  - Pierce, Benjamin C.
+  venue: MIT Press
+- title: Understanding TypeScript
+  year: 2014
+  pages: 257-281
+  doi: 10.1007/978-3-662-44202-9_11
+  type: conference
+  authors:
+  - Bierman, Gavin M. and Abadi, Martín and Torgersen, Mads
+  venue: ECOOP 2014 — Object-Oriented Programming
+- title: 'Design Patterns: Elements of Reusable Object-Oriented Software'
+  year: 1994
+  isbn: 978-0-201-63361-0
+  type: book
+  authors:
+  - Gamma, Erich and Helm, Richard and Johnson, Ralph and Vlissides, John
+  venue: Addison-Wesley Professional
+- title: Type-Safe Event Emitter Patterns in TypeScript
+  year: 2023
+  url: https://learn.microsoft.com/en-us/shows/build-2023/
+  type: website
+  authors:
+  - Rector, Mike
+  venue: Microsoft Build
+- title: 'Event-Driven Architecture: Patterns and Trade-offs'
+  year: 2022
+  isbn: 978-1-0981-0892-3
+  type: book
+  authors:
+  - headwire.com Inc.
+  venue: O'Reilly Media
+- title: Your Mouse is a Database
+  year: 2012
+  volume: 55
+  number: '5'
+  pages: 66-73
+  doi: 10.1145/2160718.2160735
+  type: journal
+  authors:
+  - Meijer, Erik
+  venue: Communications of the ACM
+- title: Purely Functional Data Structures
+  year: 1999
+  isbn: 978-0-521-66350-2
+  type: book
+  authors:
+  - Okasaki, Chris
+  venue: Cambridge University Press
 etymology:
-  term: "Event Emitter（事件发射器）"
-  origin: "源自 1990 年代 Smalltalk 与 Objective-C 的事件分发机制（Target-Action、Notification Center），后由 Node.js 在 2009 年规范化为 EventEmitter 类（参考 Node.js 源码 lib/events.js）。反应式扩展（Reactive Extensions, Rx）由 Erik Meijer 团队于 2009 年在 Microsoft 实现，2012 年开源为 RxJS。"
+- term: Event Emitter（事件发射器）
+  origin: 源自 1990 年代 Smalltalk 与 Objective-C 的事件分发机制（Target-Action、Notification Center），后由 Node.js 在 2009 年规范化为 EventEmitter 类（参考 Node.js 源码 lib/events.js）。反应式扩展（Reactive Extensions, Rx）由 Erik Meijer 团队于 2009 年在 Microsoft 实现，2012 年开源为 RxJS。
+  english: Event Emitter
 ---
 
 

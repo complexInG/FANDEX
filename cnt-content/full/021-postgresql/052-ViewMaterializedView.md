@@ -1,7 +1,8 @@
 ---
 order: 520
 title: 视图与物化视图 语法速查手册
-module: 021-postgresql
+module: postgresql
+
 category: '021-postgresql'
 difficulty: beginner
 description: 视图与物化视图 语法速查手册 的完整教学讲解。

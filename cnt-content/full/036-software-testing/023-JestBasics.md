@@ -1,7 +1,8 @@
 ---
 order: 230
 title: Jest 基础 API
-module: 036-software-testing
+module: software-testing
+
 category: '036-software-testing'
 difficulty: beginner
 description: Jest 基础 API 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 810
 title: MySQL 索引管理
-module: 020-mysql
+module: mysql
+
 category: '020-mysql'
 difficulty: beginner
 description: MySQL 索引管理 的完整教学讲解。

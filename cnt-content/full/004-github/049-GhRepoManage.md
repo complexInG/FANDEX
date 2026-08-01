@@ -1,7 +1,8 @@
 ---
 order: 490
 title: GitHub CLI 仓库管理
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub CLI 仓库管理 的完整教学讲解。

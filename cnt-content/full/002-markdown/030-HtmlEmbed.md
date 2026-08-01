@@ -1,7 +1,8 @@
 ---
 order: 300
 title: Markdown HTML 内嵌
-module: 002-markdown
+module: markdown
+
 category: '002-markdown'
 difficulty: beginner
 description: Markdown HTML 内嵌 的完整教学讲解。

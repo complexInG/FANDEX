@@ -2,37 +2,39 @@
 order: 54
 title: 删除线
 module: markdown
-category: 'Markdown Basics'
+category: Markdown Basics
 difficulty: beginner
-description: 'Markdown 删除线语法完整讲解：GFM 扩展、使用场景、HTML 替代与跨平台兼容性。'
+description: Markdown 删除线语法完整讲解：GFM 扩展、使用场景、HTML 替代与跨平台兼容性。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/转义字符
-  - markdown/脚注
-  - markdown/自动链接
-  - markdown/Emoji表情
+- markdown/转义字符
+- markdown/脚注
+- markdown/自动链接
+- markdown/Emoji表情
 prerequisites:
-  - markdown/语法指南
+- markdown/语法指南
 references:
-  - type: standard
-    authors: ['GitHub']
-    year: 2026
-    title: 'GitHub Flavored Markdown Spec - Strikethrough (extension)'
-    venue: 'github.github.com'
-    url: https://github.github.com/gfm/#strikethrough-extension-
-    accessedDate: '2026-08-01'
-  - type: standard
-    authors: ['CommonMark']
-    year: 2024
-    title: 'CommonMark Spec 0.31.2'
-    venue: 'spec.commonmark.org'
-    url: https://spec.commonmark.org/0.31.2/
-    accessedDate: '2026-08-01'
+- type: standard
+  authors:
+  - GitHub
+  year: 2026
+  title: GitHub Flavored Markdown Spec - Strikethrough (extension)
+  venue: github.github.com
+  url: https://github.github.com/gfm/#strikethrough-extension-
+  accessedDate: '2026-08-01'
+- type: standard
+  authors:
+  - CommonMark
+  year: 2024
+  title: CommonMark Spec 0.31.2
+  venue: spec.commonmark.org
+  url: https://spec.commonmark.org/0.31.2/
+  accessedDate: '2026-08-01'
 etymology:
-  - term: '删除线'
-    english: 'strikethrough'
-    origin: '编辑排版中表示应删除的贯穿线，GFM 用双波浪线 ~~ 触发。'
+- term: 删除线
+  english: strikethrough
+  origin: 编辑排版中表示应删除的贯穿线，GFM 用双波浪线 ~~ 触发。
 estimatedReadingTime: 30
 lastReviewed: '2026-08-01'
 reviewer: fanquanpp

@@ -1,7 +1,8 @@
 ---
 order: 400
 title: GitHub 合并与变基
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub 合并与变基 的完整教学讲解。

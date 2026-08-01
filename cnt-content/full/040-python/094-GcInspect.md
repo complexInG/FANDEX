@@ -1,7 +1,8 @@
 ---
 order: 940
 title: Python gc inspect dis
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python gc inspect dis 的完整教学讲解。

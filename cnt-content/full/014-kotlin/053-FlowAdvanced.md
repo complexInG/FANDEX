@@ -1,7 +1,8 @@
 ---
 order: 530
 title: Kotlin Flow 进阶
-module: 014-kotlin
+module: kotlin
+
 category: '014-kotlin'
 difficulty: beginner
 description: Kotlin Flow 进阶 的完整教学讲解。

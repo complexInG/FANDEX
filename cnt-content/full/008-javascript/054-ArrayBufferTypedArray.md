@@ -1,7 +1,8 @@
 ---
 order: 540
 title: JavaScript ArrayBuffer 与 TypedArray 语法速查
-module: 008-javascript
+module: javascript
+
 category: '008-javascript'
 difficulty: beginner
 description: JavaScript ArrayBuffer 与 TypedArray 语法速查 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 320
 title: Markdown Frontmatter YAML 语法速查
-module: 002-markdown
+module: markdown
+
 category: '002-markdown'
 difficulty: beginner
 description: Markdown Frontmatter YAML 语法速查 的完整教学讲解。

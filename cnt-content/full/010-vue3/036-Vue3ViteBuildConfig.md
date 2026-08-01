@@ -1,7 +1,8 @@
 ---
 order: 360
 title: Vue 3 Vite 构建配置与命令
-module: 010-vue3
+module: vue3
+
 category: '010-vue3'
 difficulty: beginner
 description: Vue 3 Vite 构建配置与命令 的完整教学讲解。

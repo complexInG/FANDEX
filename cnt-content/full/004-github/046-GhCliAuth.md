@@ -1,7 +1,8 @@
 ---
 order: 460
 title: GitHub CLI 认证配置
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub CLI 认证配置 的完整教学讲解。

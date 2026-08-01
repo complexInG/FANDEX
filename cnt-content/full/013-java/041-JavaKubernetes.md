@@ -4,35 +4,37 @@ title: Java与Kubernetes
 module: java
 category: Java
 difficulty: intermediate
-description: 'Java 应用在 Kubernetes 上的部署完整指南：资源限制、健康检查、优雅停机、自动伸缩与云原生实践。'
+description: Java 应用在 Kubernetes 上的部署完整指南：资源限制、健康检查、优雅停机、自动伸缩与云原生实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/Java与虚拟线程
-  - java/Java与GraalVM
-  - java/Java记录类
-  - java/Java文本块
+- java/Java与虚拟线程
+- java/Java与GraalVM
+- java/Java记录类
+- java/Java文本块
 prerequisites:
-  - java/概述与开发环境
+- java/概述与开发环境
 references:
-  - type: documentation
-    authors: ['Kubernetes 团队']
-    year: 2026
-    title: 'Kubernetes Documentation - Configure Liveness, Readiness and Startup Probes'
-    venue: 'kubernetes.io'
-    url: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-    accessedDate: '2026-08-01'
-  - type: documentation
-    authors: ['Microsoft Learn']
-    year: 2026
-    title: 'Containerize your Java applications for Kubernetes'
-    venue: 'Microsoft Learn'
-    url: https://learn.microsoft.com/en-us/azure/developer/java/containers/kubernetes
-    accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - Kubernetes 团队
+  year: 2026
+  title: Kubernetes Documentation - Configure Liveness, Readiness and Startup Probes
+  venue: kubernetes.io
+  url: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - Microsoft Learn
+  year: 2026
+  title: Containerize your Java applications for Kubernetes
+  venue: Microsoft Learn
+  url: https://learn.microsoft.com/en-us/azure/developer/java/containers/kubernetes
+  accessedDate: '2026-08-01'
 etymology:
-  - term: '容器编排'
-    english: 'orchestration'
-    origin: '借音乐指挥意象，指统一调度、部署与管理容器集群。'
+- term: 容器编排
+  english: orchestration
+  origin: 借音乐指挥意象，指统一调度、部署与管理容器集群。
 estimatedReadingTime: 30
 lastReviewed: '2026-08-01'
 reviewer: fanquanpp

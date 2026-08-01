@@ -1,7 +1,8 @@
 ---
 order: 370
 title: GitHub 仓库初始化
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub 仓库初始化 的完整教学讲解。

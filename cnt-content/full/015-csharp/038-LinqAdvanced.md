@@ -1,7 +1,8 @@
 ---
 order: 380
 title: C# LINQ 进阶操作
-module: 015-csharp
+module: csharp
+
 category: '015-csharp'
 difficulty: beginner
 description: C# LINQ 进阶操作 的完整教学讲解。

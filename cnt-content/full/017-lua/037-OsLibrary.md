@@ -1,7 +1,8 @@
 ---
 order: 370
 title: Lua os 库语法速查手册
-module: 017-lua
+module: lua
+
 category: '017-lua'
 difficulty: beginner
 description: Lua os 库语法速查手册 的完整教学讲解。

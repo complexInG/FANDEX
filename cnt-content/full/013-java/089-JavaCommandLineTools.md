@@ -1,7 +1,8 @@
 ---
 order: 890
 title: Java 命令行工具 javac/java/jar/jshell/jpackage 语法速查手册
-module: 013-java
+module: java
+
 category: '013-java'
 difficulty: beginner
 description: Java 命令行工具 javac/java/jar/jshell/jpackage 语法速查手册 的完整教学讲解。

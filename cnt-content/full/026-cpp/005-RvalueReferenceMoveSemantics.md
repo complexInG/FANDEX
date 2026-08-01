@@ -4,7 +4,7 @@ title: 右值引用与移动语义
 module: cpp
 category: C++
 difficulty: advanced
-description: '深入解析 C++11 右值引用与移动语义：值类别完整分类（lvalue/prvalue/xvalue/rvalue/glvalue）、移动构造与移动赋值的形式化语义、std::move/std::forward 的状态机模型、引用折叠规则、完美转发的形式化推导、T&& 模板推导规则、对比分析、工程实践、案例研究与习题，覆盖 C++11/14/17/20/23 的演进与生产级最佳实践。'
+description: 深入解析 C++11 右值引用与移动语义：值类别完整分类（lvalue/prvalue/xvalue/rvalue/glvalue）、移动构造与移动赋值的形式化语义、std::move/std::forward 的状态机模型、引用折叠规则、完美转发的形式化推导、T&& 模板推导规则、对比分析、工程实践、案例研究与习题，覆盖 C++11/14/17/20/23 的演进与生产级最佳实践。
 author: fanquanpp
 created: 2026-06-14
 updated: 2026-07-18
@@ -13,147 +13,147 @@ reviewer: FANDEX Content Engineering
 readingTime: 110
 estimatedReadingTime: 110
 tags:
-  - cpp
-  - rvalue-reference
-  - move-semantics
-  - perfect-forwarding
-  - value-categories
-  - c++11
-  - c++14
-  - c++17
-  - c++20
-  - c++23
+- cpp
+- rvalue-reference
+- move-semantics
+- perfect-forwarding
+- value-categories
+- c++11
+- c++14
+- c++17
+- c++20
+- c++23
 related:
-  - cpp/智能指针详解
-  - cpp/指针
-  - cpp/RAII资源管理
-  - cpp/引用
-  - cpp/模板元编程
-  - cpp/Lambda表达式
-  - cpp/STL容器与迭代器
-  - cpp/异常处理
+- cpp/智能指针详解
+- cpp/指针
+- cpp/RAII资源管理
+- cpp/引用
+- cpp/模板元编程
+- cpp/Lambda表达式
+- cpp/STL容器与迭代器
+- cpp/异常处理
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/基础语法
-  - cpp/数据类型详解
-  - cpp/指针
-  - cpp/引用
-  - cpp/面向对象基础
+- cpp/概述与现代标准
+- cpp/基础语法
+- cpp/数据类型详解
+- cpp/指针
+- cpp/引用
+- cpp/面向对象基础
 references:
-  - type: standard
-    authors:
-      - 'ISO/IEC'
-    year: 2023
-    title: 'Information technology — Programming languages — C++'
-    venue: 'ISO/IEC 14882:2023'
-    version: 'Eighth edition'
-  - type: book
-    authors:
-      - 'Stroustrup, Bjarne'
-    year: 2013
-    title: 'The C++ Programming Language'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-  - type: book
-    authors:
-      - 'Meyers, Scott'
-    year: 2015
-    title: 'Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14'
-    venue: "O'Reilly Media"
-    version: '1st edition'
-  - type: book
-    authors:
-      - 'Vandevoorde, David'
-      - 'Josuttis, Nicolai M.'
-      - 'Gregor, Douglas'
-    year: 2017
-    title: 'C++ Templates: The Complete Guide'
-    venue: 'Addison-Wesley Professional'
-    version: '2nd edition'
-  - type: book
-    authors:
-      - 'Sutter, Herb'
-      - 'Alexandrescu, Andrei'
-    year: 2004
-    title: 'C++ Coding Standards: 101 Rules, Guidelines, and Best Practices'
-    venue: 'Addison-Wesley Professional'
-  - type: book
-    authors:
-      - 'Josuttis, Nicolai M.'
-    year: 2021
-    title: 'C++ Move Semantics: The Complete Guide'
-    venue: 'DMTK Foundation'
-    version: '1st edition'
-  - type: book
-    authors:
-      - 'Williams, Anthony'
-    year: 2019
-    title: 'C++ Concurrency in Action'
-    venue: 'Manning Publications'
-    version: '2nd edition'
-  - type: conference
-    authors:
-      - 'Hinnant, Howard'
-      - 'Stroustrup, Bjarne'
-      - 'Kozicki, Bjarne'
-    year: 2008
-    title: 'A Brief Introduction to Rvalue References'
-    venue: 'ISO C++ Committee document N1690'
-  - type: technical-report
-    authors:
-      - 'ISO/IEC WG21'
-    year: 2002
-    title: 'N1377: A Proposal to Add Move Semantics Support to the C++ Language'
-    venue: 'ISO C++ Committee'
-  - type: technical-report
-    authors:
-      - 'ISO/IEC WG21'
-    year: 2015
-    title: 'N4277: Forwarding References in C++14'
-    venue: 'ISO C++ Committee'
-  - type: website
-    authors:
-      - 'cppreference.com'
-    year: 2024
-    title: 'Value categories — cppreference.com'
-    url: 'https://en.cppreference.com/w/cpp/language/value_category'
-    accessedDate: '2024-12-01'
-  - type: documentation
-    authors:
-      - 'C++ Core Guidelines Contributors'
-    year: 2024
-    title: 'C++ Core Guidelines — Move Semantics (C-series) and Forwarding (F-series)'
-    venue: 'isocpp'
-    url: 'https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines'
-    accessedDate: '2024-12-01'
+- type: standard
+  authors:
+  - ISO/IEC
+  year: 2023
+  title: Information technology — Programming languages — C++
+  venue: ISO/IEC 14882:2023
+  version: Eighth edition
+- type: book
+  authors:
+  - Stroustrup, Bjarne
+  year: 2013
+  title: The C++ Programming Language
+  venue: Addison-Wesley Professional
+  version: 4th edition
+- type: book
+  authors:
+  - Meyers, Scott
+  year: 2015
+  title: 'Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14'
+  venue: O'Reilly Media
+  version: 1st edition
+- type: book
+  authors:
+  - Vandevoorde, David
+  - Josuttis, Nicolai M.
+  - Gregor, Douglas
+  year: 2017
+  title: 'C++ Templates: The Complete Guide'
+  venue: Addison-Wesley Professional
+  version: 2nd edition
+- type: book
+  authors:
+  - Sutter, Herb
+  - Alexandrescu, Andrei
+  year: 2004
+  title: 'C++ Coding Standards: 101 Rules, Guidelines, and Best Practices'
+  venue: Addison-Wesley Professional
+- type: book
+  authors:
+  - Josuttis, Nicolai M.
+  year: 2021
+  title: 'C++ Move Semantics: The Complete Guide'
+  venue: DMTK Foundation
+  version: 1st edition
+- type: book
+  authors:
+  - Williams, Anthony
+  year: 2019
+  title: C++ Concurrency in Action
+  venue: Manning Publications
+  version: 2nd edition
+- type: conference
+  authors:
+  - Hinnant, Howard
+  - Stroustrup, Bjarne
+  - Kozicki, Bjarne
+  year: 2008
+  title: A Brief Introduction to Rvalue References
+  venue: ISO C++ Committee document N1690
+- type: technical-report
+  authors:
+  - ISO/IEC WG21
+  year: 2002
+  title: 'N1377: A Proposal to Add Move Semantics Support to the C++ Language'
+  venue: ISO C++ Committee
+- type: technical-report
+  authors:
+  - ISO/IEC WG21
+  year: 2015
+  title: 'N4277: Forwarding References in C++14'
+  venue: ISO C++ Committee
+- type: website
+  authors:
+  - cppreference.com
+  year: 2024
+  title: Value categories — cppreference.com
+  url: https://en.cppreference.com/w/cpp/language/value_category
+  accessedDate: '2024-12-01'
+- type: documentation
+  authors:
+  - C++ Core Guidelines Contributors
+  year: 2024
+  title: C++ Core Guidelines — Move Semantics (C-series) and Forwarding (F-series)
+  venue: isocpp
+  url: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
+  accessedDate: '2024-12-01'
 etymology:
-  - term: 左值
-    english: lvalue
-    origin: '术语源于 CPL 语言（1963，Christopher Strachey 等），最初指「能出现在赋值运算符左侧的表达式」（left value）；C 标准将其重定义为「locator value」，强调其具有可寻址的内存位置；C++11 后由「identity」重新刻画'
-  - term: 右值
-    english: rvalue
-    origin: '与 lvalue 对偶，最初指「只能出现在赋值运算符右侧的表达式」（right value）；C 与 C++ 沿用此名，C++11 后由「可移动」语义重新刻画'
-  - term: 临终值
-    english: xvalue
-    origin: 'C++11 引入，全称「eXpiring value」，指「即将失效的值」，通常由 std::move 或返回右值引用的表达式产生，资源可被安全掠夺'
-  - term: 纯右值
-    english: prvalue
-    origin: 'C++11 引入，全称「pure rvalue」，对应传统意义上的「右值字面量与临时对象」，是非 xvalue 的右值，用于初始化对象或作为运算操作数'
-  - term: 广义左值
-    english: glvalue
-    origin: 'C++11 引入，全称「generalized lvalue」，是 lvalue 与 xvalue 的并集，具有「identity」（可被取地址、可被关联）性质'
-  - term: 移动语义
-    english: move semantics
-    origin: '由 Howard Hinnant、Bjarne Stroustrup 等于 2002 年提案 N1377 提出，将「资源所有权转移」表达为语言级语法，与「拷贝语义」（copy semantics）相对'
-  - term: 完美转发
-    english: perfect forwarding
-    origin: '由 Howard Hinnant 等于 2002-2008 年提案体系化，目标是「泛型函数将参数的值类别与 const 性原封不动地转发给目标函数」；「完美」指零开销、零语义损耗'
-  - term: 引用折叠
-    english: reference collapsing
-    origin: 'C++11 引入的模板推导规则，规定「右值的右值引用仍为右值引用，其余组合均折叠为左值引用」，是完美转发的语法基础'
-  - term: 转发引用
-    english: forwarding reference
-    origin: '由 Scott Meyers 在《Effective Modern C++》（2015）中提出的术语，指「函数模板参数中形式为 T&& 的引用」，与「右值引用」区分；标准正式名称为「forwarding reference」（N4277, 2015）'
+- term: 左值
+  english: lvalue
+  origin: 术语源于 CPL 语言（1963，Christopher Strachey 等），最初指「能出现在赋值运算符左侧的表达式」（left value）；C 标准将其重定义为「locator value」，强调其具有可寻址的内存位置；C++11 后由「identity」重新刻画
+- term: 右值
+  english: rvalue
+  origin: 与 lvalue 对偶，最初指「只能出现在赋值运算符右侧的表达式」（right value）；C 与 C++ 沿用此名，C++11 后由「可移动」语义重新刻画
+- term: 临终值
+  english: xvalue
+  origin: C++11 引入，全称「eXpiring value」，指「即将失效的值」，通常由 std::move 或返回右值引用的表达式产生，资源可被安全掠夺
+- term: 纯右值
+  english: prvalue
+  origin: C++11 引入，全称「pure rvalue」，对应传统意义上的「右值字面量与临时对象」，是非 xvalue 的右值，用于初始化对象或作为运算操作数
+- term: 广义左值
+  english: glvalue
+  origin: C++11 引入，全称「generalized lvalue」，是 lvalue 与 xvalue 的并集，具有「identity」（可被取地址、可被关联）性质
+- term: 移动语义
+  english: move semantics
+  origin: 由 Howard Hinnant、Bjarne Stroustrup 等于 2002 年提案 N1377 提出，将「资源所有权转移」表达为语言级语法，与「拷贝语义」（copy semantics）相对
+- term: 完美转发
+  english: perfect forwarding
+  origin: 由 Howard Hinnant 等于 2002-2008 年提案体系化，目标是「泛型函数将参数的值类别与 const 性原封不动地转发给目标函数」；「完美」指零开销、零语义损耗
+- term: 引用折叠
+  english: reference collapsing
+  origin: C++11 引入的模板推导规则，规定「右值的右值引用仍为右值引用，其余组合均折叠为左值引用」，是完美转发的语法基础
+- term: 转发引用
+  english: forwarding reference
+  origin: 由 Scott Meyers 在《Effective Modern C++》（2015）中提出的术语，指「函数模板参数中形式为 T&& 的引用」，与「右值引用」区分；标准正式名称为「forwarding reference」（N4277, 2015）
 ---
 ## 第 1 章 学习目标与导论
 

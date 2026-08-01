@@ -1,7 +1,8 @@
 ---
 order: 700
 title: C++ tuple 与 pair
-module: 026-cpp
+module: cpp
+
 category: '026-cpp'
 difficulty: beginner
 description: C++ tuple 与 pair 的完整教学讲解。

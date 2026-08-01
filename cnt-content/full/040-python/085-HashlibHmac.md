@@ -1,7 +1,8 @@
 ---
 order: 850
 title: Python hashlib 与 hmac
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python hashlib 与 hmac 的完整教学讲解。

@@ -4,35 +4,37 @@ title: 链接与锚点
 module: html5
 category: HTML5
 difficulty: beginner
-description: 'HTML 超链接与锚点完整指南：href 协议、target/rel 属性、路径系统、安全与可访问性。'
+description: HTML 超链接与锚点完整指南：href 协议、target/rel 属性、路径系统、安全与可访问性。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/文本语义
-  - html5/列表
-  - html5/图像与响应式图片
-  - html5/音频与视频
+- html5/文本语义
+- html5/列表
+- html5/图像与响应式图片
+- html5/音频与视频
 prerequisites:
-  - html5/概述与核心特性
+- html5/概述与核心特性
 references:
-  - type: standard
-    authors: ['WHATWG']
-    year: 2026
-    title: 'HTML Standard - The a element'
-    venue: 'WHATWG'
-    url: https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element
-    accessedDate: '2026-08-01'
-  - type: article
-    authors: ['OWASP']
-    year: 2024
-    title: 'Reverse Tabnabbing'
-    venue: 'OWASP'
-    url: https://owasp.org/www-community/attacks/Reverse_Tabnabbing
-    accessedDate: '2026-08-01'
+- type: standard
+  authors:
+  - WHATWG
+  year: 2026
+  title: HTML Standard - The a element
+  venue: WHATWG
+  url: https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element
+  accessedDate: '2026-08-01'
+- type: journal
+  authors:
+  - OWASP
+  year: 2024
+  title: Reverse Tabnabbing
+  venue: OWASP
+  url: https://owasp.org/www-community/attacks/Reverse_Tabnabbing
+  accessedDate: '2026-08-01'
 etymology:
-  - term: '锚点'
-    english: 'anchor'
-    origin: '船锚意象，把页面内的导航锚定到特定位置。'
+- term: 锚点
+  english: anchor
+  origin: 船锚意象，把页面内的导航锚定到特定位置。
 estimatedReadingTime: 30
 lastReviewed: '2026-08-01'
 reviewer: fanquanpp

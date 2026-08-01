@@ -1,7 +1,8 @@
 ---
 order: 570
 title: gh alias 与 config 命令速查手册
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: gh alias 与 config 命令速查手册 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 770
 title: Python math/random/statistics
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python math/random/statistics 的完整教学讲解。

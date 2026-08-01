@@ -4,171 +4,171 @@ title: CompletableFuture异步编排
 module: java
 category: dev-lang
 difficulty: advanced
-description: 'Java CompletableFuture 异步编排的形式语义、CompletionStage 接口代数、Completion 栈内部结构、Java 9 API 增强、Project Loom 与虚拟线程场景下的演进路径'
+description: Java CompletableFuture 异步编排的形式语义、CompletionStage 接口代数、Completion 栈内部结构、Java 9 API 增强、Project Loom 与虚拟线程场景下的演进路径
 author: fanquanpp
 updated: '2026-07-20'
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 related:
-  - java/并发编程详解
-  - java/ThreadLocal内存泄漏
-  - java/集合框架详解
-  - java/反射与动态代理
-  - java/Lambda与函数式编程
+- java/并发编程详解
+- java/ThreadLocal内存泄漏
+- java/集合框架详解
+- java/反射与动态代理
+- java/Lambda与函数式编程
 prerequisites:
-  - java/概述与开发环境
-  - java/Lambda与函数式编程
-  - java/并发编程详解
-  - java/集合框架详解
+- java/概述与开发环境
+- java/Lambda与函数式编程
+- java/并发编程详解
+- java/集合框架详解
 tags:
-  - java
-  - completable-future
-  - completion-stage
-  - async-programming
-  - fork-join-pool
-  - reactor
-  - rxjava
-  - virtual-threads
-  - structured-concurrency
-  - jep-444
-  - jep-453
-  - concurrency
+- java
+- completable-future
+- completion-stage
+- async-programming
+- fork-join-pool
+- reactor
+- rxjava
+- virtual-threads
+- structured-concurrency
+- jep-444
+- jep-453
+- concurrency
 references:
-  - type: book
-    authors:
-      - Goetz, Brian
-      - Peierls, Tim
-      - Bloch, Joshua
-      - Bowbeer, Joseph
-      - Holmes, David
-      - Lea, Doug
-    year: 2006
-    title: "Java Concurrency in Practice"
-    venue: "Addison-Wesley Professional"
-    isbn: "978-0321349601"
-  - type: book
-    authors:
-      - Bloch, Joshua
-    year: 2018
-    title: "Effective Java (3rd ed.)"
-    venue: "Addison-Wesley Professional"
-    isbn: "978-0134685991"
-  - type: technical-report
-    authors:
-      - Lea, Doug
-    year: 2014
-    title: "The java.util.concurrent Synchronization Framework: CompletableFuture and CompletionStage"
-    venue: "State University of New York at Oswego, Technical Report"
-    url: "http://gee.cs.oswego.edu/dl/jsr166/dist/docs/java/util/concurrent/CompletableFuture.html"
-  - type: standard
-    authors:
-      - Manson, Jeremy
-      - Pugh, Bill
-      - Adve, Sarita V.
-    year: 2005
-    title: "JSR 133: Java Memory Model and Thread Specification"
-    venue: "Java Community Process"
-    url: "https://jcp.org/en/jsr/detail?id=133"
-  - type: documentation
-    authors:
-      - OpenJDK Team
-    year: 2024
-    title: "JEP 444: Virtual Threads"
-    venue: "OpenJDK Official Project"
-    url: "https://openjdk.org/jeps/444"
-  - type: documentation
-    authors:
-      - OpenJDK Team
-    year: 2024
-    title: "JEP 453: Structured Concurrency (Preview)"
-    venue: "OpenJDK Official Project"
-    url: "https://openjdk.org/jeps/453"
-  - type: documentation
-    authors:
-      - Oracle Corporation
-    year: 2024
-    title: "Java SE 21 API Specification: CompletableFuture"
-    venue: "Oracle Official Documentation"
-    url: "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletableFuture.html"
-  - type: documentation
-    authors:
-      - Oracle Corporation
-    year: 2024
-    title: "Java SE 21 API Specification: CompletionStage"
-    venue: "Oracle Official Documentation"
-    url: "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html"
-  - type: book
-    authors:
-      - Wampler, Dean
-    year: 2021
-    title: "Reactive Design Patterns"
-    venue: "Manning Publications"
-    isbn: "978-1617291808"
-  - type: conference
-    authors:
-      - Liskov, Barbara
-      - Shrira, Liuba
-    year: 1988
-    title: "Promises: Linguistic Support for Efficient Asynchronous Procedure Calls in Distributed Systems"
-    venue: "Proceedings of the ACM SIGPLAN 1988 Conference on Programming Language Design and Implementation (PLDI)"
-    pages: "260-267"
-    doi: "10.1145/53990.54016"
-  - type: conference
-    authors:
-      - Friedman, Daniel P.
-      - Wise, David S.
-    year: 1976
-    title: "The Impact of Applicative Programming on Concurrent Computation"
-    venue: "Proceedings of the 1976 Conference on Parallel Processing"
-    pages: "230-235"
-  - type: journal
-    authors:
-      - Sutter, Herb
-    year: 2005
-    title: "The Free Lunch Is Over: A Fundamental Turn Toward Concurrency in Software"
-    venue: "Dr. Dobb's Journal"
-    volume: 30
-    issue: 1
-    pages: "202-210"
-  - type: documentation
-    authors:
-      - Project Reactor Team
-    year: 2024
-    title: "Project Reactor Reference: Mono and Flux"
-    venue: "VMware Official Documentation"
-    url: "https://projectreactor.io/docs/core/release/reference/"
-  - type: documentation
-    authors:
-      - ReactiveX Team
-    year: 2024
-    title: "ReactiveX Documentation: Observable and Flowable"
-    venue: "ReactiveX Official Documentation"
-    url: "http://reactivex.io/documentation/observable.html"
-  - type: standard
-    authors:
-      - ISO/IEC
-    year: 2023
-    title: "ISO/IEC 14882:2023 Information technology — Programming languages — C++"
-    venue: "International Organization for Standardization"
+- type: book
+  authors:
+  - Goetz, Brian
+  - Peierls, Tim
+  - Bloch, Joshua
+  - Bowbeer, Joseph
+  - Holmes, David
+  - Lea, Doug
+  year: 2006
+  title: Java Concurrency in Practice
+  venue: Addison-Wesley Professional
+  isbn: 978-0321349601
+- type: book
+  authors:
+  - Bloch, Joshua
+  year: 2018
+  title: Effective Java (3rd ed.)
+  venue: Addison-Wesley Professional
+  isbn: 978-0134685991
+- type: technical-report
+  authors:
+  - Lea, Doug
+  year: 2014
+  title: 'The java.util.concurrent Synchronization Framework: CompletableFuture and CompletionStage'
+  venue: State University of New York at Oswego, Technical Report
+  url: http://gee.cs.oswego.edu/dl/jsr166/dist/docs/java/util/concurrent/CompletableFuture.html
+- type: standard
+  authors:
+  - Manson, Jeremy
+  - Pugh, Bill
+  - Adve, Sarita V.
+  year: 2005
+  title: 'JSR 133: Java Memory Model and Thread Specification'
+  venue: Java Community Process
+  url: https://jcp.org/en/jsr/detail?id=133
+- type: documentation
+  authors:
+  - OpenJDK Team
+  year: 2024
+  title: 'JEP 444: Virtual Threads'
+  venue: OpenJDK Official Project
+  url: https://openjdk.org/jeps/444
+- type: documentation
+  authors:
+  - OpenJDK Team
+  year: 2024
+  title: 'JEP 453: Structured Concurrency (Preview)'
+  venue: OpenJDK Official Project
+  url: https://openjdk.org/jeps/453
+- type: documentation
+  authors:
+  - Oracle Corporation
+  year: 2024
+  title: 'Java SE 21 API Specification: CompletableFuture'
+  venue: Oracle Official Documentation
+  url: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletableFuture.html
+- type: documentation
+  authors:
+  - Oracle Corporation
+  year: 2024
+  title: 'Java SE 21 API Specification: CompletionStage'
+  venue: Oracle Official Documentation
+  url: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html
+- type: book
+  authors:
+  - Wampler, Dean
+  year: 2021
+  title: Reactive Design Patterns
+  venue: Manning Publications
+  isbn: 978-1617291808
+- type: conference
+  authors:
+  - Liskov, Barbara
+  - Shrira, Liuba
+  year: 1988
+  title: 'Promises: Linguistic Support for Efficient Asynchronous Procedure Calls in Distributed Systems'
+  venue: Proceedings of the ACM SIGPLAN 1988 Conference on Programming Language Design and Implementation (PLDI)
+  pages: 260-267
+  doi: 10.1145/53990.54016
+- type: conference
+  authors:
+  - Friedman, Daniel P.
+  - Wise, David S.
+  year: 1976
+  title: The Impact of Applicative Programming on Concurrent Computation
+  venue: Proceedings of the 1976 Conference on Parallel Processing
+  pages: 230-235
+- type: journal
+  authors:
+  - Sutter, Herb
+  year: 2005
+  title: 'The Free Lunch Is Over: A Fundamental Turn Toward Concurrency in Software'
+  venue: Dr. Dobb's Journal
+  volume: 30
+  issue: 1
+  pages: 202-210
+- type: documentation
+  authors:
+  - Project Reactor Team
+  year: 2024
+  title: 'Project Reactor Reference: Mono and Flux'
+  venue: VMware Official Documentation
+  url: https://projectreactor.io/docs/core/release/reference/
+- type: documentation
+  authors:
+  - ReactiveX Team
+  year: 2024
+  title: 'ReactiveX Documentation: Observable and Flowable'
+  venue: ReactiveX Official Documentation
+  url: http://reactivex.io/documentation/observable.html
+- type: standard
+  authors:
+  - ISO/IEC
+  year: 2023
+  title: ISO/IEC 14882:2023 Information technology — Programming languages — C++
+  venue: International Organization for Standardization
 etymology:
-  - term: "可完成未来（CompletableFuture）"
-    english: "CompletableFuture"
-    origin: "Java 8（2014）由 Doug Lea 在 JSR-166 维护版本中引入，'Completable' 强调该 Future 可被外部主动 complete()（区别于 FutureTask 仅由内部任务完成）；其设计受 Scala Promise/Future、C# Task、JavaScript Promise 启发，是 Java 对'回调地狱'问题的标准回应。"
-  - term: "完成阶段（CompletionStage）"
-    english: "CompletionStage"
-    origin: "由 Java 8 同步引入的接口，将异步任务的'组合原语'抽象为独立的接口契约。'Stage' 暗示任务在 DAG（有向无环图）中的节点地位；'Completion' 强调触发依赖的语义事件。Reactor 的 Mono/Flux、RxJava 的 Observable 在 API 设计上均受其影响。"
-  - term: "Promise（承诺）"
-    english: "Promise"
-    origin: "由 Barbara Liskov 和 Liuba Shrira 在 1988 年论文《Promises: Linguistic Support for Efficient Asynchronous Procedure Calls in Distributed Systems》中首次提出，原用于 Argus 分布式语言；JavaScript ES6（2015）、Scala 2.10、C++ std::future/promise 均沿用此概念。CompletableFuture 即 Java 版的 Promise。"
-  - term: "异步（Asynchronous）"
-    english: "Asynchronous"
-    origin: "源自希腊语 a-（不）+ syn（一起）+ chronos（时间），字面义'不同时'。计算机领域最早出现于 1960 年代硬件中断模型；软件层面由 Erlang（1986）、Node.js（2009）等推广为'非阻塞 IO + 回调'范式。Java 在 NIO（2002）与 CompletableFuture（2014）中正式支持。"
-  - term: "虚拟线程（Virtual Thread）"
-    english: "Virtual Thread"
-    origin: "由 JEP 444（JDK 21 LTS，2023）正式发布，原型为 Project Loom（2018 启动）；'virtual' 借自操作系统虚拟内存概念——'用户态调度、按需挂载'。与 Go goroutine、Kotlin coroutine、Erlang process 同属'轻量级线程'家族，但 JVM 实现保留了 Thread API 兼容性。"
-  - term: "结构化并发（Structured Concurrency）"
-    english: "Structured Concurrency"
-    origin: "由 Martin Sústrik 在 2016 年博客提出，Nathaniel J. Smith 在 Python trio 库中系统化（2017）；Java 在 JEP 453（JDK 21 Preview）借鉴该思想。'Structured' 借自 Dijkstra 1968 年《Go To Statement Considered Harmful》倡导的结构化编程——并发任务应有明确的进入/退出边界，子任务生命周期不能逃逸父作用域。"
+- term: 可完成未来（CompletableFuture）
+  english: CompletableFuture
+  origin: Java 8（2014）由 Doug Lea 在 JSR-166 维护版本中引入，'Completable' 强调该 Future 可被外部主动 complete()（区别于 FutureTask 仅由内部任务完成）；其设计受 Scala Promise/Future、C# Task、JavaScript Promise 启发，是 Java 对'回调地狱'问题的标准回应。
+- term: 完成阶段（CompletionStage）
+  english: CompletionStage
+  origin: 由 Java 8 同步引入的接口，将异步任务的'组合原语'抽象为独立的接口契约。'Stage' 暗示任务在 DAG（有向无环图）中的节点地位；'Completion' 强调触发依赖的语义事件。Reactor 的 Mono/Flux、RxJava 的 Observable 在 API 设计上均受其影响。
+- term: Promise（承诺）
+  english: Promise
+  origin: '由 Barbara Liskov 和 Liuba Shrira 在 1988 年论文《Promises: Linguistic Support for Efficient Asynchronous Procedure Calls in Distributed Systems》中首次提出，原用于 Argus 分布式语言；JavaScript ES6（2015）、Scala 2.10、C++ std::future/promise 均沿用此概念。CompletableFuture 即 Java 版的 Promise。'
+- term: 异步（Asynchronous）
+  english: Asynchronous
+  origin: 源自希腊语 a-（不）+ syn（一起）+ chronos（时间），字面义'不同时'。计算机领域最早出现于 1960 年代硬件中断模型；软件层面由 Erlang（1986）、Node.js（2009）等推广为'非阻塞 IO + 回调'范式。Java 在 NIO（2002）与 CompletableFuture（2014）中正式支持。
+- term: 虚拟线程（Virtual Thread）
+  english: Virtual Thread
+  origin: 由 JEP 444（JDK 21 LTS，2023）正式发布，原型为 Project Loom（2018 启动）；'virtual' 借自操作系统虚拟内存概念——'用户态调度、按需挂载'。与 Go goroutine、Kotlin coroutine、Erlang process 同属'轻量级线程'家族，但 JVM 实现保留了 Thread API 兼容性。
+- term: 结构化并发（Structured Concurrency）
+  english: Structured Concurrency
+  origin: 由 Martin Sústrik 在 2016 年博客提出，Nathaniel J. Smith 在 Python trio 库中系统化（2017）；Java 在 JEP 453（JDK 21 Preview）借鉴该思想。'Structured' 借自 Dijkstra 1968 年《Go To Statement Considered Harmful》倡导的结构化编程——并发任务应有明确的进入/退出边界，子任务生命周期不能逃逸父作用域。
 ---
 ## 引言：从"阻塞等待"到"组合式异步"
 

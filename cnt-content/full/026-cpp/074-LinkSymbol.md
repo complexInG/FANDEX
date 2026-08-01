@@ -1,7 +1,8 @@
 ---
 order: 740
 title: C++ 链接与符号
-module: 026-cpp
+module: cpp
+
 category: '026-cpp'
 difficulty: beginner
 description: C++ 链接与符号 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 600
 title: Cybersecurity 逆向工程命令(radare2/ghidra CLI)
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity 逆向工程命令(radare2/ghidra CLI) 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 590
 title: Cybersecurity 隐写术工具命令
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity 隐写术工具命令 的完整教学讲解。

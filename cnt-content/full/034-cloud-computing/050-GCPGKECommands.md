@@ -1,7 +1,8 @@
 ---
 order: 500
 title: GCP GKE Kubernetes 命令
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: GCP GKE Kubernetes 命令 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 930
 title: Python shutil 与 tempfile
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python shutil 与 tempfile 的完整教学讲解。

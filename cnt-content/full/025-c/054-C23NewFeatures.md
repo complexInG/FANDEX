@@ -1,7 +1,8 @@
 ---
 order: 540
 title: C23 新特性
-module: 025-c
+module: c
+
 category: '025-c'
 difficulty: beginner
 description: C23 新特性 的完整教学讲解。

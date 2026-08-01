@@ -1,7 +1,8 @@
 ---
 order: 740
 title: Python 序列化 JSON/CSV/Pickle
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python 序列化 JSON/CSV/Pickle 的完整教学讲解。

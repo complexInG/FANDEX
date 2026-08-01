@@ -1,7 +1,8 @@
 ---
 order: 820
 title: MySQL 用户与权限管理
-module: 020-mysql
+module: mysql
+
 category: '020-mysql'
 difficulty: beginner
 description: MySQL 用户与权限管理 的完整教学讲解。

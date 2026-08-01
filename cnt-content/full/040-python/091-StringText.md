@@ -1,7 +1,8 @@
 ---
 order: 910
 title: Python 字符串与文本处理
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python 字符串与文本处理 的完整教学讲解。

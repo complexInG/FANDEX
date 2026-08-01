@@ -8,52 +8,63 @@ description: TC39 Temporal 现代日期时间 API——类型体系、时区算�
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - javascript/Web存储API
-  - javascript/索引数据库
-  - javascript/迭代器帮助器
-  - javascript/Promise构造器
-  - javascript/Intl国际化API
+- javascript/Web存储API
+- javascript/索引数据库
+- javascript/迭代器帮助器
+- javascript/Promise构造器
+- javascript/Intl国际化API
 prerequisites:
-  - javascript/语法速查
+- javascript/语法速查
 tags:
-  - Temporal
-  - Date
-  - ISO8601
-  - TimeZone
-  - IANA
-  - Duration
-  - TC39
-  - Calendar
-  - iCalendar
+- Temporal
+- Date
+- ISO8601
+- TimeZone
+- IANA
+- Duration
+- TC39
+- Calendar
+- iCalendar
 references:
-  - author: [TC39]
-    title: "Proposal: Temporal - Modern Date Time API"
-    journal: "TC39 Proposals"
-    year: 2026
-    url: "https://tc39.es/proposal-temporal/"
-  - author: [ECMA International]
-    title: "ECMAScript 2026 Language Specification - Temporal Objects"
-    journal: "ECMA-262, 17th Edition"
-    year: 2026
-    url: "https://tc39.es/ecma262/#sec-temporal-objects"
-  - author: [IANA]
-    title: "IANA Time Zone Database (tzdata)"
-    journal: "Internet Assigned Numbers Authority"
-    year: 2026
-    url: "https://www.iana.org/time-zones"
-  - author: [International Organization for Standardization]
-    title: "ISO 8601 - Date and time format"
-    journal: "ISO 8601:2019"
-    year: 2019
-    url: "https://www.iso.org/iso-8601-date-and-time-format.html"
-  - author: [Mozilla Developer Network]
-    title: "Temporal JavaScript API"
-    journal: "MDN Web Docs"
-    year: 2026
-    url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal"
+- title: 'Proposal: Temporal - Modern Date Time API'
+  year: 2026
+  url: https://tc39.es/proposal-temporal/
+  type: website
+  authors:
+  - TC39
+  venue: TC39 Proposals
+- title: ECMAScript 2026 Language Specification - Temporal Objects
+  year: 2026
+  url: https://tc39.es/ecma262/#sec-temporal-objects
+  type: standard
+  authors:
+  - ECMA International
+  venue: ECMA-262, 17th Edition
+- title: IANA Time Zone Database (tzdata)
+  year: 2026
+  url: https://www.iana.org/time-zones
+  type: website
+  authors:
+  - IANA
+  venue: Internet Assigned Numbers Authority
+- title: ISO 8601 - Date and time format
+  year: 2019
+  url: https://www.iso.org/iso-8601-date-and-time-format.html
+  type: website
+  authors:
+  - International Organization for Standardization
+  venue: ISO 8601:2019
+- title: Temporal JavaScript API
+  year: 2026
+  url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal
+  type: documentation
+  authors:
+  - Mozilla Developer Network
+  venue: MDN Web Docs
 etymology:
-  term: "Temporal"
-  origin: 'Temporal API 由 Maggie Johnson-Pint 与 Philipp Dunkel 等于 2017 年发起提案，目标是用类型化的现代 API 替代 1995 年由 Brendan Eich 实现的 Date 对象。词源 temporal 来自拉丁语 temporalis，意为"时间的"。提案在 2021 年进入 Stage 3，2024 年进入 Stage 4，是 TC39 历史上规模最大的提案之一（规范文本超过 38000 字）。'
+- term: Temporal
+  origin: Temporal API 由 Maggie Johnson-Pint 与 Philipp Dunkel 等于 2017 年发起提案，目标是用类型化的现代 API 替代 1995 年由 Brendan Eich 实现的 Date 对象。词源 temporal 来自拉丁语 temporalis，意为"时间的"。提案在 2021 年进入 Stage 3，2024 年进入 Stage 4，是 TC39 历史上规模最大的提案之一（规范文本超过 38000 字）。
+  english: Temporal
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---

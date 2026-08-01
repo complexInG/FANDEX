@@ -1,7 +1,8 @@
 ---
 order: 340
 title: Networking wget 文件下载
-module: 032-networking
+module: networking
+
 category: '032-networking'
 difficulty: beginner
 description: Networking wget 文件下载 的完整教学讲解。

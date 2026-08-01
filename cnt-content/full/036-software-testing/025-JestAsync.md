@@ -1,7 +1,8 @@
 ---
 order: 250
 title: Jest 异步测试
-module: 036-software-testing
+module: software-testing
+
 category: '036-software-testing'
 difficulty: beginner
 description: Jest 异步测试 的完整教学讲解。

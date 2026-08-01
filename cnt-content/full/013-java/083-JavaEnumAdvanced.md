@@ -1,7 +1,8 @@
 ---
 order: 830
 title: Java 枚举进阶 EnumSet/EnumMap/枚举单例语法速查手册
-module: 013-java
+module: java
+
 category: '013-java'
 difficulty: beginner
 description: Java 枚举进阶 EnumSet/EnumMap/枚举单例语法速查手册 的完整教学讲解。

@@ -2,207 +2,207 @@
 order: 106
 title: 动态规划状态压缩
 module: algorithm
-category: 'Algorithm/Dynamic-Programming'
+category: Algorithm/Dynamic-Programming
 difficulty: advanced
-description: '状态压缩动态规划（Bitmask Dynamic Programming）：以二进制位编码子集状态，将指数级状态空间压缩至 $O(2^n \cdot n)$ 的可处理范围。系统化梳理 Bellman 1957《Dynamic Programming》Princeton University Press 开山之作、Held-Karp 1962《A Dynamic Programming Approach to Sequencing Problems》J. SIAM 10(1):196-210 DOI:10.1137/0110015 旅行商问题（TSP）$O(n^2 2^n)$ 算法、bitmask DP 系统化方法，覆盖 TSP、N 皇后、数独、划分等和子集、棋盘覆盖、排列型 DP 五大经典问题，含位运算技巧（`& | ^ ~`、`<< >>`、`__builtin_popcount`、低比特 `x & (-x)`、子集枚举 `(sub - 1) & S`）、与记忆化递归、自底向上 DP、滚动数组的对比，附 Python/C++/Java 多语言实现与 LeetCode 1879/1655/1494/1125/1931 经典题解，及在 Google OR-Tools、CP-SAT 求解器、Concorde TSP 求解器中的工业级应用。'
+description: 状态压缩动态规划（Bitmask Dynamic Programming）：以二进制位编码子集状态，将指数级状态空间压缩至 $O(2^n \cdot n)$ 的可处理范围。系统化梳理 Bellman 1957《Dynamic Programming》Princeton University Press 开山之作、Held-Karp 1962《A Dynamic Programming Approach to Sequencing Problems》J. SIAM 10(1):196-210 DOI:10.1137/0110015 旅行商问题（TSP）$O(n^2 2^n)$ 算法、bitmask DP 系统化方法，覆盖 TSP、N 皇后、数独、划分等和子集、棋盘覆盖、排列型 DP 五大经典问题，含位运算技巧（`& | ^ ~`、`<< >>`、`__builtin_popcount`、低比特 `x & (-x)`、子集枚举 `(sub - 1) & S`）、与记忆化递归、自底向上 DP、滚动数组的对比，附 Python/C++/Java 多语言实现与 LeetCode 1879/1655/1494/1125/1931 经典题解，及在 Google OR-Tools、CP-SAT 求解器、Concorde TSP 求解器中的工业级应用。
 author: fanquanpp
 tags:
-  - algorithm
-  - dynamic-programming
-  - bitmask-dp
-  - state-compression
-  - traveling-salesman
-  - tsp
-  - held-karp
-  - bellman
-  - subset-enumeration
-  - bit-manipulation
-  - np-hard
-  - exponential-algorithm
+- algorithm
+- dynamic-programming
+- bitmask-dp
+- state-compression
+- traveling-salesman
+- tsp
+- held-karp
+- bellman
+- subset-enumeration
+- bit-manipulation
+- np-hard
+- exponential-algorithm
 created: 2026-06-14
 updated: 2026-07-20
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 110
 related:
-  - algorithm/动态规划
-  - algorithm/算法分析基础与学习路线
-  - algorithm/算法理论知识点
-  - algorithm/递归与回溯
-  - algorithm/布隆过滤器
-  - algorithm/KMP字符串匹配
-  - algorithm/Floyd-Warshall算法
-  - algorithm/Kruskal算法
+- algorithm/动态规划
+- algorithm/算法分析基础与学习路线
+- algorithm/算法理论知识点
+- algorithm/递归与回溯
+- algorithm/布隆过滤器
+- algorithm/KMP字符串匹配
+- algorithm/Floyd-Warshall算法
+- algorithm/Kruskal算法
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/动态规划
+- algorithm/算法分析基础与学习路线
+- algorithm/动态规划
 references:
-  - type: book
-    authors:
-      - 'Bellman, Richard'
-    year: 1957
-    title: 'Dynamic Programming'
-    venue: 'Princeton University Press'
-    pages: 'ISBN 978-0691079516. The foundational monograph that established dynamic programming as a discipline. Bellman introduced the principle of optimality and systematic treatment of multi-stage decision processes. Dover paperback edition 2003, ISBN 0486428095'
-  - type: journal
-    authors:
-      - 'Held, Michael'
-      - 'Karp, Richard M.'
-    year: 1962
-    title: 'A Dynamic Programming Approach to Sequencing Problems'
-    venue: 'Journal of the Society for Industrial and Applied Mathematics'
-    volume: 10
-    issue: 1
-    pages: '196-210'
-    doi: '10.1137/0110015'
-    pages_note: 'The Held-Karp algorithm for TSP. Achieves O(n^2 2^n) time and O(n 2^n) space, exponentially faster than the brute-force O(n!) approach. This is the canonical example of bitmask DP. Karp received the 1985 Turing Award partly for this and related work on NP-completeness'
-  - type: journal
-    authors:
-      - 'Bellman, Richard'
-    year: 1962
-    title: 'Dynamic Programming Treatment of the Traveling Salesman Problem'
-    venue: 'Journal of the ACM'
-    volume: 9
-    issue: 1
-    pages: '61-63'
-    doi: '10.1145/321105.321111'
-    pages_note: 'Independent formulation of the TSP dynamic programming algorithm by Bellman, published the same year as Held-Karp. Both papers are recognized as the origin of bitmask DP'
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'ISBN 978-0262046305, Chapter 15 (Dynamic Programming), Chapter 35 (Approximation Algorithms - TSP)'
-  - type: book
-    authors:
-      - 'Kleinberg, Jon'
-      - 'Tardos, Eva'
-    year: 2006
-    title: 'Algorithm Design'
-    venue: 'Pearson'
-    pages: 'ISBN 978-0321295354, Chapter 6 (Dynamic Programming), Section 6.6-6.10 (Sequence Alignment, Shortest Paths, TSP)'
-  - type: book
-    authors:
-      - 'Skiena, Steven S.'
-    year: 2020
-    title: 'The Algorithm Design Manual'
-    venue: 'Springer'
-    version: '3rd edition'
-    pages: 'ISBN 978-3030542556, Chapter 9 (Dynamic Programming), Section on TSP and Bitmask DP'
-  - type: book
-    authors:
-      - 'Liu, C. L.'
-    year: 1968
-    title: 'Introduction to Combinatorial Mathematics'
-    venue: 'McGraw-Hill'
-    pages: 'ISBN 978-0070381240. Standard reference for combinatorial enumeration including subset generation and bitmask techniques'
-  - type: journal
-    authors:
-      - 'Applegate, David L.'
-      - 'Bixby, Robert E.'
-      - 'Chvatal, Vasel'
-      - 'Cook, William J.'
-    year: 2006
-    title: 'The Traveling Salesman Problem: A Computational Study'
-    venue: 'Princeton University Press'
-    pages: 'ISBN 978-0691129938. Comprehensive treatment of TSP including the Concorde TSP solver, branch-and-cut, and exact algorithms for large-scale instances'
-  - type: journal
-    authors:
-      - 'Perron, Laurent'
-      - 'Furnon, Vincent'
-    year: 2026
-    title: 'OR-Tools: CP-SAT Solver Reference Manual'
-    venue: 'Google'
-    url: 'https://developers.google.com/optimization/cp/cp_solver'
-    pages: 'Google OR-Tools CP-SAT solver documentation, including bitmask-based state encoding for combinatorial optimization'
-    accessedDate: '2026-07-20'
-  - type: journal
-    authors:
-      - 'Dantzig, George B.'
-      - 'Fulkerson, D. Ray'
-      - 'Johnson, Selmer M.'
-    year: 1954
-    title: 'Solution of a Large-Scale Traveling-Salesman Problem'
-    venue: 'Operations Research'
-    volume: 2
-    issue: 4
-    pages: '393-410'
-    doi: '10.1287/opre.2.4.393'
-    pages_note: 'The Dantzig-Fulkerson-Johnson cutting-plane method for TSP, foundational work that led to modern branch-and-cut algorithms like Concorde'
-  - type: journal
-    authors:
-      - 'Tarjan, Robert E.'
-    year: 1985
-    title: 'Amortized computational complexity'
-    venue: 'SIAM Journal on Algebraic and Discrete Methods'
-    volume: 6
-    issue: 2
-    pages: '306-318'
-    doi: '10.1137/0606031'
-    pages_note: 'Provides amortized analysis techniques applicable to bitmask operations in DP, particularly for dynamic bitset representations'
-  - type: book
-    authors:
-      - 'Warren, Henry S.'
-    year: 2012
-    title: 'Hacker''s Delight'
-    venue: 'Addison-Wesley Professional'
-    version: '2nd edition'
-    pages: 'ISBN 978-0321842688. The definitive reference for bit manipulation tricks, including popcount, ctz, clz, and subset enumeration algorithms used in bitmask DP'
-  - type: book
-    authors:
-      - 'Knuth, Donald E.'
-    year: 2011
-    title: 'The Art of Computer Programming, Volume 4A: Combinatorial Algorithms, Part 1'
-    venue: 'Addison-Wesley Professional'
-    pages: 'ISBN 978-0201038040. Section 7.1 covers bit manipulation, Boolean functions, and bitwise techniques foundational to bitmask DP'
-  - type: journal
-    authors:
-      - 'Horowitz, Ellis'
-      - 'Sahni, Sartaj'
-    year: 1974
-    title: 'Computing partitions with applications to the knapsack problem'
-    venue: 'Journal of the ACM'
-    volume: 21
-    issue: 2
-    pages: '277-292'
-    doi: '10.1145/321821.321825'
-    pages_note: 'Introduced the meet-in-the-middle technique, an alternative to bitmask DP for subset-sum type problems with O(2^(n/2)) complexity'
-  - type: website
-    authors:
-      - 'LeetCode'
-    year: 2026
-    title: 'LeetCode Bitmask DP Problems Collection'
-    venue: 'LeetCode'
-    url: 'https://leetcode.com/tag/bitmask/'
-    pages: 'Curated collection of bitmask DP problems including 1879 (Minimum XOR Sum), 1655 (Distribute Repeating Integers), 1494 (Parallel Courses II), 1125 (Smallest Sufficient Team), 1931 (Painting a Grid)'
-    accessedDate: '2026-07-20'
+- type: book
+  authors:
+  - Bellman, Richard
+  year: 1957
+  title: Dynamic Programming
+  venue: Princeton University Press
+  pages: ISBN 978-0691079516. The foundational monograph that established dynamic programming as a discipline. Bellman introduced the principle of optimality and systematic treatment of multi-stage decision processes. Dover paperback edition 2003, ISBN 0486428095
+- type: journal
+  authors:
+  - Held, Michael
+  - Karp, Richard M.
+  year: 1962
+  title: A Dynamic Programming Approach to Sequencing Problems
+  venue: Journal of the Society for Industrial and Applied Mathematics
+  volume: 10
+  issue: 1
+  pages: 196-210
+  doi: 10.1137/0110015
+  pagesNote: The Held-Karp algorithm for TSP. Achieves O(n^2 2^n) time and O(n 2^n) space, exponentially faster than the brute-force O(n!) approach. This is the canonical example of bitmask DP. Karp received the 1985 Turing Award partly for this and related work on NP-completeness
+- type: journal
+  authors:
+  - Bellman, Richard
+  year: 1962
+  title: Dynamic Programming Treatment of the Traveling Salesman Problem
+  venue: Journal of the ACM
+  volume: 9
+  issue: 1
+  pages: 61-63
+  doi: 10.1145/321105.321111
+  pagesNote: Independent formulation of the TSP dynamic programming algorithm by Bellman, published the same year as Held-Karp. Both papers are recognized as the origin of bitmask DP
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: ISBN 978-0262046305, Chapter 15 (Dynamic Programming), Chapter 35 (Approximation Algorithms - TSP)
+- type: book
+  authors:
+  - Kleinberg, Jon
+  - Tardos, Eva
+  year: 2006
+  title: Algorithm Design
+  venue: Pearson
+  pages: ISBN 978-0321295354, Chapter 6 (Dynamic Programming), Section 6.6-6.10 (Sequence Alignment, Shortest Paths, TSP)
+- type: book
+  authors:
+  - Skiena, Steven S.
+  year: 2020
+  title: The Algorithm Design Manual
+  venue: Springer
+  version: 3rd edition
+  pages: ISBN 978-3030542556, Chapter 9 (Dynamic Programming), Section on TSP and Bitmask DP
+- type: book
+  authors:
+  - Liu, C. L.
+  year: 1968
+  title: Introduction to Combinatorial Mathematics
+  venue: McGraw-Hill
+  pages: ISBN 978-0070381240. Standard reference for combinatorial enumeration including subset generation and bitmask techniques
+- type: journal
+  authors:
+  - Applegate, David L.
+  - Bixby, Robert E.
+  - Chvatal, Vasel
+  - Cook, William J.
+  year: 2006
+  title: 'The Traveling Salesman Problem: A Computational Study'
+  venue: Princeton University Press
+  pages: ISBN 978-0691129938. Comprehensive treatment of TSP including the Concorde TSP solver, branch-and-cut, and exact algorithms for large-scale instances
+- type: journal
+  authors:
+  - Perron, Laurent
+  - Furnon, Vincent
+  year: 2026
+  title: 'OR-Tools: CP-SAT Solver Reference Manual'
+  venue: Google
+  url: https://developers.google.com/optimization/cp/cp_solver
+  pages: Google OR-Tools CP-SAT solver documentation, including bitmask-based state encoding for combinatorial optimization
+  accessedDate: '2026-07-20'
+- type: journal
+  authors:
+  - Dantzig, George B.
+  - Fulkerson, D. Ray
+  - Johnson, Selmer M.
+  year: 1954
+  title: Solution of a Large-Scale Traveling-Salesman Problem
+  venue: Operations Research
+  volume: 2
+  issue: 4
+  pages: 393-410
+  doi: 10.1287/opre.2.4.393
+  pagesNote: The Dantzig-Fulkerson-Johnson cutting-plane method for TSP, foundational work that led to modern branch-and-cut algorithms like Concorde
+- type: journal
+  authors:
+  - Tarjan, Robert E.
+  year: 1985
+  title: Amortized computational complexity
+  venue: SIAM Journal on Algebraic and Discrete Methods
+  volume: 6
+  issue: 2
+  pages: 306-318
+  doi: 10.1137/0606031
+  pagesNote: Provides amortized analysis techniques applicable to bitmask operations in DP, particularly for dynamic bitset representations
+- type: book
+  authors:
+  - Warren, Henry S.
+  year: 2012
+  title: Hacker's Delight
+  venue: Addison-Wesley Professional
+  version: 2nd edition
+  pages: ISBN 978-0321842688. The definitive reference for bit manipulation tricks, including popcount, ctz, clz, and subset enumeration algorithms used in bitmask DP
+- type: book
+  authors:
+  - Knuth, Donald E.
+  year: 2011
+  title: 'The Art of Computer Programming, Volume 4A: Combinatorial Algorithms, Part 1'
+  venue: Addison-Wesley Professional
+  pages: ISBN 978-0201038040. Section 7.1 covers bit manipulation, Boolean functions, and bitwise techniques foundational to bitmask DP
+- type: journal
+  authors:
+  - Horowitz, Ellis
+  - Sahni, Sartaj
+  year: 1974
+  title: Computing partitions with applications to the knapsack problem
+  venue: Journal of the ACM
+  volume: 21
+  issue: 2
+  pages: 277-292
+  doi: 10.1145/321821.321825
+  pagesNote: Introduced the meet-in-the-middle technique, an alternative to bitmask DP for subset-sum type problems with O(2^(n/2)) complexity
+- type: website
+  authors:
+  - LeetCode
+  year: 2026
+  title: LeetCode Bitmask DP Problems Collection
+  venue: LeetCode
+  url: https://leetcode.com/tag/bitmask/
+  pages: Curated collection of bitmask DP problems including 1879 (Minimum XOR Sum), 1655 (Distribute Repeating Integers), 1494 (Parallel Courses II), 1125 (Smallest Sufficient Team), 1931 (Painting a Grid)
+  accessedDate: '2026-07-20'
 etymology:
-  - term: 状态压缩
-    english: state compression
-    origin: 'state compression 字面意为"压缩状态空间"。在 DP 语境下特指用二进制位串编码原本需多维数组表示的集合状态。该术语在 1990s 信息学竞赛（IOI/ACM-ICPC）社区普及，Russian Competitive Programming School 系统化使用。中文"状态压缩 DP"或"状压 DP"为标准译法，由 IOI 中国国家集训队 2000s 引入'
-  - term: 位掩码
-    english: bitmask
-    origin: 'bitmask 由 bit（二进制位，binary digit 缩写，1946 年 Tukey 提出）+ mask（掩码，源自法语 masque，源自意大利语 maschera，源自拉丁语 masca）复合。在计算机科学中指用二进制位串作为"掩码"筛选或编码信息。bitmask DP 即以位掩码作为 DP 状态的编码方式'
-  - term: 旅行商问题
-    english: traveling salesman problem
-    origin: 'TSP 最早可追溯至 1832 年德国手册《Der handlungsreisende》。数学形式化由 Karl Menger 1930s 在维也纳给出。Held-Karp 1962 与 Bellman 1962 独立给出 $O(n^2 2^n)$ DP 算法。Dantzig-Fulkerson-Johnson 1954 引入割平面法，Applegate-Bixby-Chvatal-Cook 2006 实现的 Concorde 求解器可精确求解数千城市规模的 TSP'
-  - term: Held-Karp 算法
-    english: Held-Karp algorithm
-    origin: '由 Michael Held 与 Richard Karp 1962《A Dynamic Programming Approach to Sequencing Problems》J. SIAM 10(1):196-210 提出，是 bitmask DP 的开山之作。Richard Karp 因其在 NP 完全性与组合优化方面的贡献获 1985 年 Turing Award'
-  - term: 子集格
-    english: subset lattice
-    origin: 'lattice（格）源自希腊语 lattix（横梁）。在组合数学中，集合 $S$ 的所有子集在包含关系下构成布尔格 $\mathcal{B}_n$。bitmask DP 的状态空间正是 $\mathcal{B}_n$，其 Hasse 图为 $n$ 维超立方体'
-  - term: 轮廓线 DP
-    english: broken profile DP
-    origin: 'broken profile DP（断裂轮廓 DP）由俄罗斯竞赛程序员普及。其核心是用二进制串编码"当前行已填位置与上一行轮廓"。典型应用于骨牌覆盖、棋盘覆盖、插头 DP（plug DP）。与普通 bitmask DP 区别在于状态沿扫描线滚动而非枚举全子集'
-  - term: 普及度
-    english: popcount
-    origin: 'popcount（population count）由 IBM 1960s 在 Stretch 计算机中引入硬件指令。GCC/Clang 提供 __builtin_popcount 内建函数。C++20 标准化 std::popcount。该指令在 bitmask DP 中用于快速统计集合大小'
+- term: 状态压缩
+  english: state compression
+  origin: state compression 字面意为"压缩状态空间"。在 DP 语境下特指用二进制位串编码原本需多维数组表示的集合状态。该术语在 1990s 信息学竞赛（IOI/ACM-ICPC）社区普及，Russian Competitive Programming School 系统化使用。中文"状态压缩 DP"或"状压 DP"为标准译法，由 IOI 中国国家集训队 2000s 引入
+- term: 位掩码
+  english: bitmask
+  origin: bitmask 由 bit（二进制位，binary digit 缩写，1946 年 Tukey 提出）+ mask（掩码，源自法语 masque，源自意大利语 maschera，源自拉丁语 masca）复合。在计算机科学中指用二进制位串作为"掩码"筛选或编码信息。bitmask DP 即以位掩码作为 DP 状态的编码方式
+- term: 旅行商问题
+  english: traveling salesman problem
+  origin: TSP 最早可追溯至 1832 年德国手册《Der handlungsreisende》。数学形式化由 Karl Menger 1930s 在维也纳给出。Held-Karp 1962 与 Bellman 1962 独立给出 $O(n^2 2^n)$ DP 算法。Dantzig-Fulkerson-Johnson 1954 引入割平面法，Applegate-Bixby-Chvatal-Cook 2006 实现的 Concorde 求解器可精确求解数千城市规模的 TSP
+- term: Held-Karp 算法
+  english: Held-Karp algorithm
+  origin: 由 Michael Held 与 Richard Karp 1962《A Dynamic Programming Approach to Sequencing Problems》J. SIAM 10(1):196-210 提出，是 bitmask DP 的开山之作。Richard Karp 因其在 NP 完全性与组合优化方面的贡献获 1985 年 Turing Award
+- term: 子集格
+  english: subset lattice
+  origin: lattice（格）源自希腊语 lattix（横梁）。在组合数学中，集合 $S$ 的所有子集在包含关系下构成布尔格 $\mathcal{B}_n$。bitmask DP 的状态空间正是 $\mathcal{B}_n$，其 Hasse 图为 $n$ 维超立方体
+- term: 轮廓线 DP
+  english: broken profile DP
+  origin: broken profile DP（断裂轮廓 DP）由俄罗斯竞赛程序员普及。其核心是用二进制串编码"当前行已填位置与上一行轮廓"。典型应用于骨牌覆盖、棋盘覆盖、插头 DP（plug DP）。与普通 bitmask DP 区别在于状态沿扫描线滚动而非枚举全子集
+- term: 普及度
+  english: popcount
+  origin: popcount（population count）由 IBM 1960s 在 Stretch 计算机中引入硬件指令。GCC/Clang 提供 __builtin_popcount 内建函数。C++20 标准化 std::popcount。该指令在 bitmask DP 中用于快速统计集合大小
 ---
 
 

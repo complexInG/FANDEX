@@ -4,141 +4,141 @@ title: 并查集
 module: algorithm
 category: Algorithm/DisjointSet
 difficulty: intermediate
-description: '并查集（Disjoint Set Union, DSU / Union-Find）数据结构的形式化定义、路径压缩与按秩合并的均摊复杂度分析（反 Ackermann 函数 α(n)）、Kruskal 最小生成树/连通分量/冗余连接等典型应用，附 Python/C++/Java 多语言实现与 CLRS 第 21 章风格习题。'
+description: 并查集（Disjoint Set Union, DSU / Union-Find）数据结构的形式化定义、路径压缩与按秩合并的均摊复杂度分析（反 Ackermann 函数 α(n)）、Kruskal 最小生成树/连通分量/冗余连接等典型应用，附 Python/C++/Java 多语言实现与 CLRS 第 21 章风格习题。
 author: fanquanpp
 tags:
-  - algorithm
-  - algorithm-disjoint-set
-  - algorithm-union-find
-  - algorithm-datastructure
-  - algorithm-amortized-analysis
+- algorithm
+- algorithm-disjoint-set
+- algorithm-union-find
+- algorithm-datastructure
+- algorithm-amortized-analysis
 created: 2026-05-27
 updated: 2026-07-20
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 80
 related:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/图算法
-  - algorithm/树
-  - algorithm/线段树
-  - algorithm/树状数组
-  - algorithm/堆与优先队列
-  - algorithm/查找算法
+- algorithm/算法分析基础与学习路线
+- algorithm/图算法
+- algorithm/树
+- algorithm/线段树
+- algorithm/树状数组
+- algorithm/堆与优先队列
+- algorithm/查找算法
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/树
-  - algorithm/图算法
-  - cs-fundamentals/离散数学
+- algorithm/算法分析基础与学习路线
+- algorithm/树
+- algorithm/图算法
+- cs-fundamentals/离散数学
 references:
-  - type: journal
-    authors:
-      - 'Tarjan, Robert Endre'
-    year: 1975
-    title: 'Efficiency of a good but not linear set union algorithm'
-    venue: 'Journal of the ACM'
-    volume: 22
-    issue: 2
-    pages: '215-225'
-    doi: '10.1145/321879.321884'
-  - type: journal
-    authors:
-      - 'Galler, Bernard A.'
-      - 'Fischer, Michael J.'
-    year: 1964
-    title: 'An improved equivalence algorithm'
-    venue: 'Communications of the ACM'
-    volume: 7
-    issue: 5
-    pages: '301-303'
-    doi: '10.1145/364099.364331'
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'Chapter 21 (Data Structures for Disjoint Sets), ISBN 978-0262046305'
-  - type: book
-    authors:
-      - 'Tarjan, Robert Endre'
-    year: 1983
-    title: 'Data Structures and Network Algorithms'
-    venue: 'Society for Industrial and Applied Mathematics (SIAM)'
-    pages: 'ISBN 978-0898711875, CBMS-NSF Regional Conference Series in Applied Mathematics 44'
-  - type: book
-    authors:
-      - 'Sedgewick, Robert'
-      - 'Wayne, Kevin'
-    year: 2011
-    title: 'Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-    pages: 'ISBN 978-0321573513, Section 1.5 Case Study: Union-Find'
-  - type: book
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1998
-    title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '3rd edition'
-    pages: 'ISBN 978-0201896831, Section 2.3.3 (Equivalence Relations)'
-  - type: journal
-    authors:
-      - 'Hopcroft, John E.'
-      - 'Ullman, Jeffrey D.'
-    year: 1973
-    title: 'Set merging algorithms'
-    venue: 'SIAM Journal on Computing'
-    volume: 2
-    issue: 4
-    pages: '294-303'
-    doi: '10.1137/0202040'
-  - type: conference
-    authors:
-      - 'Ackermann, Wilhelm'
-    year: 1928
-    title: 'Zum Hilbertschen Aufbau der reellen Zahlen'
-    venue: 'Mathematische Annalen'
-    volume: 99
-    pages: '118-133'
-    doi: '10.1007/BF01459088'
-  - type: book
-    authors:
-      - 'Kleinberg, Jon'
-      - 'Tardos, Eva'
-    year: 2006
-    title: 'Algorithm Design'
-    venue: 'Pearson'
-    pages: 'ISBN 978-0321295354, Chapter 4 (Greedy Algorithms)'
-  - type: website
-    authors:
-      - 'Sanfilippo, Salvatore'
-    year: 2018
-    title: 'Redis cluster hash slot and consistent hashing design notes'
-    venue: 'Redis Documentation'
-    url: 'https://redis.io/docs/reference/cluster-spec/'
-    accessedDate: '2026-07-20'
+- type: journal
+  authors:
+  - Tarjan, Robert Endre
+  year: 1975
+  title: Efficiency of a good but not linear set union algorithm
+  venue: Journal of the ACM
+  volume: 22
+  issue: 2
+  pages: 215-225
+  doi: 10.1145/321879.321884
+- type: journal
+  authors:
+  - Galler, Bernard A.
+  - Fischer, Michael J.
+  year: 1964
+  title: An improved equivalence algorithm
+  venue: Communications of the ACM
+  volume: 7
+  issue: 5
+  pages: 301-303
+  doi: 10.1145/364099.364331
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: Chapter 21 (Data Structures for Disjoint Sets), ISBN 978-0262046305
+- type: book
+  authors:
+  - Tarjan, Robert Endre
+  year: 1983
+  title: Data Structures and Network Algorithms
+  venue: Society for Industrial and Applied Mathematics (SIAM)
+  pages: ISBN 978-0898711875, CBMS-NSF Regional Conference Series in Applied Mathematics 44
+- type: book
+  authors:
+  - Sedgewick, Robert
+  - Wayne, Kevin
+  year: 2011
+  title: Algorithms
+  venue: Addison-Wesley Professional
+  version: 4th edition
+  pages: 'ISBN 978-0321573513, Section 1.5 Case Study: Union-Find'
+- type: book
+  authors:
+  - Knuth, Donald E.
+  year: 1998
+  title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
+  venue: Addison-Wesley Professional
+  version: 3rd edition
+  pages: ISBN 978-0201896831, Section 2.3.3 (Equivalence Relations)
+- type: journal
+  authors:
+  - Hopcroft, John E.
+  - Ullman, Jeffrey D.
+  year: 1973
+  title: Set merging algorithms
+  venue: SIAM Journal on Computing
+  volume: 2
+  issue: 4
+  pages: 294-303
+  doi: 10.1137/0202040
+- type: conference
+  authors:
+  - Ackermann, Wilhelm
+  year: 1928
+  title: Zum Hilbertschen Aufbau der reellen Zahlen
+  venue: Mathematische Annalen
+  volume: 99
+  pages: 118-133
+  doi: 10.1007/BF01459088
+- type: book
+  authors:
+  - Kleinberg, Jon
+  - Tardos, Eva
+  year: 2006
+  title: Algorithm Design
+  venue: Pearson
+  pages: ISBN 978-0321295354, Chapter 4 (Greedy Algorithms)
+- type: website
+  authors:
+  - Sanfilippo, Salvatore
+  year: 2018
+  title: Redis cluster hash slot and consistent hashing design notes
+  venue: Redis Documentation
+  url: https://redis.io/docs/reference/cluster-spec/
+  accessedDate: '2026-07-20'
 etymology:
-  - term: 并查集
-    english: disjoint set union / union-find
-    origin: '中文译名突出三大核心操作：并（Union，合并两个集合）、查（Find，查找代表元）、集（Set，集合元素）。英文 disjoint set 强调"任意两个集合不相交"的不变量；union-find 强调两大基本操作'
-  - term: 路径压缩
-    english: path compression
-    origin: '由 Hopcroft-Ullman 1973 系统化命名，指 find 操作遍历路径后将所有节点直接挂到根节点，"压缩"了树的深度'
-  - term: 按秩合并
-    english: union by rank
-    origin: 'rank（秩）在此特指"树高度的上界估计"，而非"集合大小"。Tarjan 1975 给出严格形式化：rank 是节点子树高度的松散上界，路径压缩后 rank 不再精确等于高度，但保持单调性以用于合并决策'
-  - term: 反 Ackermann 函数
-    english: inverse Ackermann function
-    origin: '源自 Wilhelm Ackermann 1928 年提出的快速增长函数 A(m,n)，其反函数 α(n) = min{ k : A(k, k) ≥ n } 增长极慢（α(10^80) ≈ 4），是 Tarjan 1975 证明的 DSU 均摊复杂度下界'
-  - term: 均摊复杂度
-    english: amortized complexity
-    origin: '均摊分析（amortized analysis）由 Robert Tarjan 1985 年系统化（参见 "Amortized Computational Complexity" SIAM Journal on Algebraic Discrete Methods），用于评估操作序列的整体代价，而非单次最坏'
+- term: 并查集
+  english: disjoint set union / union-find
+  origin: 中文译名突出三大核心操作：并（Union，合并两个集合）、查（Find，查找代表元）、集（Set，集合元素）。英文 disjoint set 强调"任意两个集合不相交"的不变量；union-find 强调两大基本操作
+- term: 路径压缩
+  english: path compression
+  origin: 由 Hopcroft-Ullman 1973 系统化命名，指 find 操作遍历路径后将所有节点直接挂到根节点，"压缩"了树的深度
+- term: 按秩合并
+  english: union by rank
+  origin: rank（秩）在此特指"树高度的上界估计"，而非"集合大小"。Tarjan 1975 给出严格形式化：rank 是节点子树高度的松散上界，路径压缩后 rank 不再精确等于高度，但保持单调性以用于合并决策
+- term: 反 Ackermann 函数
+  english: inverse Ackermann function
+  origin: '源自 Wilhelm Ackermann 1928 年提出的快速增长函数 A(m,n)，其反函数 α(n) = min{ k : A(k, k) ≥ n } 增长极慢（α(10^80) ≈ 4），是 Tarjan 1975 证明的 DSU 均摊复杂度下界'
+- term: 均摊复杂度
+  english: amortized complexity
+  origin: 均摊分析（amortized analysis）由 Robert Tarjan 1985 年系统化（参见 "Amortized Computational Complexity" SIAM Journal on Algebraic Discrete Methods），用于评估操作序列的整体代价，而非单次最坏
 ---
 
 

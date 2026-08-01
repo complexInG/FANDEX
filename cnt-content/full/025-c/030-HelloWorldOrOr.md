@@ -4,97 +4,97 @@ title: 国际化与本地化
 module: c
 category: C Standard Library
 tags:
-  - c
-  - i18n
-  - l10n
-  - locale
-  - wchar
-  - unicode
-  - encoding
+- c
+- i18n
+- l10n
+- locale
+- wchar
+- unicode
+- encoding
 difficulty: intermediate
 description: C 语言国际化与本地化机制,涵盖 setlocale、宽字符、多字节编码、Unicode 与 C23 char8_t 的形式语义、工程实践与真实项目案例。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - c/文件系统操作
-  - c/函数详解
-  - c/构建系统
-  - c/静态分析与调试
-  - c/C23与C2y新标准
-  - c/字符串处理
+- c/文件系统操作
+- c/函数详解
+- c/构建系统
+- c/静态分析与调试
+- c/C23与C2y新标准
+- c/字符串处理
 prerequisites:
-  - c/概述
-  - c/数据类型详解
-  - c/指针深度解析
+- c/概述
+- c/数据类型详解
+- c/指针深度解析
 references:
-  - type: standard
-    authors:
-      - ISO/IEC JTC1/SC22/WG14
-    year: 2024
-    title: 'ISO/IEC 9899:2024 - Programming languages - C (Fifth edition)'
-    venue: International Organization for Standardization
-    url: https://www.iso.org/standard/82075.html
-    version: C23
-  - type: standard
-    authors:
-      - The Unicode Consortium
-    year: 2024
-    title: 'The Unicode Standard, Version 15.1.0'
-    venue: The Unicode Consortium
-    url: https://www.unicode.org/versions/Unicode15.1.0/
-    doi: 10.17487/T1521
-  - type: technical-report
-    authors:
-      - Kuhn, Markus
-    year: 2003
-    title: 'UTF-8 and Unicode FAQ for Unix/Linux'
-    venue: University of Cambridge Computer Laboratory
-    url: https://www.cl.cam.ac.uk/~mgk25/unicode.html
-  - type: book
-    authors:
-      - Langer, Angelika
-      - Kreft, Klaus
-    year: 2000
-    title: 'Standard C++ IOStreams and Locales: Advanced Programmer''s Guide and Reference'
-    venue: Addison-Wesley Professional
-    pages: '1-736'
-    isbn: 978-0201183954
-  - type: book
-    authors:
-      - International Components for Unicode
-    year: 2024
-    title: 'ICU - International Components for Unicode, Technical Design'
-    venue: Unicode, Inc.
-    url: https://icu.unicode.org/
-  - type: journal
-    authors:
-      - Davis, Mark
-      - Suess, Karl
-    year: 2002
-    title: 'A survey of Unicode and internationalization techniques'
-    venue: 'Software: Practice and Experience'
-    volume: 32
-    issue: 11
-    pages: '1041-1073'
-    doi: 10.1002/spe.472
-  - type: conference
-    authors:
-      - Pike, Rob
-      - Thompson, Ken
-    year: 1993
-    title: 'Hello world or Καλημέρα κόσμε or こんにちは 世界'
-    venue: 'Proc. of the Winter 1993 USENIX Conference'
-    pages: '43-50'
+- type: standard
+  authors:
+  - ISO/IEC JTC1/SC22/WG14
+  year: 2024
+  title: ISO/IEC 9899:2024 - Programming languages - C (Fifth edition)
+  venue: International Organization for Standardization
+  url: https://www.iso.org/standard/82075.html
+  version: C23
+- type: standard
+  authors:
+  - The Unicode Consortium
+  year: 2024
+  title: The Unicode Standard, Version 15.1.0
+  venue: The Unicode Consortium
+  url: https://www.unicode.org/versions/Unicode15.1.0/
+  doi: 10.17487/T1521
+- type: technical-report
+  authors:
+  - Kuhn, Markus
+  year: 2003
+  title: UTF-8 and Unicode FAQ for Unix/Linux
+  venue: University of Cambridge Computer Laboratory
+  url: https://www.cl.cam.ac.uk/~mgk25/unicode.html
+- type: book
+  authors:
+  - Langer, Angelika
+  - Kreft, Klaus
+  year: 2000
+  title: 'Standard C++ IOStreams and Locales: Advanced Programmer''s Guide and Reference'
+  venue: Addison-Wesley Professional
+  pages: 1-736
+  isbn: 978-0201183954
+- type: book
+  authors:
+  - International Components for Unicode
+  year: 2024
+  title: ICU - International Components for Unicode, Technical Design
+  venue: Unicode, Inc.
+  url: https://icu.unicode.org/
+- type: journal
+  authors:
+  - Davis, Mark
+  - Suess, Karl
+  year: 2002
+  title: A survey of Unicode and internationalization techniques
+  venue: 'Software: Practice and Experience'
+  volume: 32
+  issue: 11
+  pages: 1041-1073
+  doi: 10.1002/spe.472
+- type: conference
+  authors:
+  - Pike, Rob
+  - Thompson, Ken
+  year: 1993
+  title: Hello world or Καλημέρα κόσμε or こんにちは 世界
+  venue: Proc. of the Winter 1993 USENIX Conference
+  pages: 43-50
 etymology:
-  - term: locale
-    english: locale
-    origin: 源自拉丁语 locus(地点),经由古法语 local 进入英语,作为计算机术语最早见于 1980 年代 POSIX 草案,意为"与用户地理、文化、语言相关的运行时配置集合"。
-  - term: 国际化
-    english: internationalization
-    origin: 由于 internationalization 首尾字母 i 与 n 之间共有 18 个字母,业界将其简写为 i18n;同理 localization 简写为 l10n、globalization 简写为 g11n,该简写由 DEC 公司于 1990 年代初首创。
-  - term: 宽字符
-    english: wide character
-    origin: wide 意为"宽",指代宽度大于 char 的字符类型;最早出现在 ISO C90 Amendment 1(1995),用于支持无法用单字节 char 表示的字符集(如 CJK 中文/日文/韩文)。
+- term: locale
+  english: locale
+  origin: 源自拉丁语 locus(地点),经由古法语 local 进入英语,作为计算机术语最早见于 1980 年代 POSIX 草案,意为"与用户地理、文化、语言相关的运行时配置集合"。
+- term: 国际化
+  english: internationalization
+  origin: 由于 internationalization 首尾字母 i 与 n 之间共有 18 个字母,业界将其简写为 i18n;同理 localization 简写为 l10n、globalization 简写为 g11n,该简写由 DEC 公司于 1990 年代初首创。
+- term: 宽字符
+  english: wide character
+  origin: wide 意为"宽",指代宽度大于 char 的字符类型;最早出现在 ISO C90 Amendment 1(1995),用于支持无法用单字节 char 表示的字符集(如 CJK 中文/日文/韩文)。
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 95

@@ -1,7 +1,8 @@
 ---
 order: 280
 title: E2E 端到端测试
-module: 036-software-testing
+module: software-testing
+
 category: '036-software-testing'
 difficulty: beginner
 description: E2E 端到端测试 的完整教学讲解。

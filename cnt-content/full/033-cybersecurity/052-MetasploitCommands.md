@@ -1,7 +1,8 @@
 ---
 order: 520
 title: Cybersecurity Metasploit 命令(渗透测试)
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity Metasploit 命令(渗透测试) 的完整教学讲解。

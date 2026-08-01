@@ -1,7 +1,8 @@
 ---
 order: 490
 title: Cybersecurity OAuth2/OIDC 配置命令
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity OAuth2/OIDC 配置命令 的完整教学讲解。

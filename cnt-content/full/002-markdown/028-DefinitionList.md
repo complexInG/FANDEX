@@ -1,7 +1,8 @@
 ---
 order: 280
 title: Markdown 定义列表
-module: 002-markdown
+module: markdown
+
 category: '002-markdown'
 difficulty: beginner
 description: Markdown 定义列表 的完整教学讲解。

@@ -2,208 +2,208 @@
 order: 101
 title: 线段树
 module: algorithm
-category: 'comp-sci'
+category: comp-sci
 difficulty: advanced
-description: '线段树数据结构的形式化定义（区间幺半群上的完全二叉树）、懒标记下传语义、构建 O(n)、查询/更新 O(log n)、空间 O(4n) 的复杂度证明，覆盖递归/迭代实现、动态开点、离散化、持久化、合并线段树、李超树、扫描线等工程变体，附多语言实现、LeetCode/Codeforces 实战与 CLRS 风格习题。'
+description: 线段树数据结构的形式化定义（区间幺半群上的完全二叉树）、懒标记下传语义、构建 O(n)、查询/更新 O(log n)、空间 O(4n) 的复杂度证明，覆盖递归/迭代实现、动态开点、离散化、持久化、合并线段树、李超树、扫描线等工程变体，附多语言实现、LeetCode/Codeforces 实战与 CLRS 风格习题。
 author: fanquanpp
 tags:
-  - algorithm
-  - 'algorithm-segmenttree'
-  - 'algorithm-datastructure'
+- algorithm
+- algorithm-segmenttree
+- algorithm-datastructure
 created: 2026-06-14
 updated: 2026-07-18
 lastReviewed: '2026-07-18'
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 200
 related:
-  - algorithm/LeetCode刷题指南
-  - algorithm/并查集
-  - algorithm/树状数组
-  - algorithm/平衡树与高级树
-  - algorithm/跳跃表
-  - algorithm/堆与优先队列
-  - algorithm/图算法
-  - algorithm/动态规划
+- algorithm/LeetCode刷题指南
+- algorithm/并查集
+- algorithm/树状数组
+- algorithm/平衡树与高级树
+- algorithm/跳跃表
+- algorithm/堆与优先队列
+- algorithm/图算法
+- algorithm/动态规划
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/树
-  - algorithm/树状数组
-  - cs-fundamentals/离散数学
+- algorithm/算法分析基础与学习路线
+- algorithm/树
+- algorithm/树状数组
+- cs-fundamentals/离散数学
 references:
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'ISBN 978-0262046305'
-  - type: book
-    authors:
-      - 'Bentley, Jon L.'
-    year: 1977
-    title: "Solutions to Klee's rectangle problems"
-    venue: 'Unpublished technical report, Carnegie-Mellon University'
-    pages: 'Technical report'
-  - type: journal
-    authors:
-      - 'Bentley, Jon L.'
-    year: 1980
-    title: 'Multidimensional divide-and-conquer'
-    venue: 'Communications of the ACM'
-    volume: 23
-    issue: 4
-    pages: '214-229'
-    doi: '10.1145/358841.358850'
-  - type: book
-    authors:
-      - 'De Berg, Mark'
-      - 'Cheong, Otfried'
-      - 'van Kreveld, Marc'
-      - 'Overmars, Mark'
-    year: 2008
-    title: 'Computational Geometry: Algorithms and Applications'
-    venue: 'Springer'
-    version: '3rd edition'
-    pages: 'ISBN 978-3540779735'
-  - type: book
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1998
-    title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-    venue: 'Addison-Wesley Professional'
-    version: '2nd edition'
-    pages: 'ISBN 978-0201896855'
-  - type: book
-    authors:
-      - 'Sedgewick, Robert'
-      - 'Wayne, Kevin'
-    year: 2011
-    title: 'Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-    pages: 'ISBN 978-0321573513'
-  - type: book
-    authors:
-      - 'Skiena, Steven S.'
-    year: 2020
-    title: 'The Algorithm Design Manual'
-    venue: 'Springer'
-    version: '3rd edition'
-    pages: 'ISBN 978-3030542559'
-  - type: book
-    authors:
-      - 'Halim, Steven'
-      - 'Halim, Felix'
-    year: 2013
-    title: 'Competitive Programming'
-    venue: 'Lulu Press'
-    version: '3rd edition'
-    pages: 'ISBN 978-0982999145'
-  - type: conference
-    authors:
-      - 'Pugh, William'
-    year: 1989
-    title: 'Skip lists: A probabilistic alternative to balanced trees'
-    venue: 'Workshop on Algorithms and Data Structures'
-    pages: '437-449'
-    doi: '10.1007/3-540-51542-9_36'
-  - type: journal
-    authors:
-      - 'Sleator, Daniel D.'
-      - 'Tarjan, Robert E.'
-    year: 1985
-    title: 'Self-adjusting binary search trees'
-    venue: 'Journal of the ACM'
-    volume: 32
-    issue: 3
-    pages: '652-686'
-    doi: '10.1145/3828.3835'
-  - type: journal
-    authors:
-      - 'Fenner, Trevor I.'
-      - 'Loizou, Georgios'
-    year: 1996
-    title: 'A simple proof of the O(log n) performance of the segment tree'
-    venue: 'Information Processing Letters'
-    volume: 60
-    issue: 5
-    pages: '251-254'
-    doi: '10.1016/S0020-0190(96)00173-5'
-  - type: conference
-    authors:
-      - 'Driscoll, James R.'
-      - 'Sarnak, Neil'
-      - 'Sleator, Daniel D.'
-      - 'Tarjan, Robert E.'
-    year: 1989
-    title: 'Making data structures persistent'
-    venue: 'Journal of Computer and System Sciences'
-    volume: 38
-    issue: 1
-    pages: '86-124'
-    doi: '10.1016/0022-0000(89)90034-2'
-  - type: journal
-    authors:
-      - 'Li, Chao'
-      - 'Chen, Jingchao'
-    year: 2002
-    title: 'A new data structure for solving online segment maximum query problems'
-    venue: 'Journal of Computer Science and Technology'
-    volume: 17
-    issue: 3
-    pages: '313-320'
-    doi: '10.1007/BF02950634'
-  - type: book
-    authors:
-      - 'Lai, Ming Lei'
-      - 'Tian, Jing Chi'
-    year: 2018
-    title: 'Data Structure IOI National Training Team Paper Collection'
-    venue: 'China Youth Publishing Group'
-    pages: 'ISBN 9787515354864'
-  - type: website
-    authors:
-      - 'CP-Algorithms Contributors'
-    year: 2024
-    title: 'Segment Tree'
-    venue: 'CP-Algorithms'
-    pages: 'https://cp-algorithms.com/data_structures/segment_tree.html'
-  - type: website
-    authors:
-      - 'AtCoder Library Contributors'
-    year: 2023
-    title: 'AtCoder Library - Segment Tree'
-    venue: 'GitHub'
-    pages: 'https://github.com/atcoder/ac-library'
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: ISBN 978-0262046305
+- type: book
+  authors:
+  - Bentley, Jon L.
+  year: 1977
+  title: Solutions to Klee's rectangle problems
+  venue: Unpublished technical report, Carnegie-Mellon University
+  pages: Technical report
+- type: journal
+  authors:
+  - Bentley, Jon L.
+  year: 1980
+  title: Multidimensional divide-and-conquer
+  venue: Communications of the ACM
+  volume: 23
+  issue: 4
+  pages: 214-229
+  doi: 10.1145/358841.358850
+- type: book
+  authors:
+  - De Berg, Mark
+  - Cheong, Otfried
+  - van Kreveld, Marc
+  - Overmars, Mark
+  year: 2008
+  title: 'Computational Geometry: Algorithms and Applications'
+  venue: Springer
+  version: 3rd edition
+  pages: ISBN 978-3540779735
+- type: book
+  authors:
+  - Knuth, Donald E.
+  year: 1998
+  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
+  venue: Addison-Wesley Professional
+  version: 2nd edition
+  pages: ISBN 978-0201896855
+- type: book
+  authors:
+  - Sedgewick, Robert
+  - Wayne, Kevin
+  year: 2011
+  title: Algorithms
+  venue: Addison-Wesley Professional
+  version: 4th edition
+  pages: ISBN 978-0321573513
+- type: book
+  authors:
+  - Skiena, Steven S.
+  year: 2020
+  title: The Algorithm Design Manual
+  venue: Springer
+  version: 3rd edition
+  pages: ISBN 978-3030542559
+- type: book
+  authors:
+  - Halim, Steven
+  - Halim, Felix
+  year: 2013
+  title: Competitive Programming
+  venue: Lulu Press
+  version: 3rd edition
+  pages: ISBN 978-0982999145
+- type: conference
+  authors:
+  - Pugh, William
+  year: 1989
+  title: 'Skip lists: A probabilistic alternative to balanced trees'
+  venue: Workshop on Algorithms and Data Structures
+  pages: 437-449
+  doi: 10.1007/3-540-51542-9_36
+- type: journal
+  authors:
+  - Sleator, Daniel D.
+  - Tarjan, Robert E.
+  year: 1985
+  title: Self-adjusting binary search trees
+  venue: Journal of the ACM
+  volume: 32
+  issue: 3
+  pages: 652-686
+  doi: 10.1145/3828.3835
+- type: journal
+  authors:
+  - Fenner, Trevor I.
+  - Loizou, Georgios
+  year: 1996
+  title: A simple proof of the O(log n) performance of the segment tree
+  venue: Information Processing Letters
+  volume: 60
+  issue: 5
+  pages: 251-254
+  doi: 10.1016/S0020-0190(96)00173-5
+- type: conference
+  authors:
+  - Driscoll, James R.
+  - Sarnak, Neil
+  - Sleator, Daniel D.
+  - Tarjan, Robert E.
+  year: 1989
+  title: Making data structures persistent
+  venue: Journal of Computer and System Sciences
+  volume: 38
+  issue: 1
+  pages: 86-124
+  doi: 10.1016/0022-0000(89)90034-2
+- type: journal
+  authors:
+  - Li, Chao
+  - Chen, Jingchao
+  year: 2002
+  title: A new data structure for solving online segment maximum query problems
+  venue: Journal of Computer Science and Technology
+  volume: 17
+  issue: 3
+  pages: 313-320
+  doi: 10.1007/BF02950634
+- type: book
+  authors:
+  - Lai, Ming Lei
+  - Tian, Jing Chi
+  year: 2018
+  title: Data Structure IOI National Training Team Paper Collection
+  venue: China Youth Publishing Group
+  pages: ISBN 9787515354864
+- type: website
+  authors:
+  - CP-Algorithms Contributors
+  year: 2024
+  title: Segment Tree
+  venue: CP-Algorithms
+  pages: https://cp-algorithms.com/data_structures/segment_tree.html
+- type: website
+  authors:
+  - AtCoder Library Contributors
+  year: 2023
+  title: AtCoder Library - Segment Tree
+  venue: GitHub
+  pages: https://github.com/atcoder/ac-library
 etymology:
-  - term: 线段树
-    english: segment tree
-    origin: '由 Jon Louis Bentley 于 1977 年在 Carnegie-Mellon University 的未公开技术报告 "Solutions to Klee''s rectangle problems" 中首次提出。Bentley 设计该结构用于求解 Victor Klee 提出的"矩形并集面积"问题，"segment" 取其几何学含义"线段"，将一维区间视为线段并组织成树形索引结构。1980 年 Bentley 在 CACM 论文 "Multidimensional divide-and-conquer" 中正式公开该结构'
-  - term: 懒标记
-    english: lazy propagation
-    origin: '源自函数式编程中的 lazy evaluation（call-by-need）思想：将计算推迟到结果被实际需要时执行。线段树的 lazy propagation 由 Competitive Programming 社区于 1990s-2000s 逐步规范化，以"标记累积 + 下传时执行"的方式将区间更新从 O(n) 降至 O(log n)。CLRS 4th 第 21 章将类似思想推广至"augmented data structure"'
-  - term: 幺半群
-    english: monoid
-    origin: '源自抽象代数。由德国数学家 Eugen Netto 于 1882 年在 "Substitutionentheorie und ihre Anwendung auf die Algebra" 中作为"具有单位元的半群"提出。"monoid" 来自希腊语 "monos"（单独的），强调单一二元运算的结构。线段树的所有合法运算必须构成幺半群：满足结合律且存在单位元'
-  - term: 结合律
-    english: associative
-    origin: '源自拉丁语 "associare"（联合）。Hamilton 1853 年在四元数研究中首次明确将"结合律"列为代数运算的基本公理之一。在线段树中，结合律 (a⊕b)⊕c = a⊕(b⊕c) 保证任意区间可在不同分解方式下得到一致结果，是线段树正确性的代数基础'
-  - term: 交换律
-    english: commutative
-    origin: '源自法语 "commutatif"，由法国数学家 François Servois 于 1814 年引入代数学。"commute" 拉丁词源 "commutare"（共同改变）。线段树的求和、最值运算满足交换律，但某些变体（如矩阵乘法、Affine 变换）不满足交换律，需特别注意下传顺序'
-  - term: 幂等性
-    english: idempotent
-    origin: '源自拉丁语 "idem"（同一）+ "potens"（能力）。Benjamin Peirce 于 1870 年在 "Linear Associative Algebra" 中引入。运算 ⊕ 满足幂等性意味着 a⊕a = a。区间最值（max、min、gcd）运算即幂等，这使得 RMQ 问题可用更紧凑的稀疏表（Sparse Table）实现 O(1) 查询，而求和运算则不可'
-  - term: 可持久化
-    english: persistent
-    origin: '由 James R. Driscoll、Neil Sarnak、Daniel D. Sleator、Robert E. Tarjan 于 1986 年在论文 "Making data structures persistent" 中正式定义。persistent 一词取其"状态可保留"含义，与 ephemeral（短暂数据结构）对立。可持久化线段树通过 path-copying 技术保留历史版本，支持 O(log n) 时间访问任意历史查询'
-  - term: 标记下传
-    english: push-down
-    origin: '术语由 IOI 国家集训队论文（如李骥洋 2013《线段树》讲义）规范化。push-down 描述了懒标记从父节点向子节点传播的过程，与 push-up（自底向上回溯更新）相对。二者构成线段树区间操作的核心不变式维护机制'
+- term: 线段树
+  english: segment tree
+  origin: 由 Jon Louis Bentley 于 1977 年在 Carnegie-Mellon University 的未公开技术报告 "Solutions to Klee's rectangle problems" 中首次提出。Bentley 设计该结构用于求解 Victor Klee 提出的"矩形并集面积"问题，"segment" 取其几何学含义"线段"，将一维区间视为线段并组织成树形索引结构。1980 年 Bentley 在 CACM 论文 "Multidimensional divide-and-conquer" 中正式公开该结构
+- term: 懒标记
+  english: lazy propagation
+  origin: 源自函数式编程中的 lazy evaluation（call-by-need）思想：将计算推迟到结果被实际需要时执行。线段树的 lazy propagation 由 Competitive Programming 社区于 1990s-2000s 逐步规范化，以"标记累积 + 下传时执行"的方式将区间更新从 O(n) 降至 O(log n)。CLRS 4th 第 21 章将类似思想推广至"augmented data structure"
+- term: 幺半群
+  english: monoid
+  origin: 源自抽象代数。由德国数学家 Eugen Netto 于 1882 年在 "Substitutionentheorie und ihre Anwendung auf die Algebra" 中作为"具有单位元的半群"提出。"monoid" 来自希腊语 "monos"（单独的），强调单一二元运算的结构。线段树的所有合法运算必须构成幺半群：满足结合律且存在单位元
+- term: 结合律
+  english: associative
+  origin: 源自拉丁语 "associare"（联合）。Hamilton 1853 年在四元数研究中首次明确将"结合律"列为代数运算的基本公理之一。在线段树中，结合律 (a⊕b)⊕c = a⊕(b⊕c) 保证任意区间可在不同分解方式下得到一致结果，是线段树正确性的代数基础
+- term: 交换律
+  english: commutative
+  origin: 源自法语 "commutatif"，由法国数学家 François Servois 于 1814 年引入代数学。"commute" 拉丁词源 "commutare"（共同改变）。线段树的求和、最值运算满足交换律，但某些变体（如矩阵乘法、Affine 变换）不满足交换律，需特别注意下传顺序
+- term: 幂等性
+  english: idempotent
+  origin: 源自拉丁语 "idem"（同一）+ "potens"（能力）。Benjamin Peirce 于 1870 年在 "Linear Associative Algebra" 中引入。运算 ⊕ 满足幂等性意味着 a⊕a = a。区间最值（max、min、gcd）运算即幂等，这使得 RMQ 问题可用更紧凑的稀疏表（Sparse Table）实现 O(1) 查询，而求和运算则不可
+- term: 可持久化
+  english: persistent
+  origin: 由 James R. Driscoll、Neil Sarnak、Daniel D. Sleator、Robert E. Tarjan 于 1986 年在论文 "Making data structures persistent" 中正式定义。persistent 一词取其"状态可保留"含义，与 ephemeral（短暂数据结构）对立。可持久化线段树通过 path-copying 技术保留历史版本，支持 O(log n) 时间访问任意历史查询
+- term: 标记下传
+  english: push-down
+  origin: 术语由 IOI 国家集训队论文（如李骥洋 2013《线段树》讲义）规范化。push-down 描述了懒标记从父节点向子节点传播的过程，与 push-up（自底向上回溯更新）相对。二者构成线段树区间操作的核心不变式维护机制
 ---
 
 
@@ -3143,7 +3143,7 @@ print(idx.count_overlap(2, 4))  # 输出: 4 (差分覆盖统计)
 
 ## 第 13 章 习题与解答
 
-本章 10 道习题按 Bloom 认知层级递进组织，覆盖记忆、理解、应用、分析、评估、创造六个等级。frontmatter `exercises` 字段已结构化存储全部题目，本节给出题目正文与详细解答。
+本章 10 道习题按 Bloom 认知层级递进组织，覆盖记忆、理解、应用、分析、评估、创造六个等级。本节给出题目正文与详细解答。
 
 ### 填空题知识点讲解
 

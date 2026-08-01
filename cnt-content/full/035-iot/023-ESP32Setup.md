@@ -1,7 +1,8 @@
 ---
 order: 230
 title: 物联网 ESP32 开发环境
-module: 035-iot
+module: iot
+
 category: '035-iot'
 difficulty: beginner
 description: 物联网 ESP32 开发环境 的完整教学讲解。

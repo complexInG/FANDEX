@@ -1,7 +1,8 @@
 ---
 order: 400
 title: Cybersecurity hashcat 密码破解
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity hashcat 密码破解 的完整教学讲解。

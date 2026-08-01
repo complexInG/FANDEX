@@ -10,57 +10,63 @@ updated: '2026-07-20'
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 related:
-  - typescript/模块解析策略
-  - typescript/高级类型与类型演算
-  - typescript/协变与逆变
-  - typescript/this类型与多态
+- typescript/模块解析策略
+- typescript/高级类型与类型演算
+- typescript/协变与逆变
+- typescript/this类型与多态
 prerequisites:
-  - typescript/语法速查
+- typescript/语法速查
 tags:
-  - typescript
-  - type-gymnastics
-  - type-theory
-  - conditional-types
-  - mapped-types
-  - recursive-types
-  - type-level-programming
+- typescript
+- type-gymnastics
+- type-theory
+- conditional-types
+- mapped-types
+- recursive-types
+- type-level-programming
 references:
-  - author: Pierce, Benjamin C.
-    title: "Types and Programming Languages"
-    journal: "MIT Press"
-    year: 2002
-    type: book
-    isbn: "978-0-262-16209-8"
-  - author: Bierman, Gavin M. and Abadi, Martín and Torgersen, Mads
-    title: "Understanding TypeScript"
-    journal: "ECOOP 2014 — Object-Oriented Programming"
-    year: 2014
-    pages: "257-281"
-    doi: "10.1007/978-3-662-44202-9_11"
-    type: conference
-  - author: Microsoft
-    title: "TypeScript 2.8 Release Notes: Conditional Types"
-    journal: "Microsoft Developer Network"
-    year: 2018
-    url: "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html"
-    type: website
-  - author: Ajvani, Behdad and Vahidi, Sina and Itzhaki, Shay
-    title: "Type-level Programming in TypeScript"
-    journal: "arXiv preprint arXiv:2302.09465"
-    year: 2023
-    doi: "10.48550/arXiv.2302.09465"
-    type: journal
-  - author: Bachmayr, Christoph and others
-    title: "On the Complexity of TypeScript Type Checking"
-    journal: "Proceedings of the ACM on Programming Languages"
-    year: 2022
-    volume: 6
-    number: "OOPSLA"
-    doi: "10.1145/3563308"
-    type: journal
+- title: Types and Programming Languages
+  year: 2002
+  type: book
+  isbn: 978-0-262-16209-8
+  authors:
+  - Pierce, Benjamin C.
+  venue: MIT Press
+- title: Understanding TypeScript
+  year: 2014
+  pages: 257-281
+  doi: 10.1007/978-3-662-44202-9_11
+  type: conference
+  authors:
+  - Bierman, Gavin M. and Abadi, Martín and Torgersen, Mads
+  venue: ECOOP 2014 — Object-Oriented Programming
+- title: 'TypeScript 2.8 Release Notes: Conditional Types'
+  year: 2018
+  url: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html
+  type: website
+  authors:
+  - Microsoft
+  venue: Microsoft Developer Network
+- title: Type-level Programming in TypeScript
+  year: 2023
+  doi: 10.48550/arXiv.2302.09465
+  type: journal
+  authors:
+  - Ajvani, Behdad and Vahidi, Sina and Itzhaki, Shay
+  venue: arXiv preprint arXiv:2302.09465
+- title: On the Complexity of TypeScript Type Checking
+  year: 2022
+  volume: 6
+  number: OOPSLA
+  doi: 10.1145/3563308
+  type: journal
+  authors:
+  - Bachmayr, Christoph and others
+  venue: Proceedings of the ACM on Programming Languages
 etymology:
-  term: "类型体操（Type Gymnastics）"
-  origin: "中文社区用语，最早见于 2019 年知乎与掘金对 type-challenges 仓库的讨论；英文社区对应术语为 type-level programming 或 type metaprogramming，源自 ML/Haskell 等函数式语言在类型层做计算的悠久传统。"
+- term: 类型体操（Type Gymnastics）
+  origin: 中文社区用语，最早见于 2019 年知乎与掘金对 type-challenges 仓库的讨论；英文社区对应术语为 type-level programming 或 type metaprogramming，源自 ML/Haskell 等函数式语言在类型层做计算的悠久传统。
+  english: Type Gymnastics
 ---
 
 

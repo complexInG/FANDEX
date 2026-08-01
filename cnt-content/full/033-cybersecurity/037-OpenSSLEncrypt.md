@@ -1,7 +1,8 @@
 ---
 order: 370
 title: Cybersecurity OpenSSL 加密解密
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity OpenSSL 加密解密 的完整教学讲解。

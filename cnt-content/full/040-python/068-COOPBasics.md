@@ -1,7 +1,8 @@
 ---
 order: 680
 title: Python 面向对象基础
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python 面向对象基础 的完整教学讲解。

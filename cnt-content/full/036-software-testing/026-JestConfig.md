@@ -1,7 +1,8 @@
 ---
 order: 260
 title: Jest 配置与快照
-module: 036-software-testing
+module: software-testing
+
 category: '036-software-testing'
 difficulty: beginner
 description: Jest 配置与快照 的完整教学讲解。

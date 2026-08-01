@@ -1,7 +1,8 @@
 ---
 order: 530
 title: Harbor 私有镜像仓库命令
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: Harbor 私有镜像仓库命令 的完整教学讲解。

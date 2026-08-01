@@ -1,7 +1,8 @@
 ---
 order: 420
 title: C# .NET CLI 命令
-module: 015-csharp
+module: csharp
+
 category: '015-csharp'
 difficulty: beginner
 description: C# .NET CLI 命令 的完整教学讲解。

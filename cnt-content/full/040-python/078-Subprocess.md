@@ -1,7 +1,8 @@
 ---
 order: 780
 title: Python subprocess 子进程
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python subprocess 子进程 的完整教学讲解。

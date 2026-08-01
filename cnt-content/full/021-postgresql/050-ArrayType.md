@@ -1,7 +1,8 @@
 ---
 order: 500
 title: 数组类型操作 语法速查手册
-module: 021-postgresql
+module: postgresql
+
 category: '021-postgresql'
 difficulty: beginner
 description: 数组类型操作 语法速查手册 的完整教学讲解。

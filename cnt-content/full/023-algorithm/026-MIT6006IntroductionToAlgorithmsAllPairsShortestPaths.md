@@ -1,203 +1,203 @@
 ---
 order: 107
-title: 'Floyd-Warshall 算法'
+title: Floyd-Warshall 算法
 module: algorithm
-category: 'Algorithm/AllPairsShortestPath'
+category: Algorithm/AllPairsShortestPath
 difficulty: intermediate
 description: 'Floyd-Warshall 多源最短路径算法：Robert W. Floyd 1962《Algorithm 97: Shortest Path》CACM 5(6):345 DOI:10.1145/367766.368168 与 Stephen Warshall 1962《A Theorem on Boolean Matrices》JACM 9(1):11-12 DOI:10.1145/321105.321107 独立提出的动态规划算法，Bernard Roy 1959 更早发现传递闭包版本。算法以 $O(n^3)$ 时间、$O(n^2)$ 空间求解所有顶点对最短路径，支持负权边（无负环），可用于负环检测与传递闭包计算。本文涵盖 DP 状态设计、最优子结构证明、路径重建、位运算优化、与 Dijkstra/Bellman-Ford/Johnson 算法的对比、在 OSPF 路由协议与 NetworkX 工业级库中的应用，附 Python/C++/Java 多语言实现与 CLRS 第 25 章风格习题。'
 author: fanquanpp
 tags:
-  - algorithm
-  - algorithm-graph
-  - algorithm-shortest-path
-  - algorithm-dynamic-programming
-  - algorithm-all-pairs-shortest-path
-  - algorithm-transitive-closure
-  - algorithm-negative-cycle
-  - algorithm-floyd
-  - algorithm-warshall
-  - algorithm-roy
+- algorithm
+- algorithm-graph
+- algorithm-shortest-path
+- algorithm-dynamic-programming
+- algorithm-all-pairs-shortest-path
+- algorithm-transitive-closure
+- algorithm-negative-cycle
+- algorithm-floyd
+- algorithm-warshall
+- algorithm-roy
 created: 2026-05-27
 updated: 2026-07-20
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 95
 related:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/图算法
-  - algorithm/动态规划
-  - algorithm/并查集
-  - algorithm/Kruskal算法
-  - algorithm/拓扑排序
+- algorithm/算法分析基础与学习路线
+- algorithm/图算法
+- algorithm/动态规划
+- algorithm/并查集
+- algorithm/Kruskal算法
+- algorithm/拓扑排序
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/图算法
-  - algorithm/动态规划
-  - cs-fundamentals/离散数学
+- algorithm/算法分析基础与学习路线
+- algorithm/图算法
+- algorithm/动态规划
+- cs-fundamentals/离散数学
 references:
-  - type: journal
-    authors:
-      - 'Floyd, Robert W.'
-    year: 1962
-    title: 'Algorithm 97: Shortest Path'
-    venue: 'Communications of the ACM'
-    volume: 5
-    issue: 6
-    pages: '345'
-    doi: '10.1145/367766.368168'
-    pages_note: 'The original algorithm column by Robert W. Floyd. Presents an O(n^3) algorithm for computing shortest paths between all pairs of vertices in a weighted graph. Floyd received the 1978 Turing Award partly for this and related work on program verification'
-  - type: journal
-    authors:
-      - 'Warshall, Stephen'
-    year: 1962
-    title: 'A Theorem on Boolean Matrices'
-    venue: 'Journal of the ACM'
-    volume: 9
-    issue: 1
-    pages: '11-12'
-    doi: '10.1145/321105.321107'
-    pages_note: 'The original derivation of what is now called the Warshall algorithm for transitive closure of binary relations. Warshall observed that the transitive closure of a relation can be computed in O(n^3) by iteratively considering each element as an intermediate'
-  - type: journal
-    authors:
-      - 'Roy, Bernard'
-    year: 1959
-    title: 'Transitivité et connexité'
-    venue: 'Comptes Rendus de l''Académie des Sciences de Paris'
-    volume: 249
-    pages: '216-218'
-    pages_note: 'Roy independently discovered the transitive closure algorithm one year before Warshall. Published in French, this paper remained less known in English-speaking community until later surveys recognized the contribution'
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'Chapter 23 (All-Pairs Shortest Paths), Section 23.1 (The Floyd-Warshall Algorithm), ISBN 978-0262046305'
-  - type: book
-    authors:
-      - 'Kleinberg, Jon'
-      - 'Tardos, Eva'
-    year: 2006
-    title: 'Algorithm Design'
-    venue: 'Pearson'
-    pages: 'ISBN 978-0321295354, Chapter 6 (Dynamic Programming), Section 6.6 (Shortest Paths Revisited)'
-  - type: book
-    authors:
-      - 'Sedgewick, Robert'
-      - 'Wayne, Kevin'
-    year: 2011
-    title: 'Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-    pages: 'ISBN 978-0321573513, Section 4.4 (Shortest Paths), Section 4.3 (Minimum Spanning Trees context)'
-  - type: book
-    authors:
-      - 'Skiena, Steven S.'
-    year: 2020
-    title: 'The Algorithm Design Manual'
-    venue: 'Springer'
-    version: '3rd edition'
-    pages: 'ISBN 978-3030542556, Chapter 6 (Graph Traversal), Chapter 8 (Dynamic Programming), Section 8.2.3 (All-Pairs Shortest Path)'
-  - type: book
-    authors:
-      - 'Tarjan, Robert Endre'
-    year: 1983
-    title: 'Data Structures and Network Algorithms'
-    venue: 'Society for Industrial and Applied Mathematics (SIAM)'
-    pages: 'ISBN 978-0898711875, CBMS-NSF Regional Conference Series in Applied Mathematics 44, Chapter 8 (Shortest Paths)'
-  - type: journal
-    authors:
-      - 'Johnson, Donald B.'
-    year: 1977
-    title: 'Efficient algorithms for shortest paths in sparse networks'
-    venue: 'Journal of the ACM'
-    volume: 24
-    issue: 1
-    pages: '1-13'
-    doi: '10.1145/321992.321993'
-    pages_note: 'Johnson algorithm for all-pairs shortest paths using Bellman-Ford reweighting plus Dijkstra. Achieves O(V^2 log V + VE) for sparse graphs with negative weights (no negative cycles), asymptotically faster than Floyd-Warshall for sparse graphs'
-  - type: journal
-    authors:
-      - 'Dijkstra, Edsger W.'
-    year: 1959
-    title: 'A note on two problems in connexion with graphs'
-    venue: 'Numerische Mathematik'
-    volume: 1
-    issue: 1
-    pages: '269-271'
-    doi: '10.1007/BF01386390'
-    pages_note: 'The original Dijkstra algorithm for single-source shortest paths with non-negative weights. Dijkstra received the 1972 Turing Award partly for this work'
-  - type: journal
-    authors:
-      - 'Bellman, Richard'
-    year: 1958
-    title: 'On a routing problem'
-    venue: 'Quarterly of Applied Mathematics'
-    volume: 16
-    issue: 1
-    pages: '87-90'
-    doi: '10.1090/qam/102435'
-    pages_note: 'The original Bellman-Ford algorithm for single-source shortest paths with negative weights (no negative cycles). Dynamic programming based, O(VE) time complexity'
-  - type: standard
-    authors:
-      - 'Moy, John T.'
-    year: 1998
-    title: 'OSPF Version 2 (RFC 2328)'
-    venue: 'Internet Engineering Task Force (IETF) RFC 2328'
-    pages: 'Standards Track RFC, defines the Open Shortest Path First link-state routing protocol used in IP networks'
-    doi: '10.17487/RFC2328'
-  - type: book
-    authors:
-      - 'Bondy, John A.'
-      - 'Murty, U. S. R.'
-    year: 2008
-    title: 'Graph Theory'
-    venue: 'Springer'
-    pages: 'ISBN 978-1846289699, Graduate Texts in Mathematics 244, Chapter 4 (Shortest Paths)'
-  - type: website
-    authors:
-      - 'NetworkX Developers'
-    year: 2026
-    title: 'NetworkX Reference: floyd_warshall_numpy'
-    venue: 'NetworkX Documentation'
-    url: 'https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.dense.floyd_warshall_numpy.html'
-    pages: 'Official documentation of NetworkX implementation of Floyd-Warshall using NumPy dense matrix operations'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'Massachusetts Institute of Technology'
-    year: 2026
-    title: 'MIT 6.006: Introduction to Algorithms - All-Pairs Shortest Paths'
-    venue: 'MIT OpenCourseWare'
-    url: 'https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/'
-    pages: 'Lecture 16: All-Pairs Shortest Paths, covering Floyd-Warshall and Johnson algorithms'
-    accessedDate: '2026-07-20'
+- type: journal
+  authors:
+  - Floyd, Robert W.
+  year: 1962
+  title: 'Algorithm 97: Shortest Path'
+  venue: Communications of the ACM
+  volume: 5
+  issue: 6
+  pages: '345'
+  doi: 10.1145/367766.368168
+  pagesNote: The original algorithm column by Robert W. Floyd. Presents an O(n^3) algorithm for computing shortest paths between all pairs of vertices in a weighted graph. Floyd received the 1978 Turing Award partly for this and related work on program verification
+- type: journal
+  authors:
+  - Warshall, Stephen
+  year: 1962
+  title: A Theorem on Boolean Matrices
+  venue: Journal of the ACM
+  volume: 9
+  issue: 1
+  pages: 11-12
+  doi: 10.1145/321105.321107
+  pagesNote: The original derivation of what is now called the Warshall algorithm for transitive closure of binary relations. Warshall observed that the transitive closure of a relation can be computed in O(n^3) by iteratively considering each element as an intermediate
+- type: journal
+  authors:
+  - Roy, Bernard
+  year: 1959
+  title: Transitivité et connexité
+  venue: Comptes Rendus de l'Académie des Sciences de Paris
+  volume: 249
+  pages: 216-218
+  pagesNote: Roy independently discovered the transitive closure algorithm one year before Warshall. Published in French, this paper remained less known in English-speaking community until later surveys recognized the contribution
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: Chapter 23 (All-Pairs Shortest Paths), Section 23.1 (The Floyd-Warshall Algorithm), ISBN 978-0262046305
+- type: book
+  authors:
+  - Kleinberg, Jon
+  - Tardos, Eva
+  year: 2006
+  title: Algorithm Design
+  venue: Pearson
+  pages: ISBN 978-0321295354, Chapter 6 (Dynamic Programming), Section 6.6 (Shortest Paths Revisited)
+- type: book
+  authors:
+  - Sedgewick, Robert
+  - Wayne, Kevin
+  year: 2011
+  title: Algorithms
+  venue: Addison-Wesley Professional
+  version: 4th edition
+  pages: ISBN 978-0321573513, Section 4.4 (Shortest Paths), Section 4.3 (Minimum Spanning Trees context)
+- type: book
+  authors:
+  - Skiena, Steven S.
+  year: 2020
+  title: The Algorithm Design Manual
+  venue: Springer
+  version: 3rd edition
+  pages: ISBN 978-3030542556, Chapter 6 (Graph Traversal), Chapter 8 (Dynamic Programming), Section 8.2.3 (All-Pairs Shortest Path)
+- type: book
+  authors:
+  - Tarjan, Robert Endre
+  year: 1983
+  title: Data Structures and Network Algorithms
+  venue: Society for Industrial and Applied Mathematics (SIAM)
+  pages: ISBN 978-0898711875, CBMS-NSF Regional Conference Series in Applied Mathematics 44, Chapter 8 (Shortest Paths)
+- type: journal
+  authors:
+  - Johnson, Donald B.
+  year: 1977
+  title: Efficient algorithms for shortest paths in sparse networks
+  venue: Journal of the ACM
+  volume: 24
+  issue: 1
+  pages: 1-13
+  doi: 10.1145/321992.321993
+  pagesNote: Johnson algorithm for all-pairs shortest paths using Bellman-Ford reweighting plus Dijkstra. Achieves O(V^2 log V + VE) for sparse graphs with negative weights (no negative cycles), asymptotically faster than Floyd-Warshall for sparse graphs
+- type: journal
+  authors:
+  - Dijkstra, Edsger W.
+  year: 1959
+  title: A note on two problems in connexion with graphs
+  venue: Numerische Mathematik
+  volume: 1
+  issue: 1
+  pages: 269-271
+  doi: 10.1007/BF01386390
+  pagesNote: The original Dijkstra algorithm for single-source shortest paths with non-negative weights. Dijkstra received the 1972 Turing Award partly for this work
+- type: journal
+  authors:
+  - Bellman, Richard
+  year: 1958
+  title: On a routing problem
+  venue: Quarterly of Applied Mathematics
+  volume: 16
+  issue: 1
+  pages: 87-90
+  doi: 10.1090/qam/102435
+  pagesNote: The original Bellman-Ford algorithm for single-source shortest paths with negative weights (no negative cycles). Dynamic programming based, O(VE) time complexity
+- type: standard
+  authors:
+  - Moy, John T.
+  year: 1998
+  title: OSPF Version 2 (RFC 2328)
+  venue: Internet Engineering Task Force (IETF) RFC 2328
+  pages: Standards Track RFC, defines the Open Shortest Path First link-state routing protocol used in IP networks
+  doi: 10.17487/RFC2328
+- type: book
+  authors:
+  - Bondy, John A.
+  - Murty, U. S. R.
+  year: 2008
+  title: Graph Theory
+  venue: Springer
+  pages: ISBN 978-1846289699, Graduate Texts in Mathematics 244, Chapter 4 (Shortest Paths)
+- type: website
+  authors:
+  - NetworkX Developers
+  year: 2026
+  title: 'NetworkX Reference: floyd_warshall_numpy'
+  venue: NetworkX Documentation
+  url: https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.dense.floyd_warshall_numpy.html
+  pages: Official documentation of NetworkX implementation of Floyd-Warshall using NumPy dense matrix operations
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - Massachusetts Institute of Technology
+  year: 2026
+  title: 'MIT 6.006: Introduction to Algorithms - All-Pairs Shortest Paths'
+  venue: MIT OpenCourseWare
+  url: https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/
+  pages: 'Lecture 16: All-Pairs Shortest Paths, covering Floyd-Warshall and Johnson algorithms'
+  accessedDate: '2026-07-20'
 etymology:
-  - term: Floyd-Warshall 算法
-    english: Floyd-Warshall Algorithm
-    origin: '该算法名取自 Robert W. Floyd 与 Stephen Warshall 两位独立发现者。Floyd 1962 在《Algorithm 97: Shortest Path》CACM 5(6):345 中提出加权图全源最短路径版本（DOI:10.1145/367766.368168），同年 Warshall 在《A Theorem on Boolean Matrices》JACM 9(1):11-12 提出布尔矩阵传递闭包版本（DOI:10.1145/321105.321107）。Bernard Roy 1959《Transitivité et connexité》Comptes Rendus 249:216-218 更早发现相同思想，故部分欧洲文献称 Roy-Floyd-Warshall 算法。Floyd 1978 获 Turing Award'
-  - term: 最短路径
-    english: shortest path
-    origin: 'shortest path 概念可追溯至 19 世纪图论，但作为算法问题形式化源于 Dijkstra 1959《A note on two problems in connexion with graphs》Numerische Mathematik 1:269-271 DOI:10.1007/BF01386390。多源最短路径（all-pairs shortest path, APSP）则是 Floyd 1962 与 Johnson 1977 系统化研究的对象'
-  - term: 传递闭包
-    english: transitive closure
-    origin: 'transitive closure 来自集合论与关系代数。给定关系 R，其传递闭包 R⁺ 是包含 R 的最小传递关系。Warshall 1962 给出 $O(n^3)$ 算法。在图论中传递闭包等价于有向图的可达性矩阵'
-  - term: 负环
-    english: negative cycle
-    origin: 'negative cycle 指有向图中权值和为负的环。存在负环时两点间最短路径无定义（可沿环无限循环降低路径长度）。Bellman-Ford 1958 与 Floyd-Warshall 1962 均能检测负环：前者在第 V 次迭代后仍能松弛，后者在 $\text{dist}[i][i] < 0$ 时报告'
-  - term: 动态规划
-    english: dynamic programming
-    origin: 'dynamic programming 由 Richard Bellman 1952《On the Theory of Dynamic Programming》PNAS 38(8):716-719 命名。programming 在此指"表格法"而非"编程"。Floyd-Warshall 是动态规划的经典范例：状态 $d^{(k)}_{ij}$ 表示从 i 到 j 仅经过 $\{1, \ldots, k\}$ 中间点的最短距离'
-  - term: 邻接矩阵
-    english: adjacency matrix
-    origin: 'adjacency matrix 由 Konig 1936《Theorie der endlichen und unendlichen Graphen》系统化。对于带权图 $G = (V, E)$，邻接矩阵 $W$ 满足 $W_{ij} = w(i, j)$ 若 $(i, j) \in E$，否则 $W_{ij} = \infty$（自环 $W_{ii} = 0$）。Floyd-Warshall 在邻接矩阵上原地进行 $n$ 轮松弛'
-  - term: 中间点
-    english: intermediate vertex
-    origin: 'intermediate vertex 在 Floyd-Warshall 中指路径上非起终点的节点。算法核心思想是逐步允许更多中间点：第 k 轮允许 $\{1, \ldots, k\}$ 作为中间点，递推 $d^{(k)}_{ij} = \min(d^{(k-1)}_{ij}, d^{(k-1)}_{ik} + d^{(k-1)}_{kj})$'
+- term: Floyd-Warshall 算法
+  english: Floyd-Warshall Algorithm
+  origin: '该算法名取自 Robert W. Floyd 与 Stephen Warshall 两位独立发现者。Floyd 1962 在《Algorithm 97: Shortest Path》CACM 5(6):345 中提出加权图全源最短路径版本（DOI:10.1145/367766.368168），同年 Warshall 在《A Theorem on Boolean Matrices》JACM 9(1):11-12 提出布尔矩阵传递闭包版本（DOI:10.1145/321105.321107）。Bernard Roy 1959《Transitivité et connexité》Comptes Rendus 249:216-218 更早发现相同思想，故部分欧洲文献称 Roy-Floyd-Warshall 算法。Floyd 1978 获 Turing Award'
+- term: 最短路径
+  english: shortest path
+  origin: shortest path 概念可追溯至 19 世纪图论，但作为算法问题形式化源于 Dijkstra 1959《A note on two problems in connexion with graphs》Numerische Mathematik 1:269-271 DOI:10.1007/BF01386390。多源最短路径（all-pairs shortest path, APSP）则是 Floyd 1962 与 Johnson 1977 系统化研究的对象
+- term: 传递闭包
+  english: transitive closure
+  origin: transitive closure 来自集合论与关系代数。给定关系 R，其传递闭包 R⁺ 是包含 R 的最小传递关系。Warshall 1962 给出 $O(n^3)$ 算法。在图论中传递闭包等价于有向图的可达性矩阵
+- term: 负环
+  english: negative cycle
+  origin: negative cycle 指有向图中权值和为负的环。存在负环时两点间最短路径无定义（可沿环无限循环降低路径长度）。Bellman-Ford 1958 与 Floyd-Warshall 1962 均能检测负环：前者在第 V 次迭代后仍能松弛，后者在 $\text{dist}[i][i] < 0$ 时报告
+- term: 动态规划
+  english: dynamic programming
+  origin: dynamic programming 由 Richard Bellman 1952《On the Theory of Dynamic Programming》PNAS 38(8):716-719 命名。programming 在此指"表格法"而非"编程"。Floyd-Warshall 是动态规划的经典范例：状态 $d^{(k)}_{ij}$ 表示从 i 到 j 仅经过 $\{1, \ldots, k\}$ 中间点的最短距离
+- term: 邻接矩阵
+  english: adjacency matrix
+  origin: adjacency matrix 由 Konig 1936《Theorie der endlichen und unendlichen Graphen》系统化。对于带权图 $G = (V, E)$，邻接矩阵 $W$ 满足 $W_{ij} = w(i, j)$ 若 $(i, j) \in E$，否则 $W_{ij} = \infty$（自环 $W_{ii} = 0$）。Floyd-Warshall 在邻接矩阵上原地进行 $n$ 轮松弛
+- term: 中间点
+  english: intermediate vertex
+  origin: intermediate vertex 在 Floyd-Warshall 中指路径上非起终点的节点。算法核心思想是逐步允许更多中间点：第 k 轮允许 $\{1, \ldots, k\}$ 作为中间点，递推 $d^{(k)}_{ij} = \min(d^{(k-1)}_{ij}, d^{(k-1)}_{ik} + d^{(k-1)}_{kj})$
 ---
 
 

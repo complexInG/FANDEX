@@ -1,7 +1,8 @@
 ---
 order: 970
 title: Python 性能分析与优化
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python 性能分析与优化 的完整教学讲解。

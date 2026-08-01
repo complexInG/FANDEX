@@ -1,7 +1,8 @@
 ---
 order: 480
 title: PostgreSQL psql CLI 命令
-module: 021-postgresql
+module: postgresql
+
 category: '021-postgresql'
 difficulty: beginner
 description: PostgreSQL psql CLI 命令 的完整教学讲解。

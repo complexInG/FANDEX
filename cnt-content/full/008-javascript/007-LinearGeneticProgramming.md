@@ -4,14 +4,14 @@ title: 递归与尾调用优化
 module: javascript
 category: JavaScript
 tags:
-  - JavaScript
-  - Recursion
-  - TailCall
-  - TCO
-  - Trampoline
-  - CPS
-  - 函数式编程
-  - 算法
+- JavaScript
+- Recursion
+- TailCall
+- TCO
+- Trampoline
+- CPS
+- 函数式编程
+- 算法
 difficulty: advanced
 description: 深入解析递归的形式化定义、调用栈模型、尾调用与 TCO 规范、trampoline 技术、CPS 续延传递、栈溢出防护等高级主题,涵盖 MIT 6.001 / Stanford CS107 / SICP 级别的工程教学
 author: fanquanpp
@@ -19,104 +19,104 @@ updated: '2026-07-20'
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 related:
-  - javascript/控制流
-  - javascript/高阶函数
-  - javascript/柯里化与偏函数
-  - javascript/生成器函数
-  - javascript/Promise构造器
-  - javascript/事件循环
+- javascript/控制流
+- javascript/高阶函数
+- javascript/柯里化与偏函数
+- javascript/生成器函数
+- javascript/Promise构造器
+- javascript/事件循环
 prerequisites:
-  - javascript/语法速查
-  - javascript/高阶函数
-  - javascript/生成器函数
+- javascript/语法速查
+- javascript/高阶函数
+- javascript/生成器函数
 references:
-  - type: standard
-    authors:
-      - ECMA International
-    year: 2025
-    title: 'ECMAScript 2025 Language Specification (ECMA-262, 16th Edition) - Tail Position Calls'
-    venue: ECMA Standard
-    doi: 10.17445/ECMA-262
-    url: https://tc39.es/ecma262/#sec-tail-position-calls
-  - type: book
-    authors:
-      - Harold Abelson
-      - Gerald Jay Sussman
-      - Julie Sussman
-    year: 1996
-    title: 'Structure and Interpretation of Computer Programs (SICP), 2nd Edition'
-    venue: MIT Press
-    url: https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book.html
-  - type: journal
-    authors:
-      - Guy L. Steele Jr.
-    year: 1977
-    title: 'Debunking the "Expensive Procedure Call" Myth or, Procedure Call Implementations Considered Harmful or, LAMBDA: The Ultimate GOTO'
-    venue: 'MIT AI Lab Memo 443'
-    url: https://dspace.mit.edu/handle/1721.1/5753
-  - type: journal
-    authors:
-      - Daniel P. Friedman
-      - Mitchell Wand
-    year: 1984
-    title: 'Essentials of Programming Languages (EOPL)'
-    venue: 'MIT Press'
-    url: https://eopl3.com/
-  - type: journal
-    authors:
-      - Richard A. Kelsey
-      - William D. Clinger
-      - Jonathan Rees
-      - et al.
-    year: 1998
-    title: 'Revised^5 Report on the Algorithmic Language Scheme (R5RS)'
-    venue: 'Higher-Order and Symbolic Computation'
-    doi: 10.1023/A:1010061814543
-  - type: journal
-    authors:
-      - Appel Andrew W.
-    year: 1992
-    title: 'Compiling with Continuations'
-    venue: 'Cambridge University Press'
-    doi: 10.1017/CBO9780511609619
-  - type: book
-    authors:
-      - Kyle Simpson
-    year: 2016
-    title: 'You Don''t Know JS: Scope & Closures - Recursion and Stacks'
-    venue: O'Reilly Media
-    url: https://github.com/getify/You-Dont-Know-JS
-  - type: book
-    authors:
-      - Dr. Axel Rauschmayer
-    year: 2014
-    title: 'Exploring ES6: Tail Call Optimization'
-    venue: Leanpub
-    url: https://exploringjs.com/es6/ch_tail-calls.html
-  - type: journal
-    authors:
-      - Michael F. Brameier
-      - Wolfgang Banzhaf
-    year: 2002
-    title: 'Linear Genetic Programming'
-    venue: 'Genetic and Evolutionary Computation Conference'
-    doi: 10.1007/978-1-4615-0295-7
+- type: standard
+  authors:
+  - ECMA International
+  year: 2025
+  title: ECMAScript 2025 Language Specification (ECMA-262, 16th Edition) - Tail Position Calls
+  venue: ECMA Standard
+  doi: 10.17445/ECMA-262
+  url: https://tc39.es/ecma262/#sec-tail-position-calls
+- type: book
+  authors:
+  - Harold Abelson
+  - Gerald Jay Sussman
+  - Julie Sussman
+  year: 1996
+  title: Structure and Interpretation of Computer Programs (SICP), 2nd Edition
+  venue: MIT Press
+  url: https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book.html
+- type: journal
+  authors:
+  - Guy L. Steele Jr.
+  year: 1977
+  title: 'Debunking the "Expensive Procedure Call" Myth or, Procedure Call Implementations Considered Harmful or, LAMBDA: The Ultimate GOTO'
+  venue: MIT AI Lab Memo 443
+  url: https://dspace.mit.edu/handle/1721.1/5753
+- type: journal
+  authors:
+  - Daniel P. Friedman
+  - Mitchell Wand
+  year: 1984
+  title: Essentials of Programming Languages (EOPL)
+  venue: MIT Press
+  url: https://eopl3.com/
+- type: journal
+  authors:
+  - Richard A. Kelsey
+  - William D. Clinger
+  - Jonathan Rees
+  - et al.
+  year: 1998
+  title: Revised^5 Report on the Algorithmic Language Scheme (R5RS)
+  venue: Higher-Order and Symbolic Computation
+  doi: 10.1023/A:1010061814543
+- type: journal
+  authors:
+  - Appel Andrew W.
+  year: 1992
+  title: Compiling with Continuations
+  venue: Cambridge University Press
+  doi: 10.1017/CBO9780511609619
+- type: book
+  authors:
+  - Kyle Simpson
+  year: 2016
+  title: 'You Don''t Know JS: Scope & Closures - Recursion and Stacks'
+  venue: O'Reilly Media
+  url: https://github.com/getify/You-Dont-Know-JS
+- type: book
+  authors:
+  - Dr. Axel Rauschmayer
+  year: 2014
+  title: 'Exploring ES6: Tail Call Optimization'
+  venue: Leanpub
+  url: https://exploringjs.com/es6/ch_tail-calls.html
+- type: journal
+  authors:
+  - Michael F. Brameier
+  - Wolfgang Banzhaf
+  year: 2002
+  title: Linear Genetic Programming
+  venue: Genetic and Evolutionary Computation Conference
+  doi: 10.1007/978-1-4615-0295-7
 etymology:
-  - term: Recursion
-    english: Recursion
-    origin: 源自拉丁语 "recursio"(返回、再运行),前缀 "re-" 表示"再","cursus" 表示"运行"。计算机科学中指函数调用自身,1960 年代由 McCarthy 在 Lisp 中正式定义。
-  - term: Tail Call
-    english: Tail Call
-    origin: '"tail" 源自古英语 "taegl"(尾、尾状物),"call" 即函数调用。尾调用指函数体最后一步是调用另一函数,无需保留当前栈帧。'
-  - term: Trampoline
-    english: Trampoline
-    origin: '"trampoline" 借自西班牙语 "trampolín"(跳水板),由 "trampar"(践踏)+ "-olín"( diminutive)组成。编程中指反复弹跳的循环结构,将递归调用转为 thunk 的反复执行。'
-  - term: Continuation
-    english: Continuation
-    origin: 源自拉丁语 "continuare"(继续、连接)。在编程语言理论中,continuation 表示"程序剩余的计算",CPS(Continuation-Passing Style)将控制流显式作为参数传递。
-  - term: Proper Tail Call
-    english: Proper Tail Call (PTC)
-    origin: '"proper" 源自拉丁语 "proprius"(自己的、合适的)。PTC 是 ECMAScript 规范的正式术语,指符合规范的尾调用(语法位置在尾部的调用),引擎必须保证不增加调用栈深度。'
+- term: Recursion
+  english: Recursion
+  origin: 源自拉丁语 "recursio"(返回、再运行),前缀 "re-" 表示"再","cursus" 表示"运行"。计算机科学中指函数调用自身,1960 年代由 McCarthy 在 Lisp 中正式定义。
+- term: Tail Call
+  english: Tail Call
+  origin: '"tail" 源自古英语 "taegl"(尾、尾状物),"call" 即函数调用。尾调用指函数体最后一步是调用另一函数,无需保留当前栈帧。'
+- term: Trampoline
+  english: Trampoline
+  origin: '"trampoline" 借自西班牙语 "trampolín"(跳水板),由 "trampar"(践踏)+ "-olín"( diminutive)组成。编程中指反复弹跳的循环结构,将递归调用转为 thunk 的反复执行。'
+- term: Continuation
+  english: Continuation
+  origin: 源自拉丁语 "continuare"(继续、连接)。在编程语言理论中,continuation 表示"程序剩余的计算",CPS(Continuation-Passing Style)将控制流显式作为参数传递。
+- term: Proper Tail Call
+  english: Proper Tail Call (PTC)
+  origin: '"proper" 源自拉丁语 "proprius"(自己的、合适的)。PTC 是 ECMAScript 规范的正式术语,指符合规范的尾调用(语法位置在尾部的调用),引擎必须保证不增加调用栈深度。'
 ---
 
 

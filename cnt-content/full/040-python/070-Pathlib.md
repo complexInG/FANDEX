@@ -1,7 +1,8 @@
 ---
 order: 700
 title: Python pathlib 路径操作
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python pathlib 路径操作 的完整教学讲解。

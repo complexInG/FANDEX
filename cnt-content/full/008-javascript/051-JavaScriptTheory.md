@@ -1,55 +1,62 @@
 ---
-title: 'JavaScript 理论知识点'
+title: JavaScript 理论知识点
 module: javascript
-category: 'JS Theory'
+category: JS Theory
 order: 170
 tags:
-  - javascript
-  - theory
-  - performance
-  - ecmascript
-  - event-loop
-  - prototype
-  - closure
+- javascript
+- theory
+- performance
+- ecmascript
+- event-loop
+- prototype
+- closure
 difficulty: intermediate
 description: 执行上下文、作用域链、事件循环、原型继承与内存管理的形式语义与工程实践。
 related:
-  - javascript/Node.js高级特性与性能优化
-  - 'javascript/项目示例-待办事项应用'
+- javascript/Node.js高级特性与性能优化
+- javascript/项目示例-待办事项应用
 prerequisites:
-  - javascript/语法速查
+- javascript/语法速查
 references:
-  - author: [Brendan Eich]
-    title: 'A Brief History of JavaScript'
-    publisher: 'Mozilla Corporation'
-    year: 2020
-    type: website
-    url: 'https://javascript.info/js'
-  - author: [ECMA International]
-    title: 'ECMAScript 2026 Language Specification, 27th Edition'
-    publisher: 'ECMA International'
-    year: 2026
-    type: standard
-    doi: '10.17445/ecma-262-27'
-  - author: [Anne van Kesteren]
-    title: 'HTML Living Standard, Section 8.1.7 Job and Event Loop Model'
-    publisher: 'WHATWG'
-    year: 2026
-    type: standard
-    url: 'https://html.spec.whatwg.org/'
-  - author: [Andreas Rossberg]
-    title: 'JavaScript Semantics: A Formal Specification of the ECMAScript Language'
-    publisher: 'Schloss Dagstuhl'
-    year: 2018
-    type: conference
-    doi: '10.4230/LIPIcs.ECOOP.2018.15'
+- title: A Brief History of JavaScript
+  publisher: Mozilla Corporation
+  year: 2020
+  type: website
+  url: https://javascript.info/js
+  authors:
+  - Brendan Eich
+- title: ECMAScript 2026 Language Specification, 27th Edition
+  publisher: ECMA International
+  year: 2026
+  type: standard
+  doi: 10.17445/ecma-262-27
+  authors:
+  - ECMA International
+- title: HTML Living Standard, Section 8.1.7 Job and Event Loop Model
+  publisher: WHATWG
+  year: 2026
+  type: standard
+  url: https://html.spec.whatwg.org/
+  authors:
+  - Anne van Kesteren
+- title: 'JavaScript Semantics: A Formal Specification of the ECMAScript Language'
+  publisher: Schloss Dagstuhl
+  year: 2018
+  type: conference
+  doi: 10.4230/LIPIcs.ECOOP.2018.15
+  authors:
+  - Andreas Rossberg
 etymology:
-  - term: JavaScript
-    origin: '1995 年 Brendan Eich 在 Netscape 用 10 天完成初版 Mocha，后更名为 LiveScript，为搭 Java 热度最终改名 JavaScript；商标由 Oracle 持有，ECMA 标准化后称 ECMAScript。'
-  - term: Closure
-    origin: '源自 1964 年 Peter Landin 的 SECD 机器理论，将函数与其绑定环境打包为一个闭合一等公民。'
-  - term: Prototype
-    origin: 'Henry Lieberman 1986 年 MIT AI Lab 论文 "Using Prototypical Objects to Implement Shared Behavior" 提出原型面向对象，影响 Self 与 JavaScript。'
+- term: JavaScript
+  origin: 1995 年 Brendan Eich 在 Netscape 用 10 天完成初版 Mocha，后更名为 LiveScript，为搭 Java 热度最终改名 JavaScript；商标由 Oracle 持有，ECMA 标准化后称 ECMAScript。
+  english: JavaScript
+- term: Closure
+  origin: 源自 1964 年 Peter Landin 的 SECD 机器理论，将函数与其绑定环境打包为一个闭合一等公民。
+  english: Closure
+- term: Prototype
+  origin: Henry Lieberman 1986 年 MIT AI Lab 论文 "Using Prototypical Objects to Implement Shared Behavior" 提出原型面向对象，影响 Self 与 JavaScript。
+  english: Prototype
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 ---

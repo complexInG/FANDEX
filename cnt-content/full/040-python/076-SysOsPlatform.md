@@ -1,7 +1,8 @@
 ---
 order: 760
 title: Python sys/os 平台接口
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python sys/os 平台接口 的完整教学讲解。

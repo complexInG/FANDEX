@@ -1,7 +1,8 @@
 ---
 order: 280
 title: Networking curl HTTP 请求
-module: 032-networking
+module: networking
+
 category: '032-networking'
 difficulty: beginner
 description: Networking curl HTTP 请求 的完整教学讲解。

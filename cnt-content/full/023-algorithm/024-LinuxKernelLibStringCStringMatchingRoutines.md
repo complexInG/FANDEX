@@ -2,201 +2,201 @@
 order: 105
 title: KMP字符串匹配
 module: algorithm
-category: 'Algorithm/String'
+category: Algorithm/String
 difficulty: advanced
-description: 'Knuth-Morris-Pratt（KMP）字符串匹配算法：基于模式串自身结构构建部分匹配表（PMT/next 数组），实现 O(n+m) 线性时间匹配。涵盖 Morris 1970、Pratt 1970 独立发现与 Knuth 1970 复杂度证明的演进脉络，Knuth-Morris-Pratt 1977《Fast Pattern Matching in Strings》SIAM J. Comp. 6(2):323-350 DOI:10.1137/0206024 系统化发表；Cook 1971 字符串匹配下界、Aho-Corasick 1975 多模式扩展、Boyer-Moore 1977、Rabin-Karp 1987、Sunday 1990 变种对比；KMP 在 GNU grep、ESLint、IDE 语法检查、生物信息学 read 比对、Linux 内核字符串搜索中的应用；附 Python/C++/Java 多语言实现与 KMP 自动机、AC 自动机扩展。'
+description: Knuth-Morris-Pratt（KMP）字符串匹配算法：基于模式串自身结构构建部分匹配表（PMT/next 数组），实现 O(n+m) 线性时间匹配。涵盖 Morris 1970、Pratt 1970 独立发现与 Knuth 1970 复杂度证明的演进脉络，Knuth-Morris-Pratt 1977《Fast Pattern Matching in Strings》SIAM J. Comp. 6(2):323-350 DOI:10.1137/0206024 系统化发表；Cook 1971 字符串匹配下界、Aho-Corasick 1975 多模式扩展、Boyer-Moore 1977、Rabin-Karp 1987、Sunday 1990 变种对比；KMP 在 GNU grep、ESLint、IDE 语法检查、生物信息学 read 比对、Linux 内核字符串搜索中的应用；附 Python/C++/Java 多语言实现与 KMP 自动机、AC 自动机扩展。
 author: fanquanpp
 tags:
-  - algorithm
-  - algorithm-string
-  - algorithm-pattern-matching
-  - algorithm-kmp
-  - algorithm-finite-automaton
-  - algorithm-prefix-function
-  - algorithm-amortized
-  - algorithm-linear-time
-  - algorithm-cpp
-  - algorithm-python
+- algorithm
+- algorithm-string
+- algorithm-pattern-matching
+- algorithm-kmp
+- algorithm-finite-automaton
+- algorithm-prefix-function
+- algorithm-amortized
+- algorithm-linear-time
+- algorithm-cpp
+- algorithm-python
 created: 2026-06-14
 updated: 2026-07-20
 lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 95
 related:
-  - algorithm/字符串算法
-  - algorithm/算法分析基础与学习路线
-  - algorithm/布隆过滤器
-  - algorithm/动态规划状态压缩
-  - algorithm/跳跃表
+- algorithm/字符串算法
+- algorithm/算法分析基础与学习路线
+- algorithm/布隆过滤器
+- algorithm/动态规划状态压缩
+- algorithm/跳跃表
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/字符串算法
+- algorithm/算法分析基础与学习路线
+- algorithm/字符串算法
 references:
-  - type: journal
-    authors:
-      - 'Knuth, Donald E.'
-      - 'Morris, James H.'
-      - 'Pratt, Vaughan R.'
-    year: 1977
-    title: 'Fast pattern matching in strings'
-    venue: 'SIAM Journal on Computing'
-    volume: 6
-    issue: 2
-    pages: '323-350'
-    doi: '10.1137/0206024'
-    pages_note: 'The original KMP paper. Knuth, Morris, and Pratt independently discovered the algorithm in 1970; Knuth provided the linear-time complexity proof. The paper also proves the lower bound of 2n-m comparisons for any pattern matching algorithm on a 2-letter alphabet (improved by Cole 1994 to 2n-m in the worst case)'
-  - type: journal
-    authors:
-      - 'Cook, Stephen A.'
-    year: 1971
-    title: 'Linear time simulation of deterministic two-way pushdown automata'
-    venue: 'Information Processing, Proceedings of IFIP Congress 71, North-Holland, pp. 75-80'
-    pages: 'Theoretical foundation that led to the KMP algorithm. Cook showed that deterministic two-way pushdown automata can be simulated in linear time; this result inspired Morris and Pratt to derive the linear-time pattern matching algorithm'
-  - type: journal
-    authors:
-      - 'Aho, Alfred V.'
-      - 'Corasick, Margaret J.'
-    year: 1975
-    title: 'Efficient string matching: an aid to bibliographic search'
-    venue: 'Communications of the ACM'
-    volume: 18
-    issue: 6
-    pages: '333-340'
-    doi: '10.1145/360825.360855'
-    pages_note: 'The Aho-Corasick algorithm for multi-pattern matching. Builds a trie with failure links (generalization of KMP next array). Runs in O(n + m + z) time where z is the number of matches. Aho-Corasick is the foundation of fgrep, BSD grep -F, and many IDS systems'
-  - type: journal
-    authors:
-      - 'Boyer, Robert S.'
-      - 'Moore, J Strother'
-    year: 1977
-    title: 'A fast string searching algorithm'
-    venue: 'Communications of the ACM'
-    volume: 20
-    issue: 10
-    pages: '762-772'
-    doi: '10.1145/359842.359859'
-    pages_note: 'The Boyer-Moore algorithm. Scans the pattern from right to left, using bad-character and good-suffix heuristics. Sublinear O(n/m) in the best case; O(nm) worst case naive, improved to O(n+m) by Galil 1979 and Cole 1994'
-  - type: journal
-    authors:
-      - 'Karp, Richard M.'
-      - 'Rabin, Michael O.'
-    year: 1987
-    title: 'Efficient randomized pattern-matching algorithms'
-    venue: 'IBM Journal of Research and Development'
-    volume: 31
-    issue: 2
-    pages: '249-260'
-    doi: '10.1147/rd.312.0249'
-    pages_note: 'The Rabin-Karp algorithm. Uses rolling hash to achieve O(n+m) expected time. Generalizes to 2D pattern matching and is the basis of rsync delta computation. Rabin received the 1976 Turing Award; Karp received the 1985 Turing Award'
-  - type: journal
-    authors:
-      - 'Cole, Richard'
-    year: 1994
-    title: 'Tight bounds on the complexity of the Boyer-Moore string matching algorithm'
-    venue: 'SIAM Journal on Computing'
-    volume: 23
-    issue: 5
-    pages: '1075-1091'
-    doi: '10.1137/S0097539790325764'
-    pages_note: 'Cole improved the upper bound of Boyer-Moore to 3n comparisons in the worst case and proved lower bounds for string matching. Cole 1995 (SIAM J. Comp.) further proved the 2n-m lower bound for prefix-based pattern matching is tight'
-  - type: journal
-    authors:
-      - 'Horspool, R. Nigel'
-    year: 1980
-    title: 'Practical fast searching in strings'
-    venue: 'Software: Practice and Experience'
-    volume: 10
-    issue: 6
-    pages: '501-506'
-    doi: '10.1002/spe.4380100608'
-    pages_note: 'The Boyer-Moore-Horspool (BMH) algorithm. Simplification of Boyer-Moore using only the bad-character heuristic with the rightmost character. Practical performance is often superior to BM and KMP on natural language text'
-  - type: journal
-    authors:
-      - 'Sunday, Daniel M.'
-    year: 1990
-    title: 'A very fast substring search algorithm'
-    venue: 'Communications of the ACM'
-    volume: 33
-    issue: 8
-    pages: '132-142'
-    doi: '10.1145/79173.79184'
-    pages_note: 'The Sunday algorithm. A variant of BMH that uses the character immediately after the current window for the bad-character heuristic. Often faster than BMH in practice'
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-    pages: 'Chapter 32 (String Matching), ISBN 978-0262046305. Sections 32.1 (naive), 32.2 (Rabin-Karp), 32.3 (string matching with finite automata), 32.4 (Knuth-Morris-Pratt)'
-  - type: book
-    authors:
-      - 'Gusfield, Dan'
-    year: 1997
-    title: 'Algorithms on Strings, Trees, and Sequences: Computer Science and Computational Biology'
-    venue: 'Cambridge University Press'
-    pages: 'ISBN 978-0521585194. Chapter 2 (Exact Matching: A Deep Look), Section 2.3 (The Knuth-Morris-Pratt Algorithm). The definitive reference for string algorithms with computational biology applications'
-  - type: book
-    authors:
-      - 'Crochemore, Maxime'
-      - 'Hancart, Christophe'
-      - 'Lecroq, Thierry'
-    year: 2007
-    title: 'Algorithms on Strings'
-    venue: 'Cambridge University Press'
-    pages: 'ISBN 978-0521848992. Comprehensive treatment of string matching algorithms including KMP, BM, AC, suffix trees, suffix automata'
-  - type: book
-    authors:
-      - 'Sedgewick, Robert'
-      - 'Wayne, Kevin'
-    year: 2011
-    title: 'Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '4th edition'
-    pages: 'ISBN 978-0321573513. Section 5.3 (Substring Search), pp. 760-776. KMP, BM, Rabin-Karp implementations in Java'
-  - type: website
-    authors:
-      - 'Free Software Foundation'
-    year: 2026
-    title: 'GNU grep manual: File and command options'
-    venue: 'GNU Project'
-    url: 'https://www.gnu.org/software/grep/manual/grep.html'
-    pages: 'GNU grep uses a hybrid strategy: Boyer-Moore for single patterns (since grep 2.19, the Aho-Corasick variant for -F fixed strings with multiple patterns, and Commentz-Walter for -E extended regex)'
-    accessedDate: '2026-07-20'
-  - type: website
-    authors:
-      - 'Linux Kernel Organization'
-    year: 2026
-    title: 'Linux kernel: lib/string.c - string matching routines'
-    venue: 'Linux Kernel Source'
-    url: 'https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/lib/string.c'
-    pages: 'Linux kernel uses a KMP-based strstr implementation for some configurations; bm() function in lib/string.c implements Boyer-Moore for general use'
-    accessedDate: '2026-07-20'
+- type: journal
+  authors:
+  - Knuth, Donald E.
+  - Morris, James H.
+  - Pratt, Vaughan R.
+  year: 1977
+  title: Fast pattern matching in strings
+  venue: SIAM Journal on Computing
+  volume: 6
+  issue: 2
+  pages: 323-350
+  doi: 10.1137/0206024
+  pagesNote: The original KMP paper. Knuth, Morris, and Pratt independently discovered the algorithm in 1970; Knuth provided the linear-time complexity proof. The paper also proves the lower bound of 2n-m comparisons for any pattern matching algorithm on a 2-letter alphabet (improved by Cole 1994 to 2n-m in the worst case)
+- type: journal
+  authors:
+  - Cook, Stephen A.
+  year: 1971
+  title: Linear time simulation of deterministic two-way pushdown automata
+  venue: Information Processing, Proceedings of IFIP Congress 71, North-Holland, pp. 75-80
+  pages: Theoretical foundation that led to the KMP algorithm. Cook showed that deterministic two-way pushdown automata can be simulated in linear time; this result inspired Morris and Pratt to derive the linear-time pattern matching algorithm
+- type: journal
+  authors:
+  - Aho, Alfred V.
+  - Corasick, Margaret J.
+  year: 1975
+  title: 'Efficient string matching: an aid to bibliographic search'
+  venue: Communications of the ACM
+  volume: 18
+  issue: 6
+  pages: 333-340
+  doi: 10.1145/360825.360855
+  pagesNote: The Aho-Corasick algorithm for multi-pattern matching. Builds a trie with failure links (generalization of KMP next array). Runs in O(n + m + z) time where z is the number of matches. Aho-Corasick is the foundation of fgrep, BSD grep -F, and many IDS systems
+- type: journal
+  authors:
+  - Boyer, Robert S.
+  - Moore, J Strother
+  year: 1977
+  title: A fast string searching algorithm
+  venue: Communications of the ACM
+  volume: 20
+  issue: 10
+  pages: 762-772
+  doi: 10.1145/359842.359859
+  pagesNote: The Boyer-Moore algorithm. Scans the pattern from right to left, using bad-character and good-suffix heuristics. Sublinear O(n/m) in the best case; O(nm) worst case naive, improved to O(n+m) by Galil 1979 and Cole 1994
+- type: journal
+  authors:
+  - Karp, Richard M.
+  - Rabin, Michael O.
+  year: 1987
+  title: Efficient randomized pattern-matching algorithms
+  venue: IBM Journal of Research and Development
+  volume: 31
+  issue: 2
+  pages: 249-260
+  doi: 10.1147/rd.312.0249
+  pagesNote: The Rabin-Karp algorithm. Uses rolling hash to achieve O(n+m) expected time. Generalizes to 2D pattern matching and is the basis of rsync delta computation. Rabin received the 1976 Turing Award; Karp received the 1985 Turing Award
+- type: journal
+  authors:
+  - Cole, Richard
+  year: 1994
+  title: Tight bounds on the complexity of the Boyer-Moore string matching algorithm
+  venue: SIAM Journal on Computing
+  volume: 23
+  issue: 5
+  pages: 1075-1091
+  doi: 10.1137/S0097539790325764
+  pagesNote: Cole improved the upper bound of Boyer-Moore to 3n comparisons in the worst case and proved lower bounds for string matching. Cole 1995 (SIAM J. Comp.) further proved the 2n-m lower bound for prefix-based pattern matching is tight
+- type: journal
+  authors:
+  - Horspool, R. Nigel
+  year: 1980
+  title: Practical fast searching in strings
+  venue: 'Software: Practice and Experience'
+  volume: 10
+  issue: 6
+  pages: 501-506
+  doi: 10.1002/spe.4380100608
+  pagesNote: The Boyer-Moore-Horspool (BMH) algorithm. Simplification of Boyer-Moore using only the bad-character heuristic with the rightmost character. Practical performance is often superior to BM and KMP on natural language text
+- type: journal
+  authors:
+  - Sunday, Daniel M.
+  year: 1990
+  title: A very fast substring search algorithm
+  venue: Communications of the ACM
+  volume: 33
+  issue: 8
+  pages: 132-142
+  doi: 10.1145/79173.79184
+  pagesNote: The Sunday algorithm. A variant of BMH that uses the character immediately after the current window for the bad-character heuristic. Often faster than BMH in practice
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+  pages: Chapter 32 (String Matching), ISBN 978-0262046305. Sections 32.1 (naive), 32.2 (Rabin-Karp), 32.3 (string matching with finite automata), 32.4 (Knuth-Morris-Pratt)
+- type: book
+  authors:
+  - Gusfield, Dan
+  year: 1997
+  title: 'Algorithms on Strings, Trees, and Sequences: Computer Science and Computational Biology'
+  venue: Cambridge University Press
+  pages: 'ISBN 978-0521585194. Chapter 2 (Exact Matching: A Deep Look), Section 2.3 (The Knuth-Morris-Pratt Algorithm). The definitive reference for string algorithms with computational biology applications'
+- type: book
+  authors:
+  - Crochemore, Maxime
+  - Hancart, Christophe
+  - Lecroq, Thierry
+  year: 2007
+  title: Algorithms on Strings
+  venue: Cambridge University Press
+  pages: ISBN 978-0521848992. Comprehensive treatment of string matching algorithms including KMP, BM, AC, suffix trees, suffix automata
+- type: book
+  authors:
+  - Sedgewick, Robert
+  - Wayne, Kevin
+  year: 2011
+  title: Algorithms
+  venue: Addison-Wesley Professional
+  version: 4th edition
+  pages: ISBN 978-0321573513. Section 5.3 (Substring Search), pp. 760-776. KMP, BM, Rabin-Karp implementations in Java
+- type: website
+  authors:
+  - Free Software Foundation
+  year: 2026
+  title: 'GNU grep manual: File and command options'
+  venue: GNU Project
+  url: https://www.gnu.org/software/grep/manual/grep.html
+  pages: 'GNU grep uses a hybrid strategy: Boyer-Moore for single patterns (since grep 2.19, the Aho-Corasick variant for -F fixed strings with multiple patterns, and Commentz-Walter for -E extended regex)'
+  accessedDate: '2026-07-20'
+- type: website
+  authors:
+  - Linux Kernel Organization
+  year: 2026
+  title: 'Linux kernel: lib/string.c - string matching routines'
+  venue: Linux Kernel Source
+  url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/lib/string.c
+  pages: Linux kernel uses a KMP-based strstr implementation for some configurations; bm() function in lib/string.c implements Boyer-Moore for general use
+  accessedDate: '2026-07-20'
 etymology:
-  - term: KMP 算法
-    english: Knuth-Morris-Pratt algorithm
-    origin: 'KMP 取自三位作者姓氏首字母：Donald E. Knuth（斯坦福大学，1974 Turing Award）、James H. Morris（Carnegie Mellon University，后任 Xerox PARC 研究员）、Vaughan R. Pratt（Stanford University，后任 SUN Microsystems 研究员）。三人于 1970 年独立发现该算法，1977 年联名发表于 SIAM Journal on Computing 6(2):323-350。中文直译"克努斯-莫里斯-普拉特算法"，工业界普遍使用 KMP 简称'
-  - term: 部分匹配表
-    english: Partial Match Table (PMT)
-    origin: 'partial（部分）+ match（匹配）+ table（表）。PMT[i] 表示模式串前缀 P[0..i] 的最长相等前后缀长度（不含整体）。该术语由国内算法教学圈（如 July《算法面试宝典》）普及；英文文献多称 failure function（失败函数，Aho-Corasick 1975 引入，借鉴 KMP next 数组的概念）或 prefix function（前缀函数，CLRS 第 32 章使用）；俄文学派称 prefix-function (префикс-функция)，由 Knuth-Morris-Pratt 1977 论文与 Manacher 1975 独立提出'
-  - term: next 数组
-    english: next array / failure link
-    origin: 'next（下一个）表示失配时模式指针应跳转到的下一个位置。该术语最早由 Knuth-Morris-Pratt 1977 论文引入。Aho-Corasick 1975 推广至多模式场景时改称 failure link（失败链接）；CLRS 第 32 章使用前缀函数 π[i] 表示。在 Suffix Automaton、AC 自动机中广泛使用失配链接的概念'
-  - term: 字符串匹配
-    english: string matching / pattern matching
-    origin: 'string（串）源自古英语 streng（绳索、线索），指字符的线性序列；pattern（模式）源自拉丁语 patronus（保护者、模板），指待匹配的字符串。字符串匹配问题最早由 Knuth TAOCP Vol.3 (1973) 系统化讨论，Cook 1971 IFIP 71 证明线性时间下界，Knuth-Morris-Pratt 1977 首次给出线性时间算法。中文"字符串匹配"由 1980 年代国内教材（如严蔚敏《数据结构》）确立'
-  - term: 失配
-    english: mismatch
-    origin: 'mis-（错误）+ match（匹配）。指当前文本字符与模式字符不相等的情形。KMP 的核心创新即利用失配信息避免重复比较；Boyer-Moore 利用失配字符进行坏字符跳跃'
-  - term: KMP 自动机
-    english: KMP automaton
-    origin: 'automaton（自动机）源自希腊语 automatos（自我运动的）。KMP 自动机将 KMP 算法的状态转移显式化为一个确定性有限自动机（DFA），状态数为 |P|+1，字符表为 Σ。该构造由 Aho-Corasick 1975 推广至多模式场景（AC 自动机）。KMP 自动机在构建后可实现 O(1) 摊还时间的字符转移，适用于流式数据匹配'
-  - term: 自动机
-    english: automaton
-    origin: 'automaton 源自希腊语 αὐτόματον（self-acting，自我行动的），由 αὐτός（self）+ μαίνομαι（to be eager）构成。在计算机科学中指抽象计算模型。KMP 自动机是确定性有限自动机（DFA）的一种特殊形式，状态转移函数 δ(q, c) 由 next 数组定义'
+- term: KMP 算法
+  english: Knuth-Morris-Pratt algorithm
+  origin: KMP 取自三位作者姓氏首字母：Donald E. Knuth（斯坦福大学，1974 Turing Award）、James H. Morris（Carnegie Mellon University，后任 Xerox PARC 研究员）、Vaughan R. Pratt（Stanford University，后任 SUN Microsystems 研究员）。三人于 1970 年独立发现该算法，1977 年联名发表于 SIAM Journal on Computing 6(2):323-350。中文直译"克努斯-莫里斯-普拉特算法"，工业界普遍使用 KMP 简称
+- term: 部分匹配表
+  english: Partial Match Table (PMT)
+  origin: partial（部分）+ match（匹配）+ table（表）。PMT[i] 表示模式串前缀 P[0..i] 的最长相等前后缀长度（不含整体）。该术语由国内算法教学圈（如 July《算法面试宝典》）普及；英文文献多称 failure function（失败函数，Aho-Corasick 1975 引入，借鉴 KMP next 数组的概念）或 prefix function（前缀函数，CLRS 第 32 章使用）；俄文学派称 prefix-function (префикс-функция)，由 Knuth-Morris-Pratt 1977 论文与 Manacher 1975 独立提出
+- term: next 数组
+  english: next array / failure link
+  origin: next（下一个）表示失配时模式指针应跳转到的下一个位置。该术语最早由 Knuth-Morris-Pratt 1977 论文引入。Aho-Corasick 1975 推广至多模式场景时改称 failure link（失败链接）；CLRS 第 32 章使用前缀函数 π[i] 表示。在 Suffix Automaton、AC 自动机中广泛使用失配链接的概念
+- term: 字符串匹配
+  english: string matching / pattern matching
+  origin: string（串）源自古英语 streng（绳索、线索），指字符的线性序列；pattern（模式）源自拉丁语 patronus（保护者、模板），指待匹配的字符串。字符串匹配问题最早由 Knuth TAOCP Vol.3 (1973) 系统化讨论，Cook 1971 IFIP 71 证明线性时间下界，Knuth-Morris-Pratt 1977 首次给出线性时间算法。中文"字符串匹配"由 1980 年代国内教材（如严蔚敏《数据结构》）确立
+- term: 失配
+  english: mismatch
+  origin: mis-（错误）+ match（匹配）。指当前文本字符与模式字符不相等的情形。KMP 的核心创新即利用失配信息避免重复比较；Boyer-Moore 利用失配字符进行坏字符跳跃
+- term: KMP 自动机
+  english: KMP automaton
+  origin: automaton（自动机）源自希腊语 automatos（自我运动的）。KMP 自动机将 KMP 算法的状态转移显式化为一个确定性有限自动机（DFA），状态数为 |P|+1，字符表为 Σ。该构造由 Aho-Corasick 1975 推广至多模式场景（AC 自动机）。KMP 自动机在构建后可实现 O(1) 摊还时间的字符转移，适用于流式数据匹配
+- term: 自动机
+  english: automaton
+  origin: automaton 源自希腊语 αὐτόματον（self-acting，自我行动的），由 αὐτός（self）+ μαίνομαι（to be eager）构成。在计算机科学中指抽象计算模型。KMP 自动机是确定性有限自动机（DFA）的一种特殊形式，状态转移函数 δ(q, c) 由 next 数组定义
 ---
 
 

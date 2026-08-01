@@ -8,51 +8,63 @@ description: JavaScript 事件循环模型——HTML 规范、Node.js 实现、�
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - javascript/Proxy与Reflect
-  - javascript/Object扩展
-  - javascript/具名捕获组
-  - javascript/断言
-  - javascript/浏览器对象模型
+- javascript/Proxy与Reflect
+- javascript/Object扩展
+- javascript/具名捕获组
+- javascript/断言
+- javascript/浏览器对象模型
 prerequisites:
-  - javascript/语法速查
+- javascript/语法速查
 tags:
-  - EventLoop
-  - Microtask
-  - Macrotask
-  - Node.js
-  - libuv
-  - HTML-Spec
-  - requestAnimationFrame
-  - Promise
+- EventLoop
+- Microtask
+- Macrotask
+- Node.js
+- libuv
+- HTML-Spec
+- requestAnimationFrame
+- Promise
 references:
-  - author: [WHATWG]
-    title: "HTML Living Standard - Event loops"
-    journal: "Web Hypertext Application Technology Working Group"
-    year: 2026
-    url: "https://html.spec.whatwg.org/multipage/webappapis.html#event-loops"
-  - author: [ECMA International]
-    title: "ECMAScript 2026 Language Specification - Jobs and Job Queues"
-    journal: "ECMA-262, 17th Edition"
-    year: 2026
-    url: "https://tc39.es/ecma262/#sec-jobs"
-  - author: [Node.js Foundation]
-    title: "Node.js Documentation - The Node.js Event Loop"
-    journal: "Node.js Official Docs"
-    year: 2026
-    url: "https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/"
-  - author: [libuv Contributors]
-    title: "libuv Design Documentation"
-    journal: "libuv"
-    year: 2026
-    url: "http://docs.libuv.org/en/v1.x/design.html"
-  - author: [Titzer, Ben L.]
-    title: "Event-Loop Programming for High-Performance Network Applications"
-    journal: "ACM Queue"
-    year: 2019
-    url: "https://queue.acm.org/detail.cfm?id=3337301"
+- title: HTML Living Standard - Event loops
+  year: 2026
+  url: https://html.spec.whatwg.org/multipage/webappapis.html#event-loops
+  type: standard
+  authors:
+  - WHATWG
+  venue: Web Hypertext Application Technology Working Group
+- title: ECMAScript 2026 Language Specification - Jobs and Job Queues
+  year: 2026
+  url: https://tc39.es/ecma262/#sec-jobs
+  type: standard
+  authors:
+  - ECMA International
+  venue: ECMA-262, 17th Edition
+- title: Node.js Documentation - The Node.js Event Loop
+  year: 2026
+  url: https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/
+  type: documentation
+  authors:
+  - Node.js Foundation
+  venue: Node.js Official Docs
+- title: libuv Design Documentation
+  year: 2026
+  url: http://docs.libuv.org/en/v1.x/design.html
+  type: documentation
+  authors:
+  - libuv Contributors
+  venue: libuv
+- title: Event-Loop Programming for High-Performance Network Applications
+  year: 2019
+  url: https://queue.acm.org/detail.cfm?id=3337301
+  type: website
+  authors:
+  - Titzer
+  - Ben L.
+  venue: ACM Queue
 etymology:
-  term: "Event Loop"
-  origin: "事件循环概念最早可追溯至 1980 年代的图形用户界面系统（如 Smalltalk-80、Mac OS Toolbox Event Manager）。在 JavaScript 中由 Brendan Eich 于 1995 年实现，借鉴了 Netscape 已有的 X Window 事件循环设计。"
+- term: Event Loop
+  origin: 事件循环概念最早可追溯至 1980 年代的图形用户界面系统（如 Smalltalk-80、Mac OS Toolbox Event Manager）。在 JavaScript 中由 Brendan Eich 于 1995 年实现，借鉴了 Netscape 已有的 X Window 事件循环设计。
+  english: Event Loop
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---

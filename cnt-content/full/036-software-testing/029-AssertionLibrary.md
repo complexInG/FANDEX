@@ -1,7 +1,8 @@
 ---
 order: 290
 title: 断言库
-module: 036-software-testing
+module: software-testing
+
 category: '036-software-testing'
 difficulty: beginner
 description: 断言库 的完整教学讲解。

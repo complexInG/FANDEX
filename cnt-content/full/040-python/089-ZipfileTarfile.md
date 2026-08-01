@@ -1,7 +1,8 @@
 ---
 order: 890
 title: Python zipfile 与 tarfile
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python zipfile 与 tarfile 的完整教学讲解。

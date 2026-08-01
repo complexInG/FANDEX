@@ -1,7 +1,8 @@
 ---
 order: 370
 title: 云计算 Azure 资源组与 VM
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: 云计算 Azure 资源组与 VM 的完整教学讲解。

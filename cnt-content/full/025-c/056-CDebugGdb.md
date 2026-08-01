@@ -1,7 +1,8 @@
 ---
 order: 560
 title: C gdb 调试 语法速查手册
-module: 025-c
+module: c
+
 category: '025-c'
 difficulty: beginner
 description: C gdb 调试 语法速查手册 的完整教学讲解。

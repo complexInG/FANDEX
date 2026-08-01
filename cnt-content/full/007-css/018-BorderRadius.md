@@ -4,35 +4,37 @@ title: 边框圆角
 module: css
 category: CSS
 difficulty: beginner
-description: 'border-radius 完整原理：1-4 值语法、椭圆半径、百分比计算、圆角裁剪规则与常见形状实现。'
+description: border-radius 完整原理：1-4 值语法、椭圆半径、百分比计算、圆角裁剪规则与常见形状实现。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/Grid网格布局
-  - css/动画与过渡
-  - css/媒体查询
-  - css/容器查询
+- css/Grid网格布局
+- css/动画与过渡
+- css/媒体查询
+- css/容器查询
 prerequisites:
-  - css/概述与基本语法
+- css/概述与基本语法
 references:
-  - type: documentation
-    authors: ['MDN Web Docs']
-    year: 2026
-    title: 'border-radius - CSS: Cascading Style Sheets'
-    venue: 'MDN Web Docs'
-    url: https://developer.mozilla.org/en-US/docs/Web/CSS/border-radius
-    accessedDate: '2026-08-01'
-  - type: standard
-    authors: ['W3C']
-    year: 2025
-    title: 'CSS Backgrounds and Borders Module Level 3'
-    venue: 'W3C'
-    url: https://www.w3.org/TR/css-backgrounds-3/
-    accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - MDN Web Docs
+  year: 2026
+  title: 'border-radius - CSS: Cascading Style Sheets'
+  venue: MDN Web Docs
+  url: https://developer.mozilla.org/en-US/docs/Web/CSS/border-radius
+  accessedDate: '2026-08-01'
+- type: standard
+  authors:
+  - W3C
+  year: 2025
+  title: CSS Backgrounds and Borders Module Level 3
+  venue: W3C
+  url: https://www.w3.org/TR/css-backgrounds-3/
+  accessedDate: '2026-08-01'
 etymology:
-  - term: '圆角'
-    english: 'border-radius'
-    origin: '由 border（边框）与 radius（半径）组合而成，指用圆形或椭圆弧线替代边框的直角。'
+- term: 圆角
+  english: border-radius
+  origin: 由 border（边框）与 radius（半径）组合而成，指用圆形或椭圆弧线替代边框的直角。
 estimatedReadingTime: 30
 lastReviewed: '2026-08-01'
 reviewer: fanquanpp

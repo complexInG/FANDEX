@@ -1,7 +1,8 @@
 ---
 order: 390
 title: GitHub 拉取与获取
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub 拉取与获取 的完整教学讲解。

@@ -4,13 +4,13 @@ title: 生成器函数
 module: javascript
 category: JavaScript
 tags:
-  - JavaScript
-  - Generator
-  - Iterator
-  - Coroutine
-  - AsyncIterator
-  - ES6
-  - 异步编程
+- JavaScript
+- Generator
+- Iterator
+- Coroutine
+- AsyncIterator
+- ES6
+- 异步编程
 difficulty: advanced
 description: 深入解析 ES6 生成器函数的协程语义、迭代器协议、异步生成器、与 async/await 的关系,以及无限流处理、co 库原理等高级主题
 author: fanquanpp
@@ -18,71 +18,71 @@ updated: '2026-07-20'
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 related:
-  - javascript/递归与尾调用优化
-  - javascript/柯里化与偏函数
-  - javascript/Proxy与Reflect
-  - javascript/Object扩展
-  - javascript/Promise构造器
+- javascript/递归与尾调用优化
+- javascript/柯里化与偏函数
+- javascript/Proxy与Reflect
+- javascript/Object扩展
+- javascript/Promise构造器
 prerequisites:
-  - javascript/语法速查
-  - javascript/Promise构造器
+- javascript/语法速查
+- javascript/Promise构造器
 references:
-  - type: standard
-    authors:
-      - ECMA International
-    year: 2025
-    title: 'ECMAScript 2025 Language Specification (ECMA-262, 16th Edition)'
-    venue: ECMA Standard
-    doi: 10.17445/ECMA-262
-    url: https://tc39.es/ecma262/
-  - type: website
-    authors:
-      - Tab Atkins Jr.
-      - Yehuda Katz
-    year: 2014
-    title: 'Async Iteration for JavaScript (TC39 Proposal)'
-    venue: TC39 Proposals
-    url: https://github.com/tc39/proposal-async-iteration
-  - type: journal
-    authors:
-      - Eijiro Sumii
-      - Olin Shivers
-    year: 2004
-    title: 'A Universal Unwinding Operator'
-    venue: 'Higher-Order and Symbolic Computation'
-    doi: 10.1023/B:LISP.0000032413.90449.8c
-  - type: journal
-    authors:
-      - Chung-chieh Shan
-    year: 2007
-    title: 'A Semantic Simulation of Coroutines'
-    venue: 'Journal of Functional Programming'
-    doi: 10.1017/S0956796807006418
-  - type: book
-    authors:
-      - Axel Rauschmayer
-    year: 2014
-    title: 'Exploring ES6: Generators'
-    venue: Leanpub
-    url: https://exploringjs.com/es6/ch_generators.html
-  - type: journal
-    authors:
-      - Konrad Anton
-      - Klaus Ostermann
-    year: 2014
-    title: 'Coroutines in JavaScript'
-    venue: 'Proceedings of the 13th International Conference on Generative Programming: Concepts and Experiences (GPCE)'
-    doi: 10.1145/2658761.2658771
+- type: standard
+  authors:
+  - ECMA International
+  year: 2025
+  title: ECMAScript 2025 Language Specification (ECMA-262, 16th Edition)
+  venue: ECMA Standard
+  doi: 10.17445/ECMA-262
+  url: https://tc39.es/ecma262/
+- type: website
+  authors:
+  - Tab Atkins Jr.
+  - Yehuda Katz
+  year: 2014
+  title: Async Iteration for JavaScript (TC39 Proposal)
+  venue: TC39 Proposals
+  url: https://github.com/tc39/proposal-async-iteration
+- type: journal
+  authors:
+  - Eijiro Sumii
+  - Olin Shivers
+  year: 2004
+  title: A Universal Unwinding Operator
+  venue: Higher-Order and Symbolic Computation
+  doi: 10.1023/B:LISP.0000032413.90449.8c
+- type: journal
+  authors:
+  - Chung-chieh Shan
+  year: 2007
+  title: A Semantic Simulation of Coroutines
+  venue: Journal of Functional Programming
+  doi: 10.1017/S0956796807006418
+- type: book
+  authors:
+  - Axel Rauschmayer
+  year: 2014
+  title: 'Exploring ES6: Generators'
+  venue: Leanpub
+  url: https://exploringjs.com/es6/ch_generators.html
+- type: journal
+  authors:
+  - Konrad Anton
+  - Klaus Ostermann
+  year: 2014
+  title: Coroutines in JavaScript
+  venue: 'Proceedings of the 13th International Conference on Generative Programming: Concepts and Experiences (GPCE)'
+  doi: 10.1145/2658761.2658771
 etymology:
-  - term: Generator
-    english: Generator
-    origin: 源自拉丁语 "generare"(产生、生育),计算机科学中指按需产生值的子程序,与一次性返回的函数相对。最早出现于 CLU(1974)和 Icon(1977)语言的迭代器构造。
-  - term: Yield
-    english: Yield
-    origin: 古英语 "gieldan"(偿还、让出),在生成器语境下表示"让出控制权并产出值",与农业"产出"含义同源。
-  - term: Coroutine
-    english: Coroutine
-    origin: 由 Melvin Conway 于 1958 年提出,前缀 "co-" 表示协作,"routine" 即例程,指多个例程之间协作式切换执行。
+- term: Generator
+  english: Generator
+  origin: 源自拉丁语 "generare"(产生、生育),计算机科学中指按需产生值的子程序,与一次性返回的函数相对。最早出现于 CLU(1974)和 Icon(1977)语言的迭代器构造。
+- term: Yield
+  english: Yield
+  origin: 古英语 "gieldan"(偿还、让出),在生成器语境下表示"让出控制权并产出值",与农业"产出"含义同源。
+- term: Coroutine
+  english: Coroutine
+  origin: 由 Melvin Conway 于 1958 年提出,前缀 "co-" 表示协作,"routine" 即例程,指多个例程之间协作式切换执行。
 ---
 ## 0. 学习导览
 

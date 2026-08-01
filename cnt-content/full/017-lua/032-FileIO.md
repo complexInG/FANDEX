@@ -1,7 +1,8 @@
 ---
 order: 320
 title: Lua 文件 IO 进阶
-module: 017-lua
+module: lua
+
 category: '017-lua'
 difficulty: beginner
 description: Lua 文件 IO 进阶 的完整教学讲解。

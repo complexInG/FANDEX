@@ -4,35 +4,37 @@ title: 自连接
 module: sql
 category: SQL
 difficulty: intermediate
-description: 'SQL 自连接完整详解：同一表与自身连接的语法、典型场景（层级结构、比较、去重）与性能优化。'
+description: SQL 自连接完整详解：同一表与自身连接的语法、典型场景（层级结构、比较、去重）与性能优化。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/连接查询
-  - sql/自然连接与USING
-  - sql/半连接与反半连接
-  - sql/LATERAL派生表
+- sql/连接查询
+- sql/自然连接与USING
+- sql/半连接与反半连接
+- sql/LATERAL派生表
 prerequisites:
-  - sql/概述与标准
+- sql/概述与标准
 references:
-  - type: documentation
-    authors: ['PostgreSQL 团队']
-    year: 2026
-    title: 'PostgreSQL Documentation - Query: JOIN'
-    venue: 'postgresql.org'
-    url: https://www.postgresql.org/docs/current/queries-table-expressions.html
-    accessedDate: '2026-08-01'
-  - type: documentation
-    authors: ['PostgreSQL 团队']
-    year: 2026
-    title: 'WITH Queries (Recursive)'
-    venue: 'postgresql.org'
-    url: https://www.postgresql.org/docs/current/queries-with.html
-    accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - PostgreSQL 团队
+  year: 2026
+  title: 'PostgreSQL Documentation - Query: JOIN'
+  venue: postgresql.org
+  url: https://www.postgresql.org/docs/current/queries-table-expressions.html
+  accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - PostgreSQL 团队
+  year: 2026
+  title: WITH Queries (Recursive)
+  venue: postgresql.org
+  url: https://www.postgresql.org/docs/current/queries-with.html
+  accessedDate: '2026-08-01'
 etymology:
-  - term: '自连接'
-    english: 'self join'
-    origin: '连接操作的两侧均引用同一关系，如同照镜子般与自身比较。'
+- term: 自连接
+  english: self join
+  origin: 连接操作的两侧均引用同一关系，如同照镜子般与自身比较。
 estimatedReadingTime: 30
 lastReviewed: '2026-08-01'
 reviewer: fanquanpp

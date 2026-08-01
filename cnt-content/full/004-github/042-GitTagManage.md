@@ -1,7 +1,8 @@
 ---
 order: 420
 title: GitHub 标签管理
-module: 004-github
+module: github
+
 category: '004-github'
 difficulty: beginner
 description: GitHub 标签管理 的完整教学讲解。

@@ -2,37 +2,39 @@
 order: 103
 title: Teleport传送门应用
 module: vue3
-category: 'dev-lang'
+category: dev-lang
 difficulty: advanced
-description: 'Vue 3 Teleport 传送门组件完整应用：to 目标解析、disabled、模态框、通知、遮罩、SSR 与无障碍。'
+description: Vue 3 Teleport 传送门组件完整应用：to 目标解析、disabled、模态框、通知、遮罩、SSR 与无障碍。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/组合式API优势场景
-  - vue3/自定义组合函数封装
-  - vue3/KeepAlive缓存与生命周期
-  - vue3/异步组件与Suspense
+- vue3/组合式API优势场景
+- vue3/自定义组合函数封装
+- vue3/KeepAlive缓存与生命周期
+- vue3/异步组件与Suspense
 prerequisites:
-  - vue3/语法速查
+- vue3/语法速查
 references:
-  - type: documentation
-    authors: ['Vue.js 团队']
-    year: 2026
-    title: 'Teleport - Vue.js 官方文档'
-    venue: 'vuejs.org'
-    url: https://vuejs.org/guide/built-ins/teleport.html
-    accessedDate: '2026-08-01'
-  - type: documentation
-    authors: ['MDN Web Docs']
-    year: 2026
-    title: 'CSS position: fixed'
-    venue: 'MDN Web Docs'
-    url: https://developer.mozilla.org/en-US/docs/Web/CSS/position
-    accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - Vue.js 团队
+  year: 2026
+  title: Teleport - Vue.js 官方文档
+  venue: vuejs.org
+  url: https://vuejs.org/guide/built-ins/teleport.html
+  accessedDate: '2026-08-01'
+- type: documentation
+  authors:
+  - MDN Web Docs
+  year: 2026
+  title: 'CSS position: fixed'
+  venue: MDN Web Docs
+  url: https://developer.mozilla.org/en-US/docs/Web/CSS/position
+  accessedDate: '2026-08-01'
 etymology:
-  - term: '传送门'
-    english: 'Teleport'
-    origin: '借鉴游戏/科幻的瞬移概念，指组件渲染内容在 DOM 树中瞬移到其他位置。'
+- term: 传送门
+  english: Teleport
+  origin: 借鉴游戏/科幻的瞬移概念，指组件渲染内容在 DOM 树中瞬移到其他位置。
 estimatedReadingTime: 30
 lastReviewed: '2026-08-01'
 reviewer: fanquanpp

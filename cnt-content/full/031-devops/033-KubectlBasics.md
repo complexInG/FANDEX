@@ -1,7 +1,8 @@
 ---
 order: 330
 title: DevOps kubectl 基础命令
-module: 031-devops
+module: devops
+
 category: '031-devops'
 difficulty: beginner
 description: DevOps kubectl 基础命令 的完整教学讲解。

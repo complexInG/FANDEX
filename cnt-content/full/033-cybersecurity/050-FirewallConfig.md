@@ -1,7 +1,8 @@
 ---
 order: 500
 title: Cybersecurity 防火墙配置(ufw/firewalld)
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity 防火墙配置(ufw/firewalld) 的完整教学讲解。

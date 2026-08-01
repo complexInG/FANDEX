@@ -1,7 +1,8 @@
 ---
 order: 870
 title: 字符集与排序规则 语法速查手册
-module: 020-mysql
+module: mysql
+
 category: '020-mysql'
 difficulty: beginner
 description: 字符集与排序规则 语法速查手册 的完整教学讲解。

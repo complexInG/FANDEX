@@ -1,8 +1,8 @@
 ---
 order: 70
 tags:
-  - algorithm
-  - 'data-structure'
+- algorithm
+- data-structure
 difficulty: intermediate
 title: 图算法
 module: algorithm
@@ -15,171 +15,171 @@ lastReviewed: 2026-07-18
 reviewer: FANDEX Content Engineering
 estimatedReadingTime: 180
 related:
-  - algorithm/哈希表
-  - algorithm/树
-  - algorithm/分治算法
-  - algorithm/贪心算法
-  - algorithm/动态规划
-  - algorithm/网络流
-  - algorithm/字符串算法
-  - algorithm/搜索算法
-  - math/离散数学
+- algorithm/哈希表
+- algorithm/树
+- algorithm/分治算法
+- algorithm/贪心算法
+- algorithm/动态规划
+- algorithm/网络流
+- algorithm/字符串算法
+- algorithm/搜索算法
+- math/离散数学
 prerequisites:
-  - algorithm/算法分析基础与学习路线
-  - algorithm/搜索算法
-  - math/离散数学
+- algorithm/算法分析基础与学习路线
+- algorithm/搜索算法
+- math/离散数学
 references:
-  - type: book
-    authors:
-      - 'Cormen, Thomas H.'
-      - 'Leiserson, Charles E.'
-      - 'Rivest, Ronald L.'
-      - 'Stein, Clifford'
-    year: 2022
-    title: 'Introduction to Algorithms'
-    venue: 'MIT Press'
-    version: '4th edition'
-  - type: book
-    authors:
-      - 'Knuth, Donald E.'
-    year: 1997
-    title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
-    venue: 'Addison-Wesley Professional'
-    version: '3rd edition'
-  - type: journal
-    authors:
-      - 'Dijkstra, Edsger W.'
-    year: 1959
-    title: 'A note on two problems in connexion with graphs'
-    venue: 'Numerische Mathematik'
-    volume: 1
-    issue: 1
-    pages: '269-271'
-    doi: '10.1007/BF01386390'
-  - type: conference
-    authors:
-      - 'Tarjan, Robert Endre'
-    year: 1972
-    title: 'Depth-first search and linear graph algorithms'
-    venue: 'SIAM Journal on Computing'
-    volume: 1
-    issue: 2
-    pages: '146-160'
-    doi: '10.1137/0201010'
-  - type: journal
-    authors:
-      - 'Euler, Leonhard'
-    year: 1741
-    title: 'Solutio problematis ad geometriam situs pertinentis'
-    venue: 'Commentarii Academiae Scientiarum Petropolitanae'
-    volume: 8
-    pages: '128-140'
-  - type: book
-    authors:
-      - 'Bondy, John Adrian'
-      - 'Murty, Uppaluri Siva Ramachandra'
-    year: 2008
-    title: 'Graph Theory'
-    venue: 'Springer'
-    version: 'Graduate Texts in Mathematics 244'
-  - type: book
-    authors:
-      - 'West, Douglas Brent'
-    year: 2001
-    title: 'Introduction to Graph Theory'
-    venue: 'Prentice Hall'
-    version: '2nd edition'
-  - type: journal
-    authors:
-      - 'Kruskal, Joseph Bernard'
-    year: 1956
-    title: 'On the shortest spanning subtree of a graph and the traveling salesman problem'
-    venue: 'Proceedings of the American Mathematical Society'
-    volume: 7
-    issue: 1
-    pages: '48-50'
-  - type: journal
-    authors:
-      - 'Prim, Robert Clay'
-    year: 1957
-    title: 'Shortest connection networks and some generalizations'
-    venue: 'Bell System Technical Journal'
-    volume: 36
-    issue: 6
-    pages: '1389-1401'
-  - type: journal
-    authors:
-      - 'Floyd, Robert W.'
-    year: 1962
-    title: 'Algorithm 97: Shortest path'
-    venue: 'Communications of the ACM'
-    volume: 5
-    issue: 6
-    pages: '345'
-    doi: '10.1145/367766.368168'
-  - type: journal
-    authors:
-      - 'Warshall, Stephen'
-    year: 1962
-    title: 'A theorem on boolean matrices'
-    venue: 'Journal of the ACM'
-    volume: 9
-    issue: 1
-    pages: '11-12'
-  - type: journal
-    authors:
-      - 'Bellman, Richard'
-    year: 1958
-    title: 'On a routing problem'
-    venue: 'Quarterly of Applied Mathematics'
-    volume: 16
-    issue: 1
-    pages: '87-90'
-  - type: conference
-    authors:
-      - 'Kosaraju, Sambasiva Rao'
-    year: 1978
-    title: 'Traversing directed graphs in lexicographic order'
-    venue: 'Conference Record of the Ninth Annual ACM Symposium on Theory of Computing'
-    pages: '178-182'
-  - type: journal
-    authors:
-      - 'Page, Lawrence'
-      - 'Brin, Sergey'
-      - 'Motwani, Rajeev'
-      - 'Winograd, Terry'
-    year: 1999
-    title: 'The PageRank citation ranking: Bringing order to the web'
-    venue: 'Technical Report 1999-66, Stanford InfoLab'
-  - type: website
-    authors:
-      - 'CP-Algorithms Contributors'
-    year: 2024
-    title: 'Graph Algorithms — CP-Algorithms'
-    url: 'https://cp-algorithms.com/graph/'
-    accessedDate: '2024-12-01'
+- type: book
+  authors:
+  - Cormen, Thomas H.
+  - Leiserson, Charles E.
+  - Rivest, Ronald L.
+  - Stein, Clifford
+  year: 2022
+  title: Introduction to Algorithms
+  venue: MIT Press
+  version: 4th edition
+- type: book
+  authors:
+  - Knuth, Donald E.
+  year: 1997
+  title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
+  venue: Addison-Wesley Professional
+  version: 3rd edition
+- type: journal
+  authors:
+  - Dijkstra, Edsger W.
+  year: 1959
+  title: A note on two problems in connexion with graphs
+  venue: Numerische Mathematik
+  volume: 1
+  issue: 1
+  pages: 269-271
+  doi: 10.1007/BF01386390
+- type: conference
+  authors:
+  - Tarjan, Robert Endre
+  year: 1972
+  title: Depth-first search and linear graph algorithms
+  venue: SIAM Journal on Computing
+  volume: 1
+  issue: 2
+  pages: 146-160
+  doi: 10.1137/0201010
+- type: journal
+  authors:
+  - Euler, Leonhard
+  year: 1741
+  title: Solutio problematis ad geometriam situs pertinentis
+  venue: Commentarii Academiae Scientiarum Petropolitanae
+  volume: 8
+  pages: 128-140
+- type: book
+  authors:
+  - Bondy, John Adrian
+  - Murty, Uppaluri Siva Ramachandra
+  year: 2008
+  title: Graph Theory
+  venue: Springer
+  version: Graduate Texts in Mathematics 244
+- type: book
+  authors:
+  - West, Douglas Brent
+  year: 2001
+  title: Introduction to Graph Theory
+  venue: Prentice Hall
+  version: 2nd edition
+- type: journal
+  authors:
+  - Kruskal, Joseph Bernard
+  year: 1956
+  title: On the shortest spanning subtree of a graph and the traveling salesman problem
+  venue: Proceedings of the American Mathematical Society
+  volume: 7
+  issue: 1
+  pages: 48-50
+- type: journal
+  authors:
+  - Prim, Robert Clay
+  year: 1957
+  title: Shortest connection networks and some generalizations
+  venue: Bell System Technical Journal
+  volume: 36
+  issue: 6
+  pages: 1389-1401
+- type: journal
+  authors:
+  - Floyd, Robert W.
+  year: 1962
+  title: 'Algorithm 97: Shortest path'
+  venue: Communications of the ACM
+  volume: 5
+  issue: 6
+  pages: '345'
+  doi: 10.1145/367766.368168
+- type: journal
+  authors:
+  - Warshall, Stephen
+  year: 1962
+  title: A theorem on boolean matrices
+  venue: Journal of the ACM
+  volume: 9
+  issue: 1
+  pages: 11-12
+- type: journal
+  authors:
+  - Bellman, Richard
+  year: 1958
+  title: On a routing problem
+  venue: Quarterly of Applied Mathematics
+  volume: 16
+  issue: 1
+  pages: 87-90
+- type: conference
+  authors:
+  - Kosaraju, Sambasiva Rao
+  year: 1978
+  title: Traversing directed graphs in lexicographic order
+  venue: Conference Record of the Ninth Annual ACM Symposium on Theory of Computing
+  pages: 178-182
+- type: journal
+  authors:
+  - Page, Lawrence
+  - Brin, Sergey
+  - Motwani, Rajeev
+  - Winograd, Terry
+  year: 1999
+  title: 'The PageRank citation ranking: Bringing order to the web'
+  venue: Technical Report 1999-66, Stanford InfoLab
+- type: website
+  authors:
+  - CP-Algorithms Contributors
+  year: 2024
+  title: Graph Algorithms — CP-Algorithms
+  url: https://cp-algorithms.com/graph/
+  accessedDate: '2024-12-01'
 etymology:
-  - term: 图
-    english: graph
-    origin: 源自希腊语 "graphos"（书写、绘制），由 James Joseph Sylvester 于 1878 年首次引入英语数学词汇，意为"由顶点与边绘制的关系结构"
-  - term: 顶点
-    english: vertex
-    origin: 源自拉丁语 "vertere"（转动），原指角的顶点，欧几里得几何中用于描述多边形的角点，图论中沿用为图的节点
-  - term: 边
-    english: edge
-    origin: 源自古英语 "ecg"（刀刃、边界），图论中表示顶点之间的连接关系，与几何中的"棱"同源
-  - term: 广度优先搜索
-    english: Breadth-First Search
-    origin: 由 E. F. Moore (1959) 与 C. Y. Lee (1961) 独立提出，分别用于迷宫寻路与电路布线，名称反映其"逐层扩展"的搜索特征
-  - term: 深度优先搜索
-    english: Depth-First Search
-    origin: 由 Charles Pierre Tremaux (19th century) 在迷宫求解中提出，Tarjan (1972) 形式化并证明其线性时间复杂度，名称反映其"深入到底"的搜索特征
-  - term: 生成树
-    english: Spanning Tree
-    origin: '"spanning" 源自古英语 "spannan"（伸展、跨越），意为"覆盖所有顶点的树结构"，由 Boruvka (1926) 在电力网络优化中首次研究'
-  - term: 强连通分量
-    english: Strongly Connected Component
-    origin: '"strongly" 强调"双向可达"（区别于弱连通的"单向可达"），由 Tarjan (1972) 形式化定义并给出线性识别算法'
+- term: 图
+  english: graph
+  origin: 源自希腊语 "graphos"（书写、绘制），由 James Joseph Sylvester 于 1878 年首次引入英语数学词汇，意为"由顶点与边绘制的关系结构"
+- term: 顶点
+  english: vertex
+  origin: 源自拉丁语 "vertere"（转动），原指角的顶点，欧几里得几何中用于描述多边形的角点，图论中沿用为图的节点
+- term: 边
+  english: edge
+  origin: 源自古英语 "ecg"（刀刃、边界），图论中表示顶点之间的连接关系，与几何中的"棱"同源
+- term: 广度优先搜索
+  english: Breadth-First Search
+  origin: 由 E. F. Moore (1959) 与 C. Y. Lee (1961) 独立提出，分别用于迷宫寻路与电路布线，名称反映其"逐层扩展"的搜索特征
+- term: 深度优先搜索
+  english: Depth-First Search
+  origin: 由 Charles Pierre Tremaux (19th century) 在迷宫求解中提出，Tarjan (1972) 形式化并证明其线性时间复杂度，名称反映其"深入到底"的搜索特征
+- term: 生成树
+  english: Spanning Tree
+  origin: '"spanning" 源自古英语 "spannan"（伸展、跨越），意为"覆盖所有顶点的树结构"，由 Boruvka (1926) 在电力网络优化中首次研究'
+- term: 强连通分量
+  english: Strongly Connected Component
+  origin: '"strongly" 强调"双向可达"（区别于弱连通的"单向可达"），由 Tarjan (1972) 形式化定义并给出线性识别算法'
 ---
 
 
@@ -2867,7 +2867,7 @@ def friend_recommendation(graph, user, top_k=10):
 
 ## 第 15 章 习题与解答
 
-本章给出与 frontmatter `exercises` 字段一一对应的 10 道 CLRS 风格习题及详细解答，覆盖 Bloom 分类法的记忆、理解、应用、分析、评估、创造六个认知层级。
+本章给出 10 道 CLRS 风格习题及详细解答，覆盖 Bloom 分类法的记忆、理解、应用、分析、评估、创造六个认知层级。
 
 ### 填空题知识点讲解
 
@@ -3219,4 +3219,3 @@ $$
 本文档由 FANDEX Content Engineering 团队编写，参考了 CLRS 4th、Bondy & Murty、CP-Algorithms 等权威资料。感谢 Leonhard Euler（图论奠基）、Edsger Dijkstra（最短路径）、Robert Tarjan（DFS 与 SCC）等先贤的奠基性工作。文档中如有疏漏或错误，欢迎在项目仓库提交 Issue 或 Pull Request。
 
 ---
-

@@ -1,7 +1,8 @@
 ---
 order: 370
 title: Vue 3.4 / 3.5 新特性
-module: 010-vue3
+module: vue3
+
 category: '010-vue3'
 difficulty: beginner
 description: Vue 3.4 / 3.5 新特性 的完整教学讲解。

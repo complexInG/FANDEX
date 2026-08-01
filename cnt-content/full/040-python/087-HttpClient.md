@@ -1,7 +1,8 @@
 ---
 order: 870
 title: Python http.client HTTP 客户端
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python http.client HTTP 客户端 的完整教学讲解。

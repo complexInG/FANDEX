@@ -1,7 +1,8 @@
 ---
 order: 430
 title: C# HttpClient 网络请求
-module: 015-csharp
+module: csharp
+
 category: '015-csharp'
 difficulty: beginner
 description: C# HttpClient 网络请求 的完整教学讲解。

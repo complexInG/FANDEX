@@ -1,7 +1,8 @@
 ---
 order: 360
 title: DevOps GitLab CI/CD
-module: 031-devops
+module: devops
+
 category: '031-devops'
 difficulty: beginner
 description: DevOps GitLab CI/CD 的完整教学讲解。

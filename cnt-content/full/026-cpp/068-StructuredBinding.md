@@ -1,7 +1,8 @@
 ---
 order: 680
 title: C++ 结构化绑定语法速查手册
-module: 026-cpp
+module: cpp
+
 category: '026-cpp'
 difficulty: beginner
 description: C++ 结构化绑定语法速查手册 的完整教学讲解。

@@ -1,7 +1,8 @@
 ---
 order: 320
 title: 编程入门 Git 安装配置
-module: 001-getting-started
+module: getting-started
+
 category: '001-getting-started'
 difficulty: beginner
 description: 编程入门 Git 安装配置 的完整教学讲解。

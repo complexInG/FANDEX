@@ -1,7 +1,8 @@
 ---
 order: 720
 title: Java JDBC 数据库连接
-module: 013-java
+module: java
+
 category: '013-java'
 difficulty: beginner
 description: Java JDBC 数据库连接 的完整教学讲解。

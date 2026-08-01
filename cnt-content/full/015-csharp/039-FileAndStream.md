@@ -1,7 +1,8 @@
 ---
 order: 390
 title: C# 文件与流操作
-module: 015-csharp
+module: csharp
+
 category: '015-csharp'
 difficulty: beginner
 description: C# 文件与流操作 的完整教学讲解。

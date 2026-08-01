@@ -1,7 +1,8 @@
 ---
 order: 830
 title: Python typing 进阶
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python typing 进阶 的完整教学讲解。

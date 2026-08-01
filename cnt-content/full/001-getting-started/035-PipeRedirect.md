@@ -1,7 +1,8 @@
 ---
 order: 350
 title: 管道与重定向速查手册
-module: 001-getting-started
+module: getting-started
+
 category: '001-getting-started'
 difficulty: beginner
 description: 管道与重定向速查手册 的完整教学讲解。

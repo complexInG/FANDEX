@@ -1,7 +1,8 @@
 ---
 order: 430
 title: AWS CloudWatch 监控日志命令
-module: 034-cloud-computing
+module: cloud-computing
+
 category: '034-cloud-computing'
 difficulty: beginner
 description: AWS CloudWatch 监控日志命令 的完整教学讲解。

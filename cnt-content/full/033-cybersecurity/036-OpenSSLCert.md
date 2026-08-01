@@ -1,7 +1,8 @@
 ---
 order: 360
 title: Cybersecurity OpenSSL 证书管理
-module: 033-cybersecurity
+module: cybersecurity
+
 category: '033-cybersecurity'
 difficulty: beginner
 description: Cybersecurity OpenSSL 证书管理 的完整教学讲解。

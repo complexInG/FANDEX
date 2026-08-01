@@ -1,7 +1,8 @@
 ---
 order: 790
 title: Python logging 日志配置
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python logging 日志配置 的完整教学讲解。

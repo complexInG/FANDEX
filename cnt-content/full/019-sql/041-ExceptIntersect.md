@@ -1,7 +1,8 @@
 ---
 order: 410
 title: SQL EXCEPT / INTERSECT 集合操作语法速查手册
-module: 019-sql
+module: sql
+
 category: '019-sql'
 difficulty: beginner
 description: SQL EXCEPT / INTERSECT 集合操作语法速查手册 的完整教学讲解。

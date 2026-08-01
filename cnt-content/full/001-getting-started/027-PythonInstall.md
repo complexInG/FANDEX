@@ -1,7 +1,8 @@
 ---
 order: 270
 title: 编程入门 Python 安装
-module: 001-getting-started
+module: getting-started
+
 category: '001-getting-started'
 difficulty: beginner
 description: 编程入门 Python 安装 的完整教学讲解。

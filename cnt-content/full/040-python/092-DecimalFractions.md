@@ -1,7 +1,8 @@
 ---
 order: 920
 title: Python decimal 与 fractions
-module: 040-python
+module: python
+
 category: '040-python'
 difficulty: beginner
 description: Python decimal 与 fractions 的完整教学讲解。
