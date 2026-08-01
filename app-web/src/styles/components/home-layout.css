@@ -97,9 +97,15 @@
     transition: color var(--motion-duration-fast) var(--motion-easing-out);
   }
 
+  /* hover 变色：文字切换为主品牌色（与下划线同色系），平滑过渡
+   * 与全局 components.css 的 .nav-logo:hover 保持一致（全站统一） */
+  .nav-logo:hover {
+    color: var(--color-primary);
+  }
+
   /* 下划线伪元素：默认 width:0，hover 时展开至 100%
    * 位于文字底部，使用主题强调色，与 hero 风格统一
-   * 不使用 background-color 变化（需求：删除悬停变色） */
+   * 不使用 background-color 变化（需求：删除悬停背景色反馈） */
   .nav-logo::after {
     content: '';
     position: absolute;

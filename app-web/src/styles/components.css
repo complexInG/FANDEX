@@ -128,7 +128,11 @@
   min-width: 0;
 }
 
-/* Logo 容器 */
+/* Logo 容器
+ * 与首页 home-layout.css 的 .nav-logo 特效保持一致（全站统一）：
+ * - 相对定位：为 ::after 下划线提供定位上下文
+ * - hover 仅展开下划线，不改变文字颜色、不出现背景色
+ * ============================================================ */
 .nav-logo {
   display: inline-flex;
   align-items: center;
@@ -142,14 +146,35 @@
   padding: 4px 8px;
   border-radius: var(--fandex-radius-sm, 2px);
   cursor: pointer;
-  transition:
-    color var(--motion-duration-fast) var(--motion-easing-out),
-    background-color var(--motion-duration-fast) var(--motion-easing-out);
+  /* 相对定位：为 ::after 下划线提供定位上下文（与首页特效一致） */
+  position: relative;
+  /* 仅保留 color 过渡（移除 background 过渡），下划线动画通过 ::after 的 width 过渡实现 */
+  transition: color var(--motion-duration-fast) var(--motion-easing-out);
 }
 
+/* hover 变色：文字切换为主品牌色（与下划线同色系），平滑过渡
+ * 与首页 home-layout.css 的 .nav-logo:hover 保持一致（全站统一） */
 .nav-logo:hover {
   color: var(--color-primary);
-  background: var(--color-bg-hover);
+}
+
+/* 下划线伪元素：默认 width:0，hover 时展开至 100%
+ * 位于文字底部，使用主题强调色，与首页 hero 风格统一 */
+.nav-logo::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  width: 0;
+  background: var(--color-accent-base);
+  transition: width var(--motion-duration-normal) var(--motion-easing-out);
+  pointer-events: none;
+}
+
+.nav-logo:hover::after {
+  width: calc(100% - 16px);
 }
 
 /* Logo 文字：透明背景，与首页风格统一（消除旧版深色背景残留） */
