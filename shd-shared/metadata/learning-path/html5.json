@@ -1,0 +1,175 @@
+{
+  "version": "1.0.0",
+  "module": "html5",
+  "summary": "从标签语义到浏览器能力：HTML5 是零基础入门前端的第一个台阶，也是 Web 应用的地基。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "基础标签",
+      "subtitle": "页面结构的第一课",
+      "nodes": [
+        {
+          "id": "html-001",
+          "title": "概述与核心特性",
+          "desc": "HTML5 的定位与新特性总览",
+          "difficulty": "beginner",
+          "doc": "001-HTML5OverviewCoreFeature"
+        },
+        {
+          "id": "html-002",
+          "title": "文档类型与字符编码",
+          "desc": "doctype、meta 与语言设置",
+          "difficulty": "beginner",
+          "doc": "009-MetadataCharacterEncoding"
+        },
+        {
+          "id": "html-003",
+          "title": "基础标签与全局属性",
+          "desc": "常用标签与全局属性的作用",
+          "difficulty": "beginner",
+          "doc": "002-HTML5BasicTagGlobalAttribute"
+        },
+        {
+          "id": "html-004",
+          "title": "文本语义",
+          "desc": "标题、段落与内联语义标签",
+          "difficulty": "beginner",
+          "doc": "010-TextSemantic"
+        },
+        {
+          "id": "html-005",
+          "title": "列表",
+          "desc": "有序、无序与描述列表",
+          "difficulty": "beginner",
+          "doc": "011-List"
+        },
+        {
+          "id": "html-006",
+          "title": "链接与锚点",
+          "desc": "链接协议、锚点与下载属性",
+          "difficulty": "beginner",
+          "doc": "012-LinkageAnchor"
+        },
+        {
+          "id": "html-007",
+          "title": "图像与响应式图片",
+          "desc": "img、srcset 与 picture 的选择",
+          "difficulty": "beginner",
+          "doc": "013-ImageResponsiveImage"
+        },
+        {
+          "id": "html-008",
+          "title": "音频与视频",
+          "desc": "audio/video 与媒体控制",
+          "difficulty": "beginner",
+          "doc": "014-AudioVideo"
+        }
+      ]
+    },
+    {
+      "id": "semantic",
+      "title": "语义与表单",
+      "subtitle": "让页面可读、可达、可提交",
+      "nodes": [
+        {
+          "id": "html-009",
+          "title": "语义化标签",
+          "desc": "header/nav/main/article 等结构标签",
+          "difficulty": "intermediate",
+          "doc": "003-SemanticTag"
+        },
+        {
+          "id": "html-010",
+          "title": "无障碍访问",
+          "desc": "ARIA、键盘可达性与可访问性检查",
+          "difficulty": "intermediate",
+          "doc": "004-Accessibility"
+        },
+        {
+          "id": "html-011",
+          "title": "表单与验证",
+          "desc": "input 类型、约束验证与表单数据",
+          "difficulty": "intermediate",
+          "doc": "005-HTML5FormValidation"
+        },
+        {
+          "id": "html-012",
+          "title": "自定义数据属性",
+          "desc": "data-* 属性的约定与使用",
+          "difficulty": "beginner",
+          "doc": "027-CustomDataAttribute"
+        },
+        {
+          "id": "html-013",
+          "title": "微数据与 JSON-LD",
+          "desc": "结构化数据标记与 SEO",
+          "difficulty": "intermediate",
+          "doc": "026-MicrodataJSONLD"
+        }
+      ]
+    },
+    {
+      "id": "browser",
+      "title": "浏览器能力",
+      "subtitle": "从文档到应用",
+      "nodes": [
+        {
+          "id": "html-014",
+          "title": "Web Components 与 PWA",
+          "desc": "自定义元素、Shadow DOM 与离线应用",
+          "difficulty": "advanced",
+          "doc": "018-WebComponentsPWADevelopment"
+        },
+        {
+          "id": "html-015",
+          "title": "Web Workers",
+          "desc": "后台线程与计算卸载",
+          "difficulty": "advanced",
+          "doc": "021-WebWorkers"
+        },
+        {
+          "id": "html-016",
+          "title": "Service Worker 与 PWA",
+          "desc": "缓存策略与离线优先",
+          "difficulty": "advanced",
+          "doc": "022-ServiceWorkerPWA"
+        },
+        {
+          "id": "html-017",
+          "title": "History API",
+          "desc": "前端路由与历史记录管理",
+          "difficulty": "intermediate",
+          "doc": "023-HistoryAPI"
+        },
+        {
+          "id": "html-018",
+          "title": "WebSocket",
+          "desc": "全双工通信与实时应用",
+          "difficulty": "advanced",
+          "doc": "024-WebSocket"
+        },
+        {
+          "id": "html-019",
+          "title": "视口与移动优先",
+          "desc": "viewport 配置与移动端适配",
+          "difficulty": "beginner",
+          "doc": "029-ViewportConfigMobileFirst"
+        },
+        {
+          "id": "html-020",
+          "title": "项目示例：交互式表单应用",
+          "desc": "综合运用语义、表单与验证的实战",
+          "difficulty": "intermediate",
+          "doc": "030-HTML5ProjectExampleInteractiveFormApplication"
+        },
+        {
+          "id": "html-021",
+          "title": "关键渲染路径与资源加载",
+          "desc": "浏览器解析、渲染与资源优先级",
+          "difficulty": "advanced",
+          "doc": "031-CriticalRenderingPathAndResourceLoading"
+        }
+      ]
+    }
+  ]
+}

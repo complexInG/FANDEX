@@ -1,0 +1,107 @@
+---
+/**
+ * 单技术学习路线页
+ * -----------------------------------------------------------------------------
+ * 动态路由 /learning-path/[tech]/，渲染该技术的自绘 SVG 思维导图：
+ * 技术根节点 → 阶段列 → 知识点链，节点可点击跳转专项文档。
+ */
+import HomeLayout from '@/components/HomeLayout.astro'
+import SEO from '@/components/SEO.astro'
+import GeoBgDecor from '@/components/GeoBgDecor.astro'
+import LearningPathMap from '@/islands/learning-path/LearningPathMap'
+import { SITE } from '@/lib/constants'
+import {
+  getLearningPathModules,
+  getLearningPathTechVM,
+  hasLearningPathMap,
+} from '@/lib/learning-path'
+import '@/styles/pages/learning-path.css'
+import '@/styles/components/learning-path-map.css'
+
+/** 为已配置地图的每门技术生成独立页面 */
+export function getStaticPaths() {
+  return getLearningPathModules().map((tech) => ({ params: { tech } }))
+}
+
+const { tech } = Astro.params
+const base = import.meta.env.BASE_URL
+
+// 防御：未配置地图的技术重定向到 404
+if (!hasLearningPathMap(tech || '')) {
+  return Astro.redirect(`${base}404`)
+}
+
+const techVM = getLearningPathTechVM(tech || '', base)
+if (!techVM) {
+  return Astro.redirect(`${base}404`)
+}
+
+// 其他技术路线（底部快捷切换）
+const related = getLearningPathModules().filter((id) => id !== techVM.module)
+---
+
+<HomeLayout title={`${techVM.title}学习路线`}>
+  <SEO
+    slot="head"
+    title={`${techVM.title} 学习路线 · FANDEX`}
+    description={techVM.summary}
+    canonical={`${SITE.url}${base}learning-path/${techVM.module}/`}
+    type="website"
+  />
+
+  <div class="lp-page" style={`--lp-color:${techVM.color}`}>
+    <GeoBgDecor variant="list" />
+
+    <!-- Hero：返回链接 + 技术标识 + 官方文档入口 -->
+    <section class="lp-tech-hero fndx-scroll-reveal">
+      <a class="lp-back" href={`${base}learning-path/`}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        返回学习路线总览
+      </a>
+      <div class="lp-tech-hero__head">
+        <span class="lp-tech-hero__icon" aria-hidden="true">{techVM.icon}</span>
+        <h1>{techVM.title} 学习路线</h1>
+        {techVM.officialDocs.length > 0 && (
+          <div class="lp-tech-hero__chips">
+            {techVM.officialDocs.map((doc) => (
+              <a
+                class="lp-chip"
+                href={doc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {doc.label}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+      <p class="lp-tech-hero__desc">{techVM.summary}</p>
+    </section>
+
+    <!-- 思维导图交互区：自绘 SVG，支持拖拽、缩放、折叠与节点跳转 -->
+    <LearningPathMap client:load tech={techVM} base={base} />
+
+    <!-- 其他技术路线 -->
+    <nav class="lp-related" aria-label="其他学习路线">
+      <span class="lp-related__label">其他路线</span>
+      {related.map((id) => {
+        const item = getLearningPathTechVM(id, base)
+        if (!item) return null
+        return (
+          <a class="lp-related__link" href={`${base}learning-path/${id}/`}>
+            {item.title}
+          </a>
+        )
+      })}
+    </nav>
+  </div>
+</HomeLayout>

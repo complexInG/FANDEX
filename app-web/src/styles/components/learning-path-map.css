@@ -1,0 +1,581 @@
+/**
+ * 学习路径思维导图组件样式
+ * -----------------------------------------------------------------------------
+ * 设计说明：
+ * - 全部自绘 SVG，样式基于 ark 语义令牌，支持明暗双主题
+ * - 主题色通过 --lp-color（技术分类色）注入，节点/阶段/连线统一取色
+ * - 归入 @layer components，避免覆盖未分层样式
+ */
+@layer components {
+  /* ============================================================
+   * 主容器：统计条 + 画布 + 图例
+   * ============================================================ */
+  .lp-map {
+    --lp-color: var(--color-accent-base);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .lp-map__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  /* 统计行：数字 + 标签，与语法速览页统计风格一致 */
+  .lp-map__stats {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    background: var(--color-bg-card);
+  }
+
+  .lp-map__stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    font-family: var(--font-display);
+  }
+
+  .lp-map__stat strong {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-fg-primary);
+  }
+
+  .lp-map__stat em {
+    font-style: normal;
+    font-size: 0.7rem;
+    color: var(--color-fg-tertiary);
+  }
+
+  .lp-map__stat--ok strong {
+    color: var(--color-success);
+  }
+
+  .lp-map__stat--gap strong {
+    color: var(--color-warning);
+  }
+
+  /* ============================================================
+   * 控制条
+   * ============================================================ */
+  .lp-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    background: var(--color-bg-card);
+  }
+
+  .lp-controls__scale {
+    min-width: 46px;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    color: var(--color-fg-secondary);
+  }
+
+  /* ============================================================
+   * 画布
+   * ============================================================ */
+  .lp-map__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: var(--space-3);
+    align-items: stretch;
+  }
+
+  .lp-canvas {
+    position: relative;
+    height: 560px;
+    overflow: hidden;
+    border: 1px solid var(--color-border-light);
+    background:
+      linear-gradient(var(--geo-grid, rgba(13, 13, 13, 0.04)) 1px, transparent 1px),
+      linear-gradient(90deg, var(--geo-grid, rgba(13, 13, 13, 0.04)) 1px, transparent 1px),
+      var(--color-bg-card);
+    background-size: 28px 28px;
+    touch-action: none;
+    outline: none;
+  }
+
+  .lp-canvas:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: -2px;
+  }
+
+  .lp-canvas__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+  }
+
+  .lp-canvas:active .lp-canvas__svg {
+    cursor: grabbing;
+  }
+
+  /* 连线：默认中性色，根节点连线由阶段色内联驱动 */
+  .lp-edge {
+    fill: none;
+    stroke: var(--color-border-strong);
+    stroke-width: 1.4;
+    opacity: 0.72;
+  }
+
+  /* ============================================================
+   * 根节点（技术入口）
+   * ============================================================ */
+  .lp-root {
+    outline: none;
+  }
+
+  .lp-root:focus-visible .lp-root__rect {
+    stroke: var(--color-border-focus);
+    stroke-width: 2;
+  }
+
+  .lp-root__rect {
+    fill: color-mix(in oklch, var(--lp-color) 9%, var(--color-bg-card));
+    stroke: color-mix(in oklch, var(--lp-color) 55%, transparent);
+    stroke-width: 1.4;
+    transition: stroke var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .lp-root:hover .lp-root__rect {
+    stroke: var(--lp-color);
+  }
+
+  .lp-root__icon {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    fill: var(--lp-color);
+  }
+
+  .lp-root__title {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+    fill: var(--color-fg-primary);
+  }
+
+  .lp-root__count {
+    font-size: 0.62rem;
+    fill: var(--color-fg-tertiary);
+  }
+
+  /* ============================================================
+   * 阶段列
+   * ============================================================ */
+  .lp-stage__toggle {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .lp-stage__toggle:focus-visible .lp-stage__rect {
+    stroke: var(--color-border-focus);
+    stroke-width: 2;
+  }
+
+  .lp-stage__rect {
+    fill: color-mix(in oklch, var(--lp-color) 6%, var(--color-bg-card));
+    stroke: color-mix(in oklch, var(--lp-color) 38%, transparent);
+    stroke-width: 1;
+    transition: fill var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .lp-stage__toggle:hover .lp-stage__rect {
+    fill: color-mix(in oklch, var(--lp-color) 12%, var(--color-bg-card));
+  }
+
+  .lp-stage__num {
+    font-family: var(--font-family-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    fill: var(--lp-color);
+  }
+
+  .lp-stage__title {
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 600;
+    fill: var(--color-fg-primary);
+  }
+
+  .lp-stage__subtitle {
+    font-size: 0.62rem;
+    fill: var(--color-fg-tertiary);
+  }
+
+  .lp-stage__count-rect {
+    fill: color-mix(in oklch, var(--lp-color) 12%, transparent);
+    stroke: color-mix(in oklch, var(--lp-color) 30%, transparent);
+    stroke-width: 1;
+  }
+
+  .lp-stage__count {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 700;
+    fill: var(--lp-color);
+  }
+
+  .lp-stage__chevron {
+    stroke: var(--color-fg-secondary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform var(--motion-duration-normal) var(--motion-easing-out);
+  }
+
+  /* 折叠后箭头旋转为向下，表示可展开 */
+  .lp-stage__chevron--collapsed {
+    transform: rotate(90deg);
+    transform-origin: 7px 7px;
+  }
+
+  /* 阶段顶部主题色装饰线 */
+  .lp-stage__accent {
+    stroke-width: 2;
+  }
+
+  /* ============================================================
+   * 知识点节点
+   * ============================================================ */
+  .lp-node {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .lp-node:focus-visible .lp-node__rect {
+    stroke: var(--color-border-focus);
+    stroke-width: 2;
+  }
+
+  .lp-node__rect {
+    fill: var(--color-bg-card);
+    stroke: var(--color-border-default);
+    stroke-width: 1;
+    transition:
+      stroke var(--motion-duration-instant) var(--motion-easing-out),
+      fill var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  /* 待补充节点：虚线边框 + 警示色 */
+  .lp-node__rect--planned {
+    stroke: color-mix(in oklch, var(--color-warning) 62%, var(--color-border-strong));
+    stroke-dasharray: 5 4;
+  }
+
+  .lp-node--hovered .lp-node__rect,
+  .lp-node--selected .lp-node__rect {
+    stroke: var(--lp-color);
+    fill: color-mix(in oklch, var(--lp-color) 6%, var(--color-bg-card));
+  }
+
+  .lp-node--selected .lp-node__rect {
+    stroke-width: 1.8;
+  }
+
+  .lp-node__title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    fill: var(--color-fg-primary);
+  }
+
+  .lp-node__seq {
+    font-family: var(--font-family-mono);
+    font-size: 0.62rem;
+    fill: var(--color-fg-tertiary);
+  }
+
+  .lp-node__status {
+    font-size: 0.64rem;
+    fill: var(--color-fg-tertiary);
+  }
+
+  .lp-node__dot {
+    stroke: none;
+  }
+
+  .lp-node__dot--beginner {
+    fill: var(--color-success);
+  }
+
+  .lp-node__dot--intermediate {
+    fill: var(--color-warning);
+  }
+
+  .lp-node__dot--advanced {
+    fill: var(--color-error);
+  }
+
+  /* ============================================================
+   * 详情面板
+   * ============================================================ */
+  .lp-panel {
+    --lp-panel-color: var(--color-accent-base);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-height: 240px;
+    padding: var(--space-4);
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    background: var(--color-bg-card);
+  }
+
+  .lp-panel--empty {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--color-fg-secondary);
+  }
+
+  .lp-panel__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    color: var(--color-accent-base);
+  }
+
+  .lp-panel__hint {
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.7;
+  }
+
+  .lp-panel__sub {
+    margin: 0;
+    font-size: 0.72rem;
+    color: var(--color-fg-tertiary);
+  }
+
+  .lp-panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .lp-panel__stage {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: var(--lp-panel-color);
+  }
+
+  .lp-panel__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--color-fg-primary);
+  }
+
+  .lp-panel__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .lp-panel__difficulty {
+    padding: 1px 8px;
+    border-radius: 2px;
+    font-size: 0.68rem;
+    font-weight: 600;
+  }
+
+  .lp-panel__status {
+    padding: 1px 8px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    font-size: 0.66rem;
+    color: var(--color-fg-tertiary);
+  }
+
+  .lp-panel__status--planned {
+    color: var(--color-warning);
+    border-color: color-mix(in oklch, var(--color-warning) 40%, transparent);
+  }
+
+  .lp-panel__desc {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.7;
+    color: var(--color-fg-secondary);
+  }
+
+  /* 阅读文档主按钮 */
+  .lp-panel__doc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    padding: 6px 12px;
+    border: 1px solid color-mix(in oklch, var(--lp-panel-color) 55%, transparent);
+    border-radius: 2px;
+    background: color-mix(in oklch, var(--lp-panel-color) 8%, transparent);
+    font-family: var(--font-display);
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--lp-panel-color);
+    text-decoration: none;
+    transition: background-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .lp-panel__doc-link:hover {
+    background: color-mix(in oklch, var(--lp-panel-color) 16%, transparent);
+  }
+
+  /* 待补充提示 */
+  .lp-panel__notice {
+    padding: var(--space-2) var(--space-3);
+    border-left: 3px solid var(--color-warning);
+    background: color-mix(in oklch, var(--color-warning) 9%, var(--color-bg-card));
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: var(--color-fg-secondary);
+  }
+
+  /* 官方资料兜底链接 */
+  .lp-panel__official {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    font-size: 0.76rem;
+    color: var(--color-fg-secondary);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--color-border-strong);
+  }
+
+  .lp-panel__official:hover {
+    color: var(--lp-panel-color);
+  }
+
+  /* 定位按钮：幽灵风格 */
+  .lp-panel__locate {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    padding: 4px 10px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    background: transparent;
+    font-size: 0.72rem;
+    color: var(--color-fg-secondary);
+    cursor: pointer;
+    transition:
+      color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .lp-panel__locate:hover {
+    color: var(--lp-panel-color);
+    border-color: color-mix(in oklch, var(--lp-panel-color) 50%, transparent);
+  }
+
+  .lp-panel__footer {
+    margin: auto 0 0;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border-light);
+    font-size: 0.64rem;
+    color: var(--color-fg-tertiary);
+  }
+
+  /* ============================================================
+   * 图例
+   * ============================================================ */
+  .lp-map__legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border-light);
+    font-size: 0.7rem;
+    color: var(--color-fg-secondary);
+  }
+
+  .lp-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .lp-legend-line {
+    display: inline-block;
+    width: 18px;
+    height: 2px;
+    background: var(--color-border-strong);
+  }
+
+  .lp-legend-line--planned {
+    height: 0;
+    border-top: 2px dashed var(--color-warning);
+  }
+
+  .lp-legend-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .lp-legend-dot--beginner {
+    background: var(--color-success);
+  }
+
+  .lp-legend-dot--intermediate {
+    background: var(--color-warning);
+  }
+
+  .lp-legend-dot--advanced {
+    background: var(--color-error);
+  }
+
+  /* ============================================================
+   * 响应式
+   * ============================================================ */
+  @media (max-width: 1024px) {
+    .lp-map__body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .lp-panel {
+      min-height: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .lp-map__toolbar {
+      align-items: stretch;
+    }
+
+    .lp-canvas {
+      height: 430px;
+    }
+
+    .lp-map__stats {
+      justify-content: space-between;
+      flex: 1;
+    }
+  }
+}

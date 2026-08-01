@@ -1,0 +1,287 @@
+{
+  "version": "1.0.0",
+  "module": "javascript",
+  "summary": "从零开始掌握 JavaScript：先建立语法直觉，再理解事件循环与异步核心，最后进入元编程、性能与工程实战。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "基础语法",
+      "subtitle": "零基础起步，先建立语言直觉",
+      "nodes": [
+        {
+          "id": "js-001",
+          "title": "运行环境与开发工具",
+          "desc": "浏览器与 Node.js 中运行 JavaScript 的方式，以及开发工具链的搭建",
+          "difficulty": "beginner",
+          "doc": "001-JavaScriptOverviewRuntimeEnv"
+        },
+        {
+          "id": "js-002",
+          "title": "程序结构与基本语法",
+          "desc": "语句、注释、标识符与程序的基本构成",
+          "difficulty": "beginner",
+          "doc": "002-ProgramStructureBasicSyntax"
+        },
+        {
+          "id": "js-003",
+          "title": "变量与数据类型",
+          "desc": "var/let/const 的差异与七大基础数据类型",
+          "difficulty": "beginner",
+          "doc": "003-VariableDataType"
+        },
+        {
+          "id": "js-004",
+          "title": "数据类型与运算符",
+          "desc": "类型转换规则、运算符与优先级",
+          "difficulty": "beginner",
+          "doc": "004-DataTypeOperator"
+        },
+        {
+          "id": "js-005",
+          "title": "控制流",
+          "desc": "条件、循环与跳转语句的写法与陷阱",
+          "difficulty": "beginner",
+          "doc": "005-ControlFlow"
+        },
+        {
+          "id": "js-006",
+          "title": "对象与数组",
+          "desc": "对象、数组的创建、遍历与常用操作",
+          "difficulty": "beginner",
+          "doc": "026-ObjectArray"
+        },
+        {
+          "id": "js-007",
+          "title": "函数、作用域与闭包",
+          "desc": "函数声明、执行上下文与闭包机制",
+          "difficulty": "beginner",
+          "doc": "016-FunctionScopeClosure"
+        },
+        {
+          "id": "js-008",
+          "title": "正则表达式",
+          "desc": "模式匹配语法、捕获组与常用场景",
+          "difficulty": "beginner",
+          "doc": "043-Regex"
+        }
+      ]
+    },
+    {
+      "id": "core",
+      "title": "核心机制",
+      "subtitle": "理解语言运行的核心模型",
+      "nodes": [
+        {
+          "id": "js-009",
+          "title": "高阶函数",
+          "desc": "函数作为一等公民：map/filter/reduce 与函数组合",
+          "difficulty": "intermediate",
+          "doc": "006-HigherOrderFunction"
+        },
+        {
+          "id": "js-010",
+          "title": "递归与尾调用优化",
+          "desc": "递归思想、调用栈溢出与尾调用优化",
+          "difficulty": "intermediate",
+          "doc": "007-LinearGeneticProgramming"
+        },
+        {
+          "id": "js-011",
+          "title": "原型链与 class 本质",
+          "desc": "原型继承模型与 class 语法糖背后的机制",
+          "difficulty": "intermediate",
+          "doc": "032-PrototypeChainClassEssence"
+        },
+        {
+          "id": "js-012",
+          "title": "深拷贝与浅拷贝",
+          "desc": "引用复制陷阱与深拷贝的完整实现",
+          "difficulty": "intermediate",
+          "doc": "037-DeepShallowCopy"
+        },
+        {
+          "id": "js-013",
+          "title": "事件循环",
+          "desc": "调用栈、任务队列与事件循环模型",
+          "difficulty": "intermediate",
+          "doc": "012-EventLoop"
+        },
+        {
+          "id": "js-014",
+          "title": "异步编程基础",
+          "desc": "回调、Promise 与 async/await 的演进与写法",
+          "difficulty": "intermediate",
+          "doc": "030-AsyncProgramming"
+        },
+        {
+          "id": "js-015",
+          "title": "Promise 构造器",
+          "desc": "Promise 状态机与构造器执行细节",
+          "difficulty": "intermediate",
+          "doc": "024-YouDonTKnowJSAsyncPerformance"
+        },
+        {
+          "id": "js-016",
+          "title": "Promise 静态方法",
+          "desc": "all/race/allSettled/any 的差异与选型",
+          "difficulty": "intermediate",
+          "doc": "034-PromiseStaticMethod"
+        },
+        {
+          "id": "js-017",
+          "title": "异步并发控制",
+          "desc": "并发限制、重试、取消与信号量模式",
+          "difficulty": "advanced",
+          "doc": "035-AsyncConcurrencyControl"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "进阶能力",
+      "subtitle": "模块化、元编程与运行时性能",
+      "nodes": [
+        {
+          "id": "js-018",
+          "title": "模块化",
+          "desc": "CommonJS 与 ESM 模块体系的差异与互操作",
+          "difficulty": "intermediate",
+          "doc": "029-JavaScriptModular"
+        },
+        {
+          "id": "js-019",
+          "title": "动态导入与代码分割",
+          "desc": "import() 与按需加载的实现方式",
+          "difficulty": "intermediate",
+          "doc": "041-ModuleDynamicImportCodeSplitting"
+        },
+        {
+          "id": "js-020",
+          "title": "Proxy 与 Reflect",
+          "desc": "元编程基础：拦截对象操作与转发语义",
+          "difficulty": "advanced",
+          "doc": "010-ExploringES6ProxiesAndReflect"
+        },
+        {
+          "id": "js-021",
+          "title": "生成器函数",
+          "desc": "惰性求值、协程风格编程与迭代器协作",
+          "difficulty": "advanced",
+          "doc": "009-CoroutinesInJavaScript"
+        },
+        {
+          "id": "js-022",
+          "title": "迭代器帮助器",
+          "desc": "可迭代协议与迭代器辅助方法",
+          "difficulty": "advanced",
+          "doc": "023-IteratorHelper"
+        },
+        {
+          "id": "js-023",
+          "title": "事件循环详解",
+          "desc": "宏任务、微任务与渲染时机的完整时序",
+          "difficulty": "advanced",
+          "doc": "033-EventLoopDetailed"
+        },
+        {
+          "id": "js-024",
+          "title": "闭包内存泄漏与优化",
+          "desc": "闭包与垃圾回收的边界问题",
+          "difficulty": "advanced",
+          "doc": "031-ClosureMemoryLeakOptimization"
+        },
+        {
+          "id": "js-025",
+          "title": "内存泄漏排查",
+          "desc": "堆快照、性能面板与泄漏定位方法论",
+          "difficulty": "advanced",
+          "doc": "045-MemoryLeakTroubleshoot"
+        },
+        {
+          "id": "js-026",
+          "title": "ES6+ 新特性",
+          "desc": "从 ES6 到 ESNext 的语法与 API 演进",
+          "difficulty": "intermediate",
+          "doc": "036-ES6NewFeatures"
+        },
+        {
+          "id": "js-027",
+          "title": "防抖与节流",
+          "desc": "高频事件场景的性能优化手段",
+          "difficulty": "intermediate",
+          "doc": "038-DebounceThrottle"
+        },
+        {
+          "id": "js-028",
+          "title": "垃圾回收与内存管理",
+          "desc": "标记清除、分代回收与内存优化实践",
+          "difficulty": "advanced",
+          "doc": "057-MemoryManagementAndGarbageCollection"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "工程实战",
+      "subtitle": "浏览器、Node 与真实项目",
+      "nodes": [
+        {
+          "id": "js-029",
+          "title": "DOM 操作与事件",
+          "desc": "DOM 查询、修改、事件委托与自定义事件",
+          "difficulty": "intermediate",
+          "doc": "027-DOMOperationEvent"
+        },
+        {
+          "id": "js-030",
+          "title": "浏览器 Web API",
+          "desc": "网络请求、存储、IndexedDB 等浏览器接口",
+          "difficulty": "intermediate",
+          "doc": "046-WebAPIBrowserInterface"
+        },
+        {
+          "id": "js-031",
+          "title": "错误边界与全局错误捕获",
+          "desc": "错误处理体系、监控与上报",
+          "difficulty": "intermediate",
+          "doc": "044-ErrorBoundaryGlobalErrorCatch"
+        },
+        {
+          "id": "js-032",
+          "title": "调试与性能优化",
+          "desc": "断点调试、性能面板与优化实践",
+          "difficulty": "advanced",
+          "doc": "047-DebugPerformanceOptimization"
+        },
+        {
+          "id": "js-033",
+          "title": "Node.js 高级特性",
+          "desc": "服务端能力、流处理与性能优化",
+          "difficulty": "advanced",
+          "doc": "049-NodeJsAdvancedFeaturePerformanceOptimization"
+        },
+        {
+          "id": "js-034",
+          "title": "项目实战：待办事项应用",
+          "desc": "综合运用语法、DOM 与存储的完整项目",
+          "difficulty": "intermediate",
+          "doc": "050-JavaScriptProjectExampleTodoApp"
+        },
+        {
+          "id": "js-035",
+          "title": "模块打包原理与 Tree Shaking",
+          "desc": "打包器的工作原理与摇树优化",
+          "difficulty": "advanced",
+          "doc": "058-ModuleBundlingAndTreeShaking"
+        },
+        {
+          "id": "js-036",
+          "title": "前端性能指标与 Core Web Vitals",
+          "desc": "性能度量标准与优化闭环",
+          "difficulty": "intermediate",
+          "doc": "059-CoreWebVitalsAndPerformanceMetrics"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,252 @@
+{
+  "version": "1.0.0",
+  "module": "css",
+  "summary": "从盒模型与选择器起步，掌握 Flex/Grid 两套布局，再进入动画、响应式与现代 CSS 工程化。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "基础",
+      "subtitle": "盒模型、选择器与层叠",
+      "nodes": [
+        {
+          "id": "css-001",
+          "title": "概述与基本语法",
+          "desc": "CSS 是什么、规则结构与书写位置",
+          "difficulty": "beginner",
+          "doc": "001-CSS3OverviewBasicSyntax"
+        },
+        {
+          "id": "css-002",
+          "title": "盒模型详解",
+          "desc": "content/padding/border/margin 与 box-sizing",
+          "difficulty": "beginner",
+          "doc": "002-CSS3BoxModelDetailed"
+        },
+        {
+          "id": "css-003",
+          "title": "选择器系统",
+          "desc": "基础、组合、属性与高级选择器",
+          "difficulty": "beginner",
+          "doc": "003-CSS3SelectorSystem"
+        },
+        {
+          "id": "css-004",
+          "title": "优先级计算",
+          "desc": "层叠、继承与权重计算",
+          "difficulty": "beginner",
+          "doc": "007-PriorityCalculation"
+        },
+        {
+          "id": "css-005",
+          "title": "样式引入方式",
+          "desc": "link、@import 与内联样式的差异",
+          "difficulty": "beginner",
+          "doc": "008-StyleSheetImportMethod"
+        },
+        {
+          "id": "css-006",
+          "title": "margin 合并与塌陷",
+          "desc": "垂直外边距折叠的规则与规避",
+          "difficulty": "intermediate",
+          "doc": "009-MarginCollapse"
+        },
+        {
+          "id": "css-007",
+          "title": "定位详解",
+          "desc": "static/relative/absolute/fixed/sticky",
+          "difficulty": "intermediate",
+          "doc": "010-PositionDetailed"
+        },
+        {
+          "id": "css-008",
+          "title": "浮动与清除",
+          "desc": "float 机制与清除浮动的方法",
+          "difficulty": "intermediate",
+          "doc": "011-FloatClear"
+        },
+        {
+          "id": "css-009",
+          "title": "层叠上下文",
+          "desc": "渲染层与 z-index 的真相",
+          "difficulty": "advanced",
+          "doc": "012-StackingContext"
+        }
+      ]
+    },
+    {
+      "id": "layout",
+      "title": "布局",
+      "subtitle": "Flex 与 Grid 两把刷子",
+      "nodes": [
+        {
+          "id": "css-010",
+          "title": "传统布局技术",
+          "desc": "文档流、表格与行内块布局",
+          "difficulty": "beginner",
+          "doc": "004-TraditionalLayoutTech"
+        },
+        {
+          "id": "css-011",
+          "title": "Flexbox 弹性布局",
+          "desc": "一维弹性布局的完整体系",
+          "difficulty": "intermediate",
+          "doc": "005-CSS3FlexboxFlexLayout"
+        },
+        {
+          "id": "css-012",
+          "title": "Grid 网格布局",
+          "desc": "二维网格布局的完整体系",
+          "difficulty": "intermediate",
+          "doc": "016-CSS3GridGridLayout"
+        },
+        {
+          "id": "css-013",
+          "title": "伪类与伪元素",
+          "desc": "状态选择与装饰节点的写法",
+          "difficulty": "intermediate",
+          "doc": "006-PseudoClassPseudoElement"
+        }
+      ]
+    },
+    {
+      "id": "visual",
+      "title": "视觉与响应式",
+      "subtitle": "渐变、动画与多端适配",
+      "nodes": [
+        {
+          "id": "css-014",
+          "title": "渐变",
+          "desc": "linear/radial/conic 渐变",
+          "difficulty": "intermediate",
+          "doc": "013-Gradient"
+        },
+        {
+          "id": "css-015",
+          "title": "阴影",
+          "desc": "box-shadow 与投影技巧",
+          "difficulty": "intermediate",
+          "doc": "014-Shadow"
+        },
+        {
+          "id": "css-016",
+          "title": "背景增强",
+          "desc": "多重背景与尺寸控制",
+          "difficulty": "intermediate",
+          "doc": "015-BackgroundEnhancement"
+        },
+        {
+          "id": "css-017",
+          "title": "动画与过渡",
+          "desc": "transition 与 keyframes 动画",
+          "difficulty": "intermediate",
+          "doc": "017-CSSAnimationTransition"
+        },
+        {
+          "id": "css-018",
+          "title": "媒体查询",
+          "desc": "断点设计与响应式规则",
+          "difficulty": "intermediate",
+          "doc": "019-MediaQuery"
+        },
+        {
+          "id": "css-019",
+          "title": "容器查询",
+          "desc": "按容器尺寸响应",
+          "difficulty": "advanced",
+          "doc": "020-ContainerQuery"
+        },
+        {
+          "id": "css-020",
+          "title": "响应式设计",
+          "desc": "移动优先与流式布局",
+          "difficulty": "intermediate",
+          "doc": "030-ResponsiveDesign"
+        },
+        {
+          "id": "css-021",
+          "title": "现代色彩空间",
+          "desc": "oklch/color() 与色彩函数",
+          "difficulty": "advanced",
+          "doc": "050-ModernColorSpace"
+        }
+      ]
+    },
+    {
+      "id": "engineering",
+      "title": "工程化",
+      "subtitle": "变量、架构与现代语法",
+      "nodes": [
+        {
+          "id": "css-022",
+          "title": "CSS 变量与自定义属性",
+          "desc": "设计令牌与运行时主题",
+          "difficulty": "intermediate",
+          "doc": "023-CSSVariableCustomAttribute"
+        },
+        {
+          "id": "css-023",
+          "title": "逻辑属性",
+          "desc": "书写模式与逻辑方向",
+          "difficulty": "advanced",
+          "doc": "026-LogicalProperty"
+        },
+        {
+          "id": "css-024",
+          "title": "滚动捕捉",
+          "desc": "scroll-snap 的交互体验",
+          "difficulty": "advanced",
+          "doc": "027-ScrollSnap"
+        },
+        {
+          "id": "css-025",
+          "title": "层叠层 @layer",
+          "desc": "样式分层与优先级管理",
+          "difficulty": "advanced",
+          "doc": "025-CascadeLayer"
+        },
+        {
+          "id": "css-026",
+          "title": "特性查询 @supports",
+          "desc": "能力检测与渐进增强",
+          "difficulty": "intermediate",
+          "doc": "024-FeatureQuery"
+        },
+        {
+          "id": "css-027",
+          "title": "CSS 原生嵌套",
+          "desc": "嵌套语法与注意事项",
+          "difficulty": "intermediate",
+          "doc": "036-CSSNativeNesting"
+        },
+        {
+          "id": "css-028",
+          "title": "性能优化详解",
+          "desc": "渲染性能与样式计算优化",
+          "difficulty": "advanced",
+          "doc": "042-CSSPerformanceOptimizationDetailed"
+        },
+        {
+          "id": "css-029",
+          "title": "架构方法论",
+          "desc": "BEM、原子化与 CSS-in-JS 的取舍",
+          "difficulty": "advanced",
+          "doc": "039-CSSArchitectureMethodology"
+        },
+        {
+          "id": "css-030",
+          "title": "排版与网格系统",
+          "desc": "字号阶梯、间距体系与基准线",
+          "difficulty": "intermediate",
+          "doc": "051-TypographyAndGridSystem"
+        },
+        {
+          "id": "css-031",
+          "title": "可访问性样式",
+          "desc": "对比度、焦点样式与减少动效",
+          "difficulty": "intermediate",
+          "doc": "052-AccessibleStyling"
+        }
+      ]
+    }
+  ]
+}

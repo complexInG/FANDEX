@@ -1,0 +1,161 @@
+---
+/**
+ * 学习路径总览页
+ * -----------------------------------------------------------------------------
+ * 展示已配置知识地图的技术卡片（按分类分组），每张卡片包含覆盖统计与进度条，
+ * 点击进入单技术思维导图页。
+ */
+import HomeLayout from '@/components/HomeLayout.astro'
+import SEO from '@/components/SEO.astro'
+import GeoBgDecor from '@/components/GeoBgDecor.astro'
+import Footer from '@/components/Footer.astro'
+import { SITE } from '@/lib/constants'
+import { getModule, getPrimaryCategory } from '@/lib/modules'
+import { getCategories } from '@/services'
+import {
+  getLearningPathModules,
+  getLearningPathTechVM,
+} from '@/lib/learning-path'
+import '@/styles/pages/learning-path.css'
+
+const base = import.meta.env.BASE_URL
+
+// 技术卡片数据：模块元数据 + 视图模型（服务端组装）
+const techCards = getLearningPathModules()
+  .map((module) => {
+    const meta = getModule(module)
+    const vm = getLearningPathTechVM(module, base)
+    if (!meta || !vm) return null
+    return { module, meta, vm, category: getPrimaryCategory(meta) }
+  })
+  .filter((card): card is NonNullable<typeof card> => card !== null)
+
+// 按主分类分组（沿用首页分类顺序与配色）
+const grouped = getCategories()
+  .map((cat) => ({
+    ...cat,
+    cards: techCards.filter((card) => card.category === cat.id),
+  }))
+  .filter((group) => group.cards.length > 0)
+
+// 聚合统计
+const total = techCards.reduce(
+  (acc, card) => ({
+    nodes: acc.nodes + card.vm.stats.nodes,
+    docs: acc.docs + card.vm.stats.docs,
+    gaps: acc.gaps + card.vm.stats.gaps,
+  }),
+  { nodes: 0, docs: 0, gaps: 0 },
+)
+
+// 路线节点图标（几何 stroke 风格）
+const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M6 8v4a4 4 0 0 0 4 4h4"/></svg>`
+---
+
+<HomeLayout title="学习路线">
+  <SEO
+    slot="head"
+    title="学习路线 · FANDEX"
+    description="FANDEX 学习路线：以思维导图形式展示各技术的学习知识链，每个知识点都可跳转专项文档。"
+    canonical={`${SITE.url}${base}learning-path/`}
+    type="website"
+  />
+
+  <div class="lp-page">
+    <GeoBgDecor variant="list" />
+
+    <!-- Hero：功能标题 + 描述 + 统计 -->
+    <section class="lp-hero fndx-scroll-reveal">
+      <div class="lp-hero__icon" aria-hidden="true" set:html={icon} />
+      <h1 class="lp-hero__title">学习路线</h1>
+      <p class="lp-hero__desc">
+        以思维导图呈现每门技术的知识链：先学什么、后学什么一目了然，
+        点击知识点直达专项文档。虚线节点表示文档待补充，正在持续完善。
+      </p>
+      <div class="lp-hero__stats">
+        <span class="lp-hero__stat">
+          <strong>{techCards.length}</strong>
+          <em>门技术</em>
+        </span>
+        <span class="lp-hero__divider" aria-hidden="true"></span>
+        <span class="lp-hero__stat">
+          <strong>{total.nodes}</strong>
+          <em>个知识点</em>
+        </span>
+        <span class="lp-hero__divider" aria-hidden="true"></span>
+        <span class="lp-hero__stat">
+          <strong>{total.docs}</strong>
+          <em>篇已发布</em>
+        </span>
+        <span class="lp-hero__divider" aria-hidden="true"></span>
+        <span class="lp-hero__stat">
+          <strong>{total.gaps}</strong>
+          <em>篇待补充</em>
+        </span>
+      </div>
+    </section>
+
+    <!-- 分类技术卡片 -->
+    {grouped.map((group) => (
+      <section class="lp-category fndx-scroll-reveal" data-category={group.id}>
+        <h2 class="lp-category__title">
+          <span
+            class="lp-category__mark"
+            style={`--cat-color:${group.color}`}
+            aria-hidden="true"
+          ></span>
+          {group.label}
+          <span class="lp-category__count">{group.cards.length} 门</span>
+        </h2>
+        <div class="lp-tech-grid">
+          {group.cards.map((card) => {
+            const percent = card.vm.stats.nodes > 0
+              ? Math.round((card.vm.stats.docs / card.vm.stats.nodes) * 100)
+              : 0
+            return (
+              <a
+                class="lp-tech-card"
+                href={`${base}learning-path/${card.module}/`}
+                style={`--card-color:${group.color}`}
+              >
+                <div class="lp-tech-card__head">
+                  <span class="lp-tech-card__icon" aria-hidden="true">
+                    {card.meta.icon}
+                  </span>
+                  <span class="lp-tech-card__title">{card.meta.title}</span>
+                  <span class="lp-tech-card__arrow" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  </span>
+                </div>
+                <p class="lp-tech-card__desc">{card.vm.summary}</p>
+                <div class="lp-tech-card__stats">
+                  <span><strong>{card.vm.stats.nodes}</strong> 知识点</span>
+                  <i aria-hidden="true"></i>
+                  <span><strong>{card.vm.stats.docs}</strong> 已发布</span>
+                  <i aria-hidden="true"></i>
+                  <span class={card.vm.stats.gaps > 0 ? 'is-gap' : undefined}>
+                    <strong>{card.vm.stats.gaps}</strong> 待补充
+                  </span>
+                </div>
+                <svg
+                  class="lp-tech-card__bar"
+                  viewBox="0 0 100 4"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <rect class="bar-track" x="0" y="0" width="100" height="4" />
+                  <rect class="bar-fill" x="0" y="0" width={percent} height="4" />
+                </svg>
+              </a>
+            )
+          })}
+        </div>
+      </section>
+    ))}
+
+    <Footer />
+  </div>
+</HomeLayout>

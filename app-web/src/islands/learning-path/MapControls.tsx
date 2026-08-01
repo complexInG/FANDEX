@@ -1,0 +1,50 @@
+/**
+ * 思维导图画布控制条
+ * -----------------------------------------------------------------------------
+ * 提供缩小、放大、适应视口、复位四个操作，统一使用 fndx-icon-btn 幽灵按钮风格。
+ */
+interface Props {
+  /** 当前缩放百分比（0-100 整数） */
+  scale: number;
+  /** 缩小 */
+  onZoomOut: () => void;
+  /** 放大 */
+  onZoomIn: () => void;
+  /** 适应视口 */
+  onFit: () => void;
+  /** 复位到 100% */
+  onReset: () => void;
+}
+
+/** 控制条：仅图标按钮 + 缩放读数 */
+export default function MapControls({ scale, onZoomOut, onZoomIn, onFit, onReset }: Props) {
+  return (
+    <div className="lp-controls" role="toolbar" aria-label="思维导图缩放控制">
+      <button type="button" className="fndx-icon-btn" onClick={onZoomOut} aria-label="缩小">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
+      <button type="button" className="fndx-icon-btn" onClick={onZoomIn} aria-label="放大">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
+      <span className="lp-controls__scale" aria-live="polite">
+        {Math.round(scale)}%
+      </span>
+      <button type="button" className="fndx-icon-btn" onClick={onFit} aria-label="适应视口">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+        </svg>
+      </button>
+      <button type="button" className="fndx-icon-btn" onClick={onReset} aria-label="复位到 100%">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M3 12a9 9 0 1 0 3-6.7" />
+          <polyline points="3 3 3 8 8 8" />
+        </svg>
+      </button>
+    </div>
+  );
+}
