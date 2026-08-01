@@ -22,6 +22,7 @@ prerequisites:
   - python/上下文管理器
 ---
 
+
 ## 概述
 
 测试是软件工程的基石。在 Python 生态中，测试不仅是验证代码正确性的手段，更是一种设计哲学——测试驱动的代码往往具有更清晰的接口、更松散的耦合、更可维护的结构。Python 测试生态历经二十余年演进，已形成以 pytest 为事实标准、unittest 为标准库基础、hypothesis 提供属性测试、tox/nox 提供多环境矩阵、coverage.py 提供覆盖率分析的完整工具链。
@@ -30,89 +31,15 @@ prerequisites:
 
 测试不是"代码完成后的补充工作"，而是"代码设计的前置约束"。Kent Beck 在《Test-Driven Development: By Example》中提出 TDD 的核心循环——红（写失败测试）、绿（写最少代码让测试通过）、重构（在测试保护下改进设计）——这一循环深刻影响了现代软件工程的方法论。本篇目标在于让读者从理论、工具、工程、文化四个维度全面掌握 Python 测试体系。
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本篇采用 Bloom 分类法按认知层级组织学习目标。
-
-### 1.1 记忆层（Remember）
-
-学习者能够准确复述以下事实性知识：
-
-- Python 标准库提供 `unittest` 模块，灵感来源于 Java 的 JUnit。
-- `pytest` 是第三方测试框架，由 Holger Krekel 开发，采用 `assert` 语句而非 `self.assertEqual`。
-- 测试函数以 `test_` 开头，测试类以 `Test` 开头，pytest 默认按此规则发现测试。
-- `@pytest.fixture` 装饰器用于定义夹具（fixture），夹具通过参数注入实现依赖反转。
-- fixture 的作用域（scope）包含 `function`、`class`、`module`、`package`、`session` 五级。
-- `@pytest.mark.parametrize` 用于参数化测试，同一逻辑可针对多组输入运行。
-- `unittest.mock.patch` 可临时替换目标对象，`MagicMock` 提供 mock 对象的默认实现。
-- coverage.py 是 Python 生态中最主流的覆盖率统计工具。
-- `hypothesis` 是 Python 属性测试库，灵感来源于 Haskell 的 QuickCheck。
-- 测试金字塔（Test Pyramid）由 Mike Cohn 在《Succeeding with Agile》中提出。
-
-### 1.2 理解层（Understand）
-
-学习者能够用自己的语言解释以下概念：
-
-- 单元测试、集成测试、端到端测试的边界与权衡。
-- FIRST 原则：Fast（快速）、Independent（独立）、Repeatable（可重复）、Self-Validating（自验证）、Timely（及时）。
-- 测试驱动开发（TDD）与行为驱动开发（BDD）的本质区别：TDD 关注"代码做什么"，BDD 关注"系统行为如何表达"。
-- 黑盒测试与白盒测试的覆盖目标差异：黑盒关注输入输出规约，白盒关注内部执行路径。
-- Mock、Stub、Spy、Fake 四种测试替身（Test Double）的语义差异。
-- fixture 的依赖注入机制：pytest 通过参数名解析依赖图，按拓扑序构造。
-- 覆盖率的四种度量：语句覆盖（C0）、分支覆盖（C1）、路径覆盖（C2）、MC/DC 覆盖。
-- 参数化测试与传统循环测试的本质区别：参数化每组独立运行、独立报告、独立断言。
-- conftest.py 的作用域机制：fixture 与 hook 按目录层级向下继承。
-
-### 1.3 应用层（Apply）
-
-学习者能够在真实工程场景中：
-
-- 为现有 Python 项目搭建 pytest 测试骨架，配置 `pyproject.toml` 的 `[tool.pytest.ini_options]`。
-- 使用 fixture 与 conftest.py 实现测试数据的复用与清理。
-- 使用 `@patch`、`MagicMock` 替换外部依赖（HTTP 请求、数据库、文件系统、时间）。
-- 编写参数化测试覆盖边界条件（空值、极值、负数、Unicode、特殊字符）。
-- 配置 coverage.py 在 CI 中执行分支覆盖率检查，设置最低阈值。
-- 使用 hypothesis 生成基于规约的随机测试数据，发现边界 bug。
-- 集成 pytest 到 GitHub Actions / GitLab CI，实现 PR 阻塞式检查。
-
-### 1.4 分析层（Analyze）
-
-学习者能够剖析：
-
-- 一段失败的测试，定位根因：是产品代码 bug、测试代码 bug、还是环境问题。
-- 一段慢测试套件，分析瓶颈：是 I/O 密集（应使用 mock）、CPU 密集（应优化算法）、还是 fixture 重复构造（应提升 scope）。
-- 一段高覆盖率但低质量的测试代码：是否仅验证"代码执行了"而非"行为正确"。
-- Mock 滥用导致的测试与实现高度耦合：测试是否在验证"如何实现"而非"做了什么"。
-- pytest 插件机制的工作原理：hookspec 与 hookimpl 的注册与调用顺序。
-
-### 1.5 评价层（Evaluate）
-
-学习者能够评价：
-
-- 在给定项目中，单元测试与集成测试的比例是否合理？是否符合测试金字塔？
-- 一段测试代码的可读性、可维护性、稳定性是否达标？
-- coverage 80% 阈值是否合理？是否应该提升到 90%？是否应该用分支覆盖率替代语句覆盖率？
-- Mock 的使用是否过度？是否破坏了测试的代表性？
-- 是否值得引入 hypothesis 属性测试？引入成本与收益的权衡。
-
-### 1.6 创造层（Create）
-
-学习者能够：
-
-- 设计一套企业级 Python 测试规范，覆盖命名、目录结构、fixture 分层、mock 策略、覆盖率要求。
-- 构建一个领域特定的 pytest 插件，封装业务通用的 fixture 与断言工具。
-- 基于契约测试（Contract Testing）思想，设计微服务间接口的测试方案。
-- 设计一套混沌测试（Chaos Testing）方案，验证系统在依赖故障下的鲁棒性。
-
-## 2. 历史动机与背景
-
-### 2.1 软件测试的起源
+### 1.1 软件测试的起源
 
 软件测试作为一门工程学科，其历史可追溯至 1947 年 Grace Hopper 在 Harvard Mark II 计算机中发现的真实"虫子（bug）"——一只飞蛾导致继电器短路。这一事件被记入工程日志，"debug"一词由此诞生。但测试作为系统化方法论，则要到 1960 年代才逐渐成形。
 
 1970 年代，软件危机爆发。诸多大型项目因质量问题延期或失败，促使业界开始系统研究测试方法。1979 年 Glenford Myers 出版《The Art of Software Testing》，首次系统化定义了测试的目标："测试是为了发现错误而执行程序的过程"。这一定义颠覆了"测试是为了证明程序正确"的早期认知，奠定了现代测试哲学的基调。
 
-### 2.2 xUnit 家族的诞生
+### 1.2 xUnit 家族的诞生
 
 1989 年，Kent Beck 在 Smalltalk 中创建了 SUnit，这是首个 xUnit 框架。SUnit 确立了"每个测试独立运行、setUp/tearDown 隔离环境、assert 原语验证预期"的范式。随后：
 
@@ -120,7 +47,7 @@ prerequisites:
 - 2001 年 Python 标准库引入 `unittest` 模块（原名 PyUnit），由 Steve Purcell 贡献，遵循 xUnit 范式。
 - 2000 年代初 Holger Krekel 发起 pytest 项目，试图突破 xUnit 的类继承约束，引入函数式测试与依赖注入 fixture。
 
-### 2.3 pytest 的革命性突破
+### 1.3 pytest 的革命性突破
 
 pytest 相比 unittest 的革命性体现在五点：
 
@@ -130,7 +57,7 @@ pytest 相比 unittest 的革命性体现在五点：
 4. **参数化**：`@pytest.mark.parametrize` 让一组测试逻辑针对多组输入自动展开，独立报告每组结果。
 5. **插件系统**：pytest 的 hook 机制允许插件深度定制测试发现的各个环节，催生了 pytest-cov、pytest-django、pytest-asyncio 等丰富生态。
 
-### 2.4 测试方法论演进
+### 1.4 测试方法论演进
 
 | 时期 | 方法论 | 代表人物 / 文献 | 核心思想 |
 |------|--------|-----------------|----------|
@@ -143,7 +70,7 @@ pytest 相比 unittest 的革命性体现在五点：
 | 2013 | 契约测试 | Martin Fowler | 服务间接口契约验证 |
 | 2015 | 混沌工程 | Netflix | 主动注入故障验证鲁棒性 |
 
-### 2.5 Python 测试生态演进
+### 1.5 Python 测试生态演进
 
 | 年份 | 事件 |
 |------|------|
@@ -157,9 +84,9 @@ pytest 相比 unittest 的革命性体现在五点：
 | 2022 | pytest 7.0 重构 fixture 系统，引入 `exceptiongroup` |
 | 2024 | pytest 8.0 完善异步测试支持，支持 Python 3.12 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 测试用例的形式化定义
+### 2.1 测试用例的形式化定义
 
 一个测试用例 $t$ 是一个三元组：
 
@@ -174,7 +101,7 @@ $$
 
 测试通过当且仅当 $\text{execute}(S, I) \in O$，即被测系统在状态 $S$ 下接受输入 $I$ 后产生的实际输出落在预期输出集合内。
 
-### 3.2 覆盖率的形式化定义
+### 2.2 覆盖率的形式化定义
 
 设程序 $P$ 包含语句集合 $\text{Stmt}(P)$、分支集合 $\text{Branch}(P)$、路径集合 $\text{Path}(P)$。设测试套件 $T$ 触发的语句集合为 $\text{Stmt}(T)$，则：
 
@@ -198,7 +125,7 @@ $$
 
 由于路径数量随分支数指数增长（$|\text{Path}(P)| = O(2^n)$），完整路径覆盖率在实际工程中通常不可达。
 
-### 3.3 MC/DC 覆盖率
+### 2.3 MC/DC 覆盖率
 
 Modified Condition/Decision Coverage（MC/DC）是航空软件 DO-178B 标准要求的高强度覆盖率，定义为：
 
@@ -210,7 +137,7 @@ $$
 
 MC/DC 所需测试用例数为 $n + 1$（线性增长），远低于路径覆盖率的 $2^n$，因此是工程上可达的高强度覆盖率指标。
 
-### 3.4 属性测试的形式化定义
+### 2.4 属性测试的形式化定义
 
 属性测试（Property-Based Testing）由 John Hughes 在 Haskell QuickCheck 中提出。其核心形式化为：
 
@@ -222,7 +149,7 @@ $$
 
 测试器通过随机生成 $a \in A$，并调用 $f(a)$ 检查 $\phi$ 是否成立。若发现反例，则尝试最小化反例（shrinking），找到最小可复现的失败输入。
 
-### 3.5 测试替身的分类
+### 2.5 测试替身的分类
 
 Gerard Meszaros 在《xUnit Test Patterns》中定义了五种测试替身（Test Double）：
 
@@ -241,9 +168,9 @@ Gerard Meszaros 在《xUnit Test Patterns》中定义了五种测试替身（Tes
 - Mock：$D(x) = c$，验证 $\text{calls} \models \text{expectations}$。
 - Fake：$D(x) = R'(x)$，其中 $R'$ 是 $R$ 的简化实现。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 测试金字塔的经济学推导
+### 3.1 测试金字塔的经济学推导
 
 测试金字塔建议单元测试占 70%、集成测试占 20%、端到端测试占 10%。这一比例的经济学依据可形式化推导。
 
@@ -259,7 +186,7 @@ $$
 
 但端到端测试能发现单元测试遗漏的集成 bug（$p_e > p_u$ 在集成 bug 上成立），因此需保留少量端到端测试。这一权衡导出测试金字塔形态。
 
-### 4.2 fixture 依赖图的拓扑排序
+### 3.2 fixture 依赖图的拓扑排序
 
 pytest 的 fixture 之间可相互引用：
 
@@ -280,13 +207,13 @@ $$
 
 若存在循环依赖（$A \to B \to A$），pytest 检测到后会报错。这是 DAG 的环检测算法的应用。
 
-### 4.3 coverage 的精度上限
+### 3.3 coverage 的精度上限
 
 定理：对于任意非平凡程序 $P$，不存在多项式时间算法能计算 $P$ 的精确路径覆盖率。
 
 证明：路径覆盖率计算需要枚举程序所有可行路径，而程序路径可达性问题是图灵停机问题的子问题，不可判定。因此实际工具（coverage.py）只统计被执行过的语句与分支，不保证覆盖所有可行路径。
 
-### 4.4 属性测试的最小化算法
+### 3.4 属性测试的最小化算法
 
 hypothesis 采用基于策略树的 shrinking 算法。给定失败输入 $x$，寻找最小 $x'$ 使得 $f(x')$ 仍失败：
 
@@ -296,7 +223,7 @@ $$
 
 由于搜索空间巨大，hypothesis 采用启发式：对整数二分缩小、对列表逐步删除元素、对字符串按字符删除。这是约束满足问题（CSP）的贪心近似算法。
 
-### 4.5 Mock 的局限性
+### 3.5 Mock 的局限性
 
 定理（Mock 替身不等式）：设 $R$ 是真实依赖，$M$ 是其 mock。若 $M$ 与 $R$ 的行为规约不完全一致，则存在测试 $t$ 使得：
 
@@ -306,11 +233,11 @@ $$
 
 或反之。这是 mock 测试的根本局限：mock 仅能验证"被测代码与 mock 的契约"，不能验证"被测代码与真实依赖的契约"。因此集成测试（使用真实依赖）仍不可替代。
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节提供多个完整可运行的代码示例，覆盖 Python 测试生态的核心用法与典型工程场景。
 
-### 5.1 pytest 基础：第一个测试
+### 4.1 pytest 基础：第一个测试
 
 ```python
 # test_calc.py
@@ -370,7 +297,7 @@ def test_divide_by_zero():
         divide(1, 0)
 ```
 
-### 5.2 fixture 依赖注入
+### 4.2 fixture 依赖注入
 
 ```python
 # test_fixture.py
@@ -456,7 +383,7 @@ def test_create_user(user_service):
     assert user.id is not None
 ```
 
-### 5.3 参数化测试
+### 4.3 参数化测试
 
 ```python
 # test_parametrize.py
@@ -519,7 +446,7 @@ def test_combination(x, y):
     assert x * y > 0
 ```
 
-### 5.4 Mock 与依赖隔离
+### 4.4 Mock 与依赖隔离
 
 ```python
 # test_mock.py
@@ -630,7 +557,7 @@ def test_notify_user():
         mock_send.assert_called_once_with("user@example.com", "通知", "Hello")
 ```
 
-### 5.5 测试 FastAPI 应用
+### 4.5 测试 FastAPI 应用
 
 ```python
 # test_fastapi.py
@@ -687,7 +614,7 @@ def test_invalid_payload(client):
     assert response.status_code == 422  # FastAPI 自动校验失败
 ```
 
-### 5.6 测试数据库操作
+### 4.6 测试数据库操作
 
 ```python
 # test_database.py
@@ -766,7 +693,7 @@ def test_user_isolation(db_session):
     assert len(users) == 0  # 事务已回滚
 ```
 
-### 5.7 异步测试
+### 4.7 异步测试
 
 ```python
 # test_async.py
@@ -810,7 +737,7 @@ async def test_concurrent_requests():
     assert all(r["status"] == "ok" for r in results)
 ```
 
-### 5.8 coverage.py 与分支覆盖
+### 4.8 coverage.py 与分支覆盖
 
 ```python
 # .coveragerc 配置示例
@@ -885,7 +812,7 @@ def test_classify_boundary():
     assert classify(59) == "F"
 ```
 
-### 5.9 hypothesis 属性测试
+### 4.9 hypothesis 属性测试
 
 ```python
 # test_property.py
@@ -962,7 +889,7 @@ def test_user_creation(user):
     assert u.age == user["age"]
 ```
 
-### 5.10 pytest 配置与 conftest
+### 4.10 pytest 配置与 conftest
 
 ```python
 # pyproject.toml pytest 配置
@@ -1050,7 +977,7 @@ def env(request):
     return request.config.getoption("--env")
 ```
 
-### 5.11 pytest-benchmark 性能测试
+### 4.11 pytest-benchmark 性能测试
 
 ```python
 # test_benchmark.py
@@ -1105,7 +1032,7 @@ def test_fast_fibonacci_benchmark(benchmark):
 # 对比：pytest --benchmark-compare
 ```
 
-### 5.12 完整 TDD 流程示例
+### 4.12 完整 TDD 流程示例
 
 ```python
 # TDD 完整流程：开发一个 Stack 类
@@ -1183,9 +1110,9 @@ class Stack:
 # 例如：添加泛型支持、添加迭代器、添加 __repr__ 等
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 pytest vs unittest
+### 5.1 pytest vs unittest
 
 | 维度 | pytest | unittest |
 |------|--------|----------|
@@ -1201,7 +1128,7 @@ class Stack:
 
 **结论**：新项目优先选择 pytest，老项目可保留 unittest，并使用 pytest 作为运行器（pytest 兼容 unittest 风格测试）。
 
-### 6.2 Mock vs Stub vs Spy vs Fake
+### 5.2 Mock vs Stub vs Spy vs Fake
 
 | 类型 | 验证调用 | 提供返回值 | 实现复杂度 | 适用场景 |
 |------|----------|------------|------------|----------|
@@ -1210,7 +1137,7 @@ class Stack:
 | Spy | 是 | 是（透传真实） | 中 | 记录但不破坏真实行为 |
 | Fake | 否 | 否（自实现） | 高 | 简化版真实依赖 |
 
-### 6.3 单元测试 vs 集成测试 vs 端到端测试
+### 5.3 单元测试 vs 集成测试 vs 端到端测试
 
 | 维度 | 单元测试 | 集成测试 | 端到端测试 |
 |------|----------|----------|------------|
@@ -1222,7 +1149,7 @@ class Stack:
 | 集成 bug 发现 | 无 | 强 | 强 |
 | 推荐比例 | 70% | 20% | 10% |
 
-### 6.4 coverage.py vs codecov vs coveralls
+### 5.4 coverage.py vs codecov vs coveralls
 
 | 工具 | 类型 | 特点 |
 |------|------|------|
@@ -1231,7 +1158,7 @@ class Stack:
 | codecov | 云服务 | 上传报告，PR 中显示覆盖率变化 |
 | coveralls | 云服务 | 类似 codecov，历史更久 |
 
-### 6.5 hypothesis vs 传统参数化测试
+### 5.5 hypothesis vs 传统参数化测试
 
 | 维度 | 传统 `@parametrize` | hypothesis |
 |------|---------------------|------------|
@@ -1242,7 +1169,7 @@ class Stack:
 | 学习曲线 | 低 | 中（需学习策略） |
 | 适用场景 | 已知边界 | 探索未知边界 |
 
-### 6.6 TDD vs BDD
+### 5.6 TDD vs BDD
 
 | 维度 | TDD | BDD |
 |------|-----|-----|
@@ -1252,9 +1179,9 @@ class Stack:
 | 参与者 | 开发者 | 开发者 + 业务方 |
 | 文档价值 | 代码级文档 | 业务可读文档 |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：测试间依赖
+### 6.1 陷阱：测试间依赖
 
 **反模式**：
 
@@ -1291,7 +1218,7 @@ def test_get_user(client, created_user):
     assert response.status_code == 200
 ```
 
-### 7.2 陷阱：Mock 滥用
+### 6.2 陷阱：Mock 滥用
 
 **反模式**：
 
@@ -1326,7 +1253,7 @@ def test_create_user(client, db_session):
     assert user.name == "张三"
 ```
 
-### 7.3 陷阱：过度断言
+### 6.3 陷阱：过度断言
 
 **反模式**：
 
@@ -1354,7 +1281,7 @@ def test_get_user_returns_user_with_id(user_service):
     assert user.id == 1  # 仅验证核心契约
 ```
 
-### 7.4 陷阱：测试覆盖率迷信
+### 6.4 陷阱：测试覆盖率迷信
 
 **反模式**：追求 100% 覆盖率，写出"行覆盖但无断言"的测试。
 
@@ -1367,7 +1294,7 @@ def test_create_user_high_coverage(user_service):
 
 **正确做法**：覆盖率是参考指标，测试质量的核心是断言精度。设定合理阈值（80%-90%），不盲目追求 100%。
 
-### 7.5 陷阱：慢测试
+### 6.5 陷阱：慢测试
 
 **反模式**：单元测试中调用真实 HTTP / 数据库。
 
@@ -1389,7 +1316,7 @@ def test_get_weather(mock_get):
     assert get_weather("北京") == 25
 ```
 
-### 7.6 陷阱：测试代码重复
+### 6.6 陷阱：测试代码重复
 
 **反模式**：每个测试重复 setup。
 
@@ -1421,7 +1348,7 @@ def db():
     session.close()
 ```
 
-### 7.7 陷阱：测试魔法值
+### 6.7 陷阱：测试魔法值
 
 **反模式**：测试中出现无解释的魔法值。
 
@@ -1442,7 +1369,7 @@ def test_calculate_tax():
     assert calculate(price, tax_rate) == expected_after_tax
 ```
 
-### 7.8 陷阱：捕获输出而非验证行为
+### 6.8 陷阱：捕获输出而非验证行为
 
 **反模式**：测试函数的 `print` 输出。
 
@@ -1462,7 +1389,7 @@ def test_greet():
     assert greet("张三") == "Hello, 张三"
 ```
 
-### 7.9 陷阱：时间相关测试不稳定
+### 6.9 陷阱：时间相关测试不稳定
 
 **反模式**：依赖系统当前时间。
 
@@ -1483,7 +1410,7 @@ def test_user_age():
     assert user.age == 35
 ```
 
-### 7.10 陷阱：生产事故案例——Mock 与真实契约不一致
+### 6.10 陷阱：生产事故案例——Mock 与真实契约不一致
 
 **事故经过**：某团队 mock 了第三方支付 SDK 的 `charge` 方法，返回 `{"status": "success"}`。测试全部通过。生产中真实 SDK 返回 `{"status": "succeeded"}`（注意 `ed` 后缀），导致代码中 `if response["status"] == "success"` 判断失败，用户付款成功但系统未记录订单，造成数十万元对账差错。
 
@@ -1495,9 +1422,9 @@ def test_user_age():
 2. 集成测试中调用 SDK 的沙箱环境，验证真实返回结构。
 3. 字段比较改为枚举值或常量，集中管理。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 测试目录结构
+### 7.1 测试目录结构
 
 ```mermaid
 flowchart TD
@@ -1531,7 +1458,7 @@ flowchart TD
     T21 --> T23
 ```
 
-### 8.2 测试命名规范
+### 7.2 测试命名规范
 
 - 测试文件：`test_<模块名>.py`，如 `test_user_service.py`。
 - 测试类：`Test<被测类名>`，如 `TestUserService`。
@@ -1549,7 +1476,7 @@ def test_grade(score, grade):
     ...
 ```
 
-### 8.3 fixture 分层
+### 7.3 fixture 分层
 
 ```python
 # tests/conftest.py - 全局 fixture
@@ -1570,7 +1497,7 @@ def mock_db():
     return MagicMock()
 ```
 
-### 8.4 CI/CD 集成
+### 7.4 CI/CD 集成
 
 ```yaml
 # .github/workflows/test.yml
@@ -1616,7 +1543,7 @@ jobs:
       run: pytest --cov-fail-under=80
 ```
 
-### 8.5 并行测试加速
+### 7.5 并行测试加速
 
 ```bash
 # 安装 pytest-xdist
@@ -1638,7 +1565,7 @@ pytest -n auto --dist loadscope  # 同一模块/类在同一进程
 - `scope=session` 的 fixture 在每个进程独立创建，可能加重资源负担。
 - 集成测试涉及真实数据库时，需为每个进程分配独立 schema。
 
-### 8.6 测试性能优化
+### 7.6 测试性能优化
 
 ```python
 # 1. 提升 fixture 作用域
@@ -1665,7 +1592,7 @@ def test_large_dataset():
 # CI 快速检查：pytest -m "not slow"
 ```
 
-### 8.7 测试金字塔实施
+### 7.7 测试金字塔实施
 
 ```python
 # 单元测试：70%
@@ -1690,7 +1617,7 @@ def test_user_registration_flow(client):
     # ... 验证邮件、登录等
 ```
 
-### 8.8 与 mypy 协同
+### 7.8 与 mypy 协同
 
 ```python
 # 测试代码也应类型注解
@@ -1707,9 +1634,9 @@ strict = true
 """
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Dropbox 的 Python 测试体系
+### 8.1 案例一：Dropbox 的 Python 测试体系
 
 Dropbox 拥有约 400 万行 Python 代码，是 Python 大型项目的典型案例。其测试体系特点：
 
@@ -1721,7 +1648,7 @@ Dropbox 拥有约 400 万行 Python 代码，是 Python 大型项目的典型案
 
 Dropbox 工程团队在 PyCon 2017 分享的数据显示：引入类型注解 + 严格测试后，生产事故率下降 40%，重构速度提升 30%。
 
-### 9.2 案例二：FastAPI 的测试驱动开发
+### 8.2 案例二：FastAPI 的测试驱动开发
 
 FastAPI 框架本身是 TDD 实践的典范。其作者 Sebastián Ramírez 在开发过程中坚持：
 
@@ -1733,7 +1660,7 @@ FastAPI 框架本身是 TDD 实践的典范。其作者 Sebastián Ramírez 在�
 
 FastAPI 的测试套件约 5000 个测试，CI 完整运行约 5 分钟。
 
-### 9.3 案例三：Instagram 的 Python 单元测试迁移
+### 8.3 案例三：Instagram 的 Python 单元测试迁移
 
 Instagram 后端大量使用 Python（Django）。2017 年前，Instagram 的测试以集成测试为主，CI 时间长达 2 小时。迁移策略：
 
@@ -1744,7 +1671,7 @@ Instagram 后端大量使用 Python（Django）。2017 年前，Instagram 的测
 
 结果：CI 时间从 2 小时降至 15 分钟，单元测试占比从 20% 提升到 70%。
 
-### 9.4 案例四：hypothesis 在 Stripe 的应用
+### 8.4 案例四：hypothesis 在 Stripe 的应用
 
 Stripe 使用 hypothesis 验证支付逻辑的健壮性。典型案例：
 
@@ -1768,7 +1695,7 @@ def test_payment_calculation(amount, tax_rate):
 
 hypothesis 在一次 CI 中发现了浮点精度 bug：当金额为 0.1、税率为 0.001 时，浮点累积误差导致 tax 与 total - amount 不一致。该 bug 在传统参数化测试中未被发现。
 
-### 9.5 案例五：pytest 插件机制剖析
+### 8.5 案例五：pytest 插件机制剖析
 
 pytest 的插件系统是其成功的关键。其核心机制：
 
@@ -1800,7 +1727,7 @@ pytest_plugins = ["myplugin"]
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：编写 pytest 测试，验证一个字符串反转函数 `reverse_string(s: str) -> str` 的正确性，包括空字符串、单字符、Unicode、回文等场景。
 
@@ -1824,7 +1751,7 @@ pytest_plugins = ["myplugin"]
 - 属性 3：结果是输入的排列（相同元素相同计数）。
 - 使用 `st.lists(st.integers())` 生成输入。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：设计一个 `db_session` fixture，要求：
 - 会话级：所有测试共享一个数据库连接。
@@ -1878,7 +1805,7 @@ def test_divide_normal():
 - 未测试：`a=0, b=1`、负数除法、浮点除法、大数除法、`b` 为非数值类型的异常。
 - 路径覆盖率不等于规约覆盖率。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：实现一个自定义 pytest 插件，功能为：测试失败时自动将失败用例的输入参数保存到 JSON 文件，下次运行时优先重跑这些失败用例（类似 `pytest --lf` 但自定义实现）。
 
@@ -1929,7 +1856,7 @@ def test_b(db): ...
 - 流程：A 生成 pact 文件 → B 在 CI 中拉取 pact → B 运行 pact verifier。
 - 这是消费者驱动契约（CDC）测试模式。
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Beck, K. 2003. *Test-Driven Development: By Example*. Addison-Wesley Professional. ISBN: 978-0321146533.
 
@@ -1991,9 +1918,9 @@ def test_b(db): ...
 
 30. Beck, K., and Andres, C. 2004. *Extreme Programming Explained: Embrace Change* (2nd ed.). Addison-Wesley. ISBN: 978-0321278654.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - pytest 官方文档：https://docs.pytest.org/
 - unittest 标准库文档：https://docs.python.org/3/library/unittest.html
@@ -2003,7 +1930,7 @@ def test_b(db): ...
 - tox 文档：https://tox.wiki/
 - nox 文档：https://nox.thea.codes/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Kent Beck《Test-Driven Development: By Example》
 - Gerard Meszaros《xUnit Test Patterns》
@@ -2012,14 +1939,14 @@ def test_b(db): ...
 - Lisa Crispin《Agile Testing》
 - Mark Fewster《Software Test Automation》
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - John Hughes「QuickCheck: A Lightweight Tool for Random Testing of Haskell Programs」（ICFP 2000）
 - David Saff「An Experimental Evaluation of Continuous Testing」（ISSTA 2004）
 - Alberto Bacchelli「Expectations, Outcomes, and Challenges of Modern Code Review」（ICSE 2013）
 - Giovanni Asproni「Pytest: A Python Testing Framework」（2018）
 
-### 12.4 开源项目源码
+### 11.4 开源项目源码
 
 - pytest 源码：https://github.com/pytest-dev/pytest
 - hypothesis 源码：https://github.com/HypothesisWorks/hypothesis
@@ -2028,7 +1955,7 @@ def test_b(db): ...
 - pytest-xdist 源码：https://github.com/pytest-dev/pytest-xdist
 - tox 源码：https://github.com/tox-dev/tox
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - 契约测试（Pact）：https://docs.pact.io/
 - 混沌工程（Chaos Engineering）：https://principlesofchaos.org/

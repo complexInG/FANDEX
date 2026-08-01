@@ -16,6 +16,7 @@ prerequisites:
   - kotlin/概述与环境配置
 ---
 
+
 # 扩展函数的编译原理
 
 > 本文档对标 MIT 6.005、Stanford CS193P、CMU 15-410 教学水准，系统讲解 Kotlin 扩展函数（Extension Functions）从语言设计到 JVM 字节码实现的完整链路。内容覆盖 Kotlin 1.0 至 2.0 K2 编译器的演进，配套企业级生产代码、跨语言对比、形式化推导与习题解析。
@@ -37,72 +38,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进，覆盖记忆、理解、应用、分析、评价与创造六个维度。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述 Kotlin 扩展函数的语法形式 `fun ReceiverType.funcName(): ReturnType`。
-- 列举扩展函数编译为 JVM 字节码时的三个核心要素：静态方法、接收者参数、`@JvmName` 注解。
-- 背诵扩展函数与成员函数的优先级规则：成员函数优先于扩展函数。
-- 列出 Kotlin 2.0 K2 编译器相对于 K1 的三大改进方向：统一编译器前端、性能提升、诊断信息优化。
-- 记忆扩展属性（Extension Property）不能有 `initializer`、不能有 `backing field` 的两条硬性约束。
-
-### 1.2 Understand（理解）
-
-完成本章节后，学习者应能够解释以下概念：
-
-- 用自己的语言解释"扩展函数不修改原类"这一设计哲学的语义含义与实现机制。
-- 描述静态分发（Static Dispatch）与动态分发（Dynamic Dispatch）在扩展函数上下文中的区别，并能画出分发流程图。
-- 解释 `this` 关键字在扩展函数中的作用域：它指向接收者实例，但其可见性受 `private` 修饰符限制。
-- 阐述 nullable 接收者（Nullable Receiver）`fun String?.isNullOrBlank()` 的工作原理，并能说明其与空安全的关系。
-- 理解为什么扩展函数在泛型场景下会退化为 `Object` 接收者（类型擦除）。
-
-### 1.3 Apply（应用）
-
-完成本章节后，学习者应能够在以下场景中应用扩展函数：
-
-- 在 Android 项目中为 `View`、`Context`、`String` 等系统类添加扩展函数，简化 UI 代码。
-- 在后端 Ktor 项目中使用扩展函数为 `HttpRequest`、`HttpResponse` 添加业务无关的工具方法。
-- 在 Gradle 构建脚本中使用 `@JvmName` 解决扩展函数与 Java 静态方法命名冲突。
-- 在测试代码中使用扩展函数封装断言逻辑，提升测试可读性。
-- 在 DSL 构建器中利用扩展函数实现层次化 API（如 HTML DSL、SQL DSL）。
-
-### 1.4 Analyze（分析）
-
-完成本章节后，学习者应能够进行以下分析：
-
-- 反编译一段 Kotlin 代码，分析扩展函数编译后的字节码结构，识别接收者参数、桥接方法、内联标记。
-- 对比同一问题在"扩展函数方案"、"成员函数方案"、"工具类静态方法方案"下的字节码体积与运行时性能。
-- 分析 `kotlin-stdlib` 中 `String.isNotBlank()`、`List<T>.windowed()` 等扩展函数的实现源码，总结其设计模式。
-- 解构 Kotlin 标准库 `let`、`run`、`apply`、`also`、`with` 五个作用域函数的本质，证明它们都是基于扩展函数与内联函数实现的。
-
-### 1.5 Evaluate（评价）
-
-完成本章节后，学习者应能够评价以下设计决策：
-
-- 评价 JetBrains 在扩展函数中采用"静态分发"而非"动态分发"的设计权衡，从类型安全、性能、二进制兼容性三个维度论证。
-- 评价 C# 的扩展方法（Extension Methods）与 Kotlin 扩展函数在可见性、命名空间导入机制上的差异，并指出各自优劣。
-- 评价扩展函数在库设计中作为公共 API 的风险：版本兼容性、命名冲突、IDE 自动补全污染。
-- 评价 Kotlin 2.0 K2 编译器对扩展函数解析顺序的微调（如更严格的 `@SinceKotlin` 检查），并判断其对现有代码迁移的影响。
-
-### 1.6 Create（创造）
-
-完成本章节后，学习者应能够创造以下作品：
-
-- 设计并实现一个类型安全的 SQL DSL 库，使用扩展函数 + 内联函数 + 类型参数约束实现编译期 SQL 语法检查。
-- 设计一个跨平台的日志门面（Logging Facade），使用扩展函数为 `Any`、`Result<T>`、`Throwable` 添加结构化日志能力。
-- 实现一个迷你 Kotlin 编译器插件（Compiler Plugin），在 IR 阶段对特定扩展函数进行字节码织入（Bytecode Weaving）。
-- 撰写一份扩展函数在团队代码规范中的使用指南，明确"何时使用扩展函数、何时使用成员函数"的决策树。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：表达问题（Expression Problem）
+### 1.1 问题背景：表达问题（Expression Problem）
 
 扩展函数的诞生，根植于编程语言理论中著名的**表达问题**（The Expression Problem），又称可扩展性问题。该问题由 Philip Wadler 在 1998 年的论文《The Expression Problem》中正式命名，但其思想可追溯至 Reynolds 1975 年关于用户定义类型的论文。
 
@@ -120,7 +58,7 @@ FP          困难（需修改match） 容易
 
 Kotlin 扩展函数是一种"半开半闭"的解决方案：它允许在不修改原类的前提下添加新操作，但牺牲了对新变体的支持（因为扩展函数是静态分发的，不具备多态性）。
 
-### 2.2 Kotlin 1.0（2016 年 2 月首发）：扩展函数的初始形态
+### 1.2 Kotlin 1.0（2016 年 2 月首发）：扩展函数的初始形态
 
 Kotlin 1.0 于 2016 年 2 月 15 日正式发布，扩展函数作为语言核心特性之一首次亮相。其设计灵感主要来源于：
 
@@ -143,7 +81,7 @@ fun MutableList<Int>.swap(index1: Int, index2: Int) {
 
 此时的扩展函数已经具备了核心语义：静态分发、接收者参数、与成员函数优先级规则。
 
-### 2.3 Kotlin 1.1（2017 年 5 月）：扩展属性与内联扩展
+### 1.3 Kotlin 1.1（2017 年 5 月）：扩展属性与内联扩展
 
 Kotlin 1.1 引入了两项重要改进：
 
@@ -161,7 +99,7 @@ inline fun <T> List<T>.filterIndexed(predicate: (Int, T) -> Boolean): List<T> {
 }
 ```
 
-### 2.4 Kotlin 1.4（2020 年 8 月）：内联类与扩展函数协同
+### 1.4 Kotlin 1.4（2020 年 8 月）：内联类与扩展函数协同
 
 Kotlin 1.4 将内联类（Inline Class）提升为 Beta 状态，并在 1.5 中稳定化。内联类与扩展函数协同后，实现了"零开销抽象"（Zero-cost Abstraction）：
 
@@ -173,11 +111,11 @@ value class Meter(val value: Double)
 fun Meter.toKilometer(): Double = value / 1000.0
 ```
 
-### 2.5 Kotlin 1.5（2021 年 5 月）：value class 稳定化
+### 1.5 Kotlin 1.5（2021 年 5 月）：value class 稳定化
 
 Kotlin 1.5 将 `inline class` 重命名为 `value class`，并要求 JVM 平台必须加 `@JvmInline` 注解。这一改动使得扩展函数的接收者可以是值类型，进一步丰富了扩展函数的应用场景。
 
-### 2.6 Kotlin 1.6 与 1.7（2021-2022 年）：K2 编译器预览
+### 1.6 Kotlin 1.6 与 1.7（2021-2022 年）：K2 编译器预览
 
 Kotlin 1.6 引入了 K2 编译器的前端预览版（Frontend Preview），Kotlin 1.7 进一步完善了 K2 的诊断能力。K2 编译器采用全新的架构：
 
@@ -191,11 +129,11 @@ K2 对扩展函数的影响主要体现在：
 - 更精确的扩展函数解析优先级诊断，减少与成员函数冲突时的困惑。
 - IR 阶段支持更激进的扩展函数内联优化。
 
-### 2.7 Kotlin 1.9（2023 年 7 月）：K2 Beta
+### 1.7 Kotlin 1.9（2023 年 7 月）：K2 Beta
 
 Kotlin 1.9 将 K2 编译器标记为 Beta，并默认开启 K2 的部分优化。此时扩展函数的解析已经完全基于 K2 前端，性能与诊断质量均有显著提升。
 
-### 2.8 Kotlin 2.0（2024 年 5 月）：K2 编译器 GA
+### 1.8 Kotlin 2.0（2024 年 5 月）：K2 编译器 GA
 
 Kotlin 2.0 于 2024 年 5 月正式发布，K2 编译器进入稳定状态（Stable，GA）。K2 对扩展函数的影响包括：
 
@@ -204,7 +142,7 @@ Kotlin 2.0 于 2024 年 5 月正式发布，K2 编译器进入稳定状态（Sta
 3. **IR 优化**：K2 的 IR 后端能更好地内联扩展函数，减少虚调用。
 4. **跨平台一致性**：K2 保证了扩展函数在 JVM、JS、Native、Wasm 上的行为完全一致。
 
-### 2.9 JetBrains 的设计哲学
+### 1.9 JetBrains 的设计哲学
 
 JetBrains 在设计扩展函数时遵循了以下哲学：
 
@@ -218,7 +156,7 @@ JetBrains 在设计扩展函数时遵循了以下哲学：
 
 5. **渐进式增强**：扩展函数不是替代成员函数的方案，而是补充。JetBrains 鼓励库作者在无法修改源码时使用扩展函数，而非反射或继承。
 
-### 2.10 时间线总览
+### 1.10 时间线总览
 
 ```
 2010  Kotlin 项目启动
@@ -236,9 +174,9 @@ JetBrains 在设计扩展函数时遵循了以下哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Kotlin 语言规范（Kotlin Language Specification）
+### 2.1 Kotlin 语言规范（Kotlin Language Specification）
 
 根据 Kotlin 官方语言规范（kotlinlang.org/spec），扩展函数的形式化语法定义如下：
 
@@ -256,7 +194,7 @@ $$
 - $\text{FunctionReturnType?}$：可选的返回类型。
 - $\text{FunctionBody?}$：可选的函数体，可以是表达式或代码块。
 
-### 3.2 接收者类型的约束
+### 2.2 接收者类型的约束
 
 扩展函数的接收者类型 $\text{ReceiverType}$ 必须满足以下约束：
 
@@ -265,7 +203,7 @@ $$
 3. **泛型类型允许**：`List<T>` 是合法的接收者类型，但受类型擦除限制，运行时无法判断具体类型。
 4. **函数类型允许**：`(Int) -> String` 是合法的接收者类型，便于对函数式值进行扩展。
 
-### 3.3 扩展函数的语义（Semantics）
+### 2.3 扩展函数的语义（Semantics）
 
 根据 Kotlin 语言规范，扩展函数的语义可形式化定义为：
 
@@ -277,7 +215,7 @@ $$
 
 即：扩展函数调用在语义上等价于以接收者为第一个参数的普通函数调用。这一等价关系保证了扩展函数的静态分发特性。
 
-### 3.4 JVM 字节码规范
+### 2.4 JVM 字节码规范
 
 在 JVM 平台上，扩展函数编译为位于文件类（File Class）中的静态方法。其字节码结构遵循 JVM 规范（Java Virtual Machine Specification, JVMS）的第 4 章与第 5 章。
 
@@ -297,7 +235,7 @@ $$
 - `@SinceKotlin`：标记该扩展函数自哪个 Kotlin 版本引入。
 - `@JvmName`：指定编译后的 JVM 方法名，用于解决平台命名冲突。
 
-### 3.5 解析优先级规则
+### 2.5 解析优先级规则
 
 Kotlin 规范明确定义了扩展函数与成员函数的解析优先级：
 
@@ -314,7 +252,7 @@ $$
 3. **导入顺序不影响**：扩展函数的解析不依赖 import 顺序，避免歧义。
 4. **歧义时报错**：若多个扩展函数同等具体，编译器报错 `Overload resolution ambiguity`。
 
-### 3.6 形式化的接收者绑定
+### 2.6 形式化的接收者绑定
 
 设扩展函数 $f$ 定义在类型 $T$ 上：$f : T \times A_1 \times \cdots \times A_n \to R$。
 
@@ -328,9 +266,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 编译期转换（Compilation Transformation）
+### 3.1 编译期转换（Compilation Transformation）
 
 考虑以下 Kotlin 扩展函数：
 
@@ -364,7 +302,7 @@ $$
 - 可通过 `@file:JvmName("StringUtils")` 注解自定义类名。
 - 可通过 `@file:JvmMultifileClass` 注解使多个源文件合并为同一个类。
 
-### 4.2 接收者参数的传递
+### 3.2 接收者参数的传递
 
 接收者 `this` 在扩展函数内部作为方法的第一个参数传入。考虑：
 
@@ -392,7 +330,7 @@ $$
 \text{swap} : \text{MutableList}\langle\text{Int}\rangle \times \text{Int} \times \text{Int} \to \text{Unit}
 $$
 
-### 4.3 静态分发原理
+### 3.3 静态分发原理
 
 扩展函数的核心特性是**静态分发**。考虑以下继承结构：
 
@@ -427,7 +365,7 @@ $$
 
 这一差异是扩展函数与成员函数（虚方法）的核心区别。成员函数使用虚方法分发（Virtual Dispatch），基于运行时类型。
 
-### 4.4 与成员函数优先级的形式化证明
+### 3.4 与成员函数优先级的形式化证明
 
 **命题**：当接收者类型 $T$ 上同时存在成员函数 $f_{\text{member}}$ 与扩展函数 $f_{\text{ext}}$，且签名相同时，调用 $e.f()$ 总是解析为 $f_{\text{member}}$。
 
@@ -440,7 +378,7 @@ $$
 
 因此，成员函数优先级严格高于扩展函数。$\blacksquare$
 
-### 4.5 Nullable 接收者
+### 3.5 Nullable 接收者
 
 扩展函数允许接收者为 `null`，这是与成员函数的关键区别（成员函数调用 `null.foo()` 抛出 `NullPointerException`）。
 
@@ -464,7 +402,7 @@ $$
 f(\text{null}, a) \in R \quad \text{is well-defined}
 $$
 
-### 4.6 泛型扩展函数与类型擦除
+### 3.6 泛型扩展函数与类型擦除
 
 考虑泛型扩展函数：
 
@@ -488,7 +426,7 @@ $$
 \text{Erase}(\text{List}\langle T \rangle) = \text{List}\langle \text{Object} \rangle
 $$
 
-### 4.7 扩展函数与内联
+### 3.7 扩展函数与内联
 
 当扩展函数被标记为 `inline` 时，编译器在调用处展开函数体，消除方法调用开销。
 
@@ -518,7 +456,7 @@ $$
 \text{Inline}(e.f(a)) = \text{Substitute}(\text{Body}(f), \text{this} \mapsto e, \text{args} \mapsto a)
 $$
 
-### 4.8 扩展属性的形式化
+### 3.8 扩展属性的形式化
 
 扩展属性本质上是一对扩展函数（getter + setter）的语法糖：
 
@@ -547,7 +485,7 @@ $$
 - 不能存储状态，所有计算必须基于接收者。
 - `var` 扩展属性必须有 setter，setter 同样不能有 backing field。
 
-### 4.9 K2 编译器的 IR 阶段优化
+### 3.9 K2 编译器的 IR 阶段优化
 
 Kotlin 2.0 的 K2 编译器在 IR（Intermediate Representation）阶段对扩展函数进行以下优化：
 
@@ -562,7 +500,7 @@ $$
 \text{IR} \xrightarrow{\text{DCE}} \text{IR}' \xrightarrow{\text{Inline}} \text{IR}'' \xrightarrow{\text{ReceiverElim}} \text{IR}''' \xrightarrow{\text{BridgeElim}} \text{FinalIR}
 $$
 
-### 4.10 二进制兼容性
+### 3.10 二进制兼容性
 
 扩展函数的二进制兼容性是库设计中需要特别关注的问题。考虑：
 
@@ -579,9 +517,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：String 扩展
+### 4.1 基础示例：String 扩展
 
 ```kotlin
 package com.example.stringext
@@ -626,7 +564,7 @@ fun main() {
 }
 ```
 
-### 5.2 通用 swap 扩展
+### 4.2 通用 swap 扩展
 
 ```kotlin
 package com.example.collectionext
@@ -650,7 +588,7 @@ fun main() {
 }
 ```
 
-### 5.3 Nullable 接收者
+### 4.3 Nullable 接收者
 
 ```kotlin
 package com.example.nullext
@@ -676,7 +614,7 @@ fun main() {
 }
 ```
 
-### 5.4 扩展属性
+### 4.4 扩展属性
 
 ```kotlin
 package com.example.propext
@@ -704,7 +642,7 @@ fun main() {
 }
 ```
 
-### 5.5 DSL 构建器（生产级示例）
+### 4.5 DSL 构建器（生产级示例）
 
 ```kotlin
 package com.example.dsl
@@ -765,7 +703,7 @@ fun main() {
 }
 ```
 
-### 5.6 @JvmName 解决命名冲突
+### 4.6 @JvmName 解决命名冲突
 
 ```kotlin
 package com.example.jvmname
@@ -784,7 +722,7 @@ fun <T> List<T>?.isBlankSafe(): Boolean = this?.isEmpty() ?: true
 fun <K, V> Map<K, V>?.isBlankSafe(): Boolean = this?.isEmpty() ?: true
 ```
 
-### 5.7 企业级 Gradle 配置
+### 4.7 企业级 Gradle 配置
 
 ```kotlin
 // build.gradle.kts
@@ -851,7 +789,7 @@ publishing {
 }
 ```
 
-### 5.8 内联扩展函数
+### 4.8 内联扩展函数
 
 ```kotlin
 package com.example.inlineext
@@ -895,7 +833,7 @@ fun main() {
 }
 ```
 
-### 5.9 协程扩展函数
+### 4.9 协程扩展函数
 
 ```kotlin
 package com.example.coroutinesext
@@ -929,7 +867,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.10 测试扩展函数
+### 4.10 测试扩展函数
 
 ```kotlin
 package com.example.testext
@@ -974,7 +912,7 @@ class TestExtensionsTest {
 }
 ```
 
-### 5.11 Context Receiver 扩展（实验性）
+### 4.11 Context Receiver 扩展（实验性）
 
 ```kotlin
 package com.example.contextext
@@ -1003,7 +941,7 @@ fun main() {
 }
 ```
 
-### 5.12 sealed 类扩展
+### 4.12 sealed 类扩展
 
 ```kotlin
 package com.example.sealedext
@@ -1040,7 +978,7 @@ fun main() {
 }
 ```
 
-### 5.13 Kotlin/Native 平台扩展
+### 4.13 Kotlin/Native 平台扩展
 
 ```kotlin
 package com.example.nativeext
@@ -1070,7 +1008,7 @@ actual fun String.nativeHash(): Int {
 }
 ```
 
-### 5.14 反射与扩展函数
+### 4.14 反射与扩展函数
 
 ```kotlin
 package com.example.reflectext
@@ -1091,7 +1029,7 @@ fun main() {
 }
 ```
 
-### 5.15 完整生产级示例：日志扩展
+### 4.15 完整生产级示例：日志扩展
 
 ```kotlin
 package com.example.loggingext
@@ -1142,9 +1080,9 @@ fun main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Java 的对比
+### 5.1 与 Java 的对比
 
 Java 原生不支持扩展函数，需通过以下方式模拟：
 
@@ -1171,7 +1109,7 @@ String result = StringUtils.capitalizeFirst("hello");
 | 性能 | 与静态方法一致 | 与静态方法一致 |
 | 互操作 | 双向互操作 | Java 调用 Kotlin 需注意 `@JvmName` |
 
-### 6.2 与 C# 的对比
+### 5.2 与 C# 的对比
 
 ```csharp
 // C# 扩展方法
@@ -1198,7 +1136,7 @@ string result = "hello".CapitalizeFirst();
 | 与成员函数优先级 | 成员函数优先 | 成员函数优先 |
 | 全局污染 | 低（按文件导入） | 中（按命名空间） |
 
-### 6.3 与 Scala 的对比
+### 5.3 与 Scala 的对比
 
 ```scala
 // Scala implicit class
@@ -1224,7 +1162,7 @@ import StringExtensions._
 | 歧义风险 | 低 | 中（多个 implicit 候选） |
 | 扩展属性 | 支持 | 通过 implicit def 支持 |
 
-### 6.4 与 Swift 的对比
+### 5.4 与 Swift 的对比
 
 ```swift
 // Swift extension
@@ -1248,7 +1186,7 @@ extension String {
 | 与成员函数优先级 | 成员优先 | 类内定义优先 |
 | 互操作 | 与 Java 双向 | 与 Objective-C 双向 |
 
-### 6.5 与 Rust 的对比
+### 5.5 与 Rust 的对比
 
 ```rust
 // Rust trait
@@ -1282,7 +1220,7 @@ impl CapitalizeFirst for str {
 | 性能 | 零开销 | 零开销（静态分发） |
 | 类型安全 | 编译期 | 编译期 |
 
-### 6.6 跨语言对比总表
+### 5.6 跨语言对比总表
 
 | 特性 | Kotlin | Java | C# | Scala | Swift | Rust |
 |------|--------|------|----|----|------|------|
@@ -1298,9 +1236,9 @@ impl CapitalizeFirst for str {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：静态分发误解
+### 6.1 陷阱一：静态分发误解
 
 **错误代码**：
 
@@ -1342,7 +1280,7 @@ fun main() {
 }
 ```
 
-### 7.2 陷阱二：与成员函数冲突
+### 6.2 陷阱二：与成员函数冲突
 
 **错误代码**：
 
@@ -1362,7 +1300,7 @@ fun main() {
 
 **最佳实践**：避免为第三方库的类添加与未来可能新增的成员函数同名的扩展函数，以免被静默覆盖。使用 `@Deprecated` 或命名约定区分。
 
-### 7.3 陷阱三：扩展函数与空安全
+### 6.3 陷阱三：扩展函数与空安全
 
 **错误代码**：
 
@@ -1394,7 +1332,7 @@ fun String.removeVowels(): String = filter {
 }
 ```
 
-### 7.4 陷阱四：扩展函数中的并发安全
+### 6.4 陷阱四：扩展函数中的并发安全
 
 **错误代码**：
 
@@ -1421,7 +1359,7 @@ fun Int.incrementCounter(): Int {
 }
 ```
 
-### 7.5 陷阱五：扩展属性不能存储状态
+### 6.5 陷阱五：扩展属性不能存储状态
 
 **错误代码**：
 
@@ -1447,7 +1385,7 @@ val String.cachedLength: Int
 
 注意：此方案有线程安全问题，生产环境应使用 `ConcurrentHashMap`。
 
-### 7.6 陷阱六：扩展函数命名冲突
+### 6.6 陷阱六：扩展函数命名冲突
 
 **错误代码**：
 
@@ -1481,7 +1419,7 @@ fun main() {
 }
 ```
 
-### 7.7 陷阱七：扩展函数与反射
+### 6.7 陷阱七：扩展函数与反射
 
 **问题**：通过反射调用扩展函数需要传入接收者作为第一个参数。
 
@@ -1495,7 +1433,7 @@ fun main() {
 }
 ```
 
-### 7.8 陷阱八：扩展函数与二进制兼容性
+### 6.8 陷阱八：扩展函数与二进制兼容性
 
 **问题**：库 v1.0 提供了 `fun String.foo()`，库 v2.0 移除该扩展函数，调用方运行时报 `NoSuchMethodError`。
 
@@ -1512,7 +1450,7 @@ fun String.foo(): String = "foo"
 fun String.bar(): String = "bar"
 ```
 
-### 7.9 陷阱九：扩展函数与协程泄漏
+### 6.9 陷阱九：扩展函数与协程泄漏
 
 **错误代码**：
 
@@ -1553,7 +1491,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 7.10 陷阱十：扩展函数与可空泛型
+### 6.10 陷阱十：扩展函数与可空泛型
 
 **问题**：
 
@@ -1568,7 +1506,7 @@ fun main() {
 
 **分析**：泛型类型参数 `T` 在 JVM 上会被擦除，可空性信息丢失。需要显式约束。
 
-### 7.11 最佳实践总结
+### 6.11 最佳实践总结
 
 1. **优先使用成员函数**：当能修改源码时，使用成员函数而非扩展函数。
 2. **使用包级扩展**：将扩展函数按接收者类型分文件组织，避免命名冲突。
@@ -1581,9 +1519,9 @@ fun main() {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建配置
+### 7.1 构建配置
 
 ```kotlin
 // build.gradle.kts
@@ -1603,7 +1541,7 @@ apiValidation {
 }
 ```
 
-### 8.2 性能基准测试
+### 7.2 性能基准测试
 
 ```kotlin
 package com.example.benchmark
@@ -1633,7 +1571,7 @@ open class ExtensionBenchmark {
 }
 ```
 
-### 8.3 调试扩展函数
+### 7.3 调试扩展函数
 
 ```kotlin
 // 在 IntelliJ IDEA 中调试扩展函数：
@@ -1647,7 +1585,7 @@ fun String.debug(): String {
 }
 ```
 
-### 8.4 Kotlin/Native 中的扩展函数
+### 7.4 Kotlin/Native 中的扩展函数
 
 ```kotlin
 // Kotlin/Native 中扩展函数的内存模型
@@ -1667,7 +1605,7 @@ actual fun Double.formatCurrency(currency: String): String {
 }
 ```
 
-### 8.5 KMP（Kotlin Multiplatform）中的扩展函数
+### 7.5 KMP（Kotlin Multiplatform）中的扩展函数
 
 ```kotlin
 // commonMain
@@ -1686,7 +1624,7 @@ actual fun String.normalize(): String {
 }
 ```
 
-### 8.6 代码生成与注解处理
+### 7.6 代码生成与注解处理
 
 ```kotlin
 // 使用 KSP（Kotlin Symbol Processing）生成扩展函数
@@ -1701,7 +1639,7 @@ data class User(val name: String, val age: Int)
 // fun User.isAdult(): Boolean = age >= 18
 ```
 
-### 8.7 Gradle 构建优化
+### 7.7 Gradle 构建优化
 
 ```kotlin
 // 启用 Kotlin 编译器优化
@@ -1719,7 +1657,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 }
 ```
 
-### 8.8 测试策略
+### 7.8 测试策略
 
 ```kotlin
 package com.example.test
@@ -1758,9 +1696,9 @@ class StringExtensionsTest {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Android View 扩展
+### 8.1 案例一：Android View 扩展
 
 ```kotlin
 package com.example.androidext
@@ -1813,7 +1751,7 @@ fun TextView.setTextOrHide(text: String?) {
 }
 ```
 
-### 9.2 案例二：Ktor HTTP 扩展
+### 8.2 案例二：Ktor HTTP 扩展
 
 ```kotlin
 package com.example.ktorext
@@ -1845,7 +1783,7 @@ fun ApplicationCall.bearerToken(): String? =
     request.headers["Authorization"]?.removePrefix("Bearer ")?.trim()
 ```
 
-### 9.3 案例三：Compose Multiplatform 扩展
+### 8.3 案例三：Compose Multiplatform 扩展
 
 ```kotlin
 package com.example.composeext
@@ -1879,7 +1817,7 @@ fun BoxWithSize(
 }
 ```
 
-### 9.4 案例四：标准库源码分析
+### 8.4 案例四：标准库源码分析
 
 分析 `kotlin-stdlib` 中的 `String.isBlank()`：
 
@@ -1903,7 +1841,7 @@ public CharSequence?.isBlank(): Boolean {
 2. 通过循环判断是否全部为空白字符。
 3. 时间复杂度 $O(n)$，空间复杂度 $O(1)$。
 
-### 9.5 案例五：Arrow-kt 库扩展
+### 8.5 案例五：Arrow-kt 库扩展
 
 ```kotlin
 package com.example.arrowext
@@ -2163,7 +2101,7 @@ fun main() {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：扩展函数是静态分发的，这意味着它不能用于实现多态。请讨论：在什么场景下应该使用扩展函数，什么场景下应该使用成员函数？
 
@@ -2419,7 +2357,7 @@ public static final void extensionOnString(String receiver) {
 
 二者在 JVM 层面没有本质区别，只是扩展函数多了一个参数。
 
-### 10.5 综合应用题
+### 9.5 综合应用题
 
 **题目 1**：设计一个类型安全的 HTTP 客户端 DSL，使用扩展函数 + 内联函数 + 类型参数约束。
 
@@ -2582,9 +2520,9 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 Kotlin 官方文档
+### 10.1 Kotlin 官方文档
 
 [1] JetBrains. 2024. Kotlin Language Documentation. https://kotlinlang.org/docs/home.html
 
@@ -2592,7 +2530,7 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 
 [3] JetBrains. 2024. Kotlin Release Notes. https://kotlinlang.org/docs/releases.html
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [4] Wadler, P. 1998. The Expression Problem. https://homepages.inf.ed.ac.uk/wadler/papers/expression/expression.txt
 
@@ -2604,7 +2542,7 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 
 [8] Bececetti, A., Brylev, M., and Egorov, N. 2024. K2 Compiler Architecture. JetBrains Internal Technical Report.
 
-### 11.3 书籍
+### 10.3 书籍
 
 [9] Skeet, J. 2019. C# in Depth (4th ed.). Manning Publications. ISBN 978-1617294532.
 
@@ -2614,7 +2552,7 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 
 [12] Bakaev, M. and Shepel, A. 2023. Kotlin Cookbook. O'Reilly Media. ISBN 978-109816142.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 [13] JetBrains. 2024. K2 Compiler Migration Guide. https://kotlinlang.org/docs/k2-compiler-migration-guide.html
 
@@ -2626,7 +2564,7 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 
 [17] JetBrains. 2024. Keep - Kotlin Evolution and Enhancement Process. https://github.com/Kotlin/KEEP
 
-### 11.5 标准与规范
+### 10.5 标准与规范
 
 [18] Oracle. 2023. Java Virtual Machine Specification, Java 21 Edition. https://docs.oracle.com/javase/specs/jvms/se21/html/
 
@@ -2636,9 +2574,9 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍推荐
+### 11.1 书籍推荐
 
 1. **《Kotlin in Action》** - Dmitry Jemerov, Svetlana Isakova
    - JetBrains 工程师撰写，权威的 Kotlin 入门到进阶指南。
@@ -2655,7 +2593,7 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 5. **《The Joy of Kotlin》** - Pierre-Yves Saumont
    - 函数式编程视角下的 Kotlin，讨论扩展函数与纯函数。
 
-### 12.2 论文推荐
+### 11.2 论文推荐
 
 1. **《The Expression Problem》** - Philip Wadler (1998)
    - 表达问题的原始论文，理解扩展函数的理论根基。
@@ -2666,7 +2604,7 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 3. **《First-class Members for Modularity》** - Aksenov, Ostermann (2017)
    - 一等成员与模块化，与扩展函数设计相关。
 
-### 12.3 在线课程
+### 11.3 在线课程
 
 1. **MIT 6.005 - Software Construction** - MIT OpenCourseWare
    - 软件构造原理，包含抽象数据类型与扩展机制。
@@ -2680,7 +2618,7 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 4. **JetBrains Academy - Kotlin Developer Track**
    - 官方 Kotlin 学习路径，包含扩展函数专题。
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 1. **kotlin-stdlib** - https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib
    - Kotlin 标准库源码，包含所有扩展函数实现。
@@ -2694,7 +2632,7 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 4. **Compose Multiplatform** - https://github.com/JetBrains/compose-multiplatform
    - 跨平台 UI 框架，扩展函数构建声明式 UI。
 
-### 12.5 社区与博客
+### 11.5 社区与博客
 
 1. **Kotlin Blog** - https://blog.jetbrains.com/kotlin/
    - 官方博客，发布新版本与设计决策。
@@ -2708,7 +2646,7 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 4. **Roman Elizarov's Blog** - https://medium.com/@elizarov
    - Kotlin 语言设计者博客，讨论扩展函数等设计哲学。
 
-### 12.6 视频资源
+### 11.6 视频资源
 
 1. **KotlinConf 2024 - K2 Compiler Internals**
    - K2 编译器内部实现，深入扩展函数优化。
@@ -2719,7 +2657,7 @@ inline fun <T> T.applyCustom(block: T.() -> Unit): T {
 3. **JetBrains TV - Kotlin Language Features**
    - 官方教程，扩展函数专题讲解。
 
-### 12.7 工具与插件
+### 11.7 工具与插件
 
 1. **Kotlin Plugin for IntelliJ IDEA**
    - 官方 IDE 插件，提供扩展函数的智能补全、重构、调试。

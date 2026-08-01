@@ -16,57 +16,16 @@ prerequisites:
   - javascript/语法速查
 ---
 
+
 # Promise 静态方法（Promise Static Methods）
 
 > 本篇对标 MIT 6.005（Software Construction）、Stanford CS110L（Safety in Systems Programming）与 CMU 15-440（Distributed Systems）教学水准，系统讲授 JavaScript Promise 的形式语义、静态方法族（`Promise.all` / `Promise.allSettled` / `Promise.any` / `Promise.race` / `Promise.withResolvers`）、组合子数学性质与工程化应用。所有数学公式使用 KaTeX 渲染，参考文献采用 ACM Reference Format。
 
 ---
 
-## 1. 学习目标（Learning Objectives）
+## 1. 历史动机与发展脉络（Historical Motivation & Evolution）
 
-本节依据 Bloom 分类法（Bloom's Taxonomy，Anderson & Krathwohl, 2001）组织六层认知目标。完成本篇后，学习者应能在各认知层级达成如下目标。
-
-### 1.1 Remember（记忆）
-
-- **R1**：准确复述 Promise 的三态状态机（pending → fulfilled / rejected），列出状态转换的不可逆性（irreversibility）规则。
-- **R2**：列出 Promise 的五个核心静态方法（`Promise.all` / `Promise.allSettled` / `Promise.any` / `Promise.race` / `Promise.withResolvers`）的签名与返回值结构。
-- **R3**：背诵 `Promise.allSettled` 返回值的标准结构 `{ status: 'fulfilled', value }` 与 `{ status: 'rejected', reason }`，以及 `Promise.any` 失败时抛出的 `AggregateError` 结构。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 Promise 的"thenable"协议（thenable protocol），能引用 Promises/A+ 规范 §2.3 的"Promise Resolution Procedure"。
-- **U2**：阐述 `Promise.all` 的"fail-fast"（短路失败）语义与 `Promise.allSettled` 的"wait-all"（全等待）语义的形式区别。
-- **U3**：推演 `Promise.withResolvers()`（ES2024）如何解决"deferred pattern"中 `resolve` / `reject` 必须在 executor 内提取的代码异味（code smell）。
-
-### 1.3 Apply（应用）
-
-- **A1**：在并发请求场景中正确选择 `Promise.all` / `Promise.allSettled` / `Promise.any` / `Promise.race`，给出基于业务语义（all-required / best-effort / first-success / first-settled）的决策矩阵。
-- **A2**：运用 `Promise.withResolvers()` 实现可取消的异步任务（cancellable task）、Promise 缓存（promise cache）、事件转 Promise（event-to-promise）等模式。
-- **A3**：实现一个支持并发限制（concurrency limit）、重试（retry）、超时（timeout）的批量请求调度器，处理 1000+ URL 列表且不压垮目标服务器。
-
-### 1.4 Analyze（分析）
-
-- **An1**：对比 `Promise.any` 与 `Promise.race` 在失败处理上的语义差异——前者忽略拒绝直至全部失败，后者首次 settle 即结束，分析二者在"多源竞速"场景下的适用边界。
-- **An2**：拆解 `Promise.withResolvers()` 的规范定义（ECMA-262 §27.2.4.5），分析其等价于 `new Promise((resolve, reject) => { return { promise, resolve, reject } })` 的执行轨迹。
-- **An3**：解构 `Promise.all` 的实现原理，分析其在 `Iterable` 输入下的同步迭代与异步填充数组机制。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评估"Promise 链 vs async/await"两种异步风格在错误处理（try/catch vs `.catch`）、调试栈追踪（stack trace）、可读性上的权衡，引用 V8 团队 2017 年《Faster async functions and promises》。
-- **E2**：判断何时应使用 `Promise.allSettled` 替代 `Promise.all`，给出基于"部分失败可接受性"的决策准则。
-- **E3**：批判性分析"Promise 静态方法可完全替代手写并发控制库"的论断，引用 Bluebird / p-limit / p-queue 等库的不可替代能力。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个通用的 Promise 组合子（combinator）库，提供 `map` / `filter` / `reduce` / `partition` / `forEach` 等函数式操作，对标 Scala Future 与 Haskell Async。
-- **C2**：实现一个基于 `Promise.withResolvers()` 与 `AbortController` 的可取消 Promise 原语（cancellable promise primitive），支持超时、取消、清理回调。
-- **C3**：基于 `Promise.any` 与多 CDN 镜像源设计一个"最快响应"资源加载器，自动降级并统计各源延迟。
-
----
-
-## 2. 历史动机与发展脉络（Historical Motivation & Evolution）
-
-### 2.1 回调地狱与 Promise 的诞生（2007–2011）
+### 1.1 回调地狱与 Promise 的诞生（2007–2011）
 
 JavaScript 长期依赖回调（callback）处理异步操作。深层嵌套的回调导致著名的"回调金字塔"（Pyramid of Doom）：
 
@@ -86,13 +45,13 @@ fetchUser(userId, function (err, user) {
 
 为解决此问题，**CommonJS Promises/A** 规范（2009，Kris Zyp）首次提出 Promise 的标准化建议。随后 **Promises/A+** 规范（2012，Brian Cavalier）完善了 `then` 的语义，成为现代 Promise 的基石。
 
-### 2.2 jQuery Deferred 与早期实践（2010–2013）
+### 1.2 jQuery Deferred 与早期实践（2010–2013）
 
 jQuery 1.5（2011）引入 `jQuery.Deferred`，提供 `done` / `fail` / `then` / `when` 等方法。虽然不完全符合 Promises/A+，但普及了 Promise 概念。Dojo、Q.js、When.js 等库相继出现。
 
 **Q.js**（Kris Kowal, 2009）是首个完整实现 Promises/A 的库，提供 `Q.all` / `Q.spread` / `Q.nfcall` 等组合子。
 
-### 2.3 ES2015 标准化（2015）
+### 1.3 ES2015 标准化（2015）
 
 ES2015（ES6）将 Promise 纳入语言标准，提供：
 
@@ -103,13 +62,13 @@ ES2015（ES6）将 Promise 纳入语言标准，提供：
 
 ES2015 Promise 严格遵循 Promises/A+ 规范，并明确 `then` 回调作为微任务（microtask）执行。
 
-### 2.4 allSettled 的引入（ES2020）
+### 1.4 allSettled 的引入（ES2020）
 
 `Promise.all` 的 fail-fast 语义在"批量操作"场景下不够灵活——例如批量删除 1000 条记录时，希望收集所有成功与失败结果而非首次失败即中止。社区库（Q.js、Bluebird、ESLint）早已提供 `allSettled` / `settle` 等价方法。
 
 ES2020（提案 stage 4，2019）正式标准化 `Promise.allSettled`，返回 `Array<{ status, value | reason }>`。
 
-### 2.5 any 与 AggregateError（ES2021）
+### 1.5 any 与 AggregateError（ES2021）
 
 `Promise.race` 在"多源竞速"场景下会将"首次拒绝"作为结果，无法满足"取最快成功"语义。ES2021 引入 `Promise.any`：
 
@@ -118,7 +77,7 @@ ES2020（提案 stage 4，2019）正式标准化 `Promise.allSettled`，返回 `
 
 `AggregateError` 是 `Error` 的子类，新增 `errors` 属性，由 ES2021 与 `Promise.any` 一同标准化。
 
-### 2.6 withResolvers 的引入（ES2024）
+### 1.6 withResolvers 的引入（ES2024）
 
 传统 deferred 模式需在 executor 内提取 `resolve` / `reject`：
 
@@ -138,7 +97,7 @@ const promise = new Promise((res, rej) => {
 
 ES2024（提案 stage 4，2023）引入 `Promise.withResolvers()`，返回 `{ promise, resolve, reject }` 三元组，使 deferred 模式成为语言一等公民。
 
-### 2.7 跨语言对比
+### 1.7 跨语言对比
 
 Promise 概念在多语言中演化：
 
@@ -153,9 +112,9 @@ JavaScript Promise 的独特性在于"thenable 协议"——任何带 `then` 方
 
 ---
 
-## 3. 形式化定义（Formal Definitions）
+## 2. 形式化定义（Formal Definitions）
 
-### 3.1 Promise 的状态机
+### 2.1 Promise 的状态机
 
 **定义 3.1.1（Promise 状态机）**：Promise 是一个三元组 $\mathcal{P} = (S, V, F)$，其中：
 
@@ -176,7 +135,7 @@ $$
 
 **关键性质**：状态一旦从 pending 转为 fulfilled 或 rejected，即冻结（frozen），后续 `resolve` / `reject` 调用无效。
 
-### 3.2 then 的形式语义
+### 2.2 then 的形式语义
 
 **定义 3.2.1（then 操作）**：`p.then(onFulfilled, onRejected)` 返回新 Promise $p'$，满足：
 
@@ -194,7 +153,7 @@ $$
 2. 若 $x$ 是普通值，则 $p'$ fulfilled 为 $x$
 3. 若 `onFulfilled` 或 `onRejected` 抛出异常 $e$，则 $p'$ rejected 为 $e$
 
-### 3.3 Promise.all 的形式定义
+### 2.3 Promise.all 的形式定义
 
 **定义 3.3.1（Promise.all）**：给定 Iterable $\mathcal{I} = [p_1, p_2, \ldots, p_n]$，`Promise.all(\mathcal{I})` 返回 $P$，满足：
 
@@ -210,7 +169,7 @@ $$
 - **顺序保持**：结果数组顺序与输入顺序一致，无论完成顺序
 - **空输入**：`Promise.all([])` 立即 fulfilled 为 `[]`
 
-### 3.4 Promise.allSettled 的形式定义
+### 2.4 Promise.allSettled 的形式定义
 
 **定义 3.4.1（Promise.allSettled）**：给定 Iterable $\mathcal{I}$，`Promise.allSettled(\mathcal{I})` 返回 $P$，满足：
 
@@ -232,7 +191,7 @@ $$
 - **顺序保持**：与输入顺序一致
 - **空输入**：`Promise.allSettled([])` 立即 fulfilled 为 `[]`
 
-### 3.5 Promise.race 的形式定义
+### 2.5 Promise.race 的形式定义
 
 **定义 3.5.1（Promise.race）**：给定 Iterable $\mathcal{I}$，`Promise.race(\mathcal{I})` 返回 $P$，满足：
 
@@ -246,7 +205,7 @@ $$
 - **first-settled**：不区分成功失败
 - **空输入**：`Promise.race([])` 永远 pending（永不 settle）
 
-### 3.6 Promise.any 的形式定义
+### 2.6 Promise.any 的形式定义
 
 **定义 3.6.1（Promise.any）**：给定 Iterable $\mathcal{I}$，`Promise.any(\mathcal{I})` 返回 $P$，满足：
 
@@ -262,7 +221,7 @@ $$
 - **all-fail-reject**：仅当全部失败才 reject AggregateError
 - **空输入**：`Promise.any([])` 立即 rejected with `AggregateError([])`
 
-### 3.7 Promise.withResolvers 的形式定义
+### 2.7 Promise.withResolvers 的形式定义
 
 **定义 3.7.1（Promise.withResolvers）**：`Promise.withResolvers()` 返回三元组 $(p, \text{resolve}, \text{reject})$，其中：
 
@@ -286,9 +245,9 @@ Promise.withResolvers = function () {
 
 ---
 
-## 4. 理论推导与原理解析（Theoretical Derivation）
+## 3. 理论推导与原理解析（Theoretical Derivation）
 
-### 4.1 Promise Resolution Procedure 的正确性
+### 3.1 Promise Resolution Procedure 的正确性
 
 **定理 4.1.1**：Promise Resolution Procedure 保证 Promise 链不丢失异步性。
 
@@ -301,25 +260,25 @@ Promise.withResolvers = function () {
 
 故 `g` 永远在 `f` 完成后执行，且永远异步（至少一个微任务延迟）。$\square$
 
-### 4.2 Promise.all 的 fail-fast 正确性
+### 3.2 Promise.all 的 fail-fast 正确性
 
 **定理 4.2.1**：若输入中任一 Promise rejected，`Promise.all` 必 rejected，且 reject 时刻不晚于该 Promise reject 时刻。
 
 证明：设 $p_k$ 在时刻 $t_k$ rejected with $r_k$。`Promise.all` 内部为每个 $p_i$ 注册 `then(onFulfilled, onRejected)` 回调。当 $p_k$ rejected 时，`onRejected` 在微任务中触发，立即调用 `reject(r_k)` 使 $P$ rejected。故 $P$ reject 时刻为 $t_k + \delta$（$\delta$ 为微任务调度延迟，约 0 ms）。$\square$
 
-### 4.3 Promise.all 顺序保持证明
+### 3.3 Promise.all 顺序保持证明
 
 **定理 4.3.1**：`Promise.all([p1, p2, p3])` 的结果数组顺序与输入一致，无论 $p_i$ 完成顺序。
 
 证明：`Promise.all` 内部维护 `results: Array(n)` 与 `count` 计数器。每个 $p_i$ 的 `then` 回调执行 `results[i] = value; count++; if (count === n) resolve(results)`。索引 $i$ 在 `then` 注册时确定（同步迭代 Iterable），与 $p_i$ 完成时刻无关。故结果顺序恒为输入顺序。$\square$
 
-### 4.4 Promise.any 的成功短路性
+### 3.4 Promise.any 的成功短路性
 
 **定理 4.4.1**：若输入中任一 Promise fulfilled，`Promise.any` 必 fulfilled，且 fulfill 时刻不晚于该 Promise fulfill 时刻。
 
 证明：与 4.2 对偶。`Promise.any` 内部为每个 $p_i$ 注册 `then(onFulfilled, onRejected)`。任一 $p_k$ fulfilled 即触发 `resolve(value_k)` 使 $P$ fulfilled。仅当所有 $p_i$ rejected 才构造 `AggregateError` 并 reject。$\square$
 
-### 4.5 Promise.race 的永 pending 性质
+### 3.5 Promise.race 的永 pending 性质
 
 **定理 4.5.1**：`Promise.race([])` 永远 pending。
 
@@ -327,19 +286,19 @@ Promise.withResolvers = function () {
 
 **推论 4.5.1**：`Promise.race([])` 与 `new Promise(() => {})` 形式等价。
 
-### 4.6 then 链的错误传播
+### 3.6 then 链的错误传播
 
 **定理 4.6.1**：在 `p.then(f).then(g).catch(h)` 中，若 `f` 抛出异常 $e$，则 $e$ 跳过 `g` 直接被 `h` 捕获。
 
 证明：`p.then(f)` 返回 $p_1$。若 `f` 抛 $e$，则 $p_1$ rejected with $e$。`p_1.then(g)` 中 `g` 是 onFulfilled 回调，仅当 $p_1$ fulfilled 时执行；$p_1$ rejected 时跳过 `g`，将 rejection 透传至 $p_2$。`p_2.catch(h)` 等价于 `p_2.then(undefined, h)`，`h` 捕获 rejection。$\square$
 
-### 4.7 microtask 调度与 then 回调
+### 3.7 microtask 调度与 then 回调
 
 **定理 4.7.1**：`then` 回调作为微任务（microtask）执行，晚于当前同步代码，早于下一个宏任务（macrotask）。
 
 证明：由 HTML 规范 §8.1.6.3"Microtask performing"算法，`then` 回调入队 microtask queue。事件循环在每个宏任务后清空 microtask queue（详见"事件循环详解"篇）。$\square$
 
-### 4.8 withResolvers 的等价性
+### 3.8 withResolvers 的等价性
 
 **定理 4.8.1**：`Promise.withResolvers()` 与传统 deferred 模式行为完全等价。
 
@@ -360,9 +319,9 @@ Promise.withResolvers = function () {
 
 ---
 
-## 5. 代码示例（Production-Ready Examples）
+## 4. 代码示例（Production-Ready Examples）
 
-### 5.1 工程项目配置
+### 4.1 工程项目配置
 
 ```json
 {
@@ -377,7 +336,7 @@ Promise.withResolvers = function () {
 }
 ```
 
-### 5.2 Promise.all 基础用法
+### 4.2 Promise.all 基础用法
 
 ```javascript
 // ES2015 — Promise.all 全部成功
@@ -399,7 +358,7 @@ try {
 }
 ```
 
-### 5.3 Promise.all 错误处理增强
+### 4.3 Promise.all 错误处理增强
 
 ```javascript
 // ES2015 — 包装为永不 reject 的 Promise
@@ -427,7 +386,7 @@ async function fetchAllSettled(urls) {
 }
 ```
 
-### 5.4 Promise.allSettled 批量删除
+### 4.4 Promise.allSettled 批量删除
 
 ```javascript
 // ES2020 — 批量删除收集所有结果
@@ -458,7 +417,7 @@ async function batchDeleteItems(ids) {
 const { succeeded, failed } = await batchDeleteItems([1, 2, 3, 4, 5]);
 ```
 
-### 5.5 Promise.any 多源竞速
+### 4.5 Promise.any 多源竞速
 
 ```javascript
 // ES2021 — 多 CDN 竞速取最快成功
@@ -489,7 +448,7 @@ async function fetchFromFastestCDN(path) {
 }
 ```
 
-### 5.6 Promise.race 超时控制
+### 4.6 Promise.race 超时控制
 
 ```javascript
 // ES2015 — 超时控制
@@ -519,7 +478,7 @@ async function fetchWithTimeoutModern(url, options = {}, timeout = 5000) {
 }
 ```
 
-### 5.7 Promise.withResolvers 缓存模式
+### 4.7 Promise.withResolvers 缓存模式
 
 ```javascript
 // ES2024 — Promise 缓存避免重复请求
@@ -555,7 +514,7 @@ await Promise.all([
 ]);
 ```
 
-### 5.8 Promise.withResolvers 事件转 Promise
+### 4.8 Promise.withResolvers 事件转 Promise
 
 ```javascript
 // ES2024 — 事件转 Promise
@@ -594,7 +553,7 @@ const message = await once(ws, 'message', { timeout: 5000 });
 console.log('First message:', message);
 ```
 
-### 5.9 Promise.withResolvers 可取消任务
+### 4.9 Promise.withResolvers 可取消任务
 
 ```javascript
 // ES2024 — 可取消的异步任务
@@ -665,7 +624,7 @@ try {
 }
 ```
 
-### 5.10 并发限制调度器
+### 4.10 并发限制调度器
 
 ```javascript
 // ES2015 — pLimit 风格并发限制
@@ -702,7 +661,7 @@ const results = await Promise.allSettled(
 );
 ```
 
-### 5.11 带重试的请求
+### 4.11 带重试的请求
 
 ```javascript
 // ES2015 — 指数退避重试
@@ -733,7 +692,7 @@ async function fetchWithFailover(urls, options) {
 }
 ```
 
-### 5.12 Promise.all 顺序保持验证
+### 4.12 Promise.all 顺序保持验证
 
 ```javascript
 // ES2015 — 验证顺序保持
@@ -753,7 +712,7 @@ async function verifyOrderPreservation() {
 }
 ```
 
-### 5.13 自定义 Promise 组合子
+### 4.13 自定义 Promise 组合子
 
 ```javascript
 // ES2015 — 函数式组合子
@@ -811,9 +770,9 @@ const data = await PromiseCombinators.map(
 
 ---
 
-## 6. 对比分析（Comparative Analysis）
+## 5. 对比分析（Comparative Analysis）
 
-### 6.1 与 TypeScript 对比
+### 5.1 与 TypeScript 对比
 
 TypeScript 是 JavaScript 的超集，Promise 静态方法在类型层面有更严格约束：
 
@@ -849,7 +808,7 @@ TypeScript 的优势：
 
 JavaScript 劣势：需运行时检查 `status` 字段，类型推断靠 JSDoc 或 TypeScript JSDoc。
 
-### 6.2 与 Python asyncio 对比
+### 5.2 与 Python asyncio 对比
 
 Python `asyncio` 提供等价的组合子：
 
@@ -900,7 +859,7 @@ async def main():
 
 Python 优势：原生取消语义（`Task.cancel()`），无需外部 `AbortController`。JavaScript 优势：thenable 协议跨库互操作。
 
-### 6.3 与 Rust async 对比
+### 5.3 与 Rust async 对比
 
 Rust `Future` 是惰性的（lazy），需 `.await` 或 executor 驱动：
 
@@ -933,7 +892,7 @@ async fn main() {
 
 Rust 优势：零成本异步（zero-cost abstraction）、编译期类型检查、`Result<T, E>` 强类型错误处理。JavaScript 优势：动态类型、thenable 协议、生态成熟。
 
-### 6.4 与 Java CompletableFuture 对比
+### 5.4 与 Java CompletableFuture 对比
 
 Java `CompletableFuture`（JDK 8+）提供丰富的组合子：
 
@@ -961,7 +920,7 @@ CompletableFuture.anyOf(
 
 差异：Java 需手动类型转换（`anyOf` 返回 `Object`），JavaScript `Promise.any` 保持类型推断（TypeScript 中）。
 
-### 6.5 与 Go goroutine 对比
+### 5.5 与 Go goroutine 对比
 
 Go 不直接提供 Promise 抽象，而是通过 channel + goroutine 实现：
 
@@ -1005,7 +964,7 @@ func firstResponse(urls []string) Result {
 
 Go 优势：原生并发原语（goroutine 轻量、channel 类型安全）。JavaScript 优势：单线程模型简化心智负担，Promise API 更高阶。
 
-### 6.6 综合对比表
+### 5.6 综合对比表
 
 | 特性 | JavaScript | TypeScript | Python | Rust | Java | Go |
 |------|-----------|-----------|--------|------|------|-----|
@@ -1020,9 +979,9 @@ Go 优势：原生并发原语（goroutine 轻量、channel 类型安全）。Ja
 
 ---
 
-## 7. 常见陷阱与最佳实践（Common Pitfalls & Best Practices）
+## 6. 常见陷阱与最佳实践（Common Pitfalls & Best Practices）
 
-### 7.1 陷阱：Promise.all 的 fail-fast 数据丢失
+### 6.1 陷阱：Promise.all 的 fail-fast 数据丢失
 
 **错误**：
 
@@ -1059,7 +1018,7 @@ async function good() {
 }
 ```
 
-### 7.2 陷阱：Promise.race 不取消其他 Promise
+### 6.2 陷阱：Promise.race 不取消其他 Promise
 
 **错误**：
 
@@ -1090,7 +1049,7 @@ try {
 }
 ```
 
-### 7.3 陷阱：Promise.any 空数组立即 reject
+### 6.3 陷阱：Promise.any 空数组立即 reject
 
 **错误**：
 
@@ -1116,7 +1075,7 @@ async function safeAny(promises) {
 }
 ```
 
-### 7.4 陷阱：忘记 unhandledrejection
+### 6.4 陷阱：忘记 unhandledrejection
 
 **错误**：
 
@@ -1151,7 +1110,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 ```
 
-### 7.5 陷阱：withResolvers 的 resolve 多次调用无效
+### 6.5 陷阱：withResolvers 的 resolve 多次调用无效
 
 **错误**：
 
@@ -1165,7 +1124,7 @@ console.log(await promise); // 'first'
 
 **最佳实践**：理解 Promise 状态不可逆性。
 
-### 7.6 陷阱：Promise.all 顺序错误假设
+### 6.6 陷阱：Promise.all 顺序错误假设
 
 **错误**：
 
@@ -1180,7 +1139,7 @@ const results = await Promise.all(promises);
 // 实际结果：['slow', 'fast'] — 顺序与输入一致
 ```
 
-### 7.7 陷阱：闭包捕获 i 在循环中
+### 6.7 陷阱：闭包捕获 i 在循环中
 
 **错误**：
 
@@ -1214,7 +1173,7 @@ const results = await Promise.all(promises);
 console.log(results); // [0, 1, 2]
 ```
 
-### 7.8 最佳实践汇总
+### 6.8 最佳实践汇总
 
 1. **fail-fast 与 wait-all 选择**：业务逻辑要求全部成功用 `Promise.all`，部分失败可接受用 `Promise.allSettled`。
 2. **竞速场景**：取最快成功用 `Promise.any`，取最快完成（无论成功失败）用 `Promise.race`。
@@ -1227,9 +1186,9 @@ console.log(results); // [0, 1, 2]
 
 ---
 
-## 8. 工程实践（Engineering Practice）
+## 7. 工程实践（Engineering Practice）
 
-### 8.1 并发请求调度
+### 7.1 并发请求调度
 
 ```javascript
 // ES2024 — 生产级并发调度器
@@ -1303,7 +1262,7 @@ const results = await Promise.allSettled(
 );
 ```
 
-### 8.2 React 中的 Promise 模式
+### 7.2 React 中的 Promise 模式
 
 ```javascript
 // React — 数据预加载与 Suspense 集成
@@ -1353,7 +1312,7 @@ function App() {
 }
 ```
 
-### 8.3 Node.js 中的批量处理
+### 7.3 Node.js 中的批量处理
 
 ```javascript
 // Node.js — 批量数据库操作
@@ -1404,7 +1363,7 @@ async function processLargeDataset(items, batchSize = 100) {
 }
 ```
 
-### 8.4 性能监控
+### 7.4 性能监控
 
 ```javascript
 // ES2015 — Promise 性能监控
@@ -1465,9 +1424,9 @@ console.log(monitor.report());
 
 ---
 
-## 9. 案例研究（Case Studies）
+## 8. 案例研究（Case Studies）
 
-### 9.1 案例一：CDN 多源容错加载
+### 8.1 案例一：CDN 多源容错加载
 
 **场景**：Web 应用需从多个 CDN 加载静态资源，自动选择最快可用源。
 
@@ -1527,7 +1486,7 @@ const jquery = await loader.loadResource('/jquery.min.js');
 console.log('CDN health:', loader.getHealthReport());
 ```
 
-### 9.2 案例二：实时数据流聚合
+### 8.2 案例二：实时数据流聚合
 
 **场景**：从多个 WebSocket 聚合数据，任一连接失败不影响其他。
 
@@ -1595,7 +1554,7 @@ aggregator.onData((source, data) => {
 });
 ```
 
-### 9.3 案例三：API 网关请求聚合
+### 8.3 案例三：API 网关请求聚合
 
 **场景**：API 网关需聚合多个微服务响应，部分失败仍返回部分数据。
 
@@ -1677,7 +1636,7 @@ const result = await gateway.aggregate([
 // 即使 payment 服务挂掉，仍返回 user 和 order 数据
 ```
 
-### 9.4 案例四：可取消的文件上传
+### 8.4 案例四：可取消的文件上传
 
 **场景**：大文件上传支持取消、重试、进度。
 
@@ -1768,7 +1727,7 @@ try {
 }
 ```
 
-### 9.5 案例五：搜索框防抖 + 取消
+### 8.5 案例五：搜索框防抖 + 取消
 
 **场景**：搜索框输入时实时查询，新查询需取消旧查询。
 
@@ -1829,7 +1788,7 @@ searchBox.onInput((results) => {
 });
 ```
 
-### 9.6 案例六：Worker 池任务分发
+### 8.6 案例六：Worker 池任务分发
 
 **场景**：使用 Web Worker 池并行处理 CPU 密集任务。
 
@@ -1887,7 +1846,7 @@ const results = await Promise.allSettled(
 pool.terminate();
 ```
 
-### 9.7 案例七：IndexedDB 批量操作
+### 8.7 案例七：IndexedDB 批量操作
 
 **场景**：IndexedDB 批量插入大量数据，支持事务与错误恢复。
 
@@ -2180,7 +2139,7 @@ function promiseAllSettled(promises) {
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **1. 为什么 `Promise.race([])` 永远 pending 而 `Promise.any([])` 立即 reject？**
 
@@ -2211,7 +2170,7 @@ function promiseAllSettled(promises) {
 
 ---
 
-## 11. 参考文献（References）
+## 10. 参考文献（References）
 
 1. Anderson, L. W., & Krathwohl, D. R. (2001). *A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives*. Longman. https://doi.org/10.4324/9780203058073
 
@@ -2259,30 +2218,30 @@ function promiseAllSettled(promises) {
 
 ---
 
-## 12. 延伸阅读（Further Reading）
+## 11. 延伸阅读（Further Reading）
 
-### 12.1 规范文档
+### 11.1 规范文档
 
 - **ECMA-262 §27.2 Promise Objects**：https://tc39.es/ecma262/#sec-promise-objects
 - **Promises/A+ Specification**：https://promisesaplus.com
 - **WHATWG HTML §8.1.7 Event loop**：https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
 - **TC39 Proposals**：https://github.com/tc39/proposals
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - **《JavaScript: The Definitive Guide》**（David Flanagan, 2020, 7th Edition）：第 13 章"Asynchronous JavaScript"
 - **《You Don't Know JS: Async & Performance》**（Kyle Simpson, 2015）：深入 Promise 与异步
 - **《Effective TypeScript》**（Dan Vanderkam, 2019）：第 9 章"Async"
 - **《Designing Data-Intensive Applications》**（Martin Kleppmann, 2017）：第 5 章"Replication"对比分布式系统的容错模式
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **MDN Web Docs: Promise**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
 - **MDN: Using Promises**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises
 - **web.dev: JavaScript Promises**：https://web.dev/articles/promises
 - **V8 Blog: Faster async functions and promises**：https://v8.dev/blog/fast-async
 
-### 12.4 相关开源库
+### 11.4 相关开源库
 
 - **Bluebird**：高性能 Promise 库，提供 `Promise.map` / `Promise.filter` 等扩展组合子
 - **p-limit**：并发限制库，API 简洁
@@ -2290,7 +2249,7 @@ function promiseAllSettled(promises) {
 - **p-retry**：带指数退避的重试库
 - **axios**：HTTP 客户端，内置取消（`CancelToken` / `AbortController`）与超时
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - **Async Generators**（ES2018）：`async function*` 与 `for await...of`
 - **Top-level await**（ES2022）：模块顶层直接 `await`

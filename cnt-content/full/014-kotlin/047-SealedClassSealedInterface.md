@@ -20,6 +20,7 @@ prerequisites:
   - kotlin/类与对象
   - kotlin/Kotlin类型系统
 ---
+
 # Kotlin 密封类与密封接口速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -43,79 +44,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。Bloom 分类学由教育心理学家 Benjamin Bloom 于 1956 年提出，2001 年由 Anderson 与 Krathwohl 修订，是国际教育界普遍采用的认知能力分级框架。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述 Kotlin 密封类（`sealed class`）的定义语法：`sealed class ClassName`，所有直接子类必须在同一文件（Kotlin 1.5 前要求）或同一包内（Kotlin 1.5+ 允许）声明。
-- 列举密封类的三类合法子类形态：`data class`（携带数据）、`object`（单例）、普通 `class`（可继承）。
-- 背诵密封接口（`sealed interface`）于 Kotlin 1.5 引入，允许类、其他密封接口、`object` 与 `enum class` 实现。
-- 记忆 `when` 表达式穷举检查的触发条件：作为表达式使用（有返回值）且未提供 `else` 分支时，编译器强制要求覆盖所有子类型。
-- 列举 Kotlin 1.0 至 2.0 期间密封类的关键演进：1.0 引入、1.1 支持子类在同文件不同位置、1.5 允许跨文件同包 + 引入密封接口、1.7 支持密封接口嵌套、1.9 与 K2 兼容、2.0 K2 全面优化穷举检查精度。
-- 复述密封类构造器的可见性规则：默认 `protected`，可显式声明 `private`，但不能为 `public` 或 `internal`。
-- 记忆密封类本身是抽象的（abstract），不能直接实例化，且不能声明为 `open`（隐式 `abstract`）。
-- 列举密封类与枚举的四大差异：实例数量（多实例 vs 单实例）、状态携带（异构 vs 同构）、继承层级（可嵌套 vs 扁平）、类型参数（支持泛型 vs 不支持）。
-
-### 1.2 Understand（理解）
-
-- 用自己的语言解释"受限继承"（restricted inheritance）的含义：编译器在编译期就知道一个密封类的所有可能子类型，从而支持穷举检查。
-- 阐述密封类如何解决"开放式继承 + when 分支"的类型安全问题：开放继承下编译器无法保证 `when` 覆盖所有子类，新增子类时旧代码可能遗漏分支；密封类在新增子类时强制所有 `when` 表达式更新或编译失败。
-- 描述代数数据类型（Algebraic Data Type, ADT）的概念：由"和类型"（Sum Type）与"积类型"（Product Type）组合而成的数据类型，密封类对应和类型，`data class` 对应积类型。
-- 解释为什么密封类在 JVM 字节码层面使用 `@Metadata` 注解而非特殊字节码：JVM 不原生支持密封类，Kotlin 编译器将子类列表序列化到 `@Metadata` 注解中，供编译器跨模块检查。
-- 阐述密封接口相比密封类的两大优势：支持多继承（一个类可实现多个密封接口）与支持 `enum class` 实现（枚举值可作为密封接口的子类型）。
-- 解释"穷举检查"（exhaustiveness checking）的实现原理：编译器收集密封类的所有直接子类（含嵌套），与 `when` 分支的 `is` 检查对比，缺失即报错。
-- 描述智能转换（Smart Cast）在 `when` 分支中的作用：`is Result.Success` 后编译器自动将 `result` 细化为 `Result.Success` 类型，可直接访问 `value` 属性。
-- 解释为什么密封类配合 `out` 型变（covariance）能优雅表达"成功有值、失败无值"的场景：`Result<Nothing>` 是 `Result<T>` 的子类型，可安全赋给 `Result<T>`。
-
-### 1.3 Apply（应用）
-
-- 在网络请求结果建模中使用 `sealed class Result<out T>`，覆盖 `Loading`、`Success<T>`、`Error` 三态，并在 UI 层用 `when` 穷举处理。
-- 在 Android/iOS ViewModel 中使用密封类建模 UI 状态（`Idle`、`Loading`、`Content`、`Error`），配合 `StateFlow` 实现单向数据流。
-- 使用嵌套密封类构建层级化的领域模型，如 `sealed class UiState` 嵌套 `sealed class Content` 与 `sealed class Error`，实现分层处理。
-- 使用密封类建模递归数据结构（如表达式树、JSON 树、AST 节点），用 `when` 递归求值或遍历。
-- 在 MVI 架构中使用密封类建模 `Wish`（用户意图）与 `Effect`（副作用），保证所有意图都有对应处理器。
-- 在事件溯源（Event Sourcing）中使用密封类建模领域事件，所有事件类型在编译期已知。
-- 使用 `kotlinx.serialization` 配合密封类，通过 `@SerialName` 类鉴别器实现多态 JSON 序列化。
-- 在 KMP 项目中使用密封接口定义跨平台共享的领域模型，各平台实现各自的 UI 处理。
-
-### 1.4 Analyze（分析）
-
-- 反编译 Kotlin 密封类字节码，分析 `@Metadata` 注解中 `d2` 数组的存储结构：子类列表以 JVM 内部类名形式序列化。
-- 对比密封类与 Scala `sealed trait`、Rust `enum`、Swift `enum`、Haskell `data` 的穷举检查机制：四者均支持编译期穷举，但实现机制不同（注解 vs 关键字 vs 编译器内置）。
-- 分析嵌套密封类的穷举传播规则：`when` 处理外层密封类时，若分支只检查到 `is Content`（未深入子类），需要继续处理 `Content` 的子类，否则视为未穷举。
-- 解构 Kotlin 1.5 跨文件子类的实现：编译器扫描同包所有 `.kt` 文件，收集直接子类，然后注入 `@Metadata`。
-- 分析密封接口支持多继承的语义价值：一个 `data class` 可同时实现 `Drawable` 与 `Clickable` 两个密封接口，在两个独立的 `when` 中分别处理。
-- 分析 Kotlin 2.0 K2 编译器对穷举检查的改进：K2 能识别更多边界条件（如 `when` 嵌套、`is` 后跟 `!is`、`null` 与非空分支组合），减少误报。
-- 对比 `when (x) { is A -> ...; is B -> ...; else -> ... }`（带 `else`）与 `when (x) { is A -> ...; is B -> ... }`（无 `else`）在密封类场景下的语义差异：前者放弃穷举检查，新增子类不会报错；后者强制穷举，新增子类时编译失败。
-
-### 1.5 Evaluate（评价）
-
-- 评价 Kotlin 选择"包级受限继承"而非"模块级"或"文件级"的设计权衡：包级更灵活（支持多文件拆分），但跨模块时仍需 `sealed` 关键字显式声明子类位置。
-- 评价密封类构造器默认 `protected` 的设计：相比 `private` 提供了子类可调用的便利，相比 `public` 限制了外部实例化，是合理的折中。
-- 评估密封接口与密封类共存的设计：是否过度复杂？还是必要的灵活性补充？
-- 评价 Kotlin 不引入 Rust `match` 的"绑定模式"（binding patterns）的决策：Kotlin 的 `is` + 智能转换已覆盖 80% 场景，但嵌套解构（如 `Some(Some(x))`）确实不如 Rust 优雅。
-- 评估密封类在事件溯源架构中的适用性：相比 Java 的接口 + 实现类，密封类提供了编译期穷举保证，但牺牲了开放扩展性。
-- 评价密封类配合 `when` 表达式 vs `if-else` 链：前者在编译期检查穷举，后者无任何保证，应优先选择 `when`。
-- 评估 Kotlin 密封类与 Java `record` + `sealed`（Java 17+）的差异：Java 的 `sealed` 关键字与 `permits` 子句更显式，但语法更冗长；Kotlin 更简洁但依赖 `@Metadata` 注解。
-
-### 1.6 Create（创造）
-
-- 设计并实现一个完整的"表达式求值器"：用密封类建模算术表达式（常量、变量、加减乘除、函数调用），实现 `eval(env: Map<String, Double>)` 递归求值，并支持变量替换与简化。
-- 设计一个基于密封类的"状态机 DSL"：定义 `State`、`Event`、`Transition`，用 `when` 穷举所有 `state + event` 组合，编译期保证完整性。
-- 实现一个"JSON 树"建模与遍历框架：用密封类表示 `JsonObject`、`JsonArray`、`JsonString`、`JsonNumber`、`JsonBoolean`、`JsonNull`，实现 `accept(visitor: JsonVisitor)` 与 `toString()`。
-- 撰写一份团队密封类使用规范：何时用密封类 vs 枚举、何时用密封接口、嵌套层级限制、`when` 表达式必须穷举（禁用 `else`）等。
-- 设计一个跨平台 KMP 的"网络层"：用密封接口定义 `ApiResult`，共享模块返回 `Flow<ApiResult<T>>`，各平台 UI 层用 `when` 处理。
-- 实现一个"领域事件溯源"框架：用密封类定义所有领域事件，提供 `apply(event)` 方法用 `when` 穷举更新聚合根状态。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：开放继承与类型安全的矛盾
+### 1.1 问题背景：开放继承与类型安全的矛盾
 
 面向对象语言的传统继承模型是"开放的"（open inheritance）：任何类都可以被任意子类继承（除非显式标记 `final` 或 `sealed`）。这种开放性带来了严重的类型安全问题，尤其在模式匹配场景下：
 
@@ -140,7 +71,7 @@ fun area(shape: Shape): Double = when (shape) {
 3. **`else` 分支的陷阱**：为应对开放继承，开发者被迫添加 `else` 分支，但这会掩盖未来的遗漏。
 4. **重构困难**：删除一个子类时，所有相关 `when` 中的分支变为死代码，难以发现。
 
-### 2.2 学术背景：代数数据类型与穷举检查
+### 1.2 学术背景：代数数据类型与穷举检查
 
 密封类的思想根植于函数式编程语言中的代数数据类型（ADT）理论：
 
@@ -159,7 +90,7 @@ Kotlin 的设计选择：
 - **不引入绑定模式**：与 Scala/Rust 不同，Kotlin 用 `is` + 智能转换替代绑定模式，简洁性有余但表达力稍弱。
 - **`data class` 作为积类型**：借鉴 Scala `case class`，自动生成 `equals`、`hashCode`、`copy`。
 
-### 2.3 Kotlin 1.0（2016）：密封类初版
+### 1.3 Kotlin 1.0（2016）：密封类初版
 
 Kotlin 1.0 引入密封类，但限制严格：
 
@@ -184,7 +115,7 @@ fun eval(e: Expr): Double = when (e) {
 3. 不支持密封接口（`sealed interface`）。
 4. 穷举检查仅在 `when` 作为表达式使用时生效。
 
-### 2.4 Kotlin 1.1（2017）：子类位置灵活化
+### 1.4 Kotlin 1.1（2017）：子类位置灵活化
 
 Kotlin 1.1 放宽了子类位置限制：
 
@@ -201,7 +132,7 @@ class Square(val side: Double) : Shape()
 1. 子类与密封类在同一文件。
 2. 子类必须直接继承密封类（不能跨中间抽象层）。
 
-### 2.5 Kotlin 1.5（2021）：跨文件与密封接口
+### 1.5 Kotlin 1.5（2021）：跨文件与密封接口
 
 Kotlin 1.5 是密封类型演进的里程碑：
 
@@ -247,7 +178,7 @@ enum class Color : Drawable {
 
 3. **穷举检查改进**：`when` 表达式穷举检查覆盖密封接口的所有实现类。
 
-### 2.6 Kotlin 1.6-1.7（2021-2022）：细节优化
+### 1.6 Kotlin 1.6-1.7（2021-2022）：细节优化
 
 1.6-1.7 对密封类型进行了细节优化：
 
@@ -255,7 +186,7 @@ enum class Color : Drawable {
 2. **`@SerialName` 与密封类**：`kotlinx.serialization` 改进对密封类的多态序列化支持。
 3. **智能转换精度**：K2 预览编译器改进了 `is` 检查后的智能转换。
 
-### 2.7 Kotlin 1.9（2023）：K2 兼容
+### 1.7 Kotlin 1.9（2023）：K2 兼容
 
 Kotlin 1.9 的 K2 编译器 Beta 版本对密封类型进行了兼容性测试：
 
@@ -263,7 +194,7 @@ Kotlin 1.9 的 K2 编译器 Beta 版本对密封类型进行了兼容性测试�
 2. **错误信息改进**：K2 提供更精确的穷举失败提示，列出缺失的子类。
 3. **跨模块检查**：K2 在跨模块使用密封类时也能正确检查穷举。
 
-### 2.8 Kotlin 2.0（2024）：K2 全面成熟
+### 1.8 Kotlin 2.0（2024）：K2 全面成熟
 
 Kotlin 2.0 的 K2 编译器对密封类型进行了全面优化：
 
@@ -272,7 +203,7 @@ Kotlin 2.0 的 K2 编译器对密封类型进行了全面优化：
 3. **跨平台一致性**：KMP 项目中 JVM、JS、Native 平台的穷举检查行为完全一致。
 4. **更好的错误信息**：K2 能精确指出缺失的子类名称，并支持 Quick Fix 自动生成 `when` 分支骨架。
 
-### 2.9 与 Java 17 `sealed` 的对比
+### 1.9 与 Java 17 `sealed` 的对比
 
 Java 17（2021 年 9 月）引入了 `sealed` 关键字与 `permits` 子句：
 
@@ -297,7 +228,7 @@ Java 17 `sealed` 与 Kotlin `sealed` 的对比：
 | 子类修饰符限制    | `final`、`sealed` 或 `non-sealed`    | 任意（`class`、`data class`、`object`） |
 | Kotlin 互操作     | 可作普通继承使用，但 Kotlin 不识别    | 完全支持                          |
 
-### 2.10 时间线总览
+### 1.10 时间线总览
 
 ```
 1973  ML — 引入 datatype，函数式 ADT 开端
@@ -317,9 +248,9 @@ Java 17 `sealed` 与 Kotlin `sealed` 的对比：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 密封类的形式化定义
+### 2.1 密封类的形式化定义
 
 设 $\mathcal{T}$ 为 Kotlin 类型集合，$\mathcal{S} \subseteq \mathcal{T}$ 为密封类集合。密封类 $S \in \mathcal{S}$ 的形式化定义为一个三元组：
 
@@ -340,7 +271,7 @@ $$
 3. **不可扩展**：除 $\mathcal{C}$ 中的子类外，任何其他类不能继承 $S$。
 4. **位置约束**：所有 $C_i \in \mathcal{C}$ 必须与 $S$ 在同一包（Kotlin 1.5+）或同一文件（Kotlin 1.0-1.4）。
 
-### 3.2 代数数据类型（ADT）视角
+### 2.2 代数数据类型（ADT）视角
 
 从代数数据类型视角，密封类对应"和类型"（Sum Type），`data class` 对应"积类型"（Product Type）。
 
@@ -378,7 +309,7 @@ $$
 
 这是递归定义的代数数据类型。
 
-### 3.3 穷举检查的形式化
+### 2.3 穷举检查的形式化
 
 设 $S = (N, \Sigma, \mathcal{C})$ 是密封类，$W$ 是 `when` 表达式，$\mathcal{B}$ 是 $W$ 中的分支集合。每个分支 $b \in \mathcal{B}$ 通过 `is` 检查匹配若干子类。
 
@@ -406,7 +337,7 @@ $$
 
 即必须继续穷举 $C_i$ 的子类，或用 `else` 兜底。
 
-### 3.4 子类型关系
+### 2.4 子类型关系
 
 密封类的子类型关系 $\sqsubseteq$：
 
@@ -433,7 +364,7 @@ sealed class Result<out T> {
 val r: Result<Int> = Result.Loading  // OK
 ```
 
-### 3.5 when 表达式的形式化语义
+### 2.5 when 表达式的形式化语义
 
 `when` 表达式的形式化语义：
 
@@ -452,7 +383,7 @@ $$
 
 **分支顺序**：`when` 表达式按声明顺序匹配，第一个匹配的分支被执行。这意味着更具体的分支应放在更一般的分支之前。
 
-### 3.6 密封接口的形式化定义
+### 2.6 密封接口的形式化定义
 
 密封接口 $I$ 的形式化定义：
 
@@ -473,7 +404,7 @@ $$
 2. 一个类可同时属于多个密封接口的 $\mathcal{R}$ 集合（多继承）。
 3. 所有 $r \in \mathcal{R}$ 必须实现 $\mathcal{M}$ 中的所有抽象方法（除非 $r$ 本身是抽象的）。
 
-### 3.7 智能转换的形式化
+### 2.7 智能转换的形式化
 
 在 `when` 分支 `is T ->` 内，编译器对变量 $x$ 进行类型细化（type narrowing）：
 
@@ -497,7 +428,7 @@ when (result) {
 }
 ```
 
-### 3.8 JVM 字节码层面的表示
+### 2.8 JVM 字节码层面的表示
 
 在 JVM 字节码层面，密封类是普通的抽象类，但携带 `@Metadata` 注解：
 
@@ -523,7 +454,7 @@ public class JavaResult extends Result { /* ... */ }
 
 Kotlin 编译器会发出警告：`This class inherits from a sealed class, but no corresponding @Metadata sub-class declaration is found.`
 
-### 3.9 密封类的型变
+### 2.9 密封类的型变
 
 密封类支持泛型与型变（variance）：
 
@@ -549,7 +480,7 @@ $$
 
 这使得 `Loading` 与 `Error`（无值分支）可统一赋给任意 `Result<T>`。
 
-### 3.10 递归密封类的形式化
+### 2.10 递归密封类的形式化
 
 递归密封类（如表达式树）的形式化：
 
@@ -583,9 +514,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 密封类如何解决开放继承问题
+### 3.1 密封类如何解决开放继承问题
 
 **问题**：开放继承下，`when` 无法穷举，新增子类不报错。
 
@@ -618,7 +549,7 @@ fun area(s: Shape): Double = when (s) {
 
 编译器强制开发者更新 `area`，避免遗漏。
 
-### 4.2 穷举检查的实现机制
+### 3.2 穷举检查的实现机制
 
 **Kotlin 1.x（K1 编译器）**：
 
@@ -632,7 +563,7 @@ fun area(s: Shape): Double = when (s) {
 2. **跨模块检查**：K2 在跨模块使用密封类时，从依赖的 `@Metadata` 注解读取子类列表，正确检查穷举。
 3. **智能分支合并**：K2 能识别 `is A -> ...; is B -> ...` 与 `is A, is B -> ...` 的等价性，减少误报。
 
-### 4.3 嵌套密封类的穷举传播
+### 3.3 嵌套密封类的穷举传播
 
 嵌套密封类的穷举检查规则：
 
@@ -687,7 +618,7 @@ fun render(state: UiState) = when (state) {
 
 这种写法更简洁，编译器同样能识别穷举。
 
-### 4.4 密封接口的多继承价值
+### 3.4 密封接口的多继承价值
 
 密封接口支持多继承，这是密封类无法实现的：
 
@@ -719,7 +650,7 @@ fun handleClick(c: Clickable) = when (c) {
 
 每个密封接口的 `when` 独立检查穷举，新增 `Image` 不会影响 `Clickable` 的 `when`。
 
-### 4.5 `when` 表达式 vs `when` 语句
+### 3.5 `when` 表达式 vs `when` 语句
 
 `when` 作为表达式（有返回值）时强制穷举：
 
@@ -744,7 +675,7 @@ when (state) {
 
 **最佳实践**：始终将 `when` 作为表达式使用，借助 `val result = when (state) { ... }` 强制穷举，即使不需要返回值。
 
-### 4.6 `object` 子类与 `data class` 子类的差异
+### 3.6 `object` 子类与 `data class` 子类的差异
 
 ```kotlin
 sealed class Result<out T> {
@@ -767,7 +698,7 @@ fun handle(r: Result<Int>) = when (r) {
 - 直接引用（如 `Result.Loading`）用于 `object` 单例比较，等价于 `===`。
 - 两者均可触发穷举检查。
 
-### 4.7 智能转换的边界
+### 3.7 智能转换的边界
 
 智能转换在 `when` 分支内有效，但有以下限制：
 
@@ -797,7 +728,7 @@ when (currentState) {
 }
 ```
 
-### 4.8 密封类与 `when` 的编译器优化
+### 3.8 密封类与 `when` 的编译器优化
 
 Kotlin 编译器对 `when` 进行优化：
 
@@ -829,7 +760,7 @@ public static String name(Color c) {
 }
 ```
 
-### 4.9 密封类与递归数据结构
+### 3.9 密封类与递归数据结构
 
 递归密封类（如表达式树、JSON 树）的形式化：
 
@@ -855,7 +786,7 @@ fun stringify(json: Json): String = when (json) {
 
 递归 `when` 是 catamorphism（折叠）的实例，对树结构进行递归遍历。
 
-### 4.10 Kotlin 2.0 K2 编译器的穷举检查改进
+### 3.10 Kotlin 2.0 K2 编译器的穷举检查改进
 
 K2 编译器对穷举检查进行了多项改进：
 
@@ -882,9 +813,9 @@ fun handle(r: Result?) = when (r) {
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 网络请求结果建模
+### 4.1 网络请求结果建模
 
 ```kotlin
 /**
@@ -920,7 +851,7 @@ fun main() {
 }
 ```
 
-### 5.2 UI 状态建模（MVI 架构）
+### 4.2 UI 状态建模（MVI 架构）
 
 ```kotlin
 /**
@@ -986,7 +917,7 @@ class UserViewModel : ViewModel() {
 }
 ```
 
-### 5.3 表达式树求值（递归密封类）
+### 4.3 表达式树求值（递归密封类）
 
 ```kotlin
 /**
@@ -1070,7 +1001,7 @@ fun main() {
 }
 ```
 
-### 5.4 JSON 树建模与遍历
+### 4.4 JSON 树建模与遍历
 
 ```kotlin
 /**
@@ -1144,7 +1075,7 @@ fun main() {
 }
 ```
 
-### 5.5 密封接口多继承
+### 4.5 密封接口多继承
 
 ```kotlin
 /**
@@ -1200,7 +1131,7 @@ fun main() {
 }
 ```
 
-### 5.6 状态机建模
+### 4.6 状态机建模
 
 ```kotlin
 /**
@@ -1270,7 +1201,7 @@ fun main() {
 }
 ```
 
-### 5.7 密封类与序列化
+### 4.7 密封类与序列化
 
 ```kotlin
 import kotlinx.serialization.*
@@ -1328,7 +1259,7 @@ fun main() {
 }
 ```
 
-### 5.8 嵌套密封类分层处理
+### 4.8 嵌套密封类分层处理
 
 ```kotlin
 /**
@@ -1392,7 +1323,7 @@ fun showServerError(message: String) {}
 fun showUnknownError() {}
 ```
 
-### 5.9 密封类与 `@SerialName` 多态序列化
+### 4.9 密封类与 `@SerialName` 多态序列化
 
 ```kotlin
 /**
@@ -1439,7 +1370,7 @@ fun main() {
 }
 ```
 
-### 5.10 密封接口与枚举组合
+### 4.10 密封接口与枚举组合
 
 ```kotlin
 /**
@@ -1476,7 +1407,7 @@ fun main() {
 }
 ```
 
-### 5.11 密封类与 `copy` 实现状态更新
+### 4.11 密封类与 `copy` 实现状态更新
 
 ```kotlin
 /**
@@ -1561,7 +1492,7 @@ fun update(state: FormState, event: FormEvent): FormState = when (state) {
 }
 ```
 
-### 5.12 密封类实现 Result 类型
+### 4.12 密封类实现 Result 类型
 
 ```kotlin
 /**
@@ -1641,7 +1572,7 @@ fun main() {
 }
 ```
 
-### 5.13 密封类与 KMP 跨平台
+### 4.13 密封类与 KMP 跨平台
 
 ```kotlin
 // commonMain/NetworkResult.kt
@@ -1705,7 +1636,7 @@ class IosApiService : ApiService {
 }
 ```
 
-### 5.14 密封类实现命令模式
+### 4.14 密封类实现命令模式
 
 ```kotlin
 /**
@@ -1767,7 +1698,7 @@ class CommandExecutor {
 }
 ```
 
-### 5.15 密封类与递归下降解析器
+### 4.15 密封类与递归下降解析器
 
 ```kotlin
 /**
@@ -1864,9 +1795,9 @@ fun main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 密封类 vs 枚举
+### 5.1 密封类 vs 枚举
 
 | 特性         | 密封类（sealed class）         | 枚举（enum class）          |
 | ------------ | ------------------------------ | ---------------------------- |
@@ -1887,7 +1818,7 @@ fun main() {
 - 需要单例语义 → 枚举 或 `object` 子类的密封类
 - 需要嵌套层级 → 密封类
 
-### 6.2 密封类 vs 密封接口
+### 5.2 密封类 vs 密封接口
 
 | 特性            | 密封类（sealed class）       | 密封接口（sealed interface） |
 | --------------- | ---------------------------- | ---------------------------- |
@@ -1907,7 +1838,7 @@ fun main() {
 - 需要多能力组合 → 密封接口
 - 仅为分类，无共享实现 → 密封接口
 
-### 6.3 密封类 vs 开放类（open class）
+### 5.3 密封类 vs 开放类（open class）
 
 | 特性         | 密封类                        | 开放类（open class）         |
 | ------------ | ----------------------------- | ---------------------------- |
@@ -1917,7 +1848,7 @@ fun main() {
 | 类型安全     | 高（编译期穷举）              | 低（运行时多态）             |
 | 适用场景     | 有限状态、ADT、领域事件       | 框架扩展点、插件体系         |
 
-### 6.4 Kotlin 密封类 vs Scala `sealed trait`
+### 5.4 Kotlin 密封类 vs Scala `sealed trait`
 
 | 特性              | Kotlin                          | Scala                          |
 | ----------------- | -------------------------------- | ------------------------------ |
@@ -1960,7 +1891,7 @@ fun foo(opt: Option<Option<Int>>): String = when (opt) {
 
 Kotlin 需要嵌套 `when`，Scala 一行即可，但 Kotlin 写法同样类型安全。
 
-### 6.5 Kotlin 密封类 vs Rust `enum`
+### 5.5 Kotlin 密封类 vs Rust `enum`
 
 | 特性              | Kotlin                          | Rust                            |
 | ----------------- | -------------------------------- | ------------------------------- |
@@ -2001,7 +1932,7 @@ fun describe(e: Expr): String = when {
 
 但 Kotlin 这种写法放弃了穷举检查（用了 `when` 语句而非 `when` 表达式）。
 
-### 6.6 Kotlin 密封类 vs Java 17 `sealed`
+### 5.6 Kotlin 密封类 vs Java 17 `sealed`
 
 | 特性              | Kotlin                          | Java 17                          |
 | ----------------- | -------------------------------- | -------------------------------- |
@@ -2013,7 +1944,7 @@ fun describe(e: Expr): String = when {
 | `record` 子类     | `data class`                    | `record`                         |
 | Kotlin 互操作     | 原生                            | Kotlin 1.5+ 可识别              |
 
-### 6.7 密封类 vs 抽象类 + `when`
+### 5.7 密封类 vs 抽象类 + `when`
 
 ```kotlin
 // 方案 A：密封类
@@ -2042,7 +1973,7 @@ fun areaB(s: ShapeB): Double = when (s) {
 
 **结论**：密封类在编译期保证穷举，开放继承无法保证。优先使用密封类。
 
-### 6.8 密封类 vs `when` + `else`
+### 5.8 密封类 vs `when` + `else`
 
 ```kotlin
 // 方案 A：密封类 + 无 else（推荐）
@@ -2064,9 +1995,9 @@ fun handleB(state: Any): String = when (state) {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：`when` 用作语句而非表达式
+### 6.1 陷阱：`when` 用作语句而非表达式
 
 ```kotlin
 // 陷阱：when 作为语句，不强制穷举
@@ -2088,7 +2019,7 @@ fun handle(state: State) {
 }
 ```
 
-### 7.2 陷阱：滥用 `else` 分支
+### 6.2 陷阱：滥用 `else` 分支
 
 ```kotlin
 // 陷阱：else 分支掩盖遗漏
@@ -2105,7 +2036,7 @@ fun name(state: State): String = when (state) {
 }
 ```
 
-### 7.3 陷阱：子类跨包（Kotlin 1.5 前）
+### 6.3 陷阱：子类跨包（Kotlin 1.5 前）
 
 ```kotlin
 // Kotlin 1.4 及以前：子类必须在同文件
@@ -2127,7 +2058,7 @@ package com.example  // 同包
 class Circle(val radius: Double) : Shape()  // OK
 ```
 
-### 7.4 陷阱：密封类构造器可见性
+### 6.4 陷阱：密封类构造器可见性
 
 ```kotlin
 sealed class Result {
@@ -2146,7 +2077,7 @@ sealed class Result {
 }
 ```
 
-### 7.5 陷阱：`object` 子类用 `is` 检查
+### 6.5 陷阱：`object` 子类用 `is` 检查
 
 ```kotlin
 sealed class Result {
@@ -2166,7 +2097,7 @@ fun handleBest(r: Result<Int>) = when (r) {
 }
 ```
 
-### 7.6 陷阱：智能转换失效（`var` 变量）
+### 6.6 陷阱：智能转换失效（`var` 变量）
 
 ```kotlin
 sealed class State {
@@ -2194,7 +2125,7 @@ fun check(state: State) {
 }
 ```
 
-### 7.7 陷阱：嵌套密封类未深入穷举
+### 6.7 陷阱：嵌套密封类未深入穷举
 
 ```kotlin
 sealed class AppState {
@@ -2219,7 +2150,7 @@ fun handleBest(s: AppState) = when (s) {
 }
 ```
 
-### 7.8 陷阱：Java 互操作下穷举检查失效
+### 6.8 陷阱：Java 互操作下穷举检查失效
 
 ```java
 // Java 代码：可以"扩展"Kotlin 密封类（不推荐）
@@ -2240,7 +2171,7 @@ fun handle(s: KotlinState) = when (s) {
 
 **最佳实践**：密封类不应被 Java 继承，可用 `@JvmField` 与 `internal` 限制。
 
-### 7.9 陷阱：密封类与反射
+### 6.9 陷阱：密封类与反射
 
 ```kotlin
 sealed class Color {
@@ -2258,7 +2189,7 @@ fun allColors(): List<Color> {
 
 **最佳实践**：用枚举或手动维护列表，避免反射。
 
-### 7.10 陷阱：序列化类鉴别器冲突
+### 6.10 陷阱：序列化类鉴别器冲突
 
 ```kotlin
 @Serializable
@@ -2275,7 +2206,7 @@ sealed class Message {
 
 **最佳实践**：确保每个子类的 `@SerialName` 唯一。
 
-### 7.11 陷阱：跨模块使用密封类
+### 6.11 陷阱：跨模块使用密封类
 
 ```kotlin
 // module-a
@@ -2287,7 +2218,7 @@ class ClickEvent : ApiEvent()  // 编译错误：子类必须与密封类同模�
 
 **最佳实践**：密封类的所有子类必须与密封类在同一模块（同 Gradle 模块）。跨模块共享应使用接口而非密封类。
 
-### 7.12 陷阱：`when` 分支顺序
+### 6.12 陷阱：`when` 分支顺序
 
 ```kotlin
 sealed class Animal {
@@ -2308,7 +2239,7 @@ fun nameBest(a: Animal) = when (a) {
 }
 ```
 
-### 7.13 陷阱：`data class` 的 `equals` 误用
+### 6.13 陷阱：`data class` 的 `equals` 误用
 
 ```kotlin
 sealed class State {
@@ -2325,7 +2256,7 @@ fun check(s: State) {
 }
 ```
 
-### 7.14 陷阱：`object` 子类的全局状态
+### 6.14 陷阱：`object` 子类的全局状态
 
 ```kotlin
 sealed class Counter {
@@ -2342,7 +2273,7 @@ fun increment() = Counter.GlobalCounter.increment()
 
 **最佳实践**：`object` 子类应保持不可变，或用 `AtomicInteger` 等线程安全原语。
 
-### 7.15 陷阱：过度使用密封类
+### 6.15 陷阱：过度使用密封类
 
 ```kotlin
 // 陷阱：用密封类建模开放集合
@@ -2358,9 +2289,9 @@ sealed class UserType {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 网络层封装（KMP）
+### 7.1 网络层封装（KMP）
 
 ```kotlin
 // commonMain/NetworkResult.kt
@@ -2419,7 +2350,7 @@ suspend fun <T> safeRequest(
 }
 ```
 
-### 8.2 MVI 架构完整实现
+### 7.2 MVI 架构完整实现
 
 ```kotlin
 // MVI 完整实现示例
@@ -2507,7 +2438,7 @@ val userReducer: (ScreenState<User>, Wish) -> Pair<ScreenState<User>, List<Effec
 }
 ```
 
-### 8.3 事件溯源（Event Sourcing）
+### 7.3 事件溯源（Event Sourcing）
 
 ```kotlin
 /**
@@ -2578,7 +2509,7 @@ class EventSourcedAccount {
 }
 ```
 
-### 8.4 状态机引擎
+### 7.4 状态机引擎
 
 ```kotlin
 /**
@@ -2649,7 +2580,7 @@ class StateMachineEngine<S, E>(transitions: List<StateMachine<S, *>>) {
 }
 ```
 
-### 8.5 前端 UI 组件 props 建模
+### 7.5 前端 UI 组件 props 建模
 
 ```kotlin
 /**
@@ -2696,7 +2627,7 @@ fun renderButton(props: ButtonProps): String {
 }
 ```
 
-### 8.6 KMP 跨平台 UI 状态共享
+### 7.6 KMP 跨平台 UI 状态共享
 
 ```kotlin
 // commonMain/UiState.kt
@@ -2754,7 +2685,7 @@ class IosUserScreen(private val viewModel: UserViewModel) {
 }
 ```
 
-### 8.7 错误处理与错误传播
+### 7.7 错误处理与错误传播
 
 ```kotlin
 /**
@@ -2820,7 +2751,7 @@ fun AppError.log(logger: Logger) {
 }
 ```
 
-### 8.8 配置管理
+### 7.8 配置管理
 
 ```kotlin
 /**
@@ -2859,7 +2790,7 @@ fun ConfigValue.toJson(): String = when (this) {
 }
 ```
 
-### 8.9 表单验证
+### 7.9 表单验证
 
 ```kotlin
 sealed class ValidationResult {
@@ -2905,7 +2836,7 @@ private fun Regex.Companion.toRegexSafe(pattern: String): kotlin.text.Regex =
     kotlin.text.Regex(pattern)
 ```
 
-### 8.10 API 响应统一封装
+### 7.10 API 响应统一封装
 
 ```kotlin
 /**
@@ -2966,9 +2897,9 @@ fun <T> handleApiResponse(response: ApiResponse<T>): T? = when (response) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Kotlin 标准库 `Result` 类
+### 8.1 案例一：Kotlin 标准库 `Result` 类
 
 Kotlin 标准库的 `Result<T>` 类（虽然不是密封类，但设计思想类似）：
 
@@ -3000,7 +2931,7 @@ value class Result<out T> internal constructor(internal val value: Any?) {
 2. 密封类在 JVM 上需要 `@Metadata`，而 `value class` 追求零开销。
 3. 设计哲学不同：`Result` 是"操作结果"，不是"类型分类"。
 
-### 9.2 案例二：`kotlinx.coroutines` 的 `Deferred` 状态
+### 8.2 案例二：`kotlinx.coroutines` 的 `Deferred` 状态
 
 `Deferred` 内部状态用密封类管理：
 
@@ -3043,7 +2974,7 @@ class Deferred<T> {
 }
 ```
 
-### 9.3 案例三：Jetpack Compose 的 `Modifier`
+### 8.3 案例三：Jetpack Compose 的 `Modifier`
 
 `Modifier` 链式构建，内部用密封类表示链节点：
 
@@ -3073,7 +3004,7 @@ sealed class Modifier {
 }
 ```
 
-### 9.4 案例四：Android `ViewModel` 的 UI 状态
+### 8.4 案例四：Android `ViewModel` 的 UI 状态
 
 ```kotlin
 /**
@@ -3125,7 +3056,7 @@ fun UserScreen(viewModel: UserViewModel) {
 }
 ```
 
-### 9.5 案例五：`Arrow-kt` 的 `Either` 类型
+### 8.5 案例五：`Arrow-kt` 的 `Either` 类型
 
 Arrow 库的 `Either<L, R>` 用密封类实现：
 
@@ -3164,7 +3095,7 @@ fun main() {
 }
 ```
 
-### 9.6 案例六：`kotlinx.serialization` 的多态序列化
+### 8.6 案例六：`kotlinx.serialization` 的多态序列化
 
 ```kotlin
 @Serializable
@@ -3208,7 +3139,7 @@ fun main() {
 }
 ```
 
-### 9.7 案例七：Gradle Kotlin DSL 中的密封类
+### 8.7 案例七：Gradle Kotlin DSL 中的密封类
 
 ```kotlin
 // 假设 Gradle 插件用密封类定义配置
@@ -3254,7 +3185,7 @@ android {
 }
 ```
 
-### 9.8 案例八：Android 导航事件
+### 8.8 案例八：Android 导航事件
 
 ```kotlin
 /**
@@ -3304,7 +3235,7 @@ class NavigationManager(private val navController: NavController) {
 }
 ```
 
-### 9.9 案例九：Ktor 请求与响应建模
+### 8.9 案例九：Ktor 请求与响应建模
 
 ```kotlin
 /**
@@ -3342,7 +3273,7 @@ class KtorClient(private val httpClient: HttpClient) {
 }
 ```
 
-### 9.10 案例十：KMP 项目中的共享数据模型
+### 8.10 案例十：KMP 项目中的共享数据模型
 
 ```kotlin
 // commonMain/domain/Account.kt
@@ -3426,7 +3357,7 @@ class AccountService {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：用密封类建模"二叉树"，节点可以是叶子（携带 `Int` 值）或内部节点（携带左右子树）。实现 `sum()` 函数递归求和。
 
@@ -3476,7 +3407,7 @@ enum class Color(override val draw: () -> String) : Drawable {
 }
 ```
 
-### 10.2 中级题
+### 9.2 中级题
 
 **题目 3**：实现 `Result<T, E>` 类型，提供 `map`、`flatMap`、`getOrElse`、`fold` 方法，并使用密封类穷举所有情况。
 
@@ -3486,7 +3417,7 @@ enum class Color(override val draw: () -> String) : Drawable {
 
 **解析讲解**：见 5.11 节代码示例。
 
-### 10.3 高级题
+### 9.3 高级题
 
 **题目 5**：用密封类实现一个 JSON 解析器，支持 `Object`、`Array`、`String`、`Number`、`Boolean`、`Null` 六种节点。实现 `parse(json: String): Json` 与 `stringify(json: Json): String`。
 
@@ -3496,7 +3427,7 @@ enum class Color(override val draw: () -> String) : Drawable {
 
 **解析讲解**：见 5.6 节代码示例。
 
-### 10.4 设计题
+### 9.4 设计题
 
 **题目 7**：设计一个 KMP 项目的网络层，使用密封类建模 `NetworkResult` 与 `ApiError`，跨平台共享业务逻辑。
 
@@ -3506,7 +3437,7 @@ enum class Color(override val draw: () -> String) : Drawable {
 
 **解析讲解**：见 8.2 节代码示例。
 
-### 10.5 分析题
+### 9.5 分析题
 
 **题目 9**：分析以下代码的穷举检查是否通过，并说明原因。
 
@@ -3766,11 +3697,11 @@ fun main() {
 
 ---
 
-## 11. 参考文献（References）
+## 10. 参考文献（References）
 
 本章节列出本文档撰写过程中参考的学术论文、官方文档、经典教材与在线资源，便于读者进一步深入研读。
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 - **Kotlin Language Documentation**. JetBrains. https://kotlinlang.org/docs/home.html
 - **Kotlin Sealed Classes**. JetBrains. https://kotlinlang.org/docs/sealed-classes.html
@@ -3784,7 +3715,7 @@ fun main() {
 - **KEEP-134: Sealed Classes Improvements**. Kotlin Evolution and Enhancement Process. https://github.com/Kotlin/KEEP/blob/master/proposals/sealed-types-baseline.md
 - **KEEP-251: Sealed Classes Across Same Package**. https://github.com/Kotlin/KEEP/blob/master/proposals/sealed-classes-same-package.md
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 - **Pierce, Benjamin C.** *Types and Programming Languages*. MIT Press, 2002. 第 11 章"Sum Types"与第 15 章"Subtyping"系统讲解代数数据类型与子类型关系的理论基础。
 - **Appel, Andrew W.** *Modern Compiler Implementation in ML*. Cambridge University Press, 2004. 第 4 章"Abstract Syntax"与第 5 章"Pattern Matching"涵盖模式匹配的编译实现。
@@ -3794,7 +3725,7 @@ fun main() {
 - **Hoare, C. A. R.** "Null References: The Billion Dollar Mistake." *QCon*, 2009. 空引用问题与类型安全设计的原始讨论。
 - **Banken, Bodin, et al.** "Space Invaders: Constructing and Reasoning about Inheritance Hierarchies." *POPL '18*, 2018. 受限继承的形式化讨论。
 
-### 11.3 经典教材
+### 10.3 经典教材
 
 - **Odersky, Martin, Lex Spoon, and Bill Venners.** *Programming in Scala, 5th Edition*. Artima Press, 2021. 第 7 章"Built-in Control Structures"与第 15 章"Case Classes and Pattern Matching"系统讲解 Scala `sealed trait` 与模式匹配，是 Kotlin 密封类设计的重要参照。
 - **Toroczkai, Zoltan, et al.** *Algebraic Data Types in Modern Programming Languages*. Springer, 2020. ADT 在现代编程语言中的设计与实现综述。
@@ -3803,7 +3734,7 @@ fun main() {
 - **Sestoft, Peter.** *Programming Language Concepts*. Springer, 2017. 第 6 章"Type Systems"涵盖静态类型、型变与穷举检查的理论基础。
 - **Kleppmann, Martin.** *Designing Data-Intensive Applications*. O'Reilly Media, 2017. 第 11 章"Stream Processing"讨论事件溯源（Event Sourcing）与状态机建模。
 
-### 11.4 在线资源与博客
+### 10.4 在线资源与博客
 
 - **JetBrains Blog: Kotlin 1.5 Released**. https://blog.jetbrains.com/kotlin/2021/05/kotlin-1-5-0-released/
 - **Google Android Developers: Kotlin Sealed Classes in ViewModel UI State**. https://developer.android.com/topic/architecture/ui-state
@@ -3816,7 +3747,7 @@ fun main() {
 - **Kotlin Slack: #compiler Channel**. 讨论穷举检查实现细节与 K2 改进。
 - **GitHub: Kotlin/KEEP**. Kotlin Evolution and Enhancement Process. https://github.com/Kotlin/KEEP
 
-### 11.5 规范与标准
+### 10.5 规范与标准
 
 - **JSR-335: Lambda Expressions for the Java Programming Language**. OpenJDK, 2013. 模式匹配与类型细化的早期标准化工作。
 - **JEP 409: Sealed Classes (Java 17)**. OpenJDK. https://openjdk.org/jeps/409
@@ -3825,7 +3756,7 @@ fun main() {
 - **Kotlin Coding Conventions**. JetBrains. https://kotlinlang.org/docs/coding-conventions.html
 - **Android Kotlin Style Guide**. Google. https://developer.android.com/kotlin/style-guide
 
-### 11.6 引用格式说明
+### 10.6 引用格式说明
 
 本文档的引用格式遵循 IEEE 引用规范：
 - 学术论文：作者 + 标题 + 期刊/会议 + 年份 + 页码。
@@ -3835,13 +3766,13 @@ fun main() {
 
 ---
 
-## 12. 延伸阅读（Further Reading）
+## 11. 延伸阅读（Further Reading）
 
 本章节列出与密封类型相关的高级主题、Kotlin 演进方向、跨语言对比与工程实践资料，供读者在掌握本文档内容后进一步拓展视野。
 
-### 12.1 高级主题：递归 ADT 与 Catamorphism
+### 11.1 高级主题：递归 ADT 与 Catamorphism
 
-#### 12.1.1 Catamorphism（折叠）理论
+#### 11.1.1 Catamorphism（折叠）理论
 
 Catamorphism 是函数式编程中表示"折叠"操作的通用概念，源自范畴论。对于递归 ADT，catamorphism 提供了一种通用的遍历与归纳方法：
 
@@ -3851,16 +3782,16 @@ Catamorphism 是函数式编程中表示"折叠"操作的通用概念，源自�
 
 在 Kotlin 中，递归密封类（如表达式树、JSON 树）天然适合用 catamorphism 建模。读者可尝试实现一个通用 `cata` 函数，对任意递归密封类进行折叠。
 
-#### 12.1.2 递归数据结构的高级模式
+#### 11.1.2 递归数据结构的高级模式
 
 - **Anamorphism**：展开（unfold），从种子生成递归数据结构。适合建模无限流、回溯算法。
 - **Hylomorphism**：cata + ana 的组合，先展开再折叠。适合建模分治算法。
 - **Paramorphism**：带上下文的折叠，折叠时能访问子结构原值。适合建模有"上下文"的遍历。
 - **Apomorphism**：带提前终止的展开。适合建模带剪枝的搜索。
 
-### 12.2 Kotlin 演进方向
+### 11.2 Kotlin 演进方向
 
-#### 12.2.1 模式匹配增强（Pattern Matching）
+#### 11.2.1 模式匹配增强（Pattern Matching）
 
 Kotlin 团队正在讨论引入更强大的模式匹配，借鉴 Scala 与 Rust：
 
@@ -3873,7 +3804,7 @@ Kotlin 团队正在讨论引入更强大的模式匹配，借鉴 Scala 与 Rust�
 - **KEEP: Pattern Matching**. https://github.com/Kotlin/KEEP/issues
 - **Kotlin 2.1+ 路线图**. https://kotlinlang.org/docs/roadmap.html
 
-#### 12.2.2 K2 编译器的进一步优化
+#### 11.2.2 K2 编译器的进一步优化
 
 K2 编译器在 Kotlin 2.0 稳定后，仍有改进空间：
 
@@ -3882,7 +3813,7 @@ K2 编译器在 Kotlin 2.0 稳定后，仍有改进空间：
 - **更友好的错误信息**：精确指出遗漏的子类，并给出快速修复建议。
 - **增量编译优化**：修改密封类子类时，仅重新编译受影响的 `when` 表达式。
 
-#### 12.2.3 与 Java 17+ 密封类的互操作
+#### 11.2.3 与 Java 17+ 密封类的互操作
 
 Kotlin 与 Java 17+ 的密封类互操作仍在改进：
 
@@ -3894,9 +3825,9 @@ Kotlin 与 Java 17+ 的密封类互操作仍在改进：
 - **JEP 409: Sealed Classes**. https://openjdk.org/jeps/409
 - **Kotlin/Java Interop Guide**. https://kotlinlang.org/docs/java-to-kotlin-interop.html
 
-### 12.3 跨语言对比
+### 11.3 跨语言对比
 
-#### 12.3.1 Rust `enum` 与 `match`
+#### 11.3.1 Rust `enum` 与 `match`
 
 Rust 的 `enum` 是真正的代数数据类型，支持绑定模式与守卫：
 
@@ -3930,7 +3861,7 @@ Kotlin 与 Rust 对比：
 - **Rust Reference: Patterns**. https://doc.rust-lang.org/reference/patterns.html
 - **Rust Book: Enums and Pattern Matching**. https://doc.rust-lang.org/book/ch06-00-enums.html
 
-#### 12.3.2 Scala `sealed trait` 与 `case class`
+#### 11.3.2 Scala `sealed trait` 与 `case class`
 
 Scala 是 Kotlin 密封类设计的主要参照：
 
@@ -3958,7 +3889,7 @@ Scala 的劣势：
 - **Odersky, Martin.** *Programming in Scala, 5th Edition*. Artima Press, 2021.
 - **Scala 3 Reference**. https://docs.scala-lang.org/scala3/
 
-#### 12.3.3 Swift `enum` 与 `switch`
+#### 11.3.3 Swift `enum` 与 `switch`
 
 Swift 的 `enum` 与 Kotlin 密封类高度相似：
 
@@ -3988,7 +3919,7 @@ Swift 的特点：
 - **Swift Language Guide: Enumerations**. https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html
 - **Apple Developer: Pattern Matching**. https://developer.apple.com/documentation/swift/pattern-matching
 
-#### 12.3.4 Haskell `data` 与 `case`
+#### 11.3.4 Haskell `data` 与 `case`
 
 Haskell 是 ADT 与模式匹配的"原产地"：
 
@@ -4010,9 +3941,9 @@ Haskell 的特点：
 - **Lipovača, Miran.** *Learn You a Haskell for Great Good!* No Starch Press, 2011. https://learnyouahaskell.com/
 - **Haskell Wiki: Algebraic Data Type**. https://wiki.haskell.org/Algebraic_data_type
 
-### 12.4 工程实践与生态
+### 11.4 工程实践与生态
 
-#### 12.4.1 Arrow-kt：函数式编程库
+#### 11.4.1 Arrow-kt：函数式编程库
 
 Arrow-kt 是 Kotlin 的函数式编程库，提供了大量基于密封类的高级类型：
 
@@ -4026,7 +3957,7 @@ Arrow-kt 是 Kotlin 的函数式编程库，提供了大量基于密封类的高
 - **Arrow-kt Documentation**. https://arrow-kt.io/
 - **Arrow Meta: Compiler Plugin**. https://meta.arrow-kt.io/
 
-#### 12.4.2 Ktor 与密封类
+#### 11.4.2 Ktor 与密封类
 
 Ktor 是 JetBrains 的服务器框架，大量使用密封类：
 
@@ -4038,7 +3969,7 @@ Ktor 是 JetBrains 的服务器框架，大量使用密封类：
 参考：
 - **Ktor Documentation**. https://ktor.io/docs/welcome.html
 
-#### 12.4.3 Jetpack Compose 与密封类
+#### 11.4.3 Jetpack Compose 与密封类
 
 Jetpack Compose 使用密封类建模 UI 状态：
 
@@ -4051,7 +3982,7 @@ Jetpack Compose 使用密封类建模 UI 状态：
 - **Jetpack Compose Documentation**. https://developer.android.com/jetpack/compose
 - **Android Architecture Samples**. https://github.com/android/architecture-samples
 
-#### 12.4.4 Gradle 与密封类
+#### 11.4.4 Gradle 与密封类
 
 Gradle 的 Kotlin DSL 使用密封类建模构建配置：
 
@@ -4062,9 +3993,9 @@ Gradle 的 Kotlin DSL 使用密封类建模构建配置：
 参考：
 - **Gradle Kotlin DSL Documentation**. https://docs.gradle.org/current/userguide/kotlin_dsl.html
 
-### 12.5 社区与生态
+### 11.5 社区与生态
 
-#### 12.5.1 Kotlin 演进提案（KEEP）
+#### 11.5.1 Kotlin 演进提案（KEEP）
 
 Kotlin 演进提案（Kotlin Evolution and Enhancement Process, KEEP）是社区讨论语言特性的平台：
 
@@ -4072,7 +4003,7 @@ Kotlin 演进提案（Kotlin Evolution and Enhancement Process, KEEP）是社区
 - **Kotlin Language Committee**. https://kotlinlang.org/language-committee/
 - **Kotlin Slack: #language-proposals**. 讨论 KEEP 提案。
 
-#### 12.5.2 学术研究
+#### 11.5.2 学术研究
 
 近年来关于 Kotlin 类型系统的学术研究：
 
@@ -4080,7 +4011,7 @@ Kotlin 演进提案（Kotlin Evolution and Enhancement Process, KEEP）是社区
 - **Belyaev, Mikhail, et al.** "JetBrains Research on Kotlin Coroutines." *ACM SIGPLAN Notices* 54.10 (2019): 17-28.
 - **Ushakov, Daniil.** "Kotlin Multiplatform: A Study on Cross-Platform Code Sharing." *IEEE Software* 38.6 (2021): 42-49.
 
-#### 12.5.3 开源项目
+#### 11.5.3 开源项目
 
 - **Kotlin Standard Library**. https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib
 - **kotlinx.coroutines**. https://github.com/Kotlin/kotlinx.coroutines
@@ -4088,30 +4019,30 @@ Kotlin 演进提案（Kotlin Evolution and Enhancement Process, KEEP）是社区
 - **Arrow-kt**. https://github.com/arrow-kt/arrow
 - **Ktor**. https://github.com/ktorio/ktor
 
-### 12.6 学习路径建议
+### 11.6 学习路径建议
 
-#### 12.6.1 初学者路径（0-3 个月）
+#### 11.6.1 初学者路径（0-3 个月）
 
 1. 掌握 Kotlin 基础语法（变量、函数、类、控制流）。
 2. 理解 `data class` 与 `enum class` 的差异。
 3. 学习 `sealed class` 的基本语法与 `when` 表达式。
 4. 实践网络请求结果建模（`Result` 密封类）。
 
-#### 12.6.2 中级路径（3-12 个月）
+#### 11.6.2 中级路径（3-12 个月）
 
 1. 深入理解穷举检查与智能转换的原理。
 2. 学习密封接口与多继承的价值。
 3. 实践 MVI 架构与单向数据流。
 4. 阅读开源项目（kotlinx.coroutines、kotlinx.serialization）的密封类设计。
 
-#### 12.6.3 高级路径（12+ 个月）
+#### 11.6.3 高级路径（12+ 个月）
 
 1. 研究递归 ADT 与 catamorphism 理论。
 2. 对比 Rust、Scala、Swift 的模式匹配。
 3. 阅读 K2 编译器源码，理解穷举检查的实现。
 4. 参与社区讨论，为 Kotlin KEEP 提交反馈。
 
-### 12.7 结语
+### 11.7 结语
 
 密封类与密封接口是 Kotlin 类型系统的核心特性之一，它们将"受限继承 + 穷举检查 + 智能转换"三者结合，为构建类型安全的领域模型、状态机与递归数据结构提供了坚实的基础。本文档从形式化定义、理论推导、代码示例、对比分析、陷阱防范、工程实践到案例研究，系统性地覆盖了密封类型的所有重要主题。
 

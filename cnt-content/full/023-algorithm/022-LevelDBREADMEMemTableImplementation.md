@@ -30,14 +30,6 @@ prerequisites:
   - algorithm/树
   - cs-fundamentals/离散数学
   - cs-fundamentals/概率论与数理统计
-learningObjectives:
-  - 记忆跳跃表作为多层索引概率结构的形式化定义，复述期望 O(log n) 查找/插入/删除与空间 O(n) 的复杂度结论
-  - 理解 William Pugh 1989/1990 提出跳跃表的历史脉络：从平衡树实现复杂性出发，借助随机化达到与之等价的渐近性能
-  - 应用查找、插入、删除三种核心操作的迭代实现，针对有序集合、范围查询、排名统计编写可运行的 Python/C++/Java 代码
-  - 分析期望 O(log n) 复杂度的概率证明（几何分布 + 概率叠加），论证路径长度与节点层数的随机变量期望
-  - 评估跳跃表在并发控制、范围查询、内存开销维度相对于红黑树、AVL 树、B 树、哈希表的优劣，识别其在 Redis / LevelDB / Lucene 中的选型动机
-  - 对比朴素跳跃表、确定性跳跃表（Munro et al. 1992）、并发跳跃表（Fraser & Harris 2007）在代码复杂度、常数因子、可扩展性维度的差异
-  - 创造性设计基于跳跃表的开源项目解决方案，如排行榜系统、倒排索引合并、内存数据库主索引
 references:
   - type: journal
     authors:
@@ -145,6 +137,7 @@ etymology:
     english: MemTable
     origin: 'LevelDB/RocksDB 术语，Memory Table 缩写，指写入内存的有序数据结构，满后落盘为 SSTable；通常以跳跃表实现'
 ---
+
 
 ## 1. 概述与学习目标
 

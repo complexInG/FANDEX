@@ -26,42 +26,16 @@ tags:
   - literal-types
 ---
 
+
 # satisfies 操作符
 
 > 本文档对标 MIT 6.S192 与 Stanford CS143 课程标准，系统讲解 TypeScript 4.9 引入的 `satisfies` 操作符的形式语义、推导规则、工程实践与生产级应用。`satisfies` 是 TypeScript 类型系统的关键补充，它弥合了"类型注解拓宽"与"类型断言不安全"之间的鸿沟，使开发者能在保留表达式具体类型的同时进行类型验证。本文档面向零基础自学读者，从类型论的基本概念出发，逐步推导 `satisfies` 的设计动机、数学语义、与 `as`、`: Type` 的形式对比，最终落地为可复用的工程模式与最佳实践。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-完成本文档学习后，读者应能在三个 Bloom 层次上达成以下能力：
-
-### 1.1 认知层（Remembering / Understanding）
-
-- **LO-1.1**：能够准确陈述 `satisfies` 操作符的语法结构 `expr satisfies Type`，并解释其核心语义——"仅验证，不拓宽"（Validate but do not widen）。
-- **LO-1.2**：能够描述类型注解（`: Type`）、类型断言（`as Type`）与 `satisfies` 三者的本质差异：类型注解会拓宽推断类型，类型断言会强制覆盖且不安全，`satisfies` 仅做编译时检查并保留最具体类型。
-- **LO-1.3**：能够复述 `satisfies` 操作符的求值规则——表达式 `e` 的类型推断结果为 $T_e$，则 `e satisfies T` 的求值规则为：若 $T_e <: T$，则表达式类型仍为 $T_e$；否则编译错误。
-- **LO-1.4**：能够解释 `as const satisfies T` 与 `satisfies T as const` 的语法顺序约束，并说明 `as const` 必须在 `satisfies` 之后的原因。
-
-### 1.2 应用层（Applying / Analyzing）
-
-- **LO-2.1**：能够使用 `satisfies` 验证配置对象、字面量映射、联合类型属性，并保留字面量类型以获得精确的自动补全。
-- **LO-2.2**：能够使用 `as const satisfies T` 模式实现只读字面量类型的类型安全验证，应用于路由表、状态码映射、枚举替代等场景。
-- **LO-2.3**：能够将 `satisfies` 与 Zod、Runtypes、io-ts 等运行时验证库结合，实现"编译时类型验证 + 运行时数据验证"的双重安全保障。
-- **LO-2.4**：能够诊断 `satisfies` 使用中的常见陷阱——函数返回值不可用、与 `as const` 顺序错误、过度约束导致类型丢失、与泛型推断的交互等。
-- **LO-2.5**：能够使用 `satisfies` 实现类型安全的工厂函数、类型谓词验证、依赖注入容器、事件处理器映射等工程模式。
-
-### 1.3 创造层（Evaluating / Creating）
-
-- **LO-3.1**：能够设计一个类型安全的插件系统，使用 `satisfies` 在插件注册时验证插件接口契约，同时保留每个插件的具体类型信息以便后续调用。
-- **LO-3.2**：能够评估"类型注解 vs 类型断言 vs satisfies"三种方案在 API 设计、库开发、应用代码中的权衡，并给出量化对比（类型精度、安全性、开发体验、编译性能）。
-- **LO-3.3**：能够设计一个类型安全的状态机定义工具，利用 `satisfies` 验证状态转移表的合法性，同时保留每个状态的具体字面量类型以支持类型级路径推导。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 类型注解的"拓宽困境"（2012-2022）
+### 1.1 类型注解的"拓宽困境"（2012-2022）
 
 在 TypeScript 4.9 引入 `satisfies` 之前，开发者在处理配置对象、字面量映射时常陷入两难。考虑以下场景：
 
@@ -103,7 +77,7 @@ const badColors = {
 } as ColorMap;      // 编译通过！但运行时是错的
 ```
 
-### 2.2 社区呼声与设计讨论（2021-2022）
+### 1.2 社区呼声与设计讨论（2021-2022）
 
 TypeScript 社区长期呼吁一种"仅验证不拓宽"的操作符。GitHub Issue #7481、#27912、#47269 等讨论催生了 `satisfies` 的设计。核心设计目标：
 
@@ -114,7 +88,7 @@ TypeScript 社区长期呼吁一种"仅验证不拓宽"的操作符。GitHub Iss
 
 设计团队（Daniel Rosenwasser、Andrew Branch 等）最终选定 `expr satisfies Type` 语法，灵感来自 Rust 的 trait bound 语法 `expr: T`（但 `:` 已被类型注解占用，故选 `satisfies` 关键字）。
 
-### 2.3 satisfies 操作符的诞生（TypeScript 4.9, 2022）
+### 1.3 satisfies 操作符的诞生（TypeScript 4.9, 2022）
 
 TypeScript 4.9 正式引入 `satisfies` 操作符：
 
@@ -138,7 +112,7 @@ const badColors = {
 } satisfies ColorMap;
 ```
 
-### 2.4 与 as const 的协同（TypeScript 4.9+）
+### 1.4 与 as const 的协同（TypeScript 4.9+）
 
 `satisfies` 与 `as const` 的组合成为现代 TypeScript 的标志性模式：
 
@@ -158,7 +132,7 @@ ROUTES.users;   // '/users'（只读字面量）
 // ROUTES.home = '/new'; // 错误：只读属性
 ```
 
-### 2.5 现代应用与生态（2023-2026）
+### 1.5 现代应用与生态（2023-2026）
 
 `满足` 已成为 TypeScript 库设计的标配：
 
@@ -175,9 +149,9 @@ ROUTES.users;   // '/users'（只读字面量）
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 satisfies 的语法
+### 2.1 satisfies 的语法
 
 `satisfies` 操作符的 BNF 文法：
 
@@ -194,7 +168,7 @@ $$
 - `satisfies` 可用于变量初始化、对象字面量、数组字面量、函数返回值（通过上下文类型）等位置。
 - `satisfies` 不能用于函数返回值类型注解位置（即 `function f(): T satisfies U` 不合法）。
 
-### 3.2 类型拓宽的形式语义
+### 2.2 类型拓宽的形式语义
 
 TypeScript 的类型拓宽（Type Widening）规则可形式化为：
 
@@ -216,7 +190,7 @@ $$
 
 其中 $T_e <: T$ 必须成立（子类型检查）。
 
-### 3.3 satisfies 的求值规则
+### 2.3 satisfies 的求值规则
 
 `satisfies` 的求值规则保持推断类型不变：
 
@@ -226,7 +200,7 @@ $$
 
 即：表达式 `e satisfies T` 的类型仍为 $T_e$（推断类型），但要求 $T_e <: T$（子类型约束）。
 
-### 3.4 与类型断言的对比
+### 2.4 与类型断言的对比
 
 类型断言 `e as T` 的求值规则：
 
@@ -241,7 +215,7 @@ $$
 - `as`：允许双向转型，结果类型为 $T$。
 - `: T`：仅允许 $T_e <: T$，结果类型为 $T$。
 
-### 3.5 代数性质
+### 2.5 代数性质
 
 `satisfies` 满足以下代数性质：
 
@@ -271,7 +245,7 @@ $$
 
 注意：`as const` 必须在 `satisfies` 之前（语法上）。
 
-### 3.6 子类型关系的形式化
+### 2.6 子类型关系的形式化
 
 TypeScript 的子类型关系 $S <: T$ 定义如下（简化版）：
 
@@ -303,9 +277,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 satisfies 保留类型推断的正确性
+### 3.1 satisfies 保留类型推断的正确性
 
 **命题 4.1**：对于任意表达式 $e$ 与类型 $T$，若 $T_e <: T$（其中 $T_e$ 是 $e$ 的推断类型），则 `e satisfies T` 的类型为 $T_e$，且编译通过。
 
@@ -319,7 +293,7 @@ $$
 
 **工程含义**：`satisfies` 不改变表达式的类型，仅做编译时验证。
 
-### 4.2 satisfies 与类型注解的差异
+### 3.2 satisfies 与类型注解的差异
 
 **命题 4.2**：对于字面量表达式 $e$，类型注解 `e : T` 会拓宽 $e$ 的类型至 $T$，而 `e satisfies T` 保留 $e$ 的字面量类型。
 
@@ -343,7 +317,7 @@ $$
 
 **工程含义**：需要字面量类型时（如路由、状态码、枚举替代），使用 `satisfies`；需要拓宽类型时（如函数参数、公共接口），使用类型注解。
 
-### 4.3 satisfies 与类型断言的安全性
+### 3.3 satisfies 与类型断言的安全性
 
 **命题 4.3**：`satisfies` 比 `as` 更安全，因为 `satisfies` 仅允许向上转型（$T_e <: T$），而 `as` 允许双向转型。
 
@@ -363,7 +337,7 @@ $$
 
 **工程含义**：在需要类型验证时，优先使用 `satisfies` 而非 `as`。
 
-### 4.4 as const satisfies 的语义
+### 3.4 as const satisfies 的语义
 
 **命题 4.4**：`e as const satisfies T` 等价于 `(e as const) satisfies T`，即先将 $e$ 的所有属性变为只读字面量，再验证是否满足 $T$。
 
@@ -385,7 +359,7 @@ $$
 
 **工程含义**：`as const satisfies` 是保留只读字面量类型的类型验证模式，常用于路由表、配置常量。
 
-### 4.5 satisfies 不可用于函数返回值
+### 3.5 satisfies 不可用于函数返回值
 
 **命题 4.5**：`satisfies` 不能用于函数返回值类型注解位置，即 `function f(): T satisfies U` 不合法。
 
@@ -404,7 +378,7 @@ $\blacksquare$
 
 **工程含义**：在函数体内部使用 `satisfies` 验证返回值，而非在函数签名上使用。
 
-### 4.6 satisfies 与泛型推断的交互
+### 3.6 satisfies 与泛型推断的交互
 
 **命题 4.6**：当 `satisfies` 用于泛型函数的参数时，会先进行 `satisfies` 验证，再触发泛型推断。
 
@@ -427,11 +401,11 @@ const result = f({ a: 1 } satisfies { a: number });
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础用法
+### 4.1 基础用法
 
-#### 5.1.1 保留字面量类型
+#### 4.1.1 保留字面量类型
 
 ```typescript
 // 类型注解：拓宽类型，丢失字面量信息
@@ -447,7 +421,7 @@ const color3 = 'yellow' satisfies 'red' | 'green' | 'blue';
 // 错误：'"yellow"' 不能赋值给 '"red" | "green" | "blue"'
 ```
 
-#### 5.1.2 对象字面量验证
+#### 4.1.2 对象字面量验证
 
 ```typescript
 interface UserConfig {
@@ -480,7 +454,7 @@ const user3 = {
 } satisfies UserConfig;
 ```
 
-#### 5.1.3 联合类型属性
+#### 4.1.3 联合类型属性
 
 ```typescript
 type ThemeConfig = {
@@ -505,9 +479,9 @@ theme.colors.push('#fff');  // OK，string[] 有 push
 theme.borderRadius.toUpperCase(); // OK，string 有 toUpperCase
 ```
 
-### 5.2 配置对象验证
+### 4.2 配置对象验证
 
-#### 5.2.1 应用配置
+#### 4.2.1 应用配置
 
 ```typescript
 interface AppConfig {
@@ -552,7 +526,7 @@ type Theme = typeof config.theme;    // 'dark'
 type Locale = typeof config.locale;  // 'zh-CN'
 ```
 
-#### 5.2.2 多环境配置
+#### 4.2.2 多环境配置
 
 ```typescript
 type Environment = 'development' | 'staging' | 'production';
@@ -594,9 +568,9 @@ configs.production.features;  // string[]
 type ConfigKey = keyof typeof configs; // 'development' | 'staging' | 'production'
 ```
 
-### 5.3 字面量映射
+### 4.3 字面量映射
 
-#### 5.3.1 HTTP 状态码映射
+#### 4.3.1 HTTP 状态码映射
 
 ```typescript
 const STATUS_CODES = {
@@ -632,7 +606,7 @@ function getStatusMessage(code: StatusCode): string {
 }
 ```
 
-#### 5.3.2 事件处理器映射
+#### 4.3.2 事件处理器映射
 
 ```typescript
 type EventHandler<E extends Event = Event> = (event: E) => void;
@@ -667,7 +641,7 @@ registerHandler('click', handlers.click);   // OK
 registerHandler('click', handlers.keydown); // 错误：处理器类型不匹配
 ```
 
-### 5.4 路由表定义
+### 4.4 路由表定义
 
 ```typescript
 interface RouteConfig {
@@ -721,7 +695,7 @@ navigate('home');   // OK
 navigate('unknown'); // 错误：'"unknown"' 不能赋值给路由名称
 ```
 
-### 5.5 枚举替代方案
+### 4.5 枚举替代方案
 
 ```typescript
 // 使用 satisfies 替代枚举，获得更好的类型推断与 tree-shaking
@@ -750,9 +724,9 @@ move('UP');             // OK（字面量类型）
 move('up');             // 错误：'"up"' 不能赋值给 Direction
 ```
 
-### 5.6 与 Zod 集成
+### 4.6 与 Zod 集成
 
-#### 5.6.1 编译时 + 运行时双重验证
+#### 4.6.1 编译时 + 运行时双重验证
 
 ```typescript
 import { z } from 'zod';
@@ -792,7 +766,7 @@ const badData = {
 } satisfies User;
 ```
 
-#### 5.6.2 Schema 定义验证
+#### 4.6.2 Schema 定义验证
 
 ```typescript
 import { z } from 'zod';
@@ -842,7 +816,7 @@ schemas.product.meta.deprecated; // boolean | undefined
 schemas.internalLog.meta.internal; // true（字面量类型）
 ```
 
-### 5.7 React 组件 Props 验证
+### 4.7 React 组件 Props 验证
 
 ```typescript
 import React from 'react';
@@ -874,7 +848,7 @@ function Button(props: ButtonProps) {
 }
 ```
 
-### 5.8 依赖注入容器
+### 4.8 依赖注入容器
 
 ```typescript
 interface Service {
@@ -916,7 +890,7 @@ async function initAllServices() {
 }
 ```
 
-### 5.9 状态机定义
+### 4.9 状态机定义
 
 ```typescript
 interface StateConfig {
@@ -998,7 +972,7 @@ class StateMachine {
 }
 ```
 
-### 5.10 类型安全的工厂函数
+### 4.10 类型安全的工厂函数
 
 ```typescript
 interface Animal {
@@ -1025,7 +999,7 @@ const dog = createAnimal('dog');   // { type: string; sound: string; legs: numbe
 const fish = createAnimal('fish'); // { type: string; sound: string; legs: number; }
 ```
 
-### 5.11 类型谓词验证
+### 4.11 类型谓词验证
 
 ```typescript
 type Result<T, E = Error> =
@@ -1057,7 +1031,7 @@ handleResult(result1); // 42
 handleResult(result2); // 抛出 'fail'
 ```
 
-### 5.12 复杂配置验证
+### 4.12 复杂配置验证
 
 ```typescript
 interface WebpackConfig {
@@ -1105,9 +1079,9 @@ webpackConfig.module?.rules[0].use; // string | string[]
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 satisfies vs 类型注解 vs 类型断言
+### 5.1 satisfies vs 类型注解 vs 类型断言
 
 | 特性 | 类型注解 `: T` | 类型断言 `as T` | satisfies `satisfies T` |
 |------|---------------|----------------|------------------------|
@@ -1121,7 +1095,7 @@ webpackConfig.module?.rules[0].use; // string | string[]
 | **与 as const 协同** | 不适用 | `as const as T`（不推荐） | `as const satisfies T`（推荐） |
 | **TypeScript 版本** | 1.0+ | 1.0+ | 4.9+ |
 
-### 6.2 不同场景下的选择
+### 5.2 不同场景下的选择
 
 | 场景 | 推荐方式 | 原因 |
 |------|---------|------|
@@ -1135,7 +1109,7 @@ webpackConfig.module?.rules[0].use; // string | string[]
 | API 接口定义 | 类型注解 | 公共接口需要明确的类型契约 |
 | 内部实现细节 | satisfies | 保留具体类型，便于重构 |
 
-### 6.3 与其他语言的对比
+### 5.3 与其他语言的对比
 
 | 语言 | 类似机制 | 语法 | 是否保留具体类型 |
 |------|---------|------|----------------|
@@ -1152,7 +1126,7 @@ webpackConfig.module?.rules[0].use; // string | string[]
 
 **TypeScript 独特性**：`satisfies` 是少数提供"验证不拓宽"语义的语言机制，源于 JavaScript 动态类型与 TypeScript 静态类型的混合特性。
 
-### 6.4 编译性能对比
+### 5.4 编译性能对比
 
 | 方式 | 编译时间（相对） | 类型推断精度 | 错误信息质量 |
 |------|----------------|-------------|-------------|
@@ -1165,9 +1139,9 @@ webpackConfig.module?.rules[0].use; // string | string[]
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：函数返回值使用 satisfies
+### 6.1 陷阱一：函数返回值使用 satisfies
 
 **错误示例**：
 
@@ -1192,7 +1166,7 @@ function getUser(): User {
 }
 ```
 
-### 7.2 陷阱二：as const 与 satisfies 顺序错误
+### 6.2 陷阱二：as const 与 satisfies 顺序错误
 
 **错误示例**：
 
@@ -1212,7 +1186,7 @@ const routes = {
 } as const satisfies Record<string, string>;
 ```
 
-### 7.3 陷阱三：过度约束导致类型丢失
+### 6.3 陷阱三：过度约束导致类型丢失
 
 **错误示例**：
 
@@ -1238,7 +1212,7 @@ config.port; // 3000（保留字面量，但可修改为其他 number）
 config.port = 3001; // OK
 ```
 
-### 7.4 陷阱四：与泛型推断的意外交互
+### 6.4 陷阱四：与泛型推断的意外交互
 
 **错误示例**：
 
@@ -1264,7 +1238,7 @@ const state2 = createState({ count: 0 } satisfies { count: 0 });
 // state2 类型：{ count: 0 }
 ```
 
-### 7.5 陷阱五：satisfies 不阻止类型拓宽
+### 6.5 陷阱五：satisfies 不阻止类型拓宽
 
 **错误示例**：
 
@@ -1292,7 +1266,7 @@ const obj2 = { x: 42 } satisfies { x: number }; // obj2 类型：{ x: number }
 const obj3 = { x: 42 } as const satisfies { x: number }; // obj3 类型：{ readonly x: 42 }
 ```
 
-### 7.6 陷阱六：satisfies 与 any 的交互
+### 6.6 陷阱六：satisfies 与 any 的交互
 
 **错误示例**：
 
@@ -1316,7 +1290,7 @@ if (isString(x)) {
 }
 ```
 
-### 7.7 陷阱七：satisfies 与联合类型的意外行为
+### 6.7 陷阱七：satisfies 与联合类型的意外行为
 
 **错误示例**：
 
@@ -1350,7 +1324,7 @@ config.mode; // 'dev'（保留字面量）
 config.port; // 3000（保留字面量）
 ```
 
-### 7.8 陷阱八：satisfies 在数组上的局限性
+### 6.8 陷阱八：satisfies 在数组上的局限性
 
 **错误示例**：
 
@@ -1375,7 +1349,7 @@ const arr3 = [1, 2, 3] as const satisfies [number, number, number];
 // arr3 类型：readonly [1, 2, 3]
 ```
 
-### 7.9 陷阱九：satisfies 与类成员
+### 6.9 陷阱九：satisfies 与类成员
 
 **错误示例**：
 
@@ -1405,7 +1379,7 @@ class Bar {
 }
 ```
 
-### 7.10 陷阱十：satisfies 与 const 断言的混淆
+### 6.10 陷阱十：satisfies 与 const 断言的混淆
 
 **错误示例**：
 
@@ -1431,9 +1405,9 @@ const obj = { x: 42 } as const satisfies { x: number };
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 配置对象的最佳实践
+### 7.1 配置对象的最佳实践
 
 ```typescript
 // 实践一：使用 as const satisfies 保留只读字面量
@@ -1461,7 +1435,7 @@ const PLUGINS = {
 } satisfies Record<string, PluginConfig>;
 ```
 
-### 8.2 库开发的最佳实践
+### 7.2 库开发的最佳实践
 
 ```typescript
 // 实践一：库的公共 API 使用 satisfies 验证默认配置
@@ -1486,7 +1460,7 @@ export const EVENT_HANDLERS = {
 } satisfies Record<string, EventListener>;
 ```
 
-### 8.3 应用代码的最佳实践
+### 7.3 应用代码的最佳实践
 
 ```typescript
 // 实践一：路由配置使用 as const satisfies
@@ -1511,7 +1485,7 @@ const DEFAULT_PROPS = {
 } satisfies Partial<ButtonProps>;
 ```
 
-### 8.4 与 Zod 的最佳实践
+### 7.4 与 Zod 的最佳实践
 
 ```typescript
 import { z } from 'zod';
@@ -1558,7 +1532,7 @@ function getSchema<T extends keyof typeof SCHEMAS>(name: T): typeof SCHEMAS[T] {
 }
 ```
 
-### 8.5 性能考量
+### 7.5 性能考量
 
 ```typescript
 // 实践一：避免在热路径中使用 satisfies
@@ -1583,7 +1557,7 @@ const APP_CONFIG = {
 } satisfies AppConfig;
 ```
 
-### 8.6 测试中的最佳实践
+### 7.6 测试中的最佳实践
 
 ```typescript
 // 实践一：测试数据使用 satisfies 验证
@@ -1601,7 +1575,7 @@ const MOCK_API_RESPONSES = {
 } satisfies Record<string, MockResponse>;
 ```
 
-### 8.7 类型推导的链式使用
+### 7.7 类型推导的链式使用
 
 ```typescript
 // 实践一：链式 satisfies 实现多层验证
@@ -1622,7 +1596,7 @@ const appConfig = createConfig({
 // appConfig 类型：{ port: number; host: string }
 ```
 
-### 8.8 与装饰器结合（实验性）
+### 7.8 与装饰器结合（实验性）
 
 ```typescript
 // 实践：使用 satisfies 验证装饰器配置
@@ -1644,9 +1618,9 @@ class AppComponent {}
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：类型安全的多语言 i18n 系统
+### 8.1 案例一：类型安全的多语言 i18n 系统
 
 **背景**：构建一个类型安全的 i18n 系统，要求：
 1. 翻译键有类型安全提示
@@ -1727,7 +1701,7 @@ t('en-US', 'invalid.key'); // 编译错误：'"invalid.key"' 不能赋值给 Tra
 - 保留翻译值的具体类型
 - 新增翻译键时，所有语言必须同步（通过 satisfies 验证）
 
-### 9.2 案例二：类型安全的 API 客户端
+### 8.2 案例二：类型安全的 API 客户端
 
 **背景**：构建一个类型安全的 API 客户端，要求：
 1. 端点定义有类型验证
@@ -1819,7 +1793,7 @@ client.request('invalid'); // 编译错误：'"invalid"' 不是合法端点
 - 路径参数、查询参数、请求体类型安全
 - 新增端点时，客户端自动支持
 
-### 9.3 案例三：类型安全的 Vue 组件库
+### 8.3 案例三：类型安全的 Vue 组件库
 
 **背景**：构建一个类型安全的 Vue 3 组件库，要求：
 1. 组件 Props 有类型验证
@@ -1896,7 +1870,7 @@ const COMPONENTS = {
 - Props 验证与类型定义同步
 - 重构时编译时检测
 
-### 9.4 案例四：类型安全的 ORM Schema 定义
+### 8.4 案例四：类型安全的 ORM Schema 定义
 
 **背景**：构建一个类型安全的 ORM，要求：
 1. Schema 定义有类型验证
@@ -1957,7 +1931,7 @@ userQuery.where('age', '>', 'string');    // 编译错误：string 不能赋值�
 - 查询结果类型自动推断
 - 重命名列时编译时检测
 
-### 9.5 案例五：大型 Monorepo 的配置管理
+### 8.5 案例五：大型 Monorepo 的配置管理
 
 **背景**：一个大型 Monorepo 包含 50+ 包，需要：
 1. 统一的包配置
@@ -2462,7 +2436,7 @@ getPlugin('invalid');     // 编译错误
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本文档参考以下学术文献、官方文档与权威资料：
 
@@ -2488,39 +2462,39 @@ getPlugin('invalid');     // 编译错误
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - [TypeScript Handbook: Type Assertions](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-assertions)
 - [TypeScript 4.9 Release Notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html)
 - [TypeScript Playground: satisfies 示例](https://www.typescriptlang.org/play)
 
-### 12.2 社区资源
+### 11.2 社区资源
 
 - [TypeScript Deep Dive: satisfies](https://basarat.gitbook.io/typescript/type-system/satisfies)
 - [Total TypeScript: satisfies Operator](https://www.totaltypescript.com/articles/satisfies-operator)
 - [Matt Pocock's satisfies Tutorial](https://www.totaltypescript.com/articles/satisfies-operator)
 
-### 12.3 相关 GitHub 仓库
+### 11.3 相关 GitHub 仓库
 
 - [type-fest: 实用工具类型库](https://github.com/sindresorhus/type-fest)
 - [utility-types: 工具类型集合](https://github.com/piotrwitek/utility-types)
 - [ts-toolbelt: 高级类型工具](https://github.com/millsp/ts-toolbelt)
 
-### 12.4 类型论与理论
+### 11.4 类型论与理论
 
 - *Types and Programming Languages* (Benjamin C. Pierce) - 类型论经典教材
 - *Type-Driven Development with Idris* (Edwin Brady) - 类型驱动开发
 - *Practical Foundations for Programming Languages* (Robert Harper) - 编程语言基础
 
-### 12.5 视频课程
+### 11.5 视频课程
 
 - Matt Pocock's TypeScript Course（Total TypeScript）
 - Boris Cherny's Programming TypeScript（O'Reilly 在线课程）
 - TypeScript 团队的官方演讲（TypeScript Conf）
 
-### 12.6 相关主题
+### 11.6 相关主题
 
 - **`as const` 操作符**：保留字面量类型与只读属性
 - **类型断言（`as`）**：强制类型转换

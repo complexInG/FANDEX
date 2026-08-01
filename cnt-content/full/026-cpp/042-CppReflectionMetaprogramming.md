@@ -15,6 +15,7 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # C++ 反射与元编程
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -52,17 +53,6 @@ T gcd(T a, T b) {
 ```
 
 ---
-
-## 学习目标
-
-完成本章学习后，读者应当能够达到以下认知层级（参照 Bloom 分类法）：
-
-- **记忆（Remembering）**：复述反射（Reflection）与元编程（Metaprogramming）的定义与边界；列举 C++ 实现反射的四种主要手段（运行时类型信息 RTTI、宏注册、模板元编程 TMP、C++26 静态反射提案 P2996）；列举至少 5 种主流反射框架（Boost.DLL、Boost.PFR、Magic Enum、rttr、USRefl）。
-- **理解（Understanding）**：解释为什么 C++ 长期缺乏原生反射支持（零开销原则、静态类型哲学）；阐述编译期反射与运行时反射的语义差异；区分类型元编程（type metaprogramming）与值元编程（value metaprogramming）。
-- **应用（Applying）**：使用模板元编程实现编译期斐波那契、阶乘、类型列表过滤；使用 `std::type_info`、`typeid`、`dynamic_cast` 进行运行时类型识别；使用宏与 `std::tuple` 实现简单的类成员反射（字段名、字段类型、字段值遍历）。
-- **分析（Analyzing）**：分析 SFINAE、`if constexpr`、Concepts 三种约束机制在编译期反射中的应用与差异；评估不同反射实现策略的编译时间、运行时开销、二进制体积影响。
-- **评价（Evaluating）**：在序列化、ORM、RPC、依赖注入等场景中，权衡使用原生 RTTI、宏反射、模板元编程、外部代码生成（如 Protobuf、FlatBuffers）的优劣；评估 C++26 反射提案 P2996 对现有框架的革命性影响。
-- **创造（Creating）**：设计并实现一个完整的反射式序列化库，支持任意 POD 类型的二进制与 JSON 序列化；为其编写基于 C++20 Concepts 的接口约束；设计一个基于反射的依赖注入容器。
 
 ## 概述
 

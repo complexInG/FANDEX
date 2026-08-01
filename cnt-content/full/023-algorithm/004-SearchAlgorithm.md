@@ -37,14 +37,6 @@ prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/查找算法
   - algorithm/递归与回溯
-learningObjectives:
-  - '记忆线性搜索 $O(n)$、二分搜索 $O(\log n)$、哈希查找 $O(1)$ 平均、BFS/DFS $O(V+E)$、A* $O(b^d)$ 最坏/$O(b^{\epsilon d})$ 最优启发、IDA* $O(b^d)$ 时间/$O(d)$ 空间、Alpha-Beta 剪枝 $O(b^{d/2})$ 的形式化复杂度，复述各算法的完备性与最优性'
-  - '{''理解 Shannon 1950《Programming a Computer for Playing Chess》Philosophical Magazine 41:256-275、Dijkstra 1959《A Note on Two Problems in Connexion with Graphs》Numerische Mathematik 1:269-271、Hart-Nilsson-Raphael 1968《A Formal Basis for the Heuristic Determination of Minimum Cost Paths》IEEE Trans. SSC-4(2):100-107、Knuth-Moore 1975《An analysis of alpha-beta pruning》Artificial Intelligence 6(4):293-326、Korf 1985《Depth-first iterative-deepening'': ''An optimal admissible tree search》Artificial Intelligence 27(1):97-109 的历史脉络，说明各搜索算法的设计动机''}'
-  - '应用线性搜索（含哨兵）、二分搜索（含 lower_bound/upper_bound/二分答案）、BFS（含分层、最短路径）、DFS（含环检测、拓扑排序）、双向 BFS、IDDFS、A*（含曼哈顿/欧氏/切比雪夫启发式）、IDA*、Minimax + Alpha-Beta 剪枝编写可运行的 Python/C++/Java 代码，解决 LeetCode 33 旋转排序数组查找、LeetCode 127 单词接龙、LeetCode 200 岛屿数量、LeetCode 207 课程表、LeetCode 773 滑动谜题、LeetCode 1091 二进制矩阵中的最短路径、LeetCode 64 最小路径和等问题'
-  - '分析状态空间图模型、启发式函数的可采纳性（$h(n) \leq h^*(n)$）与一致性（$h(n) \leq c(n, n'') + h(n'')$）、A* 最优性证明、IDA* 完备性证明、Alpha-Beta 剪枝正确性证明，掌握"图搜索、势能分析、对偶论证"三大核心论证方法'
-  - '评估各搜索算法在"静态查找 vs 动态查找"、"精确匹配 vs 范围查询"、"无权最短路 vs 加权最短路"、"完备性 vs 时间复杂度"、"内存受限 vs 时间最优"维度上的优劣，识别 Google Maps 路径规划、国际象棋引擎、数据库 B+ 树索引、社交网络最短路径、机器人路径规划的选型动机'
-  - '对比线性、二分、哈希、BST、BFS、DFS、双向 BFS、IDDFS、A*、IDA*、Minimax、Alpha-Beta 在时间复杂度、空间复杂度、完备性、最优性、启发式依赖、应用场景维度的差异'
-  - '创造性设计基于搜索算法的开源项目解决方案，如 Google Maps A* 路径规划、Stockfish 国际象棋引擎、PostgreSQL B+ 树索引、Redis 字典、Sokoban 求解器、八数码问题、迷宫生成与求解、社交网络 K 度好友推荐'
 references:
   - type: book
     authors:
@@ -220,6 +212,7 @@ etymology:
     english: Alpha-Beta pruning
     origin: 'prune 源自古法语 proignier（修剪枝条）。Alpha-Beta 剪枝在 Minimax 基础上维护 $\alpha$（MAX 节点当前最佳下界）与 $\beta$（MIN 节点当前最佳上界），当 $\alpha \geq \beta$ 时剪枝。思想由 McCarthy 1956 在 Dartmouth 会议提出，Knuth-Moore 1975 给出严格分析：最优节点排序下复杂度 $O(b^{d/2})$'
 ---
+
 
 ## 1. 概述与学习目标
 

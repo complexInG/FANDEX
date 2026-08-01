@@ -27,81 +27,16 @@ tags:
   - 字符编码
 ---
 
+
 # Java IO 与 NIO 详解
 
 > I/O（Input/Output）是计算机科学中最古老、最核心、也最被低估的主题之一。从打孔卡到磁盘，从 TCP socket 到 NVMe SSD，I/O 模型的演进映射着计算机系统的演进。Java 在 JDK 1.0 时提供了面向流的同步阻塞 BIO（Blocking I/O）API，在 JDK 1.4 引入了面向缓冲区的 NIO（New I/O）API，在 JDK 7 引入了异步 AIO（Asynchronous I/O）API。三大 I/O 体系并存，既是 Java 工程师必须跨越的认知门槛，也是理解 Netty、Tomcat、Kafka、Redis 客户端等高性能中间件的钥匙。
 
 ---
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-### 1.1 认知层级目标
-
-| 层级 | 行为动词 | 具体学习目标 |
-|------|---------|-------------|
-| 记忆 | 列举、识别 | 列举 `java.io` 与 `java.nio` 包的核心类层次，识别 BIO/NIO/AIO 三大 API 的代表类 |
-| 理解 | 解释、对比 | 解释字节流与字符流的差异，对比 BIO 的阻塞语义与 NIO 的非阻塞语义，理解 `Channel`、`Buffer`、`Selector` 三件套的设计动机 |
-| 应用 | 实现、演示 | 实现一个基于 `ServerSocket` 的 BIO echo 服务器，实现一个基于 `Selector` 的 NIO echo 服务器，演示 `transferTo` 零拷贝 |
-| 分析 | 分解、推断 | 分解 `epoll_wait` 在 HotSpot 中的调用链，推断 `select` / `poll` / `epoll` 的复杂度差异 |
-| 评价 | 评判、论证 | 评判 Reactor 与 Proactor 模式的优劣，论证 Netty 选择 NIO 而非 AIO 的理由 |
-| 创造 | 设计、构建 | 设计一个支持多路复用的 HTTP 静态文件服务器，构建主从 Reactor 线程模型 |
-
-### 1.2 学习成果自检清单
-
-1. 在白板上画出 `InputStream`、`OutputStream`、`Reader`、`Writer` 的类继承图。
-2. 用一段话向同事解释"为什么 NIO 比线程-per-连接的 BIO 模型更适合 C10K 场景"。
-3. 在 Linux 终端使用 `strace` 跟踪 Java NIO 程序，识别 `epoll_create`、`epoll_ctl`、`epoll_wait` 系统调用。
-4. 编写代码演示 `mmap` 与 `sendfile` 的差异。
-5. 在 Netty 源码中定位 `NioEventLoop` 的核心 select 循环，并解释其优化策略。
-
-### 1.3 前置知识地图
-
-```mermaid
-flowchart TD
-    T0["操作系统基础"]
-    T1["文件描述符 (fd)"]
-    T2["内核态与用户态"]
-    T3["系统调用 (read/write/epoll)"]
-    T4["虚拟内存与页缓存"]
-    T5["Java 基础"]
-    T6["异常处理 (IOException)"]
-    T7["集合框架"]
-    T8["多线程基础"]
-    T9["字符编码 (UTF-8/UTF-16)"]
-    T10["Java I/O 与 NIO（本章）"]
-    T11["java.io.* (BIO)"]
-    T12["java.nio.* (NIO)"]
-    T13["java.nio.channels (Channel/Selector)"]
-    T14["java.nio.charset (Charset)"]
-    T15["零拷贝 (transferTo/mmap/directbuffer)"]
-    T0 --> T1
-    T0 --> T2
-    T0 --> T3
-    T0 --> T4
-    T4 --> T5
-    T5 --> T6
-    T5 --> T7
-    T5 --> T8
-    T5 --> T9
-    T9 --> T10
-    T10 --> T11
-    T10 --> T12
-    T10 --> T13
-    T10 --> T14
-    T10 --> T15
-```
-
-### 1.4 章节阅读建议
-
-- **零基础读者**：按顺序阅读第 2、3 节建立概念框架，配合第 5 节代码实操。
-- **后端工程师**：重点关注第 4 节操作系统层面的 epoll/kqueue/iocp 原理，第 8 节性能调优。
-- **中间件开发者**：直接阅读第 9 节 Netty、Kafka、Tomcat 的源码案例研究。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 I/O 模型演化的工程动机
+### 1.1 I/O 模型演化的工程动机
 
 I/O 模型的演化始终围绕一个核心矛盾：**CPU 速度远超 I/O 设备速度**。1960 年代，批处理系统通过磁带顺序读写回避了这一矛盾；1970 年代，多道程序设计通过进程切换让 CPU 等待 I/O 时切换执行其他进程；1980 年代，UNIX 引入了 `select` 系统调用，使得单个进程能"同时"等待多个文件描述符；2000 年代，Linux 2.6 引入 `epoll`，BSD 引入 `kqueue`，Windows 引入 IOCP，将多路复用推向新高度。
 
@@ -116,7 +51,7 @@ Java I/O 演化紧随其后：
 | 2017-09 | JDK 9 | 异步 HTTP Client | 基于 NIO |
 | 2023-09 | JDK 21 | 虚拟线程 + BIO 回潮 | `epoll` + Loom 调度 |
 
-### 2.2 关键里程碑
+### 1.2 关键里程碑
 
 | 时间 | 事件 | 意义 |
 |------|------|------|
@@ -130,7 +65,7 @@ Java I/O 演化紧随其后：
 | 2014 | Linux 3.15 引入 `io_uring` | 真正异步 I/O，无系统调用开销 |
 | 2021 | JDK 21 GA | 虚拟线程正式发布，BIO 模式再次可用 |
 
-### 2.3 Java I/O 三大体系对比
+### 1.3 Java I/O 三大体系对比
 
 | 维度 | BIO | NIO | AIO |
 |------|-----|-----|-----|
@@ -142,7 +77,7 @@ Java I/O 演化紧随其后：
 | OS 支持 | 全平台 | 全平台 | Windows IOCP 原生；Linux 模拟 |
 | 典型框架 | Tomcat Bio、旧 JDBC | Netty、Mina、Tomcat Nio | Netty AIO（已弃用） |
 
-### 2.4 设计哲学：为什么 NIO 不是 BIO 的替代品
+### 1.4 设计哲学：为什么 NIO 不是 BIO 的替代品
 
 NIO 设计初衷是"为高性能服务器提供 I/O 多路复用能力"，而非替代 BIO。BIO 的简洁性（同步阻塞、流式语义）在低并发、文件 I/O、原型开发场景仍有优势。
 
@@ -153,7 +88,7 @@ NIO 设计初衷是"为高性能服务器提供 I/O 多路复用能力"，而非
 
 JDK 21 的虚拟线程让 BIO 模式在高并发场景重新可用——一个虚拟线程的代价仅几百字节，可以"线程-per-连接"地处理数万连接。这被认为是 I/O 编程的"范式回潮"。
 
-### 2.5 JEP 与 I/O 相关提案
+### 1.5 JEP 与 I/O 相关提案
 
 | JEP | 标题 | 状态 |
 |-----|------|------|
@@ -166,7 +101,7 @@ JDK 21 的虚拟线程让 BIO 模式在高并发场景重新可用——一个�
 | JEP 454 | Foreign Function & Memory API | Final (JDK 22) |
 | JEP 444 | Virtual Threads | Final (JDK 21) |
 
-### 2.6 与操作系统的共生关系
+### 1.6 与操作系统的共生关系
 
 Java I/O 是操作系统 I/O 系统调用的"包装层"：
 
@@ -198,9 +133,9 @@ flowchart TD
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 I/O 操作的抽象模型
+### 2.1 I/O 操作的抽象模型
 
 设 $D$ 为数据源（Source）或数据汇（Sink），$B$ 为内存缓冲区，$\tau$ 为时间。一次 I/O 操作可形式化为：
 
@@ -236,7 +171,7 @@ $$
 
 其中 $F$ 为 fd 集合，返回就绪 fd 子集。
 
-### 3.2 Buffer 的形式化定义
+### 2.2 Buffer 的形式化定义
 
 NIO Buffer 是一个固定容量的、可读写切换的内存区域。形式化为五元组：
 
@@ -257,7 +192,7 @@ $$
 - `mark()`：$\text{mark} \leftarrow \text{position}$
 - `reset()`：$\text{position} \leftarrow \text{mark}$
 
-### 3.3 零拷贝的复杂度分析
+### 2.3 零拷贝的复杂度分析
 
 传统 I/O 读取文件并通过网络发送，需要 4 次上下文切换 + 4 次数据拷贝：
 
@@ -285,7 +220,7 @@ $$
 
 但 `mmap` 后数据可直接在用户态访问，无需 `read` 系统调用。
 
-### 3.4 Reactor 模式的形式化定义
+### 2.4 Reactor 模式的形式化定义
 
 Reactor 模式由 Douglas Schmidt 在 1995 年的 POSA2 一书中系统化。其核心组件：
 
@@ -301,7 +236,7 @@ $$
 
 其中 $\text{dispatch}(e) = \text{handler}_e.\text{handle}(e)$。
 
-### 3.5 字符编码的数学模型
+### 2.5 字符编码的数学模型
 
 字符编码是从字符集到字节序列的映射：
 
@@ -326,9 +261,9 @@ UTF-16 对 BMP 字符（$U \leq 0xFFFF$）用 2 字节，辅助平面字符用 4
 
 ---
 
-## 4. 理论推导：操作系统层面的 I/O 模型
+## 3. 理论推导：操作系统层面的 I/O 模型
 
-### 4.1 文件描述符与系统调用
+### 3.1 文件描述符与系统调用
 
 Linux 一切皆文件，文件描述符（fd, file descriptor）是内核维护的整数索引。每个进程有一个 `files_struct`，包含指向 `file` 对象的指针数组。fd 就是该数组的下标。
 
@@ -356,7 +291,7 @@ struct file {
 4. 数据从内核缓冲区拷贝到用户缓冲区 `buf`。
 5. 返回用户态（再次上下文切换）。
 
-### 4.2 阻塞 I/O 的内核语义
+### 3.2 阻塞 I/O 的内核语义
 
 对于阻塞 socket，当接收缓冲区无数据时，`tcp_recvmsg` 会调用 `wait_for_packet`，将当前进程加入 socket 的等待队列，并调用 `schedule()` 让出 CPU。当数据到达（网卡中断 → 协议栈 → 唤醒等待队列），进程被唤醒，继续执行 `tcp_recvmsg` 完成读取。
 
@@ -387,13 +322,13 @@ flowchart TD
 
 这种模型的问题是：**一个连接一个线程**。1 万个连接需要 1 万个线程，每个线程默认占用 1MB 栈空间，内存消耗 10GB+，且线程切换开销巨大。
 
-### 4.3 非阻塞 I/O 与多路复用
+### 3.3 非阻塞 I/O 与多路复用
 
 非阻塞 I/O（`O_NONBLOCK`）的 `read` 在数据未就绪时立即返回 `EAGAIN`，但需要应用层不断轮询（busy loop），CPU 占用高。
 
 多路复用（`select`/`poll`/`epoll`）让单线程能"等待"多个 fd 中的任意一个就绪：
 
-#### 4.3.1 `select` 的实现
+#### 3.3.1 `select` 的实现
 
 ```c
 int select(int nfds, fd_set *readfds, fd_set *writefds,
@@ -405,7 +340,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds,
 - 每次调用需要重新传入 fd 集合（用户态 → 内核态拷贝）。
 - 返回后需要再次遍历找出就绪 fd。
 
-#### 4.3.2 `poll` 的改进
+#### 3.3.2 `poll` 的改进
 
 ```c
 int poll(struct pollfd *fds, nfds_t nfds, int timeout);
@@ -413,7 +348,7 @@ int poll(struct pollfd *fds, nfds_t nfds, int timeout);
 
 `poll` 移除了 `FD_SETSIZE` 限制，但其他问题依旧：$O(n)$ 扫描、无状态。
 
-#### 4.3.3 `epoll` 的设计
+#### 3.3.3 `epoll` 的设计
 
 `epoll` 通过三个系统调用解决 `select`/`poll` 的问题：
 
@@ -431,7 +366,7 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 
 Java NIO 的 `Selector` 在 Linux 下使用 ET 模式的 `epoll`（JDK 实现细节）。
 
-### 4.4 Java NIO Selector 的字节码层实现
+### 3.4 Java NIO Selector 的字节码层实现
 
 `Selector.open()` 内部调用链：
 
@@ -465,7 +400,7 @@ flowchart TD
     T3 --> T4
 ```
 
-### 4.5 异步 I/O (AIO) 与 `io_uring`
+### 3.5 异步 I/O (AIO) 与 `io_uring`
 
 JDK 7 引入的 AIO 在 Linux 下并非真异步——其底层用 `epoll` 模拟，调用线程仍会被阻塞（只是包装为线程池异步执行回调）。Windows 下使用 IOCP，是真异步。
 
@@ -487,7 +422,7 @@ flowchart LR
 
 JDK 21+ 计划通过 Project Loom + FFM API 集成 `io_uring`，但目前（2024 年）尚未在主线 JDK 中启用。
 
-### 4.6 Buffer 在 JVM 中的内存布局
+### 3.6 Buffer 在 JVM 中的内存布局
 
 `ByteBuffer` 有两种实现：
 
@@ -511,9 +446,9 @@ public abstract class ByteBuffer {
 
 ---
 
-## 5. 代码示例（可运行 Java 代码）
+## 4. 代码示例（可运行 Java 代码）
 
-### 5.1 环境准备
+### 4.1 环境准备
 
 ```bash
 mkdir -p ~/java-io-demo
@@ -521,7 +456,7 @@ cd ~/java-io-demo
 java -version  # 验证 JDK 17+
 ```
 
-### 5.2 示例 1：BIO 文件读写
+### 4.2 示例 1：BIO 文件读写
 
 ```java
 // file: BioFileDemo.java
@@ -565,7 +500,7 @@ public class BioFileDemo {
 }
 ```
 
-### 5.3 示例 2：BIO Echo 服务器（线程-per-连接）
+### 4.3 示例 2：BIO Echo 服务器（线程-per-连接）
 
 ```java
 // file: BioEchoServer.java
@@ -615,7 +550,7 @@ telnet localhost 8080
 # 输入 hello, bye
 ```
 
-### 5.4 示例 3：NIO Buffer 基础操作
+### 4.4 示例 3：NIO Buffer 基础操作
 
 ```java
 // file: NioBufferDemo.java
@@ -655,7 +590,7 @@ public class NioBufferDemo {
 }
 ```
 
-### 5.5 示例 4：NIO 文件读写与零拷贝
+### 4.5 示例 4：NIO 文件读写与零拷贝
 
 ```java
 // file: NioFileDemo.java
@@ -703,7 +638,7 @@ public class NioFileDemo {
 }
 ```
 
-### 5.6 示例 5：NIO Selector Echo 服务器
+### 4.6 示例 5：NIO Selector Echo 服务器
 
 ```java
 // file: NioEchoServer.java
@@ -771,7 +706,7 @@ public class NioEchoServer {
 }
 ```
 
-### 5.7 示例 6：字符编码与乱码分析
+### 4.7 示例 6：字符编码与乱码分析
 
 ```java
 // file: EncodingDemo.java
@@ -819,7 +754,7 @@ public class EncodingDemo {
 }
 ```
 
-### 5.8 示例 7：直接缓冲区 vs 堆缓冲区性能对比
+### 4.8 示例 7：直接缓冲区 vs 堆缓冲区性能对比
 
 ```java
 // file: BufferBenchmark.java
@@ -853,7 +788,7 @@ public class BufferBenchmark {
 }
 ```
 
-### 5.9 示例 8：AIO 异步文件读写
+### 4.9 示例 8：AIO 异步文件读写
 
 ```java
 // file: AioFileDemo.java
@@ -894,7 +829,7 @@ public class AioFileDemo {
 }
 ```
 
-### 5.10 示例 9：AIO 异步服务器
+### 4.10 示例 9：AIO 异步服务器
 
 ```java
 // file: AioEchoServer.java
@@ -957,7 +892,7 @@ public class AioEchoServer {
 }
 ```
 
-### 5.11 示例 10：使用 `strace` 跟踪 NIO 系统调用
+### 4.11 示例 10：使用 `strace` 跟踪 NIO 系统调用
 
 ```bash
 # 编译运行 NioEchoServer
@@ -979,7 +914,7 @@ read(7, ..., 1024) = 12
 write(7, ..., 18) = 18
 ```
 
-### 5.12 示例 11：基于虚拟线程的 BIO Echo Server（JDK 21+）
+### 4.12 示例 11：基于虚拟线程的 BIO Echo Server（JDK 21+）
 
 ```java
 // file: VirtualThreadEchoServer.java
@@ -1018,9 +953,9 @@ public class VirtualThreadEchoServer {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 总体对比表
+### 5.1 总体对比表
 
 | 特性 | Java BIO | Java NIO | Java AIO | C libuv | Go net | Rust tokio |
 |------|---------|---------|---------|---------|--------|-----------|
@@ -1032,7 +967,7 @@ public class VirtualThreadEchoServer {
 | 平台一致性 | 一致 | 一致 | 不一致（Linux 模拟） | 一致 | 一致 | 一致 |
 | 零拷贝 | 不支持 | transferTo/mmap | 支持 | 支持 | 支持 | 支持 |
 
-### 6.2 Java NIO vs Go net
+### 5.2 Java NIO vs Go net
 
 Go 的 `net` 包采用"同步语义 + 异步实现"的设计：API 看起来是阻塞的（`conn.Read(buf)` 会阻塞当前 goroutine），但 Go runtime 在底层将 fd 设为非阻塞，并使用 netpoller（Linux 下是 epoll）监控 fd 就绪。当 fd 未就绪时，runtime 将当前 goroutine 挂起，让出 P 给其他 goroutine 运行。
 
@@ -1056,7 +991,7 @@ for {
 - Go 的 goroutine 切换开销（~100ns）远小于 Java 平台线程（~1µs），但与虚拟线程（~100ns）相当。
 - Go 的 netpoller 是 runtime 内置的，Java 需要借助 Netty 等框架。
 
-### 6.3 Java NIO vs Rust tokio + mio
+### 5.3 Java NIO vs Rust tokio + mio
 
 Rust 的 tokio 是基于 mio（Linux epoll / BSD kqueue）的异步运行时：
 
@@ -1084,7 +1019,7 @@ async fn echo_server() -> io::Result<()> {
 - Rust 的 `async/await` 语法比 Java 的回调式 AIO 更易读。
 - Java 的 `CompletableFuture` + 虚拟线程（JDK 21）在异步编程体验上已接近 Rust。
 
-### 6.4 Java NIO vs libuv (Node.js)
+### 5.4 Java NIO vs libuv (Node.js)
 
 libuv 是 Node.js 的底层 I/O 引擎，跨平台事件循环：
 
@@ -1104,7 +1039,7 @@ server.listen(8080);
 - Java NIO 可以配合线程池处理 CPU 密集型任务，灵活性更高。
 - 性能：Java NIO + Netty 在大多数基准测试中略优于 Node.js（V8 与 JVM JIT 优化差距小，但 JVM 的 GC pause 是劣势）。
 
-### 6.5 Java NIO vs Java AIO
+### 5.5 Java NIO vs Java AIO
 
 | 维度 | NIO | AIO |
 |------|-----|-----|
@@ -1120,9 +1055,9 @@ Netty 在 Netty 4 移除了 AIO 支持，原因是 Linux 下 AIO 与 NIO 性能�
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式 1：忽略字节流与字符流的区别
+### 6.1 反模式 1：忽略字节流与字符流的区别
 
 ```java
 // 反模式：用字节流读取中文文本，可能乱码
@@ -1140,7 +1075,7 @@ try (InputStreamReader isr = new InputStreamReader(
 }
 ```
 
-### 7.2 反模式 2：BIO 服务器无连接数限制
+### 6.2 反模式 2：BIO 服务器无连接数限制
 
 ```java
 // 反模式：每个连接创建一个线程，1 万连接耗尽内存
@@ -1157,7 +1092,7 @@ while (true) {
 }
 ```
 
-### 7.3 反模式 3：NIO 中忘记 `flip()` 或 `clear()`
+### 6.3 反模式 3：NIO 中忘记 `flip()` 或 `clear()`
 
 ```java
 // 反模式：Buffer 状态错误
@@ -1173,7 +1108,7 @@ channel.write(buf);
 buf.clear(); // 重置为写模式
 ```
 
-### 7.4 反模式 4：Selector 空轮询 bug
+### 6.4 反模式 4：Selector 空轮询 bug
 
 JDK 7 前，Linux 下 NIO Selector 存在 epoll bug：`epoll_wait` 错误返回 0 但不阻塞，导致 CPU 100%。Netty 通过"重建 Selector"绕过此 bug。
 
@@ -1187,7 +1122,7 @@ if (selectedKeys != 0 && oldWakenUp) {
 }
 ```
 
-### 7.5 反模式 5：忘记关闭 Channel
+### 6.5 反模式 5：忘记关闭 Channel
 
 ```java
 // 反模式：Channel 不关闭，导致 fd 泄漏
@@ -1202,7 +1137,7 @@ try (SocketChannel client = SocketChannel.open(
 }
 ```
 
-### 7.6 反模式 6：DirectByteBuffer 滥用
+### 6.6 反模式 6：DirectByteBuffer 滥用
 
 ```java
 // 反模式：小块数据用 DirectByteBuffer，分配开销大
@@ -1213,7 +1148,7 @@ ByteBuffer small = ByteBuffer.allocate(64);
 ByteBuffer large = ByteBuffer.allocateDirect(64 * 1024);
 ```
 
-### 7.7 反模式 7：误用 `read()` 返回值
+### 6.7 反模式 7：误用 `read()` 返回值
 
 ```java
 // 反模式：假设 read 一定读满
@@ -1225,7 +1160,7 @@ String s = new String(buf); // 用了 1024 字节，实际可能只读了 100
 String s = new String(buf, 0, n);
 ```
 
-### 7.8 反模式 8：BufferedReader 读二进制
+### 6.8 反模式 8：BufferedReader 读二进制
 
 ```java
 // 反模式：BufferedReader 处理二进制文件，会破坏字节
@@ -1243,7 +1178,7 @@ try (InputStream is = new FileInputStream("image.jpg")) {
 }
 ```
 
-### 7.9 反模式 9：在 ET 模式下未读完数据
+### 6.9 反模式 9：在 ET 模式下未读完数据
 
 NIO Selector 默认是 ET 模式，fd 就绪通知一次后必须一次读完所有数据，否则会"丢失"事件。
 
@@ -1265,7 +1200,7 @@ if (key.isReadable()) {
 }
 ```
 
-### 7.10 反模式 10：忽视字符集 BOM
+### 6.10 反模式 10：忽视字符集 BOM
 
 UTF-8 文件可能带 BOM（Byte Order Mark，`\uFEFF`），直接用 `BufferedReader` 读取会保留 BOM 字符。
 
@@ -1280,9 +1215,9 @@ System.out.println(s.startsWith("\uFEFF")); // true
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 缓冲区大小选择
+### 7.1 缓冲区大小选择
 
 | 场景 | 推荐 Buffer 大小 | 理由 |
 |------|----------------|------|
@@ -1291,7 +1226,7 @@ System.out.println(s.startsWith("\uFEFF")); // true
 | 大文件传输 | 1MB+ 或 Direct | 减少 syscall 次数 |
 | HTTP 响应 | 8KB | 接近 TCP MSS 的整数倍 |
 
-### 8.2 文件 I/O 最佳实践
+### 7.2 文件 I/O 最佳实践
 
 ```java
 // 1. 小文件读取：Files.readString 简洁
@@ -1314,7 +1249,7 @@ try (var in = FileChannel.open(src, READ);
 }
 ```
 
-### 8.3 网络编程最佳实践
+### 7.3 网络编程最佳实践
 
 1. **服务端**：优先使用 Netty / Vert.x 等成熟框架，避免手写 Selector。
 2. **客户端**：HTTP 用 `java.net.http.HttpClient`（JDK 11+）或 OkHttp。
@@ -1322,7 +1257,7 @@ try (var in = FileChannel.open(src, READ);
 4. **背压**：异步框架需处理背压，避免 OOM。
 5. **TLS**：使用 `SSLEngine` 或框架封装，注意协议版本（TLS 1.3 优先）。
 
-### 8.4 Reactor 模式实现
+### 7.4 Reactor 模式实现
 
 ```java
 public class SimpleReactor implements Runnable {
@@ -1359,7 +1294,7 @@ public class SimpleReactor implements Runnable {
 }
 ```
 
-### 8.5 主从 Reactor 模式（Netty 模型）
+### 7.5 主从 Reactor 模式（Netty 模型）
 
 ```java
 public class MainSubReactor {
@@ -1390,7 +1325,7 @@ public class MainSubReactor {
 }
 ```
 
-### 8.6 性能监控与诊断
+### 7.6 性能监控与诊断
 
 ```bash
 # 查看 fd 使用情况
@@ -1413,9 +1348,9 @@ jstack <pid> | grep -A 20 "epollWait"
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究 1：Netty 的 NIO 实现
+### 8.1 案例研究 1：Netty 的 NIO 实现
 
 Netty 是 Java NIO 的工业级封装。其核心架构：
 
@@ -1451,7 +1386,7 @@ Netty 的优化策略：
 3. **ioRatio**：控制 I/O 与任务执行时间比例（默认 50:50）。
 4. **ByteBuf 池化**：`PooledByteBufAllocator` 复用 DirectByteBuffer。
 
-### 9.2 案例研究 2：Kafka 的零拷贝传输
+### 8.2 案例研究 2：Kafka 的零拷贝传输
 
 Kafka 用 `FileChannel.transferTo` 实现零拷贝：
 
@@ -1467,7 +1402,7 @@ public class FileRecords {
 
 Kafka 还使用 `sendfile` 直接将日志段从磁盘发送到网卡，无需进入用户空间。这是 Kafka 高吞吐的核心原因之一。
 
-### 9.3 案例研究 3：Tomcat 的 NioEndpoint
+### 8.3 案例研究 3：Tomcat 的 NioEndpoint
 
 Tomcat 的 NIO Connector 使用主从 Reactor：
 
@@ -1506,7 +1441,7 @@ public class NioEndpoint {
 }
 ```
 
-### 9.4 案例研究 4：Redis 客户端 Lettuce 的 NIO
+### 8.4 案例研究 4：Redis 客户端 Lettuce 的 NIO
 
 Lettuce 是基于 Netty 的 Redis 客户端：
 
@@ -1531,7 +1466,7 @@ public class LettuceClient {
 }
 ```
 
-### 9.5 案例研究 5：Elasticsearch 的 Lucene 段文件
+### 8.5 案例研究 5：Elasticsearch 的 Lucene 段文件
 
 Lucene 使用 NIO 读写倒排索引段文件：
 
@@ -1548,7 +1483,7 @@ public class MMapDirectory extends FSDirectory {
 
 `mmap` 让 Lucene 能像访问内存一样访问索引文件，避免 `read` syscall 开销。
 
-### 9.6 案例研究 6：Cassandra 的零拷贝 SSTable 传输
+### 8.6 案例研究 6：Cassandra 的零拷贝 SSTable 传输
 
 Cassandra 使用 `FileChannel.transferTo` 在节点间传输 SSTable：
 
@@ -1564,7 +1499,7 @@ public class StreamSession {
 }
 ```
 
-### 9.7 案例研究 7：Hadoop HDFS 的数据节点
+### 8.7 案例研究 7：Hadoop HDFS 的数据节点
 
 HDFS DataNode 用 NIO 与客户端传输块数据：
 
@@ -1582,7 +1517,7 @@ public class DataXceiver {
 }
 ```
 
-### 9.8 案例研究 8：Nginx 与 OpenResty 的零拷贝
+### 8.8 案例研究 8：Nginx 与 OpenResty 的零拷贝
 
 虽然 Nginx 是 C 实现，但其零拷贝思路与 Java NIO 一致：
 
@@ -1593,7 +1528,7 @@ ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count);
 
 OpenResty 通过 Lua 调用 Nginx 的零拷贝 API，常用于静态文件加速。
 
-### 9.9 案例研究 9：Spring WebFlux 的 Netty 集成
+### 8.9 案例研究 9：Spring WebFlux 的 Netty 集成
 
 Spring WebFlux 默认使用 Netty 作为 HTTP 服务器：
 
@@ -1615,7 +1550,7 @@ public NettyReactiveWebServerFactory serverFactory() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：解释 `Buffer.flip()` 与 `Buffer.rewind()` 的区别。
 
@@ -1687,7 +1622,7 @@ public static List<Integer> scan(String host) throws IOException {
 }
 ```
 
-### 10.3 分析题
+### 9.3 分析题
 
 **习题 5**：分析以下代码为何会丢失数据，并修复。
 
@@ -1714,7 +1649,7 @@ socketChannel.write(buf);
 3. NIO 生态成熟，框架支持完善。
 4. Windows AIO 用 IOCP，但 Java 服务器主流是 Linux。
 
-### 10.4 评价题
+### 9.4 评价题
 
 **习题 7**：评价"JDK 21 虚拟线程发布后，NIO Selector 模式将被淘汰"这一观点。
 
@@ -1727,7 +1662,7 @@ socketChannel.write(buf);
   - 已有 NIO 框架生态（Netty）成熟稳定。
 - 实际趋势：BIO + 虚拟线程适合大多数业务场景；NIO 适合高性能中间件。
 
-### 10.5 创造题
+### 9.5 创造题
 
 **习题 8**：设计一个基于 NIO 的简易 HTTP 服务器，支持 GET 请求返回静态文件。
 
@@ -1739,7 +1674,7 @@ socketChannel.write(buf);
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 采用 ACM Reference Format：
 
@@ -1775,16 +1710,16 @@ socketChannel.write(buf);
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **Java NIO Tutorial**（Oracle）：https://docs.oracle.com/javase/tutorial/essential/io/
 - **JEP 51: New I/O APIs**：https://openjdk.org/jeps/51
 - **JEP 203: NIO.2 File Tree API**：https://openjdk.org/jeps/203
 - **Linux man pages**：`man 2 epoll`, `man 2 select`, `man 2 sendfile`, `man 2 mmap`
 
-### 12.2 进阶书籍
+### 11.2 进阶书籍
 
 - *UNIX Network Programming*（W. Richard Stevens）：socket 编程圣经。
 - *Java NIO*（Ron Hitchens, 2002）：基于 JDK 1.4，概念清晰。
@@ -1792,7 +1727,7 @@ socketChannel.write(buf);
 - *Understanding the Linux Kernel*（Bovet & Cesati）：内核 I/O 子系统深度解析。
 - *The Linux Programming Interface*（Michael Kerrisk）：系统调用百科全书。
 
-### 12.3 开源项目源码
+### 11.3 开源项目源码
 
 - **Netty**：`io.netty.channel.nio.NioEventLoop`、`io.netty.channel.socket.nio.NioSocketChannel`
 - **Tomcat**：`org.apache.coyote.http11.Http11NioProtocol`、`org.apache.tomcat.util.net.NioEndpoint`
@@ -1801,13 +1736,13 @@ socketChannel.write(buf);
 - **Hadoop**：`org.apache.hadoop.hdfs.server.datanode.DataXceiver`
 - **Lettuce**（Redis 客户端）：`io.lettuce.core.RedisChannelHandler`
 
-### 12.4 学术论文
+### 11.4 学术论文
 
 - Schmidt, D. C. 1995. *Reactor: An Object Behavioral Pattern for Concurrent Event Demultiplexing and Dispatching*. Washington University.
 - Banga, G., Druschel, P., and Mogul, J. C. 1998. Better operating system features for faster network servers. *ACM SIGMETRICS Performance Evaluation Review* 26, 3, 23–30.
 - Behren, R. von, Condit, J., and Brewer, E. 2003. Why events are a bad idea (for high-concurrency servers). In *Proceedings of the 9th Workshop on Hot Topics in Operating Systems (HotOS IX)*.
 
-### 12.5 演进趋势
+### 11.5 演进趋势
 
 1. **io_uring 集成**：JDK 未来版本可能通过 FFM API 集成 `io_uring`，提供真异步 I/O。
 2. **虚拟线程**：JDK 21 虚拟线程让 BIO 模式重新可用，简化高并发编程。

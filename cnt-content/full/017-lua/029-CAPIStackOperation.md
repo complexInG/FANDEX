@@ -16,51 +16,10 @@ prerequisites:
   - lua/概述与环境配置
 ---
 
+
 # C-API 栈操作：Lua 与 C 的交互核心
 
 > 本文档对标 MIT 6.028（Interpretive Computer Systems）、Stanford CS107（Programming Paradigms）、CMU 15-213（Computer Systems: A Programmer's Perspective）教学水准，系统剖析 Lua 虚拟栈的设计、形式化语义、API 全集与工程实践。
-
-## 0. 学习目标（Bloom 分类法）
-
-完成本章节学习后，学习者应能够：
-
-### 0.1 Remember（记忆）
-
-- **R1** 列举 Lua 虚拟栈的核心 API：`lua_push*`、`lua_to*`、`lua_is*`、`lua_gettop`、`lua_settop`、`lua_pop`、`lua_insert`、`lua_replace`、`lua_remove`。
-- **R2** 复述栈索引规则：正索引从底（1）到顶（top），负索引从顶（-1）到底（-top）。
-- **R3** 陈述 `lua_State` 的结构组成（栈、全局表、注册表、GC 状态）。
-
-### 0.2 Understand（理解）
-
-- **U1** 解释虚拟栈的设计动机：消除 C 与 Lua 之间的直接内存共享，避免类型不安全。
-- **U2** 阐述 `lua_pcall` 与 `lua_call` 的差异：错误处理机制与保护模式。
-- **U3** 解释 `lua_gettable` / `lua_settable` 与 `lua_rawget` / `lua_rawset` 的语义差异：是否触发 `__index` / `__newindex`。
-
-### 0.3 Apply（应用）
-
-- **A1** 编写一个 C 函数，从 Lua 端接收参数、计算结果并返回。
-- **A2** 实现 `lua_call` 与 `lua_pcall` 的两种调用方式，并处理错误。
-- **A3** 在 C 端操作 Lua table（创建、遍历、修改）。
-
-### 0.4 Analyze（分析）
-
-- **An1** 分析栈溢出的成因与防护机制（`LUAI_MAXSTACK` 配置）。
-- **An2** 对比 `lua_tostring` 与 `lua_tolstring` 的内存所有权语义。
-- **An3** 剖析 Lua 5.4 中整数子类型对 `lua_tointeger` / `lua_tonumber` 的影响。
-
-### 0.5 Evaluate（评价）
-
-- **E1** 评估在何种场景下应使用 `lua_pushvalue` 而非 `lua_pushnil` + `lua_settable`。
-- **E2** 评价 `luaL_check*` 与 `lua_is*` + `lua_to*` 两种类型检查方式的取舍。
-- **E3** 判断在性能敏感场景中 `lua_rawget` 与 `lua_gettable` 的性能差异。
-
-### 0.6 Create（创造）
-
-- **C1** 设计一个 C 端的 Lua 栈调试器，支持断点、变量查看、栈追踪。
-- **C2** 实现一个通用的 C-Lua 类型转换层，支持任意 C 类型与 Lua 值互转。
-- **C3** 构建一个基于虚拟栈的 Lua VM 指令分析器。
-
----
 
 ## 1. 历史动机与发展脉络
 
@@ -158,9 +117,9 @@ PUC-Rio 团队阐明虚拟栈设计的三大动机：
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 Lua Reference Manual 权威定义
+### 1.1 Lua Reference Manual 权威定义
 
 > **The Stack** — Lua 使用一个虚拟栈与 C 代码传递值。栈中每个元素是一个 Lua 值（nil、boolean、number、string、table、function、userdata 或 thread）。
 >
@@ -174,7 +133,7 @@ $$
 
 其中 $\text{top} = n$，栈底为 $v_1$，栈顶为 $v_n$。
 
-### 2.2 栈索引规则
+### 1.2 栈索引规则
 
 栈索引分为**正索引**（positive index）与**负索引**（negative index）：
 
@@ -197,7 +156,7 @@ n + k + 1 & \text{if } k < 0 \\
 \end{cases}
 $$
 
-### 2.3 `lua_State` 结构
+### 1.3 `lua_State` 结构
 
 ```c
 /* lstate.h (简化) */
@@ -233,7 +192,7 @@ typedef struct lua_State {
 - **调用信息链表（CallInfo）**：记录函数调用栈帧。
 - **全局状态（global_State）**：GC、字符串表、注册表等。
 
-### 2.4 栈操作的代数语义
+### 1.4 栈操作的代数语义
 
 设 $S$ 为栈状态，操作 $\text{op}$ 将 $S$ 转换为 $S'$：
 
@@ -261,7 +220,7 @@ $$
 \text{replace}(S, k) = S[\text{absidx}(k) := S[\text{top}]], \quad \text{top}' = \text{top} - 1
 $$
 
-### 2.5 错误处理的形式化
+### 1.5 错误处理的形式化
 
 `lua_pcall` 的语义：
 
@@ -281,9 +240,9 @@ $$
 
 ---
 
-## 3. 理论推导与原理解析
+## 2. 理论推导与原理解析
 
-### 3.1 虚拟栈的内存布局
+### 2.1 虚拟栈的内存布局
 
 每个 `lua_State` 拥有一个独立的 TValue 数组作为栈：
 
@@ -311,7 +270,7 @@ typedef struct TValue {
  */
 ```
 
-### 3.2 栈容量与栈溢出
+### 2.2 栈容量与栈溢出
 
 Lua 默认栈容量：
 
@@ -327,7 +286,7 @@ $$
 \text{new\_size} = \min(\text{old\_size} \cdot 2, \text{LUAI\_MAXSTACK})
 $$
 
-### 3.3 调用栈帧（CallInfo）
+### 2.3 调用栈帧（CallInfo）
 
 每次函数调用创建一个 `CallInfo` 节点：
 
@@ -342,7 +301,7 @@ typedef struct CallInfo {
 
 CallInfo 链表形成调用栈，记录每个函数的栈帧范围。
 
-### 3.4 类型检查算法
+### 2.4 类型检查算法
 
 `lua_type(L, idx)` 返回类型标签：
 
@@ -363,7 +322,7 @@ function isstring(L, idx):
     # number 可被隐式转换为 string
 ```
 
-### 3.5 `lua_to*` 与 `luaL_check*` 的语义差异
+### 2.5 `lua_to*` 与 `luaL_check*` 的语义差异
 
 `lua_to*` 系列函数**不抛出错误**，仅返回转换结果（失败时返回 0 或 NULL）：
 
@@ -386,7 +345,7 @@ f(\text{idx}) & \text{if } \text{type}(\text{idx}) \text{ matches} \\
 \end{cases}
 $$
 
-### 3.6 table 操作的语义
+### 2.6 table 操作的语义
 
 `lua_gettable(L, idx)` 的语义：
 
@@ -403,7 +362,7 @@ $$
 \text{rawget}(t, k) = t[k] \quad \text{(不触发 } \_\_\text{index})
 $$
 
-### 3.7 `lua_call` 与 `lua_pcall` 的实现
+### 2.7 `lua_call` 与 `lua_pcall` 的实现
 
 ```c
 /* lua_call 内部 */
@@ -430,9 +389,9 @@ int lua_pcall(lua_State *L, int nargs, int nresults, int errfunc) {
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 基础示例：栈操作演示
+### 3.1 基础示例：栈操作演示
 
 ```c
 #include <stdio.h>
@@ -506,7 +465,7 @@ cl /I"C:\Atian\Lua\include" stack_demo.c ^
 .\stack_demo.exe
 ```
 
-### 4.2 完整示例：C 函数注册到 Lua
+### 3.2 完整示例：C 函数注册到 Lua
 
 ```c
 #define LUA_LIB
@@ -639,7 +598,7 @@ end
 mylib.call_fn(bad_fn)  -- 在 stderr 输出错误
 ```
 
-### 4.3 table 操作示例
+### 3.3 table 操作示例
 
 ```c
 #include <stdio.h>
@@ -730,7 +689,7 @@ static int l_set_meta(lua_State *L) {
 }
 ```
 
-### 4.4 错误处理示例
+### 3.4 错误处理示例
 
 ```c
 #include <stdio.h>
@@ -803,7 +762,7 @@ static int l_with_handler(lua_State *L) {
 }
 ```
 
-### 4.5 `luaL_check*` 与 `lua_to*` 对比
+### 3.5 `luaL_check*` 与 `lua_to*` 对比
 
 ```c
 static int l_compare_apis(lua_State *L) {
@@ -828,9 +787,9 @@ static int l_compare_apis(lua_State *L) {
 
 ---
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 Lua C-API 与其他语言嵌入 API 对比
+### 4.1 Lua C-API 与其他语言嵌入 API 对比
 
 | 语言 | 嵌入机制 | 栈模型 | 错误处理 | 典型复杂度 |
 |------|----------|--------|----------|------------|
@@ -841,7 +800,7 @@ static int l_compare_apis(lua_State *L) {
 | **Scheme** | SRFI-18 stack | 部分 | continuation | 低 |
 | **Tcl** | `Tcl_Obj` + refcount | 部分 | `Tcl_EvalEx` | 中等 |
 
-### 5.2 栈模型 vs 引用模型
+### 4.2 栈模型 vs 引用模型
 
 **Lua 栈模型优势**：
 
@@ -855,14 +814,14 @@ static int l_compare_apis(lua_State *L) {
 - 灵活：可在任意位置持有引用。
 - 性能：避免栈操作开销。
 
-### 5.3 `lua_tostring` vs `lua_tolstring`
+### 4.3 `lua_tostring` vs `lua_tolstring`
 
 | API | 返回值 | 长度获取 | 适用场景 |
 |-----|--------|----------|----------|
 | `lua_tostring(L, idx)` | `const char*` | 否（需 strlen） | 简单字符串访问 |
 | `lua_tolstring(L, idx, &len)` | `const char*` | 是 | 二进制数据、含 '\0' 的字符串 |
 
-### 5.4 `lua_call` vs `lua_pcall` vs `lua_callk`
+### 4.4 `lua_call` vs `lua_pcall` vs `lua_callk`
 
 | API | 错误处理 | 协程支持 | 复杂度 |
 |-----|----------|----------|--------|
@@ -871,7 +830,7 @@ static int l_compare_apis(lua_State *L) {
 | `lua_pcallk` | 有 | 是（continuation） | 高 |
 | `lua_callk` | 无 | 是 | 高 |
 
-### 5.5 与 JavaScript V8 对比
+### 4.5 与 JavaScript V8 对比
 
 ```javascript
 // V8 嵌入示例
@@ -904,9 +863,9 @@ static int method(lua_State *L) {
 
 ---
 
-## 6. 常见陷阱与最佳实践
+## 5. 常见陷阱与最佳实践
 
-### 6.1 陷阱：忘记平衡栈
+### 5.1 陷阱：忘记平衡栈
 
 ```c
 /* 错误：栈未平衡 */
@@ -930,7 +889,7 @@ static int good_func(lua_State *L) {
 }
 ```
 
-### 6.2 陷阱：使用过期字符串指针
+### 5.2 陷阱：使用过期字符串指针
 
 ```c
 /* 错误：lua_tostring 返回的指针在栈变化后失效 */
@@ -952,7 +911,7 @@ printf("%s\n", buf);
 free(buf);
 ```
 
-### 6.3 陷阱：在 `lua_pcall` 错误后忘记清理
+### 5.3 陷阱：在 `lua_pcall` 错误后忘记清理
 
 ```c
 /* 错误：pcall 失败后栈状态不一致 */
@@ -975,7 +934,7 @@ if (status != LUA_OK) {
 }
 ```
 
-### 6.4 陷阱：误用 `lua_tostring` 改变栈值
+### 5.4 陷阱：误用 `lua_tostring` 改变栈值
 
 ```c
 /* 错误：lua_tostring 会修改 number 类型的栈值 */
@@ -996,7 +955,7 @@ lua_pop(L, 1);  /* 弹出副本 */
 lua_isinteger(L, -1);  /* true，原值未变 */
 ```
 
-### 6.5 陷阱：在 C 函数中使用 `lua_error`
+### 5.5 陷阱：在 C 函数中使用 `lua_error`
 
 ```c
 /* 错误：直接调用 lua_error 而未通过 luaL_error */
@@ -1018,7 +977,7 @@ static int good_check(lua_State *L) {
 }
 ```
 
-### 6.6 陷阱：`lua_next` 修改栈
+### 5.6 陷阱：`lua_next` 修改栈
 
 ```c
 /* 错误：lua_next 中间操作栈导致迭代错误 */
@@ -1043,7 +1002,7 @@ while (lua_next(L, 1) != 0) {
 }
 ```
 
-### 6.7 陷阱：栈索引在压栈后失效
+### 5.7 陷阱：栈索引在压栈后失效
 
 ```c
 /* 错误：正索引在压栈后指向错误位置 */
@@ -1061,7 +1020,7 @@ lua_pushstring(L, "value");
 lua_gettable(L, key_idx);
 ```
 
-### 6.8 最佳实践清单
+### 5.8 最佳实践清单
 
 1. **栈平衡原则**：每个 C 函数返回前，栈状态应与函数预期一致。
 2. **使用 `luaL_check*` 替代手动检查**：减少代码量，错误信息更友好。
@@ -1074,9 +1033,9 @@ lua_gettable(L, key_idx);
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 嵌入 Lua 解释器
+### 6.1 嵌入 Lua 解释器
 
 完整示例：
 
@@ -1132,7 +1091,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 7.2 错误处理框架
+### 6.2 错误处理框架
 
 ```c
 /* 错误处理封装 */
@@ -1168,7 +1127,7 @@ static int lua_handler(lua_State *L) {
 }
 ```
 
-### 7.3 性能优化
+### 6.3 性能优化
 
 **优化 1：批量压栈减少栈操作**
 
@@ -1216,7 +1175,7 @@ lua_pushstring(L, "hello");
 lua_pushlstring(L, "hello", 5);
 ```
 
-### 7.4 调试技巧
+### 6.4 调试技巧
 
 **技巧 1：栈转储函数**
 
@@ -1274,7 +1233,7 @@ static void debug_hook(lua_State *L, lua_Debug *ar) {
 lua_sethook(L, debug_hook, LUA_MASKLINE, 0);
 ```
 
-### 7.5 测试策略
+### 6.5 测试策略
 
 ```c
 #include <assert.h>
@@ -1317,9 +1276,9 @@ int main(void) {
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 Redis 中的 Lua 调用
+### 7.1 Redis 中的 Lua 调用
 
 Redis 通过 `lua_pcall` 执行用户脚本，关键代码（`scripting.c`）：
 
@@ -1343,7 +1302,7 @@ Redis 还限制 Lua 脚本的执行时间（默认 5 秒），通过 `lua_sethoo
 lua_sethook(lua, luaMaskCountHook, LUA_MASKCOUNT, 1000000);
 ```
 
-### 8.2 Neovim 的 Lua 集成
+### 7.2 Neovim 的 Lua 集成
 
 Neovim 在 C 端通过栈操作暴露 API：
 
@@ -1358,7 +1317,7 @@ int nvim_get_current_buf(lua_State *L) {
 
 `push_buffer` 将 C 端 buffer 对象通过 userdata 压栈。
 
-### 8.3 World of Warcraft UI
+### 7.3 World of Warcraft UI
 
 WoW 在 C 端注册大量 C 函数到 Lua：
 
@@ -1378,7 +1337,7 @@ int luaopen_frame(lua_State *L) {
 }
 ```
 
-### 8.4 LuaJIT 的栈优化
+### 7.4 LuaJIT 的栈优化
 
 LuaJIT 对栈操作进行 JIT 编译优化：
 
@@ -1398,7 +1357,7 @@ lua_add(L);  /* 内联为浮点加法指令 */
 /* addsd xmm0, xmm1 */
 ```
 
-### 8.5 Love2D 的栈使用
+### 7.5 Love2D 的栈使用
 
 Love2D 大量使用栈操作传递图形数据：
 
@@ -1421,7 +1380,7 @@ static int l_graphics_rectangle(lua_State *L) {
 }
 ```
 
-### 8.6 案例对比表
+### 7.6 案例对比表
 
 | 项目 | Lua 版本 | 栈操作特点 | 性能优化 |
 |------|----------|------------|----------|
@@ -1722,7 +1681,7 @@ int luaopen_mergelib(lua_State *L) {
 
 ---
 
-### 9.4 思考题
+### 8.4 思考题
 
 **常见疑问 14**：. 为什么 Lua 使用虚拟栈而非直接内存引用？
 
@@ -1793,9 +1752,9 @@ lua_Integer y = luaL_optinteger(L, 2, 10);
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
-### 10.1 核心文献
+### 9.1 核心文献
 
 - [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, *Lua 5.4 Reference Manual*, PUC-Rio, 2020. [Online]. Available: https://www.lua.org/manual/5.4/
 
@@ -1807,13 +1766,13 @@ lua_Integer y = luaL_optinteger(L, 2, 10);
 
 - [5] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, "Lua: an extensible extension language," *Journal of the Brazilian Computer Society*, vol. 2, no. 1, pp. 27–42, 1996. doi: 10.1590/S0104-65001996000100003.
 
-### 10.2 标准与规范
+### 9.2 标准与规范
 
 - [6] PUC-Rio, "Lua 5.4 Source Code," 2020. [Online]. Available: https://github.com/lua/lua
 
 - [7] M. Pall, "LuaJIT 2.0 Design and Implementation," 2011. [Online]. Available: http://luajit.org/
 
-### 10.3 应用案例文献
+### 9.3 应用案例文献
 
 - [8] S. Sanfilippo, "Redis and Lua: a love story," *Redis Labs Blog*, 2011. [Online]. Available: https://redis.io/docs/manual/programmability/lua/
 
@@ -1821,7 +1780,7 @@ lua_Integer y = luaL_optinteger(L, 2, 10);
 
 - [10] Blizzard Entertainment, *World of Warcraft API Reference*, 2004-2024. [Online]. Available: https://wowpedia.fandom.com/wiki/World_of_Warcraft_API
 
-### 10.4 学术引用（ACM Reference Format）
+### 9.4 学术引用（ACM Reference Format）
 
 R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 2005. The implementation of Lua 5.0. *Journal of Universal Computer Science* 11, 7, 1159–1176. DOI: https://doi.org/10.3217/jucs-011-07-1159
 
@@ -1829,21 +1788,21 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 2007. The evolution of Lua.
 
 ---
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 书籍
+### 10.1 书籍
 
 - Roberto Ierusalimschy, *Programming in Lua*, 4th Edition
 - Kurt Jung, *Lua Quick Reference*（Apress, 2018）
 - Roberto Ierusalimschy, *From Brazil to Wikipedia*
 
-### 11.2 论文与技术报告
+### 10.2 论文与技术报告
 
 - "The Implementation of Lua 5.0"（JUCS 2005）
 - "A No-Frills Introduction to Lua 5.1 VM Instructions"（Kein-Hong Man）
 - "LuaJIT 2.0: A Just-In-Time Compiler for Lua"（Mike Pall）
 
-### 11.3 在线资源
+### 10.3 在线资源
 
 - Lua 官方站点：https://www.lua.org/
 - Lua Users Wiki：http://lua-users.org/wiki/
@@ -1851,14 +1810,14 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 2007. The evolution of Lua.
 - Lua 文档：https://www.lua.org/manual/5.4/manual.html#4
 - Lua 教学教程：https://learnxinyminutes.com/docs/lua/
 
-### 11.4 开源项目参考
+### 10.4 开源项目参考
 
 - **lua-stdio**：标准库扩展，大量使用栈操作
 - **Lua-cURL**：cURL 绑定，复杂参数传递
 - **lua-socket**：网络库，使用 `lua_pcall` 处理回调
 - **lpeg**：解析表达式文法，深度使用栈
 
-### 11.5 与本文档相关章节
+### 10.5 与本文档相关章节
 
 - [用户数据](/lua/用户数据)：理解 userdata 在虚拟栈中的操作
 - [模块加载](/lua/模块加载)：`luaopen_*` 与栈的关系

@@ -27,24 +27,14 @@ prerequisites:
   - c/指针详解
 ---
 
+
 # C 语言理论知识点
 
 > 本章节面向已掌握 C 基本语法、指针与数据类型的读者，深入剖析 C 语言的编译流程、内存模型、ABI 规范、链接与加载机制、未定义行为、严格别名规则、序列点与内存对齐等核心理论。这些理论是理解 C 程序"为什么这样行为"的根基，对标 MIT 6.S081、Stanford CS107、CMU 15-213 的系统编程教学水准。所有代码示例均可直接编译运行，支持 0 基硕自学。
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-完成本章学习后，你应当能够（Bloom 分类法）：
-
-- **记忆（Remembering）**：列出 C 程序从源码到可执行文件的四个阶段（预处理、编译、汇编、链接）；复述目标文件（ELF/PE/Mach-O）的关键段（`.text`、`.data`、`.bss`、`.rodata`、`.symtab`、`.strtab`）；说明进程内存布局的五大区域（text/data/bss/heap/stack）及其生长方向；列出至少 8 种常见的未定义行为。
-- **理解（Understanding）**：解释 ABI（Application Binary Interface）的三大组成部分（调用约定、数据布局、名称修饰）；阐明 System V AMD64 ABI 与 Microsoft x64 ABI 的参数传递差异；说明严格别名规则的形式化定义及其例外情形；理解序列点（sequence point）与 C11 "顺序先于"（sequenced-before）关系的等价性；解释链接器如何通过符号解析与重定位完成多目标文件的合并。
-- **应用（Applying）**：使用 `gcc -E/-S/-c` 与 `objdump`/`readelf`/`nm` 工具链追踪编译各阶段的产物；通过 `alignas`/`#pragma pack` 控制结构体内存布局；使用 `memcpy` 或 `union` 实现安全的类型双关；编写符合 ABI 的跨语言接口（C/C++/Rust/汇编互调）；使用 UBSan/ASan/TSan 检测未定义行为。
-- **分析（Analyzing）**：通过反汇编代码追踪可变参数函数的栈布局；定位由严格别名违规、序列点违规、整数溢出导致的隐蔽 bug；分析编译器基于"UB 不会发生"假设的优化如何删除安全检查代码；对比静态链接与动态链接在启动速度、内存占用、更新便利性上的权衡。
-- **评价（Evaluating）**：在"UB 加速优化"与"UB 防御性编程"两种风格间做权衡，论证各自的安全性与性能代价；评价 C11 内存模型与 C++11/C++20 内存模型的兼容性与差异；评价 `FILE*` 缓冲 I/O 与直接 `read`/`write` 在不同场景下的适用性。
-- **创造（Creating）**：设计一个跨平台（Linux/macOS/Windows/ARM/x86）的 ABI 抽象层；实现一个简单的链接器或符号解析器；设计一个能在编译期检测严格别名违规的静态分析工具；编写一个支持多种调用约定的函数调用框架。
-
-## 2. 历史动机与演化
-
-### 2.1 C 语言的诞生与早期编译器（1969-1978）
+### 1.1 C 语言的诞生与早期编译器（1969-1978）
 
 C 语言诞生于 1969-1972 年的 Bell 实验室，由 Dennis Ritchie 在 B 语言基础上设计，用于重写 Unix 操作系统。早期 C 编译器（如 PDP-11 上的 C 编译器）采用单遍编译（single-pass），这导致 C 语言的若干设计决策：
 
@@ -54,7 +44,7 @@ C 语言诞生于 1969-1972 年的 Bell 实验室，由 Dennis Ritchie 在 B 语
 
 1978 年 Brian Kernighan 与 Dennis Ritchie 出版《The C Programming Language》（K&R C），首次系统化 C 语言规范。K&R C 时代没有正式标准，编译器行为各异。
 
-### 2.2 C89 / ANSI C 标准化（1989）
+### 1.2 C89 / ANSI C 标准化（1989）
 
 ANSI X3.159-1989（亦称 C89、ANSI C、ISO C90）是第一个 C 语言国际标准，由 ANSI 于 1989 年发布，ISO 于 1990 年采纳为 ISO/IEC 9899:1990。C89 的核心贡献：
 
@@ -64,7 +54,7 @@ ANSI X3.159-1989（亦称 C89、ANSI C、ISO C90）是第一个 C 语言国际�
 - ** trigraphs**：为不支持 ASCII 的字符集引入三字符序列（如 `??=` 表示 `#`），现已废弃。
 - **标准库**：定义 15 个标准头文件（`<stdio.h>`、`<stdlib.h>`、`<string.h>`、`<math.h>` 等）。
 
-### 2.3 C99 标准（1999）
+### 1.3 C99 标准（1999）
 
 ISO/IEC 9899:1999（C99）引入若干重要特性：
 
@@ -78,7 +68,7 @@ ISO/IEC 9899:1999（C99）引入若干重要特性：
 - **`snprintf`**：安全的格式化字符串函数。
 - **`__func__`**：函数名标识符。
 
-### 2.4 C11 标准（2011）
+### 1.4 C11 标准（2011）
 
 ISO/IEC 9899:2011（C11，原名 C1x）引入：
 
@@ -93,11 +83,11 @@ ISO/IEC 9899:2011（C11，原名 C1x）引入：
 - **`aligned_alloc`**：对齐分配。
 - **`remove`/`rename`**：标准化文件操作。
 
-### 2.5 C17 / C18 标准（2018）
+### 1.5 C17 / C18 标准（2018）
 
 ISO/IEC 9899:2018（C17，亦称 C18）主要是 C11 的修订版，未引入新特性，仅修复缺陷与澄清语义。Annex K 在 C17 中被标记为可选。
 
-### 2.6 C23 标准（2024）
+### 1.6 C23 标准（2024）
 
 ISO/IEC 9899:2024（C23）是 C 语言自 C11 以来最大的更新：
 
@@ -114,7 +104,7 @@ ISO/IEC 9899:2024（C23）是 C 语言自 C11 以来最大的更新：
 - **移除 trigraphs**：彻底废弃三字符序列。
 - **`<stdckdint.h>`**：溢出检查整数运算。
 
-### 2.7 C2y 草案（未来）
+### 1.7 C2y 草案（未来）
 
 C2y（下一个标准，预计 2029 年）讨论中的特性：
 
@@ -124,9 +114,9 @@ C2y（下一个标准，预计 2029 年）讨论中的特性：
 - **模块（Modules）**：取代头文件的模块系统（C++20 已引入）。
 - **更强大的类型系统**：可能的泛型（generic functions）。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 C 程序的编译流水线
+### 2.1 C 程序的编译流水线
 
 C 程序从源码到可执行文件经过四个阶段：
 
@@ -160,7 +150,7 @@ $$
   \text{Link}(O_1, \ldots, O_n, L_1, \ldots, L_m) = \text{Relocate}(\text{ResolveSymbols}(O_1 \cup \cdots \cup O_n \cup L_1 \cup \cdots \cup L_m))
   $$
 
-### 3.2 进程内存布局
+### 2.2 进程内存布局
 
 C 程序加载到内存后的布局（虚拟地址空间，由低到高）：
 
@@ -189,7 +179,7 @@ flowchart TD
 - **Heap**：$\text{Heap} = \text{Managed by } \texttt{malloc}/\texttt{free}$，向高地址生长。
 - **Stack**：$\text{Stack} = \{\text{StackFrame}_n, \ldots, \text{StackFrame}_1\}$，向低地址生长，LIFO。
 
-### 3.3 ABI（Application Binary Interface）
+### 2.3 ABI（Application Binary Interface）
 
 ABI 是编译后的机器码之间的接口规范，确保不同编译单元（甚至不同编译器）生成的目标文件可以正确链接与运行。ABI 由三部分组成：
 
@@ -197,7 +187,7 @@ $$
 \text{ABI} = (\text{CallingConvention}, \text{DataLayout}, \text{SystemInterface})
 $$
 
-#### 3.3.1 调用约定（Calling Convention）
+#### 2.3.1 调用约定（Calling Convention）
 
 调用约定规定：
 
@@ -222,7 +212,7 @@ $$
 
 浮点参数通过 XMM0-XMM7 传递，超过 8 个的浮点参数通过栈传递。
 
-#### 3.3.2 数据布局（Data Layout）
+#### 2.3.2 数据布局（Data Layout）
 
 数据布局规定：
 
@@ -231,12 +221,12 @@ $$
 - 位域的分配顺序。
 - 枚举的底层类型。
 
-#### 3.3.3 名称修饰（Name Mangling）
+#### 2.3.3 名称修饰（Name Mangling）
 
 - **C 语言**：符号名与源码一致（或加下划线前缀，如 Linux 下的 `printf` 在符号表中为 `printf`，macOS 下为 `_printf`）。
 - **C++ 语言**：编码参数类型信息到符号名中（如 `void f(int)` 在 GCC 下修饰为 `_Z1fi`）。
 
-### 3.4 严格别名规则（Strict Aliasing）
+### 2.4 严格别名规则（Strict Aliasing）
 
 C 标准规定，访问对象必须通过与其类型兼容的左值（lvalue）进行。形式化：
 
@@ -252,7 +242,7 @@ $$
 - $T$ 的 signed/unsigned 变体（如 `int` 与 `unsigned int` 兼容）
 - 聚合类型或联合类型中包含 $T$ 的成员
 
-### 3.5 序列点（Sequence Point）
+### 2.5 序列点（Sequence Point）
 
 序列点是程序执行中的一个点，在此点之前的所有副作用（side effect）都已求值完毕，之后的所有副作用尚未开始。C11 改用"顺序先于"（sequenced-before）关系。
 
@@ -268,7 +258,7 @@ C 中的序列点位置：
 | 函数返回时 | 返回值求值后、调用方继续执行前 |
 | 初始化列表的每个元素后（C11） | 初始化列表元素按顺序求值 |
 
-### 3.6 内存对齐（Memory Alignment）
+### 2.6 内存对齐（Memory Alignment）
 
 每个类型 $T$ 有对齐要求 $\text{alignof}(T) \in 2^{\mathbb{N}}$。对象 $o$ 的地址 $a$ 必须满足：
 
@@ -296,9 +286,9 @@ $$
 
 编译器在成员之间插入填充字节（padding）以满足对齐要求。
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 定理：C 语言的不可移植性定理
+### 3.1 定理：C 语言的不可移植性定理
 
 **定理**：C 程序中存在大量实现定义行为（implementation-defined behavior）、未指定行为（unspecified behavior）与未定义行为（undefined behavior），使得严格意义上的"可移植 C 程序"几乎不存在。
 
@@ -306,7 +296,7 @@ $$
 
 **推论**：工程实践中的"可移植"指"在目标平台集合（如 Linux/macOS/Windows on x86-64/ARM64）上行为一致"，而非"在所有符合标准的平台上行为一致"。
 
-### 4.2 定理：编译器基于 UB 的优化定理
+### 3.2 定理：编译器基于 UB 的优化定理
 
 **定理**：编译器可以假设程序中不存在未定义行为，并据此进行优化，即使这使得编译后的程序行为与源码直觉不符。
 
@@ -345,7 +335,7 @@ $\square$
 
 **推论**：编写安全检查代码时，必须在解引用之前进行空指针检查，否则检查可能被编译器删除。
 
-### 4.3 定理：严格别名违规的形式化
+### 3.3 定理：严格别名违规的形式化
 
 **定理**：若通过类型 $T_1$ 的指针访问实际类型为 $T_2$ 的对象，且 $T_1 \not\in \text{CompatibleTypes}(T_2)$，则行为未定义。
 
@@ -381,7 +371,7 @@ void scale(int *i, float *f, int n) {
 
 编译器可优化为两次独立的循环（先清零 `i`，再设置 `f`），因为假设 `i` 与 `f` 不别名。若调用方传入别名指针（如 `scale((int*)buf, (float*)buf, n)`），优化后的行为与原代码不一致。$\square$
 
-### 4.4 定理：序列点违规定理
+### 3.4 定理：序列点违规定理
 
 **定理**：在两个序列点之间，同一对象的多次修改是未定义行为。
 
@@ -412,7 +402,7 @@ i = ++i + 1;                   /* UB */
 
 $\square$
 
-### 4.5 定理：动态链接的符号解析
+### 3.5 定理：动态链接的符号解析
 
 **定理**：动态链接的符号解析在运行时发生，符号可以延迟绑定（lazy binding）以提高启动速度。
 
@@ -433,9 +423,9 @@ $\square$
 
 **推论**：动态链接程序首次调用某函数时较慢（需解析），后续调用与静态链接相当（一次间接跳转）。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 编译四阶段追踪
+### 4.1 编译四阶段追踪
 
 ```c
 /* hello.c - 用于演示编译四阶段 */
@@ -485,7 +475,7 @@ objdump -d hello.o
 readelf -r hello.o
 ```
 
-### 5.2 结构体内存布局分析
+### 4.2 结构体内存布局分析
 
 ```c
 #include <stdio.h>
@@ -536,7 +526,7 @@ BadLayout offsets:  a=0, b=4, c=8
 GoodLayout offsets: b=0, a=4, c=5
 ```
 
-### 5.3 类型双关的三种正确方法
+### 4.3 类型双关的三种正确方法
 
 ```c
 #include <stdio.h>
@@ -580,7 +570,7 @@ int main(void) {
 }
 ```
 
-### 5.4 严格别名违规的反面教材
+### 4.4 严格别名违规的反面教材
 
 ```c
 #include <stdio.h>
@@ -607,7 +597,7 @@ gcc -O2 -fstrict-aliasing -Wstrict-aliasing=3 bad_alias.c -o bad_alias
 # 输出可能是 0（编译器假设 *ip 不变），而非 0x3f800000（1.0f 的位表示）
 ```
 
-### 5.5 跨平台 ABI 抽象层
+### 4.5 跨平台 ABI 抽象层
 
 ```c
 #include <stdint.h>
@@ -661,7 +651,7 @@ ALIGNAS(64) struct PaddedCounter {
 EXTERN_C int cross_platform_add(int a, int b);
 ```
 
-### 5.6 编译期断言与类型检查
+### 4.6 编译期断言与类型检查
 
 ```c
 #include <stdbool.h>
@@ -703,7 +693,7 @@ int main(void) {
 }
 ```
 
-### 5.7 未定义行为检测
+### 4.7 未定义行为检测
 
 ```c
 #include <stdio.h>
@@ -755,7 +745,7 @@ gcc -fsanitize=undefined -g ub_example.c -o ub_ubsan
 #   2147483647 + 1 cannot be represented in type 'int'
 ```
 
-### 5.8 内存对齐与缓存行优化
+### 4.8 内存对齐与缓存行优化
 
 ```c
 #include <stdatomic.h>
@@ -823,7 +813,7 @@ int main(void) {
 }
 ```
 
-### 5.9 链接器脚本与符号控制
+### 4.9 链接器脚本与符号控制
 
 ```c
 /* libfoo.c - 演示符号可见性控制 */
@@ -880,7 +870,7 @@ nm -D libfoo_versioned.so | grep ' T '
 # 输出：public_function@@LIBFOO_1.0
 ```
 
-### 5.10 静态断言与跨平台兼容性
+### 4.10 静态断言与跨平台兼容性
 
 ```c
 #include <stdint.h>
@@ -946,9 +936,9 @@ int main(void) {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 静态链接 vs 动态链接
+### 5.1 静态链接 vs 动态链接
 
 | 特性 | 静态链接 | 动态链接 |
 | ---- | -------- | -------- |
@@ -963,7 +953,7 @@ int main(void) {
 | 调试 | 简单（所有符号在本地） | 复杂（符号在共享库中） |
 | 典型场景 | 嵌入式、容器镜像瘦身 | 桌面应用、系统库 |
 
-### 6.2 调用约定对比
+### 5.2 调用约定对比
 
 | 架构 | 约定 | 整数参数寄存器 | 浮点参数寄存器 | 调用者保存 | 被调用者保存 |
 | ---- | ---- | -------------- | -------------- | ---------- | ------------ |
@@ -975,7 +965,7 @@ int main(void) {
 | AArch64 | AAPCS64 | x0-x7 | v0-v7 | x0-x18 | x19-x30 |
 | RISC-V | RISC-V calling | a0-a7 | fa0-fa7 | t0-t6, a0-a7 | s0-s11 |
 
-### 6.3 C 与 C++ 的 ABI 差异
+### 5.3 C 与 C++ 的 ABI 差异
 
 | 特性 | C | C++ |
 | ---- | --- | ---- |
@@ -987,7 +977,7 @@ int main(void) {
 | 模板 | 不支持 | 支持（实例化后符号） |
 | RTTI | 不支持 | 支持（typeinfo） |
 
-### 6.4 不同语言的内存安全对比
+### 5.4 不同语言的内存安全对比
 
 | 语言 | 内存安全 | 类型安全 | 未定义行为 | 性能 |
 | ---- | -------- | -------- | ---------- | ---- |
@@ -998,7 +988,7 @@ int main(void) {
 | Java | GC 保证 | 强 | 几乎无 UB | 中 |
 | Haskell | GC 保证 | 极强 | 几乎无 UB | 中 |
 
-### 6.5 内存对齐策略对比
+### 5.5 内存对齐策略对比
 
 | 策略 | 内存占用 | 访问性能 | 跨平台 | 适用场景 |
 | ---- | -------- | -------- | ------ | -------- |
@@ -1007,9 +997,9 @@ int main(void) {
 | `alignas(64)` 缓存行对齐 | 大 | 最优（多线程） | 一致 | 高并发计数器 |
 | 位域 | 小 | 慢 | 不一致 | 硬件寄存器（慎用） |
 
-## 7. 常见陷阱
+## 6. 常见陷阱
 
-### 7.1 假设 `char` 的符号性
+### 6.1 假设 `char` 的符号性
 
 ```c
 /* 错误：假设 char 是 signed 或 unsigned */
@@ -1024,7 +1014,7 @@ signed char c = 200;   /* 明确为 -56 */
 unsigned char c = 200; /* 明确为 200 */
 ```
 
-### 7.2 假设 `int` 的大小
+### 6.2 假设 `int` 的大小
 
 ```c
 /* 错误：假设 int 是 4 字节 */
@@ -1035,7 +1025,7 @@ int bitmask = 0xFFFFFFFF;  /* 在 16-bit int 平台溢出 */
 uint32_t bitmask = 0xFFFFFFFFu;
 ```
 
-### 7.3 严格别名违规
+### 6.3 严格别名违规
 
 ```c
 /* 错误：通过不兼容类型指针访问对象 */
@@ -1048,7 +1038,7 @@ float f;
 memcpy(&f, &x, sizeof(f));
 ```
 
-### 7.4 序列点违规
+### 6.4 序列点违规
 
 ```c
 /* 错误：同一序列点内多次修改 */
@@ -1062,7 +1052,7 @@ i = i + 1;
 i = i + 1;
 ```
 
-### 7.5 有符号整数溢出
+### 6.5 有符号整数溢出
 
 ```c
 /* 错误：假设有符号整数溢出回绕 */
@@ -1083,7 +1073,7 @@ if (overflow) {
 }
 ```
 
-### 7.6 未初始化变量
+### 6.6 未初始化变量
 
 ```c
 /* 错误：使用未初始化变量 */
@@ -1094,7 +1084,7 @@ printf("%d\n", x);  /* UB */
 int x = 0;
 ```
 
-### 7.7 修改字符串字面量
+### 6.7 修改字符串字面量
 
 ```c
 /* 错误：修改字符串字面量 */
@@ -1106,7 +1096,7 @@ char s[] = "hello";
 s[0] = 'H';  /* OK：s 是栈上的副本 */
 ```
 
-### 7.8 数组衰减与 sizeof
+### 6.8 数组衰减与 sizeof
 
 ```c
 /* 错误：对函数参数使用 sizeof */
@@ -1120,7 +1110,7 @@ void process(int *arr, size_t n) {
 }
 ```
 
-### 7.9 假设参数求值顺序
+### 6.9 假设参数求值顺序
 
 ```c
 /* 错误：假设参数从左到右求值 */
@@ -1132,7 +1122,7 @@ printf("%d ", i++);
 printf("%d", i++);
 ```
 
-### 7.10 整数提升导致的符号错误
+### 6.10 整数提升导致的符号错误
 
 ```c
 /* 错误：未考虑整数提升 */
@@ -1152,9 +1142,9 @@ if (a < b) {
 }
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 编译选项与警告
+### 7.1 编译选项与警告
 
 ```bash
 # 生产环境推荐的 GCC 编译选项
@@ -1171,7 +1161,7 @@ gcc -std=c11 -Wall -Wextra -Wpedantic \
     -o program program.c
 ```
 
-### 8.2 静态分析工具
+### 7.2 静态分析工具
 
 ```bash
 # cppcheck：开源静态分析
@@ -1191,7 +1181,7 @@ pvs-studio --source-file program.c
 cov-build --dir cov-int gcc program.c
 ```
 
-### 8.3 Sanitizers 动态检测
+### 7.3 Sanitizers 动态检测
 
 ```bash
 # AddressSanitizer：检测越界、use-after-free
@@ -1213,7 +1203,7 @@ gcc -fsanitize=leak -g program.c -o program_lsan
 gcc -fsanitize=address,undefined -g -O1 program.c -o program_combined
 ```
 
-### 8.4 跨平台类型抽象
+### 7.4 跨平台类型抽象
 
 ```c
 /* cross_platform_types.h */
@@ -1295,7 +1285,7 @@ static inline u64 swap_u64(u64 x) {
 #endif /* CROSS_PLATFORM_TYPES_H */
 ```
 
-### 8.5 ABI 稳定性策略
+### 7.5 ABI 稳定性策略
 
 ```c
 /* 设计稳定 ABI 的 C 接口 */
@@ -1340,7 +1330,7 @@ typedef enum {
 #endif
 ```
 
-### 8.6 防御性编程
+### 7.6 防御性编程
 
 ```c
 #include <assert.h>
@@ -1402,7 +1392,7 @@ int safe_copy(char *dst, size_t dst_size, const char *src) {
 }
 ```
 
-### 8.7 跨语言 FFI 接口
+### 7.7 跨语言 FFI 接口
 
 ```c
 /* C 头文件：可被 C/C++/Rust/Python/Go 调用 */
@@ -1458,9 +1448,9 @@ fn main() {
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Linux 内核的 `container_of` 宏
+### 8.1 Linux 内核的 `container_of` 宏
 
 Linux 内核通过 `container_of` 宏实现"侵入式数据结构"，是 C 语言类型系统与编译器扩展的精妙应用：
 
@@ -1495,7 +1485,7 @@ list_for_each(pos, &task_list) {
 - `offsetof` 是标准宏，编译期计算成员偏移量。
 - `((type *)0)->member` 不实际解引用 NULL，仅用于类型推断。
 
-### 9.2 SQLite 的类型亲和性（Type Affinity）
+### 8.2 SQLite 的类型亲和性（Type Affinity）
 
 SQLite 不强制列类型，而是使用"类型亲和性"（type affinity）兼容 C 的弱类型：
 
@@ -1522,7 +1512,7 @@ static int sqlite3AffinityType(const char *zType) {
 }
 ```
 
-### 9.3 Redis 的 SDS（Simple Dynamic String）
+### 8.3 Redis 的 SDS（Simple Dynamic String）
 
 Redis 通过 SDS 解决 C 字符串的若干问题：
 
@@ -1559,7 +1549,7 @@ sds sdsnewlen(const void *init, size_t initlen) {
 }
 ```
 
-### 9.4 jemalloc 的对齐分配
+### 8.4 jemalloc 的对齐分配
 
 ```c
 /* jemalloc 提供对齐分配，避免伪共享 */
@@ -1584,7 +1574,7 @@ if (ptr) {
 }
 ```
 
-### 9.5 OpenSSL 的 ABI 版本管理
+### 8.5 OpenSSL 的 ABI 版本管理
 
 OpenSSL 经历过多次 ABI 破坏，是反面教材：
 
@@ -1604,7 +1594,7 @@ libssl.so.3
 
 **教训**：OpenSSL 通过 soname 版本号避免新库被旧程序错误加载，但 ABI 破坏仍导致大量软件需要重新编译。
 
-### 9.6 glibc 的符号版本控制
+### 8.6 glibc 的符号版本控制
 
 glibc 通过 ELF 符号版本实现向前兼容：
 
@@ -1630,7 +1620,7 @@ void *memcpy_old(void *, const void *, size_t);
 void *memcpy_new(void *, const void *, size_t);
 ```
 
-### 9.7 Rust 调用 C 库的 cbindgen 工具
+### 8.7 Rust 调用 C 库的 cbindgen 工具
 
 ```rust
 /* Rust 库代码 */
@@ -1662,7 +1652,7 @@ double distance(const Point *a, const Point *b);
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：以下代码的输出是什么？说明理由。
 
@@ -1743,7 +1733,7 @@ int deref(int *p) {
 
 优化后的代码等价于 `return *p;`，原本的 NULL 检查失效。正确做法是先检查再解引用。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 5**：实现一个跨平台的字节序无关的 32 位整数序列化函数。
 
@@ -1820,7 +1810,7 @@ int main(void) {
 
 **解析讲解**：可能输出 "no overflow"。因为 `x + 1` 在 `x = INT_MAX` 时是 UB（有符号溢出），编译器可假设 UB 不发生，即假设 `x + 1 > x` 恒成立，从而删除整个 `if` 分支。使用 `-fwrapv` 选项可强制有符号溢出回绕，此时输出 "overflow detected"。
 
-### 10.3 思考题
+### 9.3 思考题
 
 **习题 8**：为什么 C 语言保留大量未定义行为？如果消除所有 UB，C 会变成什么？
 
@@ -1889,7 +1879,7 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 3. **线程局部存储**：使用 `_Thread_local` 让每个线程有独立副本。
 4. **减少共享**：重构算法减少线程间共享数据。
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. ISO/IEC 9899:2024 (C23). *Programming languages — C*. International Organization for Standardization, 2024.
 
@@ -1923,16 +1913,16 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 
 16. LLVM Project. *Clang Language Extensions*. https://clang.llvm.org/docs/LanguageExtensions.html
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 标准与规范
+### 11.1 标准与规范
 
 - **ISO C 标准草案**（N3096 C23 草案）：免费获取的最新 C 标准草案，几乎与正式版一致。
 - **POSIX.1-2017**（IEEE Std 1003.1-2017）：定义了系统接口、Shell 与工具，是 Unix/Linux 编程的根基。
 - **System V ABI 系列**：x86-64、ARM64、RISC-V 等架构的调用约定规范。
 - **Itanium C++ ABI**：被 GCC/Clang 采用的 C++ 名称修饰与 ABI 规范。
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - **《Computer Systems: A Programmer's Perspective》**（CS:APP，3rd ed.）：CMU 15-213 课程教材，深入讲解编译、链接、内存层次、并发等主题。
 - **《The Linux Programming Interface》**：Michael Kerrisk 著，Linux/Unix 系统编程圣经。
@@ -1942,7 +1932,7 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 - **《21st Century C》**：Ben Klemens 著，现代 C（C11/C17）实践。
 - **《Effective C》**：Robert Seacord 著，CERT 中心专家撰写的 C 安全编程。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **cppreference.com**：C/C++ 标准库参考，包含 C23 新特性。
 - **gcc.gnu.org/onlinedocs**：GCC 编译器文档，详细描述扩展与优化选项。
@@ -1950,14 +1940,14 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 - **ldrtl.sourceforge.net**：Linux 动态链接器实现文档。
 - **maskray.me**：博客，深入分析 ELF、链接器、ABI 等底层主题。
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 - **MIT 6.S081: Operating System Engineering**：基于 RISC-V 的操作系统课程，深入 ABI 与系统调用。
 - **Stanford CS107: Computer Organization & Systems**：C 语言与汇编的桥梁课程。
 - **CMU 15-213: Introduction to Computer Systems**：CS:APP 配套课程，涵盖编译、链接、内存、并发。
 - **CMU 15-445: Database Systems**：涉及 ABI、内存布局、并发等系统编程主题。
 
-### 12.5 开源项目源码
+### 11.5 开源项目源码
 
 - **Linux Kernel**：`include/linux/list.h` 中的 `container_of`、`include/linux/compiler.h` 中的编译器扩展。
 - **glibc**：`stdlib/`、`elf/`、`dlfcn/` 目录中的动态链接器实现。
@@ -1966,7 +1956,7 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 - **jemalloc**：`include/jemalloc/jemalloc.h` 中的对齐分配 API。
 - **musl libc**：精简的 C 标准库实现，适合学习 ABI 与系统调用。
 
-### 12.6 工具与命令
+### 11.6 工具与命令
 
 - **binutils**：`readelf`、`objdump`、`nm`、`addr2line`、`ld` 等二进制工具。
 - **Valgrind**：内存调试与性能分析套件，包含 Memcheck、Cachegrind、Callgrind。
@@ -1974,7 +1964,7 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 - **rr (Record and Replay)**：Mozilla 开发的可逆调试器，能确定性回放程序执行。
 - **DynamoRIO**：动态二进制插桩框架，用于运行时分析与修改。
 
-### 12.7 社区与博客
+### 11.7 社区与博客
 
 - **Stack Overflow** 的 `c`、`abi`、`linker`、`undefined-behavior` 标签。
 - **Reddit /r/C_Programming**：C 语言社区讨论。
@@ -1982,7 +1972,7 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 - **LWN.net**：Linux 内核与系统编程新闻。
 - **MaskRay 博客**（https://maskray.me/）：ELF、链接器、ABI 等底层主题的深度分析。
 
-### 12.8 进阶主题
+### 11.8 进阶主题
 
 - **C2y 草案**：下一个 C 标准的演进方向，包括反射、契约、协程等提案。
 - **C++ ABI 兼容性**：Itanium C++ ABI 的稳定性与破坏案例。
@@ -1991,7 +1981,7 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 - **可信执行环境 ABI**：SGX、TrustZone 等安全执行环境的接口规范。
 - **微内核 ABI**：seL4、Fuchsia Zircon 等微内核的系统调用 ABI。
 
-### 12.9 实践练习建议
+### 11.9 实践练习建议
 
 1. **手写链接器**：实现一个简单的 ELF 链接器，理解符号解析与重定位。
 2. **ABI 兼容性测试**：使用不同 GCC 版本编译同一库，验证 ABI 兼容性。
@@ -2000,7 +1990,7 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 5. **C/Rust 互操作**：用 Rust 重写一个 C 库的部分模块，保持 ABI 兼容。
 6. **微基准测试**：测量不同调用约定、对齐方式、缓存行填充对性能的影响。
 
-### 12.10 总结
+### 11.10 总结
 
 本章深入剖析了 C 语言的编译流程、内存模型、ABI 规范、链接与加载、未定义行为、严格别名、序列点、内存对齐等核心理论。这些理论是理解 C 程序运行时行为的根基，也是编写安全、可移植、高性能 C 代码的前提。
 

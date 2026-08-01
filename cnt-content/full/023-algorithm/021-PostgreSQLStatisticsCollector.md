@@ -33,14 +33,6 @@ prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/树
   - cs-fundamentals/离散数学
-learningObjectives:
-  - '记忆树状数组（Fenwick Tree / Binary Indexed Tree）作为基于二进制分解的前缀和索引结构的形式化定义，复述 lowbit(x) = x & (-x) 的位运算原理与 $O(\log n)$ 单点更新、$O(\log n)$ 前缀查询、$O(n)$ 构建的空间 $O(n)$ 复杂度结论'
-  - '{''理解 Peter M. Fenwick 1994《A New Data Structure for Cumulative Frequency Tables》Software'': ''Practice and Experience 24(3):327-336 DOI:10.1002/spe.4380240306 的历史脉络与设计动机，说明 BIT 在累积频率统计、压缩感知、自适应游程编码中的演进路径，对比线段树 Bentley 1977 与 Mo 算法 2009 的同期发展''}'
-  - '应用 lowbit 不变式推导单点更新路径（$i \to i + \text{lowbit}(i)$）与前缀查询路径（$i \to i - \text{lowbit}(i)$），编写 Python / C++ / Java 三语言实现，覆盖单点更新 + 区间查询、区间更新 + 单点查询（差分树状数组）、区间更新 + 区间查询（双树状数组）三种模式'
-  - '分析 lowbit 区间划分的完全性与互斥性，论证 BIT 的不变式：每个 tree[i] 管辖 $[i - \text{lowbit}(i) + 1, i]$ 区间，所有 tree[i] 的并集恰为 $[1, n]$，证明更新与查询路径的对偶性（forward / backward lowbit 链）'
-  - '评估树状数组与线段树、平方分解（Mo 算法）、前缀和、跳跃表在代码复杂度、常数因子、可扩展性、Lazy Propagation 支持维度上的差异，识别 LeetCode 307 / 315 / 327 / 493 / P1908 逆序对等典型题目的选型动机'
-  - '对比单树状数组（点更新 + 区间查询）、差分树状数组（区间更新 + 点查询）、双树状数组（区间更新 + 区间查询）三种模式的代数结构（差分代数、二元运算）与转换条件'
-  - '创造性设计基于树状数组的开源项目解决方案，如搜索引擎倒排索引词频累积器、Redis ZSET 排名维护器、逆序对计数器、二维矩形统计器、在线中位数维护器'
 references:
   - type: journal
     authors:
@@ -198,6 +190,7 @@ etymology:
     english: arithmetic coding
     origin: 'arithmetic coding（算术编码）由 Rissanen 1976《Generalized Kraft Inequality and Arithmetic Coding》IBM J. Res. Dev. 6(3):198-203 提出，是一种基于累积分布函数的熵编码方法。Fenwick 1994 设计 BIT 的原始动机即是为算术编码的自适应概率模型提供高效的累积频率表维护。BIT 在此场景中需要在收到每个符号后更新频率并查询累积概率，要求 $O(\log n)$ 的更新与查询复杂度'
 ---
+
 
 ## 1. 概述与学习目标
 

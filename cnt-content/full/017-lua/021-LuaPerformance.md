@@ -28,79 +28,14 @@ prerequisites:
   - lua/表与元表进阶
 ---
 
+
 # Lua 性能优化
 
 > 本文档对标 MIT 6.172 Performance Engineering、Stanford CS149 Parallel Computing、CMU 15-410 Operating Systems 中性能分析与底层优化教学水准,面向 0 基础自学者与企业级 Lua 工程师,系统讲解 Lua 性能优化的理论基础(解释器开销模型、寄存器虚拟机、表内存布局)、量化测量(profiling 工具链、基准测试方法)、JIT 编译机制(LuaJIT trace、specialization、IR 优化)、GC 调优、热路径工程化优化模式、跨场景案例(WoW/Roblox/OpenResty/Redis/Neovim 嵌入式)与反模式识别。
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-学习本章后,读者应能在 Bloom 认知层级框架下达成下列目标。
-
-### 1.1 知识层(Remembering)
-
-- 列举 Lua 5.x 标准解释器的字节码格式:寄存器式虚拟机(register-based VM)、操作数布局、典型指令数量(Lua 5.4 约 80 条指令)。
-- 复述 Lua 全局变量查找的代价:`_G` 是普通表,每次 `x` 访问等价于一次哈希查找 `getfield(_G, "x")`。
-- 列举局部变量在寄存器中的存储方式:Lua 5.0+ 将局部变量存储在栈帧的寄存器中,访问代价为 `O(1)` 数组索引。
-- 描述 Lua 表的双重内存结构:array part(连续数组)与 hash part(开放寻址哈希表)。
-- 列举字符串在 Lua 中的驻留(interning)机制:短字符串(≤40 字节,Lua 5.4)被内部化,相同内容共享同一对象。
-- 复述 Lua GC 的算法:增量式三色标记-清除(mark-sweep),Lua 5.4 引入分代收集(generational)。
-- 列举 LuaJIT 的核心优化:trace compilation、specialization、inline caching、loop unrolling、escape analysis、scalar replacement。
-- 描述 LuaJIT IR(中间表示)与 SSA 形式、trace 录制、guard 与 side exit 的概念。
-
-### 1.2 理解层(Understanding)
-
-- 解释局部变量与全局变量访问的性能差异:寄存器索引(常数)vs 哈希查找(哈希计算 + 桶探测)。
-- 阐释表预分配(narray/nhash)的意义:避免 rehash 时的内存复制与 rehash 开销。
-- 描述 `table.concat` 比循环 `..` 快的原因:前者一次性分配结果缓冲区,后者每次创建中间字符串对象。
-- 解释字符串驻留的代价与收益:查询加速但内存常驻,长字符串不驻留以避免内存膨胀。
-- 描述 upvalue 的内存布局:upvalue 是堆上对象,持有对外层局部变量的引用,逃逸后升级为堆变量。
-- 解释 LuaJIT trace 录制机制:在循环回边(backedge)上录制执行路径,生成 trace,编译为机器码。
-- 阐释 trace abort 的原因:guard 失败、类型变化、未支持的字节码、副作用回退到解释器。
-- 描述 LuaJIT 的 NaN-boxing 编码:用 64 位双精度浮点数的 NaN 空间编码所有 Lua 值类型。
-- 解释代际 GC 的分代假设(weak generational hypothesis):新对象大多早死,老对象很少引用新对象。
-
-### 1.3 应用层(Applying)
-
-- 编写性能基准测试:使用 `os.clock`、`collectgarbage("count")`、`debug.sethook` 测量时间与内存。
-- 应用局部变量缓存模式:在模块顶部缓存 `math.sin`、`table.insert` 等全局函数。
-- 使用 `table.new(narray, nhash)`(LuaJIT)或 `table.create`(Lua 5.4)预分配表。
-- 应用对象池(object pool)减少 GC 压力:复用表、字符串缓冲区、临时对象。
-- 使用 `table.concat` 替代循环 `..` 拼接字符串。
-- 配置 LuaJIT 优化参数:`jit.opt.start(3, "hotloop=56", "hotexit=10", "instunroll=8")`。
-- 使用 LuaJIT FFI 调用 C 函数,绕过 Lua/C 绑定开销。
-- 调优 GC 参数:`collectgarbage("setpause", 200)`、`collectgarbage("setstepmul", 400)`。
-
-### 1.4 分析层(Analyzing)
-
-- 分析 Lua 字节码的反汇编输出(`luac -l -l`),识别热点指令与可优化模式。
-- 分析 LuaJIT trace 日志(`v=jit`, `dump.lua`),识别 trace abort 原因与 IR 优化阶段。
-- 分析表的内存占用:`collectgarbage("count")` 前后对比、`#t` 与 `next(t)` 探测 array/hash 比例。
-- 分析 upvalue 逃逸导致的堆分配:函数返回闭包时,upvalue 从栈变量升级为堆对象。
-- 区分"过早优化"与"必要优化":热路径(每帧执行)vs 冷路径(初始化代码)。
-- 分析 GC pause/stepmul 对帧率稳定性的影响:过长 pause 导致卡顿,过短 stepmul 导致 GC 不及时。
-- 分析 LuaJIT 的"trace stitch"机制:多个 trace 的衔接与 side exit 处理。
-
-### 1.5 评价层(Evaluating)
-
-- 评判 Lua 5.x 与 LuaJIT 在不同场景下的取舍:解释器内存占用小 vs JIT 启动开销与代码膨胀。
-- 评估 JIT 失效场景的代价:trace abort 后回退到解释器,可能比纯解释器更慢(录制开销)。
-- 评判 GC 调参的稳定性:不同工作负载下最佳 pause/stepmul 不同,需实测确定。
-- 评估对象池的复杂度收益权衡:复用减少 GC 但增加代码复杂度,可能引入 use-after-reset bug。
-- 评判 FFI 滥用的风险:C 代码绕过 GC,内存泄漏与越界访问无保护。
-- 评估"过早优化"的边界:何时该用 `local sin = math.sin`,何时是过度优化。
-
-### 1.6 创造层(Creating)
-
-- 设计完整的性能基准套件:微基准(microbenchmark)、宏观基准(macrobenchmark)、压力测试(stress test)。
-- 构建 Lua 性能 profiler:基于 `debug.sethook` 的调用栈采样、火焰图生成。
-- 设计 LuaJIT 友好的代码风格:稳定类型、避免多态、循环不变量外提。
-- 构建增量式 GC 调度器:与游戏帧率协调,每帧分配固定预算给 GC step。
-- 设计 Lua 字节码层面的优化器:类似 LuaJIT 的 IR 优化,针对标准 Lua 解释器。
-- 构建 FFI 加速库:用 C 实现热路径,通过 FFI 暴露给 Lua,绕过 Lua/C 绑定。
-
-## 2. 历史动机与演化
-
-### 2.1 性能优化的范式演化
+### 1.1 性能优化的范式演化
 
 程序语言性能优化历经四个主要阶段:
 
@@ -111,7 +46,7 @@ prerequisites:
 
 Lua 性能优化横跨第 3 与第 4 阶段:标准 Lua 5.x 解释器依赖编译器优化与程序员手工优化;LuaJIT 引入自适应 JIT 编译,提供接近原生的性能。
 
-### 2.2 Lua 性能优化的诞生动机
+### 1.2 Lua 性能优化的诞生动机
 
 Lua 自 1993 年诞生起即定位于嵌入式脚本语言,性能是核心设计目标之一。性能优化的主要动机:
 
@@ -122,7 +57,7 @@ Lua 自 1993 年诞生起即定位于嵌入式脚本语言,性能是核心设计
 5. **跨语言桥接**:Lua 作为 C 应用的脚本层,性能不应成为系统瓶颈,需接近 C 的速度。
 6. **教学简洁**:Lua 解释器代码约 2 万行 C,优化策略清晰可教学,便于学习者理解虚拟机原理。
 
-### 2.3 演化时间线
+### 1.3 演化时间线
 
 | 版本/年份 | 性能相关变化 |
 | --- | --- |
@@ -142,7 +77,7 @@ Lua 自 1993 年诞生起即定位于嵌入式脚本语言,性能是核心设计
 | Luau(2021-) | Roblox 方言,渐进式类型系统 + JIT,针对游戏场景优化 |
 | OpenResty(2011-) | 基于 LuaJIT 的 Web 平台,自定义 cosocket、shdict 等高性能 API |
 
-### 2.4 设计动机总结
+### 1.4 设计动机总结
 
 Lua 性能优化设计遵循以下原则:
 
@@ -153,9 +88,9 @@ Lua 性能优化设计遵循以下原则:
 5. **嵌入式友好**:优化不依赖大型运行时(如 V8 的 IC 与隐藏类),内存占用可控。
 6. **教学价值**:LuaJIT 的 trace 录制机制是 JIT 编译的典型教学案例,代码可读性高。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 解释器执行模型
+### 2.1 解释器执行模型
 
 Lua 5.x 标准解释器是寄存器式虚拟机,字节码指令在虚拟寄存器上操作。设指令集为 $I$,寄存器文件为 $R = \langle r_0, r_1, \ldots, r_{255} \rangle$(Lua 5.x 每帧最多 256 个寄存器),执行状态:
 
@@ -173,7 +108,7 @@ $$
 - 函数调用(`CALL`):$O(\text{栈帧大小})$,约 20-100 纳秒。
 - 元方法分派:`O(1)$ 元表查找 + 元方法调用,约 30-150 纳秒。
 
-### 3.2 全局变量查找的形式化
+### 2.2 全局变量查找的形式化
 
 全局变量 `x` 的访问等价于:
 
@@ -189,7 +124,7 @@ $$
 
 最坏情况下,哈希冲突需要线性探测,代价 $O(\text{冲突数})$。Lua 5.x 采用开放寻址,主探测为 $O(1)$,但缓存不友好。
 
-### 3.3 局部变量访问的形式化
+### 2.3 局部变量访问的形式化
 
 局部变量存储在寄存器中,访问代价为常数:
 
@@ -199,7 +134,7 @@ $$
 
 无哈希计算、无内存访问(寄存器在 CPU 缓存中),代价约 0.3-1 纳秒,比全局变量快 5-50 倍。
 
-### 3.4 表访问的形式化
+### 2.4 表访问的形式化
 
 表 $T$ 由 array part $T_a$ 与 hash part $T_h$ 组成:
 
@@ -218,7 +153,7 @@ $$
 
 array part 访问为 $O(1)$ 数组索引,缓存友好;hash part 访问为 $O(1)$ 哈希查找,但缓存不友好(哈希桶分散)。
 
-### 3.5 字符串驻留的形式化
+### 2.5 字符串驻留的形式化
 
 Lua 字符串分为短字符串($\leq 40$ 字节,Lua 5.4)与长字符串。短字符串驻留(interned):
 
@@ -231,7 +166,7 @@ $$
 
 驻留使得字符串相等比较为 $O(1)$(指针比较)而非 $O(|s|)$(逐字节比较)。代价是驻留池常驻内存,且创建短字符串有哈希计算与池查找开销。
 
-### 3.6 GC 的形式化
+### 2.6 GC 的形式化
 
 Lua GC 采用三色标记-清除:
 
@@ -253,7 +188,7 @@ $$
 
 GC 触发由 `pause` 控制(内存增长到上次回收后 `pause/100` 倍时触发),步长由 `stepmul` 控制(每步回收 `stepmul/100` 倍于本步分配的内存)。
 
-### 3.7 LuaJIT trace 的形式化
+### 2.7 LuaJIT trace 的形式化
 
 LuaJIT trace 是循环执行路径的线性录制:
 
@@ -278,7 +213,7 @@ $$
 \end{cases}
 $$
 
-### 3.8 NaN-boxing 的形式化
+### 2.8 NaN-boxing 的形式化
 
 LuaJIT 用 64 位双精度浮点数的 NaN 空间编码所有 Lua 值:
 
@@ -297,9 +232,9 @@ $$
 
 NaN-boxing 优势:所有值统一为 64 位,寄存器分配简单,无需 tag 检查(数字直接运算)。
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 局部变量与全局变量的性能比
+### 3.1 局部变量与全局变量的性能比
 
 **命题 1**:局部变量访问比全局变量访问快 $k$ 倍,$k \approx 5 \sim 50$,取决于缓存命中率。
 
@@ -326,7 +261,7 @@ NaN-boxing 优势:所有值统一为 64 位,寄存器分配简单,无需 tag 检
 
 证毕。
 
-### 4.2 表预分配避免 rehash 的复杂度
+### 3.2 表预分配避免 rehash 的复杂度
 
 **命题 2**:表插入 $n$ 个元素,预分配的代价为 $O(n)$,不预分配的代价为 $O(n \log n)$(含 rehash 复制)。
 
@@ -354,7 +289,7 @@ $$
 
 证毕。
 
-### 4.3 `table.concat` 与 `..` 的复杂度差异
+### 3.3 `table.concat` 与 `..` 的复杂度差异
 
 **命题 3**:`table.concat(parts)` 的时间复杂度为 $O(L)$,其中 $L$ 为结果长度;循环 `result = result .. part` 的复杂度为 $O(L^2)$。
 
@@ -395,7 +330,7 @@ $$
 
 证毕。
 
-### 4.4 upvalue 逃逸的内存代价
+### 3.4 upvalue 逃逸的内存代价
 
 **命题 4**:闭包捕获的局部变量在闭包逃逸(返回到函数外部)时,从栈变量升级为堆对象,产生内存分配。
 
@@ -416,7 +351,7 @@ Lua 5.x 闭包捕获局部变量的机制:
 
 证毕。
 
-### 4.5 LuaJIT trace 录制的稳定性
+### 3.5 LuaJIT trace 录制的稳定性
 
 **命题 5**:LuaJIT trace 在循环内类型稳定时性能最优,类型多态导致 trace abort。
 
@@ -446,7 +381,7 @@ trace abort 代价:
 
 证毕。
 
-### 4.6 弱表缓存的命中率不可预测性
+### 3.6 弱表缓存的命中率不可预测性
 
 **命题 6**:弱表作为缓存,命中率取决于 GC 周期,不可预测。
 
@@ -466,9 +401,9 @@ GC 时机不可预测:
 
 证毕。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 局部变量缓存模式
+### 4.1 局部变量缓存模式
 
 ```lua
 -- lua: 局部变量缓存模式
@@ -507,7 +442,7 @@ local unpack = table.unpack or unpack
 -- 性能提升:全局访问 ~21ns vs 局部访问 ~1.8ns,约 10 倍
 ```
 
-### 5.2 表预分配
+### 4.2 表预分配
 
 ```lua
 -- lua: 表预分配示例
@@ -564,7 +499,7 @@ obj.y = 2
 release(obj)
 ```
 
-### 5.3 字符串拼接优化
+### 4.3 字符串拼接优化
 
 ```lua
 -- lua: 字符串拼接优化
@@ -615,7 +550,7 @@ local function generate_report(rows)
 end
 ```
 
-### 5.4 数组 vs 哈希表的选择
+### 4.4 数组 vs 哈希表的选择
 
 ```lua
 -- lua: 数组 vs 哈希表性能对比
@@ -669,7 +604,7 @@ print(format("哈希模式: %.3f 秒", t3 - t2))
 -- 3. 大型数组访问比哈希快 2-5 倍(缓存效应)
 ```
 
-### 5.5 函数调用开销与内联
+### 4.5 函数调用开销与内联
 
 ```lua
 -- lua: 函数调用开销与内联
@@ -726,7 +661,7 @@ print(format("内联版本: %.3f 秒", t3 - t2))
 -- 比值约 1.2 倍(JIT 已自动内联)
 ```
 
-### 5.6 闭包与 upvalue 优化
+### 4.6 闭包与 upvalue 优化
 
 ```lua
 -- lua: 闭包与 upvalue 优化
@@ -778,7 +713,7 @@ print(format("值版本: %.3f 秒,内存 %d KB", t4 - t3, collectgarbage("count"
 -- 闭包版本内存最大(每个闭包独立 upvalue),对象版本次之(共享元表),值版本最小
 ```
 
-### 5.7 GC 调优
+### 4.7 GC 调优
 
 ```lua
 -- lua: GC 调优示例
@@ -833,7 +768,7 @@ local function memory_monitor()
 end
 ```
 
-### 5.8 LuaJIT FFI 加速
+### 4.8 LuaJIT FFI 加速
 
 ```lua
 -- lua: LuaJIT FFI 加速示例
@@ -915,7 +850,7 @@ local function sum_vectors(arr, n)
 end
 ```
 
-### 5.9 基于 `debug.sethook` 的简单 profiler
+### 4.9 基于 `debug.sethook` 的简单 profiler
 
 ```lua
 -- lua: 基于 debug.sethook 的采样 profiler
@@ -980,7 +915,7 @@ print(report(10))
 print(format("总耗时: %.3f 秒,采样数: %d", elapsed, total))
 ```
 
-### 5.10 热路径优化模式
+### 4.10 热路径优化模式
 
 ```lua
 -- lua: 热路径优化模式
@@ -1091,7 +1026,7 @@ local function dispatch(op, a, b)
 end
 ```
 
-### 5.11 数据结构选择
+### 4.11 数据结构选择
 
 ```lua
 -- lua: 数据结构选择对性能的影响
@@ -1177,7 +1112,7 @@ end
 -- 4. 有序数据:数组 + 二分查找 O(log n),比哈希表多排序开销但支持范围查询
 ```
 
-### 5.12 字符串驻留与长字符串
+### 4.12 字符串驻留与长字符串
 
 ```lua
 -- lua: 字符串驻留与长字符串
@@ -1237,9 +1172,9 @@ local build_user_key = make_key_builder("user")
 -- build_user_key(123) => "user_123"
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua 5.x vs LuaJIT
+### 5.1 Lua 5.x vs LuaJIT
 
 | 维度 | Lua 5.x | LuaJIT 2.1 |
 | --- | --- | --- |
@@ -1262,7 +1197,7 @@ local build_user_key = make_key_builder("user")
 - 需要 Lua 5.3+ 整数、5.4 分代 GC:Lua 5.x。
 - 需要 FFI、极致性能:LuaJIT。
 
-### 6.2 LuaJIT vs V8(JavaScript)
+### 5.2 LuaJIT vs V8(JavaScript)
 
 | 维度 | LuaJIT | V8 |
 | --- | --- | --- |
@@ -1277,7 +1212,7 @@ local build_user_key = make_key_builder("user")
 
 LuaJIT 的 trace-based JIT 在循环密集型场景表现优异,代码膨胀小;V8 的 method-based JIT 在大型应用中更灵活,但内存占用大。
 
-### 6.3 Lua vs Python
+### 5.3 Lua vs Python
 
 | 维度 | Lua | Python |
 | --- | --- | --- |
@@ -1292,7 +1227,7 @@ LuaJIT 的 trace-based JIT 在循环密集型场景表现优异,代码膨胀小;
 
 Lua 在嵌入式与游戏脚本场景因启动快、内存小而胜出;Python 在数据科学、Web 后端因生态丰富而胜出。
 
-### 6.4 Lua vs Rust(C 扩展)
+### 5.4 Lua vs Rust(C 扩展)
 
 | 维度 | Lua | Rust |
 | --- | --- | --- |
@@ -1305,7 +1240,7 @@ Lua 在嵌入式与游戏脚本场景因启动快、内存小而胜出;Python �
 
 LuaJIT + FFI 模式可结合两者优势:Lua 编写业务逻辑,Rust/C 实现热路径,FFI 桥接。
 
-### 6.5 表内存布局对比
+### 5.5 表内存布局对比
 
 | 结构 | 内存布局 | 访问模式 | 缓存友好度 |
 | --- | --- | --- | --- |
@@ -1317,9 +1252,9 @@ LuaJIT + FFI 模式可结合两者优势:Lua 编写业务逻辑,Rust/C 实现热
 
 LuaJIT FFI 结构体与数组在性能敏感场景显著优于 Lua 表,因无 GC 开销且内存连续。
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 过早优化
+### 6.1 过早优化
 
 ```lua
 -- 反模式:无性能数据指导的优化
@@ -1349,7 +1284,7 @@ local function measure_first()
 end
 ```
 
-### 7.2 忽略算法复杂度
+### 6.2 忽略算法复杂度
 
 ```lua
 -- 反模式:用 O(n^2) 算法,试图用局部变量优化常数
@@ -1378,7 +1313,7 @@ end
 -- 算法优化比代码微优化有效得多
 ```
 
-### 7.3 全局变量滥用
+### 6.3 全局变量滥用
 
 ```lua
 -- 反模式:全局变量作为状态
@@ -1409,7 +1344,7 @@ return {
 }
 ```
 
-### 7.4 循环内表创建
+### 6.4 循环内表创建
 
 ```lua
 -- 反模式:循环内创建临时表
@@ -1455,7 +1390,7 @@ local function best_process(data)
 end
 ```
 
-### 7.5 字符串拼接滥用
+### 6.5 字符串拼接滥用
 
 ```lua
 -- 反模式:循环内 .. 拼接
@@ -1473,7 +1408,7 @@ local function build_log_v2(entries)
 end
 ```
 
-### 7.6 深继承链
+### 6.6 深继承链
 
 ```lua
 -- 反模式:深继承链导致方法查找 O(D)
@@ -1499,7 +1434,7 @@ local function make_z()
 end
 ```
 
-### 7.7 弱表缓存误用
+### 6.7 弱表缓存误用
 
 ```lua
 -- 反模式:弱表缓存作为强依赖
@@ -1548,7 +1483,7 @@ local function make_lru(max_size)
 end
 ```
 
-### 7.8 GC 参数误调
+### 6.8 GC 参数误调
 
 ```lua
 -- 反模式:激进暂停 GC
@@ -1580,7 +1515,7 @@ local function good_batch(data, batch_size)
 end
 ```
 
-### 7.9 FFI 滥用导致内存泄漏
+### 6.9 FFI 滥用导致内存泄漏
 
 ```lua
 -- 反模式:FFI 分配内存但忘记释放
@@ -1619,7 +1554,7 @@ local function modern_ffi()
 end
 ```
 
-### 7.10 LuaJIT trace 频繁 abort
+### 6.10 LuaJIT trace 频繁 abort
 
 ```lua
 -- 反模式:循环内类型多变,trace 频繁 abort
@@ -1667,9 +1602,9 @@ local function best_trace(arr)
 end
 ```
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 性能优化工作流
+### 7.1 性能优化工作流
 
 1. **测量**:使用 profiler 与基准测试,识别热点。
 2. **分析**:分析热点代码,确定瓶颈类型(CPU、内存、缓存、GC)。
@@ -1705,7 +1640,7 @@ local function optimize_workflow()
 end
 ```
 
-### 8.2 基准测试方法
+### 7.2 基准测试方法
 
 ```lua
 -- lua: 基准测试方法
@@ -1762,7 +1697,7 @@ benchmark("process_data", function() process_data(test_data) end, 10000)
 -- 4. 对比基准:优化前后对比
 ```
 
-### 8.3 LuaJIT 友好的代码风格
+### 7.3 LuaJIT 友好的代码风格
 
 ```lua
 -- lua: LuaJIT 友好的代码风格
@@ -1838,7 +1773,7 @@ local function configure_jit()
 end
 ```
 
-### 8.4 内存管理最佳实践
+### 7.4 内存管理最佳实践
 
 ```lua
 -- lua: 内存管理最佳实践
@@ -1908,7 +1843,7 @@ local function monitor_memory(threshold_kb)
 end
 ```
 
-### 8.5 profiling 工具链
+### 7.5 profiling 工具链
 
 ```lua
 -- lua: profiling 工具链
@@ -1972,7 +1907,7 @@ end
 -- 输出:SVG 火焰图,直观展示热点
 ```
 
-### 8.6 部署优化
+### 7.6 部署优化
 
 ```lua
 -- lua: 部署优化
@@ -2022,9 +1957,9 @@ local function set_memory_budget(max_kb)
 end
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 WoW UI 性能优化
+### 8.1 WoW UI 性能优化
 
 WoW(World of Warcraft)UI 系统使用 Lua 5.1,每帧执行数千个 Lua 调用,性能优化至关重要。
 
@@ -2095,7 +2030,7 @@ local function throttled_update()
 end
 ```
 
-### 9.2 OpenResty 高性能 Web
+### 8.2 OpenResty 高性能 Web
 
 OpenResty 基于 Nginx + LuaJIT,处理每秒万级请求。
 
@@ -2178,7 +2113,7 @@ local function stream_response(rows)
 end
 ```
 
-### 9.3 Roblox 游戏脚本
+### 8.3 Roblox 游戏脚本
 
 Roblox 使用 Luau(Lua 5.1 方言 + 渐进式类型),每帧执行大量脚本。
 
@@ -2249,7 +2184,7 @@ local function stable_loop(arr: {number})
 end
 ```
 
-### 9.4 Redis Lua 脚本
+### 8.4 Redis Lua 脚本
 
 Redis 使用 Lua 5.1 作为原子脚本语言,脚本执行阻塞主线程,延迟敏感。
 
@@ -2296,7 +2231,7 @@ local function atomic_transfer(from, to, amount)
 end
 ```
 
-### 9.5 Neovim 插件
+### 8.5 Neovim 插件
 
 Neovim 使用 Lua 5.1 / LuaJIT 作为插件语言,替代 Vimscript。
 
@@ -2352,7 +2287,7 @@ local function get_with_cache(key, loader)
 end
 ```
 
-### 9.6 嵌入式 Lua(C 应用)
+### 8.6 嵌入式 Lua(C 应用)
 
 嵌入式 Lua 作为 C 应用的脚本层,需控制内存与 CPU。
 
@@ -2425,7 +2360,7 @@ void run_with_timeout(lua_State *L, int seconds) {
 }
 ```
 
-### 9.7 LuaJIT FFI 加速数值计算
+### 8.7 LuaJIT FFI 加速数值计算
 
 ```lua
 -- lua: LuaJIT FFI 加速数值计算
@@ -2485,7 +2420,7 @@ end
 -- 提升 65 倍
 ```
 
-### 9.8 GC 调优案例
+### 8.8 GC 调优案例
 
 ```lua
 -- lua: GC 调优案例
@@ -2528,7 +2463,7 @@ end
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 1. 解释 Lua 中局部变量与全局变量访问的性能差异,给出量化估计。
 2. 描述 Lua 表的 array part 与 hash part 的内存布局差异。
@@ -2544,7 +2479,7 @@ end
 9. 实现简单的 LRU 缓存,替代弱表缓存。
 10. 使用 LuaJIT FFI 调用 C 标准库的 `qsort` 排序数组。
 
-### 10.3 分析题
+### 9.3 分析题
 
 11. 分析以下代码的性能瓶颈,并给出优化方案:
 
@@ -2581,7 +2516,7 @@ local function make_counters(n)
 end
 ```
 
-### 10.4 设计题
+### 9.4 设计题
 
 16. 设计一个完整的 Lua 性能 profiler,支持:
     - 时间 profiling(基于 `debug.sethook`)。
@@ -2604,7 +2539,7 @@ end
     - 字符串分割(替代 `string.gmatch`)。
     - 正则匹配(调用 C 库)。
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. *Lua 5.4 Reference Manual*. Lua.org, 2020.
 2. Roberto Ierusalimschy. *Programming in Lua* (4th Edition). Lua.org, 2016.
@@ -2627,9 +2562,9 @@ end
 19. Mike Pall. *LuaJIT Performance Optimization Guide*. https://luajit.org/performance.html
 20. Roberto Ierusalimschy. *Lua Garbage Collection*. Lua.org, 2017.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **Lua 官方网站**:https://www.lua.org/
   官方文档、教程、邮件列表、参考实现。
@@ -2643,7 +2578,7 @@ end
 - **Luau 官方网站**:https://luau-lang.org/
   Roblox 的 Lua 方言,渐进式类型系统,游戏脚本参考。
 
-### 12.2 性能工程经典教材
+### 11.2 性能工程经典教材
 
 - *Systems Performance* by Brendan Gregg
   系统性能分析的经典教材,涵盖 Linux 性能工具、CPU、内存、IO、网络。
@@ -2654,7 +2589,7 @@ end
 - *Compilers: Principles, Techniques, and Tools* by Aho, Lam, Sethi, Ullman
   编译器"龙书",JIT 编译器优化理论基础。
 
-### 12.3 JIT 编译相关
+### 11.3 JIT 编译相关
 
 - *Trace-based Just-In-Time Compilation* 论文系列
   LuaJIT 的 trace 录制机制学术背景,trace-based JIT 的理论与实践。
@@ -2665,7 +2600,7 @@ end
 - *V8 Engine* 源代码
   JavaScript 的 method-based JIT,与 LuaJIT 的 trace-based 形成对比。
 
-### 12.4 实践社区
+### 11.4 实践社区
 
 - **Lua Users Mailing List**:https://www.lua.org/lua-l.html
   Lua 官方邮件列表,Roberto Ierusalimschy 等核心开发者活跃。
@@ -2679,7 +2614,7 @@ end
 - **Roblox Luau 社区**:https://github.com/luau-lang/
   游戏脚本优化实践,Luau 类型系统演进。
 
-### 12.5 工具与库
+### 11.5 工具与库
 
 - **luac / luac.lua**:Lua 字节码反汇编工具。
 - **LuaJIT -jp**:LuaJIT 内置 profiler。
@@ -2690,7 +2625,7 @@ end
 - **lua-resty-redis**:OpenResty Redis 客户端。
 - **lua-resty-mysql**:OpenResty MySQL 客户端。
 
-### 12.6 进阶主题
+### 11.6 进阶主题
 
 - **Lua 字节码优化器**:针对标准 Lua 解释器的 IR 优化,类似 LuaJIT 但不 JIT。
 - **Lua 与 WebAssembly**:Wasmoon、fengari 等项目将 Lua 移植到 WASM。

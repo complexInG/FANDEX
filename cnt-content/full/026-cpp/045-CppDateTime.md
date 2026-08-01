@@ -25,28 +25,16 @@ prerequisites:
   - cpp/概述与现代标准
   - cpp/类型系统
 ---
+
 # C++ 日期时间库
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-| Bloom 层级 | 目标描述 |
-| :--- | :--- |
-| **Remember（记忆）** | 列举 `<chrono>` 的三大核心抽象（duration、time_point、clock），复述 `system_clock`、`steady_clock`、`high_resolution_clock` 的差异 |
-| **Understand（理解）** | 解释 chrono 库的类型安全设计：为什么 `1s + 1ms` 编译通过而 `1s + 1` 编译失败；说明 epoch、tick、period 的关系 |
-| **Apply（应用）** | 使用 `std::chrono::duration_cast`、`time_point_cast`、C++20 日历字面量 `2026y/July/21` 进行时间计算与格式化 |
-| **Analyze（分析）** | 分析代码中的精度损失、溢出风险、时区转换错误，识别 `system_clock::now()` 跨进程不单调的陷阱 |
-| **Evaluate（评价）** | 评估 `steady_clock` vs `high_resolution_clock` vs `system_clock` 在性能基准、日志时间戳、跨机器同步场景下的取舍 |
-| **Create（创造）** | 设计类型安全的时间单位系统、实现自定义 Clock（如 TAI clock）、封装跨平台高精度计时器与定时任务调度 |
-
-## 2. 历史动机与发展脉络
-
-### 2.1 C++11 之前：时间处理的黑暗时代
+### 1.1 C++11 之前：时间处理的黑暗时代
 
 C++98/03 没有标准的时间库，开发者只能依赖 C 标准库的 `<ctime>`：
 
@@ -72,7 +60,7 @@ C++03 时代的替代方案：
 - ACE_Time_Value：双精度秒 + 微秒，强耦合 ACE 框架
 - Qt 的 `QDateTime`：Qt 生态专用
 
-### 2.2 C++11 chrono：Howard Hinnant 的突破
+### 1.2 C++11 chrono：Howard Hinnant 的突破
 
 2008 年，Howard Hinnant（libc++ 作者、移动语义奠基人）提出 N2661 提案 *A Foundation to Sleep On*，将 Boost.Date_Time 的核心思想简化、泛化后纳入 C++11 标准。chrono 库的三大设计目标：
 
@@ -109,7 +97,7 @@ auto t3 = t1 + t2;  // duration<double, ratio<1>>：1.001 秒，自动提升
 // auto bad = 1s + 1;  // 编译失败：1 是 int，不是 duration
 ```
 
-### 2.3 C++14/17：用户自定义字面量与 floor/round/ceil
+### 1.3 C++14/17：用户自定义字面量与 floor/round/ceil
 
 C++14 引入 `std::chrono_literals` 命名空间，提供 `h`、`min`、`s`、`ms`、`us`、`ns` 后缀：
 
@@ -128,7 +116,7 @@ auto day_start = floor<days>(now);  // 截断到当天 00:00
 auto rounded = round<hours>(now);    // 四舍五入到小时
 ```
 
-### 2.4 C++20：日历与时区革命
+### 1.4 C++20：日历与时区革命
 
 C++20 是 chrono 库最大的一次扩展，由 Howard Hinnant 主导（基于其个人库 `date`）。新增内容：
 
@@ -155,7 +143,7 @@ auto tokyo_time = zoned_time{"Asia/Tokyo", system_clock::now()};
 std::cout << format("{:%Y-%m-%d %H:%M:%S %Z}\n", ny_time);
 ```
 
-### 2.5 C++23 持续完善
+### 1.5 C++23 持续完善
 
 C++23 对 chrono 的增强较为温和：
 
@@ -170,7 +158,7 @@ auto t = 2026y/July/21 + 14h + 30min;
 std::cout << t << "\n";  // 直接输出
 ```
 
-### 2.6 C++26 草案
+### 1.6 C++26 草案
 
 C++26 持续完善 chrono：
 
@@ -179,7 +167,7 @@ C++26 持续完善 chrono：
 - 与 `std::execution` Sender/Receiver 的集成（异步定时）
 - `<chrono>` 与 `<format>` 的进一步整合
 
-### 2.7 关键提案与文献
+### 1.7 关键提案与文献
 
 - **N2661 (Hinnant, 2008)**：*A Foundation to Sleep On*，chrono 奠基提案
 - **N3344 (Hinnant, 2012)**：*Formatting for chrono*，早期格式化提案
@@ -190,7 +178,7 @@ C++26 持续完善 chrono：
 - **P2372R0 (Hinnant, 2021)**：*Fixing locale handling in `chrono`'s formatter*
 - **P2445R1 (Hinnant, 2022)**：*`std::is_clock`*
 
-### 2.8 与其他语言的横向对比
+### 1.8 与其他语言的横向对比
 
 | 特性 | C++ chrono | Rust chrono | Java java.time | Python datetime | Go time |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -201,9 +189,9 @@ C++26 持续完善 chrono：
 | 零开销 | 是 | 是 | 否 | 否 | 否 |
 | 格式化 | C++20 `format` | `strftime` | `DateTimeFormatter` | `strftime` | `time.Format` |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Duration 的形式化
+### 2.1 Duration 的形式化
 
 `std::chrono::duration` 是 chrono 库的核心类型，表示一段时间间隔。
 
@@ -235,7 +223,7 @@ $$
 
 注意：`months` 与 `years` 使用平均时长（gregorian 平均），不能用于精确日历计算。日历计算应使用 `year_month` 等日历类型。
 
-### 3.2 Time Point 的形式化
+### 2.2 Time Point 的形式化
 
 `std::chrono::time_point` 表示相对于某个时钟 epoch 的时间点。
 
@@ -261,7 +249,7 @@ $$
 | `gps_clock`（C++20） | 1980-01-06 00:00:00 GPS | 纳秒 |
 | `file_clock`（C++20） | 实现定义（用于 `time_t` 兼容） | 平台相关 |
 
-### 3.3 类型安全的代数规则
+### 2.3 类型安全的代数规则
 
 chrono 库通过模板特化实现了类型安全的代数运算规则。设 $d_1 = (r_1, p_1)$, $d_2 = (r_2, p_2)$ 为两个 duration，$t$ 为 time_point，则：
 
@@ -308,7 +296,7 @@ auto t4 = t1 / t2;   // 2 (long long)
 auto t5 = t1 * 2.5;  // (double, ratio<1>) = 2.5s
 ```
 
-### 3.4 C++20 日历类型的形式化
+### 2.4 C++20 日历类型的形式化
 
 C++20 引入日历类型，将日历字段建模为独立的强类型：
 
@@ -338,7 +326,7 @@ sys_days tp = today;             // 转 time_point（天精度）
 sys_seconds ts = today + 14h;    // 转 time_point（秒精度）
 ```
 
-### 3.5 时区与 leap second
+### 2.5 时区与 leap second
 
 C++20 时区基于 IANA 时区数据库（如 `America/New_York`、`Asia/Tokyo`）。时区信息包括：
 
@@ -367,9 +355,9 @@ auto sys_now = clock_cast<system_clock>(utc_now);
 // 二者差异 = 自 1972 年以来的闰秒数（约 27 秒）
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 类型安全：编译期单位检查
+### 3.1 类型安全：编译期单位检查
 
 chrono 的核心设计是"不同单位是不同类型"。这通过 `ratio` 模板实现：
 
@@ -392,7 +380,7 @@ $$
 
 结果类型为 `milliseconds`，自动窄化到毫秒精度。
 
-### 4.2 duration_cast 的精度损失
+### 3.2 duration_cast 的精度损失
 
 当目标类型精度低于源类型时，`duration_cast` 执行截断（truncate）：
 
@@ -415,7 +403,7 @@ auto floored = floor<seconds>(1500ms);  // 1s
 auto ceiled  = ceil<seconds>(1500ms);   // 2s
 ```
 
-### 4.3 时钟的单调性与线程安全
+### 3.3 时钟的单调性与线程安全
 
 **system_clock**：
 
@@ -454,7 +442,7 @@ auto end = steady_clock::now();
 auto elapsed = end - start;  // 保证非负
 ```
 
-### 4.4 epoch 与 Y2038 问题
+### 3.4 epoch 与 Y2038 问题
 
 `time_t` 在 32 位系统上通常为 `int32_t`，1970-01-01 起 $2^{31}$ 秒后溢出：
 
@@ -468,7 +456,7 @@ $$
 
 C++20 引入 `file_clock`，专门用于文件系统时间戳，避免 Y2038 问题。
 
-### 4.5 C++20 日历算法
+### 3.5 C++20 日历算法
 
 C++20 日历类型实现了完整的格里高利历算法。关键算法：
 
@@ -501,7 +489,7 @@ $$
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 天 | 31 | 28/29 | 31 | 30 | 31 | 30 | 31 | 31 | 30 | 31 | 30 | 31 |
 
-### 4.6 时区与 UTC 偏移
+### 3.6 时区与 UTC 偏移
 
 时区转换涉及 UTC 偏移量（offset）。例如：
 
@@ -528,7 +516,7 @@ auto zt = zoned_time{"America/New_York", ambiguous};
 auto zt2 = zoned_time{"America/New_York", ambiguous, choose::latest};
 ```
 
-### 4.7 leap second 的处理
+### 3.7 leap second 的处理
 
 Leap second 由 IERS（国际地球自转与参考系统服务）根据地球自转速度决定插入，通常在 6 月 30 日或 12 月 31 日的 23:59:60 UTC。
 
@@ -548,9 +536,9 @@ auto back_to_sys = clock_cast<system_clock>(utc_leap);
 
 注意：`utc_clock` 的实现依赖 IANA leap second 数据库，C++20 标准未规定如何获取该数据库。
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 基础：计时与休眠
+### 4.1 基础：计时与休眠
 
 ```cpp
 #include <chrono>
@@ -590,7 +578,7 @@ int main() {
 }
 ```
 
-### 5.2 性能基准：高精度计时
+### 4.2 性能基准：高精度计时
 
 ```cpp
 #include <chrono>
@@ -665,7 +653,7 @@ int main() {
 }
 ```
 
-### 5.3 日历计算
+### 4.3 日历计算
 
 ```cpp
 #include <chrono>
@@ -713,7 +701,7 @@ int main() {
 }
 ```
 
-### 5.4 时区转换
+### 4.4 时区转换
 
 ```cpp
 #include <chrono>
@@ -753,7 +741,7 @@ int main() {
 }
 ```
 
-### 5.5 格式化与解析
+### 4.5 格式化与解析
 
 ```cpp
 #include <chrono>
@@ -804,7 +792,7 @@ int main() {
 }
 ```
 
-### 5.6 自定义 Clock
+### 4.6 自定义 Clock
 
 ```cpp
 #include <chrono>
@@ -846,7 +834,7 @@ void test_with_mock_clock() {
 }
 ```
 
-### 5.7 定时任务调度器
+### 4.7 定时任务调度器
 
 ```cpp
 #include <chrono>
@@ -921,7 +909,7 @@ private:
 };
 ```
 
-### 5.8 日志时间戳
+### 4.8 日志时间戳
 
 ```cpp
 #include <chrono>
@@ -959,7 +947,7 @@ void log_demo() {
 }
 ```
 
-### 5.9 跨平台高精度计时
+### 4.9 跨平台高精度计时
 
 ```cpp
 #include <chrono>
@@ -1011,7 +999,7 @@ int main() {
 }
 ```
 
-### 5.10 时间窗口限流
+### 4.10 时间窗口限流
 
 ```cpp
 #include <chrono>
@@ -1048,9 +1036,9 @@ private:
 };
 ```
 
-## 6. 对比分析（横向对比）
+## 5. 对比分析（横向对比）
 
-### 6.1 C++ chrono vs Rust chrono
+### 5.1 C++ chrono vs Rust chrono
 
 ```rust
 // Rust 风格
@@ -1076,7 +1064,7 @@ auto date = 2026y/July/21;
 | 闰秒 | C++20 utc_clock | 部分 |
 | API 易用性 | 中等（模板冗长） | 较好 |
 
-### 6.2 C++ chrono vs Java java.time
+### 5.2 C++ chrono vs Java java.time
 
 ```java
 // Java 风格
@@ -1094,7 +1082,7 @@ LocalDate date = LocalDate.of(2026, 7, 21);
 | 不可变性 | time_point 值类型 | 不可变对象 |
 | API 易用性 | 中等 | 高 |
 
-### 6.3 C++ chrono vs Python datetime
+### 5.3 C++ chrono vs Python datetime
 
 ```python
 # Python 风格
@@ -1113,7 +1101,7 @@ elapsed = timedelta(seconds=1.5)
 | 闰秒 | C++20 | 否 |
 | API 易用性 | 中等 | 高 |
 
-### 6.4 steady_clock vs system_clock vs high_resolution_clock
+### 5.4 steady_clock vs system_clock vs high_resolution_clock
 
 | 维度 | `steady_clock` | `system_clock` | `high_resolution_clock` |
 | :--- | :--- | :--- | :--- |
@@ -1126,9 +1114,9 @@ elapsed = timedelta(seconds=1.5)
 | 适用：日志时间戳 | 不推荐 | 推荐 | 不推荐 |
 | 适用：定时任务 | 推荐 | 可用 | 可用 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：性能测量用 system_clock
+### 6.1 陷阱：性能测量用 system_clock
 
 ```cpp
 // 错误：system_clock 可能回退
@@ -1144,7 +1132,7 @@ auto end = steady_clock::now();
 auto elapsed = duration_cast<milliseconds>(end - start);
 ```
 
-### 7.2 陷阱：精度损失
+### 6.2 陷阱：精度损失
 
 ```cpp
 // 错误：duration_cast 截断
@@ -1156,7 +1144,7 @@ auto rounded = round<seconds>(t);  // 2s
 auto precise = duration<double>(t);  // 1.5s
 ```
 
-### 7.3 陷阱：整数溢出
+### 6.3 陷阱：整数溢出
 
 ```cpp
 // 错误：小类型累加大时长
@@ -1172,7 +1160,7 @@ for (int i = 0; i < 1000000; ++i) {
 }
 ```
 
-### 7.4 陷阱：时区 DST 歧义
+### 6.4 陷阱：时区 DST 歧义
 
 ```cpp
 // 错误：未处理 DST 切换的歧义
@@ -1184,7 +1172,7 @@ auto zt_earlier = zoned_time{"America/New_York", local, choose::earliest};
 auto zt_later = zoned_time{"America/New_York", local, choose::latest};
 ```
 
-### 7.5 陷阱：months 与 years 的平均时长
+### 6.5 陷阱：months 与 years 的平均时长
 
 ```cpp
 // 错误：用 months 做精确日历计算
@@ -1199,7 +1187,7 @@ auto last_day = year_month_day_last{ym.year(), month_day_last{ym.month()}}.day()
 auto result = ym / min(ymd.day(), last_day);  // 2026-02-28
 ```
 
-### 7.6 陷阱：utc_clock 与 system_clock 的差异
+### 6.6 陷阱：utc_clock 与 system_clock 的差异
 
 ```cpp
 // utc_clock 包含闰秒，system_clock 不包含
@@ -1209,7 +1197,7 @@ auto sys_now = system_clock::now();
 auto diff = utc_now - clock_cast<utc_clock>(sys_now);  // 约 27s
 ```
 
-### 7.7 陷阱：steady_clock 跨进程不一致
+### 6.7 陷阱：steady_clock 跨进程不一致
 
 ```cpp
 // 错误：用 steady_clock 同步多机器
@@ -1226,7 +1214,7 @@ auto t1 = system_clock::now();
 auto elapsed = system_clock::now() - t1;  // 跨机器比较
 ```
 
-### 7.8 陷阱：sleep_for 的精度
+### 6.8 陷阱：sleep_for 的精度
 
 ```cpp
 // 错误：期望 sleep_for(1ms) 准确睡眠 1ms
@@ -1243,7 +1231,7 @@ void precise_sleep(nanoseconds ns) {
 }
 ```
 
-### 7.9 陷阱：localtime 非线程安全
+### 6.9 陷阱：localtime 非线程安全
 
 ```cpp
 // 错误：C 风格 localtime
@@ -1258,7 +1246,7 @@ auto date = year_month_day{floor<days>(now)};
 // 或 C11 的 localtime_s（Windows）与 localtime_r（POSIX）
 ```
 
-### 7.10 陷阱：zoned_time 的构造
+### 6.10 陷阱：zoned_time 的构造
 
 ```cpp
 // 错误：直接构造 zoned_time 字符串
@@ -1269,7 +1257,7 @@ auto t = sys_days{2026y/July/21} + 14h;
 zoned_time zt{"Asia/Tokyo", t};
 ```
 
-### 7.11 最佳实践：使用字面量
+### 6.11 最佳实践：使用字面量
 
 ```cpp
 // 不推荐
@@ -1280,7 +1268,7 @@ using namespace std::chrono_literals;
 auto delay = 100ms;
 ```
 
-### 7.12 最佳实践：使用 C++20 日历类型
+### 6.12 最佳实践：使用 C++20 日历类型
 
 ```cpp
 // 旧风格：手动处理闰年
@@ -1296,9 +1284,9 @@ auto last = year_month_day_last{2026y, month_day_last{February}}.day();
 // 2026 年非闰年，last = 28d
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 时钟选择决策
+### 7.1 时钟选择决策
 
 ```mermaid
 flowchart TD
@@ -1317,7 +1305,7 @@ flowchart TD
     T4 --> T7
 ```
 
-### 8.2 日志时间戳格式
+### 7.2 日志时间戳格式
 
 推荐 ISO 8601 + 时区：
 
@@ -1328,7 +1316,7 @@ std::cout << std::format("{:%Y-%m-%dT%H:%M:%S%z}\n", zt);
 // 输出：2026-07-21T14:30:00+0800
 ```
 
-### 8.3 性能基准最佳实践
+### 7.3 性能基准最佳实践
 
 ```cpp
 // 1. 使用 steady_clock
@@ -1358,7 +1346,7 @@ public:
 };
 ```
 
-### 8.4 时区数据库管理
+### 7.4 时区数据库管理
 
 C++20 时区数据库（`tz.db`）通常位于：
 
@@ -1379,7 +1367,7 @@ try {
 }
 ```
 
-### 8.5 跨平台精度处理
+### 7.5 跨平台精度处理
 
 ```cpp
 // Windows: QueryPerformanceCounter 精度通常 100ns
@@ -1392,7 +1380,7 @@ std::cout << "Resolution: "
           << duration_cast<nanoseconds>(res).count() << " ns\n";
 ```
 
-### 8.6 时间序列数据处理
+### 7.6 时间序列数据处理
 
 ```cpp
 #include <chrono>
@@ -1423,9 +1411,9 @@ aggregate_by_window(const std::vector<std::pair<sys_seconds, T>>& data, seconds 
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：分布式系统时钟同步
+### 8.1 案例一：分布式系统时钟同步
 
 **场景**：微服务架构中，请求经过多个服务，需要追踪每个服务的处理时间。
 
@@ -1491,7 +1479,7 @@ void handle_request() {
 }
 ```
 
-### 9.2 案例二：交易日历
+### 8.2 案例二：交易日历
 
 **场景**：金融系统需要根据交易日历（如 NYSE）判断是否为交易日。
 
@@ -1539,7 +1527,7 @@ private:
 };
 ```
 
-### 9.3 案例三：定时任务系统
+### 8.3 案例三：定时任务系统
 
 **场景**：实现类似 cron 的定时任务调度，支持 "每天 14:30 执行"。
 
@@ -1613,7 +1601,7 @@ private:
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（Remember/Understand）
+### 9.1 基础题（Remember/Understand）
 
 **题目 1**：列举 `<chrono>` 库的三大核心抽象，各举一个例子。
 
@@ -1628,7 +1616,7 @@ auto t3 = t1 + t2;
 std::cout << t3.count() << "\n";  // 输出？
 ```
 
-### 10.2 中级题（Apply/Analyze）
+### 9.2 中级题（Apply/Analyze）
 
 **题目 4**：实现函数 `format_duration`，将时长格式化为 "1h 23m 45s" 形式。
 
@@ -1692,7 +1680,7 @@ days days_to_birthday(year_month_day birthday) {
 }
 ```
 
-### 10.3 高级题（Evaluate/Create）
+### 9.3 高级题（Evaluate/Create）
 
 **题目 7**：评估在 C++20 中使用 `utc_clock` vs `system_clock` 的取舍。
 
@@ -1800,7 +1788,7 @@ private:
 };
 ```
 
-### 10.4 开放题（Create）
+### 9.4 开放题（Create）
 
 **题目 11**：设计一个分布式系统的逻辑时钟（Lamport Clock）实现，使用 chrono 库。
 
@@ -1818,14 +1806,14 @@ private:
 - 工作时间可能跨日（如夜班）
 - 加班计算基于本地时间
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准文档
+### 10.1 标准文档
 
 - ISO/IEC 14882:2023 *Information technology — Programming languages — C++*，§27 Time library
 - ISO/IEC 9899:2018 *C17*，§7.27 Time handling（C 兼容部分）
 
-### 11.2 核心提案
+### 10.2 核心提案
 
 - N2661 *A Foundation to Sleep On*（Hinnant, 2008）
 - P0355R7 *Extending `<chrono>` to Calendars and Time Zones*（Hinnant, 2018）
@@ -1835,33 +1823,33 @@ private:
 - P2372R0 *Fixing locale handling in `chrono`'s formatter*
 - P2445R1 *`std::is_clock`*
 
-### 11.3 学术论文
+### 10.3 学术论文
 
 - Lamport, Leslie. *Time, Clocks, and the Ordering of Events in a Distributed System*. CACM, 1978.
 - Hinnant, Howard. *`<chrono>` Demystified*. CppCon 2016.
 
-### 11.4 经典教材
+### 10.4 经典教材
 
 - Stroustrup, Bjarne. *The C++ Programming Language*. 4th ed., Addison-Wesley, 2013.（Chapter 35: Time）
 - Josuttis, Nicolai. *C++20 - The Complete Guide*. 2022.（Chapter 11: Chrono Extensions）
 - Williams, Anthony. *C++ Concurrency in Action*. 2nd ed., Manning, 2019.
 
-### 11.5 在线资源
+### 10.5 在线资源
 
 - cppreference.com *Chrono library*: https://en.cppreference.com/w/cpp/chrono
 - Hinnant *Date library*: https://github.com/HowardHinnant/date
 - IANA Time Zone Database: https://www.iana.org/time-zones
 - IERS Leap Second: https://www.iers.org/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶书籍
+### 11.1 进阶书籍
 
 - Hinnant, Howard. *C++23 - The Complete Guide*. 2023.（chrono 章节）
 - Román, Iván. *C++20 - The Complete Guide*. 2022.
 - Tanenbaum, Andrew. *Distributed Systems*. 3rd ed., 2017.（时钟同步章节）
 
-### 12.2 视频课程
+### 11.2 视频课程
 
 - CppCon talks:
   - Howard Hinnant *`<chrono>` Demystified* (2016)
@@ -1870,14 +1858,14 @@ private:
 - MIT 6.824 *Distributed Systems*（Lamport Clock 章节）
 - Stanford CS110 *Principles of Computer Systems*（时钟同步）
 
-### 12.3 开源实现
+### 11.3 开源实现
 
 - libstdc++ *Chrono*: https://github.com/gcc-mirror/gcc/tree/master/libstdc++-v3/include/std/chrono
 - libc++ *Chrono*: https://github.com/llvm/llvm-project/tree/main/libcxx/include/chrono
 - MSVC STL *Chrono*: https://github.com/microsoft/STL
 - Howard Hinnant *Date library*: https://github.com/HowardHinnant/date
 
-### 12.4 相关主题
+### 11.4 相关主题
 
 - C++20 Ranges（详见 *cpp/C++20范围*）
 - C++20 概念（详见 *cpp/C++20概念*）
@@ -1885,7 +1873,7 @@ private:
 - C++26 与最新标准（详见 *cpp/C++26与最新标准*）
 - 并发编程（详见 *cpp/并发编程*）
 
-### 12.5 实践建议
+### 11.5 实践建议
 
 1. **理解类型安全**：先掌握 `duration`、`time_point`、`clock` 三大抽象
 2. **优先 steady_clock**：性能测量、定时任务用 `steady_clock`

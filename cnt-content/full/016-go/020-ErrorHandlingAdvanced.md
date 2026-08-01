@@ -19,60 +19,16 @@ prerequisites:
   - go/接口与类型断言
 ---
 
+
 # 错误处理进阶：error 接口、错误链与生产级实践
 
 > 本文以 Go 1.22 为基准版本，深入解析 `error` 接口的语义、`errors.Is`/`errors.As` 的反射实现、`%w` 包装机制、`panic`/`recover` 的 runtime 行为，以及 Go 1.13→1.20→1.22 错误语义的演进。适用于已掌握 Go 基础语法、希望编写健壮生产代码的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。
-
-### 1.1 Remember（记忆）
-
-- 准确复述 `error` 接口的定义：单一方法 `Error() string`。
-- 列出 `errors` 包的标准函数：`New`、`Is`、`As`、`Unwrap`、`Join`、`As`。
-- 背诵 Go 错误处理的四条铁律：error 是值、error 必须被检查、`%w` 用于包装、`panic` 仅用于不可恢复错误。
-- 复述 `panic`/`recover` 的执行语义：panic 沿调用栈向上展开，recover 仅在 defer 函数中生效。
-
-### 1.2 Understand（理解）
-
-- 解释 `errors.Is` 与 `errors.As` 的区别：前者按值匹配，后者按类型匹配。
-- 描述 `fmt.Errorf("%w", err)` 在 Go 1.13 后的内部实现：返回 `wrapError` 结构体，实现 `Unwrap()` 方法。
-- 阐述 `errors.Join`（Go 1.20）的设计动机：合并多个错误为单一错误，支持批量错误回报。
-- 说明 `panic` 在 runtime 中的实现：`gopanic` 与 `gorecover` 的交互机制。
-
-### 1.3 Apply（应用）
-
-- 在生产代码中正确使用 `errors.Is(err, os.ErrNotExist)` 检查文件错误。
-- 使用 `errors.As(err, &pathErr)` 提取路径错误的具体字段。
-- 设计自定义错误类型，支持 `Code`、`Message`、`Cause` 三层结构。
-- 使用 `errors.Join` 聚合并发任务中的多个错误。
-
-### 1.4 Analyze（分析）
-
-- 分析 `errors.Is` 的递归 Unwrap 算法，推导最坏情况时间复杂度。
-- 对比 Go 错误处理与 Java checked exception、Rust `Result<T, E>`、Haskell `Either` 的设计差异。
-- 推导 `panic` 在 goroutine 中的传播边界：跨 goroutine 不可恢复，会导致进程崩溃。
-
-### 1.5 Evaluate（评价）
-
-- 评估"error chain 过深"反模式的危害（如 10 层包装导致 `errors.Is` 性能下降）。
-- 评价 Go 1.20 引入 `errors.Join` 的必要性，对比 `multierror` 第三方库。
-- 判断何时该用 `panic` 而非 `error`（如编程错误、初始化失败、不可恢复状态）。
-
-### 1.6 Create（创造）
-
-- 设计一个支持错误码（error code）、错误链、堆栈追踪的生产级错误库。
-- 实现一个并发任务错误聚合器，支持 `Join` 语义与第一个错误快速返回。
-- 基于 `panic`/`recover` 设计一个 HTTP 服务的 graceful degradation 中间件。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 Go 1.0（2012-03）：error 接口的诞生
+### 1.1 Go 1.0（2012-03）：error 接口的诞生
 
 Go 1.0 由 Rob Pike 等人设计，明确拒绝 Java 的 checked exception 机制。设计哲学：
 
@@ -97,11 +53,11 @@ func New(text string) error
 // fmt.Errorf 用于格式化错误
 ```
 
-### 2.2 Go 1.13（2019-09）：错误包装革命
+### 1.2 Go 1.13（2019-09）：错误包装革命
 
 Go 1.13 由 Jonathan Amsterdam 主导，引入错误包装机制。这是 Go 错误处理历史上最大的一次升级：
 
-#### 2.2.1 Unwrap 接口（隐式）
+#### 1.2.1 Unwrap 接口（隐式）
 
 ```go
 // 内部约定（非导出接口）
@@ -112,7 +68,7 @@ type wrapper interface {
 
 任何实现 `Unwrap() error` 的错误类型都支持错误链遍历。
 
-#### 2.2.2 errors.Is 与 errors.As
+#### 1.2.2 errors.Is 与 errors.As
 
 ```go
 func Is(err, target error) bool
@@ -120,7 +76,7 @@ func As(err error, target interface{}) bool
 func Unwrap(err error) error
 ```
 
-#### 2.2.3 fmt.Errorf 的 %w 动词
+#### 1.2.3 fmt.Errorf 的 %w 动词
 
 ```go
 // Go 1.13 之前
@@ -130,7 +86,7 @@ fmt.Errorf("failed: %v", err)  // 仅格式化，丢失原错误
 fmt.Errorf("failed: %w", err)  // 包装原错误，保留错误链
 ```
 
-### 2.3 Go 1.18（2022-03）：errors.Is 性能优化
+### 1.3 Go 1.18（2022-03）：errors.Is 性能优化
 
 Go 1.18 配合泛型引入，对 `errors.Is` 与 `errors.As` 进行性能优化：
 
@@ -138,7 +94,7 @@ Go 1.18 配合泛型引入，对 `errors.Is` 与 `errors.As` 进行性能优化�
 - 优化错误链遍历的分支预测
 - 引入 `errors.Join` 提案讨论
 
-### 2.4 Go 1.20（2023-02）：errors.Join 与 Unwrap() []error
+### 1.4 Go 1.20（2023-02）：errors.Join 与 Unwrap() []error
 
 Go 1.20 由 Robert Griesemer 等人推动，引入多错误包装：
 
@@ -160,7 +116,7 @@ type multiWrapper interface {
 
 `errors.Is` 与 `errors.As` 同时支持两种 Unwrap 签名，递归遍历错误树（DAG）。
 
-### 2.5 Go 1.21（2023-08）：log/slog 与错误集成
+### 1.5 Go 1.21（2023-08）：log/slog 与错误集成
 
 Go 1.21 引入结构化日志 `log/slog`，与错误处理深度集成：
 
@@ -174,7 +130,7 @@ slog.Error("request failed",
 
 `slog` 自动调用 `err.Error()`，并支持 `fmt.Stringer` 接口的自定义错误类型。
 
-### 2.6 Go 1.22（2024-02）：minor 优化
+### 1.6 Go 1.22（2024-02）：minor 优化
 
 Go 1.22 对 `errors.Is` 与 `errors.As` 进一步优化：
 
@@ -182,7 +138,7 @@ Go 1.22 对 `errors.Is` 与 `errors.As` 进一步优化：
 - 减少逃逸到堆的对象数
 - `errors.Join` 的 nil 过滤优化
 
-### 2.7 演进时间轴
+### 1.7 演进时间轴
 
 ```mermaid
 timeline
@@ -198,9 +154,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Go Language Spec 定义
+### 2.1 Go Language Spec 定义
 
 Go 语言规范对 error 类型的定义：
 
@@ -220,7 +176,7 @@ $$
 
 即：任何实现 `Error() string` 方法的类型都是 `error` 接口的实例。
 
-### 3.2 错误链的形式化模型
+### 2.2 错误链的形式化模型
 
 错误链可形式化为一个**有向无环图（DAG）** $G = (V, E)$，其中：
 
@@ -243,7 +199,7 @@ $$
 
 返回错误集合（幂集），错误链成为 DAG。
 
-### 3.3 errors.Is 的形式化定义
+### 2.3 errors.Is 的形式化定义
 
 $$
 \text{Is}(e, t) = \begin{cases}
@@ -255,7 +211,7 @@ $$
 
 即：递归遍历错误链，若任一节点等于目标错误 `t`，或该节点实现了 `Is(error) bool` 方法且返回 true，则返回 true。
 
-### 3.4 errors.As 的形式化定义
+### 2.4 errors.As 的形式化定义
 
 $$
 \text{As}(e, T) = \begin{cases}
@@ -267,7 +223,7 @@ $$
 
 即：递归遍历错误链，找到第一个可赋值给目标类型 `T` 的错误，赋值并返回 true。
 
-### 3.5 类型系统视角
+### 2.5 类型系统视角
 
 Go 的 error 接口体现了 **structural typing**（结构化类型系统）：
 
@@ -283,9 +239,9 @@ Go 的 error 接口体现了 **structural typing**（结构化类型系统）：
 | Nominal typing | Java, C#, Rust | 显式（声明 implements） |
 | Duck typing | Python, Ruby | 运行时（方法存在即可） |
 
-### 3.6 runtime 数据结构
+### 2.6 runtime 数据结构
 
-#### 3.6.1 errors.errorString（最简实现）
+#### 2.6.1 errors.errorString（最简实现）
 
 ```go
 // errors/errors.go
@@ -304,7 +260,7 @@ func New(text string) error {
 
 `errorString` 仅包含一个字符串字段，是最轻量的 error 实现。`errors.New("...")` 返回的就是 `*errorString`。
 
-#### 3.6.2 fmt.wrapError（%w 包装实现）
+#### 2.6.2 fmt.wrapError（%w 包装实现）
 
 ```go
 // fmt/errors.go
@@ -337,7 +293,7 @@ func (e *wrapError) Format(s fmt.State, verb rune) {
 
 `fmt.Errorf("%w", err)` 在 Go 1.13+ 返回 `*wrapError`，包含格式化消息 `msg` 与原始错误 `err`，并实现 `Unwrap()` 与 `Format()`。
 
-#### 3.6.3 errors.joinError（Go 1.20+）
+#### 2.6.3 errors.joinError（Go 1.20+）
 
 ```go
 // errors/join.go
@@ -365,9 +321,9 @@ func (e *joinError) Unwrap() []error {
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 errors.Is 的递归算法
+### 3.1 errors.Is 的递归算法
 
 ```go
 // errors/errors.go (Go 1.22)
@@ -422,7 +378,7 @@ func Is(err, target error) bool {
 - 空间复杂度：$O(d)$（多错误包装时递归调用栈）
 - 优化：`isComparable` 标志避免不可比较类型（如 slice、map、func）的 `==` 比较 panic
 
-### 4.2 errors.As 的反射算法
+### 3.2 errors.As 的反射算法
 
 ```go
 // errors/errors.go (Go 1.22)
@@ -472,7 +428,7 @@ func As(err error, target interface{}) bool {
 - 类型检查：`targetType` 必须是接口或实现 `error`
 - 赋值：使用 `reflect.Value.Set` 将错误赋值给目标指针
 
-### 4.3 错误链的复杂度分析
+### 3.3 错误链的复杂度分析
 
 假设错误链深度为 $d$，多错误包装的分支因子为 $b$（平均每个节点有 $b$ 个子错误）：
 
@@ -490,7 +446,7 @@ func As(err error, target interface{}) bool {
 - 避免在热路径上频繁 `errors.As`（反射开销大）
 - 多错误包装时，`Join` 的错误数建议 < 100
 
-### 4.4 panic 的 runtime 实现
+### 3.4 panic 的 runtime 实现
 
 `panic` 在 runtime 中由 `gopanic` 函数实现（`runtime/panic.go`）：
 
@@ -544,7 +500,7 @@ type _panic struct {
 }
 ```
 
-### 4.5 recover 的实现
+### 3.5 recover 的实现
 
 `recover` 由 `gorecover` 实现：
 
@@ -567,7 +523,7 @@ func gorecover(argp uintptr) interface{} {
 2. `argp` 必须匹配，确保 recover 只对当前 defer 函数的 panic 生效
 3. `recover` 返回 panic 参数，并将 `p.recovered` 置为 true
 
-### 4.6 panic 的传播边界
+### 3.6 panic 的传播边界
 
 panic 沿调用栈向上展开，但**不跨 goroutine**：
 
@@ -593,9 +549,9 @@ func main() {
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 go.mod 配置
+### 4.1 go.mod 配置
 
 ```go
 // go.mod
@@ -608,7 +564,7 @@ require (
 )
 ```
 
-### 5.2 基础：errors.New 与 fmt.Errorf
+### 4.2 基础：errors.New 与 fmt.Errorf
 
 ```go
 // error_basic.go
@@ -649,7 +605,7 @@ func main() {
 }
 ```
 
-### 5.3 自定义错误类型
+### 4.3 自定义错误类型
 
 ```go
 // error_custom.go
@@ -740,7 +696,7 @@ func errorsIs(err, target error) bool {
 }
 ```
 
-### 5.4 errors.Is 与 errors.As
+### 4.4 errors.Is 与 errors.As
 
 ```go
 // error_is_as.go
@@ -806,7 +762,7 @@ func main() {
 }
 ```
 
-### 5.5 errors.Join（Go 1.20+）
+### 4.5 errors.Join（Go 1.20+）
 
 ```go
 // error_join.go
@@ -856,7 +812,7 @@ func main() {
 }
 ```
 
-### 5.6 panic 与 recover
+### 4.6 panic 与 recover
 
 ```go
 // panic_recover.go
@@ -916,7 +872,7 @@ func main() {
 }
 ```
 
-### 5.7 生产级：错误码与错误链
+### 4.7 生产级：错误码与错误链
 
 ```go
 // error_production.go
@@ -1060,7 +1016,7 @@ func main() {
 }
 ```
 
-### 5.8 Benchmark：errors.Is 性能测试
+### 4.8 Benchmark：errors.Is 性能测试
 
 ```go
 // error_bench_test.go
@@ -1136,9 +1092,9 @@ BenchmarkJoin-8          10000000   158.0 ns/op
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Rust 的 Result<T, E> 对比
+### 5.1 与 Rust 的 Result<T, E> 对比
 
 | 维度 | Go error | Rust Result<T, E> |
 | --- | --- | --- |
@@ -1172,7 +1128,7 @@ func readFile(path string) (string, error) {
 }
 ```
 
-### 6.2 与 Java checked exception 对比
+### 5.2 与 Java checked exception 对比
 
 | 维度 | Go error | Java checked exception |
 | --- | --- | --- |
@@ -1206,7 +1162,7 @@ Rob Pike 在 *"Errors are values"* 一文中明确表示：
 
 即：Go 不强制处理错误，把决策权交给开发者。
 
-### 6.3 与 Python 异常对比
+### 5.3 与 Python 异常对比
 
 | 维度 | Go error | Python exception |
 | --- | --- | --- |
@@ -1217,7 +1173,7 @@ Rob Pike 在 *"Errors are values"* 一文中明确表示：
 | 控制流 | 顺序 | 非局部跳转 |
 | 风险 | 易遗漏检查 | 难以追踪控制流 |
 
-### 6.4 与 C++ 异常对比
+### 5.4 与 C++ 异常对比
 
 | 维度 | Go error | C++ exception |
 | --- | --- | --- |
@@ -1227,7 +1183,7 @@ Rob Pike 在 *"Errors are values"* 一文中明确表示：
 | 异常安全 | 无概念 | 基本/强/不抛出 三级保证 |
 | RTTI | 接口断言 | dynamic_cast |
 
-### 6.5 综合评价
+### 5.5 综合评价
 
 | 语言 | 优势 | 劣势 |
 | --- | --- | --- |
@@ -1239,9 +1195,9 @@ Rob Pike 在 *"Errors are values"* 一文中明确表示：
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：忽略 error 检查
+### 6.1 陷阱一：忽略 error 检查
 
 ```go
 // 反模式：忽略 error
@@ -1266,7 +1222,7 @@ func good() {
 }
 ```
 
-### 7.2 陷阱二：错误包装链过深
+### 6.2 陷阱二：错误包装链过深
 
 ```go
 // 反模式：10 层包装
@@ -1286,7 +1242,7 @@ func good() error {
 }
 ```
 
-### 7.3 陷阱三：用 %v 而非 %w 包装
+### 6.3 陷阱三：用 %v 而非 %w 包装
 
 ```go
 // 反模式：使用 %v 丢失错误链
@@ -1304,7 +1260,7 @@ func good() error {
 }
 ```
 
-### 7.4 陷阱四：recover 后不返回错误
+### 6.4 陷阱四：recover 后不返回错误
 
 ```go
 // 反模式：recover 后吞掉错误
@@ -1326,7 +1282,7 @@ func good() (err error) {
 }
 ```
 
-### 7.5 陷阱五：在 goroutine 中 panic 未 recover
+### 6.5 陷阱五：在 goroutine 中 panic 未 recover
 
 ```go
 // 反模式：goroutine panic 导致进程崩溃
@@ -1349,7 +1305,7 @@ func good() {
 }
 ```
 
-### 7.6 陷阱六：errors.As 目标类型错误
+### 6.6 陷阱六：errors.As 目标类型错误
 
 ```go
 // 反模式：目标类型不是指针
@@ -1365,7 +1321,7 @@ func good() {
 }
 ```
 
-### 7.7 陷阱七：自定义 error 类型未实现 Is/Unwrap
+### 6.7 陷阱七：自定义 error 类型未实现 Is/Unwrap
 
 ```go
 // 反模式：自定义错误未实现 Unwrap
@@ -1391,7 +1347,7 @@ func (e *GoodError) Is(target error) bool {
 }
 ```
 
-### 7.8 最佳实践清单
+### 6.8 最佳实践清单
 
 1. **始终检查 error**：不要用 `_` 忽略 error，除非有充分理由
 2. **早期返回**：`if err != nil { return err }`，避免深层嵌套
@@ -1406,9 +1362,9 @@ func (e *GoodError) Is(target error) bool {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 go module 与错误库组织
+### 7.1 go module 与错误库组织
 
 ```mermaid
 flowchart TD
@@ -1454,7 +1410,7 @@ const (
 )
 ```
 
-### 8.2 错误日志与 log/slog
+### 7.2 错误日志与 log/slog
 
 ```go
 // log_slog.go
@@ -1491,7 +1447,7 @@ func main() {
 }
 ```
 
-### 8.3 pprof 分析错误处理开销
+### 7.3 pprof 分析错误处理开销
 
 ```go
 // pprof.go
@@ -1529,7 +1485,7 @@ go tool pprof http://localhost:6060/debug/pprof/profile?seconds=10
 (pprof) list errors.Is
 ```
 
-### 8.4 错误处理中间件（HTTP）
+### 7.4 错误处理中间件（HTTP）
 
 ```go
 // middleware.go
@@ -1620,7 +1576,7 @@ func main() {
 }
 ```
 
-### 8.5 错误传递与重试
+### 7.5 错误传递与重试
 
 ```go
 // retry.go
@@ -1709,9 +1665,9 @@ func main() {
 }
 ```
 
-### 8.6 调试技巧
+### 7.6 调试技巧
 
-#### 8.6.1 打印错误链
+#### 7.6.1 打印错误链
 
 ```go
 // debug.go
@@ -1742,7 +1698,7 @@ func main() {
 }
 ```
 
-#### 8.6.2 使用 delve 调试
+#### 7.6.2 使用 delve 调试
 
 ```bash
 # 启动调试器
@@ -1761,7 +1717,7 @@ dlv debug ./cmd/server
 (dlv) step
 ```
 
-#### 8.6.3 Go 1.22 的 range over int 调试
+#### 7.6.3 Go 1.22 的 range over int 调试
 
 ```go
 // Go 1.22+ 简化循环
@@ -1772,9 +1728,9 @@ for range 10 {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Kubernetes：API 错误体系
+### 8.1 Kubernetes：API 错误体系
 
 Kubernetes API server 定义了完整的错误体系（`staging/src/k8s.io/apimachinery/pkg/api/errors/errors.go`）：
 
@@ -1828,7 +1784,7 @@ func ReasonForError(err error) metav1.StatusReason {
 2. 实现 `APIStatus` 接口供 `errors.As` 提取
 3. 提供 `IsNotFound`、`IsConflict` 等便利函数
 
-### 9.2 Docker：错误包装实践
+### 8.2 Docker：错误包装实践
 
 Docker（moby）在 `pkg/errors` 包封装了错误处理：
 
@@ -1869,7 +1825,7 @@ func WrapError(err error) *ErrorWithStack {
 }
 ```
 
-### 9.3 TiDB：错误码体系
+### 8.3 TiDB：错误码体系
 
 TiDB（pingcap/tidb）定义了详细的错误码体系（`errors/terror/terror.go`）：
 
@@ -1895,7 +1851,7 @@ const (
 )
 ```
 
-### 9.4 Prometheus：错误传播
+### 8.4 Prometheus：错误传播
 
 Prometheus 在查询引擎中使用错误传播：
 
@@ -1915,7 +1871,7 @@ func (e ErrQueryTimeout) Is(target error) bool {
 }
 ```
 
-### 9.5 Consul：自定义错误类型
+### 8.5 Consul：自定义错误类型
 
 HashiCorp Consul 在 `agent/consul/` 中定义了大量自定义错误：
 
@@ -1933,7 +1889,7 @@ func IsErrNotLeader(err error) bool {
 }
 ```
 
-### 9.6 案例总结
+### 8.6 案例总结
 
 | 项目 | 错误处理特点 | 设计哲学 |
 | --- | --- | --- |
@@ -2301,7 +2257,7 @@ func main() {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 Go 选择 `error` 接口而非异常机制？这种设计的优缺点是什么？
 
@@ -2464,9 +2420,9 @@ BenchmarkAs-8   20000000    72 ns/op
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 [1] Google LLC. 2029. *Go Language Specification: Errors*. Go Project. Retrieved July 20, 2026 from https://go.dev/ref/spec#Errors
 
@@ -2476,7 +2432,7 @@ BenchmarkAs-8   20000000    72 ns/op
 
 [4] Jonathan Amsterdam. 2019. *Go 1.13 Release Notes: Errors*. Go Project. https://go.dev/doc/go1.13#error_wrapping DOI: 10.1145/3332466.3332471
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [5] Goodenough, J. B. 1975. *Exception handling: Issues and a proposed notation*. Communications of the ACM 18, 12 (December 1975), 683–696. DOI: 10.1145/361227.361230
 
@@ -2486,7 +2442,7 @@ BenchmarkAs-8   20000000    72 ns/op
 
 [8] Dony, C., Buy, U., Knudsen, J. L., and Romanovsky, A. 2006. *Advanced Topics in Exception Handling Techniques*. Springer-Verlag, Berlin, Heidelberg. DOI: 10.1007/3-540-37445-5
 
-### 11.3 开源项目与博客
+### 10.3 开源项目与博客
 
 [9] Pike, R. 2015. *Errors are values*. The Go Blog. https://go.dev/blog/errors-are-values
 
@@ -2496,7 +2452,7 @@ BenchmarkAs-8   20000000    72 ns/op
 
 [12] Kubernetes Authors. 2024. *Kubernetes API Errors*. https://github.com/kubernetes/apimachinery/blob/master/pkg/api/errors/errors.go
 
-### 11.4 标准与规范
+### 10.4 标准与规范
 
 [13] ISO/IEC. 2023. *ISO/IEC 9899:2023 Information technology — Programming languages — C*. International Organization for Standardization, Geneva, Switzerland.
 
@@ -2504,9 +2460,9 @@ BenchmarkAs-8   20000000    72 ns/op
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 - **《The Go Programming Language》** — Alan A. A. Donovan & Brian W. Kernighan
   - 第 5 章：函数，第 7 章：接口，涵盖 error 设计哲学
@@ -2517,21 +2473,21 @@ BenchmarkAs-8   20000000    72 ns/op
 - **《Go in Action》** — William Kennedy, Brian Ketelsen, Erik St. Martin
   - 第 6 章：错误处理
 
-### 12.2 学术论文
+### 11.2 学术论文
 
 - *Exception Handling: Issues and a Proposed Notation* (Goodenough, 1975)
 - *Exception Handling for C++* (Koenig & Stroustrup, 1990)
 - *A Semantics for Multiple Inheritance* (Cardelli, 1988) — 类型系统视角
 - *Type Classes: Exploring the Design Space* (Peyton Jones et al., 1997) — 约束系统
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **Go 官方博客**：https://go.dev/blog/
 - **Effective Go**：https://go.dev/doc/effective_go#errors
 - **Go by Example: Errors**：https://gobyexample.com/errors
 - **Go Error Handling Patterns**：https://github.com/golang/go/wiki/Errors
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **错误链与 DAG**：多错误包装的图论视角
 - **错误码与 gRPC status**：跨语言错误传播
@@ -2541,14 +2497,14 @@ BenchmarkAs-8   20000000    72 ns/op
 - **Go 2 error handling 提案**：`check`/`handle` 语法的讨论历史
 - **泛型错误类型**：`Result[T, E]` 在 Go 中的实现可能性
 
-### 12.5 相关 Go 提案
+### 11.5 相关 Go 提案
 
 - **proposal: errors: add Unwrap() []error** (Issue #53435, Go 1.20)
 - **proposal: errors: add Join function** (Issue #53319, Go 1.20)
 - **proposal: log/slog: structured logging** (Issue #56345, Go 1.21)
 - **Go 2 Draft Designs: Error Handling** (2018, 后被搁置)
 
-### 12.6 实战项目
+### 11.6 实战项目
 
 - **hashicorp/go-multierror**：流行的多错误聚合库
 - **pkg/errors**：Docker 的错误包装库（含堆栈）

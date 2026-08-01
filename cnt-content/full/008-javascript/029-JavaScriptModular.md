@@ -17,22 +17,12 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
+
 # JavaScript 模块化
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 0. 学习目标
-
-完成本章节学习后，读者应能够：
-
-- **记忆（Remember）**：复述 JavaScript 模块化演进的关键节点（IIFE、CommonJS、AMD/CMD、UMD、ESM）及其代表实现。
-- **理解（Understand）**：解释 CommonJS 与 ES Modules 在加载时机、绑定语义、循环依赖处理、Tree-shaking 能力上的根本差异；说明 `module.exports`/`exports` 关系与陷阱。
-- **应用（Apply）**：在 Node.js 与浏览器环境中正确启用 ESM；使用 `package.json` 的 `exports` 字段控制包入口；使用 `import()` 实现按需加载与代码分割。
-- **分析（Analyze）**：对比 Webpack、Vite、Rollup、esbuild、Turbopack、Parcel 的适用场景、性能特征与生态成熟度；分析循环依赖成因并设计解耦方案。
-- **评估（Evaluate）**：在库开发与业务项目中判断模块导出策略（默认导出 vs 具名导出、Barrel Export）的合理性；评估 Tree-shaking 失效的根因。
-- **创造（Create）**：设计并实现一个支持双格式（CJS+ESM）发布的 npm 包，配置 `exports`、`type`、`main`、`module` 字段，并通过工具验证 Tree-shaking 效果。
 
 ## 1. 历史动机与背景
 
@@ -117,9 +107,9 @@ console.log(counter.count); // undefined（私有）
 
 **局限性**：无法管理依赖关系、无法按需加载、无法被其他模块静态分析。
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 模块系统的形式化模型
+### 1.1 模块系统的形式化模型
 
 一个模块系统可形式化为五元组：
 
@@ -135,7 +125,7 @@ $$
 - $R : M \to 2^\Sigma$ 为每个模块的导出符号集
 - $\text{resolve} : (m, s) \to m'$ 为符号解析函数，返回符号 $s$ 在模块 $m$ 中对应的源模块 $m'$
 
-### 2.2 依赖图与拓扑排序
+### 1.2 依赖图与拓扑排序
 
 模块依赖构成有向图 $G = (M, E)$。若 $G$ 为有向无环图（DAG），则存在拓扑排序 $\sigma$，使得模块按 $\sigma$ 顺序加载时所有依赖已就绪：
 
@@ -145,7 +135,7 @@ $$
 
 若 $G$ 包含环（循环依赖），则不存在拓扑排序，模块系统需采用特殊策略（如返回半成品、延迟求值）。
 
-### 2.3 CommonJS 的值拷贝语义
+### 1.3 CommonJS 的值拷贝语义
 
 CommonJS 的 `require` 返回的是导出对象的**值拷贝**（对原始类型）或**引用**（对对象）。形式化地，对于模块 $m$ 的导出对象 $E_m$：
 
@@ -155,7 +145,7 @@ $$
 
 其中 $t_{\text{require}}$ 是 `require` 调用时刻。后续 $E_m$ 的修改对已 require 的引用不可见（原始类型）或可见（对象属性）。
 
-### 2.4 ESM 的 Live Binding 语义
+### 1.4 ESM 的 Live Binding 语义
 
 ESM 的 `import` 是**实时绑定**，导入符号是源模块变量的间接引用：
 
@@ -165,7 +155,7 @@ $$
 
 任何时刻读取导入符号 $s$，等价于读取源模块 $m$ 中 $s$ 的当前值。修改源模块的 $s$ 会立即反映到所有导入处（但导入方不可直接修改 $s$）。
 
-### 2.5 静态分析的形式化
+### 1.5 静态分析的形式化
 
 ESM 的 `import`/`export` 必须在顶层静态声明，这意味着依赖图 $G$ 可在编译时构建：
 
@@ -181,9 +171,9 @@ $$
 
 这是 ESM 支持 Tree-shaking 的根本原因：未使用的导出可在编译时安全删除。
 
-## 3. 理论推导
+## 2. 理论推导
 
-### 3.1 模块解析算法复杂度
+### 2.1 模块解析算法复杂度
 
 Node.js 的模块解析算法涉及 `node_modules` 向上查找：
 
@@ -200,7 +190,7 @@ require('lodash') from /a/b/c/d.js
 
 ESM 的解析规则更严格（必须包含扩展名），但 `node_modules` 查找逻辑相同。
 
-### 3.2 Tree-shaking 的可达性分析
+### 2.2 Tree-shaking 的可达性分析
 
 Tree-shaking 本质是依赖图的可达性分析：
 
@@ -218,7 +208,7 @@ $$
 - 动态属性访问（`obj[someVar]()`）难以静态分析；
 - Class 方法可能通过原型链被外部调用。
 
-### 3.3 循环依赖的处理策略
+### 2.3 循环依赖的处理策略
 
 设模块 $A$ 与 $B$ 互相依赖（$A \to B \to A$），加载顺序为 $A$ 先执行：
 
@@ -229,7 +219,7 @@ $$
 
 **关键差异**：ESM 的 live binding 在循环依赖场景下最终能拿到完整值，而 CommonJS 拿到的是加载时刻的快照。
 
-### 3.4 模块缓存的内存影响
+### 2.4 模块缓存的内存影响
 
 CommonJS 的 `require.cache` 永久持有所有已加载模块的导出对象：
 
@@ -239,9 +229,9 @@ $$
 
 在长期运行的服务中，缓存可能导致内存泄漏。ESM 的模块记录同样不可回收，但 ESM 模块通常是单例且设计为无状态，泄漏风险较低。
 
-## 4. CommonJS 详解
+## 3. CommonJS 详解
 
-### 4.1 核心语法
+### 3.1 核心语法
 
 ```javascript
 // add.cjs
@@ -271,7 +261,7 @@ console.log(subtract(5, 3)); // 2
 console.log(multiply(4, 6)); // 24
 ```
 
-### 4.2 `module.exports` vs `exports` 陷阱
+### 3.2 `module.exports` vs `exports` 陷阱
 
 ```javascript
 // 陷阱：exports 是 module.exports 的引用，重新赋值 exports 不生效
@@ -297,7 +287,7 @@ exports.add = function (a, b) {
 
 其中 `exports = module.exports = {}`，故 `exports.add = ...` 等价于 `module.exports.add = ...`，但 `exports = {...}` 只修改了局部变量。
 
-### 4.3 `require()` 解析规则
+### 3.3 `require()` 解析规则
 
 `require` 的解析遵循以下顺序：
 
@@ -313,7 +303,7 @@ exports.add = function (a, b) {
 4. **node_modules**：`require('lodash')` 从当前目录向上逐级查找 `node_modules/lodash`；
 5. **NODE_PATH**：环境变量指定的额外查找路径（不推荐使用）。
 
-### 4.4 模块缓存机制
+### 3.4 模块缓存机制
 
 CommonJS 模块首次 `require` 后被缓存，后续 `require` 返回同一对象：
 
@@ -351,7 +341,7 @@ Object.keys(require.cache).forEach((key) => {
 });
 ```
 
-### 4.5 CommonJS 循环依赖详解
+### 3.5 CommonJS 循环依赖详解
 
 ```javascript
 // a.cjs
@@ -399,9 +389,9 @@ exports.doSomething = function () {
 // npx madge --circular src/
 ```
 
-## 5. ES Modules 详解
+## 4. ES Modules 详解
 
-### 5.1 具名导出与导入
+### 4.1 具名导出与导入
 
 ```javascript
 // math.js
@@ -438,7 +428,7 @@ console.log(sum(1, 2)); // 3
 export { add as sum, subtract as minus };
 ```
 
-### 5.2 默认导出与导入
+### 4.2 默认导出与导入
 
 ```javascript
 // logger.js
@@ -480,7 +470,7 @@ import mainFn, { helper, VERSION } from './utils.js';
 // mainFn 是默认导出，helper 和 VERSION 是具名导出
 ```
 
-### 5.3 命名空间导入
+### 4.3 命名空间导入
 
 ```javascript
 import * as math from './math.js';
@@ -495,7 +485,7 @@ console.log(math.PI); // 3.14159
 math.add = null; // TypeError: Cannot assign to read only property 'add'
 ```
 
-### 5.4 动态导入 `import()`
+### 4.4 动态导入 `import()`
 
 动态导入返回 Promise，适合按需加载与代码分割：
 
@@ -524,7 +514,7 @@ try {
 }
 ```
 
-### 5.5 `import.meta`
+### 4.5 `import.meta`
 
 ESM 模块中可访问模块自身元信息：
 
@@ -544,7 +534,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 ```
 
-### 5.6 顶层 `await`（ES2022）
+### 4.6 顶层 `await`（ES2022）
 
 在 ESM 模块顶层可直接使用 `await`：
 
@@ -559,7 +549,7 @@ export const config = await fetch('/api/config').then((r) => r.json());
 - 顶层 await 会阻塞依赖该模块的所有其他模块；
 - Webpack 需配置 `experiments.topLevelAwait: true`。
 
-### 5.7 ESM 的 Live Binding 实证
+### 4.7 ESM 的 Live Binding 实证
 
 ```javascript
 // counter.js
@@ -607,9 +597,9 @@ increment();
 console.log(count); // 0（值拷贝，不反映）
 ```
 
-## 6. ESM vs CommonJS 关键差异
+## 5. ESM vs CommonJS 关键差异
 
-### 6.1 完整对比表
+### 5.1 完整对比表
 
 | 维度 | CommonJS | ES Modules |
 | :--- | :--- | :--- |
@@ -625,7 +615,7 @@ console.log(count); // 0（值拷贝，不反映）
 | 文件扩展名 | `.cjs` / `.js` | `.mjs` / `.js`（type:module） |
 | 生态 | Node 传统 | 浏览器/现代 Node/打包器 |
 
-### 6.2 导出绑定差异示例
+### 5.2 导出绑定差异示例
 
 ```javascript
 // CommonJS：值拷贝
@@ -662,7 +652,7 @@ setTimeout(() => {
 }, 200);
 ```
 
-### 6.3 `this` 顶层差异
+### 5.3 `this` 顶层差异
 
 ```javascript
 // CommonJS
@@ -672,9 +662,9 @@ console.log(this === module.exports); // true
 console.log(this); // undefined
 ```
 
-## 7. AMD 与 CMD（历史方案）
+## 6. AMD 与 CMD（历史方案）
 
-### 7.1 AMD（Asynchronous Module Definition）
+### 6.1 AMD（Asynchronous Module Definition）
 
 AMD 是浏览器端最早的异步模块规范，代表实现是 **RequireJS**：
 
@@ -700,7 +690,7 @@ require(['myModule'], function (myModule) {
 - **依赖前置**：所有依赖在 `define` 第一个参数声明，加载后执行回调；
 - **回调函数**：模块定义在回调函数中。
 
-### 7.2 CMD（Common Module Definition）
+### 6.2 CMD（Common Module Definition）
 
 CMD 是国内提出的规范，代表实现是 **SeaJS**：
 
@@ -723,7 +713,7 @@ define(function (require, exports, module) {
 - **按需加载**：只在真正使用时加载依赖；
 - **写法更接近 CommonJS**。
 
-### 7.3 AMD vs CMD 对比
+### 6.3 AMD vs CMD 对比
 
 | 对比项 | AMD | CMD |
 | :--- | :--- | :--- |
@@ -735,7 +725,7 @@ define(function (require, exports, module) {
 
 > **现状**：AMD/CMD 已被 ESM 完全取代，了解即可。现代项目统一使用 ESM。
 
-## 8. UMD（通用模块规范）
+## 7. UMD（通用模块规范）
 
 UMD 是一组跨环境兼容的模板，让同一份代码同时支持 CommonJS、AMD 与全局变量：
 
@@ -763,9 +753,9 @@ UMD 是一组跨环境兼容的模板，让同一份代码同时支持 CommonJS�
 
 **适用场景**：发布的库需要兼容旧环境（如不支持 ESM 的旧浏览器与 Node.js）。现代库推荐优先发布 ESM，CJS 作为回退。
 
-## 9. Node.js 中的 ESM 实践
+## 8. Node.js 中的 ESM 实践
 
-### 9.1 启用 ESM 的方式
+### 8.1 启用 ESM 的方式
 
 ```json
 // 方式 1：package.json 设置 type: module，.js 视为 ESM
@@ -787,7 +777,7 @@ import { add } from './math.mjs';
 const { add } = require('./math.cjs');
 ```
 
-### 9.2 ESM 中的文件扩展名
+### 8.2 ESM 中的文件扩展名
 
 ESM 的 `import` 要求相对路径必须包含完整扩展名：
 
@@ -804,7 +794,7 @@ import { add } from './utils'; // ERR_MODULE_NOT_FOUND
 
 这与 CommonJS 不同（CJS 可省略扩展名）。
 
-### 9.3 ESM 与 CommonJS 互操作
+### 8.3 ESM 与 CommonJS 互操作
 
 #### ESM 导入 CommonJS
 
@@ -871,7 +861,7 @@ console.log(esmMod.greet('World')); // 'Hello, World!'
 
 **限制**：仅支持无顶层 await 的 ESM 模块；需启用 `--experimental-require-module` 标志。
 
-### 9.4 `package.json` 的 `exports` 字段
+### 8.4 `package.json` 的 `exports` 字段
 
 `exports` 是现代 npm 包控制入口的核心字段：
 
@@ -911,7 +901,7 @@ console.log(esmMod.greet('World')); // 'Hello, World!'
 4. `browser`：浏览器环境匹配
 5. `default`：兜底
 
-### 9.5 双格式发布的完整配置
+### 8.5 双格式发布的完整配置
 
 ```json
 {
@@ -950,9 +940,9 @@ console.log(esmMod.greet('World')); // 'Hello, World!'
 - `"files"`：发布时包含的文件
 - `"types"`：TypeScript 类型入口
 
-## 10. 模块打包工具
+## 9. 模块打包工具
 
-### 10.1 为什么需要打包工具
+### 9.1 为什么需要打包工具
 
 浏览器不支持 `require()`，也不支持 Node.js 的模块解析规则。打包工具解决：
 
@@ -963,7 +953,7 @@ console.log(esmMod.greet('World')); // 'Hello, World!'
 - 开发服务器与热更新（HMR）；
 - 性能优化（压缩、Tree-shaking、Scope Hoisting）。
 
-### 10.2 Webpack
+### 9.2 Webpack
 
 Webpack 是最成熟的打包工具，核心概念：
 
@@ -1047,7 +1037,7 @@ const routes = [
 ];
 ```
 
-### 10.3 Vite
+### 9.3 Vite
 
 Vite 是新一代构建工具，开发时利用浏览器原生 ESM，生产构建使用 Rollup：
 
@@ -1091,7 +1081,7 @@ export default defineConfig({
 | 生态成熟度 | 非常成熟 | 快速成长中 |
 | 适用场景 | 大型/复杂项目 | 新项目/快速迭代 |
 
-### 10.4 Rollup
+### 9.4 Rollup
 
 Rollup 专注于库打包，Tree-shaking 效果最好：
 
@@ -1136,7 +1126,7 @@ export default [
 
 **适用场景**：发布 npm 库；Tree-shaking 要求高；输出多种格式。
 
-### 10.5 esbuild
+### 9.5 esbuild
 
 esbuild 由 Go 语言编写，编译速度极快：
 
@@ -1164,7 +1154,7 @@ esbuild.build({
 - **不支持 HMR**：适合构建而非开发服务器；
 - **被 Vite 用作依赖预构建**。
 
-### 10.6 Turbopack
+### 9.6 Turbopack
 
 Turbopack 是 Vercel 推出的增量打包工具（Next.js 集成）：
 
@@ -1172,7 +1162,7 @@ Turbopack 是 Vercel 推出的增量打包工具（Next.js 集成）：
 - 增量计算，复用上次构建结果；
 - 与 Next.js 深度集成。
 
-### 10.7 Parcel
+### 9.7 Parcel
 
 Parcel 是零配置打包工具：
 
@@ -1188,7 +1178,7 @@ Parcel 是零配置打包工具：
 
 **特点**：零配置开箱即用；适合快速原型；生态不如 Webpack/Vite 丰富。
 
-### 10.8 打包工具选型决策
+### 9.8 打包工具选型决策
 
 | 场景 | 推荐工具 | 理由 |
 | :--- | :--- | :--- |
@@ -1199,9 +1189,9 @@ Parcel 是零配置打包工具：
 | Next.js 项目 | Turbopack | 与 Next.js 深度集成 |
 | 快速原型 | Parcel | 零配置 |
 
-## 11. 模块化最佳实践
+## 10. 模块化最佳实践
 
-### 11.1 导出设计原则
+### 10.1 导出设计原则
 
 **原则 1：一个模块一个职责**
 
@@ -1272,7 +1262,7 @@ import { User, Post } from './models/index.js';
 
 **改进**：在 `package.json` 配置 `sideEffects: false`，并测试 Tree-shaking 效果。
 
-### 11.2 循环依赖检测与消除
+### 10.2 循环依赖检测与消除
 
 **检测工具**：
 
@@ -1341,7 +1331,7 @@ const b = createB();
 const a = createA(b);
 ```
 
-### 11.3 Tree-shaking 友好写法
+### 10.3 Tree-shaking 友好写法
 
 ```javascript
 // 反模式：整体导入 lodash，无法 Tree-shake
@@ -1377,9 +1367,9 @@ export function helper() {}
 }
 ```
 
-### 11.4 模块设计模式
+### 10.4 模块设计模式
 
-#### 11.4.1 工厂模式
+#### 10.4.1 工厂模式
 
 ```javascript
 // logger.js
@@ -1401,7 +1391,7 @@ import { createLogger } from './logger.js';
 const logger = createLogger({ level: 'error' });
 ```
 
-#### 11.4.2 单例模式（谨慎使用）
+#### 10.4.2 单例模式（谨慎使用）
 
 ```javascript
 // config.js
@@ -1428,7 +1418,7 @@ export const config = {
 };
 ```
 
-#### 11.4.3 策略模式
+#### 10.4.3 策略模式
 
 ```javascript
 // strategies.js
@@ -1446,7 +1436,7 @@ import { strategies } from './strategies.js';
 const result = strategies[mode].execute(data);
 ```
 
-### 11.5 模块版本管理与 SemVer
+### 10.5 模块版本管理与 SemVer
 
 ```json
 // package.json
@@ -1473,9 +1463,9 @@ const result = strategies[mode].execute(data);
 - `1.2.3`：精确版本
 - `*`：任意版本
 
-## 12. 案例研究
+## 11. 案例研究
 
-### 12.1 案例 1：发布双格式 npm 包
+### 11.1 案例 1：发布双格式 npm 包
 
 **场景**：开发一个工具库 `string-utils`，需同时支持 ESM 和 CJS 用户，并最大化 Tree-shaking。
 
@@ -1587,7 +1577,7 @@ console.log(camelCase('hello world'));
 // 构建后应只包含 camelCase 的代码，不包含 kebabCase 和 snakeCase
 ```
 
-### 12.2 案例 2：CommonJS 项目迁移到 ESM
+### 11.2 案例 2：CommonJS 项目迁移到 ESM
 
 **场景**：一个使用 CommonJS 的 Node.js 项目需迁移到 ESM，要求平滑过渡。
 
@@ -1677,7 +1667,7 @@ grep -r "require(" src/
 grep -r "__dirname" src/
 ```
 
-### 12.3 案例 3：大型项目的模块边界管理
+### 11.3 案例 3：大型项目的模块边界管理
 
 **场景**：一个 Monorepo 包含多个包，需管理模块边界，防止内部实现被外部引用。
 
@@ -1744,7 +1734,7 @@ import { types } from '@my-org/core/types';
 import { utils } from '@my-org/core/internal/utils'; // ERR_PACKAGE_PATH_NOT_EXPORTED
 ```
 
-### 12.4 案例 4：动态导入实现按需加载
+### 11.4 案例 4：动态导入实现按需加载
 
 **场景**：一个 SPA 应用，路由页面较多，需实现按需加载以减小首屏体积。
 
@@ -1819,9 +1809,9 @@ document.addEventListener('mouseover', (e) => {
 });
 ```
 
-## 13. 常见陷阱与反模式
+## 12. 常见陷阱与反模式
 
-### 13.1 混用 ESM 和 CJS 导入
+### 12.1 混用 ESM 和 CJS 导入
 
 ```javascript
 // 反模式：ESM 中使用 require
@@ -1833,7 +1823,7 @@ import fs from 'fs';
 import path from 'path';
 ```
 
-### 13.2 忘记 `await` 动态 import
+### 12.2 忘记 `await` 动态 import
 
 ```javascript
 // 反模式：动态 import 返回 Promise
@@ -1845,7 +1835,7 @@ const module = await import('./feature.js');
 module.init();
 ```
 
-### 13.3 Barrel Export 破坏 Tree-shaking
+### 12.3 Barrel Export 破坏 Tree-shaking
 
 ```javascript
 // models/index.js
@@ -1873,7 +1863,7 @@ import { User } from './models/index.js';
 import { User } from './models/User.js';
 ```
 
-### 13.4 循环依赖导致 undefined
+### 12.4 循环依赖导致 undefined
 
 ```javascript
 // a.js
@@ -1889,7 +1879,7 @@ console.log('b loaded, a =', a); // a 可能是 undefined
 
 **修复**：提取共享逻辑或使用延迟调用。
 
-### 13.5 在 ESM 中修改导入
+### 12.5 在 ESM 中修改导入
 
 ```javascript
 // counter.js
@@ -1902,7 +1892,7 @@ count = 10; // TypeError: Assignment to constant variable
 
 **原因**：ESM 导入是只读 live binding。
 
-### 13.6 顶层 await 阻塞依赖
+### 12.6 顶层 await 阻塞依赖
 
 ```javascript
 // config.js
@@ -1921,7 +1911,7 @@ import { configPromise } from './config.js';
 const config = await configPromise;
 ```
 
-### 13.7 `exports` 字段配置错误
+### 12.7 `exports` 字段配置错误
 
 ```json
 // 反模式：缺少 default 条件
@@ -1947,9 +1937,9 @@ const config = await configPromise;
 }
 ```
 
-## 14. 工程实践
+## 13. 工程实践
 
-### 14.1 模块解析加速
+### 13.1 模块解析加速
 
 ```javascript
 // webpack.config.js - 减少 resolve 范围
@@ -1965,7 +1955,7 @@ module.exports = {
 };
 ```
 
-### 14.2 Tree-shaking 验证
+### 13.2 Tree-shaking 验证
 
 ```bash
 # 使用 webpack-bundle-analyzer
@@ -1979,7 +1969,7 @@ npm install --save-dev webpack-bundle-analyzer
 }
 ```
 
-### 14.3 Monorepo 模块管理
+### 13.3 Monorepo 模块管理
 
 ```yaml
 # pnpm-workspace.yaml
@@ -1998,7 +1988,7 @@ packages:
 }
 ```
 
-### 14.4 模块热替换（HMR）
+### 13.4 模块热替换（HMR）
 
 ```javascript
 // Vite HMR API
@@ -2019,7 +2009,7 @@ if (hot) {
 }
 ```
 
-### 14.5 模块预加载与预获取
+### 13.5 模块预加载与预获取
 
 ```javascript
 // Webpack 魔法注释
@@ -2239,7 +2229,7 @@ loader.register('./main.js', `
 console.log(loader.require('./main.js')); // 3
 ```
 
-## 16. 参考文献
+## 15. 参考文献
 
 1. Ecma International. (2024). *ECMAScript 2024 Language Specification (ECMA-262, 15th edition) - Modules*. https://www.ecma-international.org/publications-and-standards/standards/ecma-262/
 
@@ -2269,16 +2259,16 @@ console.log(loader.require('./main.js')); // 3
 
 14. D. Crockford. (2019). *JavaScript: The Good Parts Revisited*. *ACM Queue*, 17(4), 50-65. https://doi.org/10.1145/3365600
 
-## 17. 延伸阅读
+## 16. 延伸阅读
 
-### 17.1 规范与提案
+### 16.1 规范与提案
 
 - **ECMAScript 规范 - Modules**：https://tc39.es/ecma262/#sec-modules - 官方 ESM 规范
 - **Node.js 模块文档**：https://nodejs.org/api/esm.html - Node.js ESM 实现细节
 - **Import Attributes 提案**：https://github.com/tc39/proposal-import-attributes - JSON、CSS 等模块类型
 - **Module Declarations 提案**：https://github.com/tc39/proposal-module-declarations - HTML 中直接写模块
 
-### 17.2 打包工具文档
+### 16.2 打包工具文档
 
 - **Webpack 文档**：https://webpack.js.org/concepts/ - 核心概念与配置
 - **Vite 文档**：https://vitejs.dev/guide/ - 新一代构建工具
@@ -2286,21 +2276,21 @@ console.log(loader.require('./main.js')); // 3
 - **esbuild 文档**：https://esbuild.github.io/ - 极速打包
 - **Turbopack 文档**：https://turbo.build/pack/docs - Rust 实现
 
-### 17.3 进阶主题
+### 16.3 进阶主题
 
 - **Module Federation**：https://module-federation.io/ - 微前端架构的模块共享
 - **Import Maps**：https://github.com/WICG/import-maps - 浏览器原生模块映射
 - **Service Worker 模块**：https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API - 离线模块缓存
 - **Web Workers 与 ESM**：https://developer.mozilla.org/en-US/docs/Web/API/Worker/importScripts - Worker 中使用模块
 
-### 17.4 实战资源
+### 16.4 实战资源
 
 - **Awesome JavaScript Modules**：https://github.com/ - 模块化资源汇总
 - **npm 包发布指南**：https://docs.npmjs.com/creating-and-publishing-unscoped-public-packages
 - **Monorepo 工具对比**：https://monorepo.tools/ - pnpm/yarn/nx workspace
 - **madge - 循环依赖检测**：https://github.com/pahen/madge
 
-### 17.5 迁移与现代化
+### 16.5 迁移与现代化
 
 - **CommonJS to ESM 迁移指南**：https://nodejs.org/api/esm.html#commonjs-namespaces
 - **require(esm) 说明**：https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require

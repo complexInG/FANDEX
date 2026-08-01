@@ -16,53 +16,6 @@ prerequisites:
   - go/概述与环境配置
 ---
 
-## 学习目标
-
-本章节对标 MIT 6.5840（Distributed Systems）与 Stanford CS110L（Safety in Systems Programming）的可观测性教学水准，融合 Go 1.21 `log/slog` 的工程实践细节。完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-### Remember（记忆）
-
-- **R1**：复述 Go 日志库的演进历史（`log` → `logrus` → `zap`/`zerolog` → `slog`）
-- **R2**：列出 `log/slog` 包的四个核心日志级别（DEBUG、INFO、WARN、ERROR）及其语义
-- **R3**：背诵 `slog.Handler`、`slog.Logger`、`slog.Record`、`slog.Attr` 四个核心抽象的职责
-- **R4**：识别 `TextHandler` 与 `JSONHandler` 的输出格式差异
-
-### Understand（理解）
-
-- **U1**：解释结构化日志相较于格式化日志的可观测性优势
-- **U2**：阐述 `slog.Handler` 接口的 `Handle`、`Enabled`、`WithAttrs`、`WithGroup` 四个方法的协作机制
-- **U3**：说明 `slog.LogAttrs` 与 `slog.Info` 的延迟计算差异
-- **U4**：推演 `slog.Logger` 在 context 中的传播路径
-
-### Apply（应用）
-
-- **A1**：使用 `slog.SetDefault` 配置全局日志器
-- **A2**：通过 `slog.With` 绑定请求级别的默认属性
-- **A3**：实现自定义 `slog.Handler` 过滤敏感字段
-- **A4**：编写 HTTP 中间件集成结构化日志
-
-### Analyze（分析）
-
-- **An1**：分析 `slog` 与 `zerolog`/`zap` 的零分配设计差异
-- **An2**：对比 `log/slog` 与 Rust `tracing`、Java SLF4J、Python `logging` 的抽象层次
-- **An3**：解构 `slog.Record` 的内部数据结构与零拷贝设计
-- **An4**：剖析 `slog.HandlerOptions` 的 `AddSource`、`Level`、`ReplaceAttr` 三大参数的作用
-
-### Evaluate（评估）
-
-- **E1**：评估 `slog` 在高并发场景下的性能开销（纳秒/调用）
-- **E2**：评判 `JSONHandler` 与 `TextHandler` 在生产环境的取舍
-- **E3**：权衡 `slog` 与第三方库（zap/zerolog）的迁移成本
-- **E4**：评估日志采样、日志级别动态调整的策略
-
-### Create（创造）
-
-- **C1**：设计一个支持多 sink（stdout、file、Kafka、Loki）的复合 `slog.Handler`
-- **C2**：实现一个基于 OpenTelemetry 的 `slog.Handler`，将日志与 trace 关联
-- **C3**：构建一个日志采样与降级机制（高 QPS 场景下自动降级）
-- **C4**：为微服务架构设计统一日志规范（字段命名、级别策略、采样规则）
-
----
 
 ## 历史动机与发展脉络
 
@@ -283,7 +236,7 @@ if slog.Default().Enabled(ctx, slog.LevelDebug) {
 }
 ```
 
-### 2. JSON 编码的性能分析
+### 1. JSON 编码的性能分析
 
 `JSONHandler` 的编码路径：
 
@@ -306,7 +259,7 @@ BenchmarkZapSugar-8         2000000     750 ns/op     0 B/op     0 allocs/op
 BenchmarkZlogrus-8           500000   3200 ns/op   680 B/op     8 allocs/op
 ```
 
-### 3. Handler 链式传播的代数性质
+### 2. Handler 链式传播的代数性质
 
 `slog.With(attrs)` 与 `slog.WithGroup(name)` 构成代数结构：
 
@@ -320,7 +273,7 @@ $$
 - **单位元**：$L.\text{With}(\emptyset) = L$
 - **Group 嵌套**：$\text{WithGroup}(g_1).\text{WithGroup}(g_2).\text{With}(A)$ 输出为 $\{g_1.g_2: A\}$
 
-### 4. 采样算法的形式化
+### 3. 采样算法的形式化
 
 高 QPS 场景下的日志采样：
 
@@ -341,7 +294,7 @@ $$
 
 当 $\text{tokens}(t) \geq 1$ 时输出，并扣减 1 个 token。
 
-### 5. Context 集成的传播语义
+### 4. Context 集成的传播语义
 
 `slog` 与 `context.Context` 的集成通过 `slog.Logger` 显式传递：
 
@@ -1041,7 +994,7 @@ flowchart TD
     OT --> JT[Jaeger / Tempo]
 ```
 
-### 2. 配置管理
+### 1. 配置管理
 
 ```go
 // config/logging.go
@@ -1108,7 +1061,7 @@ func SetupLogger(cfg LogConfig) *slog.Logger {
 }
 ```
 
-### 3. 请求级别日志传播
+### 2. 请求级别日志传播
 
 ```go
 // middleware/logger.go
@@ -1167,7 +1120,7 @@ func GetUser(ctx context.Context, id string) (*User, error) {
 }
 ```
 
-### 4. 日志轮转（容器环境推荐 stdout，无需轮转）
+### 3. 日志轮转（容器环境推荐 stdout，无需轮转）
 
 非容器环境使用 `lumberjack` 实现轮转：
 
@@ -1184,7 +1137,7 @@ writer := &lumberjack.Logger{
 handler := slog.NewJSONHandler(writer, nil)
 ```
 
-### 5. 与 Prometheus 指标集成
+### 4. 与 Prometheus 指标集成
 
 ```go
 // 监控日志级别分布
@@ -1206,7 +1159,7 @@ func (h *MetricsHandler) Handle(ctx context.Context, r slog.Record) error {
 }
 ```
 
-### 6. 与 ELK/Loki 集成
+### 5. 与 ELK/Loki 集成
 
 JSON 格式日志可直接被 Filebeat/Promtail 解析：
 

@@ -15,6 +15,7 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
+
 # C# 异步编程
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -38,53 +39,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（1956 年原版 + 2001 年修订版）的六个认知层次。完成本章学习后，读者应能：
-
-### 1.1 Remember（记忆）
-
-- 复述 C# 异步编程三代模型 APM（Begin/End）、EAP（事件）、TAP（Task）的设计动机。
-- 列出 `Task`、`Task<T>`、`ValueTask`、`ValueTask<T>` 的核心成员与适用场景。
-- 说出 `CancellationToken`、`CancellationTokenSource`、`CancellationTokenRegistration` 三者的协作关系。
-- 描述 `IAsyncEnumerable<T>`、`IAsyncEnumerator<T>`、`await foreach` 的协议。
-
-### 1.2 Understand（理解）
-
-- 解释 `async/await` 编译器重写为状态机的本质（详见"async-await 状态机"章节）。
-- 用自己的语言说明 `Task` 与 `ValueTask` 在分配成本与可用性上的差异。
-- 推导 `CancellationTokenSource.CreateLinkedTokenSource` 的链接取消传播逻辑。
-- 区分 `Task.WhenAll`、`Task.WhenAny`、`Channel<T>` 在并发协调上的角色。
-
-### 1.3 Apply（应用）
-
-- 为现有同步代码库设计渐进式异步化迁移方案。
-- 在 ASP.NET Core 控制器中正确使用 `async Task<IActionResult>` 与 `CancellationToken`。
-- 在 EF Core 中使用 `IAsyncEnumerable<T>` 流式处理大数据集。
-
-### 1.4 Analyze（分析）
-
-- 对照 CoreCLR 源码分析 `Task` 的 `Continuation` 链表与 `AwaitUnsafeOnCompleted` 调用路径。
-- 解构 `Channel<T>` 的单读者单写者（SPSC）与多读者多写者（MPMC）实现差异。
-- 对比 `SemaphoreSlim`、`AsyncLock`、`Channel<T>` 在并发限流上的适用性。
-
-### 1.5 Evaluate（评价）
-
-- 评估在库代码中默认使用 `ValueTask<T>` 的兼容性风险。
-- 评判 `async void` 的合法场景（事件处理器）与反模式（普通方法）。
-- 比较 `Task.Delay`、`Thread.Sleep`、`Timer` 在延迟执行上的语义差异。
-
-### 1.6 Create（创造）
-
-- 设计一个支持取消、超时、重试、并发限流的 HTTP 客户端包装器。
-- 实现一个基于 `Channel<T>` 的异步管道（pipeline），支持多阶段处理与背压。
-- 构建一个基于 `IAsyncEnumerable<T>` 的实时数据流消费器，支持错误传播与取消。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 同步编程的瓶颈（.NET 1.0，2002）
+### 1.1 同步编程的瓶颈（.NET 1.0，2002）
 
 .NET 1.0 的 I/O 操作（文件、网络、数据库）默认是同步阻塞的：
 
@@ -105,7 +62,7 @@ public string FetchData(string url)
 - **可扩展性差**：服务端每个请求一个线程，1000 QPS 需要 1000 线程，每线程 1MB 栈 = 1GB 内存。
 - **UI 卡顿**：桌面应用在主线程做 I/O 会冻结 UI。
 
-### 2.2 APM：异步编程模型（.NET 1.0，2002）
+### 1.2 APM：异步编程模型（.NET 1.0，2002）
 
 .NET 1.0 引入 **APM（Asynchronous Programming Model）**，又称 `Begin/End` 模式。所有 `I/O` 类暴露成对方法：
 
@@ -128,7 +85,7 @@ APM 的痛点：
 - **取消与进度支持缺失**：APM 没有内置取消令牌。
 - **资源泄漏风险**：忘记 `EndXxx` 会导致 `IAsyncResult` 资源泄漏。
 
-### 2.3 EAP：基于事件的异步模式（.NET 2.0，2005）
+### 1.3 EAP：基于事件的异步模式（.NET 2.0，2005）
 
 为缓解 APM 的回调问题，.NET 2.0 引入 **EAP（Event-based Asynchronous Pattern）**：
 
@@ -156,7 +113,7 @@ EAP 的遗留问题：
 - **错误模型不一致**：错误在 `e.Error` 中而非异常。
 - **组合性差**：无法像 `Task.WhenAll` 那样组合多个 EAP 操作。
 
-### 2.4 TAP：任务异步模式（.NET 4.0，2010）
+### 1.4 TAP：任务异步模式（.NET 4.0，2010）
 
 `Task` 与 `Task<T>` 的引入（PFX 团队，Stephen Toub 主导）标志着 **TAP（Task-based Asynchronous Pattern）** 的诞生。`Task` 是一个表示异步操作的一等公民（first-class object），具备：
 
@@ -178,7 +135,7 @@ task.ContinueWith(t =>
 
 TAP 解决了组合性问题，但仍然依赖显式 `ContinueWith`，回调嵌套依然存在。
 
-### 2.5 async/await：异步的语法糖革命（C# 5.0，2012）
+### 1.5 async/await：异步的语法糖革命（C# 5.0，2012）
 
 C# 5.0 引入 `async`/`await` 关键字，将异步代码以同步形式书写。这是 C# 历史上最重要的语言特性之一，由 Mads Torgersen、Stephen Toub、Lucian Wischik 等人设计。
 
@@ -193,7 +150,7 @@ public async Task<string> FetchDataAsync(string url)
 }
 ```
 
-### 2.6 ValueTask：减少分配（C# 7.0，2017）
+### 1.6 ValueTask：减少分配（C# 7.0，2017）
 
 `ValueTask<T>` 是 `Task<T>` 的轻量替代，适用于"经常同步完成"的场景：
 
@@ -206,7 +163,7 @@ public async ValueTask<int> GetValueAsync(string key)
 }
 ```
 
-### 2.7 IAsyncEnumerable：异步流（C# 8.0，2019）
+### 1.7 IAsyncEnumerable：异步流（C# 8.0，2019）
 
 C# 8.0 引入 `IAsyncEnumerable<T>` 与 `await foreach`，支持异步流式消费：
 
@@ -258,7 +215,7 @@ $$
 \text{IAsyncEnumerator}(T) \implies \text{AsyncStream of } T
 $$
 
-### 3.6 Channel 的形式化
+### 2.6 Channel 的形式化
 
 `Channel<T>` 是生产者-消费者模型：
 
@@ -274,7 +231,7 @@ $$
 \text{ChannelReader}(T) = (\text{ReadAllAsync}: () \to \text{IAsyncEnumerable}(T), \text{TryRead}: \text{out } T \to \text{bool})
 $$
 
-### 3.7 ECMA-334 的视角
+### 2.7 ECMA-334 的视角
 
 ECMA-334 §15.15 定义了 `async` 修饰符与 `await` 表达式的语法：
 
@@ -282,7 +239,7 @@ ECMA-334 §15.15 定义了 `async` 修饰符与 `await` 表达式的语法：
 - `await` 表达式只能在 `async` 上下文中使用。
 - `async` 方法的返回类型受限于 `AsyncMethodBuilder` 可绑定的类型。
 
-### 3.8 TAP 的形式化
+### 2.8 TAP 的形式化
 
 TAP（Task-based Asynchronous Pattern）规定：
 
@@ -300,9 +257,9 @@ public Task<TResult> XxxAsync<T, TResult>(
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 Task 的内部结构
+### 3.1 Task 的内部结构
 
 `Task<T>` 的核心字段（CoreCLR 源码简化）：
 
@@ -328,7 +285,7 @@ stateDiagram-v2
     Running --> Canceled
 ```
 
-### 4.2 Continuation 链表
+### 3.2 Continuation 链表
 
 `Task.ContinueWith` 与 `await` 都会注册 continuation。CoreCLR 使用链表管理：
 
@@ -338,7 +295,7 @@ Task.Continuations = continuation1 → continuation2 → ... → null
 
 当 Task 完成时，遍历链表依次调用 continuation（受 `TaskScheduler` 调度）。
 
-### 4.3 await 的编译器展开
+### 3.3 await 的编译器展开
 
 `await expr` 编译器展开为：
 
@@ -361,7 +318,7 @@ var result = awaiter.GetResult();
 Console.WriteLine(result);
 ```
 
-### 4.4 SynchronizationContext 的捕获
+### 3.4 SynchronizationContext 的捕获
 
 `async` 方法在 `await` 时默认捕获 `SynchronizationContext.Current`：
 
@@ -372,7 +329,7 @@ Console.WriteLine(result);
 
 `ConfigureAwait(false)` 告诉编译器不捕获上下文，continuation 直接在线程池执行。
 
-### 4.5 ValueTask 的内部结构
+### 3.5 ValueTask 的内部结构
 
 `ValueTask<T>` 是结构体，可以表示两种状态：
 
@@ -388,7 +345,7 @@ public readonly struct ValueTask<TResult>
 - **同步完成**：直接持有 `_result`，零堆分配。
 - **异步完成**：包装一个 `Task<T>` 或 `IValueTaskSource<T>`。
 
-### 4.6 CancellationToken 的取消传播
+### 3.6 CancellationToken 的取消传播
 
 `CancellationTokenSource` 维护一个回调链表：
 
@@ -409,7 +366,7 @@ using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct1, ct2);
 // ct1 或 ct2 任一取消时，linkedCts.Token 取消
 ```
 
-### 4.7 IAsyncEnumerable 的拉取模型
+### 3.7 IAsyncEnumerable 的拉取模型
 
 `await foreach` 拉取模型：
 
@@ -427,7 +384,7 @@ foreach (var item in asyncEnumerable)
 - **背压**（backpressure）：消费者处理速度控制生产者。
 - **取消**：`WithCancellation(ct)` 可取消整个流。
 
-### 4.8 Channel 的生产者-消费者模型
+### 3.8 Channel 的生产者-消费者模型
 
 `Channel<T>` 支持两种模式：
 
@@ -447,7 +404,7 @@ await foreach (var item in channel.Reader.ReadAllAsync())
 }
 ```
 
-### 4.9 TaskScheduler 的调度
+### 3.9 TaskScheduler 的调度
 
 `TaskScheduler` 决定 Task 在哪个线程执行：
 
@@ -457,7 +414,7 @@ await foreach (var item in channel.Reader.ReadAllAsync())
 
 `Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.FromCurrentSynchronizationContext())` 在 UI 线程执行。
 
-### 4.10 异步方法的内存分配
+### 3.10 异步方法的内存分配
 
 `async Task<T>` 方法的分配：
 
@@ -475,9 +432,9 @@ await foreach (var item in channel.Reader.ReadAllAsync())
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：async/await（C# 12, .NET 8）
+### 4.1 基础：async/await（C# 12, .NET 8）
 
 ```csharp
 // File: BasicAsync.cs
@@ -514,7 +471,7 @@ public static class BasicAsync
 }
 ```
 
-### 5.2 并行执行多个任务（C# 12, .NET 8）
+### 4.2 并行执行多个任务（C# 12, .NET 8）
 
 ```csharp
 // File: ParallelTasks.cs
@@ -572,7 +529,7 @@ public static class ParallelTasks
 }
 ```
 
-### 5.3 ValueTask 优化（C# 12, .NET 8）
+### 4.3 ValueTask 优化（C# 12, .NET 8）
 
 ```csharp
 // File: ValueTaskExample.cs
@@ -606,7 +563,7 @@ public class DbService
 }
 ```
 
-### 5.4 CancellationToken 取消（C# 12, .NET 8）
+### 4.4 CancellationToken 取消（C# 12, .NET 8）
 
 ```csharp
 // File: CancellationExample.cs
@@ -699,7 +656,7 @@ public static class CancellationExample
 }
 ```
 
-### 5.5 异步流 IAsyncEnumerable（C# 12, .NET 8）
+### 4.5 异步流 IAsyncEnumerable（C# 12, .NET 8）
 
 ```csharp
 // File: AsyncStreamExample.cs
@@ -784,7 +741,7 @@ public static class AsyncStreamExample
 public record User { public int Id { get; init; } public string Name { get; init; } = ""; }
 ```
 
-### 5.6 Channel 生产者-消费者（C# 12, .NET 8）
+### 4.6 Channel 生产者-消费者（C# 12, .NET 8）
 
 ```csharp
 // File: ChannelExample.cs
@@ -848,7 +805,7 @@ public class DataPipeline
 }
 ```
 
-### 5.7 SemaphoreSlim 并发限流（C# 12, .NET 8）
+### 4.7 SemaphoreSlim 并发限流（C# 12, .NET 8）
 
 ```csharp
 // File: RateLimiter.cs
@@ -916,7 +873,7 @@ public class RateLimitedHttpClient
 }
 ```
 
-### 5.8 重试机制（C# 12, .NET 8）
+### 4.8 重试机制（C# 12, .NET 8）
 
 ```csharp
 // File: RetryPolicy.cs
@@ -974,7 +931,7 @@ public static class RetryPolicy
 }
 ```
 
-### 5.9 任务组合器（C# 12, .NET 8）
+### 4.9 任务组合器（C# 12, .NET 8）
 
 ```csharp
 // File: TaskCombinators.cs
@@ -1058,7 +1015,7 @@ public static class TaskCombinators
 }
 ```
 
-### 5.10 IAsyncDisposable（C# 12, .NET 8）
+### 4.10 IAsyncDisposable（C# 12, .NET 8）
 
 ```csharp
 // File: AsyncDisposable.cs
@@ -1095,7 +1052,7 @@ public class Usage
 }
 ```
 
-### 5.11 ConfigureAwait 选项（.NET 7+）
+### 4.11 ConfigureAwait 选项（.NET 7+）
 
 ```csharp
 // File: ConfigureAwaitOptions.cs
@@ -1120,7 +1077,7 @@ public static class ConfigureAwaitOptionsExample
 }
 ```
 
-### 5.12 AsyncLocal 上下文（C# 12, .NET 8）
+### 4.12 AsyncLocal 上下文（C# 12, .NET 8）
 
 ```csharp
 // File: AsyncLocalContext.cs
@@ -1174,9 +1131,9 @@ public class Service
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 .NET 异步 vs Java CompletableFuture
+### 5.1 .NET 异步 vs Java CompletableFuture
 
 | 特性 | .NET Task | Java CompletableFuture |
 |------|-----------|------------------------|
@@ -1188,7 +1145,7 @@ public class Service
 | 异步流 | IAsyncEnumerable (C# 8.0) | Flow/Reactor |
 | 内存分配 | ValueTask 零分配 | 必须堆分配 |
 
-### 6.2 .NET async vs JavaScript async/await
+### 5.2 .NET async vs JavaScript async/await
 
 | 特性 | C# async/await | JS async/await |
 |------|----------------|-----------------|
@@ -1200,7 +1157,7 @@ public class Service
 | 顶层 await | 不支持（需 Main async） | 支持（ES2022） |
 | 多次 await | ValueTask 限制 | Promise 可多次 await |
 
-### 6.3 .NET async vs Python asyncio
+### 5.3 .NET async vs Python asyncio
 
 | 特性 | C# async/await | Python asyncio |
 |------|----------------|-----------------|
@@ -1212,7 +1169,7 @@ public class Service
 | 并发 | Task.WhenAll | asyncio.gather |
 | 性能 | 高（编译器重写） | 中（解释器开销） |
 
-### 6.4 .NET async vs Go goroutine
+### 5.4 .NET async vs Go goroutine
 
 | 特性 | C# async/await | Go goroutine |
 |------|----------------|---------------|
@@ -1224,7 +1181,7 @@ public class Service
 | 错误传播 | try/catch | error return |
 | 栈大小 | 线程栈（1MB） | goroutine 栈（2KB 起步） |
 
-### 6.5 .NET async vs Rust async
+### 5.5 .NET async vs Rust async
 
 | 特性 | C# async/await | Rust async/await |
 |------|----------------|-------------------|
@@ -1235,7 +1192,7 @@ public class Service
 | 取消 | CancellationToken | Drop |
 | 性能 | 高 | 极高（零分配） |
 
-### 6.6 综合对比表
+### 5.6 综合对比表
 
 | 语言 | async/await | 返回类型 | 取消机制 | 异步流 | 性能 |
 |------|-------------|----------|----------|--------|------|
@@ -1248,9 +1205,9 @@ public class Service
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：async void
+### 6.1 陷阱：async void
 
 **问题**：`async void` 方法异常无法被调用者捕获。
 
@@ -1281,7 +1238,7 @@ public async Task RunAsync()
 }
 ```
 
-### 7.2 陷阱：.Result / .Wait() 死锁
+### 6.2 陷阱：.Result / .Wait() 死锁
 
 **问题**：在 UI 线程或 ASP.NET classic 中调用 `.Result` 会死锁。
 
@@ -1304,7 +1261,7 @@ public string GetData()
 - 全栈异步：从入口到叶子节点都是 async。
 - ASP.NET Core 无此问题（无 SynchronizationContext）。
 
-### 7.3 陷阱：忘记 CancellationToken
+### 6.3 陷阱：忘记 CancellationToken
 
 **问题**：异步操作无超时，导致任务长期挂起。
 
@@ -1313,7 +1270,7 @@ public string GetData()
 - 使用 `CancellationTokenSource(TimeSpan)` 设置超时。
 - 长时间运行的任务定期检查 `ct.IsCancellationRequested`。
 
-### 7.4 陷阱：ValueTask 多次 await
+### 6.4 陷阱：ValueTask 多次 await
 
 **问题**：`ValueTask` 是结构体，多次 await 行为未定义。
 
@@ -1328,7 +1285,7 @@ int r2 = await vt;  // 未定义行为
 - `ValueTask` 仅 await 一次。
 - 需多次 await 时调用 `.AsTask()` 转换为 `Task`。
 
-### 7.5 陷阱：未观察的 Task 异常
+### 6.5 陷阱：未观察的 Task 异常
 
 **问题**：`Task` 异常未被 await 或处理，可能丢失或导致进程崩溃（.NET 4.0-4.5）。
 
@@ -1344,7 +1301,7 @@ TaskScheduler.UnobservedTaskException += (sender, e) =>
 };
 ```
 
-### 7.6 陷阱：在循环中 await
+### 6.6 陷阱：在循环中 await
 
 **问题**：循环中 `await` 导致串行执行，失去并行性。
 
@@ -1361,7 +1318,7 @@ var tasks = urls.Select(FetchAsync);
 var results = (await Task.WhenAll(tasks)).ToList();
 ```
 
-### 7.7 陷阱：ConfigureAwait(false) 在库代码中
+### 6.7 陷阱：ConfigureAwait(false) 在库代码中
 
 **问题**：库代码未使用 `ConfigureAwait(false)`，在 UI 应用中可能死锁。
 
@@ -1378,7 +1335,7 @@ public async Task<string> FetchAsync(string url)
 }
 ```
 
-### 7.8 陷阱：async lambda 与 void
+### 6.8 陷阱：async lambda 与 void
 
 **问题**：`Action` 参数中传入 `async () => { ... }` 隐式转为 `async void`。
 
@@ -1396,7 +1353,7 @@ foreach (var item in list)
 }
 ```
 
-### 7.9 陷阱：Task.Run 滥用
+### 6.9 陷阱：Task.Run 滥用
 
 **问题**：在 ASP.NET Core 中滥用 `Task.Run` 浪费线程池。
 
@@ -1405,7 +1362,7 @@ foreach (var item in list)
 - 仅在 CPU 密集型任务使用 `Task.Run`。
 - 桌面应用用 `Task.Run` 将 CPU 工作移出 UI 线程。
 
-### 7.10 陷阱：未实现 IAsyncDisposable
+### 6.10 陷阱：未实现 IAsyncDisposable
 
 **问题**：异步资源用同步 `IDisposable`，导致阻塞。
 
@@ -1428,9 +1385,9 @@ await using var resource = new AsyncResource();
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 csproj 配置
+### 7.1 csproj 配置
 
 ```xml
 <!-- File: AsyncApp.csproj -->
@@ -1450,7 +1407,7 @@ await using var resource = new AsyncResource();
 </Project>
 ```
 
-### 8.2 ASP.NET Core 控制器模式
+### 7.2 ASP.NET Core 控制器模式
 
 ```csharp
 // File: UsersController.cs
@@ -1495,7 +1452,7 @@ public class UsersController : ControllerBase
 }
 ```
 
-### 8.3 EF Core 异步最佳实践
+### 7.3 EF Core 异步最佳实践
 
 ```csharp
 // File: UserRepository.cs
@@ -1531,7 +1488,7 @@ public sealed class UserRepository
 }
 ```
 
-### 8.4 HttpClient 最佳实践
+### 7.4 HttpClient 最佳实践
 
 ```csharp
 // File: TypedHttpClient.cs
@@ -1585,7 +1542,7 @@ public sealed class GitHubClient
 public record Repo { public string Name { get; init; } = ""; public int Stars { get; init; } }
 ```
 
-### 8.5 BackgroundService 长期运行任务
+### 7.5 BackgroundService 长期运行任务
 
 ```csharp
 // File: BackgroundWorker.cs
@@ -1636,9 +1593,9 @@ public sealed class DataProcessor : BackgroundService
 public record DataItem { public int Id { get; init; } }
 ```
 
-### 8.6 诊断工具
+### 7.6 诊断工具
 
-#### 8.6.1 async 分析器
+#### 7.6.1 async 分析器
 
 ```xml
 <!-- 在 csproj 中启用 -->
@@ -1651,7 +1608,7 @@ public record DataItem { public int Id { get; init; } }
 - VSTHRD002：避免同步等待（.Result）。
 - VSTHRD003：避免在 async 方法中等待预创建的 Task。
 
-#### 8.6.2 dotnet-counters 监控
+#### 7.6.2 dotnet-counters 监控
 
 ```bash
 dotnet-counters monitor -p <pid> --counters System.Runtime
@@ -1664,14 +1621,14 @@ System.Runtime
     # of Async State Machines  : 567
 ```
 
-#### 8.6.3 dotnet-trace 捕获
+#### 7.6.3 dotnet-trace 捕获
 
 ```bash
 # 捕获 async 事件
 dotnet-trace collect -p <pid> --providers Microsoft-DotNETCore-SampleProfiler --duration 00:00:30
 ```
 
-### 8.7 性能基准
+### 7.7 性能基准
 
 ```csharp
 // File: AsyncBenchmark.cs
@@ -1732,9 +1689,9 @@ public class AsyncBenchmark
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：ASP.NET Core 高并发 API
+### 8.1 案例一：ASP.NET Core 高并发 API
 
 **场景**：电商商品详情 API，QPS 5000，需聚合商品、库存、评论、推荐四类数据。
 
@@ -1776,7 +1733,7 @@ public async Task<ProductDetail> GetAsync(int id, CancellationToken ct)
 
 总耗时：100ms（最长任务）
 
-### 9.2 案例二：EF Core 流式处理大数据
+### 8.2 案例二：EF Core 流式处理大数据
 
 **场景**：导出 100 万用户数据到 CSV。
 
@@ -1807,7 +1764,7 @@ public async Task ExportAsync(CancellationToken ct)
 
 内存占用：从 1GB 降到 1MB。
 
-### 9.3 案例三：Channel 实现生产者-消费者
+### 8.3 案例三：Channel 实现生产者-消费者
 
 **场景**：日志处理系统，多个生产者写入，多个消费者处理并写入 Kafka。
 
@@ -1847,7 +1804,7 @@ public class LogPipeline
 public record LogEntry { public string Message { get; init; } = ""; }
 ```
 
-### 9.4 案例四：取消传播
+### 8.4 案例四：取消传播
 
 **场景**：HTTP 请求触发多个子任务，需支持客户端取消。
 
@@ -1881,7 +1838,7 @@ public async Task<AggregatedResult> FetchAllAsync(
 }
 ```
 
-### 9.5 案例五：IAsyncEnumerable 流式响应
+### 8.5 案例五：IAsyncEnumerable 流式响应
 
 **场景**：实时股票价格推送 API。
 
@@ -1909,7 +1866,7 @@ public async IAsyncEnumerable<StockPrice> SubscribeAsync(
 
 客户端通过 SSE 或 NDJSON 流式接收。
 
-### 9.6 案例六：.NET Runtime 源码中的 async
+### 8.6 案例六：.NET Runtime 源码中的 async
 
 `HttpClient.GetStringAsync` 的简化调用链：
 
@@ -2076,7 +2033,7 @@ public class Pipeline<TInput, TOutput>
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 9**：为什么 `async void` 在事件处理器中是合法的？
 
@@ -2119,9 +2076,9 @@ catch (Exception ex)
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 微软官方文档
+### 10.1 微软官方文档
 
 [1] S. Toub. 2010. *Task-based Asynchronous Pattern (TAP)*. Microsoft. Available: https://learn.microsoft.com/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap
 
@@ -2133,7 +2090,7 @@ catch (Exception ex)
 
 [5] Microsoft. 2024. *IAsyncEnumerable<T> interface*. .NET API documentation. Available: https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1
 
-### 11.2 Stephen Toub 博客
+### 10.2 Stephen Toub 博客
 
 [6] S. Toub. 2010. *What's New for Parallelism in .NET 4.5*. .NET blog. Available: https://devblogs.microsoft.com/dotnet/whats-new-for-parallelism-in-net-4-5/
 
@@ -2143,13 +2100,13 @@ catch (Exception ex)
 
 [9] S. Toub. 2019. *Consuming IAsyncEnumerable in C# 8*. .NET blog. Available: https://devblogs.microsoft.com/dotnet/consuming-iasyncenumerable-in-c-8/
 
-### 11.3 ECMA 规范
+### 10.3 ECMA 规范
 
 [10] Ecma International. 2023. *ECMA-334: C# Language Specification*, 6th edition. Geneva, Switzerland. Available: https://www.ecma-international.org/publications/standards/Ecma-334.htm
 
 [11] Ecma International. 2012. *ECMA-335: Common Language Infrastructure (CLI) Standard*, 6th edition. Geneva, Switzerland. Available: https://www.ecma-international.org/publications/standards/Ecma-335.htm
 
-### 11.4 经典论文
+### 10.4 经典论文
 
 [12] C. Hewitt, P. Bishop, and R. Steiger. 1973. A universal modular ACTOR formalism for artificial intelligence. In *Proceedings of the 3rd International Joint Conference on Artificial Intelligence* (IJCAI'73). Morgan Kaufmann, San Francisco, CA, USA, 235-245.
 
@@ -2157,19 +2114,19 @@ catch (Exception ex)
 
 [14] P. Wadler. 1992. *Monads for functional programming*. In Lecture Notes in Computer Science, vol. 925. Springer, Berlin, Heidelberg, 24-52. DOI: https://doi.org/10.1007/978-3-662-02880-3_8
 
-### 11.5 CoreCLR 源码
+### 10.5 CoreCLR 源码
 
 [15] Microsoft. 2024. *System.Threading.Tasks.Task source code*. GitHub. Available: https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs
 
 [16] Microsoft. 2024. *System.Threading.Channels source code*. GitHub. Available: https://github.com/dotnet/runtime/tree/main/src/libraries/System.Threading.Channels
 
-### 11.6 异步流
+### 10.6 异步流
 
 [17] M. Torgersen. 2018. *C# 8: IAsyncEnumerable*. Microsoft Build talk. Available: https://learn.microsoft.com/events/build-2018/brk2110
 
 [18] Microsoft. 2024. *Asynchronous streams*. C# documentation. Available: https://learn.microsoft.com/dotnet/csharp/whats-new/csharp-8#asynchronous-streams
 
-### 11.7 书籍
+### 10.7 书籍
 
 [19] J. Albahari. 2020. *C# in Depth*, 4th edition. Manning Publications, Shelter Island, NY, USA. ISBN: 978-1617294532
 
@@ -2179,30 +2136,30 @@ catch (Exception ex)
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《Concurrency in C# Cookbook》**（Stephen Cleary）：异步编程实战，涵盖 Task、Channel、并发协调。
 - **《C# in Depth》**（Jon Skeet）：C# 语言深度指南，第 15 章详述 async/await。
 - **《Pro Asynchronous Programming in .NET》**（Richard Blewett）：异步编程全面指南。
 - **《CLR via C#》**（Jeffrey Richter）：CLR 经典教材，第 27 章详述异步。
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 - **Stephen Toub 博客**: https://devblogs.microsoft.com/dotnet/author/stoub/
 - **Stephen Cleary 博客**: https://blog.stephencleary.com/
 - **.NET 异步 FAQ**: https://devblogs.microsoft.com/dotnet/async-faq/
 - **Async/Await FAQ**: https://learn.microsoft.com/archive/blogs/ericlippert/async-await-faq
 
-### 12.3 视频与课程
+### 11.3 视频与课程
 
 - **Channel 9 Async Deep Dive**: Stephen Toub 深度讲解。
 - **Pluralsight - Async C# Best Practices**: 异步最佳实践。
 - **NDC Oslo - C# Async**: 异步编程演讲合集。
 - **YouTube - Stephen Cleary**: 异步编程讲座。
 
-### 12.4 工具
+### 11.4 工具
 
 - **Microsoft.VisualStudio.Threading.Analyzers**: 异步分析器。
 - **Async Debugging in Visual Studio**: 异步调试器（Tasks 窗口）。
@@ -2210,7 +2167,7 @@ catch (Exception ex)
 - **dotnet-counters**: 实时异步监控。
 - **dotnet-trace**: 异步事件追踪。
 
-### 12.5 相关章节
+### 11.5 相关章节
 
 - **async-await 状态机**: 深入状态机生成原理。
 - **LINQ 延迟与立即执行**: 与异步流（IAsyncEnumerable）配合。

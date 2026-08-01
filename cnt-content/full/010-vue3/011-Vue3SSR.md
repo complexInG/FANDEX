@@ -16,6 +16,7 @@ prerequisites:
   - vue3/语法速查
 ---
 
+
 # Vue 3 服务端渲染 | Server-Side Rendering in Vue 3
 
 > 本文档对标 MIT 6.170、Stanford CS142、CMU 17-437 软件工程课程水准，系统化阐述 Vue 3 服务端渲染（SSR）的原理、形式化定义、企业级实践与对比分析。涵盖同构应用架构、Hydration 机制、数据预取、流式渲染、Nuxt 3 集成、Vite SSR 构建、SSR 缓存策略、单例污染防护、SEO 优化、性能建模等主题，并辅以数学推导、对比分析、案例研究与习题。
@@ -39,62 +40,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标 | Learning Objectives
+## 1. 历史动机与发展脉络 | Historical Motivation and Evolution
 
-本章节基于 Bloom 教育目标分类法设计学习目标，覆盖记忆、理解、应用、分析、评价、创造六个层次。完成本章学习后，学习者应能够独立设计企业级 SSR 架构，并对其性能特性、安全边界与运维复杂度做出准确判断。
-
-### 1.1 记忆层（Remember）
-
-- **R1**：准确陈述 `createSSRApp` 与 `createApp` 的差异：前者禁用响应式追踪直至 hydration 完成，避免 SSR 期间不必要的依赖收集。
-- **R2**：列举 `vue/server-renderer` 提供的核心 API：`renderToString`、`renderToNodeStream`、`renderToPipeableStream`、`renderToWebStream`、`renderToSimpleStream`。
-- **R3**：复述 SSR 中运行的 Vue 生命周期钩子：仅 `beforeCreate` 与 `created`（Composition API 中即 `setup()` 同步部分）。
-- **R4**：背记 Hydration 的含义：服务端输出 HTML 字符串后，客户端 Vue 接管 DOM，将静态 HTML 转换为响应式应用的过程。
-- **R5**：识别 SSR 三种典型产物：CSR（客户端渲染）、SSR（服务端渲染）、SSG（静态站点生成）。
-
-### 1.2 理解层（Understand）
-
-- **U1**：解释 SSR 的核心价值：首屏快速可见（FCP、LCP 优化）、SEO 友好（搜索引擎可直接抓取 HTML）、弱网体验改善。
-- **U2**：阐述同构（Isomorphic/Universal）应用的设计：共享入口 `main.js`、客户端入口 `entry-client.js`、服务端入口 `entry-server.js`，构建时区分目标平台。
-- **U3**：描述 Hydration 的工作原理：客户端 Vue 复用服务端输出的 DOM 节点，附加事件监听与响应式依赖，而非重新创建 DOM。
-- **U4**：理解 `data-server-rendered="true"` 属性的作用：标记服务端渲染的根节点，Vue 客户端识别后启动 hydration 模式。
-- **U5**：说明 SSR 中全局 API 限制：`window`、`document`、`localStorage`、`navigator` 等浏览器 API 在服务端不可用，需通过 `onMounted` 或平台判断隔离。
-
-### 1.3 应用层（Apply）
-
-- **A1**：使用 `createSSRApp` 与 `renderToString` 实现一个最小的 SSR 示例，输出 HTML 字符串。
-- **A2**：构建一个同构应用，包含共享 `App.vue`、客户端入口、服务端入口，并通过 Vite SSR 构建产出。
-- **A3**：实现路由级数据预取，在服务端 `entry-server.js` 中通过 `router.getMatchedComponents()` 收集 `asyncData` 钩子并行执行。
-- **A4**：使用 Pinia 的 `usePinia()` + `store.$state` 实现 SSR 状态序列化与客户端 dehydration。
-- **A5**：使用 `renderToPipeableStream`（Node.js）或 `renderToWebStream`（边缘运行时）实现流式 SSR，提升 TTFB。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：分析 Hydration Mismatch 的成因：服务端与客户端渲染输出不一致，可能由时间戳、随机数、平台 API 差异、第三方脚本注入引起。
-- **An2**：解构 SSR 单例污染问题：`createApp` 在 Node.js 服务器中是单例，所有请求共享同一应用实例，需通过工厂函数保证每个请求独立。
-- **An3**：分析 SSR 缓存策略：组件级缓存（`getCacheKey`）、路由级缓存（HTTP `Cache-Control`）、数据级缓存（Redis/Memory），权衡命中率与新鲜度。
-- **An4**：对比 Vue 3 SSR 与 React 18 SSR 的实现差异：Vue 基于组件树同步渲染，React 18 引入 `renderToPipeableStream` 与选择性 hydration。
-- **An5**：评估 SSR 性能瓶颈：CPU 密集型渲染阻塞事件循环、数据预取串行化、大列表渲染内存占用，分析各瓶颈对应的优化策略。
-
-### 1.5 评价层（Evaluate）
-
-- **E1**：评估一个具体业务场景是否应当采用 SSR，权衡 SEO 需求、首屏性能、服务器成本、开发复杂度、运维负担。
-- **E2**：判断何时应当使用 SSG（静态生成）替代 SSR：内容型站点优先 SSG，动态个性化内容需 SSR。
-- **E3**：评价流式 SSR（Streaming SSR）的适用场景：首屏 TTFB 敏感、长内容页面、异步数据依赖多的场景。
-- **E4**：权衡 SSR 与边缘渲染（Edge Rendering）：Cloudflare Workers、Vercel Edge Functions 的限制（无 Node.js API、Bundle 体积限制）与收益（低延迟、就近访问）。
-- **E5**：评价 Vue Server Components（实验性）的前景：能否解决 SSR 的全量 hydration 成本问题，与 React Server Components 的设计差异。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计一套企业级 SSR 框架，支持路由级代码分割、流式渲染、组件级缓存、请求级状态隔离、A/B 测试注入。
-- **C2**：构建一个支持多区域部署的 SSR 微服务架构：用户态、商品态、订单态分属不同 SSR 服务，通过边缘网关聚合。
-- **C3**：实现一个 SSR 性能监控平台，实时采集 TTFB、FCP、LCP、Hydration 耗时、错误率，并支持火焰图分析。
-- **C4**：设计一个 SSR/SSG/ISR 混合渲染引擎，根据路由元信息自动选择渲染策略，支持按需升级与降级。
-
----
-
-## 2. 历史动机与发展脉络 | Historical Motivation and Evolution
-
-### 2.1 服务端渲染的起源
+### 1.1 服务端渲染的起源
 
 Web 早期的所有页面都是服务端渲染。1990 年代 CGI、PHP、ASP、JSP 等技术均采用服务端模板渲染 HTML 后返回浏览器。2000 年代 AJAX 兴起，Web 应用逐步向客户端渲染（CSR）迁移。2010 年代单页应用（SPA）成为主流，但暴露出 SEO 弱、首屏慢等问题，催生 SSR 复兴。
 
@@ -116,7 +64,7 @@ Web 早期的所有页面都是服务端渲染。1990 年代 CGI、PHP、ASP、J
 | 2024 | Vue 3.4 引入 `data-allow-mismatch` 控制 Hydration 容忍度 |
 | 2025 | Nuxt 4 RC，整合 Server Components 实验 |
 
-### 2.2 Vue 2 时代的 SSR
+### 1.2 Vue 2 时代的 SSR
 
 Vue 2 通过 `vue-server-renderer` 提供 SSR 支持，但设计上存在限制：
 
@@ -143,11 +91,11 @@ renderer.renderToString(app, (err, html) => {
 - 流式渲染支持有限，`renderToStream` 不支持 Suspense 协调。
 - Hydration Mismatch 检测较弱，仅警告不阻断。
 
-### 2.3 Vue 3 时代（2020-至今）：根本性重构
+### 1.3 Vue 3 时代（2020-至今）：根本性重构
 
 Vue 3 对 SSR 进行了根本性重构，引入全新 API 与设计理念：
 
-#### 2.3.1 createSSRApp（Vue 3.0）
+#### 1.3.1 createSSRApp（Vue 3.0）
 
 `createSSRApp` 与 `createApp` 的差异：
 
@@ -167,7 +115,7 @@ const serverApp = createSSRApp(App);
 2. **禁用虚拟 DOM 修补**：SSR 输出纯字符串，无需 diff 算法。
 3. **统一入口**：客户端与服务端使用相同的 `createSSRApp`，通过 `import.meta.env.SSR` 区分平台。
 
-#### 2.3.2 vue/server-renderer 独立包（Vue 3.0）
+#### 1.3.2 vue/server-renderer 独立包（Vue 3.0）
 
 SSR 渲染器从 `vue-server-renderer` 迁移至 `@vue/server-renderer`，作为 Vue 3 的独立子包：
 
@@ -175,7 +123,7 @@ SSR 渲染器从 `vue-server-renderer` 迁移至 `@vue/server-renderer`，作为
 import { renderToString } from 'vue/server-renderer';
 ```
 
-#### 2.3.3 流式渲染（Vue 3.0+）
+#### 1.3.3 流式渲染（Vue 3.0+）
 
 Vue 3 原生支持流式渲染：
 
@@ -187,7 +135,7 @@ const stream = renderToNodeStream(app);
 stream.pipe(res);
 ```
 
-#### 2.3.4 Suspense 与 SSR（Vue 3.2+）
+#### 1.3.4 Suspense 与 SSR（Vue 3.2+）
 
 Vue 3.2+ 支持 Suspense 在 SSR 中协调异步依赖：
 
@@ -206,7 +154,7 @@ export async function render(url) {
 }
 ```
 
-#### 2.3.5 Hydration Mismatch 控制（Vue 3.4+）
+#### 1.3.5 Hydration Mismatch 控制（Vue 3.4+）
 
 Vue 3.4 引入 `data-allow-mismatch` 属性，允许开发者显式标记可容忍 Hydration 不一致的元素：
 
@@ -217,7 +165,7 @@ Vue 3.4 引入 `data-allow-mismatch` 属性，允许开发者显式标记可容�
 </template>
 ```
 
-#### 2.3.6 Nuxt 3（2022）：跨平台 SSR 框架
+#### 1.3.6 Nuxt 3（2022）：跨平台 SSR 框架
 
 Nuxt 3 基于 Nitro 引擎，支持多平台部署：
 
@@ -235,7 +183,7 @@ Nitro 输出目标：
 - Deno Deploy
 - 静态预渲染（SSG）
 
-### 2.4 Evan You 的设计哲学
+### 1.4 Evan You 的设计哲学
 
 Evan You 对 SSR 的定位：
 
@@ -245,7 +193,7 @@ Evan You 对 SSR 的定位：
 4. **请求隔离是底线**：每个请求创建独立应用实例，避免单例污染，这是 SSR 安全的基础。
 5. **渐进式复杂度**：简单场景用 Nuxt 3，复杂场景自行搭建，Vue SSR 不强制绑定特定框架。
 
-### 2.5 与 React SSR 的对比
+### 1.5 与 React SSR 的对比
 
 React 18（2022）引入全新 SSR 架构，与 Vue 3 SSR 设计理念差异显著：
 
@@ -265,7 +213,7 @@ React 18（2022）引入全新 SSR 架构，与 Vue 3 SSR 设计理念差异显�
 - React Server Components 实现了真正的零客户端体积组件，Vue Server Components 仍在实验阶段。
 - Vue 的 Hydration 是全量接管，React 18 支持选择性 hydration，可优先 hydrate 用户交互区域。
 
-### 2.6 与 Solid、Svelte SSR 的对比
+### 1.6 与 Solid、Svelte SSR 的对比
 
 | 框架 | SSR API | 流式渲染 | Hydration |
 |------|---------|----------|-----------|
@@ -279,9 +227,9 @@ Solid.js 的 SSR 基于细粒度响应式，Hydration 仅恢复必要信号，�
 
 ---
 
-## 3. 形式化定义 | Formal Definitions
+## 2. 形式化定义 | Formal Definitions
 
-### 3.1 服务端渲染的形式化定义
+### 2.1 服务端渲染的形式化定义
 
 **定义 3.1（服务端渲染）**：服务端渲染是一个函数 $R_{\text{ssr}}$，将 Vue 应用实例与上下文映射为 HTML 字符串：
 
@@ -297,7 +245,7 @@ $$
 - $\text{Client}: \text{Shared} \to \text{ClientApp}$：客户端入口，启用响应式、挂载 DOM。
 - $\text{Server}: \text{Shared} \to \text{ServerApp}$：服务端入口，禁用响应式、输出 HTML。
 
-### 3.2 Hydration 的形式化
+### 2.2 Hydration 的形式化
 
 **定义 3.3（Hydration）**：Hydration 是一个函数 $H$，将服务端输出的 DOM 树 $D_{\text{server}}$ 与客户端 Vue 实例 $V_{\text{client}}$ 结合：
 
@@ -313,7 +261,7 @@ $$
 \text{Mismatch} \iff D_{\text{server}} \neq D_{\text{client}}^{\text{first}}
 $$
 
-### 3.3 数据预取的形式化
+### 2.3 数据预取的形式化
 
 **定义 3.5（数据预取）**：数据预取是服务端在 SSR 渲染前执行的异步数据获取函数集合：
 
@@ -329,7 +277,7 @@ $$
 
 **约束**：所有 $f_i$ 必须并行执行以最小化等待时间。
 
-### 3.4 流式渲染的形式化
+### 2.4 流式渲染的形式化
 
 **定义 3.6（流式渲染）**：流式渲染将 HTML 输出视为可分块发送的流：
 
@@ -349,7 +297,7 @@ $$
 \text{TTFB}_{\text{stream}} = t_1 \ll t_{\text{total}} = \text{TTFB}_{\text{string}}
 $$
 
-### 3.5 单例污染的形式化
+### 2.5 单例污染的形式化
 
 **定义 3.7（单例污染）**：在 Node.js 服务器中，若应用实例 $A$ 在模块作用域创建并被多请求共享：
 
@@ -365,7 +313,7 @@ $$
 \forall r \in \text{Requests}: A(r) = \text{createApp}(r) \land A(r_1) \neq A(r_2) \text{ if } r_1 \neq r_2
 $$
 
-### 3.6 SSR 状态序列化的形式化
+### 2.6 SSR 状态序列化的形式化
 
 **定义 3.8（状态序列化）**：SSR 状态序列化是将在服务端获取的状态 $S_{\text{server}}$ 转换为可嵌入 HTML 的 JSON 字符串：
 
@@ -385,7 +333,7 @@ $$
 - 反序列化后的状态必须与服务端一致，作为客户端初始状态。
 - 敏感数据（如密码、Token）不应序列化至 HTML，避免 XSS 泄露。
 
-### 3.7 Hydration 性能建模
+### 2.7 Hydration 性能建模
 
 **定义 3.9（Hydration 成本）**：Hydration 的成本 $C_H$ 与组件树节点数 $n$ 和事件监听器数量 $e$ 相关：
 
@@ -405,7 +353,7 @@ $$
 - 减少 $e$：事件委托。
 - 减少 $|\text{State}|$：精简初始状态，按需加载。
 
-### 3.8 SSR 缓存的形式化
+### 2.8 SSR 缓存的形式化
 
 **定义 3.10（组件级缓存）**：组件级缓存将组件渲染结果按缓存键 $k$ 存储：
 
@@ -429,9 +377,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析 | Theoretical Derivation
+## 3. 理论推导与原理解析 | Theoretical Derivation
 
-### 4.1 SSR 渲染管线的内部实现
+### 3.1 SSR 渲染管线的内部实现
 
 Vue 3 SSR 渲染管线分为多个阶段：
 
@@ -500,7 +448,7 @@ async function renderComponent(vnode, ctx) {
 }
 ```
 
-### 4.2 Hydration 的实现原理
+### 3.2 Hydration 的实现原理
 
 Vue 3 Hydration 分为两个阶段：探测阶段与挂载阶段。
 
@@ -547,7 +495,7 @@ function hydrate(vnode, container) {
 }
 ```
 
-### 4.3 流式渲染的实现
+### 3.3 流式渲染的实现
 
 Vue 3 流式渲染通过异步迭代器实现：
 
@@ -604,7 +552,7 @@ function renderToNodeStream(app, context) {
 }
 ```
 
-### 4.4 SSR 中响应式系统的禁用
+### 3.4 SSR 中响应式系统的禁用
 
 `createSSRApp` 内部禁用了响应式追踪：
 
@@ -636,7 +584,7 @@ function setupStatefulComponent(instance) {
 }
 ```
 
-### 4.5 SSR 与 Suspense 的协作
+### 3.5 SSR 与 Suspense 的协作
 
 SSR 中 Suspense 等待所有异步依赖完成：
 
@@ -670,7 +618,7 @@ async function renderSuspense(vnode, ctx) {
 }
 ```
 
-### 4.6 状态序列化的实现
+### 3.6 状态序列化的实现
 
 ```javascript
 // 状态序列化与反序列化
@@ -714,7 +662,7 @@ function deserializeState(json) {
 }
 ```
 
-### 4.7 SSR 性能模型
+### 3.7 SSR 性能模型
 
 设 SSR 渲染时间为 $T_{\text{ssr}}$：
 
@@ -736,7 +684,7 @@ $$
 
 其中 $k$ 是流分块数。流式渲染使得用户更早看到首屏内容，但总渲染时间不变。
 
-### 4.8 Hydration 性能优化
+### 3.8 Hydration 性能优化
 
 Vue 3 引入 `Hydration` 优化策略：
 
@@ -756,7 +704,7 @@ function render(_ctx) {
 }
 ```
 
-### 4.9 组件级缓存实现
+### 3.9 组件级缓存实现
 
 ```javascript
 // Vue 3 组件级缓存（通过 renderer 插件）
@@ -807,9 +755,9 @@ function renderWithCache(component, props) {
 
 ---
 
-## 5. 代码示例 | Code Examples
+## 4. 代码示例 | Code Examples
 
-### 5.1 最小 SSR 示例（Vue 3.5）
+### 4.1 最小 SSR 示例（Vue 3.5）
 
 ```javascript
 // server.js - 最小 SSR 示例
@@ -856,7 +804,7 @@ server.listen(3000, () => {
 });
 ```
 
-### 5.2 同构应用架构（企业级）
+### 4.2 同构应用架构（企业级）
 
 ```javascript
 // src/main.js - 共享入口
@@ -947,7 +895,7 @@ export async function render(url, manifest) {
 }
 ```
 
-### 5.3 Vue Router 集成
+### 4.3 Vue Router 集成
 
 ```javascript
 // src/router/index.js
@@ -979,7 +927,7 @@ export function createRouterInstance(isSSR = false) {
 }
 ```
 
-### 5.4 Pinia 状态管理集成
+### 4.4 Pinia 状态管理集成
 
 ```javascript
 // src/stores/user.js
@@ -1035,7 +983,7 @@ export const usePostStore = defineStore('post', {
 });
 ```
 
-### 5.5 路由级数据预取
+### 4.5 路由级数据预取
 
 ```vue
 <!-- src/pages/Post.vue -->
@@ -1067,7 +1015,7 @@ postStore.fetchPost = async ({ store, route }) => {
 </script>
 ```
 
-### 5.6 流式渲染（Node.js）
+### 4.6 流式渲染（Node.js）
 
 ```javascript
 // server-stream.js - 流式 SSR
@@ -1114,7 +1062,7 @@ server.get('*', async (req, res) => {
 server.listen(3000);
 ```
 
-### 5.7 Vite SSR 构建
+### 4.7 Vite SSR 构建
 
 ```javascript
 // vite.config.js - Vite SSR 配置
@@ -1183,7 +1131,7 @@ async function createSSRServer() {
 createSSRServer();
 ```
 
-### 5.8 Nuxt 3 应用示例
+### 4.8 Nuxt 3 应用示例
 
 ```vue
 <!-- nuxt-app/pages/index.vue -->
@@ -1245,7 +1193,7 @@ export default defineNuxtConfig({
 });
 ```
 
-### 5.9 组件级缓存示例
+### 4.9 组件级缓存示例
 
 ```javascript
 // src/utils/ssr-cache.js
@@ -1321,7 +1269,7 @@ export default {
 };
 ```
 
-### 5.10 Hydration Mismatch 处理
+### 4.10 Hydration Mismatch 处理
 
 ```vue
 <!-- src/components/TimeDisplay.vue -->
@@ -1369,7 +1317,7 @@ onMounted(() => {
 </script>
 ```
 
-### 5.11 错误处理与降级
+### 4.11 错误处理与降级
 
 ```javascript
 // src/utils/ssr-error-handler.js
@@ -1425,7 +1373,7 @@ function buildHTML({ html, state, fallback }) {
 }
 ```
 
-### 5.12 SSR 安全防护
+### 4.12 SSR 安全防护
 
 ```javascript
 // src/utils/ssr-security.js
@@ -1483,7 +1431,7 @@ export function isSafeUrl(url) {
 }
 ```
 
-### 5.13 边缘渲染示例（Cloudflare Workers）
+### 4.13 边缘渲染示例（Cloudflare Workers）
 
 ```javascript
 // worker.js - Cloudflare Workers SSR
@@ -1524,7 +1472,7 @@ export default {
 };
 ```
 
-### 5.14 服务端组件实验性示例
+### 4.14 服务端组件实验性示例
 
 ```vue
 <!-- ServerComponent.vue - 实验性服务端组件 -->
@@ -1556,7 +1504,7 @@ onServerPrefetch(async () => {
 </script>
 ```
 
-### 5.15 完整企业级 SSR 应用
+### 4.15 完整企业级 SSR 应用
 
 ```javascript
 // src/server/index.js - 企业级 SSR 服务器
@@ -1673,9 +1621,9 @@ startServer();
 
 ---
 
-## 6. 对比分析 | Comparative Analysis
+## 5. 对比分析 | Comparative Analysis
 
-### 6.1 SSR vs CSR vs SSG vs ISR
+### 5.1 SSR vs CSR vs SSG vs ISR
 
 | 渲染模式 | 全称 | 渲染时机 | SEO | 首屏性能 | 服务器成本 | 适用场景 |
 |----------|------|----------|-----|----------|------------|----------|
@@ -1691,7 +1639,7 @@ startServer();
 - 内容更新可接受延迟：ISR
 - 应用内部、无 SEO 需求：CSR
 
-### 6.2 Vue 3 SSR vs React 18 SSR
+### 5.2 Vue 3 SSR vs React 18 SSR
 
 | 维度 | Vue 3 SSR | React 18 SSR |
 |------|-----------|--------------|
@@ -1711,7 +1659,7 @@ startServer();
 3. **并发渲染**：React 18 支持并发渲染（`startTransition`），Vue 3 不支持。
 4. **生态成熟度**：Next.js 生态更成熟，Nuxt 3 紧随其后。
 
-### 6.3 Vue 3 SSR vs Solid SSR
+### 5.3 Vue 3 SSR vs Solid SSR
 
 | 维度 | Vue 3 SSR | Solid SSR |
 |------|-----------|-----------|
@@ -1723,7 +1671,7 @@ startServer();
 
 Solid 的细粒度响应式使其 Hydration 仅恢复必要信号，性能显著优于 Vue 3。
 
-### 6.4 Vue 3 SSR vs Svelte SSR
+### 5.4 Vue 3 SSR vs Svelte SSR
 
 | 维度 | Vue 3 SSR | Svelte SSR |
 |------|-----------|------------|
@@ -1735,7 +1683,7 @@ Solid 的细粒度响应式使其 Hydration 仅恢复必要信号，性能显著
 
 Svelte 编译时生成 SSR 代码，运行时极轻量，但灵活性低于 Vue 3。
 
-### 6.5 Vue 3 SSR vs Angular SSR
+### 5.5 Vue 3 SSR vs Angular SSR
 
 | 维度 | Vue 3 SSR | Angular SSR |
 |------|-----------|-------------|
@@ -1747,7 +1695,7 @@ Svelte 编译时生成 SSR 代码，运行时极轻量，但灵活性低于 Vue 
 
 Angular 16+ 引入非破坏性 Hydration，避免全量重建 DOM，性能提升显著。
 
-### 6.6 流式渲染对比
+### 5.6 流式渲染对比
 
 | 框架 | 流式 API | TTFB 优化 | 错误恢复 |
 |------|----------|-----------|----------|
@@ -1760,9 +1708,9 @@ Angular 16+ 引入非破坏性 Hydration，避免全量重建 DOM，性能提升
 
 ---
 
-## 7. 常见陷阱与最佳实践 | Pitfalls and Best Practices
+## 6. 常见陷阱与最佳实践 | Pitfalls and Best Practices
 
-### 7.1 单例污染陷阱
+### 6.1 单例污染陷阱
 
 **陷阱**：在模块作用域创建应用实例或共享状态。
 
@@ -1790,7 +1738,7 @@ export async function render() {
 }
 ```
 
-### 7.2 浏览器 API 陷阱
+### 6.2 浏览器 API 陷阱
 
 **陷阱**：在 `setup()` 顶层使用浏览器 API。
 
@@ -1838,7 +1786,7 @@ export default {
 };
 ```
 
-### 7.3 Hydration Mismatch 陷阱
+### 6.3 Hydration Mismatch 陷阱
 
 **陷阱**：服务端与客户端渲染输出不一致。
 
@@ -1871,7 +1819,7 @@ onMounted(() => {
 </script>
 ```
 
-### 7.4 数据预取陷阱
+### 6.4 数据预取陷阱
 
 **陷阱**：未在服务端预取数据，导致客户端二次请求。
 
@@ -1907,7 +1855,7 @@ export default {
 };
 ```
 
-### 7.5 状态序列化陷阱
+### 6.5 状态序列化陷阱
 
 **陷阱**：序列化包含循环引用或敏感数据。
 
@@ -1933,7 +1881,7 @@ function safeSerialize(state) {
 }
 ```
 
-### 7.6 缓存陷阱
+### 6.6 缓存陷阱
 
 **陷阱**：缓存包含用户态数据的组件。
 
@@ -1965,7 +1913,7 @@ export default {
 };
 ```
 
-### 7.7 性能陷阱
+### 6.7 性能陷阱
 
 **陷阱**：SSR 中渲染大列表，阻塞事件循环。
 
@@ -1992,7 +1940,7 @@ export default {
 };
 ```
 
-### 7.8 最佳实践清单
+### 6.8 最佳实践清单
 
 1. **每请求独立应用实例**：使用工厂函数创建应用。
 2. **平台 API 隔离**：浏览器 API 仅在 `onMounted` 或平台判断后使用。
@@ -2007,9 +1955,9 @@ export default {
 
 ---
 
-## 8. 工程实践 | Engineering Practice
+## 7. 工程实践 | Engineering Practice
 
-### 8.1 Vite SSR 构建配置
+### 7.1 Vite SSR 构建配置
 
 ```javascript
 // vite.config.js - 完整 SSR 配置
@@ -2080,7 +2028,7 @@ async function buildAll() {
 buildAll();
 ```
 
-### 8.2 Vue Router 配置
+### 7.2 Vue Router 配置
 
 ```javascript
 // src/router/index.js
@@ -2118,7 +2066,7 @@ export function createRouterInstance() {
 }
 ```
 
-### 8.3 Pinia 集成
+### 7.3 Pinia 集成
 
 ```javascript
 // src/stores/index.js
@@ -2149,7 +2097,7 @@ export function createPiniaInstance() {
 }
 ```
 
-### 8.4 SEO 元信息管理
+### 7.4 SEO 元信息管理
 
 ```javascript
 // src/utils/seo.js
@@ -2193,7 +2141,7 @@ export default {
 };
 ```
 
-### 8.5 调试工具
+### 7.5 调试工具
 
 ```javascript
 // src/utils/debug.js
@@ -2241,9 +2189,9 @@ export async function render(url) {
 }
 ```
 
-### 8.6 部署策略
+### 7.6 部署策略
 
-#### 8.6.1 Node.js 部署
+#### 7.6.1 Node.js 部署
 
 ```javascript
 // Dockerfile
@@ -2281,7 +2229,7 @@ services:
       retries: 3
 ```
 
-#### 8.6.2 Vercel 部署
+#### 7.6.2 Vercel 部署
 
 ```javascript
 // vercel.js
@@ -2311,7 +2259,7 @@ export default app;
 }
 ```
 
-#### 8.6.3 Cloudflare Workers 部署
+#### 7.6.3 Cloudflare Workers 部署
 
 ```javascript
 // wrangler.toml
@@ -2342,7 +2290,7 @@ export default {
 };
 ```
 
-### 8.7 性能监控
+### 7.7 性能监控
 
 ```javascript
 // src/utils/performance.js
@@ -2414,7 +2362,7 @@ if (typeof window !== 'undefined') {
 }
 ```
 
-### 8.8 测试策略
+### 7.8 测试策略
 
 ```javascript
 // tests/ssr.test.js
@@ -2485,9 +2433,9 @@ describe('Hydration', () => {
 
 ---
 
-## 9. 案例研究 | Case Studies
+## 8. 案例研究 | Case Studies
 
-### 9.1 案例一：Nuxt 3 全栈应用
+### 8.1 案例一：Nuxt 3 全栈应用
 
 **场景**：电商网站，包含商品列表、详情、用户中心。
 
@@ -2564,7 +2512,7 @@ export default defineEventHandler(async (event) => {
 - LCP：< 1.5s
 - SEO：Google 抓取覆盖率 100%
 
-### 9.2 案例二：企业级内容管理系统
+### 8.2 案例二：企业级内容管理系统
 
 **场景**：新闻门户网站，日均 PV 千万级。
 
@@ -2621,7 +2569,7 @@ async function renderWithCache(url) {
 - TTFB：< 300ms（缓存未命中）
 - 服务器 QPS：5000+
 
-### 9.3 案例三：Vue 官网（vuejs.org）
+### 8.3 案例三：Vue 官网（vuejs.org）
 
 **场景**：Vue 官方文档站，多语言、多版本。
 
@@ -2643,7 +2591,7 @@ async function renderWithCache(url) {
 - LCP：< 0.8s
 - 静态资源：CDN 加速
 
-### 9.4 案例四：GitLab（部分页面）
+### 8.4 案例四：GitLab（部分页面）
 
 **场景**：GitLab 部分页面采用 Vue SSR。
 
@@ -2659,7 +2607,7 @@ async function renderWithCache(url) {
 - 私有页面（Dashboard、Settings）：CSR
 - GraphQL 数据预取：服务端执行 GraphQL 查询
 
-### 9.5 案例五：阿里巴巴部分电商页面
+### 8.5 案例五：阿里巴巴部分电商页面
 
 **场景**：淘宝/天猫部分页面采用 SSR 优化首屏。
 
@@ -2680,7 +2628,7 @@ async function renderWithCache(url) {
 - 首屏 LCP：< 1s
 - 转化率提升：5%（相比 CSR）
 
-### 9.6 案例六：Netflix 渐进式 Hydration
+### 8.6 案例六：Netflix 渐进式 Hydration
 
 **场景**：Netflix 部分页面采用渐进式 Hydration 优化。
 
@@ -2697,7 +2645,7 @@ async function renderWithCache(url) {
 
 Vue 3 当前不支持原生渐进式 Hydration，但可通过 Vue Server Components（实验性）实现类似效果。
 
-### 9.7 案例七：VitePress 文档系统
+### 8.7 案例七：VitePress 文档系统
 
 **场景**：VitePress（Vue 官方文档工具）。
 
@@ -2977,7 +2925,7 @@ function renderWithCache(component, props) {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 14**：何时应当选择 SSR 而非 SSG？请列举三个典型场景。
 
@@ -3109,9 +3057,9 @@ export async function render(url, context) {
 
 ---
 
-## 11. 参考文献 | References
+## 10. 参考文献 | References
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 [1] Vue.js. 2024. Vue.js Server-Side Rendering Guide. https://vuejs.org/guide/scaling-up/ssr.html. Accessed: 2024-12-01.
 
@@ -3121,7 +3069,7 @@ export async function render(url, context) {
 
 [4] Vite. 2024. Vite Server-Side Rendering Guide. https://vitejs.dev/guide/ssr.html. Accessed: 2024-12-01.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [5] You, E. 2020. Vue 3.0 Release Notes. https://github.com/vuejs/core/releases/tag/v3.0.0. Accessed: 2024-12-01.
 
@@ -3129,7 +3077,7 @@ export async function render(url, context) {
 
 [7] Walke, A. 2022. React 18 Release: Concurrent Features. https://react.dev/blog/2022/03/29/react-v18. Accessed: 2024-12-01.
 
-### 11.3 技术标准
+### 10.3 技术标准
 
 [8] WHATWG. 2024. HTML Living Standard - Server-Side Rendering. https://html.spec.whatwg.org/. Accessed: 2024-12-01.
 
@@ -3137,7 +3085,7 @@ export async function render(url, context) {
 
 [10] Web Hypertext Application Technology Working Group. 2024. Streams API. https://streams.spec.whatwg.org/. Accessed: 2024-12-01.
 
-### 11.4 书籍与教程
+### 10.4 书籍与教程
 
 [11] You, E. 2024. Vue.js 3 Documentation. https://vuejs.org/. Accessed: 2024-12-01.
 
@@ -3147,7 +3095,7 @@ export async function render(url, context) {
 
 [14] Anthony Gore. 2023. Full-Stack Vue.js 3: Build SSR Applications with Nuxt. Apress. ISBN: 978-1484294052.
 
-### 11.5 工业实践
+### 10.5 工业实践
 
 [15] Netflix. 2019. Performance Improvements with Client-Side Hydration. https://netflixtechblog.com/. Accessed: 2024-12-01.
 
@@ -3157,7 +3105,7 @@ export async function render(url, context) {
 
 [18] Alibaba Group. 2023. Large-Scale SSR Practice at Alibaba. https://alibaba.github.io/. Accessed: 2024-12-01.
 
-### 11.6 性能与优化
+### 10.6 性能与优化
 
 [19] Google. 2024. Core Web Vitals Documentation. https://web.dev/vitals/. Accessed: 2024-12-01.
 
@@ -3165,7 +3113,7 @@ export async function render(url, context) {
 
 [21] Addy Osmani. 2023. The Cost of JavaScript in 2023. https://medium.com/@addyosmani/. Accessed: 2024-12-01.
 
-### 11.7 安全参考
+### 10.7 安全参考
 
 [22] OWASP. 2024. Cross-Site Scripting (XSS) Prevention Cheat Sheet. https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html. Accessed: 2024-12-01.
 
@@ -3173,7 +3121,7 @@ export async function render(url, context) {
 
 [24] Content Security Policy Level 3. W3C Working Draft. 2024. https://www.w3.org/TR/CSP3/. Accessed: 2024-12-01.
 
-### 11.8 框架对比
+### 10.8 框架对比
 
 [25] Solid.js. 2024. Solid SSR Documentation. https://www.solidjs.com/guides/server. Accessed: 2024-12-01.
 
@@ -3183,7 +3131,7 @@ export async function render(url, context) {
 
 [28] React. 2024. React Server Components Documentation. https://react.dev/reference/react-server-components. Accessed: 2024-12-01.
 
-### 11.9 ACM Reference Format示例
+### 10.9 ACM Reference Format示例
 
 [29] You, E. 2024. Vue.js: A Progressive Framework for Building User Interfaces. In Proceedings of the ACM International Conference on Web Engineering (ICWE '24). ACM, New York, NY, USA, 1-12. DOI: 10.1145/1234567.1234567.
 
@@ -3193,9 +3141,9 @@ export async function render(url, context) {
 
 ---
 
-## 12. 延伸阅读 | Further Reading
+## 11. 延伸阅读 | Further Reading
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **Vue.js 官方文档**：https://vuejs.org/guide/scaling-up/ssr.html
 - **Vue.js SSR API**：https://vuejs.org/api/ssr.html
@@ -3203,7 +3151,7 @@ export async function render(url, context) {
 - **Vite SSR 指南**：https://vitejs.dev/guide/ssr.html
 - **VitePress 文档**：https://vitepress.dev/
 
-### 12.2 进阶论文与文章
+### 11.2 进阶论文与文章
 
 - **Vue 3.0 Release Notes**：https://github.com/vuejs/core/releases/tag/v3.0.0
 - **Vue 3.4 Release Notes**：https://github.com/vuejs/core/releases/tag/v3.4.0
@@ -3211,14 +3159,14 @@ export async function render(url, context) {
 - **React Server Components RFC**：https://github.com/reactjs/rfcs/blob/main/text/0188-server-components.md
 - **Streaming SSR with Suspense**：https://vuejs.org/guide/scaling-up/ssr.html#suspense
 
-### 12.3 视频教程
+### 11.3 视频教程
 
 - **Vue School SSR 课程**：https://vueschool.io/courses/server-side-rendering-with-vuejs-3
 - **Nuxt 3 Master Class**：https://vueschool.io/courses/nuxt-js-3-fundamentals
 - **Evan You: Vue 3 Deep Dive**：https://www.youtube.com/watch?v=Uy6u9gqJ7J0
 - **Addy Osmani: Performance in Modern Web Apps**：https://www.youtube.com/watch?v=mLjxXPHIJo8
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **Vue 3 Core**：https://github.com/vuejs/core
 - **Nuxt 3**：https://github.com/nuxt/nuxt
@@ -3226,14 +3174,14 @@ export async function render(url, context) {
 - **Vue SSR Demo**：https://github.com/vuejs/core/tree/main/packages/server-renderer
 - **Vite SSR Examples**：https://github.com/vitejs/vite/tree/main/playground/ssr
 
-### 12.5 性能优化资源
+### 11.5 性能优化资源
 
 - **Core Web Vitals**：https://web.dev/vitals/
 - **Lighthouse**：https://developers.google.com/web/tools/lighthouse
 - **WebPageTest**：https://www.webpagetest.org/
 - **Chrome DevTools SSR Profiling**：https://developer.chrome.com/docs/devtools/
 
-### 12.6 部署平台文档
+### 11.6 部署平台文档
 
 - **Vercel Edge Functions**：https://vercel.com/docs/functions/edge-functions
 - **Cloudflare Workers**：https://developers.cloudflare.com/workers/
@@ -3241,14 +3189,14 @@ export async function render(url, context) {
 - **Deno Deploy**：https://deno.com/deploy
 - **AWS Lambda@Edge**：https://aws.amazon.com/lambda/edge/
 
-### 12.7 安全资源
+### 11.7 安全资源
 
 - **OWASP Cheat Sheet Series**：https://cheatsheetseries.owasp.org/
 - **Content Security Policy**：https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 - **XSS Prevention**：https://owasp.org/www-community/attacks/xss/
 - **SSRF Prevention**：https://owasp.org/www-community/attacks/Server_Side_Request_Forgery
 
-### 12.8 社区与论坛
+### 11.8 社区与论坛
 
 - **Vue.js Forum**：https://forum.vuejs.org/
 - **Vue Discord**：https://discord.com/invite/vue
@@ -3256,7 +3204,7 @@ export async function render(url, context) {
 - **Stack Overflow Vue SSR**：https://stackoverflow.com/questions/tagged/vue.js+ssr
 - **Reddit r/vuejs**：https://www.reddit.com/r/vuejs/
 
-### 12.9 相关技术栈
+### 11.9 相关技术栈
 
 - **Vue Router**：https://router.vuejs.org/
 - **Pinia**：https://pinia.vuejs.org/
@@ -3264,7 +3212,7 @@ export async function render(url, context) {
 - **Vue Test Utils**：https://test-utils.vuejs.org/
 - **Vue DevTools**：https://devtools.vuejs.org/
 
-### 12.10 框架对比资源
+### 11.10 框架对比资源
 
 - **React vs Vue SSR**：https://www.tomray.dev/react-vs-vue-ssr
 - **Solid.js SSR**：https://www.solidjs.com/guides/server

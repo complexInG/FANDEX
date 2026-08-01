@@ -16,61 +16,14 @@ prerequisites:
   - csharp/概述与环境配置
 ---
 
+
 # ASP-NET-Core中间件管道
 
 > "管道组合是函数式编程的核心思想在 Web 框架中的工程化体现——每个中间件都是一个变换器，将 Request 与 Response 的流编织成一条可观测、可插拔的责任链。" —— David Fowler, *ASP.NET Core Architecture Lead*
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 分类法（Bloom's Taxonomy）设定六层认知目标，学习者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：准确陈述 ASP.NET Core 请求处理管道的三层架构（Kestrel → Middleware Pipeline → Endpoint Routing）。
-- **R2**：列举 `IApplicationBuilder` 的核心方法：`Use`、`Run`、`Map`、`MapWhen`、`UseMiddleware`、`New`、`Build`。
-- **R3**：回忆 `HttpContext` 的六大核心属性：`Request`、`Response`、`Connection`、`Features`、`User`、`Items`。
-- **R4**：背诵 ASP.NET Core 官方推荐的中间件注册顺序（ExceptionHandler → HSTS → HttpsRedirection → StaticFiles → Routing → CORS → Authentication → Authorization → Endpoints）。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释中间件管道的洋葱模型（Onion Model）与函数组合（function composition）的等价关系。
-- **U2**：阐述 `RequestDelegate`（`Func<HttpContext, Task>`）作为管道核心抽象的语义与契约。
-- **U3**：说明基于约定的中间件（Convention-based Middleware）与基于工厂的中间件（Factory-based Middleware）在依赖注入上的差异。
-- **U4**：描述 Endpoint Routing 的三阶段流程：`UseRouting`（路由解析）→ Endpoint 执行 → `UseEndpoints`（端点调度）。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 `IMiddleware` 接口实现支持 scoped 依赖注入的中间件，并通过 `UseMiddleware<T>()` 注册。
-- **A2**：编写自定义异常处理中间件，集成 ProblemDetails（RFC 7807）规范输出错误响应。
-- **A3**：实现一个基于 `IAsyncEnumerable<T>` 的流式响应中间件，支持 Server-Sent Events（SSE）。
-- **A4**：使用 `IStartupFilter` 在管道构建期注入全局中间件，实现可插拔的横切关注点（cross-cutting concerns）。
-
-### 1.4 Analyze（分析）
-
-- **An1**：解构 `IApplicationBuilder.Build()` 的内部实现，分析委托链构造的逆序组合算法。
-- **An2**：分析中间件管道中的异步上下文流动（`AsyncLocal<T>`、`ExecutionContext`）与线程池调度的交互。
-- **An3**：剖析 `HttpContext` 的池化策略（`HttpContextPool`）与 GC 压力的关系，对比 `IDisposable` 与 `IAsyncDisposable`。
-- **An4**：对比 Endpoint Routing 与传统 MVC 路由（`UseMvc`）在性能与可扩展性上的根本差异。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评估中间件 vs. Filter（`IActionFilter`、`IExceptionFilter`）在横切关注点分层上的适用边界。
-- **E2**：判断高并发场景下同步中间件（`void Invoke`）对线程池的饥饿风险，并设计异步优先策略。
-- **E3**：审视 `UseMiddleware<T>()` 反射开销在 NativeAOT 场景下的限制，并评估 Source Generator 替代方案。
-- **E4**：评价 YARP（Yet Another Reverse Proxy）基于管道架构的反向代理设计模式。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个支持中间件元数据（middleware metadata）的扩展框架，编译期生成 pipeline 图与依赖分析报告。
-- **C2**：实现一个基于 `System.Threading.Channels` 的请求队列中间件，支持背压（backpressure）与超时取消。
-- **C3**：构建一个可视化管道调试工具，运行时捕获每个中间件的耗时、状态码变更、异常路径。
-- **C4**：编写一个 Roslyn 分析器，检测管道顺序错误（如 `UseAuthentication` 在 `UseRouting` 之前）并给出修复建议。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 ASP.NET（2002）：HttpModule 与 HttpHandler 时代
+### 1.1 ASP.NET（2002）：HttpModule 与 HttpHandler 时代
 
 .NET Framework 1.0 引入 ASP.NET，基于 IIS（Internet Information Services）的 ISAPI 扩展构建。请求处理通过 `HttpModule` 与 `HttpHandler` 实现：
 
@@ -114,7 +67,7 @@ ASP.NET 经典管道的局限：
 - **生命周期事件固定**：19 个固定事件（`BeginRequest`、`AuthenticateRequest`、`AuthorizeRequest` 等），无法灵活组合。
 - **同步阻塞**：默认同步 IO， scalability 受限。
 
-### 2.2 OWIN（2010）：解耦的起点
+### 1.2 OWIN（2010）：解耦的起点
 
 Open Web Interface for .NET（OWIN）规范提出将 Web 服务器与应用框架解耦：
 
@@ -142,7 +95,7 @@ OWIN 的贡献：
 2. **`Func<IDictionary, Task>` 委托链**：函数式管道模型，奠定 ASP.NET Core 中间件设计基础。
 3. **Katana 项目**：微软的 OWIN 实现，验证了脱 IIS 运行的可行性。
 
-### 2.3 ASP.NET Core 1.0（2016）：全新重写
+### 1.3 ASP.NET Core 1.0（2016）：全新重写
 
 .NET Core 推出之际，ASP.NET 团队完全重写框架，引入 `IApplicationBuilder` 与 `RequestDelegate`：
 
@@ -173,7 +126,7 @@ ASP.NET Core 1.0 的关键设计：
 - **`IApplicationBuilder` 接口**：构建器模式（Builder Pattern）组装中间件链。
 - **跨平台 Kestrel**：基于 `libuv`（后改为 `Http.Primitives`）的高性能托管服务器。
 
-### 2.4 ASP.NET Core 2.0（2017）：`WebHostBuilder` 与 `IStartupFilter`
+### 1.4 ASP.NET Core 2.0（2017）：`WebHostBuilder` 与 `IStartupFilter`
 
 引入 `IWebHostBuilder` 与 `IStartupFilter`，支持模块化注册启动逻辑：
 
@@ -194,7 +147,7 @@ public class AutoRequestCultureStartupFilter : IStartupFilter
 services.AddTransient<IStartupFilter, AutoRequestCultureStartupFilter>();
 ```
 
-### 2.5 ASP.NET Core 2.1（2018）：`IMiddleware` 与泛型主机
+### 1.5 ASP.NET Core 2.1（2018）：`IMiddleware` 与泛型主机
 
 引入 `IMiddleware` 接口，支持 scoped 依赖注入到中间件：
 
@@ -214,7 +167,7 @@ public class ScopedMiddleware : IMiddleware
 
 ASP.NET Core 2.1 还引入 Generic Host（`IHostBuilder`），将 Web 主机与 Worker 主机统一为 `IHost`。
 
-### 2.6 ASP.NET Core 3.0（2019）：Endpoint Routing
+### 1.6 ASP.NET Core 3.0（2019）：Endpoint Routing
 
 3.0 引入 Endpoint Routing，将路由匹配与端点执行解耦为两个阶段：
 
@@ -245,7 +198,7 @@ Endpoint Routing 的核心改进：
 2. **支持多种端点类型**：MVC Controller、Razor Pages、gRPC、SignalR、Health Checks 统一抽象。
 3. **性能优化**：路由表预编译，匹配复杂度从 O(n) 降为 O(log n)。
 
-### 2.7 ASP.NET Core 5.0（2020）：Web Host 弃用
+### 1.7 ASP.NET Core 5.0（2020）：Web Host 弃用
 
 5.0 弃用 `IWebHostBuilder`，全面采用 `IHostBuilder`：
 
@@ -258,7 +211,7 @@ var builder = Host.CreateDefaultBuilder(args)
     });
 ```
 
-### 2.8 ASP.NET Core 6.0（2021）：Minimal API 与 Top-level Statements
+### 1.8 ASP.NET Core 6.0（2021）：Minimal API 与 Top-level Statements
 
 6.0 引入 Minimal API，简化小型应用的启动代码：
 
@@ -279,7 +232,7 @@ app.Run();
 
 `WebApplication` 与 `WebApplicationBuilder` 封装了 `IHost` 与 `IApplicationBuilder`，显著降低样板代码。
 
-### 2.9 ASP.NET Core 7.0（2022）：Output Cache 与 Rate Limiting
+### 1.9 ASP.NET Core 7.0（2022）：Output Cache 与 Rate Limiting
 
 7.0 内置 Output Cache（取代 Response Caching Middleware）与 Rate Limiting：
 
@@ -303,7 +256,7 @@ app.UseOutputCache();
 app.UseRateLimiter();
 ```
 
-### 2.10 ASP.NET Core 8.0（2023）：AOT 与 Keyed Services
+### 1.10 ASP.NET Core 8.0（2023）：AOT 与 Keyed Services
 
 8.0 引入 NativeAOT 支持（实验性），并支持 `Keyed DI` 在中间件中使用：
 
@@ -323,7 +276,7 @@ public class CacheMiddleware(IMiddleware inner) : IMiddleware
 }
 ```
 
-### 2.11 ASP.NET Core 9.0（2024）：性能与可观测性
+### 1.11 ASP.NET Core 9.0（2024）：性能与可观测性
 
 9.0 引入：
 
@@ -332,7 +285,7 @@ public class CacheMiddleware(IMiddleware inner) : IMiddleware
 - **HybridCache**：新一代多级缓存抽象。
 - **`Microsoft.AspNetCore.OpenApi`**：原生 OpenAPI 文档生成。
 
-### 2.12 演进时间线
+### 1.12 演进时间线
 
 | 时间 | 版本 | 关键里程碑 |
 |------|------|------------|
@@ -350,9 +303,9 @@ public class CacheMiddleware(IMiddleware inner) : IMiddleware
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 中间件的形式化定义
+### 2.1 中间件的形式化定义
 
 中间件（Middleware）$M$ 是一个函数变换器，形式化地：
 
@@ -368,7 +321,7 @@ $$\text{Pipeline} = M_n \circ M_{n-1} \circ \cdots \circ M_2 \circ M_1 \circ M_{
 
 其中 $M_{\text{terminal}}$ 是终端中间件（terminal middleware），不调用 `next`。
 
-### 3.2 管道构造的代数结构
+### 2.2 管道构造的代数结构
 
 设 $\mathcal{M}$ 为所有中间件的集合，$\text{Compose}$ 为组合操作：
 
@@ -380,7 +333,7 @@ $$\text{Compose}(M_2, M_1)(\text{next}) = M_1(M_2(\text{next}))$$
 
 $$\text{Build}([M_1, M_2, \ldots, M_n]) = M_1(M_2(\cdots M_n(\text{terminal}) \cdots))$$
 
-### 3.3 `HttpContext` 的形式化定义
+### 2.3 `HttpContext` 的形式化定义
 
 `HttpContext` 是一个可变状态容器（mutable state container），形式化为七元组：
 
@@ -396,7 +349,7 @@ $$\text{HttpContext} = (\text{Request}, \text{Response}, \text{Features}, \text{
 - $\text{Connection} \in \text{ConnectionInfo}$：连接信息（IP、证书等）。
 - $\text{ServiceProvider} \in \text{IServiceProvider}$：请求作用域的 DI 容器。
 
-### 3.4 `IFeatureCollection` 的接口-实现映射
+### 2.4 `IFeatureCollection` 的接口-实现映射
 
 `HttpContext` 的不同实现（Kestrel、TestHost、IIS Express）通过 `IFeatureCollection` 提供具体功能：
 
@@ -415,7 +368,7 @@ $$\text{Features} : \text{Interface} \rightharpoonup \text{Implementation}$$
 
 例如 Kestrel 提供 `IHttpRequestFeature`、`IHttpResponseFeature`、`IHttpConnectionFeature` 等实现，TestHost 可提供 mock 实现。
 
-### 3.5 `IApplicationBuilder` 接口
+### 2.5 `IApplicationBuilder` 接口
 
 ```csharp
 public interface IApplicationBuilder
@@ -432,7 +385,7 @@ public interface IApplicationBuilder
 
 `Use` 方法接收一个变换函数 `Func<RequestDelegate, RequestDelegate>`，将"下一委托"映射为新委托。`Build` 将所有中间件组合为单一 `RequestDelegate`。
 
-### 3.6 Endpoint Routing 的形式化模型
+### 2.6 Endpoint Routing 的形式化模型
 
 Endpoint Routing 将请求路由到端点（endpoint），形式化为：
 
@@ -450,9 +403,9 @@ $$E = (\text{DisplayName}, \text{RequestDelegate}, \text{Metadata}, \text{RouteP
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 管道构造的逆序算法
+### 3.1 管道构造的逆序算法
 
 `IApplicationBuilder.Build()` 的核心实现（来自 `ApplicationBuilder.cs`）：
 
@@ -476,7 +429,7 @@ public RequestDelegate Build()
 }
 ```
 
-#### 4.1.1 为何逆序遍历？
+#### 3.1.1 为何逆序遍历？
 
 考虑中间件列表 $[M_1, M_2, M_3]$，期望的执行顺序为 $M_1 \to M_2 \to M_3 \to \text{terminal}$。
 
@@ -500,7 +453,7 @@ app = M1(app)    // M1 包装 M2 包装 M3 包装 terminal
 
 调用 `app(context)` 时执行顺序：$M_1 \to M_2 \to M_3 \to \text{terminal}$，**与注册顺序一致**。
 
-#### 4.1.2 数学证明
+#### 3.1.2 数学证明
 
 设 `Build` 返回的委托为 $\text{Pipeline}$，注册中间件序列为 $[M_1, M_2, \ldots, M_n]$。
 
@@ -516,7 +469,7 @@ $$M_1(M_2(\cdots M_n(\text{Terminal}(ctx)) \cdots))$$
 
 即 $M_1$ 最先执行，其 `next` 参数指向 $M_2 \circ \cdots \circ M_n \circ \text{Terminal}$。这正是期望的"洋葱模型"——外层中间件最先进入、最后离开。
 
-### 4.2 洋葱模型的执行语义
+### 3.2 洋葱模型的执行语义
 
 洋葱模型（Onion Model）描述中间件的双阶段执行：
 
@@ -542,7 +495,7 @@ $$M.\text{Invoke}(ctx) = \text{Pre}(ctx) \oplus \text{await } M.\text{Next}(ctx)
 
 其中 $\oplus$ 表示顺序组合，`Pre`/`Post` 分别是前置/后置逻辑。
 
-### 4.3 异步中间件的线程流动
+### 3.3 异步中间件的线程流动
 
 ASP.NET Core 中间件默认异步，通过 `Task` 传递控制权。考虑：
 
@@ -555,7 +508,7 @@ app.Use(async (context, next) =>
 });
 ```
 
-#### 4.3.1 `AsyncLocal<T>` 与 `ExecutionContext`
+#### 3.3.1 `AsyncLocal<T>` 与 `ExecutionContext`
 
 `HttpContext` 通过 `AsyncLocal<HttpContext>` 在异步流中传播：
 
@@ -591,7 +544,7 @@ public class HttpContextAccessor : IHttpContextAccessor
 
 `AsyncLocal<T>` 基于 `ExecutionContext`，在 `await` 切换线程时自动复制上下文。
 
-#### 4.3.2 同步中间件的线程池风险
+#### 3.3.2 同步中间件的线程池风险
 
 若中间件使用同步阻塞调用（如 `.Result`、`.Wait()`），会占用线程池线程：
 
@@ -612,7 +565,7 @@ $$N \cdot T_{\text{io}} > |P| \cdot T_{\text{cpu}}$$
 
 将出现线程饥饿。
 
-### 4.4 `UseMiddleware<T>()` 的反射开销
+### 3.4 `UseMiddleware<T>()` 的反射开销
 
 `UseMiddleware<T>()` 通过反射解析中间件构造函数与 `Invoke`/`InvokeAsync` 方法：
 
@@ -644,7 +597,7 @@ public static class UseMiddlewareExtensions
 
 但 NativeAOT 场景下 `Reflection.Emit` 不可用，需使用 `[DynamicallyAccessedMembers]` 标注或改用 Source Generator。
 
-### 4.5 Endpoint Routing 的多阶段设计
+### 3.5 Endpoint Routing 的多阶段设计
 
 Endpoint Routing 的三阶段流程：
 
@@ -677,7 +630,7 @@ flowchart TD
 2. **统一抽象**：不同端点类型（MVC、gRPC、SignalR）共享同一套鉴权/CORS/限流机制。
 3. **可扩展性**：第三方中间件可在 `UseRouting` 后插入，访问 endpoint 信息。
 
-### 4.6 `HttpContext` 池化与 GC
+### 3.6 `HttpContext` 池化与 GC
 
 `HttpContext` 实例池化以减少 GC 压力：
 
@@ -703,11 +656,11 @@ internal class HttpProtocol : IHttpRequestFeature, IHttpResponseFeature
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础中间件：内联 vs. 类封装
+### 4.1 基础中间件：内联 vs. 类封装
 
-#### 5.1.1 内联中间件（Inline Middleware）
+#### 4.1.1 内联中间件（Inline Middleware）
 
 ```csharp
 // C# 12 / .NET 8
@@ -744,7 +697,7 @@ app.MapGet("/", () => "Hello, Middleware!");
 app.Run();
 ```
 
-#### 5.1.2 基于约定的中间件（Convention-based Middleware）
+#### 4.1.2 基于约定的中间件（Convention-based Middleware）
 
 ```csharp
 // C# 12 / .NET 8
@@ -803,7 +756,7 @@ public static class RequestTimingMiddlewareExtensions
 app.UseRequestTiming();
 ```
 
-#### 5.1.3 基于 `IMiddleware` 接口的中间件（支持 Scoped DI）
+#### 4.1.3 基于 `IMiddleware` 接口的中间件（支持 Scoped DI）
 
 ```csharp
 // C# 12 / .NET 8
@@ -864,7 +817,7 @@ app.UseMiddleware<TenantResolutionMiddleware>();
 | 反射开销 | 仅启动时一次 | 每次请求解析（DI 容器开销） |
 | 推荐场景 | 无状态中间件 | 需要 Scoped 服务的中间件 |
 
-### 5.2 异常处理中间件（ProblemDetails 规范）
+### 4.2 异常处理中间件（ProblemDetails 规范）
 
 ```csharp
 // C# 12 / .NET 8 - 遵循 RFC 7807 ProblemDetails 规范
@@ -966,7 +919,7 @@ public sealed class ExceptionHandlingMiddleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 ```
 
-### 5.3 自定义响应缓存中间件
+### 4.3 自定义响应缓存中间件
 
 ```csharp
 // C# 12 / .NET 8 - 简化的内存缓存中间件
@@ -1068,7 +1021,7 @@ public sealed class ResponseCacheMiddleware
 }
 ```
 
-### 5.4 限流中间件（Token Bucket 算法）
+### 4.4 限流中间件（Token Bucket 算法）
 
 ```csharp
 // C# 12 / .NET 8 - 基于 Token Bucket 的限流
@@ -1180,7 +1133,7 @@ public sealed class RateLimiterOptions
 }
 ```
 
-### 5.5 请求日志中间件（结构化日志）
+### 4.5 请求日志中间件（结构化日志）
 
 ```csharp
 // C# 12 / .NET 8 - 使用 Serilog 风格的结构化日志
@@ -1299,7 +1252,7 @@ public sealed class StructuredLoggingMiddleware
 }
 ```
 
-### 5.6 CORS 中间件自定义策略
+### 4.6 CORS 中间件自定义策略
 
 ```csharp
 // C# 12 / .NET 8 - 动态 CORS 策略
@@ -1363,7 +1316,7 @@ public sealed class DynamicCorsMiddleware
 }
 ```
 
-### 5.7 背压中间件（基于 `System.Threading.Channels`）
+### 4.7 背压中间件（基于 `System.Threading.Channels`）
 
 ```csharp
 // C# 12 / .NET 8 - 请求队列与背压
@@ -1464,7 +1417,7 @@ public sealed class BackpressureOptions
 }
 ```
 
-### 5.8 多租户中间件（基于 Host 头）
+### 4.8 多租户中间件（基于 Host 头）
 
 ```csharp
 // C# 12 / .NET 8 - 多租户解析与上下文注入
@@ -1561,9 +1514,9 @@ public sealed class Tenant
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 ASP.NET Core 中间件 vs. Express.js 中间件
+### 5.1 ASP.NET Core 中间件 vs. Express.js 中间件
 
 | 维度 | ASP.NET Core | Express.js |
 |------|--------------|------------|
@@ -1608,7 +1561,7 @@ app.Use(async (context, next) =>
 });
 ```
 
-### 6.2 ASP.NET Core 中间件 vs. Spring Boot Filter
+### 5.2 ASP.NET Core 中间件 vs. Spring Boot Filter
 
 | 维度 | ASP.NET Core Middleware | Spring Boot Filter |
 |------|------------------------|-------------------|
@@ -1643,7 +1596,7 @@ public class LoggingFilter implements Filter {
 }
 ```
 
-### 6.3 ASP.NET Core 中间件 vs. Django Middleware
+### 5.3 ASP.NET Core 中间件 vs. Django Middleware
 
 | 维度 | ASP.NET Core | Django |
 |------|--------------|--------|
@@ -1668,7 +1621,7 @@ class TimingMiddleware:
         return response
 ```
 
-### 6.4 中间件 vs. Filter（MVC Filter）
+### 5.4 中间件 vs. Filter（MVC Filter）
 
 ASP.NET Core 内部有两套"横切机制"：中间件与 MVC Filter。
 
@@ -1680,7 +1633,7 @@ ASP.NET Core 内部有两套"横切机制"：中间件与 MVC Filter。
 | 路由感知 | 可通过 `context.GetEndpoint()` 获取 | 天然感知（Filter 位于 Action 上下文） |
 | 推荐场景 | 通用横切（日志、限流、CORS、鉴权） | MVC 专属（模型验证、Action 日志、ViewBag） |
 
-### 6.5 `IMiddleware` vs. 约定式中间件性能对比
+### 5.5 `IMiddleware` vs. 约定式中间件性能对比
 
 BenchmarkDotNet 基准测试（.NET 8，10万次调用）：
 
@@ -1694,9 +1647,9 @@ BenchmarkDotNet 基准测试（.NET 8，10万次调用）：
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：错误的中间件顺序
+### 6.1 陷阱 1：错误的中间件顺序
 
 **反模式**：鉴权在路由之前，无法获取 endpoint 元数据。
 
@@ -1724,7 +1677,7 @@ app.UseRateLimiter();         // 9. 限流
 app.MapControllers();         // 10. 端点映射
 ```
 
-### 7.2 陷阱 2：未调用 `next()` 或调用多次
+### 6.2 陷阱 2：未调用 `next()` 或调用多次
 
 ```csharp
 // 反模式 1：未调用 next（短路但未明确说明）
@@ -1757,7 +1710,7 @@ app.Use(async (context, next) =>
 });
 ```
 
-### 7.3 陷阱 3：响应已开始后修改响应
+### 6.3 陷阱 3：响应已开始后修改响应
 
 ```csharp
 // 反模式：响应已开始后修改 header
@@ -1787,7 +1740,7 @@ app.Use(async (context, next) =>
 });
 ```
 
-### 7.4 陷阱 4：捕获 `HttpContext` 到后台任务
+### 6.4 陷阱 4：捕获 `HttpContext` 到后台任务
 
 ```csharp
 // 反模式：在后台任务中使用 HttpContext
@@ -1819,7 +1772,7 @@ app.Use(async (context, next) =>
 });
 ```
 
-### 7.5 陷阱 5：同步阻塞导致线程池饥饿
+### 6.5 陷阱 5：同步阻塞导致线程池饥饿
 
 ```csharp
 // 反模式：在异步中间件中使用 .Result
@@ -1838,7 +1791,7 @@ app.Use(async (context, next) =>
 });
 ```
 
-### 7.6 陷阱 6：未正确配置 `IHttpContextAccessor`
+### 6.6 陷阱 6：未正确配置 `IHttpContextAccessor`
 
 ```csharp
 // 反模式：未注册 IHttpContextAccessor，导致 HttpContext.Current 为 null
@@ -1862,7 +1815,7 @@ public class MyService
 builder.Services.AddHttpContextAccessor();
 ```
 
-### 7.7 陷阱 7：`UseMiddleware<T>()` 与 Scoped 服务
+### 6.7 陷阱 7：`UseMiddleware<T>()` 与 Scoped 服务
 
 ```csharp
 // 反模式：约定式中间件注入 Scoped 服务
@@ -1908,7 +1861,7 @@ public class GoodMiddleware2
 }
 ```
 
-### 7.8 陷阱 8：异常处理中间件位置错误
+### 6.8 陷阱 8：异常处理中间件位置错误
 
 ```csharp
 // 反模式：异常处理在路由之后，无法捕获 Controller 异常
@@ -1922,7 +1875,7 @@ app.UseRouting();
 app.MapControllers();
 ```
 
-### 7.9 最佳实践总结
+### 6.9 最佳实践总结
 
 1. **异步优先**：所有中间件使用 `async/await`，避免同步阻塞。
 2. **顺序敏感**：遵循官方推荐顺序，异常处理在最外层。
@@ -1935,9 +1888,9 @@ app.MapControllers();
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 中间件项目结构
+### 7.1 中间件项目结构
 
 ```mermaid
 flowchart TD
@@ -1967,7 +1920,7 @@ flowchart TD
     T17 --> T18
 ```
 
-### 8.2 中间件单元测试
+### 7.2 中间件单元测试
 
 ```csharp
 // C# 12 / xUnit 2.6 / .NET 8
@@ -2048,7 +2001,7 @@ public class PipelineIntegrationTests : IClassFixture<WebApplicationFactory<Prog
 }
 ```
 
-### 8.3 中间件配置与选项模式
+### 7.3 中间件配置与选项模式
 
 ```csharp
 // C# 12 / .NET 8 - 强类型选项
@@ -2104,7 +2057,7 @@ app.UseMultiTenant(opt =>
 });
 ```
 
-### 8.4 中间件与 OpenTelemetry 集成
+### 7.4 中间件与 OpenTelemetry 集成
 
 ```csharp
 // C# 12 / .NET 8 - OpenTelemetry 自定义跨度
@@ -2173,7 +2126,7 @@ builder.Services.AddOpenTelemetry()
     });
 ```
 
-### 8.5 条件性中间件注册
+### 7.5 条件性中间件注册
 
 ```csharp
 // C# 12 / .NET 8 - 基于环境的条件注册
@@ -2217,7 +2170,7 @@ app.MapControllers();
 app.Run();
 ```
 
-### 8.6 中间件性能分析
+### 7.6 中间件性能分析
 
 使用 `dotnet-counters` 监控 ASP.NET Core 运行时指标：
 
@@ -2250,7 +2203,7 @@ dotnet-trace collect -n MyApp --duration 00:00:30 --format speedscope
 # 输出 speedscope 文件，可在 https://speedscope.app 打开
 ```
 
-### 8.7 中间件版本化与兼容性
+### 7.7 中间件版本化与兼容性
 
 ```csharp
 // C# 12 / .NET 8 - API 版本化中间件
@@ -2322,9 +2275,9 @@ public sealed class ApiVersioningMiddleware
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究 1：电商系统的横切关注点分层
+### 8.1 案例研究 1：电商系统的横切关注点分层
 
 某电商平台使用 ASP.NET Core 8 构建微服务，需要在所有服务统一实现：
 
@@ -2445,7 +2398,7 @@ public sealed class AuditLoggingMiddleware
 
 **效果**：12 个微服务统一审计格式，单日处理 5 亿次审计日志写入，Kafka 端到端延迟 < 50ms。
 
-### 9.2 案例研究 2：API 网关的请求聚合
+### 8.2 案例研究 2：API 网关的请求聚合
 
 某 SaaS 平台使用 YARP（Yet Another Reverse Proxy）作为 API 网关，需要在路由前执行：
 
@@ -2578,7 +2531,7 @@ app.Run();
 
 **效果**：网关单实例处理 8K RPS，平均延迟 < 5ms，熔断器在下游故障时保护系统稳定。
 
-### 9.3 案例研究 3：实时通信的 SSE 流式响应
+### 8.3 案例研究 3：实时通信的 SSE 流式响应
 
 某股票行情推送系统使用 Server-Sent Events（SSE）向客户端推送实时股价，需要：
 
@@ -2704,7 +2657,7 @@ public sealed class StockStreamMiddleware
 
 **效果**：单实例支持 2 万长连接，每秒推送 10 万条股价更新，内存占用 < 500MB。
 
-### 9.4 案例研究 4：基于元数据的动态鉴权
+### 8.4 案例研究 4：基于元数据的动态鉴权
 
 某 SaaS 平台的权限模型为 RBAC + ABAC 混合模式，需要根据 endpoint 元数据动态决策：
 
@@ -2826,7 +2779,7 @@ app.MapControllers();
 
 **效果**：单点鉴权逻辑覆盖 200+ endpoint，权限检查响应时间 < 5ms（Redis 缓存）。
 
-### 9.5 案例研究 5：A/B 测试与灰度发布
+### 8.5 案例研究 5：A/B 测试与灰度发布
 
 某产品需要基于用户特征进行 A/B 测试，将请求路由到不同版本的后端：
 
@@ -2943,7 +2896,7 @@ public sealed class CanaryAttribute : Attribute
 public IActionResult NewFeature() => Ok();
 ```
 
-### 9.6 案例研究 6：GraphQL 中间件集成
+### 8.6 案例研究 6：GraphQL 中间件集成
 
 某项目需要在 REST API 之外提供 GraphQL 端点，复用同一套鉴权/审计/限流中间件：
 
@@ -3044,7 +2997,7 @@ app.MapControllers();
 app.Run();
 ```
 
-### 9.7 案例研究 7：性能优化 1.2K RPS → 18K RPS
+### 8.7 案例研究 7：性能优化 1.2K RPS → 18K RPS
 
 某 API 服务上线后性能瓶颈分析：
 
@@ -3178,7 +3131,7 @@ CPU 使用率：60%
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 10.1.1**（记忆）：列出 ASP.NET Core 官方推荐的中间件注册顺序，并解释为何 `UseAuthentication` 必须在 `UseRouting` 之后。
 
@@ -3277,7 +3230,7 @@ public sealed class RequestLoggingMiddleware
 }
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 10.2.1**（分析）：分析以下代码的潜在问题，并给出改进建议。
 
@@ -3611,7 +3564,7 @@ public sealed class PriorityQueueMiddleware
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Microsoft. 2024. *ASP.NET Core Middleware*. Microsoft Docs. https://learn.microsoft.com/aspnet/core/fundamentals/middleware/
 
@@ -3645,43 +3598,43 @@ public sealed class PriorityQueueMiddleware
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档与规范
+### 11.1 官方文档与规范
 
 - **ASP.NET Core 官方文档**：https://learn.microsoft.com/aspnet/core/
 - **EF Core 文档**：https://learn.microsoft.com/ef/core/
 - **.NET 性能文档**：https://learn.microsoft.com/dotnet/core/performance/
 - **OpenTelemetry .NET**：https://opentelemetry.io/docs/instrumentation/net/
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - **Andrew Lock - *ASP.NET Core in Action, Third Edition*** (2023)：Manning 出版，覆盖 ASP.NET Core 8 的中间件、路由、鉴权等核心主题。
 - **Mark J. Price - *C# 12 and .NET 8 - Modern Cross-Platform Development*** (2023)：Packt 出版，第八章深入讲解 ASP.NET Core 中间件。
 - **Adam Freeman - *Pro ASP.NET Core 7*** (2023)：Apress 出版，第二部分专门讨论中间件管道与路由。
 
-### 12.3 开源项目与源码
+### 11.3 开源项目与源码
 
 - **dotnet/aspnetcore**：https://github.com/dotnet/aspnetcore - ASP.NET Core 源码，重点关注 `src/Http/Http.Abstractions` 与 `src/Http/Hosting`。
 - **dotnet/yarp**：https://github.com/microsoft/reverse-proxy - YARP 反向代理，基于 ASP.NET Core 管道构建。
 - **dotnet/aspnet-api-versioning**：https://github.com/dotnet/aspnet-api-versioning - 官方 API 版本化方案。
 - **App-vNext/Polly**：https://github.com/App-vNext/Polly - 弹性框架（熔断、重试、超时）。
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **NativeAOT 与中间件**：https://learn.microsoft.com/dotnet/core/native-aot/ - ASP.NET Core 8 的 AOT 限制与最佳实践。
 - **Source Generator**：https://learn.microsoft.com/dotnet/csharp/roslyn-source-generators - 编译期代码生成替代反射。
 - **Minimal API**：https://learn.microsoft.com/aspnet/core/fundamentals/minimal-apis - .NET 6+ 的轻量 API 风格。
 - **Blazor Server**：https://learn.microsoft.com/aspnet/core/blazor/ - Blazor Server 的 SignalR 管道深入。
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **ASP.NET Core 官方博客**：https://devblogs.microsoft.com/dotnet/category/aspnet/
 - **.NET Foundation**：https://dotnetfoundation.org/ - .NET 生态治理组织。
 - **Stack Overflow - ASP.NET Core**：https://stackoverflow.com/questions/tagged/asp.net-core
 - **Reddit - r/dotnet**：https://www.reddit.com/r/dotnet/
 
-### 12.6 相关标准与 RFC
+### 11.6 相关标准与 RFC
 
 - **RFC 7807 - Problem Details for HTTP APIs**：https://www.rfc-editor.org/rfc/rfc7807 - 错误响应规范。
 - **RFC 7231 - HTTP/1.1 Semantics**：https://www.rfc-editor.org/rfc/rfc7231 - HTTP 状态码与语义。

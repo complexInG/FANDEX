@@ -26,61 +26,16 @@ prerequisites:
   - lua/函数与闭包
   - lua/元表与元方法详解
 ---
+
 # Lua 环境与全局变量
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-学习本章后，读者应能在 Bloom 认知层级框架下达成下列目标。
-
-### 1.1 知识层（Remembering）
-
-- 列举 Lua 5.0、5.1、5.2、5.3、5.4、5.5 中全局环境机制的演化路径。
-- 复述 `_ENV` 与 `_G` 的定义、区别与联系。
-- 描述 `load`、`loadfile`、`loadstring` 函数中 environment 参数的语义。
-- 列出 `setfenv`/`getfenv` 在 Lua 5.1 中的调用形式与限制。
-
-### 1.2 理解层（Understanding）
-
-- 解释 `_ENV` 作为"普通局部变量"的语义含义及其对编译器的作用。
-- 阐释 Lua 5.2 中 `_ENV` 替代 `setfenv`/`getfenv` 的设计动机（作用域与可见性统一）。
-- 描述全局变量访问在 Lua VM 中的指令翻译过程（`GETTABUP` / `SETTABUP`）。
-- 解释沙箱（sandbox）如何通过环境控制实现资源隔离与安全。
-
-### 1.3 应用层（Applying）
-
-- 编写受限沙箱环境，安全执行不可信 Lua 代码。
-- 使用 `_ENV` 实现模块专用命名空间，避免污染全局表。
-- 应用元表（metatable）实现严格模式，捕获未声明全局变量。
-- 在 Redis/Nginx/OpenResty 中应用环境隔离管理插件与请求上下文。
-
-### 1.4 分析层（Analyzing）
-
-- 分析 `_ENV` 与闭包 upvalue 的交互，理解环境捕获语义。
-- 分析沙箱逃逸（sandbox escape）的常见路径与防御措施。
-- 区分 Lua 5.1 `setfenv` 与 5.2 `_ENV` 在元方法、协程、`pcall` 中的行为差异。
-- 分析 Neovim、WoW、Roblox 等宿主对全局环境的定制策略。
-
-### 1.5 评价层（Evaluating）
-
-- 评判 `_ENV` 设计相较于 `setfenv` 的优劣（简洁性、性能、可组合性）。
-- 评估 Lua 沙箱与 JavaScript `vm` 模块、Python `exec`+`globals` 的隔离强度差异。
-- 评判 strict 模式（如 `strict.lua`）对大型工程可维护性的影响。
-- 评估 Lua 5.4 代际 GC 对全局环境表遍历的优化效果。
-
-### 1.6 创造层（Creating）
-
-- 设计基于 `_ENV` 链的多层沙箱框架（local → module → global）。
-- 构建支持热重载的插件系统，使用环境隔离管理插件状态。
-- 设计跨版本兼容的环境抽象层，统一 5.1 `setfenv` 与 5.2+ `_ENV`。
-- 构建动态权限沙箱，按调用栈深度动态放宽/收紧 API 访问。
-
-## 2. 历史动机与演化
-
-### 2.1 全局环境机制的范式演化
+### 1.1 全局环境机制的范式演化
 
 程序语言对"全局环境"的处理历经三个阶段：
 
@@ -90,7 +45,7 @@ prerequisites:
 
 Lua 的演化浓缩了上述三个阶段。Lua 1.0（1993）采用纯全局表；Lua 3.0（1997）引入词法作用域，但全局仍走 `_G`；Lua 5.0（2003）引入 `setfenv`/`getfenv` 允许函数切换环境；Lua 5.2（2011）彻底重构，引入 `_ENV` 作为普通局部变量，废弃 `setfenv`/`getfenv`。
 
-### 2.2 Lua 在游戏/嵌入式/脚本领域的地位
+### 1.2 Lua 在游戏/嵌入式/脚本领域的地位
 
 环境与全局变量管理在 Lua 主要应用场景中扮演核心角色：
 
@@ -100,7 +55,7 @@ Lua 的演化浓缩了上述三个阶段。Lua 1.0（1993）采用纯全局表�
 - **Nginx/OpenResty**：每个 worker 进程独立全局环境，请求级别使用 `ngx.ctx` 与 `_G` 隔离。
 - **Neovim**：Vimscript 与 Lua 共存，Lua 全局环境与 Vim 全局命名空间互通，通过 `vim.g`、`vim.b`、`vim.w` 实现多层环境。
 
-### 2.3 演化时间线
+### 1.3 演化时间线
 
 | 版本 | 年份 | 环境机制变化 |
 | --- | --- | --- |
@@ -116,9 +71,9 @@ Lua 的演化浓缩了上述三个阶段。Lua 1.0（1993）采用纯全局表�
 | Luau | 2021 | Roblox 方言，采用 5.1 风格 + 渐进式类型检查，自定义 `getfenv`/`setfenv` |
 | NeoVim Lua | 2019 | 嵌入式 Lua，`vim.api`/`vim.fn`/`vim.g` 多层环境 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 环境的代数模型
+### 2.1 环境的代数模型
 
 设 $\Sigma$ 为变量环境（variable environment），是变量名到值的映射：
 
@@ -138,7 +93,7 @@ $$
 \llbracket \texttt{x = v} \rrbracket_\Sigma : \Sigma(\texttt{\_ENV})[\texttt{x}] \leftarrow \llbracket \texttt{v} \rrbracket_\Sigma
 $$
 
-### 3.2 `_ENV` 的形式化语义
+### 2.2 `_ENV` 的形式化语义
 
 `_ENV` 是一个**普通的局部变量**，其特殊性仅在于编译器的默认处理。形式化地：
 
@@ -154,7 +109,7 @@ $$
 
 这意味着 `_ENV` 与普通变量无本质区别，可以被 `local` 覆盖、闭包捕获、作为参数传递。
 
-### 3.3 沙箱的形式化定义
+### 2.3 沙箱的形式化定义
 
 沙箱（sandbox）是一个受限环境 $\Sigma_s$，满足：
 
@@ -170,7 +125,7 @@ $$
 \frac{\text{load}(code, \Sigma_s) = f \quad f \in \text{Safe}}{\text{exec}(f, \Sigma_s) \downarrow v}
 $$
 
-### 3.4 环境链的不动点语义
+### 2.4 环境链的不动点语义
 
 多层环境链 $\Sigma_1 \to \Sigma_2 \to \cdots \to \Sigma_n$ 通过 `__index` 元方法实现委托查找。变量查找函数 $\text{lookup}$：
 
@@ -182,7 +137,7 @@ $$
 \end{cases}
 $$
 
-### 3.5 严格模式的形式化
+### 2.5 严格模式的形式化
 
 严格模式（strict mode）是一个元表约束 $\mu$：
 
@@ -196,7 +151,7 @@ $$
 
 其中 $\text{Declared}$ 是预先声明的全局变量集合。
 
-### 3.6 GC 根集与全局环境
+### 2.6 GC 根集与全局环境
 
 全局环境表是 GC 的根集（root set）之一。形式化地，GC 根集 $R$：
 
@@ -206,9 +161,9 @@ $$
 
 `_G` 与 `_ENV` 默认指向同一张全局表，该表通过 registry 索引 `LUA_RIDX_GLOBALS` 被 VM 持有，作为 GC 根。
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 `_ENV` 替代 `setfenv` 的等价性定理
+### 3.1 `_ENV` 替代 `setfenv` 的等价性定理
 
 **定理 1**（`_ENV` 与 `setfenv` 表达等价性）：对任意 Lua 5.1 的 `setfenv(f, env)` 调用，存在等价的 Lua 5.2+ 代码使用 `_ENV` 实现。
 
@@ -248,7 +203,7 @@ f()  -- 执行后 env.x == 10
 
 证毕。
 
-### 4.2 `_ENV` 词法捕获定理
+### 3.2 `_ENV` 词法捕获定理
 
 **定理 2**（`_ENV` 词法捕获）：`_ENV` 遵循词法作用域规则，内层函数捕获外层的 `_ENV`。
 
@@ -274,7 +229,7 @@ end
 
 证毕。
 
-### 4.3 沙箱不可逃逸定理（理想情况）
+### 3.3 沙箱不可逃逸定理（理想情况）
 
 **定理 3**（理想沙箱不可逃逸）：若沙箱 $\Sigma_s$ 不包含 `load`、`loadfile`、`string.dump`、`debug`、`getmetatable`、`rawget`、`rawset`、`rawequal`、`_G`，且不暴露任何返回全局表的函数，则沙箱内代码无法访问全局环境 $\Sigma_g$。
 
@@ -296,7 +251,7 @@ end
 
 注：实际实现中，遗漏 `string.dump`、`pcall` 错误对象、`coroutine` 等也可能造成逃逸，需严格审查白名单。
 
-### 4.4 严格模式完备性定理
+### 3.4 严格模式完备性定理
 
 **定理 4**（严格模式捕获未声明全局）：使用 `__index`/`__newindex` 元方法 + `declared` 表实现的严格模式，可捕获所有未声明的全局变量读写。
 
@@ -332,7 +287,7 @@ setmetatable(_G, {
 
 证毕。
 
-### 4.5 环境链单调性定理
+### 3.5 环境链单调性定理
 
 **定理 5**（环境链查找单调收敛）：通过 `__index` 链实现的变量查找，若链无环，则查找必终止。
 
@@ -349,7 +304,7 @@ setmetatable(_G, {
 
 证毕。
 
-### 4.6 `_ENV` 与 GC 交互定理
+### 3.6 `_ENV` 与 GC 交互定理
 
 **定理 6**（`_ENV` 对 GC 根集的影响）：替换 `_ENV` 不改变 GC 根集，仅改变变量可见性。
 
@@ -361,9 +316,9 @@ GC 根集 $R$ 由 VM 持有（main thread、registry、globals）。`_ENV` 是�
 
 证毕。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：`_ENV` 与 `_G` 的关系
+### 4.1 基础：`_ENV` 与 `_G` 的关系
 
 ```lua
 -- lua: _ENV 与 _G 基础
@@ -388,7 +343,7 @@ end
 print(original.x)  -- 20 (写入新 _ENV，但 original 仍指向原表)
 ```
 
-### 5.2 `setfenv`/`getfenv`（Lua 5.1）
+### 4.2 `setfenv`/`getfenv`（Lua 5.1）
 
 ```lua
 -- lua 5.1: setfenv/getfenv
@@ -410,7 +365,7 @@ print(getfenv(f) == env)  -- true
 -- setfenv(0, env) 设置主代码块的环境
 ```
 
-### 5.3 `load` 的 env 参数（Lua 5.2+）
+### 4.3 `load` 的 env 参数（Lua 5.2+）
 
 ```lua
 -- lua 5.2+: load 的第四个参数设置环境
@@ -425,7 +380,7 @@ print(env.x)   -- 10
 -- local f = loadfile("script.lua", "t", env)
 ```
 
-### 5.4 沙箱基础
+### 4.4 沙箱基础
 
 ```lua
 -- lua: 基础沙箱
@@ -480,7 +435,7 @@ local ok, err = pcall(badFn)
 -- ok == false, err: attempt to index nil value (field 'execute')
 ```
 
-### 5.5 环境继承
+### 4.5 环境继承
 
 ```lua
 -- lua: 环境继承
@@ -507,7 +462,7 @@ moduleEnv.x = 100
 print(_G.x)  -- nil（父环境无 x）
 ```
 
-### 5.6 严格模式（strict.lua 风格）
+### 4.6 严格模式（strict.lua 风格）
 
 ```lua
 -- lua: 严格模式实现（参考 strict.lua by Roberto Ierusalimschy）
@@ -540,7 +495,7 @@ print(MY_CONFIG.debug)  -- false
 -- print(UNDEFINED)  -- error: variable 'UNDEFINED' is not declared
 ```
 
-### 5.7 模块环境隔离
+### 4.7 模块环境隔离
 
 ```lua
 -- lua: 模块环境隔离
@@ -582,7 +537,7 @@ print(mymath.get_state())  -- 2
 -- print(internal_state)  -- nil（全局未定义）
 ```
 
-### 5.8 插件沙箱
+### 4.8 插件沙箱
 
 ```lua
 -- lua: 插件沙箱
@@ -662,7 +617,7 @@ load_plugin("myplugin", plugin_code, api)
 -- subscribe: myplugin tick
 ```
 
-### 5.9 配置文件加载
+### 4.9 配置文件加载
 
 ```lua
 -- lua: 安全配置文件加载
@@ -694,7 +649,7 @@ end
 -- 注意：配置文件中无法调用函数，只能赋值
 ```
 
-### 5.10 环境链
+### 4.10 环境链
 
 ```lua
 -- lua: 多层环境链
@@ -732,7 +687,7 @@ env.newVar = "test"
 print(localEnv.newVar)  -- "test"（写入第一个环境）
 ```
 
-### 5.11 跨版本兼容层
+### 4.11 跨版本兼容层
 
 ```lua
 -- lua: 跨版本兼容（5.1 setfenv / 5.2+ _ENV）
@@ -784,7 +739,7 @@ else
 end
 ```
 
-### 5.12 沙箱逃逸检测
+### 4.12 沙箱逃逸检测
 
 ```lua
 -- lua: 沙箱逃逸检测
@@ -827,7 +782,7 @@ for _, leak in ipairs(leaks) do
 end
 ```
 
-### 5.13 沙箱逃逸攻击示例
+### 4.13 沙箱逃逸攻击示例
 
 ```lua
 -- lua: 沙箱逃逸攻击示例（仅用于教学防御）
@@ -873,7 +828,7 @@ local function secure_sandbox()
 end
 ```
 
-### 5.14 动态权限沙箱
+### 4.14 动态权限沙箱
 
 ```lua
 -- lua: 动态权限沙箱
@@ -944,7 +899,7 @@ sb.set_permission("allow_write", false)  -- 允许降低
 -- sb.set_permission("allow_write", true)  -- 不生效（仅允许降低）
 ```
 
-### 5.15 环境热重载
+### 4.15 环境热重载
 
 ```lua
 -- lua: 模块热重载
@@ -1020,7 +975,7 @@ local code_v2 = [[
 -- 实际工程需更复杂的状态迁移
 ```
 
-### 5.16 元表与全局环境
+### 4.16 元表与全局环境
 
 ```lua
 -- lua: 通过元表控制全局环境
@@ -1069,7 +1024,7 @@ external.secret = "modified"
 print(env.shared.secret)  -- "data"（未受影响，因为是拷贝）
 ```
 
-### 5.17 协程与 `_ENV`
+### 4.17 协程与 `_ENV`
 
 ```lua
 -- lua: 协程与 _ENV
@@ -1098,7 +1053,7 @@ print(coroutine.resume(co))  -- true 3
 print(env.x)  -- 3（环境被修改）
 ```
 
-### 5.18 元方法拦截与审计
+### 4.18 元方法拦截与审计
 
 ```lua
 -- lua: 全局访问审计
@@ -1140,7 +1095,7 @@ end
 -- read    y
 ```
 
-### 5.19 多租户隔离
+### 4.19 多租户隔离
 
 ```lua
 -- lua: 多租户环境隔离
@@ -1199,7 +1154,7 @@ local ok, result = mgr.run("tenant_b", "return user_data")
 print(ok, result)  -- false  error: attempt to index nil value
 ```
 
-### 5.20 严格模式进阶
+### 4.20 严格模式进阶
 
 ```lua
 -- lua: 高级严格模式（带类型检查）
@@ -1246,9 +1201,9 @@ MAX_CONNECTIONS = 200  -- OK（类型一致）
 -- UNDEFINED = 1  -- error: undeclared global
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua `_ENV` vs JavaScript 闭包 + 模块
+### 5.1 Lua `_ENV` vs JavaScript 闭包 + 模块
 
 | 维度 | Lua `_ENV` | JavaScript (ES6) 模块 |
 | --- | --- | --- |
@@ -1260,7 +1215,7 @@ MAX_CONNECTIONS = 200  -- OK（类型一致）
 | 性能开销 | 极低（编译期重写为表索引） | 极低（静态绑定） |
 | 兼容性 | 5.1 `setfenv` vs 5.2+ `_ENV` | ES5 全局 vs ES6 模块 |
 
-### 6.2 Lua `setfenv` vs Python `exec` + `globals`
+### 5.2 Lua `setfenv` vs Python `exec` + `globals`
 
 | 维度 | Lua 5.1 `setfenv` | Python `exec(code, globals)` |
 | --- | --- | --- |
@@ -1270,7 +1225,7 @@ MAX_CONNECTIONS = 200  -- OK（类型一致）
 | 性能 | 高 | 低（每次 exec 重新编译） |
 | 安全性 | 中（需手动审查白名单） | 低（默认暴露 `__builtins__`） |
 
-### 6.3 Lua 沙箱 vs Java Sandbox vs WASM
+### 5.3 Lua 沙箱 vs Java Sandbox vs WASM
 
 | 维度 | Lua 沙箱 | Java Sandbox (SecurityManager) | WebAssembly (WASM) |
 | --- | --- | --- | --- |
@@ -1280,7 +1235,7 @@ MAX_CONNECTIONS = 200  -- OK（类型一致）
 | 可配置性 | 高（任意表替换） | 低（策略文件） | 低（import 静态） |
 | 典型场景 | 游戏插件、Redis 脚本 | Applet、RMI | 浏览器、边缘计算 |
 
-### 6.4 Lua 5.1 `setfenv` vs 5.2 `_ENV` 性能对比
+### 5.4 Lua 5.1 `setfenv` vs 5.2 `_ENV` 性能对比
 
 ```lua
 -- lua: 性能对比基准
@@ -1311,9 +1266,9 @@ end
 -- 主要差异在 setup 阶段，调用阶段性能相近
 ```
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 误用 `_G` 作为沙箱
+### 6.1 误用 `_G` 作为沙箱
 
 ```lua
 -- 反模式：直接修改 _G 影响全局
@@ -1327,7 +1282,7 @@ env.x = 10
 -- 在 env 中执行代码，不影响 _G
 ```
 
-### 7.2 沙箱遗漏 `string.dump`
+### 6.2 沙箱遗漏 `string.dump`
 
 ```lua
 -- 反模式：沙箱遗漏 string.dump
@@ -1345,7 +1300,7 @@ end
 sandbox.string = safe_string
 ```
 
-### 7.3 沙箱遗漏 `pcall` 错误对象
+### 6.3 沙箱遗漏 `pcall` 错误对象
 
 ```lua
 -- 反模式：错误对象可能携带环境信息
@@ -1367,7 +1322,7 @@ end
 sandbox.pcall = safe_pcall
 ```
 
-### 7.4 严格模式未禁用 `rawget`/`rawset`
+### 6.4 严格模式未禁用 `rawget`/`rawset`
 
 ```lua
 -- 反模式：严格模式被 rawget 绕过
@@ -1388,7 +1343,7 @@ end
 _G.rawget = safe_rawget
 ```
 
-### 7.5 误用 `setfenv(1, ...)` 影响调用栈
+### 6.5 误用 `setfenv(1, ...)` 影响调用栈
 
 ```lua
 -- 反模式：setfenv(1, env) 影响当前函数
@@ -1406,7 +1361,7 @@ local function good_module()
 end
 ```
 
-### 7.6 沙箱遗漏 `debug` 库
+### 6.6 沙箱遗漏 `debug` 库
 
 ```lua
 -- 反模式：debug 库可逃逸沙箱
@@ -1419,7 +1374,7 @@ local sandbox = {
 }
 ```
 
-### 7.7 元方法 `__index` 形成环
+### 6.7 元方法 `__index` 形成环
 
 ```lua
 -- 反模式：环境链形成环
@@ -1445,7 +1400,7 @@ local function make_chain(...)
 end
 ```
 
-### 7.8 协程捕获错误环境
+### 6.8 协程捕获错误环境
 
 ```lua
 -- 反模式：协程创建时捕获错误 _ENV
@@ -1469,7 +1424,7 @@ local function make_coroutine_good(env)
 end
 ```
 
-### 7.9 误用 `_ENV` 作为持久状态
+### 6.9 误用 `_ENV` 作为持久状态
 
 ```lua
 -- 反模式：用 _ENV 存储模块状态
@@ -1483,7 +1438,7 @@ function M.add(a, b) return a + b end
 return M
 ```
 
-### 7.10 沙箱遗漏 `coroutine` 库
+### 6.10 沙箱遗漏 `coroutine` 库
 
 ```lua
 -- 反模式：coroutine 可用于逃逸
@@ -1509,7 +1464,7 @@ local function make_safe_coroutine(sandbox)
 end
 ```
 
-### 7.11 全局变量懒初始化
+### 6.11 全局变量懒初始化
 
 ```lua
 -- 反模式：懒初始化全局变量
@@ -1521,9 +1476,9 @@ local declared = {config = true}  -- 声明但未赋值
 -- 严格模式允许 declared 中的变量返回 nil
 ```
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 模块设计：始终使用 `local` + 模块表
+### 7.1 模块设计：始终使用 `local` + 模块表
 
 ```lua
 -- 最佳实践：模块设计
@@ -1553,7 +1508,7 @@ M = setmetatable(M, M)
 return M
 ```
 
-### 8.2 全局变量：禁用或严格限制
+### 7.2 全局变量：禁用或严格限制
 
 ```lua
 -- 最佳实践：禁用全局变量
@@ -1586,7 +1541,7 @@ end
 enable_strict_mode()
 ```
 
-### 8.3 沙箱设计：最小权限原则
+### 7.3 沙箱设计：最小权限原则
 
 ```lua
 -- 最佳实践：最小权限沙箱
@@ -1621,7 +1576,7 @@ local function safe_getmetatable(t)
 end
 ```
 
-### 8.4 插件系统：隔离与通信
+### 7.4 插件系统：隔离与通信
 
 ```lua
 -- 最佳实践：插件系统
@@ -1694,7 +1649,7 @@ local function make_plugin_system()
 end
 ```
 
-### 8.5 配置加载：白名单 schema
+### 7.5 配置加载：白名单 schema
 
 ```lua
 -- 最佳实践：配置文件加载（带 schema 验证）
@@ -1751,7 +1706,7 @@ local schema = {
 -- local config = load_config("config.lua", schema)
 ```
 
-### 8.6 跨版本兼容层
+### 7.6 跨版本兼容层
 
 ```lua
 -- 最佳实践：跨版本兼容
@@ -1792,7 +1747,7 @@ end
 return compat
 ```
 
-### 8.7 沙箱审计与日志
+### 7.7 沙箱审计与日志
 
 ```lua
 -- 最佳实践：沙箱操作审计
@@ -1834,7 +1789,7 @@ local function make_audited_sandbox(base_sandbox)
 end
 ```
 
-### 8.8 环境分层架构
+### 7.8 环境分层架构
 
 ```lua
 -- 最佳实践：环境分层
@@ -1874,9 +1829,9 @@ local function make_layered_env()
 end
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Redis 脚本环境
+### 8.1 Redis 脚本环境
 
 Redis 通过 EVAL/EVALSHA 执行 Lua 脚本，环境高度受限：
 
@@ -1945,7 +1900,7 @@ Redis 脚本环境的特殊性：
 3. **超时限制**：`lua-time-limit` 配置防止死循环。
 4. **内存限制**：脚本内存使用受 `lua-replicate-commands` 等限制。
 
-### 9.2 Nginx/OpenResty 请求隔离
+### 8.2 Nginx/OpenResty 请求隔离
 
 OpenResty 在每个 worker 进程中运行独立 Lua VM，每个请求通过 `ngx.ctx` 隔离：
 
@@ -1986,7 +1941,7 @@ OpenResty 的环境特性：
 3. **协程模型**：每个请求运行在独立协程中。
 4. **共享内存**：`lua_shared_dict` 提供跨 worker 共享，原子操作。
 
-### 9.3 魔兽世界 UI 沙箱
+### 8.3 魔兽世界 UI 沙箱
 
 WoW 自 2004 年采用 Lua 5.1 作为 UI 脚本语言，环境高度定制：
 
@@ -2030,7 +1985,7 @@ WoW 沙箱的设计要点：
 3. **插件隔离**：每个 addon 独立环境，但可访问共享 API。
 4. **Taint 机制**：对敏感 API 标记，防止第三方代码污染。
 
-### 9.4 Neovim Lua 嵌入
+### 8.4 Neovim Lua 嵌入
 
 Neovim 自 0.5 起深度集成 Lua，与 Vimscript 共存：
 
@@ -2074,7 +2029,7 @@ Neovim Lua 环境特性：
 3. **模块缓存**：`require('module')` 经 Neovim 的 runtimepath 查找。
 4. **协程集成**：Lua 协程与 Vim 事件循环协作。
 
-### 9.5 Roblox Luau 沙箱
+### 8.5 Roblox Luau 沙箱
 
 Roblox 采用 Luau（Lua 5.1 衍生）作为唯一脚本语言：
 
@@ -2111,7 +2066,7 @@ Luau 的环境特性：
 3. **权限分级**：客户端/服务端权限不同。
 4. **性能优化**：JIT 编译，类型特化。
 
-### 9.6 Lapis (Web 框架) 环境
+### 8.6 Lapis (Web 框架) 环境
 
 Lapis 是基于 OpenResty 的 Lua Web 框架：
 
@@ -2151,7 +2106,7 @@ end)
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：编写 Lua 5.2+ 代码，使用 `load` 在指定环境中执行代码，使变量 `x` 的赋值写入指定表。
 
@@ -2218,7 +2173,7 @@ rawset(_G, "MY_CONST", 42)
 print(MY_CONST)  -- 42
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 5**：编写跨版本兼容的 `set_env(fn, env)` 函数，在 5.1 使用 `setfenv`，在 5.2+ 报错提示使用 `load`。
 
@@ -2330,7 +2285,7 @@ local function load_config(filename, schema)
 end
 ```
 
-### 10.3 思考题
+### 9.3 思考题
 
 **思考题 1**：为什么 Lua 5.2 选择用 `_ENV` 替代 `setfenv`/`getfenv`？从语言设计、性能、可组合性三个角度分析。
 
@@ -2370,7 +2325,7 @@ end
 5. 限制文件系统访问（仅临时目录）。
 6. 沙箱间数据隔离（独立 `_ENV`）。
 
-### 10.4 项目题
+### 9.4 项目题
 
 **项目 1**：实现一个完整的插件系统，要求：
 
@@ -2415,9 +2370,9 @@ end
 return PluginSystem
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 主要参考文献
+### 10.1 主要参考文献
 
 [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, "Lua 5.2 Reference Manual," Technical Report, PUC-Rio, 2011. [Online]. Available: https://www.lua.org/manual/5.2/
 
@@ -2431,7 +2386,7 @@ return PluginSystem
 
 [6] R. Ierusalimschy, "Passing a Language through the Eye of a Needle," *ACM Communications*, vol. 61, no. 8, pp. 44-50, 2018. doi: 10.1145/3232624.
 
-### 11.2 沙箱与安全
+### 10.2 沙箱与安全
 
 [7] M. M. Michael and M. L. Scott, "Implementation of Incremental Garbage Collection for Lua," in *Proceedings of the 2006 ACM SIGPLAN Workshop on Memory Systems Performance and Correctness (MSPC '06)*, San Jose, CA, USA, 2006, pp. 52-61. doi: 10.1145/1178543.1178552.
 
@@ -2439,7 +2394,7 @@ return PluginSystem
 
 [9] P. Wadler, "The Marriage of Effects and Monads," in *Proceedings of the 3rd ACM SIGPLAN International Conference on Functional Programming (ICFP '98)*, Baltimore, MD, USA, 1998, pp. 63-74. doi: 10.1145/289423.289429.
 
-### 11.3 环境与作用域
+### 10.3 环境与作用域
 
 [10] G. L. Steele Jr., "RABBIT: A Compiler for SCHEME," Master's thesis, MIT, 1978. [AI Technical Report 474].
 
@@ -2447,7 +2402,7 @@ return PluginSystem
 
 [12] R. Ierusalimschy, F. Maniço, and T. Matula, "Lua-COM: Integrating Lua with COM," in *Proceedings of the 5th International Conference on Open Source Systems (OSS '09)*, Skövde, Sweden, 2009, pp. 189-194.
 
-### 11.4 相关系统与对比
+### 10.4 相关系统与对比
 
 [13] D. Flanagan, *JavaScript: The Definitive Guide*, 7th ed. O'Reilly Media, 2020.
 
@@ -2457,7 +2412,7 @@ return PluginSystem
 
 [16] A. Haas et al., "Bringing the Web up to Speed with WebAssembly," in *Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI '17)*, Barcelona, Spain, 2017, pp. 185-200. doi: 10.1145/3062341.3062363.
 
-### 11.5 嵌入式与脚本应用
+### 10.5 嵌入式与脚本应用
 
 [17] S. Sanfilippo, "Embedding Lua in C Applications," Redis Labs, 2013. [Online]. Available: https://redis.io/docs/interact/programmability/lua-api/
 
@@ -2467,42 +2422,42 @@ return PluginSystem
 
 [20] Roblox Corporation, "Luau: Fast, Safe, Typed Language for Roblox," Roblox Documentation, 2024. [Online]. Available: https://luau.org/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 源码与实现
+### 11.1 源码与实现
 
 - **Lua 5.4 源码**：`lgc.c`（GC）、`lstate.c`（状态机）、`lvm.c`（VM）、`ldo.c`（调用栈）、`lparser.c`（编译器，`_ENV` 处理）。
 - **LuaJIT 源码**：`lj_env.c`、`lj_state.c`、`lj_meta.c`（元方法优化）。
 - **Luau 源码**：`VM/src/lvm.cpp`、`Compiler/src/Compiler.cpp`（类型检查）。
 
-### 12.2 官方文档
+### 11.2 官方文档
 
 - **Lua 5.4 Reference Manual**: https://www.lua.org/manual/5.4/
 - **Lua 5.1 Reference Manual**: https://www.lua.org/manual/5.1/
 - **LuaJIT Documentation**: http://luajit.org/luajit.html
 - **Luau Documentation**: https://luau.org/
 
-### 12.3 经典论文
+### 11.3 经典论文
 
 - "The Evolution of Lua" (HOPL III, 2007)：Lua 语言演化全貌。
 - "The Implementation of Lua 5.0" (JUCS, 2005)：寄存器 VM 与 `_ENV` 设计动机。
 - "Passing a Language through the Eye of a Needle" (CACM, 2018)：Lua 嵌入式设计哲学。
 
-### 12.4 工程实践
+### 11.4 工程实践
 
 - **Redis 脚本**: https://redis.io/docs/interact/programmability/eval/
 - **OpenResty 文档**: https://openresty.org/en/docs/
 - **Neovim Lua Guide**: `:help lua-guide` 或 https://neovim.io/doc/user/lua-guide.html
 - **strict.lua**: https://github.com/lua-stdlib/stdlib/blob/master/lib/std/strict.lua
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - **代际 GC 与全局表遍历优化**：Lua 5.4 `lgc.c` 中的 `genstep` 与 `young2old` 逻辑。
 - **`<const>`/`<close>` 属性**：Lua 5.4 新增的变量属性，影响 `_ENV` 行为。
 - **Lua 模块系统演化**：`require`/`package.loaded`/`package.preload` 的设计。
 - **`_ENV` 与类型系统**：Luau 类型检查对 `_ENV` 的处理。
 
-### 12.6 相关文档
+### 11.6 相关文档
 
 - **lua/函数与闭包**：词法作用域与 upvalue 机制。
 - **lua/弱表**：弱引用与 GC 协同。

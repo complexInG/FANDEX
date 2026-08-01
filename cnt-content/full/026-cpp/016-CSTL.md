@@ -25,28 +25,16 @@ prerequisites:
   - cpp/概述与现代标准
   - cpp/STL容器与迭代器
 ---
+
 # STL容器与迭代器
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-| Bloom 层级 | 目标描述 |
-| :--- | :--- |
-| **Remember（记忆）** | 列举 STL 算法的 5 大分类（non-modifying、modifying、sorting、numeric、heap），复述 5 类迭代器（input、output、forward、bidirectional、random access）的层级关系 |
-| **Understand（理解）** | 解释 STL 算法与迭代器解耦的设计哲学，说明 `std::sort` 的内省排序（introsort）原理与 $O(n \log n)$ 复杂度保证 |
-| **Apply（应用）** | 使用 `std::transform`、`std::accumulate`、`std::remove_if` + `erase` 惯用法、`std::sort` + 自定义比较器解决实际数据处理问题 |
-| **Analyze（分析）** | 分析给定代码片段中迭代器失效风险、算法复杂度退化场景、并行算法的数据竞争，识别违反 Precondition 的 UB |
-| **Evaluate（评价）** | 评估 STL 算法与手写循环、Rust iterator、Java Stream、Python itertools 在可读性、性能、表达力上的取舍，权衡 `std::for_each` vs range-based for |
-| **Create（创造）** | 设计基于 Ranges 的可组合数据管道，实现自定义迭代器适配器、投影器（projection）、并行算法执行策略封装 |
-
-## 2. 历史动机与发展脉络
-
-### 2.1 STL 的诞生：Alexander Stepanov 与泛型编程
+### 1.1 STL 的诞生：Alexander Stepanov 与泛型编程
 
 STL（Standard Template Library）的历史可追溯至 1970 年代 Alexander Stepanov 在 GE Laboratories 对泛型编程（Generic Programming）的探索。Stepanov 受 Ole-Johan Dahl 与 Kristen Nygaard 的 SIMULA 67 启发，但意识到面向对象并非实现通用数据结构的最佳路径。1979 年，他与 David Musser 合作研究 Tecton 语言，尝试用泛型机制描述数学抽象。
 
@@ -63,7 +51,7 @@ InputIterator find(InputIterator first, InputIterator last, const T& value) {
 
 这段代码的精妙之处在于：`find` 对任何提供 `*`、`++`、`!=` 操作的迭代器都成立，无论是数组的原生指针、`std::vector<int>::iterator` 还是 `std::list<int>::iterator`。这种"算法—迭代器"解耦奠定了整个 STL 的架构基石。
 
-### 2.2 HP STL 与纳入 C++ 标准（1994）
+### 1.2 HP STL 与纳入 C++ 标准（1994）
 
 1994 年，HP Labs 正式发布 STL 实现。同年 7 月，ANSI/ISO C++ 标准委员会在 Waterloo 会议投票将 STL 纳入 C++ 标准草案。这一决定并非毫无争议：委员会中部分成员认为 STL 模板语法过于复杂、编译时间难以接受，但 Stroustrup 与 Stepanov 力排众议，最终 STL 成为 C++98 标准的核心组件。
 
@@ -75,7 +63,7 @@ C++98 标准定义的 STL 算法约 60 余个，涵盖：
 - 堆：`push_heap`、`pop_heap`、`make_heap`、`sort_heap`
 - 数值：`accumulate`、`inner_product`、`partial_sum`、`adjacent_difference`（位于 `<numeric>`）
 
-### 2.3 C++11 到 C++17：Lambda 与并行化
+### 1.3 C++11 到 C++17：Lambda 与并行化
 
 C++11 引入 Lambda 表达式，极大提升了 STL 算法的可用性。此前 `std::sort` 的自定义比较器需要定义独立的函数对象类，代码冗长：
 
@@ -118,7 +106,7 @@ std::for_each(std::execution::par_unseq, data.begin(), data.end(), [](double& x)
 | `std::execution::par_unseq` | 并行+向量化，允许交错 | 调用 `std::terminate` |
 | `std::execution::unseq`（C++20） | 仅向量化，单线程 | 异常正常传播 |
 
-### 2.4 C++20 Ranges：声明式数据管道
+### 1.4 C++20 Ranges：声明式数据管道
 
 C++20 Ranges 库是 STL 算法的重大重构。核心创新有三：
 
@@ -145,7 +133,7 @@ std::ranges::sort(people, {}, &Person::age);  // {} 表示默认 <
 
 Ranges 的设计借鉴了 Haskell 的 List Comprehension 与 C# 的 LINQ，使 C++ 首次具备声明式数据处理能力。
 
-### 2.5 C++23 与 C++26 持续增强
+### 1.5 C++23 与 C++26 持续增强
 
 C++23 新增算法：
 
@@ -162,7 +150,7 @@ C++26 草案继续完善：
 - `std::execution` Sender/Receiver 模型：与算法库集成的异步并行
 - Hazard Pointer 与 RCU 在并行算法中的应用
 
-### 2.6 关键提案与文献
+### 1.6 关键提案与文献
 
 - **N3411 (Hoberock, 2012)**：*Working Draft, Technical Specification for C++ Extensions for Parallelism*，并行算法奠基
 - **N4128 (Niebler, 2014)**：*Ranges for the Standard Library, Rev 1*，Ranges 提案初版
@@ -174,7 +162,7 @@ C++26 草案继续完善：
 - **P2302R4 (Kalb, 2021)**：*`ranges::contains`*
 - **P2447R4 (Lakos, 2022)**：*`views::repeat`*
 
-### 2.7 与其他语言的横向对比
+### 1.7 与其他语言的横向对比
 
 | 特性 | C++ STL | Rust Iterator | Java Stream | Python itertools | C# LINQ |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -186,9 +174,9 @@ C++26 草案继续完善：
 | 内存分配 | 视图无分配 | 无分配 | 中间盒装 | 生成器 | 部分分配 |
 | 错误处理 | UB / 抛异常 | Result/Option | Optional / 异常 | 异常 | 异常 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 迭代器范畴（Iterator Category）
+### 2.1 迭代器范畴（Iterator Category）
 
 STL 算法对迭代器的要求由 5 个范畴（category）定义，构成偏序关系：
 
@@ -221,7 +209,7 @@ $$
 
 算法的复杂度保证依赖于迭代器范畴。例如 `std::sort` 要求 RandomAccessIterator，对 ForwardIterator 编译失败；`std::find` 仅需 InputIterator，可作用于 `std::istream_iterator`。
 
-### 3.2 算法复杂度的形式化
+### 2.2 算法复杂度的形式化
 
 STL 算法的复杂度由标准明确指定，使用大 O 记号。设 $n$ 为范围长度：
 
@@ -247,7 +235,7 @@ $$
 
 且最坏情况不超过 $O(n \log n)$（C++11 后要求，C++98 仅 $O(n \log n)$ 平均）。这一保证的实现机制是内省排序（introsort），详见 §4.1。
 
-### 3.3 Precondition 与 Postcondition
+### 2.3 Precondition 与 Postcondition
 
 每个 STL 算法都有一组前置条件（Precondition）和后置条件（Postcondition）。违反 Precondition 导致未定义行为（UB）。
 
@@ -265,7 +253,7 @@ $$
 
 违反 `is_sorted` 前置条件将导致 UB，结果不可预测。
 
-### 3.4 Ranges 概念的形式化
+### 2.4 Ranges 概念的形式化
 
 C++20 Ranges 用 concept 形式化算法要求：
 
@@ -285,9 +273,9 @@ namespace std {
 
 这种形式化使算法的迭代器要求在编译期可检查，避免了 C++98 模板的延迟报错问题。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 内省排序（Introsort）：std::sort 的实现机制
+### 3.1 内省排序（Introsort）：std::sort 的实现机制
 
 `std::sort` 的复杂度保证依赖于内省排序算法，由 David Musser 于 1997 年提出。Introsort 是快速排序（Quicksort）+ 堆排序（Heapsort）+ 插入排序（Insertion Sort）的混合体：
 
@@ -339,7 +327,7 @@ void __introsort_loop(RandomAccessIterator first, RandomAccessIterator last, int
 }
 ```
 
-### 4.2 稳定排序：std::stable_sort 的归并实现
+### 3.2 稳定排序：std::stable_sort 的归并实现
 
 `std::stable_sort` 保证相等元素的相对顺序。典型实现使用归并排序（Merge Sort）：
 
@@ -356,7 +344,7 @@ O(n \log^2 n) & \text{otherwise}
 \end{cases}
 $$
 
-### 4.3 nth_element：快速选择的期望线性
+### 3.3 nth_element：快速选择的期望线性
 
 `std::nth_element` 将第 $n$ 大的元素放到第 $n$ 位，左侧均不大于它，右侧均不小于它。实现基于快速选择（Quickselect）：
 
@@ -365,7 +353,7 @@ $$
 
 introselect 在递归深度达到 $2 \log_2 n$ 时切换到 median-of-medians 算法，提供线性最坏保证。
 
-### 4.4 remove-erase 惯用法的原理
+### 3.4 remove-erase 惯用法的原理
 
 `std::remove_if` 不真正删除元素，而是将"保留"的元素前移，返回新逻辑末尾迭代器。这一设计源于"算法不应修改容器大小"的原则。
 
@@ -383,7 +371,7 @@ C++20 引入 `std::erase_if` 自由函数，封装这一惯用法：
 std::erase_if(v, [](int x) { return x % 2 == 0; });
 ```
 
-### 4.5 并行算法的数据竞争与安全
+### 3.5 并行算法的数据竞争与安全
 
 并行算法要求用户提供的数据竞争自由（data-race-free）的函数对象。考虑：
 
@@ -406,7 +394,7 @@ std::for_each(std::execution::par, v.begin(), v.end(), [&](int x) {
 
 `std::execution::par_unseq` 还要求函数对象不调用同步原语（如 `std::mutex::lock`），因为向量化可能在不同 SIMD lane 中并发执行。
 
-### 4.6 Ranges 视图的惰性求值
+### 3.6 Ranges 视图的惰性求值
 
 视图（View）的核心特性是惰性求值：组合多个视图不会产生中间容器。
 
@@ -425,9 +413,9 @@ for (auto x : pipeline) {  // 此处按需计算
 
 视图组合的复杂度：单次迭代 $O(k)$，其中 $k$ 是管道中视图的数量。整体复杂度 $O(n \cdot k)$。
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 非修改式算法：日志分析
+### 4.1 非修改式算法：日志分析
 
 ```cpp
 #include <algorithm>
@@ -505,7 +493,7 @@ int main() {
 }
 ```
 
-### 5.2 修改式算法：数据清洗管道
+### 4.2 修改式算法：数据清洗管道
 
 ```cpp
 #include <algorithm>
@@ -543,7 +531,7 @@ std::vector<std::string> clean_data(std::vector<std::string> raw) {
 }
 ```
 
-### 5.3 排序与分区：TopK 问题
+### 4.3 排序与分区：TopK 问题
 
 ```cpp
 #include <algorithm>
@@ -573,7 +561,7 @@ double median(std::vector<int> data) {
 }
 ```
 
-### 5.4 数值算法：滑动平均
+### 4.4 数值算法：滑动平均
 
 ```cpp
 #include <numeric>
@@ -602,7 +590,7 @@ std::size_t safe_midpoint(std::size_t a, std::size_t b) {
 }
 ```
 
-### 5.5 堆算法：优先队列底层
+### 4.5 堆算法：优先队列底层
 
 ```cpp
 #include <algorithm>
@@ -643,7 +631,7 @@ std::vector<int> stream_topk(std::vector<int> stream, std::size_t k) {
 }
 ```
 
-### 5.6 并行算法：大规模数据处理
+### 4.6 并行算法：大规模数据处理
 
 ```cpp
 #include <execution>
@@ -693,7 +681,7 @@ void benchmark() {
 }
 ```
 
-### 5.7 Ranges 视图组合：DSL 查询
+### 4.7 Ranges 视图组合：DSL 查询
 
 ```cpp
 #include <ranges>
@@ -745,7 +733,7 @@ void cpp23_chunk_by_demo(const std::vector<Order>& orders) {
 }
 ```
 
-### 5.8 二分搜索：调度系统任务查找
+### 4.8 二分搜索：调度系统任务查找
 
 ```cpp
 #include <algorithm>
@@ -783,7 +771,7 @@ private:
 };
 ```
 
-### 5.9 集合操作：差集合并
+### 4.9 集合操作：差集合并
 
 ```cpp
 #include <algorithm>
@@ -806,7 +794,7 @@ std::vector<int> employees_moved(
 }
 ```
 
-### 5.10 C++23 折叠算法：可选聚合
+### 4.10 C++23 折叠算法：可选聚合
 
 ```cpp
 #include <algorithm>
@@ -835,9 +823,9 @@ bool all_codes_start_with(const std::vector<std::string>& codes, std::string_vie
 }
 ```
 
-## 6. 对比分析（横向对比）
+## 5. 对比分析（横向对比）
 
-### 6.1 STL vs Rust Iterator
+### 5.1 STL vs Rust Iterator
 
 ```rust
 // Rust 风格
@@ -866,7 +854,7 @@ auto result = v
 | 内存安全 | 不保证 | 编译期保证 |
 | 学习曲线 | 陡（模板报错） | 中等（生命周期） |
 
-### 6.2 STL vs Java Stream
+### 5.2 STL vs Java Stream
 
 ```java
 // Java 风格
@@ -884,7 +872,7 @@ List<Integer> result = list.stream()
 | 类型推导 | `auto` | `var`（Java 10+） |
 | 内存模型 | 手动 / RAII | GC 管理 |
 
-### 6.3 STL vs Python itertools
+### 5.3 STL vs Python itertools
 
 ```python
 # Python 风格
@@ -902,9 +890,9 @@ result = list(map(lambda x: x*x, filter(lambda x: x % 2 == 0, v)))
 | 内存 | 零开销 | 生成器惰性 |
 | 错误处理 | UB / 异常 | 异常 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：迭代器失效
+### 6.1 陷阱：迭代器失效
 
 ```cpp
 // 错误：在 for_each 中修改容器
@@ -921,7 +909,7 @@ std::for_each(v.begin(), v.end(), [&to_add](int x) {
 v.insert(v.end(), to_add.begin(), to_add.end());
 ```
 
-### 7.2 陷阱：算法复杂度退化
+### 6.2 陷阱：算法复杂度退化
 
 ```cpp
 // 错误：在 list 上使用 sort（会编译失败或退化为低效）
@@ -935,7 +923,7 @@ auto it = std::find(v.begin(), v.end(), 5);  // O(n)，不是 O(log n)
 auto it2 = std::lower_bound(v.begin(), v.end(), 5);  // O(log n)，要求有序
 ```
 
-### 7.3 陷阱：remove 不真正删除
+### 6.3 陷阱：remove 不真正删除
 
 ```cpp
 // 错误：忘记 erase
@@ -949,7 +937,7 @@ v.erase(std::remove(v.begin(), v.end(), 3), v.end());
 std::erase(v, 3);
 ```
 
-### 7.4 陷阱：并行算法的数据竞争
+### 6.4 陷阱：并行算法的数据竞争
 
 ```cpp
 // 错误：非原子累加
@@ -972,7 +960,7 @@ int sum_of_squares = std::transform_reduce(
 );
 ```
 
-### 7.5 陷阱：二分搜索的未排序前置条件
+### 6.5 陷阱：二分搜索的未排序前置条件
 
 ```cpp
 // 错误：在未排序范围上使用 binary_search
@@ -984,7 +972,7 @@ std::sort(v.begin(), v.end());
 bool found = std::binary_search(v.begin(), v.end(), 2);  // true
 ```
 
-### 7.6 陷阱：string_view 生命周期
+### 6.6 陷阱：string_view 生命周期
 
 ```cpp
 // 错误：视图悬空
@@ -1002,7 +990,7 @@ std::string get_first_word(const std::string& s) {
 }
 ```
 
-### 7.7 陷阱：unique 不真正去重
+### 6.7 陷阱：unique 不真正去重
 
 ```cpp
 // 错误：unique 只去除相邻重复
@@ -1014,7 +1002,7 @@ std::sort(v.begin(), v.end());
 v.erase(std::unique(v.begin(), v.end()), v.end());
 ```
 
-### 7.8 陷阱：stable_sort 的内存
+### 6.8 陷阱：stable_sort 的内存
 
 ```cpp
 // 错误：未考虑 stable_sort 的内存开销
@@ -1033,7 +1021,7 @@ std::sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
 });
 ```
 
-### 7.9 陷阱：transform 输出范围不足
+### 6.9 陷阱：transform 输出范围不足
 
 ```cpp
 // 错误：输出范围太小
@@ -1046,7 +1034,7 @@ std::vector<int> dst;
 std::transform(src.begin(), src.end(), std::back_inserter(dst), [](int x) { return x * 2; });
 ```
 
-### 7.10 陷阱：默认比较器不匹配
+### 6.10 陷阱：默认比较器不匹配
 
 ```cpp
 // 错误：自定义类型未定义 operator<
@@ -1063,7 +1051,7 @@ std::sort(v.begin(), v.end(), [](const Person& a, const Person& b) {
 std::ranges::sort(v, {}, &Person::age);
 ```
 
-### 7.11 最佳实践：优先使用 Ranges
+### 6.11 最佳实践：优先使用 Ranges
 
 C++20 起，优先使用 `std::ranges::` 版本：
 
@@ -1082,7 +1070,7 @@ std::sort(v.begin(), v.end(), [](const Person& a, const Person& b) {
 std::ranges::sort(v, {}, &Person::age);
 ```
 
-### 7.12 最佳实践：并行算法的选择
+### 6.12 最佳实践：并行算法的选择
 
 - 数据量 $< 10^4$：使用顺序版本（并行启动开销不划算）
 - 数据量 $10^4 \sim 10^6$：考虑 `std::execution::par`
@@ -1095,9 +1083,9 @@ std::ranges::sort(v, {}, &Person::age);
 // benchmark 不同执行策略的实际性能
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目中的算法选择决策树
+### 7.1 项目中的算法选择决策树
 
 ```mermaid
 flowchart TD
@@ -1128,7 +1116,7 @@ flowchart TD
     T14 --> T17
 ```
 
-### 8.2 性能调优：避免不必要的拷贝
+### 7.2 性能调优：避免不必要的拷贝
 
 ```cpp
 // 错误：值传递大对象
@@ -1144,7 +1132,7 @@ std::sort(names.begin(), names.end(),
 std::ranges::sort(names);
 ```
 
-### 8.3 性能调优：缓存友好访问
+### 7.3 性能调优：缓存友好访问
 
 ```cpp
 // 错误：列优先访问（缓存不友好）
@@ -1166,7 +1154,7 @@ void sum_columns_fast(const std::vector<std::vector<int>>& matrix, std::vector<i
 }
 ```
 
-### 8.4 跨平台兼容性
+### 7.4 跨平台兼容性
 
 ```cpp
 // 并行算法在 MSVC 与 libstdc++ 的差异
@@ -1187,7 +1175,7 @@ T safe_reduce(It first, It last, T init) {
 }
 ```
 
-### 8.5 测试与调试
+### 7.5 测试与调试
 
 ```cpp
 #include <algorithm>
@@ -1215,14 +1203,14 @@ int main() {
 }
 ```
 
-### 8.6 与 ABI 稳定性
+### 7.6 与 ABI 稳定性
 
 STL 算法大多数为 `inline` 模板，ABI 稳定。但需要注意：
 
 - `std::execution::par` 实现依赖 TBB（libstdc++）或 Windows ThreadPool（MSVC），跨实现不兼容
 - 并行算法抛出异常时调用 `std::terminate`，不能跨 ABI 边界传播
 
-### 8.7 代码规范
+### 7.7 代码规范
 
 - 优先 `std::ranges::` 版本
 - Lambda 参数使用 `const T&` 避免拷贝
@@ -1241,9 +1229,9 @@ auto result = orders | std::views::filter([](const Order& o) { return o.status =
                      | std::views::transform([](const Order& o) { return o.amount; });
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：电商订单分析系统
+### 8.1 案例一：电商订单分析系统
 
 **场景**：分析 1000 万订单，计算各区域 Top10 商品。
 
@@ -1330,7 +1318,7 @@ int main() {
 }
 ```
 
-### 9.2 案例二：日志实时去重与告警
+### 8.2 案例二：日志实时去重与告警
 
 **场景**：流式日志处理，去重相似日志并按频率告警。
 
@@ -1370,7 +1358,7 @@ private:
 };
 ```
 
-### 9.3 案例三：分布式任务调度
+### 8.3 案例三：分布式任务调度
 
 **场景**：根据任务优先级与依赖关系调度。
 
@@ -1415,7 +1403,7 @@ std::vector<int> schedule(const std::vector<Task>& tasks) {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（Remember/Understand）
+### 9.1 基础题（Remember/Understand）
 
 **题目 1**：列举 STL 算法的 5 大分类，各举 2 个例子。
 
@@ -1429,7 +1417,7 @@ v.erase(std::unique(v.begin(), v.end()), v.end());
 // v 内容是？
 ```
 
-### 10.2 中级题（Apply/Analyze）
+### 9.2 中级题（Apply/Analyze）
 
 **题目 4**：实现函数 `count_duplicates`，返回 vector 中重复元素的数量。
 
@@ -1477,7 +1465,7 @@ std::ranges::sort(people, [](const Person& a, const Person& b) {
 });
 ```
 
-### 10.3 高级题（Evaluate/Create）
+### 9.3 高级题（Evaluate/Create）
 
 **题目 7**：评估在 `std::list` 上使用 `std::sort` 的可行性，若不可行，给出替代方案。
 
@@ -1565,7 +1553,7 @@ double sq_sum = std::transform_reduce(
 );
 ```
 
-### 10.4 开放题（Create）
+### 9.4 开放题（Create）
 
 **题目 11**：设计一个基于 Ranges 的 ETL 管道，从 CSV 文件读取数据，过滤无效行，转换字段，按字段分组聚合，输出 JSON。
 
@@ -1616,14 +1604,14 @@ long long sum_fibonacci(std::size_t n) {
 }
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准文档
+### 10.1 标准文档
 
 - ISO/IEC 14882:2023 *Information technology — Programming languages — C++*，§25 Algorithms library，§26 Ranges
 - ISO/IEC TS 19570:2018 *C++ Extensions for Parallelism*（已并入 C++17）
 
-### 11.2 核心提案
+### 10.2 核心提案
 
 - N3411 *Working Draft, Technical Specification for C++ Extensions for Parallelism*（Hoberock, 2012）
 - N4128 *Ranges for the Standard Library, Rev 1*（Niebler, 2014）
@@ -1635,35 +1623,35 @@ long long sum_fibonacci(std::size_t n) {
 - P2302R4 *`ranges::contains`*（Kalb, 2021）
 - P2447R4 *`views::repeat`*（Lakos, 2022）
 
-### 11.3 学术论文
+### 10.3 学术论文
 
 - Musser, David R. *Introspective Sorting and Selection Algorithms*. Software: Practice and Experience, 27(8):983-993, 1997.
 - Stepanov, Alexander; Lee, Meng. *The Standard Template Library*. HP Laboratories Technical Report 95-11(R.1), 1995.
 - Austern, Matthew H. *Generic Programming and the STL*. Addison-Wesley, 1998.
 - Josuttis, Nicolai. *The C++ Standard Library: A Tutorial and Reference*. 2nd ed., Addison-Wesley, 2012.
 
-### 11.4 经典教材
+### 10.4 经典教材
 
 - Stroustrup, Bjarne. *The C++ Programming Language*. 4th ed., Addison-Wesley, 2013.（Chapter 31: STL）
 - Meyers, Scott. *Effective STL*. Addison-Wesley, 2001.
 - Josuttis, Nicolai. *C++23 - The Complete Guide*. 2023.
 
-### 11.5 在线资源
+### 10.5 在线资源
 
 - cppreference.com *Algorithms library*: https://en.cppreference.com/w/cpp/algorithm
 - cppreference.com *Ranges library*: https://en.cppreference.com/w/cpp/ranges
 - Stroustrup *C++20 Ranges*: https://www.stroustrup.com/C++20FAQ.html#ranges
 - Sutter, Herb *GotW #294: Parallel Algorithms*: https://herbsutter.com/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶书籍
+### 11.1 进阶书籍
 
 - Williams, Anthony. *C++ Concurrency in Action*. 2nd ed., Manning, 2019.（第 10 章并行算法深入）
 - Román, Iván. *C++20 - The Complete Guide*. 2022.
 - Gregory, Kate. *C++23 in Action*. Manning, 2024.
 
-### 12.2 视频课程
+### 11.2 视频课程
 
 - MIT 6.172 *Performance Engineering of Software Systems*（Charles Leiserson）
 - Stanford CS106L *Standard C++ Programming*
@@ -1673,7 +1661,7 @@ long long sum_fibonacci(std::size_t n) {
   - Conor Hoekstra *Algorithm Intuition* (CppCon 2020)
   - Bryce Adelstein Lelbach *The C++17 Parallel Algorithms Library* (CppCon 2016)
 
-### 12.3 开源实现
+### 11.3 开源实现
 
 - libstdc++ *Algorithms*: https://github.com/gcc-mirror/gcc/tree/master/libstdc++-v3/include/bits
 - libc++ *Algorithms*: https://github.com/llvm/llvm-project/tree/main/libcxx/include
@@ -1681,7 +1669,7 @@ long long sum_fibonacci(std::size_t n) {
 - Boost.Algorithm: https://www.boost.org/doc/libs/release/libs/algorithm/
 - Range-v3 (Ranges 原型): https://github.com/ericniebler/range-v3
 
-### 12.4 相关主题
+### 11.4 相关主题
 
 - C++20 Ranges（详见 *cpp/C++20范围*）
 - STL 容器与迭代器（详见 *cpp/STL容器与迭代器*）
@@ -1690,7 +1678,7 @@ long long sum_fibonacci(std::size_t n) {
 - C++23 新特性（详见 *cpp/C++23新特性*）
 - C++26 与最新标准（详见 *cpp/C++26与最新标准*）
 
-### 12.5 实践建议
+### 11.5 实践建议
 
 1. **从基础算法开始**：先掌握 `find`、`copy`、`transform`、`sort`、`accumulate`
 2. **理解迭代器范畴**：阅读 `cpp/STL容器与迭代器` 后再深入算法

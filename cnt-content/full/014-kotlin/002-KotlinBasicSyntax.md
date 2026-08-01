@@ -12,45 +12,6 @@ related:
   - kotlin/函数与Lambda
   - kotlin/类与对象
 prerequisites: []
-learningObjectives:
-  - level: remember
-    objective: '能陈述 val 与 var 的区别、Kotlin 八大基本类型名称与区间（Range）语法。'
-    verifiable: '默写变量声明与区间遍历代码'
-  - level: understand
-    objective: '能解释 Kotlin 无隐式类型转换与一切皆对象的设计含义。'
-    verifiable: '说明 Int 与 Long 之间为何必须显式转换'
-  - level: apply
-    objective: '能使用字符串模板、原始字符串、when 表达式与 for 区间完成日常编码。'
-    verifiable: '编写一个包含上述特性的完整函数'
-  - level: analyze
-    objective: '能分析 when 表达式与 Java switch 的差异（穷举性、智能转换、无 fall-through）。'
-    verifiable: '给出二者对同一逻辑的实现对比'
-  - level: evaluate
-    objective: '能评价显式类型转换与类型推断在可读性和安全性上的取舍。'
-    verifiable: '针对团队代码规范给出建议'
-  - level: create
-    objective: '能独立实现一个基于 when 与区间的命令行评分工具。'
-    verifiable: '完成案例研究中的完整程序'
-exercises:
-  - id: kotlin-basic-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: 'Kotlin 中只读变量使用 _____ 关键字，可变变量使用 _____ 关键字。'
-    answer: 'val；var'
-    explanation: 'val 只能赋值一次，var 可重新赋值；优先使用 val。'
-    difficulty: easy
-  - id: kotlin-basic-02
-    type: choice
-    cognitiveLevel: understand
-    question: '关于 Kotlin 数值类型转换，下列说法正确的是？'
-    options:
-      - 'A. Int 可以隐式赋值给 Long'
-      - 'B. 必须使用 toLong() 等显式转换函数'
-      - 'C. 转换总是安全的'
-      - 'D. Float 可以直接赋给 Double'
-    answer: 'B'
-    explanation: 'Kotlin 不支持隐式拓宽转换，需要显式调用 toLong()/toDouble() 等。'
-    difficulty: medium
 references:
   - type: documentation
     authors: ['JetBrains']
@@ -75,21 +36,8 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-## 1. 学习目标（Bloom 分类）
 
-记忆层面：能够说出 Kotlin 的核心语法要素：`val`/`var` 声明、基本类型体系（`Int`、`Long`、`Double`、`Boolean`、`Char`、`String`）、字符串模板（`$var` 与 `${expr}`）、包与导入、`if`/`when`/`for`/`while` 控制流、区间（`..`、`until`、`downTo`、`step`）、类型检查（`is`）与转换（`as`）。
-
-理解层面：能够解释 Kotlin 的“空安全”设计（`?`、`!!`、`?:`、`?.`）如何把空指针异常从运行时提前到编译期；解释 `val` 的只读引用与不可变对象的区别；解释 `when` 作为表达式与语句的差异。
-
-应用层面：能够在函数、类、集合处理中熟练运用基础语法，编写无 `NullPointerException` 风险的代码，并正确使用字符串模板避免拼接错误。
-
-分析层面：能够分析 Kotlin 与 Java 在类型系统（可空类型、无原始类型）、控制流表达式化、字符串模板、区间语法上的设计差异，理解 Kotlin 的“务实的现代语言”定位。
-
-评价层面：能够评价不同声明风格（`val` vs `var`、显式类型 vs 类型推断）对可读性与可维护性的影响，形成团队风格指南。
-
-创造层面：能够用 Kotlin 的基础语法组合出领域小工具（数据处理、CLI 脚本、Android 组件），并遵循惯用法（idiomatic Kotlin）。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 Kotlin 由 JetBrains 于 2010 年开始研发，2011 年公开，2016 年 2 月发布 1.0。设计动机是解决 Java 的长期痛点：冗长（样板代码）、空指针风险、类型推断不足、函数式支持薄弱。Kotlin 与 Java 100% 互操作，编译器（kotlinc）输出 JVM 字节码，因此可以在既有 Java 项目中渐进采用。
 
@@ -109,9 +57,9 @@ timeline
     2025 : KMP 与 Compose Multiplatform 稳定演进
 ```
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 变量声明
+### 2.1 变量声明
 
 `val 名称: 类型 = 值`：只读引用，初始化后不可重新赋值（但引用的对象内部状态可变）；
 
@@ -121,7 +69,7 @@ timeline
 
 顶层声明：Kotlin 允许在文件顶层声明变量与函数，无需类包装。
 
-### 3.2 基本类型
+### 2.2 基本类型
 
 数值：`Byte`、`Short`、`Int`、`Long`（后缀 L）、`Float`（后缀 F）、`Double`；
 
@@ -135,11 +83,11 @@ timeline
 
 Kotlin 类型都是对象，但数值类型在 JVM 上尽量装箱/拆箱优化（`Int` 映射 `int` 或 `Integer`）。
 
-### 3.3 字符串模板
+### 2.3 字符串模板
 
 `"$variable"` 直接插入变量；`"${expression}"` 插入表达式；`$` 本身用 `\$` 转义。模板在编译期展开为字符串拼接或 `StringBuilder`，支持任意表达式（包括函数调用与属性访问）。
 
-### 3.4 控制流
+### 2.4 控制流
 
 `if`：可作表达式，返回分支值；
 
@@ -151,7 +99,7 @@ Kotlin 类型都是对象，但数值类型在 JVM 上尽量装箱/拆箱优化�
 
 `break`/`continue` 与标签（label）配合支持跳出嵌套循环。
 
-### 3.5 区间
+### 2.5 区间
 
 `a..b`：闭区间（包含 b）；
 
@@ -163,7 +111,7 @@ Kotlin 类型都是对象，但数值类型在 JVM 上尽量装箱/拆箱优化�
 
 区间支持 `in` 运算符检查成员关系。
 
-### 3.6 类型检查与转换
+### 2.6 类型检查与转换
 
 `is`：类型检查，智能转换（smart cast）在不可变上下文中自动生效；
 
@@ -180,29 +128,29 @@ flowchart LR
     C --> F["与 Java 互操作"]
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 空安全类型系统
+### 3.1 空安全类型系统
 
 Kotlin 把可空性编码进类型系统：`String` 与 `String?` 是不同静态类型。编译器在调用链上强制处理空值：`?.` 短路返回 null，`?:` 提供默认值，`!!` 显式声明“我确定非空”（失败抛 `NullPointerException`）。推导：若函数参数类型为 `String`，任何调用点都不可能传入 null（编译期拒绝），从而消灭了一整类运行时异常。
 
 智能转换的成立条件：目标变量在检查点后未被修改且不是开放属性（open member），编译器才允许自动转换类型。`var` 在并发场景可能被修改，因此智能转换受限。
 
-### 4.2 val 与不可变性
+### 3.2 val 与不可变性
 
 `val` 约束的是“引用”，不是“对象”。`val list = mutableListOf<Int>()` 后可以 `list.add(1)`，因为对象本身可变。Kotlin 标准库刻意区分可变与只读集合接口（`MutableList` vs `List`），用类型系统表达可变性边界。
 
-### 4.3 when 的表达式语义
+### 3.3 when 的表达式语义
 
 `when` 作表达式时必须覆盖所有分支（或存在 else），因为表达式的类型是各分支的公共超类型。这保证穷尽性（exhaustiveness），避免 Java switch 遗漏分支的静默行为。
 
-### 4.4 字符串模板的编译展开
+### 3.4 字符串模板的编译展开
 
 字符串模板编译为 `StringBuilder.append` 链或 `String.format` 的等价物，多段拼接的性能优于手工 `+` 链（减少中间字符串对象）。`${}` 内的表达式在求值时若含可空值，字符串结果为 `"null"` 文本（与 Java 拼接一致）。
 
-## 5. 代码示例（带详尽注释）
+## 4. 代码示例（带详尽注释）
 
-### 5.1 val 与 var
+### 4.1 val 与 var
 
 ```kotlin
 // 只读引用：初始化后不可重新赋值
@@ -222,7 +170,7 @@ val TOP_LEVEL_CONST = "常量"
 
 讲解：优先使用 `val`，只有确实需要重新赋值时才用 `var`。这不仅是风格，更是把“可变性”最小化的工程原则。顶层声明简化了小工具代码，是 Kotlin 与 Java 的重要差异。
 
-### 5.2 基本类型与显式转换
+### 4.2 基本类型与显式转换
 
 ```kotlin
 val anInt: Int = 100
@@ -239,7 +187,7 @@ val fromString: Int = "42".toInt()
 
 讲解：Kotlin 禁止数值类型隐式拓宽（`Int` 不能直接赋给 `Long`），避免 Java 中 `int` 与 `long` 混用的隐蔽溢出。显式转换让意图清晰，代价是少量样板。
 
-### 5.3 字符串模板
+### 4.3 字符串模板
 
 ```kotlin
 val user = "Alice"
@@ -257,7 +205,7 @@ val price = "单价：\$10"
 
 讲解：字符串模板是 Kotlin 最常用的特性之一。`${}` 内可以是任意表达式，甚至嵌套 `if`。转义 `\$` 避免与模板语法冲突。
 
-### 5.4 if 与 when 表达式
+### 4.4 if 与 when 表达式
 
 ```kotlin
 // if 作为表达式：直接赋值
@@ -281,7 +229,7 @@ val result = when {
 
 讲解：`when` 的 `in` 分支使用区间匹配；作为表达式时必须穷尽（有 else）。无参数 `when` 适合多个互斥条件判断，可读性优于嵌套 if。
 
-### 5.5 循环与区间
+### 4.5 循环与区间
 
 ```kotlin
 // 闭区间：0 到 5 包含 5
@@ -313,7 +261,7 @@ for ((index, name) in names.withIndex()) {
 
 讲解：区间与 `for` 的组合覆盖绝大多数迭代需求。`withIndex()` 解构出索引与元素，避免手动维护计数器。`downTo` 与 `step` 让倒序步进循环声明式化。
 
-### 5.6 类型检查与安全转换
+### 4.6 类型检查与安全转换
 
 ```kotlin
 fun describe(value: Any): String {
@@ -337,7 +285,7 @@ val text: String? = value as? String
 
 讲解：`is` 配合智能转换是 Kotlin 类型系统的招牌能力；`toIntOrNull` 与 `as?` 让“可能失败”的转换返回可空结果，由调用方处理，而不是抛异常。
 
-### 5.7 空安全操作符
+### 4.7 空安全操作符
 
 ```kotlin
 data class User(val name: String?, val email: String?)
@@ -365,7 +313,7 @@ println(format(User(null, "alice@example.com")))
 
 讲解：`?.`、`?:` 组合是 Kotlin 空安全的标准模式。`!!` 是逃生舱，仅用于“与 Java 互操作且确定非空”的场景；业务代码中应尽量避免。
 
-### 5.8 包与导入
+### 4.8 包与导入
 
 ```kotlin
 package com.fandex.tools
@@ -382,9 +330,9 @@ import java.util.Date as JavaDate
 
 讲解：Kotlin 的包与导入机制与 Java 类似，但增加 `as` 别名解决冲突，支持顶层声明直接导入。目录结构与包名不必强一致（但建议一致以利维护）。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Kotlin 与 Java 基础语法对比
+### 5.1 Kotlin 与 Java 基础语法对比
 
 | 维度 | Kotlin | Java |
 | --- | --- | --- |
@@ -395,15 +343,15 @@ import java.util.Date as JavaDate
 | 区间 | .. until downTo step | 无内置 |
 | 智能转换 | 是 | 无（Java 16 模式匹配部分实现） |
 
-### 6.2 val 与 Java final
+### 5.2 val 与 Java final
 
 `val` 等价于 Java `final` 局部变量；但 Kotlin 的只读集合接口（`List`）是更深层的不可变约束，Java 的 `Collections.unmodifiableList` 是运行时包装。
 
-### 6.3 可空类型与 Optional
+### 5.3 可空类型与 Optional
 
 Java 8 的 `Optional` 是包装类型，有装箱开销且不能用于字段；Kotlin 的可空性是类型系统特性，无运行时开销。在互操作边界（Java 调用 Kotlin），可空性通过 `@Nullable`/`@NotNull` 注解导出。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
 陷阱一：把 `val` 当作不可变对象。`val` 只约束引用；需要不可变数据时使用 `data class` + 只读集合。
 
@@ -421,9 +369,9 @@ Java 8 的 `Optional` 是包装类型，有装箱开销且不能用于字段；K
 
 最佳实践：默认 `val`；空安全用 `?.`/`?:`；`when` 优先于 if-else 链；区间循环优先于索引循环；每个函数保持小且纯。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构
+### 7.1 项目结构
 
 ```text
 src/main/kotlin/
@@ -439,7 +387,7 @@ src/test/kotlin/
 
 讲解：Kotlin 项目结构与 Java 类似，但顶层函数减少了“工具类”的样板。测试目录镜像主目录，使用 kotlin.test 或 JUnit 5。
 
-### 8.2 构建工具
+### 7.2 构建工具
 
 ```kotlin
 // build.gradle.kts：Kotlin DSL
@@ -463,7 +411,7 @@ application {
 
 讲解：Gradle Kotlin DSL 是 Kotlin 项目的主流构建方式，构建脚本本身也是 Kotlin 代码，获得类型检查与 IDE 补全。`mainClass` 指向 `MainKt`（顶层 main 函数所在文件的 JVM 类名）。
 
-### 8.3 与 Java 互操作
+### 7.3 与 Java 互操作
 
 ```kotlin
 // 调用 Java 代码：直接使用
@@ -476,7 +424,7 @@ val maybeNull: String? = javaMethodMayReturnNull()
 
 讲解：Kotlin 可以无缝调用 Java API；Java 返回的类型是“平台类型”，编译器不强制可空检查，需要开发者根据上下文处理。
 
-## 9. 案例研究：学生成绩统计工具
+## 8. 案例研究：学生成绩统计工具
 
 需求：读取成绩列表，计算平均分、最高分、等级分布，并以表格形式输出。用基础语法完整实现：
 
@@ -520,7 +468,7 @@ fun main() {
 
 平均分：78.5；最高分：Alice（92）；优秀：1 人 - Alice；良好：1 人 - Carol；及格：1 人 - Bob；不及格：1 人 - Dave。
 
-## 10. 知识要点总结与深入讲解
+## 9. 知识要点总结与深入讲解
 
 Kotlin 基础语法的设计哲学可以概括为“表达力优先、安全内建”：val/var 表达可变性意图，空安全表达失败可能，when/区间/模板减少样板。每学一个特性，都应与 Java 对照理解“解决的是什么痛点”。
 
@@ -528,7 +476,7 @@ Kotlin 基础语法的设计哲学可以概括为“表达力优先、安全内�
 
 类型推断不是类型弱化：Kotlin 仍是强静态类型语言，推断发生在编译期。理解了这一点，就不会误以为 `val x = 1` 是动态类型。
 
-## 11. 参考文献
+## 10. 参考文献
 
 Kotlin 官方文档, Basic syntax, 访问日期 2026-08-01, https://kotlinlang.org/docs/basic-syntax.html
 
@@ -540,7 +488,7 @@ JetBrains Blog, Kotlin 2.0 发布公告, 访问日期 2026-08-01, https://blog.j
 
 Kotlin 官方文档, 与 Java 互操作, 访问日期 2026-08-01, https://kotlinlang.org/docs/java-interop.html
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 Kotlin 集合与函数式编程，见 014-kotlin 模块的集合与 lambda 文档；
 
@@ -614,11 +562,11 @@ const val APP_NAME = "FANDEX"
 val runtimeConstant = computeValue()
 ```
 
-### 2. 基本类型
+### 1. 基本类型
 
 与 Java 不同，Kotlin 中一切皆对象，基本类型在可能时编译为 Java 原始类型。
 
-#### 2.1 数值类型
+#### 1.1 数值类型
 
 | 类型     | 位数 | 最小值   | 最大值   |
 | -------- | ---- | -------- | -------- |
@@ -644,7 +592,7 @@ val longVal2: Long = intVal2.toLong()   // 显式转换
 val doubleVal2: Double = intVal2.toDouble()
 ```
 
-#### 2.2 布尔类型
+#### 1.2 布尔类型
 
 ```kotlin
 val isActive: Boolean = true
@@ -654,7 +602,7 @@ val isComplete = false
 val result = isActive && expensiveCheck()  // 短路求值
 ```
 
-#### 2.3 字符与字符串
+#### 1.3 字符与字符串
 
 ```kotlin
 // Char — 用单引号
@@ -676,7 +624,7 @@ val rawText2 = """
 """.trimIndent()  // 去除公共缩进
 ```
 
-#### 2.4 数组
+#### 1.4 数组
 
 ```kotlin
 // 创建数组
@@ -695,7 +643,7 @@ val zeros = IntArray(5)                          // [0, 0, 0, 0, 0]
 val ones = IntArray(5) { 1 }                    // [1, 1, 1, 1, 1]
 ```
 
-### 3. 字符串模板
+### 2. 字符串模板
 
 Kotlin 支持字符串模板，比 Java 的字符串拼接更简洁高效：
 
@@ -724,9 +672,9 @@ val json = """
 
 > **注意**：如果需要在字符串中使用 `$` 字面量，需要转义：`${'$'}` 或 `\$`。
 
-### 4. 包与导入
+### 3. 包与导入
 
-#### 4.1 包声明
+#### 3.1 包声明
 
 ```kotlin
 package com.example.kotlinbasics
@@ -736,7 +684,7 @@ class MyClass
 fun topLevelFunction() = "Hello"
 ```
 
-#### 4.2 导入
+#### 3.2 导入
 
 ```kotlin
 // 默认导入（无需显式声明）
@@ -757,9 +705,9 @@ import com.example.utils.*
 import com.example.Config.DEFAULT_TIMEOUT
 ```
 
-### 5. 控制流
+### 4. 控制流
 
-#### 5.1 if 表达式
+#### 4.1 if 表达式
 
 Kotlin 中 `if` 是表达式，有返回值：
 
@@ -780,7 +728,7 @@ val result = if (score >= 90) {
 }
 ```
 
-#### 5.2 when 表达式
+#### 4.2 when 表达式
 
 `when` 是 Kotlin 中强大的模式匹配工具，替代 Java 的 `switch`：
 
@@ -819,7 +767,7 @@ fun process(input: Any) = when (input) {
 }
 ```
 
-#### 5.3 for 循环
+#### 4.3 for 循环
 
 ```kotlin
 // 遍历区间
@@ -850,7 +798,7 @@ for ((key, value) in map) {
 }
 ```
 
-#### 5.4 while 与 do-while
+#### 4.4 while 与 do-while
 
 ```kotlin
 var i = 0
@@ -865,7 +813,7 @@ do {
 } while (input.isEmpty())
 ```
 
-#### 5.5 循环控制
+#### 4.5 循环控制
 
 ```kotlin
 // break 和 continue
@@ -884,9 +832,9 @@ loop@ for (i in 1..5) {
 }
 ```
 
-### 6. 区间与数列
+### 5. 区间与数列
 
-#### 6.1 区间（Range）
+#### 5.1 区间（Range）
 
 ```kotlin
 // 闭区间
@@ -904,7 +852,7 @@ val range5 = 1..10 step 2  // 1, 3, 5, 7, 9
 val range6 = 10 downTo 1 step 3  // 10, 7, 4, 1
 ```
 
-#### 6.2 区间操作
+#### 5.2 区间操作
 
 ```kotlin
 val range = 1..100
@@ -926,7 +874,7 @@ ch in 'A'..'Z'      // false
 (1..10).step(3)     // 1, 4, 7, 10
 ```
 
-#### 6.3 数列（Progression）
+#### 5.3 数列（Progression）
 
 区间本质上是数列的实现，数列定义了 `first`、`last` 和 `step`：
 
@@ -939,7 +887,7 @@ val progression = IntProgression.fromClosedRange(1, 10, 3)
 val list = (1..10 step 2).toList()  // [1, 3, 5, 7, 9]
 ```
 
-### 7. 类型检查与转换
+### 6. 类型检查与转换
 
 ```kotlin
 // is 和 !is 操作符

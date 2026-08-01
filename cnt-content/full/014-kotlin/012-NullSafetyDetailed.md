@@ -18,6 +18,7 @@ prerequisites:
   - kotlin/类与对象
   - kotlin/属性与字段
 ---
+
 # Kotlin 空安全详解速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -41,74 +42,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述 Kotlin 区分可空类型（`T?`）与不可空类型（`T`）的类型系统设计。
-- 列举四大空安全操作符：安全调用 `?.`、Elvis 运算符 `?:`、非空断言 `!!`、安全转换 `as?`。
-- 背诵智能转换（Smart Casts）的触发条件：`is` 检查、`null` 检查、`when` 分支。
-- 记忆 `lateinit` 与 `lazy` 的语义差异：前者用于 `var` 延迟初始化，后者用于 `val` 惰性求值。
-- 列举平台类型（Platform Type）的表示形式：`String!`、`List<Int!>!`、`Map<String!, Int!>!`。
-- 复述 `filterNotNull`、`mapNotNull`、`forEachNotNull` 三个集合操作函数的签名与用途。
-- 记忆 `requireNotNull`、`checkNotNull` 两个前置条件函数的语义：失败时抛出 `IllegalArgumentException` 与 `IllegalStateException`。
-- 列举 `OrNull` 系列扩展：`firstOrNull`、`lastOrNull`、`getOrNull`、`minOrNull`、`maxOrNull`。
-
-### 1.2 Understand（理解）
-
-- 用自己的语言解释"-billion-dollar mistake"（Tony Hoare 1965 年引入空引用）的历史背景与代价。
-- 解释可空类型在 JVM 字节码层面的表示：通过 `@Nullable` 注解（`org.jetbrains.annotations`）实现，运行时无类型差异。
-- 描述智能转换的实现机制：编译器在控制流图中维护类型细化（Type Narrowing）信息，在安全分支内将 `T?` 细化为 `T`。
-- 阐述平台类型的必要性：Java 代码不携带空安全信息，Kotlin 无法确定其是否可空，因此推迟到使用处决策。
-- 解释 `?.let { ... }` 与 `?.run { ... }` 在空安全处理中的差异：前者通过 `it` 引用，后者通过 `this` 引用。
-- 理解 `?:` 与 `||` 的语义差异：前者用于 null 合并，后者用于布尔或运算。
-- 解释 `lateinit` 的实现：编译器在字段上添加 `@NotNull` 注解，并在 getter 中插入 null 检查（抛出 `UninitializedPropertyAccessException`）。
-- 描述契约（Contract）机制对智能转换的辅助作用：`requireNotNull(x)` 后编译器知道 `x` 不为 null。
-
-### 1.3 Apply（应用）
-
-- 在 API 响应处理中使用 `?.` 链式调用与 `?:` 默认值，优雅处理深层嵌套的 null。
-- 在集合操作中使用 `filterNotNull`、`mapNotNull` 过滤 null 元素，得到非空类型集合。
-- 使用 `requireNotNull` 与 `?:` 配合，实现函数前置参数校验与状态检查。
-- 使用 `lateinit` 实现 Android `Activity` 的 `ViewBinding` 延迟初始化。
-- 使用 `safeLet`、`zipValues` 等自定义扩展，处理多个可空值的同时非空逻辑。
-- 在 Java 互操作场景中显式标注 `@Nullable` / `@NotNull`，消除平台类型歧义。
-- 使用 `sealed class` + `Nothing` 表示"不可能有值"的分支，借助编译器穷尽性检查。
-
-### 1.4 Analyze（分析）
-
-- 反编译 Kotlin 代码，分析 `?.` 在字节码中等价于 `if (x != null) f(x) else null` 的实现。
-- 对比 `lateinit var` 与 `by lazy { }` 在字节码层面的差异：前者是字段 + null 检查，后者是 `Lazy` 对象 + 双重检查锁。
-- 分析智能转换在复杂控制流中的限制：跨函数、跨线程、`val` vs `var` 的差异。
-- 解构平台类型的传播规则：`String!` 传给 Kotlin 函数时，按目标类型推断（`String` 或 `String?`）。
-- 分析 `contract` 的实现原理：通过 `callsInPlace`、`returns` 等契约告知编译器控制流信息。
-
-### 1.5 Evaluate（评价）
-
-- 评价 Kotlin 选择"类型系统层"而非"运行时检查"实现空安全的设计权衡。
-- 评价 `!!` 操作符的存在价值：是"逃生舱"还是"代码异味"？
-- 评价平台类型的设计：是"实用性妥协"还是"类型安全漏洞"？
-- 评估 `lateinit` 的设计：相比 `lazy`，它的不可空保证较弱，是否值得引入？
-- 评价智能转换的语义限制：在多线程场景下智能转换可能失效，是否过于宽松？
-- 评估 `Result<T>` 类型在空安全中的角色：是否应替代 `T?` 用于"可能失败"的场景？
-
-### 1.6 Create（创造）
-
-- 设计并实现一个完整的"可空值组合器"（Nullable Combinator）：支持 `map2`、`map3`、`flatMap` 等高阶操作。
-- 设计一个基于 `sealed class` 的 `Optional<T>` 类型，提供 `map`、`flatMap`、`filter`、`getOrElse` 操作。
-- 实现一个"防御式 Java 互操作层"：自动将平台类型转换为可空类型，并提供 `requireNotNull` 包装。
-- 撰写一份团队空安全规范：何时用 `lateinit`、何时用 `lazy`、何时用 `T?`、何时禁用 `!!`。
-- 设计一个基于契约的自定义智能转换函数：`fun <T> T?.requireNonNull(): T` 在调用后使编译器知道 `this` 非 null。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：十亿美元的错误
+### 1.1 问题背景：十亿美元的错误
 
 1965 年，Tony Hoare 在设计 ALGOL W 时引入了"空引用"（Null Reference）概念。他后来在 2009 年的 QCon 演讲中将其称为"my billion-dollar mistake"：
 
@@ -128,7 +64,7 @@ Kotlin 的设计目标：
 - **Java 互操作**：通过平台类型平滑过渡，不破坏既有 Java 生态。
 - **零开销**：在 JVM 平台不增加运行时开销，仅依赖注解与编译器检查。
 
-### 2.2 学术背景：Option 类型与类型系统
+### 1.2 学术背景：Option 类型与类型系统
 
 Kotlin 空安全的思想根植于函数式编程与类型理论：
 
@@ -144,7 +80,7 @@ Kotlin 的设计选择：
 - **操作符 `?.` / `?:`**：借鉴 Groovy 的安全导航运算符。
 - **不引入 Monad**：与 Scala/Haskell 不同，Kotlin 不强制 `Option` 作为容器类型，保持 `T?` 与 `T` 的高度互操作。
 
-### 2.3 Kotlin 1.0（2016）：空安全初版
+### 1.3 Kotlin 1.0（2016）：空安全初版
 
 Kotlin 1.0 引入完整的空安全类型系统：
 
@@ -166,7 +102,7 @@ val length: Int = name?.length ?: 0  // Elvis
 5. `lateinit var`：延迟初始化的不可空属性。
 6. 集合的 `filterNotNull`、`mapNotNull` 扩展。
 
-### 2.4 Kotlin 1.1（2017）：契约预览与 provideDelegate
+### 1.4 Kotlin 1.1（2017）：契约预览与 provideDelegate
 
 Kotlin 1.1 引入了 `provideDelegate` 运算符（详见[委托属性](./委托属性.md)），间接改进了空安全：
 
@@ -187,7 +123,7 @@ fun requireNotNull(x: T?): T {
 }
 ```
 
-### 2.5 Kotlin 1.2-1.3（2018）：契约稳定与 KMP
+### 1.5 Kotlin 1.2-1.3（2018）：契约稳定与 KMP
 
 Kotlin 1.3 将契约机制稳定化，并扩展到标准库：
 
@@ -196,7 +132,7 @@ Kotlin 1.3 将契约机制稳定化，并扩展到标准库：
 3. **`assert` 契约**：断言后编译器细化类型。
 4. **KMP 一致性**：JVM、JS、Native 平台的空安全行为完全一致。
 
-### 2.6 Kotlin 1.4-1.5（2020-2021）：跨平台空安全改进
+### 1.6 Kotlin 1.4-1.5（2020-2021）：跨平台空安全改进
 
 Kotlin 1.4-1.5 在跨平台空安全方面有显著改进：
 
@@ -204,7 +140,7 @@ Kotlin 1.4-1.5 在跨平台空安全方面有显著改进：
 2. **`Enum.entries`**：替代 `values()`，避免数组拷贝。
 3. **`orEmpty` 系列扩展**：`String?.orEmpty()`、`Collection<T>?.orEmpty()`。
 
-### 2.7 Kotlin 1.6-1.7（2021-2022）：K2 与智能转换优化
+### 1.7 Kotlin 1.6-1.7（2021-2022）：K2 与智能转换优化
 
 Kotlin 1.6-1.7 的 K2 编译器预览对智能转换进行了优化：
 
@@ -212,7 +148,7 @@ Kotlin 1.6-1.7 的 K2 编译器预览对智能转换进行了优化：
 2. **跨函数智能转换**：K2 能识别 `requireNotNull`、`checkNotNull` 的契约。
 3. **更友好的错误信息**：K2 能精确指出智能转换失败的原因。
 
-### 2.8 Kotlin 1.8-1.9（2023）：与 JSpecify 集成
+### 1.8 Kotlin 1.8-1.9（2023）：与 JSpecify 集成
 
 Kotlin 1.8-1.9 与 JSpecify（Java 标准空安全注解）深度集成：
 
@@ -220,7 +156,7 @@ Kotlin 1.8-1.9 与 JSpecify（Java 标准空安全注解）深度集成：
 2. **类型参数级空安全**：`List<@Nullable String>` 与 `List<String>` 区分。
 3. **跨模块空安全**：KMP 项目中可空类型信息在模块间传递。
 
-### 2.9 Kotlin 2.0（2024 年 5 月）：K2 全面成熟
+### 1.9 Kotlin 2.0（2024 年 5 月）：K2 全面成熟
 
 Kotlin 2.0 的 K2 编译器对空安全进行了全面优化：
 
@@ -229,7 +165,7 @@ Kotlin 2.0 的 K2 编译器对空安全进行了全面优化：
 3. **跨模块空安全检查**：K2 在编译时检查跨模块的可空类型一致性。
 4. **更友好的平台类型警告**：K2 能精确指出平台类型的风险点。
 
-### 2.10 JetBrains 的设计哲学
+### 1.10 JetBrains 的设计哲学
 
 JetBrains 在设计 Kotlin 空安全时遵循了以下哲学：
 
@@ -240,7 +176,7 @@ JetBrains 在设计 Kotlin 空安全时遵循了以下哲学：
 5. **零运行时开销**：JVM 上不增加额外的 null 检查字节码（除 `lateinit` 与 `!!`）。
 6. **可读性**：`?.` 与 `?:` 比 `Optional.flatMap` 更接近"自然语言"。
 
-### 2.11 时间线总览
+### 1.11 时间线总览
 
 ```
 1965  ALGOL W — Tony Hoare 引入空引用（"十亿美元的错误"）
@@ -259,9 +195,9 @@ JetBrains 在设计 Kotlin 空安全时遵循了以下哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类型系统的空安全扩展
+### 2.1 类型系统的空安全扩展
 
 设 $\tau$ 为 Kotlin 的类型集合。Kotlin 在 $\tau$ 上定义可空类型构造器 $?$：
 
@@ -283,7 +219,7 @@ $$
 
 即 $T$ 是 $T?$ 的子类型。任何 $T$ 类型的值都可以赋给 $T?$ 类型的变量，反之不行。
 
-### 3.2 Null 类型
+### 2.2 Null 类型
 
 `Null` 是 Kotlin 类型系统的"底层类型"（Bottom Type），记作 `Nothing?`：
 
@@ -299,7 +235,7 @@ $$
 
 这意味着 `null` 可以赋给任何可空类型 $T?$，但不能赋给不可空类型 $T$。
 
-### 3.3 子类型关系的形式化
+### 2.3 子类型关系的形式化
 
 Kotlin 的子类型关系 $\sqsubseteq$ 在引入可空性后变为：
 
@@ -315,7 +251,7 @@ $$
 \text{String} \sqsubseteq \text{String?}, \quad \text{String?} \not\sqsubseteq \text{String}
 $$
 
-### 3.4 安全调用操作符 `?.`
+### 2.4 安全调用操作符 `?.`
 
 安全调用操作符的形式化定义：
 
@@ -341,7 +277,7 @@ $$
 
 返回类型为 $R?$，其中 $R$ 是 `method` 的返回类型。
 
-### 3.5 Elvis 运算符 `?:`
+### 2.5 Elvis 运算符 `?:`
 
 Elvis 运算符的形式化定义：
 
@@ -367,7 +303,7 @@ $$
 
 返回类型为 $T$，即不可空。
 
-### 3.6 非空断言操作符 `!!`
+### 2.6 非空断言操作符 `!!`
 
 非空断言的形式化定义：
 
@@ -384,7 +320,7 @@ $$
 
 `!!` 是"逃生舱"，将可空类型强制转换为不可空类型，但代价是可能的运行时 NPE。
 
-### 3.7 安全转换操作符 `as?`
+### 2.7 安全转换操作符 `as?`
 
 安全转换的形式化定义：
 
@@ -401,7 +337,7 @@ $$
 
 返回类型为 $U?$，转换失败时返回 `null` 而非抛出 `ClassCastException`。
 
-### 3.8 智能转换（Smart Casts）
+### 2.8 智能转换（Smart Casts）
 
 智能转换的形式化定义涉及控制流分析（CFA）。设 $\Gamma$ 为类型环境，$P$ 为谓词（如 `is`、`!= null`）：
 
@@ -423,7 +359,7 @@ $$
 2. **作用域内**：智能转换仅在控制流分支内有效。
 3. **无副作用**：检查与使用之间变量未被重新赋值。
 
-### 3.9 平台类型（Platform Types）
+### 2.9 平台类型（Platform Types）
 
 平台类型的形式化定义：
 
@@ -440,7 +376,7 @@ $$
 3. **传递给 Kotlin 函数**：按目标参数类型推断。
 4. **链式调用**：`java.getList().size` 的类型是 `Int!`，传播平台类型。
 
-### 3.10 lateinit 的形式化
+### 2.10 lateinit 的形式化
 
 `lateinit var` 的形式化定义：
 
@@ -459,7 +395,7 @@ x.\text{value} & \text{if initialized} \\
 \end{cases}
 $$
 
-### 3.11 契约（Contracts）的形式化
+### 2.11 契约（Contracts）的形式化
 
 契约机制允许函数告知编译器关于参数或控制流的信息：
 
@@ -489,7 +425,7 @@ fun process(x: String?) {
 }
 ```
 
-### 3.12 JVM 字节码层面的空安全
+### 2.12 JVM 字节码层面的空安全
 
 在 JVM 字节码层面，`T` 与 `T?` 没有运行时差异（都是引用类型）。空安全通过以下机制实现：
 
@@ -526,9 +462,9 @@ String result = x;
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 子类型关系的代数性质
+### 3.1 子类型关系的代数性质
 
 Kotlin 的可空类型构造器 $?$ 满足以下代数性质：
 
@@ -543,7 +479,7 @@ $$
 T?? = (T \cup \{\text{Null}\})? = (T \cup \{\text{Null}\}) \cup \{\text{Null}\} = T \cup \{\text{Null}\} = T?
 $$
 
-### 4.2 智能转换的正确性证明
+### 3.2 智能转换的正确性证明
 
 智能转换的核心是控制流分析（CFA）。考虑：
 
@@ -568,7 +504,7 @@ $$
 \frac{\Gamma \vdash x : \text{String?} \quad \Gamma \vdash x \neq \text{null}}{\Gamma \vdash x : \text{String}} \text{ (SmartCast)}
 $$
 
-### 4.3 智能转换的失效场景
+### 3.3 智能转换的失效场景
 
 智能转换在以下场景失效：
 
@@ -594,7 +530,7 @@ class Example {
 
 编译器保守地认为 `var` 属性在 `if` 检查与使用之间可能被其他线程修改，因此不应用智能转换。
 
-### 4.4 平台类型的传播规则
+### 3.4 平台类型的传播规则
 
 平台类型 $T!$ 在 Kotlin 代码中的传播遵循以下规则：
 
@@ -624,7 +560,7 @@ $$
 \frac{\Gamma \vdash e : T! \quad \Gamma \vdash \text{target} : U}{\Gamma \vdash e : U \text{ (with runtime check)}} \text{ (AssignToNonNull)}
 $$
 
-### 4.5 `?.` 链式的类型推导
+### 3.5 `?.` 链式的类型推导
 
 考虑：
 
@@ -648,7 +584,7 @@ $$
 
 即链式 `?.` 的结果类型是"所有链节点的可空类型的累积"。任何一节为 `null`，整个表达式为 `null`。
 
-### 4.6 `?:` 与 `?.` 的等价性
+### 3.6 `?:` 与 `?.` 的等价性
 
 `x ?: default` 等价于 `if (x != null) x else default`，也等价于 `x?.let { it } ?: default`（但后者有额外开销）。
 
@@ -660,7 +596,7 @@ $$
 
 编译器对 `?:` 进行优化，避免重复计算 $x$。
 
-### 4.7 `lateinit` 与 `lazy` 的字节码对比
+### 3.7 `lateinit` 与 `lazy` 的字节码对比
 
 `lateinit var x: String` 的字节码（简化）：
 
@@ -705,7 +641,7 @@ public String getX() {
 | 性能 | 直接字段访问 | 委托调用 |
 | 适用场景 | 已知初始化时机 | 惰性求值 |
 
-### 4.8 契约机制的实现原理
+### 3.8 契约机制的实现原理
 
 契约通过 `kotlin.contracts` 包实现。`requireNotNull` 的源码（简化）：
 
@@ -742,7 +678,7 @@ $$
 \text{After call: } \Gamma, x : \text{String?} \vdash x \neq \text{null} \implies \Gamma, x : \text{String}
 $$
 
-### 4.9 `Result<T>` 与 `T?` 的语义差异
+### 3.9 `Result<T>` 与 `T?` 的语义差异
 
 `Result<T>` 是 Kotlin 标准库提供的"可能失败"类型：
 
@@ -767,7 +703,7 @@ public value class Result<out T> {
 
 `Result` 在"需要区分'无值'与'失败'"的场景下优于 `T?`。
 
-### 4.10 集合的可空性
+### 3.10 集合的可空性
 
 Kotlin 区分四种集合类型：
 
@@ -796,9 +732,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：可空类型与不可空类型
+### 4.1 基础：可空类型与不可空类型
 
 ```bash
 # 编译与运行
@@ -839,7 +775,7 @@ fun main() {
 }
 ```
 
-### 5.2 智能转换：控制流细化
+### 4.2 智能转换：控制流细化
 
 ```bash
 kotlinc -script smart_casts.kts
@@ -899,7 +835,7 @@ fun main() {
 }
 ```
 
-### 5.3 安全调用链：深层嵌套
+### 4.3 安全调用链：深层嵌套
 
 ```bash
 kotlinc -script safe_chain.kts
@@ -936,7 +872,7 @@ fun main() {
 }
 ```
 
-### 5.4 let、run、with 处理空值
+### 4.4 let、run、with 处理空值
 
 ```bash
 kotlinc -script scope_functions.kts
@@ -981,7 +917,7 @@ fun main() {
 }
 ```
 
-### 5.5 集合的可空处理
+### 4.5 集合的可空处理
 
 ```bash
 kotlinc -script nullable_collections.kts
@@ -1029,7 +965,7 @@ fun main() {
 }
 ```
 
-### 5.6 前置条件检查
+### 4.6 前置条件检查
 
 ```bash
 kotlinc -script preconditions.kts
@@ -1089,7 +1025,7 @@ fun main() {
 }
 ```
 
-### 5.7 lateinit 延迟初始化
+### 4.7 lateinit 延迟初始化
 
 ```bash
 kotlinc -script lateinit_demo.kts
@@ -1154,7 +1090,7 @@ fun main() {
 }
 ```
 
-### 5.8 lazy 惰性求值
+### 4.8 lazy 惰性求值
 
 ```bash
 kotlinc -script lazy_demo.kts
@@ -1207,7 +1143,7 @@ fun main() {
 }
 ```
 
-### 5.9 自定义契约
+### 4.9 自定义契约
 
 ```bash
 kotlinc -script custom_contract.kts
@@ -1258,7 +1194,7 @@ fun main() {
 }
 ```
 
-### 5.10 Result 类型：函数式错误处理
+### 4.10 Result 类型：函数式错误处理
 
 ```bash
 kotlinc -script result_type.kts
@@ -1325,7 +1261,7 @@ fun main() {
 }
 ```
 
-### 5.11 Java 互操作：平台类型
+### 4.11 Java 互操作：平台类型
 
 ```bash
 # 假设有 Java 类 JavaService
@@ -1379,7 +1315,7 @@ fun main() {
 // public String getOptionalName() { return null; }
 ```
 
-### 5.12 sealed class 与空安全
+### 4.12 sealed class 与空安全
 
 ```bash
 kotlinc -script sealed_nullable.kts
@@ -1466,7 +1402,7 @@ fun main() {
 }
 ```
 
-### 5.13 多值可空组合：自定义 safeLet
+### 4.13 多值可空组合：自定义 safeLet
 
 ```bash
 kotlinc -script safe_let.kts
@@ -1550,7 +1486,7 @@ fun main() {
 }
 ```
 
-### 5.14 Android 视图绑定
+### 4.14 Android 视图绑定
 
 ```bash
 # Android 项目，假设有 ViewBinding
@@ -1626,7 +1562,7 @@ fun main() {
 }
 ```
 
-### 5.15 数据库实体可空处理
+### 4.15 数据库实体可空处理
 
 ```bash
 kotlinc -script db_entities.kts
@@ -1704,7 +1640,7 @@ fun main() {
 }
 ```
 
-### 5.16 Kotlin 与 Java 互操作最佳实践
+### 4.16 Kotlin 与 Java 互操作最佳实践
 
 ```bash
 # 假设有 Java 类，使用 @Nullable / @NotNull 注解
@@ -1763,9 +1699,9 @@ fun main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Java 的对比
+### 5.1 与 Java 的对比
 
 | 特性 | Java | Kotlin |
 |------|------|--------|
@@ -1796,7 +1732,7 @@ val name: String? = getName()
 name?.let { println(it.length) }
 ```
 
-### 6.2 与 Swift 的对比
+### 5.2 与 Swift 的对比
 
 | 特性 | Swift | Kotlin |
 |------|-------|--------|
@@ -1819,7 +1755,7 @@ if let n = name {
 let length = name?.count ?? 0
 ```
 
-### 6.3 与 C# 的对比
+### 5.3 与 C# 的对比
 
 | 特性 | C# | Kotlin |
 |------|-----|--------|
@@ -1837,7 +1773,7 @@ int? length = name?.Length;
 int safeLength = name?.Length ?? 0;
 ```
 
-### 6.4 与 TypeScript 的对比
+### 5.4 与 TypeScript 的对比
 
 | 特性 | TypeScript | Kotlin |
 |------|-----------|--------|
@@ -1858,7 +1794,7 @@ let safeLength: number = name?.length ?? 0;
 let forced: string = name!;
 ```
 
-### 6.5 与 Rust 的对比
+### 5.5 与 Rust 的对比
 
 | 特性 | Rust | Kotlin |
 |------|------|--------|
@@ -1883,7 +1819,7 @@ if let Some(n) = name {
 }
 ```
 
-### 6.6 与 Go 的对比
+### 5.6 与 Go 的对比
 
 | 特性 | Go | Kotlin |
 |------|-----|--------|
@@ -1908,7 +1844,7 @@ val name = getName()  // 返回 String? 或 Result<String>
 name?.let { /* 使用 */ }
 ```
 
-### 6.7 跨语言对比表
+### 5.7 跨语言对比表
 
 | 语言 | 可空类型 | 语法糖 | 智能转换 | 平台类型 | 强制处理 |
 |------|---------|--------|---------|---------|---------|
@@ -1924,9 +1860,9 @@ name?.let { /* 使用 */ }
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：过度使用 `!!`
+### 6.1 陷阱 1：过度使用 `!!`
 
 **反模式**：
 
@@ -1952,7 +1888,7 @@ val length = getUser()?.name?.length ?: 0
 2. **第三方 API 文档保证**：但应优先用 `requireNotNull`。
 3. **测试代码**：测试中可以使用 `!!` 简化断言。
 
-### 7.2 陷阱 2：`lateinit` 用于可空场景
+### 6.2 陷阱 2：`lateinit` 用于可空场景
 
 **反模式**：
 
@@ -1999,7 +1935,7 @@ class UserController {
 2. **不可空的引用类型**：`lateinit` 不支持 `Int`、`Boolean` 等基本类型。
 3. **需要可变**：`lateinit` 必须是 `var`。
 
-### 7.3 陷阱 3：平台类型未显式处理
+### 6.3 陷阱 3：平台类型未显式处理
 
 **反模式**：
 
@@ -2025,7 +1961,7 @@ val safeName: String = javaService.getName() ?: "default"
 // @NotNull String getRequiredName()
 ```
 
-### 7.4 陷阱 4：智能转换失效
+### 6.4 陷阱 4：智能转换失效
 
 **反模式**：
 
@@ -2074,7 +2010,7 @@ class Example {
 }
 ```
 
-### 7.5 陷阱 5：`?.let` 与智能转换的混淆
+### 6.5 陷阱 5：`?.let` 与智能转换的混淆
 
 **反模式**：
 
@@ -2102,7 +2038,7 @@ fun process(x: String?) {
 }
 ```
 
-### 7.6 陷阱 6：`?:` 优先级问题
+### 6.6 陷阱 6：`?:` 优先级问题
 
 **反模式**：
 
@@ -2122,7 +2058,7 @@ val result = (x ?: "default") + "suffix"
 
 `?:` 的优先级低于 `+`、`-`、`*`、`/`，与 `||` 相同。
 
-### 7.7 陷阱 7：`as?` 与泛型
+### 6.7 陷阱 7：`as?` 与泛型
 
 **反模式**：
 
@@ -2153,7 +2089,7 @@ if (first is String) {
 }
 ```
 
-### 7.8 陷阱 8：`lateinit` 用于基本类型
+### 6.8 陷阱 8：`lateinit` 用于基本类型
 
 **反模式**：
 
@@ -2171,7 +2107,7 @@ class Example {
 }
 ```
 
-### 7.9 陷阱 9：`requireNotNull` 后的智能转换
+### 6.9 陷阱 9：`requireNotNull` 后的智能转换
 
 **反模式**：
 
@@ -2196,7 +2132,7 @@ class Example {
 }
 ```
 
-### 7.10 陷阱 10：`Result` 的误用
+### 6.10 陷阱 10：`Result` 的误用
 
 **反模式**：
 
@@ -2226,7 +2162,7 @@ fun findUser(id: String): FindResult {
 }
 ```
 
-### 7.11 陷阱 11：`forEach` 中的 null 检查
+### 6.11 陷阱 11：`forEach` 中的 null 检查
 
 **反模式**：
 
@@ -2250,7 +2186,7 @@ names.forEach { name ->
 names.filterNotNull().forEach { println(it.length) }
 ```
 
-### 7.12 陷阱 12：契约的滥用
+### 6.12 陷阱 12：契约的滥用
 
 **反模式**：
 
@@ -2276,7 +2212,7 @@ fun process(x: String?) {
 
 **最佳实践**：契约应与函数实现一致，且用于表达编译器无法自动推断的事实。
 
-### 7.13 最佳实践总结
+### 6.13 最佳实践总结
 
 1. **优先使用 `?.` 与 `?:`**，避免 `!!`。
 2. **`lateinit` 用于确定会初始化的场景**，否则用 `lazy` 或可空类型。
@@ -2291,11 +2227,11 @@ fun process(x: String?) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 团队规范建议
+### 7.1 团队规范建议
 
-#### 8.1.1 空安全规范
+#### 7.1.1 空安全规范
 
 ```kotlin
 // 规范示例
@@ -2317,7 +2253,7 @@ class UserService {
 }
 ```
 
-#### 8.1.2 Detekt 规则
+#### 7.1.2 Detekt 规则
 
 ```yaml
 # detekt.yml
@@ -2341,7 +2277,7 @@ style:
     active: false
 ```
 
-#### 8.1.3 团队约定
+#### 7.1.3 团队约定
 
 ```markdown
 # 空安全团队规范
@@ -2362,7 +2298,7 @@ style:
 - 使用 `safeLet` 处理多个可空值的同时非空
 ```
 
-### 8.2 单元测试中的空安全
+### 7.2 单元测试中的空安全
 
 ```kotlin
 // UserServiceTest.kt
@@ -2403,9 +2339,9 @@ class UserServiceTest {
 }
 ```
 
-### 8.3 调试空安全
+### 7.3 调试空安全
 
-#### 8.3.1 检查平台类型
+#### 7.3.1 检查平台类型
 
 ```kotlin
 // 使用 ::returnType 检查类型
@@ -2416,7 +2352,7 @@ fun debugPlatformType() {
 }
 ```
 
-#### 8.3.2 启用严格空检查
+#### 7.3.2 启用严格空检查
 
 ```kotlin
 // 在 build.gradle.kts 中启用严格空检查
@@ -2430,7 +2366,7 @@ kotlin {
 }
 ```
 
-### 8.4 Java 互操作的空安全加固
+### 7.4 Java 互操作的空安全加固
 
 ```kotlin
 // 为 Java API 创建 Kotlin 包装层
@@ -2450,7 +2386,7 @@ class SafeJavaService(private val delegate: JavaService) {
 fun JavaService.safeGetName(): String? = this.getName()
 ```
 
-### 8.5 与 Kotlin 协程集成
+### 7.5 与 Kotlin 协程集成
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -2485,7 +2421,7 @@ class UserViewModel(private val service: UserService) {
 }
 ```
 
-### 8.6 与 Flow 集成
+### 7.6 与 Flow 集成
 
 ```kotlin
 import kotlinx.coroutines.flow.*
@@ -2510,7 +2446,7 @@ class UserService {
 }
 ```
 
-### 8.7 与 KMP 集成
+### 7.7 与 KMP 集成
 
 ```kotlin
 // commonMain
@@ -2535,9 +2471,9 @@ fun getFormattedDate(): String {
 }
 ```
 
-### 8.8 性能考虑
+### 7.8 性能考虑
 
-#### 8.8.1 `?.` 的性能开销
+#### 7.8.1 `?.` 的性能开销
 
 ```kotlin
 // 源码：x?.length
@@ -2555,7 +2491,7 @@ fun getFormattedDate(): String {
 // 复杂逻辑：用 ?.let（可读性更好）
 ```
 
-#### 8.8.2 `lateinit` 与 `lazy` 的性能
+#### 7.8.2 `lateinit` 与 `lazy` 的性能
 
 ```kotlin
 // lateinit：直接字段访问，仅初始化前有 null 检查
@@ -2583,7 +2519,7 @@ class Example3 {
 }
 ```
 
-#### 8.8.3 集合操作的性能
+#### 7.8.3 集合操作的性能
 
 ```kotlin
 // filterNotNull：O(n) 遍历
@@ -2597,7 +2533,7 @@ val lengths = list.mapNotNull { it?.length }  // [1, 1, 1]
 val lengths2 = list.filterNotNull().map { it.length }  // 两次遍历
 ```
 
-### 8.9 Detekt 规则与空安全
+### 7.9 Detekt 规则与空安全
 
 ```yaml
 # detekt.yml（节选）
@@ -2623,7 +2559,7 @@ style:
     active: false
 ```
 
-### 8.10 与 Spring Boot 集成
+### 7.10 与 Spring Boot 集成
 
 ```kotlin
 // Spring Boot 服务端空安全
@@ -2666,9 +2602,9 @@ class UserEntity(
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究 1：API 响应处理
+### 8.1 案例研究 1：API 响应处理
 
 **场景**：处理一个嵌套的 JSON API 响应。
 
@@ -2762,7 +2698,7 @@ fun main() {
 }
 ```
 
-### 9.2 案例研究 2：数据库实体映射
+### 8.2 案例研究 2：数据库实体映射
 
 **场景**：将数据库行映射到 Kotlin 实体。
 
@@ -2834,7 +2770,7 @@ fun main() {
 }
 ```
 
-### 9.3 案例研究 3：Android Bundle 恢复
+### 8.3 案例研究 3：Android Bundle 恢复
 
 **场景**：在 Android `Activity` 中保存与恢复状态。
 
@@ -2904,7 +2840,7 @@ fun main() {
 }
 ```
 
-### 9.4 案例研究 4：KMP 跨平台配置
+### 8.4 案例研究 4：KMP 跨平台配置
 
 **场景**：跨平台配置管理。
 
@@ -2963,7 +2899,7 @@ fun main() {
 }
 ```
 
-### 9.5 案例研究 5：响应式表单验证
+### 8.5 案例研究 5：响应式表单验证
 
 **场景**：表单字段的实时验证。
 
@@ -3045,7 +2981,7 @@ fun main() {
 }
 ```
 
-### 9.6 案例研究 6：缓存委托（TTL）
+### 8.6 案例研究 6：缓存委托（TTL）
 
 **场景**：使用委托属性实现带 TTL 的缓存。
 
@@ -3121,7 +3057,7 @@ fun main() {
 }
 ```
 
-### 9.7 案例研究 7：JSON 解析
+### 8.7 案例研究 7：JSON 解析
 
 **场景**：解析 JSON 字符串到对象。
 
@@ -3199,7 +3135,7 @@ fun main() {
 }
 ```
 
-### 9.8 案例研究 8：Android ViewModel 与 LiveData
+### 8.8 案例研究 8：Android ViewModel 与 LiveData
 
 ```kotlin
 // AndroidViewModel.kt（示意）
@@ -3250,7 +3186,7 @@ fun main() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：以下代码的输出是什么？
 
@@ -3293,7 +3229,7 @@ println(list.mapNotNull { it?.length })
 [1, 1, 1]
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：以下代码为什么编译错误？如何修复？
 
@@ -3397,7 +3333,7 @@ fun main() {
 }
 ```
 
-### 10.4 分析题
+### 9.4 分析题
 
 **习题 8**：分析以下代码的性能问题，并给出优化方案。
 
@@ -3419,7 +3355,7 @@ fun process(users: List<User?>): List<Int> {
 }
 ```
 
-### 10.5 设计题
+### 9.5 设计题
 
 **习题 9**：设计一个 `Optional<T>` 类型，提供 `map`、`flatMap`、`filter`、`getOrElse` 操作。
 
@@ -3526,9 +3462,9 @@ fun main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 1. JetBrains. "Null Safety." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/null-safety.html.
 
@@ -3540,7 +3476,7 @@ fun main() {
 
 5. JetBrains. "lateinit properties." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/properties.html#late-initialized-properties-and-variables.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 6. Hoare, Tony. "Null References: The Billion Dollar Mistake." *QCon*, 2009.
 
@@ -3552,13 +3488,13 @@ fun main() {
 
 10. Abadi, Martín, et al. "A Theory of Objects." *Springer-Verlag*, 1996.
 
-### 11.3 KEEP 提案
+### 10.3 KEEP 提案
 
 11. JetBrains. "KEEP-104: Contracts." *Kotlin Evolution and Enhancement Process*, 2018. https://github.com/Kotlin/KEEP/blob/master/proposals/contracts.md.
 
 12. JetBrains. "KEEP-97: Sealed Classes." *Kotlin Evolution and Enhancement Process*, 2017. https://github.com/Kotlin/KEEP/blob/master/proposals/sealed-class-inheritance.md.
 
-### 11.4 跨语言参考
+### 10.4 跨语言参考
 
 13. Apple. "The Swift Programming Language: Optionals." *Swift Documentation*, 2024. https://docs.swift.org/swift-book/LanguageGuide/TheBasics.html.
 
@@ -3568,7 +3504,7 @@ fun main() {
 
 16. Rust Team. "The Rust Programming Language: Option." *Rust Documentation*, 2024. https://doc.rust-lang.org/std/option/.
 
-### 11.5 工程实践
+### 10.5 工程实践
 
 17. JetBrains. "Coding Conventions." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/coding-conventions.html.
 
@@ -3578,19 +3514,19 @@ fun main() {
 
 20. JetBrains. "JetBrains Annotations." *GitHub Repository*, 2024. https://github.com/JetBrains/java-annotations.
 
-### 11.6 KMP 与跨平台
+### 10.6 KMP 与跨平台
 
 21. JetBrains. "Kotlin Multiplatform." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/multiplatform.html.
 
 22. JetBrains. "Kotlin/JVM, Kotlin/JS, Kotlin/Native interop." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/multiplatform.html.
 
-### 11.7 性能与优化
+### 10.7 性能与优化
 
 23. Shin, Sihyeon. "Kotlin Performance: Understanding the JVM bytecode." *Medium*, 2023. https://medium.com/kotlin-performance.
 
 24. JetBrains. "K2 Compiler." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/whatsnew20.html.
 
-### 11.8 测试
+### 10.8 测试
 
 25. Kotlin Test Team. "kotlin.test." *Kotlin Documentation*, 2024. https://kotlinlang.org/api/latest/kotlin.test/.
 
@@ -3598,9 +3534,9 @@ fun main() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 - **协程与空安全**：见[协程调度器与上下文](./协程调度器与上下文.md)与[协程异常处理](./协程异常处理.md)
 - **委托属性**：见[委托属性](./委托属性.md)，深入 `lazy`、`observable`、`vetoable` 的字节码实现
@@ -3608,7 +3544,7 @@ fun main() {
 - **DSL 设计**：见[DSL与领域特定语言](./DSL与领域特定语言.md)，结合空安全构建类型安全的 DSL
 - **扩展函数**：见[扩展函数](./扩展函数.md)，为可空类型添加扩展
 
-### 12.2 相关项目
+### 11.2 相关项目
 
 - **Arrow.kt**：函数式编程库，提供 `Option`、`Either`、`Try` 等类型
   - https://arrow-kt.io/
@@ -3622,7 +3558,7 @@ fun main() {
 - **Ktor**：Web 框架，使用空安全 API
   - https://ktor.io/
 
-### 12.3 书籍推荐
+### 11.3 书籍推荐
 
 - **"Kotlin in Action"** - Dmitry Jemerov, Svetlana Isakova
   - 第 6 章 "Nullability" 深入讲解空安全
@@ -3636,7 +3572,7 @@ fun main() {
 - **"The Joy of Kotlin"** - Pierre-Yves Saumont
   - 函数式视角下的空安全与 `Result` 类型
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **Kotlin Slack**：https://kotlinlang.slack.com/
   - `#nullability` 频道讨论空安全问题
@@ -3647,14 +3583,14 @@ fun main() {
 - **Stack Overflow**：https://stackoverflow.com/questions/tagged/kotlin+nullpointerexception
   - Kotlin 空安全常见问题
 
-### 12.5 实践项目
+### 11.5 实践项目
 
 - **Android 应用**：实践 `lateinit` 与 `ViewBinding` 的延迟初始化
 - **Spring Boot 服务**：实践 `@Nullable` 注解与 Kotlin 互操作
 - **KMP 库**：实现跨平台的配置管理，使用空安全 API
 - **DSL 设计**：构建 HTML/SQL 构建器，使用 `sealed class` 表示"不可为空"的约束
 
-### 12.6 相关 Kotlin 文档
+### 11.6 相关 Kotlin 文档
 
 - [Kotlin 与 Java 互操作](./Kotlin与Java互操作.md)
 - [扩展函数](./扩展函数.md)

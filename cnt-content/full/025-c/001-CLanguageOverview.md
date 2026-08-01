@@ -14,6 +14,7 @@ related:
 prerequisites: []
 ---
 
+
 # C 语言概述
 
 > "C is quirky, flawed, and an enormous success." — Dennis M. Ritchie
@@ -32,87 +33,17 @@ prerequisites: []
 
 ---
 
-## 1. 学习目标
-
-本节以 Bloom 分类法（Bloom's Taxonomy）组织学习目标，由低阶认知（记忆、理解）逐步过渡到高阶认知（评价、创造），便于读者自评掌握程度。
-
-### 1.1 Bloom 分类法回顾
-
-Bloom 分类法将认知过程分为六个层次：
-
-$$
-\text{Remember} \to \text{Understand} \to \text{Apply} \to \text{Analyze} \to \text{Evaluate} \to \text{Create}
-$$
-
-| 层次 | 中文名 | 关键词 | 示例问题 |
-| --- | --- | --- | --- |
-| Remember | 记忆 | list, define, name | 列出 C89 的主要新增特性 |
-| Understand | 理解 | explain, summarize | 解释 C 语言的"接近金属"哲学 |
-| Apply | 应用 | implement, use | 编写一个 Hello World 程序 |
-| Analyze | 分析 | compare, distinguish | 比较 C 与 Rust 在内存安全上的差异 |
-| Evaluate | 评价 | justify, critique | 评判在嵌入式场景下选择 C 的合理性 |
-| Create | 创造 | design, formulate | 设计一个跨平台 C 项目的目录结构 |
-
-### 1.2 Remember 层目标
-
-完成本章后，读者应能够：
-
-1. **列出** C 语言诞生的时间（1972 年）、地点（Bell Labs）、设计者（Dennis Ritchie）。
-2. **命名** C 语言标准的六个主要版本：K&R C、C89/C90、C99、C11、C17/C18、C23。
-3. **定义** 以下术语：translation unit、preprocessing token、linkage、storage duration、undefined behavior (UB)。
-4. **列举** C 语言 32 个基本关键字（C89）以及 C99/C11/C23 新增关键字。
-
-### 1.3 Understand 层目标
-
-1. **解释** C 语言"trust the programmer"设计哲学的含义及其代价。
-2. **总结** C 语言标准化的动因与过程（ANSI X3J11 → ISO/IEC JTC1/SC22/WG14）。
-3. **说明** C 程序从源代码到可执行文件的四个阶段：预处理、编译、汇编、链接。
-4. **描述** C 语言的内存模型（abstract machine）与执行线程（execution thread）概念。
-
-### 1.4 Apply 层目标
-
-1. **编写** 一个完整的 Hello World 程序并使用 GCC/Clang 编译运行。
-2. **使用** `gcc -E/-S/-c` 选项分别观察预处理、汇编、目标文件输出。
-3. **运用** `printf`、`sizeof`、`_Static_assert` 等工具验证编译期与运行期行为。
-4. **构建** 一个最小 Makefile 与 CMakeLists.txt 完成多文件编译。
-
-### 1.5 Analyze 层目标
-
-1. **比较** C 与 C++、Rust、Go、Zig 在类型系统、内存管理、并发模型上的差异。
-2. **区分** C 标准中定义的三类行为：well-defined、implementation-defined、undefined。
-3. **剖析** 一个包含 UB 的简单程序并预测其在不同优化级别下的行为。
-4. **对照** ISO/IEC 9899 条款与编译器实现行为，识别非可移植代码。
-
-### 1.6 Evaluate 层目标
-
-1. **评判** 在以下场景中选择 C 语言的合理性：
-   - 实时嵌入式系统（如汽车 ECU）
-   - 操作系统内核
-   - 高频交易系统
-   - Web 后端服务
-2. **评估** 现代 C（C11/C17/C23）相对 K&R C 的安全性提升。
-3. **论证** 在团队中推行静态分析（clang-tidy、cppcheck）的投入产出比。
-
-### 1.7 Create 层目标
-
-1. **设计** 一个跨平台（Linux/macOS/Windows）C 项目的目录结构与构建系统。
-2. **制定** 一个团队的 C 编码规范（命名、注释、错误处理、UB 规避）。
-3. **构造** 一个最小化的单元测试框架（基于 `assert` + `CMake CTest`）。
-4. **撰写** 一份技术决策报告，论证选择 C 语言实现某子系统（如协议解析器）的依据。
-
----
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 C 语言并非凭空诞生，而是为了解决一个具体工程问题：用可移植的高级语言重写 UNIX 操作系统。理解这段历史，对于理解 C 语言的设计取舍至关重要。
 
-### 2.1 前史：BCPL 与 B 语言
+### 1.1 前史：BCPL 与 B 语言
 
-#### 2.1.1 BCPL（1967）
+#### 1.1.1 BCPL（1967）
 
 Martin Richards 在剑桥大学设计了 BCPL（Basic Combined Programming Language），这是早期"无类型"语言之一。BCPL 中所有数据都是机器字（word），程序员必须自行解释每个字的含义。BCPL 的核心思想是"代码即数据"，影响后续 Lisp 系语言与 C 语言中的指针模型。
 
-#### 2.1.2 B 语言（1969）
+#### 1.1.2 B 语言（1969）
 
 Ken Thompson 在 1969 年为 DEC PDP-7 设计了 B 语言，用于早期 UNIX 原型。B 语言继承了 BCPL 的无类型思想，所有变量都是机器字。在 PDP-7（18 位字长）上，B 语言工作良好，但当 UNIX 移植到 DEC PDP-11（16 位字长、按字节寻址）时，B 语言的局限暴露无遗：
 
@@ -120,7 +51,7 @@ Ken Thompson 在 1969 年为 DEC PDP-7 设计了 B 语言，用于早期 UNIX �
 - **字寻址模型**：B 假设机器按字寻址，而 PDP-11 按字节寻址。
 - **性能差**：B 解释执行，速度远低于汇编。
 
-### 2.2 C 语言的诞生（1972）
+### 1.2 C 语言的诞生（1972）
 
 1972 年，Dennis Ritchie 在 Bell Labs 设计了"NB"（New B），随后演化为 C 语言。C 语言的关键创新在于：
 
@@ -131,7 +62,7 @@ Ken Thompson 在 1969 年为 DEC PDP-7 设计了 B 语言，用于早期 UNIX �
 
 C 语言的第一个里程碑应用是 1973 年用 C 重写 UNIX 内核（约 10,000 行 C 代码），这极大提升了 UNIX 的可移植性，并确立了 C 作为系统编程语言的地位。
 
-### 2.3 K&R C 时代（1978–1989）
+### 1.3 K&R C 时代（1978–1989）
 
 1978 年，Brian Kernighan 与 Dennis Ritchie 合著《The C Programming Language》（俗称 K&R）。这本书既是教程又是事实标准，被称为"K&R C"。K&R C 时代的特点：
 
@@ -140,11 +71,11 @@ C 语言的第一个里程碑应用是 1973 年用 C 重写 UNIX 内核（约 10
 - **未定义行为宽容**：编译器对 UB 较少诊断。
 - **标准库贫乏**：仅包含基本 I/O、字符串、数学库。
 
-### 2.4 标准化演进（C89/C90 至 C23）
+### 1.4 标准化演进（C89/C90 至 C23）
 
 C 语言的标准化由 ANSI X3J11 委员会于 1983 年启动，1989 年发布 ANSI C（C89），1990 年 ISO 采纳为 ISO/IEC 9899:1990（C90）。C89 与 C90 在技术内容上完全一致，仅文档编号不同。
 
-#### 2.4.1 C89/C90（1989/1990）
+#### 1.4.1 C89/C90（1989/1990）
 
 C89 是 C 语言第一个正式标准，奠定后续所有版本的基础。主要新增：
 
@@ -154,7 +85,7 @@ C89 是 C 语言第一个正式标准，奠定后续所有版本的基础。主�
 - **标准库扩展**：`<locale.h>`、`<setjmp.h>`、`<signal.h>`、`<stdarg.h>`。
 - **`struct` 完整语义**：结构体赋值、作为参数传递。
 
-#### 2.4.2 C95（AMD1，1995）
+#### 1.4.2 C95（AMD1，1995）
 
 C95 是 C90 的修订版，新增：
 
@@ -162,7 +93,7 @@ C95 是 C90 的修订版，新增：
 - 三字母词（trigraph）保留但弱化。
 - `<iso646.h>` 提供逻辑运算符宏（`and`、`or`、`not`）。
 
-#### 2.4.3 C99（1999）
+#### 1.4.3 C99（1999）
 
 C99 是一次重要的现代化更新，主要特性：
 
@@ -180,7 +111,7 @@ C99 是一次重要的现代化更新，主要特性：
 | 复合字面量 | `point = (struct Point){.x = 1, .y = 2};` |
 | 指定初始化器 | `struct Point p = {.x = 1, .y = 2};` |
 
-#### 2.4.4 C11（2011）
+#### 1.4.4 C11（2011）
 
 C11 进一步现代化，重点：
 
@@ -193,11 +124,11 @@ C11 进一步现代化，重点：
 - **`char16_t`、`char32_t`**：UTF-16/UTF-32 字符类型。
 - **移除 `gets`**：因缓冲区溢出漏洞。
 
-#### 2.4.5 C17/C18（2018）
+#### 1.4.5 C17/C18（2018）
 
 C17（ISO/IEC 9899:2018）是 C11 的 bug-fix 版本，无新特性，仅修正标准文档中的缺陷与歧义。
 
-#### 2.4.6 C23（2023/2024）
+#### 1.4.6 C23（2023/2024）
 
 C23（ISO/IEC 9899:2024）是 C 语言近 25 年来最大更新，主要特性：
 
@@ -213,7 +144,7 @@ C23（ISO/IEC 9899:2024）是 C 语言近 25 年来最大更新，主要特性�
 - **移除三字母词（trigraph）**。
 - **`auto` 类型推断**（C23 重定义）：`auto x = 42;` 推断为 `int`。
 
-#### 2.4.7 C2y（草案）
+#### 1.4.7 C2y（草案）
 
 C2y 是 C23 之后的下一个标准草案，正在讨论的特性包括：
 
@@ -222,7 +153,7 @@ C2y 是 C23 之后的下一个标准草案，正在讨论的特性包括：
 - 模块化（modules）支持。
 - 改进的错误处理机制。
 
-### 2.5 C 语言标准的哲学
+### 1.5 C 语言标准的哲学
 
 ISO/IEC 9899 在多个条款中阐述了 C 语言的设计哲学，可归纳为五条原则：
 
@@ -234,7 +165,7 @@ ISO/IEC 9899 在多个条款中阐述了 C 语言的设计哲学，可归纳为�
 
 这些哲学造就了 C 语言的灵活与高效，也埋下了 UB 与内存安全的隐患。
 
-### 2.6 时间线总览
+### 1.6 时间线总览
 
 ```mermaid
 timeline
@@ -257,11 +188,11 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节从 ISO/IEC 9899:2024 (C23) 标准的视角，对 C 语言进行形式化定义。这些定义严格而抽象，是理解 C 程序行为的关键。
 
-### 3.1 抽象机器模型
+### 2.1 抽象机器模型
 
 ISO/IEC 9899:2024 §5.1.2.3 定义了 C 语言的"抽象机器"（abstract machine）：
 
@@ -276,7 +207,7 @@ C 程序的语义以"抽象机器上的执行"来定义，而非任何具体硬�
 3. 交互式设备的输入输出（prompt 后等待输入）；
 4. 信号处理函数的执行（在某些约束下）。
 
-### 3.2 翻译单元（Translation Unit）
+### 2.2 翻译单元（Translation Unit）
 
 ISO/IEC 9899:2024 §5.1.1.1 定义翻译单元：
 
@@ -290,7 +221,7 @@ $$
 
 其中 $H$ 是通过 `#include` 引入的头文件集合，$\text{SkippedLines}$ 是被条件编译排除的代码行。
 
-### 3.3 未定义行为（Undefined Behavior, UB）
+### 2.3 未定义行为（Undefined Behavior, UB）
 
 ISO/IEC 9899:2024 §3.4.3 定义 UB：
 
@@ -313,7 +244,7 @@ UB 的可怕之处：编译器有权假设 UB 不发生，并基于此假设做�
 
 形式化记号：定义行为函数 $\mathcal{B}: \text{Program} \times \text{Input} \to \text{Output} \cup \{\bot\}$，其中 $\bot$ 表示 UB（"任意行为"）。一旦 $\mathcal{B}(P, I) = \bot$，则整个程序的输出无意义。
 
-### 3.4 实现定义行为（Implementation-Defined Behavior）
+### 2.4 实现定义行为（Implementation-Defined Behavior）
 
 ISO/IEC 9899:2024 §3.4.1.2 定义实现定义行为：
 
@@ -326,7 +257,7 @@ ISO/IEC 9899:2024 §3.4.1.2 定义实现定义行为：
 - 结构体成员对齐与填充。
 - `char` 默认是 `signed` 还是 `unsigned`。
 
-### 3.5 未指定行为（Unspecified Behavior）
+### 2.5 未指定行为（Unspecified Behavior）
 
 ISO/IEC 9899:2024 §3.4.1 定义未指定行为：
 
@@ -339,7 +270,7 @@ int f(void), g(void);
 int x = f() + g();  // f() 与 g() 的调用顺序未指定
 ```
 
-### 3.6 三类行为对比
+### 2.6 三类行为对比
 
 | 类别 | 标准要求 | 编译器义务 | 示例 |
 | --- | --- | --- | --- |
@@ -348,7 +279,7 @@ int x = f() + g();  // f() 与 g() 的调用顺序未指定
 | Unspecified | 提供选项，无需文档化 | 任意选择 | 函数参数求值顺序 |
 | Undefined | 无要求 | 无约束 | 有符号溢出 |
 
-### 3.7 内存模型
+### 2.7 内存模型
 
 ISO/IEC 9899:2024 §7.13.1 定义了 C11 引入的多线程内存模型：
 
@@ -369,7 +300,7 @@ $$
 
 数据竞争导致 UB，必须通过 mutex、atomic 或 thread join 同步。
 
-### 3.8 类型系统形式化
+### 2.8 类型系统形式化
 
 C 是静态类型语言，每个表达式都有类型。C23 类型系统可形式化为：
 
@@ -383,7 +314,7 @@ $$
 q ::= \text{const} \mid \text{volatile} \mid \text{restrict} \mid \text{\_Atomic}
 $$
 
-### 3.9 链接与存储期
+### 2.9 链接与存储期
 
 ISO/IEC 9899:2024 §6.2.2 定义链接（linkage）：
 
@@ -398,7 +329,7 @@ ISO/IEC 9899:2024 §6.2.4 定义存储期（storage duration）：
 - **自动存储期（automatic storage duration）**：所在代码块执行期间存在。
 - **动态分配存储期（allocated storage duration）**：从 `malloc` 到 `free`。
 
-### 3.10 标准文档结构
+### 2.10 标准文档结构
 
 ISO/IEC 9899:2024 分为以下条款（clause）：
 
@@ -423,9 +354,9 @@ ISO/IEC 9899:2024 分为以下条款（clause）：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 C 程序的执行语义
+### 3.1 C 程序的执行语义
 
 C 语义基于"操作语义"（operational semantics）的简化版本。一个 C 程序的执行可视为状态转换序列：
 
@@ -435,7 +366,7 @@ $$
 
 其中 $\sigma_i$ 是第 $i$ 步的执行状态（包括内存、寄存器、PC、文件描述符等），$P$ 是剩余待执行的程序。
 
-### 4.2 整数表示与溢出
+### 3.2 整数表示与溢出
 
 C 标准规定有符号整数的表示方式为以下三种之一（C23 起为二进制补码）：
 
@@ -457,7 +388,7 @@ $$
 \text{overflow}(a, b) \iff \exists n \in \mathbb{Z}_{<2^{31}}: a + b = n \cdot 2^{32} + r, \; r \notin [-2^{31}, 2^{31}-1]
 $$
 
-### 4.3 指针算术
+### 3.3 指针算术
 
 指针加整数 $k$ 移动 $k \times \text{sizeof}(\tau)$ 字节：
 
@@ -467,7 +398,7 @@ $$
 
 只有当 $p + k$ 指向同一数组（或数组后一位"past-the-end"）时，行为才 well-defined。否则为 UB。
 
-### 4.4 数组到指针的衰减
+### 3.4 数组到指针的衰减
 
 C 标准规定，在大多数表达式中，数组类型会"衰减"（decay）为指向首元素的指针：
 
@@ -485,7 +416,7 @@ $$
 
 但 `sizeof(a) == n \cdot \text{sizeof}(T)`，指针大小为 `sizeof(T*)`。
 
-### 4.5 严格别名规则
+### 3.5 严格别名规则
 
 ISO/IEC 9899:2024 §6.5.7 规定，通过不兼容类型的指针访问对象是 UB。形式化：
 
@@ -499,7 +430,7 @@ $$
 - 所有 `char *` 都可访问任何对象。
 - 通过 `union` 访问成员。
 
-### 4.6 编译期与运行期
+### 3.6 编译期与运行期
 
 C 是静态编译语言，许多决策在编译期完成。区分编译期与运行期：
 
@@ -513,7 +444,7 @@ C 是静态编译语言，许多决策在编译期完成。区分编译期与运
 | `malloc`/`free` | 运行期 |
 | 多线程同步 | 运行期 |
 
-### 4.7 对象与值
+### 3.7 对象与值
 
 ISO/IEC 9899:2024 §3.15 定义对象（object）为"执行期存储区域"。对象有：
 
@@ -523,7 +454,7 @@ ISO/IEC 9899:2024 §3.15 定义对象（object）为"执行期存储区域"。�
 - **生命周期（lifetime）**：程序执行期内对象存在的时段。
 - **对齐（alignment）**：地址必须是某值的倍数。
 
-### 4.8 表达式求值与序列点
+### 3.8 表达式求值与序列点
 
 ISO/IEC 9899:2024 §5.1.2.3 定义"序列点"（sequence point），用于规定副作用的顺序：
 
@@ -540,9 +471,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 Hello World（C89 风格）
+### 4.1 Hello World（C89 风格）
 
 ```c
 /* hello.c — C89 兼容版本 */
@@ -555,7 +486,7 @@ int main(void)
 }
 ```
 
-### 5.2 Hello World（C23 风格）
+### 4.2 Hello World（C23 风格）
 
 ```c
 // hello23.c — C23 风格
@@ -584,7 +515,7 @@ int main(void)
 }
 ```
 
-### 5.3 编译与运行（命令行）
+### 4.3 编译与运行（命令行）
 
 ```bash
 # 使用 GCC 编译
@@ -598,7 +529,7 @@ clang -std=c23 -Wall -Wextra -O2 hello23.c -o hello23
 # 输出: Hello, World!
 ```
 
-### 5.4 观察编译过程
+### 4.4 观察编译过程
 
 ```bash
 # 1. 预处理：展开 #include、#define，输出 hello.i
@@ -617,9 +548,9 @@ gcc hello.o -o hello23
 gcc -std=c23 -Wall -Wextra -O2 hello23.c -o hello23
 ```
 
-### 5.5 多文件项目示例
+### 4.5 多文件项目示例
 
-#### 5.5.1 项目结构
+#### 4.5.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -641,7 +572,7 @@ flowchart TD
     T8 --> T9
 ```
 
-#### 5.5.2 `include/mathutil.h`
+#### 4.5.2 `include/mathutil.h`
 
 ```c
 #ifndef MATHUTIL_H
@@ -658,7 +589,7 @@ uint64_t fibonacci(uint32_t n);
 #endif /* MATHUTIL_H */
 ```
 
-#### 5.5.3 `src/mathutil.c`
+#### 4.5.3 `src/mathutil.c`
 
 ```c
 #include "mathutil.h"
@@ -690,7 +621,7 @@ uint64_t fibonacci(uint32_t n)
 }
 ```
 
-#### 5.5.4 `src/main.c`
+#### 4.5.4 `src/main.c`
 
 ```c
 #include <stdio.h>
@@ -704,7 +635,7 @@ int main(void)
 }
 ```
 
-#### 5.5.5 Makefile
+#### 4.5.5 Makefile
 
 ```makefile
 # Makefile — 跨平台 GCC/Clang 兼容
@@ -741,7 +672,7 @@ test: $(TARGET)
 	./$(TARGET)
 ```
 
-#### 5.5.6 CMakeLists.txt
+#### 4.5.6 CMakeLists.txt
 
 ```cmake
 cmake_minimum_required(VERSION 3.20)
@@ -766,7 +697,7 @@ target_link_libraries(test_mathutil PRIVATE mathutil)
 add_test(NAME mathutil_tests COMMAND test_mathutil)
 ```
 
-#### 5.5.7 `tests/test_mathutil.c`
+#### 4.5.7 `tests/test_mathutil.c`
 
 ```c
 #include <assert.h>
@@ -790,7 +721,7 @@ int main(void)
 }
 ```
 
-### 5.6 使用静态断言验证类型大小
+### 4.6 使用静态断言验证类型大小
 
 ```c
 #include <stdio.h>
@@ -810,7 +741,7 @@ int main(void)
 }
 ```
 
-### 5.7 使用 `<stdint.h>` 提高可移植性
+### 4.7 使用 `<stdint.h>` 提高可移植性
 
 ```c
 #include <stdio.h>
@@ -836,7 +767,7 @@ int main(void)
 }
 ```
 
-### 5.8 信号处理示例
+### 4.8 信号处理示例
 
 ```c
 #include <stdio.h>
@@ -876,9 +807,9 @@ int main(void)
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 C 与 C++ 的关系
+### 5.1 C 与 C++ 的关系
 
 C 与 C++ 是两种独立语言，但 C++ 早期作为 C 的超集演化。现代 C++（C++17 起）已不再是 C 的超集，存在以下不兼容点：
 
@@ -894,7 +825,7 @@ C 与 C++ 是两种独立语言，但 C++ 早期作为 C 的超集演化。现�
 | 引用 `&` | 不支持 | 支持 |
 | 模板 | 不支持 | 支持 |
 
-### 6.2 C 与 C++/Rust/Go/Zig 全面对比
+### 5.2 C 与 C++/Rust/Go/Zig 全面对比
 
 | 维度 | C (C23) | C++ (C++23) | Rust (2021) | Go (1.23) | Zig (0.13) |
 | --- | --- | --- | --- | --- | --- |
@@ -912,7 +843,7 @@ C 与 C++ 是两种独立语言，但 C++ 早期作为 C 的超集演化。现�
 | 标准库 | 精简 | 庞大 | 现代 | 完整 | 现代化 |
 | 系统编程 | 首选 | 主流 | 崛起 | 适合服务端 | 适合系统 |
 
-### 6.3 何时选择 C
+### 5.3 何时选择 C
 
 C 在以下场景仍是首选：
 
@@ -926,7 +857,7 @@ C 在以下场景仍是首选：
 
 C 的优势：极小运行时、跨平台可移植、生态成熟、ABI 稳定（适合 FFI）。
 
-### 6.4 何时避免 C
+### 5.4 何时避免 C
 
 C 在以下场景不合适：
 
@@ -939,9 +870,9 @@ C 在以下场景不合适：
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：未初始化变量
+### 6.1 陷阱一：未初始化变量
 
 ```c
 int x;            // 未初始化
@@ -956,7 +887,7 @@ if (x) {          // UB：读取未初始化变量
 int x = 0;
 ```
 
-### 7.2 陷阱二：缓冲区溢出
+### 6.2 陷阱二：缓冲区溢出
 
 ```c
 char buf[10];
@@ -972,7 +903,7 @@ fgets(buf, sizeof(buf), stdin);              // 安全
 snprintf(buf, sizeof(buf), "%s", user_input);  // 安全
 ```
 
-### 7.3 陷阱三：忘记 `free`
+### 6.3 陷阱三：忘记 `free`
 
 ```c
 void leak(void) {
@@ -990,7 +921,7 @@ char *p = malloc(100);
 /* 函数返回时自动调用 free(p) */
 ```
 
-### 7.4 陷阱四：整数溢出
+### 6.4 陷阱四：整数溢出
 
 ```c
 int a = INT_MAX;
@@ -1012,7 +943,7 @@ int safe_add(int a, int b, int *result) {
 }
 ```
 
-### 7.5 陷阱五：悬垂指针
+### 6.5 陷阱五：悬垂指针
 
 ```c
 int *dangling(void) {
@@ -1023,7 +954,7 @@ int *dangling(void) {
 
 **最佳实践**：返回堆指针或静态存储期指针，或通过参数输出。
 
-### 7.6 陷阱六：混淆 `=` 与 `==`
+### 6.6 陷阱六：混淆 `=` 与 `==`
 
 ```c
 if (x = 5) {     /* 赋值而非比较，恒为真 */
@@ -1039,7 +970,7 @@ if (5 == x) {    /* 错误时编译失败 */
 }
 ```
 
-### 7.7 陷阱七：未定义行为
+### 6.7 陷阱七：未定义行为
 
 ```c
 int i = 0;
@@ -1048,7 +979,7 @@ i = i++ + ++i;   /* UB：同一表达式多次修改 i */
 
 **最佳实践**：避免复杂表达式中的多重副作用，启用 `-Wsequence-point`。
 
-### 7.8 陷阱八：宏的副作用
+### 6.8 陷阱八：宏的副作用
 
 ```c
 #define SQUARE(x) ((x) * (x))
@@ -1062,7 +993,7 @@ int r = SQUARE(n++);   /* n++ 被展开两次，UB */
 static inline int square(int x) { return x * x; }
 ```
 
-### 7.9 陷阱九：类型转换截断
+### 6.9 陷阱九：类型转换截断
 
 ```c
 int a = 1000000;
@@ -1071,7 +1002,7 @@ short b = (short)a;   /* 截断，结果实现定义 */
 
 **最佳实践**：检查范围或使用 `<stdint.h>` 的固定宽度类型。
 
-### 7.10 陷阱十：混淆 `char` 的符号性
+### 6.10 陷阱十：混淆 `char` 的符号性
 
 `char` 是否带符号是实现定义的。在 ARM、PowerPC 上 `char` 通常为无符号；在 x86 上为有符号。
 
@@ -1082,7 +1013,7 @@ if (c > 0) { ... }     /* 行为依赖实现 */
 
 **最佳实践**：使用 `signed char` 或 `unsigned char` 明确意图。
 
-### 7.11 综合最佳实践清单
+### 6.11 综合最佳实践清单
 
 1. **始终启用警告**：`-Wall -Wextra -Wpedantic -Werror`。
 2. **使用 Sanitizer**：`-fsanitize=address,undefined`。
@@ -1097,11 +1028,11 @@ if (c > 0) { ... }     /* 行为依赖实现 */
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 编译选项
+### 7.1 编译选项
 
-#### 8.1.1 标准
+#### 7.1.1 标准
 
 ```bash
 -std=c89       # K&R 后第一个标准
@@ -1112,7 +1043,7 @@ if (c > 0) { ... }     /* 行为依赖实现 */
 -std=gnu23     # 允许 GNU 扩展
 ```
 
-#### 8.1.2 警告
+#### 7.1.2 警告
 
 ```bash
 -Wall -Wextra -Wpedantic        # 基础警告
@@ -1130,7 +1061,7 @@ if (c > 0) { ... }     /* 行为依赖实现 */
 -Wstack-usage=4096               # 栈使用上限
 ```
 
-#### 8.1.3 优化
+#### 7.1.3 优化
 
 ```bash
 -O0    # 无优化，便于调试
@@ -1143,7 +1074,7 @@ if (c > 0) { ... }     /* 行为依赖实现 */
 -mtune=native    # 调度优化
 ```
 
-#### 8.1.4 调试信息
+#### 7.1.4 调试信息
 
 ```bash
 -g              # 基础调试信息
@@ -1152,9 +1083,9 @@ if (c > 0) { ... }     /* 行为依赖实现 */
 -gdwarf-5       # DWARF 5 格式
 ```
 
-### 8.2 Sanitizer
+### 7.2 Sanitizer
 
-#### 8.2.1 AddressSanitizer (ASan)
+#### 7.2.1 AddressSanitizer (ASan)
 
 检测：堆栈/堆缓冲区溢出、UAF（use-after-free）、double-free、内存泄漏。
 
@@ -1163,7 +1094,7 @@ gcc -fsanitize=address -g -O1 hello.c -o hello
 ./hello
 ```
 
-#### 8.2.2 UndefinedBehaviorSanitizer (UBSan)
+#### 7.2.2 UndefinedBehaviorSanitizer (UBSan)
 
 检测：整数溢出、空指针解引用、违反严格别名、未对齐访问等。
 
@@ -1172,7 +1103,7 @@ gcc -fsanitize=undefined -g -O1 hello.c -o hello
 ./hello
 ```
 
-#### 8.2.3 ThreadSanitizer (TSan)
+#### 7.2.3 ThreadSanitizer (TSan)
 
 检测：数据竞争、死锁。
 
@@ -1181,7 +1112,7 @@ gcc -fsanitize=thread -g -O1 hello.c -o hello -pthread
 ./hello
 ```
 
-#### 8.2.4 MemorySanitizer (MSan)
+#### 7.2.4 MemorySanitizer (MSan)
 
 检测：使用未初始化内存。仅 Clang 支持。
 
@@ -1190,29 +1121,29 @@ clang -fsanitize=memory -g -O1 hello.c -o hello
 ./hello
 ```
 
-### 8.3 静态分析
+### 7.3 静态分析
 
-#### 8.3.1 clang-tidy
+#### 7.3.1 clang-tidy
 
 ```bash
 clang-tidy -checks='*' hello.c -- -std=c23
 ```
 
-#### 8.3.2 cppcheck
+#### 7.3.2 cppcheck
 
 ```bash
 cppcheck --enable=all --std=c23 --inconclusive hello.c
 ```
 
-#### 8.3.3 scan-build (Clang 静态分析)
+#### 7.3.3 scan-build (Clang 静态分析)
 
 ```bash
 scan-build gcc -std=c23 hello.c -o hello
 ```
 
-### 8.4 调试
+### 7.4 调试
 
-#### 8.4.1 GDB
+#### 7.4.1 GDB
 
 ```bash
 gcc -g -O0 hello.c -o hello
@@ -1225,7 +1156,7 @@ gdb ./hello
 (gdb) quit
 ```
 
-#### 8.4.2 LLDB
+#### 7.4.2 LLDB
 
 ```bash
 clang -g -O0 hello.c -o hello
@@ -1237,22 +1168,22 @@ lldb ./hello
 (lldb) quit
 ```
 
-### 8.5 性能分析
+### 7.5 性能分析
 
-#### 8.5.1 perf (Linux)
+#### 7.5.1 perf (Linux)
 
 ```bash
 perf record ./hello
 perf report
 ```
 
-#### 8.5.2 Instruments (macOS)
+#### 7.5.2 Instruments (macOS)
 
 ```bash
 instruments -t "Time Profiler" ./hello
 ```
 
-#### 8.5.3 gprof
+#### 7.5.3 gprof
 
 ```bash
 gcc -pg hello.c -o hello
@@ -1260,13 +1191,13 @@ gcc -pg hello.c -o hello
 gprof hello gmon.out > report.txt
 ```
 
-### 8.6 构建系统
+### 7.6 构建系统
 
-#### 8.6.1 Make
+#### 7.6.1 Make
 
 适合中小型项目，简单直接。
 
-#### 8.6.2 CMake
+#### 7.6.2 CMake
 
 跨平台标准，适合大型项目。
 
@@ -1277,7 +1208,7 @@ cmake --build .
 ctest
 ```
 
-#### 8.6.3 Meson
+#### 7.6.3 Meson
 
 现代构建系统，速度快。
 
@@ -1289,7 +1220,7 @@ project('hello', 'c',
 executable('hello', 'src/main.c')
 ```
 
-#### 8.6.4 Bazel
+#### 7.6.4 Bazel
 
 适合大型 monorepo。
 
@@ -1302,9 +1233,9 @@ cc_binary(
 )
 ```
 
-### 8.7 包管理
+### 7.7 包管理
 
-#### 8.7.1 Conan
+#### 7.7.1 Conan
 
 ```ini
 # conanfile.txt
@@ -1317,13 +1248,13 @@ CMakeDeps
 CMakeToolchain
 ```
 
-#### 8.7.2 vcpkg
+#### 7.7.2 vcpkg
 
 ```bash
 vcpkg install openssl zlib
 ```
 
-### 8.8 CI/CD 示例
+### 7.8 CI/CD 示例
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1355,9 +1286,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Linux Kernel
+### 8.1 Linux Kernel
 
 Linux 内核是 C 语言最大的工程项目之一，截至 2024 年约 2800 万行代码，其中 96% 为 C。Linux 选择 C 而非 C++ 的原因：
 
@@ -1373,7 +1304,7 @@ Linux 内核遵循严格的编码规范（`Documentation/process/coding-style.rs
 - 不使用 `typedef` 隐藏结构体指针。
 - 不使用 C++ 风格注释（虽然 C99 允许）。
 
-### 9.2 Redis
+### 8.2 Redis
 
 Redis 是用 C 编写的高性能键值存储。Redis 选择 C 的原因：
 
@@ -1388,7 +1319,7 @@ Redis 的 C 代码风格特点：
 - 自定义字符串类型：SDS（Simple Dynamic Strings）。
 - 自定义数据结构：`adlist.h`、`dict.h`、`ziplist.c`。
 
-### 9.3 SQLite
+### 8.3 SQLite
 
 SQLite 是世界上部署最广的数据库（每个智能手机、每个浏览器都内置），完全用 C 编写。SQLite 选择 C 的原因：
 
@@ -1399,7 +1330,7 @@ SQLite 是世界上部署最广的数据库（每个智能手机、每个浏览�
 
 SQLite 项目以测试覆盖率著称：超过 100% 行覆盖（含分支），150,000+ 测试用例，包括模糊测试与变异测试。
 
-### 9.4 FFmpeg
+### 8.4 FFmpeg
 
 FFmpeg 是音视频处理的瑞士军刀，用 C（部分汇编）编写。FFmpeg 选择 C 的原因：
 
@@ -1408,7 +1339,7 @@ FFmpeg 是音视频处理的瑞士军刀，用 C（部分汇编）编写。FFmpe
 3. **跨平台**：支持 Windows、macOS、Linux、Android、iOS。
 4. **底层访问**：直接操作像素、采样、内存。
 
-### 9.5 PostgreSQL
+### 8.5 PostgreSQL
 
 PostgreSQL 是开源关系数据库的标杆，核心用 C 编写。PostgreSQL 的 C 代码特点：
 
@@ -1416,7 +1347,7 @@ PostgreSQL 是开源关系数据库的标杆，核心用 C 编写。PostgreSQL �
 - 内存上下文：自定义内存分配器，避免泄漏。
 - 自定义数据结构：`List`、`Bitmapset`、`StringInfo`。
 
-### 9.6 curl
+### 8.6 curl
 
 curl 是网络传输的事实标准库，用 C 编写，支持 80+ 协议。curl 选择 C 的原因：
 
@@ -1693,7 +1624,7 @@ gcc -std=c23 -fsanitize=undefined -g -O1 ub_demo.c -o ub_demo
 ./ub_demo
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题 1**：为什么 C 语言至今仍是操作系统内核的首选？请从语言特性、生态系统、历史原因三个维度分析。
 
@@ -1835,7 +1766,7 @@ int main(void) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 参考文献采用 ACM Reference Format。
 
@@ -1901,9 +1832,9 @@ int main(void) {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 经典书籍
+### 11.1 经典书籍
 
 1. **K&R《The C Programming Language》（第二版）**：C 语言圣经，简洁优雅。
 2. **King《C Programming: A Modern Approach》**：现代教材，覆盖 C99。
@@ -1912,7 +1843,7 @@ int main(void) {
 5. **Seacord《Secure Coding in C and C++》**：安全编码必读。
 6. **Gustedt《Modern C》**：免费开放，覆盖 C17/C23。链接：https://gustedt.gitlabpages.inria.fr/modern-c/
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 1. **cppreference.com**：C 标准库权威参考。https://en.cppreference.com/w/c
 2. **ISO/IEC 9899 标准草案**：N3220（C23 最终草案）。https://www.open-std.org/jtc1/sc22/wg14/
@@ -1921,7 +1852,7 @@ int main(void) {
 5. **Clang Manual**：https://clang.llvm.org/docs/
 6. **Linux Kernel Coding Style**：https://www.kernel.org/doc/html/latest/process/coding-style.html
 
-### 12.3 课程
+### 11.3 课程
 
 1. **MIT 6.S081 Operating System Engineering**：使用 C 实现 xv6 操作系统。https://pdos.csail.mit.edu/6.S081/
 2. **Stanford CS107 Computer Organization & Systems**：C 语言与系统编程。https://web.stanford.edu/class/archive/cs/cs107/
@@ -1929,14 +1860,14 @@ int main(void) {
 4. **Berkeley CS61C Great Ideas in Computer Architecture**：汇编与 C。https://cs61c.org/
 5. **MIT 6.087 Practical Programming in C**：MIT IAP 课程。https://ocw.mit.edu/
 
-### 12.4 论文
+### 11.4 论文
 
 1. **Ritchie, D. M. (1993). The Development of the C Language**. ACM HOPL II. https://www.bell-labs.com/usr/dmr/www/chist.html
 2. **Drepper, U. (2007). What Every Programmer Should Know About Memory**. Red Hat.
 3. **Regehr, J. (2010). A Guide to Undefined Behavior in C and C++**. blog.regehr.org.
 4. **Ertl, M. A. and Gregg, D. (2003). The Structure and Performance of Efficient Interpreters**. JILP.
 
-### 12.5 开源项目
+### 11.5 开源项目
 
 1. **Linux Kernel**：https://github.com/torvalds/linux — C 系统编程典范。
 2. **Redis**：https://github.com/redis/redis — 高性能服务器 C 代码。
@@ -1949,7 +1880,7 @@ int main(void) {
 9. **PostgreSQL**：https://github.com/postgres/postgres
 10. **Redis-clone (KeyDB)**：https://github.com/Snapchat/KeyDB
 
-### 12.6 工具与生态
+### 11.6 工具与生态
 
 1. **GCC**：https://gcc.gnu.org/
 2. **Clang/LLVM**：https://clang.llvm.org/
@@ -1962,7 +1893,7 @@ int main(void) {
 9. **AddressSanitizer**：https://clang.llvm.org/docs/AddressSanitizer.html
 10. **clang-tidy**：https://clang.llvm.org/extra/clang-tidy/
 
-### 12.7 社区与博客
+### 11.7 社区与博客
 
 1. **Stack Overflow C tag**：https://stackoverflow.com/questions/tagged/c
 2. **Reddit r/C_Programming**：https://www.reddit.com/r/C_Programming/
@@ -1972,21 +1903,21 @@ int main(void) {
 6. **Eli Bendersky's Website**：https://eli.thegreenplace.net/ — 系统/C 编程。
 7. **Embedded.com**：嵌入式 C 文章。
 
-### 12.8 视频课程
+### 11.8 视频课程
 
 1. **MIT 6.S081 (YouTube)**：xv6 操作系统。
 2. **CS50 by Harvard (edX)**：编程入门，前几周为 C。
 3. **Coursera: C for Everyone**：UC Santa Cruz。
 4. **Pluralsight: C Programming Fundamentals**。
 
-### 12.9 练习平台
+### 11.9 练习平台
 
 1. **LeetCode**：C 解题，提升算法能力。
 2. **Codewars**：C 卡塔。
 3. **Exercism C track**：https://exercism.org/tracks/c
 4. **HackerRank C**：https://www.hackerrank.com/domains/c
 
-### 12.10 编码规范
+### 11.10 编码规范
 
 1. **GNU Coding Standards**：https://www.gnu.org/prep/standards/
 2. **Linux Kernel Coding Style**：https://www.kernel.org/doc/html/latest/process/coding-style.html

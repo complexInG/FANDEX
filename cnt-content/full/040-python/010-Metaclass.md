@@ -19,54 +19,16 @@ prerequisites:
   - python/装饰器进阶
   - python/描述符协议
 ---
+
 # Python 元类与描述符
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节按 Bloom 认知层次（Bloom's Taxonomy）逐级给出可观察、可测量的学习目标。完成本节后，学习者应能：
-
-### 1.1 记忆层（Remember）
-
-- **R1**：准确陈述 Python 中"万物皆对象"（everything is an object）的含义，并能列出 `type`、`object`、`int`、`str`、自定义类之间的 `isinstance` 与 `__class__` 关系。
-- **R2**：背诵 `type` 的三参数形式 `type(name, bases, namespace)` 的签名及其语义等价于 `class` 语句的执行结果。
-- **R3**：列举类创建生命周期中四个核心钩子：`__prepare__`、`__new__`、`__init__`、`__call__`，并说明它们被调用的顺序与调用方。
-
-### 1.2 理解层（Understand）
-
-- **U1**：用自己的语言解释"元类是实例为类的类"这一定义，并画出 `MyClass`、`type`、`object` 三者之间的实例化箭头与继承箭头。
-- **U2**：区分"实例化一个对象"与"创建一个类"两条调用路径上 `__call__` 的不同含义，说明元类 `__call__` 如何同时参与这两条路径。
-- **U3**：解释为什么 `class Foo(metaclass=Meta)` 中 `Meta.__new__` 必须返回一个 `type` 的子类实例，而 `Meta.__init__` 无此限制。
-
-### 1.3 应用层（Apply）
-
-- **A1**：使用 `type(name, bases, dict)` 动态生成一个具备指定属性、方法与文档字符串的类，并在 REPL 中验证其行为。
-- **A2**：编写一个元类 `LoggedMeta`，自动为类体中所有以 `handle_` 开头的函数包装日志装饰器，且不修改原函数源码。
-- **A3**：使用 `__init_subclass__` 重写习题 A2 的需求，对比两种方案的可读性、可维护性与性能。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：给定一段使用元类的第三方库代码（如 Django ORM 的 `ModelBase`、Pydantic 的 `ModelMetaclass`），画出类创建时的完整调用时序图，标明每个钩子的触发点。
-- **An2**：分析"元类冲突"（metaclass conflict）的产生根因，推导 C3 线性化算法在多继承场景下对元类选择的约束。
-
-### 1.5 评价层（Evaluate）
-
-- **Ev1**：评估"是否该用元类"的决策树：在装饰器、`__init_subclass__`、`class` 工厂、元类四种方案中，根据"是否需要感知类创建事件"、"是否需要修改类命名空间"、"是否需要拦截 `__call__`"等维度选择最优方案。
-- **Ev2**：评判 PEP 487（`__init_subclass__` 与 `__set_name__`）对元类使用频率下降的影响，论证其是否"消灭了 90% 的元类需求"。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计并实现一个轻量级 ORM 元类，支持字段声明、表名自动推断、外键解析、迁移生成四项能力，并编写单元测试覆盖至少 8 个边界场景。
-- **C2**：为团队设计一份"元类使用规范"文档，包含准入门槛、代码审查清单、替代方案决策树与反模式示例。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 Smalltalk 的根源：一切皆对象，类也是对象
+### 1.1 Smalltalk 的根源：一切皆对象，类也是对象
 
 元类概念并非 Python 首创，其思想可追溯至 1970 年代 Smalltalk-80。在 Smalltalk 中，每个类都是某个 `Metaclass` 的唯一实例，而所有 `Metaclass` 又是 `Metaclass class` 的实例，形成一条"无限上升"的链条。Smalltalk 通过这条链条实现了类方法的统一建模，但也带来著名的"元类无限回归"（infinite metaclass regression）问题。
 
@@ -78,7 +40,7 @@ Python 在设计之初就借鉴了 Smalltalk 的"一切皆对象"哲学，但 Gu
 
 这一"鸡生蛋"的自指结构在形式上闭合了元类层级，避免了 Smalltalk 的无限回归。
 
-### 2.2 Python 1.x 与 2.x：`__metaclass__` 类属性
+### 1.2 Python 1.x 与 2.x：`__metaclass__` 类属性
 
 在 Python 2 中，元类通过类属性 `__metaclass__` 声明：
 
@@ -96,7 +58,7 @@ Python 2 解释器在执行 `class` 语句时，会先在类体命名空间中�
 2. **与新式类机制耦合**：Python 2 默认创建旧式类，必须显式继承 `object` 才能启用新式类与元类机制，导致教学困惑。
 3. **元类冲突处理粗糙**：多继承时若多个基类元类不同，Python 2 的报错信息晦涩，且 C3 线性化对元类的处理在某些边界情况下不符合直觉。
 
-### 2.3 Python 3：`metaclass=` 关键字参数
+### 1.3 Python 3：`metaclass=` 关键字参数
 
 PEP 3115 在 Python 3.0 中引入了新的元类声明语法：
 
@@ -111,7 +73,7 @@ class Foo(Base1, Base2, metaclass=MyMeta):
 2. **`__prepare__` 钩子引入**：允许元类自定义类体命名空间的容器类型（默认为 `dict`），为有序字段、默认值工厂等高级特性铺路。
 3. **与类型注解协同**：Python 3 的注解（PEP 3107、PEP 526）需要可定制的命名空间，`__prepare__` 成为注解收集的基础设施。
 
-### 2.4 PEP 487：`__init_subclass__` 与 `__set_name__`
+### 1.4 PEP 487：`__init_subclass__` 与 `__set_name__`
 
 Python 3.6（PEP 487）引入了两个关键钩子，被广泛认为是"消灭 90% 元类需求"的里程碑：
 
@@ -120,7 +82,7 @@ Python 3.6（PEP 487）引入了两个关键钩子，被广泛认为是"消灭 9
 
 PEP 487 之后，许多原本必须用元类实现的场景（如 Django ORM 早期的字段收集、Flask-RESTplus 的路由注册）都可以用 `__init_subclass__` + 描述符 `__set_name__` 重写，代码可读性与可维护性显著提升。
 
-### 2.5 PEP 484 / 560 / 612：类型系统对元类的依赖
+### 1.5 PEP 484 / 560 / 612：类型系统对元类的依赖
 
 Python 类型注解生态（`typing`、`pydantic`、`attrs`、`msgspec`）深度依赖元类机制：
 
@@ -128,7 +90,7 @@ Python 类型注解生态（`typing`、`pydantic`、`attrs`、`msgspec`）深度
 - **`pydantic.BaseModel`** 通过 `ModelMetaclass` 收集字段注解、生成验证器、构建 JSON Schema；
 - **`dataclasses`** 虽然基于类装饰器而非元类，但其字段收集机制（`__annotations__` + `__set_name__`）与元类方案功能等价。
 
-### 2.6 演化时间线总结
+### 1.6 演化时间线总结
 
 | 年份 | Python 版本 | 关键变化 | PEP |
 |------|-------------|----------|-----|
@@ -144,9 +106,9 @@ Python 类型注解生态（`typing`、`pydantic`、`attrs`、`msgspec`）深度
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 元类的数学定义
+### 2.1 元类的数学定义
 
 设 $\mathcal{C}$ 为 Python 中所有类的集合，$\mathcal{O}$ 为所有对象的集合。元类 $M$ 满足：
 
@@ -162,7 +124,7 @@ $$
 
 其中 $c$ 满足 $c.\text{\_\_class\_\_} = M$，$c.\text{\_\_bases\_\_} = B$，$\forall k \in N: c.k = N[k]$。
 
-### 3.2 `type` 的双重身份
+### 2.2 `type` 的双重身份
 
 在 Python 中，`type` 同时承担两个角色：
 
@@ -181,7 +143,7 @@ $$
 
 由于 $\text{type}.\text{\_\_class\_\_} = \text{type}$，链条在 `type` 处闭合。
 
-### 3.3 类创建的形式语义
+### 2.3 类创建的形式语义
 
 Python 中 `class` 语句的执行等价于以下伪代码：
 
@@ -205,7 +167,7 @@ $$
 
 注意：`__call__` 由元类的元类（通常是 `type`）提供，这正是元类同时参与"创建类"与"实例化对象"两条路径的根源。
 
-### 3.4 MRO 与元类一致性约束
+### 2.4 MRO 与元类一致性约束
 
 设类 $C$ 的基类为 $B_1, B_2, \ldots, B_k$，各基类的元类为 $M_1, M_2, \ldots, M_k$。Python 要求 $C$ 的元类 $M_C$ 满足：
 
@@ -215,7 +177,7 @@ $$
 
 即 $M_C$ 必须是所有基类元类的子类。若不存在这样的 $M_C$，则触发 `TypeError: metaclass conflict`。这一约束保证了子类实例化路径上元类 `__call__` 的一致性。
 
-### 3.5 元类层级的偏序结构
+### 2.5 元类层级的偏序结构
 
 定义元类层级上的偏序关系 $\preceq$：
 
@@ -227,9 +189,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 定理：`type` 是自身的元类
+### 3.1 定理：`type` 是自身的元类
 
 **命题**：$\text{type}.\text{\_\_class\_\_} = \text{type}$。
 
@@ -247,7 +209,7 @@ $$
 
 证毕。
 
-### 4.2 定理：元类 `__call__` 同时控制类实例化
+### 3.2 定理：元类 `__call__` 同时控制类实例化
 
 **命题**：设元类 $M$ 定义了 `__call__`，则对任意 $c \in \text{instances}(M)$（即 $c$ 是 $M$ 的实例，亦即 $c$ 是一个类），调用 $c(\text{args})$ 实际调用 $M.\text{\_\_call\_\_}(c, \text{args})$。
 
@@ -264,7 +226,7 @@ Python 的属性查找遵循"实例 -> 类 -> 元类"的顺序。对于实例 $o
 
 证毕。
 
-### 4.3 定理：元类冲突的充要条件
+### 3.3 定理：元类冲突的充要条件
 
 **命题**：设类 $C$ 继承自 $B_1, B_2, \ldots, B_k$，各基类元类为 $M_1, \ldots, M_k$。则存在合法元类 $M_C$ 当且仅当：
 
@@ -284,7 +246,7 @@ $$
 
 证毕。
 
-### 4.4 推论：`__init_subclass__` 不能完全替代元类
+### 3.4 推论：`__init_subclass__` 不能完全替代元类
 
 **命题**：存在需求 $D$，使得 `__init_subclass__` 无法实现，必须使用元类。
 
@@ -311,9 +273,9 @@ class CachedMeta(type):
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 入门：用 `type` 动态创建类
+### 4.1 入门：用 `type` 动态创建类
 
 ```python
 # 示例 5.1：type 三参数形式动态创建类
@@ -351,7 +313,7 @@ print(Dog.__class__)    # <class 'type'>
 python -c "exec(open('demo_5_1.py').read())"
 ```
 
-### 5.2 进阶：自定义元类记录类创建
+### 4.2 进阶：自定义元类记录类创建
 
 ```python
 # 示例 5.2：元类记录类创建日志
@@ -394,7 +356,7 @@ class User(Base):
 # INFO:__main__:Initializing class User
 ```
 
-### 5.3 `__prepare__`：自定义类命名空间
+### 4.3 `__prepare__`：自定义类命名空间
 
 ```python
 # 示例 5.3：用 __prepare__ 实现有序字段收集
@@ -432,7 +394,7 @@ class Form(metaclass=OrderedMeta):
 # 返回自定义容器（如带默认值工厂、属性拦截的命名空间）。
 ```
 
-### 5.4 元类实现自动接口检查
+### 4.4 元类实现自动接口检查
 
 ```python
 # 示例 5.4：元类强制子类实现指定接口方法
@@ -487,7 +449,7 @@ s.set("k", 42)
 print(s.get("k"))   # 42
 ```
 
-### 5.5 元类实现字段注册（轻量 ORM）
+### 4.5 元类实现字段注册（轻量 ORM）
 
 ```python
 # 示例 5.5：元类 + 描述符实现字段注册
@@ -548,7 +510,7 @@ u.name = "Alice"
 print(u.name, u.id)                # Alice 1
 ```
 
-### 5.6 元类 `__call__` 实现单例
+### 4.6 元类 `__call__` 实现单例
 
 ```python
 # 示例 5.6：元类 __call__ 实现线程安全单例
@@ -590,7 +552,7 @@ print(db1.connect())      # 1
 print(db2.connect())      # 2（同一个对象）
 ```
 
-### 5.7 `__init_subclass__` 替代方案
+### 4.7 `__init_subclass__` 替代方案
 
 ```python
 # 示例 5.7：用 __init_subclass__ 替代元类实现字段注册
@@ -638,7 +600,7 @@ print(User.__table__)
 print(list(User._fields.keys()))
 ```
 
-### 5.8 元类冲突示例与解决
+### 4.8 元类冲突示例与解决
 
 ```python
 # 示例 5.8：元类冲突与解决
@@ -677,7 +639,7 @@ print(isinstance(C, MetaA))  # True
 print(isinstance(C, MetaB))  # True
 ```
 
-### 5.9 元类实现方法注册（路由收集）
+### 4.9 元类实现方法注册（路由收集）
 
 ```python
 # 示例 5.9：元类自动收集装饰器标记的路由方法
@@ -724,7 +686,7 @@ print(UserController._routes)
 # {'/users': <function ...>, '/users/<id>': <function ...>}
 ```
 
-### 5.10 综合示例：轻量 ORM 元类
+### 4.10 综合示例：轻量 ORM 元类
 
 ```python
 # 示例 5.10：综合轻量 ORM 元类，支持字段类型校验与 SQL 生成
@@ -817,9 +779,9 @@ print(p.name, p.price)
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Ruby 的元类对比
+### 5.1 与 Ruby 的元类对比
 
 Ruby 有一套更显式但更复杂的"元类"模型。在 Ruby 中，每个对象都有一个"特征类"（singleton class/eigenclass），类方法实际上是定义在特征类上的方法。Ruby 的元类层级通过 `Class` 与 `Module` 链条建模。
 
@@ -835,7 +797,7 @@ Ruby 有一套更显式但更复杂的"元类"模型。在 Ruby 中，每个对�
 
 **关键差异**：Python 元类更"重"（在类创建时运行一次），Ruby 特征类更"轻"且持续动态。Python 的设计哲学是"显式优于隐式"，元类机制集中在类创建时刻；Ruby 的设计哲学是"对象能响应任何消息"，特征类允许运行时持续修改。
 
-### 6.2 与 JavaScript 的原型链对比
+### 5.2 与 JavaScript 的原型链对比
 
 JavaScript 没有真正的"元类"概念，其类层级通过原型链（prototype chain）建模。ES6 的 `class` 语法本质是构造函数的语法糖，类本身是函数对象，函数对象的 `prototype` 属性指向原型对象。
 
@@ -850,7 +812,7 @@ JavaScript 没有真正的"元类"概念，其类层级通过原型链（prototy
 
 **关键差异**：Python 通过元类在类创建时一次性注入逻辑，类创建后元类基本"沉默"（除 `__call__` 外）；JavaScript 的原型链在运行时持续参与方法查找，更灵活但也更难预测。
 
-### 6.3 与 Go 的对比
+### 5.3 与 Go 的对比
 
 Go 语言刻意没有类、继承、元类等概念，而是通过结构体（struct）、接口（interface）、组合（composition）建模。
 
@@ -865,7 +827,7 @@ Go 语言刻意没有类、继承、元类等概念，而是通过结构体（st
 
 **关键差异**：Python 的元类是运行时元编程机制；Go 选择"编译时 + 代码生成"路径，避免运行时元编程的复杂性与性能开销。两种设计哲学各有取舍：Python 牺牲性能换取灵活性，Go 牺牲灵活性换取可预测性。
 
-### 6.4 与 Java 的对比
+### 5.4 与 Java 的对比
 
 Java 有 `Class` 对象但无用户可定义的元类。Java 的元编程通过反射（reflection）、注解处理器（annotation processor）、字节码增强（bytecode enhancement，如 ASM、ByteBuddy）实现。
 
@@ -879,7 +841,7 @@ Java 有 `Class` 对象但无用户可定义的元类。Java 的元编程通过�
 
 **关键差异**：Java 通过注解处理器在编译时实现类似元类的功能（如 Lombok、MapStruct），避免运行时开销；Python 元类在运行时运行，灵活但有性能成本。
 
-### 6.5 综合对比表
+### 5.5 综合对比表
 
 | 特性 | Python | Ruby | JavaScript | Go | Java |
 |------|--------|------|------------|----|----|
@@ -891,9 +853,9 @@ Java 有 `Class` 对象但无用户可定义的元类。Java 的元编程通过�
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：`__new__` 与 `__init__` 的职责混淆
+### 6.1 陷阱一：`__new__` 与 `__init__` 的职责混淆
 
 **反模式**：
 
@@ -928,7 +890,7 @@ class GoodMeta2(type):
         super().__init__(name, bases, namespace, **kwargs)
 ```
 
-### 7.2 陷阱二：`__new__` 返回非 `type` 子类
+### 6.2 陷阱二：`__new__` 返回非 `type` 子类
 
 **反模式**：
 
@@ -956,7 +918,7 @@ class CachedMeta(type):
         return cls
 ```
 
-### 7.3 陷阱三：元类 `__call__` 与单例冲突
+### 6.3 陷阱三：元类 `__call__` 与单例冲突
 
 **反模式**：
 
@@ -1009,7 +971,7 @@ class OnlyOne:
     pass
 ```
 
-### 7.4 陷阱四：元类继承的隐式传播
+### 6.4 陷阱四：元类继承的隐式传播
 
 **反模式**：
 
@@ -1050,7 +1012,7 @@ class StrictMeta(type):
         return super().__new__(mcs, name, bases, namespace, **kwargs)
 ```
 
-### 7.5 陷阱五：`__prepare__` 返回可变默认值
+### 6.5 陷阱五：`__prepare__` 返回可变默认值
 
 **反模式**：
 
@@ -1074,7 +1036,7 @@ class GoodMeta(type):
         return OrderedDict()  # 仅返回空容器
 ```
 
-### 7.6 陷阱六：元类与 `__slots__` 冲突
+### 6.6 陷阱六：元类与 `__slots__` 冲突
 
 **反模式**：
 
@@ -1103,7 +1065,7 @@ class SlotMeta(type):
         return cls
 ```
 
-### 7.7 陷阱七：性能开销被忽视
+### 6.7 陷阱七：性能开销被忽视
 
 **反模式**：在性能敏感的热点路径上使用元类。
 
@@ -1120,7 +1082,7 @@ class SlotMeta(type):
 
 **正确做法**：性能敏感场景避免元类 `__call__` 拦截，改用 `__init_subclass__` 或类装饰器。
 
-### 7.8 陷阱八：元类与多继承的复杂性
+### 6.8 陷阱八：元类与多继承的复杂性
 
 **反模式**：
 
@@ -1143,7 +1105,7 @@ class MetaAB(MetaA, MetaB): pass
 class C(A, B, metaclass=MetaAB): pass
 ```
 
-### 7.9 陷阱九：元类与类型注解的耦合
+### 6.9 陷阱九：元类与类型注解的耦合
 
 **反模式**：
 
@@ -1176,7 +1138,7 @@ class AnnotationMeta(type):
             cls._resolved_hints = {}
 ```
 
-### 7.10 陷阱十：过度使用元类
+### 6.10 陷阱十：过度使用元类
 
 **反模式**：将所有"类创建时"逻辑都用元类实现。
 
@@ -1207,9 +1169,9 @@ flowchart TD
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 实践一：优先使用 `__init_subclass__`
+### 7.1 实践一：优先使用 `__init_subclass__`
 
 PEP 487 之后，绝大多数"父类向子类注入逻辑"的场景都应优先使用 `__init_subclass__`，而非元类。优势：
 
@@ -1241,7 +1203,7 @@ print(Plugin._registry)
 # 注意：plugin_name 关键字参数不进入 cls.__dict__
 ```
 
-### 8.2 实践二：元类应保持单一职责
+### 7.2 实践二：元类应保持单一职责
 
 元类应只做一件事（如字段收集、接口检查、单例控制），不要在元类中堆砌多种逻辑。
 
@@ -1267,7 +1229,7 @@ class FieldCollectMeta(type):
         return cls
 ```
 
-### 8.3 实践三：元类应提供完善的错误信息
+### 7.3 实践三：元类应提供完善的错误信息
 
 元类在类创建时抛出的错误应包含足够的上下文，帮助开发者快速定位问题。
 
@@ -1287,7 +1249,7 @@ class FieldMeta(type):
         return cls
 ```
 
-### 8.4 实践四：元类应支持继承
+### 7.4 实践四：元类应支持继承
 
 元类应正确处理继承链，避免"父类元类逻辑泄漏到子类"或"子类无法继承父类元类行为"。
 
@@ -1308,7 +1270,7 @@ class ModelMeta(type):
         return cls
 ```
 
-### 8.5 实践五：元类应可测试
+### 7.5 实践五：元类应可测试
 
 元类本身应有单元测试覆盖，包括正常路径、边界场景、错误路径。
 
@@ -1353,7 +1315,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-### 8.6 实践六：文档化元类行为
+### 7.6 实践六：文档化元类行为
 
 元类应在 docstring 中明确说明：
 
@@ -1380,7 +1342,7 @@ class ModelMeta(type):
     pass
 ```
 
-### 8.7 实践七：考虑使用 `abc.ABCMeta` 替代自定义元类
+### 7.7 实践七：考虑使用 `abc.ABCMeta` 替代自定义元类
 
 若需求是"抽象基类"（abstract base class），优先使用标准库 `abc.ABCMeta` 或 `abc.ABC`，而非自定义元类。
 
@@ -1416,7 +1378,7 @@ s.set("k", "v")
 print(s.get("k"))  # v
 ```
 
-### 8.8 实践八：元类与类型注解协同
+### 7.8 实践八：元类与类型注解协同
 
 现代 Python 元类常需与类型注解协同工作（如 Pydantic、attrs）。最佳实践是使用 `typing.get_type_hints` 延迟解析注解，避免在元类中过早访问 `__annotations__`。
 
@@ -1451,7 +1413,7 @@ print(User._type_hints)
 # {'id': <class 'int'>, 'name': <class 'str'>, 'email': typing.Optional[str]}
 ```
 
-### 8.9 实践九：元类的版本兼容性
+### 7.9 实践九：元类的版本兼容性
 
 元类代码应考虑 Python 版本差异，尤其是 `__prepare__`（Python 3.0+）、`__init_subclass__`（Python 3.6+）、`__set_name__`（Python 3.6+）的可用性。
 
@@ -1476,7 +1438,7 @@ else:
             return cls
 ```
 
-### 8.10 实践十：元类与 IDE 支持
+### 7.10 实践十：元类与 IDE 支持
 
 元类注入的属性应在类型存根（`.pyi`）中声明，以便 IDE 提供补全与类型检查。
 
@@ -1498,9 +1460,9 @@ class Model(metaclass=ModelMeta):
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Django ORM 的 `ModelBase`
+### 8.1 案例一：Django ORM 的 `ModelBase`
 
 Django ORM 是元类应用的经典案例。`django.db.models.base.ModelBase` 是 Django Model 的元类，负责：
 
@@ -1602,7 +1564,7 @@ print(Book._meta.fields)
 print(Book.__table__)  # book
 ```
 
-### 9.2 案例二：Pydantic 的 `ModelMetaclass`
+### 8.2 案例二：Pydantic 的 `ModelMetaclass`
 
 Pydantic v2 的 `ModelMetaclass` 是元类深度应用的现代范例。它负责：
 
@@ -1687,7 +1649,7 @@ print(u.id, u.name, u.email)
 # User(name="Bob")           # ValueError: Field id is required
 ```
 
-### 9.3 案例三：`enum.Enum` 的 `EnumMeta`
+### 8.3 案例三：`enum.Enum` 的 `EnumMeta`
 
 Python 标准库 `enum` 模块的 `EnumMeta` 是元类的教科书级范例。它负责：
 
@@ -1743,7 +1705,7 @@ for c in Color:
     print(c)                  # Color.RED, Color.GREEN, Color.BLUE
 ```
 
-### 9.4 案例四：`abc.ABCMeta` 抽象基类
+### 8.4 案例四：`abc.ABCMeta` 抽象基类
 
 `abc.ABCMeta` 是标准库提供的元类，用于实现抽象基类。它重写 `__new__`，扫描类体中的 `abstractmethod` 装饰方法，记录到 `__abstractmethods__` 集合。实例化时，若 `__abstractmethods__` 非空，则抛出 `TypeError`。
 
@@ -1806,7 +1768,7 @@ print(c.area())      # 12.56
 print(c.perimeter()) # 12.56
 ```
 
-### 9.5 案例五：Flask-RESTx 的路由收集
+### 8.5 案例五：Flask-RESTx 的路由收集
 
 Flask-RESTx（前身 Flask-RESTplus）使用元类自动收集 `@ns.route()` 装饰的资源，将路由注册延迟到类创建时。
 
@@ -1849,7 +1811,7 @@ print(UserList._routes)
 # [('/api/users', {})]
 ```
 
-### 9.6 案例六：`typing.Generic` 的参数化类型
+### 8.6 案例六：`typing.Generic` 的参数化类型
 
 Python 的 `typing.Generic` 通过元类实现参数化类型的实例化检查。当写 `List[int]` 时，元类 `GenericMeta`（Python 3.7 前）拦截 `__getitem__`，返回一个参数化的类型别名。
 
@@ -1886,7 +1848,7 @@ print(List[str, int])  # List[str, int]
 
 注：Python 3.7+ 已将 `Generic` 的元类机制简化为 `__class_getitem__`，但元类思想仍是其设计基础。
 
-### 9.7 案例七：Pytest 的插件收集
+### 8.7 案例七：Pytest 的插件收集
 
 Pytest 使用元类（与 `__init_subclass__` 组合）收集插件类，自动注册钩子。
 
@@ -1935,7 +1897,7 @@ print(MyPlugin._hooks)  # {'modify_items': <function ...>}
 print(PluginManager._plugins)  # [<class '...MyPlugin'>]
 ```
 
-### 9.8 案例八：SQLModel 的双重继承
+### 8.8 案例八：SQLModel 的双重继承
 
 SQLModel（由 FastAPI 作者开发）使用元类同时支持 Pydantic 与 SQLAlchemy，需要在类创建时同时收集字段注解与 ORM 字段。
 
@@ -1995,7 +1957,7 @@ print(User.__create_table_sql__)
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（记忆与理解）
+### 9.1 基础题（记忆与理解）
 
 **题目 10.1.1**：写出以下代码的输出，并解释原因。
 
@@ -2125,7 +2087,7 @@ db3 = Database()
 assert db3 is not db1
 ```
 
-### 10.3 分析题
+### 9.3 分析题
 
 **题目 10.3.1**：分析以下代码的输出，解释元类 `__call__` 的作用。
 
@@ -2192,7 +2154,7 @@ class StrictMeta(type):
         return ValidatingDict()
 ```
 
-### 10.4 评价题
+### 9.4 评价题
 
 **题目 10.4.1**：评估以下场景是否应使用元类，给出替代方案。
 
@@ -2220,7 +2182,7 @@ class StrictMeta(type):
 2. 不增加实例化开销；
 3. 避免"魔法溢出"到子类。
 
-### 10.5 创造题
+### 9.5 创造题
 
 **题目 10.5.1**：设计并实现一个轻量级插件系统，要求：
 
@@ -2315,7 +2277,7 @@ print(p.x, p.y)  # 1 2
 # p.x = 3  # AttributeError: Cannot modify frozen Point
 ```
 
-### 10.6 思考题
+### 9.6 思考题
 
 **题目 10.6.1**：为什么 Python 选择 `type` 作为自身的元类（自指），而不是引入一个"超元类"？
 
@@ -2362,9 +2324,9 @@ print(p.x, p.y)  # 1 2
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档与 PEP
+### 10.1 官方文档与 PEP
 
 Python Software Foundation. (2024). *The Python Tutorial: Metaclasses*. Retrieved from https://docs.python.org/3/reference/datamodel.html#metaclasses
 
@@ -2376,7 +2338,7 @@ Snow, B. (2016). *PEP 487: Simpler customisation of class creation*. Python Enha
 
 Smith, J. E. (2017). *PEP 557: Data Classes*. Python Enhancement Proposals. Retrieved from https://peps.python.org/pep-0557/
 
-### 11.2 经典教材
+### 10.2 经典教材
 
 Lutz, M. (2013). *Learning Python* (5th ed.). O'Reilly Media. Chapter 39: "Metaclasses".
 
@@ -2386,7 +2348,7 @@ Pilgrim, M. (2009). *Dive Into Python 3*. Apress. Chapter 9: "Classes & Iterator
 
 Beazley, D., and Jones, B. K. (2013). *Python Cookbook* (3rd ed.). O'Reilly Media. Chapter 9: "Metaprogramming".
 
-### 11.3 学术论文
+### 10.3 学术论文
 
 Formica, A., Lemoine, M., and Pannell, S. (2000). *Metaclasses for the Run-time Generation of classes*. Proceedings of the 8th International Conference on Object-Oriented Information Systems, 1-12.
 
@@ -2394,7 +2356,7 @@ Chiba, S. (1998). *Load-time structural reflection in Java*. European Conference
 
 Boucher, A., et al. (2020). *A Tale of Two Metaclass Systems: A Comparative Study of Python and Ruby*. Journal of Object Technology, 19(2), 1-15.
 
-### 11.4 开源项目源码
+### 10.4 开源项目源码
 
 Django Software Foundation. (2024). *django.db.models.base.ModelBase*. GitHub repository. https://github.com/django/django/blob/main/django/db/models/base.py
 
@@ -2404,7 +2366,7 @@ Python Software Foundation. (2024). *Lib/enum.py: EnumMeta*. GitHub repository. 
 
 Python Software Foundation. (2024). *Lib/abc.py: ABCMeta*. GitHub repository. https://github.com/python/cpython/blob/main/Lib/abc.py
 
-### 11.5 在线资源
+### 10.5 在线资源
 
 Hettinger, R. (2013). *Python's Class Development Toolkit*. PyCon Canada. https://www.youtube.com/watch?v=HTLu2DFOdTg
 
@@ -2414,23 +2376,23 @@ Bicking, I. (2010). *A Metaclass Seminar*. Blog post. http://ianbicking.org/blog
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 元类进阶主题
+### 11.1 元类进阶主题
 
 - **元类与描述符的协同**：阅读 `descriptor` 协议文档，理解 `__set_name__` 与元类 `__new__` 的协作。
 - **`__class_getitem__`（PEP 560）**：Python 3.7+ 引入的轻量级参数化类型机制，可替代部分元类场景。
 - **`typing.Generic` 的实现**：阅读 CPython `typing` 模块源码，理解参数化类型的元类基础。
 - **`dataclasses` 的类装饰器方案**：阅读 PEP 557 与 `dataclasses` 源码，对比元类方案与装饰器方案的取舍。
 
-### 12.2 元编程相关主题
+### 11.2 元编程相关主题
 
 - **AST 与代码生成**：阅读 `ast` 模块文档，理解编译时元编程。
 - **`exec` 与 `eval`**：理解运行时代码执行的风险与用途。
 - **`importlib` 与动态导入**：理解模块加载机制，与元类协同实现插件系统。
 - **`inspect` 模块**：理解运行时反射，与元类配合实现代码生成工具。
 
-### 12.3 相关 Python 文档
+### 11.3 相关 Python 文档
 
 - [Data model - Customizing class creation](https://docs.python.org/3/reference/datamodel.html#customizing-class-creation)
 - [Built-in Functions - type()](https://docs.python.org/3/library/functions.html#type)
@@ -2438,26 +2400,26 @@ Bicking, I. (2010). *A Metaclass Seminar*. Blog post. http://ianbicking.org/blog
 - [enum module - EnumMeta](https://docs.python.org/3/library/enum.html#enum.EnumMeta)
 - [types module - Built-in Types](https://docs.python.org/3/library/types.html)
 
-### 12.4 推荐书籍章节
+### 11.4 推荐书籍章节
 
 - *Fluent Python* (2nd ed.) 第 24 章 "Class Metaprogramming"：Luciano Ramalho 对元类有深入浅出的讲解，涵盖 `__init_subclass__` 与描述符协同。
 - *Python Cookbook* (3rd ed.) 第 9 章 "Metaprogramming"：David Beazley 提供了大量元类实战技巧。
 - *Robust Python* (2021) 第 13 章 "Metaclasses"：Patrick Viafore 从类型安全角度讨论元类的使用与风险。
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - [Python Metaclasses Wiki](https://wiki.python.org/moin/Metaclasses)
 - [Stack Overflow: metaclass tag](https://stackoverflow.com/questions/tagged/metaclass)
 - [Real Python: Python Metaclasses](https://realpython.com/python-metaclasses/)
 
-### 12.6 进阶案例库
+### 11.6 进阶案例库
 
 - **Django ORM 源码精读**：`django.db.models.base.ModelBase`，学习生产级元类的复杂逻辑。
 - **Pydantic v2 源码精读**：`pydantic._internal._model_construction.ModelMetaclass`，学习现代元类与类型注解的深度集成。
 - **attrs 源码精读**：`attr._make._ClassBuilder`，学习"类装饰器 + slots"方案如何替代元类。
 - **msgspec 源码精读**：`msgspec._core.StructMeta`，学习高性能元类（C 扩展 + Python 元类混合）。
 
-### 12.7 设计哲学延伸
+### 11.7 设计哲学延伸
 
 - *The Art of the Metaobject Protocol* (AMOP) by Gregor Kiczales et al.：元对象协议（MOP）的经典著作，理解元类的设计哲学根源。
 - *Putting Metaclasses to Work* by Ira R. Forman and Scott H. Danforth：元类在企业级系统中的应用。

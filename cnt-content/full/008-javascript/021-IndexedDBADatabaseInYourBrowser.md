@@ -25,146 +25,6 @@ prerequisites:
   - javascript/语法速查
   - javascript/Promise与async
   - javascript/Web存储API
-learningObjectives:
-  - '{''remember'': ''复述 IndexedDB 的核心特性（事务型、NoSQL、异步、同源隔离）、容量限制、API 形式与标准化历程''}'
-  - '{''understand'': ''解释 IndexedDB 的事务模型（ACID、隔离级别）、对象存储与索引结构（B+ 树）、游标机制与版本升级流程''}'
-  - '{''apply'': ''编写生产级 IndexedDB 封装库，包括 Promise 化、事务抽象、索引管理、批量操作、错误处理与数据迁移''}'
-  - '{''analyze'': ''对比 IndexedDB 与 localStorage、SQL 数据库、其他 NoSQL 在容量、性能、查询能力、事务支持上的差异''}'
-  - '{''evaluate'': ''评估 IndexedDB 在离线优先应用、大数据存储、复杂数据查询场景下的适用性，给出架构决策依据''}'
-  - '{''create'': ''设计基于 IndexedDB 的离线优先应用架构，结合 Service Worker、同步策略、冲突解决机制''}'
-exercises:
-  - id: ex-indexeddb-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: IndexedDB 是一种 ______ 型数据库，所有读写操作必须在 ______ 中执行，且 API 为 ______ 以避免阻塞主线程。
-    hint: 类型为 NoSQL/事务型；操作须在事务中；API 为异步
-    answer: NoSQL/事务,事务,异步
-    answers:
-      - NoSQL/事务
-      - 事务
-      - 异步
-    blankCount: 3
-    caseSensitive: false
-    difficulty: 1
-    estimatedTime: 2
-  - id: ex-indexeddb-02
-    type: fill-blank
-    cognitiveLevel: understand
-    question: IndexedDB 使用 ______ 事件触发 schema 升级，通过 ______ 方法创建对象存储，使用 ______ 方法创建索引；事务的隔离级别默认为 ______。
-    hint: 事件名 onupgradeneeded；方法 createObjectStore / createIndex；隔离级别基于读写锁
-    answer: onupgradeneeded,createObjectStore,createIndex,readwrite/readonly
-    answers:
-      - onupgradeneeded
-      - createObjectStore
-      - createIndex
-      - readwrite/readonly
-    blankCount: 4
-    caseSensitive: false
-    difficulty: 3
-    estimatedTime: 4
-  - id: ex-indexeddb-03
-    type: choice
-    cognitiveLevel: understand
-    question: 关于 IndexedDB 事务的描述，下列哪项是错误的？
-    options:
-      - 事务在没有活跃请求后自动提交，无需显式 commit
-      - readwrite 事务按作用域对象存储的字母顺序排序获取锁
-      - 同一事务中多个对象存储的操作共享同一个事务上下文
-      - readonly 事务与 readwrite 事务可同时访问同一对象存储
-    correctIndex: 3
-    multiple: false
-    difficulty: 3
-    explanation: readonly 事务可与 readwrite 事务同时访问同一对象存储，但 readwrite 事务之间必须串行。IndexedDB 的事务锁粒度基于对象存储而非行，遵循「readwrite 事务按作用域排序」规则以避免死锁。
-    answer: D
-  - id: ex-indexeddb-04
-    type: choice
-    cognitiveLevel: analyze
-    question: 在以下场景中，哪种存储机制最不合适？
-    options:
-      - 离线邮件客户端缓存数千封邮件正文 —— IndexedDB
-      - 用户主题偏好（明/暗模式）—— localStorage
-      - 实时聊天应用的离线消息队列与索引查询 —— IndexedDB
-      - 频繁更新的股票实时价格（每秒数百次小数据写入）—— IndexedDB
-    correctIndex: 3
-    multiple: false
-    difficulty: 4
-    explanation: IndexedDB 每次写入都需创建事务，存在固定开销，不适合每秒数百次的小数据高频写入。对于此类场景，应使用内存缓冲批量写入（攒批后一次性 commit），或考虑 localStorage + 内存映射。其他三项场景与对应存储机制匹配合理。
-    answer: D
-  - id: ex-indexeddb-05
-    type: code-fix
-    cognitiveLevel: apply
-    question: 以下 IndexedDB 数据读取函数存在缺陷，无法正确返回结果。请修复。
-    buggyCode: |
-      function getUser(db, id) {
-        const tx = db.transaction('users', 'readonly');
-        const store = tx.objectStore('users');
-        const request = store.get(id);
-        return request.result;
-      }
-    fixedCode: |
-      function getUser(db, id) {
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction('users', 'readonly');
-          const store = tx.objectStore('users');
-          const request = store.get(id);
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = () => reject(request.error);
-        });
-      }
-      // 使用示例
-      const user = await getUser(db, 1);
-    errorDescription: 原代码同步返回 request.result，但 IndexedDB 是异步 API，request.result 在 request.onsuccess 触发前为 undefined。需用 Promise 封装，在 onsuccess 回调中 resolve 结果。
-    language: javascript
-    answer: 用 Promise 封装异步结果
-    difficulty: 2
-    estimatedTime: 4
-  - id: ex-indexeddb-06
-    type: code-fix
-    cognitiveLevel: evaluate
-    question: 以下事务批量插入函数在大量数据时性能极差，且可能丢失数据。请修复。
-    buggyCode: |
-      async function bulkInsert(db, storeName, items) {
-        for (const item of items) {
-          const tx = db.transaction(storeName, 'readwrite');
-          tx.objectStore(storeName).add(item);
-        }
-      }
-    fixedCode: |
-      async function bulkInsert(db, storeName, items, batchSize = 1000) {
-        for (let i = 0; i < items.length; i += batchSize) {
-          const batch = items.slice(i, i + batchSize);
-          await new Promise((resolve, reject) => {
-            const tx = db.transaction(storeName, 'readwrite');
-            const store = tx.objectStore(storeName);
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject(tx.error);
-            tx.onabort = () => reject(tx.error);
-            for (const item of batch) {
-              store.add(item);
-            }
-          });
-        }
-      }
-    errorDescription: 原实现为每条数据创建独立事务，每事务有固定开销（约 1-5ms），10000 条数据需 10-50 秒。修复后使用单事务批量插入，并按 batchSize 分片避免事务过长被浏览器中止；同时等待 tx.oncomplete 确保数据落盘。
-    language: javascript
-    answer: 单事务批量插入并分片
-    difficulty: 4
-    estimatedTime: 8
-  - id: ex-indexeddb-07
-    type: open-ended
-    cognitiveLevel: create
-    question: 你正在设计一个支持离线编辑与跨设备同步的笔记应用，要求：(1) 离线时所有编辑即时保存；(2) 网络恢复后增量同步；(3) 冲突检测与解决；(4) 历史版本可追溯；(5) 全文搜索；(6) 多端登录状态隔离。请论述如何使用 IndexedDB 设计数据 schema、事务策略、同步队列、冲突解决算法、索引设计、存储配额管理。给出完整架构设计与关键代码。
-    keyPoints:
-      - 设计 notes / pendingOps / revisions / syncMeta 四个对象存储
-      - 使用 syncStatus 字段标记同步状态（pending/synced/conflict）
-      - 给出 LWW（Last-Write-Wins）与 CRDT 两种冲突解决策略的权衡
-      - 设计多字段索引（updatedAt、userId、tags）支持复杂查询
-      - 使用 IDBKeyRange 与游标实现分页与全文搜索
-      - 处理存储配额检测、自动清理旧版本、数据压缩策略
-    answer: 开放性论述题，需覆盖上述关键点
-    minWords: 600
-    difficulty: 5
-    estimatedTime: 40
 references:
   - type: standard
     authors:
@@ -253,6 +113,7 @@ reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 55
 ---
 
+
 # 索引数据库（IndexedDB）
 
 ## 0. 学习导言
@@ -274,24 +135,9 @@ estimatedReadingTime: 55
 
 ---
 
-## 1. 学习目标（Bloom 分类法）
+## 1. 历史动机
 
-本篇严格遵循 Bloom 修订版认知层次框架（Anderson & Krathwohl, 2001），按由低到高六个层次组织学习目标：
-
-| Bloom 层次 | 学习目标 | 对应章节 |
-| ---------- | -------- | -------- |
-| Remember（记忆） | 复述 IndexedDB 的特性、容量、API 形式与标准化历程 | 第 2 章 |
-| Understand（理解） | 解释事务模型、对象存储、索引结构、游标机制 | 第 3-7 章 |
-| Apply（应用） | 编写 Promise 封装、批量操作、索引查询、数据迁移 | 第 5-9 章 |
-| Analyze（分析） | 对比各存储机制差异，识别适用场景 | 第 10 章 |
-| Evaluate（评价） | 评估性能开销、架构选型、同步策略 | 第 12 章 |
-| Create（创造） | 设计离线优先应用架构、同步队列、冲突解决 | 第 15 章 |
-
----
-
-## 2. 历史动机
-
-### 2.1 IndexedDB 演进时间线
+### 1.1 IndexedDB 演进时间线
 
 IndexedDB 的诞生是 Web 平台从「文档展示」迈向「应用平台」的关键一步，经历了长期的标准化演进：
 
@@ -312,7 +158,7 @@ IndexedDB 的诞生是 Web 平台从「文档展示」迈向「应用平台」�
 | 2025 | Safari 17 全面支持 IndexedDB 3.0 草案 | Apple |
 | 2026 | IndexedDB 3.0 推荐标准，原生 Promise API 落地 | W3C |
 
-### 2.2 Web SQL Database 的失败教训
+### 1.2 Web SQL Database 的失败教训
 
 在 IndexedDB 之前，W3C 曾于 2009 年标准化 **Web SQL Database**——一个基于 SQLite 的浏览器 SQL 数据库。该规范最终于 2010 年被废弃，原因包括：
 
@@ -335,7 +181,7 @@ db.transaction((tx) => {
 3. **安全风险**：SQL 注入风险、动态 schema 变更难以控制
 4. **API 设计问题**：回调地狱、错误处理繁琐、缺乏类型安全
 
-### 2.3 IndexedDB 的设计哲学
+### 1.3 IndexedDB 的设计哲学
 
 为吸取 Web SQL 的教训，IndexedDB 采用了一套全新的设计哲学：
 
@@ -346,7 +192,7 @@ db.transaction((tx) => {
 - **同源策略隔离**：每个源有独立的 IndexedDB 数据库集，跨源访问被禁止
 - **支持索引与游标**：弥补 NoSQL 查询能力弱的短板
 
-### 2.4 关键人物与原始规范
+### 1.4 关键人物与原始规范
 
 IndexedDB 规范的奠基者包括：
 
@@ -360,9 +206,9 @@ IndexedDB 规范的奠基者包括：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 数据库与对象存储
+### 2.1 数据库与对象存储
 
 IndexedDB 数据库是一个由同源策略隔离的命名容器，内部包含若干**对象存储（Object Store）**与**索引（Index）**。
 
@@ -380,7 +226,7 @@ $$s: K \rightarrow V$$
 
 **定义 3.3（键路径）**：键路径 $kp$ 是一个字符串或字符串数组，指定从对象中提取主键的路径。例如 `kp = 'id'` 表示 $s$ 中每个对象的 `id` 字段作为主键；`kp = ['user', 'id']` 表示嵌套路径。
 
-### 3.2 事务的 ACID 特性
+### 2.2 事务的 ACID 特性
 
 IndexedDB 事务严格遵循 ACID 特性（Härder & Reuter, 1983）：
 
@@ -397,7 +243,7 @@ $$\text{scope}(T_1) \cap \text{scope}(T_2) \neq \emptyset \implies T_1 \text{ �
 
 为避免死锁，IndexedDB 规定 readwrite 事务按其作用域对象存储的**字典序**排序获取锁。
 
-### 3.3 索引的 B+ 树结构
+### 2.3 索引的 B+ 树结构
 
 IndexedDB 索引采用 **B+ 树**结构，其查询复杂度为对数级：
 
@@ -415,7 +261,7 @@ $$T_{\text{lookup}}(n) = O(\log_m n)$$
 
 其中 $k$ 是结果集大小。
 
-### 3.4 同源策略与存储隔离
+### 2.4 同源策略与存储隔离
 
 IndexedDB 遵循**同源策略（Same-Origin Policy）**：
 
@@ -425,7 +271,7 @@ $$\text{Origin} = (\text{scheme}, \text{host}, \text{port})$$
 
 **例外**：`file://` 协议的源被视为不透明源，IndexedDB 在 `file://` 下行为不一致，建议避免使用。
 
-### 3.5 存储容量模型
+### 2.5 存储容量模型
 
 IndexedDB 的容量受浏览器配额管理：
 
@@ -444,9 +290,9 @@ console.log(`使用率: ${((estimate.usage / estimate.quota) * 100).toFixed(2)}%
 
 ---
 
-## 4. 数据库连接与版本管理
+## 3. 数据库连接与版本管理
 
-### 4.1 打开数据库
+### 3.1 打开数据库
 
 IndexedDB 通过 `indexedDB.open()` 打开或创建数据库：
 
@@ -484,7 +330,7 @@ request.onblocked = (event) => {
 };
 ```
 
-### 4.2 版本升级流程
+### 3.2 版本升级流程
 
 版本升级是 IndexedDB schema 演进的核心机制：
 
@@ -525,7 +371,7 @@ request.onupgradeneeded = (event) => {
 2. 升级事务是隐式的 readwrite 事务，通过 `event.target.transaction` 获取
 3. 必须处理 `onblocked` 事件——其他标签页持有的旧连接会阻塞升级
 
-### 4.3 关闭数据库连接
+### 3.3 关闭数据库连接
 
 ```javascript
 /**
@@ -548,7 +394,7 @@ db.onversionchange = (event) => {
 };
 ```
 
-### 4.4 删除数据库
+### 3.4 删除数据库
 
 ```javascript
 // 删除整个数据库
@@ -562,9 +408,9 @@ deleteRequest.onblocked = () => {
 
 ---
 
-## 5. 对象存储与索引
+## 4. 对象存储与索引
 
-### 5.1 创建对象存储
+### 4.1 创建对象存储
 
 ```javascript
 // 选项说明：
@@ -575,7 +421,7 @@ const store2 = db.createObjectStore('logs', { keyPath: 'id', autoIncrement: true
 const store3 = db.createObjectStore('temp', { autoIncrement: true }); // out-of-line keys
 ```
 
-### 5.2 创建索引
+### 4.2 创建索引
 
 ```javascript
 /**
@@ -610,7 +456,7 @@ index.getAll('editor').onsuccess = (e) => {
 };
 ```
 
-### 5.3 删除对象存储与索引
+### 4.3 删除对象存储与索引
 
 ```javascript
 // 删除对象存储（仅在 onupgradeneeded 中可调用）
@@ -622,9 +468,9 @@ store.deleteIndex('age');
 
 ---
 
-## 6. 事务详解
+## 5. 事务详解
 
-### 6.1 事务的创建与作用域
+### 5.1 事务的创建与作用域
 
 ```javascript
 /**
@@ -643,7 +489,7 @@ tx.onabort = () => console.warn('事务被中止');
 tx.abort();
 ```
 
-### 6.2 事务的自动提交机制
+### 5.2 事务的自动提交机制
 
 IndexedDB 事务在没有**活跃请求**时自动提交，这一机制常导致陷阱：
 
@@ -679,7 +525,7 @@ const store = tx.objectStore('users');
 store.add({ id: 1, name: 'Alice', validated: validation.ok });
 ```
 
-### 6.3 事务隔离级别
+### 5.3 事务隔离级别
 
 ```javascript
 // readonly 事务之间可并发
@@ -695,7 +541,7 @@ const tx5 = db.transaction('users', 'readwrite');
 const tx6 = db.transaction('users', 'readonly'); // 与 tx5 并发，读到 tx5 提交前的数据
 ```
 
-### 6.4 跨对象存储事务
+### 5.4 跨对象存储事务
 
 ```javascript
 // 在单个事务中操作多个对象存储，保证原子性
@@ -731,9 +577,9 @@ try {
 
 ---
 
-## 7. CRUD 操作
+## 6. CRUD 操作
 
-### 7.1 增（add / put）
+### 6.1 增（add / put）
 
 ```javascript
 const tx = db.transaction('users', 'readwrite');
@@ -749,7 +595,7 @@ store.put({ id: 1, name: 'Alice Updated', email: 'alice@new.com' });
 store.add({ name: 'Bob' }, 100); // 显式指定键为 100
 ```
 
-### 7.2 查（get / getAll）
+### 6.2 查（get / getAll）
 
 ```javascript
 const tx = db.transaction('users', 'readonly');
@@ -786,7 +632,7 @@ store.count().onsuccess = (e) => {
 };
 ```
 
-### 7.3 改（put）
+### 6.3 改（put）
 
 ```javascript
 /**
@@ -813,7 +659,7 @@ async function updateUser(db, id, updates) {
 }
 ```
 
-### 7.4 删（delete / clear）
+### 6.4 删（delete / clear）
 
 ```javascript
 // 按主键删除
@@ -828,9 +674,9 @@ store.delete(IDBKeyRange.bound(1, 100)); // 删除 id 1-100 的记录
 
 ---
 
-## 8. 索引与查询
+## 7. 索引与查询
 
-### 8.1 通过索引查询
+### 7.1 通过索引查询
 
 ```javascript
 const tx = db.transaction('users', 'readonly');
@@ -855,7 +701,7 @@ nameAgeIndex.get(['Smith', 30]).onsuccess = (e) => {
 };
 ```
 
-### 8.2 IDBKeyRange 键范围
+### 7.2 IDBKeyRange 键范围
 
 ```javascript
 // 精确匹配
@@ -883,7 +729,7 @@ IDBKeyRange.bound(18, 65, true, true);
 IDBKeyRange.bound(18, 65, false, true);
 ```
 
-### 8.3 游标遍历
+### 7.3 游标遍历
 
 游标是 IndexedDB 处理大数据集的核心机制，支持分页、惰性遍历与条件过滤：
 
@@ -949,7 +795,7 @@ ageIndex.openCursor(IDBKeyRange.bound(18, 65), 'next').onsuccess = (event) => {
 };
 ```
 
-### 8.4 分页实现
+### 7.4 分页实现
 
 ```javascript
 /**
@@ -1000,9 +846,9 @@ const page2 = await paginate(db, 'users', 2, 20);
 
 ---
 
-## 9. Promise 封装与生产级工具库
+## 8. Promise 封装与生产级工具库
 
-### 9.1 基础 Promise 封装
+### 8.1 基础 Promise 封装
 
 ```javascript
 /**
@@ -1039,7 +885,7 @@ function openDB(name, version, onUpgrade) {
 }
 ```
 
-### 9.2 完整的 IndexedDB 工具类
+### 8.2 完整的 IndexedDB 工具类
 
 ```javascript
 /**
@@ -1214,7 +1060,7 @@ class IndexedDBWrapper {
 }
 ```
 
-### 9.3 使用示例
+### 8.3 使用示例
 
 ```javascript
 // 初始化数据库
@@ -1253,9 +1099,9 @@ await db.forEach('users', (user, key) => {
 
 ---
 
-## 10. 对比分析
+## 9. 对比分析
 
-### 10.1 与其他浏览器存储机制对比
+### 9.1 与其他浏览器存储机制对比
 
 | 维度 | localStorage | sessionStorage | IndexedDB | Cache API |
 | ---- | ------------ | -------------- | --------- | --------- |
@@ -1269,7 +1115,7 @@ await db.forEach('users', (user, key) => {
 | 生命周期 | 永久 | 标签页关闭 | 永久 | 永久（需手动清理） |
 | 适用场景 | 简单偏好 | 临时数据 | 大数据、复杂查询 | HTTP 资源缓存 |
 
-### 10.2 与 SQL 数据库对比
+### 9.2 与 SQL 数据库对比
 
 | 维度 | IndexedDB | SQL（SQLite/MySQL） |
 | ---- | --------- | ------------------- |
@@ -1283,7 +1129,7 @@ await db.forEach('users', (user, key) => {
 | 部署位置 | 浏览器内 | 服务器或本地进程 |
 | 跨标签页 | 通过 storage 事件协调 | 需进程间通信 |
 
-### 10.3 与其他 NoSQL 数据库对比
+### 9.3 与其他 NoSQL 数据库对比
 
 | 维度 | IndexedDB | MongoDB | Redis | PouchDB |
 | ---- | --------- | ------- | ----- | ------- |
@@ -1296,9 +1142,9 @@ await db.forEach('users', (user, key) => {
 
 ---
 
-## 11. 常见陷阱
+## 10. 常见陷阱
 
-### 11.1 事务自动提交陷阱
+### 10.1 事务自动提交陷阱
 
 ```javascript
 // 错误：异步等待导致事务已 inactive
@@ -1347,7 +1193,7 @@ async function correctTransfer(db, fromId, toId, amount) {
 }
 ```
 
-### 11.2 索引不生效陷阱
+### 10.2 索引不生效陷阱
 
 ```javascript
 // 陷阱：在未建索引的字段上查询，只能全表扫描
@@ -1375,7 +1221,7 @@ if (store.indexNames.contains('age')) {
 }
 ```
 
-### 11.3 版本升级阻塞陷阱
+### 10.3 版本升级阻塞陷阱
 
 ```javascript
 // 陷阱：多个标签页打开同一应用时，升级被阻塞
@@ -1395,7 +1241,7 @@ request.onblocked = () => {
 };
 ```
 
-### 11.4 嵌套事务陷阱
+### 10.4 嵌套事务陷阱
 
 ```javascript
 // IndexedDB 不支持嵌套事务
@@ -1410,7 +1256,7 @@ store.add({ id: 1, name: 'Alice' });
 store.add({ id: 2, name: 'Bob' });
 ```
 
-### 11.5 存储配额超限
+### 10.5 存储配额超限
 
 ```javascript
 // 陷阱：未监控配额，突然 QuotaExceededError
@@ -1440,7 +1286,7 @@ async function safeAdd(db, storeName, item) {
 }
 ```
 
-### 11.6 隐私模式限制
+### 10.6 隐私模式限制
 
 ```javascript
 // 隐私模式下 IndexedDB 可能不可用或容量为 0
@@ -1468,16 +1314,16 @@ if (!(await isIndexedDBAvailable())) {
 
 ---
 
-## 12. 工程实践
+## 11. 工程实践
 
-### 12.1 数据库 Schema 设计原则
+### 11.1 数据库 Schema 设计原则
 
 1. **主键选择**：优先使用稳定的唯一标识符（如 UUID），避免使用自增整数（多设备同步易冲突）
 2. **索引按需创建**：每个索引都有存储与写入开销，只为常用查询字段建索引
 3. **对象存储分域**：按业务领域划分（如 users、orders、products），避免单表过大
 4. **预留扩展字段**：使用动态字段（如 `metadata: {}`）应对未来需求
 
-### 12.2 TypeScript 类型支持
+### 11.2 TypeScript 类型支持
 
 ```typescript
 /**
@@ -1535,7 +1381,7 @@ class TypedIndexedDB<Schemas> {
 }
 ```
 
-### 12.3 数据迁移与版本升级
+### 11.3 数据迁移与版本升级
 
 ```javascript
 /**
@@ -1586,7 +1432,7 @@ async function openAppDB(name, targetVersion) {
 }
 ```
 
-### 12.4 单元测试
+### 11.4 单元测试
 
 ```javascript
 /**
@@ -1650,7 +1496,7 @@ describe('IndexedDBWrapper', () => {
 });
 ```
 
-### 12.5 性能优化策略
+### 11.5 性能优化策略
 
 ```javascript
 // 1. 批量操作（单事务 vs 多事务）
@@ -1693,9 +1539,9 @@ await db.put('users', user);
 
 ---
 
-## 13. 案例研究
+## 12. 案例研究
 
-### 13.1 Notion 的 IndexedDB 使用
+### 12.1 Notion 的 IndexedDB 使用
 
 Notion 的 Web 版本大量使用 IndexedDB 缓存文档数据，实现：
 
@@ -1704,7 +1550,7 @@ Notion 的 Web 版本大量使用 IndexedDB 缓存文档数据，实现：
 - **增量同步**：仅同步变化的数据块（CRDT-like）
 - **历史版本**：存储文档的多个版本用于撤销/重做
 
-### 13.2 Google Docs 离线模式
+### 12.2 Google Docs 离线模式
 
 Google Docs 使用 IndexedDB 实现：
 
@@ -1712,7 +1558,7 @@ Google Docs 使用 IndexedDB 实现：
 - **操作队列**：离线时的编辑操作排队，联网后重放
 - **协作冲突**：使用 OT（Operational Transformation）算法解决多人编辑冲突
 
-### 13.3 Twitter PWA
+### 12.3 Twitter PWA
 
 Twitter Progressive Web App 使用 IndexedDB：
 
@@ -1721,7 +1567,7 @@ Twitter Progressive Web App 使用 IndexedDB：
 - **草稿存储**：未发送的推文草稿
 - **离线阅读**：联网时预取，离线时可阅读
 
-### 13.4 Figma 的协同设计
+### 12.4 Figma 的协同设计
 
 Figma 使用 IndexedDB：
 
@@ -1730,7 +1576,7 @@ Figma 使用 IndexedDB：
 - **撤销栈**：多步撤销操作的本地存储
 - **多标签页协调**：通过 storage 事件同步状态
 
-### 13.5 VS Code Web 版
+### 12.5 VS Code Web 版
 
 VS Code Web 使用 IndexedDB：
 
@@ -1743,7 +1589,7 @@ VS Code Web 使用 IndexedDB：
 
 ## 知识讲解与要点分析（原习题）
 
-### 14.1 习题 1（fill-blank，remember）
+### 13.1 习题 1（fill-blank，remember）
 
 **题目**：IndexedDB 是一种 ______ 型数据库，所有读写操作必须在 ______ 中执行，且 API 为 ______ 以避免阻塞主线程。
 
@@ -1751,7 +1597,7 @@ VS Code Web 使用 IndexedDB：
 
 **解析讲解**：IndexedDB 是事务型 NoSQL 数据库，与 Web SQL 的关系型不同。所有读写必须包裹在事务中以保证 ACID。API 异步设计避免阻塞主线程，与 localStorage 的同步 API 形成对比。
 
-### 14.2 习题 2（fill-blank，understand）
+### 13.2 习题 2（fill-blank，understand）
 
 **题目**：IndexedDB 使用 ______ 事件触发 schema 升级，通过 ______ 方法创建对象存储，使用 ______ 方法创建索引；事务的隔离级别默认为 ______。
 
@@ -1759,27 +1605,27 @@ VS Code Web 使用 IndexedDB：
 
 **解析讲解**：schema 升级只能在 `onupgradeneeded` 回调中进行；`createObjectStore` 与 `createIndex` 必须在该回调内调用；事务隔离基于对象存储锁，readwrite 串行、readonly 可并发。
 
-### 14.3 习题 3（choice，understand）
+### 13.3 习题 3（choice，understand）
 
 **解析讲解**：D
 
 **解析讲解**：D 项错误——readonly 事务可与 readwrite 事务并发访问同一对象存储，但 readwrite 之间必须串行。IndexedDB 锁粒度基于对象存储，readwrite 事务按作用域字典序排序获取锁以避免死锁。
 
-### 14.4 习题 4（choice，analyze）
+### 13.4 习题 4（choice，analyze）
 
 **解析讲解**：D
 
 **解析讲解**：IndexedDB 每次写入需创建事务，存在固定开销（1-5ms），不适合每秒数百次的小数据高频写入。应使用内存缓冲批量写入，或考虑其他机制。
 
-### 14.5 习题 5（code-fix，apply）
+### 13.5 习题 5（code-fix，apply）
 
 **解析讲解**：原代码同步返回 `request.result`，但 IndexedDB 是异步 API，需用 Promise 封装在 `onsuccess` 回调中 resolve 结果。
 
-### 14.6 习题 6（code-fix，evaluate）
+### 13.6 习题 6（code-fix，evaluate）
 
 **解析讲解**：原实现为每条数据创建独立事务，性能极差。修复后使用单事务批量插入并分片，避免事务过长被浏览器中止。
 
-### 14.7 习题 7（open-ended，create）
+### 13.7 习题 7（open-ended，create）
 
 **评分要点**：
 
@@ -1792,9 +1638,9 @@ VS Code Web 使用 IndexedDB：
 
 ---
 
-## 15. 实战项目：离线优先邮件客户端
+## 14. 实战项目：离线优先邮件客户端
 
-### 15.1 项目目标
+### 14.1 项目目标
 
 构建一个支持离线收发邮件的 PWA 应用：
 
@@ -1803,7 +1649,7 @@ VS Code Web 使用 IndexedDB：
 3. 网络恢复后自动发送离线撰写的邮件
 4. 支持按发件人、主题、时间索引查询
 
-### 15.2 数据库 Schema 设计
+### 14.2 数据库 Schema 设计
 
 ```javascript
 /**
@@ -1833,7 +1679,7 @@ const emailDBUpgrade = (db, tx, oldV, newV) => {
 };
 ```
 
-### 15.3 核心实现
+### 14.3 核心实现
 
 ```javascript
 /**
@@ -2024,9 +1870,9 @@ const inbox = await mailClient.getEmailsByFolder('inbox', 1, 20);
 
 ---
 
-## 16. 与 Service Worker 集成
+## 15. 与 Service Worker 集成
 
-### 16.1 后台同步
+### 15.1 后台同步
 
 ```javascript
 // Service Worker 中注册同步事件
@@ -2067,7 +1913,7 @@ async function registerSync() {
 }
 ```
 
-### 16.2 定期同步
+### 15.2 定期同步
 
 ```javascript
 // Service Worker 中注册定期同步
@@ -2092,9 +1938,9 @@ async function registerPeriodicSync() {
 
 ---
 
-## 17. 与未来 Web 标准的关联
+## 16. 与未来 Web 标准的关联
 
-### 17.1 IndexedDB 3.0 Promise API
+### 16.1 IndexedDB 3.0 Promise API
 
 IndexedDB 3.0 引入了原生 Promise API，简化异步编程：
 
@@ -2109,7 +1955,7 @@ const db = await indexedDB.open('db', 1);
 const result = await db.transaction('users', 'readonly').objectStore('users').get(1);
 ```
 
-### 17.2 IndexedDB Observer API
+### 16.2 IndexedDB Observer API
 
 Chrome 117+ 引入了观察 API，监听数据变化：
 
@@ -2127,7 +1973,7 @@ db.observe('users', observer, { operation: ['put', 'delete'] });
 db.unobserve('users', observer);
 ```
 
-### 17.3 Web Locks API 与跨标签页协调
+### 16.3 Web Locks API 与跨标签页协调
 
 ```javascript
 // 使用 Web Locks API 协调跨标签页的数据库访问
@@ -2138,7 +1984,7 @@ navigator.locks.request('db-upgrade', async (lock) => {
 });
 ```
 
-### 17.4 Storage Access API
+### 16.4 Storage Access API
 
 跨站访问 IndexedDB（用于嵌入式应用）：
 
@@ -2151,7 +1997,7 @@ if (hasAccess) {
 }
 ```
 
-### 17.5 File System Access API 集成
+### 16.5 File System Access API 集成
 
 将 IndexedDB 数据导出到文件系统：
 
@@ -2174,7 +2020,7 @@ async function exportToCSV(storeName) {
 
 ---
 
-## 18. 参考文献
+## 17. 参考文献
 
 1. **Marathe, N. and Sicking, J. 2026.** Indexed Database API 3.0. W3C. https://www.w3.org/TR/IndexedDB-3/
 2. **Marathe, N. 2015.** Indexed Database API 1.0 - W3C Recommendation. W3C. https://www.w3.org/TR/2015/REC-IndexedDB-20150108/
@@ -2187,15 +2033,15 @@ async function exportToCSV(storeName) {
 
 ---
 
-## 19. 延伸阅读
+## 18. 延伸阅读
 
-### 19.1 官方文档与规范
+### 18.1 官方文档与规范
 
 - **W3C IndexedDB 3.0**：https://www.w3.org/TR/IndexedDB-3/ —— 最新规范
 - **MDN IndexedDB API**：https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API —— 完整 API 文档
 - **web.dev: IndexedDB**：https://web.dev/articles/indexeddb —— Google 团队权威指南
 
-### 19.2 开源库与工具
+### 18.2 开源库与工具
 
 - **idb**：https://github.com/jakearchibald/idb —— Jake Archibald 的 Promise 封装库
 - **Dexie.js**：https://dexie.org/ —— 功能强大的 IndexedDB 封装库
@@ -2203,7 +2049,7 @@ async function exportToCSV(storeName) {
 - **PouchDB**：https://pouchdb.com/ —— 支持 CouchDB 同步的 IndexedDB 封装
 - **fake-indexeddb**：https://github.com/dumbmatter/fakeIndexedDB —— 单元测试用内存实现
 
-### 19.3 相关主题
+### 18.3 相关主题
 
 - **Service Worker**：离线优先的核心技术
 - **Cache API**：HTTP 资源缓存
@@ -2212,7 +2058,7 @@ async function exportToCSV(storeName) {
 - **File System Access API**：本地文件系统集成
 - **WebAssembly 与 SQLite**：在浏览器中运行 SQLite 的替代方案
 
-### 19.4 学术论文
+### 18.4 学术论文
 
 - **Gray, J. 1978.** Notes on Data Base Operating Systems. Operating Systems, Springer. —— 事务处理奠基
 - **Härder, T. and Reuter, A. 1983.** Principles of Transaction-Oriented Database Recovery. —— ACID 正式定义
@@ -2220,9 +2066,9 @@ async function exportToCSV(storeName) {
 
 ---
 
-## 20. 附录
+## 19. 附录
 
-### 20.1 语法速查表
+### 19.1 语法速查表
 
 ```javascript
 // 打开数据库
@@ -2273,7 +2119,7 @@ const estimate = await navigator.storage.estimate();
 await navigator.storage.persist();
 ```
 
-### 20.2 兼容性表
+### 19.2 兼容性表
 
 | 特性 | Chrome | Firefox | Safari | Edge |
 | ---- | ------ | ------- | ------ | ---- |
@@ -2286,7 +2132,7 @@ await navigator.storage.persist();
 | Background Sync | 49+ | 不支持 | 不支持 | 79+ |
 | IndexedDB 3.0 Promise API | 119+ | 122+ | 17+ | 119+ |
 
-### 20.3 术语表
+### 19.3 术语表
 
 | 术语 | 英文 | 定义 |
 | ---- | ---- | ---- |
@@ -2301,7 +2147,7 @@ await navigator.storage.persist();
 | 升级 | Upgrade | schema 版本变迁 |
 | 同源策略 | Same-Origin Policy | 跨源隔离机制 |
 
-### 20.4 学习路径
+### 19.4 学习路径
 
 | 阶段 | 主题 | 资源 |
 | ---- | ---- | ---- |
@@ -2311,7 +2157,7 @@ await navigator.storage.persist();
 | 实战 | Service Worker 与离线优先 | web.dev PWA |
 | 深入 | Dexie.js 与 PouchDB | 官方文档 |
 
-### 20.5 FAQ
+### 19.5 FAQ
 
 **Q1: IndexedDB 与 Web SQL Database 有何区别？**
 
@@ -2333,7 +2179,7 @@ A: 使用 Web Locks API 协调跨标签页操作；监听 storage 事件通知�
 
 A: 默认情况下，浏览器在存储压力下可能清除 IndexedDB 数据。调用 `navigator.storage.persist()` 可请求持久化存储，避免被自动清理。
 
-### 20.6 总结
+### 19.6 总结
 
 IndexedDB 是浏览器内置的强大事务型 NoSQL 数据库，为 Web 应用提供了远超 localStorage 的存储能力。掌握其事务模型、索引机制、游标遍历与 Promise 封装，是构建离线优先 PWA 应用的核心能力。
 

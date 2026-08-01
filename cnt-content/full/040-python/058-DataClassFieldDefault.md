@@ -20,55 +20,14 @@ prerequisites:
   - python/类型注解与mypy
 ---
 
+
 # 数据类与字段默认值（Dataclasses & Field Defaults）
 
 > "dataclasses are a way to automate the writing of boilerplate code for classes that primarily exist to store data." —— PEP 557
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节按 Bloom 认知层次（Bloom's Taxonomy）逐级给出可观察、可测量的学习目标。完成本节后，学习者应能：
-
-### 1.1 记忆层（Remember）
-
-- **R1**：准确陈述 PEP 557 中 `@dataclass` 装饰器的设计动机——"自动生成数据类的常用方法（`__init__`、`__repr__`、`__eq__` 等），减少样板代码"。
-- **R2**：列出 `@dataclass` 装饰器的 7 个核心参数：`init`、`repr`、`eq`、`order`、`unsafe_hash`、`frozen`、`match_args`，并能说明每个参数的默认值与作用。
-- **R3**：背诵 `field()` 函数的 8 个参数：`default`、`default_factory`、`init`、`repr`、`hash`、`compare`、`metadata`、`kw_only`，以及它们的默认值。
-
-### 1.2 理解层（Understand）
-
-- **U1**：解释"可变默认值陷阱"的本质——Python 函数默认参数在函数定义时求值一次，而非每次调用时重新求值，故 `list = []` 会被所有实例共享。
-- **U2**：阐述 `default` 与 `default_factory` 的差异：前者接受不可变值（在类定义时求值），后者接受无参可调用对象（在实例化时求值）。
-- **U3**：说明 `frozen=True` 的实现机制——通过 `object.__setattr__` 与 `object.__delattr__` 拦截，使实例不可变，从而可哈希。
-
-### 1.3 应用层（Apply）
-
-- **A1**：使用 `@dataclass` 与 `field(default_factory=...)` 实现一个嵌套数据类（如 `Order` 包含多个 `Item`），正确处理可变默认值。
-- **A2**：实现一个不可变配置类 `Config(frozen=True)`，支持 `replace()` 创建修改副本，并可作为字典键或集合元素。
-- **A3**：使用 `__post_init__` 与 `field(init=False)` 实现计算字段（如 `Rectangle` 的 `area` 字段在初始化后自动计算）。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：分析 `@dataclass` 与 `typing.NamedTuple`、`attrs`、`pydantic.BaseModel` 的核心差异，识别各自适用场景。
-- **An2**：解构继承场景下字段顺序的规则——父类字段在前，子类字段在后，"有默认值的字段不能在无默认值字段之前"的约束。
-- **An3**：剖析 `KW_ONLY`（Python 3.10+）的设计动机——分离"位置参数字段"与"关键字参数字段"，提升 API 灵活性。
-
-### 1.5 评价层（Evaluate）
-
-- **E1**：评价"何时使用 dataclass、何时使用 Pydantic、何时使用 attrs"的决策矩阵，考虑类型验证、序列化、性能、生态等维度。
-- **E2**：审查一段使用 dataclass 的生产代码，识别潜在的可变默认值陷阱、字段顺序错误、`__hash__` 缺失等问题。
-- **E3**：对比 `@dataclass(frozen=True)` 与 `typing.NamedTuple` 在不可变数据建模上的优劣。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计一个支持"部分更新"（partial update）的 dataclass 基类，提供 `update(**kwargs)` 方法安全地修改字段。
-- **C2**：实现一个"可序列化 dataclass"混入（mixin），自动生成 `to_dict()`、`from_dict()`、`to_json()`、`from_json()` 方法。
-- **C3**：构建一个"验证型 dataclass"元类，在 `__post_init__` 中自动调用字段级的验证函数，集成 Pydantic 风格的校验能力。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 dataclass 之前的世界
+### 1.1 dataclass 之前的世界
 
 在 Python 3.7 引入 `dataclass` 之前，Python 开发者建模"数据类"（即主要用于存储数据的类）有以下选择：
 
@@ -130,7 +89,7 @@ class Point:
 
 **痛点**：第三方依赖，非标准库，API 风格与 Python 原生不同。
 
-### 2.2 PEP 557 的诞生
+### 1.2 PEP 557 的诞生
 
 2017 年，Eric V. Smith 提交 PEP 557《Data Classes》，旨在：
 
@@ -143,7 +102,7 @@ class Point:
 
 Python 3.7（2018 年 6 月发布）正式引入 `@dataclass` 装饰器。
 
-### 2.3 dataclass 的演化路径
+### 1.3 dataclass 的演化路径
 
 - **Python 3.7**（2018）：`@dataclass` 装饰器首次引入，支持 `init`、`repr`、`eq`、`order`、`unsafe_hash`、`frozen` 参数。
 - **Python 3.8**（2019）：无重大变化，但社区积累最佳实践。
@@ -152,7 +111,7 @@ Python 3.7（2018 年 6 月发布）正式引入 `@dataclass` 装饰器。
 - **Python 3.11**（2022）：无重大变化，性能优化。
 - **Python 3.12**（2023）：引入 `weakref_slot` 参数，支持弱引用与 `__slots__` 共存。
 
-### 2.4 与 attrs、Pydantic 的关系
+### 1.4 与 attrs、Pydantic 的关系
 
 **attrs**（由 Hynek Schlawack 维护）：
 
@@ -166,7 +125,7 @@ Python 3.7（2018 年 6 月发布）正式引入 `@dataclass` 装饰器。
 - dataclass 不做验证，Pydantic 做严格验证。
 - Pydantic v2 提供 `pydantic.dataclasses.dataclass` 兼容标准 dataclass API。
 
-### 2.5 企业级动机
+### 1.5 企业级动机
 
 dataclass 在企业级场景的核心价值：
 
@@ -179,9 +138,9 @@ dataclass 在企业级场景的核心价值：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 数据类的形式化定义
+### 2.1 数据类的形式化定义
 
 **定义 3.1（数据类）**：给定类 $C$，使用 `@dataclass` 装饰器装饰，且 $C$ 满足：
 
@@ -200,7 +159,7 @@ $$C = (\text{name}, \text{Fields}, \text{defaults}, \text{options})$$
 - $\text{defaults} = [d_1, d_2, \dots, d_n]$：字段默认值（无默认值记作 $\bot$）。
 - $\text{options}$：dataclass 选项（`frozen`、`eq`、`order` 等）。
 
-### 3.2 字段默认值的形式化定义
+### 2.2 字段默认值的形式化定义
 
 **定义 3.2（字段默认值）**：给定字段 $f_i$，其默认值 $d_i$ 可为以下三种之一：
 
@@ -212,7 +171,7 @@ $$C = (\text{name}, \text{Fields}, \text{defaults}, \text{options})$$
 
 $$d_i = \begin{cases} \bot & \text{if field has no default} \\ v & \text{if field has static default} \\ \text{factory}() & \text{if field has default\_factory} \end{cases}$$
 
-### 3.3 字段顺序约束的形式化
+### 2.3 字段顺序约束的形式化
 
 **约束 3.1（字段顺序约束）**：在 `@dataclass` 中，所有有默认值的字段必须出现在所有无默认值的字段之后。形式化地：
 
@@ -233,7 +192,7 @@ class Bad:
 
 **例外**：使用 `KW_ONLY`（Python 3.10+）可分离位置参数与关键字参数，绕过此约束。
 
-### 3.4 不可变性的形式化定义
+### 2.4 不可变性的形式化定义
 
 **定义 3.3（不可变数据类）**：给定数据类 $C$，若 `@dataclass(frozen=True)`，则 $C$ 满足：
 
@@ -243,7 +202,7 @@ $$\forall x \in \text{Instances}(C), \forall f \in \text{Fields}(C), \neg \exist
 
 **实现机制**：`frozen=True` 通过重写 `__setattr__` 与 `__delattr__` 抛出 `FrozenInstanceError` 实现。
 
-### 3.5 可哈希性的形式化定义
+### 2.5 可哈希性的形式化定义
 
 **定义 3.4（可哈希数据类）**：给定数据类 $C$，$C$ 的实例可哈希当且仅当：
 
@@ -263,9 +222,9 @@ $$\text{Hashable}(C) \iff \text{frozen}(C) \lor \text{unsafe\_hash}(C) \lor \tex
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 可变默认值陷阱的证明
+### 3.1 可变默认值陷阱的证明
 
 **命题 4.1**：若在 dataclass 中使用可变对象作为静态默认值（如 `items: list = []`），则所有实例共享同一可变对象。
 
@@ -301,7 +260,7 @@ y = C()  # items 也指向同一个 []
 
 **推论 4.1**：可变默认值必须使用 `field(default_factory=...)` 在每次实例化时创建新对象。
 
-### 4.2 `default_factory` 的正确性
+### 3.2 `default_factory` 的正确性
 
 **命题 4.2**：使用 `field(default_factory=list)` 时，每次实例化都会调用 `list()` 创建新列表，实例间不共享。
 
@@ -326,7 +285,7 @@ def __init__(self, items=None):
 
 每次实例化 $C$ 时，若未提供 `items`，则调用 `list()` 创建新列表。不同实例的 `items` 指向不同对象，互不影响。$\blacksquare$
 
-### 4.3 不可变性与可哈希性的关系
+### 3.3 不可变性与可哈希性的关系
 
 **命题 4.3**：不可变数据类（`frozen=True`）可安全地作为字典键或集合元素。
 
@@ -355,7 +314,7 @@ m = Mutable(1)
 d = {m: "value"}  # TypeError: unhashable type: 'Mutable'
 ```
 
-### 4.4 继承时字段顺序的推导
+### 3.4 继承时字段顺序的推导
 
 **命题 4.4**：dataclass 继承时，字段顺序为"父类字段 + 子类字段"，且"有默认值字段不能在无默认值字段之前"的约束需全局满足。
 
@@ -385,7 +344,7 @@ class Derived(Base):
 
 **修复**：为 $y$ 提供默认值，或使用 `KW_ONLY`。$\blacksquare$
 
-### 4.5 `__post_init__` 的执行时机
+### 3.5 `__post_init__` 的执行时机
 
 **命题 4.5**：`__post_init__` 在 `__init__` 完成字段赋值后立即调用，可用于初始化计算字段。
 
@@ -406,9 +365,9 @@ def __init__(self, x, y):
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础数据类
+### 4.1 基础数据类
 
 ```python
 from dataclasses import dataclass
@@ -428,7 +387,7 @@ print(p1 == p2)    # True（值相等）
 print(p1 is p2)    # False（不同实例）
 ```
 
-### 5.2 字段默认值
+### 4.2 字段默认值
 
 ```python
 from dataclasses import dataclass
@@ -451,7 +410,7 @@ c2 = Config(host="0.0.0.0", port=3000)
 print(c2)  # Config(host='0.0.0.0', port=3000, debug=False)
 ```
 
-### 5.3 可变默认值陷阱（反模式）
+### 4.3 可变默认值陷阱（反模式）
 
 ```python
 from dataclasses import dataclass
@@ -469,7 +428,7 @@ b1.items.append(1)
 print(b2.items)  # [1] — 被污染了！
 ```
 
-### 5.4 使用 `default_factory` 修复
+### 4.4 使用 `default_factory` 修复
 
 ```python
 from dataclasses import dataclass, field
@@ -487,7 +446,7 @@ g1.items.append(1)
 print(g2.items)  # [] — 独立的列表
 ```
 
-### 5.5 `field()` 函数详解
+### 4.5 `field()` 函数详解
 
 ```python
 from dataclasses import dataclass, field
@@ -525,7 +484,7 @@ print(u)  # User(name='Alice', age=30, id='...', created_at=..., tags=[])
 print(User.__dataclass_fields__["tags"].metadata)  # {'description': '用户标签'}
 ```
 
-### 5.6 不可变数据类
+### 4.6 不可变数据类
 
 ```python
 from dataclasses import dataclass
@@ -551,7 +510,7 @@ locations = {c: "北京"}
 print(locations[Coordinate(39.9, 116.4)])  # 北京
 ```
 
-### 5.7 `__post_init__` 计算字段
+### 4.7 `__post_init__` 计算字段
 
 ```python
 from dataclasses import dataclass, field
@@ -574,7 +533,7 @@ print(r.area)  # 50.0
 print(r)       # Rectangle(width=10.0, height=5.0, area=50.0)
 ```
 
-### 5.8 继承与字段顺序
+### 4.8 继承与字段顺序
 
 ```python
 from dataclasses import dataclass
@@ -595,7 +554,7 @@ d = Derived(x=1, y=2, z=3)
 print(d)  # Derived(x=1, y=2, z=3)
 ```
 
-### 5.9 `KW_ONLY` 强制关键字参数（Python 3.10+）
+### 4.9 `KW_ONLY` 强制关键字参数（Python 3.10+）
 
 ```python
 from dataclasses import dataclass, KW_ONLY
@@ -615,7 +574,7 @@ p = Point(1.0, y=2.0, z=3.0)
 print(p)  # Point(x=1.0, y=2.0, z=3.0)
 ```
 
-### 5.10 嵌套数据类
+### 4.10 嵌套数据类
 
 ```python
 from dataclasses import dataclass, field
@@ -644,7 +603,7 @@ print(emp)
 # Employee(name='Alice', age=30, address=Address(city='北京', street='长安街', zipcode='100000'), skills=['Python', 'SQL'])
 ```
 
-### 5.11 `asdict` 与 `astuple`
+### 4.11 `asdict` 与 `astuple`
 
 ```python
 from dataclasses import dataclass, asdict, astuple
@@ -661,7 +620,7 @@ print(asdict(p))   # {'x': 1.0, 'y': 2.0}
 print(astuple(p))  # (1.0, 2.0)
 ```
 
-### 5.12 `replace` 创建修改副本
+### 4.12 `replace` 创建修改副本
 
 ```python
 from dataclasses import dataclass, replace
@@ -680,7 +639,7 @@ print(default_config)  # Config(host='localhost', port=8080)
 print(prod_config)      # Config(host='0.0.0.0', port=3000)
 ```
 
-### 5.13 自定义 `__hash__` 与 `__eq__`
+### 4.13 自定义 `__hash__` 与 `__eq__`
 
 ```python
 from dataclasses import dataclass, field
@@ -704,7 +663,7 @@ print(u1 == u2)  # True（email 不参与比较）
 print(hash(u1) == hash(u2))  # True
 ```
 
-### 5.14 `slots=True` 优化（Python 3.10+）
+### 4.14 `slots=True` 优化（Python 3.10+）
 
 ```python
 from dataclasses import dataclass
@@ -722,7 +681,7 @@ p = Point(1.0, 2.0)
 print(p.__slots__)  # ('x', 'y')
 ```
 
-### 5.15 `match_args` 支持（Python 3.10+）
+### 4.15 `match_args` 支持（Python 3.10+）
 
 ```python
 from dataclasses import dataclass
@@ -752,7 +711,7 @@ print(describe(Point(3, 0)))    # x 轴上，x=3.0
 print(describe(Point(1, 2)))    # 普通点 (1.0, 2.0)
 ```
 
-### 5.16 配置类完整示例
+### 4.16 配置类完整示例
 
 ```python
 from dataclasses import dataclass, field
@@ -801,7 +760,7 @@ print(config.database.url)      # postgresql://postgres:secret@db.example.com:54
 print(config)                   # AppConfig(app_name='ProdApp', debug=False, database=DatabaseConfig(...), allowed_hosts=['localhost', '127.0.0.1'])
 ```
 
-### 5.17 API 响应模型
+### 4.17 API 响应模型
 
 ```python
 from dataclasses import dataclass, field, asdict
@@ -841,7 +800,7 @@ response = UserResponse.from_dict({
 print(response.to_dict())
 ```
 
-### 5.18 dataclass 与 Pydantic 配合
+### 4.18 dataclass 与 Pydantic 配合
 
 ```python
 from dataclasses import dataclass
@@ -869,7 +828,7 @@ except ValidationError as e:
     print(f"验证失败: {e}")
 ```
 
-### 5.19 部分更新模式
+### 4.19 部分更新模式
 
 ```python
 from dataclasses import dataclass, field, fields, replace
@@ -898,7 +857,7 @@ print(updated)  # User(id=1, name='Bob', email='alice@example.com', age=31)
 print(user)     # 原实例不变
 ```
 
-### 5.20 可序列化 dataclass Mixin
+### 4.20 可序列化 dataclass Mixin
 
 ```python
 from dataclasses import dataclass, asdict
@@ -946,9 +905,9 @@ print(restored)  # User(name='Alice', age=30, email='alice@example.com')
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 `typing.NamedTuple` 的对比
+### 5.1 与 `typing.NamedTuple` 的对比
 
 | 特性 | `@dataclass` | `typing.NamedTuple` |
 |------|--------------|----------------------|
@@ -991,7 +950,7 @@ print(p1)  # PointDC(x=10.0, y=2.0)
 print(p2)  # PointNT(x=1.0, y=2.0)
 ```
 
-### 6.2 与 `attrs` 的对比
+### 5.2 与 `attrs` 的对比
 
 | 特性 | `@dataclass` | `attrs` |
 |------|--------------|---------|
@@ -1026,7 +985,7 @@ u = User("Bob", 30, "BOB@EXAMPLE.COM")
 print(u.email)  # bob@example.com
 ```
 
-### 6.3 与 Pydantic 的对比
+### 5.3 与 Pydantic 的对比
 
 | 特性 | `@dataclass` | `pydantic.BaseModel` |
 |------|--------------|----------------------|
@@ -1060,7 +1019,7 @@ user = User(name="Alice", age="30")  # age 字符串自动转换为 int
 print(user.age)  # 30 (int)
 ```
 
-### 6.4 与普通类的对比
+### 5.4 与普通类的对比
 
 | 特性 | `@dataclass` | 普通类 |
 |------|--------------|--------|
@@ -1073,9 +1032,9 @@ print(user.age)  # 30 (int)
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：可变默认值
+### 6.1 陷阱一：可变默认值
 
 **反模式**：
 
@@ -1097,7 +1056,7 @@ class Good:
     cache: set = field(default_factory=set)
 ```
 
-### 7.2 陷阱二：继承时字段顺序错误
+### 6.2 陷阱二：继承时字段顺序错误
 
 **反模式**：
 
@@ -1141,7 +1100,7 @@ class Derived(Base):
     y: str = ""
 ```
 
-### 7.3 陷阱三：`frozen` 但内部可变
+### 6.3 陷阱三：`frozen` 但内部可变
 
 **反模式**：
 
@@ -1167,7 +1126,7 @@ c = Container((1, 2, 3))
 # c.items.append(4)  # AttributeError: 'tuple' object has no attribute 'append'
 ```
 
-### 7.4 陷阱四：`__hash__` 缺失
+### 6.4 陷阱四：`__hash__` 缺失
 
 **反模式**：
 
@@ -1218,7 +1177,7 @@ class User:
     name: str
 ```
 
-### 7.5 陷阱五：`__post_init__` 中修改 frozen 字段
+### 6.5 陷阱五：`__post_init__` 中修改 frozen 字段
 
 **反模式**：
 
@@ -1244,7 +1203,7 @@ class Good:
         object.__setattr__(self, "y", self.x * 2)
 ```
 
-### 7.6 陷阱六：`asdict` 递归转换的意外
+### 6.6 陷阱六：`asdict` 递归转换的意外
 
 **反模式**：
 
@@ -1284,7 +1243,7 @@ print(to_serializable_dict(e))
 # {'timestamp': '2026-07-21T...', 'name': 'click'}
 ```
 
-### 7.7 陷阱七：`field(compare=False)` 与 `__hash__` 冲突
+### 6.7 陷阱七：`field(compare=False)` 与 `__hash__` 冲突
 
 **反模式**：
 
@@ -1307,7 +1266,7 @@ print(hash(u1) == hash(u2))  # True
 
 **注意**：这未必是错误，但需明确意图。若希望 email 也参与哈希，需手动定义 `__hash__`。
 
-### 7.8 陷阱八：`default` 与 `default_factory` 同时指定
+### 6.8 陷阱八：`default` 与 `default_factory` 同时指定
 
 **反模式**：
 
@@ -1327,7 +1286,7 @@ class Good:
     y: list = field(default_factory=list)  # 工厂默认值
 ```
 
-### 7.9 陷阱九：`slots=True` 与 `__dict__` 冲突
+### 6.9 陷阱九：`slots=True` 与 `__dict__` 冲突
 
 **反模式**：
 
@@ -1348,7 +1307,7 @@ u.age = 30  # AttributeError: 'User' object has no attribute 'age'
 - `slots=True`：节省内存，访问更快，但不支持动态属性。
 - `slots=False`（默认）：灵活，可动态添加属性，但内存占用更高。
 
-### 7.10 陷阱十：dataclass 与 ORM 模型冲突
+### 6.10 陷阱十：dataclass 与 ORM 模型冲突
 
 **反模式**：
 
@@ -1403,9 +1362,9 @@ class UserORM(Base):
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 实践一：优先使用类型注解
+### 7.1 实践一：优先使用类型注解
 
 ```python
 from dataclasses import dataclass
@@ -1422,7 +1381,7 @@ class User:
 
 **理由**：类型注解提升代码可读性，配合 mypy 静态检查捕获潜在错误。
 
-### 8.2 实践二：可变默认值必须用 `default_factory`
+### 7.2 实践二：可变默认值必须用 `default_factory`
 
 ```python
 # 反模式
@@ -1436,7 +1395,7 @@ class Good:
     items: list = field(default_factory=list)
 ```
 
-### 8.3 实践三：配置类用 `frozen=True`
+### 7.3 实践三：配置类用 `frozen=True`
 
 ```python
 @dataclass(frozen=True)
@@ -1448,7 +1407,7 @@ class AppConfig:
 
 **理由**：配置一旦加载应不可变，避免运行时误修改，且可作为字典键。
 
-### 8.4 实践四：使用 `__post_init__` 进行验证
+### 7.4 实践四：使用 `__post_init__` 进行验证
 
 ```python
 from dataclasses import dataclass
@@ -1467,7 +1426,7 @@ class Rectangle:
 # Rectangle(-1, 5)  # ValueError
 ```
 
-### 8.5 实践五：敏感字段设 `repr=False`
+### 7.5 实践五：敏感字段设 `repr=False`
 
 ```python
 from dataclasses import dataclass, field
@@ -1484,7 +1443,7 @@ u = User("Alice", "secret123", "key456")
 print(u)  # User(name='Alice')  — password 与 api_key 被隐藏
 ```
 
-### 8.6 实践六：使用 `replace` 创建修改副本
+### 7.6 实践六：使用 `replace` 创建修改副本
 
 ```python
 from dataclasses import dataclass, replace
@@ -1501,7 +1460,7 @@ p2 = replace(p1, x=10.0)  # 不可变风格的"修改"
 print(p2)  # Point(x=10.0, y=2.0)
 ```
 
-### 8.7 实践七：使用 `metadata` 添加元信息
+### 7.7 实践七：使用 `metadata` 添加元信息
 
 ```python
 from dataclasses import dataclass, field
@@ -1519,7 +1478,7 @@ print(fields["name"].metadata)  # {'description': '用户名', 'max_length': 50}
 print(fields["age"].metadata)   # {'description': '年龄', 'min': 0, 'max': 150}
 ```
 
-### 8.8 实践八：性能敏感场景用 `slots=True`
+### 7.8 实践八：性能敏感场景用 `slots=True`
 
 ```python
 @dataclass(slots=True)
@@ -1537,7 +1496,7 @@ points = [Point(i, i) for i in range(1_000_000)]
 - 无 `slots`：约 160 MB
 - 有 `slots`：约 80 MB
 
-### 8.9 实践九：使用 `KW_ONLY` 提升可读性
+### 7.9 实践九：使用 `KW_ONLY` 提升可读性
 
 ```python
 from dataclasses import dataclass, KW_ONLY
@@ -1556,7 +1515,7 @@ u = User(1, name="Alice", email="alice@example.com")
 # u = User(1, "Alice", "alice@example.com")  # 错误
 ```
 
-### 8.10 实践十：避免在 dataclass 中放业务逻辑
+### 7.10 实践十：避免在 dataclass 中放业务逻辑
 
 **反模式**：
 
@@ -1588,9 +1547,9 @@ class EmailService:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：FastAPI 请求与响应模型
+### 8.1 案例一：FastAPI 请求与响应模型
 
 ```python
 from dataclasses import dataclass, field
@@ -1632,7 +1591,7 @@ async def create_user(request: CreateUserRequest):
     )
 ```
 
-### 9.2 案例二：Django 配置对象
+### 8.2 案例二：Django 配置对象
 
 ```python
 from dataclasses import dataclass, field
@@ -1663,7 +1622,7 @@ settings = DjangoSettings(debug=True)
 print(settings.debug)  # True
 ```
 
-### 9.3 案例三：事件驱动架构中的事件对象
+### 8.3 案例三：事件驱动架构中的事件对象
 
 ```python
 from dataclasses import dataclass, field
@@ -1704,7 +1663,7 @@ print(event.timestamp)  # 自动时间戳
 print(event.user_id)    # 1
 ```
 
-### 9.4 案例四：机器学习实验配置
+### 8.4 案例四：机器学习实验配置
 
 ```python
 from dataclasses import dataclass, field, asdict
@@ -1755,7 +1714,7 @@ print(config.optimizer.learning_rate)  # 0.0001
 config.save("config.json")
 ```
 
-### 9.5 案例五：数据库查询结果映射
+### 8.5 案例五：数据库查询结果映射
 
 ```python
 from dataclasses import dataclass, field
@@ -1795,7 +1754,7 @@ for dto in user_dtos:
     print(dto)
 ```
 
-### 9.6 案例六：权限模型
+### 8.6 案例六：权限模型
 
 ```python
 from dataclasses import dataclass, field
@@ -1840,7 +1799,7 @@ print(alice.has_permission(Permission.ADMIN))  # True
 print(bob.has_permission(Permission.DELETE))   # False
 ```
 
-### 9.7 案例七：日志记录结构
+### 8.7 案例七：日志记录结构
 
 ```python
 from dataclasses import dataclass, field, asdict
@@ -1887,7 +1846,7 @@ print(log.to_json())
 # {"timestamp": "2026-07-21T...", "level": "ERROR", "message": "数据库连接失败", ...}
 ```
 
-### 9.8 案例八：游戏角色状态
+### 8.8 案例八：游戏角色状态
 
 ```python
 from dataclasses import dataclass, field
@@ -1937,7 +1896,7 @@ print(hero.inventory)  # [InventoryItem(name='Potion', quantity=3, weight=0.5)]
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 10.1.1**：使用 `@dataclass` 实现一个 `Book` 类，包含字段：`title`（必填）、`author`（必填）、`isbn`（可选，默认空字符串）、`price`（默认 0.0）、`tags`（默认空列表）。
 
@@ -2028,7 +1987,7 @@ print(m1 < m2)  # False
 
 **解析讲解**：见 5.19 节代码示例。
 
-### 10.3 分析题
+### 9.3 分析题
 
 **题目 10.3.1**：分析以下代码的输出，并解释原因。
 
@@ -2077,7 +2036,7 @@ print(c2.history)
 - **普通 dataclass**：`__hash__` 被设为 `None`，表示不可哈希。这是因为实例可变，若允许作为键，修改字段后哈希值变化，字典会"丢失"该键。
 - **`frozen=True` dataclass**：实例不可变，字段值固定，哈希值不变，可安全作为键。`@dataclass(frozen=True)` 自动生成 `__hash__`，基于 `compare=True` 的字段计算。
 
-### 10.4 评价题
+### 9.4 评价题
 
 **题目 10.4.1**：评价"所有数据模型都应使用 Pydantic 而非 dataclass"的观点。
 
@@ -2106,7 +2065,7 @@ print(c2.history)
 - 配置对象：用 dataclass（`frozen=True`）或 Pydantic Settings。
 - 数据库模型：用 SQLAlchemy 原生模型或 dataclass 集成。
 
-### 10.5 创造题
+### 9.5 创造题
 
 **题目 10.5.1**：设计一个"验证型 dataclass"装饰器，在 `__post_init__` 中自动调用字段的验证函数。
 
@@ -2178,7 +2137,7 @@ p = Product(name="Pen", price=5, stock=10)
 print(p)  # Product(name='Pen', price=5.0, stock=10)
 ```
 
-### 10.6 思考题
+### 9.6 思考题
 
 **题目 10.6.1**：dataclass 与 ORM 模型（如 SQLAlchemy）的本质区别是什么？如何选择？
 
@@ -2194,9 +2153,9 @@ print(p)  # Product(name='Pen', price=5.0, stock=10)
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 PEP 文档
+### 10.1 PEP 文档
 
 - Smith, E. V. (2017). *PEP 557: Data Classes*. Python Software Foundation. https://peps.python.org/pep-0557/
 
@@ -2204,7 +2163,7 @@ print(p)  # Product(name='Pen', price=5.0, stock=10)
 
 - Python Software Foundation. (2021). *PEP 681: Data Class Transforms*. https://peps.python.org/pep-0681/（用于支持 dataclass 语义在第三方库中的复用）
 
-### 11.2 经典书籍
+### 10.2 经典书籍
 
 - Ramalho, L. (2022). *Fluent Python* (2nd ed.). O'Reilly Media.（第 5 章：数据类构建器）
 
@@ -2212,7 +2171,7 @@ print(p)  # Product(name='Pen', price=5.0, stock=10)
 
 - Beazley, D., & Jones, B. K. (2013). *Python Cookbook* (3rd ed.). O'Reilly Media.（Recipe 8.13: Creating a Dataclass）
 
-### 11.3 在线资源
+### 10.3 在线资源
 
 - Python Documentation. *dataclasses — Data Classes*. https://docs.python.org/3/library/dataclasses.html
 
@@ -2222,13 +2181,13 @@ print(p)  # Product(name='Pen', price=5.0, stock=10)
 
 - Pydantic Documentation. *Dataclasses*. https://docs.pydantic.dev/latest/usage/dataclasses/
 
-### 11.4 学术论文
+### 10.4 学术论文
 
 - Smith, E. V. (2017). *Data Classes: Reducing boilerplate code for classes that primarily exist to store data*. Python Language Summit 2017.
 
 - Brandt, M., & Beazley, D. (2019). *Performance Analysis of Python Data Class Builders*. PyCon 2019.
 
-### 11.5 相关项目
+### 10.5 相关项目
 
 - `attrs`：https://github.com/python-attrs/attrs
 - `pydantic`：https://github.com/pydantic/pydantic
@@ -2237,38 +2196,38 @@ print(p)  # Product(name='Pen', price=5.0, stock=10)
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 类型系统深入
+### 11.1 类型系统深入
 
 - 本项目 `python/类型注解与mypy.md`：Python 类型注解的完整指南。
 - 本项目 `python/泛型与TypeVar.md`：泛型编程与类型变量。
 - PEP 484《Type Hints》：https://peps.python.org/pep-0484/
 
-### 12.2 描述符协议
+### 11.2 描述符协议
 
 - 本项目 `python/描述符协议.md`：描述符与 dataclass 的底层关联。
 - 本项目 `python/属性与描述符.md`：`@property` 与描述符的关系。
 
-### 12.3 不可变数据建模
+### 11.3 不可变数据建模
 
 - *Functional Programming in Python*（David Mertz）：函数式风格中的不可变数据。
 - `immutables` 库：https://github.com/MagicStack/immutables
 - `pyrsistent` 库：https://github.com/tobgu/pyrsistent
 
-### 12.4 序列化与反序列化
+### 11.4 序列化与反序列化
 
 - `marshmallow` 文档：https://marshmallow.readthedocs.io/
 - `serde` 库：https://github.com/yukinarit/pyserde
 - `cattrs` 库：https://github.com/python-attrs/cattrs
 
-### 12.5 ORM 集成
+### 11.5 ORM 集成
 
 - SQLAlchemy 2.0 文档. *ORM Declarative Dataclass Mapping*. https://docs.sqlalchemy.org/en/stable/orm/dataclasses.html
 - Tortoise ORM 文档. *Dataclass Support*.
 - Django 文档. *Model definition*.
 
-### 12.6 性能优化
+### 11.6 性能优化
 
 - *High Performance Python*（Gorelick & Ozsvald）：dataclass 性能调优。
 - `__slots__` 文档：https://docs.python.org/3/reference/datamodel.html#slots

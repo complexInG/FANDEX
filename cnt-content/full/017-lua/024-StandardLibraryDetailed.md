@@ -17,60 +17,16 @@ prerequisites:
   - lua/概述与环境配置
   - lua/字符串模式匹配
 ---
+
 # Lua 标准库与协程速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本节依据 Bloom 分类法（Bloom's Taxonomy）按认知层级组织学习目标。Lua 标准库是嵌入式脚本语言的核心工具集，覆盖字符串、表、数学、IO、操作系统、调试、协程、UTF-8 八大模块。完成本章后，学习者应具备以下能力。
-
-### 1.1 记忆层（Remember）
-
-- 能够默写出 Lua 8 个标准库的名称：`string table math io os debug coroutine utf8`。
-- 能够列出 `string` 库的核心 API：`len sub find match gmatch gsub format rep upper lower byte char`。
-- 能够写出 `table` 库的全部 API：`insert remove concat sort move pack unpack`。
-- 能够复述 `math` 库的常量：`pi huge maxinteger mininteger`。
-
-### 1.2 理解层（Understand）
-
-- 能够解释 `string` 库的方法调用语法（`s:sub(1,3)` 与 `string.sub(s,1,3)` 等价）。
-- 能够说明 `table` 库的"数组部分"与"哈希部分"的区别。
-- 能够阐述 `io` 库的两种 IO 模型：显式文件句柄与 `io.read/io.write` 隐式模型。
-- 能够描述 `coroutine` 库的四种状态：`suspended running normal dead`。
-
-### 1.3 应用层（Apply）
-
-- 能够使用 `string.format` 构造符合 C `printf` 规范的字符串。
-- 能够使用 `table.concat` 与 `table.insert` 高效构造大字符串。
-- 能够使用 `io.lines` 逐行处理大文件而不一次性载入内存。
-- 能够使用 `coroutine.create/resume/yield` 实现生成器（Generator）模式。
-
-### 1.4 分析层（Analyze）
-
-- 能够分析 `table.sort` 的排序算法（基于 quicksort 的混合算法）及最坏复杂度。
-- 能够分析 `string.gsub` 在不同替换值类型下的行为差异。
-- 能够分析 `io` 库的缓冲策略对性能的影响。
-
-### 1.5 评估层（Evaluate）
-
-- 能够评估在特定场景下应选择 `os.time` 还是 `os.clock` 进行时间测量。
-- 能够评估 `debug` 库在生产环境中的安全性风险。
-- 能够评判 `table` 库 API 的设计是否满足特定业务需求。
-
-### 1.6 创造层（Create）
-
-- 能够基于 `string` 库设计一套 JSON 序列化器。
-- 能够使用 `coroutine` 库实现非抢占式任务调度器。
-- 能够编写基于 `io` 库的高吞吐日志收集器。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 Lua 标准库的设计理念
+### 1.1 Lua 标准库的设计理念
 
 Lua 标准库的设计遵循 Lua 语言的核心哲学：**最小但足够（small but adequate）**。与 Python、Ruby 等通用脚本语言"自带电池"（batteries included）的标准库不同，Lua 标准库刻意保持精简，仅提供嵌入式场景下的基础工具。
 
@@ -85,7 +41,7 @@ Roberto Ierusalimschy 在《The Evolution of Lua》（HOPL III, 2007）中明确
 - **拒绝正则表达式库**：Lua 自研轻量级模式匹配系统替代（详见"字符串模式匹配"章节）。
 - **拒绝复杂数据结构库**：Lua 用 `table` 这一统一数据结构模拟数组、哈希、对象、列表、集合等，避免引入多种数据结构。
 
-### 2.2 标准库的版本演进
+### 1.2 标准库的版本演进
 
 | Lua 版本 | 发布年份 | 标准库关键变化 |
 | :--- | :--- | :--- |
@@ -100,7 +56,7 @@ Roberto Ierusalimschy 在《The Evolution of Lua》（HOPL III, 2007）中明确
 | Lua 5.4 | 2020 | 引入 `<const>` `<close>` 语义；改进 GC；`coroutine.isyieldable` |
 | Lua 5.5 | 计划中 | 改进错误处理、原生 continuable 协程 |
 
-### 2.3 与宿主环境的边界
+### 1.3 与宿主环境的边界
 
 Lua 标准库刻意保持与宿主操作系统的薄边界，仅通过 `os` 库提供最基本的系统调用（时间、环境变量、文件重命名/删除、执行命令）。这一设计使得：
 
@@ -110,9 +66,9 @@ Lua 标准库刻意保持与宿主操作系统的薄边界，仅通过 `os` 库�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 标准库的命名空间结构
+### 2.1 标准库的命名空间结构
 
 Lua 标准库以全局表（table）形式组织，每个库是一个独立的命名空间。形式化地：
 
@@ -126,7 +82,7 @@ $$
 \text{string} = \{\text{len}, \text{sub}, \text{find}, \text{match}, \dots\}
 $$
 
-### 3.2 字符串索引的形式化定义
+### 2.2 字符串索引的形式化定义
 
 Lua 字符串是不可变字节序列。设 $s$ 为字符串，$|s|$ 为其字节长度。字符串索引满足：
 
@@ -140,7 +96,7 @@ $$
 
 其中 $n$ 为字符串长度。Lua 索引是 1-based 的，且支持负索引（从末尾计）。
 
-### 3.3 表的形式化定义
+### 2.3 表的形式化定义
 
 Lua 表是关联数组，形式化为函数 $T: K \to V$，其中 $K$ 为键集合（除 `nil` 和 `NaN` 外的所有值），$V$ 为值集合（所有值含 `nil`）。
 
@@ -152,7 +108,7 @@ $$
 
 其中 $T_{\text{array}}$ 为连续整数键 $\{1, 2, \dots, n\}$ 的存储区，$T_{\text{hash}}$ 为其他键的哈希表。这一分离对性能至关重要：数组部分访问 $O(1)$ 且缓存友好，哈希部分访问 $O(1)$ 但常数较大。
 
-### 3.4 协程的状态机定义
+### 2.4 协程的状态机定义
 
 Lua 协程是一个有限状态机，状态集合为 $\{\text{suspended}, \text{running}, \text{normal}, \text{dead}\}$。状态转移如下：
 
@@ -167,7 +123,7 @@ $$
 
 `normal` 状态出现在协程 A resume 协程 B 时，A 处于 normal 状态（既非 suspended 也非 running）。
 
-### 3.5 IO 缓冲的形式化模型
+### 2.5 IO 缓冲的形式化模型
 
 Lua IO 库基于 C 标准库 `stdio.h`，采用缓冲 IO 模型。缓冲策略分为三种：
 
@@ -190,9 +146,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 `table.sort` 的算法与复杂度
+### 3.1 `table.sort` 的算法与复杂度
 
 Lua 5.4 的 `table.sort` 实现基于** introsort**（内省排序），结合 quicksort 与 heapsort：
 
@@ -220,7 +176,7 @@ local function stable_sort(t, cmp)
 end
 ```
 
-### 4.2 `table.concat` 的性能优势
+### 3.2 `table.concat` 的性能优势
 
 `table.concat(t, sep)` 比循环 `..` 拼接字符串快得多，原因在于 Lua 字符串是不可变的，每次 `..` 都会分配新字符串：
 
@@ -253,13 +209,13 @@ $$
 
 其中 $L$ 为总字符串长度。
 
-### 4.3 `string.gsub` 的回溯复杂度
+### 3.3 `string.gsub` 的回溯复杂度
 
 `string.gsub` 内部调用模式匹配引擎，复杂度取决于模式与输入。对于简单字面替换（无特殊字符），复杂度为 $O(n + m \cdot k)$，其中 $n$ 为输入长度、$m$ 为模式长度、$k$ 为匹配次数。
 
 对于包含量词的复杂模式，最坏复杂度为 $O(n \cdot m \cdot k)$（贪心回溯）。Lua 5.4 通过 200 次回溯限制避免指数级复杂度。
 
-### 4.4 协程上下文切换的成本
+### 3.4 协程上下文切换的成本
 
 Lua 协程的上下文切换成本约为 $O(1)$，远低于操作系统线程（$O(\mu s)$ 级）。这是因为：
 
@@ -280,9 +236,9 @@ Lua 协程的上下文切换成本约为 $O(1)$，远低于操作系统线程（
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 string 库：基础操作
+### 4.1 string 库：基础操作
 
 ```lua
 -- 字符串长度（字节数，非字符数）
@@ -315,7 +271,7 @@ print(("hello"):upper())         -- HELLO
 print(("hello"):sub(2, 4))       -- ell
 ```
 
-### 5.2 string 库：查找与匹配
+### 4.2 string 库：查找与匹配
 
 ```lua
 -- string.find: 返回起止位置
@@ -352,7 +308,7 @@ end)
 print(r4)  -- 6 + 10 = 16
 ```
 
-### 5.3 string 库：字符与字节转换
+### 4.3 string 库：字符与字节转换
 
 ```lua
 -- string.byte: 取字节值
@@ -384,7 +340,7 @@ print(to_hex("Hello"))     -- 48656C6C6F
 print(from_hex("48656C6C6F"))  -- Hello
 ```
 
-### 5.4 string 库：格式化
+### 4.4 string 库：格式化
 
 ```lua
 -- string.format: 类似 C 的 printf
@@ -409,7 +365,7 @@ print(string.format("[%+d]", 42))      -- [+42]
 print(string.format("[%.3f]", 3.14159))-- [3.142]
 ```
 
-### 5.5 table 库：数组操作
+### 4.5 table 库：数组操作
 
 ```lua
 -- table.insert: 插入元素
@@ -441,7 +397,7 @@ print(table.concat(parts))         -- HelloWorldLua
 print(table.concat(parts, "-", 1, 2))  -- Hello-World
 ```
 
-### 5.6 table 库：排序
+### 4.6 table 库：排序
 
 ```lua
 -- table.sort: 默认升序
@@ -476,7 +432,7 @@ local mixed = {3, 1, 2, key = "value"}
 table.sort(mixed)  -- 只排序 {3, 1, 2} -> {1, 2, 3}
 ```
 
-### 5.7 table 库：pack/unpack
+### 4.7 table 库：pack/unpack
 
 ```lua
 -- table.pack: 将可变参数打包为表（Lua 5.2+）
@@ -518,7 +474,7 @@ local function log_call(fn, ...)
 end
 ```
 
-### 5.8 math 库：数学运算
+### 4.8 math 库：数学运算
 
 ```lua
 -- 常量
@@ -581,7 +537,7 @@ print(-7 % 3)   -- 2 (Lua 取模总是非负)
 print(math.fmod(-7, 3))  -- -1 (C 风格取模)
 ```
 
-### 5.9 math 库：随机数
+### 4.9 math 库：随机数
 
 ```lua
 -- 设置随机种子
@@ -629,7 +585,7 @@ local function better_seed()
 end
 ```
 
-### 5.10 io 库：文件操作
+### 4.10 io 库：文件操作
 
 ```lua
 -- 打开文件：r w a r+ w+ a+ b(二进制)
@@ -694,7 +650,7 @@ print(f:seek())           -- 13
 f:close()
 ```
 
-### 5.11 io 库：简化 IO 与临时文件
+### 4.11 io 库：简化 IO 与临时文件
 
 ```lua
 -- io.read / io.write: 操作标准输入输出
@@ -751,7 +707,7 @@ process_large_file("test.txt", function(line) count = count + 1 end)
 print("行数:", count)
 ```
 
-### 5.12 os 库：时间与日期
+### 4.12 os 库：时间与日期
 
 ```lua
 -- os.time: 当前时间戳（Unix 纪元秒）
@@ -810,7 +766,7 @@ end)
 print(string.format("耗时: %.3f秒", elapsed))
 ```
 
-### 5.13 os 库：系统操作
+### 4.13 os 库：系统操作
 
 ```lua
 -- os.execute: 执行系统命令
@@ -850,7 +806,7 @@ os.setlocale("zh_CN.UTF-8")
 print(os.date("%A"))  -- 星期二
 ```
 
-### 5.14 debug 库：调试信息
+### 4.14 debug 库：调试信息
 
 ```lua
 -- debug.traceback: 获取调用栈
@@ -919,7 +875,7 @@ local function profile()
 end
 ```
 
-### 5.15 coroutine 库：协程基础
+### 4.15 coroutine 库：协程基础
 
 ```lua
 -- coroutine.create: 创建协程
@@ -954,7 +910,7 @@ print(coroutine.resume(co))  -- false  cannot resume dead coroutine
 print(coroutine.isyieldable())  -- 主协程通常 false
 ```
 
-### 5.16 coroutine 库：生成器模式
+### 4.16 coroutine 库：生成器模式
 
 ```lua
 -- 生成器：无限序列
@@ -1029,7 +985,7 @@ print(sm("resume"))   -- running
 print(sm("stop"))     -- idle
 ```
 
-### 5.17 utf8 库：UTF-8 处理（Lua 5.3+）
+### 4.17 utf8 库：UTF-8 处理（Lua 5.3+）
 
 ```lua
 -- utf8.len: 计算 UTF-8 字符数
@@ -1077,7 +1033,7 @@ print(utf8_sub("Hello, 世界!", 1, 5))  -- Hello
 print(utf8_sub("Hello, 世界!", 8))      -- 世界!
 ```
 
-### 5.18 string.pack/unpack：二进制打包（Lua 5.3+）
+### 4.18 string.pack/unpack：二进制打包（Lua 5.3+）
 
 ```lua
 -- string.pack: 将值打包为二进制字符串
@@ -1138,9 +1094,9 @@ print(parsed.id, parsed.length, parsed.payload)  -- 42  5  Hello
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua 标准库 vs Python 标准库
+### 5.1 Lua 标准库 vs Python 标准库
 
 | 维度 | Lua | Python |
 | :--- | :--- | :--- |
@@ -1155,7 +1111,7 @@ print(parsed.id, parsed.length, parsed.payload)  -- 42  5  Hello
 | 文件路径 | 无 | os.path, pathlib |
 | 加密 | 无 | hashlib, hmac, secrets |
 
-### 6.2 Lua 标准库 vs JavaScript 标准库
+### 5.2 Lua 标准库 vs JavaScript 标准库
 
 | 维度 | Lua | JavaScript (Node.js) |
 | :--- | :--- | :--- |
@@ -1169,7 +1125,7 @@ print(parsed.id, parsed.length, parsed.payload)  -- 42  5  Hello
 | JSON | 无 | JSON 对象 |
 | Buffer | 字符串 | Buffer |
 
-### 6.3 Lua 标准库 vs Ruby 标准库
+### 5.3 Lua 标准库 vs Ruby 标准库
 
 | 维度 | Lua | Ruby |
 | :--- | :--- | :--- |
@@ -1182,7 +1138,7 @@ print(parsed.id, parsed.length, parsed.payload)  -- 42  5  Hello
 | 异常 | pcall + error | begin/rescue/ensure |
 | IO | io 库 | IO, File |
 
-### 6.4 各标准库内部对比
+### 5.4 各标准库内部对比
 
 | 库 | 核心职责 | 状态可变性 | 线程安全 |
 | :--- | :--- | :--- | :--- |
@@ -1195,7 +1151,7 @@ print(parsed.id, parsed.length, parsed.payload)  -- 42  5  Hello
 | `coroutine` | 协程管理 | 有状态 | 否（每协程独立） |
 | `utf8` | UTF-8 处理 | 无状态 | 是 |
 
-### 6.5 Lua 5.1 vs 5.4 标准库差异
+### 5.5 Lua 5.1 vs 5.4 标准库差异
 
 | API | Lua 5.1 | Lua 5.4 |
 | :--- | :--- | :--- |
@@ -1214,9 +1170,9 @@ print(parsed.id, parsed.length, parsed.payload)  -- 42  5  Hello
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：`#` 操作符只计算数组部分
+### 6.1 陷阱：`#` 操作符只计算数组部分
 
 ```lua
 -- 反模式：用 # 计算哈希表大小
@@ -1242,7 +1198,7 @@ function arr:add(v)
 end
 ```
 
-### 7.2 陷阱：`table.sort` 比较函数不一致
+### 6.2 陷阱：`table.sort` 比较函数不一致
 
 ```lua
 -- 反模式：比较函数不一致（违反严格弱序）
@@ -1256,7 +1212,7 @@ table.sort(t, function(a, b) return a <= b end)  -- 错误：应使用 <
 table.sort(t, function(a, b) return a < b end)
 ```
 
-### 7.3 陷阱：`string.format` 的 %s 与数字
+### 6.3 陷阱：`string.format` 的 %s 与数字
 
 ```lua
 -- 反模式：误用 %s 格式化数字
@@ -1273,7 +1229,7 @@ print(string.format("%.2f", 3.14)) -- 3.14
 print(string.format("%g", 3.14))   -- 3.14 (自动选择 %e 或 %f)
 ```
 
-### 7.4 陷阱：`io.read` 不检查 EOF
+### 6.4 陷阱：`io.read` 不检查 EOF
 
 ```lua
 -- 反模式：假设 io.read 总能读到数据
@@ -1295,7 +1251,7 @@ for line in f:lines() do
 end
 ```
 
-### 7.5 陷阱：协程不能跨 C 调用 yield
+### 6.5 陷阱：协程不能跨 C 调用 yield
 
 ```lua
 -- 反模式：在 C 函数调用中 yield
@@ -1320,7 +1276,7 @@ local function good_coroutine()
 end
 ```
 
-### 7.6 陷阱：`math.randomseed` 重复设置
+### 6.6 陷阱：`math.randomseed` 重复设置
 
 ```lua
 -- 反模式：每次调用 random 前都设置种子
@@ -1341,7 +1297,7 @@ local function good_random()
 end
 ```
 
-### 7.7 陷阱：`os.execute` 的跨平台差异
+### 6.7 陷阱：`os.execute` 的跨平台差异
 
 ```lua
 -- 反模式：直接拼接用户输入到命令
@@ -1373,7 +1329,7 @@ local function safe_popen(user_input)
 end
 ```
 
-### 7.8 陷阱：`debug` 库在生产环境的安全性
+### 6.8 陷阱：`debug` 库在生产环境的安全性
 
 ```lua
 -- debug 库可以访问和修改任何局部变量、调用栈、注册表
@@ -1401,7 +1357,7 @@ end
 -- 实践：在编译 Lua 时使用 -DLUA_USER_H 自定义 debug 库行为
 ```
 
-### 7.9 陷阱：`table.concat` 仅连接数组部分
+### 6.9 陷阱：`table.concat` 仅连接数组部分
 
 ```lua
 -- 反模式：用 table.concat 连接哈希表
@@ -1420,7 +1376,7 @@ table.sort(arr)
 print(table.concat(arr, ","))  -- a=1,b=2,c=3
 ```
 
-### 7.10 陷阱：协程资源泄漏
+### 6.10 陷阱：协程资源泄漏
 
 ```lua
 -- 反模式：创建大量协程但不让其结束
@@ -1480,9 +1436,9 @@ end
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 字符串构建：使用 `table.concat`
+### 7.1 字符串构建：使用 `table.concat`
 
 ```lua
 -- 实践：大量字符串拼接用 table.concat
@@ -1515,7 +1471,7 @@ local function build_html_optimal(items)
 end
 ```
 
-### 8.2 大文件处理：流式读取
+### 7.2 大文件处理：流式读取
 
 ```lua
 -- 实践：处理 GB 级大文件，逐行读取
@@ -1560,7 +1516,7 @@ local function file_md5(path)
 end
 ```
 
-### 8.3 时间测量：`os.time` vs `os.clock`
+### 7.3 时间测量：`os.time` vs `os.clock`
 
 ```lua
 -- os.time: 墙钟时间（Wall Clock），秒精度
@@ -1613,7 +1569,7 @@ benchmark("table.concat", function()
 end, 100)
 ```
 
-### 8.4 协程实现异步任务调度
+### 7.4 协程实现异步任务调度
 
 ```lua
 -- 实践：基于协程的异步任务调度器
@@ -1675,7 +1631,7 @@ sched:run()
 -- 任务B: 3
 ```
 
-### 8.5 元表与标准库协作
+### 7.5 元表与标准库协作
 
 ```lua
 -- 实践：用元表扩展标准库类型的行为
@@ -1749,7 +1705,7 @@ list:each(function(v) print(v) end)
 print(table.concat(list:to_array(), ", "))  -- 1, 2, 3
 ```
 
-### 8.6 单元测试：标准库 API
+### 7.6 单元测试：标准库 API
 
 ```lua
 -- 实践：标准库函数的单元测试
@@ -1825,9 +1781,9 @@ table_test:run()
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究：JSON 序列化器
+### 8.1 案例研究：JSON 序列化器
 
 基于 `string` 和 `table` 库实现一个简洁的 JSON 序列化器：
 
@@ -1932,7 +1888,7 @@ print(JsonSerializer.encode(data, true))
 -- 美化输出（带缩进）
 ```
 
-### 9.2 案例研究：日志收集器
+### 8.2 案例研究：日志收集器
 
 基于 `io` 库实现高性能日志收集器，支持多级别、文件轮转、缓冲写入：
 
@@ -2050,7 +2006,7 @@ end
 logger:close()
 ```
 
-### 9.3 案例研究：基于协程的 HTTP 服务器（简化版）
+### 8.3 案例研究：基于协程的 HTTP 服务器（简化版）
 
 ```lua
 -- 基于 socket 和 coroutine 实现的简化 HTTP 服务器
@@ -2146,7 +2102,7 @@ print(response.status, response.body)  -- 200  Hello, Lua!
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：编写函数 `reverse_words(s)`，反转字符串中的单词顺序。如 `"hello world lua"` -> `"lua world hello"`。
 
@@ -2170,7 +2126,7 @@ end
 
 参考答案要点：递归遍历，处理 table 类型，使用 `getmetatable/setmetatable`。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：实现 `memoize(fn)` 函数，缓存函数结果。要求支持多参数，且参数可为任意类型。
 
@@ -2201,7 +2157,7 @@ end
 
 参考答案要点：遍历每个表的 `pairs`，逐个赋值到结果表。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **习题 7**：实现一个完整的二进制协议解析器，支持大端/小端、定长/变长字段。要求使用 `string.pack/unpack`。
 
@@ -2217,7 +2173,7 @@ end
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本节参考文献遵循 ACM Reference Format。
 
@@ -2247,40 +2203,40 @@ end
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **Lua 5.4 Reference Manual**（https://www.lua.org/manual/5.4/）：官方标准库 API 文档，权威定义。
 - **Lua 5.4 源码**（https://www.lua.org/source/5.4/）：标准库实现源码，`lstrlib.c ltablib.c lmathlib.c liolib.c loslib.c ldblib.c lcorolib.c lutf8lib.c`。
 - **Lua-users Wiki: Standard Libraries**（http://lua-users.org/wiki/StandardLibraries）：社区维护的标准库指南。
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - **《Programming in Lua》第 4 版**（Roberto Ierusalimschy, 2016）：第 7-9 章覆盖字符串、表、IO 库，第 22-24 章深入协程、debug、文件操作。
 - **《Lua Quick Start Guide》**（Kurt J. Guida, 2018）：第 4-6 章覆盖标准库基础。
 - **《Mastering Lua》**（Kurt Jung, 2015）：第 4-8 章深入标准库高级用法。
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - Ierusalimschy, R., de Figueiredo, L. H., Celes, W. 2005. *The Implementation of Lua 5.0*. JUCS. 详解 Lua 5.0 的寄存器式虚拟机与标准库实现。
 - Medeiros, S., Ierusalimschy, R., Bastos, R. 2012. *The LuaJIT Project: Performance, Embeddability, and Portability*. 讨论 LuaJIT 对标准库的优化。
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **Lua 源码**（https://github.com/lua/lua）：官方 Lua 源码，含完整标准库实现。
 - **LuaJIT**（https://luajit.org/）：高性能 Lua 实现，对标准库有 JIT 优化。
 - **OpenResty**（https://openresty.org/）：Nginx + LuaJIT，扩展了 io、os 库以支持高并发。
 - **Luarocks**（https://luarocks.org/）：Lua 包管理器，提供大量第三方库。
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **Lua Users Wiki**（http://lua-users.org/wiki/）：社区知识库，含标准库使用技巧。
 - **Stack Overflow Lua 标签**（https://stackoverflow.com/questions/tagged/lua）：活跃问答社区。
 - **Lua 邮件列表**（https://www.lua.org/lua-l.html）：官方邮件列表，设计讨论。
 - **Reddit /r/lua**（https://www.reddit.com/r/lua/）：Lua 社区讨论区。
 
-### 12.6 相关工具
+### 11.6 相关工具
 
 - **LuaDist**（https://luadist.org/）：Lua 的跨平台包管理器与构建系统。
 - **LuaCheck**（https://github.com/mpeterv/luacheck）：Lua 静态分析器，检测标准库误用。

@@ -38,14 +38,6 @@ prerequisites:
   - algorithm/深度优先搜索
   - algorithm/广度优先搜索
   - cs-fundamentals/离散数学
-learningObjectives:
-  - 记忆拓扑排序作为 DAG 顶点线性化的形式化定义，复述 Kahn 算法（BFS 入度法）与 DFS 后序逆序法两种主流实现的时间复杂度 $O(V + E)$、空间复杂度 $O(V + E)$ 的结论
-  - 理解 Kahn 1962《Topological Sorting of Large Networks》CACM 5(11):558-562 DOI:10.1145/368996.369025、Knuth TAOCP Vol.1 §2.2.3、Tarjan 1972《Depth-First Search and Linear Graph Algorithms》SIAM J. Comput. 1(2):146-160 DOI:10.1137/0201010 的历史脉络，说明三位研究者的原始动机（PERT 网络、编译器依赖、图算法统一框架）与设计思路差异
-  - 应用 Kahn 算法（入度队列 + BFS）与 DFS 三色标记（白/灰/黑）编写正确的拓扑排序实现，使用入度归零条件或后向边检测识别图中的环，处理字典序最小拓扑排序、唯一拓扑排序判定、DAG 最长路径等变体
-  - 分析 Kahn 算法的正确性（每次出队入度为 0 的顶点不破坏剩余图的 DAG 性质）与 DFS 算法的正确性（DAG 中后序逆序即拓扑序，等价于"无后向边则图是 DAG"），论证两种算法为何都是 $O(V + E)$ 线性时间
-  - 评估 Kahn 算法（BFS 入度法，并行友好，便于字典序最小）与 DFS 后序法（递归栈深度限制，更易与 SCC/强连通分量算法融合）在大规模图、内存限制、并行化需求维度上的选型决策
-  - 对比拓扑排序与关键路径法（CPM/Kelly-Walker 1957）、PERT 图（Malcolm-Roseboom-Clark-Fazar 1959）、DAG 最长路径、强连通分量（Tarjan 1972/Kosaraju 1978）、传递归约（Aho-Garey-Ullman 1972）在算法思想与数据结构依赖维度的差异
-  - 创造性设计基于拓扑排序的工业级解决方案，如编译器构建依赖分析（make/cmake/ninja）、课程先修关系排课系统、Spark/Tez 任务调度、CI/CD Pipeline 依赖编排、区块链 UTXO 拓扑验证
 references:
   - type: journal
     authors:
@@ -239,6 +231,7 @@ etymology:
     english: strongly connected component
     origin: 'strongly connected component（SCC）指有向图中任意两点互相可达的最大顶点子集。Tarjan 1972 给出 O(V+E) 单次 DFS 算法，Kosaraju 1978 给出两次 DFS 的算法。SCC 与拓扑排序关系紧密：将每个 SCC 缩点后所得的"商图"必为 DAG，可对其做拓扑排序'
 ---
+
 
 ## 1. 概述与学习目标
 

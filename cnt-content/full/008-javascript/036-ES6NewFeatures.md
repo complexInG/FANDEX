@@ -19,6 +19,7 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
+
 # JavaScript ES6+ 新特性
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -33,51 +34,9 @@ ECMAScript 自 2015 年发布 ES6（ES2015）以来，进入了一年一版的�
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-依据 Bloom 分类法（修订版），本文档学习目标如下：
-
-### 1.1 记忆层（Remember）
-
-- **R1**：列举 ES6 至 ES2024 每个版本引入的至少 3 个核心特性。
-- **R2**：复述 `let/const/var` 三者在作用域、暂时性死区（TDZ）、重新赋值上的差异。
-- **R3**：背诵解构赋值、展开运算符、剩余参数的语法形式与适用数据类型。
-
-### 1.2 理解层（Understand）
-
-- **U1**：解释 Symbol 的唯一性与作为属性键的语义。
-- **U2**：用代数理论解释 `??` 与 `||` 的区别，并说明为何 `??` 不能与 `||` 或 `&&` 混用而不加括号。
-- **U3**：解释可选链 `?.` 与空值合并 `??` 在短路求值中的组合行为。
-
-### 1.3 应用层（Apply）
-
-- **A1**：使用解构赋值实现函数参数默认值与命名参数。
-- **A2**：使用 Proxy 实现响应式数据系统（Vue 3 风格）。
-- **A3**：使用 `for await...of` 与异步生成器实现流式数据处理。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：分析箭头函数与普通函数在 `this` 绑定、`arguments`、`new.target`、构造能力上的语义差异。
-- **An2**：分析 Proxy 与 Object.defineProperty 在响应式系统中的性能差异。
-- **An3**：分析顶层 await 在模块加载、tree-shaking、bundle 大小上的影响。
-
-### 1.5 评估层（Evaluate）
-
-- **E1**：评估在大型项目中采用 ES2022 类字段语法的迁移成本与收益。
-- **E2**：评估 Symbol 与字符串键在性能与内存上的差异，给出选型依据。
-- **E3**：评估 Records & Tuples 提案对函数式编程范式的影响。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计一个基于 Proxy 的 ORM 层，实现脏字段追踪与延迟加载。
-- **C2**：设计一个使用装饰器的依赖注入容器，支持构造函数注入与属性注入。
-- **C3**：设计一个使用模式匹配（Stage 3 提案）的状态机 DSL。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 TC39 标准化流程
+### 1.1 TC39 标准化流程
 
 TC39（Technical Committee 39）是 Ecma International 下负责 ECMAScript 标准的技术委员会。其标准化流程分为 5 个阶段：
 
@@ -91,7 +50,7 @@ TC39（Technical Committee 39）是 Ecma International 下负责 ECMAScript 标�
 
 这一流程确保每个特性在进入规范前经过充分的工程验证。开发者可参考 https://github.com/tc39/proposals 跟踪最新提案。
 
-### 2.2 ES6+ 演进时间线
+### 1.2 ES6+ 演进时间线
 
 | 版本 | 年份 | 关键特性 | 主要动机 |
 |------|------|---------|---------|
@@ -106,7 +65,7 @@ TC39（Technical Committee 39）是 Ecma International 下负责 ECMAScript 标�
 | ES14/ES2023 | 2023 | Hashbang 语法、WeakMap.prototype.get 的回调、Array.findLast/findLastIndex、Symbols as WeakMap keys | 数组改进 |
 | ES15/ES2024 | 2024 | Promise.withResolvers、Object.groupBy、Map.groupBy、String.isWellFormed、Resizable ArrayBuffer、Well-formed Unicode | 数据分组、内存弹性 |
 
-### 2.3 ES6 是分水岭
+### 1.3 ES6 是分水岭
 
 ES6 之前 JavaScript 长期停滞（1999-2015），ES3 到 ES5 用了 10 年。ES6 引入了：
 
@@ -120,9 +79,9 @@ ES6 之前 JavaScript 长期停滞（1999-2015），ES3 到 ES5 用了 10 年。
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 解构赋值的形式化
+### 2.1 解构赋值的形式化
 
 解构赋值（Destructuring Assignment）是一种**模式匹配绑定**（Pattern Matching Binding）。给定模式 $P$ 与值 $v$，解构过程是一个匹配函数 $\text{match}(P, v) \to \text{Env}$，其中 $\text{Env}$ 是变量绑定环境。
 
@@ -153,7 +112,7 @@ $$
 \end{cases}
 $$
 
-### 3.2 Symbol 的代数结构
+### 2.2 Symbol 的代数结构
 
 Symbol 是 ES6 引入的第 7 种原始类型，其代数性质如下：
 
@@ -170,7 +129,7 @@ $$
 
 内置 Symbol（Well-known Symbols）如 `Symbol.iterator`、`Symbol.asyncIterator`、`Symbol.toPrimitive` 等是协议钩子（Protocol Hooks），允许对象自定义与运算符交互的行为。
 
-### 3.3 Proxy 的形式化
+### 2.3 Proxy 的形式化
 
 Proxy 是 ES6 引入的元编程（Metaprogramming）机制，形式化为一个**拦截器函数集合**：
 
@@ -182,7 +141,7 @@ $$
 
 每个 trap 对应一个内部方法（Internal Method），如 `[[Get]]`、`[[Set]]`、`[[HasProperty]]` 等。Proxy 通过拦截这些内部方法实现对象行为的自定义。
 
-### 3.4 可选链的形式化
+### 2.4 可选链的形式化
 
 可选链 `a?.b` 的语义可定义为：
 
@@ -204,7 +163,7 @@ $$
 
 注意：可选链短路后续所有访问，即 `a?.b.c.d` 在 `a` 为 nullish 时整体返回 undefined，不会访问 `b.c.d`。
 
-### 3.5 空值合并的形式化
+### 2.5 空值合并的形式化
 
 空值合并 `a ?? b` 的语义：
 
@@ -226,7 +185,7 @@ $$
 
 其中 $\mathcal{F} = \{\text{false}, 0, -0, 0n, \text{''}, \text{null}, \text{undefined}, \text{NaN}\}$。
 
-### 3.6 顶层 await 的形式化
+### 2.6 顶层 await 的形式化
 
 顶层 await（Top-level Await, ES2022）允许在 ES Module 顶层使用 `await`，其语义等价于将整个模块视为一个异步函数：
 
@@ -240,7 +199,7 @@ $$
 \text{EvalOrder}(G) = \text{TopologicalSortWithCycleDetection}(G)
 $$
 
-### 3.7 类字段的形式化
+### 2.7 类字段的形式化
 
 ES2022 类字段语法：
 
@@ -265,9 +224,9 @@ class C {
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 模块系统的数学模型
+### 3.1 模块系统的数学模型
 
 ES Module 是一个有向无环图（DAG）的求值系统。给定模块依赖图 $G = (V, E)$，其中 $V$ 是模块集合，$E$ 是依赖关系：
 
@@ -292,7 +251,7 @@ CommonJS 与 ES Module 的核心差异：
 | 顶层 await | 不支持 | 支持（ES2022） |
 | 异步加载 | 动态 `require()` | `import()` 表达式 |
 
-### 4.2 Proxy 的代理不变量
+### 3.2 Proxy 的代理不变量
 
 Proxy 必须维持一系列**不变量**（Invariants），否则抛出 TypeError。这些不变量保证 Proxy 不会破坏 JS 类型系统的基本规则：
 
@@ -304,7 +263,7 @@ Proxy 必须维持一系列**不变量**（Invariants），否则抛出 TypeErro
 
 这些不变量使得 Proxy 在元编程时仍保持类型安全。
 
-### 4.3 异步迭代器的协程语义
+### 3.3 异步迭代器的协程语义
 
 异步迭代器协议的形式化：
 
@@ -331,7 +290,7 @@ $$
 
 这一机制使异步数据源（如分页 API、流式数据）可以像同步数组一样遍历。
 
-### 4.4 WeakRef 与垃圾回收
+### 3.4 WeakRef 与垃圾回收
 
 WeakRef（ES2021）允许持有对对象的弱引用，不阻止垃圾回收：
 
@@ -358,7 +317,7 @@ $$
 
 **警告**：WeakRef 与 FinalizationRegistry 的行为高度依赖 GC 实现，不同引擎行为差异巨大。生产中应避免依赖其精确语义，主要用于缓存与资源清理的"尽力而为"场景。
 
-### 4.5 Records & Tuples 提案的形式化
+### 3.5 Records & Tuples 提案的形式化
 
 Records & Tuples 是 Stage 2 提案（截至 2024 年），引入**不可变**的原始值类型：
 
@@ -388,9 +347,9 @@ Records & Tuples 的引入使 JavaScript 具备真正的不可变值语义，对
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 let/const 与块级作用域
+### 4.1 let/const 与块级作用域
 
 ```javascript
 // 示例 5.1：let/const 的块级作用域与 TDZ
@@ -438,7 +397,7 @@ for (var j = 0; j < 3; j++) {
 }
 ```
 
-### 5.2 解构赋值的多种用法
+### 4.2 解构赋值的多种用法
 
 ```javascript
 // 示例 5.2：解构赋值的完整用法
@@ -486,7 +445,7 @@ let p = 1, q = 2;
 console.log(p, q); // 2 1
 ```
 
-### 5.3 展开与剩余运算符
+### 4.3 展开与剩余运算符
 
 ```javascript
 // 示例 5.3：展开与剩余运算符的应用
@@ -528,7 +487,7 @@ copied.items.push(3);
 console.log(original.items); // [1, 2, 3]（共享引用）
 ```
 
-### 5.4 Symbol 的应用
+### 4.4 Symbol 的应用
 
 ```javascript
 // 示例 5.4：Symbol 的多种应用场景
@@ -598,7 +557,7 @@ console.log(sym1 === sym2); // true
 console.log(Symbol.keyFor(sym1)); // 'shared'
 ```
 
-### 5.5 Proxy 实现响应式系统
+### 4.5 Proxy 实现响应式系统
 
 ```javascript
 // 示例 5.5：基于 Proxy 的响应式数据系统
@@ -652,7 +611,7 @@ state.count = 1; // 输出：count 变化：1
 state.count = 2; // 输出：count 变化：2
 ```
 
-### 5.6 可选链与空值合并的组合
+### 4.6 可选链与空值合并的组合
 
 ```javascript
 // 示例 5.6：深层属性访问的安全写法
@@ -699,7 +658,7 @@ config.retry ||= 3;
 console.log(config); // { timeout: 3000, retry: 3 }
 ```
 
-### 5.7 私有字段与方法
+### 4.7 私有字段与方法
 
 ```javascript
 // 示例 5.7：ES2022 私有字段与方法
@@ -756,7 +715,7 @@ console.log(acc.balance); // 1300
 // acc.#validateAmount(100);   // SyntaxError
 ```
 
-### 5.8 顶层 await
+### 4.8 顶层 await
 
 ```javascript
 // 示例 5.8：顶层 await 在 ES Module 中的应用
@@ -773,7 +732,7 @@ console.log('配置已加载', config);
 // 注意：app.js 会等待 config.js 的顶层 await 完成后才执行
 ```
 
-### 5.9 异步迭代器与流式处理
+### 4.9 异步迭代器与流式处理
 
 ```javascript
 // 示例 5.9：异步迭代器实现流式数据处理
@@ -817,7 +776,7 @@ for await (const line of reader) {
 console.log(`总计 ${lines.length} 行`); // 5
 ```
 
-### 5.10 Promise.allSettled 与 Promise.any
+### 4.10 Promise.allSettled 与 Promise.any
 
 ```javascript
 // 示例 5.10：Promise.allSettled 与 Promise.any 的应用
@@ -861,7 +820,7 @@ try {
 }
 ```
 
-### 5.11 类字段与静态初始化块
+### 4.11 类字段与静态初始化块
 
 ```javascript
 // 示例 5.11：ES2022 类字段语法
@@ -911,7 +870,7 @@ console.log(Logger.instances); // 1
 console.log(Logger.config);    // { format: 'json' }
 ```
 
-### 5.12 数字分隔符与 BigInt
+### 4.12 数字分隔符与 BigInt
 
 ```javascript
 // 示例 5.12：数字分隔符与 BigInt
@@ -946,7 +905,7 @@ function factorialBig(n) {
 console.log(factorialBig(100n)); // 93326215443944152681699238856266700...
 ```
 
-### 5.13 Object.groupBy 与 Map.groupBy
+### 4.13 Object.groupBy 与 Map.groupBy
 
 ```javascript
 // 示例 5.13：ES2024 数据分组方法
@@ -983,9 +942,9 @@ console.log(byDeptLevel.get('eng-3')); // [Bob]
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 var vs let vs const
+### 5.1 var vs let vs const
 
 | 特性 | var | let | const |
 |------|-----|-----|-------|
@@ -997,7 +956,7 @@ console.log(byDeptLevel.get('eng-3')); // [Bob]
 | 初始值要求 | 否 | 否 | 是 |
 | 适用场景 | 旧代码迁移 | 可变变量 | 不可变绑定 |
 
-### 6.2 Promise.all vs allSettled vs any vs race
+### 5.2 Promise.all vs allSettled vs any vs race
 
 | 方法 | 行为 | 失败处理 | 适用场景 |
 |------|------|---------|---------|
@@ -1006,7 +965,7 @@ console.log(byDeptLevel.get('eng-3')); // [Bob]
 | `Promise.any` | 任一成功即成功 | 全失败才失败（AggregateError） | 多源竞速，任一可用即可 |
 | `Promise.race` | 第一个完成（无论成功失败） | 透传第一个结果或错误 | 超时控制、竞速 |
 
-### 6.3 Object.assign vs 展开运算符 vs structuredClone
+### 5.3 Object.assign vs 展开运算符 vs structuredClone
 
 | 特性 | Object.assign | 展开运算符 | structuredClone |
 |------|---------------|-----------|-----------------|
@@ -1019,7 +978,7 @@ console.log(byDeptLevel.get('eng-3')); // [Bob]
 | 性能 | 最快 | 快 | 慢（深度遍历） |
 | 浏览器支持 | ES6+ | ES2018+ | 现代浏览器 |
 
-### 6.4 箭头函数 vs 普通函数
+### 5.4 箭头函数 vs 普通函数
 
 | 特性 | 箭头函数 | 普通函数 |
 |------|---------|---------|
@@ -1031,7 +990,7 @@ console.log(byDeptLevel.get('eng-3')); // [Bob]
 | yield | 不支持 | 支持（生成器函数） |
 | 适用场景 | 回调、纯函数 | 方法、构造函数、生成器 |
 
-### 6.5 Map vs Object
+### 5.5 Map vs Object
 
 | 特性 | Map | Object |
 |------|-----|--------|
@@ -1046,9 +1005,9 @@ console.log(byDeptLevel.get('eng-3')); // [Bob]
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 解构默认值的 falsy 陷阱
+### 6.1 解构默认值的 falsy 陷阱
 
 ```javascript
 // 反模式：解构默认值仅在 undefined 时生效
@@ -1070,7 +1029,7 @@ processSafe({ count: 0 });   // 0（保留合法 0）
 processSafe({ count: null }); // 10
 ```
 
-### 7.2 箭头函数中的 this 误用
+### 6.2 箭头函数中的 this 误用
 
 ```javascript
 // 反模式：在对象方法中使用箭头函数，this 不绑定对象
@@ -1105,7 +1064,7 @@ class Counter {
 }
 ```
 
-### 7.3 展开运算符的浅拷贝陷阱
+### 6.3 展开运算符的浅拷贝陷阱
 
 ```javascript
 // 反模式：展开运算符只做浅拷贝
@@ -1132,7 +1091,7 @@ function deepSpread(obj) {
 }
 ```
 
-### 7.4 Symbol 不是私有的
+### 6.4 Symbol 不是私有的
 
 ```javascript
 // 反模式：误以为 Symbol 是私有属性
@@ -1161,7 +1120,7 @@ class UserSafe {
 }
 ```
 
-### 7.5 Proxy 的性能陷阱
+### 6.5 Proxy 的性能陷阱
 
 ```javascript
 // 反模式：在热路径上深度代理大型对象
@@ -1192,7 +1151,7 @@ function cachedReactive(obj) {
 }
 ```
 
-### 7.6 模块循环依赖的陷阱
+### 6.6 模块循环依赖的陷阱
 
 ```javascript
 // 文件：a.js
@@ -1212,7 +1171,7 @@ console.log('b.js loaded, a =', a); // 可能输出 'a.js loaded, a = undefined'
 // 3. 使用函数延迟访问（live binding 在求值完成后可正确读取）
 ```
 
-### 7.7 Promise.all 的失败被吞
+### 6.7 Promise.all 的失败被吞
 
 ```javascript
 // 反模式：Promise.all 失败后，其他 Promise 仍会执行但结果被吞
@@ -1235,7 +1194,7 @@ results.forEach((r) => {
 });
 ```
 
-### 7.8 私有字段不可枚举且不可继承
+### 6.8 私有字段不可枚举且不可继承
 
 ```javascript
 // 反模式：误以为私有字段可被继承或通过 Object.keys 访问
@@ -1259,11 +1218,11 @@ console.log(Object.keys(d)); // []
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 升级策略
+### 7.1 升级策略
 
-#### 8.1.1 Babel 配置
+#### 7.1.1 Babel 配置
 
 ```json
 // .babelrc
@@ -1286,7 +1245,7 @@ console.log(Object.keys(d)); // []
 }
 ```
 
-#### 8.1.2 TypeScript 配置
+#### 7.1.2 TypeScript 配置
 
 ```json
 // tsconfig.json
@@ -1304,9 +1263,9 @@ console.log(Object.keys(d)); // []
 }
 ```
 
-### 8.2 性能优化
+### 7.2 性能优化
 
-#### 8.2.1 解构的性能特征
+#### 7.2.1 解构的性能特征
 
 V8 8.0+ 优化了解构的字段访问，使其接近直接访问：
 
@@ -1330,7 +1289,7 @@ function process(items) {
 }
 ```
 
-#### 8.2.2 Map vs Object 性能选型
+#### 7.2.2 Map vs Object 性能选型
 
 ```javascript
 // 频繁增删场景：Map 更优
@@ -1347,9 +1306,9 @@ for (let i = 0; i < 1000000; i++) {
 }
 ```
 
-### 8.3 类型安全
+### 7.3 类型安全
 
-#### 8.3.1 解构的类型推断
+#### 7.3.1 解构的类型推断
 
 ```typescript
 interface User {
@@ -1366,7 +1325,7 @@ function process(user: User) {
 }
 ```
 
-#### 8.3.2 私有字段与 TypeScript
+#### 7.3.2 私有字段与 TypeScript
 
 ```typescript
 class Service {
@@ -1382,7 +1341,7 @@ class Service {
 // internalCache 在编译时被标记为 private，运行时可访问
 ```
 
-### 8.4 异步模块加载
+### 7.4 异步模块加载
 
 ```javascript
 // 路由级懒加载（React）
@@ -1406,7 +1365,7 @@ async function safeLoad(name) {
 }
 ```
 
-### 8.5 装饰器（Stage 3 提案）
+### 7.5 装饰器（Stage 3 提案）
 
 ```javascript
 // 装饰器：ES2024 已进入 Stage 3，部分引擎支持
@@ -1439,9 +1398,9 @@ c.add(1, 2);
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Vue 3 响应式系统的 Proxy 实现
+### 8.1 案例一：Vue 3 响应式系统的 Proxy 实现
 
 **项目背景**：Vue 2 使用 Object.defineProperty 实现响应式，存在以下限制：
 
@@ -1501,7 +1460,7 @@ function reactive(target) {
 // 3. 惰性响应式（仅在被访问时才递归代理）
 ```
 
-### 9.2 案例二：基于顶层 await 的配置中心
+### 8.2 案例二：基于顶层 await 的配置中心
 
 **项目背景**：微前端架构下，各子应用需要共享配置，传统方案是同步阻塞加载或异步回调，前者影响启动速度，后者代码复杂。
 
@@ -1520,7 +1479,7 @@ fetch(`${apiUrl}/users`).then(...);
 
 **收益**：配置访问同步化，代码可读性大幅提升；启动时间从 500ms 降至 200ms（去除回调嵌套）。
 
-### 9.3 案例三：私有字段实现真正的封装
+### 8.3 案例三：私有字段实现真正的封装
 
 **项目背景**：某金融 SDK 需要暴露 API 给第三方，但内部状态（密钥、签名缓存）必须严格私有，防止被篡改。
 
@@ -1571,7 +1530,7 @@ signer.sign('hello');
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：以下代码输出什么？
 
@@ -1597,7 +1556,7 @@ const { name: userName, age: userAge } = { name: 'Alice', age: 30 };
 console.log(userName, userAge);
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 3**：以下代码输出什么？解释原因。
 
@@ -1633,7 +1592,7 @@ function readonly(obj) {
 }
 ```
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 5**：实现一个 `memoize(fn)` 函数，使用 WeakMap 缓存对象参数的结果。
 
@@ -1693,7 +1652,7 @@ class Counter {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Ecma International. 2024. *ECMAScript 2024 Language Specification (ECMA-262, 15th edition)*. Geneva, Switzerland: Ecma International. https://www.ecma-international.org/wp-content/uploads/ECMA-262_15th_edition_june_2024.pdf
 
@@ -1717,23 +1676,23 @@ class Counter {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - TC39 提案仓库：https://github.com/tc39/proposals
 - MDN JavaScript Reference：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript
 - V8 引擎博客：https://v8.dev/blog
 - SpiderMonkey 文档：https://spidermonkey.dev/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Rauschmayer, A. 2024. *Exploring ES2024 and ES2025*. Exploring JS. https://exploringjs.com/
 - Simpson, K. 2020. *You Don't Know JS Yet: Scope & Closures*, 2nd Edition. O'Reilly Media. https://github.com/getify/You-Dont-Know-JS
 - Crockford, D. 2008. *JavaScript: The Good Parts*. O'Reilly Media, Sebastopol, CA.
 - Frisbie, T. 2024. *The Deep Roots of JavaScript Fatigue*. https://daveceddia.com/
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - Richards, G. et al. 2024. *An Analysis of JavaScript Feature Usage in Production Codebases*. *IEEE Software* 41, 3 (May/June 2024), 45–53. DOI: https://doi.org/10.1109/MS.2023.3310123
 
@@ -1741,7 +1700,7 @@ class Counter {
 
 - Sridharan, M. et al. 2022. *TAJS: Type Analysis for JavaScript*. Aarhus University. https://github.com/cs-au-dk/tajs
 
-### 12.4 进阶资源
+### 11.4 进阶资源
 
 - AST Explorer：https://astexplorer.net/
 - Babel REPL：https://babeljs.io/repl
@@ -1750,9 +1709,9 @@ class Counter {
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 ES6+ 特性速查表
+### 12.1 ES6+ 特性速查表
 
 | 特性 | 版本 | 语法 | 用途 |
 |------|------|------|------|
@@ -1779,7 +1738,7 @@ class Counter {
 | 类字段 | ES2022 | `x = 1` | 实例字段 |
 | groupBy | ES2024 | `Object.groupBy(arr, fn)` | 数据分组 |
 
-### 13.2 引擎特性支持矩阵
+### 12.2 引擎特性支持矩阵
 
 | 特性 | Chrome 110+ | Firefox 110+ | Safari 16+ | Node.js 20+ | Deno 1.30+ |
 |------|-------------|--------------|-----------|-------------|------------|
@@ -1791,7 +1750,7 @@ class Counter {
 | structuredClone | 是 | 是 | 是 | 是 | 是 |
 | Object.groupBy | 是 | 是 | 是 | 是 | 是 |
 
-### 13.3 Babel 转译示例
+### 12.3 Babel 转译示例
 
 | ES2022 语法 | Babel 转译为 ES2015 |
 |-------------|---------------------|
@@ -1801,7 +1760,7 @@ class Counter {
 | `class { x = 1; }` | `constructor() { this.x = 1; }` |
 | `static { init(); }` | 模块加载时立即执行 |
 
-### 13.4 性能基准参考
+### 12.4 性能基准参考
 
 V8 v12 下的特性性能（仅供参考）：
 

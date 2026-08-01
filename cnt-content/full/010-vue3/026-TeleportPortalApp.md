@@ -14,45 +14,6 @@ related:
   - vue3/异步组件与Suspense
 prerequisites:
   - vue3/语法速查
-learningObjectives:
-  - level: remember
-    objective: '能陈述 Teleport 的两个核心属性（to/disabled）及其默认行为。'
-    verifiable: '默写 Teleport 最小用法'
-  - level: understand
-    objective: '能解释渲染位置变化但组件逻辑归属不变的含义。'
-    verifiable: '说明事件冒泡与 provide/inject 在 Teleport 中的行为'
-  - level: apply
-    objective: '能实现模态框、通知与全屏遮罩三种典型场景。'
-    verifiable: '编写三个完整组件'
-  - level: analyze
-    objective: '能分析 Teleport 与 CSS 层叠上下文、fixed 定位的交互。'
-    verifiable: '解释为何 modal 需要传送至 body'
-  - level: evaluate
-    objective: '能评价禁用传送（disabled）与多个目标挂载点的取舍。'
-    verifiable: '针对 SSR 与移动端给出选择依据'
-  - level: create
-    objective: '能设计可复用的 BaseModal 组件（含过渡、焦点管理与关闭逻辑）。'
-    verifiable: '完成案例研究中的完整组件'
-exercises:
-  - id: teleport-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: 'Teleport 的 _____ 属性指定目标容器，_____ 属性为 true 时内容渲染在原位。'
-    answer: 'to；disabled'
-    explanation: 'to 支持 CSS 选择器字符串，disabled 控制是否传送。'
-    difficulty: easy
-  - id: teleport-02
-    type: choice
-    cognitiveLevel: understand
-    question: 'Teleport 传送后，组件内部的响应式状态与事件？'
-    options:
-      - 'A. 状态丢失，事件绑定失效'
-      - 'B. 状态与事件仍属于原组件，DOM 位置在目标容器'
-      - 'C. 状态属于目标容器所在组件'
-      - 'D. 事件冒泡到目标容器而非原组件树'
-    answer: 'B'
-    explanation: 'Teleport 只改变渲染的 DOM 位置，组件实例、状态、props、事件与依赖注入均不变。'
-    difficulty: medium
 references:
   - type: documentation
     authors: ['Vue.js 团队']
@@ -77,21 +38,8 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-## 1. 学习目标（Bloom 分类）
 
-记忆层面：能够说出 Vue 3 内置组件 `<Teleport>` 的作用——把组件模板的一部分渲染到当前组件 DOM 树之外的指定目标节点；能够复述其核心 props：`to`（目标选择器或元素）、`disabled`（是否禁用传送）。
-
-理解层面：能够解释“DOM 位置改变但组件逻辑层级不变”这一核心机制：Teleport 只改变渲染结果挂载的物理 DOM 位置，组件实例、props、事件、provide/inject、依赖注入等逻辑关系仍然保留在源组件内。
-
-应用层面：能够在模态框、全局通知、下拉菜单、悬浮提示等典型场景中使用 Teleport，解决 `overflow: hidden`、`transform`、`z-index` 等 CSS 上下文造成的显示问题。
-
-分析层面：能够分析 Teleport 与普通条件渲染、Portal 概念（React 的 `createPortal`）的异同；能够分析多 Teleport 共享目标节点时的挂载顺序与生命周期。
-
-评价层面：能够判断什么时候该用 Teleport、什么时候该用普通渲染：当目标节点在组件树外且需要保留组件逻辑时使用 Teleport；当只是调整样式时，优先用 CSS 解决。
-
-创造层面：能够封装基于 Teleport 的可复用组件库组件（如全局 Modal 管理器），并结合 `<Transition>`、动态挂载目标与禁用状态设计完整方案。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 Teleport 的概念源于 React 的 Portal。React 16 在 2017 年正式发布 `ReactDOM.createPortal`，解决模态框、工具提示等 UI 需要渲染到 body 或指定 DOM 节点的问题。在此之前，前端开发者只能通过 `position: fixed` 加高 z-index 强行把浮层“抬”到页面顶部，但遇到父元素创建层叠上下文（如 `transform`、`filter`、`will-change`、`contain`）时，fixed 定位会被限制在父级内，浮层就会出现被裁剪、被遮挡、层级错乱等问题。
 
@@ -113,7 +61,7 @@ flowchart LR
 
 上图表达 Teleport 的核心：组件逻辑在左，DOM 结果在右，二者通过 Teleport 解耦。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 `<Teleport>` 是一个 Vue 内置组件，其形式化行为可以描述为：给定源组件 S、目标节点 T（由 `to` 指定）与子内容 C，Teleport 在 S 的渲染函数中接收 C，但在挂载阶段把 C 的根 DOM 节点插入到 T 下，而不是 S 的父节点下。
 
@@ -144,9 +92,9 @@ flowchart TD
     C --> F["组件逻辑仍属于源组件"]
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 为什么需要 Teleport：层叠上下文推导
+### 3.1 为什么需要 Teleport：层叠上下文推导
 
 CSS 的层叠上下文（stacking context）由 `transform`、`filter`、`opacity < 1`、`position + z-index`、`contain` 等属性创建。一旦浮层所在父元素创建了层叠上下文，浮层的 z-index 就只能在该上下文内部比较，无法覆盖页面其他部分。
 
@@ -154,19 +102,19 @@ CSS 的层叠上下文（stacking context）由 `transform`、`filter`、`opacit
 
 Teleport 的解决方案是物理上把模态框 DOM 移到 body 下，从而绕开父级的所有 CSS 约束。这正是“用 DOM 结构解决 CSS 限制”的典型工程手段。
 
-### 4.2 虚拟 DOM 与真实 DOM 的分离
+### 3.2 虚拟 DOM 与真实 DOM 的分离
 
 Vue 3 的渲染器（runtime-dom）在 patch 阶段区分“移动 vnode”与“挂载 vnode”。Teleport 在编译阶段生成 `Teleport` 类型的 vnode，渲染器遇到该类型时调用专门的 `process` 逻辑：目标节点解析成功后，把子 vnode 的 DOM 插入目标节点；`disabled` 为真时，则插入到当前组件容器。
 
 因此 Teleport 的“传送”发生在渲染器层面，组件树（vnode 树）从未改变。这一设计带来两个推论：其一，`<Transition>` 包裹 Teleport 内容时过渡动画正常工作，因为过渡基于 vnode 生命周期；其二，Teleport 内容中的组件仍然可以通过 `provide/inject` 访问源组件的上下文。
 
-### 4.3 挂载顺序推导
+### 3.3 挂载顺序推导
 
 多个 Teleport 共享目标节点时，Vue 按子 vnode 的 patch 顺序依次 append。这意味着模板中先出现的 Teleport 内容在 DOM 中位于前面。如果要控制多个浮层的视觉层级（如提示层盖过弹窗层），应调整模板顺序或显式设置 z-index。
 
-## 5. 代码示例（带详尽注释）
+## 4. 代码示例（带详尽注释）
 
-### 5.1 基础用法：把模态框传送到 body
+### 4.1 基础用法：把模态框传送到 body
 
 ```vue
 <script setup>
@@ -221,7 +169,7 @@ const close = () => { visible.value = false }
 
 讲解：本示例是 Teleport 最标准的应用。要点有三个：`to="body"` 把 DOM 挂到 body；`v-if` 控制显示；`@click.self` 只允许点击遮罩本身时关闭，点击面板内部不触发。scoped 样式对 Teleport 内容同样生效，因为 Vue 的 scoped 机制基于编译期注入的 data 属性，与 DOM 位置无关。
 
-### 5.2 disabled 属性的响应式切换
+### 4.2 disabled 属性的响应式切换
 
 ```vue
 <script setup>
@@ -247,7 +195,7 @@ window.matchMedia('(max-width: 768px)').addEventListener('change', (e) => {
 
 讲解：`disabled` 支持响应式绑定。本示例用 `matchMedia` 判断移动端，移动端渲染为组件内抽屉，桌面端渲染为 body 弹窗。需要注意 `window.matchMedia(...).addEventListener` 在新版浏览器中已取代已废弃的 `addListener`。
 
-### 5.3 动态目标节点与 defer
+### 4.3 动态目标节点与 defer
 
 ```vue
 <script setup>
@@ -275,7 +223,7 @@ onMounted(() => {
 
 讲解：`defer` 是 Vue 3.5 新增属性，解决目标节点晚于 Teleport 渲染的时序问题。示例中目标节点在 `onMounted` 后创建，若不使用 `defer`，Teleport 在初始挂载时找不到目标，会发出警告并回退到原位渲染。
 
-### 5.4 与 Transition 组合实现动画
+### 4.4 与 Transition 组合实现动画
 
 ```vue
 <template>
@@ -304,7 +252,7 @@ onMounted(() => {
 
 讲解：Teleport 与 Transition 组合是官方推荐模式。进入动画在 vnode 挂载时触发，离开动画在卸载前执行，不会因为 DOM 位置改变而失效。注意过渡类名样式若写在 scoped 块中，由于 Teleport 内容与样式所在组件可能不在同一 DOM 子树，建议把过渡类名放入全局样式。
 
-### 5.5 多 Teleport 共享目标
+### 4.5 多 Teleport 共享目标
 
 ```vue
 <template>
@@ -319,9 +267,9 @@ onMounted(() => {
 
 讲解：两个 Teleport 都指向 body，第一条提示在 DOM 中先出现，第二条随后追加。若两者 z-index 相同，后追加者在视觉上更靠上。需要精确控制覆盖顺序时，调整模板顺序即可。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Teleport 与 React Portal 对比
+### 5.1 Teleport 与 React Portal 对比
 
 | 维度 | Vue Teleport | React createPortal |
 | --- | --- | --- |
@@ -333,15 +281,15 @@ onMounted(() => {
 
 讲解：两者解决同一类问题，但 Vue 把 Teleport 内置进模板系统，声明式更强；React 的 Portal 是命令式函数调用。Vue 的 DOM 事件冒泡遵循真实 DOM 结构（Teleport 后事件从 body 向上冒泡），React 的合成事件则遵循组件树，这是迁移时最容易踩的差异。
 
-### 6.2 Teleport 与普通条件渲染对比
+### 5.2 Teleport 与普通条件渲染对比
 
 普通条件渲染把浮层放在组件原位，代码简单但受父级 CSS 限制；Teleport 牺牲一点可读性换取 DOM 位置的自由。工程上推荐：浮层类组件一律使用 Teleport，普通内容使用条件渲染。
 
-### 6.3 Teleport 与 CSS 方案对比
+### 5.3 Teleport 与 CSS 方案对比
 
 `position: fixed` 加高 z-index 是 Teleport 出现前的常见方案，但无法解决父级 transform 创建包含块的问题。Teleport 是结构性方案，CSS 是表现性方案，两者可以共存：Teleport 解决挂载位置，CSS 解决视觉样式。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
 陷阱一：目标节点不存在。`to` 指向的选择器在挂载时找不到元素时，Vue 会告警并回退。最佳实践：在 `index.html` 中预留 `<div id="modal-root">`，或使用 `defer`。
 
@@ -355,9 +303,9 @@ onMounted(() => {
 
 最佳实践：把模态框、通知、弹层封装成独立组件，统一使用 `<Teleport to="body">`；为每个浮层定义清晰的 z-index 规范；动画交给 Transition；内容状态交给组件自身。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 全局 Modal 管理器封装
+### 7.1 全局 Modal 管理器封装
 
 ```ts
 // modal-manager.ts：集中管理多个模态框的挂载与状态
@@ -405,7 +353,7 @@ import { modalState, closeModal } from './modal-manager'
 
 讲解：`v-for` 渲染整个栈，`v-bind` 透传 props，`@close` 统一关闭。这个模式可扩展到 toast 通知、图片预览、确认框等所有浮层类 UI。
 
-### 8.2 移动端底部抽屉与桌面端弹窗
+### 7.2 移动端底部抽屉与桌面端弹窗
 
 ```vue
 <template>
@@ -422,7 +370,7 @@ import { modalState, closeModal } from './modal-manager'
 
 讲解：一个组件同时服务两种形态，靠 `disabled` 响应式切换。样式类随形态变化，行为逻辑完全复用。
 
-## 9. 案例研究：完整实现一个带遮罩的确认对话框
+## 8. 案例研究：完整实现一个带遮罩的确认对话框
 
 需求：实现 ConfirmDialog 组件，满足以下约束：挂载在 body 下；带淡入淡出动画；点击遮罩关闭；支持确认与取消回调；在 Vue Router 页面切换时自动关闭。
 
@@ -489,7 +437,7 @@ onBeforeUnmount(() => {
 <ConfirmDialog v-model:visible="showConfirm" title="删除确认" message="删除后不可恢复，确定继续吗？" @confirm="doDelete" />
 ```
 
-## 10. 知识要点总结与深入讲解
+## 9. 知识要点总结与深入讲解
 
 Teleport 的核心一句话：DOM 位置可变，逻辑归属不变。理解这句话就能推导出大部分行为。
 
@@ -501,7 +449,7 @@ Teleport 的核心一句话：DOM 位置可变，逻辑归属不变。理解这�
 
 `disabled` 与 `defer` 是两个容易忽略的 props：前者做响应式形态切换，后者解决目标节点时序。Vue 3.5+ 项目中应优先掌握这两个特性。
 
-## 11. 参考文献
+## 10. 参考文献
 
 Vue.js 官方文档, Built-in Components: Teleport, 访问日期 2026-08-01, https://vuejs.org/guide/built-ins/teleport.html
 
@@ -513,7 +461,7 @@ MDN Web Docs, Stacking context, 访问日期 2026-08-01, https://developer.mozil
 
 portal-vue 仓库（Teleport 的前身社区方案）, https://github.com/LinusBorg/portal-vue
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 Vue 3 的 KeepAlive 与 Teleport 配合使用，可以阅读本模块的 027-KeepAliveCacheLifecycle 文档；
 
@@ -548,9 +496,9 @@ Vue 官方生态：https://vuejs.org/ 、https://router.vuejs.org/ 、https://pi
 
 `disabled` 为 true 时，内容渲染在原位。
 
-### 2. 实际应用
+### 1. 实际应用
 
-#### 2.1 模态框
+#### 1.1 模态框
 
 ```html
 <Teleport to="body">
@@ -562,7 +510,7 @@ Vue 官方生态：https://vuejs.org/ 、https://router.vuejs.org/ 、https://pi
 </Teleport>
 ```
 
-#### 2.2 通知系统
+#### 1.2 通知系统
 
 ```html
 <Teleport to="#notifications">
@@ -572,7 +520,7 @@ Vue 官方生态：https://vuejs.org/ 、https://router.vuejs.org/ 、https://pi
 </Teleport>
 ```
 
-#### 2.3 全屏遮罩
+#### 1.3 全屏遮罩
 
 ```html
 <Teleport to="body">
@@ -582,7 +530,7 @@ Vue 官方生态：https://vuejs.org/ 、https://router.vuejs.org/ 、https://pi
 </Teleport>
 ```
 
-### 3. 多 Teleport 同一目标
+### 2. 多 Teleport 同一目标
 
 多个 Teleport 到同一目标时，按渲染顺序追加：
 

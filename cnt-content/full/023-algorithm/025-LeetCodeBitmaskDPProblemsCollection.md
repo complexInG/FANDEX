@@ -36,14 +36,6 @@ related:
 prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/动态规划
-learningObjectives:
-  - 记忆 Bellman 1957《Dynamic Programming》Princeton University Press 与 Held-Karp 1962《A Dynamic Programming Approach to Sequencing Problems》J. SIAM 10(1):196-210 DOI:10.1137/0110015 的历史脉络，复述 bitmask DP 状态压缩的核心思想：以 $n$ 位二进制编码 $n$ 元集合子集，将 $O(n!)$ 排列搜索压缩至 $O(2^n \cdot n)$ 状态空间
-  - 理解状态压缩 DP 与普通 DP 的根本区别——状态空间结构化为子集格（subset lattice），掌握位运算六大原子操作（`& | ^ ~`、`<< >>`、`x & (-x)`、`(sub - 1) & S`、`__builtin_popcount`、`__builtin_ctz`）的数学语义与底层硬件指令映射
-  - 应用状态压缩 DP 求解五类经典问题——TSP（Held-Karp $O(n^2 2^n)$）、N 皇后（$O(n!)$ → $O(2^n \cdot n)$）、划分等和子集、棋盘骨牌覆盖（轮廓线 DP）、排列型 DP，编写 Python/C++/Java 多语言实现并分析复杂度
-  - 分析 $O(2^n \cdot n^2)$ 与 $O(n!)$ 在 $n \leq 20$ 时的实际可行性（$2^{20} \approx 10^6$，$20! \approx 2.4 \times 10^{18}$），掌握"指数级算法的可处理窗口"判定方法，识别 NP-Hard 问题在小规模下的精确求解边界
-  - 评估记忆化递归 vs 自底向上迭代 vs 滚动数组 vs 子集枚举优化四种实现策略的时间/空间/常数因子权衡，识别 LeetCode 1879/1655/1494/1125/1931 等题目的最优实现选择
-  - 对比状态压缩 DP 与分支限界、Meet-in-the-Middle、CP-SAT 求解器在 TSP、子集和等 NP-Hard 问题上的优劣，掌握 Google OR-Tools、Concorde 的工业级应用场景
-  - 创造性设计基于 bitmask DP 的工业解决方案，如物流配送路径优化、芯片布线、作业调度、围棋棋型识别，并预留扩展接口以适配更大规模问题（如分治 + bitmask 混合策略、GPU 并行 bitmask DP）
 references:
   - type: book
     authors:
@@ -212,6 +204,7 @@ etymology:
     english: popcount
     origin: 'popcount（population count）由 IBM 1960s 在 Stretch 计算机中引入硬件指令。GCC/Clang 提供 __builtin_popcount 内建函数。C++20 标准化 std::popcount。该指令在 bitmask DP 中用于快速统计集合大小'
 ---
+
 
 ## 1. 概述与学习目标
 

@@ -22,18 +22,8 @@ prerequisites:
   - typescript/字面量类型
 ---
 
+
 # 类型安全的状态管理
-
-## 学习目标
-
-本节按 Bloom 认知层级组织学习目标，从基础记忆到高级创造逐层递进：
-
-- **记忆（Remember）**：能够复述状态管理的核心概念（Store、State、Action、Reducer、Selector、Middleware），列出至少 5 种主流状态管理方案（Redux、Zustand、Pinia、MobX、XState）的设计理念，说出 Flux/Redux 三大原则的内容。
-- **理解（Understand）**：能够解释单向数据流的动机，说明 reducer 纯函数约束的必要性，描述选择器记忆化（Memoization）的原理，对比 push-based 与 pull-based 响应式系统的差异。
-- **应用（Apply）**：能够在 TypeScript 项目中实现一个类型安全的 Store，编写 discriminated union 形式的 Action，使用 `useSyncExternalStore` 将 Store 接入 React，并通过中间件机制扩展日志、持久化、DevTools 能力。
-- **分析（Analyze）**：能够分析不同状态范式（全局 Store、原子状态、Signal、FSM）在性能、可测试性、可追溯性维度的权衡，识别状态 Normalization 的收益与边界，诊断不必要的重渲染根源。
-- **评估（Evaluate）**：能够评估在何种场景应引入 Redux Toolkit、Zustand、XState 或 Jotai，判断状态归属（局部 vs 全局、服务端 vs 客户端），并度量状态架构的可维护性指标（耦合度、变更影响面、测试覆盖）。
-- **创造（Create）**：能够为大型应用（50+ 路由、100+ 组件）设计端到端类型安全的状态架构，包含领域切片划分、派生状态层、效果编排、持久化策略、时间旅行调试、SSR 水合、测试金字塔，并预留扩展点支持未来微前端或联邦化。
 
 ## 历史动机与背景
 

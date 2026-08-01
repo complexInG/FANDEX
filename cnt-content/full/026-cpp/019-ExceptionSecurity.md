@@ -26,6 +26,7 @@ tags:
   - Transactional Semantics
 ---
 
+
 # 异常安全（Exception Safety）
 
 > 本章节系统讲解 C++ 异常安全保证体系，包括基本保证（Basic Guarantee）、强保证（Strong Guarantee）与不抛出保证（No-throw Guarantee）的形式化定义、事务性编程范式、copy-and-swap 惯用法，以及在 STL、Boost、Chromium 等工业级代码库中的实践。内容对标 MIT 6.170 / Stanford CS106L / CMU 15-410 课程深度。
@@ -49,59 +50,9 @@ tags:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-### 1.1 记忆（Remembering）
-
-- **R1**：复述异常安全的三层保证体系：基本保证（Basic Guarantee）、强保证（Strong Guarantee）、不抛出保证（No-throw Guarantee）。
-- **R2**：列出 `noexcept` 关键字的语义，区分 `noexcept`、`noexcept(true)`、`noexcept(false)`、`noexcept(expr)` 四种形式。
-- **R3**：背诵 STL 对容器操作的异常要求：默认构造、析构、`swap` 必须不抛出；移动构造尽量不抛出。
-- **R4**：识别 copy-and-swap 惯用法的四个组成部分：拷贝构造、析构、`friend swap`、`operator=`。
-
-### 1.2 理解（Understanding）
-
-- **U1**：解释"资源泄漏"与"状态破坏"的区别，指出基本保证防止前者，强保证防止后者。
-- **U2**：阐明 RAII 与异常安全的内在联系：RAII 是异常安全的基础设施。
-- **U3**：对比 `throw()`、`throw(type)`、`noexcept`、`noexcept(expr)` 的演化历史与语义差异。
-- **U4**：说明 `std::terminate` 被触发的五种场景，并解释为什么析构函数中的异常必须被捕获。
-
-### 1.3 应用（Applying）
-
-- **A1**：使用 copy-and-swap 惯用法为一个管理资源的类实现强异常安全的赋值运算符。
-- **A2**：使用 `std::unique_ptr` 与 `std::lock_guard` 实现 RAII 包装，确保异常发生时资源被释放。
-- **A3**：使用 `try-catch` 与事务性编程实现"全有或全无"（all-or-nothing）的多步操作。
-- **A4**：使用 `noexcept` 标注移动构造函数，使 `std::vector` 在扩容时优先使用移动而非拷贝。
-
-### 1.4 分析（Analyzing）
-
-- **An1**：分析以下代码的异常安全缺陷，指出违反了哪一层保证：
-  ```cpp
-  void f() {
-      auto p = new int[100];
-      do_something();  // 可能抛出
-      delete[] p;
-  }
-  ```
-- **An2**：解构 `std::vector::push_back` 的实现，分析其如何通过 `noexcept` 移动构造保证强异常安全。
-- **An3**：对比"异常传递"（exception propagation）与"错误码返回"（error code return）的性能开销与可读性。
-
-### 1.5 评价（Evaluating）
-
-- **E1**：评价"异常 vs 错误码"之争，给出在系统编程、应用层、嵌入式三类场景中的推荐选择。
-- **E2**：批判性分析 Google C++ Style Guide 与 LLVM Coding Standards 在异常使用上的分歧，指出各自的合理性。
-- **E3**：评估 `noexcept` 滥用的风险：标注 `noexcept` 但实际抛出会触发 `std::terminate`，比异常更危险。
-
-### 1.6 创造（Creating）
-
-- **C1**：设计一个强异常安全的字符串拼接函数，支持任意数量的 `std::string` 参数。
-- **C2**：实现一个事务性数据库接口，支持 commit/rollback 语义，任何步骤失败都回滚到初始状态。
-- **C3**：构建一个异常安全的状态机框架，保证状态转换过程中的不变量（invariants）不被破坏。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 异常机制的诞生（C++98 之前）
+### 1.1 异常机制的诞生（C++98 之前）
 
 C++ 早期的错误处理完全依赖返回值：
 
@@ -122,7 +73,7 @@ int divide(int a, int b, int* result) {
 
 1980 年代后期，Ada 语言率先引入异常机制。1990 年，Bjarne Stroustrup 在《The Design and Evolution of C++》中提出 C++ 异常设计原则：**异常用于处理"正常控制流之外"的错误，而非正常分支**。C++98 正式将异常纳入标准。
 
-### 2.2 异常安全保证的提出（1997-2000）
+### 1.2 异常安全保证的提出（1997-2000）
 
 异常引入后，开发者面临一个核心问题：**异常发生时，程序状态如何？** 1997 年，David Abrahams 在 Boost 社区提出了著名的"异常安全保证层次"（Abrahams Guarantees），后经 Jon Jagger 与 Bjarne Stroustrup 完善，成为业界共识：
 
@@ -132,7 +83,7 @@ int divide(int a, int b, int* result) {
 
 此外还有**异常中立性（Exception Neutrality）**：函数本身不处理异常，但允许异常向上传递。
 
-### 2.3 异常规范（Exception Specification）的失败
+### 1.3 异常规范（Exception Specification）的失败
 
 C++98 引入异常规范（Exception Specification），允许函数声明其可能抛出的异常类型：
 
@@ -150,7 +101,7 @@ void h() throw(...);              // 可能抛出任何异常（默认）
 
 C++11 弃用动态异常规范（保留 `throw()` 但建议用 `noexcept` 替代），C++14 进一步限制，C++17 完全移除动态异常规范，仅保留 `noexcept`。
 
-### 2.4 `noexcept` 的引入（C++11）
+### 1.4 `noexcept` 的引入（C++11）
 
 C++11 引入 `noexcept` 关键字，简化并替代异常规范：
 
@@ -168,7 +119,7 @@ void k() noexcept(noexcept(T()));  // 条件 noexcept
 - **优化机会**：编译器可基于 `noexcept` 生成更高效的代码（省略异常处理表）。
 - **STL 协同**：`std::vector` 等容器基于 `noexcept` 选择移动或拷贝。
 
-### 2.5 C++20 的 `std::expected` 与异常互补
+### 1.5 C++20 的 `std::expected` 与异常互补
 
 C++20 引入 `std::expected<T, E>`，提供一种介于异常与错误码之间的错误处理机制：
 
@@ -191,18 +142,18 @@ if (result.has_value()) {
 - 性能敏感场景，避免异常开销。
 - 需要明确错误类型的设计。
 
-### 2.6 C++23 与 C++26 的演进
+### 1.6 C++23 与 C++26 的演进
 
 - **C++23**：`std::expected` 正式标准化；`std::stacktrace` 提供异常时的调用栈信息；`if consteval` 简化编译期与运行期的异常处理区分。
 - **C++26（提案）**：P2927 提案引入"函数 try 块的改进"，允许在构造函数初始化列表中更优雅地处理成员初始化失败。P1675 提案讨论异常的零开销原则（zero-overhead exceptions）。
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 异常安全保证层次
+### 2.1 异常安全保证层次
 
-#### 3.1.1 基本保证（Basic Guarantee）
+#### 2.1.1 基本保证（Basic Guarantee）
 
 **定义 3.1**（基本保证）：对于操作 $f: S \to S$（$S$ 为程序状态空间），若 $f$ 抛出异常 $e$，则：
 
@@ -217,7 +168,7 @@ $$
 - 状态有效性：对象处于"可继续使用"的状态，但其值可能已改变。
 - 不变量保持：类的类不变量（class invariants）未被破坏。
 
-#### 3.1.2 强保证（Strong Guarantee）
+#### 2.1.2 强保证（Strong Guarantee）
 
 **定义 3.2**（强保证）：对于操作 $f: S \to S$，若 $f$ 抛出异常 $e$，则：
 
@@ -232,7 +183,7 @@ $$
 - 可观察状态：从外部观察，操作"未发生"。
 - 可恢复性：调用方可以安全地重试操作。
 
-#### 3.1.3 不抛出保证（No-throw Guarantee）
+#### 2.1.3 不抛出保证（No-throw Guarantee）
 
 **定义 3.3**（不抛出保证）：对于操作 $f$，若：
 
@@ -247,7 +198,7 @@ $$
 - 适用场景：析构函数、`swap`、移动构造、内存释放等"基础设施"操作。
 - 标注方式：`noexcept` 关键字（C++11+）。
 
-### 3.2 异常中立性（Exception Neutrality）
+### 2.2 异常中立性（Exception Neutrality）
 
 **定义 3.4**（异常中立性）：函数 $g$ 是异常中立的，当且仅当：
 
@@ -259,7 +210,7 @@ $$
 
 **实践意义**：异常中立是组合性的基础。底层函数抛出异常，上层函数透明传递，最终在合适层级处理。
 
-### 3.3 `noexcept` 的形式化语义
+### 2.3 `noexcept` 的形式化语义
 
 **定义 3.5**（`noexcept` 规范）：`noexcept(expr)` 是一个编译期常量表达式，其值为 `bool`：
 
@@ -274,7 +225,7 @@ $$
 - `new` 表达式可能抛出 `std::bad_alloc`，因此非 `noexcept`。
 - 动态类型转换 `dynamic_cast` 对引用类型可能抛出 `std::bad_cast`。
 
-### 3.4 异常安全与资源管理
+### 2.4 异常安全与资源管理
 
 **定义 3.6**（RAII 资源管理）：RAII（Resource Acquisition Is Initialization）是一种将资源生命周期绑定到对象生命周期的编程范式：
 
@@ -291,9 +242,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 析构函数不抛出的必要性
+### 3.1 析构函数不抛出的必要性
 
 **定理 4.1**（析构函数不抛出）：析构函数必须保证不抛出异常，否则可能导致 `std::terminate`。
 
@@ -330,7 +281,7 @@ C++ 标准规定：
 
 **推论 4.1**：C++11 起，析构函数默认 `noexcept`（除非基类或成员的析构函数非 `noexcept`）。
 
-### 4.2 Copy-and-Swap 的强异常安全
+### 3.2 Copy-and-Swap 的强异常安全
 
 **定理 4.2**（copy-and-swap 强保证）：使用 copy-and-swap 惯用法实现的赋值运算符满足强异常安全保证。
 
@@ -356,7 +307,7 @@ T& T::operator=(T other) {  // 注意：按值传递
 - `swap` 必须 `noexcept`（通常是成员交换指针）。
 - 析构必须 `noexcept`（标准要求）。
 
-### 4.3 `std::vector::push_back` 的强异常安全
+### 3.3 `std::vector::push_back` 的强异常安全
 
 **定理 4.3**：`std::vector::push_back` 在元素类型的移动构造是 `noexcept` 时，提供强异常安全保证；否则退化为基本保证。
 
@@ -394,7 +345,7 @@ void push_back(const T& value) {
 
 **关键洞察**：`std::move_if_noexcept` 是异常安全与性能的桥梁：移动快但有风险，拷贝慢但安全。标注 `noexcept` 移动构造使 `vector` 选择移动，提升性能。
 
-### 4.4 事务性编程的回滚机制
+### 3.4 事务性编程的回滚机制
 
 **定理 4.4**（事务回滚）：多步操作可以通过"先记录、后提交"模式实现强异常安全。
 
@@ -423,7 +374,7 @@ void transactional_op() {
 
 **性能权衡**：备份/回滚需要额外的拷贝或日志，性能开销与操作复杂度成正比。对于性能敏感场景，可考虑"延迟提交"模式：所有修改先写入临时区域，最后一次性提交。
 
-### 4.5 `noexcept` 与代码优化
+### 3.5 `noexcept` 与代码优化
 
 **定理 4.5**（`noexcept` 优化）：标注 `noexcept` 的函数允许编译器省略异常处理表（exception handling table），减少代码体积与运行时开销。
 
@@ -439,9 +390,9 @@ void transactional_op() {
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 RAII 包装器
+### 4.1 RAII 包装器
 
 ```cpp
 // file: raii_wrapper.cpp
@@ -521,7 +472,7 @@ int main() {
 - `scoped_lock` 析构解锁，避免死锁。
 - 标准库已提供 `std::unique_ptr`、`std::lock_guard`、`std::scoped_lock`，优先使用。
 
-### 5.2 Copy-and-Swap 惯用法
+### 4.2 Copy-and-Swap 惯用法
 
 ```cpp
 // file: copy_and_swap.cpp
@@ -620,7 +571,7 @@ int main() {
 2. `swap` 是 `noexcept`，交换后 `*this` 持有新数据。
 3. `other` 析构（`noexcept`）释放旧数据。
 
-### 5.3 事务性多步操作
+### 4.3 事务性多步操作
 
 ```cpp
 // file: transactional_op.cpp
@@ -747,7 +698,7 @@ int main() {
 // 运行：./transactional_op
 ```
 
-### 5.4 `noexcept` 与 STL 容器性能
+### 4.4 `noexcept` 与 STL 容器性能
 
 ```cpp
 // file: noexcept_vector.cpp
@@ -822,7 +773,7 @@ int main() {
 // 预期输出：FastMove 比 SlowMove 快约 2-5 倍（取决于数据量）
 ```
 
-### 5.5 函数 try 块（Function Try Block）
+### 4.5 函数 try 块（Function Try Block）
 
 ```cpp
 // file: function_try_block.cpp
@@ -866,7 +817,7 @@ int main() {
 // Caught in main: Resource init failed
 ```
 
-### 5.6 异常中立性
+### 4.6 异常中立性
 
 ```cpp
 // file: exception_neutral.cpp
@@ -927,9 +878,9 @@ int main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 C++ 异常 vs C 错误码
+### 5.1 C++ 异常 vs C 错误码
 
 | 维度 | C++ 异常 | C 错误码 |
 |------|----------|----------|
@@ -968,7 +919,7 @@ void do_something() {
 }
 ```
 
-### 6.2 C++ 异常 vs Rust `Result`
+### 5.2 C++ 异常 vs Rust `Result`
 
 Rust 使用 `Result<T, E>` 类型强制错误处理：
 
@@ -995,7 +946,7 @@ fn do_something() -> Result<(), Error> {
 
 Rust 的方式更"显式"，但 `?` 运算符使其简洁。C++ 的 `std::expected`（C++23）借鉴了此设计。
 
-### 6.3 C++ 异常 vs Java 受检异常
+### 5.3 C++ 异常 vs Java 受检异常
 
 Java 的受检异常（Checked Exception）强制方法声明可能抛出的异常：
 
@@ -1020,7 +971,7 @@ public void readFile() throws IOException {
 
 Java 受检异常的争议：Bruce Eckel 等人认为它导致"异常吞噬"（catch 后忽略），实际降低了安全性。
 
-### 6.4 C++ 异常 vs Go panic/recover
+### 5.4 C++ 异常 vs Go panic/recover
 
 Go 采用"错误码优先，panic/recover 兜底"的策略：
 
@@ -1048,7 +999,7 @@ func doSomething() (err error) {
 
 Go 的哲学：错误是"正常的"，不应使用异常机制。`panic` 仅用于"不可能发生"的情况。
 
-### 6.5 综合对比
+### 5.5 综合对比
 
 | 特性 | C++ | C | Rust | Java | Go |
 |------|-----|---|------|------|-----|
@@ -1060,9 +1011,9 @@ Go 的哲学：错误是"正常的"，不应使用异常机制。`panic` 仅用�
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：析构函数抛出异常
+### 6.1 陷阱一：析构函数抛出异常
 
 **反模式**：
 
@@ -1101,7 +1052,7 @@ private:
 };
 ```
 
-### 7.2 陷阱二：构造函数部分初始化
+### 6.2 陷阱二：构造函数部分初始化
 
 **反模式**：
 
@@ -1133,7 +1084,7 @@ public:
 };
 ```
 
-### 7.3 陷阱三：`noexcept` 误标注
+### 6.3 陷阱三：`noexcept` 误标注
 
 **反模式**：
 
@@ -1165,7 +1116,7 @@ public:
 static_assert(std::is_nothrow_move_constructible_v<Widget>);
 ```
 
-### 7.4 陷阱四：异常规范与模板不兼容
+### 6.4 陷阱四：异常规范与模板不兼容
 
 **反模式**（C++03 风格）：
 
@@ -1186,7 +1137,7 @@ void f(T t) noexcept(noexcept(T(t))) {  // 条件 noexcept
 }
 ```
 
-### 7.5 陷阱五：`catch(...)` 吞掉异常
+### 6.5 陷阱五：`catch(...)` 吞掉异常
 
 **反模式**：
 
@@ -1214,7 +1165,7 @@ void good_handler() {
 }
 ```
 
-### 7.6 陷阱六：在 `catch` 块中抛出新异常丢失原始信息
+### 6.6 陷阱六：在 `catch` 块中抛出新异常丢失原始信息
 
 **反模式**：
 
@@ -1246,7 +1197,7 @@ void print_exception(const std::exception& e, int level = 0) {
 }
 ```
 
-### 7.7 陷阱七：移动构造非 `noexcept` 导致性能下降
+### 6.7 陷阱七：移动构造非 `noexcept` 导致性能下降
 
 **反模式**：
 
@@ -1278,7 +1229,7 @@ std::vector<Widget> v;
 v.push_back(Widget(42));  // vector 扩容时使用移动（高效）
 ```
 
-### 7.8 陷阱八：`swap` 非 `noexcept`
+### 6.8 陷阱八：`swap` 非 `noexcept`
 
 **反模式**：
 
@@ -1311,9 +1262,9 @@ public:
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 默认使用 RAII
+### 7.1 默认使用 RAII
 
 **规则**：所有资源（内存、文件、锁、socket）必须通过 RAII 对象管理。
 
@@ -1332,7 +1283,7 @@ void good() {
 }
 ```
 
-### 8.2 移动构造与 `swap` 标注 `noexcept`
+### 7.2 移动构造与 `swap` 标注 `noexcept`
 
 **规则**：所有移动构造、移动赋值、`swap` 必须标注 `noexcept`。
 
@@ -1346,7 +1297,7 @@ public:
 };
 ```
 
-### 8.3 使用 copy-and-swap 实现赋值
+### 7.3 使用 copy-and-swap 实现赋值
 
 **规则**：对于管理资源的类，赋值运算符使用 copy-and-swap 惯用法。
 
@@ -1357,7 +1308,7 @@ T& T::operator=(T other) noexcept {  // 按值传递
 }
 ```
 
-### 8.4 事务性编程
+### 7.4 事务性编程
 
 **规则**：多步操作使用事务模式，确保强异常安全。
 
@@ -1390,7 +1341,7 @@ void transactional() {
 }
 ```
 
-### 8.5 异常中立性
+### 7.5 异常中立性
 
 **规则**：底层函数应异常中立，仅在合适的层级处理异常。
 
@@ -1414,7 +1365,7 @@ int main() {
 }
 ```
 
-### 8.6 `noexcept` 的合理使用
+### 7.6 `noexcept` 的合理使用
 
 **规则**：
 - 析构函数、`swap`、移动构造/赋值：必须 `noexcept`。
@@ -1429,7 +1380,7 @@ void f(T t) noexcept(noexcept(g(t))) {
 }
 ```
 
-### 8.7 异常类型设计
+### 7.7 异常类型设计
 
 **规则**：自定义异常应派生自 `std::exception`，提供 `what()` 方法。
 
@@ -1450,7 +1401,7 @@ public:
 };
 ```
 
-### 8.8 性能敏感场景的替代方案
+### 7.8 性能敏感场景的替代方案
 
 **规则**：在性能极致敏感的场景（高频交易、游戏引擎），可禁用异常，使用错误码或 `std::expected`。
 
@@ -1464,7 +1415,7 @@ std::expected<int, ErrorCode> parse_int(std::string_view s) noexcept {
 }
 ```
 
-### 8.9 测试异常安全
+### 7.9 测试异常安全
 
 **规则**：使用异常注入测试验证异常安全保证。
 
@@ -1500,9 +1451,9 @@ TEST(ExceptionSafety, VectorPushBackStrongGuarantee) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：`std::vector` 的异常安全实现
+### 8.1 案例一：`std::vector` 的异常安全实现
 
 `std::vector` 是异常安全的典范。其核心操作保证：
 
@@ -1543,7 +1494,7 @@ void push_back(const T& value) {
 }
 ```
 
-### 9.2 案例二：Boost.Exception 的错误信息增强
+### 8.2 案例二：Boost.Exception 的错误信息增强
 
 Boost.Exception 允许在异常中附加任意信息：
 
@@ -1579,7 +1530,7 @@ int main() {
 
 Boost.Exception 的设计哲学：异常是"携带信息的错误"，应尽可能丰富。
 
-### 9.3 案例三：Chromium 的 `base::Optional` 与异常安全
+### 8.3 案例三：Chromium 的 `base::Optional` 与异常安全
 
 Chromium 禁用异常（`-fno-exceptions`），但通过 `base::Optional`（类似 `std::optional`）与 `base::Status`（类似 `std::expected`）实现类似的错误处理：
 
@@ -1604,7 +1555,7 @@ if (result.ok()) {
 
 **设计权衡**：禁用异常降低二进制体积与运行时开销，但牺牲了表达力。Chromium 选择此方案是因为其对性能与二进制大小极度敏感。
 
-### 9.4 案例四：Linux 内核的 `goto cleanup`
+### 8.4 案例四：Linux 内核的 `goto cleanup`
 
 Linux 内核是 C 代码，无法使用异常。其采用 `goto cleanup` 模式模拟 RAII：
 
@@ -1630,7 +1581,7 @@ cleanup:
 
 这是 C 语言的"异常安全"，但其可读性与可维护性远低于 C++ 的 RAII。
 
-### 9.5 案例五：Facebook Folly 的 `fbstring`
+### 8.5 案例五：Facebook Folly 的 `fbstring`
 
 Folly 的 `fbstring` 是异常安全的字符串实现，针对小字符串优化（SSO）：
 
@@ -1657,7 +1608,7 @@ class fbstring {
 
 `fbstring` 的设计原则：所有操作要么 `noexcept`，要么强异常安全。
 
-### 9.6 案例六：Google Abseil 的异常兼容
+### 8.6 案例六：Google Abseil 的异常兼容
 
 Google Abseil 库同时支持有异常与无异常环境：
 
@@ -1684,7 +1635,7 @@ Abseil 的设计：API 使用 `StatusOr`（类似 `std::expected`），与异常
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：以下代码违反了哪一层异常安全保证？
 
@@ -1761,7 +1712,7 @@ void swap(Widget& other) noexcept {
 
 ---
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：实现一个强异常安全的 `insert` 函数，向 `std::vector` 中插入元素。
 
@@ -1866,7 +1817,7 @@ void push(int value) {
 
 ---
 
-### 10.3 思考题
+### 9.3 思考题
 
 **思考题 1**：为什么 Google C++ Style Guide 禁用异常，而 LLVM 与 Boost 大量使用？
 
@@ -1944,7 +1895,7 @@ public:
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本章节引用的文献遵循 ACM Reference Format。
 
@@ -1980,16 +1931,16 @@ public:
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 标准与提案
+### 11.1 标准与提案
 
 - **C++ Standard Working Draft (N4950)**：最新工作草案，涵盖 C++23/26 提案。https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf
 - **P0323: std::expected**：C++23 错误处理新机制。https://wg21.link/p0323
 - **P1675: Rethrowing exceptions**：异常重新抛出的改进。https://wg21.link/p1675
 - **P2927: Function try block improvements**：C++26 提案。https://wg21.link/p2927
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 1. **《Exceptional C++》** — Herb Sutter
    - 异常安全的经典著作，47 个工程难题。
@@ -2002,7 +1953,7 @@ public:
 5. **《Modern C++ Design》** — Andrei Alexandrescu
    - Loki 库设计，含异常安全策略类。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **cppreference.com — Exceptions**：https://en.cppreference.com/w/cpp/language/exceptions
 - **cppreference.com — noexcept**：https://en.cppreference.com/w/cpp/language/noexcept_spec
@@ -2010,14 +1961,14 @@ public:
 - **Google C++ Style Guide — Exceptions**：https://google.github.io/styleguide/cppguide.html#Exceptions
 - **LLVM Coding Standards — Exceptions**：https://llvm.org/docs/CodingStandards.html#do-not-use-exceptions
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 - **CPPCon 2014: Scott Meyers — The Most Important Design Decision in C++**：https://www.youtube.com/watch?v=hhjUAaQjZfY
 - **CPPCon 2017: Fedor Pikus — Exceptional C++**：https://www.youtube.com/watch?v=WwdPh2Av6uU
 - **CPPCon 2019: Jon Kalb — Exception Handling: From the Basics to the Advanced**：https://www.youtube.com/watch?v=Oy-V7FtnTqk
 - **CPPCon 2021: Klaus Iglberger — Back to Basics: Exception Safety**：https://www.youtube.com/watch?v=W6uc3X2-fuU
 
-### 12.5 开源项目实践
+### 11.5 开源项目实践
 
 - **LLVM/Clang**：`llvm/include/llvm/Support/Error.h` 的 `Expected<T>` 类。
 - **Google Abseil**：`absl/status/statusor.h` 的 `StatusOr<T>`。

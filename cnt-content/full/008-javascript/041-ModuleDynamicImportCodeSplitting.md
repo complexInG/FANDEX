@@ -18,57 +18,16 @@ prerequisites:
   - javascript/模块化
   - javascript/异步编程
 ---
+
 # JavaScript 动态 import 与代码分割
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-本节采用 Bloom 分类法对学习目标进行层级化建模，确保读者能够由浅入深、由具体到抽象地掌握模块动态导入的全部要义。
-
-### 1.1 记忆层（Remember）
-
-- 准确回忆 ES2020 中 `import()` 动态导入语法的形式化定义与返回值结构。
-- 列出至少 3 种主流打包工具（Webpack、Rollup、Vite、esbuild）对 `import()` 的处理差异。
-- 复述浏览器原生 ESM（Native ESM）与打包产物的运行时语义区别。
-
-### 1.2 理解层（Understand）
-
-- 解释 `import()` 与 `import` 声明的本质差异：前者是异步运行时表达式，后者是同步编译时声明。
-- 阐释 V8 引擎在加载 ES Module 时构建的模块图（Module Graph）与模块记录（Module Record）的对应关系。
-- 说明为何 `import()` 必须返回 Promise，以及该设计与 Top-Level Await 的协同关系。
-
-### 1.3 应用层（Apply）
-
-- 在生产项目中使用 `import()` 实现路由级懒加载（Route-Level Lazy Loading）。
-- 通过 Webpack 的 `magic comments` 与 `SplitChunksPlugin` 精细控制 chunk 切分粒度。
-- 在 SSR（Server-Side Rendering）场景下正确处理动态导入的水合（Hydration）边界。
-
-### 1.4 分析层（Analyze）
-
-- 对比 Webpack 的 `chunk` 模型与 Vite 的 `module preload` 机制在加载性能上的差异。
-- 拆解一个含 100+ 动态导入的大型项目，绘制模块依赖图（Module Dependency Graph），标识关键路径。
-- 分析 `tree shaking` 在静态导入与动态导入下的不同行为，并解释其根本原因。
-
-### 1.5 评价层（Evaluate）
-
-- 评估在 PWA 应用中采用"激进代码分割"vs"保守代码分割"对 LCP（Largest Contentful Paint）与 INP（Interaction to Next Paint）的量化影响。
-- 对给定的三套代码分割方案（路由级、组件级、功能级）评判其在加载性能、缓存命中率、维护成本三维度上的得分。
-- 评审主流开源框架（如 Next.js、Nuxt.js、Remix）的代码分割默认策略，给出可量化的改进建议。
-
-### 1.6 创造层（Create）
-
-- 设计并实现一个面向团队的代码分割性能分析 CLI，输出每个 chunk 的下载耗时、解析耗时、执行耗时。
-- 构建一套基于运行时热度的动态预加载（Predictive Prefetch）系统，根据用户行为预测下一步可能访问的 chunk。
-- 撰写一份团队级《前端代码分割规范》文档，包含阈值、命名约定、性能预算、CI 校验脚本。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 模块化之前的黑暗时代（1995-2009）
+### 1.1 模块化之前的黑暗时代（1995-2009）
 
 JavaScript 诞生之初没有任何模块化机制。所有代码共享全局作用域，开发者只能通过 IIFE（Immediately Invoked Function Expression）和命名空间对象模拟模块。Brendan Eich 在 1995 年的初版设计中承认："我们没有时间设计模块系统，因为 Netscape 给我的只有 10 天。"
 
@@ -89,7 +48,7 @@ var myModule = (function () {
 })();
 ```
 
-### 2.2 CommonJS 与 AMD 的双雄并立（2009-2015）
+### 1.2 CommonJS 与 AMD 的双雄并立（2009-2015）
 
 2009 年，Kevin Dangoor 发起 CommonJS 项目，旨在为服务器端 JavaScript 提供模块标准。其核心 API 是 `require` / `module.exports`，采用同步加载语义，适合 Node.js 但不适用于浏览器。
 
@@ -102,7 +61,7 @@ var myModule = (function () {
 
 这一分裂状态持续到 ES2015 标准化才得以统一。
 
-### 2.3 ES Modules 的诞生（2015）
+### 1.3 ES Modules 的诞生（2015）
 
 ES2015（ES6）正式引入 `import` / `export` 语法，采用静态声明式语义：
 
@@ -119,7 +78,7 @@ import { foo } from './module.js';
 
 但静态导入无法满足"按需加载"的需求，开发者仍需借助 Webpack 的 `require.ensure` 或 SystemJS 等工具实现代码分割。
 
-### 2.4 动态导入提案（2017-2020）
+### 1.4 动态导入提案（2017-2020）
 
 `import()` 提案于 2017 年进入 TC39 Stage 3，2020 年随 ES2020 正式标准化。其核心语义：
 
@@ -129,7 +88,7 @@ import { foo } from './module.js';
 
 这一设计弥合了静态导入的"编译时确定"与运行时按需加载之间的鸿沟，是 JavaScript 模块系统的重要里程碑。
 
-### 2.5 打包工具演化
+### 1.5 打包工具演化
 
 | 工具 | 年份 | 对 import() 的支持 | 关键创新 |
 |------|------|---------------------|----------|
@@ -142,7 +101,7 @@ import { foo } from './module.js';
 | Turbopack | 2023 | 原生支持 | Rust 实现，Next.js 默认 |
 | Rspack | 2023 | 原生支持 | Rust 实现，Webpack 兼容 |
 
-### 2.6 浏览器原生 ESM 支持
+### 1.6 浏览器原生 ESM 支持
 
 2017 年起，主流浏览器陆续支持 `<script type="module">`：
 
@@ -162,9 +121,9 @@ import { foo } from './module.js';
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 静态导入的形式化语义
+### 2.1 静态导入的形式化语义
 
 设模块 $M$ 中存在声明 `import { x } from './dep.js'`，则编译时引擎执行以下步骤：
 
@@ -183,7 +142,7 @@ $$
 \text{EvalOrder}(M) = \text{TopologicalSort}(G_M)
 $$
 
-### 3.2 动态导入的 Promise 语义
+### 2.2 动态导入的 Promise 语义
 
 `import(specifier)` 的求值规则可形式化为：
 
@@ -204,7 +163,7 @@ $$
 2. **异步性**：返回 Promise，不阻塞主线程。
 3. **缓存性**：模块实例在 Module Map 中缓存，后续调用立即 resolve。
 
-### 3.3 代码分割的形式化定义
+### 2.3 代码分割的形式化定义
 
 设应用总代码 $S$ 被分割为 $n$ 个 chunk $C_1, C_2, \ldots, C_n$，满足：
 
@@ -224,7 +183,7 @@ $$
 \min L_{\text{initial}} \quad \text{s.t.} \quad \text{UserExperience}(C_1) \geq \text{Threshold}
 $$
 
-### 3.4 模块图与依赖关系
+### 2.4 模块图与依赖关系
 
 模块依赖图可分为：
 
@@ -243,9 +202,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 引理：import() 的幂等性
+### 3.1 引理：import() 的幂等性
 
 **引理**：对同一模块 specifier，多次调用 `import()` 返回的 Promise resolve 到同一个模块命名空间对象。
 
@@ -265,7 +224,7 @@ $$
 
 证毕。
 
-### 4.2 定理：动态导入不影响静态分析
+### 3.2 定理：动态导入不影响静态分析
 
 **定理**：`import()` 表达式不影响 `import` 声明的静态分析能力。
 
@@ -287,7 +246,7 @@ $$
 
 证毕。
 
-### 4.3 命题：代码分割的最优 chunk 数量
+### 3.3 命题：代码分割的最优 chunk 数量
 
 **命题**：存在一个最优 chunk 数量 $n^*$，使得总加载时间最小。
 
@@ -310,7 +269,7 @@ $$
 
 证毕。
 
-### 4.4 推论：过度分割的危害
+### 3.4 推论：过度分割的危害
 
 **推论**：当 chunk 数量超过某个阈值后，总加载时间随 chunk 数增加而上升。
 
@@ -326,7 +285,7 @@ $$
 
 证毕。
 
-### 4.5 复杂度分析
+### 3.5 复杂度分析
 
 设模块图节点数为 $V$，边数为 $E$：
 
@@ -338,9 +297,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础动态导入
+### 4.1 基础动态导入
 
 ```javascript
 // 文件名: basic-import.js
@@ -392,7 +351,7 @@ async function loadMultiple() {
 }
 ```
 
-### 5.2 React 路由级懒加载
+### 4.2 React 路由级懒加载
 
 ```javascript
 // 文件名: App.jsx
@@ -454,7 +413,7 @@ export default function App() {
 }
 ```
 
-### 5.3 Vue 3 异步组件
+### 4.3 Vue 3 异步组件
 
 ```javascript
 // 文件名: vue-async.js
@@ -496,7 +455,7 @@ export default {
 };
 ```
 
-### 5.4 Webpack Magic Comments
+### 4.4 Webpack Magic Comments
 
 ```javascript
 // 文件名: webpack-magic-comments.js
@@ -549,7 +508,7 @@ const namedChunk = import(
 );
 ```
 
-### 5.5 Vite 中的动态导入
+### 4.5 Vite 中的动态导入
 
 ```javascript
 // 文件名: vite-dynamic.js
@@ -598,7 +557,7 @@ const worker = new Worker(
 );
 ```
 
-### 5.6 服务端渲染（SSR）中的动态导入
+### 4.6 服务端渲染（SSR）中的动态导入
 
 ```javascript
 // 文件名: ssr-dynamic.js
@@ -666,7 +625,7 @@ async function renderWithLoadable() {
 }
 ```
 
-### 5.7 Node.js 中的动态导入
+### 4.7 Node.js 中的动态导入
 
 ```javascript
 // 文件名: node-dynamic.js
@@ -736,7 +695,7 @@ const config = await import('./config.json', {
 console.log(config.default);
 ```
 
-### 5.8 模块预加载策略
+### 4.8 模块预加载策略
 
 ```javascript
 // 文件名: prefetch-strategy.js
@@ -854,7 +813,7 @@ window.addEventListener('popstate', () => {
 });
 ```
 
-### 5.9 模块加载错误处理
+### 4.9 模块加载错误处理
 
 ```javascript
 // 文件名: error-handling.js
@@ -943,9 +902,9 @@ new ModuleLoadMonitor();
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 横向对比：主流打包工具
+### 5.1 横向对比：主流打包工具
 
 | 特性 | Webpack 5 | Rollup 3 | Vite 4 | esbuild | Parcel 2 | Rspack |
 |------|-----------|----------|--------|---------|----------|--------|
@@ -957,7 +916,7 @@ new ModuleLoadMonitor();
 | 适用场景 | 应用 | 库 | SPA | 工具链 | 小型项目 | 大型应用 |
 | 实现语言 | JavaScript | JavaScript | JavaScript + esbuild | Go | JavaScript | Rust |
 
-### 6.2 纵向对比：Webpack 版本演化
+### 5.2 纵向对比：Webpack 版本演化
 
 | 版本 | 年份 | 关键变化 |
 |------|------|----------|
@@ -968,7 +927,7 @@ new ModuleLoadMonitor();
 | Webpack 5 | 2020 | Module Federation、持久化缓存、Asset Modules |
 | Webpack 6 (规划) | TBD | 实验性 ESM 输出、改进 Tree Shaking |
 
-### 6.3 加载策略对比
+### 5.3 加载策略对比
 
 #### Preload vs Prefetch vs modulepreload
 
@@ -984,7 +943,7 @@ new ModuleLoadMonitor();
 2. 解析模块（但不执行）。
 3. 递归预加载该模块的依赖。
 
-### 6.4 与其他语言的模块系统对比
+### 5.4 与其他语言的模块系统对比
 
 | 特性 | JavaScript ESM | Python import | Java JPMS | Rust cargo | Go modules |
 |------|----------------|---------------|-----------|------------|------------|
@@ -998,9 +957,9 @@ JavaScript 的 `import()` 是唯一原生支持异步模块加载的语言特性
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：过度分割导致加载瀑布
+### 6.1 反模式：过度分割导致加载瀑布
 
 ```javascript
 // 反模式：每个组件单独 chunk
@@ -1041,7 +1000,7 @@ function Page() {
 }
 ```
 
-### 7.2 反模式：循环依赖中的动态导入
+### 6.2 反模式：循环依赖中的动态导入
 
 ```javascript
 // 反模式：a.js 和 b.js 互相导入
@@ -1080,7 +1039,7 @@ export function doSomething() {
 }
 ```
 
-### 7.3 反模式：错误的依赖数组
+### 6.3 反模式：错误的依赖数组
 
 ```javascript
 // 反模式：动态拼接 import 路径
@@ -1109,7 +1068,7 @@ async function loadPage(name) {
 }
 ```
 
-### 7.4 反模式：在关键路径上动态导入
+### 6.4 反模式：在关键路径上动态导入
 
 ```javascript
 // 反模式：首屏渲染依赖动态导入
@@ -1134,7 +1093,7 @@ import App from './App';
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-### 7.5 反模式：忽略 chunk 加载失败
+### 6.5 反模式：忽略 chunk 加载失败
 
 ```javascript
 // 反模式：未处理加载失败
@@ -1198,7 +1157,7 @@ function App() {
 }
 ```
 
-### 7.6 反模式：动态导入中的副作用依赖
+### 6.6 反模式：动态导入中的副作用依赖
 
 ```javascript
 // 反模式：依赖模块的副作用
@@ -1240,9 +1199,9 @@ async function init() {
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 实践一：性能预算驱动的代码分割
+### 7.1 实践一：性能预算驱动的代码分割
 
 ```javascript
 // performance-budget.js
@@ -1306,7 +1265,7 @@ class PerformanceBudgetChecker {
 module.exports = { PerformanceBudgetChecker, PERF_BUDGET };
 ```
 
-### 8.2 实践二：基于路由的代码分割配置
+### 7.2 实践二：基于路由的代码分割配置
 
 ```javascript
 // webpack.config.js
@@ -1357,7 +1316,7 @@ module.exports = {
 };
 ```
 
-### 8.3 实践三：Vite 配置
+### 7.3 实践三：Vite 配置
 
 ```javascript
 // vite.config.js
@@ -1406,7 +1365,7 @@ export default defineConfig({
 });
 ```
 
-### 8.4 实践四：CI 集成 chunk 体积监控
+### 7.4 实践四：CI 集成 chunk 体积监控
 
 ```javascript
 // scripts/check-bundle-size.js
@@ -1486,7 +1445,7 @@ if (errors.length > 0) {
 console.log('\nAll budgets passed.');
 ```
 
-### 8.5 实践五：Module Federation（Webpack 5+）
+### 7.5 实践五：Module Federation（Webpack 5+）
 
 ```javascript
 // host/webpack.config.js - 宿主应用
@@ -1546,9 +1505,9 @@ module.exports = {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：电商 SPA 首屏优化
+### 8.1 案例一：电商 SPA 首屏优化
 
 **背景**：某电商平台首屏 JS 体积 2.3MB（gzipped），LCP 4.8 秒，移动端转化率低。
 
@@ -1593,7 +1552,7 @@ function prefetchNextRoute() {
 - LCP 从 4.8s 降至 1.9s。
 - 移动端转化率提升 18%。
 
-### 9.2 案例二：SaaS 后台按权限分割
+### 8.2 案例二：SaaS 后台按权限分割
 
 **背景**：某企业级 SaaS 后台有 50+ 页面，不同角色权限访问不同页面，但所有页面被打包到同一 bundle。
 
@@ -1645,7 +1604,7 @@ async function prefetchRoutesForRole(role) {
 - 普通用户首屏 JS 从 3.2MB 降至 280KB。
 - 高级管理员功能加载时间从 5s 降至 1.5s。
 
-### 9.3 案例三：A/B 测试场景
+### 8.3 案例三：A/B 测试场景
 
 **背景**：某产品详情页要做 A/B 测试，但两套设计代码合计 800KB，影响加载速度。
 
@@ -1679,7 +1638,7 @@ function ProductDetailPage() {
 
 **收益**：每个用户只需下载自己变体的代码（400KB vs 800KB），A/B 测试不影响未参与实验的用户。
 
-### 9.4 案例四：国际化按需加载
+### 8.4 案例四：国际化按需加载
 
 **背景**：某多语言应用支持 20 种语言，所有语言包打包导致体积膨胀。
 
@@ -1714,7 +1673,7 @@ await i18n.setLocale(navigator.language);
 
 **收益**：每种语言包约 50KB，用户仅加载所需语言，总节省约 950KB。
 
-### 9.5 案例五：微前端架构
+### 8.5 案例五：微前端架构
 
 **背景**：某大型企业内部应用集成 5 个子系统，传统 monolithic 架构导致构建时间长达 30 分钟。
 
@@ -1767,7 +1726,7 @@ function App() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：以下代码输出是什么？
 
@@ -1823,7 +1782,7 @@ export default function() { return 'lazy'; }
 2. 异步 chunk：`lazy.js`（动态导入，单独 chunk）。
 
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 3**：以下代码有什么问题？如何修复？
 
@@ -1906,7 +1865,7 @@ const mod = await lazyImport('./heavy-module.js', {
 ```
 
 
-### 10.3 思考题
+### 9.3 思考题
 
 **题目 5**：为什么 Vite 在开发期能比 Webpack 快这么多？请从 ESM、esbuild、按需编译三方面分析。
 
@@ -1988,7 +1947,7 @@ module.exports = {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 引用格式遵循 ACM Reference Format。
 
@@ -2034,37 +1993,37 @@ module.exports = {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 规范与标准
+### 11.1 规范与标准
 
 - **TC39 import() 提案**：https://github.com/tc39/proposal-dynamic-import - 完整的提案文档与讨论历史。
 - **ECMAScript 模块规范**：https://tc39.es/ecma262/#sec-modules - 关注 §9.5 Dynamic Import。
 - **HTML Living Standard**：https://html.spec.whatwg.org/ - 关注 `<script type="module">` 与 modulepreload。
 - **WHATWG Import Assertions**：https://github.com/tc39/proposal-import-attributes - JSON 模块等扩展。
 
-### 12.2 工具文档
+### 11.2 工具文档
 
 - **Webpack 5 Code Splitting**：https://webpack.js.org/guides/code-splitting/ - 官方代码分割指南。
 - **Rollup Code Splitting**：https://rollupjs.org/guide/en/#code-splitting - Rollup 的分割策略。
 - **Vite Build Optimization**：https://vitejs.dev/guide/build.html - Vite 构建优化配置。
 - **esbuild Code Splitting**：https://esbuild.github.io/api/#splitting - esbuild 的分割能力。
 
-### 12.3 经典书籍
+### 11.3 经典书籍
 
 - **《SurviveJS - Webpack: From Apprentice to Master》**（Juho Vepsäläinen）- Webpack 全面指南。
 - **《Full-Stack React with Next.js**（Alex Banks 等）- Next.js 与 React 代码分割实战。
 - **《High Performance Browser Networking》**（Ilya Grigorik）- 网络层面对模块加载的影响。
 - **《Web Performance in Action》**（Jeremy Wagner）- 前端性能优化全面指南。
 
-### 12.4 实战资源
+### 11.4 实战资源
 
 - **web.dev 代码分割指南**：https://web.dev/reduce-javascript-payloads-with-code-splitting/ - Google 官方最佳实践。
 - **Bundle Analyzer**：https://github.com/webpack-contrib/webpack-bundle-analyzer - 可视化 bundle 组成。
 - **Lighthouse CI**：https://github.com/GoogleChrome/lighthouse-ci - 自动化性能监控。
 - **Bundlephobia**：https://bundlephobia.com/ - 评估 npm 包体积。
 
-### 12.5 开源项目参考
+### 11.5 开源项目参考
 
 - **Next.js** 源码：动态路由与代码分割的最佳实践，特别是 `next/dynamic`。
 - **Nuxt.js** 源码：Vue 生态的代码分割方案。
@@ -2072,7 +2031,7 @@ module.exports = {
 - **Astro** 源码：Islands Architecture 中的组件级分割。
 - **Qwik** 源码：极致的按需加载，每个组件都是独立 chunk。
 
-### 12.6 进阶研究方向
+### 11.6 进阶研究方向
 
 1. **Module Federation 进阶**：研究跨应用共享状态、动态版本协商、A/B 测试集成。
 2. **HTTP/3 与 103 Early Hints**：研究新协议对模块预加载的优化。

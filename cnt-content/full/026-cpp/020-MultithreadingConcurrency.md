@@ -15,22 +15,12 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # C++ 多线程并发速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-完成本章学习后，读者应当能够达到以下认知层级（参照 Bloom 分类法）：
-
-- **记忆（Remembering）**：复述 C++ 内存模型的核心要素（happens-before、synchronizes-with、sequenced-before、sequentially consistent）；列举 C++11 至 C++23 引入的并发原语（`std::thread`、`std::mutex`、`std::condition_variable`、`std::future`、`std::atomic`、C++17 并行算法、C++20 `std::jthread`/`std::semaphore`/`std::latch`/`std::barrier`、C++20 协程、C++23 `std::mdspan` 并行扩展）；列举六种内存序（`memory_order_relaxed`、`memory_order_consume`、`memory_order_acquire`、`memory_order_release`、`memory_order_acq_rel`、`memory_order_seq_cst`）。
-- **理解（Understanding）**：解释数据竞争（data race）的定义及其导致的未定义行为；阐述 happens-before 关系如何保证可见性；区分互斥锁、读写锁、条件变量、信号量、闩、屏障的语义差异；解释死锁的四个必要条件（互斥、占有等待、不可剥夺、循环等待）。
-- **应用（Applying）**：使用 `std::thread` 与 `std::jthread` 创建可加入、可停止的线程；使用 `std::lock_guard`、`std::unique_lock`、`std::scoped_lock`、`std::shared_lock` 管理锁的生命周期；使用 `std::condition_variable` 实现生产者-消费者模式；使用 `std::atomic` 与合适的内存序实现无锁计数器与单生产者-单消费者队列。
-- **分析（Analyzing）**：分析给定并发代码中的数据竞争、死锁、虚假唤醒、内存序误用等缺陷；通过 ThreadSanitizer（TSan）、AddressSanitizer（ASan）、`helgrind` 等工具定位并发 bug；评估不同锁策略（粗粒度锁、细粒度锁、读写锁、无锁）在吞吐量与延迟上的权衡。
-- **评价（Evaluating）**：在给定场景下选择合适的并发原语（互斥锁 vs 读写锁 vs 原子操作 vs 消息传递）；评估 ABA 问题对无锁栈/队列的影响并选择合适的解决方案（ tagged pointer、hazard pointer、epoch-based reclamation）；评估 C++20 协程相比传统线程池在高并发 I/O 场景下的优劣。
-- **创造（Creating）**：设计并实现一个支持任务优先级、动态扩容、优雅停止的线程池；设计并实现一个基于 `std::atomic` 与 hazard pointer 的无锁并发栈；将传统基于锁的并发哈希表改造为基于细粒度分片锁的高并发哈希表。
 
 ## 概述
 

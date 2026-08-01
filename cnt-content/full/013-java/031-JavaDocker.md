@@ -16,16 +16,6 @@ prerequisites:
   - java/概述与开发环境
 ---
 
-## 学习目标
-
-完成本章学习后，你应当能够：
-
-- **Remember（记忆）**：复述 Java 容器化的核心术语，包括 image、container、layer、Dockerfile、multi-stage build、build cache、cgroups、namespace、overlay filesystem、OCI runtime 等基础概念，并能说出 OpenJDK 容器感知（container awareness）从 JDK 8u191、JDK 10 到 JDK 21 的演进路径。
-- **Understand（理解）**：解释 JVM 在容器内运行时如何通过 `UseContainerSupport`、`MaxRAMPercentage`、`InitialRAMPercentage` 识别 cgroups v1/v2 的 CPU 与内存限制，并理解为何裸 `-Xmx` 硬编码在云原生场景下是反模式。
-- **Apply（应用）**：使用多阶段 Dockerfile、Spring Boot Layered JAR、BuildKit、Jib、Buildpacks 等技术构建体积小于 200MB 的生产级 Java 镜像，并使用 Docker Compose、Kubernetes Manifest 编排 Java 应用与依赖服务。
-- **Analyze（分析）**：分析 Java 镜像分层缓存命中率、JVM 预热时间、GC 在容器内的停顿分布，识别镜像体积膨胀、启动慢、内存 OOM Killed、CPU throttling 等问题的根因。
-- **Evaluate（评价）**：对比 Alpine（musl libc）、Distroless、Slim Debian、UBI Minimal、CBL-Mariner 等基础镜像在体积、CVE 数量、调试友好性、JNI 兼容性上的取舍，评估 GraalVM Native Image 与 CRaC（Coordinated Restore at Checkpoint）在 Serverless 场景下的成本收益。
-- **Create（创造）**：设计一套端到端的 Java 容器化交付流水线，涵盖镜像构建、SBOM 生成、漏洞扫描（Trivy/Grype）、签名（cosign）、镜像分发（registry mirror/P2P）、K8s 部署、HPA 自动伸缩、可观测性（Micrometer + OpenTelemetry）。
 
 ## 历史动机与发展脉络
 

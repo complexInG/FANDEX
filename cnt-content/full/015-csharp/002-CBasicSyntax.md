@@ -14,6 +14,7 @@ related:
 prerequisites: []
 ---
 
+
 # C# 基础语法
 
 > 本篇是 FANDEX C# 系列的第二篇。我们将系统讲解 C# 的基础语法：类型系统、变量、运算符、控制流、字符串、模式匹配、可空性、顶级语句。内容对标 Stanford CS106A/B、MIT 6.0001、CMU 15-112 课程教学严谨度，支持 0 基础自学，同时覆盖企业级实战要点。
@@ -37,55 +38,9 @@ prerequisites: []
 
 ---
 
-## 1. 学习目标（Bloom 分类法）
+## 1. 历史动机与演化
 
-### 1.1 记忆（Remember）
-
-- **R1**：能复述 C# 的预定义类型（`int`、`long`、`short`、`byte`、`uint`、`ulong`、`float`、`double`、`decimal`、`char`、`bool`、`string`、`object`）及其字面量写法。
-- **R2**：能列举 C# 的运算符类别（算术、关系、逻辑、位、赋值、null 条件、模式、查询、委托）。
-- **R3**：能识别值类型（Value Type）与引用类型（Reference Type）的差异：值类型分配在栈或字段内联，引用类型分配在托管堆。
-- **R4**：能背诵控制流语句：`if`/`else`、`switch`、`for`、`foreach`、`while`、`do-while`、`break`、`continue`、`return`、`throw`、`try`/`catch`/`finally`、`yield`、`lock`、`using`。
-- **R5**：能复述可空引用类型（NRT）的核心规则：`string` 表示不可空，`string?` 表示可空。
-
-### 1.2 理解（Understand）
-
-- **U1**：能解释装箱（Boxing）与拆箱（Unboxing）的内存布局与性能开销。
-- **U2**：能说明字符串插值（String Interpolation）的编译期展开为 `string.Format` 或 `DefaultInterpolatedStringHandler`。
-- **U3**：能阐述 `var` 与显式类型的等价性与使用场景。
-- **U4**：能描述常量（`const`）与只读（`readonly`）在编译期与运行期的差异。
-- **U5**：能说明模式匹配（Pattern Matching）在 `is` 与 `switch` 中的不同表现。
-- **U6**：能阐述顶级语句（Top-Level Statements）的编译期展开为 `Main` 方法。
-
-### 1.3 应用（Apply）
-
-- **A1**：能正确声明变量、常量、字段、属性、参数。
-- **A2**：能编写各种控制流实现业务逻辑。
-- **A3**：能使用 `switch` 表达式与模式匹配实现复杂分支。
-- **A4**：能使用 `try-catch-finally` 与 `when` 过滤器处理异常。
-- **A5**：能开启 NRT 并处理所有 null 警告。
-
-### 1.4 分析（Analyze）
-
-- **An1**：能分析一段代码的内存布局，区分栈分配与堆分配。
-- **An2**：能拆解复合表达式的求值顺序与副作用。
-- **An3**：能分析 `null` 传播路径，识别 NRT 警告根因。
-
-### 1.5 评价（Evaluate）
-
-- **E1**：能评判 `var` vs 显式类型在可读性上的权衡。
-- **E2**：能评估 `string` 拼接、`StringBuilder`、`string.Format`、字符串插值在不同场景的性能。
-- **E3**：能评价 NRT 与代码契约（Code Contracts）的优劣。
-
-### 1.6 创造（Create）
-
-- **C1**：能设计一个类型安全的领域模型，避免 null 与装箱。
-- **C2**：能为团队编写《C# 基础编码规范》文档，涵盖命名、缩进、类型选择。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 C# 1.0（2002）：基础语法奠基
+### 1.1 C# 1.0（2002）：基础语法奠基
 
 C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的特性（如多重继承、模板、指针运算），同时融合了 Java 的 GC 与平台中立。
 
@@ -98,13 +53,13 @@ C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的�
 - 运算符：算术、关系、逻辑、位、自增自减、三元、`is`/`as`/`typeof`/`sizeof`。
 - 属性（Property）与索引器（Indexer）。
 
-### 2.2 C# 2.0（2005）：可空与泛型
+### 1.2 C# 2.0（2005）：可空与泛型
 
 - 引入 `Nullable<T>` 与 `T?` 语法糖：`int? x = null;`。
 - `??`（null 合并运算符）。
 - 泛型让 `List<T>` 等集合类型安全。
 
-### 2.3 C# 3.0（2007）：LINQ 与 Lambda
+### 1.3 C# 3.0（2007）：LINQ 与 Lambda
 
 - `var` 隐式类型。
 - Lambda 表达式 `x => x * 2`。
@@ -113,17 +68,17 @@ C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的�
 - 匿名类型。
 - 表达式树（让 Lambda 作为数据）。
 
-### 2.4 C# 4.0（2010）：dynamic 与命名参数
+### 1.4 C# 4.0（2010）：dynamic 与命名参数
 
 - `dynamic` 类型，与 IronPython、Office COM 互操作。
 - 命名参数与可选参数。
 - 泛型协变/逆变：`IEnumerable<out T>`。
 
-### 2.5 C# 5.0（2012）：async/await
+### 1.5 C# 5.0（2012）：async/await
 
 异步编程语法化，详见《异步编程详解》。
 
-### 2.6 C# 6.0（2015）：语法糖大爆发
+### 1.6 C# 6.0（2015）：语法糖大爆发
 
 - 字符串插值 `$"{name}"`，替代 `string.Format`。
 - `?.`（null 条件运算符）。
@@ -131,7 +86,7 @@ C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的�
 - 表达式主体成员 `=>`。
 - 异常过滤器 `catch (E e) when (...)`。
 
-### 2.7 C# 7.0 ~ 7.3（2017）：模式匹配与元组
+### 1.7 C# 7.0 ~ 7.3（2017）：模式匹配与元组
 
 - `is` 模式：`if (o is int i)`。
 - `switch` 中的模式匹配：`case int i when i > 0`。
@@ -141,7 +96,7 @@ C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的�
 - 数字分隔符 `1_000_000`、二进制字面量 `0b1010`。
 - `readonly struct`、`ref struct`、`in` 参数。
 
-### 2.8 C# 8.0（2019）：NRT 与异步流
+### 1.8 C# 8.0（2019）：NRT 与异步流
 
 - 可空引用类型（NRT）：`string?` 与编译期 null 流分析。
 - `switch` 表达式：`var result = e switch { ... };`。
@@ -150,7 +105,7 @@ C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的�
 - 索引与范围：`arr[^1]`、`arr[1..3]`。
 - Null 合并赋值 `??=`。
 
-### 2.9 C# 9.0（2020）：record 与顶级语句
+### 1.9 C# 9.0（2020）：record 与顶级语句
 
 - `record` 类型：基于值的相等。
 - 顶级语句：`Program.cs` 无需 `Main`。
@@ -161,7 +116,7 @@ C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的�
 - 协变返回类型。
 - 模块初始化器 `[ModuleInitializer]`。
 
-### 2.10 C# 10.0（2021）：global using 与文件命名空间
+### 1.10 C# 10.0（2021）：global using 与文件命名空间
 
 - `global using System.Linq;`：项目级全局 using。
 - 文件范围命名空间 `namespace MyApp;`：避免大括号嵌套。
@@ -170,7 +125,7 @@ C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的�
 - 结构无参构造。
 - `CallerArgumentExpression` 特性。
 
-### 2.11 C# 11.0（2022）：原始字符串与 required
+### 1.11 C# 11.0（2022）：原始字符串与 required
 
 - 原始字符串字面量 `"""..."""`。
 - 列表模式 `[1, 2, ..]`。
@@ -179,7 +134,7 @@ C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的�
 - `file` 作用域类型。
 - 泛型数学（generic math）。
 
-### 2.12 C# 12.0（2023）：主构造与集合表达式
+### 1.12 C# 12.0（2023）：主构造与集合表达式
 
 - 主构造函数：`class Person(string name)`。
 - 集合表达式：`int[] a = [1, 2, 3];`、`List<int> list = [1, 2, 3];`。
@@ -187,7 +142,7 @@ C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的�
 - 默认 lambda 参数：`(int x = 1) => x + 1`。
 - 别名任意类型：`using Point = (int X, int Y);`。
 
-### 2.13 C# 13.0（2024）：params 集合与 lock 类型
+### 1.13 C# 13.0（2024）：params 集合与 lock 类型
 
 - `params` 集合增强：`params ReadOnlySpan<int> vals`。
 - 新 `lock` 语句：基于 `System.Threading.Lock`，性能更好。
@@ -197,13 +152,13 @@ C# 1.0 的语法设计继承了 C/C++ 的外观，但去除了 C++ 中易错的�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类型系统形式化
+### 2.1 类型系统形式化
 
 设 $\mathcal{T} = \mathcal{T}_{\text{val}} \cup \mathcal{T}_{\text{ref}}$ 为类型集合，划分为值类型 $\mathcal{T}_{\text{val}}$ 与引用类型 $\mathcal{T}_{\text{ref}}$。
 
-#### 3.1.1 内存分配规则
+#### 2.1.1 内存分配规则
 
 $$
 \text{alloc}(\tau, v) = \begin{cases}
@@ -213,7 +168,7 @@ $$
 \end{cases}
 $$
 
-#### 3.1.2 装箱形式化
+#### 2.1.2 装箱形式化
 
 设 $v : \tau_{\text{val}}$ 为值类型实例，装箱操作 $\text{box}$：
 
@@ -230,7 +185,7 @@ v & \text{if } o = \text{box}(v) \text{ and } \tau(o) = \tau_{\text{val}} \\
 \end{cases}
 $$
 
-#### 3.1.3 可空类型形式化
+#### 2.1.3 可空类型形式化
 
 $\tau?$ 表示 $\tau \cup \{\text{null}\}$：
 
@@ -240,7 +195,7 @@ $$
 
 对于值类型 $\tau_{\text{val}}$，`Nullable<T>` 是包装结构；对于引用类型 $\tau_{\text{ref}}$，NRT 仅在编译期检查，运行时无开销。
 
-### 3.2 表达式求值语义
+### 2.2 表达式求值语义
 
 C# 表达式求值遵循以下规则：
 
@@ -256,7 +211,7 @@ $$
 
 其中 $\rho$ 为环境（变量绑定），$\llbracket \cdot \rrbracket_\rho$ 为求值函数。
 
-### 3.3 语句语义
+### 2.3 语句语义
 
 语句 $S$ 的语义可表示为状态变换：
 
@@ -272,7 +227,7 @@ $$
 \llbracket x = e \rrbracket_\sigma = \sigma[x \mapsto \llbracket e \rrbracket_\sigma]
 $$
 
-### 3.4 模式匹配形式化
+### 2.4 模式匹配形式化
 
 模式 $P$ 对值 $v$ 的匹配可形式化为：
 
@@ -293,9 +248,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 NRT 流分析的正确性
+### 3.1 NRT 流分析的正确性
 
 **命题 4.1**：若编译器判定表达式 $e$ 类型为 `T`（非 `T?`），则在运行时 $e$ 不会求值为 `null`。
 
@@ -311,7 +266,7 @@ $$
 
 由于分析是保守的（over-approximation），可能存在假阳性（警告但实际安全），但不会假阴性（即判定 NotNull 时一定不为 null）。
 
-### 4.2 switch 表达式的穷尽性（Exhaustiveness）
+### 3.2 switch 表达式的穷尽性（Exhaustiveness）
 
 **命题 4.2**：若 `enum E { A, B, C }` 与 `switch` 表达式：
 
@@ -329,7 +284,7 @@ $$
 
 其中 $P_i$ 是 switch 分支的模式。若加入 `_` 通配，则一定穷尽。
 
-### 4.3 字符串不可变性证明
+### 3.3 字符串不可变性证明
 
 **命题 4.3**：`string` 类型不可变，故对 `string` 的"修改"操作实际产生新对象。
 
@@ -342,7 +297,7 @@ $$
 
 性能含义：`s + s` 的复杂度是 $O(|s|)$，循环拼接 `for (int i = 0; i < n; i++) s = s + i;` 总复杂度 $O(n^2)$，应改用 `StringBuilder`。
 
-### 4.4 装箱开销形式化
+### 3.4 装箱开销形式化
 
 **命题 4.4**：装箱操作的开销 $C_{\text{box}}$ 包括分配堆对象 + 复制值 + GC 跟踪，约 $O(s)$，其中 $s$ 为类型大小。
 
@@ -362,7 +317,7 @@ for (int i = 0; i < 1_000_000; i++) list.Add(i);   // 每次装箱
 
 改为 `List<int>`：仅 `int[]` 扩容，无装箱，分配约 4MB。
 
-### 4.5 类型推断算法
+### 3.5 类型推断算法
 
 `var` 的类型推断算法：
 
@@ -385,9 +340,9 @@ var dict = new Dictionary<string, int>();  // Dictionary<string, int>
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 类型与字面量
+### 4.1 类型与字面量
 
 ```csharp
 // 整数类型
@@ -420,7 +375,7 @@ int hex = 0xFF;
 Console.WriteLine($"{b}, {i}, {d}, {s1}, {bin}, {hex}");
 ```
 
-### 5.2 var 与显式类型
+### 4.2 var 与显式类型
 
 ```csharp
 // var 编译期推断，运行时与显式类型等价
@@ -438,9 +393,9 @@ var result = GetData();   // 类型是什么？
 Person person = GetData();
 ```
 
-### 5.3 控制流
+### 4.3 控制流
 
-#### 5.3.1 if-else
+#### 4.3.1 if-else
 
 ```csharp
 int score = 85;
@@ -454,7 +409,7 @@ else
     Console.WriteLine("F");
 ```
 
-#### 5.3.2 switch 语句
+#### 4.3.2 switch 语句
 
 ```csharp
 int day = 3;
@@ -471,7 +426,7 @@ switch (day)
 }
 ```
 
-#### 5.3.3 switch 表达式（C# 8.0+）
+#### 4.3.3 switch 表达式（C# 8.0+）
 
 ```csharp
 int day = 3;
@@ -488,7 +443,7 @@ string name = day switch
 Console.WriteLine(name);
 ```
 
-#### 5.3.4 for / foreach
+#### 4.3.4 for / foreach
 
 ```csharp
 // for 循环
@@ -505,7 +460,7 @@ foreach (var (item, index) in numbers.Select((x, i) => (x, i)))
     Console.WriteLine($"[{index}] = {item}");
 ```
 
-#### 5.3.5 while / do-while
+#### 4.3.5 while / do-while
 
 ```csharp
 int n = 10;
@@ -523,9 +478,9 @@ do
 } while (m > 0);
 ```
 
-### 5.4 模式匹配
+### 4.4 模式匹配
 
-#### 5.4.1 is 模式
+#### 4.4.1 is 模式
 
 ```csharp
 object o = "hello";
@@ -541,7 +496,7 @@ if (o is Person { Age: >= 18 } adult)
     Console.WriteLine($"Adult: {adult.Name}");
 ```
 
-#### 5.4.2 switch 表达式与递归模式
+#### 4.4.2 switch 表达式与递归模式
 
 ```csharp
 public record Person(string Name, int Age, string[] Hobbies);
@@ -564,9 +519,9 @@ public int SumHead(int[] arr) => arr switch
 };
 ```
 
-### 5.5 字符串处理
+### 4.5 字符串处理
 
-#### 5.5.1 字符串插值
+#### 4.5.1 字符串插值
 
 ```csharp
 string name = "Alice";
@@ -593,7 +548,7 @@ string json = $$"""
 """;
 ```
 
-#### 5.5.2 字符串拼接性能
+#### 4.5.2 字符串拼接性能
 
 ```csharp
 // 反模式：O(n²)
@@ -616,9 +571,9 @@ handler.AppendFormatted(age);
 string msg = handler.ToStringAndClear();
 ```
 
-### 5.6 可空类型
+### 4.6 可空类型
 
-#### 5.6.1 可空值类型
+#### 4.6.1 可空值类型
 
 ```csharp
 int? x = null;
@@ -635,7 +590,7 @@ int? y = null;
 y ??= 42;   // y = 42
 ```
 
-#### 5.6.2 可空引用类型
+#### 4.6.2 可空引用类型
 
 ```csharp
 #nullable enable
@@ -655,7 +610,7 @@ int? len = nullable?.Length;   // len 为 int?
 int len2 = nullable?.Length ?? 0;  // len2 为 int
 ```
 
-### 5.7 异常处理
+### 4.7 异常处理
 
 ```csharp
 try
@@ -686,7 +641,7 @@ catch (FileNotFoundException ex) when (ex.FileName.Contains("config"))
 }
 ```
 
-### 5.8 using 声明
+### 4.8 using 声明
 
 ```csharp
 // using 语句（旧风格）
@@ -700,7 +655,7 @@ using var stream2 = new FileStream("data.bin", FileMode.Open);
 // 使用 stream2，方法结束时自动 Dispose
 ```
 
-### 5.9 顶级语句
+### 4.9 顶级语句
 
 ```csharp
 // C# 9+ 顶级语句（Program.cs 全文）
@@ -720,7 +675,7 @@ Console.WriteLine($"Hello, {name}!");
 // }
 ```
 
-### 5.10 集合表达式
+### 4.10 集合表达式
 
 ```csharp
 // C# 12 集合表达式
@@ -733,7 +688,7 @@ int a = 1, b = 2, c = 3;
 int[] combined = [0, a, b, c, ..list, 9];
 ```
 
-### 5.11 编译指令
+### 4.11 编译指令
 
 ```bash
 # 创建项目
@@ -748,7 +703,7 @@ dotnet publish -c Release -o ./publish
 ./publish/BasicDemo
 ```
 
-### 5.12 完整示例：购物车
+### 4.12 完整示例：购物车
 
 ```csharp
 using System.Globalization;
@@ -798,9 +753,9 @@ Total:                         ¥45.70
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 C# vs Java 类型系统
+### 5.1 C# vs Java 类型系统
 
 | 维度 | C# | Java |
 |------|-----|------|
@@ -813,7 +768,7 @@ Total:                         ¥45.70
 | 元组 | `(int, string)` 元组类型 | 无（用 record 或 List） |
 | 模式匹配 | `is` + `switch` 表达式 | `switch` 表达式（Java 21+） |
 
-### 6.2 C# vs TypeScript 字符串
+### 5.2 C# vs TypeScript 字符串
 
 | 维度 | C# | TypeScript |
 |------|-----|-----------|
@@ -823,7 +778,7 @@ Total:                         ¥45.70
 | 多行 | `@"multi\nline"` 或 `"""..."""` | `` `multi\nline` `` |
 | 编码 | UTF-16 | UTF-16 |
 
-### 6.3 C# vs Kotlin 模式匹配
+### 5.3 C# vs Kotlin 模式匹配
 
 C#：
 
@@ -846,7 +801,7 @@ val desc = when {
 }
 ```
 
-### 6.4 C# vs Python 控制流
+### 5.4 C# vs Python 控制流
 
 C#：
 
@@ -864,7 +819,7 @@ for i in range(10): pass
 for item in list: pass
 ```
 
-### 6.5 跨语言 Hello + 控制流
+### 5.5 跨语言 Hello + 控制流
 
 | 语言 | Hello | 条件 |
 |------|-------|------|
@@ -878,9 +833,9 @@ for item in list: pass
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 装箱陷阱
+### 6.1 装箱陷阱
 
 **反模式**：
 
@@ -895,7 +850,7 @@ foreach (int i in list) sum += i;   // 拆箱
 
 **对策**：使用 `List<int>`。
 
-### 7.2 字符串拼接 O(n²)
+### 6.2 字符串拼接 O(n²)
 
 ```csharp
 string s = "";
@@ -904,7 +859,7 @@ for (int i = 0; i < 10000; i++) s += i;   // 慢
 
 **对策**：`StringBuilder`。
 
-### 7.3 == 与 Equals 混淆
+### 6.3 == 与 Equals 混淆
 
 ```csharp
 string a = "hello";
@@ -921,7 +876,7 @@ Console.WriteLine(oa == ob);        // 不一定（ReferenceEquals）
 - 字符串比较内容用 `==`。
 - 比较引用用 `ReferenceEquals`。
 
-### 7.4 浮点精度
+### 6.4 浮点精度
 
 ```csharp
 double x = 0.1 + 0.2;
@@ -934,7 +889,7 @@ Console.WriteLine(d1 == 0.3m);  // True
 
 **对策**：财务计算用 `decimal`。
 
-### 7.5 整数溢出
+### 6.5 整数溢出
 
 ```csharp
 int max = int.MaxValue;
@@ -950,7 +905,7 @@ checked
 
 **对策**：开启 `checked` 或在 csproj 配置 `<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>`。
 
-### 7.6 switch 漏 break
+### 6.6 switch 漏 break
 
 C# 不允许隐式 fallthrough（除空 case），编译错误。但需注意显式 fallthrough：
 
@@ -977,7 +932,7 @@ switch (x)
 }
 ```
 
-### 7.7 NRT 假阳性
+### 6.7 NRT 假阳性
 
 ```csharp
 #nullable enable
@@ -991,7 +946,7 @@ string GetName()
 
 **对策**：返回类型改为 `string?` 或修改逻辑。
 
-### 7.8 异常吞咽
+### 6.8 异常吞咽
 
 ```csharp
 try { DoWork(); }
@@ -1000,7 +955,7 @@ catch { }   // 静默吞咽
 
 **对策**：记录日志或重新抛出。
 
-### 7.9 异常重抛丢失堆栈
+### 6.9 异常重抛丢失堆栈
 
 ```csharp
 try { DoWork(); }
@@ -1013,7 +968,7 @@ catch (Exception ex)
 
 **对策**：使用 `throw;`（保留堆栈）或 `ExceptionDispatchInfo.Capture(ex).Throw()`。
 
-### 7.10 var 类型推断错误
+### 6.10 var 类型推断错误
 
 ```csharp
 var x = 1;        // int，不是 long
@@ -1025,7 +980,7 @@ var d = 1 / 2;    // int 0
 double d2 = 1.0 / 2;  // 0.5
 ```
 
-### 7.11 闭包捕获循环变量
+### 6.11 闭包捕获循环变量
 
 C# 5+ 已修复，但需注意：
 
@@ -1037,7 +992,7 @@ for (int i = 0; i < 5; i++)
 foreach (var a in actions) a();   // 5 5 5 5 5（C# 5+ 输出 0 1 2 3 4）
 ```
 
-### 7.12 readonly vs const
+### 6.12 readonly vs const
 
 ```csharp
 public const int Max = 100;            // 编译期常量，跨程序集需重新编译
@@ -1046,9 +1001,9 @@ public static readonly int Max2 = 100; // 运行期，跨程序集无需重新�
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 命名约定
+### 7.1 命名约定
 
 | 类型 | 约定 | 示例 |
 |------|------|------|
@@ -1062,7 +1017,7 @@ public static readonly int Max2 = 100; // 运行期，跨程序集无需重新�
 | 常量 | PascalCase | `MaxRetryCount` |
 | 命名空间 | PascalCase | `MyApp.Services` |
 
-### 8.2 var 使用指南
+### 7.2 var 使用指南
 
 ```csharp
 // 推荐：类型明显
@@ -1076,7 +1031,7 @@ var result = DoSomething();
 Person person = GetPerson();
 ```
 
-### 8.3 字符串选择
+### 7.3 字符串选择
 
 - **简单插值**：`$"{name}"`。
 - **多行 / 含引号**：`"""..."""`。
@@ -1085,7 +1040,7 @@ Person person = GetPerson();
 - **大量拼接**：`StringBuilder`。
 - **格式化**：`string.Format` 或插值。
 
-### 8.4 异常处理策略
+### 7.4 异常处理策略
 
 ```csharp
 // 1. 业务异常：自定义异常类型
@@ -1135,7 +1090,7 @@ public class Result<T>
 }
 ```
 
-### 8.5 NRT 配置
+### 7.5 NRT 配置
 
 `csproj`：
 
@@ -1166,7 +1121,7 @@ public class Result<T>
 // 仅启用警告
 ```
 
-### 8.6 编译器分析器
+### 7.6 编译器分析器
 
 `csproj`：
 
@@ -1186,7 +1141,7 @@ dotnet_diagnostic.CA1303.severity = error
 dotnet_diagnostic.SA1101.severity = none
 ```
 
-### 8.7 字符串比较
+### 7.7 字符串比较
 
 ```csharp
 // 文化敏感比较（默认）
@@ -1204,7 +1159,7 @@ if (name.Equals("Alice", StringComparison.OrdinalIgnoreCase))
 StringComparer.OrdinalIgnoreCase.Equals(path1, path2);
 ```
 
-### 8.8 性能优化技巧
+### 7.8 性能优化技巧
 
 ```csharp
 // 1. 字符串拼接已知长度
@@ -1225,7 +1180,7 @@ foreach (var c in span) Console.Write(c);
 Span<int> buffer = stackalloc int[100];  // 栈分配
 ```
 
-### 8.9 单元测试
+### 7.9 单元测试
 
 ```csharp
 using Xunit;
@@ -1249,7 +1204,7 @@ public class CalculatorTests
 }
 ```
 
-### 8.10 调试技巧
+### 7.10 调试技巧
 
 - **断点**：VS Code 中 F9 设置断点。
 - **条件断点**：右键断点 → Edit Breakpoint → `i == 42`。
@@ -1261,9 +1216,9 @@ public class CalculatorTests
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：命令行参数解析
+### 8.1 案例：命令行参数解析
 
 ```csharp
 // 简单实现
@@ -1302,7 +1257,7 @@ rootCommand.SetHandler((name, verbose) =>
 await rootCommand.InvokeAsync(args);
 ```
 
-### 9.2 案例：FizzBuzz
+### 8.2 案例：FizzBuzz
 
 ```csharp
 for (int i = 1; i <= 100; i++)
@@ -1318,7 +1273,7 @@ for (int i = 1; i <= 100; i++)
 }
 ```
 
-### 9.3 案例：领域规则配置
+### 8.3 案例：领域规则配置
 
 ```csharp
 public record OrderRule(string Name, decimal MinAmount, decimal MaxAmount, int Priority);
@@ -1345,7 +1300,7 @@ var processor = new OrderProcessor([
 Console.WriteLine(processor.Evaluate(500));   // Medium
 ```
 
-### 9.4 案例：CSV 解析器
+### 8.4 案例：CSV 解析器
 
 ```csharp
 public static IEnumerable<string[]> ParseCsv(string path)
@@ -1366,7 +1321,7 @@ foreach (var row in ParseCsv("data.csv"))
 }
 ```
 
-### 9.5 案例：FizzBuzz 模式匹配版
+### 8.5 案例：FizzBuzz 模式匹配版
 
 ```csharp
 string FizzBuzz(int n) => (n % 3, n % 5) switch
@@ -1381,7 +1336,7 @@ foreach (var i in Enumerable.Range(1, 100))
     Console.WriteLine(FizzBuzz(i));
 ```
 
-### 9.6 案例：状态机（交通灯）
+### 8.6 案例：状态机（交通灯）
 
 ```csharp
 public enum LightState { Red, Green, Yellow }
@@ -1407,7 +1362,7 @@ for (int i = 0; i < 6; i++)
 }
 ```
 
-### 9.7 案例：基于 NRT 的服务层
+### 8.7 案例：基于 NRT 的服务层
 
 ```csharp
 #nullable enable
@@ -1443,7 +1398,7 @@ public interface IUserRepository
 public record User(int Id, string Name, string Email);
 ```
 
-### 9.8 案例：日志级别过滤
+### 8.8 案例：日志级别过滤
 
 ```csharp
 public enum LogLevel { Debug, Info, Warning, Error, Fatal }
@@ -1682,7 +1637,7 @@ Expr expr = new Div(new Num(10), new Add(new Num(2), new Num(3)));
 Console.WriteLine(Eval(expr));   // 2
 ```
 
-### 10.5 思考题
+### 9.5 思考题
 
 **常见疑问 14**：为什么 C# 不允许 `int x = null;` 但允许 `int? x = null;`？
 
@@ -1704,7 +1659,7 @@ NRT 主要是编译期机制：编译器在编译期分析 null 流，发出警�
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Hejlsberg, A., Torgersen, M., Wiltamuth, S., and Golde, P. 2010. *The C# Programming Language* (4th ed.). Addison-Wesley Professional, Boston, MA, USA.
 
@@ -1738,9 +1693,9 @@ NRT 主要是编译期机制：编译器在编译期分析 null 流，发出警�
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - C# 类型系统：<https://learn.microsoft.com/dotnet/csharp/fundamentals/types/>
 - 默认值：<https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/default-values>
@@ -1748,7 +1703,7 @@ NRT 主要是编译期机制：编译器在编译期分析 null 流，发出警�
 - 模式匹配：<https://learn.microsoft.com/dotnet/csharp/fundamentals/functional/pattern-matching>
 - 字符串插值：<https://learn.microsoft.com/dotnet/csharp/language-reference/tokens/interpolated>
 
-### 12.2 系列内交叉引用
+### 11.2 系列内交叉引用
 
 - [概述与环境配置](./概述与环境配置.md) —— C# 简史、.NET 生态、SDK 安装
 - [面向对象编程](./面向对象编程.md) —— 类、接口、继承、多态、抽象
@@ -1760,7 +1715,7 @@ NRT 主要是编译期机制：编译器在编译期分析 null 流，发出警�
 - [记录类型](./记录类型.md) —— `record` 与不可变性
 - [记录类型与不可变性](./记录类型与不可变性.md) —— `with`、值相等
 
-### 12.3 进阶书籍
+### 11.3 进阶书籍
 
 - Albahari, J. 2023. *C# 12 in a Nutshell* (O'Reilly Media.
 - Wagner, B. 2018. *More Effective C#: 50 Specific Ways to Improve Your C#* (2nd ed.). Addison-Wesley.
@@ -1768,7 +1723,7 @@ NRT 主要是编译期机制：编译器在编译期分析 null 流，发出警�
 - Wagner, B. 2022. *C# 10 in a Nutshell* (O'Reilly Media.
 - Stovell, D. 2022. *Pro .NET 6 Parallel Programming in C#* (Apress.
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - C# 设计讨论：<https://github.com/dotnet/csharplang>
 - C# Language Reference：<https://learn.microsoft.com/dotnet/csharp/language-reference/>
@@ -1776,7 +1731,7 @@ NRT 主要是编译期机制：编译器在编译期分析 null 流，发出警�
 - .NET 官方博客：<https://devblogs.microsoft.com/dotnet/>
 - .NET Foundation：<https://dotnetfoundation.org/>
 
-### 12.5 视频资源
+### 11.5 视频资源
 
 - .NET 官方 YouTube 频道：<https://www.youtube.com/@dotnet>
 - Nick Chapsas（C# 进阶）：<https://www.youtube.com/@nickchapsas>
@@ -1784,14 +1739,14 @@ NRT 主要是编译期机制：编译器在编译期分析 null 流，发出警�
 - Milan Jovanovic（工程实战）：<https://www.youtube.com/@MilanJovanovicTech>
 - Julio Casal（.NET 8/9）：<https://www.youtube.com/@julio-casal>
 
-### 12.6 工具
+### 11.6 工具
 
 - Sharplab：<https://sharplab.io/>（在线查看 C# 编译结果）
 - dotnetfiddle：<https://dotnetfiddle.net/>
 - C# Pad：<https://csharppad.com/>
 - Roslyn Quoter：<https://roslynquoter.azurewebsites.net/>
 
-### 12.7 习题答案汇总
+### 11.7 习题答案汇总
 
 | 题号 | 答案 |
 |------|------|

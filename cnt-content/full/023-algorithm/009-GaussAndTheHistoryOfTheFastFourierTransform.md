@@ -35,14 +35,6 @@ prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/排序算法
   - algorithm/递归与回溯
-learningObjectives:
-  - 记忆归并排序 $O(n \log n)$、快速排序 $O(n \log n)$ 平均/$O(n^2)$ 最坏、二分查找 $O(\log n)$、Karatsuba $O(n^{\log_2 3}) \approx O(n^{1.585})$、Strassen $O(n^{\log_2 7}) \approx O(n^{2.807})$、FFT $O(n \log n)$、最近点对 $O(n \log n)$ 的形式化复杂度，复述主定理三种情况
-  - 理解 von Neumann 1945 EDVAC 报告归并排序、Hoare 1961 CACM 快速排序、Karatsuba-Ofman 1963 Soviet Physics-Doklady 7:595-596 大整数乘法（突破 Kolmogorov $O(n^2)$ 猜想）、Cooley-Tukey 1965 Mathematics of Computation 19:297-301 FFT、Strassen 1969 Numerische Mathematik 13(4):354-356 矩阵乘法（突破 $O(n^3)$）、Bentley-Haken-Saxe 1980 SIGACT News 12(3):36-44 主定理的历史脉络，说明各分治算法的设计动机
-  - 应用归并排序（自顶向下/自底向上）、快速排序（Lomuto/Hoare/三路/随机化/双轴）、Karatsuba 大整数乘法、Strassen 矩阵乘法、Cooley-Tukey FFT（递归/迭代）、最近点对（分治+strip）编写可运行的 Python/C++/Java 代码，解决 LeetCode 53 最大子数组和、LeetCode 169 多数元素、LeetCode 23 合并 K 个有序链表、LeetCode 148 排序链表、LeetCode 240 搜索二维矩阵 II、LeetCode 315 计算右侧小于当前元素的个数、LeetCode 973 最接近原点的 K 个点等问题
-  - 分析主定理三种情况的形式化条件（$f(n) = O(n^{\log_b a - \epsilon})$ / $\Theta(n^{\log_b a} \log^k n)$ / $\Omega(n^{\log_b a + \epsilon})$）与正则条件、递归树分析法、Karatsuba 三乘法替代四乘法的代数恒等式、Strassen 七乘法替代八乘法的代数恒等式、Cooley-Tukey 蝶形运算的对称性利用、最近点对 strip 检查的 $O(1)$ 摊还分析，掌握"递归树归约、代数恒等式、势能摊还"三大核心论证方法
-  - 评估各分治算法在"分解均匀性"、"合并成本"、"递归深度"、"基线阈值"、"并行化难度"维度上的优劣，识别 NumPy/BLAS Strassen 矩阵乘法、FFTW 库、Python Timsort 归并段、PostgreSQL 外部归并排序、MapReduce 分布式排序、GPU 并行 FFT 的选型动机
-  - 对比归并、快排、Karatsuba、Strassen、FFT、最近点对在递推关系、子问题数 $a$、子问题规模 $n/b$、合并代价 $f(n)$、总复杂度、并行性维度的差异
-  - 创造性设计基于分治的开源项目解决方案，如 MapReduce 分布式词频统计、CUDA FFT 卷积神经网络、PostgreSQL 多路外排序、Go goroutine 并行归并、Karatsuba RSA 大数运算、Strassen BLAS 加速、最近点对地理 LBS 服务
 references:
   - type: book
     authors:
@@ -242,6 +234,7 @@ etymology:
     english: amortized analysis
     origin: 'amortize 源自拉丁语 ad-（向）+ mortalis（死亡），原指分期偿还债务。在算法分析中，amortized analysis 将偶尔高代价的操作分摊到低代价操作上。Cormen-Leiserson-Rivest-Stein《CLRS》第 17 章系统化，分聚合分析、核算方法、势能方法三种。最近点对 strip 检查的 $O(1)$ 摊还即聚合分析实例'
 ---
+
 
 ## 1. 概述与学习目标
 

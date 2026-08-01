@@ -15,6 +15,7 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
+
 # ArkTS 类型语法 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
@@ -69,17 +70,7 @@ ArkTS 是 HarmonyOS 应用开发的一等公民语言。从 API 9 开始,Stage �
 | 系统服务层 | C/C++ | 内核、驱动、系统服务 |
 | 内核层 | C/Rust | HarmonyOS 微内核 |
 
-## 2. 学习目标
-
-完成本章学习后,读者应能够:
-
-1. **概念层面**——准确解释 ArkTS 与 TypeScript 在类型系统、动态特性、装饰器三个维度的核心差异,并说明每种差异背后的设计动机
-2. **代码层面**——能够将一段 TypeScript 代码重构为符合 ArkTS 规范的等价代码,处理 `any`、`unknown`、结构性类型、动态属性访问等典型场景
-3. **工程层面**——理解 ArkTS 的编译工具链与类型检查机制,能够在 DevEco Studio 中识别并修复 ArkTS 编译错误
-4. **性能层面**——理解 ArkTS 严格类型约束对 AOT 编译优化的贡献,能够写出更利于编译器优化的代码
-5. **架构层面**——理解 ArkTS 如何与 ArkUI 装饰器系统协作,为后续学习声明式 UI 与状态管理奠定语言基础
-
-## 3. 前置知识
+## 2. 前置知识
 
 阅读本章前,建议读者具备以下基础:
 
@@ -90,9 +81,9 @@ ArkTS 是 HarmonyOS 应用开发的一等公民语言。从 API 9 开始,Stage �
 
 若读者对 TypeScript 完全陌生,建议先通过 TypeScript 官方 Handbook 完成基础学习,再回到本章。
 
-## 4. 核心概念
+## 3. 核心概念
 
-### 4.1 类型系统差异总览
+### 3.1 类型系统差异总览
 
 ArkTS 的类型系统在 TypeScript 基础上做了"收紧"处理。下表列出主要差异:
 
@@ -109,7 +100,7 @@ ArkTS 的类型系统在 TypeScript 基础上做了"收紧"处理。下表列出
 | `typeof` 类型查询 | 支持 | 受限 | 仅用于基本类型与变量声明 |
 | 泛型 | 完整支持 | 完整支持 | 但对泛型约束有更严格限制 |
 
-### 4.2 `any` 类型的禁止
+### 3.2 `any` 类型的禁止
 
 `any` 是 TypeScript 类型系统的"逃生舱",允许跳过类型检查。在 ArkTS 中,`any` 被彻底禁止,这是最显著的差异之一。
 
@@ -147,7 +138,7 @@ const result: string[] = processData({ items: [{ name: 'Alice' }] });
 2. **IDE 智能提示完整**——所有变量类型明确,代码补全准确
 3. **AOT 编译优化**——编译器能够基于完整类型信息生成更优化的机器码
 
-### 4.3 `unknown` 类型的使用
+### 3.3 `unknown` 类型的使用
 
 ArkTS 允许使用 `unknown` 类型作为类型安全的"逃生舱",但使用时必须通过类型守卫(type guard)收窄类型。
 
@@ -171,7 +162,7 @@ if (typeof data === 'object' && data !== null && 'name' in data) {
 
 `unknown` 与 `any` 的核心区别在于安全性:`any` 允许任意操作而不报错,`unknown` 强制要求在使用前进行类型检查。在 ArkTS 中,当确实无法预先确定类型时(如解析外部 JSON),`unknown` 是推荐的替代方案。
 
-### 4.4 函数类型的严格化
+### 3.4 函数类型的严格化
 
 TypeScript 允许函数参数类型省略,会推断为 `any`。ArkTS 强制要求所有函数参数和返回值显式标注类型。
 
@@ -201,7 +192,7 @@ const greet = (name) => `Hello, ${name}`;
 const greet = (name: string): string => `Hello, ${name}`;
 ```
 
-### 4.5 结构性类型的限制
+### 3.5 结构性类型的限制
 
 TypeScript 采用**结构性类型系统**(structural typing,又称鸭子类型):只要对象结构匹配,即使没有显式声明 `implements` 关系,也被视为兼容。ArkTS 在保留结构性类型的同时,鼓励使用名义类型(nominal typing)以提高可读性与可维护性。
 
@@ -242,7 +233,7 @@ distance(p);  // 合法
 
 ArkTS 仍然支持 `interface`,但对于需要实例化的对象,推荐使用 `class`。`class` 提供构造函数、方法、继承等完整能力,与 AOT 编译配合更佳。
 
-### 4.6 对象字面量的限制
+### 3.6 对象字面量的限制
 
 TypeScript 允许动态添加、删除对象属性。ArkTS 严格限制这些操作,以支持编译期优化。
 
@@ -271,7 +262,7 @@ obj.b = 2;  // 合法,b 已在接口中声明
 
 这种限制使得编译器能够在编译期确定对象的所有可能属性,从而优化内存布局与字段访问。
 
-### 4.7 装饰器系统
+### 3.7 装饰器系统
 
 ArkTS 引入了一套完整的装饰器系统以支持 ArkUI 声明式 UI。这是 TypeScript 中没有(或仅在实验性特性中支持)的能力。
 
@@ -305,7 +296,7 @@ ArkTS 内置装饰器大致分类:
 | 监听 | `@Watch` | 状态变化监听 |
 | 对象 | `@Observed`、`@ObjectLink` | 嵌套对象响应式 |
 
-### 4.8 `struct` 关键字
+### 3.8 `struct` 关键字
 
 ArkTS 引入 `struct` 关键字用于声明自定义组件,这是 TypeScript 中没有的概念。`struct` 类似于 `class`,但有以下区别:
 
@@ -328,7 +319,7 @@ class User {
 }
 ```
 
-### 4.9 模块系统的差异
+### 3.9 模块系统的差异
 
 ArkTS 使用 ES Module 标准(`import`/`export`),与 TypeScript 一致。但有以下细节差异:
 
@@ -351,11 +342,11 @@ export function myFunction(): void { /* ... */ }
 export const MY_CONST: number = 42;
 ```
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节通过完整代码示例展示从 TypeScript 到 ArkTS 的迁移过程。
 
-### 5.1 示例一:用户数据管理
+### 4.1 示例一:用户数据管理
 
 **TypeScript 版本(典型写法)**:
 
@@ -443,7 +434,7 @@ class UserService {
 4. `Object.assign` 替换为手动属性赋值
 5. `Partial<User>` 在 ArkTS 中仍然支持,但需注意其展开行为
 
-### 5.2 示例二:JSON 解析与验证
+### 4.2 示例二:JSON 解析与验证
 
 TypeScript 中常见的 JSON 解析模式在 ArkTS 中需要改写:
 
@@ -489,7 +480,7 @@ function isObjectWithData(data: unknown): data is Record<string, unknown> {
 
 这里的关键技巧是使用类型守卫函数 `isObjectWithData`,通过 `data is Record<string, unknown>` 的返回类型谓词,在 if 块内将 `unknown` 收窄为可访问的对象类型。
 
-### 5.3 示例三:泛型与工具类型
+### 4.3 示例三:泛型与工具类型
 
 ArkTS 支持泛型与多数工具类型,但限制比 TypeScript 严格:
 
@@ -526,7 +517,7 @@ type UserWithoutEmail = Omit<User, 'email'>;
 // type Readonly<T> = { readonly [P in keyof T]: T[P] };  // ArkTS 编译错误
 ```
 
-### 5.4 示例四:枚举与字面量联合
+### 4.4 示例四:枚举与字面量联合
 
 ArkTS 支持 `enum` 与字面量联合类型,二者可以互换使用:
 
@@ -551,7 +542,7 @@ const c2: ColorUnion = 'RED';
 // 3. AOT 编译时可消除,无运行时开销
 ```
 
-### 5.5 示例五:类与继承
+### 4.5 示例五:类与继承
 
 ArkTS 的 `class` 与 TypeScript 基本一致,支持继承、抽象类、接口实现:
 
@@ -609,9 +600,9 @@ class Counter {
 }
 ```
 
-## 6. 实战案例
+## 5. 实战案例
 
-### 6.1 案例:从 React+TS 项目迁移到 ArkTS
+### 5.1 案例:从 React+TS 项目迁移到 ArkTS
 
 假设我们要将一个简单的 React + TypeScript 待办列表组件迁移到 ArkTS。这个案例涵盖了类型定义、组件结构、状态管理等关键差异点。
 
@@ -784,7 +775,7 @@ struct TodoList {
 5. **`@Builder` 复用**——抽出 `TodoItem` 作为可复用 UI 片段,类似 React 中的子组件
 6. **`ForEach` 渲染列表**——替代 JSX 的 `map`,需要提供 `keyGenerator` 函数
 
-### 6.2 案例:类型安全的事件处理
+### 5.2 案例:类型安全的事件处理
 
 考虑一个登录表单,需要处理用户输入、表单提交、异步请求。这个案例展示 ArkTS 在异步代码中的类型约束。
 
@@ -902,9 +893,9 @@ struct LoginPage {
 4. **对象不可变更新**——修改 `@State` 对象的属性时,需要重新赋值整个对象以触发 UI 刷新
 5. **空值合并运算符 `??`**——ArkTS 支持 `??`、`?.` 等 ES2020 语法
 
-## 7. 进阶技巧
+## 6. 进阶技巧
 
-### 7.1 类型守卫的编写
+### 6.1 类型守卫的编写
 
 ArkTS 中类型守卫(type guard)是处理 `unknown` 与联合类型的核心工具。常见的类型守卫模式:
 
@@ -970,7 +961,7 @@ function processResult(result: Result): string {
 }
 ```
 
-### 7.2 不可变更新模式
+### 6.2 不可变更新模式
 
 ArkTS 中 `@State` 装饰的数组和对象必须采用不可变更新模式才能触发 UI 刷新。常见模式:
 
@@ -1023,7 +1014,7 @@ this.user = {
 
 注意:展开运算符 `...` 在 ArkTS 中只能用于数组与对象字面量内部,不能用于函数参数(不支持剩余参数语法 except in limited form)。
 
-### 7.3 工具类型的合理使用
+### 6.3 工具类型的合理使用
 
 ArkTS 支持的工具类型:
 
@@ -1067,7 +1058,7 @@ interface UserMap {
 const userMapObj: UserMap = {};
 ```
 
-### 7.4 命名空间与模块组织
+### 6.4 命名空间与模块组织
 
 ArkTS 支持命名空间 `namespace` 用于组织代码,但更推荐使用 ES Module:
 
@@ -1106,9 +1097,9 @@ namespace Utils {
 Utils.clamp(5, 0, 10);
 ```
 
-## 8. 性能优化
+## 7. 性能优化
 
-### 8.1 类型信息与 AOT 编译
+### 7.1 类型信息与 AOT 编译
 
 ArkTS 严格类型约束的核心收益是支持 AOT 编译优化。理解这一点需要从 JIT 与 AOT 的对比说起。
 
@@ -1127,7 +1118,7 @@ ArkTS 通过 AOT 编译:在打包阶段将 ArkTS 编译为 ArkVM 字节码或直
 | 包体积 | 小(源码) | 大(已编译) |
 | 运行时优化 | 持续优化 | 静态优化 |
 
-### 8.2 类型标注对性能的影响
+### 7.2 类型标注对性能的影响
 
 虽然 ArkTS 强制要求类型标注,但不同的类型选择会影响生成代码质量:
 
@@ -1168,7 +1159,7 @@ interface FlatStruct {
 }
 ```
 
-### 8.3 装饰器与性能
+### 7.3 装饰器与性能
 
 ArkTS 装饰器在编译期会被转换为等价的命令式代码,不会引入运行时反射开销。但 `@State` 等状态装饰器会注册依赖追踪,需要注意:
 
@@ -1187,7 +1178,7 @@ struct MyComponent {
 }
 ```
 
-### 8.4 内存布局优化
+### 7.4 内存布局优化
 
 ArkTS 编译器能够基于类型信息优化对象内存布局。明确、稳定的类型有助于优化:
 
@@ -1206,9 +1197,9 @@ class BadPoint {
 }
 ```
 
-## 9. 调试与排错
+## 8. 调试与排错
 
-### 9.1 常见编译错误及解决
+### 8.1 常见编译错误及解决
 
 **错误:`any` 类型不允许**:
 
@@ -1278,7 +1269,7 @@ map.set('b', 2);
 const keys: string[] = Array.from(map.keys());
 ```
 
-### 9.2 DevEco Studio 调试技巧
+### 8.2 DevEco Studio 调试技巧
 
 DevEco Studio 提供完整的 ArkTS 调试支持:
 
@@ -1288,7 +1279,7 @@ DevEco Studio 提供完整的 ArkTS 调试支持:
 4. **类型推断查看**——`Ctrl + Shift + P` 查看变量类型
 5. **ArkTS 严格模式开关**——`build-profile.json5` 中配置 `arkTSStrictMode`
 
-### 9.3 编译器日志阅读
+### 8.3 编译器日志阅读
 
 ArkTS 编译器日志格式与 TypeScript 不同,典型日志:
 
@@ -1308,9 +1299,9 @@ WARNING: Property 'unused' is declared but never used.
 
 格式为:`文件路径:行:列`,后跟错误描述与代码片段。下划线 `~~~~` 标记出错位置。
 
-## 10. 最佳实践
+## 9. 最佳实践
 
-### 10.1 类型设计原则
+### 9.1 类型设计原则
 
 **原则一:尽可能具体,而非抽象**:
 
@@ -1368,7 +1359,7 @@ enum StatusCode {
 }
 ```
 
-### 10.2 文件组织规范
+### 9.2 文件组织规范
 
 推荐的项目结构:
 
@@ -1407,7 +1398,7 @@ flowchart TD
     T19 --> T21
 ```
 
-### 10.3 命名约定
+### 9.3 命名约定
 
 ```typescript
 // 类名:PascalCase
@@ -1429,7 +1420,7 @@ const API_BASE_URL = 'https://api.example.com';
 @State userName: string = '';
 ```
 
-### 10.4 错误处理规范
+### 9.4 错误处理规范
 
 ```typescript
 // 推荐的错误处理模式
@@ -1463,9 +1454,9 @@ if (result.success && result.data) {
 }
 ```
 
-## 11. 总结与回顾
+## 10. 总结与回顾
 
-### 11.1 核心差异速查表
+### 10.1 核心差异速查表
 
 | 特性 | TypeScript | ArkTS |
 | --- | --- | --- |
@@ -1487,7 +1478,7 @@ if (result.success && result.data) {
 | 编译目标 | JavaScript | ArkVM 字节码 / 机器码 |
 | 编译方式 | JIT | AOT |
 
-### 11.2 迁移决策树
+### 10.2 迁移决策树
 
 将 TypeScript 代码迁移到 ArkTS 时,可遵循以下决策树:
 
@@ -1515,7 +1506,7 @@ if (result.success && result.data) {
    - 是 → 改写为 ArkUI 声明式语法
    - 否 → 大部分逻辑代码可直接复用
 
-### 11.3 学习路径建议
+### 10.3 学习路径建议
 
 对于不同背景的开发者,建议的学习路径:
 
@@ -1540,29 +1531,29 @@ if (result.success && result.data) {
 3. 本章节深入类型差异
 4. 重点学习 ArkUI 声明式 UI(与命令式思维差异较大)
 
-## 12. 参考资料
+## 11. 参考资料
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **HarmonyOS 应用开发文档**——https://developer.harmonyos.com/
 - **ArkTS 语言规范**——https://developer.harmonyos.com/cn/docs/arkts/
 - **TypeScript Handbook**——https://www.typescriptlang.org/docs/handbook/
 - **ArkUI 组件参考**——https://developer.harmonyos.com/cn/docs/arkui/
 
-### 12.2 推荐阅读
+### 11.2 推荐阅读
 
 - TypeScript Deep Dive——深入理解 TypeScript 类型系统
 - Programming TypeScript——O'Reilly 出版的 TS 权威指南
 - Effective TypeScript——Dan Vanderkam 著,55 条 TS 最佳实践
 - 设计模式(GoF)——理解 ArkTS 中类与接口的应用
 
-### 12.3 相关标准
+### 11.3 相关标准
 
 - ECMAScript 2023 规范——ArkTS 支持的 ES 特性子集
 - W3C TypeScript 语言规范——TS 类型系统基础
 - HarmonyOS Application Package Standard——HAP/HSP/HAR 包格式
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 完成本章学习后,可继续探索:
 

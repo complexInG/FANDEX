@@ -20,6 +20,7 @@ prerequisites:
   - css/层叠上下文
 ---
 
+
 # 背景增强（Backgrounds & Borders Enhancement）
 
 > 本文以 W3C [CSS Backgrounds and Borders Module Level 3](https://www.w3.org/TR/css-backgrounds-3/) 与 [CSS Backgrounds Module Level 4](https://www.w3.org/TR/css-backgrounds-4/) 规范为基础，系统阐释 CSS 背景系统的层级模型（Layer Model）、`background-image` 多层叠加、`background-size` 缩放算法、`background-clip` 绘制区域、`background-origin` 定位上下文、`background-attachment` 滚动行为的几何与渲染机制，并对接 Bootstrap、Tailwind CSS、Material Design 等主流框架的实践范式。内容涵盖从 CSS 1（1996）到 CSS Backgrounds Level 4（2024）的演进，提供生产级代码示例与工程化解决方案。
@@ -43,58 +44,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够：
-
-### 1.1 Remember（记忆）
-
-- 准确复述 CSS 背景系统的 8 个独立子属性：`background-color`、`background-image`、`background-repeat`、`background-attachment`、`background-position`、`background-clip`、`background-origin`、`background-size`。
-- 列出 `background-size` 的取值：`auto`、`cover`、`contain`、`<length>`、`<percentage>`，以及多值语法 `cover auto`、`50% 100%`。
-- 识别 `background-clip` 的四种取值：`border-box`（默认）、`padding-box`、`content-box`、`text`（含 `-webkit-` 前缀）。
-- 列出 `background-origin` 的三种取值：`padding-box`（默认）、`border-box`、`content-box`。
-- 列出 `background-attachment` 的三种取值：`scroll`（默认）、`fixed`、`local`。
-
-### 1.2 Understand（理解）
-
-- 解释 CSS 多背景的「层级模型」（Layer Model）：第一个声明的背景在最上层，最后一个在最底层，且 `background-color` 始终位于最底层。
-- 阐述 `background-origin` 与 `background-clip` 的本质差异：前者决定「定位起点」，后者决定「绘制边界」。
-- 论证 `background-size: cover` 与 `contain` 的几何算法差异：`cover` 保证覆盖容器但可能裁剪图像；`contain` 保证完整显示但可能留下空白。
-- 描述 `background-attachment: fixed` 与视口（viewport）的关系，及其在移动端浏览器的兼容性限制。
-
-### 1.3 Apply（应用）
-
-- 在生产代码中通过多背景实现「图像 + 渐变 + 噪声」叠加的复杂视觉效果。
-- 利用 `background-size: cover` 实现 Hero 区背景图响应式适配。
-- 使用 `background-clip: text` 配合渐变实现「渐变文字」效果，并处理浏览器兼容性。
-- 通过 `background-origin: content-box` 实现背景图与内容区对齐的精确控制。
-
-### 1.4 Analyze（分析）
-
-- 对比 `background-clip` 与 `background-origin` 在 border、padding、content 三个区域的不同行为。
-- 拆解 `background-attachment: fixed` 在 iOS Safari 上的失效原因：移动端为性能禁用固定背景的视口绑定。
-- 评估多背景层数对渲染性能的影响：每层独立的光栅化与合成成本。
-- 分析 `background-size` 与 `object-fit` 在 `<img>` 元素与背景图上的本质差异。
-
-### 1.5 Evaluate（评价）
-
-- 在「CSS 多背景」与「`::before`/`::after` 伪元素叠加」两种方案之间权衡性能、可维护性、语义清晰度。
-- 评价 `background-clip: text` 在生产环境的可行性：浏览器支持现状、可访问性影响、回退方案。
-- 反思 `background-attachment: fixed` 在视差滚动设计中的滥用与移动端用户体验。
-- 评估背景系统在 CSS Houdini Paint API 时代的未来形态。
-
-### 1.6 Create（创造）
-
-- 设计一套基于 CSS Variables 的背景设计令牌（Background Tokens），支持主题切换与响应式适配。
-- 编写 PostCSS 插件，自动为 `background-clip: text` 添加 `-webkit-` 前缀与回退方案。
-- 提出面向 CSS Working Group 的改进建议（如 `background-blend-mode: per-layer` 假想）。
-- 构建背景可视化调试工具，实时调整 `background-origin`、`background-clip`、`background-size` 并预览叠加效果。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 CSS 1（1996）：背景的雏形
+### 1.1 CSS 1（1996）：背景的雏形
 
 CSS 1 由 Håkon Wium Lie 与 Bert Bos 于 1996 年提出，首次定义背景相关属性。当时的背景系统极为简陋：
 
@@ -116,7 +68,7 @@ CSS 1 的背景系统存在显著限制：
 3. **无裁剪控制**：`background-clip` 尚未存在，背景始终绘制到 padding 边界。
 4. **定位粗糙**：`background-position` 仅支持关键字（`top`、`center`、`bottom`、`left`、`right`），不支持百分比与长度。
 
-### 2.2 CSS 2.1（2011）：背景属性的成熟
+### 1.2 CSS 2.1（2011）：背景属性的成熟
 
 CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
 
@@ -136,7 +88,7 @@ CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
 </div>
 ```
 
-### 2.3 CSS Backgrounds Module Level 3（2012-2017）
+### 1.3 CSS Backgrounds Module Level 3（2012-2017）
 
 [CSS Backgrounds and Borders Module Level 3](https://www.w3.org/TR/css-backgrounds-3/) 是背景系统的革命性升级，引入：
 
@@ -161,7 +113,7 @@ CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
 
 2017 年，Chrome 60、Firefox 55、Safari 11 全面支持 CSS Backgrounds Level 3，多背景进入生产可用阶段。
 
-### 2.4 `background-clip: text` 的引入（2011-2018）
+### 1.4 `background-clip: text` 的引入（2011-2018）
 
 `background-clip: text` 是 WebKit 于 2011 年引入的非标准扩展，用于将背景裁剪到文字区域，实现「渐变文字」效果：
 
@@ -176,7 +128,7 @@ CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
 
 长期作为 `-webkit-` 前缀私有特性存在，2018 年后逐渐被各浏览器支持，2023 年正式进入 [CSS Backgrounds Module Level 4](https://www.w3.org/TR/css-backgrounds-4/#background-clip) 草案。
 
-### 2.5 CSS Backgrounds Module Level 4（2020-2024）
+### 1.5 CSS Backgrounds Module Level 4（2020-2024）
 
 [CSS Backgrounds Module Level 4](https://www.w3.org/TR/css-backgrounds-4/) 引入了多项增强：
 
@@ -186,7 +138,7 @@ CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
 4. **`background-size` 与 `object-fit` 的语义对齐**：统一图像缩放语义。
 5. **`background-attachment: local`**：在内容滚动容器内的背景跟随行为。
 
-### 2.6 浏览器兼容性演进
+### 1.6 浏览器兼容性演进
 
 | 年份 | 事件 | 核心变化 |
 | --- | --- | --- |
@@ -200,7 +152,7 @@ CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
 | 2023 | `background-clip: text` 进入正式规范 | 无前缀使用成为可能 |
 | 2024 | 高 DPI 与 HDR 背景支持 | Display P3 色彩空间背景图 |
 
-### 2.7 演进时间线
+### 1.7 演进时间线
 
 | 年份 | 规范/事件 | 核心变化 |
 | --- | --- | --- |
@@ -217,9 +169,9 @@ CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 规范条款
+### 2.1 规范条款
 
 依据 [CSS Backgrounds and Borders Module Level 3 §3](https://www.w3.org/TR/css-backgrounds-3/#backgrounds)：
 
@@ -229,7 +181,7 @@ CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
 
 > The `background-clip` property determines the background painting area, which determines the area within which the background is painted.
 
-### 3.2 核心术语
+### 2.2 核心术语
 
 | 术语 | 英文 | 定义 |
 | --- | --- | --- |
@@ -243,7 +195,7 @@ CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
 | 附件模式 | Attachment Mode | `background-attachment` 决定的滚动行为 |
 | 背景颜色 | Background Color | `background-color`，始终位于背景栈最底层 |
 
-### 3.3 背景属性全景
+### 2.3 背景属性全景
 
 | 属性 | 取值 | 默认 | 说明 |
 | --- | --- | --- | --- |
@@ -256,7 +208,7 @@ CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
 | `background-origin` | `padding-box` \| `border-box` \| `content-box` | `padding-box` | 定位区域 |
 | `background-size` | `auto` \| `cover` \| `contain` \| `<length>` \| `<percentage>` | `auto` | 缩放模式 |
 
-### 3.4 `background` 简写语法
+### 2.4 `background` 简写语法
 
 ```
 background = 
@@ -277,7 +229,7 @@ background =
 2. `background-size` 必须跟在 `background-position` 后面，以 `/` 分隔。
 3. `background-color` 只能在最后一层（`<final-bg-layer>`）声明。
 
-### 3.5 形式化定义：背景栈
+### 2.5 形式化定义：背景栈
 
 设元素的背景栈 $\mathcal{B}$ 为有序集合：
 
@@ -295,7 +247,7 @@ $$
 
 其中 $\text{Composite}$ 是合成操作（默认为 `source-over`），$\text{Draw}(L_i, x, y)$ 是单层绘制函数。
 
-### 3.6 形式化定义：`background-size`
+### 2.6 形式化定义：`background-size`
 
 设图像原始尺寸为 $(w_0, h_0)$，容器尺寸为 $(W, H)$，`background-size` 取值为 $S$。定义缩放函数 $\text{Size}(S, w_0, h_0, W, H)$：
 
@@ -317,7 +269,7 @@ $$
 
 `cover` 保证图像覆盖整个容器（可能裁剪），`contain` 保证图像完整显示（可能留白）。
 
-### 3.7 形式化定义：`background-position`
+### 2.7 形式化定义：`background-position`
 
 `background-position` 的百分比定位遵循以下公式：
 
@@ -339,7 +291,7 @@ $$
 
 四值语法 `right 10px bottom 20px` 表示从右边偏移 10px，从底部偏移 20px。
 
-### 3.8 形式化定义：`background-clip` 与 `background-origin`
+### 2.8 形式化定义：`background-clip` 与 `background-origin`
 
 设元素的盒模型区域：
 
@@ -370,7 +322,7 @@ $$
 
 注意：`background-clip` 与 `background-origin` 是独立的，可以分别设置不同值。
 
-### 3.9 形式化定义：`background-attachment`
+### 2.9 形式化定义：`background-attachment`
 
 `background-attachment` 决定背景相对于什么坐标系滚动：
 
@@ -386,7 +338,7 @@ $$
 - `fixed`：背景相对于视口固定（不随页面或元素内容滚动）。
 - `local`：背景相对于元素内容滚动（随元素内容滚动）。
 
-### 3.10 背景绘制顺序
+### 2.10 背景绘制顺序
 
 浏览器绘制背景的完整顺序：
 
@@ -406,9 +358,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 多背景的层级模型
+### 3.1 多背景的层级模型
 
 CSS 多背景采用「栈式合成」模型，每层独立计算位置、尺寸、重复模式，然后按顺序合成。设第 $i$ 层的图像为 $I_i$，定位点为 $(x_i, y_i)$，尺寸为 $(w_i, h_i)$，则该层的绘制：
 
@@ -427,7 +379,7 @@ $$
 
 其中 $\text{Blend}$ 默认是 alpha 合成（`source-over`）。
 
-### 4.2 `background-size: cover` 的几何推导
+### 3.2 `background-size: cover` 的几何推导
 
 设图像原始尺寸为 $(w_0, h_0)$，容器尺寸为 $(W, H)$。`cover` 要求图像缩放后完全覆盖容器，即：
 
@@ -455,7 +407,7 @@ $$
 
 由于 $s \ge W/w_0$ 且 $s \ge H/h_0$，缩放后图像至少覆盖容器。若宽高比不匹配，超出部分被 `background-clip` 裁剪。
 
-### 4.3 `background-size: contain` 的几何推导
+### 3.3 `background-size: contain` 的几何推导
 
 `contain` 要求图像完整显示，即：
 
@@ -471,7 +423,7 @@ $$
 
 则缩放后图像完整显示，但可能在某一方向留白。
 
-### 4.4 `background-position` 百分比的几何意义
+### 3.4 `background-position` 百分比的几何意义
 
 百分比的精确定义：图像的 $p\%$ 点与容器的 $p\%$ 点对齐。形式化地：
 
@@ -491,7 +443,7 @@ $$
 
 这种「相对对齐」设计使得百分比比绝对偏移更直观：`50% 50%` 总是居中，无论图像与容器尺寸如何。
 
-### 4.5 `background-clip` 与 `background-origin` 的独立性
+### 3.5 `background-clip` 与 `background-origin` 的独立性
 
 考虑以下场景：
 
@@ -511,7 +463,7 @@ $$
 
 这种组合常用于：背景图对齐到外边界（包含 border），但避免被 border 遮挡。
 
-### 4.6 `background-attachment: fixed` 的视口绑定
+### 3.6 `background-attachment: fixed` 的视口绑定
 
 `background-attachment: fixed` 将背景绑定到视口坐标系：
 
@@ -523,7 +475,7 @@ $$
 
 但移动端浏览器（特别是 iOS Safari）出于性能考虑，禁用 `fixed` 的视口绑定，将其降级为 `scroll` 行为。这是移动端视差滚动效果失效的常见原因。
 
-### 4.7 `background-attachment: local` 的内容滚动
+### 3.7 `background-attachment: local` 的内容滚动
 
 `background-attachment: local` 将背景绑定到元素的内容坐标系：
 
@@ -533,7 +485,7 @@ $$
 
 即背景随元素内容滚动。这适用于可滚动容器内的背景（如聊天窗口的水印）。
 
-### 4.8 `background-clip: text` 的几何
+### 3.8 `background-clip: text` 的几何
 
 `background-clip: text` 将背景裁剪到文字的 glyph 区域：
 
@@ -553,7 +505,7 @@ $$
 }
 ```
 
-### 4.9 `background-repeat: space` 与 `round` 的算法
+### 3.9 `background-repeat: space` 与 `round` 的算法
 
 `space`：在不裁剪的前提下，尽可能多地放置图像，剩余空间均匀分配到图像之间：
 
@@ -577,7 +529,7 @@ $$
 
 `space` 保留图像原始尺寸但留空隙，`round` 拉伸图像以填满。
 
-### 4.10 多背景的性能模型
+### 3.10 多背景的性能模型
 
 浏览器渲染多背景的成本：
 
@@ -595,9 +547,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：多背景叠加
+### 4.1 基础示例：多背景叠加
 
 ```html
 <!DOCTYPE html>
@@ -637,7 +589,7 @@ $$
 </html>
 ```
 
-### 5.2 `background-size: cover` 与 `contain` 对比
+### 4.2 `background-size: cover` 与 `contain` 对比
 
 ```html
 <!DOCTYPE html>
@@ -711,7 +663,7 @@ $$
 </html>
 ```
 
-### 5.3 `background-clip` 区域对比
+### 4.3 `background-clip` 区域对比
 
 ```html
 <!DOCTYPE html>
@@ -755,7 +707,7 @@ $$
 </html>
 ```
 
-### 5.4 `background-origin` 区域对比
+### 4.4 `background-origin` 区域对比
 
 ```html
 <!DOCTYPE html>
@@ -800,7 +752,7 @@ $$
 </html>
 ```
 
-### 5.5 渐变文字效果
+### 4.5 渐变文字效果
 
 ```html
 <!DOCTYPE html>
@@ -867,7 +819,7 @@ $$
 </html>
 ```
 
-### 5.6 `background-attachment` 滚动行为
+### 4.6 `background-attachment` 滚动行为
 
 ```html
 <!DOCTYPE html>
@@ -945,7 +897,7 @@ $$
 </html>
 ```
 
-### 5.7 多背景复合效果（卡片设计）
+### 4.7 多背景复合效果（卡片设计）
 
 ```html
 <!DOCTYPE html>
@@ -1000,7 +952,7 @@ $$
 </html>
 ```
 
-### 5.8 `background-position` 四值语法
+### 4.8 `background-position` 四值语法
 
 ```html
 <!DOCTYPE html>
@@ -1053,7 +1005,7 @@ $$
 </html>
 ```
 
-### 5.9 `background-repeat` 模式对比
+### 4.9 `background-repeat` 模式对比
 
 ```html
 <!DOCTYPE html>
@@ -1099,7 +1051,7 @@ $$
 </html>
 ```
 
-### 5.10 企业级：响应式 Hero 区背景系统
+### 4.10 企业级：响应式 Hero 区背景系统
 
 ```html
 <!DOCTYPE html>
@@ -1222,7 +1174,7 @@ $$
 </html>
 ```
 
-### 5.11 企业级：设计令牌驱动的背景系统
+### 4.11 企业级：设计令牌驱动的背景系统
 
 ```html
 <!DOCTYPE html>
@@ -1311,7 +1263,7 @@ $$
 </html>
 ```
 
-### 5.12 调试工具：背景可视化检查器
+### 4.12 调试工具：背景可视化检查器
 
 ```html
 <!DOCTYPE html>
@@ -1456,9 +1408,9 @@ $$
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 `background-image` 与 `<img>` 标签对比
+### 5.1 `background-image` 与 `<img>` 标签对比
 
 | 维度 | `background-image` | `<img>` 标签 |
 | --- | --- | --- |
@@ -1472,7 +1424,7 @@ $$
 | 响应式 | `image-set()`、媒体查询 | `srcset`、`<picture>` |
 | 适用场景 | 装饰、纹理、渐变 | 内容图像、产品图 |
 
-### 6.2 `background-clip` 与 `background-origin` 对比
+### 5.2 `background-clip` 与 `background-origin` 对比
 
 | 属性 | 控制内容 | 默认值 | 取值范围 | 典型用途 |
 | --- | --- | --- | --- | --- |
@@ -1481,7 +1433,7 @@ $$
 
 关键差异：`background-clip` 决定「画到哪里」，`background-origin` 决定「从哪里开始算」。
 
-### 6.3 `background-size` 与 `object-fit` 对比
+### 5.3 `background-size` 与 `object-fit` 对比
 
 | 维度 | `background-size` | `object-fit` |
 | --- | --- | --- |
@@ -1492,7 +1444,7 @@ $$
 | 多层 | 支持 | 不支持 |
 | 配合属性 | `background-position` | `object-position` |
 
-### 6.4 多背景与伪元素叠加对比
+### 5.4 多背景与伪元素叠加对比
 
 | 维度 | 多背景 | 伪元素 `::before`/`::after` |
 | --- | --- | --- |
@@ -1504,7 +1456,7 @@ $$
 | 语义 | 装饰性 | 可承载语义 |
 | 适用场景 | 多层渐变、纹理 | 复杂叠加、需要独立动画 |
 
-### 6.5 主流框架背景实践对比
+### 5.5 主流框架背景实践对比
 
 | 框架 | 多背景策略 | `background-size` | `background-clip` | 工具类 |
 | --- | --- | --- | --- | --- |
@@ -1514,7 +1466,7 @@ $$
 | GitHub Primer | `.color-bg-*`、渐变工具 | 不直接提供 | 不直接提供 | `.bg-gradient-*` |
 | Ant Design 5 | 主题色 | 不直接提供 | 不直接提供 | 主题变量 |
 
-### 6.6 Tailwind 与 Bootstrap 背景哲学对比
+### 5.6 Tailwind 与 Bootstrap 背景哲学对比
 
 **Tailwind CSS v3.4**：原子化工具类，灵活组合。
 
@@ -1534,7 +1486,7 @@ $$
 
 Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。现代项目多倾向 Tailwind。
 
-### 6.7 预处理器对比
+### 5.7 预处理器对比
 
 | 预处理器 | 多背景 Mixin | `background-size` 支持 | `background-clip: text` 支持 |
 | --- | --- | --- | --- |
@@ -1559,9 +1511,9 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：`background-clip: text` 忘记回退
+### 6.1 陷阱 1：`background-clip: text` 忘记回退
 
 **错误代码**：
 
@@ -1593,7 +1545,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 7.2 陷阱 2：多背景层数过多导致性能问题
+### 6.2 陷阱 2：多背景层数过多导致性能问题
 
 **错误代码**：
 
@@ -1632,7 +1584,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 7.3 陷阱 3：`background-attachment: fixed` 在移动端失效
+### 6.3 陷阱 3：`background-attachment: fixed` 在移动端失效
 
 **问题**：iOS Safari 出于性能考虑，禁用 `fixed` 的视口绑定，将其降级为 `scroll`。
 
@@ -1658,7 +1610,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 7.4 陷阱 4：`background-size: 100% 100%` 拉伸变形
+### 6.4 陷阱 4：`background-size: 100% 100%` 拉伸变形
 
 **错误代码**：
 
@@ -1682,7 +1634,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 7.5 陷阱 5：`background-origin` 与 `background-clip` 混淆
+### 6.5 陷阱 5：`background-origin` 与 `background-clip` 混淆
 
 **误区**：误认为两者作用相同。
 
@@ -1702,7 +1654,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 7.6 陷阱 6：`background` 简写覆盖独立属性
+### 6.6 陷阱 6：`background` 简写覆盖独立属性
 
 **错误代码**：
 
@@ -1730,7 +1682,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 7.7 陷阱 7：高 DPI 背景图加载性能
+### 6.7 陷阱 7：高 DPI 背景图加载性能
 
 **问题**：为 Retina 屏幕加载 2x、3x 图像，移动端流量消耗大。
 
@@ -1746,7 +1698,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 7.8 陷阱 8：背景与可访问性
+### 6.8 陷阱 8：背景与可访问性
 
 **问题**：背景图上的文字对比度不足，影响阅读。
 
@@ -1763,7 +1715,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 7.9 最佳实践清单
+### 6.9 最佳实践清单
 
 1. **优先使用渐变而非图像**：渐变无需 HTTP 请求，性能更优。
 2. **使用 `background-size: cover` 适配响应式**：避免固定尺寸。
@@ -1778,9 +1730,9 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 背景设计令牌系统
+### 7.1 背景设计令牌系统
 
 ```css
 :root {
@@ -1818,7 +1770,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 8.2 PostCSS 自动前缀与优化
+### 7.2 PostCSS 自动前缀与优化
 
 ```javascript
 // postcss.config.js
@@ -1839,7 +1791,7 @@ module.exports = {
 };
 ```
 
-### 8.3 SCSS Mixin 库
+### 7.3 SCSS Mixin 库
 
 ```scss
 // _backgrounds.scss
@@ -1908,7 +1860,7 @@ module.exports = {
 }
 ```
 
-### 8.4 Tailwind CSS 自定义配置
+### 7.4 Tailwind CSS 自定义配置
 
 ```javascript
 // tailwind.config.js
@@ -1956,7 +1908,7 @@ module.exports = {
 };
 ```
 
-### 8.5 React 组件封装
+### 7.5 React 组件封装
 
 ```tsx
 import React, { CSSProperties } from 'react';
@@ -2047,7 +1999,7 @@ export function Demo() {
 }
 ```
 
-### 8.6 性能优化策略
+### 7.6 性能优化策略
 
 1. **懒加载背景图**：
 
@@ -2114,7 +2066,7 @@ document.querySelectorAll('[data-bg]').forEach((el) => observer.observe(el));
 .icon-settings { background-position: -40px 0; }
 ```
 
-### 8.7 调试工具
+### 7.7 调试工具
 
 1. **Chrome DevTools**：
 
@@ -2129,7 +2081,7 @@ document.querySelectorAll('[data-bg]').forEach((el) => observer.observe(el));
    - [CSS Backgrounds Visualizer](https://css-tricks.com/almanac/properties/b/background/)
    - [Gradient Generator](https://cssgradient.io/)
 
-### 8.8 Stylelint 校验规则
+### 7.8 Stylelint 校验规则
 
 ```json
 {
@@ -2150,7 +2102,7 @@ document.querySelectorAll('[data-bg]').forEach((el) => observer.observe(el));
 }
 ```
 
-### 8.9 Playwright 视觉回归测试
+### 7.9 Playwright 视觉回归测试
 
 ```typescript
 import { test, expect } from '@playwright/test';
@@ -2181,7 +2133,7 @@ test('渐变文字渲染正确', async ({ page }) => {
 });
 ```
 
-### 8.10 浏览器兼容性处理
+### 7.10 浏览器兼容性处理
 
 ```css
 /* background-clip: text 回退 */
@@ -2228,9 +2180,9 @@ test('渐变文字渲染正确', async ({ page }) => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例 1：Bootstrap 5 背景系统
+### 8.1 案例 1：Bootstrap 5 背景系统
 
 Bootstrap 5 通过 `.bg-*` 工具类提供主题色背景：
 
@@ -2257,7 +2209,7 @@ Bootstrap 5 通过 `.bg-*` 工具类提供主题色背景：
 2. **`!important` 强制覆盖**：避免优先级冲突。
 3. **`.bg-gradient` 渐变扩展**：在纯色基础上叠加半透明渐变。
 
-### 9.2 案例 2：Tailwind CSS v3.4 背景
+### 8.2 案例 2：Tailwind CSS v3.4 背景
 
 Tailwind 提供更细粒度的背景工具类：
 
@@ -2306,7 +2258,7 @@ Tailwind 提供更细粒度的背景工具类：
 2. **组合性**：`bg-gradient-to-r from-purple-500 to-pink-500` 灵活组合。
 3. **JIT 编译**：按需生成，无冗余 CSS。
 
-### 9.3 案例 3：Material Design 3 背景
+### 8.3 案例 3：Material Design 3 背景
 
 Material Design 3 通过 Design Token 系统管理背景：
 
@@ -2336,7 +2288,7 @@ Material Design 3 通过 Design Token 系统管理背景：
 2. **主题响应**：通过 Token 自动切换明暗主题。
 3. **无渐变**：Material Design 3 倾向纯色背景，避免视觉干扰。
 
-### 9.4 案例 4：GitHub Primer 背景
+### 8.4 案例 4：GitHub Primer 背景
 
 GitHub Primer 使用功能化背景工具类：
 
@@ -2352,7 +2304,7 @@ GitHub Primer 使用功能化背景工具类：
 }
 ```
 
-### 9.5 案例 5：Stripe 渐变美学
+### 8.5 案例 5：Stripe 渐变美学
 
 Stripe 网站以精致的渐变背景著称：
 
@@ -2373,7 +2325,7 @@ Stripe 网站以精致的渐变背景著称：
 2. **径向 + 线性混合**：丰富视觉层次。
 3. **品牌色驱动**：以 Stripe 紫（#635BFF）为核心。
 
-### 9.6 案例 6：生产事故 - 背景图导致 CLS
+### 8.6 案例 6：生产事故 - 背景图导致 CLS
 
 **场景**：某电商网站 Hero 区背景图加载后导致布局偏移（CLS）。
 
@@ -2666,7 +2618,7 @@ D. 背景不显示
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 iOS Safari 禁用 `background-attachment: fixed` 的视口绑定？从性能与渲染机制角度分析。
 
@@ -2762,9 +2714,9 @@ iOS Safari 禁用 `background-attachment: fixed` 的视口绑定主要基于以�
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 W3C 规范
+### 10.1 W3C 规范
 
 [1] W3C. CSS Backgrounds and Borders Module Level 3 [EB/OL]. (2023-12-19) [2024-12-01]. https://www.w3.org/TR/css-backgrounds-3/.
 
@@ -2782,7 +2734,7 @@ iOS Safari 禁用 `background-attachment: fixed` 的视口绑定主要基于以�
 
 [8] W3C. CSS Painting API Level 1 [EB/OL]. (2024-09-03) [2024-12-01]. https://www.w3.org/TR/css-paint-api-1/.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [9] Lie H W, Bos B. Cascading Style Sheets: Designing for the Web [M]. 3rd ed. Upper Saddle River: Addison-Wesley Professional, 2005. DOI: 10.5555/1058604.
 
@@ -2798,7 +2750,7 @@ iOS Safari 禁用 `background-attachment: fixed` 的视口绑定主要基于以�
 
 [15] Verou L. CSS Secrets: Better Solutions to Everyday Web Design Problems [M]. 1st ed. Upper Saddle River: Addison-Wesley Professional, 2015. DOI: 10.5555/2855555.
 
-### 11.3 浏览器实现文档
+### 10.3 浏览器实现文档
 
 [16] Mozilla Developer Network. Background [EB/OL]. (2024-10-15) [2024-12-01]. https://developer.mozilla.org/en-US/docs/Web/CSS/background.
 
@@ -2810,7 +2762,7 @@ iOS Safari 禁用 `background-attachment: fixed` 的视口绑定主要基于以�
 
 [20] WebKit Blog. CSS Backgrounds in WebKit [EB/OL]. (2024-07-12) [2024-12-01]. https://webkit.org/blog/css-backgrounds/.
 
-### 11.4 框架与工具文档
+### 10.4 框架与工具文档
 
 [21] Bootstrap Team. Bootstrap 5 Background Utilities [EB/OL]. (2024-06-20) [2024-12-01]. https://getbootstrap.com/docs/5.3/utilities/background/.
 
@@ -2822,7 +2774,7 @@ iOS Safari 禁用 `background-attachment: fixed` 的视口绑定主要基于以�
 
 [25] Stylelint Team. Stylelint Rules for Backgrounds [EB/OL]. (2024-07-22) [2024-12-01]. https://stylelint.io/user-guide/rules/list/.
 
-### 11.5 相关标准
+### 10.5 相关标准
 
 [26] W3C. CSS Values and Units Module Level 4 [EB/OL]. (2024-09-03) [2024-12-01]. https://www.w3.org/TR/css-values-4/.
 
@@ -2836,49 +2788,49 @@ iOS Safari 禁用 `background-attachment: fixed` 的视口绑定主要基于以�
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 W3C 规范进阶
+### 11.1 W3C 规范进阶
 
 - [CSS Backgrounds Module Level 4 Editor's Draft](https://drafts.csswg.org/css-backgrounds-4/)：最新草案，跟踪 `background-clip: text` 标准化进展。
 - [CSS Painting API Level 1](https://www.w3.org/TR/css-paint-api-1/)：Houdini Paint API，允许 JavaScript 自定义背景绘制。
 - [CSS Properties and Values API Level 1](https://www.w3.org/TR/css-properties-values-api-1/)：CSS Houdini Properties API，支持自定义属性类型化。
 
-### 12.2 进阶书籍
+### 11.2 进阶书籍
 
 - **CSS Secrets**（Lea Verou）：深入 CSS 实战技巧，包含大量背景系统应用。
 - **CSS: The Definitive Guide**（Eric Meyer）：CSS 权威指南，第 5 版涵盖现代 CSS。
 - **HTML & CSS: Design and Build Websites**（Jon Duckett）：入门级图文教程。
 - **CSS in Depth**（Keith J. Grant）：中级进阶，深入 CSS 内部机制。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - [MDN CSS Background](https://developer.mozilla.org/en-US/docs/Web/CSS/background)：Mozilla 官方文档。
 - [web.dev CSS Background](https://web.dev/articles/css-background)：Google 性能优化指南。
 - [CSS-Tricks Background](https://css-tricks.com/almanac/properties/b/background/)：实战技巧与示例。
 - [Can I Use](https://caniuse.com/?search=background-clip)：浏览器兼容性查询。
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - [Bootstrap](https://github.com/twbs/bootstrap)：学习其 `.bg-*` 工具类实现。
 - [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)：学习其原子化背景工具类设计。
 - [Primer CSS](https://github.com/primer/css)：GitHub 的设计系统实现。
 - [Material Web](https://github.com/material-components/material-web)：Material Design 3 Web 实现。
 
-### 12.5 社区与博客
+### 11.5 社区与博客
 
 - [CSS Working Group Blog](https://www.w3.org/blog/CSS/)：W3C CSS 工作组官方博客。
 - [Lea Verou's Blog](https://lea.verou.me/)：CSS 专家 Lea Verou 的博客。
 - [Chris Coyier's Blog](https://chriscoyier.net/)：CSS-Tricks 创始人博客。
 - [Una Kravets's Blog](https://una.im/)：CSS 工作组成员博客。
 
-### 12.6 视频资源
+### 11.6 视频资源
 
 - [CSS for People Who Hate CSS](https://www.youtube.com/watch?v=2Z3lya8gJDM)：Una Kravets 演讲。
 - [CSS Houdini](https://www.youtube.com/watch?v=IWDIrkDwHpU)：Houdini Paint API 实战。
 - [Modern CSS](https://www.youtube.com/playlist?list=PLo3w8EB99pqJQDw-LjJgwIepCi3mI3HNk)：现代 CSS 技术系列。
 
-### 12.7 工具与实验
+### 11.7 工具与实验
 
 - [CSS Backgrounds Visualizer](https://codepen.io/pen/?prefill=data)：在线可视化调试工具。
 - [Gradient Generator](https://cssgradient.io/)：渐变生成器。

@@ -15,28 +15,16 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # 字符串处理
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-| Bloom 层级 | 目标描述 |
-| :--- | :--- |
-| **Remember（记忆）** | 列举 C++ 中的 4 种主要字符串类型（`const char*`、`std::string`、`std::string_view`、`std::u8string`），复述 SSO 与 COW 的含义 |
-| **Understand（理解）** | 解释 `std::string` 的内部存储模型（SSO 阈值、堆分配策略），说明 `std::string_view` 的生命周期约束与悬空风险 |
-| **Apply（应用）** | 使用 `std::format`、`std::regex`、`std::from_chars`/`std::to_chars` 实现高效字符串处理，正确选择字符串类型以避免拷贝 |
-| **Analyze（分析）** | 分析给定代码片段中的字符串性能瓶颈（频繁分配、编码错误、视图悬空），识别 UB 与可移植性问题 |
-| **Evaluate（评价）** | 评估 `std::string` vs `std::string_view` vs `const char*` 在 API 设计、性能、安全性上的取舍，权衡 `std::format` vs `printf` vs `fmt` 库 |
-| **Create（创造）** | 设计零拷贝字符串处理库，实现自定义字符串视图、UTF-8 迭代器、高性能日志格式化器 |
-
-## 2. 历史动机与发展脉络
-
-### 2.1 C 字符串的痛点（1970s-1985）
+### 1.1 C 字符串的痛点（1970s-1985）
 
 C 语言以 `\0` 结尾的字符数组（null-terminated string）作为字符串表示，存在诸多痛点：
 
@@ -72,7 +60,7 @@ int main() {
 - **OpenSSL Heartbleed（2014）**：边界检查缺失导致内存泄露。
 - **Linux `sudo` CVE-2021-3156**：堆溢出提权漏洞。
 
-### 2.2 std::string 的演进（C++98 至 C++26）
+### 1.2 std::string 的演进（C++98 至 C++26）
 
 | 标准 | 发布年 | 关键特性 | 提案 |
 | :--- | :--- | :--- | :--- |
@@ -85,7 +73,7 @@ int main() {
 | **C++23** | 2023 | `contains`；`std::print`/`std::println`；`std::format_string`；`std::basic_format_string` | P1679, P2093, P2418 |
 | **C++26** | 草案 | `std::text_encoding`；`std::encoding_error`；改进的 Unicode 支持 | P0244, P1885 |
 
-### 2.3 关键提案与文献
+### 1.3 关键提案与文献
 
 - **N2668 (Becker, 2008)**：*A Proposal to Add String Concatenation to the Standard Library*，奠定现代 `std::string` 行为。
 - **P0220 (Maurer, 2016)**：*string_view: a non-owning reference to a string*，引入 `std::string_view`。
@@ -95,7 +83,7 @@ int main() {
 - **P2093 (Zverev, 2021)**：*Formatted Output*，引入 `std::print`。
 - **P1885 (Malaus, 2022)**：*Text Encoding Identification*，引入 `std::text_encoding`。
 
-### 2.4 与其他语言字符串的横向对比
+### 1.4 与其他语言字符串的横向对比
 
 | 特性 | C++ `std::string` | Rust `String`/`&str` | Python `str` | Java `String` | Go `string` |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -108,9 +96,9 @@ int main() {
 | 内存管理 | RAII | RAII | GC | GC | GC |
 | 0 开销 | 接近 | 是 | 否 | 否 | 部分 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 字符串的数学定义
+### 2.1 字符串的数学定义
 
 字符串是字符的有限序列。设 $\Sigma$ 为字符集（alphabet），则字符串 $s$ 定义为：
 
@@ -134,7 +122,7 @@ $$
 
 满足 $|\text{concat}(s, t)| = |s| + |t|$。
 
-### 3.2 C++ 中的字符串类型
+### 2.2 C++ 中的字符串类型
 
 C++ 提供多种字符串类型，按所有权与编码分类：
 
@@ -153,7 +141,7 @@ $$
 | `std::u32string` | 拥有 | `char32_t` | UTF-32 | C++11 |
 | `std::wstring` | 拥有 | `wchar_t` | 平台定义（Windows UTF-16，Linux UTF-32） | C++98 |
 
-### 3.3 std::string 的形式化模型
+### 2.3 std::string 的形式化模型
 
 `std::string` 可形式化为三元组：
 
@@ -169,7 +157,7 @@ $$
 
 且 $\text{data}[\text{size}] = '\0'$（C++11 起，保证 null 终止）。
 
-### 3.4 SSO 阈值
+### 2.4 SSO 阈值
 
 SSO（Small String Optimization）将短字符串直接存储在 `std::string` 对象内部，避免堆分配。形式化：
 
@@ -190,7 +178,7 @@ $$
 | MSVC STL | 32 字节 | 15 字节 |
 |fmt::format_string | 1 字节 | N/A |
 
-### 3.5 string_view 的视图语义
+### 2.5 string_view 的视图语义
 
 `std::string_view` 是非拥有引用，形式化为：
 
@@ -212,7 +200,7 @@ $$
 
 违反此约束导致悬空引用（dangling view），是 UB。
 
-### 3.6 字符串搜索的形式化
+### 2.6 字符串搜索的形式化
 
 字符串搜索问题：给定文本 $T$（长度 $n$）与模式 $P$（长度 $m$），找出所有出现位置：
 
@@ -232,9 +220,9 @@ $$
 | Rabin-Karp | $O(m)$ | $O(n+m)$ 平均，$O(nm)$ 最坏 | $O(1)$ |
 | Aho-Corasick | $O(\sum |P_i|)$ | $O(n + \text{matches})$ | $O(\sum |P_i|)$ |
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 SSO 的内存布局
+### 3.1 SSO 的内存布局
 
 libstdc++ `std::string`（GCC 11+，非 COW 版本）的 32 字节布局：
 
@@ -258,7 +246,7 @@ class sso_string {
 };
 ```
 
-### 4.2 COW 与多线程的冲突
+### 3.2 COW 与多线程的冲突
 
 C++03 时代，许多 `std::string` 实现使用 COW（Copy-On-Write）：
 
@@ -276,7 +264,7 @@ C++11 起禁止 COW，原因：
 
 现代实现（libstdc++ 5+，libc++）均使用 SSO + 堆分配的非 COW 实现。
 
-### 4.3 std::string_view 的设计原理
+### 3.3 std::string_view 的设计原理
 
 `std::string_view` 设计动机：
 
@@ -311,7 +299,7 @@ void f_sv(std::string_view sv);       // 调用 f_sv("literal") 仅设置指针+
 // f_sv:  45 ms（直接构造视图）
 ```
 
-### 4.4 std::format 的设计原理
+### 3.4 std::format 的设计原理
 
 C++20 `std::format` 基于 Python `str.format` 与 fmt 库设计，目标：
 
@@ -334,7 +322,7 @@ std::string format(std::format_string<Args...> fmt, Args&&... args) {
 
 `std::format_string<Args...>` 是 `consteval` 构造，编译期验证格式串与参数类型匹配。
 
-### 4.5 from_chars/to_chars 的设计原理
+### 3.5 from_chars/to_chars 的设计原理
 
 C++17 `std::from_chars`/`std::to_chars` 是最低层、最高性能的数值与字符串转换函数，设计目标：
 
@@ -365,9 +353,9 @@ assert(d == d2);  // 保证往返
 | `std::to_chars(buf, end, d)` | 95 ms | 最优 |
 | fmt::format_to(buf, "{}", d) | 110 ms | 第三方，接近最优 |
 
-### 4.6 字符编码原理
+### 3.6 字符编码原理
 
-#### 4.6.1 Unicode 与编码方案
+#### 3.6.1 Unicode 与编码方案
 
 Unicode 是字符集（codepoint 0x0 至 0x10FFFF），编码方案：
 
@@ -389,7 +377,7 @@ $$
 \end{cases}
 $$
 
-#### 4.6.2 C++ 中的编码类型
+#### 3.6.2 C++ 中的编码类型
 
 ```cpp
 // C++20 起，char8_t 是独立类型
@@ -401,7 +389,7 @@ const char32_t* utf32 = U"你好";         // UTF-32
 const wchar_t* wide = L"你好";           // 平台定义
 ```
 
-#### 4.6.3 编码转换
+#### 3.6.3 编码转换
 
 ```cpp
 // C++17 codecvt 已弃用，推荐使用 ICU 或手动实现
@@ -416,7 +404,7 @@ std::string u8 = converter.to_bytes(u16);            // UTF-16 → UTF-8
 // 推荐方案：使用 ICU 库或第三方库（如 boost::locale、utfcpp）
 ```
 
-### 4.7 正则表达式引擎
+### 3.7 正则表达式引擎
 
 C++ `<regex>` 提供 NFA（Nondeterministic Finite Automaton）引擎：
 
@@ -454,9 +442,9 @@ C++ 正则语法：
 
 性能注意：`std::regex` 性能较差（比 RE2、Boost.Regex 慢 5-10 倍），生产环境推荐第三方库（Boost.Regex、RE2、PCRE2、CTRE）。
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 std::string 基础操作
+### 4.1 std::string 基础操作
 
 ```cpp
 // file: string_basics.cpp
@@ -534,7 +522,7 @@ int main() {
 }
 ```
 
-### 5.2 std::string_view 零拷贝传参
+### 4.2 std::string_view 零拷贝传参
 
 ```cpp
 // file: string_view_usage.cpp
@@ -603,7 +591,7 @@ int main() {
 }
 ```
 
-### 5.3 std::format 格式化（C++20）
+### 4.3 std::format 格式化（C++20）
 
 ```cpp
 // file: format_usage.cpp
@@ -681,7 +669,7 @@ void custom_formatter_demo() {
 }
 ```
 
-### 5.4 std::print 与 std::println（C++23）
+### 4.4 std::print 与 std::println（C++23）
 
 ```cpp
 // file: print_usage.cpp
@@ -710,7 +698,7 @@ int main() {
 }
 ```
 
-### 5.5 高性能数值与字符串转换
+### 4.5 高性能数值与字符串转换
 
 ```cpp
 // file: charconv_usage.cpp
@@ -791,7 +779,7 @@ int main() {
 }
 ```
 
-### 5.6 字符串搜索与替换
+### 4.6 字符串搜索与替换
 
 ```cpp
 // file: search_replace.cpp
@@ -910,7 +898,7 @@ int main() {
 }
 ```
 
-### 5.7 正则表达式实战
+### 4.7 正则表达式实战
 
 ```cpp
 // file: regex_usage.cpp
@@ -971,7 +959,7 @@ int main() {
 // 优势：编译期编译正则，运行期零解析开销，比 std::regex 快 10-100 倍
 ```
 
-### 5.8 UTF-8 字符串处理
+### 4.8 UTF-8 字符串处理
 
 ```cpp
 // file: utf8_usage.cpp
@@ -1089,7 +1077,7 @@ int main() {
 }
 ```
 
-### 5.9 高性能字符串拼接
+### 4.9 高性能字符串拼接
 
 ```cpp
 // file: fast_concat.cpp
@@ -1167,7 +1155,7 @@ int main() {
 }
 ```
 
-### 5.10 日志格式化器实现
+### 4.10 日志格式化器实现
 
 ```cpp
 // file: logger.cpp
@@ -1259,7 +1247,7 @@ int main() {
 }
 ```
 
-### 5.11 配置文件解析器
+### 4.11 配置文件解析器
 
 ```cpp
 // file: config_parser.cpp
@@ -1365,7 +1353,7 @@ int main() {
 }
 ```
 
-### 5.12 字符串搜索算法实现
+### 4.12 字符串搜索算法实现
 
 ```cpp
 // file: search_algorithms.cpp
@@ -1496,9 +1484,9 @@ int main() {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 字符串类型选型矩阵
+### 5.1 字符串类型选型矩阵
 
 | 场景 | 推荐类型 | 理由 |
 | :--- | :--- | :--- |
@@ -1514,7 +1502,7 @@ int main() {
 | 大文本处理 | `std::string` + `reserve` | 避免多次分配 |
 | 字符串字面量 | `const char*` 或 `std::string_view` | 静态存储 |
 
-### 6.2 格式化方案对比
+### 5.2 格式化方案对比
 
 | 方案 | 类型安全 | 性能 | 可读性 | 标准 | 扩展性 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -1525,7 +1513,7 @@ int main() {
 | `fmt::format` | 是 | 最高 | 高 | 第三方 | 强 |
 | `boost::format` | 是 | 低 | 中 | 第三方 | 中 |
 
-### 6.3 性能基准对比
+### 5.3 性能基准对比
 
 GCC 13，-O2，10^7 次操作：
 
@@ -1547,9 +1535,9 @@ GCC 13，-O2，10^7 次操作：
 | `std::format`（int） | 18 ns | 接近最优 |
 | `sprintf`（int） | 55 ns | 慢 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 std::string_view 悬空引用
+### 6.1 std::string_view 悬空引用
 
 ```cpp
 // 反模式：返回临时对象的视图
@@ -1570,7 +1558,7 @@ std::string text = "hello world";
 auto v = get_first_word(text);  // OK，text 生命周期足够长
 ```
 
-### 7.2 string_view 与 null 终止
+### 6.2 string_view 与 null 终止
 
 ```cpp
 // 反模式：将 string_view 传给需要 null 终止的 C 函数
@@ -1586,7 +1574,7 @@ std::string_view sv2 = "hello";  // 字面量，null 终止
 printf("%s", sv2.data());  // OK（但需手动确认 null 终止）
 ```
 
-### 7.3 频繁字符串拼接
+### 6.3 频繁字符串拼接
 
 ```cpp
 // 反模式：循环中 += 导致多次重分配
@@ -1609,7 +1597,7 @@ for (int i = 0; i < 1000; ++i) oss << i << ", ";
 std::string result = oss.str();
 ```
 
-### 7.4 编码混淆
+### 6.4 编码混淆
 
 ```cpp
 // 反模式：在 UTF-8 字符串上用 size() 计算字符数
@@ -1628,7 +1616,7 @@ for (auto ch : utf8_range{utf8}) {
 }
 ```
 
-### 7.5 std::regex 性能陷阱
+### 6.5 std::regex 性能陷阱
 
 ```cpp
 // 反模式：在循环中构造 regex
@@ -1650,7 +1638,7 @@ for (const auto& line : lines) {
 // }
 ```
 
-### 7.6 to_string 的精度问题
+### 6.6 to_string 的精度问题
 
 ```cpp
 // 反模式：to_string 浮点数精度不足
@@ -1666,7 +1654,7 @@ std::string s2 = std::format("{}", pi);       // "3.141592653589793"
 std::string s3 = std::format("{:.2f}", pi);   // "3.14"
 ```
 
-### 7.7 其他陷阱
+### 6.7 其他陷阱
 
 - **`std::string::c_str()` 失效**：修改或销毁 string 后，c_str() 指针失效。
 - **`std::string_view` 与 `const char*` 隐式转换**：`string_view` 不能隐式转 `const char*`，需显式 `sv.data()`（且需保证 null 终止）。
@@ -1674,9 +1662,9 @@ std::string s3 = std::format("{:.2f}", pi);   // "3.14"
 - **`std::string` 与 `nullptr`**：`std::string(nullptr)` 是 UB（C++23 起明确）。
 - **编码假设**：`std::string` 不感知编码，按字节处理，需手动保证 UTF-8 一致性。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 API 设计原则
+### 7.1 API 设计原则
 
 ```cpp
 // 现代 C++ 字符串 API 设计
@@ -1702,7 +1690,7 @@ void append_to(std::string& out);
 std::u8string get_utf8() const;
 ```
 
-### 8.2 性能优化清单
+### 7.2 性能优化清单
 
 1. **使用 `string_view` 传参**：避免临时 string 构造。
 2. **`reserve()` 预分配**：已知大小时避免多次重分配。
@@ -1715,7 +1703,7 @@ std::u8string get_utf8() const;
 9. **批量操作**：`append(string_view)` 优于循环 `push_back`。
 10. **缓存 SSO 状态**：避免对短字符串的 `reserve`（无意义）。
 
-### 8.3 字符串与多线程
+### 7.3 字符串与多线程
 
 ```cpp
 // std::string 本身线程安全（不同实例可并发操作）
@@ -1740,7 +1728,7 @@ std::string read() {
 // 视图本身不拥有数据，多线程访问需保证底层 string 生命周期
 ```
 
-### 8.4 内存优化
+### 7.4 内存优化
 
 ```cpp
 // 大量小字符串：考虑使用自定义分配器或 arena
@@ -1761,7 +1749,7 @@ public:
 };
 ```
 
-### 8.5 国际化与本地化
+### 7.5 国际化与本地化
 
 ```cpp
 // C++20 之前的 iostream locale
@@ -1782,9 +1770,9 @@ std::cout << std::format("{:n}", 1234567.89);  // 本地化格式
 // icu::UnicodeString ustr = icu::UnicodeString::fromUTF8("你好");
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：HTTP URL 解析器
+### 8.1 案例一：HTTP URL 解析器
 
 ```cpp
 // file: url_parser.cpp
@@ -1933,7 +1921,7 @@ int main() {
 }
 ```
 
-### 9.2 案例二：JSON 字符串解析器
+### 8.2 案例二：JSON 字符串解析器
 
 ```cpp
 // file: json_parser.cpp
@@ -2144,7 +2132,7 @@ int main() {
 }
 ```
 
-### 9.3 案例三：CSV 解析器
+### 8.3 案例三：CSV 解析器
 
 ```cpp
 // file: csv_parser.cpp
@@ -2250,7 +2238,7 @@ int main() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 1. **选择题**：下列关于 `std::string_view` 的描述，错误的是？
    - A. `sizeof(std::string_view)` 通常是 16 字节
@@ -2268,7 +2256,7 @@ int main() {
 
 4. **编程题**：实现一个函数 `bool is_palindrome(std::string_view sv)`，判断字符串是否为回文（忽略大小写与非字母字符）。
 
-### 10.2 中级题
+### 9.2 中级题
 
 5. **分析题**：分析以下代码的性能问题并提出优化方案：
    ```cpp
@@ -2291,7 +2279,7 @@ int main() {
 
 8. **分析题**：解释为什么 C++11 起禁止 `std::string` 的 COW 实现，并说明 COW 在多线程场景下的具体问题。
 
-### 10.3 高级题
+### 9.3 高级题
 
 9. **编程题**：实现一个 UTF-8 字符串类 `Utf8String`，提供：
    - `size()` 返回字符数（非字节数）
@@ -2309,7 +2297,7 @@ int main() {
 
 12. **分析题**：分析 `std::regex` 与 CTRE（编译期正则）的性能差异原因，并讨论在什么场景下应选择哪种方案。
 
-### 10.4 开放题
+### 9.4 开放题
 
 13. **思考题**：C++ 标准库为何不内置强大的字符串处理功能（如 Python 的 `str.split`、`str.replace`）？这是设计哲学还是历史包袱？
 
@@ -2321,16 +2309,16 @@ int main() {
     - 可互转（显式转换）
     - 与标准库兼容
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准文档
+### 10.1 标准文档
 
 - **ISO/IEC 14882:2023** — *Information technology — Programming languages — C++*，第 6 章 Strings，第 22 章 String views libraries，第 20.20 章 Format library。
 - **ISO/IEC 10646:2020** — *Information technology — Universal Coded Character Set (UCS)*，Unicode 字符集标准。
 - **RFC 3629** — *UTF-8, a transformation format of ISO 10646*，UTF-8 编码规范。
 - **RFC 3986** — *Uniform Resource Identifier (URI): Generic Syntax*，URL 编码规范。
 
-### 11.2 提案文档
+### 10.2 提案文档
 
 - **P0220R1** — *A Proposal to Add string_view to the Standard Library*.
 - **P0067R5** — *Elementary string conversions*.
@@ -2340,7 +2328,7 @@ int main() {
 - **P1885R12** — *Text Encoding Identification*.
 - **P1679R3** — *contains() for string/string_view*.
 
-### 11.3 教材与书籍
+### 10.3 教材与书籍
 
 - **Stroustrup, B.** (2013). *The C++ Programming Language* (4th ed.). Addison-Wesley. 第 36 章 Strings。
 - **Meyers, S.** (2005). *Effective STL*. Addison-Wesley. 第 13/15/16 条款。
@@ -2349,7 +2337,7 @@ int main() {
 - **Nicol, B.** (2020). *Professional CMake: A Practical Guide*.
 - **Zverev, V.** (2021). *fmt Library Documentation*. https://fmt.dev
 
-### 11.4 论文与文章
+### 10.4 论文与文章
 
 - **Boyer, R. S., & Moore, J. S.** (1977). *A Fast String Searching Algorithm*. Communications of the ACM, 20(10).
 - **Knuth, D. E., Morris, J. H., & Pratt, V. R.** (1977). *Fast Pattern Matching in Strings*. SIAM Journal on Computing, 6(2).
@@ -2357,7 +2345,7 @@ int main() {
 - **Davis, T.** (2002). *Unicode and Software Internationalization*. https://unicode.org
 - **Malaus, J.** (2018). *The strange details of std::format*. https://www.zverovich.net/
 
-### 11.5 在线资源
+### 10.5 在线资源
 
 - **cppreference.com** — *Strings library*. https://en.cppreference.com/w/cpp/string
 - **cppreference.com** — *String views library*. https://en.cppreference.com/w/cpp/string_view
@@ -2367,16 +2355,16 @@ int main() {
 - **CTRE GitHub** — https://github.com/hanickadot/compile-time-regular-expressions
 - **ICU Project** — https://icu.unicode.org/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍推荐
+### 11.1 书籍推荐
 
 - **Sutter, H.** (1999). *Exceptional C++*. Addison-Wesley. 第 1-4 条款字符串与异常安全。
 - **Alexandrescu, A.** (2001). *Modern C++ Design*. Addison-Wesley. 第 4 章基于策略的字符串设计。
 - **Wilson, M.** (2004). *Imperfect C++*. Addison-Wesley. 第 12 章字符串优化。
 - **Meyers, S.** (2001). *Effective STL*. Addison-Wesley. 字符串相关条款。
 
-### 12.2 视频与课程
+### 11.2 视频与课程
 
 - **CppCon 2018: Victor Zverev, "std::format: What it is and why you should use it"** — `std::format` 作者讲解设计动机。
 - **CppCon 2019: Marshall Clow, "string_view: The past, present, and future"** — `string_view` 演进与陷阱。
@@ -2384,7 +2372,7 @@ int main() {
 - **MIT 6.172: Performance Engineering of Software Systems** — 字符串处理性能优化案例。
 - **Stanford CS106L: Standard C++ Programming** — 字符串与 STL 实战。
 
-### 12.3 开源实现参考
+### 11.3 开源实现参考
 
 - **fmt** — 高性能格式化库，`std::format` 的原型。https://github.com/fmtlib/fmt
 - **CTRE** — 编译期正则表达式库。https://github.com/hanickadot/compile-time-regular-expressions
@@ -2395,7 +2383,7 @@ int main() {
 - **boost::string_ref / boost::string_view** — `std::string_view` 的前身。
 - **boost::spirit** — 基于 EDSL 的字符串解析框架。
 
-### 12.4 相关主题
+### 11.4 相关主题
 
 - **C++ 标准**：C++20 `std::format`、C++23 `std::print`、C++26 `std::text_encoding`
 - **字符编码**：Unicode、UTF-8/16/32、Big5、GBK、Shift-JIS、Latin-1
@@ -2405,7 +2393,7 @@ int main() {
 - **安全**：缓冲区溢出、注入攻击、编码混淆、Unicode 同形攻击
 - **性能**：SIMD 字符串搜索、Hyperscan、Ragel、boost::xpressive
 
-### 12.5 实践建议
+### 11.5 实践建议
 
 1. **优先使用 `std::string_view`** 作为只读字符串参数，减少拷贝。
 2. **优先使用 `std::format`** 替代 `sprintf` 和 `iostream`，类型安全且高性能。

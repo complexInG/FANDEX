@@ -16,63 +16,18 @@ prerequisites:
   - cpp/概述与现代标准
 ---
 
+
 # C++ 游戏开发
 
 > 本文档系统讲解 C++ 在游戏开发中的应用，覆盖游戏循环架构、实体-组件-系统 (ECS) 模式、内存管理、缓存友好设计、SIMD 优化、数据导向设计 (DOD)、主流引擎剖析与工程实践。内容遵循 ISO/IEC 14882:2023，参考 Unreal Engine、Unity、Godot 等主流引擎的实现，目标达到海外高校教学水准。
 
 ---
 
-## 1. 学习目标
-
-本节使用 Bloom 分类法刻画学习者应达到的认知层级。
-
-### 1.1 记忆（Remember）
-
-- 列举游戏循环 (game loop) 的三个核心阶段：输入处理 (input)、状态更新 (update)、渲染 (render)。
-- 复述 ECS 三要素的定义：实体 (Entity)、组件 (Component)、系统 (System)。
-- 背诵主流游戏引擎的名称：Unreal Engine、Unity、Godot、CryEngine、Source 2、Phaser。
-- 列举 C++ 在游戏开发中的核心优势：性能、内存控制、跨平台、低延迟。
-
-### 1.2 理解（Understand）
-
-- 解释游戏循环与渲染循环 (render loop) 的区别：前者驱动逻辑更新，后者驱动画面绘制，二者通过垂直同步 (V-Sync) 协调。
-- 阐述 ECS 相对传统 OOP 继承体系的优势：组合优于继承、缓存友好、并行友好。
-- 描述 CPU 缓存层级（L1/L2/L3）对游戏性能的影响，以及缓存未命中 (cache miss) 的代价。
-- 区分数据导向设计 (DOD) 与面向对象设计 (OOP) 的核心差异：前者以数据布局为中心，后者以行为抽象为中心。
-
-### 1.3 应用（Apply）
-
-- 使用 C++17 实现一个固定时间步长 (fixed-timestep) 的游戏循环，支持可变渲染帧率。
-- 实现一个基本的 ECS 框架，包含实体管理、组件存储、系统调度。
-- 使用 `std::pmr` 或自定义分配器实现帧内 (per-frame) 内存分配器。
-- 使用 SIMD intrinsics (`<immintrin.h>`) 优化向量运算。
-
-### 1.4 分析（Analyze）
-
-- 对比 Unity 的 GameObject-Component 体系与 Unreal 的 Actor-Component 体系的设计差异。
-- 解构数据局部性 (data locality) 对游戏性能的影响，通过缓存命中率分析定位瓶颈。
-- 分析 ECS 中"原型 (archetype)"存储模型与"稀疏集合 (sparse set)"存储模型的取舍。
-- 评估 C++20 协程在游戏异步任务（资源加载、网络）中的适用性。
-
-### 1.5 评价（Evaluate）
-
-- 评估在 MMO、FPS、RTS、独立游戏四类项目中应采用何种引擎架构。
-- 判断特定游戏系统（物理、AI、渲染）是否应采用 ECS 或传统 OOP。
-- 评审一份游戏代码的内存分配模式，识别堆分配热点。
-
-### 1.6 创造（Create）
-
-- 设计并实现一个完整的 2D 游戏引擎，包含 ECS、渲染、物理、音频、输入子系统。
-- 构建一个基于 Job System 的多线程游戏任务调度器，支持依赖图。
-- 为自定义游戏引擎编写热重载 (hot reload) 系统，支持运行时替换脚本与资源。
-
----
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 C++ 游戏开发的演进反映了硬件性能、设计模式与工具链的持续博弈。
 
-### 2.1 早期：汇编与 C 主导（1970s - 1990s）
+### 1.1 早期：汇编与 C 主导（1970s - 1990s）
 
 早期游戏（如《太空侵略者》、《吃豆人》）使用汇编语言编写，针对特定硬件优化。1980 年代 C 语言普及，成为游戏开发主流：
 
@@ -82,7 +37,7 @@ C++ 游戏开发的演进反映了硬件性能、设计模式与工具链的持�
 
 C 语言的优势：性能接近汇编、跨平台、内存透明。但缺乏抽象机制，大型项目维护困难。
 
-### 2.2 C++ 的引入（1990s - 2000s）
+### 1.2 C++ 的引入（1990s - 2000s）
 
 1990 年代后期，C++ 开始进入游戏开发：
 
@@ -92,7 +47,7 @@ C 语言的优势：性能接近汇编、跨平台、内存透明。但缺乏抽
 
 C++ 的优势：OOP 抽象、模板泛型、STL 容器、RAII 资源管理。但早期 C++ 编译器性能差，运行时开销（异常、RTTI）让游戏开发者顾虑。
 
-### 2.3 OOP 继承体系的黄金期（2000s - 2010s）
+### 1.3 OOP 继承体系的黄金期（2000s - 2010s）
 
 2000 年代，游戏引擎普遍采用深继承体系：
 
@@ -124,7 +79,7 @@ flowchart TD
 3. **扩展困难**：新增功能需修改继承树，影响所有子类。
 4. **并行困难**：对象间隐式依赖，难以并行化。
 
-### 2.4 ECS 模式的兴起（2010s - 至今）
+### 1.4 ECS 模式的兴起（2010s - 至今）
 
 为解决 OOP 继承体系的问题，业界转向 ECS (Entity-Component-System) 模式：
 
@@ -146,7 +101,7 @@ ECS 的优势：
 - **并行友好**：系统间无共享状态，易于多线程。
 - **可扩展**：新增功能只需新增系统，不影响现有代码。
 
-### 2.5 数据导向设计 (DOD) 的普及（2010s - 至今）
+### 1.5 数据导向设计 (DOD) 的普及（2010s - 至今）
 
 数据导向设计 (Data-Oriented Design, DOD) 由 Mike Acton (Insomniac Games) 在 2014 年 CppCon 演讲中推广。其核心原则：
 
@@ -183,7 +138,7 @@ void UpdateEnemies(EnemyData& data, float dt) {
 }
 ```
 
-### 2.6 现代 C++ 在游戏中的应用
+### 1.6 现代 C++ 在游戏中的应用
 
 C++11/14/17/20 的新特性逐步被游戏开发采纳：
 
@@ -200,7 +155,7 @@ C++11/14/17/20 的新特性逐步被游戏开发采纳：
 - **STL**：部分引擎自实现容器（如 `TArray` in Unreal），因 STL 性能不达预期。
 - **`new`/`delete`**：游戏循环中禁用，改用自定义分配器。
 
-### 2.7 演进时间线
+### 1.7 演进时间线
 
 ```text
 1972  早期游戏（汇编）           Space Invaders
@@ -220,11 +175,11 @@ C++11/14/17/20 的新特性逐步被游戏开发采纳：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节给出游戏开发相关的形式化定义，涵盖标准引用、ECS 数学模型与缓存模型。
 
-### 3.1 ISO/IEC 14882 标准中的游戏相关条款
+### 2.1 ISO/IEC 14882 标准中的游戏相关条款
 
 C++ 标准未为游戏定义专门条款，但以下条款与游戏密切相关：
 
@@ -235,7 +190,7 @@ C++ 标准未为游戏定义专门条款，但以下条款与游戏密切相关�
 - **[simd]** SIMD：C++26 引入 `<simd>`，标准化向量运算。
 - **[time]** 时间：`std::chrono`，游戏循环计时基础。
 
-### 3.2 游戏循环的形式化模型
+### 2.2 游戏循环的形式化模型
 
 游戏循环可形式化为状态机：
 
@@ -268,7 +223,7 @@ $$
 \text{accumulator} += \Delta t_{\text{real}}, \quad \text{while}(\text{accumulator} \geq \Delta t_{\text{update}}) : \text{Update}(); \text{accumulator} -= \Delta t_{\text{update}}
 $$
 
-### 3.3 ECS 的形式化模型
+### 2.3 ECS 的形式化模型
 
 设组件类型集合 $\mathcal{C} = \{C_1, C_2, \ldots, C_n\}$，实体 $e$ 是组件集合的子集：
 
@@ -296,7 +251,7 @@ $$
 
 即对每个系统 $S$，查询所有包含 $Q_S$ 组件的实体，应用 $f_S$。
 
-### 3.4 缓存命中率模型
+### 2.4 缓存命中率模型
 
 CPU 缓存层级：
 
@@ -315,7 +270,7 @@ $$
 
 其中 $T_{\text{hit}}$ 是命中时间，$T_{\text{miss}}$ 是未命中时间。游戏代码需最大化 $H$。
 
-### 3.5 内存分配的形式化
+### 2.5 内存分配的形式化
 
 游戏内存分配器可形式化为函数：
 
@@ -335,7 +290,7 @@ $$
 4. **空闲列表 (Free List)**：$O(\log n)$ 分配/释放，任意大小。
 5. **伙伴分配器 (Buddy)**：$O(\log n)$ 分配/释放，2 的幂次大小。
 
-### 3.6 SIMD 数据并行模型
+### 2.6 SIMD 数据并行模型
 
 SIMD (Single Instruction Multiple Data) 允许一条指令处理多个数据。形式化地：
 
@@ -352,7 +307,7 @@ $$
 - **物理计算**：刚体动力学、碰撞检测。
 - **粒子系统**：批量粒子更新。
 
-### 3.7 多线程任务调度模型
+### 2.7 多线程任务调度模型
 
 游戏多线程任务调度可建模为有向无环图 (DAG)：
 
@@ -376,9 +331,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 游戏循环的时间步长分析
+### 3.1 游戏循环的时间步长分析
 
 游戏循环的核心挑战是平衡更新稳定性与渲染流畅性。三种主流模式：
 
@@ -427,7 +382,7 @@ $$
 
 误差阶 $O(\Delta t)$。$\Delta t$ 越小，误差越小但计算量越大。固定 $\Delta t = 1/60$ 在多数游戏中是性能与精度的平衡点。
 
-### 4.2 ECS 缓存性能分析
+### 3.2 ECS 缓存性能分析
 
 对比 OOP 与 ECS 的缓存性能。假设 10000 个敌人，每个敌人有 Position (12B) 与 Health (4B)。
 
@@ -468,7 +423,7 @@ std::vector<HealthComponent> healths(10000);
 
 性能差距：ECS 的位置遍历比 OOP 快 5-10 倍（实测）。
 
-### 4.3 内存分配器性能分析
+### 3.3 内存分配器性能分析
 
 游戏循环中频繁分配/释放内存导致碎片化与性能下降。对比三种分配器：
 
@@ -532,7 +487,7 @@ public:
 | 池         | 10-20            | 10-20            | 无   | 可实现 |
 | 空闲列表   | 50-100           | 50-100           | 是   | 锁竞争 |
 
-### 4.4 SIMD 向量运算优化
+### 3.4 SIMD 向量运算优化
 
 4D 向量加法的标量与 SIMD 对比：
 
@@ -587,7 +542,7 @@ __m256 add_avx(__m256 a, __m256 b) {
 
 1 条指令处理 8 个 float，性能再翻倍。
 
-### 4.5 多线程 Job System 分析
+### 3.5 多线程 Job System 分析
 
 游戏多线程的挑战：任务依赖、负载均衡、数据竞争。Job System 的核心数据结构：
 
@@ -630,7 +585,7 @@ public:
 - 本地取任务：$O(1)$。
 - 窃取任务：$O(1)$（平均），最坏 $O(n)$。
 
-### 4.6 物理引擎的数值积分
+### 3.6 物理引擎的数值积分
 
 刚体物理的数值积分方法：
 
@@ -680,7 +635,7 @@ $$
 
 游戏物理引擎（如 Bullet、PhysX）多采用半隐式欧拉，兼顾性能与稳定性。
 
-### 4.7 资源管理的智能指针分析
+### 3.7 资源管理的智能指针分析
 
 游戏资源（纹理、网格、音频）的生命周期管理。对比三种方案：
 
@@ -727,9 +682,9 @@ public:
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 固定时间步长游戏循环
+### 4.1 固定时间步长游戏循环
 
 **标准**：C++17
 
@@ -806,7 +761,7 @@ int main() {
 }
 ```
 
-### 5.2 ECS 框架实现
+### 4.2 ECS 框架实现
 
 **标准**：C++17
 
@@ -970,7 +925,7 @@ public:
 }  // namespace ecs
 ```
 
-### 5.3 使用 ECS 的示例
+### 4.3 使用 ECS 的示例
 
 ```cpp
 // main.cpp
@@ -1026,7 +981,7 @@ int main() {
 }
 ```
 
-### 5.4 线性分配器实现
+### 4.4 线性分配器实现
 
 **标准**：C++17
 
@@ -1137,7 +1092,7 @@ int main() {
 }
 ```
 
-### 5.5 池分配器实现
+### 4.5 池分配器实现
 
 **标准**：C++17
 
@@ -1200,7 +1155,7 @@ private:
 };
 ```
 
-### 5.6 SIMD 向量运算
+### 4.6 SIMD 向量运算
 
 **标准**：C++17，需要 SSE/AVX 支持
 
@@ -1272,7 +1227,7 @@ inline Vector4 normalize(Vector4 a) {
 }
 ```
 
-### 5.7 简单 Job System
+### 4.7 简单 Job System
 
 **标准**：C++17
 
@@ -1354,7 +1309,7 @@ private:
 };
 ```
 
-### 5.8 完整 2D 游戏骨架
+### 4.8 完整 2D 游戏骨架
 
 **标准**：C++17
 
@@ -1476,9 +1431,9 @@ int main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 游戏引擎对比
+### 5.1 游戏引擎对比
 
 | 引擎           | 语言            | 架构          | ECS 支持       | 开源 | 授权            |
 | -------------- | --------------- | ------------- | -------------- | ---- | --------------- |
@@ -1491,7 +1446,7 @@ int main() {
 | Flecs          | C               | ECS           | 原生           | 是   | MIT             |
 | EnTT           | C++             | ECS (header)  | 原生           | 是   | MIT             |
 
-### 6.2 ECS 存储模型对比
+### 5.2 ECS 存储模型对比
 
 | 存储模型          | 描述                                | 优势                          | 劣势                          |
 | ----------------- | ----------------------------------- | ----------------------------- | ----------------------------- |
@@ -1501,7 +1456,7 @@ int main() {
 
 Unity DOTS、Unreal Mass、Flecs、Bevy 均采用 Archetype 模型。
 
-### 6.3 内存分配器对比
+### 5.3 内存分配器对比
 
 | 分配器       | 分配复杂度 | 释放复杂度 | 碎片 | 适用场景            |
 | ------------ | ---------- | ---------- | ---- | ------------------- |
@@ -1512,7 +1467,7 @@ Unity DOTS、Unreal Mass、Flecs、Bevy 均采用 Archetype 模型。
 | 空闲列表     | $O(\log n)$ | $O(\log n)$ | 是   | 任意大小            |
 | 伙伴         | $O(\log n)$ | $O(\log n)$ | 是   | 2 的幂次大小        |
 
-### 6.4 物理 vs 渲染循环频率
+### 5.4 物理 vs 渲染循环频率
 
 | 系统     | 典型频率       | 原因                                    |
 | -------- | -------------- | --------------------------------------- |
@@ -1523,7 +1478,7 @@ Unity DOTS、Unreal Mass、Flecs、Bevy 均采用 Archetype 模型。
 | 网络     | 20-60 Hz       | 带宽与延迟平衡                          |
 | 动画     | 30-60 Hz       | 与渲染同步                              |
 
-### 6.5 C++ vs Rust vs C# 游戏开发
+### 5.5 C++ vs Rust vs C# 游戏开发
 
 | 维度       | C++              | Rust             | C#               |
 | ---------- | ---------------- | ---------------- | ---------------- |
@@ -1537,9 +1492,9 @@ Unity DOTS、Unreal Mass、Flecs、Bevy 均采用 Archetype 模型。
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 十大常见陷阱
+### 6.1 十大常见陷阱
 
 #### 陷阱 1：游戏循环中使用可变时间步长
 
@@ -1667,7 +1622,7 @@ void load_level() {
 
 正例：异步加载（线程池、协程）。
 
-### 7.2 最佳实践清单
+### 6.2 最佳实践清单
 
 1. **使用固定时间步长**：物理稳定，可重现。
 2. **使用 ECS 架构**：缓存友好，可扩展。
@@ -1687,9 +1642,9 @@ void load_level() {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构
+### 7.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -1742,7 +1697,7 @@ flowchart TD
     T39 --> T40
 ```
 
-### 8.2 CMake 配置
+### 7.2 CMake 配置
 
 ```cmake
 cmake_minimum_required(VERSION 3.20)
@@ -1786,7 +1741,7 @@ find_package(SDL2 REQUIRED)
 target_link_libraries(my_game PRIVATE SDL2::SDL2 SDL2::SDL2main)
 ```
 
-### 8.3 性能分析工具
+### 7.3 性能分析工具
 
 游戏性能分析的核心工具：
 
@@ -1823,7 +1778,7 @@ void update(float dt) {
 }
 ```
 
-### 8.4 跨平台开发
+### 7.4 跨平台开发
 
 ```cpp
 // platform.h
@@ -1852,7 +1807,7 @@ namespace platform {
 }
 ```
 
-### 8.5 资源热重载
+### 7.5 资源热重载
 
 ```cpp
 // hot_reload.h
@@ -1901,9 +1856,9 @@ private:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Unreal Engine 5
+### 8.1 案例一：Unreal Engine 5
 
 Unreal Engine 5 (UE5) 是 Epic Games 的旗舰引擎，代码量超过 1000 万行 C++。其架构特点：
 
@@ -1922,7 +1877,7 @@ UE5 的 C++ 规范特点：
 - 容器：`TArray`、`TMap`、`TSet`（非 STL）。
 - 字符串：`FString`、`FName`、`FText`。
 
-### 9.2 案例二：Unity DOTS
+### 8.2 案例二：Unity DOTS
 
 Unity DOTS (Data-Oriented Technology Stack) 是 Unity 的 ECS 重构：
 
@@ -1933,7 +1888,7 @@ Unity DOTS (Data-Oriented Technology Stack) 是 Unity 的 ECS 重构：
 
 DOTS 的性能：相比传统 MonoBehaviour，DOTS 在大量实体（10万+）场景下快 10-100 倍。
 
-### 9.3 案例三：Bevy (Rust)
+### 8.3 案例三：Bevy (Rust)
 
 Bevy 是 Rust 编写的 ECS 游戏引擎，特点：
 
@@ -1944,7 +1899,7 @@ Bevy 是 Rust 编写的 ECS 游戏引擎，特点：
 
 Bevy 的启示：现代语言（Rust）在游戏开发中的潜力，但生态仍不及 C++。
 
-### 9.4 案例四：id Software (Doom Eternal)
+### 8.4 案例四：id Software (Doom Eternal)
 
 Doom Eternal 的引擎 (id Tech 7) 特点：
 
@@ -1954,7 +1909,7 @@ Doom Eternal 的引擎 (id Tech 7) 特点：
 4. **动态分辨率**：保持 60 FPS。
 5. **流式加载**：无加载画面。
 
-### 9.5 案例五：Minecraft (Bedrock)
+### 8.5 案例五：Minecraft (Bedrock)
 
 Minecraft Bedrock 版使用 C++ 重写，特点：
 
@@ -1963,7 +1918,7 @@ Minecraft Bedrock 版使用 C++ 重写，特点：
 3. **ECS 架构**：实体系统。
 4. **网络同步**：客户端-服务器架构。
 
-### 9.6 案例六：独立游戏 (Hollow Knight)
+### 8.6 案例六：独立游戏 (Hollow Knight)
 
 Hollow Knight 使用 Unity (C#)，但其设计哲学值得 C++ 开发者借鉴：
 
@@ -2305,7 +2260,7 @@ void example() {
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么游戏开发中常禁用 C++ 异常？
 
@@ -2452,9 +2407,9 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准与规范
+### 10.1 标准与规范
 
 1. ISO/IEC. *ISO/IEC 14882:2023 Information technology — Programming languages — C++*. International Organization for Standardization, 2023.
 
@@ -2462,7 +2417,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 
 3. Khronos Group. *OpenGL 4.6 Specification*. Khronos Group, 2017. Available: https://www.khronos.org/opengl/
 
-### 11.2 书籍
+### 10.2 书籍
 
 4. Gregory, J. *Game Engine Architecture*. 3rd ed., CRC Press, 2018. ISBN: 978-1138035454.
 
@@ -2474,7 +2429,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 
 8. Acton, M. *Data-Oriented Design and C++*. CppCon, 2014.
 
-### 11.3 学术论文
+### 10.3 学术论文
 
 9. Doerr, B. "Efficient Entity-Component-System Architectures for Game Development." *Proceedings of the 2018 ACM SIGGRAPH Symposium on Interactive 3D Graphics and Games*, 2018, pp. 1-10. DOI: 10.1145/3190834.3190836.
 
@@ -2482,7 +2437,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 
 11. Cozzi, P. and Ring, K. "3D Engine Design for Virtual Globes." *Book*. A K Peters/CRC Press, 2011. DOI: 10.1201/b10915.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 12. Unreal Engine Documentation. Epic Games, 2024. Available: https://docs.unrealengine.com/
 
@@ -2494,7 +2449,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 
 16. EnTT (ECS library). Michele Caini, 2024. Available: https://github.com/skypjack/entt
 
-### 11.5 引擎源码
+### 10.5 引擎源码
 
 17. Epic Games. *Unreal Engine 5 Source Code*. GitHub, 2024. Available: https://github.com/EpicGames/UnrealEngine
 
@@ -2506,9 +2461,9 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **Gregory, J.** *Game Engine Architecture*. 3rd ed., CRC Press, 2018. 游戏引擎架构圣经。
 - **Nystrom, R.** *Game Programming Patterns*. 2014. 游戏编程模式，免费在线。
@@ -2516,7 +2471,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 - **Fletcher, D.** *Game Engine Gems*. A K Peters, 2010. 实战技巧合集。
 - **Lengyel, E.** *Foundations of Game Engine Development*. Terathon Software, 2016-2021. 4 卷本，数学与渲染。
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 - **Game Programming Patterns**：https://gameprogrammingpatterns.com/
 - **Unreal Engine 文档**：https://docs.unrealengine.com/
@@ -2526,7 +2481,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 - **EnTT**：https://github.com/skypjack/entt
 - **Flecs**：https://github.com/SanderMertens/flecs
 
-### 12.3 课程
+### 11.3 课程
 
 - **MIT 6.837 Computer Graphics**：图形学基础。
 - **UC Berkeley CS184 Foundations of Computer Graphics**：图形学。
@@ -2534,7 +2489,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 - **CppCon YouTube**：年度 C++ 大会，多个游戏相关讲座。
 - **GDC Vault**：游戏开发者大会录像。
 
-### 12.4 实践项目
+### 11.4 实践项目
 
 - **阅读 Godot 源码**：学习开源引擎架构。
 - **实现 Pong**：最小游戏循环。
@@ -2542,7 +2497,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 - **实现简单 ECS**：理解 ECS 原理。
 - **参与 Game Jam**：实战练习。
 
-### 12.5 社区
+### 11.5 社区
 
 - **r/gamedev**：https://www.reddit.com/r/gamedev/
 - **GameDev.net**：https://www.gamedev.net/

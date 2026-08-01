@@ -17,22 +17,12 @@ prerequisites:
   - typescript/语法速查
   - typescript/接口与类型别名
 ---
+
 # 类型守卫与自定义守卫
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-本节按 Bloom 认知层级组织学习目标：
-
-- **记忆（Remember）**：能够复述 `typeof`、`instanceof`、`in` 三种内置守卫的语法与适用范围，列出 TypeScript 内置的 8 种 `typeof` 返回值。
-- **理解（Understand）**：能够解释类型收窄（Type Narrowing）的内部机制，说明编译器如何根据控制流图自动收窄变量类型，并能描述自定义类型谓词（Type Predicate）的语义。
-- **应用（Apply）**：能够在生产代码中正确使用 `typeof`、`instanceof`、`in`、`Array.isArray` 等内置守卫，并能编写自定义类型谓词函数处理复杂联合类型。
-- **分析（Analyze）**：能够分析判别式联合（Discriminated Union）的工作原理，识别哪些联合类型可被自动收窄、哪些需要自定义守卫，并分析自定义守卫的性能特征。
-- **评估（Evaluate）**：能够评估断言函数（Assertion Function）与类型谓词的取舍，判断在何种场景下使用 `assert` 风格更优，以及何时应该用 `unknown` 替代 `any`。
-- **创造（Create）**：能够为业务场景设计完整的类型守卫体系，例如为 API 响应、第三方数据、用户输入构建多层守卫与运行时校验的组合方案。
 
 ## 历史动机与背景
 

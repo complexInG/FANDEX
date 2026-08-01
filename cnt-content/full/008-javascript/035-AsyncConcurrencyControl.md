@@ -16,28 +16,12 @@ prerequisites:
   - javascript/语法速查
 ---
 
+
 # 异步并发控制
 
-## 1. 学习目标（Bloom 分类）
+## 1. 历史动机：为什么需要并发控制
 
-读完本文后，读者应能够达到以下认知层次：
-
-| 层次 | 行为目标 | 具体能力描述 |
-| --- | --- | --- |
-| 记忆（Remember） | 列出 JavaScript 并发模型的核心约束 | 能在 1 分钟内说出浏览器连接数限制、单线程事件循环、宏任务/微任务调度规则 |
-| 理解（Understand） | 解释 `Promise.all` 与并发限制的差异 | 能说明为什么 `Promise.all(arr.map(fn))` 会让所有任务"同时"启动 |
-| 应用（Apply） | 在项目中实现 p-limit、AsyncQueue、批处理 | 能写出可上线的并发控制工具，并支持动态并发度调整 |
-| 分析（Analyze） | 区分不同并发控制算法的吞吐量与公平性 | 能在吞吐量、延迟、公平性之间权衡选择策略 |
-| 评价（Evaluate） | 评估并发控制方案对系统稳定性的影响 | 能根据上游服务容量、网络条件、内存限制设计合理的并发度 |
-| 创造（Create） | 设计完整的异步任务调度系统 | 能实现优先级队列、可取消任务、限速器、断路器集成的完整调度框架 |
-
-学习本课前，建议先掌握：Promise、async/await、事件循环、闭包、Class、WeakMap。
-
----
-
-## 2. 历史动机：为什么需要并发控制
-
-### 2.1 浏览器与 Node.js 的并发约束
+### 1.1 浏览器与 Node.js 的并发约束
 
 JavaScript 是单线程语言，但其异步 I/O 能力使其在网络密集型任务中表现卓越。然而，"单线程"并不等于"无限并发"：
 
@@ -47,7 +31,7 @@ JavaScript 是单线程语言，但其异步 I/O 能力使其在网络密集型�
 - **文件描述符耗尽**：Node.js 进程默认可打开 1024 个文件描述符（可通过 `ulimit -n` 调整），并发请求过多会触发 `EMFILE` 错误。
 - **CPU 竞争**：虽然 I/O 是异步的，但 JSON 解析、加密、压缩等 CPU 密集操作仍会争抢主线程时间。
 
-### 2.2 无限制并发的灾难场景
+### 1.2 无限制并发的灾难场景
 
 ```javascript
 // 反模式：一次性发起 10000 个请求
@@ -64,7 +48,7 @@ await fetchAllBad(urls);
 // 4. 单个请求超时会触发连锁重试，加剧雪崩
 ```
 
-### 2.3 p-limit 的诞生与流行
+### 1.3 p-limit 的诞生与流行
 
 2017 年，Sindre Sorhus 发布了 [p-limit](https://github.com/sindresorhus/p-limit) 库，提供简洁的 API：
 
@@ -79,7 +63,7 @@ const results = await Promise.all(
 
 其核心思想是：用一个共享的"运行槽"计数器，让超过并发度的任务在内部队列中排队。p-limit 至今仍是 npm 上最流行的并发控制库（周下载量超过 2 亿次）。
 
-### 2.4 现代前端/Node.js 的并发控制需求
+### 1.4 现代前端/Node.js 的并发控制需求
 
 | 场景 | 典型并发度 | 控制目标 |
 | --- | --- | --- |
@@ -91,7 +75,7 @@ const results = await Promise.all(
 | 批量数据处理 | CPU 核数 | 避免 CPU 争抢 |
 | WebSocket 消息推送 | 单连接 | 速率控制 |
 
-### 2.5 商业价值
+### 1.5 商业价值
 
 并发控制不只是技术细节，更是系统稳定性的关键：
 
@@ -102,9 +86,9 @@ const results = await Promise.all(
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 并发控制的核心概念
+### 2.1 并发控制的核心概念
 
 定义并发控制系统 $C$ 为五元组：
 
@@ -120,7 +104,7 @@ $$
 - $\tau$：最大并发度（concurrency limit），正整数。
 - $\sigma$：调度策略（FIFO、LIFO、优先级、公平轮询）。
 
-### 3.2 并发控制的不变量
+### 2.2 并发控制的不变量
 
 并发控制必须始终维持以下不变量：
 
@@ -138,7 +122,7 @@ $$
 
 违反不变量 1 会导致并发度失控，违反不变量 2 会导致吞吐量下降，违反不变量 3 会导致队列停滞。
 
-### 3.3 吞吐量与延迟的形式化
+### 2.3 吞吐量与延迟的形式化
 
 定义：
 
@@ -167,7 +151,7 @@ $$
 
 其中 $W_{avg}$ 是平均队列等待时间。当 $\tau \geq n$ 时 $W_{avg} = 0$；当 $\tau < n$ 时 $W_{avg}$ 随任务位置递增。
 
-### 3.4 利特尔定律（Little's Law）
+### 2.4 利特尔定律（Little's Law）
 
 并发控制系统符合排队论的利特尔定律：
 
@@ -183,7 +167,7 @@ $$
 
 在稳定状态下，并发度 $\tau$ 即系统的"服务台数量"。当 $\lambda > \tau / T_p$ 时，队列会无限增长，系统不稳定。
 
-### 3.5 调度策略的形式化
+### 2.5 调度策略的形式化
 
 **FIFO（先进先出）**：
 
@@ -213,9 +197,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 从回调到 Promise 的演进
+### 3.1 从回调到 Promise 的演进
 
 **回调时代**（2010 年前）：
 
@@ -275,7 +259,7 @@ async function serial(urls) {
 
 `for...of + await` 是严格的串行，性能极差。要并发又要有控制，必须引入并发限制器。
 
-### 4.2 p-limit 的核心算法
+### 3.2 p-limit 的核心算法
 
 p-limit 的核心是一个闭包 + 队列：
 
@@ -325,7 +309,7 @@ function pLimit(concurrency) {
 - 空间复杂度：$O(n)$（队列存储所有待执行任务）。
 - 公平性：FIFO，先入先出。
 
-### 4.3 `Promise.all` + `map` 的并发陷阱
+### 3.3 `Promise.all` + `map` 的并发陷阱
 
 ```javascript
 // 反模式
@@ -343,7 +327,7 @@ const results = await Promise.all(promises);
 
 这是正确用法。但要注意：**所有 Promise 在 `map` 时就已创建**，意味着任务的"创建时机"和"执行时机"是分离的。如果任务函数有副作用（如读取当前时间），需特别注意。
 
-### 4.4 队列调度的微任务语义
+### 3.4 队列调度的微任务语义
 
 p-limit 的 `next()` 函数在 `finally` 中调用，意味着它在任务完成后立即触发下一个任务。但 JavaScript 的事件循环规则：
 
@@ -353,7 +337,7 @@ p-limit 的 `next()` 函数在 `finally` 中调用，意味着它在任务完成
 
 这意味着并发控制不会引入额外的宏任务延迟，性能接近最优。
 
-### 4.5 吞吐量推导
+### 3.5 吞吐量推导
 
 假设：
 
@@ -387,7 +371,7 @@ $$
 \text{Speedup} \leq \tau
 $$
 
-### 4.6 队列长度的稳定性分析
+### 3.6 队列长度的稳定性分析
 
 设任务到达速率为 $\lambda$（任务/秒），服务速率为 $\mu = \tau / T_p$（任务/秒）。
 
@@ -401,9 +385,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础 p-limit 实现
+### 4.1 基础 p-limit 实现
 
 ```javascript
 /**
@@ -476,7 +460,7 @@ const results = await Promise.all(
 console.log(results);
 ```
 
-### 5.2 使用链表优化队列性能
+### 4.2 使用链表优化队列性能
 
 `Array.prototype.shift()` 是 $O(n)$ 操作，对大队列性能有影响。改用链表：
 
@@ -565,7 +549,7 @@ function pLimitFast(concurrency) {
 | Array shift | $O(n^2)$ | - | ~8000ms |
 | LinkedList | $O(n)$ | - | ~50ms |
 
-### 5.3 完整的 AsyncQueue 类
+### 4.3 完整的 AsyncQueue 类
 
 ```javascript
 /**
@@ -773,7 +757,7 @@ async function main() {
 main();
 ```
 
-### 5.4 优先级队列
+### 4.4 优先级队列
 
 ```javascript
 /**
@@ -856,7 +840,7 @@ for (let i = 0; i < 5; i++) {
 }
 ```
 
-### 5.5 可取消任务队列
+### 4.5 可取消任务队列
 
 ```javascript
 /**
@@ -948,7 +932,7 @@ try {
 }
 ```
 
-### 5.6 批处理模式
+### 4.6 批处理模式
 
 ```javascript
 /**
@@ -977,7 +961,7 @@ const results = await batchProcess(ids, 10, async (id) => {
 });
 ```
 
-### 5.7 滑动窗口模式
+### 4.7 滑动窗口模式
 
 ```javascript
 /**
@@ -1012,7 +996,7 @@ const results = await slidingWindow(urls, 10, async (url) => {
 });
 ```
 
-### 5.8 速率限制器
+### 4.8 速率限制器
 
 ```javascript
 /**
@@ -1090,7 +1074,7 @@ async function rateLimitedFetch(url) {
 }
 ```
 
-### 5.9 组合：并发 + 限速
+### 4.9 组合：并发 + 限速
 
 ```javascript
 /**
@@ -1124,9 +1108,9 @@ for (const url of urls) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 并发控制方案对比
+### 5.1 并发控制方案对比
 
 | 方案 | 实现复杂度 | 公平性 | 取消支持 | 优先级 | 典型场景 |
 | --- | --- | --- | --- | --- | --- |
@@ -1140,7 +1124,7 @@ for (const url of urls) {
 | `TokenBucket` | 中 | 速率 | 不支持 | 不支持 | API 限流 |
 | `ConcurrencyRateLimiter` | 高 | FIFO + 速率 | 可选 | 可选 | 完整生产方案 |
 
-### 6.2 p-limit vs AsyncQueue
+### 5.2 p-limit vs AsyncQueue
 
 | 维度 | p-limit | AsyncQueue |
 | --- | --- | --- |
@@ -1153,7 +1137,7 @@ for (const url of urls) {
 | 代码量 | ~30 行 | ~150 行 |
 | 适用场景 | 简单场景 | 生产级 |
 
-### 6.3 FIFO vs LIFO vs 优先级
+### 5.3 FIFO vs LIFO vs 优先级
 
 | 策略 | 公平性 | 实现难度 | 典型场景 |
 | --- | --- | --- | --- |
@@ -1163,7 +1147,7 @@ for (const url of urls) {
 | 加权公平 | 高（按权重分配） | 高 | 多租户 |
 | 时间片轮转 | 高 | 高 | 长任务公平调度 |
 
-### 6.4 浏览器 vs Node.js 并发差异
+### 5.4 浏览器 vs Node.js 并发差异
 
 | 维度 | 浏览器 | Node.js |
 | --- | --- | --- |
@@ -1175,7 +1159,7 @@ for (const url of urls) {
 | 并发推荐值 | 4-6 | 10-100 |
 | 限速来源 | 服务器 429 | 服务器 + 连接池 |
 
-### 6.5 与其他语言的对比
+### 5.5 与其他语言的对比
 
 | 语言 | 并发模型 | 典型并发控制 |
 | --- | --- | --- |
@@ -1190,9 +1174,9 @@ JavaScript 的并发控制与 Python asyncio 最相似，都基于事件循环 +
 
 ---
 
-## 7. 常见陷阱
+## 6. 常见陷阱
 
-### 7.1 陷阱：`Promise.all` 不限制并发
+### 6.1 陷阱：`Promise.all` 不限制并发
 
 ```javascript
 // 错误：以为 Promise.all 会自动限制
@@ -1209,7 +1193,7 @@ const results = await Promise.all(
 );
 ```
 
-### 7.2 陷阱：`map` 立即创建所有 Promise
+### 6.2 陷阱：`map` 立即创建所有 Promise
 
 ```javascript
 // 错误：limit() 返回的 Promise 在 map 时就已创建
@@ -1224,7 +1208,7 @@ await Promise.all(promises);
 await slidingWindow(urls, 6, fetch);
 ```
 
-### 7.3 陷阱：finally 中抛错
+### 6.3 陷阱：finally 中抛错
 
 ```javascript
 // 错误：finally 中抛错会覆盖 try 的返回值
@@ -1259,7 +1243,7 @@ const run = async (fn, resolve, reject) => {
 };
 ```
 
-### 7.4 陷阱：闭包捕获共享变量
+### 6.4 陷阱：闭包捕获共享变量
 
 ```javascript
 // 错误：i 是共享变量，所有任务可能拿到相同的 i
@@ -1282,7 +1266,7 @@ for (let i = 0; i < urls.length; i++) {
 urls.forEach((url) => limit(() => fetch(url)));
 ```
 
-### 7.5 陷阱：任务异常导致整批失败
+### 6.5 陷阱：任务异常导致整批失败
 
 ```javascript
 // 错误：一个任务失败，Promise.all 立即 reject
@@ -1301,7 +1285,7 @@ const successful = settled.filter((s) => s.status === 'fulfilled').map((s) => s.
 const failed = settled.filter((s) => s.status === 'rejected').map((s) => s.reason);
 ```
 
-### 7.6 陷阱：未处理 `unhandledrejection`
+### 6.6 陷阱：未处理 `unhandledrejection`
 
 ```javascript
 // 错误：limit() 返回的 Promise 若未 catch，reject 会成为 unhandledrejection
@@ -1318,7 +1302,7 @@ const promises = urls.map((url) =>
 const results = await Promise.all(promises);
 ```
 
-### 7.7 陷阱：并发度设置过高
+### 6.7 陷阱：并发度设置过高
 
 ```javascript
 // 错误：并发度等于任务数，等于无限制
@@ -1332,7 +1316,7 @@ await Promise.all(urls.map((url) => limit(() => fetch(url))));
 - Node.js API：10-100
 - 数据库：连接池大小（通常 10-30）
 
-### 7.8 陷阱：任务函数有副作用
+### 6.8 陷阱：任务函数有副作用
 
 ```javascript
 // 错误：任务函数依赖外部状态，执行顺序影响结果
@@ -1358,7 +1342,7 @@ const results = await Promise.all(
 );
 ```
 
-### 7.9 陷阱：动态修改并发度
+### 6.9 陷阱：动态修改并发度
 
 ```javascript
 // p-limit 的 concurrency 在创建时固定，无法动态调整
@@ -1385,7 +1369,7 @@ class MutableConcurrencyQueue {
 }
 ```
 
-### 7.10 陷阱：内存泄漏
+### 6.10 陷阱：内存泄漏
 
 ```javascript
 // 错误：队列中累积大量任务，长时间未消费
@@ -1416,9 +1400,9 @@ class BoundedAsyncQueue extends AsyncQueue {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 动态并发度调整
+### 7.1 动态并发度调整
 
 根据网络条件动态调整并发度：
 
@@ -1466,7 +1450,7 @@ class AdaptiveQueue extends AsyncQueue {
 }
 ```
 
-### 8.2 断路器集成
+### 7.2 断路器集成
 
 ```javascript
 /**
@@ -1528,7 +1512,7 @@ async function safeFetch(url) {
 }
 ```
 
-### 8.3 重试机制
+### 7.3 重试机制
 
 ```javascript
 /**
@@ -1566,7 +1550,7 @@ const results = await Promise.all(
 );
 ```
 
-### 8.4 可观测性：日志与指标
+### 7.4 可观测性：日志与指标
 
 ```javascript
 class ObservableQueue extends AsyncQueue {
@@ -1620,7 +1604,7 @@ class ObservableQueue extends AsyncQueue {
 }
 ```
 
-### 8.5 React 中的并发控制
+### 7.5 React 中的并发控制
 
 ```javascript
 import { useRef, useCallback } from 'react';
@@ -1663,7 +1647,7 @@ function FileUploader({ files }) {
 }
 ```
 
-### 8.6 Node.js 中的流式并发
+### 7.6 Node.js 中的流式并发
 
 ```javascript
 const { Readable } = require('stream');
@@ -1709,7 +1693,7 @@ rl.on('close', async () => {
 });
 ```
 
-### 8.7 性能基准测试
+### 7.7 性能基准测试
 
 ```javascript
 async function benchmark() {
@@ -1745,7 +1729,7 @@ benchmark();
 // size=10000, concurrency=16: 6300ms
 ```
 
-### 8.8 内存优化
+### 7.8 内存优化
 
 对超大队列使用生成器而非数组：
 
@@ -1781,9 +1765,9 @@ await processGenerator(lineGenerator('huge.log'), 8, async (line) => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：图片批量上传组件
+### 8.1 案例一：图片批量上传组件
 
 需求：用户选择 100 张图片上传到 CDN，要求显示进度，支持暂停/继续/取消。
 
@@ -1959,7 +1943,7 @@ function UploaderComponent() {
 }
 ```
 
-### 9.2 案例二：API 爬虫限速器
+### 8.2 案例二：API 爬虫限速器
 
 需求：爬取第三方 API，要求每秒最多 5 个请求，且最多 3 个并发。失败自动重试，连续失败触发断路器。
 
@@ -2034,7 +2018,7 @@ const result = await crawler.crawl(urls);
 console.log(`成功 ${result.successful.length}，失败 ${result.failed.length}`);
 ```
 
-### 9.3 案例三：数据库批量操作
+### 8.3 案例三：数据库批量操作
 
 需求：批量插入 10000 条记录到 PostgreSQL，避免连接池耗尽。
 
@@ -2101,7 +2085,7 @@ const result = await processor.insertBatch('users', records);
 console.log(`插入 ${result.totalInserted} 条，分 ${result.batches} 批`);
 ```
 
-### 9.4 案例四：Web Worker 并发
+### 8.4 案例四：Web Worker 并发
 
 需求：在浏览器中使用 Web Worker 并行处理 CPU 密集任务。
 
@@ -2176,7 +2160,7 @@ const hashes = await Promise.all(
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：实现一个 `pLimit(concurrency)` 函数，要求支持动态查询当前活跃任务数和队列长度。
 
@@ -2194,7 +2178,7 @@ await Promise.all([log(1), log(2), log(3), log(4)]);
 
 **题目 3**：为什么 `Promise.all(arr.map(async fn))` 会让所有任务"同时"启动？请从事件循环角度解释。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：实现一个支持优先级的 `pLimit`，要求：
 
@@ -2216,7 +2200,7 @@ await Promise.all([log(1), log(2), log(3), log(4)]);
 
 请实现完整的 `safeFetchAll(urls)` 函数。
 
-### 10.3 桑地思考题
+### 9.3 桑地思考题
 
 **题目 7**：在 32 核服务器上处理 1 亿条记录，每个记录处理需要 100ms CPU + 50ms I/O。如何设计并发方案？需要考虑：
 
@@ -2230,7 +2214,7 @@ await Promise.all([log(1), log(2), log(3), log(4)]);
 - 内存模型（共享内存 vs 消息传递）。
 - 错误传播。
 
-### 10.4 设计题
+### 9.4 设计题
 
 **题目 9**：设计一个分布式任务调度系统，要求：
 
@@ -2247,7 +2231,7 @@ await Promise.all([log(1), log(2), log(3), log(4)]);
 - 它的 `clearQueue` 方法的语义是什么？
 - 它为什么用 `AsyncResource`？有什么用？
 
-### 10.5 参考答案
+### 9.5 参考答案
 
 **题目 2 答案**：
 
@@ -2268,7 +2252,7 @@ end 4
 
 ---
 
-## 11. 参考文献（ACM 格式）
+## 10. 参考文献（ACM 格式）
 
 [1] S. Sorhus, "p-limit: Run multiple promise-returning & async functions with limited concurrency," *GitHub Repository*, 2017. [Online]. Available: https://github.com/sindresorhus/p-limit
 
@@ -2296,7 +2280,7 @@ end 4
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 - [MDN - Using Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises)
 - [MDN - async function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
@@ -2564,19 +2548,19 @@ class AsyncQueue<T = unknown> {
 
 ## 附录 J：相关算法
 
-### 10.1 工作窃取（Work Stealing）
+### 9.1 工作窃取（Work Stealing）
 
 多 worker 场景下，空闲 worker 从繁忙 worker 的队列"窃取"任务。Go 的调度器、Java 的 ForkJoinPool 都使用此算法。
 
-### 10.2 令牌桶（Token Bucket）
+### 9.2 令牌桶（Token Bucket）
 
 按固定速率生成令牌，任务消耗令牌。允许突发流量（桶满时一次性消耗多个令牌）。
 
-### 10.3 漏桶（Leaky Bucket）
+### 9.3 漏桶（Leaky Bucket）
 
 按固定速率处理任务，超出部分排队或丢弃。严格限制输出速率。
 
-### 10.4 滑动窗口（Sliding Window）
+### 9.4 滑动窗口（Sliding Window）
 
 记录最近 N 秒的请求数，超过阈值则拒绝。比固定窗口更精确，避免边界突发。
 

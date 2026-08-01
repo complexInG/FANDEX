@@ -18,107 +18,6 @@ related:
   - 'javascript/项目示例-待办事项应用'
 prerequisites:
   - javascript/语法速查
-learningObjectives:
-  - '复述 JavaScript 的历史演进时间线、ECMAScript 规范的层级结构与 TC39 四阶段提案流程'
-  - '解释执行上下文、词法环境、作用域链与闭包的形式语义，并能绘制环境记录模型'
-  - '运用 ToPrimitive、ToNumber、ToString 等抽象操作规则预测类型强制转换的执行结果'
-  - '拆解 HTML 规范 §8.1.7 事件循环模型，分析 Microtask 与 Macrotask 在浏览器与 Node.js 中的差异'
-  - '评估 Promise、async-await、Generator 在异步语义表达力上的等价性与代数效应关联'
-  - '基于 Proxy 与 Reflect 设计元编程抽象，并构造 WeakMap、WeakRef、FinalizationRegistry 的内存安全缓存方案'
-exercises:
-  fill-blank:
-    - question: JavaScript 的词法环境由 ____ 与 ____ 两部分组成，前者存储变量绑定，后者指向外层环境。
-      answer: Environment Record; outer reference
-      bloom: remember
-    - question: 在 HTML 规范 §8.1.7 中，事件循环的每轮迭代称为一个 ____，其内部包含 Microtask 检查点。
-      answer: task processing model
-      bloom: remember
-    - question: ToPrimitive(obj, hint) 在 hint 为 "number" 时会优先调用对象的 ____ 方法，其次调用 ____ 方法。
-      answer: valueOf; toString
-      bloom: understand
-  choice:
-    - question: 下列关于原型链的描述，哪一项是正确的？
-      options:
-        - 'A. [[Prototype]] 是可枚举属性，可通过 for-in 遍历到'
-        - 'B. Object.create(null) 创建的对象没有 [[Prototype]]，因此不继承任何方法'
-        - 'C. 函数的 prototype 属性与其实例的 [[Prototype]] 是同一个指针'
-        - 'D. 修改构造函数的 prototype 会立即影响已创建实例的 [[Prototype]] 链'
-      answer: B
-      bloom: analyze
-    - question: 关于严格模式 "use strict" 的语义，下列哪一项是错误的？
-      options:
-        - 'A. 禁止 with 语句'
-        - 'B. 函数内部 this 默认绑定到全局对象'
-        - 'C. 重复参数名会抛出 SyntaxError'
-        - 'D. 删除不可配置属性会抛出 TypeError'
-      answer: B
-      bloom: understand
-  code-fix:
-    - question: |
-        以下代码期望依次输出 0、1、2、3、4，但实际输出五次 5。请指出缺陷并修复。
-        ```javascript
-        for (var i = 0; i < 5; i++) {
-          setTimeout(() => console.log(i), 0);
-        }
-        ```
-      answer: |
-        var 声明的 i 是函数级作用域，所有闭包共享同一绑定，循环结束时 i === 5。
-        修复方案一：使用 let 形成块级作用域，每次迭代创建新绑定。
-        ```javascript
-        for (let i = 0; i < 5; i++) {
-          setTimeout(() => console.log(i), 0);
-        }
-        ```
-        修复方案二：使用 IIFE 捕获当前值。
-        ```javascript
-        for (var i = 0; i < 5; i++) {
-          ((j) => setTimeout(() => console.log(j), 0))(i);
-        }
-        ```
-      bloom: apply
-    - question: |
-        以下代码期望通过代理拦截属性读取并记录日志，但读取 obj.title 时报错。
-        ```javascript
-        const handler = {
-          get(target, key) {
-            console.log(`read ${key}`);
-            return target[key];
-          }
-        };
-        const obj = new Proxy({ title: 'JS' }, handler);
-        obj.title;
-        ```
-      answer: |
-        代码本身可运行，但若 handler 同时实现了 get 且未使用 Reflect.get，则可能在继承属性或 receiver 场景下产生错误绑定。推荐使用 Reflect.get(target, key, receiver) 保持语义一致：
-        ```javascript
-        const handler = {
-          get(target, key, receiver) {
-            console.log(`read ${key}`);
-            return Reflect.get(target, key, receiver);
-          }
-        };
-        ```
-      bloom: analyze
-  open-ended:
-    - question: |
-        请从代数效应（algebraic effects）的视角论证 async-await 是 Generator + Promise 的语法糖，并说明为何 async 函数无法替代真正的代数效应。
-      answer: |
-        async-await 可被编译为 Generator 配合自动 executor（如 co 库）的形式：
-        await e 等价于 yield e，executor 负责将 Promise 的 resolve/reject 转化为 generator.next/throw。
-        然而真正的代数效应允许在被调用方声明效应、由调用栈上层 handler 解释执行，
-        而 async 函数一旦使用 await 必须声明为 async，效应签名被静态污染整个调用链，
-        无法实现"透明效应"，故 async-await 仅是受限的代数效应模拟。
-      bloom: evaluate
-    - question: |
-        在设计一个长生命周期 SPA 的内存模型时，如何综合运用 WeakMap、WeakRef、FinalizationRegistry 来实现既不阻塞 GC、又能在对象被回收时清理关联资源的缓存？请描述数据流与失败模式。
-      answer: |
-        以 WeakMap<Source, Cache> 维护源对象到缓存的弱引用，避免 Source 长期存活；
-        对缓存元数据使用 WeakRef 包装，访问时调用 deref 判活；
-        FinalizationRegistry 注册 Source 被回收时的回调以清理磁盘或索引资源。
-        失败模式包括：GC 时机不确定导致 deref 返回 undefined 后仍被访问；
-        FinalizationRegistry 回调可能在主线程空闲后才执行，存在滞后；
-        WeakRef.deref 与 FinalizationRegistry 之间需用标志位去重，避免重复清理。
-      bloom: create
 references:
   - author: [Brendan Eich]
     title: 'A Brief History of JavaScript'
@@ -155,28 +54,14 @@ lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 ---
 
+
 # JavaScript 理论知识点
 
 > 本文以 MIT 6.S192、Stanford CS142 与 CMU 15-440 的教学范式为参考基准，将 JavaScript 的语言语义、类型系统、执行模型、内存模型与元编程理论组织为一篇可独立阅读的核心理论文档。所有形式化描述均基于 ECMA-262 第 27 版（ES2026）与 WHATWG HTML Living Standard。
 
-## 1. 学习目标与 Bloom 分类矩阵
+## 1. 历史动机与语言演进
 
-本节明确读者在完成本文学习后应具备的认知能力层级。Bloom 分类法将认知目标划分为六个层级：remember（记忆）、understand（理解）、apply（应用）、analyze（分析）、evaluate（评估）、create（创造）。本文目标如下：
-
-| 层级 | 目标描述 | 评估方式 |
-| ---- | -------- | -------- |
-| remember | 复述 ECMAScript 规范的层级结构、TC39 四阶段提案流程、HTML 事件循环规范条目 | 填空题 |
-| understand | 解释执行上下文、词法环境、作用域链、闭包的形式语义，能绘制环境记录模型 | 选择题 |
-| apply | 运用 ToPrimitive、ToNumber、ToString 抽象操作预测类型强制转换结果 | 代码修复题 |
-| analyze | 拆解 HTML §8.1.7 事件循环模型，分析浏览器与 Node.js 实现差异 | 选择题 |
-| evaluate | 评估 Promise、async-await、Generator 在异步表达力上的等价性与代数效应关联 | 开放题 |
-| create | 基于 Proxy、Reflect、WeakRef 设计元编程抽象与内存安全缓存 | 开放题 |
-
-学习路径建议：依次阅读历史动机、形式化定义、执行模型、异步语义、元编程理论，最后完成习题与案例研究。每一节末尾设有"理论检查点"，用于自我评估理解程度。
-
-## 2. 历史动机与语言演进
-
-### 2.1 诞生的十日工程
+### 1.1 诞生的十日工程
 
 JavaScript 由 Brendan Eich 于 1995 年 5 月在 Netscape Communications 完成 0.1 版本原型，工程周期据 Brendan Eich 本人在博客中回忆为"大约十天"。其设计目标是在 Netscape Navigator 浏览器中嵌入一门"网页脚本语言"，弥补当时 HTML 静态文档与 Java Applet 重型客户端之间的中间层空白。
 
@@ -187,7 +72,7 @@ Netscape 管理层最初希望该语言语法接近 Java 以便市场推广，�
 - Self 的原型继承
 - HyperTalk 的弱类型与动态性
 
-### 2.2 名称演变
+### 1.2 名称演变
 
 | 时间 | 名称 | 说明 |
 | ---- | ---- | ---- |
@@ -199,7 +84,7 @@ Netscape 管理层最初希望该语言语法接近 Java 以便市场推广，�
 
 商标权随 Sun Microsystems 被 Oracle 收购而转移至 Oracle，2010 年 Oracle 申请续展引发社区抗议，但商标至今仍归 Oracle 持有。
 
-### 2.3 TC39 与提案流程
+### 1.3 TC39 与提案流程
 
 TC39（Technical Committee 39）是 ECMA International 下属技术委员会，负责 ECMAScript 标准维护。其成员包括主流浏览器厂商、云厂商、学术界代表。2014 年后 TC39 采用四阶段提案流程：
 
@@ -213,7 +98,7 @@ TC39（Technical Committee 39）是 ECMA International 下属技术委员会，�
 
 ES2015（ES6）是采用该流程后的第一个版本，标志着 JavaScript 进入年度发布节奏。
 
-### 2.4 关键版本时间线
+### 1.4 关键版本时间线
 
 | 版本 | 年份 | 关键特性 |
 | ---- | ---- | -------- |
@@ -236,7 +121,7 @@ ES2015（ES6）是采用该流程后的第一个版本，标志着 JavaScript �
 | ES2025 | 2025 | Import Attributes、Iterator Helpers、Set 操作 |
 | ES2026 | 2026 | Temporal API、Explicit Resource Management（using）、Decimal、Pattern Matching |
 
-### 2.5 关键论文与里程碑
+### 1.5 关键论文与里程碑
 
 JavaScript 的形式语义研究由 Mozilla 与 Google 资助，重要里程碑包括：
 
@@ -245,9 +130,9 @@ JavaScript 的形式语义研究由 Mozilla 与 Google 资助，重要里程碑�
 - 2015 年 Andreas Rossberg 编写的"JavaScript Semantics"（JSShell 项目）以 Coq/PLT Redex 形式化定义 ES5
 - 2018 年 ECMA 维护的 official formal semantics 项目 js-language-specs
 
-## 3. 形式化定义与语言语义
+## 2. 形式化定义与语言语义
 
-### 3.1 规范的元语言
+### 2.1 规范的元语言
 
 ECMA-262 规范使用一套自定义的元语言描述语义，其核心构件包括：
 
@@ -268,7 +153,7 @@ $$
 \text{Completion} = \{ \text{type} \in \{\text{normal}, \text{break}, \text{continue}, \text{return}, \text{throw}\}, \text{value} \in \text{Value} \cup \{\text{empty}\}, \text{target} \in \text{String} \cup \{\text{empty}\} \}
 $$
 
-### 3.2 求值规则的形式化
+### 2.2 求值规则的形式化
 
 以下给出变量查找的求值规则示例，使用 PLT Redex 风格的推断规则：
 
@@ -298,7 +183,7 @@ $$
 }
 $$
 
-### 3.3 类型系统的形式化
+### 2.3 类型系统的形式化
 
 JavaScript 是动态弱类型语言，类型在运行时确定。规范定义 8 种语言类型：
 
@@ -319,7 +204,7 @@ $$
 
 类型判断操作 $\text{Type}(x)$ 在规范中通过 `Type(x)` 抽象操作实现，返回值为上述枚举。
 
-### 3.4 语义层级与宿主环境
+### 2.4 语义层级与宿主环境
 
 JavaScript 语义分为三层：
 
@@ -329,7 +214,7 @@ JavaScript 语义分为三层：
 
 这种分层使 JavaScript 可在浏览器、服务器、嵌入式设备统一运行，但也带来语义碎片化问题，例如 `setTimeout` 在浏览器由 WHATWG HTML 标准定义，在 Node.js 由 libuv 定义，二者参数语义存在差异。
 
-### 3.5 Reference 规范类型
+### 2.5 Reference 规范类型
 
 Reference 是规范内部类型，用于描述变量引用与属性访问的结果。其结构为：
 
@@ -346,9 +231,9 @@ $$
 
 Reference 通过 `GetValue` 与 `PutValue` 抽象操作解引用。这一设计使严格模式下的赋值语义、`delete` 语义、`this` 绑定规则能够统一表达。
 
-## 4. ECMAScript 规范结构
+## 3. ECMAScript 规范结构
 
-### 4.1 规范文档组织
+### 3.1 规范文档组织
 
 ECMA-262 第 27 版共分为以下章节：
 
@@ -380,7 +265,7 @@ ECMA-262 第 27 版共分为以下章节：
 26. Reflection
 27. Memory Management
 
-### 4.2 抽象操作层级
+### 3.2 抽象操作层级
 
 规范的核心是约 700 余个抽象操作（Abstract Operations），按层级组织：
 
@@ -389,7 +274,7 @@ ECMA-262 第 27 版共分为以下章节：
 - **操作抽象操作**：`Call`、`Construct`、`Get`、`Set`、`HasProperty`、`DeletePropertyOrThrow`、`DefineOwnProperty`
 - **规范辅助操作**：`RequireObjectCoercible`、`ToString`、`ToUint32`、`ToLength`
 
-### 4.3 内置对象的分类
+### 3.3 内置对象的分类
 
 规范将内置对象分为五大类：
 
@@ -404,9 +289,9 @@ ECMA-262 第 27 版共分为以下章节：
 | Control Abstraction | Promise、Generator、Iterator、AsyncIterator | 控制抽象 |
 | Reflection | Reflect、Proxy | 反射 |
 
-## 5. 执行模型与执行上下文
+## 4. 执行模型与执行上下文
 
-### 5.1 执行上下文的形式定义
+### 4.1 执行上下文的形式定义
 
 JavaScript 执行上下文（Execution Context）是规范中用于追踪代码执行状态的结构。其形式定义为四元组：
 
@@ -424,7 +309,7 @@ $$
 - `VariableEnvironment`：变量环境，存储 var 声明
 - `PrivateEnvironment`：私有名称环境，处理类的私有成员
 
-### 5.2 执行上下文栈
+### 4.2 执行上下文栈
 
 执行上下文栈（Execution Context Stack）用于管理嵌套调用。栈顶为当前运行的执行上下文。栈操作规则：
 
@@ -434,7 +319,7 @@ $$
 
 执行上下文栈是单线程的，但同一时刻可能存在多个被挂起的上下文（如 await 等待中的 async 函数）。
 
-### 5.3 词法环境与变量环境
+### 4.3 词法环境与变量环境
 
 词法环境（Lexical Environment）是规范类型，由环境记录（Environment Record）与外层引用（outer reference）组成：
 
@@ -454,7 +339,7 @@ $$
 
 变量环境（VariableEnvironment）在 ES6 后只为 var 声明保留，let/const 与块级作用域使用 LexicalEnvironment。
 
-### 5.4 作用域链的形式语义
+### 4.4 作用域链的形式语义
 
 作用域链由词法环境的外层引用构成。变量查找规则：
 
@@ -478,7 +363,7 @@ $$
 }
 $$
 
-### 5.5 闭包的形式定义
+### 4.5 闭包的形式定义
 
 闭包（Closure）是函数对象与其创建时词法环境的组合。函数对象内部槽 `[[Environment]]` 保存创建时的词法环境：
 
@@ -510,7 +395,7 @@ counter(); // 2
 3. **共享绑定**：同一词法环境中的多个闭包共享同一绑定
 4. **可变性**：var 声明的绑定可变，let/const 的绑定分别为可变/不可变
 
-### 5.6 理论检查点
+### 4.6 理论检查点
 
 请用纸笔绘制以下代码执行时的执行上下文栈与词法环境结构：
 
@@ -536,9 +421,9 @@ fn();
 - inner 调用：新增执行上下文，LexicalEnvironment 包含 z，outer 指向 outer 的词法环境
 - 变量查找 x：inner.env -> outer.env -> global.env 找到 x = 1
 
-## 6. 作用域链与闭包的形式语义
+## 5. 作用域链与闭包的形式语义
 
-### 6.1 闭包与函数式编程
+### 5.1 闭包与函数式编程
 
 闭包源自 1964 年 Peter Landin 提出的 SECD 机器理论，他将 λ 演算中的"环境"概念实现为函数对象的隐式组成部分。JavaScript 的闭包语义与 Scheme 高度相似，但与 Python 存在关键差异。
 
@@ -559,7 +444,7 @@ acc.reset();
 acc.add(1);  // 1
 ```
 
-### 6.2 闭包与循环变量
+### 5.2 闭包与循环变量
 
 经典陷阱：循环中创建多个闭包共享同一变量绑定。
 
@@ -598,7 +483,7 @@ $$
 
 每次迭代开始时，规范要求创建新的词法环境，将上一轮迭代的 x 值复制到新绑定，从而保证每次迭代的闭包捕获独立的绑定。
 
-### 6.3 闭包与内存
+### 5.3 闭包与内存
 
 闭包持有其创建时词法环境的引用，导致被引用变量无法被 GC 回收。这是常见的内存泄漏源。
 
@@ -619,7 +504,7 @@ function attachHandler() {
 3. 显式置空引用：`huge = null`
 4. 用 WeakRef 持有可能不需要的对象
 
-### 6.4 立即调用函数表达式（IIFE）
+### 5.4 立即调用函数表达式（IIFE）
 
 IIFE 是 ES5 时代实现模块隔离与块级作用域的惯用法：
 
@@ -639,9 +524,9 @@ ES6 后 let/const 与模块系统使 IIFE 大部分场景被取代，但仍在�
 - 临时变量隔离
 - 一次性副作用执行
 
-## 7. 原型继承理论
+## 6. 原型继承理论
 
-### 7.1 原型继承的起源
+### 6.1 原型继承的起源
 
 原型面向对象（Prototype-based Object-Oriented Programming）由 Henry Lieberman 与 David Ungar 分别在 1986 年 MIT 与斯坦福的研究中独立提出。其核心理念是：
 
@@ -649,7 +534,7 @@ ES6 后 let/const 与模块系统使 IIFE 大部分场景被取代，但仍在�
 
 原型继承的形式语义由 David Ungar 在 Self 语言中首次实现。JavaScript 借鉴 Self 的设计，将所有对象都视为从原型克隆而来。
 
-### 7.2 [[Prototype]] 内部槽
+### 6.2 [[Prototype]] 内部槽
 
 每个对象都有一个 `[[Prototype]]` 内部槽，指向其原型对象（或 null）。访问 `obj.x` 时，按以下规则查找：
 
@@ -675,7 +560,7 @@ $$
 
 原型链可能形成有向无环图，理论上可无限长，但实际引擎实现有深度限制（V8 约 1000 层，超出抛出 RangeError）。
 
-### 7.3 函数的 prototype 属性
+### 6.3 函数的 prototype 属性
 
 函数对象除 `[[Prototype]]` 外还有一个 `prototype` 属性（普通对象没有），用于 `new` 调用时设置实例的原型。
 
@@ -704,7 +589,7 @@ $$
 }
 $$
 
-### 7.4 原型链查找的复杂度
+### 6.4 原型链查找的复杂度
 
 单次属性查找的复杂度为 $O(d)$，其中 $d$ 为原型链深度。V8 通过内联缓存（Inline Cache）将常见场景优化为 $O(1)$。IC 状态：
 
@@ -715,7 +600,7 @@ $$
 | Polymorphic | 2-4 种隐藏类 | 中等 |
 | Megamorphic | 超过 4 种 | 最慢 |
 
-### 7.5 class 语法糖的本质
+### 6.5 class 语法糖的本质
 
 ES6 的 class 是基于原型继承的语法糖。以下两段代码语义等价：
 
@@ -754,7 +639,7 @@ class 语法糖的关键改进：
 4. **构造函数必须 new 调用**：避免 this 绑定错误
 5. **不可枚举方法**：prototype 上的方法 enumerable 为 false
 
-### 7.6 原型链的常见模型
+### 6.6 原型链的常见模型
 
 JavaScript 的全局原型链结构如下：
 
@@ -785,7 +670,7 @@ $$
 \text{functionObj} \xrightarrow{[[\text{Prototype}]]} \text{Function.prototype} \xrightarrow{[[\text{Prototype}]]} \text{Object.prototype} \xrightarrow{[[\text{Prototype}]]} \text{null}
 $$
 
-### 7.7 Object.create 与原型编程
+### 6.7 Object.create 与原型编程
 
 `Object.create(proto, descriptors)` 是显式原型编程的入口：
 
@@ -810,7 +695,7 @@ dict.foo = 1;
 // 避免原型污染与属性名冲突
 ```
 
-### 7.8 原型污染与防御
+### 6.8 原型污染与防御
 
 原型污染（Prototype Pollution）是修改 Object.prototype 导致全局行为变化的攻击：
 
@@ -834,9 +719,9 @@ const config = JSON.parse(userInput);
 4. 对用户输入做白名单过滤
 5. 使用 `Object.defineProperty(obj, key, { value, writable: false, configurable: false })`
 
-## 8. 事件循环模型
+## 7. 事件循环模型
 
-### 8.1 HTML 规范 §8.1.7 的形式定义
+### 7.1 HTML 规范 §8.1.7 的形式定义
 
 HTML Living Standard 第 8.1.7 节定义了浏览器事件循环。其核心算法可形式化描述为：
 
@@ -853,7 +738,7 @@ Task Processing Model 的核心步骤：
 5. 执行必要的渲染步骤（Update the rendering）
 6. 重复
 
-### 8.2 任务队列的分类
+### 7.2 任务队列的分类
 
 HTML 规范定义多种任务队列，按源（source）区分：
 
@@ -868,7 +753,7 @@ HTML 规范定义多种任务队列，按源（source）区分：
 
 不同源的任务队列优先级不同，浏览器可自由调度。
 
-### 8.3 Microtask 检查点
+### 7.3 Microtask 检查点
 
 Microtask 检查点（Microtask Checkpoint）的算法：
 
@@ -888,7 +773,7 @@ Microtask 来源：
 - async 函数 await 后的延续
 - IntersectionObserver（部分实现）
 
-### 8.4 浏览器与 Node.js 的差异
+### 7.4 浏览器与 Node.js 的差异
 
 浏览器事件循环由 HTML 规范定义，Node.js 事件循环由 libuv 实现，二者结构差异显著。
 
@@ -909,7 +794,7 @@ Node.js 在每个阶段切换之间清空 Microtask Queue（Node 11+ 与浏览�
 2. `setImmediate` 与 `setTimeout(0)` 在不同上下文中触发顺序不同
 3. Node.js 没有 UI 渲染步骤
 
-### 8.5 任务调度的实例分析
+### 7.5 任务调度的实例分析
 
 ```javascript
 console.log('1: script start');
@@ -940,7 +825,7 @@ console.log('6: script end');
 3. promise1.then 返回新 Promise，再次清空 Microtask：4
 4. 取下一个 Macrotask：2
 
-### 8.6 async-await 的事件循环集成
+### 7.6 async-await 的事件循环集成
 
 async 函数在 await 处挂起，将后续代码作为 Promise 的 then 回调。等价的转译：
 
@@ -966,7 +851,7 @@ $$
 }
 $$
 
-### 8.7 渲染时序
+### 7.7 渲染时序
 
 浏览器事件循环在每轮 Macrotask 之后会执行渲染步骤（仅在必要时）：
 
@@ -994,9 +879,9 @@ requestIdleCallback((deadline) => {
 });
 ```
 
-## 9. 异步语义与代数效应
+## 8. 异步语义与代数效应
 
-### 9.1 回调地狱与控制反转
+### 8.1 回调地狱与控制反转
 
 JavaScript 早期异步采用回调，导致"回调地狱"与控制反转问题：
 
@@ -1020,7 +905,7 @@ fetchUser(userId, (err, user) => {
 3. 控制权交还给被调用方，调用方无法控制执行流程
 4. 难以组合、取消、并行
 
-### 9.2 Promise 的代数结构
+### 8.2 Promise 的代数结构
 
 Promise 是状态机，三态：pending、fulfilled、rejected。状态转换是不可逆：
 
@@ -1044,7 +929,7 @@ Monad 三定律的 Promise 形式：
 2. **右单位律**：`p.then(x => Promise.resolve(x)) ≡ p`
 3. **结合律**：`p.then(f).then(g) ≡ p.then(x => f(x).then(g))`
 
-### 9.3 async-await 作为 Generator 与 Promise 的语法糖
+### 8.3 async-await 作为 Generator 与 Promise 的语法糖
 
 async-await 可被编译为 Generator + 自动 executor。Koa 框架的 co 库实现了这种转译：
 
@@ -1082,7 +967,7 @@ function spawn(genF) {
 }
 ```
 
-### 9.4 代数效应视角
+### 8.4 代数效应视角
 
 代数效应（Algebraic Effects）是函数式编程中的概念，由 André Platzer、Matija Pretnar 等人研究。其核心理念：
 
@@ -1132,7 +1017,7 @@ function run(gen) {
 }
 ```
 
-### 9.5 Promise 的组合子
+### 8.5 Promise 的组合子
 
 Promise 提供多个组合子：
 
@@ -1159,7 +1044,7 @@ const fastest = await Promise.any([
 ]);
 ```
 
-### 9.6 异步迭代器
+### 8.6 异步迭代器
 
 ES2018 引入异步迭代器（for-await-of）：
 
@@ -1192,7 +1077,7 @@ $$
 \text{IteratorResult} = \{ \text{done} : \text{boolean}, \text{value} : T \}
 $$
 
-### 9.7 顶层 await
+### 8.7 顶层 await
 
 ES2022 引入顶层 await，允许在 ES 模块顶层直接使用 await：
 
@@ -1204,9 +1089,9 @@ export default config;
 
 顶层 await 改变了模块的加载语义：依赖该模块的模块必须等待其完成。这相当于将整个模块视为 async 函数。
 
-## 10. 类型强制转换规则
+## 9. 类型强制转换规则
 
-### 10.1 ToPrimitive 抽象操作
+### 9.1 ToPrimitive 抽象操作
 
 ToPrimitive 是类型转换的核心抽象操作。其形式定义：
 
@@ -1238,7 +1123,7 @@ obj + 1;          // 43 (default → number)
 String(obj);      // 'obj'
 ```
 
-### 10.2 ToNumber 转换表
+### 9.2 ToNumber 转换表
 
 | 输入类型 | 输出 |
 | -------- | ---- |
@@ -1260,7 +1145,7 @@ String(obj);      // 'obj'
 - `"0x1F"`、`"0b101"`、`"0o17"` → 解析为对应进制
 - 其他无法解析 → NaN
 
-### 10.3 ToString 转换表
+### 9.3 ToString 转换表
 
 | 输入类型 | 输出 |
 | -------- | ---- |
@@ -1283,7 +1168,7 @@ Number 转 String 的关键规则：
 - 小数 → 最短表示（ECMAScript 规范 §7.1.12.1）
 - 大数 → 指数表示（如 `1e21` → "1e+21"）
 
-### 10.4 相等性比较 ==
+### 9.4 相等性比较 ==
 
 `==` 触发的类型转换规则：
 
@@ -1309,7 +1194,7 @@ null == 0;      // false (null 仅与 undefined 相等)
 [] == ![];      // true (右边 ![] → false → 0，左边 [] → 0)
 ```
 
-### 10.5 加法运算符 + 的特殊语义
+### 9.5 加法运算符 + 的特殊语义
 
 `+` 运算符的算法：
 
@@ -1329,7 +1214,7 @@ true + true;  // 2
 1 + undefined; // NaN (undefined → NaN)
 ```
 
-### 10.6 Symbol.toPrimitive 与自定义转换
+### 9.6 Symbol.toPrimitive 与自定义转换
 
 ES2015 引入 `Symbol.toPrimitive` 允许对象完全自定义原始值转换：
 
@@ -1354,7 +1239,7 @@ m + 0;    // '100 USD0' (default → string)
 
 Symbol.toPrimitive 的优先级高于 valueOf 与 toString。
 
-### 10.7 类型转换的设计哲学
+### 9.7 类型转换的设计哲学
 
 JavaScript 的类型转换规则被广泛批评为"坑"，但其设计哲学是：
 
@@ -1365,9 +1250,9 @@ JavaScript 的类型转换规则被广泛批评为"坑"，但其设计哲学是�
 
 这套规则的代价是产生大量反直觉行为，是 JavaScript 被称为"WAT 语言"的主要原因。严格模式与 TypeScript 类型检查可缓解大部分问题。
 
-## 11. 严格模式理论
+## 10. 严格模式理论
 
-### 11.1 严格模式的启用
+### 10.1 严格模式的启用
 
 严格模式（Strict Mode）通过在脚本、函数或模块顶部添加 `"use strict";` 字符串字面量启用。ES 模块默认为严格模式。
 
@@ -1386,7 +1271,7 @@ function strict() {
 // export const x = 1; // 不需要显式声明
 ```
 
-### 11.2 严格模式的语义变化
+### 10.2 严格模式的语义变化
 
 严格模式改变了以下语义：
 
@@ -1406,7 +1291,7 @@ function strict() {
 | 八进制字面量 010 | 8 | 抛出 SyntaxError |
 | 保留字 implements、interface 等 | 可用作标识符 | 抛出 SyntaxError |
 
-### 11.3 严格模式的形式语义
+### 10.3 严格模式的形式语义
 
 严格模式可视为语言的"方言"，规范通过 `[Strict Mode]` 标记区分。例如：
 
@@ -1414,7 +1299,7 @@ function strict() {
 - 静态语义：`HasCallInTailPosition` 在严格模式下生效
 - 求值规则：`this` 在严格模式下不经过 `ToObject` 转换
 
-### 11.4 严格模式的安全收益
+### 10.4 严格模式的安全收益
 
 严格模式通过以下方式提升安全性：
 
@@ -1423,9 +1308,9 @@ function strict() {
 3. **禁止 caller 暴露调用栈**：防止信息泄漏
 4. **简化优化**：固定 this 绑定、无 with、无 arguments.callee 使 JIT 优化更易
 
-## 12. 代理与反射的元编程理论
+## 11. 代理与反射的元编程理论
 
-### 12.1 元编程的层级
+### 11.1 元编程的层级
 
 元编程（Metaprogramming）分为：
 
@@ -1435,7 +1320,7 @@ function strict() {
 
 JavaScript 的 Proxy 与 Reflect 提供运行时 intercession 能力，即修改对象基本操作的能力。
 
-### 12.2 Proxy 的形式语义
+### 11.2 Proxy 的形式语义
 
 Proxy 是规范定义的"异质对象"（Exotic Object），其内部方法的默认实现委托给 handler 对象。形式化：
 
@@ -1461,7 +1346,7 @@ $$
 | `[[Call]]` | apply | 函数调用 |
 | `[[Construct]]` | construct | new 调用 |
 
-### 12.3 Proxy 不变量
+### 11.3 Proxy 不变量
 
 Proxy 必须满足若干不变量（invariant），否则抛出 TypeError：
 
@@ -1473,7 +1358,7 @@ Proxy 必须满足若干不变量（invariant），否则抛出 TypeError：
 
 这些不变量保证了 Proxy 即使被滥用也无法破坏对象系统的基本契约。
 
-### 12.4 Reflect 的角色
+### 11.4 Reflect 的角色
 
 Reflect 命名空间提供与 Proxy handler 一一对应的方法，用于：
 
@@ -1494,9 +1379,9 @@ Reflect 命名空间提供与 Proxy handler 一一对应的方法，用于：
    ```
 3. **正确传递 receiver**：访问器属性的 getter 中 this 应绑定到 receiver 而非 target
 
-### 12.5 代理的典型应用
+### 11.5 代理的典型应用
 
-#### 12.5.1 校验与拦截
+#### 11.5.1 校验与拦截
 
 ```javascript
 function validate(target, schema) {
@@ -1522,7 +1407,7 @@ user.name = 'Alice';  // OK
 user.age = -1;        // TypeError
 ```
 
-#### 12.5.2 自动日志
+#### 11.5.2 自动日志
 
 ```javascript
 function logCalls(obj) {
@@ -1541,7 +1426,7 @@ function logCalls(obj) {
 }
 ```
 
-#### 12.5.3 虚拟属性
+#### 11.5.3 虚拟属性
 
 ```javascript
 function withDefaults(target, defaults) {
@@ -1556,7 +1441,7 @@ const cfg = withDefaults({}, { port: 3000, host: 'localhost' });
 cfg.port; // 3000
 ```
 
-#### 12.5.4 可观察对象
+#### 11.5.4 可观察对象
 
 ```javascript
 function observable(target, observer) {
@@ -1571,7 +1456,7 @@ function observable(target, observer) {
 }
 ```
 
-### 12.6 Proxy 与原型链
+### 11.6 Proxy 与原型链
 
 Proxy 拦截 `[[Get]]` 时，被查找的属性可能在原型链上。若 handler 不正确转发，可能导致原型链查找错误：
 
@@ -1589,7 +1474,7 @@ const proxy = new Proxy(target, {
 proxy.greet(); // 'hi'
 ```
 
-### 12.7 Proxy 的性能开销
+### 11.7 Proxy 的性能开销
 
 Proxy 的每次内部方法调用都经过 handler 派发，开销显著高于普通对象。基准测试显示 Proxy 属性访问比普通对象慢 5-10 倍。生产环境使用 Proxy 应：
 
@@ -1597,9 +1482,9 @@ Proxy 的每次内部方法调用都经过 handler 派发，开销显著高于�
 2. 缓存 Proxy 结果避免重复创建
 3. 高频路径绕过 Proxy
 
-## 13. 弱引用与垃圾回收
+## 12. 弱引用与垃圾回收
 
-### 13.1 引用强度层级
+### 12.1 引用强度层级
 
 JavaScript 的引用强度从强到弱：
 
@@ -1610,7 +1495,7 @@ JavaScript 的引用强度从强到弱：
 | 弱引用 2 | WeakRef | 否（deref 可能返回 undefined） |
 | 无引用 | FinalizationRegistry | 仅在回收后通知 |
 
-### 13.2 WeakMap 与 WeakSet
+### 12.2 WeakMap 与 WeakSet
 
 WeakMap 的 key 必须是对象，且 key 是弱引用。当 key 被 GC 回收后，对应的 entry 自动消失。
 
@@ -1634,7 +1519,7 @@ $$
 
 WeakMap 不实现迭代（无 keys、values、entries、forEach），因为其内部状态随 GC 变化，无法保证一致性。
 
-### 13.3 WeakRef
+### 12.3 WeakRef
 
 ES2021 引入 WeakRef，允许显式持有弱引用：
 
@@ -1660,7 +1545,7 @@ WeakRef.deref() 的语义：
 
 deref 的结果仅在调用瞬间有效，下次 GC 可能改变结果。
 
-### 13.4 FinalizationRegistry
+### 12.4 FinalizationRegistry
 
 FinalizationRegistry 允许在对象被 GC 后执行回调：
 
@@ -1683,9 +1568,9 @@ obj = null; // 触发 GC 时执行回调
 3. 回调中应仅清理 heldValue 指向的外部资源
 4. 不能依赖回调实现关键逻辑
 
-### 13.5 弱引用的应用场景
+### 12.5 弱引用的应用场景
 
-#### 13.5.1 缓存
+#### 12.5.1 缓存
 
 ```javascript
 class WeakCache {
@@ -1697,7 +1582,7 @@ class WeakCache {
 // 当 key 被回收，缓存自动清理
 ```
 
-#### 13.5.2 对象元数据
+#### 12.5.2 对象元数据
 
 ```javascript
 const metadata = new WeakMap();
@@ -1707,7 +1592,7 @@ function track(obj, info) {
 // obj 回收时 metadata 自动清理，不会泄漏
 ```
 
-#### 13.5.3 监听器管理
+#### 12.5.3 监听器管理
 
 ```javascript
 class EventEmitter {
@@ -1721,7 +1606,7 @@ class EventEmitter {
 }
 ```
 
-### 13.6 弱引用与代数数据类型
+### 12.6 弱引用与代数数据类型
 
 弱引用的语义可视为 Maybe 类型的延续：
 
@@ -1731,9 +1616,9 @@ $$
 
 每次 deref 返回 Some(value) 或 None，对应"对象存活"与"对象被回收"。
 
-## 14. 内存模型与 V8 堆结构
+## 13. 内存模型与 V8 堆结构
 
-### 14.1 V8 堆内存分区
+### 13.1 V8 堆内存分区
 
 V8 将堆内存划分为多个区域，不同区域使用不同 GC 算法：
 
@@ -1754,7 +1639,7 @@ flowchart TD
     B5 --> B6
 ```
 
-### 14.2 新生代 GC：Scavenge
+### 13.2 新生代 GC：Scavenge
 
 新生代使用 Cheney 的半空间复制算法：
 
@@ -1771,7 +1656,7 @@ flowchart TD
 
 适用场景：新生代对象"朝生夕死"特性，GC 频繁但每次回收量大。
 
-### 14.3 老生代 GC：Mark-Sweep-Compact
+### 13.3 老生代 GC：Mark-Sweep-Compact
 
 老生代使用三色标记法：
 
@@ -1794,7 +1679,7 @@ flowchart TD
 - **并发清除与整理**：清除与整理在辅助线程执行
 - **并行 Scavenge**：新生代 GC 在多辅助线程并行执行
 
-### 14.4 Orinoco GC
+### 13.4 Orinoco GC
 
 V8 的 Orinoco 项目（2015-至今）将 GC 改进为并发与并行：
 
@@ -1804,9 +1689,9 @@ V8 的 Orinoco 项目（2015-至今）将 GC 改进为并发与并行：
 - **Concurrent Compaction**：整理并发执行
 - **Incremental Marking**：标记阶段拆分，减少主线程暂停
 
-### 14.5 内存泄漏的常见模式
+### 13.5 内存泄漏的常见模式
 
-#### 14.5.1 意外的全局变量
+#### 13.5.1 意外的全局变量
 
 ```javascript
 function leak() {
@@ -1816,7 +1701,7 @@ function leak() {
 
 严格模式下抛出 ReferenceError。
 
-#### 14.5.2 被遗忘的定时器
+#### 13.5.2 被遗忘的定时器
 
 ```javascript
 function setup() {
@@ -1828,7 +1713,7 @@ function setup() {
 // 组件销毁时未 clearInterval
 ```
 
-#### 14.5.3 闭包捕获
+#### 13.5.3 闭包捕获
 
 ```javascript
 function createLeak() {
@@ -1839,7 +1724,7 @@ function createLeak() {
 }
 ```
 
-#### 14.5.4 DOM 引用
+#### 13.5.4 DOM 引用
 
 ```javascript
 const elements = {};
@@ -1850,7 +1735,7 @@ function setup() {
 }
 ```
 
-#### 14.5.5 未移除的事件监听
+#### 13.5.5 未移除的事件监听
 
 ```javascript
 function setup() {
@@ -1860,7 +1745,7 @@ function setup() {
 }
 ```
 
-#### 14.5.6 脱离 DOM 树的引用
+#### 13.5.6 脱离 DOM 树的引用
 
 ```javascript
 let detached;
@@ -1870,9 +1755,9 @@ function create() {
 }
 ```
 
-### 14.6 内存分析的工程实践
+### 13.6 内存分析的工程实践
 
-#### 14.6.1 浏览器 DevTools
+#### 13.6.1 浏览器 DevTools
 
 Chrome DevTools 提供：
 
@@ -1880,7 +1765,7 @@ Chrome DevTools 提供：
 - **Performance 面板**：记录 GC 事件与内存曲线
 - **堆快照对比**：定位内存增长点
 
-#### 14.6.2 Node.js 内存分析
+#### 13.6.2 Node.js 内存分析
 
 ```bash
 # 启动时启用检查
@@ -1891,7 +1776,7 @@ const heapdump = require('heapdump');
 heapdump.writeSnapshot('/tmp/heap.heapsnapshot');
 ```
 
-#### 14.6.3 V8 标志位
+#### 13.6.3 V8 标志位
 
 ```bash
 # 打印 GC 事件
@@ -1904,9 +1789,9 @@ node --max-old-space-size=4096 server.js
 node --max-semi-space-size=64 server.js
 ```
 
-## 15. V8 引擎与多层 JIT
+## 14. V8 引擎与多层 JIT
 
-### 15.1 V8 的执行流水线
+### 14.1 V8 的执行流水线
 
 V8（自 v11+）采用四层执行模型：
 
@@ -1936,7 +1821,7 @@ JavaScript 源代码
       +---> 懒解析 (Lazy Parsing)
 ```
 
-### 15.2 Ignition 解释器
+### 14.2 Ignition 解释器
 
 Ignition 是 V8 的字节码解释器，特点：
 
@@ -1945,7 +1830,7 @@ Ignition 是 V8 的字节码解释器，特点：
 - **类型反馈收集**：内联缓存（IC）记录运行时类型信息
 - **低内存占用**：字节码比 AST 紧凑
 
-### 15.3 Sparkplug 基线编译器
+### 14.3 Sparkplug 基线编译器
 
 Sparkplug（V8 v9.1+）是介于 Ignition 与 Maglev 之间的基线编译器：
 
@@ -1954,7 +1839,7 @@ Sparkplug（V8 v9.1+）是介于 Ignition 与 Maglev 之间的基线编译器：
 - **节省解释开销**：避免逐字节码解释
 - **收集更多反馈**：为 Maglev/TurboFan 准备更稳定的类型反馈
 
-### 15.4 Maglev 中层编译器
+### 14.4 Maglev 中层编译器
 
 Maglev（V8 v11+）是中层优化编译器：
 
@@ -1963,7 +1848,7 @@ Maglev（V8 v11+）是中层优化编译器：
 - **快速编译**：编译时间约为 TurboFan 的 1/3
 - **填补差距**：在 Sparkplug 与 TurboFan 之间提供性能-编译时间平衡
 
-### 15.5 TurboFan 优化编译器
+### 14.5 TurboFan 优化编译器
 
 TurboFan 是 V8 的高度优化编译器，特性：
 
@@ -1983,7 +1868,7 @@ $$
 }
 $$
 
-### 15.6 逆优化
+### 14.6 逆优化
 
 逆优化（Deoptimization）在推测优化的假设失败时触发，回退到 Ignition 解释执行。触发条件：
 
@@ -2001,7 +1886,7 @@ for (let i = 0; i < 1e6; i++) add(i, i); // 整数加法，快速路径
 add(1.5, 2); // 触发逆优化，回退到通用加法
 ```
 
-### 15.7 隐藏类与内联缓存
+### 14.7 隐藏类与内联缓存
 
 V8 使用隐藏类（Hidden Class，也称 Map）描述对象内存布局。每个对象都有指向其隐藏类的指针，隐藏类记录：
 
@@ -2028,7 +1913,7 @@ const p2 = new Point(3, 4); // 复用 C0 -> C1 -> C2
 | Polymorphic | 2-4 种隐藏类 | 中等 |
 | Megamorphic | 超过 4 种 | 最慢 |
 
-### 15.8 隐藏类转换的最佳实践
+### 14.8 隐藏类转换的最佳实践
 
 ```javascript
 // 好的做法：相同顺序初始化
@@ -2053,9 +1938,9 @@ function Obj(a, b, c) {
 }
 ```
 
-## 16. 对比分析
+## 15. 对比分析
 
-### 16.1 JavaScript vs Python
+### 15.1 JavaScript vs Python
 
 | 维度 | JavaScript | Python |
 | ---- | ---------- | ------ |
@@ -2068,7 +1953,7 @@ function Obj(a, b, c) {
 | 元编程 | Proxy + Reflect | 描述符 + 元类 |
 | 闭包语义 | 绑定捕获 | 变量名捕获（受限） |
 
-### 16.2 JavaScript vs Lua
+### 15.2 JavaScript vs Lua
 
 | 维度 | JavaScript | Lua |
 | ---- | ---------- | --- |
@@ -2079,7 +1964,7 @@ function Obj(a, b, c) {
 | 协程 | Generator + async | coroutine |
 | 空值 | null + undefined | nil |
 
-### 16.3 JavaScript vs Scheme
+### 15.3 JavaScript vs Scheme
 
 JavaScript 设计深受 Scheme 影响：
 
@@ -2094,7 +1979,7 @@ JavaScript 设计深受 Scheme 影响：
 - JavaScript 命令式语法，Scheme S-表达式
 - JavaScript 引入原型面向对象，Scheme 无内置 OO
 
-### 16.4 浏览器 vs Node.js vs Deno vs Bun
+### 15.4 浏览器 vs Node.js vs Deno vs Bun
 
 | 维度 | 浏览器 | Node.js | Deno | Bun |
 | ---- | ------ | ------- | ---- | --- |
@@ -2105,9 +1990,9 @@ JavaScript 设计深受 Scheme 影响：
 | TypeScript | 通过打包工具 | 通过 ts-node/tsc | 原生支持 | 原生支持 |
 | 标准库 | DOM + Web API | fs、http 等 | Web API + 本地 | Web API + 本地 |
 
-## 17. 常见陷阱与反直觉行为
+## 16. 常见陷阱与反直觉行为
 
-### 17.1 WAT 系列陷阱
+### 16.1 WAT 系列陷阱
 
 ```javascript
 [] + [];        // ''
@@ -2128,7 +2013,7 @@ typeof null;    // 'object' (历史遗留 bug)
 0.1 + 0.2;     // 0.30000000000000004
 ```
 
-### 17.2 this 绑定陷阱
+### 16.2 this 绑定陷阱
 
 ```javascript
 const obj = {
@@ -2147,7 +2032,7 @@ setTimeout(bound, 0);  // 'Hello, Alice'
 setTimeout(() => obj.greet(), 0);  // 'Hello, Alice'
 ```
 
-### 17.3 浮点精度
+### 16.3 浮点精度
 
 ```javascript
 0.1 + 0.2 === 0.3;  // false
@@ -2159,7 +2044,7 @@ Math.round((0.1 + 0.2) * 1e10) / 1e10;  // 0.3
 Number((0.1 + 0.2).toFixed(10));        // 0.3
 ```
 
-### 17.4 比较运算符
+### 16.4 比较运算符
 
 ```javascript
 [1, 2, 3] === [1, 2, 3];  // false (引用比较)
@@ -2170,7 +2055,7 @@ Object.is(NaN, NaN);  // true (Object.is 修复 NaN 比较)
 Object.is(-0, 0);     // false (Object.is 区分 -0 与 +0)
 ```
 
-### 17.5 var 提升
+### 16.5 var 提升
 
 ```javascript
 console.log(x);  // undefined (而非 ReferenceError)
@@ -2192,7 +2077,7 @@ bar();  // TypeError: bar is not a function
 var bar = function () { console.log('bar'); };
 ```
 
-### 17.6 块级作用域与函数声明
+### 16.6 块级作用域与函数声明
 
 ```javascript
 {
@@ -2209,7 +2094,7 @@ f();  // 1（非严格模式下，块级函数声明提升到外层）
 f();  // ReferenceError（严格模式下块级作用域隔离）
 ```
 
-### 17.7 async-await 的执行顺序
+### 16.7 async-await 的执行顺序
 
 ```javascript
 async function A() {
@@ -2233,7 +2118,7 @@ console.log('C');
 
 每次 await 都将后续代码作为 microtask 调度，因此 A2 与 B2 在 C 之后执行。
 
-### 17.8 Promise 链中的错误传播
+### 16.8 Promise 链中的错误传播
 
 ```javascript
 Promise.resolve()
@@ -2244,7 +2129,7 @@ Promise.resolve()
 // 链中任何 reject 都会跳到最近的 catch
 ```
 
-### 17.9 for-in 与 hasOwnProperty
+### 16.9 for-in 与 hasOwnProperty
 
 ```javascript
 const obj = Object.create({ inherited: 'inherited' });
@@ -2259,7 +2144,7 @@ for (const k in obj) {
 }
 ```
 
-### 17.10 数组方法的 this 与 length
+### 16.10 数组方法的 this 与 length
 
 ```javascript
 const arr = [1, 2, 3];
@@ -2271,9 +2156,9 @@ arr.length = 2;
 arr;  // [1, 2]
 ```
 
-## 18. 工程实践
+## 17. 工程实践
 
-### 18.1 类型化保护
+### 17.1 类型化保护
 
 ```javascript
 function isString(v) { return typeof v === 'string'; }
@@ -2294,7 +2179,7 @@ function processUser(user) {
 }
 ```
 
-### 18.2 错误处理分层
+### 17.2 错误处理分层
 
 ```javascript
 class AppError extends Error {
@@ -2323,7 +2208,7 @@ async function fetchUser(id) {
 }
 ```
 
-### 18.3 模块设计
+### 17.3 模块设计
 
 ```javascript
 // 单一职责：每个模块只做一件事
@@ -2346,7 +2231,7 @@ export function userRoutes(controller) {
 }
 ```
 
-### 18.4 性能优化原则
+### 17.4 性能优化原则
 
 1. **避免在热路径创建对象**：复用对象，避免 GC 压力
 2. **批量操作**：使用 Map/Set 批量更新，避免循环内单独操作
@@ -2371,7 +2256,7 @@ for (let i = 0; i < 1e6; i++) {
 }
 ```
 
-### 18.5 测试驱动
+### 17.5 测试驱动
 
 ```javascript
 import { test, expect } from 'vitest';
@@ -2385,7 +2270,7 @@ test('sum adds two numbers', () => {
 });
 ```
 
-### 18.6 异步错误处理
+### 17.6 异步错误处理
 
 ```javascript
 // 反例：未捕获的 Promise
@@ -2407,7 +2292,7 @@ async function safeFetch() {
 }
 ```
 
-### 18.7 全局错误兜底
+### 17.7 全局错误兜底
 
 ```javascript
 // 浏览器
@@ -2429,9 +2314,9 @@ process.on('uncaughtException', (err) => {
 });
 ```
 
-## 19. 案例研究
+## 18. 案例研究
 
-### 19.1 React 的事件委托与合成事件
+### 18.1 React 的事件委托与合成事件
 
 React 通过事件委托将所有事件统一挂载到 document（React 17+ 挂载到 root container），通过事件冒泡机制触发组件回调。这避免了为每个元素单独 addEventListener，节省内存。
 
@@ -2441,7 +2326,7 @@ React 通过事件委托将所有事件统一挂载到 document（React 17+ 挂�
 - **事件循环**：合成事件通过 dispatchEvent 同步触发，但实际触发时机仍由事件循环决定
 - **代理模式**：事件委托本质上是利用事件冒泡的代理
 
-### 19.2 Vue 3 的响应式系统
+### 18.2 Vue 3 的响应式系统
 
 Vue 3 的 reactivity 基于 Proxy 实现：
 
@@ -2467,7 +2352,7 @@ function reactive(target) {
 - **WeakMap**：targetMap 使用 WeakMap 存储依赖，target 被回收时自动清理
 - **闭包**：activeEffect 是一个闭包变量
 
-### 19.3 Express 的中间件模型
+### 18.3 Express 的中间件模型
 
 Express 通过 next 函数实现中间件链：
 
@@ -2489,7 +2374,7 @@ app.use((req, res, next) => {
 - **尾调用**：next 是尾调用，可被尾调用优化
 - **执行栈**：next 不挂起当前执行，本质是同步递归调用
 
-### 19.4 Redux 的不可变性
+### 18.4 Redux 的不可变性
 
 Redux 强制 reducer 不可变：
 
@@ -2510,7 +2395,7 @@ function reducer(state = { count: 0 }, action) {
 - **GC 友好**：旧 state 不再被引用时立即回收
 - **隐藏类稳定**：相同结构更新保持隐藏类一致，利于 V8 优化
 
-### 19.5 Node.js 的流
+### 18.5 Node.js 的流
 
 Node.js Stream 基于事件：
 
@@ -2647,7 +2532,7 @@ readable.on('end', () => writable.end());
 
    答案：A
 
-### 20.3 代码修复题（code-fix）
+### 19.3 代码修复题（code-fix）
 
 1. **[apply]** 以下代码期望依次输出 0、1、2、3、4，但实际输出五次 5。请指出缺陷并修复。
 
@@ -2769,7 +2654,7 @@ readable.on('end', () => writable.end());
    obj.x = 2;
    ```
 
-### 20.4 开放题（open-ended）
+### 19.4 开放题（open-ended）
 
 1. **[evaluate]** 请从代数效应（algebraic effects）的视角论证 async-await 是 Generator + Promise 的语法糖，并说明为何 async 函数无法替代真正的代数效应。
 
@@ -2783,7 +2668,7 @@ readable.on('end', () => writable.end());
 
 6. **[evaluate]** 讨论事件循环模型在以下场景的局限：CPU 密集任务、长任务阻塞、背压、取消传播。Web Worker 与 SharedArrayBuffer 如何部分解决这些问题？
 
-## 21. 理论速查表
+## 20. 理论速查表
 
 | 概念 | 核心要点 | 关键细节 |
 | ---- | -------- | -------- |
@@ -2809,7 +2694,7 @@ readable.on('end', () => writable.end());
 | 新生代 GC | Scavenge 半空间复制 | 短生命周期对象 |
 | 老生代 GC | Mark-Sweep-Compact | 增量标记 + 并发回收 |
 
-## 22. 参考文献（ACM Reference Format）
+## 21. 参考文献（ACM Reference Format）
 
 [1] Eich, B. 1995. JavaScript 1.0 Specification. Netscape Communications Corporation.
 
@@ -2861,9 +2746,9 @@ readable.on('end', () => writable.end());
 
 [25] Matsakis, N. D. and Klock II, F. S. 2014. The Rust language. In Proceedings of the 2014 ACM SIGAda Annual Conference on High Integrity Language Technology (HILT 2014). ACM. DOI: 10.1145/2663171.2663188.
 
-## 23. 延伸阅读
+## 22. 延伸阅读
 
-### 23.1 经典书籍
+### 22.1 经典书籍
 
 - David Flanagan. *JavaScript: The Definitive Guide*, 7th Edition. O'Reilly Media, 2020.
 - Kyle Simpson. *You Don't Know JS* (six-book series). O'Reilly Media, 2014-2019.
@@ -2873,7 +2758,7 @@ readable.on('end', () => writable.end());
 - Boris Cherny. *Programming TypeScript*. O'Reilly Media, 2019.
 - Stefan Baumgartner. *JavaScript from Frontend to Backend*. Manning Publications, 2022.
 
-### 23.2 规范与文档
+### 22.2 规范与文档
 
 - ECMA-262 规范最新版：https://tc39.es/ecma262/
 - TC39 提案仓库：https://github.com/tc39/proposals
@@ -2882,7 +2767,7 @@ readable.on('end', () => writable.end());
 - V8 团队博客：https://v8.dev/blog
 - Node.js 文档：https://nodejs.org/docs/latest/api/
 
-### 23.3 经典论文
+### 22.3 经典论文
 
 - Andreas Rossberg. *JavaScript Semantics* (2018) - 形式化定义 ES5
 - Matthias Felleisen. *On the Expressive Power of Programming Languages* (1991)
@@ -2891,7 +2776,7 @@ readable.on('end', () => writable.end());
 - André Platzer & Matija Pretnar. *Handlers of Algebraic Effects* (2009)
 - Andreas Rossberg, et al. *Trait-based JavaScript* (2013)
 
-### 23.4 开源项目
+### 22.4 开源项目
 
 - V8 引擎：https://v8.dev/
 - SpiderMonkey（Firefox）：https://spidermonkey.dev/
@@ -2902,7 +2787,7 @@ readable.on('end', () => writable.end());
 - QuickJS（嵌入式 JS 引擎）：https://bellard.org/quickjs/
 - TypeScript：https://www.typescriptlang.org/
 
-### 23.5 学术课程
+### 22.5 学术课程
 
 - MIT 6.S192: Software Construction
 - Stanford CS142: Web Applications
@@ -2912,7 +2797,7 @@ readable.on('end', () => writable.end());
 - ETH Zurich: Advanced JavaScript
 - University of Washington CSE 490H: Programming Languages
 
-### 23.6 进阶主题
+### 22.6 进阶主题
 
 以下主题超出本文范围，建议进一步研究：
 
@@ -2926,7 +2811,7 @@ readable.on('end', () => writable.end());
 - **Import Maps**：模块解析的运行时配置
 - **Pattern Matching 提案**：模式匹配的形式语义与代数数据类型
 
-## 24. 附录 A：Bloom 分类法与习题映射
+## 23. 附录 A：Bloom 分类法与习题映射
 
 本文习题按 Bloom 分类法设计，覆盖六个认知层级：
 
@@ -2948,7 +2833,7 @@ readable.on('end', () => writable.end());
 5. 挑战代码修复与开放题
 6. 阅读案例研究连接实践
 
-## 25. 附录 B：术语对照表
+## 24. 附录 B：术语对照表
 
 | 中文术语 | 英文术语 | 缩写 | 含义 |
 | -------- | -------- | ---- | ---- |
@@ -2979,7 +2864,7 @@ readable.on('end', () => writable.end());
 | 代数效应 | Algebraic Effect | AE | 函数式效应抽象 |
 | 续延 | Continuation | - | 计算剩余部分 |
 
-## 26. 附录 C：版本与变更日志
+## 25. 附录 C：版本与变更日志
 
 | 版本 | 日期 | 变更内容 | 作者 |
 | ---- | ---- | -------- | ---- |

@@ -34,14 +34,6 @@ related:
   - algorithm/图算法
   - algorithm/树
 prerequisites: []
-learningObjectives:
-  - 记忆五类渐近记号 $O/\Omega/\Theta/o/\omega$ 的形式化定义、传递/自反/对称/转置对称/加法/乘法运算性质，复述主定理三种情况的形式化条件（$f(n) = O(n^{\log_b a - \epsilon})$ / $\Theta(n^{\log_b a} \log^k n)$ / $\Omega(n^{\log_b a + \epsilon})$ + 正则条件）与摊还分析三方法（聚合/核算/势能）
-  - 理解 Turing 1936《On Computable Numbers, with an Application to the Entscheidungsproblem》Proc. LMS 42:230-265 图灵机模型、Bachmann 1894《Analytische Zahlentheorie》大 O 符号起源、Landau 1909《Handbuch》推广、Knuth 1976《Big Omicron and Big Omega and Big Theta》SIGACT News 系统化、Hartmanis-Stearns 1965《On the Computational Complexity of Algorithms》Trans. AMS 117:285-306 复杂性类、Cobham 1964/Edmonds 1965 P 类、Cook 1971 STOC Cook-Levin 定理、Karp 1972 STOC 21 个 NP 完全问题、Bentley-Haken-Saxe 1980 主定理、Sleator-Tarjan 1985 摊还分析的历史脉络，说明各理论的设计动机
-  - 应用渐近记号化简复杂度表达式、使用主定理求解 $T(n) = aT(n/b) + f(n)$ 形式递推、使用代入法与递归树法求解非主定理形式递推、使用聚合/核算/势能法分析动态数组/二项堆/Splay 树等数据结构的摊还代价，编写 Python/C++/Java 代码并进行基准测试
-  - 分析归并排序 $O(n \log n)$、快速排序 $O(n \log n)$ 平均/$O(n^2)$ 最坏、二分查找 $O(\log n)$、Karatsuba $O(n^{\log_2 3})$、Strassen $O(n^{\log_2 7})$、动态数组 push_back 摊还 $O(1)$、Splay 树操作摊还 $O(\log n)$、KMP $O(n + m)$ 的复杂度证明，掌握"渐近分析、递归树归约、势能摊还"三大核心论证方法
-  - 评估各算法在"时间复杂度（最坏/平均/最好）"、"空间复杂度"、"是否原地"、"是否稳定（排序）"、"是否在线（在线算法）"、"是否随机化"维度上的优劣，识别 CLRS/Sedgewick/Skiena/Kleinberg-Tardos 四大教材的选型动机
-  - 对比分治/贪心/动态规划/回溯/分支限界五大算法设计范式的核心思想、适用条件、典型问题、时间复杂度特征
-  - 创造性设计基于算法分析的开源项目解决方案，如算法可视化平台、复杂度自动分析工具、LeetCode 刷题进度追踪系统、算法学习路径推荐引擎
 references:
   - type: book
     authors:
@@ -291,6 +283,7 @@ etymology:
     english: randomized algorithm
     origin: 'randomized algorithm 由 Rabin 1976《Probabilistic algorithms》形式化。Miller-Rabin 1976 素性测试是首个著名的随机化算法。分类：Las Vegas 算法（总是正确，运行时间随机，如随机化快排）与 Monte Carlo 算法（运行时间确定，结果可能错误，如 Miller-Rabin）。随机化算法可显著改进最坏情况复杂度，如快速排序 $O(n^2)$ 最坏 → $O(n \log n)$ 期望'
 ---
+
 
 ## 1. 概述与学习目标
 

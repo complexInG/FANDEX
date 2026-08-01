@@ -20,6 +20,7 @@ prerequisites:
   - python/元类与单例模式
 ---
 
+
 ## 概述
 
 描述符（Descriptor）是 Python 面向对象体系中最为深邃的协议之一。它不是一种语法糖，也不是一种设计模式的简单实现，而是 Python 属性访问机制（attribute access）的核心底层基石。Python 中 `property`、`classmethod`、`staticmethod`、`super()` 的工作机制，`@dataclass` 字段校验、ORM 字段定义、ORM 关系映射、Pydantic 模型校验、Django Model 字段等几乎所有"魔法"背后的原动力，最终都可以追溯到描述符协议。
@@ -28,70 +29,9 @@ prerequisites:
 
 本篇文档将围绕描述符协议的形式化定义、底层调用机制、协议分类、设计模式、与元类和属性查找链的交互、生产级工程实践、性能分析、陷阱与反模式、真实案例研究等展开系统化论述，目标是让读者从协议层、字节码层、C 源码层全方位掌握描述符。
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本篇采用 Bloom 分类法（Bloom's Taxonomy）按认知层级组织学习目标。Bloom 分类法将认知能力由低到高划分为六个层级：记忆（Remember）、理解（Understand）、应用（Apply）、分析（Analyze）、评价（Evaluate）、创造（Create）。本节明确每个层级应达成的可观测学习成果。
-
-### 1.1 记忆层（Remember）
-
-学习者能够准确复述以下事实性知识：
-
-- 描述符协议包含三个核心方法：`__get__(self, obj, objtype=None)`、`__set__(self, obj, value)`、`__delete__(self, obj)`。
-- 仅实现 `__get__` 的描述符称为非数据描述符（non-data descriptor）。
-- 同时实现 `__get__` 与 `__set__`（或 `__delete__`）的描述符称为数据描述符（data descriptor）。
-- 描述符必须定义为类属性，不能定义为实例属性。
-- `property` 装饰器内部本质上是数据描述符的工厂函数。
-- `classmethod` 与 `staticmethod` 内部均是非数据描述符。
-- 描述符的 `__set_name__` 钩子在 Python 3.6 引入。
-
-### 1.2 理解层（Understand）
-
-学习者能够用自己的语言解释以下概念：
-
-- 为什么数据描述符优先级高于实例字典，而非数据描述符优先级低于实例字典。
-- `__getattribute__` 在属性访问链中执行查找的完整顺序。
-- 为什么 `property` 装饰器无法在实例层面覆盖类层面的同名属性。
-- 描述符如何成为 ORM 字段、`@cached_property`、`@dataclass` 字段校验等高级特性的底层基础。
-- `super()` 在 MRO 链上查找时如何与描述符交互。
-
-### 1.3 应用层（Apply）
-
-学习者能够在真实工程场景中：
-
-- 自定义一个带类型校验的 `TypedField` 描述符，实现类似 Pydantic 的字段验证。
-- 实现一个 `LazyProperty` 描述符，做到首次访问时计算并缓存结果。
-- 使用 `__set_name__` 自动登记字段元信息，构建轻量级 ORM 字段基类。
-- 借助描述符实现 ORM 关系映射中的 `ForeignKey`、`ManyToMany` 字段。
-- 通过描述符实现只读属性、读写校验属性、计算属性。
-
-### 1.4 分析层（Analyze）
-
-学习者能够剖析：
-
-- 同一段 `obj.attr` 字节码在数据描述符、非数据描述符、普通类属性、实例属性四种场景下的执行路径差异。
-- 描述符在 CPython 解释器层面的 `tp_descr_get` 与 `tp_descr_set` 槽位调用。
-- 描述符与元类协作时，属性查找链在 metaclass MRO 与 class MRO 上的双重遍历。
-- 描述符协议在多继承菱形继承下的查找顺序。
-
-### 1.5 评价层（Evaluate）
-
-学习者能够评价：
-
-- 在给定业务场景下，使用 `property`、自定义描述符、`__getattr__`、`__setattr__` 哪种方案更合适。
-- 描述符方案与 `@dataclass`、Pydantic、attrs 等第三方库方案在性能、可维护性、扩展性上的权衡。
-- 一段生产代码中描述符设计的合理性与潜在风险。
-
-### 1.6 创造层（Create）
-
-学习者能够：
-
-- 设计一套支持字段校验、类型转换、序列化、反序列化的企业级字段基类体系。
-- 构建一个支持迁移、关系映射、查询构造的微型 ORM 原型。
-- 基于描述符实现一套领域驱动设计（DDD）中的值对象（Value Object）与聚合根（Aggregate Root）基础设施。
-
-## 2. 历史动机与背景
-
-### 2.1 Python 早期属性访问的痛点
+### 1.1 Python 早期属性访问的痛点
 
 Python 早期（1.x 时代）属性访问机制相对原始。开发者若希望在属性读写时插入自定义逻辑（例如类型校验、计算属性、缓存、日志），唯一手段是重写 `__getattr__` 与 `__setattr__` 这两个方法。然而这两个方法是全局性的，所有属性访问都会经过它们，导致代码充斥着大量 `if name == 'xxx':` 分支，可维护性极差。
 
@@ -119,7 +59,7 @@ class Person:
 
 上述代码的问题在于：每增加一个受控属性，都要修改 `__getattr__` 与 `__setattr__`，违反开闭原则（Open-Closed Principle, OCP）。属性越多，方法体越膨胀，最终演化成无法维护的"上帝方法"。
 
-### 2.2 描述符协议的引入
+### 1.2 描述符协议的引入
 
 Python 2.2 是一次里程碑式的版本发布，Guido van Rossum 与其团队在该版本中完成了"类型与类的统一"（type/class unification），引入了新式类（new-style class）。新式类的引入伴随了一系列对象模型的重新设计，其中描述符协议便是核心组成部分之一。
 
@@ -131,7 +71,7 @@ Python 2.2 是一次里程碑式的版本发布，Guido van Rossum 与其团队�
 
 Guido van Rossum 在 PEP 252（Making Types Look More Like Classes）与 PEP 253（Subtyping Built-in Types）中正式定义了描述符协议的语义。Python 2.2 后，描述符协议成为 Python 对象模型的根基。
 
-### 2.3 演进里程碑
+### 1.3 演进里程碑
 
 | 版本 | 年份 | 关键变化 |
 |------|------|----------|
@@ -144,7 +84,7 @@ Guido van Rossum 在 PEP 252（Making Types Look More Like Classes）与 PEP 253
 | Python 3.11 | 2022 | 描述符协议相关字节码优化，`LOAD_ATTR` 性能提升 |
 | Python 3.12 | 2023 | `__init_subclass__` 与 `__set_name__` 协同机制进一步完善 |
 
-### 2.4 现代价值
+### 1.4 现代价值
 
 时至今日，描述符协议在以下领域仍是不可替代的底层机制：
 
@@ -157,9 +97,9 @@ Guido van Rossum 在 PEP 252（Making Types Look More Like Classes）与 PEP 253
 
 掌握描述符协议，意味着掌握了 Python 高级框架"最后一层抽象"的钥匙。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 描述符协议的形式化表述
+### 2.1 描述符协议的形式化表述
 
 设 $C$ 为任意 Python 类，$c$ 为 $C$ 的实例。设 $a$ 为 $C$ 的一个类属性（class attribute），即 $a \in C.\_\_dict\_\_$。称 $a$ 为描述符，当且仅当 $a$ 的类型实现了以下方法中的至少一个：
 
@@ -169,7 +109,7 @@ $$
 
 其中 MRO（Method Resolution Order，方法解析顺序）表示类型的方法解析顺序链。
 
-### 3.2 协议三方法的形式化定义
+### 2.2 协议三方法的形式化定义
 
 **`__get__` 方法**：
 
@@ -195,7 +135,7 @@ $$
 
 其语义为：当执行 $\text{del } c.x$ 时，若 $x$ 是数据描述符，则调用 $a.\_\_delete\_\_(c)$。
 
-### 3.3 数据描述符与非数据描述符的形式化分类
+### 2.3 数据描述符与非数据描述符的形式化分类
 
 定义数据描述符（Data Descriptor）：
 
@@ -211,7 +151,7 @@ $$
 
 注意：判定是否为数据描述符的关键是 `__set__` 或 `__delete__` 是否存在，而 `__get__` 是否存在不影响这一分类。一个仅实现 `__set__` 而未实现 `__get__` 的对象仍是数据描述符。
 
-### 3.4 属性访问优先级的形式化定义
+### 2.4 属性访问优先级的形式化定义
 
 设 $c$ 为类 $C$ 的实例，$x$ 为待访问的属性名。属性访问 $c.x$ 的查找顺序形式化为：
 
@@ -237,7 +177,7 @@ $$
 
 数据描述符之所以"数据"，是因为它能"控制数据"——它优先于实例字典，意味着实例无法通过 `self.__dict__[x] = v` 绕过描述符的写入校验。
 
-### 3.5 属性赋值优先级的形式化定义
+### 2.5 属性赋值优先级的形式化定义
 
 属性赋值 $c.x = v$ 的查找顺序形式化为：
 
@@ -251,9 +191,9 @@ $$
 
 注意：赋值时只检查数据描述符，非数据描述符不参与赋值拦截。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 `__getattribute__` 的查找链推导
+### 3.1 `__getattribute__` 的查找链推导
 
 CPython 中 `object.__getattribute__` 的实现位于 `Objects/object.c` 文件中的 `slot_tp_getattribute_hook` 与 `_PyObject_GenericGetAttrWithDict` 函数。其核心逻辑可伪代码表示如下：
 
@@ -304,7 +244,7 @@ PyObject* _PyObject_GenericGetAttrWithDict(PyObject *obj, PyObject *name) {
 
 从上述伪代码可清晰看出属性访问的完整链路。这条链路是 Python 对象模型的核心算法，理解了它，便理解了 Python 属性访问的全部秘密。
 
-### 4.2 数据描述符优先级的必要性
+### 3.2 数据描述符优先级的必要性
 
 为什么数据描述符优先级要高于实例字典？这是 Python 设计者经过深思熟虑后的权衡。考虑 `property` 装饰器：
 
@@ -326,7 +266,7 @@ class Circle:
 
 若数据描述符优先级低于实例字典，那么 `circle.radius = 5` 将直接写入 `circle.__dict__['radius'] = 5`，绕过 setter 的校验。`property` 的存在意义便被彻底瓦解。因此，数据描述符必须拥有最高优先级，否则所有依赖描述符的校验、计算、缓存机制都将失效。
 
-### 4.3 非数据描述符优先级低于实例字典的原因
+### 3.3 非数据描述符优先级低于实例字典的原因
 
 `classmethod` 与 `staticmethod` 是非数据描述符。它们没有 `__set__`，因此优先级低于实例字典。这一设计的考量是：
 
@@ -335,7 +275,7 @@ class Circle:
 
 这一权衡体现了 Python"实用胜于纯粹"的设计哲学。Python 给开发者足够的自由，但保留必要的约束。
 
-### 4.4 描述符查找的时间复杂度分析
+### 3.4 描述符查找的时间复杂度分析
 
 设 $n$ 为类 $C$ 的 MRO 链长度，$m$ 为类字典平均属性数。属性访问 $c.x$ 的时间复杂度为：
 
@@ -349,7 +289,7 @@ $$
 
 CPython 3.3+ 引入了"类型属性缓存"（type attribute cache），通过 `_PyType_Lookup` 内部的版本号机制缓存查找结果，将重复查找的复杂度降至 $O(1)$。这一优化使描述符访问几乎与普通属性访问同速。
 
-### 4.5 `__set_name__` 的调用时机推导
+### 3.5 `__set_name__` 的调用时机推导
 
 Python 3.6 引入 `__set_name__` 钩子。其调用时机发生在类创建时，由 `type.__new__` 触发。形式化描述如下：
 
@@ -382,11 +322,11 @@ class Field:
 
 `__set_name__` 的引入极大地简化了描述符的字段名管理，是描述符协议现代化的重要里程碑。
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节提供多个完整可运行的代码示例，每个示例均带详细中文注释，覆盖描述符协议的核心用法与典型工程场景。
 
-### 5.1 最简描述符示例
+### 4.1 最简描述符示例
 
 ```python
 # 最简描述符示例：展示描述符协议的基本工作机制
@@ -447,7 +387,7 @@ print(p.name)  # 输出: None
 print(Person.name)  # 输出: <SimpleDescriptor object at 0x...>
 ```
 
-### 5.2 类型校验描述符
+### 4.2 类型校验描述符
 
 ```python
 # 类型校验描述符：实现类似 Pydantic 的字段类型检查
@@ -531,7 +471,7 @@ user.email = None
 print(user.email)  # None
 ```
 
-### 5.3 范围校验描述符
+### 4.3 范围校验描述符
 
 ```python
 # 范围校验描述符：在类型校验基础上增加范围检查
@@ -612,7 +552,7 @@ except ValueError as e:
     print(f'校验失败: {e}')
 ```
 
-### 5.4 惰性计算属性（Lazy Property）
+### 4.4 惰性计算属性（Lazy Property）
 
 ```python
 # 惰性计算属性：首次访问时计算，后续访问直接返回缓存值
@@ -694,7 +634,7 @@ print(f'  结果: {df.summary}')
 print(f'实例字典: {df.__dict__}')
 ```
 
-### 5.5 只读属性描述符
+### 4.5 只读属性描述符
 
 ```python
 # 只读属性描述符：禁止在初始化后修改属性值
@@ -760,7 +700,7 @@ except AttributeError as e:
     print(f'删除失败: {e}')
 ```
 
-### 5.6 ORM 字段基类
+### 4.6 ORM 字段基类
 
 ```python
 # ORM 字段基类：模拟 Django/SQLAlchemy 的字段定义机制
@@ -936,7 +876,7 @@ for field in User._meta['fields']:
           f'nullable={field.nullable}, pk={field.primary_key}')
 ```
 
-### 5.7 外键关系字段
+### 4.7 外键关系字段
 
 ```python
 # 外键关系字段：模拟 ORM 的外键与关联对象访问
@@ -1047,7 +987,7 @@ book.author = author2
 print(f'修改后: {book.author}')  # 直接返回缓存对象
 ```
 
-### 5.8 自定义 property 装饰器
+### 4.8 自定义 property 装饰器
 
 ```python
 # 自定义 property 装饰器：从零实现 property 的核心机制
@@ -1124,7 +1064,7 @@ except ValueError as e:
     print(f'校验失败: {e}')
 ```
 
-### 5.9 描述符与元类协作
+### 4.9 描述符与元类协作
 
 ```python
 # 描述符与元类协作：实现自动字段校验与元信息收集
@@ -1283,7 +1223,7 @@ for name in UserSchema._field_names:
     print(f'  {name}: {type(field).__name__}, required={field.required}')
 ```
 
-### 5.10 描述符实现类方法与静态方法
+### 4.10 描述符实现类方法与静态方法
 
 ```python
 # 描述符实现类方法与静态方法：从零实现 classmethod 与 staticmethod
@@ -1356,7 +1296,7 @@ print(f'is_positive(10): {MathHelper.is_positive(10)}')  # True
 print(f'is_positive(-5): {MathHelper.is_positive(-5)}')  # False
 ```
 
-### 5.11 弱引用键描述符
+### 4.11 弱引用键描述符
 
 ```python
 # 弱引用键描述符：避免在描述符实例上存储实例状态
@@ -1420,7 +1360,7 @@ gc.collect()
 print('s1 被删除后，弱引用字典自动清理')
 ```
 
-### 5.12 描述符实现观察者模式
+### 4.12 描述符实现观察者模式
 
 ```python
 # 描述符实现观察者模式：属性变化时通知监听器
@@ -1512,11 +1452,11 @@ print('total_price 不变（不触发通知）:')
 cart.total_price = 1500
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
 本节将描述符与 Python 中其他属性访问拦截机制进行对比，帮助读者在工程实践中选择最合适的方案。
 
-### 6.1 描述符 vs property vs `__getattr__` vs `__setattr__`
+### 5.1 描述符 vs property vs `__getattr__` vs `__setattr__`
 
 | 维度 | 描述符 | property | `__getattr__` | `__setattr__` |
 |------|--------|----------|---------------|---------------|
@@ -1535,7 +1475,7 @@ cart.total_price = 1500
 - **`__getattr__`**只在属性未找到时触发，适合动态属性、代理对象（如 `__getattr__` 转发到内部对象）。不适合做字段校验，因为校验字段在实例字典中存在时不会触发 `__getattr__`。
 - **`__setattr__`**在所有属性赋值时触发，适合全局性控制（如禁止动态属性、统一序列化）。但每个赋值都要经过它，性能开销大，且容易写出递归调用（在 `__setattr__` 内部又赋值）。
 
-### 6.2 描述符 vs `@dataclass` vs Pydantic vs attrs
+### 5.2 描述符 vs `@dataclass` vs Pydantic vs attrs
 
 | 维度 | 自定义描述符 | `@dataclass` | Pydantic | attrs |
 |------|--------------|--------------|----------|-------|
@@ -1554,7 +1494,7 @@ cart.total_price = 1500
 - Pydantic 是当前 Python 生态中最流行的数据校验库，FastAPI、LangChain 等均深度依赖。其 v2 版本用 Rust 重写了核心，性能极快。
 - attrs 是 attrs 库提供的数据类方案，比 `@dataclass` 更早，功能更丰富，但社区热度不如 Pydantic。
 
-### 6.3 数据描述符 vs 非数据描述符
+### 5.3 数据描述符 vs 非数据描述符
 
 | 维度 | 数据描述符 | 非数据描述符 |
 |------|------------|--------------|
@@ -1571,11 +1511,11 @@ cart.total_price = 1500
 
 `functools.cached_property` 巧妙利用非数据描述符的特性：首次访问时通过 `__get__` 计算并写入实例字典，后续访问因实例字典优先而直接返回缓存值，跳过 `__get__`。这是非数据描述符的经典应用。
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
 本节列举描述符使用中的常见陷阱与反模式，每个陷阱均附生产事故案例。
 
-### 7.1 陷阱一：在描述符实例上存储实例状态
+### 6.1 陷阱一：在描述符实例上存储实例状态
 
 **问题描述**：初学者常在描述符实例的 `__dict__` 上直接存储实例属性值，导致所有类的实例共享同一份数据。
 
@@ -1627,7 +1567,7 @@ class GoodField:
         self._storage[obj] = value
 ```
 
-### 7.2 陷阱二：忘记处理 `obj is None` 的情况
+### 6.2 陷阱二：忘记处理 `obj is None` 的情况
 
 **问题描述**：`__get__` 的 `obj` 参数在通过类访问时为 `None`。若忘记处理，会抛出 `AttributeError`。
 
@@ -1658,7 +1598,7 @@ class GoodGet:
         return obj._value
 ```
 
-### 7.3 陷阱三：`__set__` 中递归调用自身
+### 6.3 陷阱三：`__set__` 中递归调用自身
 
 **问题描述**：在 `__set__` 中通过 `setattr(obj, name, value)` 赋值，会再次触发描述符的 `__set__`，导致无限递归。
 
@@ -1697,7 +1637,7 @@ class SafeSet:
         return obj.__dict__.get(self._storage_name)
 ```
 
-### 7.4 陷阱四：描述符定义为实例属性
+### 6.4 陷阱四：描述符定义为实例属性
 
 **问题描述**：描述符协议只对类属性生效。若定义为实例属性，描述符协议不会被触发。
 
@@ -1730,7 +1670,7 @@ m = Model()
 print(m.attr)  # 输出 'descriptor'
 ```
 
-### 7.5 陷阱五：混淆数据描述符与非数据描述符的优先级
+### 6.5 陷阱五：混淆数据描述符与非数据描述符的优先级
 
 **问题描述**：误以为非数据描述符也能拦截赋值，导致校验逻辑失效。
 
@@ -1759,7 +1699,7 @@ print(m.attr)  # 'hello'
 
 **正确做法**：若需校验赋值，必须实现 `__set__`，使其成为数据描述符。
 
-### 7.6 陷阱六：忘记实现 `__set_name__` 导致存储键名冲突
+### 6.6 陷阱六：忘记实现 `__set_name__` 导致存储键名冲突
 
 **问题描述**：在 Python 3.6 之前，描述符需手动传入存储键名。若键名与描述符属性名相同，会导致递归或覆盖。
 
@@ -1807,7 +1747,7 @@ class GoodField:
         obj.__dict__[self._storage_name] = value
 ```
 
-### 7.7 陷阱七：描述符与 `__slots__` 冲突
+### 6.7 陷阱七：描述符与 `__slots__` 冲突
 
 **问题描述**：`__slots__` 限制了实例可有的属性。若描述符的存储键名不在 `__slots__` 中，赋值会失败。
 
@@ -1844,7 +1784,7 @@ class Model:
     attr = SlotField()
 ```
 
-### 7.8 陷阱八：描述符继承时的覆盖问题
+### 6.8 陷阱八：描述符继承时的覆盖问题
 
 **问题描述**：子类定义了与父类同名的描述符，会覆盖父类描述符。若两者存储键名相同，可能导致数据混乱。
 
@@ -1866,13 +1806,13 @@ c.field = 'hello'
 
 **正确做法**：每个描述符使用唯一的存储键名，或使用 `__set_name__` 自动获取字段名并结合类名生成唯一键名。
 
-### 7.9 陷阱九：描述符与多继承 MRO 的复杂性
+### 6.9 陷阱九：描述符与多继承 MRO 的复杂性
 
 **问题描述**：多继承下，描述符在 MRO 链上的查找顺序可能不符合预期，导致调用错误的描述符。
 
 **建议**：使用 `super().__get__()` 显式调用父类描述符，确保 MRO 链上的正确查找。
 
-### 7.10 陷阱十：性能敏感场景滥用描述符
+### 6.10 陷阱十：性能敏感场景滥用描述符
 
 **问题描述**：描述符的 `__get__` 与 `__set__` 涉及方法调用，比直接属性访问慢。在性能敏感的循环中滥用描述符可能导致性能瓶颈。
 
@@ -1880,11 +1820,11 @@ c.field = 'hello'
 
 **建议**：性能敏感场景避免使用描述符，改用 `__slots__` 或直接属性访问。描述符适合 I/O 密集型或业务逻辑复杂的场景。
 
-## 8. 工程实践
+## 7. 工程实践
 
 本节讨论描述符在生产环境中的最佳实践与性能优化策略。
 
-### 8.1 命名约定
+### 7.1 命名约定
 
 **存储键名命名约定**：描述符在实例字典中的存储键名应遵循统一约定，避免与用户属性冲突。推荐使用下划线前缀 + 字段名：
 
@@ -1907,7 +1847,7 @@ class Field:
         owner._field_registry[name] = self
 ```
 
-### 8.2 类型注解
+### 7.2 类型注解
 
 为描述符添加完整的类型注解，提升代码可读性与 IDE 支持：
 
@@ -1945,7 +1885,7 @@ class TypedField:
         obj.__dict__[self._storage_name] = value
 ```
 
-### 8.3 性能优化策略
+### 7.3 性能优化策略
 
 **策略一：使用 `__slots__` 加速实例字典访问**
 
@@ -1989,7 +1929,7 @@ class CachedField:
 
 对于性能极致敏感的场景，可用 Cython 或 C 扩展实现描述符。NumPy、Pandas 等库大量使用 C 扩展描述符。
 
-### 8.4 测试策略
+### 7.4 测试策略
 
 **单元测试**：为每个描述符类编写完整的单元测试，覆盖正常路径、边界值、异常路径。
 
@@ -2055,7 +1995,7 @@ class TestRangeField:
             m.age = value
 ```
 
-### 8.5 文档与元信息
+### 7.5 文档与元信息
 
 为描述符添加完整的 docstring 与元信息，便于 IDE 提示与文档生成：
 
@@ -2095,11 +2035,11 @@ class Field:
         self.name: Optional[str] = None
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
 本节剖析真实开源项目中描述符的应用，帮助读者理解描述符在工业级代码中的实践。
 
-### 9.1 案例一：Django ORM 的 Field 实现
+### 8.1 案例一：Django ORM 的 Field 实现
 
 Django ORM 的 `Field` 类是描述符协议的经典应用。每个 `Field` 实例是数据描述符，在模型类上定义，拦截属性读写。
 
@@ -2159,7 +2099,7 @@ class Field:
 2. `attname` 与 `name` 分离：`name` 是字段在 Python 中的属性名，`attname` 是在实例字典中的存储键名（通常相同，但外键不同）。
 3. 延迟加载：外键字段通过 `ForeignKeyDeferredAttribute` 描述符实现延迟加载。
 
-### 9.2 案例二：SQLAlchemy 的 AttributeDescriptor
+### 8.2 案例二：SQLAlchemy 的 AttributeDescriptor
 
 SQLAlchemy 的 ORM 层使用描述符实现属性访问拦截。其核心是 `InstrumentedAttribute` 类，它包装了 SQL 列定义与 Python 属性访问。
 
@@ -2201,7 +2141,7 @@ class InstrumentedAttribute:
 2. 实例访问返回实际值：支持 `user.name` 读取数据。
 3. 变更追踪：`__set__` 中触发变更事件，记录脏字段。
 
-### 9.3 案例三：Pydantic v1 的 Field
+### 8.3 案例三：Pydantic v1 的 Field
 
 Pydantic v1 使用描述符实现字段校验。Pydantic v2 改用 Rust 重写核心，但 v1 的描述符实现仍是经典案例。
 
@@ -2241,7 +2181,7 @@ class Field:
 2. 自定义校验器：支持 `@validator` 装饰器定义的字段校验逻辑。
 3. 默认值处理：支持可变默认值的深拷贝（避免共享）。
 
-### 9.4 案例四：Django 的 cached_property
+### 8.4 案例四：Django 的 cached_property
 
 Django 的 `cached_property` 是非数据描述符的经典应用，Python 3.8 后被 `functools.cached_property` 替代。
 
@@ -2273,7 +2213,7 @@ class cached_property:
 2. 实例字典优先：首次访问后，结果写入实例字典，后续访问直接命中实例字典，跳过 `__get__`。
 3. 缓存清除：通过 `del instance.__dict__[name]` 可清除缓存，重新计算。
 
-### 9.5 案例五：Flask 的 route 装饰器与描述符
+### 8.5 案例五：Flask 的 route 装饰器与描述符
 
 Flask 的 `route` 装饰器虽然看似与描述符无关，但其内部的 `Flask.view_functions` 字典管理与基于描述符的视图类（CBV）机制深度协作。
 
@@ -2305,7 +2245,7 @@ class MethodView:
 
 本节提供基础、进阶、挑战三个层次的习题，每道题附参考答案要点。
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：编写一个 `PositiveInt` 描述符，要求赋值时必须是正整数，否则抛出 `ValueError`。
 
@@ -2329,7 +2269,7 @@ class MethodView:
 - 实例属性不在类型的 MRO 链上，因此描述符协议不会被触发。
 - 实例属性访问直接返回对象本身，不调用 `__get__`。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：编写一个 `LazyField` 描述符，首次访问时调用工厂函数计算值，后续访问直接返回缓存。要求：缓存写入实例字典，后续访问跳过描述符 `__get__`。
 
@@ -2352,7 +2292,7 @@ class MethodView:
 - `__init__` 接收 `choices` 列表。
 - `__set__` 中检查 `value in self.choices`，否则抛出 `ValueError`。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：实现一个微型 ORM 框架，包含 `Model` 基类、`Field` 字段基类、`CharField`、`IntegerField`、`ForeignKey` 字段类。要求：
 - 自动收集字段元信息到 `_meta`。
@@ -2403,7 +2343,7 @@ class MethodView:
 - `from_dict` 与 `to_dict` 递归处理嵌套。
 - 使用 `__slots__` 加速字段访问。
 
-## 11. 参考文献
+## 10. 参考文献
 
 本节列出本篇文档参考的学术论文、官方文档、技术书籍，遵循 ACM Reference Format。
 
@@ -2447,9 +2387,9 @@ class MethodView:
 
 [20] CPython Source Code. 2024. Objects/object.c: _PyObject_GenericGetAttrWithDict. https://github.com/python/cpython/blob/main/Objects/object.c
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Python Descriptor HowTo Guide: https://docs.python.org/3/howto/descriptor.html
 - Python Data Model: Invoking Descriptors: https://docs.python.org/3/reference/datamodel.html#invoking-descriptors
@@ -2459,14 +2399,14 @@ class MethodView:
 - PEP 253: Subtyping Built-in Types: https://peps.python.org/pep-0253/
 - PEP 487: Simpler customisation of class creation: https://peps.python.org/pep-0487/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Luciano Ramalho. Fluent Python, 2nd Edition. O'Reilly Media, 2022.（第 19 章"属性与描述符"深入讨论描述符协议）
 - Mark Lutz. Learning Python, 5th Edition. O'Reilly Media, 2013.（第 38 章覆盖描述符基础）
 - David Beazley, Brian K. Jones. Python Cookbook, 3rd Edition. O'Reilly Media, 2013.（第 8 章"类与对象"包含多个描述符实战案例）
 - Brett Slatkin. Effective Python, 2nd Edition. Addison-Wesley, 2019.（第 27 条"使用属性而非 get/set 方法"）
 
-### 12.3 前沿论文与演讲
+### 11.3 前沿论文与演讲
 
 - Raymond Hettinger. Python's Class Development Toolkit. PyCon 2013.（描述符协议的最佳入门演讲）
 - Raymond Hettinger. Beyond PEP 8. PyCon 2015.（讨论描述符在生产代码中的应用）
@@ -2474,7 +2414,7 @@ class MethodView:
 - Hynek Schlawack. attrs: Attributes for Python. PyCon 2017.（attrs 库的设计哲学）
 - Samuel Colvin. Pydantic v2: 10x faster, more features. PyCon 2023.（Pydantic v2 用 Rust 重写描述符核心）
 
-### 12.4 开源项目源码
+### 11.4 开源项目源码
 
 - CPython: Objects/object.c 与 Objects/descrobject.c（描述符协议的 C 实现）
 - Django: django/db/models/fields/__init__.py（Django ORM 字段实现）
@@ -2483,7 +2423,7 @@ class MethodView:
 - attrs: src/attr/_make.py（attrs 字段实现）
 - Flask: src/flask/views.py（Flask MethodView 与描述符）
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - 元类与描述符协作：理解元类如何收集描述符元信息。
 - `__init_subclass__` 与 `__set_name__` 协同：Python 3.6+ 的类创建钩子。

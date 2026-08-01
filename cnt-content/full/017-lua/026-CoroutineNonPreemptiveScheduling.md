@@ -16,51 +16,10 @@ prerequisites:
   - lua/概述与环境配置
 ---
 
+
 # 协程非抢占式调度：Lua 的协作式并发模型
 
 > 本文档对标 MIT 6.005（Software Construction）、Stanford CS110L（Principles of Computer Systems）、CMU 15-440（Distributed Systems）教学水准，系统剖析 Lua coroutine 机制的设计哲学、形式化语义、底层实现与工程实践。
-
-## 0. 学习目标（Bloom 分类法）
-
-完成本章节学习后，学习者应能够：
-
-### 0.1 Remember（记忆）
-
-- **R1** 列举 coroutine 的四个核心 API：`coroutine.create`、`coroutine.resume`、`coroutine.yield`、`coroutine.status`。
-- **R2** 复述 coroutine 的四种状态：`suspended`、`running`、`normal`、`dead`。
-- **R3** 陈述协作式（cooperative）与抢占式（preemptive）调度的差异：是否显式让出控制权。
-
-### 0.2 Understand（理解）
-
-- **U1** 解释 coroutine 与 thread（OS 线程）的本质差异：调度机制、并发性、共享内存。
-- **U2** 阐述 `coroutine.resume` 与 `coroutine.yield` 的"双向通信"机制：参数与返回值的传递。
-- **U3** 解释非对称协程（asymmetric coroutine）与对称协程（symmetric coroutine）的区别：调用栈结构。
-
-### 0.3 Apply（应用）
-
-- **A1** 实现一个生产者-消费者模型，使用 coroutine 替代共享队列。
-- **A2** 编写一个生成器（generator），延迟生成无穷序列。
-- **A3** 利用 coroutine 实现状态机：模拟游戏循环、协议解析器。
-
-### 0.4 Analyze（分析）
-
-- **An1** 分析 coroutine 与 callback 在异步编程中的差异：可读性、调试、性能。
-- **An2** 对比 Lua coroutine、Python generator、JavaScript async/await、Go goroutine 的设计取舍。
-- **An3** 剖析 Lua 5.3 中 `coroutine` 的内部实现：`lua_State` 嵌套与 `lua_yield` 的 longjmp 机制。
-
-### 0.5 Evaluate（评价）
-
-- **E1** 评估在何种场景下应使用 coroutine 而非 OS 线程（I/O 密集、CPU 密集）。
-- **E2** 评价 Lua 不支持对称协程的影响：是否限制了并发模型的表达能力。
-- **E3** 判断 Lua 5.4 中 `coroutine.close` 的引入对资源管理的意义。
-
-### 0.6 Create（创造）
-
-- **C1** 设计一个基于 coroutine 的异步 I/O 框架，模拟 Node.js 的事件循环。
-- **C2** 实现一个对称协程库（基于 Lua 的非对称原语）。
-- **C3** 构建一个 coroutine 调试器，可视化状态转换与数据流。
-
----
 
 ## 1. 历史动机与发展脉络
 
@@ -162,9 +121,9 @@ PUC-Rio 团队在《Coroutines in Lua》论文中阐明 coroutine 的设计原�
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 Lua Reference Manual 权威定义
+### 1.1 Lua Reference Manual 权威定义
 
 > **Coroutines** — Lua supports coroutines, also called collaborative multithreading. A coroutine in Lua represents an independent thread of execution. Unlike threads in multithread systems, however, a coroutine only suspends its execution by explicitly calling a yield function.
 >
@@ -181,7 +140,7 @@ $$
 - $\text{Stack}$：独立的调用栈。
 - $\text{Status} \in \{\text{suspended}, \text{running}, \text{normal}, \text{dead}\}$。
 
-### 2.2 状态转换
+### 1.2 状态转换
 
 coroutine 的状态转换图：
 
@@ -206,7 +165,7 @@ $$
 \end{cases}
 $$
 
-### 2.3 `resume` 与 `yield` 的双向通信
+### 1.3 `resume` 与 `yield` 的双向通信
 
 `coroutine.resume(co, ...)` 的语义：
 
@@ -240,7 +199,7 @@ sequenceDiagram
     Note over Sub: dead
 ```
 
-### 2.4 非对称 vs 对称协程
+### 1.4 非对称 vs 对称协程
 
 **非对称协程**（Lua 默认）：
 
@@ -260,7 +219,7 @@ $$
 
 Lua 通过非对称原语可模拟对称协程（见 §7.3）。
 
-### 2.5 协作式调度形式化
+### 1.5 协作式调度形式化
 
 设 $T = \{t_1, t_2, \ldots, t_n\}$ 为 coroutine 集合，调度函数 $S$：
 
@@ -273,7 +232,7 @@ $$
 
 关键约束：**coroutine 必须显式 yield**，否则其他 coroutine 永远无法运行（饥饿）。
 
-### 2.6 `coroutine.wrap` 的形式化
+### 1.6 `coroutine.wrap` 的形式化
 
 $$
 \text{wrap}(f) = \text{function}(...) \to \text{resume}(\text{create}(f), ...) \text{ without first return value (status)}
@@ -283,9 +242,9 @@ $$
 
 ---
 
-## 3. 理论推导与原理解析
+## 2. 理论推导与原理解析
 
-### 3.1 coroutine 的内部结构
+### 2.1 coroutine 的内部结构
 
 在 Lua 源码 `lstate.h` 中，coroutine 本质是一个 `lua_State`：
 
@@ -313,7 +272,7 @@ typedef struct lua_State {
 - **独立的调用信息链表**：记录函数调用栈帧。
 - **共享的 `global_State`**：GC、字符串表、注册表等。
 
-### 3.2 `lua_newthread` 与 `lua_resetthread`
+### 2.2 `lua_newthread` 与 `lua_resetthread`
 
 C 端创建 coroutine：
 
@@ -344,7 +303,7 @@ int lua_resetthread(lua_State *L) {
 }
 ```
 
-### 3.3 `resume` 的实现机制
+### 2.3 `resume` 的实现机制
 
 `coroutine.resume(co, ...)` 的内部流程：
 
@@ -387,7 +346,7 @@ static int lua_resume(lua_State *L, lua_State *from, int nargs) {
 2. **栈切换**：通过 `lua_State` 切换，C 栈不变。
 3. **longjmp 机制**：yield 通过 longjmp 跳回 resume。
 
-### 3.4 `yield` 的实现机制
+### 2.4 `yield` 的实现机制
 
 `coroutine.yield(...)` 的内部流程：
 
@@ -407,7 +366,7 @@ void luaV_yield(lua_State *L, int nresults) {
 
 由于 longjmp 跨 C 函数栈，Lua 5.1 限制 yield 不能跨越 C 函数边界（除非使用 `lua_callk`）。
 
-### 3.5 协作式调度的公平性
+### 2.5 协作式调度的公平性
 
 协作式调度天然存在**饥饿问题**：若一个 coroutine 不 yield，其他 coroutine 永远无法运行。
 
@@ -418,7 +377,7 @@ void luaV_yield(lua_State *L, int nresults) {
 2. **协作约定**：coroutine 必须定期 yield（如每 N 次循环 yield 一次）。
 3. **抢占式补丁**：通过 signal handler 强制 yield（LuaCoop 等第三方库）。
 
-### 3.6 coroutine vs OS 线程
+### 2.6 coroutine vs OS 线程
 
 | 特性            | Lua coroutine          | OS 线程 (pthread)       |
 | --------------- | ---------------------- | ----------------------- |
@@ -432,7 +391,7 @@ void luaV_yield(lua_State *L, int nresults) {
 | 多核利用        | 单核                     | 多核                     |
 | I/O 阻塞        | 阻塞整个进程               | 仅阻塞当前线程            |
 
-### 3.7 coroutine 的内存布局
+### 2.7 coroutine 的内存布局
 
 每个 coroutine 拥有独立的 Lua 栈：
 
@@ -451,7 +410,7 @@ flowchart TD
 
 默认栈大小：`LUA_MINSTACK` = 20，可动态扩容至 `LUAI_MAXSTACK`（默认 1,000,000）。
 
-### 3.8 `coroutine.wrap` 与错误处理
+### 2.8 `coroutine.wrap` 与错误处理
 
 `coroutine.wrap` 与 `coroutine.resume` 的差异：
 
@@ -471,9 +430,9 @@ print(ok, err)  -- false    test.lua:1: oops
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 基础示例：coroutine 生命周期
+### 3.1 基础示例：coroutine 生命周期
 
 ```lua
 -- Lua 5.4
@@ -501,7 +460,7 @@ print("[main] third resume:", r3)  -- finished
 print("status:", coroutine.status(co))  -- dead
 ```
 
-### 4.2 进阶示例：生产者-消费者
+### 3.2 进阶示例：生产者-消费者
 
 ```lua
 -- Lua 5.4
@@ -532,7 +491,7 @@ consumer(producer())
 -- 输入：quit -> 结束
 ```
 
-### 4.3 生成器：无穷序列
+### 3.3 生成器：无穷序列
 
 ```lua
 -- Lua 5.4
@@ -578,7 +537,7 @@ for i = 1, 10 do
 end
 ```
 
-### 4.4 状态机：协议解析器
+### 3.4 状态机：协议解析器
 
 ```lua
 -- Lua 5.4
@@ -615,7 +574,7 @@ print(result.method, result.path, result.version)
 -- GET   /api/users   HTTP/1.1
 ```
 
-### 4.5 任务调度器
+### 3.5 任务调度器
 
 ```lua
 -- Lua 5.4
@@ -682,7 +641,7 @@ sched:run()
 -- Task B: 3
 ```
 
-### 4.6 协作式迭代器
+### 3.6 协作式迭代器
 
 ```lua
 -- Lua 5.4
@@ -717,7 +676,7 @@ for v in in_order(tree) do
 end
 ```
 
-### 4.7 异步 I/O 模拟
+### 3.7 异步 I/O 模拟
 
 ```lua
 -- Lua 5.4
@@ -756,7 +715,7 @@ async_main()
 -- 交替输出两个文件的读取进度
 ```
 
-### 4.8 `coroutine.wrap`：简洁的生成器
+### 3.8 `coroutine.wrap`：简洁的生成器
 
 ```lua
 -- Lua 5.4
@@ -796,7 +755,7 @@ end)
 print(table.concat(take(squares, 5), ", "))  -- 1, 4, 9, 16, 25
 ```
 
-### 4.9 错误处理
+### 3.9 错误处理
 
 ```lua
 -- Lua 5.4
@@ -837,7 +796,7 @@ local ok, err = pcall(f)
 print(ok, err)  -- false    test.lua:2: from wrap
 ```
 
-### 4.10 `coroutine.close`（Lua 5.4+）
+### 3.10 `coroutine.close`（Lua 5.4+）
 
 ```lua
 -- Lua 5.4
@@ -868,7 +827,7 @@ local function with_coroutine()
 end
 ```
 
-### 4.11 C 端协程操作
+### 3.11 C 端协程操作
 
 ```c
 /* Lua 5.4 C-API */
@@ -931,7 +890,7 @@ for i = 1, 10 do
 end
 ```
 
-### 4.12 综合示例：基于 coroutine 的并发服务器
+### 3.12 综合示例：基于 coroutine 的并发服务器
 
 ```lua
 -- Lua 5.4
@@ -990,9 +949,9 @@ event_loop()
 
 ---
 
-## 5. 与其他并发模型对比
+## 4. 与其他并发模型对比
 
-### 5.1 与 Python generator 的对比
+### 4.1 与 Python generator 的对比
 
 | 特性            | Lua coroutine              | Python generator               |
 | --------------- | -------------------------- | ----------------------------- |
@@ -1008,7 +967,7 @@ event_loop()
 **Lua 的优势**：resume 可传任意参数、错误处理通过返回值。
 **Python 的优势**：`yield from` 简化生成器组合、`async/await` 语法糖。
 
-### 5.2 与 JavaScript async/await 的对比
+### 4.2 与 JavaScript async/await 的对比
 
 | 特性          | Lua coroutine              | JS async/await                  |
 | ------------- | -------------------------- | -------------------------------- |
@@ -1021,7 +980,7 @@ event_loop()
 **Lua 的优势**：完全手动控制调度、无隐式事件循环。
 **JS 的优势**：语法糖提升可读性、Promise 生态丰富。
 
-### 5.3 与 Go goroutine 的对比
+### 4.3 与 Go goroutine 的对比
 
 | 特性          | Lua coroutine         | Go goroutine                |
 | ------------- | --------------------- | --------------------------- |
@@ -1036,7 +995,7 @@ event_loop()
 **Lua 的优势**：实现简单、无 runtime 复杂度。
 **Go 的优势**：原生多核支持、channel 通信安全。
 
-### 5.4 与 Erlang/BEAM process 的对比
+### 4.4 与 Erlang/BEAM process 的对比
 
 | 特性          | Lua coroutine         | Erlang process          |
 | ------------- | --------------------- | ---------------------- |
@@ -1049,7 +1008,7 @@ event_loop()
 **Erlang 的优势**：高容错、热代码替换。
 **Lua 的优势**：轻量、嵌入式友好。
 
-### 5.5 性能对比
+### 4.5 性能对比
 
 coroutine 创建与切换的相对开销（Lua 5.4 = 1.0x）：
 
@@ -1063,9 +1022,9 @@ Lua 在简单操作上有竞争力，但 LuaJIT 的 JIT 优化使其接近 Go �
 
 ---
 
-## 6. 常见陷阱与最佳实践
+## 5. 常见陷阱与最佳实践
 
-### 6.1 陷阱：主线程不能 yield
+### 5.1 陷阱：主线程不能 yield
 
 ```lua
 -- 错误：在主线程 yield
@@ -1078,7 +1037,7 @@ end)
 coroutine.resume(co)
 ```
 
-### 6.2 陷阱：忘记首次 resume
+### 5.2 陷阱：忘记首次 resume
 
 ```lua
 local co = coroutine.create(function()
@@ -1093,7 +1052,7 @@ print(ok, err)  -- true    42
 
 首次 `resume` 的参数作为 coroutine 函数的参数；后续 `resume` 的参数作为 `yield` 的返回值。
 
-### 6.3 陷阱：resume 已 dead 的 coroutine
+### 5.3 陷阱：resume 已 dead 的 coroutine
 
 ```lua
 local co = coroutine.create(function() return 42 end)
@@ -1104,7 +1063,7 @@ local ok, err = coroutine.resume(co)
 print(ok, err)  -- false    cannot resume dead coroutine
 ```
 
-### 6.4 陷阱：coroutine 中错误未捕获
+### 5.4 陷阱：coroutine 中错误未捕获
 
 ```lua
 local co = coroutine.create(function()
@@ -1120,7 +1079,7 @@ local result = coroutine.resume(co)  -- 此时 co 已 dead
 print(result)  -- false
 ```
 
-### 6.5 陷阱：coroutine 内的全局变量共享
+### 5.5 陷阱：coroutine 内的全局变量共享
 
 ```lua
 -- 所有 coroutine 共享同一 Lua 状态
@@ -1151,7 +1110,7 @@ print(counter)  -- 2000（共享变量，无竞态）
 
 虽然无竞态（单线程），但**逻辑竞态**仍可能发生。
 
-### 6.6 陷阱：长时间不 yield 导致饥饿
+### 5.6 陷阱：长时间不 yield 导致饥饿
 
 ```lua
 local co1 = coroutine.create(function()
@@ -1167,7 +1126,7 @@ end)
 coroutine.resume(co1)  -- 永远不返回
 ```
 
-### 6.7 陷阱：wrap 的错误未捕获
+### 5.7 陷阱：wrap 的错误未捕获
 
 ```lua
 local f = coroutine.wrap(function()
@@ -1184,7 +1143,7 @@ local ok, err = pcall(f)
 print(ok, err)  -- false    test.lua:2: oops
 ```
 
-### 6.8 最佳实践：用 wrap 简化生成器
+### 5.8 最佳实践：用 wrap 简化生成器
 
 ```lua
 -- 推荐：用 wrap 作为迭代器
@@ -1203,7 +1162,7 @@ for v in iter({1, 2, 3}) do
 end
 ```
 
-### 6.9 最佳实践：显式 close 资源
+### 5.9 最佳实践：显式 close 资源
 
 ```lua
 -- Lua 5.4+
@@ -1226,7 +1185,7 @@ local function process_with_co()
 end
 ```
 
-### 6.10 最佳实践：协作式超时
+### 5.10 最佳实践：协作式超时
 
 ```lua
 -- 实现"软超时"：coroutine 定期 yield，调度器检查时间
@@ -1256,7 +1215,7 @@ local ok, err = run_with_timeout(long_task, 100)
 print(ok, err)  -- false    timeout（若超过 100ms）
 ```
 
-### 6.11 最佳实践：对称协程模拟
+### 5.11 最佳实践：对称协程模拟
 
 ```lua
 -- 通过非对称原语实现对称协程
@@ -1312,7 +1271,7 @@ sc:start("a")
 -- B end
 ```
 
-### 6.12 最佳实践：错误恢复
+### 5.12 最佳实践：错误恢复
 
 ```lua
 -- coroutine 错误后允许恢复
@@ -1336,9 +1295,9 @@ end
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 异步 I/O 框架
+### 6.1 异步 I/O 框架
 
 ```lua
 -- Lua 5.4
@@ -1415,7 +1374,7 @@ loop:run()
 print("[main] loop done")
 ```
 
-### 7.2 协程池
+### 6.2 协程池
 
 ```lua
 -- Lua 5.4
@@ -1477,7 +1436,7 @@ for i = 1, 5 do
 end
 ```
 
-### 7.3 生成器组合
+### 6.3 生成器组合
 
 ```lua
 -- Lua 5.4
@@ -1542,7 +1501,7 @@ for v in result do
 end
 ```
 
-### 7.4 状态机实现
+### 6.4 状态机实现
 
 ```lua
 -- Lua 5.4
@@ -1579,7 +1538,7 @@ end
 -- 6   CAUTION yellow
 ```
 
-### 7.5 协程与闭包：延迟计算
+### 6.5 协程与闭包：延迟计算
 
 ```lua
 -- Lua 5.4
@@ -1659,7 +1618,7 @@ local result = Stream.range(1, 100)
 print(table.concat(result, ", "))  -- 1, 9, 25, 49, 81
 ```
 
-### 7.6 协程调试
+### 6.6 协程调试
 
 ```lua
 -- Lua 5.4
@@ -1706,7 +1665,7 @@ coroutine.resume(co); check()
 check()  -- [worker] status: dead
 ```
 
-### 7.7 与 C 模块集成
+### 6.7 与 C 模块集成
 
 ```lua
 -- Lua 5.4
@@ -1748,7 +1707,7 @@ local function handle_client(sock)
 end
 ```
 
-### 7.8 性能基准测试
+### 6.8 性能基准测试
 
 ```lua
 -- Lua 5.4
@@ -1799,9 +1758,9 @@ end, 1000000)
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 OpenResty：Nginx + LuaJIT 的协程化 I/O
+### 7.1 OpenResty：Nginx + LuaJIT 的协程化 I/O
 
 OpenResty 通过 LuaJIT 的 coroutine 实现"协程化"的非阻塞 I/O：
 
@@ -1829,7 +1788,7 @@ OpenResty 的魔法：
 - I/O 操作 yield，Nginx 调度其他请求。
 - 代码风格保持"同步"，但实际异步执行。
 
-### 8.2 Kong：API 网关的插件管道
+### 7.2 Kong：API 网关的插件管道
 
 Kong 使用 coroutine 实现插件链的协作式执行：
 
@@ -1861,7 +1820,7 @@ local RateLimitPlugin = {
 }
 ```
 
-### 8.3 Luvit：Node.js 风格的 Lua
+### 7.3 Luvit：Node.js 风格的 Lua
 
 Luvit 是基于 libuv 的 Lua 框架，模仿 Node.js API：
 
@@ -1882,7 +1841,7 @@ end)
 
 Luvit 通过 libuv + coroutine 实现非阻塞 I/O，API 与 Node.js 高度一致。
 
-### 8.4 LuaDardo：Lua 风格的 Dart
+### 7.4 LuaDardo：Lua 风格的 Dart
 
 LuaDardo 将 Lua 移植到 Dart VM，coroutine 通过 Dart 的 `Future` 与 `async/await` 实现：
 
@@ -1896,7 +1855,7 @@ Future<void> runCoroutine(LuaState luaState) async {
 }
 ```
 
-### 8.5 Redis：Lua 脚本中的 coroutine
+### 7.5 Redis：Lua 脚本中的 coroutine
 
 Redis 的 EVAL 命令执行 Lua 脚本，但**禁用 coroutine**：
 
@@ -1913,7 +1872,7 @@ Redis 的 EVAL 命令执行 Lua 脚本，但**禁用 coroutine**：
 
 Redis 的设计哲学：Lua 脚本必须**原子且确定**，coroutine 的非确定性违反此原则。
 
-### 8.6 Neovim：协程化的事件处理
+### 7.6 Neovim：协程化的事件处理
 
 Neovim 0.5+ 使用 Lua 作为配置语言，coroutine 用于异步操作：
 
@@ -2216,7 +2175,7 @@ print(ok, err)  -- false   cannot move from opened
 ```
 
 
-### 9.4 思考题
+### 8.4 思考题
 
 **常见疑问 14**：. 为什么 Lua 选择非对称协程而非对称协程？
 
@@ -2282,7 +2241,7 @@ end
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
 1. **Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes.** *Lua 5.4 Reference Manual.* PUC-Rio, 2020. ISBN 978-85-903998-6-3. DOI: 10.13140/RG.2.2.15643.92964.
 
@@ -2310,40 +2269,40 @@ end
 
 ---
 
-## 11. 扩展阅读
+## 10. 扩展阅读
 
-### 11.1 官方资料
+### 10.1 官方资料
 
 - [Lua 官方网站](https://www.lua.org/)
 - [Lua 5.4 Reference Manual - Coroutines](https://www.lua.org/manual/5.4/manual.html#2.6)
 - [Programming in Lua - Coroutines](https://www.lua.org/pil/9.html)
 - [Revisiting Coroutines](https://www.lua.org/doc/coroutines.pdf)
 
-### 11.2 进阶书籍
+### 10.2 进阶书籍
 
 - Ierusalimschy, R. *Programming in Lua* 4th Edition, PUC-Rio, 2016.
 - Conway, M. *Design of a Separable Transition-Diagram Compiler.* CACM, 1963.
 - Harper, R. *Practical Foundations for Programming Languages.* Cambridge, 2016.
 
-### 11.3 社区资源
+### 10.3 社区资源
 
 - [Lua Users Wiki - Coroutines Tutorial](http://lua-users.org/wiki/CoroutinesTutorial)
 - [Lua Users Wiki - Iterators Tutorial](http://lua-users.org/wiki/IteratorsTutorial)
 - [lua-l Mailing List Archive](https://www.lua.org/lua-l.html)
 
-### 11.4 源码分析
+### 10.4 源码分析
 
 - [Lua 5.4 源码 lstate.h](https://www.lua.org/source/5.4/lstate.h.html)
 - [Lua 5.4 源码 lcorolib.c](https://www.lua.org/source/5.4/lcorolib.c.html)
 - [Lua 5.4 源码 lvm.c](https://www.lua.org/source/5.4/lvm.c.html)
 - [LuaJIT 源码 lj_state.c](https://github.com/LuaJIT/LuaJIT/blob/v2.1/src/lj_state.c)
 
-### 11.5 相关论文
+### 10.5 相关论文
 
 - de Moura, A. L., Ierusalimschy, R. *Coroutines in Lua.* Journal of Universal Computer Science, 2004.
 - Adya, A., et al. *Cooperative Task Migration Without Global Locks.* USENIX ATC, 2002.
 
-### 11.6 实战项目
+### 10.6 实战项目
 
 - [OpenResty - 协程化 I/O](https://openresty.org/)
 - [Kong API Gateway](https://docs.konghq.com/)

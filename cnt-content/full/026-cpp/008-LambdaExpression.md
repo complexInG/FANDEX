@@ -20,54 +20,12 @@ prerequisites:
   - cpp/模板进阶
   - cpp/概述与现代标准
 ---
+
 # Lambda表达式
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-本节按照 Bloom 分类法的认知层级组织学习目标,读者完成本章学习后应能够达到以下层级。
-
-### 识记层 (Remembering)
-
-- 列举 Lambda 表达式的六个组成部分:捕获列表、参数列表、`mutable`、`noexcept`、尾随返回类型、函数体
-- 说出值捕获、引用捕获、`[=]`、`[&]`、`[this]`、`[*this]`、`[name = expr]` 七种捕获形式的语义
-- 复述 C++14 泛型 Lambda、C++17 `constexpr lambda` 与 `[*this]`、C++20 模板 Lambda 与包展开捕获、C++23 显式对象参数递归 Lambda 的引入版本
-- 识别闭包类型 (closure type) 与闭包对象 (closure object) 的区别
-
-### 理解层 (Understanding)
-
-- 解释 Lambda 表达式如何被编译器转换为唯一的匿名函数对象类,捕获变量成为类成员,函数体成为 `operator()` 实现
-- 阐述值捕获的 const 语义:不加 `mutable` 时 `operator()` 是 const 成员函数,值捕获的变量不可修改
-- 描述无捕获 Lambda 到函数指针的隐式转换条件,以及该转换在 C++17 后的 `noexcept` 兼容性
-- 区分 `std::function`、模板参数、`auto` 三种存储 Lambda 的方式在性能与类型上的差异
-
-### 应用层 (Applying)
-
-- 使用初始化捕获 (init capture) 实现移动捕获、计算捕获与重命名捕获
-- 应用 C++20 模板 Lambda 语法 `[]<typename T>(T x){}` 配合 concepts 进行类型约束
-- 使用 C++23 显式对象参数 (`this auto self`) 实现递归 Lambda,替代 Y-combinator
-- 应用 Lambda 与 STL 算法 (`std::sort`、`std::find_if`、`std::transform`、`std::accumulate`) 组合
-
-### 分析层 (Analyzing)
-
-- 分析 `std::function` 的类型擦除、SBO (Small Buffer Optimization) 与堆分配开销对性能的影响
-- 解构 Lambda 在不同捕获模式下的对象大小,推导 `sizeof(lambda)` 与捕获变量的关系
-- 对比内联 Lambda、`std::function`、函数指针、虚函数四种调用方式在流水线、分支预测、寄存器分配上的差异
-
-### 评价层 (Evaluating)
-
-- 评估何时应使用 `auto` 存储 Lambda、何时应使用 `std::function`、何时应使用模板参数
-- 判断一段使用 `[&]` 默认引用捕获的代码是否存在悬空引用风险
-- 在泛型代码设计中权衡模板 Lambda、`std::function`、概念约束的取舍
-
-### 创造层 (Creating)
-
-- 设计一个类型安全的回调注册系统,支持 Lambda、`std::function`、协程等多种可调用对象
-- 构建一个零开销的事件分发框架,利用 C++20 模板 Lambda 与 concepts 实现编译期分发
-- 提出一种基于 Lambda 表达式的 DSL (Domain-Specific Language) 设计方案
 
 ## 历史动机与背景
 

@@ -16,57 +16,16 @@ prerequisites:
   - harmonyos/概述与环境搭建
 ---
 
+
 # 跨设备调用：HarmonyOS 分布式软总线与远程 Ability 协同
 
 > 本章是 HarmonyOS 分布式能力的核心章节。HarmonyOS 区别于其他操作系统的根本特征之一就是"超级终端"——多设备被抽象为单一逻辑终端，应用可在设备间无缝迁移、协同。本章按 MIT 6.5840（分布式系统）、Stanford CS244B、CMU 15-440 等课程标准组织，覆盖分布式软总线原理、设备发现、远程 Ability 启动、跨设备迁移、IPC 安全边界等。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-### 1.1 Remember（记忆）
-
-- **R1**：复述分布式软总线（DSoftBus）的定义与历史来源（OpenDSoftBus → HarmonyOS DSoftBus）。
-- **R2**：列举 DeviceManager 提供的核心 API：`startDiscovering`、`on('deviceFound')`、`bindTarget`、`unbindTarget`。
-- **R3**：复述 `distributedScheduler` 模块的 `startRemoteAbility`、`continueAbility`、`connectRemoteAbility` 三个核心 API。
-- **R4**：复述跨设备调用的安全模型：可信设备圈、PIN 码配对、Token 鉴权。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 DSoftBus 如何在异构网络（Wi-Fi、蓝牙、Ethernet）之上提供统一通信抽象。
-- **U2**：解释设备发现的两阶段流程：广播发现 → 配对绑定 → 会话建立。
-- **U3**：阐明 `startRemoteAbility` 与 `continueAbility` 的语义差异（独立启动 vs. 状态迁移）。
-- **U4**：对比 HarmonyOS 跨设备调用与 Android 的 Cross-Device SDK、Apple 的 Handoff。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 `deviceManager` 实现设备发现列表 UI。
-- **A2**：使用 `startAbility` 跨设备启动一个远程 UIAbility 并传递 Want 参数。
-- **A3**：使用 `continueAbility` 实现视频播放从手机到智慧屏的无缝迁移。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 DSoftBus 的会话层与传输层设计，论证其性能优势来源。
-- **An2**：分析 `continueAbility` 状态序列化的 100KB 限制对应用设计的影响。
-- **An3**：分析跨设备调用的安全边界，识别潜在的中间人攻击与重放攻击。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价"超级终端"理念在多设备协同场景下的架构合理性。
-- **E2**：评价 DSoftBus 与 gRPC、MQTT、CoAP 等通用协议的优劣。
-- **E3**：评价 HarmonyOS 跨设备迁移对断网恢复的处理策略。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个跨设备协同的多人游戏架构，明确状态同步策略。
-- **C2**：设计一个跨设备调用失败的统一重试与降级框架。
-- **C3**：基于 ExtensionAbility 设计一个跨设备打印服务，支持手机到打印机的远程调用。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 多设备协同的早期探索（2015-2019）
+### 1.1 多设备协同的早期探索（2015-2019）
 
 多设备协同并非 HarmonyOS 首创。在 HarmonyOS 之前，业界已有多种尝试：
 
@@ -80,7 +39,7 @@ prerequisites:
 
 这些方案要么局限于单一厂商生态，要么仅面向特定场景（媒体/IoT），缺乏操作系统级统一抽象。
 
-### 2.2 HarmonyOS 1.0-2.0：DSoftBus 诞生
+### 1.2 HarmonyOS 1.0-2.0：DSoftBus 诞生
 
 HarmonyOS 1.0（2019）首次引入 **DSoftBus**（Distributed Soft Bus，分布式软总线）。设计目标：
 
@@ -90,7 +49,7 @@ HarmonyOS 1.0（2019）首次引入 **DSoftBus**（Distributed Soft Bus，分布
 
 HarmonyOS 2.0（2020）DSoftBus 1.0 支持手机/平板/智慧屏互联，但跨设备 Ability 调用需通过 `featureAbility.startAbilityForResult` 间接实现，API 较为繁琐。
 
-### 2.3 HarmonyOS 3.0：distributedScheduler 引入
+### 1.3 HarmonyOS 3.0：distributedScheduler 引入
 
 HarmonyOS 3.0（2022）引入 **`distributedScheduler`** 模块，提供 `startRemoteAbility`、`continueAbility`、`connectRemoteAbility` 三个语义清晰的 API。同时 DSoftBus 升级到 2.0：
 
@@ -98,7 +57,7 @@ HarmonyOS 3.0（2022）引入 **`distributedScheduler`** 模块，提供 `startR
 - 引入 `softbus::Session` 会话抽象，支持流式传输。
 - 跨设备启动延迟从 1200ms 降至 800ms。
 
-### 2.4 HarmonyOS 4.0：DSoftBus 3.0
+### 1.4 HarmonyOS 4.0：DSoftBus 3.0
 
 HarmonyOS 4.0（2023）DSoftBus 3.0 关键改进：
 
@@ -109,7 +68,7 @@ HarmonyOS 4.0（2023）DSoftBus 3.0 关键改进：
 
 跨设备启动性能提升 40%，达到 720ms。
 
-### 2.5 HarmonyOS NEXT：超级终端 2.0
+### 1.5 HarmonyOS NEXT：超级终端 2.0
 
 HarmonyOS NEXT（2024）引入"超级终端 2.0"：
 
@@ -117,7 +76,7 @@ HarmonyOS NEXT（2024）引入"超级终端 2.0"：
 - **跨设备 Ability 多实例**：同一 Ability 可在多设备同时实例化。
 - **统一能力声明**：通过 `module.json5` 的 `metadata` 声明远程可用能力。
 
-### 2.6 OpenHarmony DSoftBus 演进
+### 1.6 OpenHarmony DSoftBus 演进
 
 OpenHarmony 中的 DSoftBus 完全开源，仓库 `foundation/communication/dsoftbus`：
 
@@ -130,7 +89,7 @@ OpenHarmony 中的 DSoftBus 完全开源，仓库 `foundation/communication/dsof
 | 4.0 | 3.0 | 跨设备 IPC 优化 |
 | 5.0 | 3.5 | 超级终端 2.0 |
 
-### 2.7 时间线总览
+### 1.7 时间线总览
 
 ```mermaid
 timeline
@@ -145,9 +104,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 分布式软总线的形式化定义
+### 2.1 分布式软总线的形式化定义
 
 定义 DSoftBus 为六元组：
 
@@ -164,7 +123,7 @@ $$
 - $\mathcal{T}: \text{Session} \times \text{Data} \to \text{Delivery}$ 为传输函数，按会话类型分发数据。
 - $\mathcal{A}: \mathcal{N} \to \{\text{authenticated}, \text{pending}, \text{revoked}\}$ 为鉴权状态。
 
-### 3.2 可信设备圈
+### 2.2 可信设备圈
 
 定义可信设备圈 $\mathcal{C}(n_i)$ 为节点 $n_i$ 的可信集合：
 
@@ -174,7 +133,7 @@ $$
 
 可信圈通过 PIN 码、扫码或华为账号同步建立。跨设备调用仅允许在 $\mathcal{C}(n_i)$ 内进行。
 
-### 3.3 远程 Ability 调用语义
+### 2.3 远程 Ability 调用语义
 
 定义 `startRemoteAbility` 为：
 
@@ -184,7 +143,7 @@ $$
 
 其中 $w$ 为 Want，$d_j$ 为目标设备，$\mathcal{U}_{d_j}$ 为 $d_j$ 上的 Ability 集合，`match` 根据 `bundleName`/`abilityName`/`action` 匹配。
 
-### 3.4 跨设备迁移语义
+### 2.4 跨设备迁移语义
 
 定义 `continueAbility` 为：
 
@@ -199,7 +158,7 @@ $$
 
 其中 $\text{state} \in \Sigma^*$ 为序列化状态，要求 $|\text{state}| \leq 100\text{KB}$。
 
-### 3.5 IPC 调用语义
+### 2.5 IPC 调用语义
 
 定义 `connectRemoteAbility` 为：
 
@@ -209,7 +168,7 @@ $$
 
 返回 `RemoteObject` 引用，支持双向 IPC 调用。
 
-### 3.6 安全模型形式化
+### 2.6 安全模型形式化
 
 跨设备调用需通过三层鉴权：
 
@@ -225,9 +184,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 DSoftBus 协议栈
+### 3.1 DSoftBus 协议栈
 
 DSoftBus 采用分层协议栈：
 
@@ -256,7 +215,7 @@ $$
 \end{cases}
 $$
 
-### 4.2 设备发现协议
+### 3.2 设备发现协议
 
 设备发现采用两阶段协议：
 
@@ -287,7 +246,7 @@ PIN 码配对流程：
 
 绑定后 $n_j \in \mathcal{C}(n_i)$，可直接发起调用无需再次配对。
 
-### 4.3 远程 Ability 启动流程
+### 3.3 远程 Ability 启动流程
 
 `startRemoteAbility` 的完整流程：
 
@@ -322,7 +281,7 @@ HarmonyOS 4.0 各阶段典型延迟：
 | $T_{\text{ack}}$ | 110 ms |
 | **总计** | **720 ms** |
 
-### 4.4 跨设备迁移的状态同步
+### 3.4 跨设备迁移的状态同步
 
 `continueAbility` 的状态同步流程：
 
@@ -349,7 +308,7 @@ $$
 
 要求 $|\text{state}| \leq 100\text{KB}$。超限时系统会拒绝迁移并回调 `onContinueStateChange` 失败。
 
-### 4.5 IPC 性能模型
+### 3.5 IPC 性能模型
 
 跨设备 IPC 的延迟由四部分组成：
 
@@ -372,7 +331,7 @@ DSoftBus 3.0 优化：
 | 100 KB | 180 ms | 35 ms |
 | 1 MB | 1200 ms | 280 ms |
 
-### 4.6 冲突与一致性
+### 3.6 冲突与一致性
 
 跨设备调用可能产生并发冲突。例如两台设备同时调用远程 Ability 修改同一数据。HarmonyOS 采用两种解决策略：
 
@@ -398,9 +357,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 完整设备发现与绑定示例
+### 4.1 完整设备发现与绑定示例
 
 ```typescript
 // entry/src/main/ets/distributed/DeviceManager.ets
@@ -595,7 +554,7 @@ interface DeviceInfo {
 }
 ```
 
-### 5.2 跨设备启动 UIAbility
+### 4.2 跨设备启动 UIAbility
 
 ```typescript
 // entry/src/main/ets/distributed/RemoteAbilityLauncher.ets
@@ -683,7 +642,7 @@ interface AbilityResult {
 }
 ```
 
-### 5.3 跨设备迁移完整示例
+### 4.3 跨设备迁移完整示例
 
 ```typescript
 // entry/src/main/ets/entryability/MigratableAbility.ets
@@ -822,7 +781,7 @@ interface PlayerState {
 }
 ```
 
-### 5.4 跨设备 IPC（connectRemoteAbility）
+### 4.4 跨设备 IPC（connectRemoteAbility）
 
 ```typescript
 // entry/src/main/ets/distributed/RemoteServiceClient.ets
@@ -943,7 +902,7 @@ export class RemoteServiceClient {
 }
 ```
 
-### 5.5 完整 module.json5 分布式配置
+### 4.5 完整 module.json5 分布式配置
 
 ```json5
 // entry/src/main/module.json5
@@ -1016,9 +975,9 @@ export class RemoteServiceClient {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 HarmonyOS 跨设备调用 vs 其他方案
+### 5.1 HarmonyOS 跨设备调用 vs 其他方案
 
 | 维度 | HarmonyOS DSoftBus | Apple Handoff | Google Cross-Device | DLNA |
 | --- | --- | --- | --- | --- |
@@ -1031,7 +990,7 @@ export class RemoteServiceClient {
 | 生态范围 | HarmonyOS 设备 | Apple 设备 | Android 设备 | DLNA 认证设备 |
 | 延迟 | 720ms | 1500ms | 2500ms | 500ms（仅媒体） |
 
-### 6.2 与 gRPC / MQTT / CoAP 对比
+### 5.2 与 gRPC / MQTT / CoAP 对比
 
 | 维度 | DSoftBus | gRPC | MQTT | CoAP |
 | --- | --- | --- | --- | --- |
@@ -1043,7 +1002,7 @@ export class RemoteServiceClient {
 | P2P | 自动协商 | 需手动 | 不支持 | 不支持 |
 | 适用场景 | HarmonyOS 设备协同 | 通用微服务 | IoT 消息 | 受限设备 |
 
-### 6.3 与 Android 跨应用调用对比
+### 5.3 与 Android 跨应用调用对比
 
 | 维度 | Android | HarmonyOS |
 | --- | --- | --- |
@@ -1053,7 +1012,7 @@ export class RemoteServiceClient {
 | IPC | AIDL + Binder | rpc.RemoteObject + DSoftBus |
 | 服务发现 | PackageInfo | module.json5 + skills 匹配 |
 
-### 6.4 与 iOS Handoff 对比
+### 5.4 与 iOS Handoff 对比
 
 | 维度 | iOS Handoff | HarmonyOS continueAbility |
 | --- | --- | --- |
@@ -1064,7 +1023,7 @@ export class RemoteServiceClient {
 | 应用感知 | UI 自动提示 | 应用主动调用 |
 | 触发方式 | 系统自动 | 应用主动 continueAbility |
 
-### 6.5 启动模式跨设备行为对比
+### 5.5 启动模式跨设备行为对比
 
 | launchType | 本地行为 | 跨设备行为 |
 | --- | --- | --- |
@@ -1074,9 +1033,9 @@ export class RemoteServiceClient {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 设备发现陷阱
+### 6.1 设备发现陷阱
 
 #### 陷阱 1：未声明权限导致发现失败
 
@@ -1106,7 +1065,7 @@ export class RemoteServiceClient {
 
 **解决**：将设备发现逻辑放到 ServiceExtensionAbility。
 
-### 7.2 跨设备启动陷阱
+### 6.2 跨设备启动陷阱
 
 #### 陷阱 3：未声明 continuable
 
@@ -1147,7 +1106,7 @@ const want: Want = {
 };
 ```
 
-### 7.3 跨设备迁移陷阱
+### 6.3 跨设备迁移陷阱
 
 #### 陷阱 5：onSaveData 数据超 100KB
 
@@ -1191,7 +1150,7 @@ onWindowStageCreate(windowStage: window.WindowStage): void {
 }
 ```
 
-### 7.4 IPC 陷阱
+### 6.4 IPC 陷阱
 
 #### 陷阱 7：MessageSequence 未释放导致内存泄漏
 
@@ -1224,7 +1183,7 @@ onDestroy(): void {
 }
 ```
 
-### 7.5 安全陷阱
+### 6.5 安全陷阱
 
 #### 陷阱 9：未校验远程调用方身份
 
@@ -1256,7 +1215,7 @@ async invokeRemote(cmd: number, sensitiveData: string): Promise<string> {
 }
 ```
 
-### 7.6 最佳实践清单
+### 6.6 最佳实践清单
 
 | 实践项 | 描述 |
 | --- | --- |
@@ -1272,9 +1231,9 @@ async invokeRemote(cmd: number, sensitiveData: string): Promise<string> {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 DevEco Studio 分布式调试
+### 7.1 DevEco Studio 分布式调试
 
 DevEco Studio 5.0+ 支持双设备模拟器调试：
 
@@ -1283,7 +1242,7 @@ DevEco Studio 5.0+ 支持双设备模拟器调试：
 3. **分布式日志过滤**：hilog 中 `[dsoftbus]`、`[distributed]` 标签过滤。
 4. **分布式调用链追踪**：HiTrace 跨设备串联。
 
-### 8.2 HDC 分布式命令
+### 7.2 HDC 分布式命令
 
 ```bash
 # 查看可信设备圈
@@ -1305,7 +1264,7 @@ hdc shell distributed_dump --disconnect-all
 hdc shell hidumper -s 1702 -a "-stat"
 ```
 
-### 8.3 HiTrace 跨设备追踪
+### 7.3 HiTrace 跨设备追踪
 
 ```typescript
 import { hiTraceMeter } from '@kit.PerformanceAnalysisKit';
@@ -1328,7 +1287,7 @@ async function migrateWithTrace(deviceId: string): Promise<void> {
 
 HiTrace 在 DevEco Studio Profiler 中显示跨设备调用链。
 
-### 8.4 分布式调试日志
+### 7.4 分布式调试日志
 
 ```typescript
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -1348,7 +1307,7 @@ await this.context.startAbility(want);
 logRemoteCall('end', targetId, want);
 ```
 
-### 8.5 性能基准
+### 7.5 性能基准
 
 HarmonyOS 4.0 跨设备调用性能基准（华为 P60 → MatePad Pro，Wi-Fi LAN）：
 
@@ -1362,7 +1321,7 @@ HarmonyOS 4.0 跨设备调用性能基准（华为 P60 → MatePad Pro，Wi-Fi L
 | IPC 单程延迟（100KB） | 35 ms |
 | 跨设备 IPC 吞吐 | 28 MB/s |
 
-### 8.6 测试用例
+### 7.6 测试用例
 
 跨设备调用的典型测试场景：
 
@@ -1379,9 +1338,9 @@ HarmonyOS 4.0 跨设备调用性能基准（华为 P60 → MatePad Pro，Wi-Fi L
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：华为视频跨设备播放
+### 8.1 案例一：华为视频跨设备播放
 
 华为视频是分布式迁移的标杆应用。用户在手机观看视频，靠近智慧屏时一键迁移：
 
@@ -1399,7 +1358,7 @@ HarmonyOS 4.0 跨设备调用性能基准（华为 P60 → MatePad Pro，Wi-Fi L
 | 大数据同步延迟 | 800 ms |
 | 用户感知中断 | 1.5s |
 
-### 9.2 案例二：华为文档多设备协同编辑
+### 8.2 案例二：华为文档多设备协同编辑
 
 华为文档支持手机/平板/PC 三端协同编辑同一文档：
 
@@ -1413,7 +1372,7 @@ HarmonyOS 4.0 跨设备调用性能基准（华为 P60 → MatePad Pro，Wi-Fi L
 - 使用 OT（Operational Transformation）解决结构化冲突。
 - 光标位置通过 Session 流式传输，不经过 IPC 序列化。
 
-### 9.3 案例三：FANDEX 跨设备行情推送
+### 8.3 案例三：FANDEX 跨设备行情推送
 
 FANDEX 项目实践：
 
@@ -1451,7 +1410,7 @@ onRestoreData(wantParam: Record<string, Object>): void {
 
 **性能**：迁移延迟 850ms，用户体验流畅。
 
-### 9.4 案例四：开源 OpenHarmony 分布式音乐
+### 8.4 案例四：开源 OpenHarmony 分布式音乐
 
 OpenHarmony 官方 sample `code/Solutions/DistributedMusic`：
 
@@ -1695,7 +1654,7 @@ export default class PlayerAbility extends UIAbility {
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题 4.1**：为什么 HarmonyOS 选择自研 DSoftBus 而非直接使用 gRPC/MQTT？
 
@@ -1799,7 +1758,7 @@ async robustMigrate(deviceId: string): Promise<void> {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Huawei Device Co., Ltd. 2024. *HarmonyOS Distributed Service Development Guide: DSoftBus and distributedScheduler*. Huawei Developer Documentation. Retrieved July 20, 2026 from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/distributed-overview-0000001536331577. DOI: 10.13140/HG.2.2.34876.10880.
 
@@ -1827,9 +1786,9 @@ async robustMigrate(deviceId: string): Promise<void> {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 1. **《分布式系统：概念与设计》**（*Distributed Systems: Concepts and Design*, 6th ed.）——George Coulouris 等著，Pearson, 2022. ISBN 978-0132143011.
    分布式系统理论基础，理解 DSoftBus 设计的背景。
@@ -1846,7 +1805,7 @@ async robustMigrate(deviceId: string): Promise<void> {
 5. **《密码学原理与实践》**（*Cryptography: Theory and Practice*, 4th ed.）——Douglas Stinson著，CRC Press, 2018. ISBN 978-1138197015.
    PAKE 协议与密钥交换理论。
 
-### 12.2 论文
+### 11.2 论文
 
 1. **Li, Z. et al. 2023.** *HarmonyOS: A Distributed Operating System for All Scenarios*. Communications of the ACM 66, 11 (Nov. 2023), 56–65. DOI: 10.1145/3624717.
 
@@ -1858,7 +1817,7 @@ async robustMigrate(deviceId: string): Promise<void> {
 
 5. **Lamport, L. 1978.** *Time, Clocks, and the Ordering of Events in a Distributed System*. CACM 21, 7, 558–565. DOI: 10.1145/359545.359563.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 1. **华为开发者联盟——分布式能力文档**  
    https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/distributed-overview-0000001536331577

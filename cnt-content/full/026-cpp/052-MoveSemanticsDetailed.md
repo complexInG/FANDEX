@@ -16,26 +16,14 @@ prerequisites:
   - cpp/概述与现代标准
 ---
 
+
 # 移动语义详解
 
 > 本文档系统讲解 C++11 引入的移动语义（move semantics）机制，覆盖右值引用、移动构造、移动赋值、`std::move`、`std::forward`、RVO/NRVO、Rule of Five、move-only 类型等核心主题。所有代码示例可在支持 C++17/20/23 的主流编译器上编译通过，标注 GCC/Clang/MSVC 兼容性。对标 MIT 6.S192、Stanford CS106L、CMU 15-411 课程教学水准。
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-| Bloom 层级 | 目标描述 |
-| :--- | :--- |
-| **Remember（记忆）** | 复述左值、右值、xvalue、prvalue、lvalue reference、rvalue reference 的定义与判别方法 |
-| **Understand（理解）** | 解释移动语义与拷贝语义的本质差异，说明 `std::move` 不移动任何对象的原因 |
-| **Apply（应用）** | 为自定义类型正确实现移动构造函数与移动赋值运算符，正确使用 `std::move` 与 `std::forward` |
-| **Analyze（分析）** | 分析编译器何时执行 RVO/NRVO，何时退化到移动/拷贝，并预测汇编层面的代码生成 |
-| **Evaluate（评价）** | 评估一个类是否需要自定义移动操作，识别不合理的移动实现（如非 `noexcept`、未清空源对象） |
-| **Create（创造）** | 设计 move-only 类型（如 `std::unique_ptr`、`std::thread`、`std::mutex`），构建零拷贝数据流管线 |
-
-## 2. 历史动机与发展脉络
-
-### 2.1 C++03 时代的拷贝语义困境
+### 1.1 C++03 时代的拷贝语义困境
 
 在 C++03 时代，所有函数参数传递和返回值都需要通过拷贝构造或拷贝赋值完成。对于持有动态资源的对象（如 `std::vector`、`std::string`），这会导致严重的性能开销。例如：
 
@@ -57,7 +45,7 @@ C++03 时代解决此问题的常用方案包括：
 
 但 RVO/NRVO 不是强制性优化，编译器可选择不应用；且无法解决容器内 `push_back`、`emplace_back`、参数转发等场景的深拷贝问题。
 
-### 2.2 C++11 移动语义的引入
+### 1.2 C++11 移动语义的引入
 
 C++11 标准引入了**右值引用（rvalue reference）**`T&&` 与**移动语义（move semantics）**，从根本上解决了上述问题：
 
@@ -68,7 +56,7 @@ C++11 标准引入了**右值引用（rvalue reference）**`T&&` 与**移动语�
 - **N1855** *An Improved `std::forward`*（Douglas Gregor, 2005）：完善 `std::forward` 实现；
 - **N2118** *A Note on `std::forward`*（Douglas Gregor, 2006）：最终定型。
 
-### 2.3 C++14/17/20/23/26 演进
+### 1.3 C++14/17/20/23/26 演进
 
 | 标准 | 关键变化 | 文档编号 |
 | :--- | :--- | :--- |
@@ -79,7 +67,7 @@ C++11 标准引入了**右值引用（rvalue reference）**`T&&` 与**移动语�
 | **C++23** | `std::expected` 支持移动语义；`std::move_only_function`（P0288）替代 `std::function` 的可移动包装 | P0323, P0288 |
 | **C++26** | Hazard pointer、`std::rcu` 等无锁工具支持移动；`std::execution` 协程与移动语义深度整合（草案） | P2530, P2300 |
 
-### 2.4 与其他语言的横向对比
+### 1.4 与其他语言的横向对比
 
 | 特性 | C++ | Rust | Swift | Java | Go |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -89,9 +77,9 @@ C++11 标准引入了**右值引用（rvalue reference）**`T&&` 与**移动语�
 | 移动检查 | 类型 trait `is_nothrow_move_constructible` | Drop 检查所有权 | 编译期检查 | N/A | N/A |
 | RVO 强制 | C++17 起对纯右值强制 | 默认聚合 ELR | 默认 NRVO | JIT 内联优化 | 编译器内联优化 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 值类别（Value Category）
+### 2.1 值类别（Value Category）
 
 依据 C++23 [basic.lval]（ISO/IEC 14882:2023 第 6.7.1 节）的定义，表达式按值类别划分为如下结构：
 
@@ -120,7 +108,7 @@ flowchart TD
 
 判定函数 `is_lvalue<T>`、`is_rvalue<T>`、`is_xvalue<T>` 在 C++23 中通过 `std::is_lvalue_reference_v` 与 `std::is_rvalue_reference_v` 可间接推导。
 
-### 3.2 引用类型的形式化
+### 2.2 引用类型的形式化
 
 C++ 类型系统中引入两种引用类型：
 
@@ -131,7 +119,7 @@ $$
 - `T&` 称为 **lvalue reference**（左值引用），绑定到 lvalue；
 - `T&&` 称为 **rvalue reference**（右值引用），绑定到 rvalue（在非推导上下文中）。
 
-### 3.3 引用折叠规则
+### 2.3 引用折叠规则
 
 当模板推导或类型别名产生 "引用的引用" 时，按以下规则折叠（C++11 [dcl.ref]）：
 
@@ -146,7 +134,7 @@ $$
 
 形式化简化：只要出现 `&`，结果为 `&`；仅当两者均为 `&&` 时结果为 `&&`。
 
-### 3.4 模板参数推导规则
+### 2.4 模板参数推导规则
 
 对于函数模板 `template<typename T> void f(T&& x)`，参数推导规则（C++11 [temp.deduct.call]）为：
 
@@ -160,7 +148,7 @@ $$
 
 经引用折叠后，`T&&` 在传入 lvalue 时变成 `U&`，传入 rvalue 时保持 `U&&`。这种特殊的 `T&&` 称为 **forwarding reference**（转发引用），而非简单的 rvalue reference。
 
-### 3.5 `std::move` 与 `std::forward` 的形式化
+### 2.5 `std::move` 与 `std::forward` 的形式化
 
 `std::move(x)` 的语义：
 
@@ -182,9 +170,9 @@ $$
 
 依据模板参数 `T`（推导得到）决定是否转换为 xvalue，从而保留原值类别。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 为什么需要移动语义
+### 3.1 为什么需要移动语义
 
 考虑一个持有动态数组的类 `Buffer`：
 
@@ -213,7 +201,7 @@ public:
 
 拷贝构造的时间复杂度为 $O(n)$，而移动构造为 $O(1)$。在大数据传递场景下，移动语义带来数量级的性能提升。
 
-### 4.2 移动语义的成本模型
+### 3.2 移动语义的成本模型
 
 设拷贝成本为 $C_{copy}(n) = \alpha n + \beta$，移动成本为 $C_{move} = \gamma$（常数）。在 $n \to \infty$ 时：
 
@@ -223,7 +211,7 @@ $$
 
 即对于大对象，移动相对拷贝的优势趋近无穷大。这正是 STL 容器在 `push_back` 时优先选择移动的原因。
 
-### 4.3 重载决议与移动语义
+### 3.3 重载决议与移动语义
 
 当同时存在 `void f(const T&)` 与 `void f(T&&)` 时，重载决议规则如下：
 
@@ -235,7 +223,7 @@ $$
 调用 f(rvalue) → f(T&&)           // 移动
 ```
 
-### 4.4 RVO 与移动语义的关系
+### 3.4 RVO 与移动语义的关系
 
 C++17 起，对纯右值（prvalue）的拷贝消除变为**强制**（mandatory copy elision），见 P0135。这意味着：
 
@@ -249,7 +237,7 @@ auto v = makeVec();  // C++17: 零拷贝、零移动；C++11/14: 移动或 NRVO
 
 NRVO（具名返回值优化）依然是**可选优化**，编译器可选择不应用。若 NRVO 失败，则退化为移动（如有移动构造）或拷贝。
 
-### 4.5 `noexcept` 对移动的关键作用
+### 3.5 `noexcept` 对移动的关键作用
 
 `std::vector` 在 `reserve`/`resize` 时迁移元素，需保证强异常安全（strong exception safety）。其选择策略为：
 
@@ -277,7 +265,7 @@ $$
 \end{cases}
 $$
 
-### 4.6 move-only 类型与可移动性约束
+### 3.6 move-only 类型与可移动性约束
 
 `std::unique_ptr`、`std::thread`、`std::mutex`、`std::promise` 等类型只可移动、不可拷贝。这通过删除拷贝构造/赋值实现：
 
@@ -303,9 +291,9 @@ vec.push_back(std::move(p));                // 显式移动
 // vec.push_back(p);                       // 编译错误：拷贝构造被删除
 ```
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 完整可编译示例：`StringBuffer` 类
+### 4.1 完整可编译示例：`StringBuffer` 类
 
 下面给出一个生产级的 `StringBuffer` 实现，包含 Rule of Five 全套（析构、拷贝构造、拷贝赋值、移动构造、移动赋值）。
 
@@ -430,7 +418,7 @@ g++ -std=c++17 -O2 -Wall -Wextra -fsanitize=address,undefined \
 # d = Hello, World!
 ```
 
-### 5.2 移动语义在 STL 容器中的应用
+### 4.2 移动语义在 STL 容器中的应用
 
 ```cpp
 // file: stl_move.cpp
@@ -482,7 +470,7 @@ int main() {
 }
 ```
 
-### 5.3 移动语义与异常安全
+### 4.3 移动语义与异常安全
 
 ```cpp
 // file: move_noexcept.cpp
@@ -523,7 +511,7 @@ int main() {
 }
 ```
 
-### 5.4 完美转发的工厂函数
+### 4.4 完美转发的工厂函数
 
 ```cpp
 // file: perfect_forward_factory.cpp
@@ -560,7 +548,7 @@ int main() {
 }
 ```
 
-### 5.5 CMake 项目示例
+### 4.5 CMake 项目示例
 
 ```cmake
 # CMakeLists.txt
@@ -587,7 +575,7 @@ add_test(NAME string_buffer_test COMMAND string_buffer)
 add_test(NAME stl_move_test     COMMAND stl_move)
 ```
 
-### 5.6 move-only 类型的完整实现
+### 4.6 move-only 类型的完整实现
 
 ```cpp
 // file: move_only_resource.cpp
@@ -654,7 +642,7 @@ int main() {
 }
 ```
 
-### 5.7 返回值优化（RVO/NRVO）演示
+### 4.7 返回值优化（RVO/NRVO）演示
 
 ```cpp
 // file: rvo_demo.cpp
@@ -709,9 +697,9 @@ int main() {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Rust 所有权转移对比
+### 5.1 与 Rust 所有权转移对比
 
 | 维度 | C++ 移动语义 | Rust 所有权 |
 | :--- | :--- | :--- |
@@ -723,7 +711,7 @@ int main() {
 | 移动检查 | `static_assert(is_nothrow_move_constructible_v<T>)` | `T: Send + 'static` 等约束 |
 | 代码示例 | `auto b = std::move(a);` | `let b = a;` |
 
-### 6.2 与 Java 引用语义对比
+### 5.2 与 Java 引用语义对比
 
 | 维度 | C++ 移动语义 | Java 引用语义 |
 | :--- | :--- | :--- |
@@ -733,7 +721,7 @@ int main() {
 | 性能 | $O(1)$ 资源转移 | N/A，依赖 JIT 逃逸分析 |
 | 内存管理 | RAII + 移动 + 智能指针 | GC 标记-清除/分代 |
 
-### 6.3 与 Go 值语义对比
+### 5.3 与 Go 值语义对比
 
 | 维度 | C++ 移动语义 | Go 值语义 |
 | :--- | :--- | :--- |
@@ -742,7 +730,7 @@ int main() {
 | 资源管理 | RAII 自动析构 | `defer` + 显式 Close |
 | 性能特征 | 移动 $O(1)$，拷贝 $O(n)$ | 指针 $O(1)$，值拷贝 $O(n)$ |
 
-### 6.4 编译器优化能力对比
+### 5.4 编译器优化能力对比
 
 | 优化技术 | GCC | Clang | MSVC | ICC |
 | :--- | :--- | :--- | :--- | :--- |
@@ -752,9 +740,9 @@ int main() {
 | Move on return | 已达标 | 已达标 | 已达标 | 已达标 |
 | 隐式 `std::move` 返回 | 已达标 C++11 起 | 已达标 | 已达标 | 已达标 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：`std::move` 用于 `const` 对象
+### 6.1 陷阱 1：`std::move` 用于 `const` 对象
 
 ```cpp
 const std::string s = "hello";
@@ -765,7 +753,7 @@ std::string t = std::move(s);  // 实际上调用拷贝构造！
 
 **最佳实践**：避免对 `const` 对象使用 `std::move`；并启用编译器警告 `-Wpessimizing-move`、`-Wself-move`。
 
-### 7.2 陷阱 2：返回局部变量的 `std::move`
+### 6.2 陷阱 2：返回局部变量的 `std::move`
 
 ```cpp
 std::vector<int> make() {
@@ -778,7 +766,7 @@ std::vector<int> make() {
 
 **最佳实践**：返回局部变量时直接 `return v;`，不要 `std::move`。开启 `-Wpessimizing-move` 警告。
 
-### 7.3 陷阱 3：移动后继续使用源对象
+### 6.3 陷阱 3：移动后继续使用源对象
 
 ```cpp
 std::string a = "hello";
@@ -791,7 +779,7 @@ a.size();        // 通常安全，但内容未指定
 
 **最佳实践**：移动后不要继续使用源对象，或显式重新赋值后再使用。
 
-### 7.4 陷阱 4：移动构造未标记 `noexcept`
+### 6.4 陷阱 4：移动构造未标记 `noexcept`
 
 ```cpp
 class Bad {
@@ -807,7 +795,7 @@ v.reserve(10);  // vector 扩容时会选择拷贝而非移动
 
 **最佳实践**：移动构造与移动赋值必须标记 `noexcept`，否则在异常敏感场景下性能大幅退化。
 
-### 7.5 陷阱 5：自移动赋值
+### 6.5 陷阱 5：自移动赋值
 
 ```cpp
 StringBuffer x("hello");
@@ -820,7 +808,7 @@ x = std::move(x);  // 自移动赋值
 1. 显式检查 `if (this != &other) return *this;`；
 2. 或采用 copy-and-swap 惯用法（自动处理自赋值）。
 
-### 7.6 陷阱 6：派生类移动忘记基类
+### 6.6 陷阱 6：派生类移动忘记基类
 
 ```cpp
 class Base {
@@ -849,7 +837,7 @@ public:
 };
 ```
 
-### 7.7 陷阱 7：在按值传递参数时 `std::move`
+### 6.7 陷阱 7：在按值传递参数时 `std::move`
 
 ```cpp
 // 反例
@@ -866,7 +854,7 @@ void worse(std::string s) {
 
 **最佳实践**：按值传入的参数已属于函数，直接 `std::move` 到目标位置即可，无需在中间再次 `std::move`。
 
-### 7.8 陷阱 8：移动语义与 `auto` 的交互
+### 6.8 陷阱 8：移动语义与 `auto` 的交互
 
 ```cpp
 std::vector<int> v = {1, 2, 3};
@@ -878,7 +866,7 @@ auto w = std::move(v); // 移动构造
 
 注意 `auto&&` 是转发引用，会根据初始值推导为左值引用或右值引用。
 
-### 7.9 UB 清单
+### 6.9 UB 清单
 
 | UB 类型 | 描述 | 检测方法 |
 | :--- | :--- | :--- |
@@ -888,7 +876,7 @@ auto w = std::move(v); // 移动构造
 | 虚函数表未移动 | 派生类移动后虚函数失效 | ASan, UBSan |
 | 对 `const` 对象 `std::move` | 退化为拷贝，性能问题 | `-Wpessimizing-move` |
 
-### 7.10 最佳实践清单
+### 6.10 最佳实践清单
 
 1. **Rule of Five/Zero**：若自定义了析构、拷贝构造、拷贝赋值、移动构造、移动赋值中任一个，应当考虑全部五个；或尽量使用 Rule of Zero（依赖编译器生成的默认操作）。
 2. **移动操作标记 `noexcept`**：除非有强理由，移动构造/赋值必须 `noexcept`。
@@ -898,9 +886,9 @@ auto w = std::move(v); // 移动构造
 6. **启用编译警告**：`-Wall -Wextra -Wpessimizing-move -Wself-move -Wredundant-move`。
 7. **使用 sanitizer**：开发期开启 `-fsanitize=address,undefined`。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建与依赖
+### 7.1 构建与依赖
 
 **典型 CMake 项目结构**：
 
@@ -958,7 +946,7 @@ if(BUILD_BENCHMARKS)
 endif()
 ```
 
-### 8.2 性能基准测试
+### 7.2 性能基准测试
 
 ```cpp
 // file: bench_buffer.cpp
@@ -1017,7 +1005,7 @@ BM_EmplaceBack    827 us          826 us          845
 
 移动相比拷贝，性能提升约 **3.7 倍**。
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
 **1. 检查移动是否发生**：
 
@@ -1050,7 +1038,7 @@ perf record -g ./bench
 perf report
 ```
 
-### 8.4 依赖管理：vcpkg / Conan
+### 7.4 依赖管理：vcpkg / Conan
 
 **vcpkg.json**：
 
@@ -1082,7 +1070,7 @@ CMakeToolchain
 cmake_layout
 ```
 
-### 8.5 CI/CD 集成
+### 7.5 CI/CD 集成
 
 ```yaml
 # .github/workflows/cpp-ci.yml
@@ -1117,9 +1105,9 @@ jobs:
         run: ./build/bench_buffer --benchmark_min_time=0.1s
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：LLVM `SmallVector` 的移动实现
+### 8.1 案例一：LLVM `SmallVector` 的移动实现
 
 LLVM 的 `SmallVector<T, N>` 是一种小容量时栈分配、大容量时堆分配的容器。其移动语义实现节选自 `llvm/ADT/SmallVector.h`：
 
@@ -1143,7 +1131,7 @@ SmallVector(SmallVector&& RHS) noexcept {
 - 移动构造标记 `noexcept`，保证 `vector<SmallVector>` 扩容时使用移动；
 - 区分栈缓冲区与堆缓冲区两种情形，分别处理。
 
-### 9.2 案例二：Chromium `base::StringPiece` 的零拷贝设计
+### 8.2 案例二：Chromium `base::StringPiece` 的零拷贝设计
 
 Chromium 中广泛使用 `base::StringPiece`（类似 `std::string_view`），通过移动语义在多模块间传递：
 
@@ -1157,7 +1145,7 @@ base::StringPiece Process(base::StringPiece input) {
 
 `StringPiece` 本身是 trivially copyable，但其内部的 `std::string` 拥有者可移动转移所有权，实现零拷贝。
 
-### 9.3 案例三：Qt 的 `QString` 移动语义
+### 8.3 案例三：Qt 的 `QString` 移动语义
 
 Qt 5 起为 `QString` 实现了移动构造/赋值：
 
@@ -1174,7 +1162,7 @@ QString greeting = makeGreeting();  // 零拷贝
 
 Qt 的隐式共享（implicit sharing，COW）机制使拷贝构造本身也是 $O(1)$，但移动语义避免了引用计数的原子操作开销。
 
-### 9.4 案例四：Folly `fbvector` 的移动优化
+### 8.4 案例四：Folly `fbvector` 的移动优化
 
 Facebook 的 Folly 库中 `fbvector` 对 `std::vector` 进行了多项优化，包括：
 - 在 `relocate` 操作中检测 trivially relocatable 类型，使用 `memcpy` 替代逐元素移动；
@@ -1194,7 +1182,7 @@ void fbvector<T, Allocator>::reallocate(size_t new_cap) {
 }
 ```
 
-### 9.5 案例五：`std::unique_ptr` 的移动语义
+### 8.5 案例五：`std::unique_ptr` 的移动语义
 
 `std::unique_ptr` 是 move-only 类型的典范，其核心实现节选自 `<memory>`：
 
@@ -1458,7 +1446,7 @@ int main() {
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 12**：. 为什么 C++ 不像 Rust 那样在编译期禁止使用移动后的对象？
 
@@ -1498,7 +1486,7 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 
 但对于独占所有权，应优先使用 `unique_ptr` 配合移动语义，性能更优、语义更清晰。
 
-## 11. 参考文献
+## 10. 参考文献
 
 引用采用 ACM Reference Format，含 DOI 链接。
 
@@ -1528,9 +1516,9 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 
 13. Koskinen, J. and Parrish, A. 2021. *Performance Evaluation of Move Semantics in Modern C++*. Software: Practice and Experience 51, 5, 1023–1045. DOI: 10.1002/spe.2941
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《C++ Move Semantics — The Complete Guide》**（Nicolai M. Josuttis, 2021）：最权威的移动语义专著，覆盖 C++11/14/17/20 完整演进。
 - **《Effective Modern C++》**（Scott Meyers, 2014）：条款 23-30 详解 `std::move`/`std::forward` 的正确用法。
@@ -1538,7 +1526,7 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 - **《The C++ Programming Language》**（Bjarne Stroustrup, 4th ed., 2013）：第 7 章深入讲解右值引用。
 - **《Advanced C++ Topics》**（David Vandevoorde, Nicolai M. Josuttis, Douglas Gregor, 2nd ed., 2017）：模板与移动语义的深度结合。
 
-### 12.2 论文与提案
+### 11.2 论文与提案
 
 - **N1377**: A Proposal to Add Move Semantics Support to the C++ Language (Hinnant, 2002) — 移动语义首篇系统提案。
 - **N1610**: Clarification of Initialization of Class Objects by Rvalues (Abrahams, 2004)。
@@ -1548,7 +1536,7 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 - **P0288**: `std::move_only_function` (Spertus, 2018) — C++23 可移动函数包装器。
 - **P2266**: Simpler implicit move (Spertus, 2021) — C++20 简化隐式移动规则。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **cppreference.com**: [Value categories](https://en.cppreference.com/w/cpp/language/value_category), [Move constructors](https://en.cppreference.com/w/cpp/language/move_constructor), [std::move](https://en.cppreference.com/w/cpp/utility/move), [std::forward](https://en.cppreference.com/w/cpp/utility/forward)
 - **Compiler Explorer (godbolt.org)**: 在线查看不同编译器对移动语义的代码生成。
@@ -1557,14 +1545,14 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 - **Sutter's Mill (Herb Sutter)**: <https://herbsutter.com/> — C++ 标准化进程与最佳实践。
 - **ISO C++ Committee Papers**: <https://www.open-std.org/jtc1/sc22/wg21/> — 全部 WG21 提案原文。
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 - **CPPCon**: *Moving Faster: C++17 and Move Semantics* (Howard Hinnant, 2019) — 移动语义专题讲座。
 - **MIT 6.S192**: *Performance Engineering of Software Systems* — 包含移动语义性能分析。
 - **Stanford CS106L**: *Standard C++ Programming* — 移动语义与 STL 实战。
 - **CMU 15-411**: *Compiler Design* — 编译器如何实现 RVO/NRVO。
 
-### 12.5 开源项目源码阅读
+### 11.5 开源项目源码阅读
 
 - **LLVM `SmallVector`**: <https://github.com/llvm/llvm-project/blob/main/llvm/include/llvm/ADT/SmallVector.h>
 - **Folly `fbvector`**: <https://github.com/facebook/folly/blob/main/folly/docs/FBVector.md>

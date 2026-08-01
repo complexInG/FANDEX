@@ -31,14 +31,6 @@ prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/数组与动态数组
   - algorithm/链表
-learningObjectives:
-  - 记忆栈的 LIFO（后进先出）与队列的 FIFO（先进先出）形式化定义，复述顺序栈/链式栈/循环队列/链式队列/双端队列在 push/pop/enqueue/dequeue 操作上的时间复杂度差异
-  - 理解 Bauer-Samelson 1955-1957 慕尼黑工大叠加原理与表达式求值、Dijkstra 1960 年代递归调用栈与 ALGOL 60 编译器、Dijkstra 1965 信号量与 P/V 操作、Hoare 1978 CSP 模型与 Go channel 的历史脉络
-  - 应用顺序栈、链式栈、循环队列、链式队列、双端队列、单调栈、单调队列编写可运行的 Python/C++/Java 代码，解决括号匹配、逆波兰表达式、滑动窗口最值、每日温度、柱状图最大矩形等问题
-  - 分析单调栈与单调队列的均摊时间复杂度 $O(n)$ 论证，证明"每个元素至多入栈出栈一次"的核心不变式
-  - 评估栈与队列相对于数组、链表、堆在"操作受限场景"下的优劣，识别函数调用栈、表达式求值、BFS、任务调度、消息队列、撤销重做中的选型动机
-  - 对比顺序栈、链式栈、循环队列、链式队列、双端队列、单调栈、单调队列在内存开销、缓存友好性、扩容代价、实现复杂度维度的差异
-  - 创造性设计基于栈与队列的开源项目解决方案，如浏览器前进后退、音乐播放器、文本编辑器撤销栈、消息中间件、任务调度器、限流器
 references:
   - type: journal
     authors:
@@ -159,6 +151,7 @@ etymology:
     english: channel
     origin: 'channel 在 CSP 模型中指进程间通信的抽象通道。1978 年 Hoare 在《Communicating sequential processes》提出，每个 channel 是一个无界 FIFO 队列，发送方与接收方通过 channel 同步。Go 语言将 channel 作为一等公民，其底层实现是有锁队列或无锁环形队列'
 ---
+
 
 ## 1. 概述与学习目标
 

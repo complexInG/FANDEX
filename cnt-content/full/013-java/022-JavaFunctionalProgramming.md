@@ -30,82 +30,16 @@ tags:
   - PureFunction
 ---
 
+
 # Java 函数式编程深度指南
 
 > 函数式编程（Functional Programming, FP）作为一种起源于 λ 演算的编程范式，自 LISP（1958）诞生以来深刻影响了计算机科学的发展。Java 在 2014 年发布的 Java 8 中正式引入 Lambda 表达式、Stream API 与 `java.util.function` 包，标志着这门以面向对象为核心的语言完成了"对象 + 函数"的双范式融合。本文将从 λ 演算的形式化基础出发，深入剖析 Java 函数式接口的字节码本质、Stream 的惰性求值机制、并行流的 Fork/Join 调度原理，并通过完整的工程案例展示函数式思维如何重构传统命令式代码。读者将不仅学会"如何使用 Lambda"，更能理解"为何 `invokedynamic` 是 Java 函数式实现的基石"，从而在架构设计与性能优化层面做出有依据的决策。
 
 ---
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节以 Bloom 教育目标分类法（Anderson 2001 修订版）为框架，对学习目标进行显式分级。
-
-### 1.1 认知层级目标
-
-| 层级（Level） | 行为动词 | 具体学习目标 |
-|--------------|---------|-------------|
-| 记忆（Remember） | 列举、识别、定义 | 列举 `Function`、`Consumer`、`Supplier`、`Predicate`、`BiFunction` 等核心函数式接口的签名，识别 `@FunctionalInterface` 注解的语义约束，定义 Lambda、方法引用、Stream 等关键概念 |
-| 理解（Understand） | 解释、归纳、对比 | 解释 `invokedynamic` 如何支撑 Lambda 表达式，对比 `compose` 与 `andThen` 的执行顺序，归纳 Stream 中间操作与终端操作的差异 |
-| 应用（Apply） | 实现、使用、演示 | 使用 Lambda 重写匿名内部类，使用 `Collectors.groupingBy` 实现多级分组，使用 `IntStream` 进行数值计算，使用 `parallelStream` 加速大数据处理 |
-| 分析（Analyze） | 分解、辨别、推断 | 分解 Stream 流水线的惰性求值链路，推断 `flatMap` 的展平语义，辨别短路操作与非短路操作的性能差异 |
-| 评价（Evaluate） | 评判、论证、批判 | 评判函数式编程在副作用控制上的优势，论证并行流的适用场景，批判过度使用 Stream 导致的可读性下降 |
-| 创造（Create） | 设计、构建、重构 | 设计基于函数组合的领域特定语言（DSL），构建自定义 Collector 实现特殊收集逻辑，重构遗留命令式代码为声明式风格 |
-
-### 1.2 学习成果自检清单
-
-完成本章学习后，读者应能独立完成以下任务：
-
-1. 在不查阅文档的前提下，画出 `java.util.function` 包中核心函数式接口的继承关系图。
-2. 用一句话向同事解释 `invokedynamic` 与 Lambda 表达式的关系，并说明为何 Java 不采用匿名内部类方案。
-3. 在白板上推导一段 Stream 流水线的执行过程，标注每个操作的惰性求值时机。
-4. 设计一个基于 `Collector` 的自定义收集器，将订单流聚合为按月份分组的统计报告。
-5. 对比 `parallelStream`、`CompletableFuture`、虚拟线程三种并发模型的优缺点，给出选型建议。
-6. 重写一段 50 行的命令式循环代码为函数式风格，并保证功能等价、性能不退化。
-
-### 1.3 前置知识地图
-
-```mermaid
-flowchart TD
-    T0["Java 基础"]
-    T1["面向对象（封装、继承、多态）"]
-    T2["集合框架（List、Map、Set）"]
-    T3["泛型（类型参数、通配符、类型擦除）"]
-    T4["异常处理（try-catch-finally）"]
-    T5["Java 函数式编程（本章）"]
-    T6["语法层：Lambda 表达式、方法引用、构造引用"]
-    T7["API 层：函数式接口、Stream、Optional、Collectors"]
-    T8["语义层：纯函数、不可变性、惰性求值、高阶函数"]
-    T9["字节码层：invokedynamic、LambdaMetafactory、LambdaForm"]
-    T10["进阶应用"]
-    T11["响应式编程（Reactor、RxJava）"]
-    T12["并行计算（ForkJoinPool、parallelStream）"]
-    T13["DSL 设计（Builder 模式 + 函数组合）"]
-    T0 --> T1
-    T0 --> T2
-    T0 --> T3
-    T0 --> T4
-    T4 --> T5
-    T5 --> T6
-    T5 --> T7
-    T5 --> T8
-    T5 --> T9
-    T9 --> T10
-    T10 --> T11
-    T10 --> T12
-    T10 --> T13
-```
-
-### 1.4 章节阅读建议
-
-- **零基础读者**：建议按顺序阅读第 2-5 节，配合第 5 节代码示例上机实操，再回到第 3、4 节深化理论。
-- **有 Java 8 经验的工程师**：可跳过第 2 节基础部分，直接阅读第 3 节形式化定义、第 4 节字节码机制、第 7 节反模式。
-- **架构师**：重点关注第 6 节对比分析、第 8 节工程实践与第 9 节案例研究，特别是函数式思维如何重塑领域建模。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 函数式编程的数学渊源
+### 1.1 函数式编程的数学渊源
 
 函数式编程的根基可追溯至 Alonzo Church 于 1936 年提出的 λ 演算（Lambda Calculus）。λ 演算是一个形式系统，用于研究函数定义、函数应用和递归。其核心语法仅有三条规则：
 
@@ -123,7 +57,7 @@ flowchart TD
 
 1958 年，John McCarthy 基于 λ 演算设计了 LISP，开启了函数式编程的工程化实践。此后 ML（1973）、Haskell（1990）、Erlang（1986）等语言进一步发展了类型系统、惰性求值、模式匹配等特性。
 
-### 2.2 Java 引入函数式编程的动机
+### 1.2 Java 引入函数式编程的动机
 
 Java 8 之前，函数式编程在 Java 中只能通过匿名内部类"模拟"，但语法冗长、性能开销大。考虑以下排序示例：
 
@@ -151,7 +85,7 @@ names.sort(Comparator.comparingInt(String::length));
 3. **API 设计灵活性**：函数式接口允许 API 接受行为参数，如 `forEach`、`map`、`filter`。
 4. **生态竞争**：Scala、Groovy 等 JVM 语言已支持函数式特性，Java 需保持竞争力。
 
-### 2.3 Java 函数式编程的版本演进
+### 1.3 Java 函数式编程的版本演进
 
 | 版本 | 年份 | 关键特性 | JEP |
 |------|------|---------|-----|
@@ -163,7 +97,7 @@ names.sort(Comparator.comparingInt(String::length));
 | Java 17 | 2021 | ` sealed` 类与模式匹配（增强 Stream 的类型安全） | JEP 409 |
 | Java 21 | 2023 | 虚拟线程与 Stream 的协同、模式匹配 switch | JEP 444 |
 
-### 2.4 设计哲学：为何 Java 不采用"纯"函数式
+### 1.4 设计哲学：为何 Java 不采用"纯"函数式
 
 Java 选择"对象 + 函数"的混合范式，而非 Haskell 式的纯函数式，原因如下：
 
@@ -176,9 +110,9 @@ Java 选择"对象 + 函数"的混合范式，而非 Haskell 式的纯函数式�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 函数式接口的形式化定义
+### 2.1 函数式接口的形式化定义
 
 **定义 3.1（函数式接口）**：一个接口 $I$ 是函数式接口，当且仅当 $I$ 恰好声明了一个抽象方法 $m$。形式化地：
 
@@ -190,7 +124,7 @@ $$
 
 **注**：`@FunctionalInterface` 注解是可选的，仅用于编译期检查。即使不标注，满足上述条件的接口仍可作为函数式接口使用（如 `Comparator`）。
 
-### 3.2 Lambda 表达式的类型推断
+### 2.2 Lambda 表达式的类型推断
 
 Lambda 表达式的类型由目标类型（Target Type）推断。设目标类型为 $T = I_\alpha$（函数式接口），其函数描述符（Functional Descriptor）为 $\tau_1 \to \tau_2$。Lambda 表达式 $(x) \to e$ 的类型检查规则为：
 
@@ -200,7 +134,7 @@ $$
 
 例如，`Comparator<String>` 的描述符为 `(String, String) -> int`，因此 `(s1, s2) -> s1.length() - s2.length()` 的类型可推断为 `Comparator<String>`。
 
-### 3.3 Stream 流水线的代数结构
+### 2.3 Stream 流水线的代数结构
 
 Stream 流水线可形式化为一个**单子**（Monad）。定义 `Stream<T>` 为类型构造子，其满足以下单子定律：
 
@@ -210,7 +144,7 @@ Stream 流水线可形式化为一个**单子**（Monad）。定义 `Stream<T>` 
 
 `flatMap` 即单子的 `bind` 操作（写作 `>>=`），`of` 即 `return`/`pure`。这保证了 Stream 流水线的组合正确性。
 
-### 3.4 纯函数的数学性质
+### 2.4 纯函数的数学性质
 
 **定义 3.2（纯函数）**：函数 $f : A \to B$ 是纯函数，当且仅当：
 
@@ -225,7 +159,7 @@ $$
 
 这是函数式编程可推理性、可测试性、可并行化的数学基础。
 
-### 3.5 柯里化的形式化
+### 2.5 柯里化的形式化
 
 **定义 3.3（柯里化）**：将 $n$ 元函数 $f : A_1 \times A_2 \times \cdots \times A_n \to B$ 转换为一元函数链的过程：
 
@@ -251,9 +185,9 @@ System.out.println(add5.apply(3)); // 8
 
 ---
 
-## 4. 理论推导：函数式编程的内部机制
+## 3. 理论推导：函数式编程的内部机制
 
-### 4.1 invokedynamic 与 Lambda 的字节码实现
+### 3.1 invokedynamic 与 Lambda 的字节码实现
 
 Java 8 的 Lambda 表达式并不编译为匿名内部类，而是通过 `invokedynamic`（JSR 292）实现。这一设计决策由 Brian Goetz 主导，核心动机是：
 
@@ -287,7 +221,7 @@ INVOKEDYNAMIC compare()Ljava/util/Comparator; [
 
 通过 `-Djdk.internal.lambda.dumpProxyClasses=/tmp/lambda` 可导出生成的动态类，验证其结构。
 
-### 4.2 Stream 流水线的惰性求值机制
+### 3.2 Stream 流水线的惰性求值机制
 
 Stream 的核心设计是**惰性求值**（Lazy Evaluation）：中间操作（Intermediate Operation）不会立即执行，只有在终端操作（Terminal Operation）触发时才回溯执行整个流水线。
 
@@ -339,7 +273,7 @@ Optional<String> first = Stream.of("a", "bb", "ccc", "dddd")
 
 可以看到 `dddd` 未被处理，体现了短路优化。
 
-### 4.3 并行流的 Fork/Join 调度
+### 3.3 并行流的 Fork/Join 调度
 
 `parallelStream` 与 `stream().parallel()` 基于 `ForkJoinPool.commonPool()` 实现并行。其工作流程：
 
@@ -364,7 +298,7 @@ Spliterator<String> prefix = spliterator.trySplit();  // 分割前半部分
 4. 数据量足够大（通常 > 10000 元素）。
 5. 操作本身计算量足够大（简单 `map` 难以抵消并行开销）。
 
-### 4.4 函数式接口的字节码与运行时
+### 3.4 函数式接口的字节码与运行时
 
 `@FunctionalInterface` 注解在运行时通过 `@Retention(RetentionPolicy.RUNTIME)` 保留，但 JVM 不依赖它判断函数式接口。实际判断逻辑在 `LambdaMetafactory` 中：
 
@@ -390,7 +324,7 @@ public static CallSite metafactory(...) {
 
 这一机制使得 Lambda 的实现策略可在未来演进（如 GraalVM 的部分求值优化），而无需修改字节码。
 
-### 4.5 方法引用的四种形式
+### 3.5 方法引用的四种形式
 
 方法引用（Method Reference）是 Lambda 的语法糖，编译器将其转换为方法句柄。四种形式：
 
@@ -403,7 +337,7 @@ public static CallSite metafactory(...) {
 
 **任意对象实例方法引用的语义**：第一个参数成为接收者（receiver），其余参数作为方法参数。例如 `String::concat` 等价于 `(s1, s2) -> s1.concat(s2)`。
 
-### 4.6 Collectors 的归约代数
+### 3.6 Collectors 的归约代数
 
 `Collector` 接口定义了五个组件：
 
@@ -434,9 +368,9 @@ $$
 
 ---
 
-## 5. 代码示例：从入门到进阶的完整实战
+## 4. 代码示例：从入门到进阶的完整实战
 
-### 5.1 入门：Lambda 基础语法
+### 4.1 入门：Lambda 基础语法
 
 ```java
 package com.example.fp.basics;
@@ -483,7 +417,7 @@ public class LambdaBasics {
 }
 ```
 
-### 5.2 进阶：自定义函数式接口与组合
+### 4.2 进阶：自定义函数式接口与组合
 
 ```java
 package com.example.fp.advanced;
@@ -527,7 +461,7 @@ class TransformerDemo {
 }
 ```
 
-### 5.3 实战：Stream 数据处理管道
+### 4.3 实战：Stream 数据处理管道
 
 ```java
 package com.example.fp.stream;
@@ -635,7 +569,7 @@ public class StreamPipeline {
 }
 ```
 
-### 5.4 实战：自定义 Collector
+### 4.4 实战：自定义 Collector
 
 ```java
 package com.example.fp.collector;
@@ -754,7 +688,7 @@ class PercentileCollector implements Collector<Double, List<Double>, Map<String,
 }
 ```
 
-### 5.5 实战：并行流与自定义 ForkJoinPool
+### 4.5 实战：并行流与自定义 ForkJoinPool
 
 ```java
 package com.example.fp.parallel;
@@ -820,7 +754,7 @@ public class ParallelStreamDemo {
 }
 ```
 
-### 5.6 实战：函数组合与柯里化
+### 4.6 实战：函数组合与柯里化
 
 ```java
 package com.example.fp.composition;
@@ -904,7 +838,7 @@ public class FunctionComposition {
 }
 ```
 
-### 5.7 实战：Optional 的函数式用法
+### 4.7 实战：Optional 的函数式用法
 
 ```java
 package com.example.fp.optional;
@@ -973,7 +907,7 @@ public class OptionalDemo {
 }
 ```
 
-### 5.8 实战：原始类型流
+### 4.8 实战：原始类型流
 
 ```java
 package com.example.fp.primitive;
@@ -1031,7 +965,7 @@ public class PrimitiveStreamDemo {
 }
 ```
 
-### 5.9 实战：Stream 高级操作
+### 4.9 实战：Stream 高级操作
 
 ```java
 package com.example.fp.advanced;
@@ -1133,7 +1067,7 @@ public class AdvancedStreamOps {
 }
 ```
 
-### 5.10 完整案例：基于函数式的领域建模
+### 4.10 完整案例：基于函数式的领域建模
 
 ```java
 package com.example.fp.domain;
@@ -1301,9 +1235,9 @@ public class FunctionalECommerce {
 
 ---
 
-## 6. 对比分析：函数式 vs 命令式
+## 5. 对比分析：函数式 vs 命令式
 
-### 6.1 代码风格对比
+### 5.1 代码风格对比
 
 **场景**：统计每个部门的平均薪资，并按薪资降序排列。
 
@@ -1346,7 +1280,7 @@ List<Map.Entry<String, Double>> result = employees.stream()
 | 可读性 | 直白但冗长 | 简洁但需熟悉 API |
 | 性能 | 单次遍历效率高 | 有中间对象开销 |
 
-### 6.2 性能对比：Stream vs for 循环
+### 5.2 性能对比：Stream vs for 循环
 
 ```java
 // 测试数据：1,000,000 个整数
@@ -1388,7 +1322,7 @@ long sumParallel = data.parallelStream()
 2. **大数据量**：并行 Stream 接近 for 循环，但需考虑并行开销。
 3. **原始类型流**（`IntStream`）能显著降低装箱开销，性能接近 for 循环。
 
-### 6.3 Lambda vs 匿名内部类
+### 5.3 Lambda vs 匿名内部类
 
 ```java
 // 匿名内部类
@@ -1413,7 +1347,7 @@ Comparator<String> cmp2 = (s1, s2) -> Integer.compare(s1.length(), s2.length());
 | 内存占用 | 每个 `new` 创建新实例 | 单例（无捕获）或多例（有捕获） |
 | 序列化 | 可序列化 | 默认不可（避免泄露） |
 
-### 6.4 函数式接口 vs 自定义接口
+### 5.4 函数式接口 vs 自定义接口
 
 ```java
 // 方案 A：使用标准函数式接口
@@ -1434,7 +1368,7 @@ UserToString getName2 = User::getName;
 3. 需要在 API 文档中明确类型约束。
 4. 自定义接口的缺点：与标准库互操作需适配。
 
-### 6.5 Stream vs Reactive Streams
+### 5.5 Stream vs Reactive Streams
 
 | 维度 | Stream | Reactor Flux/Mono |
 |------|--------|-------------------|
@@ -1446,9 +1380,9 @@ UserToString getName2 = User::getName;
 
 ---
 
-## 7. 陷阱与反模式
+## 6. 陷阱与反模式
 
-### 7.1 反模式：Stream 重复消费
+### 6.1 反模式：Stream 重复消费
 
 ```java
 // 反模式：Stream 只能消费一次
@@ -1462,7 +1396,7 @@ streamSupplier.get().forEach(System.out::println);
 streamSupplier.get().map(String::toUpperCase).forEach(System.out::println);
 ```
 
-### 7.2 反模式：并行流共享可变状态
+### 6.2 反模式：并行流共享可变状态
 
 ```java
 // 反模式：并行流修改共享集合
@@ -1490,7 +1424,7 @@ List<Integer> reduced = IntStream.rangeClosed(1, 1000).parallel()
     );
 ```
 
-### 7.3 反模式：Lambda 中的副作用
+### 6.3 反模式：Lambda 中的副作用
 
 ```java
 // 反模式：Lambda 修改外部可变状态
@@ -1506,7 +1440,7 @@ List<String> adultNames = users.stream()
     .collect(Collectors.toList());
 ```
 
-### 7.4 反模式：过度嵌套的 Stream
+### 6.4 反模式：过度嵌套的 Stream
 
 ```java
 // 反模式：过度嵌套，可读性差
@@ -1528,7 +1462,7 @@ List<String> result = data.stream()
     .collect(Collectors.toList());
 ```
 
-### 7.5 反模式：在 forEach 中执行 I/O
+### 6.5 反模式：在 forEach 中执行 I/O
 
 ```java
 // 反模式：forEach 中执行数据库操作
@@ -1549,7 +1483,7 @@ List<CompletableFuture<Void>> futures = users.stream()
 futures.forEach(CompletableFuture::join);
 ```
 
-### 7.6 反模式：使用 peek 修改状态
+### 6.6 反模式：使用 peek 修改状态
 
 ```java
 // 反模式：peek 用于副作用（语义不明确）
@@ -1563,7 +1497,7 @@ List<User> users = rawUsers.stream()
     .collect(Collectors.toList());
 ```
 
-### 7.7 反模式：忽视受检异常
+### 6.7 反模式：忽视受检异常
 
 ```java
 // 反模式：Lambda 中抛出受检异常
@@ -1589,7 +1523,7 @@ files.stream()
 // 方案 3：使用 Either Monad（需要 Vavr 等库）
 ```
 
-### 7.8 反模式：Collectors.toMap 键冲突
+### 6.8 反模式：Collectors.toMap 键冲突
 
 ```java
 // 反模式：toMap 遇到重复键抛异常
@@ -1612,7 +1546,7 @@ Map<String, List<Integer>> nameToAges = users.stream()
     ));
 ```
 
-### 7.9 反模式：Optional 滥用
+### 6.9 反模式：Optional 滥用
 
 ```java
 // 反模式 1：Optional 作为字段
@@ -1634,7 +1568,7 @@ void setName() {
 }
 ```
 
-### 7.10 反模式：方法引用过度使用
+### 6.10 反模式：方法引用过度使用
 
 ```java
 // 反模式：方法引用降低可读性
@@ -1652,9 +1586,9 @@ list.stream()
 
 ---
 
-## 8. 工程实践：函数式编程的项目落地
+## 7. 工程实践：函数式编程的项目落地
 
-### 8.1 项目结构建议
+### 7.1 项目结构建议
 
 ```mermaid
 flowchart TD
@@ -1680,7 +1614,7 @@ flowchart TD
     T12 --> T13
 ```
 
-### 8.2 处理受检异常的工具
+### 7.2 处理受检异常的工具
 
 ```java
 @FunctionalInterface
@@ -1705,7 +1639,7 @@ List<String> contents = files.stream()
     .collect(Collectors.toList());
 ```
 
-### 8.3 函数式缓存
+### 7.3 函数式缓存
 
 ```java
 public class MemoizedFunction<T, R> implements Function<T, R> {
@@ -1735,7 +1669,7 @@ memoized.apply(5);  // <1ms（缓存命中）
 memoized.apply(6);  // 100ms
 ```
 
-### 8.4 函数式重试
+### 7.4 函数式重试
 
 ```java
 public class Retry {
@@ -1765,7 +1699,7 @@ public class Retry {
 String result = Retry.withRetry(() -> callRemoteService(), 3).get();
 ```
 
-### 8.5 函数式配置
+### 7.5 函数式配置
 
 ```java
 public class FunctionalRouter {
@@ -1789,7 +1723,7 @@ FunctionalRouter router = new FunctionalRouter()
     .route("/health", req -> new Response(200, "OK"));
 ```
 
-### 8.6 测试函数式代码
+### 7.6 测试函数式代码
 
 ```java
 class FunctionalTest {
@@ -1838,9 +1772,9 @@ class FunctionalTest {
 
 ---
 
-## 9. 案例研究：主流框架的函数式实践
+## 8. 案例研究：主流框架的函数式实践
 
-### 9.1 Spring Framework 的函数式风格
+### 8.1 Spring Framework 的函数式风格
 
 Spring 5+ 大量采用函数式风格：
 
@@ -1880,7 +1814,7 @@ public class SecurityConfig {
 }
 ```
 
-### 9.2 Reactor 的函数式响应式
+### 8.2 Reactor 的函数式响应式
 
 ```java
 // Reactor 的 Mono/Flux 完全基于函数式组合
@@ -1891,7 +1825,7 @@ Mono<User> getUser = userRepository.findById(id)
     .switchIfEmpty(Mono.error(new UserNotFoundException(id)));
 ```
 
-### 9.3 Vavr 的函数式增强
+### 8.3 Vavr 的函数式增强
 
 Vavr 库为 Java 提供了更完整的函数式工具：
 
@@ -1915,7 +1849,7 @@ String description = Match(user).of(
 );
 ```
 
-### 9.4 JUnit 5 的函数式断言
+### 8.4 JUnit 5 的函数式断言
 
 ```java
 // JUnit 5 的函数式断言
@@ -1936,7 +1870,7 @@ Stream<DynamicTest> dynamicTests() {
 }
 ```
 
-### 9.5 Collectors 在 Apache Commons 的应用
+### 8.5 Collectors 在 Apache Commons 的应用
 
 ```java
 // Apache Commons 的 MultiValuedMap 与 Collectors
@@ -1957,7 +1891,7 @@ ImmutableList<User> immutable = users.stream()
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（记忆与理解）
+### 9.1 基础题（记忆与理解）
 
 1. 列举 `java.util.function` 包中至少 5 个核心函数式接口及其函数描述符。
 2. 解释 `@FunctionalInterface` 注解的作用，并说明是否必须标注。
@@ -1973,7 +1907,7 @@ ImmutableList<User> immutable = users.stream()
 9. 设计一个基于函数组合的验证器，支持对用户对象进行多重校验（用户名非空、密码长度、邮箱格式）。
 10. 使用 `IntStream` 计算圆周率 π 的近似值（莱布尼茨级数），并对比不同项数的精度。
 
-### 10.3 分析题
+### 9.3 分析题
 
 11. 以下代码有什么问题？请指出并修复：
     ```java
@@ -1998,7 +1932,7 @@ ImmutableList<User> immutable = users.stream()
     int sum = data.stream().mapToInt(n -> n * n).sum();
     ```
 
-### 10.4 设计题
+### 9.4 设计题
 
 14. 设计一个函数式的任务调度器，支持任务依赖、超时控制、错误重试。要求所有操作通过函数组合完成。
 15. 设计一个基于 `Collector` 的报表生成器，支持多维度聚合（按时间、地区、产品分类），并能导出为 CSV/JSON 格式。
@@ -2013,7 +1947,7 @@ ImmutableList<User> immutable = users.stream()
     }
     ```
 
-### 10.5 开放思考题
+### 9.5 开放思考题
 
 17. 函数式编程强调不可变性，但 Java 中的 `Stream.collect` 最终产生可变集合。这种设计是否违背了 FP 原则？请论证你的观点。
 18. Java 的 Lambda 选择了 `invokedynamic` 而非匿名内部类，这一决策对 Java 生态的长期影响是什么？
@@ -2022,9 +1956,9 @@ ImmutableList<User> immutable = users.stream()
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 1. Church, A. (1936). *An unsolvable problem of elementary number theory*. American Journal of Mathematics.
 2. Backus, J. (1978). *Can Programming Be Liberated from the von Neumann Style?* Communications of the ACM.
@@ -2032,7 +1966,7 @@ ImmutableList<User> immutable = users.stream()
 4. Wadler, P. (1990). *Theorems for Free!* FPCA.
 5. Goetz, B. (2013). *Translation of Lambda Expressions*. Java Specification Request 335.
 
-### 11.2 规范与标准
+### 10.2 规范与标准
 
 6. JSR 335: *Lambda Expressions for the Java Programming Language*.
 7. JEP 126: *Lambda Expressions and Virtual Extension Methods*.
@@ -2040,7 +1974,7 @@ ImmutableList<User> immutable = users.stream()
 9. JEP 395: *Records (JDK 16)*.
 10. *The Java Language Specification (JLS)*, Chapter 15.27: Lambda Expressions.
 
-### 11.3 书籍
+### 10.3 书籍
 
 11. Urma, R. G., Fusco, M., & Mycroft, A. (2018). *Modern Java in Action*. Manning.
 12. Goetz, B., et al. (2006). *Java Concurrency in Practice*. Addison-Wesley.
@@ -2048,7 +1982,7 @@ ImmutableList<User> immutable = users.stream()
 14. Lipovača, M. (2011). *Learn You a Haskell for Great Good!* No Starch Press.
 15. Abelson, H., & Sussman, G. J. (1996). *Structure and Interpretation of Computer Programs* (2nd ed.). MIT Press.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 16. *The Java Tutorials: Lambda Expressions*. Oracle.
 17. *Stream Javadoc*. OpenJDK.
@@ -2058,27 +1992,27 @@ ImmutableList<User> immutable = users.stream()
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 函数式编程理论
+### 11.1 函数式编程理论
 
 - **λ 演算入门**：Hankin, C. (2004). *An Introduction to Lambda Calculi for Computer Scientists*.
 - **范畴论与函数式编程**：Bartosz Milewski 的 *Category Theory for Programmers* 系列。
 - **类型系统**：Pierce, B. C. (2002). *Types and Programming Languages*. MIT Press.
 
-### 12.2 Java 函数式进阶
+### 11.2 Java 函数式进阶
 
 - **Java 函数式编程深度**：Subramaniam, V. (2019). *Functional Programming in Java* (2nd ed.). Pragmatic Bookshelf.
 - **Stream 内部机制**：OpenJDK `java.util.stream` 包源码与文档。
 - **invokedynamic 深入**：Rose, J. (2009). *Bytecodes meet Combinators: invokedynamic and the JVM*.
 
-### 12.3 相关技术
+### 11.3 相关技术
 
 - **响应式编程**：*Reactive Manifesto* 与 Project Reactor 文档。
 - **模式匹配**：JEP 441 (Pattern Matching for switch) 与 Scala 模式匹配对比。
 - **不可变数据结构**：Clojure 的持久化数据结构与 Vavr 的实现。
 
-### 12.4 实战项目
+### 11.4 实战项目
 
 - **函数式 Web 框架**：Spring WebFlux、Vert.x、Javalin 的对比研究。
 - **函数式数据处理**：Apache Spark 的 RDD API 与 Java Stream 的对比。

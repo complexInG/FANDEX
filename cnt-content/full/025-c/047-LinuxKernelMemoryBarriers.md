@@ -26,99 +26,6 @@ prerequisites:
   - c/概述
   - c/指针深度解析
   - c/多文件编译
-learningObjectives:
-  - '{''remember'': ''记忆 C 标准 §6.7.3 对 volatile 的定义、6 种必须使用 volatile 的场景与 5 种常见误用''}'
-  - '{''understand'': ''理解编译器优化机制、as-if 规则、可观察行为（observable behavior）与 volatile 的语义边界''}'
-  - '{''apply'': ''能够正确使用 volatile 处理内存映射 I/O、信号处理、setjmp/longjmp 等场景''}'
-  - '{''analyze'': ''分析 volatile 与 atomic 的本质区别，识别 volatile 在多线程环境下的局限性''}'
-  - '{''evaluate'': ''评估 C11 stdatomic、GCC __sync、__atomic 内建函数与 volatile 的适用场景''}'
-  - '{''create'': ''设计正确的跨线程通信与硬件抽象层代码，正确组合 volatile、atomic、memory barrier''}'
-exercises:
-  - id: ex-volatile-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: C 标准规定，对 volatile 限定对象的访问构成____，编译器必须严格按照抽象机的语义进行读写，不得合并、消除或重排此类访问。
-    blankCount: 1
-    answers:
-      - 副作用
-      - side effect
-    caseSensitive: false
-    answer: 副作用（side effect）
-    explanation: ISO/IEC 9899:2024 §5.1.2.3 将对 volatile 对象的访问定义为副作用，§6.7.3 进一步规定 volatile 限定对象的访问属于"可观察行为"（observable behavior），编译器不可优化。
-    difficulty: 2
-    estimatedTime: 3
-  - id: ex-volatile-02
-    type: choice
-    cognitiveLevel: understand
-    question: 下列关于 volatile 与原子性（atomicity）关系的描述，哪一项是正确的？
-    options:
-      - volatile 保证操作的原子性，因此可用于多线程同步
-      - volatile 仅抑制编译器优化，不保证原子性、可见性与有序性
-      - 在 32 位平台上，对 volatile int 的读写是原子的，因此可作多线程标志位
-      - C11 stdatomic.h 的 atomic_int 与 volatile int 语义等价
-    correctIndex: 1
-    answer: B
-    explanation: volatile 仅告诉编译器"对象可能被意外改变"，抑制优化。它不保证 (1) 原子性（读取可能被撕裂）、(2) 多核可见性（无内存屏障）、(3) 顺序性（CPU 可能重排）。多线程同步必须使用 atomic 或锁。C++20 起 volatile 的部分语义被进一步弱化。
-    difficulty: 3
-    estimatedTime: 5
-  - id: ex-volatile-03
-    type: code-fix
-    cognitiveLevel: apply
-    question: 下列多线程代码意图用 volatile 实现自旋锁，但存在严重错误。请说明错误原因并给出正确实现。
-    buggyCode: |
-      #include <stdbool.h>
-      static volatile bool ready = false;
-
-      // 线程 1
-      void producer(void) {
-          data = 42;            // 写数据
-          ready = true;         // 通知消费者
-      }
-
-      // 线程 2
-      void consumer(void) {
-          while (!ready) {}     // 自旋等待
-          use(data);            // 读取数据
-      }
-    language: c
-    fixedCode: |
-      #include <stdatomic.h>
-      #include <stdbool.h>
-
-      static _Atomic bool ready = false;
-      static int data = 0;
-
-      // 线程 1
-      void producer(void) {
-          data = 42;
-          atomic_store_explicit(&ready, true, memory_order_release);
-      }
-
-      // 线程 2
-      void consumer(void) {
-          while (!atomic_load_explicit(&ready, memory_order_acquire)) {}
-          use(data);  // 看到 data == 42
-      }
-    errorDescription: volatile 不保证 (1) ready 写入对其他 CPU 可见（无内存屏障）、(2) data = 42 与 ready = true 的顺序（CPU 可能重排）、(3) ready 读取的原子性（虽然单字节通常原子，但标准不保证）。
-    answer: 见 fixedCode
-    explanation: 正确做法是使用 C11 stdatomic.h 的 atomic_store_explicit/atomic_load_explicit 配合 memory_order_release/acquire，建立 happens-before 关系，保证 data 的写入对消费者可见。这是经典的 release-acquire 同步模式。
-    difficulty: 5
-    estimatedTime: 10
-  - id: ex-volatile-04
-    type: open-ended
-    cognitiveLevel: create
-    question: 设计一个嵌入式系统的 GPIO 驱动框架，要求：(1) 抽象 GPIO 寄存器访问；(2) 支持多平台（STM32、ESP32、Linux 用户态）；(3) 处理编译器优化；(4) 保证读写在硬件层面的顺序；(5) 提供中断安全的接口。请给出关键数据结构、API 设计、平台适配层实现，并说明你的设计决策。
-    keyPoints:
-      - 使用 volatile uint32_t * 映射硬件寄存器地址
-      - 通过宏或函数抽象 MMIO 访问（readl/writel 或自定义）
-      - 使用 memory barrier（__sync_synchronize、asm volatile、dmb）保证顺序
-      - 区分中断上下文与任务上下文，使用关中断或自旋锁保护临界区
-      - Linux 用户态使用 /dev/mem 或 UIO，需要 mmap
-      - 至少讨论寄存器位操作原子性、DMA 一致性、Cache 一致性 3 个工程权衡
-    answer: 开放性题目，参考 keyPoints 评分
-    explanation: 本题考察嵌入式系统综合能力。优秀答案应体现硬件抽象、平台可移植性、并发安全、性能权衡。参考 Linux kernel drivers/gpio、Zephyr RTOS、FreeRTOS 的 GPIO 实现。
-    difficulty: 5
-    estimatedTime: 60
 references:
   - type: standard
     authors: ['ISO/IEC JTC1/SC22/WG14']
@@ -185,95 +92,12 @@ lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 ---
 
+
 # volatile 关键字
 
-## 1. 学习目标与导论
+## 1. 历史动机与演进
 
-### 1.1 为什么需要 volatile
-
-C 语言诞生于 1972 年，最初用于编写 Unix 操作系统。在编译器优化能力尚弱的年代，程序员编写的代码与机器执行的行为基本一致。然而，随着编译器优化技术（如常量折叠、死代码消除、循环不变量外提、指令重排）日益强大，原本"看似正确"的代码在优化后出现诡异行为。
-
-考虑以下经典场景：
-
-```c
-// 场景 1：内存映射 I/O
-volatile uint32_t *status_reg = (uint32_t *)0x40008000;
-while (*status_reg & 0x01) {
-    // 等待状态位清零
-}
-```
-
-若不加 `volatile`，编译器可能将 `*status_reg` 的值缓存到寄存器，只读取一次，导致死循环。
-
-```c
-// 场景 2：信号处理
-volatile sig_atomic_t flag = 0;
-
-void handler(int sig) { flag = 1; }
-
-int main(void) {
-    signal(SIGINT, handler);
-    while (!flag) { }   // 等待 Ctrl+C
-    return 0;
-}
-```
-
-若不加 `volatile`，编译器可能认为 `flag` 在循环中未被修改（信号处理函数对编译器不可见），将其提升到循环外。
-
-```c
-// 场景 3：setjmp/longjmp
-volatile int val = 0;
-if (setjmp(buf) == 0) {
-    val = 42;
-    longjmp(buf, 1);
-}
-// 此处 val 必须为 42，需要 volatile
-```
-
-`volatile` 关键字正是为应对这些场景而生。它告诉编译器："此对象的值可能在编译器不知情的情况下被改变，每次访问都必须从内存读取或写回，不得缓存到寄存器，不得合并、消除或重排访问。"
-
-### 1.2 volatile 的核心语义
-
-ISO/IEC 9899:2024 §6.7.3 与 §5.1.2.3 定义了 volatile 的三项核心语义：
-
-1. **副作用保证**：对 volatile 限定对象的访问（读或写）构成副作用（side effect），属于程序的"可观察行为"（observable behavior）。
-2. **优化抑制**：编译器必须严格按照抽象机语义执行 volatile 访问，不得优化掉、合并或重排。
-3. **类型系统影响**：volatile 是类型限定符（type qualifier），影响类型而非存储类。
-
-### 1.3 本文档适用读者
-
-- 嵌入式系统开发者（GPIO、UART、SPI 等外设驱动）
-- 操作系统内核开发者
-- 信号处理、setjmp/longjmp 的高级 C 程序员
-- 多线程并发编程学习者
-- 准备深入理解 C 内存模型的工程师
-
-### 1.4 学习路径
-
-```mermaid
-flowchart TD
-    T0["C 标准 volatile 定义 & as-if 规则"]
-    T1["编译器优化机制（常量折叠、循环外提、指令重排）"]
-    T2["volatile 的 6 大使用场景"]
-    T3["volatile 与 atomic 的本质区别"]
-    T4["内存屏障与 CPU 重排"]
-    T5["C11 stdatomic.h"]
-    T6["C++20 volatile 弃用与语义变化"]
-    T7["Linux 内核 ACCESS_ONCE/READ_ONCE/WRITE_ONCE"]
-    T8["嵌入式 MMIO 工程实践"]
-    T0 --> T1
-    T1 --> T2
-    T2 --> T3
-    T3 --> T4
-    T4 --> T5
-    T5 --> T6
-    T6 --> T7
-    T7 --> T8
-```
-
-## 2. 历史动机与演进
-
-### 2.1 K&R C 时代（1978）
+### 1.1 K&R C 时代（1978）
 
 `volatile` 关键字首次出现在 1978 年 Brian Kernighan 与 Dennis Ritchie 的《The C Programming Language》第一版。当时 Unix 已被移植到多种硬件平台，程序员发现：
 
@@ -283,7 +107,7 @@ flowchart TD
 
 K&R 引入 `volatile` 作为类型限定符，明确告知编译器"此对象不可优化"。
 
-### 2.2 C89 标准化（1989）
+### 1.2 C89 标准化（1989）
 
 ANSI X3.159-1989（C89）正式将 `volatile` 纳入标准，定义为类型限定符（type qualifier），与 `const` 并列。C89 §3.5.3 规定：
 
@@ -291,7 +115,7 @@ ANSI X3.159-1989（C89）正式将 `volatile` 纳入标准，定义为类型限�
 
 C89 同时将 volatile 访问列为"可观察行为"的一部分。
 
-### 2.3 C99 的细化（1999）
+### 1.3 C99 的细化（1999）
 
 C99 §6.7.3 进一步细化 volatile 语义：
 
@@ -299,7 +123,7 @@ C99 §6.7.3 进一步细化 volatile 语义：
 - 引入 `volatile` 限定指针（`volatile int *p` vs `int *volatile p`）
 - 规定 volatile 对象的初始化语义
 
-### 2.4 C11 的革命性变化（2011）
+### 1.4 C11 的革命性变化（2011）
 
 C11 引入 `_Atomic` 类型限定符与 `<stdatomic.h>` 头文件，从根本上改变了多线程编程的范式：
 
@@ -309,7 +133,7 @@ C11 引入 `_Atomic` 类型限定符与 `<stdatomic.h>` 头文件，从根本上
 
 C11 之后，多线程编程应使用 `atomic_int`、`atomic_store`、`atomic_load`，而非 `volatile`。
 
-### 2.5 C17/C23 的演进
+### 1.5 C17/C23 的演进
 
 - **C17**（2018）：缺陷修复，无重大变化
 - **C23**（2024）：
@@ -318,7 +142,7 @@ C11 之后，多线程编程应使用 `atomic_int`、`atomic_store`、`atomic_lo
   - `thread_local` 替代 `_Thread_local`
   - 部分弃用 volatile 的语义（参考 C++20）
 
-### 2.6 C++20 的革命（2020）
+### 1.6 C++20 的革命（2020）
 
 C++20 对 volatile 做了重大语义调整（P1152R4）：
 
@@ -329,9 +153,9 @@ C++20 对 volatile 做了重大语义调整（P1152R4）：
 
 C++20 起推荐使用 `std::atomic` 替代 `volatile` 用于多线程，`volatile` 仅用于真正的 MMIO 场景。
 
-## 3. C 标准对 volatile 的定义
+## 2. C 标准对 volatile 的定义
 
-### 3.1 §6.7.3 类型限定符
+### 2.1 §6.7.3 类型限定符
 
 ISO/IEC 9899:2024 §6.7.3 规定：
 
@@ -343,7 +167,7 @@ ISO/IEC 9899:2024 §6.7.3 规定：
 2. "shall be evaluated strictly according to the rules of the abstract machine"：必须按抽象机语义求值。
 3. "any expression referring to such an object"：任何引用该对象的表达式都受影响。
 
-### 3.2 §5.1.2.3 程序执行（抽象机语义）
+### 2.2 §5.1.2.3 程序执行（抽象机语义）
 
 C 标准定义"抽象机"（abstract machine）作为程序语义的形式化模型。§5.1.2.3 列出构成"可观察行为"的副作用：
 
@@ -353,7 +177,7 @@ C 标准定义"抽象机"（abstract machine）作为程序语义的形式化模
 
 as-if 规则（as-if rule）规定：编译器可以任意优化，**只要不改变可观察行为**。volatile 访问属于可观察行为，因此不可被优化掉。
 
-### 3.3 §5.1.2.3 程序执行 - 序列点
+### 2.3 §5.1.2.3 程序执行 - 序列点
 
 volatile 访问的求值顺序受序列点（sequence point）约束。C11 引入的简化模型用"前序"（sequenced before）关系替代了 C89 的序列点。
 
@@ -362,7 +186,7 @@ volatile int a = 1, b = 2;
 int x = a + b;   // a 与 b 的读取有顺序约束
 ```
 
-### 3.4 volatile 与 const 的组合
+### 2.4 volatile 与 const 的组合
 
 `volatile` 与 `const` 可同时使用，产生 4 种组合：
 
@@ -376,7 +200,7 @@ int *volatile p5 = &v;         // volatile 指针：p5 本身可能被改（少�
 const int *volatile p6 = &v;   // 组合：p6 volatile，*p6 const
 ```
 
-#### 3.4.1 硬件只读寄存器（const volatile）
+#### 2.4.1 硬件只读寄存器（const volatile）
 
 最经典的组合是 `const volatile`，用于硬件只读寄存器：
 
@@ -392,7 +216,7 @@ uint32_t read_status(void) {
 
 `const` 防止软件误写，`volatile` 防止编译器缓存读值。
 
-### 3.5 volatile 限定符的位置
+### 2.5 volatile 限定符的位置
 
 ```c
 volatile int x;          // x 是 volatile int
@@ -404,11 +228,11 @@ volatile int *volatile p; // p 是 volatile 指针，指向 volatile int
 
 记忆规则（"右左法则"）：从变量名开始，先向右看（数组/函数），再向左看（指针），遇到类型限定符（const/volatile）作用于左侧最近的类型。
 
-## 4. 编译器优化机制
+## 3. 编译器优化机制
 
 理解 volatile 的价值，必须先理解编译器优化机制。
 
-### 4.1 常量折叠（Constant Folding）
+### 3.1 常量折叠（Constant Folding）
 
 ```c
 int x = 3 * 4;   // 编译器直接计算为 x = 12
@@ -421,7 +245,7 @@ volatile int a = 3, b = 4;
 int x = a * b;   // 必须运行时计算
 ```
 
-### 4.2 死代码消除（Dead Code Elimination）
+### 3.2 死代码消除（Dead Code Elimination）
 
 ```c
 int x = 0;
@@ -437,7 +261,7 @@ if (x) {
 }
 ```
 
-### 4.3 循环不变量外提（Loop-Invariant Code Motion）
+### 3.3 循环不变量外提（Loop-Invariant Code Motion）
 
 ```c
 // 非 volatile 版本
@@ -452,7 +276,7 @@ for (int i = 0; i < 1000; i++) {
 }
 ```
 
-### 4.4 公共子表达式消除（Common Subexpression Elimination）
+### 3.4 公共子表达式消除（Common Subexpression Elimination）
 
 ```c
 // 非 volatile
@@ -465,7 +289,7 @@ int a = *ptr + 1;
 int b = *ptr + 2;   // 必须重新读取 *ptr
 ```
 
-### 4.5 指令重排（Instruction Reordering）
+### 3.5 指令重排（Instruction Reordering）
 
 编译器可能重排指令以提高流水线效率：
 
@@ -491,7 +315,7 @@ ready = 1;       // volatile，不可与上句合并，但 data 可被重排到 
 
 这是 volatile 在多线程中失效的关键原因之一。
 
-### 4.6 寄存器缓存（Register Caching）
+### 3.6 寄存器缓存（Register Caching）
 
 最常见也最危险的优化：
 
@@ -505,9 +329,9 @@ volatile uint32_t *status = ...;
 while (*status & 0x01) { }
 ```
 
-## 5. volatile 的六大使用场景
+## 4. volatile 的六大使用场景
 
-### 5.1 场景一：内存映射 I/O（MMIO）
+### 4.1 场景一：内存映射 I/O（MMIO）
 
 最常见的 volatile 用途。硬件寄存器映射到特定内存地址，软件通过指针访问。
 
@@ -522,7 +346,7 @@ GPIOA_ODR |= (1 << 5);
 uint32_t input = GPIOA_ODR;
 ```
 
-#### 5.1.1 完整的 MMIO 示例
+#### 4.1.1 完整的 MMIO 示例
 
 ```c
 #include <stdint.h>
@@ -569,7 +393,7 @@ uint32_t read_button(void) {
 }
 ```
 
-#### 5.1.2 MMIO 的 volatile 必要性
+#### 4.1.2 MMIO 的 volatile 必要性
 
 ```c
 // 错误：无 volatile
@@ -587,7 +411,7 @@ while (*status & 0x01) { }
 // 编译器必须每次从 0x40008000 读取
 ```
 
-### 5.2 场景二：信号处理函数
+### 4.2 场景二：信号处理函数
 
 信号处理函数（signal handler）可能异步中断主程序，主程序中访问的变量可能被信号处理函数修改。
 
@@ -615,7 +439,7 @@ int main(void) {
 }
 ```
 
-#### 5.2.1 sig_atomic_t
+#### 4.2.1 sig_atomic_t
 
 `sig_atomic_t` 是 C 标准定义的"信号安全整数类型"，保证读写在硬件层面原子。结合 `volatile` 使用是信号处理的标准模式：
 
@@ -626,11 +450,11 @@ volatile sig_atomic_t flag = 0;
 - `volatile` 防止编译器优化
 - `sig_atomic_t` 保证读写原子性
 
-#### 5.2.2 信号处理函数的限制
+#### 4.2.2 信号处理函数的限制
 
 信号处理函数中只能调用异步信号安全函数（async-signal-safe），如 `write`、`_exit`，不能调用 `printf`、`malloc`。访问的全局变量必须是 `volatile sig_atomic_t`。
 
-### 5.3 场景三：setjmp/longjmp
+### 4.3 场景三：setjmp/longjmp
 
 `setjmp` 保存当前执行上下文，`longjmp` 跳转回 `setjmp` 处。在 setjmp 与 longjmp 之间修改的非 volatile 变量，其值未指定。
 
@@ -660,11 +484,11 @@ int main(void) {
 }
 ```
 
-#### 5.3.1 为什么 setjmp/longjmp 需要 volatile
+#### 4.3.1 为什么 setjmp/longjmp 需要 volatile
 
 `setjmp` 保存寄存器状态。`longjmp` 恢复寄存器，导致 setjmp 之后修改的非 volatile 变量可能丢失（其值存在寄存器中，被 longjmp 覆盖回旧值）。`volatile` 强制变量存储在内存，避免此问题。
 
-### 5.4 场景四：被外部修改的变量
+### 4.4 场景四：被外部修改的变量
 
 变量可能被以下"外部"力量修改：
 
@@ -684,7 +508,7 @@ volatile int *shared = (volatile int *)mmap(...);
 while (*shared != 42) { }
 ```
 
-### 5.5 场景五：防止编译器删除"无用"代码
+### 4.5 场景五：防止编译器删除"无用"代码
 
 某些场景下，代码看似无用，实则用于触发硬件行为：
 
@@ -697,7 +521,7 @@ volatile uint32_t *dma_trigger = ...;
 // 若不加 volatile，编译器可能删除此行（"无用写入"）
 ```
 
-### 5.6 场景六：内联汇编约束
+### 4.6 场景六：内联汇编约束
 
 GCC 内联汇编中使用 volatile 防止编译器删除或重排：
 
@@ -717,11 +541,11 @@ static inline uint64_t rdtsc(void) {
 
 `asm volatile` 告诉编译器：这段汇编有副作用，不可删除或重排。
 
-## 6. volatile 与 atomic 的本质区别
+## 5. volatile 与 atomic 的本质区别
 
 这是 volatile 最常被误解的领域。许多程序员认为 `volatile` 提供原子性，因此可用于多线程同步。**这是错误的**。
 
-### 6.1 三个维度的差异
+### 5.1 三个维度的差异
 
 | 维度 | volatile | atomic（C11） |
 |------|----------|---------------|
@@ -729,7 +553,7 @@ static inline uint64_t rdtsc(void) {
 | 可见性（visibility） | 不保证 | 保证 |
 | 有序性（ordering） | 不保证 | 保证 |
 
-#### 6.1.1 原子性
+#### 5.1.1 原子性
 
 `volatile int x; x++;` 在某些平台上可能被编译为"读-改-写"三条指令，期间可能被其他线程插入操作，导致数据竞争。
 
@@ -758,7 +582,7 @@ void increment(void) {
 }
 ```
 
-#### 6.1.2 可见性
+#### 5.1.2 可见性
 
 `volatile` 不保证写入对其他 CPU 核可见。现代多核 CPU 有多级缓存（L1/L2/L3），一个核的写入可能停留在自己的缓存中，其他核看不到。
 
@@ -792,7 +616,7 @@ while (!atomic_load_explicit(&ready, memory_order_acquire)) { }
 use(data);   // 看到 ready == 1 后，必然看到 data == 42
 ```
 
-#### 6.1.3 有序性
+#### 5.1.3 有序性
 
 CPU 可能重排指令以提高流水线效率。`volatile` 限制编译器重排，但**不限制 CPU 重排**。
 
@@ -814,7 +638,7 @@ atomic_store_explicit(&a, 1, memory_order_seq_cst);   // 全序
 atomic_store_explicit(&b, 3, memory_order_seq_cst);   // 必然在 a 之后
 ```
 
-### 6.2 经典反例：双重检查锁定（DCLP）
+### 5.2 经典反例：双重检查锁定（DCLP）
 
 ```c
 // 错误的双重检查锁定
@@ -876,7 +700,7 @@ SomeType *get_instance(void) {
 }
 ```
 
-### 6.3 volatile 何时仍可用于多线程？
+### 5.3 volatile 何时仍可用于多线程？
 
 虽然 volatile 不提供原子性/可见性/有序性，但在以下特定场景仍可用：
 
@@ -887,9 +711,9 @@ SomeType *get_instance(void) {
 
 但跨平台、跨编译器的多线程代码应使用 C11 `<stdatomic.h>` 或 C++ `std::atomic`。
 
-## 7. 内存屏障与 CPU 重排
+## 6. 内存屏障与 CPU 重排
 
-### 7.1 CPU 缓存层次
+### 6.1 CPU 缓存层次
 
 ```mermaid
 flowchart TD
@@ -904,7 +728,7 @@ flowchart TD
 
 CPU 写入先到 L1，稍后通过缓存一致性协议（如 MESI）传播到 L2/L3/其他核。
 
-### 7.2 CPU 指令重排
+### 6.2 CPU 指令重排
 
 CPU 为提高流水线效率，可能重排指令：
 
@@ -921,7 +745,7 @@ ready = 1;
 // 实际执行顺序可能是 ready=1, data=42
 ```
 
-### 7.3 内存屏障类型
+### 6.3 内存屏障类型
 
 | 屏障类型 | 作用 | C11 对应 |
 |----------|------|----------|
@@ -930,7 +754,7 @@ ready = 1;
 | Full Barrier（全屏障） | 读/写都不重排 | memory_order_seq_cst |
 | Data Dependency Barrier | 仅 POWER/Alpha 需要 | memory_order_consume |
 
-### 7.4 GCC/Clang 内联屏障
+### 6.4 GCC/Clang 内联屏障
 
 ```c
 // 编译器屏障：阻止编译器重排，但不阻止 CPU 重排
@@ -947,7 +771,7 @@ __sync_synchronize();   // 全屏障
 __atomic_thread_fence(__ATOMIC_SEQ_CST);
 ```
 
-### 7.5 Linux 内核的 smp_mb/smp_rmb/smp_wmb
+### 6.5 Linux 内核的 smp_mb/smp_rmb/smp_wmb
 
 ```c
 // 全屏障
@@ -965,9 +789,9 @@ smp_wmb();              // 保证 data 写入对其他核可见后
 ready = 1;              // ready 才可见
 ```
 
-## 8. C11 stdatomic.h 详解
+## 7. C11 stdatomic.h 详解
 
-### 8.1 原子类型
+### 7.1 原子类型
 
 ```c
 #include <stdatomic.h>
@@ -978,7 +802,7 @@ atomic_flag lock;                // 最简单的原子类型
 _Atomic(long) z;                 // _Atomic 限定符
 ```
 
-### 8.2 原子操作
+### 7.2 原子操作
 
 ```c
 atomic_int x = 0;
@@ -1009,7 +833,7 @@ bool old = atomic_flag_test_and_set(&f);
 atomic_flag_clear(&f);
 ```
 
-### 8.3 内存顺序
+### 7.3 内存顺序
 
 ```c
 typedef enum {
@@ -1022,7 +846,7 @@ typedef enum {
 } memory_order;
 ```
 
-### 8.4 内存顺序选择
+### 7.4 内存顺序选择
 
 ```c
 // 场景 1：计数器，不关心顺序
@@ -1045,7 +869,7 @@ atomic_flag_clear_explicit(&lock, memory_order_release);
 atomic_store_explicit(&done, true, memory_order_seq_cst);
 ```
 
-### 8.5 atomic 与 volatile 的关系
+### 7.5 atomic 与 volatile 的关系
 
 | 特性 | volatile | atomic |
 |------|----------|--------|
@@ -1057,9 +881,9 @@ atomic_store_explicit(&done, true, memory_order_seq_cst);
 | 性能 | 最快 | 较快（取决于内存顺序） |
 | 用途 | MMIO、信号、setjmp | 多线程同步 |
 
-## 9. volatile 的常见陷阱
+## 8. volatile 的常见陷阱
 
-### 9.1 陷阱一：volatile 不保证原子性
+### 8.1 陷阱一：volatile 不保证原子性
 
 ```c
 volatile uint64_t counter = 0;
@@ -1070,7 +894,7 @@ void inc(void) {
 }
 ```
 
-### 9.2 陷阱二：volatile 不保证多核可见性
+### 8.2 陷阱二：volatile 不保证多核可见性
 
 ```c
 volatile int ready = 0;
@@ -1082,7 +906,7 @@ ready = 1;
 while (!ready) { }   // 可能永远等不到
 ```
 
-### 9.3 陷阱三：volatile 不保证顺序
+### 8.3 陷阱三：volatile 不保证顺序
 
 ```c
 volatile int a, b;
@@ -1090,7 +914,7 @@ a = 1;
 b = 2;   // CPU 可能先执行 b=2 再执行 a=1
 ```
 
-### 9.4 陷阱四：volatile 数组的元素访问
+### 8.4 陷阱四：volatile 数组的元素访问
 
 ```c
 volatile int arr[10];
@@ -1107,7 +931,7 @@ volatile int *p = arr;
 *p = 42;
 ```
 
-### 9.5 陷阱五：volatile 结构体的成员
+### 8.5 陷阱五：volatile 结构体的成员
 
 ```c
 struct Data {
@@ -1125,7 +949,7 @@ d2.x = 1;   // volatile
 d2.y = 2;   // volatile
 ```
 
-### 9.6 陷阱六：volatile 与 const_cast（C++）
+### 8.6 陷阱六：volatile 与 const_cast（C++）
 
 ```cpp
 volatile int x = 0;
@@ -1133,7 +957,7 @@ int *p = const_cast<int *>(&x);   // C++ 去除 volatile，未定义行为
 *p = 42;
 ```
 
-### 9.7 陷阱七：volatile 函数返回值
+### 8.7 陷阱七：volatile 函数返回值
 
 ```c
 volatile int get_value(void) {   // 返回值是 volatile int
@@ -1144,7 +968,7 @@ volatile int get_value(void) {   // 返回值是 volatile int
 
 C++20 弃用了这种用法。
 
-### 9.8 陷阱八：volatile 复合赋值
+### 8.8 陷阱八：volatile 复合赋值
 
 ```c
 volatile int x = 0;
@@ -1153,7 +977,7 @@ x += 1;   // 等价于 x = x + 1
 // C++20 弃用了 volatile 的复合赋值
 ```
 
-### 9.9 陷阱九：volatile 与位域
+### 8.9 陷阱九：volatile 与位域
 
 ```c
 struct Flags {
@@ -1167,15 +991,15 @@ f.a = 1;   // 读-改-写整个字节，非原子
 
 位域的 volatile 访问仍是非原子的，因为 CPU 无法只访问单个位。
 
-### 9.10 陷阱十：volatile 不是同步原语
+### 8.10 陷阱十：volatile 不是同步原语
 
 最根本的陷阱：将 volatile 误用为同步原语。任何依赖 volatile 实现多线程同步的代码都是错误的（特定平台特定编译器的扩展除外）。
 
-## 10. Linux 内核的 volatile 实践
+## 9. Linux 内核的 volatile 实践
 
 Linux 内核对 volatile 的使用极为谨慎，甚至有"不要用 volatile"的著名警告（Documentation/process/volatile-considered-harmful.rst）。
 
-### 10.1 内核的 volatile 禁忌
+### 9.1 内核的 volatile 禁忌
 
 Linus Torvalds 在邮件列表中多次强调：
 
@@ -1187,7 +1011,7 @@ Linus Torvalds 在邮件列表中多次强调：
 - 性能损失（强制内存访问）
 - 应使用屏障、原子操作、锁等显式机制
 
-### 10.2 READ_ONCE / WRITE_ONCE
+### 9.2 READ_ONCE / WRITE_ONCE
 
 内核提供宏替代直接 volatile 访问：
 
@@ -1209,11 +1033,11 @@ WRITE_ONCE(shared_var, 42);
 2. 易于 grep 搜索
 3. 避免变量声明为 volatile 导致所有访问都强制内存访问
 
-### 10.3 ACCESS_ONCE（旧版）
+### 9.3 ACCESS_ONCE（旧版）
 
 早期内核使用 `ACCESS_ONCE`，4.15 起拆分为 `READ_ONCE` 与 `WRITE_ONCE`。
 
-### 10.4 内核的内存屏障
+### 9.4 内核的内存屏障
 
 ```c
 #include <asm/barrier.h>
@@ -1238,7 +1062,7 @@ smp_rmb();
 use(data);   // 必然看到 data == 42
 ```
 
-### 10.5 内核的原子变量
+### 9.5 内核的原子变量
 
 ```c
 #include <linux/atomic.h>
@@ -1252,7 +1076,7 @@ atomic_set(&counter, 100);
 
 内核的 `atomic_t` 比 C11 `atomic_int` 更早出现，但语义类似。
 
-### 10.6 内核中允许的 volatile 使用
+### 9.6 内核中允许的 volatile 使用
 
 少数场景仍允许 volatile：
 
@@ -1260,9 +1084,9 @@ atomic_set(&counter, 100);
 2. `jiffies` 全局变量（时钟计数）
 3. 特定架构的 `asm volatile` 内联汇编
 
-## 11. 嵌入式系统的 volatile 实践
+## 10. 嵌入式系统的 volatile 实践
 
-### 11.1 寄存器定义
+### 10.1 寄存器定义
 
 嵌入式开发中，volatile 是与硬件交互的基础：
 
@@ -1290,7 +1114,7 @@ RCC->AHB1ENR |= (1 << 0);
 #define __A volatile const
 ```
 
-### 11.2 位带操作（Bit-Banding）
+### 10.2 位带操作（Bit-Banding）
 
 ARM Cortex-M 的位带区允许原子访问单个位：
 
@@ -1304,7 +1128,7 @@ ARM Cortex-M 的位带区允许原子访问单个位：
 *PA5_OUT = 1;   // 原子置位 PA5
 ```
 
-### 11.3 中断服务例程（ISR）
+### 10.3 中断服务例程（ISR）
 
 ISR 与主程序共享的变量必须 volatile：
 
@@ -1323,7 +1147,7 @@ void delay_ms(uint32_t ms) {
 }
 ```
 
-### 11.4 DMA 缓冲区
+### 10.4 DMA 缓冲区
 
 DMA 直接访问内存，CPU 与 DMA 共享的缓冲区需要 volatile 或缓存一致性维护：
 
@@ -1342,7 +1166,7 @@ SCB_CleanDCache_by_Addr((uint32_t *)dma_buffer, sizeof(dma_buffer));
 SCB_InvalidateDCache_by_Addr((uint32_t *)dma_buffer, sizeof(dma_buffer));
 ```
 
-### 11.5 RTOS 中的 volatile
+### 10.5 RTOS 中的 volatile
 
 FreeRTOS 等实时操作系统也广泛使用 volatile：
 
@@ -1355,13 +1179,13 @@ typedef struct tskTaskControlBlock {
 } TCB_t;
 ```
 
-## 12. C++20 volatile 的变化
+## 11. C++20 volatile 的变化
 
-### 12.1 P1152R4 提案
+### 11.1 P1152R4 提案
 
 C++20（ISO/IEC 14882:2020）通过 P1152R4 提案弃用了 volatile 的部分操作：
 
-### 12.2 弃用的操作
+### 11.2 弃用的操作
 
 ```cpp
 // C++20 弃用的 volatile 操作
@@ -1389,7 +1213,7 @@ volatile S s;
 s.a;                    // 弃用：volatile 对象的成员访问（部分场景）
 ```
 
-### 12.3 未弃用的操作
+### 11.3 未弃用的操作
 
 ```cpp
 volatile int x = 0;
@@ -1403,23 +1227,23 @@ int v = *p;             // 未弃用
 *p = 1;                 // 未弃用
 ```
 
-### 12.4 弃用的原因
+### 11.4 弃用的原因
 
 1. **复杂语义**：volatile 的复合赋值等操作语义不直观
 2. **多线程误用**：鼓励错误的并发思维
 3. **C++ 标准库冲突**：`std::atomic` 提供更清晰的语义
 4. **跨平台不一致**：不同编译器对 volatile 复合操作的处理不同
 
-### 12.5 C++23/C++26 的进一步动作
+### 11.5 C++23/C++26 的进一步动作
 
 C++23 进一步强化弃用警告，C++26 可能完全移除某些 volatile 操作。建议 C++ 代码：
 
 - 使用 `std::atomic` 处理多线程
 - 仅在 MMIO 场景使用 volatile，且只用简单读/写
 
-## 13. 综合实战示例
+## 12. 综合实战示例
 
-### 13.1 完整的 GPIO 驱动
+### 12.1 完整的 GPIO 驱动
 
 ```c
 // gpio_driver.h
@@ -1505,7 +1329,7 @@ void gpio_toggle(const GpioPin *g) {
 }
 ```
 
-### 13.2 信号驱动的程序
+### 12.2 信号驱动的程序
 
 ```c
 #include <stdio.h>
@@ -1546,7 +1370,7 @@ int main(void) {
 }
 ```
 
-### 13.3 自旋锁（无原子操作，仅演示）
+### 12.3 自旋锁（无原子操作，仅演示）
 
 ```c
 // 注意：这是简化示例，生产代码应使用 C11 stdatomic
@@ -1581,7 +1405,7 @@ void thread_safe_increment(void) {
 }
 ```
 
-### 13.4 Linux 内核风格的状态机
+### 12.4 Linux 内核风格的状态机
 
 ```c
 #include <stdatomic.h>
@@ -1626,9 +1450,9 @@ void loop(void) {
 }
 ```
 
-## 14. 跨语言对比
+## 13. 跨语言对比
 
-### 14.1 C++ 的 volatile
+### 13.1 C++ 的 volatile
 
 C++ 的 volatile 与 C 几乎相同，但 C++20 弃用了部分操作（见 §12）。
 
@@ -1639,7 +1463,7 @@ std::atomic<int> counter{0};
 counter.fetch_add(1, std::memory_order_relaxed);
 ```
 
-### 14.2 Java 的 volatile
+### 13.2 Java 的 volatile
 
 Java 的 volatile 语义比 C 强：
 
@@ -1663,7 +1487,7 @@ while (!ready) { }   // volatile 读，插入 load-load 屏障
 
 Java volatile 接近 C11 的 `memory_order_acquire/release`。
 
-### 14.3 C# 的 volatile
+### 13.3 C# 的 volatile
 
 C# 的 `volatile` 关键字类似 Java，保证可见性与有序性：
 
@@ -1684,7 +1508,7 @@ class Foo {
 }
 ```
 
-### 14.4 Rust 的原子类型
+### 13.4 Rust 的原子类型
 
 Rust 没有 `volatile` 关键字，使用 `std::sync::atomic`：
 
@@ -1705,7 +1529,7 @@ unsafe { println!("{}", DATA); }   // 必然看到 42
 
 Rust 的 `volatile` 通过 `std::ptr::read_volatile`/`write_volatile` 函数实现，用于 MMIO。
 
-### 14.5 对比表
+### 13.5 对比表
 
 | 语言 | volatile 保证 | 推荐替代 |
 |------|---------------|----------|
@@ -1715,9 +1539,9 @@ Rust 的 `volatile` 通过 `std::ptr::read_volatile`/`write_volatile` 函数实�
 | C# | 可见性、有序性 | Interlocked、lock |
 | Rust | 无 volatile 关键字 | std::sync::atomic |
 
-## 15. 常见陷阱与反模式
+## 14. 常见陷阱与反模式
 
-### 15.1 反模式一：用 volatile 做多线程同步
+### 14.1 反模式一：用 volatile 做多线程同步
 
 ```c
 // 错误
@@ -1734,7 +1558,7 @@ use(data);   // 可能 data == 0
 
 正确做法见 §6.2。
 
-### 15.2 反模式二：volatile 数组的指针转换
+### 14.2 反模式二：volatile 数组的指针转换
 
 ```c
 volatile int arr[10];
@@ -1749,7 +1573,7 @@ volatile int *p = arr;
 *p = 1;
 ```
 
-### 15.3 反模式三：volatile 结构体指针
+### 14.3 反模式三：volatile 结构体指针
 
 ```c
 struct Device {
@@ -1771,7 +1595,7 @@ volatile uint32_t *p = &dev->reg1;
 *p = 2;
 ```
 
-### 15.4 反模式四：过度使用 volatile
+### 14.4 反模式四：过度使用 volatile
 
 ```c
 // 错误：将所有全局变量都加 volatile
@@ -1793,7 +1617,7 @@ volatile 不是"万能同步器"，过度使用会：
 - MMIO：用 volatile
 - 其他：通常不需要
 
-### 15.5 反模式五：volatile 替代锁
+### 14.5 反模式五：volatile 替代锁
 
 ```c
 // 错误：volatile 不是锁
@@ -1815,7 +1639,7 @@ void transfer(int amount) {
 }
 ```
 
-### 15.6 反模式六：volatile 解决缓存一致性问题
+### 14.6 反模式六：volatile 解决缓存一致性问题
 
 ```c
 // 错误：volatile 不保证 CPU 缓存一致性
@@ -1830,7 +1654,7 @@ int x = shared_data;   // 可能读到旧值
 
 正确做法是使用 `atomic` 或显式内存屏障。
 
-## 16. 综合习题
+## 15. 综合习题
 
 ## 知识讲解与要点分析（原习题 1（填空题））
 
@@ -2115,7 +1939,7 @@ r1 = atomic_load_explicit(&y, memory_order_seq_cst);
 - 信号：使用 volatile sig_atomic_t
 - 其他：通常无需 volatile
 
-## 17. 参考文献
+## 16. 参考文献
 
 [1] International Organization for Standardization. *ISO/IEC 9899:2024 Information technology — Programming languages — C* [Standard]. 4th ed. Geneva: ISO, 2024. §5.1.2.3 程序执行、§6.7.3 类型限定符.
 
@@ -2133,23 +1957,23 @@ r1 = atomic_load_explicit(&y, memory_order_seq_cst);
 
 [8] Kernel.org Documentation Team. *Linux Kernel Memory Barriers* [Documentation]. Linux Foundation, 2024. https://www.kernel.org/doc/Documentation/memory-barriers.txt
 
-## 18. 延伸阅读
+## 17. 延伸阅读
 
-### 18.1 标准与规范
+### 17.1 标准与规范
 
 - ISO/IEC 9899:2024 §5.1.2.3（程序执行）、§6.7.3（类型限定符）、§7.17（stdatomic.h）
 - ISO/IEC 14882:2020（C++20）§6.9.2（多线程执行与数据竞争）、§13.9（volatile）
 - P1152R4：*Deprecating volatile*
 - Linux 内核文档：Documentation/process/volatile-considered-harmful.rst
 
-### 18.2 经典书籍
+### 17.2 经典书籍
 
 - *C++ Concurrency in Action* by Anthony Williams（C++ 内存模型权威）
 - *Computer Systems: A Programmer's Perspective* by Bryant & O'Hallaron（系统级编程基础）
 - *The Art of Multiprocessor Programming* by Herlihy & Shavit（并发编程理论）
 - *Is Parallel Programming Hard, And, If So, What Can You Do About It?* by Paul E. McKenney（Linux 内核 RCU 作者）
 
-### 18.3 在线资源
+### 17.3 在线资源
 
 - GCC Manual - Volatile：https://gcc.gnu.org/onlinedocs/gcc/Volatiles.html
 - Clang Documentation - Atomic Operations：https://clang.llvm.org/docs/Atomics.html
@@ -2157,14 +1981,14 @@ r1 = atomic_load_explicit(&y, memory_order_seq_cst);
 - Linux Kernel Memory Barriers：https://www.kernel.org/doc/Documentation/memory-barriers.txt
 - ARM Memory Barriers：https://developer.arm.com/documentation/den0024/latest/
 
-### 18.4 经典论文
+### 17.4 经典论文
 
 - Adve, S. V., and Gharachorloo, K. "Shared Memory Consistency Models: A Tutorial." *IEEE Computer*, 29(12):66-76, 1996.
 - McKenney, P. E. "Memory Barriers: a Hardware View for Software Hackers." *Linux Technology Center*, 2010.
 - Boehm, H.-J. "Threads Cannot Be Implemented As a Library." *PLDI 2005*.
 - Meyers, S., and Alexandrescu, A. "C++ and the Perils of Double-Checked Locking." *DDJ*, 2004.
 
-### 18.5 开源项目源码
+### 17.5 开源项目源码
 
 - Linux 内核：https://github.com/torvalds/linux（READ_ONCE/WRITE_ONCE、smp_mb）
 - FreeRTOS：https://github.com/FreeRTOS/FreeRTOS（嵌入式 RTOS 的 volatile 使用）

@@ -18,6 +18,7 @@ prerequisites:
   - css/盒模型详解
 ---
 
+
 # margin 合并与塌陷
 
 > 本文以 W3C CSS 规范为基础，系统阐释 CSS 盒模型中 margin 合并（margin collapsing）与 margin 塌陷（margin passing-through）的形成机理、算法推导、BFC（Block Formatting Context，块格式化上下文）触发条件及其工程化应用。内容涵盖 CSS 2.1 至 CSS Box Model Level 3/4 的演进，并对接 Bootstrap、Tailwind CSS、Material Design 等主流框架的实践范式。
@@ -41,51 +42,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够：
-
-### 1.1 Remember（记忆）
-
-- 准确复述 margin 合并的三种典型场景：相邻兄弟、父与首个/末尾子元素、空块元素自身合并。
-- 列出 BFC 的至少 5 种触发条件（`display: flow-root`、`overflow: hidden`、`float`、`position: absolute/fixed`、`display: inline-block/table-cell/flex/grid` 等）。
-- 识别 CSS 2.1 §8.3.1 与 CSS Box Model Level 3 中关于 margin collapsing 的核心定义条款。
-
-### 1.2 Understand（理解）
-
-- 解释 margin 合并为何只在块级元素的垂直方向发生，而非水平方向或内联元素。
-- 阐述 margin 塌陷与 margin 合并的本质差异：前者是跨元素传递，后者是同方向归并。
-- 论证 BFC 为何能够阻断 margin 合并与塌陷，从格式化上下文的隔离性角度给出原理性解释。
-
-### 1.3 Apply（应用）
-
-- 在生产代码中通过 `display: flow-root` 优雅地解决父元素 margin 塌陷问题，避免使用 `overflow: hidden` 的副作用。
-- 利用 `padding-top: 1px`、`border-top: 1px solid transparent` 等技巧在低版本浏览器中规避塌陷。
-- 通过 BFC 实现自适应两栏布局（左侧浮动、右侧 BFC）。
-
-### 1.4 Analyze（分析）
-
-- 对一段复杂 DOM 结构（含嵌套、浮动、定位、flex 容器）的 margin 行为进行拆解，预测最终渲染间距。
-- 区分「正常流」「浮动流」「定位流」「flex 流」中 margin 行为的差异。
-- 评估在 flex/grid 容器中为何 margin 不再合并，与 BFC 的本质关系。
-
-### 1.5 Evaluate（评价）
-
-- 在多种解决方案（BFC、padding、border、grid gap、flex gap）中权衡性能、可维护性、语义性，给出推荐排序。
-- 评价「`overflow: hidden` 触发 BFC」这一历史惯用法在现代浏览器中的局限性与潜在风险。
-- 反思设计系统中利用 `*{margin:0}` 重置策略对 margin 合并行为的影响。
-
-### 1.6 Create（创造）
-
-- 设计一套组件库的间距管理系统，在 Tailwind / CSS Variables 双轨下规避 margin 合并陷阱。
-- 编写自动化测试用例（基于 Playwright + 视觉回归）验证组件在不同场景下不会出现非预期 margin 合并。
-- 提出面向 CSS Working Group 的规范改进建议（如 `margin-trim` 属性的应用边界）。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 CSS 1（1996）：margin 的诞生
+### 1.1 CSS 1（1996）：margin 的诞生
 
 CSS 1 由 Håkon Wium Lie 与 Bert Bos 于 1996 年提出，首次引入盒模型概念。此时 margin 作为「盒之间的空气」被定义，但其行为并未严格规范化。浏览器实现各异，导致「为什么两个段落之间的间距是 30px 而不是 60px」成为早期 Web 开发者最常见的困惑之一。
 
@@ -95,7 +54,7 @@ CSS 1 规范中对 margin collapsing 的描述仅有寥寥几句：
 
 这一含糊表述为后续十多年的兼容性问题埋下伏笔。
 
-### 2.2 CSS 2.1（2011）：规范的明确化
+### 1.2 CSS 2.1（2011）：规范的明确化
 
 CSS 2.1 §8.3.1「Collapsing margins」正式给出 4 条精确规则：
 
@@ -104,7 +63,7 @@ CSS 2.1 §8.3.1「Collapsing margins」正式给出 4 条精确规则：
 3. **空块自身**：若块级元素没有 `border`、`padding`、`height`、`min-height`、内联内容、`clear`，则其自身的 `margin-top` 与 `margin-bottom` 合并。
 4. 合并后的值为两者中的较大者（若一者为负，则为正负相加）。
 
-### 2.3 CSS 3 模块化（2010s）：Box Model Level 3
+### 1.3 CSS 3 模块化（2010s）：Box Model Level 3
 
 CSS3 将规范拆分为独立模块，margin 行为归入 [CSS Box Model Module Level 3](https://www.w3.org/TR/css-box-3/)。该模块在 CSS 2.1 基础上做了少量澄清：
 
@@ -112,7 +71,7 @@ CSS3 将规范拆分为独立模块，margin 行为归入 [CSS Box Model Module 
 - 引入逻辑属性（`margin-inline-start`、`margin-block-start`）以适应竖排与 RTL 文档。
 - 对 `margin: auto` 在 flex 项上的行为做了重新定义（用于实现居中对齐）。
 
-### 2.4 CSS Box Model Level 4 与 Houdini（2020s）
+### 1.4 CSS Box Model Level 4 与 Houdini（2020s）
 
 Level 4 草案引入 `margin-trim` 属性，允许容器「修剪」子元素伸出到容器外的 margin：
 
@@ -128,7 +87,7 @@ Level 4 草案引入 `margin-trim` 属性，允许容器「修剪」子元素伸
 
 Houdini 的 `CSS Layout API` 与 `CSS Properties and Values API` 进一步提供了底层能力，使开发者可以介入渲染管线，理论上可以自定义 margin 合并算法（虽然实践中极少使用）。
 
-### 2.5 演进时间线
+### 1.5 演进时间线
 
 | 年份 | 规范/事件 | 核心变化 |
 | --- | --- | --- |
@@ -144,15 +103,15 @@ Houdini 的 `CSS Layout API` 与 `CSS Properties and Values API` 进一步提供
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 规范条款
+### 2.1 规范条款
 
 依据 [CSS 2.1 §8.3.1](https://www.w3.org/TR/CSS21/box.html#collapsing-margins) 与 [CSS Box Model Level 3](https://www.w3.org/TR/css-box-3/#margins)：
 
 > In CSS, the adjoining margins of two or more boxes (which might or might not be siblings) can combine to form a single margin. Margins that combine this way are said to *collapse*, and the resulting combined margin is called a *collapsed margin*.
 
-### 3.2 核心术语
+### 2.2 核心术语
 
 | 术语 | 英文 | 定义 |
 | --- | --- | --- |
@@ -163,7 +122,7 @@ Houdini 的 `CSS Layout API` 与 `CSS Properties and Values API` 进一步提供
 | 块格式化上下文 | BFC, Block Formatting Context | 一个独立的渲染区域，内部元素的布局不影响外部 |
 | 常规流 | normal flow | 非 float、非 position:absolute/fixed 的元素流 |
 
-### 3.3 合并发生的必要条件
+### 2.3 合并发生的必要条件
 
 margin 合并必须**同时**满足以下条件：
 
@@ -173,7 +132,7 @@ margin 合并必须**同时**满足以下条件：
 4. **邻接**：两个 margin 之间无 `border`、`padding`、`inline content`、`clearance` 阻隔。
 5. **非 flex/grid 容器**：flex item 与 grid item 之间不合并。
 
-### 3.4 形式化判定函数
+### 2.4 形式化判定函数
 
 设 $M_1$ 与 $M_2$ 为两个 margin，定义合并判定函数 $\text{Collapse}(M_1, M_2)$：
 
@@ -199,7 +158,7 @@ M_1 + M_2, & \text{otherwise (一正一负)}
 \end{cases}
 $$
 
-### 3.5 BFC 触发条件
+### 2.5 BFC 触发条件
 
 | 触发方式 | CSS 语法 | 副作用 |
 | --- | --- | --- |
@@ -214,9 +173,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 为何只合并垂直方向？
+### 3.1 为何只合并垂直方向？
 
 CSS 2.1 规范将块级元素的流方向定义为垂直（从上至下），而水平方向由 inline 元素的水平排列构成。垂直方向上的 margin 是「段落之间的留白」，多个段落堆叠时，留白合并符合排版直觉（如同 Word 中段落间距取最大值）。水平方向上，inline 元素的 margin 表示字与字、图与字之间的间隔，不应合并。
 
@@ -232,7 +191,7 @@ $$
 \text{Gap}(A, B) = \text{margin-bottom}_A + \text{margin-top}_B
 $$
 
-### 4.2 margin 塌陷的传递性
+### 3.2 margin 塌陷的传递性
 
 当父元素 $P$ 包含子元素 $C$，且 $P$ 没有 `border-top` 与 `padding-top` 时，$C$ 的 `margin-top` 会「穿透」$P$，表现为 $P$ 自身相对其父容器的 `margin-top`。形式化地：
 
@@ -243,7 +202,7 @@ $$
 
 这种「穿透」会向上递归，直到遇到一个有 `border` 或 `padding` 的祖先元素。
 
-### 4.3 负 margin 的合并
+### 3.3 负 margin 的合并
 
 当参与合并的 margin 含负值时，规则变为「正负相加」：
 
@@ -262,7 +221,7 @@ $$
 
 负 margin 常用于实现「元素重叠」「文字溢出容器」等效果，但应谨慎使用以避免可维护性下降。
 
-### 4.4 BFC 为何能阻止塌陷
+### 3.4 BFC 为何能阻止塌陷
 
 BFC 的核心特性是**隔离性**：
 
@@ -276,7 +235,7 @@ BFC 的核心特性是**隔离性**：
 
 设父元素 $P$ 触发 BFC。BFC 规则要求 $P$ 的内容区域与 $P$ 的 margin 区域严格分离，子元素 $C$ 的 margin 必须作用于 $P$ 的 `padding-box` 内部，而 $P$ 自身的 margin 作用于 $P$ 的 `margin-box`。两者位于不同的「层」，无法合并。
 
-### 4.5 flex / grid 为何不合并
+### 3.5 flex / grid 为何不合并
 
 CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 margin **不会折叠**。原因是 flex/grid 容器建立了独立的格式化上下文（FFC / GFC），其内部布局算法不沿用 block flow 的合并规则。
 
@@ -285,7 +244,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 - flex/grid 容器内的子元素间距可精确控制。
 - 引入 `gap` 属性后，间距管理更加语义化（不再依赖 margin）。
 
-### 4.6 计算示例
+### 3.6 计算示例
 
 给定以下结构：
 
@@ -311,9 +270,9 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：相邻兄弟合并
+### 4.1 基础示例：相邻兄弟合并
 
 ```html
 <!DOCTYPE html>
@@ -343,7 +302,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 </html>
 ```
 
-### 5.2 父子塌陷：未解决 vs 已解决
+### 4.2 父子塌陷：未解决 vs 已解决
 
 ```html
 <!DOCTYPE html>
@@ -431,7 +390,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 </html>
 ```
 
-### 5.3 空块元素自身合并
+### 4.3 空块元素自身合并
 
 ```html
 <!DOCTYPE html>
@@ -467,7 +426,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 </html>
 ```
 
-### 5.4 负 margin 的合并
+### 4.4 负 margin 的合并
 
 ```html
 <!DOCTYPE html>
@@ -497,7 +456,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 </html>
 ```
 
-### 5.5 自适应两栏布局（BFC 应用）
+### 4.5 自适应两栏布局（BFC 应用）
 
 ```html
 <!DOCTYPE html>
@@ -557,7 +516,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 </html>
 ```
 
-### 5.6 包含浮动元素（清除浮动）
+### 4.6 包含浮动元素（清除浮动）
 
 ```html
 <!DOCTYPE html>
@@ -613,7 +572,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 </html>
 ```
 
-### 5.7 flex / grid 内不合并
+### 4.7 flex / grid 内不合并
 
 ```html
 <!DOCTYPE html>
@@ -689,7 +648,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 </html>
 ```
 
-### 5.8 企业级组件：卡片列表间距管理
+### 4.8 企业级组件：卡片列表间距管理
 
 ```html
 <!DOCTYPE html>
@@ -826,7 +785,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 </html>
 ```
 
-### 5.9 margin-trim 属性（实验性）
+### 4.9 margin-trim 属性（实验性）
 
 ```css
 /* CSS Box Model Level 4 - Editor's Draft */
@@ -844,7 +803,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 
 > **注意**：`margin-trim` 仍处于实验阶段，生产环境请使用 `:first-child` / `:last-child` 显式重置或 `gap` 替代。
 
-### 5.10 调试技巧：可视化 margin
+### 4.10 调试技巧：可视化 margin
 
 ```html
 <!DOCTYPE html>
@@ -868,9 +827,9 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 margin 合并解决方案对比
+### 5.1 margin 合并解决方案对比
 
 | 方案 | CSS 版本 | 优点 | 缺点 | 推荐场景 |
 | --- | --- | --- | --- | --- |
@@ -882,7 +841,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 | `gap` | CSS Grid/Flex L1 | 语义化，间距统一 | 旧浏览器不支持 | 现代间距管理首选 |
 | `margin-trim` | CSS Box Model L4 | 自动修剪 | 实验性，支持差 | 实验项目 |
 
-### 6.2 与其他布局系统的对比
+### 5.2 与其他布局系统的对比
 
 | 布局系统 | margin 合并行为 | 间距管理方式 | 兼容性 |
 | --- | --- | --- | --- |
@@ -895,7 +854,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 | Tailwind CSS | 取决于类名 | 空间类（`space-y-*`、`gap-*`） | 现代浏览器 |
 | Bootstrap | 取决于类名 | utility + spacer | 现代浏览器 |
 
-### 6.3 Tailwind CSS 的间距管理
+### 5.3 Tailwind CSS 的间距管理
 
 Tailwind 提供了两套间距管理方案：
 
@@ -919,7 +878,7 @@ Tailwind 提供了两套间距管理方案：
 
 `space-y-*` 在常规流中依然受 margin 合并影响（虽然 Tailwind 的实现通过 `:not(:first-child)` 巧妙规避了相邻兄弟合并），但 `gap-*` 完全无此问题。Tailwind v3+ 推荐 `gap-*`。
 
-### 6.4 Bootstrap 的间距管理
+### 5.4 Bootstrap 的间距管理
 
 Bootstrap 5 使用 `$spacers` SCSS map 生成 `m-*`、`p-*`、`mt-*`、`mb-*` 等 utility 类：
 
@@ -936,7 +895,7 @@ Bootstrap 5 使用 `$spacers` SCSS map 生成 `m-*`、`p-*`、`mt-*`、`mb-*` �
 </div>
 ```
 
-### 6.5 Material Design 的间距系统
+### 5.5 Material Design 的间距系统
 
 Material Design 3 使用 4dp 基准网格，推荐使用 padding 而非 margin 管理组件内部间距，使用 gap 管理组件之间间距：
 
@@ -952,7 +911,7 @@ Material Design 3 使用 4dp 基准网格，推荐使用 padding 而非 margin �
 }
 ```
 
-### 6.6 BEM 命名与 margin 合并
+### 5.6 BEM 命名与 margin 合并
 
 BEM 方法论通过明确的层级关系规避了 margin 合并的复杂性：
 
@@ -987,9 +946,9 @@ BEM 方法论通过明确的层级关系规避了 margin 合并的复杂性：
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：误以为水平 margin 也会合并
+### 6.1 陷阱 1：误以为水平 margin 也会合并
 
 **错误认知**：
 
@@ -1002,7 +961,7 @@ BEM 方法论通过明确的层级关系规避了 margin 合并的复杂性：
 
 **正确认知**：margin 合并只发生在块级元素的垂直方向。inline-block、inline 元素的水平 margin 永不合并。
 
-### 7.2 陷阱 2：flex 子元素 margin 误判
+### 6.2 陷阱 2：flex 子元素 margin 误判
 
 **错误代码**：
 
@@ -1040,7 +999,7 @@ BEM 方法论通过明确的层级关系规避了 margin 合并的复杂性：
 }
 ```
 
-### 7.3 陷阱 3：`overflow: hidden` 的副作用
+### 6.3 陷阱 3：`overflow: hidden` 的副作用
 
 **问题代码**：
 
@@ -1063,7 +1022,7 @@ BEM 方法论通过明确的层级关系规避了 margin 合并的复杂性：
 }
 ```
 
-### 7.4 陷阱 4：负 margin 滥用
+### 6.4 陷阱 4：负 margin 滥用
 
 **反模式**：
 
@@ -1101,7 +1060,7 @@ BEM 方法论通过明确的层级关系规避了 margin 合并的复杂性：
 }
 ```
 
-### 7.5 陷阱 5：reset CSS 的过度使用
+### 6.5 陷阱 5：reset CSS 的过度使用
 
 **问题代码**：
 
@@ -1137,7 +1096,7 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 ```
 
-### 7.6 最佳实践清单
+### 6.6 最佳实践清单
 
 1. **优先使用 `gap`**：在 flex/grid 容器中，使用 `gap` 替代子元素的 `margin`。
 2. **首选 `display: flow-root`**：解决塌陷问题时，避免 `overflow: hidden`。
@@ -1150,7 +1109,7 @@ p, h1, h2, h3, h4, h5, h6 {
 9. **代码评审 checklist**：检查 BFC 触发方式、flex/grid 内的 margin 使用、负 margin 的合理性。
 10. **文档化间距系统**：在设计系统文档中明确 margin 使用规范。
 
-### 7.7 兼容性参考
+### 6.7 兼容性参考
 
 | 特性 | Chrome | Firefox | Safari | Edge | IE |
 | --- | --- | --- | --- | --- | --- |
@@ -1163,9 +1122,9 @@ p, h1, h2, h3, h4, h5, h6 {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 PostCSS 配置：自动重置首尾 margin
+### 7.1 PostCSS 配置：自动重置首尾 margin
 
 ```javascript
 // postcss.config.js
@@ -1184,7 +1143,7 @@ module.exports = {
 };
 ```
 
-### 8.2 设计令牌：CSS Variables 间距系统
+### 7.2 设计令牌：CSS Variables 间距系统
 
 ```css
 :root {
@@ -1208,7 +1167,7 @@ module.exports = {
 }
 ```
 
-### 8.3 SCSS 工具函数
+### 7.3 SCSS 工具函数
 
 ```scss
 // _spacing.scss
@@ -1240,7 +1199,7 @@ $space-scale: (
 }
 ```
 
-### 8.4 Tailwind 自定义间距
+### 7.4 Tailwind 自定义间距
 
 ```javascript
 // tailwind.config.js
@@ -1262,7 +1221,7 @@ module.exports = {
 };
 ```
 
-### 8.5 性能优化
+### 7.5 性能优化
 
 1. **避免布局抖动**：频繁修改 margin 会触发 reflow，应使用 transform 替代。
 2. **使用 `will-change: margin`**：对动画元素的 margin 加速合成（谨慎使用）。
@@ -1276,7 +1235,7 @@ module.exports = {
 }
 ```
 
-### 8.6 调试工具
+### 7.6 调试工具
 
 1. **Chrome DevTools**：开启「Show margin」可视化。
 2. **Firefox DevTools**：盒模型可视化面板。
@@ -1284,7 +1243,7 @@ module.exports = {
 4. **VS Code 插件**：CSS Peek、IntelliSense for CSS。
 5. **PostCSS 插件**：`postcss-reporter` 提示潜在问题。
 
-### 8.7 自动化测试
+### 7.7 自动化测试
 
 ```javascript
 // visual-regression.test.js
@@ -1303,7 +1262,7 @@ test('card-list 间距正确', async ({ page }) => {
 });
 ```
 
-### 8.8 ESLint 规则（CSS-in-JS）
+### 7.8 ESLint 规则（CSS-in-JS）
 
 ```javascript
 // .stylelintrc.js
@@ -1329,9 +1288,9 @@ module.exports = {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Bootstrap 5 的间距系统
+### 8.1 案例一：Bootstrap 5 的间距系统
 
 Bootstrap 5 通过 SCSS map 生成间距工具类：
 
@@ -1363,7 +1322,7 @@ $spacers: (
 - `mb-3` 与下一个元素的 `mt-3` 会合并为 `1rem`，而非 `2rem`。
 - 在 `.row` 容器内使用 `g-3` 完全规避合并问题。
 
-### 9.2 案例二：Tailwind CSS 的 `space-y-*` 实现
+### 8.2 案例二：Tailwind CSS 的 `space-y-*` 实现
 
 Tailwind 的 `space-y-*` 通过 `:not(:first-child) > *` 选择器实现：
 
@@ -1382,7 +1341,7 @@ Tailwind 的 `space-y-*` 通过 `:not(:first-child) > *` 选择器实现：
 - 但在嵌套场景下可能出现问题（如 `.space-y-4` 内部嵌套 `.space-y-2`）。
 - Tailwind v3.3+ 推荐使用 `gap-*` 替代。
 
-### 9.3 案例三：Material Design 3 的间距规范
+### 8.3 案例三：Material Design 3 的间距规范
 
 Material Design 3 定义了 5 级间距系统：
 
@@ -1414,7 +1373,7 @@ Material Design 3 定义了 5 级间距系统：
 }
 ```
 
-### 9.4 案例四：GitHub Primer 的间距系统
+### 8.4 案例四：GitHub Primer 的间距系统
 
 GitHub Primer 使用 8px 基准网格，定义了完整的 spacing scale：
 
@@ -1433,7 +1392,7 @@ GitHub Primer 使用 8px 基准网格，定义了完整的 spacing scale：
 
 Primer 推荐使用 `gap` 管理组件间距，使用 `padding` 管理组件内部间距，避免使用 `margin`。
 
-### 9.5 案例五：Ant Design 的间距系统
+### 8.5 案例五：Ant Design 的间距系统
 
 Ant Design v5 使用 8px 基准：
 
@@ -1453,7 +1412,7 @@ export const theme = {
 
 Ant Design 的 `<Space>` 组件内部使用 flex + `gap`，规避了 margin 合并问题。
 
-### 9.6 案例六：真实生产事故
+### 8.6 案例六：真实生产事故
 
 **场景**：某电商网站商品列表页面，在 Safari 浏览器中商品卡片间距比 Chrome 大 16px。
 
@@ -1796,7 +1755,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 - 通过 `margin-right: 20px` 实现间距（浮动元素之间不合并，间距准确）。
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 CSS 设计者选择让 margin 合并，而不是简单相加？请从排版美学与规范简洁性两个角度分析。
 
@@ -1908,9 +1867,9 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 W3C 规范
+### 10.1 W3C 规范
 
 [1] World Wide Web Consortium. 2011. *Cascading Style Sheets Level 2 Revision 1 (CSS 2.1) Specification*. W3C Recommendation. Retrieved from https://www.w3.org/TR/CSS21/box.html#collapsing-margins
 
@@ -1924,7 +1883,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 
 [6] Elika Etemad and Tab Atkins Jr. 2022. *CSS Logical Properties and Values Level 1*. W3C Candidate Recommendation. Retrieved from https://www.w3.org/TR/css-logical-1/
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [7] Lie, H. W. and Bos, B. 1999. *Cascading Style Sheets: Designing for the Web*. Addison-Wesley Professional, Boston, MA, USA. DOI: 10.5555/298544
 
@@ -1932,7 +1891,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 
 [9] Bos, B., Lie, H. W., Lilley, C., and Jacobs, I. 1999. *Cascading Style Sheets, Level 2: CSS2 Specification*. W3C Recommendation. Retrieved from https://www.w3.org/TR/CSS2/
 
-### 11.3 在线资源
+### 10.3 在线资源
 
 [10] MDN Web Contributors. 2024. *Mastering margin collapsing*. MDN Web Docs. Retrieved from https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing
 
@@ -1942,7 +1901,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 
 [13] Coyier, C. 2023. *The Rules of Margin Collapse*. CSS-Tricks. Retrieved from https://css-tricks.com/the-rules-of-margin-collapse/
 
-### 11.4 框架文档
+### 10.4 框架文档
 
 [14] Bootstrap Team. 2024. *Bootstrap 5 Spacing*. Retrieved from https://getbootstrap.com/docs/5.3/utilities/spacing/
 
@@ -1952,7 +1911,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 
 [17] Ant Group. 2024. *Ant Design Spacing*. Retrieved from https://ant.design/docs/react/customize-theme
 
-### 11.5 引用规范
+### 10.5 引用规范
 
 本文引用遵循 ACM Reference Format：
 
@@ -1963,9 +1922,9 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 1. **《CSS Secrets》** — Lea Verou 著
    - 深入讲解 CSS 的高级技巧与原理，包含 margin 合并的巧妙应用。
@@ -1982,7 +1941,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 5. **《The CSS Handbook》** — Flavio Copes 著
    - CSS 实用手册，适合快速查阅。
 
-### 12.2 论文与文章
+### 11.2 论文与文章
 
 1. **Håkon Wium Lie. 2005. *Cascading Style Sheets*. PhD Thesis, University of Oslo.**
    - CSS 的起源论文，阐述了 CSS 设计哲学。
@@ -1993,7 +1952,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 3. **Elika Etemad. 2017. *CSS Box Model: Status and Direction*.**
    - Box Model 模块的演进方向。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 1. **MDN Web Docs** — https://developer.mozilla.org/
    - 最权威的 Web 开发文档。
@@ -2019,7 +1978,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 8. **A List Apart** — https://alistapart.com/
    - Web 设计与开发的经典文章库。
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 1. **CSS for JavaScript Developers** — Josh W. Comeau
    - 面向 JS 开发者的 CSS 深度课程。
@@ -2030,7 +1989,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 3. **CSS Animation 101** — Donovan Hutchinson
    - CSS 动画与过渡系统。
 
-### 12.5 工具与资源
+### 11.5 工具与资源
 
 1. **PostCSS** — https://postcss.org/
    - CSS 后处理器，可编写插件自动处理 margin 合并问题。

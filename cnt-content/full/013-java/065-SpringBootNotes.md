@@ -18,6 +18,7 @@ prerequisites:
   - java/概述与开发环境
 ---
 
+
 # Spring Boot 深度指南：从自动配置到生产级微服务
 
 > 本文档对标 MIT 6.170（Software Studio）、Stanford CS 142（Web Applications）与 CMU 17-445（Software Engineering for Web Applications）教学水准，系统阐述 Spring Boot 的形式化基础、内核原理与生产级工程实践。所有代码示例均在 Spring Boot 3.x（基于 Spring Framework 6.x，运行于 Java 17+）上编译验证。
@@ -45,47 +46,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，学习者应能够：
-
-### 1.1 认知层级目标（Bloom 分类法）
-
-| Bloom 层级 | 目标描述 | 可观测行为 |
-| ---------- | -------- | ---------- |
-| **Remember（记忆）** | 复述 Spring Boot 三大特性、自动配置加载流程、起步依赖机制 | 能默写 `@SpringBootApplication`、`@EnableAutoConfiguration`、`@Conditional` 的语义 |
-| **Understand（理解）** | 解释自动配置的 SPI 加载机制、Starter 的依赖管理原理 | 能用图示描述 `spring-boot-autoconfigure/META-INF/spring/...imports` 的解析过程 |
-| **Apply（应用）** | 使用 Spring Boot 构建一个完整的 RESTful 服务，包含 JPA、Security、Actuator | 编写一个电商订单服务并集成 Swagger、Prometheus |
-| **Analyze（分析）** | 分析自动配置冲突、Bean 循环依赖、DataSource 失败的根因 | 通过 `--debug` 启动日志定位条件注解的命中情况 |
-| **Evaluate（评价）** | 比较 Spring Boot 与 Quarkus、Micronaut、Helidon 的启动性能、内存占用 | 在 GraalVM Native Image 场景下评估 Spring Boot AOT 的优劣 |
-| **Create（创造）** | 设计并实现自定义 Starter，发布到私有 Maven 仓库 | 实现一个公司内部通用的 XXL-Job Starter |
-
-### 1.2 核心能力指标
-
-完成本章后，应能独立完成以下任务：
-
-1. 设计并实现自定义 Spring Boot Starter，含 `@ConditionalOnXxx` 条件装配
-2. 配置 `application.yml` 多环境（dev/test/prod），理解 Profile 优先级
-3. 使用 Spring Data JPA 实现分页、审计、乐观锁
-4. 集成 Spring Security + JWT 实现无状态鉴权
-5. 通过 Actuator + Micrometer + Prometheus + Grafana 实现生产级监控
-6. 使用 Spring Boot 3.x 的 GraalVM Native Image 构建秒级启动镜像
-
-### 1.3 前置知识检查
-
-阅读本章前，建议已掌握：
-
-- Java 17+ 语法（record、sealed、pattern matching for switch）
-- Spring Framework 基础（IoC、AOP、Bean 生命周期）
-- Maven / Gradle 构建工具
-- HTTP 协议与 RESTful 设计
-- SQL 与至少一种关系数据库
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 Spring Boot 演进时间线
+### 1.1 Spring Boot 演进时间线
 
 ```mermaid
 timeline
@@ -103,13 +66,13 @@ timeline
     2025: Spring Boot 3.4 / 4.0 路线图，HTTP Interface Client 增强，更深入 AOT 优化
 ```
 
-### 2.2 三大设计哲学
+### 1.2 三大设计哲学
 
 1. **约定优于配置（Convention over Configuration）**：默认值合理即可零配置启动，需个性化时再覆盖。
 2. **开箱即用（Out of the Box）**：Starter 整合常用依赖，避免手选版本冲突。
 3. **生产就绪（Production-Ready）**：Actuator、Micrometer、Health Check 内置，从 Hello World 到生产部署无缝衔接。
 
-### 2.3 Spring Boot vs Spring Framework
+### 1.3 Spring Boot vs Spring Framework
 
 | 维度 | Spring Framework | Spring Boot |
 | ---- | ---------------- | ----------- |
@@ -120,7 +83,7 @@ timeline
 | **监控** | 需自行集成 | Actuator 内置 |
 | **启动速度** | 5—15s | 1—5s（3.x Native Image <0.1s） |
 
-### 2.4 Spring Boot 生态版图
+### 1.4 Spring Boot 生态版图
 
 - **Spring Cloud**：分布式系统工具集（注册中心、配置中心、熔断、网关）
 - **Spring Data**：统一的数据库抽象（JPA、Redis、MongoDB、Elasticsearch）
@@ -132,9 +95,9 @@ timeline
 
 ---
 
-## 3. 形式化定义与规范基础
+## 2. 形式化定义与规范基础
 
-### 3.1 自动配置的形式化模型
+### 2.1 自动配置的形式化模型
 
 设 $\mathcal{C}$ 为所有候选自动配置类集合，$\mathcal{M}$ 为应用启动时的元数据（ClassPath、已声明 Bean、配置属性）。则实际生效的配置类集合：
 
@@ -149,7 +112,7 @@ $$
 - `@ConditionalOnProperty(name)`：配置属性存在且匹配
 - `@ConditionalOnWebApplication`：当前是 Web 应用
 
-### 3.2 Bean 实例化的形式化语义
+### 2.2 Bean 实例化的形式化语义
 
 Spring 容器中 Bean 的实例化可形式化为偏序关系：
 
@@ -159,7 +122,7 @@ $$
 
 即 Bean $B$ 的所有依赖 $D$ 必须先实例化。若存在循环依赖 $\text{Deps}(A) \ni B \wedge \text{Deps}(B) \ni A$，Spring 通过"三级缓存"解决（仅对 setter/field 注入有效，构造器注入会失败）。
 
-### 3.3 Starter 的依赖管理规范
+### 2.3 Starter 的依赖管理规范
 
 Spring Boot Starter 是一种约定的 Maven/Gradle 依赖聚合体，命名规范：
 
@@ -168,7 +131,7 @@ Spring Boot Starter 是一种约定的 Maven/Gradle 依赖聚合体，命名规�
 
 每个 Starter 通过 `spring-boot-dependencies` BOM 管理版本，避免用户手工指定版本号。
 
-### 3.4 Actuator 端点规范
+### 2.4 Actuator 端点规范
 
 Actuator 端点遵循以下形式化模型：
 
@@ -190,9 +153,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 @SpringBootApplication 的组成
+### 3.1 @SpringBootApplication 的组成
 
 ```java
 @SpringBootConfiguration      // = @Configuration
@@ -208,7 +171,7 @@ public @interface SpringBootApplication {
 2. 加载 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`（Spring Boot 2.7+）中列出的自动配置类
 3. 对每个候选类，按 `@Conditional` 决定是否生效
 
-### 4.2 自动配置加载机制（Spring Boot 2.7+ / 3.x）
+### 3.2 自动配置加载机制（Spring Boot 2.7+ / 3.x）
 
 旧机制（Spring Boot 2.6 及之前）：
 
@@ -229,7 +192,7 @@ com.example.YyyAutoConfiguration
 
 > **变更原因**：`spring.factories` 同时承载自动配置、监听器、初始化器等多种条目，难以管理。新机制分离关注点，且支持 `AutoConfiguration.before/after` 排序。
 
-### 4.3 自动配置示例：DataSourceAutoConfiguration
+### 3.3 自动配置示例：DataSourceAutoConfiguration
 
 ```java
 @AutoConfiguration(before = SqlInitializationAutoConfiguration.class)
@@ -253,7 +216,7 @@ public class DataSourceAutoConfiguration {
 2. 容器中没有 `XADataSource` 或 `ConnectionFactory`
 3. 若用户未自定义 `DataSource`，则创建 HikariDataSource
 
-### 4.4 条件注解执行顺序
+### 3.4 条件注解执行顺序
 
 ```
 启动 → 加载候选 AutoConfiguration
@@ -264,7 +227,7 @@ public class DataSourceAutoConfiguration {
      → 最终 BeanDefinitionRegistry 完成
 ```
 
-### 4.5 三级缓存解决循环依赖
+### 3.5 三级缓存解决循环依赖
 
 Spring 用三级缓存解决 setter/field 注入的循环依赖：
 
@@ -285,7 +248,7 @@ private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(1
 
 > **关键点**：构造器注入无法解决循环依赖，因为构造时尚无 ObjectFactory。Spring Boot 2.6+ 默认禁用循环依赖（`spring.main.allow-circular-references=false`），强制开发者重构。
 
-### 4.6 内嵌容器启动流程
+### 3.6 内嵌容器启动流程
 
 ```java
 // 简化的 SpringApplication.run()
@@ -319,9 +282,9 @@ protected WebServer createWebServer() {
 
 ---
 
-## 5. 起步依赖与自动配置
+## 4. 起步依赖与自动配置
 
-### 5.1 常用 Starter
+### 4.1 常用 Starter
 
 | Starter | 作用 |
 | ------- | ---- |
@@ -343,7 +306,7 @@ protected WebServer createWebServer() {
 | `spring-boot-starter-batch` | Spring Batch |
 | `spring-boot-starter-graphql` | GraphQL |
 
-### 5.2 排除依赖
+### 4.2 排除依赖
 
 ```xml
 <dependency>
@@ -363,9 +326,9 @@ protected WebServer createWebServer() {
 </dependency>
 ```
 
-### 5.3 自定义 Starter
+### 4.3 自定义 Starter
 
-#### 5.3.1 自动配置类
+#### 4.3.1 自动配置类
 
 ```java
 package com.atian.starter.xxljob;
@@ -400,7 +363,7 @@ public class XxlJobAutoConfiguration {
 }
 ```
 
-#### 5.3.2 配置属性类
+#### 4.3.2 配置属性类
 
 ```java
 package com.atian.starter.xxljob;
@@ -423,7 +386,7 @@ public class XxlJobProperties {
 }
 ```
 
-#### 5.3.3 注册自动配置
+#### 4.3.3 注册自动配置
 
 在 `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 写入：
 
@@ -431,7 +394,7 @@ public class XxlJobProperties {
 com.atian.starter.xxljob.XxlJobAutoConfiguration
 ```
 
-#### 5.3.4 使用方
+#### 4.3.4 使用方
 
 ```xml
 <dependency>
@@ -452,9 +415,9 @@ xxl:
 
 ---
 
-## 6. 配置体系与外部化
+## 5. 配置体系与外部化
 
-### 6.1 配置优先级（从高到低）
+### 5.1 配置优先级（从高到低）
 
 1. 命令行参数（`--server.port=9090`）
 2. `SPRING_APPLICATION_JSON` 环境变量
@@ -470,7 +433,7 @@ xxl:
 12. `@PropertySource` 注解声明的源
 13. 默认属性（`SpringApplication.setDefaultProperties`）
 
-### 6.2 多环境配置
+### 5.2 多环境配置
 
 `application.yml`：
 
@@ -517,7 +480,7 @@ java -jar app.jar --spring.profiles.active=prod
 export SPRING_PROFILES_ACTIVE=prod
 ```
 
-### 6.3 @ConfigurationProperties 绑定
+### 5.3 @ConfigurationProperties 绑定
 
 ```java
 @Component
@@ -559,7 +522,7 @@ app:
 > - 支持 `DataSize` 解析（`10MB`、`1024B`）
 > - JSR-303 校验（`@Validated` + `@NotNull`、`@Min`）
 
-### 6.4 @Value 简单绑定
+### 5.4 @Value 简单绑定
 
 ```java
 @RestController
@@ -577,7 +540,7 @@ public class HelloController {
 
 > **区别**：`@Value` 适合单值简单注入，`@ConfigurationProperties` 适合结构化配置对象。
 
-### 6.5 Spring Boot 2.4+ 配置导入
+### 5.5 Spring Boot 2.4+ 配置导入
 
 ```yaml
 spring:
@@ -589,7 +552,7 @@ spring:
       - redis://  # 从 Redis 加载配置
 ```
 
-### 6.6 加密配置
+### 5.6 加密配置
 
 使用 Jasypt：
 
@@ -613,9 +576,9 @@ public StringEncryptor encryptor() {
 
 ---
 
-## 7. Web 层与 RESTful
+## 6. Web 层与 RESTful
 
-### 7.1 控制器基础
+### 6.1 控制器基础
 
 ```java
 @RestController
@@ -663,7 +626,7 @@ public class OrderController {
 }
 ```
 
-### 7.2 全局异常处理
+### 6.2 全局异常处理
 
 ```java
 @RestControllerAdvice
@@ -697,7 +660,7 @@ record ErrorResponse(String code, String message, Instant timestamp) {}
 record ErrorResponse(String code, String message, Map<String, String> details, Instant timestamp) {}
 ```
 
-### 7.3 请求校验
+### 6.3 请求校验
 
 ```java
 public record CreateOrderRequest(
@@ -713,7 +676,7 @@ public record OrderItemRequest(
 ) {}
 ```
 
-### 7.4 静态资源与 SPA
+### 6.4 静态资源与 SPA
 
 ```java
 @Configuration
@@ -742,7 +705,7 @@ public class WebConfig implements WebMvcConfigurer {
 }
 ```
 
-### 7.5 CORS
+### 6.5 CORS
 
 ```java
 @Configuration
@@ -760,7 +723,7 @@ public class CorsConfig implements WebMvcConfigurer {
 }
 ```
 
-### 7.6 Spring Boot 3.x 的声明式 HTTP Client
+### 6.6 Spring Boot 3.x 的声明式 HTTP Client
 
 ```java
 // 接口式声明，Spring 自动生成实现
@@ -786,9 +749,9 @@ public GitHubClient githubClient(WebClient.Builder builder) {
 
 ---
 
-## 8. 数据访问与持久化
+## 7. 数据访问与持久化
 
-### 8.1 Spring Data JPA 基础
+### 7.1 Spring Data JPA 基础
 
 ```java
 @Entity
@@ -851,7 +814,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 }
 ```
 
-### 8.2 审计启用
+### 7.2 审计启用
 
 ```java
 @EnableJpaAuditing
@@ -859,7 +822,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 public class App { ... }
 ```
 
-### 8.3 事务管理
+### 7.3 事务管理
 
 ```java
 @Service
@@ -910,7 +873,7 @@ public class OrderService {
 | `NEVER` | 必须无事务，否则抛异常 |
 | `NESTED` | 嵌套事务（savepoint） |
 
-### 8.4 Spring Data Redis
+### 7.4 Spring Data Redis
 
 ```java
 @Configuration
@@ -968,7 +931,7 @@ public class ProductService {
 }
 ```
 
-### 8.5 Spring Data MongoDB
+### 7.5 Spring Data MongoDB
 
 ```java
 @Document(collection = "audit_logs")
@@ -987,7 +950,7 @@ public interface AuditLogRepository extends MongoRepository<AuditLog, String> {
 }
 ```
 
-### 8.6 多数据源
+### 7.6 多数据源
 
 ```java
 @Configuration
@@ -1020,9 +983,9 @@ public class DataSourceConfig {
 
 ---
 
-## 9. Actuator 与可观测性
+## 8. Actuator 与可观测性
 
-### 9.1 启用 Actuator
+### 8.1 启用 Actuator
 
 ```xml
 <dependency>
@@ -1062,7 +1025,7 @@ management:
       enabled: true
 ```
 
-### 9.2 自定义健康指标
+### 8.2 自定义健康指标
 
 ```java
 @Component
@@ -1088,7 +1051,7 @@ public class DiskSpaceHealthIndicator implements HealthIndicator {
 }
 ```
 
-### 9.3 自定义 Micrometer 指标
+### 8.3 自定义 Micrometer 指标
 
 ```java
 @Service
@@ -1122,7 +1085,7 @@ public class OrderService {
 }
 ```
 
-### 9.4 Prometheus 抓取配置
+### 8.4 Prometheus 抓取配置
 
 ```yaml
 # prometheus.yml
@@ -1135,11 +1098,11 @@ scrape_configs:
           env: 'prod'
 ```
 
-### 9.5 Grafana 仪表盘
+### 8.5 Grafana 仪表盘
 
 Spring Boot 官方仪表盘 ID：`12900`、`11378`、`12466`（JVM/Micrometer/Spring Boot Statistics）。
 
-### 9.6 结构化日志（Spring Boot 3.4+）
+### 8.6 结构化日志（Spring Boot 3.4+）
 
 ```yaml
 logging:
@@ -1160,7 +1123,7 @@ logging:
 {"@timestamp":"2026-07-21T10:00:00Z","log.level":"INFO","process.pid":12345,"service.name":"order-service","message":"Order 42 created"}
 ```
 
-### 9.7 分布式追踪（Micrometer Tracing）
+### 8.7 分布式追踪（Micrometer Tracing）
 
 ```xml
 <dependency>
@@ -1185,9 +1148,9 @@ management:
 
 ---
 
-## 10. 安全与认证授权
+## 9. 安全与认证授权
 
-### 10.1 Spring Security 基础配置
+### 9.1 Spring Security 基础配置
 
 ```java
 @Configuration
@@ -1219,7 +1182,7 @@ public class SecurityConfig {
 }
 ```
 
-### 10.2 JWT 鉴权
+### 9.2 JWT 鉴权
 
 ```java
 @Component
@@ -1258,7 +1221,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 }
 ```
 
-### 10.3 方法级安全
+### 9.3 方法级安全
 
 ```java
 @EnableMethodSecurity
@@ -1284,9 +1247,9 @@ public class OrderService {
 
 ---
 
-## 11. 异步、定时与消息
+## 10. 异步、定时与消息
 
-### 11.1 @Async 异步
+### 10.1 @Async 异步
 
 ```java
 @Configuration
@@ -1315,7 +1278,7 @@ public class NotificationService {
 }
 ```
 
-### 11.2 @Scheduled 定时
+### 10.2 @Scheduled 定时
 
 ```java
 @Configuration
@@ -1338,7 +1301,7 @@ public class ReportTask {
 }
 ```
 
-### 11.3 Spring for Kafka
+### 10.3 Spring for Kafka
 
 ```java
 @Configuration
@@ -1393,7 +1356,7 @@ public class OrderConsumer {
 }
 ```
 
-### 11.4 Spring for RabbitMQ
+### 10.4 Spring for RabbitMQ
 
 ```java
 @Configuration
@@ -1431,9 +1394,9 @@ public class OrderConsumer {
 
 ---
 
-## 12. 对比分析
+## 11. 对比分析
 
-### 12.1 Spring Boot vs Quarkus vs Micronaut
+### 11.1 Spring Boot vs Quarkus vs Micronaut
 
 | 维度 | Spring Boot 3.x | Quarkus | Micronaut |
 | ---- | ---------------- | ------- | --------- |
@@ -1451,7 +1414,7 @@ public class OrderConsumer {
 - Serverless、Lambda 场景、追求极低冷启动 → **Quarkus / Micronaut**
 - 渐进式迁移 Spring Cloud → **Spring Boot 3.x + Spring Cloud**
 
-### 12.2 内嵌容器对比
+### 11.2 内嵌容器对比
 
 | 容器 | 默认 | 性能 | 内存 | 备注 |
 | ---- | ---- | ---- | ---- | ---- |
@@ -1460,7 +1423,7 @@ public class OrderConsumer {
 | Undertow | 否 | 极高 | 极低 | 推荐 IO 密集 |
 | Netty | WebFlux | 极高 | 极低 | 响应式专属 |
 
-### 12.3 ORM 框架对比
+### 11.3 ORM 框架对比
 
 | 框架 | 抽象级别 | 学习曲线 | 性能 | 灵活性 |
 | ---- | -------- | -------- | ---- | ------ |
@@ -1471,9 +1434,9 @@ public class OrderConsumer {
 
 ---
 
-## 13. 常见陷阱与最佳实践
+## 12. 常见陷阱与最佳实践
 
-### 13.1 热部署导致内存泄漏
+### 12.1 热部署导致内存泄漏
 
 `spring-boot-devtools` 在开发时方便，但生产环境必须排除：
 
@@ -1486,7 +1449,7 @@ public class OrderConsumer {
 </dependency>
 ```
 
-### 13.2 循环依赖
+### 12.2 循环依赖
 
 Spring Boot 2.6+ 默认禁用，可通过 `@Lazy` 临时绕过，但根治方案是重构。
 
@@ -1499,7 +1462,7 @@ public class A {
 }
 ```
 
-### 13.3 事务失效的常见原因
+### 12.3 事务失效的常见原因
 
 1. **方法非 public**：Spring AOP 默认仅代理 public 方法
 2. **同类内部调用**：`this.method()` 不经过代理
@@ -1508,7 +1471,7 @@ public class A {
 5. **数据库引擎不支持事务**：MyISAM
 6. **传播行为不当**：`NOT_SUPPORTED`、`NEVER` 会暂停事务
 
-### 13.4 application.yml 的占位符陷阱
+### 12.4 application.yml 的占位符陷阱
 
 ```yaml
 # 错误：占位符在 yaml 解析时就被替换
@@ -1521,7 +1484,7 @@ app:
   instance-id: ${app.name:default}-${random.uuid}
 ```
 
-### 13.5 不要在 static 上下文中使用 @Value
+### 12.5 不要在 static 上下文中使用 @Value
 
 ```java
 // 错误：static 字段无法注入
@@ -1543,7 +1506,7 @@ public class Good {
 }
 ```
 
-### 13.6 异常处理顺序
+### 12.6 异常处理顺序
 
 ```java
 @RestControllerAdvice
@@ -1559,11 +1522,11 @@ public class Handler {
 }
 ```
 
-### 13.7 配置文件加载顺序问题
+### 12.7 配置文件加载顺序问题
 
 `application.yml` 在 JAR 内的会被 JAR 外的同名文件覆盖。生产环境务必将敏感配置外置，避免硬编码进 JAR。
 
-### 13.8 Profile 注解陷阱
+### 12.8 Profile 注解陷阱
 
 ```java
 // 错误：@Profile 写在内部类上，但 @Configuration 类自身被扫描
@@ -1583,7 +1546,7 @@ public class Config {
 }
 ```
 
-### 13.9 启动慢的诊断
+### 12.9 启动慢的诊断
 
 ```bash
 # Spring Boot 2.4+ 启动耗时分析
@@ -1600,7 +1563,7 @@ public BufferingApplicationStartup applicationStartup() {
 }
 ```
 
-### 13.10 Native Image 兼容性
+### 12.10 Native Image 兼容性
 
 Spring Boot 3.x Native Image 要求：
 
@@ -1611,9 +1574,9 @@ Spring Boot 3.x Native Image 要求：
 
 ---
 
-## 14. 工程实践
+## 13. 工程实践
 
-### 14.1 项目结构
+### 13.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -1648,7 +1611,7 @@ flowchart TD
     T0 --> T2
 ```
 
-### 14.2 pom.xml 关键配置
+### 13.2 pom.xml 关键配置
 
 ```xml
 <project>
@@ -1751,7 +1714,7 @@ flowchart TD
 </project>
 ```
 
-### 14.3 测试
+### 13.3 测试
 
 ```java
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -1799,7 +1762,7 @@ class OrderControllerTest {
 }
 ```
 
-### 14.4 Dockerfile
+### 13.4 Dockerfile
 
 ```dockerfile
 # 多阶段构建
@@ -1825,7 +1788,7 @@ HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
     CMD curl -f http://localhost:8080/actuator/health || exit 1
 ```
 
-### 14.5 Native Image 构建
+### 13.5 Native Image 构建
 
 ```bash
 # 编译为 Native Image
@@ -1842,7 +1805,7 @@ mvn -Pnative spring-boot:build-image
 | JVM | 2.8s | 380MB |
 | Native Image | 0.06s | 80MB |
 
-### 14.6 Kubernetes 部署
+### 13.6 Kubernetes 部署
 
 ```yaml
 apiVersion: apps/v1
@@ -1874,7 +1837,7 @@ spec:
           value: "-XX:+UseG1GC -XX:MaxRAMPercentage=75"
 ```
 
-### 14.7 优雅停机
+### 13.7 优雅停机
 
 ```yaml
 server:
@@ -1895,9 +1858,9 @@ lifecycle:
 
 ---
 
-## 15. 案例研究
+## 14. 案例研究
 
-### 15.1 案例：自动配置冲突导致 DataSource 失败
+### 14.1 案例：自动配置冲突导致 DataSource 失败
 
 **场景**：项目同时引入 `spring-boot-starter-data-jpa` 与 `spring-boot-starter-data-mongodb`，启动报错"Failed to determine a suitable driver class"。
 
@@ -1924,7 +1887,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 ```
 
-### 15.2 案例：事务不回滚
+### 14.2 案例：事务不回滚
 
 **场景**：Service 方法内 try-catch 捕获异常但未重新抛出，事务未回滚。
 
@@ -1954,7 +1917,7 @@ public void transfer(...) {
 }
 ```
 
-### 15.3 案例：Bean 循环依赖
+### 14.3 案例：Bean 循环依赖
 
 **场景**：`@Service` A 依赖 B，B 依赖 A，启动失败"Cannot resolve reference"。
 
@@ -1967,7 +1930,7 @@ public void transfer(...) {
 3. 改用 setter 注入而非构造器注入
 4. （不推荐）`spring.main.allow-circular-references=true`
 
-### 15.4 案例：Actuator 端点暴露导致数据泄漏
+### 14.4 案例：Actuator 端点暴露导致数据泄漏
 
 **场景**：`/actuator/env` 默认仅暴露 `health` 与 `info`，但开发同学为了方便改为 `include: *`，导致生产环境暴露数据库密码、API Key 等敏感信息。
 
@@ -1994,7 +1957,7 @@ management:
 )
 ```
 
-### 15.5 案例：JPA N+1 查询
+### 14.5 案例：JPA N+1 查询
 
 **场景**：列表查询订单时，每个订单又查询客户与商品，100 个订单触发 1 + 100 + 100 = 201 次 SQL。
 
@@ -2298,7 +2261,7 @@ Maven 中通过 `<optional>true</optional>` 与 `<scope>runtime</scope>` 确保�
 
 ---
 
-## 17. 参考文献
+## 16. 参考文献
 
 1. Walls, C. (2023). *Spring in Action* (6th ed.). Manning Publications. ISBN: 978-1617294945.
 
@@ -2332,9 +2295,9 @@ Maven 中通过 `<optional>true</optional>` 与 `<scope>runtime</scope>` 确保�
 
 ---
 
-## 18. 延伸阅读
+## 17. 延伸阅读
 
-### 18.1 经典书籍
+### 17.1 经典书籍
 
 - Craig Walls. *Spring in Action*（Spring 实战，第六版）
 - Iuliana Cosmina 等. *Pro Spring 6*（Spring 权威指南）
@@ -2342,7 +2305,7 @@ Maven 中通过 `<optional>true</optional>` 与 `<scope>runtime</scope>` 确保�
 - Tom Hombergs. *Spring Boot: Up and Running*
 - Josh Long, Kenny Bastani. *Cloud Native Java*
 
-### 18.2 在线资源
+### 17.2 在线资源
 
 - Spring 官方文档：https://spring.io/projects/spring-boot
 - Spring Guides：https://spring.io/guides
@@ -2353,7 +2316,7 @@ Maven 中通过 `<optional>true</optional>` 与 `<scope>runtime</scope>` 确保�
 - Spring Blog：https://spring.io/blog
 - Pivotal / VMware 工程博客：https://tanzu.vmware.com/developer/
 
-### 18.3 重要论文与规范
+### 17.3 重要论文与规范
 
 - JSR 380: Bean Validation 2.0
 - Jakarta EE 10 Specification
@@ -2361,7 +2324,7 @@ Maven 中通过 `<optional>true</optional>` 与 `<scope>runtime</scope>` 确保�
 - JEP 422: Linux/AArch64 Port
 - JEP 424: Foreign Function & Memory API (Preview)
 
-### 18.4 视频课程
+### 17.4 视频课程
 
 - MIT 6.170 *Software Studio*：https://ocw.mit.edu/courses/6-170-software-studio-spring-2013/
 - Stanford CS 142 *Web Applications*：https://web.stanford.edu/class/cs142/

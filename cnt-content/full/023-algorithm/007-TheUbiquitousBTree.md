@@ -35,14 +35,6 @@ prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/链表
   - cs-fundamentals/离散数学
-learningObjectives:
-  - 记忆树与二叉树的形式化定义，复述二叉搜索树查找/插入/删除的时间复杂度与高度不变量
-  - 理解 Knuth TAOCP Vol.1 §2.3 系统化树理论、Adelson-Velsky-Landis 1962 AVL 树、Bayer 1972 B 树与对称二叉 B 树、Guibas-Sedgewick 1978 红黑树、Sleator-Tarjan 1985 Splay 伸展树、Seidel-Aragon 1996 Treap、O'Neil 1996 LSM 树的历史脉络
-  - 应用二叉树前/中/后/层序遍历（递归与迭代）、BST 操作、AVL 四种旋转、Trie 字典树编写可运行的 Python/C++/Java 代码
-  - 分析红黑树五大性质推导树高 $O(\log n)$ 上界、Splay 树均摊 $O(\log n)$ 的势能函数证明、B 树节点分裂合并代价
-  - 评估树相对于哈希表、有序数组、跳跃表在"有序遍历/范围查询/动态维护"问题维度上的优劣，识别数据库索引、调度器、缓存淘汰中的树选型动机
-  - 对比 AVL 树、红黑树、B 树、B+ 树、Splay 树、Treap、跳跃表在平衡条件、旋转次数、磁盘友好性、实现复杂度维度的差异
-  - 创造性设计基于树的开源项目解决方案，如数据库 B+ 树索引、Linux CFS 调度器、IP 路由前缀树、LRU 缓存、词频统计器
 references:
   - type: journal
     authors:
@@ -176,6 +168,7 @@ etymology:
     english: Treap
     origin: 'Treap = Tree + Heap（树与堆的合成词）。Seidel-Aragon 1996 论文《Randomized search trees》提出，每个节点同时满足 BST 性质（按 key）与堆性质（按随机优先级 priority）。中文称"树堆"，体现其兼具树与堆的双重性质'
 ---
+
 
 ## 1. 概述与学习目标
 

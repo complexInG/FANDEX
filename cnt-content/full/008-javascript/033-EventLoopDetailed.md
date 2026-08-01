@@ -16,57 +16,16 @@ prerequisites:
   - javascript/语法速查
 ---
 
+
 # 事件循环详解（Event Loop In Depth）
 
 > 本篇对标 MIT 6.005（Software Construction）、Stanford CS110L（Safety in Systems Programming）与 CMU 15-410（Operating Systems Design）教学水准，系统讲授 JavaScript 事件循环（Event Loop）的形式语义、调度模型、浏览器与 Node.js 差异及工程实践。所有数学公式使用 KaTeX 渲染，参考文献采用 ACM Reference Format。
 
 ---
 
-## 1. 学习目标（Learning Objectives）
+## 1. 历史动机与发展脉络（Historical Motivation & Evolution）
 
-本节依据 Bloom 分类法（Bloom's Taxonomy，Anderson & Krathwohl, 2001）组织六层认知目标。完成本篇后，学习者应能在各认知层级达成如下目标。
-
-### 1.1 Remember（记忆）
-
-- **R1**：准确复述浏览器事件循环的六大阶段（Task → Microtask → RequestAnimationFrame → Style → Layout → Paint），列出每阶段的输入与输出。
-- **R2**：列出宏任务（macrotask）与微任务（microtask）的典型来源（`setTimeout` / `setInterval` / I/O / `Promise.then` / `queueMicrotask` / `MutationObserver`）。
-- **R3**：背诵 Node.js 事件循环的六个阶段（timers / pending callbacks / idle, prepare / poll / check / close callbacks）及其顺序。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释"为什么 JavaScript 是单线程"——引用 Brendan Eich 1995 年的设计决策与浏览器 DOM 的"单一 UI 线程"约束。
-- **U2**：阐述微任务（microtask）相对宏任务（macrotask）的优先级语义，能引用 HTML 规范 §8.1.7 的"Perform a microtask checkpoint"算法。
-- **U3**：推演 `async/await` 在 V8 引擎中的 desugar 过程，能将 `async function f() { await g() }` 翻译为等价的 `Promise` + `then` 形式。
-
-### 1.3 Apply（应用）
-
-- **A1**：在 React / Vue 单页应用中正确使用 `queueMicrotask` 与 `setTimeout(0)` 控制更新时机，避免布局抖动（layout thrashing）。
-- **A2**：运用 `requestAnimationFrame` 与 `requestIdleCallback` 实现高性能动画与低优先级后台任务。
-- **A3**：实现一个基于 `async` 队列的串行任务调度器，处理 10000+ 异步任务且不阻塞主线程。
-
-### 1.4 Analyze（分析）
-
-- **An1**：对比浏览器事件循环与 Node.js 事件循环（libuv）的架构差异，分析"为什么 `setImmediate` 在 Node.js 存在但在浏览器不存在"。
-- **An2**：拆解"微任务饥饿"（microtask starvation）问题——递归 `Promise.resolve().then` 永远阻塞宏任务，引用 HTML 规范的"microtask checkpoint"防饥饿机制。
-- **An3**：解构 V8 的 `async/await` 优化（V8 7.2+ 的 implicit promise allocation），分析其对调试栈追踪的影响。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评估"将长任务切分为多个 `await Promise.resolve()`"模式在 INP（Interaction to Next Paint）指标上的影响，引用 web.dev 2024 的 INP 指南。
-- **E2**：判断何时应使用 `requestIdleCallback`，何时应使用 `setTimeout(0)` 让出主线程，给出基于任务紧迫性的决策矩阵。
-- **E3**：批判性分析"Promise 链 vs async/await"两种异步风格的调试体验与性能差异，引用 V8 团队 2017 年《Faster async functions and promises》。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个通用的任务调度器（task scheduler），支持优先级（user-blocking / user-visible / background）、超时、取消，对标 Scheduler API（PostTask）。
-- **C2**：实现一个 `yieldToMain()` 工具，基于 `scheduler.yield()`（Chrome 129+）与 `setTimeout` 回退，自动选择最优让出策略。
-- **C3**：基于 Web Worker 与 `MessageChannel` 设计跨线程任务调度框架，主线程提交任务，Worker 执行并返回结果，不阻塞 UI。
-
----
-
-## 2. 历史动机与发展脉络（Historical Motivation & Evolution）
-
-### 2.1 单线程 JavaScript 的起源（1995）
+### 1.1 单线程 JavaScript 的起源（1995）
 
 Brendan Eich 在 1995 年用 10 天设计 JavaScript 时，受 Netscape 浏览器约束，做出三个关键决策：
 
@@ -76,7 +35,7 @@ Brendan Eich 在 1995 年用 10 天设计 JavaScript 时，受 Netscape 浏览�
 
 这三者共同催生了**事件循环**（Event Loop）作为 JavaScript 的核心运行模型。
 
-### 2.2 事件循环的规范化（2008–2018）
+### 1.2 事件循环的规范化（2008–2018）
 
 JavaScript 长期缺乏事件循环的规范定义。浏览器各自实现，导致 `setTimeout` 与 `Promise.then` 的执行顺序在不同浏览器中不一致。
 
@@ -87,7 +46,7 @@ JavaScript 长期缺乏事件循环的规范定义。浏览器各自实现，导
 - **ES2020（2020）**：`async/await` 标准化，明确 `await` 后的续体作为微任务执行。
 - **Node.js v11（2018）**：Node.js 修正微任务执行时机，与浏览器对齐——`setTimeout` 回调与 `Promise.then` 之间会清空微任务队列。
 
-### 2.3 Node.js 事件循环的演进
+### 1.3 Node.js 事件循环的演进
 
 Node.js 采用 libuv（最初由 Joyent 的 Ben Noordhuis 与 Bert Belder 开发）作为事件循环实现。libuv 的核心是跨平台 I/O 多路复用（epoll / kqueue / IOCP）。
 
@@ -99,7 +58,7 @@ Node.js 采用 libuv（最初由 Joyent 的 Ben Noordhuis 与 Bert Belder 开发
 - **Node.js 16（2021）**：引入 `timersPromises` 模块，提供基于 Promise 的 `setTimeout`。
 - **Node.js 20（2023）**：稳定 `perf_hooks` 与 `PerformanceObserver`，支持事件循环延迟监控。
 
-### 2.4 Worker 线程与并行（2012–2024）
+### 1.4 Worker 线程与并行（2012–2024）
 
 单线程事件循环无法利用多核 CPU。Web Workers（2012）引入并行：
 
@@ -110,7 +69,7 @@ Node.js 采用 libuv（最初由 Joyent 的 Ben Noordhuis 与 Bert Belder 开发
 
 Node.js 10.5+（2018）引入 `worker_threads` 模块，支持真正的多线程。每个 Worker 有独立的事件循环与 V8 实例，通过 `MessageChannel` 通信。
 
-### 2.5 Scheduler API 与优先级调度（2024）
+### 1.5 Scheduler API 与优先级调度（2024）
 
 传统事件循环只有两种优先级：宏任务与微任务。实际工程需要更细粒度：
 
@@ -122,9 +81,9 @@ Chrome 94+ 引入 `scheduler.postTask()`，Chrome 129+ 引入 `scheduler.yield()
 
 ---
 
-## 3. 形式化定义（Formal Definitions）
+## 2. 形式化定义（Formal Definitions）
 
-### 3.1 事件循环的形式模型
+### 2.1 事件循环的形式模型
 
 **定义 3.1.1（事件循环）**：事件循环是一个三元组 $\mathcal{E} = (T, M, S)$，其中：
 
@@ -144,7 +103,7 @@ $$
 \end{aligned}
 $$
 
-### 3.2 任务源（Task Source）
+### 2.2 任务源（Task Source）
 
 HTML 规范定义多个任务源，每个源有独立队列：
 
@@ -156,7 +115,7 @@ HTML 规范定义多个任务源，每个源有独立队列：
 
 事件循环每次迭代从**任一非空队列**取一个任务，不保证跨源的 FIFO。
 
-### 3.3 微任务（Microtask）
+### 2.3 微任务（Microtask）
 
 **定义 3.3.1（微任务）**：微任务是优先于下次渲染前执行的任务。来源：
 
@@ -168,7 +127,7 @@ HTML 规范定义多个任务源，每个源有独立队列：
 
 **关键性质**：微任务队列在每个宏任务结束后**完全清空**，包括执行期间新增的微任务。
 
-### 3.4 宏任务 vs 微任务的形式化
+### 2.4 宏任务 vs 微任务的形式化
 
 设宏任务 $t$ 执行过程中入队微任务集合 $M_t$，则事件循环满足：
 
@@ -176,7 +135,7 @@ $$\forall t, \quad \text{after}(t) \implies \text{empty}(M)$$
 
 即每个宏任务后微任务队列必为空。这保证微任务"高优先级"语义。
 
-### 3.5 Node.js 事件循环阶段
+### 2.5 Node.js 事件循环阶段
 
 Node.js 事件循环（libuv）有六个阶段：
 
@@ -197,9 +156,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析（Theoretical Derivation）
+## 3. 理论推导与原理解析（Theoretical Derivation）
 
-### 4.1 微任务优先级的正确性
+### 3.1 微任务优先级的正确性
 
 **定理 4.1.1**：微任务必在下一个宏任务前执行。
 
@@ -209,7 +168,7 @@ $$
 
 证明：每次 `then` 回调执行时会再入队一个微任务，故 $M$ 永不为空，事件循环无法进入步骤 1，宏任务永不被执行。$\square$
 
-### 4.2 `async/await` 的 desugar
+### 3.2 `async/await` 的 desugar
 
 V8 将 `async/await` desugar 为 `Promise` + generator。考虑：
 
@@ -235,7 +194,7 @@ function f() {
 
 **关键点**：`await` 后的代码作为微任务执行，而非同步代码。这是 `async/await` 的核心语义。
 
-### 4.3 微任务与渲染的时序
+### 3.3 微任务与渲染的时序
 
 浏览器渲染流水线：
 
@@ -249,7 +208,7 @@ $$
 - rAF 回调中的 DOM 修改也在本帧渲染（在 Style 前）。
 - `setTimeout(0)` 回调在下一帧的 Task 阶段执行，DOM 修改在下一帧渲染。
 
-### 4.4 长任务与 INP
+### 3.4 长任务与 INP
 
 **INP（Interaction to Next Paint）**：用户交互到下一帧渲染的时间。Chrome 2024 将 INP 列为核心 Web Vitals。
 
@@ -278,7 +237,7 @@ async function yieldToMain() {
 }
 ```
 
-### 4.5 Node.js 的 process.nextTick
+### 3.5 Node.js 的 process.nextTick
 
 Node.js 独有的 `process.nextTick` 优先级**高于**微任务。形式化：
 
@@ -288,7 +247,7 @@ $$
 
 每次宏任务后，先清空 `nextTick` 队列，再清空微任务队列。`nextTick` 滥用会导致 I/O 饥饿——libuv 会强制在每阶段切换时让出，但 `nextTick` 仍可能延迟 I/O。
 
-### 4.6 setImmediate 的语义
+### 3.6 setImmediate 的语义
 
 Node.js 的 `setImmediate` 在 poll 阶段后、check 阶段执行。形式化：
 
@@ -316,9 +275,9 @@ setImmediate(() => console.log('immediate'));
 
 ---
 
-## 5. 代码示例（Production-Ready Examples）
+## 4. 代码示例（Production-Ready Examples）
 
-### 5.1 工程项目配置
+### 4.1 工程项目配置
 
 ```json
 {
@@ -333,7 +292,7 @@ setImmediate(() => console.log('immediate'));
 }
 ```
 
-### 5.2 经典输出顺序题
+### 4.2 经典输出顺序题
 
 ```javascript
 // ES2015 — 经典事件循环题
@@ -360,7 +319,7 @@ console.log('5: sync');
 //   3. 宏任务：2（setTimeout）
 ```
 
-### 5.3 微任务饥饿
+### 4.3 微任务饥饿
 
 ```javascript
 // ES2015 — 微任务饥饿
@@ -382,7 +341,7 @@ recursiveTask();
 // 其他任务有机会执行
 ```
 
-### 5.4 大数组分批处理
+### 4.4 大数组分批处理
 
 ```javascript
 // ES2017 — 长任务切分
@@ -405,7 +364,7 @@ function processChunk(chunk) {
 }
 ```
 
-### 5.5 优先级调度
+### 4.5 优先级调度
 
 ```javascript
 // ES2015 — 优先级调度
@@ -436,7 +395,7 @@ async function modernSchedule() {
 }
 ```
 
-### 5.6 requestAnimationFrame 与 setTimeout
+### 4.6 requestAnimationFrame 与 setTimeout
 
 ```javascript
 // ES5 — requestAnimationFrame 与屏幕刷新同步
@@ -453,7 +412,7 @@ function animateBad() {
 }
 ```
 
-### 5.7 requestIdleCallback
+### 4.7 requestIdleCallback
 
 ```javascript
 // ES5 — 后台任务
@@ -475,7 +434,7 @@ requestIdleCallback((deadline) => {
 }, { timeout: 2000 });
 ```
 
-### 5.8 async/await 与 Promise 对比
+### 4.8 async/await 与 Promise 对比
 
 ```javascript
 // ES2017 — async/await
@@ -503,7 +462,7 @@ function fetchDataPromise() {
 // 两者语义等价，但 async/await 调试栈更清晰
 ```
 
-### 5.9 yieldToMain 工具
+### 4.9 yieldToMain 工具
 
 ```javascript
 // ES2017 — yieldToMain（Chrome 129+ 优先）
@@ -530,7 +489,7 @@ async function process(items) {
 }
 ```
 
-### 5.10 Node.js 阶段验证
+### 4.10 Node.js 阶段验证
 
 ```javascript
 // ES2015 — Node.js 事件循环阶段验证
@@ -557,7 +516,7 @@ fs.readFile(__filename, () => {
 //   6: inner setTimeout
 ```
 
-### 5.11 串行任务调度器
+### 4.11 串行任务调度器
 
 ```javascript
 // ES2017 — 串行异步任务调度器
@@ -606,7 +565,7 @@ queue.enqueue(async () => {
 });
 ```
 
-### 5.12 并发控制
+### 4.12 并发控制
 
 ```javascript
 // ES2017 — 并发限制
@@ -641,9 +600,9 @@ const results = await mapWithConcurrency(
 
 ---
 
-## 6. 对比分析（Comparative Analysis）
+## 5. 对比分析（Comparative Analysis）
 
-### 6.1 浏览器 vs Node.js 事件循环
+### 5.1 浏览器 vs Node.js 事件循环
 
 | 维度 | 浏览器 | Node.js |
 | --- | --- | --- |
@@ -655,7 +614,7 @@ const results = await mapWithConcurrency(
 | 渲染 | 有 | 无 |
 | I/O 模型 | 浏览器底层（如 Chrome 的 mojo） | libuv（epoll / kqueue / IOCP） |
 
-### 6.2 JavaScript vs Python asyncio
+### 5.2 JavaScript vs Python asyncio
 
 | 维度 | JavaScript | Python |
 | --- | --- | --- |
@@ -666,7 +625,7 @@ const results = await mapWithConcurrency(
 | 多线程 | Web Workers / worker_threads | `threading` 模块 |
 | 多进程 | 无原生（Cluster） | `multiprocessing` 模块 |
 
-### 6.3 JavaScript vs Go goroutine
+### 5.3 JavaScript vs Go goroutine
 
 | 维度 | JavaScript | Go |
 | --- | --- | --- |
@@ -679,7 +638,7 @@ const results = await mapWithConcurrency(
 
 Go 的 goroutine 模型天然支持多核与抢占式调度，但学习曲线高于 JavaScript 的事件循环。
 
-### 6.4 JavaScript vs Rust async
+### 5.4 JavaScript vs Rust async
 
 | 维度 | JavaScript | Rust |
 | --- | --- | --- |
@@ -693,9 +652,9 @@ Rust 的 async 模型在编译期生成状态机，无堆分配，性能最优�
 
 ---
 
-## 7. 常见陷阱与最佳实践（Pitfalls & Best Practices）
+## 6. 常见陷阱与最佳实践（Pitfalls & Best Practices）
 
-### 7.1 陷阱 1：微任务饥饿
+### 6.1 陷阱 1：微任务饥饿
 
 **问题**：
 
@@ -717,7 +676,7 @@ function recursiveSafe() {
 }
 ```
 
-### 7.2 陷阱 2：闭包捕获过时值
+### 6.2 陷阱 2：闭包捕获过时值
 
 **问题**：
 
@@ -742,7 +701,7 @@ for (var i = 0; i < 3; i++) {
 }
 ```
 
-### 7.3 陷阱 3：async 函数未 await
+### 6.3 陷阱 3：async 函数未 await
 
 **问题**：
 
@@ -762,7 +721,7 @@ async function safe() {
 }
 ```
 
-### 7.4 陷阱 4：Promise 链中断
+### 6.4 陷阱 4：Promise 链中断
 
 **问题**：
 
@@ -796,7 +755,7 @@ async function good() {
 }
 ```
 
-### 7.5 陷阱 5：在 Promise 构造函数中 throw
+### 6.5 陷阱 5：在 Promise 构造函数中 throw
 
 **问题**：
 
@@ -816,7 +775,7 @@ const p = new Promise((resolve, reject) => {
 });
 ```
 
-### 7.6 陷阱 6：forgetting await in forEach
+### 6.6 陷阱 6：forgetting await in forEach
 
 **问题**：
 
@@ -846,7 +805,7 @@ async function parallel() {
 }
 ```
 
-### 7.7 陷阱 7：错误使用 Promise.all
+### 6.7 陷阱 7：错误使用 Promise.all
 
 **问题**：
 
@@ -872,7 +831,7 @@ const fulfilled = results.filter((r) => r.status === 'fulfilled');
 const rejected = results.filter((r) => r.status === 'rejected');
 ```
 
-### 7.8 陷阱 8：长任务阻塞 INP
+### 6.8 陷阱 8：长任务阻塞 INP
 
 **问题**：
 
@@ -898,9 +857,9 @@ async function process(items) {
 
 ---
 
-## 8. 工程实践（Engineering Practice）
+## 7. 工程实践（Engineering Practice）
 
-### 8.1 任务优先级策略
+### 7.1 任务优先级策略
 
 根据任务紧急性选择调度方式：
 
@@ -912,7 +871,7 @@ async function process(items) {
 | 帧同步 | `requestAnimationFrame` | 动画 |
 | 跨帧 | `await yieldToMain()` | 长任务切分 |
 
-### 8.2 INP 优化
+### 7.2 INP 优化
 
 INP（Interaction to Next Paint）是 2024 年核心 Web Vitals。优化策略：
 
@@ -921,7 +880,7 @@ INP（Interaction to Next Paint）是 2024 年核心 Web Vitals。优化策略�
 3. **避免布局抖动**：批量读写 DOM，避免交替 `offsetWidth` 与 `style` 修改。
 4. **使用 rAF**：动画与视觉更新用 `requestAnimationFrame`。
 
-### 8.3 性能监控
+### 7.3 性能监控
 
 ```javascript
 // ES2015 — PerformanceObserver 监控长任务
@@ -941,7 +900,7 @@ const inpObserver = new PerformanceObserver((list) => {
 inpObserver.observe({ type: 'interaction', buffered: true });
 ```
 
-### 8.4 Worker 卸载
+### 7.4 Worker 卸载
 
 将 CPU 密集任务卸载到 Web Worker：
 
@@ -963,7 +922,7 @@ self.onmessage = (e) => {
 };
 ```
 
-### 8.5 Node.js 集群
+### 7.5 Node.js 集群
 
 利用多核 CPU：
 
@@ -986,7 +945,7 @@ if (cluster.isPrimary) {
 }
 ```
 
-### 8.6 事件循环延迟监控（Node.js）
+### 7.6 事件循环延迟监控（Node.js）
 
 ```javascript
 // ES2015 — Node.js 事件循环延迟监控
@@ -1007,9 +966,9 @@ setInterval(() => {
 
 ---
 
-## 9. 案例研究（Case Studies）
+## 8. 案例研究（Case Studies）
 
-### 9.1 案例研究 1：React 状态更新时机
+### 8.1 案例研究 1：React 状态更新时机
 
 **背景**：React 中调用 `setState` 后立即读取 `state` 是旧值。
 
@@ -1028,7 +987,7 @@ function handleClick() {
 }
 ```
 
-### 9.2 案例研究 2：Vue nextTick 的实现
+### 8.2 案例研究 2：Vue nextTick 的实现
 
 **背景**：Vue 的 `nextTick` 在状态更新后执行回调，利用微任务。
 
@@ -1047,7 +1006,7 @@ export function nextTick(fn) {
 
 Vue 在状态变更后将渲染更新加入微任务队列，`nextTick` 确保回调在渲染后执行。
 
-### 9.3 案例研究 3：长列表渲染优化
+### 8.3 案例研究 3：长列表渲染优化
 
 **背景**：渲染 10000 条数据的列表，主线程阻塞 2 秒。
 
@@ -1076,7 +1035,7 @@ async function renderList(items) {
 }
 ```
 
-### 9.4 案例研究 4：实时数据流处理
+### 8.4 案例研究 4：实时数据流处理
 
 **背景**：WebSocket 每秒推送 1000 条数据，直接处理导致主线程卡顿。
 
@@ -1104,7 +1063,7 @@ function processBatch() {
 }
 ```
 
-### 9.5 案例研究 5：动画卡顿排查
+### 8.5 案例研究 5：动画卡顿排查
 
 **背景**：使用 `setTimeout(animate, 16)` 实现动画，60 fps 屏幕上出现卡顿。
 
@@ -1120,7 +1079,7 @@ function animate() {
 requestAnimationFrame(animate);
 ```
 
-### 9.6 案例研究 6：Node.js 服务延迟抖动
+### 8.6 案例研究 6：Node.js 服务延迟抖动
 
 **背景**：Node.js 服务 P99 延迟偶尔飙升至 500 ms。
 
@@ -1138,7 +1097,7 @@ requestAnimationFrame(animate);
 2. 大对象改为流式处理。
 3. CPU 密集任务卸载到 `worker_threads`。
 
-### 9.7 案例研究 7：Service Worker 缓存策略
+### 8.7 案例研究 7：Service Worker 缓存策略
 
 **背景**：PWA 应用 Service Worker 缓存响应，但缓存更新时机不对。
 
@@ -1402,7 +1361,7 @@ queue.enqueue(() => console.log('后台任务 2'));
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 15**：为什么 JavaScript 选择单线程而非多线程？分析 1995 年的设计决策与今天的权衡。
 
@@ -1446,7 +1405,7 @@ $$\text{Parallel}: \quad t_{\text{total}} = \max_i t_i$$
 
 ---
 
-## 11. 参考文献（References）
+## 10. 参考文献（References）
 
 1. Eich, B. (1995). *JavaScript 1.0 specification*. Netscape Communications. (历史文档)
 
@@ -1486,29 +1445,29 @@ $$\text{Parallel}: \quad t_{\text{total}} = \max_i t_i$$
 
 ---
 
-## 12. 延伸阅读（Further Reading）
+## 11. 延伸阅读（Further Reading）
 
-### 12.1 学术论文
+### 11.1 学术论文
 
 - **Hoare, C. A. R. (1978)**: *Communicating sequential processes*. CACM. — CSP 模型，事件循环的理论基础。
 - **Liskov, B., & Shrira, L. (1988)**: *Promises: Linguistic support for efficient asynchronous procedure calls*. SIGPLAN. — Promise 的学术起源。
 - **Miller, H. (2017)**: *Faster async functions and promises*. V8 Blog. — V8 团队的 async/await 性能优化。
 
-### 12.2 规范文档
+### 11.2 规范文档
 
 - **HTML Living Standard §8.1.7**: Event loops — 浏览器事件循环规范。
 - **HTML Living Standard §8.1.7.3**: Microtask processing — 微任务处理算法。
 - **ECMA-262 §8.4**: Jobs and Job Queues — ECMA 规范的微任务模型。
 - **ECMA-262 §27.2.3**: Promise Jobs — Promise 相关微任务。
 
-### 12.3 工程实践
+### 11.3 工程实践
 
 - **web.dev**: INP 优化指南（https://web.dev/articles/inp）。
 - **V8 Blog**: async/await 性能优化（https://v8.dev/blog/fast-async）。
 - **Node.js Docs**: The Node.js Event Loop（https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick）。
 - **MDN Web Docs**: 使用 `requestAnimationFrame`、`queueMicrotask`、`scheduler.postTask`。
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **Web Workers 与 OffscreenCanvas**：将渲染移至 Worker，主线程零阻塞。
 - **Service Worker**：离线缓存与推送通知的事件循环模型。
@@ -1516,7 +1475,7 @@ $$\text{Parallel}: \quad t_{\text{total}} = \max_i t_i$$
 - **SharedArrayBuffer 与 Atomics**：跨线程共享内存的同步原语。
 - **Scheduler API**：基于优先级的任务调度（Chrome 94+）。
 
-### 12.5 相关课程
+### 11.5 相关课程
 
 - **MIT 6.005: Software Construction** — 软件构造中的并发模型。
 - **Stanford CS110L: Safety in Systems Programming** — 系统编程中的安全性。

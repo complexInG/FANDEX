@@ -16,50 +16,12 @@ prerequisites:
   - python/语法速查
 ---
 
-## 1. 学习目标
 
-本章节对标 MIT 6.S977、Stanford CS246、CMU 15-780 等顶级高校工程课程的教学水准，系统讲解 Python 项目的打包、构建与发布全流程。完成本章节学习后，读者应能够：
-
-### 1.1 Bloom 认知层级目标
-
-| 层级 | 关键动词 | 具体能力描述 |
-| :--- | :--- | :--- |
-| Remember（记忆） | 列举、复述 | 列举 Python 打包生态的核心工具（setuptools、hatchling、flit、poetry、pdm、build、twine）及其历史演进 |
-| Understand（理解） | 解释、归纳 | 解释 sdist 与 wheel 的差异、src 布局的优势、PEP 517/518/621 的语义 |
-| Apply（应用） | 实现、构建 | 使用 pyproject.toml 配置一个生产级项目并通过 `python -m build` 构建出符合 PEP 517 规范的产物 |
-| Analyze（分析） | 比较、拆解 | 比较 setuptools、hatchling、flit、poetry 四种构建后端的内部架构差异与适用场景 |
-| Evaluate（评价） | 评估、批判 | 评估依赖锁定策略、版本号策略、CI/CD 发布流程在大型组织中的可维护性 |
-| Create（创造） | 设计、实现 | 设计一个支持多 Python 版本、多平台、C 扩展、Trusted Publisher 自动发布的完整工程化方案 |
-
-### 1.2 知识地图
-
-```
-[打包基础] distutils → setuptools → PEP 517/518 → pyproject.toml
-    ↓
-[构建后端] setuptools | hatchling | flit | poetry | pdm
-    ↓
-[产物格式] sdist (tar.gz) | wheel (whl) | editable | binary
-    ↓
-[发布流程] TestPyPI → PyPI → Trusted Publisher → GitHub Actions
-    ↓
-[高级话题] C 扩展 | 跨平台 wheel | 依赖锁定 | 安全签名 | 私有索引
-```
-
-### 1.3 前置知识检查
-
-学习本章节前，请确认你已掌握：
-
-1. Python 模块与包（`import`、`__init__.py`、相对导入）的基础知识；
-2. 虚拟环境（`venv`、`conda`、`virtualenv`）的创建与使用；
-3. 命令行基本操作（`pip`、`python -m`、shell 重定向）；
-4. TOML 配置文件格式的基本语法；
-5. Git 版本控制基本概念（tag、branch、CI）。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 理解 Python 打包生态的现状，必须穿越 30 余年的演进史。这条路径上有大量被废弃的方案与教训，对今天的工程决策仍然具有现实指导意义。
 
-### 2.1 上古时代：distutils（1994-2008）
+### 1.1 上古时代：distutils（1994-2008）
 
 Python 1.6 引入的 `distutils` 是官方第一代打包工具，由 Greg Ward 在 1994 年设计。其配置文件 `setup.py` 通过命令式脚本描述元数据：
 
@@ -81,7 +43,7 @@ distutils 的核心问题：
 3. 扩展 C 模块的接口僵化；
 4. 没有可插拔的构建后端机制。
 
-### 2.2 setuptools 时代：Python 2.x 主导（2004-2018）
+### 1.2 setuptools 时代：Python 2.x 主导（2004-2018）
 
 Phillip J. Eby 在 2004 年创建 `setuptools`，作为 distutils 的超集：
 
@@ -97,7 +59,7 @@ Phillip J. Eby 在 2004 年创建 `setuptools`，作为 distutils 的超集：
 - `egg` 二进制格式被社区分裂（`wheel` 取而代之）；
 - 配置散落在 `setup.py`、`setup.cfg`、`MANIFEST.in` 三个文件中。
 
-### 2.3 PEP 517/518/621：声明式时代（2015-2022）
+### 1.3 PEP 517/518/621：声明式时代（2015-2022）
 
 社区意识到 `setup.py` 必须执行任意代码这一根本缺陷，提出了一系列 PEP：
 
@@ -107,7 +69,7 @@ Phillip J. Eby 在 2004 年创建 `setuptools`，作为 distutils 的超集：
 - **PEP 660**（2021）标准化可编辑安装（`pip install -e`）的 wheel 实现；
 - **PEP 440**（2014，多次更新）定义 Python 版本号规范，被 setuptools、hatch、poetry 共同遵守。
 
-### 2.4 现代构建后端（2022 至今）
+### 1.4 现代构建后端（2022 至今）
 
 | 构建后端 | 首次发布 | 特点 | 适用场景 |
 | :--- | :--- | :--- | :--- |
@@ -119,7 +81,7 @@ Phillip J. Eby 在 2004 年创建 `setuptools`，作为 distutils 的超集：
 | maturin | 2019 | Rust 扩展专用 | PyO3 项目 |
 | scikit-build-core | 2022 | CMake 后端 | 复杂 C/C++/CUDA 扩展 |
 
-### 2.5 发布基础设施演进
+### 1.5 发布基础设施演进
 
 ```
 2003 PyPI 上线（CPython 仓库）
@@ -135,9 +97,9 @@ Phillip J. Eby 在 2004 年创建 `setuptools`，作为 distutils 的超集：
 2024 要求所有上传包必须经过 CI 校验
 ```
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 PEP 517 构建后端接口
+### 2.1 PEP 517 构建后端接口
 
 PEP 517 定义了构建后端（build backend）的三个核心钩子（hooks）。设 $B$ 为构建后端模块，$S$ 为源码目录，$W$ 为输出 wheel 路径，则接口形式化为：
 
@@ -156,7 +118,7 @@ $$
 - $\text{metadata\_dir}$ 是可选的元数据缓存目录（用于避免重复构建）；
 - 返回值是 wheel 文件名（不含路径）。
 
-### 3.2 Wheel 文件名规范（PEP 427）
+### 2.2 Wheel 文件名规范（PEP 427）
 
 wheel 文件名遵循以下 BNF 文法：
 
@@ -175,7 +137,7 @@ $$
   - `none` ABI tag：无 ABI 限制（纯 Python）
   - `any` platform tag：任意平台
 
-### 3.3 PEP 440 版本号形式化
+### 2.3 PEP 440 版本号形式化
 
 PEP 440 定义了 Python 版本号的严格文法：
 
@@ -198,7 +160,7 @@ $$
 \text{dev} < \text{a} < \text{b} < \text{rc} < \text{release} < \text{post}
 $$
 
-### 3.4 依赖说明符（PEP 508）
+### 2.4 依赖说明符（PEP 508）
 
 PEP 508 定义了依赖说明符的完整文法：
 
@@ -228,9 +190,9 @@ $$
 | `platform_python_implementation` | 解释器实现 | `"CPython"`、`"PyPy"` |
 | `implementation_version` | 解释器版本 | `"3.12.4"` |
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 sdist 与 wheel 的本质差异
+### 3.1 sdist 与 wheel 的本质差异
 
 **sdist（source distribution）**：源码包，是一个 `.tar.gz` 文件，包含 `pyproject.toml`、源码、`PKG-INFO`。安装时需要执行构建后端的 `build_wheel` 钩子，将源码编译为 wheel 后再安装。
 
@@ -250,7 +212,7 @@ $$
 
 由于 $T_{\text{build}} \gg 0$（尤其涉及 C 扩展编译时），wheel 显著优于 sdist。
 
-### 4.2 src 布局的理论优势
+### 3.2 src 布局的理论优势
 
 设项目结构存在两种布局：
 
@@ -293,7 +255,7 @@ $$
 
 这保证了测试覆盖的是真实安装产物，符合 MIT 软件工程课程的"测你所发"原则。
 
-### 4.3 可编辑安装（PEP 660）的原理
+### 3.3 可编辑安装（PEP 660）的原理
 
 PEP 660 之前，可编辑安装通过 `easy-install.pth` 文件实现，将项目根目录加入 `sys.path`，存在以下问题：
 
@@ -307,7 +269,7 @@ PEP 660 要求构建后端实现 `build_editable` 钩子，生成一个特殊的
 - 同时生成元数据目录，使 `importlib.metadata` 可正常工作；
 - 支持 src 布局、自定义导入路径。
 
-### 4.4 Trusted Publisher（OIDC）的安全模型
+### 3.4 Trusted Publisher（OIDC）的安全模型
 
 传统 PyPI 发布依赖 API Token，存在以下风险：
 
@@ -329,9 +291,9 @@ $$
 
 任何一项不符则拒绝。这种方案下，攻击者即使窃取 CI 配置也无法在其他仓库重放 token。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 最小可发布项目
+### 4.1 最小可发布项目
 
 完整目录结构：
 
@@ -482,7 +444,7 @@ if __name__ == "__main__":
 ```
 ```
 
-### 5.2 构建与发布脚本
+### 4.2 构建与发布脚本
 
 `Makefile`（推荐的项目操作入口）：
 
@@ -531,7 +493,7 @@ format:
 	ruff format src/ tests/
 ```
 
-### 5.3 GitHub Actions 自动发布工作流
+### 4.3 GitHub Actions 自动发布工作流
 
 `.github/workflows/publish.yml`：
 
@@ -598,7 +560,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 ```
 
-### 5.4 多 Python 版本测试矩阵
+### 4.4 多 Python 版本测试矩阵
 
 `.github/workflows/test.yml`：
 
@@ -643,7 +605,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
 ```
 
-### 5.5 完整项目示例：带 C 扩展的混合包
+### 4.5 完整项目示例：带 C 扩展的混合包
 
 `pyproject.toml`（含 C 扩展）：
 
@@ -711,7 +673,7 @@ setup(
 )
 ```
 
-### 5.6 动态版本号管理
+### 4.6 动态版本号管理
 
 `pyproject.toml`（setuptools_scm 从 git tag 推断版本）：
 
@@ -738,7 +700,7 @@ local_scheme = "no-local-version"
 git_describe_command = "git describe --dirty --tags --long --match '*[0-9]*'"
 ```
 
-### 5.7 hatchling 后端的完整配置
+### 4.7 hatchling 后端的完整配置
 
 ```toml
 [build-system]
@@ -789,9 +751,9 @@ dependencies = [
 python = ["3.10", "3.11", "3.12", "3.13"]
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 构建后端横向对比
+### 5.1 构建后端横向对比
 
 | 维度 | setuptools | hatchling | flit | poetry-core | pdm-backend |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -805,7 +767,7 @@ python = ["3.10", "3.11", "3.12", "3.13"]
 | 生态成熟度 | 极高 | 中 | 中 | 高 | 中 |
 | 推荐场景 | 兼容遗留 / C 扩展 | 新项目首选 | 纯 Python 小项目 | 应用项目 | PEP 582 偏好者 |
 
-### 6.2 与其他语言包管理对比
+### 5.2 与其他语言包管理对比
 
 | 维度 | Python (pip+pyproject) | JavaScript (npm) | Rust (cargo) | Go (go mod) | Java (Maven) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -818,7 +780,7 @@ python = ["3.10", "3.11", "3.12", "3.13"]
 | 元数据标准 | PEP 621 | package.json schema | Cargo manifest | module comment | POM model |
 | 构建后端可插拔 | 是（PEP 517） | 否 | 否 | 否 | 否 |
 
-### 6.3 依赖锁策略对比
+### 5.3 依赖锁策略对比
 
 | 策略 | 工具 | 优点 | 缺点 |
 | :--- | :--- | :--- | :--- |
@@ -829,9 +791,9 @@ python = ["3.10", "3.11", "3.12", "3.13"]
 | 锁定次版本 | `~=` 操作符 | 兼容补丁升级 | 仍需 CI 验证 |
 | 锁定主版本 | `^` 操作符 | 兼容次版本升级 | 不保证补丁兼容 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱清单
+### 6.1 陷阱清单
 
 #### 陷阱 1：在 setup.py 中执行 IO 或网络操作
 
@@ -936,7 +898,7 @@ dependencies = []
 dev = ["pytest>=8.0"]
 ```
 
-### 7.2 最佳实践
+### 6.2 最佳实践
 
 1. **强制使用 src 布局**：所有新项目采用 `src/包名/` 结构，避免导入歧义。
 
@@ -1018,9 +980,9 @@ def validate_version(v: str) -> str:
     twine check dist/*
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 虚拟环境隔离
+### 7.1 虚拟环境隔离
 
 推荐使用 `venv`（标准库）或 `uv`（Rust 实现的高性能替代）：
 
@@ -1036,7 +998,7 @@ uv venv --python 3.12
 uv pip install -e ".[dev]"
 ```
 
-### 8.2 多环境管理
+### 7.2 多环境管理
 
 ```bash
 # tox：跨 Python 版本测试
@@ -1062,9 +1024,9 @@ deps = mypy
 commands = mypy src tests
 ```
 
-### 8.3 性能优化
+### 7.3 性能优化
 
-#### 8.3.1 wheel 缓存
+#### 7.3.1 wheel 缓存
 
 ```bash
 # 启用 wheel 缓存（pip 默认开启）
@@ -1075,7 +1037,7 @@ pip download -d wheels/ -r requirements.txt --no-deps
 pip install --no-index --find-links=wheel/
 ```
 
-#### 8.3.2 增量构建
+#### 7.3.2 增量构建
 
 对于 C 扩展项目，使用 `ccache` 加速重复编译：
 
@@ -1088,9 +1050,9 @@ export CXX="ccache g++"
 set CC=clcache
 ```
 
-### 8.4 调试技巧
+### 7.4 调试技巧
 
-#### 8.4.1 检查已安装包元数据
+#### 7.4.1 检查已安装包元数据
 
 ```python
 from importlib.metadata import metadata, version, files
@@ -1110,7 +1072,7 @@ for f in files("minimal"):
     print(f)
 ```
 
-#### 8.4.2 检查 wheel 内容
+#### 7.4.2 检查 wheel 内容
 
 ```bash
 # 解压 wheel 检查内容
@@ -1123,7 +1085,7 @@ unzip -p dist/minimal-0.1.0-py3-none-any.whl minimal-0.1.0.dist-info/RECORD
 unzip -p dist/minimal-0.1.0-py3-none-any.whl minimal-0.1.0.dist-info/METADATA
 ```
 
-#### 8.4.3 验证 pyproject.toml
+#### 7.4.3 验证 pyproject.toml
 
 ```python
 # 使用 validate-pyproject
@@ -1131,7 +1093,7 @@ pip install validate-pyproject
 validate-pyproject pyproject.toml
 ```
 
-#### 8.4.4 构建隔离问题排查
+#### 7.4.4 构建隔离问题排查
 
 ```bash
 # 构建时禁用隔离（调试依赖问题）
@@ -1141,7 +1103,7 @@ python -m build --no-isolation
 python -m build -v
 ```
 
-### 8.5 私有索引部署
+### 7.5 私有索引部署
 
 ```toml
 # ~/.pip/pip.conf
@@ -1155,7 +1117,7 @@ index-url = https://nexus.example.com/repository/pypi-proxy/simple
 trusted-host = nexus.example.com
 ```
 
-### 8.6 monorepo 打包
+### 7.6 monorepo 打包
 
 使用 `uv` 或 `pdm` 管理 monorepo：
 
@@ -1191,9 +1153,9 @@ dependencies = [
 core = { workspace = true }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：NumPy 的多平台 wheel 构建
+### 8.1 案例一：NumPy 的多平台 wheel 构建
 
 NumPy 是 Python 生态中打包复杂度最高的项目之一。其挑战包括：
 
@@ -1247,7 +1209,7 @@ jobs:
 - manylinux / musllinux 容器保证 ABI 兼容；
 - delocate / auditwheel 修复 wheel 的动态库依赖。
 
-### 9.2 案例二：Requests 的现代化迁移
+### 8.2 案例二：Requests 的现代化迁移
 
 Requests 库在 2022 年完成从 setup.py 到 pyproject.toml 的迁移：
 
@@ -1283,7 +1245,7 @@ packages = ["requests"]
 3. 删除 `MANIFEST.in`，改用 `[tool.setuptools.package-data]`；
 4. 测试覆盖所有 Python 3.8+ 版本。
 
-### 9.3 案例三：FastAPI 的发布流程
+### 8.3 案例三：FastAPI 的发布流程
 
 FastAPI 采用 Typer + hatchling 的现代组合：
 
@@ -1322,7 +1284,7 @@ path = "fastapi/__init__.py"
 4. GitHub Actions 自动构建并发布到 PyPI（通过 Trusted Publisher）；
 5. 发布 GitHub Release，自动生成 changelog。
 
-### 9.4 案例四：Django 的多版本支持策略
+### 8.4 案例四：Django 的多版本支持策略
 
 Django 同时维护 5 个版本分支：
 
@@ -1351,7 +1313,7 @@ classifiers = [
 ]
 ```
 
-### 9.5 案例五：Instagram 的内部 PyPI 镜像
+### 8.5 案例五：Instagram 的内部 PyPI 镜像
 
 Instagram（Meta）的 Python monorepo 规模超过 1000 万行代码，每日数万次 pip 安装。其打包基础设施要点：
 
@@ -1636,7 +1598,7 @@ if __name__ == "__main__":
     print("Sorted:", sort_versions(test_cases))
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题 1**：为什么 PyPI 推荐使用 Trusted Publisher 而非 API Token？请从安全模型角度分析。
 
@@ -1672,9 +1634,9 @@ if __name__ == "__main__":
 4. **打包产物一致**：测试覆盖的就是 wheel 安装后的真实文件结构；
 5. **MIT 课程建议**：MIT 6.S977 课程明确推荐 src 布局，遵循"测你所发"原则。
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 PEP 规范
+### 10.1 PEP 规范
 
 - [1] B. Cannon, N. Smith, N. Coghlan, and R. Collins, "PEP 517: A build-system independent format for source trees," Python Software Foundation, 2017. [Online]. Available: https://peps.python.org/pep-0517/
 - [2] B. Cannon, R. Collins, and N. Smith, "PEP 518: Specifying minimum build system requirements for Python projects," Python Software Foundation, 2016. [Online]. Available: https://peps.python.org/pep-0518/
@@ -1684,7 +1646,7 @@ if __name__ == "__main__":
 - [6] R. Collins, "PEP 508: Dependency specification for Python software packages," Python Software Foundation, 2016. [Online]. Available: https://peps.python.org/pep-0508/
 - [7] D. Stufft and S. Kuchling, "PEP 427: The Wheel Binary Package Format 1.0," Python Software Foundation, 2013. [Online]. Available: https://peps.python.org/pep-0427/
 
-### 11.2 工具文档
+### 10.2 工具文档
 
 - [8] Python Packaging Authority, "Python Packaging User Guide," 2024. [Online]. Available: https://packaging.python.org/
 - [9] Ofek Lev, "Hatch: Modern, extensible Python project manager," 2024. [Online]. Available: https://hatch.pypa.io/
@@ -1695,7 +1657,7 @@ if __name__ == "__main__":
 - [14] PyPA, "build: A simple, correct PEP 517 build frontend," 2024. [Online]. Available: https://build.pypa.io/
 - [15] PyPA, "twine: Utilities for interacting with PyPI," 2024. [Online]. Available: https://twine.readthedocs.io/
 
-### 11.3 学术论文
+### 10.3 学术论文
 
 - [16] K. Berry, M. Meador, and B. Warsaw, "Distributing Python Modules: An historical perspective on the Python packaging ecosystem," in *Proc. Python Sci. Conf.*, 2019, pp. 112-118. doi: 10.25080/Majora-85784a4-00a
 - [17] D. Stufft, "The history of PyPI: Lessons learned from a decade of Python packaging," *Python Software Foundation Blog*, 2018. [Online]. Available: https://blog.python.org/2018/03/announcing-warehouse.html
@@ -1703,16 +1665,16 @@ if __name__ == "__main__":
 - [19] A. Marhold, "Reproducible builds in Python: A survey of PEP 517 adoption," *J. Open Source Softw.*, vol. 7, no. 78, p. 4321, 2022. doi: 10.21105/joss.04321
 - [20] R. Collins and D. Stufft, "PEP 691: JSON-based API for PyPI's Simple API," Python Software Foundation, 2022. [Online]. Available: https://peps.python.org/pep-0691/
 
-### 11.4 经典工程案例
+### 10.4 经典工程案例
 
 - [21] D. Stufft, "How Instagram uses Python at scale," *Instagram Engineering Blog*, 2017. [Online]. Available: https://instagram-engineering.com/
 - [22] C. Pitt, "FastAPI's path to a million downloads per month," *FastAPI Blog*, 2023. [Online]. Available: https://fastapi.tiangolo.com/
 - [23] NumPy Developers, "Building NumPy wheels: A practical guide," 2024. [Online]. Available: https://numpy.org/devdocs/building/
 - [24] Django Software Foundation, "Django's release process," 2024. [Online]. Available: https://docs.djangoproject.com/en/dev/internals/release-process/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 1. **《Python Packaging and Distribution》** — Ofek Lev, 2023
    - hatchling 作者亲述，涵盖 PEP 517/621 全栈
@@ -1722,7 +1684,7 @@ if __name__ == "__main__":
    - 第 11 章 "Packaging" 从架构角度讨论打包
 4. **《Python Distutils Setuptools Pip》** — Paul Gries, Jennifer Campbell, Jason Montojo, 2022, ISBN 978-0135957108
 
-### 12.2 在线教程与课程
+### 11.2 在线教程与课程
 
 1. **MIT OpenCourseWare 6.S977** "Software Construction" — Lecture 9: Build & Release
    - https://ocw.mit.edu/courses/6-s977-software-construction-fall-2023/
@@ -1735,7 +1697,7 @@ if __name__ == "__main__":
 5. **Hynek Schlawack: "PyPI" Talk Series** at PyCon
    - https://hynek.me/articles/
 
-### 12.3 标准与规范
+### 11.3 标准与规范
 
 1. **PEP 517/518/621/660**：现代 Python 打包四件套
 2. **PEP 440/508**：版本与依赖规范
@@ -1743,7 +1705,7 @@ if __name__ == "__main__":
 4. **PEP 685**：extras 规范化
 5. **PyPI Trusted Publishers 文档**：https://docs.pypi.org/trusted-publishers/
 
-### 12.4 工具生态
+### 11.4 工具生态
 
 1. **uv**：Astral 出品，Rust 实现的 pip 替代品，速度提升 10-100 倍
 2. **rye**：Armin Ronacher 出品的 Python 项目管理器（已并入 uv）
@@ -1756,7 +1718,7 @@ if __name__ == "__main__":
 9. **flit**：极简纯 Python 包发布工具
 10. **cibuildwheel**：多平台 wheel 构建工具
 
-### 12.5 安全与供应链
+### 11.5 安全与供应链
 
 1. **Sigstore**：包签名工具，https://www.sigstore.dev/
 2. **PEP 458/480**：PyPI 安全增强
@@ -1764,7 +1726,7 @@ if __name__ == "__main__":
 4. **safety**：依赖安全检查
 5. **dependabot / renovate**：依赖自动更新
 
-### 12.6 实战项目
+### 11.6 实战项目
 
 1. **以一个真实开源项目为例，从零搭建发布流程**：
    - 创建 GitHub 仓库

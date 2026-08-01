@@ -19,54 +19,12 @@ prerequisites:
   - cpp/智能指针详解
   - cpp/多线程
 ---
+
 # C++ 内存模型基础
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-本节按照 Bloom 分类法的认知层级组织学习目标,读者完成本章学习后应能够达到以下层级。
-
-### 识记层 (Remembering)
-
-- 列举 C++11 标准定义的六种内存序(`memory_order_relaxed`、`memory_order_consume`、`memory_order_acquire`、`memory_order_release`、`memory_order_acq_rel`、`memory_order_seq_cst`)
-- 说出 `std::atomic`、`std::atomic_flag`、`std::atomic_ref` 三种原子抽象的差异
-- 复述 happens-before、synchronizes-with、carries-dependency 三种关系的定义
-- 识别 x86-TSO 与 ARMv8 弱内存模型在指令重排上的差异
-
-### 理解层 (Understanding)
-
-- 解释数据竞争 (data race) 导致未定义行为的根本原因
-- 阐述 release-acquire 配对如何建立跨线程的 happens-before 关系
-- 描述 MESI 缓存一致性协议在多核可见性中的作用
-- 区分编译器屏障、CPU 屏障与原子操作三者的层次差异
-
-### 应用层 (Applying)
-
-- 使用 `std::atomic` 实现自旋锁、无锁队列、引用计数等并发原语
-- 应用 release-acquire 模式实现生产者-消费者同步
-- 使用 `compare_exchange_weak/strong` 实现 CAS (Compare-And-Swap) 算法
-- 应用 `alignas(64)` 解决伪共享 (false sharing) 问题
-
-### 分析层 (Analyzing)
-
-- 分析 Dekker 互斥算法在弱内存模型下失效的原因
-- 解构双重检查锁定 (DCLP) 在不同内存序下的正确性条件
-- 对比seq_cst、acq_rel、relaxed 在不同场景下的性能开销
-
-### 评价层 (Evaluating)
-
-- 评估何时应使用无锁编程、何时应退回互斥锁
-- 判断一段并发代码是否存在数据竞争或可见性 bug
-- 在 x86 与 ARM 平台之间评估内存序选择的可移植性影响
-
-### 创造层 (Creating)
-
-- 设计一个支持多生产者多消费者的无锁环形缓冲区
-- 构建一个跨平台的内存序抽象层,自动适配 TSO 与弱内存模型
-- 提出一种基于 hazard pointer 的安全内存回收方案
 
 ## 历史动机与背景
 

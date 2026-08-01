@@ -24,83 +24,6 @@ tags:
   - mapped-types
   - recursive-types
   - type-level-programming
-learningObjectives:
-  - '分析条件类型与映射类型的代数性质，建立类型函数的组合与分解思维'
-  - '评估类型递归的深度限制与复杂度边界，识别会导致编译器栈溢出或性能崩塌的退化模式'
-  - '运用 infer 与分布式条件类型实现集合运算、元组变换、对象重组等生产级类型工具'
-  - '设计并实现 DeepReadonly、TupleToUnion、Path、Get 等经典类型体操题解，并能写出对应的形式推导'
-  - '理解 TypeScript 类型系统的图灵完备性来源与有限性约束，区分类型层与运行时层'
-  - '对比 TypeScript 类型系统与 Haskell 类型类、Rust trait、Scala 3 given/using 的差异'
-exercises:
-  fill-blank:
-    - question: "条件类型 T extends U ? X : Y 中，当 T 是裸类型参数且为联合类型 A | B 时，结果为____。"
-      answer: "(A extends U ? X : Y) | (B extends U ? X : Y)"
-      bloom: understand
-    - question: "TypeScript 自身对类型递归实例化深度的硬性上限是____层。"
-      answer: "100"
-      bloom: remember
-    - question: "要判断类型 T 是否为 never，需要写成 [T] extends [never] 而非 T extends never，原因是 never 在分布式条件类型中会被____。"
-      answer: "过滤为空联合（即直接返回 never）"
-      bloom: analyze
-  choice:
-    - question: "下列哪种写法可以正确实现 IsAny<T>？"
-      options:
-        - "type IsAny<T> = T extends any ? true : false"
-        - "type IsAny<T> = 0 extends 1 & T ? true : false"
-        - "type IsAny<T> = T === any ? true : false"
-        - "type IsAny<T> = keyof T extends never ? true : false"
-      answer: "B"
-      explanation: "any 与任何类型的交叉仍是 any，故 1 & any 等价于 any，而 0 extends any 永远成立；其余三种要么永远为 true，要么语法非法。"
-      bloom: evaluate
-    - question: "关于 TypeScript 类型系统的图灵完备性，下列哪一项是正确的？"
-      options:
-        - "TypeScript 类型系统在 4.0 之后已完全图灵完备，可以表达任意计算"
-        - "TypeScript 类型系统具备图灵完备的潜在能力，但递归深度被限制为 100，因此实际不可表达任意计算"
-        - "TypeScript 类型系统是停机可判定的，因此不可能图灵完备"
-        - "TypeScript 类型系统图灵完备性已通过形式化证明，但禁止使用"
-      answer: "B"
-      explanation: "递归深度被硬性限制为 100，且尾递归优化仅在 4.5 后部分支持；理论上具备图灵完备的构造（条件 + 递归 + 无界数据），但实践中无法完成任意计算。"
-      bloom: evaluate
-  code-fix:
-    - question: "下列 DeepReadonly 实现会在函数类型、Date、Map 等内置对象上错误地递归。请修复："
-      code: |
-        type DeepReadonly<T> = {
-          readonly [P in keyof T]: T[P] extends object
-            ? DeepReadonly<T[P]>
-            : T[P];
-        };
-      fix: |
-        type DeepReadonly<T> = T extends
-          | ((...args: any[]) => any)
-          | Date
-          | RegExp
-          | Map<any, any>
-          | Set<any>
-          | ArrayBuffer
-          | ReadonlyArray<any>
-          ? T
-          : T extends object
-            ? { readonly [P in keyof T]: DeepReadonly<T[P]> }
-            : T;
-      explanation: "原实现将函数、Date 等也视为可递归对象，会破坏函数调用语义并造成类型膨胀；通过基线情形（base case）排除内置可变类型即可终止递归。"
-      bloom: apply
-    - question: "下列 IsEqual 实现在边缘情况下有误，请修复："
-      code: |
-        type IsEqual<A, B> =
-          A extends B ? (B extends A ? true : false) : false;
-      fix: |
-        type IsEqual<A, B> =
-          (<T>() => T extends A ? 1 : 2) extends
-          (<T>() => T extends B ? 1 : 2) ? true : false;
-      explanation: "原写法对 any 永远返回 true，对 never 在分布式条件下返回 never；通过两个互相独立的延迟泛型函数比较，可以避开分布式与 any 拓宽的副作用。"
-      bloom: analyze
-  open-ended:
-    - question: "请用 200 字以内论证：为什么 TypeScript 选择把递归实例化深度限制为 100 而不是无限？该限制对类型体操实践有何影响？"
-      reference: "考虑停机问题、编译器性能、增量编译的内存占用、以及开发者体验。"
-      bloom: create
-    - question: "如果让你重新设计 TypeScript 的类型系统，你会保留「分布式条件类型」这一特性吗？请给出至少两条支持与两条反对的工程理由。"
-      reference: "可参考 Rust trait 与 Haskell type class 在解算上的区别。"
-      bloom: create
 references:
   - author: Pierce, Benjamin C.
     title: "Types and Programming Languages"
@@ -139,6 +62,7 @@ etymology:
   term: "类型体操（Type Gymnastics）"
   origin: "中文社区用语，最早见于 2019 年知乎与掘金对 type-challenges 仓库的讨论；英文社区对应术语为 type-level programming 或 type metaprogramming，源自 ML/Haskell 等函数式语言在类型层做计算的悠久传统。"
 ---
+
 
 ## 引言：为什么需要类型体操
 

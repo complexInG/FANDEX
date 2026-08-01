@@ -18,62 +18,24 @@ related:
 prerequisites:
   - python/语法速查
 ---
+
 # 正则表达式
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
-
-本章节对标 MIT 6.006 算法导论、Stanford CS143 编译原理、CMU 15-150 函数式程序设计等顶级高校课程对正则语言的教学水准，系统讲解 Python `re` 模块的工程化使用与底层理论。完成本章节学习后，读者应能够：
-
-### 1.1 Bloom 认知层级目标
-
-| 层级 | 关键动词 | 具体能力描述 |
-| :--- | :--- | :--- |
-| Remember（记忆） | 列举、识别 | 列举 `re` 模块的核心 API（`search`、`match`、`fullmatch`、`findall`、`finditer`、`sub`、`split`、`compile`）与正则元字符 |
-| Understand（理解） | 解释、归纳 | 解释正则表达式对应的 NFA/DFA 自动机模型、回溯机制、贪婪与非贪婪量词的语义差异 |
-| Apply（应用） | 实现、编写 | 编写生产级正则以验证邮箱、电话号码、URL、日志格式、CSV 字段 |
-| Analyze（分析） | 比较、拆解 | 比较 `re` 与 `regex` 第三方库的差异，分析灾难性回溯的成因与防御 |
-| Evaluate（评价） | 评估、选择 | 评估在何种场景下应使用正则、何时应改用解析器（如 `pyparsing`、`lark`） |
-| Create（创造） | 设计、优化 | 设计性能优化的正则模式，编写基于 `re.VERBOSE` 的可读性正则库 |
-
-### 1.2 知识地图
-
-```
-[理论基础] 形式语言 → 正则文法 → NFA/DFA → 自动机理论
-    ↓
-[语法体系] 字符类 | 量词 | 锚点 | 分组 | 断言 | 反向引用
-    ↓
-[Python 实现] re 模块 | Match 对象 | Pattern 对象 | 编译标志
-    ↓
-[工程实战] 日志解析 | 数据清洗 | 表单验证 | 爬虫抽取
-    ↓
-[高级话题] 灾难性回溯 | 性能优化 | regex 第三方库 | Unicode 支持
-```
-
-### 1.3 前置知识检查
-
-学习本章节前，请确认你已掌握：
-
-1. Python 字符串基础操作（切片、转义、原始字符串 `r""`）；
-2. 可迭代对象与迭代器协议；
-3. 字符编码基础（Unicode、UTF-8、码点）；
-4. 集合论基本概念（并集、补集）；
-5. 自动机理论初步（DFA、NFA 的概念，可选）。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 正则表达式起源于 1956 年数学家 Stephen Cole Kleene 在 *Representation of Events in Nerve Nets and Finite Automata* 一文中提出的"正则集合"（regular sets）代数。这一数学理论在 60 余年里演化为程序员每日使用的工具。
 
-### 2.1 数学起源（1956-1968）
+### 1.1 数学起源（1956-1968）
 
 - **1956**：Kleene 提出正则语言代数，定义了并（`|`）、连接（`·`）、Kleene 闭包（`*`）三种运算；
 - **1959**：Michael Rabin 与 Dana Scott 证明正则表达式等价于有限状态自动机（FSA），获 1976 年图灵奖；
 - **1968**：Ken Thompson 在 *QED* 文本编辑器中首次实现正则表达式匹配算法，论文 "Regular Expression Search Algorithm" 发表于 *CACM*。
 
-### 2.2 Unix 时代（1970s-1980s）
+### 1.2 Unix 时代（1970s-1980s）
 
 - **1974**：Thompson 在 Unix V6 实现 `grep`（Global Regular Expression Print）；
 - **1975**：`awk` 集成正则表达式；
@@ -81,7 +43,7 @@ prerequisites:
 - **1986**：POSIX 标准化 BRE（Basic Regular Expression）与 ERE（Extended Regular Expression）；
 - **1987**：Perl 1.0 引入 PCRE（Perl Compatible Regular Expression），扩展大量语法。
 
-### 2.3 Python re 模块演进
+### 1.3 Python re 模块演进
 
 | 时间 | 版本 | 重要变化 |
 | :--- | :--- | :--- |
@@ -95,7 +57,7 @@ prerequisites:
 | 2021 | Python 3.10 | `re` 切换至 C 实现的 `_sre` 模块 |
 | 2023 | Python 3.12 | 性能提升约 5 倍（Faster CPython 项目） |
 
-### 2.4 替代引擎
+### 1.4 替代引擎
 
 - **PCRE**（Perl Compatible Regular Expression）：C 库，被 PHP、nginx 等使用；
 - **RE2**（Google）：基于 Thompson NFA，保证线性时间，不支持反向引用；
@@ -104,9 +66,9 @@ prerequisites:
 - **Rust regex**：基于 lazy DFA，性能与正确性兼顾；
 - **regex（Python 第三方库）**：支持重叠匹配、可变长度反向引用。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 正则语言的代数定义
+### 2.1 正则语言的代数定义
 
 设 $\Sigma$ 为有限字母表，$\epsilon$ 为空字符串，$\emptyset$ 为空集，则正则表达式 $R$ 递归定义为：
 
@@ -137,7 +99,7 @@ $$
 R^n := \underbrace{R \cdot R \cdots R}_{n \text{ 次}} \quad (\text{恰好 } n \text{ 次})
 $$
 
-### 3.2 自动机等价定理
+### 2.2 自动机等价定理
 
 Kleene 定理（1956）：语言 $L$ 是正则的当且仅当存在有限自动机 $M$ 接受 $L$。
 
@@ -152,7 +114,7 @@ $$
 - DFA（Deterministic Finite Automaton）：$M = (Q, \Sigma, \delta, q_0, F)$
 - NFA（Nondeterministic Finite Automaton）：转移函数 $\delta : Q \times (\Sigma \cup \{\epsilon\}) \to 2^Q$
 
-### 3.3 Python re 的执行模型
+### 2.3 Python re 的执行模型
 
 Python `re` 模块采用 **回溯式 NFA**（backtracking NFA）：
 
@@ -168,7 +130,7 @@ Python `re` 模块采用 **回溯式 NFA**（backtracking NFA）：
 
 RE2（Google）采用 Thompson NFA 算法，保证 $O(mn)$ 最坏复杂度，但放弃反向引用。
 
-### 3.4 字符类的形式化
+### 2.4 字符类的形式化
 
 字符类 `[...]` 表示一个字符集，匹配其中任意一个字符：
 
@@ -183,7 +145,7 @@ $$
 - `\w` 等价于 `[A-Za-z0-9_]`（默认）；
 - `\s` 等价于 `[ \t\n\r\f\v]`。
 
-### 3.5 量词的贪婪策略
+### 2.5 量词的贪婪策略
 
 Python 量词默认采用 **最左最长匹配**（leftmost-longest with backtracking）：
 
@@ -202,9 +164,9 @@ Python 量词默认采用 **最左最长匹配**（leftmost-longest with backtra
 
 注意：Python `re` 不支持 `*+`、`++`，但第三方库 `regex` 支持。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 回溯机制详解
+### 3.1 回溯机制详解
 
 考虑正则 `a*b` 在输入 `aaaab` 上匹配：
 
@@ -224,7 +186,7 @@ $$
 
 回溯即按 $\delta$ 中的顺序依次尝试，遇失败则回退。
 
-### 4.2 灾难性回溯的成因
+### 3.2 灾难性回溯的成因
 
 正则 `(a+)+b` 在输入 `aaaaaaaaaaaaaaaaaaaaaaaaa`（25 个 a，无 b）上：
 
@@ -241,7 +203,7 @@ $$
 3. 使用原子组 `(?>(a+)+)b`；
 4. 设置匹配超时（Python `re` 不支持，需 `regex` 库）。
 
-### 4.3 锚点的语义
+### 3.3 锚点的语义
 
 | 锚点 | 不带标志 | 带 `re.MULTILINE` | 带 `re.DOTALL` |
 | :--- | :--- | :--- | :--- |
@@ -252,7 +214,7 @@ $$
 | `\b` | 单词边界 | 单词边界 | 单词边界 |
 | `.` | 非 `\n` 字符 | 非 `\n` 字符 | 任意字符 |
 
-### 4.4 反向引用的形式化
+### 3.4 反向引用的形式化
 
 反向引用 `\1` 引用第一个捕获组的内容：
 
@@ -264,7 +226,7 @@ $$
 
 形式化地，反向引用使正则表达式的能力超出正则语言范畴，进入上下文相关文法（context-sensitive grammar）的领域。Python `re` 支持反向引用但不支持递归模式（需 `regex` 库的 `(?R)`）。
 
-### 4.5 命名分组的语义
+### 3.5 命名分组的语义
 
 `(?P<name>...)` 为分组命名，等价于 `(?:...)` 但同时记录捕获：
 
@@ -288,9 +250,9 @@ text = "I saw the the cat cat"
 print(re.findall(pattern, text))  # ['the', 'cat']
 ```
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础匹配方法
+### 4.1 基础匹配方法
 
 ```python
 """re 模块基础匹配方法示例。Python 3.12+。"""
@@ -331,7 +293,7 @@ for m in re.finditer(r"\d+", "a1b22c333"):
 # Match: 333 at 6
 ```
 
-### 5.2 替换与分割
+### 4.2 替换与分割
 
 ```python
 """替换与分割示例。"""
@@ -372,7 +334,7 @@ parts = re.split(r"\s+", "a b c d e", maxsplit=2)
 print(parts)  # ['a', 'b', 'c d e']
 ```
 
-### 5.3 字符类与量词
+### 4.3 字符类与量词
 
 ```python
 """字符类与量词示例。"""
@@ -407,7 +369,7 @@ chinese = re.findall(r"[\u4e00-\u9fa5]+", "Hello世界，Python编程123")
 print(chinese)  # ['世界', '编程']
 ```
 
-### 5.4 分组与捕获
+### 4.4 分组与捕获
 
 ```python
 """分组与捕获示例。"""
@@ -452,7 +414,7 @@ duplicates = re.findall(r"\b(\w+)\s+\1\b", text)
 print(duplicates)  # ['the', 'and']
 ```
 
-### 5.5 编译标志详解
+### 4.5 编译标志详解
 
 ```python
 """编译标志示例。"""
@@ -502,7 +464,7 @@ print(re.findall(r"\w+", "hello 世界"))          # ['hello', '世界']
 pattern = re.compile(r"^hello", re.I | re.M)
 ```
 
-### 5.6 预编译正则与性能优化
+### 4.6 预编译正则与性能优化
 
 ```python
 """预编译正则表达式示例。"""
@@ -540,7 +502,7 @@ print(f"已编译: {compiled_time:.3f}s")
 print(f"加速比: {uncompiled_time / compiled_time:.1f}x")
 ```
 
-### 5.7 数据提取与清洗
+### 4.7 数据提取与清洗
 
 ```python
 """数据提取与清洗示例。"""
@@ -616,7 +578,7 @@ score, details = check_password_strength("MyP@ss123")
 print(f"强度分数: {score}/5, 详情: {details}")
 ```
 
-### 5.8 日志解析实战
+### 4.8 日志解析实战
 
 ```python
 """Apache/Nginx 日志解析示例。"""
@@ -716,7 +678,7 @@ if entry:
     #          method='GET', path='/api/users', protocol='HTTP/1.1', status=200, size=1234)
 ```
 
-### 5.9 表单验证
+### 4.9 表单验证
 
 ```python
 """表单字段验证示例。"""
@@ -813,7 +775,7 @@ print(validate_phone("13800138000"))          # is_valid=True
 print(validate_phone("1234567890"))           # is_valid=False
 ```
 
-### 5.10 高级用法：原子组与递归
+### 4.10 高级用法：原子组与递归
 
 ```python
 """高级正则用法（部分需 regex 第三方库）。"""
@@ -865,9 +827,9 @@ if HAS_REGEX:
     print(pattern.findall("hellohello world world"))
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 re 与 regex 库对比
+### 5.1 re 与 regex 库对比
 
 | 特性 | re（标准库） | regex（第三方） |
 | :--- | :--- | :--- |
@@ -883,7 +845,7 @@ if HAS_REGEX:
 | 超时控制 | 不支持 | 支持 |
 | 维护状态 | 维护中 | 活跃 |
 
-### 6.2 与其他语言正则对比
+### 5.2 与其他语言正则对比
 
 | 语言 | 库 | 引擎 | 反向引用 | 命名分组 | 递归 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -897,7 +859,7 @@ if HAS_REGEX:
 | PHP | `PCRE` | 回溯 NFA | 支持 | `(?P<name>)` | 支持 |
 | C# | `Regex` | 回溯 NFA | 支持 | `(?<name>)` | 不支持 |
 
-### 6.3 Python `re` 与字符串方法对比
+### 5.3 Python `re` 与字符串方法对比
 
 | 任务 | 字符串方法 | 正则 | 推荐 |
 | :--- | :--- | :--- | :--- |
@@ -910,7 +872,7 @@ if HAS_REGEX:
 | 提取数字 | `[int(x) for x in s.split() if x.isdigit()]` | `re.findall(r"\d+", s)` | 视情况 |
 | 邮箱验证 | 极难 | `re.match(pattern, s)` | 正则 |
 
-### 6.4 re 与专用解析器对比
+### 5.4 re 与专用解析器对比
 
 | 任务 | 正则 | 专用解析器 | 推荐 |
 | :--- | :--- | :--- | :--- |
@@ -922,9 +884,9 @@ if HAS_REGEX:
 | 配置文件 | 不可行 | `tomllib` / `configparser` | 解析器 |
 | URL 路由 | `re.compile` | FastAPI / Flask 内置 | 视框架 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱清单
+### 6.1 陷阱清单
 
 #### 陷阱 1：忘记使用原始字符串
 
@@ -1025,7 +987,7 @@ result = re.sub(r"a", lambda m: r"\1b", "aaa")
 print(result)  # \1b\1b\1b
 ```
 
-### 7.2 最佳实践
+### 6.2 最佳实践
 
 1. **始终使用原始字符串**：`r"pattern"` 避免双重转义问题。
 
@@ -1107,9 +1069,9 @@ IPV4_REGEX = RegexPattern.compile(
 )
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 性能优化技巧
+### 7.1 性能优化技巧
 
 ```python
 """正则性能优化技巧。"""
@@ -1172,7 +1134,7 @@ print("with_compile:", timeit.timeit(lambda: with_compile(text), number=100_000)
 print("without_compile:", timeit.timeit(lambda: without_compile(text), number=100_000))
 ```
 
-### 8.2 调试正则表达式
+### 7.2 调试正则表达式
 
 ```python
 """调试正则表达式。"""
@@ -1213,7 +1175,7 @@ if __name__ == "__main__":
     debug_pattern(r"\d{4}-\d{2}-\d{2}", "Date: 2026-07-21")
 ```
 
-### 8.3 单元测试
+### 7.3 单元测试
 
 ```python
 """正则表达式的单元测试示例。"""
@@ -1293,7 +1255,7 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-### 8.4 集成到生产代码
+### 7.4 集成到生产代码
 
 ```python
 """生产环境中的正则使用模式。"""
@@ -1349,9 +1311,9 @@ except ValidationError as e:
     logger.error(f"验证失败: {e.field} - {e.message}")
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Django URL 路由
+### 8.1 案例一：Django URL 路由
 
 Django 的 URL 路由系统大量使用正则表达式：
 
@@ -1415,7 +1377,7 @@ print(router.dispatch("/users/123"))       # User 123
 print(router.dispatch("/posts/2026/07"))   # Posts in 2026/07
 ```
 
-### 9.2 案例二：日志分析系统
+### 8.2 案例二：日志分析系统
 
 Instagram 的日志分析系统使用大量正则解析日志：
 
@@ -1519,7 +1481,7 @@ def analyze_logs(logs: Iterable[AccessLog]) -> dict[str, object]:
     }
 ```
 
-### 9.3 案例三：BeautifulSoup 集成
+### 8.3 案例三：BeautifulSoup 集成
 
 爬虫项目通常组合使用正则与 BeautifulSoup：
 
@@ -1585,7 +1547,7 @@ print(extract_links_by_pattern(html, r"/users/\d+"))
 # ['/users/123', '/users/456']
 ```
 
-### 9.4 案例四：SQL 注入检测
+### 8.4 案例四：SQL 注入检测
 
 ```python
 """SQL 注入检测示例。"""
@@ -1649,7 +1611,7 @@ for inp in test_inputs:
         print(f"    - {m}")
 ```
 
-### 9.5 案例五：YouTube 字幕解析
+### 8.5 案例五：YouTube 字幕解析
 
 YouTube 字幕文件（.vtt）使用类似 XML 的格式，正则可以高效提取：
 
@@ -1987,7 +1949,7 @@ for pwd in test_passwords:
     print(f"  详情: {result.checks}")
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题 1**：为什么说 Python `re` 模块基于回溯 NFA 而非 DFA？这对性能有何影响？
 
@@ -2037,9 +1999,9 @@ for pwd in test_passwords:
 5. **边界情况**：`"_hello_"` 中下划线视为单词字符，`\b` 仅在 `_` 之外匹配；
 6. **多字节字符**：中文字符的边界由 Unicode 属性决定，需注意编码。
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 经典论文与书籍
+### 10.1 经典论文与书籍
 
 - [1] S. C. Kleene, "Representation of events in nerve nets and finite automata," in *Automata Studies*, C. E. Shannon and J. McCarthy, Eds. Princeton, NJ: Princeton University Press, 1956, pp. 3-42. doi: 10.1515/9781400882618-002
 - [2] M. O. Rabin and D. Scott, "Finite automata and their decision problems," *IBM J. Res. Dev.*, vol. 3, no. 2, pp. 114-125, 1959. doi: 10.1147/rd.32.0114
@@ -2049,29 +2011,29 @@ for pwd in test_passwords:
 - [6] J. Friedl, *Mastering Regular Expressions*, 3rd ed. Sebastopol, CA: O'Reilly Media, 2006, ISBN 978-0596528126
 - [7] D. E. Knuth, J. H. Morris, and V. R. Pratt, "Fast pattern matching in strings," *SIAM J. Comput.*, vol. 6, no. 2, pp. 323-350, 1977. doi: 10.1137/0206024
 
-### 11.2 Python 文档
+### 10.2 Python 文档
 
 - [8] Python Software Foundation, "re — Regular expression operations," Python 3.12 Documentation, 2024. [Online]. Available: https://docs.python.org/3/library/re.html
 - [9] Python Software Foundation, "Regular Expression HOWTO," 2024. [Online]. Available: https://docs.python.org/3/howto/regex.html
 - [10] M. Kuchling, "re module source code," CPython Repository. [Online]. Available: https://github.com/python/cpython/blob/main/Lib/re/
 - [11] M. Barnett, "regex: Alternative regular expression module, to replace re," 2024. [Online]. Available: https://pypi.org/project/regex/
 
-### 11.3 替代引擎
+### 10.3 替代引擎
 
 - [12] Google, "RE2: Fast, safe, thread-friendly alternative to backtracking regular expression engines," 2024. [Online]. Available: https://github.com/google/re2
 - [13] Intel, "Hyperscan: High-performance regular expression matching library," 2024. [Online]. Available: https://github.com/intel/hyperscan
 - [14] R. Cox, "Regular Expression Matching Can Be Simple And Fast," 2007. [Online]. Available: https://swtch.com/~rsc/regexp/regexp1.html
 - [15] B. Cox, "Rust regex crate: Fast, Unicode-aware regex engine," 2024. [Online]. Available: https://github.com/rust-lang/regex
 
-### 11.4 学术研究
+### 10.4 学术研究
 
 - [16] R. S. Cox, "Regular Expression Matching in the Wild," *Dr. Dobb's J.*, 2010. [Online]. Available: https://swtch.com/~rsc/regexp/regexp3.html
 - [17] M. Becchi and P. Crowley, "Extending finite automata to efficiently match Perl-compatible regular expressions," in *Proc. 2008 ACM/IEEE Symp. Archit. Netw. Commun. Syst. (ANCS)*, 2008, pp. 109-120. doi: 10.1109/ANCS.2008.4526175
 - [18] T. Peng, T. Fang, and P. B. G. M. K. H. Kuo, "A survey on regular expression denial of service attacks," *Comput. Secur.*, vol. 92, p. 101756, 2020. doi: 10.1016/j.cose.2020.101756
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 1. **《Mastering Regular Expressions》** — Jeffrey E. F. Friedl, O'Reilly, 3rd Edition, 2006
    - 正则表达式领域最权威著作，深入讲解引擎内部原理
@@ -2084,7 +2046,7 @@ for pwd in test_passwords:
 5. **《Python Cookbook》** — David Beazley, Brian K. Jones, O'Reilly, 3rd Edition
    - 第 2 章"字符串和文本"包含大量正则实战
 
-### 12.2 在线课程与教程
+### 11.2 在线课程与教程
 
 1. **MIT 6.006 Introduction to Algorithms** — Lecture 9: Finite Automata
    - https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/
@@ -2097,7 +2059,7 @@ for pwd in test_passwords:
 5. **RegexOne** — 交互式正则学习平台
    - https://regexone.com/
 
-### 12.3 在线工具
+### 11.3 在线工具
 
 1. **regex101.com** — 可视化正则匹配，支持 Python、PCRE、JavaScript
 2. **regexr.com** — 类似 regex101，附带速查表
@@ -2105,14 +2067,14 @@ for pwd in test_passwords:
 4. **pythex.org** — Python 正则在线测试
 5. **regexper.com** — 生成正则的可视化图
 
-### 12.4 标准与规范
+### 11.4 标准与规范
 
 1. **POSIX.1-2008 Base Specifications** — BRE 与 ERE 标准
 2. **Unicode Technical Standard #18** — Unicode Regex Guidelines
 3. **RFC 5322** — Internet Message Format（邮箱格式参考）
 4. **RFC 3986** — Uniform Resource Identifier（URL 格式参考）
 
-### 12.5 安全相关
+### 11.5 安全相关
 
 1. **OWASP Regular Expression Denial of Service (ReDoS)**
    - https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
@@ -2120,7 +2082,7 @@ for pwd in test_passwords:
    - https://cwe.mitre.org/data/definitions/1333.html
 3. **safe-regex** — Node.js 检测灾难性回溯的库（思路可借鉴）
 
-### 12.6 实战项目
+### 11.6 实战项目
 
 1. **实现一个简单的 URL 路由器**：使用 `re` 模块匹配 URL 模式并提取参数；
 2. **构建一个日志分析工具**：解析 Apache/Nginx 日志并生成统计报告；

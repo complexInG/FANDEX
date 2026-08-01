@@ -30,14 +30,6 @@ related:
   - algorithm/树状数组
 prerequisites:
   - algorithm/算法分析基础与学习路线
-learningObjectives:
-  - '记忆布隆过滤器的五要素结构（位数组 $m$ 位、$k$ 个哈希函数、插入流程 $h_i(x) \bmod m$、查询流程、无假阴性定理）与 Bloom 1970《Space/Time Trade-offs in Hash Coding with Allowable Errors》CACM 13(7):422-426 DOI:10.1145/362686.362692 的核心贡献'
-  - '{''理解 Bloom 1970 原始动机（文档拼写检查器空间优化）、Fan-Margolin-Allder 1998 USENIX《Summary Cache》推动 Counting Bloom Filter 工业化、Mitzenmacher 2002《Compressed Bloom Filters》网络传输优化、Fan-Andersen-Kaminsky-Kreitzberg-Plotnick 2014《Cuckoo Filter'': ''Practically Better Than Bloom》ACM TOCT 6(2) 的演进脉络''}'
-  - '应用假阳性率公式 $P = \left(1 - e^{-kn/m}\right)^k$、最优哈希函数个数 $k_{\text{opt}} = (m/n) \ln 2$、最优位数组大小 $m = -n \ln \epsilon / (\ln 2)^2$ 求解参数设计问题，编写 Python/C++/Java 三语言实现，正确选择 mmh3、FNV-1a、SHA-1 等哈希函数'
-  - '分析布隆过滤器的时空复杂度（插入 $O(k)$、查询 $O(k)$、空间 $O(m)$ 位）、假阳性率上界证明（基于 $k$ 个哈希函数独立性假设与泊松近似）、无假阴性定理的证明（基于单调性：插入只置位不清位）'
-  - '评估布隆过滤器与 Hash Set、Cuckoo Filter、HyperLogLog、Count-Min Sketch 在空间、查询时间、假阳性率、删除支持、计数支持维度上的优劣对比，识别 Cassandra、HBase、PostgreSQL、Chrome、Bitcoin SPV 等真实工程选用布隆过滤器的依据'
-  - '设计 Counting Bloom Filter、Spectral Bloom Filter、Stable Bloom Filter、Compressed Bloom Filter、Cuckoo Filter 等变种以支持删除、计数、流式数据、网络传输等扩展需求，分析各变种在空间放大、查询性能、实现复杂度上的权衡'
-  - '创造性设计基于布隆过滤器的工业级解决方案，如缓存穿透防护系统、爬虫 URL 去重引擎、邮件恶意 URL 检测系统、区块链 SPV 节点轻客户端、数据库查询结果缓存层，正确处理哈希函数选择、参数调优、并发安全、持久化等工程细节'
 references:
   - type: journal
     authors:
@@ -265,6 +257,7 @@ etymology:
     english: false positive rate
     origin: 'false positive（假阳性）+ rate（率）。布隆过滤器的假阳性率公式 $P = (1 - e^{-kn/m})^k$ 由 Bloom 1970 原始论文给出，后经 Broder-Mitzenmacher 2003《Network Applications of Bloom Filters: A Survey》Internet Mathematics 1(4):485-509 系统化推导。最优哈希函数个数 $k_{opt} = (m/n) \ln 2$ 通过对 $P$ 求导令其为零得到'
 ---
+
 
 ## 1. 概述与学习目标
 

@@ -23,96 +23,6 @@ tags:
   - TC39
   - structuredClone
   - Reflection
-learningObjectives:
-  - '列举 ES6 以来 Object 静态方法的演进时间线，复述每个方法所属的 ECMAScript 版本'
-  - '解释属性描述符的数据属性与访问器属性两种模型，区分 writable 与 configurable 的语义'
-  - '使用 Object.assign、Object.fromEntries、Object.groupBy、Object.hasOwn 等方法处理真实业务场景'
-  - '拆解 Object.create、Object.setPrototypeOf、Reflect.set 在原型链操作上的行为差异'
-  - '评估 Object.freeze/seal/preventExtensions 三层不可变性的适用场景与性能开销'
-  - '设计一个支持深冻结、深克隆与原型快照的不可变数据工具库，集成结构化克隆算法'
-exercises:
-  - id: ex-obj-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: "Object.is(NaN, NaN) 返回 ______，而 NaN === NaN 返回 ______。"
-    answer: "true；false"
-    blankCount: 2
-    answers:
-      - "true"
-      - "false"
-    caseSensitive: false
-    explanation: "Object.is 采用 SameValue(x, y) 算法，对 NaN 与 -0 +0 做特殊处理；=== 使用 Strict Equality Comparison，NaN 与任何值都不相等（包括自身）。"
-  - id: ex-obj-02
-    type: choice
-    cognitiveLevel: analyze
-    question: "下列代码输出是什么？\n```javascript\nconst obj = Object.create(null);\nobj.foo = 1;\nconsole.log(Object.hasOwn(obj, 'foo'));\nconsole.log(obj.hasOwnProperty('foo'));\n```"
-    options:
-      - "A. true true"
-      - "B. true false"
-      - "C. true 抛出 TypeError"
-      - "D. false 抛出 TypeError"
-    correctIndex: 2
-    answer: "C"
-    multiple: false
-    explanation: "Object.hasOwn 对 null 原型对象能正常工作返回 true；而 obj.hasOwnProperty 需要从 Object.prototype 继承，null 原型对象没有此方法，会抛出 TypeError。"
-  - id: ex-obj-03
-    type: code-fix
-    cognitiveLevel: analyze
-    question: |
-      以下代码尝试深度冻结配置对象，但在生产环境出现"未冻结"报告。请修复：
-      ```javascript
-      function deepFreeze(obj) {
-        Object.freeze(obj);
-        for (const key in obj) {
-          if (typeof obj[key] === 'object') {
-            deepFreeze(obj[key]);
-          }
-        }
-        return obj;
-      }
-      const config = { db: { host: 'localhost' }, list: [{ id: 1 }] };
-      deepFreeze(config);
-      ```
-    buggyCode: |
-      function deepFreeze(obj) {
-        Object.freeze(obj);
-        for (const key in obj) {
-          if (typeof obj[key] === 'object') {
-            deepFreeze(obj[key]);
-          }
-        }
-        return obj;
-      }
-    language: javascript
-    fixedCode: |
-      function deepFreeze(obj) {
-        if (obj === null || typeof obj !== 'object') return obj;
-        Object.freeze(obj);
-        // 使用 Object.getOwnPropertyNames 而非 for...in，避免遍历原型链
-        // 使用 Object.values 简化，并处理数组与普通对象
-        for (const value of Object.values(obj)) {
-          if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
-            deepFreeze(value);
-          }
-        }
-        return obj;
-      }
-    errorDescription: "原代码两个问题：(1) for...in 会遍历原型链上的可枚举属性；(2) 未检查 Object.isFrozen 导致循环引用时栈溢出；(3) 未对 null 与非 object 类型做基线判断。"
-    answer: |
-      在 deepFreeze 入口加基线判断 if (obj === null || typeof obj !== 'object') return obj；将 for...in 换为 for (const value of Object.values(obj))；递归前加 !Object.isFrozen(value) 判断避免循环引用栈溢出。这样既避免遍历原型链，又防止循环引用。
-  - id: ex-obj-04
-    type: open-ended
-    cognitiveLevel: create
-    question: "请设计一个 immutable 配置管理库，要求：(1) 支持深度冻结；(2) 提供 update(path, value) 接口返回新对象而不修改原对象；(3) 支持 TypeScript 类型推导；(4) 性能优于 JSON.parse(JSON.stringify(obj))。请描述数据结构与算法。"
-    keyPoints:
-      - "结构性共享（persistent data structure，类似 Immutable.js 的 HAMT）"
-      - "基于 Proxy 的写入拦截"
-      - "路径数组解析（lodash.set 风格）"
-      - "结构化克隆回退"
-      - "TypeScript 泛型与递归类型 Readonly<T>"
-      - "性能基准测试对比 JSON 序列化"
-    answer: "应包括：结构性共享（persistent data structure，类似 Immutable.js 的 HAMT）、基于 Proxy 的写入拦截、路径数组解析（lodash.set 风格）、结构化克隆回退、TypeScript 泛型与递归类型 Readonly<T>、性能基准测试对比 JSON 序列化。"
-    minWords: 200
 references:
   - type: website
     authors:
@@ -157,6 +67,7 @@ lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---
 
+
 # Object 扩展（ES6+ 静态方法体系）
 
 ## 0. 导言
@@ -174,73 +85,9 @@ reviewer: FANDEX Content Engineering Team
 
 ---
 
-## 1. 学习目标与认知地图
+## 1. 历史动机与技术演进
 
-完成本章后，学习者应能够：
-
-1. **复述**（remember）ES5 至 ES2024 期间 `Object` 静态方法的演进时间线。
-2. **解释**（understand）属性描述符的数据属性与访问器属性两种模型。
-3. **应用**（apply）`Object.assign`、`Object.fromEntries`、`Object.groupBy`、`Object.hasOwn` 等方法解决实际工程问题。
-4. **分析**（analyze）`Object.create`、`Object.setPrototypeOf`、`Reflect.set` 在原型链操作上的行为差异。
-5. **评估**（evaluate）`Object.freeze` / `seal` / `preventExtensions` 三层不可变性的适用场景。
-6. **设计**（create）一个支持深冻结、深克隆与原型快照的不可变数据工具库。
-
-### 1.1 知识体系
-
-```mermaid
-flowchart TD
-    T0["Object 扩展"]
-    T1["静态方法分类"]
-    T2["创建与原型"]
-    T3["Object.create"]
-    T4["Object.getPrototypeOf"]
-    T5["Object.setPrototypeOf"]
-    T6["属性定义与查询"]
-    T7["Object.defineProperty / defineProperties"]
-    T8["Object.getOwnPropertyDescriptor / getOwnPropertyDescriptors"]
-    T9["Object.getOwnPropertyNames / getOwnPropertySymbols"]
-    T10["合并与转换"]
-    T11["Object.assign（ES6）"]
-    T12["Object.fromEntries（ES2019）"]
-    T13["Object.groupBy（ES2024）"]
-    T14["遍历"]
-    T15["Object.keys / values / entries（ES5/ES2017）"]
-    T16["与 for...in / Reflect.ownKeys 的关系"]
-    T17["判等与判属性"]
-    T18["Object.is（ES6）"]
-    T19["Object.hasOwn（ES2022）"]
-    T20["不可变性"]
-    T21["Object.preventExtensions"]
-    T22["Object.seal"]
-    T23["Object.freeze"]
-    T24["属性描述符"]
-    T25["数据属性（value/writable/enumerable/configurable）"]
-    T26["访问器属性（get/set/enumerable/configurable）"]
-    T27["默认值规则"]
-    T28["深度操作"]
-    T29["深冻结（deepFreeze）"]
-    T30["深比较（deepEqual）"]
-    T31["深克隆（structuredClone）"]
-    T32["工程实践"]
-    T33["不可变更新范式（Redux/React）"]
-    T34["配置对象冻结"]
-    T35["原型污染防护"]
-    T36["性能基准"]
-    T0 --> T1
-    T23 --> T24
-    T27 --> T28
-    T31 --> T32
-    T32 --> T33
-    T32 --> T34
-    T32 --> T35
-    T32 --> T36
-```
-
----
-
-## 2. 历史动机与技术演进
-
-### 2.1 ES3 之前的对象模型缺陷（1995-2009）
+### 1.1 ES3 之前的对象模型缺陷（1995-2009）
 
 JavaScript 1.0 至 ES3（1999）期间，对象模型存在严重缺陷：
 
@@ -252,7 +99,7 @@ JavaScript 1.0 至 ES3（1999）期间，对象模型存在严重缺陷：
 | 原型操作低效且不安全 | 仅能通过 `obj.__proto__`（非标准）访问原型 | 跨浏览器行为不一致 |
 | 缺乏统一的判等 | `===` 对 `NaN` 与 `-0` 的处理不符合直觉 | 数值比较易出错 |
 
-### 2.2 ES5 革命：属性描述符与对象保护（2009）
+### 1.2 ES5 革命：属性描述符与对象保护（2009）
 
 ES5 是 `Object` API 的第一次大规模扩展，引入了 12 个静态方法：
 
@@ -272,7 +119,7 @@ ES5 是 `Object` API 的第一次大规模扩展，引入了 12 个静态方法�
 | `Object.isFrozen(obj)` | 检查是否被冻结 |
 | `Object.getPrototypeOf(obj)` | 标准化原型访问 |
 
-### 2.3 ES6 至 ES2024 演进时间线
+### 1.3 ES6 至 ES2024 演进时间线
 
 | 版本 | 年份 | 新增方法 | 核心动机 |
 | --- | --- | --- | --- |
@@ -284,7 +131,7 @@ ES5 是 `Object` API 的第一次大规模扩展，引入了 12 个静态方法�
 | ES2022 | 2022 | `Object.hasOwn` | 替代 `obj.hasOwnProperty`，对 null 原型对象友好 |
 | ES2024 | 2024 | `Object.groupBy`、`Object.hasOwn`（稳定化） | 类 Lodash 分组操作的标准化 |
 
-### 2.4 TC39 提案流程
+### 1.4 TC39 提案流程
 
 每个新方法都经过 TC39 的四阶段提案流程：
 
@@ -307,9 +154,9 @@ ES5 是 `Object` API 的第一次大规模扩展，引入了 12 个静态方法�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 属性描述符的代数模型
+### 2.1 属性描述符的代数模型
 
 JavaScript 对象的每个属性由一个**属性描述符**（Property Descriptor）表示。属性描述符分为两类：
 
@@ -331,7 +178,7 @@ $$
 \forall d \in \text{Descriptor}: (\text{has}(d, \text{value}) \lor \text{has}(d, \text{writable})) \Rightarrow \neg(\text{has}(d, \text{get}) \lor \text{has}(d, \text{set}))
 $$
 
-### 3.2 默认值规则
+### 2.2 默认值规则
 
 通过 `Object.defineProperty` 定义属性时，未指定的字段使用默认值：
 
@@ -344,7 +191,7 @@ $$
 
 这一不对称性是初学者的常见陷阱：通过 `defineProperty` 创建的属性默认不可写、不可枚举、不可配置。
 
-### 3.3 原型链的形式化定义
+### 2.3 原型链的形式化定义
 
 每个对象都有一个隐式原型 `[[Prototype]]`，构成原型链：
 
@@ -363,7 +210,7 @@ $$
 
 终止条件为 $\text{proto}^n(o) = \text{null}$。
 
-### 3.4 不可变性的层级
+### 2.4 不可变性的层级
 
 JavaScript 提供三层不可变性，形式化定义如下：
 
@@ -382,7 +229,7 @@ $$
 
 即冻结强于密封，密封强于阻止扩展。
 
-### 3.5 Object.is 的同值语义
+### 2.5 Object.is 的同值语义
 
 `Object.is(x, y)` 实现 **SameValue** 抽象操作，与 `===` 的差异在于两个边界值：
 
@@ -398,9 +245,9 @@ $$
 
 ---
 
-## 4. Object 静态方法详解
+## 3. Object 静态方法详解
 
-### 4.1 Object.assign：合并与浅拷贝
+### 3.1 Object.assign：合并与浅拷贝
 
 `Object.assign(target, ...sources)` 将所有可枚举自身属性从源对象复制到目标对象。
 
@@ -447,7 +294,7 @@ try {
 console.log(target);  // {}（good 在 bad 之后，但定义顺序是 bad 先）
 ```
 
-### 4.2 Object.is：精确判等
+### 3.2 Object.is：精确判等
 
 ```javascript
 // 与 === 的两处差异
@@ -484,7 +331,7 @@ console.log(isNegativeZero(0));   // false
 // React 内部使用 Object.is 比较状态变化，避免 NaN 触发误更新
 ```
 
-### 4.3 Object.keys / values / entries
+### 3.3 Object.keys / values / entries
 
 ```javascript
 const obj = { a: 1, b: 2, c: 3 };
@@ -522,7 +369,7 @@ console.log(Reflect.ownKeys(obj));
 // ['1', '2', 'b', 'a', Symbol(x)]
 ```
 
-### 4.4 Object.fromEntries
+### 3.4 Object.fromEntries
 
 `Object.fromEntries(iterable)` 是 `Object.entries` 的逆运算，接受可迭代对象（每个元素为 `[key, value]` 二元组）。
 
@@ -553,7 +400,7 @@ const params = Object.fromEntries(new URLSearchParams('a=1&b=2'));
 console.log(params);  // { a: '1', b: '2' }
 ```
 
-### 4.5 Object.groupBy（ES2024）
+### 3.5 Object.groupBy（ES2024）
 
 `Object.groupBy(items, callbackFn)` 按回调返回的键对可迭代元素分组，返回一个普通对象（不是数组）。
 
@@ -606,7 +453,7 @@ console.log(Object.getPrototypeOf(result));  // null
 console.log(result.hasOwnProperty);  // undefined（需用 Object.hasOwn）
 ```
 
-### 4.6 Object.hasOwn（ES2022）
+### 3.6 Object.hasOwn（ES2022）
 
 `Object.hasOwn(obj, key)` 是 `obj.hasOwnProperty(key)` 的安全替代，解决两个问题：
 
@@ -638,7 +485,7 @@ function hasOwnSafe(obj, key) {
 }
 ```
 
-### 4.7 Object.create 与原型操作
+### 3.7 Object.create 与原型操作
 
 `Object.create(proto, propertiesObject)` 显式指定原型创建新对象。
 
@@ -696,7 +543,7 @@ console.log(Object.getPrototypeOf(Object.create(null)) === null);  // true
 // Object.create(null) 最慢（特殊原型路径）
 ```
 
-### 4.8 Object.setPrototypeOf 与 Object.getPrototypeOf
+### 3.8 Object.setPrototypeOf 与 Object.getPrototypeOf
 
 ```javascript
 // 获取原型
@@ -718,7 +565,7 @@ const obj3 = Object.create(proto, {
 
 > **性能警示**：`Object.setPrototypeOf` 会触发 V8 的隐藏类（hidden class / map）迁移，性能开销可达 100 倍以上。生产环境应避免在已创建的对象上修改原型。
 
-### 4.9 Object.defineProperty / defineProperties
+### 3.9 Object.defineProperty / defineProperties
 
 ```javascript
 // 单个属性定义
@@ -796,7 +643,7 @@ const state = {};
 defineReactive(state, 'count', 0);
 ```
 
-### 4.10 Object.getOwnPropertyDescriptors
+### 3.10 Object.getOwnPropertyDescriptors
 
 `Object.getOwnPropertyDescriptors(obj)` 返回所有自身属性的描述符（含 Symbol 键、不可枚举属性）。
 
@@ -834,7 +681,7 @@ const copy2 = cloneWithDescriptors(original);
 console.log(Object.getOwnPropertyNames(copy2));  // ['hidden']
 ```
 
-### 4.11 Object.getOwnPropertyNames / getOwnPropertySymbols / Reflect.ownKeys
+### 3.11 Object.getOwnPropertyNames / getOwnPropertySymbols / Reflect.ownKeys
 
 ```javascript
 const obj = {};
@@ -875,9 +722,9 @@ console.log(Reflect.ownKeys(obj));
 
 ---
 
-## 5. 属性描述符详解
+## 4. 属性描述符详解
 
-### 5.1 数据属性 vs 访问器属性
+### 4.1 数据属性 vs 访问器属性
 
 ```javascript
 // 数据属性
@@ -916,7 +763,7 @@ console.log(Object.getOwnPropertyDescriptor(accessorObj, 'age'));
 // 注意：没有 value 与 writable 字段
 ```
 
-### 5.2 configurable 的真实含义
+### 4.2 configurable 的真实含义
 
 `configurable: false` 不仅阻止删除属性，还限制描述符的修改：
 
@@ -959,7 +806,7 @@ try {
 }
 ```
 
-### 5.3 enumerable 与遍历
+### 4.3 enumerable 与遍历
 
 ```javascript
 const obj = {};
@@ -983,7 +830,7 @@ console.log(JSON.stringify(obj));  // '{"visible":1}'
 console.log(Object.getOwnPropertyNames(obj));  // ['visible', 'hidden']
 ```
 
-### 5.4 实战：实现真正的私有属性
+### 4.4 实战：实现真正的私有属性
 
 ES2022 的 `#private` 语法之前，开发者常用闭包或 `Object.defineProperty` 模拟私有：
 
@@ -1037,9 +884,9 @@ class Counter3 {
 
 ---
 
-## 6. 对象保护与不可变性
+## 5. 对象保护与不可变性
 
-### 6.1 三层保护机制
+### 5.1 三层保护机制
 
 ```javascript
 // Level 1: preventExtensions（不可添加新属性）
@@ -1066,7 +913,7 @@ delete obj3.b;  // 静默失败
 obj3.c = 3;    // 静默失败
 ```
 
-### 6.2 浅层不可变性的陷阱
+### 5.2 浅层不可变性的陷阱
 
 `Object.freeze` 是浅层的，嵌套对象仍可修改：
 
@@ -1082,7 +929,7 @@ config.features.push('cache');       // 成功
 console.log(config);  // { server: { host: 'example.com', ... }, features: ['auth', 'logging', 'cache'] }
 ```
 
-### 6.3 深度冻结实现
+### 5.3 深度冻结实现
 
 ```javascript
 /**
@@ -1136,7 +983,7 @@ config.features.push('cache');       // 静默失败
 console.log(config.server.host);     // 'localhost'
 ```
 
-### 6.4 深度密封与深度阻止扩展
+### 5.4 深度密封与深度阻止扩展
 
 ```javascript
 // 深度密封：允许修改值，但不允许增删
@@ -1170,7 +1017,7 @@ function deepPreventExtensions(obj) {
 }
 ```
 
-### 6.5 不可变性的性能影响
+### 5.5 不可变性的性能影响
 
 ```javascript
 // V8 引擎对冻结对象的优化：极速属性访问
@@ -1195,9 +1042,9 @@ benchmark(normal, 'normal');
 
 ---
 
-## 7. 对象迭代与遍历
+## 6. 对象迭代与遍历
 
-### 7.1 各种遍历方式对比
+### 6.1 各种遍历方式对比
 
 ```javascript
 const proto = { inherited: 'from proto' };
@@ -1230,7 +1077,7 @@ console.log(Object.getOwnPropertySymbols(obj));  // [Symbol(sym)]
 console.log(Reflect.ownKeys(obj));  // ['own', 'hidden', Symbol(sym)]
 ```
 
-### 7.2 遍历顺序的完整规则
+### 6.2 遍历顺序的完整规则
 
 ES2020 起，对象属性的遍历顺序被标准化：
 
@@ -1254,7 +1101,7 @@ console.log(Reflect.ownKeys(obj));
 // 3. Symbol 键（如 Symbol(s1)、Symbol(s2)），按添加顺序
 ```
 
-### 7.3 安全遍历模式
+### 6.3 安全遍历模式
 
 ```javascript
 // 安全遍历：避免原型污染与 Symbol 误访问
@@ -1287,9 +1134,9 @@ console.log(Object.keys(dict));  // ['key1', 'key2']
 
 ---
 
-## 8. 对象创建与原型操作
+## 7. 对象创建与原型操作
 
-### 8.1 原型链的三种操作方式
+### 7.1 原型链的三种操作方式
 
 ```javascript
 // 1. __proto__（非标准但事实通用，ES6 起被规范附录承认）
@@ -1315,7 +1162,7 @@ const obj5 = Object.create(proto, {
 });
 ```
 
-### 8.2 原型污染攻击与防护
+### 7.2 原型污染攻击与防护
 
 ```javascript
 // 原型污染漏洞：恶意修改 Object.prototype
@@ -1347,7 +1194,7 @@ const safe = Object.assign({}, malicious);
 console.log({}.isAdmin);  // undefined（Object.assign 安全）
 ```
 
-### 8.3 创建 null 原型对象的三种方式
+### 7.3 创建 null 原型对象的三种方式
 
 ```javascript
 // 方式 1：Object.create(null)
@@ -1377,9 +1224,9 @@ console.log(ht.get('__proto__'));  // 'safe'
 
 ---
 
-## 9. 对比分析
+## 8. 对比分析
 
-### 9.1 Object.assign vs 展开运算符 vs structuredClone
+### 8.1 Object.assign vs 展开运算符 vs structuredClone
 
 ```javascript
 const original = {
@@ -1429,7 +1276,7 @@ copy4.map instanceof Map;  // false（变为普通对象）
 | 循环引用 | 抛错 | 抛错 | 支持 | 抛错 |
 | 性能 | 最快 | 最快 | 中等 | 中等 |
 
-### 9.2 Object.hasOwn vs hasOwnProperty vs in
+### 8.2 Object.hasOwn vs hasOwnProperty vs in
 
 ```javascript
 const obj = Object.create({ inherited: 1 });
@@ -1461,7 +1308,7 @@ dict.hasOwnProperty('key');       // TypeError!
 Object.prototype.hasOwnProperty.call(dict, 'key');  // true
 ```
 
-### 9.3 Object.keys vs Reflect.ownKeys vs for...in
+### 8.3 Object.keys vs Reflect.ownKeys vs for...in
 
 | 特性 | Object.keys | Reflect.ownKeys | for...in |
 | --- | --- | --- | --- |
@@ -1470,7 +1317,7 @@ Object.prototype.hasOwnProperty.call(dict, 'key');  // true
 | 返回值 | 数组 | 数组 | 无（迭代） |
 | 性能 | 最快 | 中等 | 最慢（需检查原型链） |
 
-### 9.4 Object.freeze vs Seal vs preventExtensions
+### 8.4 Object.freeze vs Seal vs preventExtensions
 
 | 维度 | preventExtensions | seal | freeze |
 | --- | --- | --- | --- |
@@ -1485,9 +1332,9 @@ Object.prototype.hasOwnProperty.call(dict, 'key');  // true
 
 ---
 
-## 10. 常见陷阱与修复
+## 9. 常见陷阱与修复
 
-### 10.1 陷阱：浅拷贝导致的状态污染
+### 9.1 陷阱：浅拷贝导致的状态污染
 
 ```javascript
 // 问题：React 中使用 Object.assign 更新嵌套状态
@@ -1510,7 +1357,7 @@ function updateUserFixed(state, userId, newData) {
 }
 ```
 
-### 10.2 陷阱：Object.keys 顺序的不确定假设
+### 9.2 陷阱：Object.keys 顺序的不确定假设
 
 ```javascript
 // 问题：假设 Object.keys 按插入顺序
@@ -1531,7 +1378,7 @@ map.set('a', 'a');
 console.log([...map.keys()]);  // [2, 1, 'a']（保持插入顺序）
 ```
 
-### 10.3 陷阱：Object.freeze 不能冻结数组内容
+### 9.3 陷阱：Object.freeze 不能冻结数组内容
 
 ```javascript
 // 问题：冻结数组后仍可 push
@@ -1562,7 +1409,7 @@ safe[0].a = 100;  // 静默失败
 console.log(safe[0].a);  // 1
 ```
 
-### 10.4 陷阱：原型污染
+### 9.4 陷阱：原型污染
 
 ```javascript
 // 问题：合并用户输入时被注入 __proto__
@@ -1595,7 +1442,7 @@ const safe = Object.create(null);
 Object.assign(safe, userInput);
 ```
 
-### 10.5 陷阱：Object.is 与 === 的差异
+### 9.5 陷阱：Object.is 与 === 的差异
 
 ```javascript
 // 问题：用 === 判断 NaN 永远为 false
@@ -1622,7 +1469,7 @@ function clearPositionFixed(x) {
 }
 ```
 
-### 10.6 陷阱：defineProperty 的默认值
+### 9.6 陷阱：defineProperty 的默认值
 
 ```javascript
 // 问题：默认描述符不可写、不可枚举、不可配置
@@ -1642,7 +1489,7 @@ Object.defineProperty(obj, 'key2', {
 console.log(Object.keys(obj));  // ['key2']
 ```
 
-### 10.7 陷阱：setPrototypeOf 的性能
+### 9.7 陷阱：setPrototypeOf 的性能
 
 ```javascript
 // 问题：动态修改原型导致 V8 隐藏类失效
@@ -1660,9 +1507,9 @@ const goodInstance = Object.create(correctProto);
 
 ---
 
-## 11. 工程实践
+## 10. 工程实践
 
-### 11.1 不可变状态管理（Redux 风格）
+### 10.1 不可变状态管理（Redux 风格）
 
 ```javascript
 /**
@@ -1721,7 +1568,7 @@ console.log(state.getIn(['user', 'address', 'city']));    // 'Beijing'
 console.log(newState.getIn(['user', 'address', 'city'])); // 'Shanghai'
 ```
 
-### 11.2 配置对象冻结
+### 10.2 配置对象冻结
 
 ```javascript
 /**
@@ -1754,7 +1601,7 @@ config.load({
 // config.get('api').baseURL = 'wrong';  // 失败
 ```
 
-### 11.3 类型安全的对象操作（TypeScript）
+### 10.3 类型安全的对象操作（TypeScript）
 
 ```typescript
 // 利用 keyof 与 Object.keys 实现类型安全的遍历
@@ -1792,7 +1639,7 @@ const updated = updateUser(user, { age: 26 });
 // updated 类型仍为 User
 ```
 
-### 11.4 深拷贝工具函数
+### 10.4 深拷贝工具函数
 
 ```javascript
 /**
@@ -1876,7 +1723,7 @@ function deepCloneManual(obj, preservePrototype, visited) {
 }
 ```
 
-### 11.5 性能基准测试
+### 10.5 性能基准测试
 
 ```javascript
 /**
@@ -1921,9 +1768,9 @@ bench('normal access', () => {
 
 ---
 
-## 12. 案例研究
+## 11. 案例研究
 
-### 12.1 案例 1：Immutable.js 的设计思路
+### 11.1 案例 1：Immutable.js 的设计思路
 
 Immutable.js 的 `Map` 与 `List` 通过 **HAMT（Hash Array Mapped Trie）** 实现结构性共享：
 
@@ -1959,7 +1806,7 @@ console.log(map2.get('c'));  // 3
 console.log(map1 === map2);  // false（新实例）
 ```
 
-### 12.2 案例 2：Vue 3 响应式系统（早期 defineProperty 版本）
+### 11.2 案例 2：Vue 3 响应式系统（早期 defineProperty 版本）
 
 Vue 2 的响应式基于 `Object.defineProperty`，存在以下限制：
 
@@ -2040,7 +1887,7 @@ function reactive(target) {
 }
 ```
 
-### 12.3 案例 3：Lodash 的 mergeWith 实现
+### 11.3 案例 3：Lodash 的 mergeWith 实现
 
 ```javascript
 /**
@@ -2103,7 +1950,7 @@ const finalConfig = mergeWith({}, baseConfig, devConfig, (target, source) => {
 });
 ```
 
-### 12.4 案例 4：React 的 shallowEqual
+### 11.4 案例 4：React 的 shallowEqual
 
 ```javascript
 /**
@@ -2147,7 +1994,7 @@ const MyComponent = React.memo(function MyComponent(props) {
 }, shallowEqual);
 ```
 
-### 12.5 案例 5：JSON Schema 验证器
+### 11.5 案例 5：JSON Schema 验证器
 
 ```javascript
 /**
@@ -2273,7 +2120,7 @@ console.log(validator.validate({ age: 25 }));
 
    解释：A/B 是浅拷贝；C 会丢失 Date 与 Map；D 是深拷贝且支持 Date/Map/Set。
 
-### 13.3 代码修复题（code-fix）
+### 12.3 代码修复题（code-fix）
 
 1. **（analyze）** 以下代码尝试实现深度冻结，但在循环引用对象上会栈溢出。请修复：
 
@@ -2333,7 +2180,7 @@ console.log(validator.validate({ age: 25 }));
    // 或直接使用 Object.assign({}, source)
    ```
 
-### 13.4 开放题（open-ended）
+### 12.4 开放题（open-ended）
 
 1. **（evaluate）** 比较三种实现不可变状态的方式：`Object.freeze`、Immutable.js、Immer。请从性能、开发体验、学习曲线、生态支持四个维度评估。
 
@@ -2353,29 +2200,29 @@ console.log(validator.validate({ age: 25 }));
 
 ---
 
-## 14. 延伸阅读
+## 13. 延伸阅读
 
-### 14.1 书籍
+### 13.1 书籍
 
 - **Nicholas C. Zakas**：《Principles of Object-Oriented JavaScript》（No Starch Press, 2014）——深入讲解 JavaScript 对象模型与原型链。
 - **Kyle Simpson**：《You Don't Know JS: this & Object Prototypes》（O'Reilly, 2014）——对象原型系统的经典讲解。
 - **David Flanagan**：《JavaScript: The Definitive Guide, 7th Edition》（O'Reilly, 2020）——第 6 章详细讲解对象与属性描述符。
 - **Axel Rauschmayer**：《Speaking JavaScript》（O'Reilly, 2014）——第 17 章对象作为字典的精细讲解。
 
-### 14.2 论文与规范
+### 13.2 论文与规范
 
 - **ECMA-262, 17th Edition (2026)**：第 7 章 Objects，第 20 章 Object 对象。规范文本，权威来源。
 - **Phil Bagwell (2002)**："Ideal Hash Trees"——HAMT 数据结构原始论文，Immutable.js 的理论基础。
 - **Rich Hickey (2008)**："The Value of Values"——不可变数据哲学的奠基性演讲。
 
-### 14.3 开源项目
+### 13.3 开源项目
 
 - **Immutable.js** (https://github.com/immutable-js/immutable-js)：Facebook 出品的不可变数据库，基于 HAMT。
 - **Immer** (https://github.com/immerjs/immer)：基于 Proxy 的 Copy-on-Write 不可变库，开发体验最佳。
 - **Lodash** (https://github.com/lodash/lodash)：`_.merge`、`_.cloneDeep`、`_.set` 等工具函数的工业实现。
 - **Ramda** (https://github.com/ramda/ramda)：函数式编程库，强调不可变与无副作用。
 
-### 14.4 在线资源
+### 13.4 在线资源
 
 - **MDN: Object** (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)：最完整的 API 参考。
 - **TC39 Proposals** (https://github.com/tc39/proposals)：所有进入流程的提案列表。
@@ -2383,9 +2230,9 @@ console.log(validator.validate({ age: 25 }));
 
 ---
 
-## 15. 附录
+## 14. 附录
 
-### 15.1 Object 静态方法完整速查表
+### 14.1 Object 静态方法完整速查表
 
 | 方法 | 版本 | 功能 | 是否触发原型链 |
 | --- | --- | --- | --- |
@@ -2413,7 +2260,7 @@ console.log(validator.validate({ age: 25 }));
 | `Object.setPrototypeOf(obj, proto)` | ES6 | 设置原型 | — |
 | `Object.values(obj)` | ES2017 | 自身可枚举值数组 | 否 |
 
-### 15.2 属性遍历方式对照表
+### 14.2 属性遍历方式对照表
 
 | 方式 | 自身可枚举 | 自身不可枚举 | Symbol | 原型链 | 顺序保证 |
 | --- | --- | --- | --- | --- | --- |
@@ -2424,7 +2271,7 @@ console.log(validator.validate({ age: 25 }));
 | `Object.getOwnPropertySymbols` | — | — | 是 | 否 | ES2020+ |
 | `Reflect.ownKeys` | 是 | 是 | 是 | 否 | ES2020+ |
 
-### 15.3 不可变性层级表
+### 14.3 不可变性层级表
 
 | 操作 | preventExtensions | seal | freeze | deepFreeze |
 | --- | --- | --- | --- | --- |
@@ -2436,7 +2283,7 @@ console.log(validator.validate({ age: 25 }));
 | 嵌套对象保护 | 否 | 否 | 否 | 是 |
 | V8 性能影响 | 无 | 中 | 高（但读取快） | 高 |
 
-### 15.4 TC39 提案状态参考（截至 2026-07）
+### 14.4 TC39 提案状态参考（截至 2026-07）
 
 | 提案 | 阶段 | 说明 |
 | --- | --- | --- |
@@ -2449,7 +2296,7 @@ console.log(validator.validate({ age: 25 }));
 
 ---
 
-## 16. 修订日志
+## 15. 修订日志
 
 | 日期 | 版本 | 修订内容 | 修订人 |
 | --- | --- | --- | --- |

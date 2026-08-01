@@ -14,6 +14,7 @@ related:
   - c/变量与常量
 prerequisites: []
 ---
+
 # 程序结构与基本语法
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -34,33 +35,9 @@ prerequisites: []
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-### 1.1 Bloom 分类目标
-
-| 层次 | 目标 | 关键问题 |
-| --- | --- | --- |
-| Remember | 列举 C 程序的基本组成元素 | C 程序由哪些部分组成？ |
-| Understand | 解释 token、声明、语句的区别 | 什么是 translation unit？ |
-| Apply | 编写一个完整 C 程序 | 如何编写并编译 hello.c？ |
-| Analyze | 比较声明与定义 | extern 声明与定义有何不同？ |
-| Evaluate | 评估不同命名规范的优劣 | snake_case vs camelCase？ |
-| Create | 设计一个多文件项目结构 | 如何组织 src/include/tests 目录？ |
-
-### 1.2 具体目标
-
-1. **命名** C 程序的七大组成部分：预处理指令、声明、定义、函数、语句、表达式、注释。
-2. **解释** C 编译的四个阶段：预处理、编译、汇编、链接。
-3. **使用** GCC/Clang 的 `-E/-S/-c` 选项观察各阶段输出。
-4. **区分** declaration 与 definition 的语法与语义。
-5. **设计** 一个跨平台 C 项目的目录结构。
-6. **撰写** 符合团队规范的 C 代码（命名、注释、文件组织）。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 K&R 时代的程序结构
+### 1.1 K&R 时代的程序结构
 
 K&R C（1978）的程序结构相对松散：
 
@@ -80,7 +57,7 @@ main()
 
 注意：`main` 默认返回 `int`，`printf` 隐式声明（C89 仍允许，C99 起禁止）。
 
-### 2.2 C89 的标准化
+### 1.2 C89 的标准化
 
 C89 引入了：
 
@@ -101,7 +78,7 @@ int main(void)
 }
 ```
 
-### 2.3 C99 的现代化
+### 1.3 C99 的现代化
 
 C99 引入了：
 
@@ -111,7 +88,7 @@ C99 引入了：
 - `for` 循环内的变量声明：`for (int i = 0; ...)`.
 - 指定初始化器：`struct Point p = {.x = 1, .y = 2};`。
 
-### 2.4 C11/C17 的并发与安全
+### 1.4 C11/C17 的并发与安全
 
 C11 引入了：
 
@@ -121,7 +98,7 @@ C11 引入了：
 - 匿名结构体/联合体成员。
 - 边界检查接口（Annex K，可选）。
 
-### 2.5 C23 的现代化
+### 1.5 C23 的现代化
 
 C23 进一步现代化：
 
@@ -148,7 +125,7 @@ int main(void)
 }
 ```
 
-### 2.6 演进时间线
+### 1.6 演进时间线
 
 ```mermaid
 timeline
@@ -164,9 +141,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 翻译阶段（Phases of Translation）
+### 2.1 翻译阶段（Phases of Translation）
 
 ISO/IEC 9899:2024 §5.1.1.2 定义了 C 程序的八个翻译阶段：
 
@@ -181,7 +158,7 @@ ISO/IEC 9899:2024 §5.1.1.2 定义了 C 程序的八个翻译阶段：
 | 7 | 编译为汇编代码，再汇编为目标文件 |
 | 8 | 链接所有目标文件与库，解析外部引用，生成可执行文件 |
 
-### 3.2 Token（词法单元）
+### 2.2 Token（词法单元）
 
 ISO/IEC 9899:2024 §6.4 定义 token 分类：
 
@@ -191,7 +168,7 @@ $$
 
 预处理 token 还包含：头文件名、`#`、`##`、`__VA_ARGS__` 等。
 
-### 3.3 标识符形式化
+### 2.3 标识符形式化
 
 ISO/IEC 9899:2024 §6.4.2 定义标识符：
 
@@ -211,7 +188,7 @@ C23 进一步允许标识符中直接使用 Unicode 字符（部分实现）：
 int café = 1;  // C23 允许
 ```
 
-### 3.4 声明与定义
+### 2.4 声明与定义
 
 **声明（declaration）**：引入一个名字，告知其类型与链接性。
 
@@ -237,7 +214,7 @@ int add(int, int);  /* 函数声明（原型） */
 int add(int a, int b) { return a + b; }  /* 函数定义 */
 ```
 
-### 3.5 翻译单元
+### 2.5 翻译单元
 
 ISO/IEC 9899:2024 §5.1.1.1：
 
@@ -247,7 +224,7 @@ $$
 
 预处理后，所有 `#include` 展开为一个完整的翻译单元。
 
-### 3.6 作用域（Scope）
+### 2.6 作用域（Scope）
 
 ISO/IEC 9899:2024 §6.2.1 定义作用域：
 
@@ -270,7 +247,7 @@ $$
 \text{Scope}(n) = \text{region where name } n \text{ is visible}
 $$
 
-### 3.7 链接（Linkage）
+### 2.7 链接（Linkage）
 
 ISO/IEC 9899:2024 §6.2.2：
 
@@ -288,7 +265,7 @@ void f(void) {
 }
 ```
 
-### 3.8 存储期（Storage Duration）
+### 2.8 存储期（Storage Duration）
 
 ISO/IEC 9899:2024 §6.2.4：
 
@@ -299,7 +276,7 @@ ISO/IEC 9899:2024 §6.2.4：
 | Automatic | 所在代码块执行期间 |
 | Allocated | `malloc` 到 `free` |
 
-### 3.9 类型（Type）
+### 2.9 类型（Type）
 
 ISO/IEC 9899:2024 §6.2.5 定义类型分类：
 
@@ -316,9 +293,9 @@ ISO/IEC 9899:2024 §6.2.5 定义类型分类：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 文法与语法分析
+### 3.1 文法与语法分析
 
 C 语法用上下文无关文法（CFG）描述。例如声明语句的产生式：
 
@@ -345,7 +322,7 @@ int (*fp)(int);
 
 解析讲解：`fp` 是指针，指向一个函数，函数接受 `int` 返回 `int`。
 
-### 4.2 词法分析的歧义
+### 3.2 词法分析的歧义
 
 C 词法分析遵循"最大 munch"（maximal munch）原则：每一步都匹配最长的可能 token。
 
@@ -374,7 +351,7 @@ i = a/*b;  /* 这是注释开始，而非除法 */
 i = a / *b;  /* 显式除法 */
 ```
 
-### 4.3 字符集与编码
+### 3.3 字符集与编码
 
 C 源代码使用以下字符集：
 
@@ -389,7 +366,7 @@ const char *t = u8"Hello";    /* C23: const char[]，与之前一致 */
 char8_t *u = u8"你好";         /* C23 中 u8"" 在 char8_t 字符串 */
 ```
 
-### 4.4 转义序列
+### 3.4 转义序列
 
 | 转义 | 含义 |
 | --- | --- |
@@ -410,7 +387,7 @@ char8_t *u = u8"你好";         /* C23 中 u8"" 在 char8_t 字符串 */
 | `\uXXXX` | 通用字符名（4 位十六进制） |
 | `\UXXXXXXXX` | 通用字符名（8 位十六进制） |
 
-### 4.5 标识符长度
+### 3.5 标识符长度
 
 C 标准规定：
 
@@ -419,7 +396,7 @@ C 标准规定：
 
 实际编译器支持长度更长（GCC、Clang 通常支持 4095 字符）。
 
-### 4.6 注释语义
+### 3.6 注释语义
 
 注释在翻译阶段 3 被替换为单个空格：
 
@@ -437,7 +414,7 @@ int x;
 
 C23 引入 `//` 单行注释已 20 余年，C89 仍要求 `/* */`。
 
-### 4.7 字符串字面量
+### 3.7 字符串字面量
 
 字符串字面量类型：
 
@@ -457,9 +434,9 @@ s[0] = 'H';   /* UB：修改只读内存 */
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 完整 C 程序结构
+### 4.1 完整 C 程序结构
 
 ```c
 /* main.c — 完整 C 程序结构示例（C23） */
@@ -544,7 +521,7 @@ void point_free(Point *p)
 }
 ```
 
-### 5.2 头文件结构
+### 4.2 头文件结构
 
 ```c
 /* point.h — 头文件 */
@@ -567,7 +544,7 @@ void point_set_y(Point *p, int32_t y);
 #endif /* POINT_H */
 ```
 
-### 5.3 注释风格
+### 4.3 注释风格
 
 ```c
 /**
@@ -590,7 +567,7 @@ int gcd(int a, int b)
 }
 ```
 
-### 5.4 标识符命名
+### 4.4 标识符命名
 
 ```c
 /* snake_case：变量与函数 */
@@ -616,9 +593,9 @@ typedef enum {
 typedef int32_t my_int_t;
 ```
 
-### 5.5 关键字分类
+### 4.5 关键字分类
 
-#### 5.5.1 类型关键字
+#### 4.5.1 类型关键字
 
 ```c
 char c = 'A';
@@ -633,7 +610,7 @@ void *ptr = NULL;
 _Bool b = 1;          /* C99，C23 起 bool 是关键字 */
 ```
 
-#### 5.5.2 控制流关键字
+#### 4.5.2 控制流关键字
 
 ```c
 if (x > 0) { /* ... */ } else { /* ... */ }
@@ -652,7 +629,7 @@ break;
 continue;
 ```
 
-#### 5.5.3 存储类关键字
+#### 4.5.3 存储类关键字
 
 ```c
 auto x = 42;           /* C23: 类型推断；C89: 默认 */
@@ -661,7 +638,7 @@ static int z = 0;      /* 静态存储期 + 内部链接 */
 extern int w;          /* 声明外部定义 */
 ```
 
-#### 5.5.4 类型限定符
+#### 4.5.4 类型限定符
 
 ```c
 const int ci = 42;             /* 不可修改 */
@@ -670,7 +647,7 @@ int *restrict p = &arr[0];    /* 别名提示 */
 _Atomic int ai = 0;           /* 原子操作 */
 ```
 
-### 5.6 编译过程演示
+### 4.6 编译过程演示
 
 ```bash
 # 1. 预处理：输出 .i 文件
@@ -689,7 +666,7 @@ gcc main.o -o main
 gcc -std=c23 -Wall -Wextra -O2 main.c -o main
 ```
 
-### 5.7 多文件编译
+### 4.7 多文件编译
 
 ```bash
 # 方式一：一次编译
@@ -701,7 +678,7 @@ gcc -std=c23 -c point.c -o point.o
 gcc main.o point.o -o app
 ```
 
-### 5.8 main 函数的所有形式
+### 4.8 main 函数的所有形式
 
 ```c
 /* C89 标准 */
@@ -720,7 +697,7 @@ int main(int argc, char **argv) { /* ... */ }  /* 等价于 char *argv[] */
 int main(int argc, char *argv[], char *envp[]) { /* ... */ }  /* 非标准扩展 */
 ```
 
-### 5.9 程序退出码
+### 4.9 程序退出码
 
 ```c
 #include <stdlib.h>
@@ -736,7 +713,7 @@ int main(void)
 }
 ```
 
-### 5.10 命令行参数
+### 4.10 命令行参数
 
 ```c
 #include <stdio.h>
@@ -762,7 +739,7 @@ int main(int argc, char *argv[])
 # argv[2] = world
 ```
 
-### 5.11 环境变量
+### 4.11 环境变量
 
 ```c
 #include <stdlib.h>
@@ -786,9 +763,9 @@ int main(void)
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 C 与 C++ 程序结构对比
+### 5.1 C 与 C++ 程序结构对比
 
 | 特性 | C | C++ |
 | --- | --- | --- |
@@ -803,7 +780,7 @@ int main(void)
 | 异常 | 无 | try/catch |
 | RAII | 无（手动管理） | 析构函数 |
 
-### 6.2 C 与其他语言对比
+### 5.2 C 与其他语言对比
 
 | 维度 | C | Rust | Go | Python |
 | --- | --- | --- | --- | --- |
@@ -816,9 +793,9 @@ int main(void)
 | 注释 | `//`、`/* */` | `//`、`/* */` | `//`、`/* */` | `#` |
 | 命名约定 | snake_case | snake_case | MixedCase | snake_case |
 
-### 6.3 注释规范对比
+### 5.3 注释规范对比
 
-#### 6.3.1 C 风格
+#### 5.3.1 C 风格
 
 ```c
 /* 块注释 */
@@ -832,7 +809,7 @@ int main(void)
  */
 ```
 
-#### 6.3.2 Python 风格
+#### 5.3.2 Python 风格
 
 ```python
 # 单行注释
@@ -842,7 +819,7 @@ def func(arg):
     pass
 ```
 
-#### 6.3.3 Rust 风格
+#### 5.3.3 Rust 风格
 
 ```rust
 // 单行
@@ -850,7 +827,7 @@ def func(arg):
 /// 文档注释
 ```
 
-### 6.4 何时使用何种注释
+### 5.4 何时使用何种注释
 
 | 场景 | 推荐注释 |
 | --- | --- |
@@ -863,9 +840,9 @@ def func(arg):
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：忘记 `#include`
+### 6.1 陷阱一：忘记 `#include`
 
 ```c
 int main(void) {
@@ -885,7 +862,7 @@ int main(void) {
 }
 ```
 
-### 7.2 陷阱二：头文件循环包含
+### 6.2 陷阱二：头文件循环包含
 
 ```c
 /* a.h */
@@ -911,7 +888,7 @@ int main(void) {
 /* ... */
 ```
 
-### 7.3 陷阱三：忘记函数原型
+### 6.3 陷阱三：忘记函数原型
 
 ```c
 /* 没有 int add(int, int); 的声明 */
@@ -925,7 +902,7 @@ int add(int a, int b) { return a + b; }
 
 C99 起禁止隐式函数声明。
 
-### 7.4 陷阱四：变量未初始化
+### 6.4 陷阱四：变量未初始化
 
 ```c
 int x;       /* 未初始化，UB 读取 */
@@ -938,7 +915,7 @@ if (x) { /* ... */ }
 int x = 0;
 ```
 
-### 7.5 陷阱五：混淆声明与定义
+### 6.5 陷阱五：混淆声明与定义
 
 ```c
 /* 错误：在头文件中定义变量 */
@@ -955,7 +932,7 @@ extern int x;
 int x = 42;
 ```
 
-### 7.6 陷阱六：缺少返回值
+### 6.6 陷阱六：缺少返回值
 
 ```c
 int f(int x) {
@@ -973,7 +950,7 @@ int f(int x) {
 }
 ```
 
-### 7.7 陷阱七：分号缺失
+### 6.7 陷阱七：分号缺失
 
 ```c
 struct Point {
@@ -992,7 +969,7 @@ struct Point {
 };           /* 必须有分号 */
 ```
 
-### 7.8 陷阱八：注释嵌套
+### 6.8 陷阱八：注释嵌套
 
 C 不允许 `/* */` 嵌套：
 
@@ -1002,7 +979,7 @@ C 不允许 `/* */` 嵌套：
 
 实际只注释了 `outer /* inner */`，之后的 `outer continues */` 是语法错误。
 
-### 7.9 陷阱九：宏的副作用
+### 6.9 陷阱九：宏的副作用
 
 ```c
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -1018,7 +995,7 @@ static inline int max(int a, int b) {
 }
 ```
 
-### 7.10 陷阱十：变长数组（VLA）滥用
+### 6.10 陷阱十：变长数组（VLA）滥用
 
 ```c
 int n = get_size();
@@ -1027,7 +1004,7 @@ int arr[n];   /* C99 VLA，栈分配，可能爆栈 */
 
 VLA 在 C11 改为可选，C23 仍有争议。建议大数组使用 `malloc`。
 
-### 7.11 综合最佳实践清单
+### 6.11 综合最佳实践清单
 
 1. **启用所有警告**：`-Wall -Wextra -Wpedantic -Werror`。
 2. **使用现代 C**：`-std=c23` 或至少 `-std=c11`。
@@ -1042,9 +1019,9 @@ VLA 在 C11 改为可选，C23 仍有争议。建议大数组使用 `malloc`。
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 文件组织
+### 7.1 文件组织
 
 推荐目录结构：
 
@@ -1081,9 +1058,9 @@ flowchart TD
     T16 --> T17
 ```
 
-### 8.2 头文件保护
+### 7.2 头文件保护
 
-#### 8.2.1 传统 include guard
+#### 7.2.1 传统 include guard
 
 ```c
 #ifndef MODULE_H
@@ -1094,7 +1071,7 @@ flowchart TD
 #endif /* MODULE_H */
 ```
 
-#### 8.2.2 #pragma once
+#### 7.2.2 #pragma once
 
 ```c
 #pragma once
@@ -1112,7 +1089,7 @@ flowchart TD
 - 非标准。
 - 在符号链接等边缘情况下可能误判。
 
-### 8.3 命名规范
+### 7.3 命名规范
 
 参考 Linux Kernel 风格：
 
@@ -1124,7 +1101,7 @@ flowchart TD
 - 宏：`UPPER_CASE`，如 `MAX_SIZE`。
 - 头文件宏：`MODULE_H` 格式。
 
-### 8.4 注释规范
+### 7.4 注释规范
 
 参考 Linux Kernel：
 
@@ -1141,7 +1118,7 @@ flowchart TD
 /* FIXME: 描述已知问题 */
 ```
 
-### 8.5 函数规范
+### 7.5 函数规范
 
 参考 Linux Kernel：
 
@@ -1154,7 +1131,7 @@ flowchart TD
 int parse_int(const char *str, int *result);
 ```
 
-### 8.6 错误处理
+### 7.6 错误处理
 
 ```c
 /* POSIX 风格：返回 -1，errno 设置 */
@@ -1179,7 +1156,7 @@ typedef enum {
 } ErrorCode;
 ```
 
-### 8.7 头文件设计
+### 7.7 头文件设计
 
 头文件应：
 
@@ -1208,7 +1185,7 @@ size_t vector_size(const Vector *v);
 #endif /* VECTOR_H */
 ```
 
-### 8.8 跨平台宏
+### 7.8 跨平台宏
 
 ```c
 /* platform.h */
@@ -1238,7 +1215,7 @@ size_t vector_size(const Vector *v);
 #endif /* PLATFORM_H */
 ```
 
-### 8.9 编译选项
+### 7.9 编译选项
 
 ```makefile
 CFLAGS := -std=c23 -Wall -Wextra -Wpedantic -Werror \
@@ -1253,7 +1230,7 @@ CFLAGS_DEBUG := -O0 -g -fsanitize=address,undefined
 CFLAGS_RELEASE := -O3 -DNDEBUG -flto
 ```
 
-### 8.10 CI/CD
+### 7.10 CI/CD
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1279,9 +1256,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Linux Kernel 程序结构
+### 8.1 Linux Kernel 程序结构
 
 Linux 内核的代码风格（`Documentation/process/coding-style.rst`）：
 
@@ -1312,7 +1289,7 @@ int register_device(struct device *dev)
 }
 ```
 
-### 9.2 Redis 程序结构
+### 8.2 Redis 程序结构
 
 Redis 风格特点：
 
@@ -1332,7 +1309,7 @@ zmalloc(size_t size)
 - 字符串：自定义 SDS 类型。
 - 错误处理：返回 NULL 表示失败。
 
-### 9.3 SQLite 程序结构
+### 8.3 SQLite 程序结构
 
 SQLite 风格特点：
 
@@ -1347,7 +1324,7 @@ SQLITE_API int sqlite3_open(
 );
 ```
 
-### 9.4 musl libc 程序结构
+### 8.4 musl libc 程序结构
 
 musl libc 风格特点：
 
@@ -1355,7 +1332,7 @@ musl libc 风格特点：
 - 标准：严格遵循 ISO C 与 POSIX。
 - 头文件组织：每个头文件对应源文件。
 
-### 9.5 curl 程序结构
+### 8.5 curl 程序结构
 
 curl 风格特点：
 
@@ -1653,7 +1630,7 @@ int main(void)
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题 1**：为什么 C 程序的入口函数必须是 `main`？是否可以自定义入口？
 
@@ -1735,7 +1712,7 @@ int counter = 42;
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Kernighan, B. W. and Ritchie, D. M. 1988. *The C Programming Language* (2nd ed.). Prentice Hall, Englewood Cliffs, NJ.
 
@@ -1799,9 +1776,9 @@ int counter = 42;
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 经典书籍
+### 11.1 经典书籍
 
 1. **K&R《The C Programming Language》**：C 圣经，第 1 章讲程序结构。
 2. **King《C Programming: A Modern Approach》**：现代教材。
@@ -1809,7 +1786,7 @@ int counter = 42;
 4. **Seacord《Effective C》**：现代 C 实践。
 5. **Gustedt《Modern C》**：覆盖 C17/C23，免费开放。
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 1. **cppreference.com**：https://en.cppreference.com/w/c
 2. **ISO/IEC 9899 草案**：https://www.open-std.org/jtc1/sc22/wg14/
@@ -1817,20 +1794,20 @@ int counter = 42;
 4. **Clang Manual**：https://clang.llvm.org/docs/
 5. **Linux Kernel Coding Style**：https://www.kernel.org/doc/html/latest/process/coding-style.html
 
-### 12.3 课程
+### 11.3 课程
 
 1. **MIT 6.S081 Operating System Engineering**：https://pdos.csail.mit.edu/6.S081/
 2. **Stanford CS107 Computer Organization & Systems**：https://web.stanford.edu/class/archive/cs/cs107/
 3. **CMU 15-213 Introduction to Computer Systems**：https://www.cs.cmu.edu/~213/
 4. **Berkeley CS61C Great Ideas in Computer Architecture**：https://cs61c.org/
 
-### 12.4 论文
+### 11.4 论文
 
 1. **Ritchie, D. M. (1993). The Development of the C Language**. ACM HOPL II.
 2. **Stroustrup, B. (1991). The C++ Programming Language** (3rd ed.).
 3. **Bryant, R. E. and O'Hallaron, D. R. (2015). Computer Systems: A Programmer's Perspective**.
 
-### 12.5 开源项目
+### 11.5 开源项目
 
 1. **Linux Kernel**：https://github.com/torvalds/linux
 2. **musl libc**：https://musl.libc.org/
@@ -1838,7 +1815,7 @@ int counter = 42;
 4. **SQLite**：https://www.sqlite.org/
 5. **curl**：https://github.com/curl/curl
 
-### 12.6 工具
+### 11.6 工具
 
 1. **GCC**：https://gcc.gnu.org/
 2. **Clang/LLVM**：https://clang.llvm.org/
@@ -1848,14 +1825,14 @@ int counter = 42;
 6. **clang-tidy**：https://clang.llvm.org/extra/clang-tidy/
 7. **cppcheck**：http://cppcheck.sourceforge.net/
 
-### 12.7 社区与博客
+### 11.7 社区与博客
 
 1. **Stack Overflow C tag**：https://stackoverflow.com/questions/tagged/c
 2. **Reddit r/C_Programming**：https://www.reddit.com/r/C_Programming/
 3. **Lobsters C tag**：https://lobste.rs/t/c
 4. **Eli Bendersky's Website**：https://eli.thegreenplace.net/
 
-### 12.8 编码规范
+### 11.8 编码规范
 
 1. **GNU Coding Standards**：https://www.gnu.org/prep/standards/
 2. **Linux Kernel Coding Style**：https://www.kernel.org/doc/html/latest/process/coding-style.html

@@ -15,63 +15,16 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # C++ Lambda 捕获详解
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 认知分类法（Bloom's Taxonomy）组织学习目标，使读者能够循序渐进地掌握 C++ Lambda 表达式的捕获机制（capture），并具备在生产环境中设计、分析、评估 Lambda 捕获方案的能力。Lambda 捕获是 C++ 中最易错、也最强大的语言特性之一——它决定了闭包对象如何"持有"外部世界，进而决定了异步代码、回调代码、并发代码的安全性。
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述 Lambda 表达式的完整语法骨架：`[capture-list] (parameter-list) mutable -> return-type { body }`，并能说出每个组成部分的可省略性。
-- **R2**：背出 C++ 标准中"闭包类型（closure type）"的定义位置：ISO/IEC 14882:2020 §7.5.5 [expr.prim.lambda.closure]。
-- **R3**：列出至少 8 种捕获形式：`[x]`、`[&x]`、`[=]`、`[&]`、`[=, &x]`、`[&, x]`、`[p = expr]`、`[this]`、`[*this]`、`[...captures = args]`，并说明每种形式的语义。
-- **R4**：记住 C++11/14/17/20/23 五代标准对 Lambda 捕获机制的主要增补：初始化捕获（C++14）、`*this` 捕获（C++17）、包展开捕获与模板 Lambda（C++20）、显式对象参数递归 Lambda（C++23）。
-- **R5**：背出"`[=]` 隐式捕获 `this`"在 C++20 中被弃用的历史（P0806 提案），并说明替代写法。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释"闭包类型"与"闭包对象"的区别：闭包类型是编译器为每个 Lambda 生成的匿名类类型，闭包对象是该类的具体实例。
-- **U2**：阐明值捕获与引用捕获在底层实现上的差异：值捕获对应闭包类的非静态数据成员（拷贝构造），引用捕获对应引用成员（指针语义）。
-- **U3**：描述 `mutable` 关键字对闭包类 `operator()` 签名的影响：去除 `const` 修饰，允许修改值捕获的成员。
-- **U4**：解释"初始化捕获"为何能解决"无法移动捕获"的痛点——传统的 `[=]` / `[&]` 不支持 `std::move`，初始化捕获通过 `p = std::move(x)` 表达式显式控制。
-- **U5**：阐明 `[this]` 与 `[*this]` 的本质区别：前者捕获指针（浅捕获），后者拷贝整个对象（深捕获），二者在异步回调场景下的安全性截然不同。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用初始化捕获将 `std::unique_ptr` 移动捕获进闭包，实现独占所有权的异步任务。
-- **A2**：使用 `[*this]` 捕获在异步线程中安全访问对象成员，避免对象析构导致的悬空指针。
-- **A3**：使用 `std::shared_ptr` 捕获延长资源生命周期，并配合 `std::weak_ptr` 捕获打破循环引用。
-- **A4**：使用 C++23 显式对象参数 `this auto self` 实现递归 Lambda，替代传统 `std::function` 包装模式。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 `[=]` 与 `[&]` 的"默认捕获"在大型代码库中导致的隐式依赖问题，给出团队规范建议。
-- **An2**：分析 `[this]` 捕获在异步回调中的悬空风险，画出对象生命周期与回调执行时间线。
-- **An3**：对比值捕获与引用捕获在循环中的语义差异：值捕获对循环变量的快照、引用捕获对循环变量的最终值。
-- **An4**：分析 `std::function` 与 Lambda 闭包类型在类型擦除开销上的差异（堆分配、虚调用、异常安全）。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价给定 Lambda 代码在捕获安全性、生命周期正确性、性能开销上的表现，给出 1-10 分的工程化评分。
-- **E2**：判断在异步场景下应选用 `[this]`、`[*this]`、`[shared_ptr]`、`[weak_ptr]` 中的哪一种，给出决策树。
-- **E3**：评估"在头文件中使用 Lambda 捕获"对编译时间与代码膨胀的影响。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个基于 Lambda 的线程池任务系统，支持移动捕获、超时取消、异常传播，并保证捕获资源的安全释放。
-- **C2**：实现一个 RAII 风格的"作用域退出（scope exit）"工具，使用初始化捕获在构造时保存清理函数。
-- **C3**：设计一个观察者模式的事件总线，使用 `std::weak_ptr` 捕获避免订阅者生命周期影响发布者。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 史前时代：函数对象与回调困境（pre-2011）
+### 1.1 史前时代：函数对象与回调困境（pre-2011）
 
 C++98 时代没有 Lambda 表达式，处理回调与本地函数依赖三种工具：
 
@@ -94,7 +47,7 @@ std::sort(persons.begin(), persons.end(), CompareByAge());
 
 如果排序字段需要在运行期决定（例如根据用户输入选择按年龄还是按姓名排序），就需要为每种字段定义一个 functor 类，或者使用复杂的 `std::bind` 组合。
 
-### 2.2 C++11：Lambda 表达式诞生
+### 1.2 C++11：Lambda 表达式诞生
 
 C++11（ISO/IEC 14882:2011，N2927 提案）引入 Lambda 表达式，从根本上解决了"本地函数"问题：
 
@@ -124,7 +77,7 @@ auto f = std::bind([](std::unique_ptr<int>& p) { return *p; }, std::move(ptr));
 
 这种写法晦涩难懂，且语义与 Lambda 捕获不一致。
 
-### 2.3 C++14：初始化捕获（移动捕获）
+### 1.3 C++14：初始化捕获（移动捕获）
 
 C++14（N3648 提案）引入**初始化捕获（init-capture）**，从根本上解决了移动捕获问题：
 
@@ -143,7 +96,7 @@ auto f = [p = std::move(ptr)]() { return *p; };
 
 C++14 同时引入 **Generic Lambda**（`auto` 参数），但还不支持模板参数与包展开捕获。
 
-### 2.4 C++17：`*this` 捕获与 `constexpr` Lambda
+### 1.4 C++17：`*this` 捕获与 `constexpr` Lambda
 
 C++17（P0189 提案）引入 `[*this]` 捕获，解决了 `[this]` 在异步场景下的悬空指针问题：
 
@@ -163,11 +116,11 @@ C++17 同时引入：
 2. **`*this` 在默认捕获中的处理**：`[=]` 隐式捕获 `this` 被标记为"已弃用"的过渡期开始。
 3. **捕获 `*this` 的常见场景**：异步任务、定时器、事件回调。
 
-### 2.5 C++20：模板 Lambda 与包展开捕获
+### 1.5 C++20：模板 Lambda 与包展开捕获
 
 C++20 引入两项关键改进：
 
-#### 2.5.1 模板 Lambda（P0428）
+#### 1.5.1 模板 Lambda（P0428）
 
 允许 Lambda 显式声明模板参数：
 
@@ -178,7 +131,7 @@ auto g = []<typename T, std::size_t N>(const std::array<T, N>& arr) {
 };
 ```
 
-#### 2.5.2 包展开捕获（P0780、P2095）
+#### 1.5.2 包展开捕获（P0780、P2095）
 
 允许 Lambda 捕获参数包：
 
@@ -208,7 +161,7 @@ struct S {
 };
 ```
 
-### 2.6 C++23：显式对象参数（递归 Lambda）
+### 1.6 C++23：显式对象参数（递归 Lambda）
 
 C++23（P0847）引入**显式对象参数（deducing this）**，从根本上解决了 Lambda 不能递归的问题：
 
@@ -229,7 +182,7 @@ std::cout << fibonacci(10) << std::endl;  // 55
 
 C++23 同时引入 `static operator()`，使无状态 Lambda 可以作为函数指针更自然地传递。
 
-### 2.7 C++26：反射与异步整合
+### 1.7 C++26：反射与异步整合
 
 C++26 提案中与 Lambda 捕获相关的方向：
 
@@ -237,7 +190,7 @@ C++26 提案中与 Lambda 捕获相关的方向：
 2. **结构化绑定捕获**：提案允许 `[const auto& [k, v] = pair]` 直接捕获结构化绑定。
 3. **协程与 Lambda 整合**：改进 Lambda 在协程上下文中的捕获语义。
 
-### 2.8 时间线总结表
+### 1.8 时间线总结表
 
 | 标准版本 | 年份 | Lambda 捕获关键里程碑 |
 | -------- | ---- | --------------------- |
@@ -252,9 +205,9 @@ C++26 提案中与 Lambda 捕获相关的方向：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ISO/IEC 14882 中的 Lambda 表达式定义
+### 2.1 ISO/IEC 14882 中的 Lambda 表达式定义
 
 ISO/IEC 14882:2020 §7.5.5 [expr.prim.lambda] 给出 Lambda 表达式的形式化语法：
 
@@ -293,7 +246,7 @@ init-capture:
     & identifier initializer
 ```
 
-### 3.2 闭包类型的形式化定义
+### 2.2 闭包类型的形式化定义
 
 ISO/IEC 14882:2020 §7.5.5.1 [expr.prim.lambda.closure] 第 1 段：
 
@@ -307,7 +260,7 @@ ISO/IEC 14882:2020 §7.5.5.1 [expr.prim.lambda.closure] 第 1 段：
 2. **未命名**：闭包类型无法用类型名直接引用，只能通过 `decltype` 或 `auto` 间接使用。
 3. **非聚合**：闭包类型不是聚合类型，不能使用聚合初始化。
 
-### 3.3 闭包类型的成员构成
+### 2.3 闭包类型的成员构成
 
 闭包类型的成员由 Lambda 的捕获方式决定：
 
@@ -338,7 +291,7 @@ public:
 auto f = __closure_unique_name(x, y);
 ```
 
-### 3.4 `mutable` 的形式化影响
+### 2.4 `mutable` 的形式化影响
 
 不带 `mutable` 的 Lambda，其 `operator()` 是 `const` 成员函数：
 
@@ -360,7 +313,7 @@ public:
 
 注意：`mutable` 仅影响值捕获的成员，不影响引用捕获的成员——引用本身是 `const` 的（不能重新绑定），但通过引用可以修改被引用对象。
 
-### 3.5 值捕获的形式化语义
+### 2.5 值捕获的形式化语义
 
 ISO/IEC 14882:2020 §7.5.5.2 [expr.prim.lambda.capture] 第 13 段：
 
@@ -374,7 +327,7 @@ $$
 \text{member}_i = \text{copy\_of}(\text{captured\_variable}_i)
 $$
 
-### 3.6 引用捕获的形式化语义
+### 2.6 引用捕获的形式化语义
 
 ISO/IEC 14882:2020 §7.5.5.2 第 14 段：
 
@@ -388,7 +341,7 @@ $$
 \text{member}_i = \text{reference\_to}(\text{captured\_variable}_i)
 $$
 
-### 3.7 初始化捕获的形式化语义
+### 2.7 初始化捕获的形式化语义
 
 ISO/IEC 14882:2020 §7.5.5.2 第 7 段：
 
@@ -412,7 +365,7 @@ public:
 };
 ```
 
-### 3.8 `[this]` 与 `[*this]` 的形式化语义
+### 2.8 `[this]` 与 `[*this]` 的形式化语义
 
 ISO/IEC 14882:2020 §7.5.5.2 第 16 段：
 
@@ -425,7 +378,7 @@ ISO/IEC 14882:2020 §7.5.5.2 第 16 段：
 | `[this]` | `T*` | 指针拷贝 | 依赖原对象存活 |
 | `[*this]` | `T` | 拷贝构造 | 闭包独立持有副本 |
 
-### 3.9 捕获查找规则
+### 2.9 捕获查找规则
 
 ISO/IEC 14882:2020 §7.5.5.2 第 9 段规定，Lambda 函数体中对捕获变量的访问遵循以下规则：
 
@@ -444,9 +397,9 @@ auto f = [x]() {
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 闭包类型的内存布局
+### 3.1 闭包类型的内存布局
 
 闭包类型的内存布局由其捕获成员决定。考虑：
 
@@ -488,7 +441,7 @@ public:
 
 闭包对象的总大小约为 4 + 8 + 32 = 44 字节（加上对齐填充，实际可能是 48 或 56 字节）。
 
-### 4.2 值捕获的快照语义
+### 3.2 值捕获的快照语义
 
 值捕获在 **Lambda 创建时** 拷贝变量的当前值，后续对原变量的修改不影响闭包：
 
@@ -519,7 +472,7 @@ for (const auto& cb : callbacks) {
 }
 ```
 
-### 4.3 引用捕获的别名语义
+### 3.3 引用捕获的别名语义
 
 引用捕获在闭包中持有原变量的引用，对闭包内变量的修改影响原变量：
 
@@ -547,7 +500,7 @@ auto f = makeBadLambda();
 std::cout << f() << std::endl;  // UB：访问已销毁的 local
 ```
 
-### 4.4 `mutable` 的语义分析
+### 3.4 `mutable` 的语义分析
 
 `mutable` 仅影响值捕获成员的 `const` 性质：
 
@@ -572,7 +525,7 @@ std::cout << count << std::endl;  // 0（原变量未改变）
 
 每次调用 `f2` 时，闭包成员 `count` 被修改并保持状态。这是 Lambda 作为有状态闭包的核心机制。
 
-### 4.5 初始化捕获的推导机制
+### 3.5 初始化捕获的推导机制
 
 初始化捕获 `[name = initializer]` 的语义：
 
@@ -604,7 +557,7 @@ std::map<int, std::string> m = {{1, "one"}, {2, "two"}};
 auto f = [&ref = m[1]]() { return ref; };  // ref 引用 m[1]
 ```
 
-### 4.6 `[this]` 与 `[*this]` 的语义对比
+### 3.6 `[this]` 与 `[*this]` 的语义对比
 
 `[this]` 捕获对象指针，闭包通过指针访问对象成员：
 
@@ -642,7 +595,7 @@ auto f = w.getCallback();
 std::cout << f() << std::endl;  // 42（独立持有副本）
 ```
 
-### 4.7 异步场景下的捕获安全性
+### 3.7 异步场景下的捕获安全性
 
 异步场景下，闭包的生命周期可能超过被捕获变量的生命周期。这是 Lambda 捕获最危险的场景：
 
@@ -666,7 +619,7 @@ void goodAsync() {
 }  // local 销毁，但闭包内仍有副本
 ```
 
-### 4.8 `std::function` 与闭包类型的开销对比
+### 3.8 `std::function` 与闭包类型的开销对比
 
 `std::function` 是类型擦除的调用包装器，相比直接使用闭包类型有以下开销：
 
@@ -689,9 +642,9 @@ std::function<int(int)> f2 = [x](int n) { return x + n; };  // 有额外开销
 
 ---
 
-## 5. 代码示例与实战详解
+## 4. 代码示例与实战详解
 
-### 5.1 基础捕获示例
+### 4.1 基础捕获示例
 
 ```cpp
 #include <iostream>
@@ -731,7 +684,7 @@ int main() {
 }
 ```
 
-### 5.2 `mutable` 状态机示例
+### 4.2 `mutable` 状态机示例
 
 ```cpp
 #include <iostream>
@@ -761,7 +714,7 @@ int main() {
 }
 ```
 
-### 5.3 异步回调安全捕获
+### 4.3 异步回调安全捕获
 
 ```cpp
 #include <iostream>
@@ -813,7 +766,7 @@ int main() {
 }
 ```
 
-### 5.4 信号槽系统
+### 4.4 信号槽系统
 
 ```cpp
 #include <functional>
@@ -864,7 +817,7 @@ int main() {
 }
 ```
 
-### 5.5 移动捕获（C++14）
+### 4.5 移动捕获（C++14）
 
 ```cpp
 #include <memory>
@@ -905,7 +858,7 @@ int main() {
 }
 ```
 
-### 5.6 `*this` 捕获（C++17）
+### 4.6 `*this` 捕获（C++17）
 
 ```cpp
 #include <iostream>
@@ -950,7 +903,7 @@ int main() {
 }
 ```
 
-### 5.7 智能指针捕获模式
+### 4.7 智能指针捕获模式
 
 ```cpp
 #include <memory>
@@ -1009,7 +962,7 @@ int main() {
 }
 ```
 
-### 5.8 C++20 包展开捕获
+### 4.8 C++20 包展开捕获
 
 ```cpp
 #include <iostream>
@@ -1057,7 +1010,7 @@ int main() {
 }
 ```
 
-### 5.9 C++23 递归 Lambda
+### 4.9 C++23 递归 Lambda
 
 ```cpp
 #include <iostream>
@@ -1098,7 +1051,7 @@ int main() {
 }
 ```
 
-### 5.10 泛型与模板 Lambda
+### 4.10 泛型与模板 Lambda
 
 ```cpp
 #include <iostream>
@@ -1141,9 +1094,9 @@ int main() {
 
 ---
 
-## 6. 跨语言对比
+## 5. 跨语言对比
 
-### 6.1 与 Rust 闭包对比
+### 5.1 与 Rust 闭包对比
 
 Rust 的闭包机制与 C++ 在理念上相似，但在所有权与生命周期上更严格：
 
@@ -1173,7 +1126,7 @@ fn main() {
 | 异步安全 | 手动管理 | 编译器强制 |
 | 性能 | 与手写代码等价 | 与手写代码等价 |
 
-### 6.2 与 Java Lambda 对比
+### 5.2 与 Java Lambda 对比
 
 Java 的 Lambda 只能捕获 `final` 或 `effectively final` 的局部变量，从根本上避免了悬空引用：
 
@@ -1199,7 +1152,7 @@ Java Lambda 的特点：
 3. 闭包对象是 `Object` 子类，有装箱开销。
 4. 通过函数式接口（Functional Interface）实现类型擦除。
 
-### 6.3 与 Go 闭包对比
+### 5.3 与 Go 闭包对比
 
 Go 的闭包默认引用捕获，但有垃圾回收机制保证安全：
 
@@ -1230,7 +1183,7 @@ Go 闭包的特点：
 2. 垃圾回收避免悬空引用。
 3. 性能略低（堆分配 + 间接访问）。
 
-### 6.4 与 C# 闭包对比
+### 5.4 与 C# 闭包对比
 
 C# 的闭包也是引用捕获，且变量在循环中共享：
 
@@ -1253,7 +1206,7 @@ class Program {
 }
 ```
 
-### 6.5 综合对比表
+### 5.5 综合对比表
 
 | 语言 | 默认捕获 | 移动捕获 | 引用捕获 | 生命周期安全 | 异步友好 |
 | ---- | -------- | -------- | -------- | ------------ | -------- |
@@ -1267,9 +1220,9 @@ C++ 的 Lambda 捕获机制在性能上最优（零开销），但在安全性�
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 悬空引用
+### 6.1 悬空引用
 
 ```cpp
 // 反模式：返回引用捕获局部变量的 Lambda
@@ -1291,7 +1244,7 @@ std::function<int()> goodFunction() {
 }
 ```
 
-### 7.2 循环中的引用捕获
+### 6.2 循环中的引用捕获
 
 ```cpp
 // 反模式：循环中引用捕获
@@ -1315,7 +1268,7 @@ for (int i = 0; i < 3; ++i) {
 // 输出：0 1 2
 ```
 
-### 7.3 `[=]` 隐式捕获 `this`（C++20 弃用）
+### 6.3 `[=]` 隐式捕获 `this`（C++20 弃用）
 
 ```cpp
 struct S {
@@ -1336,7 +1289,7 @@ auto goodLambda() {
 }
 ```
 
-### 7.4 异步 `[this]` 悬空
+### 6.4 异步 `[this]` 悬空
 
 ```cpp
 // 反模式：异步任务 [this] 捕获
@@ -1354,7 +1307,7 @@ struct Worker {
 
 **修复**：使用 `[*this]`（C++17）或 `shared_ptr` 捕获。
 
-### 7.5 `mutable` 滥用
+### 6.5 `mutable` 滥用
 
 ```cpp
 // 反模式：不必要的 mutable
@@ -1365,7 +1318,7 @@ auto f = [x]() mutable {
 
 `mutable` 仅在确实需要修改值捕获成员时使用。不必要的 `mutable` 会让编译器无法将闭包对象视为 `const`，影响优化。
 
-### 7.6 默认捕获 `[&]` 隐式依赖
+### 6.6 默认捕获 `[&]` 隐式依赖
 
 ```cpp
 // 反模式：[&] 隐式捕获所有变量
@@ -1382,7 +1335,7 @@ void processData(int a, int b, int c) {
 auto f = [&a, &b, &c]() { return a + b + c; };
 ```
 
-### 7.7 捕获大对象导致闭包膨胀
+### 6.7 捕获大对象导致闭包膨胀
 
 ```cpp
 // 反模式：值捕获大对象
@@ -1404,7 +1357,7 @@ auto f = [&big_data]() {  // 引用捕获（确保生命周期安全）
 };
 ```
 
-### 7.8 `std::function` 与不可复制闭包
+### 6.8 `std::function` 与不可复制闭包
 
 ```cpp
 // 反模式：将不可复制的闭包赋给 std::function
@@ -1424,7 +1377,7 @@ std::move_only_function<int()> f = [p = std::move(ptr)]() { return *p; };
 auto f = [p = std::move(ptr)]() { return *p; };
 ```
 
-### 7.9 捕获与异常安全
+### 6.9 捕获与异常安全
 
 ```cpp
 // 反模式：捕获异常对象
@@ -1446,7 +1399,7 @@ try {
 }
 ```
 
-### 7.10 递归 Lambda 的旧 workaround
+### 6.10 递归 Lambda 的旧 workaround
 
 ```cpp
 // C++11/14 的丑陋递归 Lambda workaround
@@ -1471,9 +1424,9 @@ auto fib = [](this auto self, int n) -> int {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 团队规范建议
+### 7.1 团队规范建议
 
 1. **禁止使用 `[=]` 和 `[&]` 默认捕获**：显式列出每个捕获变量，提高可读性与可维护性。
 2. **异步场景必须使用值捕获或智能指针捕获**：禁止引用捕获，避免悬空。
@@ -1482,7 +1435,7 @@ auto fib = [](this auto self, int n) -> int {
 5. **避免在头文件中暴露复杂 Lambda**：可能导致编译时间膨胀。
 6. **`mutable` 仅在必要时使用**：默认不带 `mutable`，需要状态修改时显式声明。
 
-### 8.2 性能优化建议
+### 7.2 性能优化建议
 
 1. **优先使用 `auto` 而非 `std::function`**：避免类型擦除开销。
 2. **小对象优先值捕获**：避免引用带来的间接访问。
@@ -1490,7 +1443,7 @@ auto fib = [](this auto self, int n) -> int {
 4. **避免在热路径构造 Lambda**：闭包对象构造有开销。
 5. **`noexcept` Lambda**：标记 `noexcept` 帮助编译器优化。
 
-### 8.3 异步捕获模式决策树
+### 7.3 异步捕获模式决策树
 
 ```mermaid
 flowchart TD
@@ -1509,7 +1462,7 @@ flowchart TD
     T4 --> T6
 ```
 
-### 8.4 编译期检查技巧
+### 7.4 编译期检查技巧
 
 ```cpp
 // 编译期检查闭包类型大小
@@ -1521,7 +1474,7 @@ static_assert(std::is_copy_constructible_v<decltype(f)>);
 static_assert(std::is_trivially_copyable_v<decltype(f)>);  // 可能失败
 ```
 
-### 8.5 调试技巧
+### 7.5 调试技巧
 
 ```cpp
 // 使用 typeinfo 查看闭包类型
@@ -1538,14 +1491,14 @@ free(name);
 static_assert(std::is_class_v<decltype(f)>);
 ```
 
-### 8.6 测试策略
+### 7.6 测试策略
 
 1. **单元测试 Lambda 行为**：测试闭包的状态变化、捕获正确性。
 2. **生命周期测试**：异步场景下验证捕获对象的安全释放。
 3. **性能基准**：对比 `auto` 与 `std::function` 的调用开销。
 4. **并发测试**：多线程场景下验证捕获对象的线程安全。
 
-### 8.7 与 `std::function` 的协作
+### 7.7 与 `std::function` 的协作
 
 ```cpp
 #include <functional>
@@ -1569,7 +1522,7 @@ unique_callbacks.push_back([p = std::make_unique<int>(42)]() {
 });
 ```
 
-### 8.8 与协程整合
+### 7.8 与协程整合
 
 ```cpp
 #include <coroutine>
@@ -1592,9 +1545,9 @@ Task<void> asyncWork() {
 
 ---
 
-## 9. 案例分析
+## 8. 案例分析
 
-### 9.1 案例：线程池任务系统
+### 8.1 案例：线程池任务系统
 
 ```cpp
 #include <functional>
@@ -1668,7 +1621,7 @@ private:
 - 任务队列使用 `std::function<void()>`，通过 `shared_ptr` 捕获 `packaged_task` 实现移动语义。
 - 这种设计确保任务可以包含 `unique_ptr` 等不可复制资源。
 
-### 9.2 案例：作用域退出工具
+### 8.2 案例：作用域退出工具
 
 ```cpp
 #include <functional>
@@ -1711,7 +1664,7 @@ void processData() {
 - 即使抛出异常也能保证资源释放。
 - 简化 RAII 模式的样板代码。
 
-### 9.3 案例：事件总线系统
+### 8.3 案例：事件总线系统
 
 ```cpp
 #include <functional>
@@ -1802,7 +1755,7 @@ private:
 - 订阅者使用 `weak_ptr` 捕获避免循环引用。
 - 发布者与订阅者解耦，通过 ID 管理订阅。
 
-### 9.4 案例：异步加载与回调
+### 8.4 案例：异步加载与回调
 
 ```cpp
 #include <future>
@@ -1860,7 +1813,7 @@ int main() {
 - 使用 `shared_ptr` 捕获确保回调对象存活。
 - 使用模板参数（`Callback`）避免 `std::function` 的类型擦除开销。
 
-### 9.5 案例：观察者模式的安全实现
+### 8.5 案例：观察者模式的安全实现
 
 ```cpp
 #include <memory>
@@ -1929,7 +1882,7 @@ int main() {
 
 ## 知识讲解与要点分析（原练习）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **练习 1**：写一个 Lambda，捕获局部变量 `x`（值捕获）和 `y`（引用捕获），返回 `x + y`。
 
@@ -1945,7 +1898,7 @@ int y = 20;
 auto f = [x, &y]() { return x + y; };
 ```
 
-### 10.2 中级题
+### 9.2 中级题
 
 **练习 2**：使用初始化捕获（C++14）实现一个移动捕获 `std::unique_ptr<int>` 的 Lambda。
 
@@ -1957,7 +1910,7 @@ auto f = [p = std::move(ptr)]() { return *p; };
 // ptr 此后为 nullptr
 ```
 
-### 10.3 异步安全题
+### 9.3 异步安全题
 
 **练习 3**：以下代码有什么问题？如何修复？
 
@@ -2020,7 +1973,7 @@ std::cout << accumulator(20) << std::endl;  // 30
 std::cout << accumulator(30) << std::endl;  // 60
 ```
 
-### 10.5 设计题
+### 9.5 设计题
 
 **练习 5**：设计一个线程安全的计数器类，使用 Lambda 作为回调通知机制。
 
@@ -2070,7 +2023,7 @@ counter.increment();  // 输出：Counter: 1
 counter.increment();  // 输出：Counter: 2
 ```
 
-### 10.6 高级题
+### 9.6 高级题
 
 **练习 6**：使用 C++23 显式对象参数实现一个递归 Lambda，计算阶乘。
 
@@ -2084,7 +2037,7 @@ auto factorial = [](this auto self, int n) -> int {
 std::cout << factorial(5) << std::endl;  // 120
 ```
 
-### 10.7 错误诊断题
+### 9.7 错误诊断题
 
 **练习 7**：以下代码有何错误？如何修复？
 
@@ -2113,7 +2066,7 @@ for (int i = 0; i < 3; ++i) {
 // 输出：0 1 2
 ```
 
-### 10.8 性能优化题
+### 9.8 性能优化题
 
 **练习 8**：以下代码性能问题在哪？如何优化？
 
@@ -2162,7 +2115,7 @@ auto f = [names_ptr]() {
 };
 ```
 
-### 10.9 综合应用题
+### 9.9 综合应用题
 
 **练习 9**：实现一个通用的"延迟执行"工具，接受任意可调用对象和参数，在 `operator()` 时执行。
 
@@ -2204,7 +2157,7 @@ int main() {
 }
 ```
 
-### 10.10 异步场景题
+### 9.10 异步场景题
 
 **练习 10**：以下代码在多线程环境下有何风险？如何修复？
 
@@ -2245,7 +2198,7 @@ std::thread([data_ptr]() {
 }).detach();
 ```
 
-### 10.11 设计模式题
+### 9.11 设计模式题
 
 **练习 11**：使用 Lambda 实现策略模式，根据配置选择不同的排序算法。
 
@@ -2292,7 +2245,7 @@ int main() {
 }
 ```
 
-### 10.12 反模式识别题
+### 9.12 反模式识别题
 
 **练习 12**：以下代码有何问题？如何改进？
 
@@ -2319,7 +2272,7 @@ void processItems(const std::vector<Item>& items) {
 }
 ```
 
-### 10.13 高级应用题
+### 9.13 高级应用题
 
 **练习 13**：实现一个简单的函数组合器（compose），将两个函数 `f` 和 `g` 组合成 `f(g(x))`。
 
@@ -2350,9 +2303,9 @@ int main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准文档
+### 10.1 标准文档
 
 1. ISO/IEC 14882:2011. *Information technology — Programming languages — C++*. International Organization for Standardization, 2011. §5.1.2 [expr.prim.lambda].
 2. ISO/IEC 14882:2014. *Information technology — Programming languages — C++*. International Organization for Standardization, 2014. §5.1.2 [expr.prim.lambda].
@@ -2360,7 +2313,7 @@ int main() {
 4. ISO/IEC 14882:2020. *Information technology — Programming languages — C++*. International Organization for Standardization, 2020. §7.5.5 [expr.prim.lambda]. DOI: 10.3403/30347968U.
 5. ISO/IEC 14882:2024. *Information technology — Programming languages — C++*. International Organization for Standardization, 2024. §7.5.5 [expr.prim.lambda].
 
-### 11.2 提案与论文
+### 10.2 提案与论文
 
 6. Jarvi, J., Willcock, J., & Lumsdaine, A. (2003). *N1968: Lambda Expressions and Closures for C++*. ISO/IEC JTC1/SC22/WG21. Retrieved from https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2003/n1968.pdf
 7. Stroustrup, B., Dos Reis, G., & Meredith, A. (2012). *N3337: A Primer on Lambda Expressions*. ISO/IEC JTC1/SC22/WG21.
@@ -2371,7 +2324,7 @@ int main() {
 12. Stroustrup, B., Sutton, A., & Sutter, H. (2020). *P0806R2: Deprecate implicit capture of this via [=]*. ISO/IEC JTC1/SC22/WG21.
 13. Bartoszek, B., & Eifrath, P. (2021). *P0847R7: Deducing this*. ISO/IEC JTC1/SC22/WG21.
 
-### 11.3 经典书籍
+### 10.3 经典书籍
 
 14. Stroustrup, B. (2013). *The C++ Programming Language* (4th ed.). Addison-Wesley Professional. ISBN: 978-0321563842.
 15. Meyers, S. (2014). *Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14*. O'Reilly Media. ISBN: 978-1491903995.
@@ -2379,33 +2332,33 @@ int main() {
 17. Sutter, H., & Alexandrescu, A. (2004). *C++ Coding Standards: 101 Rules, Guidelines, and Best Practices*. Addison-Wesley Professional. ISBN: 978-0321113580.
 18. Vandevoorde, D., Josuttis, N. M., & Gregor, D. (2017). *C++ Templates: The Complete Guide* (2nd ed.). Addison-Wesley Professional. ISBN: 978-0321714121.
 
-### 11.4 学术论文
+### 10.4 学术论文
 
 19. Gregor, D., Jarvi, J., & Lumsdaine, A. (2006). *Lambda Expressions and Closures for C++*. Proceedings of the 2006 ACM Symposium on Applied Computing (SAC '06). DOI: 10.1145/1141277.1141571.
 20. Stroustrup, B., & Sutton, A. (2012). *The Design of the C++0x Standard Library*. Proceedings of the 2012 ACM Conference on Systems, Programming, and Applications: Software for Humanity (SPLASH '12). DOI: 10.1145/2384716.2384733.
 
-### 11.5 在线资源
+### 10.5 在线资源
 
 21. cppreference.com. *Lambda expressions*. Retrieved from https://en.cppreference.com/w/cpp/language/lambda
 22. Stroustrup, B. (2024). *C++ Core Guidelines: Lambda Expressions*. Retrieved from https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#SS-lambda
 23. Sutter, H. (2013). *GotW: Lambda Capture*. Retrieved from https://herbsutter.com/2013/01/09/gotw-8-solution/
 
-### 11.6 编译器实现文档
+### 10.6 编译器实现文档
 
 24. Clang Project. (2024). *Clang Language Extensions: Lambda Expressions*. Retrieved from https://clang.llvm.org/cxx_status.html
 25. GCC Project. (2024). *GCC C++ Standards Support*. Retrieved from https://gcc.gnu.org/projects/cxx-status.html
 26. Microsoft. (2024). *MSVC C++ Language Conformance*. Retrieved from https://docs.microsoft.com/en-us/cpp/overview/visual-cpp-language-conformance
 
-### 11.7 相关技术报告
+### 10.7 相关技术报告
 
 27. Boost Community. (2005). *Boost.Lambda Library*. Retrieved from https://www.boost.org/doc/libs/release/libs/lambda/
 28. Boost Community. (2010). *Boost.Phoenix Library*. Retrieved from https://www.boost.org/doc/libs/release/libs/phoenix/
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 主题进阶
+### 11.1 主题进阶
 
 - **C++ 协程**：协程与 Lambda 捕获的整合，处理异步流程中的状态管理。
 - **C++20 概念（Concepts）**：与 Lambda 模板参数结合，提供更强的类型约束。
@@ -2413,21 +2366,21 @@ int main() {
 - **C++23 `std::move_only_function`**：支持不可复制闭包的函数包装器。
 - **C++26 反射（P2996）**：枚举闭包类型成员，调试与分析捕获。
 
-### 12.2 跨学科拓展
+### 11.2 跨学科拓展
 
 - **函数式编程**：Lambda 演算与闭包的数学基础，参考 Alonzo Church (1936) 的 λ-calculus。
 - **类型系统**：闭包类型的类型推导规则，参考 Hindley-Milner 类型系统。
 - **编译器优化**：闭包内联、逃逸分析、堆分配消除等技术。
 - **内存模型**：闭包成员的内存布局与缓存友好性。
 
-### 12.3 实战资源
+### 11.3 实战资源
 
 - **GoogleTest**：使用 Lambda 编写参数化测试与 fixture。
 - **Catch2**：现代测试框架中的 Lambda 用法。
 - **TBB（Threading Building Blocks）**：并行算法中的 Lambda 捕获模式。
 - **PPL（Parallel Patterns Library）**：Windows 平台并行编程。
 
-### 12.4 学术参考
+### 11.4 学术参考
 
 - Abelson, H., & Sussman, G. J. (1996). *Structure and Interpretation of Computer Programs* (2nd ed.). MIT Press. 第 1.3 节讨论闭包与高阶函数。
 - Pierce, B. C. (2002). *Types and Programming Languages*. MIT Press. 第 5-7 章讨论 λ 演算与类型系统。
@@ -2435,9 +2388,9 @@ int main() {
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 Lambda 捕获速查表
+### 12.1 Lambda 捕获速查表
 
 | 捕获形式 | C++ 版本 | 语义 | 示例 |
 | -------- | -------- | ---- | ---- |
@@ -2454,7 +2407,7 @@ int main() {
 | `[&name = expr]` | C++14 | 引用初始化捕获 | `[&ref = m[1]]() { return ref; }` |
 | `[...pack = args]` | C++20 | 包展开捕获 | `[...cs = std::move(args)]() { return (cs + ...); }` |
 
-### 13.2 `mutable` 速查表
+### 12.2 `mutable` 速查表
 
 | 场景 | 是否需要 `mutable` |
 | ---- | ------------------ |
@@ -2465,7 +2418,7 @@ int main() {
 | 修改捕获的指针本身 | 是 |
 | 修改捕获的 `unique_ptr`（重新赋值） | 是 |
 
-### 13.3 编译器支持矩阵
+### 12.3 编译器支持矩阵
 
 | 特性 | GCC | Clang | MSVC | Apple Clang |
 | ---- | --- | ----- | ---- | ----------- |
@@ -2476,7 +2429,7 @@ int main() {
 | 包展开捕获 (C++20) | 12+ | 14+ | 2022 17.5+ | 15.0+ |
 | 显式对象参数 (C++23) | 14+ | 18+ | 2022 17.6+ | 16.0+ |
 
-### 13.4 常见错误信息速查
+### 12.4 常见错误信息速查
 
 | 错误信息 | 原因 | 修复 |
 | -------- | ---- | ---- |
@@ -2486,7 +2439,7 @@ int main() {
 | `error: no matching function for call to 'std::function<...>::function(...)'` | 将不可复制的闭包赋给 `std::function` | 使用 `std::move_only_function` 或 `auto` |
 | `error: variable 'x' cannot be implicitly captured in a lambda with no capture-default specified` | Lambda 使用了变量但未指定捕获方式 | 添加 `[x]`、`[&x]`、`[=]` 或 `[&]` |
 
-### 13.5 调试命令速查
+### 12.5 调试命令速查
 
 ```bash
 # 查看 Lambda 闭包类型大小
@@ -2505,7 +2458,7 @@ clang++ -std=c++20 -Xclang -ast-dump source.cpp
 cl /std:c++20 /Zi /d2Zi+ source.cpp
 ```
 
-### 13.6 性能基准模板
+### 12.6 性能基准模板
 
 ```cpp
 #include <benchmark/benchmark.h>
@@ -2544,9 +2497,9 @@ BENCHMARK_MAIN();
 
 ---
 
-## 14. 总结
+## 13. 总结
 
-### 14.1 核心要点
+### 13.1 核心要点
 
 1. **Lambda 捕获是 C++ 中最强大也最危险的特性**：正确的捕获使代码简洁优雅，错误的捕获导致悬空引用、数据竞争等难以排查的 bug。
 2. **值捕获是安全的快照语义**：在异步场景下优先使用值捕获，避免引用悬空。
@@ -2557,7 +2510,7 @@ BENCHMARK_MAIN();
 7. **`std::function` 有类型擦除开销**：在性能敏感场景优先使用 `auto`。
 8. **智能指针捕获是异步安全的金标准**：`shared_ptr` 捕获延长生命周期，`weak_ptr` 捕获避免循环引用。
 
-### 14.2 学习路径建议
+### 13.2 学习路径建议
 
 1. **入门阶段**：掌握 `[=]` / `[&]` / `[x]` / `[&x]` 四种基础捕获。
 2. **进阶阶段**：掌握初始化捕获（C++14）与移动捕获。
@@ -2565,7 +2518,7 @@ BENCHMARK_MAIN();
 4. **专家阶段**：掌握包展开捕获（C++20）与显式对象参数（C++23）。
 5. **应用阶段**：结合智能指针、协程、并发库设计安全的异步系统。
 
-### 14.3 实践建议
+### 13.3 实践建议
 
 1. **优先显式捕获**：避免 `[=]` / `[&]` 隐式依赖。
 2. **异步场景值捕获**：禁止引用捕获局部变量。
@@ -2574,7 +2527,7 @@ BENCHMARK_MAIN();
 5. **关注闭包大小**：`sizeof(lambda)` 反映捕获开销。
 6. **测试生命周期边界**：异步场景下验证捕获资源的安全释放。
 
-### 14.4 未来演进方向
+### 13.4 未来演进方向
 
 C++26 与后续标准在 Lambda 捕获方向的演进：
 
@@ -2583,7 +2536,7 @@ C++26 与后续标准在 Lambda 捕获方向的演进：
 3. **协程与 Lambda 整合**：改进协程上下文中的捕获语义。
 4. **更严格的静态检查**：编译器静态分析悬空引用与生命周期错误。
 
-### 14.5 与其他章节的联系
+### 13.5 与其他章节的联系
 
 - **《函数对象与Lambda》**：本章节是 Lambda 表达式的捕获专题，函数对象章节讨论 Lambda 与传统 functor 的对比。
 - **《智能指针》**：本章节讨论智能指针捕获模式，智能指针章节讨论 `unique_ptr`、`shared_ptr`、`weak_ptr` 的实现细节。

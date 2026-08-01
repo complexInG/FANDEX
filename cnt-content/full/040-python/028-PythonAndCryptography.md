@@ -24,69 +24,6 @@ tags:
 - hashing
 - tls
 - pki
-learningObjectives:
-- '{''remember'': ''复述密码学三大支柱（机密性、完整性、真实性）与对应密码学原语（对称加密、哈希、MAC/签名）''}'
-- '{''understand'': ''解释 AES-GCM、RSA-OAEP、ECDSA、HMAC、argon2 等算法的工作原理与适用场景''}'
-- '{''apply'': ''使用 Python cryptography 库实现对称加密、非对称加密、数字签名与证书验证''}'
-- '{''apply'': ''使用 hashlib、bcrypt、argon2-cffi 实现口令哈希与消息摘要''}'
-- '{''analyze'': ''对比 ECB/CBC/CFB/OFB/CTR/GCM 等分组模式的差异与安全属性''}'
-- '{''evaluate'': ''评估密钥管理方案（KMS、HSM、Key Rotations）的工程权衡''}'
-- '{''create'': ''设计一个符合 TLS 1.3、PKI、零信任原则的生产级加密服务''}'
-exercises:
-- id: ex-crypto-01
-  type: fill-blank
-  cognitiveLevel: remember
-  question: AES 算法的分组长度固定为 ______ 位，支持的密钥长度为 128、192 与 ______ 位。
-  hint: 参考 NIST FIPS 197。
-  answer: '["128", "256"]'
-  blankCount: 2
-  caseSensitive: false
-  explanation: AES 的分组长度固定为 128 位（16 字节），密钥长度可以为 128、192 或 256 位，对应 AES-128/192/256。
-  difficulty: 1
-  estimatedTime: 2
-- id: ex-crypto-02
-  type: choice
-  cognitiveLevel: understand
-  question: 以下哪种分组密码工作模式同时提供了机密性（AEAD）与完整性校验？
-  options:
-  - ECB（Electronic Codebook）
-  - CBC（Cipher Block Chaining）
-  - CTR（Counter）
-  - GCM（Galois/Counter Mode）
-  correctIndex: 3
-  multiple: false
-  explanation: GCM 在 CTR 模式基础上结合 GHASH 提供认证加密（AEAD），可同时保证机密性与完整性；ECB/CBC/CTR 仅提供机密性，需额外配合 HMAC 才能保证完整性。
-  difficulty: 2
-  estimatedTime: 3
-  answer: D. GCM 在 CTR 模式基础上结合 GHASH 提供认证加密（AEAD），可同时保证机密性与完整性；ECB/CBC/CTR 仅提供机密性，需额外配合 HMAC 才能保证完整性。
-- id: ex-crypto-03
-  type: code-fix
-  cognitiveLevel: apply
-  question: 以下代码尝试使用 AES-CBC 加密用户口令，但存在多个安全缺陷，请指出缺陷并给出修复后的代码。
-  buggyCode: "import os\nfrom cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes\n\nKEY = b'0123456789abcdef'  # 硬编码密钥\nIV = b'\\x00' * 16         # 全零 IV\n\ndef encrypt(password: str) -> bytes:\n    cipher = Cipher(algorithms.AES(KEY), modes.CBC(IV))\n    encryptor = cipher.encryptor()\n    return encryptor.update(password.encode()) + encryptor.finalize()\n"
-  fixedCode: "import os\nfrom cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes\nfrom cryptography.hazmat.primitives import padding\n\n# 缺陷 1: 硬编码密钥 -> 改为每次随机生成或从 KMS 获取\n# 缺陷 2: 全零 IV -> 改为每次随机生成并随密文一同传输\n# 缺陷 3: 未做 PKCS7 填充 -> 明文长度非 16 字节倍数时会异常\n# 缺陷 4: 仅用 CBC -> 推荐直接使用 AES-GCM 获得机密性 + 完整性\n\ndef encrypt(password: str, key: bytes) -> tuple[bytes, bytes, bytes]:\n    iv = os.urandom(16)\n    padder = padding.PKCS7(128).padder()\n    padded = padder.update(password.encode()) + padder.finalize()\n    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))\n    encryptor = cipher.encryptor()\n    return key, iv, encryptor.update(padded) + encryptor.finalize()\n"
-  errorDescription: 密钥硬编码、IV 全零、缺少填充、缺乏完整性保护。
-  language: python
-  explanation: 生产环境应避免硬编码密钥；IV 应使用密码学安全随机数；CBC 模式必须做 PKCS7 填充；最佳实践是直接使用 AES-GCM 等 AEAD 模式。
-  difficulty: 3
-  estimatedTime: 10
-  answer: '密钥硬编码、IV 全零、缺少填充、缺乏完整性保护。 关键修复：# 缺陷 1: 硬编码密钥 -> 改为每次随机生成或从 KMS 获取 | # 缺陷 2: 全零 IV -> 改为每次随机生成并随密文一同传输 | # 缺陷 3: 未做 PKCS7 填充 -> 明文长度非 16 字节倍数时会异常'
-- id: ex-crypto-04
-  type: open-ended
-  cognitiveLevel: evaluate
-  question: 你正在为一家医疗 SaaS 设计患者数据加密方案，需同时满足 HIPAA（数据静态加密）、GDPR（数据传输加密）与零信任原则。请阐述你会选择哪些密码学原语、密钥管理流程（含 KMS/HSM、轮转、撤销）以及为什么不应自行实现密码学算法。
-  keyPoints:
-  - 静态加密使用 AES-256-GCM 或 XChaCha20-Poly1305
-  - 传输加密使用 TLS 1.3，禁用旧版协议
-  - 密钥分层管理（KEK / DEK）并集成 AWS KMS 或 HashiCorp Vault
-  - 密钥轮转策略（如 90 天）与撤销机制
-  - 引用 Kerckhoffs 原则说明不应自行造轮子
-  - 引用 Hipaa §164.312(a)(2)(iv) 与 (e)(2)(ii)
-  - 零信任：每次访问都重新认证与授权
-  minWords: 250
-  difficulty: 5
-  estimatedTime: 30
-  answer: 静态加密使用 AES-256-GCM 或 XChaCha20-Poly1305；传输加密使用 TLS 1.3，禁用旧版协议；密钥分层管理（KEK / DEK）并集成 AWS KMS 或 HashiCorp Vault；密钥轮转策略（如 90 天）与撤销机制；引用 Kerckhoffs 原则说明不应自行造轮子；引用 Hipaa §164.312(a)(2)(iv) 与 (e)(2)(ii)；零信任：每次访问都重新认证与授权
 references:
 - type: standard
   authors:
@@ -209,34 +146,14 @@ reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 90
 ---
 
+
 # Python 与加密
 
 > 密码学不是把消息藏起来，而是把消息变得**对攻击者毫无意义**——即便攻击者已经窃听到全部密文、掌握了算法实现、甚至拿到了除了密钥之外的几乎所有信息。
 
-## 1. 学习目标与思维导图
+## 1. 历史动机：从凯撒密码到零信任
 
-学习本章后，你应当能够：
-
-1. **记住（Remember）** 密码学三大支柱（机密性、完整性、真实性）以及对应的密码学原语；
-2. **理解（Understand）** AES、RSA、ECDSA、SHA-2/3、HMAC、argon2 等主流算法的内部结构与安全属性；
-3. **应用（Apply）** Python 的 `cryptography`、`hashlib`、`bcrypt`、`argon2-cffi` 库实现生产级加密服务；
-4. **分析（Analyze）** 不同分组模式（ECB/CBC/CTR/GCM）与密钥派生函数（PBKDF2/scrypt/argon2）的差异；
-5. **评估（Evaluate）** 密钥管理方案（KMS、HSM、密钥轮转）的工程权衡；
-6. **创造（Create）** 一个符合 TLS 1.3、PKI、零信任原则的端到端加密系统。
-
-```
-            密码学 (Cryptography)
-                |
-   +------------+------------+-----------+----------+
-   |            |            |           |          |
- 对称加密   非对称加密     哈希        MAC/签名    密钥管理
- AES/GCM    RSA/ECDSA    SHA-2/3     HMAC       KMS/HSM
- ChaCha20   X25519/Ed25519 BLAKE2    Poly1305    PBKDF2/scrypt
-```
-
-## 2. 历史动机：从凯撒密码到零信任
-
-### 2.1 古典密码时代（公元前 1900 — 1949）
+### 1.1 古典密码时代（公元前 1900 — 1949）
 
 - **公元前 1900 年**：古埃及出现非标准的象形文字替换，被认为是最早的密码学萌芽；
 - **公元前 60 年**：凯撒密码（Caesar Cipher）—— 一种位移替换密码，密钥空间仅 25；
@@ -244,13 +161,13 @@ estimatedReadingTime: 90
 - **1854 年**：Playfair Cipher 由 Charles Wheatstone 提出，使用双字母组替换；
 - **1917 年**：Vernam 提出一次性密码本（One-Time Pad, OTP），后被 Shannon 证明为无条件安全。
 
-### 2.2 机械密码时代（1920 — 1949）
+### 1.2 机械密码时代（1920 — 1949）
 
 - **1918 年**：Arthur Scherbius 发明 Enigma，二战中被纳粹德国广泛使用；
 - **1939 — 1945 年**：Alan Turing 在 Bletchley Park 破解 Enigma，被认为是现代计算机科学的开端之一；
 - **1949 年**：Claude Shannon 发表《Communication Theory of Secrecy Systems》，奠定信息论密码学基础。
 
-### 2.3 现代密码学时代（1976 — 至今）
+### 1.3 现代密码学时代（1976 — 至今）
 
 | 年份 | 事件 | 意义 |
 | ---- | ---- | ---- |
@@ -266,7 +183,7 @@ estimatedReadingTime: 90
 | 2021 | argon2 成为 RFC 9106 | 密码哈希新标准 |
 | 2024 — 2026 | 后量子密码学 (PQC) 标准化（NIST FIPS 203/204/205） | 抗量子算法落地 |
 
-### 2.4 Python 密码学生态演进
+### 1.4 Python 密码学生态演进
 
 - **1995 — 2010**：`pycrypto` 一度占据主流，但停止维护；
 - **2013 — 2014**：`cryptography` 库由 PyCA（Python Cryptographic Authority）发起，底层基于 OpenSSL 与 CommonCrypto；
@@ -274,9 +191,9 @@ estimatedReadingTime: 90
 - **2018**：Python 3.7 引入 `secrets` 模块，替代 `random` 用于密码学场景；
 - **2024**：`cryptography` 44.x 引入后量子算法实验性支持（ML-KEM、ML-DSA），对齐 NIST FIPS 203/204。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 密码学原语的三大目标
+### 2.1 密码学原语的三大目标
 
 | 目标 | 英文 | 密码学原语 | 攻击模型 |
 | ---- | ---- | ---- | ---- |
@@ -284,7 +201,7 @@ estimatedReadingTime: 90
 | 完整性 | Integrity | 哈希、MAC | 碰撞攻击、第二原像攻击 |
 | 真实性 | Authenticity | 数字签名、MAC | 伪造攻击、重放攻击 |
 
-### 3.2 对称加密形式化
+### 2.2 对称加密形式化
 
 设 $K \in \{0,1\}^k$ 为密钥，$M \in \{0,1\}^*$ 为明文，$C \in \{0,1\}^*$ 为密文，则对称加密由两个算法组成：
 
@@ -294,7 +211,7 @@ $$
 
 满足正确性：$\forall k, m, \text{Dec}(k, \text{Enc}(k, m)) = m$。
 
-#### 3.2.1 分组密码与工作模式
+#### 2.2.1 分组密码与工作模式
 
 设分组长度 $n$（如 AES 的 $n = 128$）。一个工作模式将分组密码扩展为对任意长度消息的加密：
 
@@ -311,7 +228,7 @@ $$
 
 其中 $H = E_K(0^{128})$ 是哈希子密钥，$A$ 为附加认证数据（AAD），$C$ 为密文。
 
-### 3.3 哈希函数形式化
+### 2.3 哈希函数形式化
 
 密码学哈希函数 $H: \{0,1\}^* \to \{0,1\}^n$ 满足：
 
@@ -319,7 +236,7 @@ $$
 2. **抗第二原像（Second Preimage Resistance）**：给定 $x_1$，难以找到 $x_2 \neq x_1$ 使 $H(x_1) = H(x_2)$，复杂度应接近 $O(2^n)$；
 3. **抗碰撞（Collision Resistance）**：难以找到 $x_1 \neq x_2$ 使 $H(x_1) = H(x_2)$，根据生日悖论复杂度上界为 $O(2^{n/2})$。
 
-### 3.4 非对称加密形式化
+### 2.4 非对称加密形式化
 
 设 $(pk, sk)$ 为公私钥对，加密与解密算法分别为：
 
@@ -327,7 +244,7 @@ $$
 \text{Enc}: pk \times M \to C, \quad \text{Dec}: sk \times C \to M
 $$
 
-#### 3.4.1 RSA 数学基础
+#### 2.4.1 RSA 数学基础
 
 RSA 基于大整数分解困难性：
 
@@ -345,7 +262,7 @@ $$
 
 正确性源自 Euler 定理：$m^{ed} \equiv m \pmod n$（当 $\gcd(m, n) = 1$ 时）。
 
-#### 3.4.2 椭圆曲线密码学（ECC）
+#### 2.4.2 椭圆曲线密码学（ECC）
 
 椭圆曲线定义为 Weierstrass 方程：
 
@@ -359,7 +276,7 @@ $$
 
 256 位 ECC 提供与 3072 位 RSA 等价的安全强度，因此 IoT 与移动场景普遍采用 ECC。
 
-### 3.5 椭圆曲线 Diffie-Hellman（ECDH）
+### 2.5 椭圆曲线 Diffie-Hellman（ECDH）
 
 ECDH 密钥协商协议：
 
@@ -369,9 +286,9 @@ ECDH 密钥协商协议：
 
 X25519（Curve25519）是 IETF 推荐的现代 ECDH 曲线，具备常数时间实现与抗侧信道特性。
 
-## 4. 理论推导：HMAC 与 PBKDF2
+## 3. 理论推导：HMAC 与 PBKDF2
 
-### 4.1 HMAC 构造
+### 3.1 HMAC 构造
 
 HMAC（RFC 2104）定义为：
 
@@ -381,7 +298,7 @@ $$
 
 其中 $\text{ipad} = 0x36 \cdots 36$，$\text{opad} = 0x5c \cdots 5c$。HMAC 的安全性仅依赖于底层哈希函数的抗碰撞性与抗原像性。
 
-### 4.2 PBKDF2 推导
+### 3.2 PBKDF2 推导
 
 PBKDF2（RFC 8018）用于从口令派生密钥：
 
@@ -399,7 +316,7 @@ $$
 
 参数 $c$ 为迭代次数，建议 $\geq 600000$（OWASP 2023 推荐）。
 
-### 4.3 argon2 的内存困难性
+### 3.3 argon2 的内存困难性
 
 argon2 设计目标是同时消耗 CPU 与内存，使 GPU/ASIC 攻击成本剧增。其核心为压缩函数 $G$，对矩阵 $B[i][j]$ 反复混合：
 
@@ -409,9 +326,9 @@ $$
 
 最终输出为 $H(\text{final block})$。argon2id 同时具有抗侧信道（argon2i）与抗 GPU（argon2d）特性，是 OWASP 2023 首选推荐。
 
-## 5. Python 密码学库全景
+## 4. Python 密码学库全景
 
-### 5.1 主流库对比
+### 4.1 主流库对比
 
 | 库 | 维护方 | 用途 | 底层依赖 | 性能 | License |
 | --- | --- | --- | --- | --- | --- |
@@ -426,7 +343,7 @@ $$
 | `pynacl` | PyCA | NaCl/libsodium 绑定 | libsodium | 高 | Apache-2.0 |
 | `cryptography-vectors` | PyCA | 测试向量 | - | - | BSD |
 
-### 5.2 选型建议
+### 4.2 选型建议
 
 ```mermaid
 flowchart LR
@@ -441,7 +358,7 @@ flowchart LR
   B -->|NaCl 风格密封盒| J[pynacl]
 ```
 
-### 5.3 版本兼容性矩阵
+### 4.3 版本兼容性矩阵
 
 | 库 | Python 3.9 | 3.10 | 3.11 | 3.12 | 3.13 | 3.14 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -450,9 +367,9 @@ flowchart LR
 | argon2-cffi 23.x | 是 | 是 | 是 | 是 | 是 | 是 |
 | pynacl 1.5+ | 是 | 是 | 是 | 是 | 是 | 是 |
 
-## 6. 代码示例
+## 5. 代码示例
 
-### 6.1 安全随机数生成
+### 5.1 安全随机数生成
 
 ```python
 """
@@ -498,7 +415,7 @@ def generate_aes_key() -> bytes:
     return secrets.token_bytes(32)
 ```
 
-### 6.2 对称加密：AES-GCM
+### 5.2 对称加密：AES-GCM
 
 ```python
 """
@@ -571,7 +488,7 @@ def demo_aes_gcm():
     print(f"recovered: {recovered.decode()}")
 ```
 
-### 6.3 对称加密：Fernet（高层封装）
+### 5.3 对称加密：Fernet（高层封装）
 
 ```python
 """
@@ -626,7 +543,7 @@ def rotate_key(old_key: bytes, new_key: bytes, tokens: list[bytes]) -> list[byte
     return rotated
 ```
 
-### 6.4 哈希函数
+### 5.4 哈希函数
 
 ```python
 """
@@ -688,7 +605,7 @@ def verify_hmac(key: bytes, message: bytes, expected_mac: bytes) -> bool:
     return hmac.compare_digest(actual, expected_mac)
 ```
 
-### 6.5 口令哈希（bcrypt / argon2）
+### 5.5 口令哈希（bcrypt / argon2）
 
 ```python
 """
@@ -789,7 +706,7 @@ def needs_rehash_argon2(hashed: str,
     return ph.check_needs_rehash(hashed)
 ```
 
-### 6.6 非对称加密：RSA-OAEP
+### 5.6 非对称加密：RSA-OAEP
 
 ```python
 """
@@ -887,7 +804,7 @@ def load_private_key(pem: bytes, password: str | None = None) -> rsa.RSAPrivateK
     )
 ```
 
-### 6.7 数字签名：ECDSA + Ed25519
+### 5.7 数字签名：ECDSA + Ed25519
 
 ```python
 """
@@ -950,7 +867,7 @@ def ed25519_verify(message: bytes, signature: bytes, public_key) -> bool:
         return False
 ```
 
-### 6.8 密钥派生：PBKDF2 / scrypt / HKDF
+### 5.8 密钥派生：PBKDF2 / scrypt / HKDF
 
 ```python
 """
@@ -1034,7 +951,7 @@ def hkdf_expand(input_key: bytes, length: int = 32,
     return kdf.derive(input_key)
 ```
 
-### 6.9 X.509 证书与 CSR 生成
+### 5.9 X.509 证书与 CSR 生成
 
 ```python
 """
@@ -1127,7 +1044,7 @@ def create_csr(private_key, common_name: str,
     return builder.sign(private_key, sign_alg)
 ```
 
-### 6.10 TLS 客户端与服务端示例
+### 5.10 TLS 客户端与服务端示例
 
 ```python
 """
@@ -1206,9 +1123,9 @@ def tls_client(host: str, port: int, cafile: str) -> str:
             return tls_sock.recv(4096).decode()
 ```
 
-## 7. 对比分析
+## 6. 对比分析
 
-### 7.1 与 Ruby 对比
+### 6.1 与 Ruby 对比
 
 ```ruby
 # Ruby: 使用 OpenSSL 绑定
@@ -1231,7 +1148,7 @@ hash == 'password' # => true
 - Python 的 `cryptography` 库提供更高层抽象（如 `Fernet`、`AESGCM`）；
 - Ruby 3.x 的 `openssl` gem 已迁移至 `openssl>=3.0` 兼容，社区维护活跃度低于 PyCA。
 
-### 7.2 与 JavaScript (Node.js) 对比
+### 6.2 与 JavaScript (Node.js) 对比
 
 ```javascript
 // Node.js: 使用内置 crypto 模块
@@ -1254,7 +1171,7 @@ const hash = hashSync('password');
 - JavaScript 在 Web 端可用 WebCrypto API（浏览器原生）；
 - Python 在科学计算与机器学习场景与密码学结合更紧密（如联邦学习中的同态加密）。
 
-### 7.3 与 Go 对比
+### 6.3 与 Go 对比
 
 ```go
 // Go: 标准库 crypto
@@ -1288,7 +1205,7 @@ func hashArgon2(password, salt []byte) []byte {
 - Python 库更易用但性能略低（GIL 与解释执行）；
 - Go 在服务端高并发场景下 TLS 握手性能更优。
 
-### 7.4 与 Julia 对比
+### 6.4 与 Julia 对比
 
 ```julia
 # Julia: 使用 SHA.jl 与 LibSodium.jl
@@ -1306,9 +1223,9 @@ sealed = sealedbox(pk, "message")
 - Julia 适合密码学研究原型（数值计算密集）；
 - Python 在工业生产、CI/CD、Web 后端集成更成熟。
 
-## 8. 常见陷阱（Anti-Patterns）
+## 7. 常见陷阱（Anti-Patterns）
 
-### 8.1 ECB 模式泄露模式
+### 7.1 ECB 模式泄露模式
 
 ```python
 # 错误示例：使用 ECB 加密图像，密文仍能识别原图轮廓
@@ -1318,7 +1235,7 @@ cipher = Cipher(algorithms.AES(key), modes.ECB())  # 切勿使用！
 
 ECB 模式下相同明文块映射为相同密文块，导致著名的「ECB 企鹅」攻击。
 
-### 8.2 IV/Nonce 重用
+### 7.2 IV/Nonce 重用
 
 ```python
 # 错误示例：IV 固定为 0
@@ -1328,7 +1245,7 @@ iv = b'\x00' * 12
 
 **正确做法**：每次加密使用 `os.urandom(12)` 生成新的 nonce。
 
-### 8.3 弱随机数
+### 7.3 弱随机数
 
 ```python
 import random
@@ -1337,7 +1254,7 @@ key = bytes([random.randint(0, 255) for _ in range(32)])  # 不安全！
 
 `random` 模块基于 Mersenne Twister，状态可被预测。**必须**使用 `secrets` 或 `os.urandom`。
 
-### 8.4 口令直接哈希（无盐）
+### 7.4 口令直接哈希（无盐）
 
 ```python
 import hashlib
@@ -1346,7 +1263,7 @@ hash = hashlib.sha256(password.encode()).hexdigest()  # 不安全！
 
 无盐哈希易被彩虹表攻击。**必须**使用 bcrypt/argon2/PBKDF2 等专门的口令哈希。
 
-### 8.5 字符串比较的时序攻击
+### 7.5 字符串比较的时序攻击
 
 ```python
 # 错误示例
@@ -1356,7 +1273,7 @@ if user_token == expected_token:  # 字符串比较非常数时间
 
 应使用 `hmac.compare_digest()` 或 `secrets.compare_digest()`。
 
-### 8.6 密钥硬编码
+### 7.6 密钥硬编码
 
 ```python
 API_KEY = 'sk-1234567890abcdef'  # 永远不要这样做！
@@ -1364,7 +1281,7 @@ API_KEY = 'sk-1234567890abcdef'  # 永远不要这样做！
 
 密钥应通过环境变量、KMS、Vault 等渠道获取，且不应进入版本控制系统。
 
-### 8.7 RSA 加密大段数据
+### 7.7 RSA 加密大段数据
 
 ```python
 # 错误：直接用 RSA 加密大段明文
@@ -1396,7 +1313,7 @@ def hybrid_encrypt(plaintext: bytes, rsa_public_key):
     return wrapped_key, nonce, ct
 ```
 
-### 8.8 使用 MD5/SHA1
+### 7.8 使用 MD5/SHA1
 
 ```python
 import hashlib
@@ -1406,11 +1323,11 @@ hash = hashlib.sha1(data).hexdigest()  # 2017 被破解，不再安全！
 
 应使用 SHA-256/384/512 或 SHA-3 系列。
 
-### 8.9 密钥重用与不轮转
+### 7.9 密钥重用与不轮转
 
 长期使用同一密钥会增加泄露面。**应实施密钥轮转策略**（如 90 天一轮）。
 
-### 8.10 日志泄露密钥
+### 7.10 日志泄露密钥
 
 ```python
 # 错误
@@ -1419,9 +1336,9 @@ logging.info(f'Encrypting with key: {key}')
 
 日志系统通常不加密存储，**永远不要打印密钥**。可在生产环境使用 `logging.Filter` 自动过滤敏感字段。
 
-## 9. 工程实践
+## 8. 工程实践
 
-### 9.1 项目结构建议
+### 8.1 项目结构建议
 
 ```mermaid
 flowchart TD
@@ -1451,7 +1368,7 @@ flowchart TD
     T16 --> T17
 ```
 
-### 9.2 密钥管理：KMS 集成
+### 8.2 密钥管理：KMS 集成
 
 ```python
 """
@@ -1506,7 +1423,7 @@ class KMSService:
         return response['ResponseMetadata']['RequestId']
 ```
 
-### 9.3 HashiCorp Vault 集成
+### 8.3 HashiCorp Vault 集成
 
 ```python
 """
@@ -1559,7 +1476,7 @@ class VaultService:
         return self.client.secrets.transit.rotate_key(name=name)
 ```
 
-### 9.4 密钥轮转脚本
+### 8.4 密钥轮转脚本
 
 ```python
 """
@@ -1618,7 +1535,7 @@ if __name__ == '__main__':
     main()
 ```
 
-### 9.5 性能调优
+### 8.5 性能调优
 
 ```python
 """
@@ -1673,7 +1590,7 @@ def benchmark_throughput():
     print(f'AES-GCM 吞吐量: {throughput:.2f} MB/s')
 ```
 
-### 9.6 密钥版本管理与 KeyRing
+### 8.6 密钥版本管理与 KeyRing
 
 ```python
 """
@@ -1741,9 +1658,9 @@ class KeyRing:
         kv.revoked_at = datetime.now(timezone.utc)
 ```
 
-## 10. 案例研究
+## 9. 案例研究
 
-### 10.1 案例一：Let's Encrypt 的 ACME 自动化
+### 9.1 案例一：Let's Encrypt 的 ACME 自动化
 
 **背景**：2015 年 Let's Encrypt 启动，目标是让 HTTPS 普及化。它通过 ACME 协议（RFC 8555）自动化证书申请、验证、签发与撤销流程。
 
@@ -1835,7 +1752,7 @@ class ACMEClient:
 - ECDSA 替代 RSA 节省握手流量（约 50%）；
 - 短期证书迫使运维自动化，降低密钥泄露风险。
 
-### 10.2 案例二：Signal Protocol 端到端加密
+### 9.2 案例二：Signal Protocol 端到端加密
 
 **背景**：Signal 协议被 WhatsApp、Signal、Facebook Messenger E2E 等使用，提供前向保密（Forward Secrecy）与后向保密。
 
@@ -1902,7 +1819,7 @@ class DoubleRatchetState:
         return new_pub, ciphertext
 ```
 
-### 10.3 案例三：TLS 1.3 握手优化
+### 9.3 案例三：TLS 1.3 握手优化
 
 **背景**：TLS 1.3（RFC 8446）相比 TLS 1.2 大幅简化握手，从 2-RTT 减为 1-RTT，且支持 0-RTT 恢复（PSK 模式）。
 
@@ -1955,7 +1872,7 @@ def tls13_handshake_simulation():
     return handshake_secret
 ```
 
-### 10.4 案例四：AWS KMS 在线信封加密
+### 9.4 案例四：AWS KMS 在线信封加密
 
 **场景**：SaaS 厂商需加密存储千万级用户敏感数据，主密钥不能离开 KMS。
 
@@ -1968,7 +1885,7 @@ def tls13_handshake_simulation():
 
 参考 9.2 节的 `KMSService` 类。
 
-### 10.5 案例五：Dropbox 长期存储加密
+### 9.5 案例五：Dropbox 长期存储加密
 
 Dropbox 在客户端使用 AES-256-GCM 加密用户文件，主密钥由用户密码经 PBKDF2 派生。Dropbox 服务器永远拿不到明文，但需要承担用户忘记密码的风险。
 
@@ -1977,7 +1894,7 @@ Dropbox 在客户端使用 AES-256-GCM 加密用户文件，主密钥由用户�
 - 文件分块加密，每块独立 nonce；
 - 服务器仅存储密文与元数据。
 
-### 10.6 案例六：Instagram 的反爬虫签名
+### 9.6 案例六：Instagram 的反爬虫签名
 
 Instagram 在 API 请求中加入 HMAC-SHA256 签名，密钥由设备指纹 + 时间戳派生，避免简单重放攻击。
 
@@ -1994,9 +1911,9 @@ def sign_request(url: str, body: bytes, secret: bytes) -> str:
     return hmac.new(secret, msg, hashlib.sha256).hexdigest()
 ```
 
-## 11. 安全审计与合规
+## 10. 安全审计与合规
 
-### 11.1 OWASP Top 10 与 Python 加密
+### 10.1 OWASP Top 10 与 Python 加密
 
 | OWASP 类别 | 密码学相关风险 | Python 应对 |
 | --- | --- | --- |
@@ -2005,7 +1922,7 @@ def sign_request(url: str, body: bytes, secret: bytes) -> str:
 | A07 - Identification & Auth Failures | 弱口令哈希 | argon2/bcrypt |
 | A08 - Software & Data Integrity Failures | 签名缺失 | sigstore 签名包 |
 
-### 11.2 合规标准对照
+### 10.2 合规标准对照
 
 | 标准 | 要求 | Python 实现 |
 | --- | --- | --- |
@@ -2015,7 +1932,7 @@ def sign_request(url: str, body: bytes, secret: bytes) -> str:
 | FIPS 140-2/3 | 已验证密码模块 | OpenSSL FIPS provider |
 | SOC 2 Type II | 加密监控 | 审计日志 + 告警 |
 
-### 11.3 sigstore 软件供应链签名
+### 10.3 sigstore 软件供应链签名
 
 ```python
 """
@@ -2036,9 +1953,9 @@ sigstore 使用:
 #   --cert-oidc-issuer https://github.com/login/oauth
 ```
 
-## 12. 性能基准
+## 11. 性能基准
 
-### 12.1 各算法性能对比
+### 11.1 各算法性能对比
 
 在 M2 Pro（2023）、Python 3.13、cryptography 44.x 环境下：
 
@@ -2055,7 +1972,7 @@ sigstore 使用:
 | bcrypt rounds=12 | 单口令 | 4 op/s | 250 ms |
 | argon2id m=64MB,t=3,p=4 | 单口令 | 2 op/s | 500 ms |
 
-### 12.2 基准测试脚本
+### 11.2 基准测试脚本
 
 ```python
 """
@@ -2090,9 +2007,9 @@ if __name__ == '__main__':
     print(f'AES-256-GCM: {t:.2f} MB/s')
 ```
 
-## 13. 测试与验证
+## 12. 测试与验证
 
-### 13.1 NIST 测试向量
+### 12.1 NIST 测试向量
 
 ```python
 """
@@ -2128,7 +2045,7 @@ def verify_nist_vectors():
     print('NIST 向量验证通过')
 ```
 
-### 13.2 pytest 单元测试
+### 12.2 pytest 单元测试
 
 ```python
 import pytest
@@ -2170,7 +2087,7 @@ class TestAesGcm:
             aes_gcm_encrypt(b'x', b'short')
 ```
 
-### 13.3 模糊测试
+### 12.3 模糊测试
 
 ```python
 """
@@ -2197,9 +2114,9 @@ def test_aes_gcm_roundtrip(plaintext: bytes, aad: bytes):
     assert pt == plaintext
 ```
 
-## 14. 故障排除
+## 13. 故障排除
 
-### 14.1 常见异常
+### 13.1 常见异常
 
 | 异常 | 原因 | 解决方案 |
 | --- | --- | --- |
@@ -2210,7 +2127,7 @@ def test_aes_gcm_roundtrip(plaintext: bytes, aad: bytes):
 | `argon2.exceptions.InvalidHash` | argon2 哈希格式错误 | 检查哈希字符串 |
 | `ssl.SSLError: certificate verify failed` | 证书校验失败 | 检查 CA 路径或证书过期 |
 
-### 14.2 调试技巧
+### 13.2 调试技巧
 
 ```python
 import logging
@@ -2222,7 +2139,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 ## 知识讲解与要点分析（原习题）
 
-### 15.1 综合练习：设计一个安全的密钥管理服务
+### 14.1 综合练习：设计一个安全的密钥管理服务
 
 **需求**：
 - 用户上传文件，由服务端加密后存储；
@@ -2324,7 +2241,7 @@ class SecureFileService:
         return plaintext
 ```
 
-### 15.2 综合练习：实现零信任 API 网关
+### 14.2 综合练习：实现零信任 API 网关
 
 **要求**：
 - 每个请求需 mTLS 客户端证书；
@@ -2332,27 +2249,27 @@ class SecureFileService:
 - 5 分钟内的时间窗口有效；
 - 所有操作写入审计日志。
 
-### 15.3 综合练习：实现密钥轮转工具
+### 14.3 综合练习：实现密钥轮转工具
 
 **要求**：
 - 输入：旧密钥文件、新密钥文件；
 - 输出：轮转日志（含时间戳、版本号）；
 - 失败时自动回滚。
 
-### 15.4 综合练习：实现 TLS 配置生成器
+### 14.4 综合练习：实现 TLS 配置生成器
 
 **要求**：
 - 输入：域名、有效期、算法偏好（RSA/ECDSA）；
 - 输出：完整的 Nginx/HAProxy TLS 配置文件；
 - 强制 TLS 1.2+，禁用弱算法。
 
-## 16. 后量子密码学（PQC）预览
+## 15. 后量子密码学（PQC）预览
 
-### 16.1 量子威胁
+### 15.1 量子威胁
 
 Shor 算法在理想量子计算机上可在多项式时间分解大整数与求解离散对数，威胁 RSA、ECDSA、ECDH。
 
-### 16.2 NIST PQC 标准化
+### 15.2 NIST PQC 标准化
 
 | 标准 | 算法 | 用途 | Python 支持 |
 | --- | --- | --- | --- |
@@ -2361,7 +2278,7 @@ Shor 算法在理想量子计算机上可在多项式时间分解大整数与求
 | FIPS 205 | SLH-DSA（SPHINCS+） | 哈希签名 | 实验性 |
 | - | Falcon | 签名（NTRU 格） | 待标准化 |
 
-### 16.3 混合方案
+### 15.3 混合方案
 
 ```python
 """
@@ -2380,9 +2297,9 @@ def hybrid_kem_demo():
     pass
 ```
 
-## 17. 工程检查清单
+## 16. 工程检查清单
 
-### 17.1 上线前自检
+### 16.1 上线前自检
 
 - [ ] 是否使用 `cryptography`、`hashlib`、`bcrypt`、`argon2-cffi` 而非自实现？
 - [ ] 密钥是否从 KMS / Vault / 环境变量加载，未硬编码？
@@ -2399,7 +2316,7 @@ def hybrid_kem_demo():
 - [ ] 是否使用 `hmac.compare_digest` 进行字符串比较？
 - [ ] 是否使用 `secrets` 模块生成随机密钥？
 
-### 17.2 性能调优清单
+### 16.2 性能调优清单
 
 - [ ] 是否使用 AES-GCM 而非 CBC+HMAC？
 - [ ] 大文件是否分块加密？
@@ -2408,7 +2325,7 @@ def hybrid_kem_demo():
 - [ ] 是否复用 SSLContext（避免每次握手重新协商）？
 - [ ] 是否使用 `certfile` + `keyfile` 而非内存中加载？
 
-### 17.3 合规检查清单
+### 16.3 合规检查清单
 
 - [ ] 是否记录密钥使用日志（不含密钥明文）？
 - [ ] 是否实施密钥撤销流程？
@@ -2416,9 +2333,9 @@ def hybrid_kem_demo():
 - [ ] 是否符合 HIPAA / GDPR / PCI DSS 等行业法规？
 - [ ] 是否通过 SOC 2 Type II 审计？
 
-## 18. 延伸阅读
+## 17. 延伸阅读
 
-### 18.1 必读书籍
+### 17.1 必读书籍
 
 1. **Bruce Schneier**. *Applied Cryptography: Protocols, Algorithms, and Source Code in C*. 20th Anniversary Edition. Wiley, 2015. ISBN 978-1119096726.
 2. **Jonathan Katz, Yehuda Lindell**. *Introduction to Modern Cryptography*. 3rd Edition. CRC Press, 2020. ISBN 978-0815354369.
@@ -2426,7 +2343,7 @@ def hybrid_kem_demo():
 4. **Dan Boneh, Victor Shoup**. *A Graduate Course in Applied Cryptography*. 2023. 在线版本 https://cryptobook.us/.
 5. **NIST SP 800-38D**. *Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC*. 2007.
 
-### 18.2 必读论文
+### 17.2 必读论文
 
 1. **Rivest, Shamir, Adleman**. "A Method for Obtaining Digital Signatures and Public-Key Cryptosystems." *Communications of the ACM* 21.2 (1978): 120-126. DOI: 10.1145/359340.359342.
 2. **Diffie, Hellman**. "New Directions in Cryptography." *IEEE Transactions on Information Theory* 22.6 (1976): 644-654. DOI: 10.1109/TIT.1976.1055638.
@@ -2434,7 +2351,7 @@ def hybrid_kem_demo():
 4. **Biryukov, Dinur, Dunkelman**. "Argon2: New Generation of Memory-Hard Functions for Password Hashing and Other Applications." Eurocrypt 2015.
 5. **Rescorla, E.** "The Transport Layer Security (TLS) Protocol Version 1.3." RFC 8446. 2018.
 
-### 18.3 开源项目
+### 17.3 开源项目
 
 - **cryptography**: https://github.com/pyca/cryptography
 - **bcrypt**: https://github.com/pyca/bcrypt
@@ -2446,7 +2363,7 @@ def hybrid_kem_demo():
 - **openssl**: https://github.com/openssl/openssl
 - **libsodium**: https://github.com/jedisct1/libsodium
 
-### 18.4 在线资源
+### 17.4 在线资源
 
 - **OWASP Cryptographic Storage Cheat Sheet**: https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html
 - **OWASP Password Storage Cheat Sheet**: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
@@ -2456,13 +2373,13 @@ def hybrid_kem_demo():
 - **Cloudflare SSL Lab**: https://www.ssllabs.com/
 - **Mozilla SSL Configuration Generator**: https://ssl-config.mozilla.org/
 
-### 18.5 视频课程
+### 17.5 视频课程
 
 1. **Dan Boneh**. *Cryptography I*. Stanford / Coursera. https://www.coursera.org/learn/crypto
 2. **Christof Paar**. *Understanding Cryptography*. YouTube 全集.
 3. **MIT 6.857: Network and Computer Security**. MIT OpenCourseWare.
 
-## 19. Python 版本兼容性矩阵
+## 18. Python 版本兼容性矩阵
 
 | Python 版本 | hashlib | hmac | secrets | cryptography | bcrypt | argon2-cffi |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -2473,7 +2390,7 @@ def hybrid_kem_demo():
 | 3.13 | 内置 SHA-2/3/blake2 | 内置 | 内置 | 43+ | 4+ | 23+ |
 | 3.14 (新) | 添加 filedigest() 优化 | 内置 | 内置 | 44+（含 PQC 实验） | 4+ | 23+ |
 
-## 20. 词汇表
+## 19. 词汇表
 
 | 术语 | 英文 | 含义 |
 | --- | --- | --- |
@@ -2505,7 +2422,7 @@ def hybrid_kem_demo():
 | TLS | Transport Layer Security | 传输层安全协议 |
 | X.509 | X.509 | 证书标准 |
 
-## 21. 总结与下一步
+## 20. 总结与下一步
 
 本章系统介绍了 Python 密码学工程实践：
 
@@ -2516,7 +2433,7 @@ def hybrid_kem_demo():
 5. **案例研究**：Let's Encrypt、Signal Protocol、TLS 1.3、AWS KMS、Dropbox、Instagram；
 6. **未来方向**：后量子密码学（ML-KEM、ML-DSA）的落地。
 
-### 21.1 下一步学习建议
+### 20.1 下一步学习建议
 
 - **进阶理论**：阅读 Boneh 的《A Graduate Course in Applied Cryptography》；
 - **协议设计**：研究 Noise Protocol Framework 与 Signal Protocol；
@@ -2526,7 +2443,7 @@ def hybrid_kem_demo():
 - **隐私计算**：联邦学习中的安全聚合（Secure Aggregation）、差分隐私；
 - **后量子迁移**：在测试环境部署 ML-KEM 与混合 KEM。
 
-### 21.2 FANDEX 学习路径
+### 20.2 FANDEX 学习路径
 
 继续学习：
 - `python/Python与测试`：为密码学代码编写单元测试与属性测试；

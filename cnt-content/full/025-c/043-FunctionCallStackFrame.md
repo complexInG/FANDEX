@@ -16,6 +16,7 @@ prerequisites:
   - c/概述
 ---
 
+
 # 函数调用栈帧（Function Call Stack Frame）
 
 > "The stack is a data structure that has come to be accepted as a matter of course. We rarely think about how it works, or what life would be like without it. Yet the stack is the cornerstone of programming language implementation: it makes recursive procedures possible, it provides the mechanism for passing parameters and returning values, and it gives each procedure invocation its own private storage."
@@ -29,93 +30,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy, Revised 2001）描述完成本文学习后学习者应当具备的认知层级。Bloom 分类法将认知目标从低阶到高阶划分为六个层次：remember（记忆）、understand（理解）、apply（应用）、analyze（分析）、evaluate（评价）、create（创造）。
-
-### 1.1 Remember（记忆）
-
-完成本节后，学习者应当能够准确回忆以下事实性知识：
-
-- 栈帧（stack frame）的定义：函数调用时在调用栈上分配的一块连续内存区域，存储该次调用的全部运行时上下文。
-- 栈的增长方向：在 x86、x86_64、ARM、RISC-V、LoongArch 等主流架构上，栈向低地址方向增长（stack grows downward）。
-- 帧指针（frame pointer）寄存器：x86/x86_64 上为 `ebp`/`rbp`，ARMv7 上为 `r11`（或 `fp`），ARMv8-A 上为 `x29`（或 `fp`），RISC-V 上为 `x8`（或 `s0`/`fp`）。
-- 栈指针（stack pointer）寄存器：x86/x86_64 上为 `esp`/`rsp`，ARMv7 上为 `sp`，ARMv8-A 上为 `sp`，RISC-V 上为 `sp`（`x2`）。
-- 程序计数器（program counter）寄存器：x86/x86_64 上为 `eip`/`rip`，ARMv7 上为 `pc`（`r15`），ARMv8-A 上为 `pc`，RISC-V 上为 `pc`。
-- 函数 prologue（序言）与 epilogue（尾声）的典型汇编指令序列：`push rbp; mov rbp, rsp; sub rsp, N` 与 `mov rsp, rbp; pop rbp; ret`。
-- `call` 指令的两步原子操作：将返回地址压栈，然后跳转至目标地址。
-- `ret` 指令的两步原子操作：从栈顶弹出返回地址，然后跳转至该地址。
-- System V AMD64 ABI 规定的寄存器调用约定：整数参数依次通过 `rdi`、`rsi`、`rdx`、`rcx`、`r8`、`r9` 传递，浮点参数通过 `xmm0` 至 `xmm7` 传递。
-- 栈对齐要求：System V AMD64 ABI 要求函数 `call` 指令执行前 `rsp` 必须 16 字节对齐（即 `rsp % 16 == 0`）。
-- 主流平台默认栈大小：Linux 通常 8 MiB（`ulimit -s` 显示），Windows 通常 1 MiB，macOS 通常 8 MiB。
-
-### 1.2 Understand（理解）
-
-学习者应当能够解释：
-
-- 为什么栈向低地址增长：历史根源可追溯至 PDP-11 与 IBM 801 设计，便于堆（heap）与栈共享一段连续虚拟地址空间而相向增长。
-- 帧指针（frame pointer）的作用：在栈帧之间形成"链表"，使调试器（debugger）与异常处理（exception handling）能反向遍历调用栈（stack unwinding）。
-- `-fomit-frame-pointer` 优化选项的权衡：释放 `rbp` 作为通用寄存器使用以提升性能，但牺牲调试便利性（需依赖 `.eh_frame` 段进行栈回溯）。
-- `alloca` 与变长数组（VLA）在栈上动态分配内存的机制：通过调整 `rsp` 实现，无需 `free`，函数返回时自动回收。
-- 栈溢出（stack overflow）的成因：无限递归、超大栈上分配（VLA/`alloca`）、过深的调用链导致栈指针越过栈边界（stack guard page）。
-- 栈保护机制的工作原理：Stack Canary（栈金丝雀）在返回地址前放置随机值，函数返回前校验以检测缓冲区溢出。
-- ASLR（Address Space Layout Randomization）如何通过栈基址随机化增强安全性。
-- C 调用约定（calling convention）与 ABI（Application Binary Interface）的关系：调用约定是 ABI 的子集，规定参数传递、返回值、寄存器保存、栈清理职责。
-- 为什么 System V AMD64 ABI 选择寄存器传参而非栈传参：减少内存访问，加速函数调用，但寄存器数量有限导致超过 6 个整数参数时仍需借助栈。
-- Leaf function（叶子函数）的优化：不调用其他函数的函数可省略 prologue/epilogue，直接使用栈空间而不保存 `rbp`。
-
-### 1.3 Apply（应用）
-
-学习者应当能够：
-
-- 通过 `gcc -S` 或 `clang -S` 生成汇编代码，识别函数 prologue/epilogue 模式。
-- 使用 `gdb` 的 `backtrace`、`info frame`、`info locals`、`info args` 命令检查栈帧内容。
-- 通过 `objdump -d` 反汇编二进制文件，识别 `call`、`ret`、`push`、`pop`、`enter`、`leave` 指令。
-- 在嵌入式裸机环境中正确设置栈指针（startup 代码中 `ldr sp, =_stack_top`）。
-- 使用 `sigaltstack` 在信号处理函数中切换备用栈，避免栈溢出导致信号处理递归崩溃。
-- 通过 `ulimit -s` 调整栈大小，或使用 `pthread_attr_setstacksize` 为线程设置自定义栈大小。
-- 在性能关键代码中使用 `__attribute__((noinline))` 或 `__attribute__((always_inline))` 控制函数内联，影响栈帧生成。
-- 使用 `__builtin_return_address(0)` 与 `__builtin_frame_address(0)` 获取当前栈帧信息（仅限调试用途）。
-
-### 1.4 Analyze（分析）
-
-学习者应当能够：
-
-- 分析给定汇编代码，识别函数参数来源（寄存器 vs 栈）、局部变量布局、寄存器保存策略。
-- 通过 `perf record -g` 与 `perf report` 分析调用栈深度与热点函数。
-- 在 core dump 文件中通过 `gdb` 手动回溯栈帧，识别损坏的返回地址或帧指针。
-- 分析 Stack Canary 失败时的崩溃日志（`*** stack smashing detected ***: terminated`），定位溢出源。
-- 识别 Tail Call Optimization（TCO）是否生效：若函数末尾的 `call` 被替换为 `jmp`，则未生成新栈帧。
-- 分析递归函数的栈帧复用情况，判断是否可改写为迭代以避免栈溢出。
-- 在反汇编中识别 PIE（Position Independent Executable）与栈帧相对寻址的配合（`lea rax, [rip + symbol]`）。
-
-### 1.5 Evaluate（评价）
-
-学习者应当能够评估：
-
-- 在性能关键路径上，使用寄存器传参（System V AMD64 ABI）vs 栈传参（cdecl）的相对开销（cycles/call 模型）。
-- `-fomit-frame-pointer` 在不同工作负载下的性能收益（通常 1-3%）与调试代价。
-- VLA 与 `alloca` 在嵌入式系统中的适用性（栈大小限制、错误处理困难、与 `-fstack-protector` 的交互）。
-- Stack Canary、ASLR、DEP/NX、Shadow Stack（CET）、PAC（ARM Pointer Authentication）等栈保护机制的强度对比与组合策略。
-- 大栈对象（如 `char buf[65536]`）应放在堆上还是栈上的权衡：栈分配快但可能触发栈溢出，堆分配慢但灵活。
-- 跨语言 FFI（如 Python ctypes、Node.js N-API、Rust FFI）中栈对齐与调用约定匹配的兼容性风险。
-
-### 1.6 Create（创造）
-
-学习者应当能够：
-
-- 实现一个跨平台的栈回溯（backtrace）库，无需 `libunwind` 依赖，仅依赖帧指针链。
-- 设计一个无栈协程（stackless coroutine）库，通过保存与恢复栈帧实现协作式调度。
-- 实现一个 user-level thread（用户级线程）库，包含栈切换、上下文保存与恢复。
-- 设计一个栈分析工具，通过 `ptrace` 附加目标进程并周期性采样栈帧，生成火焰图（flame graph）。
-- 在裸机嵌入式环境中实现自定义的栈溢出检测机制（如栈涂鸦 stack painting、栈哨兵 stack sentinel）。
-- 设计一个二进制兼容的 C ABI，规定跨编译器的栈帧布局、参数传递、异常处理表格式。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 栈式调用的史前时代
+### 1.1 栈式调用的史前时代
 
 在调用栈（call stack）概念确立之前，早期高级语言（如 FORTRAN I, 1957）采用静态分配策略：每个子程序拥有固定的内存区域存储局部变量，递归调用直接被禁止。FORTRAN 66 标准明确不允许递归，因为静态分配无法区分不同调用深度的局部变量实例。
 
@@ -126,7 +43,7 @@ ALGOL 60（1960）首次引入块结构（block structure）与递归过程（re
 
 ALGOL 60 的实现促进了"栈式分配"（stack allocation）概念的形成：每次过程调用在栈上分配一块新内存，返回时释放。
 
-### 2.2 PDP-11 与 C 语言的栈实现
+### 1.2 PDP-11 与 C 语言的栈实现
 
 Dennis Ritchie 在 1972 年将 C 语言移植到 PDP-11 时，PDP-11 的硬件特性深刻影响了 C 的调用约定：
 
@@ -141,7 +58,7 @@ K&R C 时代的调用约定（即后来的 cdecl）由此定型：
 3. 返回值存于 `R0`。
 4. `R5` 寄存器作为帧指针（frame pointer），形成栈帧链表。
 
-### 2.3 x86 与 cdecl/stdcall/fastcall 的分化
+### 1.3 x86 与 cdecl/stdcall/fastcall 的分化
 
 Intel 8086（1978）与 80386（1985）沿袭 PDP-11 的栈设计：栈向低地址增长，`ESP` 为栈指针，`EBP` 为帧指针。但 x86 时代的编译器厂商分化出多种调用约定：
 
@@ -155,7 +72,7 @@ Intel 8086（1978）与 80386（1985）沿袭 PDP-11 的栈设计：栈向低地
 
 这种分化导致跨编译器、跨平台的二进制兼容性极差，催生了后来 ABI 标准化的需求。
 
-### 2.4 RISC 架构与寄存器窗口
+### 1.4 RISC 架构与寄存器窗口
 
 1980 年代的 RISC 革命引入了"寄存器窗口"（register window）概念，以减少函数调用时的内存访问：
 
@@ -165,7 +82,7 @@ Intel 8086（1978）与 80386（1985）沿袭 PDP-11 的栈设计：栈向低地
 
 寄存器窗口的失败经验与寄存器划分的成功实践，共同奠定了 x86_64 ABI 的设计基础。
 
-### 2.5 x86_64 与 System V AMD64 ABI
+### 1.5 x86_64 与 System V AMD64 ABI
 
 AMD 在设计 x86_64（AMD64, 1999-2000）时大幅扩展寄存器数量：8 个通用寄存器扩展为 16 个（`rax`、`rbx`、`rcx`、`rdx`、`rsi`、`rdi`、`rbp`、`rsp`、`r8`-`r15`）。这为寄存器传参提供了硬件基础。
 
@@ -180,7 +97,7 @@ AMD 在设计 x86_64（AMD64, 1999-2000）时大幅扩展寄存器数量：8 个
 
 Microsoft x64 ABI（用于 Windows）与 System V AMD64 ABI 类似但有差异：仅用 4 个寄存器传参（`rcx`、`rdx`、`r8`、`r9`），且预留 32 字节"shadow space"供被调用方保存寄存器参数。
 
-### 2.6 ARMv8-A 与 AAPCS64
+### 1.6 ARMv8-A 与 AAPCS64
 
 ARMv8-A（2011）引入 64 位 ARM 架构（AArch64），伴随新的过程调用标准 AAPCS64（ARM Architecture Procedure Call Standard, 64-bit）：
 
@@ -192,7 +109,7 @@ ARMv8-A（2011）引入 64 位 ARM 架构（AArch64），伴随新的过程调�
 
 AAPCS64 与 System V AMD64 ABI 设计哲学相近，但寄存器更多（31 个通用寄存器），传参效率更高。
 
-### 2.7 RISC-V 与 RISC-V calling convention
+### 1.7 RISC-V 与 RISC-V calling convention
 
 RISC-V（2010 起）的调用约定延续 RISC 传统：
 
@@ -202,7 +119,7 @@ RISC-V（2010 起）的调用约定延续 RISC 传统：
 4. **返回地址**：`ra`（`x1`）。
 5. **栈对齐**：16 字节对齐（RV64）。
 
-### 2.8 C 标准对栈的"沉默"
+### 1.8 C 标准对栈的"沉默"
 
 值得注意的是，**ISO/IEC 9899 标准对调用栈的实现只字未提**。C 标准仅规定：
 
@@ -214,9 +131,9 @@ RISC-V（2010 起）的调用约定延续 RISC 传统：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 调用栈的形式化模型
+### 2.1 调用栈的形式化模型
 
 调用栈是一个 LIFO（Last-In-First-Out）数据结构，由一系列栈帧组成。形式化地，设 $S$ 为调用栈，$F_i$ 为第 $i$ 层栈帧：
 
@@ -236,7 +153,7 @@ $$
 S' = S \setminus \langle F_n \rangle
 $$
 
-### 3.2 栈帧的形式化定义
+### 2.2 栈帧的形式化定义
 
 每个栈帧 $F$ 由以下字段组成：
 
@@ -254,7 +171,7 @@ $$
 - $\text{temps}$：临时存储区。用于中间计算结果、复杂表达式求值等。
 - $\text{canary}$：栈金丝雀（stack canary）。Stack Protector 机制在 $\text{retaddr}$ 与 $\text{locals}$ 之间插入的随机值，用于检测缓冲区溢出。
 
-### 3.3 栈帧布局：System V AMD64 ABI
+### 2.3 栈帧布局：System V AMD64 ABI
 
 System V AMD64 ABI 规定的典型栈帧布局（栈向低地址增长）：
 
@@ -271,7 +188,7 @@ flowchart TD
 
 注意 System V AMD64 ABI 中"参数区"位于调用方的栈帧，被调用方通过 `rbp + 16` 偏移访问。被调用方可在自己的栈帧中预留空间保存寄存器参数（称为"home space"），但 ABI 不强制要求。
 
-### 3.4 栈指针与帧指针的关系
+### 2.4 栈指针与帧指针的关系
 
 设 $SP$ 为栈指针，$FP$ 为帧指针。在典型 prologue 后：
 
@@ -286,7 +203,7 @@ $$
 - 访问局部变量：$FP - \text{offset}$（offset > 0）。
 - 访问参数：$FP + \text{offset}$（offset > 16，前 16 字节为 retaddr 与 saved_fp）。
 
-### 3.5 调用约定的形式化定义
+### 2.5 调用约定的形式化定义
 
 调用约定是一组规则集合，规定函数调用的下列方面：
 
@@ -309,7 +226,7 @@ $$
 CC_{\text{SysV}} = \langle \text{[rdi, rsi, rdx, rcx, r8, r9] + 栈}, \text{rax + rdx}, \text{callee: [rbx, rbp, r12-r15]}, \text{caller}, 16 \rangle
 $$
 
-### 3.6 ABI 与调用约定的关系
+### 2.6 ABI 与调用约定的关系
 
 ABI（Application Binary Interface）是比调用约定更广的概念，包含：
 
@@ -325,9 +242,9 @@ ABI（Application Binary Interface）是比调用约定更广的概念，包含�
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 函数 prologue 的指令分解
+### 3.1 函数 prologue 的指令分解
 
 考虑一个典型的 C 函数：
 
@@ -369,7 +286,7 @@ epilogue 对应：
 
 `leave` 指令是 `mov rsp, rbp; pop rbp` 的复合指令，单条指令完成 epilogue 前两步。
 
-### 4.2 栈指针 16 字节对齐的由来
+### 3.2 栈指针 16 字节对齐的由来
 
 System V AMD64 ABI 要求 `call` 指令前 `rsp % 16 == 0`。这一规定的根源是 SSE/AVX 指令对 16/32 字节对齐的硬性要求：
 
@@ -389,7 +306,7 @@ sub rsp, 8            ; rsp % 16 == 8，未对齐！
 movaps [rsp], xmm0    ; 触发 SIGSEGV
 ```
 
-### 4.3 帧指针链与栈回溯
+### 3.3 帧指针链与栈回溯
 
 帧指针链（frame pointer chain）是栈回溯（stack unwinding）的基础。每个栈帧的 $\text{saved\_fp}$ 字段保存调用方的 $FP$ 值，形成单链表：
 
@@ -412,7 +329,7 @@ void backtrace_fp(void) {
 
 此算法依赖 `rbp` 帧指针链完整。`-fomit-frame-pointer` 优化会破坏该链，此时需依赖 `.eh_frame` 段中的 DWARF CFI（Call Frame Information）进行栈回溯，`libunwind` 与 `gdb backtrace` 即采用此机制。
 
-### 4.4 Stack Canary 的工作原理
+### 3.4 Stack Canary 的工作原理
 
 Stack Protector（栈保护）机制由 IBM 的 Hiroaki Etoh 与 Sanjit Sengupta 于 1998 年在 GCC 中实现，对应编译选项 `-fstack-protector`。
 
@@ -441,7 +358,7 @@ call    __stack_chk_fail               ; 终止程序
 
 canary 值通常包含 `\0` 字节以阻断 `strcpy` 等字符串函数的越界写入（null 终止符会中止复制）。Linux glibc 中 `__stack_chk_guard` 低位 8 位固定为 `\0`。
 
-### 4.5 Stack Canary 的局限性
+### 3.5 Stack Canary 的局限性
 
 Stack Canary 仅能检测"线性缓冲区溢出"覆盖返回地址的场景，对以下攻击无效：
 
@@ -456,7 +373,7 @@ Stack Canary 仅能检测"线性缓冲区溢出"覆盖返回地址的场景，�
 - **IBT（Indirect Branch Tracking）**：要求间接跳转目标必须是 `endbr64` 指令，防止 ROP/JOP 攻击。
 - **PAC（Pointer Authentication, ARMv8.3-A）**：指针高位存储加密签名，验证失败触发异常。
 
-### 4.6 alloca 与 VLA 的栈分配机制
+### 3.6 alloca 与 VLA 的栈分配机制
 
 `alloca` 是 POSIX 函数，在调用方的栈帧中动态分配内存：
 
@@ -494,7 +411,7 @@ void func(int n) {
 
 C11 起 VLA 成为可选特性，`__STDC_NO_VLA__` 宏指示编译器不支持。Microsoft Visual C++ 历来不支持 VLA，是其与 GCC/Clang 的显著差异之一。
 
-### 4.7 Tail Call Optimization（TCO）
+### 3.7 Tail Call Optimization（TCO）
 
 尾调用（tail call）指函数末尾的最后一个动作是调用另一函数并直接返回其结果。此时被调用方的栈帧可复用调用方的栈帧，无需新建：
 
@@ -533,9 +450,9 @@ C 编译器是否启用 TCO 取决于优化级别与代码语义：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：观察栈帧布局
+### 4.1 基础示例：观察栈帧布局
 
 ```c
 #include <stdio.h>
@@ -587,7 +504,7 @@ gcc -O0 -g stack_inspect.c -o stack_inspect
   &local_c - &local_b = -4
 ```
 
-### 5.2 进阶示例：观察 prologue 与 epilogue
+### 4.2 进阶示例：观察 prologue 与 epilogue
 
 ```c
 /**
@@ -620,7 +537,7 @@ gcc -O0 -S -masm=intel simple.c -o simple_intel.s
 
 观察 prologue（`push rbp; mov rbp, rsp`）与 epilogue（`pop rbp; ret`）的指令模式。
 
-### 5.3 高级示例：手动栈回溯
+### 4.3 高级示例：手动栈回溯
 
 ```c
 #define _GNU_SOURCE
@@ -687,7 +604,7 @@ int main(void) {
 }
 ```
 
-### 5.4 生产级示例：自定义信号处理与栈溢出检测
+### 4.4 生产级示例：自定义信号处理与栈溢出检测
 
 ```c
 /**
@@ -832,7 +749,7 @@ int main(void) {
 }
 ```
 
-### 5.5 生产级示例：CMake 构建配置
+### 4.5 生产级示例：CMake 构建配置
 
 ```cmake
 # CMakeLists.txt - 栈分析示例项目
@@ -873,7 +790,7 @@ install(TARGETS stack_inspect simple backtrace_demo stack_overflow
         DESTINATION bin)
 ```
 
-### 5.6 生产级示例：Makefile 配置
+### 4.6 生产级示例：Makefile 配置
 
 ```makefile
 # Makefile - 栈分析示例项目
@@ -907,7 +824,7 @@ install: all
 	$(CC) $(CFLAGS) -S -masm=intel $< -o $@
 ```
 
-### 5.7 生产级示例：跨架构栈帧检查
+### 4.7 生产级示例：跨架构栈帧检查
 
 ```c
 /**
@@ -980,9 +897,9 @@ int main(void) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 跨架构栈帧布局对比
+### 5.1 跨架构栈帧布局对比
 
 | 架构 | 栈增长方向 | 栈指针寄存器 | 帧指针寄存器 | 返回地址寄存器 | 默认栈对齐 |
 | ---- | ---------- | ------------ | ------------ | -------------- | ---------- |
@@ -995,7 +912,7 @@ int main(void) {
 | SPARC | 向下 | `%sp`/`%o6` | `%fp`/`%i6` | 寄存器窗口 | 8 字节 |
 | LoongArch | 向下 | `$sp` (`$r3`) | `$fp` (`$r22`) | `$ra` (`$r1`) | 16 字节 |
 
-### 6.2 调用约定对比（x86_64）
+### 5.2 调用约定对比（x86_64）
 
 | 调用约定 | 整数参数寄存器 | 浮点参数寄存器 | 栈清理 | 栈对齐 | 平台 |
 | -------- | -------------- | -------------- | ------ | ------ | ---- |
@@ -1005,7 +922,7 @@ int main(void) {
 | cdecl (x86) | 无，全栈传参 | 无 | 调用方 | 4 字节 | x86 传统 |
 | stdcall (x86) | 无，全栈传参 | 无 | 被调用方 | 4 字节 | Windows API |
 
-### 6.3 callee-saved 寄存器对比
+### 5.3 callee-saved 寄存器对比
 
 | ABI | callee-saved 寄存器 | caller-saved 寄存器 |
 | --- | ------------------ | ------------------ |
@@ -1015,7 +932,7 @@ int main(void) {
 | AAPCS64 (ARMv8) | `x19-x28, x29(fp), x30(lr), sp` | `x0-x18` |
 | RISC-V | `s0-s11, sp, ra` | `t0-t6, a0-a7` |
 
-### 6.4 跨语言栈帧兼容性
+### 5.4 跨语言栈帧兼容性
 
 不同语言在调用 C 函数时的栈帧兼容性：
 
@@ -1033,9 +950,9 @@ Go 语言的栈是可增长的（growable stack），运行时可能复制整个
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：返回栈上局部变量的地址
+### 6.1 陷阱：返回栈上局部变量的地址
 
 ```c
 /**
@@ -1057,7 +974,7 @@ int main(void) {
 
 修复：使用 `static`、堆分配或由调用方传入缓冲区。
 
-### 7.2 陷阱：未对齐的栈访问
+### 6.2 陷阱：未对齐的栈访问
 
 ```asm
 ; 手写汇编时常见的对齐错误
@@ -1073,7 +990,7 @@ my_func:
 
 修复：`sub rsp, N` 中 N 必须保持 16 字节对齐。
 
-### 7.3 陷阱：`alloca` 失败时的未定义行为
+### 6.3 陷阱：`alloca` 失败时的未定义行为
 
 ```c
 #include <alloca.h>
@@ -1088,7 +1005,7 @@ void risky_alloca(size_t n) {
 
 最佳实践：限制 `alloca` 大小，超大分配改用 `malloc`。
 
-### 7.4 陷阱：信号处理函数中的栈操作
+### 6.4 陷阱：信号处理函数中的栈操作
 
 ```c
 /**
@@ -1103,7 +1020,7 @@ void bad_handler(int sig) {
 
 修复：仅调用 `write()`、`_exit()` 等 async-signal-safe 函数。
 
-### 7.5 陷阱：递归过深导致栈溢出
+### 6.5 陷阱：递归过深导致栈溢出
 
 ```c
 /**
@@ -1123,7 +1040,7 @@ long factorial_tail(int n, long acc) {
 }
 ```
 
-### 7.6 陷阱：变参函数与栈布局
+### 6.6 陷阱：变参函数与栈布局
 
 ```c
 #include <stdarg.h>
@@ -1146,7 +1063,7 @@ int sum_varargs(int count, ...) {
 
 陷阱：错误地传递 `float` 给 `%d` 格式符，或反之，会导致栈布局错位，行为未定义。
 
-### 7.7 陷阱：内联汇编破坏帧指针链
+### 6.7 陷阱：内联汇编破坏帧指针链
 
 ```c
 /**
@@ -1162,7 +1079,7 @@ void bad_inline_asm(void) {
 
 修复：避免在内联汇编中修改 `rbp`，或在 clobber 列表中声明并保存恢复。
 
-### 7.8 陷阱：线程栈大小不足
+### 6.8 陷阱：线程栈大小不足
 
 ```c
 #include <pthread.h>
@@ -1184,7 +1101,7 @@ int main(void) {
 
 修复：使用 `pthread_attr_setstacksize` 显式设置栈大小，或将大对象移至堆。
 
-### 7.9 最佳实践总结
+### 6.9 最佳实践总结
 
 1. **启用栈保护**：编译时使用 `-fstack-protector-strong` 或 `-fstack-protector-all`。
 2. **保留帧指针**：调试构建使用 `-fno-omit-frame-pointer`，便于 `gdb backtrace`。
@@ -1196,9 +1113,9 @@ int main(void) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 调试工具链
+### 7.1 调试工具链
 
 | 工具 | 用途 | 示例命令 |
 | ---- | ---- | -------- |
@@ -1213,7 +1130,7 @@ int main(void) {
 | `eu-stack` | elfutils 栈回溯工具 | `eu-stack -p PID` |
 | `libunwind` | 编程式栈回溯库 | `unw_backtrace()` |
 
-### 8.2 编译选项
+### 7.2 编译选项
 
 栈相关的 GCC/Clang 编译选项：
 
@@ -1231,7 +1148,7 @@ int main(void) {
 | `-Wstack-usage=N` | 警告栈使用超过 N 字节 | 静态检查 |
 | `-Wframe-larger-than=N` | 警告栈帧大于 N 字节 | Linux Kernel 常用 |
 
-### 8.3 静态分析与 Sanitizer
+### 7.3 静态分析与 Sanitizer
 
 | 工具 | 作用 |
 | ---- | ---- |
@@ -1249,7 +1166,7 @@ gcc -fsanitize=address -g -O0 program.c -o program
 ./program
 ```
 
-### 8.4 CI/CD 集成
+### 7.4 CI/CD 集成
 
 GitHub Actions 示例（栈保护检查）：
 
@@ -1285,9 +1202,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Linux Kernel：`DECLARE_TASK_STACK` 与栈审计
+### 8.1 Linux Kernel：`DECLARE_TASK_STACK` 与栈审计
 
 Linux Kernel 中每个线程拥有独立的内核栈（通常 8 KiB 或 16 KiB）。为防止栈溢出，内核引入多项机制：
 
@@ -1324,7 +1241,7 @@ void check_stack_usage(void) {
 }
 ```
 
-### 9.2 glibc：`__stack_chk_guard` 实现
+### 8.2 glibc：`__stack_chk_guard` 实现
 
 glibc 在 `csu/libc-start.c` 中初始化 canary 值：
 
@@ -1354,7 +1271,7 @@ void __stack_chk_fail(void) {
 
 TLS 中 `__stack_chk_guard` 通过 `fs:40` 偏移访问（x86_64），保证每线程独立 canary。
 
-### 9.3 SQLite：`sqlite3StackAlloc` 与栈管理
+### 8.3 SQLite：`sqlite3StackAlloc` 与栈管理
 
 SQLite 在 VDBE（Virtual Database Engine）中使用栈式分配：
 
@@ -1385,7 +1302,7 @@ void sqlite3VdbeFramePop(Vdbe *p) {
 
 这是 C 程序中"手动实现栈帧"的经典案例，用于递归触发器（recursive trigger）支持。
 
-### 9.4 Redis：协程与栈切换
+### 8.4 Redis：协程与栈切换
 
 Redis 4.0+ 引入模块系统，模块可注册阻塞命令，内部通过协程（co-routine）切换栈：
 
@@ -1409,7 +1326,7 @@ void RM_RestoreThreadStack(RedisModuleCtx *ctx) {
 }
 ```
 
-### 9.5 Nginx：异步非阻塞与栈深度
+### 8.5 Nginx：异步非阻塞与栈深度
 
 Nginx 使用异步非阻塞模型，每个连接复用 worker 进程的栈，无需为每个连接分配独立栈。但模块开发需注意：
 
@@ -1428,7 +1345,7 @@ void *ngx_palloc(ngx_pool_t *pool, size_t size) {
 }
 ```
 
-### 9.6 DPDK：`rte_eal_remote_launch` 与每核栈
+### 8.6 DPDK：`rte_eal_remote_launch` 与每核栈
 
 DPDK（Data Plane Development Kit）为每个 CPU 核心分配独立栈：
 
@@ -1594,7 +1511,7 @@ int main(void) {
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 9**：为什么 Go 语言的 goroutine 不能直接调用 C 函数（必须通过 `cgo`）？请从栈模型角度分析。
 
@@ -1643,7 +1560,7 @@ C 函数假设栈地址固定，无法感知 Go 的栈复制。若 goroutine 直
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Kernighan B W, Ritchie D M. The C Programming Language[M]. 2nd ed. Englewood Cliffs, NJ: Prentice Hall, 1988. ISBN: 0-13-110362-8.
 
@@ -1691,9 +1608,9 @@ C 函数假设栈地址固定，无法感知 Go 的栈复制。若 goroutine 直
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《Computer Systems: A Programmer's Perspective, 3rd ed.》** — Randal E. Bryant, David R. O'Hallaron
   - 第 3 章"Machine-Level Representation of Programs"详细论述 x86_64 栈帧、调用约定、过程调用。
@@ -1706,7 +1623,7 @@ C 函数假设栈地址固定，无法感知 Go 的栈复制。若 goroutine 直
 - **《The Art of Assembly Language, 2nd ed.》** — Randall Hyde
   - 详细论述 x86 汇编与调用约定的配合。
 
-### 12.2 课程
+### 11.2 课程
 
 - **MIT 6.087: Practical Programming in C** (MIT OpenCourseWare)
   - 第 6 章"Functions and Program Structure"涵盖栈帧基础。
@@ -1719,7 +1636,7 @@ C 函数假设栈地址固定，无法感知 Go 的栈复制。若 goroutine 直
 - **MIT 6.172: Performance Engineering of Software Systems**
   - 多个讲座涉及栈对齐、缓存行对齐、TCO 等性能优化议题。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **System V AMD64 ABI 官方仓库**：https://gitlab.com/x86-psABIs/x86-64-ABI
 - **DWARF Debugging Information Format**：https://dwarfstd.org/
@@ -1727,7 +1644,7 @@ C 函数假设栈地址固定，无法感知 Go 的栈复制。若 goroutine 直
 - **OSDev Wiki — Stack**：https://wiki.osdev.org/Stack — 裸机环境栈设置参考。
 - **Linux Kernel Documentation — x86 Stack**：https://www.kernel.org/doc/html/latest/x86/stack.html
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **Linux Kernel**：`arch/x86/kernel/entry_64.S`、`arch/x86/kernel/process.c` — 内核栈管理。
 - **glibc**：`csu/libc-start.c`、`debug/stack_chk_fail.c` — Stack Canary 实现。
@@ -1735,7 +1652,7 @@ C 函数假设栈地址固定，无法感知 Go 的栈复制。若 goroutine 直
 - **gperftools**：https://github.com/gperftools/gperftools — 性能分析含栈采样。
 - **DPDK**：https://www.dpdk.org/ — 高性能网络栈，含每核栈管理。
 
-### 12.5 标准与规范
+### 11.5 标准与规范
 
 - **ISO/IEC 9899:2024 (C23)** — C 语言标准。
 - **ISO/IEC 2360:2022 (RISC-V ABI)** — RISC-V 调用约定。

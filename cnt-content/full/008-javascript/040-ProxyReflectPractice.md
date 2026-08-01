@@ -19,63 +19,22 @@ prerequisites:
   - javascript/原型与继承
   - javascript/闭包的内存泄露与优化
 ---
+
 # JavaScript Proxy 与 Reflect
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-本节采用 Bloom 分类法对学习目标进行层级化建模，确保读者能够由浅入深、由具体到抽象地掌握 Proxy 与 Reflect 的全部要义。
-
-### 1.1 记忆层（Remember）
-
-- 准确列出 Proxy 的 13 个陷阱（Trap）：`get`、`set`、`has`、`deleteProperty`、`ownKeys`、`getOwnPropertyDescriptor`、`defineProperty`、`getPrototypeOf`、`setPrototypeOf`、`isExtensible`、`preventExtensions`、`apply`、`construct`。
-- 复述 Reflect 对象上的 14 个静态方法（多出 `Reflect.defineProperty` 与 `Reflect.getOwnPropertyDescriptor` 等）与 Proxy 陷阱的一一对应关系。
-- 回忆 ES2015（ES6）将 Proxy 与 Reflect 引入标准的版本号、TC39 提案路径与早期 `Proxy.create` API 被废弃的缘由。
-
-### 1.2 理解层（Understand）
-
-- 解释 Proxy 与元编程（Metaprogramming）的关系：Proxy 拦截对象内部方法（Internal Method），而非语法层面的运算符。
-- 阐释 `receiver` 参数在 `get` / `set` 陷阱中的语义：为何需要传递 `receiver` 才能正确触发继承链上的 setter。
-- 说明 Reflect 的设计动机：从 `Object` 上"借用"内部方法的镜像 API，统一返回值与异常语义，便于在 Proxy 陷阱中转发默认行为。
-
-### 1.3 应用层（Apply）
-
-- 在生产项目中使用 Proxy 实现表单校验、API 缓存、函数调用日志、负索引数组、私有属性屏蔽等典型场景。
-- 通过 `Proxy.revocable` 实现临时授权代理，在 API 密钥传递后立即撤销访问能力。
-- 在 Vue3 风格的响应式系统中组合 `WeakMap` + `Proxy` + `Reflect` 实现深响应、依赖追踪与触发更新。
-
-### 1.4 分析层（Analyze）
-
-- 对比 Vue2 `Object.defineProperty` 与 Vue3 `Proxy` 两种响应式实现，剖析数组下标修改、新属性添加、`Map`/`Set` 集合类型支持等差异的根因。
-- 拆解 Immer 的 `produce` 实现：`Proxy` 如何延迟拷贝（Copy-on-Write）、`current` 与 `original` 如何分离、冻结语义如何保证。
-- 分析 MobX、Solid.js、Vue Reactivity、S.js 四套响应式系统在依赖追踪数据结构（`WeakMap<Target, Map<Key, Set<Effect>>>`）与调度策略上的异同。
-
-### 1.5 评价层（Evaluate）
-
-- 评估在同一业务场景下，"Proxy 方案"与"装饰器方案"、"Object.defineProperty 方案"、"手写 getter/setter 方案"在可读性、性能、维护成本、兼容性四维度上的得分。
-- 对给定的三套私有属性实现（命名约定 `_`、`WeakMap` 私有存储、`Proxy` 拦截 + `Symbol` 私有键）评判其封装强度与运行时开销。
-- 评审主流框架（Vue3、MobX、Immer、Solid）的 Proxy 使用模式，给出可量化的性能与可维护性改进建议。
-
-### 1.6 创造层（Create）
-
-- 设计并实现一个面向团队的 ORM 层，通过 Proxy 拦截属性访问实现懒加载（Lazy Load）、关系映射（Relation Mapping）、查询构建（Query Builder）。
-- 构建一套基于 `Proxy` 的 RPC 调用层，将远程方法调用透明地映射为本地对象方法调用，含超时、重试、熔断与序列化策略。
-- 撰写一份团队级《JavaScript 元编程工程规范》文档，包含 Proxy 使用准则、性能预算、Code Review 检查项、CI 静态分析脚本与不可变约束。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 元编程的思想起源（1960-1990）
+### 1.1 元编程的思想起源（1960-1990）
 
 元编程（Metaprogramming）的概念最早可追溯至 1960 年代 Lisp 的宏系统。Lisp 程序本身就是 Lisp 数据（"代码即数据"），开发者可以编写操纵代码的程序。这一思想催生了 Smalltalk 的元类（Metaclass）、CLOS 的元对象协议（Metaobject Protocol, MOP）、Python 的 `__getattr__` / `__setattr__` 魔术方法。
 
 JavaScript 在 1995 年由 Brendan Eich 设计之初就带有元编程色彩：每个对象都有 `[[Prototype]]` 内部槽，函数也是一等对象。但直到 ES5（2009），JavaScript 才通过 `Object.defineProperty` 与 `Object.create` 提供受控的元编程能力。
 
-### 2.2 ES5 Object.defineProperty 时代（2009-2015）
+### 1.2 ES5 Object.defineProperty 时代（2009-2015）
 
 ES5 引入 `Object.defineProperty(obj, key, descriptor)`，允许精确定义属性的数据描述符（value/writable）或存取描述符（get/set）：
 
@@ -106,7 +65,7 @@ function defineReactive(obj, key, val) {
 3. **无法监听 `Map`/`Set` 集合类型**：这些集合的内部状态不走属性访问。
 4. **深度监听需要递归遍历**：初始化成本高，对大型对象性能不友好。
 
-### 2.3 Proxy 提案的演进（2008-2015）
+### 1.3 Proxy 提案的演进（2008-2015）
 
 Proxy 的早期提案由 Mozilla 的 Tom Van Cutsem 与 Mark Miller 于 2008 年提出，灵感来自 ECMAScript 4 的"catchalls"概念。早期 API 形式为 `Proxy.create(handler, proto)`，陷阱名称与现今不同（如 `getOwnPropertyDescriptor` 当时叫 `getOwnPropertyDescriptor` 但返回值约定不同）。
 
@@ -119,7 +78,7 @@ Proxy 的早期提案由 Mozilla 的 Tom Van Cutsem 与 Mark Miller 于 2008 年
 
 2015 年 6 月，ES2015（ES6）正式发布，Proxy 与 Reflect 成为标准。
 
-### 2.4 引擎实现时间线
+### 1.4 引擎实现时间线
 
 | 引擎 | Proxy 支持 | Reflect 支持 | 性能优化里程碑 |
 |------|------------|--------------|------------------|
@@ -131,7 +90,7 @@ Proxy 的早期提案由 Mozilla 的 Tom Van Cutsem 与 Mark Miller 于 2008 年
 | Bun 1.0 | 2023.09 | 2023.09 | JavaScriptCore 基础上进一步优化 |
 | Deno 1.0 | 2020.05 | 2020.05 | V8 基础 |
 
-### 2.5 框架采用时间线
+### 1.5 框架采用时间线
 
 | 框架 | 采用 Proxy 的版本 | 年份 | 关键动机 |
 |------|-------------------|------|----------|
@@ -143,7 +102,7 @@ Proxy 的早期提案由 Mozilla 的 Tom Van Cutsem 与 Mark Miller 于 2008 年
 | Ember.js 4.x | 2023 | 2023 | 替代自定义追踪机制 |
 | Angular Signals | 2023.06 | 2023 | 用 Proxy 包装信号（部分场景） |
 
-### 2.6 浏览器兼容性现状
+### 1.6 浏览器兼容性现状
 
 截至 2026 年，Proxy 与 Reflect 在主流环境的支持情况：
 
@@ -162,9 +121,9 @@ Proxy 的早期提案由 Mozilla 的 Tom Van Cutsem 与 Mark Miller 于 2008 年
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 对象内部方法（Internal Methods）
+### 2.1 对象内部方法（Internal Methods）
 
 ECMAScript 规范定义每个对象都有一组"内部方法"（也称"内部槽"，Internal Slot），这些方法对 JavaScript 代码不可直接访问，但被运算符和语句隐式调用。Proxy 的本质是**替换这些内部方法的实现**。
 
@@ -184,7 +143,7 @@ $$
 
 普通对象的内部方法有默认实现（如 `[[Get]]` 沿原型链查找）。Proxy 通过 `handler` 对象的陷阱函数替换这些默认实现。
 
-### 3.2 Proxy 的代数定义
+### 2.2 Proxy 的代数定义
 
 **定义 1（Proxy 对象）**：Proxy 是一个复合对象 $P = (\text{target}, \text{handler})$，其中：
 
@@ -202,7 +161,7 @@ $$
 
 即：若 `handler` 上定义了对应陷阱，则调用陷阱；否则转发给 `target` 的默认实现。
 
-### 3.3 Reflect 的形式化语义
+### 2.3 Reflect 的形式化语义
 
 `Reflect` 对象上的每个静态方法都是对应内部方法的"裸函数"形式：
 
@@ -216,7 +175,7 @@ $$
 2. **返回值语义**：`Reflect.set` 返回布尔值表示成功，而非抛异常；与 `Object.defineProperty` 的异常语义不同。
 3. **转发友好**：在 Proxy 陷阱中调用 `Reflect.M(target, ...args)` 即可获得默认行为。
 
-### 3.4 不变式（Invariants）
+### 2.4 不变式（Invariants）
 
 ECMAScript 规范对 Proxy 陷阱的返回值施加**不变式约束**，违反将抛出 `TypeError`。不变式是为了保证对象系统的语义一致性，使外部代码无法通过 Proxy 破坏语言不变量。
 
@@ -233,7 +192,7 @@ ECMAScript 规范对 Proxy 陷阱的返回值施加**不变式约束**，违反�
 | `[[OwnPropertyKeys]]` | 必须包含 `target` 上所有不可配置的自身属性 |
 | `[[OwnPropertyKeys]]` | 若 `target` 不可扩展，则返回的 key 集合必须等于 `target` 的自身 key 集合 |
 
-### 3.5 receiver 参数的形式化语义
+### 2.5 receiver 参数的形式化语义
 
 `get` 与 `set` 陷阱的第三参数 `receiver` 表示"接收者"，即属性访问的发起对象。其语义为：
 
@@ -249,9 +208,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 引理：Proxy 不改变对象的类型
+### 3.1 引理：Proxy 不改变对象的类型
 
 **引理**：对任意对象 $T$ 与陷阱集合 $H$，`new Proxy(T, H)` 的类型（`typeof` 与 `[[Class]]`）与 $T$ 相同。
 
@@ -267,7 +226,7 @@ ECMAScript 规范 §6.1.7.3 规定 `ProxyExoticObject` 的内部槽与 $T$ 的�
 
 **推论**：函数与数组均可被 Proxy 代理，且代理后保留原类型语义。
 
-### 4.2 定理：Reflect 是陷阱转发的对偶
+### 3.2 定理：Reflect 是陷阱转发的对偶
 
 **定理**：对任意对象 $T$ 与陷阱函数 $f$，若 $f$ 调用 `Reflect.M(T, ...args)`，则 Proxy 的语义等价于"无陷阱"。
 
@@ -285,7 +244,7 @@ ECMAScript 规范 §6.1.7.3 规定 `ProxyExoticObject` 的内部槽与 $T$ 的�
 
 **工程意义**：将陷阱实现为 `Reflect.M` 转发是 Proxy 的"零行为"，便于在零行为基础上插入额外逻辑（如日志、校验）而不改变默认语义。
 
-### 4.3 命题：深层响应式的递归终止性
+### 3.3 命题：深层响应式的递归终止性
 
 **命题**：基于 `WeakMap` + `Proxy` 的深层响应式实现，对任意对象图的递归代理必然终止。
 
@@ -324,7 +283,7 @@ get(target, key, receiver):
 
 **工程意义**：`WeakMap` 缓存是深层响应式的正确性保证，且不会造成内存泄漏（`WeakMap` 持有弱引用）。
 
-### 4.4 推论：Proxy 的不变式保证语言安全性
+### 3.4 推论：Proxy 的不变式保证语言安全性
 
 **推论**：Proxy 的不变式约束保证外部代码无法通过 Proxy 绕过 `Object.freeze`、`Object.seal` 等冻结语义。
 
@@ -343,7 +302,7 @@ get(target, key, receiver):
 
 **工程意义**：开发者可以安全地将冻结对象传给不可信代码包装在 Proxy 中，不变式保证语义不被破坏。
 
-### 4.5 定理：Proxy 的性能开销下界
+### 3.5 定理：Proxy 的性能开销下界
 
 **定理**：Proxy 在任意陷阱上的性能开销下界为 $O(1)$（每次访问），但常系数大于直接属性访问。
 
@@ -374,9 +333,9 @@ V8 的 Proxy 实现在内部对象上添加 `[[ProxyHandler]]` 与 `[[ProxyTarge
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础用法：13 种陷阱演示
+### 4.1 基础用法：13 种陷阱演示
 
 ```javascript
 // 文件名: proxy-all-traps.js
@@ -496,7 +455,7 @@ fnProxy(21);             // [apply] args: [21]
 new fnProxy(21);         // [construct] args: [21]
 ```
 
-### 5.2 响应式系统（Vue3 风格简化实现）
+### 4.2 响应式系统（Vue3 风格简化实现）
 
 ```javascript
 // 文件名: reactive-system.js
@@ -668,7 +627,7 @@ state.count = 10;
 console.log(double.value);  // 20
 ```
 
-### 5.3 表单校验代理
+### 4.3 表单校验代理
 
 ```javascript
 // 文件名: validation-proxy.js
@@ -784,7 +743,7 @@ try {
 }
 ```
 
-### 5.4 缓存代理（带 TTL 与 LRU）
+### 4.4 缓存代理（带 TTL 与 LRU）
 
 ```javascript
 // 文件名: cache-proxy.js
@@ -903,7 +862,7 @@ const fetchUser = cachedProxy(
 })();
 ```
 
-### 5.5 私有属性代理（Symbol + 命名约定）
+### 4.5 私有属性代理（Symbol + 命名约定）
 
 ```javascript
 // 文件名: private-proxy.js
@@ -998,7 +957,7 @@ console.log(u.verify('wrong'));   // false
 // console.log(u.#password);  // SyntaxError
 ```
 
-### 5.6 函数调用日志与性能监控
+### 4.6 函数调用日志与性能监控
 
 ```javascript
 // 文件名: trace-proxy.js
@@ -1094,7 +1053,7 @@ const tracedFetch = trace(async (url) => {
 })();
 ```
 
-### 5.7 负索引与多维数组
+### 4.7 负索引与多维数组
 
 ```javascript
 // 文件名: fancy-array.js
@@ -1154,7 +1113,7 @@ console.log(arr[4]);      // 999
 console.log(arr.map(x => x * 2).filter(x => x > 20));  // [40, 60, 80, 1998]
 ```
 
-### 5.8 可撤销代理（API 密钥传递）
+### 4.8 可撤销代理（API 密钥传递）
 
 ```javascript
 // 文件名: revocable-proxy.js
@@ -1231,7 +1190,7 @@ setTimeout(() => {
 // revoke();
 ```
 
-### 5.9 单例模式代理
+### 4.9 单例模式代理
 
 ```javascript
 // 文件名: singleton-proxy.js
@@ -1276,7 +1235,7 @@ console.log(db1.connect());  // Connected to MySQL (1 times)
 console.log(db2.connect());  // Connected to MySQL (2 times)
 ```
 
-### 5.10 ORM 模型代理
+### 4.10 ORM 模型代理
 
 ```javascript
 // 文件名: orm-proxy.js
@@ -1345,7 +1304,7 @@ console.log(user.age);   // 30（不再触发 SQL）
 user.age = 31;           // [SQL] UPDATE users SET {"id":1,"name":"Alice","age":31,"email":"a@b.com"} WHERE id = 1
 ```
 
-### 5.11 RPC 透明调用代理
+### 4.11 RPC 透明调用代理
 
 ```javascript
 // 文件名: rpc-proxy.js
@@ -1401,7 +1360,7 @@ const client = new RPCClient('https://api.example.com/rpc');
 })();
 ```
 
-### 5.12 不可变数据代理（Immer 风格）
+### 4.12 不可变数据代理（Immer 风格）
 
 ```javascript
 // 文件名: immer-lite.js
@@ -1519,7 +1478,7 @@ console.log(original.address !== next.address);    // true（被修改的部分�
 console.log(original.name === next.name);          // true（未修改的引用共享）
 ```
 
-### 5.13 类型系统代理（运行时类型守卫）
+### 4.13 类型系统代理（运行时类型守卫）
 
 ```javascript
 // 文件名: typed-proxy.js
@@ -1577,9 +1536,9 @@ try {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 主流响应式方案对比
+### 5.1 主流响应式方案对比
 
 | 维度 | Vue2 (defineProperty) | Vue3 (Proxy) | MobX (Proxy) | Solid (Proxy) | S.js | RxJS |
 |------|-----------------------|---------------|--------------|----------------|------|------|
@@ -1592,7 +1551,7 @@ try {
 | 调度方式 | 微任务批处理 | 微任务批处理 | 同步触发 | 同步触发 | 同步 | 同步 |
 | 学习曲线 | 低 | 中 | 中 | 高 | 高 | 高 |
 
-### 6.2 Proxy vs Object.defineProperty vs Reflect
+### 5.2 Proxy vs Object.defineProperty vs Reflect
 
 ```javascript
 // 三种元编程方案的对比
@@ -1632,7 +1591,7 @@ function reflectAccess(obj, key) {
 | 学习曲线 | 低 | 中 | 低 |
 | 推荐场景 | 简单响应式 | 复杂响应式 | 陷阱转发 | 
 
-### 6.3 Proxy 与其他语言元编程对比
+### 5.3 Proxy 与其他语言元编程对比
 
 | 语言 | 元编程机制 | 拦截粒度 | 性能 |
 |------|-----------|----------|------|
@@ -1645,7 +1604,7 @@ function reflectAccess(obj, key) {
 | C# | `RealProxy` / `DispatchProxy` | 仅继承自 MarshalByRefObject | 中 |
 | Rust | `Deref` / `Drop` traits | 编译期，无运行时 | 零开销 |
 
-### 6.4 框架使用模式对比
+### 5.4 框架使用模式对比
 
 ```javascript
 // Vue3 风格：全局响应式，effect 自动收集
@@ -1671,7 +1630,7 @@ const next = produce(state, draft => { draft.count++; });
 | Solid | 编译期生成信号图 | 编译期 | 同步触发 |
 | Immer | 无依赖图（单次更新） | N/A | 立即生成新对象 |
 
-### 6.5 Reflect API 速查表
+### 5.5 Reflect API 速查表
 
 | Reflect 方法 | 对应 Proxy 陷阱 | 对应 Object 方法 | 返回值差异 |
 |--------------|------------------|------------------|------------|
@@ -1691,9 +1650,9 @@ const next = produce(state, draft => { draft.count++; });
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱 1：忘记传递 receiver 导致 setter this 错误
+### 6.1 陷阱 1：忘记传递 receiver 导致 setter this 错误
 
 **问题**：
 
@@ -1730,7 +1689,7 @@ const proxy = new Proxy(parent, {
 console.log(proxyChild.name);  // 'child'（正确）
 ```
 
-### 7.2 陷阱 2：直接修改 target 绕过代理
+### 6.2 陷阱 2：直接修改 target 绕过代理
 
 **问题**：
 
@@ -1758,7 +1717,7 @@ function createReactive(initial) {
 }
 ```
 
-### 7.3 陷阱 3：循环引用导致无限递归
+### 6.3 陷阱 3：循环引用导致无限递归
 
 **问题**：
 
@@ -1770,7 +1729,7 @@ state.a.b = state;  // 循环引用
 
 **修正**：使用 WeakMap 缓存确保每个对象只代理一次（已在 5.2 中实现）。
 
-### 7.4 陷阱 4：has 陷阱对 Symbol 处理不当
+### 6.4 陷阱 4：has 陷阱对 Symbol 处理不当
 
 **问题**：
 
@@ -1800,7 +1759,7 @@ const proxy = new Proxy({ a: 1 }, {
 });
 ```
 
-### 7.5 陷阱 5：ownKeys 必须返回数组且符合不变式
+### 6.5 陷阱 5：ownKeys 必须返回数组且符合不变式
 
 **问题**：
 
@@ -1832,7 +1791,7 @@ const proxy = new Proxy(target, {
 });
 ```
 
-### 7.6 陷阱 6：性能反模式——热路径使用 Proxy
+### 6.6 陷阱 6：性能反模式——热路径使用 Proxy
 
 **问题**：
 
@@ -1864,7 +1823,7 @@ for (let i = 0; i < raw.pixels.length; i++) {
 trigger(raw, 'pixels');
 ```
 
-### 7.7 陷阱 7：冻结对象代理的不变式冲突
+### 6.7 陷阱 7：冻结对象代理的不变式冲突
 
 **问题**：
 
@@ -1888,7 +1847,7 @@ const proxy = new Proxy(frozen, {
 proxy.x = 2;  // 静默失败（非严格模式）或 TypeError（严格模式）
 ```
 
-### 7.8 陷阱 8：this 指向问题
+### 6.8 陷阱 8：this 指向问题
 
 **问题**：
 
@@ -1925,7 +1884,7 @@ const counter = new Proxy(new Counter(), {
 counter.increment();  // 正常
 ```
 
-### 7.9 陷阱 9：JSON.stringify 不触发 get 陷阱
+### 6.9 陷阱 9：JSON.stringify 不触发 get 陷阱
 
 ```javascript
 const proxy = new Proxy({ a: 1 }, {
@@ -1940,7 +1899,7 @@ JSON.stringify(proxy);  // 不输出 [get]，因为 JSON.stringify 走内部 [[O
 
 **修正**：若需在 JSON 序列化时拦截，需实现 `toJSON` 方法或自定义 `getOwnPropertyDescriptor`。
 
-### 7.10 陷阱 10：Map/Set 代理的迭代器问题
+### 6.10 陷阱 10：Map/Set 代理的迭代器问题
 
 ```javascript
 const proxy = new Proxy(new Map([['a', 1]]), {
@@ -1970,9 +1929,9 @@ const proxy = new Proxy(new Map([['a', 1]]), {
 
 ---
 
-## 8. 工程最佳实践
+## 7. 工程最佳实践
 
-### 8.1 Proxy 使用决策树
+### 7.1 Proxy 使用决策树
 
 ```mermaid
 flowchart TD
@@ -2005,7 +1964,7 @@ flowchart TD
     T12 --> T13
 ```
 
-### 8.2 性能基准测试工具
+### 7.2 性能基准测试工具
 
 ```javascript
 // 文件名: proxy-benchmark.js
@@ -2051,7 +2010,7 @@ bench('Direct call', () => { fn(1, 2); });
 bench('Proxy call', () => { proxyFn(1, 2); });
 ```
 
-### 8.3 TypeScript 类型支持
+### 7.3 TypeScript 类型支持
 
 ```typescript
 // 文件名: proxy-types.ts
@@ -2094,7 +2053,7 @@ user.name = 'Bob';  // 类型安全
 // user.age = 'old';  // TypeScript 编译错误
 ```
 
-### 8.4 ESLint 静态检查规则
+### 7.4 ESLint 静态检查规则
 
 ```javascript
 // .eslintrc.js 中添加自定义规则
@@ -2120,7 +2079,7 @@ module.exports = {
 };
 ```
 
-### 8.5 单元测试覆盖
+### 7.5 单元测试覆盖
 
 ```javascript
 // 文件名: proxy.test.js
@@ -2171,7 +2130,7 @@ describe('reactive', () => {
 });
 ```
 
-### 8.6 可观测性与调试
+### 7.6 可观测性与调试
 
 ```javascript
 /**
@@ -2211,9 +2170,9 @@ function createDebugReactive() {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：Vue3 Reactivity 完整实现分析
+### 8.1 案例：Vue3 Reactivity 完整实现分析
 
 Vue3 的响应式系统是 Proxy 应用的典范。其核心文件 `@vue/reactivity` 的关键实现：
 
@@ -2295,7 +2254,7 @@ Vue3 的设计要点：
 4. **数组特殊处理**：`isIntegerKey` 识别数组索引，特殊触发 `set` 语义。
 5. **receiver 检查**：避免原型链上的 setter 误触发当前对象的依赖。
 
-### 9.2 案例：Immer 的 Copy-on-Write 实现
+### 8.2 案例：Immer 的 Copy-on-Write 实现
 
 Immer 通过 Proxy 实现"不可变更新但可变写法"：
 
@@ -2356,7 +2315,7 @@ Immer 的关键设计：
 3. **`finalize` 阶段**：递归将代理转为普通对象，并 `Object.freeze` 保证不可变。
 4. **未修改路径共享**：`produce(state, draft => { draft.x = 1 })` 中 `state.y` 的引用与原对象一致。
 
-### 9.3 案例：RPC 透明调用层
+### 8.3 案例：RPC 透明调用层
 
 某微服务架构中，前端需要调用 50+ 个远程服务，每个服务有 10-20 个方法。传统 RPC 客户端需要为每个方法编写 stub：
 
@@ -2409,7 +2368,7 @@ const post = await rpc.post.create({ title: 'Hello' });
 - 新增服务零成本：后端新增 `order.list` 接口，前端直接 `rpc.order.list()`。
 - 类型安全可通过 TypeScript 的递归类型补强。
 
-### 9.4 案例：表单状态管理库
+### 8.4 案例：表单状态管理库
 
 某 SaaS 应用的复杂表单（200+ 字段，含嵌套与数组）：
 
@@ -2471,7 +2430,7 @@ form.setField('user.name', 'Alice');
 form.setField('items.0.qty', 5);
 ```
 
-### 9.5 案例：配置中心动态加载
+### 8.5 案例：配置中心动态加载
 
 ```javascript
 // 远程配置中心，支持热更新
@@ -2530,7 +2489,7 @@ const config = createConfigProxy();
 
 ## 知识讲解与要点分析（原练习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题 1**：实现一个 `readOnly` 函数，使对象所有属性只读，尝试写入时抛出 `TypeError`。
 
@@ -2622,7 +2581,7 @@ console.log(proxy.x, target.x);
 
 **解析讲解**：输出 `42 1`。Proxy 拦截了 `get` 陷阱，无论 target 上 `x` 的真实值是什么，都返回 42。直接访问 `target.x` 不经过代理，返回真实值 1。
 
-### 10.2 中级题
+### 9.2 中级题
 
 **题 5**：实现一个 `computed` 函数，缓存 getter 的返回值，仅在依赖的响应式数据变化时重新计算。
 
@@ -2689,7 +2648,7 @@ function memoize(fn, keyBuilder = args => JSON.stringify(args)) {
 }
 ```
 
-### 10.3 高级题
+### 9.3 高级题
 
 **题 8**：分析以下代码的 bug 并修复。
 
@@ -2867,9 +2826,9 @@ try {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 规范与标准
+### 10.1 规范与标准
 
 [1] Ecma International. ECMAScript 2024 Language Specification (ECMA-262, 15th Edition)[S]. Geneva: Ecma International, 2024. https://tc39.es/ecma262/
 
@@ -2877,7 +2836,7 @@ try {
 
 [3] TC39. Proxy Proposal[EB/OL]. 2014. https://github.com/tc39/proposals/blob/main/finished-proposals.md
 
-### 11.2 引擎实现
+### 10.2 引擎实现
 
 [4] B. B. Oliveira, A. Rigo, C. F. Bolz. PyPy's Approach to Implementing JavaScript Proxies[C]//Proceedings of the 9th ACM SIGPLAN International Workshop on Virtual Machines and Intermediate Languages. ACM, 2017: 23-32. DOI: 10.1145/3144713.3144718
 
@@ -2885,7 +2844,7 @@ try {
 
 [6] Mozilla. SpiderMonkey Developer Documentation: Proxy Handlers[EB/OL]. 2024. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
 
-### 11.3 框架与库
+### 10.3 框架与库
 
 [7] E. You. Vue.js Reactivity Implementation[EB/OL]. 2020. https://vuejs.org/guide/extras/reactivity-in-depth.html
 
@@ -2895,7 +2854,7 @@ try {
 
 [10] R. Ryan Carniato. SolidJS: Reactive Primitives for Fine-Grained Reactivity[EB/OL]. 2021. https://www.solidjs.com/
 
-### 11.4 学术论文
+### 10.4 学术论文
 
 [11] T. Van Cutsem, M. Miller. Proxies: Design Principles for Robust Object-oriented Intercession Layer APIs[C]//Proceedings of the 6th Symposium on Dynamic Languages. ACM, 2010: 1-16. DOI: 10.1145/1869459.1869462
 
@@ -2903,13 +2862,13 @@ try {
 
 [13] A. Warth, M. Stanojevic, T. Ohshima. Technology for Building Modular and Reusable Metacircular Interpreters[C]//Proceedings of the 6th Symposium on Dynamic Languages. ACM, 2010: 1-12. DOI: 10.1145/1869459.1869461
 
-### 11.5 性能与基准
+### 10.5 性能与基准
 
 [14] P. Finkelday. JavaScript Metaprogramming Performance Analysis[J]. IEEE Software, 2022, 39(2): 38-46. DOI: 10.1109/MS.2021.3123456
 
 [15] Google Chrome Team. V8 Benchmark Suite: Proxy Overhead[EB/OL]. 2024. https://v8.dev/benchmarks
 
-### 11.6 元编程理论
+### 10.6 元编程理论
 
 [16] G. L. Steele. Growing a Language[J]. Journal of Higher-Order and Symbolic Computation, 1999, 12(3): 221-236. DOI: 10.1023/A:1010051416132
 
@@ -2917,7 +2876,7 @@ try {
 
 [18] R. P. Gabriel, R. White. Patterns for Metaprogramming[C]//Proceedings of the 10th Conference on Pattern Languages of Programs. ACM, 2003: 1-15.
 
-### 11.7 应用案例
+### 10.7 应用案例
 
 [19] Facebook. React Hooks Implementation: Use Proxy for State Tracking[EB/OL]. 2023. https://react.dev/reference/react
 
@@ -2925,36 +2884,36 @@ try {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 理论延伸
+### 11.1 理论延伸
 
 - **Metaobject Protocol（MOP）**：阅读 Kiczales 的《The Art of the Metaobject Protocol》理解 CLOS 的元对象协议，对比 JavaScript Proxy 的设计哲学。
 - **反射（Reflection）与内省（Introspection）**：区分"运行时查看自身结构"（内省）与"运行时修改自身结构"（反射），JavaScript 通过 `Reflect` 提供内省能力，通过 `Proxy` 提供反射能力。
 - **对象代理模式**：阅读 GoF《设计模式》中的 Proxy 模式，对比虚拟代理、远程代理、保护代理与 JavaScript Proxy 的对应关系。
 
-### 12.2 工程实践
+### 11.2 工程实践
 
 - **Vue Reactivity 源码**：阅读 `@vue/reactivity` 包的完整实现，理解 `track`/`trigger`/`effect` 三层架构。
 - **Immer 源码**：阅读 `immerjs/immer` 的 `proxy.ts` 与 `finalize.ts`，理解 Copy-on-Write 与 `finalize` 阶段。
 - **MobX 源码**：阅读 `mobxjs/mobx` 的 `observable.ts` 与 `derivation.ts`，理解自动依赖追踪算法。
 - **Solid.js 源码**：阅读 `ryansolid/solid` 的 `reactive.ts`，理解编译期信号与运行时 Proxy 的协作。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **MDN Web Docs**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
 - **TC39 Proposal Process**：https://tc39.es/process-document/
 - **V8 Dev Blog**：https://v8.dev/blog
 - **Vue Mastery**：https://www.vuemastery.com/courses/vue3-reactivity/
 
-### 12.4 课程
+### 11.4 课程
 
 - **MIT 6.831: User Interface Design**：MIT 的 UI 设计课程，深入讨论响应式系统与用户感知。
 - **CMU 17-445: Software Engineering for Information Systems**：CMU 的软件工程课程，涉及元编程在系统设计中的应用。
 - **Berkeley CS 162: Operating Systems**：Berkeley 的操作系统课程，对比语言级 Proxy 与 OS 级抽象。
 - **Stanford CS 142: Web Applications**：Stanford 的 Web 应用课程，讨论前端框架的响应式实现。
 
-### 12.5 开源项目
+### 11.5 开源项目
 
 - **Vue.js Core**：https://github.com/vuejs/core
 - **Immer**：https://github.com/immerjs/immer
@@ -2962,14 +2921,14 @@ try {
 - **Solid.js**：https://github.com/solidjs/solid
 - **@vue/reactivity**：https://github.com/vuejs/core/tree/main/packages/reactivity
 
-### 12.6 相关工具
+### 11.6 相关工具
 
 - **TypeScript**：通过 `tsconfig.json` 的 `lib` 选项启用 ES2015+ 的 Proxy/Reflect 类型支持。
 - **ESLint**：使用 `eslint-plugin-no-only-tests` 等插件防止 Proxy 滥用。
 - **Babel**：`@babel/plugin-proposal-class-properties` 支持私有字段与 Proxy 配合。
 - **Vitest / Jest**：单元测试框架，配合 Proxy 实现模拟对象（Mock）。
 
-### 12.7 扩展主题
+### 11.7 扩展主题
 
 - **Symbol 与私有字段**：ES2022 的 `#field` 私有字段是 Proxy 之外的强私有方案，理解其与 Proxy 私有代理的差异。
 - **Decorator**：ES2024 装饰器提案与 Proxy 在元编程上的协同关系。

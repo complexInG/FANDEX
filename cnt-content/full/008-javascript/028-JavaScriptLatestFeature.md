@@ -16,48 +16,12 @@ prerequisites:
   - javascript/语法速查
 ---
 
+
 # JavaScript 最新特性与运行时
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本节按 Bloom 分类法的认知层级组织目标，读者完成本章后应达到如下能力维度：
-
-### 1.1 记忆层（Remembering）
-
-- 复述 ES2024、ES2025、ES2026 规范中已合入的主要提案名称（如 `Object.groupBy`、`Promise.try`、`Temporal`、`Iterator Helpers`、`Set Methods`、`ShadowRealm` 等）。
-- 列出 V8、SpiderMonkey、JavaScriptCore 三大引擎的层次化编译流水线关键阶段（Parse → AST → Ignition 字节码 → Sparkplug 基线 → Maglev/TurboFan 优化）。
-- 识别 Node.js 22+、Deno 2.0、Bun 1.x 三个运行时的核心模块组织差异（内置模块、标准库、包管理器）。
-
-### 1.2 理解层（Understanding）
-
-- 用自己的语言解释 ES2025 `Promise.try` 相对 `new Promise(async (resolve) => ...)` 的语义优势。
-- 阐述 V8 的隐藏类（Hidden Class / Map）与内联缓存（Inline Cache）如何共同支撑 JavaScript 动态类型的高效执行。
-- 解释 WebAssembly（Wasm）与 JavaScript 在编译目标、内存模型、调用约定上的本质区别。
-
-### 1.3 应用层（Applying）
-
-- 在生产代码中正确使用 `Object.groupBy` / `Map.groupBy` 完成数据分桶，并避免分组键为 `Symbol` 时的退化路径。
-- 利用 `Temporal.PlainDate` 与 `Temporal.ZonedDateTime` 替换基于 `Date` 的遗留日历逻辑，处理跨时区场景。
-- 在 Node.js 22 中通过 `node --experimental-strip-types` 直接运行 `.ts` 文件并配置 `--conditions=types` 解析顺序。
-
-### 1.4 分析层（Analyzing）
-
-- 对比 `WeakRef` + `FinalizationRegistry` 与手动资源池两种方案的内存回收延迟分布，识别 GC 抖动来源。
-- 分解 `ShadowRealm` 与 `Worker`、`vm.createContext` 在隔离边界、原型链污染、性能开销上的差异，判断业务场景下的最优隔离方案。
-
-### 1.5 评价层（Evaluating）
-
-- 评估将 `Iterator.prototype.reduce` 替换手写 `for...of` 累加器是否带来真实收益，从可读性、性能、内存三维度给出工程判定。
-- 评估 Bun 1.x 在生产环境中替代 Node.js 的成熟度，识别生态系统（npm 原生模块、Node-API 兼容性、稳定性基线）的关键风险。
-
-### 1.6 创造层（Creating）
-
-- 设计一个基于 `Iterator Helpers` 与 `AsyncIterator` 的流式数据管线，支持背压、错误恢复与可观测性埋点。
-- 构建一个最小化的 WebAssembly 模块，并通过 JS-Wasm 边界进行结构化数据交换，输出性能基准报告。
-
-## 2. 历史动机与背景
-
-### 2.1 JavaScript 演化的三条主线
+### 1.1 JavaScript 演化的三条主线
 
 JavaScript 自 1995 年由 Brendan Eich 在 Netscape 用 10 天完成原型以来，其演化可被归纳为三条相互纠缠的主线：
 
@@ -65,9 +29,9 @@ JavaScript 自 1995 年由 Brendan Eich 在 Netscape 用 10 天完成原型以�
 2. **运行时的多元化**：从浏览器单宿主，到 2009 年 Node.js 诞生后的服务端运行时，再到 2018 年 Deno 与 2022 年 Bun 引入的"安全默认 + 原生 TypeScript + 高性能启动"的新范式，宿主环境从 1 个扩展到 4 个主流。
 3. **性能竞争的白热化**：2008 年 V8 引入 JIT（Just-In-Time）后，JS 性能提升约两个数量级；2017 年 WebAssembly 1.0 成为第四种浏览器原生语言；2023 年 V8 引入 Maglev 中间层优化编译器，将启动速度进一步提升 20-30%。
 
-### 2.2 ES2024-2026 提案的工程驱动力
+### 1.2 ES2024-2026 提案的工程驱动力
 
-#### 2.2.1 为什么需要 `Promise.try`
+#### 1.2.1 为什么需要 `Promise.try`
 
 ES2015 引入 Promise 后，社区形成了一种反模式：
 
@@ -91,7 +55,7 @@ const p = Promise.try(async () => {
 
 其语义可形式化为：`Promise.try(fn) ≡ new Promise((resolve, reject) => resolve(fn()))`，但对同步异常的处理路径更明确，且不会产生"嵌套 Promise"问题。
 
-#### 2.2.2 为什么需要 `Temporal`
+#### 1.2.2 为什么需要 `Temporal`
 
 `Date` 对象自 ES1 起就存在，但存在 8 类已知缺陷：
 
@@ -106,7 +70,7 @@ const p = Promise.try(async () => {
 
 `Temporal` 提案自 2017 年由 Philipp Dunkel 等人推动，2024 年进入 Stage 3，2025 年合入规范。它通过 12 个独立类型（`Instant`、`ZonedDateTime`、`PlainDate`、`PlainTime`、`PlainDateTime`、`PlainYearMonth`、`PlainMonthDay`、`Duration`、`Now`、`TimeZone`、`Calendar`）将时间建模拆分为正交维度，从根本上消除了上述缺陷。
 
-#### 2.2.3 为什么需要 `Iterator Helpers`
+#### 1.2.3 为什么需要 `Iterator Helpers`
 
 ES2015 的 `for...of` 与 Generator 提供了统一的迭代协议，但缺少类似 Array 的链式高阶方法。开发者被迫写出：
 
@@ -119,7 +83,7 @@ const result = [...someIterator]
 
 此模式存在两个工程问题：第一，`[...iter]` 强制将整个迭代器物化到内存，破坏了惰性求值；第二，多趟遍历产生多次内存分配。`Iterator Helpers`（ES2025）通过为 `Iterator.prototype` 添加 `map`、`filter`、`take`、`drop`、`reduce`、`toArray` 等方法，使迭代器获得与 Array 等价的链式 API，同时保持惰性。
 
-### 2.3 运行时三分天下的格局
+### 1.3 运行时三分天下的格局
 
 | 运行时 | 首次发布 | 引擎 | 模块系统 | 类型支持 | 包管理器 | 定位 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -129,9 +93,9 @@ const result = [...someIterator]
 
 三者均支持 ESM，但 Deno 与 Bun 默认拒绝网络访问（需显式 `--allow-net`），与 Node.js 的"默认开放"形成对比。Bun 通过 JavaScriptCore（而非 V8）获得了更快的冷启动，但牺牲了部分 Node-API 兼容性。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Promise 的形式化语义
+### 2.1 Promise 的形式化语义
 
 设 $P$ 为 Promise 集合，$S = \{pending, fulfilled, rejected\}$ 为状态集。一个 Promise 可被建模为三元组：
 
@@ -161,7 +125,7 @@ $$
 
 其中 $\text{then}$ 为同步异常捕获算子。
 
-### 3.2 迭代器协议的形式化
+### 2.2 迭代器协议的形式化
 
 迭代器可建模为状态机 $I = (Q, q_0, \Sigma, \delta, F)$，其中：
 
@@ -179,7 +143,7 @@ $$
 
 惰性求值的核心在于 $\delta_{I'}$ 仅在被调用时计算 $f(v)$，而非预先对所有元素执行映射。
 
-### 3.3 V8 隐藏类的代数建模
+### 2.3 V8 隐藏类的代数建模
 
 设 $O$ 为对象集，$H$ 为隐藏类集（在 V8 中称为 Map）。每个对象 $o \in O$ 关联一个隐藏类 $h \in H$，转移系统定义为：
 
@@ -189,7 +153,7 @@ $$
 
 即添加属性 $p$ 后，对象从隐藏类 $h_1$ 转移到 $h_2 = \text{transition}(h_1, p)$。隐藏类形成有向无环图（DAG），而非树。两个对象具有相同隐藏类当且仅当它们以相同顺序添加了相同属性。
 
-### 3.4 WebAssembly 模块的形式语义
+### 2.4 WebAssembly 模块的形式语义
 
 Wasm 模块 $M$ 可建模为四元组：
 
@@ -205,9 +169,9 @@ $$
 
 每条指令消费若干栈顶值并产生若干结果，类型系统保证栈深度不变量。这与 JavaScript 的寄存器+栈混合模型形成对比。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 Promise 链的复杂度分析
+### 3.1 Promise 链的复杂度分析
 
 考虑 $n$ 个 Promise 顺序链接：
 
@@ -228,7 +192,7 @@ $$
 
 其中 `yield` 由运行时包装为 Promise 链。
 
-### 4.2 Iterator Helpers 的惰性证明
+### 3.2 Iterator Helpers 的惰性证明
 
 设 $I$ 为长度为 $n$ 的迭代器，考虑链式调用：
 
@@ -244,7 +208,7 @@ $$
 
 其中 $m$ 为产出 $k$ 个通过 `filter` 的元素所需拉取的元素数。最坏情况 $m = n$，期望 $m = n \cdot \frac{k}{|I_2|}$。这与 Array 链式的 $\Theta(n) + \Theta(n) + \Theta(n)$ 形成对比：迭代器版本只对每个元素执行一次 $f$ 与 $g$，而 Array 版本执行三次遍历。
 
-### 4.3 隐藏类退化的概率模型
+### 3.3 隐藏类退化的概率模型
 
 设对象 $o$ 在运行时被 $k$ 次添加属性，每次添加顺序概率分布为 $P = (p_1, p_2, \ldots, p_{k!})$。则两个独立对象共享隐藏类的概率为：
 
@@ -254,7 +218,7 @@ $$
 
 若添加顺序均匀分布，则 $P = \frac{1}{k!}$，对 $k = 5$ 即 $1/120 \approx 0.83\%$。这解释了"属性添加顺序不同导致性能骤降"现象。
 
-### 4.4 Wasm 调用约定的开销分解
+### 3.4 Wasm 调用约定的开销分解
 
 JS 调用 Wasm 函数的单次开销可分解为：
 
@@ -264,9 +228,9 @@ $$
 
 其中 $T_{\text{marshal}}$ 为参数类型转换（如 JS Number 到 i32/f64），$T_{\text{trampoline}}$ 为入口跳板开销。在 V8 中，简单函数的 $T_{\text{call}} \approx 50-100 \text{ns}$，对热路径函数可优化到 10ns 以下。这意味着 Wasm 的优势在"单次大计算"场景，而非"高频小调用"场景。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 ES2024 `Object.groupBy` 完整示例
+### 4.1 ES2024 `Object.groupBy` 完整示例
 
 ```javascript
 // ============================================================
@@ -313,7 +277,7 @@ const bySymbol = Map.groupBy(inventory.slice(0, 2), (_, i) => i === 0 ? symA : '
 console.log(bySymbol.get(symA)); // [{ name: '芦笋', ... }]
 ```
 
-### 5.2 ES2025 `Promise.try` 完整示例
+### 4.2 ES2025 `Promise.try` 完整示例
 
 ```javascript
 // ============================================================
@@ -355,7 +319,7 @@ async function measureMicrotaskOverhead() {
 measureMicrotaskOverhead();
 ```
 
-### 5.3 ES2025 `Temporal` 完整示例
+### 4.3 ES2025 `Temporal` 完整示例
 
 ```javascript
 // ============================================================
@@ -398,7 +362,7 @@ const lunarDate = Temporal.PlainDate.from('2026-07-21')
 console.log(`农历: ${lunarDate.year}年 ${lunarDate.month}月 ${lunarDate.day}日`);
 ```
 
-### 5.4 ES2025 `Iterator Helpers` 完整示例
+### 4.4 ES2025 `Iterator Helpers` 完整示例
 
 ```javascript
 // ============================================================
@@ -465,7 +429,7 @@ async function* asyncNaturals() {
 })();
 ```
 
-### 5.5 ES2024 `Set Methods` 完整示例
+### 4.5 ES2024 `Set Methods` 完整示例
 
 ```javascript
 // ============================================================
@@ -526,7 +490,7 @@ function benchmark() {
 benchmark();
 ```
 
-### 5.6 Node.js 22 原生 TypeScript 支持
+### 4.6 Node.js 22 原生 TypeScript 支持
 
 ```javascript
 // ============================================================
@@ -573,7 +537,7 @@ service.addUser({ id: 1, name: '张三', email: 'zhangsan@example.com' });
 console.log(service.getUser(1));
 ```
 
-### 5.7 WebAssembly 模块加载与调用
+### 4.7 WebAssembly 模块加载与调用
 
 ```javascript
 // ============================================================
@@ -634,7 +598,7 @@ loadWasm().catch(console.error);
 compileFromBytes().catch(console.error);
 ```
 
-### 5.8 ShadowRealm 隔离执行
+### 4.8 ShadowRealm 隔离执行
 
 ```javascript
 // ============================================================
@@ -671,9 +635,9 @@ vm.runInContext('x + 5', ctx); // 15
 // vm 没有真正的原型链隔离，仅全局对象隔离
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 ES 模块与 CommonJS 的工程对比
+### 5.1 ES 模块与 CommonJS 的工程对比
 
 | 维度 | CommonJS | ES Modules |
 | --- | --- | --- |
@@ -684,7 +648,7 @@ vm.runInContext('x + 5', ctx); // 15
 | 互操作 | `require(esm)` 在 Node.js 22+ 受限支持 | `import(cjs)` 默认可用 |
 | 浏览器原生支持 | 不支持 | 支持（`<script type="module">`） |
 
-### 6.2 三大运行时性能基准
+### 5.2 三大运行时性能基准
 
 以下数据来自 2026 年 6 月的 Bun 1.2、Node.js 22、Deno 2.1 官方基准（macOS 14, M2 Pro）：
 
@@ -698,7 +662,7 @@ vm.runInContext('x + 5', ctx); // 15
 
 Bun 的性能优势主要源于 JavaScriptCore 的更快启动、Zig 实现的 IO 子系统、以及内置 SQLite 客户端。但 Bun 在 Node-API 兼容性上仍存在长尾问题（如 `node-canvas`、`sharp` 部分版本不可用）。
 
-### 6.3 Temporal 与第三方库对比
+### 5.3 Temporal 与第三方库对比
 
 | 维度 | `Date` | `moment.js` | `date-fns` | `Temporal` |
 | --- | --- | --- | --- | --- |
@@ -709,7 +673,7 @@ Bun 的性能优势主要源于 JavaScriptCore 的更快启动、Zig 实现的 I
 | 持续维护 | - | 进入维护模式 | 活跃 | TC39 维护 |
 | 日历系统 | 公历 | 公历 | 公历 | 多日历 |
 
-### 6.4 隔离方案对比
+### 5.4 隔离方案对比
 
 | 方案 | 隔离强度 | 性能开销 | 通信方式 | 适用场景 |
 | --- | --- | --- | --- | --- |
@@ -719,9 +683,9 @@ Bun 的性能优势主要源于 JavaScriptCore 的更快启动、Zig 实现的 I
 | `child_process` | 极强（独立进程） | 高（数十 ms） | IPC / stdio | 完全不可信代码 |
 | iframe + sandbox | 强（同源策略） | 高 | `postMessage` | 第三方嵌入 |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：在 Promise 构造器中调用 async 函数
+### 6.1 反模式：在 Promise 构造器中调用 async 函数
 
 **事故案例**：某 SaaS 平台在 2024 年 5 月发生线上故障，监控显示错误日志缺失关键字段（堆栈信息），导致根因分析耗时 6 小时。
 
@@ -749,7 +713,7 @@ function fetchUserConfig(userId) {
 
 **根因**：`new Promise(async () => ...)` 的执行器是 async 函数，其同步抛出的异常会被 Promise 内部捕获，但堆栈信息会丢失。`Promise.try` 通过显式的同步包装保留了完整堆栈。
 
-### 7.2 反模式：滥用 `Object.groupBy` 处理动态键
+### 6.2 反模式：滥用 `Object.groupBy` 处理动态键
 
 ```javascript
 // 反模式：分组键是用户输入，可能产生大量桶
@@ -774,7 +738,7 @@ for (const e of events) {
 }
 ```
 
-### 7.3 反模式：迭代器物化后丢失惰性
+### 6.3 反模式：迭代器物化后丢失惰性
 
 ```javascript
 // 反模式：在迭代器链中插入 [...iter] 强制物化
@@ -788,7 +752,7 @@ const wrong = [...result]; // 挂起
 const right = result.take(100).toArray();
 ```
 
-### 7.4 反模式：Temporal 时区与数据库时区不一致
+### 6.4 反模式：Temporal 时区与数据库时区不一致
 
 **事故案例**：某金融系统在 2025 年 11 月美东夏令时切换时，数据库存储 UTC 时间，但应用层使用 `Temporal.PlainDateTime` 比较，导致 1 小时窗口内的订单状态错误。
 
@@ -804,7 +768,7 @@ const orderInstant = Temporal.Instant.from(order.timestamp);
 console.log(orderInstant.equals(deadlineInstant));
 ```
 
-### 7.5 反模式：WebAssembly 滥用于小函数
+### 6.5 反模式：WebAssembly 滥用于小函数
 
 ```javascript
 // 反模式：用 Wasm 实现简单加法
@@ -816,7 +780,7 @@ const result = wasmInstance.exports.matrixMultiply(largeA, largeB);
 // 单次调用承担 100ms 计算，远超 marshal 开销
 ```
 
-### 7.6 反模式：ShadowRealm 中传递复杂对象
+### 6.6 反模式：ShadowRealm 中传递复杂对象
 
 ```javascript
 // ShadowRealm 的 evaluate 仅返回可结构化克隆的值
@@ -835,9 +799,9 @@ const value = realm.evaluate(`
 console.log(value); // 42
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 生产环境 TypeScript 配置
+### 7.1 生产环境 TypeScript 配置
 
 ```javascript
 // tsconfig.json（Node.js 22+ 原生 TS 项目）
@@ -859,7 +823,7 @@ console.log(value); // 42
 }
 ```
 
-### 8.2 V8 性能优化清单
+### 7.2 V8 性能优化清单
 
 1. **保持隐藏类稳定**：构造器中初始化所有属性，避免动态 `delete`。
 2. **数组同构**：避免在数组中混存数字与对象，触发数组模式退化。
@@ -882,7 +846,7 @@ const p = new Point(1, 2);
 p.z = 3; // 隐藏类转移，性能下降
 ```
 
-### 8.3 监控埋点：Promise 拒绝追踪
+### 7.3 监控埋点：Promise 拒绝追踪
 
 ```javascript
 // 全局未捕获拒绝追踪
@@ -913,7 +877,7 @@ function trackLongPending(ms = 5000) {
 }
 ```
 
-### 8.4 WebAssembly 项目的构建管线
+### 7.4 WebAssembly 项目的构建管线
 
 ```javascript
 // build.mjs：从 C/C++ 编译到 Wasm
@@ -954,7 +918,7 @@ buildWasm();
 verify().catch(console.error);
 ```
 
-### 8.5 Bun 生产部署清单
+### 7.5 Bun 生产部署清单
 
 1. **使用 `bun build --compile` 生成单文件可执行**：减少依赖部署。
 2. **设置 `BUN_JSC_*` 环境变量**：调优 JavaScriptCore GC 阈值。
@@ -962,9 +926,9 @@ verify().catch(console.error);
 4. **CI 中运行 `bun test --coverage`**：内置测试运行器比 Jest 快 5-10 倍。
 5. **生产前验证 Node-API 兼容性**：用 `bun --print "require('native-module')"` 快速测试。
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例 1：电商平台用 `Object.groupBy` 重构订单分桶
+### 8.1 案例 1：电商平台用 `Object.groupBy` 重构订单分桶
 
 **背景**：某电商平台原有订单按地区聚合的代码使用 `reduce`，处理 50 万订单耗时 1.2 秒。
 
@@ -994,7 +958,7 @@ const ordersByRegion = Object.groupBy(orders, o => o.region);
 - 分组键为 `Symbol` 时退化为 `Symbol()` 字符串。
 - 空数组输入返回 `{}`（无原型），需要 `Object.create(null)` 兼容。
 
-### 9.2 案例 2：金融系统迁移 `Date` 到 `Temporal`
+### 8.2 案例 2：金融系统迁移 `Date` 到 `Temporal`
 
 **背景**：某跨境支付系统在 2025 年因 `Date` 时区处理缺陷，导致每日对账误差 1-3 小时。
 
@@ -1043,7 +1007,7 @@ function reconcileOrders(orders, settlementDate) {
 - 单元测试覆盖率从 65% 提升至 92%。
 - 性能下降约 8%（polyfill 开销），可接受。
 
-### 9.3 案例 3：Node.js 服务用 Iterator Helpers 重构日志管线
+### 8.3 案例 3：Node.js 服务用 Iterator Helpers 重构日志管线
 
 **背景**：某日志分析服务原用 RxJS 处理流式日志，包体积 280 KB，启动慢。
 
@@ -1087,7 +1051,7 @@ async function processLogs(stream) {
 - 启动时间从 220ms 降至 85ms。
 - 单元素处理开销降低约 15%。
 
-### 9.4 案例 4：游戏引擎用 WebAssembly 加速物理模拟
+### 8.4 案例 4：游戏引擎用 WebAssembly 加速物理模拟
 
 **背景**：某 Web 3D 游戏原用 JS 实现 Verlet 积分，60 FPS 下处理 1000 个粒子时帧率跌至 30 FPS。
 
@@ -1131,7 +1095,7 @@ function gameLoop() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：以下哪个表达式在 ES2024+ 中合法且返回 `true`？
 
@@ -1151,7 +1115,7 @@ D. 返回 Invalid Date
 
 **解析讲解**：B。Temporal 严格校验日期合法性，2026 年非闰年。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 3**：解释以下代码为何在 V8 中性能退化，并给出修复方案。
 
@@ -1188,7 +1152,7 @@ Promise.all([p1, p2]).catch(e => console.log(e.message));
 
 **解析讲解**：输出 `A`。`Promise.all` 在第一个 Promise 拒绝时立即拒绝，`p1` 的微任务先于 `p2` 排队（虽然 `p2` 同步拒绝，但 `Promise.all` 的拒绝处理仍是异步）。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 5**：设计一个基于 `Iterator Helpers` 的流式数据处理库，要求支持背压、错误恢复、可观测性埋点。给出核心 API 设计与实现要点。
 
@@ -1283,7 +1247,7 @@ wasm.free(ptr);
 - **优化 2**：用 `WebAssembly.Function` 与 `WebAssembly.Table` 减少类型检查开销。
 - **优化 3**：对热路径函数，使用 V8 的 fast API calls（需 Wasm 模块标注 `__attribute__((import_module))`）。
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Ecma International. 2026. ECMAScript 2026 Language Specification (16th Edition). Standard ECMA-262. Geneva, Switzerland. https://www.ecma-international.org/publications-and-standards/standards/ecma-262/
 
@@ -1315,9 +1279,9 @@ wasm.free(ptr);
 
 [15] Andreas Rossberg. 2023. Wasm Components and Interface Types. Bytecode Alliance. https://component-model.bytecodealliance.org/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **TC39 Proposals**：https://tc39.es/proposals/ — 跟踪所有 ECMAScript 提案状态。
 - **V8 Dev Blog**：https://v8.dev/blog — 引擎优化深度文章。
@@ -1326,7 +1290,7 @@ wasm.free(ptr);
 - **Bun Docs**：https://bun.sh/docs — Bun 工具链文档。
 - **WebAssembly Specs**：https://webassembly.org/specs/ — Wasm 2.0 与 Component Model。
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Axel Rauschmayer. 2024. *JavaScript for Impatient Programmers* (3rd Edition). ES2024 版本覆盖新特性。https://exploringjs.com/impatient-js/
 
@@ -1336,7 +1300,7 @@ wasm.free(ptr);
 
 - Dr. Axel Rauschmayer. 2023. *Deep JavaScript: Theory and Techniques*. https://exploringjs.com/deep-js/
 
-### 12.3 前沿论文与博客
+### 11.3 前沿论文与博客
 
 - **V8 Maglev 论文**：PLDI 2021, "Faster JavaScript Execution with Maglev" — V8 中间层优化编译器的设计。
 - **WebAssembly Security**：USENIX Security 2020, "Provably Safe Execution of Untrusted WebAssembly" — Wasm 沙箱的形式化验证。
@@ -1344,7 +1308,7 @@ wasm.free(ptr);
 - **Bun Engineering Blog**：https://bun.sh/blog — 性能优化的工程实践分享。
 - **Node.js Performance Team**：https://github.com/nodejs/performance — Node.js 性能基准与优化记录。
 
-### 12.4 实战项目参考
+### 11.4 实战项目参考
 
 - **`@js-temporal/polyfill`**：Temporal API 的官方 polyfill 实现，源码学习价值高。
 - **`quickjs-emscripten`**：QuickJS 编译为 Wasm 的项目，可用于理解 JS-Wasm 互操作。
@@ -1421,9 +1385,9 @@ console.table({ PromiseTry: r1, Iterator: r2, Set: r3 });
 
 ---
 
-## 13. 附录 D：V8 编译流水线深度剖析
+## 12. 附录 D：V8 编译流水线深度剖析
 
-### 13.1 五层编译架构
+### 12.1 五层编译架构
 
 V8 截至 2026 年的编译流水线由五个阶段构成，每一层在"启动速度"与"峰值性能"之间做出不同权衡：
 
@@ -1435,7 +1399,7 @@ V8 截至 2026 年的编译流水线由五个阶段构成，每一层在"启动�
 | 4 | Maglev | 字节码 + 类型反馈 | 机器码 | 中等优化 | 中期热代码 |
 | 5 | TurboFan | 字节码 + 类型反馈 + 调用计数 | 机器码 | 激进优化 | 长期热代码 |
 
-### 13.2 类型反馈机制
+### 12.2 类型反馈机制
 
 V8 在执行字节码时收集"类型反馈"（Type Feedback），记录每个内联缓存（IC）位置观测到的类型分布。这些反馈被 Maglev 与 TurboFan 用作优化假设。
 
@@ -1452,7 +1416,7 @@ add('a', 'b'); // IC: {a: String, b: String}，可能触发去优化
 
 IC 状态迁移路径为：`Uninitialized → Monomorphic → Polymorphic → Megamorphic`。当 IC 观测到的形状数超过 4 时，进入 Megamorphic 状态，性能急剧下降。
 
-### 13.3 去优化机制
+### 12.3 去优化机制
 
 当 TurboFan 生成的优化代码遇到违反假设的情况时，触发"去优化"（Deoptimization），回退到 Ignition 字节码执行。常见触发条件：
 
@@ -1472,7 +1436,7 @@ const v8 = require('node:v8');
 //             ;;; deoptimize at <file>:<line>:<col>, <reason>
 ```
 
-### 13.4 Maglev 与 TurboFan 的协作
+### 12.4 Maglev 与 TurboFan 的协作
 
 Maglev（2023 年引入）填补了 Sparkplug 与 TurboFan 之间的"中间层"空白。其设计目标：
 
@@ -1482,7 +1446,7 @@ Maglev（2023 年引入）填补了 Sparkplug 与 TurboFan 之间的"中间层"�
 
 TurboFan 仍在长期热代码（调用计数 >10,000）上启动，提供最激进的优化（如内联虚拟调用、逃逸分析、循环不变量外提）。
 
-### 13.5 工程调优建议
+### 12.5 工程调优建议
 
 ```javascript
 // 1. 稳定类型反馈：避免在热路径上切换类型
@@ -1538,9 +1502,9 @@ function observeV8() {
 }
 ```
 
-## 14. 附录 E：WebAssembly Component Model 前瞻
+## 13. 附录 E：WebAssembly Component Model 前瞻
 
-### 14.1 从 Core Wasm 到 Component Model
+### 13.1 从 Core Wasm 到 Component Model
 
 Core WebAssembly 1.0（2017）仅提供低级类型（i32/i64/f32/f64），跨语言互操作需要手工处理内存布局。Component Model（2025 年草案）在 Core Wasm 之上引入：
 
@@ -1548,7 +1512,7 @@ Core WebAssembly 1.0（2017）仅提供低级类型（i32/i64/f32/f64），跨�
 - **组件**（Component）：组合多个核心模块，定义对外接口。
 - **链接器**（Linker）：在组件间进行类型安全的连接。
 
-### 14.2 Wasm Components 的工程价值
+### 13.2 Wasm Components 的工程价值
 
 ```javascript
 // 加载 Wasm Component（实验性 API）
@@ -1571,7 +1535,7 @@ const result = processor.exports.processImage({
 // result 是 { width: 1920, height: 1080, size: 245000 } 形式的对象
 ```
 
-### 14.3 WASI Preview 2 与 Component Model 的关系
+### 13.3 WASI Preview 2 与 Component Model 的关系
 
 WASI Preview 2（2024）完全基于 Component Model 重新定义了系统接口。主要变化：
 
@@ -1587,7 +1551,7 @@ wasmtime run --allow-filesystem=/tmp app.wasm
 wac plug --plugin=logging.wasm --plugin=app.wasm -o composed.wasm
 ```
 
-### 14.4 工程部署示例
+### 13.4 工程部署示例
 
 ```javascript
 // 在 Node.js 中嵌入 Wasm Component（需安装 wasmtime）
@@ -1615,9 +1579,9 @@ async function runComponent() {
 runComponent().catch(console.error);
 ```
 
-## 15. 附录 F：跨运行时迁移决策框架
+## 14. 附录 F：跨运行时迁移决策框架
 
-### 15.1 决策矩阵
+### 14.1 决策矩阵
 
 | 评估维度 | 权重 | Node.js 22 | Deno 2.1 | Bun 1.2 |
 | --- | --- | --- | --- | --- |
@@ -1629,7 +1593,7 @@ runComponent().catch(console.error);
 | 长期支持 | 10% | 10/10 | 8/10 | 6/10 |
 | 工具链集成 | 10% | 7/10 | 8/10 | 10/10 |
 
-### 15.2 迁移决策树
+### 14.2 迁移决策树
 
 ```mermaid
 flowchart TD
@@ -1648,7 +1612,7 @@ flowchart TD
     T4 --> T6
 ```
 
-### 15.3 渐进式迁移策略
+### 14.3 渐进式迁移策略
 
 ```javascript
 // 适配层：在 Node.js 项目中渐进式引入 Deno/Bun
@@ -1689,16 +1653,16 @@ RuntimeAdapter.serve(async (req) => {
 }, 3000);
 ```
 
-## 16. 附录 G：ES2026 后续展望
+## 15. 附录 G：ES2026 后续展望
 
-### 16.1 已进入 Stage 2 的关键提案
+### 15.1 已进入 Stage 2 的关键提案
 
 - **Pattern Matching**：受 Scala/Rust 启发的 `match` 表达式，预计 2027 年合入。
 - **Async Iterator Helpers**：当前 Iterator Helpers 的异步版本，2026 年 Stage 3。
 - **Decimal**：IEEE 754 decimal 浮点，解决金融计算精度问题，2026 年 Stage 2。
 - **Pipe Operator**：`|>` 操作符，与 F#/Elixir 类似，2026 年 Stage 2。
 
-### 16.2 Pattern Matching 示例预览
+### 15.2 Pattern Matching 示例预览
 
 ```javascript
 // Pattern Matching（Stage 2，语法可能调整）
@@ -1716,7 +1680,7 @@ console.log(describe({ type: 'user', name: '张三' })); // 用户 张三
 console.log(describe({ type: 'admin' })); // 管理员
 ```
 
-### 16.3 Pipe Operator 示例预览
+### 15.3 Pipe Operator 示例预览
 
 ```javascript
 // Pipe Operator（Stage 2）
@@ -1728,7 +1692,7 @@ const result = [1, 2, 3, 4, 5]
 console.log(result); // 18
 ```
 
-### 16.4 学习路径建议
+### 15.4 学习路径建议
 
 | 学习阶段 | 推荐内容 | 预估时间 |
 | --- | --- | --- |

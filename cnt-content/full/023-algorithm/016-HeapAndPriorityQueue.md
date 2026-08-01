@@ -34,14 +34,6 @@ prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/树
   - algorithm/数组与动态数组
-learningObjectives:
-  - 记忆堆作为完全二叉树数组表示的形式化定义 $\text{parent}(i) = \lfloor (i-1)/2 \rfloor$、$\text{left}(i) = 2i+1$、$\text{right}(i) = 2i+2$，复述最大堆/最小堆在插入、删除堆顶、查看堆顶、建堆操作上的时间复杂度差异
-  - '理解 Williams 1964《Algorithm 232: Heapsort》首次提出堆与堆排序、Floyd 1964《Algorithm 245: Treesort》改进建堆至 $O(n)$、Vuillemin 1978 二项堆、Fredman-Tarjan 1984 Fibonacci 堆（JACM 34(3):596-615）的历史脉络，说明堆为何在优先级调度场景下不可替代'
-  - 应用二叉堆的上浮（sift-up）、下沉（sift-down）、Floyd 自底向上建堆、堆排序、Top-K、索引堆编写可运行的 Python/C++/Java 代码，解决 LeetCode 215 第 K 大、LeetCode 23 合并 K 个有序链表、LeetCode 295 数据流中位数、LeetCode 621 任务调度器等问题
-  - 分析 Floyd 建堆 $O(n)$ 复杂度的数学证明 $\sum_{h=0}^{\lfloor \log n \rfloor} \lceil n/2^{h+1} \rceil \cdot h \leq 2n$、堆排序 $O(n \log n)$ 最坏复杂度、Fibonacci 堆的均摊分析，掌握"层高加权节点数求和"核心论证方法
-  - 评估二叉堆相对于有序数组、平衡树、跳表、Fibonacci 堆在"插入-删除极值"问题维度上的优劣，识别 Dijkstra 算法、Prim 算法、Huffman 编码、定时器调度、操作系统任务调度中的选型动机
-  - 对比二叉堆、d-ary 堆、二项堆、Fibonacci 堆、配对堆、左偏堆、索引堆在插入、删除极值、合并、减小键值、均摊复杂度、实现复杂度维度的差异
-  - 创造性设计基于堆的开源项目解决方案，如定时器轮、限流器、Top-K 流式聚合、A* 搜索优先队列、Huffman 编码器、Redis Stream 排序、Linux kernel timer wheel
 references:
   - type: journal
     authors:
@@ -183,6 +175,7 @@ etymology:
     english: index heap / indexed priority queue
     origin: 'index 源自拉丁语 index（指示、指针）。索引堆在普通堆基础上维护两个辅助数组：`pq[i]` 表示堆中第 $i$ 个位置存储的元素索引，`qp[j]` 表示元素 $j$ 在堆中的位置。索引堆支持 $O(\log n)$ 修改指定位置元素的键值，是 Dijkstra、Prim 等需要 decrease-key 操作的算法的关键优化。Sedgewick《Algorithms》第 4 版 §2.4 给出完整实现'
 ---
+
 
 ## 1. 概述与学习目标
 

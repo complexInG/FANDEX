@@ -19,54 +19,12 @@ prerequisites:
   - cpp/内存管理
   - cpp/智能指针详解
 ---
+
 # C++ 性能优化
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-本节按照 Bloom 分类法的认知层级组织学习目标,读者完成本章学习后应能够达到以下层级:
-
-### 识记层 (Remembering)
-
-- 列举 C++性能优化的主要层次(算法层、系统层、微架构层、编译器层)
-- 复述 Amdahl 定律与 Gustafson 定律的数学形式
-- 说出 CPU 缓存层级(L1/L2/L3/LLC)的典型容量与访问延迟量级
-- 识别主流性能分析工具(name、perf、VTune、Tracy、gperftools)的用途
-
-### 理解层 (Understanding)
-
-- 解释数据局部性(data locality)与缓存命中率对性能的影响机制
-- 阐述分支预测与分支预测失败对流水线的影响
-- 描述编译器优化级别(-O0/-O1/-O2/-O3/-Os/-Ofast/-Oz)的取舍
-- 区分测量偏差(measurement bias)与微基准陷阱(microbenchmark pitfall)
-
-### 应用层 (Applying)
-
-- 使用 `perf` 工具采集程序的热点函数与缓存未命中统计
-- 使用 `std::chrono` 与 Google Benchmark 编写可重复的微基准
-- 通过 `__builtin_expect`、`[[likely]]`/`[[unlikely]]` 调整分支提示
-- 应用 SOA(struct of arrays)布局重构热数据结构以提升向量化效率
-
-### 分析层 (Analyzing)
-
-- 对比循环展开、循环分块(loop tiling)、循环交换(loop interchange)的适用场景
-- 解构一段性能不达标的代码,定位是算法、内存、还是分支问题
-- 分析火焰图识别调用栈中的热点与冗余调用链
-
-### 评价层 (Evaluating)
-
-- 评估一次优化是否真正带来净收益(考虑可读性、可维护性、可移植性)
-- 判断 Profile-Guided Optimization (PGO) 与 LTO 在具体项目中的投入产出比
-- 在 SIMD intrinsics、auto-vectorization、编译器 pragma 之间做出工程权衡
-
-### 创造层 (Creating)
-
-- 设计一套面向高频交易系统的低延迟数据通路,纳秒级响应
-- 构建可复用的性能回归 CI 流水线,自动对比基线并阻断劣化
-- 提出一套面向团队的性能优化规范,涵盖测量、分析、回归、文档化全流程
 
 ## 历史动机与背景
 

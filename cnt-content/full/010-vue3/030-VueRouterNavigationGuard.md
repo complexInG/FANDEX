@@ -14,45 +14,6 @@ related:
   - vue3/性能优化
 prerequisites:
   - vue3/语法速查
-learningObjectives:
-  - level: remember
-    objective: '能陈述全局、路由独享、组件内三类守卫及各自钩子名称。'
-    verifiable: '默写守卫清单与触发顺序'
-  - level: understand
-    objective: '能解释守卫的返回值语义（true/false/路由对象）与导航确认流程。'
-    verifiable: '说明三类返回值的导航结果'
-  - level: apply
-    objective: '能实现登录鉴权、页面标题更新、离开确认与动态权限控制。'
-    verifiable: '编写四个完整守卫示例'
-  - level: analyze
-    objective: '能分析守卫触发顺序与组件生命周期钩子的先后关系。'
-    verifiable: '画出导航解析流程'
-  - level: evaluate
-    objective: '能评价在守卫中异步获取数据与在组件内获取数据的取舍。'
-    verifiable: '针对加载体验给出依据'
-  - level: create
-    objective: '能设计基于路由 meta 的权限守卫体系。'
-    verifiable: '完成案例研究中的完整方案'
-exercises:
-  - id: router-guard-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: '全局前置守卫是 _____，全局后置守卫是 _____。'
-    answer: 'beforeEach；afterEach'
-    explanation: 'beforeEach 在导航确认前执行，afterEach 在确认后执行。'
-    difficulty: easy
-  - id: router-guard-02
-    type: choice
-    cognitiveLevel: understand
-    question: '守卫返回以下哪个值会取消导航？'
-    options:
-      - 'A. true'
-      - 'B. false'
-      - 'C. 路由对象'
-      - 'D. undefined'
-    answer: 'B'
-    explanation: 'false 取消导航；true/undefined 放行；路由对象重定向。'
-    difficulty: medium
 references:
   - type: documentation
     authors: ['Vue Router 团队']
@@ -77,21 +38,8 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-## 1. 学习目标（Bloom 分类）
 
-记忆层面：能够列出 Vue Router 4 的三类导航守卫——全局守卫（`beforeEach`、`beforeResolve`、`afterEach`）、路由独享守卫（`beforeEnter`）、组件内守卫（`beforeRouteEnter`、`beforeRouteUpdate`、`beforeRouteLeave`），并能复述它们各自的作用。
-
-理解层面：能够解释现代守卫的返回值协议：返回 `true` 放行、返回 `false` 取消导航、返回路由地址或路由对象进行重定向、返回 `undefined` 或不返回表示放行；能够理解旧的 `next()` 回调风格仍然可用但已不推荐的原因。
-
-应用层面：能够在实际项目中实现登录鉴权、权限校验、页面标题设置、离开确认、数据预取等典型守卫场景，并处理异步守卫中的加载状态。
-
-分析层面：能够分析守卫的完整执行顺序（全局前置 → 路由独享 → 组件进入 → 全局解析 → 确认导航 → 全局后置），并解释重定向与守卫循环的触发机制。
-
-评价层面：能够根据需求选择正确的守卫层级：全局逻辑放全局守卫，单路由逻辑放 `beforeEnter`，组件生命周期逻辑放组件内守卫，并评价守卫中放数据请求与在组件中请求的优劣。
-
-创造层面：能够设计一套基于守卫的权限系统，包括动态路由、角色元信息、登录态刷新、白名单机制，并能处理异步权限数据导致的导航等待。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 Vue Router 从 0.x 时代起就提供导航守卫，用于在路由切换前执行校验。Vue Router 3（配合 Vue 2）使用 `next()` 回调风格：守卫函数接收 `(to, from, next)` 三个参数，必须调用 `next()` 放行，否则导航悬挂。这种风格的问题在于：忘记调用 `next()` 导致页面白屏；异步逻辑中重复调用 `next()` 导致不可预测行为；`next('error')` 等特殊用法晦涩。
 
@@ -117,7 +65,7 @@ timeline
     2025 : 守卫类型推导完善，推荐返回值风格
 ```
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 导航守卫是挂载在路由解析管线上的函数序列。一次导航 N（从路由 from 到路由 to）的完整执行顺序如下：
 
@@ -156,25 +104,25 @@ flowchart TD
     I --> L["afterEach（全局后置）"]
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 导航状态机
+### 3.1 导航状态机
 
 Vue Router 4 内部用 promise 链串联守卫。每个守卫被包装为 `guard(to, from)` 调用，返回值按协议归一化：`false` 映射为取消信号，字符串/对象映射为 `NavigationFailure` 或新地址，错误映射为失败。
 
 推导：设守卫序列 G1..Gn，导航成功当且仅当所有 Gi 返回真值或 undefined，且重定向目标 R 与当前目标不同。若 Gk 返回地址 R，则管线在第 k 步停止并重启：`navigate(R, from=to)`。为了避免无限循环，Vue Router 在重定向超过一定次数或回到同一地址时抛出 `NavigationFailureType.duplicated` 或重定向循环错误。
 
-### 4.2 为什么 afterEach 不能取消导航
+### 3.2 为什么 afterEach 不能取消导航
 
 `afterEach` 在导航确认后执行，此时 URL 已更新、组件即将挂载。如果允许取消，会产生状态不一致：URL 显示新地址而组件仍是旧组件。因此 `afterEach` 只用于副作用（埋点、标题、滚动位置），返回值被忽略。
 
-### 4.3 守卫中的异步与加载态
+### 3.3 守卫中的异步与加载态
 
 守卫函数可以返回 promise，管线会 await。工程上需要在等待期间展示加载状态，例如用全局 loading bar。Vue Router 4 没有内置 loading 组件，通常结合 `router.beforeEach` 的开始事件与 `afterEach`/`onError` 的结束事件控制进度条，这也是 nprogress 集成的标准做法。
 
-## 5. 代码示例（带详尽注释）
+## 4. 代码示例（带详尽注释）
 
-### 5.1 全局前置守卫：登录鉴权
+### 4.1 全局前置守卫：登录鉴权
 
 ```ts
 import { createRouter, createWebHistory } from 'vue-router'
@@ -222,7 +170,7 @@ export default router
 
 讲解：守卫通过 `to.meta` 读取路由配置中的自定义字段，实现声明式权限声明。`return { name: 'login', query: { redirect: to.fullPath } }` 使用返回值协议完成重定向；`return false` 直接取消导航。整个守卫是纯 async 函数，逻辑清晰且可测试。
 
-### 5.2 动态加载用户信息的守卫
+### 4.2 动态加载用户信息的守卫
 
 ```ts
 // 使用 Pinia 或全局状态保存用户信息
@@ -246,7 +194,7 @@ router.beforeEach(async (to) => {
 
 讲解：把“用户信息初始化”放进守卫，保证任何页面进入前数据就绪，页面组件不再各自处理加载失败。`userStore.loaded` 标志避免重复请求。
 
-### 5.3 路由独享守卫 beforeEnter
+### 4.3 路由独享守卫 beforeEnter
 
 ```ts
 const routes = [
@@ -268,7 +216,7 @@ const routes = [
 
 讲解：`beforeEnter` 只在直接进入该路由时执行；从该路由切换到该路由（仅参数变化）时不会重新执行，此时应使用组件内 `beforeRouteUpdate`。这是初学者最容易混淆的点。
 
-### 5.4 组件内守卫：离开确认
+### 4.4 组件内守卫：离开确认
 
 ```vue
 <script setup>
@@ -289,7 +237,7 @@ onBeforeRouteLeave((to, from) => {
 
 讲解：`onBeforeRouteLeave` 在组合式 API 中直接调用，无需组件选项。返回 `false` 阻止离开；返回 `true` 放行。注意该守卫不能阻止浏览器刷新或关闭标签页，那需要 `beforeunload` 事件配合。
 
-### 5.5 组件内守卫：参数变化响应
+### 4.5 组件内守卫：参数变化响应
 
 ```vue
 <script setup>
@@ -309,7 +257,7 @@ onBeforeRouteUpdate(async (to, from) => {
 
 讲解：`/article/1` 切换到 `/article/2` 时组件会被复用而非重新创建，`onMounted` 不会再次执行，因此必须用 `beforeRouteUpdate` 或监听 `route.params` 处理数据刷新。
 
-### 5.6 全局后置守卫：页面标题
+### 4.6 全局后置守卫：页面标题
 
 ```ts
 // 根据路由 meta.title 设置 document.title
@@ -321,7 +269,7 @@ router.afterEach((to) => {
 
 讲解：`afterEach` 适合做与导航结果无关的副作用。标题设置不依赖返回值，即使导航失败也最好不执行——注意 afterEach 在导航失败时不会触发，错误需由 `router.onError` 处理。
 
-### 5.7 异步权限 + 动态路由
+### 4.7 异步权限 + 动态路由
 
 ```ts
 // 登录后根据角色动态添加路由
@@ -343,9 +291,9 @@ router.beforeEach(async (to) => {
 
 讲解：`router.addRoute` 动态注册路由后，必须重新发起导航，否则目标路由仍找不到。`{ ...to, replace: true }` 保留目标地址并避免历史记录污染。这是大型后台系统的标准权限路由模式。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 守卫层级对比
+### 5.1 守卫层级对比
 
 | 守卫 | 作用域 | 触发时机 | 典型用途 |
 | --- | --- | --- | --- |
@@ -356,7 +304,7 @@ router.beforeEach(async (to) => {
 | `beforeResolve` | 全局 | 所有异步解析后 | 数据预取、最终确认 |
 | `afterEach` | 全局 | 导航确认后 | 标题、埋点、滚动 |
 
-### 6.2 返回值风格与 next 回调风格对比
+### 5.2 返回值风格与 next 回调风格对比
 
 | 维度 | 返回值风格 | next 回调风格 |
 | --- | --- | --- |
@@ -365,11 +313,11 @@ router.beforeEach(async (to) => {
 | TypeScript | 类型推导完整 | 类型弱 |
 | 官方态度 | 推荐 | 遗留 API |
 
-### 6.3 守卫与中间件对比
+### 5.3 守卫与中间件对比
 
 守卫本质上是路由级中间件。与 Express/Koa 中间件相比，Vue Router 守卫少了 `next` 链式调用，多了返回值协议；与 Nuxt 的 route middleware 相比，Vue Router 守卫更底层，Nuxt 在其上封装了 `definePageMeta` 声明式中间件。理解底层守卫后，上层框架的中间件行为可以自然推导。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
 陷阱一：忘记返回真值。守卫函数没有 return 时返回 undefined，等价放行——但若逻辑分支遗漏，会出现“看起来没执行校验”的问题。最佳实践：让每个分支显式 return。
 
@@ -383,9 +331,9 @@ router.beforeEach(async (to) => {
 
 陷阱六：忽略 `router.onError`。异步守卫抛出未捕获异常时，导航失败且无提示。最佳实践：全局注册 `router.onError` 统一处理，并区分鉴权过期与网络错误。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 守卫文件组织
+### 7.1 守卫文件组织
 
 大型项目按职责拆分守卫：
 
@@ -401,7 +349,7 @@ src/router/
 
 每个守卫文件导出 `export const authGuard = (to, from) => {...}` 形式的纯函数，在 `index.ts` 中按顺序 `router.beforeEach(authGuard); router.beforeEach(permissionGuard)`。这种组织方式让守卫可单测、可复用。
 
-### 8.2 守卫的可测试性
+### 7.2 守卫的可测试性
 
 守卫是纯函数（除副作用外），可以脱离路由实例测试：
 
@@ -423,11 +371,11 @@ describe('authGuard', () => {
 
 讲解：测试替身对象模拟 `to/from`，断言返回值。守卫逻辑越纯，测试成本越低，这也是官方推荐返回值风格带来的工程红利。
 
-### 8.3 与 Teleport/KeepAlive 的协作
+### 7.3 与 Teleport/KeepAlive 的协作
 
 路由切换会卸载旧组件、挂载新组件。若项目使用 KeepAlive 缓存页面，`beforeRouteLeave` 不会销毁组件，而是进入缓存；此时配合 `onActivated/onDeactivated` 处理数据刷新。浮层类组件（模态框）在路由离开时应关闭，可以在 `beforeRouteLeave` 中同步状态或让模态框组件监听路由变化。
 
-## 9. 案例研究：完整权限系统
+## 8. 案例研究：完整权限系统
 
 需求：实现包含登录、角色权限、动态路由、无权限页面、登录过期处理的完整权限链路。
 
@@ -468,7 +416,7 @@ export const permissionGuard: NavigationGuard = async (to, from) => {
 
 讲解：该守卫把鉴权、动态路由、角色校验集中在一条链路，白名单优先、登录态其次、动态路由第三、角色最后。所有分支显式 return，配合 `router.onError` 与 `afterEach` 完成埋点，形成完整闭环。
 
-## 10. 知识要点总结与深入讲解
+## 9. 知识要点总结与深入讲解
 
 导航守卫的本质是“路由状态机中的决策钩子”。初学者应记住执行顺序口诀：失活组件 → 全局前 → 路由独享 → 组件更新/进入 → 全局解析 → 确认 → 全局后。
 
@@ -478,7 +426,7 @@ export const permissionGuard: NavigationGuard = async (to, from) => {
 
 为什么 `beforeEnter` 不重复触发：路由记录级守卫只在初始进入时执行，参数变化属于同一路由记录内的更新，应使用组件内守卫。这是面试与实战中的高频易错点。
 
-## 11. 参考文献
+## 10. 参考文献
 
 Vue Router 官方文档, Navigation Guards, 访问日期 2026-08-01, https://router.vuejs.org/guide/advanced/navigation-guards.html
 
@@ -488,7 +436,7 @@ Vue.js 官方文档, 路由与组合式 API, 访问日期 2026-08-01, https://vu
 
 Vue Router 迁移指南（Vue 2 到 Vue 3）, 访问日期 2026-08-01, https://router.vuejs.org/guide/migration/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 与路由守卫紧密相关的组件生命周期与缓存机制，见本模块 027-KeepAliveCacheLifecycle 文档；
 
@@ -524,7 +472,7 @@ router.afterEach((to, from, failure) => {
 });
 ```
 
-### 2. 路由独享守卫
+### 1. 路由独享守卫
 
 ```javascript
 const routes = [
@@ -538,7 +486,7 @@ const routes = [
 ];
 ```
 
-### 3. 组件内守卫
+### 2. 组件内守卫
 
 ```javascript
 export default {
@@ -560,7 +508,7 @@ export default {
 };
 ```
 
-### 4. 守卫执行顺序
+### 3. 守卫执行顺序
 
 ```
 1. beforeRouteLeave（离开组件）
@@ -571,7 +519,7 @@ export default {
 6. afterEach（全局）
 ```
 
-### 5. 返回值
+### 4. 返回值
 
 | 返回值               | 效果     |
 | -------------------- | -------- |

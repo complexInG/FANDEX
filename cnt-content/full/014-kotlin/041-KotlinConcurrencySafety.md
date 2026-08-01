@@ -21,6 +21,7 @@ prerequisites:
   - kotlin/协程基础
 ---
 
+
 # Kotlin 与并发安全（Concurrency Safety in Depth）
 
 > 本文档对标 MIT 6.005 Software Construction、Stanford CS110 Principles of Computer Systems、CMU 15-440 Distributed Systems、UC Berkeley CS162 Operating Systems 等海外名校课程的教学水准，系统讲解 Kotlin 在协程与多线程环境下的并发安全（Concurrency Safety）机制，从"为什么需要并发安全"出发，逐层深入到内存模型（Memory Model）、原子操作（Atomic Operations）、互斥锁（Mutex）、CAS（Compare-And-Swap）、Actor 模型（Actor Model）、Channel、线程限制（Thread Confinement）、`@Volatile` 等核心主题。本文不假设读者熟悉 Java Memory Model 或 Go 内存模型，所有概念均由浅入深、从形式化定义到字节码实现逐层展开。完成本文学习后，读者将能够独立设计线程安全的 Kotlin 协程代码、识别与修复数据竞争（Data Race）、选择合适的并发原语并理解其在 JVM 与 Native 平台的运行时行为差异。
@@ -42,80 +43,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。Bloom 分类学由教育心理学家 Benjamin Bloom 于 1956 年提出，2001 年由 Anderson 与 Krathwohl 修订，是国际教育界普遍采用的认知能力分级框架。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述并发（Concurrency）与并行（Parallelism）的本质差异：并发是"同时处理多个任务"，并行是"同时执行多个任务"。
-- 列举共享可变状态（Shared Mutable State）导致数据竞争（Data Race）的三大要素：多个线程访问、至少一个线程写、无同步机制。
-- 背诵 Kotlin 提供的五大类并发原语：`Mutex`、`@Volatile`、`Atomic*`（`AtomicInteger`、`AtomicReference` 等）、`Channel`、`StateFlow`。
-- 记忆 Java Memory Model（JMM）的两个核心概念：happens-before 关系、内存可见性（Visibility）。
-- 列举 `kotlinx.coroutines.sync` 包提供的原语：`Mutex`、`Semaphore`、`Channel`（位于 `kotlinx.coroutines.channels`）。
-- 复述 CAS（Compare-And-Swap）操作的形式化语义：`CAS(addr, expected, new) := if *addr == expected then *addr = new; true else false`。
-- 记忆 `@Volatile` 在 JVM 上的实现：通过 `volatile` 字段标志位实现，禁止编译器缓存到寄存器，保证每次读写直接访问主内存。
-- 列举 Actor 模型的三大核心要素：Actor（行为者）、Mailbox（邮箱）、Message（消息）。
-- 背诵线程限制（Thread Confinement）的两种形式：栈限制（Stack Confinement）与对象限制（Object Confinement）。
-- 记忆 `Dispatchers.Main.immediate` 与 `Dispatchers.Main` 的差异：前者在已在主线程时同步执行，后者始终调度到事件队列。
-
-### 1.2 Understand（理解）
-
-- 用自己的语言解释"共享可变状态是并发问题的根源"：可变状态在多线程下需要同步机制保证一致性，否则会产生数据竞争。
-- 解释 happens-before 关系的含义：如果事件 A happens-before 事件 B，那么 A 的结果对 B 可见，且 A 的执行顺序在 B 之前。
-- 描述 JVM 内存模型的"主内存-工作内存"模型：每个线程有自己的工作内存（CPU 缓存或寄存器），主内存（Main Memory）是共享的。
-- 阐述 `Mutex` 与 `synchronized` 的核心差异：`Mutex` 是协程友好的（可挂起而非阻塞线程），`synchronized` 是线程级的（阻塞线程）。
-- 解释 `Mutex.withLock {}` 的语义：获取锁 → 执行临界区 → 释放锁（即使在异常情况下也释放）。
-- 理解 CAS 操作的 ABA 问题：值从 A 变为 B 再变回 A 时，CAS 会误认为未变化，需要版本号解决。
-- 描述 `Channel` 作为并发原语的本质：通过 CSP（Communicating Sequential Processes）模型，以消息传递替代共享内存。
-- 解释 `StateFlow` 的线程安全机制：内部使用 `AtomicReference` + CAS 实现无锁更新，所有更新操作原子。
-- 阐述 `@Volatile` 的局限性：保证可见性但不保证原子性，`i++` 在 `@Volatile` 下仍然不安全。
-- 描述"不可变对象天生线程安全"的原理：不可变对象的所有字段在构造完成后不可修改，任何线程读取到的都是一致状态。
-
-### 1.3 Apply（应用）
-
-- 在协程代码中使用 `Mutex` 保护共享可变变量，正确处理异常释放锁。
-- 使用 `AtomicInteger` 实现无锁计数器，避免 `synchronized` 的性能开销。
-- 使用 `Channel` 在多个协程之间安全传递数据，替代共享可变状态。
-- 使用 `StateFlow` 构建响应式状态管理，替代 `MutableSharedFlow` + `Mutex`。
-- 使用 `@Volatile` 标志位实现协程取消信号（`isActive` 替代方案）。
-- 使用 `Dispatchers.Default.limitedParallelism(1)` 实现协作式线程限制。
-- 在 Kotlin/Native 中使用 `kotlinx.atomicfu` 跨平台原子操作库。
-- 使用 `Semaphore` 限制并发请求数量（如限流器）。
-
-### 1.4 Analyze（分析）
-
-- 反编译 Kotlin 代码，分析 `Mutex.withLock` 在字节码中如何展开为 `try-finally` 释放锁。
-- 对比 `synchronized(lock) { }` 与 `mutex.withLock { }` 的字节码差异：前者调用 `monitorenter`/`monitorexit`，后者调用 `Mutex.lock`/`Mutex.unlock`。
-- 分析 `AtomicInteger.incrementAndGet` 的字节码实现：循环调用 `compareAndSwapInt` 直到成功。
-- 解构 `StateFlow.value = newValue` 的内部实现：通过 `AtomicReference.compareAndSet` 循环更新。
-- 分析 `Channel` 的缓冲区实现：基于 `BufferedChannel` 类，使用 `AtomicInt` 与 `AtomicReferenceArray` 实现无锁缓冲。
-- 分析 `@Volatile` 在不同平台的实现差异：JVM 使用 `volatile` 关键字，JS 使用普通变量（单线程），Native 使用内存屏障。
-
-### 1.5 Evaluate（评价）
-
-- 评价 Kotlin 选择 `Mutex`（协程级）而非 `synchronized`（线程级）作为默认互斥原语的设计权衡。
-- 评价 Actor 模型相对于共享内存并发的优势：避免数据竞争但增加消息传递开销。
-- 评价 `@Volatile` 的设计：是"性能优化"还是"陷阱"？为什么不直接使用 `synchronized`？
-- 评估 CAS 在高竞争场景下的表现：自旋开销可能高于阻塞锁，需要退避策略。
-- 评价 `StateFlow` 默认的"conflation"（合并）策略：新订阅者只收到最新值，可能丢失中间状态。
-- 评估"不可变数据结构 + 共享"策略相对于"可变 + 锁"策略的工程优劣。
-
-### 1.6 Create（创造）
-
-- 设计并实现一个完整的线程安全 LRU 缓存，使用 `Mutex` 保护内部链表与哈希表。
-- 设计一个基于 Actor 模型的并发任务调度器，Actor 之间通过 `Channel` 通信。
-- 实现一个无锁并发队列，使用 `AtomicReference` 与 CAS 操作，性能优于 `Mutex` 版本。
-- 撰写一份团队并发规范：何时用 `Mutex`、何时用 `Atomic*`、何时用 `Channel`、何时用不可变数据。
-- 设计一个并发限流器：基于 `Semaphore` 限制每秒最多 N 个请求，支持超时与取消。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：从单线程到多线程
+### 1.1 问题背景：从单线程到多线程
 
 早期计算机是单核单线程的，程序顺序执行，不存在并发问题。但随着硬件发展：
 
@@ -125,7 +55,7 @@ prerequisites:
 
 但多线程编程带来了一个根本性难题：**共享可变状态**（Shared Mutable State）。
 
-### 2.2 共享可变状态的问题
+### 1.2 共享可变状态的问题
 
 考虑以下经典示例：
 
@@ -157,7 +87,7 @@ Thread B: write count=1  // 期望结果是 2，实际是 1
 
 这就是**数据竞争**（Data Race）：多个线程并发访问同一可变状态，且至少一个线程写，且没有同步机制保护。
 
-### 2.3 Java Memory Model（JMM）
+### 1.3 Java Memory Model（JMM）
 
 Java 1.0 没有正式的内存模型，导致各种"奇怪"的并发问题。Java 5（2004）通过 JSR-133 正式确立了 JMM：
 
@@ -167,7 +97,7 @@ Java 1.0 没有正式的内存模型，导致各种"奇怪"的并发问题。Jav
 4. **final 语义**：正确构造的 `final` 字段对所有线程可见。
 5. **synchronized 语义**：同一锁的释放 happens-before 后续获取。
 
-### 2.4 Java 并发原语
+### 1.4 Java 并发原语
 
 `java.util.concurrent`（JSR-166，由 Doug Lea 设计）提供了：
 
@@ -177,7 +107,7 @@ Java 1.0 没有正式的内存模型，导致各种"奇怪"的并发问题。Jav
 - **`Executor`** 框架：线程池、`Future`、`CompletionService`。
 - **`CountDownLatch`、`CyclicBarrier`、`Semaphore`**：同步辅助类。
 
-### 2.5 Kotlin 的协程革命
+### 1.5 Kotlin 的协程革命
 
 Kotlin 1.3（2018）将协程稳定化，引入了"轻量级线程"概念：
 
@@ -191,9 +121,9 @@ Kotlin 1.3（2018）将协程稳定化，引入了"轻量级线程"概念：
 2. **协程间的共享状态**：多个协程可能访问同一可变状态，需要同步机制。
 3. **协程挂起时的状态**：挂起点的状态需要保证一致性。
 
-### 2.6 Kotlin 并发原语的发展
+### 1.6 Kotlin 并发原语的发展
 
-#### 2.6.1 Kotlin 1.0（2016）：基础 JVM 互操作
+#### 1.6.1 Kotlin 1.0（2016）：基础 JVM 互操作
 
 Kotlin 1.0 完全兼容 Java 并发原语：
 
@@ -214,14 +144,14 @@ fun increment() {
 fun incrementSync() = synchronized(lock) { count++ }
 ```
 
-#### 2.6.2 Kotlin 1.1（2017）：协程实验
+#### 1.6.2 Kotlin 1.1（2017）：协程实验
 
 协程作为实验特性引入，但缺少协程友好的并发原语：
 
 - 协程中调用 `synchronized` 会阻塞线程，违背协程"不阻塞"的设计哲学。
 - 需要一种"可挂起的锁"。
 
-#### 2.6.3 Kotlin 1.3（2018）：协程稳定与 `Mutex`
+#### 1.6.3 Kotlin 1.3（2018）：协程稳定与 `Mutex`
 
 Kotlin 1.3 将协程稳定化，同时 `kotlinx.coroutines` 库发布 1.0：
 
@@ -245,7 +175,7 @@ suspend fun increment() {
 - **公平性**：可选的公平模式（FIFO）。
 - **可取消**：挂起中的协程可被取消，自动释放锁等待。
 
-#### 2.6.4 Kotlin 1.4（2020）：`limitedParallelism`
+#### 1.6.4 Kotlin 1.4（2020）：`limitedParallelism`
 
 Kotlin 1.4 引入 `Dispatcher.limitedParallelism(n)`，限制调度器上的并发数：
 
@@ -260,7 +190,7 @@ withContext(singleThreadDispatcher) {
 
 这为"线程限制"提供了原语支持。
 
-#### 2.6.5 Kotlin 1.6（2021）：`kotlinx.atomicfu`
+#### 1.6.5 Kotlin 1.6（2021）：`kotlinx.atomicfu`
 
 `kotlinx.atomicfu` 稳定，提供跨平台原子操作：
 
@@ -276,7 +206,7 @@ fun increment() {
 
 支持 JVM、JS、Native 平台，是 KMP 项目的首选并发原语。
 
-#### 2.6.6 Kotlin 1.7-1.9（2022-2023）：`@Volatile` 跨平台
+#### 1.6.6 Kotlin 1.7-1.9（2022-2023）：`@Volatile` 跨平台
 
 Kotlin 1.9 将 `@Volatile` 扩展到 `commonMain`，可在 KMP 项目中使用：
 
@@ -286,7 +216,7 @@ Kotlin 1.9 将 `@Volatile` 扩展到 `commonMain`，可在 KMP 项目中使用�
 private var flag: Boolean = false
 ```
 
-#### 2.6.7 Kotlin 2.0（2024）：K2 与并发优化
+#### 1.6.7 Kotlin 2.0（2024）：K2 与并发优化
 
 Kotlin 2.0 的 K2 编译器对并发代码进行了优化：
 
@@ -294,7 +224,7 @@ Kotlin 2.0 的 K2 编译器对并发代码进行了优化：
 2. **更智能的内联**：`Mutex.withLock` 等内联函数被更激进地内联，减少函数调用开销。
 3. **Native 内存模型重设计**：Kotlin 2.0 的 Native 内存模型从"严格隔离"改为"松散共享"，性能提升约 2 倍。
 
-### 2.7 Kotlin/Native 的特殊挑战
+### 1.7 Kotlin/Native 的特殊挑战
 
 Kotlin/Native（编译为原生二进制）与 JVM 的并发模型不同：
 
@@ -302,7 +232,7 @@ Kotlin/Native（编译为原生二进制）与 JVM 的并发模型不同：
 2. **Kotlin 2.0 的新内存模型**：默认允许共享可变状态，与 JVM 行为对齐。
 3. **性能权衡**：严格隔离模型避免数据竞争但增加序列化开销，新模型接近 JVM 但需要开发者注意同步。
 
-### 2.8 时间线总览
+### 1.8 时间线总览
 
 ```
 1995  Java 1.0      — 内置 synchronized、volatile
@@ -316,7 +246,7 @@ Kotlin/Native（编译为原生二进制）与 JVM 的并发模型不同：
 2024  Kotlin 2.0    — K2 优化，Native 新内存模型
 ```
 
-### 2.9 设计哲学
+### 1.9 设计哲学
 
 Kotlin 在并发安全方面的设计哲学：
 
@@ -328,9 +258,9 @@ Kotlin 在并发安全方面的设计哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 并发的形式化
+### 2.1 并发的形式化
 
 并发系统可形式化为一个三元组：
 
@@ -350,7 +280,7 @@ $$
 
 **并行执行**：如果多个线程在物理上同时执行（多核 CPU），则 $C$ 是并行系统。
 
-### 3.2 数据竞争的形式化
+### 2.2 数据竞争的形式化
 
 数据竞争（Data Race）的形式化定义：
 
@@ -365,7 +295,7 @@ $$
 
 其中 $\text{HB}$ 是 happens-before 关系。即：两个不同线程访问同一变量 $x$，至少一个是写，且它们之间没有 happens-before 关系，则发生数据竞争。
 
-### 3.3 Happens-Before 关系
+### 2.3 Happens-Before 关系
 
 Happens-before 关系 $\text{HB}$ 是偏序关系（满足自反、反对称、传递），定义如下：
 
@@ -383,7 +313,7 @@ $$
 \text{HB} = \text{PO} \cup \text{Monitor} \cup \text{Volatile} \cup \text{ThreadStart} \cup \text{ThreadJoin} \cup \text{CoroutineResume} \cup \text{Transitive}
 $$
 
-### 3.4 互斥锁的形式化
+### 2.4 互斥锁的形式化
 
 互斥锁（Mutex）的形式化定义为一个状态机：
 
@@ -411,7 +341,7 @@ $$
 
 其中 $S$ 是需要互斥访问的代码段。
 
-### 3.5 CAS 的形式化
+### 2.5 CAS 的形式化
 
 CAS（Compare-And-Swap）的形式化定义：
 
@@ -440,7 +370,7 @@ $$
 \text{AtomicIncrement}(a) := \text{do } \{ e := *a; n := e + 1 \} \text{ while } \neg \text{CAS}(a, e, n)
 $$
 
-### 3.6 ABA 问题
+### 2.6 ABA 问题
 
 ABA 问题的形式化描述：
 
@@ -459,7 +389,7 @@ $$
 \end{cases}
 $$
 
-### 3.7 Actor 模型的形式化
+### 2.7 Actor 模型的形式化
 
 Actor 模型（Hewitt, 1973）的形式化定义：
 
@@ -486,7 +416,7 @@ $$
 \text{Process}(a, m) := \text{let } (s', \text{actions}) = B(m, s) \text{ in } s \leftarrow s'; \text{execute}(\text{actions})
 $$
 
-### 3.8 Channel 的形式化
+### 2.8 Channel 的形式化
 
 Channel 的形式化定义：
 
@@ -514,7 +444,7 @@ $$
 
 ** rendezvous（无缓冲）Channel**：$n = 0$，发送与接收必须同时就绪。
 
-### 3.9 线程限制的形式化
+### 2.9 线程限制的形式化
 
 线程限制（Thread Confinement）的形式化：
 
@@ -530,7 +460,7 @@ $$
 \text{StackConfine}(x) := x \text{ is local variable} \land \neg \text{Escapes}(x)
 $$
 
-### 3.10 Volatile 的形式化
+### 2.10 Volatile 的形式化
 
 `@Volatile` 的形式化语义：
 
@@ -550,7 +480,7 @@ $$
 2. **顺序性**：禁止 volatile 读写与前后操作重排序。
 3. **不保证原子性**：`x++` 仍然不安全（读-改-写不是原子的）。
 
-### 3.11 StateFlow 的形式化
+### 2.11 StateFlow 的形式化
 
 `StateFlow<T>` 是一个特殊的热流（Hot Flow），形式化为：
 
@@ -576,7 +506,7 @@ StateFlow 保证：
 2. **conflation**：如果更新速度超过消费速度，中间值被合并。
 3. **线程安全**：所有操作基于 CAS，无需外部锁。
 
-### 3.12 不可变对象的形式化
+### 2.12 不可变对象的形式化
 
 不可变对象（Immutable Object）的形式化：
 
@@ -594,7 +524,7 @@ $$
 
 不可变对象天生线程安全，因为不存在"写"操作，不满足数据竞争的"至少一个写"条件。
 
-### 3.13 并发安全的充分条件
+### 2.13 并发安全的充分条件
 
 并发安全的充分条件：
 
@@ -611,9 +541,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 为什么 `count++` 不安全？
+### 3.1 为什么 `count++` 不安全？
 
 `count++` 在字节码层面是三步：
 
@@ -643,7 +573,7 @@ Thread B: ISTORE count (写 count=1, 应该是 2)
 2. `AtomicInteger`：使用 CAS 实现原子增量。
 3. `Mutex.withLock`：在协程中使用可挂起的锁。
 
-### 4.2 为什么 `@Volatile` 不能解决 `count++`？
+### 3.2 为什么 `@Volatile` 不能解决 `count++`？
 
 `@Volatile` 保证可见性，但不保证原子性。即：
 
@@ -667,7 +597,7 @@ $$
 - **复合操作**：`count++`、`check-then-act`（`if (x == 0) x = 1`）。
 - **多变量一致性**：`x` 和 `y` 需要一起更新，`@Volatile` 不能保证两者同步。
 
-### 4.3 Mutex 的实现原理
+### 3.3 Mutex 的实现原理
 
 `kotlinx.coroutines.sync.Mutex` 的实现基于：
 
@@ -711,7 +641,7 @@ class Mutex {
 - **可取消性**：挂起中的协程被取消时，需要从队列移除。
 - **所有权**：记录持锁协程，便于调试与重入检测（默认不重入）。
 
-### 4.4 AtomicInteger 的实现原理
+### 3.4 AtomicInteger 的实现原理
 
 `AtomicInteger` 在 JVM 上通过 `Unsafe.compareAndSwapInt` 实现：
 
@@ -737,7 +667,7 @@ public class AtomicInteger {
 2. **自适应自旋**：JVM 根据历史成功率调整自旋次数。
 3. **分段锁**：如 `ConcurrentHashMap`，将数据分片，每个分片独立加锁。
 
-### 4.5 StateFlow 的线程安全
+### 3.5 StateFlow 的线程安全
 
 `StateFlow` 内部使用 `AtomicReference<T>` 存储值，更新操作基于 CAS：
 
@@ -765,7 +695,7 @@ StateFlow 发出: 1, 2, 3, 4, 5
 
 这适合 UI 状态：UI 只关心最新状态，不关心中间状态。
 
-### 4.6 Channel 的无锁实现
+### 3.6 Channel 的无锁实现
 
 `Channel` 的缓冲区基于 `BufferedChannel` 类，使用无锁数据结构：
 
@@ -808,7 +738,7 @@ class BufferedChannel<T>(val capacity: Int) {
 - **关闭**：`close()` 后所有挂起的发送者收到异常。
 - **背压（Backpressure）**：缓冲区满时，发送者挂起，避免生产者过快。
 
-### 4.7 为什么 Actor 模型避免数据竞争？
+### 3.7 为什么 Actor 模型避免数据竞争？
 
 Actor 模型的核心是"消息传递替代共享内存"：
 
@@ -851,7 +781,7 @@ class CounterActor {
 }
 ```
 
-### 4.8 结构化并发与并发安全
+### 3.8 结构化并发与并发安全
 
 结构化并发（Structured Concurrency）要求：
 
@@ -871,7 +801,7 @@ $$
 2. **错误传播**：子协程抛出异常时，父协程被取消，所有兄弟协程也被取消。
 3. **资源释放**：作用域结束时，所有锁、文件句柄等资源被释放。
 
-### 4.9 Kotlin/Native 的内存模型
+### 3.9 Kotlin/Native 的内存模型
 
 Kotlin 1.x 的 Native 内存模型是"严格隔离"：
 
@@ -885,7 +815,7 @@ Kotlin 2.0 的新内存模型：
 2. **需要同步**：可变共享状态需要显式同步（`@Volatile`、`Atomic*`）。
 3. **性能提升**：避免 `freeze` 开销，性能接近 JVM。
 
-### 4.10 并发安全等级
+### 3.10 并发安全等级
 
 并发安全的等级（从弱到强）：
 
@@ -903,9 +833,9 @@ Kotlin 2.0 的新内存模型：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 非线程安全的计数器
+### 4.1 非线程安全的计数器
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -932,7 +862,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.2 使用 `synchronized` 修复
+### 4.2 使用 `synchronized` 修复
 
 ```kotlin
 class SynchronizedCounter {
@@ -949,7 +879,7 @@ class SynchronizedCounter {
 
 **问题**：`synchronized` 阻塞线程，在协程中调用会阻塞调度器线程，影响其他协程。
 
-### 5.3 使用 `Mutex` 修复
+### 4.3 使用 `Mutex` 修复
 
 ```kotlin
 import kotlinx.coroutines.sync.Mutex
@@ -983,7 +913,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.4 使用 `AtomicInteger`
+### 4.4 使用 `AtomicInteger`
 
 ```kotlin
 import java.util.concurrent.atomic.AtomicInteger
@@ -1002,7 +932,7 @@ class AtomicCounter {
 **优点**：无锁，性能高。
 **缺点**：只能保护单个变量，复合操作仍需锁。
 
-### 5.5 使用 `kotlinx.atomicfu`
+### 4.5 使用 `kotlinx.atomicfu`
 
 ```kotlin
 import kotlinx.atomicfu.atomic
@@ -1021,7 +951,7 @@ class AtomicFuCounter {
 
 **优点**：跨平台（JVM、JS、Native），是 KMP 项目的首选。
 
-### 5.6 使用 `Channel` 替代共享状态
+### 4.6 使用 `Channel` 替代共享状态
 
 ```kotlin
 import kotlinx.coroutines.channels.Channel
@@ -1053,7 +983,7 @@ class ChannelCounter {
 }
 ```
 
-### 5.7 使用 `StateFlow`
+### 4.7 使用 `StateFlow`
 
 ```kotlin
 import kotlinx.coroutines.flow.*
@@ -1083,7 +1013,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.8 Actor 模型实现
+### 4.8 Actor 模型实现
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1118,7 +1048,7 @@ class CounterActor {
 }
 ```
 
-### 5.9 线程限制
+### 4.9 线程限制
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1138,7 +1068,7 @@ class ConfinedCounter {
 **优点**：无需锁，性能接近普通变量访问。
 **缺点**：所有访问必须通过 `withContext`，增加挂起开销。
 
-### 5.10 双重检查锁定（DCL）
+### 4.10 双重检查锁定（DCL）
 
 ```kotlin
 import kotlinx.coroutines.sync.Mutex
@@ -1163,7 +1093,7 @@ class LazyInit {
 class ExpensiveObject
 ```
 
-### 5.11 不可变数据结构
+### 4.11 不可变数据结构
 
 ```kotlin
 // 不可变数据类
@@ -1180,7 +1110,7 @@ val updatedList = immutableList + 4  // 新列表
 
 不可变对象天生线程安全，无需同步机制。
 
-### 5.12 读写锁（ReadWriteLock）
+### 4.12 读写锁（ReadWriteLock）
 
 ```kotlin
 import java.util.concurrent.locks.ReentrantReadWriteLock
@@ -1213,7 +1143,7 @@ class ReadWriteMap<K, V> {
 
 **适用场景**：读多写少（如配置表、缓存）。
 
-### 5.13 信号量（Semaphore）
+### 4.13 信号量（Semaphore）
 
 ```kotlin
 import kotlinx.coroutines.sync.Semaphore
@@ -1239,7 +1169,7 @@ val results = listOf("url1", "url2", ...).map { url ->
 }.awaitAll()
 ```
 
-### 5.14 `@Volatile` 标志位
+### 4.14 `@Volatile` 标志位
 
 ```kotlin
 class CancellableTask {
@@ -1263,7 +1193,7 @@ class CancellableTask {
 }
 ```
 
-### 5.15 CAS 实现 Treiber Stack
+### 4.15 CAS 实现 Treiber Stack
 
 ```kotlin
 import kotlinx.atomicfu.atomic
@@ -1298,9 +1228,9 @@ class TreiberStack<T> {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Kotlin vs Java 并发原语对比
+### 5.1 Kotlin vs Java 并发原语对比
 
 | 特性 | Java `synchronized` | Kotlin `Mutex` | `Atomic*` | `Channel` |
 | --- | --- | --- | --- | --- |
@@ -1312,7 +1242,7 @@ class TreiberStack<T> {
 | 跨平台 | JVM only | JVM/JS/Native | JVM only | JVM/JS/Native |
 | 性能 | 中 | 中 | 高 | 中 |
 
-### 6.2 共享内存 vs 消息传递
+### 5.2 共享内存 vs 消息传递
 
 | 特性 | 共享内存 + 锁 | 消息传递（Channel/Actor） |
 | --- | --- | --- |
@@ -1323,7 +1253,7 @@ class TreiberStack<T> {
 | 调试难度 | 高（死锁、竞态） | 低（消息日志） |
 | 适用场景 | 性能敏感 | 复杂业务逻辑 |
 
-### 6.3 Kotlin vs Go 并发对比
+### 5.3 Kotlin vs Go 并发对比
 
 | 特性 | Kotlin 协程 | Go Goroutine |
 | --- | --- | --- |
@@ -1335,7 +1265,7 @@ class TreiberStack<T> {
 | 跨平台 | JVM/JS/Native | 跨平台编译 |
 | 性能 | 接近 Go | 优秀 |
 
-### 6.4 Kotlin vs Rust 并发对比
+### 5.4 Kotlin vs Rust 并发对比
 
 | 特性 | Kotlin | Rust |
 | --- | --- | --- |
@@ -1346,7 +1276,7 @@ class TreiberStack<T> {
 | 学习曲线 | 中 | 陡 |
 | 性能 | 中 | 高 |
 
-### 6.5 Kotlin vs Scala 并发对比
+### 5.5 Kotlin vs Scala 并发对比
 
 | 特性 | Kotlin 协程 | Scala（Future/Akka） |
 | --- | --- | --- |
@@ -1358,9 +1288,9 @@ class TreiberStack<T> {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：在协程中使用 `synchronized`
+### 6.1 陷阱 1：在协程中使用 `synchronized`
 
 ```kotlin
 // 错误：synchronized 阻塞线程，影响其他协程
@@ -1378,7 +1308,7 @@ suspend fun correctMutex() {
 }
 ```
 
-### 7.2 陷阱 2：忘记释放锁
+### 6.2 陷阱 2：忘记释放锁
 
 ```kotlin
 // 错误：异常时锁未释放
@@ -1396,7 +1326,7 @@ suspend fun correctRelease() {
 }
 ```
 
-### 7.3 陷阱 3：`@Volatile` 误用
+### 6.3 陷阱 3：`@Volatile` 误用
 
 ```kotlin
 // 错误：@Volatile 不能保证 count++ 原子性
@@ -1415,7 +1345,7 @@ class CorrectAtomic {
 }
 ```
 
-### 7.4 陷阱 4：复合操作非原子
+### 6.4 陷阱 4：复合操作非原子
 
 ```kotlin
 // 错误：check-then-act 不是原子的
@@ -1444,7 +1374,7 @@ class CorrectInit {
 }
 ```
 
-### 7.5 陷阱 5：死锁
+### 6.5 陷阱 5：死锁
 
 ```kotlin
 // 错误：嵌套锁顺序不一致导致死锁
@@ -1482,7 +1412,7 @@ suspend fun correctLock() {
 }
 ```
 
-### 7.6 陷阱 6：可变对象通过 Channel 传递
+### 6.6 陷阱 6：可变对象通过 Channel 传递
 
 ```kotlin
 // 错误：可变对象在多协程间共享
@@ -1518,7 +1448,7 @@ suspend fun correctImmutable() {
 }
 ```
 
-### 7.7 陷阱 7：`StateFlow` 不能保护复杂状态
+### 6.7 陷阱 7：`StateFlow` 不能保护复杂状态
 
 ```kotlin
 // 错误：StateFlow 只保护单个字段
@@ -1541,7 +1471,7 @@ class CorrectStateFlow {
 }
 ```
 
-### 7.8 陷阱 8：`runBlocking` 滥用
+### 6.8 陷阱 8：`runBlocking` 滥用
 
 ```kotlin
 // 错误：在协程中调用 runBlocking 会阻塞线程
@@ -1557,7 +1487,7 @@ suspend fun correctSuspend() {
 }
 ```
 
-### 7.9 陷阱 9：`GlobalScope` 滥用
+### 6.9 陷阱 9：`GlobalScope` 滥用
 
 ```kotlin
 // 错误：GlobalScope 无法取消，容易泄漏
@@ -1581,7 +1511,7 @@ fun correctStructured() = runBlocking {
 }
 ```
 
-### 7.10 陷阱 10：`async` 不 await
+### 6.10 陷阱 10：`async` 不 await
 
 ```kotlin
 // 错误：async 启动后不 await，异常被吞
@@ -1607,7 +1537,7 @@ suspend fun correctAsync() = coroutineScope {
 }
 ```
 
-### 7.11 陷阱 11：`launch` 替代 `async`
+### 6.11 陷阱 11：`launch` 替代 `async`
 
 ```kotlin
 // 错误：launch 用于需要结果的场景，丢失返回值
@@ -1626,7 +1556,7 @@ suspend fun correctAsync() = coroutineScope {
 }
 ```
 
-### 7.12 陷阱 12：`Dispatchers.Default` 滥用
+### 6.12 陷阱 12：`Dispatchers.Default` 滥用
 
 ```kotlin
 // 错误：所有协程都用 Default，可能导致调度器饱和
@@ -1652,7 +1582,7 @@ suspend fun correctDispatcher() {
 }
 ```
 
-### 7.13 陷阱 13：`Mutex` 不可重入
+### 6.13 陷阱 13：`Mutex` 不可重入
 
 ```kotlin
 private val mutex = Mutex()
@@ -1669,7 +1599,7 @@ suspend fun recursiveLock() {
 // 解决：重构代码避免嵌套锁，或使用 ReentrantLock
 ```
 
-### 7.14 陷阱 14：`AtomicReference` 复合操作
+### 6.14 陷阱 14：`AtomicReference` 复合操作
 
 ```kotlin
 // 错误：多个字段的更新不是原子的
@@ -1694,7 +1624,7 @@ class CorrectMultiField {
 data class State(val a: Int, val b: Int)
 ```
 
-### 7.15 陷阱 15：`lateinit var` 多线程
+### 6.15 陷阱 15：`lateinit var` 多线程
 
 ```kotlin
 // 错误：lateinit var 多线程初始化不安全
@@ -1717,9 +1647,9 @@ class CorrectLazy {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 线程安全 LRU 缓存
+### 7.1 线程安全 LRU 缓存
 
 ```kotlin
 import kotlinx.coroutines.sync.Mutex
@@ -1749,7 +1679,7 @@ class ThreadSafeLRUCache<K, V>(private val maxSize: Int) {
 }
 ```
 
-### 8.2 并发任务调度器（Actor 模型）
+### 7.2 并发任务调度器（Actor 模型）
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1786,7 +1716,7 @@ class SingleThreadScheduler {
 }
 ```
 
-### 8.3 无锁并发队列（Michael-Scott 队列）
+### 7.3 无锁并发队列（Michael-Scott 队列）
 
 ```kotlin
 import kotlinx.atomicfu.atomic
@@ -1843,7 +1773,7 @@ class MichaelScottQueue<T> {
 }
 ```
 
-### 8.4 并发限流器
+### 7.4 并发限流器
 
 ```kotlin
 import kotlinx.coroutines.sync.Semaphore
@@ -1873,7 +1803,7 @@ val results = urls.map { url ->
 }.awaitAll()
 ```
 
-### 8.5 异步事件总线
+### 7.5 异步事件总线
 
 ```kotlin
 import kotlinx.coroutines.flow.*
@@ -1896,7 +1826,7 @@ sealed class Event {
 }
 ```
 
-### 8.6 双缓冲 Double Buffering
+### 7.6 双缓冲 Double Buffering
 
 ```kotlin
 import kotlinx.coroutines.sync.Mutex
@@ -1928,7 +1858,7 @@ class DoubleBuffer<T>(initial: T) {
 }
 ```
 
-### 8.7 原子引用的状态机
+### 7.7 原子引用的状态机
 
 ```kotlin
 import kotlinx.atomicfu.atomic
@@ -1967,7 +1897,7 @@ fun connect() = machine.transition {
 }
 ```
 
-### 8.8 协程本地存储（ThreadLocal/CoroutineLocal）
+### 7.8 协程本地存储（ThreadLocal/CoroutineLocal）
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1996,7 +1926,7 @@ suspend fun processRequest(requestId: String) {
 }
 ```
 
-### 8.9 响应式状态管理（MVI）
+### 7.9 响应式状态管理（MVI）
 
 ```kotlin
 import kotlinx.coroutines.flow.*
@@ -2020,7 +1950,7 @@ class MVIStore<S, I, E>(
 }
 ```
 
-### 8.10 并发安全的单例
+### 7.10 并发安全的单例
 
 ```kotlin
 // 错误：非线程安全
@@ -2066,9 +1996,9 @@ class DCLSingleton private constructor() {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究 1：`kotlinx.coroutines.sync.Mutex`
+### 8.1 案例研究 1：`kotlinx.coroutines.sync.Mutex`
 
 **问题**：协程友好的互斥锁，可挂起而非阻塞。
 
@@ -2114,7 +2044,7 @@ public class Mutex {
 
 **启示**：协程原语需要"快速路径 + 慢速路径"设计，快速路径使用无锁 CAS，慢速路径使用挂起。
 
-### 9.2 案例研究 2：`StateFlow` 的无锁实现
+### 8.2 案例研究 2：`StateFlow` 的无锁实现
 
 **问题**：多个协程并发更新状态，需要原子性。
 
@@ -2141,7 +2071,7 @@ public class StateFlow<T>(initial: T) {
 
 **启示**：`StateFlow` 通过 CAS 实现无锁更新，比 `Mutex` 更高效。
 
-### 9.3 案例研究 3：`Channel` 的无锁缓冲
+### 8.3 案例研究 3：`Channel` 的无锁缓冲
 
 **问题**：多生产者-多消费者的无锁队列。
 
@@ -2169,7 +2099,7 @@ class BufferedChannel<T>(val capacity: Int) {
 
 **启示**：无锁数据结构的关键是"分离索引"，发送与接收独立计数。
 
-### 9.4 案例研究 4：`ConcurrentHashMap`
+### 8.4 案例研究 4：`ConcurrentHashMap`
 
 **问题**：高并发哈希表。
 
@@ -2201,7 +2131,7 @@ class Segment<K, V> {
 
 **启示**：通过分片减少锁粒度，提升并发性能。
 
-### 9.5 案例研究 5：Actor 模型在 Android 中的应用
+### 8.5 案例研究 5：Actor 模型在 Android 中的应用
 
 **问题**：UI 状态管理，避免 `Mutex` 与复杂同步。
 
@@ -2231,7 +2161,7 @@ class Action<S>(val reduce: (S) -> S, val onComplete: ((S) -> Unit)? = null)
 
 **启示**：Actor 模型将状态隔离，简化并发代码。
 
-### 9.6 案例研究 6：无锁链表
+### 8.6 案例研究 6：无锁链表
 
 **问题**：并发链表，支持插入与删除。
 
@@ -2281,7 +2211,7 @@ class LockFreeLinkedList<T> {
 
 **启示**：无锁链表通过"标记删除 + 物理删除"两阶段处理 ABA 问题。
 
-### 9.7 案例研究 7：`AtomicReference` 在 Spring 中的应用
+### 8.7 案例研究 7：`AtomicReference` 在 Spring 中的应用
 
 **问题**：Spring 的 `AtomicReference` 用于配置管理。
 
@@ -2299,7 +2229,7 @@ class SpringConfigManager {
 
 **启示**：`AtomicReference` 适合"整体替换"的场景。
 
-### 9.8 案例研究 8：`Semaphore` 在限流中的应用
+### 8.8 案例研究 8：`Semaphore` 在限流中的应用
 
 **问题**：限制 API 调用并发数。
 
@@ -2318,7 +2248,7 @@ class ApiGateway(private val maxConcurrent: Int) {
 
 **启示**：`Semaphore` 是限流的最佳选择，比 `Mutex` 更灵活（允许多个许可）。
 
-### 9.9 案例研究 9：`@Volatile` 在双重检查锁定中的应用
+### 8.9 案例研究 9：`@Volatile` 在双重检查锁定中的应用
 
 **问题**：延迟初始化，避免每次访问都加锁。
 
@@ -2337,7 +2267,7 @@ class LazyService {
 
 **启示**：`@Volatile` + `synchronized` 是延迟初始化的经典模式。
 
-### 9.10 案例研究 10：`kotlinx-atomicfu` 在 KMP 中的应用
+### 8.10 案例研究 10：`kotlinx-atomicfu` 在 KMP 中的应用
 
 **问题**：跨平台原子操作。
 
@@ -2368,7 +2298,7 @@ class AtomicCounterImpl {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：什么是数据竞争？请给出形式化定义。
 
@@ -2382,7 +2312,7 @@ $$
 
 **解析讲解**：不能。`@Volatile` 保证可见性，但不保证原子性。`count++` 是"读-改-写"三步，可能被打断。应该使用 `AtomicInteger.incrementAndGet()`。
 
-### 10.2 型变题
+### 9.2 型变题
 
 **习题 3**：以下代码是否线程安全？为什么？
 
@@ -2402,7 +2332,7 @@ class Cache {
 
 **解析讲解**：不安全。`check-then-act`（`if (existing == null) map[key] = value`）不是原子的。应该使用 `ConcurrentHashMap.putIfAbsent(key, value)`。
 
-### 10.3 星投影题
+### 9.3 星投影题
 
 **习题 4**：实现一个线程安全的 `Lazy<T>`，要求：
 
@@ -2434,7 +2364,7 @@ class ThreadSafeLazy<T>(private val initializer: () -> T) : Lazy<T> {
 }
 ```
 
-### 10.4 reified 题
+### 9.4 reified 题
 
 **习题 5**：实现一个线程安全的单例，要求：
 
@@ -2502,7 +2432,7 @@ fun increment() {
 }
 ```
 
-### 10.7 设计题
+### 9.7 设计题
 
 **习题 7**：设计一个线程安全的对象池，要求：
 
@@ -2540,7 +2470,7 @@ try {
 }
 ```
 
-### 10.8 分析题
+### 9.8 分析题
 
 **习题 8**：分析以下代码的并发问题：
 
@@ -2580,7 +2510,7 @@ suspend fun transfer(to: BankAccount, amount: Int) {
 }
 ```
 
-### 10.9 优化题
+### 9.9 优化题
 
 **习题 9**：以下代码性能问题在哪？如何优化？
 
@@ -2603,7 +2533,7 @@ class Counter {
 2. 使用 `@Volatile`（仅读，但 `count++` 仍需锁）。
 3. 使用 `StateFlow`：`_count.value`。
 
-### 10.10 综合应用题
+### 9.10 综合应用题
 
 **习题 10**：设计一个并发任务执行器，要求：
 
@@ -2651,9 +2581,9 @@ class ConcurrentExecutor(
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 1. **Hoare, C. A. R. (1978)**. "Communicating sequential processes". *Communications of the ACM*, 21(8), 666-677. CSP 模型，Channel 的理论基础。
 2. **Hewitt, C., Bishop, P., & Steiger, R. (1973)**. "A universal modular actor formalism for artificial intelligence". *IJCAI*. Actor 模型。
@@ -2664,7 +2594,7 @@ class ConcurrentExecutor(
 7. **Pugh, W. (2004)**. "The Java memory model is fatally flawed". *Concurrency and Practice*. JMM 问题分析。
 8. **Manson, J., Pugh, W., & Adve, S. V. (2005)**. "The Java memory model". *POPL*. JSR-133 JMM 正式定义。
 
-### 11.2 官方文档
+### 10.2 官方文档
 
 9. **Kotlin Coroutines Documentation**. https://kotlinlang.org/docs/coroutines-overview.html
 10. **kotlinx.coroutines GitHub**. https://github.com/Kotlin/kotlinx.coroutines
@@ -2672,7 +2602,7 @@ class ConcurrentExecutor(
 12. **Java Concurrency Tutorial**. https://docs.oracle.com/javase/tutorial/essential/concurrency/
 13. **JSR-133: Java Memory Model and Thread Specification**. https://jcp.org/en/jsr/detail?id=133
 
-### 11.3 经典教材
+### 10.3 经典教材
 
 14. **Lea, D. (1999)**. *Concurrent Programming in Java: Design Principles and Patterns* (2nd ed.). Addison-Wesley. Java 并发编程圣经。
 15. **Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., & Lea, D. (2006)**. *Java Concurrency in Practice*. Addison-Wesley. JCIP，必读经典。
@@ -2680,7 +2610,7 @@ class ConcurrentExecutor(
 17. **Tanenbaum, A. S., & Bos, H. (2014)**. *Modern Operating Systems* (4th ed.). Pearson. 现代操作系统。
 18. **Silberschatz, A., Galvin, P. B., & Gagne, G. (2018)**. *Operating System Concepts* (10th ed.). Wiley. 操作系统概念。
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 19. **KotlinConf talks on coroutines**. https://www.youtube.com/results?search_query=kotlinconf+coroutines
 20. **Roman Elizarov's blog**. https://medium.com/@elizarov
@@ -2689,9 +2619,9 @@ class ConcurrentExecutor(
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 高级并发理论
+### 11.1 高级并发理论
 
 - **Linearizability**：Maurice Herlihy 与 Jeannette Wing 提出的并发对象正确性条件。
 - **Sequential Consistency**：Leslie Lamport 提出的内存模型一致性。
@@ -2699,13 +2629,13 @@ class ConcurrentExecutor(
 - **Cache Coherence Protocols**：MESI、MOESI 协议。
 - **Transaction Memory**：硬件事务内存（HTM）与软件事务内存（STM）。
 
-### 12.2 Kotlin 并发的演进
+### 11.2 Kotlin 并发的演进
 
 - **Kotlin 2.0 Native Memory Model**：从严格隔离到松散共享的演进。
 - **Coroutine Flow 的并发原语**：`Flow` 的并发操作符（`flatMapMerge`、`conflate`）。
 - **KMP 并发一致性**：跨平台并发原语的设计挑战。
 
-### 12.3 语言对比
+### 11.3 语言对比
 
 - **Go**：Goroutine + Channel，原生支持 CSP 模型。
 - **Rust**：所有权 + Send/Sync trait，编译期拒绝数据竞争。
@@ -2713,20 +2643,20 @@ class ConcurrentExecutor(
 - **Scala**：Future + Cats Effect IO，函数式并发。
 - **Erlang/Elixir**：Actor 模型的标杆。
 
-### 12.4 工程实践深入
+### 11.4 工程实践深入
 
 - **JUC（java.util.concurrent）源码**：`AQS`、`ConcurrentHashMap`、`ThreadPoolExecutor`。
 - **Disruptor**：LMAX 的高性能无锁队列。
 - **Akka**：Scala 的 Actor 框架。
 - **Project Loom**：Java 的虚拟线程（Virtual Thread）。
 
-### 12.5 形式化验证
+### 11.5 形式化验证
 
 - **TLA+**：Leslie Lamport 的形式化规约语言，用于验证并发算法。
 - **Coq/Lean**：定理证明，用于证明无锁算法的正确性。
 - **Spin/JPF**：模型检测，用于发现并发 bug。
 
-### 12.6 未来方向
+### 11.6 未来方向
 
 - **Async Rust**：Rust 的 async/await，零成本异步。
 - **Coroutine-related proposals for C++**：C++20 协程。

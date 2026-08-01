@@ -25,65 +25,16 @@ prerequisites:
   - lua/函数与闭包
   - lua/元表与元方法详解
 ---
+
 # Lua 协程与异步速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-学习本章后,读者应能在 Bloom 认知层级框架下达成下列目标。
-
-### 1.1 知识层（Remembering）
-
-- 列举 Lua 协程的四种状态:suspended、running、normal、dead。
-- 复述 `coroutine.create`、`coroutine.resume`、`coroutine.yield`、`coroutine.wrap`、`coroutine.status`、`coroutine.running`、`coroutine.isyieldable` 的签名与语义。
-- 描述 Lua 协程的非抢占式（cooperative）调度模型与操作系统线程的抢占式（preemptive）调度的本质差异。
-- 列举 Lua 5.0、5.1、5.2、5.3、5.4、5.5 中协程 API 的演化与新增（如 Lua 5.3 的 `coroutine.isyieldable`、Lua 5.4 的元方法增强）。
-
-### 1.2 理解层（Understanding）
-
-- 解释协程与调用栈的交互:协程拥有独立栈,但宿主线程同一时刻只有一个 running 协程。
-- 阐释 `coroutine.yield` 的控制转移语义:从协程跳回 resume 调用者,而非任意调度器。
-- 描述对称协程（symmetric coroutine）与非对称协程（asymmetric coroutine）的区分,Lua 属于后者。
-- 解释协程如何天然表达 continuation-passing style（CPS）,以及与 call/cc 的关系。
-- 描述 Lua 协程的栈实现:C 栈 + Lua 栈双重结构,`lua_CFunction` 与 `lua_resume` 的协作。
-
-### 1.3 应用层（Applying）
-
-- 编写协程实现自定义迭代器（generator pattern）。
-- 使用协程构建生产者-消费者、管道（pipeline）、生成器组合器。
-- 应用协程封装回调式异步 IO,模拟 async/await 同步书写风格。
-- 编写带超时与取消（cancellation）语义的异步任务调度器。
-- 在游戏脚本、Nginx/OpenResty、Neovim 等宿主中应用协程实现非阻塞逻辑。
-
-### 1.4 分析层（Analyzing）
-
-- 分析协程与闭包 upvalue 的交互:协程内捕获的 upvalue 是否跨协程共享。
-- 区分协程错误传播路径:resume 失败的返回值、`pcall` 包裹 resume 的语义差异。
-- 分析协程泄漏（leaked coroutine）的成因:resume 后未完成的协程占用栈与 upvalue。
-- 分析 Lua 协程与操作系统线程在 IO 密集与 CPU 密集任务下的性能差异。
-- 分析 LuaJIT、Luau、PicoLua 等方言对协程语义的扩展或限制。
-
-### 1.5 评价层（Evaluating）
-
-- 评判 Lua 协程相较于 Python generator、JavaScript async/await、Go goroutine 的表达力与可组合性。
-- 评估协程在嵌入式内存受限环境下的代价:每个协程栈的初始大小与增长策略。
-- 评判 callback hell、Promise、async/await、协程四种异步范式的优劣。
-- 评估 OpenResty `ngx.coroutine`、Luvit、Turbo.lua 等异步框架的设计权衡。
-
-### 1.6 创造层（Creating）
-
-- 设计基于协程的多任务调度器,支持优先级、定时器、IO 事件集成。
-- 构建可取消的 Promise 库,支持 `all`、`race`、`all_settled`、`any` 等组合子。
-- 设计 async/await 语法糖的宏展开实现（如 Lpeg 解析 + 代码生成）。
-- 构建协程池（worker pool）框架,处理 CPU 密集任务的并发限制。
-- 设计可观测的异步框架,集成 trace、metrics、backpressure 机制。
-
-## 2. 历史动机与演化
-
-### 2.1 协程理论的起源
+### 1.1 协程理论的起源
 
 协程（coroutine）的概念最早由 Melvin Conway 于 1958 年提出,用于 COBOL 编译器的语法分析。Conway 期望一种可以"互相让出控制权"的程序结构,使分析器与词法器能像两个对话者一样交替执行,而非通过显式的调用-返回耦合。
 
@@ -94,7 +45,7 @@ prerequisites:
 
 协程理论后续被 Unix pipe、Unix `setjmp`/`longjmp`、Scheme `call/cc`、Python generator、JavaScript async/await、Go goroutine 等广泛吸收,成为现代异步编程的核心。
 
-### 2.2 Lua 在游戏/嵌入式/脚本领域的地位
+### 1.2 Lua 在游戏/嵌入式/脚本领域的地位
 
 Lua 作为嵌入式语言,协程是其原生并发原语。Lua 的设计目标决定了协程的演化路径:
 
@@ -104,7 +55,7 @@ Lua 作为嵌入式语言,协程是其原生并发原语。Lua 的设计目标�
 - **脚本扩展**:Neovim、Redis（部分场景）使用协程处理用户脚本的超时与中断。
 - **桌面应用**:Lua 与 C 宿主通过协程实现交互式 REPL、调试器暂停。
 
-### 2.3 演化时间线
+### 1.3 演化时间线
 
 | 版本 | 年份 | 协程相关变化 |
 | --- | --- | --- |
@@ -122,7 +73,7 @@ Lua 作为嵌入式语言,协程是其原生并发原语。Lua 的设计目标�
 | Luvit | 2012 | Node.js 风格异步框架,基于 libuv 与协程 |
 | Turbo.lua | 2013 | 高性能 Web 框架,使用协程封装非阻塞 IO |
 
-### 2.4 设计动机总结
+### 1.4 设计动机总结
 
 Lua 引入协程的设计动机:
 
@@ -132,9 +83,9 @@ Lua 引入协程的设计动机:
 4. **可嵌入性**:Lua 协程是纯库实现,无运行时依赖,便于嵌入 C 程序。
 5. **教学简洁**:协程是计算机科学核心概念,Lua 选择提供原生支持而非依赖用户实现。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 协程的状态机模型
+### 2.1 协程的状态机模型
 
 设 $C$ 为协程集合,状态空间 $S = \{\text{suspended}, \text{running}, \text{normal}, \text{dead}\}$。状态转移函数 $\delta$:
 
@@ -166,7 +117,7 @@ $$
 
 约束:任一时刻至多一个协程处于 running 状态。这是非抢占式调度的形式化体现。
 
-### 3.2 continuation 与 CPS
+### 2.2 continuation 与 CPS
 
 continuation（续延）是"计算的剩余部分",形式化为函数 $k : \text{Value} \to \text{Answer}$。直接风格（direct style）的语义:
 
@@ -182,7 +133,7 @@ $$
 
 协程的 yield/resume 是 CPS 的具象化:`yield(v)` 等价于"将 $v$ 传给外部续延,并暂停;resume 等价于"将外部值传回,并恢复续延"。
 
-### 3.3 协程的代数语义
+### 2.3 协程的代数语义
 
 设协程 $c$ 的执行轨迹为有限序列 $e_1, e_2, \ldots, e_n$ 其中 $e_i \in \text{Event} \cup \text{Value}$。代数规则:
 
@@ -192,7 +143,7 @@ $$
 
 协程的"控制流"在代数上等价于一棵树（调用栈）与一个图（yield 跳转）的组合,但 Lua 协程为非对称式,resume/yield 严格配对,形成栈式结构。
 
-### 3.4 对称协程与非对称协程
+### 2.4 对称协程与非对称协程
 
 - **对称协程**（symmetric coroutine）:任一协程可让出控制权给任一其他协程,需显式 `transfer(c, v)`。
 - **非对称协程**（asymmetric coroutine,Lua 采用）:yield 总是回到上一次 resume 的调用者,严格父子关系。
@@ -203,7 +154,7 @@ $$
 2. **可移植性**:基于 C 栈的实现在非对称模型下简单。
 3. **错误传播**:严格父子关系使错误能向上冒泡。
 
-### 3.5 协程与线程的代价模型
+### 2.5 协程与线程的代价模型
 
 设 $T$ 为操作系统线程,$C$ 为 Lua 协程。
 
@@ -222,7 +173,7 @@ $$
 \text{Cost}_{\text{thread}} = O(\text{kernel}_\text{overhead}) + O(\text{sync})
 $$
 
-### 3.6 协程的栈实现
+### 2.6 协程的栈实现
 
 Lua 协程栈实现分两层:
 
@@ -239,7 +190,7 @@ $$
 
 LuaJIT 采用 `setcontext`/`makecontext` 直接操作 C 栈,避免双重栈;PicoLua 采用 switch-based 解释器,协程实现为状态机跳转。
 
-### 3.7 协程的代数定律
+### 2.7 协程的代数定律
 
 以下是协程的代数等式,可用于代码变换与优化:
 
@@ -261,7 +212,7 @@ $$
 
 这些定律为协程代码的等价变换提供理论基础,如展开迭代器、内联生成器等。
 
-### 3.8 异步编程的范畴论模型
+### 2.8 异步编程的范畴论模型
 
 异步计算可形式化为 monad $M$,其 unit 与 bind 操作:
 
@@ -286,9 +237,9 @@ $$
 
 形式化证明见 §4.4。
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 协程与线程表达力等价定理
+### 3.1 协程与线程表达力等价定理
 
 **定理 1**（协程与线程表达力等价）:任意可由线程表达的并发程序,均可由协程等价表达,反之亦然,前提是任务数量有限且不依赖内核抢占。
 
@@ -320,7 +271,7 @@ end
 
 证毕。
 
-### 4.2 非对称协程的栈式结构定理
+### 3.2 非对称协程的栈式结构定理
 
 **定理 2**（非对称协程控制流为树）:Lua 协程的 resume/yield 配对严格形成树形结构,无环。
 
@@ -339,7 +290,7 @@ end
 
 注:这意味着协程无法实现真正的对称通信,需通过共享变量或显式调度器中转。
 
-### 4.3 协程错误传播定理
+### 3.3 协程错误传播定理
 
 **定理 3**（协程错误不跨边界传播）:若协程 $c$ 内发生未捕获错误,$c$ 转入 dead 状态,`resume` 返回 `false, err`,错误不传播至宿主线程栈（除非 `resume` 未被 `pcall` 包裹）。
 
@@ -372,7 +323,7 @@ print("main still alive")
 
 注:Lua 5.x 的 `resume` 实际上隐式包含 `pcall`,使得错误不会跨协程传播。这与 `coroutine.wrap` 不同,后者错误会重新抛出至调用者。
 
-### 4.4 协程与 Promise 的 monad 等价定理
+### 3.4 协程与 Promise 的 monad 等价定理
 
 **定理 4**（协程与 Promise 在异步表达上 monad 等价）:Promise 与协程均可表达 monad $M$,其中 unit 与 bind 在两者中可互译。
 
@@ -418,7 +369,7 @@ async(example)()
 
 证毕。
 
-### 4.5 协程泄漏定理
+### 3.5 协程泄漏定理
 
 **定理 5**（协程泄漏的必要条件）:协程 $c$ 处于 suspended 状态但无外部 resume 引用,则 $c$ 占用的栈与 upvalue 不会被 GC 回收,直至 $c$ 本身被 GC。
 
@@ -453,7 +404,7 @@ collectgarbage("collect")  -- 现在可回收
 
 注:Lua 5.4 引入 `<close>` 与 `coroutine.close`（Luau 扩展）有助于显式清理协程。
 
-### 4.6 协程与 CPS 变换定理
+### 3.6 协程与 CPS 变换定理
 
 **定理 6**（协程可表达 call/cc 的子集）:Lua 协程可表达 call/cc 的"逃逸续延"（escape continuation）子集,但不可表达"任意续延"（any continuation）。
 
@@ -499,7 +450,7 @@ Lua 协程不支持这种"重入"（reentrant continuation）。
 
 证毕。
 
-### 4.7 协程与迭代器的等价定理
+### 3.7 协程与迭代器的等价定理
 
 **定理 7**（协程是迭代器的超集）:任意 Lua 迭代器均可用协程实现,但存在非迭代器的协程用法。
 
@@ -526,9 +477,9 @@ end
 
 证毕。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础:协程创建与状态
+### 4.1 基础:协程创建与状态
 
 ```lua
 -- lua: 协程基础
@@ -554,7 +505,7 @@ print("第二次 resume 返回:", ok2, r2)  -- true    完成
 print("状态:", coroutine.status(co))  -- dead
 ```
 
-### 5.2 coroutine.wrap 简化
+### 4.2 coroutine.wrap 简化
 
 ```lua
 -- lua: coroutine.wrap 简化
@@ -572,7 +523,7 @@ print(gen())  -- 9
 
 `wrap` 返回函数,错误直接抛出,适合迭代器场景。
 
-### 5.3 协程状态机
+### 4.3 协程状态机
 
 ```lua
 -- lua: 用协程实现状态机
@@ -611,7 +562,7 @@ print(sm("back"))    -- state A
 print(sm("next"))    -- state B
 ```
 
-### 5.4 生成器:无限斐波那契
+### 4.4 生成器:无限斐波那契
 
 ```lua
 -- lua: 无限斐波那契生成器
@@ -632,7 +583,7 @@ end
 -- 输出: 0 1 1 2 3 5 8 13 21 34
 ```
 
-### 5.5 生产者-消费者
+### 4.5 生产者-消费者
 
 ```lua
 -- lua: 生产者-消费者模式
@@ -658,7 +609,7 @@ local prod = producer()
 consumer(prod)
 ```
 
-### 5.6 管道（pipeline）
+### 4.6 管道（pipeline）
 
 ```lua
 -- lua: 协程管道
@@ -688,7 +639,7 @@ for v in pipe(pipe(range_gen(10), even_only), square) do
 end
 ```
 
-### 5.7 生成器组合子
+### 4.7 生成器组合子
 
 ```lua
 -- lua: 生成器组合子
@@ -722,7 +673,7 @@ for v in gen do print(v) end
 -- 4, 16, 36, 64, 100
 ```
 
-### 5.8 简易事件循环
+### 4.8 简易事件循环
 
 ```lua
 -- lua: 简易事件循环
@@ -799,7 +750,7 @@ end)
 loop:run()
 ```
 
-### 5.9 Promise 库
+### 4.9 Promise 库
 
 ```lua
 -- lua: 简易 Promise 库
@@ -914,7 +865,7 @@ end)
 p:then_(function(v) print("got:", v) end)
 ```
 
-### 5.10 async/await 模拟
+### 4.10 async/await 模拟
 
 ```lua
 -- lua: async/await 模拟
@@ -966,7 +917,7 @@ end)
 main()
 ```
 
-### 5.11 协程池（worker pool）
+### 4.11 协程池（worker pool）
 
 ```lua
 -- lua: 协程池处理 CPU 密集任务
@@ -1015,7 +966,7 @@ for i = 1, 10 do
 end
 ```
 
-### 5.12 取消机制
+### 4.12 取消机制
 
 ```lua
 -- lua: 协程取消机制
@@ -1057,7 +1008,7 @@ task.token.cancel()
 task.run()  -- 输出 cancelled at step 4
 ```
 
-### 5.13 协程与 upvalue
+### 4.13 协程与 upvalue
 
 ```lua
 -- lua: 协程与 upvalue 共享
@@ -1099,7 +1050,7 @@ print(coroutine.resume(c2))  -- true    11（共享 state）
 print(coroutine.resume(c1))  -- true    12
 ```
 
-### 5.14 协程错误处理
+### 4.14 协程错误处理
 
 ```lua
 -- lua: 协程错误处理对比
@@ -1136,7 +1087,7 @@ print(coroutine.resume(co3))  -- handled:    input:0:handled internally
                                -- true    recovered
 ```
 
-### 5.15 协程与递归迭代
+### 4.15 协程与递归迭代
 
 ```lua
 -- lua: 协程递归遍历树
@@ -1173,7 +1124,7 @@ end
 -- 输出: 1 2 3 4 5 6 7
 ```
 
-### 5.16 协程与 LuaJIT
+### 4.16 协程与 LuaJIT
 
 ```lua
 -- lua: LuaJIT FFI 与协程
@@ -1193,7 +1144,7 @@ local function luv_sleep(n)
 end
 ```
 
-### 5.17 协程与 C API
+### 4.17 协程与 C API
 
 ```c
 /* lua: 协程 C API 示例 */
@@ -1222,7 +1173,7 @@ int luaopen_cutil(lua_State *L) {
 }
 ```
 
-### 5.18 协程的 backpressure
+### 4.18 协程的 backpressure
 
 ```lua
 -- lua: 协程实现 backpressure
@@ -1260,7 +1211,7 @@ local function make_pipe(buffer_size)
 end
 ```
 
-### 5.19 协程与超时
+### 4.19 协程与超时
 
 ```lua
 -- lua: 协程超时机制
@@ -1292,7 +1243,7 @@ local function with_timeout(fn, timeout_ms)
 end
 ```
 
-### 5.20 协程与生成器表达式
+### 4.20 协程与生成器表达式
 
 ```lua
 -- lua: 模拟 Python 风格的生成器表达式
@@ -1318,9 +1269,9 @@ local squared_evens = genexpr(
 for v in squared_evens do print(v) end  -- 4, 16, 36, 64, 100
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Python generator / asyncio 对比
+### 5.1 与 Python generator / asyncio 对比
 
 | 特性 | Lua 协程 | Python generator | Python asyncio |
 | --- | --- | --- | --- |
@@ -1335,7 +1286,7 @@ for v in squared_evens do print(v) end  -- 4, 16, 36, 64, 100
 
 Python 的 `async def` 是语法层面的协程,Lua 是库层面的协程。Python 的 asyncio 提供完整事件循环,Lua 需自行实现或使用 OpenResty 等宿主。
 
-### 6.2 与 JavaScript async/await 对比
+### 5.2 与 JavaScript async/await 对比
 
 | 特性 | Lua 协程 | JavaScript async/await |
 | --- | --- | --- |
@@ -1349,7 +1300,7 @@ Python 的 `async def` 是语法层面的协程,Lua 是库层面的协程。Pyth
 
 JavaScript 的 async/await 是 Promise 的语法糖,Lua 协程是更底层的原语。JavaScript 的事件循环与微任务语义更复杂,Lua 协程是单线程同步执行。
 
-### 6.3 与 Go goroutine 对比
+### 5.3 与 Go goroutine 对比
 
 | 特性 | Lua 协程 | Go goroutine |
 | --- | --- | --- |
@@ -1362,7 +1313,7 @@ JavaScript 的 async/await 是 Promise 的语法糖,Lua 协程是更底层的原
 
 Go goroutine 支持多核并行,Lua 协程是单线程的。Go 通过 channel 通信,Lua 通过共享变量。Go 的抢占式调度避免单个任务阻塞,Lua 需显式 yield。
 
-### 6.4 与 C# async/await 对比
+### 5.4 与 C# async/await 对比
 
 | 特性 | Lua 协程 | C# async/await |
 | --- | --- | --- |
@@ -1375,7 +1326,7 @@ Go goroutine 支持多核并行,Lua 协程是单线程的。Go 通过 channel �
 
 C# 的 async/await 是编译器生成的状态机,类型系统支持 Task<T>。Lua 需手动管理状态与取消。
 
-### 6.5 与 Rust async/await 对比
+### 5.5 与 Rust async/await 对比
 
 | 特性 | Lua 协程 | Rust async/await |
 | --- | --- | --- |
@@ -1388,7 +1339,7 @@ C# 的 async/await 是编译器生成的状态机,类型系统支持 Task<T>。L
 
 Rust async/await 是零成本抽象,编译期生成状态机。Lua 协程是运行时支持的,有 GC 与运行时开销。
 
-### 6.6 与 Scheme call/cc 对比
+### 5.6 与 Scheme call/cc 对比
 
 | 特性 | Lua 协程 | Scheme call/cc |
 | --- | --- | --- |
@@ -1400,9 +1351,9 @@ Rust async/await 是零成本抽象,编译期生成状态机。Lua 协程是运�
 
 Scheme call/cc 是最强大的续延机制,允许"回到过去"。Lua 协程仅支持单向 yield/resume,但更高效、更易实现。
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱 1:在 yield 跨 C 边界
+### 6.1 陷阱 1:在 yield 跨 C 边界
 
 ```lua
 -- lua: 陷阱 - 跨 C 边界 yield
@@ -1416,7 +1367,7 @@ end
 
 **解决**:使用 Lua 5.3+ 或 LuaJIT,避免在 C 回调内 yield。
 
-### 7.2 陷阱 2:resume 死协程
+### 6.2 陷阱 2:resume 死协程
 
 ```lua
 -- lua: 陷阱 - resume 死协程
@@ -1430,7 +1381,7 @@ print(ok, err)  -- false    cannot resume dead coroutine
 
 **解决**:resume 前检查 `coroutine.status(co) ~= "dead"`。
 
-### 7.3 陷阱 3:wrap 抛出未捕获错误
+### 6.3 陷阱 3:wrap 抛出未捕获错误
 
 ```lua
 -- lua: 陷阱 - wrap 抛出错误
@@ -1444,7 +1395,7 @@ gen()  -- 直接抛出错误,不像 resume 返回 false
 
 **解决**:在错误敏感场景使用 `coroutine.create` + `resume`。
 
-### 7.4 陷阱 4:协程内全局变量
+### 6.4 陷阱 4:协程内全局变量
 
 ```lua
 -- lua: 陷阱 - 协程内全局变量
@@ -1465,7 +1416,7 @@ coroutine.resume(co1)  -- count: 2（被 co2 修改）
 
 **解决**:使用局部变量或独立环境（详见环境管理章节）。
 
-### 7.5 陷阱 5:upvalue 跨协程泄漏
+### 6.5 陷阱 5:upvalue 跨协程泄漏
 
 ```lua
 -- lua: 陷阱 - upvalue 跨协程泄漏
@@ -1493,7 +1444,7 @@ coroutine.resume(c1)
 
 **解决**:每个协程使用独立的 upvalue,或显式传递参数。
 
-### 7.6 陷阱 6:协程内未处理的错误
+### 6.6 陷阱 6:协程内未处理的错误
 
 ```lua
 -- lua: 陷阱 - 协程内未处理错误
@@ -1511,7 +1462,7 @@ local ok, err = coroutine.resume(co)
 
 **解决**:协程内用 `pcall` 包裹关键逻辑,设计重试机制。
 
-### 7.7 陷阱 7:协程泄漏
+### 6.7 陷阱 7:协程泄漏
 
 ```lua
 -- lua: 陷阱 - 协程泄漏
@@ -1534,7 +1485,7 @@ end
 
 **解决**:任务完成后从跟踪表中移除;Lua 5.4+ 使用 `coroutine.close`（Luau 扩展）。
 
-### 7.8 陷阱 8:嵌套 resume 的栈溢出
+### 6.8 陷阱 8:嵌套 resume 的栈溢出
 
 ```lua
 -- lua: 陷阱 - 嵌套 resume 栈溢出
@@ -1553,7 +1504,7 @@ end
 
 **解决**:限制嵌套深度,或改用尾调用。
 
-### 7.9 陷阱 9:resume 传值方向错误
+### 6.9 陷阱 9:resume 传值方向错误
 
 ```lua
 -- lua: 陷阱 - resume/yield 传值方向
@@ -1573,7 +1524,7 @@ print(r2)  -- 15（b * 3）
 
 **解决**:清晰命名,文档注释 yield 与 resume 的契约。
 
-### 7.10 陷阱 10:协程与元表 __gc
+### 6.10 陷阱 10:协程与元表 __gc
 
 ```lua
 -- lua: 陷阱 - 协程与 __gc
@@ -1596,7 +1547,7 @@ collectgarbage("collect")  -- 输出 cleanup
 
 **解决**:用 `<close>`（Lua 5.4+）显式释放,或协程结束前手动清理。
 
-### 7.11 陷阱 11:协程作为可重入迭代器
+### 6.11 陷阱 11:协程作为可重入迭代器
 
 ```lua
 -- lua: 陷阱 - 协程迭代器重入
@@ -1623,7 +1574,7 @@ end
 
 **解决**:每次创建新的生成器实例。
 
-### 7.12 陷阱 12:协程内的尾调用
+### 6.12 陷阱 12:协程内的尾调用
 
 ```lua
 -- lua: 陷阱 - 协程内尾调用与 yield
@@ -1649,7 +1600,7 @@ local function deep(n)
 end
 ```
 
-### 7.13 反模式:协程代替函数
+### 6.13 反模式:协程代替函数
 
 ```lua
 -- lua: 反模式 - 协程代替函数
@@ -1667,9 +1618,9 @@ end
 
 **解决**:仅在需要暂停/恢复时使用协程。
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 实践 1:协程命名与文档
+### 7.1 实践 1:协程命名与文档
 
 ```lua
 -- lua: 协程命名规范
@@ -1683,7 +1634,7 @@ local function http_request_coroutine(url)
 end
 ```
 
-### 8.2 实践 2:协程生命周期管理
+### 7.2 实践 2:协程生命周期管理
 
 ```lua
 -- lua: 协程生命周期管理
@@ -1728,7 +1679,7 @@ function CoroutineManager:update()
 end
 ```
 
-### 8.3 实践 3:错误隔离
+### 7.3 实践 3:错误隔离
 
 ```lua
 -- lua: 协程错误隔离
@@ -1743,7 +1694,7 @@ local function safe_resume(co, ...)
 end
 ```
 
-### 8.4 实践 4:超时与取消
+### 7.4 实践 4:超时与取消
 
 ```lua
 -- lua: 超时与取消
@@ -1787,7 +1738,7 @@ token:cancel()
 print(coroutine.resume(co))  -- cancelled
 ```
 
-### 8.5 实践 5:协程池设计
+### 7.5 实践 5:协程池设计
 
 ```lua
 -- lua: 工程级协程池
@@ -1829,7 +1780,7 @@ function Pool:size()
 end
 ```
 
-### 8.6 实践 6:异步 IO 集成
+### 7.6 实践 6:异步 IO 集成
 
 ```lua
 -- lua: 与 libuv 集成（Luvit 风格）
@@ -1853,7 +1804,7 @@ coroutine.resume(coroutine.create(async_main))
 uv.run()  -- 启动事件循环
 ```
 
-### 8.7 实践 7:可观测性
+### 7.7 实践 7:可观测性
 
 ```lua
 -- lua: 协程 trace 与 metrics
@@ -1880,7 +1831,7 @@ local function instrument(name, fn)
 end
 ```
 
-### 8.8 实践 8:backpressure
+### 7.8 实践 8:backpressure
 
 ```lua
 -- lua: 协程 backpressure
@@ -1908,7 +1859,7 @@ local function make_stream_processor(max_in_flight)
 end
 ```
 
-### 8.9 实践 9:协程与调试器集成
+### 7.9 实践 9:协程与调试器集成
 
 ```lua
 -- lua: 协程调试 hook
@@ -1927,7 +1878,7 @@ local function debug_coroutine(co)
 end
 ```
 
-### 8.10 实践 10:跨版本兼容
+### 7.10 实践 10:跨版本兼容
 
 ```lua
 -- lua: 协程跨版本兼容
@@ -1955,9 +1906,9 @@ function compat.running()
 end
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究 1:OpenResty ngx.coroutine
+### 8.1 案例研究 1:OpenResty ngx.coroutine
 
 OpenResty 基于 Nginx + LuaJIT,提供 `ngx.coroutine` 用于非阻塞 HTTP 请求:
 
@@ -2007,7 +1958,7 @@ ngx_http_lua_run_thread(L, ctx) {
 }
 ```
 
-### 9.2 案例研究 2:Luvit - Node.js 风格
+### 8.2 案例研究 2:Luvit - Node.js 风格
 
 Luvit 是基于 libuv 的 Lua 异步框架,API 与 Node.js 高度相似:
 
@@ -2041,7 +1992,7 @@ local function handler(req, res)
 end
 ```
 
-### 9.3 案例研究 3:Turbo.lua Web 框架
+### 8.3 案例研究 3:Turbo.lua Web 框架
 
 Turbo.lua 是高性能 Web 框架,使用协程实现非阻塞 IO:
 
@@ -2073,7 +2024,7 @@ turbo.ioloop.instance():start()
 - 内部使用协程 yield/resume 实现同步书写。
 - IOLoop 是核心事件循环,集成 libev/libevent。
 
-### 9.4 案例研究 4:WoW UI 协程
+### 8.4 案例研究 4:WoW UI 协程
 
 魔兽世界 UI 使用 Lua 5.1 + 自定义协程扩展:
 
@@ -2103,7 +2054,7 @@ end
 - WoW 提供 `C_Timer.After` 与 `C_Timer.NewTicker`,基于 C 实现。
 - 用户脚本中协程需手动管理,易产生泄漏。
 
-### 9.5 案例研究 5:Neovim Lua 嵌入
+### 8.5 案例研究 5:Neovim Lua 嵌入
 
 Neovim 嵌入 Lua 用于插件脚本,使用协程实现非阻塞 UI:
 
@@ -2146,7 +2097,7 @@ coroutine.resume(co)
 - 用户使用协程封装回调,实现同步风格。
 - Neovim 的事件循环由 libuv 驱动。
 
-### 9.6 案例研究 6:Love2D 游戏开发
+### 8.6 案例研究 6:Love2D 游戏开发
 
 Love2D 使用 Lua 5.1 + LuaJIT,协程用于游戏逻辑:
 
@@ -2187,7 +2138,7 @@ end
 - 协程保留移动状态,无需手动管理。
 - 适合线性剧情、对话、AI 行为。
 
-### 9.7 案例研究 7:Redis 脚本
+### 8.7 案例研究 7:Redis 脚本
 
 Redis 使用 Lua 5.1（升级到 5.1+）执行脚本,不直接暴露协程 API:
 
@@ -2212,7 +2163,7 @@ return compute()
 - 协程可用于内部状态管理,但不能 yield 跨脚本边界。
 - Redis 7.0+ 引入 functions,允许更复杂的状态管理。
 
-### 9.8 案例研究 8:LuaJIT FFI 与协程
+### 8.8 案例研究 8:LuaJIT FFI 与协程
 
 LuaJIT 的 FFI 调用是同步阻塞的,但可通过协程封装:
 
@@ -2242,7 +2193,7 @@ end
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 习题 1:协程状态转换
+### 9.1 习题 1:协程状态转换
 
 **题目**:给定以下代码,写出每行 `print` 的输出:
 
@@ -2280,7 +2231,7 @@ false    cannot resume dead coroutine
 dead
 ```
 
-### 10.2 习题 2:生成器实现
+### 9.2 习题 2:生成器实现
 
 **题目**:用协程实现一个生成器,产出斐波那契数列中小于 N 的所有数。
 
@@ -2303,7 +2254,7 @@ end
 -- 0 1 1 2 3 5 8 13 21 34 55 89
 ```
 
-### 10.3 习题 3:生产者-消费者
+### 9.3 习题 3:生产者-消费者
 
 **题目**:实现一个生产者-消费者,生产者每秒产出一个数字,消费者接收并打印。使用协程与简易事件循环。
 
@@ -2330,13 +2281,13 @@ local prod = producer()
 consumer(prod)
 ```
 
-### 10.4 习题 4:Promise 实现
+### 9.4 习题 4:Promise 实现
 
 **题目**:实现一个简单的 Promise 类,支持 `resolve`、`reject`、`then`、`catch`。
 
 **解析讲解**：见 §5.9。
 
-### 10.5 习题 5:async/await 模拟
+### 9.5 习题 5:async/await 模拟
 
 **题目**:基于 Promise 与协程,实现 `async` 与 `await` 函数,使下列代码工作:
 
@@ -2359,13 +2310,13 @@ main()
 
 **解析讲解**：见 §5.10。
 
-### 10.6 习题 6:协程池
+### 9.6 习题 6:协程池
 
 **题目**:实现一个协程池,限制最大并发数,支持任务队列。
 
 **解析讲解**：见 §8.5。
 
-### 10.7 习题 7:错误处理
+### 9.7 习题 7:错误处理
 
 **题目**:在协程中处理错误,使主线程不受影响,并记录错误日志。
 
@@ -2382,37 +2333,37 @@ local function safe_resume(co, ...)
 end
 ```
 
-### 10.8 习题 8:取消机制
+### 9.8 习题 8:取消机制
 
 **题目**:实现协程的取消机制,允许外部取消正在执行的协程。
 
 **解析讲解**：见 §8.4。
 
-### 10.9 思考题 1:协程与线程的本质区别
+### 9.9 思考题 1:协程与线程的本质区别
 
 **问题**:为什么说协程"协作式调度"在 IO 密集场景下优于线程"抢占式调度"?是否存在协程劣于线程的场景?
 
 **提示**:考虑切换开销、内存占用、IO 等待时间、CPU 密集任务。
 
-### 10.10 思考题 2:协程与 call/cc
+### 9.10 思考题 2:协程与 call/cc
 
 **问题**:Lua 协程能否实现 Scheme 的 call/cc?如果不能,缺失了什么?
 
 **提示**:考虑续延的可重入性与逃逸续延的区别。
 
-### 10.11 思考题 3:协程泄漏的检测
+### 9.11 思考题 3:协程泄漏的检测
 
 **问题**:如何检测 Lua 应用中的协程泄漏?需要哪些运行时信息?
 
 **提示**:考虑 `collectgarbage("count")`、`coroutine.status`、自定义跟踪。
 
-### 10.12 思考题 4:协程与多核
+### 9.12 思考题 4:协程与多核
 
 **问题**:Lua 协程是单线程的,如何利用多核 CPU?有哪些方案?
 
 **提示**:考虑多进程、LuaJIT + FFI、LPEG、LuaDist。
 
-### 10.13 项目题:实现完整的异步框架
+### 9.13 项目题:实现完整的异步框架
 
 **任务**:设计并实现一个完整的异步框架,包含以下功能:
 
@@ -2432,9 +2383,9 @@ end
 
 **参考实现**:见 §5.9、§5.10、§5.11、§5.12、§8.1-8.10。
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 Lua 官方资料
+### 10.1 Lua 官方资料
 
 [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, "Lua 5.4 Reference Manual," Technical Report, PUC-Rio, 2020. [Online]. Available: https://www.lua.org/manual/5.4/
 
@@ -2442,7 +2393,7 @@ end
 
 [3] R. Ierusalimschy, Programming in Lua, 4th ed. Lua.org, 2016.
 
-### 11.2 协程理论
+### 10.2 协程理论
 
 [4] M. E. Conway, "Design of a Separable Transition-Diagram Compiler," Communications of the ACM, vol. 6, no. 7, pp. 396-408, Jul. 1963. doi: 10.1145/366663.366704
 
@@ -2450,7 +2401,7 @@ end
 
 [6] C. Bruneau, S. Burckhart, and M. H. G. H. M. M., "Symmetric Coroutines for Cooperative Multitasking," Software: Practice and Experience, vol. 45, no. 5, pp. 615-632, 2015. doi: 10.1002/spe.2257
 
-### 11.3 异步编程范式
+### 10.3 异步编程范式
 
 [7] P. Haller and M. Odersky, "Event-Based Programming without Inversion of Control," in Joint Modular Languages Conference (JMLC'06), Springer, 2006, pp. 4-22. doi: 10.1007/11805400_4
 
@@ -2458,7 +2409,7 @@ end
 
 [9] C. Reis et al., "A Spider for the Modern Web: Design and Implementation of a Modern Web Crawler," in Proceedings of the 26th International Conference on World Wide Web Companion (WWW '17), 2017, pp. 801-802.
 
-### 11.4 Promise 与 async/await
+### 10.4 Promise 与 async/await
 
 [10] M. M. K. M. D. and M. S. Miller, "Promises/A+ Specification," 2014. [Online]. Available: https://promisesaplus.com/
 
@@ -2466,7 +2417,7 @@ end
 
 [12] K. Donnelly, "Futures and Promises in C++," in C++Now 2013, 2013.
 
-### 11.5 OpenResty 与异步框架
+### 10.5 OpenResty 与异步框架
 
 [13] Y. Zhang, "OpenResty: Best Practices," OpenResty Inc., 2017. [Online]. Available: https://openresty.com/
 
@@ -2474,7 +2425,7 @@ end
 
 [15] J. R. L. "Turbo.lua - A Framework for High Performance Web Applications," GitHub Repository, 2013. [Online]. Available: https://turbo.readthedocs.io/
 
-### 11.6 协程实现与性能
+### 10.6 协程实现与性能
 
 [16] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, "The Implementation of Lua 5.0," Journal of Universal Computer Science, vol. 11, no. 7, pp. 1159-1176, 2005. doi: 10.3217/jucs-011-07-1159
 
@@ -2482,7 +2433,7 @@ end
 
 [18] K. Cheung and C. L. H. "Luau: A Fast, Statically Typed Variant of Lua," Roblox Engineering Blog, 2021. [Online]. Available: https://luau-lang.org/
 
-### 11.7 函数式与范畴论
+### 10.7 函数式与范畴论
 
 [19] S. Awodey, Category Theory, 2nd ed. Oxford University Press, 2010.
 
@@ -2490,7 +2441,7 @@ end
 
 [21] E. Moggi, "Notions of Computation and Monads," Information and Computation, vol. 93, no. 1, pp. 55-92, Jul. 1991. doi: 10.1016/0890-5401(91)90052-4
 
-### 11.8 教学资源
+### 10.8 教学资源
 
 [22] MIT OpenCourseWare, "6.005 Software Construction," Spring 2016. [Online]. Available: https://ocw.mit.edu/courses/6-005-software-construction-spring-2016/
 
@@ -2500,30 +2451,30 @@ end
 
 [25] R. Ierusalimschy, "Lua: An Extensible Extension Language," in Encyclopedia of Computer Science and Technology, vol. 76, no. 47, A. Kent and J. G. Williams, Eds. Boca Raton, FL, USA: CRC Press, 2017, pp. 1-12.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 Lua 深入主题
+### 11.1 Lua 深入主题
 
 - **Lua 5.4 源码分析**:阅读 `lcorolib.c`、`ldo.c`、`lvm.c` 理解协程实现细节。
 - **LuaJIT 实现**:阅读 `lj_state.c`、`lj_frame.h` 理解 `setcontext`/`makecontext` 用法。
 - **Lua Bites**:Roberto Ierusalimschy 的博客,深入 Lua 设计哲学。
 - **The LuaJIT Project**:Mike Pall 的演讲与文档,涵盖 LuaJIT 内部机制。
 
-### 12.2 协程与并发理论
+### 11.2 协程与并发理论
 
 - **Structured Concurrency**:Nathaniel J. Smith 的"Notes on structured concurrency",讨论协程的结构化管理。
 - **Communicating Sequential Processes (CSP)**:C. A. R. Hoare 的经典著作,Go channel 的理论基础。
 - **Actor Model**:Hewitt, Bishop, Steiger 的 Actor 模型,Erlang/Akka 的基础。
 - **π-calculus**:Robin Milner 的进程代数,形式化并发理论。
 
-### 12.3 异步编程范式
+### 11.3 异步编程范式
 
 - **Node.js Event Loop**:Node.js 官方文档,深入 microtask 与 macrotask。
 - **Python asyncio**:PEP 492(async/await),Python 异步生态。
 - **Rust async/await**:Rust 官方异步编程指南,Future trait。
 - **Java Project Loom**:Java 协程（virtual threads）的设计。
 
-### 12.4 相关章节
+### 11.4 相关章节
 
 - **lua/函数与闭包**:闭包与 upvalue,协程的状态保留机制基础。
 - **lua/环境与全局变量管理**:协程的环境隔离,沙箱设计。
@@ -2531,7 +2482,7 @@ end
 - **lua/元表与元方法详解**:协程作为对象的元方法（如 `__call`）。
 - **lua/C-API栈操作**:协程 C API,`lua_resume`、`lua_yield`。
 
-### 12.5 实战项目建议
+### 11.5 实战项目建议
 
 1. **实现一个完整的 Promise 库**:含 `all`、`race`、`allSettled`、`any`、`finally` 等组合子。
 2. **实现 async/await 语法糖**:用 LPEG 解析 Lua 代码,自动转换。
@@ -2542,7 +2493,7 @@ end
 7. **实现一个游戏 AI 行为树**:用协程实现节点状态机。
 8. **实现一个 WebSocket 服务器**:基于协程的非阻塞 IO。
 
-### 12.6 社区与生态
+### 11.6 社区与生态
 
 - **Lua mailing list**:lua-l@lists.lua.org,Lua 官方邮件列表。
 - **Lua Users Wiki**:http://lua-users.org/wiki/,社区知识库。

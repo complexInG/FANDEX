@@ -16,53 +16,14 @@ prerequisites:
   - javascript/语法速查
 ---
 
+
 # 高阶函数：JavaScript 函数式编程的核心抽象
 
 > "Programs must be written for people to read, and only incidentally for machines to execute." —— Harold Abelson 与 Gerald Sussman 在 SICP 中的一句话，揭示了高阶函数作为抽象工具的本质。
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节依据 Bloom 分类法设定六个层次的认知目标，帮助学习者系统掌握高阶函数（Higher-Order Function, HOF）。
-
-### 1.1 Remember（记忆）
-
-- 复述高阶函数的两种形式：接受函数为参数、返回函数为结果。
-- 列出 JavaScript 中至少 8 个内置高阶函数及其所属原型（`Array.prototype`、`Function.prototype` 等）。
-- 说明一等公民（first-class citizen）与高阶函数的关系。
-
-### 1.2 Understand（理解）
-
-- 解释"函数是一等公民"在 JavaScript 中的具体含义：可赋值、可传参、可返回、可作为对象属性。
-- 阐述 map / filter / reduce 三个核心高阶函数的语义差异与适用场景。
-- 推断为什么 `Array.prototype.sort` 默认按字符串排序，以及如何用高阶函数纠正。
-
-### 1.3 Apply（应用）
-
-- 使用 `compose` / `pipe` 构建函数管道，将多个纯函数组合为单一函数。
-- 实现记忆化（memoization）装饰器，加速递归算法如 Fibonacci。
-- 在 React 中用高阶函数（HOC）实现横切关注点（如鉴权、日志）。
-
-### 1.4 Analyze（分析）
-
-- 对比命令式 `for` 循环与函数式 `reduce` 在可读性、可测试性、性能上的差异。
-- 拆解 lodash/fp、Ramda、 RxJS 三大函数式库的设计哲学。
-- 分析 V8 对 `arr.map(f)` 的内联优化（inlining）与去优化（deoptimization）触发条件。
-
-### 1.5 Evaluate（评价）
-
-- 评估在性能敏感场景下使用高阶函数的代价（如游戏循环、音视频处理）。
-- 判定何时该用高阶函数抽象，何时该保留显式循环（如调试可读性优先）。
-
-### 1.6 Create（创造）
-
-- 设计一个支持中间件（middleware）模式的 HTTP 服务器框架，用高阶函数组合请求处理器。
-- 实现一个惰性求值的链式集合操作库，支持 `seq(xs).filter().map().take()` API。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 函数式编程的数学起源
+### 1.1 函数式编程的数学起源
 
 高阶函数的概念源于 **λ 演算（Lambda Calculus）**，由 Alonzo Church 在 1930 年代提出。λ 演算中，函数本身是值，可被传递、返回、嵌套——这正是高阶函数的形式化基础。
 
@@ -78,7 +39,7 @@ $$
 
 `map` 本身就是一个接受函数 `f` 并返回新函数的高阶函数。
 
-### 2.2 LISP：最早的高阶函数实践
+### 1.2 LISP：最早的高阶函数实践
 
 1958 年，John McCarthy 在 MIT 发明 LISP，将 λ 演算引入计算机程序。LISP 的核心数据结构是列表（list），核心操作是 `mapcar`、`filter`、`reduce`：
 
@@ -89,7 +50,7 @@ $$
 
 这一范式深刻影响了后续所有支持函数式编程的语言。
 
-### 2.3 ES1-ES3 时代：函数作为一等公民
+### 1.3 ES1-ES3 时代：函数作为一等公民
 
 JavaScript 自 1995 年诞生起即支持函数作为一等公民，这一设计源于 Brendan Eich 借鉴 Scheme 的经验：
 
@@ -108,7 +69,7 @@ function compose(f, g) {
 
 ES3 没有 `Array.prototype.map` / `filter` / `reduce`，开发者需手写或使用 Prototype.js、jQuery 等库。
 
-### 2.4 ES5 时代：数组高阶方法标准化
+### 1.4 ES5 时代：数组高阶方法标准化
 
 ES5（2009）将 LISP 三大函数纳入标准：
 
@@ -121,7 +82,7 @@ ES5（2009）将 LISP 三大函数纳入标准：
 
 这极大推动了函数式风格在 JavaScript 中的普及。
 
-### 2.5 ES6 时代：箭头函数与函数式爆发
+### 1.5 ES6 时代：箭头函数与函数式爆发
 
 ES6（2015）引入箭头函数，使高阶函数调用从冗长的 `function` 表达式简化为一行：
 
@@ -135,7 +96,7 @@ ES6（2015）引入箭头函数，使高阶函数调用从冗长的 `function` �
 
 箭头函数还自动绑定 `this`，解决了回调中 `this` 丢失的经典问题。
 
-### 2.6 ES2022+：管道与部分应用提案
+### 1.6 ES2022+：管道与部分应用提案
 
 TC39 持续推动函数式特性：
 
@@ -160,7 +121,7 @@ addOne(5);  // 6
 
 - **`Iterator.prototype.map/filter`**（ES2024）：见 Iterator Helpers 章节。
 
-### 2.7 函数式库的演进
+### 1.7 函数式库的演进
 
 | 年份 | 库 | 贡献 |
 | --- | --- | --- |
@@ -175,9 +136,9 @@ addOne(5);  // 6
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 一等公民的定义
+### 2.1 一等公民的定义
 
 函数在 JavaScript 中是一等公民（first-class citizen），意味着：
 
@@ -193,7 +154,7 @@ $$
 4. 作为对象属性：`obj.method = f`
 5. 作为数组元素：`[f1, f2, f3]`
 
-### 3.2 高阶函数的形式化定义
+### 2.2 高阶函数的形式化定义
 
 高阶函数是满足以下任一条件的函数：
 
@@ -203,7 +164,7 @@ $$
 
 即接受函数为参数，或返回函数为结果。
 
-### 3.3 map / filter / reduce 的形式化
+### 2.3 map / filter / reduce 的形式化
 
 **map**：对每个元素应用函数
 
@@ -225,7 +186,7 @@ $$
 
 这三个函数构成 **列表处理的基本算子**，任何对列表的遍历操作都可由它们组合表达（Bird-Meertens 范式）。
 
-### 3.4 函数组合的形式化
+### 2.4 函数组合的形式化
 
 定义函数组合 $\circ$：
 
@@ -247,7 +208,7 @@ $$
 
 但不满足交换律：$f \circ g \neq g \circ f$。
 
-### 3.5 柯里化的形式化
+### 2.5 柯里化的形式化
 
 柯里化将多元函数转换为一元函数的链：
 
@@ -257,7 +218,7 @@ $$
 
 即 `f(a, b, c)` 等价于 `curry(f)(a)(b)(c)`。
 
-### 3.6 复杂度分析
+### 2.6 复杂度分析
 
 | 高阶操作 | 时间复杂度 | 空间复杂度 |
 | --- | --- | --- |
@@ -272,9 +233,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 闭包：高阶函数的实现基础
+### 3.1 闭包：高阶函数的实现基础
 
 高阶函数返回的函数通常通过**闭包（closure）**捕获外部变量：
 
@@ -297,7 +258,7 @@ $$
 
 调用时，函数体在 `env` 上下文中执行，`env` 中的变量与函数共存亡。
 
-### 4.2 函数组合的代数结构
+### 3.2 函数组合的代数结构
 
 函数在组合下构成**幺半群（monoid）**：
 
@@ -319,7 +280,7 @@ compose(compose(f, g), h) === compose(f, compose(g, h));
 
 这一代数结构是函数式编程"无副作用"性质的形式化保证。
 
-### 4.3 范畴论视角
+### 3.3 范畴论视角
 
 在范畴论中，函数是态射（morphism），组合是态射的复合。JavaScript 中的"函数范畴"可视为：
 
@@ -336,7 +297,7 @@ $$
 
 其中 $F$ 是类型构造器（如 `Array`）。`Array` 因此是一个 functor。
 
-### 4.4 短路求值与惰性
+### 3.4 短路求值与惰性
 
 某些高阶函数支持短路：
 
@@ -361,7 +322,7 @@ $$
 \text{some}(p, xs) = \exists i < |xs| : p(xs_i) \land \forall j < i : \neg p(xs_j)
 $$
 
-### 4.5 V8 的高阶函数优化
+### 3.5 V8 的高阶函数优化
 
 V8 对高阶函数采用以下优化：
 
@@ -381,7 +342,7 @@ const slow = arr.map(x => {
 
 实测 `fast` 比 `slow` 快 3-5 倍（V8 v12）。
 
-### 4.6 this 绑定与箭头函数
+### 3.6 this 绑定与箭头函数
 
 高阶函数中的 `this` 是经典陷阱：
 
@@ -411,9 +372,9 @@ const obj2 = {
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 项目结构
+### 4.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -433,7 +394,7 @@ flowchart TD
     T8 --> T9
 ```
 
-### 5.2 package.json
+### 4.2 package.json
 
 ```json
 {
@@ -446,7 +407,7 @@ flowchart TD
 }
 ```
 
-### 5.3 函数组合工具
+### 4.3 函数组合工具
 
 ```javascript
 // src/compose.js
@@ -565,7 +526,7 @@ const fibonacci = memoize((n) => {
 console.log(fibonacci(50));  // 12586269025 — 瞬间完成
 ```
 
-### 5.4 中间件模式
+### 4.4 中间件模式
 
 ```javascript
 // src/middleware.js
@@ -634,7 +595,7 @@ await handler(ctx, async (ctx) => {
 });
 ```
 
-### 5.5 React 高阶组件（HOC）
+### 4.5 React 高阶组件（HOC）
 
 ```javascript
 // src/react-hoc.jsx
@@ -735,7 +696,7 @@ const UserProfile = enhance(({ user }) => (
 ));
 ```
 
-### 5.6 测试用例
+### 4.6 测试用例
 
 ```javascript
 // test/compose.test.js
@@ -815,9 +776,9 @@ test('memoize: clear cache', () => {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与命令式循环的对比
+### 5.1 与命令式循环的对比
 
 ```javascript
 // 命令式：求平方和
@@ -845,7 +806,7 @@ const sum3 = [1, 2, 3, 4, 5]
 | 可测试性 | 中 | 高（每步独立测试） | 高 |
 | 并行化潜力 | 难 | 易（map可并行） | 难 |
 
-### 6.2 与 TypeScript 的对比
+### 5.2 与 TypeScript 的对比
 
 TypeScript 在类型层面提供更精确的高阶函数签名：
 
@@ -863,7 +824,7 @@ function map(arr, f) {
 
 TypeScript 的泛型使高阶函数类型安全，但 JavaScript 的灵活性允许更动态的元编程。
 
-### 6.3 与 Python 的对比
+### 5.3 与 Python 的对比
 
 ```python
 # Python
@@ -887,7 +848,7 @@ const total = nums.reduce((a, b) => a + b, 0);
 - Python 的 `lambda` 限制为单表达式，JavaScript 的箭头函数可含多条语句。
 - Python 的 `map`/`filter` 返回迭代器（惰性），JavaScript 的返回数组（急切）。
 
-### 6.4 与 Ruby 的对比
+### 5.4 与 Ruby 的对比
 
 ```ruby
 # Ruby
@@ -899,7 +860,7 @@ total = nums.sum
 
 Ruby 用 block（块）作为高阶函数的参数，语法更接近自然语言。JavaScript 用箭头函数，更接近数学函数表示。
 
-### 6.5 与 Rust 的对比
+### 5.5 与 Rust 的对比
 
 ```rust
 // Rust
@@ -913,9 +874,9 @@ Rust 的迭代器是零成本抽象（编译为紧凑循环），与 JavaScript 
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：reduce 缺失初始值
+### 6.1 陷阱：reduce 缺失初始值
 
 ```javascript
 // 错误：空数组无初始值会抛错
@@ -925,7 +886,7 @@ Rust 的迭代器是零成本抽象（编译为紧凑循环），与 JavaScript 
 [].reduce((a, b) => a + b, 0);  // 0
 ```
 
-### 7.2 陷阱：map 回调的返回值
+### 6.2 陷阱：map 回调的返回值
 
 ```javascript
 // 错误：忘记return
@@ -938,7 +899,7 @@ Rust 的迭代器是零成本抽象（编译为紧凑循环），与 JavaScript 
 [1, 2, 3].map(x => { return x * 2; });
 ```
 
-### 7.3 陷阱：sort 默认按字符串排序
+### 6.3 陷阱：sort 默认按字符串排序
 
 ```javascript
 // 错误：默认按字符串排序
@@ -948,7 +909,7 @@ Rust 的迭代器是零成本抽象（编译为紧凑循环），与 JavaScript 
 [10, 2, 1, 21].sort((a, b) => a - b);  // [1, 2, 10, 21]
 ```
 
-### 7.4 陷阱：在循环中创建函数
+### 6.4 陷阱：在循环中创建函数
 
 ```javascript
 // 反模式：每次渲染创建新函数，导致子组件不必要的重渲染
@@ -962,7 +923,7 @@ function Parent({ items }) {
 const handleClick = useCallback((id) => { /* ... */ }, []);
 ```
 
-### 7.5 陷阱：链式调用创建多个中间数组
+### 6.5 陷阱：链式调用创建多个中间数组
 
 ```javascript
 // 反模式：大数据集多个中间数组
@@ -986,7 +947,7 @@ const result = hugeArray.values()
   .toArray();
 ```
 
-### 7.6 最佳实践清单
+### 6.6 最佳实践清单
 
 1. **回调函数用箭头函数**：避免 `this` 绑定问题。
 2. **reduce 始终提供初始值**：避免空数组报错。
@@ -998,9 +959,9 @@ const result = hugeArray.values()
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 性能基准
+### 7.1 性能基准
 
 ```javascript
 // benchmark.js
@@ -1045,9 +1006,9 @@ await run();
 | filter+map+reduce | ~45ms | 3个中间数组 |
 | single reduce | ~15ms | 单次遍历 |
 
-### 8.2 调试技巧
+### 7.2 调试技巧
 
-#### 8.2.1 tap 函数：在链路中插入日志
+#### 7.2.1 tap 函数：在链路中插入日志
 
 ```javascript
 const tap = (label) => (x) => {
@@ -1067,7 +1028,7 @@ const result = pipe(
 // [after multiply 2] 12
 ```
 
-#### 8.2.2 trace 函数：追踪函数调用
+#### 7.2.2 trace 函数：追踪函数调用
 
 ```javascript
 const trace = (label, fn) => (...args) => {
@@ -1083,7 +1044,7 @@ traced(1, 2);
 // [add] returned 3
 ```
 
-### 8.3 与 Lodash/Ramda 对比
+### 7.3 与 Lodash/Ramda 对比
 
 ```javascript
 // Lodash
@@ -1108,7 +1069,7 @@ const result = [1, 2, 3]
 
 现代 JavaScript 原生方法已足够覆盖 90% 场景，仅在需要特殊功能（如 `keyBy`、`groupBy`、深度路径访问）时才引入 Lodash。
 
-### 8.4 与 TypeScript 集成
+### 7.4 与 TypeScript 集成
 
 ```typescript
 // 类型安全的compose
@@ -1136,9 +1097,9 @@ const result: string = f(5);  // "12"
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 React 中的高阶组件演进
+### 8.1 React 中的高阶组件演进
 
 React 0.13（2015）首次推荐 HOC 模式，`react-redux` 的 `connect()` 是经典案例：
 
@@ -1181,7 +1142,7 @@ function MyComponent() {
 - 类组件的兼容
 - 第三方库的连接（如 `connect`）
 
-### 9.2 Redux 中间件
+### 8.2 Redux 中间件
 
 Redux 的中间件系统完全基于高阶函数：
 
@@ -1212,7 +1173,7 @@ function applyMiddleware(...middlewares) {
 }
 ```
 
-### 9.3 Express/Koa 中间件
+### 8.3 Express/Koa 中间件
 
 Express（2010）与 Koa（2013）的中间件系统都是高阶函数：
 
@@ -1233,7 +1194,7 @@ app.use(async (ctx, next) => {
 
 Koa 的"洋葱模型"通过 `async/await` 实现"前置-后置"逻辑，比 Express 的"瀑布"模型更具表达力。
 
-### 9.4 Lodash 的实现哲学
+### 8.4 Lodash 的实现哲学
 
 Lodash 的所有高阶函数都遵循以下原则：
 
@@ -1253,7 +1214,7 @@ const result = _.chain(users)
 
 Lodash 的惰性链与 ES2024 Iterator Helpers 解决同一问题，但前者是用户态实现。
 
-### 9.5 Ramda 的"函数优先、数据置后"哲学
+### 8.5 Ramda 的"函数优先、数据置后"哲学
 
 Ramda 的所有高阶函数都采用"数据置后"参数顺序，便于柯里化与组合：
 
@@ -1446,7 +1407,7 @@ window.addEventListener('scroll', onScroll);
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 10**：为什么 `Array.prototype.forEach` 无法用 `break` 中断？如何模拟中断？
 
@@ -1485,9 +1446,9 @@ window.addEventListener('scroll', onScroll);
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 规范与提案
+### 10.1 规范与提案
 
 - ECMAScript 2024 Language Specification, §23.1.3 Array.prototype.map, §23.1.3 Array.prototype.filter, §23.1.3 Array.prototype.reduce. ECMA International, 2024. [Online]. Available: https://tc39.es/ecma262/
 
@@ -1495,7 +1456,7 @@ window.addEventListener('scroll', onScroll);
 
 - TC39 Proposal: Partial Application [Online]. Available: https://github.com/tc39/proposal-partial-application
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 - Church, A. 1936. "An Unsolvable Problem of Elementary Number Theory." *American Journal of Mathematics*, 58(2): 345-363. DOI: 10.2307/2371045.
 
@@ -1503,7 +1464,7 @@ window.addEventListener('scroll', onScroll);
 
 - Hughes, J. 1989. "Why Functional Programming Matters." *Computer Journal*, 32(2): 98-107. DOI: 10.1093/comjnl/32.2.98.
 
-### 11.3 工业实践
+### 10.3 工业实践
 
 - Eich, B. 2008. "JavaScript at Ten Years." *Microsoft MIX '08*. [Online]. Available: https://brendaneich.com/2008/04/javascript-at-ten-years/
 
@@ -1511,7 +1472,7 @@ window.addEventListener('scroll', onScroll);
 
 - Cross, A. et al. 2019. "Ramda: Practical Functional Programming for JavaScript." [Online]. Available: https://ramdajs.com/
 
-### 11.4 引用格式（ACM Reference Format）
+### 10.4 引用格式（ACM Reference Format）
 
 Alonzo Church. 1936. An unsolvable problem of elementary number theory. *Am. J. Math.* 58, 2 (April 1936), 345–363. DOI: https://doi.org/10.2307/2371045.
 
@@ -1521,9 +1482,9 @@ John Hughes. 1989. Why functional programming matters. *Comput. J.* 32, 2 (April
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **Abelson, H. and Sussman, G.** *Structure and Interpretation of Computer Programs* (2nd ed.). MIT Press, 1996. — 第 1-2 章是高阶函数与函数式抽象的圣经级教材。
 
@@ -1533,13 +1494,13 @@ John Hughes. 1989. Why functional programming matters. *Comput. J.* 32, 2 (April
 
 - **Fogus, M.** *Functional JavaScript*. O'Reilly, 2013. — 第一本系统讲解 JavaScript 函数式编程的著作。
 
-### 12.2 论文
+### 11.2 论文
 
 - **Hughes, J.** "Why Functional Programming Matters." *Computer Journal*, 1989. — 经典论文，论证函数式编程的本质优势。
 
 - **Wadler, P.** "Theorems for Free!" *FPCA '89*. DOI: 10.1145/99370.99404.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **MDN: Array.prototype.map**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
 
@@ -1553,7 +1514,7 @@ John Hughes. 1989. Why functional programming matters. *Comput. J.* 32, 2 (April
 
 - **Mostly Adequate Guide**：https://mostly-adequate.gitbook.io/mostly-adequate-guide/ — 函数式编程入门经典。
 
-### 12.4 相关 FANDEX 文档
+### 11.4 相关 FANDEX 文档
 
 - [数据类型与运算符](./数据类型与运算符) — 函数类型的底层基础。
 - [控制流](./控制流) — 高阶函数与命令式控制流的对比。

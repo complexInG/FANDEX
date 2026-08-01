@@ -34,14 +34,6 @@ prerequisites:
   - algorithm/图算法
   - algorithm/动态规划
   - cs-fundamentals/离散数学
-learningObjectives:
-  - 记忆 Floyd-Warshall 算法作为动态规划范式的形式化定义，复述状态 $d^{(k)}_{ij} = \min(d^{(k-1)}_{ij}, d^{(k-1)}_{ik} + d^{(k-1)}_{kj})$ 与时间复杂度 $O(n^3)$、空间复杂度 $O(n^2)$（原地优化后）的结论
-  - '理解 Floyd 1962《Algorithm 97: Shortest Path》CACM 5(6):345 DOI:10.1145/367766.368168、Warshall 1962《A Theorem on Boolean Matrices》JACM 9(1):11-12 DOI:10.1145/321105.321107、Roy 1959 独立发现传递闭包算法的历史脉络，说明三人各自的原始动机与设计思路差异'
-  - 应用三重循环嵌套顺序 $(k, i, j)$ 编写正确实现，使用路径重建矩阵 $\text{nxt}[i][j]$ 反推任意顶点对最短路径，使用 $\text{dist}[i][i] < 0$ 判定负环
-  - 分析 Floyd-Warshall 的最优子结构（最短路径的子路径仍是最短路径）与重叠子问题性质，论证为什么 $k$ 维可省略实现 $O(n^2)$ 原地更新
-  - 评估 Floyd-Warshall 与 Dijkstra（非负权，单源 $O((V+E)\log V)$）、Bellman-Ford（负权，单源 $O(VE)$）、Johnson（全源，稀疏图 $O(V^2 \log V + VE)$）在稠密图/稀疏图/负权图维度上的选型决策
-  - 对比 Floyd-Warshall 在最短路径、传递闭包（Warshall 形式 $r_{ij}^{(k)} = r_{ij}^{(k-1)} \lor (r_{ik}^{(k-1)} \land r_{kj}^{(k-1)})$）、最小环检测三种应用中的代码差异
-  - 创造性设计基于 Floyd-Warshall 的工业级解决方案，如城市交通网络规划、网络路由表计算、社交关系传递闭包分析、编译器数据流分析
 references:
   - type: journal
     authors:
@@ -207,6 +199,7 @@ etymology:
     english: intermediate vertex
     origin: 'intermediate vertex 在 Floyd-Warshall 中指路径上非起终点的节点。算法核心思想是逐步允许更多中间点：第 k 轮允许 $\{1, \ldots, k\}$ 作为中间点，递推 $d^{(k)}_{ij} = \min(d^{(k-1)}_{ij}, d^{(k-1)}_{ik} + d^{(k-1)}_{kj})$'
 ---
+
 
 ## 1. 概述与学习目标
 

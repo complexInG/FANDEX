@@ -31,90 +31,16 @@ tags:
   - Java21
 ---
 
+
 # Java 虚拟线程深度指南（Project Loom）
 
 > 虚拟线程（Virtual Threads）是 Java 21（2023 年 9 月）正式发布的里程碑式特性，由 Project Loom 项目孵化而成。它将 Java 的并发模型从"操作系统线程 1:1 映射"重定义为"JVM 调度的 M:N 映射"，让开发者能用传统的同步阻塞式编程风格实现高并发，无需学习响应式编程（Reactive Programming）的复杂范式。这一特性被 Brian Goetz（Java 语言架构师）称为"自 Java 8 Lambda 以来最重要的语言演进"，因为它重新定义了 Java 在云原生时代处理高并发 I/O 的能力边界。本文将系统性剖析虚拟线程的设计哲学、调度机制、Continuation 原理、Pinning 陷阱、结构化并发、与 Spring Boot 3.2+ 的集成实践，以及与响应式编程的深度对比，让读者既能掌握"如何使用虚拟线程"，也能理解"虚拟线程为何如此设计"，最终建立对 Java 并发演进全景的系统认知。
 
 ---
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节以 Bloom 教育目标分类法（Anderson 2001 修订版）为框架，对学习目标进行显式分级，便于读者自检学习成果与认知深度。
-
-### 1.1 认知层级目标
-
-| 层级（Level） | 行为动词 | 具体学习目标 |
-|--------------|---------|-------------|
-| 记忆（Remember） | 列举、识别、定义 | 识别虚拟线程的核心术语（载体线程、Continuation、Pinning、Mount/Unmount），列举 `Thread.startVirtualThread`、`Executors.newVirtualThreadPerTaskExecutor`、`StructuredTaskScope` 等核心 API 签名 |
-| 理解（Understand） | 解释、归纳、对比 | 解释 M:N 调度模型与 1:1 调度模型的差异，对比虚拟线程与平台线程的内存占用、创建成本、阻塞行为，归纳 Pinning 发生的三种典型场景 |
-| 应用（Apply） | 实现、使用、演示 | 使用虚拟线程实现高并发 HTTP 服务，使用 `StructuredTaskScope.ShutdownOnFailure` 实现结构化并发，演示 Spring Boot 3.2+ 虚拟线程配置 |
-| 分析（Analyze） | 分解、辨别、推断 | 分解虚拟线程的 Continuation 栈帧存储机制，推断 `synchronized` 块导致 Pinning 的 JVM 内部原因，辨别虚拟线程适用与不适用的场景 |
-| 评价（Evaluate） | 评判、论证、批判 | 评判虚拟线程是否会取代响应式编程（Reactor、RxJava），论证虚拟线程在高并发网关场景的吞吐量优势，批判 ThreadLocal 在虚拟线程下的内存陷阱 |
-| 创造（Create） | 设计、构建、重构 | 设计基于虚拟线程 + 结构化并发的微服务架构，构建 Pinning 检测与监控体系，重构 Reactor 异步代码为虚拟线程同步风格 |
-
-### 1.2 学习成果自检清单
-
-完成本章学习后，读者应能独立完成以下任务：
-
-1. 在不查阅文档的前提下，编写出使用虚拟线程并发抓取 1000 个 URL 的代码，并解释其与 `CompletableFuture` 方案的差异。
-2. 用一句话向同事解释虚拟线程的"Continuation 卸载"与"载体线程释放"之间的关系。
-3. 在白板上画出虚拟线程从 `Thread.startVirtualThread` 到 `park` 到 `unpark` 的完整状态机流转图。
-4. 识别生产代码中导致 Pinning 的反模式（`synchronized` 块内阻塞、`native` 方法调用、JNI 调用），并给出 `ReentrantLock` 替代方案。
-5. 使用 `jcmd <pid> Thread.dump_to_file -format=json` 抓取虚拟线程堆栈，定位 Pinning 线程。
-6. 设计一个基于 `StructuredTaskScope` 的并发订单聚合服务，要求任一子任务失败立即取消其他子任务。
-7. 对比虚拟线程、Reactor、Kotlin 协程三种并发模型的优缺点，给出 3 种典型场景的选型建议。
-
-### 1.3 前置知识地图
-
-```mermaid
-flowchart TD
-    T0["Java 并发基础"]
-    T1["Thread / Runnable"]
-    T2["synchronized / volatile"]
-    T3["wait / notify / notifyAll"]
-    T4["Lock / Condition（ReentrantLock）"]
-    T5["Executor / ExecutorService / ThreadPoolExecutor"]
-    T6["Java 并发进阶"]
-    T7["CompletableFuture（Java 8）"]
-    T8["ForkJoinPool（Java 7）"]
-    T9["Flow / Reactive Streams（Java 9）"]
-    T10["ThreadLocal / InheritableThreadLocal"]
-    T11["Java 虚拟线程（本章）"]
-    T12["核心机制：Continuation / Carrier Thread / M:N 调度"]
-    T13["API 层：Thread.ofVirtual / newVirtualThreadPerTaskExecutor"]
-    T14["进阶层：StructuredTaskScope / ScopedValue"]
-    T15["陷阱层：Pinning / ThreadLocal / 池化"]
-    T16["集成层：Spring Boot 3.2 / Helidon Níma / Quarkus"]
-    T0 --> T1
-    T0 --> T2
-    T0 --> T3
-    T0 --> T4
-    T0 --> T5
-    T5 --> T6
-    T6 --> T7
-    T6 --> T8
-    T6 --> T9
-    T6 --> T10
-    T10 --> T11
-    T11 --> T12
-    T11 --> T13
-    T11 --> T14
-    T11 --> T15
-    T11 --> T16
-```
-
-### 1.4 章节阅读建议
-
-- **零基础读者**：建议按顺序阅读第 2-5 节，配合第 5 节代码示例上机实操，再回到第 3、4 节深化理论。
-- **有 Java 并发经验的工程师**：可跳过第 2 节基础部分，直接阅读第 3 节 Continuation 机制、第 4 节 Pinning 原理、第 7 节反模式。
-- **架构师**：重点关注第 6 节对比分析、第 8 节工程实践与第 9 节案例研究，特别是虚拟线程与响应式编程的选型决策。
-- **Spring Boot 开发者**：直接跳转第 8.2 节 Spring Boot 3.2+ 集成实践。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 并发模型的演进：从线程到协程到虚拟线程
+### 1.1 并发模型的演进：从线程到协程到虚拟线程
 
 Java 的并发模型经历了三个主要阶段：
 
@@ -164,7 +90,7 @@ Project Loom 由 Ron Pressler（Oracle）于 2018 年发起，目标是在 JVM �
 - JDK 21（2023-09）：虚拟线程正式发布（JEP 444），成为 LTS 特性。
 - JDK 22-24（2024-2025）：结构化并发、作用域值持续预览演进，社区生态（Spring Boot 3.2、Helidon Níma、Quarkus 3.6）全面接入。
 
-### 2.2 关键里程碑时间线
+### 1.2 关键里程碑时间线
 
 | 时间 | JDK 版本 | 虚拟线程相关演进 |
 |------|---------|-------------|
@@ -179,7 +105,7 @@ Project Loom 由 Ron Pressler（Oracle）于 2018 年发起，目标是在 JVM �
 | 2025-03 | JDK 24 | JEP 499：结构化并发第四次预览，API 趋于稳定 |
 | 2025-09 | JDK 25 (LTS) | 结构化并发预期正式发布，虚拟线程生态成熟 |
 
-### 2.3 设计哲学：为何选择"虚拟线程"而非"协程"
+### 1.3 设计哲学：为何选择"虚拟线程"而非"协程"
 
 Java 设计团队（Brian Goetz、Ron Pressler）在 Loom 设计阶段曾考虑三种方案：
 
@@ -203,7 +129,7 @@ Java 设计团队（Brian Goetz、Ron Pressler）在 Loom 设计阶段曾考虑�
 
 Java 团队选择方案 C 的核心原因是 **"生态兼容性优先"** —— Java 生态积累了 25 年的同步库（JDBC、JPA、Jackson、OkHttp），重写这些库为 async 版本的成本远高于在 JVM 层实现虚拟线程。这一决策使 Java 在云原生时代保持了"一次编写、到处运行"的承诺。
 
-### 2.4 JEP 与虚拟线程相关提案
+### 1.4 JEP 与虚拟线程相关提案
 
 | JEP 编号 | 标题 | 状态 | 核心内容 |
 |---------|------|------|---------|
@@ -218,7 +144,7 @@ Java 团队选择方案 C 的核心原因是 **"生态兼容性优先"** —— 
 | JEP 499 | Structured Concurrency (Fourth Preview) | Final (JDK 24) | API 趋于正式 |
 | JEP 505 | Scoped Values (Fifth Preview) | Final (JDK 25) | 预期正式发布 |
 
-### 2.5 虚拟线程与 Java 生态的共生关系
+### 1.5 虚拟线程与 Java 生态的共生关系
 
 虚拟线程并非孤立存在，它与以下生态形成了共生关系：
 
@@ -234,9 +160,9 @@ Java 团队选择方案 C 的核心原因是 **"生态兼容性优先"** —— 
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 虚拟线程的形式化定义
+### 2.1 虚拟线程的形式化定义
 
 设 $T_p$ 为平台线程集合（操作系统线程），$T_v$ 为虚拟线程集合，$C$ 为载体线程（Carrier Thread）集合，$S$ 为调度器（Scheduler）。虚拟线程系统可形式化为一个六元组：
 
@@ -253,7 +179,7 @@ $$
 - $\text{Continuation}$：延续对象，保存虚拟线程的栈帧。
 - $\text{Mount}: T_v \times C \to \text{State}$：挂载操作，将虚拟线程绑定到载体线程执行。
 
-### 3.2 M:N 调度模型
+### 2.2 M:N 调度模型
 
 传统平台线程采用 **1:1 调度**：一个 Java 线程对应一个操作系统线程。
 
@@ -269,7 +195,7 @@ $$
 
 其中 $M \gg N$（典型值 $M = 10^6$，$N = \text{CPU 核心数}$）。调度器 $S$ 负责在载体线程上分时执行虚拟线程，虚拟线程阻塞时自动让出载体线程。
 
-### 3.3 虚拟线程状态机
+### 2.3 虚拟线程状态机
 
 虚拟线程的状态机可形式化为：
 
@@ -300,7 +226,7 @@ $$
 - **PARKED**：虚拟线程卸载（Unmount），载体线程释放，可执行其他虚拟线程。
 - **PINNED**：虚拟线程无法卸载，载体线程被占用，无法执行其他虚拟线程（退化为平台线程行为）。
 
-### 3.4 Continuation 的形式化定义
+### 2.4 Continuation 的形式化定义
 
 Continuation 是虚拟线程的核心抽象，表示"计算的剩余部分"。形式化地，设 $c$ 为一个 Continuation，$s$ 为当前栈帧序列，$e$ 为执行环境（局部变量、操作数栈），则：
 
@@ -320,7 +246,7 @@ $$
 
 Continuation 的栈帧存储在堆上（而非操作系统栈），这是虚拟线程内存占用极低的根本原因。每个 Continuation 的初始栈约 1KB，可按需增长到 100KB-1MB（极少见）。
 
-### 3.5 内存占用形式化对比
+### 2.5 内存占用形式化对比
 
 设 $n$ 为线程数量，$M_p$ 为平台线程总内存，$M_v$ 为虚拟线程总内存：
 
@@ -344,7 +270,7 @@ $$
 
 虚拟线程的内存优势为 1000 倍，这是其能支撑百万级并发的物理基础。
 
-### 3.6 吞吐量模型
+### 2.6 吞吐量模型
 
 设 $T_{\text{cpu}}$ 为任务 CPU 执行时间，$T_{\text{io}}$ 为任务 I/O 等待时间，$N$ 为载体线程数。对于 I/O 密集型任务（$T_{\text{io}} \gg T_{\text{cpu}}$）：
 
@@ -374,9 +300,9 @@ $$
 
 ---
 
-## 4. 理论推导：JVM 视角下的虚拟线程机制
+## 3. 理论推导：JVM 视角下的虚拟线程机制
 
-### 4.1 虚拟线程的 JVM 实现
+### 3.1 虚拟线程的 JVM 实现
 
 虚拟线程在 HotSpot JVM 中的实现涉及以下核心组件：
 
@@ -393,7 +319,7 @@ flowchart TD
     B0 --> B1
 ```
 
-### 4.2 Continuation 的栈帧存储机制
+### 3.2 Continuation 的栈帧存储机制
 
 传统平台线程的栈帧存储在操作系统分配的线程栈上（1MB 连续内存）。虚拟线程的栈帧存储分为两种状态：
 
@@ -414,7 +340,7 @@ flowchart TD
 
 这一机制的关键是 **栈帧的可序列化**：JVM 需要将栈帧从载体线程栈"卸下"并保存到堆，恢复时再"挂回"载体线程栈。这要求 JVM 修改 `Continuation` 的实现，使其支持栈帧的拷贝与恢复。
 
-### 4.3 卸载触发点：哪些操作会触发 Unmount
+### 3.3 卸载触发点：哪些操作会触发 Unmount
 
 虚拟线程在以下操作中会自动卸载（Unmount）：
 
@@ -433,11 +359,11 @@ flowchart TD
 
 JDK 21 对以上所有 API 都做了虚拟线程适配，业务代码无需任何修改即可享受卸载机制。
 
-### 4.4 Pinning（线程固定）机制
+### 3.4 Pinning（线程固定）机制
 
 Pinning 是虚拟线程"无法卸载"的状态，会导致载体线程被占用。Pinning 发生在以下三种场景：
 
-#### 4.4.1 `synchronized` 块内阻塞
+#### 3.4.1 `synchronized` 块内阻塞
 
 ```java
 public synchronized void process() {  // 进入 synchronized 块
@@ -451,7 +377,7 @@ JVM 的 monitor（监视器锁）实现依赖操作系统层（`ObjectMonitor`�
 
 HotSpot 的 `ObjectMonitor` 结构在 JDK 21 前未针对虚拟线程适配，这是 Pinning 的根本原因。JDK 24+（JEP 491）正在开发 `synchronized` 的虚拟线程适配，预计 JDK 25 正式解决。
 
-#### 4.4.2 `native` 方法调用
+#### 3.4.2 `native` 方法调用
 
 ```java
 public native void doNativeWork();  // native 方法
@@ -465,11 +391,11 @@ public void caller() {
 
 native 方法的栈帧存储在 native 栈上（C/C++ 栈），JVM 无法访问和拷贝 native 栈。虚拟线程在执行 native 方法时被 Pinning，载体线程被占用直到 native 方法返回。
 
-#### 4.4.3 JNI 调用
+#### 3.4.3 JNI 调用
 
 JNI（Java Native Interface）调用同样会导致 Pinning，原因与 native 方法相同。
 
-### 4.5 Pinning 的检测与监控
+### 3.5 Pinning 的检测与监控
 
 JDK 21 提供了 Pinning 检测机制：
 
@@ -521,7 +447,7 @@ java -XX:StartFlightRecording=duration=60s,filename=pinning.jfr -jar app.jar
 
 JFR 事件 `jdk.VirtualThreadPinned` 记录每次 Pinning 的详细信息，可通过 JDK Mission Control 分析。
 
-### 4.6 载体线程调度器：ForkJoinPool
+### 3.6 载体线程调度器：ForkJoinPool
 
 虚拟线程的载体线程由 `ForkJoinPool` 提供，默认配置：
 
@@ -541,7 +467,7 @@ ForkJoinPool virtualThreadScheduler = new ForkJoinPool(
 - **work-stealing**：空闲工作线程会从其他工作线程的队列尾部"窃取"任务，均衡负载。
 - **不可替换**：应用代码无法替换虚拟线程的调度器（与平台线程不同）。
 
-### 4.7 Continuation 的实现：yield 与 resume
+### 3.7 Continuation 的实现：yield 与 resume
 
 `Continuation` 的核心方法：
 
@@ -580,9 +506,9 @@ public class Continuation {
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 创建虚拟线程的三种方式
+### 4.1 创建虚拟线程的三种方式
 
 ```java
 package com.fandex.virtualthread;
@@ -699,7 +625,7 @@ public class VirtualThreadCreationDemo {
 }
 ```
 
-### 5.2 虚拟线程并发 HTTP 请求
+### 4.2 虚拟线程并发 HTTP 请求
 
 ```java
 package com.fandex.virtualthread;
@@ -782,7 +708,7 @@ public class ConcurrentHttpDemo {
 }
 ```
 
-### 5.3 结构化并发示例
+### 4.3 结构化并发示例
 
 ```java
 package com.fandex.virtualthread;
@@ -897,7 +823,7 @@ public class StructuredConcurrencyDemo {
 }
 ```
 
-### 5.4 Pinning 检测与规避
+### 4.4 Pinning 检测与规避
 
 ```java
 package com.fandex.virtualthread;
@@ -981,7 +907,7 @@ public class PinningDemo {
 }
 ```
 
-### 5.5 作用域值（ScopedValue）示例
+### 4.5 作用域值（ScopedValue）示例
 
 ```java
 package com.fandex.virtualthread;
@@ -1047,7 +973,7 @@ public class ScopedValueDemo {
 }
 ```
 
-### 5.6 虚拟线程与 ThreadLocal 的对比
+### 4.6 虚拟线程与 ThreadLocal 的对比
 
 ```java
 package com.fandex.virtualthread;
@@ -1099,7 +1025,7 @@ public class ThreadLocalTrapDemo {
 }
 ```
 
-### 5.7 Spring Boot 3.2+ 虚拟线程集成
+### 4.7 Spring Boot 3.2+ 虚拟线程集成
 
 ```java
 package com.fandex.virtualthread;
@@ -1207,7 +1133,7 @@ public class VirtualThreadSpringBootApp {
 }
 ```
 
-### 5.8 虚拟线程性能基准测试
+### 4.8 虚拟线程性能基准测试
 
 ```java
 package com.fandex.virtualthread;
@@ -1291,9 +1217,9 @@ public class PerformanceBenchmark {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 虚拟线程 vs 平台线程
+### 5.1 虚拟线程 vs 平台线程
 
 | 维度 | 平台线程（Platform Thread） | 虚拟线程（Virtual Thread） |
 |------|---------------------------|--------------------------|
@@ -1310,7 +1236,7 @@ public class PerformanceBenchmark {
 | **优先级** | 支持（`setPriority`） | 不支持（固定为 `NORM_PRIORITY`） |
 | **调试** | 简单（线程数少） | 复杂（百万线程堆栈） |
 
-### 6.2 虚拟线程 vs 响应式编程（Reactor / RxJava）
+### 5.2 虚拟线程 vs 响应式编程（Reactor / RxJava）
 
 | 维度 | 响应式编程（Reactor） | 虚拟线程 |
 |------|---------------------|---------|
@@ -1333,7 +1259,7 @@ public class PerformanceBenchmark {
 - **流式处理**：保留 Reactor（背压、窗口、聚合等操作符强大）。
 - **简单 CRUD 服务**：虚拟线程更合适。
 
-### 6.3 虚拟线程 vs Kotlin 协程
+### 5.3 虚拟线程 vs Kotlin 协程
 
 | 维度 | Kotlin 协程（kotlinx.coroutines） | Java 虚拟线程 |
 |------|----------------------------------|--------------|
@@ -1346,7 +1272,7 @@ public class PerformanceBenchmark {
 | **生态** | Kotlin 原生 | Java 原生（Spring、Quarkus 等） |
 | **结构化并发** | 原生支持（`coroutineScope`） | `StructuredTaskScope`（预览） |
 
-### 6.4 虚拟线程 vs Go goroutine
+### 5.4 虚拟线程 vs Go goroutine
 
 | 维度 | Go goroutine | Java 虚拟线程 |
 |------|-------------|--------------|
@@ -1359,7 +1285,7 @@ public class PerformanceBenchmark {
 | **生态** | Go 原生 | Java 生态（Spring 等） |
 | **成熟度** | 成熟（Go 1.0+） | 成熟（Java 21+） |
 
-### 6.5 何时选择虚拟线程
+### 5.5 何时选择虚拟线程
 
 | 场景 | 推荐 | 原因 |
 |------|------|------|
@@ -1374,9 +1300,9 @@ public class PerformanceBenchmark {
 
 ---
 
-## 7. 陷阱与反模式
+## 6. 陷阱与反模式
 
-### 7.1 反模式：在虚拟线程中使用 `synchronized`
+### 6.1 反模式：在虚拟线程中使用 `synchronized`
 
 **问题代码**：
 
@@ -1409,7 +1335,7 @@ public String fetchData(String key) {
 
 启动时加 `-Djdk.tracePinnedThreads=short`，JVM 会打印 Pinning 堆栈，帮助快速定位。
 
-### 7.2 反模式：池化虚拟线程
+### 6.2 反模式：池化虚拟线程
 
 **问题代码**：
 
@@ -1434,7 +1360,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 }
 ```
 
-### 7.3 反模式：滥用 ThreadLocal
+### 6.3 反模式：滥用 ThreadLocal
 
 **问题代码**：
 
@@ -1464,7 +1390,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 2. 将共享数据作为方法参数显式传递。
 3. 若必须用 `ThreadLocal`，确保虚拟线程结束前调用 `remove()` 清理。
 
-### 7.4 反模式：在虚拟线程中执行 CPU 密集型任务
+### 6.4 反模式：在虚拟线程中执行 CPU 密集型任务
 
 **问题代码**：
 
@@ -1493,7 +1419,7 @@ IntStream.range(0, 100).forEach(i -> {
 });
 ```
 
-### 7.5 反模式：虚拟线程中调用 native 方法
+### 6.5 反模式：虚拟线程中调用 native 方法
 
 **问题代码**：
 
@@ -1516,7 +1442,7 @@ native 方法的栈帧存储在 native 栈上，JVM 无法拷贝。虚拟线程�
 2. 使用纯 Java 实现替代 native 方法（如 BouncyCastle 替代 OpenSSL JNI）。
 3. 评估 native 调用频率，若极少调用可接受 Pinning。
 
-### 7.6 反模式：在虚拟线程中使用 `Object.wait()`
+### 6.6 反模式：在虚拟线程中使用 `Object.wait()`
 
 **问题代码**：
 
@@ -1552,7 +1478,7 @@ public void waitForData() throws InterruptedException {
 }
 ```
 
-### 7.7 反模式：忽略 Pinning 监控
+### 6.7 反模式：忽略 Pinning 监控
 
 **问题分析**：
 
@@ -1565,7 +1491,7 @@ public void waitForData() throws InterruptedException {
 3. 启用 JFR 录制 `jdk.VirtualThreadPinned` 事件，通过 JDK Mission Control 分析。
 4. 接入 Micrometer / Prometheus，监控载体线程池的活跃线程数（若持续等于池大小，可能存在 Pinning）。
 
-### 7.8 反模式：在虚拟线程中阻塞文件 I/O
+### 6.8 反模式：在虚拟线程中阻塞文件 I/O
 
 **问题代码**：
 
@@ -1585,7 +1511,7 @@ public byte[] readFile(Path path) {
 2. 或使用 NIO `AsynchronousFileChannel`（真正异步文件 I/O）。
 3. 评估文件大小与并发度，小文件可接受阻塞。
 
-### 7.9 反模式：虚拟线程与响应式混用不当
+### 6.9 反模式：虚拟线程与响应式混用不当
 
 **问题代码**：
 
@@ -1609,7 +1535,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 2. 若必须用 Reactor，配置 `Schedulers.fromExecutor(Executors.newVirtualThreadPerTaskExecutor())`。
 3. 评估是否真的需要 Reactor（虚拟线程已提供高并发，无需响应式）。
 
-### 7.10 反模式：误用 `StructuredTaskScope` 的 `shutdown` 策略
+### 6.10 反模式：误用 `StructuredTaskScope` 的 `shutdown` 策略
 
 **问题代码**：
 
@@ -1641,9 +1567,9 @@ try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 虚拟线程迁移策略
+### 7.1 虚拟线程迁移策略
 
 从平台线程迁移到虚拟线程的策略：
 
@@ -1674,7 +1600,7 @@ try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
 2. **调优载体线程池**：必要时调整 `-Djdk.virtualThreadParallelism`。
 3. **接入结构化并发**：用 `StructuredTaskScope` 替代 `CompletableFuture` 链。
 
-### 8.2 Spring Boot 3.2+ 集成实践
+### 7.2 Spring Boot 3.2+ 集成实践
 
 **application.yml 配置**：
 
@@ -1758,7 +1684,7 @@ public class VirtualThreadMetrics {
 }
 ```
 
-### 8.3 虚拟线程监控体系
+### 7.3 虚拟线程监控体系
 
 **1. JFR（Java Flight Recorder）监控**
 
@@ -1809,7 +1735,7 @@ public MeterRegistryCustomizer<PrometheusMeterRegistry> virtualThreadMetrics() {
 }
 ```
 
-### 8.4 虚拟线程调试技巧
+### 7.4 虚拟线程调试技巧
 
 **1. 获取虚拟线程堆栈**
 
@@ -1840,9 +1766,9 @@ log.info("Processing in thread: {}", Thread.currentThread());
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Spring Boot 3.2 迁移实战
+### 8.1 案例一：Spring Boot 3.2 迁移实战
 
 **背景**：某电商网关服务，原基于 Spring WebFlux + Reactor，QPS 约 5000，延迟 P99 约 200ms。团队决定迁移到虚拟线程以简化代码。
 
@@ -1906,7 +1832,7 @@ spring:
 - 迁移后仍保留 Reactor 用于流式处理（如 SSE 推送），两者共存。
 - 需重构所有 `synchronized` 为 `ReentrantLock`，避免 Pinning。
 
-### 9.2 案例二：Netflix 高并发网关迁移
+### 8.2 案例二：Netflix 高并发网关迁移
 
 **背景**：Netflix 的 Zuul 网关原基于 Netty + 响应式，处理全球 2 亿订阅用户的请求。2024 年 Netflix 试点虚拟线程迁移。
 
@@ -1932,7 +1858,7 @@ spring:
 - 开发效率显著提升，代码可维护性大幅改善。
 - Netflix 决定在新服务中全面采用虚拟线程，存量服务逐步迁移。
 
-### 9.3 案例三：阿里巴巴 Helidon Níma 接入
+### 8.3 案例三：阿里巴巴 Helidon Níma 接入
 
 **背景**：阿里巴巴某内部微服务原基于 Spring WebFlux，2024 年试点 Oracle Helidon Níma（完全基于虚拟线程的 Web 服务器）。
 
@@ -1974,7 +1900,7 @@ public static void main(String[] args) {
 - Spring MVC + 虚拟线程是最佳平衡点（生态成熟 + 性能优秀）。
 - 新项目可考虑 Helidon Níma，存量项目优先 Spring Boot 3.2+。
 
-### 9.4 案例四：Pinning 性能问题排查
+### 8.4 案例四：Pinning 性能问题排查
 
 **背景**：某金融交易系统迁移虚拟线程后，QPS 未达预期（仅提升 2 倍，预期 10 倍）。
 
@@ -2037,7 +1963,7 @@ public class AccountService {
 - 迁移虚拟线程时必须扫描所有 `synchronized` 块。
 - 使用 `-Djdk.tracePinnedThreads=full` 快速定位 Pinning 点。
 
-### 9.5 案例五：ThreadLocal 内存泄漏
+### 8.5 案例五：ThreadLocal 内存泄漏
 
 **背景**：某 SaaS 平台迁移虚拟线程后，运行 24 小时后 OOM。
 
@@ -2110,7 +2036,7 @@ try {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（记忆 / 理解）
+### 9.1 基础题（记忆 / 理解）
 
 **习题 1**：列举虚拟线程与平台线程的 5 个关键差异。
 
@@ -2163,7 +2089,7 @@ public class UserService {
 - 任一数据源查询失败立即取消其他查询。
 - 返回所有成功的结果。
 
-### 10.3 进阶题（评价 / 创造）
+### 9.3 进阶题（评价 / 创造）
 
 **习题 9**：设计一个基于虚拟线程的高并发 API 网关，要求：
 
@@ -2185,9 +2111,9 @@ public class UserService {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档与规范
+### 10.1 官方文档与规范
 
 1. Pressler, R. (2023). *JEP 444: Virtual Threads*. Oracle Corporation. https://openjdk.org/jeps/444
 
@@ -2199,7 +2125,7 @@ public class UserService {
 
 5. Oracle Corporation. (2024). *Java StructuredTaskScope Specification (JDK 22)*. https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/util/concurrent/StructuredTaskScope.html
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 6. Pressler, R., & Rose, A. (2018). *Project Loom: Modern Scalable Concurrency for the Java Platform*. JavaOne 2018. https://www.youtube.com/watch?v=lIq-x_iI-kc
 
@@ -2207,7 +2133,7 @@ public class UserService {
 
 8. Anderson, L. W., & Krathwohl, D. R. (2001). *A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives*. Longman.
 
-### 11.3 书籍
+### 10.3 书籍
 
 9. Urma, R. G., Warburton, R., & Mycroft, A. (2024). *Modern Java in Action: Lambda, Streams, Functional and Reactive Programming* (2nd ed.). Manning Publications.
 
@@ -2215,7 +2141,7 @@ public class UserService {
 
 11. Pressler, R. (2024). *Virtual Threads: A Deep Dive into Project Loom*. O'Reilly Media.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 12. Pressler, R. (2023). *Virtual Threads: The Complete Guide*. https://inside.java/2023/07/26/virtual-threads-complete-guide/
 
@@ -2227,40 +2153,40 @@ public class UserService {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 深入理解 Project Loom
+### 11.1 深入理解 Project Loom
 
 - **Project Loom 官方主页**：https://openjdk.org/projects/loom/
 - **JEP 425 / 436 / 444 演进历程**：从预览到正式的完整设计讨论
 - **Ron Pressler 的 Loom 设计演讲**：JavaOne 2018-2023 系列演讲
 
-### 12.2 虚拟线程与响应式编程
+### 11.2 虚拟线程与响应式编程
 
 - **Spring WebFlux 官方文档**：https://docs.spring.io/spring-framework/reference/web/webflux.html
 - **Reactor 官方文档**：https://projectreactor.io/docs/core/release/reference/
 - **虚拟线程 vs Reactor 选型指南**：https://spring.io/blog/2023/11/23/virtual-threads-vs-reactor
 
-### 12.3 结构化并发与作用域值
+### 11.3 结构化并发与作用域值
 
 - **JEP 453 / 462 / 480 结构化并发演进**：从预览到稳定的设计历程
 - **JEP 446 / 480 / 505 作用域值演进**：`ScopedValue` 与 `ThreadLocal` 的对比
 - **结构化并发论文**：*Structured Concurrency* by Nathaniel J. Smith (2017)
 
-### 12.4 虚拟线程性能调优
+### 11.4 虚拟线程性能调优
 
 - **JDK Mission Control (JMC)**：https://www.oracle.com/java/technologies/jdk-mission-control.html
 - **JFR 虚拟线程事件**：`jdk.VirtualThreadStart`, `jdk.VirtualThreadPinned`, `jdk.VirtualThreadEnd`
 - **jcmd 线程转储指南**：https://docs.oracle.com/en/java/javase/21/troubleshoot/
 
-### 12.5 虚拟线程生态
+### 11.5 虚拟线程生态
 
 - **Spring Boot 3.2+ 虚拟线程支持**：https://docs.spring.io/spring-boot/docs/3.2/reference/htmlsingle/#features.task-execution-and-scheduling.threads.virtual
 - **Helidon Níma 文档**：https://helidon.io/docs/v4/se/guides/nima
 - **Quarkus 虚拟线程**：https://quarkus.io/guides/virtual-threads
 - **gRPC Java 虚拟线程**：https://github.com/grpc/grpc-java/issues/10529
 
-### 12.6 相关主题
+### 11.6 相关主题
 
 - **Java 响应式编程**：Reactor、RxJava、Akka Streams 对比
 - **Java 多线程与并发**：`java.util.concurrent` 全家桶深度解析

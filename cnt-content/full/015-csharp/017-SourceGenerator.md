@@ -16,6 +16,7 @@ prerequisites:
   - csharp/概述与环境配置
 ---
 
+
 # C# 源生成器深度解析
 
 > 源生成器（Source Generators）是 C# 9 引入的编译时代码生成技术，标志着 C# 元编程范式从"运行期反射"向"编译期生成"的根本性转移。本文档系统梳理源生成器的语言动机、Roslyn API、增量生成器（Incremental Generators）、设计模式与工程实践，达到 MIT 6.035、Stanford CS243 同等编译器教学水准。
@@ -37,69 +38,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-### 1.1 记忆层（Remembering）
-
-完成本节后，学习者应能准确回忆：
-
-- 源生成器的定义：在编译期执行、分析用户代码并生成新源代码的 Roslyn 扩展。
-- `ISourceGenerator` 与 `IIncrementalGenerator` 两个核心接口的差异。
-- `[Generator]` 特性的作用与必需性。
-- `ForAttributeWithMetadataName` 等 For-方法链式 API。
-- 源生成器的执行时机：在语法分析后、语义分析期间。
-- 源生成器输出：`AddSource(string name, string source)` 添加新源文件。
-- 限制：不能修改已有代码，只能添加新代码；不能产生编译错误，只能产生诊断信息。
-
-### 1.2 理解层（Understanding）
-
-学习者应能用自己的语言解释：
-
-- 源生成器与 T4 模板、CodeSmith 等传统代码生成工具的本质区别（编译期 vs 构建期）。
-- 增量生成器相比第一代源生成器的性能优势：基于管道（Pipeline）的增量计算与缓存。
-- 源生成器与 AOT 的协同：消除反射在 Native AOT 场景下的裁剪问题。
-- `SyntaxReceiver` vs `ForAttributeWithMetadataName`：前者需手动遍历语法树，后者由 Roslyn 自动过滤。
-- 源生成器的并发模型：多个生成器可并行执行，但单个生成器内部需保证线程安全。
-
-### 1.3 应用层（Applying）
-
-学习者应能：
-
-- 实现一个简单的源生成器，为标注 `[EnumDescription]` 的枚举自动生成 `GetDescription()` 扩展方法。
-- 使用 `IIncrementalGenerator` 与 `ForAttributeWithMetadataName` API 重写上述生成器，对比性能。
-- 实现一个依赖注入容器生成器，扫描标注 `[Injectable]` 的类型并生成 `Register` 方法。
-- 编写单元测试验证源生成器输出（使用 `CSharpGeneratorDriver`）。
-
-### 1.4 分析层（Analyzing）
-
-学习者应能：
-
-- 分析给定源生成器的执行性能瓶颈，识别不必要的语法树遍历。
-- 比较源生成器与反射、表达式树在元编程能力上的取舍。
-- 解构增量生成器的管线阶段：`SyntaxValueProvider` → `Transform` → `RegisterSourceOutput`。
-- 分析 `SourceProductionContext` 与 `IncrementalValueProvider` 的设计意图。
-
-### 1.5 评价层（Evaluating）
-
-学习者应能：
-
-- 评判何时应当使用源生成器替代运行时反射，何时反而应当保留反射（动态加载场景）。
-- 评估源生成器引入的编译时间开销与运行时性能收益的平衡点。
-- 评价 Roslyn 团队在 .NET 6/7/8 中对增量生成器 API 的演进方向是否合理。
-
-### 1.6 创造层（Creating）
-
-学习者应能：
-
-- 设计一个基于源生成器的 ORM 框架，自动生成实体映射代码（参考 Dapper.SourceGen）。
-- 实现一个编译期 JSON Schema 验证器，根据 Schema 生成强类型访问代码。
-- 构建一个跨项目的源生成器 NuGet 包，包含 MSBuild 集成与诊断规则。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 元编程的演进路线
+### 1.1 元编程的演进路线
 
 C# 的元编程能力经历了四个主要阶段：
 
@@ -127,7 +68,7 @@ C# 的元编程能力经历了四个主要阶段：
 2. **样板代码消除**：`INotifyPropertyChanged`、`JsonSerializerContext`、依赖注入注册等样板代码可自动生成。
 3. **类型安全**：生成的代码与手写代码一样经过编译期类型检查。
 
-### 2.2 Roslyn 编译管道与源生成器位置
+### 1.2 Roslyn 编译管道与源生成器位置
 
 Roslyn 编译管道分为六个阶段：
 
@@ -144,7 +85,7 @@ Roslyn 编译管道分为六个阶段：
 
 生成器接收 `Compilation` 对象（包含所有已解析的语法树与部分语义信息），分析用户代码后通过 `AddSource` 注入新的语法树。注入的语法树会与原有语法树一起进入后续语义分析与 IL 生成阶段。
 
-### 2.3 增量生成器的诞生（C# 9.0 后期 → .NET 6+）
+### 1.3 增量生成器的诞生（C# 9.0 后期 → .NET 6+）
 
 第一代 `ISourceGenerator` 存在性能问题：
 
@@ -158,7 +99,7 @@ Roslyn 编译管道分为六个阶段：
 - 仅当输入变化时，下游阶段才重新执行。
 - 提供专门的 `ForAttributeWithMetadataName` API，由 Roslyn 自动过滤标注节点，避免手动遍历。
 
-### 2.4 设计哲学对比
+### 1.4 设计哲学对比
 
 | 元编程手段         | 执行时机   | AOT 友好 | 类型安全 | 性能  | 典型代表                |
 | :----------------- | :--------- | :------- | :------- | :---- | :---------------------- |
@@ -172,9 +113,9 @@ Roslyn 编译管道分为六个阶段：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 源生成器的形式化模型
+### 2.1 源生成器的形式化模型
 
 设源生成器 $G$ 是一个函数，接受编译上下文 $C$，输出一组新源文件 $\Delta S$：
 
@@ -191,7 +132,7 @@ $$C' = C \cup \Delta S$$
 
 编译最终输出为 $Compile(C')$。
 
-### 3.2 增量生成的管线模型
+### 2.2 增量生成的管线模型
 
 增量生成器 $G_{\text{inc}}$ 由若干管线阶段 $P_1, P_2, \ldots, P_k$ 组成，每个阶段为纯函数：
 
@@ -209,7 +150,7 @@ Roslyn 增量生成器提供三类基础 Provider：
 2. `AdditionalTextsProvider`：提供 `.txt` 等附加文件。
 3. `MetadataReferencesProvider`：提供程序集引用。
 
-### 3.3 生成器输出的确定性
+### 2.3 生成器输出的确定性
 
 源生成器必须满足**确定性**（Determinism）：相同输入产生相同输出。形式化：
 
@@ -221,7 +162,7 @@ $$\forall C_1, C_2: C_1 = C_2 \implies G(C_1) = G(C_2)$$
 - 不能依赖生成器内部的可变全局状态。
 - 字符串拼接顺序必须稳定（避免 `Dictionary` 枚举顺序差异）。
 
-### 3.4 生成器并发模型
+### 2.4 生成器并发模型
 
 多个源生成器 $G_1, G_2, \ldots, G_k$ 可并发执行。Roslyn 保证：
 
@@ -238,9 +179,9 @@ $$T_{\text{total}} = \max(T_1, T_2, \ldots, T_k)$$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 增量计算的复杂度分析
+### 3.1 增量计算的复杂度分析
 
 设项目有 $N$ 个语法树，每次按键导致 $\Delta N$ 个语法树变化。第一代 `ISourceGenerator`：
 
@@ -254,7 +195,7 @@ $$T_{\text{new}} = O(\Delta N + \text{pipeline overhead}) \quad \text{每次按�
 
 $$\text{Speedup} = \frac{N}{\Delta N} = 10000 \times$$
 
-### 4.2 ForAttributeWithMetadataName 的时间复杂度
+### 3.2 ForAttributeWithMetadataName 的时间复杂度
 
 传统 `SyntaxReceiver` 需遍历所有语法节点：
 
@@ -266,7 +207,7 @@ $$T_{\text{attr}} = O(|\text{annotated nodes}|)$$
 
 对于稀疏标注（绝大多数类型未标注目标特性），$|\text{annotated nodes}| \ll |\text{nodes}|$，性能优势显著。
 
-### 4.3 缓存有效性理论
+### 3.3 缓存有效性理论
 
 增量管线的缓存命中率取决于输入变化的"局部性"。设管线阶段 $P_i$ 的输入 $I_i$ 由前序输出 $O_{i-1}$ 决定，定义相似度：
 
@@ -276,7 +217,7 @@ $$\text{sim}(I_i^{(t)}, I_i^{(t-1)}) = \frac{|I_i^{(t)} \cap I_i^{(t-1)}|}{|I_i^
 
 对于 Roslyn 的 `EquatableArray<T>` 与 `SourceGeneratorContext` 比较，采用**结构相等性**（Structural Equality）而非引用相等性，使得即使对象实例不同，内容相同即可命中缓存。
 
-### 4.4 源生成器的语义安全性
+### 3.4 源生成器的语义安全性
 
 源生成器生成的代码与手写代码享有同等语义保证：
 
@@ -290,7 +231,7 @@ $$\text{TypeCheck}(s) = \text{true} \implies s \text{ 可被纳入编译}$$
 
 若 $\text{TypeCheck}(s) = \text{false}$，生成器应通过 `context.ReportDiagnostic(...)` 报告诊断而非产生编译错误。
 
-### 4.5 AOT 兼容性证明
+### 3.5 AOT 兼容性证明
 
 **定理**：使用源生成器替代反射的代码，在 Native AOT 编译下可被完整保留。
 
@@ -303,9 +244,9 @@ $$\text{TypeCheck}(s) = \text{true} \implies s \text{ 可被纳入编译}$$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 第一代源生成器：ISourceGenerator
+### 4.1 第一代源生成器：ISourceGenerator
 
 ```csharp
 using System;
@@ -415,7 +356,7 @@ public class EnumSyntaxReceiver : ISyntaxReceiver
 }
 ```
 
-### 5.2 增量源生成器：IIncrementalGenerator
+### 4.2 增量源生成器：IIncrementalGenerator
 
 ```csharp
 using System;
@@ -537,7 +478,7 @@ public static class {{info.Name}}DescriptionExtensions
 }
 ```
 
-### 5.3 依赖注入容器生成器
+### 4.3 依赖注入容器生成器
 
 ```csharp
 using System;
@@ -620,7 +561,7 @@ public static class ServiceCollectionExtensions
 }
 ```
 
-### 5.4 JSON 序列化器上下文生成器（简化版）
+### 4.4 JSON 序列化器上下文生成器（简化版）
 
 ```csharp
 using System;
@@ -696,7 +637,7 @@ namespace JsonContextGenerator;
 }
 ```
 
-### 5.5 单元测试：验证源生成器输出
+### 4.5 单元测试：验证源生成器输出
 
 ```csharp
 using Microsoft.CodeAnalysis;
@@ -791,7 +732,7 @@ public class EnumDescriptionGeneratorTests
 }
 ```
 
-### 5.6 诊断报告：编译期错误
+### 4.6 诊断报告：编译期错误
 
 ```csharp
 using Microsoft.CodeAnalysis;
@@ -842,9 +783,9 @@ public class DiagnosticGenerator : IIncrementalGenerator
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 ISourceGenerator vs IIncrementalGenerator
+### 5.1 ISourceGenerator vs IIncrementalGenerator
 
 | 维度           | ISourceGenerator (第一代)        | IIncrementalGenerator (第二代)  |
 | :------------- | :------------------------------- | :------------------------------ |
@@ -856,7 +797,7 @@ public class DiagnosticGenerator : IIncrementalGenerator
 | 状态管理       | 无状态（每次重新执行）           | 管线状态可缓存                  |
 | 推荐使用       | 仅维护旧项目                     | 所有新项目                      |
 
-### 6.2 源生成器与反射对比
+### 5.2 源生成器与反射对比
 
 | 场景             | 反射                          | 源生成器                      |
 | :--------------- | :------------------------------ | :----------------------------- |
@@ -870,7 +811,7 @@ public class DiagnosticGenerator : IIncrementalGenerator
 | 灵活性           | 高（动态加载场景）             | 低（编译期固定）              |
 | 调试             | 难（运行时行为）               | 易（生成代码可读）            |
 
-### 6.3 源生成器与其他代码生成技术对比
+### 5.3 源生成器与其他代码生成技术对比
 
 | 技术              | 执行时机       | 集成方式           | 类型安全 | 典型项目                  |
 | :---------------- | :------------- | :----------------- | :------- | :------------------------ |
@@ -882,7 +823,7 @@ public class DiagnosticGenerator : IIncrementalGenerator
 | 表达式树          | 运行期编译     | 代码内             | 强       | EF Core                   |
 | CodeDom           | 运行期         | .NET API           | 中       | System.CodeDom            |
 
-### 6.4 增量管线 Provider 对比
+### 5.4 增量管线 Provider 对比
 
 | Provider 类型                  | 输入源         | 适用场景                       |
 | :----------------------------- | :------------- | :----------------------------- |
@@ -894,9 +835,9 @@ public class DiagnosticGenerator : IIncrementalGenerator
 
 ---
 
-## 7. 常见陷阱
+## 6. 常见陷阱
 
-### 7.1 性能陷阱
+### 6.1 性能陷阱
 
 **陷阱 1：在 Execute 中调用 LINQ ToLookup**
 
@@ -931,7 +872,7 @@ public void OnVisitSyntaxNode(SyntaxNode node)
 // 修复：使用 ForAttributeWithMetadataName
 ```
 
-### 7.2 正确性陷阱
+### 6.2 正确性陷阱
 
 **陷阱 1：生成器读取文件系统**
 
@@ -958,7 +899,7 @@ context.RegisterSourceOutput(provider, (spc, info) =>
 });
 ```
 
-### 7.3 调试陷阱
+### 6.3 调试陷阱
 
 **陷阱 1：无法在生成器中设置断点**
 
@@ -980,7 +921,7 @@ public void Execute(GeneratorExecutionContext context)
 
 源生成器中的未捕获异常会被 Roslyn 静默吞掉，仅输出一条诊断。应使用 `try/catch` 包裹关键代码并主动报告诊断。
 
-### 7.4 兼容性陷阱
+### 6.4 兼容性陷阱
 
 **陷阱 1：生成器目标框架**
 
@@ -1006,9 +947,9 @@ public void Execute(GeneratorExecutionContext context)
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构
+### 7.1 项目结构
 
 推荐的源生成器项目结构：
 
@@ -1035,7 +976,7 @@ flowchart TD
     T12 --> T13
 ```
 
-### 8.2 csproj 配置
+### 7.2 csproj 配置
 
 ```xml
 <!-- 生成器主项目 -->
@@ -1068,14 +1009,14 @@ flowchart TD
 </Project>
 ```
 
-### 8.3 命名规范
+### 7.3 命名规范
 
 - 生成的文件名：`{ClassName}.g.cs` 或 `{ClassName}.Generated.cs`。
 - 生成的命名空间：与原类型相同命名空间或 `{原命名空间}.Generated`。
 - 文件头：添加 `// <auto-generated/>` 注释，避免被代码分析器检查。
 - 启用 nullable：在生成代码开头添加 `#nullable enable`。
 
-### 8.4 性能优化清单
+### 7.4 性能优化清单
 
 | 优化项                          | 收益             |
 | :------------------------------ | :--------------- |
@@ -1086,7 +1027,7 @@ flowchart TD
 | 使用 `StringBuilder` 而非字符串拼接 | 减少 GC 压力   |
 | 限制生成的代码量                | 减少 IL 编译时间 |
 
-### 8.5 调试技巧
+### 7.5 调试技巧
 
 1. **`Debugger.Launch()`**：在生成器代码中插入，等待 IDE 附加调试器。
 2. **`#if DEBUG` 输出**：将生成的代码写入临时文件供检查。
@@ -1094,7 +1035,7 @@ flowchart TD
 4. **生成代码查看**：在 `obj/Generated/Microsoft.CodeAnalysis.CSharp.SourceGenerators/` 目录查看。
 5. **Roslyn 日志**：设置环境变量 `DOTNET_ROSLYN_LOG_LEVEL=Trace` 查看详细日志。
 
-### 8.6 测试策略
+### 7.6 测试策略
 
 1. **单元测试**：使用 `CSharpGeneratorDriver` 执行生成器，验证输出代码内容。
 2. **快照测试**：使用 `Verify` 库比较生成代码与基线快照。
@@ -1104,9 +1045,9 @@ flowchart TD
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：System.Text.Json.SourceGenerator
+### 8.1 案例一：System.Text.Json.SourceGenerator
 
 `System.Text.Json` 的源生成器是 .NET 官方最复杂的生成器之一，其设计目标：
 
@@ -1127,7 +1068,7 @@ string json = JsonSerializer.Serialize(myObj, MyContext.Default.MyType);
 
 源生成器分析 `MyType` 的所有公共属性，生成 `JsonTypeInfo<MyType>` 实例，包含 `JsonPropertyInfo` 列表。运行时序列化直接使用该信息，无需反射。
 
-### 9.2 案例二：Microsoft.Extensions.DependencyInjection.SourceGenerators
+### 8.2 案例二：Microsoft.Extensions.DependencyInjection.SourceGenerators
 
 ASP.NET Core 的 `AddControllers()` 在 .NET 7+ 中改用源生成器发现控制器：
 
@@ -1147,7 +1088,7 @@ public static partial class ControllerRegistrar
 
 避免运行时反射扫描程序集，提升启动性能 30%+。
 
-### 9.3 案例三：CommunityToolkit.Mvvm（INotifyPropertyChanged 生成器）
+### 8.3 案例三：CommunityToolkit.Mvvm（INotifyPropertyChanged 生成器）
 
 `CommunityToolkit.Mvvm` 使用源生成器自动实现 `INotifyPropertyChanged`：
 
@@ -1168,7 +1109,7 @@ public partial class MyViewModel : ObservableObject
 
 源生成器扫描 `[ObservableProperty]` 特性的字段，生成对应的公共属性，并在 setter 中调用 `OnPropertyChanged`。这消除了手写 `INotifyPropertyChanged` 的样板代码。
 
-### 9.4 案例四：Dapper.SourceGenerators
+### 8.4 案例四：Dapper.SourceGenerators
 
 `Dapper` 是流行的轻量级 ORM，其源生成器版本预编译 SQL 查询：
 
@@ -1190,7 +1131,7 @@ public partial class UserRepository
 }
 ```
 
-### 9.5 案例五：自实现 INotifyPropertyChanged 生成器
+### 8.5 案例五：自实现 INotifyPropertyChanged 生成器
 
 ```csharp
 /// <summary>
@@ -1294,7 +1235,7 @@ public partial class {{typeProps.ContainingType}}
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：编写一个源生成器，为标注 `[ToString]` 的类自动生成 `ToString()` 方法，输出所有公共属性的名称与值。
 
@@ -1326,7 +1267,7 @@ public class MyGenerator : ISourceGenerator
 2. 简洁：无需手动实现 `ISyntaxReceiver`，回调直接获取语义信息。
 3. 增量友好：自动支持增量缓存，仅标注节点变化时重算。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：实现一个源生成器，扫描项目中的所有 `.json` 文件（通过 `AdditionalFiles`），为每个文件生成强类型的配置类。
 
@@ -1352,7 +1293,7 @@ public class MyGenerator : ISourceGenerator
 - `EquatableArray<T>` 实现结构相等性，内容相同则相等。
 - 实现需重写 `Equals`、`GetHashCode`。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **习题 7**：设计一个编译期 ORM 框架，源生成器根据实体类与 `[Column]` 特性生成 SQL 查询方法。
 
@@ -1402,9 +1343,9 @@ public void Execute(GeneratorExecutionContext context)
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档与规范
+### 10.1 官方文档与规范
 
 [1] Microsoft Corporation. 2024. *Source generators*. C# documentation. Retrieved July 21, 2026 from https://learn.microsoft.com/dotnet/csharp/roslyn-sdk/source-generators-overview
 
@@ -1414,7 +1355,7 @@ public void Execute(GeneratorExecutionContext context)
 
 [4] Microsoft. 2022. *Source generators design notes*. GitHub. https://github.com/dotnet/roslyn/issues/45506
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [5] Edelstein, D., Murphy, G. C., and Notkin, D. 1997. *Aspect-oriented programming: A critical review*. In Proceedings of the European Conference on Object-Oriented Programming (ECOOP '97). ACM, New York, NY, USA, 245–268. DOI: https://doi.org/10.1007/BFb0053385
 
@@ -1424,7 +1365,7 @@ public void Execute(GeneratorExecutionContext context)
 
 [8] Bierman, G. M., Parkinson, M., and Pitts, A. M. 2003. *The design and implementation of C# 2.0 generics*. In Proceedings of the ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '03). ACM, New York, NY, USA, 1–12. DOI: https://doi.org/10.1145/949305.949306
 
-### 11.3 编译器与元编程
+### 10.3 编译器与元编程
 
 [9] Hejlsberg, A. and Torgersen, M. 2020. *The history of C#*. Microsoft Build Conference.
 
@@ -1432,7 +1373,7 @@ public void Execute(GeneratorExecutionContext context)
 
 [11] Czarnecki, K. and Eisenecker, U. W. 2000. *Generative programming: Methods, tools, and applications*. Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0-201-30977-3.
 
-### 11.4 .NET 与 Roslyn 实现
+### 10.4 .NET 与 Roslyn 实现
 
 [12] Gordich, A. 2021. *Roslyn source generators in practice*. MSDN Magazine. https://learn.microsoft.com/archive/msdn-magazine/2021/july/csharp-source-generators
 
@@ -1440,7 +1381,7 @@ public void Execute(GeneratorExecutionContext context)
 
 [14] Latham, A. 2022. *Incremental generators: A new C# feature*. .NET Blog. https://devblogs.microsoft.com/dotnet/incremental-generators/
 
-### 11.5 相关框架与项目
+### 10.5 相关框架与项目
 
 [15] CommunityToolkit. 2023. *CommunityToolkit.Mvvm source generator design*. GitHub. https://github.com/CommunityToolkit/dotnet/blob/main/docs/source-generator-design.md
 
@@ -1450,16 +1391,16 @@ public void Execute(GeneratorExecutionContext context)
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **C# 源生成器文档**：https://learn.microsoft.com/dotnet/csharp/roslyn-sdk/source-generators-overview
 - **增量生成器指南**：https://github.com/dotnet/roslyn/blob/main/docs/features/incremental-generators.md
 - **Roslyn 源生成器 Cookbook**：https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md
 - **.NET 运行时源码**：https://github.com/dotnet/runtime
 
-### 12.2 开源项目参考
+### 11.2 开源项目参考
 
 - **CommunityToolkit.Mvvm**：MVVM 源生成器的工业级实现。
 - **System.Text.Json.SourceGeneration**：官方 JSON 序列化源生成器。
@@ -1467,26 +1408,26 @@ public void Execute(GeneratorExecutionContext context)
 - **Vogen**：值对象源生成器，演示类型安全的强类型 ID。
 - **Mediator.SourceGenerator**：中介者模式源生成器实现。
 
-### 12.3 进阶书籍
+### 11.3 进阶书籍
 
 - **《Pro .NET Memory Management》**(Konrad Kokosa)：理解 .NET 内存与源生成器交互。
 - **《C# in Depth》**(Jon Skeet)：C# 语言演进上下文。
 - **《Roslyn-Annotated Reference**：Roslyn API 深度参考。
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 - **.NET Conf: Source Generators Deep Dive**：年度 .NET 大会的源生成器专题。
 - **Microsoft Learn: Source Generators**：官方入门教程。
 - **YouTube: Andrew Lock's Source Generator Series**：实战系列教程。
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **GitHub: dotnet/roslyn discussions**：源生成器讨论区。
 - **Stack Overflow: source-generators tag**：技术问答。
 - **r/csharp (Reddit)**：社区讨论。
 - **.NET Discord Server**：实时交流。
 
-### 12.6 学习路径建议
+### 11.6 学习路径建议
 
 | 阶段     | 推荐资源                                              | 目标                              |
 | :------- | :---------------------------------------------------- | :-------------------------------- |

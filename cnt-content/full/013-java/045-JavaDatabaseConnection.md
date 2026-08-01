@@ -23,59 +23,22 @@ prerequisites:
   - java/概述与开发环境
   - java/异常处理
 ---
+
 # Java 日期时间 API
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-### 1.1 记忆（Remembering）
-
-- 列出 JDBC 核心 API：`DriverManager`、`Connection`、`Statement`、`PreparedStatement`、`ResultSet`。
-- 回忆 JDBC 事务的四个基本特性（ACID）。
-- 列出 JDBC 类型映射表：Java 类型与 SQL 类型的对应关系。
-
-### 1.2 理解（Understanding）
-
-- 解释 `Statement`、`PreparedStatement`、`CallableStatement` 的差异与适用场景。
-- 描述连接池的工作原理与核心参数（最小空闲、最大连接、超时、验证查询）。
-- 区分 JDBC 的四种事务隔离级别：`NONE`、`READ_UNCOMMITTED`、`READ_COMMITTED`、`REPEATABLE_READ`、`SERIALIZABLE`。
-
-### 1.3 应用（Applying）
-
-- 使用 `PreparedStatement` 编写防 SQL 注入的查询。
-- 配置 HikariCP 连接池并调优关键参数。
-- 通过 `Connection#setAutoCommit(false)` 手动管理事务并处理回滚。
-
-### 1.4 分析（Analyzing）
-
-- 分析连接池耗尽故障的原因链：从代码未 close 到池配置不合理。
-- 解构 ORM 框架的 N+1 查询问题并给出修复方案。
-- 比较不同事务传播行为（PROPAGATION_REQUIRED、REQUIRES_NEW 等）的语义。
-
-### 1.5 评价（Evaluating）
-
-- 评估 JPA/Hibernate 与 MyBatis 在某项目中的选型合理性。
-- 评判连接池参数配置是否匹配业务负载。
-- 评价某次数据库故障的根因分析与修复方案。
-
-### 1.6 创造（Creating）
-
-- 设计支持读写分离与分库分表的数据访问层架构。
-- 构建基于 ShardingSphere 的分布式数据库中间件方案。
-- 实现一个支持多数据源动态切换的 Spring Boot Starter。
-
-## 2. 历史动机与背景
-
-### 2.1 JDBC 的诞生
+### 1.1 JDBC 的诞生
 
 1996 年 1 月，Sun Microsystems 发布 JDBC 1.0（JDK 1.1 内置），目的是为 Java 应用提供统一的数据库访问 API。在此之前，开发者需要为每种数据库（Oracle、Sybase、Informix）使用专有 API，移植成本高昂。
 
 JDBC 的设计灵感部分来自 Microsoft 的 ODBC（Open Database Connectivity，1992），但 JDBC 是面向对象的纯 Java API，而 ODBC 是 C 语言接口。JDBC 通过 **驱动管理器 + 厂商驱动** 的模式实现可插拔：JDK 仅提供 API 规范，各数据库厂商提供具体驱动实现。
 
-### 2.2 JDBC 规范的演进
+### 1.2 JDBC 规范的演进
 
 | 版本 | 发布年份 | 主要特性 |
 |------|----------|----------|
@@ -87,7 +50,7 @@ JDBC 的设计灵感部分来自 Microsoft 的 ODBC（Open Database Connectivity
 | JDBC 4.2 | 2014 (JDK 8) | java.time 支持、REF CURSOR |
 | JDBC 4.3 | 2017 (JDK 9) | 分片查询、Schema支持 |
 
-### 2.3 连接池的兴起
+### 1.3 连接池的兴起
 
 早期 JDBC 通过 `DriverManager.getConnection()` 创建物理连接，每次请求新建与销毁 TCP 连接，开销巨大（一次 TCP 三次握手 + MySQL 认证约 5~20ms）。1999 年 Apache Jakarta 项目发布 **DBCP**（Database Connection Pool），引入连接复用机制，将获取连接开销降至微秒级。
 
@@ -100,7 +63,7 @@ JDBC 的设计灵感部分来自 Microsoft 的 ODBC（Open Database Connectivity
 - **Druid**（2012，阿里巴巴）：内置 SQL 监控、SQL 防火墙，国内广泛使用。
 - **vibur**（2014）：通过 JCStress 测试保证并发正确性。
 
-### 2.4 ORM 框架的演进
+### 1.4 ORM 框架的演进
 
 - **Entity EJB（2001）**：J2EE 早期标准，过度复杂。
 - **Hibernate（2003）**：Gavin King 开发，全功能 ORM。
@@ -110,9 +73,9 @@ JDBC 的设计灵感部分来自 Microsoft 的 ODBC（Open Database Connectivity
 - **jOOQ（2012）**：类型安全 SQL 构建器，面向关系模型。
 - **R2DBC（2018）**：响应式数据库访问，配合 WebFlux 使用。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 JDBC 接口体系形式化
+### 2.1 JDBC 接口体系形式化
 
 JDBC API 可形式化为一组接口集合：
 
@@ -134,7 +97,7 @@ $$
 PreparedStatement \xrightarrow{executeQuery} ResultSet
 $$
 
-### 3.2 连接池的形式化模型
+### 2.2 连接池的形式化模型
 
 连接池 $P$ 可形式化为五元组：
 
@@ -168,7 +131,7 @@ wait(Q, timeout) & \text{otherwise}
 \end{cases}
 $$
 
-### 3.3 事务 ACID 形式化
+### 2.3 事务 ACID 形式化
 
 事务 $T$ 满足 ACID 性质：
 
@@ -177,7 +140,7 @@ $$
 3. **隔离性（Isolation）**：$\forall T_1, T_2: T_1 \| T_2 \equiv T_1; T_2 \lor T_2; T_1$，并发执行结果等价于某种串行执行。
 4. **持久性（Durability）**：$commit(T) \Rightarrow \forall t > t_{commit}: state(D, t) \models T$，已提交事务的修改永久保存。
 
-### 3.4 隔离级别与现象
+### 2.4 隔离级别与现象
 
 ANSI SQL-92 定义了四种隔离级别与三种并发现象：
 
@@ -194,7 +157,7 @@ ANSI SQL-92 定义了四种隔离级别与三种并发现象：
 - **不可重复读**：$T_1$ 两次读同一行得到不同值，因 $T_2$ 在中间提交了修改。
 - **幻读**：$T_1$ 两次执行相同查询返回不同行集合，因 $T_2$ 插入/删除了匹配行。
 
-### 3.5 事务传播行为
+### 2.5 事务传播行为
 
 Spring 定义了七种事务传播行为：
 
@@ -208,11 +171,11 @@ $$
 - **REQUIRES_NEW**：始终新建，挂起 $T_{cur}$。
 - **NESTED**：在 $T_{cur}$ 中创建保存点，可独立回滚。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 JDBC 驱动加载机制
+### 3.1 JDBC 驱动加载机制
 
-#### 4.1.1 JDBC 4.0 前：Class.forName
+#### 3.1.1 JDBC 4.0 前：Class.forName
 
 ```java
 // JDBC 4.0 前必须显式加载驱动
@@ -222,7 +185,7 @@ Connection conn = DriverManager.getConnection(url, user, pwd);
 
 驱动类在 `static {}` 块中调用 `DriverManager.registerDriver(new Driver())` 完成注册。
 
-#### 4.1.2 JDBC 4.0+：SPI 自动加载
+#### 3.1.2 JDBC 4.0+：SPI 自动加载
 
 JDBC 4.0 引入 Service Provider Interface（SPI）机制，驱动 jar 包内 `META-INF/services/java.sql.Driver` 文件列出驱动类全名，`DriverManager` 启动时通过 `ServiceLoader` 自动加载。
 
@@ -233,15 +196,15 @@ Connection conn = DriverManager.getConnection(url, user, pwd);
 
 `DriverManager.getConnection` 内部遍历所有已注册驱动，调用 `driver.acceptsURL(url)` 判断是否匹配，匹配后调用 `driver.connect(url, info)` 建立连接。
 
-### 4.2 PreparedStatement 的预编译机制
+### 3.2 PreparedStatement 的预编译机制
 
-#### 4.2.1 工作流程
+#### 3.2.1 工作流程
 
 1. 客户端发送 SQL 模板（含 `?` 占位符）到服务端。
 2. 服务端解析、编译 SQL，生成执行计划，返回 `stmt_id`。
 3. 后续执行时，客户端发送 `stmt_id` + 参数值，服务端直接使用预编译计划。
 
-#### 4.2.2 性能与安全收益
+#### 3.2.2 性能与安全收益
 
 - **防 SQL 注入**：参数以二进制传输，不会作为 SQL 语法解析。
 - **性能提升**：避免重复解析与编译，适合多次执行的 SQL。
@@ -272,16 +235,16 @@ $$
 
 当 $N > 1$ 时，预编译显著更快。
 
-#### 4.2.3 服务端 vs 客户端预编译
+#### 3.2.3 服务端 vs 客户端预编译
 
 - **服务端预编译**：MySQL 5.7+ 默认开启 `useServerPrepStmts`，由数据库缓存执行计划。
 - **客户端预编译**：默认行为，驱动在客户端将 `?` 替换为字面值后发送完整 SQL。
 
 注意：MySQL 默认情况下 `useServerPrepStmts=false`，即使用 `PreparedStatement` 也是客户端模拟预编译，仍能防注入但不享受服务端缓存。
 
-### 4.3 连接池核心算法
+### 3.3 连接池核心算法
 
-#### 4.3.1 HikariCP 的 FastList
+#### 3.3.1 HikariCP 的 FastList
 
 传统 `ArrayList` 的 `remove(Object)` 需要遍历查找，复杂度 $O(n)$。HikariCP 自定义 `FastList`：
 
@@ -305,7 +268,7 @@ public boolean remove(Object element) {
 }
 ```
 
-#### 4.3.2 ConcurrentBag
+#### 3.3.2 ConcurrentBag
 
 HikariCP 的核心并发数据结构 `ConcurrentBag` 借鉴了 Caffeine 与 JCTools 的设计：
 
@@ -321,7 +284,7 @@ HikariCP 的核心并发数据结构 `ConcurrentBag` 借鉴了 Caffeine 与 JCTo
 
 这种设计避免了传统连接池的同步锁，吞吐量提升 2~3 倍。
 
-#### 4.3.3 连接验证策略
+#### 3.3.3 连接验证策略
 
 为避免借出的连接已失效，连接池在借出前验证：
 
@@ -330,9 +293,9 @@ HikariCP 的核心并发数据结构 `ConcurrentBag` 借鉴了 Caffeine 与 JCTo
 
 验证开销：MySQL `SELECT 1` 约 0.1~0.5ms，频繁验证会降低吞吐。HikariCP 仅在连接空闲超过 `idleTimeout` 时验证，平衡开销与可靠性。
 
-### 4.4 事务隔离与锁机制
+### 3.4 事务隔离与锁机制
 
-#### 4.4.1 MySQL InnoDB 的 MVCC
+#### 3.4.1 MySQL InnoDB 的 MVCC
 
 InnoDB 通过多版本并发控制（MVCC）实现 REPEATABLE_READ 且避免幻读：
 
@@ -348,7 +311,7 @@ false & \text{otherwise}
 \end{cases}
 $$
 
-#### 4.4.2 Next-Key Lock 防幻读
+#### 3.4.2 Next-Key Lock 防幻读
 
 InnoDB 在 REPEATABLE_READ 下使用 Next-Key Lock（Record Lock + Gap Lock）：
 
@@ -358,9 +321,9 @@ InnoDB 在 REPEATABLE_READ 下使用 Next-Key Lock（Record Lock + Gap Lock）�
 
 例如 `SELECT * FROM users WHERE age > 18 AND age < 30 FOR UPDATE` 会锁定 `(18, 30]` 范围，其他事务无法在此范围插入。
 
-### 4.5 ORM 性能模型
+### 3.5 ORM 性能模型
 
-#### 4.5.1 N+1 查询问题
+#### 3.5.1 N+1 查询问题
 
 JPA/Hibernate 默认懒加载关联关系：
 
@@ -379,7 +342,7 @@ for (Order order : orders) {
 2. **@EntityGraph**：声明式指定关联图。
 3. **BatchSize**：`@BatchSize(size=50)`，将 N 次合并为 $\lceil N/50 \rceil + 1$ 次。
 
-#### 4.5.2 Hibernate 一级缓存
+#### 3.5.2 Hibernate 一级缓存
 
 Session 级别缓存避免重复查询同一对象：
 
@@ -390,9 +353,9 @@ User u2 = session.get(User.class, 1L);  // 命中缓存，不查库
 
 但跨 Session 或多实例时缓存失效，二级缓存（如 Ehcache、Redis）可跨 Session 共享。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础 JDBC 操作（try-with-resources）
+### 4.1 基础 JDBC 操作（try-with-resources）
 
 ```java
 import java.sql.*;
@@ -505,7 +468,7 @@ public class JdbcBasicDemo {
 }
 ```
 
-### 5.2 手动事务管理
+### 4.2 手动事务管理
 
 ```java
 import java.sql.*;
@@ -571,7 +534,7 @@ public class TransactionDemo {
 }
 ```
 
-### 5.3 Savepoint 部分回滚
+### 4.3 Savepoint 部分回滚
 
 ```java
 import java.sql.*;
@@ -614,7 +577,7 @@ public class SavepointDemo {
 }
 ```
 
-### 5.4 HikariCP 连接池配置
+### 4.4 HikariCP 连接池配置
 
 ```java
 import com.zaxxer.hikari.HikariConfig;
@@ -695,7 +658,7 @@ public class HikariCpConfig {
 }
 ```
 
-### 5.5 Spring Boot + Spring Data JPA
+### 4.5 Spring Boot + Spring Data JPA
 
 ```java
 import org.springframework.boot.SpringApplication;
@@ -832,7 +795,7 @@ class UserService {
 }
 ```
 
-### 5.6 MyBatis Mapper 示例
+### 4.6 MyBatis Mapper 示例
 
 ```java
 import org.apache.ibatis.annotations.*;
@@ -923,7 +886,7 @@ class MyBatisUsage {
 }
 ```
 
-### 5.7 批量插入性能优化
+### 4.7 批量插入性能优化
 
 ```java
 import java.sql.*;
@@ -1033,7 +996,7 @@ public class BatchInsertDemo {
 }
 ```
 
-### 5.8 读写分离实现
+### 4.8 读写分离实现
 
 ```java
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
@@ -1093,9 +1056,9 @@ class OrderService {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 主流连接池对比
+### 5.1 主流连接池对比
 
 | 维度 | HikariCP | Druid | DBCP 2 | C3P0 | Tomcat JDBC |
 |------|----------|-------|--------|------|-------------|
@@ -1108,7 +1071,7 @@ class OrderService {
 | 国内使用率 | 高 | **极高** | 低 | 低 | 中 |
 | 推荐场景 | 通用、Spring Boot | 需 SQL 监控 | 遗留系统 | 不推荐 | Tomcat 应用 |
 
-### 6.2 ORM 框架对比
+### 5.2 ORM 框架对比
 
 | 维度 | JPA/Hibernate | MyBatis | jOOQ | Spring JDBC |
 |------|---------------|---------|------|-------------|
@@ -1120,7 +1083,7 @@ class OrderService {
 | 性能 | 中（开销大） | 高 | 高 | **最高** |
 | 推荐场景 | 业务模型清晰、CRUD 为主 | 复杂查询、性能敏感 | 类型安全需求 | 简单应用、极致性能 |
 
-### 6.3 数据库连接方式对比
+### 5.3 数据库连接方式对比
 
 | 方式 | 同步/异步 | API 风格 | 适用场景 |
 |------|-----------|----------|----------|
@@ -1130,7 +1093,7 @@ class OrderService {
 | Quarkus Panache | 同步/反应式 | 活跃记录模式 | 云原生 Quarkus |
 |Exposed (Kotlin)|同步|DSL|Kotlin 应用|
 
-### 6.4 事务管理方式对比
+### 5.4 事务管理方式对比
 
 | 方式 | 优点 | 缺点 | 适用场景 |
 |------|------|------|----------|
@@ -1140,9 +1103,9 @@ class OrderService {
 | JTA 分布式事务 | 支持多资源 | 性能开销大 | 跨库事务 |
 | Saga 模式 | 最终一致 | 实现复杂 | 微服务架构 |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：使用 Statement 拼接 SQL
+### 6.1 反模式：使用 Statement 拼接 SQL
 
 **问题代码**：
 
@@ -1173,7 +1136,7 @@ public User findUser(String name) throws SQLException {
 }
 ```
 
-### 7.2 反模式：Connection 未关闭
+### 6.2 反模式：Connection 未关闭
 
 **问题代码**：
 
@@ -1210,7 +1173,7 @@ public User getUser(long id) throws SQLException {
 }
 ```
 
-### 7.3 反模式：长事务
+### 6.3 反模式：长事务
 
 **问题代码**：
 
@@ -1247,7 +1210,7 @@ public void saveBatch(List<User> batch) {
 }
 ```
 
-### 7.4 反模式：N+1 查询
+### 6.4 反模式：N+1 查询
 
 **问题代码**：
 
@@ -1284,7 +1247,7 @@ List<Order> findAll();
 private User user;
 ```
 
-### 7.5 反模式：忽略隔离级别
+### 6.5 反模式：忽略隔离级别
 
 **问题代码**：
 
@@ -1306,7 +1269,7 @@ public void transfer(long from, long to, double amount) {
 }
 ```
 
-### 7.6 反模式：连接池配置不合理
+### 6.6 反模式：连接池配置不合理
 
 **问题配置**：
 
@@ -1338,7 +1301,7 @@ spring:
       minimum-idle: 5
 ```
 
-### 7.7 反模式：DDL 操作在事务内
+### 6.7 反模式：DDL 操作在事务内
 
 **问题代码**：
 
@@ -1356,7 +1319,7 @@ public void migrate() {
 
 **修复方案**：DDL 操作移出事务，单独执行。
 
-### 7.8 反模式：跨库事务无补偿
+### 6.8 反模式：跨库事务无补偿
 
 **问题代码**：
 
@@ -1391,11 +1354,11 @@ public void createOrder(Order order) {
 2. **本地消息表 + 最终一致**：本地事务 + 消息队列异步通知。
 3. **Seata**：分布式事务中间件。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 连接池监控
+### 7.1 连接池监控
 
-#### 8.1.1 HikariCP 监控指标
+#### 7.1.1 HikariCP 监控指标
 
 | 指标 | 含义 | 健康范围 |
 |------|------|----------|
@@ -1412,7 +1375,7 @@ public void createOrder(Order order) {
 // /actuator/metrics/hikaricp.connections.active
 ```
 
-#### 8.1.2 慢查询监控
+#### 7.1.2 慢查询监控
 
 ```java
 // 使用 P6Spy 拦截 SQL，记录慢查询
@@ -1430,7 +1393,7 @@ filter=true
 exclude=SELECT 1
 ```
 
-### 8.2 事务最佳实践
+### 7.2 事务最佳实践
 
 1. **事务尽量短**：避免在事务内做 HTTP、RPC 调用。
 2. **事务粒度合适**：避免大事务（影响吞吐与并发）。
@@ -1445,9 +1408,9 @@ public void doBusiness() throws Exception {
 }
 ```
 
-### 8.3 SQL 性能优化
+### 7.3 SQL 性能优化
 
-#### 8.3.1 索引使用原则
+#### 7.3.1 索引使用原则
 
 - 查询条件字段建索引。
 - 联合索引遵循最左前缀。
@@ -1459,7 +1422,7 @@ SELECT * FROM users WHERE DATE(create_time) = '2026-07-21';  -- 失效
 SELECT * FROM users WHERE create_time >= '2026-07-21' AND create_time < '2026-07-22';  -- 命中
 ```
 
-#### 8.3.2 分页优化
+#### 7.3.2 分页优化
 
 ```sql
 -- 传统分页（深分页慢）
@@ -1469,7 +1432,7 @@ SELECT * FROM orders ORDER BY id LIMIT 100000, 10;  -- 扫描 100010 行
 SELECT * FROM orders WHERE id > 100000 ORDER BY id LIMIT 10;  -- 扫描 10 行
 ```
 
-### 8.4 多数据源配置
+### 7.4 多数据源配置
 
 ```java
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -1494,9 +1457,9 @@ public class MultiDataSourceConfig {
 }
 ```
 
-### 8.5 数据库连接泄漏排查
+### 7.5 数据库连接泄漏排查
 
-#### 8.5.1 HikariCP 泄漏检测
+#### 7.5.1 HikariCP 泄漏检测
 
 ```yaml
 spring:
@@ -1511,14 +1474,14 @@ spring:
 WARN  com.zaxxer.hikari.LeakTask - Apparent connection leak detected
 ```
 
-#### 8.5.2 排查步骤
+#### 7.5.2 排查步骤
 
 1. 启用泄漏检测。
 2. 在日志中找到泄漏堆栈。
 3. 定位代码，确认 try-with-resources 是否完整。
 4. 检查异常路径是否跳过 close。
 
-### 8.6 数据库连接故障恢复
+### 7.6 数据库连接故障恢复
 
 ```java
 import java.sql.SQLException;
@@ -1558,9 +1521,9 @@ public class ResilientUserService {
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：连接池耗尽导致服务雪崩
+### 8.1 案例一：连接池耗尽导致服务雪崩
 
 **背景**：某电商订单系统在促销期间，QPS 从 1000 升至 5000，HikariCP 连接池配置 maxPoolSize=50，30 分钟内连接池全部耗尽，服务 503。
 
@@ -1581,7 +1544,7 @@ public class ResilientUserService {
 
 **效果**：QPS 5000 时连接池占用 < 30，P99 延迟从 30s 降至 100ms。
 
-### 9.2 案例二：JPA N+1 查询性能优化
+### 8.2 案例二：JPA N+1 查询性能优化
 
 **背景**：某 SaaS 平台用户列表页加载 100 条用户数据耗时 8 秒，用户体验极差。
 
@@ -1618,7 +1581,7 @@ private Department department;
 
 **效果**：SQL 次数从 101 降至 3（JOIN FETCH）或 3（BatchSize=50），响应时间从 8s 降至 200ms。
 
-### 9.3 案例三：分布式事务一致性故障
+### 8.3 案例三：分布式事务一致性故障
 
 **背景**：某支付系统采用微服务架构，订单服务与账户服务独立数据库，使用本地事务。某次故障中订单创建成功但账户扣款失败，导致超卖 200 单，损失 50 万元。
 
@@ -1657,7 +1620,7 @@ public void pay(Order order) {
 
 **效果**：故障率从 0.1% 降至 0.001%，年损失控制在 5000 元以内。
 
-### 9.4 案例四：MySQL 死锁分析
+### 8.4 案例四：MySQL 死锁分析
 
 **背景**：某库存系统在高并发下偶发死锁，MySQL 日志显示 `Deadlock found when trying to get lock; try restarting transaction`。
 
@@ -1707,7 +1670,7 @@ private Long version;
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：简述 JDBC 中 `Statement`、`PreparedStatement`、`CallableStatement` 的区别。
 
@@ -1740,7 +1703,7 @@ try (Connection conn = ds.getConnection();
 }
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：HikariCP 的 `maximumPoolSize` 应如何设置？过大或过小有什么问题？
 
@@ -1769,7 +1732,7 @@ try (Connection conn = ds.getConnection();
 - NEVER：非事务执行，有事务则抛异常。
 - MANDATORY：必须在事务中，无则抛异常。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **习题 7**：设计一个支持 10 万 QPS 的订单系统数据访问层，包括连接池、缓存、分库分表方案。
 
@@ -1856,7 +1819,7 @@ HikariPool-1 - Connection is not available, request timed out after 30000ms
   3. 调整 `maximumPoolSize`。
   4. 增加数据库 `max_connections`。
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Ellis, J., Srivastava, N., and Halpern, M. 2017. JDBC 4.3 Specification. Oracle. Retrieved from https://docs.oracle.com/javase/9/docs/api/java/sql/package-summary.html
 
@@ -1888,9 +1851,9 @@ HikariPool-1 - Connection is not available, request timed out after 30000ms
 
 [15] Helland, P. 2007. Life beyond distributed transactions: an apostate's opinion. In Proceedings of the 3rd Biennial Conference on Innovative Data Systems Research (CIDR '07), 132–141.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **JDBC Specification**: https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html
 - **HikariCP Wiki**: https://github.com/brettwooldridge/HikariCP/wiki
@@ -1898,14 +1861,14 @@ HikariPool-1 - Connection is not available, request timed out after 30000ms
 - **Hibernate ORM Manual**: https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html
 - **MyBatis Documentation**: https://mybatis.org/mybatis-3/
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - **《高性能 MySQL》（第 4 版）**：数据库索引、查询优化、连接池原理。
 - **《数据密集型应用系统设计》**：分布式事务、CAP 理论、一致性模型。
 - **《Java Persistence with Hibernate》（第 2 版）**：Hibernate 权威指南。
 - **《Spring 实战》（第 6 版）**：Spring Data 与事务管理。
 
-### 12.3 前沿主题
+### 11.3 前沿主题
 
 - **R2DBC**：响应式数据库访问，配合 WebFlux。
 - **Quarkus Panache**：简化 JPA，活跃记录模式。
@@ -1913,7 +1876,7 @@ HikariPool-1 - Connection is not available, request timed out after 30000ms
 - **ShardingSphere**：分库分表中间件。
 - **Seata**：分布式事务解决方案。
 
-### 12.4 开源工具
+### 11.4 开源工具
 
 - **P6Spy**：SQL 拦截与日志。
 - **Arthas**：Java 在线诊断工具。

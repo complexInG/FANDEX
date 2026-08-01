@@ -15,61 +15,20 @@ related:
 prerequisites:
   - python/语法速查
 ---
+
 # Python threading 同步原语
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章节学习后，你应当能够：
-
-### 1.1 记忆（Remember）
-
-- **R1**：复述 Python GIL（Global Interpreter Lock）的定义、产生原因与作用域。
-- **R2**：列举 `threading`、`multiprocessing`、`concurrent.futures` 三大模块的核心 API。
-- **R3**：陈述进程（process）与线程（thread）在内存空间、调度单位、上下文切换成本上的差异。
-
-### 1.2 理解（Understand）
-
-- **U1**：解释为什么 CPython 在多线程下无法实现真正的并行 CPU 计算。
-- **U2**：阐述 `multiprocessing` 通过 fork/spawn/forkserver 三种启动方式的差异及跨平台行为。
-- **U3**：描述 `ThreadPoolExecutor` 与 `ProcessPoolExecutor` 在异常传播、结果聚合上的语义对称性。
-
-### 1.3 应用（Apply）
-
-- **A1**：使用 `concurrent.futures` 编写一个生产级并发 HTTP 抓取器，支持超时、重试、限流。
-- **A2**：使用 `multiprocessing.Pool` 实现一个 CPU 密集型数据预处理 pipeline。
-- **A3**：使用 `threading.Lock`、`queue.Queue`、`threading.Event` 协调多线程生产者-消费者模型。
-
-### 1.4 分析（Analyze）
-
-- **An1**：对比同一任务在多线程与多进程实现下的吞吐量与内存占用曲线。
-- **An2**：定位由 GIL 释放点引起的性能抖动，识别 `dis` 字节码层面的阻塞区间。
-- **An3**：分析进程间通信（Pipe/Queue/Value/Array/Manager）的序列化开销。
-
-### 1.5 评价（Evaluate）
-
-- **E1**：在给定业务场景下（IO 密集 vs CPU 密集 vs 混合），论证应选择 threading、multiprocessing 还是 asyncio。
-- **E2**：评估共享内存方案（`multiprocessing.shared_memory`）相对于 Manager 代理的性能优势与风险。
-- **E3**：评判 PEP 703 "GIL-less CPython" 对未来并发编程范式的潜在影响。
-
-### 1.6 创造（Create）
-
-- **C1**：设计一个支持动态扩缩容的混合并发任务调度器（线程池+进程池+协程）。
-- **C2**：实现一个基于 `multiprocessing.Process` 与信号量的进程级限流器，具备优雅退出能力。
-- **C3**：构建一个跨进程的内存共享 key-value 存储，支持原子 CAS 操作。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 早期单核时代（Python 0.9 – 1.x，1991–2000）
+### 1.1 早期单核时代（Python 0.9 – 1.x，1991–2000）
 
 Python 诞生于 1991 年，Guido van Rossum 在 CWI（荷兰国家数学与计算机科学研究所）设计之初，就将"简洁性优于性能"作为核心理念。当时的硬件主流仍是单核处理器，操作系统对线程的支持尚未成熟（Windows NT 3.1 直到 1993 年才正式发布，LinuxThreads 1996 年才合入内核），Python 0.9 至 1.5 仅支持通过 `os.fork()` 在 Unix 上创建进程，并未提供原生线程抽象。
 
-### 2.2 GIL 的诞生（Python 1.5，1997）
+### 1.2 GIL 的诞生（Python 1.5，1997）
 
 1997 年发布的 Python 1.5 引入了 `thread` 模块（后重命名为 `_thread`），首次支持多线程编程。然而 CPython 的内存管理基于**引用计数**（reference counting），每个 Python 对象内部维护一个 `ob_refcnt` 字段，多线程并发修改该字段将导致竞态条件（race condition）。当时无锁原子操作（如 CAS）在跨平台支持上不完善，Guido 选择了一个简洁而具争议的方案：在解释器层面引入一把全局互斥锁——**GIL**。
 
@@ -79,11 +38,11 @@ GIL 的核心规则：**任一时刻，仅允许一个线程在 CPython 解释�
 2. 牺牲了多核 CPU 上的并行计算能力；
 3. 使 Python 在 IO 密集型场景仍能通过线程切换获得并发收益。
 
-### 2.3 threading 模块（Python 2.0，2000）
+### 1.3 threading 模块（Python 2.0，2000）
 
 Python 2.0 引入 `threading` 模块，提供面向对象的高级线程 API，模仿 Java 的 `java.lang.Thread` 设计，包含 `Thread`、`Lock`、`RLock`、`Condition`、`Event`、`Semaphore`、`Timer` 等原语。同一时期 `Queue` 模块（Python 2.4 起标准库）提供了线程安全的 FIFO/LIFO/Priority 队列，成为生产者-消费者模式的标准基础设施。
 
-### 2.4 multiprocessing 模块（Python 2.6，2008）
+### 1.4 multiprocessing 模块（Python 2.6，2008）
 
 随着多核 CPU 在 2005 年后普及，GIL 成为 CPU 密集型任务的瓶颈。PEP 371 在 Python 2.6 引入了 `multiprocessing` 模块，由 Jesse Noller 实现，通过进程级隔离绕过 GIL。该模块的 API 设计刻意与 `threading` 对齐，降低了迁移成本：
 
@@ -96,19 +55,19 @@ Python 2.0 引入 `threading` 模块，提供面向对象的高级线程 API，�
 | `Semaphore`         | `Semaphore`         |
 | `queue.Queue`       | `multiprocessing.Queue` |
 
-### 2.5 concurrent.futures（Python 3.2，2011）
+### 1.5 concurrent.futures（Python 3.2，2011）
 
 PEP 3148 在 Python 3.2 引入 `concurrent.futures`，由 Brian Quinlan 设计，提供统一的 `Executor` 抽象，将线程池与进程池的 API 收敛为 `submit`/`map`/`shutdown` 三件套。这是 Python 并发 API 设计史上的重要里程碑，确立了"任务（callable）→ 执行器（executor）→ 未来（future）"三层解耦模型。
 
-### 2.6 asyncio 的崛起（Python 3.4–3.12，2014–2024）
+### 1.6 asyncio 的崛起（Python 3.4–3.12，2014–2024）
 
 PEP 3156（Python 3.4）引入 `asyncio`，标志着 Python 在 IO 密集型场景从"多线程切换"转向"协程调度"范式。`asyncio` 与 `multiprocessing` 形成互补：前者用单线程事件循环处理海量并发连接，后者用多进程榨干 CPU 多核。
 
-### 2.7 GIL 的黄昏（Python 3.13+，2024–）
+### 1.7 GIL 的黄昏（Python 3.13+，2024–）
 
 PEP 703（2023 年 10 月）正式提议**移除 GIL**，使 CPython 支持真正的多线程并行执行。Sam Gross 的 nogil 分支被合入 main 分支（experimental build）。Python 3.13（2024 年 10 月发布）首次提供 `--disable-gil` 编译选项，Python 3.14+（2025）将其作为可配置特性。这一变革将重塑 Python 并发编程生态，本章节第 11 节将专门讨论其影响。
 
-### 2.8 设计哲学总结
+### 1.8 设计哲学总结
 
 Guido van Rossum 在多次访谈中强调 Python 的并发设计遵循以下哲学：
 
@@ -120,11 +79,11 @@ Guido van Rossum 在多次访谈中强调 Python 的并发设计遵循以下哲�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 进程与线程的形式化模型
+### 2.1 进程与线程的形式化模型
 
-#### 3.1.1 进程（Process）
+#### 2.1.1 进程（Process）
 
 进程是操作系统资源分配和保护的基本单位。形式化地，一个进程 $P$ 可表示为七元组：
 
@@ -142,7 +101,7 @@ $$
 - $\text{Sec}$：安全上下文（uid、gid、capabilities）。
 - $\text{Env}$：环境变量与工作目录。
 
-#### 3.1.2 线程（Thread）
+#### 2.1.2 线程（Thread）
 
 线程是 CPU 调度的基本单位，同一进程内的线程共享 $\text{AS}$、$\text{FD}$、$\text{Sec}$、$\text{Env}$，但拥有独立的 $\text{PC}$、$\text{RS}$ 与栈空间。线程 $T$ 可表示为四元组：
 
@@ -150,7 +109,7 @@ $$
 T = \langle \text{TID}, \text{PC}, \text{RS}, \text{Stack} \rangle
 $$
 
-#### 3.1.3 上下文切换成本
+#### 2.1.3 上下文切换成本
 
 设进程切换成本为 $C_p$，线程切换成本为 $C_t$，则有：
 
@@ -164,7 +123,7 @@ $$
 C_t \approx 1\text{-}2\,\mu s, \quad C_p \approx 5\text{-}10\,\mu s
 $$
 
-### 3.2 GIL 的形式化语义
+### 2.2 GIL 的形式化语义
 
 GIL 可建模为一个二元信号量 $\text{GIL} \in \{0, 1\}$，初始值为 1。任一线程 $T_i$ 执行 Python 字节码前必须执行 $\text{P}(\text{GIL})$（即 `acquire`），执行完毕或达到 `sys.setswitchinterval()`（默认 $5\,ms$）时执行 $\text{V}(\text{GIL})$（即 `release`）。
 
@@ -178,7 +137,7 @@ CPython 3.2+ 采用**带有时间片的抢占式 GIL**：持有 GIL 的线程在
 2. **IO 阻塞**：执行阻塞式系统调用（如 `read`、`recv`）前主动释放。
 3. **C 扩展显式释放**：通过 `Py_BEGIN_ALLOW_THREADS` / `Py_END_ALLOW_THREADS` 宏显式释放。
 
-### 3.3 Amdahl 定律与多进程加速比
+### 2.3 Amdahl 定律与多进程加速比
 
 设任务中可并行部分占比为 $p$，处理器数为 $N$，则加速比 $S(N)$ 满足 Amdahl 定律：
 
@@ -194,7 +153,7 @@ $$
 
 对于 GIL 约束下的多线程 CPU 密集型任务，$p \to 0$，故 $S(N) \approx 1$。而对于 `multiprocessing`，理论上 $p \to 1$，但受 IPC（进程间通信）开销与序列化成本影响，实际加速比通常低于理论值。
 
-### 3.4 进程间通信的复杂度
+### 2.4 进程间通信的复杂度
 
 `multiprocessing.Queue` 基于 POSIX 管道 + pickle 序列化。设单次 IPC 延迟为 $L$，消息大小为 $M$ 字节，序列化/反序列化吞吐率为 $B$ 字节/秒，则单次消息总延迟：
 
@@ -206,9 +165,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 GIL 的字节码视角
+### 3.1 GIL 的字节码视角
 
 考虑以下代码：
 
@@ -235,7 +194,7 @@ def increment():
 
 `counter += 1` 展开为 `LOAD_GLOBAL` → `LOAD_CONST` → `BINARY_OP` → `STORE_GLOBAL` 共 4 条字节码。GIL 在这 4 条字节码之间**不会释放**（因为每条字节码是原子的），但**整个 `+=` 操作不是原子的**——GIL 可能在 `BINARY_OP` 后、`STORE_GLOBAL` 前切换线程，导致更新丢失。
 
-#### 4.1.1 数学证明：竞态导致丢失更新
+#### 3.1.1 数学证明：竞态导致丢失更新
 
 设两个线程并发执行 $N$ 次 `counter += 1`，初始 `counter = 0`。理论结果应为 $2N$。实际结果 $X$ 满足：
 
@@ -245,7 +204,7 @@ $$
 
 其中 $k$ 为丢失更新次数。$k > 0$ 的充要条件是存在某一时刻，两个线程的 `LOAD_GLOBAL` 读取到相同的旧值，随后各自 `STORE_GLOBAL` 写回，造成一次丢失。由 Ballot-box 问题（boxed-ballot problem），当 $N \to \infty$ 时 $P(k = 0) \to 0$。
 
-#### 4.1.2 锁的正确性证明
+#### 3.1.2 锁的正确性证明
 
 使用 `threading.Lock` 后：
 
@@ -264,7 +223,7 @@ def increment():
 
 锁保证了临界区（critical section）的**互斥性**（mutual exclusion）与**进展性**（progress），由 Lamport 面包店算法的互斥性证明可直接推导。
 
-### 4.2 多进程的内存模型
+### 3.2 多进程的内存模型
 
 `multiprocessing.Process` 在 Linux 上默认使用 `fork()`，子进程获得父进程地址空间的**写时复制**（Copy-on-Write, CoW）副本。这意味着：
 
@@ -272,7 +231,7 @@ def increment():
 2. 一旦子进程修改某对象，内核触发 page fault，复制该页。
 3. Python 引用计数的修改会触发 CoW，导致"看似只读"的遍历操作也会复制大量内存页。
 
-#### 4.2.1 CoW 失效的引用计数问题
+#### 3.2.1 CoW 失效的引用计数问题
 
 设父进程创建了一个包含 $n$ 个元素的列表 `L`，每个元素是一个 Python 对象。子进程 `fork()` 后，若仅遍历 `L`（不修改），理论上不会触发 CoW。然而 CPython 的 `for x in L:` 语义等价于：
 
@@ -285,11 +244,11 @@ while True:
 
 `Py_INCREF(x)` 修改了 `x->ob_refcnt`，触发 CoW。这是 Python `fork()` 模型相对于 C `fork()` 的关键差异。
 
-#### 4.2.2 解决方案：spawn 与 forkserver
+#### 3.2.2 解决方案：spawn 与 forkserver
 
 Python 3.4+ 引入 `spawn` 启动方式（macOS 3.8+ 默认，Windows 一直默认）：子进程**不继承父进程内存**，而是重新启动 Python 解释器，仅序列化必要的参数。这避免了 CoW 引用计数问题，但牺牲了启动速度。
 
-### 4.3 线程池的任务调度模型
+### 3.3 线程池的任务调度模型
 
 `ThreadPoolExecutor` 内部维护一个工作线程队列与一个任务队列（`collections.deque`）。调度遵循 **FIFO** 规则：
 
@@ -299,7 +258,7 @@ $$
 
 当工作线程数 $W < \text{max\_workers}$ 且队列非空时，创建新线程；当线程空闲超过一定时间，回收线程。这一模型称为 **dynamic thread pool with bounded size**。
 
-#### 4.3.1 最优线程数推导
+#### 3.3.1 最优线程数推导
 
 对于 IO 密集型任务，最优线程数 $N^*$ 由 Little 定律推导：
 
@@ -317,7 +276,7 @@ $$
 
 对于 CPU 密集型任务（多进程场景），$N^* = N_{\text{cpu}}$，超出后反而因上下文切换降低吞吐。
 
-### 4.4 死锁的 Coffman 条件
+### 3.4 死锁的 Coffman 条件
 
 死锁（deadlock）发生的充要条件由 Coffman（1971）给出四条：
 
@@ -330,9 +289,9 @@ $$
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 项目结构
+### 4.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -361,7 +320,7 @@ flowchart TD
     T5 --> T11
 ```
 
-### 5.2 pyproject.toml
+### 4.2 pyproject.toml
 
 ```toml
 [project]
@@ -395,7 +354,7 @@ select = ["E", "F", "I", "N", "UP", "B", "C4", "SIM"]
 strict = true
 ```
 
-### 5.3 requirements.txt
+### 4.3 requirements.txt
 
 ```
 httpx==0.27.0
@@ -403,7 +362,7 @@ tenacity==8.2.3
 rich==13.7.1
 ```
 
-### 5.4 线程池：并发 HTTP 抓取器（Python 3.12）
+### 4.4 线程池：并发 HTTP 抓取器（Python 3.12）
 
 ```python
 """
@@ -578,7 +537,7 @@ if __name__ == "__main__":
     )
 ```
 
-### 5.5 进程池：CPU 密集型数据预处理（Python 3.12）
+### 4.5 进程池：CPU 密集型数据预处理（Python 3.12）
 
 ```python
 """
@@ -677,7 +636,7 @@ if __name__ == "__main__":
     print(f"elapsed: {t1 - t0:.2f}s, speedup vs single-thread ≈ {estimate_single(n) / (t1 - t0):.1f}x")
 ```
 
-### 5.6 生产者-消费者模型（Python 3.11）
+### 4.6 生产者-消费者模型（Python 3.11）
 
 ```python
 """
@@ -762,7 +721,7 @@ if __name__ == "__main__":
     main()
 ```
 
-### 5.7 进程间通信：Pipe 与 Queue（Python 3.12）
+### 4.7 进程间通信：Pipe 与 Queue（Python 3.12）
 
 ```python
 """
@@ -872,7 +831,7 @@ if __name__ == "__main__":
     main()
 ```
 
-### 5.8 完整基准测试：threading vs multiprocessing vs asyncio
+### 4.8 完整基准测试：threading vs multiprocessing vs asyncio
 
 ```python
 """
@@ -945,9 +904,9 @@ if __name__ == "__main__":
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 JavaScript (Node.js) 对比
+### 5.1 与 JavaScript (Node.js) 对比
 
 | 维度 | Python `threading` | Python `multiprocessing` | Node.js Worker Threads | Node.js Cluster |
 | ---- | ------------------ | ------------------------ | ---------------------- | --------------- |
@@ -959,11 +918,11 @@ if __name__ == "__main__":
 | 通信方式 | 共享变量+锁 | Queue/Pipe/Manager | postMessage / SAB | IPC channel |
 | 默认推荐 | IO 密集 | CPU 密集 | CPU 密集 | Web 服务负载均衡 |
 
-### 6.2 与 Ruby 对比
+### 5.2 与 Ruby 对比
 
 Ruby MRI（Matz's Ruby Interpreter）同样采用 GIL（称为 GVL，Global VM Lock），与 Python 哲学接近。Ruby 3.0 引入 Ractor（Actor 模型）实现真正并行，类似 Python 的 `multiprocessing` 但 API 更优雅。JRuby（JVM 实现）与 TruffleRuby 无 GIL，支持真正多线程。
 
-### 6.3 与 Go 对比
+### 5.3 与 Go 对比
 
 Go 的 goroutine 是**用户态轻量级线程**（~2KB 栈），由 Go runtime 调度到 OS 线程（M:N 模型）。这是 Python 没有的范式：
 
@@ -976,11 +935,11 @@ Go 的 goroutine 是**用户态轻量级线程**（~2KB 栈），由 Go runtime 
 | 调度器 | OS 调度 | Go runtime（work stealing） |
 | 学习曲线 | 低 | 中 |
 
-### 6.4 与 Java 对比
+### 5.4 与 Java 对比
 
 Java 自 JDK 21（2023）正式 GA **Virtual Thread**（Project Loom），将 goroutine 风格的轻量级线程引入 JVM。Java 传统 `Thread` 是 OS 线程，Java `ForkJoinPool` 类似 Python `ProcessPoolExecutor` 但为线程级。Java 没有 GIL，多线程可真正并行。
 
-### 6.5 何时选择哪种模型
+### 5.5 何时选择哪种模型
 
 ```mermaid
 flowchart TD
@@ -1003,9 +962,9 @@ flowchart TD
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：GIL 不会自动保护复合操作
+### 6.1 陷阱 1：GIL 不会自动保护复合操作
 
 **错误代码**：
 
@@ -1042,7 +1001,7 @@ def worker():
 
 或使用 `itertools.count` 与 `threading.local`，或直接用 `multiprocessing.Value` 配合锁。
 
-### 7.2 陷阱 2：可变默认参数在多线程下泄漏
+### 6.2 陷阱 2：可变默认参数在多线程下泄漏
 
 ```python
 # 错误：默认参数在所有线程间共享
@@ -1053,7 +1012,7 @@ def cache(key: str, data: dict = {}):  # 危险！
 
 多线程调用时 `data` 是同一对象，导致数据竞争。正确做法：使用 `None` 哨兵 + 线程局部存储。
 
-### 7.3 陷阱 3：fork 后子进程持有父进程的锁
+### 6.3 陷阱 3：fork 后子进程持有父进程的锁
 
 ```python
 # 错误：fork 前线程持有锁，子进程继承锁但仍处于"已锁"状态，导致死锁
@@ -1069,7 +1028,7 @@ if pid == 0:
 
 **解决**：使用 `multiprocessing` 的 `spawn` 启动方式，或在 `fork` 前释放所有锁。
 
-### 7.4 陷阱 4：闭包延迟绑定在多线程中的意外行为
+### 6.4 陷阱 4：闭包延迟绑定在多线程中的意外行为
 
 ```python
 # 错误：所有线程捕获同一个变量 i
@@ -1084,7 +1043,7 @@ for i in range(5):
     threads.append(Thread(target=lambda i=i: print(i)))
 ```
 
-### 7.5 陷阱 5：multiprocessing 中 lambda 无法 pickle
+### 6.5 陷阱 5：multiprocessing 中 lambda 无法 pickle
 
 ```python
 # 错误：lambda 不能 pickle
@@ -1095,7 +1054,7 @@ with Pool(4) as pool:
 
 **解决**：使用 `functools.partial` 或顶层函数。
 
-### 7.6 陷阱 6：ProcessPoolExecutor 异常被吞没
+### 6.6 陷阱 6：ProcessPoolExecutor 异常被吞没
 
 ```python
 # 错误：future.exception() 未检查
@@ -1115,7 +1074,7 @@ with ProcessPoolExecutor() as pool:
         logger.error("task failed", exc_info=exc)
 ```
 
-### 7.7 最佳实践清单
+### 6.7 最佳实践清单
 
 1. **优先使用 `concurrent.futures`** 而非裸 `threading` / `multiprocessing`，API 更高级、异常处理更完善。
 2. **CPU 密集型任务用 `ProcessPoolExecutor`**，IO 密集型任务用 `ThreadPoolExecutor`。
@@ -1130,9 +1089,9 @@ with ProcessPoolExecutor() as pool:
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 虚拟环境与依赖
+### 7.1 虚拟环境与依赖
 
 ```bash
 # 创建项目
@@ -1146,7 +1105,7 @@ pip install httpx tenacity rich
 pip install -e ".[dev]"
 ```
 
-### 8.2 打包发布
+### 7.2 打包发布
 
 使用 `hatchling`（PEP 621）：
 
@@ -1170,9 +1129,9 @@ pip install build
 python -m build  # 生成 dist/*.whl
 ```
 
-### 8.3 性能调优
+### 7.3 性能调优
 
-#### 8.3.1 GIL 释放点检测
+#### 7.3.1 GIL 释放点检测
 
 ```python
 import dis
@@ -1180,7 +1139,7 @@ dis.dis(your_function)
 # 查找 CALL_FUNCTION 字节码，C 扩展通常在此时释放 GIL
 ```
 
-#### 8.3.2 使用 `perf` 分析
+#### 7.3.2 使用 `perf` 分析
 
 ```bash
 # Linux
@@ -1188,7 +1147,7 @@ sudo perf record -g python your_script.py
 sudo perf report
 ```
 
-#### 8.3.3 多进程内存优化
+#### 7.3.3 多进程内存优化
 
 ```python
 # 错误：每个子进程加载大模型副本
@@ -1203,9 +1162,9 @@ def worker(shm_name: str):
     ...
 ```
 
-### 8.4 调试技巧
+### 7.4 调试技巧
 
-#### 8.4.1 多线程死锁检测
+#### 7.4.1 多线程死锁检测
 
 ```python
 import threading
@@ -1215,7 +1174,7 @@ import faulthandler
 faulthandler.dump_traceback_later(30, repeat=True)
 ```
 
-#### 8.4.2 多进程调试
+#### 7.4.2 多进程调试
 
 ```python
 # 子进程崩溃时打印栈
@@ -1224,7 +1183,7 @@ faulthandler.enable()
 # 在 fork 后立即调用
 ```
 
-#### 8.4.3 vscode launch.json
+#### 7.4.3 vscode launch.json
 
 ```json
 {
@@ -1243,7 +1202,7 @@ faulthandler.enable()
 }
 ```
 
-### 8.5 监控与可观测性
+### 7.5 监控与可观测性
 
 ```python
 """
@@ -1264,7 +1223,7 @@ class InstrumentedExecutor(ThreadPoolExecutor):
         return fut
 ```
 
-### 8.6 测试策略
+### 7.6 测试策略
 
 ```python
 """
@@ -1305,9 +1264,9 @@ def test_no_deadlock():
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Instagram：用 multiprocessing 处理图像分析
+### 8.1 Instagram：用 multiprocessing 处理图像分析
 
 Instagram 后端早期使用 Django + Celery，对用户上传图片进行多分辨率缩略图生成（CPU 密集）。他们采用 **进程池 + 共享内存** 模式：
 
@@ -1318,11 +1277,11 @@ Instagram 后端早期使用 Django + Celery，对用户上传图片进行多分
 
 关键数据：8 核机器，单图处理 200ms，吞吐量 40 images/sec。
 
-### 9.2 YouTube：Python + C 扩展释放 GIL
+### 8.2 YouTube：Python + C 扩展释放 GIL
 
 YouTube 视频转码用 C 实现（FFmpeg 封装），Python 调度。C 扩展在执行转码时通过 `Py_BEGIN_ALLOW_THREADS` 释放 GIL，允许多线程并行调度多个转码任务。这是 **混合并发** 范式的典型案例：Python 层用 threading 管理 IO，C 层用 native thread 执行 CPU。
 
-### 9.3 Dropbox：用 multiprocessing 隔离插件
+### 8.3 Dropbox：用 multiprocessing 隔离插件
 
 Dropbox 桌面客户端的第三方插件系统使用 `multiprocessing` 隔离不信任代码：
 
@@ -1331,7 +1290,7 @@ Dropbox 桌面客户端的第三方插件系统使用 `multiprocessing` 隔离�
 - 子进程崩溃不影响主进程，重启即可恢复。
 - 使用 `resource.setrlimit` 限制子进程 CPU/内存。
 
-### 9.4 NumPy：BLAS 多线程释放 GIL
+### 8.4 NumPy：BLAS 多线程释放 GIL
 
 NumPy 的矩阵运算调用 OpenBLAS/MKL，这些库在执行 `np.dot` 等 CPU 密集操作时：
 
@@ -1341,7 +1300,7 @@ NumPy 的矩阵运算调用 OpenBLAS/MKL，这些库在执行 `np.dot` 等 CPU �
 
 因此 `np.dot(A, B)` 在多线程 Python 中可真正并行。但若在多进程中再调用 NumPy，会因 BLAS 内部线程与进程数冲突导致**线程爆炸**，需通过 `OMP_NUM_THREADS=1` 限制。
 
-### 9.5 Django + gunicorn：prefork 模型
+### 8.5 Django + gunicorn：prefork 模型
 
 Django 服务的标准部署：`gunicorn --workers=4 --worker-class=sync myproject.wsgi`。Gunicorn master 进程 `fork()` 出 4 个 worker 进程，每个 worker 串行处理请求。这是 **prefork 模型**，利用 `multiprocessing` 哲学：
 
@@ -1545,7 +1504,7 @@ if __name__ == "__main__":
         print(f"{word}: {n}")
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 9**：假设你设计一个实时日志聚合服务，每秒接收 10000 条日志（每条平均 500B），需要解析、过滤、写入 Elasticsearch。你会选择 `threading`、`multiprocessing`、`asyncio` 还是混合方案？请给出架构图与决策依据。
 
@@ -1588,9 +1547,9 @@ flowchart LR
 
 ---
 
-## 11. PEP 703 与未来展望
+## 10. PEP 703 与未来展望
 
-### 11.1 PEP 703 概述
+### 10.1 PEP 703 概述
 
 PEP 703（"Making the GIL Optional in Python"）由 Sam Gross 撰写，2023 年 10 月正式接受。核心改动：
 
@@ -1599,7 +1558,7 @@ PEP 703（"Making the GIL Optional in Python"）由 Sam Gross 撰写，2023 年 
 3. **Safe Object Mutability**：dict/list 等容器引入细粒度锁，替代 GIL 的隐式保护。
 4. ** Interpreter Lock 替代 GIL**：每解释器独立锁，配合 PEP 683（per-interpreter GIL）实现真正的 sub-interpreter 并行。
 
-### 11.2 启用方式（Python 3.13+）
+### 10.2 启用方式（Python 3.13+）
 
 ```bash
 # 编译时启用
@@ -1610,7 +1569,7 @@ make
 python -X gil=0 script.py
 ```
 
-### 11.3 对现有代码的影响
+### 10.3 对现有代码的影响
 
 | 场景 | GIL 模式 | No-GIL 模式 |
 | ---- | -------- | ----------- |
@@ -1620,7 +1579,7 @@ python -X gil=0 script.py
 | asyncio | 不受影响 | 不受影响 |
 | multiprocessing | 仍可用 | 可被 threading 替代 |
 
-### 11.4 迁移建议
+### 10.4 迁移建议
 
 1. **短期（2024-2026）**：保持现有 multiprocessing 代码，关注 C 扩展兼容性。
 2. **中期（2026-2028）**：新项目优先使用 threading，仅在隔离需求时用 multiprocessing。
@@ -1628,7 +1587,7 @@ python -X gil=0 script.py
 
 ---
 
-## 12. 参考文献
+## 11. 参考文献
 
 [1] Van Rossum, G. 1991. *Python Tutorial*. CWI Report CS-R9526. DOI: 10.5281/zenodo.31753
 
@@ -1662,9 +1621,9 @@ python -X gil=0 script.py
 
 ---
 
-## 13. 延伸阅读
+## 12. 延伸阅读
 
-### 13.1 书籍
+### 12.1 书籍
 
 - **《Python Concurrency with asyncio》**（Matthew Fowler, 2022, Manning）：asyncio 权威指南。
 - **《High Performance Python》**（Micha Gorelick & Ian Ozsvald, 2nd ed., 2020, O'Reilly）：性能优化全维度。
@@ -1672,13 +1631,13 @@ python -X gil=0 script.py
 - **《The Art of Multiprocessor Programming》**（Maurice Herlihy & Nir Shavit, 2nd ed., 2012, MIT Press）：并发理论基础。
 - **《Operating System Concepts》**（Silberschatz, Galvin, Gagne, 10th ed., 2018, Wiley）：进程与线程经典教材。
 
-### 13.2 论文与技术报告
+### 12.2 论文与技术报告
 
 - **Gross, S. et al.** "NoGIL: Making Python Fast and Thread-Safe." *USENIX ATC '23*.
 - **Patterson, D. A. and Hennessy, J. L.** *Computer Architecture: A Quantitative Approach*（6th ed.）, Chapter 5 "Thread-Level Parallelism".
 - **Adve, S. V. and Gharachorloo, K.** "Shared memory consistency models: A tutorial." *IEEE Computer* 29, 12 (1996), 66–76.
 
-### 13.3 在线资源
+### 12.3 在线资源
 
 - **Python 官方文档**：
   - `threading` — https://docs.python.org/3/library/threading.html
@@ -1695,7 +1654,7 @@ python -X gil=0 script.py
   - `pytest-xdist` — pytest 并行执行
   - `uvicorn` — asyncio ASGI 服务器
 
-### 13.4 进阶路线图
+### 12.4 进阶路线图
 
 ```mermaid
 flowchart TD
@@ -1714,9 +1673,9 @@ flowchart TD
 
 ---
 
-## 14. 附录
+## 13. 附录
 
-### 14.1 速查表：常见并发原语
+### 13.1 速查表：常见并发原语
 
 | 原语 | `threading` | `multiprocessing` | 用途 |
 | ---- | ----------- | ----------------- | ---- |
@@ -1729,7 +1688,7 @@ flowchart TD
 | 队列 | `queue.Queue` | `Queue` | 生产者-消费者 |
 | 屏障 | `Barrier` | `Barrier` | 多线程同步点 |
 
-### 14.2 Python 版本兼容性矩阵
+### 13.2 Python 版本兼容性矩阵
 
 | 特性 | 3.8 | 3.9 | 3.10 | 3.11 | 3.12 | 3.13 | 3.14 |
 | --- | --- | --- | ---- | ---- | ---- | ---- | ---- |
@@ -1740,7 +1699,7 @@ flowchart TD
 | No-GIL（experimental） | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 | 已达标 | 已达标 |
 | pickle protocol 5 | 不支持 | 已达标 | 已达标 | 已达标 | 已达标 | 已达标 | 已达标 |
 
-### 14.3 命令速查
+### 13.3 命令速查
 
 ```bash
 # 启动多进程程序
@@ -1764,7 +1723,7 @@ python -m memray flamegraph profile.bin
 python -X faulthandler your_script.py
 ```
 
-### 14.4 推荐项目配置
+### 13.4 推荐项目配置
 
 `.gitignore`：
 

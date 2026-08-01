@@ -16,16 +16,6 @@ prerequisites:
   - typescript/语法速查
 ---
 
-## 学习目标
-
-完成本章学习后，读者应能够在以下认知层级（Bloom 分类法）达到相应能力：
-
-1. **记忆（Remember）**：复述类型系统与运行时验证的对偶关系，列举主流 Schema 验证库（zod、io-ts、ajv、yup、valibot）的核心 API。
-2. **理解（Understand）**：解释 TypeScript 静态类型在运行时被擦除的根本原因，说明 Schema 单源真理（Single Source of Truth）如何消除类型与验证逻辑的漂移。
-3. **应用（Apply）**：使用 zod 或 io-ts 为真实表单编写端到端类型安全的验证代码，覆盖字符串、数字、日期、枚举、数组、对象等基础类型。
-4. **分析（Analyze）**：对比静态类型与运行时验证的边界，识别两者语义不一致的场景（如 `string` 与 `NonEmptyString`、`number` 与 `FiniteNumber`）。
-5. **评价（Evaluate）**：评估不同 Schema 库在性能、Bundle 体积、错误信息可读性、生态成熟度等维度的权衡，为项目选型给出依据。
-6. **创造（Create）**：设计并实现一个支持异步验证、跨字段依赖、条件分支、国际化错误消息的通用表单验证框架。
 
 ## 历史动机与背景
 

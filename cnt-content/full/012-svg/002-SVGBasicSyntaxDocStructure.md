@@ -14,52 +14,16 @@ related:
 prerequisites:
   - svg/概述与环境配置
 ---
+
 # SVG 文档结构 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章延续 MIT 6.831《用户界面设计与实现》与 CMU 15-213《计算机系统导论》的教学严谨度,在 SVG 概述基础上深入文档结构的形式化定义。学完本章后,学习者应当能够在 Bloom 教育目标分类法的六个层级上达成下列能力。
-
-### 1.1 Bloom 能力矩阵
-
-| 层级 | 行为动词 | 本章目标能力 | 评估方式 |
-| ---- | -------- | ------------ | -------- |
-| **Remember** 记忆 | 列举、复述 | 能列举 SVG 根元素、容器元素、图形元素、元数据元素的分类 | 选择题、填空题 |
-| **Understand** 理解 | 解释、归纳 | 能解释命名空间、属性继承、文档树形结构的语义 | 概念辨析题 |
-| **Apply** 应用 | 使用、实现 | 能编写符合 SVG 2 规范的完整文档,正确使用 defs/symbol/use | 实操题 |
-| **Analyze** 分析 | 比较、分解 | 能分析嵌套 `<svg>` 与 `<g>` 的差异、可继承与不可继承属性 | 对比分析题 |
-| **Evaluate** 评价 | 评判、推荐 | 能评估文档结构的合理性,给出工程化重构建议 | 代码评审题 |
-| **Create** 创造 | 设计、构建 | 能设计一个具备可访问性、可维护性的 SVG 文档骨架 | 架构设计题 |
-
-### 1.2 知识图谱前置依赖
-
-```mermaid
-graph LR
-    A[SVG 概述] --> B[本章:文档结构]
-    HTML[HTML 基础] --> C[XML 语法]
-    C --> B
-    B --> D[坐标系与 viewBox]
-    B --> E[基本图形详解]
-    B --> F[路径 path 详解]
-    B --> G[符号与复用]
-```
-
-### 1.3 学习成果清单
-
-完成本章学习后,学习者应当能够产出:
-
-1. 一份符合 SVG 2 规范的独立 .svg 文件(含 XML 声明、命名空间、`<defs>`、`<symbol>`、`<title>`、`<desc>`)
-2. 一份内联 SVG 的 HTML5 文档(具备可访问性)
-3. 一份 SVG 文档结构形式化定义说明
-4. 一份属性继承规则的速查表
-
-## 2. 历史动机与发展脉络
-
-### 2.1 XML 与 SVG 的语法渊源
+### 1.1 XML 与 SVG 的语法渊源
 
 SVG 选择 XML 作为语法基础并非偶然。1996 年 W3C 启动 XML(Extensible Markup Language)设计,1998 年发布 XML 1.0 推荐标准。XML 的设计目标包括:
 
@@ -71,7 +35,7 @@ SVG 选择 XML 作为语法基础并非偶然。1996 年 W3C 启动 XML(Extensib
 
 XML 的这些特征恰好契合矢量图形描述的需求,因此 SVG 1.0 顺理成章地选择 XML 作为载体。
 
-### 2.2 SVG 文档模型演进
+### 1.2 SVG 文档模型演进
 
 | 版本 | 文档模型变化 | 关键差异 |
 | ---- | ------------ | -------- |
@@ -81,7 +45,7 @@ XML 的这些特征恰好契合矢量图形描述的需求,因此 SVG 1.0 顺理
 | SVG 2 | DOM 接口与 HTML 对齐 | 与 CSS 协同更紧密 |
 | SVG 2.1 | 简化命名空间要求 | 内联 SVG 可省略 xmlns |
 
-### 2.3 与 HTML 解析器的协同
+### 1.3 与 HTML 解析器的协同
 
 HTML5 引入了对内联 SVG 的支持,但 HTML 解析器遵循与 XML 不同的规则:
 
@@ -96,7 +60,7 @@ HTML5 引入了对内联 SVG 的支持,但 HTML 解析器遵循与 XML 不同的
 
 理解这一差异对调试 SVG 至关重要:独立 .svg 文件必须严格 XML,内联 SVG 可宽松。
 
-### 2.4 设计哲学:文档即接口
+### 1.4 设计哲学:文档即接口
 
 SVG 的设计哲学可概括为"文档即接口"(Document as Interface):
 
@@ -107,9 +71,9 @@ SVG 的设计哲学可概括为"文档即接口"(Document as Interface):
 
 这一哲学使 SVG 既可作为图像格式,也可作为编程接口,这是其与 Canvas 的本质区别。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 SVG 文档的形式化模型
+### 2.1 SVG 文档的形式化模型
 
 SVG 文档可形式化为一个有根的有向树 $T = (V, E)$,其中:
 
@@ -125,7 +89,7 @@ SVG 文档可形式化为一个有根的有向树 $T = (V, E)$,其中:
 - $\text{attrs}: \text{AttrName} \to \text{AttrValue}$ 是属性映射函数
 - $\text{children} \subseteq V$ 是子节点有序集合
 
-### 3.2 SVG 标签字母表
+### 2.2 SVG 标签字母表
 
 SVG 标签字母表 $\Sigma$ 可分类为:
 
@@ -142,7 +106,7 @@ $$
 | 动画 $\Sigma_{\text{anim}}$ | `<animate>` `<animateTransform>` `<animateMotion>` `<set>` |
 | 元数据 $\Sigma_{\text{meta}}$ | `<title>` `<desc>` `<metadata>` |
 
-### 3.3 属性继承的偏序关系
+### 2.3 属性继承的偏序关系
 
 SVG 属性继承构成一个偏序关系 $\preceq$。设属性 $a$ 可继承至子节点,则:
 
@@ -155,7 +119,7 @@ $$
 
 属性继承遵循"就近原则":从当前节点向上查找,遇到第一个显式声明即停止。
 
-### 3.4 命名空间的形式化
+### 2.4 命名空间的形式化
 
 XML 命名空间是一个 URI 引用,用于限定元素与属性名的归属。形式化定义:
 
@@ -177,7 +141,7 @@ $$
 
 SVG 2 推荐使用普通 `href` 而非 `xlink:href`,以简化命名空间声明。
 
-### 3.5 文档类型定义(DTD)的简化
+### 2.5 文档类型定义(DTD)的简化
 
 SVG 1.1 的 DTD 定义了元素允许的子元素与属性。例如 `<svg>` 元素的 DTD 片段:
 
@@ -199,9 +163,9 @@ SVG 1.1 的 DTD 定义了元素允许的子元素与属性。例如 `<svg>` 元�
 
 SVG 2 移除了 DTD 依赖,改为通过 RelaxNG 或纯文本规范定义文档模型。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 DOM 树的构建算法
+### 3.1 DOM 树的构建算法
 
 浏览器解析 SVG 时构建 DOM 树,其算法复杂度可分析。设文档长度为 $L$,元素数为 $n$:
 
@@ -214,7 +178,7 @@ SVG 2 移除了 DTD 依赖,改为通过 RelaxNG 或纯文本规范定义文档�
 
 总复杂度 $O(L + n \cdot m)$,在 $L \gg n$ 时瓶颈在 IO,在 $n \cdot m \gg L$ 时瓶颈在属性计算。
 
-### 4.2 属性继承的传递闭包
+### 3.2 属性继承的传递闭包
 
 属性继承可建模为传递闭包计算。设继承关系图 $G = (V, E)$,其中 $(u, v) \in E$ 当且仅当 $v$ 是 $u$ 的子节点。属性 $a$ 的继承值:
 
@@ -228,7 +192,7 @@ $$
 
 这是树形 DP 问题,可在 $O(n)$ 时间内计算所有节点的属性值。
 
-### 4.3 坐标系复合的代数性质
+### 3.3 坐标系复合的代数性质
 
 嵌套 `<svg>` 建立的坐标系复合具有代数性质。设外层变换为 $T_1$,内层变换为 $T_2$,则复合变换 $T = T_1 \circ T_2$:
 
@@ -238,7 +202,7 @@ $$
 
 由于仿射变换集合在矩阵乘法下封闭,且构成一个幺半群(monoid),嵌套 `<svg>` 的复合结果仍是仿射变换,这是 SVG 坐标系代数性质的基础。
 
-### 4.4 `<use>` 引用的语义模型
+### 3.4 `<use>` 引用的语义模型
 
 `<use>` 元素引用 `<symbol>` 或其他元素时,其语义可形式化为"影子 DOM 克隆":
 
@@ -252,7 +216,7 @@ $$
 2. **属性覆盖有限**:`<use>` 上的属性仅部分可继承到克隆(如 fill、stroke)
 3. **事件独立**:`<use>` 实例的事件不传播到原始元素
 
-### 4.5 SVG 2 与 CSS 属性的对齐
+### 3.5 SVG 2 与 CSS 属性的对齐
 
 SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。下表列出关键迁移:
 
@@ -269,9 +233,9 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 
 这一对齐让 SVG 元素可像 HTML 元素一样用 CSS 完整控制,提升了与 Web 生态的融合。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 `<svg>` 根元素
+### 4.1 `<svg>` 根元素
 
 `<svg>` 是 SVG 文档的根元素,承载坐标系、视口与全局属性。
 
@@ -287,7 +251,7 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 </svg>
 ```
 
-#### 5.1.1 关键属性
+#### 4.1.1 关键属性
 
 | 属性 | 作用 | 说明 |
 | ---- | ---- | ---- |
@@ -297,7 +261,7 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 | `preserveAspectRatio` | 宽高比策略 | 控制 viewBox 如何适配视口 |
 | `role` / `aria-label` | 可访问性 | 为屏幕阅读器提供语义 |
 
-#### 5.1.2 内联 vs 独立文件
+#### 4.1.2 内联 vs 独立文件
 
 ```html
 <!-- 内联:HTML 解析器宽容,可省略 xmlns -->
@@ -312,7 +276,7 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 </svg>
 ```
 
-### 5.2 完整独立 SVG 文档骨架
+### 4.2 完整独立 SVG 文档骨架
 
 生产级独立 .svg 文件应包含以下要素:
 
@@ -349,7 +313,7 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 </svg>
 ```
 
-### 5.3 `<g>` 分组元素
+### 4.3 `<g>` 分组元素
 
 `<g>`(group)将多个元素逻辑分组,可统一应用样式与变换。
 
@@ -364,7 +328,7 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 
 子元素继承 `<g>` 上的 `fill`、`stroke`、`transform` 等可继承属性。`<g>` 是组织复杂图形的核心工具。
 
-#### 5.3.1 配合 transform 的复合变换
+#### 4.3.1 配合 transform 的复合变换
 
 ```html
 <svg viewBox="0 0 400 200">
@@ -380,7 +344,7 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 
 三层 `<g>` 嵌套实现了平移、旋转、缩放的复合变换。
 
-### 5.4 `<defs>` 定义
+### 4.4 `<defs>` 定义
 
 `<defs>` 存放可复用资源(渐变、滤镜、符号、路径),**不直接渲染**,通过 `url(#id)` 引用。
 
@@ -406,7 +370,7 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 
 `<defs>` 内的元素**不参与渲染**,只有被引用时才实例化,这是性能优化的关键。
 
-### 5.5 `<symbol>` 符号
+### 4.5 `<symbol>` 符号
 
 `<symbol>` 类似 `<g>`,但**自带 viewBox**,适合定义可复用图标,配合 `<use>` 实例化。
 
@@ -428,7 +392,7 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 | 适用场景 | 逻辑分组 | 图标定义 |
 | 配合 `<use>` | 可 | 推荐 |
 
-### 5.6 `<use>` 引用
+### 4.6 `<use>` 引用
 
 `<use>` 复制并实例化 `<g>`、`<symbol>` 或其他元素。
 
@@ -448,7 +412,7 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 2. 部分浏览器对外部 `<use>` 支持不完整
 3. 内联 `<symbol>` + `<use>` 是最稳健的方案
 
-### 5.7 `<title>` 与 `<desc>`
+### 4.7 `<title>` 与 `<desc>`
 
 为可访问性提供标题与描述,类似 `<img alt>`。
 
@@ -467,7 +431,7 @@ SVG 2 将许多原 SVG 专有属性提升为 CSS 属性,统一了样式模型。
 3. `aria-labelledby` 引用两者的 id
 4. 屏幕阅读器优先读 `<title>`,详细时读 `<desc>`
 
-### 5.8 `<metadata>` 元数据
+### 4.8 `<metadata>` 元数据
 
 存放 RDF / DC 等元信息,不参与渲染。
 
@@ -495,7 +459,7 @@ Dublin Core(DC)常用字段:
 | `dc:description` | 描述 |
 | `dc:format` | 格式 |
 
-### 5.9 `<switch>` 与特性检测
+### 4.9 `<switch>` 与特性检测
 
 `<switch>` 按顺序渲染第一个 `requiredFeatures` 匹配的子元素,用于兼容降级。
 
@@ -518,17 +482,17 @@ Dublin Core(DC)常用字段:
 }
 ```
 
-## 6. 元素嵌套规则
+## 5. 元素嵌套规则
 
-### 6.1 容器元素
+### 5.1 容器元素
 
 可包含其他图形元素的容器:`<svg>`、`<g>`、`<defs>`、`<symbol>`、`<a>`、`<mask>`、`<pattern>`、`<marker>`。
 
-### 6.2 图形元素
+### 5.2 图形元素
 
 只能作为叶子节点或包含动画元素:`<rect>`、`<circle>`、`<ellipse>`、`<line>`、`<polyline>`、`<polygon>`、`<path>`、`<text>`、`<image>`、`<use>`。
 
-### 6.3 嵌套规则表
+### 5.3 嵌套规则表
 
 ```mermaid
 flowchart TD
@@ -548,7 +512,7 @@ flowchart TD
     Defs --> Symbol
 ```
 
-### 6.4 嵌套 `<svg>` 建立子坐标系
+### 5.4 嵌套 `<svg>` 建立子坐标系
 
 `<svg>` 可嵌套,建立独立坐标系,常用于组件化场景。
 
@@ -573,9 +537,9 @@ flowchart TD
 | 性能开销 | 较高 | 较低 |
 | 适用场景 | 组件化 | 逻辑分组 |
 
-## 7. 属性继承规则
+## 6. 属性继承规则
 
-### 7.1 可继承属性
+### 6.1 可继承属性
 
 | 类别 | 属性 |
 | ---- | ---- |
@@ -584,11 +548,11 @@ flowchart TD
 | 文本 | `font-family`、`font-size`、`font-weight`、`text-anchor`、`direction` |
 | 其他 | `opacity`、`visibility`、`cursor`、`letter-spacing` |
 
-### 7.2 不可继承属性
+### 6.2 不可继承属性
 
 `x`、`y`、`cx`、`cy`、`r`、`width`、`height`、`transform`、`filter`、`clip-path`、`mask` 等几何与变换属性不可继承。
 
-### 7.3 `currentColor` 关键字
+### 6.3 `currentColor` 关键字
 
 `currentColor` 引用当前元素的 `color` 属性,实现与 CSS 联动的主题色。
 
@@ -601,7 +565,7 @@ flowchart TD
 
 修改 `color` 即可统一调整 fill 与 stroke 颜色,是图标系统主题化的核心技巧。
 
-### 7.4 继承链查找算法
+### 6.4 继承链查找算法
 
 属性继承的查找算法可形式化描述:
 
@@ -617,9 +581,9 @@ function getComputedAttr(element, attrName):
 
 这是树形向上查找,时间复杂度 $O(d)$,其中 $d$ 为树深度。
 
-## 8. 对比分析
+## 7. 对比分析
 
-### 8.1 SVG vs HTML 文档结构
+### 7.1 SVG vs HTML 文档结构
 
 | 维度 | SVG 文档 | HTML 文档 |
 | ---- | -------- | --------- |
@@ -631,7 +595,7 @@ function getComputedAttr(element, attrName):
 | 严格性 | 严格 | 宽松 |
 | 默认渲染 | 矢量图形 | 流式布局 |
 
-### 8.2 `<g>` vs `<symbol>` vs `<defs>`
+### 7.2 `<g>` vs `<symbol>` vs `<defs>`
 
 | 元素 | 渲染 | viewBox | 适用场景 |
 | ---- | ---- | ------- | -------- |
@@ -639,14 +603,14 @@ function getComputedAttr(element, attrName):
 | `<symbol>` | 不直接渲染 | 是 | 图标定义,配合 `<use>` |
 | `<defs>` | 不直接渲染 | 否 | 资源仓库,存放渐变/滤镜/符号 |
 
-### 8.3 `<use>` vs JavaScript 克隆
+### 7.3 `<use>` vs JavaScript 克隆
 
 | 方式 | 优势 | 劣势 |
 | ---- | ---- | ---- |
 | `<use>` | 声明式,性能优 | 属性覆盖有限 |
 | JS 克隆 | 完全控制 | 性能开销大,需手动维护 |
 
-### 8.4 与其他文档模型对比
+### 7.4 与其他文档模型对比
 
 | 模型 | 描述 | 与 SVG 关系 |
 | ---- | ---- | ------------ |
@@ -655,9 +619,9 @@ function getComputedAttr(element, attrName):
 | DOM 4 | 现代 DOM 标准 | SVG 2 与之对齐 |
 | Shadow DOM | Web Components 隔离 | `<use>` 类似但非真 Shadow DOM |
 
-## 9. 常见陷阱与最佳实践
+## 8. 常见陷阱与最佳实践
 
-### 9.1 陷阱 1:独立 SVG 文件缺少 XML 声明
+### 8.1 陷阱 1:独立 SVG 文件缺少 XML 声明
 
 ```xml
 <!-- 错误:缺少 XML 声明,部分浏览器拒绝解析 -->
@@ -672,7 +636,7 @@ function getComputedAttr(element, attrName):
 </svg>
 ```
 
-### 9.2 陷阱 2:xmlns 命名空间缺失
+### 8.2 陷阱 2:xmlns 命名空间缺失
 
 ```xml
 <!-- 错误:独立 SVG 文件无命名空间,被识别为普通 XML -->
@@ -688,7 +652,7 @@ function getComputedAttr(element, attrName):
 </svg>
 ```
 
-### 9.3 陷阱 3:`<defs>` 内的元素被渲染
+### 8.3 陷阱 3:`<defs>` 内的元素被渲染
 
 ```html
 <!-- 错误:期望 defs 内的 circle 不显示,但写在 defs 外 -->
@@ -709,7 +673,7 @@ function getComputedAttr(element, attrName):
 </svg>
 ```
 
-### 9.4 陷阱 4:`<symbol>` 直接渲染
+### 8.4 陷阱 4:`<symbol>` 直接渲染
 
 ```html
 <!-- 错误:symbol 不会直接渲染 -->
@@ -728,7 +692,7 @@ function getComputedAttr(element, attrName):
 </svg>
 ```
 
-### 9.5 陷阱 5:`xlink:href` 与 `href` 混用
+### 8.5 陷阱 5:`xlink:href` 与 `href` 混用
 
 ```html
 <!-- 旧版(SVG 1.x):使用 xlink:href -->
@@ -743,7 +707,7 @@ function getComputedAttr(element, attrName):
 
 **最佳实践**:优先使用 `href`,如需兼容老浏览器(IE 11)才同时声明。
 
-### 9.6 陷阱 6:`<title>` 位置错误
+### 8.6 陷阱 6:`<title>` 位置错误
 
 ```html
 <!-- 错误:title 不是第一个子元素,屏幕阅读器不读取 -->
@@ -759,7 +723,7 @@ function getComputedAttr(element, attrName):
 </svg>
 ```
 
-### 9.7 陷阱 7:属性继承误用
+### 8.7 陷阱 7:属性继承误用
 
 ```html
 <!-- 错误:期望 width/height 可继承到子元素 -->
@@ -776,7 +740,7 @@ function getComputedAttr(element, attrName):
 </svg>
 ```
 
-### 9.8 浏览器兼容性最佳实践
+### 8.8 浏览器兼容性最佳实践
 
 | 特性 | Chrome | Firefox | Safari | Edge | 兼容策略 |
 | ---- | ------ | ------- | ------ | ---- | -------- |
@@ -786,7 +750,7 @@ function getComputedAttr(element, attrName):
 | 嵌套 `<svg>` | 全部 | 全部 | 全部 | 全部 | 直接使用 |
 | `<switch>` | 全部 | 全部 | 全部 | 全部 | 已弃用,改用 CSS |
 
-### 9.9 可访问性最佳实践
+### 8.9 可访问性最佳实践
 
 ```html
 <svg
@@ -810,7 +774,7 @@ function getComputedAttr(element, attrName):
 - [ ] 装饰性 SVG 用 `aria-hidden="true"`
 - [ ] 交互元素添加 `tabindex="0"`
 
-### 9.10 性能优化清单
+### 8.10 性能优化清单
 
 - [ ] 复杂资源放 `<defs>`,延迟渲染
 - [ ] 复用图形用 `<symbol>` + `<use>`
@@ -820,9 +784,9 @@ function getComputedAttr(element, attrName):
 - [ ] DOM 节点数控制在 5000 以内
 - [ ] `<defs>` 内的资源按需声明,避免无用资源
 
-## 10. 工程实践
+## 9. 工程实践
 
-### 10.1 生产级 SVG 文档骨架
+### 9.1 生产级 SVG 文档骨架
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -853,7 +817,7 @@ function getComputedAttr(element, attrName):
 </svg>
 ```
 
-### 10.2 SVG 雪碧图(Sprite)
+### 9.2 SVG 雪碧图(Sprite)
 
 将多个图标合并为一个 SVG 文件,通过 `<use>` 引用,减少 HTTP 请求:
 
@@ -894,7 +858,7 @@ function getComputedAttr(element, attrName):
 </html>
 ```
 
-### 10.3 React 组件封装
+### 9.3 React 组件封装
 
 ```tsx
 // components/Icon.tsx
@@ -944,7 +908,7 @@ export const Icon: React.FC<IconProps> = ({
 };
 ```
 
-### 10.4 Vue 组件封装
+### 9.4 Vue 组件封装
 
 ```vue
 <!-- components/Icon.vue -->
@@ -994,9 +958,9 @@ const labelledBy = computed(() =>
 </template>
 ```
 
-### 10.5 调试工具
+### 9.5 调试工具
 
-#### 10.5.1 浏览器开发者工具
+#### 9.5.1 浏览器开发者工具
 
 Chrome DevTools 是调试 SVG 文档结构的利器:
 
@@ -1007,15 +971,15 @@ Chrome DevTools 是调试 SVG 文档结构的利器:
 | Accessibility | 检查 ARIA 标签 |
 | Performance | 分析渲染性能 |
 
-#### 10.5.2 在线工具
+#### 9.5.2 在线工具
 
 - **W3C Validator**:https://validator.w3.org/
 - **SVG Validator**:https://svgvalidator.appspot.com/
 - **SVGOMG**:https://jakearchibald.github.io/svgomg/
 
-### 10.6 设计工具集成
+### 9.6 设计工具集成
 
-#### 10.6.1 Figma SVG 导出配置
+#### 9.6.1 Figma SVG 导出配置
 
 1. 选中图层
 2. 右键 → "Copy as SVG"
@@ -1024,7 +988,7 @@ Chrome DevTools 是调试 SVG 文档结构的利器:
    - "Include id attribute"(保留 id)
    - 关闭 "Simplify stroke"(保留原始路径)
 
-#### 10.6.2 Adobe Illustrator SVG 导出
+#### 9.6.2 Adobe Illustrator SVG 导出
 
 | 选项 | 推荐值 | 原因 |
 | ---- | ------ | ---- |
@@ -1034,7 +998,7 @@ Chrome DevTools 是调试 SVG 文档结构的利器:
 | Minification | 启用 | 减小体积 |
 | Object IDs | Layer Names | 便于调试 |
 
-### 10.7 自动化校验脚本
+### 9.7 自动化校验脚本
 
 ```javascript
 // scripts/validate-svg-structure.mjs
@@ -1103,9 +1067,9 @@ if (failed.length > 0) {
 }
 ```
 
-## 11. 案例研究
+## 10. 案例研究
 
-### 11.1 案例一:Bootstrap Icons 的文档结构
+### 10.1 案例一:Bootstrap Icons 的文档结构
 
 Bootstrap Icons 采用简洁的文档结构:
 
@@ -1122,7 +1086,7 @@ Bootstrap Icons 采用简洁的文档结构:
 3. viewBox 为 16x16,适合小图标
 4. 通过 class 提供样式钩子
 
-### 11.2 案例二:Heroicons 的 React 组件结构
+### 10.2 案例二:Heroicons 的 React 组件结构
 
 Heroicons 提供独立的 React 组件:
 
@@ -1156,7 +1120,7 @@ export const HomeIcon = (props: React.SVGProps<SVGSVGElement>) => {
 3. 使用 `stroke="currentColor"` 支持主题
 4. strokeLinecap 与 strokeLinejoin 统一风格
 
-### 11.3 案例三:FANDEX 项目的 SVG 架构
+### 10.3 案例三:FANDEX 项目的 SVG 架构
 
 ```mermaid
 flowchart TD
@@ -1177,7 +1141,7 @@ flowchart TD
     T9 --> T11
 ```
 
-### 11.4 案例四:Google Material Symbols 的结构
+### 10.4 案例四:Google Material Symbols 的结构
 
 Google Material Symbols 提供 SVG 与字体双格式:
 
@@ -1197,7 +1161,7 @@ SVG 优势:
 2. 可变字重(weight、grade、optical size)
 3. 支持 fill-rule 复杂填充规则
 
-### 11.5 案例五:Lucide Icons 的源文档结构
+### 10.5 案例五:Lucide Icons 的源文档结构
 
 Lucide Icons(原 Feather Icons)采用严格的文档规范:
 
@@ -1430,7 +1394,7 @@ sprites/icons.svg:
 </svg>
 ```
 
-### 12.4 思考题
+### 11.4 思考题
 
 **题目 2.13** 为什么 SVG 选择 XML 而非自定义二进制格式作为语法基础?结合文档结构的需求分析。
 
@@ -1540,9 +1504,9 @@ flowchart TD
    - 自动校验文档结构
    - 视觉回归测试
 
-## 13. 参考文献
+## 12. 参考文献
 
-### 13.1 规范与标准
+### 12.1 规范与标准
 
 - World Wide Web Consortium (W3C). 2003. *Scalable Vector Graphics (SVG) 1.1 Specification - Document Structure*. W3C Recommendation. https://www.w3.org/TR/SVG11/struct.html
 
@@ -1554,7 +1518,7 @@ flowchart TD
 
 - Hollander, D., Tobin, R., and Bray, T. 2009. *Namespaces in XML 1.0 (Third Edition)*. W3C Recommendation. https://www.w3.org/TR/xml-names/
 
-### 13.2 学术论文
+### 12.2 学术论文
 
 - Appelt, W. 1999. *WWW based collaboration with the BSCW system*. In Proceedings of the 26th Conference on Current Trends in Theory and Practice of Informatics on Theory and Practice of Informatics (SOFSEM '99), 66–78. https://doi.org/10.1007/3-540-49127-X_5
 
@@ -1562,7 +1526,7 @@ flowchart TD
 
 - Hors, A. L., Hegaret, P. L., Wood, L., Nicol, G., Robie, J., Champion, M., and Byrne, S. 2004. *Document Object Model (DOM) Level 3 Core Specification*. W3C Recommendation. https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/
 
-### 13.3 书籍
+### 12.3 书籍
 
 - Eisenberg, J. D. 2002. *SVG Essentials*. O'Reilly Media, Sebastopol, CA. ISBN: 978-0-596-00223-7.
 
@@ -1572,9 +1536,9 @@ flowchart TD
 
 - Ray, E. T. 2003. *Learning XML*. O'Reilly Media, Sebastopol, CA. ISBN: 978-0-596-00420-6.
 
-## 14. 延伸阅读
+## 13. 延伸阅读
 
-### 14.1 在线教程与文档
+### 13.1 在线教程与文档
 
 - **MDN SVG 教程**:https://developer.mozilla.org/zh-CN/docs/Web/SVG/Tutorial
   Mozilla 官方 SVG 教程,涵盖从入门到进阶
@@ -1588,7 +1552,7 @@ flowchart TD
 - **A List Apart: SVG 文档结构**:https://alistapart.com/article/svg-document-structure/
   深入讲解 SVG 文档结构设计
 
-### 14.2 开源项目与代码库
+### 13.2 开源项目与代码库
 
 - **SVGO**:https://github.com/svg/svgo
   SVG 优化工具,源码学习文档结构
@@ -1605,7 +1569,7 @@ flowchart TD
 - **Lucide**:https://github.com/lucide-icons/lucide
   Feather Icons 的继任者,2000+ 图标
 
-### 14.3 视频课程
+### 13.3 视频课程
 
 - **Frontend Masters: Advanced SVG Animation**
   Sarah Drasner 主讲的 SVG 进阶课程
@@ -1616,7 +1580,7 @@ flowchart TD
 - **Pluralsight: SVG Document Structure**
   专注 SVG 文档结构的深度课程
 
-### 14.4 进阶主题建议
+### 13.4 进阶主题建议
 
 完成本章学习后,建议继续探索:
 

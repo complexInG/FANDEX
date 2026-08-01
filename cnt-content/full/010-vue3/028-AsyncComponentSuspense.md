@@ -16,6 +16,7 @@ prerequisites:
   - vue3/语法速查
 ---
 
+
 # 异步组件与 Suspense | Async Components and Suspense in Vue 3
 
 > 本文档对标 MIT 6.170、Stanford CS142、CMU 17-437 软件工程课程水准，系统化阐述 Vue 3 异步组件（`defineAsyncComponent`）与 `Suspense` 机制的原理、形式化定义、企业级实践与对比分析。涵盖代码分割（Code Splitting）、动态导入（Dynamic Import）、异步依赖编排（Async Orchestration）、错误边界（Error Boundary）、加载状态管理、SSR 流式渲染等主题，并辅以数学建模、对比分析、案例研究与习题。
@@ -39,61 +40,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标 | Learning Objectives
+## 1. 历史动机与发展脉络 | Historical Motivation and Evolution
 
-本章节基于 Bloom 教育目标分类法设计学习目标，覆盖记忆、理解、应用、分析、评价、创造六个层次。完成本章学习后，学习者应能够独立设计企业级异步加载架构，并对其性能特性与边界条件做出准确判断。
-
-### 1.1 记忆层（Remember）
-
-- **R1**：准确陈述 `defineAsyncComponent` 的函数签名，包括简单形式 `defineAsyncComponent(loader)` 与完整配置形式 `defineAsyncComponent(options)`。
-- **R2**：列举异步组件的完整配置项：`loader`、`loadingComponent`、`errorComponent`、`delay`、`timeout`、`suspensible`、`onError`。
-- **R3**：复述 `Suspense` 组件的两个具名插槽：`#default`（默认内容）与 `#fallback`（加载占位）。
-- **R4**：背记 `Suspense` 的事件回调：`onPending`（pending）、`onResolve`（resolve）、`onFallback`（fallback）。
-- **R5**：识别 `async setup()` 必须在 `Suspense` 内使用，否则 Vue 会抛出警告。
-
-### 1.2 理解层（Understand）
-
-- **U1**：解释代码分割（Code Splitting）的核心思想：将应用拆分为多个 chunk，按需加载，减少首屏体积。
-- **U2**：阐述动态导入（Dynamic Import）`import('./Component.vue')` 返回 Promise 的语法，以及 Webpack/Vite 如何将其转换为独立 chunk。
-- **U3**：描述 `Suspense` 的工作原理：等待所有异步依赖完成后，再渲染默认插槽；若任一依赖 pending，则渲染 fallback。
-- **U4**：理解 `defineAsyncComponent` 与 `Suspense` 的协作模式：`suspensible: true`（默认）时，异步组件参与 Suspense 协调；`suspensible: false` 时，异步组件独立管理 loading/error 状态。
-- **U5**：说明 `delay` 与 `timeout` 的语义：`delay` 防止 loading 闪烁，`timeout` 触发超时错误，避免无限等待。
-
-### 1.3 应用层（Apply）
-
-- **A1**：使用 `defineAsyncComponent` 实现路由懒加载，将每个路由对应的组件拆分为独立 chunk。
-- **A2**：使用 `Suspense` 包装异步组件树，统一管理加载占位与错误边界。
-- **A3**：实现一个带重试机制的异步组件，使用 `onError` 回调实现最多 3 次重试。
-- **A4**：在 `async setup()` 中调用 API 获取数据，配合 `Suspense` 实现加载态管理。
-- **A5**：使用 Vite 的 `import.meta.glob` 实现批量异步加载，构建可配置的组件注册表。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：分析 `Suspense` 的依赖收集机制：Vue 内部维护异步依赖计数器，每个异步 setup 注册依赖，完成时递减，归零时触发 resolve。
-- **An2**：对比 Vue `Suspense` 与 React `Suspense` 的实现差异：Vue 基于组件树依赖追踪，React 基于 throw Promise 模式。
-- **An3**：解构 `defineAsyncComponent` 的内部状态机：idle → loading → loaded/error，分析状态转换条件。
-- **An4**：分析异步组件在 SSR 中的行为：服务端同步等待所有异步依赖，客户端 hydration 时跳过加载态。
-- **An5**：评估 `delay: 200ms` 与 `delay: 0` 在用户体验上的差异：前者避免闪烁，后者立即显示 loading。
-
-### 1.5 评价层（Evaluate）
-
-- **E1**：评估一个路由是否应当懒加载，权衡首屏体积、加载延迟、SEO 影响。
-- **E2**：判断何时应当使用 `Suspense` 包裹异步组件，何时使用 `defineAsyncComponent` 的内置 loading/error 配置，权衡灵活性。
-- **E3**：评价 `async setup()` 的适用场景：何时优于 `onMounted` + 状态管理，何时引入过度复杂。
-- **E4**：权衡 `Suspense` 在大型应用中的使用成本：嵌套 Suspense、错误边界、加载顺序的复杂性。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计一套企业级异步组件加载策略，支持优先级、预加载、降级、缓存，并与 Vue Router 深度集成。
-- **C2**：构建一个基于 `Suspense` 的流式 SSR 框架，支持服务端流式渲染与客户端渐进式 hydration。
-- **C3**：实现一个异步组件的错误恢复系统，支持自动重试、降级组件、用户手动重试、错误上报。
-- **C4**：设计一个可视化的异步依赖分析工具，展示组件树的异步加载链路、加载时间、错误率，辅助性能优化。
-
----
-
-## 2. 历史动机与发展脉络 | Historical Motivation and Evolution
-
-### 2.1 代码分割的起源
+### 1.1 代码分割的起源
 
 Web 应用的体积随功能增长而膨胀，首屏 JS 体积从 2010 年的几十 KB 增长到 2025 年的数 MB。代码分割（Code Splitting）是应对此问题的核心技术，其设计动机：
 
@@ -114,7 +63,7 @@ Web 应用的体积随功能增长而膨胀，首屏 JS 体积从 2010 年的几
 | 2022 | Vue 3.2 稳定 `Suspense`，支持嵌套与 SSR |
 | 2024 | Vite 5 优化动态导入，支持模块预加载 |
 
-### 2.2 Vue 2 时代的异步组件
+### 1.2 Vue 2 时代的异步组件
 
 Vue 2 提供 `defineAsyncComponent`（早期为 `() => Promise`），支持基础代码分割：
 
@@ -135,11 +84,11 @@ const AsyncComponent = () => import('./AsyncComponent.vue');
 - 无 Suspense 协调，多个异步组件无法统一管理加载态。
 - 无 `async setup()`，数据获取需在 `created` 或 `mounted` 中处理。
 
-### 2.3 Vue 3 时代（2020-至今）：完整重构
+### 1.3 Vue 3 时代（2020-至今）：完整重构
 
 Vue 3 对异步组件进行根本性重构，并引入 `Suspense`：
 
-#### 2.3.1 defineAsyncComponent 完整配置（Vue 3.0）
+#### 1.3.1 defineAsyncComponent 完整配置（Vue 3.0）
 
 ```javascript
 import { defineAsyncComponent } from 'vue';
@@ -158,7 +107,7 @@ const AsyncComp = defineAsyncComponent({
 });
 ```
 
-#### 2.3.2 Suspense 组件（Vue 3.0，实验性）
+#### 1.3.2 Suspense 组件（Vue 3.0，实验性）
 
 ```vue
 <Suspense>
@@ -171,7 +120,7 @@ const AsyncComp = defineAsyncComponent({
 </Suspense>
 ```
 
-#### 2.3.3 async setup()（Vue 3.0）
+#### 1.3.3 async setup()（Vue 3.0）
 
 Vue 3 允许 `setup` 为 async 函数，自动与 Suspense 集成：
 
@@ -184,7 +133,7 @@ export default {
 };
 ```
 
-#### 2.3.4 嵌套 Suspense（Vue 3.2+）
+#### 1.3.4 嵌套 Suspense（Vue 3.2+）
 
 Vue 3.2+ 支持嵌套 Suspense，允许局部异步依赖独立管理加载态：
 
@@ -207,11 +156,11 @@ Vue 3.2+ 支持嵌套 Suspense，允许局部异步依赖独立管理加载态�
 </Suspense>
 ```
 
-#### 2.3.5 SSR 流式渲染（Vue 3.3+）
+#### 1.3.5 SSR 流式渲染（Vue 3.3+）
 
 Vue 3.3+ 优化了 SSR 中的 Suspense，支持流式渲染（`renderToNodeStream`），服务端在异步依赖完成时立即输出对应 HTML，提升首屏 TTFB（Time To First Byte）。
 
-### 2.4 Evan You 的设计哲学
+### 1.4 Evan You 的设计哲学
 
 Evan You 对异步组件与 Suspense 的定位：
 
@@ -220,7 +169,7 @@ Evan You 对异步组件与 Suspense 的定位：
 3. **与 React Suspense 互补**：借鉴 React 的概念，但实现基于 Vue 的响应式系统，重渲染粒度更细。
 4. **实验性优先级**：`Suspense` 长期标记为实验性，API 可能调整，避免过早稳定化限制演进。
 
-### 2.5 与 React.lazy/Suspense 的对比
+### 1.5 与 React.lazy/Suspense 的对比
 
 React 16.6（2018）引入 `React.lazy` 与 `Suspense`，与 Vue 方案解决相似问题：
 
@@ -242,7 +191,7 @@ React 16.6（2018）引入 `React.lazy` 与 `Suspense`，与 Vue 方案解决相
 - React 的 `lazy` 更精简，复杂场景需配合 ErrorBoundary 与外部数据获取库。
 - Vue 的 `async setup()` 允许组件级数据获取与 Suspense 集成，React 需借助 React Query 等。
 
-### 2.6 与 Solid.js、Svelte 的对比
+### 1.6 与 Solid.js、Svelte 的对比
 
 | 框架 | 异步组件 API | Suspense 支持 | 数据获取集成 |
 |------|--------------|---------------|--------------|
@@ -256,9 +205,9 @@ Solid.js 的 `lazy` 与 Vue 最相似，但基于细粒度响应式，性能更�
 
 ---
 
-## 3. 形式化定义 | Formal Definitions
+## 2. 形式化定义 | Formal Definitions
 
-### 3.1 异步组件的形式化定义
+### 2.1 异步组件的形式化定义
 
 **定义 3.1（异步组件）**：异步组件是一个返回 Promise 的工厂函数，记为 $A$：
 
@@ -280,7 +229,7 @@ $$
 \text{state} \in \{\text{idle}, \text{loading}, \text{loaded}, \text{error}\}
 $$
 
-### 3.2 异步组件配置的形式化
+### 2.2 异步组件配置的形式化
 
 **定义 3.3（完整配置）**：`defineAsyncComponent` 的完整配置是一个七元组：
 
@@ -298,7 +247,7 @@ $$
 - $\text{suspensible}: \text{boolean}$：是否参与 Suspense 协调，默认 true。
 - $\text{onError}: (\text{error}, \text{retry}, \text{fail}, \text{attempts}) \to \text{void}$：错误回调。
 
-### 3.3 状态机的形式化
+### 2.3 状态机的形式化
 
 **定义 3.4（状态转换）**：异步组件包装器的状态转换：
 
@@ -318,7 +267,7 @@ $$
 - `error` 可通过 `retry` 转回 `loading`，支持错误恢复。
 - `timeout` 与 `loader.reject` 都会触发 `error`，但 `timeout` 不取消 loader。
 
-### 3.4 Suspense 的形式化定义
+### 2.4 Suspense 的形式化定义
 
 **定义 3.5（Suspense 依赖）**：Suspense 维护一个异步依赖集合 $D$：
 
@@ -344,7 +293,7 @@ $$
 - $\text{resolved}$：渲染 `#default` 插槽。
 - $\text{rejected}$：向上抛出错误，由 ErrorBoundary 或上层 Suspense 处理。
 
-### 3.5 async setup() 的形式化
+### 2.5 async setup() 的形式化
 
 **定义 3.7（async setup）**：`async setup()` 是返回 Promise 的 setup 函数：
 
@@ -362,7 +311,7 @@ $$
 
 Promise resolve 时递减依赖计数，归零时触发 Suspense resolve。
 
-### 3.6 代码分割的形式化
+### 2.6 代码分割的形式化
 
 **定义 3.8（chunk 分割）**：设应用总代码量为 $C$，分割为 $n$ 个 chunk：
 
@@ -379,7 +328,7 @@ $$
 - 用户访问路由 $r$ 时，必须加载 $c_r$（该路由的组件）。
 - 共享依赖（如 Vue 运行时）应抽离为 vendor chunk，避免重复。
 
-### 3.7 动态导入的形式化
+### 2.7 动态导入的形式化
 
 **定义 3.9（动态导入）**：`import('./module')` 返回一个 Promise：
 
@@ -400,9 +349,9 @@ Webpack/Vite 将其转换为：
 
 ---
 
-## 4. 理论推导与原理解析 | Theoretical Derivation
+## 3. 理论推导与原理解析 | Theoretical Derivation
 
-### 4.1 defineAsyncComponent 的内部实现
+### 3.1 defineAsyncComponent 的内部实现
 
 Vue 3 的 `defineAsyncComponent` 内部实现是一个包装组件，维护状态机：
 
@@ -481,7 +430,7 @@ export function defineAsyncComponent(options) {
 2. **重试支持**：`onError` 提供 `retry` 回调，递归调用 `load`。
 3. **状态机**：`loading`/`loaded`/`error` 三态切换，驱动渲染。
 
-### 4.2 Suspense 的依赖追踪机制
+### 3.2 Suspense 的依赖追踪机制
 
 Suspense 内部维护一个 `deps` 集合与计数器：
 
@@ -532,7 +481,7 @@ const Suspense = {
 3. **Promise 链接**：Promise resolve 时调用 `resolve()`，递减计数器。
 4. **归零触发渲染**：`deps === 0` 时切换到默认插槽。
 
-### 4.3 async setup() 的执行流程
+### 3.3 async setup() 的执行流程
 
 `async setup()` 的执行流程：
 
@@ -549,7 +498,7 @@ const Suspense = {
 - 多个 `async setup()` 嵌套时，Suspense 等待所有依赖完成。
 - `async setup()` 中可以使用 `onMounted` 等生命周期钩子，但需在 Promise resolve 后执行。
 
-### 4.4 代码分割的性能分析
+### 3.4 代码分割的性能分析
 
 **首屏加载量优化**：
 
@@ -575,7 +524,7 @@ $$
 - 路由切换时需加载新 chunk，增加延迟。
 - HTTP 请求数增多，需 HTTP/2 或预加载优化。
 
-### 4.5 chunk 预加载策略
+### 3.5 chunk 预加载策略
 
 Vite/Webpack 提供多种预加载策略：
 
@@ -600,7 +549,7 @@ link.addEventListener('mouseenter', () => {
 - 性能收益：用户实际访问时 $O(1)$，从缓存读取。
 - 权衡：仅预加载高概率访问的 chunk。
 
-### 4.6 Suspense 嵌套的复杂度
+### 3.6 Suspense 嵌套的复杂度
 
 嵌套 Suspense 允许局部依赖独立管理：
 
@@ -624,7 +573,7 @@ link.addEventListener('mouseenter', () => {
 - 依赖追踪：$O(n)$，$n$ 为 Suspense 节点数。
 - 错误传播：内层错误可被外层捕获，也可独立处理。
 
-### 4.7 与 React Suspense 的原理对比
+### 3.7 与 React Suspense 的原理对比
 
 React 18 的 Suspense 基于 throw Promise 模式：
 
@@ -660,7 +609,7 @@ function use(fetchPromise) {
 - 通用性：任意数据获取库（如 React Query）可通过 throw 集成。
 - 并发渲染：React 18 的 Concurrent Rendering 与 Suspense 深度集成。
 
-### 4.8 SSR 流式渲染的原理
+### 3.8 SSR 流式渲染的原理
 
 Vue 3.3+ 的 SSR 支持 Suspense 流式渲染：
 
@@ -683,7 +632,7 @@ stream.pipe(res);
 - TTFB（Time To First Byte）显著降低：服务端无需等待所有数据即可响应。
 - 用户感知性能提升：浏览器逐步渲染，无需等待完整 HTML。
 
-### 4.9 错误传播与捕获
+### 3.9 错误传播与捕获
 
 Suspense 的错误传播规则：
 
@@ -717,9 +666,9 @@ export default {
 
 ---
 
-## 5. 代码示例 | Code Examples
+## 4. 代码示例 | Code Examples
 
-### 5.1 基础用法：路由懒加载
+### 4.1 基础用法：路由懒加载
 
 ```javascript
 // router/index.ts —— Vue 3.4+ + Vue Router 4
@@ -754,7 +703,7 @@ export const router = createRouter({
 });
 ```
 
-### 5.2 完整配置：defineAsyncComponent
+### 4.2 完整配置：defineAsyncComponent
 
 ```vue
 <!-- AsyncComponent.vue —— Vue 3.4+ -->
@@ -792,7 +741,7 @@ const HeavyChart = defineAsyncComponent({
 </template>
 ```
 
-### 5.3 Suspense 基础用法
+### 4.3 Suspense 基础用法
 
 ```vue
 <!-- AsyncPage.vue -->
@@ -834,7 +783,7 @@ const AsyncFooter = defineAsyncComponent(() => import('./Footer.vue'));
 </style>
 ```
 
-### 5.4 async setup() 与数据获取
+### 4.4 async setup() 与数据获取
 
 ```vue
 <!-- UserProfile.vue -->
@@ -904,7 +853,7 @@ onErrorCaptured((err) => {
 </template>
 ```
 
-### 5.5 嵌套 Suspense
+### 4.5 嵌套 Suspense
 
 ```vue
 <!-- NestedSuspense.vue -->
@@ -957,7 +906,7 @@ const AsyncComments = defineAsyncComponent(() => import('./Comments.vue'));
 </template>
 ```
 
-### 5.6 Suspense 事件
+### 4.6 Suspense 事件
 
 ```vue
 <!-- SuspenseWithEvents.vue -->
@@ -1007,7 +956,7 @@ function onFallback() {
 </template>
 ```
 
-### 5.7 错误处理与重试
+### 4.7 错误处理与重试
 
 ```vue
 <!-- AsyncWithErrorHandling.vue -->
@@ -1096,7 +1045,7 @@ function reload() {
 </style>
 ```
 
-### 5.8 Vite 批量异步加载
+### 4.8 Vite 批量异步加载
 
 ```javascript
 // utils/loadComponents.js —— Vue 3.4+ + Vite 5
@@ -1133,7 +1082,7 @@ for (const [name, component] of Object.entries(components)) {
 }
 ```
 
-### 5.9 预加载策略
+### 4.9 预加载策略
 
 ```javascript
 // utils/preload.js
@@ -1178,7 +1127,7 @@ if ('requestIdleCallback' in window) {
 }
 ```
 
-### 5.10 组件加载状态可视化
+### 4.10 组件加载状态可视化
 
 ```vue
 <!-- AsyncLoader.vue —— 可视化加载状态 -->
@@ -1278,7 +1227,7 @@ function stopLoading() {
 </style>
 ```
 
-### 5.11 企业级异步组件注册器
+### 4.11 企业级异步组件注册器
 
 ```typescript
 // utils/asyncComponents.ts —— 企业级异步组件注册
@@ -1355,7 +1304,7 @@ registerAsyncComponents(app);
 app.mount('#app');
 ```
 
-### 5.12 SSR 流式渲染示例
+### 4.12 SSR 流式渲染示例
 
 ```javascript
 // server.js —— Vue 3.4+ SSR 流式渲染
@@ -1413,9 +1362,9 @@ server.listen(3000, () => {
 
 ---
 
-## 6. 对比分析 | Comparative Analysis
+## 5. 对比分析 | Comparative Analysis
 
-### 6.1 与 React.lazy/Suspense 的对比
+### 5.1 与 React.lazy/Suspense 的对比
 
 | 维度 | Vue 3 defineAsyncComponent | React.lazy |
 |------|------------------------------|------------|
@@ -1437,7 +1386,7 @@ server.listen(3000, () => {
 2. **数据获取集成**：Vue 的 `async setup()` 原生支持组件级数据获取与 Suspense 集成，React 需借助 React Query 等。
 3. **并发渲染**：React 18 的 Concurrent Rendering 支持中断与重试，Vue 基于响应式系统，无中断。
 
-### 6.2 与 Solid.js lazy/Suspense 的对比
+### 5.2 与 Solid.js lazy/Suspense 的对比
 
 | 维度 | Vue 3 | Solid.js |
 |------|-------|----------|
@@ -1453,7 +1402,7 @@ server.listen(3000, () => {
 - Solid.js 的细粒度响应式使其性能更优，但学习成本较高。
 - Vue 的组件级渲染粒度更易理解，社区生态更成熟。
 
-### 6.3 与 Svelte 异步组件的对比
+### 5.3 与 Svelte 异步组件的对比
 
 | 维度 | Vue 3 | Svelte |
 |------|-------|--------|
@@ -1468,7 +1417,7 @@ server.listen(3000, () => {
 - Svelte 无原生 Suspense，需手动管理加载态。
 - Svelte 的编译时优化使其运行时极小，但灵活性受限。
 
-### 6.4 与 Angular 异步路由的对比
+### 5.4 与 Angular 异步路由的对比
 
 | 维度 | Vue 3 | Angular |
 |------|-------|---------|
@@ -1478,7 +1427,7 @@ server.listen(3000, () => {
 | 依赖注入 | provide/inject | 完整 DI 容器 |
 | 学习成本 | 中 | 高 |
 
-### 6.5 综合选型决策矩阵
+### 5.5 综合选型决策矩阵
 
 | 场景 | 推荐方案 |
 |------|----------|
@@ -1493,9 +1442,9 @@ server.listen(3000, () => {
 
 ---
 
-## 7. 常见陷阱与最佳实践 | Pitfalls and Best Practices
+## 6. 常见陷阱与最佳实践 | Pitfalls and Best Practices
 
-### 7.1 陷阱：async setup() 在 Suspense 外使用
+### 6.1 陷阱：async setup() 在 Suspense 外使用
 
 **错误代码**：
 
@@ -1529,7 +1478,7 @@ const data = await fetch('/api/data').then(r => r.json());
 </template>
 ```
 
-### 7.2 陷阱：loading 闪烁
+### 6.2 陷阱：loading 闪烁
 
 **错误代码**：
 
@@ -1553,7 +1502,7 @@ const AsyncComp = defineAsyncComponent({
 
 **原理**：`delay` 防止快速加载时 loading 闪烁，提升用户体验。200ms 是经验值，根据实际加载时间调整。
 
-### 7.3 陷阱：未处理超时
+### 6.3 陷阱：未处理超时
 
 **错误代码**：
 
@@ -1577,7 +1526,7 @@ const AsyncComp = defineAsyncComponent({
 });
 ```
 
-### 7.4 陷阱：Suspense 未捕获错误
+### 6.4 陷阱：Suspense 未捕获错误
 
 **错误代码**：
 
@@ -1622,7 +1571,7 @@ onErrorCaptured((err) => {
 </template>
 ```
 
-### 7.5 陷阱：循环依赖导致加载失败
+### 6.5 陷阱：循环依赖导致加载失败
 
 **错误代码**：
 
@@ -1643,7 +1592,7 @@ export default {
 - 重构代码，消除循环依赖。
 - 使用动态 import 延迟加载：`const B = () => import('./B.vue')`。
 
-### 7.6 陷阱：chunk 命名冲突
+### 6.6 陷阱：chunk 命名冲突
 
 **错误代码**：
 
@@ -1661,7 +1610,7 @@ const A = () => import(/* webpackChunkName: "a" */ './A.vue');
 const B = () => import(/* webpackChunkName: "b" */ './B.vue');
 ```
 
-### 7.7 陷阱：Suspense 嵌套过深
+### 6.7 陷阱：Suspense 嵌套过深
 
 **错误代码**：
 
@@ -1679,7 +1628,7 @@ const B = () => import(/* webpackChunkName: "b" */ './B.vue');
 
 **建议**：限制 Suspense 嵌套层级，通常 2 层足够。深层嵌套应重构组件结构。
 
-### 7.8 陷阱：async setup 中使用生命周期钩子
+### 6.8 陷阱：async setup 中使用生命周期钩子
 
 **错误代码**：
 
@@ -1712,7 +1661,7 @@ export default {
 
 **原理**：Vue 的生命周期钩子需在 setup 同步执行期间注册，await 之后的代码异步执行，钩子注册失败。
 
-### 7.9 最佳实践：合理使用 delay
+### 6.9 最佳实践：合理使用 delay
 
 ```javascript
 // 根据 loader 平均加载时间调整 delay
@@ -1724,7 +1673,7 @@ const AsyncComp = defineAsyncComponent({
 });
 ```
 
-### 7.10 最佳实践：错误恢复
+### 6.10 最佳实践：错误恢复
 
 ```javascript
 const AsyncComp = defineAsyncComponent({
@@ -1748,7 +1697,7 @@ const AsyncComp = defineAsyncComponent({
 });
 ```
 
-### 7.11 最佳实践：预加载关键路由
+### 6.11 最佳实践：预加载关键路由
 
 ```javascript
 // router/index.ts
@@ -1772,7 +1721,7 @@ router.beforeEach((to) => {
 });
 ```
 
-### 7.12 最佳实践：chunk 分析与优化
+### 6.12 最佳实践：chunk 分析与优化
 
 ```javascript
 // vite.config.ts —— 分析 chunk 大小
@@ -1802,7 +1751,7 @@ export default defineConfig({
 });
 ```
 
-### 7.13 最佳实践：SSR 错误降级
+### 6.13 最佳实践：SSR 错误降级
 
 ```javascript
 // SSR 中处理异步组件错误
@@ -1830,9 +1779,9 @@ async function render(url) {
 
 ---
 
-## 8. 工程实践 | Engineering Practice
+## 7. 工程实践 | Engineering Practice
 
-### 8.1 项目结构组织
+### 7.1 项目结构组织
 
 ```mermaid
 flowchart TD
@@ -1863,7 +1812,7 @@ flowchart TD
     T18 --> T19
 ```
 
-### 8.2 Vite 配置优化
+### 7.2 Vite 配置优化
 
 ```typescript
 // vite.config.ts
@@ -1917,7 +1866,7 @@ export default defineConfig({
 });
 ```
 
-### 8.3 Vue Router 懒加载
+### 7.3 Vue Router 懒加载
 
 ```typescript
 // router/index.ts
@@ -1970,7 +1919,7 @@ router.beforeEach((to) => {
 export default router;
 ```
 
-### 8.4 单元测试
+### 7.4 单元测试
 
 ```typescript
 // tests/components/AsyncComponent.spec.ts
@@ -2043,7 +1992,7 @@ describe('AsyncComponent', () => {
 });
 ```
 
-### 8.5 集成测试
+### 7.5 集成测试
 
 ```typescript
 // tests/integration/route.spec.ts
@@ -2079,7 +2028,7 @@ describe('Route lazy loading', () => {
 });
 ```
 
-### 8.6 性能监控
+### 7.6 性能监控
 
 ```typescript
 // composables/useChunkPerformance.ts
@@ -2121,7 +2070,7 @@ export function useChunkPerformance() {
 }
 ```
 
-### 8.7 SSR 流式渲染实践
+### 7.7 SSR 流式渲染实践
 
 ```typescript
 // server/index.ts —— Nuxt 3 风格的 SSR
@@ -2172,7 +2121,7 @@ server.get('*', async (req, res) => {
 server.listen(3000);
 ```
 
-### 8.8 调试工具
+### 7.8 调试工具
 
 ```typescript
 // devtools/asyncInspector.ts
@@ -2219,9 +2168,9 @@ function getAsyncComponentTree(instance: any): any {
 
 ---
 
-## 9. 案例研究 | Case Studies
+## 8. 案例研究 | Case Studies
 
-### 9.1 案例一：Nuxt 3 的路由懒加载
+### 8.1 案例一：Nuxt 3 的路由懒加载
 
 Nuxt 3 默认将所有页面组件懒加载，无需手动配置：
 
@@ -2247,7 +2196,7 @@ export default defineNuxtConfig({
 2. **预取策略**：Nuxt 默认预取所有可见链接对应的 chunk。
 3. **Suspense 集成**：Nuxt 的 `<NuxtPage>` 内置 Suspense，管理加载态。
 
-### 9.2 案例二：Element Plus 的按需加载
+### 8.2 案例二：Element Plus 的按需加载
 
 Element Plus 通过异步组件实现按需加载：
 
@@ -2276,7 +2225,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 2. **异步注册**：组件首次使用时加载，未使用的组件不打包。
 3. **Tree Shaking 配合**：与 Vite/Webpack 的 Tree Shaking 协同，进一步减小体积。
 
-### 9.3 案例三：VitePress 的异步加载
+### 8.3 案例三：VitePress 的异步加载
 
 VitePress 大量使用异步组件加载 Markdown 渲染器：
 
@@ -2297,7 +2246,7 @@ export default {
 };
 ```
 
-### 9.4 案例四：Vue Router 的懒加载
+### 8.4 案例四：Vue Router 的懒加载
 
 Vue Router 4 推荐使用动态 import 实现懒加载：
 
@@ -2326,7 +2275,7 @@ router.beforeEach(async (to) => {
 });
 ```
 
-### 9.5 案例五：企业级仪表盘的异步加载
+### 8.5 案例五：企业级仪表盘的异步加载
 
 ```vue
 <!-- Dashboard.vue —— 企业级仪表盘 -->
@@ -2425,7 +2374,7 @@ function onChartError(name: string, error: Error) {
 </style>
 ```
 
-### 9.6 案例六：电商商品详情页的异步加载
+### 8.6 案例六：电商商品详情页的异步加载
 
 ```vue
 <!-- ProductDetail.vue -->
@@ -2793,7 +2742,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：在大型应用中，如何设计一套完整的代码分割与预加载策略，平衡首屏性能、用户体验与带宽成本？
 
@@ -2892,11 +2841,11 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 ---
 
-## 11. 参考文献 | References
+## 10. 参考文献 | References
 
 本文档参考了以下学术文献、官方文档与技术专著，遵循 ACM Reference Format。
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 [1] Evan You and the Vue.js Team. 2024. Vue.js 3 Official Documentation: Components in Depth - Async Components. Retrieved July 20, 2026 from https://vuejs.org/guide/components/async.html
 
@@ -2908,7 +2857,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 [5] Vue Router Team. 2024. Vue Router 4 Documentation: Dynamic Route Matching. Retrieved July 20, 2026 from https://router.vuejs.org/guide/essentials/dynamic-matching.html
 
-### 11.2 学术文献
+### 10.2 学术文献
 
 [6] Addy Osmani. 2017. The Cost of JavaScript in 2017. Retrieved July 20, 2026 from https://medium.com/dev-channel/the-cost-of-javascript-in-2017-4446d428e434
 
@@ -2920,7 +2869,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 [10] Evan You. 2021. Vue 3.2 Released. Retrieved July 20, 2026 from https://blog.vuejs.org/posts/vue-3.2
 
-### 11.3 相关框架文档
+### 10.3 相关框架文档
 
 [11] Meta Platforms, Inc. 2024. React Documentation: Suspense. Retrieved July 20, 2026 from https://react.dev/reference/react/Suspense
 
@@ -2932,7 +2881,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 [15] Angular Team. 2024. Angular Documentation: Lazy Loading. Retrieved July 20, 2026 from https://angular.dev/guide/lazy-loading
 
-### 11.4 技术专著
+### 10.4 技术专著
 
 [16] Evan You. 2023. Vue.js 3 Design and Implementation (Vue.js 设计与实现). People's Posts and Telecommunications Press, Beijing, China.
 
@@ -2940,7 +2889,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 [18] Alex Kyriakidis, Pablo De Garcia, and Christian Pan. 2023. The Vue Handbook: A Comprehensive Guide to Vue.js. Vue School.
 
-### 11.5 论文与技术报告
+### 10.5 论文与技术报告
 
 [19] Evan You. 2019. Vue 3.0 RFC: Suspense. Retrieved July 20, 2026 from https://github.com/vuejs/rfcs/blob/master/active-rfcs/0000-suspense.md
 
@@ -2948,7 +2897,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 [21] Vite Team. 2024. Vite Documentation: Dynamic Import. Retrieved July 20, 2026 from https://vitejs.dev/guide/features.html#dynamic-import
 
-### 11.6 在线资源
+### 10.6 在线资源
 
 [22] Vue School. 2024. Vue 3 Async Components. Retrieved July 20, 2026 from https://vueschool.io/courses/vue-3-async-components
 
@@ -2958,9 +2907,9 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 ---
 
-## 12. 延伸阅读 | Further Reading
+## 11. 延伸阅读 | Further Reading
 
-### 12.1 书籍
+### 11.1 书籍
 
 1. **《Vue.js 设计与实现》**——霍春阳
    - 深入剖析 Vue 3 异步组件、Suspense 的实现原理。
@@ -2975,7 +2924,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 4. **《Vue.js 3 By Example》**——Thiago Delgado Pinto
    - 通过实战项目讲解 Vue 3，包含异步组件的应用。
 
-### 12.2 论文与 RFC
+### 11.2 论文与 RFC
 
 1. **Vue 3 Suspense RFC**：https://github.com/vuejs/rfcs
    - Vue 官方的 RFC，包含 Suspense 的设计讨论。
@@ -2986,7 +2935,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 3. **React Suspense RFC**：https://github.com/reactjs/rfcs
    - React Suspense 的设计讨论，对比 Vue 与 React 的实现差异。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 1. **Vue School**：https://vueschool.io/
    - Vue 官方推荐的在线学习平台，包含异步组件的视频教程。
@@ -3003,7 +2952,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 5. **Web.dev**：https://web.dev/
    - Google 的 Web 性能指南，包含代码分割最佳实践。
 
-### 12.4 开源项目参考
+### 11.4 开源项目参考
 
 1. **Nuxt 3**：https://github.com/nuxt/nuxt
    - Vue 3 元框架，自动化路由懒加载与 Suspense 集成。
@@ -3020,7 +2969,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 5. **Pinia Colada**：https://github.com/posva/pinia-colada
    - Vue 官方的数据获取库，类似 React Query。
 
-### 12.5 社区与讨论
+### 11.5 社区与讨论
 
 1. **Vue Discord**：https://discord.com/invite/vue
    - Vue 官方 Discord，讨论异步组件与 Suspense 实践。

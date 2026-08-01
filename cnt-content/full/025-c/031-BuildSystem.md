@@ -20,22 +20,12 @@ prerequisites:
   - c/预处理器与宏
   - c/头文件与链接
 ---
+
 # C 构建系统 语法速查手册
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-本节遵循 Bloom 认知分类法，按"记忆 → 理解 → 应用 → 分析 → 评价 → 创造"六层级组织学习目标。读者完成本节后应能够：
-
-- **记忆层级**：复述 C 语言编译流程四阶段（预处理、编译、汇编、链接）、Make 的依赖图模型、CMake 的"元构建"角色、Ninja 的并行调度策略。
-- **理解层级**：解释 Makefile 规则语法、CMake 的目标（target）与属性（property）模型、生成器（generator）机制、`PUBLIC`/`PRIVATE`/`INTERFACE` 关键字在依赖传播中的语义差异。
-- **应用层级**：使用 CMake 构建多目录 C 项目、管理外部依赖（`find_package`、`FetchContent`、`vcpkg`）、编写跨平台工具链文件（toolchain）、配置 Debug/Release/RelWithDebInfo 构建类型。
-- **分析层级**：剖析 Make 的递归make问题、CMake 的策略（policy）机制、Ninja 的依赖图数据库（`.ninja_deps`）如何实现精确增量构建、链接时优化（LTO）对构建系统的影响。
-- **评价层级**：评估在何种场景下应选择 Make、CMake、Meson、Bazel 或 SCons，权衡构建速度、可维护性、跨平台支持、生态成熟度与团队学习成本。
-- **创造层级**：基于 CMake 设计一套完整的模块化项目骨架，集成单元测试（CTest/GoogleTest）、静态分析（clang-tidy/cppcheck）、代码覆盖率（gcov/llvm-cov）、交叉编译、持续集成（CI）与发布管理。
 
 ## 历史动机与背景
 

@@ -15,6 +15,7 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
+
 # 组件生命周期详解 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
@@ -75,18 +76,7 @@ HarmonyOS 应用中存在两个层次的生命周期,初学者常将其混淆:
 
 可以看到 ArkUI 的设计更接近 SwiftUI,通过 `aboutToAppear` / `aboutToDisappear` 提供清晰的"前后"钩子,而非 React 的"渲染后再回调"模式。
 
-## 2. 学习目标
-
-完成本章学习后,读者应能够:
-
-1. **概念层面**——准确解释组件生命周期与 UIAbility 生命周期的区别,以及各回调的触发时机
-2. **代码层面**——能够正确实现 `aboutToAppear`、`aboutToDisappear`、`onPageShow`、`onPageHide`、`onBackPress` 等回调
-3. **资源管理**——掌握在生命周期中正确申请与释放资源(订阅、定时器、监听)的模式
-4. **数据加载**——理解为何应在 `aboutToAppear` 而非 `build()` 中执行异步数据加载
-5. **性能优化**——识别生命周期相关的高开销操作,并通过 LazyForEach、组件复用等手段优化
-6. **调试排错**——能够通过生命周期日志与 DevEco Studio 工具定位组件未销毁、内存泄漏等问题
-
-## 3. 前置知识
+## 2. 前置知识
 
 阅读本章前,建议读者具备以下基础:
 
@@ -95,9 +85,9 @@ HarmonyOS 应用中存在两个层次的生命周期,初学者常将其混淆:
 - **状态管理**——理解 `@State`、`@Prop`、`@Link` 的数据同步机制
 - **Stage 模型**——了解 Ability、UIAbility 等基础概念(可参考"Stage 模型与 FA 模型区别"章节)
 
-## 4. 核心概念
+## 3. 核心概念
 
-### 4.1 组件生命周期总览
+### 3.1 组件生命周期总览
 
 ArkUI 组件的生命周期包含以下回调函数,按典型触发顺序排列:
 
@@ -115,7 +105,7 @@ ArkUI 组件的生命周期包含以下回调函数,按典型触发顺序排列:
 - `onPageShow`、`onPageHide`、`onBackPress` 仅在 `@Entry` 页面入口组件中生效
 - `build()` 是必须实现的方法,但严格意义上不属于"回调",而是组件的核心契约
 
-### 4.2 生命周期时序图
+### 3.2 生命周期时序图
 
 理解生命周期的关键是掌握各回调的触发顺序。下图展示一个典型的"页面 A 跳转到页面 B,然后返回"的完整生命周期:
 
@@ -164,7 +154,7 @@ build (A)  ----> UI 渲染 ----> onPageShow (A)
 2. 返回时,页面 B 的 `aboutToDisappear` 在页面 A 的 `onPageShow` 之前触发,即"先销毁旧页面,再显示目标页面"
 3. 默认 `router.pushUrl` 行为下,页面 A 不会被销毁(保留在路由栈中),只有 `router.replaceUrl` 或栈满时才会触发 A 的 `aboutToDisappear`
 
-### 4.3 `aboutToAppear` 详解
+### 3.3 `aboutToAppear` 详解
 
 `aboutToAppear` 是组件创建后、`build()` 执行前的回调。这是组件生命周期中**最重要的初始化时机**。
 
@@ -237,7 +227,7 @@ async function fetchUser(id: number): Promise<User> {
 }
 ```
 
-### 4.4 `aboutToDisappear` 详解
+### 3.4 `aboutToDisappear` 详解
 
 `aboutToDisappear` 是组件即将从组件树移除并销毁前的回调。这是**资源释放的最后时机**。
 
@@ -335,7 +325,7 @@ class EventBus {
 const eventBus = new EventBus();
 ```
 
-### 4.5 `onPageShow` 与 `onPageHide`
+### 3.5 `onPageShow` 与 `onPageHide`
 
 `onPageShow` 与 `onPageHide` 仅在 `@Entry` 页面入口组件中生效,用于响应页面可见性的变化。
 
@@ -428,7 +418,7 @@ class Analytics {
 const analytics = new Analytics();
 ```
 
-### 4.6 `onBackPress` 返回键拦截
+### 3.6 `onBackPress` 返回键拦截
 
 `onBackPress` 仅在 `@Entry` 组件中生效,用于拦截系统返回键(物理返回键或手势返回)。
 
@@ -508,7 +498,7 @@ struct EditFormPage {
 import router from '@ohos.router';
 ```
 
-### 4.7 UIAbility 生命周期
+### 3.7 UIAbility 生命周期
 
 UIAbility 是 Stage 模型中的应用组件抽象,管理应用窗口与前后台切换。一个应用可以包含多个 UIAbility,每个 UIAbility 负责一个独立的功能模块(如主界面、登录、设置)。
 
@@ -617,9 +607,9 @@ UIAbility 生命周期与组件生命周期的关系:
 [Entry Component] onPageShow
 ```
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 示例一:数据加载与状态管理
+### 4.1 示例一:数据加载与状态管理
 
 展示在 `aboutToAppear` 中加载数据、在 `build()` 中根据状态渲染不同 UI 的完整模式。
 
@@ -716,7 +706,7 @@ struct DataListPage {
 }
 ```
 
-### 5.2 示例二:WebSocket 订阅与清理
+### 4.2 示例二:WebSocket 订阅与清理
 
 展示在生命周期中正确管理 WebSocket 连接的完整模式,包含自动重连。
 
@@ -821,7 +811,7 @@ interface ChatMessage {
 }
 ```
 
-### 5.3 示例三:KeepAlive 模式
+### 4.3 示例三:KeepAlive 模式
 
 通过 `if` 控制组件显示/隐藏时,ArkUI 会销毁并重建组件。如果希望保留组件状态(如表单输入、滚动位置),需要使用 KeepAlive 模式——通过透明度或可见性而非条件渲染来控制显示。
 
@@ -957,7 +947,7 @@ struct SettingsPanel {
 
 使用 KeepAlive 模式后,切换 Tab 时控制台**不会**打印 `aboutToDisappear`,所有组件保留状态。
 
-### 5.4 示例四:UIAbility 生命周期与全局状态
+### 4.4 示例四:UIAbility 生命周期与全局状态
 
 展示完整 UIAbility 生命周期,以及如何与组件生命周期协作管理全局状态。
 
@@ -1126,11 +1116,11 @@ struct IndexPage {
 import router from '@ohos.router';
 ```
 
-## 6. 实战案例:实时聊天应用
+## 5. 实战案例:实时聊天应用
 
 本节通过一个完整的实时聊天应用案例,综合运用所有生命周期回调,展示真实业务场景下的最佳实践。
 
-### 6.1 需求分析
+### 5.1 需求分析
 
 实现一个简单的实时聊天页面,具备以下功能:
 - 进入页面时连接 WebSocket
@@ -1141,7 +1131,7 @@ import router from '@ohos.router';
 - 离开页面时关闭连接
 - 拦截返回键,有未读消息时提示
 
-### 6.2 完整实现
+### 5.2 完整实现
 
 ```typescript
 import webSocket from '@ohos.net.webSocket';
@@ -1400,7 +1390,7 @@ struct RealtimeChatPage {
 }
 ```
 
-### 6.3 案例要点解析
+### 5.3 案例要点解析
 
 1. **资源生命周期与组件生命周期对齐**——`aboutToAppear` 中申请 WebSocket 连接,`aboutToDisappear` 中关闭,确保资源不泄漏
 2. **页面可见性优化**——`onPageHide` 时将状态置为 `paused` 而非断开连接,平衡资源消耗与响应速度
@@ -1408,9 +1398,9 @@ struct RealtimeChatPage {
 4. **回调守卫**——所有异步回调中检查 `isComponentActive`,避免操作已销毁组件
 5. **返回键拦截**——`onBackPress` 中根据未读数决定是否提示,提供更好的用户体验
 
-## 7. 进阶技巧
+## 6. 进阶技巧
 
-### 7.1 异步加载与骨架屏
+### 6.1 异步加载与骨架屏
 
 在 `aboutToAppear` 中加载数据时,可以在 `build()` 中先渲染骨架屏,提升用户体验感知。
 
@@ -1493,7 +1483,7 @@ async function fetchArticle(id: number): Promise<Article> {
 }
 ```
 
-### 7.2 防抖与节流
+### 6.2 防抖与节流
 
 在生命周期中注册的事件监听常需要防抖(debounce)或节流(throttle)以避免频繁触发。
 
@@ -1556,7 +1546,7 @@ async function fetchSuggestions(keyword: string): Promise<string[]> {
 }
 ```
 
-### 7.3 组件复用 `@Reusable`
+### 6.3 组件复用 `@Reusable`
 
 对于频繁创建销毁的列表项组件,使用 `@Reusable` 装饰器可以让框架复用已销毁组件的实例,减少创建开销。
 
@@ -1616,7 +1606,7 @@ struct MessageListPage {
 }
 ```
 
-### 7.4 全局事件订阅的清理
+### 6.4 全局事件订阅的清理
 
 订阅全局事件(如 EventBus、应用级状态)时,必须在 `aboutToDisappear` 中取消订阅,否则会导致:
 1. 内存泄漏(组件被销毁但仍被订阅列表引用)
@@ -1699,9 +1689,9 @@ class EventBus {
 const eventBus = new EventBus();
 ```
 
-## 8. 性能优化
+## 7. 性能优化
 
-### 8.1 避免 `aboutToAppear` 中的高耗时操作
+### 7.1 避免 `aboutToAppear` 中的高耗时操作
 
 `aboutToAppear` 中执行同步高耗时操作会阻塞 `build()` 执行,导致页面渲染延迟。
 
@@ -1784,7 +1774,7 @@ struct GoodPage {
 }
 ```
 
-### 8.2 LazyForEach 与组件复用
+### 7.2 LazyForEach 与组件复用
 
 长列表场景下,使用 `LazyForEach` 替代 `ForEach`,只在可见范围内渲染组件,大幅减少组件创建数量。
 
@@ -1856,7 +1846,7 @@ struct LongListGood {
 interface MyData { id: string; value: string; }
 ```
 
-### 8.3 减少 `build()` 中的副作用
+### 7.3 减少 `build()` 中的副作用
 
 `build()` 方法应保持纯净,仅根据当前状态描述 UI,不应执行副作用(网络请求、状态修改等)。
 
@@ -1905,7 +1895,7 @@ struct GoodBuildExample {
 }
 ```
 
-### 8.4 状态精细化拆分
+### 7.4 状态精细化拆分
 
 将不同更新频率的状态拆分到不同组件,避免单个状态变化触发大面积重渲染。
 
@@ -1996,9 +1986,9 @@ struct ArticleListView {
 }
 ```
 
-## 9. 调试排错
+## 8. 调试排错
 
-### 9.1 生命周期日志追踪
+### 8.1 生命周期日志追踪
 
 通过在所有生命周期回调中添加日志,可以快速定位组件创建、销毁异常。
 
@@ -2045,7 +2035,7 @@ import router from '@ohos.router';
 
 如果返回时**没有**看到 `onPageShow`,说明组件可能已被销毁(使用了 `replaceUrl` 或被路由栈清理)。
 
-### 9.2 内存泄漏排查
+### 8.2 内存泄漏排查
 
 组件未销毁是常见的内存泄漏问题。典型症状:
 - `aboutToDisappear` 日志未打印
@@ -2109,7 +2099,7 @@ struct TrackedPage {
 }
 ```
 
-### 9.3 状态未更新的常见原因
+### 8.3 状态未更新的常见原因
 
 如果 `@State` 修改后 UI 没有更新,通常是以下原因之一:
 
@@ -2158,16 +2148,16 @@ struct GoodUpdate {
 interface User { name: string; age: number; }
 ```
 
-### 9.4 DevEco Studio 调试技巧
+### 8.4 DevEco Studio 调试技巧
 
 1. **Profiler 工具**——查看组件实例数、内存占用、函数调用耗时
 2. **Inspector**——可视化组件树,检查渲染结果与预期是否一致
 3. **断点调试**——在生命周期回调中设置断点,观察触发顺序
 4. **Log 过滤**——使用 `[Tracker]` 等前缀过滤日志,快速定位问题
 
-## 10. 最佳实践
+## 9. 最佳实践
 
-### 10.1 资源管理清单
+### 9.1 资源管理清单
 
 在 `aboutToAppear` 中申请的每个资源,都必须在 `aboutToDisappear` 中有对应的释放逻辑。建议使用清单核对:
 
@@ -2181,7 +2171,7 @@ interface User { name: string; age: number; }
 | 数据库游标 | `rdb.query` | `resultSet.close` |
 | 全局状态订阅 | `state.subscribe` | `unsubscribe()` |
 
-### 10.2 异步操作的回调守卫
+### 9.2 异步操作的回调守卫
 
 在 `aboutToAppear` 中启动的异步操作,可能在组件销毁后才完成。所有回调中必须检查组件是否仍存活。
 
@@ -2225,7 +2215,7 @@ async function fetchData(): Promise<string> {
 }
 ```
 
-### 10.3 单一职责的组件设计
+### 9.3 单一职责的组件设计
 
 避免在单个组件中处理过多生命周期逻辑。如果一个组件的 `aboutToAppear` 超过 50 行,考虑拆分。
 
@@ -2280,7 +2270,7 @@ struct UserProfileSection {
 // ... 其他子组件类似
 ```
 
-### 10.4 状态保存与恢复
+### 9.4 状态保存与恢复
 
 页面跳转返回后,如果组件未销毁(KeepAlive 模式),状态会自动保留。但如果使用 `replaceUrl` 或栈满,组件会被销毁,需要在 `aboutToDisappear` 中持久化关键状态,在 `aboutToAppear` 中恢复。
 
@@ -2317,9 +2307,9 @@ struct FormPage {
 }
 ```
 
-## 11. 总结回顾
+## 10. 总结回顾
 
-### 11.1 核心知识点回顾
+### 10.1 核心知识点回顾
 
 1. **两个生命周期层次**——组件级(`aboutToAppear`/`aboutToDisappear`)与 UIAbility 级(`onCreate`/`onForeground`/`onBackground`/`onDestroy`),不可混淆
 2. **五个核心回调**——`aboutToAppear`(初始化)、`build`(渲染)、`onPageShow`(可见)、`onPageHide`(隐藏)、`aboutToDisappear`(清理)
@@ -2328,7 +2318,7 @@ struct FormPage {
 5. **异步回调守卫**——所有异步回调中检查组件是否仍存活,避免操作已销毁组件
 6. **KeepAlive 模式**——通过 `Visibility.Hidden` 而非 `if` 控制组件显隐,保留状态
 
-### 11.2 速查表
+### 10.2 速查表
 
 | 场景 | 推荐回调 | 注意事项 |
 | --- | --- | --- |
@@ -2342,7 +2332,7 @@ struct FormPage {
 | 释放资源 | `aboutToDisappear` | 必须与 `aboutToAppear` 中的申请一一对应 |
 | 保存草稿 | `aboutToDisappear` | 使用 Preferences 持久化 |
 
-### 11.3 常见错误清单
+### 10.3 常见错误清单
 
 1. **在 `build()` 中执行副作用**——`build()` 必须保持纯净
 2. **直接修改对象/数组属性**——必须使用不可变更新
@@ -2355,7 +2345,7 @@ struct FormPage {
 9. **KeepAlive 模式下未考虑内存占用**——隐藏的组件仍占用资源,需权衡
 10. **使用 `if` 控制频繁切换的组件**——会触发销毁重建,应使用 `Visibility`
 
-### 11.4 进阶学习路径
+### 10.4 进阶学习路径
 
 1. **深入 ArkUI 渲染机制**——理解 diff 算法、虚拟组件树
 2. **学习 Stage 模型 Ability**——掌握多 Ability 协作、跨 Ability 通信
@@ -2363,9 +2353,9 @@ struct FormPage {
 4. **掌握 LazyForEach 与 `IDataSource`**——长列表性能优化的核心
 5. **学习 HarmonyOS 内存管理**——理解 LMK、内存压力下的组件回收
 
-## 12. 参考资料
+## 11. 参考资料
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 1. **HarmonyOS Developer——UI Development**
    - ArkUI Component Lifecycle: `https://developer.harmonyos.com/cn/docs/arkui-lifecycle`
@@ -2376,13 +2366,13 @@ struct FormPage {
    - `@ohos.router`
    - `@ohos.data.preferences`
 
-### 12.2 推荐书籍与论文
+### 11.2 推荐书籍与论文
 
 1. **《HarmonyOS 应用开发实战》**——华为专家团队著,系统讲解 ArkUI 与生命周期
 2. **《声明式 UI 编程范式》**——对比 React、Flutter、SwiftUI 的设计哲学
 3. **"A Survey on Declarative UI Frameworks"**——IEEE 软件工程学报,对比分析现代声明式 UI 框架
 
-### 12.3 相关章节
+### 11.3 相关章节
 
 - **ArkTS 与 TypeScript 差异**——理解 ArkTS 类型系统对生命周期回调的影响
 - **ArkUI 声明式语法**——掌握 `@Component`、`@State` 等装饰器,生命周期依附于此
@@ -2390,7 +2380,7 @@ struct FormPage {
 - **权限申请**——权限申请通常在 `onCreate` 中完成,与 UIAbility 生命周期相关
 - **分布式数据管理**——长连接与数据同步,常在生命周期中管理
 
-### 12.4 练习题
+### 11.4 练习题
 
 #### 基础题
 
@@ -2451,7 +2441,7 @@ struct FormPage {
    - 方式 A:使用 `if` 切换组件
    - 方式 B:使用 `Visibility.Hidden` 控制显隐
 
-### 12.5 术语表
+### 11.5 术语表
 
 | 术语 | 英文 | 定义 |
 | --- | --- | --- |

@@ -15,67 +15,16 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+
 # 实时通信 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数 | `{ }` 分组 | `|` 或 | `...` 重复
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节依据 Bloom 教育目标分类法（Bloom's Taxonomy）组织学习目标，覆盖记忆、理解、应用、分析、评价、创造六个层次。
-
-### 1.1 Remember（记忆）
-
-- **R-1**：列举 WebRTC 的三大核心 API：`getUserMedia`、`RTCPeerConnection`、`RTCDataChannel`。
-- **R-2**：复述 `MediaDevices.getUserMedia(constraints)` 的参数结构：`video`、`audio`、`screen` 三大类别及各自约束（`width`、`height`、`frameRate`、`facingMode`、`echoCancellation`）。
-- **R-3**：识别 W3C WebRTC 1.0 规范中"ICE Candidate Trickle"与"SDP Offer/Answer"两阶段握手流程。
-- **R-4**：背诵 ICE 协议中的三种候选类型：host candidate、server reflexive candidate（SRFLX）、relay candidate（RELAY）。
-- **R-5**：列出 WebRTC 强制要求实现的视频编解码器：VP8、VP9、AV1（2024 起）、H.264（Baseline）。
-
-### 1.2 Understand（理解）
-
-- **U-1**：解释 ICE（Interactive Connectivity Establishment）协议在 NAT 穿透中的作用机制。
-- **U-2**：阐明 STUN（Session Traversal Utilities for NAT）与 TURN（Traversal Using Relays around NAT）的本质差异与适用场景。
-- **U-3**：说明 SDP（Session Description Protocol）的 `Offer/Answer` 模型如何完成能力协商。
-- **U-4**：理解 `RTCPeerConnection` 的状态机：`stable` → `have-local-offer` → `stable` → `have-remote-offer` → `stable`。
-- **U-5**：阐明 DTLS-SRTP 加密在 WebRTC 安全链路中的位置与作用。
-- **U-6**：解释 `RTCDataChannel` 如何基于 SCTP over DTLS over UDP 实现"有序/无序、可靠/不可靠"的可配置传输。
-
-### 1.3 Apply（应用）
-
-- **A-1**：实现一个完整的本地视频通话 demo，包含摄像头采集、本地预览、点对点连接、远端播放、断连重连。
-- **A-2**：使用 `getUserMedia` 约束采集 720p/30fps 视频，并在 `MediaStream` 上应用 RTP 仿射重采样。
-- **A-3**：通过 WebSocket 信令服务器交换 SDP 与 ICE 候选，建立跨网络的双向音视频通话。
-- **A-4**：基于 `RTCDataChannel` 实现一个低延迟（<50ms）的双向文本聊天与文件传输。
-
-### 1.4 Analyze（分析）
-
-- **An-1**：解构 WebRTC 的协议栈层次：信令层（应用层）+ 控制层（ICE/STUN/TURN）+ 传输层（DTLS/SRTP/SCTP）+ 媒体层（RTP/RTCP）。
-- **An-2**：剖析 `RTCPeerConnection` 内部的"轨道"（track）与"收发器"（transceiver）模型，分析 `addTrack` 与 `addTransceiver` 的差异。
-- **An-3**：分析 NAT 类型（Full Cone、Restricted Cone、Port Restricted Cone、Symmetric）对 ICE 候选选择的影响。
-- **An-4**：解构 Simulcast 与 SVC（Scalable Video Coding）在多人会议中的带宽自适应机制。
-- **An-5**：分析 `perfect negotiation` 模式如何避免 glare（双方同时发起 offer 导致死锁）。
-
-### 1.5 Evaluate（评价）
-
-- **E-1**：评估 WebRTC vs WebSocket + MJPEG vs RTSP/HLS 在实时性、延迟、扩展性、跨平台支持上的取舍。
-- **E-2**：判断自建 TURN 服务器（coturn）vs 商业托管（Twilio NTS、Xirsys）的运维成本与可靠性。
-- **E-3**：对比 SFU（Selective Forwarding Unit）与 MCU（Multipoint Control Unit）在 10 人/100 人/1000 人规模会议中的带宽与算力开销。
-- **E-4**：评估 WebRTC 在 5G 与 WebTransport（HTTP/3）背景下的演进前景与替代方案。
-
-### 1.6 Create（创造）
-
-- **C-1**：设计并实现一个支持 50 人同时在线的 SFU 视频会议后端（基于 mediasoup / Janus / LiveKit）。
-- **C-2**：构建一个 WebRTC 网络诊断工具，自动检测 NAT 类型、ICE 成功率、端到端延迟、丢包率。
-- **C-3**：实现一个跨平台（Web/iOS/Android/桌面）的 P2P 文件传输应用，基于 `RTCDataChannel` 与分块加密。
-- **C-4**：设计一个完美协商（perfect negotiation）的抽象层，兼容所有浏览器并处理 glare、回滚、ICE restart 等边界场景。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 前实时通信时代（1995—2010）
+### 1.1 前实时通信时代（1995—2010）
 
 早期 Web 仅支持单向 HTTP 请求，实时通信依赖以下方案：
 
@@ -88,7 +37,7 @@ prerequisites:
 | Java Applet + Socket | 浏览器内 TCP | 50ms | 依赖插件、安全风险 |
 | WebSocket（2010） | 全双工 TCP | 50—100ms | 仅文本/二进制流，无媒体 |
 
-### 2.2 WebRTC 诞生（2010—2011）
+### 1.2 WebRTC 诞生（2010—2011）
 
 2010 年 Google 以约 1.33 亿美元收购 GIPS（Global IP Solutions）与 On2（VP8 编码器），将二者代码开源为 WebRTC 项目。设计目标：
 
@@ -103,7 +52,7 @@ prerequisites:
 - **W3C WebRTC WG**：定义浏览器 JavaScript API。
 - **IETF RTCWeb WG**：定义底层协议（ICE、DTLS-SRTP、SDP扩展、编解码器）。
 
-### 2.3 规范化与普及（2012—2018）
+### 1.3 规范化与普及（2012—2018）
 
 | 年份 | 里程碑 | 浏览器 |
 | ---- | ------ | ------ |
@@ -115,7 +64,7 @@ prerequisites:
 | 2017 | WebRTC 1.0 进入 W3C Candidate Recommendation | 全部主流 |
 | 2018 | `navigator.mediaDevices.getUserMedia` 取代旧 `navigator.getUserMedia` | 全部主流 |
 
-### 2.4 现代化演进（2019—2024）
+### 1.4 现代化演进（2019—2024）
 
 | 年份 | 特性 | 意义 |
 | ---- | ---- | ---- |
@@ -128,7 +77,7 @@ prerequisites:
 | 2023 | WebTransport（HTTP/3）作为 WebRTC 替代方案实验 | 极低延迟 |
 | 2024 | WebRTC NV（Next Version）API：`RTCRtpScriptTransform` | 客户端转码、AI 增强 |
 
-### 2.5 演进时间线
+### 1.5 演进时间线
 
 ```mermaid
 timeline
@@ -151,7 +100,7 @@ timeline
     2024: WebRTC NV（RTCRtpScriptTransform）
 ```
 
-### 2.6 规范族谱
+### 1.6 规范族谱
 
 - **W3C WebRTC 1.0**（Recommendation, 2022）：JavaScript API 权威定义。
 - **W3C Media Capture and Streams**：`getUserMedia` 与 `MediaStream` 定义。
@@ -164,9 +113,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 WebRTC API 概览
+### 2.1 WebRTC API 概览
 
 ```webidl
 [Exposed=Window, SecureContext]
@@ -228,7 +177,7 @@ interface RTCDataChannel : EventTarget {
 };
 ```
 
-### 3.2 ICE 候选类型形式化
+### 2.2 ICE 候选类型形式化
 
 设 ICE 候选 $c$ 由四元组定义：
 
@@ -251,7 +200,7 @@ $$
 
 ICE 选择最高优先级的成功候选对作为数据通道。
 
-### 3.3 SDP Offer/Answer 模型
+### 2.3 SDP Offer/Answer 模型
 
 SDP（Session Description Protocol, RFC 4566）是会话描述的文本格式。WebRTC 使用 SDP 描述媒体能力：
 
@@ -284,7 +233,7 @@ a=fmtp:111 minptime=10;useinbandfec=1
 7. Callee 通过信令通道将 `answer` 发回 Caller。
 8. Caller `setRemoteDescription(answer)` 接收。
 
-### 3.4 信令状态机形式化
+### 2.4 信令状态机形式化
 
 `RTCPeerConnection.signalingState` 的有限状态机：
 
@@ -304,7 +253,7 @@ $$
 \end{aligned}
 $$
 
-### 3.5 连接状态机
+### 2.5 连接状态机
 
 `RTCPeerConnection.connectionState`：
 
@@ -321,7 +270,7 @@ $$
 - `disconnected` → `connected`：恢复通信。
 - `disconnected` → `failed`：超过 30s 仍无响应。
 
-### 3.6 RTCDataChannel 传输参数
+### 2.6 RTCDataChannel 传输参数
 
 `RTCDataChannel` 基于 SCTP over DTLS over UDP：
 
@@ -348,7 +297,7 @@ $$
 | `false` | `null` | UDP with message boundaries | SCTP |
 | `false` | 设定 | UDP with partial reliability | 实时游戏 |
 
-### 3.7 媒体编解码器约束
+### 2.7 媒体编解码器约束
 
 W3C WebRTC 规范要求实现：
 
@@ -363,9 +312,9 @@ W3C WebRTC 规范要求实现：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 NAT 穿透数学模型
+### 3.1 NAT 穿透数学模型
 
 NAT（Network Address Translator）将内网 IP 映射到公网 IP。设内网主机 $H_i$ 在内网 IP $IP_i^{\text{priv}}$ 与端口 $P_i^{\text{priv}}$ 上发送数据包，NAT 将其映射为公网 $IP^{\text{pub}}$ 与端口 $P^{\text{pub}}$：
 
@@ -390,7 +339,7 @@ $$
 | Symmetric | Restricted | 不可（需 TURN） |
 | Symmetric | Symmetric | 不可（需 TURN） |
 
-### 4.2 STUN 协议工作原理
+### 3.2 STUN 协议工作原理
 
 STUN 客户端向 STUN 服务器发送绑定请求：
 
@@ -412,7 +361,7 @@ $$
 
 典型值 20—100ms。
 
-### 4.3 TURN 中继开销
+### 3.3 TURN 中继开销
 
 当 P2P 失败，使用 TURN 中继：
 
@@ -430,7 +379,7 @@ $$
 
 **TURN 服务器成本**：1 Mbps 媒体流 → 2 Mbps TURN 流量。10 人会议（每人 1 Mbps）→ 20 Mbps TURN 流量。
 
-### 4.4 ICE 候选检查复杂度
+### 3.4 ICE 候选检查复杂度
 
 设 Caller 有 $m$ 个候选，Callee 有 $n$ 个候选，则候选对数量：
 
@@ -446,7 +395,7 @@ $$
 
 **优化**：Trickle ICE 在候选生成时立即发送，并行检查，将 $T_{\text{ICE}}$ 从串行 $O(mn)$ 降为并行 $O(\max(m, n))$。
 
-### 4.5 DTLS-SRTP 加密链路
+### 3.5 DTLS-SRTP 加密链路
 
 WebRTC 强制使用 DTLS-SRTP 加密媒体流：
 
@@ -461,7 +410,7 @@ $$
 
 **完美前向保密（PFS）**：DTLS 1.2 使用 ECDHE 密钥交换，即使长期密钥泄露，历史通信仍安全。
 
-### 4.6 抖动缓冲与丢包恢复
+### 3.6 抖动缓冲与丢包恢复
 
 设网络抖动方差 $\sigma_J$，缓冲深度 $B$：
 
@@ -481,7 +430,7 @@ $$
 R_{\text{est}}(t) = R_{\text{prev}} + \alpha \cdot \text{trend}(t) - \beta \cdot \text{loss}(t)
 $$
 
-### 4.7 Simulcast 带宽自适应
+### 3.7 Simulcast 带宽自适应
 
 Simulcast 同时发送多档编码（如 180p/360p/720p），SFU 根据接收方带宽选择转发：
 
@@ -497,7 +446,7 @@ $$
 
 相比 SVC（单流多层），Simulcast 编码开销大但切换灵活。
 
-### 4.8 端到端延迟分解
+### 3.8 端到端延迟分解
 
 设端到端延迟 $T_{\text{e2e}}$：
 
@@ -521,9 +470,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 完整 HTML5 视频通话 demo
+### 4.1 完整 HTML5 视频通话 demo
 
 ```html
 <!DOCTYPE html>
@@ -668,7 +617,7 @@ $$
 </html>
 ```
 
-### 5.2 getUserMedia 约束详解
+### 4.2 getUserMedia 约束详解
 
 ```javascript
 // 基础约束
@@ -734,7 +683,7 @@ await videoTrack.applyConstraints({
 videoTrack.stop();
 ```
 
-### 5.3 RTCDataChannel 实时聊天
+### 4.3 RTCDataChannel 实时聊天
 
 ```javascript
 // Caller 端
@@ -785,7 +734,7 @@ async function sendFile(channel, file) {
 }
 ```
 
-### 5.4 Perfect Negotiation（完美协商）
+### 4.4 Perfect Negotiation（完美协商）
 
 ```javascript
 // 完美协商避免 glare（双方同时发起 offer）
@@ -839,7 +788,7 @@ class PerfectNegotiation {
 }
 ```
 
-### 5.5 信令服务器（Node.js + ws）
+### 4.5 信令服务器（Node.js + ws）
 
 ```javascript
 // signaling-server.js
@@ -885,7 +834,7 @@ wss.on('connection', (ws) => {
 console.log('Signaling server running on ws://localhost:8080');
 ```
 
-### 5.6 媒体统计（getStats）
+### 4.6 媒体统计（getStats）
 
 ```javascript
 async function monitorStats(pc) {
@@ -918,9 +867,9 @@ setInterval(() => monitorStats(pc), 5000);
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 实时通信方案对比
+### 5.1 实时通信方案对比
 
 | 方案 | 延迟 | 双向 | 媒体 | 浏览器原生 | 适用场景 |
 | ---- | ---- | ---- | ---- | ---------- | -------- |
@@ -932,7 +881,7 @@ setInterval(() => monitorStats(pc), 5000);
 | RTSP / RTMP | 100—500ms | 否 | 音视频 | 否（需插件） | 安防监控 |
 | WebTransport | <50ms | 是 | 任意 | 部分（HTTP/3） | 实验性 |
 
-### 6.2 ICE 服务器对比
+### 5.2 ICE 服务器对比
 
 | 类型 | 协议 | 部署难度 | 成本 | 延迟 | P2P 成功率 |
 | ---- | ---- | -------- | ---- | ---- | ---------- |
@@ -943,7 +892,7 @@ setInterval(() => monitorStats(pc), 5000);
 | TURN + TCP | TURN/TCP | 中 | 中 | 高 | 99.9%（防火墙） |
 | TURN + TLS | TURN/TLS | 高 | 高 | 最高 | 99.99%（企业网） |
 
-### 6.3 多人会议架构对比
+### 5.3 多人会议架构对比
 
 | 架构 | 服务器算力 | 服务器带宽 | 客户端带宽 | 延迟 | 扩展性 |
 | ---- | ---------- | ---------- | ---------- | ---- | ------ |
@@ -953,7 +902,7 @@ setInterval(() => monitorStats(pc), 5000);
 | SFU + Simulcast | 低 | $O(n)$ | 上行 $O(k)$，下行 $O(n-1)$ | 低 | 优秀（≤1000 人） |
 | SFU + SVC | 低 | $O(n)$ | 上行 $O(1)$，下行 $O(n-1)$ | 低 | 优秀 |
 
-### 6.4 编解码器对比
+### 5.4 编解码器对比
 
 | 编解码器 | 类型 | 压缩率 | 复杂度 | 浏览器支持 | WebRTC 必需 |
 | -------- | ---- | ------ | ------ | ---------- | ----------- |
@@ -965,7 +914,7 @@ setInterval(() => monitorStats(pc), 5000);
 | Opus | 音频 | 高 | 中 | 全部 | 是 |
 | G.711 | 音频 | 低 | 低 | 全部 | 否 |
 
-### 6.5 信令协议对比
+### 5.5 信令协议对比
 
 | 方案 | 协议 | 优势 | 劣势 |
 | ---- | ---- | ---- | ---- |
@@ -978,9 +927,9 @@ setInterval(() => monitorStats(pc), 5000);
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 安全陷阱
+### 6.1 安全陷阱
 
 **陷阱 7.1.1**：getUserMedia 在非 HTTPS 环境调用。
 
@@ -1025,7 +974,7 @@ try {
 }
 ```
 
-### 7.2 信令陷阱
+### 6.2 信令陷阱
 
 **陷阱 7.2.1**：未实现 Perfect Negotiation，导致 glare 死锁。
 
@@ -1069,7 +1018,7 @@ pc.onicegatheringstatechange = () => {
 };
 ```
 
-### 7.3 性能反模式
+### 6.3 性能反模式
 
 **反模式 7.3.1**：未在轨道停止后清理资源。
 
@@ -1107,7 +1056,7 @@ const bitmap = await createImageBitmap(videoFrame);
 
 **修复**：使用 `RTCRtpScriptTransform` 或 Worker。
 
-### 7.4 兼容性陷阱
+### 6.4 兼容性陷阱
 
 **陷阱 7.4.1**：Safari 不支持 `addTrack` 的某些用法。
 
@@ -1130,7 +1079,7 @@ newTrack.enabled = true;
 await sender.replaceTrack(newTrack);
 ```
 
-### 7.5 SDP 陷阱
+### 6.5 SDP 陷阱
 
 **陷阱 7.5.1**：手动修改 SDP。
 
@@ -1162,9 +1111,9 @@ await sender.setParameters(params);
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 TypeScript 类型封装
+### 7.1 TypeScript 类型封装
 
 ```typescript
 // webrtc-client.ts
@@ -1311,7 +1260,7 @@ client.onRemoteStream((stream) => {
 });
 ```
 
-### 8.2 React 视频通话组件
+### 7.2 React 视频通话组件
 
 ```tsx
 // VideoCall.tsx
@@ -1388,7 +1337,7 @@ export const VideoCall: React.FC<{ roomId: string }> = ({ roomId }) => {
 };
 ```
 
-### 8.3 coturn TURN 服务器部署
+### 7.3 coturn TURN 服务器部署
 
 ```bash
 # 安装 coturn
@@ -1430,7 +1379,7 @@ sudo ufw allow 5349/tcp
 sudo ufw allow 49152:65535/udp
 ```
 
-### 8.4 SFU 集成（mediasoup）
+### 7.4 SFU 集成（mediasoup）
 
 ```javascript
 // mediasoup-client.ts
@@ -1471,7 +1420,7 @@ async function connect() {
 }
 ```
 
-### 8.5 自动化测试（Playwright）
+### 7.5 自动化测试（Playwright）
 
 ```typescript
 // webrtc.test.ts
@@ -1512,9 +1461,9 @@ test('端到端通话建立', async ({ browser }) => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Google Meet
+### 8.1 Google Meet
 
 Google Meet 是 WebRTC 视频会议的标杆产品：
 
@@ -1525,7 +1474,7 @@ Google Meet 是 WebRTC 视频会议的标杆产品：
 5. **AI 增强**：实时字幕（Web Speech API）、噪声消除（RNN 模型）、人像居中（MediaPipe）。
 6. **降级策略**：网络恶化时优先保证音频，视频降帧/降分辨率。
 
-### 9.2 Discord Voice
+### 8.2 Discord Voice
 
 Discord 语音通话基于 WebRTC：
 
@@ -1535,7 +1484,7 @@ Discord 语音通话基于 WebRTC：
 4. **降级**：UDP 失败时回退到 TCP TURN。
 5. **隐私**：所有通话端到端加密（DTLS-SRTP）。
 
-### 9.3 WhatsApp Web
+### 8.3 WhatsApp Web
 
 WhatsApp Web 视频通话基于 WebRTC：
 
@@ -1544,7 +1493,7 @@ WhatsApp Web 视频通话基于 WebRTC：
 3. **加密**：Signal Protocol（端到端加密），WebRTC 仅作为传输载体。
 4. **跨平台**：移动端原生 WebRTC，Web 端浏览器 WebRTC，通过 WhatsApp 服务器桥接。
 
-### 9.4 WebTorrent
+### 8.4 WebTorrent
 
 WebTorrent 基于 WebRTC 实现 P2P 文件共享：
 
@@ -1553,7 +1502,7 @@ WebTorrent 基于 WebRTC 实现 P2P 文件共享：
 3. **同时支持 Web 与桌面**：Web 端 WebRTC，桌面端同时支持 uTP。
 4. **典型用途**：P2P 视频流（WebTorrent 站点）、即时文件分享。
 
-### 9.5 Cloudflare Stream RTC
+### 8.5 Cloudflare Stream RTC
 
 Cloudflare 商业 WebRTC 服务：
 
@@ -1562,7 +1511,7 @@ Cloudflare 商业 WebRTC 服务：
 3. **AI 转码**：服务端实时转码（VP8/VP9/H.264/AV1）。
 4. **录制**：可选服务端录制为 MP4。
 
-### 9.6 Twitch Live Producer
+### 8.6 Twitch Live Producer
 
 Twitch 主播推流使用 WebRTC：
 
@@ -1571,7 +1520,7 @@ Twitch 主播推流使用 WebRTC：
 3. **回声消除**：主播听自己声音时使用 WebRTC AEC。
 4. **降级**：网络不稳时回退到 RTMP。
 
-### 9.7 1Password 远程协助
+### 8.7 1Password 远程协助
 
 1Password 远程协助功能基于 WebRTC：
 
@@ -1580,7 +1529,7 @@ Twitch 主播推流使用 WebRTC：
 3. **端到端加密**：DTLS-SRTP + 应用层额外加密。
 4. **零信任**：会话密钥仅在两个客户端之间，1Password 服务器不可见。
 
-### 9.8 Excalidraw 实时协作
+### 8.8 Excalidraw 实时协作
 
 Excalidraw 在线白板使用 WebRTC：
 
@@ -2164,7 +2113,7 @@ console.table(result);
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] C. Holmberg, S. Hakansson, and G. Eriksson. 2021. WebRTC 1.0: Real-Time Communication Between Browsers. W3C Recommendation. Retrieved July 20, 2026 from https://www.w3.org/TR/webrtc/
 
@@ -2192,22 +2141,22 @@ console.table(result);
 
 ---
 
-## 12. 扩展阅读
+## 11. 扩展阅读
 
-### 12.1 官方规范
+### 11.1 官方规范
 
 - W3C WebRTC 1.0: https://www.w3.org/TR/webrtc/
 - W3C Media Capture and Streams: https://www.w3.org/TR/mediacapture-streams/
 - W3C WebRTC Statistics: https://www.w3.org/TR/webrtc-stats/
 - IETF RTCWeb WG: https://datatracker.ietf.org/wg/rtcweb/documents/
 
-### 12.2 浏览器实现
+### 11.2 浏览器实现
 
 - Chromium WebRTC: https://webrtc.googlesource.com/src/
 - Firefox WebRTC: https://wiki.mozilla.org/Media/WebRTC
 - Safari WebRTC: https://developer.apple.com/documentation/webkit/delivering_video_content_for_safari
 
-### 12.3 SFU 与开源项目
+### 11.3 SFU 与开源项目
 
 - mediasoup: https://mediasoup.org/
 - Janus: https://janus.conf.meetecho.com/
@@ -2215,19 +2164,19 @@ console.table(result);
 - Jitsi Videobridge: https://jitsi.org/jitsi-videobridge/
 - Pion (Go WebRTC): https://github.com/pion/webrtc
 
-### 12.4 TURN 服务
+### 11.4 TURN 服务
 
 - coturn: https://github.com/coturn/coturn
 - Twilio NTS: https://www.twilio.com/stun-turn
 - Cloudflare Calls: https://developers.cloudflare.com/calls/
 
-### 12.5 学习资源
+### 11.5 学习资源
 
 - WebRTC for the Curious: https://webrtcforthecurious.com/
 - WebRTC Samples: https://webrtc.github.io/samples/
 - WebRTC Fundamentals (Google): https://codelabs.developers.google.com/codelabs/webrtc-web/
 
-### 12.6 浏览器兼容性矩阵
+### 11.6 浏览器兼容性矩阵
 
 | 特性 | Chrome | Firefox | Safari | Edge |
 | ---- | ------ | ------- | ------ | ---- |
@@ -2242,7 +2191,7 @@ console.table(result);
 | `RTCRtpScriptTransform` | 111+ | 未支持 | 未支持 | 111+ |
 | Perfect Negotiation | 80+ | 80+ | 14.1+ | 80+ |
 
-### 12.7 术语表
+### 11.7 术语表
 
 | 术语 | 全称 | 说明 |
 | ---- | ---- | ---- |
@@ -2267,7 +2216,7 @@ console.table(result);
 | JID | Jabber ID | XMPP 标识 |
 | P2P | Peer-to-Peer | 点对点 |
 
-### 12.8 学习路径
+### 11.8 学习路径
 
 **入门（1 周）**：
 

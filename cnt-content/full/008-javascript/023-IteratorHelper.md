@@ -15,55 +15,16 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
+
 # JavaScript Symbol 与迭代协议语法速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节依据 Bloom 分类法设定六个层次的认知目标，帮助学习者系统掌握 TC39 Iterator Helpers 提案。
-
-### 1.1 Remember（记忆）
-
-- 复述迭代器（Iterator）与可迭代对象（Iterable）的协议定义。
-- 列出 Iterator Helpers 提案提供的至少 10 个方法名及其用途。
-- 说明 `Iterator.prototype` 与 `Iterator.prototype.constructor` 的关系。
-
-### 1.2 Understand（理解）
-
-- 解释"惰性求值（lazy evaluation）"与"急切求值（eager evaluation）"在内存占用与时间复杂度上的差异。
-- 阐述 `Iterator` 是如何通过 `next()`、`return()`、`throw()` 三个方法实现协程式控制流的。
-- 推断为什么 `take(n)` 与 `drop(n)` 必须返回新的 Iterator 而非数组。
-
-### 1.3 Apply（应用）
-
-- 使用 `iterator.filter().map().take()` 链式调用处理无限序列。
-- 在 Node.js 流处理中用 `toArray()` 终结惰性链，避免一次性加载大文件。
-- 在 React 组件中用 Iterator 实现"按需加载更多"的虚拟列表。
-
-### 1.4 Analyze（分析）
-
-- 对比 `Array.prototype.map` 与 `Iterator.prototype.map` 的中间数组创建开销。
-- 拆解 `for...of` 循环的脱糖过程，理解 `Symbol.iterator` 的查找机制。
-- 分析 `Iterator.from` 与 `Array.prototype.values` 在不同对象上的行为差异。
-
-### 1.5 Evaluate（评价）
-
-- 评估在大数据 ETL 管道中采用 Iterator Helpers 替代 RxJS Observable 的可行性。
-- 判定哪些场景下惰性求值反而比急切求值更慢（如多次消费同一迭代器）。
-
-### 1.6 Create（创造）
-
-- 设计一个基于 Iterator Helpers 的流式数据处理框架，支持背压（backpressure）与错误恢复。
-- 实现一个"无限日志流"工具，用 `filter` + `take` 实现按时间窗口采样。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 ES5 时代：数组的统治
+### 1.1 ES5 时代：数组的统治
 
 ES5（2009）为 `Array.prototype` 引入了 `forEach`、`map`、`filter`、`reduce`、`some`、`every` 等高阶方法。这些方法统一了集合操作的风格，但有一个根本局限：**急切求值**。
 
@@ -76,7 +37,7 @@ const result = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 // 共创建 3 个中间数组，对于 1M 元素输入，内存峰值 4M
 ```
 
-### 2.2 ES6 时代：迭代器协议的引入
+### 1.2 ES6 时代：迭代器协议的引入
 
 ES6（2015）引入了 `Symbol.iterator` 与 Iterator 协议，使任意对象都可"可迭代"：
 
@@ -128,7 +89,7 @@ const evens = take(filter(map(naturals(), x => x * 2), x => x > 5), 3);
 // [12, 16, 20]
 ```
 
-### 2.3 外部库的探索：Lazy.js、Transducers、RxJS
+### 1.3 外部库的探索：Lazy.js、Transducers、RxJS
 
 社区涌现多种惰性求值方案：
 
@@ -151,7 +112,7 @@ const result = from([1, 2, 3, 4, 5])
 // [4, 8]
 ```
 
-### 2.4 TC39 提案：Iterator Helpers
+### 1.4 TC39 提案：Iterator Helpers
 
 2019 年，Michael Ficarra 与 Sathya Gunasekaran 在 TC39 提出"Iterator Helpers"提案，目标：
 
@@ -168,7 +129,7 @@ const result = from([1, 2, 3, 4, 5])
 | 2024-03 | Stage 3 | V8 v12.0+、Safari 17.4+、Firefox 128+ 提供原生支持 |
 | 2025-06 | Stage 3→4 | 进入 Stage 4 候选，预计 ES2026 标准确认 |
 
-### 2.5 与 ES2024 的关系
+### 1.5 与 ES2024 的关系
 
 ES2024 已正式收录 Iterator Helpers，所有主流浏览器的最新版本支持。Node.js 22+ 默认启用。
 
@@ -176,9 +137,9 @@ ES2024 已正式收录 Iterator Helpers，所有主流浏览器的最新版本�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 规范文本定位
+### 2.1 规范文本定位
 
 Iterator Helpers 在 ECMAScript 规范中新增以下章节：
 
@@ -198,7 +159,7 @@ Iterator Helpers 在 ECMAScript 规范中新增以下章节：
 - **§22.1.2.11** Iterator.prototype.every ( predicate )
 - **§22.1.2.12** Iterator.prototype.find ( predicate )
 
-### 3.2 Iterator 协议的形式化定义
+### 2.2 Iterator 协议的形式化定义
 
 一个 Iterator 对象 `it` 是一个满足以下接口的对象：
 
@@ -212,7 +173,7 @@ $$
 \text{IterResult} = \{ \text{value} : V, \text{done} : \text{boolean} \}
 $$
 
-### 3.3 惰性求值的语义
+### 2.3 惰性求值的语义
 
 定义 `map(it, f)` 为：
 
@@ -222,7 +183,7 @@ $$
 
 关键性质：**调用 `map(it, f)` 不消耗 `it` 的任何元素**。只有当结果迭代器的 `next()` 被调用时，`it` 才被消耗。
 
-### 3.4 复杂度分析
+### 2.4 复杂度分析
 
 | 操作 | 时间复杂度 | 空间复杂度 | 说明 |
 | --- | --- | --- | --- |
@@ -233,7 +194,7 @@ $$
 | `it.reduce(f, init)` | `O(n)` | `O(1)` | 消耗整个迭代器 |
 | `it.some(p)` | 平均 `O(k)` | `O(1)` | k 为找到首个 true 时的位置 |
 
-### 3.5 与 SameValueZero 的关系
+### 2.5 与 SameValueZero 的关系
 
 Iterator 内部使用 `SameValueZero` 比较参数：
 
@@ -244,9 +205,9 @@ Iterator 内部使用 `SameValueZero` 比较参数：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 惰性求值 vs 急切求值
+### 3.1 惰性求值 vs 急切求值
 
 **急切求值（eager evaluation）**：
 
@@ -283,7 +244,7 @@ $$
 
 当 `take(1)` 触发时，$m_i \ll n_i$，节省可观。
 
-### 4.2 短路求值的数学基础
+### 3.2 短路求值的数学基础
 
 `some`、`every`、`find` 等终止方法支持短路：
 
@@ -310,7 +271,7 @@ $$
 
 实现上，`some` 在 `p(x) === true` 时立即返回；`every` 在 `p(x) === false` 时立即返回。
 
-### 4.3 迭代器是"一次性"的
+### 3.3 迭代器是"一次性"的
 
 Iterator 是状态化的：消费一次后无法重用。
 
@@ -340,7 +301,7 @@ console.log([...result]); // [2, 4, 6]
 console.log([...result]); // [] — 已耗尽
 ```
 
-### 4.4 背压与拉模式
+### 3.4 背压与拉模式
 
 Iterator 是"拉模式（pull-based）"：消费者调用 `next()` 时生产者才推进。这与"推模式（push-based）"的 Observable 相对：
 
@@ -351,7 +312,7 @@ Iterator 是"拉模式（pull-based）"：消费者调用 `next()` 时生产者�
 
 Pull 模式天然支持**背压**：消费者按自己节奏拉取，生产者不会淹没消费者。这也是 Node.js 流（Streams）选择异步迭代器（AsyncIterator）的原因。
 
-### 4.5 闭包与内存
+### 3.5 闭包与内存
 
 Iterator Helpers 的每个方法都返回一个新的 Iterator 对象，该对象通过闭包捕获原 Iterator 与回调函数：
 
@@ -369,7 +330,7 @@ const mapped = someIterator.map(x => x * 2);
 
 链式调用 `a.map(f1).filter(f2).take(n)` 形成 3 层闭包嵌套，每层引用前一层的 Iterator。GC 在链路断开时回收所有对象。
 
-### 4.6 与 Generator 的关系
+### 3.6 与 Generator 的关系
 
 Generator 函数是创建 Iterator 的语法糖：
 
@@ -401,9 +362,9 @@ Iterator.prototype.map(mapper):
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 项目结构
+### 4.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -422,7 +383,7 @@ flowchart TD
     T7 --> T8
 ```
 
-### 5.2 package.json
+### 4.2 package.json
 
 ```json
 {
@@ -439,7 +400,7 @@ flowchart TD
 }
 ```
 
-### 5.3 ETL 流水线（ES2024）
+### 4.3 ETL 流水线（ES2024）
 
 ```javascript
 // src/etl.js
@@ -503,7 +464,7 @@ const total = await writeToTarget(pipeline);
 console.log(`Processed ${total} records`);
 ```
 
-### 5.4 无限日志流采样
+### 4.4 无限日志流采样
 
 ```javascript
 // src/log-stream.js
@@ -569,7 +530,7 @@ export function countByLevel() {
 }
 ```
 
-### 5.5 分页加载（React）
+### 4.5 分页加载（React）
 
 ```javascript
 // src/pagination.js
@@ -655,7 +616,7 @@ function ProductList() {
 }
 ```
 
-### 5.6 测试用例
+### 4.6 测试用例
 
 ```javascript
 // test/etl.test.js
@@ -765,9 +726,9 @@ test('Iterator.from wraps non-iterator', () => {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Array 方法的对比
+### 5.1 与 Array 方法的对比
 
 | 方法 | Array.prototype | Iterator.prototype | 差异 |
 | --- | --- | --- | --- |
@@ -784,7 +745,7 @@ test('Iterator.from wraps non-iterator', () => {
 | `reverse` | 立即 | **无** | 同上 |
 | `at` | 索引访问 | **无** | 需 `drop(n).take(1)` |
 
-### 6.2 与 RxJS Observable 的对比
+### 5.2 与 RxJS Observable 的对比
 
 | 维度 | Iterator | RxJS Observable |
 | --- | --- | --- |
@@ -808,7 +769,7 @@ observable.subscribe({
 });
 ```
 
-### 6.3 与 IxJS 的对比
+### 5.3 与 IxJS 的对比
 
 | 维度 | IxJS | Iterator Helpers |
 | --- | --- | --- |
@@ -818,7 +779,7 @@ observable.subscribe({
 | AsyncIterator | 支持 | 支持（async版本，Stage 3） |
 | 性能 | 用户态实现 | 引擎优化 |
 
-### 6.4 与 Python itertools 的对比
+### 5.4 与 Python itertools 的对比
 
 | Python | JavaScript |
 | --- | --- |
@@ -832,7 +793,7 @@ observable.subscribe({
 
 Python 的 `itertools` 是函数库，JavaScript 是方法链。两者在功能上接近，但 JavaScript 的方法链更符合 OOP 风格。
 
-### 6.5 与 Rust Iterator 的对比
+### 5.5 与 Rust Iterator 的对比
 
 Rust 的 Iterator trait 提供几乎相同的方法：
 
@@ -860,9 +821,9 @@ Rust 的零成本抽象（zero-cost abstraction）使链式调用编译为紧凑
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：迭代器只能消费一次
+### 6.1 陷阱：迭代器只能消费一次
 
 ```javascript
 const it = [1, 2, 3].values().map(x => x * 2);
@@ -875,7 +836,7 @@ console.log([...makeIter()]); // [2, 4, 6]
 console.log([...makeIter()]); // [2, 4, 6]
 ```
 
-### 7.2 陷阱：map 与 filter 的索引参数
+### 6.2 陷阱：map 与 filter 的索引参数
 
 ```javascript
 // Iterator的map回调签名：(value, index)
@@ -890,7 +851,7 @@ console.log([...makeIter()]); // [2, 4, 6]
 // ['0:20', '1:30'] — i是新迭代器的索引，不是原数组的
 ```
 
-### 7.3 陷阱：take(0) 与 drop(0)
+### 6.3 陷阱：take(0) 与 drop(0)
 
 ```javascript
 [1, 2, 3].values().take(0).toArray();  // []
@@ -900,7 +861,7 @@ console.log([...makeIter()]); // [2, 4, 6]
 // [1, 2, 3].values().take(-1);  // RangeError
 ```
 
-### 7.4 陷阱：闭包中的副作用
+### 6.4 陷阱：闭包中的副作用
 
 ```javascript
 // 反模式：在迭代器中使用外部可变状态
@@ -916,7 +877,7 @@ console.log(result);  // [2, 4]
 // 最佳实践：迭代器应为纯函数，副作用在终结方法中执行
 ```
 
-### 7.5 陷阱：与生成器的兼容性
+### 6.5 陷阱：与生成器的兼容性
 
 ```javascript
 function* gen() { yield 1; yield 2; yield 3; }
@@ -943,7 +904,7 @@ const wrapped = Iterator.from(bareIterator);
 wrapped.map(x => x);  // OK
 ```
 
-### 7.6 最佳实践清单
+### 6.6 最佳实践清单
 
 1. **大集合优先用 Iterator**：避免一次性占用内存。
 2. **链路末端才用 toArray**：中间保持惰性。
@@ -955,11 +916,11 @@ wrapped.map(x => x);  // OK
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建配置
+### 7.1 构建配置
 
-#### 8.1.1 Node.js 直接使用（22+）
+#### 7.1.1 Node.js 直接使用（22+）
 
 ```javascript
 // package.json
@@ -971,7 +932,7 @@ wrapped.map(x => x);  // OK
 const result = [1, 2, 3].values().map(x => x * 2).toArray();
 ```
 
-#### 8.1.2 旧浏览器 polyfill
+#### 7.1.2 旧浏览器 polyfill
 
 ```javascript
 // 入口文件
@@ -981,7 +942,7 @@ import 'core-js/actual/iterator';
 // <script src="https://polyfill.io/v3/polyfill.min.js?features=Iterator"></script>
 ```
 
-#### 8.1.3 TypeScript 配置
+#### 7.1.3 TypeScript 配置
 
 ```json
 // tsconfig.json
@@ -995,7 +956,7 @@ import 'core-js/actual/iterator';
 }
 ```
 
-### 8.2 性能基准
+### 7.2 性能基准
 
 ```javascript
 // benchmark.js
@@ -1041,9 +1002,9 @@ await run();
 
 Iterator chain 在大数据+提前终止场景下比 Array chain 快 10 倍以上。
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
-#### 8.3.1 检查迭代器状态
+#### 7.3.1 检查迭代器状态
 
 ```javascript
 const it = [1, 2, 3].values().map(x => x * 2);
@@ -1054,7 +1015,7 @@ const snapshot = [...it];  // [2, 4, 6]
 // it 现在已耗尽
 ```
 
-#### 8.3.2 添加日志到链路
+#### 7.3.2 添加日志到链路
 
 ```javascript
 const tap = (iter, label) => iter.map(x => {
@@ -1073,7 +1034,7 @@ const result = [1, 2, 3, 4, 5]
   .toArray();
 ```
 
-#### 8.3.3 错误传播
+#### 7.3.3 错误传播
 
 ```javascript
 const it = [1, 2, 3].values().map(x => {
@@ -1091,7 +1052,7 @@ try {
 it.next();  // { done: true } — 不可恢复
 ```
 
-### 8.4 与 AsyncIterator 配合
+### 7.4 与 AsyncIterator 配合
 
 ES2024 还引入了 `AsyncIterator` helpers（Stage 3 → 4）：
 
@@ -1117,9 +1078,9 @@ const result = await fetchPages()
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 V8 引擎实现
+### 8.1 V8 引擎实现
 
 V8 v12.0（2024年3月）实现了 Iterator Helpers。其内部表示：
 
@@ -1131,7 +1092,7 @@ V8 v12.0（2024年3月）实现了 Iterator Helpers。其内部表示：
 
 来源：[V8 blog: Iterator Helpers in V8](https://v8.dev/blog/v8-release-120)
 
-### 9.2 Chrome DevTools 集成
+### 8.2 Chrome DevTools 集成
 
 Chrome 121+ 的 DevTools 在 Console 中显示 Iterator 对象时，会自动展开前 5 个值供预览（不消耗迭代器）：
 
@@ -1140,7 +1101,7 @@ Chrome 121+ 的 DevTools 在 Console 中显示 Iterator 对象时，会自动展
 Iterator { 2, 4, 6, done: false }
 ```
 
-### 9.3 Babel 的转译策略
+### 8.3 Babel 的转译策略
 
 Babel 7.24+ 提供 Iterator Helpers 插件，将：
 
@@ -1157,7 +1118,7 @@ const result = _iterator.toArray(_iterator.take(_iterator.map(_iterator.filter(i
 
 转译后代码在 ES5 环境可运行，但性能不及原生（用户态实现）。
 
-### 9.4 React 19 的探索
+### 8.4 React 19 的探索
 
 React 19 引入 `use()` Hook 后，React 团队正在探索"惰性数据流"模式：
 
@@ -1176,7 +1137,7 @@ function UserProfile({ userId }) {
 
 Iterator Helpers 的惰性特性使组件可以按需消费数据流，无需等待整个 fetch 完成。
 
-### 9.5 Node.js 流的迁移
+### 8.5 Node.js 流的迁移
 
 Node.js 22+ 的 Streams API 完全支持 AsyncIterator：
 
@@ -1371,7 +1332,7 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 10**：为什么 Iterator Helpers 没有提供 `sort()` 方法？如何对迭代器排序？
 
@@ -1415,15 +1376,15 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 规范与提案
+### 10.1 规范与提案
 
 - TC39 Proposal: Iterator Helpers [Online]. Available: https://github.com/tc39/proposal-iterator-helpers
 
 - ECMAScript 2024 Language Specification, §22.1 The Iterator Constructor. ECMA International, 2024. [Online]. Available: https://tc39.es/ecma262/#sec-iterator-objects
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 - Wadler, P. 1990. "Deforestation: Transforming Programs to Eliminate Trees." *Theoretical Computer Science*, 73(2): 231-248. DOI: 10.1016/0304-3975(90)90147-A.
 
@@ -1431,7 +1392,7 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
 
 - Hutton, G. 2007. "Programming in Haskell." *Cambridge University Press*. Chapter 6 on Lazy Evaluation.
 
-### 11.3 工业实践
+### 10.3 工业实践
 
 - Ficarra, M. and Gunasekaran, S. 2023. "Iterator Helpers: Now in Stage 3." *TC39 Meeting Notes*. [Online]. Available: https://github.com/tc39/proposal-iterator-helpers/blob/main/README.md.
 
@@ -1439,7 +1400,7 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
 
 - Klechkovski, V. 2024. "Polyfilling Iterator Helpers with Core-js." *core-js Blog*. [Online]. Available: https://github.com/zloirock/core-js#iterator-helpers.
 
-### 11.4 引用格式（ACM Reference Format）
+### 10.4 引用格式（ACM Reference Format）
 
 Michael Ficarra, Sathya Gunasekaran, Kevin Gibbons, and Yulia Startsev. 2024. *Iterator Helpers for ECMAScript*. TC39 / ECMA International. Retrieved July 20, 2026 from https://github.com/tc39/proposal-iterator-helpers
 
@@ -1449,9 +1410,9 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **Hutton, G.** *Programming in Haskell* (2nd ed.). Cambridge University Press, 2016. — 第 6 章深入讲解惰性求值与无穷数据结构。
 
@@ -1459,13 +1420,13 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 - **Marlow, S.** *Haskell 2010 Language Report*. — Haskell 的惰性求值是 JavaScript Iterator Helpers 的理论原型。
 
-### 12.2 论文
+### 11.2 论文
 
 - **Wadler, P.** "Deforestation: Transforming Programs to Eliminate Trees." *TCS*, 1990. — 短路求值与中间结构消除的理论基础。
 
 - **Gill, A., Launchbury, J., and Peyton Jones, S.** "A Short Cut to Deforestation." *FPCA '93*. DOI: 10.1145/165180.165214.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **TC39 提案仓库**：https://github.com/tc39/proposal-iterator-helpers — 提案最新进展、规范文本。
 
@@ -1479,7 +1440,7 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 - **RxJS**：https://rxjs.dev/ — 对比理解 Pull vs Push 模式。
 
-### 12.4 相关 FANDEX 文档
+### 11.4 相关 FANDEX 文档
 
 - [索引数据库](./索引数据库) — IDB cursor 是天然的迭代器，与 helpers 配合处理大数据集。
 - [时间API](./时间API) — Temporal 对象可迭代，配合 helpers 实现日期范围遍历。

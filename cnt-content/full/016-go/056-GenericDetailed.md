@@ -21,60 +21,16 @@ prerequisites:
   - go/Map原理
 ---
 
+
 # 泛型详解：类型参数、约束与 GC Shape Stenciling 实现
 
 > 本文以 Go 1.22 为基准版本，深入解析 Go 1.18 引入的泛型机制：类型参数语法、约束系统、类型推断算法、runtime 实现（GC shape stenciling）、泛型算法库设计与生产级最佳实践。适用于已掌握 Go 接口与反射、希望编写可复用类型安全代码的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。
-
-### 1.1 Remember（记忆）
-
-- 准确复述类型参数语法：`func F[T any](x T) T`、`type Stack[T any] struct{...}`。
-- 列出 `constraints` 包提供的标准约束：`Ordered`、`Signed`、`Unsigned`、`Integer`、`Float`、`Complex`。
-- 背诵泛型三要素：类型参数（type parameter）、类型实参（type argument）、类型约束（type constraint）。
-- 复述 `comparable` 约束的语义：支持 `==` 与 `!=` 比较。
-
-### 1.2 Understand（理解）
-
-- 解释类型推断算法：从函数实参推断类型参数的过程。
-- 描述 GC shape stenciling 实现策略：按 GC 形状分组生成代码，而非每个类型生成一份。
-- 阐述泛型与接口的区别：泛型是编译期多态，接口是运行期多态。
-- 说明约束的底层机制：约束本质是 interface，可包含类型集合（type set）。
-
-### 1.3 Apply（应用）
-
-- 编写泛型容器：`Stack[T]`、`Queue[T]`、`Set[T comparable]`。
-- 实现泛型算法：`Map`、`Filter`、`Reduce`、`Sort`。
-- 使用 `constraints.Ordered` 约束编写通用比较函数。
-- 设计泛型函数式工具：`Option[T]`、`Result[T, E]`。
-
-### 1.4 Analyze（分析）
-
-- 分析泛型与接口的性能差异：编译期单态化 vs 运行期虚函数调用。
-- 推导类型推断算法的复杂度，指出推断失败的场景。
-- 对比 Go 泛型与 C++ templates、Rust generics、Java generics 的实现差异。
-
-### 1.5 Evaluate（评价）
-
-- 评估"过度泛化"反模式的危害（如为单一类型引入泛型）。
-- 评价 GC shape stenciling 的折衷：代码体积 vs 类型安全。
-- 判断何时该用泛型而非接口（性能敏感路径用泛型，灵活性优先用接口）。
-
-### 1.6 Create（创造）
-
-- 设计一个类型安全的 ORM 框架，利用泛型避免 `interface{}` 转换。
-- 实现一个泛型依赖注入容器，支持构造函数注入。
-- 基于泛型设计一个分布式任务队列，支持自定义任务类型与结果类型。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 设计动机（2010-2017）
+### 1.1 设计动机（2010-2017）
 
 Go 自 2009 年发布以来，一直缺少泛型支持。开发者通过以下方式模拟泛型：
 
@@ -88,7 +44,7 @@ Robert Griesemer 与 Rob Pike 在 2010 年就开始研究泛型方案，但受�
 - **语法简洁**：不能引入复杂的 `template<typename T>` 语法
 - **语义清晰**：泛型应保持 Go 的"显式优于隐式"哲学
 
-### 2.2 类型函数提案（2011-2015）
+### 1.2 类型函数提案（2011-2015）
 
 早期提案采用 `type T` 关键字：
 
@@ -99,7 +55,7 @@ func Map(type T, U)(s []T, f func(T) U) []U
 
 被否决原因：语法怪异、与现有语法不协调。
 
-### 2.3 Contracts 提案（2018）
+### 1.3 Contracts 提案（2018）
 
 2018 年的 Contracts 提案引入 `contract` 关键字：
 
@@ -123,7 +79,7 @@ func Max(T Ordered)(a, b T) T {
 2. 语法与 `interface` 重复
 3. 学习成本高
 
-### 2.4 Type Parameters 提案（2020）
+### 1.4 Type Parameters 提案（2020）
 
 2020 年由 Robert Griesemer 提交的 Type Parameters 提案（issue #43651）最终被采纳：
 
@@ -148,7 +104,7 @@ func Sum[T Number](nums []T) T {
 3. **类型推断**：调用时无需显式指定类型参数
 4. **方括号语法**：`[T any]` 避免与函数参数括号冲突
 
-### 2.5 Go 1.18（2022-03）：泛型正式发布
+### 1.5 Go 1.18（2022-03）：泛型正式发布
 
 Go 1.18 由 Matthew Dempsky、Robert Griesemer、Dan Scales 等人完成泛型实现。核心特性：
 
@@ -158,19 +114,19 @@ Go 1.18 由 Matthew Dempsky、Robert Griesemer、Dan Scales 等人完成泛型�
 - 类型推断：从函数实参推断类型参数
 - 泛型类型与方法
 
-### 2.6 Go 1.19（2022-08）：minor 优化
+### 1.6 Go 1.19（2022-08）：minor 优化
 
 - 修复泛型相关的内存逃逸问题
 - 改进类型推断算法
 - 性能优化：减少 GC shape stenciling 的代码体积
 
-### 2.7 Go 1.20（2023-02）：可比性改进
+### 1.7 Go 1.20（2023-02）：可比性改进
 
 - 引入 `comparable` 约束的精确语义
 - 修复 `comparable` 与接口类型的交互问题
 - 改进类型集合的算法
 
-### 2.8 Go 1.21（2023-08）：标准库泛型化
+### 1.8 Go 1.21（2023-08）：标准库泛型化
 
 Go 1.21 引入 `maps`、`slices` 标准库包，提供泛型工具：
 
@@ -188,7 +144,7 @@ func Clone[K comparable, V any](m map[K]V) map[K]V
 
 同时引入 `cmp` 包，提供 `Ordered` 约束与比较函数。
 
-### 2.9 Go 1.22（2024-02）：range over function
+### 1.9 Go 1.22（2024-02）：range over function
 
 Go 1.22 引入 `range over function` 实验特性，与泛型深度集成：
 
@@ -201,7 +157,7 @@ for v := range Map([]int{1,2,3}, func(x int) int { return x*2 }) {
 }
 ```
 
-### 2.10 演进时间轴
+### 1.10 演进时间轴
 
 ```mermaid
 timeline
@@ -217,9 +173,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类型参数的文法
+### 2.1 类型参数的文法
 
 Go 语言规范对类型参数的文法定义：
 
@@ -259,7 +215,7 @@ type Stringer interface {
 }
 ```
 
-### 3.2 类型集合（Type Set）的形式化
+### 2.2 类型集合（Type Set）的形式化
 
 约束 $C$ 定义了一个类型集合 $\text{TypeSet}(C)$：
 
@@ -273,7 +229,7 @@ $$
 - **交集**：`interface { int; String() string }` → $\{ T \mid T = \text{int} \land T \text{ has String()} \} = \emptyset$
 - **底层类型**：`~string` → $\{ T \mid \text{underlying}(T) = \text{string} \}$
 
-### 3.3 类型可满足性
+### 2.3 类型可满足性
 
 类型 $T$ 满足约束 $C$ 当且仅当：
 
@@ -287,7 +243,7 @@ $$
 \text{Satisfies}(T, C) \iff T \in \text{TypeSet}(C)
 $$
 
-### 3.4 类型推断算法
+### 2.4 类型推断算法
 
 类型推断可形式化为约束求解问题。给定函数 `F[T1, T2, ...]` 与调用 `F(arg1, arg2, ...)`：
 
@@ -304,7 +260,7 @@ $$
 \end{cases}
 $$
 
-### 3.5 GC Shape Stenciling
+### 2.5 GC Shape Stenciling
 
 Go 泛型的实现策略是 **GC shape stenciling**，介于完全单态化（C++ templates）与完全装箱（Java generics）之间。
 
@@ -329,7 +285,7 @@ $$
 - `int`、`float64`：GC shape 相同（都是 8 字节非指针），共享代码
 - `[8]byte`、`int64`：GC shape 不同（数组 vs 标量），不同代码
 
-### 3.6 类型系统视角
+### 2.6 类型系统视角
 
 Go 泛型是 **parametric polymorphism**（参数化多态）的实现，与以下概念相关：
 
@@ -347,13 +303,13 @@ Go 泛型属于 **let-polymorphism**（Let 多态），即：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 类型推断算法详解
+### 3.1 类型推断算法详解
 
 类型推断分为两个阶段：**类型统一**（type unification）与**类型替换**（type substitution）。
 
-#### 4.1.1 类型统一
+#### 3.1.1 类型统一
 
 给定函数签名 `F[T1, T2](p1 P1, p2 P2)` 与调用 `F(a1, a2)`，对每个参数建立方程：
 
@@ -377,7 +333,7 @@ Map([]int{1,2,3}, func(x int) string { return fmt.Sprint(x) })
 
 解：$T = \text{int}$, $U = \text{string}$。
 
-#### 4.1.2 推断失败的常见场景
+#### 3.1.2 推断失败的常见场景
 
 ```go
 // 场景 1：从 nil 无法推断
@@ -393,11 +349,11 @@ func H[T any](a, b T) T { return a }
 H(1, "string") // 错误：T 同时为 int 和 string
 ```
 
-### 4.2 约束的实现机制
+### 3.2 约束的实现机制
 
 约束本质是 interface，编译器对约束进行特殊处理。
 
-#### 4.2.1 类型集合计算
+#### 3.2.1 类型集合计算
 
 ```go
 type Number interface {
@@ -411,7 +367,7 @@ $$
 \text{TypeSet}(\text{Number}) = \{ \text{int}, \text{int64}, \text{float32}, \text{float64} \}
 $$
 
-#### 4.2.2 方法集 vs 类型集合
+#### 3.2.2 方法集 vs 类型集合
 
 ```go
 // 类型集合约束
@@ -430,7 +386,7 @@ type Stringer interface {
 - 方法集：$\{ T \mid T \text{ has methods } \}$
 - 类型集合：$\{ T \mid T \in \text{union} \land T \text{ has methods } \}$
 
-#### 4.2.3 comparable 约束
+#### 3.2.3 comparable 约束
 
 ```go
 type comparable interface {
@@ -448,9 +404,9 @@ type comparable interface {
 
 - `slice`、`map`、`func`
 
-### 4.3 GC Shape Stenciling 实现细节
+### 3.3 GC Shape Stenciling 实现细节
 
-#### 4.3.1 代码生成策略
+#### 3.3.1 代码生成策略
 
 对每个泛型函数 `F[T]`，编译器按 GC shape 分组生成代码：
 
@@ -487,7 +443,7 @@ func Max_ptr(a, b unsafe.Pointer) unsafe.Pointer {
 }
 ```
 
-#### 4.3.2 字典（Dictionary）传递
+#### 3.3.2 字典（Dictionary）传递
 
 对于需要运行时类型信息的操作（如 `>`、`<`、`==`），编译器生成一个**字典**，包含：
 
@@ -508,7 +464,7 @@ type Dictionary struct {
 }
 ```
 
-#### 4.3.3 性能权衡
+#### 3.3.3 性能权衡
 
 | 实现策略 | 代码体积 | 运行时性能 | 类型安全 |
 | --- | --- | --- | --- |
@@ -523,7 +479,7 @@ type Dictionary struct {
 3. **性能**：避免装箱开销
 4. **GC 兼容**：GC shape 包含引用图信息
 
-### 4.4 泛型函数的内联
+### 3.4 泛型函数的内联
 
 泛型函数的内联策略与普通函数不同：
 
@@ -542,7 +498,7 @@ func Add[T Number](a, b T) T { return a + b }
 
 **Go 1.22 改进**：对部分简单泛型函数支持内联。
 
-### 4.5 泛型类型的内存布局
+### 3.5 泛型类型的内存布局
 
 ```go
 type Stack[T any] struct {
@@ -559,7 +515,7 @@ var s2 Stack[string]
 // 但 sizeof(s1) == sizeof(s2)（都是 24 字节：slice header）
 ```
 
-### 4.6 类型断言与泛型
+### 3.6 类型断言与泛型
 
 泛型类型参数不能直接用于类型断言：
 
@@ -581,9 +537,9 @@ func F[T any](x T) {
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 go.mod 配置
+### 4.1 go.mod 配置
 
 ```go
 // go.mod
@@ -596,7 +552,7 @@ require (
 )
 ```
 
-### 5.2 基础：泛型函数
+### 4.2 基础：泛型函数
 
 ```go
 // generic_basic.go
@@ -684,7 +640,7 @@ func main() {
 }
 ```
 
-### 5.3 约束（Constraints）
+### 4.3 约束（Constraints）
 
 ```go
 // generic_constraints.go
@@ -793,7 +749,7 @@ func main() {
 }
 ```
 
-### 5.4 泛型类型
+### 4.4 泛型类型
 
 ```go
 // generic_types.go
@@ -945,7 +901,7 @@ func main() {
 }
 ```
 
-### 5.5 函数式工具：Option 与 Result
+### 4.5 函数式工具：Option 与 Result
 
 ```go
 // functional.go
@@ -1049,7 +1005,7 @@ func main() {
 }
 ```
 
-### 5.6 泛型与接口结合
+### 4.6 泛型与接口结合
 
 ```go
 // generic_interface.go
@@ -1145,7 +1101,7 @@ func main() {
 }
 ```
 
-### 5.7 泛型并发工具
+### 4.7 泛型并发工具
 
 ```go
 // generic_concurrent.go
@@ -1286,7 +1242,7 @@ func main() {
 }
 ```
 
-### 5.8 使用标准库 slices 与 maps
+### 4.8 使用标准库 slices 与 maps
 
 ```go
 // stdlib_generics.go
@@ -1353,7 +1309,7 @@ func main() {
 }
 ```
 
-### 5.9 Benchmark：泛型 vs 接口
+### 4.9 Benchmark：泛型 vs 接口
 
 ```go
 // generic_bench_test.go
@@ -1449,9 +1405,9 @@ BenchmarkDirect-8      20000000  58 ns/op
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 C++ Templates 对比
+### 5.1 与 C++ Templates 对比
 
 | 维度 | Go generics | C++ templates |
 | --- | --- | --- |
@@ -1483,7 +1439,7 @@ std::string sum<std::string>(const std::vector<std::string>& strs) {
 }
 ```
 
-### 6.2 与 Rust Generics 对比
+### 5.2 与 Rust Generics 对比
 
 | 维度 | Go generics | Rust generics |
 | --- | --- | --- |
@@ -1508,7 +1464,7 @@ trait Container {
 }
 ```
 
-### 6.3 与 Java Generics 对比
+### 5.3 与 Java Generics 对比
 
 | 维度 | Go generics | Java generics |
 | --- | --- | --- |
@@ -1534,7 +1490,7 @@ public static <T extends Number> T sum(List<T> nums) {
 public static Number sum(List nums) { ... }
 ```
 
-### 6.4 与 C# Generics 对比
+### 5.4 与 C# Generics 对比
 
 | 维度 | Go generics | C# generics |
 | --- | --- | --- |
@@ -1554,7 +1510,7 @@ public static T Sum<T>(List<T> nums) where T : struct, IAddable<T> {
 }
 ```
 
-### 6.5 综合评价
+### 5.5 综合评价
 
 | 语言 | 优势 | 劣势 |
 | --- | --- | --- |
@@ -1566,9 +1522,9 @@ public static T Sum<T>(List<T> nums) where T : struct, IAddable<T> {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：过度泛化
+### 6.1 陷阱一：过度泛化
 
 ```go
 // 反模式：为单一类型引入泛型
@@ -1584,7 +1540,7 @@ type UserIDs struct{}
 func (u *UserIDs) Add(id int) { ... }
 ```
 
-### 7.2 陷阱二：约束过宽
+### 6.2 陷阱二：约束过宽
 
 ```go
 // 反模式：约束过宽，无法使用具体方法
@@ -1603,7 +1559,7 @@ func Print[T Stringer](x T) {
 }
 ```
 
-### 7.3 陷阱三：忽略类型推断失败
+### 6.3 陷阱三：忽略类型推断失败
 
 ```go
 // 反模式：依赖类型推断，但推断失败
@@ -1614,7 +1570,7 @@ result := F(nil) // 错误：无法从 nil 推断 T
 result := F[int](0)
 ```
 
-### 7.4 陷阱四：泛型方法接收者类型不一致
+### 6.4 陷阱四：泛型方法接收者类型不一致
 
 ```go
 // 反模式：方法接收者类型不一致
@@ -1634,7 +1590,7 @@ func (s *Stack[T]) Pop() (T, bool) {
 }
 ```
 
-### 7.5 陷阱五：在泛型函数中使用类型断言
+### 6.5 陷阱五：在泛型函数中使用类型断言
 
 ```go
 // 反模式：直接对类型参数断言
@@ -1652,7 +1608,7 @@ func F[T any](x T) {
 }
 ```
 
-### 7.6 陷阱六：约束嵌套过深
+### 6.6 陷阱六：约束嵌套过深
 
 ```go
 // 反模式：约束嵌套导致复杂度爆炸
@@ -1670,7 +1626,7 @@ type Hashable interface {
 }
 ```
 
-### 7.7 陷阱七：泛型与 goroutine 泄漏
+### 6.7 陷阱七：泛型与 goroutine 泄漏
 
 ```go
 // 反模式：泛型函数中启动 goroutine 但未处理取消
@@ -1694,7 +1650,7 @@ func Process[T any](ctx context.Context, items []T, f func(context.Context, T)) 
 }
 ```
 
-### 7.8 最佳实践清单
+### 6.8 最佳实践清单
 
 1. **优先使用具体类型**：泛型不是银弹，单一类型用具体类型
 2. **约束最小化**：只声明必需的方法与类型
@@ -1709,9 +1665,9 @@ func Process[T any](ctx context.Context, items []T, f func(context.Context, T)) 
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目组织
+### 7.1 项目组织
 
 ```mermaid
 flowchart TD
@@ -1748,7 +1704,7 @@ flowchart TD
     T20 --> T21
 ```
 
-### 8.2 泛型 Repository 模式
+### 7.2 泛型 Repository 模式
 
 ```go
 // repository/repository.go
@@ -1834,7 +1790,7 @@ func (r *MemoryRepository[T]) List(ctx context.Context) ([]T, error) {
 }
 ```
 
-### 8.3 泛型 ORM 设计
+### 7.3 泛型 ORM 设计
 
 ```go
 // orm/orm.go
@@ -1895,7 +1851,7 @@ func scanRow(rows *sql.Rows, dest any) error {
 }
 ```
 
-### 8.4 pprof 分析泛型开销
+### 7.4 pprof 分析泛型开销
 
 ```go
 // pprof_generics.go
@@ -1933,7 +1889,7 @@ go tool pprof http://localhost:6060/debug/pprof/profile
 (pprof) list heavyGeneric
 ```
 
-### 8.5 泛型测试策略
+### 7.5 泛型测试策略
 
 ```go
 // stack_test.go
@@ -1985,9 +1941,9 @@ func TestStackAllTypes(t *testing.T) {
 }
 ```
 
-### 8.6 调试技巧
+### 7.6 调试技巧
 
-#### 8.6.1 查看泛型实例化
+#### 7.6.1 查看泛型实例化
 
 ```bash
 # 查看泛型实例化
@@ -1998,7 +1954,7 @@ go build -gcflags='-m' ./...
 # ./main.go:10:6: instantiated Sum[float64]
 ```
 
-#### 8.6.2 使用 go tool objdump
+#### 7.6.2 使用 go tool objdump
 
 ```bash
 go build -o app ./cmd/server
@@ -2006,7 +1962,7 @@ go tool objdump -s Sum app | head
 # 查看实际生成的代码
 ```
 
-#### 8.6.3 类型断言调试
+#### 7.6.3 类型断言调试
 
 ```go
 // 调试类型参数
@@ -2017,9 +1973,9 @@ func DebugType[T any](x T) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 标准库 slices 包
+### 8.1 标准库 slices 包
 
 Go 1.21 引入的 `slices` 包是泛型的典型应用（`slices/slices.go`）：
 
@@ -2073,7 +2029,7 @@ func Reverse[T any](s []T) {
 2. 自定义比较通过函数参数，避免约束膨胀
 3. 算法实现与具体类型解耦
 
-### 9.2 标准库 maps 包
+### 8.2 标准库 maps 包
 
 ```go
 // maps/maps.go
@@ -2120,7 +2076,7 @@ func Equal[K, V comparable](m1, m2 map[K]V) bool {
 }
 ```
 
-### 9.3 samber/lo：函数式工具库
+### 8.3 samber/lo：函数式工具库
 
 `samber/lo` 是流行的 Go 函数式库，大量使用泛型：
 
@@ -2170,7 +2126,7 @@ func Zip[A, B any](a []A, b []B) []Tuple2[A, B] {
 }
 ```
 
-### 9.4 golang.org/x/exp/constraints
+### 8.4 golang.org/x/exp/constraints
 
 `constraints` 包提供标准约束：
 
@@ -2203,7 +2159,7 @@ type Ordered interface {
 }
 ```
 
-### 9.5 Kubernetes：泛型改造
+### 8.5 Kubernetes：泛型改造
 
 Kubernetes 正在逐步引入泛型以减少 `interface{}` 使用：
 
@@ -2215,7 +2171,7 @@ func List(items []interface{}, filter func(interface{}) bool) []interface{} { ..
 func List[T any](items []T, filter func(T) bool) []T { ... }
 ```
 
-### 9.6 案例总结
+### 8.6 案例总结
 
 | 项目 | 泛型应用 | 设计哲学 |
 | --- | --- | --- |
@@ -2707,7 +2663,7 @@ func main() {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 Go 选择 GC shape stenciling 而非完全单态化？
 
@@ -2937,9 +2893,9 @@ db.Delete(ctx, user.ID)
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 [1] Google LLC. 2024. *Go Language Specification: Type Parameter Declarations*. Go Project. Retrieved July 20, 2026 from https://go.dev/ref/spec#Type_parameter_declarations
 
@@ -2949,7 +2905,7 @@ db.Delete(ctx, user.ID)
 
 [4] Google LLC. 2024. *Generics proposal (Issue #43651)*. GitHub. https://github.com/golang/go/issues/43651
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [5] Bracha, G., Odersky, M., Stoutamire, D., and Wadler, P. 1998. *Making the future safe for the past: Adding genericity to the Java programming language*. In Proceedings of the 13th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications (OOPSLA '98), 183–200. DOI: 10.1145/286936.286957
 
@@ -2959,7 +2915,7 @@ db.Delete(ctx, user.ID)
 
 [8] Scales, D. 2020. *Type Parameters Proposal*. Go Project. https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md
 
-### 11.3 开源项目与博客
+### 10.3 开源项目与博客
 
 [9] Griesemer, R. 2020. *Generics in Go*. The Go Blog. https://go.dev/blog/generics-proposal
 
@@ -2969,7 +2925,7 @@ db.Delete(ctx, user.ID)
 
 [12] samber. 2024. *lo: A Lodash-style Go library based on Go 1.18+ Generics*. https://github.com/samber/lo
 
-### 11.4 标准与规范
+### 10.4 标准与规范
 
 [13] ISO/IEC. 2023. *ISO/IEC 14882:2023 Information technology — Programming languages — C++*. International Organization for Standardization, Geneva, Switzerland.
 
@@ -2977,9 +2933,9 @@ db.Delete(ctx, user.ID)
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 - **《Learning Go: An Idiomatic Approach to Real-World Go Programming》** — Jon Bodner
   - 第 6 章：泛型，覆盖约束、类型推断、最佳实践
@@ -2990,21 +2946,21 @@ db.Delete(ctx, user.ID)
 - **《Programming in Go: Creating Applications for the 21st Century》** — Mark Summerfield
   - 泛型章节
 
-### 12.2 学术论文
+### 11.2 学术论文
 
 - *Making the Future Safe for the Past* (Bracha et al., 1998) — Java generics
 - *A Comparative Study of Language Support for Generic Programming* (Garcia et al., 2003)
 - *Type Classes: Exploring the Design Space* (Peyton Jones et al., 1997) — 约束系统
 - *Generics for Go* (Scales, 2020) — Go 泛型提案
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **Go 官方泛型教程**：https://go.dev/doc/tutorial/generics
 - **Generics Proposal**：https://github.com/golang/go/issues/43651
 - **Type Parameters Design Draft**：https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md
 - **Generics by Example**：https://github.com/akutz/go-generics-the-hard-way
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **GC shape stenciling 细节**：编译器实现
 - **类型推断算法**：双统一算法
@@ -3014,14 +2970,14 @@ db.Delete(ctx, user.ID)
 - **关联类型**：Go 未来可能引入
 - **特化**：Go 是否需要支持
 
-### 12.5 相关 Go 提案
+### 11.5 相关 Go 提案
 
 - **proposal: spec: add type parameters** (Issue #43651, Go 1.18)
 - **proposal: slices, maps package** (Issue #52553, Go 1.21)
 - **proposal: cmp package** (Issue #52500, Go 1.21)
 - **proposal: range over function** (Go 1.22)
 
-### 12.6 实战项目
+### 11.6 实战项目
 
 - **samber/lo**：函数式工具库
 - **golang.org/x/exp/constraints**：标准约束包

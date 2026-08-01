@@ -35,14 +35,6 @@ prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/图算法
   - algorithm/堆与优先队列
-learningObjectives:
-  - 记忆活动选择 $O(n \log n)$、哈夫曼编码 $O(n \log n)$、Kruskal $O(E \log E)$、Prim $O(E \log V)$（二叉堆）/$O(E + V \log V)$（Fibonacci 堆）、Dijkstra $O((V+E) \log V)$、分数背包 $O(n \log n)$ 的形式化复杂度，复述各贪心算法的贪心选择性质与最优子结构
-  - 理解 Huffman 1952《A Method for the Construction of Minimum-Redundancy Codes》Proc. IRE 40(9):1098-1101、Kruskal 1956《On the shortest spanning subtree of a graph and the traveling salesman problem》Proc. AMS 7(1):48-50、Prim 1957《Shortest connection networks and some generalizations》Bell System Technical Journal 36(6):1389-1401、Dijkstra 1959《A note on two problems in connexion with graphs》Numerische Mathematik 1:269-271、Rado 1957《Note on independence functions》Proc. London Math. Soc. 7:300-320、Edmonds 1971《Matroids and the greedy algorithm》Mathematical Programming 1:127-136 的历史脉络，说明各贪心算法的设计动机
-  - 应用活动选择（按结束时间排序）、哈夫曼编码（优先队列构建）、Kruskal（并查集+排序）、Prim（优先队列）、Dijkstra（优先队列+松弛）、分数背包（按单位价值排序）、区间调度（按结束时间排序）编写可运行的 Python/C++/Java 代码，解决 LeetCode 55 跳跃游戏、LeetCode 134 加油站、LeetCode 406 根据身高重建队列、LeetCode 452 用最少数量箭引爆气球、LeetCode 621 任务调度器、LeetCode 763 划分字母区间等问题
-  - 分析贪心选择性质与最优子结构的形式化定义、拟阵 $(E, \mathcal{I})$ 三公理（遗传性/扩张性/空集性）、Edmonds 定理（拟阵上贪心最优）、交换论证/保持领先/势能下降三大正确性证明方法，掌握"交换论证、归纳证明、拟阵归约"三大核心论证方法
-  - 评估各贪心算法在"贪心选择性质是否满足"、"最优子结构是否成立"、"0-1 背包 vs 分数背包"、"区间调度 vs 加权区间调度"维度上的优劣，识别 Huffman 编码、网络设计 MST、Google Maps 最短路、JPEG/zip 压缩、任务调度的选型动机
-  - 对比活动选择、哈夫曼编码、Kruskal、Prim、Dijkstra、分数背包、任务调度、区间调度在贪心策略、排序键、数据结构、时间复杂度、正确性证明方法维度的差异
-  - 创造性设计基于贪心算法的开源项目解决方案，如 Huffman 压缩器、Kruskal 网络拓扑设计、Dijkstra 路径规划、Prim 网络广播、加油站路径优化、任务调度器
 references:
   - type: book
     authors:
@@ -212,6 +204,7 @@ etymology:
     english: interval scheduling
     origin: 'interval 源自拉丁语 intervallum（空间之间的距离）。区间调度问题：在给定的多个区间中选出不冲突的最大子集。贪心策略按结束时间排序，Kleinberg-Tardos 第 4.1 节给出 stay-ahead 证明。加权版本需 DP，是贪心与 DP 的经典边界'
 ---
+
 
 ## 1. 概述与学习目标
 
@@ -1307,14 +1300,12 @@ flowchart TD
 ## 参考文献
 
 
-
 算法导论（CLRS）：https://mitpress.mit.edu/9780262046305/
 LeetCode：https://leetcode.cn/
 OI Wiki：https://oi-wiki.org/
 Visualgo 可视化：https://visualgo.net/zh
 
 ## 延伸阅读
-
 
 
 数据结构与算法基础，见 023-algorithm 模块文档。

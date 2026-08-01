@@ -15,22 +15,12 @@ related:
 prerequisites:
   - go/概述与环境配置
 ---
+
 # Go 接口与类型断言
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-完成本章学习后,读者应能够在以下 Bloom 认知层级达到对应能力:
-
-- **记忆(Memory)**:复述 Go 接口(interface)的内部表示(eface 与 iface 结构)、itab(interfacetable)的组成、类型断言(Type Assertion)与类型切换(Type Switch)的语法形式,准确说出值接收者(Value Receiver)与指针接收者(Pointer Receiver)在方法集(Method Set)上的差异。
-- **理解(Understanding)**:解释 Go 隐式接口实现(Implicit Implementation)与 Java 显式接口实现(Explicit Implementation)的本质区别,阐述鸭子类型(Duck Typing)在 Go 中的体现,说明接口值的动态派发(Dynamic Dispatch)机制与直接调用的性能差异。
-- **应用(Application)**:使用接口设计小而精的 API(如 `io.Reader`、`io.Writer`),通过类型断言与类型切换处理异构集合,利用接口组合(Interface Embedding)构建复合契约,通过 `any`(`interface{}`)实现通用容器与泛型替代方案。
-- **分析(Analysis)**:对照 `runtime/iface.go` 源码,分析 eface 与 iface 的内存布局,定位 itab 缓存命中率、动态派发的性能热点,识别 nil 接口、nil 指针接口、接口比较等典型陷阱的底层成因。
-- **评价(Evaluation)**:对比 Go 接口与 Java/C++/Rust 的多态机制,在编译期安全、运行时开销、表达力、学习曲线等维度做出权衡;评价泛型(Go 1.18+)对接口的补充与替代作用,在不同场景下选择接口、泛型或二者结合的方案。
-- **创造(Creation)**:为大型项目设计一套基于"小接口、消费者定义、接口组合"原则的接口架构,支持 Mock 测试、依赖注入、插件扩展,并通过 benchmark 验证接口调用的性能符合 SLA 要求。
 
 ## 历史动机与背景
 
@@ -1331,7 +1321,7 @@ func getUser() interface{} {
 }
 ```
 
-### 2. 指针接收者方法集陷阱
+### 1. 指针接收者方法集陷阱
 
 ```go
 type Modifier interface {
@@ -1353,7 +1343,7 @@ func main() {
 
 **修复**:统一使用指针接收者,或将方法改为值接收者。
 
-### 3. 接口比较 panic
+### 2. 接口比较 panic
 
 ```go
 var a interface{} = []int{1, 2}
@@ -1365,7 +1355,7 @@ fmt.Println(a == b) // panic: runtime error: comparing uncomparable type []int
 
 **修复**:使用 `reflect.DeepEqual` 或比较切片元素。
 
-### 4. 类型断言失败 panic
+### 3. 类型断言失败 panic
 
 ```go
 var i interface{} = "hello"
@@ -1381,7 +1371,7 @@ if !ok {
 }
 ```
 
-### 5. 接口嵌入的歧义
+### 4. 接口嵌入的歧义
 
 ```go
 type A interface{ Foo() }
@@ -1396,7 +1386,7 @@ type C interface {
 
 **建议**:避免嵌入方法名相同但语义不同的接口。
 
-### 6. 接口零值陷阱
+### 5. 接口零值陷阱
 
 ```go
 type Stringer interface {
@@ -1427,7 +1417,7 @@ func print(s Stringer) {
 }
 ```
 
-### 7. any 滥用导致类型安全丧失
+### 6. any 滥用导致类型安全丧失
 
 ```go
 // 反模式:用 any 代替具体类型
@@ -1484,7 +1474,7 @@ type RedisCache struct{ ... }
 
 **原则**:接口在"使用"处定义,而非"实现"处。这样接口更贴合需求,避免"胖接口"。
 
-### 2. 小接口原则
+### 1. 小接口原则
 
 ```go
 // 好:1-2 个方法的小接口
@@ -1506,7 +1496,7 @@ type ReadWriteCloser interface {
 - 易组合:通过嵌入组合成大接口。
 - 易理解:接口契约清晰。
 
-### 3. 返回具体类型,接受接口类型
+### 2. 返回具体类型,接受接口类型
 
 ```go
 // 推荐
@@ -1523,7 +1513,7 @@ func NewUserService(repo *PostgresUserRepo) *UserRepository { ... }
 - 返回具体类型:调用方获得完整 API,灵活性高。
 - 接受接口:允许任何实现,可测试性强。
 
-### 4. 接口与错误处理结合
+### 3. 接口与错误处理结合
 
 ```go
 // 自定义错误类型,通过接口判断
@@ -1554,7 +1544,7 @@ func getUser(id int) (*User, error) {
 }
 ```
 
-### 5. 接口与依赖注入
+### 4. 接口与依赖注入
 
 ```go
 // 定义接口

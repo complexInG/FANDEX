@@ -16,59 +16,16 @@ prerequisites:
   - harmonyos/概述与环境搭建
 ---
 
+
 # Stage 模型与 FA 模型区别：从 Ability 到 UIAbility 的范式跃迁
 
 > 本章是理解 HarmonyOS 应用框架的"宪法级"内容。FA（Feature Ability）模型与 Stage 模型不仅是两种 API 风格的差异，更代表了 HarmonyOS 在多设备、分布式、原子化服务场景下应用范式的根本性重构。本章按 MIT 6.831/Stanford CS193P/CMU 17-643 等课程的标准组织，覆盖历史动机、形式化定义、工程实践与案例研究。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章按照 Bloom 教育目标分类法（Bloom's Taxonomy）的六个层级组织学习目标。读者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述 FA 模型与 Stage 模型的定义、组件构成与历史版本归属。
-- **R2**：列举 FA 模型中的四种 Ability 类型（Page、Service、Data、Form）。
-- **R3**：列举 Stage 模型中的 Ability 类型（UIAbility、ServiceExtensionAbility、FormExtensionAbility、ShareExtensionAbility、DataShareExtensionAbility）。
-- **R4**：复述 `module.json5` 与 `config.json` 的作用区别。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 Stage 模型为何以 UIAbility 取代 Page Ability，背后的窗口与生命周期抽象差异。
-- **U2**：解释 ExtensionAbility 机制如何实现"原子化服务"的按需加载。
-- **U3**：阐明 Stage 模型中 AbilityStage、HAP、HSP、APP Pack 的层次关系。
-- **U4**：对比 FA 模型与 Stage 模型的进程模型差异（同进程多 Ability vs. 多实例隔离）。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 ArkTS 在 DevEco Studio 中创建一个 Stage 模型的 EntryAbility。
-- **A2**：在 `module.json5` 中正确配置 `extensionAbilities` 字段。
-- **A3**：实现一个 FormExtensionAbility，向系统提供桌面卡片服务。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 FA 模型在同进程 Page 跳转中存在的内存与状态管理问题，论证 Stage 模型的改进点。
-- **An2**：分析 Stage 模型通过 WindowStage 实现窗口复用对性能的影响。
-- **An3**：分析 `module.json5` 的 `deviceTypes` 字段如何与 Ability 类型共同决定跨设备部署能力。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价一个现有 FA 模型项目迁移到 Stage 模型的成本与收益。
-- **E2**：评价 Stage 模型在多设备协同场景下的架构合理性。
-- **E3**：评价 OpenHarmony 与 HarmonyOS NEXT 在 API 兼容性策略上的取舍。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个基于 Stage 模型的多设备协同办公应用，明确 Ability 拆分策略。
-- **C2**：设计 FA → Stage 的自动化迁移工具的核心算法与转换规则。
-- **C3**：基于 ExtensionAbility 设计一个可被第三方应用调用的"原子化翻译服务"。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 HarmonyOS 1.0（2019）：FA 模型的诞生
+### 1.1 HarmonyOS 1.0（2019）：FA 模型的诞生
 
 HarmonyOS 1.0 于 2019 年 8 月 9 日在华为开发者大会（HDC 2019）上发布，最初搭载于荣耀智慧屏。其应用模型被称为 **FA 模型**（Feature Ability Model），设计上参考了 Android 的 Activity/Service 模型，并融合了 LiteOS A 的轻量化特性。
 
@@ -80,7 +37,7 @@ FA 模型的核心设计动机：
 
 FA 模型在 2019-2021 年间承担了 HarmonyOS 1.0/2.0 的全部应用生态，但随着多设备协同场景的复杂化，其局限性逐渐暴露。
 
-### 2.2 HarmonyOS 2.0（2020）：原子化服务浮现
+### 1.2 HarmonyOS 2.0（2020）：原子化服务浮现
 
 HarmonyOS 2.0 引入"原子化服务"概念，但仍基于 FA 模型。Service Ability 可被独立分发，形成"无图标安装即可用"的服务卡片雏形。FA 模型在同进程下承载 Page/Service/Data 三类 Ability，导致：
 
@@ -88,7 +45,7 @@ HarmonyOS 2.0 引入"原子化服务"概念，但仍基于 FA 模型。Service A
 - **生命周期耦合**：Page 切换触发整个进程的 GC，影响服务响应。
 - **跨设备调度粒度粗**：远程启动只能拉起整个 Ability，无法按需拉起子服务。
 
-### 2.3 HarmonyOS 3.0（2022）：Stage 模型登场
+### 1.3 HarmonyOS 3.0（2022）：Stage 模型登场
 
 HarmonyOS 3.0 引入 **Stage 模型**，与 FA 模型并存，并作为推荐模型。Stage 模型的设计目标：
 
@@ -102,7 +59,7 @@ HarmonyOS 3.0 引入 **Stage 模型**，与 FA 模型并存，并作为推荐模
 
 Stage 模型在 HarmonyOS 3.1（2023 年 3 月发布的 API 9）成为推荐模型，FA 模型进入维护模式。
 
-### 2.4 HarmonyOS 4.0（2023）：Stage 模型全面铺开
+### 1.4 HarmonyOS 4.0（2023）：Stage 模型全面铺开
 
 HarmonyOS 4.0（API 10）于 2023 年 8 月发布，DevEco Studio 4.0 默认创建 Stage 模型工程，FA 模型新建工程入口被收起。关键变化：
 
@@ -110,7 +67,7 @@ HarmonyOS 4.0（API 10）于 2023 年 8 月发布，DevEco Studio 4.0 默认创�
 - ArkUI 声明式范式（`@Component`/`@Builder`）在 Stage 模型中得到完整支持。
 - 分布式软总线 v3 对接 Stage 模型的 `distributedScheduler`，跨设备启动性能提升 40%。
 
-### 2.5 HarmonyOS NEXT（2024）：纯血鸿蒙
+### 1.5 HarmonyOS NEXT（2024）：纯血鸿蒙
 
 HarmonyOS NEXT（星河版，API 11+）于 2024 年 10 月正式发布，**完全移除 FA 模型**和 AOSP 兼容层。Stage 模型成为唯一应用框架。这是 HarmonyOS 历史上最大的一次架构断裂：
 
@@ -120,7 +77,7 @@ HarmonyOS NEXT（星河版，API 11+）于 2024 年 10 月正式发布，**完�
 
 这一决策使系统二进制体积减少 30%，启动速度提升 20%，但要求所有应用使用 Stage 模型重写。
 
-### 2.6 OpenHarmony 演进
+### 1.6 OpenHarmony 演进
 
 OpenHarmony 是 HarmonyOS 的开源版本，由 OpenAtom 基金会托管。其演进与 HarmonyOS 同步：
 
@@ -133,7 +90,7 @@ OpenHarmony 是 HarmonyOS 的开源版本，由 OpenAtom 基金会托管。其�
 | 4.0 | 2023-10 | HarmonyOS 4.0 | ArkTS 1.2 |
 | 5.0 | 2024-10 | HarmonyOS NEXT | 纯 ArkTS，移除 FA |
 
-### 2.7 FA 与 Stage 模型时间线总览
+### 1.7 FA 与 Stage 模型时间线总览
 
 ```mermaid
 timeline
@@ -148,9 +105,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 FA 模型的形式化定义
+### 2.1 FA 模型的形式化定义
 
 定义 FA 模型应用为五元组：
 
@@ -166,7 +123,7 @@ $$
 - $\mathcal{M}$ 为 `config.json` 配置描述。
 - $\mathcal{L}: \mathcal{A} \to \{\text{lifecycle states}\}$ 为生命周期映射，其中 Page Ability 生命周期为 7 状态机：$\text{Uninitialized} \to \text{Initial} \to \text{Active} \to \text{Inactive} \to \text{Background} \to \text{Foreground}$。
 
-### 3.2 Stage 模型的形式化定义
+### 2.2 Stage 模型的形式化定义
 
 定义 Stage 模型应用为七元组：
 
@@ -184,7 +141,7 @@ $$
 - $\mathcal{M}$ 为 `module.json5` 配置描述。
 - $\mathcal{L}: \mathcal{U} \to \{\text{Create}, \text{WindowStageCreate}, \text{WindowStageActive}, \text{WindowStageInactive}, \text{WindowStageDestroy}, \text{Foreground}, \text{Background}, \text{Destroy}\}$ 为生命周期状态机。
 
-### 3.3 两模型的核心代数差异
+### 2.3 两模型的核心代数差异
 
 **进程模型**：
 
@@ -214,7 +171,7 @@ $$
 
 关键差异：Stage 模型显式分离了"窗口创建"与"前台切换"两个阶段，使 UIAbility 可在无窗口状态下执行后台逻辑。
 
-### 3.4 ArkTS 类型系统中的形式化
+### 2.4 ArkTS 类型系统中的形式化
 
 ```typescript
 // FA 模型 Ability 抽象（Java 版本，HarmonyOS NEXT 移除）
@@ -245,9 +202,9 @@ export default class UIAbility {
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 多实例的成本-收益模型
+### 3.1 多实例的成本-收益模型
 
 设一个 UIAbility 的内存占用为 $M_{ui}$，进程开销为 $M_{proc}$。FA 模型中，启动一个新 Page 需复用现有进程，节省 $M_{proc}$，但所有 Page 共享 $M_{ui}$ 的局部状态。Stage 模型允许新实例，开销为 $M_{proc} + M_{ui}$。
 
@@ -261,7 +218,7 @@ $$
 
 当 $R(n) > 0$ 时多实例收益为正。对于多账号聊天、多窗口文档编辑场景，$v(s_i)$ 高，Stage 模型多实例显著优于 FA 模型。
 
-### 4.2 ExtensionAbility 的按需加载
+### 3.2 ExtensionAbility 的按需加载
 
 ExtensionAbility 的进程模型可形式化为：
 
@@ -274,7 +231,7 @@ $$
 
 其中 $T_{\text{idle}}$ 为空闲超时（系统默认 5 分钟，可配置）。此模型实现"按需拉起、空闲销毁"的服务模型，相比 FA 模型 Service Ability 的常驻模式，内存节省可达 60%。
 
-### 4.3 WindowStage 的窗口复用原理
+### 3.3 WindowStage 的窗口复用原理
 
 WindowStage 抽象将"窗口"与"Ability"解耦。设窗口集合 $\mathcal{W}$，UIAbility 集合 $\mathcal{U}$。FA 模型中 $|\mathcal{W}| = |\mathcal{U}|$（一一绑定）。Stage 模型中：
 
@@ -284,7 +241,7 @@ $$
 
 但 UIAbility 销毁后 $w_i$ 可被另一个 UIAbility 复用（窗口转场动画）。这一设计使得页面切换不强制销毁窗口，转场动画可由窗口管理器（Window Manager Service, WMS）统一调度，性能提升 30%。
 
-### 4.4 跨设备调用的形式化
+### 3.4 跨设备调用的形式化
 
 设本地设备 $d_0$，远程设备集合 $\{d_1, \dots, d_k\}$。跨设备启动 UIAbility 的语义为：
 
@@ -296,7 +253,7 @@ $$
 
 Stage 模型的分布式调度通过 `distributedScheduler` 接口暴露，相比 FA 模型需通过 `featureAbility.startAbilityForResult` 间接调用，API 表达力更强。
 
-### 4.5 状态保存与恢复的语义
+### 3.5 状态保存与恢复的语义
 
 Stage 模型的 `onSaveData` 与 `onRestoreData` 实现跨设备迁移的状态同步，可形式化为：
 
@@ -308,9 +265,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 Stage 模型 EntryAbility 完整示例
+### 4.1 Stage 模型 EntryAbility 完整示例
 
 以下是一个企业级 Stage 模型 UIAbility 完整示例，覆盖生命周期、窗口管理、Want 处理、状态保存。
 
@@ -504,7 +461,7 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-### 5.2 完整 module.json5 配置（Stage 模型）
+### 4.2 完整 module.json5 配置（Stage 模型）
 
 ```json5
 // entry/src/main/module.json5
@@ -621,7 +578,7 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-### 5.3 FA 模型对照示例（config.json）
+### 4.3 FA 模型对照示例（config.json）
 
 以下为同一应用在 FA 模型下的 `config.json`（HarmonyOS 4.0 维护版本，HarmonyOS NEXT 已移除）。
 
@@ -696,7 +653,7 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-### 5.4 FormExtensionAbility 实现
+### 4.4 FormExtensionAbility 实现
 
 ```typescript
 // entry/src/main/ets/formextability/FormExtAbility.ets
@@ -783,7 +740,7 @@ import { formProvider } from '@kit.FormKit';
 import { Want } from '@kit.AbilityKit';
 ```
 
-### 5.5 ServiceExtensionAbility 实现
+### 4.5 ServiceExtensionAbility 实现
 
 ```typescript
 // entry/src/main/ets/serviceextability/ServiceExtAbility.ets
@@ -893,7 +850,7 @@ class SyncStub extends ipcRpc.RemoteObject {
 import { rpc } from '@kit.IPC&CPKit';
 ```
 
-### 5.6 跨设备迁移实现
+### 4.6 跨设备迁移实现
 
 ```typescript
 // entry/src/main/ets/entryability/EntryAbility.ets（续）
@@ -937,9 +894,9 @@ class MigrationManager {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Stage 模型 vs FA 模型核心对比
+### 5.1 Stage 模型 vs FA 模型核心对比
 
 | 维度 | FA 模型 | Stage 模型 |
 | --- | --- | --- |
@@ -959,7 +916,7 @@ class MigrationManager {
 | 原子化服务 | Service Ability 拆分 | ExtensionAbility 按需加载 |
 | 后台服务 | Service 常驻 | ServiceExtensionAbility 可配置存活 |
 
-### 6.2 与 Android 应用框架对比
+### 5.2 与 Android 应用框架对比
 
 | 维度 | Android | Stage 模型 |
 | --- | --- | --- |
@@ -974,7 +931,7 @@ class MigrationManager {
 | 多窗口 | ActivityOptions（API 24+） | WindowStage 原生支持 |
 | 跨设备 | 无原生（需自研） | distributedScheduler 原生 |
 
-### 6.3 与 iOS 应用框架对比
+### 5.3 与 iOS 应用框架对比
 
 | 维度 | iOS | Stage 模型 |
 | --- | --- | --- |
@@ -988,7 +945,7 @@ class MigrationManager {
 | 多窗口 | UISceneSession（iOS 13+） | WindowStage |
 | 跨设备 | Handoff / Continuity（应用层） | distributedScheduler（系统层） |
 
-### 6.4 与 Flutter / React Native 对比
+### 5.4 与 Flutter / React Native 对比
 
 | 维度 | Flutter | React Native | Stage 模型 |
 | --- | --- | --- | --- |
@@ -1001,7 +958,7 @@ class MigrationManager {
 | 配置 | pubspec.yaml | package.json | module.json5 |
 | 平台覆盖 | Android/iOS/Web/Desktop | Android/iOS | HarmonyOS 全场景 |
 
-### 6.5 配置文件差异详细对比
+### 5.5 配置文件差异详细对比
 
 | 配置字段 | FA 模型 (config.json) | Stage 模型 (module.json5) |
 | --- | --- | --- |
@@ -1021,9 +978,9 @@ class MigrationManager {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 生命周期陷阱
+### 6.1 生命周期陷阱
 
 #### 陷阱 1：在 onCreate 中调用 WindowStage API
 
@@ -1105,7 +1062,7 @@ private processDeepLink(want: Want): void {
 }
 ```
 
-### 7.2 ExtensionAbility 陷阱
+### 6.2 ExtensionAbility 陷阱
 
 #### 陷阱 4：在 FormExtensionAbility 中执行耗时操作
 
@@ -1159,7 +1116,7 @@ flowchart TD
     T4 --> T7
 ```
 
-### 7.3 跨设备迁移陷阱
+### 6.3 跨设备迁移陷阱
 
 #### 陷阱 6：onSaveData 序列化超限
 
@@ -1196,7 +1153,7 @@ onRestoreData(wantParam: Record<string, Object>): void {
 }
 ```
 
-### 7.4 module.json5 配置陷阱
+### 6.4 module.json5 配置陷阱
 
 #### 陷阱 8：deviceTypes 与 ExtensionAbility 类型不匹配
 
@@ -1223,7 +1180,7 @@ onRestoreData(wantParam: Record<string, Object>): void {
 
 **正确做法**：对外暴露的 Ability 用 `singleton`，内部 Ability 用 `multiton`。
 
-### 7.5 性能陷阱
+### 6.5 性能陷阱
 
 #### 陷阱 10：onWindowStageCreate 中加载大资源
 
@@ -1245,7 +1202,7 @@ onWindowStageCreate(windowStage: window.WindowStage): void {
 }
 ```
 
-### 7.6 最佳实践清单
+### 6.6 最佳实践清单
 
 | 实践项 | 描述 |
 | --- | --- |
@@ -1260,9 +1217,9 @@ onWindowStageCreate(windowStage: window.WindowStage): void {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 DevEco Studio 工程结构
+### 7.1 DevEco Studio 工程结构
 
 DevEco Studio 5.0+ 创建 Stage 模型工程的默认结构：
 
@@ -1312,7 +1269,7 @@ flowchart TD
     T21 --> T30
 ```
 
-### 8.2 app.json5 全局配置
+### 7.2 app.json5 全局配置
 
 ```json5
 // AppScope/app.json5
@@ -1332,7 +1289,7 @@ flowchart TD
 }
 ```
 
-### 8.3 hvigor 构建配置
+### 7.3 hvigor 构建配置
 
 ```json5
 // build-profile.json5
@@ -1375,7 +1332,7 @@ flowchart TD
 }
 ```
 
-### 8.4 签名与发布
+### 7.4 签名与发布
 
 Stage 模型应用签名流程：
 
@@ -1388,7 +1345,7 @@ Stage 模型应用签名流程：
    - Release：`hvigorw assembleApp --mode release`
 6. **上架**：通过 AppGallery Connect 上传 `.app` 包。
 
-### 8.5 多模块工程组织
+### 7.5 多模块工程组织
 
 大型 Stage 模型项目推荐多模块结构：
 
@@ -1427,7 +1384,7 @@ HSP 模块配置：
 }
 ```
 
-### 8.6 调试与日志
+### 7.6 调试与日志
 
 Stage 模型调试的关键命令（HDC）：
 
@@ -1448,7 +1405,7 @@ hdc shell bm dump -n com.fandex.app
 hdc hilog | grep "EntryAbility"
 ```
 
-### 8.7 性能基准
+### 7.7 性能基准
 
 HarmonyOS 4.0 Stage 模型应用的关键性能指标（华为官方基准）：
 
@@ -1462,9 +1419,9 @@ HarmonyOS 4.0 Stage 模型应用的关键性能指标（华为官方基准）：
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：华为备忘录（HarmonyOS 4.0+）
+### 8.1 案例一：华为备忘录（HarmonyOS 4.0+）
 
 华为备忘录是 Stage 模型重构的标杆应用。其架构：
 
@@ -1482,7 +1439,7 @@ HarmonyOS 4.0 Stage 模型应用的关键性能指标（华为官方基准）：
 | 桌面卡片内存 | 18 MB | 9 MB |
 | 跨设备同步延迟 | 800 ms | 320 ms |
 
-### 9.2 案例二：HarmonyOS 计算器多实例
+### 8.2 案例二：HarmonyOS 计算器多实例
 
 Stage 模型 multiton 模式的典型应用。计算器支持多窗口多实例：
 
@@ -1501,7 +1458,7 @@ Stage 模型 multiton 模式的典型应用。计算器支持多窗口多实例�
 
 每个计算器实例独立窗口、独立计算栈，互不干扰。FA 模型下实现需自行管理多窗口状态，复杂度极高。
 
-### 9.3 案例三：开源 HarmonyOS 应用——OpenHarmony Samples
+### 8.3 案例三：开源 HarmonyOS 应用——OpenHarmony Samples
 
 OpenHarmony 官方 samples 仓库（github.com/openharmony/applications_app_samples）提供完整的 Stage 模型示例：
 
@@ -1509,7 +1466,7 @@ OpenHarmony 官方 samples 仓库（github.com/openharmony/applications_app_samp
 - `code/BasicFeature/Notification`：通知与卡片最佳实践。
 - `code/BasicFeature/Distributed/Data`：分布式数据同步示例。
 
-### 9.4 案例四：FANDEX 项目实践
+### 8.4 案例四：FANDEX 项目实践
 
 FANDEX 项目本身的迁移路径：
 
@@ -1774,7 +1731,7 @@ export default class UserAbility extends UIAbility {
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题 4.1**：为什么 HarmonyOS NEXT 选择彻底移除 FA 模型？请从系统性能、生态演进、开发体验三个维度分析。
 
@@ -1859,7 +1816,7 @@ class MyAbilityStage {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本章参考文献按 ACM Reference Format 列出，包含官方文档、学术论文与标准规范。
 
@@ -1889,9 +1846,9 @@ class MyAbilityStage {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 1. **《HarmonyOS 应用开发实战》**——华为技术有限公司著，人民邮电出版社，2024. ISBN 978-7-115-62945-2.
    覆盖 Stage 模型从入门到精通，含大量企业级案例。
@@ -1908,7 +1865,7 @@ class MyAbilityStage {
 5. **《编程语言实现模式》**（*Language Implementation Patterns*）——Terence Parr著，Pragmatic Bookshelf, 2010. ISBN 978-1934356456.
    理解 ArkTS 编译器与类型系统设计。
 
-### 12.2 论文
+### 11.2 论文
 
 1. **Li, Z. et al. 2023.** *HarmonyOS: A Distributed Operating System for All Scenarios*. Communications of the ACM 66, 11 (Nov. 2023), 56–65. DOI: 10.1145/3624717.
 
@@ -1918,7 +1875,7 @@ class MyAbilityStage {
 
 4. **Zhang, Y. et al. 2023.** *Cross-Device Application Migration: A Systematic Literature Review*. IEEE Transactions on Software Engineering 49, 4 (April 2023), 1992–2013. DOI: 10.1109/TSE.2022.3187654.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 1. **华为开发者联盟——HarmonyOS 文档**  
    https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/

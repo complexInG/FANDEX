@@ -16,22 +16,12 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
+
 # JavaScript 对象与数组
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 0. 学习目标
-
-完成本章节学习后，读者应能够：
-
-- **记忆（Remember）**：复述 JavaScript 对象的属性描述符六字段、原型链查找算法、数组的七种创建方式与二十余个内建方法分类。
-- **理解（Understand）**：解释对象字面量、构造函数、`Object.create`、`class` 四种对象创建范式的内存布局与原型链差异；说明 `Object.keys` 与 `for...in` 的枚举顺序规则与差异原因。
-- **应用（Apply）**：使用解构赋值、展开运算符、可选链、空值合并运算符编写简洁可读的数据处理代码；使用 `Object.defineProperty`、`Proxy`、`Reflect` 实现属性拦截与响应式系统。
-- **分析（Analyze）**：对比 `Object.assign`、展开运算符、`structuredClone` 三种拷贝策略的深浅层次与性能特征；分析 V8 隐藏类与内联缓存对对象属性访问的优化机制。
-- **评估（Evaluate）**：在给定业务场景（如配置合并、数据过滤、不可变更新）中判断对象与数组操作模式的适用性，指出原型链污染、排序稳定性、稀疏数组等潜在风险。
-- **创造（Create）**：设计并实现一个支持链式调用、不可变更新、深拷贝与性能监控的数据操作工具库，并通过基准测试验证其在百万级数据下的性能表现。
 
 ## 1. 历史动机与背景
 
@@ -89,9 +79,9 @@ console.log(arr.length); // 3（length 不计非数字属性）
 
 因此，深入理解对象与数组的语义、性能特征与陷阱，是成为高级 JavaScript 工程师的前提。
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 对象的代数模型
+### 1.1 对象的代数模型
 
 JavaScript 对象可形式化为一个有限映射：
 
@@ -105,7 +95,7 @@ $$
 - $\text{Proto} \in \text{Obj} \cup \{\text{null}\}$ 为原型引用，构成原型链；
 - $\text{Extensible} \in \{\text{true}, \text{false}\}$ 标识对象是否可添加新属性。
 
-### 2.2 属性描述符的形式化
+### 1.2 属性描述符的形式化
 
 属性描述符分为**数据描述符**与**访问器描述符**两类，均为四元组：
 
@@ -129,7 +119,7 @@ $$
 - `configurable`：若为 `false`，描述符不可再修改，属性不可删除；
 - `get`/`set`：访问器函数，读取/写入时触发。
 
-### 2.3 原型链查找算法
+### 1.3 原型链查找算法
 
 属性读取 `obj[k]` 的形式化语义：
 
@@ -149,7 +139,7 @@ $$
 
 其中 $\text{Proto}^n$ 表示 $n$ 次原型引用。原型链末端为 `null`，最大深度通常为 6（`Object.prototype` 之上即 `null`）。
 
-### 2.4 数组作为对象的特化
+### 1.4 数组作为对象的特化
 
 数组是添加了 `length` 语义与 `Array.prototype` 原型的对象：
 
@@ -165,7 +155,7 @@ $$
 
 当设置 `a[i] = v` 且 $i \geq \text{length}$ 时，`length` 自动更新为 $i + 1$；当设置 `a.length = n < \text{length}` 时，所有 $k \geq n$ 的索引属性被删除。
 
-### 2.5 解构赋值的形式化
+### 1.5 解构赋值的形式化
 
 解构赋值是模式匹配语法的特例：
 
@@ -187,9 +177,9 @@ $$
 
 这解释了为什么数组解构可用于任意可迭代对象（如 `Map`、`Set`、生成器），而对象解构只能用于对象（或装箱后的原始类型）。
 
-## 3. 理论推导
+## 2. 理论推导
 
-### 3.1 属性访问的时间复杂度
+### 2.1 属性访问的时间复杂度
 
 V8 引擎对对象属性访问的优化经历了三个阶段：
 
@@ -208,7 +198,7 @@ console.log(p1.__proto__ === p2.__proto__); // true
 
 属性添加顺序不同会导致不同的隐藏类，破坏内联缓存。**工程启示**：构造函数应按固定顺序初始化属性。
 
-### 3.2 数组模式与性能
+### 2.2 数组模式与性能
 
 V8 将数组分为三种元素类型（Element Kind）：
 
@@ -237,7 +227,7 @@ arr[10] = 5;                      // 降级为 HOLEY_ELEMENTS
 
 **工程启示**：避免在密集数组中创建空洞；异构类型数据考虑使用对象数组而非混合类型数组。
 
-### 3.3 排序算法的稳定性
+### 2.3 排序算法的稳定性
 
 ECMAScript 自 ES2019 起强制要求 `Array.prototype.sort` 稳定。此前 V8 在数组长度 > 10 时使用 QuickSort（不稳定），≤ 10 时使用 InsertionSort（稳定）。
 
@@ -249,7 +239,7 @@ $$
 
 TimSort（V8 7.0+）的时间复杂度为 $O(n \log n)$ 最坏、$O(n)$ 最好，且稳定。
 
-### 3.4 拷贝深度的复杂度
+### 2.4 拷贝深度的复杂度
 
 | 方法 | 深度 | 复杂度 | 支持类型 |
 | :--- | :--- | :--- | :--- |
@@ -261,11 +251,11 @@ TimSort（V8 7.0+）的时间复杂度为 $O(n \log n)$ 最坏、$O(n)$ 最好�
 
 `structuredClone` 的优势：支持 `Date`、`RegExp`、`Map`、`Set`、`ArrayBuffer`、`Blob`、`Error` 等类型，且正确处理循环引用。但不支持函数、DOM 节点、Symbol 属性。
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 对象创建的四种范式
+### 3.1 对象创建的四种范式
 
-#### 4.1.1 对象字面量
+#### 3.1.1 对象字面量
 
 ```javascript
 // 对象字面量：最常用的对象创建方式
@@ -290,7 +280,7 @@ const person = {
 console.log(person.greet()); // 'Hello, 张三'
 ```
 
-#### 4.1.2 构造函数（传统模式）
+#### 3.1.2 构造函数（传统模式）
 
 ```javascript
 // 构造函数：通过 new 调用的普通函数
@@ -314,7 +304,7 @@ console.log(p instanceof Person); // true
 console.log(p.constructor === Person); // true
 ```
 
-#### 4.1.3 Object.create（显式原型）
+#### 3.1.3 Object.create（显式原型）
 
 ```javascript
 // Object.create：直接指定原型创建对象，不调用构造函数
@@ -337,7 +327,7 @@ console.log(person.greet()); // 'Hello, 张三'
 console.log(Object.getPrototypeOf(person) === personProto); // true
 ```
 
-#### 4.1.4 ES6 class 语法
+#### 3.1.4 ES6 class 语法
 
 ```javascript
 // class 是构造函数与原型方法的语法糖
@@ -398,7 +388,7 @@ console.log(s.ssn); // '*****6789'
 console.log(Person.species); // 'Homo sapiens'
 ```
 
-### 4.2 属性描述符的精细控制
+### 3.2 属性描述符的精细控制
 
 ```javascript
 const obj = {};
@@ -454,7 +444,7 @@ delete sealed.x; // 不可删除
 console.log(sealed); // { x: 100 }
 ```
 
-### 4.3 原型链与继承
+### 3.3 原型链与继承
 
 ```javascript
 // 原型链查找演示
@@ -510,7 +500,7 @@ console.log(dog instanceof Dog); // true
 console.log(dog instanceof Animal); // true
 ```
 
-### 4.4 对象方法全集
+### 3.4 对象方法全集
 
 ```javascript
 const obj = { a: 1, b: 2, c: 3 };
@@ -558,7 +548,7 @@ const prevented = Object.preventExtensions(obj);
 console.log(Object.isExtensible(prevented)); // false
 ```
 
-### 4.5 数组创建与基础操作
+### 3.5 数组创建与基础操作
 
 ```javascript
 // 创建方式
@@ -595,7 +585,7 @@ console.log([1, 2, 3].at(-1)); // 3
 console.log([1, 2, 3].at(-2)); // 2
 ```
 
-### 4.6 数组迭代方法
+### 3.6 数组迭代方法
 
 ```javascript
 const numbers = [1, 2, 3, 4, 5];
@@ -647,7 +637,7 @@ for (const value of numbers.values()) {
 }
 ```
 
-### 4.7 数组转换方法
+### 3.7 数组转换方法
 
 ```javascript
 // slice：切片（不改原数组）
@@ -686,9 +676,9 @@ const spliced = original.toSpliced(1, 1); // [3, 2]
 const withReplaced = original.with(0, 99); // [99, 1, 2]
 ```
 
-### 4.8 解构赋值全集
+### 3.8 解构赋值全集
 
-#### 4.8.1 数组解构
+#### 3.8.1 数组解构
 
 ```javascript
 const arr = [1, 2, 3, 4, 5];
@@ -732,7 +722,7 @@ function process([first, ...rest]) {
 console.log(process([1, 2, 3])); // { first: 1, rest: [2, 3] }
 ```
 
-#### 4.8.2 对象解构
+#### 3.8.2 对象解构
 
 ```javascript
 const user = {
@@ -782,7 +772,7 @@ console.log(render(user)); // '张三 (30) from 北京'
 console.log(render({ name: '李四' })); // '李四 (18) from undefined'
 ```
 
-### 4.9 展开与剩余运算符
+### 3.9 展开与剩余运算符
 
 ```javascript
 // 数组展开
@@ -818,7 +808,7 @@ console.log(process({ name: 'test', timeout: 100, retry: 3 }));
 // { name: 'test', options: { timeout: 100, retry: 3 } }
 ```
 
-### 4.10 现代对象语法
+### 3.10 现代对象语法
 
 ```javascript
 // 可选链（Optional Chaining，ES2020）
@@ -868,9 +858,9 @@ console.log(Object.hasOwn(obj, 'inherited')); // false
 console.log(obj.hasOwnProperty('inherited')); // false（但 obj 自身没有 hasOwnProperty，从 Object.prototype 继承）
 ```
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 对象创建四种范式对比
+### 4.1 对象创建四种范式对比
 
 | 范式 | 原型来源 | 是否调用构造函数 | 私有字段支持 | 适用场景 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -893,7 +883,7 @@ const proto = { x: 0, y: 0 };
 const p3 = Object.create(proto);
 ```
 
-### 5.2 Object vs Map
+### 4.2 Object vs Map
 
 | 维度 | `Object` | `Map` |
 | :--- | :--- | :--- |
@@ -929,7 +919,7 @@ for (let i = 0; i < 10000; i++) {
 }
 ```
 
-### 5.3 Array vs Set vs TypedArray
+### 4.3 Array vs Set vs TypedArray
 
 | 类型 | 元素重复 | 元素类型 | 内存布局 | 适用场景 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -959,7 +949,7 @@ for (let i = 0; i < typed.length; i++) sum2 += typed[i];
 console.timeEnd('typed sum'); // 通常快 2-5 倍
 ```
 
-### 5.4 浅拷贝 vs 深拷贝方法对比
+### 4.4 浅拷贝 vs 深拷贝方法对比
 
 | 方法 | 深度 | 循环引用 | 函数 | Date | RegExp | Map/Set | 性能 |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -991,9 +981,9 @@ const cloned = structuredClone(cyclic); // 正确处理，不报错
 console.log(cloned.self === cloned); // true
 ```
 
-## 6. 常见陷阱与反模式
+## 5. 常见陷阱与反模式
 
-### 6.1 `==` vs `===` 的隐式转换
+### 5.1 `==` vs `===` 的隐式转换
 
 ```javascript
 // 反模式：使用 == 导致意外结果
@@ -1009,7 +999,7 @@ console.log(0 === false); // false
 console.log(null === undefined); // false
 ```
 
-### 6.2 `sort` 默认按字符串排序
+### 5.2 `sort` 默认按字符串排序
 
 ```javascript
 // 反模式：数值排序未传比较函数
@@ -1022,7 +1012,7 @@ nums.sort((a, b) => a - b); // [1, 2, 10, 21]
 nums.sort((a, b) => b - a); // [21, 10, 2, 1]（降序）
 ```
 
-### 6.3 `forEach` 无法 break
+### 5.3 `forEach` 无法 break
 
 ```javascript
 // 反模式：期望 forEach 提前终止
@@ -1044,7 +1034,7 @@ for (const n of [1, 2, 3, 4, 5]) {
 }
 ```
 
-### 6.4 `map` 与 `parseInt` 的陷阱
+### 5.4 `map` 与 `parseInt` 的陷阱
 
 ```javascript
 // 反模式：parseInt 接收第二个参数（索引）作为进制
@@ -1059,7 +1049,7 @@ const nums2 = ['1', '2', '3'].map((s) => parseInt(s, 10)); // [1, 2, 3]
 const nums3 = ['1', '2', '3'].map(Number); // [1, 2, 3]
 ```
 
-### 6.5 原型链污染
+### 5.5 原型链污染
 
 ```javascript
 // 反模式：合并未受信数据到对象
@@ -1086,7 +1076,7 @@ map.set('__proto__', { isAdmin: true });
 console.log({}.isAdmin); // undefined（Map 不污染原型）
 ```
 
-### 6.6 浅拷贝导致的共享引用
+### 5.6 浅拷贝导致的共享引用
 
 ```javascript
 // 反模式：浅拷贝嵌套对象
@@ -1105,7 +1095,7 @@ console.log(original.nested.value); // 1
 // const next = produce(original, draft => { draft.nested.value = 100; });
 ```
 
-### 6.7 稀疏数组的陷阱
+### 5.7 稀疏数组的陷阱
 
 ```javascript
 // 反模式：创建稀疏数组
@@ -1124,7 +1114,7 @@ const dense = new Array(3).fill(null); // [null, null, null]
 const seq = Array.from({ length: 3 }, (_, i) => i); // [0, 1, 2]
 ```
 
-### 6.8 `Object.keys` 顺序的误解
+### 5.8 `Object.keys` 顺序的误解
 
 ```javascript
 // 误解：认为 Object.keys 按插入顺序
@@ -1147,7 +1137,7 @@ const map = new Map([
 console.log([...map.keys()]); // ['b', '2', 'a', '1']
 ```
 
-### 6.9 `delete` 操作的性能陷阱
+### 5.9 `delete` 操作的性能陷阱
 
 ```javascript
 // 反模式：delete 数组元素导致降级
@@ -1169,7 +1159,7 @@ delete obj.b; // 隐藏类迁移，性能下降
 obj.b = undefined;
 ```
 
-### 6.10 `for...in` 遍历原型链
+### 5.10 `for...in` 遍历原型链
 
 ```javascript
 // 反模式：for...in 遍历数组或受原型污染的对象
@@ -1195,9 +1185,9 @@ for (const i in arr) {
 }
 ```
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 不可变更新模式
+### 6.1 不可变更新模式
 
 ```javascript
 // 不可变更新的核心：始终返回新对象，不修改原对象
@@ -1237,7 +1227,7 @@ const inserted = [...todos.slice(0, 1), { id: 1.5, text: 'X', done: false }, ...
 // });
 ```
 
-### 7.2 响应式系统的简化实现
+### 6.2 响应式系统的简化实现
 
 ```javascript
 // 基于 Proxy 的响应式对象
@@ -1314,7 +1304,7 @@ state.count = 1; // 输出: count is 1
 state.count = 2; // 输出: count is 2
 ```
 
-### 7.3 数组性能优化
+### 6.3 数组性能优化
 
 ```javascript
 // 1. 避免在循环中创建新数组
@@ -1384,7 +1374,7 @@ class Queue {
 }
 ```
 
-### 7.4 对象性能优化
+### 6.4 对象性能优化
 
 ```javascript
 // 1. 保持隐藏类稳定：固定属性顺序
@@ -1437,7 +1427,7 @@ for (let i = 0; i < arr.length; i++) {
 obj.deep.nested.value = nested + sum;
 ```
 
-### 7.5 链式 API 设计
+### 6.5 链式 API 设计
 
 ```javascript
 // 流式 API：基于方法返回 this 或新对象
@@ -1499,9 +1489,9 @@ const q = new QueryBuilder()
   .build();
 ```
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 案例 1：表单状态管理
+### 7.1 案例 1：表单状态管理
 
 ```javascript
 // 需求：管理一个多字段表单的状态，支持字段更新、校验、提交
@@ -1564,7 +1554,7 @@ state = formReducer(state, { type: 'UPDATE_FIELD', field: 'username', value: 'al
 console.log(state.errors.username); // null
 ```
 
-### 8.2 案例 2：数据处理管道
+### 7.2 案例 2：数据处理管道
 
 ```javascript
 // 需求：对日志数据进行过滤、转换、聚合
@@ -1617,7 +1607,7 @@ console.log(grouped.ERROR); // [3 个 ERROR 日志]
 console.log(grouped.INFO);  // [2 个 INFO 日志]
 ```
 
-### 8.3 案例 3：防抖与节流的实现
+### 7.3 案例 3：防抖与节流的实现
 
 ```javascript
 // 防抖：在最后一次调用后延迟执行
@@ -1681,7 +1671,7 @@ input.addEventListener('input', (e) => search(e.target.value));
 button.addEventListener('click', () => search.cancel()); // 取消未执行的搜索
 ```
 
-### 8.4 案例 4：深拷贝实现
+### 7.4 案例 4：深拷贝实现
 
 ```javascript
 // 支持循环引用、Date、RegExp、Map、Set 的深拷贝
@@ -1764,7 +1754,7 @@ console.log(cloned.self === cloned); // true（循环引用正确处理）
 console.log(cloned.arr[1] !== original.arr[1]); // true（深拷贝）
 ```
 
-### 8.5 案例 5：事件系统实现
+### 7.5 案例 5：事件系统实现
 
 ```javascript
 // 基于对象的发布订阅模式
@@ -2046,7 +2036,7 @@ obs.notify('world');
 // 订阅者 2: world
 ```
 
-## 10. 参考文献
+## 9. 参考文献
 
 [1] Ecma International. 2026. *ECMAScript 2026 Language Specification* (27th ed.). ECMA-262. https://262.ecma-international.org/27.0/
 
@@ -2076,28 +2066,28 @@ obs.notify('world');
 
 [14] Addy Osmani. 2017. *Learning JavaScript Design Patterns* (2nd ed.). O'Reilly Media, Sebastopol, CA, USA. DOI: https://doi.org/10.1201/9781003338180
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 规范与标准
+### 10.1 规范与标准
 
 - **ECMAScript 规范**：[TC39 ECMA-262](https://tc39.es/ecma262/)，重点阅读 *Ordinary Object Internal Methods*、*Indexed Collections* 章节。
 - **TC39 提案**：[Records & Tuples](https://github.com/tc39/proposal-record-tuple)（不可变数据结构）、[Deep Path Properties for Record](https://github.com/tc39/proposal-deep-path-properties-for-record)。
 - **WhatWG HTML 规范**：[Structured Clone](https://html.spec.whatwg.org/multipage/structured-data.html#safe-passing-of-structured-data)，理解 `structuredClone` 的支持类型。
 
-### 11.2 引擎实现
+### 10.2 引擎实现
 
 - **V8 博客**：[Fast Properties in V8](https://v8.dev/blog/fast-properties)、[Elements kinds in V8](https://v8.dev/blog/elements-kinds)。
 - **JavaScriptCore**：[DFG JIT Inline Caching](https://webkit.org/blog/3210/dfg-jit-optimizations-for-array-accesses/)。
 - **SpiderMonkey**：[Shape Trees and ICs](https://hacks.mozilla.org/2017/02/creating-a-js-engine-1/)。
 
-### 11.3 进阶书籍
+### 10.3 进阶书籍
 
 - *You Don't Know JS Yet: Objects & Classes*（Kyle Simpson）：深入原型链与 `this` 绑定。
 - *JavaScript: The Definitive Guide*（David Flanagan，第 7 版）：对象与数组章节为权威参考。
 - *High Performance JavaScript*（Nicholas C. Zakas）：V8 优化与性能陷阱。
 - *The Principles of Object-Oriented JavaScript*（Nicholas C. Zakas）：原型继承的工程实践。
 
-### 11.4 实践库
+### 10.4 实践库
 
 - **Immer**：[immerjs/immer](https://github.com/immerjs/immer)，基于 Proxy 的不可变更新。
 - **Lodash**：[lodash/lodash](https://github.com/lodash/lodash)，提供 `cloneDeep`、`merge`、`groupBy` 等工具。

@@ -16,67 +16,16 @@ prerequisites:
   - go/概述与环境配置
 ---
 
+
 # Go 与 Kubernetes：从 client-go 到 Operator 的工程实践
 
 > 本文以 Kubernetes 1.28 与 client-go 0.28 为基准版本，覆盖 Kubernetes API 编程模型的核心机制：RESTful API 交互、Clientset、Informer/Cache、Workqueue、Controller 协调循环（Reconciliation Loop）、Custom Resource Definition（CRD）、Operator 模式、Leader Election、kubebuilder/controller-runtime 框架。适用于已掌握 Go 基础语法与 Kubernetes 基本使用、希望深入理解 K8s 控制平面编程的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。Bloom 分类法将认知目标分为六个递进层级：Remember（记忆）→ Understand（理解）→ Apply（应用）→ Analyze（分析）→ Evaluate（评价）→ Create（创造）。
-
-### 1.1 Remember（记忆）
-
-- 准确复述 client-go 的核心组件：`Clientset`、`RESTClient`、`DynamicClient`、`DiscoveryClient`。
-- 列出 Informer 机制的三大组件：`Reflector`、`Delta FIFO`、`Local Cache`（Indexer）。
-- 背诵 Controller 模式的核心循环：List → Watch → Workqueue → Reconcile → Update Status。
-- 列出 CRD 的关键 API 字段：`group`、`version`、`kind`、`plural`、`schema`。
-- 复述 Operator 模式 = CRD + Controller + 协调循环（Reconciliation Loop）。
-
-### 1.2 Understand（理解）
-
-- 解释 Informer 为何通过 List + Watch 组合实现最终一致性，而非纯 Watch。
-- 描述 Delta FIFO 队列与 Local Cache 的协同关系，说明为何需要两层缓存。
-- 阐述 Workqueue 的"延迟队列 + 限速队列"机制如何避免热点资源被反复重试。
-- 说明 Controller 的"level-triggered"语义与"edge-triggered"语义的差异，并解释为何 K8s 选择前者。
-- 解释 Leader Election 为何使用 Lease 资源而非 etcd 的分布式锁。
-
-### 1.3 Apply（应用）
-
-- 使用 `client-go` 的 Clientset 编写程序列出、创建、更新、删除 Pod、Service、Deployment。
-- 使用 `dynamic.Client` 操作 CRD 资源，无需预生成类型代码。
-- 使用 `k8s.io/client-go/informers` 实现 Pod 事件的实时监听与本地缓存查询。
-- 使用 `kubebuilder` 或 `operator-sdk` 脚手架生成 Operator 项目，实现 CRD 与 Controller。
-- 使用 `controller-runtime` 库实现 Reconcile 函数，处理资源状态变化。
-
-### 1.4 Analyze（分析）
-
-- 分析 Informer 的 resync 机制为何能修复"错过事件"问题，并推导 resync 周期对一致性的影响。
-- 对比 client-go Informer 与 controller-runtime Cache 的实现差异，说明后者为何更易用。
-- 推导 Controller 的 "至少一次"（at-least-once）语义：Workqueue 中断后重启时如何避免重复处理。
-- 分析 Operator 与 Helm、Kustomize 在应用部署生命周期管理上的差异。
-- 分析 K8s API Server 的 Watch 通知机制基于 etcd Watch 的实现细节与分块传输（chunked response）。
-
-### 1.5 Evaluate（评价）
-
-- 评估在何种业务场景下应使用 Operator 模式而非 Helm Chart 或纯 CI/CD 流水线。
-- 评价 Informer 的 Local Cache 内存占用对集群规模（10 万 Pod）的影响，提出分级缓存方案。
-- 判断 Leader Election 的 Lease 持有时长与续约间隔对故障切换（failover）延迟的影响。
-- 评估 kubebuilder 与 operator-sdk 在项目结构、依赖管理、社区生态上的差异，选择合适的脚手架。
-
-### 1.6 Create（创造）
-
-- 设计一个数据库 Operator（如 MySQL Operator），实现主从复制、备份、故障恢复。
-- 实现一个基于 CRD 的批量任务调度器，支持 cron 表达式、依赖图、重试策略。
-- 构建一个多集群资源同步工具，使用 Informer + Workqueue 跨集群同步 ConfigMap、Secret。
-- 设计一个 Operator 的指标暴露方案，集成 Prometheus，跟踪 Reconcile 延迟、错误率、队列深度。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 Kubernetes 的诞生与 Go 的选择（2014-2015）
+### 1.1 Kubernetes 的诞生与 Go 的选择（2014-2015）
 
 Kubernetes 源于 Google 内部运行了十年的 Borg 系统的设计经验。2014 年 6 月，Google 以 Go 语言开源 Kubernetes，选择 Go 的原因：
 
@@ -86,7 +35,7 @@ Kubernetes 源于 Google 内部运行了十年的 Borg 系统的设计经验。2
 4. **Google 内部实践**：Go 在 Google 内部已有广泛使用，团队熟悉度高。
 5. **生态健康**：Go 在云原生领域（Docker、etcd、Prometheus）形成正向循环。
 
-### 2.2 client-go 的演进（2015-2018）
+### 1.2 client-go 的演进（2015-2018）
 
 client-go 是 Kubernetes 官方维护的 Go 客户端库，演进历程：
 
@@ -96,7 +45,7 @@ client-go 是 Kubernetes 官方维护的 Go 客户端库，演进历程：
 - **2018（v8.0）**：引入 Workqueue 的限速队列（RateLimitingQueue）。
 - **2019（v12.0）**：引入 DiscoveryClient，支持 API 资源发现。
 
-### 2.3 Controller 模式的标准化（2017-2019）
+### 1.3 Controller 模式的标准化（2017-2019）
 
 Kubernetes 的核心控制平面（kube-controller-manager、cloud-controller-manager）均基于 Controller 模式。2017 年，`k8s.io/client-go/tools/cache` 包将 Controller 模式标准化为：
 
@@ -110,7 +59,7 @@ Reflector → Delta FIFO → Indexer (Local Cache)
 
 **核心思想**：声明式 API（Declarative API）+ 协调循环（Reconciliation Loop）。
 
-### 2.4 Operator 模式的提出（2016）
+### 1.4 Operator 模式的提出（2016）
 
 2016 年 11 月，CoreOS 提出 Operator 模式，将运维知识编码为软件：
 
@@ -121,7 +70,7 @@ Reflector → Delta FIFO → Indexer (Local Cache)
 2. Controller：监听 CRD 变化，执行运维逻辑（创建 Pod、配置主从、备份）。
 3. 协调循环：持续观察实际状态，向期望状态收敛。
 
-### 2.5 kubebuilder 与 controller-runtime（2018-至今）
+### 1.5 kubebuilder 与 controller-runtime（2018-至今）
 
 2018 年，Google 与 VMware 联合推出 `kubebuilder` 项目，基于 `controller-runtime` 库简化 Operator 开发：
 
@@ -133,9 +82,9 @@ Reflector → Delta FIFO → Indexer (Local Cache)
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Kubernetes API 的形式化定义
+### 2.1 Kubernetes API 的形式化定义
 
 Kubernetes API 是一个 RESTful 资源模型，每个资源可形式化为：
 
@@ -153,7 +102,7 @@ $$
 
 GVK（Group-Version-Kind）标识资源的类型，GVR（Group-Version-Resource）标识 RESTful 端点。两者通过 RESTMapper 互相映射。
 
-### 3.2 声明式 API 的形式化定义
+### 2.2 声明式 API 的形式化定义
 
 声明式 API 的核心是"期望状态"（Spec）与"实际状态"（Status）的对偶：
 
@@ -178,7 +127,7 @@ $$
 
 当 $\text{Status}_{n+1} = \text{Status}_n = \text{Spec}$ 时达到收敛。
 
-### 3.3 Informer 机制的形式化定义
+### 2.3 Informer 机制的形式化定义
 
 Informer 机制可形式化为状态机：
 
@@ -193,7 +142,7 @@ $$
 
 **resync 机制**：周期性地将 Indexer 中的所有对象作为 Sync 事件重新入队，触发 Handler，确保即使错过 Watch 事件也能恢复一致性。
 
-### 3.4 Workqueue 的形式化定义
+### 2.4 Workqueue 的形式化定义
 
 Workqueue 是一个带去重、延迟、限速的队列：
 
@@ -211,9 +160,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 List + Watch 协同机制
+### 3.1 List + Watch 协同机制
 
 Kubernetes API Server 提供 List 与 Watch 两个接口：
 
@@ -238,7 +187,7 @@ Kubernetes API Server 提供 List 与 Watch 两个接口：
 
 **resourceVersion 的语义**：K8s 中 `resourceVersion` 是 etcd 的 `mod_revision`，全局单调递增。客户端通过它实现乐观并发控制（Optimistic Concurrency Control）。
 
-### 4.2 Delta FIFO 队列的设计
+### 3.2 Delta FIFO 队列的设计
 
 Delta FIFO 是 Informer 的核心数据结构，结合了 FIFO 与 Delta 的特性：
 
@@ -265,7 +214,7 @@ type DeltaFIFO struct {
 
 考虑 Watch 推送连续两个事件：`Update(Pod-A, v1)` 与 `Update(Pod-A, v2)`。若直接出队，Handler 可能只处理 v1，错过 v2。DeltaFIFO 将两者累积为 `[Updated v1, Updated v2]`，Handler 依次处理，最终状态为 v2。
 
-### 4.3 Indexer 与本地缓存
+### 3.3 Indexer 与本地缓存
 
 Indexer 是 Informer 的本地缓存，提供按 key、namespace、labels 的快速查询：
 
@@ -294,7 +243,7 @@ type Indexer interface {
 
 **性能**：Indexer 基于 `thread_safe_store`，使用 `sync.RWMutex` 保护，读多写少场景下性能优异。对于 10 万 Pod 的集群，内存占用约 1-2 GB。
 
-### 4.4 Workqueue 的限速机制
+### 3.4 Workqueue 的限速机制
 
 Workqueue 提供三种限速器：
 
@@ -318,7 +267,7 @@ $$
 2. **避免热点**：频繁变更的资源（如每秒 1000 次 Update）不应占用过多 Reconcile 资源。
 3. **错误隔离**：单个失败资源不影响其他资源的处理。
 
-### 4.5 Leader Election 机制
+### 3.5 Leader Election 机制
 
 多副本 Controller 部署时，需通过 Leader Election 确保只有一个副本工作，避免重复处理：
 
@@ -356,7 +305,7 @@ leaderelection.RunOrDie(ctx, leaderelection.LeaderElectionConfig{
 
 **典型配置**：`15s / 10s / 2s`，故障切换时间约 15-30 秒。
 
-### 4.6 CRD 与 API Server 的交互
+### 3.6 CRD 与 API Server 的交互
 
 CRD（Custom Resource Definition）通过 API Server 注册新的资源类型：
 
@@ -410,9 +359,9 @@ spec:
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 使用 Clientset 操作 Pod
+### 4.1 使用 Clientset 操作 Pod
 
 ```go
 package main
@@ -499,7 +448,7 @@ func main() {
 }
 ```
 
-### 5.2 使用 Informer 监听 Pod 事件
+### 4.2 使用 Informer 监听 Pod 事件
 
 ```go
 package main
@@ -566,7 +515,7 @@ func main() {
 }
 ```
 
-### 5.3 使用 Workqueue 实现 Controller
+### 4.3 使用 Workqueue 实现 Controller
 
 ```go
 package main
@@ -690,7 +639,7 @@ func main() {
 }
 ```
 
-### 5.4 使用 kubebuilder 创建 Operator
+### 4.4 使用 kubebuilder 创建 Operator
 
 ```bash
 # 1. 初始化项目
@@ -757,7 +706,7 @@ func (r *MySQLClusterReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 ```
 
-### 5.5 使用 DynamicClient 操作 CRD
+### 4.5 使用 DynamicClient 操作 CRD
 
 ```go
 package main
@@ -799,9 +748,9 @@ func main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 client-go vs controller-runtime
+### 5.1 client-go vs controller-runtime
 
 | 维度          | client-go                          | controller-runtime                      |
 |---------------|------------------------------------|-----------------------------------------|
@@ -813,7 +762,7 @@ func main() {
 | 测试          | 需 mock clientset                 | 提供 envtest 集成测试                   |
 | 适用场景      | 简单 Controller、学习             | 生产级 Operator                         |
 
-### 6.2 kubebuilder vs operator-sdk
+### 5.2 kubebuilder vs operator-sdk
 
 | 维度          | kubebuilder                        | operator-sdk                           |
 |---------------|------------------------------------|----------------------------------------|
@@ -824,7 +773,7 @@ func main() {
 | OLM 集成      | 需手动                             | 内置生成 bundle                        |
 | 适用场景      | 纯 Go Operator                     | 多语言 Operator、OLM 生态              |
 
-### 6.3 Operator vs Helm vs Kustomize
+### 5.3 Operator vs Helm vs Kustomize
 
 | 维度          | Operator                           | Helm                          | Kustomize                     |
 |---------------|------------------------------------|-------------------------------|-------------------------------|
@@ -835,7 +784,7 @@ func main() {
 | 复杂度        | 高（需开发 Controller）            | 中（模板语法）                | 低（YAML 合并）               |
 | 适用场景      | 有状态应用、数据库、中间件         | 无状态应用、简单配置          | 多环境配置管理                |
 
-### 6.4 Informer vs Direct API Call
+### 5.4 Informer vs Direct API Call
 
 | 维度          | Informer                           | Direct API Call                |
 |---------------|------------------------------------|--------------------------------|
@@ -847,9 +796,9 @@ func main() {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：忘记处理 `resourceVersion` 冲突
+### 6.1 陷阱一：忘记处理 `resourceVersion` 冲突
 
 **错误代码**：
 
@@ -876,7 +825,7 @@ err = retry.RetryOnConflict(retry.DefaultRetry, func() error {
 })
 ```
 
-### 7.2 陷阱二：Informer 缓存未同步就读取
+### 6.2 陷阱二：Informer 缓存未同步就读取
 
 **错误代码**：
 
@@ -900,7 +849,7 @@ if !cache.WaitForCacheSync(stopCh, podInformer.HasSynced) {
 pods, _ := factory.Core().V1().Pods().Lister().List(labels.Everything())
 ```
 
-### 7.3 陷阱三：Reconcile 中执行阻塞操作
+### 6.3 陷阱三：Reconcile 中执行阻塞操作
 
 **错误代码**：
 
@@ -930,7 +879,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 }
 ```
 
-### 7.4 陷阱四：Status 更新导致无限循环
+### 6.4 陷阱四：Status 更新导致无限循环
 
 **错误代码**：
 
@@ -954,7 +903,7 @@ if cluster.Status.ObservedGeneration != cluster.Generation {
 }
 ```
 
-### 7.5 最佳实践一：使用 Finalizer 处理清理
+### 6.5 最佳实践一：使用 Finalizer 处理清理
 
 ```go
 const finalizerName = "example.com/mysqlcluster-finalizer"
@@ -992,7 +941,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 }
 ```
 
-### 7.6 最佳实践二：合理设置 RequeueAfter
+### 6.6 最佳实践二：合理设置 RequeueAfter
 
 ```go
 func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -1011,7 +960,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 }
 ```
 
-### 7.7 最佳实践三：暴露 Prometheus 指标
+### 6.7 最佳实践三：暴露 Prometheus 指标
 
 ```go
 var (
@@ -1043,9 +992,9 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 Operator 项目结构标准
+### 7.1 Operator 项目结构标准
 
 ```mermaid
 flowchart TD
@@ -1077,7 +1026,7 @@ flowchart TD
     T14 --> T18
 ```
 
-### 8.2 多 Worker 并发协调
+### 7.2 多 Worker 并发协调
 
 ```go
 func main() {
@@ -1101,7 +1050,7 @@ func main() {
 - 过多（20+）：API Server 压力大，可能触发限速（429）。
 - 推荐：根据集群规模与 API Server 性能，5-10 为宜。
 
-### 8.3 Webhook 验证与默认值
+### 7.3 Webhook 验证与默认值
 
 ```go
 // api/v1/mysqlcluster_webhook.go
@@ -1122,7 +1071,7 @@ func (r *MySQLCluster) Default() {
 }
 ```
 
-### 8.4 集成测试（envtest）
+### 7.4 集成测试（envtest）
 
 ```go
 package controller_test
@@ -1163,9 +1112,9 @@ func TestReconcile(t *testing.T) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：MySQL Operator 实现主从复制
+### 8.1 案例一：MySQL Operator 实现主从复制
 
 某企业需要自建 MySQL Operator，支持主从复制、自动故障恢复：
 
@@ -1214,7 +1163,7 @@ func (r *MySQLClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request
 }
 ```
 
-### 9.2 案例二：CronJob Operator 实现定时任务
+### 8.2 案例二：CronJob Operator 实现定时任务
 
 ```go
 func (r *CronJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -1242,7 +1191,7 @@ func (r *CronJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 }
 ```
 
-### 9.3 案例三：Prometheus Operator 的指标暴露
+### 8.3 案例三：Prometheus Operator 的指标暴露
 
 ```go
 // 监控 Operator 的 Reconcile 性能
@@ -1278,7 +1227,7 @@ func init() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：为什么 Kubernetes 选择 List + Watch 而非纯 Watch？
 
@@ -1288,7 +1237,7 @@ func init() {
 
 **解析讲解**：resync 周期性地将 Indexer 中所有对象作为 Sync 事件重新入队，触发 Handler，确保即使错过 Watch 事件也能恢复一致性。默认 10 小时，通过 `NewSharedInformerFactory(clientset, resyncPeriod)` 设置。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 3**：实现一个 Controller，监听 ConfigMap 变化，将变化同步到所有引用该 ConfigMap 的 Pod。
 
@@ -1315,7 +1264,7 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 }
 ```
 
-### 10.3 思考题
+### 9.3 思考题
 
 **题目 4**：为何 Reconcile 必须是幂等的？如何保证幂等性？
 
@@ -1330,7 +1279,7 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 - `RetryPeriod` 影响 API Server 压力与切换延迟。
 - 典型配置：`15s / 10s / 2s`，切换时间 15-30 秒。
 
-### 10.4 实战题
+### 9.4 实战题
 
 **题目 6**：设计一个 Redis Operator，支持主从复制、哨兵模式、集群模式三种部署形态。
 
@@ -1343,7 +1292,7 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Kubernetes Documentation: https://kubernetes.io/docs/home/
 2. client-go Repository: https://github.com/kubernetes/client-go
@@ -1363,9 +1312,9 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **Kubernetes API Reference**: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/
 - **client-go Examples**: https://github.com/kubernetes/client-go/tree/master/examples
@@ -1373,14 +1322,14 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 - **controller-runtime API**: https://pkg.go.dev/sigs.k8s.io/controller-runtime
 - **CRD Documentation**: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
 
-### 12.2 进阶主题
+### 11.2 进阶主题
 
 - **Server-Side Apply**: https://kubernetes.io/docs/reference/using-api/server-side-apply/ - 声明式资源管理的新范式。
 - **Watch Bookmarks**: https://kubernetes.io/docs/reference/using-api/api-concepts/ - 优化 Watch 性能的 bookmark 事件。
 - **API Priority and Fairness**: https://kubernetes.io/docs/concepts/cluster-administration/flow-control/ - API Server 限流机制。
 - **Admission Webhook**: https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/ - 资源验证与默认值注入。
 
-### 12.3 相关主题
+### 11.3 相关主题
 
 - **Go与Docker**: 容器化是 K8s 的基础，理解 Docker 镜像构建有助于编写 Operator 镜像。
 - **Go与gRPC**: K8s 内部组件（如 kubelet 与 API Server）部分使用 gRPC。
@@ -1388,35 +1337,35 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 - **Go与数据库**: Operator 常用于管理数据库，理解数据库复制原理有助于编写数据库 Operator。
 - **Context详解**: K8s API 调用大量使用 `context.Context` 传递超时与取消信号。
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **Kubernetes Slack**: https://kubernetes.slack.com/ - `#client-go-misc`、`#kubebuilder` 频道。
 - **Kubernetes SIG API Machinery**: https://github.com/kubernetes/community/tree/master/sig-api-machinery - API 机制设计与实现。
 - **OperatorHub.io**: https://operatorhub.io/ - 社区 Operator 目录。
 - **Awesome Kubernetes Operators**: https://github.com/operator-framework/awesome-operators - 优秀 Operator 集合。
 
-### 12.5 学术论文
+### 11.5 学术论文
 
 - **"Borg, Omega, and Kubernetes"** (Burns, Brewer, Oppenheimer, 2016) - K8s 设计哲学的源流。
 - **"Large-scale cluster management at Google with Borg"** (Verma et al., 2015) - Borg 系统的学术形式化。
 - **"Formal Verification of Kubernetes Controller"** (各种学术论文) - Controller 协调循环的形式化验证。
 - **"Toward a Formal Semantics for Kubernetes"** - K8s 声明式 API 的形式化语义研究。
 
-### 12.6 视频资源
+### 11.6 视频资源
 
 - **"Kubernetes Deconstructed"** (Hightower) - K8s 架构深度讲解。
 - **"Building Kubernetes Operators"** (Red Hat) - Operator 开发实战。
 - **"Deep Dive: client-go Informers"** (KubeCon) - Informer 机制详解。
 - **"Controller Runtime Internals"** (KubeCon) - controller-runtime 源码解析。
 
-### 12.7 实战项目
+### 11.7 实战项目
 
 - **Prometheus Operator**: https://github.com/prometheus-operator/prometheus-operator - 监控系统的 Operator，学习 CRD 设计。
 - **Cert-Manager**: https://github.com/cert-manager/cert-manager - 证书管理 Operator，学习 Webhook 集成。
 - **ArgoCD**: https://github.com/argoproj/argo-cd - GitOps 工具，学习 Controller 模式。
 - **Istio Operator**: https://github.com/istio/operator - Service Mesh Operator，学习复杂资源编排。
 
-### 12.8 工具链
+### 11.8 工具链
 
 - **`kubectl`**: K8s 命令行工具，调试 Controller 时必备。
 - **`k9s`**: TUI 界面的 K8s 客户端，快速浏览资源。
@@ -1426,7 +1375,7 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 - **`kuttl`**: K8s 端到端测试工具。
 - **`kustomize`**: K8s 配置管理工具。
 
-### 12.9 未来演进方向
+### 11.9 未来演进方向
 
 - **Gateway API**: 替代 Ingress 的新一代 API，Operator 模式扩展性更强。
 - **Operator Lifecycle Manager (OLM)**: Operator 的包管理与生命周期管理。
@@ -1434,7 +1383,7 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 - **WASM Operator**: 使用 WebAssembly 编写 Operator，降低运行时开销。
 - **多集群 Operator**: 跨集群资源同步与协调。
 
-### 12.10 常见问题 FAQ
+### 11.10 常见问题 FAQ
 
 **Q1: Informer 的内存占用如何估算？**
 

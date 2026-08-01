@@ -15,6 +15,7 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
+
 # Java 反射与动态代理
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -41,45 +42,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，学习者应能够：
-
-### 1.1 认知层级目标（Bloom 分类法）
-
-| Bloom 层级 | 目标描述 | 可观测行为 |
-| ---------- | -------- | ---------- |
-| **Remember（记忆）** | 复述 Class 对象、Field、Method、Constructor 的语义 | 能默写 `Class.forName`、`getMethod`、`invoke` 的方法签名 |
-| **Understand（理解）** | 解释 Class 文件结构、字节码指令、invokedynamic 的工作原理 | 能用 `javap -v` 分析 Class 文件并解释常量池 |
-| **Apply（应用）** | 使用反射 API 实现对象创建、方法调用、字段访问 | 编写一个通用的 JSON 序列化器 |
-| **Analyze（分析）** | 分析 JDK Proxy 与 CGLib 的字节码差异 | 用 ASM 查看生成的代理类字节码 |
-| **Evaluate（评价）** | 评估反射、MethodHandle、invokedynamic 的性能差异 | 在 JMH 基准测试中比较三者吞吐 |
-| **Create（创造）** | 设计并实现一个自定义 AOP 框架 | 基于动态代理实现声明式事务、日志、限流 |
-
-### 1.2 核心能力指标
-
-完成本章后，应能独立完成以下任务：
-
-1. 使用反射 API 实现一个简易依赖注入容器
-2. 区分 JDK Proxy、CGLib、MethodHandle 三种动态调用方式的适用场景
-3. 阅读 Spring AOP、MyBatis Mapper、Hibernate Lazy Loading 的源码
-4. 使用 `javap`、ASM、ByteBuddy 分析与生成字节码
-5. 评估反射调用的性能开销并选择优化方案
-
-### 1.3 前置知识检查
-
-阅读本章前，建议已掌握：
-
-- Java 面向对象（class、interface、继承、多态）
-- Java 字节码基础（能读懂 `javap -c` 输出）
-- 类加载机制（ClassLoader、双亲委派）
-- 设计模式（代理模式、装饰器模式）
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 反射机制的演进时间线
+### 1.1 反射机制的演进时间线
 
 ```mermaid
 timeline
@@ -98,7 +63,7 @@ timeline
     2024-2025: Java 22-25：进一步限制反射的非法访问，强封装（Strong Encapsulation by Default）
 ```
 
-### 2.2 动态代理的三种范式
+### 1.2 动态代理的三种范式
 
 | 范式 | 代表 | 原理 | 引入版本 |
 | ---- | ---- | ---- | -------- |
@@ -106,7 +71,7 @@ timeline
 | **字节码生成** | CGLib、ByteBuddy、ASM | 运行时生成子类字节码 | 第三方 |
 | **MethodHandle** | `java.lang.invoke` | 直接方法句柄，编译期优化 | Java 7 |
 
-### 2.3 反射性能的演进
+### 1.3 反射性能的演进
 
 JVM 对反射的优化经历了三个阶段：
 
@@ -122,13 +87,13 @@ Method m = String.class.getMethod("length");
 
 ---
 
-## 3. 形式化定义与规范基础
+## 2. 形式化定义与规范基础
 
-### 3.1 JLS 对反射的定义
+### 2.1 JLS 对反射的定义
 
 JLS §13.1 规定：每个被加载的类都有一个 `Class` 对象，它是反射的入口。JLS §4.12.1 定义了类型擦除后，反射通过 `Type` 接口家族（`ParameterizedType`、`TypeVariable`、`GenericArrayType`）获取泛型信息。
 
-### 3.2 Class 文件结构（JVMS §4）
+### 2.2 Class 文件结构（JVMS §4）
 
 反射的能力来源于 Class 文件的结构化元数据。Class 文件格式：
 
@@ -153,7 +118,7 @@ ClassFile {
 }
 ```
 
-### 3.3 Class 对象的形式化模型
+### 2.3 Class 对象的形式化模型
 
 设 $C$ 为一个已加载的类，则其 `Class` 对象 $\text{Class}(C)$ 包含：
 
@@ -169,7 +134,7 @@ $$
 - $A_C$：注解集合
 - $P_C$：包路径与模块信息
 
-### 3.4 方法调用的形式化语义
+### 2.4 方法调用的形式化语义
 
 反射方法调用 `Method.invoke(obj, args)` 的语义等价于：
 
@@ -183,7 +148,7 @@ $$
 2. 若 $m$ 为实例方法，则 $\text{dispatch}(o, m, \text{args}) = o.m(\text{args})$，按 $o$ 的运行时类型分派（虚方法分派）
 3. 若 $m$ 为 private 方法，则不进行虚分派，直接调用声明类的方法
 
-### 3.5 动态代理的规范定义
+### 2.5 动态代理的规范定义
 
 JLS（Java 语言规范）不规定动态代理，但 `java.lang.reflect.Proxy` 的行为在 JDK 文档中定义：
 
@@ -205,9 +170,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 Class 对象的创建时机
+### 3.1 Class 对象的创建时机
 
 JVM 在以下情况创建 `Class` 对象：
 
@@ -237,7 +202,7 @@ Example.staticMethod();                // static 方法调用
 Class.forName("Example");              // 默认 initialize=true
 ```
 
-### 4.2 方法分派的字节码
+### 3.2 方法分派的字节码
 
 Java 方法调用有 5 个字节码指令：
 
@@ -267,7 +232,7 @@ invokevirtual Integer.intValue():int
 
 `Method.invoke` 内部根据方法修饰符选择对应的字节码指令。
 
-### 4.3 动态代理的字节码生成
+### 3.3 动态代理的字节码生成
 
 JDK Proxy 在运行时生成类 `com.sun.proxy.$ProxyN`，其结构：
 
@@ -302,9 +267,9 @@ public final class $Proxy0 extends Proxy implements UserService {
 3. 调用 `ClassLoader.defineClass` 加载到 JVM
 4. 通过反射调用构造器创建实例
 
-### 4.4 MethodHandle 与 invokedynamic
+### 3.4 MethodHandle 与 invokedynamic
 
-#### 4.4.1 MethodHandle 基础
+#### 3.4.1 MethodHandle 基础
 
 MethodHandle 是 Java 7 引入的"类型安全的函数指针"：
 
@@ -320,7 +285,7 @@ MethodHandle mh = lookup.findVirtual(String.class, "substring", mt);
 String result = (String) mh.invoke("hello world", 6);  // "world"
 ```
 
-#### 4.4.2 invokedynamic 原理
+#### 3.4.2 invokedynamic 原理
 
 `invokedynamic` 是 Java 7 引入的字节码指令，为动态语言设计。其工作流程：
 
@@ -343,7 +308,7 @@ invokedynamic apply(Ljava/lang/String;)Ljava/lang/Integer; \
 
 `LambdaMetafactory.metafactory` 在首次调用时生成一个实现 `Function` 的类，后续调用直接调用该类的方法。
 
-#### 4.4.3 性能对比
+#### 3.4.3 性能对比
 
 | 调用方式 | 首次开销 | 稳态性能 | 备注 |
 | -------- | -------- | -------- | ---- |
@@ -352,7 +317,7 @@ invokedynamic apply(Ljava/lang/String;)Ljava/lang/Integer; \
 | MethodHandle | 中 | 1.2—1.5x | `invokeExact` 性能最优 |
 | invokedynamic | 高 | 1.1—1.3x | JIT 完全优化 |
 
-### 4.5 泛型与反射
+### 3.5 泛型与反射
 
 Java 泛型采用类型擦除（Type Erasure），但反射可通过 `Type` 接口获取擦除前的类型信息：
 
@@ -382,9 +347,9 @@ $$
 
 ---
 
-## 5. 反射核心 API 详解
+## 4. 反射核心 API 详解
 
-### 5.1 获取 Class 对象的四种方式
+### 4.1 获取 Class 对象的四种方式
 
 ```java
 // 方式 1：类字面量（编译期检查，推荐）
@@ -408,7 +373,7 @@ Class<?> c4 = ClassLoader.getSystemClassLoader().loadClass("java.lang.String");
 | Class.forName | 是 | 否 | ClassNotFoundException | 动态加载 |
 | loadClass | 否 | 否 | ClassNotFoundException | 自定义加载时机 |
 
-### 5.2 创建实例
+### 4.2 创建实例
 
 ```java
 Class<?> clazz = User.class;
@@ -429,7 +394,7 @@ privateCtor.setAccessible(true);  // 突破 private 限制
 User u4 = (User) privateCtor.newInstance();
 ```
 
-### 5.3 字段访问
+### 4.3 字段访问
 
 ```java
 class User {
@@ -449,7 +414,7 @@ Field constField = User.class.getDeclaredField("CONSTANT");
 String value = (String) constField.get(null);  // 静态字段传 null
 ```
 
-### 5.4 方法调用
+### 4.4 方法调用
 
 ```java
 Method method = String.class.getMethod("substring", int.class, int.class);
@@ -469,7 +434,7 @@ privateMethod.setAccessible(true);
 privateMethod.invoke(instance);
 ```
 
-### 5.5 注解读取
+### 4.5 注解读取
 
 ```java
 @Retention(RetentionPolicy.RUNTIME)
@@ -498,7 +463,7 @@ System.out.println(methodAnno.value());  // "process"
 Annotation[] annos = Annotated.class.getAnnotations();
 ```
 
-### 5.6 数组操作
+### 4.6 数组操作
 
 ```java
 // 创建数组
@@ -510,7 +475,7 @@ int val = (int) Array.get(arr, 0);
 String[][] matrix = (String[][]) Array.newInstance(String.class, 3, 4);
 ```
 
-### 5.7 泛型类型信息
+### 4.7 泛型类型信息
 
 ```java
 class Box<T> {
@@ -534,9 +499,9 @@ Type returnType = m.getGenericReturnType();  // List<E>
 
 ---
 
-## 6. JDK 动态代理
+## 5. JDK 动态代理
 
-### 6.1 基础示例
+### 5.1 基础示例
 
 ```java
 import java.lang.reflect.InvocationHandler;
@@ -597,7 +562,7 @@ public class ProxyDemo {
 }
 ```
 
-### 6.2 代理类的生成原理
+### 5.2 代理类的生成原理
 
 `Proxy.newProxyInstance` 的内部流程：
 
@@ -652,7 +617,7 @@ public final class $Proxy0 extends Proxy implements UserService {
 }
 ```
 
-### 6.3 限制：只能代理接口
+### 5.3 限制：只能代理接口
 
 JDK Proxy 的根本限制：**只能代理接口，不能代理类**。
 
@@ -660,7 +625,7 @@ JDK Proxy 的根本限制：**只能代理接口，不能代理类**。
 
 **解决方案**：使用 CGLib 等字节码生成库，通过生成子类代理类。
 
-### 6.4 查看生成的代理类
+### 5.4 查看生成的代理类
 
 通过设置系统属性，可将代理类字节码保存到磁盘：
 
@@ -676,13 +641,13 @@ System.setProperty("jdk.proxy.ProxyGenerator.saveGeneratedFiles", "true");
 
 ---
 
-## 7. CGLib 动态代理
+## 6. CGLib 动态代理
 
-### 7.1 CGLib 简介
+### 6.1 CGLib 简介
 
 CGLib（Code Generation Library）是一个强大的字节码生成库，基于 ASM。Spring AOP 默认使用 CGLib 代理非接口类。
 
-### 7.2 Maven 依赖
+### 6.2 Maven 依赖
 
 ```xml
 <dependency>
@@ -692,7 +657,7 @@ CGLib（Code Generation Library）是一个强大的字节码生成库，基于 
 </dependency>
 ```
 
-### 7.3 基础示例
+### 6.3 基础示例
 
 ```java
 import net.sf.cglib.proxy.Enhancer;
@@ -733,7 +698,7 @@ public class CglibDemo {
 }
 ```
 
-### 7.4 CGLib 生成原理
+### 6.4 CGLib 生成原理
 
 CGLib 通过 ASM 生成目标类的**子类**：
 
@@ -763,7 +728,7 @@ public class UserServiceImpl$$EnhancerByCGLIB$$12345678 extends UserServiceImpl 
 
 **关键优化**：CGLib 生成一个 `getName$$Super` 方法，通过字节码直接调用 `super.getName()`，避免反射开销。
 
-### 7.5 CallbackFilter：选择性代理
+### 6.5 CallbackFilter：选择性代理
 
 ```java
 Enhancer enhancer = new Enhancer();
@@ -779,7 +744,7 @@ enhancer.setCallbackFilter(method -> {
 });
 ```
 
-### 7.6 限制
+### 6.6 限制
 
 - **final 类不能代理**：无法继承
 - **final 方法不能代理**：无法 override
@@ -788,9 +753,9 @@ enhancer.setCallbackFilter(method -> {
 
 ---
 
-## 8. MethodHandle 与 invokedynamic
+## 7. MethodHandle 与 invokedynamic
 
-### 8.1 MethodHandle 基础
+### 7.1 MethodHandle 基础
 
 ```java
 import java.lang.invoke.MethodHandle;
@@ -820,13 +785,13 @@ public class MHDemo {
 }
 ```
 
-### 8.2 MethodHandle 的优势
+### 7.2 MethodHandle 的优势
 
 1. **类型安全**：编译期检查签名
 2. **性能优**：JIT 可内联 `invokeExact`
 3. **可组合**：支持 `filterArguments`、`collectArguments` 等变换
 
-### 8.3 MethodHandle 变换
+### 7.3 MethodHandle 变换
 
 ```java
 MethodHandle mh = lookup.findVirtual(String.class, "length", MethodType.methodType(int.class));
@@ -844,7 +809,7 @@ int len2 = (int) filtered.invoke("hello");  // 先 toUpperCase 再 length，结�
 MethodHandle collector = mh.asCollector(int[].class, 0);
 ```
 
-### 8.4 invokedynamic 实战
+### 7.4 invokedynamic 实战
 
 ```java
 import java.lang.invoke.*;
@@ -871,7 +836,7 @@ public class IndyDemo {
 }
 ```
 
-### 8.5 性能基准测试（JMH）
+### 7.5 性能基准测试（JMH）
 
 ```java
 @State(Scope.Benchmark)
@@ -923,9 +888,9 @@ public class ReflectionBenchmark {
 
 ---
 
-## 9. 对比分析
+## 8. 对比分析
 
-### 9.1 JDK Proxy vs CGLib vs MethodHandle
+### 8.1 JDK Proxy vs CGLib vs MethodHandle
 
 | 维度 | JDK Proxy | CGLib | MethodHandle |
 | ---- | --------- | ----- | ------------ |
@@ -939,7 +904,7 @@ public class ReflectionBenchmark {
 | Spring AOP | 接口优先 | 类回退 | N/A |
 | 典型场景 | AOP、RPC | AOP、ORM | Lambda、动态语言 |
 
-### 9.2 与其他语言对比
+### 8.2 与其他语言对比
 
 | 语言 | 反射机制 | 动态代理 | 性能 |
 | ---- | -------- | -------- | ---- |
@@ -951,7 +916,7 @@ public class ReflectionBenchmark {
 | Python | __dict__、getattr | 鸭子类型 + 装饰器 | 低（动态语言） |
 | Rust | 无运行时反射 | 过程宏（编译期） | 极高（零开销） |
 
-### 9.3 字节码生成库对比
+### 8.3 字节码生成库对比
 
 | 库 | 抽象级别 | 性能 | 易用性 | 典型用户 |
 | -- | -------- | ---- | ------ | -------- |
@@ -962,9 +927,9 @@ public class ReflectionBenchmark {
 
 ---
 
-## 10. 常见陷阱与最佳实践
+## 9. 常见陷阱与最佳实践
 
-### 10.1 陷阱：反射访问性能慢
+### 9.1 陷阱：反射访问性能慢
 
 **反例**：
 
@@ -993,7 +958,7 @@ for (int i = 0; i < 1_000_000; i++) {
 }
 ```
 
-### 10.2 陷阱：模块系统下反射访问受限
+### 9.2 陷阱：模块系统下反射访问受限
 
 **Java 9+ 问题**：
 
@@ -1015,7 +980,7 @@ Manifest-Version: 1.0
 Add-Opens: java.base/java.lang
 ```
 
-### 10.3 陷阱：反射破坏单例
+### 9.3 陷阱：反射破坏单例
 
 ```java
 class Singleton {
@@ -1048,7 +1013,7 @@ enum Singleton {
 }
 ```
 
-### 10.4 陷阱：CGLib 代理 final 类
+### 9.4 陷阱：CGLib 代理 final 类
 
 ```java
 final class FinalClass {
@@ -1061,7 +1026,7 @@ enhancer.setSuperclass(FinalClass.class);  // 运行时异常
 
 **解决**：改用接口代理或重新设计类去掉 final。
 
-### 10.5 陷阱：代理对象的方法分派
+### 9.5 陷阱：代理对象的方法分派
 
 ```java
 class Target {
@@ -1095,7 +1060,7 @@ public class MyService {
 }
 ```
 
-### 10.6 陷阱：invoke 处理基本类型
+### 9.6 陷阱：invoke 处理基本类型
 
 ```java
 Method m = Integer.class.getMethod("parseInt", String.class);
@@ -1110,7 +1075,7 @@ Method setter = SomeClass.class.getMethod("setValue", int.class);
 setter.invoke(obj, 42);  // 自动装箱为 Integer
 ```
 
-### 10.7 陷阱：可变参数方法
+### 9.7 陷阱：可变参数方法
 
 ```java
 class VarArgs {
@@ -1124,7 +1089,7 @@ Method m = VarArgs.class.getMethod("log", String[].class);
 m.invoke(instance, new Object[]{new String[]{"a", "b"}});
 ```
 
-### 10.8 最佳实践清单
+### 9.8 最佳实践清单
 
 1. **缓存 Method/Field 对象**：避免重复查找
 2. **优先用 MethodHandle**：性能更优
@@ -1137,9 +1102,9 @@ m.invoke(instance, new Object[]{new String[]{"a", "b"}});
 
 ---
 
-## 11. 工程实践
+## 10. 工程实践
 
-### 11.1 Maven 项目配置
+### 10.1 Maven 项目配置
 
 ```xml
 <project>
@@ -1179,7 +1144,7 @@ m.invoke(instance, new Object[]{new String[]{"a", "b"}});
 </project>
 ```
 
-### 11.2 自定义 AOP 框架
+### 10.2 自定义 AOP 框架
 
 ```java
 import java.lang.annotation.*;
@@ -1323,7 +1288,7 @@ public class AOPDemo {
 }
 ```
 
-### 11.3 简易依赖注入容器
+### 10.3 简易依赖注入容器
 
 ```java
 import java.lang.annotation.*;
@@ -1397,7 +1362,7 @@ public class DIDemo {
 }
 ```
 
-### 11.4 JSON 序列化器（反射实现）
+### 10.4 JSON 序列化器（反射实现）
 
 ```java
 import java.lang.reflect.*;
@@ -1461,9 +1426,9 @@ public class JsonSerializer {
 
 ---
 
-## 12. 案例研究
+## 11. 案例研究
 
-### 12.1 案例一：Spring AOP 实现原理
+### 11.1 案例一：Spring AOP 实现原理
 
 Spring AOP 是动态代理最典型的应用。其核心流程：
 
@@ -1531,7 +1496,7 @@ public class AspectJProxyFactory {
 }
 ```
 
-### 12.2 案例二：MyBatis Mapper 代理
+### 11.2 案例二：MyBatis Mapper 代理
 
 MyBatis 的 Mapper 接口无需实现类，通过动态代理在运行时生成实现：
 
@@ -1585,7 +1550,7 @@ UserMapper mapper = new MapperProxy<>(sqlSession, UserMapper.class).newInstance(
 User user = mapper.findById(1);
 ```
 
-### 12.3 案例三：Hibernate 懒加载
+### 11.3 案例三：Hibernate 懒加载
 
 Hibernate 通过代理实现关联关系的懒加载：
 
@@ -1607,7 +1572,7 @@ class Order {
 
 Hibernate 使用 ByteBuddy（或 CGLib）生成实体的子类代理，字段访问时触发 SQL 加载。
 
-### 12.4 案例四：Retrofit 动态代理
+### 11.4 案例四：Retrofit 动态代理
 
 Retrofit 用动态代理将 Java 接口转为 HTTP 请求：
 
@@ -1913,7 +1878,7 @@ public class StrategyPattern {
 ```
 
 
-### 13.4 思考题
+### 12.4 思考题
 
 **题目 12**：为什么 Spring AOP 在 Bean 实现接口时默认使用 JDK Proxy，而不是统一用 CGLib？
 
@@ -2059,7 +2024,7 @@ Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，�
 
 ---
 
-## 14. 参考文献
+## 13. 参考文献
 
 本节参考文献遵循 ACM Reference Format。
 
@@ -2095,9 +2060,9 @@ Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，�
 
 ---
 
-## 15. 延伸阅读
+## 14. 延伸阅读
 
-### 15.1 书籍
+### 14.1 书籍
 
 1. **《Java Reflection in Action》**
    - 作者：Ira R. Forman, Nate Forman
@@ -2127,7 +2092,7 @@ Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，�
    - ISBN：978-1617294293
    - 评价：模块系统迁移权威指南
 
-### 15.2 论文
+### 14.2 论文
 
 1. **Rose, J. (2009). "Bytecode Meet Combinators: invokedynamic and the Future of JVM Languages." ICOOOLPS '09.**
    - invokedynamic 的设计动机
@@ -2138,7 +2103,7 @@ Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，�
 3. **Rose, J. (2017). "JEP 261: Module System."**
    - 模块系统对反射的限制
 
-### 15.3 在线资源
+### 14.3 在线资源
 
 1. **OpenJDK Reflection Documentation**
    - https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/package-summary.html
@@ -2180,7 +2145,7 @@ Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，�
     - https://github.com/square/retrofit
     - Retrofit 动态代理实战案例
 
-### 15.4 视频课程
+### 14.4 视频课程
 
 1. **MIT 6.031: Software Construction**
    - https://ocw.mit.edu/courses/6-031-software-construction-fall-2017/

@@ -18,6 +18,7 @@ prerequisites:
   - lua/标准库详解
   - lua/Lua与C交互
 ---
+
 # Lua LuaJIT
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -192,57 +193,9 @@ end
 -- 注意：LuaJIT 兼容 Lua 5.1 语法
 -- 不支持 5.3+ 整数类型、原生位运算、<close> 等
 ```
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本节依据 Bloom 分类法（Bloom's Taxonomy）按认知层级组织学习目标，学习者完成本章后应具备以下能力。
-
-### 1.1 记忆层（Remember）
-
-- 能够准确复述 LuaJIT（Lua Just-In-Time compiler）的设计目标、作者（Mike Pall）与首次发布时间（2005）。
-- 能够默写出 LuaJIT 的三大核心组件：解释器（Interpreter）、JIT 编译器（Trace Compiler）、FFI（Foreign Function Interface）模块。
-- 能够列出 LuaJIT 兼容的 Lua 版本（Lua 5.1 语义 + 部分扩展）与扩展模块（`ffi`、`jit`、`bit`、`table.new`、`table.clear`）。
-- 能够写出 `jit.status()`、`jit.on()`、`jit.off()`、`jit.util`、`ffi.cdef`、`ffi.new`、`ffi.C` 等核心 API 的签名。
-
-### 1.2 理解层（Understand）
-
-- 能够解释 JIT（Just-In-Time）编译与 AOT（Ahead-Of-Time）编译、解释执行的差异。
-- 能够阐述 Trace-based JIT 与 Method-based JIT 的区别，并说明 LuaJIT 选择 Trace-based 的原因。
-- 能够说明热点检测（Hotspot Detection）、Trace 录制（Trace Recording）、Trace 优化（Trace Optimization）三阶段的执行流程。
-- 能够描述 FFI 的工作原理：为何 FFI 调用 C 函数比传统 Lua C API 绑定更快。
-- 能够解释 LuaJIT 的栈式虚拟机（Stack-based VM）与寄存器式虚拟机（Register-based VM）的选择。
-
-### 1.3 应用层（Apply）
-
-- 能够使用 `ffi.cdef` 声明 C 函数签名、结构体、联合体、枚举。
-- 能够使用 `ffi.new`、`ffi.cast`、`ffi.typeof` 创建与操作 cdata 对象。
-- 能够使用 `jit.opt.start` 调整 JIT 编译参数（`hotloop`、`hotexit`、`maxtrace` 等）。
-- 能够使用 `jit.on()`、`jit.off()`、`jit.off(fn)` 控制特定函数的 JIT 行为。
-- 能够使用 `ffi.load` 加载动态库并通过 LuaJIT 调用其导出函数。
-
-### 1.4 分析层（Analyze）
-
-- 能够分析给定 Lua 代码片段的 JIT 行为，识别可能导致 JIT 回退（NYI, Not Yet Implemented）的构造。
-- 能够分析 FFI cdata 的内存归属：哪些由 LuaJIT GC 管理，哪些需要手动释放。
-- 能够分析 Trace 录制失败的常见原因（Side trace 过多、循环次数过少、`lua_pcall` 阻塞等）。
-- 能够解读 `luajit -jv`、`luajit -jdump` 输出的 Trace 日志。
-
-### 1.5 评估层（Evaluate）
-
-- 能够评估在特定场景下是否应使用 LuaJIT 替代标准 Lua（基于性能需求、库兼容性、平台支持等维度）。
-- 能够评估 FFI 方案与 Lua C API 方案的取舍：开发便利性、运行性能、可维护性、错误安全性。
-- 能够评估 JIT 优化对代码可读性、调试难度的影响，并权衡性能与可维护性。
-
-### 1.6 创造层（Create）
-
-- 能够设计基于 FFI 的高性能 Lua 模块（如绑定 libuv、libpng、libsqlite3）。
-- 能够设计基于 LuaJIT 的协程调度器、高性能 Web 框架。
-- 能够编写 JIT 友好的 Lua 代码：避免 NYI 构造、热路径内联、数据布局优化。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 LuaJIT 的诞生背景
+### 1.1 LuaJIT 的诞生背景
 
 LuaJIT 由德国开发者 Mike Pall 于 2005 年发起，目标是构建一个"在生产环境中可用、性能接近原生 C"的 Lua 实现。彼时 Lua 5.1 已广泛应用于嵌入式脚本、游戏逻辑、Web 服务器等场景，但解释执行的性能瓶颈日益显现：
 
@@ -257,7 +210,7 @@ Mike Pall 选择从零开始设计 LuaJIT 2.x，采用三大核心创新：
 - **寄存器式字节码**：放弃 Lua 原本的栈式字节码，改用寄存器式字节码（SSA-like 形式），减少指令数量。
 - **FFI 模块**：直接在 Lua 中声明 C 类型与函数签名，绕过传统 C API 栈操作，调用开销接近原生 C 函数指针。
 
-### 2.2 Trace-based JIT 的设计动机
+### 1.2 Trace-based JIT 的设计动机
 
 JIT 编译器按编译粒度可分为两类：
 
@@ -270,7 +223,7 @@ LuaJIT 选择 Trace-based JIT 的原因：
 2. **循环热点突出**：Lua 在游戏脚本、Web 处理中大量使用循环（`for`、`while`），Trace 录制循环执行路径，编译后循环性能可提升 10-100 倍。
 3. **编译开销可控**：Trace 仅编译实际执行的热路径，冷代码不编译，避免 JIT 编译本身成为性能瓶颈。
 
-### 2.3 FFI 的设计动机
+### 1.3 FFI 的设计动机
 
 传统 Lua 与 C 交互通过 Lua C API 完成，每次调用需要：
 
@@ -286,7 +239,7 @@ Mike Pall 设计 FFI 的目标：**让 Lua 调用 C 函数的开销接近 C 函�
 - **直接函数指针调用**：FFI 调用通过函数指针直接跳转到 C 函数，跳过 Lua 栈。
 - **JIT 内联**：在 JIT 编译的 Trace 中，FFI 调用可被内联到机器码中，进一步消除调用开销。
 
-### 2.4 LuaJIT 的发展演进
+### 1.4 LuaJIT 的发展演进
 
 | 版本 | 发布年份 | 关键里程碑 |
 | :--- | :--- | :--- |
@@ -300,7 +253,7 @@ Mike Pall 设计 FFI 的目标：**让 Lua 调用 C 函数的开销接近 C 函�
 
 Mike Pall 于 2015 年逐步退出主要维护工作，社区（OpenResty 团队、Cloudflare 等）继续维护 2.1 分支。截至 2026 年，LuaJIT 2.1 仍是生产环境最广泛使用的 Lua 实现。
 
-### 2.5 设计哲学：性能优先、兼容性次之
+### 1.5 设计哲学：性能优先、兼容性次之
 
 LuaJIT 在性能与兼容性之间的取舍：
 
@@ -312,11 +265,11 @@ LuaJIT 在性能与兼容性之间的取舍：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节给出 LuaJIT 的形式化定义，包括 JIT 编译的形式化模型、Trace 结构、FFI 类型系统。
 
-### 3.1 JIT 编译的形式化模型
+### 2.1 JIT 编译的形式化模型
 
 设 $P$ 为 Lua 程序，$I$ 为解释器（Interpreter），$T$ 为 Trace 录制器，$C$ 为 Trace 编译器。LuaJIT 的执行过程可形式化为：
 
@@ -326,7 +279,7 @@ $$
 
 解释器 $I$ 执行字节码并统计循环热度（Hotness Counter）。当某循环执行次数超过阈值 $\theta_{\text{hotloop}}$（默认 56）时，触发 Trace 录制。
 
-### 3.2 Trace 的形式化定义
+### 2.2 Trace 的形式化定义
 
 Trace 是程序执行的一条线性路径，由基本块序列组成。形式化地，Trace 是一个三元组：
 
@@ -342,7 +295,7 @@ $$
 
 Trace 的执行语义：从入口基本块 $b_1$ 开始顺序执行，每个守卫 $g \in G$ 在运行时检查。若守卫失败（Guard Fail），则退出编译后的机器码，回退到解释器对应位置（Side Exit）。
 
-### 3.3 热点检测的形式化定义
+### 2.3 热点检测的形式化定义
 
 设 $\text{counter}(l)$ 为循环 $l$ 的执行计数器，$\theta_{\text{hotloop}}$ 为热度阈值。热点检测规则：
 
@@ -352,7 +305,7 @@ $$
 
 LuaJIT 还支持基于退出次数的热点检测：当某 Side Exit 被命中超过 $\theta_{\text{hotexit}}$（默认 10）次时，从该退出点录制新的 Side Trace。
 
-### 3.4 Trace 录制的形式化定义
+### 2.4 Trace 录制的形式化定义
 
 Trace 录制器 $T$ 在解释器执行时记录指令流。设 $I_t$ 为 $t$ 时刻执行的指令，录制过程可表示为：
 
@@ -366,7 +319,7 @@ $$
 - **值特化（Value Specialization）**：对于常量值（如循环不变量），编译时直接内联。
 - **守卫生成（Guard Generation）**：为每个特化假设生成守卫条件，运行时检查。
 
-### 3.5 FFI 类型系统的形式化定义
+### 2.5 FFI 类型系统的形式化定义
 
 FFI 类型系统 $\mathcal{T}_{\text{FFI}}$ 包含 C 类型与 Lua 类型的双向映射。定义类型域 $\mathcal{C}$（C 类型）与 $\mathcal{L}$（Lua 类型），FFI 提供：
 
@@ -393,7 +346,7 @@ FFI 的转换规则：
 | `struct*`、`union*` | `cdata` | 通过 `ffi.new` 创建 |
 | `void*` | `cdata` | 通过 `ffi.cast` |
 
-### 3.6 cdata 的形式化定义
+### 2.6 cdata 的形式化定义
 
 cdata（C Data）是 LuaJIT 中表示 C 类型对象的 Lua 值。形式化地，cdata 是一个二元组：
 
@@ -412,7 +365,7 @@ cdata 与 Lua table 的区别：
 - cdata 的内存布局与 C 一致（连续存储、对齐填充），可直接传递给 C 函数。
 - cdata 的生命周期由 GC 管理（默认）或手动管理（通过 `ffi.gc` 注册析构）。
 
-### 3.7 JIT 编译复杂度分析
+### 2.7 JIT 编译复杂度分析
 
 设 Trace 长度为 $L$（基本块数量），每条字节码编译时间为 $O(1)$，则 Trace 编译时间复杂度为：
 
@@ -439,9 +392,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 Trace 录制的状态机
+### 3.1 Trace 录制的状态机
 
 Trace 录制过程可建模为状态机。设状态集合 $S = \{s_{\text{idle}}, s_{\text{monitor}}, s_{\text{recording}}, s_{\text{compiling}}, s_{\text{executing}}\}$，状态转移如下：
 
@@ -451,7 +404,7 @@ Trace 录制过程可建模为状态机。设状态集合 $S = \{s_{\text{idle}}
 4. **$s_{\text{compiling}} \to s_{\text{executing}}$**：编译完成，后续循环执行编译后的机器码。
 5. **$s_{\text{executing}} \to s_{\text{idle}}$**：守卫失败，回退到解释器。
 
-### 4.2 守卫失败与 Side Trace 的推导
+### 3.2 守卫失败与 Side Trace 的推导
 
 设主 Trace（Root Trace）的守卫集合为 $G = \{g_1, g_2, \dots, g_m\}$，每个守卫 $g_i$ 的失败概率为 $p_i$。当主 Trace 执行时，期望执行长度（Instruction Steady-state Length）为：
 
@@ -461,7 +414,7 @@ $$
 
 若某守卫 $g_i$ 失败频率高（$p_i > \theta_{\text{hotexit}}$），LuaJIT 会从该退出点录制 Side Trace，覆盖 $g_i$ 失败后的执行路径。Side Trace 的录制与编译流程与主 Trace 一致，但入口为 Side Exit 点。
 
-### 4.3 类型特化的收益模型
+### 3.3 类型特化的收益模型
 
 设循环中变量 $v$ 的类型在 90% 的情况下为 `number`，10% 为 `string`。Trace 录制时假设 $v$ 为 `number`，生成守卫 `typeof(v) == number`。
 
@@ -470,7 +423,7 @@ $$
 
 期望性能提升：$0.9 \cdot T_{\text{native}} + 0.1 \cdot T_{\text{interp}}$。若 $T_{\text{native}} = 0.1 \cdot T_{\text{interp}}$，则期望时间为 $0.09 \cdot T_{\text{interp}} + 0.1 \cdot T_{\text{interp}} = 0.19 \cdot T_{\text{interp}}$，仍比纯解释快 5 倍。
 
-### 4.4 寄存器式字节码的优势
+### 3.4 寄存器式字节码的优势
 
 LuaJIT 2.x 改用寄存器式字节码（Register-based Bytecode），对比 Lua 5.x 的栈式字节码（Stack-based Bytecode）：
 
@@ -483,7 +436,7 @@ LuaJIT 2.x 改用寄存器式字节码（Register-based Bytecode），对比 Lua
 2. **JIT 编译友好**：寄存器式字节码更接近 SSA（Static Single Assignment）形式，便于转换为机器码。
 3. **数据流清晰**：寄存器分配在编译期确定，运行时无需栈操作。
 
-### 4.5 FFI 调用开销的形式化分析
+### 3.5 FFI 调用开销的形式化分析
 
 设 C 函数调用开销为 $T_{\text{c-call}}$（约 5ns，包括函数指针跳转、参数传递、返回）。FFI 调用开销包括：
 
@@ -504,7 +457,7 @@ LuaJIT 2.x 改用寄存器式字节码（Register-based Bytecode），对比 Lua
 
 FFI 相对 C API 的性能优势：$T_{\text{c-api}} / T_{\text{ffi}} \approx 4-10$ 倍。
 
-### 4.6 JIT 内联优化
+### 3.6 JIT 内联优化
 
 在 JIT 编译的 Trace 中，FFI 调用可被内联到机器码中，进一步消除调用开销。内联后的开销仅剩参数 marshalling 与 C 函数执行：
 
@@ -516,11 +469,11 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节通过多个完整可运行示例演示 LuaJIT 的核心 API 与典型用法。所有示例均经过 LuaJIT 2.1 验证。
 
-### 5.1 JIT 状态查询与控制
+### 4.1 JIT 状态查询与控制
 
 ```lua
 -- 查询 JIT 状态
@@ -552,7 +505,7 @@ jit.off(coldFunction)
 -- jit.off(fun, true) 表示对该函数及其调用链关闭 JIT
 ```
 
-### 5.2 JIT 优化参数调整
+### 4.2 JIT 优化参数调整
 
 ```lua
 -- 调整 JIT 优化参数
@@ -578,7 +531,7 @@ jit.opt.start(2)
 -- 注意：LuaJIT 没有直接 API 查询当前参数，可通过 -jv 参数运行查看
 ```
 
-### 5.3 FFI 基本类型操作
+### 4.3 FFI 基本类型操作
 
 ```lua
 local ffi = require("ffi")
@@ -611,7 +564,7 @@ print(type(sum), sum)          -- cdata  52
 print("x = " .. tonumber(x))   -- 正确：x = 42
 ```
 
-### 5.4 FFI 结构体
+### 4.4 FFI 结构体
 
 ```lua
 local ffi = require("ffi")
@@ -677,7 +630,7 @@ p_ptr.x = 999.0                     -- 修改原结构体
 print(p.x)                          -- 999 (因为指针指向 p)
 ```
 
-### 5.5 FFI 数组
+### 4.5 FFI 数组
 
 ```lua
 local ffi = require("ffi")
@@ -735,7 +688,7 @@ for i = 0, 2 do
 end
 ```
 
-### 5.6 FFI 调用 C 标准库
+### 4.6 FFI 调用 C 标准库
 
 ```lua
 local ffi = require("ffi")
@@ -821,7 +774,7 @@ print("时间戳:", tonumber(timestamp))
 print("进程 ID:", tonumber(ffi.C.getpid()))
 ```
 
-### 5.7 FFI 加载自定义动态库
+### 4.7 FFI 加载自定义动态库
 
 ```lua
 local ffi = require("ffi")
@@ -865,7 +818,7 @@ if jit.os == "Windows" then
 end
 ```
 
-### 5.8 FFI 回调函数
+### 4.8 FFI 回调函数
 
 ```lua
 local ffi = require("ffi")
@@ -924,7 +877,7 @@ callback:free()
 -- 3. JIT 编译器无法内联 FFI 回调，回调内的代码始终在解释器中执行
 ```
 
-### 5.9 高性能数学计算示例
+### 4.9 高性能数学计算示例
 
 ```lua
 local ffi = require("ffi")
@@ -1005,7 +958,7 @@ local m3 = matrixMultiply(m1, m2, n)
 print(string.format("矩阵乘法 %dx%d: %.4f 秒", n, n, os.clock() - start))
 ```
 
-### 5.10 FFI 实现高性能数据结构
+### 4.10 FFI 实现高性能数据结构
 
 ```lua
 local ffi = require("ffi")
@@ -1089,7 +1042,7 @@ print(getBit(bm, 100))  -- true
 print(getBit(bm, 101))  -- false
 ```
 
-### 5.11 内存管理与析构
+### 4.11 内存管理与析构
 
 ```lua
 local ffi = require("ffi")
@@ -1175,7 +1128,7 @@ end
 -- 即使忘记 close，GC 也会在对象回收时自动 fclose
 ```
 
-### 5.12 bit 模块（位运算）
+### 4.12 bit 模块（位运算）
 
 ```lua
 -- LuaJIT 提供 bit 模块（Lua 5.1 没有原生位运算）
@@ -1232,7 +1185,7 @@ print("IP 转整数:", n)            -- 3232235876
 print("整数转 IP:", intToIp(n))  -- 192.168.1.100
 ```
 
-### 5.13 table.new 与 table.clear
+### 4.13 table.new 与 table.clear
 
 ```lua
 -- LuaJIT 扩展：table.new 和 table.clear
@@ -1306,7 +1259,7 @@ obj.data = "hello"
 pool:release(obj)
 ```
 
-### 5.14 JIT 调试与 Trace 分析
+### 4.14 JIT 调试与 Trace 分析
 
 ```lua
 -- 使用 jit 模块进行调试
@@ -1364,7 +1317,7 @@ end
 benchmark("sum 1-1000", testSum, 100000)
 ```
 
-### 5.15 完整示例：基于 FFI 的 HTTP 服务器
+### 4.15 完整示例：基于 FFI 的 HTTP 服务器
 
 ```lua
 -- 简化的 HTTP 服务器（基于 FFI 调用系统 socket API）
@@ -1455,9 +1408,9 @@ end
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 LuaJIT 与标准 Lua（PUC-Rio Lua）对比
+### 5.1 LuaJIT 与标准 Lua（PUC-Rio Lua）对比
 
 | 维度 | LuaJIT 2.1 | PUC-Rio Lua 5.4 |
 | :--- | :--- | :--- |
@@ -1477,7 +1430,7 @@ end
 | **维护状态** | 社区维护（OpenResty 团队） | 官方维护 |
 | **典型用户** | OpenResty, Kong, Love2D |魔兽世界, NeoVim, Redis |
 
-### 6.2 LuaJIT 与其他 JIT 实现对比
+### 5.2 LuaJIT 与其他 JIT 实现对比
 
 | JIT 实现 | 语言 | 编译策略 | 编译开销 | 峰值性能 | 启动性能 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -1490,7 +1443,7 @@ end
 
 LuaJIT 在 JIT 编译开销与峰值性能间取得良好平衡，特别适合脚本场景（启动快、预热短）。
 
-### 6.3 FFI 与传统 Lua C API 对比
+### 5.3 FFI 与传统 Lua C API 对比
 
 | 维度 | FFI | Lua C API |
 | :--- | :--- | :--- |
@@ -1504,7 +1457,7 @@ LuaJIT 在 JIT 编译开销与峰值性能间取得良好平衡，特别适合�
 | **调试难度** | 中（cdata 在调试器中显示有限） | 高（C/Lua 混合栈） |
 | **适用场景** | 性能敏感、C 库绑定 | 跨 Lua 版本、复杂对象 |
 
-### 6.4 Trace-based JIT 与 Method-based JIT 对比
+### 5.4 Trace-based JIT 与 Method-based JIT 对比
 
 | 维度 | Trace-based JIT（LuaJIT） | Method-based JIT（HotSpot） |
 | :--- | :--- | :--- |
@@ -1517,7 +1470,7 @@ LuaJIT 在 JIT 编译开销与峰值性能间取得良好平衡，特别适合�
 | **去优化开销** | 低（Side Exit 快速回退） | 高（需重建解释器状态） |
 | **适用场景** | 动态语言、循环密集 | 静态语言、方法稳定 |
 
-### 6.5 LuaJIT 内部模块对比
+### 5.5 LuaJIT 内部模块对比
 
 | 模块 | 用途 | 性能影响 | 使用频率 |
 | :--- | :--- | :--- | :--- |
@@ -1532,9 +1485,9 @@ LuaJIT 在 JIT 编译开销与峰值性能间取得良好平衡，特别适合�
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：误以为所有 Lua 代码都会被 JIT 编译
+### 6.1 陷阱：误以为所有 Lua 代码都会被 JIT 编译
 
 **问题描述**：开发者期望所有 Lua 代码经 JIT 编译后都接近 C 性能，但实际有部分代码会被 JIT 回退（NYI, Not Yet Implemented）。
 
@@ -1587,7 +1540,7 @@ local function goodSum(n)
 end
 ```
 
-### 7.2 陷阱：FFI cdata 误用为 Lua 类型
+### 6.2 陷阱：FFI cdata 误用为 Lua 类型
 
 **问题描述**：FFI 创建的 cdata 对象不是 Lua 的 table 或 number，直接用于 Lua 标准函数会报错。
 
@@ -1633,7 +1586,7 @@ local a = ffi.new("int", 42)
 print(tonumber(a) == 42)  -- 正确
 ```
 
-### 7.3 陷阱：FFI 回调内存泄漏
+### 6.3 陷阱：FFI 回调内存泄漏
 
 **问题描述**：FFI 回调（`ffi.cast` 创建的函数指针）必须显式释放，否则会内存泄漏。
 
@@ -1679,7 +1632,7 @@ local function createManagedCallback(fn)
 end
 ```
 
-### 7.4 陷阱：JIT 编译的副作用与确定性
+### 6.4 陷阱：JIT 编译的副作用与确定性
 
 **问题描述**：JIT 编译后的代码可能与解释器执行结果不一致（极少见但可能），导致调试困难。
 
@@ -1721,7 +1674,7 @@ local function safeAdd(a, b)
 end
 ```
 
-### 7.5 陷阱：忽视 1GB 内存限制（32 位 LuaJIT）
+### 6.5 陷阱：忽视 1GB 内存限制（32 位 LuaJIT）
 
 **问题描述**：32 位 LuaJIT 的 GC 内存限制约为 1GB，处理大数据集时会触发 `not enough memory`。
 
@@ -1771,7 +1724,7 @@ end
 -- 64 位 LuaJIT 的内存限制取决于操作系统（通常 TB 级）
 ```
 
-### 7.6 陷阱：误用 `ffi.gc` 导致内存泄漏
+### 6.6 陷阱：误用 `ffi.gc` 导致内存泄漏
 
 **问题描述**：`ffi.gc` 注册的析构函数在某些情况下不会被调用，导致内存泄漏。
 
@@ -1836,7 +1789,7 @@ function Resource:close()
 end
 ```
 
-### 7.7 陷阱：JIT 与协程交互问题
+### 6.7 陷阱：JIT 与协程交互问题
 
 **问题描述**：在协程（coroutine）中切换可能影响 JIT 编译，特别是跨 `coroutine.yield` 边界的 Trace。
 
@@ -1900,7 +1853,7 @@ local function worker()
 end
 ```
 
-### 7.8 陷阱：忽视 FFI 类型安全
+### 6.8 陷阱：忽视 FFI 类型安全
 
 **问题描述**：FFI 允许直接操作 C 内存，类型错误不会触发 Lua 错误，而是导致未定义行为（崩溃、数据损坏）。
 
@@ -1950,7 +1903,7 @@ safeArraySet(arr, 10, 5, 42)  -- OK
 -- 正确：通过合法 API 获取指针
 ```
 
-### 7.9 陷阱：JIT 编译时间过长影响启动
+### 6.9 陷阱：JIT 编译时间过长影响启动
 
 **问题描述**：某些场景下 JIT 编译开销过大，导致程序启动慢或首次执行延迟。
 
@@ -1999,7 +1952,7 @@ end
 jit.opt.start("hotloop=200")  -- 提高阈值，减少编译频率
 ```
 
-### 7.10 陷阱：忽视跨平台差异
+### 6.10 陷阱：忽视跨平台差异
 
 **问题描述**：FFI 调用系统 API 在不同平台行为不同，直接复制代码可能导致跨平台失败。
 
@@ -2064,9 +2017,9 @@ end
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 JIT 友好的代码编写
+### 7.1 JIT 友好的代码编写
 
 **原则 1：保持热路径简单**
 
@@ -2190,7 +2143,7 @@ local function bestProcess(items)
 end
 ```
 
-### 8.2 FFI 绑定库设计模式
+### 7.2 FFI 绑定库设计模式
 
 **模式 1：自动类型转换**
 
@@ -2336,7 +2289,7 @@ local function goodBatch(inputs)
 end
 ```
 
-### 8.3 性能调优实践
+### 7.3 性能调优实践
 
 **实践 1：基准测试方法论**
 
@@ -2445,7 +2398,7 @@ jit.opt.start("maxtrace=500", "maxmcode=4096", "maxrecord=2000")
 -- jit.off()
 ```
 
-### 8.4 调试与性能分析
+### 7.4 调试与性能分析
 
 **工具 1：Trace 日志**
 
@@ -2533,7 +2486,7 @@ end
 print(ffiMemUsage())  -- VmRSS: 12345 kB
 ```
 
-### 8.5 生产环境部署实践
+### 7.5 生产环境部署实践
 
 **实践 1：预编译字节码**
 
@@ -2600,9 +2553,9 @@ end
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：OpenResty 高性能 Web 服务器
+### 8.1 案例一：OpenResty 高性能 Web 服务器
 
 **背景**：OpenResty 是基于 Nginx 与 LuaJIT 的 Web 平台，每秒处理数十万 HTTP 请求。
 
@@ -2669,7 +2622,7 @@ end
 | 数据库查询封装 | 100μs | 20μs | 5x |
 | 整体 QPS | 5,000 | 50,000 | 10x |
 
-### 9.2 案例二：Kong API 网关
+### 8.2 案例二：Kong API 网关
 
 **背景**：Kong 是基于 OpenResty 的 API 网关，处理 API 路由、认证、限流等。
 
@@ -2736,7 +2689,7 @@ end
 - P99 延迟：5ms（启用 JIT）vs 30ms（禁用 JIT）
 - 内存占用：120MB（启用 JIT）vs 80MB（禁用 JIT，JIT 机器码占额外内存）
 
-### 9.3 案例三：Love2D 游戏引擎
+### 8.3 案例三：Love2D 游戏引擎
 
 **背景**：Love2D 是用 C++ 编写的 2D 游戏引擎，使用 LuaJIT 作为脚本语言。
 
@@ -2833,7 +2786,7 @@ end
 - 物理模拟 1000 个刚体：120 FPS（JIT）vs 25 FPS（禁用）
 - 碰撞检测：5ms（JIT）vs 40ms（禁用）
 
-### 9.4 案例四：高性能日志处理系统
+### 8.4 案例四：高性能日志处理系统
 
 **背景**：某互联网公司使用 LuaJIT 实现日志收集与处理系统，每秒处理 100 万条日志。
 
@@ -2938,7 +2891,7 @@ end
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：解释 LuaJIT 的 Trace-based JIT 与 HotSpot JVM 的 Method-based JIT 的核心区别，并说明各自适用场景。
 
@@ -2967,7 +2920,7 @@ ffi.C.printf("Hello, %s!\n", "LuaJIT")
 - `jit.off(fn)`：仅对特定函数 `fn` 关闭 JIT，其他函数仍可 JIT 编译。
 - 后者用于精确控制：对 JIT 不友好的函数关闭，保留其他函数的优化。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：分析以下代码的 JIT 行为，指出可能导致 JIT 回退的位置并优化。
 
@@ -3078,7 +3031,7 @@ print(bm:get(100))  -- false
   - 长期服务：`hotloop=56`（默认，平衡）。
   - 内存受限：`hotloop=200`（减少 Trace 数量）。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：使用 FFI 实现一个简单的内存池（Memory Pool），要求：
 
@@ -3352,11 +3305,11 @@ client:close()
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本章参考文献遵循 ACM Reference Format，所有文献均提供 DOI 链接（如有）。
 
-### 11.1 LuaJIT 核心文献
+### 10.1 LuaJIT 核心文献
 
 1. Pall, M. (2005). *LuaJIT: A just-in-time compiler for Lua*. Retrieved from https://luajit.org/
 
@@ -3366,7 +3319,7 @@ client:close()
 
 4. Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. (2007). *Lua 5.1 reference manual*. Retrieved from https://www.lua.org/manual/5.1/
 
-### 11.2 JIT 编译技术文献
+### 10.2 JIT 编译技术文献
 
 5. Gal, A., Eich, B., Shaver, M., Anderson, D., Mandelin, D., Haghighat, M. R., Kaplan, B., Hoare, G., Zbarsky, B., Orendorff, J., Ruderman, J., Smith, E. W., Reitmaier, R., Bebenita, M., Chang, M., and Franz, M. (2009). *Trace-based just-in-time type specialization for dynamic languages*. ACM SIGPLAN Notices, 44(6), 465-478. DOI: 10.1145/1542476.1542528
 
@@ -3374,7 +3327,7 @@ client:close()
 
 7. Kotzmann, T., and Mössenböck, H. (2005). *Run-time support for optimizations based on escape analysis*. Proceedings of the International Symposium on Code Generation and Optimization, 48-56. DOI: 10.1109/CGO.2005.29
 
-### 11.3 FFI 与跨语言调用
+### 10.3 FFI 与跨语言调用
 
 8. Furr, M., and Foster, J. S. (2005). *Checking type safety of foreign function calls*. ACM SIGPLAN Notices, 40(6), 62-72. DOI: 10.1145/1064978.1065019
 
@@ -3382,13 +3335,13 @@ client:close()
 
 10. Titzer, B. L., and Palsberg, J. (2009). *Vertical memory management for dynamic languages*. ACM Transactions on Programming Languages and Systems, 31(4), 1-39. DOI: 10.1145/1518918.1518920
 
-### 11.4 动态语言性能优化
+### 10.4 动态语言性能优化
 
 11. Bolz, C. F., Cuni, A., Fijałkowski, M., and Rigo, A. (2009). *Tracing the meta-level: PyPy's tracing JIT compiler*. Proceedings of the 4th workshop on the Implementation, Compilation, Optimization of Object-Oriented Languages and Programming Systems, 18-25. DOI: 10.1145/1565824.1565827
 
 12. Chang, M., Smith, E., Reitmaier, R., Bebenita, M., Flores, A., Gal, A., and Franz, M. (2009). *Tracing for web 3.0: Trace compilation for the next generation web applications*. Proceedings of the 2009 ACM SIGPLAN/SIGOPS International Conference on Virtual Execution Environments, 71-80. DOI: 10.1145/1508293.1508304
 
-### 11.5 Lua 嵌入式应用
+### 10.5 Lua 嵌入式应用
 
 13. Ierusalimschy, R. (2003). *Programming in Lua* (1st ed.). Lua.org. ISBN: 978-85-903908-0-1.
 
@@ -3400,7 +3353,7 @@ client:close()
 
 17. LÖVE Development Team. (2026). *LÖVE - Free 2D game development framework*. Retrieved from https://love2d.org/
 
-### 11.6 类型系统与寄存器式虚拟机
+### 10.6 类型系统与寄存器式虚拟机
 
 18. Davis, B., and Beatty, A. (2003). *The case for virtual register machines*. Proceedings of the 2003 workshop on Interpreters, Virtual Machines and Emulators, 41-49. DOI: 10.1145/858570.858576
 
@@ -3410,9 +3363,9 @@ client:close()
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档与资源
+### 11.1 官方文档与资源
 
 - **LuaJIT 官方网站**：https://luajit.org/
   - 包含完整文档、下载链接、扩展模块说明。
@@ -3423,7 +3376,7 @@ client:close()
 - **Lua 官方网站**：https://www.lua.org/
   - Lua 语言官方资源，包括参考手册与论文。
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Ierusalimschy, R. (2016). *Programming in Lua* (4th ed.). Lua.org.
   - Lua 作者亲自撰写，涵盖 Lua 5.3 完整特性。
@@ -3432,7 +3385,7 @@ client:close()
 - Jones, M. T. (2017). *AI for Game Developers*. O'Reilly Media.
   - 包含 LuaJIT 在游戏开发中的应用案例。
 
-### 12.3 前沿论文与研究报告
+### 11.3 前沿论文与研究报告
 
 - Pall, M. (2010). *LuaJIT 2.0: A new trace-based JIT compiler for Lua*. Lua Workshop.
   - LuaJIT 2.0 设计与实现的关键论文。
@@ -3441,7 +3394,7 @@ client:close()
 - Bolz, C. F., et al. (2014). *Meta-tracing makes a fast RPython interpreter for Python*. DLS 2014.
   - PyPy 的 meta-tracing 技术，与 LuaJIT 对比研究。
 
-### 12.4 开源项目与代码
+### 11.4 开源项目与代码
 
 - **LuaJIT 源码**：https://github.com/LuaJIT/LuaJIT
   - 官方 LuaJIT 源码仓库，包含完整实现。
@@ -3452,7 +3405,7 @@ client:close()
 - **LÖVE 源码**：https://github.com/love2d/love
   - 2D 游戏引擎，使用 LuaJIT 作为脚本语言。
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **Lua mailing list**：https://www.lua.org/lua-l.html
   - Lua 官方邮件列表，讨论 Lua 语言相关问题。
@@ -3463,7 +3416,7 @@ client:close()
 - **Reddit r/lua**：https://www.reddit.com/r/lua/
   - Lua 社区讨论。
 
-### 12.6 相关工具与扩展
+### 11.6 相关工具与扩展
 
 - **LuaJIT lang toolkit**：https://github.com/joyjoy-vm/lua-llvm
   - 基于 LLVM 的 LuaJIT 后端实验。
@@ -3474,7 +3427,7 @@ client:close()
 - **LuaJIT FFI bindings collection**：https://github.com/daurnimator/luajit-ffi-bindings
   - 社区维护的 FFI 绑定集合。
 
-### 12.7 性能调优工具
+### 11.7 性能调优工具
 
 - **luajit-decompiler**：https://github.com/bobsayshilol/luajit-decompiler
   - LuaJIT 字节码反编译器，用于调试。

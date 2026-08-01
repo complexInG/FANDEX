@@ -16,6 +16,7 @@ prerequisites:
   - kotlin/概述与环境配置
 ---
 
+
 # 内联类（value class）
 
 > 本文档对标 MIT 6.005、Stanford CS193P、CMU 15-410 教学水准，系统讲解 Kotlin 内联类（`@JvmInline value class`）从设计哲学到 JVM 字节码实现的完整链路。内容覆盖 Kotlin 1.3 inline class 实验性、1.5 value class 稳定化，以及与 C# struct、Scala AnyVal、Rust struct 的跨语言对比。
@@ -37,72 +38,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述 Kotlin 内联类的语法形式 `@JvmInline value class ClassName(val property: Type)`。
-- 列举内联类的三个核心约束：单一属性、不能继承、JVM 平台必须加 `@JvmInline`。
-- 背诵 Kotlin 1.5 是 `value class` 稳定化的版本，1.3 是 `inline class` 引入的版本。
-- 列举内联类的底层表示：基础类型直接替换、装箱场景的退化。
-- 记忆 `UInt`、`ULong`、`UByte`、`UShort` 等无符号整型是基于 `value class` 实现的。
-
-### 1.2 Understand（理解）
-
-完成本章节后，学习者应能够解释以下概念：
-
-- 用自己的语言解释"零开销抽象"（Zero-cost Abstraction）的语义含义与实现机制。
-- 描述内联类在编译期被"展开"为底层类型的过程，并能画出编译前后的对比图。
-- 解释 `equals`、`hashCode`、`toString` 在内联类中的自动生成规则。
-- 阐述内联类与 `data class` 在内存表示、性能、API 设计上的核心差异。
-- 理解内联类在泛型、可空、集合等"装箱场景"中退化为对象类型的根本原因（JVM 类型擦除）。
-
-### 1.3 Apply（应用）
-
-完成本章节后，学习者应能够在以下场景中应用内联类：
-
-- 为业务领域建模创建类型安全的标识符，如 `UserId(val id: Long)`、`OrderId(val id: String)`，避免类型混淆。
-- 为度量值建模创建零开销的物理量类型，如 `Meter(val value: Double)`、`Kilogram(val value: Double)`。
-- 替代 `data class Wrapper(val value: T)`，消除装箱开销。
-- 在 Android 项目中为 `Int`、`Long` 等基础类型添加语义化包装。
-- 在 KMP 项目中使用内联类统一跨平台的类型表示。
-
-### 1.4 Analyze（分析）
-
-完成本章节后，学习者应能够进行以下分析：
-
-- 反编译一段 Kotlin 代码，分析内联类编译后的字节码结构，识别装箱点（Boxing Site）。
-- 对比同一问题在"内联类方案"、"data class 方案"、" typealias 方案"下的字节码体积与运行时性能。
-- 分析 `kotlin-stdlib` 中 `UInt`、`Duration` 等内联类的实现源码，总结其设计模式。
-- 解构内联类在 `when` 表达式、`is` 检查、智能转换中的行为差异。
-
-### 1.5 Evaluate（评价）
-
-完成本章节后，学习者应能够评价以下设计决策：
-
-- 评价 JetBrains 在 Kotlin 1.5 将 `inline class` 重命名为 `value class` 的设计权衡。
-- 评价 Kotlin 内联类与 C# struct、Scala AnyVal 在内存模型与性能上的差异。
-- 评价内联类在库设计中作为公共 API 的风险：装箱退化、二进制兼容性、序列化。
-- 评价内联类限制（单一属性、不能继承）对表达能力的影响。
-
-### 1.6 Create（创造）
-
-完成本章节后，学习者应能够创造以下作品：
-
-- 设计并实现一个零开销的物理量库，覆盖长度、质量、时间、温度等维度，支持单位转换与运算。
-- 设计一个类型安全的 ID 系统，为不同业务实体（User、Order、Product）创建互不混淆的 ID 类型。
-- 实现一个货币类型，结合 `value class` 与运算符重载，提供类型安全的金额计算。
-- 撰写一份内联类在团队代码规范中的使用指南，明确"何时使用内联类、何时使用 data class"的决策树。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：装箱开销与类型安全矛盾
+### 1.1 问题背景：装箱开销与类型安全矛盾
 
 在 Kotlin 1.3 之前，若开发者希望为基本类型（如 `Long`、`String`）添加语义化包装，面临两难：
 
@@ -138,7 +76,7 @@ val list = listOf(UserId(1), UserId(2), UserId(3))  // 三个 Long 装箱为三�
 
 `typealias` 牺牲了类型安全，`data class` 引入了装箱开销。Kotlin 团队希望找到"既类型安全又零开销"的方案，这就是内联类的诞生背景。
 
-### 2.2 学术背景：Value Types 研究
+### 1.2 学术背景：Value Types 研究
 
 内联类的理论基础来自编程语言理论中的**值类型**（Value Types）研究：
 
@@ -149,7 +87,7 @@ val list = listOf(UserId(1), UserId(2), UserId(3))  // 三个 Long 装箱为三�
 
 Kotlin 内联类借鉴了 Scala AnyVal 的设计，但通过 `@JvmInline` 注解显式标记，避免 Scala 隐式解析的复杂性。
 
-### 2.3 Kotlin 1.3（2018 年 10 月）：inline class 实验性引入
+### 1.3 Kotlin 1.3（2018 年 10 月）：inline class 实验性引入
 
 Kotlin 1.3 引入了 `inline class` 作为实验性特性：
 
@@ -174,7 +112,7 @@ inline class UInt(val data: Int)
 - 不能有 `var` 属性。
 - 不能有多个构造属性。
 
-### 2.4 Kotlin 1.4（2020 年 8 月）：Beta 与 init 块支持
+### 1.4 Kotlin 1.4（2020 年 8 月）：Beta 与 init 块支持
 
 Kotlin 1.4 将 inline class 提升为 Beta，并引入：
 
@@ -200,7 +138,7 @@ inline class Name(val value: String) : Printable {
 }
 ```
 
-### 2.5 Kotlin 1.4.30（2021 年 2 月）：value class 引入
+### 1.5 Kotlin 1.4.30（2021 年 2 月）：value class 引入
 
 Kotlin 1.4.30 引入了 `value class` 关键字作为 `inline class` 的替代：
 
@@ -219,7 +157,7 @@ value class UserId(val id: Long)
 2. **平台无关**：`value` 是语言关键字，`@JvmInline` 是平台特定注解。
 3. **语义清晰**：`value` 强调"值语义"，`inline` 强调"编译期展开"，前者更准确。
 
-### 2.6 Kotlin 1.5（2021 年 5 月）：value class GA
+### 1.6 Kotlin 1.5（2021 年 5 月）：value class GA
 
 Kotlin 1.5 将 `value class` 提升为稳定状态（Stable，GA）：
 
@@ -228,7 +166,7 @@ Kotlin 1.5 将 `value class` 提升为稳定状态（Stable，GA）：
 - 无符号整型 `UInt`、`ULong`、`UByte`、`UShort` 稳定化。
 - `Duration`、`Result` 等标准库类型基于 `value class` 重构。
 
-### 2.7 Kotlin 1.6-1.9（2021-2023 年）：稳定演进
+### 1.7 Kotlin 1.6-1.9（2021-2023 年）：稳定演进
 
 Kotlin 1.6 至 1.9 期间，`value class` 持续完善：
 
@@ -237,7 +175,7 @@ Kotlin 1.6 至 1.9 期间，`value class` 持续完善：
 3. **序列化支持**：`kotlinx.serialization` 对 value class 完整支持。
 4. **Compose 集成**：Compose Multiplatform 对 value class 友好。
 
-### 2.8 Kotlin 2.0（2024 年 5 月）：K2 与 value class
+### 1.8 Kotlin 2.0（2024 年 5 月）：K2 与 value class
 
 Kotlin 2.0 的 K2 编译器对 `value class` 进行以下优化：
 
@@ -246,7 +184,7 @@ Kotlin 2.0 的 K2 编译器对 `value class` 进行以下优化：
 3. **诊断质量**：更明确的装箱退化警告。
 4. **跨平台一致**：JVM、JS、Native、Wasm 行为完全一致。
 
-### 2.9 JetBrains 的设计哲学
+### 1.9 JetBrains 的设计哲学
 
 JetBrains 在设计 `value class` 时遵循了以下哲学：
 
@@ -256,7 +194,7 @@ JetBrains 在设计 `value class` 时遵循了以下哲学：
 4. **类型安全**：编译期检查类型隔离，运行时退化但语义保留。
 5. **最小惊讶**：`value class` 的 `equals`、`hashCode`、`toString` 行为与 `data class` 一致。
 
-### 2.10 时间线总览
+### 1.10 时间线总览
 
 ```
 2018  Kotlin 1.3 — inline class 实验性引入
@@ -270,9 +208,9 @@ JetBrains 在设计 `value class` 时遵循了以下哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Kotlin 语言规范（Kotlin Language Specification）
+### 2.1 Kotlin 语言规范（Kotlin Language Specification）
 
 根据 Kotlin 官方语言规范，`value class` 的形式化语法定义如下：
 
@@ -288,7 +226,7 @@ $$
 - $\text{PrimaryConstructor}$：主构造函数，必须且仅能有一个 `val` 属性。
 - $\text{ClassBody?}$：可选的类体，可包含方法、`init` 块、计算属性。
 
-### 3.2 主构造函数约束
+### 2.2 主构造函数约束
 
 `value class` 的主构造函数必须满足以下约束：
 
@@ -307,7 +245,7 @@ value class User(val name: String, val age: Int)  // 编译错误：多个属性
 value class Counter(var count: Int)  // 编译错误：var 属性
 ```
 
-### 3.3 内联类的语义（Semantics）
+### 2.3 内联类的语义（Semantics）
 
 对于 `@JvmInline value class V(val v: T)`，其语义可形式化定义为：
 
@@ -325,7 +263,7 @@ $$
 \text{Repr}(V) = \text{Repr}(T) \quad \text{(非装箱场景，运行时)}
 $$
 
-### 3.4 装箱规则（Boxing Rules）
+### 2.4 装箱规则（Boxing Rules）
 
 当 `value class` 实例需要被当作对象处理时，会发生**装箱**（Boxing）。装箱场景包括：
 
@@ -345,7 +283,7 @@ $$
 \text{Unbox}(o : V.\text{Boxed}) = o.\text{underlying}
 $$
 
-### 3.5 JVM 字节码规范
+### 2.5 JVM 字节码规范
 
 在 JVM 平台上，`value class` 编译为 `final` 类，带有特殊标记。其字节码结构：
 
@@ -379,7 +317,7 @@ public final class UserId {
 - `unbox(UserId)`：将 `UserId` 对象拆箱为底层 `long`。
 - `equals`、`hashCode`、`toString`：基于底层值自动生成。
 
-### 3.6 元数据注解
+### 2.6 元数据注解
 
 Kotlin 编译器在 `value class` 的字节码中添加特殊元数据：
 
@@ -387,7 +325,7 @@ Kotlin 编译器在 `value class` 的字节码中添加特殊元数据：
 - `@JvmInline`：标记为内联类，提示 JVM 后端进行优化。
 - `@SinceKotlin`：标记引入版本。
 
-### 3.7 与 data class 的形式化对比
+### 2.7 与 data class 的形式化对比
 
 | 维度 | value class | data class |
 |------|------------|-----------|
@@ -402,9 +340,9 @@ Kotlin 编译器在 `value class` 的字节码中添加特殊元数据：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 编译期转换（Compilation Transformation）
+### 3.1 编译期转换（Compilation Transformation）
 
 考虑以下 Kotlin value class：
 
@@ -437,7 +375,7 @@ $$
 
 其中 $T_V$ 是 $V$ 的底层类型。
 
-### 4.2 装箱点分析
+### 3.2 装箱点分析
 
 考虑以下场景：
 
@@ -465,7 +403,7 @@ $$
 \text{BoxingSite}(V) = \{ V?, T<V>, \text{List}\langle V \rangle, \text{Any}, \text{Array}\langle V \rangle \}
 $$
 
-### 4.3 equals 与 hashCode 的推导
+### 3.3 equals 与 hashCode 的推导
 
 `value class` 的 `equals` 和 `hashCode` 默认基于底层属性：
 
@@ -503,7 +441,7 @@ $$
 \text{hashCode}(v : V) = \text{hashCode}(v.\text{underlying})
 $$
 
-### 4.4 自定义 equals 与 hashCode
+### 3.4 自定义 equals 与 hashCode
 
 `value class` 可以重写 `equals` 和 `hashCode`：
 
@@ -521,7 +459,7 @@ value class Email(val value: String) {
 
 注意：自定义 `equals` 时，装箱不可避免（因为 `equals` 接收 `Any?`）。
 
-### 4.5 init 块的执行时机
+### 3.5 init 块的执行时机
 
 `value class` 的 `init` 块在构造时执行：
 
@@ -554,7 +492,7 @@ $$
 \end{cases}
 $$
 
-### 4.6 接口实现
+### 3.6 接口实现
 
 `value class` 可以实现接口：
 
@@ -588,7 +526,7 @@ public final class Score implements Comparable<Score> {
 }
 ```
 
-### 4.7 与内联函数的协同
+### 3.7 与内联函数的协同
 
 `value class` 与 `inline` 函数结合，可以进一步消除装箱：
 
@@ -611,7 +549,7 @@ $$
 \text{Inline}(f(V)) = \text{Substitute}(\text{Body}(f), V \mapsto \text{Unbox}(V))
 $$
 
-### 4.8 K2 编译器的 IR 优化
+### 3.8 K2 编译器的 IR 优化
 
 Kotlin 2.0 的 K2 编译器在 IR 阶段对 `value class` 进行以下优化：
 
@@ -626,7 +564,7 @@ $$
 \text{IR} \xrightarrow{\text{EscapeAnalysis}} \text{IR}' \xrightarrow{\text{BoxElim}} \text{IR}'' \xrightarrow{\text{Inline}} \text{IR}''' \xrightarrow{\text{BridgeElim}} \text{FinalIR}
 $$
 
-### 4.9 二进制兼容性
+### 3.9 二进制兼容性
 
 `value class` 的二进制兼容性需要注意：
 
@@ -641,7 +579,7 @@ $$
 \text{Compatible}(v_1, v_2) \implies \text{UnderlyingType}(v_1) = \text{UnderlyingType}(v_2)
 $$
 
-### 4.10 反射与 value class
+### 3.10 反射与 value class
 
 `value class` 在反射中的行为：
 
@@ -658,9 +596,9 @@ println(kClass.primaryConstructor?.parameters?.first()?.type)  // Long
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：类型安全 ID
+### 4.1 基础示例：类型安全 ID
 
 ```kotlin
 package com.example.ids
@@ -698,7 +636,7 @@ fun main() {
 }
 ```
 
-### 5.2 物理量建模
+### 4.2 物理量建模
 
 ```kotlin
 package com.example.physics
@@ -734,7 +672,7 @@ fun main() {
 }
 ```
 
-### 5.3 init 块验证
+### 4.3 init 块验证
 
 ```kotlin
 package com.example.validation
@@ -773,7 +711,7 @@ fun main() {
 }
 ```
 
-### 5.4 接口实现
+### 4.4 接口实现
 
 ```kotlin
 package com.example.interfaces
@@ -808,7 +746,7 @@ fun main() {
 }
 ```
 
-### 5.5 与扩展函数协同
+### 4.5 与扩展函数协同
 
 ```kotlin
 package com.example.ext
@@ -835,7 +773,7 @@ fun main() {
 }
 ```
 
-### 5.6 无符号整型（标准库实现）
+### 4.6 无符号整型（标准库实现）
 
 ```kotlin
 package com.example.unsigned
@@ -860,7 +798,7 @@ fun main() {
 }
 ```
 
-### 5.7 Duration 类型（标准库）
+### 4.7 Duration 类型（标准库）
 
 ```kotlin
 package com.example.duration
@@ -880,7 +818,7 @@ fun main() {
 }
 ```
 
-### 5.8 企业级 Gradle 配置
+### 4.8 企业级 Gradle 配置
 
 ```kotlin
 // build.gradle.kts
@@ -911,7 +849,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 }
 ```
 
-### 5.9 序列化支持
+### 4.9 序列化支持
 
 ```kotlin
 package com.example.serialization
@@ -944,7 +882,7 @@ fun main() {
 }
 ```
 
-### 5.10 货币类型（生产级示例）
+### 4.10 货币类型（生产级示例）
 
 ```kotlin
 package com.example.money
@@ -1000,7 +938,7 @@ fun main() {
 }
 ```
 
-### 5.11 测试 value class
+### 4.11 测试 value class
 
 ```kotlin
 package com.example.test
@@ -1042,7 +980,7 @@ value class Percentage(val value: Int) {
 }
 ```
 
-### 5.12 KMP 跨平台使用
+### 4.12 KMP 跨平台使用
 
 ```kotlin
 // commonMain
@@ -1061,7 +999,7 @@ actual fun getPlatformInfo() = PlatformInfo("JavaScript ${js("typeof navigator !
 actual fun getPlatformInfo() = PlatformInfo("iOS")
 ```
 
-### 5.13 运算符重载
+### 4.13 运算符重载
 
 ```kotlin
 package com.example.operators
@@ -1091,7 +1029,7 @@ fun main() {
 }
 ```
 
-### 5.14 与 sealed class 协同
+### 4.14 与 sealed class 协同
 
 ```kotlin
 package com.example.sealed
@@ -1114,7 +1052,7 @@ value class ScrollEvent(val deltaY: Int) : Event() {
 // 上述代码仅为概念演示，实际可能需要调整
 ```
 
-### 5.15 完整生产级示例：领域建模
+### 4.15 完整生产级示例：领域建模
 
 ```kotlin
 package com.example.domain
@@ -1200,9 +1138,9 @@ fun main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 data class 的对比
+### 5.1 与 data class 的对比
 
 ```kotlin
 // value class
@@ -1225,7 +1163,7 @@ data class UserIdD(val id: Long)
 | 被继承 | final | 默认 final，可开放 |
 | 适用场景 | 类型安全包装 | 数据载体 |
 
-### 6.2 与 typealias 的对比
+### 5.2 与 typealias 的对比
 
 ```kotlin
 typealias UserIdT = Long
@@ -1243,7 +1181,7 @@ value class UserIdV(val id: Long)
 | 装箱 | 无 | 装箱场景有 |
 | 适用场景 | 简单别名 | 严格类型隔离 |
 
-### 6.3 与 C# struct 的对比
+### 5.3 与 C# struct 的对比
 
 ```csharp
 // C# struct
@@ -1268,7 +1206,7 @@ public struct UserId
 | 性能 | 非装箱场景零开销 | 总是值语义，无堆分配 |
 | 跨平台 | JVM/JS/Native/Wasm | .NET |
 
-### 6.4 与 Scala AnyVal 的对比
+### 5.4 与 Scala AnyVal 的对比
 
 ```scala
 // Scala AnyVal
@@ -1285,7 +1223,7 @@ class UserId(val id: Long) extends AnyVal
 | 学习曲线 | 低 | 高 |
 | 性能 | 非装箱场景零开销 | 非装箱场景零开销 |
 
-### 6.5 与 Rust struct 的对比
+### 5.5 与 Rust struct 的对比
 
 ```rust
 // Rust struct
@@ -1307,7 +1245,7 @@ impl UserId {
 | 性能 | 非装箱场景零开销 | 总是零开销 |
 | 跨平台 | JVM/JS/Native/Wasm | 跨平台原生 |
 
-### 6.6 跨语言对比总表
+### 5.6 跨语言对比总表
 
 | 特性 | Kotlin | Java | C# | Scala | Rust |
 |------|--------|------|----|----|------|
@@ -1321,9 +1259,9 @@ impl UserId {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：误以为完全没有装箱
+### 6.1 陷阱一：误以为完全没有装箱
 
 **误解**：value class 完全没有装箱开销。
 
@@ -1347,7 +1285,7 @@ fun main() {
 }
 ```
 
-### 7.2 陷阱二：泛型方法中的装箱
+### 6.2 陷阱二：泛型方法中的装箱
 
 **错误代码**：
 
@@ -1374,7 +1312,7 @@ fun main() {
 }
 ```
 
-### 7.3 陷阱三：集合中的装箱
+### 6.3 陷阱三：集合中的装箱
 
 **问题**：
 
@@ -1395,7 +1333,7 @@ val ids = longArrayOf(1, 2, 3)
 inline fun List<Long>.asUserIdList(): List<UserId> = this.map { UserId(it) }
 ```
 
-### 7.4 陷阱四：可空类型的装箱
+### 6.4 陷阱四：可空类型的装箱
 
 **问题**：
 
@@ -1418,7 +1356,7 @@ fun findUser(id: Long): User?
 data class UserIdBox(val value: UserId?)
 ```
 
-### 7.5 陷阱五：修改底层类型不兼容
+### 6.5 陷阱五：修改底层类型不兼容
 
 **问题**：
 
@@ -1436,7 +1374,7 @@ value class UserId(val id: String)  // 二进制不兼容
 
 **最佳实践**：使用 `@Deprecated` 渐进式迁移。
 
-### 7.6 陷阱六：与反射结合的装箱
+### 6.6 陷阱六：与反射结合的装箱
 
 **问题**：
 
@@ -1453,7 +1391,7 @@ fun main() {
 
 **原因**：反射 API 接收 `Any?`，强制装箱。
 
-### 7.7 陷阱七：序列化兼容性
+### 6.7 陷阱七：序列化兼容性
 
 **问题**：默认 Java 序列化可能不正确处理 value class。
 
@@ -1468,7 +1406,7 @@ value class UserId(val value: Long)
 data class User(val id: UserId, val name: String)
 ```
 
-### 7.8 陷阱八：与 Java 互操作
+### 6.8 陷阱八：与 Java 互操作
 
 **问题**：Java 代码调用 Kotlin value class 时，可能需要显式装箱。
 
@@ -1480,7 +1418,7 @@ long id = UserId.unbox-impl(userId);  // 拆箱
 
 **最佳实践**：在公共 API 中避免直接暴露 value class，或使用 `@JvmName` 优化。
 
-### 7.9 陷阱九：init 块的副作用
+### 6.9 陷阱九：init 块的副作用
 
 **问题**：init 块在每次构造时执行，可能有性能影响。
 
@@ -1496,7 +1434,7 @@ value class ValidatedString(val value: String) {
 
 **最佳实践**：将验证逻辑保持在最简，或将验证移到构造工厂方法。
 
-### 7.10 陷阱十：value class 的递归
+### 6.10 陷阱十：value class 的递归
 
 **问题**：value class 不能递归引用自身。
 
@@ -1507,7 +1445,7 @@ value class Recursive(val inner: Recursive)  // 编译错误
 
 **原因**：递归会导致无限展开。
 
-### 7.11 最佳实践总结
+### 6.11 最佳实践总结
 
 1. **优先使用 value class 替代 typealias**：当需要类型安全时。
 2. **避免在泛型场景使用**：泛型场景会装箱。
@@ -1520,9 +1458,9 @@ value class Recursive(val inner: Recursive)  // 编译错误
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建配置
+### 7.1 构建配置
 
 ```kotlin
 // build.gradle.kts
@@ -1540,7 +1478,7 @@ kotlin {
 }
 ```
 
-### 8.2 性能基准测试
+### 7.2 性能基准测试
 
 ```kotlin
 package com.example.benchmark
@@ -1577,7 +1515,7 @@ open class ValueClassBenchmark {
 data class UserIdData(val id: Long)
 ```
 
-### 8.3 调试 value class
+### 7.3 调试 value class
 
 在 IntelliJ IDEA 中调试 value class：
 
@@ -1585,7 +1523,7 @@ data class UserIdData(val id: Long)
 2. 调试器会显示 value class 实例的底层值。
 3. 使用 Evaluate Expression 查看表达式。
 
-### 8.4 Kotlin/Native 中的 value class
+### 7.4 Kotlin/Native 中的 value class
 
 ```kotlin
 // Kotlin/Native 中 value class 的内存模型
@@ -1603,7 +1541,7 @@ fun processString(s: NativeString) {
 }
 ```
 
-### 8.5 KMP（Kotlin Multiplatform）中的 value class
+### 7.5 KMP（Kotlin Multiplatform）中的 value class
 
 ```kotlin
 // commonMain
@@ -1622,7 +1560,7 @@ actual fun getPlatform() = PlatformInfo("JS")
 actual fun getPlatform() = PlatformInfo("iOS")
 ```
 
-### 8.6 代码生成与注解处理
+### 7.6 代码生成与注解处理
 
 ```kotlin
 // 使用 KSP 生成 value class
@@ -1637,7 +1575,7 @@ data class MyData(val id: Long)
 // value class MyDataId(val value: Long)
 ```
 
-### 8.7 序列化策略
+### 7.7 序列化策略
 
 ```kotlin
 import kotlinx.serialization.Serializable
@@ -1660,7 +1598,7 @@ fun main() {
 }
 ```
 
-### 8.8 测试策略
+### 7.8 测试策略
 
 ```kotlin
 package com.example.test
@@ -1698,9 +1636,9 @@ value class Percentage(val value: Int) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：kotlin-stdlib 中的 UInt
+### 8.1 案例一：kotlin-stdlib 中的 UInt
 
 ```kotlin
 // kotlin-stdlib 源码
@@ -1722,7 +1660,7 @@ value class UInt(val data: Int) : Comparable<UInt> {
 2. 实现 `Comparable<UInt>`，支持比较。
 3. 重载运算符，提供自然语法。
 
-### 9.2 案例二：kotlin.time.Duration
+### 8.2 案例二：kotlin.time.Duration
 
 ```kotlin
 // kotlin.time.Duration 实际定义（简化）
@@ -1744,7 +1682,7 @@ value class Duration(val rawValue: Long) : Comparable<Duration> {
 2. 提供多种单位转换（秒、毫秒、微秒）。
 3. 支持运算符重载，自然语法。
 
-### 9.3 案例三：Arrow-kt 的类型类
+### 8.3 案例三：Arrow-kt 的类型类
 
 ```kotlin
 // Arrow-kt 库中使用 value class 实现类型安全
@@ -1763,7 +1701,7 @@ value class PositiveInt(val value: Int) {
 }
 ```
 
-### 9.4 案例四：领域驱动设计（DDD）
+### 8.4 案例四：领域驱动设计（DDD）
 
 ```kotlin
 // DDD 中的值对象
@@ -1791,7 +1729,7 @@ data class User(
 )
 ```
 
-### 9.5 案例五：Spring Boot 集成
+### 8.5 案例五：Spring Boot 集成
 
 ```kotlin
 package com.example.spring
@@ -2028,7 +1966,7 @@ fun main() {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：讨论 value class 与 data class 的适用场景，何时使用哪个？
 
@@ -2221,7 +2159,7 @@ fun main() {
 }
 ```
 
-### 10.5 综合应用题
+### 9.5 综合应用题
 
 **题目 1**：设计一个类型安全的 HTTP 状态码库。
 
@@ -2383,9 +2321,9 @@ value class UserId(val id: Long)
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 Kotlin 官方文档
+### 10.1 Kotlin 官方文档
 
 [1] JetBrains. 2024. Inline classes. https://kotlinlang.org/docs/inline-classes.html
 
@@ -2393,7 +2331,7 @@ value class UserId(val id: Long)
 
 [3] JetBrains. 2024. Kotlin Release Notes. https://kotlinlang.org/docs/releases.html
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [4] Wadler, P. 1998. The Expression Problem. https://homepages.inf.ed.ac.uk/wadler/papers/expression/expression.txt
 
@@ -2403,7 +2341,7 @@ value class UserId(val id: Long)
 
 [7] Click, C. 2005. The 5-Minute Mainstream. In Java One Conference.
 
-### 11.3 书籍
+### 10.3 书籍
 
 [8] Jemerov, D. and Isakova, S. 2017. Kotlin in Action. Manning Publications. ISBN 978-1617293280.
 
@@ -2413,7 +2351,7 @@ value class UserId(val id: Long)
 
 [11] Moskala, M. 2020. Effective Kotlin. Kt. Academy. ISBN 978-8395478316.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 [12] JetBrains. 2024. KEEP - Inline Classes. https://github.com/Kotlin/KEEP/blob/master/proposals/inline-classes.md
 
@@ -2423,7 +2361,7 @@ value class UserId(val id: Long)
 
 [15] ECMA International. 2017. Standard ECMA-334: C# Language Specification. https://www.ecma-international.org/publications-and-standards/standards/ecma-334/
 
-### 11.5 标准与规范
+### 10.5 标准与规范
 
 [16] Oracle. 2023. Java Virtual Machine Specification, Java 21 Edition. https://docs.oracle.com/javase/specs/jvms/se21/html/
 
@@ -2431,9 +2369,9 @@ value class UserId(val id: Long)
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍推荐
+### 11.1 书籍推荐
 
 1. **《Kotlin in Action》** - Dmitry Jemerov, Svetlana Isakova
    - JetBrains 工程师撰写，包含 value class 章节。
@@ -2447,7 +2385,7 @@ value class UserId(val id: Long)
 4. **《C# in Depth》** - Jon Skeet
    - C# struct 与 Kotlin value class 对比。
 
-### 12.2 论文推荐
+### 11.2 论文推荐
 
 1. **《The Expression Problem》** - Philip Wadler
    - 类型与操作的可扩展性，理解 value class 的理论根基。
@@ -2455,7 +2393,7 @@ value class UserId(val id: Long)
 2. **《Scalable Component Abstractions》** - Odersky, Zenger
    - Scala AnyVal 设计，对比 Kotlin value class。
 
-### 12.3 在线课程
+### 11.3 在线课程
 
 1. **MIT 6.005 - Software Construction**
    - 软件构造原理，包含抽象数据类型。
@@ -2466,7 +2404,7 @@ value class UserId(val id: Long)
 3. **JetBrains Academy - Kotlin Developer Track**
    - 官方 Kotlin 学习路径，包含 value class 专题。
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 1. **kotlin-stdlib** - https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib
    - Kotlin 标准库源码，包含 UInt、Duration 等 value class 实现。
@@ -2477,7 +2415,7 @@ value class UserId(val id: Long)
 3. **kotlinx.serialization** - https://github.com/Kotlin/kotlinx.serialization
    - 序列化库，对 value class 完整支持。
 
-### 12.5 社区与博客
+### 11.5 社区与博客
 
 1. **Kotlin Blog** - https://blog.jetbrains.com/kotlin/
    - 官方博客，发布 value class 新版本。
@@ -2488,7 +2426,7 @@ value class UserId(val id: Long)
 3. **KEEP (Kotlin Evolution and Enhancement Process)**
    - Kotlin 语言演进提案。
 
-### 12.6 视频资源
+### 11.6 视频资源
 
 1. **KotlinConf 2024 - Value Classes in Practice**
    - value class 实战应用。
@@ -2496,7 +2434,7 @@ value class UserId(val id: Long)
 2. **JetBrains TV - Inline Classes Deep Dive**
    - value class 内部实现讲解。
 
-### 12.7 工具与插件
+### 11.7 工具与插件
 
 1. **Kotlin Plugin for IntelliJ IDEA**
    - 官方 IDE 插件，提供 value class 智能提示。

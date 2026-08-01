@@ -15,6 +15,7 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
+
 # Java 并发工具速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -43,45 +44,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，学习者应能够：
-
-### 1.1 认知层级目标（Bloom 分类法）
-
-| Bloom 层级 | 目标描述 | 可观测行为 |
-| ---------- | -------- | ---------- |
-| **Remember（记忆）** | 复述 JMM 三大特性、synchronized 四种锁状态、AQS 核心字段 | 能默写 happens-before 八条规则与 AQS state 语义 |
-| **Understand（理解）** | 解释锁升级过程、CAS 的 ABA 问题、虚线程与平台线程的差异 | 能用图示描述 Mark Word 在偏向锁/轻量锁/重量锁下的位布局 |
-| **Apply（应用）** | 使用 ThreadPoolExecutor、CompletableFuture、Atomic 类构建并发程序 | 编写一个支持背压的生产者-消费者系统 |
-| **Analyze（分析）** | 分析死锁成因、ThreadLocal 内存泄漏、线程池耗尽的根因 | 用 `jstack`、`jcmd Thread.print` 诊断死锁 |
-| **Evaluate（评价）** | 比较 synchronized 与 ReentrantLock、ForkJoin 与 ThreadPoolExecutor 的取舍 | 在 P99 SLA=50ms 场景下选择合适的并发原语 |
-| **Create（创造）** | 设计并实现自定义 AQS 同步器、自定义线程池拒绝策略 | 实现一个限流同步器（RateLimiter） |
-
-### 1.2 核心能力指标
-
-完成本章后，应能独立完成以下任务：
-
-1. 设计并实现线程安全的 Singleton（DCL、Holder、Enum）
-2. 基于 AQS 实现自定义同步器（如 TwinsLock、Semaphore 变体）
-3. 配置生产级线程池并诊断线程泄漏、任务堆积问题
-4. 使用 CompletableFuture 编排多异步任务的 DAG 调度
-5. 在 Java 21+ 中选择虚拟线程或平台线程构建高并发服务
-
-### 1.3 前置知识检查
-
-阅读本章前，建议已掌握：
-
-- Java 面向对象、泛型、lambda 表达式
-- JVM 内存模型（堆、栈、方法区）
-- 操作系统进程/线程、调度、同步原语（mutex、semaphore）
-- 基本的数据结构（队列、链表、哈希表）
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 Java 并发演进时间线
+### 1.1 Java 并发演进时间线
 
 ```mermaid
 timeline
@@ -100,7 +65,7 @@ timeline
     2024-2025: Java 22-25：结构化并发 GA，虚拟线程性能优化
 ```
 
-### 2.2 三大设计哲学
+### 1.2 三大设计哲学
 
 Java 并发的演进反映三种哲学的交替：
 
@@ -108,7 +73,7 @@ Java 并发的演进反映三种哲学的交替：
 2. **高层抽象 + 工具（2004—2014）**：j.u.c. 提供 Executor、Lock、Atomic、ConcurrentHashMap，避免直接操作锁。
 3. **异步 + 轻量并发（2014—至今）**：CompletableFuture、虚拟线程，回归"同步代码风格 + 异步执行"。
 
-### 2.3 Doug Lea 与 JSR 166
+### 1.3 Doug Lea 与 JSR 166
 
 `java.util.concurrent` 的设计源于 Doug Lea 的 `util.concurrent` 库（1998—2003）。2003 年 JSR 166 将其纳入 JDK 1.5，后续由 JSR 166y、166z 持续扩展。Doug Lea 的设计哲学是"提供比 synchronized 更细粒度、更高性能的并发原语"，其核心贡献包括：
 
@@ -119,13 +84,13 @@ Java 并发的演进反映三种哲学的交替：
 
 ---
 
-## 3. 形式化定义与规范基础
+## 2. 形式化定义与规范基础
 
-### 3.1 JLS §17：Java 内存模型（JMM）
+### 2.1 JLS §17：Java 内存模型（JMM）
 
 JLS §17 定义了 Java 内存模型，规定了线程间共享变量的可见性、有序性与原子性规则。JMM 的形式化由 Manson、Pugh、Adve 在 2005 年的论文《The Java Memory Model》中给出。
 
-### 3.2 共享变量的形式化模型
+### 2.2 共享变量的形式化模型
 
 设 $V$ 为共享变量集合，$T$ 为线程集合，$A$ 为所有内存操作的序列。每个操作 $a \in A$ 形式化为：
 
@@ -141,7 +106,7 @@ $$
 
 其中 $w_r$ 是 $r$ 可见的写操作，满足 $w_r \xrightarrow{hb} r$ 且不存在中间写。
 
-### 3.3 happens-before 八条规则
+### 2.3 happens-before 八条规则
 
 JLS §17.4.5 定义的 happens-before 规则：
 
@@ -154,7 +119,7 @@ JLS §17.4.5 定义的 happens-before 规则：
 7. **对象终结规则**：构造函数结束 $\xrightarrow{hb}$ finalizer 开始
 8. **传递性**：$a \xrightarrow{hb} b \wedge b \xrightarrow{hb} c \Rightarrow a \xrightarrow{hb} c$
 
-### 3.4 CAS 的形式化定义
+### 2.4 CAS 的形式化定义
 
 Compare-And-Swap 是无锁同步的基础，形式化为：
 
@@ -167,7 +132,7 @@ $$
 
 CAS 必须由硬件提供原子保证，x86 上对应 `lock cmpxchg` 指令，ARM 上对应 `ldaxr+stlxr` 独占加载存储对。
 
-### 3.5 线程池的形式化模型
+### 2.5 线程池的形式化模型
 
 线程池可形式化为五元组：
 
@@ -197,9 +162,9 @@ submit(task):
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 对象头与 Mark Word
+### 3.1 对象头与 Mark Word
 
 HotSpot 对象头（Object Header）由三部分构成：
 
@@ -221,7 +186,7 @@ flowchart TD
     MW --> G[GC 标记：- / 11]
 ```
 
-### 4.2 锁升级过程
+### 3.2 锁升级过程
 
 synchronized 锁状态按竞争程度单调升级（不可降级，但偏向锁可被批量撤销）：
 
@@ -234,7 +199,7 @@ stateDiagram-v2
     重量级锁 --> [*]
 ```
 
-#### 4.2.1 偏向锁（Biased Locking）
+#### 3.2.1 偏向锁（Biased Locking）
 
 - **触发**：首次进入同步块时，CAS 将线程 ID 写入 Mark Word
 - **重入**：同一线程再次进入时，仅比对 thread ID，无需 CAS
@@ -243,21 +208,21 @@ stateDiagram-v2
 
 > **设计原因**：早期 HotSpot 实测，90% 的 synchronized 块由同一线程进入，偏向锁可消除无竞争场景下的 CAS 开销。但现代应用多线程访问更普遍，偏向锁的撤销成本（STW）反而成为负担。
 
-#### 4.2.2 轻量级锁
+#### 3.2.2 轻量级锁
 
 - **加锁**：在线程栈分配 Lock Record，CAS 将对象头指向 Lock Record
 - **重入**：Lock Record 计数 +1
 - **解锁**：CAS 恢复对象头，若失败说明有竞争，升级为重量锁
 - **适用**：两个线程交替进入，无真并发
 
-#### 4.2.3 重量级锁
+#### 3.2.3 重量级锁
 
 - **加锁**：通过 `ObjectMonitor`（基于 AQS 思想）维护 entry list、wait set
 - **阻塞**：调用 `pthread_mutex_lock` 进入内核态
 - **唤醒**：`pthread_cond_signal` 唤醒一个等待线程
 - **适用**：多线程真并发竞争
 
-### 4.3 AQS 原理深度解析
+### 3.3 AQS 原理深度解析
 
 AbstractQueuedSynchronizer 是 j.u.c. 的基石，其核心：
 
@@ -274,7 +239,7 @@ public abstract class AbstractQueuedSynchronizer
 }
 ```
 
-#### 4.3.1 state 的语义
+#### 3.3.1 state 的语义
 
 不同同步器赋予 state 不同语义：
 
@@ -286,7 +251,7 @@ public abstract class AbstractQueuedSynchronizer
 | CountDownLatch | 剩余计数 |
 | CyclicBarrier（内部 Generation） | 不可重用，依赖 lock + condition |
 
-#### 4.3.2 CLH 队列
+#### 3.3.2 CLH 队列
 
 AQS 使用 CLH（Craig, Landin, Hagersten）队列变种：
 
@@ -308,7 +273,7 @@ flowchart LR
 - `CONDITION (-2)`：在 Condition 等待队列
 - `PROPAGATE (-3)`：共享模式下传播唤醒
 
-#### 4.3.3 独占模式获取锁流程
+#### 3.3.3 独占模式获取锁流程
 
 ```java
 // 简化版 AQS 独占获取
@@ -342,15 +307,15 @@ final boolean acquireQueued(Node node, int arg) {
 }
 ```
 
-#### 4.3.4 公平与非公平
+#### 3.3.4 公平与非公平
 
 - **公平锁**：`tryAcquire` 前先检查 `hasQueuedPredecessors()`
 - **非公平锁**：直接 CAS 尝试，允许"插队"
 - **性能差异**：非公平吞吐高 5—20%，但可能导致队列饥饿
 
-### 4.4 CAS 与 ABA 问题
+### 3.4 CAS 与 ABA 问题
 
-#### 4.4.1 ABA 问题
+#### 3.4.1 ABA 问题
 
 CAS 仅比对值，无法识别"A→B→A"的中间变化：
 
@@ -369,7 +334,7 @@ ref.set("A");
 ref.compareAndSet(v1, "C");
 ```
 
-#### 4.4.2 解决方案
+#### 3.4.2 解决方案
 
 - **AtomicStampedReference**：附加版本号
 - **AtomicMarkableReference**：附加 boolean 标记
@@ -388,7 +353,7 @@ ref.set("A", 2);
 ref.compareAndSet(v1, "C", stamp[0], 3);  // false
 ```
 
-### 4.5 内存屏障与 volatile
+### 3.5 内存屏障与 volatile
 
 volatile 通过内存屏障实现可见性与有序性：
 
@@ -405,9 +370,9 @@ HotSpot 对 volatile 写插入 `StoreStore + StoreLoad`，对 volatile 读插入
 
 ---
 
-## 5. synchronized 与锁升级
+## 4. synchronized 与锁升级
 
-### 5.1 synchronized 三种用法
+### 4.1 synchronized 三种用法
 
 ```java
 public class SyncExample {
@@ -433,7 +398,7 @@ public class SyncExample {
 }
 ```
 
-### 5.2 字节码层面
+### 4.2 字节码层面
 
 ```java
 public void blockMethod();
@@ -463,7 +428,7 @@ public void blockMethod();
            7   19    22   any         // 异常处理：确保 monitorexit
 ```
 
-### 5.3 synchronized vs ReentrantLock
+### 4.3 synchronized vs ReentrantLock
 
 | 维度 | synchronized | ReentrantLock |
 | ---- | ------------ | ------------- |
@@ -482,7 +447,7 @@ public void blockMethod();
 - 需要可中断、超时、多 Condition、公平 → ReentrantLock
 - 读多写少 → ReentrantReadWriteLock 或 StampedLock
 
-### 5.4 wait / notify 机制
+### 4.4 wait / notify 机制
 
 ```java
 public class BoundedBuffer<T> {
@@ -525,9 +490,9 @@ public class BoundedBuffer<T> {
 
 ---
 
-## 6. Lock 接口与 AQS
+## 5. Lock 接口与 AQS
 
-### 6.1 ReentrantLock 基础用法
+### 5.1 ReentrantLock 基础用法
 
 ```java
 import java.util.concurrent.locks.ReentrantLock;
@@ -571,7 +536,7 @@ public class ReentrantLockExample {
 }
 ```
 
-### 6.2 Condition 多条件变量
+### 5.2 Condition 多条件变量
 
 ```java
 import java.util.concurrent.locks.Condition;
@@ -623,7 +588,7 @@ public class BoundedBufferWithCondition<T> {
 }
 ```
 
-### 6.3 ReentrantReadWriteLock
+### 5.3 ReentrantReadWriteLock
 
 ```java
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -654,7 +619,7 @@ public class ThreadSafeCache<K, V> {
 }
 ```
 
-### 6.4 StampedLock（Java 8+）
+### 5.4 StampedLock（Java 8+）
 
 ```java
 import java.util.concurrent.locks.StampedLock;
@@ -694,7 +659,7 @@ public class Point {
 
 > **注意**：StampedLock 不可重入，不适合嵌套调用。乐观读适用于读多写少且能容忍短暂不一致的场景。
 
-### 6.5 自定义同步器：TwinsLock
+### 5.5 自定义同步器：TwinsLock
 
 实现一个允许至多 2 个线程同时获取的同步器：
 
@@ -739,9 +704,9 @@ public class TwinsLock {
 
 ---
 
-## 7. 原子类与 CAS
+## 6. 原子类与 CAS
 
-### 7.1 基本原子类
+### 6.1 基本原子类
 
 ```java
 import java.util.concurrent.atomic.*;
@@ -778,7 +743,7 @@ public class AtomicExample {
 }
 ```
 
-### 7.2 LongAdder（高并发计数）
+### 6.2 LongAdder（高并发计数）
 
 `LongAdder` 在 `AtomicLong` 基础上分段累加，降低 CAS 竞争：
 
@@ -808,7 +773,7 @@ public class Statistics {
 | LongAdder | 0.18s | 555M ops/s |
 | synchronized | 8.5s | 11M ops/s |
 
-### 7.3 LongAccumulator
+### 6.3 LongAccumulator
 
 ```java
 import java.util.concurrent.atomic.LongAccumulator;
@@ -821,7 +786,7 @@ maxAccum.accumulate(100);
 long max = maxAccum.get();  // 100
 ```
 
-### 7.4 VarHandle（Java 9+）
+### 6.4 VarHandle（Java 9+）
 
 VarHandle 替代 `sun.misc.Unsafe`，提供细粒度内存访问：
 
@@ -865,9 +830,9 @@ public class VarHandleExample {
 
 ---
 
-## 8. 线程池工程实践
+## 7. 线程池工程实践
 
-### 8.1 ThreadPoolExecutor 七参数
+### 7.1 ThreadPoolExecutor 七参数
 
 ```java
 import java.util.concurrent.*;
@@ -888,9 +853,9 @@ public class ThreadPoolExample {
 
 > **建议**：生产环境避免使用 `Executors.newFixedThreadPool` / `newCachedThreadPool`，前者用无界队列易 OOM，后者无最大线程限制也易 OOM。阿里规约强制使用 `ThreadPoolExecutor` 显式构造。
 
-### 8.2 线程池参数调优
+### 7.2 线程池参数调优
 
-#### 8.2.1 CPU 密集型
+#### 7.2.1 CPU 密集型
 
 ```
 N_threads = N_cpu + 1
@@ -898,7 +863,7 @@ N_threads = N_cpu + 1
 
 +1 是为了在某个线程偶发页缺失中断时，CPU 不至于空闲。
 
-#### 8.2.2 IO 密集型
+#### 7.2.2 IO 密集型
 
 Brian Goetz 公式：
 
@@ -915,7 +880,7 @@ $$
 N = 8 \times 0.8 \times (1 + 5) = 38.4 \approx 40
 $$
 
-#### 8.2.3 队列选择
+#### 7.2.3 队列选择
 
 | 队列 | 特性 | 适用 |
 | ---- | ---- | ---- |
@@ -926,7 +891,7 @@ $$
 | `PriorityBlockingQueue` | 优先级队列 | 任务有优先级 |
 | `DelayQueue` | 延迟队列 | 定时任务 |
 
-#### 8.2.4 拒绝策略
+#### 7.2.4 拒绝策略
 
 | 策略 | 行为 | 适用 |
 | ---- | ---- | ---- |
@@ -936,7 +901,7 @@ $$
 | `DiscardOldestPolicy` | 丢弃队列最老任务 | 仅最新任务重要 |
 | 自定义 | 实现 `RejectedExecutionHandler` | 写日志、告警、持久化 |
 
-### 8.3 自定义拒绝策略：写日志并降级
+### 7.3 自定义拒绝策略：写日志并降级
 
 ```java
 import java.util.concurrent.RejectedExecutionHandler;
@@ -970,7 +935,7 @@ public class LoggingRejectedHandler implements RejectedExecutionHandler {
 }
 ```
 
-### 8.4 线程池监控
+### 7.4 线程池监控
 
 ```java
 import java.util.concurrent.*;
@@ -1003,7 +968,7 @@ public class PoolMonitor {
 }
 ```
 
-### 8.5 ForkJoinPool
+### 7.5 ForkJoinPool
 
 ForkJoinPool 采用 work-stealing 调度，每个线程有自己的双端队列：
 
@@ -1034,7 +999,7 @@ public class FibonacciTask extends RecursiveTask<Long> {
 
 **适用**：分治任务（如归并排序、矩阵乘法、大数组求和）。`parallelStream()` 默认使用 `ForkJoinPool.commonPool()`。
 
-### 8.6 ScheduledExecutorService
+### 7.6 ScheduledExecutorService
 
 ```java
 import java.util.concurrent.*;
@@ -1062,7 +1027,7 @@ public class ScheduledExample {
 > - `scheduleWithFixedDelay`：上一次任务**结束**到下一次任务**开始**的间隔固定
 > - `scheduleAtFixedRate`：两次任务**开始**的时间间隔固定，若任务执行超过周期，会"串行追赶"
 
-### 8.7 优雅关闭
+### 7.7 优雅关闭
 
 ```java
 public void gracefulShutdown(ThreadPoolExecutor pool) {
@@ -1088,9 +1053,9 @@ public void gracefulShutdown(ThreadPoolExecutor pool) {
 
 ---
 
-## 9. CompletableFuture 异步编排
+## 8. CompletableFuture 异步编排
 
-### 9.1 创建与基本操作
+### 8.1 创建与基本操作
 
 ```java
 import java.util.concurrent.*;
@@ -1127,7 +1092,7 @@ public class CFExample {
 }
 ```
 
-### 9.2 异步任务 DAG
+### 8.2 异步任务 DAG
 
 构造一个典型电商场景：并行查询用户、商品、库存，再合并计算。
 
@@ -1173,7 +1138,7 @@ public class OrderService {
 }
 ```
 
-### 9.3 任一完成（race）
+### 8.3 任一完成（race）
 
 ```java
 // 哪个先返回就用哪个
@@ -1191,7 +1156,7 @@ Object firstResult = CompletableFuture.anyOf(primary, fallback).get();
 System.out.println(firstResult);  // "fallback"
 ```
 
-### 9.4 超时控制（Java 9+）
+### 8.4 超时控制（Java 9+）
 
 ```java
 // Java 9+ 原生超时
@@ -1212,7 +1177,7 @@ CompletableFuture<String> withDefault = slow.completeOnTimeout("default", 1, Tim
 System.out.println(withDefault.get());  // "default"
 ```
 
-### 9.5 自定义线程池
+### 8.5 自定义线程池
 
 > **重要**：`supplyAsync` 不传 Executor 时使用 `ForkJoinPool.commonPool()`，其大小为 `CPU核数 - 1`，不适合 IO 密集任务。生产环境必须显式传入自定义线程池。
 
@@ -1231,9 +1196,9 @@ CompletableFuture.supplyAsync(() -> queryFromDb(), ioPool)
 
 ---
 
-## 10. 虚拟线程（Java 21+）
+## 9. 虚拟线程（Java 21+）
 
-### 10.1 虚拟线程 vs 平台线程
+### 9.1 虚拟线程 vs 平台线程
 
 | 维度 | 平台线程 | 虚拟线程 |
 | ---- | -------- | -------- |
@@ -1244,7 +1209,7 @@ CompletableFuture.supplyAsync(() -> queryFromDb(), ioPool)
 | **CPU 密集** | 适合 | 不优（调度开销） |
 | **IO 密集** | 不适合（数量受限） | 极适合 |
 
-### 10.2 创建虚拟线程
+### 9.2 创建虚拟线程
 
 ```java
 import java.time.Duration;
@@ -1277,7 +1242,7 @@ public class VirtualThreadExample {
 }
 ```
 
-### 10.3 虚拟线程的"Continuation"
+### 9.3 虚拟线程的"Continuation"
 
 虚拟线程的核心是 `Continuation`（续体）——一种可挂起/恢复的执行上下文。当虚拟线程执行阻塞 IO（如 `socket.read()`）时，JVM 将其栈帧保存到堆上，释放载体线程；IO 完成后，调度器将其栈帧恢复到任意载体线程继续执行。
 
@@ -1297,9 +1262,9 @@ class Continuation {
 }
 ```
 
-### 10.4 虚拟线程的"陷阱"
+### 9.4 虚拟线程的"陷阱"
 
-#### 10.4.1 synchronized 阻塞载体线程
+#### 9.4.1 synchronized 阻塞载体线程
 
 JDK 21 中，虚拟线程内调用 `synchronized` 会**钉住（pin）**载体线程，使其无法被其他虚拟线程使用。解决：
 
@@ -1323,7 +1288,7 @@ public String readData() {
 
 > JDK 24+（JEP 491）已优化此问题，`synchronized` 不再钉住载体线程。
 
-#### 10.4.2 ThreadLocal 内存爆炸
+#### 9.4.2 ThreadLocal 内存爆炸
 
 虚拟线程数量可达百万，每个 ThreadLocal 都会占用一份内存。Java 21 引入 **Scoped Values**（预览）作为更轻量的替代：
 
@@ -1347,11 +1312,11 @@ public class ScopedValueExample {
 }
 ```
 
-#### 10.4.3 CPU 密集任务不优
+#### 9.4.3 CPU 密集任务不优
 
 虚拟线程适合 IO 阻塞任务。CPU 密集任务（如加密、压缩、数值计算）应使用平台线程或 ForkJoinPool。
 
-### 10.5 结构化并发（预览，Java 21+）
+### 9.5 结构化并发（预览，Java 21+）
 
 ```java
 import java.util.concurrent.*;
@@ -1377,9 +1342,9 @@ public class StructuredConcurrency {
 
 ---
 
-## 11. 对比分析
+## 10. 对比分析
 
-### 11.1 Java vs Go vs Rust 并发模型
+### 10.1 Java vs Go vs Rust 并发模型
 
 | 维度 | Java | Go | Rust |
 | ---- | ---- | ---- | ---- |
@@ -1390,7 +1355,7 @@ public class StructuredConcurrency {
 | **数据竞争** | 运行时检测 | 运行时检测 | 编译期禁止 |
 | **生态** | j.u.c. 成熟 | 内置简洁 | tokio 生态 |
 
-### 11.2 锁选择决策树
+### 10.2 锁选择决策树
 
 ```mermaid
 flowchart TD
@@ -1406,7 +1371,7 @@ flowchart TD
     T3 --> T5
 ```
 
-### 11.3 异步模型对比
+### 10.3 异步模型对比
 
 | 模型 | 代表 | 优点 | 缺点 |
 | ---- | ---- | ---- | ---- |
@@ -1417,9 +1382,9 @@ flowchart TD
 
 ---
 
-## 12. 常见陷阱与最佳实践
+## 11. 常见陷阱与最佳实践
 
-### 12.1 死锁的四个必要条件
+### 11.1 死锁的四个必要条件
 
 1. **互斥**：资源不可共享
 2. **持有并等待**：持锁线程可申请新锁
@@ -1471,7 +1436,7 @@ jcmd <pid> Thread.print
 - **尝试超时**：`tryLock(timeout)` 失败则回退
 - **避免嵌套锁**：重构代码使临界区不重叠
 
-### 12.2 活锁与饥饿
+### 11.2 活锁与饥饿
 
 ```java
 // 活锁：两个线程互相退让，永远无法前进
@@ -1495,7 +1460,7 @@ public void tryLock(Object a, Object b) {
 }
 ```
 
-### 12.3 ThreadLocal 内存泄漏
+### 11.3 ThreadLocal 内存泄漏
 
 ThreadLocalMap 的 Entry 是 WeakReference<ThreadLocal>，但 value 是强引用。若 ThreadLocal 实例被回收，key 变为 null，但 value 仍被 Entry 引用，导致泄漏（尤其在线程池中线程长期存活）。
 
@@ -1526,7 +1491,7 @@ public class CorrectUsage {
 }
 ```
 
-### 12.4 双重检查锁定（DCL）的陷阱
+### 11.4 双重检查锁定（DCL）的陷阱
 
 ```java
 // 错误：未 volatile，指令重排导致部分构造
@@ -1569,7 +1534,7 @@ public class CorrectSingleton {
 }
 ```
 
-### 12.5 更优的单例实现
+### 11.5 更优的单例实现
 
 ```java
 // 1. 静态内部类（推荐，无需 volatile）
@@ -1590,7 +1555,7 @@ public enum EnumSingleton {
 }
 ```
 
-### 12.6 并发集合选择
+### 11.6 并发集合选择
 
 | 集合 | 适用 | 注意 |
 | ---- | ---- | ---- |
@@ -1604,7 +1569,7 @@ public enum EnumSingleton {
 | `PriorityBlockingQueue` | 优先级 | 任务需 Comparable |
 | `DelayQueue` | 延迟任务 | 任务需实现 Delayed |
 
-### 12.7 不要在共享 Executor 中执行长任务
+### 11.7 不要在共享 Executor 中执行长任务
 
 ```java
 // 错误：长任务占用 commonPool 线程，影响其他 parallelStream
@@ -1620,9 +1585,9 @@ CompletableFuture.runAsync(() -> {
 
 ---
 
-## 13. 工程实践
+## 12. 工程实践
 
-### 13.1 Spring Boot 中正确使用 @Async
+### 12.1 Spring Boot 中正确使用 @Async
 
 ```java
 import org.springframework.scheduling.annotation.Async;
@@ -1656,7 +1621,7 @@ public class OrderService {
 }
 ```
 
-### 13.2 Micrometer 监控线程池
+### 12.2 Micrometer 监控线程池
 
 ```java
 import io.micrometer.core.instrument.MeterRegistry;
@@ -1686,7 +1651,7 @@ executor_queued_tasks{pool="biz-pool"} 5
 executor_completed_tasks_total{pool="biz-pool"} 12345
 ```
 
-### 13.3 LMAX Disruptor 无锁队列
+### 12.3 LMAX Disruptor 无锁队列
 
 ```java
 import com.lmax.disruptor.*;
@@ -1732,7 +1697,7 @@ public class DisruptorExample {
 
 **适用**：单生产者-单消费者高吞吐场景（百万 ops/s）。LMAX 交易系统核心组件。
 
-### 13.4 Resilience4j 限流
+### 12.4 Resilience4j 限流
 
 ```java
 import io.github.resilience4j.ratelimiter.*;
@@ -1757,7 +1722,7 @@ public class RateLimitService {
 }
 ```
 
-### 13.5 Maven 依赖
+### 12.5 Maven 依赖
 
 ```xml
 <dependencies>
@@ -1784,9 +1749,9 @@ public class RateLimitService {
 
 ---
 
-## 14. 案例研究
+## 13. 案例研究
 
-### 14.1 案例：线程池耗尽导致服务雪崩
+### 13.1 案例：线程池耗尽导致服务雪崩
 
 **场景**：电商系统订单服务在促销期间响应超时，下游服务级联失败。
 
@@ -1819,7 +1784,7 @@ RequestConfig config = RequestConfig.custom()
 CircuitBreaker breaker = CircuitBreaker.ofDefaults("order");
 ```
 
-### 14.2 案例：ThreadLocal 泄漏导致 OOM
+### 13.2 案例：ThreadLocal 泄漏导致 OOM
 
 **场景**：内部审计系统运行 30 天后 OOM，堆 dump 显示 10 万个 `UserContext` 实例。
 
@@ -1856,7 +1821,7 @@ public class UserContext {
 }
 ```
 
-### 14.3 案例：ConcurrentHashMap size 不准
+### 13.3 案例：ConcurrentHashMap size 不准
 
 **场景**：日志统计模块用 `ConcurrentHashMap` 累加计数，结果与实际有差异。
 
@@ -1882,7 +1847,7 @@ AtomicLong total = new AtomicLong();
 map.forEach((k, v) -> total.addAndGet(v));
 ```
 
-### 14.4 案例：CompletableFuture 链式异常丢失
+### 13.4 案例：CompletableFuture 链式异常丢失
 
 **场景**：异步任务链中某个环节抛异常，但 `get()` 抛出的异常栈信息丢失了原始定位。
 
@@ -1920,7 +1885,7 @@ CompletableFuture.supplyAsync(() -> queryDb())         // 异常 A
 });
 ```
 
-### 14.5 案例：虚拟线程 + 数据库连接池瓶颈
+### 13.5 案例：虚拟线程 + 数据库连接池瓶颈
 
 **场景**：Java 21 服务使用虚拟线程，QPS 提升 10 倍，但数据库连接池被打满，请求大量超时。
 
@@ -2377,7 +2342,7 @@ public class CachedValue<V> {
 
 ---
 
-## 16. 参考文献
+## 15. 参考文献
 
 1. Manson, J., Pugh, W., & Adve, S. V. (2005). *The Java Memory Model*. In Proceedings of the 32nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '05), pp. 378–391. ACM. DOI: [10.1145/1040305.1040336](https://doi.org/10.1145/1040305.1040336)
 
@@ -2411,9 +2376,9 @@ public class CachedValue<V> {
 
 ---
 
-## 17. 延伸阅读
+## 16. 延伸阅读
 
-### 17.1 经典书籍
+### 16.1 经典书籍
 
 - Brian Goetz 等. *Java Concurrency in Practice*（Java 并发实战，Java 并发领域必读）
 - Doug Lea. *Concurrent Programming in Java*（第二版，j.u.c. 设计者亲述）
@@ -2421,13 +2386,13 @@ public class CachedValue<V> {
 - Jeff Richter. *CLR via C#*（虽是 .NET，但并发原语章节值得参考）
 - Bjarne Stroustrup. *The C++ Programming Language* 第四版（与 Java 并发对比）
 
-### 17.2 重要论文
+### 16.2 重要论文
 
 - Dijkstra, E. W. (1965). *Solution of a problem in concurrent programming control*. Communications of the ACM.
 - Hoare, C. A. R. (1978). *Communicating Sequential Processes*. Communications of the ACM.
 - Lamport, L. (1979). *How to Make a Multiprocessor Computer That Correctly Executes Multiprocess Programs*. IEEE Transactions on Computers.
 
-### 17.3 在线资源
+### 16.3 在线资源
 
 - OpenJDK JEP 索引：https://openjdk.org/jeps/0
 - Java 并发官方教程：https://docs.oracle.com/javase/tutorial/essential/concurrency/
@@ -2438,7 +2403,7 @@ public class CachedValue<V> {
 - Project Loom：https://openjdk.org/projects/loom/
 - Java 并发 30 讲（极客时间）：https://time.geekbang.org/column/intro/100023901
 
-### 17.4 视频课程
+### 16.4 视频课程
 
 - MIT 6.005 *Software Construction*（软件构造，含并发章节）：https://ocw.mit.edu/courses/6-005-software-construction-spring-2016/
 - Stanford CS 140 *Operating Systems*：https://cs140.stanford.edu/

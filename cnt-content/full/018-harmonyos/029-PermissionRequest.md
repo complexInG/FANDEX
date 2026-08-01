@@ -16,63 +16,16 @@ prerequisites:
   - harmonyos/概述与环境搭建
 ---
 
+
 # 权限申请：HarmonyOS 访问控制模型与运行时权限工程实践
 
 > 权限系统是操作系统安全模型的"最后一公里"。如果说进程隔离与沙箱构筑了"城墙"，那么权限系统就是城墙上的"门卫"——决定每个应用能否跨越边界访问敏感资源。本章按 MIT 6.858（Computer Systems Security）、Stanford CS155（Computer and Network Security）、CMU 15-410（Distributed Systems）等课程标准组织，系统讲解 HarmonyOS 权限模型的设计哲学、`ohos.permission.*` 命名空间、`normal`/`system_basic`/`system_core` 三级权限等级、`system_grant`/`user_grant` 双轨授权机制、`abilityAccessCtrl` 模块 API、`requestPermissionsFromUser` 运行时申请流程、权限组（Permission Group）策略、动态申请与权限拒绝处理、跨应用权限共享、分布式权限同步等核心议题，并对照 Android Runtime Permissions、iOS Privacy Manifest、Windows App Capability 等业界方案。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章按照 Bloom 教育目标分类法（Bloom's Taxonomy）的六个层级组织学习目标。读者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述 HarmonyOS 权限的三级等级体系：`normal`、`system_basic`、`system_core`，及其对应的风险等级。
-- **R2**：列举两种授权方式：`system_grant`（系统授权）与 `user_grant`（用户授权），并指出各自的触发时机。
-- **R3**：复述 `module.json5` 中 `requestPermissions` 字段的完整结构：`name`、`reason`、`usedScene.abilities`、`usedScene.when`。
-- **R4**：复述 `abilityAccessCtrl` 模块的核心 API：`createAtManager`、`requestPermissionsFromUser`、`checkAccessToken`、`verifyAccessToken`。
-- **R5**：复述 `usedScene.when` 的三个取值：`inuse`（使用时）、`always`（始终）、`unrestricted`（无限制）。
-- **R6**：复述权限申请返回的 `authResults` 取值：`0`（已授予）、`-1`（已拒绝）、`2`（未确认）。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 `system_grant` 与 `user_grant` 在用户体验上的差异：前者安装时静默授予，后者运行时弹窗询问。
-- **U2**：阐明权限等级（`normal`/`system_basic`/`system_core`）与授权方式（`system_grant`/`user_grant`）是两个正交维度，可组合出 6 种权限类型。
-- **U3**：解释 `ACL`（Access Control List）与 `RBAC`（Role-Based Access Control）的差异，论证 HarmonyOS 选择 ACL 模型的工程原因。
-- **U4**：对比 HarmonyOS 权限系统与 Android Runtime Permissions（API 23+）、iOS Privacy Manifest（iOS 14+）、Windows App Capability 的设计哲学。
-- **U5**：解释权限组（Permission Group）的引入动机：减少用户决策疲劳，但带来的"全有或全无"风险。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 `module.json5` 的 `requestPermissions` 字段声明一个相机权限，并指定 `reason` 与 `usedScene`。
-- **A2**：使用 `abilityAccessCtrl.createAtManager().requestPermissionsFromUser()` 运行时申请 `ohos.permission.CAMERA`。
-- **A3**：使用 `checkAccessToken` 实现一个权限状态检查工具类，支持批量查询。
-- **A4**：实现一个权限拒绝后的"引导跳转设置页"流程，使用 `Want` 跳转到应用详情页。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 HarmonyOS 选择"权限组而非单权限"作为用户授权单元的取舍：用户决策次数减少 vs. 用户对授权粒度失控。
-- **An2**：分析 `requestPermissionsFromUser` 弹窗的"不可定制 UI"设计如何防范"Clickjacking"与"权限诱导"攻击。
-- **An3**：分析分布式场景下"权限跟随"机制：远程 Ability 启动时，本地权限如何映射到远程设备。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价 HarmonyOS 的"分级权限等级"（`normal`/`system_basic`/`system_core`）相比 Android 的"权限分组"在安全粒度上的优劣。
-- **E2**：评价 `usedScene.when = inuse` 作为默认值在隐私保护与开发者负担间的平衡。
-- **E3**：评价 HarmonyOS NEXT 引入的"权限使用审计日志"在合规审计中的价值。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个企业级权限管理中间件，支持权限分组申请、拒绝重试、状态持久化、权限使用埋点。
-- **C2**：设计一个面向多设备的"分布式权限同步协议"，明确权限状态如何在可信设备圈传播。
-- **C3**：设计一个 CI 集成的"权限最小化审计工具"，自动检测应用是否声明了非必要权限。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 移动端权限系统的演进（2008-2019）
+### 1.1 移动端权限系统的演进（2008-2019）
 
 移动操作系统权限系统经历了从"安装时一次性授权"到"运行时按需授权"的范式转变：
 
@@ -87,7 +40,7 @@ prerequisites:
 
 HarmonyOS 设计权限系统时吸收了 Android Runtime Permissions 的运行时申请机制，并借鉴 iOS Privacy Manifest 的"用途声明"思想，同时引入了更严格的三级等级体系。
 
-### 2.2 HarmonyOS 1.0（2019）：分级权限雏形
+### 1.2 HarmonyOS 1.0（2019）：分级权限雏形
 
 HarmonyOS 1.0 仅运行于智慧屏，权限模型较为简单：
 
@@ -96,7 +49,7 @@ HarmonyOS 1.0 仅运行于智慧屏，权限模型较为简单：
 - 全部采用 `system_grant`，无运行时申请。
 - 权限在应用签名时由系统校验，未声明的权限无法使用。
 
-### 2.3 HarmonyOS 2.0（2020）：运行时权限引入
+### 1.3 HarmonyOS 2.0（2020）：运行时权限引入
 
 HarmonyOS 2.0 随手机形态发布，引入运行时权限：
 
@@ -106,7 +59,7 @@ HarmonyOS 2.0 随手机形态发布，引入运行时权限：
 - 引入 `usedScene.when` 字段，支持 `inuse`/`always` 区分。
 - 权限组概念引入，相机/麦克风等归为同组。
 
-### 2.4 HarmonyOS 3.0（2022）：权限组与审计
+### 1.4 HarmonyOS 3.0（2022）：权限组与审计
 
 HarmonyOS 3.0 关键改进：
 
@@ -116,7 +69,7 @@ HarmonyOS 3.0 关键改进：
 - **后台权限**：`always` 权限需用户在设置中显式开启，弹窗不支持。
 - **`availableStatus` 字段**：声明权限使用的前置条件（如需定位开启）。
 
-### 2.5 HarmonyOS 4.0（2023）：分布式权限
+### 1.5 HarmonyOS 4.0（2023）：分布式权限
 
 HarmonyOS 4.0 引入分布式权限：
 
@@ -126,7 +79,7 @@ HarmonyOS 4.0 引入分布式权限：
 - **隐私清单**：应用需声明数据出境、第三方 SDK 权限使用。
 - **`reason` 多语言**：支持多语言文案，按系统语言自动切换。
 
-### 2.6 HarmonyOS NEXT（2024）：隐私即设计
+### 1.6 HarmonyOS NEXT（2024）：隐私即设计
 
 HarmonyOS NEXT 将"隐私即设计"（Privacy by Design）作为核心原则：
 
@@ -136,7 +89,7 @@ HarmonyOS NEXT 将"隐私即设计"（Privacy by Design）作为核心原则：
 - **权限使用 SDK 强制声明**：第三方 SDK 必须在 `module.json5` 中声明其所需权限。
 - **权限撤销增强**：支持"长时间未使用自动撤销"（6 个月未使用）。
 
-### 2.7 OpenHarmony 权限演进
+### 1.7 OpenHarmony 权限演进
 
 OpenHarmony 中权限管理模块位于 `security/access_token`：
 
@@ -149,7 +102,7 @@ OpenHarmony 中权限管理模块位于 `security/access_token`：
 | 4.0 | 3.0 | 隐私清单、状态栏提示 |
 | 5.0 | 3.5 | 权限沙箱、AI 风险识别 |
 
-### 2.8 时间线总览
+### 1.8 时间线总览
 
 ```mermaid
 timeline
@@ -163,9 +116,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 权限系统的形式化定义
+### 2.1 权限系统的形式化定义
 
 定义 HarmonyOS 权限系统为九元组：
 
@@ -185,7 +138,7 @@ $$
 - $\mathcal{E}: \mathcal{A} \times \mathcal{R} \to \text{Event Stream}$ 为权限使用事件流（审计）。
 - $\mathcal{O}: \mathcal{A} \times \mathcal{R} \to \{\text{allowed}, \text{denied}\}$ 为运行时访问决策函数。
 
-### 3.2 访问控制决策
+### 2.2 访问控制决策
 
 应用 $a$ 访问受权限 $r$ 保护的资源时，决策函数 $\mathcal{O}$ 定义为：
 
@@ -199,7 +152,7 @@ $$
 - $\text{Granted}(a, r) \iff \mathcal{U}(a, r) = \text{granted}$：用户已授权。
 - $\text{ContextValid}(a, r)$：当前使用场景符合 $\mathcal{T}(r)$（如 `inuse` 权限要求应用在前台）。
 
-### 3.3 权限等级与授权方式的正交性
+### 2.3 权限等级与授权方式的正交性
 
 权限等级 $\mathcal{L}$ 与授权方式 $\mathcal{G}$ 是两个正交维度，组合出 6 种权限类型：
 
@@ -209,7 +162,7 @@ $$
 | system_basic | MANAGE_WIFI_CONFIG | CAMERA、READ_MEDIA |
 | system_core | MANAGE_USERS、SET_TIME | （通常无，系统应用免弹窗） |
 
-### 3.4 权限组的数学结构
+### 2.4 权限组的数学结构
 
 定义权限组（Permission Group）为权限集合的划分：
 
@@ -219,7 +172,7 @@ $$
 
 授权单元为权限组而非单权限：用户授予组内任一权限后，组内其他权限再次申请时**仍需弹窗**（HarmonyOS 不支持"组内自动授予"），但弹窗文案会显示"该应用已获得组内其他权限"。
 
-### 3.5 权限状态机
+### 2.5 权限状态机
 
 应用对单个权限的状态转换定义如下：
 
@@ -239,7 +192,7 @@ $$
 \end{aligned}
 $$
 
-### 3.6 分布式权限同步
+### 2.6 分布式权限同步
 
 同账号下设备 $d_i$ 与 $d_j$ 的权限状态同步：
 
@@ -255,9 +208,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 访问控制理论：ACL vs. RBAC vs. ABAC
+### 3.1 访问控制理论：ACL vs. RBAC vs. ABAC
 
 访问控制三大模型：
 
@@ -285,7 +238,7 @@ HarmonyOS 选择 **ACL + 属性约束**的混合模型：
 - 属性约束：`usedScene.when`（环境属性）、`availableStatus`（资源属性）。
 - 选择理由：移动应用权限相对静态，ACL 简单直接；ABAC 过度灵活增加决策开销。
 
-### 4.2 权限校验的调用栈
+### 3.2 权限校验的调用栈
 
 应用调用受保护 API（如 `camera.getCameras()`）时，系统权限校验流程：
 
@@ -318,7 +271,7 @@ flowchart TD
 - 校验基于 **UID**（应用安装时分配），而非 bundleName，防止伪装。
 - 审计日志写入 `/data/log/audit/`，仅系统可读。
 
-### 4.3 运行时弹窗的安全模型
+### 3.3 运行时弹窗的安全模型
 
 `requestPermissionsFromUser` 弹窗由**系统进程**渲染，非应用进程：
 
@@ -349,7 +302,7 @@ flowchart TD
 - **防诱导**：弹窗 UI 由系统控制，应用无法修改文案（仅 `reason` 字段可定制）。
 - **防重放**：每次申请生成唯一 `requestId`，防止伪造回调。
 
-### 4.4 权限组的认知模型
+### 3.4 权限组的认知模型
 
 权限组设计基于用户的"认知分类"理论：
 
@@ -361,7 +314,7 @@ $$
 
 但权限组带来"全有或全无"风险：用户授予组内任一权限后，可能误以为仅授予该权限，实则组内其他权限也获得"更容易授权"的路径。HarmonyOS 选择折中：组内权限仍需独立弹窗，但弹窗文案提示"已获得组内其他权限"。
 
-### 4.5 后台权限的隐私风险
+### 3.5 后台权限的隐私风险
 
 `inuse` 与 `always` 的核心差异在于**后台可见性**：
 
@@ -378,7 +331,7 @@ $$
 - 系统状态栏显示"应用 X 正在后台使用位置"通知，用户可一键撤销。
 - 24 小时内后台累计使用超过 30 分钟，系统弹窗询问用户是否保留权限。
 
-### 4.6 权限撤销的一致性
+### 3.6 权限撤销的一致性
 
 用户在设置中撤销权限后，应用需保证状态一致性：
 
@@ -394,7 +347,7 @@ HarmonyOS 设计：
 - **应用缓存**：应用需自行清理，系统不强制。
 - **持久化数据**：已读取的数据（如已拍摄照片）不删除，但无法继续访问。
 
-### 4.7 权限申请时序与用户体验
+### 3.7 权限申请时序与用户体验
 
 权限申请的最佳时机是"用户首次触发需权限的功能时"，而非应用启动时：
 
@@ -421,7 +374,7 @@ flowchart TD
 2. 应用尚未建立信任，用户倾向于拒绝。
 3. 合规审计可能标记为"过度索权"。
 
-### 4.8 分布式权限同步的安全性
+### 3.8 分布式权限同步的安全性
 
 跨设备权限同步需防范"权限放大攻击"：
 
@@ -440,9 +393,9 @@ HarmonyOS 防御：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 module.json5 完整权限声明
+### 4.1 module.json5 完整权限声明
 
 ```json5
 // entry/src/main/module.json5
@@ -548,7 +501,7 @@ HarmonyOS 防御：
 }
 ```
 
-### 5.2 企业级权限管理封装
+### 4.2 企业级权限管理封装
 
 ```typescript
 // entry/src/main/ets/utils/PermissionManager.ets
@@ -816,7 +769,7 @@ export class PermissionManager {
 }
 ```
 
-### 5.3 相机权限申请完整流程
+### 4.3 相机权限申请完整流程
 
 ```typescript
 // entry/src/main/ets/pages/CameraPage.ets
@@ -964,7 +917,7 @@ struct CameraPage {
 }
 ```
 
-### 5.4 权限组批量申请
+### 4.4 权限组批量申请
 
 ```typescript
 // entry/src/main/ets/pages/MediaSharePage.ets
@@ -1066,7 +1019,7 @@ struct MediaSharePage {
 }
 ```
 
-### 5.5 后台位置权限申请
+### 4.5 后台位置权限申请
 
 ```typescript
 // entry/src/main/ets/pages/BackgroundLocationPage.ets
@@ -1220,7 +1173,7 @@ struct BackgroundLocationPage {
 }
 ```
 
-### 5.6 权限使用审计与埋点
+### 4.6 权限使用审计与埋点
 
 ```typescript
 // entry/src/main/ets/utils/PermissionAuditor.ets
@@ -1388,7 +1341,7 @@ export class PermissionAuditor {
 }
 ```
 
-### 5.7 自定义权限申请对话框（前置解释）
+### 4.7 自定义权限申请对话框（前置解释）
 
 ```typescript
 // entry/src/main/ets/components/PermissionRationaleDialog.ets
@@ -1544,9 +1497,9 @@ struct AudioRecordPage {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 HarmonyOS vs. Android vs. iOS 权限系统
+### 5.1 HarmonyOS vs. Android vs. iOS 权限系统
 
 | 维度 | HarmonyOS 4.0 | Android 14 | iOS 17 |
 | --- | --- | --- | --- |
@@ -1563,7 +1516,7 @@ struct AudioRecordPage {
 | **第三方 SDK** | 必须声明所需权限 | 需在 Manifest 声明 | Privacy Manifest 声明 |
 | **自动撤销** | NEXT 引入（6 个月未用） | 11+ 引入（数月未用） | 无 |
 
-### 6.2 设计哲学差异
+### 5.2 设计哲学差异
 
 **HarmonyOS**：
 - 强调"分级等级"（normal/system_basic/system_core），系统应用与普通应用严格区分。
@@ -1580,7 +1533,7 @@ struct AudioRecordPage {
 - 无权限分组，每个权限独立弹窗。
 - 用户体验最简洁，但开发者负担较重。
 
-### 6.3 跨平台框架的权限适配
+### 5.3 跨平台框架的权限适配
 
 | 框架 | 权限 API | 局限 |
 | --- | --- | --- |
@@ -1591,7 +1544,7 @@ struct AudioRecordPage {
 
 HarmonyOS 原生 ArkTS 权限 API 是最完整的，跨平台框架目前对 HarmonyOS 支持仍需完善。
 
-### 6.4 企业级权限管理对比
+### 5.4 企业级权限管理对比
 
 | 维度 | HarmonyOS | Android Enterprise | iOS MDM |
 | --- | --- | --- | --- |
@@ -1603,9 +1556,9 @@ HarmonyOS 原生 ArkTS 权限 API 是最完整的，跨平台框架目前对 Har
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 常见陷阱
+### 6.1 常见陷阱
 
 #### 陷阱 1：在 `onCreate` 中申请所有权限
 
@@ -1727,7 +1680,7 @@ async function startRemoteCamera(targetDeviceId: string) {
 
 **正确做法**：先通过分布式权限查询 API 校验目标设备权限状态。
 
-### 7.2 最佳实践
+### 6.2 最佳实践
 
 #### 实践 1：最小化权限声明
 
@@ -1767,9 +1720,9 @@ async function startRemoteCamera(targetDeviceId: string) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 DevEco Studio 权限调试
+### 7.1 DevEco Studio 权限调试
 
 DevEco Studio 提供"权限管理"面板：
 
@@ -1797,7 +1750,7 @@ hdc shell acm revoke --bundle-name com.example.app --permission ohos.permission.
 hdc shell hilog | grep -i "permission"
 ```
 
-### 8.2 权限自动化测试
+### 7.2 权限自动化测试
 
 在单元测试与 UI 测试中模拟权限场景：
 
@@ -1839,7 +1792,7 @@ export default function permissionTest() {
 }
 ```
 
-### 8.3 权限合规审计
+### 7.3 权限合规审计
 
 上架前需完成权限合规自查：
 
@@ -1915,7 +1868,7 @@ if (issues.length > 0) {
 }
 ```
 
-### 8.4 CI/CD 集成
+### 7.4 CI/CD 集成
 
 在 `.github/workflows/ci.yml` 中集成权限审计：
 
@@ -1938,7 +1891,7 @@ jobs:
         run: node scripts/permission-audit.mjs
 ```
 
-### 8.5 权限文档生成
+### 7.5 权限文档生成
 
 为每个应用自动生成"权限说明文档"，满足应用商店上架要求：
 
@@ -1984,9 +1937,9 @@ generatePermDoc(
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：社交媒体应用的权限策略
+### 8.1 案例一：社交媒体应用的权限策略
 
 **应用背景**：某社交媒体应用，核心功能包括发布图文、直播、语音消息。
 
@@ -2021,7 +1974,7 @@ generatePermDoc(
 - 后台不申请任何权限（所有均为 `inuse`）。
 - 月度生成权限使用报告，提交合规团队。
 
-### 9.2 案例二：导航应用的后台定位
+### 8.2 案例二：导航应用的后台定位
 
 **应用背景**：某导航应用，需在后台持续定位。
 
@@ -2073,7 +2026,7 @@ function stopNavigation() {
 - 用户可一键关闭后台定位。
 - 24 小时累计后台使用超过 30 分钟，系统弹窗询问。
 
-### 9.3 案例三：跨设备办公的权限同步
+### 8.3 案例三：跨设备办公的权限同步
 
 **应用背景**：某跨设备办公应用，用户在手机、平板、PC 上登录同一账号。
 
@@ -2408,7 +2361,7 @@ export class PermissionHistoryStore {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 HarmonyOS 选择"权限组内仍独立弹窗"而非 Android 的"组内自动授予"？请从安全性与用户体验两个维度分析。
 
@@ -2493,9 +2446,9 @@ export class PermissionHistoryStore {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术文献
+### 10.1 学术文献
 
 [1] J. Anderson. 1972. *Computer Security Technology Planning Study*. Technical Report ESD-TR-73-51, Vol. II, Electronic Systems Division, Air Force Systems Command, Hanscom Field, Bedford, MA. DOI: 10.21236/753901.
 
@@ -2517,7 +2470,7 @@ export class PermissionHistoryStore {
 
 [10] M. Grace, Y. Zhou, Z. Wang, and X. Jiang. 2012. Systematic detection of capability leaks in stock Android smartphones. In *Proceedings of the 19th Network and Distributed System Security Symposium (NDSS '12)*. Internet Society. DOI: 10.14722/ndss.2012.23124.
 
-### 11.2 工业标准与官方文档
+### 10.2 工业标准与官方文档
 
 [11] Huawei Device Co., Ltd. 2024. *HarmonyOS Application Development Guide: Permission Management*. Huawei Developer Documentation. Retrieved July 20, 2026 from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/permission-management-0000001493749212.
 
@@ -2535,7 +2488,7 @@ export class PermissionHistoryStore {
 
 [18] California Office of the Attorney General. 2020. *California Consumer Privacy Act (CCPA) of 2018 as Amended by CPRA*. California Civil Code §§ 1798.100-1798.199.100.
 
-### 11.3 进阶阅读
+### 10.3 进阶阅读
 
 [19] D. E. Bell and L. J. LaPadula. 1973. *Secure Computer Systems: Mathematical Foundations*. Technical Report 2547, Vol. I, MITRE Corporation, Bedford, MA. DOI: 10.21236/770048.
 
@@ -2547,28 +2500,28 @@ export class PermissionHistoryStore {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **HarmonyOS 权限列表**：[https://developer.huawei.com/consumer/cn/doc/harmonyos-references/permissions](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/permissions) —— 完整的 `ohos.permission.*` 权限清单及等级、授权方式说明。
 - **OpenHarmony 安全子系统**：[https://gitee.com/openharmony/security_access_token](https://gitee.com/openharmony/security_access_token) —— 权限管理模块源码，可深入了解实现细节。
 - **HarmonyOS 安全指南**：[https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/security-overview](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/security-overview) —— 涵盖应用安全、数据安全、设备安全的完整指南。
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - **《Computer Security: Art and Science》** —— Matt Bishop 著，Addison-Wesley 出版。访问控制理论的经典教材，涵盖 Bell-LaPadula、Biba、RBAC、ABAC 等模型。
 - **《Security Engineering》** —— Ross Anderson 著，Wiley 出版。工业级安全工程实践指南，包含移动操作系统安全案例分析。
 - **《Android Security Internals》** —— Nikolay Elenkov 著，No Starch Press 出版。Android 权限模型深度剖析，可对比 HarmonyOS 设计差异。
 
-### 12.3 学术会议
+### 11.3 学术会议
 
 - **USENIX Security**：顶级安全学术会议，每年有移动权限系统相关论文。
 - **ACM CCS（Computer and Communications Security）**：访问控制与移动安全研究的重要阵地。
 - **IEEE S&P（Symposium on Security and Privacy）**：隐私保护与权限系统设计的前沿研究。
 - **SOUPS（Symposium on Usable Privacy and Security）**：聚焦权限系统的用户体验研究。
 
-### 12.4 相关章节
+### 11.4 相关章节
 
 - `harmonyos/Stage模型与FA模型区别` —— Stage 模型下的 AbilityContext 是权限申请的入口。
 - `harmonyos/跨设备调用` —— 跨设备调用涉及分布式权限同步。

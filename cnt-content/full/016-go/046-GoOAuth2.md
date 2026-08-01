@@ -16,53 +16,6 @@ prerequisites:
   - go/概述与环境配置
 ---
 
-## 学习目标
-
-本章节对标 MIT 6.5840（Distributed Systems）、Stanford CS155（Computer and Network Security）与 CMU 15-440（Distributed Systems）的身份认证与授权教学水准，融合 RFC 6749（OAuth 2.0）、RFC 7519（JWT）、RFC 7636（PKCE）、RFC 8725（JWT Best Practices）与 Go `golang.org/x/oauth2`、`github.com/golang-jwt/jwt/v5` 的工程实践细节。完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-### Remember（记忆）
-
-- **R1**：复述 OAuth 2.0 的四个角色（Resource Owner、Client、Authorization Server、Resource Server）与四种核心授权流程（Authorization Code、Implicit、Password、Client Credentials）
-- **R2**：列出 JWT 的三段式结构（Header、Payload、Signature）与 JWS、JWE、JWK 的关系
-- **R3**：背诵 JWT 标准声明（`iss`、`sub`、`aud`、`exp`、`nbf`、`iat`、`jti`）的语义
-- **R4**：识别 HS256、RS256、ES256、EdDSA 四种签名算法的密钥模型与计算开销差异
-
-### Understand（理解）
-
-- **U1**：解释授权码模式（Authorization Code Flow）相较于隐式模式（Implicit Flow）的安全优势
-- **U2**：阐述 PKCE（Proof Key for Code Exchange）如何防御授权码拦截攻击
-- **U3**：说明 OAuth 2.0 与 OpenID Connect（OIDC）的关系：OIDC 是 OAuth 2.0 之上的身份认证层
-- **U4**：推演 Refresh Token 的轮换（Rotation）策略与重用检测机制
-
-### Apply（应用）
-
-- **A1**：使用 `golang.org/x/oauth2` 实现 GitHub/Google 第三方登录
-- **A2**：使用 `github.com/golang-jwt/jwt/v5` 生成与验证 HS256/RS256/ES256 签名的 JWT
-- **A3**：编写 JWT 中间件，校验 Bearer Token 并将用户信息注入 `context.Context`
-- **A4**：实现 OAuth2 客户端凭证模式用于服务间调用（M2M）
-
-### Analyze（分析）
-
-- **An1**：分析 JWT 相较于服务端 Session 的性能与安全权衡
-- **An2**：对比 OAuth 2.0 的四种授权流程在不同场景（Web 应用、SPA、移动端、服务间）的适用性
-- **An3**：解构 JWT 的"无状态"特性带来的撤销难题与解决方案（黑名单、短时效 + Refresh、DPoP）
-- **An4**：剖析 JWS 与 JWE 的组合：签了再加密 vs 加密再签名
-
-### Evaluate（评估）
-
-- **E1**：评估 JWT 在微服务架构下作为身份令牌的选型决策
-- **E2**：评判 RS256 与 HS256 在多方协作系统中的密钥分发成本
-- **E3**：权衡 OAuth 2.1 草案对隐式模式与密码模式的废弃是否合理
-- **E4**：评估 DPoP（RFC 9449）与 mTLS（RFC 8705）作为发件人约束机制的优劣
-
-### Create（创造）
-
-- **C1**：设计一个支持多 IdP（GitHub/Google/Apple）的统一身份认证网关
-- **C2**：实现一个 OAuth2 Authorization Server，支持授权码 + PKCE 与客户端凭证流程
-- **C3**：构建一个 JWT 密钥轮换机制，支持 RS256 公钥的 JWKS endpoint 与平滑过渡
-- **C4**：为微服务架构设计零信任身份传播方案（JWT + mTLS + OpenTelemetry trace 关联）
-
----
 
 ## 历史动机与发展脉络
 
@@ -88,7 +41,7 @@ Cookie-Session 的局限：
 - 跨域困难（CORS、SameSite）
 - 无法委派第三方应用访问用户资源
 
-### 2. OAuth 1.0（2007）：委派授权的开端
+### 1. OAuth 1.0（2007）：委派授权的开端
 
 2007 年 Ma.gnolia 提出 OAuth 协议解决"Mashup 问题"：让第三方应用访问用户在 Flickr/Twitter 的数据，而不需要密码。OAuth Core 1.0 于 2007 年 12 月发布。
 
@@ -101,7 +54,7 @@ OAuth 1.0a（2009）修复了 session fixation 攻击（Twitter 曾受影响）�
 - 签名算法晦涩（参数排序、URL 编码规则繁琐）
 - 无法在浏览器端直接发起（需要服务端签名）
 
-### 3. OAuth 2.0（RFC 6749，2012）：简化与碎片化
+### 2. OAuth 2.0（RFC 6749，2012）：简化与碎片化
 
 2012 年 10 月，IETF 发布 [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749) "The OAuth 2.0 Authorization Framework"，**不向后兼容** OAuth 1.0。主要变化：
 
@@ -124,7 +77,7 @@ OAuth 2.0 的批评：
 - 留下太多可选项，导致实现碎片化
 - Implicit Flow 与 Password Flow 被滥用
 
-### 4. JWT 时代（RFC 7519，2015）
+### 3. JWT 时代（RFC 7519，2015）
 
 JWT（JSON Web Token）并非 OAuth 2.0 强制要求，但已成为事实标准。RFC 7519 于 2015 年 5 月发布，定义了紧凑的、URL-safe 的声明表示格式。
 
@@ -145,7 +98,7 @@ JWT 周边的 JOSE（JSON Object Signing and Encryption）规范族：
 - **JWK**（RFC 7517）：JSON Web Key，密钥表示
 - **JWA**（RFC 7518）：JSON Web Algorithms，算法注册表
 
-### 5. OIDC（OpenID Connect，2014）
+### 4. OIDC（OpenID Connect，2014）
 
 OAuth 2.0 是**授权协议**，不是**认证协议**。OIDC 在 OAuth 2.0 之上增加身份层：
 
@@ -156,7 +109,7 @@ OAuth 2.0 是**授权协议**，不是**认证协议**。OIDC 在 OAuth 2.0 之�
 
 OIDC 由 OpenID Foundation 维护，被 Google、Microsoft、Okta、Auth0 等广泛支持。
 
-### 6. PKCE（RFC 7636，2015）：移动端与 SPA 的救星
+### 5. PKCE（RFC 7636，2015）：移动端与 SPA 的救星
 
 授权码流程原本要求客户端保密 `client_secret`，但移动端与 SPA 无法安全存储密钥（APK 可反编译、JS 可被查看）。
 
@@ -174,7 +127,7 @@ PKCE 抵御"授权码拦截攻击"：即使攻击者截获了授权码，没有 
 
 OAuth 2.1 草案要求所有使用授权码流程的客户端**必须**使用 PKCE，即使是机密客户端。
 
-### 7. OAuth 2.1 草案（2022）：整合最佳实践
+### 6. OAuth 2.1 草案（2022）：整合最佳实践
 
 OAuth 2.1 是 OAuth 2.0 的整理版，整合多个 RFC 与最佳实践：
 
@@ -184,7 +137,7 @@ OAuth 2.1 是 OAuth 2.0 的整理版，整合多个 RFC 与最佳实践：
 - 明确 Redirect URI 精确匹配（禁用通配符）
 - 推荐使用 DPoP 或 mTLS 作为发件人约束
 
-### 8. JWT 最佳实践（RFC 8725，2020）
+### 7. JWT 最佳实践（RFC 8725，2020）
 
 RFC 8725 "JSON Web Token Best Current Practices" 总结了 JWT 的安全实践：
 
@@ -194,7 +147,7 @@ RFC 8725 "JSON Web Token Best Current Practices" 总结了 JWT 的安全实践�
 4. **时效要短**：Access Token 建议 15 分钟以内
 5. **敏感数据不要放 JWT**：JWT 是签名不是加密（除非用 JWE）
 
-### 9. 发件人约束：DPoP 与 mTLS（2020-2022）
+### 8. 发件人约束：DPoP 与 mTLS（2020-2022）
 
 Bearer Token 的固有缺陷：谁拿到令牌就能用。两种发件人约束机制：
 
@@ -210,7 +163,7 @@ DPoP 工作流程：
 4. 后续请求都携带 DPoP Header，Resource Server 验证签名与 cnf.jkt
 ```
 
-### 10. Go 生态演进时间线
+### 9. Go 生态演进时间线
 
 | 时间 | 事件 | 重要性 |
 |------|------|--------|
@@ -246,7 +199,7 @@ $$
 - $T$（Token）：令牌空间，包括 Access Token 与 Refresh Token
 - $F$（Flow）：授权流程集合，$F = \{\text{AuthCode}, \text{Implicit}, \text{Password}, \text{ClientCreds}, \text{Device}, \text{Refresh}\}$
 
-### 2. 授权码流程的形式化定义
+### 1. 授权码流程的形式化定义
 
 授权码流程是一个时序协议：
 
@@ -272,7 +225,7 @@ $$
 \text{state} = \text{HMAC}_{k_C}(\text{session_id}) \quad \text{where } k_C \text{ is client's session key}
 $$
 
-### 3. JWT 的形式化定义
+### 2. JWT 的形式化定义
 
 JWT 是一个三元组：
 
@@ -297,7 +250,7 @@ $$
 \end{cases}
 $$
 
-### 4. JWT 声明的形式化分类
+### 3. JWT 声明的形式化分类
 
 JWT 声明分为三类：
 
@@ -321,7 +274,7 @@ $$
 
 **Private Claims**：双方协商的私有声明，如 `role`、`tenant_id`。
 
-### 5. 安全属性的形式化定义
+### 4. 安全属性的形式化定义
 
 JWT 的核心安全属性：
 
@@ -355,7 +308,7 @@ $$
 \text{aud}(\text{JWT}) \ni \text{self\_id}
 $$
 
-### 6. PKCE 的形式化定义
+### 5. PKCE 的形式化定义
 
 PKCE 协议是授权码流程的扩展：
 
@@ -407,7 +360,7 @@ $$
 2. **发件人约束**：DPoP / mTLS 绑定密钥
 3. **撤销机制**：黑名单或 token revocation
 
-### 2. JWT 验证的复杂度分析
+### 1. JWT 验证的复杂度分析
 
 JWT 验证算法：
 
@@ -433,7 +386,7 @@ JWT 验证算法：
 | ES256 | 80000 | 110000 | 较均衡 |
 | EdDSA | 30000 | 60000 | 推荐 |
 
-### 3. RSA vs ECDSA 的密钥大小对比
+### 2. RSA vs ECDSA 的密钥大小对比
 
 非对称密钥长度与安全强度对比：
 
@@ -454,7 +407,7 @@ JWT 大小对比（典型 Payload 100 字节）：
 
 **结论**：EdDSA 在性能、密钥大小、签名大小上都是最优选择，推荐新项目使用。
 
-### 4. Refresh Token 轮换的安全性
+### 3. Refresh Token 轮换的安全性
 
 Refresh Token 轮换（Rotation）策略：
 
@@ -479,7 +432,7 @@ $$
 2. 用户正常刷新，得到 $T_r^{(2)}$，$T_r^{(1)}$ 失效
 3. 攻击者用 $T_r^{(1)}$ 刷新 → 重用检测触发，撤销 $T_r^{(2)}$ 与整个家族
 
-### 5. JWT 与 Session 的状态性分析
+### 4. JWT 与 Session 的状态性分析
 
 **Session 模型**（有状态）：
 
@@ -501,7 +454,7 @@ $$
 
 **混合模式**：短时 Access Token（无状态）+ Refresh Token（有状态），兼顾性能与可撤销性。
 
-### 6. JWKS（JSON Web Key Set）的密钥轮换
+### 5. JWKS（JSON Web Key Set）的密钥轮换
 
 JWKS endpoint 暴露公钥集合，客户端按 `kid`（Key ID）查找：
 
@@ -522,7 +475,7 @@ JWKS endpoint 暴露公钥集合，客户端按 `kid`（Key ID）查找：
 4. **保留旧公钥**：用于验证未过期的旧 JWT
 5. **过期后移除**：所有旧 JWT 过期后，从 JWKS 移除旧公钥
 
-### 7. JWT 与 OpenTelemetry 的关联
+### 6. JWT 与 OpenTelemetry 的关联
 
 JWT 与分布式追踪的关联：
 
@@ -2523,7 +2476,7 @@ var ErrTokenNotFound = fmt.Errorf("refresh token not found")
 | Device Code | 设备 | 是 | 中 | 保留 |
 | Refresh Token | 所有 | 否 | 中 | 保留 |
 
-### 2. JWT 签名算法对比
+### 1. JWT 签名算法对比
 
 | 算法 | 类型 | 密钥长度 | 签名速度 | 验证速度 | 签名大小 | 适用场景 |
 |------|------|---------|---------|---------|---------|---------|
@@ -2539,7 +2492,7 @@ var ErrTokenNotFound = fmt.Errorf("refresh token not found")
 | EdDSA | 非对称 | 256 bit | 快（30μs） | 快（60μs） | 64 字节 | 强烈推荐 |
 | PS256 | 非对称 | 2048+ bit | 慢 | 快 | 256 字节 | RSA-PSS |
 
-### 3. JWT vs Session 对比
+### 2. JWT vs Session 对比
 
 | 维度 | JWT | Session |
 |------|-----|---------|
@@ -2552,7 +2505,7 @@ var ErrTokenNotFound = fmt.Errorf("refresh token not found")
 | 移动端 | 友好 | 不友好 |
 | 微服务 | 推荐 | 不推荐 |
 
-### 4. Go 与其他语言的 OAuth2/JWT 生态对比
+### 3. Go 与其他语言的 OAuth2/JWT 生态对比
 
 | 维度 | Go | Rust | Java | Python | Node.js | C++ |
 |------|-----|------|------|--------|---------|-----|
@@ -2565,7 +2518,7 @@ var ErrTokenNotFound = fmt.Errorf("refresh token not found")
 | 性能 | 高 | 极高 | 中 | 低 | 中 | 极高 |
 | 生态成熟度 | 高 | 中 | 极高 | 高 | 高 | 低 |
 
-### 5. Go JWT 库对比
+### 4. Go JWT 库对比
 
 | 库 | 维护状态 | 特性 | 性能 | 推荐 |
 |----|---------|------|------|------|
@@ -2575,7 +2528,7 @@ var ErrTokenNotFound = fmt.Errorf("refresh token not found")
 | `github.com/coreos/go-oidc/v3` | 活跃 | OIDC 标准 | 高 | OIDC 首选 |
 | `github.com/dgrijalva/jwt-go` | 不维护 | 旧版，已 fork | 中 | 不要使用 |
 
-### 6. OAuth2 服务器实现对比
+### 5. OAuth2 服务器实现对比
 
 | 实现 | 语言 | 特性 | 适用场景 |
 |------|------|------|---------|
@@ -2734,7 +2687,7 @@ jwt.ParseWithClaims(tokenString, claims, keyFunc,
 4. 等待旧 JWT 过期
 5. 从 JWKS 移除旧公钥
 
-### 2. JWT 性能优化
+### 1. JWT 性能优化
 
 **验证缓存**：
 
@@ -2760,7 +2713,7 @@ func (v *CachedValidator) Validate(tokenString string) (*CustomClaims, error) {
 
 **注意**：缓存会增加撤销难度，建议只缓存短期（如 5 秒）。
 
-### 3. 多 IdP 集成
+### 2. 多 IdP 集成
 
 **统一身份网关**：
 
@@ -2777,7 +2730,7 @@ flowchart TD
     GS --> JWT
 ```
 
-### 4. 零信任架构
+### 3. 零信任架构
 
 零信任架构下，每个服务调用都需要验证身份：
 
@@ -2788,7 +2741,7 @@ User → API Gateway → Service A → Service B → Database
 
 JWT 在服务间传递，每个服务独立验证。
 
-### 5. 安全审计
+### 4. 安全审计
 
 **审计事件**：
 
@@ -2812,7 +2765,7 @@ slog.Info("token issued",
 )
 ```
 
-### 6. 测试策略
+### 5. 测试策略
 
 **单元测试**：
 

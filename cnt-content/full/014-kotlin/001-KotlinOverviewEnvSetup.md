@@ -15,6 +15,7 @@ related:
   - java/概述与开发环境
 prerequisites: []
 ---
+
 # Kotlin Channel 通道
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -38,74 +39,9 @@ prerequisites: []
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。Bloom 分类学由教育心理学家 Benjamin Bloom 于 1956 年提出，2001 年由 Anderson 与 Krathwohl 修订，是国际教育界普遍采用的认知能力分级框架。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述 Kotlin 是由 JetBrains 公司于 2011 年首次公开、2016 年发布 1.0 正式版的静态类型编程语言。
-- 列出 Kotlin 的三大核心设计目标：实用（pragmatic）、简洁（concise）、安全（safe），并复述它们各自的工程含义。
-- 记忆 Kotlin 的主要编译目标平台：JVM、JavaScript、Native（LLVM）、WebAssembly，以及对应的产物形式（.class、.js、.klib、.wasm）。
-- 背诵 Kotlin 版本演进的关键节点：1.0（2016）、1.1（2017 协程实验）、1.3（2018 协程稳定）、1.4（2020 显式模式）、1.5（2021 密封类改进）、1.6（2021）、1.7（2022）、1.8（2023 JVM 19）、1.9（2023 K2 Beta）、2.0（2024 K2 编译器稳定）。
-- 列举 Kotlin 的核心特性：空安全（null safety）、类型推断（type inference）、扩展函数（extension function）、数据类（data class）、密封类（sealed class）、智能转换（smart cast）、协程（coroutines）、属性委托（property delegation）。
-- 复述 Kotlin 的命名来源：来自圣彼得堡附近的 Kotlin 岛（Kotlin Island），与 Java 命名自 Java 咖啡的命名传统一致。
-- 列出 IntelliJ IDEA、Android Studio、Eclipse、Visual Studio Code 四款支持 Kotlin 开发的 IDE 及其官方支持程度。
-- 记忆 Kotlin 的官方包管理器为 Gradle，官方仓库为 Maven Central，标准库工件坐标为 `org.jetbrains.kotlin:kotlin-stdlib`。
-
-### 1.2 Understand（理解）
-
-- 用自己的语言解释 Kotlin 与 Java 的关系：Kotlin 不是 Java 的替代品，而是 Java 生态的协作者，二者通过 JVM 字节码实现 100% 双向互操作。
-- 解释 JVM 字节码（bytecode）作为中间表示（intermediate representation, IR）的作用：让 Kotlin、Scala、Clojure、Groovy 等多种语言共享同一运行时与生态。
-- 描述 Kotlin/Native 与 Kotlin/JVM 的根本差异：前者编译为原生机器码（通过 LLVM），无 JVM 运行时依赖，启动快、内存占用低；后者依赖 JVM，运行时支持完整的 Java 生态。
-- 阐述 Kotlin Multiplatform（KMP）的设计理念：将业务逻辑（数据模型、网络、存储、业务规则）抽取为共享模块（common module），各平台（iOS、Android、Web、Desktop）实现各自的 UI 层与平台 API 绑定。
-- 解释 Kotlin 的"渐进式复杂度"（progressive complexity）设计：初学者可以用类似 Python 的简洁语法快速上手，高级开发者可以使用泛型、契约、DSL 构建等深度特性。
-- 理解 K2 编译器相对于 K1 的核心改进：新架构分为前端（Frontend）与后端（Backend），中间通过统一 IR 解耦，使多平台编译更稳定，编译速度提升约 2 倍。
-- 解释为什么 Google 在 2017 年宣布 Kotlin 为 Android 官方语言、2019 年宣布为"首选"（preferred）语言：Kotlin 的空安全显著降低了 NPE 崩溃率，协程简化了异步代码，扩展函数让 Android API 更易扩展。
-
-### 1.3 Apply（应用）
-
-- 在本机操作系统（Windows、macOS、Linux）上独立完成 JDK 17 LTS 与 IntelliJ IDEA Community Edition 的安装与配置。
-- 创建第一个 Kotlin/JVM Gradle 项目，编写 `main` 函数输出 "Hello, Kotlin!"，并通过 `./gradlew run` 运行。
-- 创建一个 Kotlin Multiplatform 项目，定义 `commonMain` 中的共享 `expect fun`，并在 `jvmMain` 与 `jsMain` 中实现 `actual fun`。
-- 使用 Kotlin Playground（https://play.kotlinlang.org）在浏览器中运行 Kotlin 代码，无需本地环境。
-- 使用 `kotlinc` 命令行编译器编译单个 `.kt` 文件，生成 `.class` 文件并通过 `java` 命令运行。
-- 配置 IntelliJ IDEA 的 Live Templates，使用 `main`、`sout`、`soutv` 等快捷模板加速编码。
-- 配置 Gradle 的 Kotlin DSL（`build.gradle.kts`），声明 `kotlin("jvm")` 插件与 `kotlin-stdlib` 依赖。
-- 使用 `kotlin.jvm.target.validation.mode` 控制 JVM 目标版本一致性检查的策略。
-
-### 1.4 Analyze（分析）
-
-- 对比 Kotlin 与 Java 的"消除样板代码"策略：Kotlin 通过 `data class` 自动生成 `equals`、`hashCode`、`toString`、`copy`、`componentN`，而 Java 需要 Lombok 或手写。
-- 分析 Kotlin 选择"静态类型 + 类型推断"而非"动态类型"的设计权衡：前者牺牲少量书写便利换取编译期错误检查、IDE 重构支持与运行时性能。
-- 解构 Kotlin/JVM 的编译流程：源代码 `.kt` → 语法分析（Parser）→ 语义分析（Analyzer）→ IR → 字节码生成（Codegen）→ `.class` 文件 → JVM 类加载 → JIT 编译为机器码。
-- 分析 KMP 与 Flutter、React Native 的本质差异：KMP 共享业务逻辑，UI 仍原生；后两者共享 UI，业务逻辑各自实现。两者解决的问题维度不同。
-- 分析 Kotlin 2.0 K2 编译器相对于 K1 在性能上的改进机制：旧版 K1 中语义分析在多个阶段重复进行，K2 通过 FIR（Frontend Intermediate Representation）一次分析后多次消费。
-
-### 1.5 Evaluate（评价）
-
-- 评价 JetBrains 在设计 Kotlin 时"实用优于纯粹"（pragmatic over pure）的设计取向：它不像 Haskell 那样追求理论纯粹性，而是兼顾工业可用性与类型安全。
-- 评价 Kotlin 选择"嵌入 JVM 生态"而非"自建生态"的策略：节省了 20 年的库生态积累，但代价是继承了 JVM 的所有缺陷（启动慢、内存大）。
-- 评价 KMP 的"渐进式共享"策略：相比 Flutter 的"全有或全无"，KMP 允许逐步迁移，但增加了认知复杂度（需要理解 expect/actual 机制）。
-- 评估 Kotlin 在服务端的竞争力：相比 Java 的优势是简洁与协程，相比 Go 的优势是生态与表达力，相比 Scala 的优势是简单与可维护性。
-- 评价 Kotlin 协程将"复杂度隐藏在库中"的设计：开发者写同步风格代码，编译器将其转换为状态机，但调试栈追踪可能变得难懂。
-- 评估 Kotlin 2.0 强制使用 K2 编译器的迁移成本：第三方编译器插件（如 KSP、KAPT）需要适配，迁移期可能产生兼容性问题。
-
-### 1.6 Create（创造）
-
-- 设计并实现一个完整的 Kotlin 项目脚手架，包含 `build.gradle.kts`、`settings.gradle.kts`、`gradle.properties`、`.gitignore`、`README.md`，支持多平台编译。
-- 设计一个团队 Kotlin 编码规范文档，规定：包结构、命名约定、`data class` 使用范围、`null` 处理策略、协程使用边界。
-- 实现一个最小化的 Kotlin DSL，用于描述 HTTP API 端点配置，输出对应的 OpenAPI 规范 JSON。
-- 搭建一个 CI/CD 流水线（GitHub Actions），在 push 时自动运行 `./gradlew build`、`./gradlew test`、`./gradlew detekt`，并上传覆盖率报告。
-- 设计一个多模块 Gradle 项目结构：`app`（应用主模块）、`core`（核心库）、`data`（数据层）、`feature-xxx`（功能模块），每个模块独立编译、独立测试。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：Java 的痛点与 JetBrains 的痛点
+### 1.1 问题背景：Java 的痛点与 JetBrains 的痛点
 
 2010 年前后，JetBrains 公司（IntelliJ IDEA 的创造者）的开发团队面临着一系列工程痛点：
 
@@ -122,7 +58,7 @@ JetBrains 内部评估了 Scala、Groovy、Clojure 等候选语言，最终决�
 - 比 Groovy 更安全（静态类型，编译期检查）。
 - 比 Java 更简洁（消除样板代码，引入现代语言特性）。
 
-### 2.2 学术背景：现代语言设计的成熟
+### 1.2 学术背景：现代语言设计的成熟
 
 Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 
@@ -133,7 +69,7 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 - **TypeScript（2012）**：启发了 Kotlin 的渐进式类型（gradual typing）思路与可空类型注解。
 - **Rust（2010）**：启发了 Kotlin 的所有权思路（虽然没有引入借用检查，但 `data class` 的 `copy` 与 Rust 的 `Clone` 异曲同工）。
 
-### 2.3 Kotlin 1.0（2016）：正式发布
+### 1.3 Kotlin 1.0（2016）：正式发布
 
 2016 年 2 月 15 日，JetBrains 发布 Kotlin 1.0 正式版，标志着语言进入稳定期。1.0 的核心特性：
 
@@ -149,7 +85,7 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 
 1.0 发布时已支持与 Java 100% 互操作，可在 JVM 8+ 上运行。
 
-### 2.4 Kotlin 1.1（2017）：协程实验与 Google 入场
+### 1.4 Kotlin 1.1（2017）：协程实验与 Google 入场
 
 2017 年的关键事件：
 
@@ -161,7 +97,7 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 3. **Kotlin/JS 1.1**：实验性支持编译为 JavaScript。
 4. **类型别名（typealias）**：允许为现有类型起别名，如 `typealias StringPredicate = (String) -> Boolean`。
 
-### 2.5 Kotlin 1.3（2018）：协程稳定与跨平台
+### 1.5 Kotlin 1.3（2018）：协程稳定与跨平台
 
 2018 年的里程碑：
 
@@ -170,7 +106,7 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 3. **契约（Contracts）实验**：引入 `contract` 函数，让编译器知道某些函数的行为（如 `requireNotNull` 后 `x` 不为 null），辅助智能转换。
 4. **内联类（inline class）实验**：允许 `value class` 在运行时表示为基础类型，零运行时开销。
 
-### 2.6 Kotlin 1.4（2020）：显式 API 模式
+### 1.6 Kotlin 1.4（2020）：显式 API 模式
 
 2020 年 8 月，Kotlin 1.4 发布，主要改进：
 
@@ -179,7 +115,7 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 3. **Kotlin Multiplatform Mobile（KMM）Alpha**：移动端跨平台方案进入 Alpha。
 4. **标准库改进**：`Deque`、`StringBuilder` 等跨平台 API。
 
-### 2.7 Kotlin 1.5（2021）：密封类改进
+### 1.7 Kotlin 1.5（2021）：密封类改进
 
 2021 年 5 月，Kotlin 1.5 引入：
 
@@ -188,7 +124,7 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 3. **无符号整数（Unsigned Integers）稳定**：`UInt`、`ULong`、`UByte`、`UShort` 进入稳定 API。
 4. **stdlib JAR 模块化**：将 `kotlin-stdlib` 拆分为多个模块，减少冗余依赖。
 
-### 2.8 Kotlin 1.6（2021）与 1.7（2022）
+### 1.8 Kotlin 1.6（2021）与 1.7（2022）
 
 1.6 主要改进：
 
@@ -201,7 +137,7 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 - **`minOf`/`maxOf` 优化**：性能改进。
 - **`value class` 优化**：减少装箱（boxing）。
 
-### 2.9 Kotlin 1.8（2023）：JVM 19 与 Kotlin/JS IR
+### 1.9 Kotlin 1.8（2023）：JVM 19 与 Kotlin/JS IR
 
 1.8 引入：
 
@@ -210,7 +146,7 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 3. **`kotlinx-datetime` 稳定**：跨平台日期时间库。
 4. **`AutoCloseable` 兼容**：Kotlin 资源使用语法 `use {}` 兼容 Java 9+ 的 `AutoCloseable`。
 
-### 2.10 Kotlin 1.9（2023）：K2 Beta 与 Kotlin Multiplatform 稳定
+### 1.10 Kotlin 1.9（2023）：K2 Beta 与 Kotlin Multiplatform 稳定
 
 1.9 是 2.0 之前的预热版本：
 
@@ -219,7 +155,7 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 3. **KSP2**：Kotlin Symbol Processing API 第二版，支持增量编译与 K2 兼容。
 4. **`@Volatile` 跨平台**：可在 `commonMain` 中使用。
 
-### 2.11 Kotlin 2.0（2024）：K2 编译器稳定
+### 1.11 Kotlin 2.0（2024）：K2 编译器稳定
 
 2024 年 5 月，Kotlin 2.0 正式发布，K2 编译器进入稳定阶段：
 
@@ -229,7 +165,7 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 4. **`guard` 条件表达式实验**：早期返回的语法糖。
 5. **`@RequiresOptIn` 改进**：实验性 API 标注机制更严格。
 
-### 2.12 Kotlin 在企业中的采用
+### 1.12 Kotlin 在企业中的采用
 
 截至 2024 年，Kotlin 已被大量公司采用：
 
@@ -245,9 +181,9 @@ Kotlin 的设计并非凭空发明，而是站在多个成熟语言之上：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 语言的类型系统分类
+### 2.1 语言的类型系统分类
 
 Kotlin 在编程语言分类学中的位置如下：
 
@@ -264,7 +200,7 @@ Kotlin 在编程语言分类学中的位置如下：
 | 求值策略       | 严格/惰性                     | 严格（Strict），但支持 `lazy` 局部惰性            |
 | 函数性质       | 一等公民/非一等               | 函数是一等公民（First-class）                     |
 
-### 3.2 语法定义的形式化描述
+### 2.2 语法定义的形式化描述
 
 Kotlin 的语法可形式化定义为以下文法（简化版 BNF 范式）：
 
@@ -315,7 +251,7 @@ unary          ::= ("!" | "-")* postfix
 postfix        ::= primary (callSuffix | navigationSuffix)*
 ```
 
-### 3.3 形式化语义：类型推导规则
+### 2.3 形式化语义：类型推导规则
 
 Kotlin 的类型推断遵循 Hindley-Milner 类型系统的部分思想，并扩展至面向对象。核心推导规则：
 
@@ -349,7 +285,7 @@ $$
 \frac{\Gamma \vdash x : T?}{\Gamma \vdash x?.\text{method}() : R?} \quad \text{(安全调用)}
 $$
 
-### 3.4 编译流程的形式化描述
+### 2.4 编译流程的形式化描述
 
 Kotlin/JVM 的编译流程可形式化为以下管道（pipeline）：
 
@@ -365,7 +301,7 @@ $$
 4. **降级（Lowering）**：$\mathcal{L}_{\text{ow}} : \text{FIR} \to \text{IR}$，将高层 IR 转换为后端 IR。
 5. **代码生成（Codegen）**：$\mathcal{C} : \text{IR} \to \mathcal{B}$，生成目标字节码。
 
-### 3.5 KMP 共享模块的形式化语义
+### 2.5 KMP 共享模块的形式化语义
 
 KMP 的核心是 `expect`/`actual` 机制，可形式化描述为：
 
@@ -382,13 +318,13 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 Kotlin/JVM 编译机制深入
+### 3.1 Kotlin/JVM 编译机制深入
 
 Kotlin 编译器将 `.kt` 源代码编译为 JVM 字节码（`.class` 文件），过程涉及多个内部阶段：
 
-#### 4.1.1 词法分析（Lexical Analysis）
+#### 3.1.1 词法分析（Lexical Analysis）
 
 词法分析器将源代码字符流切分为 Token 序列。例如：
 
@@ -410,7 +346,7 @@ Kotlin 的 Token 类型包括：
 - **操作符**：`+`、`-`、`*`、`/`、`==`、`?.`、`?:`、`!!`、`..`、`->` 等。
 - **分隔符**：`(`、`)`、`{`、`}`、`[`、`]`、`;`、`,`。
 
-#### 4.1.2 语法分析（Syntax Analysis）
+#### 3.1.2 语法分析（Syntax Analysis）
 
 语法分析器根据 BNF 文法构造 AST。例如：
 
@@ -441,7 +377,7 @@ flowchart TD
     T7 --> T9
 ```
 
-#### 4.1.3 语义分析（Semantic Analysis）
+#### 3.1.3 语义分析（Semantic Analysis）
 
 语义分析器执行：
 
@@ -457,7 +393,7 @@ K2 编译器将此阶段分为：
 - **FIR 检查**：执行所有类型与引用检查。
 - **FIR 序列化**：用于增量编译与跨模块依赖。
 
-#### 4.1.4 后端 IR 与代码生成
+#### 3.1.4 后端 IR 与代码生成
 
 K2 后端将 FIR 转换为后端 IR（Backend IR），然后生成各平台的目标代码：
 
@@ -466,7 +402,7 @@ K2 后端将 FIR 转换为后端 IR（Backend IR），然后生成各平台的�
 - **Native 后端**：通过 LLVM 生成原生二进制（`.klib` → `.exe`/`.so`/`.dylib`）。
 - **Wasm 后端**：生成 WebAssembly（`.wasm` 文件）。
 
-### 4.2 字节码层的 Kotlin 表达
+### 3.2 字节码层的 Kotlin 表达
 
 Kotlin 编译为 JVM 字节码后，许多语法糖会被"解糖"（desugar）为基础字节码操作：
 
@@ -484,7 +420,7 @@ Kotlin 编译为 JVM 字节码后，许多语法糖会被"解糖"（desugar）�
 | `lateinit var`        | 字段无 null 检查，但 getter 检查 `isInitialized`          |
 | `by lazy { }`         | 生成 `Lazy<T>` 对象，使用双重检查锁                       |
 
-### 4.3 Kotlin/Native 的编译机制
+### 3.3 Kotlin/Native 的编译机制
 
 Kotlin/Native 不依赖 JVM，直接编译为原生机器码，过程为：
 
@@ -506,7 +442,7 @@ Kotlin/Native 的优势：
 - 可用于嵌入式系统（如 IoT 设备）。
 - 编译为 iOS 二进制，支持跨平台移动开发。
 
-### 4.4 Kotlin/JS 的编译机制
+### 3.4 Kotlin/JS 的编译机制
 
 Kotlin/JS 编译为 JavaScript，过程涉及：
 
@@ -519,7 +455,7 @@ Kotlin/JS 支持两种产物：
 - **Node.js 模块**：可在 Node.js 环境运行，可调用 NPM 包。
 - **Browser 脚本**：可在浏览器中运行，可调用 DOM API。
 
-### 4.5 Kotlin/Wasm 的编译机制
+### 3.5 Kotlin/Wasm 的编译机制
 
 Kotlin/Wasm 是较新的目标平台（1.9.20 起实验性），将 Kotlin 编译为 WebAssembly：
 
@@ -527,7 +463,7 @@ Kotlin/Wasm 是较新的目标平台（1.9.20 起实验性），将 Kotlin 编�
 - 性能优于 JS，接近原生。
 - 可与 JavaScript 互操作。
 
-### 4.6 类型推断算法的原理
+### 3.6 类型推断算法的原理
 
 Kotlin 使用局部类型推断（基于约束求解），核心算法类似 Scala 的类型推断：
 
@@ -548,7 +484,7 @@ val x = if (cond) 1 else "string"
 3. 求解 `T = Int ∪ String = Comparable<*>`（最近公共父类型）。
 4. 实际推断结果：`Serializable & Comparable<*>`（intersection type）。
 
-### 4.7 智能转换的实现机制
+### 3.7 智能转换的实现机制
 
 智能转换是 Kotlin 的标志性特性。其实现原理基于**控制流类型细化（Type Refinement in Control Flow）**：
 
@@ -562,7 +498,7 @@ val x = if (cond) 1 else "string"
 - 跨函数边界失效（函数调用后类型推断重置）。
 - 在自定义 getter 中失效（属性可能返回不同类型）。
 
-### 4.8 协程的状态机转换
+### 3.8 协程的状态机转换
 
 Kotlin 协程通过 `suspend` 关键字标记函数，编译器将其转换为**状态机（State Machine）**。例如：
 
@@ -601,7 +537,7 @@ fun fetchUser(continuation: Continuation<User>): Any? {
 
 每个 `suspend` 调用对应一个状态，状态机通过 `label` 字段记录当前位置。这使得协程在不阻塞线程的情况下挂起与恢复。
 
-### 4.9 KMP 的符号解析机制
+### 3.9 KMP 的符号解析机制
 
 KMP 的 `expect`/`actual` 机制在编译期进行匹配验证：
 
@@ -613,9 +549,9 @@ KMP 的 `expect`/`actual` 机制在编译期进行匹配验证：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 第一个 Kotlin 程序
+### 4.1 第一个 Kotlin 程序
 
 ```kotlin
 // HelloWorld.kt
@@ -637,7 +573,7 @@ java -jar HelloWorld.jar
 Hello, Kotlin!
 ```
 
-### 5.2 数据类
+### 4.2 数据类
 
 ```kotlin
 // 数据类：自动生成 equals、hashCode、toString、copy、componentN
@@ -667,7 +603,7 @@ fun main() {
 }
 ```
 
-### 5.3 空安全
+### 4.3 空安全
 
 ```kotlin
 // 空安全：编译期区分可空与不可空
@@ -689,7 +625,7 @@ fun main() {
 fun getNullableName(): String? = if ((1..10).random() > 5) "Bob" else null
 ```
 
-### 5.4 扩展函数
+### 4.4 扩展函数
 
 ```kotlin
 // 扩展函数：为现有类型添加方法
@@ -706,7 +642,7 @@ fun main() {
 }
 ```
 
-### 5.5 Lambda 与高阶函数
+### 4.5 Lambda 与高阶函数
 
 ```kotlin
 // 高阶函数：函数作为参数或返回值
@@ -736,7 +672,7 @@ fun main() {
 }
 ```
 
-### 5.6 协程基础
+### 4.6 协程基础
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -764,7 +700,7 @@ fun main() = runBlocking {
 // Answer: 42  (0.5秒后)
 ```
 
-### 5.7 密封类与 when
+### 4.7 密封类与 when
 
 ```kotlin
 // 密封类：受限继承 + when 穷尽检查
@@ -793,7 +729,7 @@ fun main() {
 }
 ```
 
-### 5.8 属性委托
+### 4.8 属性委托
 
 ```kotlin
 // 属性委托：将 getter/setter 逻辑委托给其他对象
@@ -830,7 +766,7 @@ fun main() {
 }
 ```
 
-### 5.9 DSL 构建
+### 4.9 DSL 构建
 
 ```kotlin
 // DSL：领域特定语言
@@ -881,7 +817,7 @@ fun main() {
 }
 ```
 
-### 5.10 KMP 共享模块
+### 4.10 KMP 共享模块
 
 ```kotlin
 // commonMain/Main.kt
@@ -919,9 +855,9 @@ fun main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Kotlin vs Java
+### 5.1 Kotlin vs Java
 
 | 维度           | Java                                       | Kotlin                                                |
 | -------------- | ------------------------------------------ | ----------------------------------------------------- |
@@ -943,7 +879,7 @@ fun main() {
 | 互操作         | 自身                                       | 与 Java 100% 双向                                     |
 | 学习曲线       | 较陡                                       | 渐进式（入门易，精通难）                              |
 
-### 6.2 Kotlin vs Scala
+### 5.2 Kotlin vs Scala
 
 | 维度           | Scala                                  | Kotlin                                          |
 | -------------- | --------------------------------------- | ----------------------------------------------- |
@@ -959,7 +895,7 @@ fun main() {
 | 社区           | 学术 + 数据工程                        | Android + 服务端                               |
 | 典型项目       | Spark、Kafka、Akka                      | Android、Spring、Ktor                          |
 
-### 6.3 Kotlin vs Swift
+### 5.3 Kotlin vs Swift
 
 | 维度           | Swift                              | Kotlin                                       |
 | -------------- | ------------------------------------ | -------------------------------------------- |
@@ -973,7 +909,7 @@ fun main() {
 | 编译目标       | LLVM（原生）                         | JVM/JS/Native/Wasm                           |
 | 设计灵感       | Rust、Haskell、C#                    | Scala、C#、Groovy                            |
 
-### 6.4 Kotlin vs Go
+### 5.4 Kotlin vs Go
 
 | 维度           | Go                                  | Kotlin                                         |
 | -------------- | ------------------------------------ | ---------------------------------------------- |
@@ -987,7 +923,7 @@ fun main() {
 | 生态           | 云原生、微服务                       | Android、JVM 服务端、跨平台                    |
 | OOP            | 简化 OOP（无继承）                   | 完整 OOP                                       |
 
-### 6.5 KMP vs Flutter vs React Native
+### 5.5 KMP vs Flutter vs React Native
 
 | 维度           | Kotlin Multiplatform           | Flutter                    | React Native             |
 | -------------- | ------------------------------ | -------------------------- | ------------------------ |
@@ -1003,9 +939,9 @@ fun main() {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：误用 `!!` 强制非空
+### 6.1 陷阱：误用 `!!` 强制非空
 
 **问题代码**：
 
@@ -1029,7 +965,7 @@ fun process(name: String?) {
 }
 ```
 
-### 7.2 陷阱：在 `var` 上使用智能转换
+### 6.2 陷阱：在 `var` 上使用智能转换
 
 **问题代码**：
 
@@ -1061,7 +997,7 @@ class Foo {
 }
 ```
 
-### 7.3 陷阱：协程泄露
+### 6.3 陷阱：协程泄露
 
 **问题代码**：
 
@@ -1093,7 +1029,7 @@ class MyService : CoroutineScope {
 }
 ```
 
-### 7.4 陷阱：使用 `runBlocking` 阻塞主线程
+### 6.4 陷阱：使用 `runBlocking` 阻塞主线程
 
 **问题代码**：
 
@@ -1119,7 +1055,7 @@ fun fetchUser(callback: (User) -> Unit) {
 }
 ```
 
-### 7.5 陷阱：data class 包含可变属性
+### 6.5 陷阱：data class 包含可变属性
 
 **问题代码**：
 
@@ -1137,7 +1073,7 @@ val alice = User("Alice", 30)
 val aliceOlder = alice.copy(age = 31)
 ```
 
-### 7.6 陷阱：滥用 `lateinit`
+### 6.6 陷阱：滥用 `lateinit`
 
 **问题代码**：
 
@@ -1167,7 +1103,7 @@ class Bar {
 }
 ```
 
-### 7.7 陷阱：在 KMP 中使用 JVM 特定 API
+### 6.7 陷阱：在 KMP 中使用 JVM 特定 API
 
 **问题代码**：
 
@@ -1197,7 +1133,7 @@ fun formatDate(timestamp: Long): String {
 }
 ```
 
-### 7.8 陷阱：Gradle 依赖版本不一致
+### 6.8 陷阱：Gradle 依赖版本不一致
 
 **问题**：模块 A 使用 `kotlinx-coroutines:1.6.0`，模块 B 使用 `1.7.0`，导致冲突。
 
@@ -1222,7 +1158,7 @@ dependencies {
 }
 ```
 
-### 7.9 陷阱：协程上下文丢失
+### 6.9 陷阱：协程上下文丢失
 
 **问题代码**：
 
@@ -1245,7 +1181,7 @@ suspend fun updateUi() {
 }
 ```
 
-### 7.10 陷阱：滥用单例 `object`
+### 6.10 陷阱：滥用单例 `object`
 
 **问题代码**：
 
@@ -1277,9 +1213,9 @@ class MyService(private val config: Config) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构规范
+### 7.1 项目结构规范
 
 推荐的 Kotlin/JVM 项目结构：
 
@@ -1360,7 +1296,7 @@ flowchart TD
     T14 --> T15
 ```
 
-### 8.2 Gradle 构建脚本
+### 7.2 Gradle 构建脚本
 
 最小化的 `build.gradle.kts`：
 
@@ -1407,7 +1343,7 @@ dependencyResolutionManagement {
 }
 ```
 
-### 8.3 版本目录（Version Catalog）
+### 7.3 版本目录（Version Catalog）
 
 `gradle/libs.versions.toml`：
 
@@ -1434,7 +1370,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ```
 
-### 8.4 多平台构建配置
+### 7.4 多平台构建配置
 
 KMP 项目的 `shared/build.gradle.kts`：
 
@@ -1490,7 +1426,7 @@ kotlin {
 }
 ```
 
-### 8.5 单元测试
+### 7.5 单元测试
 
 ```kotlin
 import kotlin.test.Test
@@ -1518,7 +1454,7 @@ class Calculator {
 }
 ```
 
-### 8.6 协程测试
+### 7.6 协程测试
 
 ```kotlin
 import kotlinx.coroutines.test.runTest
@@ -1544,7 +1480,7 @@ class MyService {
 }
 ```
 
-### 8.7 代码规范工具：Detekt
+### 7.7 代码规范工具：Detekt
 
 `config/detekt.yml`：
 
@@ -1584,7 +1520,7 @@ detekt {
 }
 ```
 
-### 8.8 持续集成
+### 7.8 持续集成
 
 `.github/workflows/ci.yml`：
 
@@ -1619,7 +1555,7 @@ jobs:
         uses: codecov/codecov-action@v3
 ```
 
-### 8.9 文档生成：Dokka
+### 7.9 文档生成：Dokka
 
 ```kotlin
 plugins {
@@ -1640,9 +1576,9 @@ dokka {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：从 Java 迁移到 Kotlin
+### 8.1 案例一：从 Java 迁移到 Kotlin
 
 **场景**：一个 Spring Boot 服务，使用 Java 8，包含 50 个类。团队决定迁移到 Kotlin。
 
@@ -1698,7 +1634,7 @@ data class User(
 
 **收益**：从 30+ 行减少到 4 行，可读性大幅提升。
 
-### 9.2 案例二：Android 应用迁移到协程
+### 8.2 案例二：Android 应用迁移到协程
 
 **场景**：一个 Android 应用使用 RxJava 处理异步操作，迁移到协程。
 
@@ -1747,7 +1683,7 @@ fun showUser(userId: Long) {
 - 类型更明确（`User` 而非 `Observable<User>`）。
 - 异常处理更直观（try/catch 而非 onError 回调）。
 
-### 9.3 案例三：KMP 跨平台应用
+### 8.3 案例三：KMP 跨平台应用
 
 **场景**：一个移动应用，iOS 与 Android 共享业务逻辑（数据模型、网络、缓存）。
 
@@ -1838,7 +1774,7 @@ class UserViewModel: ObservableObject {
 - iOS 与 Android 行为一致。
 - 团队可专注于各平台 UI 优化。
 
-### 9.4 案例四：服务端 Ktor API
+### 8.4 案例四：服务端 Ktor API
 
 **场景**：用 Ktor 构建一个 RESTful API。
 
@@ -1886,7 +1822,7 @@ fun main() {
 - 简洁的路由 DSL。
 - 与 Kotlin 协程原生集成。
 
-### 9.5 案例五：DSL 构建 SQL 查询
+### 8.5 案例五：DSL 构建 SQL 查询
 
 ```kotlin
 class SqlBuilder {
@@ -1929,7 +1865,7 @@ fun main() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：以下代码的输出是什么？
 
@@ -1992,7 +1928,7 @@ data class Point(val x: Double, val y: Double) {
 }
 ```
 
-### 10.2 中级题
+### 9.2 中级题
 
 **习题 4**：实现一个 `Result<T>` 类型，使用密封类表示成功与失败。
 
@@ -2086,7 +2022,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 10.3 高级题
+### 9.3 高级题
 
 **习题 7**：设计一个 KMP 项目，共享一个 HTTP 客户端接口。
 
@@ -2193,7 +2129,7 @@ class Counter {
 }
 ```
 
-### 10.4 设计题
+### 9.4 设计题
 
 **习题 9**：设计一个简单的 DI（依赖注入）框架。
 
@@ -2302,9 +2238,9 @@ fun main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 1. JetBrains. "Kotlin Documentation." *Kotlin Official Site*, 2024. https://kotlinlang.org/docs/home.html.
 
@@ -2318,7 +2254,7 @@ fun main() {
 
 6. Google. "Android Kotlin Fundamentals." *Android Developers*, 2024. https://developer.android.com/courses/kotlin-android-fundamentals/overview.
 
-### 11.2 学术论文与技术报告
+### 10.2 学术论文与技术报告
 
 7. Bruel, Pierre-Yves et al. "On the Design of Kotlin's Null Safety." *Journal of Object Technology*, 2020.
 
@@ -2328,7 +2264,7 @@ fun main() {
 
 10. Vazquez, Carlos. "K2 Compiler Architecture." *JetBrains Internal Document*, 2023.
 
-### 11.3 KEEP 提案
+### 10.3 KEEP 提案
 
 11. JetBrains. "KEEP-87: Multiplatform Projects." *Kotlin Evolution and Enhancement Process*, 2018. https://github.com/Kotlin/KEEP/blob/master/proposals/multiplatform-projects.md.
 
@@ -2336,7 +2272,7 @@ fun main() {
 
 13. JetBrains. "KEEP-300: Sealed Classes Improvements." *Kotlin Evolution and Enhancement Process*, 2021. https://github.com/Kotlin/KEEP/blob/master/proposals/sealed-class-inheritance.md.
 
-### 11.4 工程实践
+### 10.4 工程实践
 
 14. JetBrains. "Kotlin Coding Conventions." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/coding-conventions.html.
 
@@ -2346,7 +2282,7 @@ fun main() {
 
 17. Gradle. "Gradle Kotlin DSL Primer." *Gradle Documentation*, 2024. https://docs.gradle.org/current/userguide/kotlin_dsl.html.
 
-### 11.5 书籍推荐
+### 10.5 书籍推荐
 
 18. Jemerov, Dmitry, and Svetlana Isakova. *Kotlin in Action*. Manning Publications, 2017.
 
@@ -2358,7 +2294,7 @@ fun main() {
 
 22. Saumont, Pierre-Yves. *The Joy of Kotlin*. Manning Publications, 2019.
 
-### 11.6 跨语言参考
+### 10.6 跨语言参考
 
 23. Apple. "The Swift Programming Language." *Swift Documentation*, 2024. https://docs.swift.org/swift-book/.
 
@@ -2368,7 +2304,7 @@ fun main() {
 
 26. Rust Team. "The Rust Programming Language." *Rust Documentation*, 2024. https://doc.rust-lang.org/book/.
 
-### 11.7 课程参考
+### 10.7 课程参考
 
 27. MIT OpenCourseWare. "6.005 Software Construction." *MIT OCW*, 2024. https://ocw.mit.edu/courses/6-005-software-construction-spring-2016/.
 
@@ -2380,9 +2316,9 @@ fun main() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 - **基础语法**：见后续章节，深入学习变量、控制流、函数。
 - **类与对象**：见 `类与对象.md`，了解 Kotlin OOP 的完整特性。
@@ -2392,7 +2328,7 @@ fun main() {
 - **空安全详解**：见 `空安全详解.md`，系统学习空安全的设计与实践。
 - **委托属性**：见 `委托属性.md`，深入 `lazy`、`observable`、自定义委托。
 
-### 12.2 相关项目
+### 11.2 相关项目
 
 - **Kotlin Coroutines**：官方协程库
   - https://github.com/Kotlin/kotlinx.coroutines
@@ -2418,7 +2354,7 @@ fun main() {
 - **Arrow.kt**：函数式编程库
   - https://arrow-kt.io/
 
-### 12.3 工具与插件
+### 11.3 工具与插件
 
 - **IntelliJ IDEA**：JetBrains 官方 IDE，提供 Kotlin 最好的开发体验
   - https://www.jetbrains.com/idea/
@@ -2438,7 +2374,7 @@ fun main() {
 - **Kotlin Notebook**：交互式 Kotlin 笔记本
   - https://kotlinlang.org/docs/kotlin-notebook-overview.html
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **Kotlin Slack**：https://kotlinlang.slack.com/
   - 各专项频道（#android、#server、#coroutines、#multiplatform）
@@ -2455,7 +2391,7 @@ fun main() {
 - **Kotlin Weekly**：https://kotlinweekly.net/
   - 每周 Kotlin 新闻邮件
 
-### 12.5 实践项目建议
+### 11.5 实践项目建议
 
 完成本文档学习后，建议尝试以下项目巩固知识：
 
@@ -2465,7 +2401,7 @@ fun main() {
 - **KMP 共享库**：创建一个 KMP 项目，实现一个跨平台的 HTTP 客户端封装。
 - **DSL 设计**：为某个领域（如 SQL、HTML、配置）设计一个 Kotlin DSL。
 
-### 12.6 学习路径建议
+### 11.6 学习路径建议
 
 针对不同背景的学习者，推荐如下学习路径：
 
@@ -2493,7 +2429,7 @@ fun main() {
 4. 学习协程与异步编程。
 5. 实战：用 Ktor 构建一个 Web API。
 
-### 12.7 后续学习路线图
+### 11.7 后续学习路线图
 
 完成本文档与基础语法、类与对象、函数与 Lambda 的学习后，推荐按以下顺序进阶：
 
@@ -2503,7 +2439,7 @@ fun main() {
 4. **泛型与类型系统 → 委托属性 → 内联类**
 5. **Kotlin 与 Spring / Ktor / Koin / Exposed / Compose**
 
-### 12.8 相关 Kotlin 文档
+### 11.8 相关 Kotlin 文档
 
 - [基础语法](./基础语法.md)
 - [函数与 Lambda](./函数与Lambda.md)

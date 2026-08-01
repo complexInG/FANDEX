@@ -16,53 +16,6 @@ prerequisites:
   - go/概述与环境配置
 ---
 
-## 0. 学习目标
-
-本篇文档依据 Bloom 分类法,从认知、理解、应用、分析、评价、创造六个层次构建学习路径。完成本篇学习后,读者应能够熟练运用 Go 的标准并发模式,设计高吞吐、低延迟、可观测的并发系统。
-
-### 0.1 Remember(记忆)
-
-- 列举 Go 标准并发模式的核心类别:generator、pipeline、fan-out/fan-in、worker pool、done channel、or-channel、tee、bridge channel、errgroup、semaphore、context cancellation。
-- 复述 `close(ch)` 的广播语义:唤醒所有阻塞在 `recvq` 中的 goroutine,使其返回零值。
-- 背诵 `context.Context` 的四种派生方式:`WithCancel`、`WithTimeout`、`WithDeadline`、`WithValue`。
-- 描述 `errgroup.Group` 的核心方法:`Go`、`Wait`、`WithContext`、`SetLimit`、`TryGo`。
-
-### 0.2 Understand(理解)
-
-- 解释 pipeline 模式的数据流动机制:每个 stage 是一个 goroutine,通过 channel 串联,前一个 stage 的输出是后一个 stage 的输入。
-- 阐述 fan-out/fan-in 的语义差异:fan-out 是将一个输入分发给多个 worker,fan-in 是将多个输入合并为一个输出。
-- 理解 done channel 模式取消 goroutine 的原理:关闭 done channel 后,所有 `<-done` 操作立即返回零值,从而触发 goroutine 退出。
-- 说明 or-channel 模式实现多路复用取消的递归结构。
-
-### 0.3 Apply(应用)
-
-- 编写一个三阶段 pipeline:读取文件 -> 解析 JSON -> 写入数据库,每个阶段可独立扩展并发度。
-- 使用 `errgroup.WithContext` 实现并发请求多个下游服务,任一失败即取消其他。
-- 利用带缓冲的 semaphore 模式控制 goroutine 并发数,避免 OOM。
-- 通过 `context.WithTimeout` 为 HTTP 请求设置超时,并在超时后清理资源。
-
-### 0.4 Analyze(分析)
-
-- 分析 pipeline 中某个 stage 阻塞对整体吞吐量的影响,推导 Little's Law 在 pipeline 中的应用。
-- 解构 worker pool 模式中 worker 数量、任务队列容量、任务处理时间三者之间的关系。
-- 对比 `errgroup` 与 `sync.WaitGroup` 在错误传播、上下文取消、并发限制方面的差异。
-- 分析 goroutine 泄漏的根因:发送方未关闭 channel、接收方提前退出、无取消信号。
-
-### 0.5 Evaluate(评价)
-
-- 评价"通过通信共享内存"在 pipeline 模式下的工程价值,论述其相比共享内存 + 锁的优势与局限。
-- 评价 fan-out 模式的扩展性瓶颈:当 worker 数量超过 CPU 核数时,吞吐量增长趋于平缓。
-- 评价 `context.Context` 作为 Go 标准取消机制的统一性:它在 API 设计、测试、observability 上的影响。
-- 评价 semaphore 模式基于 channel vs 基于 `sync.Mutex` + 计数器的取舍。
-
-### 0.6 Create(创造)
-
-- 设计一个支持动态扩缩容的 worker pool,根据队列长度自动调整 worker 数量。
-- 构建一个可观测的 pipeline 框架,集成 OpenTelemetry,采集每个 stage 的吞吐量、延迟、错误率。
-- 实现一个支持优先级的 fan-in 模式,高优先级 channel 的数据优先被消费。
-- 创造一个基于 generic 的并发模式库,提供 `Map`、`Reduce`、`Filter`、`FlatMap` 等函数式并发原语。
-
----
 
 ## 1. 历史动机与发展脉络
 
@@ -142,9 +95,9 @@ for _, url := range urls {
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 并发模式的核心抽象
+### 1.1 并发模式的核心抽象
 
 并发模式可形式化为一个三元组 $\mathcal{M} = (P, C, S)$,其中:
 
@@ -160,7 +113,7 @@ $$
 
 其中 $Q_i$ 是状态集,$\Sigma_i$ 是输入字母表(channel 操作),$\delta_i$ 是转移函数,$q_0$ 是初始状态,$F_i$ 是终止状态集。
 
-### 2.2 Pipeline 的形式化定义
+### 1.2 Pipeline 的形式化定义
 
 Pipeline 是一系列 stage 的线性组合,每个 stage $f_i$ 是一个从输入 channel 到输出 channel 的函数:
 
@@ -176,7 +129,7 @@ $$
 
 其中 $\circ$ 表示 goroutine 级别的组合,即每个 $f_i$ 在独立的 goroutine 中执行。
 
-### 2.3 Fan-out/Fan-in 的形式化定义
+### 1.3 Fan-out/Fan-in 的形式化定义
 
 **Fan-out**:将一个输入 channel $c_{\text{in}}$ 分发给 $k$ 个 worker:
 
@@ -196,7 +149,7 @@ $$
 c_{\text{merged}} = \text{fan-in}(\text{fan-out}(c_{\text{in}}, k))
 $$
 
-### 2.4 Worker Pool 的形式化定义
+### 1.4 Worker Pool 的形式化定义
 
 Worker pool 由三部分组成:
 
@@ -208,7 +161,7 @@ $$
 w_i : \text{loop}\{ t = \text{recv}(Q_{\text{task}}); r = \text{process}(t); \text{send}(Q_{\text{result}}, r) \}
 $$
 
-### 2.5 context.Context 的接口定义
+### 1.5 context.Context 的接口定义
 
 依据 `context/context.go`:
 
@@ -239,7 +192,7 @@ case v := <-input:
 }
 ```
 
-### 2.6 errgroup.Group 的结构
+### 1.6 errgroup.Group 的结构
 
 依据 `golang.org/x/sync/errgroup`:
 
@@ -277,9 +230,9 @@ func (g *Group) Go(f func() error) {
 
 ---
 
-## 3. 理论推导与原理解析
+## 2. 理论推导与原理解析
 
-### 3.1 Little's Law 在并发模式中的应用
+### 2.1 Little's Law 在并发模式中的应用
 
 Little's Law 是排队论的基本定理,描述了稳定系统中吞吐量、并发数、响应时间的关系:
 
@@ -306,7 +259,7 @@ $$
 
 例如:HTTP 请求到达率 1000 QPS,平均处理时间 50ms,则 $k \geq 1000 \times 0.05 = 50$ 个 worker。
 
-### 3.2 Pipeline 吞吐量的形式化分析
+### 2.2 Pipeline 吞吐量的形式化分析
 
 设 pipeline 有 $n$ 个 stage,每个 stage 处理时间为 $t_i$($i = 1, 2, \ldots, n$)。pipeline 的吞吐量受最慢的 stage 限制:
 
@@ -340,7 +293,7 @@ $$
 \frac{t_i}{k_i^*} = \frac{\sum_j t_j}{K}, \quad \forall i
 $$
 
-### 3.3 Channel 缓冲区大小的形式化分析
+### 2.3 Channel 缓冲区大小的形式化分析
 
 设生产者速率 $\lambda_p$,消费者速率 $\lambda_c$($\lambda_p > \lambda_c$),缓冲区大小 $B$。队列填满时间:
 
@@ -360,7 +313,7 @@ $$
 
 实践中,常取 $B = \min(\lambda_c \cdot L_{\max}, \text{memory\_limit} / \text{element\_size})$。
 
-### 3.4 取消传播的 happens-before 保证
+### 2.4 取消传播的 happens-before 保证
 
 Go 内存模型规定,channel 的关闭 happens-before 任何对该 channel 的接收返回。形式化地:
 
@@ -385,7 +338,7 @@ cancel()  // 触发取消
 
 `cancel()` 内部调用 `close(ctx.done)`,依据 happens-before,goroutine 中的 `<-ctx.Done()` 必然能感知到取消。
 
-### 3.5 errgroup 并发限制的实现原理
+### 2.5 errgroup 并发限制的实现原理
 
 `errgroup.SetLimit(n)` 内部使用一个带缓冲 channel 作为信号量:
 
@@ -413,7 +366,7 @@ if !g.TryGo(f) {
 }
 ```
 
-### 3.6 or-channel 递归取消的复杂度分析
+### 2.6 or-channel 递归取消的复杂度分析
 
 or-channel 模式通过递归 select 实现多路复用取消:
 
@@ -457,9 +410,9 @@ $$
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 项目结构
+### 3.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -507,7 +460,7 @@ require (
 )
 ```
 
-### 4.2 Generator 模式
+### 3.2 Generator 模式
 
 Generator 是将普通数据流转换为 channel 的工厂函数,是 pipeline 的起点。
 
@@ -562,7 +515,7 @@ func GeneratorFunc(ctx context.Context, fn func() (int, bool)) <-chan int {
 }
 ```
 
-### 4.3 Pipeline 模式
+### 3.3 Pipeline 模式
 
 Pipeline 将多个 stage 串联,每个 stage 是一个 goroutine,通过 channel 传递数据。
 
@@ -643,7 +596,7 @@ for v := range result {
 }
 ```
 
-### 4.4 Fan-out/Fan-in 模式
+### 3.4 Fan-out/Fan-in 模式
 
 Fan-out 将一个输入分发给多个 worker 并行处理,Fan-in 将多个 worker 的输出合并。
 
@@ -737,7 +690,7 @@ func FanInSelect(ctx context.Context, ch1, ch2 <-chan int) <-chan int {
 }
 ```
 
-### 4.5 Worker Pool 模式
+### 3.5 Worker Pool 模式
 
 Worker pool 是 Go 中最经典的并发模式,预创建固定数量的 worker,通过任务队列分发任务。
 
@@ -869,7 +822,7 @@ func main() {
 }
 ```
 
-### 4.6 Done Channel 模式
+### 3.6 Done Channel 模式
 
 Done channel 是最早的取消模式,通过关闭一个 channel 广播取消信号。
 
@@ -909,7 +862,7 @@ func DoneChannel() {
 }
 ```
 
-### 4.7 Or-Channel 模式
+### 3.7 Or-Channel 模式
 
 Or-channel 将多个取消信号合并为一个,任一信号触发即取消。
 
@@ -974,7 +927,7 @@ go func() {
 <-Or(sig1, sig2, sig3)  // 1 秒后返回
 ```
 
-### 4.8 Tee 模式
+### 3.8 Tee 模式
 
 Tee 模式将一个输入 channel 分流为两个输出 channel,类似 Unix 的 `tee` 命令。
 
@@ -1012,7 +965,7 @@ func Tee[T any](ctx context.Context, in <-chan T) (<-chan T, <-chan T) {
 }
 ```
 
-### 4.9 Bridge Channel 模式
+### 3.9 Bridge Channel 模式
 
 Bridge channel 将 `chan chan T` 展平为 `chan T`,处理动态生成的 channel 序列。
 
@@ -1075,7 +1028,7 @@ for v := range Bridge(ctx, paginatedFetch(ctx, 5)) {
 }
 ```
 
-### 4.10 errgroup 模式
+### 3.10 errgroup 模式
 
 `errgroup` 是 Go 官方推荐的并发错误处理模式,封装了 WaitGroup + 错误传播 + 取消传播。
 
@@ -1157,7 +1110,7 @@ func PipelineWithErrgroup(ctx context.Context, input <-chan int) <-chan int {
 }
 ```
 
-### 4.11 Semaphore 模式
+### 3.11 Semaphore 模式
 
 Semaphore 用于限制并发数,有两种实现:基于 channel 和基于 `golang.org/x/sync/semaphore`。
 
@@ -1236,7 +1189,7 @@ func fetchWithLimit(ctx context.Context, urls []string, maxConcurrency int) erro
 }
 ```
 
-### 4.12 Context 取消模式
+### 3.12 Context 取消模式
 
 Context 是 Go 标准的取消机制,所有并发模式都应集成 context。
 
@@ -1315,7 +1268,7 @@ func PropagateCancel(ctx context.Context) {
 }
 ```
 
-### 4.13 泛型并发模式(Go 1.18+)
+### 3.13 泛型并发模式(Go 1.18+)
 
 Go 1.18 引入泛型后,并发模式可类型参数化,提升复用性。
 
@@ -1426,9 +1379,9 @@ func FanInGeneric[T any](ctx context.Context, channels ...<-chan T) <-chan T {
 
 ---
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 并发模式对比表
+### 4.1 并发模式对比表
 
 | 模式 | 适用场景 | 优点 | 缺点 | 典型应用 |
 |------|---------|------|------|---------|
@@ -1444,7 +1397,7 @@ func FanInGeneric[T any](ctx context.Context, channels ...<-chan T) <-chan T {
 | Semaphore | 资源限制 | 精确控制并发度 | 需正确释放 | DB 连接池、API 限流 |
 | Context | 取消传播 | 标准化、可嵌套 | 不支持错误传递 | 所有现代 Go 代码 |
 
-### 5.2 errgroup vs sync.WaitGroup
+### 4.2 errgroup vs sync.WaitGroup
 
 | 维度 | errgroup | sync.WaitGroup |
 |------|----------|----------------|
@@ -1456,7 +1409,7 @@ func FanInGeneric[T any](ctx context.Context, channels ...<-chan T) <-chan T {
 | 学习成本 | 低 | 极低 |
 | 标准库 | 第三方(golang.org/x/sync) | 标准库 |
 
-### 5.3 channel-based semaphore vs golang.org/x/sync/semaphore
+### 4.3 channel-based semaphore vs golang.org/x/sync/semaphore
 
 | 维度 | channel-based | x/sync/semaphore |
 |------|---------------|-------------------|
@@ -1467,7 +1420,7 @@ func FanInGeneric[T any](ctx context.Context, channels ...<-chan T) <-chan T {
 | 可观测性 | 无 | 有(metrics) |
 | 适用场景 | 简单等权限制 | 复杂资源管理 |
 
-### 5.4 CSP vs Actor 模型
+### 4.4 CSP vs Actor 模型
 
 | 维度 | Go CSP | Erlang/Akka Actor |
 |------|--------|-------------------|
@@ -1480,9 +1433,9 @@ func FanInGeneric[T any](ctx context.Context, channels ...<-chan T) <-chan T {
 
 ---
 
-## 6. 常见陷阱与最佳实践
+## 5. 常见陷阱与最佳实践
 
-### 6.1 goroutine 泄漏
+### 5.1 goroutine 泄漏
 
 **陷阱**:goroutine 阻塞在 channel 发送/接收,无人唤醒。
 
@@ -1512,7 +1465,7 @@ func noLeak(ctx context.Context) {
 }
 ```
 
-### 6.2 向已关闭 channel 发送
+### 5.2 向已关闭 channel 发送
 
 **陷阱**:向已关闭 channel 发送会 panic。
 
@@ -1539,7 +1492,7 @@ for v := range out {
 }
 ```
 
-### 6.3 循环变量捕获
+### 5.3 循环变量捕获
 
 **陷阱**:Go 1.22 之前,循环变量在整个循环中是同一变量。
 
@@ -1567,7 +1520,7 @@ for i := 0; i < 5; i++ {
 }
 ```
 
-### 6.4 nil channel 的妙用
+### 5.4 nil channel 的妙用
 
 **陷阱**:对 nil channel 的发送/接收会永久阻塞。
 
@@ -1600,7 +1553,7 @@ for ch1 != nil || ch2 != nil {
 }
 ```
 
-### 6.5 channel 关闭的重复关闭
+### 5.5 channel 关闭的重复关闭
 
 **陷阱**:重复关闭 channel 会 panic。
 
@@ -1625,7 +1578,7 @@ func (s *SafeChannel) Close() {
 }
 ```
 
-### 6.6 数据竞争(Data Race)
+### 5.6 数据竞争(Data Race)
 
 **陷阱**:多个 goroutine 并发读写同一变量,无同步。
 
@@ -1671,7 +1624,7 @@ for i := 0; i < 1000; i++ {
 }
 ```
 
-### 6.7 errgroup 错误仅保留第一个
+### 5.7 errgroup 错误仅保留第一个
 
 **陷阱**:`errgroup.Group` 仅保留第一个错误,后续错误被丢弃。
 
@@ -1705,7 +1658,7 @@ _ = g.Wait()
 return errors.Join(allErrs...)
 ```
 
-### 6.8 context.Value 滥用
+### 5.8 context.Value 滥用
 
 **陷阱**:将 context.Value 用于业务参数传递,导致隐式依赖。
 
@@ -1746,9 +1699,9 @@ func traceID(ctx context.Context) string {
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 goroutine 泄漏检测
+### 6.1 goroutine 泄漏检测
 
 使用 `go.uber.org/goleak` 在测试中检测 goroutine 泄漏。
 
@@ -1765,7 +1718,7 @@ func TestWorker(t *testing.T) {
 }
 ```
 
-### 7.2 竞态检测
+### 6.2 竞态检测
 
 使用 `-race` 标志在测试时检测数据竞争。
 
@@ -1774,7 +1727,7 @@ go test -race ./...
 go run -race main.go
 ```
 
-### 7.3 pprof 诊断 goroutine
+### 6.3 pprof 诊断 goroutine
 
 ```bash
 # 启动 pprof
@@ -1788,7 +1741,7 @@ go tool pprof http://localhost:6060/debug/pprof/goroutine
 go tool pprof -http=:8080 http://localhost:6060/debug/pprof/goroutine
 ```
 
-### 7.4 集成 OpenTelemetry
+### 6.4 集成 OpenTelemetry
 
 为并发模式集成 tracing,观测每个 stage 的延迟。
 
@@ -1820,7 +1773,7 @@ func TracedStage(ctx context.Context, in <-chan int) <-chan int {
 }
 ```
 
-### 7.5 automaxprocs
+### 6.5 automaxprocs
 
 在容器环境中,`GOMAXPROCS` 默认为宿主机 CPU 数,可能导致 goroutine 过度调度。使用 `go.uber.org/automaxprocs` 自动调整。
 
@@ -1833,7 +1786,7 @@ func main() {
 }
 ```
 
-### 7.6 优雅关闭
+### 6.6 优雅关闭
 
 实现优雅关闭,确保所有 goroutine 完成后再退出。
 
@@ -1871,7 +1824,7 @@ func main() {
 }
 ```
 
-### 7.7 benchstat 性能对比
+### 6.7 benchstat 性能对比
 
 使用 `benchstat` 对比不同并发模式的性能。
 
@@ -1904,9 +1857,9 @@ go test -bench=. -count=10 | benchstat old.txt new.txt
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 Kubernetes:informer 机制
+### 7.1 Kubernetes:informer 机制
 
 Kubernetes 的 informer 是典型的 fan-out + worker pool 模式:
 
@@ -1946,7 +1899,7 @@ func (c *Controller) processLoop() {
 }
 ```
 
-### 8.2 Docker:daemon 并发处理
+### 7.2 Docker:daemon 并发处理
 
 Docker daemon 使用 worker pool 处理容器操作请求:
 
@@ -1954,7 +1907,7 @@ Docker daemon 使用 worker pool 处理容器操作请求:
 - **Worker pool**:固定 worker 处理容器生命周期操作。
 - **Mutex**:容器状态变更使用 `sync.Mutex` 保护(因临界区小,优于 channel)。
 
-### 8.3 TiDB:并发执行器
+### 7.3 TiDB:并发执行器
 
 TiDB 的 SQL 执行器是典型的 pipeline + fan-out/fan-in 模式:
 
@@ -1998,7 +1951,7 @@ func (p *Pipeline) Execute(ctx context.Context) ([]Row, error) {
 }
 ```
 
-### 8.4 Prometheus:scrape 并发
+### 7.4 Prometheus:scrape 并发
 
 Prometheus 的 scrape manager 使用 worker pool + context:
 
@@ -2357,7 +2310,7 @@ func (p *DynamicWorkerPool) Shutdown() {
 }
 ```
 
-### 9.4 思考题
+### 8.4 思考题
 
 **1. 为什么 Go 推荐使用 channel 而非 mutex?在什么场景下 mutex 更合适?**
 
@@ -2447,7 +2400,7 @@ context.Value 的合理用途:
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
 [1] Rob Pike. 2012. Go at Google: Language Design in the Service of Software Engineering. In Proceedings of the 11th Dynamic Languages Symposium (DLS '12). ACM, New York, NY, USA, 7-8. DOI: https://doi.org/10.1145/2384577.2384580
 
@@ -2481,9 +2434,9 @@ context.Value 的合理用途:
 
 ---
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 书籍
+### 10.1 书籍
 
 - **Concurrency in Go**(Katherine Cox-Buday, O'Reilly, 2016):Go 并发编程权威指南,深入讲解各种模式与陷阱。
 - **Go in Action**(William Kennedy, Brian Ketelsen, Erik St. Martin, Manning, 2016):第 6 章详述 goroutine 与 channel。
@@ -2491,7 +2444,7 @@ context.Value 的合理用途:
 - **Programming Go**(Jon Bodner, O'Reilly, 2022):第 10-12 章覆盖并发、channel、context。
 - **Learning Go**(Jon Bodner, O'Reilly, 2021):第 5 章"Functions"与第 8 章"Concurrency"。
 
-### 11.2 论文与技术文档
+### 10.2 论文与技术文档
 
 - **Communicating Sequential Processes**(Tony Hoare, 1978):CSP 原始论文,Go 并发哲学源头。
 - **Scalable Go Scheduler Design Doc**(Dmitry Vyukov, 2014):GMP 调度器设计文档。
@@ -2499,7 +2452,7 @@ context.Value 的合理用途:
 - **Go Concurrency Patterns: Pipelines and cancellation**:Go 官方博客,经典 pipeline 文章。
 - **Go Concurrency Patterns: Context**:Go 官方博客,context 设计动机。
 
-### 11.3 在线资源
+### 10.3 在线资源
 
 - **Go by Example**(https://gobyexample.com/):并发章节提供简洁示例。
 - **Go Tour**(https://go.dev/tour/concurrency):官方互动教程。
@@ -2507,14 +2460,14 @@ context.Value 的合理用途:
 - **Go Concurrency Patterns**(https://go.dev/blog/pipelines):Go 官方博客系列。
 - **Uber Go Style Guide**(https://github.com/uber-go/guide):并发章节涵盖最佳实践。
 
-### 11.4 视频与演讲
+### 10.4 视频与演讲
 
 - **Advanced Go Concurrency Patterns**(Sameer Ajmani, GopherCon 2014):Google 工程师讲解高级模式。
 - **Rethinking Classical Concurrency Patterns**(Bryan C. Mills, GopherCon 2018):重新审视经典模式。
 - **Understanding Channels**(Kavya Joshi, GopherCon 2017):channel 底层实现剖析。
 - **Concurrency Tools**(Eben Freeman, GopherCon 2021):新型并发工具与模式。
 
-### 11.5 工具一览
+### 10.5 工具一览
 
 | 工具 | 用途 | 链接 |
 |------|------|------|
@@ -2530,7 +2483,7 @@ context.Value 的合理用途:
 
 ---
 
-## 12. 总结
+## 11. 总结
 
 本篇系统梳理了 Go 的标准并发模式,涵盖从基础的 generator、pipeline 到高级的 errgroup、semaphore、context 取消。核心要点回顾:
 

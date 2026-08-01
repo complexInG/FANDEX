@@ -17,60 +17,16 @@ prerequisites:
   - go/Go与HTTP服务器
 ---
 
+
 # Go 与 WebAssembly：从浏览器到边缘计算
 
 > 本文以 Go 1.22 为基准版本，覆盖 Go 1.11 至 Go 1.24 的 Wasm 演进，包括 wasm 字节码格式、栈式虚拟机执行语义、`syscall/js` 桥接机制、WASI 接口、TinyGo 替代编译器与典型企业级案例研究。适用于已掌握 Go 基础语法与 HTTP 服务开发、希望深入理解 WebAssembly 工程化落地的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。Bloom 分类法将认知目标分为六个递进层级：Remember（记忆）→ Understand（理解）→ Apply（应用）→ Analyze（分析）→ Evaluate（评价）→ Create（创造）。
-
-### 1.1 Remember（记忆）
-
-- 准确复述 WebAssembly 1.0（MVP）规范的核心要素：模块结构、段（section）类型、值类型、指令集。
-- 列出 Go 编译到 wasm 的两种目标：`GOOS=js GOARCH=wasm`（浏览器）与 `GOOS=wasip1 GOARCH=wasm`（WASI）。
-- 背诵 `syscall/js` 包的核心 API：`js.Global()`、`js.Value`、`js.FuncOf`、`js.Value.Get/Set/Call/Invoke`。
-- 列出 wasm 二进制体积优化的三种手段：`-ldflags="-s -w"`、`brotli` 压缩、TinyGo 替代编译。
-
-### 1.2 Understand（理解）
-
-- 解释 wasm 的栈式虚拟机（stack-based VM）执行模型，对比寄存器式虚拟机（如 Lua VM、JVM 字节码部分场景）的差异。
-- 描述 wasm 的线性内存（linear memory）模型，说明 Go runtime 如何将其用作堆内存。
-- 阐述 `js.FuncOf` 的回调机制：JavaScript 调用 Go 函数时的 trampoline 跳板如何完成参数传递与返回值回收。
-- 说明为何 Go wasm 二进制体积通常为 2-7 MB，而 Rust wasm 可压缩到 50 KB 量级。
-
-### 1.3 Apply（应用）
-
-- 在生产代码中将 Go 函数注册为 JavaScript 可调用函数，处理 DOM 事件、Canvas 绘图、Web Worker 通信。
-- 使用 `GOOS=js GOARCH=wasm go build` 编译 Go 程序为 wasm 模块，并通过 `wasm_exec.js` 加载到浏览器。
-- 使用 `wasm-tools`、`wabt`（wasm2wat/wat2wasm）检视生成的 wasm 字节码，定位体积与性能瓶颈。
-- 编写 WASI 程序，使用 `wasmtime`、`wasmer`、`WasmEdge` 在服务器端执行。
-
-### 1.4 Analyze（分析）
-
-- 分析 wasm 模块的段布局：type section、import section、function section、memory section、export section、code section。
-- 对比 Go wasm 与 Rust wasm-bindgen、AssemblyScript、Zig wasm 在二进制体积、启动延迟、GC 支持上的差异。
-- 推导 Go wasm 在浏览器中的调度模型：单线程协作式调度（Go 1.11-1.24）与 wasm threads proposal（未来）的对比。
-
-### 1.5 Evaluate（评价）
-
-- 评估在何种业务场景下应使用 Go wasm（计算密集型 + 浏览器端复用 Go 业务逻辑）相对于纯 JavaScript 或 Rust wasm 的优势。
-- 评价 `syscall/js` 的同步调用模型在长任务、Promise 链式调用场景下的适用性与局限。
-- 判断 wasm 模块的内存增长策略（initial / maximum）对 OOM 风险的影响，并提出合理的兜底方案。
-
-### 1.6 Create（创造）
-
-- 设计一个 Go wasm 模块，复用现有 Go 后端的校验、加密、解析逻辑，在浏览器端执行以减少网络往返。
-- 实现一个支持 Web Worker 的并行 wasm 计算框架，利用 SharedArrayBuffer + wasm threads 完成多核加速。
-- 基于 WASI 构建跨平台 CLI 工具，同一份 wasm 二进制可在 Linux、Windows、macOS、Edge Runtime 上运行。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 WebAssembly 的起源（2015-2017）
+### 1.1 WebAssembly 的起源（2015-2017）
 
 WebAssembly（简称 Wasm）源于浏览器厂商对 JavaScript 性能瓶颈的共识。2015 年 6 月，Google、Mozilla、Microsoft、Apple 联合宣布 Wasm 项目，目标是为浏览器提供一种可移植、安全、接近原生性能的低级字节码格式。2017 年 3 月，Wasm 1.0（MVP）规范发布，三大浏览器（Chrome、Firefox、Safari）同日支持。
 
@@ -81,7 +37,7 @@ WebAssembly（简称 Wasm）源于浏览器厂商对 JavaScript 性能瓶颈的�
 3. **沙箱安全**：wasm 默认无法访问 DOM、网络、文件系统，必须通过宿主（host）显式注入能力（capability-based security）。
 4. **紧凑二进制**：wasm 二进制通常比等价 JavaScript 源码小 2-5 倍，解析速度比 JS 快 10 倍以上。
 
-### 2.2 Go 1.11（2018-08）：js/wasm 支持
+### 1.2 Go 1.11（2018-08）：js/wasm 支持
 
 Go 1.11 由 Richard Musiol 等人完成 `GOOS=js GOARCH=wasm` 目标的支持，标志着 Go 正式进入浏览器端。首批实现的核心特征：
 
@@ -90,17 +46,17 @@ Go 1.11 由 Richard Musiol 等人完成 `GOOS=js GOARCH=wasm` 目标的支持，
 - **完整 runtime**：将 Go runtime（GC、scheduler、netpoller）一并编译到 wasm，因此二进制体积 2 MB 起步。这是 Go wasm 体积远大于 Rust wasm 的根本原因。
 - **单线程**：受限于 wasm 1.0 的单线程模型，Go 的 goroutine 在 wasm 中采用协作式调度（cooperative scheduling），由 `runtime.GOOS == "js"` 路径特殊处理。
 
-### 2.3 Go 1.13-1.17（2019-2021）：稳定性提升
+### 1.3 Go 1.13-1.17（2019-2021）：稳定性提升
 
 - Go 1.13：修复 `js.FuncOf` 内存泄漏，引入 `js.Value.Release()` 显式释放 JS 引用。
 - Go 1.14：wasm 模块支持 `time.Ticker`、`time.After`，底层基于 `performance.now()` 与 `setTimeout`。
 - Go 1.17：编译器全面切换到 SSA 后端，wasm 二进制体积减少约 10-15%，启动时间缩短约 20%。
 
-### 2.4 Go 1.18（2022-03）：泛型与 wasm
+### 1.4 Go 1.18（2022-03）：泛型与 wasm
 
 Go 1.18 引入类型参数，但 wasm 目标的编译路径未发生根本变化。值得注意的是，泛型实例化在 wasm 中的代码膨胀问题（code bloat）导致部分项目体积增加 5-10%，社区开始普遍采用 `//go:build !js` 标签隔离非浏览器代码。
 
-### 2.5 Go 1.21（2023-08）：WASI Preview 1 支持
+### 1.5 Go 1.21（2023-08）：WASI Preview 1 支持
 
 Go 1.21 由 Axel Bjerregaard Sørensen 等人贡献 `GOOS=wasip1 GOARCH=wasm` 目标，支持 WASI Preview 1（WebAssembly System Interface）。关键变化：
 
@@ -109,7 +65,7 @@ Go 1.21 由 Axel Bjerregaard Sørensen 等人贡献 `GOOS=wasip1 GOARCH=wasm` �
 - **网络受限**：WASI Preview 1 不提供 socket 接口，因此 `net.Listen`、`net.Dial` 在 WASI 下不可用。需要通过 WASI Preview 2 或宿主扩展（host extension）补充。
 - **运行时环境**：可在 `wasmtime`、`wasmer`、`WasmEdge`、`wasm3`、`WAMR` 等 WASI 兼容 runtime 中执行。
 
-### 2.6 Go 1.24（2025-02）：性能与可观察性
+### 1.6 Go 1.24（2025-02）：性能与可观察性
 
 Go 1.24 针对 wasm 目标做了若干优化：
 
@@ -117,7 +73,7 @@ Go 1.24 针对 wasm 目标做了若干优化：
 - **`go tool pprof` 支持**：wasm 模块可输出 CPU profile 与 heap profile，通过 `runtime/pprof` 与 `wasm_exec.js` 的 `profile` 选项配合使用。
 - **`-buildmode=pie`**：部分 wasm runtime（如 wasmtime）要求位置无关代码，Go 1.24 默认启用 PIE 编译。
 
-### 2.7 TinyGo 平行演进
+### 1.7 TinyGo 平行演进
 
 TinyGo 是 Go 的子集编译器，由 Ayke van Laethem 主导，基于 LLVM 后端，目标之一是生成更小的 wasm 二进制：
 
@@ -132,7 +88,7 @@ TinyGo 是 Go 的子集编译器，由 Ayke van Laethem 主导，基于 LLVM 后
 
 TinyGo 适合资源受限场景（嵌入式、Edge Function），但对完整 Go 标准库的支持仍在演进中。
 
-### 2.8 演进时间轴
+### 1.8 演进时间轴
 
 ```mermaid
 timeline
@@ -149,9 +105,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 WebAssembly 规范定义
+### 2.1 WebAssembly 规范定义
 
 WebAssembly 1.0（MVP）规范由 W3C 与 WebAssembly Community Group 联合发布。形式化文法：
 
@@ -169,7 +125,7 @@ section ::= type_section | import_section | function_section
 2. **值类型**（MVP）：`i32`、`i64`、`f32`、`f64` 四种。Go 的 `int` 在 wasm 中映射为 `i32`（32 位平台）或 `i64`（64 位，需要 wasm 2.0 multi-memory 或 memory64 提案）。
 3. **沙箱隔离**：wasm 模块默认无法访问 DOM、网络、文件系统，必须通过 import section 显式声明所需能力，宿主在实例化时注入。
 
-### 3.2 栈式虚拟机执行模型
+### 2.2 栈式虚拟机执行模型
 
 wasm 指令在概念上操作一个操作数栈（operand stack）。例如，计算 `(a + b) * c` 的指令序列：
 
@@ -189,11 +145,11 @@ $$
 
 其中 $s$ 是操作数栈状态，$\text{inst}$ 是单条指令，$\text{seq}$ 是指令序列。
 
-### 3.3 Go wasm runtime 数据结构
+### 2.3 Go wasm runtime 数据结构
 
 源码位置：`runtime/os_wasip1.go`、`runtime/js.go`（js/wasm）、`syscall/js/js.go`。
 
-#### 3.3.1 js.Value
+#### 2.3.1 js.Value
 
 ```go
 // syscall/js/js.go (Go 1.22)
@@ -210,7 +166,7 @@ type ref uint64
 
 `js.Value` 通过 `ref` 字段引用 JavaScript 堆中的对象，避免 Go GC 与 JS GC 之间的直接耦合。当 `js.Value` 在 Go 侧被回收时，runtime 通过 `runtime.goexit` 钩子通知 `wasm_exec.js` 释放对应的 JS 引用。
 
-#### 3.3.2 js.Func
+#### 2.3.2 js.Func
 
 ```go
 type Func struct {
@@ -229,7 +185,7 @@ func FuncOf(fn func(this Value, args []Value) any) Func
 3. Go 回调函数执行完毕后，将返回值序列化回 JS 堆。
 4. JS trampoline 解析返回值并返回给调用方。
 
-### 3.4 线性内存与 Go 堆
+### 2.4 线性内存与 Go 堆
 
 wasm 模块的线性内存是连续的字节数组，通过 `memory.grow` 指令扩展。Go runtime 将整个 Go 堆映射到线性内存：
 
@@ -245,7 +201,7 @@ $$
 \text{initial} = 8 \text{ pages} = 512 \text{ KB}, \quad \text{maximum} = 65536 \text{ pages} = 4 \text{ GB}
 $$
 
-### 3.5 类型系统理论
+### 2.5 类型系统理论
 
 从类型论视角，wasm 模块是一个 **封闭世界**（closed world）的类型系统：
 
@@ -257,9 +213,9 @@ Go 的 `any` 类型在 wasm 边界被转换为 `js.Value`，但其动态类型�
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 wasm 字节码与体积分析
+### 3.1 wasm 字节码与体积分析
 
 wasm 二进制由若干段（section）组成，每段有 1 字节 ID + LEB128 长度前缀。典型 Go wasm 模块的段布局：
 
@@ -280,7 +236,7 @@ $$
 \text{Size}_{\text{wasm}} \approx \underbrace{\text{Size}_{\text{runtime}}}_{\approx 1.8 \text{ MB}} + \underbrace{\text{Size}_{\text{user code}}}_{\text{proportional to LoC}} + \underbrace{\text{Size}_{\text{reflect, fmt, ...}}}_{\text{transitive deps}}
 $$
 
-### 4.2 启动延迟模型
+### 3.2 启动延迟模型
 
 Go wasm 模块的启动延迟由三部分组成：
 
@@ -298,7 +254,7 @@ $$
 T_{\text{start}} = \frac{3 \text{ MB}}{10 \text{ Mbps}} + \frac{3 \text{ MB}}{5 \text{ MB/s}} + 100 \text{ ms} = 2.4 \text{ s} + 600 \text{ ms} + 100 \text{ ms} \approx 3.1 \text{ s}
 $$
 
-### 4.3 调度模型与协作式让出
+### 3.3 调度模型与协作式让出
 
 Go wasm 的 goroutine 调度采用协作式让出（cooperative yield）：
 
@@ -311,7 +267,7 @@ Go wasm 的 goroutine 调度采用协作式让出（cooperative yield）：
 
 **推论**：长任务应切分为多个 macrotask，通过 `time.Sleep(0)` 或 `runtime.Gosched()` 让出。
 
-### 4.4 跨边界调用的开销模型
+### 3.4 跨边界调用的开销模型
 
 Go 调用 JavaScript 函数的开销：
 
@@ -327,7 +283,7 @@ $$
 
 因此，**频繁跨边界调用**（如每像素调用 `ctx.fillRect`）性能极差。应批量传递数据，在 Go 侧完成计算，最后一次性写回 JS。
 
-### 4.5 内存增长与 OOM 风险
+### 3.5 内存增长与 OOM 风险
 
 线性内存的 `maximum` 字段决定上限。当 Go 堆增长触及 `maximum` 时，`memory.grow` 返回 -1，Go runtime 触发 `runtime.throw("out of memory")`，整个 wasm 模块崩溃。
 
@@ -343,9 +299,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：注册函数与 DOM 操作
+### 4.1 基础：注册函数与 DOM 操作
 
 ```go
 // main.go
@@ -430,7 +386,7 @@ python -m http.server 8080
 </html>
 ```
 
-### 5.2 DOM 操作与事件处理
+### 4.2 DOM 操作与事件处理
 
 ```go
 package main
@@ -474,7 +430,7 @@ func setupDOM() {
 }
 ```
 
-### 5.3 Canvas 图像处理（灰度化）
+### 4.3 Canvas 图像处理（灰度化）
 
 ```go
 package main
@@ -520,7 +476,7 @@ func grayscale(this js.Value, args []js.Value) any {
 }
 ```
 
-### 5.4 Promise 与异步 fetch
+### 4.4 Promise 与异步 fetch
 
 ```go
 package main
@@ -584,7 +540,7 @@ func fetchUser(this js.Value, args []js.Value) any {
 }
 ```
 
-### 5.5 Web Worker 通信
+### 4.5 Web Worker 通信
 
 ```go
 // worker.go - 在 Web Worker 中运行的 wasm 模块
@@ -625,7 +581,7 @@ worker.postMessage({ cmd: 'compute', data: 40 });
 worker.onmessage = (e) => console.log('结果:', e.data);
 ```
 
-### 5.6 WASI 文件操作
+### 4.6 WASI 文件操作
 
 ```go
 // wasi_main.go
@@ -674,7 +630,7 @@ wasmtime --dir=. wasi_main.wasm README.md
 wasmtime --env USER=Alice --dir=. wasi_main.wasm
 ```
 
-### 5.7 性能基准与体积对比
+### 4.7 性能基准与体积对比
 
 ```go
 // bench.go - 对比 wasm 与 JS 的性能
@@ -739,9 +695,9 @@ brotli -q 11 main.wasm -o main.wasm.br
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Go wasm vs Rust wasm-bindgen
+### 5.1 Go wasm vs Rust wasm-bindgen
 
 | 维度 | Go wasm | Rust wasm-bindgen |
 | --- | --- | --- |
@@ -755,7 +711,7 @@ brotli -q 11 main.wasm -o main.wasm.br
 | 生态成熟度 | 中 | 高（webpack 插件、wasm-pack） |
 | 适用场景 | 复用 Go 后端逻辑 | 性能敏感、库级复用 |
 
-### 6.2 Go wasm vs AssemblyScript
+### 5.2 Go wasm vs AssemblyScript
 
 | 维度 | Go wasm | AssemblyScript |
 | --- | --- | --- |
@@ -766,7 +722,7 @@ brotli -q 11 main.wasm -o main.wasm.br
 | 与 JS 互操作 | syscall/js（手动） | 原生（语法层支持） |
 | 适用场景 | 后端逻辑复用 | 纯前端高性能计算 |
 
-### 6.3 Go wasm vs Zig wasm
+### 5.3 Go wasm vs Zig wasm
 
 | 维度 | Go wasm | Zig wasm |
 | --- | --- | --- |
@@ -777,7 +733,7 @@ brotli -q 11 main.wasm -o main.wasm.br
 | 生态成熟度 | 高 | 中 |
 | 适用场景 | 业务逻辑 | 系统级、嵌入式 |
 
-### 6.4 Go js/wasm vs Go wasip1
+### 5.4 Go js/wasm vs Go wasip1
 
 | 维度 | `GOOS=js GOARCH=wasm` | `GOOS=wasip1 GOARCH=wasm` |
 | --- | --- | --- |
@@ -791,9 +747,9 @@ brotli -q 11 main.wasm -o main.wasm.br
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：频繁跨边界调用
+### 6.1 反模式：频繁跨边界调用
 
 ```go
 // BAD: 每像素调用 SetIndex，导致大量 wasm↔JS 边界切换
@@ -845,7 +801,7 @@ func goodGrayscale(canvas js.Value) {
 }
 ```
 
-### 7.2 反模式：忘记释放 js.Func
+### 6.2 反模式：忘记释放 js.Func
 
 ```go
 // BAD: 每次调用都创建新 Func，但不释放，导致 JS 堆泄漏
@@ -869,7 +825,7 @@ func goodEventListener(button js.Value) {
 }
 ```
 
-### 7.3 反模式：长任务阻塞 UI
+### 6.3 反模式：长任务阻塞 UI
 
 ```go
 // BAD: 同步计算 5 秒，阻塞浏览器渲染
@@ -900,7 +856,7 @@ func goodCompute() js.Value {
 }
 ```
 
-### 7.4 反模式：未设置 wasm Memory 上限
+### 6.4 反模式：未设置 wasm Memory 上限
 
 ```javascript
 // BAD: 不设上限，浏览器可能 OOM
@@ -918,7 +874,7 @@ go.importObject.env = {
 WebAssembly.instantiateStreaming(fetch('main.wasm'), go.importObject);
 ```
 
-### 7.5 反模式：file:// 协议加载 wasm
+### 6.5 反模式：file:// 协议加载 wasm
 
 ```html
 <!-- BAD: 直接打开 HTML 文件，wasm 无法加载（CORS 限制） -->
@@ -932,7 +888,7 @@ python -m http.server 8080
 npx serve .
 ```
 
-### 7.6 反模式：在 wasm 中使用 net.Listen
+### 6.6 反模式：在 wasm 中使用 net.Listen
 
 ```go
 // BAD: js/wasm 不支持 net.Listen，运行时 panic
@@ -952,7 +908,7 @@ func goodFetch(url string) ([]byte, error) {
 }
 ```
 
-### 7.7 反模式：直接使用 string 作为 Context key
+### 6.7 反模式：直接使用 string 作为 Context key
 
 ```go
 // BAD: 在 wasm 中与其他 Go 代码共用 string key，可能冲突
@@ -966,7 +922,7 @@ const userIDKey ctxKey = "userID"
 ctx := context.WithValue(r.Context(), userIDKey, 123)
 ```
 
-### 7.8 反模式：忽略 wasm 二进制体积
+### 6.8 反模式：忽略 wasm 二进制体积
 
 ```bash
 # BAD: 直接上传 5 MB 的 wasm，影响首屏加载
@@ -983,9 +939,9 @@ brotli -q 11 main.wasm -o main.wasm.br
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 构建流水线
+### 7.1 构建流水线
 
 生产级 Go wasm 项目的典型构建流水线：
 
@@ -1021,7 +977,7 @@ jobs:
           path: dist/
 ```
 
-### 8.2 二进制体积优化策略
+### 7.2 二进制体积优化策略
 
 1. **`-ldflags="-s -w"`**：去除符号表与 DWARF 调试信息，体积减少约 30%。
 2. **`-tags netgo`**：禁用 cgo 网络栈（虽然 wasm 本就不支持 cgo，但显式声明可避免误引入）。
@@ -1031,7 +987,7 @@ jobs:
 6. **TinyGo**：资源敏感场景使用 TinyGo 替代官方编译器。
 7. **HTTP 压缩**：brotli 优先（比 gzip 多减 10-15%），通过 `Content-Encoding: br` 传输。
 
-### 8.3 内存监控与 OOM 兜底
+### 7.3 内存监控与 OOM 兜底
 
 ```go
 // 在 wasm 模块中定期检查内存使用
@@ -1057,7 +1013,7 @@ func monitorMemory(ctx context.Context) {
 }
 ```
 
-### 8.4 错误处理与 panic 捕获
+### 7.4 错误处理与 panic 捕获
 
 ```go
 // 包装 js.FuncOf，捕获 panic 并转换为 JS Error
@@ -1087,7 +1043,7 @@ js.Global().Set("compute", safeFunc(func(this js.Value, args []js.Value) (any, e
 }))
 ```
 
-### 8.5 CI/CD 部署模式
+### 7.5 CI/CD 部署模式
 
 **模式 1：CDN 静态托管**
 
@@ -1120,7 +1076,7 @@ GOOS=wasip1 GOARCH=wasm go build -o plugin.wasm ./cmd/plugin
 wasmer run plugin.wasm --dir=. --env=API_KEY=xxx
 ```
 
-### 8.6 团队协作约定
+### 7.6 团队协作约定
 
 1. **目录结构约定**：
 
@@ -1166,9 +1122,9 @@ build-wasm:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Astro——Go wasm 处理 Markdown 渲染
+### 8.1 案例一：Astro——Go wasm 处理 Markdown 渲染
 
 Astro 是静态站点生成器，其内容渲染流水线在浏览器端预览时复用 Go 后端的 Markdown 解析逻辑。具体做法：
 
@@ -1179,7 +1135,7 @@ Astro 是静态站点生成器，其内容渲染流水线在浏览器端预览�
 
 **收益**：前后端 Markdown 渲染结果完全一致，避免了 JS 与 Go 实现差异导致的预览错位。
 
-### 9.2 案例二：Cosmos SDK——链上交易签名
+### 8.2 案例二：Cosmos SDK——链上交易签名
 
 Cosmos SDK 的浏览器钱包（Keplr）使用 Go wasm 复用 Go 后端的交易签名逻辑：
 
@@ -1189,7 +1145,7 @@ Cosmos SDK 的浏览器钱包（Keplr）使用 Go wasm 复用 Go 后端的交易
 
 **收益**：加密逻辑单点维护，避免 JS 与 Go 实现不一致导致的安全风险。
 
-### 9.3 案例三：Fermyon Spin——WASI 服务器端应用
+### 8.3 案例三：Fermyon Spin——WASI 服务器端应用
 
 Fermyon Spin 是基于 WASI 的服务器端应用框架，支持用 Go 编写云函数：
 
@@ -1221,7 +1177,7 @@ spin deploy
 
 **收益**：冷启动 < 1 ms（相比容器化 Go 服务的 100 ms+），适合事件驱动场景。
 
-### 9.4 案例四：WasmEdge——Go 作为 Edge 插件
+### 8.4 案例四：WasmEdge——Go 作为 Edge 插件
 
 WasmEdge 是 CNCF 的 wasm runtime，支持用 Go wasm 编写 Edge 插件：
 
@@ -1231,7 +1187,7 @@ WasmEdge 是 CNCF 的 wasm runtime，支持用 Go wasm 编写 Edge 插件：
 
 **收益**：跨云厂商一致运行时，无需为不同 Edge 平台重新编译。
 
-### 9.5 案例五：TinyGo 在嵌入式设备的应用
+### 8.5 案例五：TinyGo 在嵌入式设备的应用
 
 TinyGo 编译的 wasm 在资源受限设备（如 ESP32、micro:bit）上运行 Go 逻辑：
 
@@ -1263,7 +1219,7 @@ func main() {
 
 ## 知识讲解与要点分析（原练习）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题 1**：使用 `syscall/js` 实现一个函数 `isPrime(n int) bool`，在浏览器中调用并显示 1-100 的所有素数。
 
@@ -1333,7 +1289,7 @@ Go wasm 体积大的根本原因：
 - 使用 brotli 压缩并启用 HTTP 缓存（传输体积可减 75%+）。
 
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题 3**：实现一个 Go wasm 模块，在浏览器中加载一张图片，应用 Sobel 边缘检测算法，并将结果显示在 Canvas 上。要求：使用 `js.CopyBytesToGo` 批量传输数据，避免每像素边界调用。
 
@@ -1449,7 +1405,7 @@ func process(data js.Value) {
 ```
 
 
-### 10.3 思考题
+### 9.3 思考题
 
 **题 5**：在浏览器中，Go wasm 与 JavaScript 共享同一个事件循环。若 Go wasm 中启动了 1000 个 goroutine，调度器如何避免某个 goroutine 长时间占用 CPU 导致 UI 卡顿？请从协作式调度与抢占式调度的角度分析。
 
@@ -1535,7 +1491,7 @@ func New() Client { return &nativeClient{c: &http.Client{}} }
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 以下参考文献遵循 ACM Reference Format：
 
@@ -1561,22 +1517,22 @@ func New() Client { return &nativeClient{c: &http.Client{}} }
 
 ---
 
-## 12. 扩展阅读
+## 11. 扩展阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **Go Wasm Wiki**：https://github.com/golang/go/wiki/WebAssembly
 - **WebAssembly 官方规范**：https://webassembly.github.io/spec/
 - **WASI 官方文档**：https://wasi.dev/
 - **TinyGo 文档**：https://tinygo.org/
 
-### 12.2 经典论文
+### 11.2 经典论文
 
 - *Bringing the Web up to Speed with WebAssembly* (Haas et al., PLDI 2017)：wasm 设计动机与实现。
 - *WASM: A WebAssembly Compiler for the Edge* (Zhang et al., 2021)：Edge 场景下 wasm 的应用。
 - *Memory Safety in WebAssembly* (Watt et al., 2022)：wasm 内存模型的形式化分析。
 
-### 12.3 开源项目
+### 11.3 开源项目
 
 - **wasm-pack**（Rust）：https://github.com/rustwasm/wasm-pack
 - **wasm-bindgen**（Rust）：https://github.com/rustwasm/wasm-bindgen
@@ -1587,14 +1543,14 @@ func New() Client { return &nativeClient{c: &http.Client{}} }
 - **WasmEdge**：https://github.com/WasmEdge/WasmEdge
 - **Fermyon Spin**：https://github.com/fermyon/spin
 
-### 12.4 书籍推荐
+### 11.4 书籍推荐
 
 - *WebAssembly in Action* (C. Gerard Galland, Manning, 2019)
 - *Level Up with WebAssembly* (Robert Aboukhalil, Pragmatic Bookshelf, 2020)
 - *Programming WebAssembly with Rust* (Kevin Hoffman, O'Reilly, 2019)
 - *WebAssembly: The Definitive Guide* (Brian Sletten, O'Reilly, 2023)
 
-### 12.5 会议与社区
+### 11.5 会议与社区
 
 - **WebAssembly Community Group**：https://www.w3.org/community/webassembly/
 - **Bytecode Alliance**：https://bytecodealliance.org/

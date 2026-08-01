@@ -14,6 +14,7 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
+
 # 元服务开发与发布 语法速查手册
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -102,20 +103,7 @@ flowchart TD
 
 可以看到,HarmonyOS 元服务在"卡片能力"与"跨设备流转"两个维度上具备独特优势,这是鸿蒙生态的差异化护城河。
 
-## 2. 学习目标
-
-完成本章学习后,读者应能够:
-
-1. **概念层面**——准确解释元服务的定义、与传统应用的核心差异、在 HarmonyOS 生态中的定位,能够基于产品需求判断是否采用元服务形态
-2. **工程层面**——能够使用 DevEco Studio 创建元服务工程,理解工程结构、`module.json5` 配置、FormAbility 配置、卡片尺寸规范等关键约束
-3. **卡片开发**——熟练使用 ArkTS 卡片语法开发 1x1、2x2、2x4、4x4 等多尺寸服务卡片,掌握卡片数据绑定、刷新机制、事件交互
-4. **数据通信**——理解元服务主体与卡片之间的数据传递机制,能够使用 `formProvider`、`FormBindingData`、SharedStorage 等完成主体到卡片的数据同步
-5. **发布流程**——掌握元服务签名、打包、上架 AppGallery Connect 的完整流程,理解审核要点与常见拒审原因
-6. **进阶能力**——能够实现卡片定时刷新、跨设备同步、深度链接跳转、卡片分享等高级功能
-7. **性能与体积**——理解 10MB 体积约束下的代码与资源优化策略,能够通过 HAR 拆分、资源压缩、代码混淆等手段控制体积
-8. **调试排错**——能够使用 DevEco Studio 的卡片预览器、日志查看器、真机调试等工具定位卡片渲染、数据同步、事件回调等问题
-
-## 3. 前置知识
+## 2. 前置知识
 
 阅读本章前,建议读者具备以下基础:
 
@@ -128,9 +116,9 @@ flowchart TD
 
 若读者对上述任何一项不熟悉,建议先完成对应章节学习再回到本章。元服务开发涉及的概念较多,前置知识不足会导致理解困难。
 
-## 4. 核心概念
+## 3. 核心概念
 
-### 4.1 元服务的工程结构
+### 3.1 元服务的工程结构
 
 元服务工程在 DevEco Studio 中使用专用模板创建,其目录结构与传统应用略有差异。一个典型的元服务工程结构如下:
 
@@ -171,7 +159,7 @@ flowchart TD
 3. **`resources/base/profile/form_config.json`** 是卡片元数据配置文件,定义卡片的名称、尺寸、刷新周期等
 4. 工程整体体积必须控制在 10MB 以内,包括代码、资源、动态加载库
 
-### 4.2 `module.json5` 关键配置
+### 3.2 `module.json5` 关键配置
 
 `module.json5` 是元服务工程的核心配置文件。下表列出与元服务相关的关键字段:
 
@@ -234,7 +222,7 @@ flowchart TD
 - **`extensionAbilities`** 中的 `type: "form"`——声明这是一个 FormAbility,用于承载服务卡片能力
 - **`metadata`** 中的 `ohos.extension.form`——指向卡片配置文件,卡片的具体尺寸、刷新周期等元数据在配置文件中定义
 
-### 4.3 卡片配置文件 `form_config.json`
+### 3.3 卡片配置文件 `form_config.json`
 
 卡片配置文件位于 `resources/base/profile/form_config.json`,定义卡片的元数据。每个元服务可发布多张卡片,每张卡片在 `forms` 数组中独立配置:
 
@@ -299,7 +287,7 @@ flowchart TD
 | `updateDuration` | number | 定时刷新间隔,单位为 30 分钟(如 `1` 表示 30 分钟,`2` 表示 60 分钟) |
 | `formConfigAbility` | string | 卡片配置 Ability,用户长按卡片"配置"时跳转的 Ability |
 
-### 4.4 卡片尺寸规范
+### 3.4 卡片尺寸规范
 
 HarmonyOS 支持的卡片尺寸遵循网格规范。手机设备上典型支持以下尺寸:
 
@@ -333,7 +321,7 @@ $$
 
 这种网格化设计保证了不同尺寸卡片在桌面布局时对齐美观。
 
-### 4.5 FormAbility 详解
+### 3.5 FormAbility 详解
 
 FormAbility 是元服务中专门管理卡片生命周期的 ExtensionAbility。它继承自 `FormExtensionAbility`,并实现以下核心回调:
 
@@ -416,7 +404,7 @@ export default class WeatherFormAbility extends FormExtensionAbility {
 3. **`onFormEvent` 是卡片与 FormAbility 的交互通道**——卡片内的按钮点击可通过 `postCardAction` 触发此回调
 4. **`onRouteTo` 是卡片点击跳转的钩子**——通常用于跳转到元服务主体的对应页面
 
-### 4.6 卡片 UI 文件结构
+### 3.6 卡片 UI 文件结构
 
 ArkTS 卡片 UI 文件使用 ArkUI 声明式语法,但有以下约束:
 
@@ -485,7 +473,7 @@ struct WeatherCard {
 - **`postCardAction`**——卡片向 FormAbility 发送消息的全局函数。`action: 'message'` 表示发送消息,FormAbility 的 `onFormEvent` 会收到回调
 - **样式约束**——卡片 UI 应使用相对单位(`'100%'`)或固定 px 值,避免使用 vp/vp 等 API(卡片环境不支持)
 
-### 4.7 卡片与元服务主体的数据通信
+### 3.7 卡片与元服务主体的数据通信
 
 元服务主体与卡片之间需要双向通信,常见场景包括:
 
@@ -493,7 +481,7 @@ struct WeatherCard {
 - **卡片 -> 主体**:卡片点击跳转到主体,并传递上下文(如点击的项 ID)
 - **卡片 -> FormAbility**:卡片按钮触发 FormAbility 处理逻辑(如收藏、刷新)
 
-#### 4.7.1 主体 -> 卡片:主动刷新
+#### 3.7.1 主体 -> 卡片:主动刷新
 
 元服务主体在需要时可通过 `formProvider.updateForm` 主动刷新指定卡片:
 
@@ -527,7 +515,7 @@ class WeatherService {
 }
 ```
 
-#### 4.7.2 卡片 -> 主体:跳转传参
+#### 3.7.2 卡片 -> 主体:跳转传参
 
 卡片点击触发跳转时,可通过 `router` action 携带参数:
 
@@ -571,7 +559,7 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-#### 4.7.3 卡片 -> FormAbility:事件触发
+#### 3.7.3 卡片 -> FormAbility:事件触发
 
 卡片按钮通过 `message` action 向 FormAbility 发送消息,FormAbility 在 `onFormEvent` 中处理:
 
@@ -605,7 +593,7 @@ private async saveFavorite(formId: string, city: string): Promise<void> {
 }
 ```
 
-### 4.8 卡片的数据模型与状态管理
+### 3.8 卡片的数据模型与状态管理
 
 卡片的数据通过 `FormBindingData` 传递,本质上是一个 `Record<string, Object>` 结构。需要理解以下几点:
 
@@ -613,7 +601,7 @@ private async saveFavorite(formId: string, city: string): Promise<void> {
 2. **数据大小限制**——单次 `updateForm` 的数据大小不能超过 1KB,大数据应分多次更新或通过 SharedStorage 共享
 3. **数据一致性**——FormAbility 与卡片运行在独立进程中,数据通过 IPC 传递,不是直接内存共享
 
-### 4.9 SharedStorage 跨进程共享
+### 3.9 SharedStorage 跨进程共享
 
 当卡片与主体需要共享较大数据时,可使用 `AppStorage` 的分布式变体或 SharedStorage。SharedStorage 提供跨进程读写能力:
 
@@ -640,9 +628,9 @@ class SharedDataService {
 
 FormAbility 与主体使用相同的 `storeName`,即可实现数据共享。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 示例 1:最简单的 2x2 天气卡片
+### 4.1 示例 1:最简单的 2x2 天气卡片
 
 本示例演示一个最简单的天气卡片,展示静态数据。
 
@@ -727,7 +715,7 @@ struct WeatherCard {
 }
 ```
 
-### 5.2 示例 2:定时刷新的动态卡片
+### 4.2 示例 2:定时刷新的动态卡片
 
 本示例演示卡片每 30 分钟自动刷新一次数据。
 
@@ -805,7 +793,7 @@ export default class WeatherFormAbility extends FormExtensionAbility {
 }
 ```
 
-### 5.3 示例 3:多尺寸卡片适配
+### 4.3 示例 3:多尺寸卡片适配
 
 本示例演示同一份业务数据,适配 2x2 与 4x4 两种尺寸卡片。
 
@@ -971,7 +959,7 @@ struct TodoCardLarge {
 }
 ```
 
-### 5.4 示例 4:卡片与主体数据联动
+### 4.4 示例 4:卡片与主体数据联动
 
 本示例演示主体更新数据后,主动推送刷新卡片。
 
@@ -1018,9 +1006,9 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-## 6. 实战案例
+## 5. 实战案例
 
-### 6.1 案例:完整天气元服务
+### 5.1 案例:完整天气元服务
 
 本案例演示一个完整的天气元服务,包含:
 
@@ -1030,7 +1018,7 @@ export default class EntryAbility extends UIAbility {
 - 定时刷新:每 30 分钟更新一次
 - 卡片交互:点击卡片跳转主体,点击刷新按钮触发 FormAbility
 
-#### 6.1.1 工程结构
+#### 5.1.1 工程结构
 
 ```mermaid
 flowchart TD
@@ -1077,7 +1065,7 @@ flowchart TD
     T33 --> T36
 ```
 
-#### 6.1.2 数据模型定义
+#### 5.1.2 数据模型定义
 
 ```typescript
 // model/WeatherData.ets
@@ -1110,7 +1098,7 @@ export interface City {
 }
 ```
 
-#### 6.1.3 天气服务实现
+#### 5.1.3 天气服务实现
 
 ```typescript
 // service/WeatherService.ets
@@ -1162,7 +1150,7 @@ export class WeatherService {
 }
 ```
 
-#### 6.1.4 FormAbility 完整实现
+#### 5.1.4 FormAbility 完整实现
 
 ```typescript
 // formability/WeatherFormAbility.ets
@@ -1258,7 +1246,7 @@ export default class WeatherFormAbility extends FormExtensionAbility {
 }
 ```
 
-#### 6.1.5 2x2 卡片 UI
+#### 5.1.5 2x2 卡片 UI
 
 ```typescript
 // widget/pages/WeatherCardSmall.ets
@@ -1342,7 +1330,7 @@ struct WeatherCardSmall {
 }
 ```
 
-#### 6.1.6 4x4 大卡片 UI
+#### 5.1.6 4x4 大卡片 UI
 
 ```typescript
 // widget/pages/WeatherCardLarge.ets
@@ -1465,7 +1453,7 @@ struct WeatherCardLarge {
 }
 ```
 
-#### 6.1.7 主体页面
+#### 5.1.7 主体页面
 
 ```typescript
 // pages/Index.ets
@@ -1609,9 +1597,9 @@ struct IndexPage {
 }
 ```
 
-## 7. 进阶技巧
+## 6. 进阶技巧
 
-### 7.1 卡片尺寸响应式设计
+### 6.1 卡片尺寸响应式设计
 
 当一张卡片需要支持多个尺寸时,可以根据 `formId` 对应的尺寸动态切换布局。但 ArkTS 卡片目前不直接支持运行时获取尺寸,推荐做法是为每个尺寸单独写 UI 文件,通过 `form_config.json` 配置多个 `forms` 项,各自指向不同的 UI 文件。
 
@@ -1658,7 +1646,7 @@ WeatherHeader(this.city, this.updatedAt)
 WeatherMain(this.temperature, this.weather, 60)
 ```
 
-### 7.2 卡片定时刷新策略
+### 6.2 卡片定时刷新策略
 
 `updateDuration` 字段的最小单位是 30 分钟,即 `updateDuration: 1` 表示 30 分钟,`updateDuration: 2` 表示 60 分钟。最小刷新间隔不能小于 30 分钟,这是系统级限制,避免频繁刷新耗电。
 
@@ -1675,7 +1663,7 @@ WeatherMain(this.temperature, this.weather, 60)
 + 卡片提供手动刷新按钮
 ```
 
-### 7.3 跨设备卡片同步
+### 6.3 跨设备卡片同步
 
 HarmonyOS 支持卡片在多设备间同步。例如用户在手机上添加的天气卡片,可以同步到平板或手表。这通过分布式数据管理实现:
 
@@ -1711,7 +1699,7 @@ class CardSyncService {
 
 通过分布式 KV Store,数据自动在登录同一华为账号的设备间同步。当用户在新设备上添加卡片时,FormAbility 的 `onAddForm` 可以先从 KV Store 读取已有数据,实现"卡片即添加即有数据"的体验。
 
-### 7.4 深度链接与卡片分享
+### 6.4 深度链接与卡片分享
 
 元服务支持通过 URL scheme 触发跳转,即"深度链接"。例如:
 
@@ -1759,7 +1747,7 @@ export default class EntryAbility extends UIAbility {
 
 卡片分享则是另一种传播方式。用户长按卡片可触发"分享"菜单,将卡片分享给其他用户。分享机制由系统处理,开发者只需确保卡片在不同设备上能正确加载即可。
 
-### 7.5 卡片与元服务主体的状态同步
+### 6.5 卡片与元服务主体的状态同步
 
 当元服务主体修改了用户偏好(如默认城市、单位),需要同步到卡片。最佳实践是使用 `preferences` 本地存储,FormAbility 与主体共用同一份数据:
 
@@ -1797,7 +1785,7 @@ export class PreferencesService {
 
 注意 FormAbility 的 `this.context` 与主体的 `context` 是不同的 Context 对象,但只要使用相同的 `storeName`,即可访问同一份数据。
 
-### 7.6 静默刷新与可见性优化
+### 6.6 静默刷新与可见性优化
 
 当卡片不可见时(如用户切换到其他桌面页),继续刷新会浪费电。`onVisibilityChange` 回调可用于感知可见性变化:
 
@@ -1827,7 +1815,7 @@ export default class WeatherFormAbility extends FormExtensionAbility {
 
 但需注意,系统定时刷新(`updateDuration`)仍会触发 `onUpdateForm`,即使卡片不可见。开发者可在 `onUpdateForm` 内部根据可见性判断是否跳过。
 
-### 7.7 卡片与 1+8+N 多设备适配
+### 6.7 卡片与 1+8+N 多设备适配
 
 元服务可运行在手机、平板、手表、车机、智慧屏等多种设备上。卡片 UI 需要根据设备类型适配:
 
@@ -1877,7 +1865,7 @@ struct WeatherCard {
 }
 ```
 
-### 7.8 卡片国际化
+### 6.8 卡片国际化
 
 卡片 UI 应支持多语言。通过资源文件 `resources/base/element/string.json` 与 `resources/en_US/element/string.json`、`resources/zh_CN/element/string.json` 等分别提供不同语言字符串:
 
@@ -1902,9 +1890,9 @@ Button($r('app.string.card_refresh'))
   })
 ```
 
-## 8. 性能优化
+## 7. 性能优化
 
-### 8.1 体积控制(10MB 约束)
+### 7.1 体积控制(10MB 约束)
 
 元服务的硬性体积上限是 10MB,包括代码、资源、动态加载库。超出此限制将无法上架。体积控制策略:
 
@@ -1937,7 +1925,7 @@ Button($r('app.string.card_refresh'))
 
 构建后通过 `hdc shell du -sh /data/app/...` 查看实际安装包大小。
 
-### 8.2 首屏加载优化
+### 7.2 首屏加载优化
 
 元服务的首屏加载速度直接影响用户体验。目标:首次打开 < 1 秒。优化策略:
 
@@ -1973,7 +1961,7 @@ struct IndexPage {
 }
 ```
 
-### 8.3 内存优化
+### 7.3 内存优化
 
 元服务内存占用应控制在 50MB 以下(系统建议)。优化策略:
 
@@ -2008,7 +1996,7 @@ struct MyPage {
 }
 ```
 
-### 8.4 卡片刷新性能
+### 7.4 卡片刷新性能
 
 卡片刷新涉及 IPC 通信与 UI 重建,频繁刷新会增加 CPU 与内存负担。优化策略:
 
@@ -2017,7 +2005,7 @@ struct MyPage {
 3. **避免大数据**——单次 `updateForm` 数据不超过 1KB,大数据通过 SharedStorage
 4. **可见性过滤**——不可见的卡片跳过刷新
 
-### 8.5 启动速度优化
+### 7.5 启动速度优化
 
 元服务冷启动速度受以下因素影响:
 
@@ -2044,9 +2032,9 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-## 9. 调试排错
+## 8. 调试排错
 
-### 9.1 卡片预览
+### 8.1 卡片预览
 
 DevEco Studio 提供卡片预览器,可在不部署到设备的情况下查看卡片渲染效果。打开方式:
 
@@ -2061,7 +2049,7 @@ DevEco Studio 提供卡片预览器,可在不部署到设备的情况下查看�
 - 预览器会使用默认值渲染
 - 修改默认值即可看到不同数据下的渲染效果
 
-### 9.2 真机调试卡片
+### 8.2 真机调试卡片
 
 真机调试时,卡片运行在独立进程中,日志与主体日志分开。查看卡片日志:
 
@@ -2075,9 +2063,9 @@ hdc shell hilog | grep "WeatherFormAbility"
 - 进程:选择元服务进程(通常包含 `form` 标识)
 - 标签:`FormExtensionAbility`、`formProvider`、`formBindingData`
 
-### 9.3 常见错误与排查
+### 8.3 常见错误与排查
 
-#### 9.3.1 卡片添加后无数据显示
+#### 8.3.1 卡片添加后无数据显示
 
 **可能原因**:
 
@@ -2091,7 +2079,7 @@ hdc shell hilog | grep "WeatherFormAbility"
 2. 检查返回的数据字段名是否与 `@LocalStorageProp('xxx')` 中的 `xxx` 完全一致
 3. 检查 `form_config.json` 中 `src` 指向的文件路径是否正确
 
-#### 9.3.2 卡片定时刷新不生效
+#### 8.3.2 卡片定时刷新不生效
 
 **可能原因**:
 
@@ -2106,7 +2094,7 @@ hdc shell hilog | grep "WeatherFormAbility"
 2. 检查设备是否进入省电模式(设置 -> 电池)
 3. 查看日志,确认 `onUpdateForm` 是否被调用,是否有异常
 
-#### 9.3.3 卡片点击无反应
+#### 8.3.3 卡片点击无反应
 
 **可能原因**:
 
@@ -2120,7 +2108,7 @@ hdc shell hilog | grep "WeatherFormAbility"
 2. 检查 `postCardAction` 参数格式:`action`、`bundleName`、`abilityName` 是否正确
 3. 检查 `module.json5` 中 `formConfigAbility` 是否指向正确的 Ability
 
-#### 9.3.4 体积超限无法上架
+#### 8.3.4 体积超限无法上架
 
 **可能原因**:
 
@@ -2135,7 +2123,7 @@ hdc shell hilog | grep "WeatherFormAbility"
 3. 压缩图片资源
 4. 移除非必要的多语言资源(只保留 base + zh_CN + en_US)
 
-#### 9.3.5 卡片白屏或闪烁
+#### 8.3.5 卡片白屏或闪烁
 
 **可能原因**:
 
@@ -2149,16 +2137,16 @@ hdc shell hilog | grep "WeatherFormAbility"
 2. 合并数据更新,避免短时间内多次 `updateForm`
 3. 检查卡片 UI 是否仅使用支持的 API
 
-### 9.4 DevEco Studio 调试技巧
+### 8.4 DevEco Studio 调试技巧
 
 - **断点调试**——可在 FormAbility 中设置断点,调试卡片添加、刷新、事件回调
 - **日志过滤**——使用 `[FormAbility]` 前缀统一格式化日志,便于过滤
 - **性能分析**——使用 DevEco Studio Profiler 分析卡片刷新耗时、内存占用
 - **多设备预览**——在 Previewer 中切换设备类型,验证多设备适配
 
-## 10. 最佳实践
+## 9. 最佳实践
 
-### 10.1 元服务设计原则
+### 9.1 元服务设计原则
 
 1. **单一职责**——一个元服务应聚焦一个核心场景(如天气、待办、扫码),避免功能堆砌
 2. **卡片优先**——首屏体验应优先通过卡片交付,主体作为补充
@@ -2166,7 +2154,7 @@ hdc shell hilog | grep "WeatherFormAbility"
 4. **数据驱动**——所有 UI 状态由数据驱动,避免卡片内维护复杂状态
 5. **跨设备一致**——同一份数据,不同设备展示不同布局,但语义一致
 
-### 10.2 卡片 UX 规范
+### 9.2 卡片 UX 规范
 
 1. **视觉层次**——主要信息突出(大字号),次要信息弱化(小字号)
 2. **留白与对齐**——充足的内边距(建议 12-16px),信息按网格对齐
@@ -2175,14 +2163,14 @@ hdc shell hilog | grep "WeatherFormAbility"
 5. **交互反馈**——按钮点击应有视觉反馈(按下变色、波纹动画)
 6. **避免信息过载**——2x2 卡片信息字段不超过 4 个,4x4 不超过 8 个
 
-### 10.3 数据安全
+### 9.3 数据安全
 
 1. **不硬编码密钥**——API Key、Secret 必须通过后端中转,不能硬编码在元服务中
 2. **HTTPS 强制**——所有网络请求必须使用 HTTPS,禁止明文 HTTP
 3. **本地存储加密**——敏感数据存储到 `preferences` 时应先加密
 4. **权限最小化**——只申请必要的权限,不申请"全部权限"
 
-### 10.4 签名与发布
+### 9.4 签名与发布
 
 元服务发布需要正式签名证书。流程:
 
@@ -2217,7 +2205,7 @@ hdc shell hilog | grep "WeatherFormAbility"
 }
 ```
 
-### 10.5 审核要点
+### 9.5 审核要点
 
 AppGallery Connect 对元服务的审核要点:
 
@@ -2236,7 +2224,7 @@ AppGallery Connect 对元服务的审核要点:
 - 体积超出 10MB 限制
 - 缺少隐私政策
 
-### 10.6 版本迭代策略
+### 9.6 版本迭代策略
 
 元服务的版本迭代应遵循"小步快跑"原则:
 
@@ -2245,7 +2233,7 @@ AppGallery Connect 对元服务的审核要点:
 3. **数据驱动**——监控卡片使用数据(添加数、点击率、刷新率),指导优化方向
 4. **灰度发布**——AGC 支持灰度发布,先对 10% 用户开放新版本
 
-### 10.7 监控与运维
+### 9.7 监控与运维
 
 元服务上线后,可通过 AGC 提供的运维能力监控:
 
@@ -2256,9 +2244,9 @@ AppGallery Connect 对元服务的审核要点:
 
 建议建立"日报"机制,每天查看关键指标,发现异常及时处理。
 
-## 11. 总结回顾
+## 10. 总结回顾
 
-### 11.1 核心知识图谱
+### 10.1 核心知识图谱
 
 ```mermaid
 flowchart TD
@@ -2311,7 +2299,7 @@ flowchart TD
     T31 --> T35
 ```
 
-### 11.2 关键 API 速查表
+### 10.2 关键 API 速查表
 
 | API | 用途 | 示例 |
 | --- | --- | --- |
@@ -2327,7 +2315,7 @@ flowchart TD
 | `@LocalStorageProp` | 卡片接收数据 | `@LocalStorageProp('city') city: string` |
 | `preferences` | 跨进程存储 | `preferences.getPreferences(ctx, name)` |
 
-### 11.3 常见错误清单
+### 10.3 常见错误清单
 
 1. `installationFree` 未设为 `true`,导致无法识别为元服务
 2. `form_config.json` 中 `src` 路径错误,卡片无法加载
@@ -2340,7 +2328,7 @@ flowchart TD
 9. 单次 `updateForm` 数据超过 1KB,导致更新失败
 10. 主体与 FormAbility 使用不同的 `storeName`,导致数据无法共享
 
-### 11.4 学习路径建议
+### 10.4 学习路径建议
 
 - **入门阶段**——按本章示例 1 完成"最简天气卡片",理解基础流程
 - **进阶阶段**——按示例 2-4 实现动态刷新、多尺寸适配、主体联动
@@ -2348,7 +2336,7 @@ flowchart TD
 - **优化阶段**——按第 8 章优化体积、性能、内存
 - **发布阶段**——按第 10 章完成签名、上架、审核
 
-### 11.5 练习题
+### 10.5 练习题
 
 1. **基础题**——简述元服务与传统应用在 5 个维度上的核心差异
 2. **配置题**——编写 `module.json5` 与 `form_config.json`,实现一个 2x2 待办卡片
@@ -2358,7 +2346,7 @@ flowchart TD
 6. **排错题**——卡片添加后显示空白,FormAbility 日志显示 `onAddForm` 已被调用并返回了数据,问题最可能出在哪里?
 7. **设计题**——为"扫码支付"场景设计一个元服务,包括卡片尺寸、卡片内容、主体功能、交互流程
 
-### 11.6 术语表
+### 10.6 术语表
 
 | 术语 | 英文 | 说明 |
 | --- | --- | --- |
@@ -2376,7 +2364,7 @@ flowchart TD
 | HAR | HarmonyOS Archive | HarmonyOS 静态共享包 |
 | HAP | HarmonyOS Ability Package | HarmonyOS 应用安装包 |
 
-### 11.7 扩展阅读
+### 10.7 扩展阅读
 
 完成本章学习后,建议进一步探索:
 
@@ -2386,9 +2374,9 @@ flowchart TD
 - **服务流转**——`continueAbility` 跨设备流转,实现"在哪用,在哪继续"
 - **HarmonyOS 设计规范**——卡片的视觉设计规范、交互模式、动效指南
 
-## 12. 参考资料
+## 11. 参考资料
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - HarmonyOS Developer 官方文档:元服务开发指南
   - https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/atomic-service
@@ -2403,7 +2391,7 @@ flowchart TD
 - AppGallery Connect 元服务发布指南
   - https://developer.huawei.com/consumer/cn/doc/agc/atomic-service-publish
 
-### 12.2 设计规范
+### 11.2 设计规范
 
 - HarmonyOS Design Guidelines:Service Widgets
   - https://developer.huawei.com/consumer/cn/doc/harmonyos-design/design-widgets
@@ -2411,14 +2399,14 @@ flowchart TD
 - Material Design:Widgets Best Practices(参考借鉴)
 - Apple Human Interface Guidelines:Widgets(参考借鉴)
 
-### 12.3 开源示例
+### 11.3 开源示例
 
 - HarmonyOS 官方 Samples:FormSample
   - https://gitee.com/harmonyos_samples/formsample
 - HarmonyOS 官方 Samples:WeatherSample
 - 华为开发者社区:元服务实战案例集
 
-### 12.4 相关章节
+### 11.4 相关章节
 
 - ArkTS 与 TypeScript 差异——理解 ArkTS 语言基础
 - ArkUI 声明式语法——掌握 ArkUI 组件与状态管理
@@ -2428,7 +2416,7 @@ flowchart TD
 - 跨设备调用——深入 `startAbility` 跨设备启动 Ability
 - DevEco Studio 调试器——掌握卡片预览、性能分析、日志查看
 
-### 12.5 学习建议
+### 11.5 学习建议
 
 元服务开发是 HarmonyOS 应用开发的进阶能力,建议按以下顺序逐步深入:
 

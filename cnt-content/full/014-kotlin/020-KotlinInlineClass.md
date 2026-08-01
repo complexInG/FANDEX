@@ -18,22 +18,12 @@ prerequisites:
   - kotlin/类与对象
   - kotlin/基础语法
 ---
+
 # Kotlin 内联类与 Value Class
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-完成本文学习后，读者应能够在以下认知层级达成对应能力（参照 Bloom 分类法）：
-
-- **记忆（Remembering）**：复述 value class（内联类）的定义语法、限制条件，识别 `@JvmInline` 注解的作用，列举其与普通类的核心差异。
-- **理解（Understanding）**：解释内联类在编译期被"擦除"为底层类型的原理，阐述 boxing 与 unboxing 的发生时机，说明 value class 与 data class 的语义区别。
-- **应用（Applying）**：在真实工程中用 value class 实现类型安全的 ID 类型、单位类型、密码等场景，避免基本类型的歧义混用。
-- **分析（Analyzing）**：剖析 value class 的字节码产物，识别何时发生 boxing、何时保持内联，分析其在泛型、可空类型、集合中的行为。
-- **评估（Evaluating）**：评估 value class 在性能、可读性、跨平台兼容性上的权衡，判断在特定场景下是否应使用 data class 替代。
-- **创造（Creating）**：设计基于 value class 的领域模型，构建类型安全的 API 边界，编写跨平台（JVM/JS/Native）兼容的 value class。
 
 ## 历史动机与背景
 

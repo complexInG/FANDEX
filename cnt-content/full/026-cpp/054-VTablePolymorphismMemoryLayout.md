@@ -29,6 +29,7 @@ tags:
   - ABI
 ---
 
+
 # 虚函数表与多态内存布局（Virtual Function Table & Polymorphic Memory Layout）
 
 > 本章节系统讲解 C++ 动态多态的底层实现机制：虚函数表（vtable）、虚指针（vptr）的对象内存布局、单继承与多重继承下的 vtable 结构、RTTI（运行时类型信息）的实现、thunk 技术与 this 指针调整、以及 CRTP 静态多态替代方案。内容对标 MIT 6.170 / Stanford CS106L / CMU 15-410 课程深度，融合 Itanium C++ ABI、LLVM、GCC、MSVC 等工业实现。
@@ -52,59 +53,9 @@ tags:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-本章节遵循 Bloom 分类法（Bloom's Taxonomy）设计学习目标，自低阶认知向高阶创造逐级递进。完成本章节后，读者应能够：
-
-### 1.1 记忆（Remembering）
-
-- **R1**：复述虚函数表（vtable）与虚指针（vptr）的定义，指出 vtable 是每个类的静态数据，vptr 是每个对象的隐式成员。
-- **R2**：列出虚函数调用的四步过程：取 vptr、查 vtable、取槽位函数指针、调用。
-- **R3**：背诵虚析构函数的必要性：通过基类指针删除派生类对象时，必须调用虚析构函数以避免资源泄漏。
-- **R4**：识别 Itanium C++ ABI 与 Microsoft Visual C++ ABI 在 vtable 布局上的核心差异。
-
-### 1.2 理解（Understanding）
-
-- **U1**：解释为什么构造函数和析构函数中调用虚函数不会触发多态：vptr 在构造/析构过程中分别指向当前类的 vtable。
-- **U2**：阐明多重继承下"this 指针调整"（this pointer adjustment）的必要性，并绘制派生类对象的内存布局图。
-- **U3**：对比单继承、多重继承、虚拟继承三种场景下 vtable 结构的差异，指出虚拟继承引入的 vbase offset 表。
-- **U4**：说明 RTTI（`typeid` 与 `dynamic_cast`）如何依赖 vtable 中的 type_info 指针实现运行时类型识别。
-
-### 1.3 应用（Applying）
-
-- **A1**：使用 `static_cast`、`dynamic_cast`、`reinterpret_cast`、`const_cast` 在类层次结构中进行正确的类型转换。
-- **A2**：使用 CRTP（Curiously Recurring Template Pattern）实现静态多态，消除虚函数开销。
-- **A3**：使用 `std::any`、`std::function`、`std::variant` 等类型擦除（Type Erasure）技术实现运行时多态的替代方案。
-- **A4**：通过手动构造 vtable（函数指针数组）实现 C 风格的面向对象，理解 vtable 的本质。
-
-### 1.4 分析（Analyzing）
-
-- **An1**：分析以下代码的内存布局与虚函数调用过程：
-  ```cpp
-  Base* p = new Derived;
-  p->virtualFunc();
-  ```
-  绘制对象内存图、vtable 结构图，并标注每一步的内存访问。
-- **An2**：解构"钻石型继承"（Diamond Inheritance）下的对象布局，指出虚拟继承如何消除基类子对象的重复。
-- **An3**：对比虚函数调用的性能开销与内联函数的性能收益，分析何时应使用 CRTP 替代虚函数。
-
-### 1.5 评价（Evaluating）
-
-- **E1**：评价"虚函数 vs CRTP"之争，给出在库设计、应用层、嵌入式三类场景中的推荐选择。
-- **E2**：批判性分析 Itanium C++ ABI 与 MSVC ABI 的设计差异，指出各自的优缺点与跨平台兼容性问题。
-- **E3**：评估 `dynamic_cast` 的性能开销与设计异味（Design Smell）：过度使用 `dynamic_cast` 通常表明类层次设计存在问题。
-
-### 1.6 创造（Creating）
-
-- **C1**：设计一个高性能的游戏实体系统（Entity Component System），使用 CRTP 或函数指针数组替代虚函数，实现零开销多态。
-- **C2**：实现一个类型安全的信号槽（Signal-Slot）系统，使用 vtable 实现多目标订阅，并支持编译期类型检查。
-- **C3**：构建一个跨平台的 ABI 抽象层，屏蔽 Itanium ABI 与 MSVC ABI 的差异，实现统一的反射接口。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 早期 C++ 与"函数指针表"的雏形（1985-1989）
+### 1.1 早期 C++ 与"函数指针表"的雏形（1985-1989）
 
 Bjarne Stroustrup 在 1985 年发布 Cfront 1.0 时，C++ 的多态机制尚未标准化。早期的 "C with Classes" 通过函数指针表模拟虚函数：
 
@@ -134,7 +85,7 @@ s->vtable[0](s);  // 调用 circle_draw
 
 这种手动管理函数指针表的方式繁琐且易错，促使 Stroustrup 在 C++ 2.0（1989 年）中引入了 `virtual` 关键字，由编译器自动生成与管理 vtable。
 
-### 2.2 C++ 2.0：virtual 关键字的标准化（1989）
+### 1.2 C++ 2.0：virtual 关键字的标准化（1989）
 
 1989 年的 C++ 2.0 引入了 `virtual` 关键字，将"函数指针表"的生成与管理交给编译器：
 
@@ -162,7 +113,7 @@ private:
 - **纯虚函数**：`virtual void f() = 0;` 声明抽象类，强制派生类实现。
 - **虚析构函数**：通过基类指针删除派生类对象时正确调用完整析构链。
 
-### 2.3 RTTI 的引入（C++ 1998）
+### 1.3 RTTI 的引入（C++ 1998）
 
 C++ 1998 标准正式纳入运行时类型信息（RTTI），提供 `typeid` 与 `dynamic_cast`：
 
@@ -179,7 +130,7 @@ if (c) { /* 转换成功 */ }
 
 RTTI 依赖 vtable 中的 `type_info` 指针实现，标准未规定具体布局，但主流编译器（GCC、Clang、MSVC）均在 vtable 中存储 type_info 指针。
 
-### 2.4 Itanium C++ ABI 的标准化（2001）
+### 1.4 Itanium C++ ABI 的标准化（2001）
 
 2001 年，Itanium C++ ABI 标准化 vtable 布局，被 GCC、Clang 采用。该 ABI 定义了：
 - vtable 的精确布局：vbase offset、offset-to-top、typeinfo、虚函数指针。
@@ -188,7 +139,7 @@ RTTI 依赖 vtable 中的 `type_info` 指针实现，标准未规定具体布局
 
 MSVC 采用独立的 ABI，布局细节未公开，但通过逆向工程已基本了解。
 
-### 2.5 C++11：`override` 与 `final` 关键字
+### 1.5 C++11：`override` 与 `final` 关键字
 
 C++11 引入 `override` 与 `final` 关键字，增强虚函数安全性：
 
@@ -209,7 +160,7 @@ public:
 
 `override` 让编译器检查签名匹配，避免因签名不一致导致的"伪覆盖"（accidental overload）。
 
-### 2.6 C++20：虚函数的进一步演化
+### 1.6 C++20：虚函数的进一步演化
 
 C++20 引入多项与虚函数相关的改进：
 
@@ -232,16 +183,16 @@ static_assert(call(d) == 2);  // 编译期多态调用
 // 3. 概念（Concepts）约束虚函数
 ```
 
-### 2.7 C++23 与 C++26：反射与多态
+### 1.7 C++23 与 C++26：反射与多态
 
 - **C++23**：`std::expected` 提供错误处理替代方案；`if consteval` 区分编译期与运行期多态。
 - **C++26（提案）**：P2996 静态反射提案，允许在编译期查询类的虚函数列表、生成 vtable、实现自定义多态机制。
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 虚函数表（vtable）
+### 2.1 虚函数表（vtable）
 
 **定义 3.1**（虚函数表）：对于一个类 $C$，若其声明了至少一个虚函数（包括继承的虚函数），编译器为其生成一个静态的虚函数表 $\text{vtable}_C$，定义为函数指针的有序集合：
 
@@ -260,7 +211,7 @@ $$
 - vtable 在编译期生成，运行期不可修改（理论上可通过恶意修改内存绕过，属于未定义行为）。
 - vtable 的具体布局由 ABI 规定，Itanium ABI 与 MSVC ABI 不兼容。
 
-### 3.2 虚指针（vptr）
+### 2.2 虚指针（vptr）
 
 **定义 3.2**（虚指针）：对于包含虚函数的类 $C$，其每个对象 $o$ 在内存中包含一个隐式成员 $\text{vptr}_o$，指向 $C$ 的 vtable：
 
@@ -274,7 +225,7 @@ $$
 - vptr 在析构函数执行后由编译器插入的"隐藏代码"重置。
 - vptr 通常位于对象的起始位置（单继承），多重继承下每个含虚函数的基类子对象各有一个 vptr。
 
-### 3.3 虚函数调用的形式化语义
+### 2.3 虚函数调用的形式化语义
 
 **定义 3.3**（虚函数调用）：通过基类指针 $p$ 调用虚函数 $f$（在 vtable 中的槽位为 $k$）的形式化语义：
 
@@ -287,7 +238,7 @@ $$
 2. 从 vtable 的第 $k$ 个槽位加载函数指针。
 3. 调用该函数指针，传入 this 指针（可能需要调整）。
 
-### 3.4 this 指针调整（this Adjustment）
+### 2.4 this 指针调整（this Adjustment）
 
 **定义 3.4**（this 指针调整）：在多重继承下，当派生类对象 $D$ 被转换为基类 $B_i$ 的指针时，指针值需要调整：
 
@@ -303,7 +254,7 @@ $$
 \text{thunk}_{f, B_i \to D} \triangleq \lambda \text{this}: f_D(\text{this} - \text{offset}(B_i, D))
 $$
 
-### 3.5 RTTI 的形式化定义
+### 2.5 RTTI 的形式化定义
 
 **定义 3.5**（RTTI）：运行时类型信息（Run-Time Type Information）通过 vtable 中的 type_info 指针实现：
 
@@ -322,7 +273,7 @@ $$
 
 其中 $\text{dynamic\_type}(p)$ 通过 vtable 的 type_info 确定。
 
-### 3.6 虚拟继承的 vbase offset 表
+### 2.6 虚拟继承的 vbase offset 表
 
 **定义 3.6**（vbase offset）：在虚拟继承下，派生类 $D$ 虚拟继承自 $V$，$V$ 子对象在 $D$ 中的偏移量在运行期通过 vbase offset 表查询：
 
@@ -334,9 +285,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 虚函数调用的正确性
+### 3.1 虚函数调用的正确性
 
 **定理 4.1**（虚函数调用的正确性）：通过基类指针调用虚函数 $f$，实际调用的是动态类型对应的 $f$ 实现。
 
@@ -354,7 +305,7 @@ $$
 - vtable 的槽位顺序在基类与派生类中一致（ABI 保证）。
 - this 指针正确调整（单继承无需调整，多重继承通过 thunk）。
 
-### 4.2 虚析构函数的必要性
+### 3.2 虚析构函数的必要性
 
 **定理 4.2**（虚析构函数必要性）：若基类指针可能指向派生类对象，基类的析构函数必须为 virtual，否则通过基类指针 delete 派生类对象是未定义行为。
 
@@ -382,7 +333,7 @@ delete p;  // 未定义行为
 
 因此，基类析构函数必须为 virtual。$\square$
 
-### 4.3 构造/析构中虚函数的退化
+### 3.3 构造/析构中虚函数的退化
 
 **定理 4.3**（构造/析构中虚函数退化）：在构造函数或析构函数中调用虚函数，调用的是当前类的版本，而非派生类的版本。
 
@@ -417,7 +368,7 @@ Derived d;  // 输出 "Base::f"
 
 **设计原理**：派生类的成员尚未构造（构造时）或已析构（析构时），调用派生类的虚函数会访问未初始化或已失效的成员，导致未定义行为。C++ 通过限制 vptr 指向当前类来避免这种问题。$\square$
 
-### 4.4 多重继承下 thunk 的正确性
+### 3.4 多重继承下 thunk 的正确性
 
 **定理 4.4**（thunk 正确性）：多重继承下，通过基类指针调用虚函数，thunk 正确调整 this 指针。
 
@@ -456,7 +407,7 @@ flowchart TD
 
 因此，thunk 正确调整了 this 指针。$\square$
 
-### 4.5 虚函数调用的性能开销
+### 3.5 虚函数调用的性能开销
 
 **定理 4.5**（虚函数性能开销）：虚函数调用比普通函数调用多两次内存访问（加载 vptr、加载函数指针），且无法内联。
 
@@ -488,9 +439,9 @@ call rax          ; 间接调用
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基本虚函数与内存布局观察
+### 4.1 基本虚函数与内存布局观察
 
 ```cpp
 // file: vtable_basic.cpp
@@ -559,7 +510,7 @@ Derived::foo
 Base::bar
 ```
 
-### 5.2 多重继承的内存布局
+### 4.2 多重继承的内存布局
 
 ```cpp
 // file: multiple_inheritance_layout.cpp
@@ -607,7 +558,7 @@ int main() {
 }
 ```
 
-### 5.3 虚析构函数的正确使用
+### 4.3 虚析构函数的正确使用
 
 ```cpp
 // file: virtual_destructor.cpp
@@ -665,7 +616,7 @@ int main() {
 }
 ```
 
-### 5.4 虚拟继承与钻石型继承
+### 4.4 虚拟继承与钻石型继承
 
 ```cpp
 // file: diamond_inheritance.cpp
@@ -719,7 +670,7 @@ int main() {
 }
 ```
 
-### 5.5 RTTI：typeid 与 dynamic_cast
+### 4.5 RTTI：typeid 与 dynamic_cast
 
 ```cpp
 // file: rtti_demo.cpp
@@ -789,7 +740,7 @@ int main() {
 }
 ```
 
-### 5.6 CRTP 静态多态
+### 4.6 CRTP 静态多态
 
 ```cpp
 // file: crtp_demo.cpp
@@ -854,7 +805,7 @@ int main() {
 }
 ```
 
-### 5.7 手动模拟 vtable
+### 4.7 手动模拟 vtable
 
 ```cpp
 // file: manual_vtable.cpp
@@ -931,7 +882,7 @@ int main() {
 }
 ```
 
-### 5.8 类型擦除：std::function 的实现原理
+### 4.8 类型擦除：std::function 的实现原理
 
 ```cpp
 // file: type_erasure.cpp
@@ -1004,9 +955,9 @@ int main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 C 语言的对比
+### 5.1 与 C 语言的对比
 
 | 特性 | C 语言 | C++ 虚函数 |
 |------|--------|------------|
@@ -1036,7 +987,7 @@ double shape_area(const struct Shape* s) { return s->vtable->area(s); }
 
 C 语言的手动 vtable 与 C++ 的自动 vtable 本质相同，但 C++ 通过 `virtual` 关键字提供了类型安全与自动化。
 
-### 6.2 与 Rust 的对比
+### 5.2 与 Rust 的对比
 
 | 特性 | C++ 虚函数 | Rust Trait 对象（dyn Trait） |
 |------|------------|------------------------------|
@@ -1076,7 +1027,7 @@ fn process_static<T: Shape>(s: &T) {
 
 Rust 的 fat pointer 设计将 vptr 与数据指针分离，对象本身不持有 vptr，内存布局更紧凑。C++ 的 vptr 内嵌对象设计支持对象自描述，但增加了对象大小。
 
-### 6.3 与 Java 的对比
+### 5.3 与 Java 的对比
 
 | 特性 | C++ 虚函数 | Java 方法 |
 |------|------------|-----------|
@@ -1088,7 +1039,7 @@ Rust 的 fat pointer 设计将 vptr 与数据指针分离，对象本身不持�
 
 Java 的所有非 final 方法默认虚函数，简化了多态使用，但增加了性能开销。HotSpot JVM 通过"类层次分析"（CHA）进行去虚化（devirtualization），将虚调用转为直接调用甚至内联。
 
-### 6.4 与 Go 的对比
+### 5.4 与 Go 的对比
 
 | 特性 | C++ 虚函数 | Go Interface |
 |------|------------|--------------|
@@ -1119,7 +1070,7 @@ func process(s Shape) {
 
 Go 的 interface 采用"隐式实现"，类型无需显式声明实现某接口，只要方法签名匹配即可。这简化了代码组织，但失去了编译期检查实现完整性的能力（C++ 通过 abstract 类强制）。
 
-### 6.5 跨编译器 ABI 对比
+### 5.5 跨编译器 ABI 对比
 
 | 特性 | Itanium ABI（GCC/Clang） | MSVC ABI |
 |------|--------------------------|----------|
@@ -1133,9 +1084,9 @@ Itanium ABI 与 MSVC ABI 不兼容，跨编译器动态库（DLL/SO）的 C++ �
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 构造函数中调用虚函数
+### 6.1 构造函数中调用虚函数
 
 **反模式**：
 
@@ -1170,7 +1121,7 @@ Derived d;
 d.init();  // Derived::init
 ```
 
-### 7.2 非虚析构函数导致资源泄漏
+### 6.2 非虚析构函数导致资源泄漏
 
 **反模式**：
 
@@ -1200,7 +1151,7 @@ public:
 };
 ```
 
-### 7.3 在析构函数中调用虚函数
+### 6.3 在析构函数中调用虚函数
 
 **反模式**：
 
@@ -1233,7 +1184,7 @@ public:
 };
 ```
 
-### 7.4 过度使用 dynamic_cast
+### 6.4 过度使用 dynamic_cast
 
 **反模式**：
 
@@ -1271,7 +1222,7 @@ void process(Shape* s) {
 }
 ```
 
-### 7.5 对象切片（Object Slicing）
+### 6.5 对象切片（Object Slicing）
 
 **反模式**：
 
@@ -1305,7 +1256,7 @@ void show(const Base& b) {  // 引用传递
 }
 ```
 
-### 7.6 虚函数与默认参数的组合陷阱
+### 6.6 虚函数与默认参数的组合陷阱
 
 **反模式**：
 
@@ -1341,7 +1292,7 @@ public:
 };
 ```
 
-### 7.7 多重继承下的歧义
+### 6.7 多重继承下的歧义
 
 **反模式**：
 
@@ -1379,7 +1330,7 @@ c.A::f();
 c.B::f();
 ```
 
-### 7.8 误用 reinterpret_cast 进行类型转换
+### 6.8 误用 reinterpret_cast 进行类型转换
 
 **反模式**：
 
@@ -1402,9 +1353,9 @@ if (d) d->y = 10;
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 何时使用虚函数
+### 7.1 何时使用虚函数
 
 **推荐使用虚函数的场景**：
 - 类层次结构稳定，接口与实现分离。
@@ -1416,7 +1367,7 @@ if (d) d->y = 10;
 - 编译期已知的类型（考虑模板或重载）。
 - 单一实现的接口（过度设计）。
 
-### 8.2 虚函数与性能优化
+### 7.2 虚函数与性能优化
 
 **8.2.1 减少虚函数调用次数**：
 
@@ -1478,7 +1429,7 @@ public:
 };
 ```
 
-### 8.3 vtable 与二进制兼容性
+### 7.3 vtable 与二进制兼容性
 
 **问题**：修改类的虚函数声明会破坏二进制兼容性（ABI 兼容）。
 
@@ -1507,7 +1458,7 @@ public:
 - 使用 Pimpl 惯用法隐藏实现细节。
 - 跨编译器/跨版本的库使用 C 接口。
 
-### 8.4 Pimpl 惯用法
+### 7.4 Pimpl 惯用法
 
 ```cpp
 // widget.h
@@ -1548,7 +1499,7 @@ void Widget::doSomething() {
 
 Pimpl 惯用法隐藏实现细节，使头文件稳定，修改实现不影响 ABI。
 
-### 8.5 接口类设计
+### 7.5 接口类设计
 
 ```cpp
 // 纯接口类（所有成员函数都是纯虚函数）
@@ -1591,7 +1542,7 @@ std::unique_ptr<IRenderer> createRenderer(RendererType type) {
 - 提供 `virtual ~IRenderer() = default;` 虚析构函数。
 - 不依赖具体类型，便于跨平台/跨实现。
 
-### 8.6 虚函数与移动语义
+### 7.6 虚函数与移动语义
 
 ```cpp
 class PolymorphicBase {
@@ -1622,9 +1573,9 @@ public:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Qt 的元对象系统
+### 8.1 案例一：Qt 的元对象系统
 
 Qt 通过 moc（Meta-Object Compiler）扩展 C++ 的元对象能力，提供信号槽、属性系统、反射等。moc 为每个含 Q_OBJECT 的类生成额外的元数据，类似于增强版的 vtable。
 
@@ -1652,7 +1603,7 @@ const QMetaObject MyWidget::staticMetaObject = {
 
 Qt 的元对象系统展示了如何通过代码生成扩展 C++ 的运行时多态能力，弥补标准 C++ 反射的不足（C++26 反射提案将改变这一现状）。
 
-### 9.2 案例二：COM（Component Object Model）
+### 8.2 案例二：COM（Component Object Model）
 
 微软的 COM 规范完全基于 vtable 实现，定义了跨语言、跨进程的二进制接口标准。
 
@@ -1684,7 +1635,7 @@ COM 的设计要求：
 
 COM 展示了 vtable 作为二进制接口标准的可行性，是 C++ 跨语言互操作的经典案例。
 
-### 9.3 案例三：LLVM 的 RTTI 替代方案
+### 8.3 案例三：LLVM 的 RTTI 替代方案
 
 LLVM 项目为了避免标准 RTTI 的开销（`dynamic_cast` 较慢），实现了自定义的 RTTI 系统，通过枚举与手动判断替代 vtable 中的 type_info。
 
@@ -1725,7 +1676,7 @@ if (auto* c = dyn_cast<Constant>(val)) {
 
 LLVM 的 RTTI 通过枚举值快速判断类型，避免了 vtable 查询，性能优于标准 `dynamic_cast`。这是性能敏感系统中的常见优化策略。
 
-### 9.4 案例四：Chromium 的多线程消息传递
+### 8.4 案例四：Chromium 的多线程消息传递
 
 Chromium 使用 vtable 实现跨线程的消息传递，通过 `Task` 类封装可调用对象。
 
@@ -1759,7 +1710,7 @@ PostTask(io_thread, std::make_unique<CallableTask<SomeLambda>>(
 
 Chromium 通过 vtable 实现类型擦除，将任意可调用对象封装为统一的 `Task` 接口，跨线程传递。这是 vtable 在系统编程中的典型应用。
 
-### 9.5 案例五：Unreal Engine 的反射系统
+### 8.5 案例五：Unreal Engine 的反射系统
 
 Unreal Engine 使用宏与代码生成（UHT, Unreal Header Tool）实现反射系统，支持蓝图（Blueprint）与 C++ 互操作。
 
@@ -1791,7 +1742,7 @@ struct AMyActor_StaticClass {
 
 Unreal Engine 通过自定义反射系统支持运行时类型查询、属性编辑、蓝图绑定等功能，弥补了 C++ 标准反射的缺失。C++26 的静态反射提案有望简化此类系统的实现。
 
-### 9.6 案例六：游戏 ECS（Entity Component System）
+### 8.6 案例六：游戏 ECS（Entity Component System）
 
 现代游戏引擎采用 ECS 架构替代传统继承体系，通过组件组合而非继承实现多态。
 
@@ -1830,7 +1781,7 @@ ECS 通过"数据导向设计"（Data-Oriented Design）避免虚函数开销，
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 习题
+### 9.1 习题
 
 **习题 1**：分析以下代码的内存布局与输出：
 
@@ -1938,7 +1889,7 @@ int main() {
 
 **习题 6**：使用手动 vtable（函数指针数组）实现一个简单的多态 Shape 系统，支持 Circle 与 Rectangle，无需 `virtual` 关键字。
 
-### 10.2 思考题
+### 9.2 思考题
 
 **思考题 1**：为什么 C++ 选择将 vptr 内嵌于对象，而 Rust 选择将 vptr 与指针分离（fat pointer）？两种设计各自的优缺点是什么？
 
@@ -1950,7 +1901,7 @@ int main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Stroustrup, B. (1994). *The Design and Evolution of C++*. Addison-Wesley. ISBN 0-201-54330-3.
 2. Stroustrup, B. (2013). *The C++ Programming Language* (4th ed.). Addison-Wesley. ISBN 978-0321563842.
@@ -1971,40 +1922,40 @@ int main() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 标准与规范
+### 11.1 标准与规范
 
 - **Itanium C++ ABI**：深入理解 GCC/Clang 的 vtable 布局，包括虚拟继承、thunk、typeinfo 的精确实现。
 - **MSVC C++ ABI**：通过逆向工程与文档了解 MSVC 的 vtable 布局差异。
 - **C++ Standard [class.virtual], [class.abstract], [expr.dynamic.cast]**：标准对虚函数、抽象类、dynamic_cast 的规定。
 
-### 12.2 编译器实现
+### 11.2 编译器实现
 
 - **GCC 源码**：`gcc/cp/class.c` 中 vtable 的生成逻辑。
 - **Clang/LLVM 源码**：`clang/lib/AST/RecordLayoutBuilder.cpp` 中类布局的计算。
 - **MSVC 内部实现**：通过 `/d1reportSingleClassLayout` 选项查看类的内存布局。
 
-### 12.3 相关技术
+### 11.3 相关技术
 
 - **CRTP（Curiously Recurring Template Pattern）**：静态多态的标准模式，参考 folly、Boost 等库的实现。
 - **Type Erasure**：`std::function`、`std::any`、`std::variant` 的实现原理。
 - **ECS（Entity Component System）**：游戏引擎中的数据导向设计，参考 Unreal、Unity 的实现。
 - **COM（Component Object Model）**：微软的跨语言二进制接口标准，完全基于 vtable。
 
-### 12.4 性能分析
+### 11.4 性能分析
 
 - **Devirtualization**：编译器如何将虚调用转为直接调用，参考 GCC 的 `-fdevirtualize` 与 Clang 的 `-fwhole-program-vtables`。
 - **Speculative Devirtualization**：基于分支预测的去虚化技术，参考 Chromium 的 V8 优化。
 - **Polymorphic Inline Caches**：JIT 编译器（如 HotSpot、V8）如何利用内联缓存加速虚调用。
 
-### 12.5 未来方向
+### 11.5 未来方向
 
 - **C++26 反射（P2996）**：编译期反射将改变多态与元编程的实践。
 - **Pattern Matching（P2688）**：替代 `dynamic_cast` 的更优雅方案。
 - **Metaclasses（P0707）**：允许自定义类的生成规则，可能简化接口类的定义。
 
-### 12.6 附录
+### 11.6 附录
 
 #### 附录 A：术语表
 

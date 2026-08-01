@@ -19,6 +19,7 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
+
 # JavaScript 控制流
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -33,57 +34,15 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-依据 Bloom 分类法（Bloom's Taxonomy，修订版 Anderson & Krathwohl, 2001），本文档的学习目标按认知层级组织如下：
-
-### 1.1 记忆层（Remember）
-
-- **R1**：复述 JavaScript 控制流的五类基本结构（顺序、分支、循环、异常、异步）。
-- **R2**：列举 `if/else`、`switch`、`?:`、`??`、`&&`、`||` 六种分支语法的语义差异。
-- **R3**：背诵 `for`、`for...in`、`for...of`、`while`、`do...while`、`for await...of` 六种循环的迭代对象要求。
-
-### 1.2 理解层（Understand）
-
-- **U1**：解释 Truthy/Falsy 集合的判定规则，并说明 `==` 与 `===` 在控制流中的语义差异。
-- **U2**：用自然语言描述 `try/catch/finally` 的执行序与 `finally` 块对返回值的覆盖行为。
-- **U3**：解释短路求值（Short-circuit Evaluation）的代数性质，并说明其在 React 条件渲染中的应用。
-
-### 1.3 应用层（Apply）
-
-- **A1**：在不引入循环嵌套的前提下，用迭代器方法实现多维数据的扁平化遍历。
-- **A2**：在异步场景下使用 `for await...of` 替换 Promise 链，保证异常透传与资源释放。
-- **A3**：使用 `break`、`continue`、`return`、`throw` 四种跳转语句控制循环退出语义。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：将生产代码中嵌套深度 ≥ 3 的 `if-else` 链重构为查表分发或策略模式。
-- **An2**：分析 `switch` 语句穿透（fall-through）的发生条件，给出基于 ESLint 规则的静态防护方案。
-- **An3**：对比循环 vs 递归 vs 迭代器方法在 V8 引擎下的字节码差异，给出选型依据。
-
-### 1.5 评估层（Evaluate）
-
-- **E1**：评估循环展开（Loop Unrolling）在 JIT 编译器介入下的实际收益与可读性损失。
-- **E2**：在异步控制流中评估 `Promise.all` 与 `for await...of` 的吞吐量与内存占用权衡。
-- **E3**：评估在热路径（Hot Path）上使用 `try/catch` 的性能开销，给出可量化的基准测试结论。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计一个支持中断、恢复、回滚的事务式控制流库（参考 Saga 模式）。
-- **C2**：基于生成器实现一个可中断的协程调度器，用于长任务的分片执行。
-- **C3**：设计一个状态机 DSL，将业务流程描述为状态转移图并自动生成测试用例。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 控制流问题的历史脉络
+### 1.1 控制流问题的历史脉络
 
 控制流问题可追溯至 1968 年 Edsger W. Dijkstra 发表的著名论文 *Go To Statement Considered Harmful*。在该论文中，Dijkstra 论证了无约束的 `goto` 语句导致程序状态空间爆炸，使程序正确性证明变得不可能。这一论断直接催生了结构化程序设计运动，确立了**顺序、分支、循环**三类基本控制结构足以表达任意可计算函数的"结构化程序定理"（Böhm-Jacopini Theorem, 1966）。
 
 JavaScript 在 1995 年由 Brendan Eich 用 10 天时间设计完成，其控制流设计承袭自 C/Java 语法家族，保留了 `if/else`、`switch`、`for`、`while`、`do...while`、`break`、`continue`、`return`、`throw` 等关键字。这一选择让 JavaScript 在语法上对 C 系程序员友好，但也继承了 `switch` 穿透、`==` 强制类型转换等历史包袱。
 
-### 2.2 JavaScript 控制流的演进时间线
+### 1.2 JavaScript 控制流的演进时间线
 
 | 年份 | ECMAScript 版本 | 控制流相关特性 | 设计动机 |
 |------|----------------|----------------|----------|
@@ -97,7 +56,7 @@ JavaScript 在 1995 年由 Brendan Eich 用 10 天时间设计完成，其控制
 | 2021 | ES12 | 逻辑赋值 `||=`、`&&=`、`??=` | 简化条件赋值惯用法 |
 | 2024 | ES15 | `Iterator.prototype` 显式原型方法、`Set` 方法族 | 标准化迭代器组合子 |
 
-### 2.3 为什么需要形式化理解控制流
+### 1.3 为什么需要形式化理解控制流
 
 许多 JavaScript 开发者认为控制流是"基础语法"，无需深入研究。但以下真实场景要求开发者对控制流具备形式化理解：
 
@@ -108,9 +67,9 @@ JavaScript 在 1995 年由 Brendan Eich 用 10 天时间设计完成，其控制
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 控制流的操作语义
+### 2.1 控制流的操作语义
 
 JavaScript 控制流的语义由 ECMAScript 规范以**结构化操作语义**（Structural Operational Semantics, SOS）的形式给出。其核心是一个状态转移系统 $(S, \Sigma, \rightarrow)$，其中：
 
@@ -126,7 +85,7 @@ $$
 
 其中 $\text{NormalCompletion}(v)$ 表示正常完成记录（Normal Completion Record），携带返回值 $v$。控制流的非正常完成（如 `break`、`continue`、`return`、`throw`）则产生 $\text{BreakCompletion}$、$\text{ContinueCompletion}$、$\text{ReturnCompletion}$、$\text{ThrowCompletion}$ 等子类型，由外层语句决定如何处理。
 
-### 3.2 分支语句的形式化
+### 2.2 分支语句的形式化
 
 `if (e) s_1 \text{ else } s_2` 的求值规则如下：
 
@@ -151,7 +110,7 @@ $$
 
 上述集合 $\{\text{undefined}, \text{null}, \text{false}, 0, -0, \text{NaN}, \text{''}\}$ 即 Falsy 值集合，记作 $\mathcal{F}$。其余所有值构成 Truthy 集合 $\mathcal{T} = \mathbb{V} \setminus \mathcal{F}$（其中 $\mathbb{V}$ 为 JS 值的全集）。
 
-### 3.3 循环语句的形式化
+### 2.3 循环语句的形式化
 
 `while (e) s` 的操作语义可表达为不动点形式：
 
@@ -166,7 +125,7 @@ $$
 
 不动点形式对应最小不动点 $\text{lfp}(F)$，其中 $F(W)(\sigma) = \sigma \text{ if } \neg \text{ToBoolean}(\text{eval}(e, \sigma)) \text{ else } W(\sigma')$。这一表达等价于说循环的语义是函数 $F$ 的最小不动点，可用域论（Domain Theory）的不动点定理保证存在性（当转移函数连续时）。
 
-### 3.4 异常控制流的形式化
+### 2.4 异常控制流的形式化
 
 `try { s_1 } catch (e) { s_2 } finally { s_3 }` 的语义可表达为：
 
@@ -184,7 +143,7 @@ $$
 
 其中算子 $r_2 \diamond r_3$ 表示完成记录的组合：若 $s_2$ 正常完成则取 $r_3$，否则取 $r_2$（异常透传优先级低于 finally 的覆盖行为，详见 [ES2024 7.5 Completion Record Specification]）。
 
-### 3.5 短路求值的代数结构
+### 2.5 短路求值的代数结构
 
 JavaScript 的逻辑运算符 `&&`、`||`、`??` 在语义上构成一个代数系统 $(\mathbb{V}, \land, \lor, \top, \bot)$，其中：
 
@@ -204,9 +163,9 @@ JavaScript 的逻辑运算符 `&&`、`||`、`??` 在语义上构成一个代数�
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 结构化程序定理与表达力
+### 3.1 结构化程序定理与表达力
 
 **Böhm-Jacopini 定理**（1966）证明：任意可计算函数都可用顺序、选择（`if-else`）、迭代（`while`）三类基本结构表达，且无需 `goto`。
 
@@ -214,7 +173,7 @@ JavaScript 的逻辑运算符 `&&`、`||`、`??` 在语义上构成一个代数�
 
 **推论**：JavaScript 中的所有控制流（包括 `switch`、`for`、`do...while`、`try/catch`、`async/await`、`for await...of`）都可以等价转换为 `if/else` 与 `while` 的组合。这意味着 JavaScript 的控制流表达力不弱于任意图灵完备语言。
 
-### 4.2 循环不变式与正确性证明
+### 3.2 循环不变式与正确性证明
 
 循环的正确性可用 Hoare 逻辑（Hoare Logic）证明，其核心是循环不变式（Loop Invariant）：
 
@@ -247,9 +206,9 @@ function sum(arr) {
 
 通过循环不变式可在不执行代码的前提下证明循环正确性，这是形式化方法（Formal Methods）的基础。
 
-### 4.3 复杂度分析
+### 3.3 复杂度分析
 
-#### 4.3.1 时间复杂度
+#### 3.3.1 时间复杂度
 
 各类循环结构的时间复杂度取决于循环体内操作与迭代次数：
 
@@ -262,7 +221,7 @@ function sum(arr) {
 | 递归（无记忆化） | $O(2^n)$ | Fibonacci 朴素递归 |
 | 递归（带记忆化） | $O(n)$ | 空间换时间 |
 
-#### 4.3.2 空间复杂度
+#### 3.3.2 空间复杂度
 
 控制流的空间复杂度主要来自：
 
@@ -272,7 +231,7 @@ function sum(arr) {
 
 尾调用优化（TCO）在严格模式下可让递归的空间复杂度从 $O(n)$ 降为 $O(1)$，但 Safari JavaScriptCore 是当前主流引擎中唯一完整实现 TCO 的，V8 与 SpiderMonkey 因历史包袱未实现。这意味着在生产环境中应避免依赖 TCO，改用显式循环或 trampoline 模式。
 
-### 4.4 控制流图（CFG）与可达性分析
+### 3.4 控制流图（CFG）与可达性分析
 
 静态分析工具通过构建控制流图（Control Flow Graph, CFG）进行可达性分析。CFG 是一个有向图 $G = (V, E)$，其中：
 
@@ -291,7 +250,7 @@ JavaScript 控制流图的特殊边包括：
 - 变量初始化检查（TypeScript 的 `Definitely Assigned` 检查）
 - 类型收窄（Type Narrowing，如 `if (typeof x === 'string')` 后 x 收窄为 string）
 
-### 4.5 异步控制流的形式化
+### 3.5 异步控制流的形式化
 
 `async/await` 的语义可形式化为状态机变换（CPS 变换的退化形式）。给定 `async function f() { ... await g(); ... }`，编译器将其转换为：
 
@@ -308,9 +267,9 @@ Babel 与 TypeScript 的 `async/await` 降级编译就是这一变换的工程�
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 条件分支的多种写法
+### 4.1 条件分支的多种写法
 
 ```javascript
 // 示例 5.1：基于用户角色渲染界面
@@ -383,7 +342,7 @@ console.log(renderWithLookup(user));   // 管理员面板：Alice
 console.log(strategy.execute(user));   // 管理员面板：Alice
 ```
 
-### 5.2 循环与迭代器方法对比
+### 4.2 循环与迭代器方法对比
 
 ```javascript
 // 示例 5.2：对数组进行平方、过滤、求和的多种实现
@@ -432,7 +391,7 @@ console.log(sumSquaresFunctional(arr));    // 220
 console.log(sumSquaresReduce(arr));        // 220
 ```
 
-### 5.3 异常控制流与资源释放
+### 4.3 异常控制流与资源释放
 
 ```javascript
 // 示例 5.3：数据库事务的正确异常处理
@@ -474,7 +433,7 @@ await transferFunds(db, 'A001', 'B002', 500);   // 正常转账
 await transferFunds(db, 'A001', 'B002', 2000);  // 触发限额异常
 ```
 
-### 5.4 异步迭代器与流式处理
+### 4.4 异步迭代器与流式处理
 
 ```javascript
 // 示例 5.4：分页 API 的流式异步迭代
@@ -522,7 +481,7 @@ async function processAll() {
 await processAll();
 ```
 
-### 5.5 短路求值的工程应用
+### 4.5 短路求值的工程应用
 
 ```javascript
 // 示例 5.5：短路求值在条件赋值与默认值中的应用
@@ -555,7 +514,7 @@ settings.debug &&= false;    // 等价于 settings.debug = settings.debug && fal
 console.log(settings);       // { timeout: 3000, retry: 3 }
 ```
 
-### 5.6 标签语句与跳出多层循环
+### 4.6 标签语句与跳出多层循环
 
 ```javascript
 // 示例 5.6：标签语句在矩阵搜索中的应用
@@ -596,7 +555,7 @@ function skipRowsWithNegative(matrix) {
 }
 ```
 
-### 5.7 生成器与无限序列
+### 4.7 生成器与无限序列
 
 ```javascript
 // 示例 5.7：生成器实现惰性无限序列
@@ -634,7 +593,7 @@ const result = [...take(map(filter(naturals(), (n) => n % 2 === 0), (n) => n * n
 console.log(result); // [4, 16, 36, 64, 100]
 ```
 
-### 5.8 状态机实现
+### 4.8 状态机实现
 
 ```javascript
 // 示例 5.8：基于闭包的状态机实现
@@ -682,9 +641,9 @@ console.log(order.current); // delivered
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 分支语句对比
+### 5.1 分支语句对比
 
 | 特性 | if-else | switch | 三元 ?: | 查找表 |
 |------|---------|--------|---------|--------|
@@ -696,7 +655,7 @@ console.log(order.current); // delivered
 | 短路求值 | 支持 | 不支持 | 支持 | 不适用 |
 | 副作用 | 可包含 | 可包含 | 应避免 | 在映射函数中可包含 |
 
-### 6.2 循环结构对比
+### 5.2 循环结构对比
 
 | 特性 | for | for...in | for...of | while | do...while | forEach | reduce |
 |------|-----|----------|----------|-------|-----------|---------|--------|
@@ -710,7 +669,7 @@ console.log(order.current); // delivered
 | 索引访问 | 是 | 否 | 否 | 视实现 | 视实现 | 否 | 否 |
 | 性能（V8） | 最快 | 慢（含原型链） | 快 | 接近 for | 接近 for | 慢（函数调用） | 慢（函数调用） |
 
-### 6.3 异常处理 vs 错误码
+### 5.3 异常处理 vs 错误码
 
 | 维度 | 异常（try/catch） | 错误码（返回值） |
 |------|-------------------|------------------|
@@ -722,7 +681,7 @@ console.log(order.current); // delivered
 | 适用场景 | 真正异常情况 | 可预期的业务失败 |
 | Go/Rust 借鉴 | 不推荐 | Result/Option 模式 |
 
-### 6.4 异步控制流对比
+### 5.4 异步控制流对比
 
 | 方案 | 代码风格 | 错误处理 | 并发能力 | 调试难度 |
 |------|---------|---------|---------|---------|
@@ -734,9 +693,9 @@ console.log(order.current); // delivered
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 switch 穿透导致的批量操作失误
+### 6.1 switch 穿透导致的批量操作失误
 
 **生产事故案例**：某电商系统在订单状态机中使用 `switch` 处理状态转移，因遗漏 `break`，导致"已取消"订单被误转移至"已发货"状态，造成 200 万元损失。
 
@@ -780,7 +739,7 @@ function handleOrderSafe(order) {
 // 推荐：使用 ESLint 的 no-fallthrough 规则强制检查
 ```
 
-### 7.2 在循环中创建闭包捕获循环变量
+### 6.2 在循环中创建闭包捕获循环变量
 
 **经典陷阱**：`var` 声明的循环变量在闭包中共享同一引用。
 
@@ -804,7 +763,7 @@ for (var i = 0; i < 3; i++) {
 // 输出：0 1 2
 ```
 
-### 7.3 在异步循环中滥用 forEach
+### 6.3 在异步循环中滥用 forEach
 
 ```javascript
 // 反模式：forEach 不支持 await，导致异步操作并行执行
@@ -834,7 +793,7 @@ async function fetchAllParallel(urls) {
 }
 ```
 
-### 7.4 在 finally 块中 return 覆盖异常
+### 6.4 在 finally 块中 return 覆盖异常
 
 ```javascript
 // 反模式：finally 中的 return 覆盖了 try 中的异常
@@ -867,7 +826,7 @@ function safeReturn() {
 }
 ```
 
-### 7.5 在热路径使用 try/catch
+### 6.5 在热路径使用 try/catch
 
 V8 在 TurboFan 优化阶段对 `try/catch` 块的处理曾存在 Bug（2018 年前），导致热路径性能下降 30% 以上。现代 V8（v7.0+）已修复此问题，但仍需注意：
 
@@ -902,7 +861,7 @@ function safeProcess(item) {
 }
 ```
 
-### 7.6 for...in 遍历数组的陷阱
+### 6.6 for...in 遍历数组的陷阱
 
 ```javascript
 // 反模式：for...in 遍历数组（顺序不保证，且包含非数字键）
@@ -922,7 +881,7 @@ for (let i = 0; i < arr.length; i++) {
 }
 ```
 
-### 7.7 在条件判断中使用赋值表达式
+### 6.7 在条件判断中使用赋值表达式
 
 ```javascript
 // 反模式：在条件中赋值，易与 === 混淆
@@ -937,7 +896,7 @@ if (user) {
 }
 ```
 
-### 7.8 异步循环中忘记 await
+### 6.8 异步循环中忘记 await
 
 ```javascript
 // 反模式：忘记 await，导致异步操作未等待即返回
@@ -959,9 +918,9 @@ async function processOrdersSafe(orders) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 控制流的可读性原则
+### 7.1 控制流的可读性原则
 
 1. **单一职责**：每个函数仅承担一项控制流职责。若一个函数同时包含分支、循环、异常处理，考虑拆分。
 2. **早返回（Early Return）**：用 guard clause 替代嵌套 if-else。
@@ -996,9 +955,9 @@ function getDiscountClean(user) {
 3. **避免 else after return**：ESLint 规则 `no-else-return`。
 4. **限制嵌套深度**：建议 ≤ 3 层，可通过提取函数降低。
 
-### 8.2 性能优化策略
+### 7.2 性能优化策略
 
-#### 8.2.1 循环展开（谨慎使用）
+#### 7.2.1 循环展开（谨慎使用）
 
 ```javascript
 // 在 JIT 优化不足的场景下，循环展开可减少分支预测开销
@@ -1020,7 +979,7 @@ function sum(arr) {
 }
 ```
 
-#### 8.2.2 缓存长度
+#### 7.2.2 缓存长度
 
 ```javascript
 // 在嵌套循环中缓存外层数组长度
@@ -1034,7 +993,7 @@ function processMatrix(matrix) {
 }
 ```
 
-#### 8.2.3 使用 TypedArray 提升数值遍历性能
+#### 7.2.3 使用 TypedArray 提升数值遍历性能
 
 ```javascript
 // 对数值数据使用 Float64Array
@@ -1045,7 +1004,7 @@ for (let i = 0; i < data.length; i++) {
 // 比 Array 快 2-3 倍，且内存占用更少
 ```
 
-### 8.3 异步控制流的并发优化
+### 7.3 异步控制流的并发优化
 
 ```javascript
 // 串行执行：总耗时 = sum(每个任务耗时)
@@ -1078,7 +1037,7 @@ async function parallelWithLimit(tasks, limit = 10) {
 }
 ```
 
-### 8.4 可测试性设计
+### 7.4 可测试性设计
 
 控制流应设计为易于单元测试：
 
@@ -1102,7 +1061,7 @@ function calculate(logger = () => {}) {
 }
 ```
 
-### 8.5 ESLint 规则配置
+### 7.5 ESLint 规则配置
 
 推荐启用以下 ESLint 规则保障控制流质量：
 
@@ -1123,7 +1082,7 @@ function calculate(logger = () => {}) {
 }
 ```
 
-### 8.6 TypeScript 类型收窄
+### 7.6 TypeScript 类型收窄
 
 TypeScript 利用控制流进行类型收窄（Type Narrowing），是 JavaScript 控制流的强类型扩展：
 
@@ -1158,9 +1117,9 @@ function isError(x: unknown): x is Error {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：React 中的条件渲染模式
+### 8.1 案例一：React 中的条件渲染模式
 
 **项目背景**：某大型 SaaS 后台管理系统中，列表页的列渲染逻辑包含 200+ 个字段，每个字段根据权限、状态、用户偏好动态显示。
 
@@ -1204,7 +1163,7 @@ const renderCell = (field, value, user) => {
 
 **收益**：新增字段只需添加一行配置，无需修改控制流主体，圈复杂度从 15 降至 2。
 
-### 9.2 案例二：异步批量请求的重试与限流
+### 8.2 案例二：异步批量请求的重试与限流
 
 **项目背景**：金融数据采集系统，需从 200 个上游 API 拉取数据，要求限流（每秒最多 10 并发）、失败重试（最多 3 次）、超时（5 秒）。
 
@@ -1254,7 +1213,7 @@ async function batchFetch(urls, concurrency = 10) {
 
 **生产收益**：吞吐量从串行的 200 秒降至并行的 25 秒，失败率从 15% 降至 0.1%。
 
-### 9.3 案例三：基于生成器的协程调度
+### 8.3 案例三：基于生成器的协程调度
 
 **项目背景**：长视频处理任务（转码、加水印、上传）总耗时 10 分钟，需在浏览器中执行且不阻塞主线程。
 
@@ -1293,7 +1252,7 @@ runCoroutine(processVideo(file));
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：以下代码输出什么？解释原因。
 
@@ -1343,7 +1302,7 @@ function classify(score) {
 }
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 3**：以下代码输出什么？解释 `finally` 的覆盖行为。
 
@@ -1376,7 +1335,7 @@ async function retry(fn, retries = 3, delay = 1000) {
 }
 ```
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 5**：设计一个可中断的 `map` 函数，支持在迭代过程中通过外部信号中止，并保证已开始的工作单元完成。
 
@@ -1436,7 +1395,7 @@ function findPairsOptimized(arr, target) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Ecma International. 2024. *ECMAScript 2024 Language Specification (ECMA-262, 15th edition)*. Geneva, Switzerland: Ecma International. https://www.ecma-international.org/wp-content/uploads/ECMA-262_15th_edition_june_2024.pdf
 
@@ -1460,23 +1419,23 @@ function findPairsOptimized(arr, target) {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - ECMAScript 规范：https://tc39.es/ecma262/
 - MDN Web Docs - 控制流：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Control_flow_and_error_handling
 - MDN Web Docs - 迭代器与生成器：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Iterators_and_generators
 - V8 引擎博客：https://v8.dev/blog
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Flanagan, D. 2020. *JavaScript: The Definitive Guide, 7th Edition*. O'Reilly Media, Sebastopol, CA.
 - Haverbeke, M. 2018. *Eloquent JavaScript, 3rd Edition*. No Starch Press, San Francisco, CA. https://eloquentjavascript.net/
 - Simpson, K. 2019. *You Don't Know JS Yet (book series)*, 2nd Edition. O'Reilly Media. https://github.com/getify/You-Dont-Know-JS
 - Crockford, D. 2008. *JavaScript: The Good Parts*. O'Reilly Media, Sebastopol, CA.
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - Madsen, M. and Lhoták, O. 2020. *A Sound and Complete Semantics for JavaScript Promises*. *Proceedings of the ACM on Programming Languages* 4, OOPSLA (November 2020), 1–28. DOI: https://doi.org/10.1145/3428253
 
@@ -1484,7 +1443,7 @@ function findPairsOptimized(arr, target) {
 
 - Sridharan, M. et al. 2022. *TAJS: Type Analysis for JavaScript*. Aarhus University. https://github.com/cs-au-dk/tajs
 
-### 12.4 进阶资源
+### 11.4 进阶资源
 
 - *SICP* (Structure and Interpretation of Computer Programs)：https://mitpress.mit.edu/sites/default/files/sicp/index.html
 - *Crafting Interpreters* by Robert Nystrom：https://craftinginterpreters.com/
@@ -1493,9 +1452,9 @@ function findPairsOptimized(arr, target) {
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 术语表
+### 12.1 术语表
 
 | 术语 | 英文 | 定义 |
 |------|------|------|
@@ -1510,7 +1469,7 @@ function findPairsOptimized(arr, target) {
 | 协程 | Coroutine | 可暂停与恢复的函数 |
 | 结构化操作语义 | Structural Operational Semantics (SOS) | 形式语义学的一种风格 |
 
-### 13.2 ESLint 规则速查
+### 12.2 ESLint 规则速查
 
 | 规则 | 作用 | 推荐等级 |
 |------|------|---------|
@@ -1522,7 +1481,7 @@ function findPairsOptimized(arr, target) {
 | `complexity` | 限制圈复杂度 | warn |
 | `guard-for-in` | 强制 for...in 配合 hasOwnProperty | error |
 
-### 13.3 性能基准参考
+### 12.3 性能基准参考
 
 V8 引擎下（Node.js v22）的典型性能数据（仅供参考，实际以基准测试为准）：
 
@@ -1535,7 +1494,7 @@ V8 引擎下（Node.js v22）的典型性能数据（仅供参考，实际以基
 | `arr.reduce(fn, 0)` | ~6000 万 | 单次遍历 |
 | `try { throw } catch` | ~100 万 | 抛出与捕获开销 |
 
-### 13.4 控制流与并发原语对照
+### 12.4 控制流与并发原语对照
 
 | JavaScript | Rust | Go | Python |
 |-----------|------|----|-------|

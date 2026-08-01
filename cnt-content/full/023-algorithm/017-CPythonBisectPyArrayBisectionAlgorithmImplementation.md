@@ -34,14 +34,6 @@ prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/数组与动态数组
   - algorithm/树
-learningObjectives:
-  - 记忆顺序查找 $O(n)$、二分查找 $O(\log n)$、插值查找 $O(\log \log n)$ 平均、哈希查找 $O(1)$ 平均、BST 查找 $O(\log n)$ 平均、跳表查找 $O(\log n)$ 期望的形式化复杂度，复述各查找算法在前提条件（有序性、随机访问、哈希函数、平衡性）上的差异
-  - 理解 Mauchly 1946 二分查找（Knuth TAOCP Vol.3 §6.2.1 考据）、Luhn 1953 IBM 备忘录哈希表、Bloom 1970 布隆过滤器（CACM 13(7):422-426）、Bayer-McCreight 1972 B 树（ACM TODS 1(3):157-189）、Bayer 1972 对称二叉 B 树、Guibas-Sedgewick 1978 红黑树《A Dichromatic Framework for Balanced Trees》、Knuth-Morris-Pratt 1977 KMP（SIAM J. Comput. 6(2):323-350）、Boyer-Moore 1977 字符串匹配（CACM 20(10):762-772）、Pugh 1990 跳表（CACM 33(6):668-676）的历史脉络，说明不同查找结构的设计动机
-  - 应用顺序查找（含哨兵优化）、标准二分查找、二分查找变体（lower_bound、upper_bound、查找插入位置、旋转数组查找、二分答案、浮点二分）、插值查找、斐波那契查找编写可运行的 Python/C++/Java 代码，解决 LeetCode 33 旋转排序数组查找、LeetCode 35 搜索插入位置、LeetCode 69 x 的平方根、LeetCode 162 寻找峰值、LeetCode 240 搜索二维矩阵 II、LeetCode 34 在排序数组中查找元素第一个和最后一个位置等问题
-  - 分析二分查找 $O(\log n)$ 复杂度的递推式 $T(n) = T(n/2) + O(1)$、插值查找 $O(\log \log n)$ 平均复杂度的概率分析、跳表 $O(\log n)$ 期望复杂度的几何分布论证、布隆过滤器误判率 $(1 - e^{-kn/m})^k$ 的数学推导，掌握"分治递推、概率分析、势能分析"三大核心论证方法
-  - 评估二分查找相对于顺序查找、哈希查找、BST 查找、跳表查找在"静态查找 vs 动态查找"、"精确匹配 vs 范围查询"、"内存开销 vs 查找速度"维度上的优劣，识别数据库 B+ 树索引、Redis 字典、Linux VMA 红黑树、浏览器历史、C++ std::map vs std::unordered_map 的选型动机
-  - 对比顺序查找、二分查找、插值查找、斐波那契查找、哈希查找、BST 查找、AVL/红黑树查找、B 树查找、跳表查找、Trie 查找在时间复杂度、空间复杂度、前提条件、是否支持范围查询、是否支持动态更新、缓存友好性维度的差异
-  - 创造性设计基于查找算法的开源项目解决方案，如数据库 B+ 树索引、Redis 字典与跳表双索引、布隆过滤器防缓存穿透、KMP/Boyer-Moore 文本编辑器查找、跳表实现 LRU 缓存、Trie 实现自动补全、哈希表实现去重统计
 references:
   - type: book
     authors:
@@ -218,6 +210,7 @@ etymology:
     english: Boyer-Moore algorithm
     origin: 'Boyer-Moore 算法由 Robert S. Boyer 与 J. Strother Moore 于 1977 年在 *Communications of the ACM* 20(10):762-772《A Fast String Searching Algorithm》中提出。两人当时在 SRI International 研究定理证明器。算法核心是"坏字符规则（bad character rule）+ 好后缀规则（good suffix rule）"，从模式串右端开始匹配，平均复杂度 $O(n/m)$，是最快的字符串查找算法之一。PostgreSQL、grep、各种文本编辑器的查找功能（Ctrl+F）大多基于 Boyer-Moore 或其变体'
 ---
+
 
 ## 1. 概述与学习目标
 

@@ -15,63 +15,16 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
+
 # C# 反射与特性
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 分类法（Bloom's Taxonomy）设定六层认知目标，学习者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：准确陈述 .NET 元数据系统的层次结构（Assembly → Module → Type → MemberInfo）。
-- **R2**：列举 `System.Reflection` 命名空间中的核心类型：`Type`、`MethodInfo`、`PropertyInfo`、`FieldInfo`、`ConstructorInfo`、`EventInfo`、`Attribute`。
-- **R3**：回忆 `AttributeUsage` 特性的三个核心属性：`ValidOn`、`AllowMultiple`、`Inherited`。
-- **R4**：背诵反射获取类型的四种方式：`typeof(T)`、`obj.GetType()`、`Type.GetType(name)`、`Assembly.GetType(name)`。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 .NET 元数据（metadata）与 IL 代码（CIL/MSIL）在 PE 文件中的存储结构。
-- **U2**：阐述 `CustomAttributeData` 与 `GetCustomAttribute` 在运行时行为的差异（实例化 vs. 仅元数据读取）。
-- **U3**：说明 `ReflectionContext` 与 `TypeDelegator` 在元编程（meta-programming）中的作用。
-- **U4**：描述 `Expression` 树（表达式树）与反射 `MethodInfo.Invoke` 在性能上的根本区别。
-
-### 1.3 Apply（应用）
-
-- **A1**：实现一个轻量级 IoC 容器，通过反射解析构造函数参数并注入依赖。
-- **A2**：使用 `System.Reflection.Emit` 动态生成代理类，实现 AOP（面向切面编程）。
-- **A3**：编写自定义 `JsonConverter`，通过反射处理多态类型。
-- **A4**：使用 Source Generator（C# 9+）替代运行时反射，编译期生成映射代码。
-
-### 1.4 Analyze（分析）
-
-- **An1**：解构 `Type.GetMethod` 的 `BindingFlags` 过滤机制，分析其复杂度。
-- **An2**：分析反射调用 `MethodInfo.Invoke` 的运行时开销（权限检查、参数装箱、栈帧构造）。
-- **An3**：剖析 `DynamicMethod` 与 `MethodBuilder` 在 JIT 编译路径上的差异。
-- **An4**：对比 `Attribute` 在 .NET Framework 与 .NET Core/5+ 中的实现差异。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评估在热路径（hot path）上使用反射 vs. 编译期代码生成的取舍。
-- **E2**：判断 `IL Emit` 与 `Expression.CompileToMethod` 在不同场景下的优劣。
-- **E3**：审视 Source Generator 是否能完全替代运行时反射，并指出剩余用例。
-- **E4**：评价 .NET 8 引入的 `System.Reflection.Metadata` 与 `MetadataLoadContext` 在 AOT 场景下的价值。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个基于 Source Generator 的对象映射框架，编译期生成 `Map<TFrom, TTo>` 代码。
-- **C2**：实现一个支持拦截（interception）的动态代理库，基于 `DispatchProxy` 与 `Emit`。
-- **C3**：构建一个 Roslyn 分析器（Analyzer），自动检测低效反射调用并提出修复建议。
-- **C4**：编写一个 `MetadataLoader`，支持在 NativeAOT 环境下加载未运行的程序集元数据。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 .NET Framework 1.0（2002）：反射的诞生
+### 1.1 .NET Framework 1.0（2002）：反射的诞生
 
 .NET 设计之初就将"丰富的元数据"作为核心特性。与 C++ 的 RTTI（run-time type information）不同，.NET 元数据存储所有类型成员信息（方法、属性、字段、特性、参数），可通过 `System.Reflection` 命名空间在运行时完整访问。
 
@@ -91,7 +44,7 @@ object instance = Activator.CreateInstance(type);
 public class OldClass { }
 ```
 
-### 2.2 .NET Framework 2.0（2005）：泛型反射
+### 1.2 .NET Framework 2.0（2005）：泛型反射
 
 C# 2.0 引入泛型，反射 API 同步扩展：
 
@@ -106,7 +59,7 @@ Type closedGeneric = openGeneric.MakeGenericType(typeof(string));
 
 `MakeGenericType` 提供运行时类型构造能力，是泛型元编程的基础。
 
-### 2.3 .NET Framework 3.5（2008）：表达式树与 LINQ
+### 1.3 .NET Framework 3.5（2008）：表达式树与 LINQ
 
 C# 3.0 引入表达式树（Expression Trees），将 lambda 表达式表示为数据结构：
 
@@ -117,7 +70,7 @@ Expression<Func<int, int>> expr = x => x * 2;
 
 表达式树是反射的"轻量替代"——通过编译期类型检查获得性能，同时保留运行时元编程能力。LINQ Provider（如 Entity Framework）大量使用表达式树翻译 C# 表达式为 SQL。
 
-### 2.4 .NET Framework 4.0（2010）：DLR 与 dynamic
+### 1.4 .NET Framework 4.0（2010）：DLR 与 dynamic
 
 C# 4.0 引入 `dynamic` 关键字与动态语言运行时（DLR）：
 
@@ -129,7 +82,7 @@ d.NonExistentMethod();  // 运行时抛出 RuntimeBinderException
 
 DLR 内部使用 `CallSite` 与反射缓存，比直接反射调用快 5-10 倍。
 
-### 2.5 .NET Framework 4.5（2012）：TypeInfo 与反射优化
+### 1.5 .NET Framework 4.5（2012）：TypeInfo 与反射优化
 
 .NET 4.5 引入 `TypeInfo`，将类型信息访问分为"轻量"（`Type`）与"完整"（`TypeInfo`）：
 
@@ -140,7 +93,7 @@ TypeInfo info = typeof(Person).GetTypeInfo();
 
 此版本还引入 `CustomAttributeData`，可在不实例化特性的前提下读取元数据。
 
-### 2.6 .NET Core 1.0（2016）：反射精简
+### 1.6 .NET Core 1.0（2016）：反射精简
 
 .NET Core 出于 AOT 友好与体积考虑，大幅精简反射 API：
 
@@ -148,7 +101,7 @@ TypeInfo info = typeof(Person).GetTypeInfo();
 - 引入 `System.Reflection.TypeExtensions` 扩展方法。
 - 默认不加载 `System.Reflection.Emit`（需单独引用 `System.Reflection.Emit` 包）。
 
-### 2.7 .NET Core 2.0/2.1（2017-2018）：性能改进
+### 1.7 .NET Core 2.0/2.1（2017-2018）：性能改进
 
 `MethodInfo.CreateDelegate` 大幅优化，比 `MethodInfo.Invoke` 快 10 倍以上：
 
@@ -158,7 +111,7 @@ var action = (Action<string>)method.CreateDelegate(typeof(Action<string>));
 action("Hello");  // 高性能调用
 ```
 
-### 2.8 .NET 5（2020）：Source Generator 与 AOT
+### 1.8 .NET 5（2020）：Source Generator 与 AOT
 
 C# 9.0 引入 Source Generator（源生成器），可在编译期生成代码：
 
@@ -175,13 +128,13 @@ public class MyGenerator : IIncrementalGenerator
 
 Source Generator 是反射的"编译期替代方案"，避免运行时反射开销，同时支持 AOT 编译（NativeAOT、Mono AOT）。
 
-### 2.9 .NET 6/7（2021-2022）：反射 API 完善
+### 1.9 .NET 6/7（2021-2022）：反射 API 完善
 
 - 引入 `System.Reflection.Metadata` 与 `System.Reflection.Metadata.Ecma335`，提供低层元数据访问。
 - `MetadataLoadContext` 允许加载程序集仅用于元数据读取（不执行代码）。
 - `UnsafeAccessor` 属性（C# 12 预览）允许安全访问私有成员。
 
-### 2.10 .NET 8（2023）：NativeAOT 与反射限制
+### 1.10 .NET 8（2023）：NativeAOT 与反射限制
 
 .NET 8 正式发布 NativeAOT，对反射有严格限制：
 
@@ -196,7 +149,7 @@ public static T Create<[DynamicallyAccessedMembers(DynamicallyAccessedMemberType
     => Activator.CreateInstance<T>();
 ```
 
-### 2.11 .NET 9（2024）：反射性能优化与 hybrid compiler
+### 1.11 .NET 9（2024）：反射性能优化与 hybrid compiler
 
 .NET 9 进一步优化反射：
 
@@ -204,7 +157,7 @@ public static T Create<[DynamicallyAccessedMembers(DynamicallyAccessedMemberType
 - `UnsafeAccessor` 增强，支持泛型方法。
 - Source Generator 框架稳定，成为推荐做法。
 
-### 2.12 演进时间线
+### 1.12 演进时间线
 
 | 时间 | .NET 版本 | 关键里程碑 |
 |------|-----------|------------|
@@ -222,16 +175,16 @@ public static T Create<[DynamicallyAccessedMembers(DynamicallyAccessedMemberType
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ECMA-335 元数据标准
+### 2.1 ECMA-335 元数据标准
 
 ECMA-335 标准定义了 CLI（Common Language Infrastructure）的元数据格式。每个 .NET 程序集（assembly）包含两个核心部分：
 
 1. **元数据（Metadata）**：类型、成员、特性等结构化信息。
 2. **IL 代码（CIL）**：中间语言指令，由 JIT 编译为本机代码。
 
-#### 3.1.1 元数据表（Metadata Tables）
+#### 2.1.1 元数据表（Metadata Tables）
 
 ECMA-335 定义了 38 张元数据表，核心表包括：
 
@@ -276,7 +229,7 @@ ECMA-335 定义了 38 张元数据表，核心表包括：
 | 0x2B | MethodSpec | 方法规范 |
 | 0x2C | GenericParamConstraint | 泛型约束 |
 
-#### 3.1.2 `Type` 类型的形式化定义
+#### 2.1.2 `Type` 类型的形式化定义
 
 设 $A$ 为一个程序集，$T$ 为 $A$ 中的一个类型。则 $T$ 在元数据中由以下五元组表示：
 
@@ -290,9 +243,9 @@ $$T = (\text{name}, \text{namespace}, \text{baseType}, \text{members}, \text{att
 - $\text{members} \subseteq \text{Method} \times \text{Field} \times \text{Property} \times \text{Event}$：成员集合。
 - $\text{attributes} \subseteq \text{CustomAttribute}$：特性集合。
 
-### 3.2 `Attribute` 的形式化定义
+### 2.2 `Attribute` 的形式化定义
 
-#### 3.2.1 特性的语义
+#### 2.2.1 特性的语义
 
 特性是附加到程序实体的元数据。形式化地，特性是一个二元组：
 
@@ -303,7 +256,7 @@ $$\text{Attribute} = (\text{type}, \text{arguments})$$
 - $\text{type} \in \text{Type}$：特性的类型，必须继承自 `System.Attribute`。
 - $\text{arguments} \in \text{List}\langle\text{Constant}\rangle \times \text{Map}\langle\text{String}, \text{Constant}\rangle$：位置参数与命名参数。
 
-#### 3.2.2 `AttributeUsage` 的形式化约束
+#### 2.2.2 `AttributeUsage` 的形式化约束
 
 `AttributeUsageAttribute` 限制特性的应用范围：
 
@@ -315,7 +268,7 @@ $$\text{Match}(T) \in \text{ValidOn}(A)$$
 
 且若 $\text{AllowMultiple}(A) = \text{false}$，则同一目标 $T$ 上 $A$ 的实例数 $\leq 1$。
 
-### 3.3 反射调用的形式化语义
+### 2.3 反射调用的形式化语义
 
 设 $M$ 为方法，$\text{Invoke}(M, \text{target}, \text{args})$ 为反射调用。其语义为：
 
@@ -331,7 +284,7 @@ $$\text{Invoke}(M, \text{target}, \text{args}) = \text{eval}(M.\text{body}, \tex
 4. **装箱**：值类型参数装箱为 `object`。
 5. **GC 转换**：将托管指针转换为对象引用。
 
-### 3.4 `MemberInfo` 的元数据流
+### 2.4 `MemberInfo` 的元数据流
 
 `MemberInfo` 是所有反射成员的基类，其核心数据流：
 
@@ -353,11 +306,11 @@ PE File (Assembly)
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 反射调用的复杂度分析
+### 3.1 反射调用的复杂度分析
 
-#### 4.1.1 `MethodInfo.Invoke` 的开销模型
+#### 3.1.1 `MethodInfo.Invoke` 的开销模型
 
 设 $T_{\text{invoke}}$ 为反射调用总耗时：
 
@@ -375,7 +328,7 @@ $$T_{\text{invoke}} = T_{\text{lookup}} + T_{\text{security}} + T_{\text{bind}} 
 
 总耗时约 265-1070 ns，相比直接调用（1-5 ns），慢 50-200 倍。
 
-#### 4.1.2 `CreateDelegate` 的优化
+#### 3.1.2 `CreateDelegate` 的优化
 
 通过 `MethodInfo.CreateDelegate` 创建委托后，调用开销接近直接调用：
 
@@ -397,7 +350,7 @@ BenchmarkDotNet v0.13.12, .NET 8
 | DynamicCallSite | 18.34 ns  | 14.91 |
 ```
 
-### 4.2 特性读取的形式化算法
+### 3.2 特性读取的形式化算法
 
 读取目标 $T$ 上特性 $A$ 的算法：
 
@@ -424,7 +377,7 @@ Output: 特性实例列表
 
 时间复杂度：$O(n \cdot m)$，其中 $n$ 为 $T$ 上的特性数，$m$ 为类型层次深度。
 
-### 4.3 表达式树的编译模型
+### 3.3 表达式树的编译模型
 
 表达式树（`Expression<TDelegate>`）通过 `Compile()` 方法编译为 IL：
 
@@ -443,7 +396,7 @@ int result = fn(21);  // 42
 
 性能：首次编译耗时 100-500 μs，但后续调用接近直接调用。
 
-### 4.4 Source Generator 的编译期模型
+### 3.4 Source Generator 的编译期模型
 
 Source Generator 在编译期执行，遵循 Roslyn 流水线：
 
@@ -467,7 +420,7 @@ $$G : \text{Compilation} \to \text{List}\langle\text{SourceText}\rangle$$
 - **类型安全**：编译期检查生成代码。
 - **IDE 支持**：IntelliSense、跳转定义可用。
 
-### 4.5 元数据访问的内存模型
+### 3.5 元数据访问的内存模型
 
 `System.Reflection.Metadata` 提供低层元数据访问，基于 `MetadataReader`：
 
@@ -496,7 +449,7 @@ foreach (var typeDefHandle in metadataReader.TypeDefinitions)
 
 时间复杂度：$O(1)$ 查找（基于 token），$O(n)$ 遍历。
 
-### 4.6 反射与并发
+### 3.6 反射与并发
 
 `MemberInfo` 与 `Attribute` 实例在 .NET 中是线程安全的：
 
@@ -508,9 +461,9 @@ foreach (var typeDefHandle in metadataReader.TypeDefinitions)
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：反射类型成员
+### 4.1 基础示例：反射类型成员
 
 ```csharp
 // File: Reflection/BasicReflection.cs
@@ -582,7 +535,7 @@ public static class BasicReflection
 }
 ```
 
-### 5.2 自定义特性
+### 4.2 自定义特性
 
 ```csharp
 // File: Reflection/CustomAttributes.cs
@@ -663,7 +616,7 @@ public static class CustomAttributeDemo
 }
 ```
 
-### 5.3 简单 ORM 映射器
+### 4.3 简单 ORM 映射器
 
 ```csharp
 // File: Reflection/SimpleOrm.cs
@@ -750,7 +703,7 @@ public static class OrmDemo
 }
 ```
 
-### 5.4 反射 Emit 动态类型生成
+### 4.4 反射 Emit 动态类型生成
 
 ```csharp
 // File: Reflection/DynamicEmit.cs
@@ -835,7 +788,7 @@ public static class DynamicTypeBuilder
 }
 ```
 
-### 5.5 表达式树编译
+### 4.5 表达式树编译
 
 ```csharp
 // File: Reflection/ExpressionTrees.cs
@@ -894,7 +847,7 @@ public static class FastInvoker
 }
 ```
 
-### 5.6 Source Generator 实现
+### 4.6 Source Generator 实现
 
 ```csharp
 // File: Generators/MapperGenerator.cs
@@ -947,7 +900,7 @@ public class MapperGenerator : IIncrementalGenerator
 }
 ```
 
-### 5.7 csproj 配置
+### 4.7 csproj 配置
 
 ```xml
 <!-- File: Fandex.Demos.csproj -->
@@ -971,7 +924,7 @@ public class MapperGenerator : IIncrementalGenerator
 </Project>
 ```
 
-### 5.8 编译与运行
+### 4.8 编译与运行
 
 ```bash
 dotnet build -c Release
@@ -980,9 +933,9 @@ dotnet run -c Release
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 跨语言元编程对比
+### 5.1 跨语言元编程对比
 
 | 特性 | C# (.NET Reflection) | Java (java.lang.reflect) | Python (inspect) | Go (reflect) | Rust (syn/quote) | TypeScript (decorators) |
 |------|----------------------|--------------------------|-------------------|--------------|-------------------|------------------------|
@@ -992,9 +945,9 @@ dotnet run -c Release
 | 动态代码生成 | Emit + Expression | Proxy + ByteBuddy | exec/eval | 不支持 | proc-macro | 不支持 |
 | AOT 友好 | 部分（Source Generator） | 部分 | N/A | AOT 默认 | AOT 默认 | N/A |
 
-### 6.2 与 Java 反射深度对比
+### 5.2 与 Java 反射深度对比
 
-#### 6.2.1 API 设计
+#### 5.2.1 API 设计
 
 ```java
 // Java
@@ -1012,7 +965,7 @@ object instance = Activator.CreateInstance(type);
 object result = method.Invoke(instance, null);
 ```
 
-#### 6.2.2 关键差异
+#### 5.2.2 关键差异
 
 | 方面 | C# | Java |
 |------|-----|------|
@@ -1023,7 +976,7 @@ object result = method.Invoke(instance, null);
 | AOT 支持 | NativeAOT（部分反射） | GraalVM Native Image |
 | 性能优化 | `CreateDelegate` | `MethodHandle` |
 
-### 6.3 与 Go reflect 对比
+### 5.3 与 Go reflect 对比
 
 ```go
 // Go
@@ -1039,7 +992,7 @@ Go 反射限制较多：
 - 性能比 C# 慢 5-10 倍。
 - 不支持泛型反射（Go 1.18+ 通过 `TypeParameters` 支持）。
 
-### 6.4 与 Rust proc-macro 对比
+### 5.4 与 Rust proc-macro 对比
 
 ```rust
 // Rust proc-macro
@@ -1053,7 +1006,7 @@ Rust 的 `derive` 宏在编译期生成代码，类似 C# Source Generator，但
 - 无运行时反射开销。
 - 类型安全（编译期检查）。
 
-### 6.5 综合选型建议
+### 5.5 综合选型建议
 
 | 场景 | 推荐方案 |
 |------|---------|
@@ -1066,9 +1019,9 @@ Rust 的 `derive` 宏在编译期生成代码，类似 C# Source Generator，但
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：反射调用性能差
+### 6.1 陷阱 1：反射调用性能差
 
 ```csharp
 // 反例：每次反射调用都查找方法
@@ -1096,7 +1049,7 @@ public void GoodLoop()
 }
 ```
 
-### 7.2 陷阱 2：特性被多次实例化
+### 6.2 陷阱 2：特性被多次实例化
 
 ```csharp
 var attr1 = typeof(MyClass).GetCustomAttribute<MyAttribute>();
@@ -1106,7 +1059,7 @@ Console.WriteLine(ReferenceEquals(attr1, attr2));  // False!（每次新建实�
 
 **最佳实践**：缓存特性实例，或使用 `CustomAttributeData` 避免实例化。
 
-### 7.3 陷阱 3：BindingFlags 错误
+### 6.3 陷阱 3：BindingFlags 错误
 
 ```csharp
 // 默认仅返回 public 成员
@@ -1118,7 +1071,7 @@ var allMethods = type.GetMethods(
     BindingFlags.Instance | BindingFlags.Static);
 ```
 
-### 7.4 陷阱 4：值类型装箱
+### 6.4 陷阱 4：值类型装箱
 
 ```csharp
 struct Point { public int X, Y; }
@@ -1130,7 +1083,7 @@ var point = new Point { X = 1, Y = 2 };
 
 **最佳实践**：使用泛型委托避免装箱。
 
-### 7.5 陷阱 5：NativeAOT 兼容性
+### 6.5 陷阱 5：NativeAOT 兼容性
 
 ```csharp
 // 在 NativeAOT 下不可用
@@ -1145,7 +1098,7 @@ public static T Create<[DynamicallyAccessedMembers(DynamicallyAccessedMemberType
     => Activator.CreateInstance<T>();
 ```
 
-### 7.6 陷阱 6：循环引用导致栈溢出
+### 6.6 陷阱 6：循环引用导致栈溢出
 
 ```csharp
 public class Node
@@ -1159,7 +1112,7 @@ var node = new Node { Next = /* ... */ };
 
 **最佳实践**：实现循环引用检测（`HashSet<object>` 跟踪已访问对象）。
 
-### 7.7 陷阱 7：Open Generic 类型混淆
+### 6.7 陷阱 7：Open Generic 类型混淆
 
 ```csharp
 Type openGeneric = typeof(List<>);  // List<T>，T 未指定
@@ -1171,7 +1124,7 @@ Console.WriteLine(closed.IsGenericType);  // True
 Console.WriteLine(closed.GetGenericTypeDefinition() == openGeneric);  // True
 ```
 
-### 7.8 陷阱 8：MethodInfo 与 ConstructorInfo 实例比较
+### 6.8 陷阱 8：MethodInfo 与 ConstructorInfo 实例比较
 
 ```csharp
 var m1 = typeof(string).GetMethod("Substring", new[] { typeof(int) });
@@ -1182,7 +1135,7 @@ Console.WriteLine(m1 == m2);  // 通常 True（MemberInfo 重写了 ==）
 
 **最佳实践**：使用 `MetadataToken` 与 `Module` 联合比较。
 
-### 7.9 最佳实践清单
+### 6.9 最佳实践清单
 
 1. **缓存 `MethodInfo`/`PropertyInfo`**：避免每次查找。
 2. **使用 `CreateDelegate`** 替代 `Invoke`，性能提升 50-100 倍。
@@ -1197,9 +1150,9 @@ Console.WriteLine(m1 == m2);  // 通常 True（MemberInfo 重写了 ==）
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构组织
+### 7.1 项目结构组织
 
 ```mermaid
 flowchart TD
@@ -1229,7 +1182,7 @@ flowchart TD
     T19 --> T20
 ```
 
-### 8.2 NuGet 包配置
+### 7.2 NuGet 包配置
 
 ```xml
 <!-- Fandex.Reflection.csproj -->
@@ -1251,7 +1204,7 @@ flowchart TD
 </Project>
 ```
 
-### 8.3 高性能反射缓存
+### 7.3 高性能反射缓存
 
 ```csharp
 // File: Caching/MemberCache.cs
@@ -1287,9 +1240,9 @@ public static class MemberCache
 }
 ```
 
-### 8.4 性能优化技巧
+### 7.4 性能优化技巧
 
-#### 8.4.1 Delegate 优化
+#### 7.4.1 Delegate 优化
 
 ```csharp
 public static class MethodInvoker<TInstance, TArg, TResult>
@@ -1315,7 +1268,7 @@ public static class MethodInvoker<TInstance, TArg, TResult>
 }
 ```
 
-#### 8.4.2 对象池减少分配
+#### 7.4.2 对象池减少分配
 
 ```csharp
 using Microsoft.Extensions.ObjectPool;
@@ -1354,9 +1307,9 @@ public class DictionaryPolicy : IPooledObjectPolicy<Dictionary<string, object?>>
 }
 ```
 
-### 8.5 调试技巧
+### 7.5 调试技巧
 
-#### 8.5.1 查看程序集元数据
+#### 7.5.1 查看程序集元数据
 
 ```bash
 # 使用 ildasm
@@ -1370,7 +1323,7 @@ dotnet tool install -g dotnet-ildasm
 dotnet ildasm MyAssembly.dll
 ```
 
-#### 8.5.2 BenchmarkDotNet 性能测试
+#### 7.5.2 BenchmarkDotNet 性能测试
 
 ```csharp
 [MemoryDiagnoser]
@@ -1395,7 +1348,7 @@ public class ReflectionBenchmarks
 }
 ```
 
-### 8.6 单元测试
+### 7.6 单元测试
 
 ```csharp
 public class ReflectionTests
@@ -1427,7 +1380,7 @@ public class ReflectionTests
 }
 ```
 
-### 8.7 CI/CD 集成
+### 7.7 CI/CD 集成
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1472,9 +1425,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：ASP.NET Core MVC 模型绑定
+### 8.1 案例一：ASP.NET Core MVC 模型绑定
 
 ASP.NET Core MVC 使用反射将 HTTP 请求绑定到控制器参数：
 
@@ -1504,7 +1457,7 @@ public class DefaultModelBinder
 
 **优化**：现代 ASP.NET Core 使用 Source Generator 预生成绑定器，避免运行时反射。
 
-### 9.2 案例二：EF Core 实体物化
+### 8.2 案例二：EF Core 实体物化
 
 EF Core 使用反射将数据库行物化为实体：
 
@@ -1535,7 +1488,7 @@ public class EntityMaterializer
 
 **优化**：EF Core 编译表达式树为委托，避免每次物化都反射。
 
-### 9.3 案例三：System.Text.Json 序列化
+### 8.3 案例三：System.Text.Json 序列化
 
 System.Text.Json 使用 `MetadataReader` 预读类型信息，编译期生成序列化器：
 
@@ -1576,7 +1529,7 @@ public class JsonTypeInfo<T>
 }
 ```
 
-### 9.4 案例四：AutoMapper 对象映射
+### 8.4 案例四：AutoMapper 对象映射
 
 AutoMapper 使用反射 + 表达式树实现高性能对象映射：
 
@@ -1614,7 +1567,7 @@ public class MappingEngine
 }
 ```
 
-### 9.5 案例五：xUnit 测试框架
+### 8.5 案例五：xUnit 测试框架
 
 xUnit 使用反射发现测试方法：
 
@@ -1650,7 +1603,7 @@ public class TestDiscoverer
 }
 ```
 
-### 9.6 案例六：Castle DynamicProxy
+### 8.6 案例六：Castle DynamicProxy
 
 Castle.DynamicProxy 使用 `Emit` 生成代理类：
 
@@ -1904,7 +1857,7 @@ public class UserDto
 2. 编写单元测试验证生成代码。
 3. 与 AutoMapper 库对比性能。
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q13.** 为什么 .NET Core 精简了反射 API？请从 AOT、体积、安全三个角度分析。
 
@@ -1973,9 +1926,9 @@ public static class PluginRegistry
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准与规范
+### 10.1 标准与规范
 
 [1] ECMA International. *ECMA-335: Common Language Infrastructure (CLI)*. 6th ed. Geneva: ECMA International, 2012.
 
@@ -1985,7 +1938,7 @@ public static class PluginRegistry
 
 [4] Microsoft Corporation. *Reflection-based Trimming*. 2021. Available: https://learn.microsoft.com/en-us/dotnet/core/deploying/trimming/prepare-libraries-for-trimming
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [5] Kiczales, Gregor, et al. "Aspect-Oriented Programming." *Proceedings of ECOOP*, 1997, pp. 220-242. DOI: 10.1007/BFb0053381.
 
@@ -1995,7 +1948,7 @@ public static class PluginRegistry
 
 [8] Bono, Viviana, et al. "A Core Calculus for Metaclass Programming." *Proceedings of OOPSLA*, 2002.
 
-### 11.3 工业实践
+### 10.3 工业实践
 
 [9] Torgersen, Mads. "Source Generators: A New Era of Meta-programming in C#." *Microsoft Build*, 2020.
 
@@ -2003,7 +1956,7 @@ public static class PluginRegistry
 
 [11] Abrams, Brad. *The .NET Framework Standard Library Annotated Reference*. Addison-Wesley, 2004.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 [12] Microsoft Learn. *Reflection in .NET*. https://learn.microsoft.com/en-us/dotnet/fundamentals/reflection/reflection
 
@@ -2015,9 +1968,9 @@ public static class PluginRegistry
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 1. **《Metaprogramming in .NET》** — Kevin Hazzard, Jason Bock, Manning Publications, 2013
    - 元编程经典，深入反射、Emit、动态代理。
@@ -2031,7 +1984,7 @@ public static class PluginRegistry
 4. **《Compiler Construction: A Practical Approach》** — Niklaus Wirth, Addison-Wesley, 1996
    - 编译原理经典，理解元数据与编译过程。
 
-### 12.2 推荐论文
+### 11.2 推荐论文
 
 1. **"The Mirror Design Pattern"** — Patricia Lourie, 2002
    - 反射系统的设计模式。
@@ -2042,7 +1995,7 @@ public static class PluginRegistry
 3. **"Type-Safe Reflection"** — Jacques Garrigue, 2010
    - 类型安全反射的形式化。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 1. **Microsoft Learn - Reflection**
    https://learn.microsoft.com/en-us/dotnet/fundamentals/reflection/reflection
@@ -2062,7 +2015,7 @@ public static class PluginRegistry
 6. **Roslyn Syntax Visualizer** — VS 扩展
    https://marketplace.visualstudio.com/items?itemName=vs-pkg-projects.RoslynSyntaxVisualizer
 
-### 12.4 进阶学习路径
+### 11.4 进阶学习路径
 
 ```mermaid
 flowchart TD
@@ -2095,7 +2048,7 @@ flowchart TD
     T9 --> T13
 ```
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 1. **Stack Overflow - [reflection] 标签**
    https://stackoverflow.com/questions/tagged/reflection

@@ -16,16 +16,6 @@ prerequisites:
   - go/概述与环境配置
 ---
 
-## 学习目标
-
-完成本章学习后,读者应能够在以下 Bloom 认知层级达到对应能力:
-
-- **记忆(Memory)**:复述依赖注入(Dependency Injection,DI)的核心术语,包括依赖(Dependency)、注入(Injection)、Provider、Injector、容器(Container)、生命周期(Lifecycle),准确说出 Go 主流 DI 框架(Wire、dig、fx、containerd)的设计定位与典型 API 签名。
-- **理解(Understanding)**:解释控制反转(Inversion of Control,IoC)与依赖注入的关系,阐述编译时注入(Code Generation DI)与运行时注入(Runtime DI)的本质差异,说明构造函数注入(Constructor Injection)、字段注入(Field Injection)、方法注入(Method Injection)三种方式的适用场景。
-- **应用(Application)**:使用 Google Wire 为中型 Web 服务编写 Provider Set、Injector 函数、接口绑定(Bind)、清理函数(Cleanup),并通过 `wire gen` 生成可编译的初始化代码;使用 `go.uber.org/dig` 或 `go.uber.org/fx` 构建运行时容器并管理组件生命周期。
-- **分析(Analysis)**:对照 Wire 生成的 `wire_gen.go` 与手写初始化代码,识别依赖图(Dependency Graph)的拓扑排序过程,定位循环依赖(Cyclic Dependency)、缺失 Provider(Missing Provider)、接口绑定方向错误等典型故障的根因。
-- **评价(Evaluation)**:对比手动注入、Wire、dig、fx、containerd、golobby/inject 等多种方案的编译期安全性、运行时开销、调试便利性、学习曲线、生态成熟度,在不同规模项目(原型/中小型/大型微服务)中做出合理技术选型。
-- **创造(Creation)**:为包含 HTTP Server、gRPC Server、Message Queue Consumer、Scheduled Job、Multiple Database 的复杂微服务设计一套基于 Wire 的模块化依赖注入架构,支持多环境(dev/staging/prod)配置切换、优雅启停(Graceful Shutdown)、健康检查(Health Check)与就绪探针(Readiness Probe)的统一注入。
 
 ## 历史动机与背景
 
@@ -1206,7 +1196,7 @@ func InitializeApp() *App {
 }
 ```
 
-### 2. `wire_gen.go` 未提交版本控制
+### 1. `wire_gen.go` 未提交版本控制
 
 部分团队认为 `wire_gen.go` 是生成文件,应加入 `.gitignore`。这导致:
 
@@ -1216,7 +1206,7 @@ func InitializeApp() *App {
 
 正确做法:`wire_gen.go` 应提交版本控制。Wire 仅在依赖图变更时需要重新生成。
 
-### 3. 循环依赖未检测
+### 2. 循环依赖未检测
 
 ```go
 type A struct{ b *B }
@@ -1233,7 +1223,7 @@ Wire 会在 `wire gen` 阶段检测到循环依赖并报错。dig/fx 则在 `Inv
 
 解决方案:重构设计,提取公共依赖,或使用工厂模式延迟创建。
 
-### 4. 接口绑定方向错误
+### 3. 接口绑定方向错误
 
 ```go
 // 错误:方向反了
@@ -1245,7 +1235,7 @@ wire.Bind(new(UserRepository), new(*PostgresUserRepo))
 
 `wire.Bind(interface, implementation)`:第一个参数是要绑定的接口类型,第二个是提供实例的实现类型。方向反了会导致 Wire 找不到 Provider。
 
-### 5. 同类型多 Provider 未消歧
+### 4. 同类型多 Provider 未消歧
 
 ```go
 // 两个 Provider 都提供 *sql.DB
@@ -1261,7 +1251,7 @@ wire.Build(NewPrimaryDB, NewReplicaDB) // 报错:multiple providers for *sql.DB
 - 包装为不同类型:`type PrimaryDB struct{ *sql.DB }`。
 - 使用 `wire.FieldsOf` 从配置结构体提取。
 
-### 6. nil 接口陷阱
+### 5. nil 接口陷阱
 
 ```go
 type Repository interface {
@@ -1290,7 +1280,7 @@ s.repo.Get(1) // panic: nil pointer dereference
 - Provider 永远不返回 nil,出错时返回 error。
 - 使用 `fx.Annotated` 或显式工厂模式处理可选依赖。
 
-### 7. dig 的单例陷阱
+### 6. dig 的单例陷阱
 
 dig 默认单例,但有时需要多实例:
 
@@ -1324,7 +1314,7 @@ var AppSet = wire.NewSet(InfraSet, RepoSet, ServiceSet, HandlerSet, NewApp)
 
 避免单个 `wire.Build` 列出几十个 Provider,可读性差且难维护。
 
-### 2. 接口与实现分离
+### 1. 接口与实现分离
 
 ```go
 // 仓储接口定义在 service 包,实现在 repository 包
@@ -1350,7 +1340,7 @@ wire.Bind(new(service.UserRepository), new(*repository.PostgresUserRepo))
 
 这种"消费者定义接口"模式符合 Go 的"接受接口,返回结构体"原则,降低耦合。
 
-### 3. 配置注入而非全局变量
+### 2. 配置注入而非全局变量
 
 ```go
 // 反模式:全局配置
@@ -1372,7 +1362,7 @@ func NewApp(config *ConfigStruct) *App {
 
 配置作为普通依赖注入,便于测试时替换,避免全局状态。
 
-### 4. 测试专用注入器
+### 3. 测试专用注入器
 
 ```go
 // wire_test.go
@@ -1405,7 +1395,7 @@ func TestUserService(t *testing.T) {
 
 为测试单独生成注入器,自动使用 Mock 实现,无需手写组装代码。
 
-### 5. 优雅启停集成
+### 4. 优雅启停集成
 
 ```go
 func main() {

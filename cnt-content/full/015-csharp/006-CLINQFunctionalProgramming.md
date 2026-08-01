@@ -15,71 +15,6 @@ related:
 prerequisites: []
 ---
 
-## 0. 学习目标
-
-本章节基于 Bloom 分类法（Bloom's Taxonomy）将学习目标按认知层级递进组织，帮助学习者从记忆到创造逐层构建对 LINQ 与函数式编程的深度理解。
-
-### 0.1 记忆层（Remember）
-
-完成本章学习后，学习者应当能够：
-
-- 复述 LINQ 的英文全称（Language Integrated Query）及其核心定义
-- 列举 LINQ 的三大组成部分：LINQ to Objects、LINQ to XML、LINQ to SQL/Entities
-- 识别查询语法（Query Syntax）与方法语法（Method Syntax）的基本结构
-- 回忆标准查询运算符（Standard Query Operators）的命名空间 `System.Linq`
-- 列举至少 10 个常用 LINQ 运算符：`Where`、`Select`、`OrderBy`、`GroupBy`、`Join`、`SelectMany`、`Any`、`All`、`First`、`Count`
-
-### 0.2 理解层（Understand）
-
-完成本章学习后，学习者应当能够：
-
-- 解释延迟执行（Deferred Execution）与立即执行（Immediate Execution）的本质区别
-- 阐述 IEnumerable 与 IQueryable 两类序列在 LINQ 处理上的差异
-- 说明表达式树（Expression Tree）作为数据结构与代码可执行体之间的双重身份
-- 解释函子（Functor）、应用函子（Applicative Functor）、Monad 三者之间的关系
-- 阐述 LINQ 与函数式编程在历史演进中的相互影响
-
-### 0.3 应用层（Apply）
-
-完成本章学习后，学习者应当能够：
-
-- 在生产代码中使用 LINQ 重写传统 `foreach` 循环逻辑，提升可读性
-- 对集合数据执行筛选、投影、聚合、分组、连接等操作
-- 使用 PLINQ（Parallel LINQ）对 CPU 密集型查询进行并行化加速
-- 在 EF Core 中正确编写 LINQ 查询并理解其翻译为 SQL 的过程
-- 应用局部函数（Local Functions）封装查询内部的辅助逻辑
-
-### 0.4 分析层（Analyze）
-
-完成本章学习后，学习者应当能够：
-
-- 分析 LINQ 查询在运行时的执行链路与中间状态
-- 比较不同 LINQ 实现的性能特征（迭代器 vs 表达式树翻译）
-- 拆解复杂的 `SelectMany` 链式调用，识别其与 Monad bind 操作的同构性
-- 分析表达式树如何在 EF Core 中被翻译为 SQL，并识别翻译失败的场景
-- 识别 LINQ 查询中的多次枚举问题与性能反模式
-
-### 0.5 评价层（Evaluate）
-
-完成本章学习后，学习者应当能够：
-
-- 评估一个 LINQ 查询在生产环境中的性能与内存开销
-- 判断何时应使用查询语法而非方法语法（或反之），并给出工程依据
-- 评价函数式编程范式相对于面向对象范式在特定业务场景下的优劣
-- 评估 PLINQ 的并行化收益是否大于其线程调度开销
-- 评估表达式树在动态查询构建场景下的适用性
-
-### 0.6 创造层（Create）
-
-完成本章学习后，学习者应当能够：
-
-- 设计并实现自定义 LINQ 运算符，扩展 `IEnumerable<T>` 的查询能力
-- 构建基于表达式树的动态查询生成器，支持运行时组合查询条件
-- 设计自定义 Monad（如 Result、Maybe、Validation）并提供 LINQ 查询表达式支持
-- 实现一个简易的 ORM 映射器，将 LINQ 表达式翻译为目标 SQL
-- 创造性地将函数式编程范式与 C# 命令式特性融合，构建高可维护的生产级系统
-
----
 
 ## 1. 历史动机与背景
 
@@ -171,9 +106,9 @@ var names = users.Where(u => u.Age > 18).Select(u => u.Name).ToList();
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 LINQ 的数学基础
+### 1.1 LINQ 的数学基础
 
 LINQ 的核心抽象可以形式化定义为：给定一个数据源 $S$ 与一组查询运算符 $\Omega$，LINQ 查询 $Q$ 是一个由运算符组合而成的函数复合：
 
@@ -183,7 +118,7 @@ $$
 
 其中 $\omega_i \in \Omega$，每个运算符接受一个序列并返回一个序列（或标量值）。
 
-### 2.2 IEnumerable 作为函子
+### 1.2 IEnumerable 作为函子
 
 在范畴论中，**函子（Functor）** 是从一个范畴到另一个范畴的映射，保持态射结构。在 C# 中，`IEnumerable<T>` 构成一个函子，其 `Select` 运算符实现了函子的 `fmap` 操作：
 
@@ -205,7 +140,7 @@ $$
 \end{aligned}
 $$
 
-### 2.3 SelectMany 作为 Monad 的 bind 操作
+### 1.3 SelectMany 作为 Monad 的 bind 操作
 
 `IEnumerable<T>` 不仅是一个函子，还是一个 **Monad**。Monad 的核心操作 `bind`（通常记作 `>>=`）在 LINQ 中对应 `SelectMany`：
 
@@ -241,7 +176,7 @@ xs.SelectMany(x => new[] { x }) ≡ xs
 xs.SelectMany(f).SelectMany(g) ≡ xs.SelectMany(x => f(x).SelectMany(g))
 ```
 
-### 2.4 查询表达式的形式语法
+### 1.4 查询表达式的形式语法
 
 C# 查询表达式的形式语法（简化版）可定义为：
 
@@ -259,7 +194,7 @@ $$
 
 查询表达式会被编译器翻译为对扩展方法的调用，这一翻译过程遵循 C# 语言规范第 7.16 节定义的规则。
 
-### 2.5 表达式树的代数结构
+### 1.5 表达式树的代数结构
 
 表达式树（`Expression<TDelegate>`）将代码表示为抽象语法树（AST）。形式上，表达式树可以定义为以下代数数据类型：
 
@@ -275,9 +210,9 @@ $$
 
 ---
 
-## 3. 理论推导
+## 2. 理论推导
 
-### 3.1 延迟执行的执行语义
+### 2.1 延迟执行的执行语义
 
 LINQ 查询的延迟执行基于迭代器模式（Iterator Pattern）。考虑以下查询：
 
@@ -297,7 +232,7 @@ var query = numbers.Where(n => n > 0).Select(n => n * 2);
 - **空间复杂度**：$O(k)$，每个运算符维护一个迭代器状态，与序列长度无关
 - **总体**：流式处理，单元素内存占用为常数级
 
-### 3.2 查询运算符的代数性质
+### 2.2 查询运算符的代数性质
 
 LINQ 运算符具有丰富的代数性质，这些性质是查询优化的理论基础：
 
@@ -321,7 +256,7 @@ $$
 
 这一性质在函数式编程的**融合优化（Deforestation / Stream Fusion）**中被广泛使用，可消除中间数据结构的分配开销。
 
-### 3.3 复杂度分析
+### 2.3 复杂度分析
 
 不同 LINQ 运算符的时间与空间复杂度：
 
@@ -338,7 +273,7 @@ $$
 | `Contains` | $O(n)$ 平均 | $O(1)$ | 线性扫描 |
 | `First` | $O(1)$ 最优 / $O(n)$ 最差 | $O(1)$ | 短路求值 |
 
-### 3.4 PLINQ 的并行化分析
+### 2.4 PLINQ 的并行化分析
 
 PLINQ 通过将输入序列分区并并行处理来加速 CPU 密集型查询。其加速比受 **Amdahl 定律**约束：
 
@@ -350,7 +285,7 @@ $$
 
 对于完全并行的 `Where` 操作，理论加速比接近 $N$。但对于 `OrderBy` 等需要全局状态的操作，PLINQ 的开销可能超过收益。
 
-### 3.5 表达式树翻译的复杂性
+### 2.5 表达式树翻译的复杂性
 
 EF Core 将 LINQ 表达式翻译为 SQL 的过程涉及多个阶段：
 
@@ -364,9 +299,9 @@ EF Core 将 LINQ 表达式翻译为 SQL 的过程涉及多个阶段：
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 基础查询语法对比
+### 3.1 基础查询语法对比
 
 ```csharp
 using System;
@@ -424,7 +359,7 @@ public class BasicLinqDemo
 }
 ```
 
-### 4.2 延迟执行演示
+### 3.2 延迟执行演示
 
 ```csharp
 using System;
@@ -480,7 +415,7 @@ public class DeferredExecutionDemo
 }
 ```
 
-### 4.3 SelectMany 与多层嵌套
+### 3.3 SelectMany 与多层嵌套
 
 ```csharp
 using System;
@@ -553,7 +488,7 @@ public class SelectManyDemo
 }
 ```
 
-### 4.4 分组与聚合
+### 3.4 分组与聚合
 
 ```csharp
 using System;
@@ -636,7 +571,7 @@ public class GroupByDemo
 }
 ```
 
-### 4.5 Join 操作
+### 3.5 Join 操作
 
 ```csharp
 using System;
@@ -727,7 +662,7 @@ public class JoinDemo
 }
 ```
 
-### 4.6 表达式树构建与翻译
+### 3.6 表达式树构建与翻译
 
 ```csharp
 using System;
@@ -875,7 +810,7 @@ public class ExpressionTreeDemo
 }
 ```
 
-### 4.7 PLINQ 并行查询
+### 3.7 PLINQ 并行查询
 
 ```csharp
 using System;
@@ -943,7 +878,7 @@ public class PlinqDemo
 }
 ```
 
-### 4.8 自定义 LINQ 运算符
+### 3.8 自定义 LINQ 运算符
 
 ```csharp
 using System;
@@ -1101,7 +1036,7 @@ public class CustomOperatorsDemo
 }
 ```
 
-### 4.9 函数式编程实践
+### 3.9 函数式编程实践
 
 ```csharp
 using System;
@@ -1245,7 +1180,7 @@ public class FunctionalProgrammingDemo
 }
 ```
 
-### 4.10 局部函数与闭包
+### 3.10 局部函数与闭包
 
 ```csharp
 using System;
@@ -1346,9 +1281,9 @@ public class LocalFunctionDemo
 
 ---
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 LINQ 与传统命令式循环对比
+### 4.1 LINQ 与传统命令式循环对比
 
 | 维度 | 命令式 `foreach` | LINQ 方法语法 | LINQ 查询语法 |
 |------|------------------|--------------|--------------|
@@ -1361,7 +1296,7 @@ public class LocalFunctionDemo
 | 学习成本 | 低 | 中 | 中 |
 | 适用场景 | 简单遍历 | 复杂查询 | 多表连接、分组 |
 
-### 5.2 IEnumerable 与 IQueryable 对比
+### 4.2 IEnumerable 与 IQueryable 对比
 
 | 特性 | `IEnumerable<T>` | `IQueryable<T>` |
 |------|------------------|-----------------|
@@ -1374,7 +1309,7 @@ public class LocalFunctionDemo
 | 可组合性 | 支持所有 LINQ 运算符 | 部分运算符不可翻译（如自定义方法） |
 | 异常处理 | 本地异常 | 翻译失败异常、远端异常 |
 
-### 5.3 函数式范式与面向对象范式对比
+### 4.3 函数式范式与面向对象范式对比
 
 | 维度 | 函数式编程（LINQ风格） | 面向对象编程 |
 |------|----------------------|--------------|
@@ -1388,7 +1323,7 @@ public class LocalFunctionDemo
 | 代码量 | 简洁 | 较多 |
 | C# 中的支持 | LINQ、record、pattern matching | class、inheritance |
 
-### 5.4 查询语法与方法语法选择策略
+### 4.4 查询语法与方法语法选择策略
 
 ```csharp
 // 场景一：简单查询 —— 方法语法更简洁
@@ -1410,7 +1345,7 @@ var result3 = from u in users
 var result4 = users.Where(...).Batch(100).Select(...);
 ```
 
-### 5.5 与其他语言查询机制对比
+### 4.5 与其他语言查询机制对比
 
 | 语言 | 查询机制 | 特点 |
 |------|----------|------|
@@ -1424,9 +1359,9 @@ var result4 = users.Where(...).Batch(100).Select(...);
 
 ---
 
-## 6. 常见陷阱与反模式
+## 5. 常见陷阱与反模式
 
-### 6.1 多次枚举导致重复计算
+### 5.1 多次枚举导致重复计算
 
 **生产事故案例**：某电商系统在订单统计模块中，对同一个 `IEnumerable` 查询进行了多次枚举（Count、Sum、ToList），导致数据库被查询了 4 次，高峰期数据库连接池耗尽。
 
@@ -1458,7 +1393,7 @@ public class GoodStatsService
 }
 ```
 
-### 6.2 闭包捕获循环变量
+### 5.2 闭包捕获循环变量
 
 **经典陷阱**：在循环中创建 lambda 时捕获循环变量，所有 lambda 引用的是同一个变量，导致结果与预期不符。
 
@@ -1489,7 +1424,7 @@ public List<Func<int>> GoodClosure()
 }
 ```
 
-### 6.3 在 Where 中执行副作用
+### 5.3 在 Where 中执行副作用
 
 **反模式**：在 `Where` 谓词中执行 IO 操作或修改状态，破坏纯函数性与延迟执行语义。
 
@@ -1506,7 +1441,7 @@ var userIdsWithOrders = db.GetOrders().Select(o => o.UserId).ToHashSet();
 var result = users.Where(u => userIdsWithOrders.Contains(u.Id)).ToList();
 ```
 
-### 6.4 在 EF Core 中使用无法翻译的方法
+### 5.4 在 EF Core 中使用无法翻译的方法
 
 **生产事故**：EF Core 3.0+ 默认不再自动客户端求值，调用无法翻译的方法会抛出异常。
 
@@ -1522,7 +1457,7 @@ var result = dbContext.Users
     .ToList();
 ```
 
-### 6.5 OrderBy 后再 Where 的性能陷阱
+### 5.5 OrderBy 后再 Where 的性能陷阱
 
 ```csharp
 // 反模式：先排序后过滤，对全量数据排序
@@ -1532,7 +1467,7 @@ var result = users.OrderBy(u => u.Name).Where(u => u.Age > 18).ToList();
 var result = users.Where(u => u.Age > 18).OrderBy(u => u.Name).ToList();
 ```
 
-### 6.6 SelectMany 导致笛卡尔积爆炸
+### 5.6 SelectMany 导致笛卡尔积爆炸
 
 ```csharp
 // 反模式：未限制的 SelectMany 可能导致结果集爆炸
@@ -1544,7 +1479,7 @@ var validCombinations = users
     .SelectMany(u => products.Where(p => p.SuitableFor(u)).Take(10).Select(p => (u, p)));
 ```
 
-### 6.7 使用 First 而非 FirstOrDefault 导致异常
+### 5.7 使用 First 而非 FirstOrDefault 导致异常
 
 ```csharp
 // 反模式：未处理空序列场景
@@ -1555,7 +1490,7 @@ var user = users.FirstOrDefault(u => u.Id == targetId);
 if (user == null) throw new KeyNotFoundException($"用户 {targetId} 不存在");
 ```
 
-### 6.8 ToList 滥用导致内存峰值
+### 5.8 ToList 滥用导致内存峰值
 
 ```csharp
 // 反模式：在管道中间多次 ToList，浪费内存
@@ -1577,9 +1512,9 @@ var result = source
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 生产级 LINQ 查询封装
+### 6.1 生产级 LINQ 查询封装
 
 ```csharp
 using System;
@@ -1675,7 +1610,7 @@ public static class QueryExecutor
 }
 ```
 
-### 7.2 规约模式（Specification Pattern）
+### 6.2 规约模式（Specification Pattern）
 
 ```csharp
 using System;
@@ -1829,7 +1764,7 @@ public class OrderSpecifications
 }
 ```
 
-### 7.3 性能优化策略
+### 6.3 性能优化策略
 
 **策略一：避免不必要的 ToList**
 
@@ -1893,7 +1828,7 @@ private static readonly Func<MyDbContext, int, User?> _getUserById =
 var user = _getUserById(dbContext, 1);
 ```
 
-### 7.4 测试策略
+### 6.4 测试策略
 
 ```csharp
 using System;
@@ -1979,9 +1914,9 @@ public class LinqQueryTests
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 案例一：电商订单分析系统
+### 7.1 案例一：电商订单分析系统
 
 **项目背景**：某中型电商平台日均处理 50 万订单，需要实时分析订单数据，支持多维度查询（按用户、商品、时间、地区等）。
 
@@ -2119,7 +2054,7 @@ public record SalesTrend(DateTime Period, int OrderCount, decimal TotalAmount);
 public record ProductRank(int ProductId, string ProductName, int TotalQuantity, decimal TotalRevenue);
 ```
 
-### 8.2 案例二：日志分析系统
+### 7.2 案例二：日志分析系统
 
 **项目背景**：某分布式系统每天产生 10 亿条日志，需要快速查询特定时间段的错误日志并统计错误模式。
 
@@ -2202,7 +2137,7 @@ public record ServiceErrorStats(
 public record ErrorRateSnapshot(DateTime WindowStart, int ErrorCount, int TotalCount, double ErrorRate);
 ```
 
-### 8.3 案例三：动态报表生成器
+### 7.3 案例三：动态报表生成器
 
 **项目背景**：企业内部需要根据用户选择的维度动态生成报表，维度组合可能上千种。
 
@@ -2267,7 +2202,7 @@ public enum AggregateType { Count, Sum, Average, Max, Min }
 
 ## 知识讲解与要点分析（原习题）
 
-### 9.1 基础题
+### 8.1 基础题
 
 **习题 1**：使用 LINQ 方法语法实现以下需求：给定整数列表，返回所有偶数的平方，并按降序排列。
 
@@ -2297,7 +2232,7 @@ var result = from a in listA
              select new { a.Name, b.Value };
 ```
 
-### 9.2 进阶题
+### 8.2 进阶题
 
 **习题 4**：实现一个自定义 LINQ 运算符 `ChunkBy`，将序列按键分组连续元素（类似 Run-Length Encoding 的分组逻辑）。
 
@@ -2343,7 +2278,7 @@ public static IEnumerable<IEnumerable<T>> ChunkBy<T, TKey>(
 - 右单位律：`xs.SelectMany(x => new[] { x })` 保持每个元素不变
 - 结合律：通过展开 `SelectMany` 的实现，可证明左右结合方式产生的序列相同
 
-### 9.3 挑战题
+### 8.3 挑战题
 
 **习题 7**：实现一个简易的 ORM 查询翻译器，将简单的 LINQ 表达式（Where、Select、OrderBy）翻译为 SQL 字符串。
 
@@ -2389,7 +2324,7 @@ var result = numbers
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
 1. Hejlsberg, A., Torgersen, M., Wiltamuth, S., & Golde, P. (2010). *The C# Programming Language* (4th ed.). Addison-Wesley Professional. ISBN: 978-0-321-74176-9.
 
@@ -2417,9 +2352,9 @@ var result = numbers
 
 ---
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 - **C# LINQ 文档**：https://learn.microsoft.com/dotnet/csharp/linq/
 - **标准查询运算符**：https://learn.microsoft.com/dotnet/csharp/linq/standard-query-operators/
@@ -2427,7 +2362,7 @@ var result = numbers
 - **EF Core 查询**：https://learn.microsoft.com/ef/core/querying/
 - **PLINQ**：https://learn.microsoft.com/dotnet/standard/parallel-programming/parallel-linq-plinq
 
-### 11.2 经典教材
+### 10.2 经典教材
 
 - **C# in Depth** (Jon Skeet)：深入理解 C# 演进，包含 LINQ 设计原理
 - **Real-World Functional Programming** (Tomas Petricek)：F# 与 C# 函数式编程对比
@@ -2435,7 +2370,7 @@ var result = numbers
 - **The C# Programming Language** (Anders Hejlsberg)：C# 语言设计者的权威著作
 - **Programming Language Pragmatics** (Michael Scott)：编程语言通用理论
 
-### 11.3 前沿论文与社区资源
+### 10.3 前沿论文与社区资源
 
 - **LINQ 最初设计论文**：Meijer et al. (2007) "LINQ: Reconciling object, relational and XML programming in the .NET framework"
 - **范畴论入门**：Bartosz Milewski 的 "Programming Category Theory" 系列
@@ -2443,7 +2378,7 @@ var result = numbers
 - **C# 函数式编程博客**：https://enterprisecraftsmanship.com/
 - **LINQ 性能优化**：https://www.tomdu.net/dev/linq-perf.html
 
-### 11.4 相关开源项目
+### 10.4 相关开源项目
 
 - **EF Core**：https://github.com/dotnet/efcore —— 学习 LINQ 到 SQL 翻译的最佳实战
 - **System.Linq.Async**：https://github.com/dotnet/reactive —— 异步 LINQ 扩展
@@ -2451,7 +2386,7 @@ var result = numbers
 - **Interactive Extensions**：https://github.com/dotnet/reactive —— 反应式编程扩展
 - **LanguageExt**：https://github.com/louthy/language-ext —— C# 函数式编程库，提供完整 Monad 实现
 
-### 11.5 进阶主题
+### 10.5 进阶主题
 
 - **Reactive Extensions (Rx)**：将 LINQ 推广到事件流，`IObservable<T>` 是 `IEnumerable<T>` 的对偶
 - **Async Streams**：`IAsyncEnumerable<T>` 将 LINQ 推广到异步流（C# 8.0+）
@@ -2461,7 +2396,7 @@ var result = numbers
 
 ---
 
-## 12. 小结
+## 11. 小结
 
 LINQ 是 C# 语言演进中最具革命性的特性之一，它不仅统一了不同数据源的查询模型，更将函数式编程的核心思想（高阶函数、惰性求值、Monad）引入了主流面向对象语言。理解 LINQ 的设计哲学需要从多个维度切入：
 

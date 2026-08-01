@@ -16,61 +16,14 @@ prerequisites:
   - csharp/概述与环境配置
 ---
 
+
 # Entity-Framework-Core迁移与优化
 
 > "对象关系映射（ORM）是开发者的舒适区，但舒适区往往是性能黑洞。" —— Jimmy Bogard, *Architecting with Entity Framework Core*
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 分类法（Bloom's Taxonomy）设定六层认知目标，学习者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：准确陈述 EF Core 的架构层次（Model/EF Core/ADO.NET/Database）与各层职责。
-- **R2**：列举 EF Core 的核心组件：`DbContext`、`DbSet<T>`、`ChangeTracker`、`ModelBuilder`、`Migration`、`DatabaseProvider`。
-- **R3**：回忆 Code First、Database First、Model First 三种建模策略的差异。
-- **R4**：背诵 EF Core 三种查询模式：Eager Loading（`Include`）、Explicit Loading（`Entry().Reference().Load()`）、Lazy Loading（代理）。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 `ChangeTracker` 的状态机：`Detached`、`Unchanged`、`Added`、`Modified`、`Deleted`。
-- **U2**：阐述 EF Core 的查询翻译管线（LINQ → Expression Tree → SQL Tree → Database SQL）。
-- **U3**：说明 `SaveChanges` 内部的事务管理机制与默认隔离级别。
-- **U4**：描述 Migration 的元数据模型（`__EFMigrationsHistory` 表与 `Migration` 类的 `Up`/`Down` 方法）。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 Fluent API 与 Data Annotation 配置复杂领域模型（值对象、Owned Entity、TPT/TPH/TPC 继承映射）。
-- **A2**：实现自定义 `IInterceptor` 与 `IQueryable` 扩展，捕获 SQL 执行并优化性能。
-- **A3**：编写跨数据库 Provider（SQL Server、PostgreSQL、SQLite、MySQL）的可移植 DbContext。
-- **A4**：使用 EF Core Power Tools 反向工程现有数据库并生成 Code First 模型。
-
-### 1.4 Analyze（分析）
-
-- **An1**：解构 `Include` 与 `Join` 在 SQL 翻译层面的差异（Cartesian Explosion vs. Split Query）。
-- **An2**：分析 N+1 查询问题的成因（懒加载、迭代中查询），并给出三种解决方案。
-- **An3**：剖析 `DbContext` 池化（`DbContextPool`）与短生命周期 `DbContext` 在高并发场景下的取舍。
-- **An4**：对比 EF Core 与 Dapper 的性能边界（实体物化、SQL 生成、缓存策略）。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评估在性能敏感的批处理场景下使用 EF Core `BulkExtensions` vs. 原生 ADO.NET 的取舍。
-- **E2**：判断乐观并发（`[Timestamp]`/`RowVersion`）vs. 悲观并发（`SELECT FOR UPDATE`）的适用场景。
-- **E3**：审视 EF Core 8 引入的 `CompiledQuery`、`AsNoTracking`、`Split Query` 在大规模查询中的综合优化效果。
-- **E4**：评价多租户架构下 `ITenantFilter`（全局查询过滤器）vs. 分离 `DbContext` 方案的可维护性。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个基于 EF Core 的事件溯源（Event Sourcing）持久化层，支持快照与重放。
-- **C2**：实现一个 CQRS 框架，EF Core 处理 Command 端，Dapper 处理 Query 端，自动同步读写模型。
-- **C3**：构建一个 EF Core Source Generator，从 POCO 自动生成 Fluent API 配置代码。
-- **C4**：编写一个 EF Core Analyzer，检测潜在 N+1 查询、缺少索引建议、循环中查询等问题。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 Entity Framework 1.0（2008）：ADO.NET Entity Framework
+### 1.1 Entity Framework 1.0（2008）：ADO.NET Entity Framework
 
 EF1 诞生于 .NET Framework 3.5 SP1，是对 ADO.NET 数据集（DataSet）的升级。设计目标是将关系数据抽象为概念模型（Conceptual Model），通过 EDM（Entity Data Model）描述：
 
@@ -96,7 +49,7 @@ EF1 的局限：
 - **性能较差**：Entity SQL 翻译、对象物化开销大。
 - **API 设计不一致**：`ObjectSet<T>`、`ObjectQuery<T>` 与 LINQ 混用。
 
-### 2.2 Entity Framework 4.0（2010）：Code First 与 DbContext
+### 1.2 Entity Framework 4.0（2010）：Code First 与 DbContext
 
 EF4 引入 Code First 风格，Poco 实体 + Fluent API 配置，并简化 `DbContext` API：
 
@@ -125,7 +78,7 @@ public class BlogContext : DbContext
 
 `virtual` 属性启用懒加载代理（lazy loading proxy），EF4 动态生成代理类，首次访问导航属性时查询数据库。
 
-### 2.3 Entity Framework 6（2013）：成熟期
+### 1.3 Entity Framework 6（2013）：成熟期
 
 EF6 是 .NET Framework 上的最后版本，引入：
 
@@ -141,7 +94,7 @@ EF6 性能瓶颈：
 - **ChangeTracker 全表扫描**：大量实体时检测变更缓慢。
 - **SQL 翻译效率低**：复杂 LINQ 翻译为低效 SQL。
 
-### 2.4 Entity Framework Core 1.0（2016）：全新重写
+### 1.4 Entity Framework Core 1.0（2016）：全新重写
 
 .NET Core 推出之际，EF 团队选择完全重写，发布 EF Core 1.0：
 
@@ -157,7 +110,7 @@ EF Core 1.0 缺失特性（后续补齐）：
 - 复杂类型（Owned Entity 在 2.0 引入）。
 - GroupBy 翻译（2.1 部分支持，3.0 完全支持）。
 
-### 2.5 EF Core 2.0（2017）：Owned Entity 与懒加载
+### 1.5 EF Core 2.0（2017）：Owned Entity 与懒加载
 
 EF Core 2.0 引入：
 
@@ -179,7 +132,7 @@ public class Blog
 }
 ```
 
-### 2.6 EF Core 3.0（2019）：LINQ 翻译重写
+### 1.6 EF Core 3.0（2019）：LINQ 翻译重写
 
 EF Core 3.0 完全重写 LINQ 翻译管线，从 SQL 生成器改为基于 `QueryExpression` 的语法树转换：
 
@@ -199,7 +152,7 @@ Tracked Entity
 
 3.0 移除旧客户端评估（client-side evaluation）：所有 LINQ 必须翻译为 SQL，否则抛出异常。这避免了开发期看似正确、生产环境性能灾难的"客户端过滤"。
 
-### 2.7 EF Core 5.0（2020）：成熟期
+### 1.7 EF Core 5.0（2020）：成熟期
 
 EF Core 5.0 引入：
 
@@ -209,7 +162,7 @@ EF Core 5.0 引入：
 - **拆分查询**（Split Query）：`AsSplitQuery()` 解决 Cartesian Explosion。
 - **索引属性**：`IndexAttribute` 配置索引。
 
-### 2.8 EF Core 6.0（2021）：性能优化
+### 1.8 EF Core 6.0（2021）：性能优化
 
 EF Core 6.0 LTS 版本大幅优化性能：
 
@@ -218,7 +171,7 @@ EF Core 6.0 LTS 版本大幅优化性能：
 - **`SaveChanges` 批处理**：批量 INSERT/UPDATE/DELETE，减少网络往返。
 - **`AsNoTrackingWithIdentityResolution`**：避免无跟踪查询的重复实体。
 
-### 2.9 EF Core 7.0（2022）：JSON 列与批量操作
+### 1.9 EF Core 7.0（2022）：JSON 列与批量操作
 
 EF Core 7.0 引入：
 
@@ -227,7 +180,7 @@ EF Core 7.0 引入：
 - **TPC 继承映射**：Table per Concrete type，适合深继承树。
 - **自定义约定**：`IModelCustomizer`、`IModelFinalizingConvention`。
 
-### 2.10 EF Core 8.0（2023）：.NET 8 LTS 同步
+### 1.10 EF Core 8.0（2023）：.NET 8 LTS 同步
 
 EF Core 8.0 引入：
 
@@ -237,7 +190,7 @@ EF Core 8.0 引入：
 - **`PrimitiveCollection`**：原生集合类型映射（如 `List<int>` 映射为 JSON 数组）。
 - **惰性加载代理改进**：性能优化。
 
-### 2.11 EF Core 9.0（2024）：性能与 AOT
+### 1.11 EF Core 9.0（2024）：性能与 AOT
 
 EF Core 9.0 引入：
 
@@ -246,7 +199,7 @@ EF Core 9.0 引入：
 - **AOT 友好**：减少 `Reflection.Emit` 使用，支持 NativeAOT。
 - **Azure Cosmos DB for NoSQL 改进**：分区键、向量搜索。
 
-### 2.12 演进时间线
+### 1.12 演进时间线
 
 | 时间 | 版本 | 关键里程碑 |
 |------|------|------------|
@@ -265,9 +218,9 @@ EF Core 9.0 引入：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 实体模型的形式化定义
+### 2.1 实体模型的形式化定义
 
 EF Core 的实体模型（Model）是一个六元组：
 
@@ -282,7 +235,7 @@ $$M = (E, R, P, F, I, C)$$
 - $I$：索引集合（Indexes），$I : E \to \text{List}\langle\text{Index}\rangle$。
 - $C$：配置集合（Configurations）。
 
-#### 3.1.1 实体类型的形式化定义
+#### 2.1.1 实体类型的形式化定义
 
 实体类型 $T \in E$ 是一个四元组：
 
@@ -295,7 +248,7 @@ $$T = (\text{Name}, \text{BaseType}, \text{Properties}, \text{Key})$$
 - $\text{Properties} \subseteq P$：属性集合。
 - $\text{Key} \in P^*$：主键属性集合。
 
-### 3.2 关系的形式化定义
+### 2.2 关系的形式化定义
 
 EF Core 中两个实体 $T_1, T_2$ 的关系 $R$ 定义为：
 
@@ -328,7 +281,7 @@ public class Tag
 // EF Core 自动创建 PostTag 中间表
 ```
 
-### 3.3 ChangeTracker 的状态机
+### 2.3 ChangeTracker 的状态机
 
 EF Core 的 `ChangeTracker` 维护实体的状态，定义为五元组状态机：
 
@@ -359,7 +312,7 @@ stateDiagram-v2
 | Modified | Added | Modified | Deleted | Detached | Unchanged |
 | Deleted | Added | Modified | Deleted | Detached | Detached |
 
-### 3.4 查询翻译的形式化语义
+### 2.4 查询翻译的形式化语义
 
 EF Core 将 LINQ 查询翻译为 SQL，可形式化为函数：
 
@@ -376,7 +329,7 @@ $$\text{Translate} : \text{Expression}\langle T\rangle \to \text{SQL}$$
 6. DbDataReader → Entity Materializer → T
 ```
 
-#### 3.4.1 查询翻译示例
+#### 2.4.1 查询翻译示例
 
 ```csharp
 var activeBlogs = context.Blogs
@@ -399,7 +352,7 @@ WHERE b.IsActive AND (
 ORDER BY b.Name;
 ```
 
-#### 3.4.2 查询缓存
+#### 2.4.2 查询缓存
 
 EF Core 缓存翻译结果，避免重复翻译：
 
@@ -407,7 +360,7 @@ $$\text{Cache} : \text{Expression}\langle T\rangle \to \text{CompiledQuery}\lang
 
 首次执行查询时翻译并缓存，后续执行相同结构查询直接复用缓存。缓存键基于表达式树的结构（非值）。
 
-### 3.5 迁移的形式化模型
+### 2.5 迁移的形式化模型
 
 Migration 是数据库模式演进的原子单元：
 
@@ -429,9 +382,9 @@ CREATE TABLE __EFMigrationsHistory (
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 N+1 查询问题的形式化分析
+### 3.1 N+1 查询问题的形式化分析
 
 N+1 查询是 ORM 最经典的反模式。形式化地，若查询实体 $E_1$ 的 $n$ 条记录，每条记录关联 $E_2$ 的若干记录：
 
@@ -488,9 +441,9 @@ var posts = context.Posts.Where(p => blogIds.Contains(p.BlogId)).ToList();  // 1
 
 总查询次数：2，性能最优。
 
-### 4.2 性能模型
+### 3.2 性能模型
 
-#### 4.2.1 查询执行时间模型
+#### 3.2.1 查询执行时间模型
 
 EF Core 查询执行时间：
 
@@ -513,7 +466,7 @@ $$T_{\text{query}} = T_{\text{translate}} + T_{\text{sql\_exec}} + T_{\text{mate
 | CompiledQuery + AsNoTracking | 54 | 0.01 | 12 | 42 | 0 |
 | Dapper | 32 | - | 12 | 20 | - |
 
-#### 4.2.2 SaveChanges 性能模型
+#### 3.2.2 SaveChanges 性能模型
 
 `SaveChanges` 执行时间：
 
@@ -528,7 +481,7 @@ EF Core 6+ 的批处理优化：将多个 INSERT/UPDATE/DELETE 合并为单次 `
 | `BulkExtensions` | 80 | 1（COPY） |
 | 原生 SqlBulkCopy | 35 | 1 |
 
-### 4.3 ChangeTracker 的变更检测算法
+### 3.3 ChangeTracker 的变更检测算法
 
 `SaveChanges` 调用 `DetectChanges`，扫描所有 tracked 实体比较当前值与原始值：
 
@@ -558,7 +511,7 @@ Output: Updated state for each entity
 3. **`ChangeTracker.QueryTrackingBehavior = NoTracking`**：DbContext 默认不跟踪。
 4. **小批量提交**：每 100-1000 条 `SaveChanges` 一次，避免 ChangeTracker 膨胀。
 
-### 4.4 编译模型的性能优化
+### 3.4 编译模型的性能优化
 
 EF Core 6 引入编译模型（Compiled Model），在编译期生成 `IModel` 实例，避免运行时反射构建：
 
@@ -605,9 +558,9 @@ public class BlogContextModel : RuntimeModel
 | 编译模型 | 320 |
 | 编译模型 + CompiledQuery | 280 |
 
-### 4.5 事务与并发控制
+### 3.5 事务与并发控制
 
-#### 4.5.1 默认事务
+#### 3.5.1 默认事务
 
 `SaveChanges` 默认在事务中执行：
 
@@ -627,7 +580,7 @@ catch
 
 隔离级别默认 `READ COMMITTED`（SQL Server）。
 
-#### 4.5.2 乐观并发
+#### 3.5.2 乐观并发
 
 EF Core 通过 `[Timestamp]`（`RowVersion`）实现乐观并发：
 
@@ -651,7 +604,7 @@ WHERE BlogId = @p0 AND RowVersion = @p2;
 -- 若影响 0 行，抛出 DbUpdateConcurrencyException
 ```
 
-#### 4.5.3 悲观并发
+#### 3.5.3 悲观并发
 
 显式锁：
 
@@ -670,9 +623,9 @@ await transaction.CommitAsync();
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 Code First 模型配置（C# 12+）
+### 4.1 Code First 模型配置（C# 12+）
 
 ```csharp
 // C# 12+ / .NET 8+: Code First 模型配置
@@ -769,7 +722,7 @@ public class BlogContext : DbContext
 }
 ```
 
-### 5.2 迁移命令
+### 4.2 迁移命令
 
 ```bash
 # 创建迁移
@@ -803,7 +756,7 @@ dotnet ef database drop --force
 dotnet ef dbcontext optimize --output-dir CompiledModels
 ```
 
-### 5.3 查询模式
+### 4.3 查询模式
 
 ```csharp
 // Eager Loading（解决 N+1）
@@ -865,7 +818,7 @@ var filteredBlogs = await context.Blogs
     .ToListAsync();
 ```
 
-### 5.4 批量操作
+### 4.4 批量操作
 
 ```csharp
 // EF Core 7+: ExecuteUpdate（直接翻译为 SQL UPDATE）
@@ -895,7 +848,7 @@ await context.BulkUpdateAsync(blogs);
 await context.BulkDeleteAsync(blogs);
 ```
 
-### 5.5 事务与并发
+### 4.5 事务与并发
 
 ```csharp
 // 显式事务
@@ -969,7 +922,7 @@ finally
 }
 ```
 
-### 5.6 全局查询过滤器（多租户）
+### 4.6 全局查询过滤器（多租户）
 
 ```csharp
 public interface ITenantEntity
@@ -1013,7 +966,7 @@ var allBlogs = await context.Blogs
     .ToListAsync();
 ```
 
-### 5.7 自定义拦截器
+### 4.7 自定义拦截器
 
 ```csharp
 // SQL 拦截器：记录所有执行的 SQL
@@ -1076,7 +1029,7 @@ public class SlowQueryInterceptor : DbCommandInterceptor
 }
 ```
 
-### 5.8 跨数据库 Provider
+### 4.8 跨数据库 Provider
 
 ```csharp
 // 可移植 DbContext
@@ -1131,7 +1084,7 @@ services.AddDbContext<BlogContext>(options =>
         ServerVersion.AutoDetect(Configuration.GetConnectionString("MySql"))));
 ```
 
-### 5.9 CQRS 与 Dapper 集成
+### 4.9 CQRS 与 Dapper 集成
 
 ```csharp
 // EF Core 处理写操作
@@ -1184,7 +1137,7 @@ public class BlogQueryHandler
 }
 ```
 
-### 5.10 复杂类型（EF Core 8+）
+### 4.10 复杂类型（EF Core 8+）
 
 ```csharp
 // EF Core 8+: Complex Types（无主键的值对象）
@@ -1223,7 +1176,7 @@ modelBuilder.Entity<Customer>(c =>
 // 注意：Complex Type 不能为 null（与 Owned Entity 不同）
 ```
 
-### 5.11 JSON 列映射（EF Core 7+）
+### 4.11 JSON 列映射（EF Core 7+）
 
 ```csharp
 // EF Core 7+: 将对象映射为 JSON 列
@@ -1261,7 +1214,7 @@ var customersInNY = await context.Customers
 // SELECT * FROM Customers WHERE JSON_VALUE(Contact, '$.Address.City') = 'New York'
 ```
 
-### 5.12 异步流式处理（IAsyncEnumerable）
+### 4.12 异步流式处理（IAsyncEnumerable）
 
 ```csharp
 // EF Core 8+: IAsyncEnumerable 流式处理
@@ -1301,9 +1254,9 @@ if (batch.Count > 0) ProcessBatch(batch);
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 EF Core vs Dapper vs NHibernate
+### 5.1 EF Core vs Dapper vs NHibernate
 
 | 特性 | EF Core | Dapper | NHibernate |
 |------|---------|--------|------------|
@@ -1320,7 +1273,7 @@ if (batch.Count > 0) ProcessBatch(batch);
 | 社区活跃度 | 高 | 高 | 中 |
 | 推荐场景 | 业务复杂、领域模型 | 简单 CRUD、性能敏感 | 老项目维护 |
 
-### 6.2 Code First vs Database First
+### 5.2 Code First vs Database First
 
 | 维度 | Code First | Database First |
 |------|-----------|----------------|
@@ -1331,7 +1284,7 @@ if (batch.Count > 0) ProcessBatch(batch);
 | 数据库特性 | 受限 | 完整支持 |
 | 适合场景 | 新项目 | 现有数据库 |
 
-### 6.3 Eager Loading vs Split Query vs Explicit Loading
+### 5.3 Eager Loading vs Split Query vs Explicit Loading
 
 | 方案 | 查询次数 | 网络往返 | 内存 | SQL 复杂度 | 适用场景 |
 |------|---------|---------|------|----------|---------|
@@ -1340,7 +1293,7 @@ if (batch.Count > 0) ProcessBatch(batch);
 | Explicit Loading | 1 + N | 1 + N | 低 | 简单 | 按需加载 |
 | Lazy Loading | 1 + N | 1 + N | 低 | 简单 | 不推荐 |
 
-### 6.4 TPH vs TPT vs TPC 继承映射
+### 5.4 TPH vs TPT vs TPC 继承映射
 
 | 策略 | 表数量 | 性能 | 复杂度 | NULL 列 | 适用场景 |
 |------|--------|------|--------|---------|---------|
@@ -1359,7 +1312,7 @@ modelBuilder.Entity<Animal>().UseTptMappingStrategy();
 modelBuilder.Entity<Animal>().UseTpcMappingStrategy();
 ```
 
-### 6.5 NoTracking vs Tracking
+### 5.5 NoTracking vs Tracking
 
 | 维度 | AsNoTracking | AsNoTrackingWithIdentityResolution | Tracking |
 |------|--------------|-----------------------------------|----------|
@@ -1371,9 +1324,9 @@ modelBuilder.Entity<Animal>().UseTpcMappingStrategy();
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：N+1 查询
+### 6.1 陷阱：N+1 查询
 
 **反例**：
 
@@ -1402,7 +1355,7 @@ var blogStats = await context.Blogs
     .ToListAsync();  // 1 次
 ```
 
-### 7.2 陷阱：ChangeTracker 膨胀
+### 6.2 陷阱：ChangeTracker 膨胀
 
 **反例**：
 
@@ -1432,7 +1385,7 @@ for (int i = 0; i < hugeList.Count; i += batchSize)
 await context.BulkInsertAsync(hugeList);
 ```
 
-### 7.3 陷阱：循环中的查询
+### 6.3 陷阱：循环中的查询
 
 **反例**：
 
@@ -1460,7 +1413,7 @@ foreach (var id in ids)
 }
 ```
 
-### 7.4 陷阱：Cartesian Explosion
+### 6.4 陷阱：Cartesian Explosion
 
 **反例**：
 
@@ -1487,7 +1440,7 @@ var blogs = await context.Blogs
 // 4 次查询：1 blogs + 1 posts + 1 author + 1 tags
 ```
 
-### 7.5 陷阱：AutoDetectChangesEnabled 性能问题
+### 6.5 陷阱：AutoDetectChangesEnabled 性能问题
 
 **反例**：
 
@@ -1516,7 +1469,7 @@ finally
 }
 ```
 
-### 7.6 陷阱：DbContext 线程不安全
+### 6.6 陷阱：DbContext 线程不安全
 
 **反例**：
 
@@ -1548,7 +1501,7 @@ services.AddDbContextPool<BlogContext>(options =>
     options.UseSqlServer(connectionString), poolSize: 128);
 ```
 
-### 7.7 最佳实践总结
+### 6.7 最佳实践总结
 
 | 实践 | 说明 |
 |------|------|
@@ -1567,9 +1520,9 @@ services.AddDbContextPool<BlogContext>(options =>
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 仓储模式（Repository Pattern）
+### 7.1 仓储模式（Repository Pattern）
 
 ```csharp
 public interface IRepository<T> where T : class
@@ -1640,7 +1593,7 @@ public class UnitOfWork : IUnitOfWork
 }
 ```
 
-### 8.2 多租户架构
+### 7.2 多租户架构
 
 ```csharp
 public interface ITenantProvider
@@ -1697,7 +1650,7 @@ public class MultiTenantDbContext : DbContext
 }
 ```
 
-### 8.3 软删除模式
+### 7.3 软删除模式
 
 ```csharp
 public interface ISoftDeletable
@@ -1742,7 +1695,7 @@ var deletedBlogs = await context.Blogs
     .ToListAsync();
 ```
 
-### 8.4 审计日志（SaveChanges 拦截）
+### 7.4 审计日志（SaveChanges 拦截）
 
 ```csharp
 public class AuditInterceptor : SaveChangesInterceptor
@@ -1809,7 +1762,7 @@ public class AuditInterceptor : SaveChangesInterceptor
 }
 ```
 
-### 8.5 EF Core Analyzer
+### 7.5 EF Core Analyzer
 
 ```csharp
 // 自定义 Roslyn 分析器：检测 N+1 查询模式
@@ -1860,9 +1813,9 @@ public class NPlusOneQueryAnalyzer : DiagnosticAnalyzer
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：电商订单系统
+### 8.1 案例一：电商订单系统
 
 **场景**：电商系统订单管理，包含订单、订单项、商品、用户多对多关系。
 
@@ -1965,7 +1918,7 @@ public async Task<int> CreateOrderAsync(CreateOrderCommand command)
 }
 ```
 
-### 9.2 案例二：内容管理系统（CMS）
+### 8.2 案例二：内容管理系统（CMS）
 
 **场景**：CMS 系统，文章与标签多对多关系，分类树形结构。
 
@@ -2031,7 +1984,7 @@ public async Task<IEnumerable<ArticleSearchResult>> SearchArticlesAsync(string k
 }
 ```
 
-### 9.3 案例三：SaaS 多租户
+### 8.3 案例三：SaaS 多租户
 
 **场景**：SaaS 平台，每个租户独立数据，使用全局查询过滤器。
 
@@ -2076,7 +2029,7 @@ public class TenantDbContext : DbContext
 }
 ```
 
-### 9.4 案例四：事件溯源（Event Sourcing）
+### 8.4 案例四：事件溯源（Event Sourcing）
 
 **场景**：事件溯源系统，聚合根状态由事件重放得到。
 
@@ -2138,7 +2091,7 @@ public class EventStore
 }
 ```
 
-### 9.5 案例五：审计日志系统
+### 8.5 案例五：审计日志系统
 
 **场景**：所有实体变更记录到审计表，支持查询历史。
 
@@ -2199,7 +2152,7 @@ public class AuditInterceptor : SaveChangesInterceptor
 }
 ```
 
-### 9.6 案例六：跨数据库迁移
+### 8.6 案例六：跨数据库迁移
 
 **场景**：从 SQL Server 迁移到 PostgreSQL，保持业务逻辑不变。
 
@@ -2267,7 +2220,7 @@ public class PostgresDbContext : BaseDbContext
 }
 ```
 
-### 9.7 案例七：性能优化实战
+### 8.7 案例七：性能优化实战
 
 **场景**：列表页查询 10000 条记录，从 8 秒优化到 200 毫秒。
 
@@ -2610,7 +2563,7 @@ services.AddDbContext<BlogContext>(options =>
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本章节引用的学术与工程资料按 ACM Reference Format 列出：
 
@@ -2656,9 +2609,9 @@ services.AddDbContext<BlogContext>(options =>
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - [EF Core Documentation — Microsoft Learn](https://learn.microsoft.com/ef/core/)
 - [EF Core Migrations](https://learn.microsoft.com/ef/core/managing-schemas/migrations/)
@@ -2666,7 +2619,7 @@ services.AddDbContext<BlogContext>(options =>
 - [EF Core Logging and Interception](https://learn.microsoft.com/ef/core/logging-events-diagnostics/)
 - [EF Core Testing](https://learn.microsoft.com/ef/core/testing/)
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - *Entity Framework Core in Action* by Jon P Smith（EF Core 实战指南，含性能优化）
 - *Pro Entity Framework Core for ASP.NET Core MVC* by Adam Freeman（ASP.NET Core 集成）
@@ -2674,13 +2627,13 @@ services.AddDbContext<BlogContext>(options =>
 - *Domain-Driven Design* by Eric Evans（领域驱动设计，EF Core 实现值对象、聚合根）
 - *Patterns of Enterprise Application Architecture* by Martin Fowler（企业架构模式，含仓储、工作单元）
 
-### 12.3 学术论文
+### 11.3 学术论文
 
 - Meijer, E., Beckman, B., & Bierman, G. (2003). *LINQ: Reconciling Object, Relations and XML in the .NET Framework*. SIGMOD 2003.
 - Bierman, G., Meijer, E., & Torgersen, M. (2007). *Lost in Translation: Formalizing the .NET LINQ Pattern*. SAC 2008.
 - Young, G. (2010). *CQRS Documents*. cqrs.files.wordpress.com.
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **EFCore.BulkExtensions**：高性能批量操作
   https://github.com/borisdj/EFCore.BulkExtensions
@@ -2700,7 +2653,7 @@ services.AddDbContext<BlogContext>(options =>
 - **AspNetCore.Diagnostics.EntityFrameworkCore**：EF Core 健康检查
   https://github.com/dotnet/AspNetCore.Diagnostics
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 1. **EF Core Source Generator**：编译期生成 `IModel`，减少启动时间。
 2. **Cosmos DB Provider**：NoSQL 数据库的 EF Core 集成。

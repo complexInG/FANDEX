@@ -18,28 +18,16 @@ prerequisites:
   - cpp/概述与现代标准
   - cpp/引用
 ---
+
 # C++ 完美转发与引用折叠
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-| Bloom 层级 | 目标描述 |
-| :--- | :--- |
-| **Remember（记忆）** | 列举引用折叠的 4 种组合结果，复述 `std::forward` 与 `std::move` 的区别 |
-| **Understand（理解）** | 解释转发引用（forwarding reference）的推导机制，说明 `T&&` 在模板与非模板上下文中的差异 |
-| **Apply（应用）** | 使用 `std::forward` 实现完美转发的工厂函数、包装器、`emplace_back` 等场景 |
-| **Analyze（分析）** | 分析给定代码片段中值类别的传递是否正确，识别 `std::move` vs `std::forward` 误用 |
-| **Evaluate（评价）** | 评估完美转发的限制（如花括号初始化列表、`{}`、braced-init-list），权衡不同方案 |
-| **Create（创造）** | 设计基于 `std::make_index_sequence` 的 tuple 展开器、可变参数 lambda 包装器、heterogeneous visitor |
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题起源：泛型包装器与参数转发
+### 1.1 问题起源：泛型包装器与参数转发
 
 在 C++03 时代，编写泛型包装器（wrapper）面临"参数值类别丢失"的问题。考虑：
 
@@ -61,7 +49,7 @@ wrapper(42);   // 期望调用 #2，但 const T& 版本被选中，调用 #1，�
 
 为正确转发右值，C++03 不得不提供 4 个重载（const/non-const × lvalue/rvalue），且无法处理可变参数。
 
-### 2.2 C++11 完美转发的引入
+### 1.2 C++11 完美转发的引入
 
 C++11 通过三个核心机制联合解决：
 
@@ -72,7 +60,7 @@ C++11 通过三个核心机制联合解决：
 
 这一组合使"零开销转发任意参数"成为可能，是现代 C++ 工程的基础设施。
 
-### 2.3 关键提案与文献
+### 1.3 关键提案与文献
 
 | 提案 | 作者 | 年份 | 内容 |
 | :--- | :--- | :--- | :--- |
@@ -92,7 +80,7 @@ C++11 通过三个核心机制联合解决：
 | P0769 | B. Revzin | 2017 | *Implicit lambda capture of \*this* |
 | P0641 | R. Smith | 2017 | *Resolving const qualifier drop in aliasing rules* |
 
-### 2.4 C++14/17/20/23 演进
+### 1.4 C++14/17/20/23 演进
 
 | 标准 | 关键变化 | 影响 |
 | :--- | :--- | :--- |
@@ -103,7 +91,7 @@ C++11 通过三个核心机制联合解决：
 | **C++23** | `std::move_only_function` 完善、`std::generator` 协程中的完美转发、deducing this 与引用折叠 | 新范式 |
 | **C++26** | Reflection（草案）与完美转发、`std::execution` 协程调度 | 元反射集成 |
 
-### 2.5 与其他语言的横向对比
+### 1.5 与其他语言的横向对比
 
 | 特性 | C++ | Rust | Swift | Java | C# |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -113,9 +101,9 @@ C++11 通过三个核心机制联合解决：
 | tuple 展开 | `std::apply` / 折叠表达式 | `#[derive]` + spread | `forEach` | 无 | 无 |
 | 类型推导 | `auto` / `decltype` | `impl Trait` | 类型推断 | `var` | `var` |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 引用折叠规则的形式化
+### 2.1 引用折叠规则的形式化
 
 引用折叠规则（ISO/IEC 14882:2023 §13.10.2）：
 
@@ -137,7 +125,7 @@ $$
 
 **核心规则**：只要其中一个是左值引用，就折叠为左值引用；只有两个都是右值引用才保持右值引用。
 
-### 3.2 转发引用的形式化
+### 2.2 转发引用的形式化
 
 转发引用（forwarding reference，又称 universal reference）的形式化定义（ISO/IEC 14882:2023 §16.3.2）：
 
@@ -160,7 +148,7 @@ T = U,\ T\&\& = U\&\& & \text{if } e \text{ is rvalue of } U
 \end{cases}
 $$
 
-### 3.3 `std::forward` 的形式化
+### 2.3 `std::forward` 的形式化
 
 `std::forward<T>` 的核心语义：
 
@@ -173,7 +161,7 @@ $$
 \end{cases}
 $$
 
-### 3.4 完美转发的形式化目标
+### 2.4 完美转发的形式化目标
 
 完美转发的形式化目标：
 
@@ -183,7 +171,7 @@ $$
 
 其中每个 $\text{forward}_{T_i}(\text{args}_i)$ 保持原实参的值类别（lvalue / xvalue / prvalue）。
 
-### 3.5 可变参数模板的形式化
+### 2.5 可变参数模板的形式化
 
 可变参数模板（variadic template）的形式化：
 
@@ -205,7 +193,7 @@ $$
 \text{sizeof}\ldots(\text{pack}) = n
 $$
 
-### 3.6 `std::make_index_sequence` 的形式化
+### 2.6 `std::make_index_sequence` 的形式化
 
 `std::make_index_sequence<N>` 生成 `std::index_sequence<0, 1, ..., N-1>`：
 
@@ -213,7 +201,7 @@ $$
 \text{make\_index\_sequence}_N = \text{index\_sequence}\langle 0, 1, \ldots, N-1 \rangle
 $$
 
-### 3.7 折叠表达式（Fold Expression）的形式化
+### 2.7 折叠表达式（Fold Expression）的形式化
 
 C++17 折叠表达式的四种形式：
 
@@ -234,9 +222,9 @@ $$
 - 二元左折叠：`(init op ... op pack)`
 - 二元右折叠：`(pack op ... op init)`
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 转发引用识别条件
+### 3.1 转发引用识别条件
 
 转发引用（forwarding reference）必须满足三个条件：
 
@@ -285,7 +273,7 @@ struct C {
 };
 ```
 
-### 4.2 `std::forward` 的实现原理
+### 3.2 `std::forward` 的实现原理
 
 `std::forward` 的核心实现：
 
@@ -312,7 +300,7 @@ template<typename T>
 | `int&` | `int&`（折叠） | 保持左值 |
 | `int&&` | `int&&`（不折叠） | 保持右值 |
 
-### 4.3 `std::move` 与 `std::forward` 的本质区别
+### 3.3 `std::move` 与 `std::forward` 的本质区别
 
 两者看似相似，但语义完全不同：
 
@@ -334,7 +322,7 @@ template<typename T>
 
 注意：`std::move` 本身的参数也是转发引用 `T&&`，但通过 `remove_reference_t` 后强制加 `&&`，无条件转为右值。
 
-### 4.4 完美转发的传递性
+### 3.4 完美转发的传递性
 
 完美转发可以多层嵌套，但每一层都需要 `std::forward`：
 
@@ -363,7 +351,7 @@ outer(42);             // 保持为 prvalue（最终为 xvalue 传递）
 
 **关键**：每一层都使用 `std::forward<T>`，T 在每一层重新推导。
 
-### 4.5 引用折叠的应用场景
+### 3.5 引用折叠的应用场景
 
 引用折叠主要出现在 4 种上下文：
 
@@ -391,11 +379,11 @@ auto&& a = x;       // a 是 int&（折叠）
 auto&& b = 42;      // b 是 int&&
 ```
 
-### 4.6 完美转发的限制
+### 3.6 完美转发的限制
 
 完美转发并非万能，存在以下限制：
 
-#### 4.6.1 花括号初始化列表
+#### 3.6.1 花括号初始化列表
 
 ```cpp
 template<typename T>
@@ -417,7 +405,7 @@ void make_vec(std::initializer_list<T> init) {
 make_vec({1, 2, 3});  // OK
 ```
 
-#### 4.6.2 0 与 NULL
+#### 3.6.2 0 与 NULL
 
 ```cpp
 void f(int*);
@@ -430,7 +418,7 @@ g(0);   // 调用 f(int)，不是 f(int*)
 g(NULL); // 编译错误或调用 f(int)
 ```
 
-#### 4.6.3 重载仅按 const 区分
+#### 3.6.3 重载仅按 const 区分
 
 ```cpp
 void f(int&);
@@ -443,7 +431,7 @@ const int x = 42;
 g(x);  // 期望调用 f(const int&)，实际调用 f(const int&)（正确）
 ```
 
-#### 4.6.4 位域
+#### 3.6.4 位域
 
 ```cpp
 struct S {
@@ -457,7 +445,7 @@ S s;
 g(s.flag);  // 错误：位域不能绑定到非 const 引用
 ```
 
-#### 4.6.5 静态数组退化为指针
+#### 3.6.5 静态数组退化为指针
 
 ```cpp
 template<typename T>
@@ -467,7 +455,7 @@ int arr[5];
 g(arr);  // T 推导为 int (&)[5]（数组引用），但常见错误是 int*
 ```
 
-### 4.7 `std::make_index_sequence` 的实现原理
+### 3.7 `std::make_index_sequence` 的实现原理
 
 `std::make_index_sequence<N>` 是元编程的核心工具，其经典实现通过递归展开：
 
@@ -522,7 +510,7 @@ struct make_seq<1> { using type = index_sequence<0>; };
 
 这种实现对 `N=1e6` 也可在合理时间内编译。
 
-### 4.8 tuple 展开原理
+### 3.8 tuple 展开原理
 
 `std::apply` 的实现核心是 `std::make_index_sequence`：
 
@@ -544,7 +532,7 @@ constexpr decltype(auto) apply(F&& f, Tuple&& t) {
 
 **关键**：`std::get<Is>(t)...` 是包展开，将 tuple 元素逐个取出。
 
-### 4.9 折叠表达式（C++17）
+### 3.9 折叠表达式（C++17）
 
 C++17 引入折叠表达式简化包展开：
 
@@ -589,7 +577,7 @@ void print_all(Ts&&... args) {
 | `(init op ... op pack)` | `(((init op pack_1) op pack_2) op ...) op pack_n` |
 | `(pack op ... op init)` | `pack_1 op (pack_2 op (... op (pack_n op init)))` |
 
-### 4.10 `std::bind_front` 与完美转发
+### 3.10 `std::bind_front` 与完美转发
 
 C++20 引入 `std::bind_front` 简化部分应用：
 
@@ -610,9 +598,9 @@ std::cout << f(8) << "\n";  // 50
 
 `std::bind_front` 是 `std::bind` 的简化版本，完美转发参数且不复杂地处理占位符。
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 基础完美转发
+### 4.1 基础完美转发
 
 ```cpp
 // file: perfect_forwarding_basic.cpp
@@ -639,7 +627,7 @@ int main() {
 }
 ```
 
-### 5.2 可变参数完美转发
+### 4.2 可变参数完美转发
 
 ```cpp
 // file: variadic_forwarding.cpp
@@ -682,7 +670,7 @@ int main() {
 }
 ```
 
-### 5.3 emplace_back 的实现
+### 4.3 emplace_back 的实现
 
 ```cpp
 // file: emplace_demo.cpp
@@ -749,7 +737,7 @@ int main() {
 }
 ```
 
-### 5.4 通用函数包装器
+### 4.4 通用函数包装器
 
 ```cpp
 // file: function_wrapper.cpp
@@ -800,7 +788,7 @@ int main() {
 }
 ```
 
-### 5.5 lambda 中的完美转发（C++20 初始化捕获包展开）
+### 4.5 lambda 中的完美转发（C++20 初始化捕获包展开）
 
 ```cpp
 // file: lambda_forwarding.cpp
@@ -847,7 +835,7 @@ int main() {
 }
 ```
 
-### 5.6 工厂函数
+### 4.6 工厂函数
 
 ```cpp
 // file: factory.cpp
@@ -913,7 +901,7 @@ int main() {
 }
 ```
 
-### 5.7 tuple 展开
+### 4.7 tuple 展开
 
 ```cpp
 // file: tuple_apply.cpp
@@ -968,7 +956,7 @@ int main() {
 }
 ```
 
-### 5.8 heterogeneous visitor
+### 4.8 heterogeneous visitor
 
 ```cpp
 // file: visitor.cpp
@@ -1024,7 +1012,7 @@ int main() {
 }
 ```
 
-### 5.9 完美转发链式调用
+### 4.9 完美转发链式调用
 
 ```cpp
 // file: chaining.cpp
@@ -1115,7 +1103,7 @@ int main() {
 }
 ```
 
-### 5.10 CMake 构建示例
+### 4.10 CMake 构建示例
 
 ```cmake
 # CMakeLists.txt
@@ -1147,9 +1135,9 @@ if(ENABLE_TESTS)
 endif()
 ```
 
-## 6. 对比分析（横向对比）
+## 5. 对比分析（横向对比）
 
-### 6.1 `std::move` vs `std::forward` 深度对比
+### 5.1 `std::move` vs `std::forward` 深度对比
 
 ```cpp
 // 场景：移动语义 vs 完美转发
@@ -1179,7 +1167,7 @@ int main() {
 | 局部变量 return | `return x;`（依赖 RVO） | 通常不需 std::move |
 | 局部变量明确移动 | `return std::move(x);` | 关闭 NRVO 时使用 |
 
-### 6.2 完美转发 vs 直接重载
+### 5.2 完美转发 vs 直接重载
 
 ```cpp
 // 方案 A：完美转发（推荐）
@@ -1205,7 +1193,7 @@ void emplace(int& a, int& b);
 | 限制 | 花括号列表、位域等 | 无 |
 | 调试 | 较难（模板错误信息） | 容易 |
 
-### 6.3 `std::forward` vs `std::forward_like`（C++23）
+### 5.3 `std::forward` vs `std::forward_like`（C++23）
 
 C++23 引入 `std::forward_like<T>(x)`，根据 `T` 的值类别转发 `x`：
 
@@ -1237,7 +1225,7 @@ auto get_first(Container&& c) {
 | 用途 | 转发函数参数 | 根据"拥有者"的值类别转发"成员" |
 | C++ 标准 | C++11 | C++23 |
 
-### 6.4 与其他语言的对比
+### 5.4 与其他语言的对比
 
 | 特性 | C++ | Rust | Swift | Java | C# |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -1247,7 +1235,7 @@ auto get_first(Container&& c) {
 | 协变 / 逆变 | 有限 | 有 | 有 | 有 | 有 |
 | 编译期求值 | `constexpr`/`consteval` | `const fn` | `constexpr` | 无 | `const` |
 
-### 6.5 `std::bind` vs `std::bind_front` vs Lambda
+### 5.5 `std::bind` vs `std::bind_front` vs Lambda
 
 ```cpp
 // 方案 A: std::bind（C++11，已不推荐）
@@ -1268,9 +1256,9 @@ auto f3 = [](int x) { return add(42, x); };
 | 性能 | 中等 | 好 | 最好 |
 | 可读性 | 差 | 好 | 最好 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 转发引用误用 `std::move`
+### 6.1 转发引用误用 `std::move`
 
 **陷阱**：
 
@@ -1296,7 +1284,7 @@ void wrapper(T&& x) {
 }
 ```
 
-### 7.2 对非转发引用使用 `std::forward`
+### 6.2 对非转发引用使用 `std::forward`
 
 **陷阱**：
 
@@ -1313,7 +1301,7 @@ void g(const T&& x) {  // 注意：const T&& 不是转发引用
 
 **修复**：明确区分转发引用与右值引用，前者用 `std::forward<T>`，后者用 `std::move` 或显式 `static_cast`。
 
-### 7.3 多次转发同一参数
+### 6.3 多次转发同一参数
 
 **陷阱**：
 
@@ -1335,7 +1323,7 @@ void wrapper(T&& x) {
 }
 ```
 
-### 7.4 花括号初始化列表无法转发
+### 6.4 花括号初始化列表无法转发
 
 **陷阱**：
 
@@ -1365,7 +1353,7 @@ void makeVec(std::vector<int> v);
 makeVec({1, 2, 3});  // 隐式构造 vector
 ```
 
-### 7.5 转发引用重载优于特定重载
+### 6.5 转发引用重载优于特定重载
 
 **陷阱**：
 
@@ -1389,7 +1377,7 @@ void f(T&& x);
 void f(int& x);
 ```
 
-### 7.6 `auto&&` 误用
+### 6.6 `auto&&` 误用
 
 **陷阱**：误以为 `auto&&` 总是右值引用：
 
@@ -1400,7 +1388,7 @@ auto&& r = x;  // r 是 int&（折叠），不是 int&&
 
 **理解**：`auto&&` 是转发引用，根据初始化表达式推导。
 
-### 7.7 完美转发与 `noexcept`
+### 6.7 完美转发与 `noexcept`
 
 **陷阱**：转发函数的 `noexcept` 取决于目标函数：
 
@@ -1426,7 +1414,7 @@ void wrapper(T&& x) noexcept(std::is_nothrow_invocable_v<decltype(target), T>) {
 }
 ```
 
-### 7.8 完美转发与返回值
+### 6.8 完美转发与返回值
 
 **陷阱**：返回转发参数的引用：
 
@@ -1446,7 +1434,7 @@ decltype(auto) good(T&& x) {
 }
 ```
 
-### 7.9 编译时递归深度限制
+### 6.9 编译时递归深度限制
 
 **陷阱**：超长 `std::make_index_sequence` 可能超出编译器递归深度：
 
@@ -1457,7 +1445,7 @@ auto bad = std::make_index_sequence<1000000>{};  // 编译器栈溢出
 
 **修复**：使用对数级实现（GCC/Clang/MSVC 标准库已优化），或限制 N 大小。
 
-### 7.10 ABI 兼容性问题
+### 6.10 ABI 兼容性问题
 
 **陷阱**：完美转发的函数签名 mangling 复杂，跨编译器版本可能不兼容：
 
@@ -1471,22 +1459,22 @@ void wrapper(T&& x);
 
 **修复**：跨模块边界避免使用完美转发，使用具体类型。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 Google C++ Style Guide 的完美转发规范
+### 7.1 Google C++ Style Guide 的完美转发规范
 
 - **使用场景**：仅当确实需要保留值类别时（如 `emplace_back`、工厂函数）；
 - **避免**：在简单包装器中使用完美转发，增加复杂度；
 - **代码风格**：`std::forward<T>` 必须显式指定 `T`，不允许 `std::forward<decltype(x)>(x)`；
 - **`noexcept`**：转发函数应正确传播 `noexcept`。
 
-### 8.2 LLVM Coding Standards
+### 7.2 LLVM Coding Standards
 
 - 鼓励使用完美转发减少重载数量；
 - 模板代码需有详细注释，解释推导规则；
 - 错误信息友好化：使用 `static_assert` 提供清晰诊断。
 
-### 8.3 性能分析
+### 7.3 性能分析
 
 ```cpp
 // Benchmark: perfect_forwarding vs direct_overload
@@ -1521,7 +1509,7 @@ BENCHMARK(BM_DirectOverload);
 // 实测：两者性能完全相同（同汇编）
 ```
 
-### 8.4 调试完美转发
+### 7.4 调试完美转发
 
 完美转发的错误信息通常冗长，调试技巧：
 
@@ -1550,13 +1538,13 @@ void wrapper(T&& x) {
 
 3. **使用 `clang -Xclang -ast-dump` 查看模板实例化结果**。
 
-### 8.5 静态分析
+### 7.5 静态分析
 
 - **Clang-Tidy**：`cppcoreguidelines-special-member-functions`、`modernize-use-default-member-init`、`modernize-use-transparent-functors`；
 - **cppcheck**：检测模板滥用；
 - **PVS-Studio**：识别 `std::move` / `std::forward` 误用。
 
-### 8.6 ABI 兼容性
+### 7.6 ABI 兼容性
 
 完美转发的函数在 ABI 层面生成特殊 mangling：
 
@@ -1569,7 +1557,7 @@ template<typename T> void f(T&&);
 
 跨模块边界使用完美转发时，确保编译器、标准库版本一致。
 
-### 8.7 错误处理
+### 7.7 错误处理
 
 完美转发应正确传播异常：
 
@@ -1585,9 +1573,9 @@ void wrapper(T&& x) noexcept(noexcept(target(std::forward<T>(x)))) {
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：`std::make_unique` 的实现
+### 8.1 案例：`std::make_unique` 的实现
 
 ```cpp
 // C++14 std::make_unique 的简化实现
@@ -1603,7 +1591,7 @@ auto q = std::make_unique<std::vector<int>>(10, 42);  // 10 个 42
 
 **关键设计**：完美转发所有参数到 T 的构造函数，零开销。
 
-### 9.2 案例：`std::emplace_back` 的实现
+### 8.2 案例：`std::emplace_back` 的实现
 
 ```cpp
 // std::vector::emplace_back 的简化实现
@@ -1618,7 +1606,7 @@ T& vector<T, Alloc>::emplace_back(Args&&... args) {
 
 **关键设计**：避免临时对象，直接在容器内部构造。
 
-### 9.3 案例：`std::function` 的实现
+### 8.3 案例：`std::function` 的实现
 
 ```cpp
 // std::function 的简化实现
@@ -1653,7 +1641,7 @@ public:
 };
 ```
 
-### 9.4 案例：完美转发实现 `compose`
+### 8.4 案例：完美转发实现 `compose`
 
 ```cpp
 // 函数组合：compose(f, g, h)(x) = f(g(h(x)))
@@ -1680,7 +1668,7 @@ auto f = compose(
 std::cout << f(10) << "\n";  // ((10 - 3) * 2) + 1 = 15
 ```
 
-### 9.5 案例：完美转发实现 memoize
+### 8.5 案例：完美转发实现 memoize
 
 ```cpp
 // 记忆化：缓存函数结果
@@ -1705,7 +1693,7 @@ auto fib = memoize([](int n) {
 });
 ```
 
-### 9.6 案例：CRTP + 完美转发
+### 8.6 案例：CRTP + 完美转发
 
 ```cpp
 template<typename Derived>
@@ -1743,7 +1731,7 @@ int main() {
 }
 ```
 
-### 9.7 案例：完美转发与 ranges
+### 8.7 案例：完美转发与 ranges
 
 ```cpp
 #include <ranges>
@@ -1763,7 +1751,7 @@ auto result = filter_and_transform(v, [](int x) { return x % 2 == 0; });
 // result: 4, 8（2 和 4 各 ×2）
 ```
 
-### 9.8 案例：完美转发实现 `curry`
+### 8.8 案例：完美转发实现 `curry`
 
 ```cpp
 template<typename F>
@@ -1787,7 +1775,7 @@ std::cout << curried(1)(2)(3) << "\n";  // 6
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（Remember / Understand）
+### 9.1 基础题（Remember / Understand）
 
 **习题 1**：以下哪些是转发引用？
 
@@ -1858,7 +1846,7 @@ void wrapper(T&& x) {
 
 **解析讲解**：第二次 `std::forward<T>(x)` 时，若 `T` 推导为非引用（即 `x` 原为 rvalue），则 `x` 可能已被 move，第二次访问是 UB。修复：每个参数只 `std::forward` 一次。
 
-### 10.3 评价题（Evaluate）
+### 9.3 评价题（Evaluate）
 
 **习题 6**：评估以下两种实现：
 
@@ -1899,7 +1887,7 @@ int main() {
 
 **解析讲解**：不安全。`identity(42)` 中 `x` 是局部参数，函数返回后 `x` 销毁，返回的 `int&&` 悬空。修复：返回值 `auto`（按值）。
 
-### 10.4 创造题（Create）
+### 9.4 创造题（Create）
 
 **习题 8**：实现一个完美转发的 `make_tuple` 函数：
 
@@ -1975,7 +1963,7 @@ tuple_for_each([](auto&& x) {
 }, t);
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Stroustrup, B. 1985. *An Overview of C++*. SIGPLAN Notices 20(6): 47-64. DOI: 10.1145/17919.17922.
 
@@ -2023,9 +2011,9 @@ tuple_for_each([](auto&& x) {
 
 [23] Meyers, S. 2014. *Move Semantics, auto, and Smart Pointers*. CppCon 2014.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 标准文献
+### 11.1 标准文献
 
 - ISO/IEC 14882:2023 §9.4.3 *References*：引用的标准化定义。
 - ISO/IEC 14882:2023 §13.10.2 *Reference collapsing*：引用折叠规则。
@@ -2034,7 +2022,7 @@ tuple_for_each([](auto&& x) {
 - ISO/IEC 14882:2023 §17.8 *Function objects*：`std::function`、`std::bind`、`std::invoke`。
 - ISO/IEC 14882:2023 §19.7 *Tuple*：`std::tuple`、`std::apply`。
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - *Effective Modern C++* by Scott Meyers, Items 23-30（右值引用、移动语义、转发引用）。
 - *C++ Templates: The Complete Guide* by Vandevoorde et al., Chapters 7-12（函数模板推导、转发引用、可变参数模板）。
@@ -2042,7 +2030,7 @@ tuple_for_each([](auto&& x) {
 - *C++ Coding Standards* by Sutter & Alexandrescu, Items 90-94（参数传递、转发）。
 - *Exceptional C++* by Sutter, Items 16-18（编译期引用安全）。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - cppreference.com: *Reference declaration* <https://en.cppreference.com/w/cpp/language/reference>
 - cppreference.com: *std::forward* <https://en.cppreference.com/w/cpp/utility/forward>
@@ -2054,7 +2042,7 @@ tuple_for_each([](auto&& x) {
 - ISO C++ FAQ: *References* <https://isocpp.org/wiki/faq/references>
 - C++ Core Guidelines: *T.43: Prefer using nullptr over NULL or 0* <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>
 
-### 12.4 视频与课程
+### 11.4 视频与课程
 
 - Herb Sutter, *Back to the Basics! Essentials of Modern C++ Style* (CppCon 2014).
 - Scott Meyers, *Move Semantics, auto, and Smart Pointers* (CppCon 2014).
@@ -2063,7 +2051,7 @@ tuple_for_each([](auto&& x) {
 - MIT 6.S192 *Software Construction* <https://ocw.mit.edu/courses/6-s192-software-construction-fall-2016/>.
 - Stanford CS106L *Standard C++ Programming* <http://web.stanford.edu/class/cs106l/>.
 
-### 12.5 历史文献
+### 11.5 历史文献
 
 - Stepanov, A. and Lee, M. 1995. *The Standard Template Library*. HP Laboratories Technical Report 95-11(R.1).
 - Stroustrup, B. 1994. *The Design and Evolution of C++*. Addison-Wesley. ISBN: 978-0201543308.

@@ -17,64 +17,16 @@ prerequisites:
   - lua/概述与环境配置
   - lua/标准库详解
 ---
+
 # Lua C API 基础
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本节依据 Bloom 分类法（Bloom's Taxonomy）按认知层级组织学习目标，学习者完成本章后应具备以下能力。
-
-### 1.1 记忆层（Remember）
-
-- 能够准确复述 Lua C API 的设计目标（嵌入式、双向交互、栈式数据交换）与首次发布时间（Lua 1.1，1993）。
-- 能够默写出 Lua C API 的核心头文件三角：`lua.h`（公共 API）、`lauxlib.h`（辅助库）、`lualib.h`（标准库）。
-- 能够列出栈操作的索引规则：正索引从底 1 开始，负索引从顶 -1 开始，绝对索引通过 `lua_absindex` 转换。
-- 能够写出 `lua_CFunction` 签名 `typedef int (*lua_CFunction)(lua_State *L)`、`luaL_Reg` 结构、`luaopen_<mod>` 入口签名。
-- 能够列出八大基本类型常量：`LUA_TNIL`、`LUA_TBOOLEAN`、`LUA_TLIGHTUSERDATA`、`LUA_TNUMBER`、`LUA_TSTRING`、`LUA_TTABLE`、`LUA_TFUNCTION`、`LUA_TUSERDATA`、`LUA_TTHREAD`。
-
-### 1.2 理解层（Understand）
-
-- 能够解释 Lua 虚拟栈（Virtual Stack）作为 C/Lua 数据交换唯一通道的设计动机：避免 C 与 Lua 内存模型直接耦合、统一类型边界、支持可重入。
-- 能够阐述完整 userdata（Full Userdata）与轻量 userdata（Light Userdata）的差异：内存归属、GC 管理、元表支持、`__gc` 元方法触发条件。
-- 能够说明 `luaL_ref` / `luaL_unref` 引用机制的实现：注册表（Registry，`LUA_REGISTRYINDEX`）中的整数键映射表，避免跨 C 边界持有 Lua 值导致 GC 误回收。
-- 能够描述 `lua_pcall` 与 `lua_call` 的区别：受保护调用如何通过 `setjmp`/`longjmp` 实现 C 层错误恢复，以及 Lua 5.3+ 引入的 Continuation（`lua_pcallk`）为何可避免_yield 跨 C 边界限制。
-- 能够解释 `lua_State` 的内存模型：每个状态机独立 GC、独立字符串池、独立栈，多状态机并发需通过协程或独立 `lua_State` 实现。
-
-### 1.3 应用层（Apply）
-
-- 能够使用 `luaL_check*` / `luaL_opt*` 系列函数安全地获取参数并触发 Lua 层错误。
-- 能够编写 `luaopen_<mod>` 入口，通过 `luaL_newlib` 注册函数列表并返回模块表。
-- 能够使用 `lua_newuserdata` + `luaL_setmetatable` 创建带元表绑定的 Full Userdata，并通过 `__gc` 元方法管理资源释放。
-- 能够使用 `luaL_requiref` 在 Lua 5.2+ 中正确预加载 C 模块到 `package.loaded`，兼容 `require` 语义。
-- 能够使用 `luaL_Buffer` / `luaL_pushresult` 高效拼接大量字符串，避免中间字符串爆炸。
-
-### 1.4 分析层（Analyze）
-
-- 能够分析给定 C 模块的栈平衡性：每个代码路径上压栈数与弹栈数是否一致、`return N` 是否与栈顶留下的 N 个值匹配。
-- 能够分析多返回值、可变参数、命名参数在 C 层的映射方式，并指出 `lua_gettop` 与返回值数量的关系。
-- 能够分析 `lua_pcallk` 的 Continuation 机制：为何在协程 `yield` 跨 C 边界时传统 `lua_pcall` 会失效，以及 `k` 函数如何接续被挂起的调用。
-- 能够分析 Userdata 的 GC 时机：何时 `__gc` 会被调用、循环引用是否会导致内存泄漏、弱引用表如何作用于 Userdata。
-
-### 1.5 评估层（Evaluate）
-
-- 能够评估在特定场景下是否应使用 Lua C API 而非 LuaJIT FFI：基于宿主 Lua 版本、平台 ABI 稳定性、库分发方式、性能要求综合判断。
-- 能够评估 `lua_pcall` 错误处理与 C 层 `setjmp`/`longjmp` 的资源释放风险：哪些资源需要 `__gc` 兜底，哪些需要在 pcall 前用 `luaL_ref` 暂存。
-- 能够评估 C 模块的 ABI 兼容性：跨 Lua 5.1 / 5.2 / 5.3 / 5.4 / LuaJIT 的源码与二进制兼容策略，以及 `LUA_COMPAT_*` 宏的作用。
-
-### 1.6 创造层（Create）
-
-- 能够设计一个完整的 C 扩展模块：类型注册、错误处理、内存管理、线程安全、版本兼容层。
-- 能够设计 Lua 与 C++ 的桥接层：RAII 资源管理、异常到 Lua 错误的转换、STL 容器与 Lua Table 的双向转换。
-- 能够设计可跨 Lua 5.1/5.2/5.3/5.4 与 LuaJIT 兼容的 C 模块代码，使用条件编译宏屏蔽版本差异。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 嵌入式设计目标的诞生
+### 1.1 嵌入式设计目标的诞生
 
 Lua 自 1993 年诞生之初就被设计为"可嵌入的扩展语言（Embeddable Extension Language）"。Roberto Ierusalimschy 等人在 TECGraf 实验室开发 Lua 1.0 时，其前置项目 SOL 与 DEL 已暴露出"宿主程序与脚本语言缺乏统一交互协议"的痛点：
 
@@ -83,7 +35,7 @@ Lua 自 1993 年诞生之初就被设计为"可嵌入的扩展语言（Embeddabl
 
 Lua 1.0 的核心创新之一就是引入 **C API**：宿主程序通过一组 C 函数操作 Lua 状态机，Lua 通过同一组 API 反向调用 C 函数。这种对称的双向交互模型使 Lua 成为真正可嵌入的脚本语言。
 
-### 2.2 虚拟栈的设计动机
+### 1.2 虚拟栈的设计动机
 
 Lua C API 选择"虚拟栈"作为 C 与 Lua 之间唯一的数据通道，这一设计在 1993 年看来并不显然。同期其他嵌入式语言（如 Tcl、Perl 嵌入式 API）多采用直接指针或共享内存的方式。Lua 选择虚拟栈的动机：
 
@@ -96,7 +48,7 @@ Roberto Ierusalimschy 在《The Evolution of Lua》中写道：
 
 > "栈式 API 是 Lua 1.0 最重要的设计决策之一。它将 C 与 Lua 的耦合限制在一组窄而稳定的接口上，使 Lua 可以在保持内部实现自由演进的同时，维持 C 扩展的二进制兼容性。"
 
-### 2.3 API 演进史
+### 1.3 API 演进史
 
 Lua C API 的演进遵循"保守扩展、谨慎破坏"原则：
 
@@ -112,7 +64,7 @@ Lua C API 的演进遵循"保守扩展、谨慎破坏"原则：
 | Lua 5.3（2015） | `lua_pcallk` / `lua_callk` Continuation、整数类型分离、`luaL_tolstring` | 协程跨 C 边界、整数语义 |
 | Lua 5.4（2020） | `lua_resetthread`、`lua_closeslot`、To-Be-Closed 变量、`luaL_addgsub` | 资源管理增强 |
 
-### 2.4 与其他嵌入式脚本 API 的对比
+### 1.4 与其他嵌入式脚本 API 的对比
 
 | 语言 | 嵌入 API 模型 | 栈式 | 类型边界 | GC 集成 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -125,7 +77,7 @@ Lua C API 的演进遵循"保守扩展、谨慎破坏"原则：
 
 Lua 的栈式 API 在性能上略逊于直接指针访问（多一层 push/pop 开销），但在 GC 安全性、ABI 稳定性、跨版本兼容性上具有显著优势。这正是 Lua 长期作为游戏、网关、嵌入式领域首选脚本语言的关键原因之一。
 
-### 2.5 LuaJIT FFI 的冲击与 C API 的定位
+### 1.5 LuaJIT FFI 的冲击与 C API 的定位
 
 2011 年 LuaJIT 2.0 引入 FFI（Foreign Function Interface），允许 Lua 直接声明并调用 C 函数，无需编写 C 代码。FFI 在性能上比 C API 高 4-10 倍（约 25-65ns vs 200-500ns/调用），且开发效率远高于手写 C 模块。
 
@@ -140,11 +92,11 @@ Lua 的栈式 API 在性能上略逊于直接指针访问（多一层 push/pop �
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节给出 Lua C API 核心概念的形式化定义，包括栈模型、引用机制、Userdata 生命周期、错误传播。
 
-### 3.1 虚拟栈的形式化定义
+### 2.1 虚拟栈的形式化定义
 
 设 `lua_State *L` 为 Lua 状态机，每个状态机拥有一个虚拟栈 $\text{Stack}_L$。栈是 Lua 值的有序序列：
 
@@ -170,7 +122,7 @@ $$
 - $\text{pop}(k): \text{Stack}_L \to \text{Stack}_L[1..n-k]$（移除栈顶 $k$ 个元素）
 - $\text{settop}(n): \text{Stack}_L \to \text{Stack}_L[1..n]$（调整栈大小，新增位置填 nil）
 
-### 3.2 类型判断的形式化定义
+### 2.2 类型判断的形式化定义
 
 C API 提供类型查询函数 $\text{lua\_type}: \text{Stack}_L \times \text{Index} \to \Sigma$，其中 $\Sigma$ 为类型常量集合：
 
@@ -190,7 +142,7 @@ $$
 
 类型判断的"快速"版本 $\text{lua\_is*}$ 系列函数基于此实现，但允许数字到字符串的隐式转换检查。
 
-### 3.3 C 函数调用的形式化定义
+### 2.3 C 函数调用的形式化定义
 
 Lua 调用 C 函数的语义可形式化为：
 
@@ -212,7 +164,7 @@ $$
 
 即函数返回时栈顶新增的元素数必须等于返回值数。违反此契约将导致栈泄漏或 Lua 内部状态损坏。
 
-### 3.4 引用机制的形式化定义
+### 2.4 引用机制的形式化定义
 
 `luaL_ref` 提供一种将 Lua 值"长期持有"的机制，避免跨 C 边界传递栈索引（栈索引在函数返回后失效）。
 
@@ -233,7 +185,7 @@ $$
 
 引用 $r$ 是一个整数句柄，C 代码可安全长期持有，并通过 `lua_rawgeti(L, t, r)` 取回对应 Lua 值。
 
-### 3.5 Userdata 的形式化定义
+### 2.5 Userdata 的形式化定义
 
 Full Userdata 是 Lua 中表示 C 内存对象的类型。形式化地：
 
@@ -255,7 +207,7 @@ $$
 
 `__gc` 调用顺序保证：在 Lua 5.4 中，所有 `__gc` 在对象被回收前调用一次，且调用顺序遵循"后绑定先调用"（LIFO）规则。
 
-### 3.6 错误传播的形式化定义
+### 2.6 错误传播的形式化定义
 
 Lua 错误通过 `lua_error(L)` 抛出，机制为 `longjmp` 跳转到最近的 `lua_pcall` 保护点。形式化地：
 
@@ -276,7 +228,7 @@ $$
 
 `msgh` 参数（消息处理器）的语义：若 `msgh != 0`，则错误发生时先调用 `Registry[msgh]` 函数，将其返回值作为最终错误对象。常用于添加调用栈 traceback（`debug.traceback`）。
 
-### 3.7 Continuation 的形式化定义
+### 2.7 Continuation 的形式化定义
 
 Lua 5.3 引入 `lua_pcallk` / `lua_callk`，支持协程 `yield` 跨 C 函数边界。形式化地：
 
@@ -293,9 +245,9 @@ Continuation 机制的限制：$k$ 必须能从 $ctx$ 重建所有需要的局�
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 栈操作的复杂度分析
+### 3.1 栈操作的复杂度分析
 
 设栈大小为 $n$，常见栈操作的时间复杂度：
 
@@ -316,7 +268,7 @@ Lua 表的哈希部分使用开链法 + 哈希桶。设表有 $n$ 个键，桶�
 
 对整数键 `lua_rawgeti`，若索引在数组部分范围内（$1 \leq i \leq \text{narray}$），直接 `arr[i-1]` 访问，复杂度严格 $O(1)$。
 
-### 4.2 Userdata GC 的成本模型
+### 3.2 Userdata GC 的成本模型
 
 设 $U$ 为某类型的 Userdata 集合，$|U| = N$，每个 Userdata 大小为 $s$ 字节。GC 标记阶段成本：
 
@@ -336,7 +288,7 @@ $$
 
 **优化推导**：若 Userdata 内部仅含原始 C 数据（无 Lua 引用），可通过 `__gc` 不做任何事 + `lua_setuservalue` 管理关联 Lua 对象的方式，使标记阶段 $c_2 \approx 0$，同时 `__gc` 调用最小化。
 
-### 4.3 引用机制的内存开销
+### 3.3 引用机制的内存开销
 
 `luaL_ref` 使用注册表中的子表，实现为整数键到值的映射。设某 C 模块持有 $N$ 个引用，则注册表子表占用：
 
@@ -348,7 +300,7 @@ $$
 
 **对比直接持有 Userdata**：若直接在 C 全局变量中持有 `void*`，仅需 8 字节，但失去 GC 跟踪。`luaL_ref` 是"内存换安全"的典型权衡。
 
-### 4.4 pcall 的 setjmp 开销
+### 3.4 pcall 的 setjmp 开销
 
 `lua_pcall` 通过 `setjmp`/`longjmp` 实现 C 层错误捕获。`setjmp` 调用成本：
 
@@ -361,7 +313,7 @@ $$
 
 **性能建议**：热路径避免在循环内频繁 `lua_pcall`，可将循环整体置于一次 pcall 中，错误统一处理。
 
-### 4.5 字符串内部化对 C API 的影响
+### 3.5 字符串内部化对 C API 的影响
 
 Lua 字符串内部化（Interning）使相同内容的字符串在内存中唯一。C API 中：
 
@@ -373,7 +325,7 @@ Lua 字符串内部化（Interning）使相同内容的字符串在内存中唯�
 
 **推导**：C 代码若需长期持有字符串，必须 `lua_pop` 前复制到 C 内存（`strdup`），或通过 `luaL_ref` 持有 Lua 字符串引用。
 
-### 4.6 多状态机并发的可行性
+### 3.6 多状态机并发的可行性
 
 Lua C API 设计支持多 `lua_State` 并存，每个状态机独立 GC、独立栈。但 Lua 不内置线程安全，跨状态机访问需外部同步。
 
@@ -388,11 +340,11 @@ Lua C API 设计支持多 `lua_State` 并存，每个状态机独立 GC、独立
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节通过多个完整可运行示例演示 Lua C API 的核心用法。所有示例基于 Lua 5.4，并标注跨版本兼容性差异。
 
-### 5.1 最简 C 模块：数学函数绑定
+### 4.1 最简 C 模块：数学函数绑定
 
 **C 代码（math_ext.c）**：
 
@@ -491,7 +443,7 @@ print(math_ext.lerp(10, 20, 0.3))  -- 输出: 13
 -- pcall(math_ext.clamp, 1, 10, 5)  -- 触发: arg #3: min must be <= max
 ```
 
-### 5.2 Userdata 完整示例：Vec3 向量类型
+### 4.2 Userdata 完整示例：Vec3 向量类型
 
 ```c
 /* vec3.c
@@ -738,7 +690,7 @@ local v6 = Vec3(1, 2, 3)
 print(v5 == v6)             -- true
 ```
 
-### 5.3 错误处理与 pcall
+### 4.3 错误处理与 pcall
 
 ```c
 /* error_demo.c
@@ -863,7 +815,7 @@ int luaopen_error_demo(lua_State *L) {
 }
 ```
 
-### 5.4 引用机制：长期持有 Lua 值
+### 4.4 引用机制：长期持有 Lua 值
 
 ```c
 /* ref_demo.c
@@ -970,7 +922,7 @@ int luaopen_ref_demo(lua_State *L) {
 }
 ```
 
-### 5.5 luaL_Buffer：高效字符串拼接
+### 4.5 luaL_Buffer：高效字符串拼接
 
 ```c
 /* buffer_demo.c
@@ -1090,7 +1042,7 @@ int luaopen_buffer_demo(lua_State *L) {
 }
 ```
 
-### 5.6 跨版本兼容：5.1 / 5.2 / 5.3 / 5.4 / LuaJIT
+### 4.6 跨版本兼容：5.1 / 5.2 / 5.3 / 5.4 / LuaJIT
 
 ```c
 /* compat.h
@@ -1171,7 +1123,7 @@ static void lua_rawsetp_compat(lua_State *L, int idx, const void *p) {
 #endif /* LUA_COMPAT_H */
 ```
 
-### 5.7 协程与 Continuation：lua_pcallk
+### 4.7 协程与 Continuation：lua_pcallk
 
 ```c
 /* cont_demo.c
@@ -1259,7 +1211,7 @@ int luaopen_cont_demo(lua_State *L) {
 #endif
 ```
 
-### 5.8 宿主程序嵌入 Lua
+### 4.8 宿主程序嵌入 Lua
 
 ```c
 /* host.c
@@ -1353,7 +1305,7 @@ gcc -O2 -o host host.c -I/usr/local/include/lua5.4 -llua5.4 -lm
 # 程序退出码: 42
 ```
 
-### 5.9 Lua 调用 C 函数指针
+### 4.9 Lua 调用 C 函数指针
 
 ```c
 /* callback.c
@@ -1427,7 +1379,7 @@ print(string.format("最终结果: %g", final))
 -- 最终结果: 50
 ```
 
-### 5.10 完整 Userdata 资源管理：文件句柄
+### 4.10 完整 Userdata 资源管理：文件句柄
 
 ```c
 /* file_handle.c
@@ -1629,7 +1581,7 @@ local function read_first_line(path)
 end
 ```
 
-### 5.11 多状态机与 lua_xmove
+### 4.11 多状态机与 lua_xmove
 
 ```c
 /* multi_state.c
@@ -1698,9 +1650,9 @@ int luaopen_multi_state(lua_State *L) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua C API vs LuaJIT FFI
+### 5.1 Lua C API vs LuaJIT FFI
 
 | 维度 | Lua C API | LuaJIT FFI |
 | :--- | :--- | :--- |
@@ -1720,7 +1672,7 @@ int luaopen_multi_state(lua_State *L) {
 - **使用 C API**：宿主 Lua 非 LuaJIT、需嵌入 Lua 到 C 程序、跨 Lua 版本分发、需要细粒度资源管理。
 - **使用 FFI**：宿主为 LuaJIT、纯 Lua 项目绑定 C 库、追求极致性能、希望避免 C 编译。
 
-### 6.2 Full Userdata vs Light Userdata
+### 5.2 Full Userdata vs Light Userdata
 
 | 维度 | Full Userdata | Light Userdata |
 | :--- | :--- | :--- |
@@ -1736,7 +1688,7 @@ int luaopen_multi_state(lua_State *L) {
 - **Full Userdata**：封装 `FILE*`、数据库连接、自定义 C 对象。
 - **Light Userdata**：作为表键关联 C 对象（`table[lightuserdata] = ...`），避免 C 全局变量。
 
-### 6.3 Lua C API vs Python C API
+### 5.3 Lua C API vs Python C API
 
 | 维度 | Lua C API | Python C API |
 | :--- | :--- | :--- |
@@ -1750,7 +1702,7 @@ int luaopen_multi_state(lua_State *L) {
 
 **关键差异**：Lua 无 GIL，多状态机天然并行；Python 受 GIL 限制，多线程 CPU 密集任务收益有限。但 Python 生态丰富，C 扩展更多。
 
-### 6.4 错误处理方案对比
+### 5.4 错误处理方案对比
 
 | 方案 | 机制 | 优点 | 缺点 |
 | :--- | :--- | :--- | :--- |
@@ -1768,9 +1720,9 @@ int luaopen_multi_state(lua_State *L) {
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 栈平衡失效
+### 6.1 栈平衡失效
 
 **反模式**：
 
@@ -1800,7 +1752,7 @@ static int l_good(lua_State *L) {
 
 **调试技巧**：在函数入口与出口分别 `assert(lua_gettop(L) == expected)`。
 
-### 7.2 持有失效的栈指针
+### 6.2 持有失效的栈指针
 
 **反模式**：
 
@@ -1844,7 +1796,7 @@ static int l_safe_pointer(lua_State *L) {
 }
 ```
 
-### 7.3 Userdata 类型混淆
+### 6.3 Userdata 类型混淆
 
 **反模式**：
 
@@ -1873,7 +1825,7 @@ static int l_safe_getx(lua_State *L) {
 }
 ```
 
-### 7.4 __gc 中抛出错误
+### 6.4 __gc 中抛出错误
 
 **反模式**：
 
@@ -1905,7 +1857,7 @@ static int l_good_gc(lua_State *L) {
 
 若需报告错误，记录到日志文件而非抛出 Lua 错误。
 
-### 7.5 跨 C 边界 yield
+### 6.5 跨 C 边界 yield
 
 **反模式**：
 
@@ -1931,7 +1883,7 @@ static int l_safe_yield(lua_State *L) {
 }
 ```
 
-### 7.6 忽略 luaL_checkudata 的错误返回
+### 6.6 忽略 luaL_checkudata 的错误返回
 
 **反模式**：
 
@@ -1956,7 +1908,7 @@ static int l_safe(lua_State *L) {
 }
 ```
 
-### 7.7 全局状态污染
+### 6.7 全局状态污染
 
 **反模式**：
 
@@ -1995,7 +1947,7 @@ static int l_callback(lua_State *L) {
 }
 ```
 
-### 7.8 忘记 luaL_unref
+### 6.8 忘记 luaL_unref
 
 **反模式**：
 
@@ -2028,9 +1980,9 @@ static int l_release(lua_State *L) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构规范
+### 7.1 项目结构规范
 
 ```mermaid
 flowchart TD
@@ -2056,7 +2008,7 @@ flowchart TD
     T10 --> T13
 ```
 
-### 8.2 CMake 构建脚本
+### 7.2 CMake 构建脚本
 
 ```cmake
 # CMakeLists.txt
@@ -2101,7 +2053,7 @@ install(TARGETS my_module
 )
 ```
 
-### 8.3 LuaRocks 包描述
+### 7.3 LuaRocks 包描述
 
 ```lua
 -- my_module-1.0.0-1.rockspec
@@ -2138,7 +2090,7 @@ build = {
 }
 ```
 
-### 8.4 内存管理最佳实践
+### 7.4 内存管理最佳实践
 
 1. **优先使用 Userdata 而非 malloc**：Userdata 由 Lua GC 管理，无需手动 free。
 2. **__gc 必须幂等**：可能被多次调用（Lua 5.4 在 panic 时会重试）。
@@ -2146,7 +2098,7 @@ build = {
 4. **避免循环引用**：Userdata 互相引用时，GC 可能无法回收，需手动管理或使用弱引用。
 5. **大对象分块**：超过 1MB 的 Userdata 考虑分块或使用 light userdata + 手动管理。
 
-### 8.5 线程安全
+### 7.5 线程安全
 
 Lua C API 非线程安全，多线程场景需：
 
@@ -2172,7 +2124,7 @@ static int ts_call(ThreadSafeState *ts, const char *func, int nargs) {
 }
 ```
 
-### 8.6 性能优化
+### 7.6 性能优化
 
 1. **减少栈操作**：批量 `lua_rawseti` 优于逐个 `lua_settable`。
 2. **使用 `lua_rawgeti` 而非 `lua_geti`**：跳过元方法，O(1) 访问数组部分。
@@ -2182,7 +2134,7 @@ static int ts_call(ThreadSafeState *ts, const char *func, int nargs) {
 6. **避免热路径 pcall**：`setjmp` 开销约 100ns，热循环中应避免。
 7. **使用 `lua_pushlstring` 而非 `lua_pushstring`**：避免二进制数据 `\0` 截断。
 
-### 8.7 错误处理策略
+### 7.7 错误处理策略
 
 1. **C 函数内部用 `luaL_error`**：简洁，自动清理 Lua 栈。
 2. **调用 Lua 函数用 `lua_pcall`**：防止 Lua 错误传播到 C 层。
@@ -2205,9 +2157,9 @@ static int l_rich_error(lua_State *L, const char *msg, int code) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Redis 中的 Lua 嵌入
+### 8.1 Redis 中的 Lua 嵌入
 
 Redis 自 2.6 起内置 Lua 5.1 解释器，用于 `EVAL` 命令实现原子事务。Redis 的 Lua 嵌入是 C API 工程实践的典范：
 
@@ -2266,7 +2218,7 @@ int evalCommand(client *c) {
 - pcall 是防止脚本错误崩溃宿主的必备手段。
 - 共享 `lua_State` 配合事务保证原子性。
 
-### 9.2 Neovim 的 Lua 配置系统
+### 8.2 Neovim 的 Lua 配置系统
 
 Neovim 0.5+ 用 Lua 替代 Vimscript 作为配置语言，Lua 通过 C API 与 Neovim 核心交互：
 
@@ -2306,7 +2258,7 @@ static int l_nvim_api_call(lua_State *L) {
 - 异步回调通过 `luaL_ref` 持有 Lua 函数。
 - 错误消息需保留 Lua 调用栈供调试。
 
-### 9.3 魔兽世界的 UI 系统
+### 8.3 魔兽世界的 UI 系统
 
 魔兽世界（WoW）的 UI 全部用 Lua 编写，是 Lua C API 在游戏领域最大规模的应用：
 
@@ -2334,7 +2286,7 @@ static int l_nvim_api_call(lua_State *L) {
 - Userdata 适合封装引擎对象（帧、纹理、声音）。
 - 事件回调机制需稳定的引用管理（`luaL_ref`）。
 
-### 9.4 OpenResty 的 Lua 网关
+### 8.4 OpenResty 的 Lua 网关
 
 OpenResty 在 Nginx 中嵌入 LuaJIT，用于编写高性能 Web 网关：
 
@@ -2360,7 +2312,7 @@ OpenResty 在 Nginx 中嵌入 LuaJIT，用于编写高性能 Web 网关：
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：编写一个 C 函数 `l_sum`，接收任意数量的数字参数，返回它们的和。要求使用 `lua_gettop` 获取参数数量，循环 `lua_tonumber` 累加。
 
@@ -2402,7 +2354,7 @@ else
 end
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：实现一个 `Matrix` Userdata 类型，支持 `Matrix.new(rows, cols)`、`m:get(i, j)`、`m:set(i, j, v)`、`m * m2`（矩阵乘法）。要求使用 Full Userdata、元方法绑定、`__gc` 不需要（仅含数字）。
 
@@ -2465,7 +2417,7 @@ static int l_reverse(lua_State *L) {
 - 从后向前遍历，`luaL_addchar` 逐字符添加。
 - `luaL_pushresult` 生成最终字符串。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：设计一个跨 Lua 5.1/5.2/5.3/5.4/LuaJIT 兼容的 C 模块框架，处理以下差异：
 
@@ -2517,46 +2469,46 @@ static int l_reverse(lua_State *L) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 Lua 官方文献
+### 10.1 Lua 官方文献
 
 - Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 1996. Lua-an extensible extension language. *Software: Practice and Experience* 26, 6 (June 1996), 635-652. DOI: [10.1002/(SICI)1097-024X(199606)26:6<635::AID-SPE26>3.0.CO;2-P](https://doi.org/10.1002/(SICI)1097-024X(199606)26:6<635::AID-SPE26>3.0.CO;2-P).
 - Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2007. The evolution of Lua. In *Proceedings of the third ACM SIGPLAN conference on History of programming languages* (HOPL III). ACM, 2-1-2-21. DOI: [10.1145/1238844.1238846](https://doi.org/10.1145/1238844.1238846).
 - Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2005. The implementation of Lua 5.0. *Journal of Universal Computer Science* 11, 7 (July 2005), 1159-1176. DOI: [10.3217/jucs-011-07-1159](https://doi.org/10.3217/jucs-011-07-1159).
 - Roberto Ierusalimschy. 2016. *Programming in Lua* (4th ed.). Lua.org. ISBN: 978-85-903798-6-3.
 
-### 11.2 Lua C API 文档
+### 10.2 Lua C API 文档
 
 - Lua.org. 2024. *Lua 5.4 Reference Manual*. Lua.org. ISBN: 978-85-903798-8-7. Available at: [https://www.lua.org/manual/5.4/](https://www.lua.org/manual/5.4/).
 - Lua.org. 2006. *Lua 5.1 Reference Manual*. Lua.org. ISBN: 85-903798-3-3. Available at: [https://www.lua.org/manual/5.1/](https://www.lua.org/manual/5.1/).
 
-### 11.3 LuaJIT 与 FFI
+### 10.3 LuaJIT 与 FFI
 
 - Pall, M. 2011. LuaJIT 2.0 FFI. Available at: [http://luajit.org/ext_ffi.html](http://luajit.org/ext_ffi.html).
 - Pall, M. 2009. LuaJIT 2.0 JIT compiler. Available at: [http://luajit.org/luajit.html](http://luajit.org/luajit.html).
 
-### 11.4 嵌入式 Lua 案例研究
+### 10.4 嵌入式 Lua 案例研究
 
 - Carlson, J. L., Johnson, A., and Kibbey, T. 2013. *Redis in Action*. Manning Publications. ISBN: 978-1617290855.
 - OpenResty Inc. 2024. *OpenResty Documentation*. Available at: [https://openresty.org/en/](https://openresty.org/en/).
 - Neovim Community. 2024. *Neovim Lua API*. Available at: [https://neovim.io/doc/user/lua.html](https://neovim.io/doc/user/lua.html).
 
-### 11.5 虚拟机与编译原理
+### 10.5 虚拟机与编译原理
 
 - Davis, B., Beatty, A., Casey, K., Gregg, D., and Waldspurger, C. 2003. The case for virtual register machines. In *Proceedings of the 2003 workshop on Interpreters, virtual machines and emulators* (IVME '03). ACM, 41-49. DOI: [10.1145/858570.858577](https://doi.org/10.1145/858570.858577).
 - Shi, Y., Casey, K., Ertl, M. A., and Gregg, D. 2005. Virtual machine showdown: Stack versus registers. *ACM Transactions on Architecture and Code Optimization (TACO)* 4, 4 (December 2005), 1-36. DOI: [10.1145/1369397.1369399](https://doi.org/10.1145/1369397.1369399).
 
-### 11.6 垃圾回收
+### 10.6 垃圾回收
 
 - Hudson, R. L., and Moss, J. E. B. 2001. Incremental Collection of Mature Objects. In *Memory Management* (Lecture Notes in Computer Science, Vol. 2150). Springer, 388-401. DOI: [10.1007/3-540-44619-5_27](https://doi.org/10.1007/3-540-44619-5_27).
 - Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2012. Passing a language through the eye of a needle. *Communications of the ACM* 55, 7 (July 2012), 38-43. DOI: [10.1145/2209249.2209267](https://doi.org/10.1145/2209249.2209267).
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Lua 5.4 Reference Manual: [https://www.lua.org/manual/5.4/](https://www.lua.org/manual/5.4/)
 - Lua 5.3 Reference Manual: [https://www.lua.org/manual/5.3/](https://www.lua.org/manual/5.3/)
@@ -2564,20 +2516,20 @@ static int l_reverse(lua_State *L) {
 - LuaJIT FFI Documentation: [http://luajit.org/ext_ffi.html](http://luajit.org/ext_ffi.html)
 - LuaJIT JIT Compiler: [http://luajit.org/luajit.html](http://luajit.org/luajit.html)
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Roberto Ierusalimschy. *Programming in Lua* (4th ed.). Lua.org, 2016.
 - Roberto Ierusalimschy. *Lua Programming Gems*. Lua.org, 2008.
 - Klaus Wühlisch et al. *Building Expert Systems in Prolog, Amzi! Inc.*（虽非 Lua 专书，但嵌入式语言章节有借鉴价值）
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - "The Evolution of Lua" (HOPL III, 2007)
 - "The Implementation of Lua 5.0" (JUCS, 2005)
 - "Lua-an extensible extension language" (SPE, 1996)
 - "Passing a language through the eye of a needle" (CACM, 2012)
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - Lua 源码: [https://github.com/lua/lua](https://github.com/lua/lua)
 - LuaJIT 源码: [https://github.com/LuaJIT/LuaJIT](https://github.com/LuaJIT/LuaJIT)
@@ -2586,20 +2538,20 @@ static int l_reverse(lua_State *L) {
 - Redis: [https://github.com/redis/redis](https://github.com/redis/redis)
 - Neovim: [https://github.com/neovim/neovim](https://github.com/neovim/neovim)
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - Lua Users Wiki: [http://lua-users.org/wiki/](http://lua-users.org/wiki/)
 - Lua 邮件列表存档: [https://www.lua.org/lua-l.html](https://www.lua.org/lua-l.html)
 - Stack Overflow Lua 标签: [https://stackoverflow.com/questions/tagged/lua](https://stackoverflow.com/questions/tagged/lua)
 
-### 12.6 性能调优工具
+### 11.6 性能调优工具
 
 - luacheck: Lua 静态分析工具，[https://github.com/mpeterv/luacheck](https://github.com/mpeterv/luacheck)
 - lua-perf: Lua 性能分析工具
 - LuaJIT 的 `-jv` / `-jdump` 参数：JIT 编译日志
 - `debug.sethook`: 函数调用追踪
 
-### 12.7 跨语言交互对比
+### 11.7 跨语言交互对比
 
 - Python C API: [https://docs.python.org/3/c-api/](https://docs.python.org/3/c-api/)
 - Ruby C Extension: [https://docs.ruby-lang.org/en/master/extension_rdoc.html](https://docs.ruby-lang.org/en/master/extension_rdoc.html)

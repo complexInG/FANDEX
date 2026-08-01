@@ -16,6 +16,7 @@ prerequisites:
   - typescript/语法速查
 ---
 
+
 # 映射类型与键重映射
 
 > 本文档对标 MIT 6.S192、Stanford CS110、CMU 15-214 等课程教学水准，系统讲解 TypeScript 映射类型（Mapped Types）与键重映射（Key Remapping via `as`）的设计动机、形式化定义、推理规则与工程级应用。所有代码示例均可在 TS 5.4 + `strict: true` 下编译通过。
@@ -39,41 +40,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够：
-
-### 1.1 Bloom 认知层级映射
-
-| 层级 | 行为动词 | 预期成果 |
-|------|----------|----------|
-| **Remember**（记忆） | 列举、识别 | 写出映射类型基本语法 `{ [K in keyof T]: ... }`，列举 TypeScript 4.1 引入的 `as` 子句形式化结构 |
-| **Understand**（理解） | 解释、归纳 | 解释映射类型的同态性（homomorphism）与隐式修饰符保留规则，归纳内置工具类型 `Partial<T>`、`Required<T>`、`Readonly<T>`、`Pick<T,K>` 的实现原理 |
-| **Apply**（应用） | 实现、使用 | 在企业级代码中实现 `Getters<T>`、`Setters<T>`、`DeepReadonly<T>`、`DeepPartial<T>` 等工具类型，并正确使用 `as` 子句过滤与转换键名 |
-| **Analyze**（分析） | 比较、分解 | 比较映射类型与索引签名（index signature）的本质差异，分解 `as` 子句与条件类型组合时的推理顺序 |
-| **Evaluate**（评价） | 评判、选择 | 针对给定业务场景（如 API 响应类型转换、状态机类型推导、表单字段派生）选择合适的映射类型实现，并给出类型推断复杂度与编译性能的权衡 |
-| **Create**（创造） | 设计、构建 | 设计一个端到端类型安全的 ORM 类型层，使用映射类型 + 键重映射 + 条件类型将数据库 schema 类型转换为 CRUD API 类型 |
-
-### 1.2 前置知识
-
-- TypeScript 联合类型与字面量类型
-- `keyof` 操作符与索引访问类型 `T[K]`
-- 条件类型 `T extends U ? X : Y` 与 `infer` 关键字
-- 模板字面量类型 `` `get${Capitalize<K>}` ``
-- `as const` 断言与 readonly 修饰符
-
-### 1.3 适用读者
-
-- 具备 1 年以上 TypeScript 实战经验的高级开发者
-- 正在为开源库设计类型层 API 的工程师
-- 希望深入理解 TypeScript 类型系统形式化语义的研究者
-- 准备 TypeScript 高级面试的工程师
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 映射类型的起源
+### 1.1 映射类型的起源
 
 映射类型（Mapped Type）的概念可追溯到 Haskell 的 `Functor` typeclass 与 ML 系语言的记录映射。在 TypeScript 出现之前，Scala 通过隐式转换（implicit conversion）和 Shapeless 库实现了类似的"记录级类型变换"。
 
@@ -81,7 +50,7 @@ TypeScript 在 **1.8（2016 年 2 月）** 首次引入映射类型，由 Micros
 
 > **设计动机**：在大型企业级项目中，开发者经常需要从一个基础类型派生出多个变种（`Partial<T>`、`Readonly<T>`、`Nullable<T>`）。手写每个变种的接口不仅冗余，而且容易遗漏字段。映射类型允许通过类型层"循环"自动派生。
 
-### 2.2 版本演进时间线
+### 1.2 版本演进时间线
 
 ```
 2016-02  TS 1.8     映射类型首次引入：{ [K in keyof T]: ... }
@@ -93,7 +62,7 @@ TypeScript 在 **1.8（2016 年 2 月）** 首次引入映射类型，由 Micros
 2024-03  TS 5.4     NoInfer<T>，与映射类型配合提升推断精度
 ```
 
-### 2.3 设计动机深度分析
+### 1.3 设计动机深度分析
 
 Daniel Rosenwasser 在 [TypeScript 4.1 Release Notes](https://devblogs.microsoft.com/typescript/announcing-typescript-4-1/) 中阐述了 `as` 子句的两个核心动机：
 
@@ -103,7 +72,7 @@ Daniel Rosenwasser 在 [TypeScript 4.1 Release Notes](https://devblogs.microsoft
 
 这两个动机共同确立了映射类型作为"类型层记录变换语言"的地位。
 
-### 2.4 当前社区共识（2024-2025）
+### 1.4 当前社区共识（2024-2025）
 
 TypeScript 核心团队在 2024 年路线图中明确：
 
@@ -113,9 +82,9 @@ TypeScript 核心团队在 2024 年路线图中明确：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 映射类型的语法形式
+### 2.1 映射类型的语法形式
 
 映射类型的形式化语法定义（参考 [TypeScript Specification, §3.6]）：
 
@@ -141,7 +110,7 @@ $$
 - `+?` / `-?`：添加或移除可选（optional）修饰符
 - `as N_K`：键重映射子句，将 $K$ 转换为新键 $N_K$
 
-### 3.2 同态映射类型与非同态映射类型
+### 2.2 同态映射类型与非同态映射类型
 
 **同态映射类型**（Homomorphic Mapped Type）的形式化定义：
 
@@ -163,7 +132,7 @@ $$
 
 当 `in` 后的类型不是 `keyof T` 时，映射类型失去同态性，修饰符不会被保留。
 
-### 3.3 键重映射的形式化
+### 2.3 键重映射的形式化
 
 `as` 子句将键 $K$ 映射为新键 $N_K$：
 
@@ -183,7 +152,7 @@ $$
 \frac{K \in U \quad N_K = \text{never}}{\text{filtered out}}
 $$
 
-### 3.4 修饰符操作的形式化
+### 2.4 修饰符操作的形式化
 
 `+readonly` 与 `-readonly` 操作的形式化：
 
@@ -207,9 +176,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 同态映射类型的修饰符保留
+### 3.1 同态映射类型的修饰符保留
 
 考虑以下示例：
 
@@ -233,7 +202,7 @@ $$
 
 TypeScript 编译器在处理同态映射类型时，会自动复制原类型的修饰符。这一行为在 [Bierman et al., 2014] 中被称为 **修饰符同态性**（modifier homomorphism）。
 
-### 4.2 非同态映射类型丢失修饰符
+### 3.2 非同态映射类型丢失修饰符
 
 ```typescript
 type Keys = 'id' | 'name' | 'age';
@@ -244,7 +213,7 @@ type NonHomo = { [K in Keys]: string };
 
 形式化解释：`Keys` 不是 `keyof T`，映射类型失去同态性，无法继承修饰符。
 
-### 4.3 键重映射的过滤机制
+### 3.3 键重映射的过滤机制
 
 `as never` 子句的过滤行为可形式化为：
 
@@ -283,7 +252,7 @@ type Result = StringProps<User>;
 
 最终类型为 `{ name: string; email: string }`。
 
-### 4.4 键名转换的代数结构
+### 3.4 键名转换的代数结构
 
 `as` 子句配合模板字面量类型可实现键名的代数变换。设键名变换函数 $f: \text{string} \to \text{string}$，则：
 
@@ -303,7 +272,7 @@ $$
 | 全小写 | `Lowercase<K>` | `Lowercase<K>` |
 | getter 命名 | `get${Capitalize<K>}` | `` `get${Capitalize<string & K>}` `` |
 
-### 4.5 修饰符操作的代数性质
+### 3.5 修饰符操作的代数性质
 
 `+readonly` / `-readonly` 操作构成一个代数系统：
 
@@ -319,7 +288,7 @@ $$
 \text{optional}^2 = \text{optional}, \quad \text{required} \circ \text{optional} = \text{required}, \quad \text{optional} \circ \text{required} = \text{optional}
 $$
 
-### 4.6 类型推断复杂度分析
+### 3.6 类型推断复杂度分析
 
 映射类型的类型推断复杂度取决于：
 
@@ -343,7 +312,7 @@ $$
 
 其中 $d$ 为嵌套深度，$n$ 为每层的平均键数。TypeScript 5.0 后引入的实例化缓存使此复杂度大幅降低。
 
-### 4.7 编译产物的体积模型
+### 3.7 编译产物的体积模型
 
 映射类型**完全在编译期消除**，不产生运行时对象。例如：
 
@@ -363,9 +332,9 @@ const u = { id: '1', name: 'Alice', age: 30 };
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础映射类型
+### 4.1 基础映射类型
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -421,7 +390,7 @@ type MutableUser = Mutable<User>;
 // { id: string; name?: string; age: number }
 ```
 
-### 5.2 键重映射：getter 派生
+### 4.2 键重映射：getter 派生
 
 ```typescript
 // TS 5.4 - 使用 as 子句派生 getter 接口
@@ -474,7 +443,7 @@ console.log(getters.getName());  // 'Alice'
 console.log(getters.getAge());   // 30
 ```
 
-### 5.3 键重映射：setter 派生
+### 4.3 键重映射：setter 派生
 
 ```typescript
 /**
@@ -502,7 +471,7 @@ type UserSetters = Setters<User>;
 // 需通过 PickByNonReadonly 进一步过滤（见 5.4）
 ```
 
-### 5.4 过滤 readonly 属性
+### 4.4 过滤 readonly 属性
 
 ```typescript
 /**
@@ -543,7 +512,7 @@ type UserSettersStrict = SettersStrict<UserWithReadonly>;
 // { setName: (value: string) => void; setAge: (value: number) => void }
 ```
 
-### 5.5 条件过滤：按值类型筛选
+### 4.5 条件过滤：按值类型筛选
 
 ```typescript
 /**
@@ -571,7 +540,7 @@ type BooleanConfig = PickByValueType<ApiConfig, boolean>;
 // { debug: boolean }
 ```
 
-### 5.6 排除 null 与 undefined
+### 4.6 排除 null 与 undefined
 
 ```typescript
 /**
@@ -592,7 +561,7 @@ type CleanUser = RemoveNullAndUndefined<User>;
 // { id: string; age: number }
 ```
 
-### 5.7 深层 Readonly
+### 4.7 深层 Readonly
 
 ```typescript
 /**
@@ -621,7 +590,7 @@ type DeepReadonlyObj = DeepReadonly<DeepObj>;
 // }
 ```
 
-### 5.8 深层 Partial
+### 4.8 深层 Partial
 
 ```typescript
 /**
@@ -657,7 +626,7 @@ const config: PartialConfig = {
 };
 ```
 
-### 5.9 添加前缀/后缀
+### 4.9 添加前缀/后缀
 
 ```typescript
 /**
@@ -686,7 +655,7 @@ type SuffixedUser = Suffix<User, 'Field'>;
 // { idField: string; nameField: string }
 ```
 
-### 5.10 完整的 `tsconfig.json`
+### 4.10 完整的 `tsconfig.json`
 
 ```json
 {
@@ -708,7 +677,7 @@ type SuffixedUser = Suffix<User, 'Field'>;
 }
 ```
 
-### 5.11 企业级 ORM 类型层
+### 4.11 企业级 ORM 类型层
 
 ```typescript
 // TS 5.4 - 基于映射类型的 ORM 类型层
@@ -797,7 +766,7 @@ type UserRepository = Repository<UserSchema>;
 type PostRepository = Repository<PostSchema>;
 ```
 
-### 5.12 状态机派生
+### 4.12 状态机派生
 
 ```typescript
 // TS 5.4 - 状态机类型派生
@@ -839,9 +808,9 @@ function createMachine<T extends StateConfig>(config: T) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与其他类型系统的对比
+### 5.1 与其他类型系统的对比
 
 | 语言/系统 | 映射类型 | 键重映射 | 同态性 | 修饰符操作 | 编译期消除 |
 |-----------|----------|----------|--------|-----------|------------|
@@ -853,7 +822,7 @@ function createMachine<T extends StateConfig>(config: T) {
 | **Flow** | 不支持 | 不支持 | 不适用 | 不适用 | 不适用 |
 | **OCaml PPX** | 派生宏 | 不支持 | 否 | 不支持 | 是 |
 
-### 6.2 与 Flow 的对比
+### 5.2 与 Flow 的对比
 
 Flow 不支持映射类型，所有类型变换必须显式写出。例如，Flow 实现 `Partial` 需要手动复制接口：
 
@@ -879,7 +848,7 @@ TypeScript 通过映射类型一行代码解决：
 type PartialUser = Partial<User>;
 ```
 
-### 6.3 与 Rust Serde 宏的对比
+### 5.3 与 Rust Serde 宏的对比
 
 Rust 通过 Serde 派生宏实现类似的类型变换：
 
@@ -918,7 +887,7 @@ type SerializedUser = {
 - **表达能力**：Rust 更强（可自定义序列化逻辑），TypeScript 仅类型层
 - **运行时性能**：Rust 零成本抽象，TypeScript 同样无运行时开销
 
-### 6.4 与 Python type hints 的对比
+### 5.4 与 Python type hints 的对比
 
 Python 3.11 引入 `dataclass_transform` 与 `TypedDict`，但尚不支持映射类型：
 
@@ -940,7 +909,7 @@ class PartialUser(TypedDict, total=False):
 
 TypeScript 的映射类型在表达力与简洁性上均优于 Python。
 
-### 6.5 与 Haskell Functor 的对比
+### 5.5 与 Haskell Functor 的对比
 
 Haskell 的 `Functor` typeclass 提供值级映射：
 
@@ -958,7 +927,7 @@ TypeScript 映射类型在**类型层**做类似的事：将"类型函数"应用
 - **Haskell Functor**：值级映射，保留容器结构
 - **TypeScript 映射类型**：类型级映射，可同时变换键与值
 
-### 6.6 与 Scala Shapeless 的对比
+### 5.6 与 Scala Shapeless 的对比
 
 Scala 的 Shapeless 库通过 `LabelledGeneric` 实现记录级类型变换：
 
@@ -981,9 +950,9 @@ TypeScript 映射类型在易用性上远超 Shapeless：
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：非同态映射类型丢失修饰符
+### 6.1 陷阱一：非同态映射类型丢失修饰符
 
 ```typescript
 interface User {
@@ -1002,7 +971,7 @@ type GoodMapped = { [K in keyof User]: User[K] };
 
 **最佳实践**：始终使用 `keyof T` 而非显式联合类型作为 `in` 后的类型，以保持同态性。
 
-### 7.2 陷阱二：`as` 子句过滤的语义混淆
+### 6.2 陷阱二：`as` 子句过滤的语义混淆
 
 ```typescript
 interface User {
@@ -1030,7 +999,7 @@ type Result2 = BadFilter2<User>;
 
 **最佳实践**：明确区分"键过滤"与"值过滤"。键过滤使用 `K extends SomeType`，值过滤使用 `T[K] extends SomeType`。
 
-### 7.3 陷阱三：递归映射类型的深度限制
+### 6.3 陷阱三：递归映射类型的深度限制
 
 ```typescript
 // 反面示例：深层递归映射类型
@@ -1053,7 +1022,7 @@ TypeScript 类型系统对递归深度有约 1000 层的硬限制。
 - 使用 `unknown` 或 `any` 截断递归
 - 考虑运行时方案（如 `Object.freeze`）替代深层类型
 
-### 7.4 陷阱四：键重映射的 `never` 行为
+### 6.4 陷阱四：键重映射的 `never` 行为
 
 ```typescript
 interface User {
@@ -1081,7 +1050,7 @@ type Result2 = Filtered2<User>;
 
 **最佳实践**：过滤键用 `as never`，过滤值用条件类型。两者语义不同，不可混用。
 
-### 7.5 陷阱五：修饰符操作符的方向
+### 6.5 陷阱五：修饰符操作符的方向
 
 ```typescript
 interface User {
@@ -1106,7 +1075,7 @@ type RemoveOptional<T> = { [K in keyof T]-?: T[K] };
 
 **最佳实践**：始终显式写 `+` 或 `-`，避免歧义。
 
-### 7.6 陷阱六：键重映射与 `keyof` 的交互
+### 6.6 陷阱六：键重映射与 `keyof` 的交互
 
 ```typescript
 interface User {
@@ -1128,7 +1097,7 @@ type OriginalKeys = keyof User; // 'id' | 'name'
 
 **最佳实践**：键重映射后的类型与原类型在 `keyof` 上不同。需要保留原键信息时，使用辅助类型记录。
 
-### 7.7 陷阱七：映射类型与索引签名的混淆
+### 6.7 陷阱七：映射类型与索引签名的混淆
 
 ```typescript
 // 映射类型：键集合是有限的
@@ -1146,7 +1115,7 @@ type Right = { [K in string]: string }; // 这是映射类型（但会得到空�
 
 **最佳实践**：注意 `[K in ...]` 与 `[K: ...]` 的语法差异。
 
-### 7.8 陷阱八：性能问题
+### 6.8 陷阱八：性能问题
 
 ```typescript
 // 反面示例：在循环中大量使用复杂映射类型
@@ -1168,7 +1137,7 @@ type Processed = SlowType<LargeConfig>;  // 编译时间显著增加
 - 超过 1000ms 的类型应重构
 - 使用 `type-fest` 的优化版本（如 `Simplify<T>`）
 
-### 7.9 最佳实践速查表
+### 6.9 最佳实践速查表
 
 | 场景 | 推荐方案 | 理由 |
 |------|----------|------|
@@ -1181,9 +1150,9 @@ type Processed = SlowType<LargeConfig>;  // 编译时间显著增加
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建配置
+### 7.1 构建配置
 
 ```json
 // tsconfig.json - 推荐配置（TS 5.4）
@@ -1205,7 +1174,7 @@ type Processed = SlowType<LargeConfig>;  // 编译时间显著增加
 }
 ```
 
-### 8.2 性能分析
+### 7.2 性能分析
 
 ```bash
 # 启用扩展诊断
@@ -1220,9 +1189,9 @@ npx tsc --noEmit --extendedDiagnostics
 # 当 Instantiations > 1,000,000 时，应优化映射类型
 ```
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
-#### 8.3.1 类型展开
+#### 7.3.1 类型展开
 
 ```typescript
 // 强制 TypeScript 展开映射类型
@@ -1242,7 +1211,7 @@ type Raw = Getters<User>;          // 显示为映射类型语法
 type Expanded = Expand<Getters<User>>;  // 显示展开后的具体类型
 ```
 
-#### 8.3.2 类型断言测试
+#### 7.3.2 类型断言测试
 
 ```typescript
 // 使用类型断言验证类型推断
@@ -1253,13 +1222,13 @@ type Test1 = AssertEqual<Getters<User>['getId'], () => string>;  // true
 type Test2 = AssertEqual<Getters<User>['getName'], () => string>; // true
 ```
 
-#### 8.3.3 TypeScript Playground
+#### 7.3.3 TypeScript Playground
 
 - 网址：<https://www.typescriptlang.org/play>
 - 技巧：在 `.ts` 文件中悬停类型查看展开
 - 使用 `?ts=5.4` 参数指定 TS 版本
 
-### 8.4 测试策略
+### 7.4 测试策略
 
 ```typescript
 // 使用 vitest + type assertions 进行映射类型测试
@@ -1285,9 +1254,9 @@ describe('Getters', () => {
 });
 ```
 
-### 8.5 性能优化
+### 7.5 性能优化
 
-#### 8.5.1 使用 `Simplify` 展开
+#### 7.5.1 使用 `Simplify` 展开
 
 ```typescript
 /**
@@ -1301,7 +1270,7 @@ type Complex = Getters<User> & Setters<User> & Partial<User>;
 type Simple = Simplify<Complex>;  // IDE 中显示更清晰
 ```
 
-#### 8.5.2 缓存类型计算
+#### 7.5.2 缓存类型计算
 
 ```typescript
 // 反面示例：每次调用重新计算
@@ -1312,7 +1281,7 @@ type CachedUser = SlowType<User>;
 type Processed = CachedUser & { extra: string };
 ```
 
-### 8.6 库代码设计
+### 7.6 库代码设计
 
 发布到 npm 的库代码应：
 
@@ -1323,9 +1292,9 @@ type Processed = CachedUser & { extra: string };
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：`type-fest` 库
+### 8.1 案例一：`type-fest` 库
 
 [`type-fest`](https://github.com/sindresorhus/type-fest) 是 TypeScript 社区最流行的类型工具库，包含 100+ 个基于映射类型的工具类型。
 
@@ -1353,7 +1322,7 @@ type SetOptional<BaseType, Keys extends keyof BaseType> = {
 - 通过 `&` 交叉类型组合可选与非可选部分
 - 提供 `Simplify` 改善类型显示
 
-### 9.2 案例二：`ts-toolbelt` 库
+### 8.2 案例二：`ts-toolbelt` 库
 
 [`ts-toolbelt`](https://github.com/millsp/ts-toolbelt) 提供更激进的映射类型工具，包括：
 
@@ -1370,7 +1339,7 @@ type SelectKeys<O, M> = {
 - `type-fest` 更保守，优先考虑兼容性
 - 两者均基于映射类型 + 键重映射
 
-### 9.3 案例三：Prisma 的类型派生
+### 8.3 案例三：Prisma 的类型派生
 
 [Prisma](https://github.com/prisma/prisma) ORM 使用映射类型将数据库 schema 类型派生为 TypeScript 客户端类型。
 
@@ -1393,7 +1362,7 @@ type UserGetPayload<S extends UserArgs> = {
 - 通过 `as` 子句处理不同字段的派生逻辑
 - 端到端类型安全，从 SQL schema 到业务代码
 
-### 9.4 案例四：Airbnb 的 API 客户端
+### 8.4 案例四：Airbnb 的 API 客户端
 
 Airbnb 的 TypeScript API 客户端使用映射类型自动派生请求/响应类型：
 
@@ -1425,7 +1394,7 @@ type ApiClient = {
 - 任何 schema 变更自动反映到客户端类型
 - 编译期捕获 API 调用错误
 
-### 9.5 案例五：Google 的 TypeScript 风格指南
+### 8.5 案例五：Google 的 TypeScript 风格指南
 
 Google TypeScript Style Guide（§5.4 类型派生）：
 
@@ -1638,7 +1607,7 @@ function getConfigValue<T>(obj: T, path: PathKeys<T>): any {
 - 递归路径拼接（10 分）
 - 字符串模板正确（5 分）
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么同态映射类型会保留修饰符？请从编译器实现角度分析。
 
@@ -1738,9 +1707,9 @@ type ApiClient = {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 Bierman, G., Abadi, M., & Torgersen, M. (2014). Understanding TypeScript. In *Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP 2014)* (pp. 257–281). Springer. <https://doi.org/10.1007/978-3-662-44202-9_11>
 
@@ -1752,7 +1721,7 @@ Wadler, P., & Blott, S. (1989). How to make ad-hoc polymorphism less ad hoc. In 
 
 Swamy, N., Hicks, M., & Bierman, G. (2014). Gradual typing for JavaScript. In *Proceedings of the 29th ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA 2014)* (pp. 1–27). ACM. <https://doi.org/10.1145/2660193.2660232>
 
-### 11.2 官方文档与规范
+### 10.2 官方文档与规范
 
 TypeScript Language Specification (2014). Microsoft. <https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md>
 
@@ -1762,7 +1731,7 @@ Rosenwasser, D. (2020). *Announcing TypeScript 4.1*. Microsoft DevBlog. <https:/
 
 Microsoft. (2024). *TypeScript 5.4 release notes*. <https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-4.html>
 
-### 11.3 工程实践文献
+### 10.3 工程实践文献
 
 Airbnb. (2024). *TypeScript style guide*. <https://github.com/airbnb/typescript>
 
@@ -1772,7 +1741,7 @@ Sindresorhus. (2024). *type-fest: A collection of essential TypeScript types*. <
 
 Prisma. (2024). *Prisma Client type generation*. <https://www.prisma.io/docs/concepts/components/prisma-client>
 
-### 11.4 历史资料
+### 10.4 历史资料
 
 Hejlsberg, A. (2017). *TypeScript: The first six years*. GopherCon 2017 Keynote. <https://www.youtube.com/watch?v=jXccn7GYn94>
 
@@ -1780,9 +1749,9 @@ Soicher, G. (2016). *TypeScript 1.8: Mapped types design notes*. Microsoft Inter
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《Effective TypeScript》**（Dan Vanderkam，2024 第二版）- 第 7 章"类型派生"深入讨论映射类型最佳实践
 - **《Programming TypeScript》**（Boris Cherny，2023 第三版）- 第 6 章覆盖映射类型与键重映射
@@ -1790,7 +1759,7 @@ Soicher, G. (2016). *TypeScript 1.8: Mapped types design notes*. Microsoft Inter
 - **《Learning TypeScript》**（Josh Goldberg，2022）- 第 8 章映射类型基础
 - **《Category Theory for Programmers》**（Bartosz Milewski，2018）- 函子（Functor）概念的理论基础
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 - **TypeScript Handbook（官方）**: <https://www.typescriptlang.org/docs/handbook/2/mapped-types.html>
 - **TypeScript Deep Dive**: <https://basarat.gitbook.io/typescript/type-system/mapped-types>
@@ -1798,21 +1767,21 @@ Soicher, G. (2016). *TypeScript 1.8: Mapped types design notes*. Microsoft Inter
 - **TypeScript Playground**: <https://www.typescriptlang.org/play>
 - **type-fest 源码**: <https://github.com/sindresorhus/type-fest> - 学习生产级映射类型实现
 
-### 12.3 论文与演讲
+### 11.3 论文与演讲
 
 - **"Understanding TypeScript"**（Gavin Bierman, ECOOP 2014）- TypeScript 类型系统形式化分析
 - **"TypeScript: The first six years"**（Anders Hejlsberg, GopherCon 2017）- 设计动机
 - **"Gradual Typing for JavaScript"**（Swamy et al., OOPSLA 2014）- 渐进式类型系统
 - **"Functors, Applicatives, and Monads in Pictures"**（Aditya Bhargava）- 函子概念可视化
 
-### 12.4 相关开源项目
+### 11.4 相关开源项目
 
 - **`type-fest`**: <https://github.com/sindresorhus/type-fest> - TypeScript 类型工具库
 - **`ts-toolbelt`**: <https://github.com/millsp/ts-toolbelt> - 高级类型工具
 - **`ts-pattern`**: <https://github.com/gvergnaud/ts-pattern> - 模式匹配与映射类型结合
 - **`effect`**: <https://github.com/effect-ts/effect> - 函数式编程框架
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 完成本章学习后，建议继续探索：
 

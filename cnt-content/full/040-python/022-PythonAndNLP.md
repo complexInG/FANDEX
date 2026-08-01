@@ -22,67 +22,6 @@ tags:
 - llm
 - tokenizer
 - attention
-learningObjectives:
-- '{''remember'': ''复述自然语言处理的核心任务类型（分词、词性标注、命名实体识别、依存句法分析、语义角色标注）及其形式化定义''}'
-- '{''understand'': ''解释 Transformer 注意力机制的数学形式化与softmax归一化的几何意义''}'
-- '{''apply'': ''使用 spaCy 工业级流水线完成中文/英文文本的实体识别与依存分析''}'
-- '{''apply'': ''使用 Hugging Face Transformers 调用预训练模型完成文本分类、问答、生成任务''}'
-- '{''analyze'': ''对比 NLTK、spaCy、Transformers 三大NLP库的架构差异、性能特征与适用场景''}'
-- '{''evaluate'': ''评估预训练模型在特定业务场景下的选择策略（BERT vs GPT vs T5）''}'
-- '{''create'': ''设计端到端的中文情感分析系统，包含数据预处理、模型微调、推理服务化''}'
-exercises:
-- id: nlp-ex-01
-  type: fill-blank
-  cognitiveLevel: remember
-  question: 在 Transformer 自注意力机制中，查询矩阵 Q、键矩阵 K、V 值矩阵 V 的注意力计算公式为 Attention(Q,K,V) = softmax(____) V，其中 d_k 是键向量的维度。
-  blankCount: 1
-  answers:
-  - QK^T / sqrt(d_k)
-  caseSensitive: false
-  answer: QK^T / sqrt(d_k)
-  explanation: 缩放点积注意力通过除以 sqrt(d_k) 抵消点积随维度增长而方差变大的效应，保持 softmax 梯度稳定。
-  difficulty: 2
-  estimatedTime: 3
-- id: nlp-ex-02
-  type: choice
-  cognitiveLevel: understand
-  question: 关于 spaCy 与 NLTK 的对比，下列说法正确的是？
-  options:
-  - spaCy 采用流水线（pipeline）设计，强调工业级性能与生产部署，但算法选择自由度较低
-  - NLTK 主要面向教学与研究，提供丰富的语料库与算法实现，但性能不适合大规模生产环境
-  - spaCy 默认使用基于规则的分词器，无法处理中文
-  - NLTK 的命名实体识别准确率在生产环境普遍优于 spaCy
-  correctIndex: 0
-  multiple: false
-  explanation: spaCy 的设计哲学是"实用优先"，采用 Cython 优化核心路径，流水线设计使组件可组合但替换成本较高；NLTK 教学属性更强，算法实现多样但性能未做工程级优化。
-  difficulty: 3
-  estimatedTime: 4
-  answer: A. spaCy 的设计哲学是"实用优先"，采用 Cython 优化核心路径，流水线设计使组件可组合但替换成本较高；NLTK 教学属性更强，算法实现多样但性能未做工程级优化。
-- id: nlp-ex-03
-  type: code-fix
-  cognitiveLevel: apply
-  question: 以下使用 spaCy 处理中文文本的代码存在两处缺陷，请修正使其能正确完成分词与命名实体识别。
-  buggyCode: "import spacy\nnlp = spacy.load(\"en_core_web_sm\")\ndoc = nlp(\"北京是中国的首都\")\nfor token in doc:\n    print(token.text, token.pos_)\nfor ent in doc.ents:\n    print(ent.text, ent.label_)\n"
-  language: python
-  fixedCode: "import spacy\n# 修正点1：中文需加载中文模型而非英文模型\nnlp = spacy.load(\"zh_core_web_sm\")\ndoc = nlp(\"北京是中国的首都\")\nfor token in doc:\n    print(token.text, token.pos_)\nfor ent in doc.ents:\n    print(ent.text, ent.label_)\n"
-  errorDescription: 中文文本需加载对应中文预训练模型 zh_core_web_sm，否则分词与实体识别将退化为字符级处理，准确率极低。
-  answer: 将 spacy.load("en_core_web_sm") 改为 spacy.load("zh_core_web_sm")
-  difficulty: 3
-  estimatedTime: 5
-- id: nlp-ex-04
-  type: open-ended
-  cognitiveLevel: create
-  question: 假设你需要为某电商平台构建一个中文商品评论情感分析系统，日均评论量 500 万条，对延迟敏感（P99 < 200ms）。请描述你的技术选型、模型架构、工程化方案与潜在风险。
-  keyPoints:
-  - 数据策略（标注成本、类别不均衡、噪声过滤）
-  - 模型选型（轻量级 BERT/RoBERTa-wwm 与 LLM API 的权衡）
-  - 工程化（ONNX Runtime、模型蒸馏、批处理推理）
-  - 监控与漂移（数据漂移检测、A/B 测试、人工回评闭环）
-  - 成本与合规（推理成本、隐私脱敏、模型可解释性）
-  minWords: 300
-  answer: 开放性问题，参考要点为：建议采用 RoBERTa-wwm-ext 微调 + ONNX 量化部署；标注阶段使用主动学习降本；推理服务使用 FastAPI + Triton Inference Server；设置漂移监控与人工回评闭环。
-  difficulty: 5
-  estimatedTime: 30
 references:
 - type: conference
   authors:
@@ -213,6 +152,7 @@ reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 95
 ---
 
+
 ## 1. 概述与学习路径
 
 自然语言处理（Natural Language Processing，NLP）是计算机科学、人工智能与语言学的交叉学科，目标是让计算机能够理解、生成、翻译人类自然语言。Python 凭借其简洁语法、丰富的科学计算生态与开源社区的持续投入，已成为 NLP 研究与工业实践的事实标准语言。
@@ -234,25 +174,13 @@ estimatedReadingTime: 95
 - 中文术语首次出现时附英文原词
 - Python 版本参考 3.11/3.12/3.13 主流版本
 
-## 2. 学习目标
+## 2. 历史动机与演进时间线
 
-本模块采用 Bloom 分类法刻画学习目标，覆盖从记忆到创造的完整认知层次：
-
-1. **记忆（remember）**：复述 NLP 核心任务类型（分词、词性标注、命名实体识别、依存句法分析、语义角色标注）及其形式化定义。
-2. **理解（understand）**：解释 Transformer 注意力机制的数学形式化与 softmax 归一化的几何意义。
-3. **应用（apply）**：使用 spaCy 工业级流水线完成中文/英文文本的实体识别与依存分析。
-4. **应用（apply）**：使用 Hugging Face Transformers 调用预训练模型完成文本分类、问答、生成任务。
-5. **分析（analyze）**：对比 NLTK、spaCy、Transformers 三大 NLP 库的架构差异、性能特征与适用场景。
-6. **评价（evaluate）**：评估预训练模型在特定业务场景下的选择策略（BERT vs GPT vs T5）。
-7. **创造（create）**：设计端到端的中文情感分析系统，包含数据预处理、模型微调、推理服务化。
-
-## 3. 历史动机与演进时间线
-
-### 3.1 NLP 的发展脉络
+### 2.1 NLP 的发展脉络
 
 自然语言处理的演进可分为四个主要阶段，每一阶段对应不同的方法论与工具范式。
 
-#### 3.1.1 规则符号主义阶段（1950-1980）
+#### 2.1.1 规则符号主义阶段（1950-1980）
 
 1950 年，Alan Turing 在《Computing Machinery and Intelligence》中提出图灵测试，将自然语言对话作为机器智能的判定标准。这一时期的 NLP 以基于规则的符号系统为主，代表项目包括：
 
@@ -262,7 +190,7 @@ estimatedReadingTime: 95
 
 规则方法的瓶颈在于：自然语言现象的复杂度远超人工规则覆盖能力，且规则间冲突难以调和。
 
-#### 3.1.2 统计学习阶段（1980-2010）
+#### 2.1.2 统计学习阶段（1980-2010）
 
 1980 年代起，IBM Watson 研究中心的 Frederick Jelinek 团队提出基于隐马尔可夫模型（HMM）的语音识别与机器翻译方法，开启统计 NLP 时代。这一阶段的代表性工作包括：
 
@@ -271,11 +199,11 @@ estimatedReadingTime: 95
 - 1995 年第六届消息理解会议（MUC-6）首次正式定义命名实体识别任务
 - 2003 年 Bengio 等提出神经语言模型，首次将词表示为稠密向量
 
-#### 3.1.3 深度学习阶段（2010-2017）
+#### 2.1.3 深度学习阶段（2010-2017）
 
 2013 年 Tomas Mikolov 等提出 Word2Vec，将词嵌入推向工业应用。2014 年 Bahdanau 等提出注意力机制解决神经机器翻译的对齐问题。2015 年 PENN Treebank 上的依存分析准确率被深度学习模型刷新。
 
-#### 3.1.4 大模型时代（2017-至今）
+#### 2.1.4 大模型时代（2017-至今）
 
 2017 年 Vaswani 等发表《Attention Is All You Need》，提出 Transformer 架构，彻底改变 NLP 范式。此后：
 
@@ -286,7 +214,7 @@ estimatedReadingTime: 95
 - 2023 年 Llama 2、Mistral 等开源大模型普及
 - 2024-2025 年多模态大模型、Agent 框架成熟
 
-### 3.2 Python 在 NLP 中的崛起
+### 2.2 Python 在 NLP 中的崛起
 
 Python 之所以成为 NLP 主流语言，源于三个关键因素：
 
@@ -294,7 +222,7 @@ Python 之所以成为 NLP 主流语言，源于三个关键因素：
 2. **深度学习框架**：PyTorch、TensorFlow 在 Python 中拥有最完整的 API
 3. **NLP 专用库**：NLTK、spaCy、Transformers 形成完整工具链
 
-### 3.3 Guido van Rossum 与 Python 设计哲学
+### 2.3 Guido van Rossum 与 Python 设计哲学
 
 Python 由 Guido van Rossum 于 1989 年圣诞节假期开始设计，1991 年发布 0.9.0 版本。其设计哲学强调：
 
@@ -304,7 +232,7 @@ Python 由 Guido van Rossum 于 1989 年圣诞节假期开始设计，1991 年�
 
 这些原则使 Python 在学术研究与工程实践中均具备良好可读性，特别适合作为 NLP 算法描述与实验载体。Guido 在 2018 年卸任 BDFL（终身仁慈独裁者）后，Python 转向由 5 人指导委员会治理。
 
-### 3.4 PEP 流程与 NLP 相关 PEP
+### 2.4 PEP 流程与 NLP 相关 PEP
 
 Python 增强提案（Python Enhancement Proposal，PEP）是 Python 演进的核心治理机制。与 NLP 相关的关键 PEP 包括：
 
@@ -316,9 +244,9 @@ Python 增强提案（Python Enhancement Proposal，PEP）是 Python 演进的�
 
 PEP 的生命周期包括草案、修订、最终决议等阶段，类似学术会议的同行评审，保证语言演进的严谨性。
 
-## 4. 形式化定义与数学基础
+## 3. 形式化定义与数学基础
 
-### 4.1 自然语言处理的形式化
+### 3.1 自然语言处理的形式化
 
 定义自然语言处理问题：给定自然语言文本 $x \in \Sigma^*$（$\Sigma$ 为字符表），目标是学习映射函数 $f: \Sigma^* \rightarrow Y$，其中 $Y$ 取决于具体任务：
 
@@ -335,7 +263,7 @@ $$
 
 其中 $\mathcal{L}$ 为损失函数，$\Omega(f)$ 为正则项，$\lambda$ 为正则系数。
 
-### 4.2 分词的形式化
+### 3.2 分词的形式化
 
 分词（Tokenization）将文本切分为最小语义单元序列。形式化定义为：
 
@@ -356,7 +284,7 @@ $$
 
 其中 $c_i$ 为字符，$t_i \in \{B, M, E, S\}$ 分别表示词首、词中、词尾、单字词。
 
-### 4.3 词向量的数学定义
+### 3.3 词向量的数学定义
 
 词向量（Word Embedding）将离散词映射为稠密实数向量：
 
@@ -378,9 +306,9 @@ $$
 
 由于分母计算量 $O(W)$ 过大，实际训练采用负采样或层次 softmax。
 
-### 4.4 注意力机制的形式化
+### 3.4 注意力机制的形式化
 
-#### 4.4.1 缩放点积注意力
+#### 3.4.1 缩放点积注意力
 
 给定查询矩阵 $\mathbf{Q} \in \mathbb{R}^{n \times d_k}$、键矩阵 $\mathbf{K} \in \mathbb{R}^{m \times d_k}$、值矩阵 $\mathbf{V} \in \mathbb{R}^{m \times d_v}$，缩放点积注意力定义为：
 
@@ -390,7 +318,7 @@ $$
 
 除以 $\sqrt{d_k}$ 的理论依据：当 $d_k$ 较大时，点积 $\mathbf{q} \cdot \mathbf{k}$ 的方差为 $d_k$，导致 softmax 进入饱和区，梯度消失。缩放使方差稳定为 1。
 
-#### 4.4.2 多头注意力
+#### 3.4.2 多头注意力
 
 多头注意力（Multi-Head Attention）将注意力机制并行化：
 
@@ -406,7 +334,7 @@ $$
 
 参数矩阵 $\mathbf{W}_i^Q \in \mathbb{R}^{d_{\text{model}} \times d_k}$、$\mathbf{W}_i^K \in \mathbb{R}^{d_{\text{model}} \times d_k}$、$\mathbf{W}_i^V \in \mathbb{R}^{d_{\text{model}} \times d_v}$、$\mathbf{W}^O \in \mathbb{R}^{hd_v \times d_{\text{model}}}$。
 
-### 4.5 Transformer 层的完整定义
+### 3.5 Transformer 层的完整定义
 
 Transformer 编码器层（Encoder Layer）由多头注意力 + 前馈网络 + 残差连接 + 层归一化组成：
 
@@ -423,7 +351,7 @@ $$
 \text{FFN}(\mathbf{x}) = \max(0, \mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\mathbf{W}_2 + \mathbf{b}_2
 $$
 
-### 4.6 softmax 的数值稳定性
+### 3.6 softmax 的数值稳定性
 
 softmax 函数定义为：
 
@@ -439,9 +367,9 @@ $$
 
 数学等价，但数值稳定。
 
-## 5. 理论推导与算法原理
+## 4. 理论推导与算法原理
 
-### 5.1 隐马尔可夫模型与词性标注
+### 4.1 隐马尔可夫模型与词性标注
 
 HMM 假设观测序列 $O_{1:T}$ 与隐状态序列 $S_{1:T}$ 满足两个独立假设：
 
@@ -462,7 +390,7 @@ $$
 
 时间复杂度 $O(T \cdot |\mathcal{S}|^2)$，空间复杂度 $O(T \cdot |\mathcal{S}|)$。
 
-### 5.2 条件随机场与序列标注
+### 4.2 条件随机场与序列标注
 
 CRF 直接建模后验概率：
 
@@ -472,7 +400,7 @@ $$
 
 CRF 克服了 HMM 的标签偏置问题，但推理仍需使用前向-后向算法。
 
-### 5.3 BERT 的预训练目标
+### 4.3 BERT 的预训练目标
 
 BERT 采用掩码语言模型（MLM）：
 
@@ -482,7 +410,7 @@ $$
 
 其中 $\mathcal{M}$ 为被掩码的位置集合，$x_{\setminus \mathcal{M}}$ 为未被掩码的上下文。同时使用下一句预测（NSP）目标。
 
-### 5.4 GPT 的自回归语言模型
+### 4.4 GPT 的自回归语言模型
 
 GPT 采用自回归建模：
 
@@ -496,7 +424,7 @@ $$
 \mathcal{L}_{\text{LM}} = -\frac{1}{T} \sum_{t=1}^{T} \log P(x_t | x_{<t}; \theta)
 $$
 
-### 5.5 BPE 分词算法
+### 4.5 BPE 分词算法
 
 Byte-Pair Encoding（BPE）通过迭代合并最频繁字符对构建词表：
 
@@ -507,9 +435,9 @@ Byte-Pair Encoding（BPE）通过迭代合并最频繁字符对构建词表：
 
 BPE 解决未登录词（OOV）问题，被 GPT、BERT、Llama 等模型广泛采用。
 
-## 6. 核心库与生产级代码示例
+## 5. 核心库与生产级代码示例
 
-### 6.1 NLTK：教学与研究的基石
+### 5.1 NLTK：教学与研究的基石
 
 NLTK（Natural Language Toolkit）由 Steven Bird 与 Edward Loper 于 2001 年发起，是 Python 最早的 NLP 库，主要面向教学与研究。
 
@@ -554,7 +482,7 @@ NLTK 的特点：
 - API 设计教学友好，但性能未做工程优化
 - 适合学习经典算法与原型验证
 
-### 6.2 spaCy：工业级 NLP 流水线
+### 5.2 spaCy：工业级 NLP 流水线
 
 spaCy 由 Matthew Honnibal 于 2014 年创建，定位于工业级 NLP 库。其核心设计理念：
 
@@ -602,7 +530,7 @@ for sent in doc.sents:
 # print(f"猫与狗的相似度: {doc1.similarity(doc2):.4f}")
 ```
 
-#### 6.2.1 自定义流水线组件
+#### 5.2.1 自定义流水线组件
 
 ```python
 import spacy
@@ -643,7 +571,7 @@ doc = nlp("股票市场今日大涨，利率维持低位。")
 print(f"分类: {doc._.category}, 置信度: {doc._.score}")
 ```
 
-#### 6.2.2 模型序列化与部署
+#### 5.2.2 模型序列化与部署
 
 ```python
 import spacy
@@ -662,7 +590,7 @@ for doc in docs:
     print([ent.text for ent in doc.ents])
 ```
 
-### 6.3 Hugging Face Transformers：大模型生态
+### 5.3 Hugging Face Transformers：大模型生态
 
 Transformers 库由 Hugging Face 公司维护，是大模型时代的核心工具。它提供：
 
@@ -710,7 +638,7 @@ text = generator("人工智能的未来", max_length=50, num_return_sequences=1)
 print("生成:", text[0]["generated_text"])
 ```
 
-#### 6.3.1 模型加载与推理细节
+#### 5.3.1 模型加载与推理细节
 
 ```python
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
@@ -752,7 +680,7 @@ print(f"预测标签: {model.config.id2label[pred]}")
 print(f"概率分布: {probs.tolist()}")
 ```
 
-#### 6.3.2 微调（Fine-tuning）
+#### 5.3.2 微调（Fine-tuning）
 
 ```python
 from transformers import (
@@ -833,7 +761,7 @@ trainer.train()
 trainer.save_model("./outputs/sentiment-bert-final")
 ```
 
-### 6.4 jieba：中文分词利器
+### 5.4 jieba：中文分词利器
 
 ```python
 import jieba
@@ -870,7 +798,7 @@ text2 = "小明毕业于北京大学计算机科学与技术系"
 print("调整后: " + "/".join(jieba.cut(text2)))
 ```
 
-### 6.5 fastNLP 与 PaddleNLP（中文生态补充）
+### 5.5 fastNLP 与 PaddleNLP（中文生态补充）
 
 中文 NLP 生态除上述库外，还有：
 
@@ -887,9 +815,9 @@ print("调整后: " + "/".join(jieba.cut(text2)))
 # print(result)
 ```
 
-## 7. 对比分析
+## 6. 对比分析
 
-### 7.1 Python NLP 库横向对比
+### 6.1 Python NLP 库横向对比
 
 | 维度 | NLTK | spaCy | Transformers | jieba |
 |------|------|-------|--------------|-------|
@@ -905,13 +833,13 @@ print("调整后: " + "/".join(jieba.cut(text2)))
 | 社区活跃度 | 中 | 高 | 极高 | 中 |
 | 适用场景 | 教学、原型 | 生产管线 | 微调、大模型 | 中文预处理 |
 
-### 7.2 Python 与其他语言 NLP 生态对比
+### 6.2 Python 与其他语言 NLP 生态对比
 
-#### 7.2.1 Python vs Ruby
+#### 6.2.1 Python vs Ruby
 
 Ruby 的 NLP 生态以 treat、engtagger 为代表，但远不及 Python。Ruby 的优势在 DSL 友好，缺点是数值计算库薄弱、缺乏主流深度学习框架绑定。
 
-#### 7.2.2 Python vs JavaScript/TypeScript
+#### 6.2.2 Python vs JavaScript/TypeScript
 
 JavaScript 在浏览器端 NLP 有天然优势（如 compromise、natural 库），适合轻量级前端处理。但：
 
@@ -919,7 +847,7 @@ JavaScript 在浏览器端 NLP 有天然优势（如 compromise、natural 库）
 - 训练阶段仍依赖 Python
 - Node.js 在大规模张量计算上性能劣于 Python+NumPy
 
-#### 7.2.3 Python vs Go
+#### 6.2.3 Python vs Go
 
 Go 在并发与部署上有优势，适合构建 NLP 服务的网关层。但：
 
@@ -927,7 +855,7 @@ Go 在并发与部署上有优势，适合构建 NLP 服务的网关层。但：
 - 深度学习生态薄弱
 - 训练与推理仍依赖 Python 调用 ONNX Runtime / libtorch
 
-#### 7.2.4 Python vs Julia
+#### 6.2.4 Python vs Julia
 
 Julia 设计目标为科学计算，理论性能优于 Python（JIT 编译）。但：
 
@@ -935,7 +863,7 @@ Julia 设计目标为科学计算，理论性能优于 Python（JIT 编译）。
 - 主流模型预训练权重稀缺
 - 工业部署工具链不成熟
 
-#### 7.2.5 Python vs Java
+#### 6.2.5 Python vs Java
 
 Java 生态有 Stanford CoreNLP、OpenNLP、DKPro，企业级稳定。但：
 
@@ -943,7 +871,7 @@ Java 生态有 Stanford CoreNLP、OpenNLP、DKPro，企业级稳定。但：
 - 与 PyTorch/TensorFlow 集成差
 - 现代大模型几乎都首选 Python
 
-### 7.3 预训练模型选择策略
+### 6.3 预训练模型选择策略
 
 | 模型类型 | 代表 | 适用场景 | 优势 | 局限 |
 |---------|------|---------|------|------|
@@ -953,9 +881,9 @@ Java 生态有 Stanford CoreNLP、OpenNLP、DKPro，企业级稳定。但：
 | 通用大模型 | GPT-4、Claude | 复杂推理、Agent | 涌现能力、零样本 | API 成本高 |
 | 开源大模型 | Llama 3、Qwen | 私有部署、定制 | 可控、可微调 | 需算力投入 |
 
-## 8. 常见陷阱与修复
+## 7. 常见陷阱与修复
 
-### 8.1 陷阱1：未设置随机种子导致结果不可复现
+### 7.1 陷阱1：未设置随机种子导致结果不可复现
 
 ```python
 # 错误：训练结果不可复现
@@ -979,7 +907,7 @@ def set_all_seeds(seed: int = 42):
 set_all_seeds(42)
 ```
 
-### 8.2 陷阱2：tokenizer 与模型不匹配
+### 7.2 陷阱2：tokenizer 与模型不匹配
 
 ```python
 # 错误：使用 BERT 的 tokenizer 但加载 RoBERTa 模型
@@ -995,7 +923,7 @@ tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 model = AutoModel.from_pretrained(checkpoint)
 ```
 
-### 8.3 陷阱3：中文文本未正确预处理
+### 7.3 陷阱3：中文文本未正确预处理
 
 ```python
 # 错误：直接将带 HTML 标签的文本送入模型
@@ -1021,7 +949,7 @@ raw = "<p>这 是一段   测试文本。</p>"
 print(clean_text(raw))  # 这 是一段 测试文本.
 ```
 
-### 8.4 陷阱4：忽略最大序列长度
+### 7.4 陷阱4：忽略最大序列长度
 
 ```python
 # 错误：超过模型最大长度的文本被静默截断
@@ -1052,7 +980,7 @@ chunks = chunk_text(long_text, tokenizer, max_length=400, stride=50)
 print(f"分块数量: {len(chunks)}")
 ```
 
-### 8.5 陷阱5：未使用 no_grad 与 eval 模式
+### 7.5 陷阱5：未使用 no_grad 与 eval 模式
 
 ```python
 # 错误：推理时未关闭梯度计算，显存浪费且速度慢
@@ -1074,7 +1002,7 @@ with torch.no_grad(), torch.amp.autocast("cuda"):  # 混合精度
     outputs = model(**batch_inputs)
 ```
 
-### 8.6 陷阱6：忽略标签不平衡
+### 7.6 陷阱6：忽略标签不平衡
 
 ```python
 # 错误：直接用准确率评估不平衡数据集
@@ -1099,7 +1027,7 @@ weights = torch.tensor([1.0, 10.0])  # 反比例加权
 loss_fn = nn.CrossEntropyLoss(weight=weights)
 ```
 
-### 8.7 陷阱7：spaCy 模型未安装即调用
+### 7.7 陷阱7：spaCy 模型未安装即调用
 
 ```python
 import spacy
@@ -1120,7 +1048,7 @@ except OSError:
 # zh-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/zh_core_web_sm-3.7.0/zh_core_web_sm-3.7.0-py3-none-any.whl
 ```
 
-### 8.8 陷阱8：未关闭 tokenizer 警告
+### 7.8 陷阱8：未关闭 tokenizer 警告
 
 ```python
 # 错误：每次推理都重新加载 tokenizer，触发警告且性能差
@@ -1161,9 +1089,9 @@ class Predictor:
         return torch.argmax(logits, dim=-1).item()
 ```
 
-## 9. 工程实践
+## 8. 工程实践
 
-### 9.1 虚拟环境与依赖管理
+### 8.1 虚拟环境与依赖管理
 
 ```bash
 # 推荐使用 uv（Astral，2024 起流行，比 pip 快 10-100 倍）
@@ -1180,7 +1108,7 @@ conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvi
 pip install spacy transformers
 ```
 
-### 9.2 pyproject.toml 配置示例
+### 8.2 pyproject.toml 配置示例
 
 ```toml
 [project]
@@ -1201,7 +1129,7 @@ dev = ["pytest>=8.0", "ruff>=0.4", "mypy>=1.9"]
 gpu = ["torch[cuda]"]
 ```
 
-### 9.3 模型推理服务化
+### 8.3 模型推理服务化
 
 ```python
 from fastapi import FastAPI, HTTPException
@@ -1296,7 +1224,7 @@ if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
 
-### 9.4 性能调优
+### 8.4 性能调优
 
 ```python
 # 1. 混合精度推理（FP16）
@@ -1331,7 +1259,7 @@ quantized = quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)
 # outputs = model.generate(input_ids, max_length=50, use_cache=True)
 ```
 
-### 9.5 数据预处理流水线
+### 8.5 数据预处理流水线
 
 ```python
 from datasets import Dataset
@@ -1381,7 +1309,7 @@ result = preprocessor.process(sample)
 print(f"处理后样本数: {len(result['input_ids'])}")
 ```
 
-### 9.6 模型评估与监控
+### 8.6 模型评估与监控
 
 ```python
 from sklearn.metrics import (
@@ -1419,9 +1347,9 @@ def evaluate_model(y_true, y_pred, y_proba):
 # evaluate_model(y_true, y_pred, y_proba)
 ```
 
-## 10. 案例研究
+## 9. 案例研究
 
-### 10.1 案例1：Dropbox 的文档理解
+### 9.1 案例1：Dropbox 的文档理解
 
 Dropbox 利用 NLP 实现文件内容搜索、智能推荐与文档分类。技术栈：
 
@@ -1436,7 +1364,7 @@ Dropbox 利用 NLP 实现文件内容搜索、智能推荐与文档分类。技�
 - 多语言支持需考虑分词器差异（中文用 jieba 预处理）
 - 在线推理延迟通过模型蒸馏从 200ms 降至 50ms
 
-### 10.2 案例2：Instagram 的内容审核
+### 9.2 案例2：Instagram 的内容审核
 
 Instagram（Meta）使用 NLP 自动审核违规内容。技术栈：
 
@@ -1451,7 +1379,7 @@ Instagram（Meta）使用 NLP 自动审核违规内容。技术栈：
 - 标签噪声通过众包 + 主动学习缓解
 - 模型版本灰度发布，配合人工审核反馈
 
-### 10.3 案例3：YouTube 字幕生成
+### 9.3 案例3：YouTube 字幕生成
 
 YouTube 使用 NLP 自动生成视频字幕。技术栈：
 
@@ -1466,7 +1394,7 @@ YouTube 使用 NLP 自动生成视频字幕。技术栈：
 - 多模型协作优于单一端到端模型
 - 用户反馈数据是模型迭代的关键
 
-### 10.4 案例4：阿里巴巴电商搜索
+### 9.4 案例4：阿里巴巴电商搜索
 
 阿里巴巴电商搜索系统使用 NLP 处理用户查询：
 
@@ -1481,7 +1409,7 @@ YouTube 使用 NLP 自动生成视频字幕。技术栈：
 - 模型蒸馏将 BERT-base 压缩为 6 层，延迟从 80ms 降至 15ms
 - 数据飞轮：模型上线后产生的点击数据反哺训练
 
-### 10.5 案例5：GitHub Copilot 代码补全
+### 9.5 案例5：GitHub Copilot 代码补全
 
 GitHub Copilot 基于 OpenAI Codex 实现 Python 代码补全：
 
@@ -1532,7 +1460,7 @@ grouped_entities=True（新版为 aggregation_strategy="simple"）
 
 解析讲解：D。`AutoModel` 是通用基类，调用分类任务需用 `AutoModelForSequenceClassification`；C 会有警告但能加载；D 缺少 config.json 会直接报错，无法加载。
 
-### 11.3 代码修正题
+### 10.3 代码修正题
 
 **习题 11.6**（应用层）：以下代码试图使用 spaCy 比较两段中文文本的语义相似度，但运行结果不合理。请找出问题并修正。
 
@@ -1616,7 +1544,7 @@ scheduler.step()
 optimizer.zero_grad()
 ```
 
-### 11.4 开放性问题
+### 10.4 开放性问题
 
 **习题 11.8**（评价层）：某团队需要为电商平台构建商品评论情感分析系统，候选方案有：
 
@@ -1661,7 +1589,7 @@ optimizer.zero_grad()
 
 权衡：稀疏注意力保留局部性但损失全局信息；线性注意力速度快但近似精度有限。
 
-## 12. 参考文献
+## 11. 参考文献
 
 参考文献遵循 ACM Reference Format，按发表年份升序排列：
 
@@ -1679,21 +1607,21 @@ optimizer.zero_grad()
 
 [7] Wolf, T., Debut, L., Sanh, V., Chaumond, J., Delangue, C., Moi, A., Cistac, P., Rault, T., Louf, R., Funtowicz, M., Davison, J., Shleifer, S., von Platen, P., Carr, C., Rush, A. M., et al. 2020. Transformers: State-of-the-art natural language processing. In _Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing: System Demonstrations (EMNLP 2020 Demos)_, 38–45. DOI: 10.18653/v1/2020.emnlp-demos.6. https://aclanthology.org/2020.emnlp-demos.6
 
-## 13. 延伸阅读
+## 12. 延伸阅读
 
-### 13.1 书籍
+### 12.1 书籍
 
 - Jurafsky, D. and Martin, J. H. _Speech and Language Processing_ (3rd ed. draft). Stanford University. https://web.stanford.edu/~jurafsky/slp3/ — NLP 教科书标准参考，覆盖统计与深度学习方法。
 - Goldberg, Y. _Neural Network Methods in Natural Language Processing_. Morgan & Claypool, 2017. — 神经网络 NLP 入门经典。
 - Eisenstein, J. _Introduction to Natural Language Processing_. MIT Press, 2019. — 强调语言学与统计建模基础。
 
-### 13.2 经典论文
+### 12.2 经典论文
 
 - Bahdanau, D., Cho, K., and Bengio, Y. 2015. Neural machine translation by jointly learning to align and translate. In _ICLR 2015_. — 注意力机制的开山之作。
 - Mikolov, T. et al. 2013. Distributed representations of words and phrases and their compositionality. In _NeurIPS 2013_. — Word2Vec 经典。
 - Pennington, J., Socher, R., and Manning, C. D. 2014. GloVe: Global vectors for word representation. In _EMNLP 2014_. — 词向量另一经典方法。
 
-### 13.3 开源项目
+### 12.3 开源项目
 
 - spaCy: https://github.com/explosion/spaCy — 工业级 NLP 库
 - Hugging Face Transformers: https://github.com/huggingface/transformers — 大模型生态
@@ -1702,13 +1630,13 @@ optimizer.zero_grad()
 - LlamaIndex: https://github.com/run-llama/llama_index — LLM 应用框架
 - LangChain: https://github.com/langchain-ai/langchain — LLM 编排框架
 
-### 13.4 在线课程
+### 12.4 在线课程
 
 - Stanford CS224N: Natural Language Processing with Deep Learning. https://web.stanford.edu/class/cs224n/
 - Hugging Face NLP Course. https://huggingface.co/learn/nlp-course
 - fast.ai NLP. https://www.fast.ai/2019/07/23/fastnlp-1/
 
-### 13.5 标准与规范
+### 12.5 标准与规范
 
 - PEP 8: Python 代码风格指南
 - PEP 484: 类型注解
@@ -1716,7 +1644,7 @@ optimizer.zero_grad()
 - PEP 560: 核心类型对泛型的支持
 - PEP 695: 类型参数语法（Python 3.12+）
 
-## 14. 术语表
+## 13. 术语表
 
 | 术语 | 英文 | 简要说明 |
 |------|------|---------|
@@ -1736,11 +1664,11 @@ optimizer.zero_grad()
 | 序列到序列 | Sequence-to-Sequence (Seq2Seq) | 编码器-解码器架构，用于翻译、摘要 |
 | 子词分词 | Subword Tokenization | BPE、WordPiece 等算法，平衡词表与序列长度 |
 
-## 15. 版本演进与兼容性说明
+## 14. 版本演进与兼容性说明
 
 本节列出 Python 与主流 NLP 库的版本兼容矩阵，供工程实践参考。
 
-### 15.1 Python 版本支持现状
+### 14.1 Python 版本支持现状
 
 | Python 版本 | 发布年份 | 状态 | 主流 NLP 库支持 |
 |------------|---------|------|----------------|
@@ -1751,7 +1679,7 @@ optimizer.zero_grad()
 | 3.13 | 2024 | 主流维护 | 主流支持 |
 | 3.14 | 2025 | 新版本 | 部分库尚在适配 |
 
-### 15.2 主要 NLP 库版本
+### 14.2 主要 NLP 库版本
 
 - spaCy 3.7+（2023-）：新增 spancat 等组件，支持 Transformer 后端
 - Transformers 4.40+（2024-）：支持 Llama 3、Mistral、Qwen 等新模型
@@ -1759,7 +1687,7 @@ optimizer.zero_grad()
 - NLTK 3.8+：稳定更新
 - jieba 0.42+：长期稳定
 
-## 16. 总结
+## 15. 总结
 
 本模块系统讲解了 Python 在自然语言处理领域的应用，涵盖以下要点：
 

@@ -14,45 +14,6 @@ related:
   - html5/音频与视频
 prerequisites:
   - html5/概述与核心特性
-learningObjectives:
-  - level: remember
-    objective: '能陈述 a 元素的 href/target/rel/download 属性及取值。'
-    verifiable: '默写属性表'
-  - level: understand
-    objective: '能解释绝对路径、相对路径与根相对路径的解析规则。'
-    verifiable: '给定目录结构写出正确路径'
-  - level: apply
-    objective: '能创建外链、页内锚点、邮件/电话链接与下载链接。'
-    verifiable: '完成含全部类型的导航示例'
-  - level: analyze
-    objective: '能分析 target=_blank 的安全风险（reverse tabnabbing）与 rel 缓解。'
-    verifiable: '解释 noopener/noreferrer 的作用'
-  - level: evaluate
-    objective: '能评价链接文本对可访问性与 SEO 的影响。'
-    verifiable: '对比描述性文本与点击这里'
-  - level: create
-    objective: '能设计带平滑滚动与滚动边距的文档目录导航。'
-    verifiable: '完成案例研究中的目录组件'
-exercises:
-  - id: html-link-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: '新窗口打开链接使用 target=_____，同时必须搭配 rel=_____ 防止窗口劫持。'
-    answer: '_blank；noopener noreferrer'
-    explanation: '_blank 打开新标签，noopener 切断 opener 引用。'
-    difficulty: easy
-  - id: html-link-02
-    type: choice
-    cognitiveLevel: understand
-    question: '在 /docs/guide/index.html 中引用 /docs/about.html，正确路径是？'
-    options:
-      - 'A. about.html'
-      - 'B. ../about.html'
-      - 'C. /about.html'
-      - 'D. ./about.html'
-    answer: 'B'
-    explanation: '从 guide 子目录回到 docs 目录需 ../about.html。'
-    difficulty: medium
 references:
   - type: standard
     authors: ['WHATWG']
@@ -77,21 +38,8 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-## 1. 学习目标（Bloom 分类）
 
-记忆层面：能够说出 `<a>` 元素的核心属性（`href`、`target`、`rel`、`download`、`hreflang`、`type`）及其取值；能够复述绝对 URL、相对 URL、锚点 URL（`#id`）与协议相对 URL 的写法。
-
-理解层面：能够解释 URL 解析的层级规则（协议、主机、路径、查询、片段），理解 `target="_blank"` 必须搭配 `rel="noopener noreferrer"` 的安全原因，理解锚点跳转基于元素 `id` 而非 `name`（HTML5 后）。
-
-应用层面：能够编写页面内目录、跨页面链接、邮件链接、电话链接、下载链接，能够为链接设计正确的键盘焦点与无障碍状态。
-
-分析层面：能够分析不同 `target` 值（`_self`、`_blank`、`_parent`、`_top`）在 iframe 环境中的行为差异，能够分析链接与按钮在语义和交互上的区别。
-
-评价层面：能够根据内容判断何时使用链接（导航到新位置）、何时使用按钮（触发页面内动作），并评估链接文案的可访问性与 SEO 影响。
-
-创造层面：能够设计完整的站内导航系统，包括锚点滚动、滚动监听高亮、链接预加载（`prefetch`/`preload`）、SPA 路由与原生链接的协作。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 超链接是万维网诞生的核心概念。1989 年 Tim Berners-Lee 提出“信息管理提议”，把“链接”作为 Web 的根本机制；1991 年 HTML Tags 中 `<A>` 元素即已存在，`HREF` 属性从一开始就承担“超文本引用”职责。HTML 2.0（1995）正式标准化 `<a>`；HTML 4.01（1999）引入 `target`、`rel`、`type` 等属性并支持 `name` 锚点；HTML5（2014）移除了 `name` 锚点（统一用全局 `id`），为 `<a>` 增加 `download` 属性，并明确了 `target="_blank"` 的 `rel="noopener"` 安全要求。
 
@@ -108,7 +56,7 @@ timeline
     2021 : 浏览器默认 target=_blank 启用 noopener
 ```
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 `<a>` 是 HTML 的锚点元素。当存在 `href` 属性时，它创建指向目标资源的超链接；没有 `href` 时是占位锚点（不产生链接行为，但可以作为交互元素的语义容器）。
 
@@ -142,9 +90,9 @@ flowchart LR
     E -- "否" --> G["当前窗口导航"]
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 URL 解析算法
+### 3.1 URL 解析算法
 
 浏览器按照 WHATWG URL 标准解析 `href`。解析基准为文档 URL（或 `<base>` 元素指定的基地址）。相对路径解析规则：
 
@@ -158,19 +106,19 @@ flowchart LR
 
 片段 `#id` 不参与网络请求，只触发文档内滚动。理解这一规则可以解释：为什么 `/docs/guide` 与 `guide` 指向不同资源；为什么 `#top` 跳转不需要网络往返。
 
-### 4.2 target=_blank 的安全模型
+### 3.2 target=_blank 的安全模型
 
 传统上，`window.open` 或 `target="_blank"` 打开的新窗口通过 `window.opener` 引用原窗口。恶意页面可以利用 `opener` 调用 `window.opener.location = '钓鱼地址'` 或读取部分信息（反向 tabnabbing 攻击）。`rel="noopener"` 使新窗口的 `opener` 为 `null`，切断该引用链。`noreferrer` 更进一步，同时不发送 Referer 头，适合从隐私敏感的页面链接到外部。
 
-### 4.3 锚点跳转机制
+### 3.3 锚点跳转机制
 
 点击 `#section` 链接时，浏览器执行“滚动到片段”算法：在文档中查找 `id="section"` 的元素；找到后将其滚动到视口（默认对齐方式受 CSS `scroll-margin-top` 影响）；若不存在，则尝试 `name="section"`（旧行为兼容）；仍不存在则跳转到文档顶部。URL 的 hash 变化会写入历史记录，因此锚点跳转支持前进后退。
 
 SPA 路由中，hash 同时被路由系统使用（如 Vue Router 的 hash 模式），此时锚点语义需要路由库的特殊处理，通常改用 `scrollBehavior` 实现。
 
-## 5. 代码示例（带详尽注释）
+## 4. 代码示例（带详尽注释）
 
-### 5.1 基础链接
+### 4.1 基础链接
 
 ```html
 <!-- 绝对 URL：指向站外资源 -->
@@ -188,7 +136,7 @@ SPA 路由中，hash 同时被路由系统使用（如 Vue Router 的 hash 模�
 
 讲解：四种写法覆盖绝大多数场景。站内链接建议使用根相对路径（`/docs/guide`），避免文档移动后相对路径失效。
 
-### 5.2 新窗口打开与安全属性
+### 4.2 新窗口打开与安全属性
 
 ```html
 <!-- 新窗口打开外部文档，noopener 防止反向 tabnabbing -->
@@ -199,7 +147,7 @@ SPA 路由中，hash 同时被路由系统使用（如 Vue Router 的 hash 模�
 
 讲解：`rel="noopener noreferrer"` 是外部链接的标准组合：`noopener` 切断 opener，`noreferrer` 隐藏来源页面地址。即使现代浏览器默认 noopener，显式书写仍是安全基线。
 
-### 5.3 页面内锚点
+### 4.3 页面内锚点
 
 ```html
 <!-- 目录：锚点指向目标 id -->
@@ -227,7 +175,7 @@ h2 {
 }
 ```
 
-### 5.4 邮箱与电话链接
+### 4.4 邮箱与电话链接
 
 ```html
 <!-- mailto：点击唤起邮件客户端，可预设收件人/主题/正文 -->
@@ -241,7 +189,7 @@ h2 {
 
 讲解：`mailto` 与 `tel` 使用专用协议。注意 `&` 在 HTML 属性中应写为 `&amp;`，或直接使用 URL 编码 `%26`，避免严格解析器的警告。
 
-### 5.5 下载链接
+### 4.5 下载链接
 
 ```html
 <!-- download 提示浏览器保存文件，filename.pdf 为建议文件名 -->
@@ -250,7 +198,7 @@ h2 {
 
 讲解：`download` 仅在同源 URL 或 `blob:`/`data:` URL 下可靠生效；跨域资源（如 CDN）的下载名由服务器 Content-Disposition 决定。
 
-### 5.6 链接状态样式
+### 4.6 链接状态样式
 
 ```css
 /* 链接四种状态：未访问、已访问、悬停、聚焦 */
@@ -271,7 +219,7 @@ a:focus-visible {
 
 讲解：`:focus-visible` 只对键盘导航显示焦点环，鼠标点击不显示，兼顾可访问性与美观。不要移除默认 outline 而不提供替代焦点样式。
 
-### 5.7 按钮与链接的语义选择
+### 4.7 按钮与链接的语义选择
 
 ```html
 <!-- 导航到其他页面：用 a -->
@@ -283,7 +231,7 @@ a:focus-visible {
 
 讲解：经验法则：URL 会变化用 `<a>`，URL 不变用 `<button>`。误用会导致键盘行为（空格/回车）、中键新开标签、复制链接地址等能力错乱。
 
-### 5.8 无障碍链接文案
+### 4.8 无障碍链接文案
 
 ```html
 <!-- 链接文案应自解释；避免“点击这里” -->
@@ -295,9 +243,9 @@ a:focus-visible {
 
 讲解：屏幕阅读器用户会用 Tab 键遍历链接，“点击这里”“更多”等孤立文案无法传达目标。链接文本应描述目的地或动作结果。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 target 取值对比
+### 5.1 target 取值对比
 
 | 值 | 行为 | 典型场景 |
 | --- | --- | --- |
@@ -306,7 +254,7 @@ a:focus-visible {
 | `_parent` | 父上下文 | iframe 内链接 |
 | `_top` | 顶层上下文 | iframe 内跳出框架 |
 
-### 6.2 链接与按钮对比
+### 5.2 链接与按钮对比
 
 | 维度 | a 链接 | button 按钮 |
 | --- | --- | --- |
@@ -316,11 +264,11 @@ a:focus-visible {
 | 可复制地址 | 支持 | 不支持 |
 | 默认样式 | 文本链接 | 按钮外观 |
 
-### 6.3 锚点与路由对比
+### 5.3 锚点与路由对比
 
 多页应用（MPA）用原生锚点；单页应用（SPA）用路由的 `scrollBehavior` 或 `useAnchorScroll` 组合函数。原生锚点简单可靠，但无法在 SPA 的虚拟路由中表达“页面内状态”；SPA 路由则需要在历史记录与滚动恢复上自行处理。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
 陷阱一：`target="_blank"` 忘记 `rel="noopener"`，存在反向 tabnabbing 风险。
 
@@ -336,9 +284,9 @@ a:focus-visible {
 
 陷阱七：SPA 中混用 `href` 与前端路由导致整页刷新。最佳实践：Vue Router 的 `<RouterLink>`、React Router 的 `<Link>` 拦截点击并走客户端导航。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 链接统一封装组件
+### 7.1 链接统一封装组件
 
 以 Vue 3 为例，封装“站内路由链接或站外普通链接”的通用组件：
 
@@ -370,7 +318,7 @@ const isInternal = computed(() => Boolean(props.to))
 
 讲解：统一封装保证所有站外链接自动携带安全 rel，站内链接走 SPA 路由，避免团队各自实现导致的遗漏。
 
-### 8.2 目录滚动监听
+### 7.2 目录滚动监听
 
 ```js
 // 滚动监听：高亮当前阅读章节对应的目录项
@@ -390,7 +338,7 @@ headings.forEach((h) => observer.observe(h))
 
 讲解：IntersectionObserver 以视口中部为判定区，进入判定区的标题触发目录高亮。`rootMargin` 微调触发区域，避免多个标题同时命中。
 
-### 8.3 链接预加载
+### 7.3 链接预加载
 
 ```html
 <!-- 预取：空闲时下载资源，提高导航速度 -->
@@ -402,7 +350,7 @@ headings.forEach((h) => observer.observe(h))
 
 讲解：`prefetch` 适合“用户很可能点击”的页面；`preconnect` 适合第三方资源域名。二者是性能优化手段，不应过度使用。
 
-## 9. 案例研究：文档站目录系统
+## 8. 案例研究：文档站目录系统
 
 需求：为长文档实现目录侧栏：锚点链接、当前章节高亮、固定导航栏偏移修正、键盘可访问。
 
@@ -440,7 +388,7 @@ h1, h2 {
 
 讲解：整个系统由三部分组成：语义 HTML（`ol + a + id`）、滚动修正（`scroll-margin-top`）、交互高亮（IntersectionObserver 或滚动事件）。每部分职责单一，替换任意部分不影响其他部分。
 
-## 10. 知识要点总结与深入讲解
+## 9. 知识要点总结与深入讲解
 
 链接的核心属性是 `href`，其值决定“去哪里”；`target` 决定“在哪里打开”；`rel` 决定“与新上下文的关系与安全边界”。三者独立配置，但组合使用时有安全约束：`_blank` 应搭配 `noopener`。
 
@@ -448,7 +396,7 @@ h1, h2 {
 
 链接与按钮的选择是交互设计的基础问题：导航用链接，动作用按钮。这个判断影响键盘支持、中键行为、SEO 与辅助技术体验，值得在组件设计层面统一约束。
 
-## 11. 参考文献
+## 10. 参考文献
 
 WHATWG HTML Standard, The a element, 访问日期 2026-08-01, https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element
 
@@ -460,7 +408,7 @@ MDN Web Docs, rel=noopener, 访问日期 2026-08-01, https://developer.mozilla.o
 
 Web.dev, Links and buttons guide, 访问日期 2026-08-01, https://web.dev/articles/links-and-buttons
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 锚点滚动与 CSS 滚动行为（`scroll-behavior`、`scroll-margin`），见 007-css 模块相关文档；
 
@@ -511,7 +459,7 @@ MDN 的超链接教程：https://developer.mozilla.org/zh-CN/docs/Learn_web_deve
 <a rel="ugc">用户生成内容</a>
 ```
 
-### 2. 锚点与页面内导航
+### 1. 锚点与页面内导航
 
 ```html
 <h2 id="section1">第一节</h2>
@@ -527,7 +475,7 @@ html {
 }
 ```
 
-### 3. 路径系统
+### 2. 路径系统
 
 ```html
 <!-- 绝对路径 -->
@@ -540,7 +488,7 @@ html {
 <a href="../page.html">父目录</a>
 ```
 
-### 4. 链接可访问性
+### 3. 链接可访问性
 
 ```html
 <!--  描述性链接文本 -->

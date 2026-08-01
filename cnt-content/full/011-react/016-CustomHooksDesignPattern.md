@@ -16,30 +16,16 @@ prerequisites:
   - react/概述与环境配置
 ---
 
+
 # 自定义 Hooks 设计模式：从原理到工程实践
 
 > 本章对标 MIT 6.831（User Interface Software）与 Stanford CS142 课程深度，系统阐述 React 自定义 Hooks 的形式化语义、设计原则、经典模式与工程实践。读者将掌握从基础状态封装到高级并发协调的完整 Hooks 设计方法论，能够编写高复用、高可测、高可维护的企业级 Hook 库。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应当能够：
-
-| Bloom 层级 | 目标描述 |
-|------------|----------|
-| **Remember（记忆）** | 复述 Hooks 规则（顶层调用、函数组件/Hook 内调用）、自定义 Hook 命名约定与依赖追踪机制。 |
-| **Understand（理解）** | 解释 Hook 闭包模型、`useEffect` 清理时序、`useRef` 持久化原理与 `useSyncExternalStore` 一致性保证。 |
-| **Apply（应用）** | 实现状态管理、副作用封装、数据获取、设备适配等典型自定义 Hook。 |
-| **Analyze（分析）** | 对比不同 Hook 设计模式的可复用性、可测试性、性能开销，识别 Hook 中的反模式。 |
-| **Evaluate（评估）** | 在"逻辑复用 vs 状态共享"、"Hook vs Context vs 状态库"之间做出基于场景的选型决策。 |
-| **Create（创造）** | 设计一套企业级 Hook 库，覆盖 API 设计、TypeScript 类型、单元测试、文档生成与版本管理。 |
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 Hooks 诞生的历史背景
+### 1.1 Hooks 诞生的历史背景
 
 React 在 2013-2018 年间主要采用类组件（Class Components），其状态逻辑复用存在三大痛点：
 
@@ -53,7 +39,7 @@ React 在 2013-2018 年间主要采用类组件（Class Components），其状�
 - 副作用与状态聚合（一个 Hook 内聚一类逻辑）
 - 函数式心智模型（无 `this`、无 `bind`）
 
-### 2.2 自定义 Hook 的演进
+### 1.2 自定义 Hook 的演进
 
 | 阶段 | 时间 | 特征 |
 |------|------|------|
@@ -62,7 +48,7 @@ React 在 2013-2018 年间主要采用类组件（Class Components），其状�
 | **并发适配期** | 2022（v18） | `useSyncExternalStore`、`useTransition`、`useDeferredValue`、`useId` 等并发 Hook 引入 |
 | **编译期优化期** | 2024+ | React Compiler 减少手动 memoization，Hook 自动获得记忆化能力 |
 
-### 2.3 设计哲学
+### 1.3 设计哲学
 
 React 团队对自定义 Hook 的设计哲学：
 
@@ -73,9 +59,9 @@ React 团队对自定义 Hook 的设计哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Hook 的类型签名
+### 2.1 Hook 的类型签名
 
 自定义 Hook 是一个以 `use` 开头、返回值任意（状态、函数、对象）的函数：
 
@@ -96,7 +82,7 @@ $$
 - $E$ 是副作用集合（effect、layout effect、insertion effect）
 - $r$ 是返回值
 
-### 3.2 Hook 调用的链表结构
+### 2.2 Hook 调用的链表结构
 
 React 内部将每个组件的 Hook 调用维护为一个**链表**。设组件 $C$ 调用了 Hook 序列 $\{h_1, h_2, \dots, h_n\}$，则 Fiber 节点上的 Hook 链表为：
 
@@ -112,7 +98,7 @@ $$
 
 **Hook 规则**"只在顶层调用"的本质：保证 Hook 调用顺序在每次渲染中一致，使 React 能正确映射链表节点。
 
-### 3.3 副作用的代数语义
+### 2.3 副作用的代数语义
 
 `useEffect` 可形式化为：
 
@@ -131,7 +117,7 @@ $$
 
 即上一次 effect 的清理在本次 effect 执行之前。
 
-### 3.4 闭包陷阱的形式化
+### 2.4 闭包陷阱的形式化
 
 闭包陷阱（Stale Closure）源于 JavaScript 闭包捕获变量的时机：
 
@@ -148,9 +134,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 Hook 链表与调度
+### 3.1 Hook 链表与调度
 
 React 在每次渲染开始时重置 Hook 调用指针 `currentHook = null`，每次 Hook 调用按顺序消费链表节点：
 
@@ -161,7 +147,7 @@ updateHook() → 取下一个节点 → 读取 memoizedState
 
 设 Hook 调用顺序为 $\pi = (h_1, h_2, \dots, h_n)$，若某次渲染顺序变为 $\pi' = (h_1, h_3, h_2, \dots)$，则链表节点错配，状态错乱。这就是"Hook 不能放在条件/循环中"的根本原因。
 
-### 4.2 useEffect 与 useLayoutEffect 的时序
+### 3.2 useEffect 与 useLayoutEffect 的时序
 
 ```mermaid
 flowchart TD
@@ -194,7 +180,7 @@ $$
 
 `useLayoutEffect` 阻塞 paint，适合测量 DOM；`useEffect` 不阻塞 paint，适合订阅、网络请求。
 
-### 4.3 useRef 的持久化原理
+### 3.3 useRef 的持久化原理
 
 `useRef` 在 Hook 链表中存储一个可变对象 `{ current: T }`，该对象在组件生命周期内引用不变：
 
@@ -207,7 +193,7 @@ $$
 2. DOM 节点句柄
 3. 定时器/订阅句柄
 
-### 4.4 useSyncExternalStore 的一致性保证
+### 3.4 useSyncExternalStore 的一致性保证
 
 React 18 引入 `useSyncExternalStore` 解决外部 store 与并发渲染的一致性问题。其核心契约：
 
@@ -222,9 +208,9 @@ React 在每次 render 与每次 paint 前调用 `getSnapshot`，若结果与上
 
 ---
 
-## 5. 代码示例（企业级 Production-Ready）
+## 4. 代码示例（企业级 Production-Ready）
 
-### 5.1 基础模式：useToggle 与 useBoolean
+### 4.1 基础模式：useToggle 与 useBoolean
 
 ```tsx
 import { useState, useCallback } from 'react';
@@ -256,7 +242,7 @@ function Modal() {
 }
 ```
 
-### 5.2 副作用模式：useDebounce 与 useThrottle
+### 4.2 副作用模式：useDebounce 与 useThrottle
 
 ```tsx
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -329,7 +315,7 @@ export function useThrottledCallback<T extends (...args: any[]) => void>(
 }
 ```
 
-### 5.3 持久化模式：useLocalStorage 与 useSessionStorage
+### 4.3 持久化模式：useLocalStorage 与 useSessionStorage
 
 ```tsx
 import { useState, useEffect, useCallback } from 'react';
@@ -411,7 +397,7 @@ export function useLocalStorage<T>(
 }
 ```
 
-### 5.4 数据获取模式：useFetch 与 useAsync
+### 4.4 数据获取模式：useFetch 与 useAsync
 
 ```tsx
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -542,7 +528,7 @@ export function useFetch<T = any>(
 }
 ```
 
-### 5.5 设备适配模式：useMediaQuery 与 useWindowSize
+### 4.5 设备适配模式：useMediaQuery 与 useWindowSize
 
 ```tsx
 import { useState, useEffect, useCallback } from 'react';
@@ -615,7 +601,7 @@ export function useWindowSize(debounceMs: number = 100): WindowSize {
 }
 ```
 
-### 5.6 订阅模式：useEventListener 与 useIntersectionObserver
+### 4.6 订阅模式：useEventListener 与 useIntersectionObserver
 
 ```tsx
 import { useRef, useEffect, useCallback } from 'react';
@@ -683,7 +669,7 @@ export function useIntersectionObserver(
 }
 ```
 
-### 5.7 表单模式：useForm
+### 4.7 表单模式：useForm
 
 ```tsx
 import { useState, useCallback, useMemo, useRef } from 'react';
@@ -839,7 +825,7 @@ export function useForm<T extends Record<string, any>>({
 }
 ```
 
-### 5.8 并发模式：useTransitionWithCallback
+### 4.8 并发模式：useTransitionWithCallback
 
 ```tsx
 import { useState, useTransition, useCallback, useRef } from 'react';
@@ -894,7 +880,7 @@ function SearchInput({ onSearch }) {
 }
 ```
 
-### 5.9 外部 Store 模式：useSyncExternalStore
+### 4.9 外部 Store 模式：useSyncExternalStore
 
 ```tsx
 import { useSyncExternalStore } from 'react';
@@ -937,7 +923,7 @@ export function useCounter() {
 }
 ```
 
-### 5.10 副作用聚合：useEvent 与 usePrevious
+### 4.10 副作用聚合：useEvent 与 usePrevious
 
 ```tsx
 import { useRef, useEffect, useCallback } from 'react';
@@ -988,9 +974,9 @@ export function useMounted(): boolean {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Hooks vs HOC vs Render Props
+### 5.1 Hooks vs HOC vs Render Props
 
 | 维度 | Hooks | HOC | Render Props |
 |------|-------|-----|--------------|
@@ -1002,7 +988,7 @@ export function useMounted(): boolean {
 | **性能** | 优（无额外组件） | 一般（多渲染一层的组件） | 一般 |
 | **适用场景** | 逻辑复用 | 通用增强（如鉴权） | 动态渲染 |
 
-### 6.2 自定义 Hook vs Context vs 状态库
+### 5.2 自定义 Hook vs Context vs 状态库
 
 | 方案 | 适用场景 | 性能 | 可维护性 |
 |------|---------|------|----------|
@@ -1013,7 +999,7 @@ export function useMounted(): boolean {
 | Jotai/Recoil | 原子化状态、派生计算 | 优 | 高 |
 | React Query | 服务端状态（缓存、同步） | 优 | 极高 |
 
-### 6.3 Hooks 与 Vue Composables 对比
+### 5.3 Hooks 与 Vue Composables 对比
 
 | 维度 | React Hooks | Vue Composables |
 |------|-------------|-----------------|
@@ -1025,9 +1011,9 @@ export function useMounted(): boolean {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：违反 Hooks 规则
+### 6.1 陷阱一：违反 Hooks 规则
 
 ```tsx
 // 反模式：在条件中调用 Hook
@@ -1054,7 +1040,7 @@ function BadHandler() {
 
 **原则**：只在组件函数体的顶层调用 Hook，且调用顺序在每次渲染中必须一致。
 
-### 7.2 陷阱二：依赖数组遗漏
+### 6.2 陷阱二：依赖数组遗漏
 
 ```tsx
 // 反模式：依赖遗漏导致闭包陷阱
@@ -1082,7 +1068,7 @@ function Good({ userId }) {
 
 推荐使用 `eslint-plugin-react-hooks` 的 `exhaustive-deps` 规则自动检测。
 
-### 7.3 陷阱三：将函数加入依赖却未稳定
+### 6.3 陷阱三：将函数加入依赖却未稳定
 
 ```tsx
 // 反模式：父组件每次传入新函数引用，导致子组件 useEffect 反复触发
@@ -1114,7 +1100,7 @@ function Child({ onEvent }) {
 }
 ```
 
-### 7.4 陷阱四：useEffect 中执行状态更新导致循环
+### 6.4 陷阱四：useEffect 中执行状态更新导致循环
 
 ```tsx
 // 反模式：useEffect 更新依赖自身的状态
@@ -1140,7 +1126,7 @@ function Good({ initial }) {
 }
 ```
 
-### 7.5 陷阱五：滥用 useRef 替代 state
+### 6.5 陷阱五：滥用 useRef 替代 state
 
 ```tsx
 // 反模式：用 ref 触发 UI 更新（ref 变化不触发重渲染）
@@ -1166,7 +1152,7 @@ function Good() {
 
 `useRef` 用于"不触发渲染的可变值"（如定时器、DOM 句柄、最新值盒子）。
 
-### 7.6 陷阱六：自定义 Hook 返回值不稳定
+### 6.6 陷阱六：自定义 Hook 返回值不稳定
 
 ```tsx
 // 反模式：每次返回新对象，导致消费者难以 memo
@@ -1188,7 +1174,7 @@ function useGood() {
 }
 ```
 
-### 7.7 最佳实践清单
+### 6.7 最佳实践清单
 
 | # | 实践 | 理由 |
 |---|------|------|
@@ -1205,9 +1191,9 @@ function useGood() {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 TypeScript 类型设计
+### 7.1 TypeScript 类型设计
 
 ```tsx
 // 返回值类型：as const 保证元组类型
@@ -1231,7 +1217,7 @@ type UseFetchResult<T, E> =
   | { loading: false; data: null; error: E };
 ```
 
-### 8.2 单元测试（React Testing Library）
+### 7.2 单元测试（React Testing Library）
 
 ```tsx
 import { renderHook, act } from '@testing-library/react';
@@ -1310,7 +1296,7 @@ describe('useFetch', () => {
 });
 ```
 
-### 8.3 Hook 库的发布与文档
+### 7.3 Hook 库的发布与文档
 
 ```typescript
 // packages/hooks/package.json
@@ -1341,7 +1327,7 @@ describe('useFetch', () => {
 - **TypeDoc**：API 参考
 - **Nextra**：轻量级
 
-### 8.4 ESLint 配置
+### 7.4 ESLint 配置
 
 ```javascript
 // .eslintrc.js
@@ -1359,7 +1345,7 @@ module.exports = {
 };
 ```
 
-### 8.5 Monorepo 组织
+### 7.5 Monorepo 组织
 
 ```mermaid
 flowchart TD
@@ -1378,9 +1364,9 @@ flowchart TD
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Airbnb：useLocalStorage 实现用户偏好持久化
+### 8.1 Airbnb：useLocalStorage 实现用户偏好持久化
 
 Airbnb 在搜索过滤器中用 `useLocalStorage` 持久化用户偏好（语言、货币、日期格式）：
 
@@ -1399,7 +1385,7 @@ const [prefs, setPrefs] = useLocalStorage('user-prefs', {
 - 减少服务端 GET /preferences 调用 40%
 - 跨标签同步减少 30% 的状态不一致投诉
 
-### 9.2 Meta（Facebook）：useSyncExternalStore 替代 redux/useSelector
+### 8.2 Meta（Facebook）：useSyncExternalStore 替代 redux/useSelector
 
 Facebook 在迁移到 React 18 时，将 Redux 的 `useSelector` 替换为基于 `useSyncExternalStore` 的实现：
 
@@ -1417,7 +1403,7 @@ function useSelector<T>(selector: (state: RootState) => T): T {
 - 重渲染次数减少 18%（更精确的快照比较）
 - 与 React DevTools 的 Time Travel 完全兼容
 
-### 9.3 Vercel：useFetch 演进为 SWR
+### 8.3 Vercel：useFetch 演进为 SWR
 
 Vercel 开源的 SWR（Stale-While-Revalidate）库是 `useFetch` 的工业级实现：
 
@@ -1441,7 +1427,7 @@ function Profile() {
 
 SWR 模式现已成为 React 数据获取的事实标准之一。
 
-### 9.4 Shopify：useMediaQuery 实现 PWA 自适应
+### 8.4 Shopify：useMediaQuery 实现 PWA 自适应
 
 Shopify 在其 PWA 中用 `useMediaQuery` 与 `useWindowSize` 实现自适应布局：
 
@@ -1463,7 +1449,7 @@ return (
 - 与 React Suspense 配合，避免 hydration mismatch
 - Lighthouse PWA 评分 95+
 
-### 9.5 Notion：自定义 Hook 组织编辑器逻辑
+### 8.5 Notion：自定义 Hook 组织编辑器逻辑
 
 Notion 的富文本编辑器使用 30+ 自定义 Hook 组织逻辑：
 
@@ -1732,7 +1718,7 @@ export function useDebouncedCallback<Args extends any[]>(
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q1.** 为什么 React 选择"显式依赖数组"而非 Vue 的"自动依赖追踪"？请从可预测性、性能、并发兼容性三个角度论述。
 
@@ -1805,9 +1791,9 @@ Server Components 限制：
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 [1] Salvaneschi, G. and Mezini, M. 2016. Debugging for reactive programming. In *Proceedings of the 38th International Conference on Software Engineering (ICSE '16)*. ACM, 796–807. DOI: https://doi.org/10.1145/2884781.2884816
 
@@ -1819,7 +1805,7 @@ Server Components 限制：
 
 [5] Lima, A. et al. 2023. The impact of React 18 concurrent features on custom hooks. *IEEE Transactions on Software Engineering* 49, 4 (April 2023), 1–18. DOI: https://doi.org/10.1109/TSE.2023.1234567
 
-### 11.2 官方文档与工程博客
+### 10.2 官方文档与工程博客
 
 [6] Abramov, D. 2019. *Making Sense of React Hooks*. React Blog. https://overreacted.io/making-setinterval-declarative-with-react-hooks/ (accessed Jun. 14, 2026).
 
@@ -1831,7 +1817,7 @@ Server Components 限制：
 
 [10] Clark, S. 2022. *useSyncExternalStore: React 18 Hook for external stores*. React Blog. https://react.dev/reference/react/useSyncExternalStore (accessed Jun. 14, 2026).
 
-### 11.3 标准与规范
+### 10.3 标准与规范
 
 [11] ECMAScript International. 2024. *ECMAScript 2024 Language Specification*. ECMA-262, 15th Edition. https://tc39.es/ecma262/ (accessed Jun. 14, 2026).
 
@@ -1839,23 +1825,23 @@ Server Components 限制：
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - Boris Cherny. *Thinking in React: From First Principles*. Manning, 2024.（第 7 章 Hooks 深入）
 - Carl Menger. *React Hooks in Action*. Manning, 2022.
 - Azat Mardan. *React Quickly*. Manning, 2nd ed., 2024.（第 9-11 章）
 - Daichi Furiya. *React Hooks Cookbook*. O'Reilly, 2023.
 
-### 12.2 论文与技术报告
+### 11.2 论文与技术报告
 
 - Sebastian Markbåge. *React Hooks RFC*. GitHub, 2018.
 - Dan Abramov. *useEffect vs useLayoutEffect*. Overreacted, 2019.
 - Ryan Florence. *React Hooks: The Reuse Revolution*. React Conf, 2018.
 - Andrew Clark. *useSyncExternalStore: A Practical Guide*. React Conf, 2022.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **React Official Hooks Docs**: https://react.dev/reference/react
 - **useHooks.com**（社区 Hook 集合）: https://usehooks.com/
@@ -1864,7 +1850,7 @@ Server Components 限制：
 - **SWR**: https://swr.vercel.org/
 - **TanStack Query**: https://tanstack.com/query/
 
-### 12.4 开源项目参考
+### 11.4 开源项目参考
 
 - **react-use**（200+ Hook）: https://github.com/streamich/react-use
 - **ahooks**（中文社区）: https://github.com/alibaba/hooks
@@ -1872,7 +1858,7 @@ Server Components 限制：
 - **react-hook-form**: https://github.com/react-hook-form/react-hook-form
 - **swr**: https://github.com/vercel/swr
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - React Compiler 对自定义 Hook 的自动记忆化
 - Server Components 中 Hook 的限制与未来演进

@@ -15,6 +15,7 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
+
 # 分布式能力 语法速查手册
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -80,46 +81,6 @@ featureAbility.disconnectAbility(connectionId)
 考虑一个真实场景：用户在手机上编辑一份会议纪要，进入会议室后希望在智慧屏上继续展示和编辑。传统方案需要：手动上传文件至云端、在智慧屏登录同一账号、打开文件、定位到上次编辑位置。而 HarmonyOS 的分布式任务迁移可以在毫秒级完成 Ability 状态的序列化、传输与恢复，用户感知到的仅是"屏幕变了，内容不变"。
 
 这种"1+8+N"的全场景智慧生活愿景，正是分布式能力的设计动机。
-
-## 学习目标
-
-本章节基于 Bloom 分类法（Bloom's Taxonomy）分层设计学习目标，覆盖认知域的六个层级：
-
-### 记忆层（Remember）
-
-- 能够列举 HarmonyOS 分布式能力的四大核心子系统及其缩写
-- 能够复述分布式软总线的"发现-连接-传输"三阶段流程
-- 能够回忆分布式数据同步中最终一致性（Eventual Consistency）与强一致性（Strong Consistency）的区别
-
-### 理解层（Understand）
-
-- 能够解释"超级终端"概念与物理设备的关系
-- 能够阐述分布式任务迁移与分布式数据同步的本质差异
-- 能够说明分布式设备虚拟化如何让上层 API 无感知跨设备访问
-
-### 应用层（Apply）
-
-- 能够使用 `@ohos.distributedSchedule` 模块实现跨设备 Ability 启动
-- 能够使用 `@ohos.data.distributedDataObject` 完成跨设备数据同步
-- 能够配置 `module.json5` 中的 `distributedScheduleEnabled` 字段
-
-### 分析层（Analyze）
-
-- 能够分解分布式任务迁移的全链路时序，识别各阶段耗时占比
-- 能够对比分布式数据服务（DDS）与关系型数据库分布式同步的差异
-- 能够剖析软总线心跳保活机制对电量与延迟的权衡
-
-### 评价层（Evaluate）
-
-- 能够评估"最终一致性"与"强一致性"在具体业务场景下的适用性
-- 能够评判跨设备调用链路在弱网环境下的容错能力
-- 能够选择合适的分布式数据结构以平衡延迟与冲突率
-
-### 创造层（Create）
-
-- 能够设计一个跨手机、平板、智慧屏的多人协同白板应用架构
-- 能够基于分布式能力构建一个端云协同的离线优先（Offline-First）方案
-- 能够组合任务迁移、数据同步与设备虚拟化，创造新颖的全场景交互范式
 
 ## 历史动机与背景
 
@@ -910,7 +871,7 @@ function recommendDevice(devices: DeviceDisplayInfo[]): DeviceDisplayInfo | null
 }
 ```
 
-#### 2. 迁移失败回退策略
+#### 1. 迁移失败回退策略
 
 迁移可能因网络中断、目标设备资源不足等原因失败。必须设计回退路径：
 
@@ -941,7 +902,7 @@ async function migrateWithFallback(targetDeviceId: string): Promise<void> {
 }
 ```
 
-#### 3. 数据冲突解决策略
+#### 2. 数据冲突解决策略
 
 对于最终一致性场景，需要设计冲突解决函数：
 

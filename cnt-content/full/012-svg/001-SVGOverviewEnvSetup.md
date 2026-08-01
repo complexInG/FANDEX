@@ -14,69 +14,22 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+
 # SVG 嵌入方式 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节对标 MIT 6.831《用户界面设计与实现》、Stanford CS147《人机交互设计》以及 CMU 15-462《计算机图形学》的教学标准,系统构建 SVG 学习者的认知框架。学完本章后,学习者应当能够在 Bloom 教育目标分类法的六个层级上达成下列能力。
-
-### 1.1 Bloom 能力矩阵
-
-| 层级 | 行为动词 | 本章目标能力 | 评估方式 |
-| ---- | -------- | ------------ | -------- |
-| **Remember** 记忆 | 列举、复述 | 能复述 SVG 的全称、规范制定机构、版本演进时间线 | 选择题、填空题 |
-| **Understand** 理解 | 解释、归纳 | 能解释矢量图形与位图的本质差异、SVG 与 Canvas 的描述模型差异 | 概念辨析题 |
-| **Apply** 应用 | 使用、实现 | 能在 HTML 中以四种方式嵌入 SVG,并配置基础开发环境 | 实操题 |
-| **Analyze** 分析 | 比较、分解 | 能对比 SVG/Canvas/WebGL/PNG 四种图形技术的性能特征与适用场景 | 对比分析题 |
-| **Evaluate** 评价 | 评判、推荐 | 能根据业务场景评估 SVG 的技术选型,给出工程化决策建议 | 决策题 |
-| **Create** 创造 | 设计、构建 | 能设计一个具备生产级质量的 SVG 工程目录结构与构建流程 | 项目设计题 |
-
-### 1.2 知识图谱前置依赖
-
-```mermaid
-graph LR
-    A[HTML5 基础] --> B[DOM 与 XML 语法]
-    C[CSS 基础] --> D[选择器与样式属性]
-    B --> E[SVG 概述与环境配置]
-    D --> E
-    E --> F[基础语法与文档结构]
-    E --> G[坐标系与 viewBox]
-    F --> H[基本图形详解]
-    G --> H
-    F --> I[路径 path 详解]
-```
-
-### 1.3 学习路径建议
-
-| 阶段 | 主题 | 目标 | 建议学时 |
-| ---- | ---- | ---- | -------- |
-| **入门** | 概述、语法、坐标系、基本图形、路径 | 能手写常见几何图形 | 6-8 小时 |
-| **进阶** | 文本、渐变、变换、滤镜、蒙版 | 能还原 Figma 视觉稿 | 10-12 小时 |
-| **高级** | 动画、JavaScript、性能、图标系统 | 能构建生产级可视化系统 | 15-20 小时 |
-| **专家** | 设计系统、跨平台、WebGL 协同 | 能主导 SVG 工程化与架构决策 | 持续迭代 |
-
-### 1.4 本章学习成果清单
-
-完成本章学习后,学习者应当能够产出下列成果:
-
-1. 一份 SVG 与 Canvas/WebGL 的技术选型对比报告
-2. 一个可在浏览器中运行的 SVG Hello World 示例
-3. 一个基于 SVGO 的 SVG 工程优化脚本
-4. 一份覆盖 Figma 导出、SVGO 压缩、Sprite 雪碧图生成的工程化方案
-
-## 2. 历史动机与发展脉络
-
-### 2.1 矢量图形的起源:从 PostScript 到 Web
+### 1.1 矢量图形的起源:从 PostScript 到 Web
 
 矢量图形的思想可追溯至 20 世纪 60 年代。1963 年,Ivan Sutherland 在麻省理工学院(MIT)开发了 Sketchpad 系统,这是公认的计算机图形学开山之作,首次实现了基于约束的矢量绘图。1976 年,John Warnock 与 Charles Geschke 在施乐帕克研究中心(Xerox PARC)开发页面描述语言 InterPress,后于 1982 年创立 Adobe 公司并推出 PostScript,奠定了矢量描述的工业标准。
 
 PostScript 的成功启发了 W3C 在 Web 平台引入矢量图形标准。1998 年,Microsoft 提交 VML(Vector Markup Language),Adobe 与 Sun 提交 PGML(Precision Graphics Markup Language),两份提案并行演进促使 W3C 成立 SVG Working Group,于 2001 年发布 SVG 1.0 正式推荐标准。
 
-### 2.2 SVG 规范版本演进
+### 1.2 SVG 规范版本演进
 
 SVG 规范历经二十余年迭代,形成了清晰的版本演进图谱。
 
@@ -89,7 +42,7 @@ SVG 规范历经二十余年迭代,形成了清晰的版本演进图谱。
 | SVG 2 | 2018-至今 | 融合 HTML5、CSS Grid、Web Components | Candidate Recommendation | 现代浏览器部分支持 |
 | SVG 2.1 | 2024+ | Web Animations API 集成、属性简化 | Working Draft | 实验性支持 |
 
-### 2.3 关键技术决策节点
+### 1.3 关键技术决策节点
 
 ```mermaid
 timeline
@@ -105,7 +58,7 @@ timeline
     2024 : SVG 2.1 Working Draft
 ```
 
-### 2.4 设计哲学:为什么是 XML
+### 1.4 设计哲学:为什么是 XML
 
 SVG 1.x 选择 XML 作为语法基础,而非自定义二进制格式,这一决策源于三方面权衡:
 
@@ -115,7 +68,7 @@ SVG 1.x 选择 XML 作为语法基础,而非自定义二进制格式,这一决�
 
 SVG 2 虽保留 XML 语法,但允许 HTML 解析器宽松解析内联 SVG,降低了对严格 XML 语法的依赖。
 
-### 2.5 与同期技术的关系
+### 1.5 与同期技术的关系
 
 | 技术 | 出现时间 | 定位 | 与 SVG 关系 |
 | ---- | -------- | ---- | ------------ |
@@ -125,15 +78,15 @@ SVG 2 虽保留 XML 语法,但允许 HTML 解析器宽松解析内联 SVG,降低
 | WebGL | 2011 | GPU 加速 3D 绘制 | 高端场景互补,SVG 不擅长 3D |
 | WebGPU | 2023+ | 现代图形 API | 高性能场景,SVG 不参与竞争 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 SVG 的规范定义
+### 2.1 SVG 的规范定义
 
 依据 W3C SVG 1.1 规范第 1 章,SVG 的形式化定义如下:
 
 > SVG 是一种用于描述二维矢量图形的 XML 应用,其全称为 Scalable Vector Graphics(可缩放矢量图形)。SVG 支持三种类型的图形对象:矢量图形(由路径、直线、曲线组成的几何形状)、图像、文本。图形对象可被分组、样式化、变换与组合,并支持动画与交互。
 
-### 3.2 形式化数学模型
+### 2.2 形式化数学模型
 
 从数学视角,SVG 描述的是一个有限维欧氏空间 $\mathbb{R}^2$ 中的图形对象集合。设 $S$ 为 SVG 文档,则 $S$ 可形式化定义为:
 
@@ -148,7 +101,7 @@ $$
 - $P: E \to \text{Attr}$ 为属性(attribute)赋值函数
 - $A: E \to \text{Anim}$ 为动画绑定函数
 
-### 3.3 坐标系统的形式化
+### 2.3 坐标系统的形式化
 
 SVG 坐标系建立在二维欧氏空间上,以左上角为原点,X 轴向右递增,Y 轴向下递增。这与数学中笛卡尔坐标系 Y 轴向上相反,源于屏幕扫描的历史约定。
 
@@ -167,7 +120,7 @@ $$
 
 其中变换矩阵 $M = \begin{bmatrix} a & c & e \\ b & d & f \\ 0 & 0 & 1 \end{bmatrix}$ 包含六个自由度,可表达平移(translate)、旋转(rotate)、缩放(scale)、倾斜(skew)等仿射变换。详细推导见第 4 章及《变换 transform》章节。
 
-### 3.4 W3C 标准体系定位
+### 2.4 W3C 标准体系定位
 
 SVG 在 W3C 标准体系中归属于**图形与渲染**(Graphics and Rendering)工作组,与下列规范协同:
 
@@ -180,7 +133,7 @@ SVG 在 W3C 标准体系中归属于**图形与渲染**(Graphics and Rendering)�
 | ARIA 1.2 | 可访问性 | SVG 元素支持 ARIA 角色 |
 | CSS Color 4 | 颜色定义 | SVG 支持 OKLCH、color() 等新颜色函数 |
 
-### 3.5 SVG 命名空间的形式化
+### 2.5 SVG 命名空间的形式化
 
 SVG 命名空间 URI 为 `http://www.w3.org/2000/svg`,其形式化定义为:
 
@@ -190,9 +143,9 @@ $$
 
 在 XML 文档中,命名空间通过 `xmlns` 属性声明,用于消除元素名冲突。独立 .svg 文件必须声明 SVG 命名空间,内联在 HTML 中的 SVG 则由 HTML 解析器自动处理命名空间。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 矢量描述与位图采样的本质区别
+### 3.1 矢量描述与位图采样的本质区别
 
 位图图像通过对连续信号 $f(x, y)$ 在离散网格点采样得到:
 
@@ -213,7 +166,7 @@ $$
 
 放大时只需重新参数化,采样密度由显示设备决定,因此任意缩放下保持锐利。
 
-### 4.2 SVG 描述模型:保留模式 vs 立即模式
+### 3.2 SVG 描述模型:保留模式 vs 立即模式
 
 SVG 采用**保留模式**(retained mode)绘图:浏览器维护一棵图形场景树,应用层只声明图形对象,渲染时机由浏览器决定。Canvas 采用**立即模式**(immediate mode):应用层主动调用绘图命令,浏览器不保留场景状态。
 
@@ -224,7 +177,7 @@ SVG 采用**保留模式**(retained mode)绘图:浏览器维护一棵图形场�
 
 因此 $n$ 较小时 SVG 性能更优,$n$ 较大时 Canvas 性能更优,交叉点通常在 $n \approx 1000 \sim 5000$,具体取决于图元复杂度与浏览器实现。
 
-### 4.3 SVG 渲染管线
+### 3.3 SVG 渲染管线
 
 SVG 渲染管线可抽象为五个阶段:
 
@@ -247,7 +200,7 @@ flowchart LR
 | 布局与变换 | $O(n)$ | 仿射矩阵复合与坐标映射 |
 | 光栅化 | $O(A)$, $A$ 为像素数 | 几何采样与抗锯齿 |
 
-### 4.4 仿射变换的复合
+### 3.4 仿射变换的复合
 
 多个变换的复合遵循矩阵乘法。设 $T_1, T_2$ 为两个仿射变换,其复合 $T = T_2 \circ T_1$ 表示先应用 $T_1$ 再应用 $T_2$:
 
@@ -274,7 +227,7 @@ $$
 
 矩阵乘法**不可交换**:$T_1 \cdot T_2 \neq T_2 \cdot T_1$。这解释了为何 `transform="translate(100,0) rotate(45)"` 与 `transform="rotate(45) translate(100,0)"` 在 SVG 中渲染结果不同。
 
-### 4.5 SVG 路径长度的微分定义
+### 3.5 SVG 路径长度的微分定义
 
 SVG `<path>` 的几何长度通过曲线积分计算。设路径参数化为 $\gamma(t) = (x(t), y(t)), t \in [0, 1]$,则其长度为:
 
@@ -290,9 +243,9 @@ $$
 
 该积分无解析解,需通过数值积分(如高斯-勒让德求积)计算。浏览器 `getTotalLength()` API 即采用此方法。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 第一个 SVG:Hello World
+### 4.1 第一个 SVG:Hello World
 
 下面是一个具备生产级质量的 SVG Hello World 示例,符合 SVG 2 规范:
 
@@ -367,7 +320,7 @@ $$
 - `url(#id)` 引用 defs 中的渐变、滤镜等资源
 - `role="img"` 与 `aria-labelledby` 提供可访问性语义
 
-### 5.2 独立 SVG 文件
+### 4.2 独立 SVG 文件
 
 生产环境常将 SVG 作为独立 .svg 文件使用,需严格遵循 XML 规范:
 
@@ -399,7 +352,7 @@ $$
 3. 属性值必须用双引号包裹,不能省略
 4. 标签必须严格闭合,自闭合标签需以 `/>` 结尾
 
-### 5.3 四种嵌入方式完整示例
+### 4.3 四种嵌入方式完整示例
 
 ```html
 <!DOCTYPE html>
@@ -451,7 +404,7 @@ $$
 </html>
 ```
 
-### 5.4 生产级 SVG 工程目录结构
+### 4.4 生产级 SVG 工程目录结构
 
 ```mermaid
 flowchart TD
@@ -488,7 +441,7 @@ flowchart TD
     T19 --> T22
 ```
 
-### 5.5 SVGO 优化脚本示例
+### 4.5 SVGO 优化脚本示例
 
 ```javascript
 // scripts/optimize.mjs
@@ -531,7 +484,7 @@ await Promise.all(
 );
 ```
 
-### 5.6 SVG 校验脚本
+### 4.6 SVG 校验脚本
 
 ```javascript
 // scripts/validate.mjs
@@ -584,9 +537,9 @@ if (failed.length > 0) {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 SVG vs Canvas vs WebGL vs PNG 图标字体
+### 5.1 SVG vs Canvas vs WebGL vs PNG 图标字体
 
 | 维度 | SVG | Canvas | WebGL | PNG | Icon Font |
 | ---- | --- | ------ | ----- | --- | --------- |
@@ -603,7 +556,7 @@ if (failed.length > 0) {
 | **学习曲线** | 中(XML + CSS) | 中(命令式 API) | 高(着色器、矩阵) | 低 | 中(字体工具链) |
 | **浏览器支持** | 全平台 | 全平台 | 现代浏览器 | 全平台 | 全平台 |
 
-### 6.2 性能基准测试参考数据
+### 5.2 性能基准测试参考数据
 
 下列数据基于 Chrome 120、MacBook Pro M1,渲染 1000 个圆形图元:
 
@@ -616,7 +569,7 @@ if (failed.length > 0) {
 
 数据表明:SVG 在 1000 元素级别仍可接受,但 10000 元素级别应迁移至 Canvas 或 WebGL。
 
-### 6.3 选型决策树
+### 5.3 选型决策树
 
 ```mermaid
 flowchart TD
@@ -635,7 +588,7 @@ flowchart TD
     K -- 否 --> G
 ```
 
-### 6.4 工程化成本对比
+### 5.4 工程化成本对比
 
 | 维度 | SVG | Canvas | WebGL |
 | ---- | --- | ------ | ----- |
@@ -645,9 +598,9 @@ flowchart TD
 | 团队学习成本 | 低(XML+CSS) | 中(命令式) | 高(着色器、矩阵) |
 | 工具链成熟度 | 高(Figma/SVGO) | 中(Canvas API) | 低(Three.js 等) |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1:忘记声明 viewBox
+### 6.1 陷阱 1:忘记声明 viewBox
 
 ```html
 <!-- 错误:仅有 width/height,响应式缩放后变形 -->
@@ -663,7 +616,7 @@ flowchart TD
 
 **最佳实践**:图标 SVG 始终声明 viewBox,通过 CSS 控制实际显示尺寸。
 
-### 7.2 陷阱 2:小数坐标导致抗锯齿模糊
+### 6.2 陷阱 2:小数坐标导致抗锯齿模糊
 
 ```html
 <!-- 模糊:1px 描边落在 .5 坐标 -->
@@ -675,7 +628,7 @@ flowchart TD
 
 **最佳实践**:对 1px 描边使用 `shape-rendering="crispEdges"`,对一般场景保持默认抗锯齿。
 
-### 7.3 陷阱 3:过多 DOM 元素导致性能问题
+### 6.3 陷阱 3:过多 DOM 元素导致性能问题
 
 ```html
 <!-- 错误:10000 个独立 circle 元素 -->
@@ -691,7 +644,7 @@ flowchart TD
 
 **最佳实践**:SVG 元素数量控制在 5000 以内,超出考虑 Canvas/WebGL 或 path 合并。
 
-### 7.4 陷阱 4:外部 CSS 无法作用于 img 引用的 SVG
+### 6.4 陷阱 4:外部 CSS 无法作用于 img 引用的 SVG
 
 ```html
 <!-- 无效:img 引用的 SVG 内部无法被外部 CSS 控制 -->
@@ -708,7 +661,7 @@ flowchart TD
 </svg>
 ```
 
-### 7.5 陷阱 5:z-index 在 SVG 中无效
+### 6.5 陷阱 5:z-index 在 SVG 中无效
 
 SVG 元素绘制顺序由文档顺序决定,**不支持 z-index**。
 
@@ -726,7 +679,7 @@ SVG 元素绘制顺序由文档顺序决定,**不支持 z-index**。
 </svg>
 ```
 
-### 7.6 浏览器兼容性最佳实践
+### 6.6 浏览器兼容性最佳实践
 
 | 特性 | Chrome | Firefox | Safari | Edge | 兼容策略 |
 | ---- | ------ | ------- | ------ | ---- | -------- |
@@ -736,7 +689,7 @@ SVG 元素绘制顺序由文档顺序决定,**不支持 z-index**。
 | `path()` CSS 函数 | 88+ | - | - | 88+ | 渐进增强 |
 | SMIL 动画 | 全部 | 全部 | 全部 | 全部 | Chrome 曾废弃但恢复 |
 
-### 7.7 可访问性最佳实践
+### 6.7 可访问性最佳实践
 
 ```html
 <svg viewBox="0 0 100 100" role="img" aria-labelledby="title-id desc-id">
@@ -753,7 +706,7 @@ SVG 元素绘制顺序由文档顺序决定,**不支持 z-index**。
 3. 焦点元素需添加 `tabindex="0"`
 4. 文字内容优先用 SVG `<text>` 元素而非位图
 
-### 7.8 性能优化清单
+### 6.8 性能优化清单
 
 - [ ] 使用 SVGO 压缩 SVG 文件,通常可减小 30-70% 体积
 - [ ] 合并相似 path,减少 DOM 节点数
@@ -764,11 +717,11 @@ SVG 元素绘制顺序由文档顺序决定,**不支持 z-index**。
 - [ ] 图标用 `<symbol>` + `<use>` 雪碧图模式
 - [ ] 避免 `<filter>` 过度使用,渲染开销大
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建工具集成
+### 7.1 构建工具集成
 
-#### 8.1.1 Vite + SVGO
+#### 7.1.1 Vite + SVGO
 
 ```javascript
 // vite.config.mjs
@@ -793,7 +746,7 @@ export default defineConfig({
 });
 ```
 
-#### 8.1.2 Webpack + svg-sprite-loader
+#### 7.1.2 Webpack + svg-sprite-loader
 
 ```javascript
 // webpack.config.js
@@ -822,7 +775,7 @@ module.exports = {
 };
 ```
 
-#### 8.1.3 Rollup + vite-plugin-svg
+#### 7.1.3 Rollup + vite-plugin-svg
 
 ```javascript
 // rollup.config.mjs
@@ -841,9 +794,9 @@ export default defineConfig({
 });
 ```
 
-### 8.2 调试工具
+### 7.2 调试工具
 
-#### 8.2.1 浏览器开发者工具
+#### 7.2.1 浏览器开发者工具
 
 Chrome DevTools 的 Elements 面板可直接编辑 SVG 属性并实时预览,是调试 SVG 的首选方式。
 
@@ -854,15 +807,15 @@ Chrome DevTools 的 Elements 面板可直接编辑 SVG 属性并实时预览,是
 | Performance | 分析 SVG 渲染性能 |
 | Rendering | 高亮重绘区域、显示 FPS |
 
-#### 8.2.2 在线工具
+#### 7.2.2 在线工具
 
 - **SVGOMG**(https://jakearchibald.github.io/svgomg/):SVGO 在线可视化优化工具
 - **SVG-Edit**(https://github.com/SVG-Edit/svgedit):浏览器内 SVG 编辑器
 - **SVGOMG Diff**:对比优化前后差异
 
-### 8.3 设计工具集成
+### 7.3 设计工具集成
 
-#### 8.3.1 Figma 导出 SVG
+#### 7.3.1 Figma 导出 SVG
 
 Figma 是当前主流的 SVG 设计工具,导出时建议:
 
@@ -871,7 +824,7 @@ Figma 是当前主流的 SVG 设计工具,导出时建议:
 3. 启用 "Include id attribute" 便于后续操作
 4. 关闭 "Simplify stroke" 保留原始路径
 
-#### 8.3.2 Adobe Illustrator 导出
+#### 7.3.2 Adobe Illustrator 导出
 
 文件 → 导出 → 导出为 → 选择 SVG,推荐配置:
 
@@ -882,7 +835,7 @@ Figma 是当前主流的 SVG 设计工具,导出时建议:
 | Decimal places | 2 | 精度与体积平衡 |
 | Minification | 启用 | 减小体积 |
 
-#### 8.3.3 Inkscape 命令行导出
+#### 7.3.3 Inkscape 命令行导出
 
 ```bash
 # 批量转换 .ai 为优化 .svg
@@ -890,7 +843,7 @@ inkscape --export-type=svg --export-plain-svg input.ai
 svgo input.svg -o optimized.svg
 ```
 
-### 8.4 SVG 雪碧图生成
+### 7.4 SVG 雪碧图生成
 
 ```javascript
 // scripts/sprite.mjs
@@ -949,7 +902,7 @@ generateSprite();
 </html>
 ```
 
-### 8.5 React 组件自动生成
+### 7.5 React 组件自动生成
 
 ```javascript
 // scripts/generate-react.mjs
@@ -1001,7 +954,7 @@ ${componentName}.displayName = '${componentName}';
 generateReactComponents();
 ```
 
-### 8.6 CI/CD 集成
+### 7.6 CI/CD 集成
 
 ```yaml
 # .github/workflows/svg-pipeline.yml
@@ -1041,9 +994,9 @@ jobs:
           file_pattern: 'optimized/** sprites/**'
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一:D3.js 数据可视化
+### 8.1 案例一:D3.js 数据可视化
 
 D3.js 是 SVG 在数据可视化领域的标杆案例。其核心思想是利用 SVG 元素作为 DOM 节点,通过数据驱动的方式动态更新属性。
 
@@ -1088,7 +1041,7 @@ D3 选择 SVG 而非 Canvas 的原因:
 2. 数据更新可通过 D3 的 enter/update/exit 模式平滑过渡
 3. SVG 元素可被 DevTools 直接检查,便于调试
 
-### 9.2 案例二:Google Material Design 图标系统
+### 8.2 案例二:Google Material Design 图标系统
 
 Google Material Icons 采用 SVG 而非图标字体,理由:
 
@@ -1108,7 +1061,7 @@ Material Icons 工程化方案:
 4. 生成 React 组件库
 5. 按需打包,支持 tree-shaking
 
-### 9.3 案例三:GitHub Octicon
+### 8.3 案例三:GitHub Octicon
 
 GitHub Octicon 是开源 SVG 图标系统的典范,采用 monorepo 管理:
 
@@ -1137,7 +1090,7 @@ flowchart TD
 3. 使用 `currentColor` 支持主题化
 4. 严格遵循 SVG 1.1 规范
 
-### 9.4 案例四:Bootstrap Icons
+### 8.4 案例四:Bootstrap Icons
 
 Bootstrap Icons 提供了 2000+ SVG 图标,采用 CDN 分发:
 
@@ -1154,7 +1107,7 @@ Bootstrap Icons 提供了 2000+ SVG 图标,采用 CDN 分发:
 2. 使用 `fill="currentColor"` 实现主题化
 3. 通过 Bootstrap CSS 类统一管理尺寸
 
-### 9.5 案例五:阿里巴巴 ant-design 图标
+### 8.5 案例五:阿里巴巴 ant-design 图标
 
 Ant Design 通过 `@ant-design/icons` 包提供 React 图标组件,采用按需加载:
 
@@ -1178,7 +1131,7 @@ function App() {
 3. 支持 `spin`、`rotate`、`style` 等通用属性
 4. 支持 `rotate={90}` 等数值控制
 
-### 9.6 案例六:本 FANDEX 项目的 SVG 架构
+### 8.6 案例六:本 FANDEX 项目的 SVG 架构
 
 FANDEX-Web 项目采用分层 SVG 架构:
 
@@ -1502,7 +1455,7 @@ await Promise.all(
 6. dominant-baseline="middle" 让文字垂直居中
 7. role 与 aria-labelledby 提供可访问性
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1.13** 为什么 SVG 选择 XML 作为语法基础而非自定义二进制格式?分析这一决策的优缺点。
 
@@ -1604,9 +1557,9 @@ await Promise.all(
     - 变更日志(Changesets)
     - 图标变更历史可追溯
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 规范与标准
+### 10.1 规范与标准
 
 - World Wide Web Consortium (W3C). 2001. *Scalable Vector Graphics (SVG) 1.0 Specification*. W3C Recommendation. https://www.w3.org/TR/SVG10/
 
@@ -1618,7 +1571,7 @@ await Promise.all(
 
 - Internet Engineering Task Force (IETF). 2015. *The "image/svg+xml" Media Type Registration*. RFC 6174. https://doi.org/10.17487/RFC6174
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 - Sutherland, I. E. 1963. *Sketchpad: A man-machine graphical communication system*. In Proceedings of the AFIPS Spring Joint Computer Conference (SJCC '63), 329–346. https://doi.org/10.1145/1461551.1461591
 
@@ -1630,7 +1583,7 @@ await Promise.all(
 
 - Liu, Z., Jiang, B., and Heer, J. 2013. *imMens: Real-time visual querying of big data*. Computer Graphics Forum 32, 3pt4 (June 2013), 421–430. https://doi.org/10.1111/cgf.12129
 
-### 11.3 工业实践与会议报告
+### 10.3 工业实践与会议报告
 
 - Adobe Systems Inc. 1985. *PostScript Language Reference Manual*. Addison-Wesley Professional, Reading, MA.
 
@@ -1640,7 +1593,7 @@ await Promise.all(
 
 - Archibald, J. 2014. *SVGOMG: A web-based SVG optimizer*. GitHub repository. https://github.com/jakearchibald/svgomg
 
-### 11.4 书籍
+### 10.4 书籍
 
 - Eisenberg, J. D. 2002. *SVG Essentials*. O'Reilly Media, Sebastopol, CA. ISBN: 978-0-596-00223-7.
 
@@ -1650,9 +1603,9 @@ await Promise.all(
 
 - Watson, R. 2018. *Learn SVG: The Web Graphics Standard*. A K Peters/CRC Press, Boca Raton, FL. https://doi.org/10.1201/9780429488706
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 在线教程与文档
+### 11.1 在线教程与文档
 
 - **MDN SVG 文档**:https://developer.mozilla.org/zh-CN/docs/Web/SVG
   Mozilla 开发者网络的 SVG 权威参考,涵盖所有元素与属性
@@ -1666,7 +1619,7 @@ await Promise.all(
 - **SVG 周刊**(SVG Weekly):https://svg-weekly.com/
   每周更新的 SVG 资源与案例
 
-### 12.2 开源项目与代码库
+### 11.2 开源项目与代码库
 
 - **D3.js**:https://github.com/d3/d3
   Mike Bostock 的数据可视化库,SVG 的标杆应用
@@ -1686,7 +1639,7 @@ await Promise.all(
 - **Material Symbols**:https://fonts.google.com/icons
   Google 官方 Material Design 图标系统
 
-### 12.3 视频课程
+### 11.3 视频课程
 
 - **Frontend Masters: SVG Animation & UX**
   Sarah Drasner 主讲的 SVG 动画与用户体验课程
@@ -1697,7 +1650,7 @@ await Promise.all(
 - **Pluralsight: SVG Fundamentals**
   SVG 基础系统性课程
 
-### 12.4 学术资源
+### 11.4 学术资源
 
 - **IEEE Transactions on Visualization and Computer Graphics**
   数据可视化与计算机图形学的顶级期刊,常发表 SVG 相关研究
@@ -1708,7 +1661,7 @@ await Promise.all(
 - **CHI Conference on Human Factors in Computing Systems**
   人机交互会议,SVG 在交互设计中的应用研究
 
-### 12.5 进阶主题建议
+### 11.5 进阶主题建议
 
 完成本章学习后,建议继续探索:
 

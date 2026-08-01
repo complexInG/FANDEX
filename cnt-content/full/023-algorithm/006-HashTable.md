@@ -29,14 +29,6 @@ prerequisites:
   - algorithm/链表
   - algorithm/树
   - cs-fundamentals/离散数学
-learningObjectives:
-  - 记忆哈希表作为直接寻址表空间优化方案的形式化定义，复述链地址法与开放寻址法在查找成功/查找失败场景下的平均探测次数公式
-  - 理解 Hans Peter Luhn 1953 IBM 首次提出哈希、Knuth TAOCP Vol.3 §6.4 系统化理论、Carter-Wegman 1979 全域哈希、Bloom 1970 布隆过滤器的历史脉络
-  - 应用除法哈希、乘法哈希（Knuth 黄金分割比）、多项式滚动哈希（Rabin-Karp）、链地址法、开放寻址法（线性探测/二次探测/双重哈希）编写可运行的 Python/C++/Java 代码
-  - 分析简单均匀哈希假设下链地址法 ASL = 1 + α/2 与均匀哈希假设下开放寻址法 ASL = (1/α)·ln(1/(1-α)) 的推导过程，论证负载因子 α 对性能的影响
-  - 评估哈希表相对于平衡树、有序数组、跳跃表在"键值查找"问题维度上的优劣，识别 LRU/LFU 缓存、计数器、字典编码、数据库索引中的哈希选型动机
-  - 对比链地址法、线性探测、二次探测、双重哈希、布谷鸟哈希在聚集现象、缓存友好性、删除复杂度、负载因子上限维度的差异
-  - 创造性设计基于哈希表的开源项目解决方案，如 LRU 缓存、词频统计器、URL 短链系统、数据库去重索引、Bloom Filter 海量数据判重
 references:
   - type: journal
     authors:
@@ -159,6 +151,7 @@ etymology:
     english: consistent hashing
     origin: 'consistent（一致性）指节点增减时只有相邻区间的数据需要迁移，而非全局重哈希。由 Karger et al. 1997 IEEE WCSA 论文《Consistent hashing and random trees》提出，是分布式缓存（Memcached/Redis Cluster/Cassandra/DynamoDB）路由的核心算法'
 ---
+
 
 ## 1. 概述与学习目标
 

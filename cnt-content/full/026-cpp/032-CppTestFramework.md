@@ -18,54 +18,12 @@ prerequisites:
   - cpp/智能指针详解
   - cpp/C++工具链
 ---
+
 # C++ 测试框架
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-本节按照 Bloom 分类法的认知层级组织学习目标,读者完成本章学习后应能够达到以下层级。
-
-### 识记层 (Remembering)
-
-- 列举 C++ 主流测试框架 Google Test、Catch2、doctest、Boost.Test、CppUTest 的名称与特点
-- 说出 FIRST 原则 (Fast、Independent、Repeatable、Self-validating、Timely) 的含义
-- 复述单元测试、集成测试、参数化测试、死亡测试、基准测试的定义
-- 识别 Arrange-Act-Assert (AAA) 测试代码组织模式
-
-### 理解层 (Understanding)
-
-- 解释 TEST、TEST_F、TEST_P、TEST_SUITE 四种宏的区别与适用场景
-- 阐述 EXPECT 与 ASSERT 断言的语义差异及失败处理策略
-- 描述测试夹具 (Fixture) 的 SetUp/TearDown 生命周期
-- 区分 Mock、Stub、Fake、Spy 四种测试替身的语义差异
-
-### 应用层 (Applying)
-
-- 使用 Google Test 编写参数化测试与类型化测试
-- 应用 Google Mock 编写 Mock 类并设置 EXPECT_CALL 期望
-- 使用 Catch2 的 SECTION、GENERATOR、MATCHERS 进行 BDD 风格测试
-- 集成 CTest 与 gtest_discover_tests 实现自动化测试发现
-
-### 分析层 (Analyzing)
-
-- 分析测试覆盖率 (Line、Branch、MC/DC) 的优缺点与适用场景
-- 解构 TDD (Red-Green-Refactor) 循环的每一步目标
-- 对比 Google Test 与 Catch2 在编译速度、二进制大小、调试体验的差异
-
-### 评价层 (Evaluating)
-
-- 评估一个测试套件的健康度 (覆盖率、稳定性、执行速度)
-- 判断测试代码是否过度依赖实现细节 (脆弱测试)
-- 在 TDD 与事后测试之间做出工程权衡
-
-### 创造层 (Creating)
-
-- 设计一个支持多种测试框架的统一测试基础设施
-- 构建一个面向嵌入式系统的硬件在环 (HIL) 测试框架
-- 提出一种基于属性测试 (Property-based Testing) 的 C++ 验证方案
 
 ## 历史动机与背景
 

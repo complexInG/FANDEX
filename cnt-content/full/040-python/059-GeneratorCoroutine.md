@@ -15,57 +15,18 @@ related:
 prerequisites:
   - python/语法速查
 ---
+
 # Python 迭代器与生成器进阶
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
-
-本章节对标 MIT 6.001 结构与解释、Stanford CS143 编译原理、CMU 15-410 操作系统、UC Berkeley CS61A 程序设计等顶级高校课程对控制流抽象与协程理论的教学水准，系统讲解 Python 生成器与协程的工程化使用与底层理论。完成本章节学习后，读者应能够：
-
-### 1.1 Bloom 认知层级目标
-
-| 层级 | 关键动词 | 具体能力描述 |
-| :--- | :--- | :--- |
-| Remember（记忆） | 列举、识别 | 列举生成器与协程的核心 API（`yield`、`send`、`throw`、`close`、`yield from`、`StopIteration`、`GeneratorExit`、`async for`）与状态机定义 |
-| Understand（理解） | 解释、归纳 | 解释 `yield` 表达式的求值规则、生成器帧栈的保存机制、`yield from` 的委托语义、协程与子例程的本质区别 |
-| Apply（应用） | 实现、编写 | 编写生产级代码：流式数据处理、生成器管道、分页 API 调用、树形遍历、协程状态机、生产者-消费者模型 |
-| Analyze（分析） | 比较、拆解 | 比较生成器与迭代器的语义差异、分析 `yield from` 与 `for x in it: yield x` 的本质区别、识别协程回调地狱的成因 |
-| Evaluate（评价） | 评估、选择 | 评估在何种场景下应使用生成器而非列表、何时使用 `yield from` 而非手动委托、选择同步生成器还是异步生成器 |
-| Create（创造） | 设计、优化 | 设计可组合的生成器管道、实现自定义协程调度器、构建基于生成器的 DSL（领域特定语言） |
-
-### 1.2 知识地图
-
-```
-[理论基础] 子例程 vs 协程 | CPS 变换 | 有限状态机 | 惰性求值
-    ↓
-[Python 实现] 生成器函数 | 生成器对象 | yield 表达式 | send/throw/close
-    ↓
-[委托机制] yield from | 子生成器 | 返回值传播 | 异常透明转发
-    ↓
-[工程实战] 流式处理 | 管道组合 | 分页 | 树遍历 | 状态机
-    ↓
-[高级话题] 异步生成器 | 协程调度 | 生成器装饰器 | 暂停-恢复模型
-```
-
-### 1.3 前置知识检查
-
-学习本章节前，请确认你已掌握：
-
-1. Python 函数定义、参数传递、作用域规则；
-2. 迭代器协议（`__iter__`、`__next__`、`StopIteration`）；
-3. 装饰器的基本用法（参考《装饰器进阶》）；
-4. 上下文管理器与 `with` 语句（参考《上下文管理器》）；
-5. 异常处理机制（`try/except/finally`、自定义异常）；
-6. 集合论与有限状态机的基本概念。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 生成器与协程并非 Python 独创，其理论根源可追溯至 1958 年的协程概念与 1970 年代的惰性求值思想。理解这一脉络有助于把握 Python 设计的取舍。
 
-### 2.1 协程的理论起源
+### 1.1 协程的理论起源
 
 - **1958**：Melvin Conway 提出"协程"（coroutine）概念，用于 COBOL 编译器的词法分析。其核心是"对称的多入口函数"，与子例程（subroutine）的"调用-返回"模型相对；
 - **1963**：Joel W. W. 在 Simula 67 中实现"准并发"协程；
@@ -78,7 +39,7 @@ prerequisites:
 - **1999**：Python 1.5.1 引入 `__getitem__` 协议的隐式迭代；
 - **2001**：Python 2.2（PEP 255）正式引入生成器。
 
-### 2.2 Python 生成器与协程演进时间线
+### 1.2 Python 生成器与协程演进时间线
 
 | 时间 | 版本 | 重要变化 |
 | :--- | :--- | :--- |
@@ -95,7 +56,7 @@ prerequisites:
 | 2023 | Python 3.12 | 生成器性能优化，`PyGenObject` 内存布局精简 |
 | 2025 | Python 3.13+ | 实验性 free-threaded 构建（PEP 703）下生成器语义调整 |
 
-### 2.3 PEP 255 的设计目标
+### 1.3 PEP 255 的设计目标
 
 PEP 255（*Simple Generators*，由 Neil Schemenauer、Tim Peters、Magnus Lie Hetland 于 2001 年提出）明确生成器的设计动机：
 
@@ -105,7 +66,7 @@ PEP 255（*Simple Generators*，由 Neil Schemenauer、Tim Peters、Magnus Lie H
 4. **状态机简化**：复杂状态可保存在生成器局部变量中，无需显式状态字段；
 5. **协程雏形**：虽 2.2 版本未提供 `send`，但 `yield` 的暂停-恢复语义已奠定协程基础。
 
-### 2.4 PEP 342 与协程觉醒
+### 1.4 PEP 342 与协程觉醒
 
 PEP 342（*Coroutines via Enhanced Generators*，由 Guido van Rossum、Phillip J. Eby 于 2005 年提出）将生成器升级为协程：
 
@@ -118,7 +79,7 @@ PEP 342（*Coroutines via Enhanced Generators*，由 Guido van Rossum、Phillip 
 
 PEP 342 的核心洞察：**协程 = 生成器 + 双向通信 + 异常注入**。Eby 在《Generator Tricks for Systems Programmers》中展示了基于生成器的协程可用于状态机、管道、协程调度器，催生了 Twisted 的 `inlineCallbacks`、Tornado 的 `gen.coroutine`、asyncio 的早期实现。
 
-### 2.5 PEP 380 与 yield from
+### 1.5 PEP 380 与 yield from
 
 PEP 380（*Syntax for Delegating to a Subgenerator*，由 Greg Ewing 于 2011 年提出）引入 `yield from`：
 
@@ -128,7 +89,7 @@ PEP 380（*Syntax for Delegating to a Subgenerator*，由 Greg Ewing 于 2011 �
 4. **`asyncio` 基石**：在 `async def` 出现前，`yield from` 是 asyncio 的核心语法；
 5. **协程组合原语**：为后来的 `await` 提供了语义基础。
 
-### 2.6 PEP 492 与协程语法升级
+### 1.6 PEP 492 与协程语法升级
 
 PEP 492（*Coroutines with async and await syntax*，由 Yury Selivanov 于 2015 年提出）将协程从生成器机制中独立出来：
 
@@ -138,7 +99,7 @@ PEP 492（*Coroutines with async and await syntax*，由 Yury Selivanov 于 2015
 4. **`__await__` 协议**：统一 awaitable 对象接口；
 5. **PEP 525 异步生成器**：`async def` + `yield`，允许在协程中产出值。
 
-### 2.7 与其他语言的对比
+### 1.7 与其他语言的对比
 
 | 语言 | 协程机制 | 暂停语法 | 恢复语法 |
 | :--- | :--- | :--- | :--- |
@@ -160,9 +121,9 @@ PEP 492（*Coroutines with async and await syntax*，由 Yury Selivanov 于 2015
 - **对称协程**（Lua、Go）：协程间平等切换；
 - **非对称协程**（Python、Ruby）：协程与调用者之间是主从关系，`yield` 总是返回到调用点。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 协程的代数定义
+### 2.1 协程的代数定义
 
 设 $S$ 为程序状态集合（包括局部变量、指令指针、操作数栈），$V$ 为值集合，$E$ 为事件集合（包括 `send`、`throw`、`close`）。协程（coroutine）定义为五元组：
 
@@ -186,7 +147,7 @@ $$
 
 协程放宽了这一约束：允许在任意 `yield` 点挂起，并从该点恢复执行。
 
-### 3.2 生成器状态机
+### 2.2 生成器状态机
 
 Python 生成器对象在执行过程中处于以下状态之一：
 
@@ -222,7 +183,7 @@ $$
 2. `GEN_CLOSED` 状态下任何操作均抛出 `StopIteration`；
 3. 生成器对象不可重入，迭代完毕后需重新创建。
 
-### 3.3 yield 表达式的形式化语义
+### 2.3 yield 表达式的形式化语义
 
 `yield expr` 是一个表达式，其求值规则可形式化为：
 
@@ -240,7 +201,7 @@ $$
    - `send(v)` 时：$v_{\text{resume}} = v$；
    - `next()` 时：$v_{\text{resume}} = \text{None}$。
 
-### 3.4 send / throw / close 的操作语义
+### 2.4 send / throw / close 的操作语义
 
 设生成器 $g$ 当前状态为 $s$：
 
@@ -273,7 +234,7 @@ $$
 \end{cases}
 $$
 
-### 3.5 yield from 的委托语义
+### 2.5 yield from 的委托语义
 
 `yield from expr` 形式化为：
 
@@ -323,7 +284,7 @@ RESULT = _r
 2. 子生成器的 `return value` 成为 `yield from` 表达式的值；
 3. `GeneratorExit` 不被透明转发，而是触发子生成器的 `close()`。
 
-### 3.6 协程与生成器的关系
+### 2.6 协程与生成器的关系
 
 Python 中协程与生成器的关系经历了三个阶段：
 
@@ -355,9 +316,9 @@ $$
 | `await` 协议 | 不支持 | 支持 `__await__` |
 | `yield from` | 委托子生成器 | 弃用，应使用 `await` |
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 CPS 变换与生成器状态机
+### 3.1 CPS 变换与生成器状态机
 
 **CPS（Continuation-Passing Style）变换** 是协程编译的核心技术。给定一个直接风格的函数：
 
@@ -386,7 +347,7 @@ $$
 
 每次 `yield` 保存当前续延，`next/send` 调用该续延。
 
-### 4.2 协作式调度的数学分析
+### 3.2 协作式调度的数学分析
 
 协程采用协作式调度（cooperative scheduling）：
 
@@ -411,7 +372,7 @@ $$
 | CPU 利用率 | 单核 | 多核 |
 | 公平性 | 依赖协程纪律 | OS 调度器保证 |
 
-### 4.3 生成器的内存模型
+### 3.3 生成器的内存模型
 
 CPython 中生成器对象 `PyGenObject` 的内存布局（CPython 3.12）：
 
@@ -448,7 +409,7 @@ typedef struct {
 3. 生成器结束时，释放 `gi_frame`；
 4. 与函数调用栈不同，生成器帧栈在堆上分配，生命周期独立于调用者。
 
-### 4.4 yield from 的代数性质
+### 3.4 yield from 的代数性质
 
 `yield from` 满足以下代数性质：
 
@@ -480,7 +441,7 @@ $$
 
 这些性质使 `yield from` 成为协程组合的代数基础，与 `await` 的语义一致。
 
-### 4.5 生成器与单子
+### 3.5 生成器与单子
 
 生成器可视为 **状态单子**（State Monad）的实例：
 
@@ -495,7 +456,7 @@ $$
 
 这使得生成器可以像列表一样组合，同时保持惰性求值。
 
-### 4.6 生成器与惰性求值
+### 3.6 生成器与惰性求值
 
 生成器实现了"按需计算"（call-by-need）：
 
@@ -525,9 +486,9 @@ list(itertools.islice(ones(), 3))  # [1, 1, 1]
 
 Python 通过显式 `next()` 控制 thunk 求值时机，Haskell 通过运行时自动管理。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基本生成器
+### 4.1 基本生成器
 
 ```python
 """生成器基础示例。Python 3.12+。"""
@@ -577,7 +538,7 @@ if __name__ == "__main__":
     basic_generator_demo()
 ```
 
-### 5.2 send 双向通信
+### 4.2 send 双向通信
 
 ```python
 """send 方法：双向通信。Python 3.12+。"""
@@ -624,7 +585,7 @@ if __name__ == "__main__":
     send_demo()
 ```
 
-### 5.3 throw 与 close
+### 4.3 throw 与 close
 
 ```python
 """throw 与 close 方法。Python 3.12+。"""
@@ -679,7 +640,7 @@ if __name__ == "__main__":
     throw_close_demo()
 ```
 
-### 5.4 yield from 委托
+### 4.4 yield from 委托
 
 ```python
 """yield from 委托语义。Python 3.12+。"""
@@ -744,7 +705,7 @@ if __name__ == "__main__":
     yield_from_demo()
 ```
 
-### 5.5 生成器管道
+### 4.5 生成器管道
 
 ```python
 """生成器管道：流式数据处理。Python 3.12+。"""
@@ -843,7 +804,7 @@ if __name__ == "__main__":
     fluent_pipeline_demo()
 ```
 
-### 5.6 协程实现状态机
+### 4.6 协程实现状态机
 
 ```python
 """协程实现有限状态机。Python 3.12+。"""
@@ -913,7 +874,7 @@ if __name__ == "__main__":
     state_machine_demo()
 ```
 
-### 5.7 无限序列与惰性求值
+### 4.7 无限序列与惰性求值
 
 ```python
 """无限序列与惰性求值。Python 3.12+。"""
@@ -985,7 +946,7 @@ if __name__ == "__main__":
     infinite_demo()
 ```
 
-### 5.8 生成器与 itertools 组合
+### 4.8 生成器与 itertools 组合
 
 ```python
 """生成器与 itertools 组合。Python 3.12+。"""
@@ -1076,7 +1037,7 @@ if __name__ == "__main__":
     itertools_demo()
 ```
 
-### 5.9 异步生成器
+### 4.9 异步生成器
 
 ```python
 """异步生成器：异步流式数据。Python 3.12+。"""
@@ -1159,7 +1120,7 @@ if __name__ == "__main__":
     asyncio.run(async_generator_demo())
 ```
 
-### 5.10 实战：流式日志分析
+### 4.10 实战：流式日志分析
 
 ```python
 """实战：流式日志分析。Python 3.12+。"""
@@ -1269,9 +1230,9 @@ if __name__ == "__main__":
     log_analysis_demo()
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 生成器 vs 迭代器
+### 5.1 生成器 vs 迭代器
 
 | 维度 | 迭代器 | 生成器 |
 | :--- | :--- | :--- |
@@ -1284,7 +1245,7 @@ if __name__ == "__main__":
 | 复用性 | 可重置 | 一次性 |
 | 异步支持 | 不支持 | 异步生成器支持 |
 
-### 6.2 生成器协程 vs asyncio.Task
+### 5.2 生成器协程 vs asyncio.Task
 
 | 维度 | 生成器协程（已弃用） | asyncio.Task |
 | :--- | :--- | :--- |
@@ -1296,7 +1257,7 @@ if __name__ == "__main__":
 | 调试 | 难以追踪 | 良好（原生 await） |
 | 异常处理 | 复杂 | 简洁（`try/except`） |
 
-### 6.3 Python 生成器 vs JavaScript 生成器
+### 5.3 Python 生成器 vs JavaScript 生成器
 
 | 维度 | Python | JavaScript |
 | :--- | :--- | :--- |
@@ -1308,7 +1269,7 @@ if __name__ == "__main__":
 | 委托 | `yield from subgen()` | `yield* subgen()` |
 | 关闭 | `gen.close()` | `gen.return(value)` |
 
-### 6.4 Python 协程 vs Lua 协程
+### 5.4 Python 协程 vs Lua 协程
 
 | 维度 | Python | Lua |
 | :--- | :--- | :--- |
@@ -1320,7 +1281,7 @@ if __name__ == "__main__":
 | 用途 | 迭代 + 异步 | 协作式多任务 |
 | 对称性 | 非对称（主从） | 对称（`coroutine.yield`） |
 
-### 6.5 Python 生成器 vs Go goroutine
+### 5.5 Python 生成器 vs Go goroutine
 
 | 维度 | Python 生成器 | Go goroutine |
 | :--- | :--- | :--- |
@@ -1332,9 +1293,9 @@ if __name__ == "__main__":
 | 数量上限 | 几十万 | 几百万 |
 | 错误传播 | `throw` | channel + `panic` |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 常见陷阱
+### 6.1 常见陷阱
 
 #### 陷阱 1：忘记启动生成器
 
@@ -1487,7 +1448,7 @@ funcs = [(lambda i=i: i) for i in range(3)]
 print([f() for f in funcs])  # [0, 1, 2]
 ```
 
-### 7.2 最佳实践
+### 6.2 最佳实践
 
 #### 实践 1：使用类型注解
 
@@ -1627,9 +1588,9 @@ class PipelineBuilder:
         yield from data
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构
+### 7.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -1659,7 +1620,7 @@ flowchart TD
     T17 --> T19
 ```
 
-### 8.2 pyproject.toml 配置
+### 7.2 pyproject.toml 配置
 
 ```toml
 [project]
@@ -1695,7 +1656,7 @@ line-length = 100
 asyncio_mode = "auto"
 ```
 
-### 8.3 流式 HTTP 响应
+### 7.3 流式 HTTP 响应
 
 ```python
 """FastAPI 流式响应。Python 3.12+。"""
@@ -1745,7 +1706,7 @@ async def stream_csv() -> StreamingResponse:
     )
 ```
 
-### 8.4 数据库游标流式处理
+### 7.4 数据库游标流式处理
 
 ```python
 """数据库游标流式处理。Python 3.12+。"""
@@ -1794,7 +1755,7 @@ def process_large_table():
             process_event(row)
 ```
 
-### 8.5 生成器性能优化
+### 7.5 生成器性能优化
 
 ```python
 """生成器性能优化技巧。Python 3.12+。"""
@@ -1847,7 +1808,7 @@ if __name__ == "__main__":
     benchmark_generator_vs_list()
 ```
 
-### 8.6 测试生成器
+### 7.6 测试生成器
 
 ```python
 """生成器测试。Python 3.12+。"""
@@ -1931,7 +1892,7 @@ async def test_async_generator():
     assert result == [0, 1, 2, 3, 4]
 ```
 
-### 8.7 调试生成器
+### 7.7 调试生成器
 
 ```python
 """生成器调试技巧。Python 3.12+。"""
@@ -1999,9 +1960,9 @@ if __name__ == "__main__":
     debug_demo()
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：Python 标准库中的应用
+### 8.1 案例：Python 标准库中的应用
 
 **`os.walk` - 目录遍历生成器**：
 
@@ -2067,7 +2028,7 @@ def stream_json_array(filepath):
                     continue
 ```
 
-### 9.2 案例：Django 流式响应
+### 8.2 案例：Django 流式响应
 
 ```python
 """Django StreamingHttpResponse。Python 3.12+。"""
@@ -2096,7 +2057,7 @@ def stream_csv_view(request):
     return response
 ```
 
-### 9.3 案例：Flask 流式响应
+### 8.3 案例：Flask 流式响应
 
 ```python
 """Flask 流式响应。Python 3.12+。"""
@@ -2125,7 +2086,7 @@ def logs():
     )
 ```
 
-### 9.4 案例：SQLAlchemy 流式查询
+### 8.4 案例：SQLAlchemy 流式查询
 
 ```python
 """SQLAlchemy 流式查询。Python 3.12+。"""
@@ -2156,7 +2117,7 @@ for user in stream_users():
     process(user)
 ```
 
-### 9.5 案例：实时数据处理管道
+### 8.5 案例：实时数据处理管道
 
 ```python
 """实时数据处理管道：模拟股票行情流。Python 3.12+。"""
@@ -2431,7 +2392,7 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
     return [gen(q) for q in queues]
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **1. 为什么 Python 的生成器不能"重置"（重新从头迭代）？这带来了哪些优势和劣势？**
 
@@ -2465,9 +2426,9 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 - 异步生成器：网络 I/O、数据库查询、文件系统慢操作；
 - 性能差异：异步生成器有事件循环开销（~50ns/切换），但避免阻塞事件循环，整体吞吐量更高。
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 Python 增强提案（PEP）
+### 10.1 Python 增强提案（PEP）
 
 1. Schemenauer, N., Peters, T., & Hetland, M. L. (2001). *PEP 255: Simple Generators*. Python Enhancement Proposals. https://peps.python.org/pep-0255/
 2. van Rossum, G., & Eby, P. J. (2005). *PEP 342: Coroutines via Enhanced Generators*. Python Enhancement Proposals. https://peps.python.org/pep-0342/
@@ -2477,7 +2438,7 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 6. Selivanov, Y. (2016). *PEP 530: Asynchronous Comprehensions*. Python Enhancement Proposals. https://peps.python.org/pep-0530/
 7. Shannon, B., & Snow, C. L. (2023). *PEP 703: Making the Global Interpreter Lock Optional in CPython*. Python Enhancement Proposals. https://peps.python.org/pep-0703/
 
-### 11.2 经典论文与著作
+### 10.2 经典论文与著作
 
 8. Conway, M. E. (1958). *Design of a separable transition-diagram compiler*. Communications of the ACM, 6(7), 396-408. https://doi.org/10.1145/366663.366704
 9. Marlin, C. D. (1980). *Coroutines: A Programming Methodology, a Language Design and an Implementation* (Lecture Notes in Computer Science, Vol. 95). Springer-Verlag. https://doi.org/10.1007/3-540-09894-1
@@ -2485,7 +2446,7 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 11. Landin, P. J. (1965). *A correspondence between ALGOL 60 and Church's lambda-notation: Part I*. Communications of the ACM, 8(2), 89-101. https://doi.org/10.1145/363744.363749
 12. Reynolds, J. C. (1993). *The discoveries of continuations*. Lisp and Symbolic Computation, 6(3-4), 233-247. https://doi.org/10.1007/BF01019459
 
-### 11.3 Python 实现文献
+### 10.3 Python 实现文献
 
 13. Van Rossum, G., & Drake, F. L. (2011). *The Python Language Reference Manual* (Version 3.2). Network Theory Ltd.
 14. Brandt, M., & Hetland, M. L. (2002). *PEP 263: Defining Python Source Code Encodings*. Python Enhancement Proposals. https://peps.python.org/pep-0263/
@@ -2493,7 +2454,7 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 16. Beazley, D. (2008). *A Curious Course on Coroutines and Concurrency*. PyCon 2009 Tutorial. https://www.dabeaz.com/coroutines/
 17. Beazley, D. (2014). *Generators: The Final Frontier*. PyCon 2014. https://www.dabeaz.com/finalgenerator/
 
-### 11.4 协程理论文献
+### 10.4 协程理论文献
 
 18. de Moura, A. L., & Ierusalimschy, R. (2009). *Revisiting coroutines*. ACM Transactions on Programming Languages and Systems (TOPLAS), 31(2), 1-31. https://doi.org/10.1145/1462166.1462167
 19. Ierusalimschy, R. (2009). *Programming in Lua* (3rd ed.). Lua.org.
@@ -2501,7 +2462,7 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 21. Kiselyov, O., & Sabry, J. (2004). *Delimited continuations in statically typed functional languages*. Journal of Functional Programming, 14(5), 535-576. https://doi.org/10.1017/S0956796804005112
 22. Wadler, P. (1995). *Monads for functional programming*. In Advanced Functional Programming (pp. 24-52). Springer. https://doi.org/10.1007/3-540-59451-5_2
 
-### 11.5 并发与异步文献
+### 10.5 并发与异步文献
 
 23. Hoare, C. A. R. (1978). *Communicating sequential processes*. Communications of the ACM, 21(8), 666-677. https://doi.org/10.1145/359576.359585
 24. Berry, D., & Selivanov, Y. (2015). *Python Concurrency with asyncio*. O'Reilly Media.
@@ -2509,9 +2470,9 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 26. Ronacher, A. (2010). *Generator-based coroutines in Flask*. https://flask.palletsprojects.com/en/3.0.x/patterns/streaming/
 27. Caceres, R., et al. (2010). *Twisted Documentation*. https://docs.twisted.org/en/stable/
 
-## 12. 进一步阅读
+## 11. 进一步阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 1. **`asyncio` 深度**：参考《异步编程详解》章节，深入理解事件循环、Task、Future；
 2. **协程调度器实现**：阅读 `asyncio` 源码 `base_events.py` 与 `tasks.py`；
@@ -2521,7 +2482,7 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 6. **Icon 语言**：了解生成器作为一等公民的语言设计；
 7. **Free-threaded Python**：PEP 703 的实施细节与对生成器的影响。
 
-### 12.2 实战项目
+### 11.2 实战项目
 
 1. **流式 ETL 管道**：使用生成器组合数据清洗、转换、加载管道；
 2. **实时日志分析**：基于生成器的日志流处理系统；
@@ -2529,7 +2490,7 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 4. **CSV/JSON 流式解析**：处理大文件不占用内存；
 5. **协程调度器**：基于 `yield from` 实现简易任务调度器。
 
-### 12.3 相关文档
+### 11.3 相关文档
 
 - Python 官方文档 - 生成器：https://docs.python.org/3/reference/expressions.html#yield-expressions
 - Python 官方文档 - 异步生成器：https://docs.python.org/3/reference/expressions.html#asynchronous-generator-functions
@@ -2538,14 +2499,14 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 - Real Python - How to Use Generators and yield in Python：https://realpython.com/introduction-to-python-generators/
 - Stack Overflow - Python Generators Tag：https://stackoverflow.com/questions/tagged/python-generators
 
-### 12.4 视频资源
+### 11.4 视频资源
 
 - David Beazley - *Generators: The Final Frontier* (PyCon 2014)
 - David Beazley - *Python Concurrency From the Ground Up* (PyCon 2015)
 - Brett Slatkin - *Effective Python* 系列中的生成器章节
 - Raymond Hettinger - *Transforming Code into Beautiful, Idiomatic Python* (PyCon 2013)
 
-## 13. 附录
+## 12. 附录
 
 ### 附录 A：生成器 API 速查
 

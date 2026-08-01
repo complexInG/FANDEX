@@ -16,66 +16,16 @@ prerequisites:
   - harmonyos/概述与环境搭建
 ---
 
+
 # 自定义组件：ArkUI 声明式组件模型与组合复用工程实践
 
 > 组件是声明式 UI 的"原子单元"——每个组件既是渲染输出单位，也是状态隔离与复用的边界。本章按 CMU 15-410（Distributed Systems）、MIT 6.5840（Distributed Systems）、Stanford CS142（Web Applications）等课程标准组织，系统讲解 ArkUI 自定义组件的声明模型、生命周期回调矩阵、`@Component`/`@Entry`/`@Builder`/`@BuilderParam`/`@Styles`/`@Extend`/`@Reusable` 装饰器体系、组件间通信（`@Prop`/`@Link`/`@Provide`/`@Consume`/`@ObjectLink`/`@Watch`/事件回调）、插槽机制、样式复用、组件复用池、性能优化（延迟加载、按需构建、VSync 同步）、跨组件状态同步、组件库设计模式等核心议题，并对照 React Component、Vue SFC、SwiftUI View、Jetpack Compose Composable 等业界方案。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章按照 Bloom 教育目标分类法（Bloom's Taxonomy）的六个层级组织学习目标。读者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述 ArkUI 自定义组件的六个生命周期回调：`aboutToAppear`、`aboutToDisappear`、`onPageShow`、`onPageHide`、`onBackPress`、`aboutToReuse`（`@Reusable` 专用）。
-- **R2**：列举 ArkUI 组件通信装饰器矩阵：`@Prop`（单向）、`@Link`（双向）、`@Provide`/`@Consume`（跨层级）、`@ObjectLink`（嵌套对象）、`@Watch`（监听）、`@StorageLink`/`@LocalStorageLink`（全局/局部存储）。
-- **R3**：复述 `@Builder` 与 `@BuilderParam` 的区别：前者用于声明可复用 UI 片段，后者用于声明组件插槽。
-- **R4**：复述 `@Styles` 与 `@Extend` 的区别：前者仅可复用通用样式属性，后者可扩展原生组件方法并支持参数。
-- **R5**：复述 `@Reusable` 装饰器的工作机制：组件实例进入复用池后保留状态，下次同类型节点出现时复用而非销毁重建。
-- **R6**：复述 `@Component` 与 `@Entry` 的关系：`@Entry` 标记页面根组件，绑定路由；`@Component` 仅标记可复用组件。
-
-### 1.2 Understand（理解）
-
-- **U1**：阐明 ArkUI 自定义组件与 React Function Component、Vue SFC、SwiftUI View、Compose Composable 的本质差异：ArkUI 基于 struct + 装饰器，编译期生成状态追踪代码。
-- **U2**：解释 `@Prop` 单向数据流与 `@Link` 双向绑定的实现差异：`@Prop` 在子组件内部做值拷贝，`@Link` 建立父子状态对象的引用关系。
-- **U3**：解释 `@BuilderParam` 的"插槽"机制与 React `children`/Vue `<slot>`/Web Components `<slot>` 的等价性。
-- **U4**：对比 `@Styles` 与 `@Extend`：`@Styles` 是属性集合的复用，`@Extend` 是方法扩展，两者本质是编译期宏展开。
-- **U5**：解释 `@Reusable` 复用池的"LRU + 类型匹配"策略：仅当新节点与池中节点类型、`@Reusable` id 一致时才命中。
-- **U6**：阐明 `aboutToAppear` 与 `build()` 的执行顺序：前者在组件创建后、首次 `build()` 前执行，用于异步数据初始化。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 `@Component` + `@Prop` + `@BuilderParam` 实现一个带插槽的卡片组件，支持自定义头部与内容。
-- **A2**：使用 `@Reusable` + `aboutToReuse` 实现一个列表项复用组件，避免滑动时的重建开销。
-- **A3**：使用 `@Styles` 提取通用按钮样式，使用 `@Extend` 为 `Text` 扩展 `titleStyle()` 方法。
-- **A4**：使用 `@Provide`/`@Consume` 实现一个主题切换功能，根组件提供 theme，深层叶子组件消费。
-- **A5**：使用 `@Watch` 实现一个监听器，当 `@State` 变化时触发副作用（如埋点、本地存储）。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 ArkUI 选择 struct + 装饰器而非 class 继承的工程动机：避免继承层次过深、便于 AOT 静态分析。
-- **An2**：分析 `@Reusable` 复用池的命中条件与未命中时的退化路径：未命中时走标准创建流程。
-- **An3**：分析 `@BuilderParam` 多插槽场景下的冲突解决：按声明顺序匹配，或通过命名插槽显式指定。
-- **An4**：分析 `@Prop` 深拷贝在大对象场景下的性能成本，给出使用 `@Link` 或 `@ObjectLink` 的替代方案。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价 ArkUI 的"struct + 装饰器"模型相比 React Hooks 的优劣：编译期优化 vs 运行时灵活性。
-- **E2**：评价 `@Reusable` 复用机制相比 React `memo`、Vue `keep-alive` 的设计差异与适用场景。
-- **E3**：评价 `@Styles`/`@Extend` 作为编译期宏展开相比 Tailwind 工具类、CSS-in-JS 的工程价值。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个企业级组件库的基础设施：包含设计令牌（Design Token）、主题切换、国际化、无障碍、按需加载。
-- **C2**：设计一个跨组件状态同步中间件：基于 `@Provide`/`@Consume` + `AppStorage` 实现全局状态与局部状态的协调。
-- **C3**：设计一个组件性能监控 SDK：自动采集 `build()` 耗时、`@Reusable` 命中率、`@Watch` 触发频率，输出火焰图。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 声明式 UI 的演进（2014-2020）
+### 1.1 声明式 UI 的演进（2014-2020）
 
 声明式 UI 范式经历了从虚拟 DOM 到编译期生成代码的转变：
 
@@ -90,7 +40,7 @@ prerequisites:
 
 ArkUI 在设计上吸收了 SwiftUI 的 struct 模型与 Compose 的编译期插桩思想，但用装饰器（Decorator）替代了 Kotlin 的 @Composable 注解，使 TypeScript 开发者更易接受。
 
-### 2.2 ArkUI 1.0（2021）：基础组件模型
+### 1.2 ArkUI 1.0（2021）：基础组件模型
 
 HarmonyOS 3.0 首次推出 ArkUI 1.0：
 
@@ -99,7 +49,7 @@ HarmonyOS 3.0 首次推出 ArkUI 1.0：
 - 生命周期仅 `aboutToAppear`、`aboutToDisappear`、`onPageShow`、`onPageHide`、`onBackPress`。
 - 无组件复用机制，列表滑动时频繁创建销毁。
 
-### 2.3 ArkUI 2.0（2022）：状态管理增强
+### 1.3 ArkUI 2.0（2022）：状态管理增强
 
 HarmonyOS 3.1 引入 ArkUI 2.0：
 
@@ -109,7 +59,7 @@ HarmonyOS 3.1 引入 ArkUI 2.0：
 - 引入 `@StorageLink`、`@StorageProp`、`@LocalStorageLink`、`@LocalStorageProp`。
 - 组件间通信能力完善，但仍无复用机制。
 
-### 2.4 ArkUI 3.0（2023）：复用与性能
+### 1.4 ArkUI 3.0（2023）：复用与性能
 
 HarmonyOS 4.0 引入 ArkUI 3.0：
 
@@ -119,7 +69,7 @@ HarmonyOS 4.0 引入 ArkUI 3.0：
 - 编译器优化：build() 方法编译期生成 RenderFunction，减少运行时开销。
 - 引入 `if/else` 与 `ForEach` 的条件渲染追踪，避免无效 diff。
 
-### 2.5 ArkUI 4.0（2024）：跨端与原子化
+### 1.5 ArkUI 4.0（2024）：跨端与原子化
 
 HarmonyOS NEXT 引入 ArkUI 4.0：
 
@@ -129,7 +79,7 @@ HarmonyOS NEXT 引入 ArkUI 4.0：
 - 引入 `@Param`/`@Once`/`@Event` 等新装饰器，与 `@ComponentV2` 配套。
 - 性能：编译期生成 .abc 文件，build() 耗时降低 40%。
 
-### 2.6 OpenHarmony ArkUI 演进
+### 1.6 OpenHarmony ArkUI 演进
 
 | OpenHarmony 版本 | ArkUI 版本 | 关键特性 |
 | --- | --- | --- |
@@ -138,7 +88,7 @@ HarmonyOS NEXT 引入 ArkUI 4.0：
 | 4.0 | 3.0 | @Reusable、LazyForEach 优化 |
 | 5.0 | 4.0 | @ComponentV2、跨端组件 |
 
-### 2.7 时间线总览
+### 1.7 时间线总览
 
 ```mermaid
 timeline
@@ -151,9 +101,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 自定义组件的形式化定义
+### 2.1 自定义组件的形式化定义
 
 定义 ArkUI 自定义组件为七元组：
 
@@ -171,7 +121,7 @@ $$
 - $\mathcal{E}: \text{EventStream}$ 为组件发出的事件流，通过回调函数向父组件传递。
 - $\mathcal{M}: \text{Metadata}$ 为组件元数据，包含组件名、参数类型、装饰器信息等，由编译期生成。
 
-### 3.2 组件实例的生命周期
+### 2.2 组件实例的生命周期
 
 组件实例 $c$ 的生命周期状态转换：
 
@@ -194,7 +144,7 @@ $$
 \end{aligned}
 $$
 
-### 3.3 单向数据流的形式化
+### 2.3 单向数据流的形式化
 
 `@Prop` 单向数据流的语义：
 
@@ -208,7 +158,7 @@ $$
 \Delta p \implies \text{Rebuild}(c) \implies c.p \leftarrow \text{clone}(p')
 $$
 
-### 3.4 双向绑定的形式化
+### 2.4 双向绑定的形式化
 
 `@Link` 双向绑定的语义：
 
@@ -218,7 +168,7 @@ $$
 
 任一方的修改都会同步到另一方。实现上，`@Link` 建立的是对父组件状态对象的"引用"（通过 ES Proxy 或 ArkUI 内部状态对象），而非值拷贝。
 
-### 3.5 跨层级传递的形式化
+### 2.5 跨层级传递的形式化
 
 `@Provide`/`@Consume` 的语义：
 
@@ -232,7 +182,7 @@ $$
 \text{Provide}(a, k, v) \implies \forall d \in \text{Descendants}(a): \text{Consume}(d, k) = v
 $$
 
-### 3.6 复用池的形式化
+### 2.6 复用池的形式化
 
 `@Reusable` 复用池的工作机制：
 
@@ -248,7 +198,7 @@ $$
 
 复用池采用 LRU（Least Recently Used）策略，容量上限默认为 128 个实例。
 
-### 3.7 构建函数的纯函数性
+### 2.7 构建函数的纯函数性
 
 理想情况下，`build()` 应为纯函数：
 
@@ -258,7 +208,7 @@ $$
 
 即给定相同的状态与属性，应输出相同的 UI 树。但实际上，`build()` 中可包含副作用（如日志、埋点），ArkUI 不强制纯函数性，但建议遵循单向数据流原则。
 
-### 3.8 依赖追踪的复杂度
+### 2.8 依赖追踪的复杂度
 
 ArkUI 的响应式系统对 `@State` 的依赖追踪复杂度：
 
@@ -271,9 +221,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 声明式 UI 的核心不变量
+### 3.1 声明式 UI 的核心不变量
 
 声明式 UI 的核心不变量是"UI 是状态的函数"：
 
@@ -301,7 +251,7 @@ build() {
 
 这种编译期变换使开发者无需手动管理依赖，但也意味着 `@State` 必须通过 `this.` 访问才能触发追踪。
 
-### 4.2 @Prop 深拷贝的成本分析
+### 3.2 @Prop 深拷贝的成本分析
 
 `@Prop` 在子组件内部做值拷贝，对于基本类型（number、string、boolean）成本为 $O(1)$，但对于对象数组成本为 $O(n)$：
 
@@ -319,7 +269,7 @@ $$
 - 使用 `@ObjectLink` + `@Observed`，仅追踪变化的字段。
 - 使用 `@Prop` + `@Watch`，仅在变化时处理，但拷贝仍发生。
 
-### 4.3 @BuilderParam 插槽的编译期展开
+### 3.3 @BuilderParam 插槽的编译期展开
 
 `@BuilderParam` 在编译期展开为函数参数：
 
@@ -351,7 +301,7 @@ Card({ content: () => { Text('Hello'); } });
 
 这种展开使插槽成为一等公民，可被传递、组合、缓存。
 
-### 4.4 @Reusable 复用池的命中条件
+### 3.4 @Reusable 复用池的命中条件
 
 `@Reusable` 复用池的命中条件：
 
@@ -363,7 +313,7 @@ $$
 
 未命中时的退化路径：走标准创建流程，无性能损失。
 
-### 4.5 @Styles 与 @Extend 的编译期宏展开
+### 3.5 @Styles 与 @Extend 的编译期宏展开
 
 `@Styles` 与 `@Extend` 在编译期展开为样式对象：
 
@@ -395,7 +345,7 @@ function title(text: Text, size: number) {
 }
 ```
 
-### 4.6 组件树与渲染树的分离
+### 3.6 组件树与渲染树的分离
 
 ArkUI 维护三棵树：
 
@@ -415,7 +365,7 @@ ArkUI 维护三棵树：
 
 状态变化时，仅触发 Element Tree 的局部 diff 与 Render Tree 的局部更新，避免整树重建。
 
-### 4.7 ForEach 的 key 机制
+### 3.7 ForEach 的 key 机制
 
 `ForEach` 的 `keyGenerator` 决定列表项的复用：
 
@@ -432,7 +382,7 @@ $$
 \text{Reuse}(\text{ForEach}) \iff \text{key}(\text{old}[i]) = \text{key}(\text{new}[j])
 $$
 
-### 4.8 条件渲染的依赖追踪
+### 3.8 条件渲染的依赖追踪
 
 `if/else` 分支在 ArkUI 中会被追踪：
 
@@ -449,7 +399,7 @@ if (this.isLoading) {
 
 这意味着 `if/else` 切换是有成本的，频繁切换会导致 Element 频繁创建销毁。替代方案：使用 `visibility` 属性隐藏，保留 Element。
 
-### 4.9 组件复用与内存占用
+### 3.9 组件复用与内存占用
 
 `@Reusable` 复用池的内存占用：
 
@@ -459,7 +409,7 @@ $$
 
 复用池默认容量 128，对于大组件（如带图片的卡片），可能占用数十 MB。需通过 `reuseMaxLimit` 控制容量。
 
-### 4.10 装饰器的编译期元编程
+### 3.10 装饰器的编译期元编程
 
 ArkUI 装饰器本质是 TypeScript 装饰器的扩展，在编译期由 ArkTS 编译器（基于 TypeScript Compiler API）变换 AST：
 
@@ -477,9 +427,9 @@ set count(value: number) { this.__count.set(value); }
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础自定义组件：带插槽的卡片
+### 4.1 基础自定义组件：带插槽的卡片
 
 ```typescript
 // 通用卡片组件，支持头部、内容、底部三插槽
@@ -595,7 +545,7 @@ struct CardDemo {
 }
 ```
 
-### 5.2 带生命周期的定时器组件
+### 4.2 带生命周期的定时器组件
 
 ```typescript
 @Component
@@ -658,7 +608,7 @@ struct Timer {
 }
 ```
 
-### 5.3 @Prop 单向数据流：用户卡片
+### 4.3 @Prop 单向数据流：用户卡片
 
 ```typescript
 interface UserProfile {
@@ -719,7 +669,7 @@ struct UserList {
 }
 ```
 
-### 5.4 @Link 双向绑定：开关组件
+### 4.4 @Link 双向绑定：开关组件
 
 ```typescript
 @Component
@@ -766,7 +716,7 @@ struct SettingsPage {
 }
 ```
 
-### 5.5 @Provide/@Consume 跨层级：主题切换
+### 4.5 @Provide/@Consume 跨层级：主题切换
 
 ```typescript
 interface Theme {
@@ -862,7 +812,7 @@ struct Button {
 }
 ```
 
-### 5.6 @Builder 与 @BuilderParam：可复用 UI 片段
+### 4.6 @Builder 与 @BuilderParam：可复用 UI 片段
 
 ```typescript
 // 全局 @Builder：可在任意组件中复用
@@ -928,7 +878,7 @@ struct ListPage {
 }
 ```
 
-### 5.7 @Styles 与 @Extend：样式复用
+### 4.7 @Styles 与 @Extend：样式复用
 
 ```typescript
 // @Styles：复用通用样式属性
@@ -977,7 +927,7 @@ struct StyledCard {
 }
 ```
 
-### 5.8 @Reusable 组件复用：列表项
+### 4.8 @Reusable 组件复用：列表项
 
 ```typescript
 interface NewsItem {
@@ -1057,7 +1007,7 @@ struct NewsList {
 }
 ```
 
-### 5.9 @Watch 状态监听：埋点与持久化
+### 4.9 @Watch 状态监听：埋点与持久化
 
 ```typescript
 import { preferences } from '@kit.ArkData';
@@ -1101,7 +1051,7 @@ struct SearchBar {
 }
 ```
 
-### 5.10 综合案例：购物车商品行
+### 4.10 综合案例：购物车商品行
 
 ```typescript
 interface CartItem {
@@ -1221,9 +1171,9 @@ struct CartPage {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 ArkUI 自定义组件 vs React Function Component
+### 5.1 ArkUI 自定义组件 vs React Function Component
 
 | 维度 | ArkUI | React FC | 差异分析 |
 | --- | --- | --- | --- |
@@ -1235,7 +1185,7 @@ struct CartPage {
 | 性能 | 编译期 AOT，无 Virtual DOM | 运行时 Virtual DOM Diff | ArkUI 性能更优 |
 | 生态 | HarmonyOS 专属 | 跨平台 | React 生态更丰富 |
 
-### 6.2 ArkUI vs Vue SFC
+### 5.2 ArkUI vs Vue SFC
 
 | 维度 | ArkUI | Vue SFC | 差异分析 |
 | --- | --- | --- | --- |
@@ -1246,7 +1196,7 @@ struct CartPage {
 | 复用 | @Reusable | keep-alive | 机制类似 |
 | 编译 | ArkTS 编译期 AOT | vue-loader 运行时 | ArkUI 性能更优 |
 
-### 6.3 ArkUI vs SwiftUI
+### 5.3 ArkUI vs SwiftUI
 
 | 维度 | ArkUI | SwiftUI | 差异分析 |
 | --- | --- | --- | --- |
@@ -1256,7 +1206,7 @@ struct CartPage {
 | 复用 | @Reusable | SwiftUI 无显式复用 | ArkUI 多了复用池 |
 | 语言 | ArkTS（TS 超集） | Swift | ArkTS 更易学 |
 
-### 6.4 ArkUI vs Jetpack Compose
+### 5.4 ArkUI vs Jetpack Compose
 
 | 维度 | ArkUI | Compose | 差异分析 |
 | --- | --- | --- | --- |
@@ -1266,7 +1216,7 @@ struct CartPage {
 | 复用 | @Reusable | key + remember | 机制不同 |
 | 编译 | ArkTS AOT | Kotlin Compiler Plugin | 都为编译期变换 |
 
-### 6.5 @BuilderParam vs React children vs Vue slot
+### 5.5 @BuilderParam vs React children vs Vue slot
 
 | 维度 | @BuilderParam | React children | Vue slot |
 | --- | --- | --- | --- |
@@ -1275,7 +1225,7 @@ struct CartPage {
 | 多插槽 | 多个 @BuilderParam | 命名 props | 命名 slot |
 | 类型检查 | 强类型（函数签名） | 弱类型（ReactNode） | 弱类型 |
 
-### 6.6 @Reusable vs React.memo vs Vue keep-alive
+### 5.6 @Reusable vs React.memo vs Vue keep-alive
 
 | 维度 | @Reusable | React.memo | Vue keep-alive |
 | --- | --- | --- | --- |
@@ -1286,9 +1236,9 @@ struct CartPage {
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：在 build() 中执行副作用
+### 6.1 陷阱：在 build() 中执行副作用
 
 ```typescript
 // 反模式：在 build() 中发起网络请求
@@ -1320,7 +1270,7 @@ struct GoodComponent {
 
 **事故案例**：某电商应用首页在 build() 中调用 `localStorage.get()`，导致每次状态变化都触发磁盘 I/O，首页滑动卡顿。修复后 FPS 从 30 提升至 60。
 
-### 7.2 陷阱：@Prop 传递大对象
+### 6.2 陷阱：@Prop 传递大对象
 
 ```typescript
 // 反模式：@Prop 传递 1000 条数据
@@ -1350,7 +1300,7 @@ struct GoodList {
 
 **事故案例**：某新闻应用列表使用 `@Prop` 传递 500 条新闻，每次刷新导致主线程阻塞 200ms。改用 `@Link` 后降至 5ms。
 
-### 7.3 陷阱：滥用 @Provide/@Consume 导致全局污染
+### 6.3 陷阱：滥用 @Provide/@Consume 导致全局污染
 
 ```typescript
 // 反模式：所有状态都用 @Provide
@@ -1379,7 +1329,7 @@ struct CartPage {
 
 **事故案例**：某应用将 30+ 状态全部 `@Provide`，导致任意组件变化都触发整树重建，首页加载时间从 500ms 升至 2s。
 
-### 7.4 陷阱：@Reusable 未重置内部状态
+### 6.4 陷阱：@Reusable 未重置内部状态
 
 ```typescript
 // 反模式：@Reusable 组件未重置状态
@@ -1409,7 +1359,7 @@ struct GoodRow {
 
 **事故案例**：某社交应用列表项的"点赞"状态在复用后保留，导致用户看到错误的点赞状态。修复后投诉量下降 80%。
 
-### 7.5 陷阱：ForEach 的 key 使用 index
+### 6.5 陷阱：ForEach 的 key 使用 index
 
 ```typescript
 // 反模式：用 index 作为 key
@@ -1425,7 +1375,7 @@ ForEach(this.items, (item) => {
 
 **事故案例**：某待办列表使用 index 作为 key，删除第一项后所有项的状态错位（第二项变成第一项的状态）。改用 id 后正常。
 
-### 7.6 陷阱：在 aboutToDisappear 中访问已销毁的资源
+### 6.6 陷阱：在 aboutToDisappear 中访问已销毁的资源
 
 ```typescript
 // 反模式：异步回调中访问已销毁组件
@@ -1463,7 +1413,7 @@ struct GoodComponent {
 }
 ```
 
-### 7.7 陷阱：过度使用 if/else 切换
+### 6.7 陷阱：过度使用 if/else 切换
 
 ```typescript
 // 反模式：频繁 if/else 切换
@@ -1493,7 +1443,7 @@ struct GoodPage {
 }
 ```
 
-### 7.8 陷阱：@BuilderParam 与 @State 混淆作用域
+### 6.8 陷阱：@BuilderParam 与 @State 混淆作用域
 
 ```typescript
 // 反模式：在 @Builder 中错误引用 this
@@ -1532,7 +1482,7 @@ struct Parent {
 }
 ```
 
-### 7.9 陷阱：@Link 未使用 $ 语法
+### 6.9 陷阱：@Link 未使用 $ 语法
 
 ```typescript
 // 反模式：直接传值，未建立双向绑定
@@ -1556,7 +1506,7 @@ struct Parent {
 }
 ```
 
-### 7.10 陷阱：组件嵌套过深导致性能下降
+### 6.10 陷阱：组件嵌套过深导致性能下降
 
 ```typescript
 // 反模式：10 层嵌套
@@ -1588,9 +1538,9 @@ struct Flat {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 组件库设计原则
+### 7.1 组件库设计原则
 
 设计 ArkUI 组件库时应遵循：
 
@@ -1601,7 +1551,7 @@ struct Flat {
 5. **主题适配**：通过 `@Provide`/`@Consume` 注入主题，而非硬编码颜色。
 6. **无障碍**：支持 `accessibilityText`、`accessibilityRole` 等属性。
 
-### 8.2 组件性能监控
+### 7.2 组件性能监控
 
 ```typescript
 // 组件性能监控装饰器（伪代码，需 ArkTS 编译器插件支持）
@@ -1627,7 +1577,7 @@ struct MonitoredComponent {
 }
 ```
 
-### 8.3 组件懒加载
+### 7.3 组件懒加载
 
 ```typescript
 // 使用 LazyForEach 懒加载列表
@@ -1669,7 +1619,7 @@ class LazyDataSource implements IDataSource {
 }
 ```
 
-### 8.4 组件测试
+### 7.4 组件测试
 
 ```typescript
 // 组件单元测试（需配合 ArkUI 测试框架）
@@ -1699,7 +1649,7 @@ export default function abilityTest() {
 }
 ```
 
-### 8.5 组件文档生成
+### 7.5 组件文档生成
 
 ```typescript
 // 使用 JSDoc 注解生成组件文档
@@ -1742,7 +1692,7 @@ export struct Card {
 }
 ```
 
-### 8.6 组件版本管理
+### 7.6 组件版本管理
 
 ```typescript
 // 版本化组件：支持渐进式迁移
@@ -1767,7 +1717,7 @@ export struct CardV2 {
 export { CardV2 as Card };
 ```
 
-### 8.7 组件主题化
+### 7.7 组件主题化
 
 ```typescript
 // 主题令牌
@@ -1817,9 +1767,9 @@ struct ThemedButton {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：电商商品列表性能优化
+### 8.1 案例一：电商商品列表性能优化
 
 **场景**：某电商应用商品列表 1000 项，滑动卡顿，FPS 20。
 
@@ -1836,7 +1786,7 @@ struct ThemedButton {
 
 **结果**：FPS 从 20 提升至 58，内存占用降低 40%。
 
-### 9.2 案例二：跨组件状态同步
+### 8.2 案例二：跨组件状态同步
 
 **场景**：某社交应用需要全局用户状态、主题、语言切换，原方案通过 props 逐层传递，代码冗长且易错。
 
@@ -1852,7 +1802,7 @@ struct ThemedButton {
 
 **结果**：代码量减少 60%，状态同步延迟从 100ms 降至 10ms。
 
-### 9.3 案例三：组件库设计与发布
+### 8.3 案例三：组件库设计与发布
 
 **场景**：某企业需要开发内部组件库，供 10+ 应用复用。
 
@@ -1870,7 +1820,7 @@ struct ThemedButton {
 
 **结果**：10 个应用接入，UI 一致性提升，开发效率提高 50%。
 
-### 9.4 案例四：复杂表单组件
+### 8.4 案例四：复杂表单组件
 
 **场景**：某表单应用需要动态表单，字段数量与类型运行时决定。
 
@@ -1940,7 +1890,7 @@ struct DynamicForm {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **常见疑问 1**：ArkUI 自定义组件有哪六个生命周期回调？分别说明触发时机。
 
@@ -1952,7 +1902,7 @@ struct DynamicForm {
 
 **常见疑问 5**：`@Reusable` 复用池的命中条件是什么？未命中时如何退化？
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **常见疑问 6**：分析以下代码的性能问题并给出优化方案：
 
@@ -1986,7 +1936,7 @@ struct ProductList {
 2. 支持"关注"按钮，关注状态在复用时正确重置。
 3. 点击头像触发回调。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **常见疑问 11**：设计一个企业级组件库的基础架构，包含：
 1. 主题系统（设计令牌、主题切换）。
@@ -2008,7 +1958,7 @@ struct ProductList {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Huawei. ArkUI Developer Documentation. HarmonyOS 5.0. 2024. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ark-ui-0000001501453337
 
@@ -2038,7 +1988,7 @@ struct ProductList {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 - **HarmonyOS 官方文档**：[ArkUI 组件](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkui-ts-components-0000001501271297)
 - **OpenHarmony 源码**：[ArkUI 框架源码](https://gitee.com/openharmony/arkui_ace_engine)

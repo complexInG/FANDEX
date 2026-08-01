@@ -16,16 +16,6 @@ prerequisites:
   - java/概述与开发环境
 ---
 
-## 学习目标
-
-完成本章学习后，你应当能够：
-
-- **Remember（记忆）**：复述 JVM 垃圾回收（Garbage Collection, GC）的核心术语，包括 root set、reachability、safepoint、write barrier 等概念。
-- **Understand（理解）**：解释标记-清除、标记-整理、复制算法、分代收集四类基础 GC 算法的工作原理，以及它们各自的空间与时间复杂度权衡。
-- **Apply（应用）**：在生产环境中使用 `jstat`、`jcmd`、`jmap`、JFR（Java Flight Recorder）等工具定位 GC 异常，并通过 JVM 参数调整堆大小、回收器与暂停目标。
-- **Analyze（分析）**：解构 G1、ZGC、Shenandoah 三种现代回收器的回收流水线，识别并发标记、转移、引用处理、卸载各阶段的停顿来源。
-- **Evaluate（评价）**：针对不同 SLA（延迟敏感、吞吐量优先、大堆内存）场景，评估并选择合适的 GC 算法与参数组合，并量化其对 P99 延迟的影响。
-- **Create（创造）**：设计一套基于真实负载的 GC 调优实验方案，包含基线测量、假设验证、回归测试，输出可复现的调优报告。
 
 ## 历史动机与发展脉络
 

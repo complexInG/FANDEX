@@ -24,61 +24,22 @@ prerequisites:
   - lua/环境与全局变量管理
   - lua/函数与闭包
 ---
+
 # Lua 弱表与 GC
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-学习本章后，读者应能在 Bloom 认知层级框架下达成下列目标。
-
-### 1.1 知识层（Remembering）
-
-- 列举 Lua 弱表的三种模式：弱键 (`__mode = "k"`)、弱值 (`__mode = "v"`)、弱键值 (`__mode = "kv"`)。
-- 复述弱引用（weak reference）与强引用（strong reference）的区别。
-- 描述 Lua 增量标记-清除 GC 与代际 GC 对弱表的不同处理时机。
-
-### 1.2 理解层（Understanding）
-
-- 解释弱表条目被回收的具体时机（GC 周期中的"清除"阶段）。
-- 阐释弱表与字符串驻留（string interning）的相互作用。
-- 描述 ephemeron table 的语义及其对"重链"（resurrection）的影响。
-
-### 1.3 应用层（Applying）
-
-- 编写基于弱表的对象缓存（memoization cache）。
-- 使用弱表实现事件订阅/退订机制，避免内存泄漏。
-- 应用弱表管理临时资源、对话窗口、玩家会话。
-
-### 1.4 分析层（Analyzing）
-
-- 分析弱表与闭包 upvalue、 userdata 关联的 GC 行为。
-- 区分弱表失效与显式置 nil 的回收时机差异。
-- 分析 Redis/Nginx/Game Lua 中弱表的实际性能开销。
-
-### 1.5 评价层（Evaluating）
-
-- 评判弱表 vs LRU 缓存的取舍。
-- 评估 Lua 5.4 代际 GC 对弱表语义的优化与回归。
-- 评判弱表设计在嵌入式环境下的合理性。
-
-### 1.6 创造层（Creating）
-
-- 设计基于弱表的对象池框架。
-- 构建自动化的弱表泄漏检测工具。
-- 设计跨版本兼容的弱表抽象层。
-
-## 2. 历史动机与演化
-
-### 2.1 内存管理范式的演化
+### 1.1 内存管理范式的演化
 
 内存管理历经手动管理（C/C++ `malloc`/`free`）、引用计数（Python `PyObject`）、跟踪式 GC（Java/Lua）三个主要阶段。弱引用（weak reference）的概念最早由 Java 1.1（1997）的 `WeakReference` 类普及，用于解决"对象图中的缓存引用阻碍 GC"问题。
 
 Lua 在 5.0 版本（2003）正式引入弱表，灵感来自 Java 弱引用与 Scheme 垃圾收集器。Lua 之前的版本中，所有表条目都持有强引用，导致缓存模式难以实现而不引起内存膨胀。
 
-### 2.2 Lua 在游戏/嵌入式/脚本领域的地位
+### 1.2 Lua 在游戏/嵌入式/脚本领域的地位
 
 Lua 在以下场景大量使用弱表：
 
@@ -87,7 +48,7 @@ Lua 在以下场景大量使用弱表：
 - **Redis 脚本**：脚本内不能直接使用弱表（脚本生命周期短），但 Redis 内部使用类似机制管理客户端。
 - **Nginx/OpenResty**：worker 进程内使用弱表管理请求上下文，请求结束后自动清理。
 
-### 2.3 演化时间线
+### 1.3 演化时间线
 
 | 版本 | 年份 | 弱表相关变化 |
 | --- | --- | --- |
@@ -99,9 +60,9 @@ Lua 在以下场景大量使用弱表：
 | Lua 5.5 | 2025 | 持续优化弱表扫描开销 |
 | Luau | 2021 | 弱表语义与 Lua 5.1 一致，但 GC 优化 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 弱引用的形式化
+### 2.1 弱引用的形式化
 
 设 $O$ 为对象集合，$R$ 为引用集合。强引用 $s \in O \times O$ 表示"持有"，弱引用 $w \in O \times O$ 表示"观察但持有权移交 GC"。
 
@@ -113,7 +74,7 @@ $$
 
 其中 $S$ 为强引用集。弱引用不参与可达性计算。
 
-### 3.2 弱表的代数模型
+### 2.2 弱表的代数模型
 
 弱表 $T$ 可形式化为四元组：
 
@@ -133,7 +94,7 @@ $$
 \forall (k, v) \in T: \quad \text{if } \text{mode}_v = \text{weak} \land v \notin \text{Reach}_G \Rightarrow (k, v) \text{ removed}
 $$
 
-### 3.3 ephemeron table 语义
+### 2.3 ephemeron table 语义
 
 Lua 5.2+ 引入 ephemeron table 语义：当键为弱引用时，值的可达性传递性条件化于键的可达性。
 
@@ -143,7 +104,7 @@ $$
 
 形式化规则：在 GC 周期中，若弱键 $k$ 不可达，则条目 $(k, v)$ 被移除，**即使 $v$ 仍通过其他强引用可达**。这避免了"重链"问题。
 
-### 3.4 GC 与弱表交互的形式化
+### 2.4 GC 与弱表交互的形式化
 
 Lua GC 周期可抽象为五阶段：
 
@@ -157,7 +118,7 @@ $$
 - **finalize**：调用 `__gc` 元方法。
 - **weak-clear**：清理弱表中失效条目。
 
-### 3.5 弱表与可达性的不动点
+### 2.5 弱表与可达性的不动点
 
 弱表清理需迭代收敛：
 
@@ -167,9 +128,9 @@ $$
 
 当 $\text{Reach}_{n+1} = \text{Reach}_n$ 时收敛，此时执行最终清除。
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 弱表回收时机定理
+### 3.1 弱表回收时机定理
 
 **定理 1**（弱表条目回收时机）：Lua 5.x 保证弱表条目的回收发生在 GC 周期的 atomic 阶段，且在 `__gc` 元方法调用之前。
 
@@ -185,7 +146,7 @@ Lua GC 在 atomic 阶段：
 
 证毕。
 
-### 4.2 字符串键不被弱化定理
+### 3.2 字符串键不被弱化定理
 
 **定理 2**（字符串键的强引用语义）：Lua 弱表中的字符串键不会被弱化为弱引用，即使 `__mode = "k"`。
 
@@ -212,7 +173,7 @@ static int isobjtraceable (const TValue *o) {
 
 证毕。
 
-### 4.3 ephemeron table 不动点定理
+### 3.3 ephemeron table 不动点定理
 
 **定理 3**（ephemeron 不动点存在性）：在 ephemeron table 语义下，弱键条目的清理会达到不动点，即存在 $N$ 使得 $\text{Reach}_{N+1} = \text{Reach}_N$。
 
@@ -228,7 +189,7 @@ Lua 实现采用迭代算法，最多 $O(|T|)$ 轮收敛，其中 $|T|$ 为弱�
 
 证毕。
 
-### 4.4 弱表与闭包 upvalue 的交互
+### 3.4 弱表与闭包 upvalue 的交互
 
 **定理 4**（弱表对闭包的语义）：若弱表值为函数 $f$，且 $f$ 捕获了 upvalue $u$，则当 $f$ 通过弱表回收时，$u$ 不会立即被回收，需视 $u$ 是否还被其他闭包引用。
 
@@ -257,7 +218,7 @@ print(f)  -- function: 0x...
 
 证明：弱表回收的只是弱表与对象的弱引用，对象的实际回收需视所有引用消失。
 
-### 4.5 弱表遍历的稳定性
+### 3.5 弱表遍历的稳定性
 
 **定理 5**（弱表遍历不可靠性）：在遍历弱表期间，任何 `next` 或 `pairs` 调用可能遇到已失效但未清除的条目，也可能因 GC 触发而中途变更。
 
@@ -285,9 +246,9 @@ for k, v in pairs(t) do
 end
 ```
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 弱表基础
+### 4.1 弱表基础
 
 ```lua
 -- lua: 弱表基础
@@ -307,7 +268,7 @@ collectgarbage("collect")
 print(weak_values[1])  -- nil（已回收）
 ```
 
-### 5.2 弱键表示例
+### 4.2 弱键表示例
 
 ```lua
 -- lua: 弱键表
@@ -330,7 +291,7 @@ for k, v in pairs(weak_keys) do count = count + 1 end
 print(count)  -- 1（只剩 key2）
 ```
 
-### 5.3 对象缓存
+### 4.3 对象缓存
 
 ```lua
 -- lua: 弱表实现对象缓存
@@ -371,7 +332,7 @@ collectgarbage("collect")
 print(cache.size())  -- 0（u1 已回收）
 ```
 
-### 5.4 事件订阅系统
+### 4.4 事件订阅系统
 
 ```lua
 -- lua: 弱表实现事件订阅
@@ -414,7 +375,7 @@ print(emitter:count())  -- 1（handler1 已回收）
 emitter:emit("world")  -- 只有 handler2 触发
 ```
 
-### 5.5 字符串键不被弱化验证
+### 4.5 字符串键不被弱化验证
 
 ```lua
 -- lua: 字符串键不被弱化
@@ -430,7 +391,7 @@ print(weak_keys["my_string_key"])  -- value（未被回收）
 -- 字符串字面量在常量表中，永远不被弱化
 ```
 
-### 5.6 ephemeron table 语义
+### 4.6 ephemeron table 语义
 
 ```lua
 -- lua: ephemeron table 语义
@@ -454,7 +415,7 @@ end
 print(found)  -- false（key 与 value 都被回收）
 ```
 
-### 5.7 弱表与元表
+### 4.7 弱表与元表
 
 ```lua
 -- lua: 弱表作为元表
@@ -484,7 +445,7 @@ for _ in pairs(instances) do count = count + 1 end
 print(count)  -- 1（inst1 已回收）
 ```
 
-### 5.8 临时表池
+### 4.8 临时表池
 
 ```lua
 -- lua: 弱表实现表池
@@ -524,7 +485,7 @@ collectgarbage("collect")
 print(pool.stats())  -- {created=1, pooled=0}（池中表被回收）
 ```
 
-### 5.9 玩家会话管理
+### 4.9 玩家会话管理
 
 ```lua
 -- lua: 弱表管理玩家会话（游戏场景）
@@ -571,7 +532,7 @@ print(mgr.active_count())  -- 1（session 被回收）
 mgr.cleanup_metadata()  -- 清理元数据
 ```
 
-### 5.10 检测对象泄漏
+### 4.10 检测对象泄漏
 
 ```lua
 -- lua: 弱表检测对象泄漏
@@ -613,7 +574,7 @@ print(detector.alive())  -- {}（已回收）
 detector.assert_no_leak()  -- 通过
 ```
 
-### 5.11 弱表遍历安全模式
+### 4.11 弱表遍历安全模式
 
 ```lua
 -- lua: 弱表遍历安全包装
@@ -643,7 +604,7 @@ for k, v in safe_pairs(weak) do
 end
 ```
 
-### 5.12 双向引用管理
+### 4.12 双向引用管理
 
 ```lua
 -- lua: 双向引用避免循环
@@ -680,9 +641,9 @@ collectgarbage("collect")
 -- 需要更精细的设计
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua vs Java 弱引用
+### 5.1 Lua vs Java 弱引用
 
 | 维度 | Lua | Java |
 | --- | --- | --- |
@@ -693,7 +654,7 @@ collectgarbage("collect")
 | 性能 | 高（C 实现） | 中等（VM 内部） |
 | 跨线程 | 单线程 | 多线程安全 |
 
-### 6.2 Lua vs Python 弱引用
+### 5.2 Lua vs Python 弱引用
 
 | 维度 | Lua | Python |
 | --- | --- | --- |
@@ -703,7 +664,7 @@ collectgarbage("collect")
 | 性能 | 高 | 中等 |
 | 跨版本兼容 | 5.0+ 一致 | 2.1+ 一致 |
 
-### 6.3 Lua vs JavaScript WeakMap
+### 5.3 Lua vs JavaScript WeakMap
 
 | 维度 | Lua | JavaScript |
 | --- | --- | --- |
@@ -714,7 +675,7 @@ collectgarbage("collect")
 | 元方法 | `__mode` | 无 |
 | 应用场景 | 缓存、追踪 | 私有数据、元数据 |
 
-### 6.4 性能对比基准
+### 5.4 性能对比基准
 
 | 操作 | Lua 5.4 | Luau JIT | Python 3.11 |
 | --- | --- | --- | --- |
@@ -724,9 +685,9 @@ collectgarbage("collect")
 | GC 弱表扫描 | 10μs/100条 | 8μs/100条 | 50μs/100条 |
 | 内存开销 | 16B/条 | 16B/条 | 80B/条 |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：弱表元方法设置时机
+### 6.1 陷阱：弱表元方法设置时机
 
 **反模式**：
 
@@ -741,7 +702,7 @@ local t = setmetatable({}, {__mode = "v"})
 t[1] = some_obj
 ```
 
-### 7.2 陷阱：字符串键不被弱化
+### 6.2 陷阱：字符串键不被弱化
 
 **反模式**：
 
@@ -757,7 +718,7 @@ print(weak["key1"])  -- value1（未被清除）
 -- 实际：字符串在 Lua 中是驻留的，永远不会被弱化
 ```
 
-### 7.3 陷阱：弱表中的数字键
+### 6.3 陷阱：弱表中的数字键
 
 ```lua
 -- lua: 弱表中的数字键
@@ -768,7 +729,7 @@ collectgarbage("collect")
 print(weak[1])  -- value（数字不是可回收对象）
 ```
 
-### 7.4 陷阱：弱值表中的数字
+### 6.4 陷阱：弱值表中的数字
 
 ```lua
 -- lua: 弱值表中的数字
@@ -779,7 +740,7 @@ collectgarbage("collect")
 print(weak[1])  -- 42（数字永远不被弱化）
 ```
 
-### 7.5 反模式：在弱表中存储临时大对象
+### 6.5 反模式：在弱表中存储临时大对象
 
 ```lua
 -- lua: 弱表不适合存储大对象
@@ -797,7 +758,7 @@ storage[1] = big
 -- 显式 storage[1] = nil 释放
 ```
 
-### 7.6 陷阱：遍历弱表期间触发 GC
+### 6.6 陷阱：遍历弱表期间触发 GC
 
 ```lua
 -- lua: 遍历弱表期间触发 GC
@@ -818,7 +779,7 @@ for k, v in pairs(weak) do
 end
 ```
 
-### 7.7 陷阱：弱表与 tostring 的交互
+### 6.7 陷阱：弱表与 tostring 的交互
 
 ```lua
 -- lua: 弱表中 table 作为键，tostring 后引用
@@ -835,7 +796,7 @@ collectgarbage("collect")
 print(weak[key_str])  -- nil（字符串键）
 ```
 
-### 7.8 反模式：弱表作为唯一数据源
+### 6.8 反模式：弱表作为唯一数据源
 
 ```lua
 -- lua: 弱表不适合作为唯一数据源
@@ -853,7 +814,7 @@ local alice = login("alice")
 -- alice 可能已被回收，user_db["alice"] 为 nil
 ```
 
-### 7.9 陷阱：弱表与元方法 `__index`
+### 6.9 陷阱：弱表与元方法 `__index`
 
 ```lua
 -- lua: 弱表作为 __index 元表
@@ -864,9 +825,9 @@ local obj = setmetatable({}, {__index = defaults})
 -- 当 defaults 中的对象被回收，访问 obj.x 可能返回 nil
 ```
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 弱表缓存模式
+### 7.1 弱表缓存模式
 
 ```lua
 -- lua: 弱表缓存的最佳实践
@@ -891,7 +852,7 @@ local function make_memoized(fn)
 end
 ```
 
-### 8.2 LRU 缓存与弱表结合
+### 7.2 LRU 缓存与弱表结合
 
 ```lua
 -- lua: LRU + 弱表混合缓存
@@ -940,7 +901,7 @@ local function make_lru_cache(max_size)
 end
 ```
 
-### 8.3 事件订阅系统
+### 7.3 事件订阅系统
 
 ```lua
 -- lua: 事件订阅系统最佳实践
@@ -981,7 +942,7 @@ collectgarbage("collect")
 bus.publish("world")  -- 无输出
 ```
 
-### 8.4 资源池化
+### 7.4 资源池化
 
 ```lua
 -- lua: 资源池化（数据库连接、网络连接）
@@ -1035,7 +996,7 @@ collectgarbage("collect")
 print(pool.stats())  -- {created=1, pooled=0, in_use=0}
 ```
 
-### 8.5 弱表配置约定
+### 7.5 弱表配置约定
 
 ```lua
 -- lua: 弱表配置的最佳实践
@@ -1057,7 +1018,7 @@ local function make_weak_both()
 end
 ```
 
-### 8.6 测试与可调试性
+### 7.6 测试与可调试性
 
 ```lua
 -- lua: 弱表的测试工具
@@ -1085,9 +1046,9 @@ obj = nil
 assert_weak_ref_cleared(weak, 1)  -- 等待 GC 完成
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Redis 中的弱表应用
+### 8.1 Redis 中的弱表应用
 
 Redis 脚本生命周期短，弱表应用有限，但 Redis 内部使用类似机制管理客户端。
 
@@ -1116,7 +1077,7 @@ local function handle_disconnect(fd)
 end
 ```
 
-### 9.2 Nginx 中的请求上下文
+### 8.2 Nginx 中的请求上下文
 
 ```lua
 -- lua: OpenResty 请求上下文管理
@@ -1141,7 +1102,7 @@ local function active_request_count()
 end
 ```
 
-### 9.3 游戏中的实体管理
+### 8.3 游戏中的实体管理
 
 ```lua
 -- lua: 魔兽世界风格的实体管理
@@ -1173,7 +1134,7 @@ local function for_each_entity(callback)
 end
 ```
 
-### 9.4 Lapis Web 框架的缓存
+### 8.4 Lapis Web 框架的缓存
 
 ```lua
 -- lua: Lapis 风格的请求缓存
@@ -1199,7 +1160,7 @@ local function make_request_cache()
 end
 ```
 
-### 9.5 Neovim 中的 buffer 管理
+### 8.5 Neovim 中的 buffer 管理
 
 ```lua
 -- lua: Neovim buffer 管理
@@ -1222,7 +1183,7 @@ end
 -- nvim_buf_detach 没有直接 API，但弱表自动处理
 ```
 
-### 9.6 企业级案例：分布式锁缓存
+### 8.6 企业级案例：分布式锁缓存
 
 ```lua
 -- lua: 分布式锁缓存
@@ -1265,7 +1226,7 @@ end
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：实现一个函数 `weak_size(t)`，统计弱表中的活跃条目数。
 
@@ -1315,7 +1276,7 @@ collectgarbage("collect")
 print(mapped[1])  -- 可能 nil
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 3**：实现一个完整的 LRU + 弱表混合缓存，支持 max_size、expire_time 与 stats。
 
@@ -1431,7 +1392,7 @@ collectgarbage("collect")
 observable:notify("world")  -- 无输出，自动清理
 ```
 
-### 10.3 思考题
+### 9.3 思考题
 
 **思考题 1**：为什么 Lua 弱表中的字符串键不会被弱化？
 
@@ -1459,7 +1420,7 @@ observable:notify("world")  -- 无输出，自动清理
 
 Lua 允许遍历弱表是设计取舍，给予开发者灵活性但需谨慎使用。
 
-### 10.4 项目题
+### 9.4 项目题
 
 **项目题**：实现一个内存泄漏检测库，能够：
 1. 追踪对象创建与回收。
@@ -1530,9 +1491,9 @@ res = nil
 detector:assert_clean()  -- 应通过
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 ACM Reference Format
+### 10.1 ACM Reference Format
 
 [1] Roberto Ierusalimschy, Luiz Henrique de Figueiredo, and Waldemar Celes. 2005. The implementation of Lua 5.0. _Journal of Universal Computer Science_ 11, 7 (2005), 1159–1176. DOI: https://doi.org/10.3217/jucs-011-07-1159
 
@@ -1574,50 +1535,50 @@ detector:assert_clean()  -- 应通过
 
 [20] Peter J. Denning. 1970. Virtual memory. _Computing Surveys_ 2, 3 (Sept. 1970), 153–189. DOI: https://doi.org/10.1145/356571.356573
 
-### 11.2 引用与扩展
+### 10.2 引用与扩展
 
 **关于 Lua 弱表实现细节**，可参考 Ierusalimschy 等人的 *The Implementation of Lua 5.0*（文献 [1]），其中详述了弱表与 GC 的协同机制。
 
 **关于通用垃圾收集理论**，Jones & Lins 的 *Garbage Collection*（文献 [5]）是经典教材，全面覆盖标记-清除、复制、分代等算法。
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Lua 5.4 Reference Manual: Weak Tables 章节 - https://www.lua.org/manual/5.4/manual.html#2.7
 - Lua 5.4 GC: https://www.lua.org/manual/5.4/manual.html#2.5
 - LuaJIT Weak Tables: https://luajit.org/extensions.html
 - Luau Memory Model: https://luau.org/memory
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - *Garbage Collection: Algorithms for Automatic Dynamic Memory Analysis* by Jones & Lins
 - *Programming in Lua* (4th ed.) by Roberto Ierusalimschy - 第 17 章"弱表与垃圾收集"
 - *The Garbage Collection Handbook: The Art of Automatic Memory Management* by Jones, Hosking, Moss
 - *Crafting Interpreters* by Robert Nystrom - 第 25 章"垃圾收集"
 
-### 12.3 进阶论文
+### 11.3 进阶论文
 
 - *The Implementation of Lua 5.0* - 弱表与 GC 协同
 - *A No-Frills Introduction to Lua 5.1 VM Instructions* - 字节码层面
 - *Lua Performance Tips* by Roberto Ierusalimschy
 - *Generational Garbage Collection in Lua 5.4* - 代际 GC 实现
 
-### 12.4 实战项目
+### 11.4 实战项目
 
 - **LuaJIT**: 弱表优化实现 - https://luajit.org/
 - **OpenResty**: 请求生命周期与弱表 - https://openresty.org/
 - **Lapis**: Web 框架缓存实现 - https://leafo.net/lapis/
 - **Kong**: API 网关插件缓存 - https://konghq.com/
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - Lua Users Wiki: Weak Tables - http://lua-users.org/wiki/WeakTablesTutorial
 - Lua Mailing List Archives: GC 讨论
 - Stack Overflow: lua+weak-tables
 - Roblox Luau: Memory Management
 
-### 12.6 配套实验
+### 11.6 配套实验
 
 建议结合以下实验加深理解：
 
@@ -1626,7 +1587,7 @@ detector:assert_clean()  -- 应通过
 3. **内存泄漏检测器**：构建基于弱表的泄漏检测工具。
 4. **GC 可视化**：使用 `collectgarbage` API 监控弱表回收时机。
 
-### 12.7 学习路径建议
+### 11.7 学习路径建议
 
 ```mermaid
 flowchart TD

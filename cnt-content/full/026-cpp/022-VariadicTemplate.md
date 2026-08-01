@@ -26,6 +26,7 @@ tags:
   - Parameter Pack
 ---
 
+
 # 变参模板（Variadic Templates）
 
 > 本章节面向已掌握 C++ 基础模板语法的读者，系统讲解可变参数模板（Variadic Templates）的形式化模型、参数包展开机制、折叠表达式语义，以及在标准库与现代工程中的实际应用。内容对标 MIT 6.938 / Stanford CS106L / CMU 15-411 等海外名校课程深度，融合 LLVM、Facebook folly、Google Abseil 等工业界实践。
@@ -49,58 +50,13 @@ tags:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-本章节遵循 Bloom 分类法（Bloom's Taxonomy）设计学习目标，自低阶认知向高阶创造逐级递进。完成本章节后，读者应能够：
-
-### 1.1 记忆（Remembering）
-
-- **R1**：复述参数包（Parameter Pack）的定义语法，包括模板参数包 `template<typename... Ts>` 与函数参数包 `Ts... args`。
-- **R2**：列出 `sizeof...(pack)` 运算符的语义，并指出其返回类型为 `size_t`。
-- **R3**：背诵 C++17 引入的四种折叠表达式形式：一元右折叠、一元左折叠、二元右折叠、二元左折叠。
-- **R4**：识别 `typename...`、`class...`、`template<typename> class...`、`auto...` 四种模板参数包声明形式的差异。
-
-### 1.2 理解（Understanding）
-
-- **U1**：解释参数包在模板实例化时的展开过程，能够绘制展开树（Expansion Tree）。
-- **U2**：阐明递归模板终止（Base Case）的必要性，并说明为什么 C++11 时代必须显式提供空包特化。
-- **U3**：对比 `Args... args` 与 `Args&&... args` 的语义差异，理解万能引用（Universal Reference）与参数包的结合。
-- **U4**：说明折叠表达式中左右结合性的影响，特别是在 `<<`、`>>`、`,` 等运算符上的差异。
-
-### 1.3 应用（Applying）
-
-- **A1**：使用变参模板实现类型安全的 `printf`，避免 C 风格 `printf` 的格式串与参数类型不匹配问题。
-- **A2**：使用折叠表达式实现编译期累加、逻辑与/或、逗号运算符链式调用。
-- **A3**：使用 `std::tuple` 与 `std::index_sequence` 实现参数包的索引访问与运行时遍历。
-- **A4**：实现一个简单的 `std::variant` 访问器（Visitor），支持对多种类型的多态分发。
-
-### 1.4 分析（Analyzing）
-
-- **An1**：分析变参模板实例化后的代码膨胀（Code Bloat）问题，估算递归展开的编译时间复杂度。
-- **An2**：解构 `std::make_unique<T>(args...)` 的实现，分析完美转发在参数包中的应用。
-- **An3**：对比递归展开与折叠表达式两种风格在可读性、编译性能、错误信息友好度上的差异。
-
-### 1.5 评价（Evaluating）
-
-- **E1**：评估在何种场景下应优先使用折叠表达式而非递归展开，给出至少 3 条决策依据。
-- **E2**：评价 `using` 类型别名（Type Alias）在简化变参模板可读性方面的作用，并与 `template<typename> struct` 风格对比。
-- **E3**：批判性分析"过度元编程"反模式，指出变参模板在何种情况下会损害可维护性。
-
-### 1.6 创造（Creating）
-
-- **C1**：设计一个类型安全的信号槽系统（Signal-Slot），支持任意可调用对象与任意参数组合。
-- **C2**：实现一个编译期依赖注入容器（DI Container），通过变参模板注册与解析服务。
-- **C3**：构建一个泛型序列化框架，利用变参模板自动遍历聚合体的字段并生成序列化代码。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 前变参模板时代（C++98/03）
+### 1.1 前变参模板时代（C++98/03）
 
 在 C++11 之前，C++ 模板不支持真正意义上的"可变参数"。开发者若需要接收任意数量的参数，只能依赖以下三种权宜之计：
 
-#### 2.1.1 C 风格变长参数（`va_list`）
+#### 1.1.1 C 风格变长参数（`va_list`）
 
 ```cpp
 #include <cstdarg>
@@ -126,7 +82,7 @@ int sum_ints(int count, ...) {
 - 无法传递非平凡对象：`va_arg` 只能处理 POD 类型，传递 `std::string` 会触发 UB。
 - 性能损失：栈帧布局依赖 ABI，无法内联优化。
 
-#### 2.1.2 模板默认参数枚举（"假变参"）
+#### 1.1.2 模板默认参数枚举（"假变参"）
 
 ```cpp
 // C++03 时代的"假变参"：通过枚举默认参数实现
@@ -150,7 +106,7 @@ Boost.Tuple 在 C++03 时代正是采用这种手法，通过预处理宏生成�
 - 代码生成依赖预处理宏，可读性极差。
 - 编译时间随参数上限二次增长。
 
-#### 2.1.3 Boost.Preprocessor 宏生成
+#### 1.1.3 Boost.Preprocessor 宏生成
 
 ```cpp
 // Boost.Preprocessor 风格：用宏循环生成代码
@@ -163,7 +119,7 @@ Boost.Tuple 在 C++03 时代正是采用这种手法，通过预处理宏生成�
 
 这是 C++03 时代 Boost.MPL、Boost.Fusion 等库的基石，但其复杂度令普通开发者望而却步。
 
-### 2.2 C++11：变参模板的诞生
+### 1.2 C++11：变参模板的诞生
 
 2007 年，Douglas Gregor 与 Jaakko Järvi 向 C++ 委员会提交了 N2080 提案《A Proposal to Add a Variadic Template Facility to the C++ Standard》，标志着变参模板正式进入标准。其核心动机包括：
 
@@ -192,7 +148,7 @@ void print_all(Ts... args) {
 }
 ```
 
-### 2.3 C++14：泛型 Lambda 与返回类型推导
+### 1.3 C++14：泛型 Lambda 与返回类型推导
 
 C++14 进一步放宽了变参模板的使用限制：
 
@@ -200,7 +156,7 @@ C++14 进一步放宽了变参模板的使用限制：
 - **返回类型自动推导**：使变参模板的递归终止函数更易书写。
 - **`std::index_sequence`**：标准库提供编译期整数序列，简化参数包索引访问。
 
-### 2.4 C++17：折叠表达式（Fold Expressions）
+### 1.4 C++17：折叠表达式（Fold Expressions）
 
 C++17 引入折叠表达式（N4295 提案），这是变参模板演化的里程碑。在 C++11/14 时代，对参数包进行二元运算（如累加、逻辑与/或）必须通过递归模板实现，代码冗长且易错。折叠表达式将其压缩为一行：
 
@@ -230,7 +186,7 @@ C++17 定义了四种折叠形式：
 | 二元右折叠 | `(pack op ... op init)` | `(e1 op (e2 op (... op (eN op init))))` |
 | 二元左折叠 | `(init op ... op pack)` | `((((init op e1) op e2) op ...) op eN)` |
 
-### 2.5 C++20：概念（Concepts）与变参模板
+### 1.5 C++20：概念（Concepts）与变参模板
 
 C++20 引入概念（Concepts），使变参模板的约束（Constraints）变得简洁：
 
@@ -252,18 +208,18 @@ auto sum(Ts... ts) { return (ts + ...); }
 
 C++20 还引入了 `std::format`（基于变参模板的格式化库），以及 `consteval`、`constinit` 等与变参模板协同的关键字。
 
-### 2.6 C++23 与 C++26 的演进
+### 1.6 C++23 与 C++26 的演进
 
 - **C++23**：`std::print`、`std::expected`、`if consteval` 等进一步简化变参模板在错误处理与格式化中的使用。`std::tuple` 的实现从递归继承改为扁平数组，提升编译速度。
 - **C++26（预期）**：静态反射（Reflection）提案 P2996 将允许在编译期遍历参数包的元信息，如类型名称、字段布局。模式匹配（Pattern Matching）提案 P2688 将引入 `inspect` 语法，与变参模板结合实现更优雅的多态分发。
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 参数包的语法与语义
+### 2.1 参数包的语法与语义
 
-#### 3.1.1 模板参数包
+#### 2.1.1 模板参数包
 
 **定义 3.1**（模板参数包）：在模板参数列表中，以省略号 `...` 标识的参数称为模板参数包（Template Parameter Pack）。其语法形式为：
 
@@ -282,7 +238,7 @@ tuple<int> t1;           // Ts = {int}
 tuple<int, double, char> t3;  // Ts = {int, double, char}
 ```
 
-#### 3.1.2 函数参数包
+#### 2.1.2 函数参数包
 
 **定义 3.2**（函数参数包）：在函数参数列表中，由模板参数包推导而来的参数称为函数参数包（Function Parameter Pack）。其声明形式为 `Ts... args`，其中 `Ts` 是模板参数包。
 
@@ -294,7 +250,7 @@ f();                  // args 为空
 f(42, "hello", 3.14); // args = {42, "hello", 3.14}
 ```
 
-#### 3.1.3 `sizeof...` 运算符
+#### 2.1.3 `sizeof...` 运算符
 
 **定义 3.3**（`sizeof...` 运算符）：对于参数包 `Pack`，`sizeof...(Pack)` 返回包中元素的数目，类型为 `std::size_t`。该运算符在编译期求值，可在 `constexpr` 上下文中使用。
 
@@ -312,7 +268,7 @@ static_assert(arity<>() == 0);
 static_assert(arity<int, double, char>() == 3);
 ```
 
-### 3.2 包展开（Pack Expansion）
+### 2.2 包展开（Pack Expansion）
 
 **定义 3.4**（包展开模式）：参数包的展开通过"模式 + 省略号"实现。模式 `Pattern` 是一个包含参数包 `Pack` 的表达式，展开结果为 `Pattern(e1), Pattern(e2), ..., Pattern(eN)`。
 
@@ -334,7 +290,7 @@ $$
 | `std::pair<Ts, Ts>...` | `std::pair<int, int>, std::pair<double, double>` |
 | `sizeof...(Ts)` | `2`（不是展开，是聚合） |
 
-### 3.3 折叠表达式的形式化定义
+### 2.3 折叠表达式的形式化定义
 
 **定义 3.5**（折叠表达式）：给定二元运算符 `op`、参数包 `Pack = ⟨e₁, e₂, ..., eₙ⟩` 与可选初值 `init`，折叠表达式定义如下：
 
@@ -381,7 +337,7 @@ $$
 
 二元折叠在空包时返回 `init`，因此可用于提供默认值。
 
-### 3.4 类型别名与变参模板
+### 2.4 类型别名与变参模板
 
 C++11 引入的 `using` 别名模板（Alias Template）极大简化了变参模板的可读性：
 
@@ -407,9 +363,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 参数包展开的终止性
+### 3.1 参数包展开的终止性
 
 **定理 4.1**（展开终止性）：对于任意有限的参数包 `Pack = ⟨e₁, ..., eₙ⟩`，其递归展开在有限步内终止。
 
@@ -422,7 +378,7 @@ $$
 
 **推论 4.1**：变参模板的编译期复杂度与参数包大小呈线性关系 $O(n)$（单次展开），但若存在多层嵌套模板，总复杂度可能达到 $O(n^d)$，其中 $d$ 为嵌套深度。
 
-### 4.2 折叠表达式的结合性
+### 3.2 折叠表达式的结合性
 
 **定理 4.2**（折叠结合性）：对于满足结合律的运算符 `op`（如 `+`、`*`、`&&`、`||`、`&`、`|`），一元左折叠与一元右折叠的结果相同；对于不满足结合律的运算符（如 `-`、`/`、`<<`、`>>`、`%`），左右折叠结果不同。
 
@@ -443,7 +399,7 @@ $$
 
 **实践意义**：对于 `-`、`/`、`<<`、`>>` 等运算符，必须谨慎选择折叠方向。例如，流插入运算符 `<<` 必须使用左折叠，因为 `std::cout << a << b` 的语义是从左向右结合。
 
-### 4.3 递归展开与折叠表达式的等价性
+### 3.3 递归展开与折叠表达式的等价性
 
 **定理 4.3**（等价性）：对于任意二元运算符 `op` 与非空参数包 `Pack = ⟨e₁, ..., eₙ⟩`，递归展开与折叠表达式的语义等价。
 
@@ -473,7 +429,7 @@ T fold_right(T first, Rest... rest) {
 
 LLVM Clang 的实现（`SemaExprCXX.cpp` 中的 `ActOnCxxFoldExpr`）直接在语义分析阶段构建抽象语法树（AST），避免了模板实例化的开销。
 
-### 4.4 参数包推导的唯一性
+### 3.4 参数包推导的唯一性
 
 **定理 4.4**（推导唯一性）：在函数模板参数推导中，一个模板参数包只能出现在推导上下文中的一个位置，且必须能被唯一确定。
 
@@ -494,9 +450,9 @@ void h(Ts... args, T last);
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 类型安全的 printf
+### 4.1 类型安全的 printf
 
 经典示例：使用变参模板实现类型安全的 `printf`，避免 C 风格 `printf` 的格式串与参数不匹配问题。
 
@@ -545,7 +501,7 @@ int main() {
 - 标准版本：C++17（兼容 C++11，但 `std::string_view` 需 C++17）
 - 优化：`-O2` 启用内联，递归调用可被编译器展平为顺序代码
 
-### 5.2 折叠表达式实现累加与逻辑运算
+### 4.2 折叠表达式实现累加与逻辑运算
 
 ```cpp
 // file: fold_expressions.cpp
@@ -627,7 +583,7 @@ int main() {
 // 运行：./fold_expressions
 ```
 
-### 5.3 完美转发与 `std::make_unique`
+### 4.3 完美转发与 `std::make_unique`
 
 变参模板与完美转发的结合是 `std::make_unique`、`std::emplace_back` 的核心：
 
@@ -695,7 +651,7 @@ int main() {
 - `std::forward<Args>(args)...` 将每个参数以其原始值类别转发。
 - `sizeof...(args)` 在编译期返回参数数目。
 
-### 5.4 `std::tuple` 与 `std::index_sequence`
+### 4.4 `std::tuple` 与 `std::index_sequence`
 
 C++14 引入的 `std::index_sequence` 简化了参数包的运行时遍历：
 
@@ -758,7 +714,7 @@ int main() {
 // 运行：./tuple_index_sequence
 ```
 
-### 5.5 类型安全的变体访问器（Visitor）
+### 4.5 类型安全的变体访问器（Visitor）
 
 ```cpp
 // file: variant_visitor.cpp
@@ -823,7 +779,7 @@ int main() {
 // 运行：./variant_visitor
 ```
 
-### 5.6 编译期字符串拼接
+### 4.6 编译期字符串拼接
 
 ```cpp
 // file: compile_time_string_concat.cpp
@@ -872,7 +828,7 @@ int main() {
 // 运行：./compile_time_string_concat
 ```
 
-### 5.7 信号槽系统（Signal-Slot）
+### 4.7 信号槽系统（Signal-Slot）
 
 ```cpp
 // file: signal_slot.cpp
@@ -946,9 +902,9 @@ int main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 C++ vs C
+### 5.1 C++ vs C
 
 | 维度 | C（`va_list`） | C++（变参模板） |
 |------|----------------|------------------|
@@ -976,7 +932,7 @@ void print(T value) { std::cout << value << '\n'; }
 print(3.14);  // 输出 3.14，类型正确
 ```
 
-### 6.2 C++ vs Rust
+### 5.2 C++ vs Rust
 
 Rust 不直接支持变参函数（除宏外），但通过以下机制实现类似功能：
 
@@ -1019,7 +975,7 @@ fn main() {
 
 Rust 的方式更"手动"，但避免了模板实例化爆炸，编译速度更稳定。
 
-### 6.3 C++ vs Java
+### 5.3 C++ vs Java
 
 Java 通过可变参数（Varargs）实现类似功能，但语义完全不同：
 
@@ -1058,7 +1014,7 @@ public static void pollute(List<String>... lists) {
 
 C++ 变参模板不存在此类问题，因为类型在编译期完全确定。
 
-### 6.4 C++ vs Go
+### 5.4 C++ vs Go
 
 Go 不支持变参函数模板，仅支持类型固定的可变参数：
 
@@ -1090,7 +1046,7 @@ func main() {
 
 Go 1.18 引入泛型后，可通过类型参数实现部分变参功能，但仍不及 C++ 灵活。
 
-### 6.5 综合对比表
+### 5.5 综合对比表
 
 | 特性 | C++ | C | Rust | Java | Go |
 |------|-----|---|------|------|-----|
@@ -1103,9 +1059,9 @@ Go 1.18 引入泛型后，可通过类型参数实现部分变参功能，但仍
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：递归展开缺少终止基例
+### 6.1 陷阱一：递归展开缺少终止基例
 
 **反模式**：
 
@@ -1146,7 +1102,7 @@ void print(Args... args) {
 }
 ```
 
-### 7.2 陷阱二：参数包位置错误
+### 6.2 陷阱二：参数包位置错误
 
 **反模式**：
 
@@ -1176,7 +1132,7 @@ void good_with_default(Ts... args, T last = T{}) {
 }
 ```
 
-### 7.3 陷阱三：折叠表达式方向错误
+### 6.3 陷阱三：折叠表达式方向错误
 
 **反模式**：
 
@@ -1191,7 +1147,7 @@ void bad_print(Args... args) {
 
 **分析**：`std::cout << a << b` 的语义是 `((std::cout << a) << b)`，必须左折叠。若用右折叠 `(a << (b << (... << std::cout)))`，则 `b << std::cout` 是非法的（`int << ostream` 无意义）。
 
-### 7.4 陷阱四：万能引用与参数包的误用
+### 6.4 陷阱四：万能引用与参数包的误用
 
 **反模式**：
 
@@ -1212,7 +1168,7 @@ void good(Args&&... args) {
 
 **详细分析**：`Args&&...` 在模板参数推导时，若实参是左值，`Args` 被推导为 `T&`，`Args&&` 折叠为 `T&`（左值引用）；若实参是右值，`Args` 被推导为 `T`，`Args&&` 为 `T&&`（右值引用）。但在函数体内，具名参数 `args` 始终是左值，必须用 `std::forward` 恢复原始值类别。
 
-### 7.5 陷阱五：代码膨胀（Code Bloat）
+### 6.5 陷阱五：代码膨胀（Code Bloat）
 
 **反模式**：
 
@@ -1246,7 +1202,7 @@ log(1, 2.0, "three", '4');
 2. 使用类型擦除（`std::any`、`std::variant`）减少实例化。
 3. 限制变参模板的使用范围，避免在头文件中暴露。
 
-### 7.6 陷阱六：`sizeof...` 的编译期特性误用
+### 6.6 陷阱六：`sizeof...` 的编译期特性误用
 
 **反模式**：
 
@@ -1275,7 +1231,7 @@ void process(Args... args) {
 }
 ```
 
-### 7.7 陷阱七：包展开模式不匹配
+### 6.7 陷阱七：包展开模式不匹配
 
 **反模式**：
 
@@ -1309,7 +1265,7 @@ void good(Cs... containers) {
 }
 ```
 
-### 7.8 陷阱八：递归展开的深度限制
+### 6.8 陷阱八：递归展开的深度限制
 
 **反模式**：
 
@@ -1339,9 +1295,9 @@ error: constexpr evaluation depth exceeds maximum of 512
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 优先使用折叠表达式
+### 7.1 优先使用折叠表达式
 
 **规则**：在 C++17 及以上项目中，对所有二元运算符作用域参数包的场景，优先使用折叠表达式而非递归展开。
 
@@ -1369,7 +1325,7 @@ auto sum_fold(Args... args) {
 }
 ```
 
-### 8.2 使用类型别名简化
+### 7.2 使用类型别名简化
 
 **规则**：对复杂的变参模板，使用 `using` 别名模板隐藏实现细节。
 
@@ -1391,7 +1347,7 @@ PtrTupleVec<Ts...> make_vec() { /* ... */ }
 auto v = make_vec<int, double, char>();  // 更清晰
 ```
 
-### 8.3 完美转发的正确姿势
+### 7.3 完美转发的正确姿势
 
 **规则**：对所有万能引用参数包，必须使用 `std::forward` 转发，且在 lambda 捕获时使用 `std::forward` 或完美转发包装器。
 
@@ -1414,7 +1370,7 @@ auto make_binder(F&& f, Args&&... args) {
 }
 ```
 
-### 8.4 限制变参模板的作用域
+### 7.4 限制变参模板的作用域
 
 **规则**：变参模板应尽量在内部实现细节中使用，对外接口优先使用具体类型或 `std::variant`。
 
@@ -1443,7 +1399,7 @@ private:
 };
 ```
 
-### 8.5 使用 `if constexpr` 简化分支
+### 7.5 使用 `if constexpr` 简化分支
 
 C++17 的 `if constexpr` 可在编译期分支，避免递归：
 
@@ -1473,7 +1429,7 @@ void print(Args... args) {
 }
 ```
 
-### 8.6 编译时验证与 `static_assert`
+### 7.6 编译时验证与 `static_assert`
 
 **规则**：对变参模板的参数包，使用 `static_assert` 验证约束，提供清晰的编译期错误。
 
@@ -1492,7 +1448,7 @@ process_numeric(1, 2.0, 3.14f);  // OK
 // process_numeric(1, "two", 3);  // 编译错误：清晰提示
 ```
 
-### 8.7 与概念（C++20）结合
+### 7.7 与概念（C++20）结合
 
 C++20 概念使变参模板的约束更优雅：
 
@@ -1520,7 +1476,7 @@ auto make_set(Keys... keys) {
 }
 ```
 
-### 8.8 工具链配置
+### 7.8 工具链配置
 
 **推荐编译选项**：
 
@@ -1545,9 +1501,9 @@ cl /std:c++20 /O2 /W4 /permissive- /Zc:__cplusplus \
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：`std::tuple` 的实现
+### 8.1 案例一：`std::tuple` 的实现
 
 `std::tuple` 是变参模板最经典的应用。以下是其简化实现，揭示核心机制：
 
@@ -1621,7 +1577,7 @@ int main() {
 - C++23 后改用扁平数组存储（`_Tuple_impl` 内部数组），减少继承层级，提升编译速度。
 - 使用 EBO（Empty Base Optimization）优化空类大小的成员。
 
-### 9.2 案例二：`std::function` 的类型擦除
+### 8.2 案例二：`std::function` 的类型擦除
 
 `std::function` 利用变参模板实现类型擦除，存储任意可调用对象：
 
@@ -1680,7 +1636,7 @@ int main() {
 
 **关键洞察**：变参模板 `Args...` 用于签名，`callable_impl<F>` 内部使用完美转发调用任意可调用对象。这是 `std::function`、`std::any`、`std::variant` 类型擦除的核心模式。
 
-### 9.3 案例三：Boost.Hana 的元编程
+### 8.3 案例三：Boost.Hana 的元编程
 
 Boost.Hana 是 C++14 元编程库，大量使用变参模板与折叠表达式：
 
@@ -1726,7 +1682,7 @@ int main() {
 
 Hana 的设计哲学：将编译期与运行时计算统一为相同的接口，变参模板是基础。
 
-### 9.4 案例四：Chromium 的 `base::BindOnce`
+### 8.4 案例四：Chromium 的 `base::BindOnce`
 
 Chromium 的 `base::BindOnce` 使用变参模板实现回调绑定：
 
@@ -1766,7 +1722,7 @@ int result = std::move(cb).Run();  // 3
 - 零拷贝：完美转发避免不必要的拷贝。
 - 可移动：`OnceCallback` 只能调用一次，强制 move 语义。
 
-### 9.5 案例五：Linux 内核的 `printf` 安全化
+### 8.5 案例五：Linux 内核的 `printf` 安全化
 
 虽然 Linux 内核是 C 代码，但 GCC 扩展 `_Generic` 与变参模板思想相似。C++ 内核模块（如 LLVM 的 BPF 工具）使用变参模板替代 `printf`：
 
@@ -1786,7 +1742,7 @@ void klog(std::string_view fmt, Args&&... args) {
 }
 ```
 
-### 9.6 案例六：Facebook Folly 的 `format`
+### 8.6 案例六：Facebook Folly 的 `format`
 
 Facebook Folly 库的 `folly::format` 使用变参模板实现类型安全的格式化：
 
@@ -1814,7 +1770,7 @@ Folly 的实现使用变参模板 + `std::initializer_list` 类型擦除，平�
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：以下代码的输出是什么？
 
@@ -1884,7 +1840,7 @@ void print(Args... args) {
 
 ---
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：实现一个 `all_same` 函数，检查所有参数是否类型相同。
 
@@ -2008,7 +1964,7 @@ f(1, 2, 3);  // last=1, args={2,3}
 
 ---
 
-### 10.3 思考题
+### 9.3 思考题
 
 **思考题 1**：为什么 C++17 引入折叠表达式后，标准库中 `std::make_tuple` 的实现仍然使用递归？
 
@@ -2069,7 +2025,7 @@ f(1, 2, 3);  // last=1, args={2,3}
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本章节引用的文献遵循 ACM Reference Format。
 
@@ -2105,15 +2061,15 @@ f(1, 2, 3);  // last=1, args={2,3}
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 标准与提案文档
+### 11.1 标准与提案文档
 
 - **C++ Standard Working Draft (N4950)**：最新工作草案，涵盖 C++26 提案。链接：https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf
 - **P2996: Reflection for C++26**：静态反射提案，将改变变参模板使用模式。链接：https://wg21.link/p2996
 - **P2688: Pattern Matching**：模式匹配提案，与变参模板协同。链接：https://wg21.link/p2688
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 1. **《C++ Templates: The Complete Guide》(2nd Edition)** — David Vandevoorde, Nicolai Josuttis, Douglas Gregor
    - 模板编程的权威参考，第二版覆盖 C++17 折叠表达式。
@@ -2124,7 +2080,7 @@ f(1, 2, 3);  // last=1, args={2,3}
 4. **《C++ Concurrency in Action》(2nd Edition)** — Anthony Williams
    - 第 4-6 章涉及变参模板在并发原语中的应用。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **cppreference.com — Variadic arguments**：https://en.cppreference.com/w/cpp/language/variadic_arguments
 - **cppreference.com — Fold expressions**：https://en.cppreference.com/w/cpp/language/fold
@@ -2133,14 +2089,14 @@ f(1, 2, 3);  // last=1, args={2,3}
 - **LLVM Clang Source — SemaExprCXX.cpp**：折叠表达式实现源码。
 - **GCC libstdc++ — tuple implementation**：`/usr/include/c++/<version>/tuple` 查看实际实现。
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 - **CPPCon 2014: Walter E. Brown — Modern Template Metaprogramming**：https://www.youtube.com/watch?v=Am2isBQCawY
 - **CPPCon 2018: Louis Dionne — C++ Metaclasses**：https://www.youtube.com/watch?v=9N0iQGFC4UQ
 - **CPPCon 2020: Ben Deane — Easy Coding with Variadic Templates**：https://www.youtube.com/watch?v=4D1Rg4Q72ZM
 - **MIT 6.938: Analog Electronics Laboratory**：C++ 模板在工程中的应用。
 
-### 12.5 开源项目实践
+### 11.5 开源项目实践
 
 - **LLVM/Clang**：`llvm/include/llvm/ADT/STLExtras.h` 中的变参模板工具。
 - **Facebook Folly**：`folly/Function.h`、`folly/Format.h` 的变参模板实现。

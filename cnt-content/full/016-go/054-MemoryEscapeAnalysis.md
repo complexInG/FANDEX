@@ -37,58 +37,14 @@ keywords:
   - 内联优化
 ---
 
+
 # Go 内存逃逸分析（Escape Analysis）
 
 > 内存逃逸分析是 Go 编译器决定变量分配位置（栈或堆）的关键过程。栈分配几乎零开销，函数返回即回收；堆分配依赖 GC，带来扫描标记与写屏障开销。理解逃逸分析的算法、触发条件、优化技巧与陷阱，是编写高性能 Go 代码的必备能力。本文从编译原理、形式化算法、源码实现、工程实践到生产案例，系统化剖析 Go 内存逃逸分析的全部要点。
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-学完本文后，读者应能够在以下认知层级上掌握 Go 内存逃逸分析（依据 Bloom 修订版分类法）：
-
-### 1.1 记忆层（Remembering）
-
-- 复述逃逸分析的定义与作用：编译期决定变量分配在栈还是堆。
-- 列举常见的逃逸场景：返回局部变量指针、interface 参数、闭包捕获、切片扩容、发送到 channel。
-- 说明查看逃逸分析结果的命令：`go build -gcflags="-m"`、`-m -m`、`-N -l`。
-
-### 1.2 理解层（Understanding）
-
-- 解释栈分配与堆分配在性能、回收机制、生命周期上的本质差异。
-- 阐述逃逸分析算法的基本思路：从函数入口出发，跟踪变量的所有引用路径，若引用超出函数作用域则逃逸。
-- 区分 `moved to heap`、`does not escape`、`leaking param` 等编译器输出含义。
-- 说明内联（inlining）与逃逸分析的相互作用：内联扩展调用上下文，使逃逸分析更精确。
-
-### 1.3 应用层（Applying）
-
-- 使用 `go build -gcflags="-m"` 诊断代码中的逃逸点。
-- 通过预分配切片容量、避免 interface 参数、使用值返回等方式减少逃逸。
-- 在性能敏感路径用 `strconv` 替代 `fmt`，用 `sync.Pool` 复用对象。
-- 通过 `go tool compile`、`GOSSAFUNC` 查看 SSA 中间表示与优化过程。
-
-### 1.4 分析层（Analyzing）
-
-- 拆解 `fmt.Println` 为何必然导致参数逃逸：interface 装箱与反射调用机制。
-- 分析 `for range` 中闭包捕获循环变量的逃逸路径。
-- 对比 `*Point` 与 `Point` 返回值在不同结构体大小下的分配策略。
-- 评估 `sync.Pool` 在高并发场景下的复用效率与 GC 压力。
-
-### 1.5 评价层（Evaluating）
-
-- 评价"过早优化是万恶之源"在逃逸分析场景下的适用性：何时该优化，何时不该。
-- 评估 Go 1.22+ 循环变量语义变更对闭包逃逸的影响。
-- 权衡代码可读性与逃逸优化的取舍：何时接受逃逸以换取清晰性。
-
-### 1.6 创造层（Creating）
-
-- 设计一个零分配的 HTTP 中间件框架，避免 request/response 对象逃逸。
-- 实现一个基于 arena 实验 API（Go 1.20+）的批量内存管理方案。
-- 构建一个逃逸分析可视化工具，自动标注源码中的逃逸点并给出优化建议。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 逃逸分析的编译原理起源
+### 1.1 逃逸分析的编译原理起源
 
 逃逸分析起源于 20 世纪 80 年代的函数式语言编译优化研究。1999 年，Choi 等人在 IBM Jalapeño JVM（后演化为 Jikes RVM）中发表了经典论文 *Escape Analysis for Java*，首次系统化描述了对象逃逸到堆、方法、线程的分级模型：
 
@@ -98,7 +54,7 @@ keywords:
 
 Go 编译器从早期版本就内置了逃逸分析（位于 `cmd/compile/internal/escape` 包），核心目标是减少 GC 压力。
 
-### 2.2 Go 编译器逃逸分析的演进
+### 1.2 Go 编译器逃逸分析的演进
 
 | 版本 | 关键变更 |
 |------|---------|
@@ -110,7 +66,7 @@ Go 编译器从早期版本就内置了逃逸分析（位于 `cmd/compile/intern
 | Go 1.22 | 循环变量语义变更，每个迭代独立变量，影响闭包逃逸 |
 | Go 1.20+ | arena 实验性 API，允许手动管理堆内存 |
 
-### 2.3 为什么 Go 需要逃逸分析
+### 1.3 为什么 Go 需要逃逸分析
 
 Go 的设计哲学是"让 GC 处理内存"，但 GC 意味着额外开销：
 
@@ -121,7 +77,7 @@ Go 的设计哲学是"让 GC 处理内存"，但 GC 意味着额外开销：
 
 通过逃逸分析，编译器能将"看似需要堆但实际不会逃逸"的变量分配到栈上，显著降低 GC 压力。
 
-### 2.4 与其他语言对比
+### 1.4 与其他语言对比
 
 - **C/C++**：完全手动管理，栈堆由程序员决定（`malloc` vs 局部变量），无逃逸分析。
 - **Java**：JVM 有逃逸分析（JIT 编译时），支持栈上分配、标量替换、锁消除。
@@ -130,9 +86,9 @@ Go 的设计哲学是"让 GC 处理内存"，但 GC 意味着额外开销：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 栈与堆的代数结构
+### 2.1 栈与堆的代数结构
 
 设 $\mathcal{V}$ 为程序变量集合，$\mathcal{F}$ 为函数集合，$\mathcal{S}$ 为栈分配集合，$\mathcal{H}$ 为堆分配集合。栈与堆可形式化为：
 
@@ -146,7 +102,7 @@ $$
 
 其中 $\text{owner}(v)$ 是创建 $v$ 的函数，$\text{scope}(f)$ 是函数 $f$ 的活跃区间。
 
-### 3.2 逃逸函数的形式化
+### 2.2 逃逸函数的形式化
 
 逃逸分析的核心是定义逃逸函数 $\text{Escape} : \mathcal{V} \rightarrow \{ \text{NoEscape}, \text{ArgEscape}, \text{GlobalEscape} \}$：
 
@@ -158,7 +114,7 @@ $$
 \end{cases}
 $$
 
-### 3.3 引用路径分析
+### 2.3 引用路径分析
 
 对变量 $v$ 的所有引用路径 $P(v)$，逃逸条件为：
 
@@ -168,7 +124,7 @@ $$
 
 即只要存在一条引用路径超出 owner 函数作用域，变量就逃逸到堆。
 
-### 3.4 分配开销模型
+### 2.4 分配开销模型
 
 设 $C_{\text{stack}}$ 为栈分配开销，$C_{\text{heap}}$ 为堆分配开销：
 
@@ -187,7 +143,7 @@ $$
 
 对 1KB 对象，$C_{\text{stack}} \approx 1$ ns，$C_{\text{heap}} \approx 100$ ns，差距 100 倍。
 
-### 3.5 内联对逃逸的影响
+### 2.5 内联对逃逸的影响
 
 内联将函数 $g$ 的调用替换为函数体，扩展 owner 范围：
 
@@ -205,9 +161,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 逃逸分析算法
+### 3.1 逃逸分析算法
 
 Go 编译器的逃逸分析基于**流不敏感、上下文不敏感**的数据流分析（flow-insensitive, context-insensitive）。算法核心：
 
@@ -220,7 +176,7 @@ Go 编译器的逃逸分析基于**流不敏感、上下文不敏感**的数据�
 - 构建：$O(N + E)$，$N$ 为变量数，$E$ 为赋值边数。
 - 传播：$O(N \cdot E)$ 最坏，实际近似线性。
 
-### 4.2 interface 装箱的逃逸推导
+### 3.2 interface 装箱的逃逸推导
 
 Go 的 `interface` 内部结构（`eface` 或 `iface`）：
 
@@ -241,7 +197,7 @@ $$
 
 例外：当编译器能静态确定 interface 的实际类型时（如直接调用 `fmt.Stringer.String()`），可能避免装箱。
 
-### 4.3 闭包捕获的逃逸推导
+### 3.3 闭包捕获的逃逸推导
 
 闭包捕获外部变量时，被捕获的变量被提升到堆：
 
@@ -263,7 +219,7 @@ $$
 
 因此 $x \in \mathcal{H}$。
 
-### 4.4 切片扩容的逃逸推导
+### 3.4 切片扩容的逃逸推导
 
 `make([]T, n)` 中若 $n$ 是编译期常量且较小，编译器可在栈上分配；若 $n$ 是变量或较大，则逃逸：
 
@@ -278,7 +234,7 @@ $$
 
 `append` 触发扩容时，新底层数组必然在堆上分配（因扩容后大小不可预测）。
 
-### 4.5 内联优化的边界推导
+### 3.5 内联优化的边界推导
 
 设函数 $f$ 调用 $g$：
 
@@ -287,7 +243,7 @@ $$
 
 内联决策由编译器的内联预算（inline budget）决定，默认 80（Go 1.18+ 调整）。复杂函数超出预算则不内联。
 
-### 4.6 复杂度分析
+### 3.6 复杂度分析
 
 | 操作 | 时间复杂度 | 备注 |
 |------|----------|------|
@@ -299,9 +255,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：查看逃逸分析结果
+### 4.1 基础：查看逃逸分析结果
 
 ```go
 // Package main 演示如何查看逃逸分析结果
@@ -347,7 +303,7 @@ go build -gcflags="-m -m" main.go
 # 输出更详细的决策原因
 ```
 
-### 5.2 场景一：返回局部变量指针
+### 4.2 场景一：返回局部变量指针
 
 ```go
 // Package main 演示返回局部变量指针导致的逃逸
@@ -393,7 +349,7 @@ func main() {
 
 **优化建议**：小结构体（小于 64 字节）优先用值返回，避免逃逸。
 
-### 5.3 场景二：interface 参数装箱
+### 4.3 场景二：interface 参数装箱
 
 ```go
 // Package main 演示 interface 参数导致的逃逸
@@ -442,7 +398,7 @@ func main() {
 
 **优化建议**：性能关键路径避免 `fmt`，用 `strconv`、`strings.Builder`、直接 `os.Stdout.Write`。
 
-### 5.4 场景三：闭包捕获变量
+### 4.4 场景三：闭包捕获变量
 
 ```go
 // Package main 演示闭包捕获导致的逃逸
@@ -495,7 +451,7 @@ func main() {
 }
 ```
 
-### 5.5 场景四：切片与 map 逃逸
+### 4.5 场景四：切片与 map 逃逸
 
 ```go
 // Package main 演示切片与 map 的逃逸
@@ -546,7 +502,7 @@ func main() {
 }
 ```
 
-### 5.6 场景五：sync.Pool 复用对象
+### 4.6 场景五：sync.Pool 复用对象
 
 ```go
 // Package main 演示 sync.Pool 复用堆对象
@@ -589,7 +545,7 @@ func main() {
 
 **注意**：`sync.Pool` 不适合长生命周期对象，因为 GC 时池会被清空。
 
-### 5.7 场景六：channel 发送逃逸
+### 4.7 场景六：channel 发送逃逸
 
 ```go
 // Package main 演示 channel 发送导致的逃逸
@@ -632,7 +588,7 @@ func main() {
 }
 ```
 
-### 5.8 场景七：内联与逃逸的协同
+### 4.8 场景七：内联与逃逸的协同
 
 ```go
 // Package main 演示内联对逃逸分析的影响
@@ -681,7 +637,7 @@ go build -gcflags="-m" main.go
 # 输出：can inline addInline、cannot inline complexFunc 等
 ```
 
-### 5.9 场景八：批量处理减少逃逸
+### 4.9 场景八：批量处理减少逃逸
 
 ```go
 // Package main 演示批量处理减少逃逸
@@ -755,7 +711,7 @@ func main() {
 }
 ```
 
-### 5.10 场景九：使用 pprof 确认逃逸影响
+### 4.10 场景九：使用 pprof 确认逃逸影响
 
 ```go
 // Package main 演示使用 pprof 分析堆分配
@@ -818,9 +774,9 @@ go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Go 与 Java 逃逸分析对比
+### 5.1 Go 与 Java 逃逸分析对比
 
 | 维度 | Go | Java |
 |------|-----|------|
@@ -831,7 +787,7 @@ go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
 | 优化稳定性 | 稳定（编译期决定） | 依赖 JIT 热点，可能退优化 |
 | 分析精度 | 较保守 | 较精确（运行时数据辅助） |
 
-### 6.2 Go 与 Rust 对比
+### 5.2 Go 与 Rust 对比
 
 | 维度 | Go | Rust |
 |------|-----|------|
@@ -841,7 +797,7 @@ go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
 | 堆分配 | 编译器决定 | 程序员显式（`Box`、`Vec`、`Arc`） |
 | 性能可预测性 | 中等（依赖 GC） | 高（无 GC） |
 
-### 6.3 Go 与 C++ 对比
+### 5.3 Go 与 C++ 对比
 
 | 维度 | Go | C++ |
 |------|-----|------|
@@ -850,7 +806,7 @@ go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
 | 内存回收 | GC | 手动 `delete` 或智能指针 |
 | 分析工具 | `go build -gcflags="-m"` | 无内置（需 PGO） |
 
-### 6.4 Go 与 Swift 对比
+### 5.4 Go 与 Swift 对比
 
 | 维度 | Go | Swift |
 |------|-----|------|
@@ -858,7 +814,7 @@ go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
 | 逃逸闭包 | 默认逃逸 | `@escaping` 标注 |
 | 分析工具 | `-gcflags="-m"` | `@escaping` 编译期检查 |
 
-### 6.5 Go 与泛型的关系
+### 5.5 Go 与泛型的关系
 
 Go 1.18+ 引入泛型后，逃逸分析对泛型函数有特殊处理：
 
@@ -877,9 +833,9 @@ func PrintString(v string) { fmt.Println(v) }
 
 ---
 
-## 7. 陷阱与反模式
+## 6. 陷阱与反模式
 
-### 7.1 反模式一：fmt 在热路径
+### 6.1 反模式一：fmt 在热路径
 
 ```go
 // 反模式：热路径使用 fmt
@@ -898,7 +854,7 @@ func processHotPathFast(items []Item, logger *Logger) {
 }
 ```
 
-### 7.2 反模式二：不必要的指针返回
+### 6.2 反模式二：不必要的指针返回
 
 ```go
 // 反模式：小结构体返回指针
@@ -916,7 +872,7 @@ func NewPoint(x, y float64) Point {
 
 **经验法则**：结构体小于 64 字节优先值返回；大于 64 字节或需要共享修改时用指针。
 
-### 7.3 反模式三：未预分配切片
+### 6.3 反模式三：未预分配切片
 
 ```go
 // 反模式：动态扩容
@@ -938,7 +894,7 @@ func buildSliceFast(n int) []int {
 }
 ```
 
-### 7.4 反模式四：闭包循环变量陷阱（Go 1.21 及之前）
+### 6.4 反模式四：闭包循环变量陷阱（Go 1.21 及之前）
 
 ```go
 // Go 1.21 及之前的反模式
@@ -971,7 +927,7 @@ func correctLoop() {
 
 Go 1.22+ 修复了此问题，循环变量每次迭代独立。
 
-### 7.5 反模式五：sync.Pool 误用
+### 6.5 反模式五：sync.Pool 误用
 
 ```go
 // 反模式：Pool 中放入长生命周期对象
@@ -989,7 +945,7 @@ var bufPool = sync.Pool{
 }
 ```
 
-### 7.6 反模式六：过度优化牺牲可读性
+### 6.6 反模式六：过度优化牺牲可读性
 
 ```go
 // 反模式：过度优化，可读性差
@@ -1010,7 +966,7 @@ func hotPathLog(v int) string {
 }
 ```
 
-### 7.7 反模式七：map 取地址
+### 6.7 反模式七：map 取地址
 
 ```go
 // 反模式：map 值不可取地址
@@ -1028,7 +984,7 @@ func correct() {
 }
 ```
 
-### 7.8 反模式八：忽略内联预算
+### 6.8 反模式八：忽略内联预算
 
 ```go
 // 反模式：函数过长，无法内联
@@ -1051,9 +1007,9 @@ func writeResponse(w http.ResponseWriter, u *User) { /* */ }
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 性能分析流程
+### 7.1 性能分析流程
 
 1. **基准测试**：用 `go test -bench` 量化性能。
 2. **逃逸分析**：用 `-gcflags="-m"` 找出逃逸点。
@@ -1075,7 +1031,7 @@ func BenchmarkProcess(b *testing.B) {
 // go test -bench=. -benchmem -count=5
 ```
 
-### 8.2 零分配设计模式
+### 7.2 零分配设计模式
 
 ```go
 // 零分配 HTTP 处理器
@@ -1092,7 +1048,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-### 8.3 对象池模式
+### 7.3 对象池模式
 
 ```go
 type ObjectPool[T any] struct {
@@ -1139,7 +1095,7 @@ func handleRequest() {
 }
 ```
 
-### 8.4 编译指令
+### 7.4 编译指令
 
 ```go
 //go:noinline  // 禁止内联（调试用）
@@ -1152,7 +1108,7 @@ func debugFunc() {}
 //go:noescape  // 在汇编文件中标注 C 函数不逃逸
 ```
 
-### 8.5 CI 集成逃逸检查
+### 7.5 CI 集成逃逸检查
 
 ```bash
 #!/bin/bash
@@ -1168,7 +1124,7 @@ if [ -s escape_report.txt ]; then
 fi
 ```
 
-### 8.6 性能基线管理
+### 7.6 性能基线管理
 
 ```go
 // perf/baseline_test.go
@@ -1199,9 +1155,9 @@ func BenchmarkEscape(b *testing.B) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：encoding/json 的逃逸优化
+### 8.1 案例一：encoding/json 的逃逸优化
 
 `encoding/json` 包在序列化时大量使用 `interface{}`，导致逃逸。Go 1.18+ 引入 `Marshaler` 接口和 `json.Encoder` 缓冲池优化：
 
@@ -1224,7 +1180,7 @@ func (enc *Encoder) Encode(v interface{}) error {
 
 通过 `sync.Pool` 复用 `encodeState`，避免每次序列化都分配。
 
-### 9.2 案例二：bytes.Buffer 的内联优化
+### 8.2 案例二：bytes.Buffer 的内联优化
 
 `bytes.Buffer` 的 `Write`、`WriteString` 方法被设计为可内联：
 
@@ -1242,7 +1198,7 @@ func (b *Buffer) WriteString(s string) (n int, err error) {
 
 内联后，调用方可能直接在栈上操作 `[]byte`，避免 `Buffer` 结构体逃逸。
 
-### 9.3 案例三：sync.Pool 在 fmt 中的应用
+### 8.3 案例三：sync.Pool 在 fmt 中的应用
 
 `fmt` 包内部使用 `sync.Pool` 复用 `pp`（print processor）结构体：
 
@@ -1268,7 +1224,7 @@ func (p *pp) free() {
 
 每次 `fmt.Println` 复用 `pp`，避免为每次打印分配新结构体。
 
-### 9.4 案例四：protobuf 的零拷贝优化
+### 8.4 案例四：protobuf 的零拷贝优化
 
 `google.golang.org/protobuf` 包通过 `unsafe.Pointer` 和切片复用实现零拷贝解析：
 
@@ -1284,7 +1240,7 @@ func (m *Message) Unmarshal(data []byte) error {
 
 但要注意：若 `data` 在堆上，结构体字段也指向堆；若调用方在栈上分配 `data`，则避免堆逃逸。
 
-### 9.5 案例五：Go 1.22 循环变量修复
+### 8.5 案例五：Go 1.22 循环变量修复
 
 Go 1.22 修复了循环变量在每个迭代独立的问题，消除了"显式拷贝"反模式：
 
@@ -1451,9 +1407,9 @@ func main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 - Choi, J.-D., Gupta, M., Serrano, M., Sreedhar, V. C., & Midkiff, S. (1999). *Escape analysis for Java*. ACM SIGPLAN Notices, 34(10), 1–19. https://doi.org/10.1145/320385.320386
 
@@ -1465,7 +1421,7 @@ func main() {
 
 - Cox-Buckley, K., et al. (2024). *Arena-based memory management in Go*. Go Proposal 51317. https://github.com/golang/go/issues/51317
 
-### 11.2 官方文档
+### 10.2 官方文档
 
 - The Go Programming Language Specification. (2024). *The Go Programming Language Specification*. https://go.dev/ref/spec
 
@@ -1475,13 +1431,13 @@ func main() {
 
 - Go Team. (2024). *Escape analysis in the Go compiler*（源码注释）. https://github.com/golang/go/tree/master/src/cmd/compile/internal/escape
 
-### 11.3 标准与规范
+### 10.3 标准与规范
 
 - IEEE Std 1003.1-2017. *POSIX.1-2017*. https://pubs.opengroup.org/onlinepubs/9699919799/
 
 - ISO/IEC 9899:2018. *C programming language standard*. https://www.iso.org/standard/57853.html
 
-### 11.4 经典教材
+### 10.4 经典教材
 
 - Aho, A. V., Lam, M. S., Sethi, R., & Ullman, J. D. (2006). *Compilers: Principles, Techniques, and Tools* (2nd ed.). Pearson. https://dl.acm.org/doi/10.5555/1177220
 
@@ -1489,39 +1445,39 @@ func main() {
 
 ---
 
-## 12. 扩展阅读
+## 11. 扩展阅读
 
-### 12.1 Go 编译器内部机制
+### 11.1 Go 编译器内部机制
 
 - *Go SSA 后端介绍*：https://go.dev/src/cmd/compile/internal/ssa/README.md
 - *Go 编译器 Phase 列表*：https://go.dev/src/cmd/compile/internal/ssa/gen/README
 - *Go runtime 内存分配器*：`src/runtime/malloc.go`、`src/runtime/mheap.go`
 
-### 12.2 性能优化深入
+### 11.2 性能优化深入
 
 - *High Performance Go Workshop*（Dave Cheney）：https://dave.cheney.net/training
 - *Go 性能工具箱*：`go tool pprof`、`go tool trace`、`go tool compile`
 - *Benchmark 标准库*：`testing` 包的 `B.ReportAllocs()`
 
-### 12.3 相关 Go 提案
+### 11.3 相关 Go 提案
 
 - *Proposal: arena*（实验性）：https://github.com/golang/go/issues/51317
 - *Proposal: //go:noscape*：https://github.com/golang/go/issues/56900
 - *Proposal: weak pointers*：https://github.com/golang/go/issues/67552
 
-### 12.4 其他语言对比
+### 11.4 其他语言对比
 
 - *Java Escape Analysis in HotSpot*：https://docs.oracle.com/en/java/javase/17/vm/java-hotspot-virtual-machine-performance-enhancements.html
 - *Rust Ownership*：https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html
 - *Swift ARC*：https://docs.swift.org/swift-book/LanguageGuide/AutomaticReferenceCounting.html
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - *Go Performance Reflexion*（Ardan Labs）：https://www.ardanlabs.com/blog/2017/05/language-mechanics-on-escape-analysis.html
 - *Dave Cheney - Escape Analysis*：https://www.youtube.com/watch?v=DZ4Q8XmyYRk
 - *Go 内存模型*：https://go.dev/ref/mem
 
-### 12.6 进阶实验
+### 11.6 进阶实验
 
 - 使用 `GOSSAFUNC=main go build` 生成 SSA HTML，观察优化过程。
 - 要点：自定义 `//go:generate` 工具，自动检测逃逸并生成报告。
@@ -1529,9 +1485,9 @@ func main() {
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 逃逸分析输出速查
+### 12.1 逃逸分析输出速查
 
 | 输出 | 含义 | 应对 |
 |------|------|------|
@@ -1544,7 +1500,7 @@ func main() {
 | `cannot inline f: function too complex` | `f` 过复杂无法内联 | 考虑拆分 |
 | `inlining call to f` | 调用 `f` 被内联 | 良好 |
 
-### 13.2 常用命令速查
+### 12.2 常用命令速查
 
 ```bash
 # 基础逃逸分析
@@ -1573,7 +1529,7 @@ go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
 go build -gcflags="-m=2" ./...
 ```
 
-### 13.3 逃逸场景速查表
+### 12.3 逃逸场景速查表
 
 | 场景 | 是否逃逸 | 优化建议 |
 |------|---------|---------|
@@ -1590,7 +1546,7 @@ go build -gcflags="-m=2" ./...
 | 全局变量赋值 | 是 | 避免全局可变状态 |
 | reflect 操作 | 是 | 缓存 reflect 结果 |
 
-### 13.4 API 速查
+### 12.4 API 速查
 
 ```go
 // 查看逃逸
@@ -1625,7 +1581,7 @@ go http.ListenAndServe("localhost:6060", nil)
 // 访问 http://localhost:6060/debug/pprof/
 ```
 
-### 13.5 版本特性对照
+### 12.5 版本特性对照
 
 | Go 版本 | 逃逸分析相关变更 |
 |---------|---------------|
@@ -1638,7 +1594,7 @@ go http.ListenAndServe("localhost:6060", nil)
 | 1.22 | 循环变量独立，闭包陷阱修复 |
 | 1.23+ | 持续优化分析精度 |
 
-### 13.6 调试技巧
+### 12.6 调试技巧
 
 1. **对比有无可内联**：用 `-gcflags="-m=2"` 查看内联决策。
 2. **隔离逃逸源**：逐段注释代码，定位触发逃逸的行。
@@ -1646,7 +1602,7 @@ go http.ListenAndServe("localhost:6060", nil)
 4. **汇编验证**：`go tool compile -S` 查看是否调用 `runtime.newobject`。
 5. **pprof 量化**：用 `-alloc_objects` 确认分配次数。
 
-### 13.7 常见问题
+### 12.7 常见问题
 
 **Q1：为什么 `fmt.Println(42)` 也会逃逸？**
 A：`fmt.Println` 参数为 `interface{}`，整数 42 需装箱为堆对象。即使 42 是常量，编译器仍保守处理。

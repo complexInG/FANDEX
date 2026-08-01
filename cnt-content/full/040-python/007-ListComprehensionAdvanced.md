@@ -15,6 +15,7 @@ related:
 prerequisites:
   - python/语法速查
 ---
+
 # 列表推导式进阶
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -27,35 +28,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-### 1.1 Bloom 认知层级映射
-
-| 层级 | 行为动词 | 具体目标 |
-| ---- | -------- | -------- |
-| Remember（记忆） | 列举、识别 | 列出 4 种推导式（list/dict/set/genexp）的语法形式与关键字 |
-| Understand（理解） | 解释、归纳 | 解释推导式的求值顺序、作用域规则与惰性语义 |
-| Apply（应用） | 实现、使用 | 将循环、过滤、嵌套数据结构转换用推导式重写 |
-| Analyze（分析） | 比较、解构 | 比较推导式与 `map`/`filter`/`for` 循环的字节码与性能差异 |
-| Evaluate（评价） | 评判、辩护 | 判断何时不应使用推导式（可读性阈值、副作用风险） |
-| Create（创造） | 设计、重构 | 设计企业级数据处理流水线，融合推导式与生成器管道 |
-
-### 1.2 预期能力
-
-阅读完毕后，读者应能够：
-
-1. 精确描述推导式的形式文法（EBNF）与求值规则
-2. 在 CPython 字节码层面解释推导式的独立函数对象与隐藏作用域
-3. 编写符合 PEP 8 与 Google Python Style Guide 的推导式代码
-4. 量化推导式与等价循环在不同规模数据下的性能差异
-5. 识别并修复推导式相关的内存膨胀、变量泄漏、闭包陷阱等典型缺陷
-6. 设计基于生成器表达式的流式数据处理管道，支持百万级数据零拷贝
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 前史：函数式编程的数学根源
+### 1.1 前史：函数式编程的数学根源
 
 推导式（comprehension）一词最早源自数学集合论中的 ZF 公理（Zermelo-Fraenkel set theory），其记法形如：
 
@@ -70,7 +45,7 @@ $$
 squares = [x^2 | x <- [1..10], x `mod` 2 == 0]
 ```
 
-### 2.2 Python 早期：循环与 `map`/`filter` 的二元格局
+### 1.2 Python 早期：循环与 `map`/`filter` 的二元格局
 
 Python 0.9（1991 年 2 月）发布时，构建列表的标准方式是 `for` 循环与 `append`：
 
@@ -90,7 +65,7 @@ evens = list(filter(lambda x: x % 2 == 0, range(20)))
 
 `lambda` 表达式由 Amrit Prem 在 1994 年（Python 1.0）加入，但 `lambda` 在 Python 中受限于单行表达式，且与 `map`/`filter` 组合后可读性下降，社区长期呼吁引入 Haskell 风格的推导式语法。
 
-### 2.3 PEP 202：List Comprehension（2000 年）
+### 1.3 PEP 202：List Comprehension（2000 年）
 
 PEP 202 由 Barry Warsaw 于 2000 年 7 月提交，Python 2.0 正式引入列表推导式。语法设计如下：
 
@@ -107,7 +82,7 @@ PEP 202 由 Barry Warsaw 于 2000 年 7 月提交，Python 2.0 正式引入列�
 
 PEP 202 同时规定：推导式在 Python 2 中**泄漏循环变量到外层作用域**，这一行为在 Python 3 中被修正（详见 §4.3）。
 
-### 2.4 PEP 274：Dict/Set Comprehension（2001 年）
+### 1.4 PEP 274：Dict/Set Comprehension（2001 年）
 
 PEP 274 由 Barry Warsaw 于 2001 年 10 月提交，但直到 Python 2.7 / 3.0 才落地。语法扩展：
 
@@ -116,7 +91,7 @@ PEP 274 由 Barry Warsaw 于 2001 年 10 月提交，但直到 Python 2.7 / 3.0 
 {expr for target in iterable if condition}                  # set
 ```
 
-### 2.5 PEP 289：Generator Expression（2002 年）
+### 1.5 PEP 289：Generator Expression（2002 年）
 
 PEP 289 由 Raymond Hettinger 于 2002 年 1 月提交，Python 2.4 引入生成器表达式。核心动机：
 
@@ -129,7 +104,7 @@ PEP 289 由 Raymond Hettinger 于 2002 年 1 月提交，Python 2.4 引入生成
 total = sum(x * x for x in range(1000000))  # 不构建百万元素列表
 ```
 
-### 2.6 PEP 3104 与 PEP 3110：异常与作用域修订（2006-2007）
+### 1.6 PEP 3104 与 PEP 3110：异常与作用域修订（2006-2007）
 
 Python 3 修订了推导式作用域：
 
@@ -148,7 +123,7 @@ squares = [x**2 for x in range(3)]
 print(x)  # 输出 10（无泄漏）
 ```
 
-### 2.7 PEP 704 与异步推导式（PEP 530, 6.x 演进）
+### 1.7 PEP 704 与异步推导式（PEP 530, 6.x 演进）
 
 PEP 530（Python 3.6）引入异步推导式：
 
@@ -158,7 +133,7 @@ result = [i async for i in aiter() if i % 2]
 
 PEP 704（Python 3.12+）继续微调推导式行为，例如对 `await` 在推导式中的支持与作用域细节。
 
-### 2.8 PEP 8 与 PEP 579：风格演进
+### 1.8 PEP 8 与 PEP 579：风格演进
 
 PEP 8 明确建议：
 
@@ -168,7 +143,7 @@ PEP 8 明确建议：
 
 PEP 579（Python Enhancement Proposal 系列综述）将推导式列为 Python 函数式编程范式的核心元素。
 
-### 2.9 时间线一览
+### 1.9 时间线一览
 
 | 年份 | Python 版本 | PEP | 事件 |
 | ---- | ----------- | --- | ---- |
@@ -183,9 +158,9 @@ PEP 579（Python Enhancement Proposal 系列综述）将推导式列为 Python �
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 EBNF 文法
+### 2.1 EBNF 文法
 
 依据 Python Language Reference §6.2.4 / §6.3，推导式的形式文法定义如下（简化）：
 
@@ -208,7 +183,7 @@ dict_comprehension ::=  expression ":" expression comp_for
 set_comprehension  ::=  expression comp_for
 ```
 
-### 3.2 求值语义
+### 2.2 求值语义
 
 设推导式形式为：
 
@@ -224,7 +199,7 @@ $$
 
 即对每个 `for` 子句产生的笛卡尔积中满足所有 `if` 谓词的组合，应用表达式 $e$ 求值，收集结果。
 
-### 3.3 求值顺序
+### 2.3 求值顺序
 
 Python 推导式严格按 **从左到右** 的子句顺序求值，等价于嵌套 `for` 循环：
 
@@ -240,7 +215,7 @@ for x in A:
             result.append(f(x, y))
 ```
 
-### 3.4 CPython 实现模型
+### 2.4 CPython 实现模型
 
 在 CPython 中，推导式被编译为独立的函数对象（Python 3 中），其字节码等价于：
 
@@ -278,7 +253,7 @@ dis.dis(compile("[x**2 for x in range(10) if x % 2 == 0]", "<demo>", "eval"))
 
 可以看到推导式被编译为 `<listcomp>` 函数对象，外层只负责调用。
 
-### 3.5 对象协议与迭代器协议
+### 2.5 对象协议与迭代器协议
 
 推导式的 `for` 子句依赖迭代器协议（`__iter__` + `__next__`）。任何实现了 `__iter__` 返回 iterator 的对象都可作为可迭代对象。
 
@@ -292,7 +267,7 @@ $$
 \text{Iterator} = \{ o \mid o.\text{\_\_iter\_\_}() = o \land o.\text{\_\_next\_\_}() : T \cup \{\text{StopIteration}\} \}
 $$
 
-### 3.6 生成器表达式的对象模型
+### 2.6 生成器表达式的对象模型
 
 生成器表达式返回 `types.GeneratorType`，本质是带有 `gi_frame`、`gi_code`、`gi_yieldfrom` 属性的协程对象。其求值采用 **惰性求值**（lazy evaluation）：
 
@@ -304,9 +279,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 时间复杂度分析
+### 3.1 时间复杂度分析
 
 设外层迭代长度为 $n$，内层为 $m$，过滤谓词命中率为 $\rho$，则推导式时间复杂度为：
 
@@ -322,7 +297,7 @@ $$
 
 其中 $c_{\text{expr}}$ 为表达式求值成本。
 
-### 4.2 空间复杂度分析
+### 3.2 空间复杂度分析
 
 列表推导式：
 
@@ -340,7 +315,7 @@ $$
 
 常数空间，仅保留当前帧与迭代器状态。
 
-### 4.3 作用域规则的形式化
+### 3.3 作用域规则的形式化
 
 设外层作用域为 $\Gamma$，推导式内部作用域为 $\Gamma'$。在 Python 3+：
 
@@ -355,7 +330,7 @@ offset = 100
 result = [x + offset for x in range(5)]  # offset 在闭包中可读
 ```
 
-### 4.4 字节码层面的内联优化（PEP 709, Python 3.12）
+### 3.4 字节码层面的内联优化（PEP 709, Python 3.12）
 
 Python 3.12 之前，推导式始终生成独立函数对象。PEP 709 引入内联优化：对于简单的推导式，编译器将其内联到外层字节码，省去函数调用开销。
 
@@ -367,7 +342,7 @@ Python 3.12 之前，推导式始终生成独立函数对象。PEP 709 引入内
 | `[x**2 for x in range(100) if x % 2]` | 4.8 | 3.4 | 1.41× |
 | `{x: x**2 for x in range(100)}` | 4.5 | 3.1 | 1.45× |
 
-### 4.5 短路求值与惰性链
+### 3.5 短路求值与惰性链
 
 生成器表达式支持流式管道，与 `itertools` 组合可实现复杂惰性计算：
 
@@ -398,7 +373,7 @@ $$
 \sum_{i=0}^{n} F_i^2 = F_n \cdot F_{n+1}
 $$
 
-### 4.6 笛卡尔积与嵌套推导式
+### 3.6 笛卡尔积与嵌套推导式
 
 嵌套 `for` 子句实现笛卡尔积：
 
@@ -413,7 +388,7 @@ product = [(a, b) for a in A for b in B]
 # [(1,'a'), (1,'b'), (2,'a'), (2,'b'), (3,'a'), (3,'b')]
 ```
 
-### 4.7 矩阵转置的形式化
+### 3.7 矩阵转置的形式化
 
 给定矩阵 $M \in \mathbb{R}^{m \times n}$，其转置 $M^\top \in \mathbb{R}^{n \times m}$ 定义为：
 
@@ -434,9 +409,9 @@ assert transpose(M) == [[1, 4], [2, 5], [3, 6]]
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 项目配置：`pyproject.toml`
+### 4.1 项目配置：`pyproject.toml`
 
 ```toml
 [project]
@@ -481,7 +456,7 @@ addopts = "-ra --strict-markers --benchmark-columns=min,mean,median,max"
 testpaths = ["tests"]
 ```
 
-### 5.2 基础推导式：4 种形式
+### 4.2 基础推导式：4 种形式
 
 ```python
 """基础推导式：list / dict / set / generator。
@@ -509,7 +484,7 @@ print(f"unique_mod5 = {sorted(unique_mod5)}")
 print(f"total_squares = {total_squares}")
 ```
 
-### 5.3 嵌套推导式：矩阵扁平化与重建
+### 4.3 嵌套推导式：矩阵扁平化与重建
 
 ```python
 """嵌套推导式：矩阵扁平化与重建。
@@ -561,7 +536,7 @@ if __name__ == "__main__":
     assert restored == matrix
 ```
 
-### 5.4 多条件过滤与多重赋值
+### 4.4 多条件过滤与多重赋值
 
 ```python
 """多重 for + 多重 if + 解构赋值。
@@ -596,7 +571,7 @@ print(f"high_performers = {high_performers}")
 print(f"result[:5] = {result[:5]}")
 ```
 
-### 5.5 与 `zip`、`enumerate` 组合
+### 4.5 与 `zip`、`enumerate` 组合
 
 ```python
 """推导式与 zip / enumerate 组合。
@@ -624,7 +599,7 @@ print(f"indexed = {indexed}")
 print(f"reversed_dict = {reversed_dict}")
 ```
 
-### 5.6 生成器管道：流式数据处理
+### 4.6 生成器管道：流式数据处理
 
 ```python
 """生成器表达式管道：流式处理大日志文件。
@@ -688,7 +663,7 @@ if __name__ == "__main__":
     print(f"统计: {stats}")
 ```
 
-### 5.7 与 `itertools` 组合：复杂数据流
+### 4.7 与 `itertools` 组合：复杂数据流
 
 ```python
 """推导式 + itertools：复杂数据流处理。
@@ -731,7 +706,7 @@ if __name__ == "__main__":
     print(compute_distances([(3, 4), (5, 12), (8, 15)]))
 ```
 
-### 5.8 异步推导式（PEP 530）
+### 4.8 异步推导式（PEP 530）
 
 ```python
 """异步推导式：async for。
@@ -765,7 +740,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 5.9 数据类与 Pydantic 集成
+### 4.9 数据类与 Pydantic 集成
 
 ```python
 """推导式 + Pydantic：批量数据建模。
@@ -805,7 +780,7 @@ print(f"adults: {[u.name for u in adults]}")
 print(f"name_to_id: {name_to_id}")
 ```
 
-### 5.10 类型注解与静态检查
+### 4.10 类型注解与静态检查
 
 ```python
 """类型注解的推导式：配合 mypy --strict。
@@ -846,9 +821,9 @@ if __name__ == "__main__":
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 跨语言对照表
+### 5.1 跨语言对照表
 
 | 语言 | 列表构造语法 | 惰性变体 | 内置聚合 | 备注 |
 | ---- | ----------- | -------- | -------- | ---- |
@@ -861,7 +836,7 @@ if __name__ == "__main__":
 | C# (LINQ) | `from x in xs where p select e` | `xs.Where(...).Select(...)` (IQueryable) | `.Sum()` | 查询表达式 |
 | Java (Stream) | `xs.stream().filter(...).map(...).toList()` | `xs.stream()...` | `.reduce` | Java 8+ |
 
-### 6.2 性能与可读性对比
+### 5.2 性能与可读性对比
 
 | 维度 | Python 推导式 | `map`/`filter` | `for` 循环 | Rust 迭代器 |
 | ---- | ------------- | --------------- | ---------- | ----------- |
@@ -873,7 +848,7 @@ if __name__ == "__main__":
 | 内存（genexp） | O(1) | O(1) | O(1) | O(1) |
 | 类型推断 | 弱（动态） | 弱 | 弱 | 强 |
 
-### 6.3 Rust 迭代器对比
+### 5.3 Rust 迭代器对比
 
 Rust 的迭代器适配器与 Python 生成器表达式在概念上等价，但 Rust 在编译期进行零成本抽象：
 
@@ -894,7 +869,7 @@ squares = [x * x for x in range(10) if (x * x) % 2 == 0]
 2. **强类型推断**：Rust 编译器静态推断元素类型，Python 在运行时确定
 3. **所有权语义**：Rust 迭代器明确区分借用与所有权转移，Python 无此概念
 
-### 6.4 Haskell 列表单子对比
+### 5.4 Haskell 列表单子对比
 
 Haskell 的列表推导式基于 list monad：
 
@@ -915,9 +890,9 @@ Python 推导式与 Haskell 在语法上几乎一一对应，但：
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：可变默认参数与闭包
+### 6.1 陷阱 1：可变默认参数与闭包
 
 ```python
 # 反例：闭包捕获可变默认
@@ -930,7 +905,7 @@ funcs = [lambda i=i: i for i in range(3)]
 print([f() for f in funcs])  # [0, 1, 2]
 ```
 
-### 7.2 陷阱 2：副作用与外部状态
+### 6.2 陷阱 2：副作用与外部状态
 
 ```python
 # 反例：在推导式中修改外部状态
@@ -942,7 +917,7 @@ result = [counter := counter + 1 for _ in range(5)]  # PEP 572 海象运算符
 result = list(range(1, 6))
 ```
 
-### 7.3 陷阱 3：嵌套过深导致可读性下降
+### 6.3 陷阱 3：嵌套过深导致可读性下降
 
 ```python
 # 反例：三层嵌套
@@ -966,7 +941,7 @@ for a in A:
                 result.append(f(a, b, c))
 ```
 
-### 7.4 陷阱 4：生成器表达式只能迭代一次
+### 6.4 陷阱 4：生成器表达式只能迭代一次
 
 ```python
 gen = (x**2 for x in range(5))
@@ -979,7 +954,7 @@ print(list(gen_factory()))
 print(list(gen_factory()))
 ```
 
-### 7.5 陷阱 5：变量遮蔽
+### 6.5 陷阱 5：变量遮蔽
 
 ```python
 # 反例：循环变量遮蔽外层
@@ -989,7 +964,7 @@ print(x)  # Python 3: 100（无泄漏）
 # 但若推导式内引用了外层 x 的语义，会出错
 ```
 
-### 7.6 陷阱 6：大列表内存膨胀
+### 6.6 陷阱 6：大列表内存膨胀
 
 ```python
 # 反例：构建千万元素列表求和
@@ -999,7 +974,7 @@ total = sum([x**2 for x in range(10_000_000)])  # 占用 ~80MB 内存
 total = sum(x**2 for x in range(10_000_000))  # 几乎零内存
 ```
 
-### 7.7 陷阱 7：异常处理缺失
+### 6.7 陷阱 7：异常处理缺失
 
 ```python
 # 反例：异常会终止整个推导式
@@ -1017,7 +992,7 @@ result = [n for n in (safe_int(x) for x in data) if n is not None]
 print(result)  # [1, 2, 4]
 ```
 
-### 7.8 陷阱 8：与字典推导式混淆
+### 6.8 陷阱 8：与字典推导式混淆
 
 ```python
 # 反例：误用冒号
@@ -1028,7 +1003,7 @@ d = {x: x**2 for x in range(5)}
 print(d)  # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
 ```
 
-### 7.9 陷阱 9：tuple 推导式不存在
+### 6.9 陷阱 9：tuple 推导式不存在
 
 ```python
 # 反例：圆括号会被解释为生成器表达式
@@ -1040,7 +1015,7 @@ t = tuple(x for x in range(5))
 print(type(t), t)  # <class 'tuple'> (0, 1, 2, 3, 4)
 ```
 
-### 7.10 陷阱 10：推导式内 await 限制
+### 6.10 陷阱 10：推导式内 await 限制
 
 ```python
 # 反例：普通推导式内不能使用 await
@@ -1050,7 +1025,7 @@ print(type(t), t)  # <class 'tuple'> (0, 1, 2, 3, 4)
 # result = [x async for x in aiter() if await pred(x)]
 ```
 
-### 7.11 最佳实践清单
+### 6.11 最佳实践清单
 
 1. **优先用生成器表达式**处理大集合，避免内存膨胀
 2. **推导式不超过两层嵌套**，超过则改用显式循环
@@ -1062,9 +1037,9 @@ print(type(t), t)  # <class 'tuple'> (0, 1, 2, 3, 4)
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建与打包
+### 7.1 构建与打包
 
 ```bash
 # 创建虚拟环境
@@ -1082,7 +1057,7 @@ pytest
 pytest tests/test_benchmark.py --benchmark-only
 ```
 
-### 8.2 虚拟环境与依赖锁定
+### 7.2 虚拟环境与依赖锁定
 
 ```bash
 # 使用 uv（推荐，10x 速度）
@@ -1094,7 +1069,7 @@ uv pip compile pyproject.toml -o requirements.txt
 uv pip sync requirements.txt
 ```
 
-### 8.3 性能基准测试
+### 7.3 性能基准测试
 
 ```python
 """pytest-benchmark：推导式 vs 循环 vs map/filter。
@@ -1133,7 +1108,7 @@ def test_benchmark_squares(benchmark: pytest.Funcitem, n: int) -> None:
     assert len(result) == n
 ```
 
-### 8.4 属性测试（Hypothesis）
+### 7.4 属性测试（Hypothesis）
 
 ```python
 """Hypothesis 属性测试：推导式等价性。
@@ -1163,7 +1138,7 @@ def test_flatten_equivalence(matrix: list[list[int]]) -> None:
     assert flatten_comp(matrix) == flatten_loop(matrix)
 ```
 
-### 8.5 调试技巧
+### 7.5 调试技巧
 
 ```python
 """调试推导式的技巧。
@@ -1203,7 +1178,7 @@ if __name__ == "__main__":
     inspect_comprehension()
 ```
 
-### 8.6 静态类型检查配置
+### 7.6 静态类型检查配置
 
 ```toml
 # mypy.ini
@@ -1220,7 +1195,7 @@ check_untyped_defs = true
 disallow_untyped_defs = false
 ```
 
-### 8.7 CI/CD 配置（GitHub Actions）
+### 7.7 CI/CD 配置（GitHub Actions）
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1254,9 +1229,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 NumPy：从推导式到向量化
+### 8.1 NumPy：从推导式到向量化
 
 NumPy 早期版本（2005 年发布前）大量使用推导式处理数组。现代 NumPy 推荐使用向量化操作：
 
@@ -1277,7 +1252,7 @@ squares_vec = arr**2  # 快 100x
 
 NumPy 源码（`numpy/core/src/multiarray/ctors.c`）内部用 C 实现的高效循环替代推导式，体现"Python 推导式适合控制流，向量化适合数据流"的设计哲学。
 
-### 9.2 Pandas：列推导式 vs `apply` vs 向量化
+### 8.2 Pandas：列推导式 vs `apply` vs 向量化
 
 ```python
 import pandas as pd
@@ -1299,7 +1274,7 @@ df["squared"] = df["value"] ** 2
 # 向量化: 2 ms
 ```
 
-### 9.3 Polars：原生 Python 推导式的角色
+### 8.3 Polars：原生 Python 推导式的角色
 
 Polars（Rust 实现的 DataFrame 库）在 Python 层仍用推导式做控制流，但数据流交给 Rust 内核：
 
@@ -1315,7 +1290,7 @@ columns = [f"col_{i}" for i in range(10)]
 df = df.with_columns([(pl.col("value") ** 2).alias("squared")])
 ```
 
-### 9.4 CPython 标准库中的推导式
+### 8.4 CPython 标准库中的推导式
 
 CPython 标准库大量使用推导式。以 `lib/pathlib.py` 为例：
 
@@ -1333,7 +1308,7 @@ class Path:
         return (p for p in self.rglob(pattern) if p.match(pattern))
 ```
 
-### 9.5 Instagram：Django 模板与推导式
+### 8.5 Instagram：Django 模板与推导式
 
 Instagram 后端使用 Django + 大量 Python 推导式处理用户数据。在其工程博客中提到：
 
@@ -1341,7 +1316,7 @@ Instagram 后端使用 Django + 大量 Python 推导式处理用户数据。在�
 
 参考 Instagram Engineering Blog（2017）：他们通过将热点路径的循环改写为推导式，在用户动态聚合模块获得了 30% 的吞吐量提升。
 
-### 9.6 YouTube：推荐系统中的流式管道
+### 8.6 YouTube：推荐系统中的流式管道
 
 YouTube 推荐系统早期用 Python + 生成器表达式构建流式管道，避免一次性加载百万级视频元数据：
 
@@ -1355,7 +1330,7 @@ def recommend(user_id: int) -> Iterator[Video]:
     return (v for v, _ in sorted_videos)  # 投影
 ```
 
-### 9.7 Dropbox：文件系统遍历
+### 8.7 Dropbox：文件系统遍历
 
 Dropbox 客户端使用推导式 + `os.walk` 实现高效的增量同步：
 
@@ -1382,7 +1357,7 @@ def find_large_files(root: Path, min_size: int = 1024 * 1024) -> list[Path]:
     ]
 ```
 
-### 9.8 CPython 字节码优化：PEP 709 实战
+### 8.8 CPython 字节码优化：PEP 709 实战
 
 Python 3.12 内联推导式后，CPython 测试套件观察到总体速度提升 5-10%：
 
@@ -1657,7 +1632,7 @@ assert take(5, gen) == [0, 1, 4, 9, 16]
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q1.** 为什么 Python 推导式在 Python 2 中泄漏循环变量，而在 Python 3 中不泄漏？这一改动对代码迁移有何影响？
 
@@ -1724,9 +1699,9 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 PEP 与官方文档
+### 10.1 PEP 与官方文档
 
 [1] Warsaw, B. 2000. PEP 202: List Comprehensions. Python Enhancement Proposals. https://peps.python.org/pep-0202/. DOI: 10.5281/zenodo.10678420.
 
@@ -1740,7 +1715,7 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 
 [6] Van Rossum, G. and Drake Jr, J.L. 2024. The Python Language Reference (3.13 ed.). Python Software Foundation. https://docs.python.org/3/reference/.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [7] Burstall, R.M. and Darlington, J. 1977. A transformation system for developing recursive programs. Journal of the ACM (JACM) 24, 1 (Jan. 1977), 44–67. DOI: 10.1145/321992.321996.
 
@@ -1750,7 +1725,7 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 
 [10] Augusstson, L. 1999. Implementing Haskell overloading. In Proceedings of the 4th International Symposium on Functional Programming Languages and Computer Architecture (FPCA '89). ACM, 324–333. DOI: 10.1145/99370.99404.
 
-### 11.3 工业实践
+### 10.3 工业实践
 
 [11] Kloeckner, A. 2017. NumPy internals: Array iteration and vectorization. https://numpy.org/devdocs/dev/internals.html.
 
@@ -1760,7 +1735,7 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 
 [14] Hettinger, R. 2013. Python's comprehensions and generators. PyCon 2013 Tutorial. https://pycon.org/2013/.
 
-### 11.4 标准与规范
+### 10.4 标准与规范
 
 [15] Van Rossum, G., Warsaw, B., and Coghlan, N. 2001. PEP 8: Style Guide for Python Code. Python Enhancement Proposals. https://peps.python.org/pep-0008/.
 
@@ -1768,9 +1743,9 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **Ramalho, L. 2022.** *Fluent Python (2nd ed.)*. O'Reilly Media. — 第 2 章"An Array of Sequences"、第 7 章"Closures and Decorators"对推导式有深度剖析。
 - **Beazley, D. and Jones, B.K. 2013.** *Python Cookbook (3rd ed.)*. O'Reilly Media. — 第 1 章"Data Structures and Algorithms"涵盖大量推导式实战模式。
@@ -1778,7 +1753,7 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 - **Slatkin, B. 2019.** *Effective Python (2nd ed.)*. Addison-Wesley. — 第 8 条"Use List Comprehensions Instead of map and filter"。
 - **Pilgrim, M. 2009.** *Dive Into Python 3*. Apress. — 第 4 章对推导式的进阶讨论。
 
-### 12.2 论文与文档
+### 11.2 论文与文档
 
 - **PEP 202** — List Comprehensions
 - **PEP 274** — Dict Comprehensions
@@ -1788,7 +1763,7 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 - **PEP 8** — Style Guide for Python Code（推导式相关章节）
 - **CPython Internals: Compilation of comprehensions** — https://github.com/python/cpython/blob/main/Python/compile.c
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **Python Language Reference, §6.2.4 Displays for lists, sets and dictionaries** — https://docs.python.org/3/reference/expressions.html#displays-for-lists-sets-and-dictionaries
 - **Real Python: When to Use a List Comprehension in Python** — https://realpython.com/list-comprehension-python/
@@ -1796,7 +1771,7 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 - **PyPy Status Blog: List comprehension optimization** — https://pypy.org/posts/
 - **PEP 709 implementation deep dive by Brandt Bucher** — https://github.com/python/cpython/pull/104497
 
-### 12.4 相关 PEP 主题
+### 11.4 相关 PEP 主题
 
 - **PEP 274** — Dict/Set Comprehensions
 - **PEP 3104** — `nonlocal` 关键字
@@ -1805,7 +1780,7 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 - **PEP 572** — Assignment Expressions (海象运算符)
 - **PEP 695** — Type Parameter Syntax (Python 3.12)
 
-### 12.5 跨语言参考
+### 11.5 跨语言参考
 
 - **Haskell Report 2020** — §3.11 List Comprehensions
 - **Rust Book** — §13.2 Processing a Series of Items with Iterators

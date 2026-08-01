@@ -31,84 +31,16 @@ tags:
   - JEP
 ---
 
+
 # Java 现代特性深度指南（Java 8-21）
 
 > Java 自 1996 年诞生以来，经历了从"缓慢演进"到"快速迭代"的范式转变。从 Java 8（2014）的 Lambda、Stream、Optional 三剑客开启现代 Java 纪元，到 Java 21（2023）的虚拟线程、模式匹配、记录类三大支柱完成"现代 Java"形态构建，这 9 年间的演进重新定义了 Java 作为一门语言的表达力、性能边界与工程哲学。本文将以版本为线索、以特性为单元、以原理为深度，系统性地剖析 Java 8 至 21 的关键演进，让读者既能掌握每个特性的"如何使用"，也能理解"为何如此设计"，最终建立对 Java 语言演进的系统认知。
 
 ---
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节以 Bloom 教育目标分类法（Anderson 2001 修订版）为框架，对学习目标进行显式分级。
-
-### 1.1 认知层级目标
-
-| 层级（Level） | 行为动词 | 具体学习目标 |
-|--------------|---------|-------------|
-| 记忆（Remember） | 列举、识别、定义 | 列举 Java 8 至 21 各 LTS 版本的关键特性，识别 Record、密封类、模式匹配、虚拟线程、文本块等核心语法的语义 |
-| 理解（Understand） | 解释、归纳、对比 | 解释 invokedynamic 如何支撑 Lambda，对比 Record 与传统 POJO 的差异，归纳 Pattern Matching 的类型消除原则 |
-| 应用（Apply） | 实现、使用、演示 | 使用 Record 替代 DTO，使用密封类建模领域，使用 switch 模式匹配实现多态分派，使用虚拟线程实现高并发服务 |
-| 分析（Analyze） | 分解、辨别、推断 | 分解 `var` 的类型推断链路，推断虚拟线程在 synchronized 块中的固定行为，辨别文本块的缩进剥离算法 |
-| 评价（Evaluate） | 评判、论证、批判 | 评判 Record 的不可变性约束是否适用于所有 DTO 场景，论证虚拟线程与平台线程的选型依据，批判模式匹配 switch 的穷举性检查 |
-| 创造（Create） | 设计、构建、重构 | 设计基于密封类 + 模式匹配的领域模型，构建虚拟线程 + 结构化并发的微服务架构，重构遗留 POJO 代码为现代 Record + Record Pattern |
-
-### 1.2 学习成果自检清单
-
-完成本章学习后，读者应能独立完成以下任务：
-
-1. 在不查阅文档的前提下，列出 Java 8、11、17、21 四个 LTS 版本的核心特性清单。
-2. 用一句话向同事解释 invokedynamic 与 Lambda 表达式的关系。
-3. 在白板上画出 Record 类的字节码结构，指出自动生成的方法及其语义。
-4. 设计一个基于密封类 + 模式匹配 switch 的支付方式领域模型，编译器保证穷举性。
-5. 对比虚拟线程、CompletableFuture、Reactor 三种并发模型的优缺点，给出选型建议。
-6. 重写一段遗留 Java 7 代码（5 层 if-else 嵌套 + StringBuilder 拼接）为现代 Java 21 风格。
-
-### 1.3 前置知识地图
-
-```mermaid
-flowchart TD
-    T0["Java 基础"]
-    T1["面向对象（封装、继承、多态）"]
-    T2["集合框架（List、Map、Set）"]
-    T3["异常处理（try-catch-finally）"]
-    T4["泛型（类型参数、通配符）"]
-    T5["Java 函数式编程（Java 8 基础）"]
-    T6["Lambda 表达式"]
-    T7["Stream API"]
-    T8["Optional"]
-    T9["函数式接口"]
-    T10["Java 现代特性（本章）"]
-    T11["语法层：Record、密封类、模式匹配、文本块、switch 表达式"]
-    T12["API 层：List.of、Map.of、String 新方法、HttpClient"]
-    T13["并发层：虚拟线程、结构化并发、作用域值"]
-    T14["JVM 层：invokedynamic、ALPN、AppCDS、ZGC、Generational Shenandoah"]
-    T0 --> T1
-    T0 --> T2
-    T0 --> T3
-    T0 --> T4
-    T4 --> T5
-    T5 --> T6
-    T5 --> T7
-    T5 --> T8
-    T5 --> T9
-    T9 --> T10
-    T10 --> T11
-    T10 --> T12
-    T10 --> T13
-    T10 --> T14
-```
-
-### 1.4 章节阅读建议
-
-- **零基础读者**：建议按顺序阅读第 2-5 节，配合第 5 节代码示例上机实操，再回到第 3、4 节深化理论。
-- **有 Java 8 经验的工程师**：可跳过第 2 节基础部分，直接阅读第 3 节 Record 与密封类、第 4 节模式匹配、第 7 节反模式。
-- **架构师**：重点关注第 6 节对比分析、第 8 节工程实践与第 9 节案例研究，特别是虚拟线程与 Spring Boot 3 的集成。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 Java 演进的范式转变
+### 1.1 Java 演进的范式转变
 
 Java 的发展史可分为三个阶段：
 
@@ -131,7 +63,7 @@ Java 的发展史可分为三个阶段：
 - 后续版本（22、23、24...）继续增量演进，但核心形态已稳定。
 - GraalVM、Native Image 推动 Java 向"云原生"友好演进。
 
-### 2.2 JEP 机制与特性孵化
+### 1.2 JEP 机制与特性孵化
 
 Java 的每个新特性都通过 **JEP（JDK Enhancement Proposal）** 流程推进。JEP 的状态机：
 
@@ -166,7 +98,7 @@ JEP 分为几类：
 - **Tooling Features**：工具链改进（如 jshell、jpackage）。
 - **Infrastructure Features**：构建与发布流程改进。
 
-### 2.3 关键 LTS 版本时间线
+### 1.3 关键 LTS 版本时间线
 
 | 版本 | 发布时间 | 类型 | 关键特性 |
 |------|---------|------|---------|
@@ -175,7 +107,7 @@ JEP 分为几类：
 | JDK 17 | 2021-09 | LTS | 密封类正式、Pattern Matching for instanceof 正式、强封装默认、Text Blocks 正式、Switch 表达式正式 |
 | JDK 21 | 2023-09 | LTS | 虚拟线程正式、Pattern Matching for switch 正式、Record Patterns 正式、字符串模板预览、Sequenced Collections |
 
-### 2.4 设计哲学：Java 演进的保守与激进
+### 1.4 设计哲学：Java 演进的保守与激进
 
 Java 的演进遵循 **"保守的语法、激进的库"** 原则：
 
@@ -185,7 +117,7 @@ Java 的演进遵循 **"保守的语法、激进的库"** 原则：
 
 这一哲学的核心是 **"向后兼容"** —— 一份 1996 年的 Java 1.0 代码在 Java 21 上仍应能编译运行。这是 Java 在企业级市场不可替代的根本原因。
 
-### 2.5 与其他语言的对比
+### 1.5 与其他语言的对比
 
 | 特性 | Java | Kotlin | Scala | C# |
 |------|------|--------|-------|-----|
@@ -201,9 +133,9 @@ Java 的演进遵循 **"保守的语法、激进的库"** 原则：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Record 类的形式化定义
+### 2.1 Record 类的形式化定义
 
 Record 类 $R$ 是一个不可变的透明数据载体，定义为：
 
@@ -222,7 +154,7 @@ $$
 
 形式化地，Record 类的"透明性"意味着其内部表示（字段值）与外部接口（访问器）完全对应，无隐藏状态。
 
-### 3.2 密封类的形式化定义
+### 2.2 密封类的形式化定义
 
 密封类 $S$ 显式声明其 permitted 子类集合 $P(S)$：
 
@@ -241,7 +173,7 @@ $$
 
 密封类使得 **穷举性检查**（exhaustiveness）成为可能：编译器可验证 switch 表达式是否覆盖所有 $P(S)$，无需 `default` 分支。
 
-### 3.3 Pattern Matching 的形式化语义
+### 2.3 Pattern Matching 的形式化语义
 
 Pattern Matching 是一种将"类型测试 + 类型转换 + 变量绑定"三步合一的机制。形式化地，模式 $p$ 与值 $v$ 的匹配 $\text{match}(p, v)$ 定义为：
 
@@ -281,7 +213,7 @@ $$
 \end{cases}
 $$
 
-### 3.4 虚拟线程的形式化模型
+### 2.4 虚拟线程的形式化模型
 
 虚拟线程是 JVM 调度的轻量级线程，其形式化模型：
 
@@ -299,7 +231,7 @@ $$
 - **创建成本低**：虚拟线程无需 OS 系统调用（`clone`），JVM 内部分配。
 - **阻塞成本低**：虚拟线程阻塞时不占用载体线程，载体线程可执行其他虚拟线程。
 
-### 3.5 invokedynamic 与 Lambda 的关系
+### 2.5 invokedynamic 与 Lambda 的关系
 
 Lambda 表达式在字节码层通过 `invokedynamic` 指令实现。形式化地：
 
@@ -324,9 +256,9 @@ Function<String, Integer> f = s -> s.length();
 
 ---
 
-## 4. 理论推导：现代特性的内部机制
+## 3. 理论推导：现代特性的内部机制
 
-### 4.1 Record 类的字节码剖析
+### 3.1 Record 类的字节码剖析
 
 考虑以下 Record 定义：
 
@@ -359,7 +291,7 @@ public final class Point extends java.lang.Record {
 
 Record 类在 `Record` 属性（JVMS §4.7.30）中记录其组件元数据，反射 API 通过 `Class.getRecordComponents()` 读取，使 Jackson、Gson 等库能识别 Record 的规范构造器进行反序列化。
 
-### 4.2 密封类的字节码剖析
+### 3.2 密封类的字节码剖析
 
 ```java
 public sealed interface Shape permits Circle, Square, Triangle {}
@@ -382,7 +314,7 @@ public abstract interface Shape
 
 这一机制在编译期和运行期双重保障封闭性。
 
-### 4.3 Pattern Matching 的类型消除算法
+### 3.3 Pattern Matching 的类型消除算法
 
 `instanceof` 模式匹配的字节码等价于：
 
@@ -420,7 +352,7 @@ if (!(obj instanceof String s)) {
 System.out.println(s.length()); // s 已绑定
 ```
 
-### 4.4 Switch 模式匹配的穷举性算法
+### 3.4 Switch 模式匹配的穷举性算法
 
 Switch 模式匹配的穷举性检查基于以下规则：
 
@@ -437,7 +369,7 @@ $$
 
 其中 $\text{covered}(\text{cases}, T)$ 递归判断 `cases` 是否覆盖 $T$ 的所有可能值。
 
-### 4.5 虚拟线程的卸载机制
+### 3.5 虚拟线程的卸载机制
 
 虚拟线程的卸载（unmount）发生在以下场景：
 
@@ -474,7 +406,7 @@ flowchart TD
 
 修复：用 `ReentrantLock` 替代 `synchronized`。JDK 21+ 提供了 `jcmd Thread.dump_to_file` 命令检测 pinning。
 
-### 4.6 Text Block 的缩进剥离算法
+### 3.6 Text Block 的缩进剥离算法
 
 Text Block（文本块）使用 `"""` 包裹多行字符串，其缩进剥离算法：
 
@@ -499,7 +431,7 @@ String s2 = """
 
 `stripIndent()` 方法实现这一算法，可手动调用。
 
-### 4.7 var 关键字的类型推断
+### 3.7 var 关键字的类型推断
 
 `var` 是 Java 10 引入的局部变量类型推断（Local Variable Type Inference），仅用于局部变量（不可用于字段、方法参数、返回类型）。
 
@@ -524,9 +456,9 @@ x = "string"; // 编译错误：x 是 int，不能赋值 String
 
 ---
 
-## 5. 代码示例：从入门到进阶的完整实战
+## 4. 代码示例：从入门到进阶的完整实战
 
-### 5.1 示例 1：Record 类全面演示
+### 4.1 示例 1：Record 类全面演示
 
 ```java
 // 文件：RecordDemo.java
@@ -610,7 +542,7 @@ public class RecordDemo {
 }
 ```
 
-### 5.2 示例 2：密封类与模式匹配 switch
+### 4.2 示例 2：密封类与模式匹配 switch
 
 ```java
 // 文件：SealedPatternDemo.java
@@ -720,7 +652,7 @@ public class SealedPatternDemo {
 }
 ```
 
-### 5.3 示例 3：文本块与字符串增强
+### 4.3 示例 3：文本块与字符串增强
 
 ```java
 // 文件：TextBlockDemo.java
@@ -804,7 +736,7 @@ public class TextBlockDemo {
 }
 ```
 
-### 5.4 示例 4：虚拟线程实战
+### 4.4 示例 4：虚拟线程实战
 
 ```java
 // 文件：VirtualThreadDemo.java
@@ -916,7 +848,7 @@ public class VirtualThreadDemo {
 }
 ```
 
-### 5.5 示例 5：结构化并发（Structured Concurrency）
+### 4.5 示例 5：结构化并发（Structured Concurrency）
 
 ```java
 // 文件：StructuredConcurrencyDemo.java
@@ -1020,7 +952,7 @@ public class StructuredConcurrencyDemo {
 }
 ```
 
-### 5.6 示例 6：作用域值（Scoped Values）
+### 4.6 示例 6：作用域值（Scoped Values）
 
 ```java
 // 文件：ScopedValueDemo.java
@@ -1084,7 +1016,7 @@ public class ScopedValueDemo {
 }
 ```
 
-### 5.7 示例 7：HttpClient（Java 11+）
+### 4.7 示例 7：HttpClient（Java 11+）
 
 ```java
 // 文件：HttpClientDemo.java
@@ -1176,7 +1108,7 @@ public class HttpClientDemo {
 }
 ```
 
-### 5.8 示例 8：集合工厂方法与不可变集合
+### 4.8 示例 8：集合工厂方法与不可变集合
 
 ```java
 // 文件：CollectionFactoryDemo.java
@@ -1279,7 +1211,7 @@ public class CollectionFactoryDemo {
 }
 ```
 
-### 5.9 示例 9：Sequenced Collections（Java 21）
+### 4.9 示例 9：Sequenced Collections（Java 21）
 
 ```java
 // 文件：SequencedCollectionDemo.java
@@ -1337,7 +1269,7 @@ public class SequencedCollectionDemo {
 }
 ```
 
-### 5.10 示例 10：Switch 表达式与 yield
+### 4.10 示例 10：Switch 表达式与 yield
 
 ```java
 // 文件：SwitchExpressionDemo.java
@@ -1411,9 +1343,9 @@ public class SwitchExpressionDemo {
 
 ---
 
-## 6. 对比分析：现代特性的取舍
+## 5. 对比分析：现代特性的取舍
 
-### 6.1 Record vs 传统 POJO vs Lombok @Data
+### 5.1 Record vs 传统 POJO vs Lombok @Data
 
 | 维度 | Record（Java 16+） | 传统 POJO | Lombok @Data |
 |------|------------------|----------|--------------|
@@ -1435,7 +1367,7 @@ public class SwitchExpressionDemo {
 - **JPA Entity / 可变实体**：使用传统 POJO 或 Lombok（Entity 的可变性通常是需要的）。
 - **避免 Lombok 的新项目**：Record + 密封类可覆盖大部分场景，减少对 Lombok 的依赖。
 
-### 6.2 虚拟线程 vs CompletableFuture vs Reactor
+### 5.2 虚拟线程 vs CompletableFuture vs Reactor
 
 | 维度 | 虚拟线程（JDK 21） | CompletableFuture（JDK 8） | Reactor / RxJava |
 |------|------------------|--------------------------|------------------|
@@ -1457,7 +1389,7 @@ public class SwitchExpressionDemo {
 - **背压敏感场景**（如流处理）：Reactor 仍是首选，虚拟线程不解决背压。
 - **混合场景**：虚拟线程处理 I/O，Reactor 处理流。
 
-### 6.3 Pattern Matching vs 传统 instanceof + 强转
+### 5.3 Pattern Matching vs 传统 instanceof + 强转
 
 ```java
 // 传统写法（Java 7）
@@ -1480,7 +1412,7 @@ if (obj instanceof String s) {
 | 作用域 | 仅 if 块内 | 流敏感（自动推断） |
 | 与 switch 配合 | 不支持 | 支持（switch 模式匹配） |
 
-### 6.4 Text Block vs 字符串拼接
+### 5.4 Text Block vs 字符串拼接
 
 ```java
 // 传统写法
@@ -1508,9 +1440,9 @@ String json = """
 
 ---
 
-## 7. 陷阱与反模式
+## 6. 陷阱与反模式
 
-### 7.1 反模式 1：Record 中添加可变状态
+### 6.1 反模式 1：Record 中添加可变状态
 
 ```java
 // 反模式：Record 中添加可变字段（违反 Record 不可变性）
@@ -1534,7 +1466,7 @@ public class Counter {
 }
 ```
 
-### 7.2 反模式 2：密封类的 non-sealed 滥用
+### 6.2 反模式 2：密封类的 non-sealed 滥用
 
 ```java
 // 反模式：non-sealed 破坏封闭性
@@ -1555,7 +1487,7 @@ public double area(Shape s) {
 // 正确：避免 non-sealed，或将其限制在受控范围
 ```
 
-### 7.3 反模式 3：虚拟线程中使用 synchronized
+### 6.3 反模式 3：虚拟线程中使用 synchronized
 
 ```java
 // 反模式：synchronized 导致虚拟线程固定（Pinning）
@@ -1582,7 +1514,7 @@ public String fetchData() {
 }
 ```
 
-### 7.4 反模式 4：var 过度使用
+### 6.4 反模式 4：var 过度使用
 
 ```java
 // 反模式：var 滥用导致类型不清晰
@@ -1601,7 +1533,7 @@ var stream = users.stream();                     // Stream<User> 明显
 var entry = Map.entry("key", 1);                 // Map.Entry<String, Integer> 明显
 ```
 
-### 7.5 反模式 5：在 Record 紧凑构造器中修改参数
+### 6.5 反模式 5：在 Record 紧凑构造器中修改参数
 
 ```java
 // 反模式：在紧凑构造器中修改参数（违反规范）
@@ -1628,7 +1560,7 @@ public record Age(int years) {
 }
 ```
 
-### 7.6 反模式 6：模式匹配 switch 忘记 null 处理
+### 6.6 反模式 6：模式匹配 switch 忘记 null 处理
 
 ```java
 // 反模式：未处理 null，运行时 NPE
@@ -1658,7 +1590,7 @@ public String describe(Shape s) {
 }
 ```
 
-### 7.7 反模式 7：文本块缩进混乱
+### 6.7 反模式 7：文本块缩进混乱
 
 ```java
 // 反模式：文本块缩进不一致，导致剥离结果不符预期
@@ -1676,7 +1608,7 @@ String json = """
         """; // 所有行缩进 8，尾部 """ 缩进 8，剥离后无附加缩进
 ```
 
-### 7.8 反模式 8：虚拟线程池化
+### 6.8 反模式 8：虚拟线程池化
 
 ```java
 // 反模式：池化虚拟线程（虚拟线程本应即用即弃）
@@ -1689,7 +1621,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 }
 ```
 
-### 7.9 反模式 9：作用域值的误用
+### 6.9 反模式 9：作用域值的误用
 
 ```java
 // 反模式：作用域值不是 ThreadLocal，无法在任意位置修改
@@ -1713,7 +1645,7 @@ ScopedValue.where(COUNTER, new int[]{0}).run(() -> {
 });
 ```
 
-### 7.10 反模式 10：忽视预览特性的不稳定性
+### 6.10 反模式 10：忽视预览特性的不稳定性
 
 ```java
 // 反模式：在生产代码使用预览特性
@@ -1730,9 +1662,9 @@ public String process(String input) {
 
 ---
 
-## 8. 工程实践：现代 Java 的项目落地
+## 7. 工程实践：现代 Java 的项目落地
 
-### 8.1 JDK 版本选型
+### 7.1 JDK 版本选型
 
 | 场景 | 推荐 JDK | 原因 |
 |------|---------|------|
@@ -1742,9 +1674,9 @@ public String process(String input) {
 | 遗留系统（JDK 7-） | 评估迁移成本 | 若无迁移可能，考虑 GraalVM Native Image |
 | 云原生 / Serverless | JDK 21 + GraalVM | Native Image 启动快、内存省 |
 
-### 8.2 升级路径
+### 7.2 升级路径
 
-#### 8.2.1 JDK 8 → JDK 17 升级清单
+#### 7.2.1 JDK 8 → JDK 17 升级清单
 
 1. **模块系统适配**：
    - 检查 `sun.*` 内部 API 使用，替换为公开 API。
@@ -1767,7 +1699,7 @@ public String process(String input) {
    - 重新编译所有依赖到 JDK 17 字节码（class file version 61）。
    - 检查第三方依赖的兼容性。
 
-#### 8.2.2 JDK 17 → JDK 21 升级清单
+#### 7.2.2 JDK 17 → JDK 21 升级清单
 
 1. **虚拟线程适配**：
    - 替换 `synchronized` 为 `ReentrantLock`。
@@ -1781,7 +1713,7 @@ public String process(String input) {
    - 将 Lombok @Value 替换为 Record。
    - DTO 类迁移到 Record。
 
-### 8.3 Spring Boot 3 + 虚拟线程实践
+### 7.3 Spring Boot 3 + 虚拟线程实践
 
 ```yaml
 # application.yml - 启用虚拟线程
@@ -1832,7 +1764,7 @@ public class OrderService {
 }
 ```
 
-### 8.4 Record 与 Jackson 集成
+### 7.4 Record 与 Jackson 集成
 
 ```java
 // Jackson 2.12+ 原生支持 Record 反序列化
@@ -1872,7 +1804,7 @@ public class JacksonConfig {
 }
 ```
 
-### 8.5 密封类 + 模式匹配的领域建模
+### 7.5 密封类 + 模式匹配的领域建模
 
 ```java
 // 领域模型：电商订单状态
@@ -1917,9 +1849,9 @@ enum OrderEvent { PAY, SHIP, DELIVER, CANCEL }
 
 ---
 
-## 9. 案例研究：主流框架的现代 Java 实践
+## 8. 案例研究：主流框架的现代 Java 实践
 
-### 9.1 案例研究 1：Spring Framework 6 的 Java 17 基线
+### 8.1 案例研究 1：Spring Framework 6 的 Java 17 基线
 
 Spring Framework 6（2022 年 11 月发布）将基线提升到 Java 17，并广泛使用现代特性：
 
@@ -1929,7 +1861,7 @@ Spring Framework 6（2022 年 11 月发布）将基线提升到 Java 17，并广
 4. **HttpClient 替代 RestTemplate**：Spring 6 的 `RestClient` 基于 Java 11+ HttpClient。
 5. **虚拟线程支持**：Spring Boot 3.2+ 自动配置虚拟线程。
 
-### 9.2 案例研究 2：Quarkus 的原生镜像与 Record
+### 8.2 案例研究 2：Quarkus 的原生镜像与 Record
 
 Quarkus 框架深度集成 GraalVM Native Image，Record 在其中扮演重要角色：
 
@@ -1937,7 +1869,7 @@ Quarkus 框架深度集成 GraalVM Native Image，Record 在其中扮演重要�
 2. **Record 的反射友好性**：Native Image 中 Record 的规范构造器可被反射调用，无需额外配置。
 3. **密封类 + Pattern Matching**：Quarkus 的 CDI 容器使用密封类建模 Bean 类型，模式匹配简化分派。
 
-### 9.3 案例研究 3：Kafka 客户端的虚拟线程适配
+### 8.3 案例研究 3：Kafka 客户端的虚拟线程适配
 
 Kafka 客户端（kafka-clients 3.7+）适配了虚拟线程：
 
@@ -1964,7 +1896,7 @@ Thread vt = Thread.startVirtualThread(() -> {
 });
 ```
 
-### 9.4 案例研究 4：JIT 优化对现代特性的影响
+### 8.4 案例研究 4：JIT 优化对现代特性的影响
 
 HotSpot JIT 编译器对现代特性有专门优化：
 
@@ -1973,7 +1905,7 @@ HotSpot JIT 编译器对现代特性有专门优化：
 3. **Pattern Matching 的优化**：`instanceof` 模式匹配的 type check 在 JIT 中可合并，减少指令数。
 4. **虚拟线程的 Continuation 优化**：虚拟线程的栈帧保存/恢复在 JIT 中被优化为栈指针操作。
 
-### 9.5 案例研究 5：电商订单系统的现代 Java 重构
+### 8.5 案例研究 5：电商订单系统的现代 Java 重构
 
 某电商系统从 JDK 8 升级到 JDK 21 的重构案例：
 
@@ -2066,7 +1998,7 @@ public OrderDetail getOrderDetail(Long orderId) {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（记忆与理解）
+### 9.1 基础题（记忆与理解）
 
 1. 列举 Java 8、11、17、21 四个 LTS 版本的核心特性。
 2. 解释 Record 与传统 POJO 在 equals/hashCode 实现上的差异。
@@ -2103,7 +2035,7 @@ public OrderDetail getOrderDetail(Long orderId) {
    - 失败重试（指数退避）。
    - 结果聚合。
 
-### 10.3 进阶题（评价与创造）
+### 9.3 进阶题（评价与创造）
 
 9. 评判以下陈述："虚拟线程将取代 Reactor 和 CompletableFuture，未来 Java 并发编程将回归同步风格。" 阐述你的观点。
 
@@ -2125,7 +2057,7 @@ public OrderDetail getOrderDetail(Long orderId) {
     - 语句节点：声明、赋值、if、while。
     - 求值器：使用模式匹配 switch 实现。
 
-### 10.4 开放思考题
+### 9.4 开放思考题
 
 13. Java 演进遵循"保守语法、激进库"原则。这一原则在 AI 时代是否仍然适用？阐述你的观点。
 
@@ -2135,16 +2067,16 @@ public OrderDetail getOrderDetail(Long orderId) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 1. Oracle. *Java Language Specification (JLS), Java SE 21 Edition*. https://docs.oracle.com/javase/specs/jls/se21/html/
 2. Oracle. *Java Virtual Machine Specification (JVMS), Java SE 21 Edition*. https://docs.oracle.com/javase/specs/jvms/se21/html/
 3. OpenJDK. *JDK Enhancement Proposals (JEPs)*. https://openjdk.org/jeps/0
 4. Oracle. *Java SE 21 API Documentation*. https://docs.oracle.com/en/java/javase/21/docs/api/
 
-### 11.2 关键 JEP
+### 10.2 关键 JEP
 
 5. JEP 395: Records. https://openjdk.org/jeps/395
 6. JEP 409: Sealed Classes. https://openjdk.org/jeps/409
@@ -2158,7 +2090,7 @@ public OrderDetail getOrderDetail(Long orderId) {
 14. JEP 286: Local-Variable Type Inference. https://openjdk.org/jeps/286
 15. JEP 321: HttpClient. https://openjdk.org/jeps/321
 
-### 11.3 学术论文与书籍
+### 10.3 学术论文与书籍
 
 16. Goetz, B. (2013). *Lambda: A Peek Under the Hood*. Java Magazine.
 17. Goetz, B. (2022). *Virtual Threads: New Foundations for Server-Scale Java*. Java Magazine.
@@ -2166,7 +2098,7 @@ public OrderDetail getOrderDetail(Long orderId) {
 19. Urma, R.-G., Fusco, M., & Mycroft, A. (2018). *Modern Java in Action*. Manning.
 20. Goetz, B., et al. (2006). *Java Concurrency in Practice*. Addison-Wesley.
 
-### 11.4 工业实践
+### 10.4 工业实践
 
 21. Spring Framework 6 Reference. https://docs.spring.io/spring-framework/reference/
 22. Spring Boot 3.2 Release Notes. https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2-Release-Notes
@@ -2174,7 +2106,7 @@ public OrderDetail getOrderDetail(Long orderId) {
 24. Project Loom Design Documents. https://openjdk.org/projects/loom/
 25. GraalVM Native Image. https://www.graalvm.org/native-image/
 
-### 11.5 ACM Reference Format
+### 10.5 ACM Reference Format
 
 ```
 [1] Brian Goetz. 2022. Virtual Threads: New Foundations for Server-Scale Java.
@@ -2189,16 +2121,16 @@ public OrderDetail getOrderDetail(Long orderId) {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 后续版本预览
+### 11.1 后续版本预览
 
 - **JDK 22+ 新特性**：字符串模板正式、Statements Before super()、Unnamed Variables。
 - **JDK 25 预测**：可能是下一个 LTS（2025 年 9 月），结构化并发正式、作用域值正式。
 - **Project Valhalla**：值类型（Value Types），将彻底改变 Java 性能模型。
 - **Project Babylon**：GPU/异构计算集成，Java 向数据科学扩展。
 
-### 12.2 相关 Java 主题
+### 11.2 相关 Java 主题
 
 - **Java 函数式编程**：Lambda、Stream、Optional 的深入原理。
 - **Java 并发与虚拟线程**：虚拟线程的深入剖析。
@@ -2206,20 +2138,20 @@ public OrderDetail getOrderDetail(Long orderId) {
 - **Java 模块系统**：JPMS 与强封装。
 - **Java 与 GraalVM**：Native Image 与 AOT 编译。
 
-### 12.3 函数式编程与模式匹配
+### 11.3 函数式编程与模式匹配
 
 - **《Functional Programming in Scala》** by Paul Chiusano, Rúnar Bjarnason —— 函数式编程原理。
 - **《Programming in Scala》** by Martin Odersky —— Scala 的模式匹配深度。
 - **《Real-World Functional Programming》** by Tomas Petricek —— F# 与函数式实践。
 
-### 12.4 并发与异步编程
+### 11.4 并发与异步编程
 
 - **《Java Concurrency in Practice》** by Brian Goetz et al. —— Java 并发圣经。
 - **《Designing Data-Intensive Applications》** by Martin Kleppmann —— 分布式系统与并发。
 - **Reactive Streams 规范**：https://www.reactive-streams.org/
 - **Project Reactor 文档**：https://projectreactor.io/docs/
 
-### 12.5 性能与调优
+### 11.5 性能与调优
 
 - **《Java Performance》** by Scott Oaks —— JVM 性能调优权威指南。
 - **Java Microbenchmark Harness (JMH)**：https://openjdk.org/projects/code-tools/jmh/

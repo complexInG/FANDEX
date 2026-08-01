@@ -14,61 +14,14 @@ prerequisites:
   - csharp/概述与环境配置
 ---
 
+
 # 记录类型与不可变性
 
 > "可变性是状态变化的根源，而不可变性是推理复杂系统的基石。" —— Gary Bernhardt
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 分类法（Bloom's Taxonomy）设定六层认知目标，学习者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：准确陈述 C# 9.0 中 `record` 关键字的语法形式与位置记录（positional record）的定义方式。
-- **R2**：列举 record 类型自动合成的成员清单（`Equals`、`GetHashCode`、`==`、`!=`、`PrintMembers`、`<Clone>$` 构造函数、`Deconstruct`）。
-- **R3**：回忆 `with` 表达式、`init` 访问器、`required` 修饰符引入的 C# 版本号。
-- **R4**：背诵 record 与 record struct、record class 三种变体的语义差异。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 record 类型相较于普通 `class` 在值相等（value equality）语义上的根本区别。
-- **U2**：阐述 `init` 访问器在对象初始化阶段（object initialization phase）与构造函数结束后的不同行为。
-- **U3**：说明 `with` 表达式在编译器层面如何通过 `<Clone>$` 方法与 `init` 访问器协作完成非破坏性更新（non-destructive mutation）。
-- **U4**：描述不可变数据结构（immutable data structures）在多线程并发场景下保证线程安全的理论基础。
-
-### 1.3 Apply（应用）
-
-- **A1**：在 DDD（Domain-Driven Design）聚合根（Aggregate Root）与值对象（Value Object）设计中应用 record 类型。
-- **A2**：使用 `with` 表达式实现状态机的不可变状态转移函数。
-- **A3**：在 LINQ 查询管道中引入 record 作为中间投影类型，并验证其性能开销。
-- **A4**：将传统可变 DTO 改造为 record 类型，并通过单元测试验证语义等价性。
-
-### 1.4 Analyze（分析）
-
-- **An1**：对比位置记录与非位置记录在 IL 层面的差异，识别编译器合成的成员。
-- **An2**：分析 record 在 GC（Garbage Collection）代际晋升中的行为，与可变引用类型对比。
-- **An3**：解构 `Equals` 与 `GetHashCode` 的合成实现，定位 `EqualityContract` 属性的作用。
-- **An4**：剖析 record 在序列化（System.Text.Json、Newtonsoft.Json）过程中的行为差异。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评估在性能敏感的热路径（hot path）上使用 record struct 替代 record class 的取舍。
-- **E2**：判断 record 不可变性在分布式系统中的优势是否足以抵消额外的内存分配开销。
-- **E3**：审视 record 与 `readonly struct` 在语义重叠场景下的选择标准。
-- **E4**：评价 C# 11 引入的 `required` 修饰符与构造函数参数的初始化保证强弱。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个基于 record 的不可变领域模型，支持时间旅行（time-travel）调试与事件溯源（event sourcing）。
-- **C2**：实现一个基于 record 的持久化数据结构（persistent data structure）库，包含不可变链表、不可变字典。
-- **C3**：编写一个 Source Generator，自动为指定 record 生成 EF Core 配置代码。
-- **C4**：构建一个函数式风格的错误处理库（Result、Option monad），全部基于 record 实现。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 C# 1.0（2002）：奠基时代的可变世界
+### 1.1 C# 1.0（2002）：奠基时代的可变世界
 
 C# 1.0 在 ECMA-334 标准中首次发布，其类型系统以 Java 为参照，主要包含 `class` 与 `struct` 两种用户自定义类型。彼时的设计哲学是"对象即状态容器"，所有属性默认可变（mutable），通过 `get`/`set` 访问器暴露字段。
 
@@ -99,7 +52,7 @@ public class Person
 - **样板代码繁重**：实现不可变类型需手写构造函数、只读字段、`Equals`、`GetHashCode`、`ToString`，动辄 50 行。
 - **缺乏非破坏性更新**：修改属性需要手动构造新对象，缺乏 `with` 类语法。
 
-### 2.2 C# 2.0（2005）：泛型与部分不可变
+### 1.2 C# 2.0（2005）：泛型与部分不可变
 
 C# 2.0 引入泛型（generics）与可空类型（nullable types），为不可变集合奠定基础。`List<T>`、`IList<T>` 出现，但仍是可变设计。`readonly` 字段修饰符开始被广泛使用：
 
@@ -117,7 +70,7 @@ public class Point
 }
 ```
 
-### 2.3 C# 3.0（2007）：LINQ 与隐式不可变
+### 1.3 C# 3.0（2007）：LINQ 与隐式不可变
 
 C# 3.0 的 LINQ 引入了匿名类型（anonymous types），其属性默认只读，是 C# 历史上第一次大规模使用隐式不可变类型：
 
@@ -128,7 +81,7 @@ var projection = from p in people
 
 匿名类型启发了后续 record 的设计：自动合成 `Equals`、`GetHashCode`、`ToString`，并支持值相等。但匿名类型有致命局限——无法跨方法边界传递、无法自定义行为。
 
-### 2.4 C# 4.0（2010）：命名参数与可选参数
+### 1.4 C# 4.0（2010）：命名参数与可选参数
 
 C# 4.0 引入命名参数，为后续 `with` 表达式的对象初始化器语法奠定基础：
 
@@ -136,11 +89,11 @@ C# 4.0 引入命名参数，为后续 `with` 表达式的对象初始化器语�
 var p = new Point(x: 1.0, y: 2.0);
 ```
 
-### 2.5 C# 5.0（2012）：async/await 与共享状态问题
+### 1.5 C# 5.0（2012）：async/await 与共享状态问题
 
 async/await 的引入使得并发编程门槛大幅降低，但也暴露了可变状态在多线程下的危险。这促使社区重新审视不可变数据结构的价值。.NET 4.0 引入的 `System.Collections.Immutable` 命名空间（在 4.5 正式可用）提供了 `ImmutableArray<T>`、`ImmutableList<T>`、`ImmutableDictionary<TKey, TValue>` 等持久化数据结构。
 
-### 2.6 C# 6.0（2015）：只读自动属性
+### 1.6 C# 6.0（2015）：只读自动属性
 
 C# 6.0 引入只读自动属性（read-only auto-properties），使得不可变类型的定义首次变得简洁：
 
@@ -161,7 +114,7 @@ public class Point
 
 同时引入的还有 `nameof` 表达式与字符串插值，为 record 的 `ToString` 合成埋下伏笔。
 
-### 2.7 C# 7.0（2017）：struct 元组与模式匹配
+### 1.7 C# 7.0（2017）：struct 元组与模式匹配
 
 C# 7.0 引入元组（ValueTuple）与解构（deconstruction），并提供模式匹配（pattern matching）初版。这些特性共同促成了 record 设计的最终形态：
 
@@ -172,7 +125,7 @@ var (x, y) = p;  // 解构
 
 `readonly struct` 也在此版本引入，为不可变值类型提供语言级支持。
 
-### 2.8 C# 8.0（2019）：可空引用类型与异步流
+### 1.8 C# 8.0（2019）：可空引用类型与异步流
 
 C# 8.0 引入可空引用类型（NRT），要求类型系统对 null 进行显式标注。这对 record 的设计有重要影响——record 的属性必须显式声明可空性：
 
@@ -180,7 +133,7 @@ C# 8.0 引入可空引用类型（NRT），要求类型系统对 null 进行显�
 public record Person(string Name, string? Email);
 ```
 
-### 2.9 C# 9.0（2020）：record 诞生
+### 1.9 C# 9.0（2020）：record 诞生
 
 C# 9.0 与 .NET 5 同步发布，正式引入 `record` 关键字。这是 C# 类型系统近十年最重要的演进。设计文档（`proposals/csharp-9.0/records.md`）明确说明 record 的目标：
 
@@ -191,7 +144,7 @@ C# 9.0 与 .NET 5 同步发布，正式引入 `record` 关键字。这是 C# 类
 
 最初的 record 仅支持引用类型（record class），位置记录语法 `record Person(string Name, int Age)` 自动生成主构造函数与不可变属性。
 
-### 2.10 C# 10.0（2021）：record struct 与无参数构造函数
+### 1.10 C# 10.0（2021）：record struct 与无参数构造函数
 
 C# 10.0 将 record 扩展到值类型，引入 `record struct`：
 
@@ -201,7 +154,7 @@ public record struct Point(double X, double Y);
 
 同时支持 `readonly record struct`，提供完全不可变的值类型语义。这一版本还允许 struct 拥有无参数构造函数与字段初始化器，使得 record struct 的语法更灵活。
 
-### 2.11 C# 11.0（2022）：required 修饰符与 file 作用域
+### 1.11 C# 11.0（2022）：required 修饰符与 file 作用域
 
 C# 11.0 引入 `required` 修饰符，强制对象初始化器必须设置该属性：
 
@@ -217,7 +170,7 @@ var p = new Person { Name = "Alice", Age = 30 };  // 必须设置 Name
 
 同时引入 `file` 作用域类型与 `Span<char>` 模式匹配，为 record 的高级场景提供支持。
 
-### 2.12 C# 12.0（2023）：主构造函数泛化
+### 1.12 C# 12.0（2023）：主构造函数泛化
 
 C# 12.0 将主构造函数（primary constructor）扩展到所有 `class` 与 `struct`，不再局限于 record。这降低了 record 与普通类型的语法差异：
 
@@ -228,11 +181,11 @@ public class Service(string connectionString)
 }
 ```
 
-### 2.13 C# 13.0（2024）：params 集合增强与 partial 属性
+### 1.13 C# 13.0（2024）：params 集合增强与 partial 属性
 
 C# 13.0 引入 `params` 集合增强与 `partial` 属性，使得 Source Generator 可以为 record 自动生成属性实现，进一步扩展 record 在元编程场景下的能力。
 
-### 2.14 .NET 平台演进时间线
+### 1.14 .NET 平台演进时间线
 
 | 时间 | .NET 版本 | C# 版本 | 关键里程碑 |
 |------|-----------|---------|------------|
@@ -252,13 +205,13 @@ C# 13.0 引入 `params` 集合增强与 `partial` 属性，使得 Source Generat
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ECMA-334 标准定义
+### 2.1 ECMA-334 标准定义
 
 ECMA-334 第 6 版（对应 C# 7.0 起的标准）及其后续补充提案 `proposals/csharp-9.0/records.md` 给出 record 类型的形式化定义。
 
-#### 3.1.1 语法产生式
+#### 2.1.1 语法产生式
 
 ```
 class_declaration
@@ -276,7 +229,7 @@ struct_declaration
     ;
 ```
 
-#### 3.1.2 record 类型的形式化语义
+#### 2.1.2 record 类型的形式化语义
 
 设 $T$ 为一个 record 类型，其位置参数列表为 $P = (p_1 : T_1, p_2 : T_2, \ldots, p_n : T_n)$。则编译器为 $T$ 合成以下成员：
 
@@ -291,11 +244,11 @@ struct_declaration
 9. **Deconstruct** 方法：将属性解构为元组。
 10. **EqualityContract** 属性：返回当前类型（用于子类记录的相等性判定）。
 
-### 3.2 CLR 类型系统视角
+### 2.2 CLR 类型系统视角
 
 从 CLR（Common Language Runtime）角度看，record 编译后是一个普通的引用类型（record class）或值类型（record struct），其元数据（metadata）通过 `TypeAttributes` 与 `StructLayoutAttribute` 标识。
 
-#### 3.2.1 IL 层面的 record class
+#### 2.2.1 IL 层面的 record class
 
 考虑以下 record：
 
@@ -349,7 +302,7 @@ public record Person(string Name, int Age);
 - `<Clone>$` 是受保护的实例方法，用于 `with` 表达式。
 - `Equals(Person)` 与 `Equals(object)` 都被重写，前者避免装箱。
 
-#### 3.2.2 record struct 的 IL 差异
+#### 2.2.2 record struct 的 IL 差异
 
 ```csharp
 public record struct Point(double X, double Y);
@@ -368,9 +321,9 @@ public record struct Point(double X, double Y);
 
 `record struct` 编译为值类型，属性直接以 `initonly` 字段实现，无 backing field 间接。这使其在性能敏感场景下优于 `record class`。
 
-### 3.3 不可变性的形式化定义
+### 2.3 不可变性的形式化定义
 
-#### 3.3.1 不可变性的三层语义
+#### 2.3.1 不可变性的三层语义
 
 不可变性在编程语言理论中有三种不同强度：
 
@@ -380,7 +333,7 @@ public record struct Point(double X, double Y);
 
 C# record 默认提供**浅不可变**——`init` 属性在初始化后不可变，但若属性类型为可变引用（如 `List<T>`），则其内容仍可变。
 
-#### 3.3.2 形式化定义
+#### 2.3.2 形式化定义
 
 设 $O$ 为对象，$\text{Fields}(O) = \{f_1, f_2, \ldots, f_n\}$ 为其字段集合，$\sigma : \text{Fields}(O) \to \text{Values}$ 为字段赋值函数。对象 $O$ 在时刻 $t$ 的状态记为 $\sigma_t$。
 
@@ -396,7 +349,7 @@ $$\sigma_{O'}(f_i) = v \land \sigma_{O'}(f_j) = \sigma_O(f_j), \forall j \neq i 
 
 C# `record` 配合 `with` 表达式实现持久化不可变语义（前提是属性类型本身亦不可变）。
 
-### 3.4 值相等的形式化定义
+### 2.4 值相等的形式化定义
 
 设 $a, b$ 为类型 $T$ 的两个实例。$T$ 的值相等关系 $\equiv_T$ 定义为：
 
@@ -404,7 +357,7 @@ $$a \equiv_T b \iff \forall p \in \text{Properties}(T): a.p =_T b.p$$
 
 其中 $=_T$ 为属性类型的相等关系。对于 record 类型，编译器合成的 `Equals` 实现此关系。注意 `EqualityContract` 属性参与比较，确保不同子类 record 不相等。
 
-### 3.5 引用透明性
+### 2.5 引用透明性
 
 引用透明性（referential transparency）是函数式编程的核心性质：
 
@@ -414,13 +367,13 @@ $$\text{RT}(e): \forall C[\cdot], C[e] \text{ 的语义可由 } e \text{ 的值�
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 不可变性的代数结构
+### 3.1 不可变性的代数结构
 
 不可变数据结构可以建模为代数结构，便于形式化推理。
 
-#### 4.1.1 不可变记录作为代数数据类型
+#### 3.1.1 不可变记录作为代数数据类型
 
 设 $R$ 为 record 类型，其字段为 $T_1 \times T_2 \times \cdots \times T_n$ 的笛卡尔积。则 $R$ 可视为代数数据类型（ADT）中的**积类型**（product type）：
 
@@ -432,7 +385,7 @@ $$a = b \iff \pi_i(a) = \pi_i(b), \forall i \in [1, n]$$
 
 其中 $\pi_i$ 为第 $i$ 个投影函数（即属性 getter）。
 
-#### 4.1.2 with 表达式的代数语义
+#### 3.1.2 with 表达式的代数语义
 
 `with` 表达式对应笛卡尔积上的"更新"操作：
 
@@ -446,7 +399,7 @@ $$\pi_j(\text{with}(a, f_i \mapsto v)) = \begin{cases} v & \text{if } j = i \\ \
 
 $$\pi_j(a) \text{ 在 with 调用前后不变}, \forall j$$
 
-### 4.2 哈希函数的数学性质
+### 3.2 哈希函数的数学性质
 
 record 合成的 `GetHashCode` 基于所有属性的哈希。设属性 $p_i$ 的哈希为 $h_i = \text{GetHashCode}(p_i)$，则合成哈希为：
 
@@ -460,7 +413,7 @@ $$H = \left(\sum_{i=1}^{n} h_i \cdot 31^{n-i}\right) \bmod 2^{32}$$
 
 实际 .NET 实现使用基于素数的乘法混合，详见 `System.Numerics.HashHelpers.Combine`。
 
-#### 4.2.1 哈希一致性定理
+#### 3.2.1 哈希一致性定理
 
 值相等与哈希相等必须满足：
 
@@ -474,7 +427,7 @@ record 的合成实现保证前者。证明：
 
 $$a \equiv b \implies \forall i: \pi_i(a) = \pi_i(b) \implies \forall i: h_i(a) = h_i(b) \implies H(a) = H(b) \quad \square$$
 
-### 4.3 EqualityContract 与子类记录相等性
+### 3.3 EqualityContract 与子类记录相等性
 
 考虑继承的 record：
 
@@ -516,7 +469,7 @@ $$\text{new Shape}(1) \neq \text{new Circle}(1)$$
 
 即使 `Area` 相同。这是 Liskov 替换原则（LSP）与值相等语义的精妙平衡。
 
-### 4.4 with 表达式与克隆的复杂度
+### 3.4 with 表达式与克隆的复杂度
 
 设 record $R$ 有 $n$ 个字段，每个字段拷贝成本为 $O(1)$。则 `with` 表达式的复杂度为：
 
@@ -528,7 +481,7 @@ $$T(\text{deep with}) = O(n \cdot d)$$
 
 这是因为 `with` 仅做浅拷贝（shallow copy）——字段引用直接复制，不递归克隆被引用对象。这一特性使 `with` 在浅更新场景下高效，但深更新需多次链式 `with`。
 
-### 4.5 不可变数据结构的时间复杂度
+### 3.5 不可变数据结构的时间复杂度
 
 C# record 通常用于构建持久化数据结构。以不可变链表为例：
 
@@ -552,7 +505,7 @@ public record ImmutableList<T>(T Head, ImmutableList<T>? Tail)
 
 对比可变 `List<T>`：`Add` 均摊 $O(1)$，索引访问 $O(1)$，但多线程下需加锁。
 
-### 4.6 GC 对不可变对象的影响
+### 3.6 GC 对不可变对象的影响
 
 不可变 record 在 GC 中有特殊优势：
 
@@ -564,9 +517,9 @@ public record ImmutableList<T>(T Head, ImmutableList<T>? Tail)
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：位置记录
+### 4.1 基础示例：位置记录
 
 ```csharp
 // File: Records/BasicRecords.cs
@@ -607,7 +560,7 @@ public static class BasicRecords
 }
 ```
 
-### 5.2 非位置记录：自定义属性
+### 4.2 非位置记录：自定义属性
 
 ```csharp
 // File: Records/NonPositionalRecord.cs
@@ -660,7 +613,7 @@ public static class NonPositionalDemo
 }
 ```
 
-### 5.3 record struct：值类型语义
+### 4.3 record struct：值类型语义
 
 ```csharp
 // File: Records/RecordStructDemo.cs
@@ -705,7 +658,7 @@ public static class RecordStructDemo
 }
 ```
 
-### 5.4 record 继承
+### 4.4 record 继承
 
 ```csharp
 // File: Records/RecordInheritance.cs
@@ -749,7 +702,7 @@ public static class InheritanceDemo
 }
 ```
 
-### 5.5 企业级示例：DDD 值对象
+### 4.5 企业级示例：DDD 值对象
 
 ```csharp
 // File: Records/DomainModel/Money.cs
@@ -886,7 +839,7 @@ public static class DomainModelDemo
 }
 ```
 
-### 5.6 csproj 配置
+### 4.6 csproj 配置
 
 ```xml
 <!-- File: Fandex.Demos.csproj -->
@@ -910,7 +863,7 @@ public static class DomainModelDemo
 </Project>
 ```
 
-### 5.7 编译与运行
+### 4.7 编译与运行
 
 ```bash
 # 创建项目
@@ -929,9 +882,9 @@ ildasm Fandex.Demos.dll /out=Fandex.Demos.il
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 跨语言横向对比
+### 5.1 跨语言横向对比
 
 | 特性 | C# (record) | Java (record) | Kotlin (data class) | TypeScript (readonly) | Go (struct) | Rust (struct) |
 |------|-------------|---------------|---------------------|----------------------|-------------|--------------|
@@ -944,9 +897,9 @@ ildasm Fandex.Demos.dll /out=Fandex.Demos.il
 | 模式匹配 | 支持（C# 7+） | 支持（Java 16+） | 支持 | 需手动 | 需 type switch | 支持（match） |
 | 序列化友好 | System.Text.Json | Jackson | kotlinx.serialization | JSON.stringify | encoding/json | serde |
 
-### 6.2 与 Java Record 的深度对比
+### 5.2 与 Java Record 的深度对比
 
-#### 6.2.1 语法差异
+#### 5.2.1 语法差异
 
 ```java
 // Java record
@@ -965,11 +918,11 @@ public record Person(string Name, int Age);
 - **位置参数**：Java record 只能通过位置参数定义；C# record 支持位置与非位置两种形式。
 - **`with` 表达式**：Java 不支持，需手动 `new Person(p.name(), newAge)`；C# 原生支持。
 
-#### 6.2.2 内存布局
+#### 5.2.2 内存布局
 
 Java record 是引用类型，对象头开销 16 字节（64 位 JVM，开启压缩指针）。C# record class 同样是引用类型，但对象头更小（8 字节），且字段布局更紧凑。C# record struct 则是值类型，无对象头。
 
-#### 6.2.3 性能基准
+#### 5.2.3 性能基准
 
 ```
 BenchmarkDotNet v0.13.12, Windows 11
@@ -982,7 +935,7 @@ BenchmarkDotNet v0.13.12, Windows 11
 
 注：以上为示意数据，实际数字取决于运行时与硬件。
 
-### 6.3 与 Kotlin data class 对比
+### 5.3 与 Kotlin data class 对比
 
 ```kotlin
 // Kotlin data class
@@ -994,7 +947,7 @@ val older = p.copy(age = 31)  // 非破坏性更新
 
 Kotlin `data class` 提供 `copy()` 方法，等价于 C# `with` 表达式。但 Kotlin `data class` 是可变的（除非属性声明为 `val`），且默认开放继承（与 Java record 不同）。
 
-### 6.4 与 TypeScript readonly 对比
+### 5.4 与 TypeScript readonly 对比
 
 ```typescript
 // TypeScript
@@ -1011,7 +964,7 @@ const older: Person = { ...p, age: 31 };  // 展开运算符
 
 TypeScript 的 `readonly` 仅在编译期检查，运行时无效。展开运算符 `{ ...p, age: 31 }` 类似 `with`，但每次创建新对象，无引用复用优化。
 
-### 6.5 与 Go struct 对比
+### 5.5 与 Go struct 对比
 
 ```go
 // Go struct
@@ -1028,7 +981,7 @@ older.Age = 31
 
 Go struct 是值类型，赋值即拷贝，类似 C# `record struct`。但 Go 缺乏值相等的语言支持，需 `reflect.DeepEqual`，性能较差。
 
-### 6.6 与 Rust struct 对比
+### 5.6 与 Rust struct 对比
 
 ```rust
 // Rust
@@ -1044,7 +997,7 @@ let older = Person { age: 31, ..p };  // 结构更新语法
 
 Rust struct 默认不可变，需 `mut` 显式声明。`#[derive(PartialEq)]` 自动实现值相等。结构更新语法 `..p` 类似 `with`，但语义为"移动其余字段"。
 
-### 6.7 综合选型建议
+### 5.7 综合选型建议
 
 | 场景 | 推荐语言/特性 |
 |------|--------------|
@@ -1058,9 +1011,9 @@ Rust struct 默认不可变，需 `mut` 显式声明。`#[derive(PartialEq)]` �
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：record 属性是可变引用类型
+### 6.1 陷阱 1：record 属性是可变引用类型
 
 ```csharp
 // 陷阱：record 属性引用可变对象
@@ -1084,7 +1037,7 @@ var updated = cart.AddItem("cherry");
 // updated.Items 为 ["apple", "banana", "cherry"]
 ```
 
-### 7.2 陷阱 2：with 表达式是浅拷贝
+### 6.2 陷阱 2：with 表达式是浅拷贝
 
 ```csharp
 public record Container(ImmutableList<int> Data);
@@ -1096,7 +1049,7 @@ Console.WriteLine(ReferenceEquals(c1.Data, c2.Data));  // True！同一引用
 
 **说明**：`with` 仅复制字段引用，不递归克隆。对于不可变引用类型这是安全的（因为内部不可变），但需理解此特性。
 
-### 7.3 陷阱 3：record struct 默认可变
+### 6.3 陷阱 3：record struct 默认可变
 
 ```csharp
 // 陷阱：record struct 默认属性可变
@@ -1115,7 +1068,7 @@ var p = new Point(1, 2);
 // p.X = 10;  // 编译错误
 ```
 
-### 7.4 陷阱 4：装箱导致性能下降
+### 6.4 陷阱 4：装箱导致性能下降
 
 ```csharp
 // 陷阱：record struct 作为 object 使用时装箱
@@ -1138,7 +1091,7 @@ for (int i = 0; i < 1000; i++)
 }
 ```
 
-### 7.5 陷阱 5：自定义 Equals 忘记处理 EqualityContract
+### 6.5 陷阱 5：自定义 Equals 忘记处理 EqualityContract
 
 ```csharp
 public record Base(int X);
@@ -1154,7 +1107,7 @@ public record Derived(int X, int Y) : Base(X)
 
 **最佳实践**：尽量使用自动合成的 Equals；若必须自定义，调用 `base.Equals` 并检查 `EqualityContract`。
 
-### 7.6 陷阱 6：record 与序列化的兼容性
+### 6.6 陷阱 6：record 与序列化的兼容性
 
 ```csharp
 public record Person(string Name, int Age);
@@ -1168,7 +1121,7 @@ var p = JsonSerializer.Deserialize<Person>(json);
 
 但 Newtonsoft.Json < 13.0 不支持主构造函数反序列化，需手动添加构造函数或升级版本。
 
-### 7.7 陷阱 7：record 在 Dictionary 中的哈希稳定性
+### 6.7 陷阱 7：record 在 Dictionary 中的哈希稳定性
 
 ```csharp
 public record MutableInside(int Id, StringBuilder Builder);
@@ -1182,7 +1135,7 @@ key.Builder.Append(" world");
 
 **最佳实践**：record 属性应为不可变类型；若包含可变引用，避免作为 Dictionary 键。
 
-### 7.8 陷阱 8：async 闭包捕获 record
+### 6.8 陷阱 8：async 闭包捕获 record
 
 ```csharp
 public record State(int Count);
@@ -1202,7 +1155,7 @@ await Task.WhenAll(tasks);
 
 **说明**：record 闭包捕获按引用，但因 `with` 创建新对象，闭包变量指向最新值。这是 record 配合 async 的特性，需理解。
 
-### 7.9 最佳实践清单
+### 6.9 最佳实践清单
 
 1. **优先使用 `readonly record struct`** 表示小型值类型（< 16 字节）。
 2. **优先使用 `record class`** 表示领域模型、DTO、事件。
@@ -1217,9 +1170,9 @@ await Task.WhenAll(tasks);
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构组织
+### 7.1 项目结构组织
 
 ```mermaid
 flowchart TD
@@ -1250,7 +1203,7 @@ flowchart TD
     T20 --> T21
 ```
 
-### 8.2 NuGet 包配置
+### 7.2 NuGet 包配置
 
 ```xml
 <!-- Fandex.Domain.csproj -->
@@ -1270,7 +1223,7 @@ flowchart TD
 </Project>
 ```
 
-### 8.3 Source Generator 自动生成
+### 7.3 Source Generator 自动生成
 
 C# 12 的 Source Generator 可基于 record 自动生成样板代码：
 
@@ -1325,9 +1278,9 @@ public class DtoMapperGenerator : IIncrementalGenerator
 }
 ```
 
-### 8.4 性能优化技巧
+### 7.4 性能优化技巧
 
-#### 8.4.1 使用 ObjectPool 减少 record 分配
+#### 7.4.1 使用 ObjectPool 减少 record 分配
 
 ```csharp
 using Microsoft.Extensions.ObjectPool;
@@ -1347,7 +1300,7 @@ finally
 }
 ```
 
-#### 8.4.2 避免频繁 `with` 链
+#### 7.4.2 避免频繁 `with` 链
 
 ```csharp
 // 低效：多次 with
@@ -1357,7 +1310,7 @@ var updated = original with { A = 1 } with { B = 2 } with { C = 3 };
 var updated = original with { A = 1, B = 2, C = 3 };
 ```
 
-#### 8.4.3 使用 `Span<T>` 与 `stackalloc` 配合 record struct
+#### 7.4.3 使用 `Span<T>` 与 `stackalloc` 配合 record struct
 
 ```csharp
 public readonly record struct Point(double X, double Y);
@@ -1370,16 +1323,16 @@ for (int i = 0; i < 100; i++)
 // 零堆分配
 ```
 
-### 8.5 调试技巧
+### 7.5 调试技巧
 
-#### 8.5.1 DebuggerDisplay 自定义
+#### 7.5.1 DebuggerDisplay 自定义
 
 ```csharp
 [DebuggerDisplay("Person({Name}, {Age} years)")]
 public record Person(string Name, int Age);
 ```
 
-#### 8.5.2 使用 DotnetDump 分析内存
+#### 7.5.2 使用 DotnetDump 分析内存
 
 ```bash
 # 捕获 dump
@@ -1392,7 +1345,7 @@ dotnet-dump analyze dump.dmp
 > gcroot <address>
 ```
 
-#### 8.5.3 BenchmarkDotNet 性能测试
+#### 7.5.3 BenchmarkDotNet 性能测试
 
 ```csharp
 // File: Benchmarks/RecordBenchmarks.cs
@@ -1422,7 +1375,7 @@ public class Program
 }
 ```
 
-### 8.6 单元测试
+### 7.6 单元测试
 
 ```csharp
 // File: Tests/PersonTests.cs
@@ -1476,7 +1429,7 @@ public class PersonTests
 }
 ```
 
-### 8.7 CI/CD 集成
+### 7.7 CI/CD 集成
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1507,11 +1460,11 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：.NET Runtime 中的 record 应用
+### 8.1 案例一：.NET Runtime 中的 record 应用
 
-#### 9.1.1 System.Text.Json 的 JsonTypeInfo
+#### 8.1.1 System.Text.Json 的 JsonTypeInfo
 
 .NET 7 起的 `System.Text.Json` 使用 record 表示 JSON 元数据：
 
@@ -1533,7 +1486,7 @@ public record JsonPropertyInfo
 - 值相等：缓存键可基于 JsonPropertyInfo 比较。
 - `with` 表达式：派生 JsonPropertyInfo 时复用基类属性。
 
-#### 9.1.2 ASP.NET Core 的 EndpointMetadata
+#### 8.1.2 ASP.NET Core 的 EndpointMetadata
 
 .NET 7 引入 minimal API，使用 record 表示端点元数据：
 
@@ -1556,7 +1509,7 @@ public record RouteEndpointBuilder : EndpointBuilder
 
 record 的不可变性确保路由元数据在注册后不被修改，`with` 表达式支持派生端点构建。
 
-### 9.2 案例二：EF Core 中的 record 实体
+### 8.2 案例二：EF Core 中的 record 实体
 
 EF Core 6+ 完整支持 record 作为实体类型：
 
@@ -1608,7 +1561,7 @@ modelBuilder.Entity<Blog>()
             c => c.ToImmutableList()));
 ```
 
-### 9.3 案例三：Orleans 中的 Grain 状态
+### 8.3 案例三：Orleans 中的 Grain 状态
 
 Microsoft Orleans（分布式 Actor 框架）使用 record 表示 Grain 状态：
 
@@ -1659,7 +1612,7 @@ public class PlayerGrain : Grain, IPlayerGrain
 - `with` 表达式：状态转移函数式风格。
 - 模式匹配：事件分发清晰可维护。
 
-### 9.4 案例四：MassTransit 中的消息契约
+### 8.4 案例四：MassTransit 中的消息契约
 
 MassTransit（消息队列抽象）使用 record 定义消息：
 
@@ -1684,7 +1637,7 @@ public class SubmitOrderConsumer : IConsumer<SubmitOrder>
 }
 ```
 
-### 9.5 案例五：Dapr 状态管理
+### 8.5 案例五：Dapr 状态管理
 
 Dapr（分布式应用运行时）的 State API 推荐使用 record 表示状态：
 
@@ -2014,7 +1967,7 @@ var result = ParseInt("42")
 2. 添加异步版本 `AsyncResult<T>`。
 3. 与 C# 异常处理对比优劣。
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q13.** 为什么 C# record 选择支持继承，而 Java record 与 Kotlin data class 不支持？请从语言设计哲学、运行时实现、性能影响三个角度分析。
 
@@ -2075,9 +2028,9 @@ var result = ParseInt("42")
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准与规范
+### 10.1 标准与规范
 
 [1] ECMA International. *ECMA-334: The C# Language Specification*. 5th ed. Geneva: ECMA International, 2017. DOI: 10.1159/ECMA.334.5.
 
@@ -2087,7 +2040,7 @@ var result = ParseInt("42")
 
 [4] Microsoft Corporation. *C# 10.0 Record Structs Specification*. 2021. Available: https://github.com/dotnet/csharplang/blob/main/proposals/csharp-10.0/record-structs.md
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [5] Okasaki, Chris. *Purely Functional Data Structures*. Carnegie Mellon University, PhD Thesis, 1996. DOI: 10.1184/R1/6604988.
 
@@ -2097,7 +2050,7 @@ var result = ParseInt("42")
 
 [8] Abadi, Martín, and Luca Cardelli. *A Theory of Objects*. Springer-Verlag, 1996. DOI: 10.1007/978-1-4612-0791-4.
 
-### 11.3 工业实践
+### 10.3 工业实践
 
 [9] Torgersen, Mads, et al. "C# 9.0 Records: A New Kind of Immutable Type." *Microsoft Build*, 2020, https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-9.
 
@@ -2105,7 +2058,7 @@ var result = ParseInt("42")
 
 [11] Bierman, Gavin, Claudio Russo, and Mads Torgersen. "C# 7-9 Records and the Evolution of Data-Oriented Programming." *OOPSLA*, 2021.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 [12] Microsoft Learn. *Records (C# Reference)*. https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record
 
@@ -2117,9 +2070,9 @@ var result = ParseInt("42")
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 1. **《Functional Programming in C#》** — Enrico Buonanno, Manning Publications, 2023
    - 函数式编程在 C# 中的实践，深入 record 与不可变性。
@@ -2136,7 +2089,7 @@ var result = ParseInt("42")
 5. **《C# in Depth》** — Jon Skeet, Manning Publications, 2019
    - C# 语言演进的权威解读，含 record 历史背景。
 
-### 12.2 推荐论文
+### 11.2 推荐论文
 
 1. **"The Expressive Power of Object-Oriented Programming"** — Kim B. Bruce, 1995
    - 对象类型系统的形式化，理解 record 的代数语义。
@@ -2147,7 +2100,7 @@ var result = ParseInt("42")
 3. **"Linear Types Can Change the World!"** — Philip Wadler, 1990
    - 线性类型与不可变性的理论基础。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 1. **Microsoft Learn - C# Records**
    https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record
@@ -2173,7 +2126,7 @@ var result = ParseInt("42")
 8. **C# Language Design on YouTube** — Mads Torgersen 讲解
    https://www.youtube.com/@dotnet
 
-### 12.4 进阶学习路径
+### 11.4 进阶学习路径
 
 ```mermaid
 flowchart TD
@@ -2206,7 +2159,7 @@ flowchart TD
     T8 --> T13
 ```
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 1. **Stack Overflow - [c#-records] 标签**
    https://stackoverflow.com/questions/tagged/c%23-records

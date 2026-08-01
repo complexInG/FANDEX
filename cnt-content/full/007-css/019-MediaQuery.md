@@ -14,45 +14,6 @@ related:
   - css/移动端适配
 prerequisites:
   - css/概述与基本语法
-learningObjectives:
-  - level: remember
-    objective: '能陈述 @media 语法、四种媒体类型与逻辑操作符（and/逗号/not/only）。'
-    verifiable: '默写媒体查询骨架'
-  - level: understand
-    objective: '能解释媒体特性（min-width/orientation/prefers-*）的取值与语义。'
-    verifiable: '说明 prefers-reduced-motion 的作用'
-  - level: apply
-    objective: '能实现响应式断点、深色模式与减少动画适配。'
-    verifiable: '编写完整响应式样式'
-  - level: analyze
-    objective: '能分析媒体查询与容器查询/数值函数的差异。'
-    verifiable: '给出同一布局三种方案对比'
-  - level: evaluate
-    objective: '能评价移动优先（min-width）与桌面优先（max-width）的取舍。'
-    verifiable: '论证断点设计依据'
-  - level: create
-    objective: '能设计包含明暗模式与动效偏好的完整主题系统。'
-    verifiable: '完成案例研究中的主题方案'
-exercises:
-  - id: mq-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: '媒体类型中默认值是 _____，逻辑或使用 _____ 分隔条件。'
-    answer: 'all；逗号'
-    explanation: '逗号分隔多条查询等价于 OR。'
-    difficulty: easy
-  - id: mq-02
-    type: choice
-    cognitiveLevel: understand
-    question: '哪个媒体特性用于检测用户是否偏好减少动画？'
-    options:
-      - 'A. prefers-color-scheme'
-      - 'B. prefers-reduced-motion'
-      - 'C. orientation'
-      - 'D. hover'
-    answer: 'B'
-    explanation: 'prefers-reduced-motion 尊重系统减少动态效果设置。'
-    difficulty: easy
 references:
   - type: standard
     authors: ['W3C']
@@ -77,21 +38,8 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-## 1. 学习目标（Bloom 分类）
 
-记忆层面：能够说出 `@media` 规则的基本语法（媒体类型 + 媒体特性 + 逻辑操作符），能够复述 `min-width`、`max-width`、`orientation`、`prefers-color-scheme`、`prefers-reduced-motion` 等常用媒体特性。
-
-理解层面：能够解释响应式设计的工作机制：媒体查询基于视口（viewport）或用户偏好等外部条件条件化应用样式；理解 `min-width` 与 `max-width` 的数学含义（前者是“大于等于”，后者是“小于等于”）。
-
-应用层面：能够编写移动优先（mobile-first）断点体系、深色模式、减少动画偏好适配，能够组合 `and`、`not`、`,`（或）逻辑操作符，并处理 `@media` 与 CSS 变量的协作。
-
-分析层面：能够分析断点选择策略（内容驱动 vs 设备驱动）、容器查询（`@container`）与媒体查询的适用边界，能够分析媒体查询与 `@import`、`<link media>` 的性能差异。
-
-评价层面：能够评价“为每种设备写断点”的维护成本，形成基于内容的断点设计方法，并评估图片 `srcset`、`<picture>` 与媒体查询在响应式图片上的分工。
-
-创造层面：能够设计完整的响应式布局系统（流式网格 + 断点 + 组件级容器查询），并支持深色模式、减少动画、高对比度等用户偏好。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 2004 年前后，移动设备开始访问 Web，固定宽度布局在窄屏上需要横向滚动。2007 年 iPhone 发布后，响应式 Web 设计（Responsive Web Design）由 Ethan Marcotte 于 2010 年在 A List Apart 提出，其三大支柱是流式网格、弹性图片与媒体查询。
 
@@ -108,7 +56,7 @@ timeline
     2023 : 容器查询主流支持，与媒体查询互补
 ```
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 `@media` 规则由媒体查询列表构成，语法：
 
@@ -145,27 +93,27 @@ flowchart TD
     B -- "否" --> E
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 min-width 与 max-width 的不等式
+### 3.1 min-width 与 max-width 的不等式
 
 `min-width: 768px` 等价于 `width >= 768px`；`max-width: 767px` 等价于 `width <= 767px`。两者在 767/768 边界互补。移动优先策略使用 `min-width` 从窄到宽逐步增强；桌面优先策略使用 `max-width` 从宽到窄逐步降级。
 
-### 4.2 视口与布局视口
+### 3.2 视口与布局视口
 
 媒体查询中的 `width` 指布局视口宽度（layout viewport），由 `<meta name="viewport" content="width=device-width, initial-scale=1">` 控制。缺失该 meta 时，移动浏览器使用默认视口宽度（如 980px），媒体查询将按 980px 判断，导致移动优先样式失效。因此响应式页面的第一步是正确设置 viewport meta。
 
-### 4.3 媒体查询的层叠行为
+### 3.3 媒体查询的层叠行为
 
 媒体查询不改变 CSS 层叠优先级，只控制规则是否参与层叠。因此两条规则同时命中时，后定义者胜出。移动优先写法中，基础样式在前，`min-width` 增强在后，天然符合层叠顺序。
 
-### 4.4 与容器查询的分工
+### 3.4 与容器查询的分工
 
 媒体查询参照视口，解决“页面级”响应；容器查询参照最近的容器尺寸，解决“组件级”响应。一个卡片组件在窄侧栏与宽主区中应自适应容器，而不是依赖视口断点。容器查询需要父元素声明 `container-type: inline-size`，且不能替代媒体查询（页面级排版仍需视口信息）。
 
-## 5. 代码示例（带详尽注释）
+## 4. 代码示例（带详尽注释）
 
-### 5.1 移动优先断点体系
+### 4.1 移动优先断点体系
 
 ```css
 /* 基础样式：默认面向窄屏（移动优先） */
@@ -192,7 +140,7 @@ flowchart TD
 
 讲解：断点 640/1024 是内容驱动的常用选择。移动优先的要点：基础样式无需媒体查询，增强逐级叠加，因此窄屏设备只加载最简样式。
 
-### 5.2 深色模式
+### 4.2 深色模式
 
 ```css
 :root {
@@ -216,7 +164,7 @@ body {
 
 讲解：`prefers-color-scheme` 读取操作系统或浏览器的深色偏好。通过 CSS 变量切换主题，一套选择器适配两种模式，避免重复编写整套样式。
 
-### 5.3 减少动画偏好
+### 4.3 减少动画偏好
 
 ```css
 /* 默认动画 */
@@ -235,7 +183,7 @@ body {
 
 讲解：`prefers-reduced-motion` 服务于前庭障碍与晕动症用户，是 WCAG 2.1 可访问性最佳实践。关闭动画的同时应保证内容立即可见（不要用 `opacity: 0` 残留）。
 
-### 5.4 打印样式
+### 4.4 打印样式
 
 ```css
 /* 打印时隐藏导航与广告，展开正文 */
@@ -253,7 +201,7 @@ body {
 
 讲解：`print` 媒体类型为打印优化：隐藏非内容区域、设置黑白配色、避免分页截断。可用 `page-break-inside: avoid` 控制元素不跨页。
 
-### 5.5 方向与指针能力
+### 4.5 方向与指针能力
 
 ```css
 /* 横屏：两栏布局 */
@@ -273,7 +221,7 @@ body {
 
 讲解：`orientation` 适配平板横竖屏；`hover`/`pointer` 区分触屏与鼠标设备，避免触屏设备出现无法取消的悬停态。
 
-### 5.6 范围语法
+### 4.6 范围语法
 
 ```css
 /* 新语法：只命中 768-1024 区间 */
@@ -286,7 +234,7 @@ body {
 
 讲解：范围语法表达区间更直观，且避免 767/768 边界笔误。2023 年起所有主流浏览器支持，可放心用于现代项目。
 
-### 5.7 JavaScript 中的媒体查询
+### 4.7 JavaScript 中的媒体查询
 
 ```js
 // 用 matchMedia 在 JS 中响应视口变化
@@ -303,7 +251,7 @@ handleChange(mq) // 初始化执行一次
 
 讲解：`matchMedia` 返回 MediaQueryList，`change` 事件在命中状态变化时触发。注意使用 `addEventListener` 而非已废弃的 `addListener`，并清理监听避免泄漏。
 
-### 5.8 响应式图片
+### 4.8 响应式图片
 
 ```html
 <!-- 根据视口宽度选择图片资源 -->
@@ -315,9 +263,9 @@ handleChange(mq) // 初始化执行一次
 
 讲解：`srcset` 按资源宽度声明候选，`sizes` 告诉浏览器图片在布局中的实际宽度，浏览器综合视口、DPR 与带宽自动选择。这是媒体查询之外的响应式图片标准方案。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 媒体查询与容器查询
+### 5.1 媒体查询与容器查询
 
 | 维度 | 媒体查询 | 容器查询 |
 | --- | --- | --- |
@@ -326,15 +274,15 @@ handleChange(mq) // 初始化执行一次
 | 前置条件 | 无 | 父元素 container-type |
 | 适用 | 整体布局 | 复用组件 |
 
-### 6.2 min-width 与 max-width 策略
+### 5.2 min-width 与 max-width 策略
 
 移动优先（min-width）代码路径短、性能好、渐进增强；桌面优先（max-width）适合改造存量桌面站点。新项目推荐移动优先。
 
-### 6.3 @media 与 @import media
+### 5.3 @media 与 @import media
 
 `<link media="...">` 与 `@import url(...) media` 也能条件加载样式表，但会额外产生请求；`@media` 内联规则没有请求开销。性能敏感场景优先内联媒体查询。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
 陷阱一：缺少 viewport meta，移动端媒体查询失效。
 
@@ -350,9 +298,9 @@ handleChange(mq) // 初始化执行一次
 
 陷阱七：媒体查询中写 `not (min-width: 768px)` 的非法组合。`not` 修饰整个查询，等价写法为 `@media not all and (min-width: 768px)`。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 断点设计令牌
+### 7.1 断点设计令牌
 
 ```css
 :root {
@@ -365,7 +313,7 @@ handleChange(mq) // 初始化执行一次
 
 讲解：断点值收敛为令牌，配合注释说明每个断点的内容动机（如“列表换两列”“导航收起为汉堡”），避免随意新增断点。
 
-### 8.2 组合查询的组件化
+### 7.2 组合查询的组件化
 
 ```css
 /* 桌面端且在浅色模式下：给卡片添加悬停投影 */
@@ -378,7 +326,7 @@ handleChange(mq) // 初始化执行一次
 
 讲解：`and` 组合多个维度条件。组合越多越脆弱，建议每个查询只解决一个维度的适配。
 
-## 9. 案例研究：文档站点完整响应式方案
+## 8. 案例研究：文档站点完整响应式方案
 
 需求：文档站桌面三栏（目录/正文/相关）、平板两栏、手机单栏，支持深色模式与减少动画。
 
@@ -425,7 +373,7 @@ handleChange(mq) // 初始化执行一次
 
 讲解：方案分层清晰：布局断点解决结构，色彩变量解决主题，动画偏好解决无障碍。每层独立演进，互不干扰。`animation-duration: 0.01ms` 的技巧让动画“瞬间完成”而非硬性禁用，避免依赖动画完成的逻辑挂起。
 
-## 10. 知识要点总结与深入讲解
+## 9. 知识要点总结与深入讲解
 
 媒体查询的条件本质是“视口/环境特性谓词”，命中则参与层叠。移动优先的核心是把默认样式写成窄屏最优，再用 `min-width` 逐级增强。
 
@@ -433,7 +381,7 @@ handleChange(mq) // 初始化执行一次
 
 容器查询与媒体查询的分工可以总结为：页面排版问视口，组件排版问容器。两者配合才能覆盖现代响应式设计的全部场景。
 
-## 11. 参考文献
+## 10. 参考文献
 
 W3C, Media Queries Level 3, 访问日期 2026-08-01, https://www.w3.org/TR/mediaqueries-3/
 
@@ -447,7 +395,7 @@ MDN Web Docs, CSS Container Queries, 访问日期 2026-08-01, https://developer.
 
 MDN Web Docs, Responsive images, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Media_queries/Responsive_images
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 响应式布局常与 Grid/Flex 配合，见 007-css 模块的布局文档；
 
@@ -477,7 +425,7 @@ JS 中 matchMedia 的更多用法，见 008-javascript 模块相关文档；
 
 #### 逻辑操作符：`and`、逗号（or）、`not`、`only`
 
-### 2. 常用媒体特性
+### 1. 常用媒体特性
 
 ```css
 @media (min-width: 768px) {
@@ -494,7 +442,7 @@ JS 中 matchMedia 的更多用法，见 008-javascript 模块相关文档；
 } /* 精确指针 */
 ```
 
-### 3. 响应式断点
+### 2. 响应式断点
 
 ```css
 .container {
@@ -518,7 +466,7 @@ JS 中 matchMedia 的更多用法，见 008-javascript 模块相关文档；
 }
 ```
 
-### 4. 深色模式
+### 3. 深色模式
 
 ```css
 :root {
@@ -533,7 +481,7 @@ JS 中 matchMedia 的更多用法，见 008-javascript 模块相关文档；
 }
 ```
 
-### 5. JavaScript 检测
+### 4. JavaScript 检测
 
 ```javascript
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;

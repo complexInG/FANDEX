@@ -17,54 +17,12 @@ prerequisites:
   - cpp/概述与现代标准
   - cpp/模板
 ---
+
 # C++ 数学库
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-本节按照 Bloom 分类法的认知层级组织学习目标,读者完成本章学习后应能够达到以下层级:
-
-### 识记层 (Remembering)
-
-- 列举 C++ 标准库提供的主要数学头文件(`<cmath>`、`<complex>`、`<random>`、`<numeric>`、`<numbers>`、`<bit>`)
-- 说出 IEEE 754 浮点数标准的基本格式(single/double/half/bfloat16)
-- 复述 BLAS/LAPACK 的层级划分与典型函数命名约定
-- 识别 Eigen、Armadillo、Blaze、xtensor 等主流第三方数学库
-
-### 理解层 (Understanding)
-
-- 解释浮点数精度损失与舍入误差的产生机制
-- 阐述条件数(condition number)与数值稳定性的关系
-- 描述 SIMD 指令在数学函数向量化中的应用
-- 区分伪随机数生成器(PRNG)与真随机数生成器(TRNG)的差异
-
-### 应用层 (Applying)
-
-- 使用 `<random>` 头文件实现高质量随机数序列
-- 使用 `std::complex` 实现复数运算与 FFT
-- 使用 `<numeric>` 中的 `std::accumulate`、`std::reduce`、`std::inner_product` 等
-- 应用 `std::numbers` 常量(pi、e、sqrt2 等)于数学公式实现
-
-### 分析层 (Analyzing)
-
-- 分析一个数值算法的稳定性,识别灾难性抵消(catastrophic cancellation)
-- 解构 BLAS 库的分层结构,理解 Level 1/2/3 的性能差异根因
-- 对比 Eigen 与 Armadillo 在表达式模板(expression template)设计上的差异
-
-### 评价层 (Evaluating)
-
-- 评估特定场景应使用标准库还是第三方库(精度、性能、依赖)
-- 判断一段数值代码是否需要使用 Kahan 求和或更高精度补偿
-- 在 CPU 与 GPU 数学库(CUBLAS、cuDNN)之间做出工程权衡
-
-### 创造层 (Creating)
-
-- 设计一个支持多精度(float/double/long double)的通用数值库
-- 构建一个面向机器学习推理的向量化数学内核
-- 提出一种基于异构计算(CPU+GPU)的混合数值方案
 
 ## 历史动机与背景
 

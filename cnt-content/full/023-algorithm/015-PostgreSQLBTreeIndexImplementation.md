@@ -35,14 +35,6 @@ prerequisites:
   - algorithm/树
   - algorithm/算法分析基础与学习路线
   - cs-fundamentals/离散数学
-learningObjectives:
-  - 记忆二叉搜索树（BST）的递归定义与中序遍历有序性不变式，复述 BST 在最坏情况下退化为链表导致 $O(n)$ 操作的退化条件，理解 Adelson-Velsky-Landis 1962《An algorithm for the organization of information》Dokl. Akad. Nauk SSSR 146:263-266 提出 AVL 树的历史动机
-  - 理解 AVL 树平衡因子 $\in \{-1, 0, 1\}$ 不变式与 LL/RR/LR/RL 四种失衡情况，应用单旋与双旋操作恢复平衡，编写 Python / C++ / Java 三语言完整实现，证明 AVL 树高度 $h \leq 1.4405 \log_2(n+2) - 0.3277$ 的紧致上界
-  - 分析 Bayer 1972 对称二叉 B 树与 Guibas-Sedgewick 1978《A Dichromatic Framework for Balanced Trees》FOCS 现代红黑树的演进关系，理解红黑树五条性质（颜色、根黑、叶黑、红不连续、黑高相同）与等价 2-3-4 树对应关系，论证红黑树高度 $h \leq 2 \log_2(n+1)$ 与插入/删除旋转次数上界（插入 ≤ 2 次旋转、删除 ≤ 3 次旋转）
-  - 应用 B 树 $m$ 阶定义（每个节点最多 $m$ 个子节点，至少 $\lceil m/2 \rceil$ 个子节点，根至少 2 个，叶子同层）分析磁盘 I/O 优化原理，推导 $m$ 阶 B 树高度 $h \leq \log_{\lceil m/2 \rceil} \frac{n+1}{2}$，对比 B 树与 B+ 树在数据存储位置、叶子链表、内部节点紧凑度维度的差异
-  - 评估 Splay 树（Sleator-Tarjan 1985 JACM 32(3):652-686 DOI:10.1145/3828.3835）作为自调整二叉搜索树的摊还复杂度，应用势能方法证明 $m$ 次操作总摊还代价 $O(m \log n)$，对比 Splay 树与 AVL / 红黑树在访问局部性、内存开销、实现复杂度维度的优劣
-  - 对比 AVL / 红黑树 / B 树 / B+ 树 / Splay / Treap / AA / LLRB 在平衡标准、树高、旋转次数、查询 / 修改复杂度、工业应用维度的差异，识别 MySQL InnoDB B+ 树 / Linux CFS 红黑树 / Java TreeMap / C++ std::map / PostgreSQL B-tree 的选型动机
-  - 创造性设计基于平衡树的开源项目解决方案，如数据库索引引擎、文件系统目录结构、内存键值存储、调度器进程队列、IP 路由表
 references:
   - type: journal
     authors:
@@ -261,6 +253,7 @@ etymology:
     english: rotation
     origin: 'rotation（旋转）是平衡树维护平衡的核心操作，通过局部调整子树结构而不破坏 BST 性质。旋转分为左旋（left rotation）与右旋（right rotation），互为对偶。旋转操作由 Adelson-Velsky-Landis 1962 在 AVL 树原始论文中系统化，被后续所有平衡树（红黑树、B 树、Splay 树）采纳。其名称来源于几何旋转'
 ---
+
 
 ## 1. 概述与学习目标
 

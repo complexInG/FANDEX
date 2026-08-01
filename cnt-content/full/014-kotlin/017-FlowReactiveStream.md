@@ -18,16 +18,6 @@ prerequisites:
   - kotlin/协程基础
 ---
 
-## 学习目标
-
-完成本文学习后，读者应能够在以下认知层级达成对应能力（参照 Bloom 分类法）：
-
-- **记忆（Remembering）**：复述 Kotlin Flow、StateFlow、SharedFlow 的核心定义，列举冷流与热流的关键差异，识别 Reactive Streams 规范的四大要素。
-- **理解（Understanding）**：用自己的语言解释背压（backpressure）的产生机理，区分 `collect`、`collectLatest`、`conflate` 三种收集策略的语义差异，阐述 `SharedFlow` 的 replay 与 extraBufferCapacity 作用。
-- **应用（Applying）**：在 Android、后端服务、数据管道等真实场景中独立设计 Flow 链路，使用 `flowOn`、`buffer`、`combine`、`zip`、`flatMapLatest` 等操作符解决实际问题。
-- **分析（Analyzing）**：对比 Flow 与 RxJava、Project Reactor 的实现差异，剖析 coroutine context 在 Flow 中的传播路径，识别冷流向热流转换时的资源泄漏风险。
-- **评估（Evaluating）**：针对具体性能瓶颈，判断是否需要切换至 `Channel` 或 `StateFlow`，评估不同缓冲策略对内存与延迟的影响，权衡测试可控性与生产真实度。
-- **创造（Creating）**：设计自定义响应式操作符，构建基于 SharedFlow 的事件总线架构，编写符合 Reactive Streams 规范的互操作适配层。
 
 ## 历史动机与背景
 

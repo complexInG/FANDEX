@@ -17,105 +17,6 @@ related:
   - 'typescript/项目示例-类型安全的API客户端'
 prerequisites:
   - typescript/语法速查
-learningObjectives:
-  - '复述类型论发展史，从 Simply Typed Lambda Calculus 到 System F 再到 Hindley-Milner 的演进脉络'
-  - '解释结构类型与名义类型的语义差异，并能用 KaTeX 写出宽度子类型与深度子类型的形式规则'
-  - '运用协变、逆变、双变、不变规则预测函数类型、数组、Promise 的子类型关系'
-  - '拆解 TypeScript 编译器的类型推导算法，分析控制流分析中的窄化与类型守卫'
-  - '评估条件类型、映射类型、模板字面量类型在类型级计算上的表达力与图灵完备性'
-  - '基于同伦类型论思想设计类型级证明，构造类型安全的 DSL 与运行时验证集成方案'
-exercises:
-  fill-blank:
-    - question: TypeScript 的类型兼容性采用 ____ 子类型化规则，即如果 S 的结构包含 T 的所有成员，则 S 是 T 的子类型。
-      answer: width / 宽度
-      bloom: remember
-    - question: 函数参数在 strictFunctionTypes 模式下是 ____ 的，而函数返回值始终是 ____ 的。
-      answer: contravariant / 逆变; covariant / 协变
-      bloom: understand
-    - question: TypeScript 类型系统在类型级别上是 ____ 完备的，可通过条件类型与递归类型模拟任意计算。
-      answer: Turing / 图灵
-      bloom: remember
-    - question: '在条件类型 T extends U ? X : Y 中，infer 关键字在协变位置出现时取 ____ 类型，在逆变位置出现时取 ____ 类型。'
-      answer: union / 联合; intersection / 交叉
-      bloom: understand
-  choice:
-    - question: 下列关于结构化类型与名义化类型的描述，哪一项是正确的？
-      options:
-        - 'A. Java 的泛型是结构化的'
-        - 'B. TypeScript 默认采用名义化类型'
-        - 'C. Rust 的类型系统是名义化的'
-        - 'D. Go 的接口是名义化的'
-      answer: C
-      bloom: understand
-    - question: 关于 TypeScript 的类型擦除，下列哪一项是错误的？
-      options:
-        - 'A. interface 在编译后完全消失'
-        - 'B. type 别名在编译后完全消失'
-        - 'C. enum 会编译为 JavaScript 对象'
-        - 'D. class 在编译后完全消失'
-      answer: D
-      bloom: understand
-  code-fix:
-    - question: |
-        以下代码期望区分 USD 与 EUR 两种货币类型，但实际可互相赋值。请修复。
-        ```typescript
-        type USD = number;
-        type EUR = number;
-        const usd: USD = 100;
-        const eur: EUR = usd; // 应报错，但实际合法
-        ```
-      answer: |
-        TypeScript 默认结构化，number 与 USD 结构相同故兼容。使用品牌类型模拟名义化：
-        ```typescript
-        type Brand<T, B> = T & { __brand: B };
-        type USD = Brand<number, 'USD'>;
-        type EUR = Brand<number, 'EUR'>;
-        const usd = 100 as USD;
-        const eur: EUR = usd; // 报错：USD 与 EUR 不兼容
-        ```
-      bloom: apply
-    - question: |
-        以下代码期望从 Promise 中提取内部类型 T，但结果为 never。请修复。
-        ```typescript
-        type Unwrap<T> = T extends Promise<infer U> ? U : never;
-        type Result = Unwrap<Promise<string> | Promise<number>>;
-        // 结果：string | number
-        ```
-      answer: |
-        原代码实际正确，结果是 string | number。若结果为 never，可能是 TS 版本过低或写错为 Promise<infer U> extends。修正写法：
-        ```typescript
-        type Unwrap<T> = T extends Promise<infer U> ? U : never;
-        type Result = Unwrap<Promise<string> | Promise<number>>;
-        // string | number（协变位置 infer 取联合）
-        ```
-      bloom: analyze
-  open-ended:
-    - question: |
-        请论证 TypeScript 类型系统的图灵完备性，并讨论类型级计算的实用边界。
-      answer: |
-        TypeScript 通过条件类型、映射类型、递归类型与字面量类型可实现自然数表示（元组长度）、布尔表示、条件分支与递归。
-        已有类型级实现图灵机、Lambda 演算、SKI 组合子的实例。
-        但类型级编译深度受 --typeChecks 限制（默认 50 层递归），且类型级计算不参与运行时，
-        因此仅适合 DSL、配置校验、文档生成等静态场景，运行时计算仍需 JavaScript。
-      bloom: evaluate
-    - question: |
-        设计一个类型安全的运行时验证库，要求：从 Zod-like schema 推断静态类型；
-        schema 编译为高效的运行时校验函数；支持递归类型与联合类型。
-      answer: |
-        核心思路：
-        1. 用条件类型与映射类型从 schema 推断类型（infer）；
-        2. schema 编译为校验函数时使用闭包缓存子校验器；
-        3. 递归类型用 lazy schema（thunk）解决前向引用；
-        4. 联合类型用 any-of 校验。
-        ```typescript
-        interface Schema<T> { _type: T; validate(v: unknown): v is T; }
-        const str: Schema<string> = {
-          _type: '' as string,
-          validate(v): v is string { return typeof v === 'string'; }
-        };
-        type Infer<S> = S extends Schema<infer T> ? T : never;
-        ```
-      bloom: create
 references:
   - author: [Benjamin C. Pierce]
     title: 'Types and Programming Languages'
@@ -157,34 +58,20 @@ lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 ---
 
+
 # TypeScript 理论知识点
 
 > 本文以 MIT 6.815、Stanford CS242、CMU 15-312 的类型论教学范式为参考基准，将 TypeScript 的类型系统原理、类型推导算法、子类型理论、泛型多态、类型级计算与控制流分析组织为一篇可独立阅读的核心理论文档。所有形式化描述均基于 Benjamin C. Pierce 的 *Types and Programming Languages* 与 TypeScript 5.x 官方规范。
 
-## 1. 学习目标与 Bloom 分类矩阵
+## 1. 历史动机与语言演进
 
-本节明确读者在完成本文学习后应具备的认知能力层级。Bloom 分类法将认知目标划分为六个层级：remember（记忆）、understand（理解）、apply（应用）、analyze（分析）、evaluate（评估）、create（创造）。本文目标如下：
-
-| 层级 | 目标描述 | 评估方式 |
-| ---- | -------- | -------- |
-| remember | 复述类型论发展史，从 STLC 到 System F 再到 Hindley-Milner 的演进 | 填空题 |
-| understand | 解释结构类型与名义类型的语义差异，写出子类型规则 | 填空题、选择题 |
-| apply | 运用协变、逆变、双变、不变规则预测子类型关系 | 代码修复题 |
-| analyze | 拆解编译器的类型推导算法与控制流分析 | 选择题、代码修复题 |
-| evaluate | 评估条件类型、映射类型、模板字面量类型的表达力 | 开放题 |
-| create | 基于同伦类型论思想设计类型级证明与 DSL | 开放题 |
-
-学习路径建议：先建立类型论的数学基础（STLC、System F、HM），再学习 TypeScript 的具体实现（结构化类型、子类型、泛型），最后挑战类型级编程与高级主题。
-
-## 2. 历史动机与语言演进
-
-### 2.1 类型论的史前时代
+### 1.1 类型论的史前时代
 
 类型论（Type Theory）的起源可追溯至 1903 年 Bertrand Russell 在《数学原理》中提出的"分支类型论"（ramified type theory），旨在解决集合论中的 Russell 悖论。Russell 将对象分层为基础类型、谓词类型、谓词的谓词类型等，禁止"自指"导致的悖论。
 
 1932 年 Alonzo Church 提出 λ 演算作为形式化计算模型，1940 年 Church 在《A Formulation of the Simple Theory of Types》中引入简单类型 λ 演算（Simply Typed Lambda Calculus, STLC），奠定现代类型论基础。
 
-### 2.2 Simply Typed Lambda Calculus（STLC）
+### 1.2 Simply Typed Lambda Calculus（STLC）
 
 STLC 的语法：
 
@@ -216,7 +103,7 @@ STLC 的关键性质：
 - **强规范化**：所有良类型项均能归约到正常形式
 - **可判定性**：类型检查可在多项式时间内完成
 
-### 2.3 System F：参数化多态
+### 1.3 System F：参数化多态
 
 1971 年 Jean-Yves Girard 与 1974 年 John Reynolds 独立提出 System F（又称多态 λ 演算），引入类型量化：
 
@@ -234,7 +121,7 @@ $$
 
 System F 表达力强但类型推导不可判定。TypeScript 的泛型可视为受限的 System F。
 
-### 2.4 Hindley-Milner 类型推导
+### 1.4 Hindley-Milner 类型推导
 
 1969 年 J. Roger Hindley 与 1978 年 Robin Milner 独立发现算法 W，能在不显式标注类型的情况下推导项的主类型（principal type）。Algorithm W 基于 Robinson 统一算法（unification）：
 
@@ -244,7 +131,7 @@ $$
 
 Hindley-Milner 系统支持 let 多态，是 ML 系语言（Standard ML、OCaml、Haskell、F#）的基础。TypeScript 的类型推导受 HM 影响，但因结构化类型与可空类型，复杂度更高。
 
-### 2.5 TypeScript 的诞生
+### 1.5 TypeScript 的诞生
 
 TypeScript 由 Microsoft 于 2012 年发布，首席架构师为 Anders Hejlsberg（也是 Turbo Pascal、Delphi、C# 的设计者）。设计目标：
 
@@ -260,7 +147,7 @@ TypeScript 的关键设计选择：
 - **渐进式类型化**（gradual typing）允许 any
 - **类型推导**借鉴 HM 但适应结构化类型
 
-### 2.6 TypeScript 版本演进
+### 1.6 TypeScript 版本演进
 
 | 版本 | 年份 | 关键特性 |
 | ---- | ---- | -------- |
@@ -288,7 +175,7 @@ TypeScript 的关键设计选择：
 | 5.8 | 2025 | --erasableSyntaxOnly、增量改进 |
 | 6.0 | 2026 | Beta 阶段：类型推断增强、新的工具类型 |
 
-### 2.7 关键论文与里程碑
+### 1.7 关键论文与里程碑
 
 类型论的关键里程碑包括：
 
@@ -303,9 +190,9 @@ TypeScript 的关键设计选择：
 - 2016 TypeScript 2.0 引入严格类型与可空类型
 - 2018 TypeScript 2.8 引入条件类型
 
-## 3. 形式化定义与类型论基础
+## 2. 形式化定义与类型论基础
 
-### 3.1 类型系统的形式定义
+### 2.1 类型系统的形式定义
 
 类型系统由三元组组成：
 
@@ -323,7 +210,7 @@ $$
 \mathcal{T} = \{ \text{primitives} \} \cup \{ \text{object types} \} \cup \{ \text{union/intersection} \} \cup \{ \text{conditional} \} \cup \{ \text{mapped} \} \cup \ldots
 $$
 
-### 3.2 类型判断
+### 2.2 类型判断
 
 类型判断 $\Gamma \vdash e : \tau$ 表示"在类型环境 $\Gamma$ 下，表达式 $e$ 具有类型 $\tau$"。$\Gamma$ 是变量到类型的映射：
 
@@ -331,23 +218,23 @@ $$
 \Gamma = \{ x_1 : \tau_1, x_2 : \tau_2, \ldots \}
 $$
 
-### 3.3 静态语义规则
+### 2.3 静态语义规则
 
 TypeScript 的关键类型规则：
 
-#### 3.3.1 变量规则
+#### 2.3.1 变量规则
 
 $$
 \frac{x : \tau \in \Gamma}{\Gamma \vdash x : \tau} \quad \text{(Var)}
 $$
 
-#### 3.3.2 函数抽象
+#### 2.3.2 函数抽象
 
 $$
 \frac{\Gamma, x : \tau_1 \vdash e : \tau_2}{\Gamma \vdash (x : \tau_1) \Rightarrow e : \tau_1 \to \tau_2} \quad \text{(Abs)}
 $$
 
-#### 3.3.3 函数应用
+#### 2.3.3 函数应用
 
 $$
 \frac{\Gamma \vdash f : \tau_1 \to \tau_2 \quad \Gamma \vdash a : \tau_1' \quad \tau_1' <: \tau_1}{\Gamma \vdash f(a) : \tau_2} \quad \text{(App)}
@@ -355,19 +242,19 @@ $$
 
 其中 $<:$ 是子类型关系。
 
-#### 3.3.4 对象类型
+#### 2.3.4 对象类型
 
 $$
 \frac{\forall i \in I . \Gamma \vdash e_i : \tau_i \quad \text{label } l_i \text{ distinct}}{\Gamma \vdash \{ l_i : e_i \}_{i \in I} : \{ l_i : \tau_i \}_{i \in I}} \quad \text{(Obj)}
 $$
 
-#### 3.3.5 字段访问
+#### 2.3.5 字段访问
 
 $$
 \frac{\Gamma \vdash e : \{ l : \tau \}}{\Gamma \vdash e.l : \tau} \quad \text{(Proj)}
 $$
 
-### 3.4 进展与保持定理
+### 2.4 进展与保持定理
 
 类型系统的健全性（soundness）由两条定理保证：
 
@@ -376,9 +263,9 @@ $$
 
 TypeScript 并非完全健全（因 any 类型与类型断言），但其严格模式下的子集满足这两条性质。
 
-## 4. 类型论层级：STLC → System F → HM
+## 3. 类型论层级：STLC → System F → HM
 
-### 4.1 Simply Typed Lambda Calculus 详解
+### 3.1 Simply Typed Lambda Calculus 详解
 
 STLC 的语法与语义已在 2.2 节给出。其关键特性：
 
@@ -388,7 +275,7 @@ STLC 的语法与语义已在 2.2 节给出。其关键特性：
 
 STLC 的局限：无法表达多态。例如 `id = \lambda x : \tau. x` 在 STLC 中必须为每种类型重复定义。
 
-### 4.2 System F 的参数化多态
+### 3.2 System F 的参数化多态
 
 System F 引入类型抽象 $\Lambda \alpha. e$ 与类型应用 $e[\tau]$：
 
@@ -402,7 +289,7 @@ function identity<T>(x: T): T { return x; }
 
 System F 的强规范化证明较复杂，需用 Girard 的候选集方法。System F 的类型推导不可判定，故 TypeScript 仅支持受限的局部类型推导。
 
-### 4.3 Hindley-Milner 与 Algorithm W
+### 3.3 Hindley-Milner 与 Algorithm W
 
 HM 系统的语法：
 
@@ -438,7 +325,7 @@ Algorithm W(Γ, e):
 
 TypeScript 借鉴 HM 的思想，但因结构化类型与子类型关系，使用约束求解而非纯统一。
 
-### 4.4 TypeScript 在类型论层级中的位置
+### 3.4 TypeScript 在类型论层级中的位置
 
 | 系统 | 表达力 | 类型推导 | TypeScript 关系 |
 | ---- | ------ | -------- | --------------- |
@@ -450,9 +337,9 @@ TypeScript 借鉴 HM 的思想，但因结构化类型与子类型关系，使�
 
 TypeScript 是结构化类型 + 子类型 + 参数化多态的混合系统，可视为 System F<: 的实现变体。
 
-## 5. 结构类型与名义类型
+## 4. 结构类型与名义类型
 
-### 5.1 结构化类型（Structural Typing）
+### 4.1 结构化类型（Structural Typing）
 
 TypeScript 默认采用结构化类型，类型兼容性基于成员的结构：
 
@@ -472,7 +359,7 @@ $$
 
 即 S 是 T 的子类型当且仅当 S 拥有 T 的所有成员，且对应成员类型兼容。
 
-### 5.2 名义化类型（Nominal Typing）
+### 4.2 名义化类型（Nominal Typing）
 
 名义化类型系统（Java、C#、Rust、Swift）中，类型兼容性基于显式声明：
 
@@ -490,7 +377,7 @@ $$
 \frac{S \text{ declared as subtype of } T}{S <: T} \quad \text{(Nominal Subtyping)}
 $$
 
-### 5.3 结构化 vs 名义化对比
+### 4.3 结构化 vs 名义化对比
 
 | 特性 | 结构化类型 | 名义化类型 |
 | ---- | ---------- | ---------- |
@@ -501,9 +388,9 @@ $$
 | 表达力 | "能做什么" | "是什么" |
 | 类型推导 | 较易 | 较难 |
 
-### 5.4 在 TypeScript 中模拟名义化
+### 4.4 在 TypeScript 中模拟名义化
 
-#### 5.4.1 品牌类型（Branded Type）
+#### 4.4.1 品牌类型（Branded Type）
 
 ```typescript
 type Brand<T, B> = T & { __brand: B };
@@ -522,7 +409,7 @@ processUSD(eur); // 类型错误：EUR 不能赋值给 USD
 
 品牌类型利用"幽灵字段"打破结构等价。`__brand` 在运行时不存在，仅作类型层标记。
 
-#### 5.4.2 类 + 私有属性
+#### 4.4.2 类 + 私有属性
 
 ```typescript
 class USD {
@@ -543,7 +430,7 @@ processUSD(new EUR(100)); // 类型错误
 
 私有属性使类不可结构兼容，从而实现名义化语义。但需注意 `private` 关键字在编译后会被擦除。
 
-#### 5.4.3 unique symbol
+#### 4.4.3 unique symbol
 
 ```typescript
 const USDTag: unique symbol = Symbol('USD');
@@ -554,7 +441,7 @@ const usd: USD = { value: 100, [USDTag]: undefined };
 
 unique symbol 是 TypeScript 中唯一不可重复的符号字面量类型，可作为名义化标记。
 
-### 5.5 结构化类型的多余属性检查
+### 4.5 结构化类型的多余属性检查
 
 对象字面量直接赋值时触发多余属性检查（Excess Property Check）：
 
@@ -569,9 +456,9 @@ const p3: Point2D = obj; // 合法（非字面量不检查）
 
 多余属性检查是结构化类型系统的安全补丁，仅对字面量直接赋值生效。
 
-## 6. 子类型理论
+## 5. 子类型理论
 
-### 6.1 子类型关系
+### 5.1 子类型关系
 
 子类型关系 $S <: T$ 表示"S 是 T 的子类型"，即类型 S 的值可安全地用在期望 T 的位置。子类型关系的规则：
 
@@ -585,7 +472,7 @@ $$
 
 子类型关系构成偏序（reflexive, transitive, antisymmetric）。
 
-### 6.2 宽度子类型（Width Subtyping）
+### 5.2 宽度子类型（Width Subtyping）
 
 对象类型 S 比 T 拥有更多属性时，S 是 T 的子类型：
 
@@ -601,7 +488,7 @@ const p3: Point3D = { x: 1, y: 2, z: 3 };
 const p2: Point2D = p3; // 合法：Point3D 是 Point2D 的子类型
 ```
 
-### 6.3 深度子类型（Depth Subtyping）
+### 5.3 深度子类型（Depth Subtyping）
 
 对象成员类型递归满足子类型关系：
 
@@ -611,7 +498,7 @@ $$
 
 深度子类型对可变字段不安全，TypeScript 仅对只读字段应用深度子类型。
 
-### 6.4 函数子类型
+### 5.4 函数子类型
 
 函数子类型规则涉及参数与返回值的子类型方向：
 
@@ -621,7 +508,7 @@ $$
 
 即函数参数逆变，返回值协变。这条规则确保函数可安全替换。
 
-#### 6.4.1 安全性论证
+#### 5.4.1 安全性论证
 
 设 $f : \tau_1 \to \tau_2$，$g : \tau_1' \to \tau_2'$，且 $\tau_1' <: \tau_1, \tau_2 <: \tau_2'$。
 
@@ -631,9 +518,9 @@ $$
 
 - $f$ 返回 $\tau_2$ 类型输出。$g$ 返回 $\tau_2'$ 类型输出。调用方期望 $\tau_2$，需要 $g$ 的输出兼容，即 $\tau_2' <: \tau_2$，即返回值协变。
 
-### 6.5 协变与逆变
+### 5.5 协变与逆变
 
-#### 6.5.1 基本概念
+#### 5.5.1 基本概念
 
 设 Sub 是 Super 的子类型：
 
@@ -642,7 +529,7 @@ $$
 - **不变**（Invariant）：`Container<Sub>` 和 `Container<Super>` 无子类型关系。
 - **双变**（Bivariant）：两者互为子类型。
 
-#### 6.5.2 函数参数的逆变
+#### 5.5.2 函数参数的逆变
 
 ```typescript
 class Animal { name: string = 'animal'; }
@@ -662,7 +549,7 @@ animalHandler(new Animal()); // dog.breed 是 undefined
 
 TypeScript 默认函数参数是双变的（为了实用性），开启 `strictFunctionTypes` 后变为逆变。
 
-#### 6.5.3 函数返回值的协变
+#### 5.5.3 函数返回值的协变
 
 ```typescript
 type AnimalFactory = () => Animal;
@@ -674,7 +561,7 @@ const animalFactory: AnimalFactory = dogFactory; // 安全：Dog 是 Animal 的�
 
 返回值协变是类型安全的，因为调用方期望 Animal，得到 Dog 是兼容的。
 
-#### 6.5.4 TypeScript 中的协变/逆变规则
+#### 5.5.4 TypeScript 中的协变/逆变规则
 
 | 位置 | 默认行为 | strictFunctionTypes | 说明 |
 | ---- | -------- | ------------------- | ---- |
@@ -686,7 +573,7 @@ const animalFactory: AnimalFactory = dogFactory; // 安全：Dog 是 Animal 的�
 | Promise | 协变 | 协变 | Promise<T> 协变于 T |
 | ReadonlyArray | 协变 | 协变 | 只读数组协变 |
 
-### 6.6 条件类型中的协变/逆变推断
+### 5.6 条件类型中的协变/逆变推断
 
 TypeScript 的 `infer` 关键字在条件类型中遵循协变/逆变规则：
 
@@ -703,7 +590,7 @@ type FlattenedReturnType<T> = T extends (...args: any[]) => infer R extends any[
   : never;
 ```
 
-#### 6.6.1 协变位置多个推断 → 联合类型
+#### 5.6.1 协变位置多个推断 → 联合类型
 
 ```typescript
 type CovariantInfer<T> = T extends {
@@ -715,7 +602,7 @@ type Result = CovariantInfer<{ a: string; b: number }>;
 // string | number（协变位置，取联合类型）
 ```
 
-#### 6.6.2 逆变位置多个推断 → 交叉类型
+#### 5.6.2 逆变位置多个推断 → 交叉类型
 
 ```typescript
 type ContravariantInfer<T> = T extends {
@@ -735,9 +622,9 @@ type Result2 = ContravariantInfer<{
 - 协变位置（输出）：可返回任一类型，故取联合
 - 逆变位置（输入）：必须接受所有类型，故取交叉
 
-## 7. 类型推导算法
+## 6. 类型推导算法
 
-### 7.1 TypeScript 的类型推导场景
+### 6.1 TypeScript 的类型推导场景
 
 TypeScript 在以下场景执行类型推导：
 
@@ -748,7 +635,7 @@ TypeScript 在以下场景执行类型推导：
 5. **控制流分析**：根据条件分支窄化
 6. **最佳通用类型**：数组字面量等
 
-### 7.2 上下文类型化
+### 6.2 上下文类型化
 
 上下文类型化（Contextual Typing）是 TypeScript 的特色：根据期望类型推导表达式类型。
 
@@ -770,7 +657,7 @@ $$
 
 其中 $\tau'$ 是上下文期望类型，$e \leadsto \tau$ 是初始推导。
 
-### 7.3 最佳通用类型
+### 6.3 最佳通用类型
 
 数组字面量推导需要找"最佳通用类型"（Best Common Type）：
 
@@ -789,7 +676,7 @@ const arr = [new Dog(), new Cat(), new Bird()];
 3. 若存在唯一最佳，返回之
 4. 否则返回联合类型或要求显式标注
 
-### 7.4 控制流分析
+### 6.4 控制流分析
 
 TypeScript 通过控制流分析（Control Flow Analysis）窄化类型：
 
@@ -809,7 +696,7 @@ $$
 \frac{\Gamma \vdash e : \tau_1 \lor \tau_2 \quad \text{typeof } e \text{ is } \tau_1 \text{ in branch}}{\Gamma, \text{branch} \vdash e : \tau_1} \quad \text{(Narrow)}
 $$
 
-#### 7.4.1 类型守卫
+#### 6.4.1 类型守卫
 
 类型守卫（Type Guard）是返回类型谓词的函数：
 
@@ -835,7 +722,7 @@ function process(v: string | number) {
 - `Array.isArray(v)`
 - 用户定义的 `v is T` 谓词
 
-#### 7.4.2 可辨识联合
+#### 6.4.2 可辨识联合
 
 ```typescript
 type Shape =
@@ -854,7 +741,7 @@ function area(s: Shape): number {
 
 可辨识联合（Discriminated Union）通过共同的字面量字段区分变体，TypeScript 在 switch 中自动窄化。
 
-#### 7.4.3 穷尽检查
+#### 6.4.3 穷尽检查
 
 ```typescript
 function area(s: Shape): number {
@@ -871,7 +758,7 @@ function area(s: Shape): number {
 
 `never` 类型用于编译时穷尽检查。若新增 Shape 变体未在 switch 中处理，`_exhaustive: never` 会报错。
 
-### 7.5 类型推导的局限
+### 6.5 类型推导的局限
 
 TypeScript 类型推导有若干局限：
 
@@ -880,9 +767,9 @@ TypeScript 类型推导有若干局限：
 3. **不能推导高阶类型**：缺少 Higher-Kinded Types
 4. **不能推导条件类型分支**：条件类型在编译期求值
 
-## 8. 泛型的类型论基础
+## 7. 泛型的类型论基础
 
-### 8.1 参数化多态
+### 7.1 参数化多态
 
 TypeScript 的泛型对应 System F 的参数化多态：
 
@@ -904,7 +791,7 @@ $$
 
 泛型函数 `identity<T>` 的类型为 $\forall \alpha. \alpha \to \alpha$。
 
-### 8.2 泛型约束
+### 7.2 泛型约束
 
 ```typescript
 function length<T extends { length: number }>(x: T): number {
@@ -924,7 +811,7 @@ $$
 
 System F<: 是支持受限多态的扩展，由 Cardelli 与 Wegner（1985）提出。
 
-### 8.3 泛型参数推导
+### 7.3 泛型参数推导
 
 TypeScript 根据实参推导泛型参数：
 
@@ -942,7 +829,7 @@ pair<string, number>('hello', 42);  // 显式
 3. 求解方程组（类似 unify）
 4. 未确定的类型参数取默认约束
 
-### 8.4 const 类型参数
+### 7.4 const 类型参数
 
 TypeScript 5.0 引入 const 类型参数：
 
@@ -958,7 +845,7 @@ const t = tuple(1, 'hello', true);
 
 const 修饰符使推导的字面量类型更精确。
 
-### 8.5 泛型的运行时行为
+### 7.5 泛型的运行时行为
 
 TypeScript 泛型在编译时被擦除：
 
@@ -977,9 +864,9 @@ const container = [1, 2, 3];
 - Java 的泛型擦除在 JVM 层，但运行时仍可通过反射获取部分信息
 - TypeScript 的擦除在编译层，运行时无任何类型信息
 
-## 9. 条件类型的类型论基础
+## 8. 条件类型的类型论基础
 
-### 9.1 条件类型语法
+### 8.1 条件类型语法
 
 ```typescript
 type IsString<T> = T extends string ? true : false;
@@ -998,7 +885,7 @@ Y & \text{otherwise}
 \end{cases}
 $$
 
-### 9.2 分布式条件类型
+### 8.2 分布式条件类型
 
 当 T 是联合类型 `T1 | T2 | ... | Tn` 时，条件类型分布应用：
 
@@ -1023,7 +910,7 @@ type R2 = ToArrayNonDist<string | number>;
 // (string | number)[]
 ```
 
-### 9.3 infer 关键字
+### 8.3 infer 关键字
 
 `infer` 在条件类型中声明类型变量：
 
@@ -1042,7 +929,7 @@ Y & \text{otherwise}
 \end{cases}
 $$
 
-### 9.4 协变/逆变与 infer
+### 8.4 协变/逆变与 infer
 
 infer 在协变位置取联合类型，在逆变位置取交叉类型：
 
@@ -1054,7 +941,7 @@ type ContravInfer<T> = T extends { a: (x: infer R) => void; b: (x: infer R) => v
 type R2 = ContravInfer<{ a: (x: string) => void; b: (x: number) => void }>;  // string & number (= never)
 ```
 
-### 9.5 内置工具类型
+### 8.5 内置工具类型
 
 TypeScript 提供多个基于条件类型的工具类型：
 
@@ -1067,7 +954,7 @@ type InstanceType<T> = T extends new (...args: any[]) => infer R ? R : never;
 type Awaited<T> = T extends Promise<infer U> ? Awaited<U> : T;
 ```
 
-### 9.6 条件类型的递归
+### 8.6 条件类型的递归
 
 ```typescript
 type DeepReadonly<T> = {
@@ -1079,9 +966,9 @@ type DeepPromise<T> = T extends Promise<infer U> ? DeepPromise<U> : T;
 
 递归条件类型在 TypeScript 4.1 后支持，但有深度限制（默认 50 层）。
 
-## 10. 映射类型与同伦类型论
+## 9. 映射类型与同伦类型论
 
-### 10.1 映射类型语法
+### 9.1 映射类型语法
 
 映射类型（Mapped Types）基于现有类型的属性构造新类型：
 
@@ -1105,7 +992,7 @@ $$
 \llbracket \{ [P \in \text{keys}(T)] : \tau[P] \} \rrbracket = \{ l_i : \tau[l_i] \}_{l_i \in \text{keys}(T)}
 $$
 
-### 10.2 同伦类型论视角
+### 9.2 同伦类型论视角
 
 同伦类型论（Homotopy Type Theory, HoTT）将类型视为空间，类型等价视为路径。映射类型可视为类型空间的连续映射：
 
@@ -1115,7 +1002,7 @@ $$
 
 每个映射类型对应一个类型函数，将输入类型映射到输出类型。TypeScript 的映射类型是受限的类型级函数。
 
-### 10.3 映射类型的修饰符
+### 9.3 映射类型的修饰符
 
 ```typescript
 type Mutable<T> = {
@@ -1129,7 +1016,7 @@ type Required<T> = {
 
 `-readonly` 与 `-?` 是修饰符移除语法，对应类型空间中的反向操作。
 
-### 10.4 键重映射（Key Remapping）
+### 9.4 键重映射（Key Remapping）
 
 TypeScript 4.1 引入键重映射：
 
@@ -1151,7 +1038,7 @@ $$
 
 其中 $f$ 是类型级函数（此处为模板字面量类型）。
 
-### 10.5 过滤映射
+### 9.5 过滤映射
 
 通过 `never` 键过滤属性：
 
@@ -1165,7 +1052,7 @@ type WithoutKind = RemoveKindField<Shape>;
 // { radius: number }
 ```
 
-### 10.6 同态映射
+### 9.6 同态映射
 
 同态映射（Homomorphic Mapped Types）保持原类型的修饰符：
 
@@ -1179,9 +1066,9 @@ type Foo2 = Homomorphic<Foo>;
 
 非同态映射则不保留修饰符。
 
-## 11. 类型级别的计算与图灵完备性
+## 10. 类型级别的计算与图灵完备性
 
-### 11.1 类型级自然数表示
+### 10.1 类型级自然数表示
 
 TypeScript 可用元组长度表示自然数：
 
@@ -1197,7 +1084,7 @@ type ToNum<N extends any[]> = N['length'];
 type N3 = ToNum<Three>;  // 3
 ```
 
-### 11.2 类型级加法
+### 10.2 类型级加法
 
 ```typescript
 type Add<A extends any[], B extends any[]> = [...A, ...B];
@@ -1210,7 +1097,7 @@ type BuildTuple<N extends number, T extends any[] = []> =
 type Sum = AddNum<2, 3>;  // 5
 ```
 
-### 11.3 类型级条件分支
+### 10.3 类型级条件分支
 
 ```typescript
 type If<Cond extends boolean, Then, Else> =
@@ -1219,7 +1106,7 @@ type If<Cond extends boolean, Then, Else> =
 type Result = If<true, 'yes', 'no'>;  // 'yes'
 ```
 
-### 11.4 类型级斐波那契
+### 10.4 类型级斐波那契
 
 ```typescript
 type Fibonacci<
@@ -1232,7 +1119,7 @@ type Fib5 = Fibonacci<5>;  // 5
 type Fib10 = Fibonacci<10>;  // 55
 ```
 
-### 11.5 图灵完备性证明
+### 10.5 图灵完备性证明
 
 TypeScript 类型系统的图灵完备性可通过以下要素证明：
 
@@ -1257,7 +1144,7 @@ type Counter<N extends number, T extends any[] = []> =
   T['length'] extends N ? T : Counter<N, [...T, 1]>;
 ```
 
-### 11.6 类型级计算的局限
+### 10.6 类型级计算的局限
 
 类型级计算虽然图灵完备，但有显著局限：
 
@@ -1269,7 +1156,7 @@ type Counter<N extends number, T extends any[] = []> =
 
 实用边界：类型级计算适合 DSL、配置校验、文档生成等静态场景。运行时计算仍需 JavaScript。
 
-### 11.7 模板字面量类型
+### 10.7 模板字面量类型
 
 ```typescript
 type EventName = `on${Capitalize<string>}`;
@@ -1289,9 +1176,9 @@ type Setters<T> = {
 };
 ```
 
-## 12. 声明合并理论
+## 11. 声明合并理论
 
-### 12.1 声明合并的语义
+### 11.1 声明合并的语义
 
 TypeScript 允许同名的接口、命名空间、函数等多次声明，编译时合并为单一声明。形式化：
 
@@ -1301,7 +1188,7 @@ $$
 
 其中 $\sqcup$ 是声明合并算子，规则因声明类型而异。
 
-### 12.2 接口合并
+### 11.2 接口合并
 
 ```typescript
 interface Box { height: number; }
@@ -1317,7 +1204,7 @@ interface Box { height: number; width: number; }
 2. 不同名属性合并到同一接口
 3. 方法声明视为函数重载
 
-### 12.3 函数合并
+### 11.3 函数合并
 
 ```typescript
 function f(x: string): string;
@@ -1334,7 +1221,7 @@ f(42);        // number
 2. 实现签名不可见
 3. 必须存在实现
 
-### 12.4 命名空间合并
+### 11.4 命名空间合并
 
 ```typescript
 namespace Animals {
@@ -1350,7 +1237,7 @@ namespace Animals {
 // Animals.Dog, Animals.Cat, Animals.feed 都可见
 ```
 
-### 12.5 命名空间与函数合并
+### 11.5 命名空间与函数合并
 
 ```typescript
 function f(): void {}
@@ -1362,9 +1249,9 @@ f();          // 调用函数
 f.version;    // 访问命名空间成员
 ```
 
-### 12.6 声明合并的应用
+### 11.6 声明合并的应用
 
-#### 12.6.1 扩展第三方类型
+#### 11.6.1 扩展第三方类型
 
 ```typescript
 // 扩展 Express 的 Request 类型
@@ -1382,7 +1269,7 @@ declare global {
 }
 ```
 
-#### 12.6.2 模块增强
+#### 11.6.2 模块增强
 
 ```typescript
 // my-module.d.ts
@@ -1391,16 +1278,16 @@ declare module 'my-module' {
 }
 ```
 
-### 12.7 声明合并的陷阱
+### 11.7 声明合并的陷阱
 
 1. **意外合并**：同名接口可能被无意合并
 2. **顺序敏感**：函数重载顺序影响类型匹配
 3. **不可合并冲突**：同名属性类型不一致会报错
 4. **跨文件合并**：全局声明合并可能引发意外
 
-## 13. 控制流分析
+## 12. 控制流分析
 
-### 13.1 控制流图
+### 12.1 控制流图
 
 TypeScript 维护每个变量的控制流图（Control Flow Graph, CFG），记录变量在不同代码路径上的类型。
 
@@ -1419,9 +1306,9 @@ function example(x: string | number | null) {
 }
 ```
 
-### 13.2 窄化机制
+### 12.2 窄化机制
 
-#### 13.2.1 typeof 窄化
+#### 12.2.1 typeof 窄化
 
 ```typescript
 function f(x: string | number) {
@@ -1431,7 +1318,7 @@ function f(x: string | number) {
 }
 ```
 
-#### 13.2.2 instanceof 窄化
+#### 12.2.2 instanceof 窄化
 
 ```typescript
 function f(x: Date | string) {
@@ -1441,7 +1328,7 @@ function f(x: Date | string) {
 }
 ```
 
-#### 13.2.3 in 窄化
+#### 12.2.3 in 窄化
 
 ```typescript
 interface A { a: string; }
@@ -1456,7 +1343,7 @@ function f(x: A | B) {
 }
 ```
 
-#### 13.2.4 字面量窄化
+#### 12.2.4 字面量窄化
 
 ```typescript
 type Direction = 'left' | 'right';
@@ -1468,7 +1355,7 @@ function f(d: Direction) {
 }
 ```
 
-#### 13.2.5 自定义类型守卫
+#### 12.2.5 自定义类型守卫
 
 ```typescript
 function isString(x: unknown): x is string {
@@ -1480,7 +1367,7 @@ function isNonNull<T>(x: T): x is NonNullable<T> {
 }
 ```
 
-#### 13.2.6 断言函数
+#### 12.2.6 断言函数
 
 ```typescript
 function assertNonNull<T>(x: T): asserts x is NonNullable<T> {
@@ -1493,7 +1380,7 @@ function process(x: string | null) {
 }
 ```
 
-### 13.3 别名与控制流
+### 12.3 别名与控制流
 
 TypeScript 4.4 起支持别名的控制流分析：
 
@@ -1506,7 +1393,7 @@ function f(x: string | number) {
 }
 ```
 
-### 13.4 控制流的局限
+### 12.4 控制流的局限
 
 1. **不能跨函数**：函数内的窄化对调用方不可见
 2. **不能跨模块**：模块边界的类型保留原始声明
@@ -1521,7 +1408,7 @@ function f() {
 }
 ```
 
-### 13.5 穷尽检查与 never
+### 12.5 穷尽检查与 never
 
 ```typescript
 type Color = 'red' | 'green' | 'blue';
@@ -1540,9 +1427,9 @@ function toHex(c: Color): string {
 
 新增 Color 变体时，default 分支的 `never` 赋值会报错，提示开发者补全 switch。
 
-## 14. 类型擦除与编译模型
+## 13. 类型擦除与编译模型
 
-### 14.1 TypeScript 的编译模型
+### 13.1 TypeScript 的编译模型
 
 TypeScript 在编译时执行类型检查，然后擦除所有类型信息，输出纯 JavaScript：
 
@@ -1573,9 +1460,9 @@ console.log(greet(u));
 
 所有类型标注（interface、type、泛型参数、类型断言）在编译后完全消失。
 
-### 14.2 类型擦除的影响
+### 13.2 类型擦除的影响
 
-#### 14.2.1 无运行时类型检查
+#### 13.2.1 无运行时类型检查
 
 ```typescript
 function isString(value: unknown): value is string {
@@ -1584,7 +1471,7 @@ function isString(value: unknown): value is string {
 // 不能用 value instanceof string 或 typeof value === "String"
 ```
 
-#### 14.2.2 泛型不保留
+#### 13.2.2 泛型不保留
 
 ```typescript
 class Container<T> {
@@ -1594,7 +1481,7 @@ const c = new Container<number>(42);
 // 运行时无法判断 c 的泛型参数是 number
 ```
 
-#### 14.2.3 枚举的特殊处理
+#### 13.2.3 枚举的特殊处理
 
 ```typescript
 enum Direction {
@@ -1604,7 +1491,7 @@ enum Direction {
 // 编译为 JavaScript 对象，是少数保留运行时信息的类型构造
 ```
 
-#### 14.2.4 类部分保留
+#### 13.2.4 类部分保留
 
 ```typescript
 class Person {
@@ -1614,9 +1501,9 @@ class Person {
 // instanceof Person 在运行时可用
 ```
 
-### 14.3 运行时类型信息的替代方案
+### 13.3 运行时类型信息的替代方案
 
-#### 14.3.1 Zod / io-ts / class-validator
+#### 13.3.1 Zod / io-ts / class-validator
 
 ```typescript
 import { z } from 'zod';
@@ -1631,7 +1518,7 @@ type User = z.infer<typeof UserSchema>; // 从 schema 推断类型
 const result = UserSchema.parse(unknownData); // 运行时验证
 ```
 
-#### 14.3.2 自定义类型守卫
+#### 13.3.2 自定义类型守卫
 
 ```typescript
 function isUser(value: unknown): value is User {
@@ -1644,7 +1531,7 @@ function isUser(value: unknown): value is User {
 }
 ```
 
-#### 14.3.3 装饰器元数据
+#### 13.3.3 装饰器元数据
 
 ```typescript
 import 'reflect-metadata';
@@ -1655,7 +1542,7 @@ class UserService {
 }
 ```
 
-### 14.4 类型擦除的设计哲学
+### 13.4 类型擦除的设计哲学
 
 TypeScript 选择类型擦除的原因：
 
@@ -1666,9 +1553,9 @@ TypeScript 选择类型擦除的原因：
 
 这与 Java/C# 的泛型擦除不同。Java 的泛型擦除在 JVM 层面，而 TypeScript 的类型擦除是在编译层面，彻底移除所有类型构造。
 
-## 15. 类型论高级主题
+## 14. 类型论高级主题
 
-### 15.1 高阶类型（Higher-Kinded Types）
+### 14.1 高阶类型（Higher-Kinded Types）
 
 TypeScript 不直接支持高阶类型（如 `F<_>`），但可通过多种技术模拟：
 
@@ -1693,7 +1580,7 @@ interface Functor<F> {
 }
 ```
 
-### 15.2 依赖类型
+### 14.2 依赖类型
 
 依赖类型（Dependent Types）允许类型依赖于值，是类型论的最强形式。TypeScript 不支持真正的依赖类型，但可通过字面量类型部分模拟：
 
@@ -1713,7 +1600,7 @@ type Subtract<A extends number, B extends number> =
 // vec (S n) = Pair A (vec n)
 ```
 
-### 15.3 同伦类型论
+### 14.3 同伦类型论
 
 同伦类型论（Homotopy Type Theory, HoTT）将类型视为空间，类型等价视为路径，高阶等价视为高阶路径。HoTT 在 Coq、Agda、Lean 中有支持。
 
@@ -1723,7 +1610,7 @@ TypeScript 不直接支持 HoTT，但其类型系统中的某些现象可用 HoT
 - 子类型关系：对应类型空间的连续映射
 - 类型级函数：对应类型空间的函数空间
 
-### 15.4 线性类型
+### 14.4 线性类型
 
 线性类型（Linear Types）要求每个变量恰好使用一次，用于资源管理。TypeScript 不支持线性类型，但可通过类型系统部分模拟：
 
@@ -1741,7 +1628,7 @@ const y = consume(x);
 // x 不能再使用（编译器无法强制，但可由 lint 规则辅助）
 ```
 
-### 15.5 效应系统
+### 14.5 效应系统
 
 效应系统（Effect Systems）跟踪函数的副作用。TypeScript 不支持内置效应系统，但可通过类型标注模拟：
 
@@ -1755,9 +1642,9 @@ function readFile(path: string): IO<string> { /* ... */ }
 function writeFile(path: string, content: string): IO<void> { /* ... */ }
 ```
 
-## 16. 对比分析
+## 15. 对比分析
 
-### 16.1 TypeScript vs Flow
+### 15.1 TypeScript vs Flow
 
 | 维度 | TypeScript | Flow |
 | ---- | ---------- | ---- |
@@ -1769,7 +1656,7 @@ function writeFile(path: string, content: string): IO<void> { /* ... */ }
 | 渐进式 | 是 | 是 |
 | 现状 | 主流 | 维护中 |
 
-### 16.2 TypeScript vs PureScript
+### 15.2 TypeScript vs PureScript
 
 | 维度 | TypeScript | PureScript |
 | ---- | ---------- | ---------- |
@@ -1781,7 +1668,7 @@ function writeFile(path: string, content: string): IO<void> { /* ... */ }
 | 编译目标 | JavaScript | JavaScript |
 | 学习曲线 | 平缓 | 陡峭 |
 
-### 16.3 TypeScript vs ReasonML
+### 15.3 TypeScript vs ReasonML
 
 | 维度 | TypeScript | ReasonML |
 | ---- | ---------- | -------- |
@@ -1791,7 +1678,7 @@ function writeFile(path: string, content: string): IO<void> { /* ... */ }
 | 编译目标 | JavaScript | JavaScript（BuckleScript） |
 | 互操作 | 与 JS 无缝 | 较复杂 |
 
-### 16.4 TypeScript vs Java
+### 15.4 TypeScript vs Java
 
 | 维度 | TypeScript | Java |
 | ---- | ---------- | ---- |
@@ -1802,7 +1689,7 @@ function writeFile(path: string, content: string): IO<void> { /* ... */ }
 | 反射 | 无 | 完整反射 |
 | 运行时类型 | 无 | 保留 |
 
-### 16.5 TypeScript vs Rust
+### 15.5 TypeScript vs Rust
 
 | 维度 | TypeScript | Rust |
 | ---- | ---------- | ---- |
@@ -1812,9 +1699,9 @@ function writeFile(path: string, content: string): IO<void> { /* ... */ }
 | 类型推导 | 较强 | 局部 |
 | 高阶特性 | 条件/映射类型 | 关联类型、trait |
 
-## 17. 常见陷阱
+## 16. 常见陷阱
 
-### 17.1 结构化类型的意外兼容
+### 16.1 结构化类型的意外兼容
 
 ```typescript
 interface User { name: string; age: number; }
@@ -1826,7 +1713,7 @@ const product: Product = user; // 合法但语义错误
 
 修复：使用品牌类型。
 
-### 17.2 any 与 unknown
+### 16.2 any 与 unknown
 
 ```typescript
 // any 关闭类型检查
@@ -1843,7 +1730,7 @@ function g(x: unknown) {
 }
 ```
 
-### 17.3 类型断言绕过检查
+### 16.3 类型断言绕过检查
 
 ```typescript
 const x = 'hello' as number; // 编译通过但运行时错误
@@ -1852,7 +1739,7 @@ const y = 'hello' as unknown as number; // 双重断言更危险
 
 类型断言应仅用于"我比你更了解类型"的场景，不可用于绕过检查。
 
-### 17.4 函数参数双变
+### 16.4 函数参数双变
 
 ```typescript
 class Animal { name = 'animal'; }
@@ -1865,7 +1752,7 @@ const h: Handler = dogHandler; // 默认合法，但调用 h(new Animal()) 会�
 // strictFunctionTypes 下报错
 ```
 
-### 17.5 索引签名的局限
+### 16.5 索引签名的局限
 
 ```typescript
 interface StringMap { [key: string]: string; }
@@ -1881,7 +1768,7 @@ map.c; // string（即使 c 不存在，类型仍是 string）
 type SafeAccess<T, K extends string> = K extends keyof T ? T[K] : undefined;
 ```
 
-### 17.6 枚举的反直觉
+### 16.6 枚举的反直觉
 
 ```typescript
 enum Color { Red, Green, Blue }
@@ -1893,7 +1780,7 @@ enum Direction { Up = 'UP', Down = 'DOWN' }
 const d: Direction = 'UP'; // 错误：必须用 Direction.Up
 ```
 
-### 17.7 类型守卫的局限
+### 16.7 类型守卫的局限
 
 ```typescript
 function isString(x: unknown): x is string {
@@ -1906,7 +1793,7 @@ function f(arr: unknown[]) {
 }
 ```
 
-### 17.8 联合类型的方法调用
+### 16.8 联合类型的方法调用
 
 ```typescript
 interface A { foo(): void; bar(): void; }
@@ -1919,7 +1806,7 @@ function f(x: A | B) {
 }
 ```
 
-### 17.9 类型字面量的不可变性
+### 16.9 类型字面量的不可变性
 
 ```typescript
 let x: 'hello' = 'hello';
@@ -1929,7 +1816,7 @@ const y: 'hello' = 'hello';
 // y 不可重新赋值
 ```
 
-### 17.10 装饰器的编译差异
+### 16.10 装饰器的编译差异
 
 TypeScript 装饰器在不同 target 下编译结果不同：
 
@@ -1938,9 +1825,9 @@ TypeScript 装饰器在不同 target 下编译结果不同：
 
 跨 target 项目应谨慎使用装饰器。
 
-## 18. 工程实践
+## 17. 工程实践
 
-### 18.1 渐进式类型化
+### 17.1 渐进式类型化
 
 TypeScript 支持在 JavaScript 项目中逐步引入类型：
 
@@ -1950,7 +1837,7 @@ TypeScript 支持在 JavaScript 项目中逐步引入类型：
 4. 逐步将 .js 重命名为 .ts
 5. 启用严格模式选项
 
-### 18.2 严格模式选项
+### 17.2 严格模式选项
 
 `tsconfig.json` 推荐配置：
 
@@ -1974,7 +1861,7 @@ TypeScript 支持在 JavaScript 项目中逐步引入类型：
 }
 ```
 
-### 18.3 类型守卫库
+### 17.3 类型守卫库
 
 ```typescript
 function isString(v: unknown): v is string {
@@ -1994,7 +1881,7 @@ function isArray<T>(v: unknown, guard: (x: unknown) => x is T): v is T[] {
 }
 ```
 
-### 18.4 错误类型设计
+### 17.4 错误类型设计
 
 ```typescript
 type Result<T, E = Error> =
@@ -2015,7 +1902,7 @@ if (r.ok) {
 }
 ```
 
-### 18.5 类型安全的 API 客户端
+### 17.5 类型安全的 API 客户端
 
 ```typescript
 interface Endpoint {
@@ -2043,7 +1930,7 @@ async function request<P extends Path, M extends Method<P>>(
 }
 ```
 
-### 18.6 运行时验证集成
+### 17.6 运行时验证集成
 
 ```typescript
 import { z } from 'zod';
@@ -2062,7 +1949,7 @@ async function fetchUser(id: string): Promise<User> {
 }
 ```
 
-### 18.7 模块与命名空间
+### 17.7 模块与命名空间
 
 ES Module 优先，避免 namespace：
 
@@ -2077,9 +1964,9 @@ import { UserService } from './user-service';
 
 namespace 仅用于声明合并场景。
 
-## 19. 案例研究
+## 18. 案例研究
 
-### 19.1 React 组件类型
+### 18.1 React 组件类型
 
 ```typescript
 interface ButtonProps {
@@ -2100,7 +1987,7 @@ function Button({ variant, size, onClick, children }: ButtonProps) {
 - **可选属性**：onClick 用 ? 表示可选
 - **类型推导**：组件返回类型自动推导
 
-### 19.2 Redux Toolkit 的类型推导
+### 18.2 Redux Toolkit 的类型推导
 
 ```typescript
 const slice = createSlice({
@@ -2123,7 +2010,7 @@ const { increment, add } = slice.actions;
 - **条件类型**：根据 reducers 推导 ActionCreator 类型
 - **映射类型**：reducers 对象的类型构造
 
-### 19.3 tRPC 的端到端类型安全
+### 18.3 tRPC 的端到端类型安全
 
 ```typescript
 const appRouter = trpc.router()
@@ -2147,7 +2034,7 @@ const user = await client.query('getUser', '123'); // 类型安全
 
 tRPC 利用 TypeScript 的类型推导在前后端之间共享类型，无需代码生成。
 
-### 19.4 Drizzle ORM 的类型安全查询
+### 18.4 Drizzle ORM 的类型安全查询
 
 ```typescript
 const users = pgTable('users', {
@@ -2165,7 +2052,7 @@ const result = await db
 
 Drizzle 利用 TypeScript 的字面量类型与条件类型构造类型安全的 SQL 查询。
 
-### 19.5 fp-ts 的函数式编程
+### 18.5 fp-ts 的函数式编程
 
 ```typescript
 import * as O from 'fp-ts/Option';
@@ -2305,7 +2192,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 
    答案：C
 
-### 20.3 代码修复题（code-fix）
+### 19.3 代码修复题（code-fix）
 
 1. **[apply]** 以下代码期望区分 USD 与 EUR 两种货币类型，但实际可互相赋值。请修复。
 
@@ -2399,7 +2286,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
      : T;
    ```
 
-### 20.4 开放题（open-ended）
+### 19.4 开放题（open-ended）
 
 1. **[evaluate]** 请论证 TypeScript 类型系统的图灵完备性，并讨论类型级计算的实用边界。
 
@@ -2413,7 +2300,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 
 6. **[evaluate]** 讨论 TypeScript 类型擦除的利弊。若 TypeScript 保留运行时类型信息（如 .NET），会对语言产生哪些影响？
 
-## 21. 理论速查表
+## 20. 理论速查表
 
 | 概念 | 核心要点 | 关键细节 |
 | ---- | -------- | -------- |
@@ -2444,7 +2331,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 | 声明合并 | 同名声明合并 | interface、namespace |
 | 图灵完备 | 类型级可计算 | 元组长度 + 条件 + 递归 |
 
-## 22. 参考文献（ACM Reference Format）
+## 21. 参考文献（ACM Reference Format）
 
 [1] Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press, Cambridge, MA.
 
@@ -2498,9 +2385,9 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 
 [26] Hejlsberg, A. and Rosenwasser, D. 2020. TypeScript 4.1: Template literal types. Microsoft Blog.
 
-## 23. 延伸阅读
+## 22. 延伸阅读
 
-### 23.1 经典书籍
+### 22.1 经典书籍
 
 - Benjamin C. Pierce. *Types and Programming Languages*. MIT Press, 2002.
 - Robert Harper. *Practical Foundations for Programming Languages*. Cambridge University Press, 2016.
@@ -2510,7 +2397,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 - Matt Pocock. *Total TypeScript*. Online, 2024.
 - Mario Zupan. *Mastering TypeScript*. Packt Publishing, 2024.
 
-### 23.2 规范与文档
+### 22.2 规范与文档
 
 - TypeScript 官方文档：https://www.typescriptlang.org/docs/
 - TypeScript 规范：https://github.com/microsoft/TypeScript/blob/main/doc/spec.md
@@ -2519,7 +2406,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 - DefinitelyTyped（.d.ts 仓库）：https://github.com/DefinitelyTyped/DefinitelyTyped
 - TC39 ECMAScript 提案：https://github.com/tc39/proposals
 
-### 23.3 经典论文
+### 22.3 经典论文
 
 - Alonzo Church. *A Formulation of the Simple Theory of Types* (1940)
 - Jean-Yves Girard. *Interprétation fonctionnelle et élimination des coupures* (1972)
@@ -2531,7 +2418,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 - Andrew Wright & Matthias Felleisen. *A Syntactic Approach to Type Soundness* (1994)
 - Gavin Bierman, Martín Abadi, Mads Torgersen. *Understanding TypeScript* (2014)
 
-### 23.4 开源项目
+### 22.4 开源项目
 
 - TypeScript：https://github.com/microsoft/TypeScript
 - fp-ts（函数式编程）：https://github.com/gcanti/fp-ts
@@ -2542,7 +2429,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 - Effect（效应系统）：https://github.com/effect-ts/effect
 - class-validator：https://github.com/typestack/class-validator
 
-### 23.5 学术课程
+### 22.5 学术课程
 
 - MIT 6.815: Programming Languages
 - Stanford CS242: Programming Languages
@@ -2552,7 +2439,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 - EPFL: Type Theory
 - University of Cambridge: Type Theory
 
-### 23.6 进阶主题
+### 22.6 进阶主题
 
 以下主题超出本文范围，建议进一步研究：
 
@@ -2565,7 +2452,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 - **可计算性**：图灵机、Lambda 演算、递归函数
 - **形式化验证**：Coq、Isabelle、Lean 的应用
 
-## 24. 附录 A：Bloom 分类法与习题映射
+## 23. 附录 A：Bloom 分类法与习题映射
 
 本文习题按 Bloom 分类法设计，覆盖六个认知层级：
 
@@ -2587,7 +2474,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 5. 挑战代码修复与开放题
 6. 阅读案例研究连接实践
 
-## 25. 附录 B：术语对照表
+## 24. 附录 B：术语对照表
 
 | 中文术语 | 英文术语 | 缩写 | 含义 |
 | -------- | -------- | ---- | ---- |
@@ -2626,9 +2513,9 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 | 上下文类型化 | Contextual Typing | - | 由期望类型推导 |
 | 多余属性检查 | Excess Property Check | - | 字面量赋值检查 |
 
-## 26. 附录 C：TypeScript 配置参考
+## 25. 附录 C：TypeScript 配置参考
 
-### 26.1 推荐的 tsconfig.json
+### 25.1 推荐的 tsconfig.json
 
 ```json
 {
@@ -2657,7 +2544,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 }
 ```
 
-### 26.2 关键编译选项说明
+### 25.2 关键编译选项说明
 
 | 选项 | 说明 |
 | ---- | ---- |
@@ -2675,7 +2562,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 | `isolatedModules` | 单文件编译隔离 |
 | `verbatimModuleSyntax` | 严格模块语法（避免 type-only import 编译问题） |
 
-## 27. 附录 D：版本与变更日志
+## 26. 附录 D：版本与变更日志
 
 | 版本 | 日期 | 变更内容 | 作者 |
 | ---- | ---- | -------- | ---- |

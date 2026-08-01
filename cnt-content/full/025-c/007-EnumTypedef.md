@@ -14,45 +14,6 @@ related:
   - c/动态内存管理
 prerequisites:
   - c/概述
-learningObjectives:
-  - level: remember
-    objective: '能陈述 enum 与 typedef 的定义语法与核心语义。'
-    verifiable: '默写两种语法的最小示例'
-  - level: understand
-    objective: '能解释枚举在 C 中本质为整数类型，typedef 不创建新类型而只是别名。'
-    verifiable: '说明枚举与整数的隐式转换规则'
-  - level: apply
-    objective: '能使用枚举定义状态机、错误码与位标志，并用 typedef 简化函数指针。'
-    verifiable: '完成三类场景的完整代码'
-  - level: analyze
-    objective: '能分析枚举名作用域冲突、重复值与位组合的类型安全边界。'
-    verifiable: '指出两个枚举同名常量的编译错误及解决方式'
-  - level: evaluate
-    objective: '能评价 X-Macro 等元编程技巧的收益与可维护性代价。'
-    verifiable: '对比手写映射与 X-Macro 两种实现'
-  - level: create
-    objective: '能设计可移植的类型别名体系与事件回调架构。'
-    verifiable: '完成案例研究中的完整模块'
-exercises:
-  - id: c-enum-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: 'C 语言中定义枚举类型的关键字是 _____，定义类型别名的关键字是 _____。'
-    answer: 'enum；typedef'
-    explanation: 'enum 定义枚举类型，typedef 为已有类型创建别名。'
-    difficulty: easy
-  - id: c-enum-02
-    type: choice
-    cognitiveLevel: understand
-    question: '关于 typedef，下列说法正确的是？'
-    options:
-      - 'A. typedef 创建新的独立类型'
-      - 'B. typedef 只是为已有类型创建别名'
-      - 'C. typedef 只能用于结构体'
-      - 'D. typedef 改变类型的内存布局'
-    answer: 'B'
-    explanation: 'typedef 不创建新类型，不改变存储与布局。'
-    difficulty: medium
 references:
   - type: documentation
     authors: ['cppreference']
@@ -75,21 +36,8 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-## 1. 学习目标（Bloom 分类）
 
-记忆层面：能够说出 `enum` 的声明语法、枚举常量的默认取值规则（从 0 递增）与显式赋值规则；能够说出 `typedef` 的基本语法（`typedef 原类型 别名`）及其在结构体、联合体、枚举、函数指针、数组类型上的应用。
-
-理解层面：能够解释枚举的底层存储（整数类型，C 标准保证能容纳所有枚举值），解释 `typedef` 不是创建新类型而是类型别名，理解枚举与 `#define` 常量的区别（作用域、类型安全、调试信息）。
-
-应用层面：能够用枚举表达状态机状态、错误码、配置选项；用 `typedef` 简化复杂声明（结构体别名、函数指针类型、定长数组类型），写出可读性更好的头文件。
-
-分析层面：能够分析枚举底层类型的实现差异（编译器可能选择 `int` 或更小类型）、`sizeof(enum)` 的不确定性；分析 `typedef` 与宏在类型检查上的差异。
-
-评价层面：能够评估“枚举 vs 宏 vs 常量”在特定场景的取舍，评估函数指针 typedef 在回调设计中的价值。
-
-创造层面：能够设计带显式值的错误码枚举、带字符串映射的状态机，并用 typedef 构建清晰的回调与表驱动架构。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 C 语言早期没有布尔类型与命名常量机制，开发者用 `#define` 定义魔数，导致类型不安全、作用域泄漏、调试信息缺失。C89（ANSI C，1989）正式标准化 `enum`，提供编译期常量集合；`typedef` 则从 C 的早期版本就存在，用于为类型创建别名，是抽象类型（不透明指针、函数指针）的基石。
 
@@ -105,9 +53,9 @@ timeline
     2024 : C23 支持显式枚举底层类型
 ```
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 枚举定义
+### 2.1 枚举定义
 
 ```c
 enum 标签名 {
@@ -121,7 +69,7 @@ enum 标签名 {
 
 枚举变量的取值可以是任意整型值（不限于枚举常量列表），这是 C 的历史行为，也是常见误用来源。
 
-### 3.2 typedef 定义
+### 2.2 typedef 定义
 
 `typedef` 的语法是“存储类说明符 + 类型 + 别名”，例如：
 
@@ -134,7 +82,7 @@ typedef int Vector4[4];               // 定长数组类型别名
 
 `typedef` 声明不创建新类型，只引入同义词；因此 `typedef int A; typedef int B;` 后 `A` 与 `B` 完全兼容。
 
-### 3.3 枚举与 typedef 组合
+### 2.3 枚举与 typedef 组合
 
 ```c
 typedef enum {
@@ -154,9 +102,9 @@ flowchart LR
     D --> F["结构体/函数指针/数组简化"]
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 枚举的底层类型推导
+### 3.1 枚举的底层类型推导
 
 C 标准要求枚举的底层类型是“能表示所有枚举值”的整型（char、signed/unsigned 整数类型均可）。实现通常选择 `int` 或 `unsigned int`，但若所有值在 `char` 范围内，部分编译器会选更小类型。C23 的显式底层类型语法消除了这一不确定性：
 
@@ -166,17 +114,17 @@ enum Color : unsigned char { RED, GREEN, BLUE }; // C23
 
 因此 `sizeof(enum)` 在 C11 及之前不可移植，序列化枚举时不应假设大小。
 
-### 4.2 typedef 的解析规则
+### 3.2 typedef 的解析规则
 
 typedef 声明遵循 C 的声明语法（declarator 规则）：`typedef int (*FP)(void);` 中 `(*FP)(void)` 是函数指针声明符，`FP` 被绑定为“指向返回 int、无参数函数的指针”类型。复杂声明可以用“从内向外读”的方法解析：`FP` 先解引用为指针，再调用，再取 int。掌握这一规则后，任何 typedef 都可以读懂。
 
-### 4.3 枚举 vs 宏 vs const
+### 3.3 枚举 vs 宏 vs const
 
 `#define RED 0` 是文本替换，无类型、无作用域，可能在宏展开时产生意外；`const int RED = 0` 是运行期对象（非编译期常量，不能用于 case 标签或数组尺寸）；`enum { RED = 0 }` 是编译期常量、有作用域、能参与类型检查（有限）。C23 的 `constexpr` 提供第三种选择，但枚举在状态机与位标志场景仍最常用。
 
-## 5. 代码示例（带详尽注释）
+## 4. 代码示例（带详尽注释）
 
-### 5.1 基础枚举
+### 4.1 基础枚举
 
 ```c
 #include <stdio.h>
@@ -197,7 +145,7 @@ int main(void) {
 
 讲解：默认从 0 递增是枚举的基础行为。输出 `today = 2`。枚举参与算术时退化为基础整型，这是 C 的宽松行为，使用时注意。
 
-### 5.2 显式赋值
+### 4.2 显式赋值
 
 ```c
 #include <stdio.h>
@@ -226,7 +174,7 @@ int main(void) {
 
 讲解：显式赋值让枚举胜任错误码与位标志。位移表达式（`1 << n`）保证位不重叠；组合结果可能不是枚举常量之一，C 允许这种赋值，但要显式转换为目标类型。
 
-### 5.3 枚举在 switch 中使用
+### 4.3 枚举在 switch 中使用
 
 ```c
 #include <stdio.h>
@@ -258,7 +206,7 @@ int main(void) {
 
 讲解：枚举与 switch 是状态机的经典组合。`default` 分支防御“枚举变量被赋了列表外的整数值”的 C 特性，保证函数对任意输入都有输出。
 
-### 5.4 typedef 基本用法
+### 4.4 typedef 基本用法
 
 ```c
 #include <stdio.h>
@@ -284,7 +232,7 @@ int main(void) {
 
 讲解：`typedef struct {...} Point;` 同时完成结构体定义与别名。嵌入式开发常用 `u8/u16/u32` 等宽度别名保证跨平台一致。注意 `typedef` 不能用于在声明时初始化对象。
 
-### 5.5 typedef 与函数指针
+### 4.5 typedef 与函数指针
 
 ```c
 #include <stdio.h>
@@ -309,7 +257,7 @@ int main(void) {
 
 讲解：函数指针 typedef 让回调类型可复用、可数组化。表驱动（用数据表代替 if-else 链）是 C 工程的重要架构模式，函数指针数组是其核心载体。
 
-### 5.6 typedef 与定长数组
+### 4.6 typedef 与定长数组
 
 ```c
 #include <stdio.h>
@@ -336,7 +284,7 @@ int main(void) {
 
 讲解：`typedef int Vector4[4]` 后，`Vector4*` 是指向整个数组的指针，函数参数带上长度信息，防止数组退化为指针导致越界。
 
-### 5.7 typedef 与联合体
+### 4.7 typedef 与联合体
 
 ```c
 #include <stdio.h>
@@ -359,7 +307,7 @@ int main(void) {
 
 讲解：联合体别名用于协议解析、寄存器访问等场景。注意输出依赖主机字节序，跨平台协议解析应使用移位而非直接读字节。
 
-### 5.8 枚举与字符串映射
+### 4.8 枚举与字符串映射
 
 ```c
 #include <stdio.h>
@@ -392,9 +340,9 @@ int main(void) {
 
 讲解：映射表依赖“枚举值连续且从 0 开始”的前提，因此访问前做范围检查。这是枚举序列化与日志系统的常见模式。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 枚举 vs 宏常量
+### 5.1 枚举 vs 宏常量
 
 | 维度 | enum | #define |
 | --- | --- | --- |
@@ -404,15 +352,15 @@ int main(void) {
 | 编译期常量 | 是 | 是 |
 | 与 switch/case | 配合良好 | 配合良好 |
 
-### 6.2 typedef vs 宏别名
+### 5.2 typedef vs 宏别名
 
 `#define HANDLER int (*)(int)` 也能缩写声明，但宏在语法层面替换，容易出现优先级错误且无类型检查；`typedef` 是语言级别名，解析正确、可读性好。现代 C 代码应使用 typedef。
 
-### 6.3 枚举底层类型在不同标准下的行为
+### 5.3 枚举底层类型在不同标准下的行为
 
 C89-C17 由实现选择底层类型；C23 允许显式指定。跨编译器序列化枚举时应显式转换为基础整型或使用 C23 语法。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
 陷阱一：枚举常量名全局冲突。同一作用域内枚举常量名不能重复。最佳实践：加前缀（如 `STATE_`、`ERR_`）。
 
@@ -426,9 +374,9 @@ C89-C17 由实现选择底层类型；C23 允许显式指定。跨编译器序�
 
 陷阱六：函数指针 typedef 阅读困难。最佳实践：从内向外读声明，或拆分为两步（先 `typedef` 返回类型函数）。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 错误码头文件设计
+### 7.1 错误码头文件设计
 
 ```c
 // errors.h：统一错误码
@@ -452,7 +400,7 @@ const char* error_string(Error err);
 
 讲解：头文件用 include guard 防重复包含；错误码从 0 开始且显式赋值；`error_string` 声明让实现与使用分离。这是 C 库的经典接口设计。
 
-### 8.2 状态机实现
+### 7.2 状态机实现
 
 ```c
 // 状态-事件表驱动状态机骨架
@@ -473,7 +421,7 @@ State next_state(State s, Event e) {
 
 讲解：表驱动状态机把转移逻辑从 switch 中抽离为数据，便于生成与验证。枚举值是数组下标，要求枚举连续，用静态断言（`_Static_assert`）保证。
 
-## 9. 案例研究：带字符串映射的日志系统
+## 8. 案例研究：带字符串映射的日志系统
 
 需求：实现日志级别过滤与级别名输出，级别可扩展。
 
@@ -527,7 +475,7 @@ int main(void) {
 
 讲解：该案例综合枚举（级别）、typedef（别名）、映射表（字符串化）、防御检查（范围校验）与工程结构（过滤策略）。运行输出为 `[WARN] 警告信息` 与 `[DEBUG] 调试信息`。
 
-## 10. 知识要点总结与深入讲解
+## 9. 知识要点总结与深入讲解
 
 枚举的本质是“一组有名字的编译期整型常量”，typedef 的本质是“类型的别名”。两者组合产生 C 中最常用的类型定义模式：`typedef enum {...} Name;`。
 
@@ -535,7 +483,7 @@ int main(void) {
 
 typedef 的阅读技巧是“从内向外”：`int (*Handler)(int)` 中 `Handler` 是指针，指向函数，函数返回 int。掌握声明解析后，函数指针、数组指针等复杂类型不再可怕。
 
-## 11. 参考文献
+## 10. 参考文献
 
 cppreference, C 语言枚举声明（enum）, 访问日期 2026-08-01, https://zh.cppreference.com/w/c/language/enum
 
@@ -547,7 +495,7 @@ Microsoft Learn, C Enumeration Declarations, 访问日期 2026-08-01, https://le
 
 GCC 文档, Warning Options（-Wenum-conversion 等）, 访问日期 2026-08-01, https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 结构体与联合体的完整讲解，见 025-c 模块的 struct/union 文档；
 

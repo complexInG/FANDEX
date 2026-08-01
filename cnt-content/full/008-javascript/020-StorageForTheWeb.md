@@ -25,174 +25,6 @@ prerequisites:
   - javascript/语法速查
   - javascript/浏览器对象模型
   - javascript/Promise与async
-learningObjectives:
-  - '{''remember'': ''复述 Cookie、localStorage、sessionStorage、IndexedDB 的容量限制、生命周期与 API 形式，及 Web Storage 规范的标准化历程''}'
-  - '{''understand'': ''解释同源策略对存储的影响、Cookie 的安全属性（Secure、HttpOnly、SameSite）、Storage 事件机制与浏览器存储隔离模型''}'
-  - '{''apply'': ''编写生产级存储工具库，包括 JSON 序列化、TTL 过期机制、命名空间隔离、跨标签页同步、错误处理与降级方案''}'
-  - '{''analyze'': ''对比 Cookie、Web Storage、IndexedDB 在容量、性能、API 复杂度、安全性上的差异，识别各自适用场景''}'
-  - '{''evaluate'': ''评估 XSS、CSRF、追踪等安全风险，给出防御策略与同站/跨站 Cookie 配置方案''}'
-  - '{''create'': ''设计离线优先（offline-first）应用的存储架构，结合 Service Worker、Cache API、IndexedDB 实现可信赖的离线体验''}'
-exercises:
-  - id: ex-webstorage-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: Web Storage 包含 localStorage 与 ______ 两种机制，前者生命周期为 ______，后者生命周期为标签页关闭。
-    hint: 前者为 sessionStorage；后者生命周期分别为永久与标签页关闭
-    answer: sessionStorage,永久
-    answers:
-      - sessionStorage
-      - 永久
-    blankCount: 2
-    caseSensitive: false
-    difficulty: 1
-    estimatedTime: 2
-  - id: ex-webstorage-02
-    type: fill-blank
-    cognitiveLevel: understand
-    question: Cookie 的 ______ 属性可防止 JavaScript 通过 document.cookie 访问，从而防御 ______ 攻击；______ 属性限制 Cookie 仅在 HTTPS 连接下发送。
-    hint: 前者为 HttpOnly；中者为 XSS；后者为 Secure
-    answer: HttpOnly,XSS,Secure
-    answers:
-      - HttpOnly
-      - XSS
-      - Secure
-    blankCount: 3
-    caseSensitive: false
-    difficulty: 2
-    estimatedTime: 4
-  - id: ex-webstorage-03
-    type: choice
-    cognitiveLevel: understand
-    question: 下列关于 localStorage 与 sessionStorage 区别的描述，哪项是错误的？
-    options:
-      - localStorage 永久存储，sessionStorage 在标签页关闭时清除
-      - 二者均遵循同源策略，不同源之间数据相互隔离
-      - localStorage 容量通常为 5-10MB，sessionStorage 容量与之相同
-      - sessionStorage 在同一标签页的不同 iframe 中共享
-    correctIndex: 3
-    multiple: false
-    difficulty: 3
-    explanation: sessionStorage 不在 iframe 之间共享。每个浏览上下文（browsing context）有独立的 sessionStorage，iframe 是独立的浏览上下文，故其 sessionStorage 与父页面隔离。
-    answer: D
-  - id: ex-webstorage-04
-    type: choice
-    cognitiveLevel: analyze
-    question: 在以下场景中，哪种存储机制最合适保存用户的敏感会话令牌（session token）？
-    options:
-      - localStorage，便于跨标签页访问
-      - sessionStorage，标签页关闭自动清除，降低泄漏风险
-      - Cookie 配合 Secure、HttpOnly、SameSite=Strict 属性
-      - IndexedDB，存储结构化数据
-    correctIndex: 2
-    multiple: false
-    difficulty: 4
-    explanation: 敏感会话令牌应使用 Cookie 并配合 Secure（仅 HTTPS）、HttpOnly（防 XSS 读取）、SameSite=Strict（防 CSRF）三重防护。localStorage 与 sessionStorage 均可被 JavaScript 访问，存在 XSS 风险；IndexedDB 过于复杂且同样可被 JS 访问。
-    answer: C
-  - id: ex-webstorage-05
-    type: code-fix
-    cognitiveLevel: apply
-    question: 以下函数意图将对象存入 localStorage 并设置 1 小时过期，但存在缺陷。请修复。
-    buggyCode: |
-      function setWithExpiry(key, value, ttl) {
-        localStorage.setItem(key, JSON.stringify(value));
-        localStorage.setItem(key + '_ttl', Date.now() + ttl);
-      }
-      function getWithExpiry(key) {
-        const value = localStorage.getItem(key);
-        const ttl = localStorage.getItem(key + '_ttl');
-        if (Date.now() > ttl) {
-          localStorage.removeItem(key);
-          return null;
-        }
-        return JSON.parse(value);
-      }
-      setWithExpiry('user', { name: 'Alice' }, 3600000);
-    fixedCode: |
-      function setWithExpiry(key, value, ttl) {
-        const item = {
-          value: value,
-          expiry: Date.now() + ttl,
-        };
-        localStorage.setItem(key, JSON.stringify(item));
-      }
-      function getWithExpiry(key) {
-        const raw = localStorage.getItem(key);
-        if (!raw) return null;
-        try {
-          const item = JSON.parse(raw);
-          if (Date.now() > item.expiry) {
-            localStorage.removeItem(key);
-            return null;
-          }
-          return item.value;
-        } catch (e) {
-          console.error('JSON parse failed:', e);
-          localStorage.removeItem(key);
-          return null;
-        }
-      }
-      setWithExpiry('user', { name: 'Alice' }, 3600000);
-    errorDescription: 原实现将值与 TTL 分开存储，需两次 setItem 调用，原子性差；且 getItem 在键不存在时返回 null，Number(null) 为 0 导致 Date.now() > 0 永远为真。修复后合并为单个对象存储，并添加 try-catch 处理 JSON 解析异常。
-    language: javascript
-    answer: 合并为单对象存储并添加异常处理
-    difficulty: 3
-    estimatedTime: 6
-  - id: ex-webstorage-06
-    type: code-fix
-    cognitiveLevel: evaluate
-    question: 以下跨标签页同步函数无法在所有浏览器中正常工作，且未处理 Storage 事件。请修复。
-    buggyCode: |
-      function syncState(state) {
-        localStorage.setItem('appState', JSON.stringify(state));
-      }
-      window.addEventListener('storage', function (e) {
-        if (e.key === 'appState') {
-          updateUI(e.newValue);
-        }
-      });
-    fixedCode: |
-      function syncState(state) {
-        try {
-          localStorage.setItem('appState', JSON.stringify(state));
-          // 同标签页 storage 事件不触发，需手动派发
-          window.dispatchEvent(new StorageEvent('storage', {
-            key: 'appState',
-            newValue: JSON.stringify(state),
-          }));
-        } catch (e) {
-          console.error('Storage failed:', e);
-        }
-      }
-      window.addEventListener('storage', function (e) {
-        if (e.key === 'appState' && e.newValue !== null) {
-          try {
-            const state = JSON.parse(e.newValue);
-            updateUI(state);
-          } catch (e) {
-            console.error('Parse failed:', e);
-          }
-        }
-      });
-    errorDescription: 原实现仅在 setItem 时调用，不会触发本标签页的 storage 事件（storage 事件仅在相同源的其他标签页触发）。修复后手动派发 StorageEvent，并对 JSON 解析添加异常处理。
-    language: javascript
-    answer: 手动派发 StorageEvent 并添加异常处理
-    difficulty: 4
-    estimatedTime: 8
-  - id: ex-webstorage-07
-    type: open-ended
-    cognitiveLevel: create
-    question: 你正在设计一个离线优先的笔记应用，要求支持离线编辑、跨设备同步、冲突解决。请论述如何组合使用 Service Worker、Cache API、IndexedDB、localStorage，包括：(1) 离线缓存策略；(2) 数据同步模型（last-write-wins vs CRDT）；(3) 冲突检测与解决；(4) 存储容量管理；(5) 数据迁移与版本升级；(6) 隐私与安全考虑。给出架构设计与示例代码。
-    keyPoints:
-      - 提出分层存储架构（Cache API 缓存资源、IndexedDB 存储数据、localStorage 存配置）
-      - 论述 Service Worker 拦截网络请求实现离线优先
-      - 处理冲突解决的两种策略（LWW 简单但易丢数据，CRDT 复杂但保证收敛）
-      - 给出存储配额检测与清理策略（navigator.storage.estimate）
-      - 设计 IndexedDB schema 版本升级流程
-      - 处理敏感数据加密（WebCrypto API）
-    answer: 开放性论述题，需覆盖上述关键点
-    minWords: 500
-    difficulty: 5
-    estimatedTime: 35
 references:
   - type: standard
     authors:
@@ -275,6 +107,7 @@ lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 50
 ---
+
 # JavaScript Web 存储 API
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -300,24 +133,9 @@ estimatedReadingTime: 50
 
 ---
 
-## 1. 学习目标（Bloom 分类法）
+## 1. 历史动机
 
-本篇严格遵循 Bloom 修订版认知层次框架（Anderson & Krathwohl, 2001），按由低到高六个层次组织学习目标：
-
-| Bloom 层次 | 学习目标 | 对应章节 |
-| ---------- | -------- | -------- |
-| Remember（记忆） | 复述四种存储机制的容量、生命周期与 API | 第 2 章 |
-| Understand（理解） | 解释同源策略、Cookie 安全属性、Storage 事件机制 | 第 3 章 |
-| Apply（应用） | 编写生产级存储工具库、跨标签页同步、TTL 过期 | 第 4-5 章 |
-| Analyze（分析） | 对比各机制差异，识别适用场景 | 第 6 章 |
-| Evaluate（评价） | 评估安全风险，给出防御策略 | 第 8 章 |
-| Create（创造） | 设计离线优先应用存储架构 | 第 10 章 |
-
----
-
-## 2. 历史动机
-
-### 2.1 Web 存储演进时间线
+### 1.1 Web 存储演进时间线
 
 Web 存储机制经历了从「状态保持」到「离线优先」的长期演进：
 
@@ -343,7 +161,7 @@ Web 存储机制经历了从「状态保持」到「离线优先」的长期演�
 | 2024 | Storage Access API 标准化，跨站存储访问 | W3C |
 | 2026 | IndexedDB 3.0 推荐标准，原生 Promise API | W3C |
 
-### 2.2 状态保持的痛点
+### 1.2 状态保持的痛点
 
 在 Cookie 之前，Web 应用面临严重的状态保持问题：
 
@@ -381,7 +199,7 @@ const cookies = document.cookie.split('; ').reduce((acc, pair) => {
 
 Web Storage 与 IndexedDB 的引入，正是为了解决上述痛点——**让浏览器具备真正的客户端存储能力**。
 
-### 2.3 关键人物与原始规范
+### 1.3 关键人物与原始规范
 
 Web 存储规范的奠基者包括：
 
@@ -393,7 +211,7 @@ Web 存储规范的奠基者包括：
 
 - **Alex Russell**：Google Chrome 团队工程师，2013 年提出 Service Worker 概念，将离线优先（offline-first）理念引入 Web 平台。
 
-### 2.4 存储机制概览
+### 1.4 存储机制概览
 
 下表对比四种主要存储机制：
 
@@ -404,7 +222,7 @@ Web 存储规范的奠基者包括：
 | sessionStorage | 5-10MB | 标签页关闭 | 键值对 | 否 | 否 |
 | IndexedDB | 数百MB-数GB | 永久 | NoSQL 事务 | 否 | 是 |
 
-### 2.5 与其他 Web API 的关系
+### 1.5 与其他 Web API 的关系
 
 Web 存储与以下 API 协同工作：
 
@@ -419,9 +237,9 @@ Web 存储与以下 API 协同工作：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 同源策略
+### 2.1 同源策略
 
 Web 存储遵循**同源策略（Same-Origin Policy）**，相同源的页面共享存储，不同源相互隔离。源（origin）由三元组定义：
 
@@ -435,7 +253,7 @@ $$
 \text{origin}(u_1) = \text{origin}(u_2) \iff \text{scheme}_1 = \text{scheme}_2 \land \text{host}_1 = \text{host}_2 \land \text{port}_1 = \text{port}_2
 $$
 
-### 3.2 存储隔离模型
+### 2.2 存储隔离模型
 
 浏览器存储采用分层隔离模型：
 
@@ -449,7 +267,7 @@ $$
 \text{Storage}_{\text{origin}} = \text{Cookie}_{\text{origin}} \cup \text{LocalStorage}_{\text{origin}} \cup \text{SessionStorage}_{\text{origin}} \cup \text{IndexedDB}_{\text{origin}}
 $$
 
-### 3.3 Cookie 形式定义
+### 2.3 Cookie 形式定义
 
 Cookie 是 (name, value, attributes) 三元组：
 
@@ -466,7 +284,7 @@ $$
 - `HttpOnly`：JavaScript 不可访问
 - `SameSite`：跨站发送策略（Strict / Lax / None）
 
-### 3.4 localStorage 形式语义
+### 2.4 localStorage 形式语义
 
 localStorage 是持久的键值存储：
 
@@ -487,7 +305,7 @@ v & \text{if } (k, v) \in \text{localStorage} \\
 \end{cases}
 $$
 
-### 3.5 sessionStorage 浏览上下文隔离
+### 2.5 sessionStorage 浏览上下文隔离
 
 sessionStorage 在浏览上下文（browsing context）级别隔离：
 
@@ -497,7 +315,7 @@ $$
 
 即使两个标签页同源，若分属不同浏览上下文（如新标签页、新窗口），其 sessionStorage 相互隔离。
 
-### 3.6 IndexedDB 事务模型
+### 2.6 IndexedDB 事务模型
 
 IndexedDB 采用 ACID 事务模型：
 
@@ -513,7 +331,7 @@ $$
 
 事务满足原子性：所有操作要么全部成功，要么全部回滚。
 
-### 3.7 Storage 事件机制
+### 2.7 Storage 事件机制
 
 当 localStorage 被修改时，相同源的其他标签页会收到 `storage` 事件：
 
@@ -525,9 +343,9 @@ $$
 
 ---
 
-## 4. Cookie 详解
+## 3. Cookie 详解
 
-### 4.1 Cookie 基础操作
+### 3.1 Cookie 基础操作
 
 ```javascript
 /**
@@ -594,7 +412,7 @@ console.log(getCookie('user'));  // 'Alice'
 deleteCookie('user');
 ```
 
-### 4.2 Cookie 安全属性
+### 3.2 Cookie 安全属性
 
 | 属性 | 作用 | 推荐值 |
 | ---- | ---- | ------ |
@@ -605,7 +423,7 @@ deleteCookie('user');
 | SameSite=None | 允许跨站发送 | 需配合 Secure，仅第三方 Cookie |
 | Domain | 指定可见域 | 谨慎使用，避免过宽 |
 
-### 4.3 SameSite 属性详解
+### 3.3 SameSite 属性详解
 
 ```javascript
 // SameSite=Strict：完全禁止跨站发送
@@ -624,7 +442,7 @@ setCookie('tracking', 'id', { sameSite: 'None', secure: true });
 // 第三方追踪、嵌入式应用场景
 ```
 
-### 4.4 Cookie 编码与特殊字符
+### 3.4 Cookie 编码与特殊字符
 
 ```javascript
 // Cookie 值中不能包含分号、逗号、空格等特殊字符
@@ -644,7 +462,7 @@ const data = decodeURIComponent(cookies.data);
 const json = JSON.parse(decodeURIComponent(cookies.json));
 ```
 
-### 4.5 第三方 Cookie
+### 3.5 第三方 Cookie
 
 第三方 Cookie 指当前页面引用的**非同源**域设置的 Cookie：
 
@@ -664,9 +482,9 @@ const json = JSON.parse(decodeURIComponent(cookies.json));
 
 ---
 
-## 5. localStorage 与 sessionStorage
+## 4. localStorage 与 sessionStorage
 
-### 5.1 基础 API
+### 4.1 基础 API
 
 ```javascript
 // localStorage 基础操作
@@ -687,7 +505,7 @@ sessionStorage.setItem('temp', 'value');
 sessionStorage.getItem('temp');
 ```
 
-### 5.2 JSON 序列化工具
+### 4.2 JSON 序列化工具
 
 ```javascript
 /**
@@ -772,7 +590,7 @@ const user = jsonStorage.get('user', { name: '', age: 0 });
 console.log(user);  // { name: 'Alice', age: 30 }
 ```
 
-### 5.3 TTL 过期机制
+### 4.3 TTL 过期机制
 
 ```javascript
 /**
@@ -843,7 +661,7 @@ ttlStorage.set('apiCache', { data: '...' }, 5 * 60 * 1000);
 const cached = ttlStorage.get('apiCache');
 ```
 
-### 5.4 命名空间隔离
+### 4.4 命名空间隔离
 
 ```javascript
 /**
@@ -916,7 +734,7 @@ authStorage.clearNamespace();
 console.log(cacheStorage.get('users')); // 依然存在
 ```
 
-### 5.5 跨标签页同步
+### 4.5 跨标签页同步
 
 ```javascript
 /**
@@ -995,7 +813,7 @@ sync.subscribe((state, event) => {
 sync.broadcast('来自标签页 B 的问候');
 ```
 
-### 5.6 容量检测与配额管理
+### 4.6 容量检测与配额管理
 
 ```javascript
 /**
@@ -1078,9 +896,9 @@ async function checkStorage() {
 
 ---
 
-## 6. 存储机制对比
+## 5. 存储机制对比
 
-### 6.1 综合对比表
+### 5.1 综合对比表
 
 | 维度 | Cookie | localStorage | sessionStorage | IndexedDB |
 | ---- | ------ | ------------ | --------------- | --------- |
@@ -1095,7 +913,7 @@ async function checkStorage() {
 | Web Worker 访问 | 否 | 否 | 否 | 是 |
 | Service Worker 访问 | 否 | 否 | 否 | 是 |
 
-### 6.2 性能对比
+### 5.2 性能对比
 
 ```javascript
 // 性能测试：写入 10000 条数据
@@ -1135,7 +953,7 @@ function performanceTest() {
 }
 ```
 
-### 6.3 适用场景对比
+### 5.3 适用场景对比
 
 | 场景 | 推荐机制 | 原因 |
 | ---- | -------- | ---- |
@@ -1150,9 +968,9 @@ function performanceTest() {
 
 ---
 
-## 7. 实战应用
+## 6. 实战应用
 
-### 7.1 表单自动保存
+### 6.1 表单自动保存
 
 ```javascript
 /**
@@ -1238,7 +1056,7 @@ class FormAutoSave {
 const autoSave = new FormAutoSave('myForm', { interval: 3000 });
 ```
 
-### 7.2 离线数据缓存
+### 6.2 离线数据缓存
 
 ```javascript
 /**
@@ -1370,7 +1188,7 @@ await cache.set('users', [{ name: 'Alice' }], 5 * 60 * 1000);
 const users = await cache.get('users');
 ```
 
-### 7.3 多标签页登录状态同步
+### 6.3 多标签页登录状态同步
 
 ```javascript
 /**
@@ -1439,7 +1257,7 @@ const auth = new AuthSync();
 // 在任何标签页调用 auth.logout()，所有标签页都会同步登出
 ```
 
-### 7.4 主题切换持久化
+### 6.4 主题切换持久化
 
 ```javascript
 /**
@@ -1519,9 +1337,9 @@ themeManager.setTheme('dark');
 
 ---
 
-## 8. 安全考量
+## 7. 安全考量
 
-### 8.1 XSS 攻击与防御
+### 7.1 XSS 攻击与防御
 
 XSS（跨站脚本攻击）可读取 localStorage 与 sessionStorage：
 
@@ -1542,7 +1360,7 @@ XSS（跨站脚本攻击）可读取 localStorage 与 sessionStorage：
 // Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com
 ```
 
-### 8.2 CSRF 攻击与防御
+### 7.2 CSRF 攻击与防御
 
 CSRF（跨站请求伪造）利用 Cookie 自动发送的特性：
 
@@ -1573,7 +1391,7 @@ fetch('/api/data', {
 // 服务器端检查请求来源
 ```
 
-### 8.3 Cookie 安全配置最佳实践
+### 7.3 Cookie 安全配置最佳实践
 
 ```javascript
 // 会话 Cookie：最高安全级别
@@ -1603,7 +1421,7 @@ setCookie('tracking', trackingId, {
 });
 ```
 
-### 8.4 存储数据加密
+### 7.4 存储数据加密
 
 ```javascript
 /**
@@ -1693,9 +1511,9 @@ const secret = await secureStorage.get('secret');
 
 ---
 
-## 9. 常见陷阱
+## 8. 常见陷阱
 
-### 9.1 localStorage 容量超限
+### 8.1 localStorage 容量超限
 
 ```javascript
 // 错误：未捕获 QuotaExceededError
@@ -1729,7 +1547,7 @@ function safeSetItem(key, value) {
 }
 ```
 
-### 9.2 JSON 解析失败
+### 8.2 JSON 解析失败
 
 ```javascript
 // 错误：未处理 JSON 解析异常
@@ -1747,7 +1565,7 @@ function safeParse(str, defaultValue = null) {
 const user = safeParse(localStorage.getItem('user'));
 ```
 
-### 9.3 sessionStorage 误解
+### 8.3 sessionStorage 误解
 
 ```javascript
 // 误解：sessionStorage 在所有标签页共享
@@ -1760,7 +1578,7 @@ const user = safeParse(localStorage.getItem('user'));
 // 实际：iframe 是独立浏览上下文，sessionStorage 隔离
 ```
 
-### 9.4 Cookie 路径误解
+### 8.4 Cookie 路径误解
 
 ```javascript
 // 误解：Path=/app 限制 Cookie 仅在 /app 路径下可访问
@@ -1776,7 +1594,7 @@ document.cookie = 'user=; Max-Age=0; Path=/';
 document.cookie = 'user=; Max-Age=0; Path=/app';
 ```
 
-### 9.5 storage 事件不触发
+### 8.5 storage 事件不触发
 
 ```javascript
 // 误解：localStorage.setItem 会触发本标签页的 storage 事件
@@ -1800,7 +1618,7 @@ function setItemWithEvent(key, value) {
 }
 ```
 
-### 9.6 IndexedDB 事务自动关闭
+### 8.6 IndexedDB 事务自动关闭
 
 ```javascript
 // 错误：在事务完成后操作
@@ -1829,7 +1647,7 @@ function performTransaction(db, callback) {
 }
 ```
 
-### 9.7 隐私模式存储限制
+### 8.7 隐私模式存储限制
 
 ```javascript
 // 隐私模式下 localStorage 可能抛出异常或配额为 0
@@ -1859,9 +1677,9 @@ const memoryStorage = {
 
 ---
 
-## 10. 工程实践
+## 9. 工程实践
 
-### 10.1 存储抽象层设计
+### 9.1 存储抽象层设计
 
 ```javascript
 /**
@@ -1937,7 +1755,7 @@ class UnifiedStorage {
 }
 ```
 
-### 10.2 TypeScript 类型支持
+### 9.2 TypeScript 类型支持
 
 ```typescript
 interface StorageItem<T> {
@@ -1971,7 +1789,7 @@ storage.set('theme', 'dark');
 // storage.set('theme', 'blue');  // 类型错误
 ```
 
-### 10.3 数据迁移与版本升级
+### 9.3 数据迁移与版本升级
 
 ```javascript
 /**
@@ -2037,7 +1855,7 @@ migrator.addMigration(1, 2, (storage) => {
 await migrator.migrate(2);
 ```
 
-### 10.4 单元测试
+### 9.4 单元测试
 
 ```javascript
 // 使用 Jest 测试存储工具
@@ -2090,7 +1908,7 @@ describe('ttlStorage', () => {
 });
 ```
 
-### 10.5 ESLint 规则
+### 9.5 ESLint 规则
 
 ```json
 {
@@ -2109,9 +1927,9 @@ describe('ttlStorage', () => {
 
 ---
 
-## 11. 案例研究
+## 10. 案例研究
 
-### 11.1 Reddit 的离线缓存策略
+### 10.1 Reddit 的离线缓存策略
 
 Reddit 使用 Service Worker + Cache API + IndexedDB 实现离线浏览：
 
@@ -2151,7 +1969,7 @@ async function fetchWithCache(url) {
 }
 ```
 
-### 11.2 Twitter 的 PWA 存储
+### 10.2 Twitter 的 PWA 存储
 
 Twitter PWA 使用 IndexedDB 存储时间线数据，实现即时加载：
 
@@ -2196,7 +2014,7 @@ class TimelineCache {
 }
 ```
 
-### 11.3 Notion 的协同编辑
+### 10.3 Notion 的协同编辑
 
 Notion 使用 IndexedDB 缓存文档，支持离线编辑与冲突解决：
 
@@ -2230,7 +2048,7 @@ class DocumentCache {
 }
 ```
 
-### 11.4 GitHub 的代码搜索缓存
+### 10.4 GitHub 的代码搜索缓存
 
 GitHub 使用 IndexedDB 缓存搜索结果，提升重复查询速度：
 
@@ -2250,7 +2068,7 @@ class SearchCache {
 }
 ```
 
-### 11.5 Google Docs 的协同同步
+### 10.5 Google Docs 的协同同步
 
 Google Docs 使用 IndexedDB + Operational Transformation 实现协同编辑：
 
@@ -2289,7 +2107,7 @@ class OperationLog {
 
 ## 知识讲解与要点分析（原习题）
 
-### 12.1 习题详解
+### 11.1 习题详解
 
 本节提供 7 道习题，覆盖填空、选择、代码修正、开放性问题四类题型，对应 Bloom 六个认知层次。
 
@@ -2361,7 +2179,7 @@ class OperationLog {
 
 ---
 
-## 13. 参考文献
+## 12. 参考文献
 
 1. Hickson, I. 2016. *Web Storage (Second Edition) - W3C Recommendation*. W3C. Retrieved from https://www.w3.org/TR/webstorage/
 
@@ -2383,28 +2201,28 @@ class OperationLog {
 
 ---
 
-## 14. 延伸阅读
+## 13. 延伸阅读
 
-### 14.1 官方规范与文档
+### 13.1 官方规范与文档
 
 - **Web Storage Specification**：https://www.w3.org/TR/webstorage/ —— W3C 官方规范
 - **Indexed Database API 3.0**：https://www.w3.org/TR/IndexedDB-3/ —— IndexedDB 最新规范
 - **Storage Standard**：https://storage.spec.whatwg.org/ —— WHATWG 存储标准
 - **Service Worker API**：https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
 
-### 14.2 经典著作
+### 13.2 经典著作
 
 - **《JavaScript: The Definitive Guide》**（David Flanagan, 2020）：第 15 章深入讲解 Web 存储
 - **《High Performance Browser Networking》**（Ilya Grigorik, 2013）：第 11 章讲解 Cookie 与性能
 - **《Programming JavaScript Applications》**（Eric Elliott, 2014）：函数式存储抽象
 
-### 14.3 在线教程
+### 13.3 在线教程
 
 - **web.dev: Storage for the web**：https://web.dev/articles/storage-for-the-web —— Google 团队权威指南
 - **MDN Web Storage API**：https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
 - **Google Developers: Cookie Security**：https://developers.google.com/web/updates/2020/02/cookie-samesite
 
-### 14.4 相关主题
+### 13.4 相关主题
 
 - **Service Worker**：离线优先的核心技术
 - **Cache API**：专为 Response 对象设计的缓存
@@ -2413,7 +2231,7 @@ class OperationLog {
 - **Federated Credential Management API**：联邦认证替代第三方 Cookie
 - **Topics API**：基于兴趣的广告替代方案
 
-### 14.5 学术论文
+### 13.5 学术论文
 
 - **Barth, A. 2011. HTTP State Management Mechanism**. IETF RFC 6265. —— Cookie 协议的权威定义
 - **Jackson, C. and Barth, A. 2008. Beware of Finer-Grained Origins**. W2SP 2008. —— 同源策略的细化研究
@@ -2421,9 +2239,9 @@ class OperationLog {
 
 ---
 
-## 15. 附录
+## 14. 附录
 
-### 15.1 语法速查表
+### 14.1 语法速查表
 
 ```javascript
 // Cookie
@@ -2454,7 +2272,7 @@ navigator.storage.estimate().then(estimate => {
 navigator.storage.persist();
 ```
 
-### 15.2 兼容性表
+### 14.2 兼容性表
 
 | 特性 | Chrome | Firefox | Safari | Edge |
 | ---- | ------ | ------- | ------ | ---- |
@@ -2465,7 +2283,7 @@ navigator.storage.persist();
 | navigator.storage.estimate | 61+ | 57+ | 15.2+ | 79+ |
 | navigator.storage.persist | 55+ | 57+ | 15.2+ | 79+ |
 
-### 15.3 存储容量参考
+### 14.3 存储容量参考
 
 | 浏览器 | localStorage | sessionStorage | IndexedDB | Cache API |
 | ------ | ------------ | --------------- | --------- | --------- |
@@ -2474,7 +2292,7 @@ navigator.storage.persist();
 | Safari | 5MB/源 | 5MB/源 | 1GB/源 | 1GB/源 |
 | Edge | 10MB/源 | 10MB/源 | 60%磁盘 | 60%磁盘 |
 
-### 15.4 安全配置速查
+### 14.4 安全配置速查
 
 ```javascript
 // 会话 Cookie（最高安全）
@@ -2503,7 +2321,7 @@ jsonStorage.set('language', 'zh-CN');
 await cacheDB.set('offlineData', data, 24 * 3600 * 1000);
 ```
 
-### 15.5 存储抽象层架构
+### 14.5 存储抽象层架构
 
 ```mermaid
 flowchart TD
@@ -2514,7 +2332,7 @@ flowchart TD
     Unified --> IDB[IndexedDB<br/>结构化、事务型]
 ```
 
-### 15.6 术语表
+### 14.6 术语表
 
 | 术语 | 英文 | 定义 |
 | ---- | ---- | ---- |
@@ -2529,13 +2347,13 @@ flowchart TD
 | 持久化存储 | Persistent Storage | 不会被浏览器自动清除的存储 |
 | 存储事件 | Storage Event | localStorage 变化时触发的事件 |
 
-### 15.7 修订记录
+### 14.7 修订记录
 
 | 日期 | 版本 | 修订内容 | 修订人 |
 | ---- | ---- | -------- | ------ |
 | 2026-07-20 | 1.0 | 初始金标准版本 | FANDEX Content Engineering Team |
 
-### 15.8 致谢
+### 14.8 致谢
 
 本篇文档参考了以下资源：
 
@@ -2545,7 +2363,7 @@ flowchart TD
 - web.dev：Google 团队的最佳实践
 - Jake Archibald 的博客：深入分析存储策略
 
-### 15.9 学习路径
+### 14.9 学习路径
 
 | 阶段 | 主题 | 推荐资源 |
 | ---- | ---- | -------- |
@@ -2555,7 +2373,7 @@ flowchart TD
 | 实战 | 离线优先应用 | web.dev PWA 课程 |
 | 深入 | Service Worker 与 Cache API | Google Developers PWA |
 
-### 15.10 教学建议
+### 14.10 教学建议
 
 **面向不同学习者的教学策略：**
 
@@ -2570,7 +2388,7 @@ flowchart TD
 3. 不讲解存储配额限制，导致生产环境超限崩溃
 4. 过度依赖 localStorage 存储敏感数据，引发安全问题
 
-### 15.11 FAQ
+### 14.11 FAQ
 
 **Q1: localStorage 与 IndexedDB 该选哪个？**
 
@@ -2592,7 +2410,7 @@ A: 三步策略：(1) 捕获 QuotaExceededError；(2) 清理过期或低优先�
 
 A: Chrome 80+ 要求 SameSite=None 必须配合 Secure，否则被拒绝。部分旧浏览器（如 Safari 12）不支持 SameSite=None，会将其视为 SameSite=Strict。需根据目标用户群选择策略。
 
-### 15.12 总结
+### 14.12 总结
 
 Web 存储 API 是现代 Web 应用不可或缺的基础设施，从 1994 年的 Cookie 到 2026 年的 IndexedDB 3.0，经历了 30 余年的演进。
 
@@ -2615,9 +2433,9 @@ Web 存储 API 是现代 Web 应用不可或缺的基础设施，从 1994 年的
 
 ---
 
-## 16. 实战项目：构建离线优先笔记应用
+## 15. 实战项目：构建离线优先笔记应用
 
-### 16.1 项目目标
+### 15.1 项目目标
 
 构建一个支持离线编辑、跨设备同步、冲突解决的笔记应用：
 
@@ -2626,7 +2444,7 @@ Web 存储 API 是现代 Web 应用不可或缺的基础设施，从 1994 年的
 3. localStorage 存储用户偏好与元数据
 4. 后台同步机制，网络恢复时自动推送
 
-### 16.2 完整实现
+### 15.2 完整实现
 
 ```javascript
 /**
@@ -2982,7 +2800,7 @@ async function main() {
 main();
 ```
 
-### 16.3 项目总结
+### 15.3 项目总结
 
 本项目展示了离线优先应用的完整存储架构：
 
@@ -2995,9 +2813,9 @@ main();
 
 ---
 
-## 17. 与未来 Web 标准的关联
+## 16. 与未来 Web 标准的关联
 
-### 17.1 Storage Access API
+### 16.1 Storage Access API
 
 允许第三方 iframe 请求用户授权访问其第一方存储：
 
@@ -3011,7 +2829,7 @@ if (document.requestStorageAccess) {
 }
 ```
 
-### 17.2 Federated Credential Management API
+### 16.2 Federated Credential Management API
 
 替代第三方 Cookie 的联邦认证方案：
 
@@ -3027,7 +2845,7 @@ const fedcm = await navigator.credentials.get({
 });
 ```
 
-### 17.3 Topics API
+### 16.3 Topics API
 
 基于兴趣的广告替代方案，不依赖跨站追踪：
 
@@ -3037,7 +2855,7 @@ const topics = await document.browsingTopics();
 // 返回 [{ topic: 1, version: 'v1' }, ...]
 ```
 
-### 17.4 First-Party Sets
+### 16.4 First-Party Sets
 
 同主体站点共享存储：
 
@@ -3049,7 +2867,7 @@ const topics = await document.browsingTopics();
 }
 ```
 
-### 17.5 对 Web 存储的影响
+### 16.5 对 Web 存储的影响
 
 未来 Web 存储的演进方向：
 

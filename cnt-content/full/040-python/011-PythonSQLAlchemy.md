@@ -21,55 +21,14 @@ prerequisites:
   - python/类型注解与mypy
 ---
 
+
 # Python 与 SQLAlchemy（Python & SQLAlchemy）
 
 > "SQLAlchemy is not an ORM, it's a database toolkit that happens to include an ORM." —— Michael Bayer, SQLAlchemy Creator
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节按 Bloom 认知层次（Bloom's Taxonomy）逐级给出可观察、可测量的学习目标。完成本节后，学习者应能：
-
-### 1.1 记忆层（Remember）
-
-- **R1**：准确陈述 SQLAlchemy 的双层架构——Core（SQL 表达式语言）与 ORM（对象关系映射），并说明二者的依赖关系（ORM 构建于 Core 之上）。
-- **R2**：列出 SQLAlchemy 2.0 的核心组件：`Engine`、`Connection`、`Session`、`DeclarativeBase`、`Mapped`、`mapped_column`、`MetaData`、`Table`、`select`、`Result`，并能说明每个组件的职责。
-- **R3**：背诵 Unit of Work（工作单元）模式的三个核心要素：Identity Map（身份映射）、Change Tracking（变更追踪）、Transaction Coordination（事务协调）。
-
-### 1.2 理解层（Understand）
-
-- **U1**：解释 Engine 与 Connection 的区别——Engine 是连接池与方言（Dialect）的持有者，Connection 是单次数据库会话的执行上下文。
-- **U2**：阐述 Session 与 Connection 的关系——Session 是 ORM 层的工作单元，内部持有一个或多个 Connection，自动管理对象状态与数据库同步。
-- **U3**：说明 ORM 对象的四种状态——Transient（瞬态）、Pending（待持久化）、Persistent（持久化）、Detached（游离），并能画出状态转换图。
-
-### 1.3 应用层（Apply）
-
-- **A1**：使用 SQLAlchemy 2.0 声明式映射（`DeclarativeBase` + `Mapped` + `mapped_column`）定义一对多、多对多关系模型，正确配置 `relationship` 与 `back_populates`。
-- **A2**：使用 `select` 构造器编写复杂查询：JOIN、子查询、聚合、窗口函数、CTE（Common Table Expression）、EXISTS 子查询。
-- **A3**：使用 `selectinload`、`joinedload`、`subqueryload`、`raiseload` 解决 N+1 查询问题，并能说明四种加载策略的 SQL 生成机制。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：分析 Lazy Loading（懒加载）在异步 ORM（`AsyncSession`）下的致命问题——`await` 语义与同步描述符冲突，必须改用 `selectinload` 或显式 `await session.refresh(..., attribute_names=[...])`。
-- **An2**：解构 Session 的"事务边界"——`session.begin()` vs `session.commit()` vs `session.flush()` vs `session.rollback()` 的语义差异与典型误用。
-- **An3**：剖析 Detached 实例的陷阱——`DetachedInstanceError` 的触发条件、`expire_on_commit` 的影响、`session.merge()` 的重新附着机制。
-
-### 1.5 评价层（Evaluate）
-
-- **E1**：评价"何时用 Core、何时用 ORM、何时混用"的决策矩阵，考虑查询复杂度、性能要求、可维护性、团队熟悉度等维度。
-- **E2**：审查一段使用 SQLAlchemy 的生产代码，识别潜在的 N+1 查询、Session 泄漏、Detached 实例、事务嵌套、连接池耗尽等问题。
-- **E3**：对比 SQLAlchemy ORM 与 Django ORM、Peewee、Tortoise ORM、SQLModel、Prisma（Python 绑定）在架构、性能、生态、类型安全上的优劣。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计一个支持多租户（multi-tenant）的 SQLAlchemy 会话工厂，根据请求上下文动态切换数据库连接（schema-level 或 database-level 隔离）。
-- **C2**：实现一个基于 SQLAlchemy 事件系统（`event.listen`）的审计日志中间件，自动记录所有 INSERT/UPDATE/DELETE 操作的前后状态。
-- **C3**：构建一个"软删除 + 版本控制"混入（mixin），通过 `where` 子句过滤已删除记录，并通过 `transaction` 表记录每次修改的历史快照。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 SQL 与对象世界的鸿沟
+### 1.1 SQL 与对象世界的鸿沟
 
 关系型数据库（RDBMS）与面向对象编程语言（OOPL）之间存在著名的"对象关系阻抗失配"（Object-Relational Impedance Mismatch）。1990 年代后期，随着 Java、Python 等 OO 语言的兴起，开发者急需一种工具弥合这一鸿沟。
 
@@ -85,7 +44,7 @@ prerequisites:
 | 集合 | 表 + 集合运算 | `list`、`set`、`dict` |
 | 事务 | ACID | 通常无原生支持 |
 
-### 2.2 ORM 的早期探索
+### 1.2 ORM 的早期探索
 
 **1995 年：DAO（Data Access Object）模式**
 Sun Microsystems 在 J2EE 蓝图中提出 DAO 模式，将数据库访问封装在独立对象中，但开发者仍需手写大量 SQL 与结果集映射代码。
@@ -102,7 +61,7 @@ Fowler 系统化定义了三种数据库访问模式：
 **2003 年：Rails Active Record**
 David Heinemeier Hansson 在 Ruby on Rails 中推广 Active Record 模式——模型类直接继承 `ActiveRecord::Base`，类即表，实例即行，属性即列。Active Record 简单直接，但与领域模型解耦困难。
 
-### 2.3 SQLAlchemy 的诞生
+### 1.3 SQLAlchemy 的诞生
 
 **2005 年 5 月：SQLAlchemy 0.1**
 Michael Bayer（Twitter: @zzzeek）发布 SQLAlchemy 0.1。Bayer 的设计哲学与 Active Record 截然不同：
@@ -117,7 +76,7 @@ Michael Bayer（Twitter: @zzzeek）发布 SQLAlchemy 0.1。Bayer 的设计哲学
 4. **显式优于隐式**：查询使用显式 `select` 构造器，而非 Django ORM 的"链式查询管理器"。
 5. **方言抽象**：通过 Dialect 层抽象不同数据库的差异，支持 PostgreSQL、MySQL、SQLite、Oracle、SQL Server 等。
 
-### 2.4 SQLAlchemy 的演化路径
+### 1.4 SQLAlchemy 的演化路径
 
 **SQLAlchemy 1.x（2005-2020）**：
 
@@ -144,7 +103,7 @@ Michael Bayer（Twitter: @zzzeek）发布 SQLAlchemy 0.1。Bayer 的设计哲学
 - 性能优化，减少反射开销。
 - 异步驱动生态完善（`asyncpg`、`aiosqlite`、`asyncmy`）。
 
-### 2.5 与其他 ORM 的演化对比
+### 1.5 与其他 ORM 的演化对比
 
 | ORM | 首次发布 | 模式 | 类型安全 | 异步支持 | 主要生态 |
 |-----|----------|------|----------|----------|----------|
@@ -159,9 +118,9 @@ Michael Bayer（Twitter: @zzzeek）发布 SQLAlchemy 0.1。Bayer 的设计哲学
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ORM 的形式化定义
+### 2.1 ORM 的形式化定义
 
 **定义 3.1（对象关系映射）**：给定对象模型 $O = (C, A, R)$（其中 $C$ 为类集合，$A$ 为属性集合，$R$ 为关系集合）与关系模型 $R = (T, F, K)$（其中 $T$ 为表集合，$F$ 为字段集合，$K$ 为键/外键集合），ORM 是一个双射函数 $\phi: O \leftrightarrow R$，满足：
 
@@ -175,7 +134,7 @@ $$\forall r \in R, \exists k \in K, \phi(r) = k$$
 2. **标识不变量**：$c$ 的主键等于 $t$ 的主键。
 3. **关系不变量**：$c_1$ 引用 $c_2$ 等价于 $t_1$ 的外键引用 $t_2$ 的主键。
 
-### 3.2 Unit of Work 模式的形式化定义
+### 2.2 Unit of Work 模式的形式化定义
 
 **定义 3.2（Unit of Work）**：给定会话 $S$，对象集合 $O = \{o_1, o_2, \dots, o_n\}$，$S$ 维护以下四个映射：
 
@@ -190,7 +149,7 @@ $$\text{commit}(S) = \text{flush}(S.\text{new} \cup S.\text{dirty} \cup S.\text{
 
 其中 $\text{flush}$ 将变更同步到数据库（执行 INSERT/UPDATE/DELETE），$\text{transaction.commit}$ 提交事务。
 
-### 3.3 Identity Map 的形式化定义
+### 2.3 Identity Map 的形式化定义
 
 **定义 3.3（Identity Map）**：给定会话 $S$ 与类 $C$，主键 $pk$，Identity Map 是一个函数：
 
@@ -200,7 +159,7 @@ $$\text{idmap}: (C, pk) \to o \cup \{\bot\}$$
 
 Identity Map 保证同一会话内，对同一主键的多次查询返回同一对象实例（`x is y` 为真）。
 
-### 3.4 对象状态机的形式化定义
+### 2.4 对象状态机的形式化定义
 
 **定义 3.4（ORM 对象状态）**：给定对象 $o$ 与会话 $S$，$o$ 的状态 $\sigma(o, S) \in \{\text{Transient}, \text{Pending}, \text{Persistent}, \text{Deleted}, \text{Detached}\}$，状态转换由以下规则定义：
 
@@ -222,7 +181,7 @@ $$\sigma(o, S) = \begin{cases}
 - `session.close()`：所有 $\text{Persistent} \to \text{Detached}$
 - `session.merge(o)`：$\text{Detached} \to \text{Persistent}$（创建新实例）
 
-### 3.5 懒加载的形式化定义
+### 2.5 懒加载的形式化定义
 
 **定义 3.5（懒加载）**：给定持久化对象 $o$ 与关系属性 $r$，$r$ 的懒加载定义为：
 
@@ -237,9 +196,9 @@ o.r & \text{otherwise}
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 Identity Map 的一致性保证
+### 3.1 Identity Map 的一致性保证
 
 **命题 4.1**：在同一会话 $S$ 中，对同一主键 $pk$ 的多次查询返回同一对象实例。
 
@@ -261,7 +220,7 @@ o.r & \text{otherwise}
 
 **推论 4.1**：Identity Map 既是性能优化（避免重复查询），也是一致性保证（同一会话内对象状态同步）。
 
-### 4.2 N+1 查询问题的形式化分析
+### 3.2 N+1 查询问题的形式化分析
 
 **命题 4.2**：设查询 $N$ 个 $C$ 类对象，每个对象访问关系属性 $r$，若 $r$ 配置为懒加载，则总查询数为 $N + 1$。
 
@@ -275,7 +234,7 @@ o.r & \text{otherwise}
 
 **推论 4.3**：使用 `joinedload` 可将总查询数降为 1（JOIN 查询），但可能产生笛卡尔积，需配合 `unique()` 调用。
 
-### 4.3 Unit of Work 的事务原子性
+### 3.3 Unit of Work 的事务原子性
 
 **命题 4.3**：Unit of Work 模式保证会话内所有变更在 `commit()` 时原子提交——要么全部成功，要么全部回滚。
 
@@ -290,7 +249,7 @@ o.r & \text{otherwise}
 
 若 `flush()` 成功但 `transaction.commit()` 失败（如网络中断），数据库事务在数据库端回滚，但 $S$ 的内存状态可能不一致——此时应调用 `session.rollback()` 重置会话。$\blacksquare$
 
-### 4.4 懒加载在异步上下文中的不可用性
+### 3.4 懒加载在异步上下文中的不可用性
 
 **命题 4.4**：在 `AsyncSession` 中，懒加载关系属性访问会抛出 `MissingGreenlet` 或 `IOShouldBeAsync` 异常。
 
@@ -306,7 +265,7 @@ SQLAlchemy 通过 `greenlet` 协程检测：若懒加载在非 greenlet 上下�
 2. 使用 `await session.refresh(obj, attribute_names=['rel'])` 显式加载。
 3. 将同步代码迁移到 `await session.run_sync(sync_func)` 中执行。$\blacksquare$
 
-### 4.5 连接池的数学模型
+### 3.5 连接池的数学模型
 
 **定义 4.1（连接池）**：连接池 $P$ 是一个容量为 $C_{\max}$ 的连接集合，满足：
 
@@ -325,9 +284,9 @@ SQLAlchemy 通过 `greenlet` 协程检测：若懒加载在非 greenlet 上下�
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 Engine 与 Connection（Core 层）
+### 4.1 Engine 与 Connection（Core 层）
 
 ```python
 from sqlalchemy import create_engine, text
@@ -361,7 +320,7 @@ with engine.connect() as conn:
     conn.commit()  # 显式提交
 ```
 
-### 5.2 声明式模型定义（SQLAlchemy 2.0 风格）
+### 4.2 声明式模型定义（SQLAlchemy 2.0 风格）
 
 ```python
 from datetime import datetime
@@ -436,7 +395,7 @@ engine = create_engine("sqlite:///myapp.db", echo=True)
 Base.metadata.create_all(engine)
 ```
 
-### 5.3 增删改查（CRUD）
+### 4.3 增删改查（CRUD）
 
 ```python
 from sqlalchemy import select
@@ -467,7 +426,7 @@ with Session(engine) as session:
     session.commit()
 ```
 
-### 5.4 复杂查询
+### 4.4 复杂查询
 
 ```python
 from sqlalchemy import and_, or_, func, desc, asc, select
@@ -546,7 +505,7 @@ with Session(engine) as session:
         print(f"高产作者 {row.name}: {row.count} 篇")
 ```
 
-### 5.5 关系加载策略
+### 4.5 关系加载策略
 
 ```python
 from sqlalchemy.orm import selectinload, joinedload, subqueryload, raiseload, Session
@@ -578,7 +537,7 @@ with Session(engine) as session:
     # users[0].articles  # 抛出 InvalidRequestError
 ```
 
-### 5.6 事务管理
+### 4.6 事务管理
 
 ```python
 from sqlalchemy.exc import IntegrityError
@@ -620,7 +579,7 @@ with Session(engine) as session:
     session.commit()  # 外层提交
 ```
 
-### 5.7 多对多关系
+### 4.7 多对多关系
 
 ```python
 from sqlalchemy import Table, ForeignKey, String
@@ -671,7 +630,7 @@ with Session(engine) as session:
         print(art.title)
 ```
 
-### 5.8 异步 SQLAlchemy
+### 4.8 异步 SQLAlchemy
 
 ```python
 import asyncio
@@ -731,7 +690,7 @@ async def main():
 asyncio.run(main())
 ```
 
-### 5.9 混合属性与表达式
+### 4.9 混合属性与表达式
 
 ```python
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
@@ -775,7 +734,7 @@ with Session(engine) as session:
     stmt = select(User).where(User.is_adult == True)
 ```
 
-### 5.10 事件监听
+### 4.10 事件监听
 
 ```python
 from sqlalchemy import event
@@ -817,7 +776,7 @@ def on_user_load(target, context):
     print(f"[LOAD] 加载用户 {target.id}")
 ```
 
-### 5.11 反射现有数据库
+### 4.11 反射现有数据库
 
 ```python
 from sqlalchemy import create_engine, MetaData, Table, inspect
@@ -842,7 +801,7 @@ print(inspector.get_foreign_keys("users"))
 print(inspector.get_indexes("users"))
 ```
 
-### 5.12 Alembic 数据库迁移
+### 4.12 Alembic 数据库迁移
 
 ```bash
 # 安装 Alembic
@@ -899,9 +858,9 @@ def downgrade() -> None:
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 SQLAlchemy vs Django ORM
+### 5.1 SQLAlchemy vs Django ORM
 
 | 维度 | SQLAlchemy | Django ORM |
 |------|-----------|------------|
@@ -922,7 +881,7 @@ def downgrade() -> None:
 - **SQLAlchemy**：复杂业务逻辑、多数据库、需要 SQL 灵活性、非 Django 项目。
 - **Django ORM**：Django 项目、CRUD 为主、快速开发、团队不熟悉 SQL。
 
-### 6.2 SQLAlchemy vs Peewee
+### 5.2 SQLAlchemy vs Peewee
 
 | 维度 | SQLAlchemy | Peewee |
 |------|-----------|--------|
@@ -932,7 +891,7 @@ def downgrade() -> None:
 | 异步 | 支持 | 不支持 |
 | 适合规模 | 大中型项目 | 小项目、脚本 |
 
-### 6.3 SQLAlchemy vs Tortoise ORM
+### 5.3 SQLAlchemy vs Tortoise ORM
 
 | 维度 | SQLAlchemy | Tortoise ORM |
 |------|-----------|--------------|
@@ -942,7 +901,7 @@ def downgrade() -> None:
 | 成熟度 | 极高（20 年） | 中（2018+） |
 | 生态 | 全 Python | FastAPI 生态 |
 
-### 6.4 SQLAlchemy vs SQLModel
+### 5.4 SQLAlchemy vs SQLModel
 
 SQLModel 由 FastAPI 作者 Sebastián Ramírez 开发，本质是 **Pydantic + SQLAlchemy** 的薄封装。
 
@@ -955,7 +914,7 @@ SQLModel 由 FastAPI 作者 Sebastián Ramírez 开发，本质是 **Pydantic + 
 | 灵活性 | 极高 | 受限（Pydantic 约束） |
 | 适合场景 | 复杂业务 | FastAPI + 简单 CRUD |
 
-### 6.5 SQLAlchemy vs Prisma
+### 5.5 SQLAlchemy vs Prisma
 
 Prisma 是新一代 ORM，源于 TypeScript 生态，后扩展到 Python、Rust 等。
 
@@ -970,9 +929,9 @@ Prisma 是新一代 ORM，源于 TypeScript 生态，后扩展到 Python、Rust 
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 N+1 查询
+### 6.1 N+1 查询
 
 ```python
 # 反模式：N+1 查询
@@ -985,7 +944,7 @@ stmt = select(User).options(selectinload(User.articles))
 users = session.execute(stmt).scalars().all()
 ```
 
-### 7.2 Session 泄漏
+### 6.2 Session 泄漏
 
 ```python
 # 反模式：Session 未关闭
@@ -1000,7 +959,7 @@ def get_user(user_id):
         return session.get(User, user_id)
 ```
 
-### 7.3 Detached 实例访问
+### 6.3 Detached 实例访问
 
 ```python
 # 反模式：访问 Detached 实例的懒加载属性
@@ -1021,7 +980,7 @@ with SessionLocal() as session:
     # session 关闭后，已加载的属性仍可访问
 ```
 
-### 7.4 异步下懒加载
+### 6.4 异步下懒加载
 
 ```python
 # 反模式：异步下使用懒加载
@@ -1044,7 +1003,7 @@ async def get_user(user_id):
         return (await session.execute(stmt)).scalar_one()
 ```
 
-### 7.5 全局共享 Session
+### 6.5 全局共享 Session
 
 ```python
 # 反模式：全局 Session
@@ -1059,7 +1018,7 @@ def get_db():
         db.close()
 ```
 
-### 7.6 循环导入
+### 6.6 循环导入
 
 ```python
 # 反模式：模型间循环导入
@@ -1076,7 +1035,7 @@ class User(Base):
     )  # "Article" 是字符串，延迟解析
 ```
 
-### 7.7 Cascade 误用
+### 6.7 Cascade 误用
 
 ```python
 # 反模式：删除用户时文章变成"孤儿"
@@ -1095,7 +1054,7 @@ class User(Base):
     )
 ```
 
-### 7.8 误用 query.all()（1.x 风格）
+### 6.8 误用 query.all()（1.x 风格）
 
 ```python
 # 反模式：1.x 风格（2.0 已废弃）
@@ -1106,7 +1065,7 @@ stmt = select(User).where(User.age > 20)
 users = session.execute(stmt).scalars().all()
 ```
 
-### 7.9 默认值陷阱
+### 6.9 默认值陷阱
 
 ```python
 # 反模式：Python 端默认值与服务端默认值混淆
@@ -1121,7 +1080,7 @@ class User(Base):
     )
 ```
 
-### 7.10 连接池耗尽
+### 6.10 连接池耗尽
 
 ```python
 # 反模式：长事务占用连接
@@ -1147,9 +1106,9 @@ def long_running_task():
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 Session 作用域管理
+### 7.1 Session 作用域管理
 
 ```python
 from contextlib import contextmanager
@@ -1175,7 +1134,7 @@ with session_scope(SessionLocal) as session:
     session.add(user)
 ```
 
-### 8.2 FastAPI 集成
+### 7.2 FastAPI 集成
 
 ```python
 from fastapi import FastAPI, Depends, HTTPException
@@ -1242,7 +1201,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     return user
 ```
 
-### 8.3 仓储模式（Repository Pattern）
+### 7.3 仓储模式（Repository Pattern）
 
 ```python
 from typing import Generic, TypeVar, Type, Optional, Sequence
@@ -1291,7 +1250,7 @@ class UserService:
         return self.repo.create(User(name=name, email=email))
 ```
 
-### 8.4 软删除模式
+### 7.4 软删除模式
 
 ```python
 from datetime import datetime
@@ -1325,7 +1284,7 @@ with Session(engine) as session:
     users = session.execute(stmt).scalars().all()
 ```
 
-### 8.5 多租户隔离
+### 7.5 多租户隔离
 
 ```python
 from sqlalchemy import text
@@ -1352,7 +1311,7 @@ with middleware.get_session("acme") as session:
     users = session.execute(select(User)).scalars().all()
 ```
 
-### 8.6 读写分离
+### 7.6 读写分离
 
 ```python
 from sqlalchemy import create_engine
@@ -1391,7 +1350,7 @@ with split.get_session() as session:
     users = session.execute(select(User)).scalars().all()
 ```
 
-### 8.7 审计日志
+### 7.7 审计日志
 
 ```python
 from sqlalchemy import event, inspect
@@ -1447,7 +1406,7 @@ def audit_log(session, flush_context, instances):
         ))
 ```
 
-### 8.8 性能优化清单
+### 7.8 性能优化清单
 
 1. **连接池调优**：`pool_size`、`max_overflow`、`pool_recycle`、`pool_pre_ping`。
 2. **批量操作**：`session.add_all()`、`bulk_insert_mappings()`、`bulk_update_mappings()`。
@@ -1462,9 +1421,9 @@ def audit_log(session, flush_context, instances):
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：电商系统订单管理
+### 8.1 案例：电商系统订单管理
 
 **需求**：实现订单创建、查询、取消、退款功能，支持事务与库存扣减。
 
@@ -1557,7 +1516,7 @@ class OrderService:
             order.status = "cancelled"
 ```
 
-### 9.2 案例：内容管理系统（CMS）
+### 8.2 案例：内容管理系统（CMS）
 
 ```python
 class Category(Base):
@@ -1622,7 +1581,7 @@ def get_posts_by_category_tree(session: Session, category_id: int):
     return session.execute(stmt).scalars().all()
 ```
 
-### 9.3 案例：Django 中使用 SQLAlchemy
+### 8.3 案例：Django 中使用 SQLAlchemy
 
 ```python
 # settings.py
@@ -1659,7 +1618,7 @@ def get_users(request):
         return JsonResponse({"users": [{"id": u.id, "name": u.name} for u in users]})
 ```
 
-### 9.4 案例：数据分析平台
+### 8.4 案例：数据分析平台
 
 ```python
 import pandas as pd
@@ -1692,7 +1651,7 @@ stmt = (
 top_users = pd.read_sql(stmt, engine)
 ```
 
-### 9.5 案例：Celery 任务与 SQLAlchemy
+### 8.5 案例：Celery 任务与 SQLAlchemy
 
 ```python
 from celery import Celery
@@ -1732,7 +1691,7 @@ def fetch_users():
 workflow = fetch_users.s() | process_user_data.s()
 ```
 
-### 9.6 案例：Flask + SQLAlchemy
+### 8.6 案例：Flask + SQLAlchemy
 
 ```python
 from flask import Flask
@@ -1765,7 +1724,7 @@ def create_user():
     return {"id": user.id, "name": user.name}, 201
 ```
 
-### 9.7 案例：测试隔离
+### 8.7 案例：测试隔离
 
 ```python
 import pytest
@@ -1806,7 +1765,7 @@ def test_create_user(session):
     # 测试结束后自动回滚，不污染其他测试
 ```
 
-### 9.8 案例：监控与可观测性
+### 8.8 案例：监控与可观测性
 
 ```python
 import time
@@ -1860,7 +1819,7 @@ def trace_after_execute(conn, cursor, statement, parameters, context, executeman
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（记忆与理解）
+### 9.1 基础题（记忆与理解）
 
 **题 1**：SQLAlchemy 的 Core 层与 ORM 层有何区别？为什么 SQLAlchemy 采用双层架构？
 
@@ -1988,7 +1947,7 @@ from sqlalchemy.orm import subqueryload
 stmt = select(User).options(subqueryload(User.posts))
 ```
 
-### 10.3 分析题
+### 9.3 分析题
 
 **题 6**：分析以下代码的问题并修复：
 
@@ -2040,7 +1999,7 @@ with Session(engine) as session:
 
 Session 状态：进入"失败"状态，后续操作需先调用 `session.rollback()` 重置。最佳实践是使用 `with session.begin()` 包裹整个事务块，或使用 try-except 捕获异常并 rollback。
 
-### 10.4 评价题
+### 9.4 评价题
 
 **题 8**：评价"在微服务架构中，每个服务应使用独立数据库，通过 API 通信而非跨服务 JOIN"这一原则。SQLAlchemy 在此场景下有何局限？
 
@@ -2062,7 +2021,7 @@ Session 状态：进入"失败"状态，后续操作需先调用 `session.rollba
 3. **GraphQL Federation**：网关层跨服务查询，对客户端透明。
 4. **共享只读副本**：非核心服务订阅核心服务的数据变更（CDC），维护只读副本供查询。
 
-### 10.5 创造题
+### 9.5 创造题
 
 **题 9**：设计一个支持"乐观并发控制"的混入，通过版本号字段防止并发修改。
 
@@ -2158,7 +2117,7 @@ def critical_section():
             session.commit()
 ```
 
-### 10.6 思考题
+### 9.6 思考题
 
 **题 11**：为什么 SQLAlchemy 2.0 废弃了 `Query` 对象？这一变更的利弊是什么？
 
@@ -2172,17 +2131,17 @@ def critical_section():
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 - Bayer, M. (2026). *SQLAlchemy 2.0 Documentation*. SQLAlchemy Project. https://docs.sqlalchemy.org/en/20/
 
-### 11.2 规范与提案
+### 10.2 规范与提案
 
 - Bayer, M. (2020). *SQLAlchemy 2.0 Migration Guide*. SQLAlchemy Project. https://docs.sqlalchemy.org/en/20/changelog/migration_20.html
 
-### 11.3 经典著作
+### 10.3 经典著作
 
 - Fowler, M. (2002). *Patterns of Enterprise Application Architecture*. Addison-Wesley Professional.
 
@@ -2197,13 +2156,13 @@ def critical_section():
   - 第 5 章：使用 Saga 维护事务一致性
   - 第 7 章：在微服务中实现查询
 
-### 11.4 学术论文
+### 10.4 学术论文
 
 - Ambler, S. W. (2005). *The Object-Relational Impedance Mismatch*. Ambysoft. https://www.agiledata.org/essays/impedanceMismatch.html
 
 - Keller, W., & Coldewey, J. (1996). *Accessing Relational Databases: A Study of Three Object-Oriented Models*. Journal of Object-Oriented Programming, 9(5), 14-24.
 
-### 11.5 社区资源
+### 10.5 社区资源
 
 - Bayer, M. (2026). *SQLAlchemy Blog*. https://docs.sqlalchemy.org/en/20/whatsnew/
 
@@ -2211,7 +2170,7 @@ def critical_section():
 
 - SQLAlchemy GitHub Discussions. https://github.com/sqlalchemy/sqlalchemy/discussions
 
-### 11.6 引用格式说明
+### 10.6 引用格式说明
 
 本节参考文献采用 **ACM Reference Format**：
 
@@ -2227,9 +2186,9 @@ Fowler, M. (2002). Patterns of Enterprise Application Architecture. Addison-Wesl
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 1. **SQLAlchemy Core 深度**：`Table`、`Column`、`select`、`insert`、`update`、`delete` 构造器的完整 API。
 2. **类型系统**：`TypeDecorator` 自定义类型、`Enum`、`JSON`、`ARRAY`、`UUID`、`JSONB`（PostgreSQL）。
@@ -2242,7 +2201,7 @@ Fowler, M. (2002). Patterns of Enterprise Application Architecture. Addison-Wesl
 9. **SQLAlchemy 与 Cython**：性能关键路径的 Cython 加速。
 10. **SQLAlchemy 与 Rust**：`sqlalchemy-rs` 实验性 Rust 扩展。
 
-### 12.2 相关工具
+### 11.2 相关工具
 
 - **Alembic**：SQLAlchemy 的官方迁移工具。
 - **SQLModel**：FastAPI 作者的 Pydantic + SQLAlchemy 封装。
@@ -2252,7 +2211,7 @@ Fowler, M. (2002). Patterns of Enterprise Application Architecture. Addison-Wesl
 - **sqlacodegen**：从现有数据库生成模型代码。
 - **SQLAlchemy-Serializer**：轻量序列化。
 
-### 12.3 数据库特定知识
+### 11.3 数据库特定知识
 
 - **PostgreSQL**：JSONB、数组、全文搜索、`pg_trgm`、PostGIS、`pg_advisory_lock`。
 - **MySQL**：字符集、引擎选择（InnoDB vs MyISAM）、`FOR UPDATE`。
@@ -2260,7 +2219,7 @@ Fowler, M. (2002). Patterns of Enterprise Application Architecture. Addison-Wesl
 - **Oracle**：序列、PL/SQL、`ROWNUM`、`CONNECT BY`。
 - **SQL Server**：`TOP`、`WITH (NOLOCK)`、`IDENTITY`。
 
-### 12.4 架构模式
+### 11.4 架构模式
 
 - **CQRS**：命令查询职责分离。
 - **Event Sourcing**：事件溯源。
@@ -2270,7 +2229,7 @@ Fowler, M. (2002). Patterns of Enterprise Application Architecture. Addison-Wesl
 - **Read Replica**：读写分离。
 - **Sharding**：分库分表。
 
-### 12.5 性能与监控
+### 11.5 性能与监控
 
 - **EXPLAIN ANALYZE**：查询执行计划分析。
 - **pg_stat_statements**：PostgreSQL 查询统计。
@@ -2279,7 +2238,7 @@ Fowler, M. (2002). Patterns of Enterprise Application Architecture. Addison-Wesl
 - **Prometheus + Grafana**：数据库指标监控。
 - **Datadog / New Relic**：APM 解决方案。
 
-### 12.6 推荐书籍
+### 11.6 推荐书籍
 
 1. *SQLAlchemy 2 in Action* — Bayer, M.（预计 2026 出版）
 2. *High Performance MySQL* — Schwartz, B. et al.
@@ -2287,7 +2246,7 @@ Fowler, M. (2002). Patterns of Enterprise Application Architecture. Addison-Wesl
 4. *SQL Performance Explained* — Markus Winand
 5. *Designing Data-Intensive Applications* — Martin Kleppmann
 
-### 12.7 在线课程
+### 11.7 在线课程
 
 1. *SQLAlchemy 2.0 Course* — Talk Python Training
 2. *Database Engineering* — CMU 15-445

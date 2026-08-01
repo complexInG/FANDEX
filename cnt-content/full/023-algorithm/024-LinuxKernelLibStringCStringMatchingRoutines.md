@@ -31,14 +31,6 @@ related:
 prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/字符串算法
-learningObjectives:
-  - 记忆 KMP 算法三阶段流程（构建 next/PMT 数组、扫描文本、失配回跳）与 next 数组的形式化递推式 $\pi[i+1] = \begin{cases} \pi[i]+1 & \text{若 } P[\pi[i]] = P[i] \\ \pi^{(2)}[i]+1 & \text{若 } P[\pi[i]] \neq P[i] \text{ 但 } P[\pi^{(2)}[i]] = P[i] \\ \vdots & \vdots \\ 0 & \text{否则} \end{cases}$，复述 Knuth-Morris-Pratt 1977《Fast Pattern Matching in Strings》SIAM J. Comp. 6(2):323-350 DOI:10.1137/0206024 的核心贡献
-  - 理解 Morris 1970 与 Pratt 1970 独立发现 KMP、Knuth 1970 完善复杂度证明的演进脉络，说明 Cook 1971《Linear-time simulation of deterministic two-way pushdown automata》字符串匹配下界证明对 KMP 设计动机的影响，复述 KMP 与 Boyer-Moore 1977、Rabin-Karp 1987、Aho-Corasick 1975 在算法范式上的本质差异
-  - 应用 KMP 算法求解字符串匹配、字符串周期性判定、最小循环节、字符串前后缀匹配等问题，编写 Python/C++/Java 三语言实现，正确构建 next 数组并完成 $O(n+m)$ 时间复杂度的匹配过程
-  - 分析 KMP 算法时间复杂度 $O(n+m)$ 的证明：基于文本指针 $i$ 单调不减、模式指针 $j$ 摊还 $O(1)$ 的论证方法，掌握"势能函数 $\Phi = j$"的摊还分析技巧
-  - 评估 KMP 在不同场景（小模式大文本、流式数据、多模式匹配、生物序列）下与 Boyer-Moore、Rabin-Karp、Aho-Corasick、Suffix Automaton、Suffix Array 的优劣对比，识别 GNU grep、ESLint、Linux 内核等真实工程中选用 KMP 或其变种的依据
-  - 设计 KMP 自动机（KMP Automaton）并将其扩展为 Aho-Corasick 多模式自动机，分析其在敏感词过滤、入侵检测系统（IDS）、DNA 序列比对中的工程价值
-  - 创造性设计基于 KMP 的开源工具，如代码静态分析器（标识符冲突检测）、日志模式匹配引擎、DNA 序列 motif 发现工具，正确处理 Unicode、大小写不敏感、多字节编码等工程细节
 references:
   - type: journal
     authors:
@@ -206,6 +198,7 @@ etymology:
     english: automaton
     origin: 'automaton 源自希腊语 αὐτόματον（self-acting，自我行动的），由 αὐτός（self）+ μαίνομαι（to be eager）构成。在计算机科学中指抽象计算模型。KMP 自动机是确定性有限自动机（DFA）的一种特殊形式，状态转移函数 δ(q, c) 由 next 数组定义'
 ---
+
 
 ## 1. 概述与学习目标
 

@@ -26,42 +26,16 @@ tags:
   - pattern-matching
 ---
 
+
 # 条件类型与 infer
 
 > 本文档对标 MIT 6.S192 与 Stanford CS143 课程标准，系统讲解 TypeScript 条件类型（Conditional Types）与 `infer` 关键字的形式语义、推导规则、工程实践与生产级应用。条件类型是 TypeScript 类型系统的图灵完备基石，使开发者能在类型层面进行分支决策与模式匹配。本文档面向零基础自学读者，从类型论的基本概念出发，逐步推导条件类型的设计动机、数学语义与实战模式，最终落地为可复用的类型工具库。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-完成本文档学习后，读者应能在三个 Bloom 层次上达成以下能力：
-
-### 1.1 认知层（Remembering / Understanding）
-
-- **LO-1.1**：能够准确陈述条件类型的语法结构 `T extends U ? X : Y`，并解释 `extends` 在此处的语义（子类型关系判定，而非继承）。
-- **LO-1.2**：能够描述"裸类型参数"（Naked Type Parameter）的概念，并区分裸类型参数与被包裹类型参数在分布式条件类型中的行为差异。
-- **LO-1.3**：能够复述 `infer` 关键字的三类使用位置：函数参数位置、函数返回值位置、类型构造器位置，并解释其推断机制。
-- **LO-1.4**：能够解释 `never` 类型在分布式条件类型中的"空集"语义，并说明 `never` 不触发分发的根本原因。
-
-### 1.2 应用层（Applying / Analyzing）
-
-- **LO-2.1**：能够使用条件类型实现类型过滤（`Filter<T, U>`）、类型映射（`MapType<T>`）、类型提取（`Extract<T, U>`）三类常见模式。
-- **LO-2.2**：能够使用 `infer` 提取函数签名、Promise 值、数组元素、对象属性、模板字面量片段等类型信息。
-- **LO-2.3**：能够使用 `[T] extends [U]` 阻止分布式条件类型，并解释何时需要阻止分发。
-- **LO-2.4**：能够诊断条件类型相关的编译错误，如"Type instantiation is excessively deep and possibly infinite"。
-- **LO-2.5**：能够使用条件类型与映射类型组合，实现 `PickByValue`、`OmitByValue`、`DeepReadonly`、`DeepPartial` 等高阶工具类型。
-
-### 1.3 创造层（Evaluating / Creating）
-
-- **LO-3.1**：能够设计一个类型安全的函数重载提取器，从重载列表中选取最具体的签名。
-- **LO-3.2**：能够评估"条件类型 vs 函数重载 vs 联合类型"三种方案在 API 设计中的权衡，并给出量化对比。
-- **LO-3.3**：能够设计一个类型安全的 SQL 查询构建器，利用 `infer` 与条件类型推导查询结果的行类型。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 静态类型的"分支困境"（2010-2015）
+### 1.1 静态类型的"分支困境"（2010-2015）
 
 在条件类型出现之前，TypeScript（以及绝大多数静态类型语言）的类型系统是**单调的**——给定一个泛型参数 `T`，无法在类型层面"判断 T 是字符串还是数字"。这意味着许多类型工具无法实现：
 
@@ -83,7 +57,7 @@ function returnType(f: Function): unknown {
 }
 ```
 
-### 2.2 条件类型的诞生（TypeScript 2.8, 2018）
+### 1.2 条件类型的诞生（TypeScript 2.8, 2018）
 
 TypeScript 2.8 引入条件类型，灵感来自 Haskell 的类型族（Type Family）与 Scala 的隐式解析。核心语法：
 
@@ -99,7 +73,7 @@ type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 
 形式化地，条件类型使 TypeScript 类型系统具备**图灵完备性**——理论上可以在类型层面计算任意可计算函数（受编译器递归深度限制）。
 
-### 2.3 `infer` 的扩展（TypeScript 2.8 - 4.7）
+### 1.3 `infer` 的扩展（TypeScript 2.8 - 4.7）
 
 `infer` 关键字的能力随版本演进而增强：
 
@@ -107,7 +81,7 @@ type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 - **TS 4.7**：`infer` 支持约束（`infer R extends string`），可限定推断结果的子类型。
 - **TS 5.4**：`infer` 在数组解构位置支持 `const` 修饰符，保留元组字面量类型。
 
-### 2.4 现代条件类型的工程化应用
+### 1.4 现代条件类型的工程化应用
 
 今天，条件类型已成为 TypeScript 类型编程的核心基石：
 
@@ -118,9 +92,9 @@ type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 条件类型的语法
+### 2.1 条件类型的语法
 
 条件类型的 BNF 文法：
 
@@ -131,7 +105,7 @@ $$
 \end{aligned}
 $$
 
-### 3.2 子类型判定语义
+### 2.2 子类型判定语义
 
 设 $\text{Subtype}(S, T)$ 表示 "$S$ 是 $T$ 的子类型"（即 $S <: T$），条件类型的求值规则为：
 
@@ -149,7 +123,7 @@ TypeScript 中的子类型关系 $<:$ 包含：
 - **联合类型**：$S <: T \cup U \iff S <: T \vee S <: U$。
 - **字面量**：$\texttt{'a'} <: \texttt{string}$，$\texttt{42} <: \texttt{number}$。
 
-### 3.3 分布式条件类型的求值规则
+### 2.3 分布式条件类型的求值规则
 
 设 $T = T_1 \cup T_2 \cup \cdots \cup T_n$ 为联合类型，条件类型 $C = T \texttt{ extends } U \texttt{ ? } X \texttt{ : } Y$ 的求值规则为：
 
@@ -167,7 +141,7 @@ $$
 
 此时 $[T_1 \cup T_2] <: [U]$ 当且仅当 $(T_1 \cup T_2) <: U$（元组的协变规则）。
 
-### 3.4 `infer` 的推断规则
+### 2.4 `infer` 的推断规则
 
 设 `infer R` 出现在 `extends` 子句的位置 $p$。TypeScript 编译器执行**模式匹配**：
 
@@ -183,7 +157,7 @@ $$
 
 其中 $R'$ 是 $T$ 中与 $P$ 的 $R$ 位置对应的子类型。
 
-### 3.5 `never` 的空集语义
+### 2.5 `never` 的空集语义
 
 `never` 类型在 TypeScript 中表示"永不出现的值"，在类型论中对应**空类型** $\bot$。
 
@@ -205,9 +179,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 分布式条件类型的可分配性
+### 3.1 分布式条件类型的可分配性
 
 **命题 4.1**：分布式条件类型对联合类型满足分配律，即：
 
@@ -225,7 +199,7 @@ $$
 
 **工程含义**：分布式条件类型天然支持"类型过滤"——对于联合类型 $T$，可过滤出满足某条件的成员。
 
-### 4.2 `infer` 推断的唯一性
+### 3.2 `infer` 推断的唯一性
 
 **命题 4.2**：对于函数类型 $F = (...args: A) \Rightarrow R$，`infer R` 推断出的返回值类型是唯一的。
 
@@ -233,7 +207,7 @@ $$
 
 但若 $T$ 是函数重载，TypeScript 选择**最后一个签名**的返回值类型（参见 TS Handbook）。这是因为重载的最后一个签名通常是实现签名，最具体。$\blacksquare$
 
-### 4.3 `never` 与分发的不可逆性
+### 3.3 `never` 与分发的不可逆性
 
 **命题 4.3**：对于任意条件类型 $C = T \texttt{ extends } U \texttt{ ? } X \texttt{ : } Y$，若 $T = \texttt{never}$，则 $C \Downarrow \texttt{never}$，无论 $U$、$X$、$Y$ 是什么。
 
@@ -260,7 +234,7 @@ type A = IsNever<never>; // true
 type B = IsNever<string>; // false
 ```
 
-### 4.4 条件类型的递归与不动点
+### 3.4 条件类型的递归与不动点
 
 **命题 4.4**：条件类型与递归类型结合可实现不动点算子（Fixed-Point Combinator），从而在类型层面表达任意可计算函数。
 
@@ -277,11 +251,11 @@ TypeScript 编译器对递归类型设置深度限制（默认 50 层，TS 4.5+ 
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 条件类型基础
+### 4.1 条件类型基础
 
-#### 5.1.1 最简单的条件类型
+#### 4.1.1 最简单的条件类型
 
 ```typescript
 type IsString<T> = T extends string ? true : false;
@@ -291,7 +265,7 @@ type B = IsString<42>;        // false
 type C = IsString<string | number>;  // boolean —— 分发为 true | false
 ```
 
-#### 5.1.2 `extends` 的子类型语义
+#### 4.1.2 `extends` 的子类型语义
 
 ```typescript
 type IsAssignable<T, U> = T extends U ? true : false;
@@ -303,7 +277,7 @@ type D = IsAssignable<string, any>;       // true（所有类型都是 any 的�
 type E = IsAssignable<string, unknown>;   // true（所有类型都是 unknown 的子类型）
 ```
 
-#### 5.1.3 类型级别的布尔运算
+#### 4.1.3 类型级别的布尔运算
 
 ```typescript
 type And<A extends boolean, B extends boolean> = A extends true
@@ -326,9 +300,9 @@ type Test3 = Not<true>;          // false
 type Test4 = Xor<true, false>;   // true
 ```
 
-### 5.2 分布式条件类型
+### 4.2 分布式条件类型
 
-#### 5.2.1 自动分发
+#### 4.2.1 自动分发
 
 ```typescript
 type ToArray<T> = T extends any ? T[] : never;
@@ -341,7 +315,7 @@ type Result2 = ToArray<boolean>;
 // boolean 是字面量联合 true | false，分发后为 true[] | false[]
 ```
 
-#### 5.2.2 阻止分发
+#### 4.2.2 阻止分发
 
 ```typescript
 type ToArrayNoDistribute<T> = [T] extends [any] ? T[] : never;
@@ -350,7 +324,7 @@ type Result = ToArrayNoDistribute<string | number>;
 // 结果：(string | number)[] —— 不分发
 ```
 
-#### 5.2.3 类型过滤
+#### 4.2.3 类型过滤
 
 ```typescript
 type Filter<T, U> = T extends U ? T : never;
@@ -368,7 +342,7 @@ type A = MyNonNullable<string | null | number | undefined>;
 // string | number
 ```
 
-#### 5.2.4 类型排除
+#### 4.2.4 类型排除
 
 ```typescript
 type Exclude<T, U> = T extends U ? never : T;
@@ -386,9 +360,9 @@ type C = Extract<'a' | 'b' | 'c', 'a' | 'b'>;
 // 'a' | 'b'
 ```
 
-### 5.3 `infer` 关键字
+### 4.3 `infer` 关键字
 
-#### 5.3.1 提取函数返回值
+#### 4.3.1 提取函数返回值
 
 ```typescript
 type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
@@ -399,7 +373,7 @@ type C = MyReturnType<(x: string, y: number) => void>; // void
 type D = MyReturnType<string>;                         // never（非函数）
 ```
 
-#### 5.3.2 提取函数参数
+#### 4.3.2 提取函数参数
 
 ```typescript
 type MyParameters<T> = T extends (...args: infer P) => any ? P : never;
@@ -409,7 +383,7 @@ type B = MyParameters<() => void>;                       // []
 type C = MyParameters<(x: string, ...rest: number[]) => void>;  // [string, ...number[]]
 ```
 
-#### 5.3.3 提取构造函数实例类型
+#### 4.3.3 提取构造函数实例类型
 
 ```typescript
 type InstanceType<T extends abstract new (...args: any[]) => any> =
@@ -419,7 +393,7 @@ class User { constructor(public name: string) {} }
 type U = InstanceType<typeof User>;  // User
 ```
 
-#### 5.3.4 提取 Promise 值（递归）
+#### 4.3.4 提取 Promise 值（递归）
 
 ```typescript
 type Awaited<T> = T extends Promise<infer U>
@@ -433,7 +407,7 @@ type B = Awaited<Promise<Promise<number>>>;        // number
 type C = Awaited<string | Promise<number>>;        // string | number
 ```
 
-#### 5.3.5 提取数组元素
+#### 4.3.5 提取数组元素
 
 ```typescript
 type First<T extends readonly any[]> = T extends [infer F, ...any[]] ? F : never;
@@ -446,7 +420,7 @@ type C = Element<string[]>;    // string
 type D = Element<Array<boolean>>;  // boolean
 ```
 
-#### 5.3.6 提取对象属性值
+#### 4.3.6 提取对象属性值
 
 ```typescript
 type ValueOf<T> = T extends { [K in keyof T]: infer V } ? V : never;
@@ -457,7 +431,7 @@ type ValueOf2<T> = T[keyof T];
 type A = ValueOf<{ name: string; age: number }>;  // string | number
 ```
 
-#### 5.3.7 提取模板字面量片段
+#### 4.3.7 提取模板字面量片段
 
 ```typescript
 type GetPrefix<S extends string> = S extends `${infer P}_${string}` ? P : S;
@@ -473,9 +447,9 @@ type C = GetSuffix<'user_name'>;    // 'name'
 type D = Split<'a,b,c', ','>;       // ['a', 'b', 'c']
 ```
 
-### 5.4 多 `infer` 位置
+### 4.4 多 `infer` 位置
 
-#### 5.4.1 同时提取参数与返回值
+#### 4.4.1 同时提取参数与返回值
 
 ```typescript
 type FunctionInfo<T> = T extends (...args: infer Args) => infer Return
@@ -486,7 +460,7 @@ type Info = FunctionInfo<(x: string, y: number) => boolean>;
 // { args: [string, number]; return: boolean }
 ```
 
-#### 5.4.2 提取 Promise 链中的多层类型
+#### 4.4.2 提取 Promise 链中的多层类型
 
 ```typescript
 type UnwrapAll<T> = T extends Promise<infer U>
@@ -500,7 +474,7 @@ type UnwrapAll<T> = T extends Promise<infer U>
 type A = UnwrapAll<Promise<Promise<Promise<number>>>>;  // number
 ```
 
-#### 5.4.3 同名 `infer` 的合并行为
+#### 4.4.3 同名 `infer` 的合并行为
 
 ```typescript
 type FirstSecond<T> = T extends [infer F, infer F] ? F[] : never;
@@ -509,9 +483,9 @@ type A = FirstSecond<[string, string]>;  // string[]
 type B = FirstSecond<[string, number]>;  // never（推断冲突）
 ```
 
-### 5.5 函数重载提取
+### 4.5 函数重载提取
 
-#### 5.5.1 获取最后一个重载签名
+#### 4.5.1 获取最后一个重载签名
 
 ```typescript
 type LastOverload<T> = T extends {
@@ -530,7 +504,7 @@ function f(x: string | number): string | number {
 type F = LastOverload<typeof f>;  // (x: number) => number
 ```
 
-#### 5.5.2 获取第一个重载签名
+#### 4.5.2 获取第一个重载签名
 
 ```typescript
 type FirstOverload<T> = T extends {
@@ -545,9 +519,9 @@ type FirstOverload<T> = T extends {
 type F = FirstOverload<typeof f>;  // (x: string) => string
 ```
 
-### 5.6 条件类型实战
+### 4.6 条件类型实战
 
-#### 5.6.1 深层只读
+#### 4.6.1 深层只读
 
 ```typescript
 type DeepReadonly<T> = T extends Function
@@ -570,7 +544,7 @@ type ReadonlyUser = DeepReadonly<User>;
 // }
 ```
 
-#### 5.6.2 类型过滤与映射
+#### 4.6.2 类型过滤与映射
 
 ```typescript
 type PickByValue<T, V> = {
@@ -592,7 +566,7 @@ type StringFields = PickByValue<User, string>;  // { name: string; email: string
 type NonBooleanFields = OmitByValue<User, boolean>;  // { name: string; age: number; email: string }
 ```
 
-#### 5.6.3 类型安全的路径访问
+#### 4.6.3 类型安全的路径访问
 
 ```typescript
 type Get<T, P extends string> =
@@ -614,7 +588,7 @@ type B = Get<Config, 'ui.theme'>;     // 'light' | 'dark'
 type C = Get<Config, 'api.timeout'>;  // number
 ```
 
-#### 5.6.4 类型级别的链表
+#### 4.6.4 类型级别的链表
 
 ```typescript
 type List<T = any> = null | { head: T; tail: List<T> };
@@ -637,9 +611,9 @@ type N1 = LengthTuple<L1>;  // 3
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Flow 条件类型的对比
+### 5.1 与 Flow 条件类型的对比
 
 | 维度 | TypeScript 条件类型 | Flow 条件类型 |
 |------|---------------------|---------------|
@@ -651,7 +625,7 @@ type N1 = LengthTuple<L1>;  // 3
 | 实战生态 | utility-types、type-fest | flow-typed |
 | 工具链 | VSCode 深度集成 | Flow Language Service |
 
-### 6.2 与 Rust 类型系统的对比
+### 5.2 与 Rust 类型系统的对比
 
 Rust 没有条件类型，但通过 trait bound 与 where 子句实现类似的分支语义：
 
@@ -671,7 +645,7 @@ type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 - Rust 的 trait bound 是**运行时多态**（动态分发或单态化），TypeScript 的条件类型是**纯类型层计算**（编译时确定，无运行时开销）。
 - Rust 不需要在类型层进行复杂计算，因为运行时已具备完整类型信息；TypeScript 必须在类型层"模拟"运行时行为，因此需要条件类型。
 
-### 6.3 与 Haskell 类型族的对比
+### 5.3 与 Haskell 类型族的对比
 
 Haskell 的类型族（Type Family）是函数式编程语言中条件类型的"前辈"：
 
@@ -692,7 +666,7 @@ type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 - Haskell 的类型推导由 GHC 求解器完成，TypeScript 的推导由 tsc 编译器完成。
 - Haskell 支持更高阶类型（Higher-Kinded Types），TypeScript 不直接支持，但可通过条件类型模拟。
 
-### 6.4 与纯 JS + 运行时检查的对比
+### 5.4 与纯 JS + 运行时检查的对比
 
 ```javascript
 // JavaScript：运行时检查
@@ -716,9 +690,9 @@ type R = ReturnType<() => string>;  // string，编译时已知
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：`never` 不触发分发
+### 6.1 陷阱：`never` 不触发分发
 
 **问题代码**：
 
@@ -739,7 +713,7 @@ type A = IsNever<never>;    // true
 type B = IsNever<string>;   // false
 ```
 
-### 7.2 陷阱：`boolean` 的分发行为
+### 6.2 陷阱：`boolean` 的分发行为
 
 **问题代码**：
 
@@ -759,7 +733,7 @@ type ToArrayNoDistribute<T> = [T] extends [any] ? T[] : never;
 type A = ToArrayNoDistribute<boolean>;  // boolean[]
 ```
 
-### 7.3 陷阱：函数重载的 `infer` 只取最后一个签名
+### 6.3 陷阱：函数重载的 `infer` 只取最后一个签名
 
 **问题代码**：
 
@@ -775,7 +749,7 @@ type R = ReturnType<typeof f>;  // string | number（最后一个签名）
 
 **修复**：参考 5.5.1 节，使用 `LastOverload` 或 `FirstOverload`。
 
-### 7.4 陷阱：递归深度限制
+### 6.4 陷阱：递归深度限制
 
 **问题代码**：
 
@@ -795,7 +769,7 @@ type A = DeepTuple<[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[1]]]]]]]]]]
 2. 使用尾递归形式（TS 4.5+ 优化）。
 3. 拆分类型为多个步骤。
 
-### 7.5 陷阱：`infer` 在非函数位置的错误使用
+### 6.5 陷阱：`infer` 在非函数位置的错误使用
 
 **错误代码**：
 
@@ -812,7 +786,7 @@ type BadInfer<T> = T extends infer R ? R : never;
 type Identity<T> = T;
 ```
 
-### 7.6 陷阱：分布式条件类型与映射类型的交互
+### 6.6 陷阱：分布式条件类型与映射类型的交互
 
 **问题代码**：
 
@@ -843,7 +817,7 @@ type R = Bad<{ a: string } | { b: number }>;
 
 **修复**：使用分布式映射类型或先分配再映射。
 
-### 7.7 陷阱：`infer` 推断为 `unknown`
+### 6.7 陷阱：`infer` 推断为 `unknown`
 
 **问题代码**：
 
@@ -861,7 +835,7 @@ type A = Awaited<Promise>;  // unknown
 type Awaited<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
 ```
 
-### 7.8 陷阱：条件类型与 `any` 的交互
+### 6.8 陷阱：条件类型与 `any` 的交互
 
 **问题代码**：
 
@@ -884,11 +858,11 @@ type A = IsString<any>;  // true
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 工具类型实现
+### 7.1 工具类型实现
 
-#### 8.1.1 标准工具类型
+#### 7.1.1 标准工具类型
 
 ```typescript
 // 排除 null 与 undefined
@@ -913,7 +887,7 @@ type Awaited<T> = T extends null | undefined ? T :
       Awaited<V> : never : T;
 ```
 
-#### 8.1.2 深度操作工具
+#### 7.1.2 深度操作工具
 
 ```typescript
 type DeepPartial<T> = T extends object
@@ -937,7 +911,7 @@ type DeepRequired<T> = T extends object
   : T;
 ```
 
-#### 8.1.3 类型过滤工具
+#### 7.1.3 类型过滤工具
 
 ```typescript
 type PickByValue<T, V> = {
@@ -962,7 +936,7 @@ type StringFields = PickByValue<User, string>;          // { name: string }
 type NonBooleanFields = OmitByValue<User, boolean>;     // { name: string; age: number }
 ```
 
-#### 8.1.4 路径类型工具
+#### 7.1.4 路径类型工具
 
 ```typescript
 type Get<T, P extends string> =
@@ -987,7 +961,7 @@ type AllPaths = Paths<Config>;
 // 'api.baseURL' | 'api.timeout' | 'ui.theme'
 ```
 
-### 8.2 类型安全的 API 设计
+### 7.2 类型安全的 API 设计
 
 ```typescript
 // 类型安全的 fetch 包装器
@@ -1034,7 +1008,7 @@ const user = await api('/users/:id', 'GET', { params: { id: '1' } });
 const newUser = await api('/users', 'POST', { body: { name: 'Alice' } });
 ```
 
-### 8.3 类型安全的 SQL 查询构建器
+### 7.3 类型安全的 SQL 查询构建器
 
 ```typescript
 interface Schema {
@@ -1075,7 +1049,7 @@ const users = await new QueryBuilder('users')
 // users 类型为 Pick<Schema['users'], 'id' | 'name'>[]
 ```
 
-### 8.4 性能优化
+### 7.4 性能优化
 
 1. **避免深度递归**：递归深度超过 50 层会显著拖慢编译。
 2. **使用尾递归**：TS 4.5+ 优化了尾递归条件类型，可达 1000 层。
@@ -1084,9 +1058,9 @@ const users = await new QueryBuilder('users')
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：实现 `type-fest` 的 `SetRequired`
+### 8.1 案例：实现 `type-fest` 的 `SetRequired`
 
 **场景**：`type-fest` 提供的 `SetRequired` 工具，将对象的部分属性从可选改为必选。
 
@@ -1104,7 +1078,7 @@ type RequiredName = SetRequired<User, 'name'>;
 // { name: string; age?: number; email: string }
 ```
 
-### 9.2 案例：实现 `ts-toolbelt` 的 `Path`
+### 8.2 案例：实现 `ts-toolbelt` 的 `Path`
 
 **场景**：递归获取对象的所有路径。
 
@@ -1127,7 +1101,7 @@ type ConfigPaths = Path<Config>;
 // 'api.baseURL' | 'api.timeout' | 'ui.theme'
 ```
 
-### 9.3 案例：实现 React Router 的路由参数提取
+### 8.3 案例：实现 React Router 的路由参数提取
 
 **场景**：从路由字符串 `/users/:id/posts/:postId` 提取参数名。
 
@@ -1158,7 +1132,7 @@ route('/users/:id', { id: '1' });  // OK
 route('/users/:id', {});            // 错误：缺少 id
 ```
 
-### 9.4 案例：实现 Zod 的类型推导
+### 8.4 案例：实现 Zod 的类型推导
 
 **场景**：Zod 是运行时验证库，利用条件类型从 schema 推导类型。
 
@@ -1192,7 +1166,7 @@ type User = typeof schema['_output'];
 // { name: string; age: number }
 ```
 
-### 9.5 案例：实现类型安全的 useState
+### 8.5 案例：实现类型安全的 useState
 
 **场景**：React 的 `useState` 在条件类型帮助下支持初始值类型推导。
 
@@ -1220,7 +1194,7 @@ const [user, setUser] = useState<{ name: string } | null>(null);
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 10.1**：实现 `IsEqual<A, B>` 类型，判断两个类型是否相等。
 
@@ -1264,7 +1238,7 @@ type T = boolean extends true ? 'yes' : 'no';
 
 **解析讲解**：`boolean` 是 `true | false` 的别名，TypeScript 对其进行分布式判定，分别判断 `true extends true`（取 'yes'）与 `false extends true`（取 'no'），合并为 `'yes' | 'no'`。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 10.4**：实现 `DeepKeyOf<T>`，返回对象所有嵌套键的联合类型（点分隔）。
 
@@ -1317,7 +1291,7 @@ type B = Join<['hello'], '-'>;        // 'hello'
 type C =Join<[], '-'>;                // ''
 ```
 
-### 10.3 思考题
+### 9.3 思考题
 
 **思考题 10.7**：为什么 TypeScript 选择"分布式"作为条件类型对联合类型的默认行为？从类型论与工程实践两个角度分析。
 
@@ -1351,7 +1325,7 @@ type C =Join<[], '-'>;                // ''
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 > 采用 ACM Reference Format。
 
@@ -1377,9 +1351,9 @@ type C =Join<[], '-'>;                // ''
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **TypeScript Handbook: Conditional Types** — https://www.typescriptlang.org/docs/handbook/2/conditional-types.html
   官方对条件类型的系统讲解，含分布式条件类型与 `infer`。
@@ -1390,7 +1364,7 @@ type C =Join<[], '-'>;                // ''
 - **TypeScript 4.7 Release Notes: infer extends** — https://devblogs.microsoft.com/typescript/announcing-typescript-4-7/
   `infer` 约束语法的官方介绍。
 
-### 12.2 社区资源
+### 11.2 社区资源
 
 - **type-fest** — https://github.com/sindresorhus/type-fest
   社区维护的类型工具库，包含数百个基于条件类型的工具。
@@ -1404,13 +1378,13 @@ type C =Join<[], '-'>;                // ''
 - **type-challenges** — https://github.com/type-challenges/type-challenges
   类型体操练习题，从入门到高级。
 
-### 12.3 相关课程
+### 11.3 相关课程
 
 - **MIT 6.S192: Intermediate Software Construction** — TypeScript 类型系统的学术视角。
 - **Stanford CS143: Compilers** — 类型系统设计的学术基础。
 - **CMU 15-312: Programming Languages** — 类型论与 lambda 演算。
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **Type-Level TypeScript** — https://type-level-typescript.com/
   从类型论角度深入讲解 TypeScript 类型系统的在线教程。
@@ -1421,7 +1395,7 @@ type C =Join<[], '-'>;                // ''
 - **The TypeScript Compiler API** — https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API
   通过编程方式操作 TypeScript 类型系统，理解条件类型的内部实现。
 
-### 12.5 相关论文
+### 11.5 相关论文
 
 - **"Type Functions in TypeScript"** — Gabriel Tanner (2022)
   探讨 TypeScript 类型函数与 Haskell 类型族的关系。

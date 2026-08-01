@@ -21,55 +21,14 @@ prerequisites:
   - python/元类
 ---
 
+
 # 元类与单例模式（Metaclass & Singleton Pattern）
 
 > "Singleton is a pattern, but in Python the module is the singleton." —— Brett Slatkin, *Effective Python*
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节按 Bloom 认知层次（Bloom's Taxonomy）逐级给出可观察、可测量的学习目标。完成本节后，学习者应能：
-
-### 1.1 记忆层（Remember）
-
-- **R1**：准确陈述单例模式（Singleton Pattern）的经典定义，能复述 GoF《Design Patterns: Elements of Reusable Object-Oriented Software》中对 Singleton 意图（Intent）的原始描述："Ensure a class only has one instance, and provide a global point of access to it."
-- **R2**：列出 Python 中实现单例的至少 5 种方式：模块级单例、`__new__` 重写、装饰器、元类 `__call__`、`__init_subclass__`、`importlib` 重载防护、`enum` 单例、`functools.cache` 惰性单例。
-- **R3**：背诵元类 `__call__` 方法在实例创建过程中的执行顺序：`type.__call__(cls, *args, **kwargs)` → `cls.__new__(cls, *args, **kwargs)` → `cls.__init__(self, *args, **kwargs)`。
-
-### 1.2 理解层（Understand）
-
-- **U1**：解释为何 Python 的模块导入机制天然提供单例语义（`sys.modules` 缓存），并能说明 `import module` 多次返回同一模块对象的底层机制。
-- **U2**：对比"单例类"与"全局唯一对象"的概念差异，理解 Python 社区为何倾向于后者（模块级变量）而非前者（GoF 风格单例类）。
-- **U3**：阐述元类 `__call__` 拦截实例化的工作原理，绘制 `SingletonMeta.__call__` 与 `cls.__new__`、`cls.__init__` 的调用时序图。
-
-### 1.3 应用层（Apply）
-
-- **A1**：使用元类实现线程安全的单例 `Database` 类，正确使用 `threading.Lock` 与双重检查锁定（Double-Checked Locking, DCL）模式。
-- **A2**：为单例类实现可销毁（destroyable）变体，支持在单元测试中重置实例状态，避免测试间状态污染。
-- **A3**：基于元类实现"每子类一实例"（per-subclass singleton）模式，使继承层次中每个子类都拥有独立的单例。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：分析单例模式在 Python 测试中的三大痛点——隐藏依赖、状态泄漏、并行测试冲突，并对比 pytest fixture、`dependency injection`、`contextvar` 等替代方案。
-- **An2**：解构"全局状态"（global state）与"共享状态"（shared state）的本质区别，识别单例违反单一职责原则（SRP）的具体场景。
-- **An3**：剖析 CPython GIL 与单例线程安全的交互，说明为何在 CPython 下不加锁的简单单例"通常"能工作但仍是错的。
-
-### 1.5 评价层（Evaluate）
-
-- **E1**：评价 GoF 单例模式在现代 Python 中的适用性，判断何时应使用单例、何时应改用模块级对象、何时应使用依赖注入。
-- **E2**：审查一段使用元类单例的生产代码，识别潜在的线程安全漏洞、内存泄漏（`_instances` 字典永不释放）与测试隔离问题。
-- **E3**：对比单例与 Monostate（Borg 模式）、单例与 Multiton、单例与对象池的工程权衡，给出选型决策矩阵。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计一个支持"环境隔离"（environment-scoped singleton）的元类，使同一进程内不同环境（如 dev/staging/prod）拥有独立的单例实例。
-- **C2**：实现一个"可观测单例"（observable singleton）元类，自动记录单例的创建、访问、销毁事件，集成 `logging`、`structlog` 或 `opentelemetry`。
-- **C3**：构建一个"单例治理框架"（singleton governance framework），提供注册表、生命周期管理、健康检查、优雅降级与熔断能力。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 单例模式的历史起源
+### 1.1 单例模式的历史起源
 
 单例模式最早可追溯至 GoF 1994 年出版的《Design Patterns: Elements of Reusable Object-Oriented Software》。GoF 将其归类为创建型模式（Creational Pattern），意图解决"需要全局唯一实例"的设计问题。原始动机包括：
 
@@ -79,7 +38,7 @@ prerequisites:
 - **数据库连接池**：连接池需要全局协调资源分配。
 - **缓存**：全局缓存需要一致性访问。
 
-### 2.2 Python 单例的演化路径
+### 1.2 Python 单例的演化路径
 
 Python 社区对单例模式的态度经历了显著的演化：
 
@@ -109,7 +68,7 @@ Python 3.6 引入 `__init_subclass__`，为许多原本需要元类的场景提�
 - 使用 `functools.cache`、`functools.lru_cache` 实现惰性单例。
 - 仅在框架级代码（如 Django、SQLAlchemy）使用元类单例。
 
-### 2.3 元类单例的企业级动机
+### 1.3 元类单例的企业级动机
 
 尽管社区倾向于避免单例，但元类单例在以下企业级场景仍有不可替代的价值：
 
@@ -121,9 +80,9 @@ Python 3.6 引入 `__init_subclass__`，为许多原本需要元类的场景提�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 单例模式的形式化定义
+### 2.1 单例模式的形式化定义
 
 **定义 3.1（单例类）**：给定类 $C$，若 $C$ 满足以下两个条件，则称 $C$ 为单例类：
 
@@ -136,7 +95,7 @@ $$\text{Singleton}(C) \iff |\text{Instances}(C)| = 1 \land \exists f: \star \to 
 
 其中 $\text{Instances}(C)$ 表示 $C$ 在运行时的实例集合，$|\cdot|$ 表示集合基数，$\star$ 表示任意调用上下文。
 
-### 3.2 元类单例的形式化定义
+### 2.2 元类单例的形式化定义
 
 **定义 3.2（元类单例）**：给定元类 $M$ 与类 $C$（即 $C$ 的元类为 $M$，记作 $\text{metaclass}(C) = M$），若 $M$ 重写 `__call__` 方法满足：
 
@@ -144,7 +103,7 @@ $$M.\text{\_\_call\_\_}(C, \text{args}) = \begin{cases} \text{new\_instance} & \
 
 则称 $C$ 为元类 $M$ 控制的单例类。
 
-### 3.3 单例与恒等性的形式化关系
+### 2.3 单例与恒等性的形式化关系
 
 **定理 3.1（单例恒等性）**：若 $C$ 为单例类，则对任意 $x, y \in \text{Instances}(C)$：
 
@@ -156,7 +115,7 @@ $$x = y \iff x \equiv y \iff \text{id}(x) = \text{id}(y)$$
 
 由定义 3.1 的唯一性，$|\text{Instances}(C)| = 1$，故 $x, y$ 实际为同一对象，即 $\text{id}(x) = \text{id}(y)$。在 Python 中，`id` 返回对象在内存中的地址，相同 `id` 意味着同一对象，故 $x \equiv y$（身份相等），进而 $x = y$（值相等，因同一对象的值必然相等），`hash(x) = hash(y)`（因 `hash` 是对象的方法，同一对象调用同一方法返回相同结果）。$\blacksquare$
 
-### 3.4 线程安全单例的形式化定义
+### 2.4 线程安全单例的形式化定义
 
 **定义 3.3（线程安全单例）**：给定单例元类 $M$，若在并发环境下 $M.\text{\_\_call\_\_}$ 满足：
 
@@ -164,7 +123,7 @@ $$\forall t_1, t_2 \in \text{Threads}, \text{call}_{t_1}(C) = \text{call}_{t_2}(
 
 即任意线程调用 $C$ 的构造获得的实例 `id` 相同，则称 $M$ 为线程安全单例元类。
 
-### 3.5 Monostate（Borg）模式的形式化定义
+### 2.5 Monostate（Borg）模式的形式化定义
 
 **定义 3.4（Monostate/Borg）**：给定类 $B$，若 $B$ 满足：
 
@@ -176,9 +135,9 @@ Monostate 与单例的核心区别在于"身份唯一"vs"状态唯一"。Alex Ma
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 元类 `__call__` 拦截实例化的正确性
+### 3.1 元类 `__call__` 拦截实例化的正确性
 
 **命题 4.1**：设元类 $M$ 重写 `__call__` 方法，在首次调用时创建实例并缓存，后续调用返回缓存实例。则 $M$ 控制的类 $C$ 满足单例性质。
 
@@ -201,7 +160,7 @@ def __call__(cls, *args, **kwargs):
 
 由数学归纳法，对所有 $n \geq 1$，第 $n$ 次调用 `C(...)` 返回 $x$，即所有实例身份相同。$\blacksquare$
 
-### 4.2 双重检查锁定（DCL）的必要性
+### 3.2 双重检查锁定（DCL）的必要性
 
 **命题 4.2**：在多线程环境下，简单单例元类（不加锁）无法保证线程安全。
 
@@ -244,7 +203,7 @@ def __call__(cls, *args, **kwargs):
 
 在 CPython 中，由于 GIL（Global Interpreter Lock）的存在，字节码级别的操作是原子的。`dict` 的 `__contains__` 与 `__setitem__` 各自是原子的，但 `if ... not in ...: ...[...] = ...` 这一复合操作并非原子。因此 DCL 在 Python 中仍有必要性，尤其是在 `super().__call__()` 涉及复杂初始化（可能释放 GIL，如 I/O 操作）的场景。
 
-### 4.3 每子类一实例（Per-Subclass Singleton）的正确性
+### 3.3 每子类一实例（Per-Subclass Singleton）的正确性
 
 **命题 4.3**：设元类 $M$ 的 `_instances` 以类为键，则 $M$ 控制的基类 $B$ 及其子类 $C_1, C_2, \dots, C_n$ 各自独立满足单例性质。
 
@@ -264,7 +223,7 @@ $$\forall i \neq j, \text{Instances}(C_i) \cap \text{Instances}(C_j) = \emptyset
 
 每个 $C_i$ 各自满足 $|\text{Instances}(C_i)| = 1$。$\blacksquare$
 
-### 4.4 Monostate 与单例的等价性条件
+### 3.4 Monostate 与单例的等价性条件
 
 **命题 4.4**：Monostate 类 $B$ 在以下条件下与单例类等价：
 
@@ -290,9 +249,9 @@ def __eq__(self, other):
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 模块级单例（最 Pythonic）
+### 4.1 模块级单例（最 Pythonic）
 
 ```python
 # config.py
@@ -361,7 +320,7 @@ print(config_module.config is c1)  # True
 print(id(c1) == id(c2))      # True
 ```
 
-### 5.2 `__new__` 重写实现单例
+### 4.2 `__new__` 重写实现单例
 
 ```python
 class Singleton:
@@ -392,7 +351,7 @@ print(s1.value)      # 10
 print(s2.value)      # 10
 ```
 
-### 5.3 装饰器实现单例
+### 4.3 装饰器实现单例
 
 ```python
 import functools
@@ -436,7 +395,7 @@ log1.log("hello")
 print(log2.logs)     # ['hello']
 ```
 
-### 5.4 元类 `__call__` 实现单例（核心方案）
+### 4.4 元类 `__call__` 实现单例（核心方案）
 
 ```python
 class SingletonMeta(type):
@@ -473,7 +432,7 @@ print(db1 is db2)  # True
 print(db1.query("SELECT 1"))  # 查询: SELECT 1 on sqlite:///app.db
 ```
 
-### 5.5 线程安全元类单例（DCL）
+### 4.5 线程安全元类单例（DCL）
 
 ```python
 import threading
@@ -535,7 +494,7 @@ for t in threads:
 print(len(set(results)))  # 1（所有线程获得同一实例）
 ```
 
-### 5.6 每子类一实例的元类单例
+### 4.6 每子类一实例的元类单例
 
 ```python
 class PerClassSingletonMeta(type):
@@ -584,7 +543,7 @@ print(m1.execute())   # MySQL 执行: mysql
 print(r1.execute())   # Redis 执行: redis
 ```
 
-### 5.7 可销毁单例（测试友好）
+### 4.7 可销毁单例（测试友好）
 
 ```python
 import threading
@@ -645,7 +604,7 @@ print(c1 is c2)          # False
 print(c2.get("k"))       # None（新实例无缓存）
 ```
 
-### 5.8 Monostate（Borg 模式）
+### 4.8 Monostate（Borg 模式）
 
 ```python
 class Borg:
@@ -686,7 +645,7 @@ c1.set("debug", True)
 print(c2.get("debug"))  # True（状态共享）
 ```
 
-### 5.9 `__init_subclass__` 实现注册式单例
+### 4.9 `__init_subclass__` 实现注册式单例
 
 ```python
 class PluginRegistry:
@@ -721,7 +680,7 @@ print(PluginRegistry.registry)
 # 注意：__init_subclass__ 在类定义时即触发，name 参数控制注册键
 ```
 
-### 5.10 `functools.cache` 惰性单例
+### 4.10 `functools.cache` 惰性单例
 
 ```python
 import functools
@@ -750,7 +709,7 @@ print(db1 is db3)  # False（不同参数）
 get_database.cache_clear()
 ```
 
-### 5.11 `enum` 单例
+### 4.11 `enum` 单例
 
 ```python
 from enum import Enum, auto
@@ -782,7 +741,7 @@ current_state = current_state.transition_to(AppState.RUNNING)
 print(current_state)  # AppState.RUNNING
 ```
 
-### 5.12 环境隔离单例
+### 4.12 环境隔离单例
 
 ```python
 import threading
@@ -842,7 +801,7 @@ EnvironmentScopedSingletonMeta.clear_environment("dev")
 # 下次获取 dev 配置会创建新实例
 ```
 
-### 5.13 可观测单例元类
+### 4.13 可观测单例元类
 
 ```python
 import logging
@@ -897,9 +856,9 @@ print(svc1 is svc2)  # True
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Ruby 单例的对比
+### 5.1 与 Ruby 单例的对比
 
 **Ruby 的 Singleton 模块**：
 
@@ -936,7 +895,7 @@ db = Database.instance  # 获取单例
 - 强制性更强，不易绕过。
 - 线程安全由标准库保证。
 
-### 6.2 与 JavaScript 单例的对比
+### 5.2 与 JavaScript 单例的对比
 
 **JavaScript 单例**：
 
@@ -986,7 +945,7 @@ class Singleton {
 - Python 的模块系统与 JavaScript ES Module 在单例语义上相似。
 - Python 元类提供了 JavaScript 无法实现的类创建拦截能力。
 
-### 6.3 与 Go 单例的对比
+### 5.3 与 Go 单例的对比
 
 **Go 单例**：
 
@@ -1032,7 +991,7 @@ func GetInstance() *Database {
 - 动态类型允许运行时修改单例行为。
 - 测试时更易 Mock（通过依赖注入）。
 
-### 6.4 与 Java 单例的对比
+### 5.4 与 Java 单例的对比
 
 **Java 单例（DCL）**：
 
@@ -1077,7 +1036,7 @@ public enum DatabaseEnum {
 - Joshua Bloch 在《Effective Java》中强烈推荐 enum 单例，因其天然防御序列化与反射攻击。
 - Python 的 `enum` 同样提供单例语义，但用途更偏向状态枚举而非传统单例。
 
-### 6.5 Python 各单例实现方式对比
+### 5.5 Python 各单例实现方式对比
 
 | 实现方式 | 代码量 | 线程安全 | 测试友好 | 继承支持 | 性能 | 推荐场景 |
 |---------|--------|---------|---------|---------|------|---------|
@@ -1092,9 +1051,9 @@ public enum DatabaseEnum {
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：`__init__` 重复调用
+### 6.1 陷阱一：`__init__` 重复调用
 
 **反模式**：
 
@@ -1144,7 +1103,7 @@ print(s2.value)  # 10
 
 **元类方案天然避免此问题**：元类 `__call__` 在首次调用后直接返回缓存实例，不再调用 `type.__call__`，因此 `__init__` 只执行一次。
 
-### 7.2 陷阱二：线程不安全的简单单例
+### 6.2 陷阱二：线程不安全的简单单例
 
 **反模式**：
 
@@ -1163,7 +1122,7 @@ class UnsafeSingletonMeta(type):
 
 **修复**：使用 DCL（见 5.5 节）。
 
-### 7.3 陷阱三：`_instances` 字典内存泄漏
+### 6.3 陷阱三：`_instances` 字典内存泄漏
 
 **反模式**：
 
@@ -1200,7 +1159,7 @@ class WeakSingletonMeta(type):
         return cls._instances[cls]
 ```
 
-### 7.4 陷阱四：单例状态污染测试
+### 6.4 陷阱四：单例状态污染测试
 
 **反模式**：
 
@@ -1244,7 +1203,7 @@ def test_default_mode(config):
     assert config.debug is False  # 通过
 ```
 
-### 7.5 陷阱五：元类冲突
+### 6.5 陷阱五：元类冲突
 
 **反模式**：
 
@@ -1284,7 +1243,7 @@ class User(BaseModel, metaclass=CombinedMeta):
     pass
 ```
 
-### 7.6 陷阱六：单例与 `copy.deepcopy`
+### 6.6 陷阱六：单例与 `copy.deepcopy`
 
 **反模式**：
 
@@ -1325,7 +1284,7 @@ class Config(metaclass=SingletonMeta):
         return self  # 单例：返回自身
 ```
 
-### 7.7 陷阱七：`pickle` 破坏单例
+### 6.7 陷阱七：`pickle` 破坏单例
 
 **反模式**：
 
@@ -1365,7 +1324,7 @@ class Config(metaclass=SingletonMeta):
         return (self.__class__, ())
 ```
 
-### 7.8 陷阱八：子类化单例时的意外共享
+### 6.8 陷阱八：子类化单例时的意外共享
 
 **反模式**：
 
@@ -1409,7 +1368,7 @@ class PerClassSingletonMeta(type):
         return cls._instances[cls]
 ```
 
-### 7.9 陷阱九：单例隐藏依赖导致测试困难
+### 6.9 陷阱九：单例隐藏依赖导致测试困难
 
 **反模式**：
 
@@ -1460,7 +1419,7 @@ def test_create_user():
     assert mock_logger.logs == ["创建用户: Alice"]
 ```
 
-### 7.10 陷阱十：过度使用单例
+### 6.10 陷阱十：过度使用单例
 
 **反模式**：将所有服务类都设为单例。
 
@@ -1478,9 +1437,9 @@ class AnalyticsService(metaclass=SingletonMeta): ...
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 实践一：优先使用模块级单例
+### 7.1 实践一：优先使用模块级单例
 
 ```python
 # config.py（推荐）
@@ -1501,7 +1460,7 @@ from config import config
 - 测试时可通过 `importlib.reload` 重置。
 - 符合 PEP 8 与社区共识。
 
-### 8.2 实践二：元类单例必须线程安全
+### 7.2 实践二：元类单例必须线程安全
 
 ```python
 import threading
@@ -1521,7 +1480,7 @@ class SingletonMeta(type):
 
 **理由**：多线程环境是 Python 服务的常态（Web 服务器、异步任务），不安全的单例会导致难以复现的 bug。
 
-### 8.3 实践三：提供测试重置机制
+### 7.3 实践三：提供测试重置机制
 
 ```python
 class TestableSingletonMeta(type):
@@ -1548,7 +1507,7 @@ def singleton_instance():
     SomeService.reset()
 ```
 
-### 8.4 实践四：使用 `weakref` 避免内存泄漏
+### 7.4 实践四：使用 `weakref` 避免内存泄漏
 
 ```python
 import weakref
@@ -1567,7 +1526,7 @@ class WeakSingletonMeta(type):
         return cls._instances[cls]
 ```
 
-### 8.5 实践五：文档化单例语义
+### 7.5 实践五：文档化单例语义
 
 ```python
 class Database(metaclass=SingletonMeta):
@@ -1589,7 +1548,7 @@ class Database(metaclass=SingletonMeta):
     pass
 ```
 
-### 8.6 实践六：避免单例中持有可变全局状态
+### 7.6 实践六：避免单例中持有可变全局状态
 
 ```python
 # 反模式
@@ -1608,7 +1567,7 @@ def handle_request(user):
     # 在此请求范围内访问 request_user.get()
 ```
 
-### 8.7 实践七：单例初始化应快速且无副作用
+### 7.7 实践七：单例初始化应快速且无副作用
 
 ```python
 # 反模式
@@ -1630,7 +1589,7 @@ class LazySingleton(metaclass=SingletonMeta):
         return self._data
 ```
 
-### 8.8 实践八：使用类型注解提升可维护性
+### 7.8 实践八：使用类型注解提升可维护性
 
 ```python
 from typing import Any, Dict, Optional, Type, TypeVar
@@ -1659,7 +1618,7 @@ class Config(metaclass=TypedSingletonMeta):
         return getattr(self, key, default)
 ```
 
-### 8.9 实践九：集成结构化日志
+### 7.9 实践九：集成结构化日志
 
 ```python
 import logging
@@ -1687,7 +1646,7 @@ class LoggedSingletonMeta(type):
         return cls._instances[cls]
 ```
 
-### 8.10 实践十：提供优雅降级能力
+### 7.10 实践十：提供优雅降级能力
 
 ```python
 import threading
@@ -1714,9 +1673,9 @@ class ResilientSingletonMeta(type):
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Python `logging` 模块的单例设计
+### 8.1 案例一：Python `logging` 模块的单例设计
 
 Python 标准库 `logging` 模块是单例模式的经典应用：
 
@@ -1755,7 +1714,7 @@ class Manager:
 
 **启示**：单例不一定通过元类实现，注册表模式是更灵活的替代方案。
 
-### 9.2 案例二：Django 的 `AppConfig` 单例
+### 8.2 案例二：Django 的 `AppConfig` 单例
 
 Django 框架使用模块级单例管理应用配置：
 
@@ -1803,7 +1762,7 @@ print(user_app.name)  # 'django.contrib.auth'
 - 提供丰富的 API（`get_app_config`、`get_model`、`get_models`）。
 - 支持 `ready()` 钩子进行应用初始化。
 
-### 9.3 案例三：SQLAlchemy 的 `MetaData` 与 `Engine`
+### 8.3 案例三：SQLAlchemy 的 `MetaData` 与 `Engine`
 
 SQLAlchemy 使用模块级单例管理数据库元数据：
 
@@ -1832,7 +1791,7 @@ Session = sessionmaker(bind=engine)
 - `metadata` 作为 `Base` 的属性，自动收集所有表定义。
 - `Engine` 推荐应用级单例，`Session` 推荐请求级多实例。
 
-### 9.4 案例四：Pydantic 的 `BaseSettings` 单例
+### 8.4 案例四：Pydantic 的 `BaseSettings` 单例
 
 Pydantic v2 的 `BaseSettings` 常用作配置单例：
 
@@ -1869,7 +1828,7 @@ print(settings.app_name)
 - 支持环境变量与 `.env` 文件自动加载。
 - 测试时调用 `get_settings.cache_clear()` 重置。
 
-### 9.5 案例五：Celery 的 `Celery` 应用单例
+### 8.5 案例五：Celery 的 `Celery` 应用单例
 
 Celery 分布式任务队列使用模块级单例：
 
@@ -1899,7 +1858,7 @@ app.send_task("myapp.add", args=[1, 2])
 - 装饰器 `@app.task` 注册任务到单例。
 - 支持多应用并存（不同模块不同 `app`）。
 
-### 9.6 案例六：Redis 客户端连接池
+### 8.6 案例六：Redis 客户端连接池
 
 `redis-py` 使用单例模式管理连接池：
 
@@ -1936,7 +1895,7 @@ r2 = RedisClient()
 print(r1 is r2)  # True
 ```
 
-### 9.7 案例七：TensorFlow / PyTorch 全局会话
+### 8.7 案例七：TensorFlow / PyTorch 全局会话
 
 深度学习框架常使用单例管理 GPU 资源：
 
@@ -1976,7 +1935,7 @@ class GPUResourceManager(metaclass=GPUResourceManagerMeta):
             self.allocated_memory -= size
 ```
 
-### 9.8 案例八：FastAPI 的设置对象
+### 8.8 案例八：FastAPI 的设置对象
 
 FastAPI 推荐使用 Pydantic Settings 作为配置单例：
 
@@ -2021,7 +1980,7 @@ async def list_items(
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 10.1.1**：使用模块级方式实现一个 `Logger` 单例，支持 `info`、`warning`、`error` 三个方法，输出格式为 `[时间] [级别] 消息`。
 
@@ -2134,7 +2093,7 @@ print(c1 is c2)  # True
 print(c1 is c3)  # True
 ```
 
-### 10.3 分析题
+### 9.3 分析题
 
 **题目 10.3.1**：分析以下代码的问题，并给出修复方案。
 
@@ -2190,7 +2149,7 @@ CPython 的 GIL（Global Interpreter Lock）保证字节码级别的原子性，
 
 因此，多线程下仍可能创建多个实例，违反单例性质。生产代码必须使用锁保证线程安全。
 
-### 10.4 评价题
+### 9.4 评价题
 
 **题目 10.4.1**：评价以下观点："Python 中应该避免使用单例模式，模块级变量是唯一正确的单例实现方式。"
 
@@ -2213,7 +2172,7 @@ CPython 的 GIL（Global Interpreter Lock）保证字节码级别的原子性，
 
 **结论**：模块级变量应作为默认选择，元类单例作为框架级或特殊场景的补充。不应一刀切地禁止元类单例，但应避免在业务代码中滥用。
 
-### 10.5 创造题
+### 9.5 创造题
 
 **题目 10.5.1**：设计一个"单例治理框架"，提供以下能力：
 
@@ -2302,7 +2261,7 @@ registry.register("database", create_database, database_health_check)
 db = registry.get("database")
 ```
 
-### 10.6 思考题
+### 9.6 思考题
 
 **题目 10.6.1**：在微服务架构中，单例模式是否仍有意义？分布式环境下的"单例"应如何实现？
 
@@ -2318,9 +2277,9 @@ db = registry.get("database")
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 经典文献
+### 10.1 经典文献
 
 - Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley Professional.（GoF 经典，单例模式的原始定义）
 
@@ -2328,7 +2287,7 @@ db = registry.get("database")
 
 - Slatkin, B. (2019). *Effective Python* (2nd ed.). Addison-Wesley Professional.（Item 35: Use Modules to Encapsulate State, Not Classes）
 
-### 11.2 Python 特定文献
+### 10.2 Python 特定文献
 
 - Martelli, A. (2003). *Python Cookbook* (2nd ed.). O'Reilly Media.（Borg 模式的原始提出）
 
@@ -2336,7 +2295,7 @@ db = registry.get("database")
 
 - Beazley, D., & Jones, B. K. (2013). *Python Cookbook* (3rd ed.). O'Reilly Media.（Recipe 9.13: Using a Metaclass to Control Instance Creation）
 
-### 11.3 PEP 文档
+### 10.3 PEP 文档
 
 - Python Software Foundation. (2006). *PEP 3115: Metaclasses in Python 3000*. https://peps.python.org/pep-3115/
 
@@ -2344,13 +2303,13 @@ db = registry.get("database")
 
 - Python Software Foundation. (2017). *PEP 557: Data Classes*. https://peps.python.org/pep-0557/
 
-### 11.4 学术论文
+### 10.4 学术论文
 
 - Hannemann, J., & Kiczales, G. (2002). Design pattern implementation in Java and AspectJ. *ACM SIGPLAN Notices*, 37(11), 193-205.（单例模式的面向切面实现）
 
 - Beck, K., & Cunningham, W. (1989). Using pattern languages for object-oriented programs. *OOPSLA'89 Workshop on Specification and Design for Object-Oriented Programming*.（设计模式语言）
 
-### 11.5 在线资源
+### 10.5 在线资源
 
 - Python Documentation. *Data model*. https://docs.python.org/3/reference/datamodel.html
 
@@ -2360,39 +2319,39 @@ db = registry.get("database")
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 元类深入
+### 11.1 元类深入
 
 - 本项目 `python/元类.md`：元类与类创建过程的深度解析。
 - 本项目 `python/描述符协议.md`：描述符与元类的配合使用。
 - 本项目 `python/装饰器进阶.md`：装饰器作为元类的轻量替代方案。
 
-### 12.2 设计模式
+### 11.2 设计模式
 
 - *Head First Design Patterns*（O'Reilly）：单例模式的可视化讲解。
 - *Refactoring to Patterns*（Addison-Wesley）：何时引入单例，何时移除单例。
 - *Design Patterns in Python*（GitHub 资源）：Python 版 23 种设计模式实现。
 
-### 12.3 测试与单例
+### 11.3 测试与单例
 
 - *Test Driven Development*（Kent Beck）：测试驱动开发中的依赖管理。
 - pytest 文档：*Fixture 与单例重置*。https://docs.pytest.org/en/stable/fixture.html
 - *Working Effectively with Legacy Code*（Michael Feathers）：如何测试遗留代码中的单例。
 
-### 12.4 并发与线程安全
+### 11.4 并发与线程安全
 
 - *Python Concurrency with asyncio*（Matthew Fowler）：异步编程中的单例。
 - *High Performance Python*（Micha Gorelick, Ian Ozsvald）：单例的性能考量。
 - Python `threading` 文档：https://docs.python.org/3/library/threading.html
 
-### 12.5 框架实践
+### 11.5 框架实践
 
 - Django Documentation. *Applications*. https://docs.djangoproject.com/en/stable/ref/applications/
 - SQLAlchemy Documentation. *Session Basics*. https://docs.sqlalchemy.org/en/stable/orm/session_basics.html
 - FastAPI Documentation. *Settings and Environment Variables*. https://fastapi.tiangolo.com/advanced/settings/
 
-### 12.6 函数式替代方案
+### 11.6 函数式替代方案
 
 - *Functional Programming in Python*（David Mertz）：函数式风格中的状态管理。
 - *Learn You a Haskell for Great Good!*（Miran Lipovača）：Monadic 状态管理对 Python 的启示。

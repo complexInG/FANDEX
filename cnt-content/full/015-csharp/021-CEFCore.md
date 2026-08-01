@@ -20,16 +20,6 @@ prerequisites:
   - csharp/异步编程
 ---
 
-## 学习目标
-
-完成本章学习后，读者应当能够达到以下认知层级（参照 Bloom 分类法）：
-
-- **记忆（Remembering）**：复述 EF Core 的核心概念（DbContext、DbSet、实体、迁移、变更追踪），列举主要数据库提供程序（SQL Server、SQLite、PostgreSQL、MySQL、Cosmos DB）。
-- **理解（Understanding）**：解释 EF Core 的工作机制（LINQ 表达式树翻译为 SQL、变更追踪器、导航属性修复、N+1 问题成因）；阐述 Code-First 与 Database-First 的差异；说明乐观并发与悲观并发的实现原理。
-- **应用（Applying）**：使用 Fluent API 与数据注解配置实体映射；编写复杂的 LINQ 查询（Include、分组、连接、分页）；管理迁移生命周期；在 ASP.NET Core 中通过 DI 注册 DbContext。
-- **分析（Analyzing）**：解构生成的 SQL 执行计划，识别性能瓶颈（N+1、笛卡尔积、缺少索引、过度加载）；对比不同加载策略（Eager、Explicit、Lazy）的适用场景与代价。
-- **评价（Evaluating）**：评估 DbContext 生命周期选择（Scoped、Transient、Singleton）的合理性；评价仓储模式与直接使用 DbContext 的工程权衡；审计生产代码中的并发安全与事务边界。
-- **创造（Creating）**：基于 DDD 战术模式设计聚合根与值对象的 EF Core 映射；构建多租户数据隔离架构；实现事件溯源与 CQRS 模式；为高并发场景设计乐观锁重试策略与最终一致性方案。
 
 ## 历史动机与背景
 

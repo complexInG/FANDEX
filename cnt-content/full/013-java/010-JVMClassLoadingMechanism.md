@@ -29,84 +29,16 @@ tags:
   - JavaAgent
 ---
 
+
 # JVM 类加载机制深度指南
 
 > 类加载机制是 Java"一次编写、到处运行"承诺的运行时基石。从 1995 年 Java 1.0 内置的原始 ClassLoader，到 Java 9 引入的模块系统（JPMS），再到云原生时代的动态类加载、热部署、字节码增强、Java Agent，类加载机制始终是 Java 平台最具生命力、也最常被误解的核心子系统。本文将以"加载-链接-初始化"三阶段为骨架，以双亲委派模型为神经中枢，以字节码与运行时常量池为微观切面，系统性剖析类加载的全貌，让读者既能编写自定义 ClassLoader 解决工程问题，也能理解 Spring Boot、Tomcat、OSGi、Arthas 等主流框架的类加载设计。
 
 ---
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节以 Bloom 教育目标分类法（Anderson 2001 修订版）为框架，对学习目标进行显式分级。
-
-### 1.1 认知层级目标
-
-| 层级（Level） | 行为动词 | 具体学习目标 |
-|--------------|---------|-------------|
-| 记忆（Remember） | 列举、识别、定义 | 列举类加载生命周期的 5 个阶段，识别 Bootstrap、Platform、Application 三级类加载器，定义双亲委派模型 |
-| 理解（Understand） | 解释、归纳、对比 | 解释双亲委派的设计动机，对比类加载时机与类初始化时机，归纳 `Class` 对象在方法区与堆中的双重存在 |
-| 应用（Apply） | 实现、使用、演示 | 实现自定义 ClassLoader 加载字节码，使用 `URLClassLoader` 动态加载 JAR，演示热部署基本流程 |
-| 分析（Analyze） | 分解、辨别、推断 | 分解 `loadClass` 与 `findClass` 的职责边界，推断 SPI 场景下的类加载器切换原理，辨别 `forName` 与 `loadClass` 的初始化差异 |
-| 评价（Evaluate） | 评判、论证、批判 | 评判 Tomcat 打破双亲委派的合理性，论证 JPMS 对双亲委派的改进与挑战，批判反射绕过模块封装的风险 |
-| 创造（Create） | 设计、构建、重构 | 设计支持热卸载的插件化容器，构建 Java Agent 字节码增强工具，重构遗留单类加载器应用为多 ClassLoader 隔离架构 |
-
-### 1.2 学习成果自检清单
-
-完成本章学习后，读者应能独立完成以下任务：
-
-1. 在不查阅文档的前提下，画出类加载生命周期的 5 阶段状态机。
-2. 用一句话向同事解释双亲委派模型如何保证核心 API 的安全性与一致性。
-3. 在白板上写出 `ClassLoader.loadClass` 的伪代码，标注委派点与回退点。
-4. 实现一个自定义 ClassLoader，能从加密的字节数组解密后加载类。
-5. 对比 Tomcat 的 WebappClassLoader 与 OSGi 的 BundleClassLoader，给出隔离粒度的差异。
-6. 设计一个基于 Java Agent 的方法耗时统计工具，并说明 `premain` 与 `agentmain` 的触发时机。
-
-### 1.3 前置知识地图
-
-```mermaid
-flowchart TD
-    T0["Java 基础"]
-    T1["面向对象（类、对象、继承）"]
-    T2["反射（Class、Method、Field）"]
-    T3["异常处理"]
-    T4["JVM 基础（本章前置）"]
-    T5["运行时数据区（方法区、堆、栈）"]
-    T6["字节码（class 文件格式）"]
-    T7["执行引擎（解释器 + JIT）"]
-    T8["JVM 类加载机制（本章）"]
-    T9["类加载生命周期：加载 → 链接（验证、准备、解析） → 初始化"]
-    T10["类加载器层次：Bootstrap → Platform → Application → Custom"]
-    T11["双亲委派模型与打破场景"]
-    T12["模块系统（JPMS）对类加载的影响"]
-    T13["字节码增强：ASM、Javassist、ByteBuddy"]
-    T14["工程实践：热部署、Java Agent、SPI、OSGi、Tomcat"]
-    T0 --> T1
-    T0 --> T2
-    T0 --> T3
-    T3 --> T4
-    T4 --> T5
-    T4 --> T6
-    T4 --> T7
-    T7 --> T8
-    T8 --> T9
-    T8 --> T10
-    T8 --> T11
-    T8 --> T12
-    T8 --> T13
-    T8 --> T14
-```
-
-### 1.4 章节阅读建议
-
-- **零基础读者**：建议按顺序阅读第 2-5 节，配合第 5 节代码示例上机实操，再回到第 3、4 节深化理论。
-- **有 Java 开发经验的工程师**：可跳过第 2 节基础部分，直接阅读第 3 节双亲委派、第 4 节字节码、第 7 节反模式。
-- **架构师**：重点关注第 6 节对比分析、第 8 节工程实践与第 9 节案例研究，特别是 Tomcat、OSGi、Spring Boot 的类加载设计。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 类加载机制的诞生背景
+### 1.1 类加载机制的诞生背景
 
 1995 年 Java 1.0 发布时，类加载机制的设计目标非常明确：**支持 Applet 从网络远程加载类**。当时浏览器需要从任意 URL 下载 `.class` 文件并在沙箱中执行，这要求类加载必须满足两个约束：
 
@@ -115,7 +47,7 @@ flowchart TD
 
 为满足这两个约束，Java 设计了 `ClassLoader` 抽象类，并采用"类加载器 + 类全限定名"作为类的唯一标识（即 **运行时包名空间**）。这一设计使得两个不同的 `ClassLoader` 可以分别加载 `java.lang.String`，它们在 JVM 内部被视为完全不同的类。
 
-### 2.2 双亲委派模型的引入
+### 1.2 双亲委派模型的引入
 
 Java 1.2 引入了 **双亲委派模型**（Parent Delegation Model），将类加载器组织为层级结构：
 
@@ -135,7 +67,7 @@ Custom ClassLoader（用户自定义）
 2. **一致性**：同一个类在全 JVM 内只被加载一次（同一 ClassLoader + 同一类名），避免类型歧义。
 3. **可扩展性**：用户可通过继承 `URLClassLoader` 实现自定义加载器，自动复用双亲委派。
 
-### 2.3 类加载器的演进史
+### 1.3 类加载器的演进史
 
 | 版本 | 年份 | 关键变化 |
 |------|------|---------|
@@ -148,7 +80,7 @@ Custom ClassLoader（用户自定义）
 | JDK 16 | 2021 | 强封装默认（`--illegal-access=deny`），反射绕过被封堵 |
 | JDK 21 | 2023 | AppCFS（Application Class Data Sharing）支持动态归档 |
 
-### 2.4 关键里程碑：JPMS 的冲击
+### 1.4 关键里程碑：JPMS 的冲击
 
 Java 9 引入的模块系统（JSR 376）对类加载机制产生了深远影响：
 
@@ -159,7 +91,7 @@ Java 9 引入的模块系统（JSR 376）对类加载机制产生了深远影响
 
 这一变化使得"双亲委派"从 1.2 时代的铁律，演变为"模块感知的双亲委派"，是类加载机制 30 年来最大的一次重构。
 
-### 2.5 设计哲学：安全性与灵活性的平衡
+### 1.5 设计哲学：安全性与灵活性的平衡
 
 Java 类加载机制的设计哲学可以概括为：
 
@@ -174,9 +106,9 @@ Java 类加载机制的设计哲学可以概括为：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类加载生命周期的形式化定义
+### 2.1 类加载生命周期的形式化定义
 
 类 $C$ 的生命周期可形式化为状态机：
 
@@ -196,7 +128,7 @@ $$
 
 注意 **Resolved 可延迟**：JVM 规范允许在初始化前不解析符号引用，只有真正使用时才解析（惰性解析）。HotSpot 默认采用惰性解析。
 
-### 3.2 双亲委派模型的形式化定义
+### 2.2 双亲委派模型的形式化定义
 
 类加载器 $L$ 的 `loadClass` 方法可形式化为：
 
@@ -222,7 +154,7 @@ $$
 
 这意味着：即使两个 ClassLoader 加载了字节码完全相同的 `com.example.User`，它们也是不同的类，互相赋值会抛 `ClassCastException`。
 
-### 3.3 类初始化时机的形式化定义
+### 2.3 类初始化时机的形式化定义
 
 JVM 规范规定，类的 **初始化**（而非加载）在以下 6 种情况触发：
 
@@ -248,7 +180,7 @@ $$
 \end{cases}
 $$
 
-### 3.4 类卸载的形式化条件
+### 2.4 类卸载的形式化条件
 
 类 $C$ 被 JVM 卸载需同时满足 3 个条件：
 
@@ -264,9 +196,9 @@ $$
 
 ---
 
-## 4. 理论推导：类加载的内部机制
+## 3. 理论推导：类加载的内部机制
 
-### 4.1 class 文件格式剖析
+### 3.1 class 文件格式剖析
 
 class 文件是字节码的二进制容器，格式如下（JVMS §4）：
 
@@ -300,7 +232,7 @@ ClassFile {
 5. **fields / methods**：字段与方法表，每个含 access_flags、name、descriptor、attributes。
 6. **attributes**：类级属性（如 `SourceFile`、`InnerClasses`、`BootstrapMethods`）。
 
-### 4.2 常量池的结构与解析
+### 3.2 常量池的结构与解析
 
 常量池是 class 文件的核心，所有符号引用都存于此。常见常量类型：
 
@@ -317,7 +249,7 @@ ClassFile {
 
 **解析过程**：当字节码指令（如 `invokevirtual`）引用常量池项时，JVM 将符号引用（如 `java/lang/String.length:()I`）替换为直接引用（方法入口地址）。这一过程称为 **Resolution**。
 
-### 4.3 验证阶段的 4 个子阶段
+### 3.3 验证阶段的 4 个子阶段
 
 验证是链接的第一步，确保字节码安全合法。分为 4 个子阶段：
 
@@ -329,7 +261,7 @@ ClassFile {
    - 类型转换安全。
 4. **符号引用验证**：解析阶段执行，验证引用的类、字段、方法确实存在且可访问。
 
-### 4.4 准备阶段的零值赋值
+### 3.4 准备阶段的零值赋值
 
 准备阶段为静态字段分配内存并赋 **零值**，而非源码中的初始值：
 
@@ -344,7 +276,7 @@ public class Example {
 
 **ConstantValue 例外**：`static final` 字段若值为编译期常量（字面量、字符串），编译器在 class 文件中写入 `ConstantValue` 属性，准备阶段直接赋值，跳过 `<clinit>`。
 
-### 4.5 解析阶段的惰性策略
+### 3.5 解析阶段的惰性策略
 
 HotSpot 默认采用 **惰性解析**：符号引用在首次使用时才解析。例如：
 
@@ -362,7 +294,7 @@ public class Main {
 
 惰性解析的优势：启动快、未用类不加载；劣势：错误延迟暴露。
 
-### 4.6 初始化阶段的 `<clinit>` 执行
+### 3.6 初始化阶段的 `<clinit>` 执行
 
 初始化阶段执行 `<clinit>` 方法，该方法由编译器自动生成，包含：
 
@@ -387,7 +319,7 @@ public class Singleton {
 
 这是"饿汉式"单例线程安全的根本原因——`<clinit>` 的原子性。
 
-### 4.7 双亲委派的字节码视角
+### 3.7 双亲委派的字节码视角
 
 `ClassLoader.loadClass` 的源码（简化）：
 
@@ -425,7 +357,7 @@ protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundE
 3. **parent == null**：委派 Bootstrap（C++ 实现，无 Java 对象）。
 4. **findClass**：用户重写点，默认抛 `ClassNotFoundException`。
 
-### 4.8 类卸载的 GC 机制
+### 3.8 类卸载的 GC 机制
 
 类卸载发生在 Full GC 时，需同时满足 3 个条件（重申）：
 
@@ -437,7 +369,7 @@ protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundE
 
 **热部署的理论基础**：自定义 ClassLoader 加载的类可卸载。当替换插件时，丢弃旧 ClassLoader，加载新 ClassLoader，旧类在下次 GC 时卸载，新类生效。
 
-### 4.9 模块系统对类加载的改造
+### 3.9 模块系统对类加载的改造
 
 JPMS（Java 9+）将双亲委派改造为"模块感知"：
 
@@ -462,9 +394,9 @@ flowchart TD
 
 ---
 
-## 5. 代码示例：从入门到进阶的完整实战
+## 4. 代码示例：从入门到进阶的完整实战
 
-### 5.1 入门：查看类的加载器
+### 4.1 入门：查看类的加载器
 
 ```java
 public class LoaderDemo {
@@ -488,7 +420,7 @@ public class LoaderDemo {
 }
 ```
 
-### 5.2 基础：自定义 ClassLoader 从文件加载
+### 4.2 基础：自定义 ClassLoader 从文件加载
 
 ```java
 import java.nio.file.*;
@@ -528,7 +460,7 @@ public class FileClassLoader extends ClassLoader {
 }
 ```
 
-### 5.3 进阶：解密加载（防止 class 被反编译）
+### 4.3 进阶：解密加载（防止 class 被反编译）
 
 ```java
 import java.nio.file.*;
@@ -564,7 +496,7 @@ public class DecryptingClassLoader extends ClassLoader {
 }
 ```
 
-### 5.4 进阶：热部署示例
+### 4.4 进阶：热部署示例
 
 ```java
 import java.nio.file.*;
@@ -636,7 +568,7 @@ public class HotDeployDemo {
 }
 ```
 
-### 5.5 进阶：打破双亲委派（Tomcat 风格）
+### 4.5 进阶：打破双亲委派（Tomcat 风格）
 
 ```java
 public class WebAppClassLoader extends URLClassLoader {
@@ -676,7 +608,7 @@ public class WebAppClassLoader extends URLClassLoader {
 }
 ```
 
-### 5.6 进阶：Java Agent 字节码增强（premain）
+### 4.6 进阶：Java Agent 字节码增强（premain）
 
 ```java
 // Agent.java
@@ -720,7 +652,7 @@ Can-Retransform-Classes: true
 java -javaagent:timing-agent.jar -jar myapp.jar
 ```
 
-### 5.7 进阶：agentmain（运行时挂载）
+### 4.7 进阶：agentmain（运行时挂载）
 
 ```java
 public class DiagnosticAgent {
@@ -744,7 +676,7 @@ vm.loadAgent("diagnostic-agent.jar");
 vm.detach();
 ```
 
-### 5.8 进阶：SPI 与上下文类加载器
+### 4.8 进阶：SPI 与上下文类加载器
 
 ```java
 // ServiceLoader 内部使用上下文 ClassLoader 加载实现类
@@ -760,7 +692,7 @@ Thread.currentThread().setContextClassLoader(customLoader);
 
 SPI 场景：JDBC `DriverManager` 由 Bootstrap 加载，但具体 `Driver` 实现由第三方提供（classpath），Bootstrap 无法加载。解决：使用 `Thread.currentThread().getContextClassLoader()` 加载实现类，这正是双亲委派"被打破"的标准场景。
 
-### 5.9 进阶：ByteBuddy 字节码增强
+### 4.9 进阶：ByteBuddy 字节码增强
 
 ```java
 import net.bytebuddy.*;
@@ -782,7 +714,7 @@ public class ByteBuddyDemo {
 }
 ```
 
-### 5.10 实战：模拟 Arthas 方法耗时监控
+### 4.10 实战：模拟 Arthas 方法耗时监控
 
 ```java
 import java.lang.instrument.*;
@@ -820,9 +752,9 @@ public class MethodTimerAgent {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 类加载器层次对比
+### 5.1 类加载器层次对比
 
 | 类加载器 | 实现语言 | 加载路径 | 父加载器 | 典型类 |
 |---------|---------|---------|---------|--------|
@@ -831,7 +763,7 @@ public class MethodTimerAgent {
 | Application | Java | `classpath` | Platform | 用户类 |
 | Custom | Java | 自定义 | 任意 | 插件类 |
 
-### 6.2 `Class.forName` vs `ClassLoader.loadClass`
+### 5.2 `Class.forName` vs `ClassLoader.loadClass`
 
 | 维度 | `Class.forName` | `ClassLoader.loadClass` |
 |------|----------------|----------------------|
@@ -853,7 +785,7 @@ Class<?> c2 = ClassLoader.getSystemClassLoader().loadClass("com.example.Foo");
 Class<?> c3 = Class.forName("com.example.Foo", false, loader);
 ```
 
-### 6.3 双亲委派 vs 模块化加载
+### 5.3 双亲委派 vs 模块化加载
 
 | 维度 | 双亲委派（1.2-8） | 模块化加载（9+） |
 |------|------------------|----------------|
@@ -863,7 +795,7 @@ Class<?> c3 = Class.forName("com.example.Foo", false, loader);
 | 性能 | 略低（多次委派） | 略高（模块图直接查） |
 | 隔离粒度 | 类加载器级 | 模块级 |
 
-### 6.4 各框架类加载策略对比
+### 5.4 各框架类加载策略对比
 
 | 框架 | 类加载策略 | 隔离粒度 | 打破双亲委派 |
 |------|----------|---------|-------------|
@@ -874,7 +806,7 @@ Class<?> c3 = Class.forName("com.example.Foo", false, loader);
 | JBoss/WildFly | ModuleClassLoader | 每个模块一个 | 是（模块化） |
 | Arthas | IsolatingClassLoader | 增强 ClassLoader | 是（运行时挂载） |
 
-### 6.5 字节码增强库对比
+### 5.5 字节码增强库对比
 
 | 库 | 性能 | API 友好度 | 学习曲线 | 典型用户 |
 |----|------|-----------|---------|---------|
@@ -885,9 +817,9 @@ Class<?> c3 = Class.forName("com.example.Foo", false, loader);
 
 ---
 
-## 7. 陷阱与反模式
+## 6. 陷阱与反模式
 
-### 7.1 反模式：自定义 ClassLoader 不重写 findClass
+### 6.1 反模式：自定义 ClassLoader 不重写 findClass
 
 **错误**：直接重写 `loadClass` 破坏双亲委派，导致核心 API 被替换风险。
 
@@ -917,7 +849,7 @@ public class GoodLoader extends ClassLoader {
 }
 ```
 
-### 7.2 反模式：跨 ClassLoader 赋值导致 ClassCastException
+### 6.2 反模式：跨 ClassLoader 赋值导致 ClassCastException
 
 ```java
 ClassLoader cl1 = new FileClassLoader(...);
@@ -942,7 +874,7 @@ Class<?> implClass = cl.loadClass("com.example.WorkerImpl");
 Worker w = (Worker) implClass.newInstance();  // OK，Worker 由公共加载器加载
 ```
 
-### 7.3 反模式：Class.forName 阻塞初始化
+### 6.3 反模式：Class.forName 阻塞初始化
 
 ```java
 // 反例：在启动时 forName 所有类
@@ -960,7 +892,7 @@ for (String cls : allClasses) {
 }
 ```
 
-### 7.4 反模式：Java Agent 内存泄漏
+### 6.4 反模式：Java Agent 内存泄漏
 
 ```java
 // 反例：Agent 持续累积增强类
@@ -984,7 +916,7 @@ static List<WeakReference<byte[]>> cache = new ArrayList<>();
 // 定期清理
 ```
 
-### 7.5 反模式：SPI 忽略上下文类加载器
+### 6.5 反模式：SPI 忽略上下文类加载器
 
 ```java
 // 反例：SPI 实现类用调用者加载器
@@ -1003,7 +935,7 @@ ServiceLoader<Driver> loaders = ServiceLoader.load(
 );
 ```
 
-### 7.6 反模式：热部署导致 PermGen / Metaspace OOM
+### 6.6 反模式：热部署导致 PermGen / Metaspace OOM
 
 ```java
 // 反例：每次重载新建 ClassLoader，但保留旧实例
@@ -1027,7 +959,7 @@ ClassLoader cl = new FileClassLoader(...);
 // ...
 ```
 
-### 7.7 反模式：反射绕过模块封装
+### 6.7 反模式：反射绕过模块封装
 
 ```java
 // 反例：Java 16+ 默认强封装，反射被拒绝
@@ -1044,7 +976,7 @@ f.setAccessible(true);  // InaccessibleObjectException
 java --add-opens java.base/java.lang=ALL-UNNAMED -jar myapp.jar
 ```
 
-### 7.8 反模式：模块化与双亲委派冲突
+### 6.8 反模式：模块化与双亲委派冲突
 
 ```java
 // 反例：依赖双亲委派加载 classpath 上的类
@@ -1054,7 +986,7 @@ java --add-opens java.base/java.lang=ALL-UNNAMED -jar myapp.jar
 
 **解决**：将依赖也模块化，或使用 `Automatic-Module-Name`。
 
-### 7.9 反模式：defineClass 重复定义
+### 6.9 反模式：defineClass 重复定义
 
 ```java
 // 反例：同一 ClassLoader 重复 defineClass 同一类
@@ -1067,7 +999,7 @@ cl.defineClass("Foo", bytes2, 0, bytes2.length);  // LinkageError
 
 **解决**：新建 ClassLoader 或使用 `Instrumentation.redefineClasses`（Java Agent）。
 
-### 7.10 反模式：线程上下文类加载器泄漏
+### 6.10 反模式：线程上下文类加载器泄漏
 
 ```java
 // 反例：线程池中设置上下文 ClassLoader 未恢复
@@ -1092,9 +1024,9 @@ try {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 类加载诊断技巧
+### 7.1 类加载诊断技巧
 
 1. **查看类加载器**：`-XX:+TraceClassLoading`（旧版）、`-Xlog:class+load=info`（Java 9+）。
 2. **查看类卸载**：`-XX:+TraceClassUnloading`、`-Xlog:class+unload=info`。
@@ -1102,7 +1034,7 @@ try {
 4. **Arthas**：`sc -d <ClassName>` 查看类加载器。
 5. **堆 dump**：MAT 分析 `ClassLoader` 对象引用链。
 
-### 8.2 性能调优
+### 7.2 性能调优
 
 1. **CDS（Class Data Sharing）**：将核心类预先归档，启动时 mmap 加载，减少类加载时间。
    - Java 10+：AppCDS 支持应用类。
@@ -1111,14 +1043,14 @@ try {
 3. **Metaspace 调优**：`-XX:MetaspaceSize`、`-XX:MaxMetaspaceSize`。
 4. **类加载并行**：Java 7+ 默认并行加载（`-XX:+ParallelClassLoading`）。
 
-### 8.3 安全实践
+### 7.3 安全实践
 
 1. **限制自定义 ClassLoader**：生产环境慎用，避免加载不可信字节码。
 2. **SecurityManager**（已废弃，Java 17+）：限制 `defineClass`、`loadClass` 权限。
 3. **字节码校验**：`-Xverify:all`（默认开启，生产不要关闭 `-noverify`）。
 4. **模块封装**：Java 9+ 默认强封装，反射需显式 `opens`。
 
-### 8.4 热部署架构设计
+### 7.4 热部署架构设计
 
 1. **类加载器隔离**：每个插件一个 ClassLoader。
 2. **接口契约**：插件实现公共接口，主程序通过接口调用。
@@ -1126,7 +1058,7 @@ try {
 4. **依赖管理**：插件依赖共享库时，由公共父加载器加载，避免重复。
 5. **资源释放**：插件卸载前关闭 `ThreadLocal`、`InputStream`、定时任务等。
 
-### 8.5 Java Agent 工程化
+### 7.5 Java Agent 工程化
 
 1. **MANIFEST.MF**：声明 `Premain-Class`、`Can-Redefine-Classes`、`Can-Retransform-Classes`。
 2. **字节码增强库选型**：推荐 ByteBuddy（API 友好、性能高）。
@@ -1136,9 +1068,9 @@ try {
 
 ---
 
-## 9. 案例研究：主流框架实践
+## 8. 案例研究：主流框架实践
 
-### 9.1 Tomcat：WebappClassLoader 的设计
+### 8.1 Tomcat：WebappClassLoader 的设计
 
 Tomcat 为每个 Webapp 创建独立的 `WebappClassLoader`，打破双亲委派：
 
@@ -1155,7 +1087,7 @@ Tomcat 为每个 Webapp 创建独立的 `WebappClassLoader`，打破双亲委派
 - **优先**：Webapp 自己的类优先加载，避免父加载器（Tomcat 共享库）冲突。
 - **热部署**：替换 Webapp 时丢弃 ClassLoader，旧类卸载。
 
-### 9.2 OSGi：BundleClassLoader 的网状委派
+### 8.2 OSGi：BundleClassLoader 的网状委派
 
 OSGi 为每个 Bundle 创建 `BundleClassLoader`，采用 **网状委派**：
 
@@ -1178,7 +1110,7 @@ OSGi 为每个 Bundle 创建 `BundleClassLoader`，采用 **网状委派**：
 - 复杂性高，调试困难。
 - 与现有库兼容性差（依赖双亲委派的库可能失效）。
 
-### 9.3 Spring Boot：LaunchedURLClassLoader
+### 8.3 Spring Boot：LaunchedURLClassLoader
 
 Spring Boot 的 Fat JAR 使用 `LaunchedURLClassLoader`：
 
@@ -1200,7 +1132,7 @@ Spring Boot 的 Fat JAR 使用 `LaunchedURLClassLoader`：
 - Fat JAR 内的 JAR 通过 `jar:file:!/path` 协议加载。
 - 与 `spring-boot-devtools` 配合实现热重启（重启 = 新建 ClassLoader）。
 
-### 9.4 JDBC：SPI 与上下文类加载器
+### 8.4 JDBC：SPI 与上下文类加载器
 
 JDBC 是 SPI 的典型场景：
 
@@ -1227,7 +1159,7 @@ private static void loadInitialDrivers() {
 
 这是双亲委派"被打破"的标准模式：**父加载器需要加载子加载器的类时，通过上下文类加载器**。
 
-### 9.5 JRebel：商业化热部署
+### 8.5 JRebel：商业化热部署
 
 JRebel 通过 Java Agent + 字节码增强实现 **不重启** 的热部署：
 
@@ -1251,7 +1183,7 @@ JRebel 通过 Java Agent + 字节码增强实现 **不重启** 的热部署：
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 1. 简述类加载生命周期的 5 个阶段，并说明哪些阶段可延迟。
 2. 写出双亲委派模型的伪代码，标出委派点与回退点。
@@ -1267,7 +1199,7 @@ JRebel 通过 Java Agent + 字节码增强实现 **不重启** 的热部署：
    - 主程序通过公共接口调用插件。
    - 卸载后旧插件实例可被 GC。
 
-### 10.3 分析题
+### 9.3 分析题
 
 8. 分析以下代码输出：
 
@@ -1299,7 +1231,7 @@ c.cast(o);  // ClassCastException
 
 10. 为何 Tomcat 的 WebappClassLoader 要先自己加载再委派父加载器？
 
-### 10.4 设计题
+### 9.4 设计题
 
 11. 设计一个微服务网关，支持运行时加载新插件（如限流、鉴权），要求：
     - 插件以 JAR 形式动态加入。
@@ -1310,7 +1242,7 @@ c.cast(o);  // ClassCastException
     - 对生产环境影响最小（<5% 开销）。
     - 支持运行时启停。
 
-### 10.5 开放题
+### 9.5 开放题
 
 13. JPMS 的"模块感知双亲委派"相比传统双亲委派，带来了哪些优势与挑战？
 14. 为何 Java 17 废弃 SecurityManager？这对类加载安全性有何影响？
@@ -1345,7 +1277,7 @@ public class Singleton {
     - 记录 SQL 文本与耗时。
     - 超过阈值时上报到监控中心。
 
-### 10.7 代码题
+### 9.7 代码题
 
 19. 实现一个支持版本化的 ClassLoader，可同时加载同一类的多个版本，并通过版本号获取对应实例。
 
@@ -1353,16 +1285,16 @@ public class Singleton {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方规范
+### 10.1 官方规范
 
 1. **JVMS**（Java Virtual Machine Specification）: Chapter 5 Loading, Linking, and Initializing. https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html
 2. **JLS**（Java Language Specification）: Chapter 12 Execution. https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html
 3. **JEP 261**: Module System. https://openjdk.org/jeps/261
 4. **JEP 463**: Implicitly Declared Classes (Java 21 Preview).
 
-### 11.2 经典书籍
+### 10.2 经典书籍
 
 5. **周志明**. 深入理解 Java 虚拟机（第 3 版）. 机械工业出版社, 2019. 第 7 章 类加载机制.
 6. **Alex Buckley et al.** Java Module System. O'Reilly, 2018.
@@ -1371,13 +1303,13 @@ public class Singleton {
 9. **Rafael Winterhalter**. The Java Module System. Manning, 2018.
 10. **Norman Maurer, M. Justin Lee**. Java Concurrency in Practice. Addison-Wesley, 2006.
 
-### 11.3 论文与文章
+### 10.3 论文与文章
 
 11. **Li, T., Ellis, J.** "Class Loading in the Java Virtual Machine". Sun Microsystems, 1998.
 12. **Bracha, G.** "The Java Module System: A Survey". JCP, 2016.
 13. **Winterhalter, R.** "Byte Buddy: Code Generation Made Easy". Java Magazine, 2019.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 14. OpenJDK Class Loading Guide. https://openjdk.org/groups/core-libs/ClassLoaderGuide.html
 15. Spring Boot Reference: Executable JAR. https://docs.spring.io/spring-boot/docs/current/reference/html/executable-jar.html
@@ -1389,9 +1321,9 @@ public class Singleton {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 相关章节
+### 11.1 相关章节
 
 - `java/JVM内存模型`：类存储在方法区与堆的细节。
 - `java/JVM垃圾回收`：类卸载的 GC 机制。
@@ -1400,7 +1332,7 @@ public class Singleton {
 - `java/Java新特性`：Java 8-21 对类加载的改进。
 - `java/并发编程基础`：`<clinit>` 的线程安全机制。
 
-### 12.2 进阶主题
+### 11.2 进阶主题
 
 - **AOT 编译**：GraalVM Native Image 与类加载的"消亡"。
 - **CDS / AppCDS**：类数据共享，加速启动。
@@ -1408,7 +1340,7 @@ public class Singleton {
 - **Project Leyden**：Java 静态镜像，挑战 Native Image。
 - **JFR Class Loading Events**：生产环境类加载监控。
 
-### 12.3 社区资源
+### 11.3 社区资源
 
 - OpenJDK Class Library & Tools 邮件列表：core-libs-dev@openjdk.org
 - Spring Framework Issues：https://github.com/spring-projects/spring-framework/issues

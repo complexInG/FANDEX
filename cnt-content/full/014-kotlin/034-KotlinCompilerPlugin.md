@@ -15,51 +15,10 @@ related:
 prerequisites:
   - kotlin/概述与环境配置
 ---
+
 ﻿# Kotlin kotlinc 编译命令速查手册
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
-## 学习目标
-
-本章节基于 Bloom 分类法组织学习目标，按认知层级由低到高排列，读者可逐级检验自身掌握程度。
-
-### 1. 记忆层（Remembering）
-
-- 能复述 kapt、KSP、Kotlin Compiler Plugin 三者的官方全称与基本定位。
-- 能列举 Kotlin 编译流程的四个主要阶段：Parsing、Analysis、Generation、Optimization。
-- 能写出至少三个基于 KSP 的主流开源库（如 Room、Hilt、Moshi 等）。
-
-### 2. 理解层（Understanding）
-
-- 能解释注解处理器（Annotation Processor）与编译器插件的本质差异。
-- 能描述 kapt 为什么需要生成 Java Stub 文件，以及由此引入的性能开销。
-- 能阐述 KSP 基于 Kotlin Compiler PSI 树进行分析的工作机制。
-
-### 3. 应用层（Applying）
-
-- 能为自定义注解编写 KSP 处理器并集成到 Gradle 工程。
-- 能使用 kotlinpoet 或 KotlinPoetKSP 生成类型安全的 Kotlin 代码。
-- 能通过 `SymbolProcessorProvider` 注册自定义处理器并在 build.gradle.kts 中启用。
-
-### 4. 分析层（Analyzing）
-
-- 能对比 kapt 与 KSP 在编译时长、内存占用、增量编译支持上的差异。
-- 能分析 Kotlin 编译器插件与 IR backend（Intermediate Representation）的协同关系。
-- 能定位 KSP 处理器中 `resolve()` 调用过频导致的性能瓶颈。
-
-### 5. 评价层（Evaluating）
-
-- 能评估在大型 Monorepo 中采用 KSP 替代 kapt 的迁移成本与收益。
-- 能判定何种场景适合采用 Kompile/Compose Compiler Plugin 而非 KSP。
-- 能针对开源库的处理器实现提出架构层面的改进建议。
-
-### 6. 创造层（Creating）
-
-- 能设计一个完整的基于 KSP 的领域驱动代码生成框架，包含 DSL、Processor、Gradle Plugin 三件套。
-- 能为开源项目贡献新的编译器插件能力，并完成基准测试与文档化。
-- 能构建一套覆盖增量编译、错误诊断、IDE 高亮的自定义工具链。
 
 ---
 
@@ -71,7 +30,7 @@ Java 5（2004 年）引入了 JSR 175「注解」机制，开启了元编程时�
 
 然而 Java 的注解处理 API 与 Java 编译器 `javac` 强耦合，处理流程依赖于 `Element`、`TypeMirror` 等抽象，无法直接理解 Kotlin 的扩展函数、协程、`suspend` 修饰符、内联类等语言特性。
 
-### 2. Kotlin 诞生初期的妥协：kapt
+### 1. Kotlin 诞生初期的妥协：kapt
 
 Kotlin 1.0（2016 年）发布时，JetBrains 面临的关键问题是：如何在不重写所有 Java 注解处理器的前提下，让 Kotlin 代码能被 Dagger、Dagger 2、Room、ButterKnife 等生态工具直接消费？答案是 kapt（Kotlin Annotation Processing Tool）。
 
@@ -85,7 +44,7 @@ $$
 
 其中 $T_{\text{analyze}}(K)$ 与 $T_{\text{kotlinc}}(K)$ 的分析阶段存在重复执行，这是 kapt 性能瓶颈的根本原因。
 
-### 3. KSP 的诞生：面向 Kotlin 原生的处理器
+### 2. KSP 的诞生：面向 Kotlin 原生的处理器
 
 Google 在 2019 年启动了 KSP（Kotlin Symbol Processing）项目，目标是在不依赖 javac、不生成 Stub 的前提下，直接基于 Kotlin Compiler 的 PSI（Program Structure Interface）树进行符号处理。KSP 1.0 于 2021 年发布，与 Kotlin 1.5.30 同步稳定。
 
@@ -96,7 +55,7 @@ KSP 的关键优势在于：
 - 处理速度比 kapt 快 2~3 倍（Google 内部测试数据，Hilt 项目对比）；
 - 原生理解 Kotlin 类型系统，包括 `suspend`、`inline class`、`value class`、`typealias`。
 
-### 4. Kotlin Compiler Plugin：最深的入侵
+### 3. Kotlin Compiler Plugin：最深的入侵
 
 KSP 解决了「读」的问题（符号分析），但仍无法修改 Kotlin 源码的语义。对于需要在编译期对源码进行深度变换的场景，例如：
 
@@ -107,7 +66,7 @@ KSP 解决了「读」的问题（符号分析），但仍无法修改 Kotlin �
 
 这些场景只能通过 Kotlin Compiler Plugin 实现，它们直接挂载到编译器的分析、解析、代码生成阶段，是最强但也是最危险的元编程能力。
 
-### 5. 工业界动机：构建性能与开发者体验
+### 4. 工业界动机：构建性能与开发者体验
 
 随着 Android 工程、KMP（Kotlin Multiplatform）工程的规模膨胀，kapt 成为编译耗时的主要瓶颈。Google 在 AndroidX、Room、Hilt 等项目中的实测数据显示，将 kapt 迁移到 KSP 后，全量编译时长可降低 30%~50%，增量编译时长可降低 60%~80%。这一动机推动了 KSP 在 Android 生态的快速普及，也促使 JetBrains 在 Kotlin 2.0 中进一步将 K2 编译器与 KSP 深度整合。
 
@@ -139,7 +98,7 @@ $$
 
 其中 $\text{Parse}'$、$\text{Analyze}'$、$\text{Gen}'$ 表示被插件拦截后的扩展版本。
 
-### 2. KSP 的符号处理代数
+### 1. KSP 的符号处理代数
 
 KSP 的处理流程可形式化为一个以符号为节点、以引用为边的图遍历过程。设 $\Sigma$ 为程序中所有符号的集合，$\mathcal{R} \subseteq \Sigma \times \Sigma$ 为符号间的引用关系，则 KSP 处理器的工作是：
 
@@ -161,7 +120,7 @@ $$
 
 直到不动点 $\Sigma_{n+1} = \Sigma_n$。
 
-### 3. 增量处理的依赖图
+### 2. 增量处理的依赖图
 
 KSP 增量处理的核心是构建与维护一张「源文件 - 生成文件」依赖图 $G = (V, E)$：
 
@@ -176,7 +135,7 @@ $$
 
 其中 $E^+$ 为 $E$ 的传递闭包。
 
-### 4. kapt Stub 生成代价模型
+### 3. kapt Stub 生成代价模型
 
 kapt 的总耗时 $T_{\text{kapt}}$ 可分解为：
 
@@ -211,7 +170,7 @@ $$
 
 **推论**：处理器必须严格遵守 KSP 的依赖声明 API（`Dependencies`、`aggregating` 标志），否则增量编译可能产生不一致结果。
 
-### 2. Kotlin Compiler Plugin 的可组合性问题
+### 1. Kotlin Compiler Plugin 的可组合性问题
 
 设 $P_1, P_2$ 为两个 Kotlin Compiler Plugin，分别对应变换 $T_1, T_2$。理想情况下，二者组合应满足交换律：
 
@@ -227,7 +186,7 @@ $$
 
 形式化地，设 $T_1, T_2$ 的「冲突集合」为 $C(T_1, T_2) \subseteq \text{AST}$，则当且仅当 $C(T_1, T_2) = \emptyset$ 时，$T_1 \circ T_2 = T_2 \circ T_1$。这是 Kotlin 官方对 Compiler Plugin 推广持保守态度的根本原因——Compose、Serialization 等插件均经过单独验证，组合使用时需谨慎。
 
-### 3. K2 编译器的 FirExtension 架构
+### 2. K2 编译器的 FirExtension 架构
 
 Kotlin 2.0 引入的 K2 编译器采用 FIR（Frontend IR）作为前端中间表示，FirExtension 是 K2 时代的插件扩展点。其核心机制包括：
 
@@ -250,7 +209,7 @@ $$
 
 K2 的细粒度订阅模型在大型工程中可降低 20%~40% 的插件开销（JetBrains 官方 K2 基准测试数据）。
 
-### 4. 复杂度分析
+### 3. 复杂度分析
 
 | 操作 | 时间复杂度 | 空间复杂度 | 备注 |
 |------|-----------|-----------|------|
@@ -504,7 +463,7 @@ public class UserFactory {
 
 本示例实现一个最小化的「All-Open」风格插件，将标注 `@OpenForTesting` 的类自动改为 `open`。
 
-#### 2.1 插件入口
+#### 1.1 插件入口
 
 ```kotlin
 // plugin/src/main/kotlin/com/example/allopen/AllOpenComponentRegistrar.kt
@@ -557,7 +516,7 @@ class AllOpenComponentRegistrar(
 }
 ```
 
-#### 2.2 Gradle 插件封装
+#### 1.2 Gradle 插件封装
 
 ```kotlin
 // plugin-gradle/src/main/kotlin/com/example/allopen/gradle/AllOpenGradlePlugin.kt
@@ -719,7 +678,7 @@ ksp {
 | 稳定性 | 稳定 | 稳定（KSP 1.0+） | 实验性 API 较多 |
 | 代表项目 | Dagger, ButterKnife, Room（旧版） | Hilt, Room, Moshi, Kotest | Compose, kotlinx.serialization |
 
-### 2. 编译时长对比（基于 Hilt 工程实测）
+### 1. 编译时长对比（基于 Hilt 工程实测）
 
 | 工程规模 | kapt 全量 | KSP 全量 | kapt 增量 | KSP 增量 |
 |---------|----------|---------|----------|---------|
@@ -729,7 +688,7 @@ ksp {
 
 数据来源：Google AndroidX 内部基准测试（2023 Q4），运行于 64 核 Xeon 工作站。
 
-### 3. 与 Java APT 的深度对比
+### 2. 与 Java APT 的深度对比
 
 | 维度 | Java APT (javax.annotation.processing) | KSP |
 |------|--------------------------------------|-----|
@@ -741,7 +700,7 @@ ksp {
 | 生态成熟度 | 极高（10+ 年沉淀） | 高（Google 主推，快速成熟） |
 | 跨平台支持 | 仅 JVM | JVM、JS、Native |
 
-### 4. KSP 与 Kotlin Compiler Plugin 的选型决策
+### 3. KSP 与 Kotlin Compiler Plugin 的选型决策
 
 KSP 与 Kotlin Compiler Plugin 的本质区别在于「读」与「写」的能力划分：
 
@@ -767,7 +726,7 @@ flowchart TD
     T4 --> T6
 ```
 
-### 5. 实测案例：Hilt 从 kapt 迁移到 KSP 的收益
+### 4. 实测案例：Hilt 从 kapt 迁移到 KSP 的收益
 
 Google 在 2023 年完成 Hilt 从 kapt 到 KSP 的迁移，对 200 模块的 AOSP 子工程进行对比：
 
@@ -803,7 +762,7 @@ fileSpec.writeTo(codeGenerator, deps)
 
 **生产建议**：始终显式传入源文件列表，并通过 `KSP.incremental.log=true` 在 CI 中验证依赖图正确性。
 
-### 2. 反模式：在 KSP 处理器中调用 `resolve()` 过频
+### 1. 反模式：在 KSP 处理器中调用 `resolve()` 过频
 
 **事故场景**：某 Moshi CodeGen 替代实现在处理泛型类时，对每个类型参数调用 `resolve()`，在大型工程中导致 OOM。
 
@@ -826,7 +785,7 @@ symbols.forEach { sym ->
 }
 ```
 
-### 3. 反模式：kapt 与 KSP 共存时的循环依赖
+### 2. 反模式：kapt 与 KSP 共存时的循环依赖
 
 **事故场景**：某项目同时使用 kapt（Dagger）与 KSP（Room），Dagger 生成的代码被 Room 引用，但 Room 处理顺序早于 Dagger，导致编译失败。
 
@@ -837,7 +796,7 @@ symbols.forEach { sym ->
 1. 将相互依赖的处理器都迁移到 KSP；
 2. 或重构模块边界，使 kapt 处理的代码不依赖 KSP 生成的代码。
 
-### 4. 反模式：Compiler Plugin 修改用户可见的 AST
+### 3. 反模式：Compiler Plugin 修改用户可见的 AST
 
 **事故场景**：某自定义 Compiler Plugin 在 Analysis 阶段向用户类注入新方法，但未通知 IDE，导致 IntelliJ IDEA 无法识别新方法，出现红色波浪线。
 
@@ -848,7 +807,7 @@ symbols.forEach { sym ->
 1. 提供配套的 IntelliJ 插件，同步注入相同成员到 IDE 的 PSI 树；
 2. 或改用 KSP 生成新文件而非修改原文件，IDE 可通过 `build/generated/ksp/main/kotlin/` 目录识别生成代码。
 
-### 5. 反模式：在 KSP 处理器中使用反射
+### 4. 反模式：在 KSP 处理器中使用反射
 
 **事故场景**：某处理器使用 `Class.forName()` 加载用户类进行反射调用，导致在 Kotlin/Native 工程中崩溃。
 
@@ -866,7 +825,7 @@ val decl = resolver.getClassDeclarationByName(resolver.getKSNameFromString(class
 val functions = decl?.getAllFunctions()
 ```
 
-### 6. 反模式：忽略 KSP 的多轮处理语义
+### 5. 反模式：忽略 KSP 的多轮处理语义
 
 **事故场景**：某处理器在第一轮处理 `@Service` 注解时生成了新的 `@Repository` 类，但未在第二轮中被 Repository 处理器捕获。
 
@@ -888,7 +847,7 @@ override fun process(resolver: Resolver): List<KSAnnotated> {
 }
 ```
 
-### 7. 反模式：在 Compiler Plugin 中硬编码版本号
+### 6. 反模式：在 Compiler Plugin 中硬编码版本号
 
 **事故场景**：某插件硬编码了 Kotlin 1.7 的内部 API 调用，升级到 Kotlin 1.9 后编译器崩溃。
 
@@ -931,7 +890,7 @@ flowchart TD
     T14 --> T15
 ```
 
-### 2. 处理器的测试策略
+### 1. 处理器的测试策略
 
 ```kotlin
 // processor/src/test/kotlin/com/example/processor/FactoryProcessorTest.kt
@@ -994,9 +953,9 @@ class FactoryProcessorTest {
 }
 ```
 
-### 3. 性能优化清单
+### 2. 性能优化清单
 
-#### 3.1 减少符号解析次数
+#### 2.1 减少符号解析次数
 
 ```kotlin
 // 反例：每个字段都触发类型解析
@@ -1013,7 +972,7 @@ classFields.forEach { field ->
 }
 ```
 
-#### 3.2 使用 `aggregating` 标志优化增量处理
+#### 2.2 使用 `aggregating` 标志优化增量处理
 
 ```kotlin
 // 隔离生成（isolating）：单个源文件变更只重跑该文件
@@ -1025,7 +984,7 @@ fileSpec.writeTo(codeGenerator, Dependencies(aggregating = false, sourceFile))
 fileSpec.writeTo(codeGenerator, Dependencies(aggregating = true, *allSourceFiles))
 ```
 
-#### 3.3 启用 KSP 增量日志
+#### 2.3 启用 KSP 增量日志
 
 ```kotlin
 // build.gradle.kts
@@ -1036,7 +995,7 @@ ksp {
 }
 ```
 
-### 4. 与 Gradle Build Cache 集成
+### 3. 与 Gradle Build Cache 集成
 
 ```kotlin
 // build.gradle.kts
@@ -1049,7 +1008,7 @@ ksp {
 // KotlinPoet 自动保证生成代码的确定性
 ```
 
-### 5. CI 中的处理器验证
+### 4. CI 中的处理器验证
 
 ```kotlin
 // ci-verify.gradle.kts
@@ -1068,7 +1027,7 @@ tasks.register("verifyKspIncremental") {
 }
 ```
 
-### 6. 错误诊断最佳实践
+### 5. 错误诊断最佳实践
 
 ```kotlin
 class MyProcessor(private val logger: KSPLogger) : SymbolProcessor {
@@ -1090,7 +1049,7 @@ class MyProcessor(private val logger: KSPLogger) : SymbolProcessor {
 }
 ```
 
-### 7. 多平台工程的处理器分发
+### 6. 多平台工程的处理器分发
 
 ```kotlin
 // 为不同目标平台提供不同处理器实现

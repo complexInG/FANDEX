@@ -20,6 +20,7 @@ prerequisites:
   - javascript/ES6+新特性
   - javascript/控制流
 ---
+
 # JavaScript Web API 浏览器接口语法速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -32,24 +33,9 @@ Web API 是浏览器暴露给 JavaScript 的一组宿主对象与接口集合，
 
 理解 Web API 不仅是掌握"调用方式"，更重要的是理解其背后的**异步模型**、**生命周期**、**安全模型**（同源策略、CORS、CSP、权限 API）、**事件循环集成方式**以及**资源回收契约**。本文档从历史演进、形式化定义、理论推导、工程实践、陷阱分析、案例研究六个维度系统讲解现代浏览器 Web API 的核心子集。
 
-## 2. 学习目标
+## 2. 历史动机与背景
 
-本节采用 Anderson & Krathwohl 修订版 Bloom 分类法，按认知层级划分学习目标：
-
-| 认知层级 | 学习目标描述 |
-| --- | --- |
-| 记忆（Remembering） | 列举 15 个以上常用 Web API 的名称、用途与典型调用形态；背诵 Fetch、Storage、IntersectionObserver 的核心方法签名 |
-| 理解（Understanding） | 解释事件循环、宏任务、微任务与 Web API 回调的调度关系；用自己的话描述同源策略与 CORS 预检流程 |
-| 应用（Applying） | 在生产代码中正确使用 AbortController 取消 Fetch；用 IntersectionObserver 实现懒加载与无限滚动 |
-| 分析（Analyzing） | 对比 localStorage、sessionStorage、IndexedDB、Cache API 的容量、同步性、作用域与适用场景；区分 `postMessage`、`BroadcastChannel`、`MessageChannel` 三种消息传递机制 |
-| 评价（Evaluating） | 评估一个 Web Worker 方案的可行性与代价（结构化克隆开销、传输数据量、线程数）；判断 IntersectionObserver 触发抖动是否由祖先元素 transform 引起 |
-| 创造（Creating） | 设计一个带取消、超时、重试、进度监控的 Fetch 封装；基于 BroadcastChannel + IndexedDB 构建多标签页状态同步库 |
-
-完成本节学习后，读者应能独立分析任意 Web API 的 MDN 文档，并写出符合工程规范的封装代码。
-
-## 3. 历史动机与背景
-
-### 3.1 Web API 的演化时间线
+### 2.1 Web API 的演化时间线
 
 | 年份 | 关键里程碑 | 解决的核心问题 |
 | --- | --- | --- |
@@ -65,7 +51,7 @@ Web API 是浏览器暴露给 JavaScript 的一组宿主对象与接口集合，
 | 2023 | WebGPU 在 Chrome 113 落地 | 替代 WebGL，提供现代 GPU 计算与渲染能力 |
 | 2024 | Storage Access API、Permissions API 广泛落地 | 隐私优先时代下的权限治理 |
 
-### 3.2 设计动机分析
+### 2.2 设计动机分析
 
 Web API 的演化遵循三条主线：
 
@@ -73,9 +59,9 @@ Web API 的演化遵循三条主线：
 2. **零开销观察者**：`scroll`、`resize`、`mutation` 事件在主线程触发，成本高昂。`IntersectionObserver`、`ResizeObserver`、`MutationObserver`、`PerformanceObserver` 把监听逻辑下沉到浏览器内核，仅在状态变化时回调，大幅降低主线程压力。
 3. **能力解耦与权限化**：早期浏览器把能力直接挂在 `navigator` 上（如 `navigator.geolocation`）；现代 API 采用 Permissions API 模型，调用前显式请求权限，符合隐私优先的 Web 演进方向。
 
-## 4. 形式化定义
+## 3. 形式化定义
 
-### 4.1 宿主对象与 Web API 接口
+### 3.1 宿主对象与 Web API 接口
 
 设 $H$ 为宿主环境（browser、Node、Deno 等），$E$ 为 ECMAScript 运行时。Web API 可形式化为一个映射：
 
@@ -95,7 +81,7 @@ $$
 - $L$：生命周期转移函数 $L: S \times \Sigma \rightarrow S$，$\Sigma$ 为事件集合
 - $P$：权限要求（如 `geolocation` 需要 `permission.state === 'granted'`）
 
-### 4.2 Fetch 的形式化语义
+### 3.2 Fetch 的形式化语义
 
 Fetch 操作可建模为一个三元组 $\langle \text{Request}, \text{Response}, \text{AbortSignal} \rangle$。设 $R$ 为 Request，$A$ 为 AbortSignal，则 Fetch 是从 Request 与 AbortSignal 到 Response Promise 的函数：
 
@@ -115,7 +101,7 @@ $$
 \text{next}: \text{ReadableStream} \rightarrow \text{Promise}\langle \{ \text{done}: \text{boolean}, \text{value}: \text{Uint8Array} \} \rangle
 $$
 
-### 4.3 Storage 的代数结构
+### 3.3 Storage 的代数结构
 
 设 $\text{Storage}$ 是一个键值存储，其代数结构满足：
 
@@ -131,7 +117,7 @@ $$
 - $\text{set}: K \times V \rightarrow \varnothing$（幂等：$\text{set}(k, \text{set}(k, v)) = \text{set}(k, v)$）
 - $\text{remove}: K \rightarrow \varnothing$（满足 $\text{get}(\text{remove}(k)) = \text{null}$）
 
-### 4.4 Observer 模式的形式化
+### 3.4 Observer 模式的形式化
 
 设 $O$ 为 Observer，$T$ 为 Target，$Cb$ 为回调。Observer 系统满足：
 
@@ -147,7 +133,7 @@ $$
 
 这种设计把"是否触发"的判定从 JavaScript 主线程下沉到内核，避免了主线程频繁轮询。
 
-### 4.5 Web Worker 的并发模型
+### 3.5 Web Worker 的并发模型
 
 Worker 之间通过消息传递通信（Actor 模型）。设 $W_1, W_2$ 为两个 Worker，消息传递可形式化为：
 
@@ -167,9 +153,9 @@ $$
 \text{postMessage}(M, \text{transferList}) \Rightarrow M' = M \text{（所有权转移，原对象失效）}
 $$
 
-## 5. 理论推导
+## 4. 理论推导
 
-### 5.1 事件循环与 Web API 回调的调度
+### 4.1 事件循环与 Web API 回调的调度
 
 浏览器事件循环可抽象为：
 
@@ -185,7 +171,7 @@ $$
 
 推论 2：**IntersectionObserver 回调是微任务**，而 `scroll` 事件回调是宏任务（实际上 `scroll` 会在渲染前合并触发）。因此 IntersectionObserver 在高频滚动场景下性能更优。
 
-### 5.2 结构化克隆的复杂度分析
+### 4.2 结构化克隆的复杂度分析
 
 结构化克隆算法的时间复杂度：
 
@@ -205,7 +191,7 @@ $$
 T_{\text{transfer}}(\text{ArrayBuffer}) = O(1)
 $$
 
-### 5.3 IndexedDB 事务的隔离性
+### 4.3 IndexedDB 事务的隔离性
 
 IndexedDB 遵循 ACID 中的 A（原子性）与 I（隔离性）。事务 $T$ 持有对象存储 $S$ 上的锁，直到 $T$ 提交或回滚：
 
@@ -215,7 +201,7 @@ $$
 
 IndexedDB 没有"读锁/写锁"区分，同一对象存储上的并发事务串行执行。这与 SQLite 的 WAL 模式不同，后者允许读写并发。
 
-### 5.4 Fetch 取消的传播
+### 4.4 Fetch 取消的传播
 
 当调用 `controller.abort()` 时，AbortSignal 触发 `abort` 事件，Fetch 内部传播取消信号到底层网络栈：
 
@@ -225,7 +211,7 @@ $$
 
 对于已发出的 HTTP 请求，浏览器会关闭 TCP 连接，导致服务器端可能收到 `ECONNRESET`。因此**取消 Fetch 不能保证服务器未收到请求**，业务层需配合幂等性设计。
 
-### 5.5 Web Worker 的内存开销
+### 4.5 Web Worker 的内存开销
 
 每个 Worker 拥有独立的 V8 Isolate，堆内存独立。Worker 启动开销 $T_{\text{startup}}$ 与脚本大小 $|S|$ 成正比：
 
@@ -235,9 +221,9 @@ $$
 
 经验值：$\alpha \approx 0.1 \text{ms/KB}$，$\beta \approx 30 \text{ms}$（V8 Isolate 初始化）。因此 Worker 适合长期任务而非短任务（短任务建议用 `Promise` + `requestIdleCallback`）。
 
-## 6. 代码示例
+## 5. 代码示例
 
-### 6.1 Fetch 基础用法
+### 5.1 Fetch 基础用法
 
 ```javascript
 // 基本的 GET 请求：使用 async/await 配合 try/catch 处理异常
@@ -273,7 +259,7 @@ async function createUser(user) {
 }
 ```
 
-### 6.2 Fetch 完整配置
+### 5.2 Fetch 完整配置
 
 ```javascript
 // Fetch 的完整选项：演示所有常用配置
@@ -308,7 +294,7 @@ async function advancedFetch() {
 }
 ```
 
-### 6.3 AbortController 取消请求
+### 5.3 AbortController 取消请求
 
 ```javascript
 // 手动取消：用户点击取消按钮时调用 controller.abort()
@@ -340,7 +326,7 @@ function fetchWithTimeout(url, options = {}, timeout = 5000) {
 }
 ```
 
-### 6.4 文件上传与下载
+### 5.4 文件上传与下载
 
 ```javascript
 // 文件上传：使用 FormData 自动设置 multipart/form-data
@@ -393,7 +379,7 @@ async function downloadFile(url, filename) {
 }
 ```
 
-### 6.5 Web Storage
+### 5.5 Web Storage
 
 ```javascript
 // localStorage：同源共享，持久化存储
@@ -436,7 +422,7 @@ storage.set('token', 'abc123', 3600000);
 console.log(storage.get('token'));
 ```
 
-### 6.6 Storage 事件监听
+### 5.6 Storage 事件监听
 
 ```javascript
 // 监听其他标签页的 storage 变化：仅在多标签页同源时触发
@@ -450,7 +436,7 @@ window.addEventListener('storage', (event) => {
 });
 ```
 
-### 6.7 IndexedDB
+### 5.7 IndexedDB
 
 ```javascript
 // IndexedDB：用于存储大量结构化数据
@@ -500,7 +486,7 @@ async function getUserByName(db, name) {
 }
 ```
 
-### 6.8 IntersectionObserver 懒加载
+### 5.8 IntersectionObserver 懒加载
 
 ```javascript
 // 图片懒加载：仅在图片进入视口前 100px 时加载
@@ -527,7 +513,7 @@ const imageObserver = new IntersectionObserver(
 lazyImages.forEach((img) => imageObserver.observe(img));
 ```
 
-### 6.9 IntersectionObserver 无限滚动
+### 5.9 IntersectionObserver 无限滚动
 
 ```javascript
 // 无限滚动：监听底部哨兵元素
@@ -568,7 +554,7 @@ async function loadMoreData() {
 }
 ```
 
-### 6.10 Web Worker
+### 5.10 Web Worker
 
 ```javascript
 // 主线程：创建 Worker 并通信
@@ -597,7 +583,7 @@ worker.onerror = (error) => {
 // };
 ```
 
-### 6.11 内联 Worker
+### 5.11 内联 Worker
 
 ```javascript
 // 使用 Blob 创建内联 Worker：无需独立 .js 文件
@@ -628,7 +614,7 @@ worker.onmessage = (e) => {
 };
 ```
 
-### 6.12 BroadcastChannel 多标签页通信
+### 5.12 BroadcastChannel 多标签页通信
 
 ```javascript
 // 多标签页通信：BroadcastChannel 是同源多标签页通信的标准方案
@@ -650,7 +636,7 @@ channel2.onmessage = (event) => {
 // channel.close();
 ```
 
-### 6.13 Geolocation
+### 5.13 Geolocation
 
 ```javascript
 // 地理位置获取：需要 HTTPS 与用户授权
@@ -683,7 +669,7 @@ if ('geolocation' in navigator) {
 }
 ```
 
-### 6.14 Clipboard API
+### 5.14 Clipboard API
 
 ```javascript
 // 复制文本到剪贴板：Clipboard API 是异步的
@@ -715,7 +701,7 @@ async function readClipboard() {
 }
 ```
 
-### 6.15 Notification API
+### 5.15 Notification API
 
 ```javascript
 // 系统通知：需要用户授权
@@ -742,7 +728,7 @@ self.addEventListener('notificationclick', (event) => {
 });
 ```
 
-### 6.16 ResizeObserver
+### 5.16 ResizeObserver
 
 ```javascript
 // 监听元素尺寸变化：替代 window.resize + getBoundingClientRect 的方案
@@ -761,9 +747,9 @@ resizeObserver.observe(document.querySelector('.container'));
 // resizeObserver.disconnect();
 ```
 
-## 7. 对比分析
+## 6. 对比分析
 
-### 7.1 Fetch vs XMLHttpRequest
+### 6.1 Fetch vs XMLHttpRequest
 
 | 维度 | Fetch | XMLHttpRequest |
 | --- | --- | --- |
@@ -777,7 +763,7 @@ resizeObserver.observe(document.querySelector('.container'));
 
 **推荐**：新项目优先 Fetch；需要上传进度时回退 XHR。
 
-### 7.2 localStorage vs sessionStorage vs IndexedDB vs Cache API
+### 6.2 localStorage vs sessionStorage vs IndexedDB vs Cache API
 
 | 维度 | localStorage | sessionStorage | IndexedDB | Cache API |
 | --- | --- | --- | --- | --- |
@@ -789,7 +775,7 @@ resizeObserver.observe(document.querySelector('.container'));
 | 事务支持 | 否 | 否 | 是 | 否 |
 | 典型场景 | 用户偏好、Token | 临时表单数据 | 离线数据、聊天记录 | PWA 离线资源 |
 
-### 7.3 postMessage vs BroadcastChannel vs MessageChannel
+### 6.3 postMessage vs BroadcastChannel vs MessageChannel
 
 | 机制 | 用途 | 通信方向 | 同源要求 |
 | --- | --- | --- | --- |
@@ -799,7 +785,7 @@ resizeObserver.observe(document.querySelector('.container'));
 
 **推荐**：多标签页同步用 BroadcastChannel；iframe 通信用 window.postMessage；Web Worker 双向通信用 MessageChannel。
 
-### 7.4 IntersectionObserver vs scroll 事件
+### 6.4 IntersectionObserver vs scroll 事件
 
 | 维度 | IntersectionObserver | scroll 事件 |
 | --- | --- | --- |
@@ -809,7 +795,7 @@ resizeObserver.observe(document.querySelector('.container'));
 | 异步性 | 微任务 | 宏任务 |
 | 推荐场景 | 懒加载、无限滚动 | 滚动位置驱动动画 |
 
-### 7.5 setTimeout vs requestAnimationFrame vs requestIdleCallback
+### 6.5 setTimeout vs requestAnimationFrame vs requestIdleCallback
 
 | API | 用途 | 触发时机 | 帧同步 |
 | --- | --- | --- | --- |
@@ -817,9 +803,9 @@ resizeObserver.observe(document.querySelector('.container'));
 | `requestAnimationFrame` | 视觉动画 | 下一帧渲染前 | 是 |
 | `requestIdleCallback` | 低优先级任务 | 浏览器空闲时 | 否 |
 
-## 8. 常见陷阱与反模式
+## 7. 常见陷阱与反模式
 
-### 8.1 Fetch 不会自动 reject 4xx/5xx
+### 7.1 Fetch 不会自动 reject 4xx/5xx
 
 ```javascript
 // 反模式：错误地认为 fetch 会 reject 404
@@ -844,7 +830,7 @@ async function goodFetch() {
 }
 ```
 
-### 8.2 localStorage 同步阻塞主线程
+### 7.2 localStorage 同步阻塞主线程
 
 ```javascript
 // 反模式：在 localStorage 存储大对象
@@ -861,7 +847,7 @@ async function goodStore() {
 }
 ```
 
-### 8.3 IntersectionObserver 未 unobserve 导致内存泄漏
+### 7.3 IntersectionObserver 未 unobserve 导致内存泄漏
 
 ```javascript
 // 反模式：组件卸载后未 disconnect
@@ -882,7 +868,7 @@ function destroyComponent() {
 }
 ```
 
-### 8.4 Web Worker 中 try/catch 不捕获异步错误
+### 7.4 Web Worker 中 try/catch 不捕获异步错误
 
 ```javascript
 // worker.js 反模式
@@ -908,7 +894,7 @@ self.onmessage = function (event) {
 };
 ```
 
-### 8.5 AbortController 复用导致误取消
+### 7.5 AbortController 复用导致误取消
 
 ```javascript
 // 反模式：多个请求共用一个 controller
@@ -926,7 +912,7 @@ async function fetchWithCancel(url) {
 }
 ```
 
-### 8.6 IndexedDB 事务过早关闭
+### 7.6 IndexedDB 事务过早关闭
 
 ```javascript
 // 反模式：在事务外执行操作
@@ -949,7 +935,7 @@ async function goodTransaction() {
 }
 ```
 
-### 8.7 BroadcastChannel 未 close 导致泄漏
+### 7.7 BroadcastChannel 未 close 导致泄漏
 
 ```javascript
 // 反模式：单页应用路由切换时未关闭 channel
@@ -970,7 +956,7 @@ function destroyPage() {
 }
 ```
 
-### 8.8 Geolocation 在 HTTP 下不可用
+### 7.8 Geolocation 在 HTTP 下不可用
 
 ```javascript
 // 反模式：HTTP 环境下调用 Geolocation
@@ -983,9 +969,9 @@ navigator.geolocation.getCurrentPosition(
 // 部署到 HTTP 时需降级到 IP 地理位置服务
 ```
 
-## 9. 工程实践
+## 8. 工程实践
 
-### 9.1 生产级 Fetch 封装
+### 8.1 生产级 Fetch 封装
 
 ```javascript
 /**
@@ -1057,7 +1043,7 @@ class HttpError extends Error {
 }
 ```
 
-### 9.2 IndexedDB Promise 封装
+### 8.2 IndexedDB Promise 封装
 
 ```javascript
 /**
@@ -1120,7 +1106,7 @@ class IndexedDBWrapper {
 }
 ```
 
-### 9.3 IntersectionObserver + Web Worker 性能监控
+### 8.3 IntersectionObserver + Web Worker 性能监控
 
 ```javascript
 // 性能监控工具：基于 PerformanceObserver 收集 LCP、FID、CLS
@@ -1147,7 +1133,7 @@ const longTaskObserver = new PerformanceObserver((list) => {
 longTaskObserver.observe({ type: 'longtask', buffered: true });
 ```
 
-### 9.4 多标签页状态同步
+### 8.4 多标签页状态同步
 
 ```javascript
 /**
@@ -1208,9 +1194,9 @@ class TabSync {
 }
 ```
 
-## 10. 案例研究
+## 9. 案例研究
 
-### 10.1 案例：基于 Fetch Streams 的流式 AI 响应处理
+### 9.1 案例：基于 Fetch Streams 的流式 AI 响应处理
 
 某聊天应用需要处理 OpenAI 流式响应（SSE 格式），使用 Fetch 的 `response.body.getReader()` 实现：
 
@@ -1280,7 +1266,7 @@ await streamChatCompletion(
 );
 ```
 
-### 10.2 案例：基于 IndexedDB 的离线优先 PWA
+### 9.2 案例：基于 IndexedDB 的离线优先 PWA
 
 某任务管理应用采用离线优先架构，所有操作先写 IndexedDB，再后台同步到服务器：
 
@@ -1340,7 +1326,7 @@ class OfflineFirstTaskManager {
 }
 ```
 
-### 10.3 案例：Web Worker 加密计算
+### 9.3 案例：Web Worker 加密计算
 
 某安全聊天应用使用 Web Worker 在后台执行 AES 加密，避免阻塞主线程 UI：
 
@@ -1395,7 +1381,7 @@ self.onmessage = async function (event) {
 
 ## 知识讲解与要点分析（原习题）
 
-### 11.1 基础题
+### 10.1 基础题
 
 **题目 1**：用 AbortController 实现一个支持手动取消与超时自动取消的 Fetch 封装。
 
@@ -1411,7 +1397,7 @@ self.onmessage = async function (event) {
 - 设置 `threshold: 0`
 - 异常情况（元素不存在）应 reject
 
-### 11.2 进阶题
+### 10.2 进阶题
 
 **题目 3**：实现一个 IndexedDB Promise 封装，支持 `get`、`put`、`delete`、`getAll`、`clear` 方法，并正确处理事务的生命周期。
 
@@ -1428,7 +1414,7 @@ self.onmessage = async function (event) {
 - 路由跳转用 `window.location.href`
 - 防止重复触发：tag 标记或时间戳去重
 
-### 11.3 挑战题
+### 10.3 挑战题
 
 **题目 5**：设计一个基于 Fetch Streams 的"逐字打字机效果"AI 聊天界面，要求：
 - 实时显示 AI 响应（每 50ms 输出一个字符）
@@ -1469,7 +1455,7 @@ function observeItems() {
 - 问题 4：fetch 失败未捕获
 - 优化：unobserve 后再请求；用 Promise.all 批量；失败重试
 
-## 12. 参考文献
+## 11. 参考文献
 
 [1] WHATWG. 2024. Fetch Standard. Retrieved July 21, 2024 from https://fetch.spec.whatwg.org/
 
@@ -1491,22 +1477,22 @@ function observeItems() {
 
 [10] W3C. 2024. Resize Observer Standard. Retrieved from https://www.w3.org/TR/resize-observer/
 
-## 13. 延伸阅读
+## 12. 延伸阅读
 
-### 13.1 官方文档
+### 12.1 官方文档
 
 - [MDN Web Docs - Web APIs](https://developer.mozilla.org/en-US/docs/Web/API)
 - [WHATWG Standards](https://spec.whatwg.org/)
 - [W3C Standards](https://www.w3.org/TR/)
 - [Chrome Developers - Web Capabilities](https://developer.chrome.com/docs/capabilities/)
 
-### 13.2 经典教材与论文
+### 12.2 经典教材与论文
 
 - Boris Smus. 2015. *Programming Web Audio Applications*. O'Reilly Media.
 - Pierre Camilleri. 2020. "Structured Clone Algorithm: A Formal Analysis." *ACM Transactions on the Web* 14, 3, Article 12 (October 2020), 45 pages. DOI: 10.1145/3411789.
 - C. Anderson et al. 2021. "Fugu: Capabilities for the Web." *ACM Queue* 19, 3 (June 2021). Retrieved from https://queue.acm.org/detail.cfm?id=3469541
 
-### 13.3 前沿与趋势
+### 12.3 前沿与趋势
 
 - WebGPU API：替代 WebGL 的现代 GPU 接口
 - WebTransport：基于 QUIC 的低延迟双向通信
@@ -1515,15 +1501,15 @@ function observeItems() {
 - File System Access API：浏览器内文件系统读写能力
 - WebHID / WebUSB / WebSerial：硬件设备访问
 
-### 13.4 性能优化方向
+### 12.4 性能优化方向
 
 - [web.dev - Performance](https://web.dev/performance/)
 - [Chrome DevTools - Performance Reference](https://developer.chrome.com/docs/devtools/performance/reference/)
 - [V8 JavaScript Engine - Optimizing for V8](https://v8.dev/docs/embed)
 
-## 14. 附录
+## 13. 附录
 
-### 14.1 浏览器兼容性速查
+### 13.1 浏览器兼容性速查
 
 | Web API | Chrome | Firefox | Safari | Edge | 移动端 |
 | --- | --- | --- | --- | --- | --- |
@@ -1539,7 +1525,7 @@ function observeItems() {
 | Clipboard API (write) | 66+ | 63+ | 13.1+ | 79+ | 全部支持 |
 | Clipboard API (read) | 66+ | 90+ | 13.1+ | 79+ | 部分 |
 
-### 14.2 调试速查表
+### 13.2 调试速查表
 
 | 场景 | DevTools 面板 | 关键操作 |
 | --- | --- | --- |
@@ -1551,7 +1537,7 @@ function observeItems() {
 | 内存泄漏 | Memory | 拍摄 Heap Snapshot 对比 |
 | 性能分析 | Performance | 录制 Flame Chart 分析长任务 |
 
-### 14.3 安全检查清单
+### 13.3 安全检查清单
 
 - 所有 Fetch 调用设置合理的 `Content-Type`
 - 用户输入通过 `encodeURIComponent` 处理后再拼接到 URL
@@ -1561,7 +1547,7 @@ function observeItems() {
 - Geolocation、Notification、Clipboard 等权限 API 调用前检查 `Permissions.query`
 - Worker 内执行的代码需同源，避免动态 `importScripts` 加载第三方脚本
 
-### 14.4 更新日志
+### 13.4 更新日志
 
 - 2026-04-05：初始创建，涵盖 Fetch、Storage、IntersectionObserver、Web Workers、Geolocation 等常用接口。
 - 2026-06-13：扩展文件上传下载、IndexedDB Promise 封装、AbortController 取消机制。

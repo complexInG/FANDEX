@@ -16,70 +16,29 @@ prerequisites:
   - javascript/语法速查
 ---
 
+
 # 数组高阶方法（Array Higher-Order Methods）
 
 > 本篇对标 MIT 6.031（Software Construction）、Stanford CS110L（Safety in Systems Programming）与 CMU 15-150（Functional Programming）教学水准，系统讲授 JavaScript 数组高阶方法的形式语义、工程实践与性能权衡。所有数学公式使用 KaTeX 渲染，参考文献采用 ACM Reference Format。
 
 ---
 
-## 1. 学习目标（Learning Objectives）
+## 1. 历史动机与发展脉络（Historical Motivation & Evolution）
 
-本节依据 Bloom 分类法（Bloom's Taxonomy，Anderson & Krathwohl, 2001）的六层认知目标体系组织学习产出。完成本篇后，学习者应能在各认知层级达成如下目标。
-
-### 1.1 Remember（记忆）
-
-- **R1**：准确复述 `Array.prototype.map / filter / reduce / forEach / find / some / every / flat / flatMap / sort` 方法的形参签名（parameter signature）与返回值语义。
-- **R2**：列出 ECMAScript 历次规范中数组方法的引入版本（ES5 / ES2015 / ES2019 / ES2023 / ES2024）。
-- **R3**：背诵 Functor / Monad / Foldable 三大类型类（type class）在 JavaScript 数组上的实例化形式。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释高阶函数（higher-order function）相对命令式循环（imperative loop）的可读性与可维护性优势，能够引用 McConnell《Code Complete》第 7 章的相关论述。
-- **U2**：阐述回调函数（callback）签名 `(element, index, array) => T` 中三个形参的语义角色，并能说明 `thisArg` 参数在严格模式下的绑定行为。
-- **U3**：推演 `reduce` 的归约过程，能将 `reduce(f, init)` 翻译为左折叠（left fold）的递归形式 `foldl`。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 `map + filter + reduce` 组合完成 ETL（Extract-Transform-Load）管道，处理真实业务数据集（如日志、订单、传感器流）。
-- **A2**：运用 `flatMap` 替代手写的"映射后展平"两步操作，并量化代码行数与可读性提升。
-- **A3**：在 Node.js 后端或 React 前端项目中，按团队 ESLint 规则选用合适的高阶方法替代 `for` 循环。
-
-### 1.4 Analyze（分析）
-
-- **An1**：对比 `for` / `for..of` / `forEach` / `map` 在 V8 引擎下的 JIT 编译路径与时间复杂度，识别"函数调用开销"的边界条件。
-- **An2**：拆解 `Array.prototype.sort` 的 TimSort 实现细节（时间复杂度 $O(n \log n)$，空间 $O(n)$），分析其在 V8 与 SpiderMonkey 中的差异。
-- **An3**：解构 `reduce` 的"归纳定义"，将数组求和 $\sum_{i=0}^{n-1} a_i$ 形式化为折叠操作。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评估"链式调用 vs 中间变量"两种编码风格在可读性、可调试性、内存占用三维度上的权衡，能够引用《Structure and Interpretation of Computer Programs》（SICP, Abelson & Sussman, 1996）的相关章节。
-- **E2**：判断何时应改用 `for` 循环而非 `reduce`（如：早终止、副作用聚合、性能关键热路径）。
-- **E3**：批判性分析"过度函数式"反模式（over-functionalization），引用《Clean Code》（Martin, 2008）第 3 章关于函数短小与单一职责的原则。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个通用的 `transduce` 工具，将 `map` / `filter` 融合为单遍遍历（fusion），消除中间数组分配，对标 Clojure `transducer` 与 Ramda `into`。
-- **C2**：实现 `groupBy` / `partition` / `chunk` / `uniqueBy` 等扩展方法，并为其编写 TypeScript 类型签名与单元测试（覆盖率 ≥ 95%）。
-- **C3**：基于 `Iterator` 与 `Generator`（ES2015）实现惰性求值（lazy evaluation）版本的 `map` / `filter`，对标 Rust `Iterator` trait 与 Java `Stream` API。
-
----
-
-## 2. 历史动机与发展脉络（Historical Motivation & Evolution）
-
-### 2.1 函数式编程的谱系
+### 1.1 函数式编程的谱系
 
 数组高阶方法的根源可追溯至 1958 年 John McCarthy 在 MIT 设计的 Lisp 语言。Lisp 的 `mapcar`、`remove-if-not`（即 `filter`）、`reduce` 三大原语奠定了"列表作为统一数据结构"的函数式范式。随后，ML 语言（1973，Robin Milner，爱丁堡大学）引入了类型化的代数数据类型（Algebraic Data Type, ADT）与模式匹配，Haskell（1990）进一步将 `Functor`、`Monad`、`Foldable` 抽象为 type class。
 
 JavaScript 的数组高阶方法本质上是这些函数式原语在动态类型语言中的工程化落地。Brendan Eich 在 1995 年设计 JavaScript 时，受 Scheme（Lisp 方言）影响，将函数视为一等公民（first-class citizen），为后续的高阶方法奠定了语义基础。
 
-### 2.2 JavaScript 1.0 → ES5：奠基期（1995–2009）
+### 1.2 JavaScript 1.0 → ES5：奠基期（1995–2009）
 
 - **1995（JavaScript 1.0）**：Netscape 2.0 发布，JavaScript 仅有 `for` / `while` / `for..in` 循环，无数组高阶方法。
 - **1997（ECMAScript 1）**：ECMA-262 第 1 版标准化，数组仅含 `join / reverse / sort / concat / slice / splice / push / pop / shift / unshift`。
 - **1999（ECMAScript 3）**：新增 `forEach / map / filter / some / every / reduce / reduceRight / indexOf / lastIndexOf`，由 Mozilla 的 Brendan Eich 与 Dave Herman 推动，对标 Python 的列表推导与 Ruby 的 `Enumerable` 模块。**这是 JavaScript 数组方法的关键里程碑**。
 - **2009（ES5）**：正式纳入规范，新增严格模式（strict mode），明确回调签名为 `(element, index, array)`，并引入 `thisArg` 参数以支持 `this` 绑定。
 
-### 2.3 ES6 → ES2024：现代化与函数式补全（2015–2024）
+### 1.3 ES6 → ES2024：现代化与函数式补全（2015–2024）
 
 | 版本 | 年份 | 新增方法 | TC39 提案 |
 | --- | --- | --- | --- |
@@ -89,7 +48,7 @@ JavaScript 的数组高阶方法本质上是这些函数式原语在动态类型
 | ES2024 | 2024 | `Object.groupBy` / `Map.groupBy`（数组分组） | Array.prototype.group（Justin Ridgewell） |
 | ES2025（候选） | 2025 | `Iterator.prototype.map / filter / take / drop / reduce`（Iterator Helpers） | Iterator Helpers（Michael Ficarra） |
 
-### 2.4 设计哲学的转向
+### 1.4 设计哲学的转向
 
 ES2019 的 `flat` / `flatMap` 与 ES2023 的"Change Array by Copy"系列标志着 JavaScript 数组方法的设计哲学从"原地变更"（in-place mutation）向"不可变纯函数"（immutable pure function）转向，这与 React 的不可变状态管理、Redux 的 reducer 纯函数约束形成共振，是函数式编程范式在前端工程中全面渗透的体现。
 
@@ -97,9 +56,9 @@ ES2019 的 `flat` / `flatMap` 与 ES2023 的"Change Array by Copy"系列标志�
 
 ---
 
-## 3. 形式化定义（Formal Definitions）
+## 2. 形式化定义（Formal Definitions）
 
-### 3.1 ECMAScript 规范引用
+### 2.1 ECMAScript 规范引用
 
 本节所有方法的语义以 ECMA-262 第 14 版（ES2024）为准。规范文本位于 <https://tc39.es/ecma262/>。
 
@@ -108,7 +67,7 @@ ES2019 的 `flat` / `flatMap` 与 ES2023 的"Change Array by Copy"系列标志�
 - `Array.prototype.reduce`：§23.1.3.21 `Array.prototype.reduce ( callbackfn [ , initialValue ] )`
 - `Array.prototype.flatMap`：§23.1.3.11 `Array.prototype.flatMap ( mapperFunction [ , thisArg ] )`
 
-### 3.2 高阶函数的形式定义
+### 2.2 高阶函数的形式定义
 
 **定义 3.2.1（高阶函数）**：函数 $f$ 称为高阶函数，当且仅当它满足以下任一条件：
 
@@ -118,7 +77,7 @@ ES2019 的 `flat` / `flatMap` 与 ES2023 的"Change Array by Copy"系列标志�
 
 JavaScript 的 `map` / `filter` / `reduce` 等数组方法均属于第一类高阶函数。
 
-### 3.3 Functor 类型类
+### 2.3 Functor 类型类
 
 **定义 3.3.1（Functor）**：设 $F$ 为类型构造子（type constructor），$F$ 是 Functor 当且仅当存在一个 `map` 操作（在 Haskell 中记作 `fmap`）满足以下类型签名与两条公理：
 
@@ -152,7 +111,7 @@ const rhs = arr.map(f).map(g);             // map(g) ∘ map(f)
 console.log(JSON.stringify(lhs) === JSON.stringify(rhs)); // true
 ```
 
-### 3.4 Monad 类型类与 flatMap
+### 2.4 Monad 类型类与 flatMap
 
 **定义 3.4.1（Monad）**：设 $M$ 为类型构造子，$M$ 是 Monad 当且仅当存在：
 
@@ -167,7 +126,7 @@ console.log(JSON.stringify(lhs) === JSON.stringify(rhs)); // true
 
 JavaScript 数组在"嵌套即 Monad 上下文"的解读下近似满足 Monad 律（`of` 对应 `[x]`，`flatMap` 对应 `Array.prototype.flatMap`）。需要说明的是，JavaScript 数组并非严格意义上的 Monad，因为其语义超载（既是 Functor 又是"非确定性计算"的载体），但在工程实践中按 Monad 模式使用是安全的。
 
-### 3.5 Foldable 类型类与 reduce
+### 2.5 Foldable 类型类与 reduce
 
 **定义 3.5.1（Foldable）**：类型 $F$ 是 Foldable 当且仅当存在 `foldr`（右折叠）与 `foldl`（左折叠）：
 
@@ -187,7 +146,7 @@ $$\text{reduce}(f, \text{acc}, []) = \text{acc}$$
 
 $$\text{reduce}(f, \text{acc}, [x, \dots, xs]) = \text{reduce}(f, f(\text{acc}, x), xs)$$
 
-### 3.6 时间复杂度形式化
+### 2.6 时间复杂度形式化
 
 设 $n$ 为数组长度，$T_f$ 为回调函数单次执行时间，各方法的时间复杂度与空间复杂度形式化如下：
 
@@ -205,9 +164,9 @@ $$\text{reduce}(f, \text{acc}, [x, \dots, xs]) = \text{reduce}(f, f(\text{acc}, 
 
 ---
 
-## 4. 理论推导与原理解析（Theoretical Derivation）
+## 3. 理论推导与原理解析（Theoretical Derivation）
 
-### 4.1 归约的代数结构
+### 3.1 归约的代数结构
 
 考虑数组的求和归约：
 
@@ -231,7 +190,7 @@ const sum = (arr) => arr.reduce((acc, x) => acc + x, 0);
 
 这意味着：对于求和、求积、字符串拼接、数组合并等满足结合律的操作，`reduce` 与 `reduceRight` 结果相同（在无浮点误差时）。
 
-### 4.2 短路求值的形式化
+### 3.2 短路求值的形式化
 
 `some` 与 `every` 实现了短路求值（short-circuit evaluation）：
 
@@ -245,7 +204,7 @@ $$\text{some}(p, \text{arr}) = \text{true} \implies \exists k, \forall i < k, p(
 
 即一旦遇到第一个 `true`，立即返回，不再评估后续元素。这一性质使得 `some` / `every` 可用于"早终止"场景，时间复杂度从 $O(n)$ 降至 $O(k)$。
 
-### 4.3 map 与 filter 的融合（Fusion）
+### 3.3 map 与 filter 的融合（Fusion）
 
 考虑链式调用 `arr.map(f).filter(p)`，其语义为：
 
@@ -259,7 +218,7 @@ $$\text{result} = \text{reduce}((\text{acc}, x) \Rightarrow p(f(x)) ? \text{acc}
 
 空间复杂度降为 $O(k)$（$k$ 为结果元素数）。这是函数式编程中 deforestation（去森林化，Wadler, 1990）的特例，也是 transducer 的理论基础。
 
-### 4.4 flatMap 的 Monad 结合律验证
+### 3.4 flatMap 的 Monad 结合律验证
 
 验证 `flatMap` 的结合律：
 
@@ -278,7 +237,7 @@ const rhs = m.flatMap((x) => f(x).flatMap(g));
 console.log(JSON.stringify(lhs) === JSON.stringify(rhs)); // true
 ```
 
-### 4.5 sort 的 TimSort 分析
+### 3.5 sort 的 TimSort 分析
 
 V8 自 v7.0（2018）起采用 TimSort（Tim Peters, 2002）替代原地快排。TimSort 的时间复杂度：
 
@@ -290,9 +249,9 @@ $$T(n) = \begin{cases} O(n) & \text{若数组已部分有序（存在长 run）}
 
 ---
 
-## 5. 代码示例（Production-Ready Examples）
+## 4. 代码示例（Production-Ready Examples）
 
-### 5.1 工程项目配置
+### 4.1 工程项目配置
 
 以下示例基于 Node.js 18+ 与原生 ES Modules。`package.json` 配置：
 
@@ -315,7 +274,7 @@ $$T(n) = \begin{cases} O(n) & \text{若数组已部分有序（存在长 run）}
 }
 ```
 
-### 5.2 map — 结构化映射
+### 4.2 map — 结构化映射
 
 ```javascript
 // ES2015 — 将原始用户记录映射为视图模型
@@ -338,7 +297,7 @@ console.log(userViews);
 // [ { id: 1, name: 'Alice', ... }, { id: 2, name: 'Bob', ... } ]
 ```
 
-### 5.3 filter — 谓词筛选
+### 4.3 filter — 谓词筛选
 
 ```javascript
 // ES2015 — 按多条件筛选订单
@@ -356,9 +315,9 @@ const highValueOrders = orders.filter(isHighValuePaid);
 // [ { id: 'O-1', ... }, { id: 'O-3', ... } ]
 ```
 
-### 5.4 reduce — 万能归约（核心方法）
+### 4.4 reduce — 万能归约（核心方法）
 
-#### 5.4.1 数组求和与统计
+#### 4.4.1 数组求和与统计
 
 ```javascript
 // ES5 — 基础归约：求和、求积、极值
@@ -370,7 +329,7 @@ const max = nums.reduce((acc, x) => Math.max(acc, x), -Infinity); // 5
 const min = nums.reduce((acc, x) => Math.min(acc, x), Infinity);  // 1
 ```
 
-#### 5.4.2 数组扁平化（reduce 版）
+#### 4.4.2 数组扁平化（reduce 版）
 
 ```javascript
 // ES5 — 在 flat 出现前的经典写法
@@ -379,7 +338,7 @@ const flat = nested.reduce((acc, arr) => acc.concat(arr), []);
 // [1, 2, 3, 4, 5]
 ```
 
-#### 5.4.3 按字段分组
+#### 4.4.3 按字段分组
 
 ```javascript
 // ES2015 — 按属性分组（ES2024 后可用 Object.groupBy 替代）
@@ -396,7 +355,7 @@ const byDept = people.reduce((acc, p) => {
 // { Eng: [{...}, {...}], Sales: [{...}] }
 ```
 
-#### 5.4.4 管道化函数组合
+#### 4.4.4 管道化函数组合
 
 ```javascript
 // ES2015 — 用 reduce 组合函数管道，对标 Ramda pipe / lodash flow
@@ -410,7 +369,7 @@ const slugify = pipe(trim, toLower, kebab);
 console.log(slugify('  Hello World  ')); // 'hello-world'
 ```
 
-#### 5.4.5 状态机归约
+#### 4.4.5 状态机归约
 
 ```javascript
 // ES2015 — 用 reduce 实现有限状态机（FSM）
@@ -435,7 +394,7 @@ const trace = events.reduce(
 console.log(trace); // 'DONE'
 ```
 
-### 5.5 flatMap — 映射后展平
+### 4.5 flatMap — 映射后展平
 
 ```javascript
 // ES2019 — flatMap 经典应用：分词与映射
@@ -447,7 +406,7 @@ const words = sentences.flatMap((s) => s.split(' '));
 // 等价于 sentences.map(s => s.split(' ')).flat()
 ```
 
-#### 5.5.1 一对多映射
+#### 4.5.1 一对多映射
 
 ```javascript
 // ES2019 — 订单展开为订单项
@@ -462,7 +421,7 @@ const lineItems = orders.flatMap((o) =>
 // [ {orderId:'O-1',sku:'A',qty:2}, {orderId:'O-1',sku:'B',qty:1}, {orderId:'O-2',sku:'C',qty:5} ]
 ```
 
-### 5.6 find / findLast — 查找首个匹配
+### 4.6 find / findLast — 查找首个匹配
 
 ```javascript
 // ES2015 / ES2023 — 查找与逆序查找
@@ -478,7 +437,7 @@ const firstActiveIdx = users.findIndex((u) => u.active);        // 0
 const lastActiveIdx = users.findLastIndex((u) => u.active);     // 2（ES2023）
 ```
 
-### 5.7 some / every — 存在量词与全称量词
+### 4.7 some / every — 存在量词与全称量词
 
 ```javascript
 // ES5 — 等价于一阶逻辑的 ∃ 与 ∀
@@ -496,7 +455,7 @@ const hasTruthy = checks.some((x) => {
 // 输出 checking 0, checking 0, checking 1，然后返回 true
 ```
 
-### 5.8 sort — 排序与比较器
+### 4.8 sort — 排序与比较器
 
 ```javascript
 // ES2019+ — 稳定排序
@@ -509,7 +468,7 @@ const sorted = arr.toSorted((a, b) => a - b);
 console.log(arr === sorted); // false（新数组）
 ```
 
-#### 5.8.1 自定义对象排序
+#### 4.8.1 自定义对象排序
 
 ```javascript
 // ES2015 — 多字段排序
@@ -527,7 +486,7 @@ const cmp = (a, b) => {
 employees.sort(cmp);
 ```
 
-### 5.9 Object.groupBy / Map.groupBy（ES2024）
+### 4.9 Object.groupBy / Map.groupBy（ES2024）
 
 ```javascript
 // ES2024 — 原生分组方法
@@ -544,7 +503,7 @@ const groupedMap = Map.groupBy(inventory, (x) => x.category);
 // Map(2) { 'fruit' => [...], 'veg' => [...] }
 ```
 
-### 5.10 Change Array by Copy（ES2023）
+### 4.10 Change Array by Copy（ES2023）
 
 ```javascript
 // ES2023 — 不可变更体系，适配 React/Redux 不可变约束
@@ -556,7 +515,7 @@ const spliced = original.toSpliced(1, 1);    // [3, 2]
 const replaced = original.with(0, 99);       // [99, 1, 2]
 ```
 
-### 5.11 综合示例：ETL 管道
+### 4.11 综合示例：ETL 管道
 
 ```javascript
 // ES2024 — 综合运用 map/filter/reduce/flatMap/groupBy
@@ -583,9 +542,9 @@ console.log(errorRate);
 
 ---
 
-## 6. 对比分析（Comparative Analysis）
+## 5. 对比分析（Comparative Analysis）
 
-### 6.1 与 TypeScript 的对比
+### 5.1 与 TypeScript 的对比
 
 TypeScript 在 JavaScript 高阶方法之上增加了类型安全。`map` / `filter` / `reduce` 在 TS 中的类型签名：
 
@@ -607,7 +566,7 @@ interface Array<T> {
 | `reduce` 初始值类型 | 任意 | 必须显式标注，否则易推断为 `T` 而非 `U` |
 | 空安全 | 需运行时检查 | 可用 `optional chaining` + `nullish coalescing` 表达 |
 
-### 6.2 与 Python 的对比
+### 5.2 与 Python 的对比
 
 ```python
 # Python — 列表推导 vs map/filter
@@ -626,7 +585,7 @@ squared_evens = [x * x for x in nums if x % 2 == 0]
 | `reduce` 位置 | `Array.prototype.reduce` | `functools.reduce`（非内置） |
 | 性能 | V8 JIT 优化 | CPython 解释执行，循环通常更快 |
 
-### 6.3 与 Rust 的对比
+### 5.3 与 Rust 的对比
 
 ```rust
 // Rust — Iterator trait，零成本抽象
@@ -645,15 +604,15 @@ let result: Vec<i32> = v.iter()
 | 所有权 | 无 | 借用检查器保证内存安全 |
 | 融合优化 | 需手写 transducer | 编译器自动 fusion |
 
-### 6.4 与 WebAssembly（Wasm）的对比
+### 5.4 与 WebAssembly（Wasm）的对比
 
 Wasm 本身无高阶函数概念，数组操作需通过循环实现。但 Wasm 可作为 JS 高阶方法的性能加速后端（如 AssemblyScript 编译 TS → Wasm）。在数值计算密集场景，Wasm 可比 JS 快 5-20 倍，但对于含闭包的高阶方法，JS 的 JIT 优化通常优于 Wasm 的函数调用开销。
 
 ---
 
-## 7. 常见陷阱与最佳实践（Pitfalls & Best Practices）
+## 6. 常见陷阱与最佳实践（Pitfalls & Best Practices）
 
-### 7.1 陷阱：在 `map` 中产生副作用
+### 6.1 陷阱：在 `map` 中产生副作用
 
 ```javascript
 // 反模式：用 map 替代 forEach，忽略返回值
@@ -666,7 +625,7 @@ arr.forEach((x) => console.log(x));
 
 **原则**：`map` 用于"转换"，`forEach` 用于"副作用"。混用会误导读者，且 `map` 会分配无用数组。
 
-### 7.2 陷阱：`reduce` 缺少初始值
+### 6.2 陷阱：`reduce` 缺少初始值
 
 ```javascript
 // 陷阱：空数组 reduce 无初始值会抛 TypeError
@@ -677,7 +636,7 @@ empty.reduce((acc, x) => acc + x); // TypeError: Reduce of empty array with no i
 empty.reduce((acc, x) => acc + x, 0); // 0
 ```
 
-### 7.3 陷阱：`sort` 默认按字符串排序
+### 6.3 陷阱：`sort` 默认按字符串排序
 
 ```javascript
 // 陷阱：数字数组默认按字典序排序
@@ -687,7 +646,7 @@ empty.reduce((acc, x) => acc + x, 0); // 0
 [10, 2, 1].sort((a, b) => a - b); // [1, 2, 10]
 ```
 
-### 7.4 陷阱：`map` 解构回调误用 `this`
+### 6.4 陷阱：`map` 解构回调误用 `this`
 
 ```javascript
 // 陷阱：箭头函数无 this 绑定，传统函数有
@@ -705,7 +664,7 @@ const obj = {
 };
 ```
 
-### 7.5 陷阱：`flatMap` 深度仅 1
+### 6.5 陷阱：`flatMap` 深度仅 1
 
 ```javascript
 // 陷阱：flatMap 只展平一层
@@ -715,7 +674,7 @@ const obj = {
 [[[1, 2]]].flat(2); // [1, 2]
 ```
 
-### 7.6 陷阱：链式调用的可读性崩塌
+### 6.6 陷阱：链式调用的可读性崩塌
 
 ```javascript
 // 反模式：超长链式调用
@@ -736,7 +695,7 @@ const pricedItems = allItems
 const byId = pricedItems.reduce((acc, i) => ((acc[i.id] = i), acc), {});
 ```
 
-### 7.7 陷阱：`forEach` 无法 `break`
+### 6.7 陷阱：`forEach` 无法 `break`
 
 ```javascript
 // 陷阱：forEach 不支持 break / continue
@@ -752,7 +711,7 @@ for (const x of [1, 2, 3]) {
 }
 ```
 
-### 7.8 最佳实践汇总
+### 6.8 最佳实践汇总
 
 1. **纯函数优先**：回调应为纯函数，避免修改外部状态。
 2. **不可变优先**：优先使用 `toSorted` / `toReversed` 等 ES2023 不可变方法，适配 React/Redux。
@@ -763,9 +722,9 @@ for (const x of [1, 2, 3]) {
 
 ---
 
-## 8. 工程实践（Engineering Practice）
+## 7. 工程实践（Engineering Practice）
 
-### 8.1 构建与打包
+### 7.1 构建与打包
 
 数组高阶方法是 ES5+ 原生 API，无需 polyfill（除 `flat` / `flatMap` 需 ES2019，`findLast` / `toSorted` 需 ES2023，`groupBy` 需 ES2024）。使用 Babel / SWC 时配置 `targets`：
 
@@ -784,7 +743,7 @@ import 'core-js/stable/array/flat';
 import 'core-js/stable/array/flat-map';
 ```
 
-### 8.2 性能基准测试
+### 7.2 性能基准测试
 
 使用 `mitata` 或 Node.js 内置 `perf_hooks` 做微基准：
 
@@ -830,7 +789,7 @@ bench('map (waste)', () => {
 | `reduce` | 8.5 | 4.0x |
 | `map`（带分配） | 18.2 | 8.7x |
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
 1. **断点在回调内**：在 `map` / `filter` 回调内设置条件断点，按 `index === N` 过滤。
 2. **Chrome DevTools Performance**：录制 profile，查看 `Array.map` 的闭包调用栈与耗时分布。
@@ -842,7 +801,7 @@ const result = users.map((u) => ({ id: u.id, name: u.name }));
 console.table(result);
 ```
 
-### 8.4 ESLint 规则推荐
+### 7.4 ESLint 规则推荐
 
 ```json
 // .eslintrc.json
@@ -858,7 +817,7 @@ console.table(result);
 }
 ```
 
-### 8.5 与不可变数据库集成
+### 7.5 与不可变数据库集成
 
 在 Redux Toolkit、Zustand、Immer 场景中，优先使用 ES2023 不可变方法：
 
@@ -880,9 +839,9 @@ const nextState = {
 
 ---
 
-## 9. 案例研究（Case Studies）
+## 8. 案例研究（Case Studies）
 
-### 9.1 Lodash 的实现剖析
+### 8.1 Lodash 的实现剖析
 
 Lodash 的 `_.map` / `_.reduce` 在 JavaScript 原生方法之上增加了：
 
@@ -906,7 +865,7 @@ function arrayMap(array, iteratee) {
 
 对比原生 `map`，Lodash 用 `while` 循环替代 `for` 以减少字节码开销，在旧引擎上有 10-30% 性能优势，但在 V8 5.9+（2017）后差距已基本消失。
 
-### 9.2 Ramda 与函数式编程
+### 8.2 Ramda 与函数式编程
 
 Ramda 是严格的函数式库，其 `map` / `filter` / `reduce` 是**柯里化**的：
 
@@ -933,7 +892,7 @@ const xf = R.compose(
 R.transduce(xf, R.flip(R.append), [], [1, 2, 3, 4, 5]); // [20]
 ```
 
-### 9.3 React 中的数组渲染
+### 8.3 React 中的数组渲染
 
 React 列表渲染是 `map` 最高频场景：
 
@@ -957,7 +916,7 @@ function UserList({ users }) {
 - `key` 必须唯一稳定，避免用 `index` 作 key（在动态增删时会导致状态错乱）。
 - 避免在 render 中执行高复杂度 `reduce`，应通过 `useMemo` 缓存。
 
-### 9.4 Three.js 中的顶点数组处理
+### 8.4 Three.js 中的顶点数组处理
 
 Three.js 的 BufferGeometry 使用 `Float32Array`，但构建时常先用普通数组 `map` / `flatMap` 生成顶点数据，再 `set` 进 TypedArray：
 
@@ -980,7 +939,7 @@ const geometry = new THREE.BufferGeometry();
 geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 ```
 
-### 9.5 jQuery 的 toArray 与 each
+### 8.5 jQuery 的 toArray 与 each
 
 jQuery 的 `$.each` / `$.map` 是早期（2006 年）对 ES3 缺失高阶方法的补充。jQuery 3 后已基本对齐原生语义，但仍保留对"类数组对象"的支持：
 
@@ -1194,7 +1153,7 @@ const result = transduce(xf, (acc, x) => [...acc, x], [], [1, 2, 3, 4, 5, 6]);
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 15**：为什么 `forEach` 不能 `break`，而 `some` / `every` 可以模拟 break？请从语义与实现角度分析。
 
@@ -1239,7 +1198,7 @@ const result = transduce(xf, (acc, x) => [...acc, x], [], [1, 2, 3, 4, 5, 6]);
 
 ---
 
-## 11. 参考文献（References）
+## 10. 参考文献（References）
 
 [1] ECMA International. 2024. *ECMA-262: ECMAScript 2024 Language Specification*, 14th ed. Geneva: ECMA International. <https://tc39.es/ecma262/2024/>
 
@@ -1273,9 +1232,9 @@ const result = transduce(xf, (acc, x) => [...acc, x], [], [1, 2, 3, 4, 5, 6]);
 
 ---
 
-## 12. 延伸阅读（Further Reading）
+## 11. 延伸阅读（Further Reading）
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《JavaScript: The Good Parts》**（Douglas Crockford, 2008, O'Reilly）：第 6 章详述数组方法的设计哲学。
 - **《Functional-Light JavaScript》**（Kyle Simpson, 2017）：以轻量方式讲解函数式编程与 map/filter/reduce。
@@ -1283,12 +1242,12 @@ const result = transduce(xf, (acc, x) => [...acc, x], [], [1, 2, 3, 4, 5, 6]);
 - **《High Performance JavaScript》**（Nicholas C. Zakas, 2010）：第 4 章分析数组方法性能。
 - **《Effective TypeScript》**（Dan Vanderkam, 2019）：第 3 章讲解 `reduce` 的类型陷阱。
 
-### 12.2 论文与技术报告
+### 11.2 论文与技术报告
 
 - Philip Wadler. 1992. *Theorems for Free!* FPCA '89. DOI: <https://doi.org/10.1145/99370.99404>（参数化定理，分析 map 的类型不变量）
 - Conor McBride and Ross Paterson. 2008. *Applicative Programming with Effects*. Journal of Functional Programming 18, 1. DOI: <https://doi.org/10.1017/S0956796807006326>（Applicative Functor 理论）
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **MDN Web Docs — Array**：<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array>
 - **TC39 Proposals**：<https://tc39.es/proposals/>
@@ -1297,14 +1256,14 @@ const result = transduce(xf, (acc, x) => [...acc, x], [], [1, 2, 3, 4, 5, 6]);
 - **Ramda Documentation**：<https://ramdajs.com/docs/>
 - **Lodash Documentation**：<https://lodash.com/docs/>
 
-### 12.4 开源项目源码
+### 11.4 开源项目源码
 
 - **Lodash**：<https://github.com/lodash/lodash>（参考 `arrayMap.js`, `arrayReduce.js`）
 - **Ramda**：<https://github.com/ramda/ramda>（参考 `map.js`, `transduce.js`）
 - **V8 Array Implementation**：<https://github.com/v8/v8/tree/main/src/js>（`array.js` 中的 `ArrayMap`, `ArrayReduce` 字节码）
 - **Core-JS Polyfills**：<https://github.com/zloirock/core-js>（`flat`, `flatMap`, `groupBy` 的 polyfill 实现）
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - **Transducer**：Clojure 的 transducer 设计，Ramda 在 JS 中的实现。
 - **Deforestation**：Wadler 1990 论文，函数式程序的自动融合优化。

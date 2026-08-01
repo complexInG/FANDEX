@@ -14,53 +14,16 @@ related:
 prerequisites:
   - svg/基本图形详解
 ---
+
 # SVG 路径 path 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章延续 Stanford CS248《图形学导论》与 MIT 6.837《计算机图形学》的教学严谨度,在坐标系基础上深入 SVG 路径的形式化定义。学完本章后,学习者应当能够在 Bloom 教育目标分类法的六个层级上达成下列能力。
-
-### 1.1 Bloom 能力矩阵
-
-| 层级 | 行为动词 | 本章目标能力 | 评估方式 |
-| ---- | -------- | ------------ | -------- |
-| **Remember** 记忆 | 列举、复述 | 能列举 path 的 10 大命令(M/L/H/V/C/S/Q/T/A/Z)及其参数 | 选择题、填空题 |
-| **Understand** 理解 | 解释、归纳 | 能解释贝塞尔曲线的控制点语义、弧线 4 参数组合的几何含义 | 概念辨析题 |
-| **Apply** 应用 | 使用、实现 | 能编写复杂路径数据,绘制任意曲线、扇形、心形等图形 | 实操题 |
-| **Analyze** 分析 | 比较、分解 | 能分析贝塞尔曲线 de Casteljau 算法、arc 隐式方程求解 | 推导题 |
-| **Evaluate** 评价 | 评判、推荐 | 能评估路径数据压缩策略,给出 SVGO 优化建议 | 代码评审题 |
-| **Create** 创造 | 设计、构建 | 能设计一个支持路径绘制与编辑的 SVG 工具 | 架构设计题 |
-
-### 1.2 知识图谱前置依赖
-
-```mermaid
-graph LR
-    A[基本图形详解] --> B[本章:路径 path 详解]
-    M[Math: 微积分基础] --> C[贝塞尔曲线参数化]
-    C --> B
-    L[Math: 线性代数] --> D[arc 椭圆方程]
-    D --> B
-    B --> E[符号与复用]
-    B --> F[变换 transform]
-    B --> G[动画与路径]
-```
-
-### 1.3 学习成果清单
-
-完成本章学习后,学习者应当能够产出:
-
-1. 一份使用所有 10 大 path 命令绘制的复杂图形
-2. 一份贝塞尔曲线 de Casteljau 算法的 JavaScript 实现
-3. 一份 arc 命令四参数组合的几何对照图
-4. 一份路径长度计算与 stroke-dasharray 动画实现
-
-## 2. 历史动机与发展脉络
-
-### 2.1 路径数据的演进
+### 1.1 路径数据的演进
 
 SVG path 命令的设计源自 PostScript 的路径模型(1982 年由 John Warnock 设计),核心思想是用**命令序列**描述图形轮廓。这一模型经历了多个阶段:
 
@@ -72,7 +35,7 @@ SVG path 命令的设计源自 PostScript 的路径模型(1982 年由 John Warno
 | 2001 | SVG 1.0 | `M`/`L`/`C`/`Q`/`A`/`Z` | XML 化路径数据 |
 | 2018 | SVG 2 | 与 CSS path() 函数融合 | 路径作为 CSS 属性 |
 
-### 2.2 贝塞尔曲线的历史
+### 1.2 贝塞尔曲线的历史
 
 贝塞尔曲线由法国工程师 Pierre Bézier 于 1960 年在 Renault(雷诺)汽车公司推广用于车身设计,但数学基础由 Paul de Casteljau 于 1959 年在 Citroën(雪铁龙)提出。两者的命名差异反映了学术与工程的优先权之争:
 
@@ -81,7 +44,7 @@ SVG path 命令的设计源自 PostScript 的路径模型(1982 年由 John Warno
 
 SVG path 的 `C`/`Q`/`S`/`T` 命令直接对应贝塞尔曲线的控制点参数。
 
-### 2.3 弧线命令的设计考量
+### 1.3 弧线命令的设计考量
 
 SVG 的 `A` 命令采用"端点 + 半径 + 标志"的参数化方式,而非直接给出椭圆中心。这一选择源于两个约束:
 
@@ -90,7 +53,7 @@ SVG 的 `A` 命令采用"端点 + 半径 + 标志"的参数化方式,而非直�
 
 因此 SVG 选择用 `large-arc-flag` 与 `sweep-flag` 两个布尔值区分 4 种情况。
 
-### 2.4 设计哲学:命令序列即数据
+### 1.4 设计哲学:命令序列即数据
 
 SVG path 的设计哲学可概括为"命令序列即数据":
 
@@ -101,9 +64,9 @@ SVG path 的设计哲学可概括为"命令序列即数据":
 
 这一设计使 path 既能作为矢量数据存储,也能作为编程接口操作。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 路径数据的形式化模型
+### 2.1 路径数据的形式化模型
 
 SVG 路径数据可形式化为一个命令序列 $D = (c_1, c_2, \ldots, c_n)$,其中每个命令 $c_i$ 是一个元组:
 
@@ -115,7 +78,7 @@ $$
 - $\text{absolute} \in \{\text{true}, \text{false}\}$ 是绝对/相对标志(大写/小写)
 - $\text{params}$ 是参数序列,长度由命令类型决定
 
-### 3.2 当前点与子路径状态
+### 2.2 当前点与子路径状态
 
 路径解析器维护一个状态机,核心状态包括:
 
@@ -125,7 +88,7 @@ $$
 
 每个命令根据状态计算新的几何点,并更新状态。M 命令会重置子路径起点;Z 命令将当前点设为子路径起点。
 
-### 3.3 命令字母表
+### 2.3 命令字母表
 
 $$
 \Sigma_{\text{path}} = \{M, L, H, V, C, S, Q, T, A, Z\}
@@ -144,7 +107,7 @@ $$
 | `A` | 弧线 | rx,ry rot large,sweep x,y | 7 |
 | `Z` | 闭合路径 | 无 | 0 |
 
-### 3.4 绝对坐标 vs 相对坐标
+### 2.4 绝对坐标 vs 相对坐标
 
 大写命令使用**绝对坐标**(以 SVG 坐标系原点为参考),小写命令使用**相对坐标**(以前一命令终点为参考):
 
@@ -158,7 +121,7 @@ $$
 2. **可移植性**:路径数据可平移而不修改内部坐标
 3. **可复用性**:同一相对路径可在不同位置复用
 
-### 3.5 贝塞尔曲线的参数化定义
+### 2.5 贝塞尔曲线的参数化定义
 
 n 次贝塞尔曲线 $B(t)$ 由 $n+1$ 个控制点 $P_0, P_1, \ldots, P_n$ 定义:
 
@@ -171,7 +134,7 @@ $$
 
 其中 $P_0$ 是当前点(曲线起点),$P_1, P_2$ 是控制点,$P_3$ 是终点。
 
-### 3.6 弧线的椭圆方程
+### 2.6 弧线的椭圆方程
 
 SVG arc 命令隐含一个椭圆方程。设椭圆中心 $(c_x, c_y)$,半长轴 $r_x$,半短轴 $r_y$,旋转角 $\phi$,则椭圆上的点 $(x, y)$ 满足:
 
@@ -181,9 +144,9 @@ $$
 
 其中 $\theta \in [0, 2\pi)$ 是椭圆参数角。给定端点 $P_1, P_2$ 与半径 $r_x, r_y$,中心 $(c_x, c_y)$ 可通过解方程组获得(共有 2 个可能解)。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 de Casteljau 算法
+### 3.1 de Casteljau 算法
 
 de Casteljau 算法是计算贝塞尔曲线上点的递归方法,数值稳定且几何直观。对 n 次贝塞尔曲线:
 
@@ -203,7 +166,7 @@ $$
 
 这一算法可同时计算曲线导数(切线方向),对路径动画与 stroke-dasharray 计算至关重要。
 
-### 4.2 贝塞尔曲线的导数
+### 3.2 贝塞尔曲线的导数
 
 n 次贝塞尔曲线的导数是 $n-1$ 次贝塞尔曲线:
 
@@ -216,7 +179,7 @@ $$
 
 导数模长 $|B'(t)|$ 即切线长度,用于参数 $t$ 到弧长的转换。
 
-### 4.3 路径长度的数值积分
+### 3.3 路径长度的数值积分
 
 路径长度 $L$ 可通过积分计算:
 
@@ -249,7 +212,7 @@ function cubicBezierPoint(p0, p1, p2, p3, t) {
 
 更精确的方法是 Gaussian quadrature(高斯积分),在少量采样点下获得高精度。
 
-### 4.4 弧线参数的求解
+### 3.4 弧线参数的求解
 
 给定 arc 命令 $A\ r_x\ r_y\ \phi\ f_a\ f_s\ x_2\ y_2$(起点 $P_1$,终点 $P_2$),椭圆中心 $(c_x, c_y)$ 的求解步骤:
 
@@ -293,7 +256,7 @@ $$
 
 $sweep\_flag$ $f_s$ 决定 $\theta_2$ 大于还是小于 $\theta_1$。
 
-### 4.5 fill-rule 算法
+### 3.5 fill-rule 算法
 
 复杂路径的填充规则基于射线交叉计数:
 
@@ -309,7 +272,7 @@ $$
 \text{fill}_{\text{evenodd}}(P) = \left( \sum_{i} 1 \right) \mod 2 = 1
 $$
 
-### 4.6 平滑贝塞尔(S/T)的控制点反射
+### 3.6 平滑贝塞尔(S/T)的控制点反射
 
 `S x2,y2 x,y` 命令的第一个控制点自动反射前一命令(必须是 C/S)的第二控制点:
 
@@ -321,7 +284,7 @@ $$
 
 `T x,y` 命令类似,但反射前一 Q/T 命令的控制点。
 
-### 4.7 pathLength 的归一化语义
+### 3.7 pathLength 的归一化语义
 
 `pathLength` 属性将路径长度归一化为指定值 $L_n$。后续的 `stroke-dasharray`、`stroke-dashoffset` 等基于 $L_n$ 计算:
 
@@ -331,7 +294,7 @@ $$
 
 所有引用路径长度的属性都按 scale 缩放,使动画可基于归一化参数(0-100 或 0-1)编写。
 
-### 4.8 多子路径的填充
+### 3.8 多子路径的填充
 
 单个 `<path>` 可包含多个 `M` 命令,形成多个独立子路径。填充规则应用于整个路径:
 
@@ -340,9 +303,9 @@ $$
 
 这一性质常用于绘制环形、镂空图形(如五角星中心)。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 path 概述
+### 4.1 path 概述
 
 `<path>` 是 SVG 中最强大的元素,通过 `d` 属性的命令序列描述任意形状。所有基本图形都可用 path 表达。
 
@@ -352,7 +315,7 @@ $$
 </svg>
 ```
 
-### 5.2 命令总览
+### 4.2 命令总览
 
 | 命令 | 含义 | 参数 | 大小写区别 |
 | ---- | ---- | ---- | ---------- |
@@ -369,9 +332,9 @@ $$
 
 > **绝对坐标**:以坐标系原点为参考;**相对坐标**:以前一命令终点为参考。
 
-### 5.3 直线命令
+### 4.3 直线命令
 
-#### 5.3.1 M / L
+#### 4.3.1 M / L
 
 ```html
 <path d="M 10 10 L 100 10 L 100 50 L 10 50 Z" fill="#4f5bd5" />
@@ -379,7 +342,7 @@ $$
 
 绘制矩形:从 (10,10) → (100,10) → (100,50) → (10,50) → 闭合回起点。
 
-#### 5.3.2 H / V
+#### 4.3.2 H / V
 
 ```html
 <path d="M 10 10 H 100 V 50 H 10 Z" fill="#00b894" />
@@ -387,7 +350,7 @@ $$
 
 `H 100` 等价于 `L 100 当前y`,`V 50` 等价于 `L 当前x 50`。H/V 比 L 更紧凑,文件更小。
 
-#### 5.3.3 相对坐标
+#### 4.3.3 相对坐标
 
 ```html
 <!-- 绝对 -->
@@ -398,9 +361,9 @@ $$
 
 相对命令 `l 90 0` 表示从前一点向右移动 90,y 不变。
 
-### 5.4 贝塞尔曲线
+### 4.4 贝塞尔曲线
 
-#### 5.4.1 二次贝塞尔 Q
+#### 4.4.1 二次贝塞尔 Q
 
 `Q x1,y1 x,y`:一个控制点 + 终点。
 
@@ -414,7 +377,7 @@ $$
 </svg>
 ```
 
-#### 5.4.2 平滑二次贝塞尔 T
+#### 4.4.2 平滑二次贝塞尔 T
 
 `T x,y`:自动反射前一控制点,形成连续平滑曲线。
 
@@ -424,7 +387,7 @@ $$
 
 第二个控制点自动为 $(280, 170)$(反射 $(100, 10)$ 关于 $(190, 90)$),形成波浪。
 
-#### 5.4.3 三次贝塞尔 C
+#### 4.4.3 三次贝塞尔 C
 
 `C x1,y1 x2,y2 x,y`:两个控制点 + 终点,可表达更复杂曲线。
 
@@ -434,7 +397,7 @@ $$
 </svg>
 ```
 
-#### 5.4.4 平滑三次贝塞尔 S
+#### 4.4.4 平滑三次贝塞尔 S
 
 `S x2,y2 x,y`:第二控制点自动反射,第一控制点需显式提供。
 
@@ -442,7 +405,7 @@ $$
 <path d="M 10 50 C 50 10 100 90 150 50 S 250 10 290 50" fill="none" stroke="#d63031" />
 ```
 
-### 5.5 弧线命令 A
+### 4.5 弧线命令 A
 
 ```
 A rx,ry x-axis-rotation large-arc-flag sweep-flag x,y
@@ -456,7 +419,7 @@ A rx,ry x-axis-rotation large-arc-flag sweep-flag x,y
 | `sweep-flag` | 0 逆时针 / 1 顺时针 |
 | `x,y` | 终点 |
 
-#### 5.5.1 四种弧组合
+#### 4.5.1 四种弧组合
 
 ```html
 <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
@@ -468,7 +431,7 @@ A rx,ry x-axis-rotation large-arc-flag sweep-flag x,y
 </svg>
 ```
 
-#### 5.5.2 圆弧扇形
+#### 4.5.2 圆弧扇形
 
 ```html
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -478,7 +441,7 @@ A rx,ry x-axis-rotation large-arc-flag sweep-flag x,y
 
 绘制 1/4 扇形:从圆心 (100,100) → (100,20) → 顺时针弧到 (180,100) → 闭合。
 
-### 5.6 闭合路径 Z
+### 4.6 闭合路径 Z
 
 `Z`(或 `z`)从当前点连回 `M` 起点形成闭合。
 
@@ -491,11 +454,11 @@ A rx,ry x-axis-rotation large-arc-flag sweep-flag x,y
 
 > 闭合后 `fill` 才能正确填充内部。
 
-### 5.7 路径填充规则 fill-rule
+### 4.7 路径填充规则 fill-rule
 
 复杂路径(自相交或多子路径)的填充行为由 `fill-rule` 控制。
 
-#### 5.7.1 nonzero(默认)
+#### 4.7.1 nonzero(默认)
 
 ```html
 <path
@@ -507,7 +470,7 @@ A rx,ry x-axis-rotation large-arc-flag sweep-flag x,y
 
 外矩形 + 内矩形:nonzero 规则下内矩形被"挖空"(外顺时针 + 内逆时针 → 区域计数为 0)。
 
-#### 5.7.2 evenodd
+#### 4.7.2 evenodd
 
 ```html
 <path
@@ -519,7 +482,7 @@ A rx,ry x-axis-rotation large-arc-flag sweep-flag x,y
 
 evenodd 规则下,无论方向,奇数次穿越绘制,偶数次不绘制 → 形成环带效果。
 
-#### 5.7.3 五角星示例
+#### 4.7.3 五角星示例
 
 ```html
 <!-- nonzero:中心填充 -->
@@ -537,7 +500,7 @@ evenodd 规则下,无论方向,奇数次穿越绘制,偶数次不绘制 → 形�
 />
 ```
 
-### 5.8 多子路径
+### 4.8 多子路径
 
 单个 `<path>` 可包含多个 `M` 命令,形成多个独立子路径。
 
@@ -546,7 +509,7 @@ evenodd 规则下,无论方向,奇数次穿越绘制,偶数次不绘制 → 形�
 <path d="M 10 10 L 90 10 L 50 90 Z M 110 10 L 190 10 L 150 90 Z" fill="#4f5bd5" />
 ```
 
-### 5.9 路径长度与测量
+### 4.9 路径长度与测量
 
 `pathLength` 属性将路径归一化到指定长度,便于 stroke-dasharray 动画。
 
@@ -573,7 +536,7 @@ const point = path.getPointAtLength(100); // 路径中点坐标
 console.log(point.x, point.y);
 ```
 
-### 5.10 stroke-dasharray 动画
+### 4.10 stroke-dasharray 动画
 
 ```html
 <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
@@ -597,7 +560,7 @@ console.log(point.x, point.y);
 </svg>
 ```
 
-### 5.11 实战:手写心形
+### 4.11 实战:手写心形
 
 ```html
 <svg viewBox="0 0 100 100" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
@@ -620,7 +583,7 @@ console.log(point.x, point.y);
 - C 到 (100,50):右半弧
 - C 回 (50,30):闭合
 
-### 5.12 JavaScript 路径生成器
+### 4.12 JavaScript 路径生成器
 
 ```javascript
 class PathBuilder {
@@ -681,7 +644,7 @@ console.log(roundedRectPath(10, 10, 100, 80, 8));
 // "M 18 10 A 8 8 0 0 1 110 18 A 8 8 0 0 1 102 90 A 8 8 0 0 1 10 82 A 8 8 0 0 1 18 10 Z"
 ```
 
-### 5.13 de Casteljau 算法实现
+### 4.13 de Casteljau 算法实现
 
 ```javascript
 function deCasteljau(points, t) {
@@ -714,7 +677,7 @@ const p3 = { x: 190, y: 50 };
 console.log(cubicBezier(p0, p1, p2, p3, 0.5)); // 中点
 ```
 
-### 5.14 弧线参数求解
+### 4.14 弧线参数求解
 
 ```javascript
 function arcCenter(p1, p2, rx, ry, phi, largeArc, sweep) {
@@ -780,9 +743,9 @@ console.log(center);
 // { cx: 100, cy: 100, rx: 50, ry: 50, phi: 0, theta1: ..., theta2: ... }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 SVG path vs Canvas Path2D
+### 5.1 SVG path vs Canvas Path2D
 
 | 特性 | SVG path | Canvas Path2D |
 | ---- | -------- | -------------- |
@@ -795,7 +758,7 @@ console.log(center);
 | 序列化 | 原生支持 | 需手动序列化 |
 | 编辑能力 | DOM 操作 | 不可编辑 |
 
-### 6.2 SVG path vs PostScript path
+### 5.2 SVG path vs PostScript path
 
 | 特性 | SVG path | PostScript path |
 | ---- | -------- | --------------- |
@@ -806,7 +769,7 @@ console.log(center);
 | 平滑贝塞尔 | S/T | 需手动计算 |
 | 文本格式 | 是 | 是 |
 
-### 6.3 贝塞尔曲线 vs 样条曲线
+### 5.3 贝塞尔曲线 vs 样条曲线
 
 | 特性 | 贝塞尔曲线 | B 样条曲线 | NURBS |
 | ---- | ---------- | ---------- | ----- |
@@ -817,7 +780,7 @@ console.log(center);
 | 适用场景 | SVG/字体 | CAD | 高级建模 |
 | 计算复杂度 | 低 | 中 | 高 |
 
-### 6.4 nonzero vs evenodd
+### 5.4 nonzero vs evenodd
 
 | 特性 | nonzero | evenodd |
 | ---- | ------- | -------- |
@@ -827,9 +790,9 @@ console.log(center);
 | 实现复杂度 | 中 | 低 |
 | 适用场景 | 方向明确的设计 | 复杂嵌套图形 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 命令字母大小写混淆
+### 6.1 命令字母大小写混淆
 
 ```html
 <!-- 错误:相对坐标用大写,导致位置错乱 -->
@@ -841,7 +804,7 @@ console.log(center);
 <!-- 等价于从 (10,10) 移动 (90,90),到 (100,100) -->
 ```
 
-### 7.2 弧线参数无解
+### 6.2 弧线参数无解
 
 ```html
 <!-- 错误:两点距离超过椭圆直径,导致自动放大半径 -->
@@ -851,7 +814,7 @@ console.log(center);
 
 **最佳实践**:验证端点距离 $\leq 2 \cdot \max(r_x, r_y)$,否则半径会被自动修正。
 
-### 7.3 Z 命令后未重置当前点
+### 6.3 Z 命令后未重置当前点
 
 ```html
 <!-- 错误:Z 后继续画线,会从 Z 之前的终点开始 -->
@@ -861,7 +824,7 @@ console.log(center);
 
 **最佳实践**:Z 后若需在新位置画图,应使用 M 命令显式重置。
 
-### 7.4 平滑贝塞尔前无 C/Q
+### 6.4 平滑贝塞尔前无 C/Q
 
 ```html
 <!-- 错误:S 前没有 C,反射控制点未定义 -->
@@ -871,7 +834,7 @@ console.log(center);
 
 **最佳实践**:S 命令前应有 C 或 S 命令;T 命令前应有 Q 或 T 命令。
 
-### 7.5 坐标精度过高
+### 6.5 坐标精度过高
 
 ```html
 <!-- 冗余:过多小数位 -->
@@ -883,7 +846,7 @@ console.log(center);
 
 **最佳实践**:用 SVGO 自动压缩坐标精度,通常 2-3 位小数已足够视觉精度。
 
-### 7.6 复杂路径未分组
+### 6.6 复杂路径未分组
 
 ```html
 <!-- 难维护:所有形状在一个 path 内 -->
@@ -896,7 +859,7 @@ console.log(center);
 </g>
 ```
 
-### 7.7 路径方向影响 fill-rule
+### 6.7 路径方向影响 fill-rule
 
 ```html
 <!-- nonzero 规则下,内矩形方向决定是否镂空 -->
@@ -909,7 +872,7 @@ console.log(center);
 
 **最佳实践**:需要镂空效果时,确保外环与内环方向相反(可通过 reverse 命令调整)。
 
-### 7.8 pathLength 与实际长度混淆
+### 6.8 pathLength 与实际长度混淆
 
 ```html
 <!-- 误解:认为 pathLength=100 后,实际长度变为 100 -->
@@ -917,11 +880,11 @@ console.log(center);
 <!-- 实际长度可能为 200,pathLength 仅影响 stroke-dasharray 等的归一化 -->
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 SVG 图标库设计
+### 7.1 SVG 图标库设计
 
-#### 8.1.1 统一 viewBox 与坐标系
+#### 7.1.1 统一 viewBox 与坐标系
 
 ```xml
 <!-- 所有图标统一 24×24 viewBox -->
@@ -930,7 +893,7 @@ console.log(center);
 </svg>
 ```
 
-#### 8.1.2 路径数据 TypeScript 类型
+#### 7.1.2 路径数据 TypeScript 类型
 
 ```typescript
 // SVG path 命令类型定义
@@ -962,7 +925,7 @@ function commandsToPath(commands: PathCommand[]): string {
 }
 ```
 
-### 8.2 Vue 3 SVG 路径组件
+### 7.2 Vue 3 SVG 路径组件
 
 ```vue
 <template>
@@ -998,7 +961,7 @@ const size = computed(() => Number(props.size));
 </script>
 ```
 
-### 8.3 React SVG 路径组件
+### 7.3 React SVG 路径组件
 
 ```jsx
 import { memo } from 'react';
@@ -1039,7 +1002,7 @@ const SVGIcon = memo(function SVGIcon({
 export default SVGIcon;
 ```
 
-### 8.4 SVGO 优化配置
+### 7.4 SVGO 优化配置
 
 ```javascript
 // svgo.config.js
@@ -1071,7 +1034,7 @@ module.exports = {
 };
 ```
 
-### 8.5 路径长度计算工具
+### 7.5 路径长度计算工具
 
 ```javascript
 class PathLengthCalculator {
@@ -1191,7 +1154,7 @@ class PathLengthCalculator {
 }
 ```
 
-### 8.6 SVG 编辑器核心逻辑
+### 7.6 SVG 编辑器核心逻辑
 
 ```javascript
 class SVGPathEditor {
@@ -1255,9 +1218,9 @@ class SVGPathEditor {
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一:Material Design 图标
+### 8.1 案例一:Material Design 图标
 
 Google Material Icons 大量使用 path 命令:
 
@@ -1273,7 +1236,7 @@ Google Material Icons 大量使用 path 命令:
 2. 弧线 A 命令精确绘制圆角
 3. 单一 path 简化 DOM 结构
 
-### 9.2 案例二:Heroicons 体系
+### 8.2 案例二:Heroicons 体系
 
 ```xml
 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor">
@@ -1287,7 +1250,7 @@ Google Material Icons 大量使用 path 命令:
 2. `stroke-linecap="round"` 让端点圆润
 3. 简洁命令序列
 
-### 9.3 案例三:Lucide Icons
+### 8.3 案例三:Lucide Icons
 
 ```xml
 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1295,7 +1258,7 @@ Google Material Icons 大量使用 path 命令:
 </svg>
 ```
 
-### 9.4 案例四:Bootstrap Icons
+### 8.4 案例四:Bootstrap Icons
 
 ```xml
 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
@@ -1309,7 +1272,7 @@ Google Material Icons 大量使用 path 命令:
 2. 单 path 完成圆形 + 镂空
 3. 16×16 viewBox 适配密集 UI
 
-### 9.5 案例五:D3.js 数据可视化
+### 8.5 案例五:D3.js 数据可视化
 
 ```javascript
 import * as d3 from 'd3';
@@ -1329,7 +1292,7 @@ const path = svg.append('path')
 
 D3.js 内部将曲线插值转换为 SVG path 命令,支持贝塞尔、B 样条等多种插值。
 
-### 9.6 案例六:FANDEX 项目实战
+### 8.6 案例六:FANDEX 项目实战
 
 FANDEX 项目使用 path 命令绘制知识图谱节点连接线:
 
@@ -1657,7 +1620,7 @@ console.log(points);
 - 贝塞尔采样(2 分)
 - Z 命令处理(2 分)
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 13**:为什么 SVG 选择贝塞尔曲线而非 B 样条或 NURBS 作为路径曲线?这一选择有哪些优势与劣势?
 
@@ -1839,9 +1802,9 @@ const path = document.querySelector('path');
 setProgress(path, 30); // 30% 进度
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 W3C 规范
+### 10.1 W3C 规范
 
 1. W3C. 2018. **SVG 2 Specification: Path Element**. W3C Recommendation. https://www.w3.org/TR/SVG2/paths.html
 
@@ -1849,7 +1812,7 @@ setProgress(path, 30); // 30% 进度
 
 3. W3C. 2023. **CSS Masking Module Level 1: fill-rule**. W3C Candidate Recommendation. https://www.w3.org/TR/css-masking-1/
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 4. Bézier, P. 1966. **Définition numérique des courbes et surfaces I**. *Automatisme* 11, 625–632.
 
@@ -1863,7 +1826,7 @@ setProgress(path, 30); // 30% 进度
 
 9. Piegl, L. and Tiller, W. 1997. **The NURBS Book** (2nd ed.). Springer-Verlag, Berlin, Heidelberg, Germany. https://doi.org/10.1007/978-3-642-59223-2
 
-### 11.3 工程实践参考
+### 10.3 工程实践参考
 
 10. Eisenberg, J. D. 2014. **SVG Essentials** (2nd ed.). O'Reilly Media, Sebastopol, CA, USA.
 
@@ -1871,7 +1834,7 @@ setProgress(path, 30); // 30% 进度
 
 12. Bostock, M., Ogievetsky, V., and Heer, J. 2011. **D3: Data-Driven Documents**. *IEEE Transactions on Visualization and Computer Graphics* 17, 12, 2301–2309. https://doi.org/10.1109/TVCG.2011.185
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 13. MDN Web Docs. 2023. **SVG <path> element**. https://developer.mozilla.org/en-US/docs/Web/SVG/Element/path
 
@@ -1883,35 +1846,35 @@ setProgress(path, 30); // 30% 进度
 
 17. Bostock, M. 2023. **D3-Path**. https://github.com/d3/d3-path
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 计算机图形学
+### 11.1 计算机图形学
 
 - **MIT 6.837 Computer Graphics**:深入理解贝塞尔曲线、B 样条、NURBS
 - **Stanford CS248 Introduction to Computer Graphics**:曲线与曲面的数学基础
 - **CMU 15-462/662 Computer Graphics**:从理论到实现的完整覆盖
 - **Farin, G. Curves and Surfaces for CAGD**:CAD/CAM 领域的曲线曲面圣经
 
-### 12.2 字体设计
+### 11.2 字体设计
 
 - **OpenType Specification**:字体中贝塞尔曲线的应用
 - **TrueType Reference Manual**:二次贝塞尔在 TrueType 中的使用
 - **Frutiger, A. Type Sign Symbol**:字体设计与几何美学
 
-### 12.3 数据可视化
+### 11.3 数据可视化
 
 - **D3.js 文档**:曲线插值器(curveBasis、curveCardinal、curveCatmullRom)
 - **Munzner, T. Visualization Analysis and Design**:可视化中的路径应用
 - **Wilkinson, L. The Grammar of Graphics**:图形语法的路径表示
 
-### 12.4 相关工具
+### 11.4 相关工具
 
 - **SVGO**:路径数据压缩与优化
 - **Inkscape**:开源 SVG 编辑器,可视化路径编辑
 - **Figma**:设计工具的路径布尔运算
 - **Illustrator**:Adobe 的路径编辑工具
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - **CSS path() 函数**:SVG 2 将 path 数据作为 CSS 属性
 - **Houdini API**:自定义路径渲染

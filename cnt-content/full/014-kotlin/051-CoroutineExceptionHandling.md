@@ -17,6 +17,7 @@ prerequisites:
   - kotlin/概述与环境配置
   - kotlin/协程调度器与上下文
 ---
+
 # Kotlin 协程异常处理
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -40,72 +41,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述 Kotlin 协程异常处理的两大原则：异常默认会向上传播到父协程；`launch` 的异常无法被外层 `try/catch` 捕获。
-- 列举结构化并发的核心 API：`Job`、`SupervisorJob`、`supervisorScope`、`coroutineScope`、`CoroutineExceptionHandler`。
-- 背诵 `SupervisorJob` 与普通 `Job` 的语义差异：`SupervisorJob` 的子协程失败不会传播到父，也不会取消兄弟协程。
-- 记忆 `CoroutineExceptionHandler` 是 `CoroutineContext` 的元素，仅对未捕获的异常生效，且仅对根协程（root coroutine）的 `launch` 生效。
-- 列举 `async` 与 `launch` 的异常语义差异：`async` 的异常在 `await()` 时才被抛出，未 `await` 的 `async` 异常会被父协程处理。
-- 复述取消异常（CancellationException）的特殊地位：它是协程取消的"正常信号"，不应被捕获并吞掉。
-- 列举异常传播的三个层级：子协程 → 父协程 → 根协程 → `CoroutineExceptionHandler` → Thread.UncaughtExceptionHandler。
-
-### 1.2 Understand（理解）
-
-- 用自己的语言解释"结构化异常传播"（Structured Exception Propagation）的语义含义：协程的异常处理与协程层级结构绑定，而非调用栈。
-- 解释为什么 `try { launch { throw } } catch (e) {}` 无法捕获异常：`launch` 是"fire-and-forget"，异常发生在另一个调用栈。
-- 描述 `SupervisorJob` 的设计意图：用于"独立子任务"场景，如多个独立网络请求，一个失败不应影响其他。
-- 阐述 `coroutineScope` 与 `supervisorScope` 的差异：前者任意子失败则全部取消，后者子失败相互隔离。
-- 解释 `async` 的异常为何"延迟"到 `await`：`Deferred` 是"未来值的容器"，异常被封装在 `Deferred` 中。
-- 理解取消语义：`CancellationException` 是协作式取消的信号，捕获它而不重新抛出会破坏结构化并发。
-- 解释 `CoroutineExceptionHandler` 在 Android 中的"最后防线"角色：用于崩溃日志上报，不能用于恢复 UI。
-
-### 1.3 Apply（应用）
-
-- 在 ViewModel 中正确使用 `viewModelScope.launch` 配合 `try/catch` 包裹子协程，避免崩溃。
-- 在并行的多个独立任务中使用 `supervisorScope`，确保一个失败不影响其他。
-- 使用 `CoroutineExceptionHandler` 实现全局崩溃日志上报。
-- 在 `async` 链中正确使用 `await`，并用 `try/catch` 捕获异常。
-- 使用 `runCatching` 与 `Result` 类型替代 `try/catch`，实现函数式异常处理。
-- 在 Spring Boot 服务端使用 `CoroutineExceptionHandler` 与 `ControllerAdvice` 集成。
-- 自定义 `CoroutineContext` 元素，将 MDC（Mapped Diagnostic Context）与协程绑定，便于异常日志追踪。
-
-### 1.4 Analyze（分析）
-
-- 反编译协程字节码，分析 `Job.cancel()` 与 `Job.cancelAndJoin()` 的差异。
-- 对比同一业务逻辑在"回调"、"Promise/Future"、"RxJava"、"协程"四种方案下的异常处理复杂度。
-- 分析 `kotlinx.coroutines` 源码中 `ChildHandleNode`、`ParentJob`、`ChildJob` 的协作关系。
-- 解构 `SupervisorJobImpl` 与 `JobImpl` 的源码差异：`childCancelled` 方法的不同实现。
-- 分析 `async` 在 `coroutineScope` 与 `supervisorScope` 中的不同行为：前者异常会取消父，后者不会。
-
-### 1.5 Evaluate（评价）
-
-- 评价 Kotlin 选择"结构化异常传播"而非"基于调用栈的传播"的设计权衡。
-- 评价 `SupervisorJob` 默认不传递异常到父的设计优劣：避免了"一个失败全军覆没"，但要求开发者显式管理。
-- 评价 `CoroutineExceptionHandler` 仅对 `launch` 根协程生效的设计：是否过于受限？
-- 评价 `async` 异常延迟到 `await` 的语义：在哪些场景下会引发"未 await 的 async 静默失败"？
-- 评价 `CancellationException` 的特殊地位：它是不是"滥用异常机制实现控制流"？
-- 评价结构化并发对传统 `try/catch` 的影响：是否削弱了"显式优于隐式"的原则？
-
-### 1.6 Create（创造）
-
-- 设计并实现一个自定义的"重试协程构建器"：`retryLaunch(times = 3) { ... }`，自动在异常时重试。
-- 设计一个跨平台的异常处理框架：统一 Android、iOS、JVM 的协程异常上报接口。
-- 实现一个"异常聚合器"：收集多个子协程的异常，统一处理（类似 `Promise.allSettled`）。
-- 撰写一份团队协程异常处理规范：何时用 `try/catch`、何时用 `SupervisorJob`、何时用 `CoroutineExceptionHandler`。
-- 设计一个基于 `Flow` 的异常重试机制：`flow { }.retryWhen { cause, attempt -> ... }`。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：异步异常的复杂性
+### 1.1 问题背景：异步异常的复杂性
 
 异步编程中的异常处理长期是一个棘手问题。在传统的回调和 Future 模式中，异常的传播路径不清晰，容易导致"未处理异常"或"异常被吞掉"。
 
@@ -123,7 +61,7 @@ Kotlin 协程的设计目标：
 - **显式控制**：开发者可以选择"传播"或"隔离"异常，通过 `SupervisorJob` 显式声明。
 - **零开销**：异常处理不引入额外开销，复用 JVM 的异常机制。
 
-### 2.2 学术背景：CSP 与结构化并发
+### 1.2 学术背景：CSP 与结构化并发
 
 结构化并发的理论基础来自 Hoare 的 CSP（Communicating Sequential Processes, 1978）与最近的结构化并发提案（Structured Concurrency, 2016）：
 
@@ -133,7 +71,7 @@ Kotlin 协程的设计目标：
 
 Kotlin 协程采用这一思想，将异常处理与 `Job` 层级绑定，形成"结构化异常传播"机制。
 
-### 2.3 Kotlin 1.1（2017）：协程实验性阶段
+### 1.3 Kotlin 1.1（2017）：协程实验性阶段
 
 Kotlin 1.1 引入协程作为实验性特性，异常处理机制较为原始：
 
@@ -150,7 +88,7 @@ launch {
 
 此时 `SupervisorJob` 与 `CoroutineExceptionHandler` 尚未稳定，开发者主要依赖 `try/catch`。
 
-### 2.4 Kotlin 1.3（2018 年 10 月）：协程 GA
+### 1.4 Kotlin 1.3（2018 年 10 月）：协程 GA
 
 Kotlin 1.3 将协程提升为稳定状态（GA），同时引入了完整的异常处理 API：
 
@@ -159,7 +97,7 @@ Kotlin 1.3 将协程提升为稳定状态（GA），同时引入了完整的异�
 3. **`supervisorScope` / `coroutineScope`**：作用域构建器，分别对应隔离与传播语义。
 4. **`CancellationException`**：正式成为取消信号的载体。
 
-### 2.5 Kotlin 1.4-1.5（2020-2021）：异常处理优化
+### 1.5 Kotlin 1.4-1.5（2020-2021）：异常处理优化
 
 Kotlin 1.4-1.5 期间，异常处理有以下优化：
 
@@ -168,7 +106,7 @@ Kotlin 1.4-1.5 期间，异常处理有以下优化：
 3. **`Flow` 的异常处理**：`Flow.catch`、`Flow.retry`、`Flow.retryWhen` 等 API 稳定。
 4. **`CoroutineExceptionHandler` 在 KMP 中的支持**：在 JS、Native 平台行为一致。
 
-### 2.6 Kotlin 1.6-1.7（2021-2022）：诊断与调试改进
+### 1.6 Kotlin 1.6-1.7（2021-2022）：诊断与调试改进
 
 Kotlin 1.6-1.7 改进了协程异常的诊断：
 
@@ -176,7 +114,7 @@ Kotlin 1.6-1.7 改进了协程异常的诊断：
 2. **`CoroutineStack` 预览**：调试器能展示协程的"逻辑调用栈"，而非 JVM 调用栈。
 3. **`DebugProbes`**：用于在运行时探查所有活跃协程的状态。
 
-### 2.7 Kotlin 1.8-1.9（2023 年）：与 Virtual Threads 集成
+### 1.7 Kotlin 1.8-1.9（2023 年）：与 Virtual Threads 集成
 
 Kotlin 1.8-1.9 与 JVM 21 的 Virtual Threads 集成，异常处理有以下变化：
 
@@ -184,7 +122,7 @@ Kotlin 1.8-1.9 与 JVM 21 的 Virtual Threads 集成，异常处理有以下变�
 2. **`Dispatchers.IO` 与 Virtual Threads 互操作**：异常传播路径不变。
 3. **结构化并发与 Loom 的对比**：Loom 的 `StructuredTaskScope` 与 Kotlin 的 `coroutineScope` 概念相似。
 
-### 2.8 Kotlin 2.0（2024 年 5 月）：K2 与异常处理
+### 1.8 Kotlin 2.0（2024 年 5 月）：K2 与异常处理
 
 Kotlin 2.0 的 K2 编译器对异常处理进行了优化：
 
@@ -192,7 +130,7 @@ Kotlin 2.0 的 K2 编译器对异常处理进行了优化：
 2. **`Continuation` 复用**：K2 能更好地复用 `Continuation` 对象，减少异常堆栈的"膨胀"。
 3. **结构化并发改进**：更严格的 `CoroutineScope` 检查，避免异常在错误的作用域被处理。
 
-### 2.9 JetBrains 的设计哲学
+### 1.9 JetBrains 的设计哲学
 
 JetBrains 在设计协程异常处理时遵循了以下哲学：
 
@@ -203,7 +141,7 @@ JetBrains 在设计协程异常处理时遵循了以下哲学：
 5. **零开销**：异常处理复用 JVM 机制，不引入额外开销。
 6. **平台无关**：异常处理在 JVM、JS、Native、Wasm 行为一致。
 
-### 2.10 时间线总览
+### 1.10 时间线总览
 
 ```
 2017  Kotlin 1.1 — 协程实验性，仅 try/catch
@@ -216,9 +154,9 @@ JetBrains 在设计协程异常处理时遵循了以下哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 协程异常传播的形式化
+### 2.1 协程异常传播的形式化
 
 设协程层级结构为一个有向树 $T = (V, E)$，其中：
 
@@ -237,7 +175,7 @@ $$
 
 其中 $p = \text{Parent}(c)$。
 
-### 3.2 Job 的层级关系
+### 2.2 Job 的层级关系
 
 `Job` 的层级关系形式化定义如下：
 
@@ -251,7 +189,7 @@ $$
 \text{Parent}(c) = p \iff \text{ChildHandle}(c).\text{parent} = p
 $$
 
-### 3.3 SupervisorJob 的语义
+### 2.3 SupervisorJob 的语义
 
 `SupervisorJob` 的核心区别在于 `childCancelled` 方法：
 
@@ -271,7 +209,7 @@ $$
 \text{childCancelled}_{\text{Supervisor}}(p, c) = \text{false} \quad \text{(不取消父与兄弟)}
 $$
 
-### 3.4 CoroutineExceptionHandler 的触发条件
+### 2.4 CoroutineExceptionHandler 的触发条件
 
 `CoroutineExceptionHandler` 仅在以下条件全部满足时触发：
 
@@ -285,7 +223,7 @@ $$
 - $\text{IsLaunch}(c)$：$c$ 通过 `launch` 启动（非 `async`）。
 - $\text{NotCaught}(e)$：异常未被 `try/catch` 捕获。
 
-### 3.5 取消异常的特殊地位
+### 2.5 取消异常的特殊地位
 
 `CancellationException` 在异常传播中被特殊处理：
 
@@ -298,7 +236,7 @@ $$
 
 即：取消异常不会触发父协程的取消（因为父可能已经主动取消子）。
 
-### 3.6 async 的异常语义
+### 2.6 async 的异常语义
 
 `async` 启动的协程，异常被封装在 `Deferred` 中：
 
@@ -316,7 +254,7 @@ v & \text{if } d = \text{Resolved}(v) \\
 \end{cases}
 $$
 
-### 3.7 结构化并发的异常语义
+### 2.7 结构化并发的异常语义
 
 `coroutineScope` 与 `supervisorScope` 的异常语义：
 
@@ -330,7 +268,7 @@ $$
 
 即：`coroutineScope` 任意子失败即抛出；`supervisorScope` 仅自身或显式抛出时失败。
 
-### 3.8 JVM 字节码层面的异常处理
+### 2.8 JVM 字节码层面的异常处理
 
 在 JVM 字节码层面，协程的异常处理通过 `try-catch` 表实现：
 
@@ -347,9 +285,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 异常传播的代数模型
+### 3.1 异常传播的代数模型
 
 考虑以下协程层级：
 
@@ -376,7 +314,7 @@ $$
 \text{Propagate}(\text{c1}, \text{E1}) \to \text{Cancel}(\text{p1}) \to \text{Cancel}(\text{c2}) \to \text{HandleAtRoot}(\text{scope}, \text{E1})
 $$
 
-### 4.2 SupervisorJob 的隔离性证明
+### 3.2 SupervisorJob 的隔离性证明
 
 考虑：
 
@@ -402,7 +340,7 @@ $$
 \text{Propagate}_{\text{Supervisor}}(\text{c1}, \text{E1}) \to \text{HandleAtRoot}(\text{p1}, \text{E1}) \quad \text{(c2 不受影响)}
 $$
 
-### 4.3 try/catch 无法捕获 launch 异常的原因
+### 3.3 try/catch 无法捕获 launch 异常的原因
 
 考虑：
 
@@ -430,7 +368,7 @@ $$
 
 因为 `launch` 的语义是 $\text{launch}(f) = \text{schedule}(f) \land \text{return Job}$，异常发生在 `schedule` 之后。
 
-### 4.4 async 的异常延迟性
+### 3.4 async 的异常延迟性
 
 考虑：
 
@@ -463,7 +401,7 @@ $$
 \text{await}(\text{Deferred}(\text{Rejected}(e))) = \text{throw } e
 $$
 
-### 4.5 CancellationException 的特殊处理
+### 3.5 CancellationException 的特殊处理
 
 考虑：
 
@@ -505,7 +443,7 @@ scope.launch {
 }
 ```
 
-### 4.6 CoroutineExceptionHandler 的触发时机
+### 3.6 CoroutineExceptionHandler 的触发时机
 
 `CoroutineExceptionHandler` 的触发条件：
 
@@ -532,7 +470,7 @@ scope.launch {
 }
 ```
 
-### 4.7 Job 状态机的形式化
+### 3.7 Job 状态机的形式化
 
 `Job` 的状态转换：
 
@@ -556,7 +494,7 @@ $$
 - `Completing` 时抛异常 → `Cancelling` → `Cancelled`。
 - `Cancelling` 时抛异常 → 忽略（已经在取消中）。
 
-### 4.8 异常处理的字节码分析
+### 3.8 异常处理的字节码分析
 
 考虑：
 
@@ -594,9 +532,9 @@ public static final Object caller(Continuation p1) {
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：异常默认传播
+### 4.1 基础：异常默认传播
 
 ```bash
 # 编译运行
@@ -643,7 +581,7 @@ parent done
 Exception in thread "DefaultDispatcher-worker-2" java.lang.RuntimeException: child 1 fails
 ```
 
-### 5.2 SupervisorJob：隔离子协程
+### 4.2 SupervisorJob：隔离子协程
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -677,7 +615,7 @@ parent done
 Exception in thread "DefaultDispatcher-worker-2" java.lang.RuntimeException: child 1 fails
 ```
 
-### 5.3 supervisorScope：作用域内的隔离
+### 4.3 supervisorScope：作用域内的隔离
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -711,7 +649,7 @@ Scope failed: java.lang.RuntimeException: A fails
 
 注意：`supervisorScope` 本身仍会抛出子协程的异常（最后一个），但不会取消兄弟协程。
 
-### 5.4 coroutineScope：传播语义
+### 4.4 coroutineScope：传播语义
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -743,7 +681,7 @@ Scope failed: java.lang.RuntimeException: A fails
 
 注意：`B runs` 不会被打印，因为 `coroutineScope` 是传播语义。
 
-### 5.5 CoroutineExceptionHandler：全局兜底
+### 4.5 CoroutineExceptionHandler：全局兜底
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -785,7 +723,7 @@ Handler caught: java.lang.RuntimeException: launch error
 Await caught: java.lang.RuntimeException: async error
 ```
 
-### 5.6 try/catch 限制
+### 4.6 try/catch 限制
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -822,7 +760,7 @@ Caught: java.lang.RuntimeException: async error
 Exception in thread "DefaultDispatcher-worker-2" java.lang.RuntimeException: launch error
 ```
 
-### 5.7 CancellationException 的正确处理
+### 4.7 CancellationException 的正确处理
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -868,7 +806,7 @@ Cleanup done
 Done
 ```
 
-### 5.8 runCatching：函数式异常处理
+### 4.8 runCatching：函数式异常处理
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -898,7 +836,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.9 自定义重试机制
+### 4.9 自定义重试机制
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -937,7 +875,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.10 异常聚合器
+### 4.10 异常聚合器
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -981,7 +919,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.11 Android ViewModel 中的异常处理
+### 4.11 Android ViewModel 中的异常处理
 
 ```kotlin
 import androidx.lifecycle.ViewModel
@@ -1013,7 +951,7 @@ class UserViewModel : ViewModel() {
 }
 ```
 
-### 5.12 Spring Boot 中的异常处理
+### 4.12 Spring Boot 中的异常处理
 
 ```kotlin
 import org.springframework.web.bind.annotation.*
@@ -1036,7 +974,7 @@ class UserController {
 }
 ```
 
-### 5.13 Flow 的异常处理
+### 4.13 Flow 的异常处理
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1069,9 +1007,9 @@ fun main() = runBlocking {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Java 异常处理的对比
+### 5.1 与 Java 异常处理的对比
 
 | 维度 | Java (Future/Executor) | Kotlin 协程 |
 |---|---|---|
@@ -1081,7 +1019,7 @@ fun main() = runBlocking {
 | 全局兜底 | `Thread.UncaughtExceptionHandler` | `CoroutineExceptionHandler` |
 | 结构化 | 无（独立 Future） | 有（Job 层级） |
 
-### 6.2 与 RxJava 的对比
+### 5.2 与 RxJava 的对比
 
 | 维度 | RxJava | Kotlin 协程 |
 |---|---|---|
@@ -1091,7 +1029,7 @@ fun main() = runBlocking {
 | 取消 | `Disposable.dispose()` | `Job.cancel()` |
 | 全局兜底 | 无原生支持 | `CoroutineExceptionHandler` |
 
-### 6.3 与 Project Reactor 的对比
+### 5.3 与 Project Reactor 的对比
 
 | 维度 | Reactor | Kotlin 协程 |
 |---|---|---|
@@ -1101,7 +1039,7 @@ fun main() = runBlocking {
 | 超时 | `timeout(duration)` | `withTimeout(duration)` |
 | 回退 | `onErrorReturn(default)` | `?: default` |
 
-### 6.4 与 Swift async/await 的对比
+### 5.4 与 Swift async/await 的对比
 
 | 维度 | Swift async/await | Kotlin 协程 |
 |---|---|---|
@@ -1112,7 +1050,7 @@ fun main() = runBlocking {
 | 并行隔离 | 无原生支持 | `supervisorScope` |
 | 全局兜底 | 无 | `CoroutineExceptionHandler` |
 
-### 6.5 与 Go goroutine 的对比
+### 5.5 与 Go goroutine 的对比
 
 | 维度 | Go goroutine | Kotlin 协程 |
 |---|---|---|
@@ -1123,7 +1061,7 @@ fun main() = runBlocking {
 | 全局兜底 | 无 | `CoroutineExceptionHandler` |
 | 结构化 | `context` 传递 | `coroutineScope` |
 
-### 6.6 与 JavaScript Promise 的对比
+### 5.6 与 JavaScript Promise 的对比
 
 | 维度 | JavaScript Promise | Kotlin 协程 |
 |---|---|---|
@@ -1133,7 +1071,7 @@ fun main() = runBlocking {
 | 全局兜底 | `unhandledrejection` 事件 | `CoroutineExceptionHandler` |
 | async/await | `try/catch` | `try/catch` |
 
-### 6.7 跨语言对比总结
+### 5.7 跨语言对比总结
 
 ```
                   结构化异常    显式控制    取消语义    全局兜底
@@ -1147,9 +1085,9 @@ Java Future           ×           √           △           ×
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：try/catch 包裹 launch
+### 6.1 陷阱：try/catch 包裹 launch
 
 **反模式**：
 
@@ -1193,7 +1131,7 @@ scope.launch(handler) {
 }
 ```
 
-### 7.2 陷阱：吞掉 CancellationException
+### 6.2 陷阱：吞掉 CancellationException
 
 **反模式**：
 
@@ -1225,7 +1163,7 @@ scope.launch {
 }
 ```
 
-### 7.3 陷阱：finally 中调用挂起函数
+### 6.3 陷阱：finally 中调用挂起函数
 
 **反模式**：
 
@@ -1256,7 +1194,7 @@ scope.launch {
 }
 ```
 
-### 7.4 陷阱：async 未 await 导致异常丢失
+### 6.4 陷阱：async 未 await 导致异常丢失
 
 **反模式**：
 
@@ -1291,7 +1229,7 @@ val deferreds = listOf(
 deferreds.awaitAll()  // 任意一个失败即抛出
 ```
 
-### 7.5 陷阱：SupervisorJob 滥用
+### 6.5 陷阱：SupervisorJob 滥用
 
 **反模式**：
 
@@ -1329,7 +1267,7 @@ scope.launch {
 }
 ```
 
-### 7.6 陷阱：CoroutineExceptionHandler 用于恢复
+### 6.6 陷阱：CoroutineExceptionHandler 用于恢复
 
 **反模式**：
 
@@ -1365,7 +1303,7 @@ scope.launch(handler) {
 }
 ```
 
-### 7.7 陷阱：catch Exception 而非 Throwable
+### 6.7 陷阱：catch Exception 而非 Throwable
 
 **反模式**：
 
@@ -1395,7 +1333,7 @@ scope.launch {
 }
 ```
 
-### 7.8 陷阱：异常在错误的作用域处理
+### 6.8 陷阱：异常在错误的作用域处理
 
 **反模式**：
 
@@ -1424,7 +1362,7 @@ class MyActivity : AppCompatActivity() {
 }
 ```
 
-### 7.9 陷阱：过度使用 runCatching
+### 6.9 陷阱：过度使用 runCatching
 
 **反模式**：
 
@@ -1458,7 +1396,7 @@ suspend fun loadUser(): LoadResult<User> = try {
 }
 ```
 
-### 7.10 陷阱：协程嵌套过深
+### 6.10 陷阱：协程嵌套过深
 
 **反模式**：
 
@@ -1485,7 +1423,7 @@ scope.launch {
 }
 ```
 
-### 7.11 陷阱：忽略异常的堆栈重建
+### 6.11 陷阱：忽略异常的堆栈重建
 
 **反模式**：
 
@@ -1517,7 +1455,7 @@ try {
 }
 ```
 
-### 7.12 陷阱：Flow 的 catch 位置
+### 6.12 陷阱：Flow 的 catch 位置
 
 **反模式**：
 
@@ -1569,9 +1507,9 @@ try {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 团队规范
+### 7.1 团队规范
 
 建议在团队中制定以下规范：
 
@@ -1594,7 +1532,7 @@ try {
    - 系统错误用异常表达
    - `runCatching` 仅用于简单场景
 
-### 8.2 监控与上报
+### 7.2 监控与上报
 
 ```kotlin
 // 自定义 CoroutineExceptionHandler，集成崩溃监控
@@ -1625,7 +1563,7 @@ val appScope = CoroutineScope(
 )
 ```
 
-### 8.3 MDC 集成
+### 7.3 MDC 集成
 
 ```kotlin
 import org.slf4j.MDC
@@ -1663,7 +1601,7 @@ suspend fun processRequest(requestId: String) = withMdc(
 }
 ```
 
-### 8.4 超时与取消
+### 7.4 超时与取消
 
 ```kotlin
 // 使用 withTimeout 实现超时
@@ -1696,7 +1634,7 @@ suspend fun <T> withTimeoutAndRetry(
 }
 ```
 
-### 8.5 Detekt 静态检查
+### 7.5 Detekt 静态检查
 
 ```yaml
 # detekt.yml
@@ -1713,7 +1651,7 @@ coroutines:
         active: true
 ```
 
-### 8.6 单元测试
+### 7.6 单元测试
 
 ```kotlin
 import kotlinx.coroutines.test.*
@@ -1756,7 +1694,7 @@ class MyViewModelTest {
 }
 ```
 
-### 8.7 调试技巧
+### 7.7 调试技巧
 
 ```kotlin
 // 启用调试模式
@@ -1784,7 +1722,7 @@ fun dumpCoroutines() {
 }
 ```
 
-### 8.8 性能考虑
+### 7.8 性能考虑
 
 异常处理的性能开销主要在异常抛出与堆栈收集：
 
@@ -1801,9 +1739,9 @@ class FastNetworkException(message: String) : RuntimeException(message) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：Android 图片加载库的异常处理
+### 8.1 案例：Android 图片加载库的异常处理
 
 **场景**：实现一个图片加载库，支持内存缓存、磁盘缓存、网络加载。
 
@@ -1868,7 +1806,7 @@ class ImageLoader(
 - 分层异常处理：磁盘错误降级，网络错误转换。
 - `CancellationException` 必须重新抛出。
 
-### 9.2 案例：金融交易系统的补偿事务
+### 8.2 案例：金融交易系统的补偿事务
 
 **场景**：银行转账，需要支持失败时的补偿（回滚）。
 
@@ -1925,7 +1863,7 @@ class TransferService(
 - 补偿事务：失败时执行反向操作。
 - 审计日志：无论成功失败都记录。
 
-### 9.3 案例：实时聊天系统的消息分发
+### 8.3 案例：实时聊天系统的消息分发
 
 **场景**：聊天室，向所有在线用户分发消息，一个用户失败不影响其他。
 
@@ -1980,7 +1918,7 @@ class ChatRoom {
 - 超时处理：`withTimeout` 防止慢速连接阻塞。
 - 失败时移除会话：避免重复失败。
 
-### 9.4 案例：KMP 项目中的统一异常处理
+### 8.4 案例：KMP 项目中的统一异常处理
 
 **场景**：跨平台（JVM、iOS、JS）的统一异常处理。
 
@@ -2033,7 +1971,7 @@ actual class PlatformExceptionReporter {
 }
 ```
 
-### 9.5 案例：SSE 长连接的异常恢复
+### 8.5 案例：SSE 长连接的异常恢复
 
 **场景**：Server-Sent Events 长连接，断线自动重连。
 
@@ -2086,7 +2024,7 @@ class SseClient(private val url: String) {
 - `delay(1000)`：指数退避可在此基础上实现。
 - `CancellationException` 必须重新抛出。
 
-### 9.6 案例：批量数据处理的重试
+### 8.6 案例：批量数据处理的重试
 
 **场景**：从数据库批量读取数据，每条独立处理，失败的记录到失败列表。
 
@@ -2131,7 +2069,7 @@ class BatchProcessor(
 }
 ```
 
-### 9.7 案例：Android Crashlytics 集成
+### 8.7 案例：Android Crashlytics 集成
 
 ```kotlin
 class CrashlyticsExceptionHandler : CoroutineExceptionHandler {
@@ -2164,7 +2102,7 @@ class MyApp : Application() {
 }
 ```
 
-### 9.8 案例：单元测试中的异常断言
+### 8.8 案例：单元测试中的异常断言
 
 ```kotlin
 import kotlinx.coroutines.test.*
@@ -2238,7 +2176,7 @@ class MyServiceTest {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：以下代码的输出是什么？
 
@@ -2289,7 +2227,7 @@ try {
 
 `Caught` 不会被打印，因为 `launch` 的异常无法通过外层 `try/catch` 捕获。异常会传播到根协程，触发 `CoroutineExceptionHandler` 或 `Thread.UncaughtExceptionHandler`。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：实现一个 `retryOnFailure` 协程构建器，支持自定义重试策略。
 
@@ -2414,7 +2352,7 @@ Done
 
 `Finally 2` 不会被打印，因为 `delay(100)` 在 `finally` 中会抛出 `CancellationException`（协程正在取消），无法继续执行。要在 `finally` 中执行挂起函数，必须用 `withContext(NonCancellable)` 包裹。
 
-### 10.4 分析题
+### 9.4 分析题
 
 **题目 8**：分析以下代码的执行流程，描述异常的传播路径。
 
@@ -2451,7 +2389,7 @@ scope.launch {
 
 注意：`SupervisorJob` 在最外层，不影响 `coroutineScope` 内的传播语义。
 
-### 10.5 设计题
+### 9.5 设计题
 
 **题目 9**：设计一个支持"熔断器"模式的协程工具，在连续失败 N 次后熔断一段时间。
 
@@ -2548,9 +2486,9 @@ class UserRepository(
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 1. JetBrains. "Coroutines exceptions handling." *Kotlin Coroutines Documentation*, 2024. https://kotlinlang.org/docs/coroutine-exceptions.html
 
@@ -2558,7 +2496,7 @@ class UserRepository(
 
 3. JetBrains. "Structured concurrency." *Kotlin Coroutines Documentation*, 2024. https://kotlinlang.org/docs/coroutines-basics.html#structured-concurrency
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 4. Hoare, C. A. R. "Communicating sequential processes." *Communications of the ACM* 21.8 (1978): 666-677.
 
@@ -2570,7 +2508,7 @@ class UserRepository(
 
 8. Dijkstra, Edsger W. "Cooperating sequential processes." *Programming Languages: NATO Advanced Study Institute*, 1965.
 
-### 11.3 Kotlin 提案与演进
+### 10.3 Kotlin 提案与演进
 
 9. Elizarov, Roman. "KEEP-154: Structured concurrency." *Kotlin Evolution and Enhancement Process*, 2018. https://github.com/Kotlin/KEEP/blob/master/proposals/structured-concurrency.md
 
@@ -2578,7 +2516,7 @@ class UserRepository(
 
 11. Elizarov, Roman. "Cancellation and timeouts." *Kotlin Coroutines Documentation*, 2024. https://kotlinlang.org/docs/cancellation-and-timeouts.html
 
-### 11.4 Reactive Streams 与对比
+### 10.4 Reactive Streams 与对比
 
 12. Reactive Streams. "Reactive Streams Specification." *JVM Specification*, 2015. https://github.com/reactive-streams/reactive-streams-jvm
 
@@ -2586,7 +2524,7 @@ class UserRepository(
 
 14. Pivotal Software. "Project Reactor Reference." *Spring Framework Documentation*, 2024. https://projectreactor.io/docs/core/release/reference/
 
-### 11.5 跨语言参考
+### 10.5 跨语言参考
 
 15. Swift Evolution. "SE-0296: Async/await." *Swift Evolution Proposals*, 2020. https://github.com/apple/swift-evolution/blob/main/proposals/0296-async-await.md
 
@@ -2596,37 +2534,37 @@ class UserRepository(
 
 18. ECMA International. "ECMAScript 2024: Promise.allSettled." *ECMA-262 Specification*, 2024.
 
-### 11.6 工程实践
+### 10.6 工程实践
 
 19. Google. "Android Kotlin Flow: Handle errors." *Android Developers Documentation*, 2024. https://developer.android.com/kotlin/flow#errors
 
 20. Jetbrains. "Testing coroutines." *Kotlin Coroutines Testing Documentation*, 2024. https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-test/
 
-### 11.7 字节码与实现
+### 10.7 字节码与实现
 
 21. JetBrains. "Kotlin coroutines internals: Job state machine." *Kotlin Source Code*, 2024. https://github.com/JetBrains/kotlin/blob/master/libraries/stdlib/src/kotlin/coroutines/Job.kt
 
 22. JetBrains. "kotlinx-coroutines-core: SupervisorJob implementation." *Coroutines Source Code*, 2024. https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/common/src/SupervisorKt.kt
 
-### 11.8 KMP 与跨平台
+### 10.8 KMP 与跨平台
 
 23. JetBrains. "Kotlin Multiplatform: Coroutines." *KMP Documentation*, 2024. https://kotlinlang.org/docs/multiplatform.html
 
 24. Touchlab. "KMP exception handling best practices." *Touchlab Blog*, 2024. https://touchlab.co/kmp-exception-handling
 
-### 11.9 性能与基准
+### 10.9 性能与基准
 
 25. Elizarov, Roman. "Kotlin coroutines performance benchmarks." *Roman Elizarov Blog*, 2020. https://medium.com/@elizarov/coroutines-vs-threads-benchmarks-aa2f678f6f29
 
-### 11.10 测试与调试
+### 10.10 测试与调试
 
 26. JetBrains. "DebugProbes API." *kotlinx-coroutines-debug Documentation*, 2024. https://github.com/Kotlin/kotlinx.coroutines/tree/master/kotlinx-coroutines-debug
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 - **Kotlin 2.0 K2 编译器对协程异常堆栈的优化**：理解 K2 如何减少异常堆栈的中间帧。
 - **Virtual Threads (Loom) 与协程的异常互操作**：JVM 21 上异常处理路径的一致性。
@@ -2634,28 +2572,28 @@ class UserRepository(
 - **Flow 的异常传播语义**：`Flow.catch` 与 `Flow.retry` 的实现原理。
 - **结构化并发的未来**：Swift、Java、Python 的结构化并发提案对比。
 
-### 12.2 相关项目
+### 11.2 相关项目
 
 - **kotlinx.coroutines**：官方协程库源码，重点阅读 `Job.kt`、`SupervisorKt.kt`、`CoroutineExceptionHandler.kt`。
 - **Arrow-kt**：函数式异常处理库，提供 `Either`、`Validated` 等替代异常的方案。
 - **Kotlin Result**：标准库的 `Result<T>` 类型，函数式异常处理。
 - **Spring Boot Coroutines**：Spring 对协程的支持，重点阅读 `ControllerAdvice` 与协程的集成。
 
-### 12.3 相关书籍
+### 11.3 相关书籍
 
 - **《Kotlin in Action》**（Dmitry Jemerov, Svetlana Isakova）：第 11 章 协程。
 - **《The Joy of Kotlin》**（Pierre-Yves Saumont）：第 9-11 章 异常处理与函数式错误。
 - **《Functional Programming in Kotlin》**（Marco Vermeulen）：第 8 章 处理错误。
 - **《Kotlin Coroutines Deep Dive》**（Roman Elizarov, Marcin Moskala）：协程异常处理的完整解析。
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **Kotlin Slack**：`#coroutines` 频道，与 JetBrains 团队直接交流。
 - **Kotlin Discussions**：https://discuss.kotlinlang.org/，协程异常处理讨论。
 - **Stack Overflow**：`kotlin-coroutines` 标签，常见问题与解答。
 - **GitHub Issues**：https://github.com/Kotlin/kotlinx.coroutines/issues，官方追踪与讨论。
 
-### 12.5 实践项目
+### 11.5 实践项目
 
 建议实践以下项目以巩固协程异常处理：
 

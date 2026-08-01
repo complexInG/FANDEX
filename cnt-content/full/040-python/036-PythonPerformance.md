@@ -16,55 +16,14 @@ prerequisites:
   - python/语法速查
 ---
 
+
 # Python 与性能优化
 
 > 本文档对标 MIT 6.172 "Performance Engineering of Software Systems"、Stanford CS107 "Computer Organization & Systems"、CMU 15-410 "Distributed Systems" 中性能优化模块的教学水准，系统讲解 Python 性能分析的形式化方法、优化原理与生产级实践。
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章节学习后，你应当能够：
-
-### 1.1 记忆（Remember）
-
-- **R1**：列举 Python 性能分析的五大工具（`cProfile`、`line_profiler`、`memory_profiler`、`py-spy`、`scalene`）及各自适用场景。
-- **R2**：复述 Amdahl 定律、Little 定律、Roofline 模型的数学定义。
-- **R3**：陈述 CPython 解释器的执行流程（源码 → AST → 字节码 → PVM）与 JIT 编译的差异。
-
-### 1.2 理解（Understand）
-
-- **U1**：解释 Python 比 C 慢 10-100 倍的根本原因（解释执行、动态类型、对象模型、GIL）。
-- **U2**：阐述 `__slots__`、`functools.lru_cache`、生成器三大优化在内存与时间复杂度上的数学基础。
-- **U3**：描述 NumPy 向量化（vectorization）相对 Python 循环的性能优势原理（SIMD、连续内存、C 内核）。
-
-### 1.3 应用（Apply）
-
-- **A1**：使用 `cProfile` + `pstats` + `snakeviz` 定位一个程序的热点函数，并提出优化方案。
-- **A2**：使用 `multiprocessing` + `NumPy` 将一个 CPU 密集型任务加速 4-8 倍。
-- **A3**：使用 `asyncio` + `aiohttp` 将一个 IO 密集型任务从 100 秒优化到 5 秒。
-
-### 1.4 分析（Analyze）
-
-- **An1**：对比 `cProfile`（确定性）与 `py-spy`（采样）的输出差异，分析何时应选采样 profiler。
-- **An2**：剖析一个 100 万行数据处理脚本，识别瓶颈（CPU vs IO vs 内存）并制定优化优先级。
-- **An3**：分析一段使用 `asyncio` 但未获加速的代码，定位"伪异步"调用（如同步 `requests.get`）。
-
-### 1.5 评价（Evaluate）
-
-- **E1**：在团队规范会议上，论证是否应引入 Cython 或 Rust（PyO3）重写热点模块。
-- **E2**：评估 PyPy 替代 CPython 的兼容性风险与性能收益。
-- **E3**：判断"过早优化是万恶之源"（Knuth）在 Python 项目中的适用边界。
-
-### 1.6 创造（Create）
-
-- **C1**：设计一个支持自动 benchmark 回归的 CI 流水线，性能回退超过 5% 自动阻断合并。
-- **C2**：实现一个基于 `__slots__` + `array.array` + `mmap` 的大规模数据加载器，达到内存零拷贝。
-- **C3**：构建一个混合并发 pipeline（`asyncio` + `multiprocessing` + `NumPy`），处理亿级日志数据。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 Python 性能的先天局限（1991–2000）
+### 1.1 Python 性能的先天局限（1991–2000）
 
 Python 诞生之初，Guido van Rossum 明确将"开发效率优于运行效率"作为核心哲学。CPython 解释器采用**树遍历解释器**（tree-walking interpreter）+ **字节码虚拟机**（PVM）架构，相比 C 的原生机器码执行，存在三层开销：
 
@@ -74,19 +33,19 @@ Python 诞生之初，Guido van Rossum 明确将"开发效率优于运行效率"
 
 1990 年代硬件单核性能每年增长约 50%，Python 的性能劣势被硬件红利掩盖。
 
-### 2.2 Psyco 与早期 JIT（2004–2010）
+### 1.2 Psyco 与早期 JIT（2004–2010）
 
 2004 年 Armin Rigo 发布 **Psyco**，Python 第一个实用 JIT 编译器，通过** specialize**（特化）技术为不同类型的函数生成机器码。Psyco 可使纯 Python 代码提速 2-100x，但仅支持 32 位 x86，且内存占用高。Python 3.x 后 Psyco 停止维护。
 
-### 2.3 PyPy 的崛起（2011–）
+### 1.3 PyPy 的崛起（2011–）
 
 2011 年 PyPy 1.6 发布，由 PyPy 团队（基于 EU PyPy 联盟资助）开发的**跟踪 JIT**（tracing JIT）实现。PyPy 通过**元追踪**（meta-tracing）记录程序执行轨迹，热点循环编译为机器码。典型场景下 PyPy 比 CPython 快 4-5x，但启动慢、C 扩展兼容性差（需 cpyext 桥接）。
 
-### 2.4 NumPy 与科学计算（2006–）
+### 1.4 NumPy 与科学计算（2006–）
 
 Travis Oliphant 于 2006 年发布 NumPy 1.0，通过**同质数组**（homogeneous array）+ **C 内核**+ **BLAS/LAPACK** 集成，使 Python 在数值计算领域达到接近 C 的性能。NumPy 的**向量化**（vectorization）通过 SIMD（SSE/AVX/NEON）指令并行处理，单条操作可处理 4-16 个 float64。
 
-### 2.5 Cython 与静态类型（2007–）
+### 1.5 Cython 与静态类型（2007–）
 
 Cython（前身 Pyrex）由 Greg Ewing 创建，Stefan Behnel 长期维护。Cython 允许在 Python 代码中混入静态 C 类型声明，编译为 C 扩展。Cython 的性能优势来自：
 
@@ -96,7 +55,7 @@ Cython（前身 Pyrex）由 Greg Ewing 创建，Stefan Behnel 长期维护。Cyt
 
 Cython 是 NumPy、pandas、scikit-learn 等科学计算库的隐形基石。
 
-### 2.6 现代 Profiler 时代（2018–）
+### 1.6 现代 Profiler 时代（2018–）
 
 2018 年后，性能分析工具迎来爆发：
 
@@ -105,11 +64,11 @@ Cython 是 NumPy、pandas、scikit-learn 等科学计算库的隐形基石。
 - **memray**（2022，Bloomberg）：内存 profiler，支持原生扩展与线程级分析。
 - **Austin**（2020，Gabriele N. Tornetta）：栈采样器，与 PyPy 兼容。
 
-### 2.7 性能工具链 Rust 化（2022–）
+### 1.7 性能工具链 Rust 化（2022–）
 
 Pydantic v2（2023）、Ruff（2022）、Polars（2021）等用 Rust 重写的工具，使 Python 生态进入"性能关键路径 Rust 化"时代。Rust 通过 **PyO3** FFI 与 Python 互操作，性能接近原生 C，同时保证内存安全。
 
-### 2.8 设计哲学总结
+### 1.8 设计哲学总结
 
 Python 性能优化的核心哲学：
 
@@ -123,9 +82,9 @@ Guido van Rossum 在 PyCon 2019 的演讲中强调：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 性能的四维模型
+### 2.1 性能的四维模型
 
 程序性能 $P$ 可建模为四维向量：
 
@@ -140,7 +99,7 @@ $$
 - $E$（Energy）：能耗，单位焦耳（J），与 CPU 功耗成正比。
 - $L$（Latency）：尾延迟（p99、p999），单位毫秒。
 
-### 3.2 时间复杂度的形式化
+### 2.2 时间复杂度的形式化
 
 设输入规模为 $n$，算法 $A$ 的时间复杂度 $T_A(n)$ 满足 Big-O 定义：
 
@@ -154,7 +113,7 @@ $$
 O(1) \subset O(\log n) \subset O(\sqrt{n}) \subset O(n) \subset O(n \log n) \subset O(n^2) \subset O(2^n) \subset O(n!)
 $$
 
-### 3.3 Amdahl 定律
+### 2.3 Amdahl 定律
 
 设任务中可加速部分占比为 $p$，加速比为 $s$，则总加速比 $S$ 满足 Amdahl 定律：
 
@@ -170,7 +129,7 @@ $$
 
 **例**：若 80% 代码可向量化加速 10x，则总加速比为 $\frac{1}{0.2 + 0.08} = 3.57$x。
 
-### 3.4 Little 定律
+### 2.4 Little 定律
 
 在稳定状态下，系统并发数 $L$、到达率 $\lambda$、平均响应时间 $W$ 满足：
 
@@ -180,7 +139,7 @@ $$
 
 **例**：QPS = 1000，平均响应时间 = 0.05s，则系统并发数 = 50。
 
-### 3.5 Roofline 模型
+### 2.5 Roofline 模型
 
 Roofline 模型（Williams et al., 2009）描述计算性能上限：
 
@@ -195,7 +154,7 @@ Python 在 Roofline 模型中的位置：
 - 纯 Python 循环：AI 低，$P$ 受限于解释器开销，远低于 Roofline。
 - NumPy 向量化：AI 高，$P$ 接近 Roofline（受限于 BLAS 性能）。
 
-### 3.6 内存层级
+### 2.6 内存层级
 
 现代计算机内存层级（latency 递增）：
 
@@ -211,9 +170,9 @@ Python `list` 的元素是 `PyObject*` 指针（8 bytes），实际对象分散�
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 CPython 字节码执行的开销
+### 3.1 CPython 字节码执行的开销
 
 考虑 `a + b` 的字节码：
 
@@ -232,7 +191,7 @@ BINARY_ADD        # 调用 PyNumber_Add，约 50-100 cycles
 
 对比 C 的 `a + b`：单条 `ADD` 指令，1 cycle。Python 慢约 50-100x。
 
-### 4.2 NumPy 向量化的性能模型
+### 3.2 NumPy 向量化的性能模型
 
 NumPy 的 `a + b`（其中 `a`、`b` 是 `ndarray`）：
 
@@ -255,7 +214,7 @@ NumPy 优势来自：
 2. **连续内存**：cache 命中率高。
 3. **SIMD 指令**：AVX2 可并行处理 8 个 float64。
 
-### 4.3 `__slots__` 的内存节省
+### 3.3 `__slots__` 的内存节省
 
 普通 Python 类实例通过 `__dict__` 存储属性，每个实例开销：
 
@@ -271,7 +230,7 @@ $$
 
 对 10 字段的类，节省约 280 bytes/instance。百万实例节省 280 MB。
 
-### 4.4 `functools.lru_cache` 的复杂度
+### 3.4 `functools.lru_cache` 的复杂度
 
 `lru_cache` 基于 OrderedDict 实现，每次查询 $O(1)$，每次更新 $O(1)$（含 LRU 淘汰）。空间复杂度 $O(k)$，其中 $k$ 是 `maxsize`。
 
@@ -281,7 +240,7 @@ $$
 2. **命中率 > 50%**：否则缓存开销大于收益。
 3. **参数可哈希**：list/dict 不可作为参数。
 
-### 4.5 GIL 对多线程性能的影响
+### 3.5 GIL 对多线程性能的影响
 
 GIL 使 CPython 多线程在 CPU 密集型任务下**负加速**：
 
@@ -299,7 +258,7 @@ $$
 2. IO 密集型 → `asyncio` 或 `threading`。
 3. 调用 C 扩展（如 NumPy、Cython）→ C 扩展可显式释放 GIL（`Py_BEGIN_ALLOW_THREADS`）。
 
-### 4.6 生成器的惰性求值
+### 3.6 生成器的惰性求值
 
 生成器（generator）通过**协程**实现惰性求值：
 
@@ -322,7 +281,7 @@ def fib():
 
 生成器省内存但时间略慢（每次 `next` 调用有开销）。
 
-### 4.7 asyncio 的并发模型
+### 3.7 asyncio 的并发模型
 
 `asyncio` 基于单线程事件循环（epoll/kqueue/IOCP），通过**协程切换**实现 IO 并发：
 
@@ -341,7 +300,7 @@ $$
 - 多线程（4 线程）：约 25s
 - asyncio：约 0.1s（IO 并行）
 
-### 4.8 Cython 的性能来源
+### 3.8 Cython 的性能来源
 
 Cython 编译流程：
 
@@ -372,9 +331,9 @@ Cython 版本编译为原生 C 循环，无 `PyObject` 装箱，性能与 C 相�
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 项目结构
+### 4.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -407,7 +366,7 @@ flowchart TD
     T5 --> T13
 ```
 
-### 5.2 pyproject.toml
+### 4.2 pyproject.toml
 
 ```toml
 [project]
@@ -449,7 +408,7 @@ python_version = "3.10"
 strict = true
 ```
 
-### 5.3 性能分析工具集（Python 3.10+）
+### 4.3 性能分析工具集（Python 3.10+）
 
 ```python
 """
@@ -571,7 +530,7 @@ if __name__ == "__main__":
         print(f"result: {demo()}")
 ```
 
-### 5.4 CPU 密集型优化（Python 3.12+）
+### 4.4 CPU 密集型优化（Python 3.12+）
 
 ```python
 """
@@ -711,7 +670,7 @@ if __name__ == "__main__":
     benchmark("Python matmul (100x100)", matrix_multiply_python, A_list, B_list)
 ```
 
-### 5.5 IO 密集型优化（Python 3.10+）
+### 4.5 IO 密集型优化（Python 3.10+）
 
 ```python
 """
@@ -825,7 +784,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 5.6 内存优化（Python 3.10+）
+### 4.6 内存优化（Python 3.10+）
 
 ```python
 """
@@ -956,7 +915,7 @@ if __name__ == "__main__":
     compare_array_list()
 ```
 
-### 5.7 NumPy 向量化（Python 3.10+）
+### 4.7 NumPy 向量化（Python 3.10+）
 
 ```python
 """
@@ -1105,7 +1064,7 @@ if __name__ == "__main__":
     compare_memory_layout()
 ```
 
-### 5.8 缓存策略（Python 3.10+）
+### 4.8 缓存策略（Python 3.10+）
 
 ```python
 """
@@ -1256,7 +1215,7 @@ if __name__ == "__main__":
     print(f"缓存: {time.perf_counter() - start:.4f}s")
 ```
 
-### 5.9 基准测试（pytest-benchmark）
+### 4.9 基准测试（pytest-benchmark）
 
 ```python
 """
@@ -1320,9 +1279,9 @@ def test_euclidean_numpy(benchmark) -> None:
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Profiler 工具对比
+### 5.1 Profiler 工具对比
 
 | 工具 | 类型 | 开销 | 精度 | 适用场景 | 输出 |
 | ---- | ---- | ---- | ---- | -------- | ---- |
@@ -1333,7 +1292,7 @@ def test_euclidean_numpy(benchmark) -> None:
 | `memray` | 跟踪 | 中 | 内存分配 | 内存泄漏 | HTML/Flamegraph |
 | `Austin` | 采样 | 极低 | 栈采样 | PyPy/生产 | flamegraph |
 
-### 6.2 并发模型对比
+### 5.2 并发模型对比
 
 | 模型 | 适用场景 | 优势 | 劣势 | 典型加速比 |
 | ---- | -------- | ---- | ---- | ---------- |
@@ -1345,7 +1304,7 @@ def test_euclidean_numpy(benchmark) -> None:
 | Cython | 热点循环 | 接近 C | 编译复杂 | 50-200x |
 | PyPy | 通用 | JIT 加速 | C 扩展兼容差 | 3-5x |
 
-### 6.3 缓存策略对比
+### 5.3 缓存策略对比
 
 | 策略 | 命中率 | 内存 | 复杂度 | 适用场景 |
 | ---- | ------ | ---- | ------ | -------- |
@@ -1355,7 +1314,7 @@ def test_euclidean_numpy(benchmark) -> None:
 | FIFO | 低 | 固定 | $O(1)$ | 队列场景 |
 | 多级 | 高 | 大 | $O(1)$ | 高性能服务 |
 
-### 6.4 跨语言性能对比
+### 5.4 跨语言性能对比
 
 100 万元素相加基准（单位 ms）：
 
@@ -1370,9 +1329,9 @@ def test_euclidean_numpy(benchmark) -> None:
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 过早优化
+### 6.1 过早优化
 
 **陷阱**：在未 profile 的情况下猜测瓶颈，优化非热点代码。
 
@@ -1396,7 +1355,7 @@ def sum_list(lst):
     return np.sum(lst)
 ```
 
-### 7.2 字符串拼接
+### 6.2 字符串拼接
 
 **陷阱**：循环中用 `+` 拼接字符串，$O(n^2)$ 复杂度。
 
@@ -1413,7 +1372,7 @@ s = "".join(str(i) for i in range(10000))
 s = "".join(map(str, range(10000)))
 ```
 
-### 7.3 列表 vs 生成器
+### 6.3 列表 vs 生成器
 
 **陷阱**：仅需遍历一次时仍使用列表。
 
@@ -1426,7 +1385,7 @@ total = sum(data)
 total = sum(x * 2 for x in range(10**8))
 ```
 
-### 7.4 全局变量查找
+### 6.4 全局变量查找
 
 **陷阱**：循环中频繁访问全局变量，触发 LOAD_GLOBAL。
 
@@ -1441,7 +1400,7 @@ def compute(lst, sin=math.sin):
     return [sin(x) for x in lst]
 ```
 
-### 7.5 错误的多线程 CPU 优化
+### 6.5 错误的多线程 CPU 优化
 
 **陷阱**：用多线程加速 CPU 密集型任务，受 GIL 限制。
 
@@ -1464,7 +1423,7 @@ for p in processes: p.start()
 for p in processes: p.join()
 ```
 
-### 7.6 `lru_cache` 的参数陷阱
+### 6.6 `lru_cache` 的参数陷阱
 
 **陷阱**：使用不可哈希参数（list、dict）。
 
@@ -1481,7 +1440,7 @@ def good_func(items: tuple[int, ...]) -> int:
     return sum(items)
 ```
 
-### 7.7 NumPy 不当使用
+### 6.7 NumPy 不当使用
 
 **陷阱**：在循环中调用 NumPy。
 
@@ -1495,7 +1454,7 @@ for i in range(n):
 result = np.sqrt(np.arange(n))
 ```
 
-### 7.8 异步伪并发
+### 6.8 异步伪并发
 
 **陷阱**：在 asyncio 中调用同步阻塞函数。
 
@@ -1514,7 +1473,7 @@ async def fetch(url):
             return await r.text()
 ```
 
-### 7.9 内存泄漏
+### 6.9 内存泄漏
 
 **陷阱**：全局变量持续增长。
 
@@ -1533,7 +1492,7 @@ def cached_process(key):
     return expensive_compute(key)
 ```
 
-### 7.10 `time.time()` vs `time.perf_counter()`
+### 6.10 `time.time()` vs `time.perf_counter()`
 
 **陷阱**：用 `time.time()` 计时，受 NTP 调整影响。
 
@@ -1553,9 +1512,9 @@ elapsed = time.perf_counter() - start
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 性能优化流程
+### 7.1 性能优化流程
 
 ```mermaid
 flowchart TD
@@ -1594,7 +1553,7 @@ flowchart TD
     T13 --> T16
 ```
 
-### 8.2 性能基线（baseline）
+### 7.2 性能基线（baseline）
 
 在 CI 中维护性能基线：
 
@@ -1625,7 +1584,7 @@ jobs:
           git commit -m "chore: update performance baseline"
 ```
 
-### 8.3 生产环境监控
+### 7.3 生产环境监控
 
 ```python
 """
@@ -1695,7 +1654,7 @@ def track_function(func):
     return wrapper
 ```
 
-### 8.4 性能预算
+### 7.4 性能预算
 
 设定性能预算，超预算自动告警：
 
@@ -1742,7 +1701,7 @@ def api_handler():
     budget.check(latency_ms, memory_mb=150, cpu=60)
 ```
 
-### 8.5 持续优化策略
+### 7.5 持续优化策略
 
 1. **80/20 原则**：80% 性能问题来自 20% 代码，优先优化热点。
 2. **分层优化**：算法 > 数据结构 > 实现 > 并发 > 硬件。
@@ -1752,9 +1711,9 @@ def api_handler():
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Instagram：Cython 加速 Django
+### 8.1 Instagram：Cython 加速 Django
 
 **背景**：Instagram 后端使用 Django，部分热点函数性能瓶颈明显。
 
@@ -1770,7 +1729,7 @@ def api_handler():
 - 加 `cdef` 类型声明后再获 2-3x
 - 注意 `PyObject` 装箱边界
 
-### 9.2 Dropbox：Python → Go 迁移
+### 8.2 Dropbox：Python → Go 迁移
 
 **背景**：Dropbox 早期用 Python 构建后端，性能成为瓶颈。
 
@@ -1786,7 +1745,7 @@ def api_handler():
 - Go 的并发模型（goroutine）适合 IO 密集场景
 - Python 在快速迭代、灵活部署上仍有优势
 
-### 9.3 NumPy：科学计算的基石
+### 8.3 NumPy：科学计算的基石
 
 **背景**：NumPy 通过向量化使 Python 在科学计算领域可用。
 
@@ -1800,7 +1759,7 @@ def api_handler():
 - 矩阵乘法（1000x1000）：NumPy 8ms，纯 Python 8000ms，加速 1000x
 - 随机数生成（100 万）：NumPy 5ms，纯 Python 200ms，加速 40x
 
-### 9.4 YouTube：Python 性能优化实践
+### 8.4 YouTube：Python 性能优化实践
 
 **背景**：YouTube 早期用 Python 构建，2018 年性能优化回顾。
 
@@ -1815,7 +1774,7 @@ def api_handler():
 - 服务器数量减少 40%
 - 用户跳出率降低 15%
 
-### 9.5 PyPy：Mozilla Servo 的 Python 工具链
+### 8.5 PyPy：Mozilla Servo 的 Python 工具链
 
 **背景**：Mozilla Servo 团队将构建工具链从 CPython 迁移到 PyPy。
 
@@ -1828,7 +1787,7 @@ def api_handler():
 - C 扩展兼容性差（cpyext 性能损失）
 - 启动慢（JIT 预热约 5s）
 
-### 9.6 Polars：Rust 重写的 pandas
+### 8.6 Polars：Rust 重写的 pandas
 
 **背景**：pandas 单线程、内存不高效，Ritchie Vink 用 Rust 重写为 Polars。
 
@@ -1946,7 +1905,7 @@ for name, func in [("loop", sum_squares_loop),
 
 **解析讲解**：见 `caching.py` 中的 `TTLCache` 实现，加 `threading.Lock` 保证线程安全。
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 11**：为什么 Python 的 `list` 比 `array.array` 慢但更灵活？请从类型系统角度分析。
 
@@ -1969,7 +1928,7 @@ for name, func in [("loop", sum_squares_loop),
 
 ---
 
-## 11. 工具选型决策树
+## 10. 工具选型决策树
 
 ```mermaid
 flowchart TD
@@ -2014,62 +1973,62 @@ flowchart TD
 
 ---
 
-## 12. 参考资料
+## 11. 参考资料
 
-### 12.1 规范与 PEP
+### 11.1 规范与 PEP
 
 - van Rossum, G., & Peters, T. (2001). PEP 8: Style Guide for Python Code. Python Enhancement Proposals. https://peps.python.org/pep-0008/
 - Brandl, G. (2010). PEP 3104: Access to Names in Outer Scopes. Python Enhancement Proposals. https://peps.python.org/pep-3104/
 - Smith, E. V. (2017). PEP 557: Data Classes. Python Enhancement Proposals. https://peps.python.org/pep-0557/
 
-### 12.2 官方文档
+### 11.2 官方文档
 
 - Python Software Foundation. (2024). cProfile — Deterministic Profiling. Python 3.12 Documentation. https://docs.python.org/3/library/profile.html
 - NumPy Team. (2024). NumPy Documentation. https://numpy.org/doc/stable/
 - Cython Team. (2024). Cython Documentation. https://cython.readthedocs.io/
 - PyPy Team. (2024). PyPy Documentation. https://docs.pypy.org/
 
-### 12.3 学术论文
+### 11.3 学术论文
 
 - Williams, S., Waterman, A., & Patterson, D. (2009). Roofline: An Insightful Visual Performance Model for Multicore Architectures. Communications of the ACM, 52(4), 65-76. https://doi.org/10.1145/1498765.1498785
 - Amdahl, G. M. (1967). Validity of the Single Processor Approach to Achieving Large Scale Computing Capabilities. AFIPS Conference Proceedings, 30, 483-485. https://doi.org/10.1145/1465482.1465560
 - Little, J. D. C. (1961). A Proof for the Queuing Formula L = λW. Operations Research, 9(3), 383-387. https://doi.org/10.1287/opre.9.3.383
 
-### 12.4 工程实践
+### 11.4 工程实践
 
 - Frederickson, B. (2018). py-spy: Sampling profiler for Python. https://github.com/benfred/py-spy
 - Burger, M. et al. (2020). Scalene: A high-performance, high-precision CPU+GPU profiler for Python. https://github.com/plasma-umass/scalene
 - Bloomberg. (2022). memray: Memory profiler for Python. https://github.com/bloomberg/memray
 
-### 12.5 性能基准
+### 11.5 性能基准
 
 - Python Performance Benchmarks. https://pyperformance.readthedocs.io/
 - NumPy Benchmarks. https://numpy.org/doc/stable/reference/generated/numpy.testing.Benchmark.html
 
 ---
 
-## 13. 延伸阅读
+## 12. 延伸阅读
 
-### 13.1 书籍
+### 12.1 书籍
 
 - Leiserson, C. E., et al. (2023). Performance Engineering of Software Systems (MIT 6.172 Course Notes). MIT OpenCourseWare.（CSAPP 第 5 章"优化程序性能"）
 - Ramalho, L. (2022). Fluent Python (2nd ed.). O'Reilly Media. ISBN: 978-1492056355.（第 11 章"Pythonic 对象"与第 17 章"迭代器与生成器"）
 - McKinney, W. (2022). Python for Data Analysis (3rd ed.). O'Reilly Media. ISBN: 978-1098104030.（NumPy 章节）
 - Behnel, S. et al. (2024). Cython Tutorial. https://cython.readthedocs.io/en/latest/src/tutorial/
 
-### 13.2 论文与标准
+### 12.2 论文与标准
 
 - Knuth, D. E. (1974). Computer Programming as an Art. Communications of the ACM, 17(12), 667-673.（"过早优化"经典论述）
 - Patterson, D. A., & Hennessy, J. L. (2020). Computer Organization and Design RISC-V Edition (2nd ed.). Morgan Kaufmann. ISBN: 978-0128203316.
 
-### 13.3 在线资源
+### 12.3 在线资源
 
 - Python Speed Center: https://speed.python.org/
 - PyPy Speed Center: https://speed.pypy.org/
 - NumPy Performance: https://numpy.org/doc/stable/user/performance.html
 - py-spy Documentation: https://github.com/benfred/py-spy
 
-### 13.4 学习路线
+### 12.4 学习路线
 
 ```
 初级：cProfile + 基础优化（list/dict 选择、字符串拼接）
@@ -2085,9 +2044,9 @@ flowchart TD
 
 ---
 
-## 14. 附录
+## 13. 附录
 
-### 14.1 cProfile 输出解读
+### 13.1 cProfile 输出解读
 
 ```
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
@@ -2100,7 +2059,7 @@ flowchart TD
 - `cumtime`：累计耗时（含子调用）
 - `percall`：`cumtime` / `ncalls`
 
-### 14.2 常见性能反模式速查
+### 13.2 常见性能反模式速查
 
 | 反模式 | 优化方案 | 加速比 |
 | ------ | -------- | ------ |
@@ -2113,7 +2072,7 @@ flowchart TD
 | Python 循环数值计算 | NumPy 向量化 | 50-500x |
 | `time.time()` 计时 | `time.perf_counter()` | 准确性 |
 
-### 14.3 NumPy 性能优化清单
+### 13.3 NumPy 性能优化清单
 
 - [ ] 数组 dtype 选择最小够用（`float32` 替代 `float64`）
 - [ ] 内存布局匹配操作（行操作用 C order，列操作用 F order）
@@ -2123,7 +2082,7 @@ flowchart TD
 - [ ] 使用 `sliding_window_view` 替代手动滑动窗口
 - [ ] 大数组用 `np.memmap` 处理
 
-### 14.4 asyncio 性能优化清单
+### 13.4 asyncio 性能优化清单
 
 - [ ] 所有 IO 操作用 async 库（aiohttp、asyncpg、aiomysql）
 - [ ] 用 `asyncio.Semaphore` 限流
@@ -2133,7 +2092,7 @@ flowchart TD
 - [ ] 用 `uvloop` 替代默认事件循环（Linux，2-4x 加速）
 - [ ] 连接池复用（aiohttp.ClientSession、asyncpg.Pool）
 
-### 14.5 性能分析检查清单
+### 13.5 性能分析检查清单
 
 - [ ] 测量基线（baseline）
 - [ ] 定位热点函数（cProfile）
@@ -2145,7 +2104,7 @@ flowchart TD
 - [ ] CI 集成性能回归检查
 - [ ] 生产环境监控（py-spy / Prometheus）
 
-### 14.6 工具命令速查
+### 13.6 工具命令速查
 
 ```bash
 # cProfile

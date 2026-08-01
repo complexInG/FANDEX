@@ -18,53 +18,12 @@ prerequisites:
   - javascript/正则表达式
 ---
 
+
 # 断言
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-本节采用 Bloom 分类法对学习目标进行层级化建模，确保读者能够由浅入深、由具体到抽象地掌握正则表达式断言（Assertion）的全部要义。
-
-### 1.1 记忆层（Remember）
-
-- 准确回忆四种断言的语法形式：正向先行 `(?=pattern)`、负向先行 `(?!pattern)`、正向后行 `(?<=pattern)`、负向后行 `(?<!pattern)`。
-- 列出 ECMAScript 标准中后行断言（Lookbehind）引入的具体版本（ES2018）及其在 V8、SpiderMonkey、JavaScriptCore 三大引擎中的落地时间。
-- 复述"零宽匹配（Zero-Width Match）"的定义：断言匹配位置而非字符，不消耗输入字符串。
-
-### 1.2 理解层（Understand）
-
-- 解释断言与普通字符匹配在有限状态自动机（Finite State Automaton, FSA）层面的本质差异。
-- 阐释后行断言在正则引擎实现中的核心难点：NFA 的"反向扫描"为何需要特殊数据结构（如双向链表字符流）。
-- 说明固定长度后行断言（Fixed-Length Lookbehind）与可变长度后行断言（Variable-Length Lookbehind）在 ECMAScript 规范中的语义差异。
-
-### 1.3 应用层（Apply）
-
-- 在生产项目中使用先行断言实现密码强度校验、CSV 字段分割、HTML 标签内容提取等典型场景。
-- 通过后行断言简化"前缀条件匹配"逻辑，避免使用捕获组与后处理的繁琐写法。
-- 在 Node.js 服务端使用断言实现日志清洗、配置文件解析、SQL 注入检测等文本处理任务。
-
-### 1.4 分析层（Analyze）
-
-- 对比 JavaScript 正则引擎与 PCRE2、Python `re`、Java `java.util.regex`、Rust `regex`、Go `regexp` 在断言支持上的差异。
-- 拆解一个含嵌套断言的复杂正则表达式，绘制其对应的 NFA 状态转移图，标注零宽位置。
-- 分析"回溯爆炸（Catastrophic Backtracking）"在断言场景下的触发条件，并解释 V8 的回溯限制策略。
-
-### 1.5 评价层（Evaluate）
-
-- 评估在同一文本处理任务中，"断言方案"与"非断言方案（如字符串方法链式调用）"在可读性、性能、维护成本三维度上的得分。
-- 对给定的三套密码强度正则（单层断言、多层断言、断言+反向引用）评判其安全性与执行效率。
-- 评审主流开源项目（如 ESLint、Prettier、Babel）中正则断言的使用模式，给出可量化的改进建议。
-
-### 1.6 创造层（Create）
-
-- 设计并实现一个基于断言的轻量级词法分析器（Lexer），支持自定义 token 规则与上下文敏感匹配。
-- 构建一套正则性能基准测试框架，自动测量含断言正则在不同输入规模下的执行时间与内存占用。
-- 撰写一份团队级《正则表达式工程规范》文档，包含断言使用准则、性能预算、Code Review 检查项、CI 静态分析脚本。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 正则表达式的理论起源（1943-1956）
+### 1.1 正则表达式的理论起源（1943-1956）
 
 正则表达式的理论基础可追溯至 1943 年 Warren McCulloch 与 Walter Pitts 提出的神经元数学模型，他们用正规式描述神经网络的状态转移。1956 年，Stephen Kleene 在论文《Representation of Events in Nerve Nets and Finite Automata》中正式定义了**正则集合（Regular Sets）**与**正则表达式（Regular Expression）**的概念，并证明其与有限状态自动机等价。
 
@@ -76,7 +35,7 @@ $$
 
 其中 $L(A)$ 表示自动机 $A$ 接受的语言，$L(R)$ 表示正则表达式 $R$ 描述的语言。
 
-### 2.2 Unix 工具与 POSIX 标准（1968-1992）
+### 1.2 Unix 工具与 POSIX 标准（1968-1992）
 
 1968 年，Ken Thompson 在《QED Text Editor》中实现了首个正则表达式搜索引擎，并将其引入 Unix 的 `ed`、`grep`、`sed` 等工具。Thompson 的实现采用 NFA（Nondeterministic Finite Automaton）构造法，是现代正则引擎的鼻祖。
 
@@ -87,7 +46,7 @@ $$
 
 1992 年，POSIX.2 标准化了两类正则的语法，但**未包含断言**。断言是 PCRE 的扩展特性。
 
-### 2.3 PCRE 与先行断言的诞生（1987-1997）
+### 1.3 PCRE 与先行断言的诞生（1987-1997）
 
 1987 年，Philip Hazel 在剑桥大学开发了 PCRE（Perl Compatible Regular Expressions）库，目标是兼容 Perl 5 的正则语法。Perl 5 在 1994 年引入了**先行断言（Lookahead）**：
 
@@ -113,7 +72,7 @@ if ($text =~ /(\d+)元/) {
 @prices = $text =~ /\d+(?=元)/g;
 ```
 
-### 2.4 后行断言的演进（2000-2018）
+### 1.4 后行断言的演进（2000-2018）
 
 后行断言（Lookbehind）的实现远比先行断言复杂，原因在于：
 
@@ -132,7 +91,7 @@ ECMAScript 标准化进程较为缓慢：
 
 V8 引擎在 Chrome 62（2017.10）首次实现后行断言，SpiderMonkey 在 Firefox 78（2020.06）跟进，JavaScriptCore 在 Safari 16.4（2023.03）完全支持。
 
-### 2.5 V8 正则引擎的演化
+### 1.5 V8 正则引擎的演化
 
 V8 的正则引擎经历了多次重大重构：
 
@@ -148,7 +107,7 @@ V8 的正则引擎经历了多次重大重构：
 
 V8 的双引擎策略（irregexp + experimental NFA）是为了应对回溯爆炸攻击：irregexp 编译为本地代码速度快但易受 DoS 攻击，新 NFA 引擎虽慢但有严格的执行时间上限。
 
-### 2.6 浏览器兼容性现状
+### 1.6 浏览器兼容性现状
 
 截至 2026 年，断言在主流环境的支持情况：
 
@@ -167,9 +126,9 @@ V8 的双引擎策略（irregexp + experimental NFA）是为了应对回溯爆�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 正则表达式的代数定义
+### 2.1 正则表达式的代数定义
 
 正则表达式 $R$ 在字母表 $\Sigma$ 上递归定义如下：
 
@@ -188,7 +147,7 @@ $$
 
 扩展操作符（如 `+`、`?`、`{n,m}`）均可由上述基本操作符表达。例如 $R^+ = R \cdot R^*$，$R? = R | \epsilon$。
 
-### 3.2 断言的形式化语义
+### 2.2 断言的形式化语义
 
 **定义 1（先行断言）**：给定正则表达式 $R$ 与输入串 $w = w_1 w_2 \ldots w_n$，位置 $i$（$0 \leq i \leq n$）满足正向先行断言 `(?=R)` 当且仅当：
 
@@ -218,7 +177,7 @@ $$
 \neg \exists \text{ prefix } p \text{ of } w[:i], \quad p \in L(R)
 $$
 
-### 3.3 零宽特性的数学表述
+### 2.3 零宽特性的数学表述
 
 断言的"零宽"特性可形式化为：
 
@@ -242,7 +201,7 @@ $$
 \text{Match}(R_1 R_2 \ldots R_k, w, i) = \bigcap_{j=1}^{k} \text{Match}(R_j, w, i)
 $$
 
-### 3.4 NFA 构造规则
+### 2.4 NFA 构造规则
 
 Thompson 构造法将正则表达式转换为 NFA。对于断言，需扩展标准构造规则：
 
@@ -275,7 +234,7 @@ NFA for (?<=R):
   4. If none, fail
 ```
 
-### 3.5 复杂度分析
+### 2.5 复杂度分析
 
 设输入串长度为 $n$，正则表达式长度为 $m$：
 
@@ -289,9 +248,9 @@ V8 通过回溯上限（默认 $10^6$ 步）与超时机制防止指数级回溯
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 引理：断言不改变正则语言的表达能力
+### 3.1 引理：断言不改变正则语言的表达能力
 
 **引理**：包含断言的正则表达式所描述的语言仍是正则语言。
 
@@ -327,7 +286,7 @@ $$
 
 **推论**：断言是"语法糖"，不增加表达能力，但显著简化正则书写。
 
-### 4.2 定理：先行断言的幂等性
+### 3.2 定理：先行断言的幂等性
 
 **定理**：对任意正则 $R$，`(?=R)(?=R)` 与 `(?=R)` 描述同一语言。
 
@@ -348,7 +307,7 @@ $$
 
 证毕。
 
-### 4.3 命题：负向先行断言的补语言性质
+### 3.3 命题：负向先行断言的补语言性质
 
 **命题**：`(?=R)` 与 `(?!R)` 在同一位置上的匹配结果互斥且穷尽。
 
@@ -369,7 +328,7 @@ $$
 
 证毕。
 
-### 4.4 推论：后行断言的方向对称性
+### 3.4 推论：后行断言的方向对称性
 
 **推论**：`(?<=R)` 在位置 $i$ 的匹配等价于"将输入串反转后，`(?=R^R)` 在反转串的位置 $n-i$ 的匹配"，其中 $R^R$ 是 $R$ 的反转正则。
 
@@ -383,7 +342,7 @@ $$
 
 **工程意义**：理论上可通过反转输入串将后行断言转为先行断言，但实际实现中反转 Unicode 串（含组合字符、代理对）复杂，故引擎通常直接实现后行扫描。
 
-### 4.5 回溯爆炸的不可判定性
+### 3.5 回溯爆炸的不可判定性
 
 **定理**：判定一个含断言的正则表达式是否在某些输入上触发指数级回溯，是不可判定的（Undecidable）。
 
@@ -403,9 +362,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础用法：四种断言
+### 4.1 基础用法：四种断言
 
 ```javascript
 // 文件名: assertions-basic.js
@@ -450,7 +409,7 @@ console.log('"123" abc "456"'.match(quotedNum));
 // 输出: ['123', '456']
 ```
 
-### 5.2 密码强度校验
+### 4.2 密码强度校验
 
 ```javascript
 // 文件名: password-validator.js
@@ -504,7 +463,7 @@ console.log(validatePassword('Abc1!'));
 // $                          到结尾
 ```
 
-### 5.3 CSV 字段分割
+### 4.3 CSV 字段分割
 
 ```javascript
 // 文件名: csv-parser.js
@@ -567,7 +526,7 @@ console.log(parseCSV(csvText));
 // }
 ```
 
-### 5.4 HTML 标签内容提取
+### 4.4 HTML 标签内容提取
 
 ```javascript
 // 文件名: html-extractor.js
@@ -630,7 +589,7 @@ console.log('注释内容:', htmlWithComments.match(commentRegex));
 // 输出: [' comment ']
 ```
 
-### 5.5 货币格式处理
+### 4.5 货币格式处理
 
 ```javascript
 // 文件名: currency-formatter.js
@@ -684,7 +643,7 @@ console.log(removeThousandSeparator('1,234,567.89'));  // '1234567.89'
 console.log(removeThousandSeparator('1,234'));         // '1234'
 ```
 
-### 5.6 文本清洗与替换
+### 4.6 文本清洗与替换
 
 ```javascript
 // 文件名: text-cleanup.js
@@ -755,7 +714,7 @@ console.log(smartCapitalize('hello world. this is a test. end!'));
 // 输出: 'Hello world. This is a test. End!'
 ```
 
-### 5.7 URL 参数提取
+### 4.7 URL 参数提取
 
 ```javascript
 // 文件名: url-params.js
@@ -820,7 +779,7 @@ console.log(parseUrl('https://api.example.com/v1/users?page=1&limit=20#section2'
 // }
 ```
 
-### 5.8 词法分析器
+### 4.8 词法分析器
 
 ```javascript
 // 文件名: lexer.js
@@ -892,7 +851,7 @@ console.log(tokenizeWithContext(code));
 // 注意: obj.return 中的 return 不会被识别为关键字
 ```
 
-### 5.9 日志解析
+### 4.9 日志解析
 
 ```javascript
 // 文件名: log-parser.js
@@ -972,7 +931,7 @@ console.log(parseLog(log));
 // ]
 ```
 
-### 5.10 SQL 注入检测
+### 4.10 SQL 注入检测
 
 ```javascript
 // 文件名: sql-injection-detector.js
@@ -1043,7 +1002,7 @@ console.log(detectSQLInjection('normal search query'));
 // []
 ```
 
-### 5.11 Node.js 服务端使用
+### 4.11 Node.js 服务端使用
 
 ```javascript
 // 文件名: server-side-usage.js
@@ -1150,7 +1109,7 @@ console.log(extractTODOs(sourceCode));
 // 输出: ['implement error handling', 'add unit tests']
 ```
 
-### 5.12 浏览器端使用
+### 4.12 浏览器端使用
 
 ```javascript
 // 文件名: browser-usage.js
@@ -1230,9 +1189,9 @@ function highlightSyntax(code) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 不同正则引擎的断言支持
+### 5.1 不同正则引擎的断言支持
 
 | 引擎 | 先行断言 | 后行断言 | 可变长度后行 | 嵌套断言 | 性能特征 |
 |------|----------|----------|--------------|----------|----------|
@@ -1259,7 +1218,7 @@ function highlightSyntax(code) {
 
 4. **.NET 的优势**：完整支持可变长度后行断言与嵌套断言，是功能最丰富的引擎之一。
 
-### 6.2 断言 vs 非断言方案对比
+### 5.2 断言 vs 非断言方案对比
 
 以"提取价格数字"为例：
 
@@ -1310,7 +1269,7 @@ const priceWithReplace = (text) => {
 - 复杂场景或对性能敏感时，使用捕获组。
 - 不熟悉正则的团队成员，可考虑字符串方法。
 
-### 6.3 断言 vs 捕获组的语义差异
+### 5.3 断言 vs 捕获组的语义差异
 
 ```javascript
 const text = '价格：100元';
@@ -1330,7 +1289,7 @@ console.log(withCapture[1]);    // '100' (捕获组)
 - **断言**：零宽，不消费字符，匹配结果是"纯目标"。
 - **捕获组**：消费字符，匹配结果是"目标+上下文"，需通过索引提取目标。
 
-### 6.4 ECMAScript 各版本断言支持
+### 5.4 ECMAScript 各版本断言支持
 
 | ES 版本 | 年份 | 断言特性 |
 |---------|------|----------|
@@ -1342,7 +1301,7 @@ console.log(withCapture[1]);    // '100' (捕获组)
 | ES2022 | 2022 | `d` 标志（indices），可获取断言位置 |
 | ES2024 | 2024 | `v` 标志，增强 Unicode 集合操作 |
 
-### 6.5 框架对断言的使用
+### 5.5 框架对断言的使用
 
 **ESLint**：
 
@@ -1368,9 +1327,9 @@ const templateLiteralRegex = /(?<=`)[\s\S]+(?=`)/g;
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：负向先行断言的贪婪问题
+### 6.1 陷阱：负向先行断言的贪婪问题
 
 **反模式**：
 
@@ -1399,7 +1358,7 @@ console.log('12px 34em'.match(correct2)); // ['34']
 const correct3 = /(?:^|\D)(\d+)(?![\d]*px)/g;
 ```
 
-### 7.2 陷阱：后行断言的固定长度限制
+### 6.2 陷阱：后行断言的固定长度限制
 
 **反模式**（在某些引擎中）：
 
@@ -1415,7 +1374,7 @@ console.log(regex.test('123test')); // true (V8)
 // 在 Python re 中会报错
 ```
 
-### 7.3 陷阱：嵌套断言导致回溯爆炸
+### 6.3 陷阱：嵌套断言导致回溯爆炸
 
 **反模式**：
 
@@ -1438,7 +1397,7 @@ console.timeEnd('match');
 const safe = /a/g;
 ```
 
-### 7.4 陷阱：断言中的捕获组行为
+### 6.4 陷阱：断言中的捕获组行为
 
 **陷阱**：
 
@@ -1458,7 +1417,7 @@ console.log(match);
 const regex = /(?=(?:\d{4})-(?:\d{2})-(?:\d{2}))/;
 ```
 
-### 7.5 陷阱：后行断言中的 `^` 锚点
+### 6.5 陷阱：后行断言中的 `^` 锚点
 
 **反模式**：
 
@@ -1482,7 +1441,7 @@ console.log('123\n456'.match(correct)); // ['123', '456']
 const alternative = /(?<=\n|^)\d+/g;
 ```
 
-### 7.6 陷阱：Unicode 字符的断言
+### 6.6 陷阱：Unicode 字符的断言
 
 **反模式**：
 
@@ -1504,7 +1463,7 @@ const correct = /(?<=.)..(?=.)/gu;
 const better = /(?<=\p{L})\p{L}(?=\p{L})/gu;
 ```
 
-### 7.7 陷阱：性能陷阱 - 全局搜索中的断言
+### 6.7 陷阱：性能陷阱 - 全局搜索中的断言
 
 **反模式**：
 
@@ -1530,7 +1489,7 @@ if (idx > 0 && /a+$/.test(text.slice(0, idx))) {
 const optimized = /a+b/g;
 ```
 
-### 7.8 陷阱：误用断言替代捕获组
+### 6.8 陷阱：误用断言替代捕获组
 
 **反模式**：
 
@@ -1545,9 +1504,9 @@ const simple = /^\w+@\w+\.\w+$/;
 
 ---
 
-## 8. 工程最佳实践
+## 7. 工程最佳实践
 
-### 8.1 实践：断言使用决策树
+### 7.1 实践：断言使用决策树
 
 在决定是否使用断言时，遵循以下决策树：
 
@@ -1584,7 +1543,7 @@ flowchart TD
     T12 --> T14
 ```
 
-### 8.2 实践：性能测试基准
+### 7.2 实践：性能测试基准
 
 建立正则性能测试基准，确保断言使用不影响性能：
 
@@ -1643,7 +1602,7 @@ benchmark.measure('后行断言', /(?<=：)\d+/g, text);
 benchmark.report();
 ```
 
-### 8.3 实践：CI 集成正则检查
+### 7.3 实践：CI 集成正则检查
 
 在 CI 流水线中集成正则安全检查：
 
@@ -1713,7 +1672,7 @@ if (findings.length > 0) {
 }
 ```
 
-### 8.4 实践：可读性优化
+### 7.4 实践：可读性优化
 
 通过注释与变量命名提升正则可读性：
 
@@ -1763,7 +1722,7 @@ function createPasswordRegex(options = {}) {
 }
 ```
 
-### 8.5 实践：单元测试覆盖
+### 7.5 实践：单元测试覆盖
 
 为正则表达式编写充分的单元测试：
 
@@ -1826,7 +1785,7 @@ describe('CSV 解析正则', () => {
 });
 ```
 
-### 8.6 实践：国际化与 Unicode 支持
+### 7.6 实践：国际化与 Unicode 支持
 
 ```javascript
 // 文件名: i18n-regex.js
@@ -1870,9 +1829,9 @@ console.log(numberRegex.test('۱۲۳'));           // true (阿拉伯-印度数�
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：电商平台商品标题清洗
+### 8.1 案例：电商平台商品标题清洗
 
 **背景**：某电商平台收到商家上传的商品标题，含大量营销词汇、emoji、特殊符号，需清洗为规范标题。
 
@@ -1935,7 +1894,7 @@ const results = workerData.titles.map(t => cleaner.clean(t));
 parentPort.postMessage(results);
 ```
 
-### 9.2 案例：日志分析与告警
+### 8.2 案例：日志分析与告警
 
 **背景**：某 Node.js 微服务产生大量结构化日志，需实时解析并触发告警。
 
@@ -2029,7 +1988,7 @@ logs.forEach(log => {
 // 输出: [ALERT] payment-failure: 5 events in 60s
 ```
 
-### 9.3 案例：代码静态分析工具
+### 8.3 案例：代码静态分析工具
 
 **背景**：开发一个简单的代码静态分析工具，检测潜在的安全问题。
 
@@ -2133,7 +2092,7 @@ const findings = analyzer.analyze(code, 'example.js');
 analyzer.report(findings);
 ```
 
-### 9.4 案例：配置文件迁移工具
+### 8.4 案例：配置文件迁移工具
 
 **背景**：将 INI 格式配置文件迁移为 YAML 格式。
 
@@ -2234,7 +2193,7 @@ console.log(converter.convert(iniContent));
 //   debug: false
 ```
 
-### 9.5 案例：Markdown 文档工具
+### 8.5 案例：Markdown 文档工具
 
 **背景**：开发一个 Markdown 文档处理工具，提取目录、代码块、链接等。
 
@@ -2348,7 +2307,7 @@ console.log('统计:', tools.generateStats(md));
 
 ## 知识讲解与要点分析（原练习）
 
-### 10.1 基础练习
+### 9.1 基础练习
 
 **练习 1**：使用正向先行断言匹配所有以 "ing" 结尾的单词（不包含 "ing"）。
 
@@ -2388,7 +2347,7 @@ console.log(json.match(keyRegex));
 // 输出: ['name', 'age', 'city']
 ```
 
-### 10.2 中级练习
+### 9.2 中级练习
 
 **练习 4**：编写一个正则，匹配不在 HTML 标签内的"JavaScript"字符串。
 
@@ -2431,7 +2390,7 @@ console.log(renderTemplate(template, { name: 'Alice', age: 30 }));
 // 输出: 'Hello, Alice! Your age is 30.'
 ```
 
-### 10.3 高级练习
+### 9.3 高级练习
 
 **练习 7**：编写一个正则，匹配所有不在引号内的逗号（用于 CSV 分割）。
 
@@ -2556,7 +2515,7 @@ console.log(extractUrls(text));
 // 输出: ['https://example.com', 'http://test.org/page?q=1']
 ```
 
-### 10.4 综合练习
+### 9.4 综合练习
 
 **练习 13**：实现一个简易的 Markdown 转 HTML 转换器，支持标题、粗体、斜体、代码块。
 
@@ -2651,11 +2610,11 @@ console.log('圈复杂度:', cyclomaticComplexity(code));
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本节参考文献遵循 ACM Reference Format，包含 DOI 链接以便读者深入查阅。
 
-### 11.1 经典理论文献
+### 10.1 经典理论文献
 
 1. Kleene, S. C. 1956. Representation of events in nerve nets and finite automata. In *Automata Studies* (C. E. Shannon and J. McCarthy, Eds.). Princeton University Press, Princeton, NJ, 3-41. DOI: https://doi.org/10.1515/9781400882618-002
 
@@ -2665,7 +2624,7 @@ console.log('圈复杂度:', cyclomaticComplexity(code));
 
 4. Aho, A. V. 1990. Algorithms for finding patterns in strings. In *Handbook of Theoretical Computer Science, Volume A: Algorithms and Complexity* (J. van Leeuwen, Ed.). MIT Press, Cambridge, MA, 255-300.
 
-### 11.2 正则引擎实现文献
+### 10.2 正则引擎实现文献
 
 5. Cox, R. 2007. Regular expression matching can be simple and fast (but is slow in Java, Perl, PHP, Python, Ruby, ...). *swtch.com*. Retrieved July 21, 2026 from https://swtch.com/~rsc/regexp/regexp1.html
 
@@ -2673,7 +2632,7 @@ console.log('圈复杂度:', cyclomaticComplexity(code));
 
 7. Laurikari, V. 2001. NFAs with tagged transitions, their conversion to deterministic automata and application to regular expressions. In *Proceedings of the 7th International Symposium on String Processing and Information Retrieval* (SPIRE 2000). IEEE Computer Society, Washington, DC, 181-187. DOI: https://doi.org/10.1109/SPIRE.2000.878178
 
-### 11.3 ECMAScript 规范
+### 10.3 ECMAScript 规范
 
 8. ECMA International. 2026. *ECMAScript 2026 Language Specification* (12th ed.). ECMA, Geneva, Switzerland. Retrieved July 21, 2026 from https://tc39.es/ecma262/
 
@@ -2681,7 +2640,7 @@ console.log('圈复杂度:', cyclomaticComplexity(code));
 
 10. Dyomin, D. 2018. RegExp Lookbehind Assertions in V8. *V8 Blog*. Retrieved July 21, 2026 from https://v8.dev/blog/lookbehind
 
-### 11.4 安全相关文献
+### 10.4 安全相关文献
 
 11. Davis, J. 2019. Regular expression denial of service (ReDoS). In *OWASP Top 10*. OWASP Foundation. Retrieved July 21, 2026 from https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
 
@@ -2689,13 +2648,13 @@ console.log('圈复杂度:', cyclomaticComplexity(code));
 
 13. Weideman, N., Watson, B. C., Kourie, A., and Makamu, V. 2020. Detecting and mitigating ReDoS vulnerabilities in practice. *Journal of Computer Virology and Hacking Techniques* 16, 4 (Nov. 2020), 311-324. DOI: https://doi.org/10.1007/s11416-020-00353-y
 
-### 11.5 性能优化文献
+### 10.5 性能优化文献
 
 14. Graham-Cumming, J. 2003. How to make a faster regex engine. *Dr. Dobb's Journal* 28, 1 (Jan. 2003), 34-42.
 
 15. Saari, M. 2018. Regular expression performance in JavaScript. In *Proceedings of the 2018 IEEE International Conference on Web Engineering* (ICWE 2018). IEEE, Piscataway, NJ, 145-153. DOI: https://doi.org/10.1109/ICWE.2018.00025
 
-### 11.6 应用领域文献
+### 10.6 应用领域文献
 
 16. Friedl, J. E. F. 2006. *Mastering Regular Expressions* (3rd ed.). O'Reilly Media, Sebastopol, CA.
 
@@ -2703,7 +2662,7 @@ console.log('圈复杂度:', cyclomaticComplexity(code));
 
 18. Stubblebine, T. 2007. *Regular Expression Pocket Reference* (2nd ed.). O'Reilly Media, Sebastopol, CA.
 
-### 11.7 浏览器与引擎文档
+### 10.7 浏览器与引擎文档
 
 19. Google LLC. 2026. V8 JavaScript engine: Regular expressions. *V8 Documentation*. Retrieved July 21, 2026 from https://v8.dev/docs/regexp
 
@@ -2711,21 +2670,21 @@ console.log('圈复杂度:', cyclomaticComplexity(code));
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 理论深化
+### 11.1 理论深化
 
 - **《Introduction to Automata Theory, Languages, and Computation》**（Hopcroft, Motwani, Ullman）：正则语言与有限自动机的经典教材，MIT 6.004 课程指定用书。
 - **《Computational Complexity: A Modern Approach》**（Arora, Barak）：复杂度理论，含正则匹配的复杂度分析。
 - **《Elements of the Theory of Computation》**（Lewis, Papadimitriou）：计算理论的另一经典，覆盖正则语言的代数性质。
 
-### 12.2 工程实践
+### 11.2 工程实践
 
 - **《Mastering Regular Expressions》**（Jeffrey Friedl）：正则表达式圣经，深入讲解各引擎实现差异。
 - **《Regular Expressions Cookbook》**（Jan Goyvaerts, Steven Levithan）：实用配方集，含大量真实场景的正则解决方案。
 - **《High Performance JavaScript》**（Nicholas Zakas）：第 5 章专门讨论正则表达式性能优化。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **MDN Web Docs - Regular Expressions**：Mozilla 官方文档，覆盖 ES2026 最新特性。
 - **V8 Dev Blog**：V8 引擎官方博客，定期发布正则引擎优化文章。
@@ -2733,14 +2692,14 @@ console.log('圈复杂度:', cyclomaticComplexity(code));
 - **regexr.com**：另一款在线正则工具，含详细语法解释。
 - **debuggex.com**：可视化正则表达式对应的 NFA 状态图。
 
-### 12.4 相关课程
+### 11.4 相关课程
 
 - **MIT 6.004 Computational Structures**：MIT 计算理论课程，覆盖自动机与正则语言。
 - **Stanford CS154 Automata and Complexity Theory**：Stanford 自动机理论课程。
 - **CMU 15-453 Formal Languages, Automata, and Computability**：CMU 形式语言课程。
 - **Coursera "Algorithms, Part I"**（Princeton）：含字符串匹配算法。
 
-### 12.5 开源项目
+### 11.5 开源项目
 
 - **V8 引擎源码**：https://v8.dev/source，关注 `src/regexp/` 目录。
 - **SpiderMonkey 源码**：https://github.com/mozilla/gecko-dev，关注 `js/src/util/Unicode.h` 与 `js/src/vm/RegExpObject.cpp`。
@@ -2748,14 +2707,14 @@ console.log('圈复杂度:', cyclomaticComplexity(code));
 - **RE2**：Google 的 DFA 正则引擎，https://github.com/google/re2。
 - **Hyperscan**：Intel 的高性能正则引擎，https://github.com/intel/hyperscan。
 
-### 12.6 工具与库
+### 11.6 工具与库
 
 - **`safe-regex`**：检测正则是否可能触发 ReDoS，https://github.com/davisjam/safe-regex。
 - **`re2`**：Node.js 的 RE2 绑定，提供 $O(nm)$ 保证，https://github.com/uhop/node-re2。
 - **`xregexp`**：扩展正则库，提供更多特性，https://github.com/slevithan/xregexp。
 - **`regexpp`**：ESLint 使用的正则解析器，https://github.com/mysticatea/regexpp。
 
-### 12.7 拓展主题
+### 11.7 拓展主题
 
 - **正则表达式与 CFG（Context-Free Grammar）的边界**：正则表达式无法匹配嵌套结构（如括号匹配），需使用 CFG。了解 PEG（Parsing Expression Grammar）作为替代方案。
 - **流式正则匹配**：处理超大文本时，使用流式正则引擎避免内存爆炸。参考 `grep` 的实现。

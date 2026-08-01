@@ -29,86 +29,16 @@ tags:
   - Truffle
 ---
 
+
 # Java 与 GraalVM 深度指南
 
 > GraalVM 是 Oracle Labs 主导开发的高性能 Java 运行时与多语言工具链，其核心创新 Native Image 技术（AOT 编译）将 Java 应用编译为独立的本地可执行文件，启动时间从秒级降至毫秒级，内存占用减少 5-10 倍，彻底改变了 Java 在 Serverless、容器化、微服务等云原生场景的竞争力。Spring Boot 3 的原生支持、Quarkus、Micronaut 的全面拥抱，标志着"云原生 Java"时代的到来。本文将系统性地剖析 GraalVM 的架构、Native Image 的封闭世界假设、反射/资源/代理的配置化、与 JIT 的对比、Truffle 多语言框架、以及在企业级生产中的工程实践，让读者既能编写高性能的 Native Image 应用，也能理解 GraalVM 对 Java 生态的深远影响。
 
 ---
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节以 Bloom 教育目标分类法（Anderson 2001 修订版）为框架，对学习目标进行显式分级。
-
-### 1.1 认知层级目标
-
-| 层级（Level） | 行为动词 | 具体学习目标 |
-|--------------|---------|-------------|
-| 记忆（Remember） | 列举、识别、定义 | 列举 GraalVM 的核心组件（Graal 编译器、SubstrateVM、Truffle、GraalWasm），识别 Native Image 与 JIT 的差异，定义"封闭世界假设" |
-| 理解（Understand） | 解释、归纳、对比 | 解释 AOT 编译与 JIT 编译的本质差异，对比 Native Image 与传统 JVM 在启动、内存、吞吐上的权衡，归纳反射配置的生成机制 |
-| 应用（Apply） | 实现、使用、演示 | 使用 `native-image` 工具编译 Java 应用，使用 `native-image-agent` 自动生成配置，演示 Spring Boot 3 的 Native 构建 |
-| 分析（Analyze） | 分解、辨别、推断 | 分解 Native Image 构建流程（分析、初始化、编译），推断哪些库不兼容 Native Image，辨别 PGO 与 G1 在 Native 中的可用性 |
-| 评价（Evaluate） | 评判、论证、批判 | 评判 Native Image 在长跑应用上的适用性，论证 Quarkus 与 Spring Boot Native 的选型依据，批判"Java 启动慢"的刻板印象 |
-| 创造（Create） | 设计、构建、重构 | 设计基于 Native Image 的 Serverless 函数，构建多语言互操作的 Truffle 应用，重构遗留 Spring 应用为 Native 友好 |
-
-### 1.2 学习成果自检清单
-
-完成本章学习后，读者应能独立完成以下任务：
-
-1. 在不查阅文档的前提下，画出 GraalVM 的整体架构图。
-2. 用一句话向同事解释"封闭世界假设"为何使 Native Image 无法运行时加载类。
-3. 在白板上写出 `native-image` 的构建流程，标出分析、初始化、编译三阶段。
-4. 使用 `native-image-agent` 为现有 Spring Boot 应用生成完整的反射/资源/代理配置。
-5. 对比 Native Image 与传统 JVM 在启动时间、内存占用、峰值吞吐、构建时间上的差异。
-6. 设计一个基于 Native Image 的 AWS Lambda 函数，并解释冷启动时间的优化原理。
-
-### 1.3 前置知识地图
-
-```mermaid
-flowchart TD
-    T0["Java 基础"]
-    T1["面向对象、泛型、注解"]
-    T2["JVM 基础（内存模型、GC）"]
-    T3["类加载机制（重要前置）"]
-    T4["JVM 进阶（本章前置）"]
-    T5["JIT 编译（C1/C2、分层编译）"]
-    T6["字节码与执行引擎"]
-    T7["反射、动态代理、MethodHandle"]
-    T8["GraalVM（本章）"]
-    T9["Graal 编译器：替代 C2 的 Java 实现 JIT"]
-    T10["Native Image：AOT 编译为本地可执行文件"]
-    T11["SubstrateVM：Native Image 的运行时"]
-    T12["封闭世界假设：构建时静态分析"]
-    T13["配置文件：reflect-config / resource-config / proxy-config"]
-    T14["Truffle 框架：在 JVM 上运行多语言"]
-    T15["工程实践：Spring Boot 3、Quarkus、Micronaut、Serverless"]
-    T0 --> T1
-    T0 --> T2
-    T0 --> T3
-    T3 --> T4
-    T4 --> T5
-    T4 --> T6
-    T4 --> T7
-    T7 --> T8
-    T8 --> T9
-    T8 --> T10
-    T8 --> T11
-    T8 --> T12
-    T8 --> T13
-    T13 --> T14
-    T13 --> T15
-```
-
-### 1.4 章节阅读建议
-
-- **零基础读者**：建议按顺序阅读第 2-5 节，配合第 5 节代码示例上机实操，再回到第 3、4 节深化理论。
-- **有 Java 经验的工程师**：可跳过第 2 节基础部分，直接阅读第 3 节 Native Image 原理、第 4 节配置机制、第 7 节反模式。
-- **架构师**：重点关注第 6 节对比分析、第 8 节工程实践与第 9 节案例研究，特别是 Spring Boot 3、Quarkus 的 Native 选型。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 GraalVM 的诞生背景
+### 1.1 GraalVM 的诞生背景
 
 Java 自 1995 年诞生以来，在"启动慢、内存高"的批评声中走过了 30 年。这一批评在云原生时代尤为刺耳：
 
@@ -122,7 +52,7 @@ Go、Rust 等编译型语言以"毫秒启动、低内存"在云原生场景快�
 2. **支持 AOT 编译**：将 Java 应用编译为本地可执行文件，解决启动与内存问题。
 3. **多语言互操作**：通过 Truffle 框架在 JVM 上运行 JavaScript、Python、Ruby、LLVM IR 等。
 
-### 2.2 GraalVM 的版本演进
+### 1.2 GraalVM 的版本演进
 
 | 版本 | 年份 | 关键里程碑 |
 |------|------|-----------|
@@ -136,7 +66,7 @@ Go、Rust 等编译型语言以"毫秒启动、低内存"在云原生场景快�
 | GraalVM for JDK 22 | 2024 | PGO 改进、构建速度提升 |
 | GraalVM for JDK 23 | 2024 | G1 GC 稳定、启动优化 |
 
-### 2.3 关键里程碑：Spring Boot 3 的拥抱
+### 1.3 关键里程碑：Spring Boot 3 的拥抱
 
 2022 年 11 月发布的 **Spring Boot 3.0** 是 GraalVM 走向主流的标志性事件：
 
@@ -147,7 +77,7 @@ Go、Rust 等编译型语言以"毫秒启动、低内存"在云原生场景快�
 
 这一拥抱使 GraalVM 从"实验性技术"变为"生产级选择"，企业级 Java 应用首次能在 Serverless 场景与 Go、Node.js 正面竞争。
 
-### 2.4 竞争格局：GraalVM vs OpenJDK Project Leyden
+### 1.4 竞争格局：GraalVM vs OpenJDK Project Leyden
 
 GraalVM 的 Native Image 路线并非 Java 平台 AOT 的唯一选择。OpenJDK 社区于 2023 年启动 **Project Leyden**，目标是：
 
@@ -168,7 +98,7 @@ GraalVM 的 Native Image 路线并非 Java 平台 AOT 的唯一选择。OpenJDK 
 
 GraalVM 走的是"激进 AOT"路线，牺牲动态性换启动与内存；Leyden 走"渐进优化"路线，保留 Java 全部特性。两者将在未来 5 年并行演进。
 
-### 2.5 设计哲学：封闭世界与性能优先
+### 1.5 设计哲学：封闭世界与性能优先
 
 GraalVM Native Image 的核心哲学是 **封闭世界假设**（Closed-World Assumption）：
 
@@ -187,9 +117,9 @@ GraalVM Native Image 的核心哲学是 **封闭世界假设**（Closed-World As
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 GraalVM 架构的形式化定义
+### 2.1 GraalVM 架构的形式化定义
 
 GraalVM 可形式化为一个分层系统：
 
@@ -204,7 +134,7 @@ $$
 3. **Truffle**：语言实现框架，基于 AST 解释器 + Partial Evaluation。
 4. **GraalWasm**：WebAssembly 运行时，基于 Truffle。
 
-### 3.2 Native Image 构建流程的形式化定义
+### 2.2 Native Image 构建流程的形式化定义
 
 Native Image 构建可形式化为三阶段：
 
@@ -222,7 +152,7 @@ $$
    - 输入：$M$、$H_0$。
    - 输出：本地可执行文件。
 
-### 3.3 封闭世界假设的形式化定义
+### 2.3 封闭世界假设的形式化定义
 
 封闭世界假设可形式化为：
 
@@ -241,7 +171,7 @@ $$
 
 这些操作在 Native Image 中需通过 `reflect-config.json` 显式声明，否则运行时报错。
 
-### 3.4 构建时初始化 vs 运行时初始化
+### 2.4 构建时初始化 vs 运行时初始化
 
 类的初始化时机可配置：
 
@@ -254,7 +184,7 @@ $$
 
 默认策略：GraalVM 自动判断，安全类（如纯计算）BuildTime，有副作用类 RunTime。可通过 `--initialize-at-build-time` / `--initialize-at-run-time` 显式控制。
 
-### 3.5 Native Image 性能模型
+### 2.5 Native Image 性能模型
 
 Native Image 的性能可形式化为：
 
@@ -273,9 +203,9 @@ $$
 
 ---
 
-## 4. 理论推导：Native Image 的内部机制
+## 3. 理论推导：Native Image 的内部机制
 
-### 4.1 静态分析算法
+### 3.1 静态分析算法
 
 Native Image 的静态分析基于 **可达性分析**（Reachability Analysis）：
 
@@ -293,7 +223,7 @@ Native Image 的静态分析基于 **可达性分析**（Reachability Analysis�
 
 **复杂性**：分析需处理虚方法的多个目标（CHA 算法）、接口的多实现、反射的动态分发等，是一个不动点计算。
 
-### 4.2 Build-Time 初始化的堆快照
+### 3.2 Build-Time 初始化的堆快照
 
 Build-Time 初始化的核心是将"运行时初始化的堆"变为"构建时初始化的堆快照"：
 
@@ -313,7 +243,7 @@ Build-Time 初始化的核心是将"运行时初始化的堆"变为"构建时初
 
 **默认策略**：GraalVM 默认所有类 RunTime 初始化（保守）。用户需显式 `--initialize-at-build-time` 指定。
 
-### 4.3 反射配置的工作原理
+### 3.3 反射配置的工作原理
 
 Native Image 通过 `reflect-config.json` 声明反射访问：
 
@@ -339,7 +269,7 @@ Native Image 通过 `reflect-config.json` 声明反射访问：
 
 **自动生成**：`native-image-agent` 可在 JVM 模式下运行应用，追踪所有反射调用，自动生成 `reflect-config.json`。
 
-### 4.4 资源配置的工作原理
+### 3.4 资源配置的工作原理
 
 `resource-config.json` 声明嵌入的资源：
 
@@ -359,7 +289,7 @@ Native Image 通过 `reflect-config.json` 声明反射访问：
 
 **未声明的资源**：运行时 `getResourceAsStream` 返回 `null`。
 
-### 4.5 动态代理配置的工作原理
+### 3.5 动态代理配置的工作原理
 
 `proxy-config.json` 声明动态代理的接口组合：
 
@@ -374,7 +304,7 @@ Native Image 通过 `reflect-config.json` 声明反射访问：
 
 **未声明的接口组合**：运行时 `Proxy.newProxyInstance` 抛出异常。
 
-### 4.6 SubstrateVM 的运行时机制
+### 3.6 SubstrateVM 的运行时机制
 
 SubstrateVM 是 Native Image 的运行时，提供：
 
@@ -391,7 +321,7 @@ SubstrateVM 是 Native Image 的运行时，提供：
 - 无字节码校验：构建时已校验。
 - 无 `-XX` 参数：使用 `--gc=` 等专属参数。
 
-### 4.7 PGO（Profile-Guided Optimization）
+### 3.7 PGO（Profile-Guided Optimization）
 
 PGO 通过运行时采样指导 AOT 编译，弥补无 JIT 的性能损失：
 
@@ -410,7 +340,7 @@ PGO 通过运行时采样指导 AOT 编译，弥补无 JIT 的性能损失：
 - 构建时间增加 2-3 倍（需两次构建 + 一次采样运行）。
 - 采样场景需代表性，否则优化失效。
 
-### 4.8 Truffle 框架与多语言互操作
+### 3.8 Truffle 框架与多语言互操作
 
 Truffle 是 GraalVM 的多语言框架，核心思想：
 
@@ -445,9 +375,9 @@ try (Context ctx = Context.create()) {
 
 ---
 
-## 5. 代码示例：从入门到进阶的完整实战
+## 4. 代码示例：从入门到进阶的完整实战
 
-### 5.1 入门：安装 GraalVM
+### 4.1 入门：安装 GraalVM
 
 ```bash
 # 方式 1：使用 SDKMAN（Linux/Mac）
@@ -467,7 +397,7 @@ native-image --version
 # native-image 21.0.3, GraalVM 21.0.3
 ```
 
-### 5.2 基础：编译 Hello World
+### 4.2 基础：编译 Hello World
 
 ```java
 // HelloWorld.java
@@ -493,7 +423,7 @@ native-image HelloWorld
 # Startup time: 12 ms
 ```
 
-### 5.3 基础：对比 JVM 与 Native Image 启动
+### 4.3 基础：对比 JVM 与 Native Image 启动
 
 ```bash
 # JVM 运行
@@ -509,7 +439,7 @@ java HelloWorld
 /usr/bin/time -v ./helloworld         # Maximum resident: ~5MB
 ```
 
-### 5.4 进阶：使用 native-image-agent 生成配置
+### 4.4 进阶：使用 native-image-agent 生成配置
 
 ```bash
 # 步骤 1：在 JVM 模式下运行应用，agent 自动收集反射/资源/代理配置
@@ -532,7 +462,7 @@ java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/
 native-image -jar target/myapp.jar myapp
 ```
 
-### 5.5 进阶：反射配置示例
+### 4.5 进阶：反射配置示例
 
 ```json
 // reflect-config.json
@@ -570,7 +500,7 @@ public class NativeConfig {
 }
 ```
 
-### 5.6 进阶：资源配置示例
+### 4.6 进阶：资源配置示例
 
 ```json
 // resource-config.json
@@ -597,7 +527,7 @@ public class NativeConfig {
 public class ResourceConfig {}
 ```
 
-### 5.7 进阶：动态代理配置示例
+### 4.7 进阶：动态代理配置示例
 
 ```json
 // proxy-config.json
@@ -608,7 +538,7 @@ public class ResourceConfig {}
 ]
 ```
 
-### 5.8 进阶：Spring Boot 3 Native 编译
+### 4.8 进阶：Spring Boot 3 Native 编译
 
 ```xml
 <!-- pom.xml -->
@@ -656,7 +586,7 @@ java -jar target/myapp.jar          # ~3 秒
 ./target/myapp                      # ~80 毫秒
 ```
 
-### 5.9 进阶：自定义 Feature 扩展
+### 4.9 进阶：自定义 Feature 扩展
 
 ```java
 // 实现 Feature 接口，在构建过程中执行自定义逻辑
@@ -691,7 +621,7 @@ public class MyFeature implements Feature {
 Args = --features=com.example.MyFeature
 ```
 
-### 5.10 实战：基于 Native Image 的 AWS Lambda
+### 4.10 实战：基于 Native Image 的 AWS Lambda
 
 ```java
 // LambdaHandler.java
@@ -734,7 +664,7 @@ aws lambda create-function \
 # Native Image Lambda: 100-200 毫秒
 ```
 
-### 5.11 进阶：PGO 优化
+### 4.11 进阶：PGO 优化
 
 ```bash
 # 第一步：构建带 PGO 采样的镜像
@@ -756,7 +686,7 @@ native-image --pgo=default.iprof -jar myapp.jar myapp-optimized
 ./myapp-optimized     # 有 PGO，吞吐 1500 req/s（提升 50%）
 ```
 
-### 5.12 进阶：Truffle 多语言示例
+### 4.12 进阶：Truffle 多语言示例
 
 ```java
 import org.graalvm.polyglot.*;
@@ -789,9 +719,9 @@ public class PolyglotDemo {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Native Image vs 传统 JVM
+### 5.1 Native Image vs 传统 JVM
 
 | 维度 | 传统 JVM | Native Image |
 |------|---------|--------------|
@@ -808,7 +738,7 @@ public class PolyglotDemo {
 | 调试 | 完整支持 | 受限 |
 | JFR | 支持 | 有限支持 |
 
-### 6.2 Native Image vs OpenJDK AOT（jaotc）
+### 5.2 Native Image vs OpenJDK AOT（jaotc）
 
 | 维度 | Native Image | jaotc（Java 9-17） |
 |------|--------------|-------------------|
@@ -819,7 +749,7 @@ public class PolyglotDemo {
 | 内存改善 | 5-10 倍 | 几乎无 |
 | 动态性 | 受限 | 不受限 |
 
-### 6.3 Native Image vs Project Leyden
+### 5.3 Native Image vs Project Leyden
 
 | 维度 | Native Image | Project Leyden |
 |------|--------------|----------------|
@@ -831,7 +761,7 @@ public class PolyglotDemo {
 | 成熟度 | 生产可用 | 实验中 |
 | Spring Boot 支持 | 3.0+ | 暂无 |
 
-### 6.4 Spring Boot Native vs Quarkus vs Micronaut
+### 5.4 Spring Boot Native vs Quarkus vs Micronaut
 
 | 框架 | Native 支持 | 启动时间 | 内存 | 设计理念 |
 |------|------------|---------|------|---------|
@@ -845,7 +775,7 @@ public class PolyglotDemo {
 - **Quarkus**：从零设计为 Native 友好，构建时注解处理，无运行时反射。
 - **Micronaut**：编译时注入（无反射），原生 Native 友好。
 
-### 6.5 GraalVM vs OpenJ9 vs HotSpot
+### 5.5 GraalVM vs OpenJ9 vs HotSpot
 
 | 维度 | GraalVM | OpenJ9 | HotSpot |
 |------|---------|--------|---------|
@@ -858,9 +788,9 @@ public class PolyglotDemo {
 
 ---
 
-## 7. 陷阱与反模式
+## 6. 陷阱与反模式
 
-### 7.1 反模式：运行时动态加载类
+### 6.1 反模式：运行时动态加载类
 
 ```java
 // 反例：运行时加载类
@@ -872,7 +802,7 @@ Class<?> clazz = Class.forName(className);  // 运行时错误：类未声明
 
 **解决**：构建时声明所有可能类，或改用 SPI（ServiceLoader）+ 配置。
 
-### 7.2 反模式：未声明反射
+### 6.2 反模式：未声明反射
 
 ```java
 // 反例：反射访问未声明字段
@@ -892,7 +822,7 @@ f.set(user, "value");  // 运行时错误：字段未在 reflect-config 声明
 ]
 ```
 
-### 7.3 反模式：未声明资源
+### 6.3 反模式：未声明资源
 
 ```java
 // 反例：加载未声明资源
@@ -910,7 +840,7 @@ InputStream is = getClass().getResourceAsStream("/config.json");
 }
 ```
 
-### 7.4 反模式：Build-Time 初始化副作用
+### 6.4 反模式：Build-Time 初始化副作用
 
 ```java
 // 反例：Build-Time 初始化打开文件
@@ -935,7 +865,7 @@ public class ConfigLoader {
 native-image --initialize-at-run-time=com.example.ConfigLoader
 ```
 
-### 7.5 反模式：动态代理未声明
+### 6.5 反模式：动态代理未声明
 
 ```java
 // 反例：动态代理接口组合未声明
@@ -954,7 +884,7 @@ Object proxy = Proxy.newProxyInstance(
 ]
 ```
 
-### 7.6 反模式：长跑应用使用 Native Image
+### 6.6 反模式：长跑应用使用 Native Image
 
 ```bash
 # 反例：长跑高吞吐服务使用 Native Image
@@ -969,7 +899,7 @@ Object proxy = Proxy.newProxyInstance(
 - 或使用 PGO 优化 Native Image。
 - 或使用 Project Leyden（未来）。
 
-### 7.7 反模式：不兼容第三方库
+### 6.7 反模式：不兼容第三方库
 
 ```java
 // 反例：使用不兼容 Native Image 的库
@@ -983,7 +913,7 @@ HikariDataSource ds = new HikariDataSource();  // 可能依赖反射、动态生
 - 使用兼容替代（如 Agroal 替代 HikariCP）。
 - 手动配置反射/资源。
 
-### 7.8 反模式：忽略 GC 调优
+### 6.8 反模式：忽略 GC 调优
 
 ```bash
 # 反例：默认 GC（Serial）不适合大堆
@@ -996,7 +926,7 @@ HikariDataSource ds = new HikariDataSource();  // 可能依赖反射、动态生
 native-image --gc=G1 -jar myapp.jar
 ```
 
-### 7.9 反模式：构建机环境差异
+### 6.9 反模式：构建机环境差异
 
 ```bash
 # 反例：构建机使用 macOS，运行机使用 Linux
@@ -1013,7 +943,7 @@ docker run -it --rm \
     native-image -jar /work/myapp.jar /work/myapp
 ```
 
-### 7.10 反模式：构建内存不足
+### 6.10 反模式：构建内存不足
 
 ```bash
 # 反例：CI 环境内存不足
@@ -1028,36 +958,36 @@ native-image -jar myapp.jar  # OOM，构建失败
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建优化
+### 7.1 构建优化
 
 1. **构建缓存**：使用 `--build-artifacts` 缓存中间产物，加速增量构建。
 2. **并行构建**：`--parallelism=N`，根据 CPU 调整。
 3. **分层构建**：将依赖与应用分层，依赖层缓存。
 4. **容器化构建**：使用 GraalVM 官方 Docker 镜像，保证环境一致。
 
-### 8.2 性能调优
+### 7.2 性能调优
 
 1. **PGO**：对长跑应用使用 PGO，提升 30-50% 吞吐。
 2. **GC 选择**：`--gc=G1`（Java 17+）适合大堆，`--gc=serial` 适合小应用。
 3. **初始化配置**：`--initialize-at-build-time` 加速启动，但需谨慎副作用。
 4. **内联调优**：`--inline-before-analysis=true` 提升优化空间。
 
-### 8.3 调试与诊断
+### 7.3 调试与诊断
 
 1. **栈追踪**：`-H:+ReportExceptionStackTraces` 输出完整栈。
 2. **类初始化追踪**：`-H:+TraceClassInitialization` 定位 Build-Time 初始化问题。
 3. **可达性报告**：`--diagnostics-mode` 输出分析详情。
 4. **JFR**：`--enable-jfr` 启用 JFR（Java 17+）。
 
-### 8.4 兼容性检查
+### 7.4 兼容性检查
 
 1. **Spring Boot Native Hints**：`@NativeHint` 注解声明库的反射需求。
 2. **GraalVM Reachability Metadata**：官方维护的第三方库配置仓库。
 3. **测试**：在 CI 中加入 Native Image 测试阶段。
 
-### 8.5 部署实践
+### 7.5 部署实践
 
 1. **Distroless 镜像**：使用 `gcr.io/distroless/cc` 作为基础镜像，无 OS 开销。
 2. **Scratch 镜像**：静态链接的 Native Image 可使用 `scratch`，镜像大小 ~20MB。
@@ -1066,9 +996,9 @@ native-image -jar myapp.jar  # OOM，构建失败
 
 ---
 
-## 9. 案例研究：主流框架实践
+## 8. 案例研究：主流框架实践
 
-### 9.1 Spring Boot 3 Native 支持
+### 8.1 Spring Boot 3 Native 支持
 
 **架构**：
 
@@ -1090,7 +1020,7 @@ native-image -jar myapp.jar  # OOM，构建失败
 | Spring Boot Web | 3.0s | 0.08s |
 | Spring Boot + JPA | 5.0s | 0.15s |
 
-### 9.2 Quarkus：Native First 框架
+### 8.2 Quarkus：Native First 框架
 
 **设计理念**：
 
@@ -1111,7 +1041,7 @@ native-image -jar myapp.jar  # OOM，构建失败
 - 内存占用 ~20MB（Spring Boot Native ~50MB）。
 - 无需 `native-image-agent`，框架自动声明配置。
 
-### 9.3 Micronaut：编译时注入
+### 8.3 Micronaut：编译时注入
 
 **设计理念**：
 
@@ -1126,7 +1056,7 @@ native-image -jar myapp.jar  # OOM，构建失败
 # 输出 build/native/nativeCompile/myapp
 ```
 
-### 9.4 Helidon SE：微服务框架
+### 8.4 Helidon SE：微服务框架
 
 Oracle 的微服务框架，与 GraalVM 同源，Native 支持最佳：
 
@@ -1138,7 +1068,7 @@ mvn package -Pnative-image
 
 启动时间 ~20ms，内存 ~15MB。
 
-### 9.5 AWS Lambda Custom Runtime
+### 8.5 AWS Lambda Custom Runtime
 
 AWS Lambda 的 `provided.al2023` 运行时支持 Native Image：
 
@@ -1159,9 +1089,9 @@ Native Image 使 Java 在 Serverless 场景与 Node.js、Python 平起平坐。
 
 ---
 
-## 10. 知识讲解与要点分析（原习题）
+## 9. 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 1. 简述 GraalVM 的核心组件及其职责。
 2. 解释"封闭世界假设"对反射、动态代理的影响。
@@ -1174,7 +1104,7 @@ Native Image 使 Java 在 Serverless 场景与 Node.js、Python 平起平坐。
 6. 编写一个使用 `@RegisterReflectionForBinding` 的配置类。
 7. 设计一个基于 Native Image 的 CLI 工具，要求启动 <50ms。
 
-### 10.3 分析题
+### 9.3 分析题
 
 8. 分析以下代码在 Native Image 中为何失败：
 
@@ -1186,7 +1116,7 @@ Class<?> clazz = Class.forName(className);
 9. 为何 Spring Boot 3 需要 `spring-aot` 模块才能支持 Native？
 10. 对比 PGO 与 JIT 的优化原理，说明 PGO 为何无法完全替代 JIT。
 
-### 10.4 设计题
+### 9.4 设计题
 
 11. 设计一个基于 Native Image 的 Serverless 函数平台，要求：
     - 函数冷启动 <200ms。
@@ -1198,7 +1128,7 @@ Class<?> clazz = Class.forName(className);
     - 核心业务服务用传统 JVM（高吞吐）。
     - 任务队列消费者用 Native Image（弹性伸缩）。
 
-### 10.5 开放题
+### 9.5 开放题
 
 13. GraalVM Native Image 是否会取代传统 JVM？在哪些场景？
 14. Project Leyden 的"渐进 AOT"路线相比 GraalVM 的"激进 AOT"有哪些优势？
@@ -1232,7 +1162,7 @@ public class ConfigLoader {
     - Python 执行数据分析。
     - 三者共享内存对象。
 
-### 10.7 代码题
+### 9.7 代码题
 
 19. 实现一个 Native Image 友好的 JSON 序列化器，要求：
     - 无反射（编译时生成代码）。
@@ -1243,9 +1173,9 @@ public class ConfigLoader {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 1. **GraalVM Official Documentation**. https://www.graalvm.org/latest/docs/
 2. **Native Image Reference Manual**. https://www.graalvm.org/latest/reference-manual/native-image/
@@ -1253,20 +1183,20 @@ public class ConfigLoader {
 4. **GraalVM Polyglot API**. https://www.graalvm.org/sdk/javadoc/
 5. **Spring Boot Native Image Guide**. https://docs.spring.io/spring-boot/docs/current/reference/html/native-image.html
 
-### 11.2 JEP 与规范
+### 10.2 JEP 与规范
 
 6. **JEP 295**: Ahead-of-Time Compilation (deprecated). https://openjdk.org/jeps/295
 7. **JEP 472**: Prepare to Enforce Module Encapsulation (Java 24).
 8. **Project Leyden**. https://openjdk.org/projects/leyden/
 
-### 11.3 经典书籍与论文
+### 10.3 经典书籍与论文
 
 9. **Würthinger, T. et al.** "Self-Attributing Higher-Order Traces". IEEE, 2017.
 10. **Würthinger, T. et al.** "One VM to Rule Them All". Onward!, 2013.
 11. **Duboscq, G. et al.** "Graal IR: An Extensible Declarative Intermediate Representation". APLAS, 2013.
 12. **Simon, D. et al.** "SubstrateVM: AOT Compilation for Java". PPPJ, 2019.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 13. GraalVM GitHub: https://github.com/oracle/graal
 14. GraalVM Reachability Metadata: https://github.com/oracle/graalvm-reachability-metadata
@@ -1277,9 +1207,9 @@ public class ConfigLoader {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 相关章节
+### 11.1 相关章节
 
 - `java/JVM类加载机制`：Native Image 的"无类加载"与传统 JVM 的对比。
 - `java/Java新特性`：Java 8-21 对 AOT 与启动优化的支持。
@@ -1287,7 +1217,7 @@ public class ConfigLoader {
 - `java/Java与Kubernetes`：容器化部署的 Native Image 实践。
 - `java/Java记录类`：Record 的不可变性对 Native 友好。
 
-### 12.2 进阶主题
+### 11.2 进阶主题
 
 - **Project Leyden**：OpenJDK 的 AOT 路线。
 - **CDS / AppCDS**：类数据共享，传统 JVM 的启动优化。
@@ -1296,7 +1226,7 @@ public class ConfigLoader {
 - **GraalWasm**：WebAssembly 运行时。
 - **ES2GraalJS**：ECMAScript 引擎实现。
 
-### 12.3 社区资源
+### 11.3 社区资源
 
 - GraalVM Slack: https://graalvm.slack.com/
 - GraalVM Twitter: @graalvm
@@ -1430,7 +1360,6 @@ GraalVM 的演进仍在继续——从 PGO 到 G1 GC，从 Spring Boot 3 到 Qua
 ## 参考文献
 
 
-
 Oracle Java 官方文档：https://docs.oracle.com/en/java/
 OpenJDK 项目：https://openjdk.org/
 Java 语言规范：https://docs.oracle.com/javase/specs/
@@ -1439,7 +1368,6 @@ Baeldung 教程站：https://www.baeldung.com/
 Maven 官方文档：https://maven.apache.org/guides/
 
 ## 延伸阅读
-
 
 
 Java 并发与 JUC，见 013-java 模块并发文档。

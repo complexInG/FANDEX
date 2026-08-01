@@ -16,49 +16,12 @@ prerequisites:
   - c/概述
 ---
 
+
 ## 概述
 
 C 语言自 1972 年诞生以来,始终将性能与简洁置于安全之上。`strcpy`、`sprintf`、`gets` 等不安全函数因缺少边界检查,成为缓冲区溢出(buffer overflow)漏洞的温床。1988 年 Morris 蠕虫利用 fingerd 缓冲区溢出感染数千台主机,首次让世界认识到 C 语言安全问题的严重性。此后 Code Red、Slammer、Blaster 等大规模蠕虫均利用缓冲区溢出攻击 Windows 服务器。
 
 为缓解此类漏洞,C89/C99 标准引入 `strncpy`、`snprintf` 等带边界版本;微软在 2004 年 MS04-025 后推动 C11 Annex K "Bounds-checking interfaces",定义 `strcpy_s`、`sprintf_s`、`memcpy_s` 等带运行时约束检查的安全函数。2007 年 OpenBSD 提出 `strlcpy`/`strlcat`,在 BSD 与 macOS 中流行。本文系统化阐述 C 安全函数族、边界检查机制、编译期与运行期加固技术及生产实践。
-
-## 学习目标
-
-### 识记层(Remember)
-
-- 列举 C 标准中带边界检查的字符串函数(`strncpy`、`strncat`、`snprintf`、`strlcpy`、`strlcat`)及其差异。
-- 复述 C11 Annex K 安全函数的命名约定(`_s` 后缀)与运行时约束处理机制(`constraint_handler_t`)。
-- 说明 `errno_t`、`rsize_t`、`RSIZE_MAX` 的定义与作用。
-
-### 理解层(Understand)
-
-- 解释缓冲区溢出(stack/heap overflow)的内存布局与攻击原理。
-- 阐述 ASLR、DEP/NX、Canary、PIE、RELRO 等编译器与操作系统级加固机制的工作原理。
-- 推导 `strncpy` 在源串长于 n 时不补 '\0' 的设计动机与陷阱。
-
-### 应用层(Apply)
-
-- 使用 `snprintf`、`strlcpy` 替换不安全的 `sprintf`、`strcpy` 调用。
-- 启用 GCC `-D_FORTIFY_SOURCE=2`、`-fstack-protector-strong`、`-fPIE -pie` 等编译选项。
-- 通过 AddressSanitizer (ASan)、UndefinedBehaviorSanitizer (UBSan)、Valgrind 检测内存越界。
-
-### 分析层(Analyze)
-
-- 对比 C11 Annex K、OpenBSD strlcpy、POSIX.1-2008 `snprintf` 三套方案在可移植性、性能、安全性上的差异。
-- 分析 `-D_FORTIFY_SOURCE` 在不同优化级别(`-O0`/`-O2`)下的行为差异。
-- 推导 `strlen(s) + 1` 模式在多线程与信号处理函数中可能引发的整数溢出。
-
-### 评价层(Evaluate)
-
-- 评估 CERT C、MISRA C:2012、ISO/IEC TS 17961 三套 C 安全编码标准在企业项目中的适用性。
-- 论证"全部使用 `_s` 安全函数"策略在跨平台项目中的可行性。
-- 评判 Stack Buffer Overflow 与 Heap Buffer Overflow 在现代利用链中的相对严重性。
-
-### 创造层(Create)
-
-- 设计一套面向大型 C 项目的字符串与缓冲区管理封装库,统一安全接口与错误处理。
-- 构建基于静态分析与 fuzzing 的 C 代码安全测试流水线,集成 OSS-Fuzz、libFuzzer、AFL++。
-- 实现一个支持运行时缓冲区完整性检查的调试 allocator(类似 Electric Fence、DUMA)。
 
 ## 历史动机与背景
 
@@ -66,15 +29,15 @@ C 语言自 1972 年诞生以来,始终将性能与简洁置于安全之上。`s
 
 1988 年 11 月 2 日,Cornell 研究生 Robert Tappan Morris 释放 Morris 蠕虫,感染约 6000 台 Unix 主机(占当时 ARPANET 10%)。其利用的漏洞之一就是 fingerd 服务中 `gets` 调用导致的栈缓冲区溢出。这被认为是 Internet 上首次大规模安全事件,促使 DARPA 成立 CERT/CC(Computer Emergency Response Team)。Morris 蠕虫后,C 语言的安全问题正式进入学术界与工业界视野。
 
-### 2. Aleph One 与 Smashing the Stack
+### 1. Aleph One 与 Smashing the Stack
 
 1996 年 Phrack 杂志第 49 期发表 Aleph One(化名 Elias Levy)的文章《Smashing The Stack For Fun And Profit》,系统化讲解了栈缓冲区溢出利用技术,包括 shellcode 注入、返回地址覆盖、NOP sled 等技术。此文使缓冲区溢出利用从黑盒技术变成大众知识,直接催生了此后十年的安全攻防研究。
 
-### 3. 微软 SDLC 与安全函数推动
+### 2. 微软 SDLC 与安全函数推动
 
 2002 年比尔·盖茨发布"Trustworthy Computing"备忘录,微软全面推行安全开发生命周期(SDLC)。2004 年发布 MS04-025 补丁后,微软推动 C 标准化组织采纳"安全函数库"提案,最终在 C11 标准中以 Annex K 形式纳入。同时微软在 Visual Studio 中通过 `#define _CRT_SECURE_NO_WARNINGS` 与 `_s` 函数替代物逐步淘汰不安全 API。
 
-### 4. 现代缓冲区溢出防御
+### 3. 现代缓冲区溢出防御
 
 操作系统与编译器层面引入多重防御:
 
@@ -99,7 +62,7 @@ $$
 
 不安全访问 $\text{access}(B, i, sz) \text{ where } i + sz > n$ 即为缓冲区溢出。
 
-### 2. 字符串长度与缓冲区大小
+### 1. 字符串长度与缓冲区大小
 
 C 字符串 $S$ 是以 `'\0'` 结尾的字节序列,其长度:
 
@@ -109,7 +72,7 @@ $$
 
 存储 $S$ 所需最小缓冲区大小为 $\text{strlen}(S) + 1$。安全函数要求显式传递缓冲区大小 $n$,并在 $n < \text{strlen}(S) + 1$ 时截断或报错。
 
-### 3. 安全函数返回值语义
+### 2. 安全函数返回值语义
 
 C11 Annex K 安全函数返回 `errno_t`,定义为 `int`:
 
@@ -123,11 +86,11 @@ $$
 
 失败时调用 `constraint_handler_t` 处理函数,默认调用 `abort()`,可由 `set_constraint_handler_s` 自定义。
 
-### 4. rsize_t 与 RSIZE_MAX
+### 3. rsize_t 与 RSIZE_MAX
 
 C11 Annex K 引入 `rsize_t`(通常为 `size_t` 别名),`RSIZE_MAX` 为最大合法大小(通常 `SIZE_MAX >> 1`)。当函数参数声明为 `rsize_t` 时,传入超过 `RSIZE_MAX` 的值被视为运行时约束违反,触发约束处理。这防止了"整数溢出导致巨大 size_t"类漏洞。
 
-### 5. 边界检查的代数模型
+### 4. 边界检查的代数模型
 
 带边界检查的 `strncpy_s(dst, dstsz, src, count)` 满足:
 
@@ -158,7 +121,7 @@ if (a > SIZE_MAX - b - 1) return ERROR;
 size_t n = a + b + 1;
 ```
 
-### 2. strncpy 不补 '\0' 的陷阱
+### 1. strncpy 不补 '\0' 的陷阱
 
 `strncpy(dst, src, n)` 行为:
 
@@ -176,7 +139,7 @@ $$
 
 应使用 `snprintf(dst, n, "%s", src)` 或 `strlcpy(dst, src, n)` 替代。
 
-### 3. 整数转换的符号扩展
+### 2. 整数转换的符号扩展
 
 ```c
 int len = get_len();           /* 可能为负 */
@@ -188,7 +151,7 @@ memcpy(dst, src, n);            /* 越界 */
 
 防御:在转换前显式检查非负。
 
-### 4. 栈缓冲区溢出的返回地址覆盖
+### 3. 栈缓冲区溢出的返回地址覆盖
 
 栈帧布局(从高地址到低地址):
 
@@ -201,7 +164,7 @@ memcpy(dst, src, n);            /* 越界 */
 
 `gets(buf)` 读入超过 N 字节时,数据依次覆盖:buf → RBP → 返回地址。攻击者将返回地址覆盖为 shellcode 地址,函数返回时跳转到 shellcode。Stack Canary 在 RBP 与 buf 之间插入随机值,溢出时先破坏 canary,函数返回前检查 canary 不一致即 abort。
 
-### 5. Return-Oriented Programming (ROP)
+### 4. Return-Oriented Programming (ROP)
 
 DEP/NX 使数据段不可执行,直接注入 shellcode 失效。ROP 攻击将返回地址覆盖为现有可执行代码中的"gadget"序列(以 `ret` 结尾的几条指令),通过串联 gadget 完成任意操作。设攻击者可控返回地址序列 $\{r_1, r_2, \dots, r_k\}$,每个 $r_i$ 指向一个 gadget,执行流依次跳转:
 
@@ -611,7 +574,7 @@ static inline void *safe_calloc(size_t nmemb, size_t size) {
 | `sprintf` | C89 | 是 | 否 | 全平台 | 已弃用 |
 | `sprintf_s` | C11 Annex K | 是 | 是 | MSVC/C11 可选 | Windows 推荐 |
 
-### 2. 编译选项加固对比
+### 1. 编译选项加固对比
 
 | 选项 | 防御目标 | 性能开销 | 兼容性 |
 |---|---|---|---|
@@ -626,7 +589,7 @@ static inline void *safe_calloc(size_t nmemb, size_t size) {
 | `-fcf-protection=full` | 控制流完整性 | 1-3% | GCC/Clang (x86) |
 | `-mbranch-protection=standard` | ARM BTI/PAC | 微小 | ARM64 |
 
-### 3. 安全编码标准对比
+### 2. 安全编码标准对比
 
 | 标准 | 发布机构 | 范围 | 工具支持 |
 |---|---|---|---|
@@ -637,7 +600,7 @@ static inline void *safe_calloc(size_t nmemb, size_t size) {
 | ISO 26262 | ISO | 汽车功能安全 | Polyspace, QA-C |
 | IEC 62304 | IEC | 医疗软件 | 静态分析工具 |
 
-### 4. 运行时检查工具对比
+### 3. 运行时检查工具对比
 
 | 工具 | 检测目标 | 性能开销 | 平台 |
 |---|---|---|---|
@@ -664,13 +627,13 @@ memcpy(buf, src, len + 1); /* 拷贝 len + 1 字节,越界 */
 
 **正确做法**:统一"长度 vs 容量"语义,分配 `len + 1`(为 '\0'),拷贝 `len`。
 
-### 2. 混淆 size 与 length
+### 1. 混淆 size 与 length
 
 **事故案例**:某日志库将 `size_t length` 误传给 `snprintf(dst, length, ...)`,导致 dst 缺 '\0' 终止符,后续 `strcat` 越界。
 
 **正确做法**:文档与命名严格区分:长度不含终止符,容量含终止符。
 
-### 3. sizeof(指针) 误用
+### 2. sizeof(指针) 误用
 
 **反模式**:
 
@@ -690,7 +653,7 @@ void f(char *buf, size_t buf_size) {
 }
 ```
 
-### 4. 整数转换有符号错误
+### 3. 整数转换有符号错误
 
 **事故案例**:某 PDF 解析器从文件读 int32 长度字段,直接转 size_t,malloc 分配巨大内存,触发 OOM。
 
@@ -703,13 +666,13 @@ if ((uint32_t)raw_len > MAX_LEN) return ERROR;
 size_t len = (size_t)raw_len;
 ```
 
-### 5. 多线程下 strlen 不安全
+### 4. 多线程下 strlen 不安全
 
 **事故案例**:线程 A 调用 `strlen(s)`,线程 B 同时修改 `s` 字符串末尾字节,导致 strlen 返回错误长度。
 
 **正确做法**:字符串在多线程下应只读;需修改时使用 mutex 保护或使用不可变字符串。
 
-### 6. snprintf 返回值误用
+### 5. snprintf 返回值误用
 
 **反模式**:
 
@@ -723,7 +686,7 @@ int n = snprintf(buf, sizeof(buf), "%s", long_str);
 
 **正确做法**:snprintf 返回值若 `>= size` 表示截断,后续操作应基于实际写入长度 `min(n, size-1)`。
 
-### 7. strncpy 后忘补 '\0'
+### 6. strncpy 后忘补 '\0'
 
 **反模式**:
 
@@ -735,7 +698,7 @@ printf("%s", buf);  /* 越界读 */
 
 **正确做法**:strncpy 后显式 `buf[sizeof(buf) - 1] = '\0';` 或改用 strlcpy/snprintf。
 
-### 8. sscanf 无边界检查
+### 7. sscanf 无边界检查
 
 **反模式**:
 
@@ -776,7 +739,7 @@ CFLAGS="-O2 -g \
 CFLAGS_DEBUG="-O0 -g -fsanitize=address,undefined -fno-omit-frame-pointer"
 ```
 
-### 2. CI 集成静态分析
+### 1. CI 集成静态分析
 
 ```yaml
 # .github/workflows/security.yml 示例
@@ -807,7 +770,7 @@ jobs:
         run: ./build/tests
 ```
 
-### 3. Fuzzing 集成
+### 2. Fuzzing 集成
 
 ```c
 /* 文件: fuzz_parser.c
@@ -828,7 +791,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 }
 ```
 
-### 4. 安全 allocator 封装
+### 3. 安全 allocator 封装
 
 ```c
 /* 文件: safe_alloc.c
@@ -893,7 +856,7 @@ void safe_free(void *ptr) {
 }
 ```
 
-### 5. 输入验证清单
+### 4. 输入验证清单
 
 | 数据类型 | 验证规则 |
 |---|---|

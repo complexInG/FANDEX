@@ -15,38 +15,28 @@ related:
 prerequisites:
   - c/概述
 ---
+
 # C 动态静态库
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-完成本章学习后，你应当能够（Bloom 分类法）：
-
-- **记忆（Remembering）**：复述静态库与动态库的本质区别、常见文件扩展名（`.a`、`.lib`、`.so`、`.dll`、`.dylib`）与对应的工具链（`ar`、`ranlib`、`ld`、`ldd`、`objdump`、`nm`、`dumpbin`）。
-- **理解（Understanding）**：解释编译期链接、加载期链接、运行期链接三种链接时机的差异，以及它们对可执行文件体积、启动速度、内存占用、依赖管理的影响。
-- **应用（Applying）**：使用 `gcc -static`、`gcc -shared`、`ar rcs`、`ranlib` 等命令独立创建静态库、动态库，并在第三方工程中通过头文件与链接参数正确引用。
-- **分析（Analyzing）**：通过 `readelf -d`、`nm -D`、`objdump -T` 等工具分析 ELF/PE/Mach-O 文件中的符号表、动态段、重定位表，定位未定义符号、符号版本冲突、循环依赖等问题。
-- **评价（Evaluating）**：在嵌入式、桌面、服务端、容器化等不同部署场景下，论证选择静态链接或动态链接的合理性，并就启动延迟、内存共享、安全更新、ABI 稳定性等维度做出权衡判断。
-- **创造（Creating）**：设计一套支持 ABI 兼容、版本化符号导出、延迟加载、插件化扩展的库架构，能够撰写符合 LSB（Linux Standard Base）和 Windows DLL Best Practices 规范的工程级库产品。
-
-## 2. 历史动机与演化
-
-### 2.1 库的概念起源
+### 1.1 库的概念起源
 
 "库"（library）一词在计算机科学中最早可追溯至 1947 年 Maurice Wilkes 在 EDSAC 项目中提出的"子程序库"思想。早期程序员必须为每台机器重新编写数学函数，Wilkes 倡导把通用子程序预先写好、保存在磁带上，按需调用，这是软件复用的萌芽。
 
 在 C 语言诞生（1972 年，Dennis Ritchie 于 Bell Labs）之前，Fortran 与汇编语言已经存在"子程序库"的概念，但缺乏统一的二进制接口标准。每个操作系统、每种编译器都自成体系，二进制级别的代码复用极为困难。
 
-### 2.2 Unix 早期：`ar` 与静态库
+### 1.2 Unix 早期：`ar` 与静态库
 
 1970 年代 Unix 第七版（V7）首次引入 `ar`（archiver）工具，用于把多个 `.o` 目标文件归档为一个 `.a` 文件。早期 `ar` 仅做简单归档，链接器（`ld`）必须扫描整个归档以查找符号，效率低下。BSD 4.3 引入了符号索引（`__.SYMDEF`），System V 改名为 `/`，GNU `ar` 默认在归档时通过 `s` 选项生成符号索引，`ranlib` 工具可单独为旧归档补建索引。
 
 静态库的设计哲学是"按需拷贝"：链接器扫描归档，只把被引用的目标文件拷贝进最终可执行文件。这种模型简单可靠，但存在"静态库符号冲突"、"重复拷贝导致体积膨胀"等问题。
 
-### 2.3 动态库的诞生
+### 1.3 动态库的诞生
 
 1980 年代中期，SunOS 4.0（1988）首次引入共享库（shared library，`.so`）机制，目标是：
 
@@ -56,7 +46,7 @@ prerequisites:
 
 Microsoft 在 Windows NT 3.1（1993）引入了 DLL（Dynamic-Link Library）机制，并设计了 `LoadLibrary` / `GetProcAddress` API，沿用至今。Apple 在 Mac OS X 10.0（2001）引入了 Mach-O 格式的 `.dylib`，并在 10.5 引入" umbrella framework "概念。
 
-### 2.4 C 标准演化对库的影响
+### 1.4 C 标准演化对库的影响
 
 | 标准版本 | 年份 | 对库的关键影响 |
 | -------- | ---- | -------------- |
@@ -68,15 +58,15 @@ Microsoft 在 Windows NT 3.1（1993）引入了 DLL（Dynamic-Link Library）机
 | C23      | 2024 | 引入 `<stdbit.h>`、`<stdckdint.h>`、`<stdfloat.h>`；新增 `#embed` 指令，可在编译期把二进制资源嵌入程序，影响静态资源库设计。 |
 | C2y      | 草案 | 探讨反射、契约、模块化（`import std;`）等特性，未来可能改变头文件库的发布方式。 |
 
-### 2.5 现代生态
+### 1.5 现代生态
 
 - **Linux**：以 ELF（Executable and Linkable Format）为基础，`glibc` 提供核心 C 运行时；`musl libc` 为轻量替代；`systemd` 引入 `ld.so` 缓存机制加速动态链接。
 - **Windows**：以 PE（Portable Executable）为基础，`kernel32.dll`、`ucrtbase.dll`（Universal CRT，VS 2015 起统一）提供 C 运行时；WinSxS（Side-by-Side Assembly）解决 DLL Hell。
 - **macOS/iOS**：以 Mach-O 为基础，`libSystem.dylib` 提供 C 运行时；引入 `@rpath`、`@loader_path`、`@executable_path` 等动态路径变量解决嵌入式 framework 定位问题。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 静态库的形式化定义
+### 2.1 静态库的形式化定义
 
 设 $O = \{o_1, o_2, \ldots, o_n\}$ 为一组目标文件（object file）的集合，每个 $o_i$ 包含：
 
@@ -98,7 +88,7 @@ $$
 
 该过程重复直至 $U_{\text{final}}$ 不再变化（不动点），即所有可解析符号都被纳入。
 
-### 3.2 动态库的形式化定义
+### 2.2 动态库的形式化定义
 
 **动态库** $L_{dynamic}$ 是一个可被多个进程共享装载的目标文件，包含：
 
@@ -118,7 +108,7 @@ $$
 \text{Bind}(p, L_{dynamic}) : \forall r \in \text{RelaTable}(L_{dynamic}), \text{fix } r.addr \leftarrow \text{SymTable}^{dyn}(\text{loaded deps})[r.symbol]
 $$
 
-### 3.3 链接时机的三分类
+### 2.3 链接时机的三分类
 
 $$
 \text{LinkTime} = \begin{cases}
@@ -128,9 +118,9 @@ $$
 \end{cases}
 $$
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 静态库解析的"按需拷贝"性质
+### 3.1 静态库解析的"按需拷贝"性质
 
 **命题**：静态库链接满足"惰性拷贝"性质，即未引用的目标文件不会进入最终可执行文件。
 
@@ -138,7 +128,7 @@ $$
 
 **推论**：静态库不会导致"过度膨胀"，但同一符号若在多个静态库中均有定义，则会出现"重复定义"错误。
 
-### 4.2 动态库的"位置无关"性质
+### 3.2 动态库的"位置无关"性质
 
 **命题**：PIC（Position Independent Code）代码在被映射到任意虚拟地址时，无需修改代码段即可正确执行。
 
@@ -146,15 +136,15 @@ $$
 
 **推论**：PIC 允许同一份 `.so` 文件被多个进程映射到不同的虚拟地址，但物理内存只需一份（通过 mmap 共享），这是动态库节省内存的理论基础。
 
-### 4.3 符号版本与兼容性
+### 3.3 符号版本与兼容性
 
 设 $\text{Ver}(s) = v$ 表示符号 $s$ 的版本为 $v$。GNU 符号版本机制允许同一 `.so` 同时导出多个版本的 `printf@@GLIBC_2.2.5` 与 `printf@@GLIBC_2.17`。运行时，动态链接器根据可执行文件 `.gnu.version_r` 中记录的需求版本选择对应实现。
 
 **兼容性定理**：若库 $L$ 的版本 $v_2$ 同时保留了 $v_1$ 的所有符号版本，则依赖 $v_1$ 的可执行文件在 $v_2$ 上仍可运行（向后兼容）。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 创建静态库
+### 4.1 创建静态库
 
 以下示例展示如何创建一个简单的数学静态库 `libmymath.a`，包含加法与乘法两个函数。
 
@@ -230,7 +220,7 @@ gcc -Wall main.c libmymath.a -o main_static
 ldd main_static  # 输出中不应出现 libmymath
 ```
 
-### 5.2 创建动态库
+### 4.2 创建动态库
 
 **编译为动态库**：
 
@@ -262,7 +252,7 @@ ldd main_dynamic
 # 输出应包含：libmymath.so.1 => ./libmymath.so.1
 ```
 
-### 5.3 运行时加载（`dlopen`）
+### 4.3 运行时加载（`dlopen`）
 
 ```c
 #include <stdio.h>
@@ -315,7 +305,7 @@ gcc -Wall main_dlopen.c -ldl -o main_dlopen
 ./main_dlopen
 ```
 
-### 5.4 Windows 平台 DLL 创建
+### 4.4 Windows 平台 DLL 创建
 
 ```c
 /* mymath_dll.h */
@@ -352,7 +342,7 @@ gcc -shared -o mymath_dll.dll mymath_dll.c -Wl,--out-implib,libmymath_dll.a
 gcc main.c -L. -lmymath_dll -o main.exe
 ```
 
-### 5.5 符号导出控制
+### 4.5 符号导出控制
 
 在 Linux 上使用版本脚本精确控制符号导出：
 
@@ -382,7 +372,7 @@ EXPORTS
     my_mul @2
 ```
 
-### 5.6 静态库归档格式内部剖析
+### 4.6 静态库归档格式内部剖析
 
 `ar` 归档文件由"全局头 + 多个文件成员"组成，理解其内部结构有助于排查"为什么我的符号没被链接进去"等问题。
 
@@ -435,7 +425,7 @@ ranlib libmymath.a
 ar rcs libmymath.a mymath.o
 ```
 
-### 5.7 ELF 动态链接内部机制
+### 4.7 ELF 动态链接内部机制
 
 动态库 `.so` 文件本质上是 ELF 格式的特殊目标文件。理解其内部结构对调试符号问题至关重要。
 
@@ -505,7 +495,7 @@ readelf -r libmymath.so
 objdump -d -j .plt libmymath.so
 ```
 
-### 5.8 库的初始化与终止函数
+### 4.8 库的初始化与终止函数
 
 动态库可以注册在加载/卸载时执行的函数，用于全局状态初始化与资源清理。
 
@@ -588,7 +578,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 
 注意：`DllMain` 内禁止调用 `LoadLibrary`、`CreateThread` 等可能持有加载器锁的 API，否则会导致死锁。
 
-### 5.9 跨语言调用示例：C 库供 Python 调用
+### 4.9 跨语言调用示例：C 库供 Python 调用
 
 ```c
 /* greet.c - 提供 say_hello 函数 */
@@ -635,9 +625,9 @@ python3 caller.py
 #       7
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 静态库 vs 动态库
+### 5.1 静态库 vs 动态库
 
 | 维度          | 静态库 (`.a` / `.lib`) | 动态库 (`.so` / `.dll` / `.dylib`) |
 | ------------- | ---------------------- | ---------------------------------- |
@@ -650,25 +640,25 @@ python3 caller.py
 | 安全性        | 高（依赖固化）         | 易受 DLL 劫持                      |
 | 调试难度      | 简单（符号完整）       | 较复杂（涉及动态链接器）           |
 
-### 6.2 与其他语言的对比
+### 5.2 与其他语言的对比
 
-#### 6.2.1 C++ 的库机制
+#### 5.2.1 C++ 的库机制
 
 C++ 在 C 的基础上增加了 name mangling（名称修饰），不同编译器（GCC、Clang、MSVC）的 mangling 方案不同，导致 C++ 动态库的 ABI 跨编译器兼容性极差。C++ 通常通过 `extern "C"` 导出 C 接口以提升兼容性。C++20 引入 modules（`import`），未来可能取代部分头文件库场景。
 
-#### 6.2.2 Rust 的 crate 与 `cdylib`
+#### 5.2.2 Rust 的 crate 与 `cdylib`
 
 Rust 默认使用静态链接的 crate 模型（`cargo build` 默认静态链接所有依赖）。Rust 通过 `crate-type = ["cdylib"]` 生成 C ABI 兼容的动态库，可通过 `dlopen` 从 C 调用。Rust 的 ABI 不稳定（unstable ABI），跨版本二进制兼容需使用 `cbindgen` 生成 C 头文件并通过 C ABI 暴露。
 
-#### 6.2.3 Go 的 plugin
+#### 5.2.3 Go 的 plugin
 
 Go 1.8 引入 `plugin` 包，支持在 Linux/macOS 上动态加载 `.so`，但功能受限：必须使用相同 Go 版本编译，不支持 Windows，且无法卸载。Go 默认静态编译，可执行文件通常不依赖任何外部 `.so`，便于容器化部署。
 
-#### 6.2.4 Java 的 JAR
+#### 5.2.4 Java 的 JAR
 
 Java 通过 JAR 文件打包字节码，由 JVM 在加载时解析。JAR 本质上是"动态库"，但 JVM 字节码跨平台、跨架构，与 C 的本地动态库机制完全不同。JNI（Java Native Interface）允许 Java 调用 C/C++ 动态库。
 
-### 6.3 选型决策树
+### 5.3 选型决策树
 
 ```mermaid
 flowchart TD
@@ -688,9 +678,9 @@ flowchart TD
     T5 --> T7
 ```
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 静态库顺序陷阱
+### 6.1 静态库顺序陷阱
 
 **反模式**：在 `gcc main.c -lmymath -lfoo` 中，若 `main.c` 引用 `libfoo`，而 `libfoo` 又引用 `libmymath`，链接器从左到右扫描，先处理 `libmymath` 时未发现引用，跳过；后处理 `libfoo` 时发现引用 `libmymath`，但 `libmymath` 已被跳过，报"未定义符号"错误。
 
@@ -706,7 +696,7 @@ gcc main.c -lfoo -lmymath -lfoo  # 重复列出解决循环依赖
 gcc main.c -Wl,--start-group -lfoo -lmymath -Wl,--end-group
 ```
 
-### 7.2 DLL Hell
+### 6.2 DLL Hell
 
 **反模式**：在 Windows 系统目录放置多个版本的 `libfoo.dll`，不同程序依赖不同版本，导致升级一个程序破坏另一个程序。
 
@@ -716,7 +706,7 @@ gcc main.c -Wl,--start-group -lfoo -lmymath -Wl,--end-group
 - 使用 WinSxS（Side-by-Side Assembly）+ manifest 文件声明依赖版本。
 - 使用 `SetDllDirectory` 或 `LoadLibraryEx` 的 `LOAD_LIBRARY_SEARCH_APPLICATION_DIR` 标志限制搜索路径，防止 DLL 劫持。
 
-### 7.3 `LD_LIBRARY_PATH` 滥用
+### 6.3 `LD_LIBRARY_PATH` 滥用
 
 **反模式**：在 `~/.bashrc` 中全局设置 `LD_LIBRARY_PATH=/opt/myapp/lib`，影响系统中所有程序的库搜索路径，可能引发冲突。
 
@@ -726,7 +716,7 @@ gcc main.c -Wl,--start-group -lfoo -lmymath -Wl,--end-group
 - 使用 `patchelf --set-rpath /opt/myapp/lib main` 事后修改。
 - 系统级库安装到 `/usr/lib` 或 `/usr/local/lib`，并运行 `ldconfig` 更新缓存。
 
-### 7.4 符号版本冲突
+### 6.4 符号版本冲突
 
 **反模式**：可执行文件链接 `libfoo.so.1`（依赖 `printf@@GLIBC_2.17`），但运行环境的 `libc.so.6` 仅提供 `printf@@GLIBC_2.2.5`，运行时报 `version `GLIBC_2.17' not found`。
 
@@ -736,7 +726,7 @@ gcc main.c -Wl,--start-group -lfoo -lmymath -Wl,--end-group
 - 使用 `objdump -T main | grep GLIBC` 检查实际依赖的 GLIBC 版本。
 - 容器化部署保证运行环境与编译环境一致。
 
-### 7.5 C++ 跨编译器 ABI 不兼容
+### 6.5 C++ 跨编译器 ABI 不兼容
 
 **反模式**：用 GCC 编译的 `.so` 中导出 `std::string` 类型的符号，用 Clang 或 MSVC 编译的调用方链接该 `.so`，运行时崩溃。
 
@@ -746,22 +736,22 @@ gcc main.c -Wl,--start-group -lfoo -lmymath -Wl,--end-group
 - 使用 `extern "C"` 包裹导出函数。
 - 跨语言接口避免传递 STL 容器，改为传递裸指针 + 长度。
 
-### 7.6 静态库与动态库混合链接的符号遮蔽
+### 6.6 静态库与动态库混合链接的符号遮蔽
 
 **反模式**：可执行文件同时链接 `libfoo.a`（静态）与 `libbar.so`（动态），两者都定义 `foo_init`，链接器选择静态库版本，但 `libbar.so` 内部调用 `foo_init` 仍指向动态库版本，导致同一程序中存在两份 `foo_init`，状态不一致。
 
 **正确做法**：使用 `--exclude-libs` 隐藏静态库符号，或使用版本脚本统一管理符号可见性。
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 ABI 稳定性设计
+### 7.1 ABI 稳定性设计
 
 1. **PIMPL 模式**（Pointer to IMPLementation）：在头文件中仅暴露不透明指针，实现细节放在 `.cpp` 中，修改实现不破坏 ABI。
 2. **虚函数表稳定**：发布的类一旦有虚函数，不能新增虚函数（会改变 vtable 布局）；新增功能通过新增非虚函数或子类完成。
 3. **避免内联**：导出的函数不要在头文件中内联，否则客户端可能编译期绑定旧实现。
 4. **数据成员对齐**：发布的结构体不要随意增删字段，如需扩展使用"预留字段"或"扩展结构体"模式。
 
-### 8.2 版本号管理（SemVer + SONAME）
+### 7.2 版本号管理（SemVer + SONAME）
 
 | 语义化版本变化 | ABI 影响      | SONAME 变化          |
 | -------------- | ------------- | -------------------- |
@@ -777,7 +767,7 @@ libfoo.so.1        -> libfoo.so.1.0.0 (SONAME 软链接)
 libfoo.so.1.0.0    (实际文件)
 ```
 
-### 8.3 符号可见性控制
+### 7.3 符号可见性控制
 
 - **默认隐藏**：编译时加 `-fvisibility=hidden`，所有符号默认不导出。
 - **显式导出**：使用 `__attribute__((visibility("default")))` 标记需要导出的符号。
@@ -801,13 +791,13 @@ libfoo.so.1.0.0    (实际文件)
 MYLIB_API int my_add(int, int);
 ```
 
-### 8.4 依赖管理
+### 7.4 依赖管理
 
 - **静态库传递依赖**：静态库 `libfoo.a` 依赖 `libbar.a`，链接主程序时必须显式列出两者，且 `libbar.a` 在 `libfoo.a` 之后。
 - **动态库传递依赖**：动态库 `libfoo.so` 在自身链接时记录对 `libbar.so` 的依赖，主程序链接 `libfoo.so` 时自动拉入 `libbar.so`。可通过 `-Wl,--as-needed` 抑制无用依赖。
 - **静态 + 动态混合**：用 `-Wl,-Bstatic -lfoo -Wl,-Bdynamic -lbar` 精确控制每个库的链接方式。
 
-### 8.5 跨平台构建示例（CMake）
+### 7.5 跨平台构建示例（CMake）
 
 ```cmake
 cmake_minimum_required(VERSION 3.16)
@@ -847,7 +837,7 @@ install(TARGETS mymath_static mymath_shared
 install(FILES mymath.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 ```
 
-### 8.6 调试技巧
+### 7.6 调试技巧
 
 | 工具           | 平台     | 用途                                       |
 | -------------- | -------- | ------------------------------------------ |
@@ -863,9 +853,9 @@ install(FILES mymath.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 | `otool -L libfoo.dylib` | macOS    | 列出动态依赖                             |
 | `install_name_tool` | macOS    | 修改 dylib 的 install name 与 rpath      |
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Linux 内核模块（`.ko`）
+### 8.1 Linux 内核模块（`.ko`）
 
 Linux 内核模块（Kernel Module，`.ko`）本质上是一种特殊的"动态库"，在运行时通过 `insmod` / `modprobe` 加载到内核地址空间。与用户态动态库的对比：
 
@@ -874,7 +864,7 @@ Linux 内核模块（Kernel Module，`.ko`）本质上是一种特殊的"动态�
 - **版本管理**：模块的 `vermagic` 字符串必须与内核版本严格匹配（除非启用 `CONFIG_MODVERSIONS`，使用 CRC 校验符号 ABI）。
 - **安全性**：模块运行在内核态，错误会导致整个系统崩溃；签名验证（`CONFIG_MODULE_SIG_FORCE`）防止加载未签名模块。
 
-### 9.2 Android NDK 的 `libc.so`
+### 8.2 Android NDK 的 `libc.so`
 
 Android 自 5.0（Lollipop）起统一使用 Bionic libc 作为 C 运行时。Bionic 的设计取舍：
 
@@ -882,11 +872,11 @@ Android 自 5.0（Lollipop）起统一使用 Bionic libc 作为 C 运行时。Bi
 - **不稳定 ABI**：Bionic 的内部 ABI 在不同 Android 版本间可能变化，NDK 通过 `libc.so` 的符号版本与 `android/support` 头文件层屏蔽差异。
 - **应用打包**：Android 应用 APK 中不允许携带 `libc.so`，所有应用共享系统的 Bionic，避免内存浪费。
 
-### 9.3 LLVM 的插件化架构
+### 8.3 LLVM 的插件化架构
 
 LLVM 通过 `llvm::sys::DynamicLibrary::LoadLibraryPermanently` 在运行时加载 `.so` / `.dll` 插件，插件通过 `RegisterPass` 等模板类在静态初始化时向 LLVM 注册扩展。这种架构允许 `opt`、`clang` 等工具在不重新编译的前提下加载第三方优化 pass。
 
-### 9.4 Windows DLL 的延迟加载
+### 8.4 Windows DLL 的延迟加载
 
 MSVC 支持"延迟加载 DLL"（`/DELAYLOAD:foo.dll`），程序启动时不加载 `foo.dll`，首次调用其函数时由 CRT 桩代码触发 `LoadLibrary`。优势：
 
@@ -894,7 +884,7 @@ MSVC 支持"延迟加载 DLL"（`/DELAYLOAD:foo.dll`），程序启动时不加�
 - 可选功能模块按需加载，节省内存。
 - 跨平台部署时，缺失的 DLL 仅在调用时报错而非启动时崩溃。
 
-### 9.5 嵌入式场景：静态链接为唯一选择
+### 8.5 嵌入式场景：静态链接为唯一选择
 
 在某些 RTOS（如 FreeRTOS、Zephyr）与裸机环境中，没有动态链接器，所有代码必须静态链接为单一镜像。此时：
 
@@ -903,11 +893,11 @@ MSVC 支持"延迟加载 DLL"（`/DELAYLOAD:foo.dll`），程序启动时不加�
 - 链接脚本（linker script）精确控制段布局。
 - 静态库的"按需拷贝"特性可减小镜像体积。
 
-### 9.6 Python C 扩展模块
+### 8.6 Python C 扩展模块
 
 Python 通过 CPython API 提供 C 扩展机制，扩展模块本身是一个动态库（Linux `.so`、Windows `.pyd`、macOS `.dylib`），由 Python 解释器在 `import` 时通过 `dlopen` / `LoadLibrary` 加载。扩展模块必须使用与 CPython 解释器相同的编译器、相同架构、相同 CRT（Windows 上为 `ucrtbase.dll`），否则加载失败。
 
-### 9.7 完整案例：基于 `dlopen` 的日志后端切换
+### 8.7 完整案例：基于 `dlopen` 的日志后端切换
 
 以下案例展示一个日志库，允许用户在运行时切换日志后端（文件、控制台、网络），通过 `dlopen` 加载不同的后端实现。
 
@@ -1150,7 +1140,7 @@ gcc -Wall -fPIC -shared file_backend.c    -o libfile_backend.so
 
 此案例展示了完整的库工程实践：清晰的接口定义、ABI 稳定的结构体（vtable）、运行时插件加载、配置参数传递、资源生命周期管理。
 
-### 9.8 Linux `ld.so` 加载流程详解
+### 8.8 Linux `ld.so` 加载流程详解
 
 当 Linux 用户执行 `./main` 时，内核实际执行以下流程：
 
@@ -1611,7 +1601,7 @@ codesign -s "Developer ID: Your Name" libfoo.dylib
 | `entry point not found` (Windows)       | DLL 版本不匹配            | `dumpbin /exports foo.dll`                 |
 | `dyld: Library not loaded` (macOS)      | install name 错误          | `otool -L main`、`install_name_tool`       |
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1]  Kernighan, B. W., & Ritchie, D. M. (1988). _The C Programming Language_ (2nd ed.). Prentice Hall.
 
@@ -1633,7 +1623,7 @@ codesign -s "Developer ID: Your Name" libfoo.dylib
 
 [10] CMake Project. (2025). _CMake Reference Manual: add_library_. Kitware, Inc.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 - **Drepper, U.** _What Every Programmer Should Know About Memory_ — 系统讲解内存层次与动态库共享机制。
 - **Pavlatos, M.** _Windows System Programming_ (4th ed.) — Windows DLL 与进程加载深度剖析。

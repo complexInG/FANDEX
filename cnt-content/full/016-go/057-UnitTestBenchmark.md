@@ -16,53 +16,6 @@ prerequisites:
   - go/概述与环境配置
 ---
 
-## 0. 学习目标
-
-本篇文档依据 Bloom 分类法,从认知、理解、应用、分析、评价、创造六个层次构建学习路径。完成本篇学习后,读者应能够:
-
-### 0.1 Remember(记忆)
-
-- 列举 `testing` 包的核心类型:`T`、`B`、`TB`、`M`、`PB`、`F`。
-- 描述 `go test` 命令的常用标志:`-run`、`-bench`、`-benchmem`、`-cover`、`-race`、`-v`、`-count`、`-parallel`、`-timeout`、`-fuzz`。
-- 复述表驱动测试(table-driven test)的结构与 `t.Run` 子测试机制。
-- 背诵 Go 1.18 引入原生 fuzzing 测试的 API 形态(`F.Add`、`F.Fuzz`、`f.Failing`、`seed corpus`)。
-
-### 0.2 Understand(理解)
-
-- 解释 `testing.T` 的 `Helper()`、`Cleanup()`、`Parallel()`、`Deadline()`、`Logf()` 等方法在测试生命周期中的作用。
-- 阐述 `Benchmark` 中 `b.N` 自适应循环的工作原理与 `b.ResetTimer()`、`b.ReportAllocs()`、`b.RunParallel()`、`b.SetBytes()` 的语义。
-- 理解 `go test -cover` 输出的 `coverage: 78.3% of statements` 背后的插桩机制:编译器在每个基本块插入计数器。
-- 说明 `TestMain(*testing.M)` 的执行时机:在所有 `Test*`、`Benchmark*`、`Example*`、`FuzzXxx` 之前调用一次。
-
-### 0.3 Apply(应用)
-
-- 为任意 Go 函数编写表驱动测试,使用 `t.Run` 为每个用例命名并启用 `t.Parallel()`。
-- 使用 `go test -bench=. -benchmem -count=10 | benchstat old.txt new.txt` 完成统计意义上的性能对比。
-- 编写 `BenchmarkMemory` 风格的内存分配基准,通过 `b.ReportAllocs()` 验证零分配路径。
-- 利用 `testing/quick` 实现基于随机输入的属性测试(property-based testing)。
-
-### 0.4 Analyze(分析)
-
-- 分析一个测试套件中 goroutine 泄漏、data race、flaky test 的根因,给出 `t.Parallel` 与共享状态交互的诊断思路。
-- 解读 `go tool cover -html=coverage.out` 生成的 HTML 报告,定位未覆盖分支与边界条件。
-- 对比 `testify/assert`、`testify/require`、`gomock`、`mockery`、`bufmock`、`counterfeiter` 等工具在 mock 与断言场景的取舍。
-- 解构一个生产级 Go 项目的 CI 流水线,识别测试金字塔(test pyramid)各层比例失衡的风险。
-
-### 0.5 Evaluate(评价)
-
-- 评价 100% 覆盖率的工程价值:覆盖率是必要条件而非充分条件,高覆盖率可能掩盖分支语义错误。
-- 评价 mock 与 stub 在微服务测试中的副作用:过度 mock 会导致测试与实现强耦合,失去重构保护能力。
-- 评价 fuzzing 与表驱动测试的互补关系:前者发现未知边界,后者固化已知行为。
-- 评价 `testify` 与原生 `testing` 的工程权衡:可读性 vs 依赖膨胀。
-
-### 0.6 Create(创造)
-
-- 设计一个支持测试夹具(fixture)、测试钩子(setup/teardown)、测试并行度控制的内部测试框架。
-- 构建基于 `go test -json` 输出的 CI 测试报告聚合系统,支持历史趋势、失败聚类、flaky 检测。
-- 实现一个针对 HTTP/gRPC 服务的契约测试框架,集成 Pact 思想与 Go `testing` 生态。
-- 创造一个基于 LLM 的测试用例生成工具,辅助开发者从函数签名推导表驱动用例。
-
----
 
 ## 1. 历史动机与发展脉络
 
@@ -140,9 +93,9 @@ Go 测试生态的演进与 Rust、Java、Python 存在显著差异:
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 `testing` 包的核心类型与接口
+### 1.1 `testing` 包的核心类型与接口
 
 依据 Go 官方文档(go/src/testing/testing.go)与 Go Language Spec,`testing` 包提供以下核心类型:
 
@@ -209,7 +162,7 @@ type F struct {
 }
 ```
 
-### 2.2 测试函数签名规范
+### 1.2 测试函数签名规范
 
 Go 编译器通过函数命名约定识别测试函数,这一约定在 `go/build` 包中实现:
 
@@ -241,7 +194,7 @@ func TestMain(m *testing.M) int {
 }
 ```
 
-### 2.3 `b.N` 自适应循环的形式化语义
+### 1.3 `b.N` 自适应循环的形式化语义
 
 基准测试的核心是 `b.N` 自适应算法。其形式化定义为:
 
@@ -259,7 +212,7 @@ $$
 
 `-benchtime=Nx` 可强制固定循环次数,`-benchtime=10s` 可调整目标时间。
 
-### 2.4 覆盖率插桩的形式化模型
+### 1.4 覆盖率插桩的形式化模型
 
 Go 覆盖率工具基于基本块(basic block)插桩。设函数 $f$ 的控制流图(CFG)由基本块 $B_1, B_2, \ldots, B_n$ 组成。编译器在每个基本块入口插入计数器 $c_i$:
 
@@ -280,9 +233,9 @@ $$
 
 ---
 
-## 3. 理论推导与原理解析
+## 2. 理论推导与原理解析
 
-### 3.1 测试金字塔的统计基础
+### 2.1 测试金字塔的统计基础
 
 测试金字塔(Test Pyramid)由 Mike Cohn 在 *Succeeding with Agile*(2009)中提出。其形态可由故障检测成本与故障发现概率的权衡推导:
 
@@ -300,7 +253,7 @@ $$
 
 实践中,Go 项目的典型比例为 $N_u : N_i : N_e \approx 70 : 20 : 10$。
 
-### 3.2 并行测试的正确性条件
+### 2.2 并行测试的正确性条件
 
 设测试集合 $T = \{t_1, t_2, \ldots, t_n\}$,其中 $t_i$ 的共享状态集合为 $S_i$。`t.Parallel()` 的安全性条件为:
 
@@ -315,7 +268,7 @@ $$
 3. **共享网络端口**:并行测试绑定同一端口,需动态分配端口。
 4. **共享数据库**:并行测试操作同一表,需事务隔离或独立 schema。
 
-### 3.3 Fuzzing 的覆盖率引导理论
+### 2.3 Fuzzing 的覆盖率引导理论
 
 Go 1.18 的原生 fuzzing 基于 libFuzzer 的覆盖率引导思想。其核心算法为:
 
@@ -340,7 +293,7 @@ $$
 
 随着语料库增长,发现新分支的概率衰减,需要结合字典与结构感知变异提升效率。
 
-### 3.4 基准测量的统计噪声模型
+### 2.4 基准测量的统计噪声模型
 
 基准测试结果受系统噪声影响,包括:
 
@@ -365,9 +318,9 @@ $$
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 项目结构
+### 3.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -406,7 +359,7 @@ require (
 )
 ```
 
-### 4.2 被测代码
+### 3.2 被测代码
 
 ```go
 // user.go
@@ -509,7 +462,7 @@ import "fmt"
 
 > 上述代码末尾的 `import "fmt"` 仅为说明用途,实际项目中应合并到顶部 import 块。
 
-### 4.3 表驱动单元测试
+### 3.3 表驱动单元测试
 
 ```go
 // user_test.go
@@ -719,7 +672,7 @@ func TestParseUsers_GoldenFile(t *testing.T) {
 }
 ```
 
-### 4.4 子测试与并行控制
+### 3.4 子测试与并行控制
 
 ```go
 // parallel_test.go
@@ -785,7 +738,7 @@ func TestMain(m *testing.M) int {
 }
 ```
 
-### 4.5 基准测试
+### 3.5 基准测试
 
 ```go
 // bench_test.go
@@ -925,7 +878,7 @@ func BenchmarkRandomGeneration(b *testing.B) {
 var randv2 = struct{ IntN func(int) int }{IntN: func(n int) int { return rand.Intn(n) }}
 ```
 
-### 4.6 内存基准与 `b.ReportAllocs`
+### 3.6 内存基准与 `b.ReportAllocs`
 
 ```go
 // memory_bench_test.go
@@ -1004,7 +957,7 @@ func BenchmarkReportMetric(b *testing.B) {
 }
 ```
 
-### 4.7 Golden File 测试
+### 3.7 Golden File 测试
 
 ```go
 // golden_test.go
@@ -1079,7 +1032,7 @@ func TestUpdateGoldenPattern(t *testing.T) {
 }
 ```
 
-### 4.8 Fuzzing 测试
+### 3.8 Fuzzing 测试
 
 ```go
 // fuzz_test.go
@@ -1165,7 +1118,7 @@ func FuzzEmailRegex(f *testing.F) {
 }
 ```
 
-### 4.9 Example 测试
+### 3.9 Example 测试
 
 ```go
 // example_test.go
@@ -1203,7 +1156,7 @@ func ExampleUser_IsAdult() {
 }
 ```
 
-### 4.10 Mock 与 testify
+### 3.10 Mock 与 testify
 
 ```go
 // mock_test.go
@@ -1345,7 +1298,7 @@ func TestService_Register_WithTestify(t *testing.T) {
 }
 ```
 
-### 4.11 `testing/quick` 属性测试
+### 3.11 `testing/quick` 属性测试
 
 ```go
 // property_test.go
@@ -1398,7 +1351,7 @@ func TestAgeGroup_Property(t *testing.T) {
 }
 ```
 
-### 4.12 TestMain 与 setup/teardown
+### 3.12 TestMain 与 setup/teardown
 
 ```go
 // main_test.go
@@ -1458,7 +1411,7 @@ func TestWithTestMain(t *testing.T) {
 }
 ```
 
-### 4.13 helper 与 cleanup
+### 3.13 helper 与 cleanup
 
 ```go
 // helper_test.go
@@ -1543,9 +1496,9 @@ func TestWithTempDir(t *testing.T) {
 
 ---
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 测试框架对比
+### 4.1 测试框架对比
 
 | 维度 | Go `testing` | Rust `cargo test` | Java JUnit 5 | Python pytest | JavaScript Jest |
 |------|-------------|-------------------|--------------|---------------|-----------------|
@@ -1560,7 +1513,7 @@ func TestWithTempDir(t *testing.T) {
 | 覆盖率 | `go test -cover` | `cargo-tarpaulin` | JaCoCo | `coverage.py` | `jest --coverage` |
 | 学习曲线 | 低(API 简单) | 中(宏、生命周期) | 中(注解丰富) | 低(fixture 灵活) | 中(配置复杂) |
 
-### 5.2 断言库对比
+### 4.2 断言库对比
 
 ```go
 // Go 原生
@@ -1604,7 +1557,7 @@ Expect(err).NotTo(HaveOccurred())
 | goconvey | BDD 嵌套 | goconvey | 业务可读性优先 |
 | Gomega + Ginkgo | matcher + BDD | ginkgo | K8s 生态常用 |
 
-### 5.3 性能测试工具对比
+### 4.3 性能测试工具对比
 
 | 工具 | 语言 | 测量精度 | 统计分析 | 适用场景 |
 |------|------|---------|---------|---------|
@@ -1617,9 +1570,9 @@ Expect(err).NotTo(HaveOccurred())
 
 ---
 
-## 6. 常见陷阱与最佳实践
+## 5. 常见陷阱与最佳实践
 
-### 6.1 陷阱一:循环变量捕获(Go 1.21 及以下)
+### 5.1 陷阱一:循环变量捕获(Go 1.21 及以下)
 
 ```go
 // 陷阱(Go 1.21 及以下)
@@ -1648,7 +1601,7 @@ func TestLoopVarFix(t *testing.T) {
 }
 ```
 
-### 6.2 陷阱二:`t.Parallel` 与共享全局状态
+### 5.2 陷阱二:`t.Parallel` 与共享全局状态
 
 ```go
 // 陷阱:data race
@@ -1668,7 +1621,7 @@ func TestParallelSafe(t *testing.T) {
 }
 ```
 
-### 6.3 陷阱三:`time.Now()` 与 flaky test
+### 5.3 陷阱三:`time.Now()` 与 flaky test
 
 ```go
 // 陷阱:依赖时间精度
@@ -1710,7 +1663,7 @@ func NewUserWithClock(name, email string, age int, clock Clock) (*User, error) {
 }
 ```
 
-### 6.4 陷阱四:goroutine 泄漏
+### 5.4 陷阱四:goroutine 泄漏
 
 ```go
 // 陷阱:测试启动的 goroutine 未等待完成
@@ -1750,7 +1703,7 @@ func TestMain(m *testing.M) int {
 }
 ```
 
-### 6.5 陷阱五:Mock 过度耦合实现
+### 5.5 陷阱五:Mock 过度耦合实现
 
 ```go
 // 反模式:mock 内部实现细节
@@ -1767,7 +1720,7 @@ type Service struct {
 svc := NewService(new(MockRepo))
 ```
 
-### 6.6 陷阱六:基准测试未隔离环境
+### 5.6 陷阱六:基准测试未隔离环境
 
 ```go
 // 反模式:基准测试受 IO 影响
@@ -1789,7 +1742,7 @@ func BenchmarkFileReadInMem(b *testing.B) {
 }
 ```
 
-### 6.7 陷阱七:`b.ResetTimer` 位置错误
+### 5.7 陷阱七:`b.ResetTimer` 位置错误
 
 ```go
 // 反模式:ResetTimer 在循环内
@@ -1810,7 +1763,7 @@ func BenchmarkRight(b *testing.B) {
 }
 ```
 
-### 6.8 最佳实践清单
+### 5.8 最佳实践清单
 
 1. **优先表驱动测试**:可读性高、易扩展、易于并行化。
 2. **使用 `t.Helper` 标记辅助函数**:失败栈定位准确。
@@ -1830,9 +1783,9 @@ func BenchmarkRight(b *testing.B) {
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 CI 集成
+### 6.1 CI 集成
 
 `.github/workflows/test.yml`:
 
@@ -1896,7 +1849,7 @@ jobs:
             *.out
 ```
 
-### 7.2 Makefile 集成
+### 6.2 Makefile 集成
 
 ```makefile
 # Makefile
@@ -1948,7 +1901,7 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 ```
 
-### 7.3 benchstat 性能回归检测
+### 6.3 benchstat 性能回归检测
 
 ```bash
 # 1. 基线版本
@@ -1979,7 +1932,7 @@ NewUser-8           3.00 ± 0%      2.00 ± 0%  -33.33%  (p=0.000 n=10+10)
 
 `p < 0.05` 表示差异显著,`p > 0.05` 表示噪声内。
 
-### 7.4 pprof 与测试集成
+### 6.4 pprof 与测试集成
 
 ```go
 // pprof_test.go
@@ -2018,7 +1971,7 @@ func BenchmarkWithMemProfile(b *testing.B) {
 // go tool pprof -http=:8080 cpu.prof
 ```
 
-### 7.5 调试测试
+### 6.5 调试测试
 
 ```bash
 # 调试单个测试
@@ -2052,7 +2005,7 @@ go test -parallel 4
 go test -count=100 -run TestFlaky
 ```
 
-### 7.6 VS Code 调试配置
+### 6.6 VS Code 调试配置
 
 `.vscode/launch.json`:
 
@@ -2090,9 +2043,9 @@ go test -count=100 -run TestFlaky
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 Kubernetes 测试体系
+### 7.1 Kubernetes 测试体系
 
 Kubernetes 是全球最大的 Go 项目之一,其测试体系是业界标杆:
 
@@ -2129,7 +2082,7 @@ func TestUntil(t *testing.T) {
 }
 ```
 
-### 8.2 Docker 测试体系
+### 7.2 Docker 测试体系
 
 Docker(Moby)项目的测试特点:
 
@@ -2167,7 +2120,7 @@ func TestWithPostgres(t *testing.T) {
 }
 ```
 
-### 8.3 TiDB 测试体系
+### 7.3 TiDB 测试体系
 
 TiDB 是 PingCAP 开发的分布式 SQL 数据库,测试体系极具参考价值:
 
@@ -2202,7 +2155,7 @@ func TestCriticalPathWithFailure(t *testing.T) {
 }
 ```
 
-### 8.4 prometheus 测试体系
+### 7.4 prometheus 测试体系
 
 Prometheus 的测试特点:
 
@@ -2508,7 +2461,7 @@ func BenchmarkConcat(b *testing.B) {
 }
 ```
 
-### 9.4 思考题
+### 8.4 思考题
 
 **题目 1**:为什么 Go 团队坚持不将 `assert` 库纳入标准库?这种设计决策对生态有何影响?
 
@@ -2582,7 +2535,7 @@ func BenchmarkConcat(b *testing.B) {
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
 [1] Pike, R. (2012). Go at Google: Language Design in the Service of Software Engineering. *Proceedings of the 11th Asian Symposium on Programming Languages and Systems*, 1–19. https://doi.org/10.1007/978-3-642-35308-6_1
 
@@ -2616,9 +2569,9 @@ func BenchmarkConcat(b *testing.B) {
 
 ---
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 书籍
+### 10.1 书籍
 
 - Donovan, A. A., & Kernighan, B. W. (2015). *The Go Programming Language*. Addison-Wesley.
 - Cox-Buday, K. (2016). *Concurrency in Go*. O'Reilly Media.
@@ -2626,13 +2579,13 @@ func BenchmarkConcat(b *testing.B) {
 - Forsgren, N., Humble, J., & Kim, G. (2018). *Accelerate: The Science of Lean Software and DevOps*. IT Revolution Press.
 - Osherove, R. (2013). *The Art of Unit Testing: With Examples in C#* (2nd ed.). Manning Publications.(原则适用于所有语言)
 
-### 11.2 论文
+### 10.2 论文
 
 - Manabu, G., et al. (2022). "Native Fuzzing in Go 1.18." *Go Blog*.
 - Serebryany, K., et al. (2017). "OSS-Fuzz: Continuous Fuzzing for Open Source Software." *USENIX Security Symposium*.
 - Klees, G., et al. (2018). "Evaluating Fuzz Testing." *ACM SIGSAC Conference on Computer and Communications Security*. https://doi.org/10.1145/3243734.3243804
 
-### 11.3 在线资源
+### 10.3 在线资源
 
 - Go 官方测试文档:https://go.dev/pkg/testing/
 - Go Fuzzing 教程:https://go.dev/doc/fuzz/
@@ -2645,20 +2598,20 @@ func BenchmarkConcat(b *testing.B) {
 - Go 测试最佳实践:https://github.com/golang/go/wiki/TestComments
 - Dave Cheney 的测试博客:https://dave.cheney.net/tag/testing
 
-### 11.4 视频资源
+### 10.4 视频资源
 
 - GopherCon 2019: "Testing with Go" by Brad Fitzpatrick
 - GopherCon 2021: "Fuzzing in Go" by Katie Hockman
 - GopherCon 2022: "Practical Fuzzing" by Manabu Gutierrez
 - Google Testing Blog: https://testing.googleblog.com/
 
-### 11.5 相关标准
+### 10.5 相关标准
 
 - ISO/IEC/IEEE 29119-1:2022 Software and systems engineering — Software testing
 - ISO/IEC 25010:2011 Systems and software Quality Requirements and Evaluation (SQuaRE)
 - ISTQB Certified Tester Foundation Level Syllabus v4.0 (2023)
 
-### 11.6 工具一览
+### 10.6 工具一览
 
 | 工具 | 用途 | 链接 |
 |------|------|------|
@@ -2675,7 +2628,7 @@ func BenchmarkConcat(b *testing.B) {
 | `goc` | 覆盖率聚合 | github.com/qiniu/goc |
 | `gotestum` | 测试增强工具集 | gotest.tools |
 
-### 11.7 社区与论坛
+### 10.7 社区与论坛
 
 - Go 官方论坛:https://forum.golangbridge.org/
 - Reddit r/golang:https://www.reddit.com/r/golang/
@@ -2685,7 +2638,7 @@ func BenchmarkConcat(b *testing.B) {
 
 ---
 
-## 12. 总结
+## 11. 总结
 
 本篇系统阐述了 Go 单元测试与基准测试的完整知识体系:
 

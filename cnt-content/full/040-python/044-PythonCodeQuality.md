@@ -16,55 +16,14 @@ prerequisites:
   - python/语法速查
 ---
 
+
 # Python 与代码质量
 
 > 本文档对标 MIT 6.005 "Software Construction" 中 "Code Quality" 章节、Stanford CS106B "Programming Abstractions" 代码规范部分、CMU 17-313 "Foundations of Software Engineering" 质量保障模块的教学水准，系统讲解 Python 代码质量工具链的形式化定义、工程实践与最佳实践。
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章节学习后，你应当能够：
-
-### 1.1 记忆（Remember）
-
-- **R1**：列举 Python 代码质量的六个维度（可读性、可维护性、可测试性、可靠性、效率、安全性）。
-- **R2**：复述 Ruff、Black、mypy、pre-commit、isort、bandit 各自的职责定位。
-- **R3**：陈述 PEP 8 的核心规范（缩进、行长、命名、空行、import 顺序）。
-
-### 1.2 理解（Understand）
-
-- **U1**：解释静态分析（static analysis）与动态分析（dynamic analysis）的本质区别。
-- **U2**：阐述 Python 类型系统中的 nominal typing 与 structural typing、协变（covariance）与逆变（contravariance）。
-- **U3**：描述 AST（Abstract Syntax Tree）在 linter 工具链中的核心作用。
-
-### 1.3 应用（Apply）
-
-- **A1**：为一个现有 Python 项目配置完整的 Ruff + mypy + pre-commit 工具链。
-- **A2**：使用 pytest + coverage 编写覆盖率达 90%+ 的单元测试套件。
-- **A3**：使用 bandit 进行安全扫描并修复高危项。
-
-### 1.4 分析（Analyze）
-
-- **An1**：对比 Ruff 与 Pylint、Flake8 在性能、规则覆盖、配置体验上的差异。
-- **An2**：分析一段复杂类型注解，识别其中的协变/逆变误用。
-- **An3**：剖析一个 CI 流水线，定位代码质量瓶颈（lint 慢、type-check 失败、test 不稳定）。
-
-### 1.5 评价（Evaluate）
-
-- **E1**：在团队规范会议上，论证是否应采用 strict mypy 还是 gradual typing。
-- **E2**：评估引入 Ruff 替代 Black + isort + Flake8 的迁移成本与收益。
-- **E3**：评判"100% 覆盖率"作为团队 KPI 的合理性与潜在副作用。
-
-### 1.6 创造（Create）
-
-- **C1**：设计一个支持 monorepo 多包的代码质量基线方案，统一规则与例外。
-- **C2**：实现一个自定义 Ruff 插件，检测项目特定的反模式（如直接调用 `print`）。
-- **C3**：构建一个 GitHub Actions 全流程流水线，集成 lint、type-check、test、security、coverage、文档生成。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 早期：PEP 8 与手工规范（2001–2010）
+### 1.1 早期：PEP 8 与手工规范（2001–2010）
 
 Python 代码质量文化始于 2001 年 Guido van Rossum 撰写的 **PEP 8 "Style Guide for Python Code"**。在静态分析工具尚未成熟的年代，PEP 8 主要依赖人工 review 与团队约定执行。这一时期的工具包括：
 
@@ -72,25 +31,25 @@ Python 代码质量文化始于 2001 年 Guido van Rossum 撰写的 **PEP 8 "Sty
 - **pep8.py**（2006，Johann C. Rocholl）：纯 PEP 8 检查器，后更名为 **pycodestyle**。
 - **Pyflakes**（2005，Phil Frost）：检测未使用 import、未定义变量等逻辑错误，速度快但不检查风格。
 
-### 2.2 整合期：Flake8 与 Black（2012–2019）
+### 1.2 整合期：Flake8 与 Black（2012–2019）
 
 2012 年 **Flake8** 由 Tarek Ziade 创建，将 pycodestyle、Pyflakes、mccabe（复杂度检查）三合一，配合丰富的插件生态（flake8-bugbear、flake8-comprehensions 等）成为事实标准。
 
 2018 年 **Black** 由 Łukasz Langa（Python 核心开发者）在 PSF 资助下发布，引发"不妥协的代码格式化"（uncompromising code formatter）革命。Black 的核心理念：**所有可接受的代码风格中，只保留一种**，从而消除 review 中关于格式的争论。Black 借鉴了 gofmt 的设计哲学，使 Python 首次拥有了"零配置格式化"工具。
 
-### 2.3 类型系统：mypy 与类型注解（2014–）
+### 1.3 类型系统：mypy 与类型注解（2014–）
 
 PEP 484（2014，Guido van Rossum 等）引入 **type hints**，使 Python 拥有可选的静态类型系统。**mypy**（最初由 Jukka Lehtosalo 在 Aalto 大学开发，用于检查类似 Python 的 Alore 语言）被改造为 Python 类型检查器，成为类型生态的基石。
 
 2018 年 Microsoft 发布 **pyright**（用 TypeScript 编写，集成于 VS Code），性能优于 mypy。Google 发布 **pytype**，通过推断为无类型代码提供类型。三者形成竞争格局，PEP 484 作为通用协议。
 
-### 2.4 现代化：Ruff 与 pre-commit（2022–）
+### 1.4 现代化：Ruff 与 pre-commit（2022–）
 
 2022 年 8 月 **Ruff** 由 Astral 公司（Charlie Marsh 创立）首发。Ruff 用 Rust 实现，**比 Flake8 快 10-100 倍**，且集成了 isort、pyupgrade、flake8-bugbear 等 50+ 工具的功能。Ruff 的出现标志着 Python 工具链进入"统一极速"时代。
 
 **pre-commit**（2014，Anthony Sottile）则解决了工具链的"落地"问题——通过 Git hook 在 commit 前自动运行 lint/format/test，使规范从"文档约定"变为"机器强制"。
 
-### 2.5 设计哲学演进
+### 1.5 设计哲学演进
 
 Python 代码质量工具链的设计哲学经历了三次跃迁：
 
@@ -106,9 +65,9 @@ Guido van Rossum 在 2023 年 PyCon 演讲中提到：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 代码质量的六维模型
+### 2.1 代码质量的六维模型
 
 形式化地，代码质量 $Q$ 可建模为多维向量：
 
@@ -125,7 +84,7 @@ $$
 - $E$（Efficiency）：效率，量化指标包括 Big-O 复杂度、内存峰值、p99 延迟。
 - $S$（Security）：安全性，量化指标包括 CVE 数、OWASP Top 10 命中数。
 
-### 3.2 AST 的形式化定义
+### 2.2 AST 的形式化定义
 
 Python 代码经 `ast.parse()` 解析后得到 AST。形式化地，AST 是满足以下文法的树：
 
@@ -146,7 +105,7 @@ $$
 \text{UnusedImport}(i) \iff i \in \text{Imports}(\text{root}) \land i \notin \text{NameUses}(\text{root})
 $$
 
-### 3.3 类型系统的形式化
+### 2.3 类型系统的形式化
 
 Python 类型系统基于 **Hindley-Milner** 的简化变体。类型判断记为：
 
@@ -156,19 +115,19 @@ $$
 
 读作"在类型环境 $\Gamma$ 下，表达式 $e$ 具有类型 $\tau$"。基本规则：
 
-#### 3.3.1 变量规则
+#### 2.3.1 变量规则
 
 $$
 \frac{(x, \tau) \in \Gamma}{\Gamma \vdash x : \tau} \text{(Var)}
 $$
 
-#### 3.3.2 函数应用规则
+#### 2.3.2 函数应用规则
 
 $$
 \frac{\Gamma \vdash f : \tau_1 \to \tau_2 \quad \Gamma \vdash x : \tau_1}{\Gamma \vdash f(x) : \tau_2} \text{(App)}
 $$
 
-#### 3.3.3 子类型规则
+#### 2.3.3 子类型规则
 
 Python 类型系统支持子类型（subtyping）：`Dog` 是 `Animal` 的子类型（$\text{Dog} \leq \text{Animal}$）。函数参数类型逆变，返回类型协变：
 
@@ -176,7 +135,7 @@ $$
 \frac{\tau_1' \leq \tau_1 \quad \tau_2 \leq \tau_2'}{\tau_1 \to \tau_2 \leq \tau_1' \to \tau_2'} \text{(Sub-Fun)}
 $$
 
-### 3.4 圈复杂度
+### 2.4 圈复杂度
 
 McCabe 圈复杂度（cyclomatic complexity）$V(G)$ 定义为控制流图 $G$ 的圈数：
 
@@ -199,7 +158,7 @@ $$
 - $10 < V \leq 20$：复杂，应重构
 - $V > 20$：高风险，必须拆分
 
-### 3.5 测试覆盖率的形式化
+### 2.5 测试覆盖率的形式化
 
 分支覆盖率 $C_b$ 定义为：
 
@@ -217,9 +176,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 Ruff 的性能优势：Rust + 单次遍历
+### 3.1 Ruff 的性能优势：Rust + 单次遍历
 
 Flake8 基于 Python 实现的 AST 遍历，每个规则单独遍历 AST，复杂度：
 
@@ -245,7 +204,7 @@ $$
 
 Ruff 比 Flake8 快约 70 倍，比 Pylint 快约 530 倍。
 
-### 4.2 Black 的格式化算法
+### 3.2 Black 的格式化算法
 
 Black 不基于规则配置，而是基于**确定性算法**。核心算法：
 
@@ -259,7 +218,7 @@ Black 不基于规则配置，而是基于**确定性算法**。核心算法：
 - **字符串规范化**：双引号优先（`"hello"` 而非 `'hello'`），除非字符串内含双引号。
 - **括号策略**：函数调用参数超长时，每个参数独占一行，末尾强制逗号。
 
-#### 4.2.1 魔法尾逗号的数学性质
+#### 3.2.1 魔法尾逗号的数学性质
 
 Black 的尾逗号策略等价于以下规则：若原代码在某位置存在尾逗号，则格式化后**强制在该位置换行**。形式化地：
 
@@ -269,7 +228,7 @@ $$
 
 这一规则赋予开发者通过添加尾逗号"提示"Black 拆分位置的权力，是 Black"不妥协"哲学中唯一的"妥协点"。
 
-### 4.3 mypy 的类型推断算法
+### 3.3 mypy 的类型推断算法
 
 mypy 使用**双向类型推断**（bidirectional type inference），结合：
 
@@ -285,7 +244,7 @@ def f(x: int) -> str:
                    # 一致：通过
 ```
 
-#### 4.3.1 渐进式类型系统
+#### 3.3.1 渐进式类型系统
 
 PEP 484 定义 `Any` 类型与 `Unknown` 类型，使 Python 类型系统成为**渐进式**（gradual）系统。形式化地，`Any` 满足：
 
@@ -295,7 +254,7 @@ $$
 
 即 `Any` 是类型格的顶元素与底元素的合一。这使得"无类型代码"与"有类型代码"可互操作，是渐进迁移的技术基础。
 
-### 4.4 静态分析的可判定性
+### 3.4 静态分析的可判定性
 
 由 Rice 定理（Rice's Theorem），任何非平凡的程序语义性质都是不可判定的。这意味着 linter 与类型检查器只能给出**保守近似**：
 
@@ -304,7 +263,7 @@ $$
 
 mypy 选择 **sound but incomplete**（可靠但不完备），即不会漏报真实类型错误，但可能误报（需 `# type: ignore` 抑制）。
 
-### 4.5 测试金字塔与覆盖率边际效用
+### 3.5 测试金字塔与覆盖率边际效用
 
 测试金字塔（Test Pyramid）建议：
 
@@ -328,9 +287,9 @@ $$
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 项目结构
+### 4.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -360,7 +319,7 @@ flowchart TD
     T10 --> T14
 ```
 
-### 5.2 pyproject.toml（完整配置）
+### 4.2 pyproject.toml（完整配置）
 
 ```toml
 [project]
@@ -524,7 +483,7 @@ skips = ["B101"]  # 跳过 assert 检查
 tests = ["B201", "B301", "B501"]
 ```
 
-### 5.3 .pre-commit-config.yaml
+### 4.3 .pre-commit-config.yaml
 
 ```yaml
 # pre-commit 配置：在 git commit 前自动运行质量检查
@@ -585,7 +544,7 @@ repos:
         additional_dependencies: [tomli]
 ```
 
-### 5.4 业务代码示例（Python 3.12）
+### 4.4 业务代码示例（Python 3.12）
 
 ```python
 """
@@ -802,7 +761,7 @@ if __name__ == "__main__":  # pragma: no cover
         sys.exit(1)
 ```
 
-### 5.5 测试代码（Python 3.12）
+### 4.5 测试代码（Python 3.12）
 
 ```python
 """
@@ -911,7 +870,7 @@ class TestPropertyBased:
         assert calculate(f"{n} + 0") == float(n)
 ```
 
-### 5.6 GitHub Actions 流水线（Python 3.12）
+### 4.6 GitHub Actions 流水线（Python 3.12）
 
 ```yaml
 # .github/workflows/quality.yml
@@ -1002,9 +961,9 @@ jobs:
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Linter 工具对比
+### 5.1 Linter 工具对比
 
 | 工具 | 实现语言 | 速度（10万行） | 规则数 | 自动修复 | 配置复杂度 | 推荐场景 |
 | ---- | -------- | -------------- | ------ | -------- | ---------- | -------- |
@@ -1013,7 +972,7 @@ jobs:
 | Pylint | Python | 95s | 400+ | 部分 | 高 | 深度分析 |
 | Pyflakes | Python | 3s | 30 | 不支持 | 极低 | CI 快速检查 |
 
-### 6.2 Formatter 工具对比
+### 5.2 Formatter 工具对比
 
 | 工具 | 风格 | 配置项 | 字符串处理 | 行长 | 默认引号 | 推荐 |
 | ---- | ---- | ------ | ---------- | ---- | -------- | ---- |
@@ -1023,7 +982,7 @@ jobs:
 | YAPF | Google | 多 | 保留原样 | 80 | 保留 | Google 风格 |
 | isort | 仅 import | 中 | N/A | N/A | N/A | 已被 Ruff 替代 |
 
-### 6.3 类型检查器对比
+### 5.3 类型检查器对比
 
 | 工具 | 实现语言 | 速度 | 严格度 | 推断能力 | 编辑器集成 | 推荐 |
 | ---- | -------- | ---- | ------ | -------- | ---------- | ---- |
@@ -1032,7 +991,7 @@ jobs:
 | pytype | Python | 中 | 中 | 极强（推断无类型代码） | 一般 | Google 生态 |
 | Pyre | OCaml | 极快 | 高 | 中 | 良好 | Meta 生态 |
 
-### 6.4 与其他语言工具链对比
+### 5.4 与其他语言工具链对比
 
 | 维度 | Python | JavaScript | Rust | Go | Java |
 | ---- | ------ | ---------- | ---- | -- | ---- |
@@ -1047,9 +1006,9 @@ Python 工具链的特点是**生态多元但分散**，需要 `pyproject.toml` 
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：`# type: ignore` 滥用
+### 6.1 陷阱 1：`# type: ignore` 滥用
 
 ```python
 # 错误：无注释的 type: ignore
@@ -1064,7 +1023,7 @@ def f(x: int) -> int:
     return x + 1  # type: ignore[no-any-return]  # 第三方库返回 Any
 ```
 
-### 7.2 陷阱 2：mutable default 参数
+### 6.2 陷阱 2：mutable default 参数
 
 ```python
 # 错误
@@ -1085,7 +1044,7 @@ def f(items: list[int] | None = None) -> list[int]:
     return items
 ```
 
-### 7.3 陷阱 3：bare except 捕获所有异常
+### 6.3 陷阱 3：bare except 捕获所有异常
 
 ```python
 # 错误
@@ -1104,7 +1063,7 @@ except (ValueError, KeyError) as exc:
     logger.warning("specific error: %s", exc)
 ```
 
-### 7.4 陷阱 4：测试中的"测试实现细节"
+### 6.4 陷阱 4：测试中的"测试实现细节"
 
 ```python
 # 错误：测试私有方法
@@ -1115,7 +1074,7 @@ def test_private_method(self):
 
 **正确**：测试公共接口的行为。
 
-### 7.5 陷阱 5：覆盖率陷阱
+### 6.5 陷阱 5：覆盖率陷阱
 
 ```python
 # 错误：为覆盖率写无意义测试
@@ -1129,7 +1088,7 @@ def test_branch():
 
 100% 覆盖率不等于高质量测试。应关注**有意义的分支**与**边界条件**。
 
-### 7.6 陷阱 6：pre-commit 阻塞开发
+### 6.6 陷阱 6：pre-commit 阻塞开发
 
 ```yaml
 # 错误：所有 hook 都使用 verbose 输出 + 不跳过
@@ -1140,7 +1099,7 @@ def test_branch():
 
 开发者频繁 commit 时被慢 hook 拖累。**正确**：分阶段（fast hook 本地，slow hook 仅 CI）。
 
-### 7.7 最佳实践清单
+### 6.7 最佳实践清单
 
 1. **新项目首选 Ruff**：替代 Flake8 + isort + Black + pyupgrade。
 2. **类型注解从公共 API 开始**：先注解 `__init__.py` 导出的函数/类，再扩展到内部。
@@ -1155,9 +1114,9 @@ def test_branch():
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 渐进式引入类型注解
+### 7.1 渐进式引入类型注解
 
 对遗留项目，建议分阶段迁移：
 
@@ -1182,7 +1141,7 @@ strict = true
 strict = true
 ```
 
-### 8.2 monorepo 多包配置
+### 7.2 monorepo 多包配置
 
 ```mermaid
 flowchart TD
@@ -1203,7 +1162,7 @@ flowchart TD
 
 根 `pyproject.toml` 定义基线，子包通过 `extends` 覆盖（PEP 621 + uv workspace）。
 
-### 8.3 自定义 Ruff 规则
+### 7.3 自定义 Ruff 规则
 
 Ruff 支持 Python 编写自定义规则（通过 `ruff_python_ast`）：
 
@@ -1230,16 +1189,16 @@ class DisallowPrint(Rule):
         )
 ```
 
-### 8.4 测试覆盖率提升技巧
+### 7.4 测试覆盖率提升技巧
 
-#### 8.4.1 识别未覆盖分支
+#### 7.4.1 识别未覆盖分支
 
 ```bash
 pytest --cov=quality_demo --cov-report=html
 open htmlcov/index.html  # 在浏览器查看
 ```
 
-#### 8.4.2 使用 `pragma: no cover` 排除无法测试的代码
+#### 7.4.2 使用 `pragma: no cover` 排除无法测试的代码
 
 ```python
 if sys.platform == "win32":  # pragma: no cover
@@ -1247,16 +1206,16 @@ if sys.platform == "win32":  # pragma: no cover
     do_windows_specific_thing()
 ```
 
-#### 8.4.3 分支覆盖率优于行覆盖率
+#### 7.4.3 分支覆盖率优于行覆盖率
 
 ```toml
 [tool.coverage.run]
 branch = true  # 启用分支覆盖率
 ```
 
-### 8.5 安全扫描深度实践
+### 7.5 安全扫描深度实践
 
-#### 8.5.1 bandit 规则详解
+#### 7.5.1 bandit 规则详解
 
 ```bash
 # 扫描并生成 JSON 报告
@@ -1275,7 +1234,7 @@ bandit -r src/ -lll  # medium severity 以上
 - **B602**：subprocess shell=True（命令注入）
 - **B608**：SQL 字符串拼接（SQL 注入）
 
-#### 8.5.2 自定义忽略
+#### 7.5.2 自定义忽略
 
 ```python
 # 在代码中局部忽略
@@ -1283,9 +1242,9 @@ import subprocess
 subprocess.run(["ls", "-l"])  # nosec B603 - 参数已硬编码
 ```
 
-### 8.6 性能优化
+### 7.6 性能优化
 
-#### 8.6.1 mypy 增量检查
+#### 7.6.1 mypy 增量检查
 
 ```bash
 # 启用缓存
@@ -1295,7 +1254,7 @@ mypy --cache-dir=.mypy_cache src/
 dmypy run -- src/
 ```
 
-#### 8.6.2 pytest 并行化
+#### 7.6.2 pytest 并行化
 
 ```bash
 # 多进程并行（CPU 密集测试）
@@ -1306,7 +1265,7 @@ pytest -n 4     # 使用 4 个进程
 pytest -n auto --dist=loadgroup  # 按 xdist_group 标记分发
 ```
 
-#### 8.6.3 Ruff 缓存
+#### 7.6.3 Ruff 缓存
 
 Ruff 自动缓存结果，重复运行秒级返回。若发现慢，检查是否禁用了缓存：
 
@@ -1315,23 +1274,23 @@ ruff check . --no-cache  # 慢
 ruff check .             # 快（有缓存）
 ```
 
-### 8.7 调试技巧
+### 7.7 调试技巧
 
-#### 8.7.1 查看 Ruff 应用的规则
+#### 7.7.1 查看 Ruff 应用的规则
 
 ```bash
 ruff check . --explain UP031  # 查看 UP031 规则详情
 ruff check . --fix  # 自动修复
 ```
 
-#### 8.7.2 mypy 错误定位
+#### 7.7.2 mypy 错误定位
 
 ```bash
 mypy --show-error-codes src/  # 显示错误代码
 mypy --show-traceback src/    # 显示 traceback（调试 mypy 自身）
 ```
 
-#### 8.7.3 pre-commit 局部运行
+#### 7.7.3 pre-commit 局部运行
 
 ```bash
 pre-commit run --files src/calculator.py  # 仅检查指定文件
@@ -1341,9 +1300,9 @@ SKIP=mypy git commit -m "msg"              # 跳过 mypy hook
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Instagram：在遗留代码中渐进引入类型
+### 8.1 Instagram：在遗留代码中渐进引入类型
 
 Instagram 后端使用 Django + Python，代码库超过 1000 万行。2016 年起开始引入 mypy，策略：
 
@@ -1354,7 +1313,7 @@ Instagram 后端使用 Django + Python，代码库超过 1000 万行。2016 年�
 
 关键数据：类型注解使代码缺陷率降低 15%，重构速度提升 30%（PyCon 2017 报告）。
 
-### 9.2 Dropbox：mypy 的大规模部署
+### 8.2 Dropbox：mypy 的大规模部署
 
 Dropbox 是 mypy 的早期采用者（Guido van Rossum 在 Dropbox 期间推动）。其 mypy 部署规模：
 
@@ -1369,7 +1328,7 @@ Dropbox 是 mypy 的早期采用者（Guido van Rossum 在 Dropbox 期间推动�
 - **类型注解应作为代码 review 的一部分**。
 - **mypy 错误信息应清晰可执行**：Dropbox 贡献了大量错误信息改进。
 
-### 9.3 FastAPI：类型驱动的现代框架
+### 8.3 FastAPI：类型驱动的现代框架
 
 FastAPI 由 Sebastián Ramírez 于 2018 年创建，**完全基于类型注解**构建：
 
@@ -1397,7 +1356,7 @@ async def create_item(item: Item) -> dict:
 
 这是**类型驱动开发**（Type-Driven Development）的典范。
 
-### 9.4 CPython 自身的工具链迁移
+### 8.4 CPython 自身的工具链迁移
 
 CPython 代码库自 2022 年起开始用 Ruff 替代 Flake8 + isort：
 
@@ -1405,7 +1364,7 @@ CPython 代码库自 2022 年起开始用 Ruff 替代 Flake8 + isort：
 - 配置：从 `.flake8` + `setup.cfg` + `isort.cfg` 三文件合并到 `pyproject.toml`。
 - 规则：启用 Ruff 的 `UP`（pyupgrade）规则，自动将 `Optional[X]` 改为 `X | None`。
 
-### 9.5 Django 项目的代码质量基线
+### 8.5 Django 项目的代码质量基线
 
 Django 项目典型配置：
 
@@ -1609,7 +1568,7 @@ repos:
         pass_filenames: true
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 9**：你接手一个 5 万行的 Python 遗留项目，无类型注解、无测试、无 lint 配置。请设计一个 6 个月的代码质量提升路线图，包含里程碑与可量化指标。
 
@@ -1652,7 +1611,7 @@ def test_add():
 
 ---
 
-## 11. 工具链选型决策树
+## 10. 工具链选型决策树
 
 ```mermaid
 flowchart TD
@@ -1693,7 +1652,7 @@ flowchart TD
 
 ---
 
-## 12. 参考文献
+## 11. 参考文献
 
 [1] Van Rossum, G., Warsaw, B., and Coghlan, N. 2001. *PEP 8: Style Guide for Python Code*. https://peps.python.org/pep-0008/
 
@@ -1729,9 +1688,9 @@ flowchart TD
 
 ---
 
-## 13. 延伸阅读
+## 12. 延伸阅读
 
-### 13.1 书籍
+### 12.1 书籍
 
 - **《Clean Code in Python》**（Mariano Anaya, 2nd ed., 2022, Packt）：Python 代码质量实战指南。
 - **《Robust Python》**（Patrick Viafore, 2021, O'Reilly）：类型注解与健壮性设计。
@@ -1739,13 +1698,13 @@ flowchart TD
 - **《Refactoring: Improving the Design of Existing Code》**（Martin Fowler, 2nd ed., 2018, Addison-Wesley）：重构圣经。
 - **《Test-Driven Development: By Example》**（Kent Beck, 2002, Addison-Wesley）：TDD 经典。
 
-### 13.2 论文与技术报告
+### 12.2 论文与技术报告
 
 - **O'Callaghan, M.** "Static Analysis at Scale: Instagram's Type Checking Journey." *IEEE Software* 35, 4 (2018), 76–82.
 - **Ayewah, N. et al.** "Using Static Analysis to Find Bugs." *IEEE Software* 25, 5 (2008), 22–29.
 - **Padioleau, Y. et al.** "Learning Natural Coding Style for Linting." *ICSE '22*.
 
-### 13.3 在线资源
+### 12.3 在线资源
 
 - **官方文档**：
   - Ruff — https://docs.astral.sh/ruff/
@@ -1765,7 +1724,7 @@ flowchart TD
   - `pydantic/pydantic` — 类型校验库
   - `astral-sh/uv` — Ruff 同公司产品
 
-### 13.4 进阶路线图
+### 12.4 进阶路线图
 
 ```mermaid
 flowchart TD
@@ -1784,9 +1743,9 @@ flowchart TD
 
 ---
 
-## 14. 附录
+## 13. 附录
 
-### 14.1 Ruff 规则集速查
+### 13.1 Ruff 规则集速查
 
 | 前缀 | 来源 | 说明 |
 | ---- | ---- | ---- |
@@ -1803,7 +1762,7 @@ flowchart TD
 | PT | flake8-pytest-style | pytest 风格 |
 | RUF | Ruff 自有 | Ruff 特有规则 |
 
-### 14.2 mypy 严格度配置矩阵
+### 13.2 mypy 严格度配置矩阵
 
 | 选项 | 默认 | strict | 含义 |
 | ---- | ---- | ------ | ---- |
@@ -1817,7 +1776,7 @@ flowchart TD
 | `strict_equality` | False | True | 严格等价比较 |
 | `extra_checks` | False | True | 启用实验性检查 |
 
-### 14.3 pytest 常用命令速查
+### 13.3 pytest 常用命令速查
 
 ```bash
 # 运行所有测试
@@ -1848,7 +1807,7 @@ pytest --cov=quality_demo --cov-report=html
 pytest --durations=10
 ```
 
-### 14.4 常见 mypy 错误代码
+### 13.4 常见 mypy 错误代码
 
 | 错误代码 | 含义 | 解决方法 |
 | -------- | ---- | -------- |
@@ -1860,9 +1819,9 @@ pytest --durations=10
 | `no-any-return` | 返回 Any | 显式 cast 或修正返回类型 |
 | `unused-ignore` | type: ignore 多余 | 删除该注释 |
 
-### 14.5 团队规范模板
+### 13.5 团队规范模板
 
-#### 14.5.1 代码 review checklist
+#### 13.5.1 代码 review checklist
 
 ```
 [ ] 类型注解完整且正确
@@ -1877,7 +1836,7 @@ pytest --durations=10
 [ ] 单文件不超过 500 行
 ```
 
-#### 14.5.2 提交规范（Conventional Commits）
+#### 13.5.2 提交规范（Conventional Commits）
 
 ```
 <type>(<scope>): <subject>

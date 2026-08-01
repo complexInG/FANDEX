@@ -31,88 +31,16 @@ tags:
   - Redis
 ---
 
+
 # Spring Boot 数据访问深度指南
 
 > 数据访问是企业级应用的核心。Spring Boot 在数据访问层提供了从底层 JDBC 到高层 ORM 的完整栈：JdbcTemplate 简化原生 JDBC 编码；Spring Data JPA 通过方法名派生查询实现"零 SQL"开发；MyBatis 在保留 SQL 控制力的同时消除样板代码；R2DBC 与响应式栈适配高并发非阻塞场景；事务管理、连接池、缓存、多数据源等横切关注点被统一抽象。本文将以"数据访问的层次模型"为骨架，从 JDBC 起步，逐层向上剖析 JPA、MyBatis、R2DBC 的内部机制，覆盖事务传播、N+1 问题、批量优化、缓存一致性等工程关键问题，让读者既能编写高效的数据访问代码，也能理解主流框架的设计取舍。
 
 ---
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节以 Bloom 教育目标分类法（Anderson 2001 修订版）为框架，对学习目标进行显式分级。
-
-### 1.1 认知层级目标
-
-| 层级（Level） | 行为动词 | 具体学习目标 |
-|--------------|---------|-------------|
-| 记忆（Remember） | 列举、识别、定义 | 列举 Spring Data 的核心抽象（Repository、CrudRepository、JpaRepository），识别 JPA 实体生命周期状态，定义事务的 ACID 性质 |
-| 理解（Understand） | 解释、归纳、对比 | 解释 Hibernate 的脏检查机制，对比 JPA 与 MyBatis 的 SQL 控制粒度，归纳事务传播行为的 7 种类型 |
-| 应用（Apply） | 实现、使用、演示 | 使用方法名派生查询实现 Repository，使用 @Transactional 控制事务边界，使用 Specification 实现动态查询 |
-| 分析（Analyze） | 分解、辨别、推断 | 分解 Hibernate Session 的 flush 时机，推断 N+1 问题的触发条件，辨别 eager 与 lazy 加载的性能影响 |
-| 评价（Evaluate） | 评判、论证、批判 | 评判 JPA 的"魔法"对可维护性的影响，论证 HikariCP 的连接池参数选择，批判过度使用 @OneToMany 导致的内存爆炸 |
-| 创造（Create） | 设计、构建、重构 | 设计支持多租户的多数据源架构，构建 JPA + MyBatis 混合方案，重构遗留 JDBC 代码为 Spring Data 风格 |
-
-### 1.2 学习成果自检清单
-
-完成本章学习后，读者应能独立完成以下任务：
-
-1. 在不查阅文档的前提下，画出 Spring Data 的 Repository 继承层次。
-2. 用一句话向同事解释 Hibernate 的一级缓存与二级缓存的区别。
-3. 在白板上写出 `@Transactional` 的传播行为与隔离级别枚举。
-4. 实现一个支持动态查询、分页、排序的复杂 Repository。
-5. 对比 JPA、MyBatis、JdbcTemplate、R2DBC 的性能、灵活性、可维护性。
-6. 设计一个支持读写分离的多数据源架构，并解决事务跨库问题。
-
-### 1.3 前置知识地图
-
-```mermaid
-flowchart TD
-    T0["Java 基础"]
-    T1["面向对象（封装、继承、多态）"]
-    T2["集合框架（List、Map、Set）"]
-    T3["异常处理"]
-    T4["JDBC 基础（Connection、Statement、ResultSet）"]
-    T5["Spring 基础（本章前置）"]
-    T6["IoC 容器（Bean、依赖注入）"]
-    T7["AOP（切面、代理）"]
-    T8["配置（@Configuration、@Component）"]
-    T9["事务抽象（PlatformTransactionManager）"]
-    T10["Spring Boot 数据访问（本章）"]
-    T11["底层：JDBC（JdbcTemplate、SimpleJdbcInsert）"]
-    T12["ORM：JPA / Hibernate（实体、Repository、JPQL、Criteria）"]
-    T13["SQL Mapper：MyBatis（@Mapper、XML、动态 SQL）"]
-    T14["响应式：R2DBC（Reactive Repository）"]
-    T15["横切：事务、连接池（HikariCP）、缓存（Redis）"]
-    T16["工程实践：多数据源、读写分离、分库分表、批量优化"]
-    T0 --> T1
-    T0 --> T2
-    T0 --> T3
-    T0 --> T4
-    T4 --> T5
-    T5 --> T6
-    T5 --> T7
-    T5 --> T8
-    T5 --> T9
-    T9 --> T10
-    T10 --> T11
-    T10 --> T12
-    T10 --> T13
-    T10 --> T14
-    T10 --> T15
-    T10 --> T16
-```
-
-### 1.4 章节阅读建议
-
-- **零基础读者**：建议按顺序阅读第 2-5 节，配合第 5 节代码示例上机实操，先理解 JDBC 再学习 JPA。
-- **有 Spring 经验的工程师**：可跳过第 2 节基础部分，直接阅读第 3 节 JPA 内部机制、第 4 节事务、第 7 节反模式。
-- **架构师**：重点关注第 6 节对比分析、第 8 节工程实践与第 9 节案例研究，特别是多数据源与读写分离设计。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 数据访问的演化史
+### 1.1 数据访问的演化史
 
 Java 数据访问经历了从"裸 JDBC"到"声明式 ORM"的漫长演化：
 
@@ -140,7 +68,7 @@ Java 数据访问经历了从"裸 JDBC"到"声明式 ORM"的漫长演化：
 - Spring Data R2DBC：响应式 Repository 抽象。
 - 虚拟线程（Java 21, 2023）：JDBC + 虚拟线程重新成为高并发选项。
 
-### 2.2 Spring Data 的设计哲学
+### 1.2 Spring Data 的设计哲学
 
 Spring Data 项目的核心设计哲学：
 
@@ -150,7 +78,7 @@ Spring Data 项目的核心设计哲学：
 4. **多存储统一**：JPA、MongoDB、Redis、Elasticsearch 共享同一套 Repository 抽象。
 5. **与 Spring 生态深度集成**：事务、缓存、AOP、配置中心无缝衔接。
 
-### 2.3 关键版本时间线
+### 1.3 关键版本时间线
 
 | 版本/年份 | 关键变化 |
 |----------|---------|
@@ -170,7 +98,7 @@ Spring Data 项目的核心设计哲学：
 | Spring Boot 3.2（2023） | 虚拟线程支持，JDBC 高并发回归 |
 | Spring Boot 3.3（2024） | JPA Batch Size 改进、CRUD Repository 重构 |
 
-### 2.4 设计哲学：抽象与控制的平衡
+### 1.4 设计哲学：抽象与控制的平衡
 
 数据访问的核心矛盾是 **抽象程度** 与 **SQL 控制力** 的权衡：
 
@@ -207,9 +135,9 @@ flowchart TD
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 实体生命周期状态机
+### 2.1 实体生命周期状态机
 
 JPA 实体有 4 种生命周期状态：
 
@@ -237,7 +165,7 @@ $$\text{Removed} \xrightarrow{\text{flush}} \text{Deleted (from DB)}$$
 - `refresh(entity)`：用数据库值覆盖内存值（Managed 状态下）
 - `flush()`：将脏检查的差异同步到数据库（不提交事务）
 
-### 3.2 事务 ACID 性质的形式化定义
+### 2.2 事务 ACID 性质的形式化定义
 
 事务的 ACID 性质：
 
@@ -253,7 +181,7 @@ $$\text{Removed} \xrightarrow{\text{flush}} \text{Deleted (from DB)}$$
 4. **持久性（Durability）**：事务提交后即使系统崩溃也不丢失。
    $$\text{Durable}(T) = \text{commit}(T) \implies \text{persisted}(T) \text{ even after crash}$$
 
-### 3.3 事务传播行为的形式化定义
+### 2.3 事务传播行为的形式化定义
 
 Spring 定义了 7 种事务传播行为：
 
@@ -273,7 +201,7 @@ $$\text{propagate}(\text{REQUIRED}, T_{cur}) = T_{cur} \text{ if exists else new
 $$\text{propagate}(\text{REQUIRES\_NEW}, T_{cur}) = \text{suspend}(T_{cur}) + T_{new}$$
 $$\text{propagate}(\text{NESTED}, T_{cur}) = T_{cur} + \text{savepoint}()$$
 
-### 3.4 隔离级别的形式化定义
+### 2.4 隔离级别的形式化定义
 
 SQL 标准定义了 4 种隔离级别（由弱到强）：
 
@@ -295,7 +223,7 @@ SQL 标准定义了 4 种隔离级别（由弱到强）：
 3. **幻读（Phantom Read）**：T1 两次范围查询得到不同行数（T2 在中间插入/删除）。
    $$\text{PhantomRead}(T_1, T_2) = |\text{range}(T_1.\text{read})| \neq |\text{range}(T_1.\text{read})| \text{ due to } T_2.\text{insert/delete}$$
 
-### 3.5 JPA Proxy 的形式化语义
+### 2.5 JPA Proxy 的形式化语义
 
 JPA 的 `@OneToMany` 默认 lazy 加载，返回的是代理对象。形式化地：
 
@@ -312,9 +240,9 @@ $$\text{trigger}(E.\text{field}) = \neg\text{initialized}(E) \land \text{access}
 
 ---
 
-## 4. 理论推导：JPA 内部机制
+## 3. 理论推导：JPA 内部机制
 
-### 4.1 PersistenceContext 与 Session
+### 3.1 PersistenceContext 与 Session
 
 Hibernate 的 `Session`（JPA 的 `EntityManager`）维护一个 **PersistenceContext**，它是：
 
@@ -339,7 +267,7 @@ em.getTransaction().commit();          // flush + commit
 - **修改自动同步**：无需调用 `update()`，flush 时自动生成 UPDATE。
 - **持久化上下文生命周期**：默认与事务绑定（事务提交后清空），也可用 `EXTENDED` 跨事务。
 
-### 4.2 脏检查机制
+### 3.2 脏检查机制
 
 Hibernate 脏检查的核心算法：
 
@@ -371,7 +299,7 @@ class PersistenceContext {
 - `@DynamicUpdate`：只更新变化的字段（默认更新所有字段）。
 - `@SelectBeforeUpdate`：仅在 select 后比较（用于 detached 实体 merge 时判断是否变化）。
 
-### 4.3 flush 时机
+### 3.3 flush 时机
 
 Hibernate 在以下时机 flush：
 
@@ -384,7 +312,7 @@ Hibernate 在以下时机 flush：
 - `AUTO`（默认）：查询前 flush（保证查询结果反映内存修改）。
 - `COMMIT`：仅在 commit 时 flush（查询可能读到旧值，性能更好但语义复杂）。
 
-### 4.4 N+1 问题的根因
+### 3.4 N+1 问题的根因
 
 N+1 问题是 JPA 最经典的性能陷阱：
 
@@ -422,7 +350,7 @@ for (Order order : orders) {
 
 4. **FetchType.EAGER**（不推荐）：永远 join，但每次查询都加载，可能过度加载。
 
-### 4.5 二级缓存
+### 3.5 二级缓存
 
 JPA 的二级缓存（L2 Cache）跨 Session 共享，配置后可避免重复查询：
 
@@ -458,7 +386,7 @@ flowchart TD
 - `NONSTRICT_READ_WRITE`：读写，无锁（最终一致性）。
 - `TRANSACTIONAL`：事务性（JTA 环境）。
 
-### 4.6 HikariCP 连接池
+### 3.6 HikariCP 连接池
 
 Spring Boot 默认使用 HikariCP，关键参数：
 
@@ -484,7 +412,7 @@ spring:
 
 > PostgreSQL 官方文档指出：连接数超过 `CPU 核心数 * 2 + 磁盘数` 后，性能反而下降（上下文切换开销超过并行收益）。HikariCP 作者同样建议小连接池。
 
-### 4.7 事务管理器架构
+### 3.7 事务管理器架构
 
 Spring 的事务抽象：
 
@@ -539,7 +467,7 @@ class UserServiceProxy extends UserService {
 3. **rollbackFor**：默认仅 `RuntimeException` 与 `Error` 回滚，受检异常不回滚（需 `@Transactional(rollbackFor = Exception.class)`）。
 4. **传播行为**：通过 `TransactionStatus` 与线程绑定（`TransactionSynchronizationManager`）。
 
-### 4.8 MyBatis 的 SqlSession
+### 3.8 MyBatis 的 SqlSession
 
 MyBatis 的核心抽象是 `SqlSession`，它封装了 `Connection` 与执行器：
 
@@ -570,7 +498,7 @@ flowchart TD
 
 **一级缓存的陷阱**：在 Spring 集成中，每次 Mapper 调用通常新建 SqlSession（除非在 `@Transactional` 内），一级缓存几乎无效。这与 MyBatis 原生用法（一个 SqlSession 跨多次查询）不同。
 
-### 4.9 R2DBC 的事务模型
+### 3.9 R2DBC 的事务模型
 
 R2DBC 的事务与 JDBC 截然不同（响应式 + 非阻塞）：
 
@@ -606,9 +534,9 @@ public Mono<Void> transfer(Long from, Long to, BigDecimal amount) {
 
 ---
 
-## 5. 代码示例：从入门到进阶的完整实战
+## 4. 代码示例：从入门到进阶的完整实战
 
-### 5.1 示例 1：JdbcTemplate 基础
+### 4.1 示例 1：JdbcTemplate 基础
 
 ```java
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -697,7 +625,7 @@ public class UserDao {
 }
 ```
 
-### 5.2 示例 2：Spring Data JPA 基础
+### 4.2 示例 2：Spring Data JPA 基础
 
 ```java
 import org.springframework.data.domain.*;
@@ -789,7 +717,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 }
 ```
 
-### 5.3 示例 3：JPA 实体关联
+### 4.3 示例 3：JPA 实体关联
 
 ```java
 import javax.persistence.*;
@@ -876,7 +804,7 @@ public class Tag {
 }
 ```
 
-### 5.4 示例 4：Specification 动态查询
+### 4.4 示例 4：Specification 动态查询
 
 ```java
 import org.springframework.data.jpa.domain.Specification;
@@ -929,7 +857,7 @@ public class UserService {
 }
 ```
 
-### 5.5 示例 5：MyBatis 注解与 XML
+### 4.5 示例 5：MyBatis 注解与 XML
 
 ```java
 import org.apache.ibatis.annotations.*;
@@ -1056,7 +984,7 @@ public interface UserMapper {
 </mapper>
 ```
 
-### 5.6 示例 6：事务管理
+### 4.6 示例 6：事务管理
 
 ```java
 import org.springframework.stereotype.Service;
@@ -1147,7 +1075,7 @@ public class TransferService {
 }
 ```
 
-### 5.7 示例 7：多数据源配置
+### 4.7 示例 7：多数据源配置
 
 ```java
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -1238,7 +1166,7 @@ public class SecondaryDataSourceConfig {
 }
 ```
 
-### 5.8 示例 8：Spring Data R2DBC
+### 4.8 示例 8：Spring Data R2DBC
 
 ```java
 import org.springframework.data.annotation.Id;
@@ -1301,7 +1229,7 @@ public class ReactiveTransferService {
 }
 ```
 
-### 5.9 示例 9：缓存集成
+### 4.9 示例 9：缓存集成
 
 ```java
 import org.springframework.cache.annotation.*;
@@ -1371,7 +1299,7 @@ public class CachedUserService {
 }
 ```
 
-### 5.10 示例 10：批量优化
+### 4.10 示例 10：批量优化
 
 ```java
 import org.springframework.stereotype.Service;
@@ -1448,9 +1376,9 @@ spring:
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 JPA vs MyBatis vs JdbcTemplate vs R2DBC
+### 5.1 JPA vs MyBatis vs JdbcTemplate vs R2DBC
 
 | 维度 | JPA / Hibernate | MyBatis | JdbcTemplate | R2DBC |
 |------|----------------|---------|--------------|-------|
@@ -1474,7 +1402,7 @@ spring:
 - **响应式栈（WebFlux）**：R2DBC。
 - **混合**：JPA 主导 + MyBatis 处理复杂查询。
 
-### 6.2 JPA vs Hibernate vs Spring Data JPA
+### 5.2 JPA vs Hibernate vs Spring Data JPA
 
 这三者常被混淆，关键区别：
 
@@ -1495,7 +1423,7 @@ flowchart TD
 - **Hibernate**：JPA 实现，提供 `Session` 等 Hibernate 专有 API（建议用 JPA 标准 API）。
 - **Spring Data JPA**：在 JPA 之上的 Repository 抽象，自动生成 SimpleJpaRepository 实现。
 
-### 6.3 HikariCP vs Druid vs DBCP
+### 5.3 HikariCP vs Druid vs DBCP
 
 | 维度 | HikariCP | Druid | DBCP 2 |
 |------|----------|-------|--------|
@@ -1512,7 +1440,7 @@ flowchart TD
 - 默认 HikariCP（Spring Boot 默认）。
 - 需要强监控与 SQL 防护选 Druid。
 
-### 6.4 EAGER vs LAZY 加载
+### 5.4 EAGER vs LAZY 加载
 
 | 维度 | EAGER | LAZY |
 |------|-------|------|
@@ -1524,7 +1452,7 @@ flowchart TD
 
 **最佳实践**：默认 LAZY，仅在确需立即访问时用 `JOIN FETCH` 或 `@EntityGraph`。
 
-### 6.5 一级缓存 vs 二级缓存
+### 5.5 一级缓存 vs 二级缓存
 
 | 维度 | 一级缓存（L1） | 二级缓存（L2） |
 |------|--------------|--------------|
@@ -1536,9 +1464,9 @@ flowchart TD
 
 ---
 
-## 7. 陷阱与反模式
+## 6. 陷阱与反模式
 
-### 7.1 反模式 1：N+1 查询问题
+### 6.1 反模式 1：N+1 查询问题
 
 ```java
 // 反模式：默认 LAZY 导致 N+1
@@ -1552,7 +1480,7 @@ for (Order order : orders) {
 List<Order> findAllWithUser();
 ```
 
-### 7.2 反模式 2：在 Controller 中直接用 Repository
+### 6.2 反模式 2：在 Controller 中直接用 Repository
 
 ```java
 // 反模式：Controller 直接调 Repository
@@ -1578,7 +1506,7 @@ public class UserController {
 }
 ```
 
-### 7.3 反模式 3：自调用 @Transactional 失效
+### 6.3 反模式 3：自调用 @Transactional 失效
 
 ```java
 // 反模式：同类内方法调用，AOP 代理失效
@@ -1621,7 +1549,7 @@ public class UserBatchService {
 }
 ```
 
-### 7.4 反模式 4：受检异常不回滚
+### 6.4 反模式 4：受检异常不回滚
 
 ```java
 // 反模式：受检异常不回滚，数据不一致
@@ -1640,7 +1568,7 @@ public void transfer(Long from, Long to, BigDecimal amount) throws IOException {
 }
 ```
 
-### 7.5 反模式 5：过度使用 CascadeType.ALL
+### 6.5 反模式 5：过度使用 CascadeType.ALL
 
 ```java
 // 反模式：CascadeType.ALL 在多对多中导致意外删除
@@ -1658,7 +1586,7 @@ private List<Tag> tags = new ArrayList<>();
 private List<OrderItem> items;  // 只级联保存与合并，不级联删除
 ```
 
-### 7.6 反模式 6：saveAll 用于大批量插入
+### 6.6 反模式 6：saveAll 用于大批量插入
 
 ```java
 // 反模式：saveAll 逐条 INSERT，性能极差
@@ -1685,7 +1613,7 @@ public void importUsersJpa(List<User> users) {
 }
 ```
 
-### 7.7 反模式 7：在事务中调用远程服务
+### 6.7 反模式 7：在事务中调用远程服务
 
 ```java
 // 反模式：事务内调用远程服务，长事务占用连接
@@ -1713,7 +1641,7 @@ public void processOrder(Long orderId) {
 }
 ```
 
-### 7.8 反模式 8：忽略 readOnly 优化
+### 6.8 反模式 8：忽略 readOnly 优化
 
 ```java
 // 反模式：只读查询用默认事务，错过优化
@@ -1735,7 +1663,7 @@ public List<User> getAllUsers() {
 2. FlushMode 设为 `MANUAL`。
 3. 驱动层可优化（如 PostgreSQL 只读连接）。
 
-### 7.9 反模式 9：MyBatis #{} 与 ${} 误用
+### 6.9 反模式 9：MyBatis #{} 与 ${} 误用
 
 ```java
 // 反模式：${} 拼接字符串，SQL 注入风险
@@ -1753,7 +1681,7 @@ User findByName(@Param("name") String name);
 User findById(@Param("table") String table, @Param("id") Long id);
 ```
 
-### 7.10 反模式 10：缓存不一致
+### 6.10 反模式 10：缓存不一致
 
 ```java
 // 反模式：只读缓存未在更新时清空
@@ -1780,9 +1708,9 @@ public void updateUser(Long id, User user) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 读写分离架构
+### 7.1 读写分离架构
 
 ```java
 // 抽象数据源路由
@@ -1835,7 +1763,7 @@ public class UserService {
 }
 ```
 
-### 8.2 分库分表（ShardingSphere）
+### 7.2 分库分表（ShardingSphere）
 
 ```yaml
 # application.yml
@@ -1867,7 +1795,7 @@ spring:
             props: { sharding-count: 4 }
 ```
 
-### 8.3 数据库迁移（Flyway）
+### 7.3 数据库迁移（Flyway）
 
 ```yaml
 spring:
@@ -1895,7 +1823,7 @@ CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_created_at ON users(created_at);
 ```
 
-### 8.4 监控与可观测性
+### 7.4 监控与可观测性
 
 ```yaml
 # 开启 Hibernate 统计
@@ -1939,7 +1867,7 @@ public class MonitoredUserService {
 }
 ```
 
-### 8.5 审计功能
+### 7.5 审计功能
 
 ```java
 // 配置类
@@ -1978,7 +1906,7 @@ public abstract class BaseEntity {
 }
 ```
 
-### 8.6 与虚拟线程集成
+### 7.6 与虚拟线程集成
 
 ```yaml
 # Spring Boot 3.2+
@@ -2017,9 +1945,9 @@ public class HybridService {
 
 ---
 
-## 9. 案例研究：主流框架实践
+## 8. 案例研究：主流框架实践
 
-### 9.1 案例研究 1：Spring Boot 官方推荐的 JPA 实践
+### 8.1 案例研究 1：Spring Boot 官方推荐的 JPA 实践
 
 Spring Boot 官方文档推荐的标准 JPA 分层：
 
@@ -2052,7 +1980,7 @@ public class UserController {
 }
 ```
 
-### 9.2 案例研究 2：MyBatis-Plus 增强
+### 8.2 案例研究 2：MyBatis-Plus 增强
 
 ```java
 import com.baomidou.mybatisplus.annotation.*;
@@ -2102,7 +2030,7 @@ public class UserService extends ServiceImpl<UserMapper, User> implements IServi
 }
 ```
 
-### 9.3 案例研究 3：JPA + MyBatis 混合方案
+### 8.3 案例研究 3：JPA + MyBatis 混合方案
 
 ```java
 // 简单 CRUD 用 JPA
@@ -2133,7 +2061,7 @@ public class UserFacade {
 }
 ```
 
-### 9.4 案例研究 4：分布式事务（Seata）
+### 8.4 案例研究 4：分布式事务（Seata）
 
 ```java
 import io.seata.spring.annotation.GlobalTransactional;
@@ -2162,7 +2090,7 @@ public class OrderService {
 }
 ```
 
-### 9.5 案例研究 5：响应式数据访问栈
+### 8.5 案例研究 5：响应式数据访问栈
 
 ```java
 // 完整响应式数据栈
@@ -2217,7 +2145,7 @@ public class ReactiveUserService {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 1. 描述 JPA 实体的 4 种生命周期状态及状态转移。
 
@@ -2229,7 +2157,7 @@ public class ReactiveUserService {
 
 5. 解释 N+1 问题的根因，并给出 3 种解决方案。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 6. 实现一个支持动态查询的 Specification，能根据传入的 UserQuery（含 name、minAge、maxAge、email 等可空字段）构建查询条件。
 
@@ -2241,7 +2169,7 @@ public class ReactiveUserService {
 
 10. 解释 HikariCP 的 `maximum-pool-size` 该如何设置，并说明为什么过大的连接池反而会降低性能。
 
-### 10.3 思考题
+### 9.3 思考题
 
 11. **JPA 的"魔法"**：JPA 通过方法名派生查询大幅提升开发效率，但这种"魔法"是否会带来可维护性问题？什么情况下应该放弃 JPA 改用 MyBatis？
 
@@ -2253,7 +2181,7 @@ public class ReactiveUserService {
 
 15. **分库分表后的事务**：跨库事务是分布式系统的难题，Seata、XA、TCC、Saga 各有什么优劣？什么场景该用哪种？
 
-### 10.4 实战题
+### 9.4 实战题
 
 16. 用 Spring Data JPA 实现一个博客系统，包含文章、评论、标签三类实体，要求：
     - 文章与评论一对多（LAZY 加载）
@@ -2285,7 +2213,7 @@ public class ReactiveUserService {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. **JSR 338: Java Persistence API 2.2**. Oracle, 2017. https://jcp.org/en/jsr/detail?id=338
 
@@ -2319,9 +2247,9 @@ public class ReactiveUserService {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - "Java Persistence with Hibernate". Christian Bauer, Gavin King, Gary Gregory. Manning, 2nd Edition, 2015.
 - "Spring in Action". Craig Walls. Manning, 6th Edition, 2022.
@@ -2330,7 +2258,7 @@ public class ReactiveUserService {
 - "Database Internals". Alex Petrov. O'Reilly, 2019.（数据库底层原理）
 - "Designing Data-Intensive Applications". Martin Kleppmann. O'Reilly, 2017.（分布式数据系统圣经）
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 - Spring Data 官方文档：https://docs.spring.io/spring-data/jpa/reference/
 - Hibernate 官方文档：https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html
@@ -2339,7 +2267,7 @@ public class ReactiveUserService {
 - Vlad Mihalcea 博客（JPA/Hibernate 性能权威）：https://vladmihalcea.com/
 - HikariCP GitHub Wiki：https://github.com/brettwooldridge/HikariCP
 
-### 12.3 相关规范与论文
+### 11.3 相关规范与论文
 
 - JSR 220: EJB 3.0（含 JPA 1.0）
 - JSR 317: JPA 2.0
@@ -2348,7 +2276,7 @@ public class ReactiveUserService {
 - "BASE: An ACID Alternative"（CAP 与 BASE）
 - "Saga Pattern"（分布式事务）
 
-### 12.4 社区与生态
+### 11.4 社区与生态
 
 - Spring Data JPA GitHub: https://github.com/spring-projects/spring-data-jpa
 - Hibernate GitHub: https://github.com/hibernate/hibernate-orm

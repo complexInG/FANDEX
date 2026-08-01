@@ -17,22 +17,12 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
+
 # JavaScript 异步编程
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 0. 学习目标
-
-完成本章节学习后，读者应能够：
-
-- **记忆（Remember）**：复述 JavaScript 事件循环的六阶段模型、微任务与宏任务的优先级顺序、Promise 的三种状态机迁移规则。
-- **理解（Understand）**：解释 callback hell 的成因、Promise 链式调用的实现原理、async/await 作为 Promise 语法糖的本质。
-- **应用（Apply）**：使用 `Promise.all`、`Promise.race`、`Promise.allSettled`、`Promise.any` 实现并发控制与容错策略；使用 `AbortController` 取消异步任务。
-- **分析（Analyze）**：对比 callback、Promise、async/await 三种异步范式的可读性、错误处理能力与调试体验；对比浏览器与 Node.js 事件循环的差异。
-- **评估（Evaluate）**：在给定业务场景（如请求重试、并发限流、超时控制）中判断异步模式的适用性，并指出潜在的反模式与内存泄漏风险。
-- **创造（Create）**：设计并实现一个支持取消、超时、重试、并发限流的异步任务调度器，并通过单元测试验证其正确性。
 
 ## 1. 历史动机与背景
 
@@ -69,9 +59,9 @@ JavaScript 诞生于 1995 年，由 Brendan Eich 在 Netscape 用 10 天设计�
 
 因此，掌握异步编程不是可选技能，而是 JavaScript 工程师的核心能力。
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 异步计算的形式化模型
+### 1.1 异步计算的形式化模型
 
 设 $f : A \to B$ 为一个计算任务。若 $f$ 在主线程上同步执行，则其执行时间 $T_{\text{sync}}$ 为：
 
@@ -93,7 +83,7 @@ $$
 
 当 $T_f \approx T_g$ 时，加速比趋近于 2；当 $T_f \gg T_g$ 时，加速比趋近于 1（异步无显著收益）。这解释了为什么 CPU 密集型任务异步化收益有限。
 
-### 2.2 Promise 状态机
+### 1.2 Promise 状态机
 
 Promise 是一个三状态有限自动机：
 
@@ -131,7 +121,7 @@ $$
 
 **关键不变式**：一旦进入终态 $\text{fulfilled}$ 或 $\text{rejected}$，状态不可再迁移。这被称为 **Promise 不变式（Promise Invariant）**。
 
-### 2.3 事件循环的形式化模型
+### 1.3 事件循环的形式化模型
 
 事件循环可建模为一个带优先级队列的调度器：
 
@@ -153,9 +143,9 @@ while (true) {
 
 **优先级**：`nextTick > micro > macro`。这意味着微任务总是优先于宏任务，但微任务过多会"饿死"宏任务。
 
-## 3. 理论推导
+## 2. 理论推导
 
-### 3.1 微任务饿死宏任务
+### 2.1 微任务饿死宏任务
 
 设微任务产生速率为 $\lambda_m$，每个微任务执行时间为 $\bar{t}_m$，宏任务产生速率为 $\lambda_M$，每个宏任务执行时间为 $\bar{t}_M$。若微任务在执行过程中不断产生新微任务，则宏任务被调度的时间窗口为：
 
@@ -176,7 +166,7 @@ recursiveMicrotask();
 setTimeout(() => console.log('宏任务永远不执行'), 0);
 ```
 
-### 3.2 Promise 链的延迟下界
+### 2.2 Promise 链的延迟下界
 
 设有 $n$ 个串行 `then`，每个 `then` 回调入队微任务并执行需 $t_{\text{micro}}$。则总延迟下界为：
 
@@ -186,7 +176,7 @@ $$
 
 实测在 V8 中 $t_{\text{micro}} \approx 1\mu s$，故 1000 级 `then` 链至少需 1ms。这对深度递归的 Promise 链是性能瓶颈。
 
-### 3.3 async/await 的零成本承诺
+### 2.3 async/await 的零成本承诺
 
 ES2017 规范允许引擎将 `async/await` 编译为等效的 Promise 链，但 V8 在 2018 年后实现了**零成本异步**优化：
 
@@ -196,7 +186,7 @@ ES2017 规范允许引擎将 `async/await` 编译为等效的 Promise 链，但 
 
 这意味着在 V8 中，`async/await` 的性能等同甚至优于手写 Promise 链。
 
-### 3.4 并发与并行的区分
+### 2.4 并发与并行的区分
 
 - **并发（Concurrency）**：单线程在多个任务间快速切换，逻辑上同时进行。
 - **并行（Parallelism）**：多线程/多核物理上同时执行。
@@ -211,9 +201,9 @@ $$
 
 其中 $\alpha$ 为可并行比例，$p$ 为处理器数。若 90% 代码可并行，4 核加速比为 $S(4) = 1/(0.1 + 0.225) \approx 3.08$。
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 回调基础
+### 3.1 回调基础
 
 ```javascript
 // 早期 Node.js 风格回调：第一个参数为错误，第二个为数据
@@ -237,7 +227,7 @@ readFileCallback('/etc/hosts', (err, data) => {
 });
 ```
 
-### 4.2 Callback Hell 与重构
+### 3.2 Callback Hell 与重构
 
 ```javascript
 // 反模式：回调地狱
@@ -277,7 +267,7 @@ fetchUserAsync(userId)
   .catch(handleError);
 ```
 
-### 4.3 Promise 完整示例
+### 3.3 Promise 完整示例
 
 ```javascript
 // 创建 Promise
@@ -328,7 +318,7 @@ async function fetchFirstAvailable(urls) {
 }
 ```
 
-### 4.4 async/await 完整示例
+### 3.4 async/await 完整示例
 
 ```javascript
 // 串行执行
@@ -389,7 +379,7 @@ async function fetchWithRetry(url, maxRetries = 3, baseDelay = 1000) {
 }
 ```
 
-### 4.5 AbortController 取消异步
+### 3.5 AbortController 取消异步
 
 ```javascript
 // 创建控制器
@@ -450,7 +440,7 @@ async function search(keyword) {
 }
 ```
 
-### 4.6 AsyncContext（ES2025 提案）
+### 3.6 AsyncContext（ES2025 提案）
 
 ```javascript
 // AsyncContext 用于跨异步边界传播上下文（类似 Node.js 的 AsyncLocalStorage）
@@ -483,9 +473,9 @@ async function taskWithSnapshot() {
 }
 ```
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 三种异步范式对比
+### 4.1 三种异步范式对比
 
 | 维度 | Callback | Promise | async/await |
 | :--- | :--- | :--- | :--- |
@@ -500,7 +490,7 @@ async function taskWithSnapshot() {
 | 学习成本 | 低 | 中 | 中 |
 | 适用场景 | 简单事件回调 | 复杂异步流 | 业务逻辑层首选 |
 
-### 5.2 浏览器 vs Node.js 事件循环
+### 4.2 浏览器 vs Node.js 事件循环
 
 | 维度 | 浏览器 | Node.js |
 | :--- | :--- | :--- |
@@ -512,7 +502,7 @@ async function taskWithSnapshot() {
 | I/O 模型 | 操作系统特定 | epoll/kqueue/IOCP |
 | 渲染时机 | 宏任务之间可能渲染 | 不涉及渲染 |
 
-### 5.3 Promise 组合器对比
+### 4.3 Promise 组合器对比
 
 | 方法 | 行为 | 失败策略 | 返回值 |
 | :--- | :--- | :--- | :--- |
@@ -528,9 +518,9 @@ async function taskWithSnapshot() {
 - 取最快响应：`Promise.race`
 - 取首个可用资源：`Promise.any`
 
-## 6. 常见陷阱与反模式
+## 5. 常见陷阱与反模式
 
-### 6.1 forEach 中的 await 不等待
+### 5.1 forEach 中的 await 不等待
 
 ```javascript
 // 反模式：forEach 不会等待 async 回调
@@ -564,7 +554,7 @@ async function fetchAll(urls) {
 }
 ```
 
-### 6.2 忘记 await 导致 Promise 浮空
+### 5.2 忘记 await 导致 Promise 浮空
 
 ```javascript
 // 反模式：忘记 await，错误丢失
@@ -594,7 +584,7 @@ async function riskyOperation() {
 }
 ```
 
-### 6.3 串行 await 导致性能下降
+### 5.3 串行 await 导致性能下降
 
 ```javascript
 // 反模式：三个独立请求串行
@@ -618,7 +608,7 @@ async function loadFast() {
 }
 ```
 
-### 6.4 在 Promise 构造函数中 return 值
+### 5.4 在 Promise 构造函数中 return 值
 
 ```javascript
 // 反模式：return 不会作为 resolve 值
@@ -640,7 +630,7 @@ const p = new Promise((resolve) => {
 });
 ```
 
-### 6.5 catch 后未重新抛出导致链继续
+### 5.5 catch 后未重新抛出导致链继续
 
 ```javascript
 // 反模式：catch 吞掉错误，后续 then 仍执行
@@ -666,7 +656,7 @@ fetchAsync()
   });
 ```
 
-### 6.6 微任务递归导致栈溢出或饿死
+### 5.6 微任务递归导致栈溢出或饿死
 
 ```javascript
 // 反模式：微任务无限递归
@@ -691,7 +681,7 @@ async function iterChain(n) {
 }
 ```
 
-### 6.7 async 函数返回值未 Promise 化
+### 5.7 async 函数返回值未 Promise 化
 
 ```javascript
 // 反模式：返回原始值导致类型混淆
@@ -708,9 +698,9 @@ async function main() {
 }
 ```
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 异步错误处理策略
+### 6.1 异步错误处理策略
 
 ```javascript
 // 策略 1：全局未捕获 Promise 拒绝监听
@@ -754,7 +744,7 @@ async function fetchData(url) {
 }
 ```
 
-### 7.2 并发限流实现
+### 6.2 并发限流实现
 
 ```javascript
 // 通用并发限流器
@@ -789,7 +779,7 @@ const results = await Promise.all(
 );
 ```
 
-### 7.3 超时与取消组合
+### 6.3 超时与取消组合
 
 ```javascript
 // 超时 + 取消组合工具
@@ -822,7 +812,7 @@ const result = await withTimeoutAndCancel(
 );
 ```
 
-### 7.4 请求去重与缓存
+### 6.4 请求去重与缓存
 
 ```javascript
 // 进行中的 Promise 缓存，避免重复请求
@@ -855,7 +845,7 @@ async function getUser(id) {
 await Promise.all([getUser(1), getUser(1), getUser(1)]);
 ```
 
-### 7.5 异步资源管理（Resource Cleanup）
+### 6.5 异步资源管理（Resource Cleanup）
 
 ```javascript
 // 使用 AsyncResource 跟踪异步上下文（Node.js）
@@ -910,7 +900,7 @@ const result = await withConnection(async (conn) => {
 });
 ```
 
-### 7.6 异步可迭代流处理
+### 6.6 异步可迭代流处理
 
 ```javascript
 // 自定义异步迭代器：流式处理大文件
@@ -943,9 +933,9 @@ for await (const line of readLines('/var/log/app.log')) {
 }
 ```
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 案例 1：搜索框防抖与取消
+### 7.1 案例 1：搜索框防抖与取消
 
 **场景**：用户在搜索框输入时，需要实时向后端请求搜索建议。要求：
 
@@ -1013,7 +1003,7 @@ class SearchBox {
 }
 ```
 
-### 8.2 案例 2：批量请求限流与重试
+### 7.2 案例 2：批量请求限流与重试
 
 **场景**：需要从第三方 API 批量获取 1000 条数据，API 限制：
 
@@ -1117,7 +1107,7 @@ const urls = Array.from({ length: 1000 }, (_, i) => `https://api.example.com/ite
 const { success, failed } = await fetcher.fetchAll(urls);
 ```
 
-### 8.3 案例 3：WebSocket 心跳与重连
+### 7.3 案例 3：WebSocket 心跳与重连
 
 **场景**：长连接 WebSocket 需要保活与断线重连。要求：
 
@@ -1229,7 +1219,7 @@ const ws = new ReconnectingWebSocket('wss://api.example.com/ws');
 ws.subscribe('user:123');
 ```
 
-### 8.4 案例 4：Node.js 流式处理与背压
+### 7.4 案例 4：Node.js 流式处理与背压
 
 **场景**：从数据库读取大量数据流式写入文件，需处理背压（写入慢于读取）。
 
@@ -1433,7 +1423,7 @@ async function runWithConcurrency(tasks, limit) {
 }
 ```
 
-## 10. 参考文献
+## 9. 参考文献
 
 1. Ecma International. (2024). *ECMAScript 2024 Language Specification (ECMA-262, 15th edition)*. ECMA International. https://www.ecma-international.org/publications-and-standards/standards/ecma-262/
 
@@ -1459,22 +1449,22 @@ async function runWithConcurrency(tasks, limit) {
 
 12. G. H. Tan, J. C. Lau. (2020). *A Comparative Study of Asynchronous Programming Models in JavaScript*. *Proceedings of the ACM on Programming Languages*, 4(OOPSLA), 1-28. https://doi.org/10.1145/3428255
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 规范与提案
+### 10.1 规范与提案
 
 - **ECMAScript 规范**：https://tc39.es/ecma262/ - 官方语言规范，Promise 与 async/await 章节必读
 - **TC39 提案仓库**：https://github.com/tc39/proposals - 跟踪异步相关新提案
 - **Promise/A+ 规范**：https://promisesaplus.com/ - Promise 行为的事实标准
 - **HTML Living Standard - Event loops**：https://html.spec.whatwg.org/ - 浏览器事件循环规范
 
-### 11.2 引擎实现
+### 10.2 引擎实现
 
 - **V8 博客：Faster async functions and promises**：https://v8.dev/blog/fast-async - V8 团队对 async/await 性能优化的深度解析
 - **libuv 设计文档**：https://docs.libuv.org/ - Node.js 事件循环底层实现
 - **JavaScriptCore 异步实现**：https://webkit.org/blog/ - WebKit 引擎的 Promise 实现细节
 
-### 11.3 进阶主题
+### 10.3 进阶主题
 
 - **AsyncLocalStorage**：https://nodejs.org/api/async_context.html - Node.js 异步上下文传播
 - **AsyncHooks**：https://nodejs.org/api/async_hooks.html - 异步资源生命周期追踪
@@ -1482,14 +1472,14 @@ async function runWithConcurrency(tasks, limit) {
 - **Web Streams API**：https://developer.mozilla.org/en-US/docs/Web/API/Streams_API - 浏览器流式处理标准
 - **Temporal API**：https://tc39.es/proposal-temporal/ - 与异步相关的时间处理新标准
 
-### 11.4 实战资源
+### 10.4 实战资源
 
 - **Awesome Async JavaScript**：https://github.com/ - 异步编程资源汇总
 - **Promise 实现 DIY**：https://promisesaplus.com/implementations - 自己实现一个 Promise 以深入理解
 - **Node.js 最佳实践**：https://github.com/goldbergyoni/nodebestpractices - 含异步错误处理章节
 - **You Don't Know JS: Async & Performance**：Kyle Simpson 著，深入异步原理的经典书籍
 
-### 11.5 调试与监控
+### 10.5 调试与监控
 
 - **Chrome DevTools Async Stack Traces**：https://developer.chrome.com/docs/devtools/ - 调试异步代码
 - **Node.js Clinic.js**：https://clinicjs.org/ - 异步性能诊断工具

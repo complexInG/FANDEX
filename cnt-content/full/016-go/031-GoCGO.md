@@ -16,53 +16,6 @@ prerequisites:
   - go/概述与环境配置
 ---
 
-## 0. 学习目标
-
-本篇文档依据 Bloom 分类法,从认知、理解、应用、分析、评价、创造六个层次构建学习路径。完成本篇学习后,读者应能够安全、高效地使用 CGO 实现 Go 与 C 互操作,理解其底层机制、性能开销与内存管理边界,在系统调用、遗留 C 库复用、性能关键路径等场景中作出正确的工程决策。
-
-### 0.1 Remember(记忆)
-
-- 列举 CGO 的核心组件:`import "C"` 伪包、C 注释块(preamble)、`#cgo` 指令、`C.*` 类型映射、五类桥接函数(`C.CString`、`C.GoString`、`C.GoStringN`、`C.GoBytes`、`C.Alloc`)。
-- 复述 `import "C"` 的位置约束:必须紧邻 C 注释块,中间不能有空行或其他 import。
-- 背诵 Go 与 C 类型映射表:`C.int` ↔ `int32`、`C.long` ↔ `int64`(64 位 Linux)、`C.size_t` ↔ `uintptr`、`C.char` ↔ `int8`。
-- 描述 `//export` 指令的语法要求:导出函数前一行注释、函数体不能包含 Go 闭包、参数与返回值必须为 C 兼容类型。
-
-### 0.2 Understand(理解)
-
-- 解释 CGO 调用的两栈切换机制:Go goroutine 栈 → M 线程系统栈 → C 函数栈,涉及 `runtime.cgocall`、`runtime.asmcgocall`、`runtime.cgocallback` 三阶段。
-- 阐述 `C.CString` 与 `C.GoString` 的内存归属差异:前者在 C 堆(`malloc`),后者在 Go 堆(`runtime.mallocgc`)。
-- 理解 cgo 检测机制:`CGO_ENABLED` 环境变量、`import "C"` 触发器、`runtime/cgo` 包初始化。
-- 说明 Go 1.21 `runtime.Pinner` 在 cgo 场景下的必要性:C 代码持有 Go 指针时,GC 可能提前回收对象导致悬垂引用。
-
-### 0.3 Apply(应用)
-
-- 编写一个调用 SQLite3 的 CGO 程序,正确管理 `*C.sqlite3` 生命周期,使用 `defer C.sqlite3_close(db)` 释放资源。
-- 使用 `//export` 导出 Go 函数供 C 回调,处理 `unsafe.Pointer` 上下文传递。
-- 通过 `#cgo CFLAGS`、`#cgo LDFLAGS` 配置 pkg-config 或手动指定头文件与库路径。
-- 利用 `build` 标签(`//go:build cgo`)实现 CGO 与纯 Go 实现的代码切换。
-
-### 0.4 Analyze(分析)
-
-- 分析 CGO 单次调用约 50-200ns 开销的来源:栈切换、TLS 切换、goroutine 状态转换、调度器协作。
-- 解构 cgo 调用阻塞时 M 线程的 hand-off 机制:P 与阻塞的 M 解绑,新 M 接管 P 继续调度其他 goroutine。
-- 对比 `C.CString`(复制)与 `C.Alloc` + `unsafe.String`(Go 1.21+,零拷贝)在字符串传递上的性能差异。
-- 分析 cgo 程序交叉编译受限的根因:目标平台需具备 C 工具链(gcc/clang),`CGO_ENABLED=1` 时无法使用 Go 的纯交叉编译能力。
-
-### 0.5 Evaluate(评价)
-
-- 评价"是否使用 CGO"的工程决策框架:性能收益 vs 构建复杂度、交叉编译受限、调试难度、GC 交互风险。
-- 评价 Go 团队对 cgo 的"必要时使用,而非默认使用"立场,论述其在云原生生态(纯 Go 静态二进制)中的合理性。
-- 评价 `runtime.Pinner`(Go 1.21+)相比 `runtime.KeepAlive` 在 cgo 长生命周期场景下的优势。
-- 评价 cgo 与纯 Go 重写(如 purego、Go 重写 SQLite)的取舍,论述两种方案在性能、可维护性、生态上的差异。
-
-### 0.6 Create(创造)
-
-- 设计一个 cgo 性能基准测试框架,自动测量栈切换、内存分配、类型转换各阶段开销。
-- 构建一个 cgo 代码生成工具,从 C 头文件自动生成类型安全的 Go 绑定(类似 SWIG 但更轻量)。
-- 实现一个 cgo goroutine 泄漏检测器,基于 `runtime.Stack` 分析阻塞在 C 调用中的 goroutine。
-- 创造一个 hybrid 执行模式,在 hot path 中通过纯 Go 实现性能,cold path 通过 cgo 复用 C 库。
-
----
 
 ## 1. 历史动机与发展脉络
 
@@ -153,9 +106,9 @@ slc := unsafe.Slice((*byte)(ptr), size)
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 CGO 的核心架构
+### 1.1 CGO 的核心架构
 
 CGO 的架构可形式化为一个五元组 $\mathcal{C} = (G, C, B, R, T)$,其中:
 
@@ -165,7 +118,7 @@ CGO 的架构可形式化为一个五元组 $\mathcal{C} = (G, C, B, R, T)$,其�
 - $R$ 是类型映射规则集合:$R : T_G \leftrightarrow T_C$。
 - $T$ 是调用约定集合:包括栈切换、TLS 切换、调度协作。
 
-### 2.2 `import "C"` 伪包的形式化语义
+### 1.2 `import "C"` 伪包的形式化语义
 
 `import "C"` 是 Go 编译器识别 CGO 的伪包(pseudo-package)。其形式化语义:
 
@@ -180,7 +133,7 @@ $$
 \text{import "C"} : \forall s \in \mathcal{N}_C, \quad C.s \in \mathcal{N}_G
 $$
 
-### 2.3 C 类型映射的形式化定义
+### 1.3 C 类型映射的形式化定义
 
 Go 与 C 类型映射遵循"大小与对齐匹配"原则。形式化地,对于 C 类型 $T_C$ 与 Go 类型 $T_G$:
 
@@ -210,7 +163,7 @@ $$
 
 **注意**:`C.long` 在 Linux 64 位为 8 字节,在 Windows 64 位为 4 字节(LLP64 模型)。跨平台代码应使用 `C.longlong` 或固定大小类型(`int32_t`、`int64_t`)。
 
-### 2.4 桥接函数的形式化定义
+### 1.4 桥接函数的形式化定义
 
 CGO 提供六个核心桥接函数,处理 Go 与 C 之间的内存边界:
 
@@ -258,7 +211,7 @@ $$
 \text{Free}(ptr) = \text{free}(ptr)
 $$
 
-### 2.5 `//export` 指令的形式化语义
+### 1.5 `//export` 指令的形式化语义
 
 `//export` 指令将 Go 函数导出为 C 可调用符号。形式化地:
 
@@ -273,7 +226,7 @@ $$
 3. 导出函数不能是闭包,不能引用包级 Go 变量(通过 `//go:linkname` 绕过除外)。
 4. 一个包中若有 `//export` 函数,则该包所有 Go 文件都不能在 `import "C"` 前包含非 `import "C"` 的 import。
 
-### 2.6 cgo 调用的运行时模型
+### 1.6 cgo 调用的运行时模型
 
 cgo 调用的运行时模型涉及三个栈:
 
@@ -307,9 +260,9 @@ func cgocall(fn, arg unsafe.Pointer) int32 {
 
 ---
 
-## 3. 理论推导与原理解析
+## 2. 理论推导与原理解析
 
-### 3.1 CGO 调用开销的形式化分析
+### 2.1 CGO 调用开销的形式化分析
 
 单次 CGO 调用的开销 $T_{\text{cgo}}$ 由以下部分组成:
 
@@ -342,7 +295,7 @@ $$
 2. **热路径隔离**:在 hot path 中避免 cgo,仅在 cold path 使用。
 3. **异步化**:将 cgo 调用放入 worker pool,主路径不阻塞。
 
-### 3.2 cgo 调用与 goroutine 调度的交互
+### 2.2 cgo 调用与 goroutine 调度的交互
 
 cgo 调用期间,goroutine 不参与调度。具体流程:
 
@@ -364,7 +317,7 @@ $$
 
 **监控指标**:通过 `runtime.NumGoroutine()` 与 `runtime/pprof` 的 threadcreate profile 监控 M 线程数。
 
-### 3.3 Go 指针传递规则的形式化表述
+### 2.3 Go 指针传递规则的形式化表述
 
 Go 1.6+ 的 cgo 指针传递规则可形式化为以下三条公理:
 
@@ -407,7 +360,7 @@ $$
 
 即:通过 `Pinner` 显式固定后,C 可长期持有 Go 指针,GC 不会回收。
 
-### 3.4 `C.CString` 与 `C.GoString` 的内存归属分析
+### 2.4 `C.CString` 与 `C.GoString` 的内存归属分析
 
 `C.CString` 的内存分配在 C 堆:
 
@@ -450,7 +403,7 @@ func GoString(cs *C.char) string {
 - 无需手动释放,GC 自动回收。
 - 复制语义:C 字符串的内容被复制到新的 Go 字符串。
 
-### 3.5 cgo 期间的 GC 安全点
+### 2.5 cgo 期间的 GC 安全点
 
 Go GC 需要 STW(Stop-The-World)与并发标记阶段。cgo 调用期间的 GC 安全点机制:
 
@@ -468,7 +421,7 @@ Go GC 需要 STW(Stop-The-World)与并发标记阶段。cgo 调用期间的 GC �
 2. 在 C 代码中主动调用 `runtime.GC()`(通过 `//go:linkname`)。
 3. 使用 `GOGC` 调整 GC 触发频率,减少 STW 次数。
 
-### 3.6 cgo 交叉编译受限的原理
+### 2.6 cgo 交叉编译受限的原理
 
 纯 Go 程序可交叉编译:
 
@@ -494,9 +447,9 @@ GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go build
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 项目结构
+### 3.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -541,7 +494,7 @@ go 1.22
 require modernc.org/sqlite v1.28.0  // 纯 Go SQLite(对比用)
 ```
 
-### 4.2 基础:调用 C 标准库
+### 3.2 基础:调用 C 标准库
 
 ```go
 // basics.go
@@ -599,7 +552,7 @@ func main() {
 }
 ```
 
-### 4.3 字符串传递
+### 3.3 字符串传递
 
 ```go
 // strings.go
@@ -671,7 +624,7 @@ func DemoStrings() {
 }
 ```
 
-### 4.4 结构体传递
+### 3.4 结构体传递
 
 ```go
 // structs.go
@@ -731,7 +684,7 @@ func DemoStructs() {
 }
 ```
 
-### 4.5 回调:C 调用 Go 函数
+### 3.5 回调:C 调用 Go 函数
 
 ```go
 // callback.go
@@ -789,7 +742,7 @@ func ProcessArray(items []int) {
 }
 ```
 
-### 4.6 `//export` 导出 Go 函数
+### 3.6 `//export` 导出 Go 函数
 
 ```go
 // export.go
@@ -830,7 +783,7 @@ func GoGreet(name *C.char) *C.char {
 var _ = unsafe.Pointer(nil)
 ```
 
-### 4.7 SQLite 完整示例
+### 3.7 SQLite 完整示例
 
 ```go
 // sqlite_demo.go
@@ -981,7 +934,7 @@ func DemoSQLite() {
 }
 ```
 
-### 4.8 零拷贝与高性能字符串处理
+### 3.8 零拷贝与高性能字符串处理
 
 ```go
 // zerocopy.go
@@ -1057,7 +1010,7 @@ func ToUpper(s string) string {
 }
 ```
 
-### 4.9 `runtime.Pinner` 固定 Go 对象(Go 1.21+)
+### 3.9 `runtime.Pinner` 固定 Go 对象(Go 1.21+)
 
 ```go
 // pinner.go
@@ -1130,7 +1083,7 @@ func ProcessWithoutPinner(data []int64) {
 }
 ```
 
-### 4.10 条件编译:CGO 与纯 Go 切换
+### 3.10 条件编译:CGO 与纯 Go 切换
 
 ```go
 // conditional.go
@@ -1195,7 +1148,7 @@ func TestStrlen(t *testing.T) {
 }
 ```
 
-### 4.11 调用外部 C 库
+### 3.11 调用外部 C 库
 
 ```go
 // external_lib.go
@@ -1256,7 +1209,7 @@ func (c *CURLSession) Perform() error {
 }
 ```
 
-### 4.12 基准测试
+### 3.12 基准测试
 
 ```go
 // benchmark_test.go
@@ -1326,9 +1279,9 @@ func BenchmarkStandardConversion(b *testing.B) {
 
 ---
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 CGO 调用 vs 纯 Go 调用
+### 4.1 CGO 调用 vs 纯 Go 调用
 
 | 维度 | CGO 调用 | 纯 Go 调用 |
 |------|---------|-----------|
@@ -1343,7 +1296,7 @@ func BenchmarkStandardConversion(b *testing.B) {
 | 调试难度 | 高(Go 与 C 混合栈) | 低 |
 | 适用场景 | 系统调用、C 库复用 | 业务逻辑、Web 服务 |
 
-### 5.2 `C.CString` vs `C.Alloc` + `unsafe.String`(Go 1.20+)
+### 4.2 `C.CString` vs `C.Alloc` + `unsafe.String`(Go 1.20+)
 
 | 维度 | `C.CString` | `C.Alloc` + `unsafe.String` |
 |------|------------|----------------------------|
@@ -1355,7 +1308,7 @@ func BenchmarkStandardConversion(b *testing.B) {
 | 性能 | 标准 | 略快(避免 cgo 调用 `malloc`) |
 | 适用场景 | 一般 C 字符串传递 | 高性能、与 `unsafe.Slice` 配合 |
 
-### 5.3 `runtime.KeepAlive` vs `runtime.Pinner`(Go 1.21+)
+### 4.3 `runtime.KeepAlive` vs `runtime.Pinner`(Go 1.21+)
 
 | 维度 | `runtime.KeepAlive` | `runtime.Pinner` |
 |------|--------------------|-----------------|
@@ -1367,7 +1320,7 @@ func BenchmarkStandardConversion(b *testing.B) {
 | 适用场景 | 短期 cgo 调用 | 长期持有、异步回调 |
 | 开销 | 低 | 中(需维护 Pin 列表) |
 
-### 5.4 CGO vs 其他语言 FFI
+### 4.4 CGO vs 其他语言 FFI
 
 | 维度 | Go CGO | Rust FFI | Python ctypes | Java JNI |
 |------|--------|---------|--------------|---------|
@@ -1379,7 +1332,7 @@ func BenchmarkStandardConversion(b *testing.B) {
 | 跨平台 | 受限(C 工具链) | 良好(交叉编译) | N/A | 良好 |
 | 生态成熟度 | 中 | 高 | 高 | 高 |
 
-### 5.5 CGO vs purego(纯 Go 动态调用)
+### 4.5 CGO vs purego(纯 Go 动态调用)
 
 `purego` 是近年兴起的纯 Go 动态库调用方案,无需 cgo:
 
@@ -1396,9 +1349,9 @@ func BenchmarkStandardConversion(b *testing.B) {
 
 ---
 
-## 6. 常见陷阱与最佳实践
+## 5. 常见陷阱与最佳实践
 
-### 6.1 陷阱 1:`C.CString` 内存泄漏
+### 5.1 陷阱 1:`C.CString` 内存泄漏
 
 **错误代码**:
 
@@ -1423,7 +1376,7 @@ func GoodExample(name string) {
 
 **根因**:`C.CString` 在 C 堆分配内存,Go GC 不追踪,必须手动释放。
 
-### 6.2 陷阱 2:`import "C"` 前有空行
+### 5.2 陷阱 2:`import "C"` 前有空行
 
 **错误代码**:
 
@@ -1454,7 +1407,7 @@ import "fmt"
 
 **根因**:Go 编译器通过 `import "C"` 与紧邻的 C 注释块识别 cgo,中间不能有其他 import 或空行。
 
-### 6.3 陷阱 3:C 代码持有 Go 指针
+### 5.3 陷阱 3:C 代码持有 Go 指针
 
 **错误代码**:
 
@@ -1496,7 +1449,7 @@ func GoodExample() {
 
 **根因**:Go 1.6 指针规则禁止 C 代码长期持有 Go 指针,违反会触发 panic 或未定义行为。
 
-### 6.4 陷阱 4:Goroutine 泄漏(C 阻塞)
+### 5.4 陷阱 4:Goroutine 泄漏(C 阻塞)
 
 **错误代码**:
 
@@ -1528,7 +1481,7 @@ func GoodExample() {
 
 **根因**:cgo 调用阻塞时,M 线程被占用,runtime 会创建新 M 接管 P,导致线程数爆炸。
 
-### 6.5 陷阱 5:`//export` 文件 import 顺序
+### 5.5 陷阱 5:`//export` 文件 import 顺序
 
 **错误代码**:
 
@@ -1567,7 +1520,7 @@ func MyFunc() {
 
 **根因**:含 `//export` 的文件中,`import "C"` 必须是第一个 import,其他 import 在其后。
 
-### 6.6 陷阱 6:类型映射平台差异
+### 5.6 陷阱 6:类型映射平台差异
 
 **错误代码**:
 
@@ -1605,7 +1558,7 @@ func GoodExample() {
 
 **根因**:`C.long` 在 Linux 64 位为 8 字节,在 Windows 64 位为 4 字节(LLP64 模型)。跨平台代码应使用 `long long` 或 `int64_t`。
 
-### 6.7 陷阱 7:cgo 调用中的 GC STW 延长
+### 5.7 陷阱 7:cgo 调用中的 GC STW 延长
 
 **错误代码**:
 
@@ -1653,7 +1606,7 @@ func GoodExample() {
 
 **根因**:cgo 期间 goroutine 不参与调度,GC STW 需等待 cgo 返回。长 C 循环会显著延长 STW。
 
-### 6.8 陷阱 8:`unsafe.Pointer` 与 `uintptr` 混淆
+### 5.8 陷阱 8:`unsafe.Pointer` 与 `uintptr` 混淆
 
 **错误代码**:
 
@@ -1681,7 +1634,7 @@ func GoodExample() {
 
 **根因**:`uintptr` 不被 GC 追踪,GC 移动对象后 `uintptr` 持有的地址失效。
 
-### 6.9 陷阱 9:交叉编译失败
+### 5.9 陷阱 9:交叉编译失败
 
 **错误场景**:
 
@@ -1705,7 +1658,7 @@ CC=x86_64-unknown-linux-gnu-gcc GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build
 docker run --rm -v $PWD:/src -w /src golang:1.22 go build
 ```
 
-### 6.10 陷阱 10:`//export` 函数参数含 Go 类型
+### 5.10 陷阱 10:`//export` 函数参数含 Go 类型
 
 **错误代码**:
 
@@ -1730,9 +1683,9 @@ func GoodExport(s *C.char) *C.char {
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 何时使用 CGO:决策框架
+### 6.1 何时使用 CGO:决策框架
 
 使用以下决策树判断是否使用 CGO:
 
@@ -1761,7 +1714,7 @@ flowchart TD
 3. **隔离 cgo**:将 cgo 代码隔离在独立包中,便于维护与替换。
 4. **提供纯 Go 后备**:为 cgo 实现提供纯 Go 后备(通过 build tags)。
 
-### 7.2 cgo 项目构建
+### 6.2 cgo 项目构建
 
 **标准构建**:
 
@@ -1811,7 +1764,7 @@ import "C"
 import "C"
 ```
 
-### 7.3 使用 pkg-config
+### 6.3 使用 pkg-config
 
 ```go
 /*
@@ -1839,7 +1792,7 @@ import "C"
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 ```
 
-### 7.4 调试 cgo 程序
+### 6.4 调试 cgo 程序
 
 **查看 cgo 生成的代码**:
 
@@ -1882,7 +1835,7 @@ dlv debug ./myapp
 (dlv) threads  # 查看线程(含 cgo 阻塞线程)
 ```
 
-### 7.5 性能分析
+### 6.5 性能分析
 
 **pprof 分析**:
 
@@ -1933,7 +1886,7 @@ go tool trace trace.out
 # 在浏览器中查看,关注 "Goroutine analysis" 与 "Thread analysis"
 ```
 
-### 7.6 cgo 检测工具
+### 6.6 cgo 检测工具
 
 **检测是否启用了 cgo**:
 
@@ -1968,7 +1921,7 @@ staticcheck ./...
 # 会检测 cgo 相关的常见问题
 ```
 
-### 7.7 CI/CD 配置
+### 6.7 CI/CD 配置
 
 **GitHub Actions 示例**:
 
@@ -2015,7 +1968,7 @@ jobs:
         run: go build -o myapp-${{ matrix.target }} .
 ```
 
-### 7.8 版本兼容性
+### 6.8 版本兼容性
 
 **Go 版本兼容性矩阵**:
 
@@ -2064,9 +2017,9 @@ func KeepAlive(obj interface{}) {
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 案例一:database/sql 的 SQLite 驱动
+### 7.1 案例一:database/sql 的 SQLite 驱动
 
 `mattn/go-sqlite3` 是最流行的 Go SQLite 驱动,基于 cgo:
 
@@ -2171,7 +2124,7 @@ func goSqlite3Callback(ctx unsafe.Pointer, n C.int, values **C.char, columns **C
 
 **替代方案**:`modernc.org/sqlite` 是纯 Go 实现的 SQLite,无需 cgo,但性能略低。
 
-### 8.2 案例二:OpenSSL 加密
+### 7.2 案例二:OpenSSL 加密
 
 ```go
 package openssl
@@ -2237,7 +2190,7 @@ func (s *SSLContext) Close() {
 
 **替代方案**:`crypto/tls` 是 Go 标准库的 TLS 实现,纯 Go,推荐使用。仅在需特定 OpenSSL 功能(如 FIPS 模式)时使用 cgo。
 
-### 8.3 案例三:libpcap 网络抓包
+### 7.3 案例三:libpcap 网络抓包
 
 ```go
 package pcap
@@ -2321,7 +2274,7 @@ func (h *Handle) Loop(cb PacketCallback, count int) error {
 }
 ```
 
-### 8.4 案例四:Kubernetes 中的 cgo 使用
+### 7.4 案例四:Kubernetes 中的 cgo 使用
 
 Kubernetes 主要使用纯 Go,但在以下场景使用 cgo:
 
@@ -2363,7 +2316,7 @@ func GetValue(name string) (string, error) {
 - **纯 Go 优先**:如 `os`、`syscall` 包能实现的功能,不使用 cgo。
 - **静态编译**:K8s 二进制默认 `CGO_ENABLED=0`,确保交叉编译与静态链接。
 
-### 8.5 案例五:Docker 中的 cgo 使用
+### 7.5 案例五:Docker 中的 cgo 使用
 
 Docker(Moby)在以下场景使用 cgo:
 
@@ -2402,7 +2355,7 @@ import "C"
 - **中期(2015-2018)**:逐步将 cgo 调用替换为 CLI 调用(如 `runc`)。
 - **现状(2018+)**:最小化 cgo 使用,优先通过 CLI 或 gRPC 与子系统交互。
 
-### 8.6 案例六:TiDB 中的 cgo 使用
+### 7.6 案例六:TiDB 中的 cgo 使用
 
 TiDB 主要使用纯 Go,但在以下场景使用 cgo:
 
@@ -2436,7 +2389,7 @@ TiDB 主要使用纯 Go,但在以下场景使用 cgo:
 - **cgo 仅用于特殊场景**:如调用特定 C 库(如 libdeflate 用于压缩)。
 - **可观测性**:所有 cgo 调用都有 prometheus 指标监控。
 
-### 8.7 案例七:Go 调用 CUDA
+### 7.7 案例七:Go 调用 CUDA
 
 ```go
 package cuda
@@ -2747,7 +2700,7 @@ func main() {
 4. `defer pinner.Unpin()` 在函数返回时解除固定,GC 恢复正常管理。
 5. 适用于 C 代码需要长期持有 Go 指针的场景(如异步回调、注册回调)。
 
-### 9.4 思考题
+### 8.4 思考题
 
 **题 1**:为什么 Go 团队对 CGO 采取"可用但不鼓励"的立场?从工程角度分析其利弊。
 
@@ -2935,9 +2888,9 @@ func main() {
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
-### 10.1 官方文档
+### 9.1 官方文档
 
 [1] Go Authors. 2024. *CGO Documentation*. The Go Programming Language. https://pkg.go.dev/cmd/cgo
 
@@ -2949,7 +2902,7 @@ func main() {
 
 [5] Go Authors. 2016. *Go 1.6 Release Notes: Cgo Pointer Rules*. The Go Programming Language. https://go.dev/doc/go1.6#cgo
 
-### 10.2 论文与文章
+### 9.2 论文与文章
 
 [6] Cox, Russ. 2017. *C, Go, Cgo*. The Acme Catgory Company Blog. https://research.swtch.com/cgo
 
@@ -2967,7 +2920,7 @@ func main() {
 
 [13] Click, Cliff. 2005. *Azul's Pauseless GC Algorithm*. In *Proceedings of the 4th International Symposium on Memory Management (ISMM 2006)*. ACM, New York, NY, 46–56. DOI: https://doi.org/10.1145/1133956.1133963
 
-### 10.3 源码与实现
+### 9.3 源码与实现
 
 [14] Go Authors. 2024. *Go Runtime: cgocall.go*. GitHub. https://github.com/golang/go/blob/master/src/runtime/cgocall.go
 
@@ -2975,7 +2928,7 @@ func main() {
 
 [16] Go Authors. 2024. *cmd/cgo: cgo tool source*. GitHub. https://github.com/golang/go/tree/master/src/cmd/cgo
 
-### 10.4 相关生态
+### 9.4 相关生态
 
 [17] mattn. 2024. *go-sqlite3: sqlite3 driver for go*. GitHub. https://github.com/mattn/go-sqlite3
 
@@ -2985,7 +2938,7 @@ func main() {
 
 [20] golang. 2024. *x/sync/errgroup*. GitHub. https://pkg.go.dev/golang.org/x/sync/errgroup
 
-### 10.5 书籍
+### 9.5 书籍
 
 [21] Donovan, Alan A. A. and Brian W. Kernighan. 2015. *The Go Programming Language*. Addison-Wesley Professional, Boston, MA. ISBN: 978-0134190440. (Chapter 13: Low-Level Programming, covers cgo basics)
 
@@ -2995,9 +2948,9 @@ func main() {
 
 ---
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 书籍
+### 10.1 书籍
 
 - **《The Go Programming Language》**(Alan A. A. Donovan & Brian W. Kernighan):第 13 章涵盖 cgo 基础与 unsafe 包。
 - **《Concurrency in Go》**(Katherine Cox-Buday):讨论 cgo 对并发模型的影响。
@@ -3005,14 +2958,14 @@ func main() {
 - **《Linux System Programming》**(Robert Love):C 系统编程基础,理解 cgo 调用的底层。
 - **《Advanced Programming in the UNIX Environment》**(W. Richard Stevens):UNIX 系统调用,常通过 cgo 访问。
 
-### 11.2 论文与技术报告
+### 10.2 论文与技术报告
 
 - **"CSP: Communicating Sequential Processes"**(C. A. R. Hoare, 1978):Go 并发设计哲学源头。
 - **"Go GC: Priorities and Design"**(Dmitry Vyukov, 2015):Go GC 设计文档,涉及 cgo 交互。
 - **"Azul's Pauseless GC Algorithm"**(Cliff Click, 2005):低延迟 GC 算法,对比 Go GC。
 - **"Why Cgo is Slow"**(Various authors):分析 cgo 调用开销的来源。
 
-### 11.3 在线资源
+### 10.3 在线资源
 
 - **Go 官方 cgo 文档**:https://pkg.go.dev/cmd/cgo
 - **Go Blog**:https://blog.golang.org/
@@ -3021,14 +2974,14 @@ func main() {
 - **Go Dev Wiki**:https://github.com/golang/go/wiki
 - **cgo examples**:https://github.com/golang/go/tree/master/misc/cgo
 
-### 11.4 视频资源
+### 10.4 视频资源
 
 - **"Cgo: Go and C Integration"**(GopherCon 2017):深入 cgo 实现。
 - **"Go Runtime: Scheduler and GC"**(GopherCon 2018):runtime 内部机制,含 cgo 交互。
 - **"Building High-Performance Go Services"**(GopherCon 2019):cgo 性能优化。
 - **"Go and C Interop"**(Google I/O 2014):cgo 基础教程。
 
-### 11.5 工具一览
+### 10.5 工具一览
 
 | 工具 | 用途 | 链接 |
 |------|------|------|
@@ -3043,7 +2996,7 @@ func main() {
 | `purego` | 纯 Go 动态库调用 | https://github.com/ebitengine/purego |
 | `swig` | C++ 绑定生成 | http://www.swig.org/ |
 
-### 11.6 社区与讨论
+### 10.6 社区与讨论
 
 - **Go Forum**:https://forum.golangbridge.org/
 - **r/golang**:https://www.reddit.com/r/golang/
@@ -3051,7 +3004,7 @@ func main() {
 - **Go Issue Tracker**:https://github.com/golang/go/issues
 - **cgo discussions**:https://github.com/golang/go/discussions
 
-### 11.7 相关 Go 包
+### 10.7 相关 Go 包
 
 - **`runtime/cgo`**:cgo 运行时支持。
 - **`unsafe`**:指针操作(配合 cgo)。
@@ -3060,7 +3013,7 @@ func main() {
 - **`plugin`**:Go 插件(动态加载,与 cgo 互补)。
 - **`net`**:网络编程(纯 Go,避免 cgo)。
 
-### 11.8 进阶主题
+### 10.8 进阶主题
 
 - **Go 与 WebAssembly**:替代 cgo 的跨平台方案。
 - **Go 与 gRPC**:跨语言通信(替代 cgo 的常用方案)。
@@ -3071,25 +3024,25 @@ func main() {
 
 ---
 
-## 12. 总结
+## 11. 总结
 
 本篇文档系统阐述了 Go 与 CGO 的完整知识体系,覆盖从基础概念到高级实践的各个层面。核心要点回顾:
 
-### 12.1 核心机制
+### 11.1 核心机制
 
 - **CGO 桥接架构**:Go 代码通过 `import "C"` 伪包与 C 代码交互,涉及栈切换、TLS 切换、调度协作三大开销。
 - **类型映射**:Go 与 C 类型按"大小与对齐匹配"原则映射,注意 `C.long` 的平台差异。
 - **内存边界**:`C.CString`/`C.Alloc` 在 C 堆,`C.GoString`/`C.GoBytes` 在 Go 堆,需正确管理生命周期。
 - **指针规则**:Go 1.6+ 三条规则约束 Go 指针传递,`runtime.Pinner`(Go 1.21+)提供例外。
 
-### 12.2 工程实践
+### 11.2 工程实践
 
 - **决策框架**:默认 `CGO_ENABLED=0`,仅在无纯 Go 替代时启用 cgo。
 - **性能优化**:批量化调用、热路径隔离、异步化处理。
 - **构建管理**:`#cgo` 指令、pkg-config、交叉编译方案。
 - **调试监控**:pprof、trace、GDB/Delve、staticcheck。
 
-### 12.3 版本演进
+### 11.3 版本演进
 
 - **Go 1.6**:指针规则正式化。
 - **Go 1.17**:寄存器 ABI,cgo 性能提升。
@@ -3097,14 +3050,14 @@ func main() {
 - **Go 1.21**:`runtime.Pinner` 引入。
 - **Go 1.22**:循环变量语义变更,闭包场景更安全。
 
-### 12.4 替代方案
+### 11.4 替代方案
 
 - **纯 Go 重写**:如 `modernc.org/sqlite`、`compress/gzip`。
 - **purego**:动态库调用,无需 cgo。
 - **CLI 调用**:`os/exec` 调用外部程序。
 - **gRPC**:跨语言通信。
 
-### 12.5 学习路径建议
+### 11.5 学习路径建议
 
 1. **入门**:理解 `import "C"`、类型映射、`C.CString`/`C.GoString`。
 2. **进阶**:掌握指针规则、`//export`、条件编译。

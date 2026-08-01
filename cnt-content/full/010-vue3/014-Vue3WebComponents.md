@@ -16,6 +16,7 @@ prerequisites:
   - vue3/语法速查
 ---
 
+
 # Vue3 与 Web Components | Vue3 and Web Components Interoperability
 
 > 本文档对标 MIT 6.170、Stanford CS142、CMU 17-437 软件工程课程水准，系统化阐述 Vue 3 与 Web Components 的互操作机制、自定义元素（Custom Elements）、Shadow DOM、HTML 模板等核心主题。涵盖 Vue Web Component 的定义、事件系统、样式隔离、SSR 兼容性等工程实践，并辅以数学建模、对比分析、案例研究与习题。
@@ -39,60 +40,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标 | Learning Objectives
+## 1. 历史动机与发展脉络 | Historical Motivation and Evolution
 
-本章节基于 Bloom 教育目标分类法设计学习目标，覆盖记忆、理解、应用、分析、评价、创造六个层次。
-
-### 1.1 记忆层（Remember）
-
-- **R1**：准确陈述 Web Components 的四大核心规范（Custom Elements、Shadow DOM、HTML Templates、ES Modules）。
-- **R2**：列举 Vue 3 提供的 Web Components 相关 API（`defineCustomElement`、`configureApp` 中的 `compilerOptions.isCustomElement`）。
-- **R3**：复述 Shadow DOM 的核心概念：Shadow Root、Shadow Tree、Shadow Host、Shadow Boundary。
-- **R4**：背记 Custom Elements 的两种类型：Autonomous Custom Elements（自包含）与 Customized Built-in Elements（扩展原生元素）。
-- **R5**：识别 Vue 3 中 Web Components 的生命周期回调（`connectedCallback`、`disconnectedCallback`、`adoptedCallback`、`attributeChangedCallback`）。
-
-### 1.2 理解层（Understand）
-
-- **U1**：解释 Vue 3 中 `defineCustomElement` 与 `defineComponent` 的区别，说明前者如何将 Vue 组件转换为原生 Custom Element。
-- **U2**：阐述 Shadow DOM 的样式隔离机制：外部样式无法穿透 Shadow Boundary，内部样式无法泄漏到外部。
-- **U3**：描述 Vue 3 应用中如何通过 `compilerOptions.isCustomElement` 配置识别自定义元素标签。
-- **U4**：理解 Custom Elements 的属性（Attribute）与属性（Property）映射规则：Vue 3 自动处理 `attr` 与 `prop` 的同步。
-- **U5**：说明 Web Components 在跨框架复用、设计系统建设、微前端架构中的战略价值。
-
-### 1.3 应用层（Apply）
-
-- **A1**：使用 `defineCustomElement` 将 Vue SFC 转换为可分发的 Custom Element，并通过 CDN 分发。
-- **A2**：在 Vue 应用中消费第三方 Web Components（如 Lit、Stencil 构建的组件）。
-- **A3**：实现 Custom Elements 的事件系统，正确处理 Vue 中的 `@event` 绑定。
-- **A4**：配置 Shadow DOM 的样式穿透（CSS 自定义属性、`::part()` 伪元素）。
-- **A5**：在 React、Angular、Svelte 等其他框架中复用 Vue 构建的 Web Components。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：分析 Vue Web Component 与原生 Vue SFC 在生命周期、响应式系统、依赖注入等方面的差异。
-- **An2**：对比 Shadow DOM 与传统 CSS 命名空间（BEM、CSS Modules、Scoped CSS）的隔离机制。
-- **An3**：解构 Custom Elements 的反应式属性（Reactive Attributes）实现原理，分析其与 Vue 响应式系统的协作。
-- **An4**：分析 Web Components 在 SSR 场景下的挑战（Declarative Shadow DOM、hydration）。
-
-### 1.5 评价层（Evaluate）
-
-- **E1**：评估一个企业设计系统是否适合基于 Web Components 实现，权衡跨框架复用与开发成本。
-- **E2**：判断何时应当使用 Vue Web Component，何时使用原生 Vue SFC，权衡运行时开销与可移植性。
-- **E3**：评价微前端架构中 Web Components 与 Module Federation、Single SPA 等方案的优劣。
-- **E4**：权衡 Shadow DOM 的样式隔离与可定制性，确定何时开放 `::part()` 接口。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计一套基于 Vue Web Components 的企业设计系统，覆盖按钮、表单、表格、对话框等核心组件。
-- **C2**：构建一个跨框架组件库，使用 Vue 构建并通过 Web Components 分发至 React、Angular、Svelte 项目。
-- **C3**：设计一个微前端架构，使用 Web Components 作为应用间通信与隔离的边界。
-- **C4**：实现一个支持 SSR 的 Vue Web Component，使用 Declarative Shadow DOM 实现服务端渲染。
-
----
-
-## 2. 历史动机与发展脉络 | Historical Motivation and Evolution
-
-### 2.1 Web Components 规范的诞生（2013-2018）
+### 1.1 Web Components 规范的诞生（2013-2018）
 
 Web Components 是 W3C 与 WHATWG 联合推动的一组浏览器原生组件标准，旨在为 Web 提供原生的组件化能力。其设计动机源于：
 
@@ -112,15 +62,15 @@ Web Components 是 W3C 与 WHATWG 联合推动的一组浏览器原生组件标�
 | 2023 | Declarative Shadow DOM 在主流浏览器支持 |
 | 2024 | Web Components 成为跨框架组件标准 |
 
-### 2.2 Vue 与 Web Components 的关系
+### 1.2 Vue 与 Web Components 的关系
 
 Vue 与 Web Components 的关系经历了三个阶段：
 
-#### 2.2.1 Vue 2 时代（2014-2020）：观望与初步支持
+#### 1.2.1 Vue 2 时代（2014-2020）：观望与初步支持
 
 Vue 2 对 Web Components 提供基础支持：通过 `compilerOptions.isCustomElement` 识别自定义元素，但缺乏官方的"Vue → Web Component"转换工具。
 
-#### 2.2.2 Vue 3.0 时代（2020-2022）：官方支持
+#### 1.2.2 Vue 3.0 时代（2020-2022）：官方支持
 
 Vue 3 引入 `defineCustomElement` API，提供官方的 Vue → Custom Element 转换路径：
 
@@ -135,7 +85,7 @@ const MyElement = defineCustomElement({
 customElements.define('my-element', MyElement);
 ```
 
-#### 2.2.3 Vue 3.2+ 时代（2022-至今）：完善与生产可用
+#### 1.2.3 Vue 3.2+ 时代（2022-至今）：完善与生产可用
 
 Vue 3.2+ 对 Web Components 支持进一步完善：
 
@@ -144,7 +94,7 @@ Vue 3.2+ 对 Web Components 支持进一步完善：
 - 支持 Custom Element 的属性（Property）与特性（Attribute）双向同步。
 - 支持 SSR 友好的 Custom Element。
 
-### 2.3 Evan You 的设计哲学
+### 1.3 Evan You 的设计哲学
 
 Evan You 对 Vue 与 Web Components 的关系定位：
 
@@ -154,7 +104,7 @@ Evan You 对 Vue 与 Web Components 的关系定位：
 
 3. **企业设计系统的理想载体**：对于需要在多个框架（Vue、React、Angular）中复用的企业设计系统，Web Components 是理想载体。Vue 作为开发体验，Web Components 作为分发格式。
 
-### 2.4 与 Lit、Stencil 的对比
+### 1.4 与 Lit、Stencil 的对比
 
 | 框架 | 类型 | 包体积 | 响应式 | SSR | Vue 协同 |
 |------|------|--------|--------|-----|----------|
@@ -165,9 +115,9 @@ Evan You 对 Vue 与 Web Components 的关系定位：
 
 ---
 
-## 3. 形式化定义 | Formal Definitions
+## 2. 形式化定义 | Formal Definitions
 
-### 3.1 Custom Elements 的形式化定义
+### 2.1 Custom Elements 的形式化定义
 
 **定义 3.1（Custom Element 类）**：Custom Element 是 `HTMLElement` 的子类，记为 $E$：
 
@@ -192,7 +142,7 @@ $$
 \text{adoptedCallback}(): \text{called when element is moved to a new document}
 $$
 
-### 3.2 Shadow DOM 的形式化定义
+### 2.2 Shadow DOM 的形式化定义
 
 **定义 3.4（Shadow Tree）**：Shadow DOM 创建一个独立的 DOM 子树，记为 $\mathcal{S}$：
 
@@ -222,7 +172,7 @@ $$
 
 例外：CSS 自定义属性（CSS Custom Properties）穿透 Shadow Boundary。
 
-### 3.3 Vue Custom Element 的形式化定义
+### 2.3 Vue Custom Element 的形式化定义
 
 **定义 3.7（defineCustomElement）**：Vue 的 `defineCustomElement` 是一个映射函数：
 
@@ -237,7 +187,7 @@ $$
 3. **Shadow DOM 挂载**：Vue 应用挂载到 Shadow Root，实现样式隔离。
 4. **生命周期映射**：Vue 的 `mounted`/`unmounted` 映射到 `connectedCallback`/`disconnectedCallback`。
 
-### 3.4 Attribute 与 Property 的映射
+### 2.4 Attribute 与 Property 的映射
 
 **定义 3.8（Attribute 与 Property）**：
 
@@ -262,7 +212,7 @@ $$
 | `Array` | `JSON.parse(value)` |
 | `Object` | `JSON.parse(value)` |
 
-### 3.5 事件系统的形式化
+### 2.5 事件系统的形式化
 
 **定义 3.9（Custom Event 分发）**：Vue Web Component 通过 `dispatchEvent` 分发事件：
 
@@ -278,9 +228,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析 | Theoretical Derivation
+## 3. 理论推导与原理解析 | Theoretical Derivation
 
-### 4.1 Vue 响应式与 Custom Elements 的协作
+### 3.1 Vue 响应式与 Custom Elements 的协作
 
 Vue 3 的响应式系统基于 Proxy，Custom Elements 基于 `attributeChangedCallback`。两者协作流程：
 
@@ -294,7 +244,7 @@ Vue 3 的响应式系统基于 Proxy，Custom Elements 基于 `attributeChangedC
 - 每次属性变化触发两次更新：Custom Element 回调 + Vue 响应式更新。
 - 复杂度：$O(1)$（属性映射）+ $O(d)$（Vue Diff，$d$ 为动态节点数）。
 
-### 4.2 Shadow DOM 样式隔离的数学建模
+### 3.2 Shadow DOM 样式隔离的数学建模
 
 设全局 CSS 规则集合为 $R_{\text{global}}$，Shadow DOM 内部 CSS 规则集合为 $R_{\text{shadow}}$。
 
@@ -320,7 +270,7 @@ $$
 
 CSS 自定义属性（如 `--color-primary`）通过继承机制穿透 Shadow Boundary。
 
-### 4.3 Custom Elements 注册的性能分析
+### 3.3 Custom Elements 注册的性能分析
 
 **首次注册开销**：
 
@@ -345,7 +295,7 @@ $$
 - 首次实例化：5-20ms（取决于组件复杂度）
 - 后续实例化：2-10ms（Vue 运行时已缓存）
 
-### 4.4 事件传播路径分析
+### 3.4 事件传播路径分析
 
 Custom Event 从 Shadow DOM 内部分发到外部监听器的路径：
 
@@ -360,7 +310,7 @@ $$
 
 若 `composed: false`，事件仅在 Shadow DOM 内部传播，外部无法监听。
 
-### 4.5 跨框架互操作的复杂度
+### 3.5 跨框架互操作的复杂度
 
 Web Components 作为跨框架标准，其互操作复杂度：
 
@@ -380,9 +330,9 @@ $$
 
 ---
 
-## 5. 代码示例 | Code Examples
+## 4. 代码示例 | Code Examples
 
-### 5.1 定义基础 Vue Web Component
+### 4.1 定义基础 Vue Web Component
 
 ```javascript
 // my-element.js —— Vue 3.4+
@@ -450,7 +400,7 @@ customElements.define('my-element', MyElement);
 export default MyElement;
 ```
 
-### 5.2 使用 SFC 定义 Vue Web Component
+### 4.2 使用 SFC 定义 Vue Web Component
 
 ```vue
 <!-- MyWidget.ce.vue —— Vue 3.4+ -->
@@ -555,7 +505,7 @@ const MyWidgetElement = defineCustomElement(MyWidget);
 customElements.define('my-widget', MyWidgetElement);
 ```
 
-### 5.3 在 Vue 应用中消费 Web Components
+### 4.3 在 Vue 应用中消费 Web Components
 
 ```javascript
 // vite.config.ts —— 配置 isCustomElement
@@ -623,7 +573,7 @@ function toggleTheme(): void {
 </template>
 ```
 
-### 5.4 Shadow DOM 样式穿透
+### 4.4 Shadow DOM 样式穿透
 
 ```javascript
 // themed-button.js
@@ -686,7 +636,7 @@ customElements.define('themed-button', ThemedButton);
 <themed-button variant="secondary">Secondary</themed-button>
 ```
 
-### 5.5 事件系统与 CustomEvent
+### 4.5 事件系统与 CustomEvent
 
 ```javascript
 // event-emitter-element.js
@@ -766,7 +716,7 @@ customElements.define('event-emitter', EventEmitterElement);
 </script>
 ```
 
-### 5.6 生命周期回调
+### 4.6 生命周期回调
 
 ```javascript
 // lifecycle-element.js
@@ -812,7 +762,7 @@ class LifecycleElementWrapper extends LifecycleElement {
 customElements.define('lifecycle-element', LifecycleElementWrapper);
 ```
 
-### 5.7 Slot 投影
+### 4.7 Slot 投影
 
 ```javascript
 // card-element.js
@@ -862,7 +812,7 @@ customElements.define('my-card', CardElement);
 </my-card>
 ```
 
-### 5.8 跨框架复用示例
+### 4.8 跨框架复用示例
 
 ```javascript
 // shared-button.js —— Vue 构建的跨框架按钮
@@ -1010,7 +960,7 @@ export class AppComponent {
 </shared-button>
 ```
 
-### 5.9 SSR 兼容的 Custom Element
+### 4.9 SSR 兼容的 Custom Element
 
 ```javascript
 // ssr-friendly-element.js
@@ -1054,7 +1004,7 @@ const SSRFriendlyElement = defineCustomElement({
 customElements.define('ssr-friendly', SSRFriendlyElement);
 ```
 
-### 5.10 完整企业级组件示例
+### 4.10 完整企业级组件示例
 
 ```javascript
 // enterprise-table.js —— 企业级表格 Web Component
@@ -1231,9 +1181,9 @@ customElements.define('enterprise-table', EnterpriseTable);
 
 ---
 
-## 6. 对比分析 | Comparative Analysis
+## 5. 对比分析 | Comparative Analysis
 
-### 6.1 Vue Web Components 与原生 Vue SFC 对比
+### 5.1 Vue Web Components 与原生 Vue SFC 对比
 
 | 维度 | Vue SFC | Vue Web Component |
 |------|---------|-------------------|
@@ -1248,7 +1198,7 @@ customElements.define('enterprise-table', EnterpriseTable);
 | 包体积 | 共享 Vue 运行时 | 每个 CE 独立 Vue 实例（可共享） |
 | 调试 | Vue DevTools 完整支持 | Vue DevTools 有限支持 |
 
-### 6.2 Web Components 实现方案对比
+### 5.2 Web Components 实现方案对比
 
 | 方案 | 类型 | 包体积 | 响应式 | DX | Vue 协同 |
 |------|------|--------|--------|-----|----------|
@@ -1258,7 +1208,7 @@ customElements.define('enterprise-table', EnterpriseTable);
 | Fast | 独立库 | 中 | Observable | 良好 | 一般 |
 | 原生 | 无依赖 | 零 | 手动 | 差 | 一般 |
 
-### 6.3 样式隔离方案对比
+### 5.3 样式隔离方案对比
 
 | 方案 | 隔离机制 | 运行时开销 | 可穿透性 | 浏览器支持 |
 |------|----------|------------|----------|------------|
@@ -1268,7 +1218,7 @@ customElements.define('enterprise-table', EnterpriseTable);
 | BEM | 命名约定 | 无 | 全局可读 | 全部 |
 | iframe | 完全隔离 | 高 | postMessage | 全部 |
 
-### 6.4 跨框架组件方案对比
+### 5.4 跨框架组件方案对比
 
 | 方案 | 复用度 | 性能 | 开发体验 | 维护成本 |
 |------|--------|------|----------|----------|
@@ -1280,9 +1230,9 @@ customElements.define('enterprise-table', EnterpriseTable);
 
 ---
 
-## 7. 常见陷阱与最佳实践 | Pitfalls and Best Practices
+## 6. 常见陷阱与最佳实践 | Pitfalls and Best Practices
 
-### 7.1 全局状态与依赖注入陷阱
+### 6.1 全局状态与依赖注入陷阱
 
 **陷阱**：Web Components 创建独立的 Vue 实例，无法访问宿主应用的 Provide/Inject。
 
@@ -1299,7 +1249,7 @@ const MyElement = defineCustomElement({
 
 **正确做法**：通过 Attribute/Property 传递数据，或使用全局状态（如 Pinia 持久化到 localStorage）。
 
-### 7.2 SSR 兼容性陷阱
+### 6.2 SSR 兼容性陷阱
 
 **陷阱**：在 Custom Element 的 setup 中直接访问浏览器 API。
 
@@ -1327,7 +1277,7 @@ const MyElement = defineCustomElement({
 });
 ```
 
-### 7.3 样式覆盖陷阱
+### 6.3 样式覆盖陷阱
 
 **陷阱**：外部 CSS 无法覆盖 Shadow DOM 内部样式。
 
@@ -1361,7 +1311,7 @@ const MyElement = defineCustomElement({
 });
 ```
 
-### 7.4 事件监听陷阱
+### 6.4 事件监听陷阱
 
 **陷阱**：Custom Event 未设置 `composed: true`，事件不穿透 Shadow Boundary。
 
@@ -1386,7 +1336,7 @@ this.dispatchEvent(new CustomEvent('my-event', {
 }));
 ```
 
-### 7.5 属性类型转换陷阱
+### 6.5 属性类型转换陷阱
 
 **陷阱**：Complex 类型（Object、Array）通过 Attribute 传递时需 JSON 序列化。
 
@@ -1415,7 +1365,7 @@ const myItems = ref([1, 2, 3]);
 <my-element data='{"key":"value"}'></my-element>
 ```
 
-### 7.6 最佳实践清单
+### 6.6 最佳实践清单
 
 1. **优先使用 SFC**：在 Vue 应用内部优先使用 SFC，仅在跨框架复用时使用 Web Components。
 2. **CSS 自定义属性开放定制**：所有可定制样式通过 CSS 变量暴露，便于外部覆盖。
@@ -1430,9 +1380,9 @@ const myItems = ref([1, 2, 3]);
 
 ---
 
-## 8. 工程实践 | Engineering Practice
+## 7. 工程实践 | Engineering Practice
 
-### 8.1 Vite 配置
+### 7.1 Vite 配置
 
 ```typescript
 // vite.config.ts
@@ -1471,7 +1421,7 @@ export default defineConfig({
 });
 ```
 
-### 8.2 单元测试
+### 7.2 单元测试
 
 ```typescript
 // my-element.test.ts
@@ -1515,7 +1465,7 @@ describe('my-element', () => {
 });
 ```
 
-### 8.3 文档生成
+### 7.3 文档生成
 
 ```typescript
 // 使用 Web Component Analyzer 生成文档
@@ -1531,7 +1481,7 @@ export default {
 };
 ```
 
-### 8.4 Storybook 集成
+### 7.4 Storybook 集成
 
 ```javascript
 // .storybook/main.js
@@ -1564,7 +1514,7 @@ Default.args = {
 };
 ```
 
-### 8.5 CI/CD 发布
+### 7.5 CI/CD 发布
 
 ```yaml
 # .github/workflows/release.yml
@@ -1595,9 +1545,9 @@ jobs:
 
 ---
 
-## 9. 案例研究 | Case Studies
+## 8. 案例研究 | Case Studies
 
-### 9.1 Ionic Framework（ionic.io）
+### 8.1 Ionic Framework（ionic.io）
 
 Ionic Framework 是最著名的 Web Components 实践案例。Ionic 4+ 完全基于 Stencil 构建为 Web Components，可在 Vue、React、Angular 中复用。
 
@@ -1617,7 +1567,7 @@ import '@ionic/vue/css/ionic.bundle.css';
 const app = createApp(App).use(IonicVue);
 ```
 
-### 9.2 SAP UI5 Web Components
+### 8.2 SAP UI5 Web Components
 
 SAP UI5 Web Components 是企业级 Web Components 库，提供符合 SAP Fiori 设计规范的组件。
 
@@ -1628,7 +1578,7 @@ SAP UI5 Web Components 是企业级 Web Components 库，提供符合 SAP Fiori 
 3. **国际化**：内置 i18n 支持。
 4. **主题切换**：通过 CSS 变量实现主题切换。
 
-### 9.3 GitHub Web Components
+### 8.3 GitHub Web Components
 
 GitHub 在其网站中大量使用 Web Components，包括 `<details-dialog>`、`<filter-input>`、`<clipboard-copy>` 等组件。
 
@@ -1638,7 +1588,7 @@ GitHub 在其网站中大量使用 Web Components，包括 `<details-dialog>`、
 2. **轻量级**：每个组件独立打包，按需加载。
 3. **可访问性**：完整的键盘导航与屏幕阅读器支持。
 
-### 9.4 Adobe Spectrum Web Components
+### 8.4 Adobe Spectrum Web Components
 
 Adobe Spectrum Web Components 是 Adobe 设计系统的官方 Web Components 实现。
 
@@ -1648,7 +1598,7 @@ Adobe Spectrum Web Components 是 Adobe 设计系统的官方 Web Components 实
 2. **TypeScript 优先**：完整的 TypeScript 类型定义。
 3. **可主题化**：通过 CSS 变量实现深色模式、高对比度模式等。
 
-### 9.5 VueUse Web Components
+### 8.5 VueUse Web Components
 
 VueUse 部分工具可作为 Web Components 分发，提供跨框架的状态管理与工具函数。
 
@@ -1869,7 +1819,7 @@ function App() {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：何时应该使用 Vue Web Components 而非 Vue SFC？请列出至少 3 个场景。
 
@@ -1959,7 +1909,7 @@ function App() {
 
 ---
 
-## 11. 参考文献 | References
+## 10. 参考文献 | References
 
 1. W3C. (2023). *Custom Elements Specification*. W3C. https://w3c.github.io/webcomponents/spec/custom/
 
@@ -2003,28 +1953,28 @@ function App() {
 
 ---
 
-## 12. 延伸阅读 | Further Reading
+## 11. 延伸阅读 | Further Reading
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **Vue 3 Custom Elements**：https://vuejs.org/guide/extras/web-components.html
 - **MDN Web Components**：https://developer.mozilla.org/en-US/docs/Web/API/Web_components
 - **Google Web Components**：https://developers.google.com/web/fundamentals/web-components
 - **web.dev Web Components**：https://web.dev/web-components-io/
 
-### 12.2 进阶书籍
+### 11.2 进阶书籍
 
 - **《Web Components in Action》**：Ben Farrell 著，Manning Publications，2022。
 - **《Building Web Components with Lit》**：Andres Bukres 著，O'Reilly Media，2022。
 - **《Component-Based Software Engineering》**：George T. Heineman 著，Springer，2023。
 
-### 12.3 在线课程
+### 11.3 在线课程
 
 - **Frontend Masters: Web Components**：https://frontendmasters.com/courses/web-components/
 - **web.dev: Learn Web Components**：https://web.dev/learn-web-components/
 - **Pluralsight: Web Components Fundamentals**：https://www.pluralsight.com/courses/web-components-fundamentals
 
-### 12.4 工具与库
+### 11.4 工具与库
 
 - **Lit**：https://lit.dev/
 - **Stencil**：https://stenciljs.com/
@@ -2033,7 +1983,7 @@ function App() {
 - **Custom Elements Manifest Analyzer**：https://custom-elements-manifest.open-wc.org/
 - **Storybook for Web Components**：https://storybook.js.org/docs/web-components/get-started/introduction
 
-### 12.5 设计系统案例
+### 11.5 设计系统案例
 
 - **Ionic Framework**：https://ionicframework.com/
 - **SAP UI5 Web Components**：https://sap.github.io/ui5-webcomponents/
@@ -2041,14 +1991,14 @@ function App() {
 - **GitHub Primer**：https://primer.style/
 - **Microsoft Fluent UI**：https://www.npmjs.com/package/@fluentui/web-components
 
-### 12.6 社区与博客
+### 11.6 社区与博客
 
 - **Web Components Community**：https://webcomponents.community/
 - **Custom Elements Everywhere**：https://custom-elements-everywhere.com/
 - **Chrome Developers Blog**：https://developer.chrome.com/blog/
 - **web.dev blog**：https://web.dev/blog/
 
-### 12.7 相关规范
+### 11.7 相关规范
 
 - **Custom Elements**：https://html.spec.whatwg.org/multipage/custom-elements.html
 - **Shadow DOM**：https://dom.spec.whatwg.org/#shadow-trees
@@ -2056,7 +2006,7 @@ function App() {
 - **CSS Scoping**：https://drafts.csswg.org/css-scoping/
 - **CSS Shadow Parts**：https://drafts.csswg.org/css-shadow-parts/
 
-### 12.8 学习路径建议
+### 11.8 学习路径建议
 
 1. **入门阶段**：
    - 阅读 MDN Web Components 教程

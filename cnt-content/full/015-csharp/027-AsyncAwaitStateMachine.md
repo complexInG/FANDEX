@@ -16,6 +16,7 @@ prerequisites:
   - csharp/概述与环境配置
 ---
 
+
 # async/await 状态机：从语法糖到执行模型的全景解析
 
 > 本章对标 MIT 6.1020（Software Construction）与 Stanford CS110L（Safety in Systems Programming）的异步教学深度，结合 ECMA-334 规范、CLR RFC 与 .NET Runtime 源码，将 `async/await` 的语法糖层层剥开，揭示编译器生成的状态机、`AsyncMethodBuilder`、`IAsyncStateMachine`、`MoveNext`、`SynchronizationContext`、`TaskScheduler` 与 `ConfigureAwait` 之间的协作机制。
@@ -37,53 +38,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（1956 年原版 + 2001 年修订版）的六个认知层次。完成本章学习后，读者应能：
-
-### 1.1 Remember（记忆）
-
-- 复述 `async/await` 关键字在 C# 5.0 中引入的历史背景与动机。
-- 列出 `IAsyncStateMachine` 接口的成员（`MoveNext`、`SetStateMachine`、`<>1__state`、`<>t__builder`、`<>u__1` 等编译器生成字段）。
-- 说出 `AsyncMethodBuilder`、`AsyncTaskMethodBuilder<T>`、`AsyncValueTaskMethodBuilder<T>` 三者的职责差异。
-- 描述 `SynchronizationContext.Current` 与 `TaskScheduler.Current` 在上下文捕获中的角色。
-
-### 1.2 Understand（理解）
-
-- 解释编译器为何将 `async` 方法转换为状态机而非基于线程的延续（continuation）链。
-- 用自己的语言说明 `MoveNext` 状态转移的有限状态自动机（FSA）语义。
-- 推导 `await` 表达式在同步完成与异步完成两条路径下的执行差异。
-- 区分 `ConfigureAwait(true)` 与 `ConfigureAwait(false)` 在 UI 应用、ASP.NET classic 与 ASP.NET Core 中的行为差异。
-
-### 1.3 Apply（应用）
-
-- 为现有同步代码库设计渐进式异步化迁移方案。
-- 在自定义 `AsyncMethodBuilder` 场景中（如 `PoolableAsyncMethodBuilder`）实现对象池复用。
-- 在热路径（hot path）中将 `Task<T>` 替换为 `ValueTask<T>` 并测量分配减少量。
-
-### 1.4 Analyze（分析）
-
-- 对照 .NET Runtime 源码（`AsyncTaskMethodBuilder`、`AsyncValueTaskMethodBuilder`）分析 `MoveNext` 的异常传播路径。
-- 对比单次 `await` 与 `await Task.WhenAll(...)` 在状态机字段数量与状态转移图上的差异。
-- 解构 `SynchronizationContext` 的 `Post`/`Send` 调度模型，识别 `DispatcherSynchronizationContext`（WPF）、`WinFormsSynchronizationContext`、`AspNetSynchronizationContext` 的实现差异。
-
-### 1.5 Evaluate（评价）
-
-- 评估在库代码中默认使用 `ConfigureAwait(false)` 的争议（Stephen Toub 推荐 vs 部分开发者反对）。
-- 评判 `ValueTask` 作为公共 API 返回类型的兼容性风险（多次 await 的未定义行为）。
-- 在 ASP.NET Core（无 `SynchronizationContext`）与传统 ASP.NET（有 `AspNetSynchronizationContext`）之间，比较 `ConfigureAwait` 的实际影响。
-
-### 1.6 Create（创造）
-
-- 设计一个面向嵌入式或游戏引擎（如 Unity）的自定义 `AsyncMethodBuilder`，将异步执行调度到主线程帧循环。
-- 实现一个可观测的状态机探针（profiler），在每次 `MoveNext` 转移时记录耗时、状态值、awaiter 类型。
-- 构建一个静态分析器（基于 Roslyn），检测代码库中潜在的 `async void`、`.Result`、`.Wait()` 陷阱。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 异步编程的史前时代（.NET Framework 1.x，2002）
+### 1.1 异步编程的史前时代（.NET Framework 1.x，2002）
 
 .NET 1.0 的异步模型基于 **APM（Asynchronous Programming Model）**，又称 `Begin/End` 模式。所有 `I/O` 类（如 `Stream`、`HttpWebRequest`、`Socket`）暴露成对的 `BeginXxx`/`EndXxx` 方法：
 
@@ -105,7 +62,7 @@ APM 的痛点：
 - **取消与进度支持缺失**：APM 没有内置取消令牌，需要自定义协议。
 - **资源泄漏风险**：忘记调用 `EndXxx` 会导致 `IAsyncResult` 资源泄漏。
 
-### 2.2 EAP：基于事件的异步模式（.NET Framework 2.0，2005）
+### 1.2 EAP：基于事件的异步模式（.NET Framework 2.0，2005）
 
 为缓解 APM 的回调问题，.NET 2.0 引入 **EAP（Event-based Asynchronous Pattern）**：
 
@@ -132,7 +89,7 @@ EAP 的遗留问题：
 - **错误模型不一致**：错误在 `e.Error` 中而非异常。
 - **组合性差**：无法像 `Task.WhenAll` 那样组合多个 EAP 操作。
 
-### 2.3 TAP：任务异步模式（.NET Framework 4.0，2010）
+### 1.3 TAP：任务异步模式（.NET Framework 4.0，2010）
 
 `Task` 与 `Task<T>` 的引入（PFX 团队，Stephen Toub 主导）标志着 **TAP（Task-based Asynchronous Pattern）** 的诞生。`Task` 是一个表示异步操作的一等公民（first-class object），具备：
 
@@ -153,7 +110,7 @@ task.ContinueWith(t => {
 
 TAP 解决了组合性问题，但仍然依赖显式 `ContinueWith`，回调嵌套依然存在。
 
-### 2.4 async/await：异步的语法糖革命（C# 5.0，2012）
+### 1.4 async/await：异步的语法糖革命（C# 5.0，2012）
 
 C# 5.0 引入 `async`/`await` 关键字，将异步代码以同步形式书写。这是 C# 历史上最重要的语言特性之一，由 Mads Torgersen、Stephen Toub、Lucian Wischik 等人设计。
 
@@ -167,7 +124,7 @@ async Task<string> FetchAsync(string url) {
 }
 ```
 
-### 2.5 后续演进：从 C# 5.0 到 C# 12
+### 1.5 后续演进：从 C# 5.0 到 C# 12
 
 | 版本 | 年份 | 关键特性 | 对异步的影响 |
 |------|------|----------|--------------|
@@ -182,7 +139,7 @@ async Task<string> FetchAsync(string url) {
 | C# 12.0 | 2023 | `async Task<T>` 主流化、`CollectionExpression` | 与异步无直接关系 |
 | C# 13.0 | 2024 | `params ReadOnlySpan<T>`、`ref struct` 改进 | 间接影响异步内存模型 |
 
-### 2.6 .NET Runtime 的演进
+### 1.6 .NET Runtime 的演进
 
 - **.NET Framework 4.5（2012）**：`async/await` 首次可用，`SynchronizationContext` 在 ASP.NET classic 中起关键作用。
 - **.NET Core 1.0（2016）**：移除 `AspNetSynchronizationContext`，所有异步操作不再需要 `ConfigureAwait(false)`。
@@ -196,9 +153,9 @@ async Task<string> FetchAsync(string url) {
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ECMA-334 规范视角
+### 2.1 ECMA-334 规范视角
 
 ECMA-334（C# 语言规范）第 12 章将 `async` 修饰符定义为方法、Lambda 或匿名方法的可选修饰符。形式上：
 
@@ -215,7 +172,7 @@ $$
 - 任何具有对应 `AsyncMethodBuilder` 的类型（C# 7+ 自定义返回类型）
 - `void`（仅用于事件处理器，称为 `async void`）
 
-### 3.2 await 表达式的形式语义
+### 2.2 await 表达式的形式语义
 
 `await` 表达式形如：
 
@@ -237,7 +194,7 @@ $$
 \textit{Awaitable}(T) \iff \exists A.\ \text{GetAwaiter}(T): A \land \text{IsCompleted}(A): \text{bool} \land \text{OnCompleted}(A, \text{Action}) \land \text{GetResult}(A): \tau
 $$
 
-### 3.3 状态机接口的形式化定义
+### 2.3 状态机接口的形式化定义
 
 CLR 通过 `IAsyncStateMachine` 接口（定义于 `System.Runtime.CompilerServices`）规范状态机行为：
 
@@ -266,7 +223,7 @@ $$
 - $s_0 = 0$：初始状态。
 - $F = \{-1\}$：终止状态集。
 
-### 3.4 AsyncMethodBuilder 接口
+### 2.4 AsyncMethodBuilder 接口
 
 `AsyncMethodBuilder` 是编译器与运行时之间的契约。每个异步返回类型对应一个 builder 类型：
 
@@ -292,7 +249,7 @@ public struct AsyncTaskMethodBuilder<T>
 }
 ```
 
-### 3.5 SynchronizationContext 的形式化角色
+### 2.5 SynchronizationContext 的形式化角色
 
 `SynchronizationContext` 是 .NET 对"执行上下文"的抽象。其核心方法：
 
@@ -314,7 +271,7 @@ $$
 
 在 WPF 中，`Post` 调用 `Dispatcher.BeginInvoke`；在 Windows Forms 中，`Post` 调用 `Control.BeginInvoke`；在 ASP.NET classic 中，`Post` 在请求上下文上恢复执行；在 ASP.NET Core 与 Console 应用中，`SynchronizationContext.Current == null`，`Post` 默认委托给 `ThreadPool.QueueUserWorkItem`。
 
-### 3.6 类型系统约束
+### 2.6 类型系统约束
 
 C# 7.0 起，`async` 方法的返回类型可以自定义，但必须满足：
 
@@ -326,9 +283,9 @@ C# 10.0 进一步允许 `[AsyncMethodBuilder(...)]` 应用于属性、字段、�
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 状态机生成的核心算法
+### 3.1 状态机生成的核心算法
 
 编译器对 `async` 方法的转换遵循以下算法（简化版）：
 
@@ -352,7 +309,7 @@ C# 10.0 进一步允许 `[AsyncMethodBuilder(...)]` 应用于属性、字段、�
    - 返回 <>t__builder.Task
 ```
 
-### 4.2 MoveNext 的状态转移逻辑
+### 3.2 MoveNext 的状态转移逻辑
 
 `MoveNext` 是状态机的核心。考虑以下原方法：
 
@@ -444,7 +401,7 @@ private struct SumAsync_StateMachine : IAsyncStateMachine
 }
 ```
 
-### 4.3 状态转移图
+### 3.3 状态转移图
 
 将上述 `MoveNext` 抽象为状态转移图：
 
@@ -460,7 +417,7 @@ $$
 
 其中 $s_i^{\text{susp}}$ 表示挂起状态，等待底层 I/O 完成后由 `AwaitUnsafeOnCompleted` 注册的回调触发 `MoveNext`。
 
-### 4.4 AwaitUnsafeOnCompleted 的调用链
+### 3.4 AwaitUnsafeOnCompleted 的调用链
 
 `AwaitUnsafeOnCompleted` 是状态机与 awaiter 之间的桥梁。其调用链：
 
@@ -475,7 +432,7 @@ $$
 \text{Complete}(T, v) \to \text{Invoke}(\text{Continuation}(T)) \to \text{MoveNext}(\text{StateMachine}) \to \text{Resume at } s_{i+1}
 $$
 
-### 4.5 同步完成 vs 异步完成的优化
+### 3.5 同步完成 vs 异步完成的优化
 
 当 `awaiter.IsCompleted == true` 时，状态机不挂起，直接调用 `GetResult()` 继续。这避免了：
 
@@ -485,7 +442,7 @@ $$
 
 这是 **fast path**。许多高性能场景（如内存缓存命中）会走 fast path，几乎无开销。
 
-### 4.6 SynchronizationContext 捕获的时机
+### 3.6 SynchronizationContext 捕获的时机
 
 在 `AwaitUnsafeOnCompleted` 中，builder 会捕获当前 `SynchronizationContext`（如果有）：
 
@@ -506,7 +463,7 @@ else
 
 `ConfigureAwait(false)` 的作用是**告诉 builder 不捕获 SynchronizationContext**，直接在底层 Task 完成的线程上继续执行 `MoveNext`。
 
-### 4.7 状态机装箱的时机
+### 3.7 状态机装箱的时机
 
 状态机默认是 `struct`，避免堆分配。但有两种情况会触发装箱（boxing）：
 
@@ -524,7 +481,7 @@ $$
 \end{cases}
 $$
 
-### 4.8 ValueTask 的优化原理
+### 3.8 ValueTask 的优化原理
 
 `ValueTask<T>` 是结构体，可以同时包装：
 
@@ -540,7 +497,7 @@ $$
 - 不能并发 await
 - API 设计复杂
 
-### 4.9 性能模型
+### 3.9 性能模型
 
 设 $N$ 为 `await` 点数，$P_{\text{susp}}$ 为挂起概率，则：
 
@@ -558,13 +515,13 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 最小可复现：观察状态机字段
+### 4.1 最小可复现：观察状态机字段
 
 下面通过 `dotnet` 创建项目，反编译观察编译器生成的状态机。
 
-#### 5.1.1 项目结构
+#### 4.1.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -577,7 +534,7 @@ flowchart TD
     T0 --> T3
 ```
 
-#### 5.1.2 csproj 配置（.NET 9，C# 12）
+#### 4.1.2 csproj 配置（.NET 9，C# 12）
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -601,7 +558,7 @@ flowchart TD
 </Project>
 ```
 
-#### 5.1.3 源代码
+#### 4.1.3 源代码
 
 ```csharp
 // Program.cs
@@ -636,7 +593,7 @@ public class Program
 }
 ```
 
-#### 5.1.4 反编译查看状态机
+#### 4.1.4 反编译查看状态机
 
 ```bash
 # 使用 ilspycmd 反编译
@@ -646,11 +603,11 @@ ilspycmd -p StateMachineDemo.dll > decompiled.cs
 
 反编译后可以看到编译器生成的 `<Main>d__0` 结构体，包含 `<>1__state`、`<>t__builder`、`<>u__1`、`<>s__4` 等字段。
 
-### 5.2 企业级示例：自定义 AsyncMethodBuilder
+### 4.2 企业级示例：自定义 AsyncMethodBuilder
 
 下面演示如何为自定义类型 `PoolableTask<T>` 实现 `AsyncMethodBuilder`，复用状态机对象。
 
-#### 5.2.1 项目结构
+#### 4.2.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -665,7 +622,7 @@ flowchart TD
     T0 --> T4
 ```
 
-#### 5.2.2 csproj 配置
+#### 4.2.2 csproj 配置
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -681,7 +638,7 @@ flowchart TD
 </Project>
 ```
 
-#### 5.2.3 自定义异步返回类型
+#### 4.2.3 自定义异步返回类型
 
 ```csharp
 // PoolableTask.cs
@@ -745,7 +702,7 @@ public readonly struct PoolableTask<T>
 }
 ```
 
-#### 5.2.4 自定义 AsyncMethodBuilder
+#### 4.2.4 自定义 AsyncMethodBuilder
 
 ```csharp
 // PoolableAsyncMethodBuilder.cs
@@ -845,7 +802,7 @@ public struct PoolableAsyncMethodBuilder<T>
 }
 ```
 
-#### 5.2.5 使用示例
+#### 4.2.5 使用示例
 
 ```csharp
 // Program.cs
@@ -874,9 +831,9 @@ class Program
 }
 ```
 
-### 5.3 SynchronizationContext 捕获演示
+### 4.3 SynchronizationContext 捕获演示
 
-#### 5.3.1 WPF 场景
+#### 4.3.1 WPF 场景
 
 ```csharp
 // WPF 中的死锁陷阱
@@ -927,7 +884,7 @@ public partial class MainWindow : Window
 }
 ```
 
-#### 5.3.2 ASP.NET Core 场景
+#### 4.3.2 ASP.NET Core 场景
 
 ```csharp
 // ASP.NET Core 控制器
@@ -958,7 +915,7 @@ public class DataController : ControllerBase
 }
 ```
 
-### 5.4 ValueTask 性能基准
+### 4.4 ValueTask 性能基准
 
 ```csharp
 // ValueTaskBenchmark.cs
@@ -1023,7 +980,7 @@ public class Program
 }
 ```
 
-### 5.5 完整的异步流水线示例
+### 4.5 完整的异步流水线示例
 
 ```csharp
 // AsyncPipeline.cs
@@ -1152,9 +1109,9 @@ public class Program
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Java CompletableFuture 的对比
+### 5.1 与 Java CompletableFuture 的对比
 
 | 维度 | C# async/await | Java CompletableFuture |
 |------|----------------|------------------------|
@@ -1167,7 +1124,7 @@ public class Program
 | 阻塞 | `.Result` 死锁风险 | `.get()` 阻塞当前线程 |
 | 虚拟线程 | 不需要（线程池轻量） | Java 21+ 虚拟线程替代 |
 
-#### 6.1.1 Java 示例
+#### 5.1.1 Java 示例
 
 ```java
 // Java 风格
@@ -1182,7 +1139,7 @@ CompletableFuture<Integer> withExecutor = CompletableFuture
     .supplyAsync(() -> fetchData("url"), executor);
 ```
 
-#### 6.1.2 C# 等价
+#### 5.1.2 C# 等价
 
 ```csharp
 // C# 风格
@@ -1196,7 +1153,7 @@ async Task<int> ProcessAsync()
 
 C# 的优势在于**线性书写**，编译器自动处理状态转移。
 
-### 6.2 与 Kotlin Coroutines 的对比
+### 5.2 与 Kotlin Coroutines 的对比
 
 | 维度 | C# async/await | Kotlin Coroutines |
 |------|----------------|--------------------|
@@ -1208,7 +1165,7 @@ C# 的优势在于**线性书写**，编译器自动处理状态转移。
 | 结构化并发 | 无内置 | `coroutineScope`、`supervisorScope` |
 | 多线程 | `Task.Run`、`ThreadPool` | `Dispatchers.IO`、`Dispatchers.Default` |
 
-#### 6.2.1 Kotlin 示例
+#### 5.2.1 Kotlin 示例
 
 ```kotlin
 // Kotlin 风格
@@ -1227,7 +1184,7 @@ suspend fun processAll() = coroutineScope {
 
 Kotlin 的优势：**结构化并发**（structured concurrency）是语言级特性，避免协程泄漏。
 
-### 6.3 与 JavaScript async/await 的对比
+### 5.3 与 JavaScript async/await 的对比
 
 | 维度 | C# async/await | JavaScript async/await |
 |------|----------------|------------------------|
@@ -1241,7 +1198,7 @@ Kotlin 的优势：**结构化并发**（structured concurrency）是语言级�
 
 JavaScript 的状态机由 V8 引擎在 JIT 阶段生成，无源码级可见性。
 
-### 6.4 与 Go goroutine 的对比
+### 5.4 与 Go goroutine 的对比
 
 | 维度 | C# async/await | Go goroutine |
 |------|----------------|---------------|
@@ -1257,7 +1214,7 @@ Go 的优势：**goroutine 极轻量**，2KB 起步栈，可以轻松开百万�
 
 C# 的优势：**类型安全**、**异步取消**、**与 BCL 集成度高**。
 
-### 6.5 综合对比表
+### 5.5 综合对比表
 
 | 特性 | C# 12 | Java 21 | Kotlin 1.9 | TS 5.x | Go 1.22 |
 |------|-------|---------|------------|--------|---------|
@@ -1270,9 +1227,9 @@ C# 的优势：**类型安全**、**异步取消**、**与 BCL 集成度高**。
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：async void
+### 6.1 陷阱一：async void
 
 ```csharp
 // 错误：async void 异常无法被捕获
@@ -1292,7 +1249,7 @@ async Task ProcessAsync()
 
 **例外**：事件处理器必须使用 `async void`，因为 .NET 事件签名要求 `void` 返回。
 
-### 7.2 陷阱二：.Result / .Wait() 死锁
+### 6.2 陷阱二：.Result / .Wait() 死锁
 
 ```csharp
 // 错误：在 UI 线程或 ASP.NET classic 中死锁
@@ -1314,7 +1271,7 @@ private async Task<string> GetDataAsync()
 2. 库代码使用 `ConfigureAwait(false)`。
 3. ASP.NET Core 无此问题（无 `SynchronizationContext`）。
 
-### 7.3 陷阱三：未传递 CancellationToken
+### 6.3 陷阱三：未传递 CancellationToken
 
 ```csharp
 // 错误：无法取消
@@ -1332,7 +1289,7 @@ async Task<string> FetchAsync(string url, CancellationToken ct = default)
 }
 ```
 
-### 7.4 陷阱四：async 方法中未 await
+### 6.4 陷阱四：async 方法中未 await
 
 ```csharp
 // 错误：fire-and-forget，异常丢失
@@ -1352,7 +1309,7 @@ async Task ProcessAllAsync(IEnumerable<string> urls)
 }
 ```
 
-### 7.5 陷阱五：ValueTask 误用
+### 6.5 陷阱五：ValueTask 误用
 
 ```csharp
 // 错误：ValueTask 不能多次 await
@@ -1372,7 +1329,7 @@ int r1 = await task;
 int r2 = await task;  // OK
 ```
 
-### 7.6 陷阱六：循环中的 async
+### 6.6 陷阱六：循环中的 async
 
 ```csharp
 // 错误：串行执行
@@ -1394,7 +1351,7 @@ await Task.WhenAll(urls.Select(async url =>
 }));
 ```
 
-### 7.7 陷阱七：在 lock 内 await
+### 6.7 陷阱七：在 lock 内 await
 
 ```csharp
 // 错误：C# 不允许在 lock 内 await
@@ -1420,7 +1377,7 @@ async Task ProcessAsync()
 }
 ```
 
-### 7.8 陷阱八：捕获循环变量
+### 6.8 陷阱八：捕获循环变量
 
 ```csharp
 // 错误：所有 Lambda 捕获同一个 i
@@ -1438,7 +1395,7 @@ for (int i = 0; i < 10; i++)
 }
 ```
 
-### 7.9 最佳实践总结
+### 6.9 最佳实践总结
 
 1. **库代码默认 `ConfigureAwait(false)`**（争议但被广泛采纳）。
 2. **公共 API 返回 `Task<T>`**，仅内部热路径用 `ValueTask<T>`。
@@ -1453,11 +1410,11 @@ for (int i = 0; i < 10; i++)
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目配置
+### 7.1 项目配置
 
-#### 8.1.1 csproj 推荐
+#### 7.1.1 csproj 推荐
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -1485,9 +1442,9 @@ for (int i = 0; i < 10; i++)
 </Project>
 ```
 
-### 8.2 异步诊断工具
+### 7.2 异步诊断工具
 
-#### 8.2.1 EventSource 监听状态机
+#### 7.2.1 EventSource 监听状态机
 
 ```csharp
 // AsyncEventListener.cs
@@ -1521,7 +1478,7 @@ public class AsyncEventListener : EventListener
 }
 ```
 
-#### 8.2.2 dotnet-counters
+#### 7.2.2 dotnet-counters
 
 ```bash
 # 实时监控 GC、ThreadPool、Task 指标
@@ -1535,7 +1492,7 @@ dotnet-counters monitor -p <pid> \
 # - GC Gen 0/1/2 Count
 ```
 
-#### 8.2.3 dotnet-trace 与 PerfView
+#### 7.2.3 dotnet-trace 与 PerfView
 
 ```bash
 # 抓取 30 秒异步事件
@@ -1546,11 +1503,11 @@ dotnet-trace collect -p <pid> --format speedscope \
 dotnet-trace report trace.nettrace
 ```
 
-#### 8.2.4 async debugger（Visual Studio）
+#### 7.2.4 async debugger（Visual Studio）
 
 Visual Studio 2022 提供 **Async Call Stack** 窗口，可以查看异步调用链（而非物理线程调用栈）。在调试时打开 `Debug > Windows > Tasks`，可以看到所有 Task 状态。
 
-### 8.3 性能基准
+### 7.3 性能基准
 
 ```csharp
 // AsyncBenchmark.cs
@@ -1607,9 +1564,9 @@ public class Program
 }
 ```
 
-### 8.4 调试技巧
+### 7.4 调试技巧
 
-#### 8.4.1 排查"卡住的" Task
+#### 7.4.1 排查"卡住的" Task
 
 ```csharp
 // 启用 Task 超时诊断
@@ -1632,7 +1589,7 @@ public static async Task<T> WithTimeoutAndDiag<T>(
 }
 ```
 
-#### 8.4.2 检测未 await 的 Task
+#### 7.4.2 检测未 await 的 Task
 
 ```csharp
 // 在 Debug 模式下记录未 await 的 Task
@@ -1649,7 +1606,7 @@ public static void FireAndForget(Task task, [CallerMemberName] string caller = "
 }
 ```
 
-### 8.5 NuGet 包管理
+### 7.5 NuGet 包管理
 
 ```xml
 <!-- 异步相关常用包 -->
@@ -1667,9 +1624,9 @@ public static void FireAndForget(Task task, [CallerMemberName] string caller = "
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 .NET Runtime 中的状态机实现
+### 8.1 .NET Runtime 中的状态机实现
 
 源码位置：[dotnet/runtime/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/AsyncTaskMethodBuilder.cs](https://github.com/dotnet/runtime)
 
@@ -1733,7 +1690,7 @@ public struct AsyncTaskMethodBuilder<TResult>
 }
 ```
 
-### 9.2 ASP.NET Core 中的异步中间件
+### 8.2 ASP.NET Core 中的异步中间件
 
 ```csharp
 // ASP.NET Core 中间件：异步链
@@ -1770,7 +1727,7 @@ app.UseMiddleware<AsyncMiddleware>();
 
 ASP.NET Core 的请求管道是一个完整的异步链，每个中间件 `await` 下一个，状态机层层嵌套。
 
-### 9.3 EF Core 中的异步查询
+### 8.3 EF Core 中的异步查询
 
 ```csharp
 public async Task<List<User>> GetUsersAsync(
@@ -1788,7 +1745,7 @@ public async Task<List<User>> GetUsersAsync(
 
 EF Core 的 `ToListAsync` 内部使用 `DbDataReader.ReadAsync`，全程异步，避免阻塞数据库连接池线程。
 
-### 9.4 Kestrel 的异步 I/O
+### 8.4 Kestrel 的异步 I/O
 
 Kestrel（ASP.NET Core 内置 HTTP 服务器）使用 `System.IO.Pipelines` 与 `PipeReader`/`PipeWriter`：
 
@@ -1815,7 +1772,7 @@ public async Task ProcessConnectionAsync(ConnectionContext connection)
 
 Kestrel 的核心是异步流水线，每个连接占用的线程极少（通常 0-1 个线程，I/O 完全异步）。
 
-### 9.5 Unity 中的异步
+### 8.5 Unity 中的异步
 
 Unity 2017+ 支持 `async/await`，但有特殊注意事项：
 
@@ -2118,7 +2075,7 @@ public class Program
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 9**：为什么 .NET 设计 `ValueTask<T>` 而不是直接优化 `Task<T>` 减少分配？
 
@@ -2171,9 +2128,9 @@ public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 规范与官方文档
+### 10.1 规范与官方文档
 
 [1] Ecma International. 2023. *ECMA-334: The C# Language Specification (6th edition)*. Geneva, Switzerland: Ecma International. https://www.ecma-international.org/wp-content/uploads/ECMA-334_6th_edition_december_2022.pdf
 
@@ -2181,7 +2138,7 @@ public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
 
 [3] Microsoft. 2024. *Asynchronous programming patterns*. .NET documentation. https://learn.microsoft.com/dotnet/standard/asynchronous-programming-patterns/
 
-### 11.2 设计论文与博客
+### 10.2 设计论文与博客
 
 [4] Stephen Toub. 2011. *Task-based Asynchronous Pattern (TAP)*. MSDN Magazine. https://learn.microsoft.com/archive/msdn-magazine/2012/september/async-programming-task-based-asynchronous-pattern-tap
 
@@ -2193,7 +2150,7 @@ public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
 
 [8] Lucian Wischik. 2012. *Async Causality Chain*. MSDN Magazine. https://learn.microsoft.com/archive/msdn-magazine/2013/march/async-await-faq
 
-### 11.3 学术论文
+### 10.3 学术论文
 
 [9] Gonzalez, A., Bhattacharya, S., Das, A., et al. 2015. *Asynclocks: Leveraging async/await for thread-safe concurrent programming*. In Proceedings of the 30th Annual ACM Symposium on Applied Computing (SAC '15). Association for Computing Machinery, New York, NY, USA, 2110–2115. https://doi.org/10.1145/2695664.2695929
 
@@ -2203,7 +2160,7 @@ public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
 
 [12] Okur, S., Hartveld, D. L., Dig, D., et al. 2014. *A study and toolkit for asynchronous programming in C#. In Proceedings of the 36th International Conference on Software Engineering (ICSE 2014)*. Association for Computing Machinery, New York, NY, USA, 1117–1127. https://doi.org/10.1145/2568225.2568267
 
-### 11.4 书籍
+### 10.4 书籍
 
 [13] Albahari, J. 2020. *C# in a Nutshell: The Definitive Reference*. O'Reilly Media, Sebastopol, CA, USA. ISBN: 978-1492051017.
 
@@ -2211,7 +2168,7 @@ public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
 
 [15] Wagner, B. 2017. *Concurrency in C# Cookbook (2nd ed.)*. O'Reilly Media, Sebastopol, CA, USA. ISBN: 978-1491949572.
 
-### 11.5 Runtime 源码
+### 10.5 Runtime 源码
 
 [16] Microsoft. 2024. *dotnet/runtime repository*. GitHub. https://github.com/dotnet/runtime
 
@@ -2223,35 +2180,35 @@ public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶书籍
+### 11.1 进阶书籍
 
 - **Stephen Cleary**. *Concurrency in C# Cookbook (2nd ed.)* — 全面覆盖 Task、async、并行、响应式编程。
 - **Joe Duffy**. *Concurrent Programming on Windows* — 虽然年代较早，但对 .NET 底层并发模型有深入剖析。
 - **Jeffrey Richter**. *CLR via C# (4th ed.)* — 第 27 章"Compute-Bound Asynchronous Operations"和第 28 章"I/O-Bound Asynchronous Operations"是经典章节。
 
-### 12.2 学术资源
+### 11.2 学术资源
 
 - **MIT 6.1020 Software Construction** — https://ocw.mit.edu/ — 异步与并发模块。
 - **Stanford CS110L Safety in Systems Programming** — https://web.stanford.edu/class/cs110l/ — Rust/C++ 异步安全对比。
 - **CMU 15-440 Distributed Systems** — http://www.cs.cmu.edu/~dga/15-440/ — 分布式异步通信。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **.NET Performance YouTube channel**（Maoni Stephens, Stephen Toub）— GC 与异步性能深度讲解。
 - **Stephen Toub 的 GitHub** — https://github.com/stephentoub — 大量异步性能示例。
 - **Async & Await FAQ（Stephen Cleary）** — https://blog.stephencleary.com/2012/02/async-and-await.html — 最权威的 FAQ。
 - **Parallel Programming with .NET（MSDN blog）** — https://devblogs.microsoft.com/dotnet/ — 官方并行编程博客。
 
-### 12.4 相关源码
+### 11.4 相关源码
 
 - **dotnet/runtime/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/** — Task、TaskScheduler、SynchronizationContext 实现。
 - **dotnet/aspnetcore/src/Servers/Kestrel/** — Kestrel 异步 I/O 实现。
 - **dotnet/efcore/src/EFCore/** — EF Core 异步查询实现。
 - **dotnet/roslyn/src/Compilers/CSharp/Portable/Lowering/AsyncRewriter/** — 编译器状态机重写逻辑。
 
-### 12.5 视频资源
+### 11.5 视频资源
 
 - **Channel 9: async/await in C#** — https://channel9.msdn.com/ — Stephen Toub 系列讲座。
 - **NDC Conference: Asynchronous Programming in C#** — https://www.ndcconferences.com/ — 业界顶级 .NET 会议。

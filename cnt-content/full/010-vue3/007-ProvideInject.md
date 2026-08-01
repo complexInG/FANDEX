@@ -16,6 +16,7 @@ prerequisites:
   - vue3/语法速查
 ---
 
+
 # Provide 与 Inject | Dependency Injection in Vue 3
 
 > 本文档对标 MIT 6.170、Stanford CS142、CMU 17-437 软件工程课程水准，系统化阐述 Vue 3 中 `provide`/`inject` 依赖注入机制的原理、形式化定义、企业级实践与对比分析。涵盖响应式注入、`InjectionKey` 类型系统、跨层级通信、SSR 单例污染防护、插件架构设计等主题，并辅以数学建模、案例研究与习题。
@@ -39,67 +40,15 @@ prerequisites:
 
 ---
 
-## 1. 学习目标 | Learning Objectives
+## 1. 历史动机与发展脉络 | Historical Motivation and Evolution
 
-本章节基于 Bloom 教育目标分类法设计学习目标，覆盖记忆、理解、应用、分析、评价、创造六个层次。完成本章学习后，学习者应能够独立设计企业级依赖注入架构，并对其适用场景与限制做出准确判断。
-
-### 1.1 记忆层（Remember）
-
-- **R1**：准确陈述 Vue 3 中 `provide` 与 `inject` 两个 API 的函数签名，包括 `provide(key, value)` 与 `inject(key, defaultValue?, treatDefaultAsFactory?)`。
-- **R2**：列举 `provide`/`inject` 的三种典型使用场景：跨层级通信、插件配置注入、组件库主题传递。
-- **R3**：复述 `InjectionKey<T>` 的类型定义：它是 `Symbol` 的子类型，泛型参数 `T` 描述注入值的类型。
-- **R4**：背记 `provide`/`inject` 必须在 `setup()` 同步执行期间调用，不能放在异步回调或 `onMounted` 等生命周期钩子中调用。
-- **R5**：识别 `provide` 的注入查找规则：子组件 `inject` 时，沿组件树向上查找最近的 `provide`，直到根组件或未找到则使用默认值。
-
-### 1.2 理解层（Understand）
-
-- **U1**：解释依赖注入（Dependency Injection, DI）模式的核心思想：控制反转（Inversion of Control, IoC），由父组件控制子组件依赖的提供，而非子组件主动获取。
-- **U2**：阐述 Vue 3 的 `provide`/`inject` 与 Vue 2 的关键差异：Vue 2 的 `provide` 是非响应式的（除非主动返回响应式对象），Vue 3 完全整合 Composition API，可直接传递 `ref`/`reactive` 实现响应式注入。
-- **U3**：描述 `provide` 在组件实例上的内部存储结构：每个组件实例有 `provides` 选项，子组件的 `provides` 通过原型链指向父组件的 `provides`，形成链式查找。
-- **U4**：理解 `InjectionKey<T>` 的类型安全机制：通过 `Symbol` 作为运行时键、泛型 `T` 作为编译时类型，实现类型与值的统一。
-- **U5**：说明 `provide`/`inject` 与 Pinia/Vuex 的本质区别：前者是组件树内的依赖注入，后者是全局状态管理，二者适用场景不同。
-
-### 1.3 应用层（Apply）
-
-- **A1**：使用 `provide`/`inject` 实现一个完整的主题切换系统，支持亮色/暗色双主题，并保证响应式更新。
-- **A2**：使用 `InjectionKey<T>` 实现类型安全的国际化（i18n）注入，包含语言切换、翻译函数、locale 状态。
-- **A3**：实现一个表单组件库，通过 `provide`/`inject` 在 `Form`、`FormItem`、`Input` 三层组件间传递校验状态、错误信息、字段名。
-- **A4**：在 Vue 3 插件开发中，使用 `app.provide()` 向全局注入服务（如 HTTP 客户端、日志服务、配置对象）。
-- **A5**：实现一个响应式的用户认证状态注入，支持登录、登出、权限校验，并在多个组件中共享。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：分析 Vue 3 `provide`/`inject` 的查找算法复杂度，对比与 React Context 的实现差异（Vue 原型链查找 vs React Provider 查找）。
-- **An2**：解构 `provide` 在 SSR 场景下的单例污染问题：`app.provide()` 在 SSR 中是全局单例，所有请求共享同一份注入，需通过 `Symbol` 或请求级实例隔离。
-- **An3**：分析响应式注入的依赖追踪机制：当 `inject` 的值是 `ref` 时，组件渲染期间自动建立依赖，`ref.value` 变化触发组件重新渲染。
-- **An4**：对比 `provide`/`inject`、`props`/`emits`、EventBus、Pinia 四种组件通信方式的时间复杂度与空间复杂度。
-- **An5**：分析组件库（如 Element Plus、Vuetify）如何利用 `provide`/`inject` 实现配置全局化与组件间协作。
-
-### 1.5 评价层（Evaluate）
-
-- **E1**：评估一个具体业务场景应当使用 `provide`/`inject` 还是 Pinia，权衡开发成本、可维护性、可测试性、可扩展性。
-- **E2**：判断何时应当将 `provide` 包装为 Composable（如 `useTheme()`、`useI18n()`），而非直接在子组件中 `inject`，权衡 API 友好度与封装成本。
-- **E3**：评价 `readonly()` 包装注入值的必要性：何时应当暴露可变状态，何时应当只允许子组件读取、由父组件独占修改权。
-- **E4**：权衡 `provide`/`inject` 在测试中的可维护性：单元测试需要 mock 注入值，对比直接 `import` 服务的测试复杂度。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计一套企业级依赖注入框架，支持依赖声明、生命周期管理、作用域隔离（单例、请求、组件级），并兼容 Vue 3 的响应式系统。
-- **C2**：构建一个基于 `provide`/`inject` 的多租户 SaaS 架构，支持租户配置注入、权限隔离、主题定制。
-- **C3**：设计一个 Vue 3 插件体系，使用 `app.provide()` 注入核心服务，允许第三方插件扩展或替换服务实现。
-- **C4**：实现一个支持热重载（HMR）的 `provide`/`inject` 调试工具，可视化组件树的注入关系，帮助开发者快速定位注入缺失或冲突。
-
----
-
-## 2. 历史动机与发展脉络 | Historical Motivation and Evolution
-
-### 2.1 依赖注入模式的起源
+### 1.1 依赖注入模式的起源
 
 依赖注入（Dependency Injection, DI）是控制反转（Inversion of Control, IoC）的一种实现形式，最早由 Martin Fowler 在 2004 年的论文《Inversion of Control Containers and the Dependency Injection pattern》中系统化命名。其核心思想是：**对象的依赖由外部容器提供，而非对象自身创建**。
 
 DI 模式在企业级 Java（Spring Framework）、.NET（Unity、NInject）、Angular 等框架中广泛应用。Angular 1.x 在前端领域首次将 DI 作为核心架构，2016 年 Angular 2+ 进一步强化了 DI 容器设计。
 
-### 2.2 Vue 2 时代（2016-2020）：初步支持
+### 1.2 Vue 2 时代（2016-2020）：初步支持
 
 Vue 2.2 引入 `provide`/`inject` API，主要服务于高级组件库开发者。其设计动机：
 
@@ -133,11 +82,11 @@ export default {
 };
 ```
 
-### 2.3 Vue 3 时代（2020-至今）：全面重构
+### 1.3 Vue 3 时代（2020-至今）：全面重构
 
 Vue 3 对 `provide`/`inject` 进行了根本性重构：
 
-#### 2.3.1 Composition API 整合（Vue 3.0）
+#### 1.3.1 Composition API 整合（Vue 3.0）
 
 `provide`/`inject` 成为 Composition API 的一部分，可在 `setup()` 中以函数形式调用：
 
@@ -153,7 +102,7 @@ export default {
 };
 ```
 
-#### 2.3.2 InjectionKey 类型系统（Vue 3.0）
+#### 1.3.2 InjectionKey 类型系统（Vue 3.0）
 
 引入 `InjectionKey<T>` 类型，使用 `Symbol` 作为运行时键，泛型 `T` 作为编译时类型：
 
@@ -166,7 +115,7 @@ provide(ThemeKey, ref('dark'));
 const theme = inject(ThemeKey); // 自动推断为 Ref<string> | undefined
 ```
 
-#### 2.3.3 默认值与工厂函数（Vue 3.0）
+#### 1.3.3 默认值与工厂函数（Vue 3.0）
 
 `inject` 支持第二个参数作为默认值，第三个参数 `treatDefaultAsFactory` 指示是否将默认值视为工厂函数：
 
@@ -178,7 +127,7 @@ const theme = inject('theme', 'light');
 const config = inject('config', () => createDefaultConfig(), true);
 ```
 
-#### 2.3.4 应用级 provide（Vue 3.0）
+#### 1.3.4 应用级 provide（Vue 3.0）
 
 `app.provide()` 在应用级别注入，所有组件均可访问：
 
@@ -188,11 +137,11 @@ app.provide('httpClient', axios);
 app.provide('config', { apiBase: '/api' });
 ```
 
-#### 2.3.5 SSR 友好（Vue 3.2+）
+#### 1.3.5 SSR 友好（Vue 3.2+）
 
 Vue 3.2+ 优化了 SSR 场景下的 `provide`/`inject`，通过 `app.provide()` 与请求级应用实例隔离，避免单例污染。
 
-### 2.4 Evan You 的设计哲学
+### 1.4 Evan You 的设计哲学
 
 Evan You 对 `provide`/`inject` 的定位：
 
@@ -201,7 +150,7 @@ Evan You 对 `provide`/`inject` 的定位：
 3. **类型安全是关键**：`InjectionKey<T>` 的引入使得 TypeScript 用户能够获得完整的类型推断，避免运行时错误。
 4. **响应式是默认行为**：Vue 3 中 `provide` 的值若为 `ref`/`reactive`，则自动响应式，无需额外处理。
 
-### 2.5 与 React Context 的对比
+### 1.5 与 React Context 的对比
 
 React Context（2018 年稳定）与 Vue `provide`/`inject` 解决相似问题，但实现差异显著：
 
@@ -217,7 +166,7 @@ React Context（2018 年稳定）与 Vue `provide`/`inject` 解决相似问题�
 
 **关键差异**：Vue 的响应式系统使得 `inject` 的组件仅在其依赖的 `ref.value` 变化时重渲染，而 React Context 的所有消费者在 `value` 引用变化时全部重渲染，需要通过 `useMemo` 或拆分 Context 优化。
 
-### 2.6 与 Angular DI 的对比
+### 1.6 与 Angular DI 的对比
 
 Angular 的 DI 容器是框架核心，支持构造函数注入、服务单例、多级注入器（root、module、component）：
 
@@ -242,9 +191,9 @@ Vue 的设计权衡是**简单优先**：对于 90% 的应用，`props`/`emits` 
 
 ---
 
-## 3. 形式化定义 | Formal Definitions
+## 2. 形式化定义 | Formal Definitions
 
-### 3.1 组件树的形式化定义
+### 2.1 组件树的形式化定义
 
 **定义 3.1（组件树）**：Vue 应用是一个有根的有向树 $\mathcal{T} = \langle V, E \rangle$，其中：
 
@@ -261,7 +210,7 @@ $$
 \end{cases}
 $$
 
-### 3.2 provide 的形式化定义
+### 2.2 provide 的形式化定义
 
 **定义 3.3（provide 操作）**：`provide(key, value)` 在组件 $v$ 上记录一个键值对：
 
@@ -283,7 +232,7 @@ $$
 \text{provides}_r.\text{__proto__} = \text{appProvides}
 $$
 
-### 3.3 inject 的形式化定义
+### 2.3 inject 的形式化定义
 
 **定义 3.5（inject 查找算法）**：`inject(key, default?)` 在组件 $v$ 上的查找过程：
 
@@ -304,7 +253,7 @@ $$
 
 在最坏情况下（键不存在），需要遍历从 $v$ 到根 $r$ 的所有祖先。
 
-### 3.4 响应式注入的形式化
+### 2.4 响应式注入的形式化
 
 **定义 3.7（响应式注入值）**：若 `provide` 的值 $\text{val}$ 是响应式对象（`ref` 或 `reactive`），则 `inject` 返回的也是同一引用：
 
@@ -318,7 +267,7 @@ $$
 2. **依赖追踪**：组件渲染期间访问 $\text{val}.\text{value}$ 或 $\text{val}.\text{prop}$ 时，自动建立依赖。
 3. **变更通知**：当 $\text{val}$ 变化时，所有依赖该值的组件触发重渲染。
 
-### 3.5 InjectionKey 的类型系统
+### 2.5 InjectionKey 的类型系统
 
 **定义 3.8（InjectionKey）**：`InjectionKey<T>` 是 `Symbol` 的子类型：
 
@@ -343,7 +292,7 @@ $$
 \forall k: \text{InjectionKey}<T>, \forall c: \text{consumer}: \text{inject}(c, k): T | \text{undefined}
 $$
 
-### 3.6 默认值的形式化
+### 2.6 默认值的形式化
 
 **定义 3.10（inject 默认值）**：`inject(key, defaultValue?, treatDefaultAsFactory?)` 的语义：
 
@@ -358,7 +307,7 @@ $$
 
 工厂函数模式用于避免默认值的副作用在每次调用时重复执行（如创建新对象）。
 
-### 3.7 readonly 注入的形式化
+### 2.7 readonly 注入的形式化
 
 **定义 3.11（只读注入）**：通过 `readonly()` 包装响应式对象，禁止子组件修改：
 
@@ -373,7 +322,7 @@ $$
 \text{readonly}(\text{val})[p] := \text{val}[p] \text{ (write, blocked, warn)}
 $$
 
-### 3.8 注入作用域的形式化
+### 2.8 注入作用域的形式化
 
 **定义 3.12（注入作用域）**：`provide` 的作用域是从提供者组件及其所有后代组件：
 
@@ -385,9 +334,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析 | Theoretical Derivation
+## 3. 理论推导与原理解析 | Theoretical Derivation
 
-### 4.1 provides 原型链的实现机制
+### 3.1 provides 原型链的实现机制
 
 Vue 3 内部使用原型链实现 `provide`/`inject` 的链式查找。每个组件实例有一个 `provides` 对象，其原型指向父组件的 `provides`。
 
@@ -437,7 +386,7 @@ function inject(key, defaultValue, treatDefaultAsFactory = false) {
 2. **原型链查找**：`inject` 通过原型链自动向上查找，复杂度 $O(d)$，$d$ 为组件深度。
 3. **根组件特例**：根组件的 `provides` 通过 `Object.create(appContext.provides)` 创建，使得 `app.provide` 注入的值可被全应用访问。
 
-### 4.2 响应式注入的依赖追踪
+### 3.2 响应式注入的依赖追踪
 
 当 `inject` 返回一个 `ref` 时，Vue 的响应式系统自动追踪依赖。依赖追踪基于 `effect` 与 `track`：
 
@@ -461,7 +410,7 @@ $$
 \forall e_i \in \text{dep}(\text{theme}): \text{schedule}(e_i)
 $$
 
-### 4.3 inject 的查找复杂度分析
+### 3.3 inject 的查找复杂度分析
 
 设组件树深度为 $d$，键 $k$ 在第 $i$ 层（$0 \leq i \leq d$）被 `provide`（$i=0$ 表示根组件），则 `inject` 的查找步数为 $d - i$。
 
@@ -482,7 +431,7 @@ $$
 - 对于频繁 `inject` 的值，优先 `provide` 在靠近消费者的组件，减少查找深度。
 - 对于全局不变的值（如配置），使用 `app.provide` 注入根组件，避免重复 `provide`。
 
-### 4.4 与 React Context 的性能对比
+### 3.4 与 React Context 的性能对比
 
 React Context 的重渲染机制基于 `Context.Provider` 的 `value` 引用比较：
 
@@ -508,7 +457,7 @@ $$
 \text{speedup} = \frac{n}{n/k} = k
 $$
 
-### 4.5 SSR 单例污染的理论分析
+### 3.5 SSR 单例污染的理论分析
 
 在 SSR 中，`app.provide()` 注入的值在应用实例上，若同一应用实例服务多个请求，会导致数据污染。
 
@@ -560,7 +509,7 @@ provide(requestSymbol, requestData);
 
 Nuxt 3 采用请求级应用实例 + `useNuxtApp()` composable 封装，是当前 SSR DI 的最佳实践。
 
-### 4.6 InjectionKey 的类型推断原理
+### 3.6 InjectionKey 的类型推断原理
 
 `InjectionKey<T>` 的类型推断基于 TypeScript 的泛型与 `Symbol` 唯一性：
 
@@ -592,7 +541,7 @@ export function inject<T>(
 - 消费者无需手动断言：`inject(ThemeKey)` 自动推断为 `Ref<string> | undefined`，无需 `as` 断言。
 - 跨文件共享 Key 时保持类型一致性：导出 `InjectionKey` 即导出类型契约。
 
-### 4.7 readonly 注入的拦截机制
+### 3.7 readonly 注入的拦截机制
 
 `readonly()` 返回一个 Proxy，拦截 `set`、`delete` 操作：
 
@@ -630,9 +579,9 @@ function readonly(target) {
 
 ---
 
-## 5. 代码示例 | Code Examples
+## 4. 代码示例 | Code Examples
 
-### 5.1 基础用法：主题切换
+### 4.1 基础用法：主题切换
 
 ```vue
 <!-- App.vue —— Vue 3.4+ -->
@@ -701,7 +650,7 @@ const toggleTheme = inject('toggleTheme');
 </style>
 ```
 
-### 5.2 类型安全：InjectionKey 与 Symbol
+### 4.2 类型安全：InjectionKey 与 Symbol
 
 ```typescript
 // keys/theme.ts —— 集中管理 InjectionKey
@@ -759,7 +708,7 @@ provide(ThemeKey, {
 </script>
 ```
 
-### 5.3 响应式注入：计数器
+### 4.3 响应式注入：计数器
 
 ```vue
 <!-- CounterProvider.vue —— Vue 3.4+ -->
@@ -848,7 +797,7 @@ const { increment, decrement, reset } = inject('counter');
 </template>
 ```
 
-### 5.4 企业级表单组件库
+### 4.4 企业级表单组件库
 
 ```typescript
 // form/keys.ts —— Form 组件库的 InjectionKey
@@ -1091,7 +1040,7 @@ const labelStyle = computed(() => ({
 </style>
 ```
 
-### 5.5 国际化（i18n）系统
+### 4.5 国际化（i18n）系统
 
 ```typescript
 // i18n/keys.ts
@@ -1212,7 +1161,7 @@ const { t, locale, setLocale, availableLocales } = useI18n();
 </template>
 ```
 
-### 5.6 用户认证系统
+### 4.6 用户认证系统
 
 ```typescript
 // auth/keys.ts
@@ -1322,7 +1271,7 @@ export function useAuth(): AuthContext {
 }
 ```
 
-### 5.7 插件开发：HTTP 客户端注入
+### 4.7 插件开发：HTTP 客户端注入
 
 ```typescript
 // plugins/httpClient.ts
@@ -1382,7 +1331,7 @@ export function useHttpClient(): AxiosInstance {
 }
 ```
 
-### 5.8 工厂函数默认值
+### 4.8 工厂函数默认值
 
 ```typescript
 // 当 inject 未找到时，使用工厂函数创建默认值
@@ -1422,7 +1371,7 @@ const config = inject('config', createDefaultConfig, true);
 // 适用于需要隔离状态的场景
 ```
 
-### 5.9 应用级 provide 与插件
+### 4.9 应用级 provide 与插件
 
 ```typescript
 // main.ts —— Vue 3.4+ 应用入口
@@ -1451,7 +1400,7 @@ app.provide('appConfig', {
 app.mount('#app');
 ```
 
-### 5.10 调试：可视化注入树
+### 4.10 调试：可视化注入树
 
 ```typescript
 // composables/useProvideDebug.ts —— 开发模式下记录 provide/inject 调用
@@ -1486,9 +1435,9 @@ export function debugInject(key: string | symbol) {
 
 ---
 
-## 6. 对比分析 | Comparative Analysis
+## 5. 对比分析 | Comparative Analysis
 
-### 6.1 与 Props/Emit 的对比
+### 5.1 与 Props/Emit 的对比
 
 | 维度 | provide/inject | props/emit |
 |------|----------------|------------|
@@ -1508,7 +1457,7 @@ export function debugInject(key: string | symbol) {
 - 需要全局共享 → Pinia。
 - 组件库内部协作 → `provide`/`inject`。
 
-### 6.2 与 EventBus 的对比
+### 5.2 与 EventBus 的对比
 
 | 维度 | provide/inject | EventBus |
 |------|----------------|----------|
@@ -1527,7 +1476,7 @@ export function debugInject(key: string | symbol) {
 - 无响应式，需手动触发更新。
 - Vue 3 已移除官方 EventBus（`$on`、`$off`），推荐使用 mitt 等第三方库或迁移到 `provide`/`inject` + Pinia。
 
-### 6.3 与 Pinia/Vuex 的对比
+### 5.3 与 Pinia/Vuex 的对比
 
 | 维度 | provide/inject | Pinia |
 |------|----------------|-------|
@@ -1546,7 +1495,7 @@ export function debugInject(key: string | symbol) {
 - 购物车、商品列表、全局计数 → Pinia（需要 Devtools 与持久化）。
 - 表单状态、对话框状态 → 视复杂度，简单用 `provide`/`inject`，复杂用 Pinia。
 
-### 6.4 与 React Context 的对比
+### 5.4 与 React Context 的对比
 
 | 维度 | Vue provide/inject | React Context |
 |------|---------------------|---------------|
@@ -1566,7 +1515,7 @@ export function debugInject(key: string | symbol) {
 2. **API 风格**：Vue 是函数式，React 是 JSX，各有优劣。
 3. **默认值**：Vue 在 `inject` 时声明，React 在 `createContext` 时声明，后者更集中。
 
-### 6.5 与 Angular DI 的对比
+### 5.5 与 Angular DI 的对比
 
 | 维度 | Vue provide/inject | Angular DI |
 |------|---------------------|------------|
@@ -1591,7 +1540,7 @@ export function debugInject(key: string | symbol) {
 - 组件树作为天然 DI 容器，无需额外抽象。
 - `InjectionKey` 提供类型安全，不引入装饰器复杂度。
 
-### 6.6 与 Svelte Context 的对比
+### 5.6 与 Svelte Context 的对比
 
 | 维度 | Vue provide/inject | Svelte Context |
 |------|---------------------|----------------|
@@ -1603,7 +1552,7 @@ export function debugInject(key: string | symbol) {
 
 Svelte 的 `setContext`/`getContext` 与 Vue 非常相似，但 Svelte 的响应式基于编译时，Vue 基于运行时 Proxy。
 
-### 6.7 综合选型决策矩阵
+### 5.7 综合选型决策矩阵
 
 | 场景 | 推荐方案 |
 |------|----------|
@@ -1619,9 +1568,9 @@ Svelte 的 `setContext`/`getContext` 与 Vue 非常相似，但 Svelte 的响应
 
 ---
 
-## 7. 常见陷阱与最佳实践 | Pitfalls and Best Practices
+## 6. 常见陷阱与最佳实践 | Pitfalls and Best Practices
 
-### 7.1 陷阱：响应式丢失
+### 6.1 陷阱：响应式丢失
 
 **错误代码**：
 
@@ -1647,7 +1596,7 @@ const theme = inject('theme'); // theme 是 Ref<string>，响应式
 
 **原理**：`provide` 接收的是值的引用，若传递 `theme.value`，则传递的是字符串值，失去响应式。
 
-### 7.2 陷阱：解构失去响应式
+### 6.2 陷阱：解构失去响应式
 
 **错误代码**：
 
@@ -1664,7 +1613,7 @@ const theme = inject('theme'); // Ref<string>
 // 或使用 toRefs 解构对象
 ```
 
-### 7.3 陷阱：命名冲突
+### 6.3 陷阱：命名冲突
 
 **错误代码**：
 
@@ -1698,7 +1647,7 @@ provide('parentA:config', { apiBase: '/api' });
 provide('parentB:config', { apiBase: '/api/v2' });
 ```
 
-### 7.4 陷阱：类型推断失败
+### 6.4 陷阱：类型推断失败
 
 **错误代码**：
 
@@ -1717,7 +1666,7 @@ provide(ThemeKey, ref('dark'));
 const theme = inject(ThemeKey); // 类型为 Ref<string> | undefined
 ```
 
-### 7.5 陷阱：在异步上下文中调用
+### 6.5 陷阱：在异步上下文中调用
 
 **错误代码**：
 
@@ -1751,7 +1700,7 @@ export default {
 
 **原理**：`provide`/`inject` 依赖 `getCurrentInstance()` 获取当前组件实例，异步上下文中实例可能丢失。
 
-### 7.6 陷阱：SSR 单例污染
+### 6.6 陷阱：SSR 单例污染
 
 **错误代码**：
 
@@ -1780,7 +1729,7 @@ app.get('*', (req, res) => {
 });
 ```
 
-### 7.7 陷阱：循环依赖
+### 6.7 陷阱：循环依赖
 
 **错误代码**：
 
@@ -1804,7 +1753,7 @@ export default {
 
 **说明**：虽然 `provide` 在 `setup` 中同步执行，但若 B 在 A 的 `setup` 完成前尝试 `inject`，会失败。Vue 3 的渲染顺序保证父组件 `setup` 先于子组件，所以一般无此问题。但若使用 `setup()` 返回渲染函数，需注意。
 
-### 7.8 陷阱：默认值的副作用
+### 6.8 陷阱：默认值的副作用
 
 **错误代码**：
 
@@ -1826,7 +1775,7 @@ const config = inject('config', () => ({
 }), true);
 ```
 
-### 7.9 陷阱：修改 readonly 注入
+### 6.9 陷阱：修改 readonly 注入
 
 **错误代码**：
 
@@ -1853,7 +1802,7 @@ const increment = inject('increment');
 increment(); // 通过方法修改
 ```
 
-### 7.10 最佳实践：封装为 Composable
+### 6.10 最佳实践：封装为 Composable
 
 **推荐做法**：
 
@@ -1906,7 +1855,7 @@ export function useTheme(): ThemeContext {
 3. 封装性：使用者只需调用 `provideTheme`（提供方）或 `useTheme`（消费方）。
 4. 可测试性：测试时可单独 mock `useTheme`。
 
-### 7.11 最佳实践：使用 readonly 保护状态
+### 6.11 最佳实践：使用 readonly 保护状态
 
 ```typescript
 // 父组件独占修改权，子组件只读
@@ -1923,7 +1872,7 @@ const state = inject('state');
 const actions = inject('actions');
 ```
 
-### 7.12 最佳实践：集中管理 InjectionKey
+### 6.12 最佳实践：集中管理 InjectionKey
 
 ```typescript
 // keys/index.ts —— 集中导出所有 InjectionKey
@@ -1940,7 +1889,7 @@ export { HttpClientKey } from './httpClient';
 - 重命名时一处修改，全应用生效。
 - 便于生成文档与类型检查。
 
-### 7.13 最佳实践：SSR 请求级隔离
+### 6.13 最佳实践：SSR 请求级隔离
 
 ```typescript
 // server.js —— Nuxt 风格的请求级应用
@@ -1965,7 +1914,7 @@ async function render(url, request) {
 }
 ```
 
-### 7.14 最佳实践：测试 mock
+### 6.14 最佳实践：测试 mock
 
 ```typescript
 // tests/setup.ts —— 测试中 mock provide
@@ -2002,9 +1951,9 @@ test('renders theme', () => {
 
 ---
 
-## 8. 工程实践 | Engineering Practice
+## 7. 工程实践 | Engineering Practice
 
-### 8.1 项目结构组织
+### 7.1 项目结构组织
 
 ```mermaid
 flowchart TD
@@ -2038,7 +1987,7 @@ flowchart TD
     T21 --> T22
 ```
 
-### 8.2 Vite 配置
+### 7.2 Vite 配置
 
 ```typescript
 // vite.config.ts
@@ -2069,7 +2018,7 @@ export default defineConfig({
 });
 ```
 
-### 8.3 TypeScript 配置
+### 7.3 TypeScript 配置
 
 ```json
 // tsconfig.json
@@ -2091,7 +2040,7 @@ export default defineConfig({
 }
 ```
 
-### 8.4 Vue Devtools 调试
+### 7.4 Vue Devtools 调试
 
 Vue Devtools 6+ 支持 `provide`/`inject` 的可视化：
 
@@ -2120,7 +2069,7 @@ if (import.meta.env.DEV) {
 }
 ```
 
-### 8.5 单元测试
+### 7.5 单元测试
 
 ```typescript
 // tests/composables/useTheme.spec.ts
@@ -2187,7 +2136,7 @@ describe('useTheme', () => {
 });
 ```
 
-### 8.6 集成测试
+### 7.6 集成测试
 
 ```typescript
 // tests/integration/form.spec.ts
@@ -2239,7 +2188,7 @@ describe('Form integration', () => {
 });
 ```
 
-### 8.7 SSR 兼容
+### 7.7 SSR 兼容
 
 ```typescript
 // Nuxt 3 风格的请求级状态
@@ -2285,7 +2234,7 @@ export function useAuth() {
 }
 ```
 
-### 8.8 插件开发规范
+### 7.8 插件开发规范
 
 ```typescript
 // plugins/types.ts —— 插件类型定义
@@ -2361,7 +2310,7 @@ const logger = inject(LoggerKey);
 logger.info('Application started');
 ```
 
-### 8.9 性能监控
+### 7.9 性能监控
 
 ```typescript
 // composables/useProvidePerformance.ts
@@ -2393,7 +2342,7 @@ export function useProvidePerformance() {
 }
 ```
 
-### 8.10 调试工具
+### 7.10 调试工具
 
 ```typescript
 // devtools/provideInspector.ts —— Vue Devtools 自定义 Inspector
@@ -2434,9 +2383,9 @@ function collectProvideTree(instance: any): any {
 
 ---
 
-## 9. 案例研究 | Case Studies
+## 8. 案例研究 | Case Studies
 
-### 9.1 案例一：Element Plus 的 Form 组件
+### 8.1 案例一：Element Plus 的 Form 组件
 
 Element Plus 的 `Form` 组件是 `provide`/`inject` 的经典应用：
 
@@ -2480,7 +2429,7 @@ provide(formContextKey, context);
 3. **类型安全**：`formContextKey` 使用 `InjectionKey<FormContext>`，子组件 `inject` 时获得完整类型。
 4. **readonly 保护**：`FormItem` 仅暴露必要方法，内部状态不可直接修改。
 
-### 9.2 案例二：Vuetify 的主题系统
+### 8.2 案例二：Vuetify 的主题系统
 
 Vuetify 3 的主题系统通过 `provide`/`inject` 实现全局主题切换：
 
@@ -2530,7 +2479,7 @@ export function useTheme() {
 2. **computed 派生**：`current` 是 `global` 的 computed，自动响应。
 3. **全局 API**：`useTheme()` 作为 Composable，简化使用。
 
-### 9.3 案例三：Nuxt 的 Runtime Config
+### 8.3 案例三：Nuxt 的 Runtime Config
 
 Nuxt 3 通过 `provide`/`inject` 实现服务端与客户端共享的运行时配置：
 
@@ -2571,7 +2520,7 @@ async function createNuxtApp(ssrContext) {
 2. **响应式**：`reactive(config)` 允许运行时更新。
 3. **非空断言**：`inject(key)!` 假设 Nuxt 框架保证注入存在。
 
-### 9.4 案例四：Vue Router 的注入
+### 8.4 案例四：Vue Router 的注入
 
 Vue Router 4 通过 `provide`/`inject` 实现路由信息共享：
 
@@ -2607,7 +2556,7 @@ export function useRoute() {
 2. **响应式路由**：`currentRoute` 是 `ref`，路由变化时自动响应。
 3. **全局属性兼容**：同时提供 `$router`、`$route` 全局属性，兼容 Options API。
 
-### 9.5 案例五：Pinia 的实现
+### 8.5 案例五：Pinia 的实现
 
 Pinia 内部也使用 `provide`/`inject` 实现插件机制：
 
@@ -2636,7 +2585,7 @@ export function usePinia() {
 }
 ```
 
-### 9.6 案例六：企业级微前端架构
+### 8.6 案例六：企业级微前端架构
 
 在微前端架构中，主应用通过 `provide`/`inject` 向子应用注入共享服务：
 
@@ -2661,7 +2610,7 @@ subApp.config.globalProperties.$sharedServices = mainApp._context.provides.share
 2. **解耦**：子应用通过 `inject` 获取依赖，不直接 import 主应用代码。
 3. **隔离**：每个子应用有独立 Vue 实例，状态隔离。
 
-### 9.7 案例七：VueUse 的 createGlobalState
+### 8.7 案例七：VueUse 的 createGlobalState
 
 VueUse 提供的 `createGlobalState` 是 `provide`/`inject` 的应用：
 
@@ -3093,7 +3042,7 @@ export const RequirePermission = defineComponent({
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：在什么场景下，应当优先选择 `provide`/`inject` 而非 Pinia？请列举至少三个场景并说明理由。
 
@@ -3208,11 +3157,11 @@ interface ServiceLifecycle {
 
 ---
 
-## 11. 参考文献 | References
+## 10. 参考文献 | References
 
 本文档参考了以下学术文献、官方文档与技术专著，遵循 ACM Reference Format。
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 [1] Evan You and the Vue.js Team. 2024. Vue.js 3 Official Documentation: Component Basics. Retrieved July 20, 2026 from https://vuejs.org/guide/components/provide-inject.html
 
@@ -3224,7 +3173,7 @@ interface ServiceLifecycle {
 
 [5] Evan You and the Vue.js Team. 2024. Vue.js 3 API Reference: inject. Retrieved July 20, 2026 from https://vuejs.org/api/composition-api-dependency-injection.html#inject
 
-### 11.2 学术文献
+### 10.2 学术文献
 
 [6] Martin Fowler. 2004. Inversion of Control Containers and the Dependency Injection Pattern. Retrieved July 20, 2026 from https://martinfowler.com/articles/injection.html
 
@@ -3236,7 +3185,7 @@ interface ServiceLifecycle {
 
 [10] Evan You. 2021. Vue 3.2 Released. Retrieved July 20, 2026 from https://blog.vuejs.org/posts/vue-3.2
 
-### 11.3 相关框架文档
+### 10.3 相关框架文档
 
 [11] Meta Platforms, Inc. 2024. React Documentation: Context. Retrieved July 20, 2026 from https://react.dev/reference/react/createContext
 
@@ -3248,7 +3197,7 @@ interface ServiceLifecycle {
 
 [15] Nuxt Labs. 2024. Nuxt 3 Documentation: Composables. Retrieved July 20, 2026 from https://nuxt.com/docs/api/composables/use-nuxt-app
 
-### 11.4 技术专著
+### 10.4 技术专著
 
 [16] Evan You. 2023. Vue.js 3 Design and Implementation (Vue.js 设计与实现). People's Posts and Telecommunications Press, Beijing, China.
 
@@ -3256,7 +3205,7 @@ interface ServiceLifecycle {
 
 [18] Holt Calhoun, Daniel Fallman, and Constantine Lignos. 2023. Vue.js 3 Cookbook: Discover effective techniques to leverage the benefits of Vue 3. Packt Publishing, Birmingham, UK.
 
-### 11.5 论文与技术报告
+### 10.5 论文与技术报告
 
 [19] Evan You. 2019. Vue 3.0 RFC: Composition API. Retrieved July 20, 2026 from https://github.com/vuejs/rfcs/blob/master/active-rfcs/0000-reactivity-ref-sugar.md
 
@@ -3264,7 +3213,7 @@ interface ServiceLifecycle {
 
 [21] Anthony Fu. 2022. Vue Use: Collection of Essential Vue Composition Utilities. Retrieved July 20, 2026 from https://vueuse.org/
 
-### 11.6 在线资源
+### 10.6 在线资源
 
 [22] Vue School. 2024. Vue 3 Composition API. Retrieved July 20, 2026 from https://vueschool.io/courses/vue-3-composition-api
 
@@ -3274,9 +3223,9 @@ interface ServiceLifecycle {
 
 ---
 
-## 12. 延伸阅读 | Further Reading
+## 11. 延伸阅读 | Further Reading
 
-### 12.1 书籍
+### 11.1 书籍
 
 1. **《Vue.js 设计与实现》**——霍春阳
    - 深入剖析 Vue 3 响应式系统、组件化、编译优化的实现原理。
@@ -3294,7 +3243,7 @@ interface ServiceLifecycle {
 5. **《Composition API with Vue 3》**——Daniel Klotz
    - 专注于 Composition API，深入探讨 `provide`/`inject` 的最佳实践。
 
-### 12.2 论文与 RFC
+### 11.2 论文与 RFC
 
 1. **Vue 3 Reactivity RFC**：https://github.com/vuejs/rfcs
    - Vue 官方的 RFC 列表，包含响应式系统、`provide`/`inject` 的设计讨论。
@@ -3305,7 +3254,7 @@ interface ServiceLifecycle {
 3. **Inversion of Control Containers and the Dependency Injection Pattern**——Martin Fowler
    - 依赖注入模式的奠基性文章，阐述 IoC 与 DI 的本质。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 1. **Vue School**：https://vueschool.io/
    - Vue 官方推荐的在线学习平台，包含 `provide`/`inject` 的视频教程。
@@ -3322,7 +3271,7 @@ interface ServiceLifecycle {
 5. **Component Party**：https://component-party.dev/
    - 多框架组件 API 对比，包含 `provide`/`inject` 在 Vue、React、Svelte 中的对比。
 
-### 12.4 开源项目参考
+### 11.4 开源项目参考
 
 1. **Element Plus**：https://github.com/element-plus/element-plus
    - Vue 3 组件库，`Form`、`Form-Item` 等组件大量使用 `provide`/`inject`。
@@ -3339,7 +3288,7 @@ interface ServiceLifecycle {
 5. **Pinia**：https://github.com/vuejs/pinia
    - 官方状态管理库，内部使用 `provide`/`inject` 实现插件机制。
 
-### 12.5 社区与讨论
+### 11.5 社区与讨论
 
 1. **Vue Discord**：https://discord.com/invite/vue
    - Vue 官方 Discord，与社区讨论 `provide`/`inject` 的实践。

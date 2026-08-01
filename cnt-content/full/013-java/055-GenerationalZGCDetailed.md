@@ -16,16 +16,6 @@ prerequisites:
   - java/概述与开发环境
 ---
 
-## 学习目标
-
-完成本章学习后，你应当能够：
-
-- **Remember（记忆）**：复述分代 ZGC（Generational ZGC）的关键术语，包括 colored pointer、load barrier、relocation set、remembered set、forwarding table 等。
-- **Understand（理解）**：解释 JDK 21 分代 ZGC 相比非分代 ZGC 的核心改进，以及分代假说在低延迟回收器中的具体体现。
-- **Apply（应用）**：在生产环境中通过 `-XX:+UseZGC -XX:+ZGenerational` 启用分代 ZGC，并使用 `jcmd`、JFR、`zgc-stat` 等工具观察其行为。
-- **Analyze（分析）**：解构分代 ZGC 的回收流水线，识别 young collection、major collection、relocation set selection 各阶段的工作内容与停顿来源。
-- **Evaluate（评价）**：针对大堆（>16GB）、低延迟（P99 < 5ms）、高分配速率场景，评估分代 ZGC 与 G1、Shenandoah 的取舍。
-- **Create（创造）**：设计一套分代 ZGC 调优实验，涵盖基线测量、参数扫描、回归验证，输出可复现的性能报告。
 
 ## 历史动机与发展脉络
 

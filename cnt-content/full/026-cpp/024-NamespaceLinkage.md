@@ -15,63 +15,16 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # 命名空间与链接
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 认知分类法（Bloom's Taxonomy）组织学习目标，使读者能够循序渐进地掌握 C++ 命名空间（namespace）与链接性（linkage）两大密切相关的核心机制，并具备在生产环境中设计、分析、评估大型程序组织方案的能力。命名空间与链接性是 C++ 程序架构的基石——前者解决名称冲突，后者决定跨翻译单元（translation unit）的符号可见性，二者共同决定了头文件、源文件、库、模块的边界与组合方式。
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述命名空间的完整语法骨架：`namespace optional-name { declarations }`，并能说明命名空间定义、别名（alias）、匿名形式、内联形式（inline）四种变体的写法。
-- **R2**：背出 ISO/IEC 14882:2020 中命名空间的定义位置：§9.8.1 [namespace.pre] 与 §9.8.2 [namespace.def]；链接性的定义位置：§6.6 [basic.link]。
-- **R3**：列出三种链接性（linkage）分类：无链接（no linkage）、内部链接（internal linkage）、外部链接（external linkage），并说明模块链接（module linkage，C++20 新增）的语义。
-- **R4**：记住 C++11/14/17/20/23 五代标准对命名空间与链接性的主要增补：内联命名空间（C++11）、嵌套命名空间简写（C++17）、`namespace fs = std::filesystem` 别名标准化、模块（C++20）、`export using`（C++20）、命名空间级 `using enum`（C++20）。
-- **R5**：背出 `using` 声明（using-declaration）与 `using` 指令（using-directive）的本质区别：前者引入单个名称，后者引入整个命名空间的"软注入"，仅作用于当前作用域的名称查找。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释"翻译单元"的完整定义：一个源文件（.cpp）加上所有直接或间接包含的头文件，经过预处理后形成的单一编译输入。
-- **U2**：阐明"内部链接"与"外部链接"在目标文件层面的差异：内部链接符号不进入目标文件的符号表（或标记为局部），外部链接符号进入符号表供链接器解析。
-- **U3**：描述参数依赖查找（ADL，Argument-Dependent Lookup）的完整规则：未限定名函数调用时，编译器除了在当前作用域查找外，还会在所有实参类型所在的命名空间中查找候选函数。
-- **U4**：解释"匿名命名空间"为何等价于 `static` 修饰但语义更广——`static` 不能修饰类与模板，匿名命名空间可以应用于所有实体。
-- **U5**：阐明"内联命名空间"的"透明性"——其成员被"注入"到外层命名空间，外层可以直接访问，无需写 `v2::`，便于版本管理与 ABI 兼容。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用嵌套命名空间简写（C++17）定义 `company::product::module::v2` 的多层命名空间结构。
-- **A2**：使用匿名命名空间为 .cpp 文件中的内部辅助函数提供内部链接，替代传统的 `static` 修饰。
-- **A3**：使用内联命名空间实现版本化库 API，默认暴露新版本，老版本通过显式命名空间访问。
-- **A4**：使用 `using` 声明将基类的重载函数引入派生类，避免名称遮蔽（name hiding）。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 `using namespace` 在头文件中使用的危害：污染所有包含该头文件的翻译单元，可能引发名称冲突、ADL 意外匹配、重载决议歧义。
-- **An2**：分析 `extern "C"` 的作用机制：禁用 C++ 名称修饰（name mangling），使函数符号符合 C 链接约定，便于与 C 库互操作。
-- **An3**：对比匿名命名空间与 `static` 修饰在 .cpp 文件中的差异：可应用范围、模板特化、类型可见性、ODR（One Definition Rule）影响。
-- **An4**：分析 C++20 模块系统对传统头文件-源文件模型的影响：模块接口单元（interface unit）、实现单元、分区、全局模块片段（global module fragment）。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价给定大型项目的命名空间设计在层级深度、名称长度、版本管理、内部细节隔离上的表现，给出 1-10 分的工程化评分。
-- **E2**：判断在以下场景中应选用 `static`、匿名命名空间、内联命名空间、`extern "C"` 中的哪一种，给出决策树。
-- **E3**：评估"在头文件中使用匿名命名空间"对 ODR 的影响，并给出修复方案。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个完整的版本化库命名空间结构，支持多版本并存、ABI 兼容、用户自定义类型的 ADL 扩展点。
-- **C2**：实现一个基于 `extern "C"` 的 C/C++ 互操作层，封装回调函数、错误码、字符串传递、内存所有权约定。
-- **C3**：设计一个插件系统，利用外部链接与 `extern "C"` 实现运行期动态库加载与符号解析。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 史前时代：C 语言的全局命名空间（pre-1998）
+### 1.1 史前时代：C 语言的全局命名空间（pre-1998）
 
 C 语言没有命名空间概念，所有全局标识符共享同一个命名空间。大型项目中不可避免地出现名称冲突——两个库都定义 `read`、`write`、`open`、`close` 等通用函数名时，链接器无法区分。C 语言的应对策略是命名约定（naming convention）：
 
@@ -85,7 +38,7 @@ int curl_easy_cleanup(void* handle);
 
 这种"前缀全局名"的方案丑陋但有效，被 POSIX、Win32、SQLite、libcurl 等大量 C 库广泛采用。C++ 早期（带类的 C 时代）继承了这一痛点。
 
-### 2.2 C++98：命名空间诞生
+### 1.2 C++98：命名空间诞生
 
 C++98（ISO/IEC 14882:1998）引入命名空间，从根本上解决了全局命名空间污染问题：
 
@@ -111,7 +64,7 @@ C++98 的命名空间特性：
 7. **`extern "C"`**：禁用名称修饰，用于 C 互操作。
 8. **ADL**：参数依赖查找规则确立。
 
-### 2.3 C++11：内联命名空间
+### 1.3 C++11：内联命名空间
 
 C++11（ISO/IEC 14882:2011，N2536 提案）引入**内联命名空间（inline namespace）**，从根本上解决了版本化库的痛点：
 
@@ -134,7 +87,7 @@ mylib::v1::process();   // 显式调用老版本
 
 C++11 同时规范了 `constexpr`、`static thread_local` 等链接性相关的存储类说明符。
 
-### 2.4 C++14：完善与稳定
+### 1.4 C++14：完善与稳定
 
 C++14 对命名空间与链接性的改动较少，主要是：
 
@@ -142,7 +95,7 @@ C++14 对命名空间与链接性的改动较少，主要是：
 2. **变量模板**：变量模板的链接性规则明确化。
 3. **`std::launder`**：与对象生存期相关的链接性细化。
 
-### 2.5 C++17：嵌套命名空间简写
+### 1.5 C++17：嵌套命名空间简写
 
 C++17（P1094 提案）引入嵌套命名空间的简写语法，减少了多层嵌套的样板代码：
 
@@ -164,7 +117,7 @@ C++17 同时引入：
 2. **`inline` 变量**：与内联函数类似，避免头文件中定义变量的 ODR 违规。
 3. **`[[maybe_unused]]`、`[[nodiscard]]`、`[[fallthrough]]`** 属性在命名空间中的标准化。
 
-### 2.6 C++20：模块系统革命
+### 1.6 C++20：模块系统革命
 
 C++20（P1102、P1779 提案）引入模块系统，从根本上改变了头文件-源文件模型：
 
@@ -202,7 +155,7 @@ C++20 同时引入：
 2. **`std::ranges`、`std::views`** 等新命名空间。
 3. **concepts 与命名空间的交互**：concept 必须在命名空间中定义。
 
-### 2.7 C++23：完善与扩展
+### 1.7 C++23：完善与扩展
 
 C++23 对命名空间与链接性的小幅度完善：
 
@@ -211,7 +164,7 @@ C++23 对命名空间与链接性的小幅度完善：
 3. **`std::expected`、`std::print`** 等新标准库命名空间。
 4. **`std::mdspan`**：多维数组视图的命名空间结构。
 
-### 2.8 C++26：反射与静态分析
+### 1.8 C++26：反射与静态分析
 
 C++26 提案中与命名空间相关的方向：
 
@@ -220,7 +173,7 @@ C++26 提案中与命名空间相关的方向：
 3. **Contracts**：契约检查与链接性的交互。
 4. **`std::meta`**：反射命名空间的标准化。
 
-### 2.9 时间线总结表
+### 1.9 时间线总结表
 
 | 标准版本 | 年份 | 命名空间与链接性关键里程碑 |
 | -------- | ---- | -------------------------- |
@@ -235,9 +188,9 @@ C++26 提案中与命名空间相关的方向：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ISO/IEC 14882 中的命名空间定义
+### 2.1 ISO/IEC 14882 中的命名空间定义
 
 ISO/IEC 14882:2020 §9.8.1 [namespace.pre] 第 1 段：
 
@@ -270,7 +223,7 @@ namespace-body:
     declaration-seq_opt
 ```
 
-### 3.2 命名空间成员的定义形式
+### 2.2 命名空间成员的定义形式
 
 ISO/IEC 14882:2020 §9.8.2.1 [namespace.def.general] 第 2 段：
 
@@ -284,7 +237,7 @@ ISO/IEC 14882:2020 §9.8.2.1 [namespace.def.general] 第 2 段：
 2. 命名空间成员可以在命名空间外部定义，但必须通过限定名（qualified-id）。
 3. 命名空间是开放的（open）——可以随时添加新成员。
 
-### 3.3 链接性的形式化定义
+### 2.3 链接性的形式化定义
 
 ISO/IEC 14882:2020 §6.6 [basic.link] 第 2 段：
 
@@ -302,7 +255,7 @@ linkage:
     external linkage
 ```
 
-### 3.4 无链接（No Linkage）
+### 2.4 无链接（No Linkage）
 
 ISO/IEC 14882:2020 §6.6.3 [basic.link.no_linkage]：
 
@@ -316,7 +269,7 @@ ISO/IEC 14882:2020 §6.6.3 [basic.link.no_linkage]：
 2. 块作用域中的类型（`using IntVec = std::vector<int>;` 在函数内部）。
 3. 块作用域中的静态变量（`static int counter = 0;` 在函数内部——这里的 `static` 是"静态存储期"，不是"内部链接"）。
 
-### 3.5 内部链接（Internal Linkage）
+### 2.5 内部链接（Internal Linkage）
 
 ISO/IEC 14882:2020 §6.6.4 [basic.link.internal]：
 
@@ -333,7 +286,7 @@ ISO/IEC 14882:2020 §6.6.4 [basic.link.internal]：
 5. 匿名联合（anonymous union）。
 6. 模板的非类型参数中的内部链接表达式。
 
-### 3.6 模块链接（Module Linkage，C++20）
+### 2.6 模块链接（Module Linkage，C++20）
 
 ISO/IEC 14882:2020 §6.6.5 [basic.link.module]：
 
@@ -343,7 +296,7 @@ ISO/IEC 14882:2020 §6.6.5 [basic.link.module]：
 
 模块链接是 C++20 引入的新链接性类型，介于内部链接与外部链接之间。模块内部的所有非导出实体具有模块链接，跨模块不可见，但模块内部各单元（接口单元、实现单元、分区）可见。
 
-### 3.7 外部链接（External Linkage）
+### 2.7 外部链接（External Linkage）
 
 ISO/IEC 14882:2020 §6.6.6 [basic.link.external]：
 
@@ -362,7 +315,7 @@ ISO/IEC 14882:2020 §6.6.6 [basic.link.external]：
 7. `inline` 函数与 `inline` 变量。
 8. `thread_local` 变量（但需 `extern` 声明跨翻译单元共享）。
 
-### 3.8 `extern "C"` 的形式化语义
+### 2.8 `extern "C"` 的形式化语义
 
 ISO/IEC 14882:2020 §9.8.3 [namespace.link] 第 1 段：
 
@@ -385,7 +338,7 @@ linkage-specification:
 3. 全局对象名同样符合 C 约定。
 4. 类型不受 `extern "C"` 影响——C++ 类型仍然是 C++ 类型。
 
-### 3.9 ADL 的形式化规则
+### 2.9 ADL 的形式化规则
 
 ISO/IEC 14882:2020 §6.5.4 [basic.lookup.argdep]：
 
@@ -403,7 +356,7 @@ ADL 的搜索规则：
    - 内层命名空间（如果实参类型在内联命名空间中）。
 3. 在所有关联命名空间中查找候选函数。
 
-### 3.10 内联命名空间的形式化语义
+### 2.10 内联命名空间的形式化语义
 
 ISO/IEC 14882:2020 §9.8.2.2 [namespace.inline]：
 
@@ -420,9 +373,9 @@ ISO/IEC 14882:2020 §9.8.2.2 [namespace.inline]：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 名称查找的完整流程
+### 3.1 名称查找的完整流程
 
 C++ 的名称查找（name lookup）是一个复杂的多阶段过程，理解命名空间与链接性的关键在于掌握查找流程。完整的查找流程：
 
@@ -466,7 +419,7 @@ mylib::Point p1, p2;
 double d = distance(p1, p2);  // ADL 找到 mylib::distance
 ```
 
-### 4.2 链接性的底层实现
+### 3.2 链接性的底层实现
 
 链接性的底层实现由编译器与链接器协作完成：
 
@@ -511,7 +464,7 @@ extern "C" void func(int x, double y);
 // MSVC 修饰后：_func
 ```
 
-### 4.3 匿名命名空间的内部链接机制
+### 3.3 匿名命名空间的内部链接机制
 
 匿名命名空间的成员具有内部链接，其实现机制是：
 
@@ -539,7 +492,7 @@ using namespace __unique_name_$LINENUMBER;
 3. **可应用于模板特化**：完整特化需要内部链接时，只能用匿名命名空间。
 4. **语义统一**：同一翻译单元内的所有内部链接实体使用统一机制。
 
-### 4.4 内联命名空间的透明性
+### 3.4 内联命名空间的透明性
 
 内联命名空间的"透明性"实现机制：
 
@@ -565,7 +518,7 @@ namespace mylib {
 2. **ABI 兼容**：旧代码无需重编译即可使用新版本。
 3. **平台特化**：根据编译期条件选择不同实现。
 
-### 4.5 ADL 的设计动机与陷阱
+### 3.5 ADL 的设计动机与陷阱
 
 ADL 的设计动机是让运算符重载（operator overloading）自然工作：
 
@@ -611,7 +564,7 @@ void wrapper(T x) {
 }
 ```
 
-### 4.6 `using` 指令的"软注入"语义
+### 3.6 `using` 指令的"软注入"语义
 
 `using namespace mylib;` 不是"复制所有成员到当前作用域"，而是"软注入"——仅在名称查找时考虑 `mylib` 的成员：
 
@@ -636,7 +589,7 @@ void g() {
 }
 ```
 
-### 4.7 `extern "C"` 与 ABI 稳定性
+### 3.7 `extern "C"` 与 ABI 稳定性
 
 `extern "C"` 不仅用于 C 互操作，还用于跨编译器 ABI 稳定性：
 
@@ -667,7 +620,7 @@ void destroy_image(Image* img);
 4. 参数与返回值必须是 C 兼容类型（POD 类型）。
 5. 异常规格——C 函数不能抛出 C++ 异常（需 `noexcept`）。
 
-### 4.8 C++20 模块链接的语义
+### 3.8 C++20 模块链接的语义
 
 C++20 模块系统引入"模块链接"，介于内部链接与外部链接之间：
 
@@ -695,9 +648,9 @@ namespace { int unused = 0; }
 
 ---
 
-## 5. 代码示例与实战详解
+## 4. 代码示例与实战详解
 
-### 5.1 命名空间基础
+### 4.1 命名空间基础
 
 ```cpp
 // C++17：命名空间基础
@@ -750,7 +703,7 @@ int main() {
 }
 ```
 
-### 5.2 C++17 嵌套命名空间简写
+### 4.2 C++17 嵌套命名空间简写
 
 ```cpp
 // C++17 之前：繁琐的嵌套
@@ -780,7 +733,7 @@ namespace company::product::module {
 }
 ```
 
-### 5.3 命名空间别名
+### 4.3 命名空间别名
 
 ```cpp
 // 长命名空间别名
@@ -805,7 +758,7 @@ template<typename Iterator>
 using value_type_t = typename std::iterator_traits<Iterator>::value_type;
 ```
 
-### 5.4 匿名命名空间
+### 4.4 匿名命名空间
 
 ```cpp
 // translation_unit.cpp
@@ -845,7 +798,7 @@ void public_function() {
 }
 ```
 
-### 5.5 内联命名空间与版本管理
+### 4.5 内联命名空间与版本管理
 
 ```cpp
 // library.h
@@ -897,7 +850,7 @@ void versioned_usage() {
 }
 ```
 
-### 5.6 参数依赖查找（ADL）
+### 4.6 参数依赖查找（ADL）
 
 ```cpp
 #include <iostream>
@@ -952,7 +905,7 @@ void adl_demo() {
 }
 ```
 
-### 5.7 `extern "C"` 与 C 互操作
+### 4.7 `extern "C"` 与 C 互操作
 
 ```cpp
 // c_api.h（C 与 C++ 兼容头文件）
@@ -1015,7 +968,7 @@ void image_set_pixel(Image* img, int x, int y, int value) {
 }  // extern "C"
 ```
 
-### 5.8 `using` 声明与继承
+### 4.8 `using` 声明与继承
 
 ```cpp
 // using 声明将基类函数引入派生类
@@ -1064,7 +1017,7 @@ public:
 };
 ```
 
-### 5.9 命名空间与模板特化
+### 4.9 命名空间与模板特化
 
 ```cpp
 // 模板特化必须在原命名空间中
@@ -1106,7 +1059,7 @@ namespace mylib {
 }
 ```
 
-### 5.10 C++20 模块基础
+### 4.10 C++20 模块基础
 
 ```cpp
 // mylib.cppm（模块接口单元）
@@ -1161,9 +1114,9 @@ int main() {
 
 ---
 
-## 6. 跨语言对比
+## 5. 跨语言对比
 
-### 6.1 与 Java 包的对比
+### 5.1 与 Java 包的对比
 
 Java 的包（package）与 C++ 命名空间在概念上相似，但实现机制截然不同：
 
@@ -1202,7 +1155,7 @@ Java 包的关键差异：
 3. **无函数级别的导入**——Java 函数必须属于类，不存在"命名空间级自由函数"。
 4. **无内联命名空间**——版本管理依赖构建工具（Maven、Gradle）。
 
-### 6.2 与 Python 模块的对比
+### 5.2 与 Python 模块的对比
 
 Python 的模块（module）与包（package）基于文件系统：
 
@@ -1247,7 +1200,7 @@ Python 的关键差异：
 3. **下划线约定**——`_internal` 表示"内部"，`__private` 表示"私有"（名称改写）。
 4. **动态导入**——`importlib.import_module("mylib.service")` 运行期导入。
 
-### 6.3 与 Rust 模块的对比
+### 5.3 与 Rust 模块的对比
 
 Rust 的模块系统与 C++ 命名空间在设计哲学上更为接近：
 
@@ -1293,7 +1246,7 @@ Rust 的关键差异：
 4. **`pub(crate)` 可见性**——仅 crate 内部可见，类似 C++ 的模块链接。
 5. **`super`、`self`、`crate` 关键字**——相对路径导航。
 
-### 6.4 与 C# 命名空间的对比
+### 5.4 与 C# 命名空间的对比
 
 C# 的命名空间与 C++ 最为相似：
 
@@ -1338,7 +1291,7 @@ C# 的关键差异：
 3. **`using static`**——导入静态成员，C++ 无此特性。
 4. **命名空间别名限定**——`global::System.Console` 确保从全局命名空间开始查找。
 
-### 6.5 与 Go 包的对比
+### 5.5 与 Go 包的对比
 
 Go 语言使用"包（package）"概念，与 C++ 命名空间差异较大：
 
@@ -1378,9 +1331,9 @@ Go 的关键差异：
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 在头文件中使用 `using namespace`
+### 6.1 在头文件中使用 `using namespace`
 
 **反模式**：
 
@@ -1415,7 +1368,7 @@ void helper() {
 }
 ```
 
-### 7.2 在头文件中使用匿名命名空间
+### 6.2 在头文件中使用匿名命名空间
 
 **反模式**：
 
@@ -1462,7 +1415,7 @@ int Service::counter_ = 0;  // 外部链接定义
 void Service::run() { counter_++; }
 ```
 
-### 7.3 ODR 违规：内联函数中的内部链接变量
+### 6.3 ODR 违规：内联函数中的内部链接变量
 
 **反模式**：
 
@@ -1497,7 +1450,7 @@ inline int get_counter() {
 }
 ```
 
-### 7.4 ADL 意外匹配
+### 6.4 ADL 意外匹配
 
 **反模式**：
 
@@ -1534,7 +1487,7 @@ void use() {
 }
 ```
 
-### 7.5 跨翻译单元的 `static` 变量不一致
+### 6.5 跨翻译单元的 `static` 变量不一致
 
 **反模式**：
 
@@ -1565,7 +1518,7 @@ extern int config_value;  // 声明
 int config_value = 42;  // 定义，外部链接
 ```
 
-### 7.6 `extern "C"` 的误用
+### 6.6 `extern "C"` 的误用
 
 **反模式**：
 
@@ -1593,7 +1546,7 @@ extern "C" void process(std::string s);  // 警告：非 POD 类型跨 ABI 不�
 }
 ```
 
-### 7.7 内联命名空间的滥用
+### 6.7 内联命名空间的滥用
 
 **反模式**：
 
@@ -1616,7 +1569,7 @@ namespace mylib {
 
 **正确用法**：内联命名空间仅用于版本管理。
 
-### 7.8 命名空间嵌套过深
+### 6.8 命名空间嵌套过深
 
 **反模式**：
 
@@ -1650,9 +1603,9 @@ namespace service = company::department::team::project::module::v2;
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 库的命名空间设计
+### 7.1 库的命名空间设计
 
 一个成熟的库应当遵循以下命名空间设计原则：
 
@@ -1715,7 +1668,7 @@ namespace concepts {
 4. **内部细节隔离**：`detail` 命名空间标识实现细节，用户不应直接使用。
 5. **嵌套深度**：通常不超过 3 层，避免冗长限定名。
 
-### 8.2 头文件保护
+### 7.2 头文件保护
 
 ```cpp
 // 推荐：使用 #pragma once 或 include guard
@@ -1739,7 +1692,7 @@ private:
 }  // namespace mylib
 ```
 
-### 8.3 PIMPL 习语与编译防火
+### 7.3 PIMPL 习语与编译防火
 
 PIMPL（Pointer to IMPLementation）习语通过前向声明与指针隐藏实现细节，减少头文件依赖：
 
@@ -1805,7 +1758,7 @@ PIMPL 的优势：
 2. **ABI 稳定**：`Service` 类的大小固定（一个指针），修改 `Impl` 不影响 ABI。
 3. **隐藏实现**：私有成员不在头文件中暴露。
 
-### 8.4 跨平台命名空间设计
+### 7.4 跨平台命名空间设计
 
 ```cpp
 // 推荐：使用条件编译与内联命名空间实现跨平台
@@ -1841,7 +1794,7 @@ private:
 }  // namespace mylib
 ```
 
-### 8.5 版本化库的迁移策略
+### 7.5 版本化库的迁移策略
 
 ```cpp
 // 推荐：版本化库的渐进式迁移
@@ -1881,7 +1834,7 @@ namespace v3 {
 // 4. 最终移除 v1，将 v2 移入 deprecated
 ```
 
-### 8.6 C/C++ 互操作最佳实践
+### 7.6 C/C++ 互操作最佳实践
 
 ```cpp
 // c_api.h：C 兼容头文件
@@ -1958,7 +1911,7 @@ int mylib_service_run(mylib_service* svc) {
 }  // extern "C"
 ```
 
-### 8.7 模块化迁移（C++20）
+### 7.7 模块化迁移（C++20）
 
 ```cpp
 // 推荐：渐进式迁移到 C++20 模块
@@ -2001,7 +1954,7 @@ namespace mylib {
 // 新代码：import mylib;
 ```
 
-### 8.8 命名约定与团队规范
+### 7.8 命名约定与团队规范
 
 **推荐命名约定**：
 
@@ -2039,9 +1992,9 @@ class Container {}
 
 ---
 
-## 9. 案例分析
+## 8. 案例分析
 
-### 9.1 案例一：标准库的命名空间结构
+### 8.1 案例一：标准库的命名空间结构
 
 C++ 标准库的命名空间结构是命名空间设计的典范：
 
@@ -2107,7 +2060,7 @@ auto str = "hello"s;  // std::string
 4. **内联命名空间**：`chrono_literals` 在 `chrono` 中是内联的，`using namespace std::chrono` 时自动启用。
 5. **版本管理**：标准库通过内联命名空间管理 ABI 兼容（如 `std::__1` 在 libc++ 中）。
 
-### 9.2 案例二：Boost 库的命名空间设计
+### 8.2 案例二：Boost 库的命名空间设计
 
 Boost 库是 C++ 库命名空间设计的参考标准：
 
@@ -2154,7 +2107,7 @@ boost::asio::ip::tcp::socket sock(ctx);
 2. **模块独立**：每个子库（`filesystem`、`asio`、`program_options`）是独立的库，可以单独使用。
 3. **跨平台**：Boost 通过命名空间隔离平台特化。
 
-### 9.3 案例三：插件系统的外部链接设计
+### 8.3 案例三：插件系统的外部链接设计
 
 设计一个支持运行期加载的插件系统：
 
@@ -2364,7 +2317,7 @@ int main() {
 4. **版本协商**：`get_version` 接口允许加载器检查插件版本兼容性。
 5. **错误隔离**：C 接口不允许异常泄漏，所有错误通过返回码传递。
 
-### 9.4 案例四：版本化库的迁移
+### 8.4 案例四：版本化库的迁移
 
 设计一个版本化库，支持多版本并存与平滑迁移：
 
@@ -2436,7 +2389,7 @@ void experimental_usage() {
 // 4. 最终移除 v1
 ```
 
-### 9.5 案例五：C++/C 混合项目的链接管理
+### 8.5 案例五：C++/C 混合项目的链接管理
 
 一个典型的 C++/C 混合项目，需要正确管理链接性：
 
@@ -2528,7 +2481,7 @@ int main() {
 
 ## 知识讲解与要点分析（原练习）
 
-### 10.1 练习一：命名空间基础
+### 9.1 练习一：命名空间基础
 
 **题目**：给定以下代码，指出所有错误并修复。
 
@@ -2568,7 +2521,7 @@ int main() {
 }
 ```
 
-### 10.2 练习二：ADL 分析
+### 9.2 练习二：ADL 分析
 
 **题目**：给定以下代码，分析每次 `swap` 调用实际调用的是哪个函数。
 
@@ -2600,7 +2553,7 @@ void test() {
 
 **推荐写法**：使用 (2) 的惯用法，这是 C++ 标准推荐的自定义 swap 调用方式。
 
-### 10.3 练习三：链接性判断
+### 9.3 练习三：链接性判断
 
 **题目**：判断以下每个实体的链接性（无链接/内部链接/外部链接）。
 
@@ -2655,7 +2608,7 @@ void function() {                  // (14) 定义
 | (15) | `local_var` | 无链接 | 局部变量 |
 | (16) | `static_local` | 无链接 | 局部静态变量（静态存储期，但无链接） |
 
-### 10.4 练习四：匿名命名空间 vs `static`
+### 9.4 练习四：匿名命名空间 vs `static`
 
 **题目**：以下两段代码有何差异？哪种更推荐？
 
@@ -2698,7 +2651,7 @@ static int counter = 0;
 2. 可应用于所有实体——类型、模板、函数、变量。
 3. 现代风格——C++ 标准与风格指南（如 Google C++ Style Guide）推荐使用匿名命名空间。
 
-### 10.5 练习五：`extern "C"` 重载
+### 9.5 练习五：`extern "C"` 重载
 
 **题目**：为什么以下代码编译错误？
 
@@ -2726,7 +2679,7 @@ int process(int x);
 int process(double x);
 ```
 
-### 10.6 练习六：内联命名空间与 ABI
+### 9.6 练习六：内联命名空间与 ABI
 
 **题目**：以下代码在升级版本时，如何保证二进制兼容性？
 
@@ -2789,7 +2742,7 @@ namespace mylib {
 2. 如果需要强制使用 v1，可以写 `mylib::v1::Service`。
 3. ABI 不兼容的修改通过新版本隔离。
 
-### 10.7 练习七：命名空间别名与模板
+### 9.7 练习七：命名空间别名与模板
 
 **题目**：以下代码是否能编译？为什么？
 
@@ -2808,7 +2761,7 @@ abc::Container<int> v;
 
 可以编译。命名空间别名（`namespace abc = a::b::c;`）创建一个等价的名称，可以像原命名空间一样使用，包括模板实例化。`abc::Container<int>` 等价于 `a::b::c::Container<int>`。
 
-### 10.8 练习八：ODR 与内联函数
+### 9.8 练习八：ODR 与内联函数
 
 **题目**：以下代码是否违反 ODR？
 
@@ -2839,7 +2792,7 @@ int f2() { return compute(20); }
 2. `#pragma once`（或 include guard）确保同一翻译单元不会重复包含头文件。
 3. 所有翻译单元中的 `compute` 定义必须完全相同（token-by-token）。
 
-### 10.9 练习九：ADL 与命名空间设计
+### 9.9 练习九：ADL 与命名空间设计
 
 **题目**：设计一个 `Vector3d` 类型，使得 `dot(a, b)`、`cross(a, b)`、`norm(a)` 可以通过 ADL 调用。
 
@@ -2897,7 +2850,7 @@ int main() {
 }
 ```
 
-### 10.10 练习十：综合设计
+### 9.10 练习十：综合设计
 
 **题目**：设计一个日志库的命名空间结构，要求：
 
@@ -3080,9 +3033,9 @@ int logger_log(logger_handle* handle, int level, const char* message) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 ISO/IEC 标准
+### 10.1 ISO/IEC 标准
 
 - International Organization for Standardization. (2020). *Information technology — Programming languages — C++* (ISO/IEC 14882:2020). Geneva, Switzerland: ISO. https://www.iso.org/standard/79758.html
 
@@ -3090,7 +3043,7 @@ int logger_log(logger_handle* handle, int level, const char* message) {
 
 - International Organization for Standardization. (2017). *Information technology — Programming languages — C++* (ISO/IEC 14882:2017). Geneva, Switzerland: ISO.
 
-### 11.2 提案与标准文档
+### 10.2 提案与标准文档
 
 - Stroustrup, B., & Gregor, D. (2002). *N2536: A proposal to add inline namespaces to the C++ standard*. ISO/IEC JTC1/SC22/WG21. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2002/n2536.pdf
 
@@ -3102,7 +3055,7 @@ int logger_log(logger_handle* handle, int level, const char* message) {
 
 - Sutton, A., & Faisal, F. (2023). *P2996R5: Reflection for C++26*. ISO/IEC JTC1/SC22/WG21. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2996r5.html
 
-### 11.3 经典著作
+### 10.3 经典著作
 
 - Stroustrup, B. (2013). *The C++ Programming Language* (4th ed.). Addison-Wesley Professional. ISBN: 978-0321563842.
 
@@ -3116,7 +3069,7 @@ int logger_log(logger_handle* handle, int level, const char* message) {
 
 - Vandervoorde, D., & Josuttis, N. M. (2017). *C++ Templates: The Complete Guide* (2nd ed.). Addison-Wesley Professional. ISBN: 978-0321714121.
 
-### 11.4 学术论文与会议文献
+### 10.4 学术论文与会议文献
 
 - Stroustrup, B. (2006). *The Design and Evolution of C++* (Reissue). Addison-Wesley Professional. ISBN: 978-0201543308.
 
@@ -3126,7 +3079,7 @@ int logger_log(logger_handle* handle, int level, const char* message) {
 
 - Reis, G. D., Stroustrup, B., & Meredith, A. (2006). *C++0x language extensions for internal library interfaces*. Proceedings of the 2006 ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '06), 239–252. https://doi.org/10.1145/1167473.1167494
 
-### 11.5 在线资源
+### 10.5 在线资源
 
 - cppreference.com. (2026). *Namespaces — cppreference.com*. Retrieved July 21, 2026, from https://en.cppreference.com/w/cpp/language/namespace
 
@@ -3140,7 +3093,7 @@ int logger_log(logger_handle* handle, int level, const char* message) {
 
 - Stack Overflow. (2026). *C++ namespace best practices*. Retrieved July 21, 2026, from https://stackoverflow.com/questions/tagged/c%2b%2b+namespace
 
-### 11.6 引用格式说明
+### 10.6 引用格式说明
 
 以上参考文献遵循 ACM Reference Format：
 
@@ -3151,36 +3104,36 @@ int logger_log(logger_handle* handle, int level, const char* message) {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 深入标准文档
+### 11.1 深入标准文档
 
 1. **ISO/IEC 14882:2020 §9.8 [namespace]**：命名空间的完整标准定义。
 2. **ISO/IEC 14882:2020 §6.6 [basic.link]**：链接性的完整标准定义。
 3. **ISO/IEC 14882:2020 §6.5.4 [basic.lookup.argdep]**：ADL 的完整规则。
 4. **ISO/IEC 14882:2020 §9.8.3 [namespace.link]**：`extern "C"` 的标准规定。
 
-### 12.2 相关文档
+### 11.2 相关文档
 
 1. **cpp/language/modules**：C++20 模块系统的完整说明。
 2. **cpp/language/inline**：`inline` 说明符的完整语义。
 3. **cpp/language/storage_duration**：存储期与链接性的关系。
 4. **cpp/utility/program**：`std::exit`、`std::atexit` 与链接性的交互。
 
-### 12.3 进阶主题
+### 11.3 进阶主题
 
 1. **Concepts（C++20）**：与命名空间的交互，concept 必须在命名空间中定义。
 2. **反射（C++26）**：编译期枚举命名空间成员的能力。
 3. **契约（C++26）**：契约检查与链接性的交互。
 4. **元编程**：模板元编程中的命名空间设计。
 
-### 12.4 实践指南
+### 11.4 实践指南
 
 1. **Google C++ Style Guide**：命名空间章节，推荐匿名命名空间优于 `static`。
 2. **LLVM Coding Standards**：命名空间使用规范。
 3. **C++ Core Guidelines**：命名空间相关规则（SF.20-SF.35）。
 
-### 12.5 相关 C++ 文档（本仓库内）
+### 11.5 相关 C++ 文档（本仓库内）
 
 1. **cpp/概述与现代标准**：C++ 标准版本概览。
 2. **cpp/头文件与声明**：头文件包含与前置声明。
@@ -3190,9 +3143,9 @@ int logger_log(logger_handle* handle, int level, const char* message) {
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 命名空间语法速查表
+### 12.1 命名空间语法速查表
 
 ```cpp
 // 1. 命名空间定义
@@ -3231,7 +3184,7 @@ namespace mylib {
 }
 ```
 
-### 13.2 链接性决策树
+### 12.2 链接性决策树
 
 ```mermaid
 flowchart TD
@@ -3259,7 +3212,7 @@ flowchart TD
     T12 --> T13
 ```
 
-### 13.3 ADL 查找规则速查
+### 12.3 ADL 查找规则速查
 
 ```
 对于未限定函数调用 f(args...)：
@@ -3283,7 +3236,7 @@ flowchart TD
    - 显式限定：std::swap(a, b) 不触发 ADL
 ```
 
-### 13.4 编译器诊断信息
+### 12.4 编译器诊断信息
 
 常见编译器错误信息：
 
@@ -3315,7 +3268,7 @@ error C2872: 'X': ambiguous symbol
 warning C4273: 'X': inconsistent dll linkage
 ```
 
-### 13.5 调试命令
+### 12.5 调试命令
 
 **查看符号表**：
 
@@ -3365,7 +3318,7 @@ objdump -r object_file.o
 # → 检查声明与定义的签名是否一致
 ```
 
-### 13.6 基准测试模板
+### 12.6 基准测试模板
 
 ```cpp
 // benchmark_template.cpp
@@ -3410,7 +3363,7 @@ int main() {
 }
 ```
 
-### 13.7 命名空间检查清单
+### 12.7 命名空间检查清单
 
 设计库的命名空间时，检查以下清单：
 
@@ -3427,7 +3380,7 @@ int main() {
 - [ ] 测试覆盖所有公共 API？
 - [ ] C++20 模块迁移路径规划？
 
-### 13.8 常见链接性速查
+### 12.8 常见链接性速查
 
 | 实体 | 默认链接性 | 修饰符 | 修改后链接性 |
 | ---- | ---------- | ------ | ------------ |
@@ -3445,7 +3398,7 @@ int main() {
 
 ---
 
-## 14. 总结
+## 13. 总结
 
 命名空间与链接性是 C++ 程序组织的两大基石。命名空间通过为标识符提供作用域上下文，解决了大型项目中的名称冲突问题；链接性决定了标识符在不同翻译单元之间的可见性，是头文件、源文件、库组织的基础。
 

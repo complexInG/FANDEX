@@ -16,28 +16,18 @@ prerequisites:
   - typescript/语法速查
 ---
 
+
 # 装饰器详解：从实验性到 TC39 Stage 3 标准
 
 > 本篇系统阐述 TypeScript 装饰器的形式语义、演进脉络、企业级用法与陷阱，覆盖 TS 1.5 实验性装饰器到 TS 5.0 标准化装饰器的完整历程，对标 MIT 6.5838、Stanford CS242、CMU 15-814 等课程对 *meta-programming* 与 *aspect-oriented programming* 的教学要求。
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本篇后，学习者应当能够：
-
-1. **Remember**：列举装饰器在 TypeScript 1.5（实验性）、4.9（TC39 Stage 3 草案）、5.0（标准化）三个关键节点的语法与语义差异。
-2. **Understand**：解释装饰器的形式语义——它本质上是高阶函数（higher-order function）的应用，遵循 $\text{Decorate}(C) = \text{Wrapper}(C)$ 的代数规则。
-3. **Apply**：使用类装饰器、方法装饰器、属性装饰器、参数装饰器构建企业级横切关注点（cross-cutting concerns）：日志、性能监控、权限校验、依赖注入、事务管理。
-4. **Analyze**：剖析新旧两种装饰器元数据模型差异——`Reflect.metadata` vs `Symbol.metadata`，识别其与 `emitDecoratorMetadata` 编译选项的关系。
-5. **Evaluate**：在 Java 注解、Python 装饰器、C# Attribute、Rust macro 之间对比 TypeScript 装饰器的优劣，针对具体业务场景评估是否应采用装饰器方案。
-6. **Create**：设计一个类型安全的依赖注入容器或 AOP（面向切面编程）框架，利用 TS 5.0 标准装饰器的 `context` 对象与 `addInitializer` 钩子实现生产级元编程能力。
-
-## 2. 历史动机与发展脉络
-
-### 2.1 元编程与横切关注点的需求
+### 1.1 元编程与横切关注点的需求
 
 面向对象编程（OOP）擅长封装业务核心逻辑，但在日志、事务、权限、缓存等横切关注点上常导致代码重复。Gregor Kiczales 等人在 1997 年 Xerox PARC 工作中提出 **Aspect-Oriented Programming**（AOP，面向切面编程），将横切关注点模块化为 *aspects*。装饰器正是 AOP 在 JavaScript/TypeScript 中的实现载体。
 
-### 2.2 TypeScript 装饰器演进时间线
+### 1.2 TypeScript 装饰器演进时间线
 
 | 版本 | 年份 | 关键特性 | 设计动机 |
 | --- | --- | --- | --- |
@@ -50,7 +40,7 @@ prerequisites:
 | TS 5.4 | 2024 | 装饰器 `context.access` 与 `addInitializer` 完善 | 支持私有字段访问与初始化钩子 |
 | TS 5.5 | 2025 | 装饰器与 `using` 资源管理协同 | 配合 Explicit Resource Management 提案 |
 
-### 2.3 TC39 标准化进程
+### 1.3 TC39 标准化进程
 
 ECMAScript 装饰器提案历经多次迭代：
 
@@ -59,7 +49,7 @@ ECMAScript 装饰器提案历经多次迭代：
 - **Stage 3（2022）**：Ron Buckton 与 Kristen Hewell 推进，TS 5.0 实现此版本
 - **Stage 4（预期 2025）**：进入正式 ECMAScript 标准
 
-### 2.4 元编程理论基础
+### 1.4 元编程理论基础
 
 装饰器属于 **meta-programming**（元编程）范畴。从类型论角度，装饰器是类型构造子到类型构造子的高阶函数：
 
@@ -75,9 +65,9 @@ $$
 
 即装饰后的类应是原类的子类型，确保 LSP 不被破坏。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 实验性装饰器签名（TS 1.5 - 4.x）
+### 2.1 实验性装饰器签名（TS 1.5 - 4.x）
 
 实验性装饰器采用 positional parameters 风格：
 
@@ -108,7 +98,7 @@ type ParameterDecorator = (
 ) => void;
 ```
 
-### 3.2 标准化装饰器签名（TS 5.0+）
+### 2.2 标准化装饰器签名（TS 5.0+）
 
 TC39 Stage 3 装饰器采用 context-based 风格，更清晰且类型安全：
 
@@ -134,7 +124,7 @@ interface ClassMethodDecoratorContext<
 }
 ```
 
-### 3.3 语义规则
+### 2.3 语义规则
 
 标准化装饰器的求值规则形式化：
 
@@ -153,9 +143,9 @@ $$
 1. 自顶向下：装饰器**求值**从上到下（先 `A`，后 `B`，再 `C`）
 2. 自底向上：装饰器**应用**从下到上（先 `C(X)`，后 `B(C(X))`，再 `A(B(C(X)))`）
 
-### 3.4 元数据模型
+### 2.4 元数据模型
 
-#### 3.4.1 实验性元数据（`Reflect.metadata`）
+#### 2.4.1 实验性元数据（`Reflect.metadata`）
 
 依赖 `reflect-metadata` polyfill：
 
@@ -169,7 +159,7 @@ class A {
 }
 ```
 
-#### 3.4.2 标准化元数据（`Symbol.metadata`）
+#### 2.4.2 标准化元数据（`Symbol.metadata`）
 
 TS 5.2+ 使用 `Symbol.metadata`：
 
@@ -193,9 +183,9 @@ const meta = (UserService as any)[Symbol.metadata];
 console.log(meta.get('className'));  // 'UserService'
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 装饰器作为高阶函数
+### 3.1 装饰器作为高阶函数
 
 装饰器的本质是高阶函数。考虑：
 
@@ -223,7 +213,7 @@ $$
 (\text{logged} \circ f)(x) = \text{logged}(f)(x)
 $$
 
-### 4.2 装饰器组合的代数结构
+### 3.2 装饰器组合的代数结构
 
 多个装饰器组合形成 **monoid**（幺半群）：
 
@@ -234,7 +224,7 @@ $$
 
 这为装饰器组合提供了数学保证。
 
-### 4.3 装饰器求值与应用的分离
+### 3.3 装饰器求值与应用的分离
 
 TypeScript 编译器将装饰器分为两阶段：
 
@@ -253,7 +243,7 @@ $$
 const compose = (...fns: Function[]) => (x: any) => fns.reduceRight((v, f) => f(v), x);
 ```
 
-### 4.4 元数据传播的不变量
+### 3.4 元数据传播的不变量
 
 装饰器元数据必须满足 **idempotency**（幂等性）：
 
@@ -273,9 +263,9 @@ $$
 
 子类继承父类元数据，但同名元数据子类覆盖父类。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 企业级依赖注入容器
+### 4.1 企业级依赖注入容器
 
 **tsconfig.json**
 
@@ -397,7 +387,7 @@ class UserService {
 const userService = DIContainer.resolve<UserService>(Symbol('UserService'));
 ```
 
-### 5.2 方法装饰器：性能监控与日志
+### 4.2 方法装饰器：性能监控与日志
 
 ```typescript
 /**
@@ -469,7 +459,7 @@ class PaymentService {
 }
 ```
 
-### 5.3 属性装饰器：自动校验
+### 4.3 属性装饰器：自动校验
 
 ```typescript
 /**
@@ -558,7 +548,7 @@ const result = validateObject(user);
 console.log(result);  // { valid: false, errors: ['name: Must be at least 3 characters', ...] }
 ```
 
-### 5.4 类装饰器：自动注册路由（NestJS 风格）
+### 4.4 类装饰器：自动注册路由（NestJS 风格）
 
 ```typescript
 /**
@@ -637,7 +627,7 @@ console.log(routes);
 // ]
 ```
 
-### 5.5 Accessor 装饰器：响应式状态
+### 4.5 Accessor 装饰器：响应式状态
 
 ```typescript
 /**
@@ -690,7 +680,7 @@ unsubscribe();
 store.count = 2;  // 无输出
 ```
 
-### 5.6 实验性装饰器完整示例（向后兼容）
+### 4.6 实验性装饰器完整示例（向后兼容）
 
 ```typescript
 /**
@@ -775,9 +765,9 @@ class ExampleService {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Java 注解对比
+### 5.1 与 Java 注解对比
 
 ```java
 // Java 注解
@@ -804,7 +794,7 @@ public class Service {
 | 性能 | 装饰器在加载时执行一次 | 反射开销 |
 | 生态 | NestJS、TypeORM、MikroORM | Spring、Hibernate、JPA |
 
-### 6.2 与 Python 装饰器对比
+### 5.2 与 Python 装饰器对比
 
 ```python
 # Python 装饰器
@@ -831,7 +821,7 @@ class Service:
 | 性能 | 编译期展开 | 运行时包装 |
 | 表达力 | 仅类相关 | 更通用（也可装饰函数） |
 
-### 6.3 与 C# Attribute 对比
+### 5.3 与 C# Attribute 对比
 
 ```csharp
 // C# Attribute
@@ -852,7 +842,7 @@ public class Service {
 | 表达力 | 强（可修改目标） | 弱（仅标记） |
 | 静态分析 | 类型检查 | 编译期检查 attribute 用法 |
 
-### 6.4 与 Rust Macro 对比
+### 5.4 与 Rust Macro 对比
 
 ```rust
 // Rust macro 1.2 (proc-macro)
@@ -872,7 +862,7 @@ fn process() { /* ... */ }
 | 复杂度 | 较低 | 高（需 proc-macro 体系） |
 | 生态 | NestJS、TypeORM | serde、tokio、axum |
 
-### 6.5 与 Scala Annotations 对比
+### 5.5 与 Scala Annotations 对比
 
 ```scala
 // Scala
@@ -882,9 +872,9 @@ def oldMethod(): Unit = {}
 // 类似 Java 注解，需反射处理
 ```
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：实验性 vs 标准装饰器混用
+### 6.1 陷阱：实验性 vs 标准装饰器混用
 
 ```typescript
 // 错误：实验性与标准装饰器不能混用
@@ -898,7 +888,7 @@ def oldMethod(): Unit = {}
 
 **最佳实践**：新项目使用 TS 5.0+ 标准装饰器，关闭 `experimentalDecorators`；旧项目逐步迁移。
 
-### 7.2 陷阱：装饰器返回类型不匹配
+### 6.2 陷阱：装饰器返回类型不匹配
 
 ```typescript
 // 实验性装饰器返回错误类型
@@ -915,7 +905,7 @@ function goodDecorator<T extends new (...args: any[]) => any>(
 }
 ```
 
-### 7.3 陷阱：方法装饰器中 `this` 丢失
+### 6.3 陷阱：方法装饰器中 `this` 丢失
 
 ```typescript
 function badLog<T extends (...args: any[]) => any>(
@@ -939,7 +929,7 @@ function goodLog<T extends (...args: any[]) => any>(
 }
 ```
 
-### 7.4 陷阱：`emitDecoratorMetadata` 依赖 polyfill
+### 6.4 陷阱：`emitDecoratorMetadata` 依赖 polyfill
 
 ```typescript
 // 实验性装饰器 + emitDecoratorMetadata 需要 reflect-metadata
@@ -950,7 +940,7 @@ import 'reflect-metadata';  // 必须导入
 
 **最佳实践**：TS 5.2+ 使用 `Symbol.metadata` 替代，无需 polyfill。
 
-### 7.5 陷阱：装饰器顺序与组合语义
+### 6.5 陷阱：装饰器顺序与组合语义
 
 ```typescript
 @A
@@ -962,7 +952,7 @@ class X {}
 // 最终：A(B(X))
 ```
 
-### 7.6 陷阱：`any` 类型污染
+### 6.6 陷阱：`any` 类型污染
 
 ```typescript
 // 反模式
@@ -973,7 +963,7 @@ function Log(target: any, key: string, descriptor: any) {
 
 **最佳实践**：使用标准装饰器 context 类型，或显式泛型约束。
 
-### 7.7 陷阱：私有成员与装饰器
+### 6.7 陷阱：私有成员与装饰器
 
 实验性装饰器对私有成员支持有限，TS 5.0+ 通过 `context.access` 提供安全访问：
 
@@ -994,7 +984,7 @@ class Example {
 }
 ```
 
-### 7.8 陷阱：装饰器与 `useDefineForClassFields`
+### 6.8 陷阱：装饰器与 `useDefineForClassFields`
 
 ```json
 {
@@ -1006,9 +996,9 @@ class Example {
 
 TS 5.0+ 装饰器与 `useDefineForClassFields: true` 协同良好，但实验性装饰器可能出现属性初始化顺序问题。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 tsc 编译配置
+### 7.1 tsc 编译配置
 
 ```json
 // 标准装饰器（TS 5.0+）
@@ -1037,7 +1027,7 @@ TS 5.0+ 装饰器与 `useDefineForClassFields: true` 协同良好，但实验性
 }
 ```
 
-### 8.2 装饰器调试技巧
+### 7.2 装饰器调试技巧
 
 ```typescript
 // 1. 打印 context 查看元数据
@@ -1054,7 +1044,7 @@ function debug<T>(target: T, context: any): T {
 // tsc --sourceMap
 ```
 
-### 8.3 装饰器单元测试
+### 7.3 装饰器单元测试
 
 ```typescript
 import { describe, it, expect } from 'vitest';
@@ -1079,7 +1069,7 @@ describe('@measure decorator', () => {
 });
 ```
 
-### 8.4 性能基准测试
+### 7.4 性能基准测试
 
 ```typescript
 // 装饰器在加载时执行一次，运行时仅 wrapper 开销
@@ -1103,7 +1093,7 @@ await bench.run();
 console.table(bench.table());
 ```
 
-### 8.5 ESLint 规则
+### 7.5 ESLint 规则
 
 ```javascript
 // .eslintrc.cjs
@@ -1117,9 +1107,9 @@ module.exports = {
 };
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 NestJS 的依赖注入体系
+### 8.1 NestJS 的依赖注入体系
 
 NestJS 是 TypeScript 装饰器应用的标杆项目。其核心 `@Module`、`@Injectable`、`@Controller` 装饰器构建了完整的 DI 体系：
 
@@ -1148,7 +1138,7 @@ class UserController {
 
 **收益**：相比手写工厂模式，DI 容器+装饰器让代码量减少约 40%，模块边界清晰，测试时可轻松 mock。
 
-### 9.2 TypeORM 的实体装饰器
+### 8.2 TypeORM 的实体装饰器
 
 ```typescript
 @Entity({ name: 'users' })
@@ -1181,7 +1171,7 @@ class User {
 
 TypeORM 通过装饰器将类型系统与数据库 schema 绑定，实现类型安全的 ORM。
 
-### 9.3 Angular 的变更检测
+### 8.3 Angular 的变更检测
 
 Angular 2.0+ 大量使用装饰器定义组件、指令、管道：
 
@@ -1204,7 +1194,7 @@ class UserComponent {
 
 Angular 编译器（ngc）在装饰器基础上做 AOT（Ahead-of-Time）编译优化。
 
-### 9.4 MikroORM 的实体映射
+### 8.4 MikroORM 的实体映射
 
 MikroORM 利用 TS 5.0 标准装饰器与 `Reflect.metadata` 实现类型安全的实体定义：
 
@@ -1225,7 +1215,7 @@ class Book {
 }
 ```
 
-### 9.5 TypeStack 的 class-validator
+### 8.5 TypeStack 的 class-validator
 
 ```typescript
 import { IsString, IsInt, Min, Max, validate } from 'class-validator';
@@ -1352,7 +1342,7 @@ console.log(svc.fib(40));  // 第一次计算
 console.log(svc.fib(40));  // 第二次命中缓存
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 8**：装饰器与高阶组件（HOC）在 React 中的相似之处与差异？请从类型论角度分析。
 
@@ -1383,9 +1373,9 @@ console.log(svc.fib(40));  // 第二次命中缓存
 
 **形式化**：context 对象是 dependent type（依赖类型）的近似——`kind` 决定其他字段类型，类似 $\Sigma$ 类型（dependent pair）。
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 [1] Kiczales, G., Lamping, J., Mendhekar, A., Maeda, C., Lopes, C., Loingtier, J.-M., & Irwin, J. (1997). Aspect-oriented programming. In *Proceedings of the 11th European Conference on Object-Oriented Programming* (pp. 220–242). Springer. https://doi.org/10.1007/BFb0053381
 
@@ -1395,7 +1385,7 @@ console.log(svc.fib(40));  // 第二次命中缓存
 
 [4] Filman, R. E., Friedman, D. P., Aksit, M., & Clarke, S. (2005). *Aspect-Oriented Software Development*. Addison-Wesley.
 
-### 11.2 官方规范
+### 10.2 官方规范
 
 [5] ECMA TC39. (2023). *Proposal: Decorators (Stage 3)*. https://github.com/tc39/proposal-decorators
 
@@ -1405,22 +1395,22 @@ console.log(svc.fib(40));  // 第二次命中缓存
 
 [8] ECMA International. (2024). *ECMAScript 2024 Language Specification*. https://tc39.es/ecma262/
 
-### 11.3 标准提案
+### 10.3 标准提案
 
 [9] Ehrenberg, D. (2022). *Decorators proposal: Metadata*. TC39 Meeting Notes. https://github.com/tc39/notes/blob/main/meetings/2022-03/mar-29.md
 
 [10] Buckton, R. (2023). *Proposal: Decorator Metadata (Stage 3)*. https://github.com/tc39/proposal-decorator-metadata
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - Kiczales, G., et al. (1997). *The AspectJ Programming Guide*. Xerox PARC. — AOP 经典参考。
 - Lopes, C. V. (2007). *Aspect-Oriented Programming with usecases*. Prentice Hall.
 - Bracha, G. (2004). *Executable Grammars in Java*. — 元编程理论。
 - Stefanov, S. (2023). *TypeScript Design Patterns*. O'Reilly. — 第 7 章 *Decorator Pattern with TS 5.0*。
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 - TypeScript Handbook: *Decorators (TS 5.0)* — https://www.typescriptlang.org/docs/handbook/decorators.html
 - TC39 Decorators Proposal — https://github.com/tc39/proposal-decorators
@@ -1428,7 +1418,7 @@ console.log(svc.fib(40));  // 第二次命中缓存
 - TypeORM Documentation: *Entities* — https://typeorm.io/entities
 - Angular Guide: *Attribute Directives* — https://angular.io/guide/attribute-directives
 
-### 12.3 相关源码
+### 11.3 相关源码
 
 - TypeScript 编译器装饰器实现：`src/compiler/transformers/Decorators.ts`
 - TypeScript 装饰器类型检查：`src/compiler/checker.ts` 中的 `checkDecorator`
@@ -1436,7 +1426,7 @@ console.log(svc.fib(40));  // 第二次命中缓存
 - TypeORM 装饰器：`src/decorator/`
 - TypeStack class-validator：`src/decorator/`
 
-### 12.4 进阶论文
+### 11.4 进阶论文
 
 - Walker, R. J., Baniassad, E. L. A., & Murphy, G. C. (1999). An initial assessment of aspect-oriented programming. In *Proceedings of the 21st International Conference on Software Engineering* (pp. 120–130). https://doi.org/10.1145/302405.302413
 

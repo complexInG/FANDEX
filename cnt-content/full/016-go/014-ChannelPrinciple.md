@@ -20,58 +20,16 @@ prerequisites:
   - go/GMP调度模型
 ---
 
+
 # Channel 原理：CSP 模型与 runtime 实现
 
 > 本文以 Go 1.22 为基准版本，深入解析 channel 的 runtime 实现、send/recv 状态机、select 调度、close 语义及 CSP（Communicating Sequential Processes）理论模型。适用于已掌握 goroutine 基础、希望理解并发原语底层机制的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。
-
-### 1.1 Remember（记忆）
-
-- 准确复述 `hchan` 结构体的字段及其含义（`qcount`、`dataqsiz`、`buf`、`sendx`、`recvx`、`sendq`、`recvq`、`lock`）。
-- 列出 channel 的三种状态：nil、closed、normal，并说明各状态下 send/recv 的行为。
-- 背诵 channel 操作的关键约束：向 closed channel 发送 panic、从 closed channel 接收返回零值、向 nil channel 发送/接收永久阻塞。
-
-### 1.2 Understand（理解）
-
-- 解释 CSP（Communicating Sequential Processes）模型与传统共享内存并发的区别。
-- 描述 `send` 与 `recv` 操作的状态机：何时阻塞、何时唤醒、何时直接传递（unbuffered channel 的优化路径）。
-- 阐述 `select` 语句的实现机制：scase 数组、pollorder、lockorder。
-- 说明 close 操作的语义：唤醒所有等待的 goroutine、设置 closed 标志、防止重复 close。
-
-### 1.3 Apply（应用）
-
-- 在生产代码中正确选择 unbuffered、buffered、nil channel 的组合模式。
-- 使用 `select` + `time.After` 实现超时控制。
-- 利用 channel 实现 worker pool、pipeline、fan-out/fan-in 等并发模式。
-
-### 1.4 Analyze（分析）
-
-- 分析 unbuffered channel 的"直接传递"优化路径，对比"通过 buf 中转"路径的开销差异。
-- 推导 select 在 N 个 case 全部就绪时的公平性（伪随机选择算法）。
-- 对比 Go channel 与 Erlang mailbox、Rust mpsc、Java BlockingQueue 的实现差异。
-
-### 1.5 Evaluate（评价）
-
-- 评估"share memory by communicating"原则的适用边界，指出何时应改用 `sync.Mutex`。
-- 评价 channel 在高吞吐场景下的瓶颈，并提出替代方案（如 `atomic`、`ring buffer`）。
-- 判断 goroutine 泄漏的成因（如未关闭的 channel、永久阻塞的 recv），并提出修复策略。
-
-### 1.6 Create（创造）
-
-- 设计一个支持背压（backpressure）的 pipeline 框架。
-- 实现一个泛型 channel 多路复用器（`Merge[T](chans ...<-chan T) <-chan T`）。
-- 基于 channel 设计一个可取消的定时任务调度器。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 CSP 理论起源（1978）
+### 1.1 CSP 理论起源（1978）
 
 Channel 的理论基础是 C. A. R. Hoare 在 1978 年论文 *"Communicating Sequential Processes"* 中提出的 CSP 演算。CSP 将并发系统建模为一组顺序进程，进程间通过**通信**（而非共享变量）同步。
 
@@ -84,7 +42,7 @@ Channel 的理论基础是 C. A. R. Hoare 在 1978 年论文 *"Communicating Seq
 
 Go 语言从设计之初就拥抱 CSP：Rob Pike 在 2009 年的演讲 *"Go: a simple programming environment"* 中明确指出 channel 是 Go 并发的核心原语。
 
-### 2.2 Go 1.0（2012-03）：初版 channel
+### 1.2 Go 1.0（2012-03）：初版 channel
 
 Go 1.0 的 channel 实现位于 `runtime/chan.go`，由 Russ Cox 等人设计。核心结构 `hchan` 包含：
 
@@ -98,18 +56,18 @@ Go 1.0 的 channel 实现位于 `runtime/chan.go`，由 Russ Cox 等人设计。
 2. **直接传递优化**：unbuffered channel 在 recv goroutine 等待时，send 直接将数据拷贝到 recv 的栈上，绕过 buf
 3. **FIFO 语义**：`sendq`、`recvq` 都是 FIFO 队列，保证公平性
 
-### 2.3 Go 1.3（2014-12）：调度器重写
+### 1.3 Go 1.3（2014-12）：调度器重写
 
 Go 1.3 由 Dmitry Vyukov 完成调度器重写，引入 P/M/G 模型。channel 的 `goready`、`gopark` 调用与新的调度器深度集成：
 
 - `gopark`：将当前 goroutine 置为 `Gwaiting` 状态，从 P 上摘下
 - `goready`：将 goroutine 重新置为 `Grunnable`，放入 P 的本地队列
 
-### 2.4 Go 1.14（2020-02）：异步抢占
+### 1.4 Go 1.14（2020-02）：异步抢占
 
 Go 1.14 引入基于信号的异步抢占，解决 tight loop 中 goroutine 不让出 CPU 的问题。channel 的 `lock` 在异步抢占下需要额外的安全保证（不能在持锁时被抢占导致死锁），runtime 通过 `preemptoff` 标志保护。
 
-### 2.5 Go 1.18（2022-03）：泛型 channel
+### 1.5 Go 1.18（2022-03）：泛型 channel
 
 Go 1.18 引入类型参数，channel 类型支持泛型：
 
@@ -131,11 +89,11 @@ func Merge[T any](chans ...<-chan T) <-chan T {
 }
 ```
 
-### 2.6 Go 1.22（2024-02）：range over function
+### 1.6 Go 1.22（2024-02）：range over function
 
 Go 1.22 引入 `range over function` 实验特性，channel 作为可迭代对象支持新的 range 语法（实验性）。同时优化了 channel 内部 mutex 的实现，减少不必要的 atomic 操作。
 
-### 2.7 演进时间轴
+### 1.7 演进时间轴
 
 ```mermaid
 timeline
@@ -152,9 +110,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Go Language Spec 定义
+### 2.1 Go Language Spec 定义
 
 Go 语言规范对 channel 类型的定义：
 
@@ -174,11 +132,11 @@ ChannelType = ( "chan" | "chan" "<-" | "<-" "chan" ) ElementType .
 
 **方向性是类型的一部分**，`chan<- int` 与 `chan int` 是不同类型。`chan int` 可隐式转换为 `chan<- int` 或 `<-chan int`，反之不可。
 
-### 3.2 runtime 数据结构
+### 2.2 runtime 数据结构
 
 源码位置：`runtime/chan.go`（Go 1.22）。
 
-#### 3.2.1 hchan
+#### 2.2.1 hchan
 
 ```go
 // runtime/chan.go (Go 1.22)
@@ -202,7 +160,7 @@ type waitq struct {
 }
 ```
 
-#### 3.2.2 sudog（等待队列节点）
+#### 2.2.2 sudog（等待队列节点）
 
 ```go
 // runtime/runtime2.go
@@ -224,7 +182,7 @@ type sudog struct {
 
 `sudog` 是 goroutine 在等待队列中的"代表"，包含 goroutine 指针、数据指针、链表节点。runtime 维护一个 `sudogcache` 池，避免频繁分配。
 
-### 3.3 CSP 形式化
+### 2.3 CSP 形式化
 
 CSP 的核心算子 `!`（send）与 `?`（recv）的迹（trace）语义：
 
@@ -253,7 +211,7 @@ $$
 - send 操作：若 $k < n$，$\text{Buffer}$ 变为 $\langle \ldots, v_{k+1} \rangle$
 - recv 操作：若 $k > 0$，$\text{Buffer}$ 变为 $\langle v_2, \ldots, v_k \rangle$，返回 $v_1$
 
-### 3.4 类型系统视角
+### 2.4 类型系统视角
 
 从类型论视角，channel 是 **并发会合点（rendezvous point）** 的类型化抽象。其形式化签名：
 
@@ -267,9 +225,9 @@ Go 的 channel 类型是 **linear type**（线性类型）的弱化版本：发�
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 send 操作状态机
+### 3.1 send 操作状态机
 
 `chansend` 函数（简化版）的状态转移：
 
@@ -295,7 +253,7 @@ flowchart TD
     R --> S[ch.lock.release()]
 ```
 
-#### 4.1.1 直接传递优化（sendDirect）
+#### 3.1.1 直接传递优化（sendDirect）
 
 unbuffered channel 或 buf 满时，若有 goroutine 在 `recvq` 等待，send 操作**不经过 buf**，直接将数据拷贝到 recv goroutine 的栈上：
 
@@ -314,7 +272,7 @@ func sendDirect(t *_type, sg *sudog) {
 - 减少 cache miss（recv goroutine 的栈更可能在本地 cache）
 - 减少调度延迟（recv goroutine 立即可运行）
 
-### 4.2 recv 操作状态机
+### 3.2 recv 操作状态机
 
 `chanrecv` 函数的状态转移类似 send，但方向相反：
 
@@ -340,7 +298,7 @@ flowchart TD
     T --> U[ch.lock.release()]
 ```
 
-#### 4.2.1 closed channel 的 recv 语义
+#### 3.2.1 closed channel 的 recv 语义
 
 ```go
 v, ok := <-ch
@@ -361,7 +319,7 @@ if c.closed != 0 && c.qcount == 0 {
 }
 ```
 
-### 4.3 close 操作
+### 3.3 close 操作
 
 ```go
 // runtime/chan.go (简化)
@@ -403,11 +361,11 @@ func closechan(c *hchan) {
 - close 唤醒所有 `sendq` 中的 goroutine（它们将 panic "send on closed channel"）
 - close 是幂等的吗？**不是**，重复 close 会 panic
 
-### 4.4 select 实现
+### 3.4 select 实现
 
 源码位置：`runtime/select.go`。
 
-#### 4.4.1 scase 结构
+#### 3.4.1 scase 结构
 
 ```go
 // runtime/select.go
@@ -418,7 +376,7 @@ type scase struct {
 }
 ```
 
-#### 4.4.2 selectgo 算法
+#### 3.4.2 selectgo 算法
 
 `selectgo` 函数的核心流程：
 
@@ -503,7 +461,7 @@ done:
 }
 ```
 
-#### 4.4.3 公平性分析
+#### 3.4.3 公平性分析
 
 select 用 `fastrandn` 打乱 pollorder，保证：
 
@@ -515,7 +473,7 @@ select 用 `fastrandn` 打乱 pollorder，保证：
 - **不是绝对公平**：`fastrandn` 是伪随机，存在统计偏差
 - **不保证就绪 case 优先**：若 default case 存在，则任何 case 都不就绪时立即执行 default，否则随机选一个就绪 case
 
-### 4.5 加锁顺序与死锁避免
+### 3.5 加锁顺序与死锁避免
 
 select 同时操作多个 channel 时，必须按固定顺序加锁，否则会死锁：
 
@@ -536,9 +494,9 @@ sort.Slice(lockorder, func(i, j int) bool {
 })
 ```
 
-### 4.6 性能模型
+### 3.6 性能模型
 
-#### 4.6.1 单次 send/recv 开销
+#### 3.6.1 单次 send/recv 开销
 
 $$
 T_{\text{send}} = T_{\text{lock}} + T_{\text{memmove}} + T_{\text{sched}} + T_{\text{unlock}}
@@ -553,11 +511,11 @@ $$
 
 总计约 $240$ ns/操作（unbuffered，有等待者）。若 buf 有空间，无需调度，约 $40$ ns/操作。
 
-#### 4.6.2 吞吐量上界
+#### 3.6.2 吞吐量上界
 
 单 channel 吞吐量受 `lock` 限制。8 核 CPU 上，channel send/recv 的吞吐量约 5-10M ops/sec。多 channel 并行（不同 channel 不共享 lock）可线性扩展。
 
-### 4.7 死锁检测
+### 3.7 死锁检测
 
 Go runtime 在 main goroutine 退出前检测全局死锁：
 
@@ -570,9 +528,9 @@ Go runtime 在 main goroutine 退出前检测全局死锁：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 go.mod 配置
+### 4.1 go.mod 配置
 
 ```go
 // go.mod
@@ -581,7 +539,7 @@ module github.com/fandex/go-channel-demo
 go 1.22
 ```
 
-### 5.2 基础用法
+### 4.2 基础用法
 
 ```go
 // channel_basic.go
@@ -638,7 +596,7 @@ func main() {
 }
 ```
 
-### 5.3 Production-Ready：Worker Pool
+### 4.3 Production-Ready：Worker Pool
 
 ```go
 // worker_pool.go
@@ -747,7 +705,7 @@ func (p *Pool) Shutdown() {
 }
 ```
 
-### 5.4 Pipeline 模式
+### 4.4 Pipeline 模式
 
 ```go
 // pipeline.go
@@ -813,7 +771,7 @@ func main() {
 }
 ```
 
-### 5.5 Fan-out / Fan-in
+### 4.5 Fan-out / Fan-in
 
 ```go
 // fanout_fanin.go
@@ -898,7 +856,7 @@ func main() {
 }
 ```
 
-### 5.6 Benchmark
+### 4.6 Benchmark
 
 ```go
 // channel_bench_test.go
@@ -973,9 +931,9 @@ func BenchmarkMutexPingPong(b *testing.B) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与主流语言并发原语对比
+### 5.1 与主流语言并发原语对比
 
 | 特性 | Go channel | Rust mpsc | Erlang mailbox | Java BlockingQueue | Python asyncio.Queue |
 | --- | --- | --- | --- | --- | --- |
@@ -988,7 +946,7 @@ func BenchmarkMutexPingPong(b *testing.B) {
 | 性能（ns/op） | 240 | 180 | 800 | 320 | 5000 |
 | 内存开销 | 中（hchan ~96B） | 低 | 高（每个 process 独立） | 高（每个对象 monitor） | 低 |
 
-### 6.2 CSP vs Actor 模型
+### 5.2 CSP vs Actor 模型
 
 | 维度 | CSP (Go) | Actor (Erlang/Akka) |
 | --- | --- | --- |
@@ -999,7 +957,7 @@ func BenchmarkMutexPingPong(b *testing.B) {
 | 容错 | 显式 recover | let-it-crash 哲学 |
 | 分布式 | 需额外支持（gRPC/NATS） | 内置分布式 |
 
-### 6.3 channel vs mutex 性能对比
+### 5.3 channel vs mutex 性能对比
 
 | 场景 | channel | mutex | 胜者 |
 | --- | --- | --- | --- |
@@ -1019,9 +977,9 @@ func BenchmarkMutexPingPong(b *testing.B) {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：goroutine 泄漏（永久阻塞）
+### 6.1 陷阱 1：goroutine 泄漏（永久阻塞）
 
 ```go
 // 反模式：goroutine 永久阻塞，泄漏
@@ -1060,7 +1018,7 @@ func fixed2() {
 }
 ```
 
-### 7.2 陷阱 2：向 closed channel 发送
+### 6.2 陷阱 2：向 closed channel 发送
 
 ```go
 // 错误：向 closed channel 发送会 panic
@@ -1094,7 +1052,7 @@ func (s *SafeSender) Close() {
 }
 ```
 
-### 7.3 陷阱 3：重复 close
+### 6.3 陷阱 3：重复 close
 
 ```go
 ch := make(chan int)
@@ -1117,7 +1075,7 @@ func (s *SafeClose) Close() {
 }
 ```
 
-### 7.4 陷阱 4：nil channel 误用
+### 6.4 陷阱 4：nil channel 误用
 
 ```go
 // nil channel 在 select 中永远阻塞，可利用此特性动态禁用 case
@@ -1145,7 +1103,7 @@ case <-ctx.Done():
 }
 ```
 
-### 7.5 陷阱 5：channel 作为锁
+### 6.5 陷阱 5：channel 作为锁
 
 ```go
 // 反模式：用 channel 模拟 mutex
@@ -1160,7 +1118,7 @@ func (m *Mutex) Unlock()  { <-m.ch }
 
 **修复**：直接使用 `sync.Mutex`。
 
-### 7.6 陷阱 6：buffered channel 容量选择
+### 6.6 陷阱 6：buffered channel 容量选择
 
 ```go
 // 反模式：buffer 设为 1，相当于"半双工"，仍频繁阻塞
@@ -1172,7 +1130,7 @@ ch := make(chan int, 1_000_000)
 // 经验值：buffer = worker 数 * 2，平衡吞吐与内存
 ```
 
-### 7.7 陷阱 7：range channel 永不退出
+### 6.7 陷阱 7：range channel 永不退出
 
 ```go
 // 反模式：range 永不结束（channel 未 close）
@@ -1186,7 +1144,7 @@ func consumer(ch <-chan int) {
 
 **修复**：producer 完成后必须 close，或用 context 控制。
 
-### 7.8 最佳实践清单
+### 6.8 最佳实践清单
 
 | 实践 | 说明 |
 | --- | --- |
@@ -1201,9 +1159,9 @@ func consumer(ch <-chan int) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 go module 与构建
+### 7.1 go module 与构建
 
 ```bash
 mkdir go-channel-demo && cd go-channel-demo
@@ -1213,7 +1171,7 @@ go mod init github.com/fandex/go-channel-demo
 go get golang.org/x/sync/errgroup
 ```
 
-### 8.2 errgroup：错误传播
+### 7.2 errgroup：错误传播
 
 ```go
 // errgroup_demo.go
@@ -1250,7 +1208,7 @@ func main() {
 }
 ```
 
-### 8.3 性能分析（pprof）
+### 7.3 性能分析（pprof）
 
 ```go
 // pprof_channel.go
@@ -1293,9 +1251,9 @@ go tool pprof -http=:8080 http://localhost:6060/debug/pprof/goroutine
 (pprof) list chansend
 ```
 
-### 8.4 调试技巧
+### 7.4 调试技巧
 
-#### 8.4.1 检测 goroutine 泄漏
+#### 7.4.1 检测 goroutine 泄漏
 
 ```bash
 # 启用竞争检测器
@@ -1307,7 +1265,7 @@ go get go.uber.org/goleak
 # 测试中 defer goleak.VerifyNone(t)
 ```
 
-#### 8.4.2 查看所有 goroutine 状态
+#### 7.4.2 查看所有 goroutine 状态
 
 ```bash
 # 通过 SIGQUIT 让 runtime 打印所有 goroutine 堆栈
@@ -1321,9 +1279,9 @@ kill -QUIT <pid>
 # ...
 ```
 
-### 8.5 性能优化
+### 7.5 性能优化
 
-#### 8.5.1 优先使用 buffered channel
+#### 7.5.1 优先使用 buffered channel
 
 ```go
 // 反例：unbuffered，每次 send 都触发调度
@@ -1333,14 +1291,14 @@ ch := make(chan int)
 ch := make(chan int, 128)
 ```
 
-#### 8.5.2 高吞吐场景改用 ring buffer
+#### 7.5.2 高吞吐场景改用 ring buffer
 
 ```go
 // 当 channel 成为瓶颈（>10M ops/sec），考虑无锁 ring buffer
 // 例如 container/list + atomic，或第三方库 tidwall/btree
 ```
 
-#### 8.5.3 避免大对象直接发送
+#### 7.5.3 避免大对象直接发送
 
 ```go
 // 反例：每次 send 拷贝 1KB
@@ -1352,9 +1310,9 @@ ch := make(chan *[1024]byte)
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Kubernetes：informer 的 update channel
+### 8.1 Kubernetes：informer 的 update channel
 
 Kubernetes client-go 的 informer 用 buffered channel 缓存 etcd watch 事件：
 
@@ -1373,7 +1331,7 @@ type DeltaFifo struct {
 - handler goroutine 从 output 消费，慢消费时 informer 阻塞
 - 用 `close` + `sync.Once` 实现优雅关闭
 
-### 9.2 Docker：buildkit 的 progress 输出
+### 8.2 Docker：buildkit 的 progress 输出
 
 buildkit 用 channel 传递 build 进度事件：
 
@@ -1392,7 +1350,7 @@ type progressCh chan *Vertex
 - 多 worker 共享一个 progressCh（fan-in）
 - 慢消费者用 ring buffer 缓冲
 
-### 9.3 TiDB：session 执行流水线
+### 8.3 TiDB：session 执行流水线
 
 TiDB 的 SQL 执行器用 channel 连接各个算子：
 
@@ -1412,7 +1370,7 @@ type Executor interface {
 - channel 容量 = 16（经验值），平衡延迟与吞吐
 - 用 `context` 控制整条 pipeline 取消
 
-### 9.4 Prometheus：scrape 抓取结果
+### 8.4 Prometheus：scrape 抓取结果
 
 Prometheus 的 scraper 用 channel 传递抓取结果：
 
@@ -1427,7 +1385,7 @@ type scrapeResult struct {
 resultCh := make(chan *scrapeResult, 1000)
 ```
 
-### 9.5 HashiCorp Consul：service watch
+### 8.5 HashiCorp Consul：service watch
 
 Consul agent 用 channel 推送服务变更：
 
@@ -1708,7 +1666,7 @@ func main() {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q1.** 为什么 Go 选择 CSP 模型而非 Actor 模型？两者的本质区别是什么？
 
@@ -1783,9 +1741,9 @@ func main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档与规范
+### 10.1 官方文档与规范
 
 [1] Google LLC. 2024. The Go Programming Language Specification. (February 2024). Retrieved July 20, 2026 from https://go.dev/ref/spec#Channel_types. DOI: 10.25385/golang/spec-1.22.
 
@@ -1795,7 +1753,7 @@ func main() {
 
 [4] Dmitry Vyukov. 2013. Go Preemptive Scheduler Design. (2013). Retrieved July 20, 2026 from https://docs.google.com/document/d/1ETuA2RRmVSFkE6ryQpewYDqVvEyVqn17IQyTuA8bIYQ.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [5] Charles Antony Richard Hoare. 1978. Communicating Sequential Processes. *Communications of the ACM* 21, 8 (August 1978), 666–677. DOI: 10.1145/359576.359585.
 
@@ -1809,7 +1767,7 @@ func main() {
 
 [10] Russ Cox. 2009. Hello, worlds. (September 2009). Retrieved July 20, 2026 from https://research.swtch.com/threads.
 
-### 11.3 开源实现
+### 10.3 开源实现
 
 [11] The Go Authors. 2024. Go runtime `chan.go`. (2024). Retrieved July 20, 2026 from https://github.com/golang/go/blob/master/src/runtime/chan.go.
 
@@ -1823,9 +1781,9 @@ func main() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 - **C. A. R. Hoare.** *Communicating Sequential Processes*. Prentice-Hall, 1985. ISBN 978-0-13-153271-7.
   - CSP 理论奠基之作，免费 PDF：https://usingcsp.com/cspbook.pdf
@@ -1838,14 +1796,14 @@ func main() {
 - **Steve Francia, Ben Congdon.** *Go Fundamentals*. O'Reilly, 2024.
   - 涵盖 Go 1.22 的最新 channel 特性
 
-### 12.2 推荐论文
+### 11.2 推荐论文
 
 - **Hoare, C. A. R.** "Communicating Sequential Processes." *CACM* 21, 8 (1978), 666–677. DOI: 10.1145/359576.359585.
 - **Brookes, S. D., Hoare, C. A. R., and Roscoe, A. W.** "A Theory of Communicating Sequential Processes." *JACM* 31, 3 (1984), 560–599. DOI: 10.1145/828.833.
 - **Milner, R., Parrow, J., and Walker, D.** "A Calculus of Mobile Processes, I/II." *Information and Computation* 100, 1 (1992), 1–77. DOI: 10.1016/0890-5401(92)90008-4.
 - **Pike, R.** "Go at Google: Language Design in the Service of Software Engineering." (2012). Talk at ECOOP 2012.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **Go Blog: Share Memory By Communicating** — https://go.dev/blog/codelab-share
 - **Go Blog: Pipelines and cancellation** — https://go.dev/blog/pipelines
@@ -1855,7 +1813,7 @@ func main() {
 - **Bilibili: 深入理解 Go Channel** — https://www.bilibili.com/video/BV1rJ411b7Pq
 - **Sourcegraph: Go chan.go source** — https://sourcegraph.com/github.com/golang/go/-/blob/src/runtime/chan.go
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **π-calculus**：Milner 提出的移动进程演算，比 CSP 更适合建模动态拓扑
 - **Channel typing（session types）**：类型化 channel，保证协议正确性（如 Rust 的 session-types crate）

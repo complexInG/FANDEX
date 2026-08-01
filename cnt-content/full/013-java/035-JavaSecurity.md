@@ -15,22 +15,12 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
+
 # Java 安全与加密 MessageDigest/Cipher/KeyStore/SecureRandom 语法速查手册
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-完成本章学习后，你应当能够：
-
-- **Remember（记忆）**：复述 Java 安全架构的四大支柱——JCA（Java Cryptography Architecture）、JCE（Java Cryptography Extension）、JSSE（Java Secure Socket Extension）、JAAS（Java Authentication and Authorization Service），并能说出 AES-GCM、RSA-OAEP、ECDSA、EdDSA、HKDF、PBKDF2、scrypt、Argon2 等算法的用途与适用场景。
-- **Understand（理解）**：解释对称加密（CPA/CCA 安全）、非对称加密（陷门函数）、哈希（抗碰撞/抗原像）、数字签名（EUF-CMA 安全）、消息认证码（MAC）的形式化安全定义，并理解 TLS 1.3 握手、X.509 证书链验证、OCSP stapling 的工作原理。
-- **Apply（应用）**：使用 JCA API（`Cipher`、`Mac`、`Signature`、`KeyAgreement`）、Bouncy Castle、Java 11+ `HttpClient` HTTPS、Spring Security 6（OAuth2 Resource Server、Method Security）、JJWT/Nimbus JWT 库构建生产级安全系统。
-- **Analyze（分析）**：分析 OWASP Top 10（2025）漏洞在 Java 应用中的具体表现——SQL 注入（JPA/MyBatis）、XSS（Thymeleaf/React）、CSRF、SSRF、反序列化（Jackson/Fastjson）、XXE、日志注入、路径遍历——并给出修复方案与防御性编码模式。
-- **Evaluate（评价）**：评估密钥管理方案（HSM、KMS、HashiCorp Vault、AWS Secrets Manager）的安全性、可用性、性能、成本权衡，评估零信任架构（Zero Trust）与基于边界防御（Castle-and-Moat）的取舍。
-- **Create（创造）**：设计一套端到端的安全架构，涵盖身份认证（OIDC）、授权（RBAC + ABAC）、传输安全（mTLS）、密钥管理（Vault + KMS）、审计日志（SIEM）、漏洞防御（WAF + CSP）、合规（GDPR/PCI-DSS/SOC 2）。
 
 ## 历史动机与发展脉络
 

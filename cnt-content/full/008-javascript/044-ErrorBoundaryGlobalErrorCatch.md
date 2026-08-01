@@ -16,28 +16,12 @@ prerequisites:
   - javascript/语法速查
 ---
 
+
 # 错误边界与全局错误捕获
 
-## 1. 学习目标（Bloom 分类）
+## 1. 历史动机：为什么需要错误边界
 
-读完本文后，读者应能够达到以下认知层次：
-
-| 层次 | 行为目标 | 具体能力描述 |
-| --- | --- | --- |
-| 记忆（Remember） | 列出 JavaScript 主要错误类型与触发场景 | 能在 1 分钟内说出 7 种内建错误类型 |
-| 理解（Understand） | 解释 `try/catch` 与 `window.onerror` 的执行差异 | 能说明同步、异步、Promise 错误捕获边界 |
-| 应用（Apply） | 在项目中实现 ErrorBoundary、全局错误监听 | 能写出可上线的错误收集 SDK 雏形 |
-| 分析（Analyze） | 区分不同错误捕获方式的作用域与限制 | 能定位错误未被捕获的根本原因 |
-| 评价（Evaluate） | 评估错误监控方案对性能与体验的影响 | 能根据业务场景设计错误上报策略 |
-| 创造（Create） | 设计完整的错误监控系统架构 | 能实现错误聚合、采样、上下文收集的完整系统 |
-
-学习本课前，建议先掌握：try/catch、Promise、async/await、EventTarget、原型链继承。
-
----
-
-## 2. 历史动机：为什么需要错误边界
-
-### 2.1 浏览器错误处理的传统局限
+### 1.1 浏览器错误处理的传统局限
 
 在早期浏览器中，错误处理非常原始：
 
@@ -46,7 +30,7 @@ prerequisites:
 - **Promise 错误丢失**：ES6 之前没有 Promise，ES6 引入 Promise 后未捕获的 rejection 会被静默丢弃，导致调试困难。
 - **React 类组件崩溃**：子组件抛出错误会卸载整棵组件树，用户体验极差。
 
-### 2.2 React ErrorBoundary 的诞生
+### 1.2 React ErrorBoundary 的诞生
 
 2017 年 React 16 引入 Error Boundary（错误边界），通过生命周期方法 `componentDidCatch`（后增 `static getDerivedStateFromError`）捕获子组件树渲染中的错误。其设计动机：
 
@@ -54,7 +38,7 @@ prerequisites:
 - 错误应被隔离，应用其他部分继续可用。
 - 错误信息可上报到监控系统，便于追踪。
 
-### 2.3 现代 Web 的全局错误处理体系
+### 1.3 现代 Web 的全局错误处理体系
 
 | 错误来源 | 捕获机制 | 触发条件 |
 | --- | --- | --- |
@@ -68,7 +52,7 @@ prerequisites:
 | React 渲染错误 | ErrorBoundary 组件 | 子组件渲染抛出 |
 | Vue 渲染错误 | `errorCaptured` 钩子 | 子组件渲染抛出 |
 
-### 2.4 错误监控的商业价值
+### 1.4 错误监控的商业价值
 
 错误监控是 SRE（Site Reliability Engineering）的核心环节。一个完整的错误监控系统能：
 
@@ -79,9 +63,9 @@ prerequisites:
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 错误对象的规范结构
+### 2.1 错误对象的规范结构
 
 ECMAScript 规范定义 `Error` 对象的标准属性：
 
@@ -111,7 +95,7 @@ try {
 }
 ```
 
-### 3.2 错误捕获的形式化模型
+### 2.2 错误捕获的形式化模型
 
 定义"错误传播路径" $E(e)$ 为错误 $e$ 从抛出点到最终处理的传播序列：
 
@@ -128,7 +112,7 @@ unhandled & \text{若调用栈为空且无全局处理器}
 \end{cases}
 $$
 
-### 3.3 同步与异步错误的形式化区别
+### 2.3 同步与异步错误的形式化区别
 
 **同步错误**：在调用栈中传播，可被 `try/catch` 捕获。
 
@@ -158,7 +142,7 @@ $$
 | async/await | 异步函数内同步 | `try/catch` 包裹 await | `unhandledrejection` |
 | 资源加载错误 | 无 JS 调用栈 | EventListener | 无（仅监听） |
 
-### 3.4 React ErrorBoundary 的形式化契约
+### 2.4 React ErrorBoundary 的形式化契约
 
 ErrorBoundary 类组件需实现以下任一方法：
 
@@ -187,9 +171,9 @@ class ErrorBoundary extends React.Component {
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 错误对象的继承链
+### 3.1 错误对象的继承链
 
 JavaScript 内建 7 种错误类型，构成原型链：
 
@@ -232,7 +216,7 @@ console.log(e instanceof Error); // true
 console.log(e instanceof Object); // true
 ```
 
-### 4.2 `try/catch/finally` 的执行模型
+### 3.2 `try/catch/finally` 的执行模型
 
 `try/catch/finally` 是同步错误处理的唯一结构。其语义：
 
@@ -284,7 +268,7 @@ try {
 }
 ```
 
-### 4.3 异步错误的"丢失"机制
+### 3.3 异步错误的"丢失"机制
 
 ```javascript
 try {
@@ -316,7 +300,7 @@ setTimeout(() => {
 }, 0);
 ```
 
-### 4.4 Promise 错误传播规则
+### 3.4 Promise 错误传播规则
 
 Promise 的 reject 状态通过 `.then` 的第二个参数或 `.catch` 传递：
 
@@ -335,7 +319,7 @@ Promise.reject(new Error('fail'))
 - `.catch(onRejected)`：等价于 `.then(undefined, onRejected)`。
 - 链中任何 `.catch` 后的 `.then` 都会被执行（因为 catch 返回 fulfilled Promise）。
 
-### 4.5 async/await 错误转换
+### 3.5 async/await 错误转换
 
 `async/await` 是 Promise 的语法糖，错误处理通过 `try/catch`：
 
@@ -356,7 +340,7 @@ fetchUser(1).catch(e => console.log('outer', e.message));
 
 `await` 将 Promise rejection 转换为同步抛出，使得 try/catch 可捕获。
 
-### 4.6 全局错误处理的事件模型
+### 3.6 全局错误处理的事件模型
 
 浏览器提供以下全局错误事件：
 
@@ -387,9 +371,9 @@ window.addEventListener('unhandledrejection', (event) => {
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础错误类型与抛出
+### 4.1 基础错误类型与抛出
 
 ```javascript
 // 抛出不同类型的错误
@@ -407,7 +391,7 @@ throw { code: 500, msg: 'server error' };
 throw 42;
 ```
 
-### 5.2 自定义错误类
+### 4.2 自定义错误类
 
 ```javascript
 class AppError extends Error {
@@ -460,7 +444,7 @@ try {
 }
 ```
 
-### 5.3 全局错误监听
+### 4.3 全局错误监听
 
 ```javascript
 // 同步错误与资源加载错误
@@ -507,7 +491,7 @@ window.addEventListener('rejectionhandled', (event) => {
 
 注意：**资源加载错误必须用捕获阶段**（第三个参数 `true`），因为 error 事件不会冒泡。
 
-### 5.4 React ErrorBoundary 实现
+### 4.4 React ErrorBoundary 实现
 
 ```javascript
 import React from 'react';
@@ -575,7 +559,7 @@ function App() {
 - ErrorBoundary 不能捕获自身错误，需嵌套使用。
 - 函数组件没有 ErrorBoundary，需借助第三方库（如 `react-error-boundary`）或自己包装。
 
-### 5.5 Vue 错误处理
+### 4.5 Vue 错误处理
 
 ```javascript
 // Vue 3 全局错误处理器
@@ -604,7 +588,7 @@ export default {
 };
 ```
 
-### 5.6 Node.js 全局错误处理
+### 4.6 Node.js 全局错误处理
 
 ```javascript
 // Node.js 全局未捕获异常
@@ -632,7 +616,7 @@ if (cluster.isMaster) {
 }
 ```
 
-### 5.7 Web Worker 错误处理
+### 4.7 Web Worker 错误处理
 
 ```javascript
 // 主线程
@@ -658,7 +642,7 @@ self.addEventListener('unhandledrejection', (e) => {
 });
 ```
 
-### 5.8 跨域脚本的 `Script error`
+### 4.8 跨域脚本的 `Script error`
 
 ```html
 <!-- 没有配置 crossorigin 的跨域脚本，错误会变成 'Script error.' -->
@@ -678,9 +662,9 @@ Access-Control-Allow-Origin: *
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 错误捕获方案对比
+### 5.1 错误捕获方案对比
 
 | 方案 | 覆盖范围 | 性能影响 | 实现复杂度 | 适用场景 |
 | --- | --- | --- | --- | --- |
@@ -693,7 +677,7 @@ Access-Control-Allow-Origin: *
 | `process.on('uncaughtException')` | Node.js 全局 | 极低 | 简单 | Node 服务端 |
 | APM SDK (Sentry/Bugsnag) | 全方位 | 中 | 中 | 商业级监控 |
 
-### 6.2 `try/catch` 与全局监听的差异
+### 5.2 `try/catch` 与全局监听的差异
 
 | 维度 | `try/catch` | 全局监听 |
 | --- | --- | --- |
@@ -704,7 +688,7 @@ Access-Control-Allow-Origin: *
 | 资源错误 | 不覆盖 | 覆盖（捕获阶段） |
 | SSR 兼容 | 是 | 否（Node 端用 process.on） |
 
-### 6.3 Sentry vs 自建监控系统
+### 5.3 Sentry vs 自建监控系统
 
 | 维度 | Sentry | 自建 |
 | --- | --- | --- |
@@ -717,9 +701,9 @@ Access-Control-Allow-Origin: *
 
 ---
 
-## 7. 常见陷阱
+## 6. 常见陷阱
 
-### 7.1 异步错误未被 try/catch 捕获
+### 6.1 异步错误未被 try/catch 捕获
 
 ```javascript
 // 反模式
@@ -734,7 +718,7 @@ try {
 
 修复：将 try/catch 移到回调内部，或用全局监听。
 
-### 7.2 Promise 链未 `.catch`
+### 6.2 Promise 链未 `.catch`
 
 ```javascript
 // 反模式
@@ -748,7 +732,7 @@ fetch('/api')
   .catch((err) => console.error('Failed:', err));
 ```
 
-### 7.3 async 函数未 await
+### 6.3 async 函数未 await
 
 ```javascript
 // 反模式
@@ -770,7 +754,7 @@ async function save() {
 }
 ```
 
-### 7.4 ErrorBoundary 不能捕获事件处理器错误
+### 6.4 ErrorBoundary 不能捕获事件处理器错误
 
 ```javascript
 class Counter extends React.Component {
@@ -786,7 +770,7 @@ class Counter extends React.Component {
 
 React 设计如此，因为事件处理器不属于渲染流程。需在事件处理器内自己 try/catch。
 
-### 7.5 `error` 事件不冒泡
+### 6.5 `error` 事件不冒泡
 
 ```javascript
 // 反模式：在冒泡阶段监听 img 错误
@@ -800,7 +784,7 @@ window.addEventListener('error', (e) => {
 }, true);
 ```
 
-### 7.6 `Error.prototype.stack` 非标准
+### 6.6 `Error.prototype.stack` 非标准
 
 ```javascript
 const e = new Error('test');
@@ -809,7 +793,7 @@ console.log(e.stack); // 各引擎格式不同
 
 不同引擎（V8、SpiderMonkey、JSC）的 stack 格式不同，解析需用 `stacktracejs` 等库。生产环境需通过 Source Map 还原压缩后代码的真实堆栈。
 
-### 7.7 跨域脚本错误屏蔽
+### 6.7 跨域脚本错误屏蔽
 
 ```javascript
 // CDN 上的脚本错误会被屏蔽
@@ -820,7 +804,7 @@ console.log(e.stack); // 各引擎格式不同
 <script src="https://cdn.example.com/lib.js" crossorigin="anonymous"></script>
 ```
 
-### 7.8 Node.js `uncaughtException` 后的进程状态
+### 6.8 Node.js `uncaughtException` 后的进程状态
 
 ```javascript
 // 反模式
@@ -837,7 +821,7 @@ process.on('uncaughtException', (err) => {
 
 Node.js 官方建议：捕获后立即退出，由外部进程管理器（PM2、systemd、Docker）重启。
 
-### 7.9 finally 中返回值
+### 6.9 finally 中返回值
 
 ```javascript
 function f() {
@@ -862,7 +846,7 @@ function g() {
 console.log(g()); // 'ok'
 ```
 
-### 7.10 `error` 与 `unhandledrejection` 的边界
+### 6.10 `error` 与 `unhandledrejection` 的边界
 
 ```javascript
 // Promise 抛出同步错误，触发 unhandledrejection 而非 error
@@ -881,9 +865,9 @@ f();
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 错误监控 SDK 雏形
+### 7.1 错误监控 SDK 雏形
 
 ```javascript
 class ErrorMonitor {
@@ -1000,7 +984,7 @@ const monitor = new ErrorMonitor({
 });
 ```
 
-### 8.2 Source Map 解析
+### 7.2 Source Map 解析
 
 生产环境通常压缩代码，stack 中的行号对应压缩后代码。需通过 Source Map 还原：
 
@@ -1031,7 +1015,7 @@ async function parseStack(stack, sourceMap) {
 - 上传到独立的内部服务，监控 SDK 通过 ID 查询。
 - 配置 CDN/Nginx 拒绝外部访问 `.map` 文件。
 
-### 8.3 错误聚合
+### 7.3 错误聚合
 
 ```javascript
 function aggregateErrors(errors) {
@@ -1053,7 +1037,7 @@ function aggregateErrors(errors) {
 }
 ```
 
-### 8.4 用户反馈机制
+### 7.4 用户反馈机制
 
 ```javascript
 class FeedbackDialog {
@@ -1090,7 +1074,7 @@ class FeedbackDialog {
 }
 ```
 
-### 8.5 React 错误边界分层
+### 7.5 React 错误边界分层
 
 ```javascript
 // 顶层：捕获所有，显示致命错误页面
@@ -1142,7 +1126,7 @@ function App() {
 }
 ```
 
-### 8.6 错误降级与重试
+### 7.6 错误降级与重试
 
 ```javascript
 class RetryBoundary extends React.Component {
@@ -1177,7 +1161,7 @@ class RetryBoundary extends React.Component {
 }
 ```
 
-### 8.7 性能考量
+### 7.7 性能考量
 
 - **采样**：高流量应用全量上报成本高，按 1-10% 采样。
 - **节流**：单个用户 1 分钟内同类错误只上报一次。
@@ -1204,9 +1188,9 @@ class ThrottledMonitor extends ErrorMonitor {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：构建完整错误监控 SDK
+### 8.1 案例：构建完整错误监控 SDK
 
 ```javascript
 class SentryLike {
@@ -1376,7 +1360,7 @@ sentry.setUser({ id: 'user-123', email: 'alice@example.com' });
 sentry.setTag('feature', 'checkout');
 ```
 
-### 9.2 案例：错误驱动的自动回滚
+### 8.2 案例：错误驱动的自动回滚
 
 ```javascript
 class AutoRollback {
@@ -1433,7 +1417,7 @@ class AutoRollback {
 }
 ```
 
-### 9.3 案例：API 调用错误重试与降级
+### 8.3 案例：API 调用错误重试与降级
 
 ```javascript
 class ApiClient {
@@ -1490,7 +1474,7 @@ const config = await api.request('/api/config');
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 1. 写出以下代码的输出：
 
@@ -1519,7 +1503,7 @@ try {
 
 解析讲解：`setTimeout` 的回调在新的调用栈中执行，原 try 块已退出。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 3. 实现一个 `safeRun` 函数，捕获所有错误（同步、异步、Promise）：
 
@@ -1604,7 +1588,7 @@ class ErrorBoundary extends React.Component {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 7. 为什么 `error` 事件不冒泡？这一设计有什么好处与坏处？
 
@@ -1612,7 +1596,7 @@ class ErrorBoundary extends React.Component {
 
 9. 比较 Node.js 中 `uncaughtException` 与 `unhandledRejection` 的处理建议差异。
 
-### 10.5 调试题
+### 9.5 调试题
 
 10. 找出以下代码的问题并修复：
 
@@ -1653,7 +1637,7 @@ class App extends React.Component {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Ecma International. 2024. ECMAScript 2024 Language Specification (ECMA-262, 15th Edition). Section 20.5 Error Objects. Retrieved from https://tc39.es/ecma262/
 
@@ -1681,15 +1665,15 @@ class App extends React.Component {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 规范文档
+### 11.1 规范文档
 
 - **ECMA-262 Error 章节**：<https://tc39.es/ecma262/#sec-error-objects>
 - **WHATWG HTML error 事件**：<https://html.spec.whatwg.org/>
 - **TC39 Error Cause 提案**：<https://github.com/tc39/proposal-error-cause>
 
-### 12.2 商业监控服务
+### 11.2 商业监控服务
 
 - **Sentry**：<https://sentry.io>
   最成熟的开源错误监控服务，支持 JS、Node、React、Vue 等。
@@ -1702,7 +1686,7 @@ class App extends React.Component {
 - **LogRocket**：<https://logrocket.com>
   录屏式错误回放，能复现用户操作过程。
 
-### 12.3 开源工具
+### 11.3 开源工具
 
 - **stacktrace.js**：<https://github.com/stacktracejs/stacktrace.js>
   跨浏览器解析堆栈的库。
@@ -1713,7 +1697,7 @@ class App extends React.Component {
 - **raven-js**：<https://github.com/getsentry/raven-js>
   Sentry 旧版 SDK（已被新版取代，但思路值得学习）。
 
-### 12.4 经典书籍
+### 11.4 经典书籍
 
 - **《JavaScript Patterns》**（Stoyan Stefanov）
   第 6 章深入错误处理模式。
@@ -1724,7 +1708,7 @@ class App extends React.Component {
 - **《Release Engineering Best Practices》**（Google SRE Book）
   错误驱动的发布与回滚实践。
 
-### 12.5 学术论文
+### 11.5 学术论文
 
 - **"Finding and Fixing Bugs in JavaScript Programs with Static Analysis"** (FSE 2019)
   静态分析在错误预防中的应用。
@@ -1733,7 +1717,7 @@ class App extends React.Component {
 - **"Empirical Study of JavaScript Errors"** (MSR 2017)
   JavaScript 错误的实证分析，揭示常见模式。
 
-### 12.6 推荐实践
+### 11.6 推荐实践
 
 - 阅读 Sentry、Bugsnag SDK 源码，学习工业级错误收集实现。
 - 阅读 React 官方文档关于 Error Boundary 的设计与限制。

@@ -14,6 +14,7 @@ related:
 prerequisites: []
 ---
 
+
 # C# 概述与环境配置
 
 > 本文是 FANDEX C# 系列的开篇。我们将从语言的诞生背景、设计哲学、运行平台、生态构成，到本地环境的搭建与第一个可运行程序，全方位带你建立对 C# 与 .NET 的宏观认知。内容对标 MIT 6.0001、Stanford CS106X、CMU 15-110 等海外名校入门课程的教学严谨度，同时融入企业级工程实战经验，支持 0 基础自学。
@@ -37,56 +38,11 @@ prerequisites: []
 
 ---
 
-## 1. 学习目标（Bloom 分类法）
-
-Bloom 分类法将认知能力由低到高划分为六个层次：记忆（Remember）、理解（Understand）、应用（Apply）、分析（Analyze）、评价（Evaluate）、创造（Create）。本节据此列出本篇学习目标，便于读者自检与教学评估。
-
-### 1.1 记忆（Remember）
-
-- **R1**：能复述 C# 语言的诞生年份（2000 年）、首席设计师（Anders Hejlsberg）及其前序作品（Turbo Pascal、Delphi、TypeScript）。
-- **R2**：能列出 .NET 平台的三大核心组成：运行时（Runtime）、基础类库（BCL, Base Class Library）、应用模型（App Model）。
-- **R3**：能背诵 .NET 主要版本的时间线（.NET Framework 1.0/2.0/3.5/4.x、.NET Core 1.0/2.0/3.x、.NET 5/6/7/8/9）。
-- **R4**：能识别 SDK（Software Development Kit）与 Runtime（运行时）的语义差异。
-
-### 1.2 理解（Understand）
-
-- **U1**：能解释 CTS（Common Type System）、CLS（Common Language Specification）、CIL（Common Intermediate Language）三者的层次关系。
-- **U2**：能用自己的话阐述托管代码（Managed Code）与原生代码（Native Code）的执行差异。
-- **U3**：能说明 JIT（Just-In-Time）编译与 AOT（Ahead-Of-Time）编译的优劣。
-- **U4**：能描述 NuGet 包管理器在依赖解析中的作用机制。
-- **U5**：能阐述 .NET 跨平台（Windows / Linux / macOS / iOS / Android）的实现原理。
-
-### 1.3 应用（Apply）
-
-- **A1**：能在 Windows / macOS / Linux 上独立安装 .NET SDK 9.0。
-- **A2**：能使用 `dotnet new`、`dotnet build`、`dotnet run` 完成控制台应用的创建、编译、运行。
-- **A3**：能使用 `dotnet add package` 引入 NuGet 包并正确调用。
-- **A4**：能配置 VS Code / Rider / Visual Studio 2022 的 C# 开发环境。
-
-### 1.4 分析（Analyze）
-
-- **An1**：能对比 .NET Framework 与 .NET（Core）在 GC、AppDomain、程序集加载机制上的差异。
-- **An2**：能拆解 `dotnet build` 背后的 MSBuild 任务链（Restore → Compile → Pack → Publish）。
-- **An3**：能分析 `csproj`、`Program.cs`、`bin/`、`obj/` 之间的依赖关系。
-
-### 1.5 评价（Evaluate）
-
-- **E1**：能评估在何种场景下应选择 .NET 而非 JVM、Go、Node.js。
-- **E2**：能评判 AOT 编译在启动速度与运行时性能之间的权衡是否合理。
-- **E3**：能评估 LTS（Long Term Support）版本与 STS（Standard Term Support）版本在生产环境中的选型。
-
-### 1.6 创造（Create）
-
-- **C1**：能设计一个具备项目分层（Presentation / Business / Data）的 C# 控制台应用骨架。
-- **C2**：能为团队编写一份《C# 开发环境搭建指南》文档，涵盖版本管理、IDE 配置、调试技巧。
-
----
-
-## 2. 历史动机与演化
+## 1. 历史动机与演化
 
 理解一门语言的现在，必须先理解它走过的路。C# 的演化是一部"在工程实用主义与语言创新之间不断平衡"的历史。
 
-### 2.1 史前背景：COM 时代的痛点
+### 1.1 史前背景：COM 时代的痛点
 
 在 .NET 诞生之前（1990 年代），微软生态主流是 **COM**（Component Object Model）与 **MFC**（Microsoft Foundation Classes）。开发者面临的核心痛点包括：
 
@@ -95,7 +51,7 @@ Bloom 分类法将认知能力由低到高划分为六个层次：记忆（Remem
 3. **跨语言调用成本高**：C++ 写的 COM 组件被 VB 调用时需要 IDL（Interface Definition Language）转译，开发体验差。
 4. **Java 的崛起**：1995 年 Sun 推出 Java，凭借"Write Once, Run Anywhere"与垃圾回收（GC）抢占企业市场，对微软构成战略威胁。
 
-### 2.2 .NET Framework 1.0（2002）与 C# 1.0
+### 1.2 .NET Framework 1.0（2002）与 C# 1.0
 
 2000 年 6 月，微软在 Orlando 召开的 PDC（Professional Developers Conference）上正式发布 **.NET 战略**（Project Lightning / NGWS, Next Generation Windows Services）。其核心目标：
 
@@ -119,7 +75,7 @@ Bloom 分类法将认知能力由低到高划分为六个层次：记忆（Remem
 - 基于 `foreach` 的迭代器模式。
 - 完整的 GC 与 AppDomain 隔离。
 
-### 2.3 .NET Framework 2.0（2005）与 C# 2.0
+### 1.3 .NET Framework 2.0（2005）与 C# 2.0
 
 C# 2.0 引入了影响深远的特性：
 
@@ -129,7 +85,7 @@ C# 2.0 引入了影响深远的特性：
 - **匿名方法（Anonymous Methods）**：`delegate(int x) { return x*x; }`，为后续 Lambda 铺路。
 - **协变与逆变（Covariance/Contravariance）**：在委托层面初步支持。
 
-### 2.4 .NET Framework 3.0 / 3.5（2006 / 2007）与 C# 3.0
+### 1.4 .NET Framework 3.0 / 3.5（2006 / 2007）与 C# 3.0
 
 C# 3.0 是该语言的"二次飞跃"，伴随 .NET Framework 3.5 推出，**LINQ**（Language Integrated Query）登场。核心特性：
 
@@ -142,7 +98,7 @@ C# 3.0 是该语言的"二次飞跃"，伴随 .NET Framework 3.5 推出，**LINQ
 - **表达式树（Expression Trees）**：`Expression<Func<int,int>>`，将代码作为数据，是 EF Core、IQueryable 的基石。
 - **自动实现属性**：`public int X { get; set; }`。
 
-### 2.5 .NET Framework 4.0（2010）与 C# 4.0
+### 1.5 .NET Framework 4.0（2010）与 C# 4.0
 
 为应对动态语言（Python、Ruby）的崛起：
 
@@ -152,7 +108,7 @@ C# 3.0 是该语言的"二次飞跃"，伴随 .NET Framework 3.5 推出，**LINQ
 - **嵌入式 COM 互操作**：Office 自动化体验大幅提升。
 - **TPL（Task Parallel Library）与 PLINQ**：基于 `Task` 的并行编程范式，奠定后续 async/await 基础。
 
-### 2.6 .NET Framework 4.5（2012）与 C# 5.0
+### 1.6 .NET Framework 4.5（2012）与 C# 5.0
 
 **C# 5.0 是异步编程的里程碑**：
 
@@ -160,7 +116,7 @@ C# 3.0 是该语言的"二次飞跃"，伴随 .NET Framework 3.5 推出，**LINQ
 - **Caller Information 特性**：`[CallerMemberName]`、`[CallerFilePath]`、`[CallerLineNumber]`，简化 INotifyPropertyChanged 实现。
 - **foreach 与闭包改进**：修复了 C# 5 之前闭包捕获循环变量的著名 bug。
 
-### 2.7 .NET Framework 4.6（2015）与 C# 6.0
+### 1.7 .NET Framework 4.6（2015）与 C# 6.0
 
 C# 6.0 以"小而精"的特性提高开发体验：
 
@@ -174,7 +130,7 @@ C# 6.0 以"小而精"的特性提高开发体验：
 - **nameof 表达式**：`nameof(x)`。
 - **索引初始化器**：`new Dictionary<int,string> { [1]="a", [2]="b" }`。
 
-### 2.8 .NET Framework 4.7（2017）与 C# 7.0 / 7.1 / 7.2 / 7.3
+### 1.8 .NET Framework 4.7（2017）与 C# 7.0 / 7.1 / 7.2 / 7.3
 
 C# 7.x 围绕"性能"与"模式匹配"展开：
 
@@ -188,7 +144,7 @@ C# 7.x 围绕"性能"与"模式匹配"展开：
 - **Span<T> 与 Memory<T>**：C# 7.2 起 `Span<T>` 作为 `ref struct` 提供，是 .NET 性能革命的核心。
 - **数字分隔符与二进制字面量**：`0b1010_1010`。
 
-### 2.9 .NET Core 1.0 / 2.0 / 2.1 / 2.2（2016 - 2018）
+### 1.9 .NET Core 1.0 / 2.0 / 2.1 / 2.2（2016 - 2018）
 
 为应对容器化与跨平台需求，微软启动 **.NET Core** 重写：
 
@@ -201,7 +157,7 @@ C# 7.x 围绕"性能"与"模式匹配"展开：
 
 C# 7.x 在此阶段发布，配合 .NET Standard 2.0（2017）解决类库跨 Framework 与 Core 共享问题。
 
-### 2.10 .NET Core 3.0 / 3.1（2019）
+### 1.10 .NET Core 3.0 / 3.1（2019）
 
 - **Windows 桌面支持回归**：WPF、WinForms 在 .NET Core 3.0 复活。
 - **默认可空引用类型（NRT）**：C# 8.0 引入，编译期 null 安全。
@@ -211,7 +167,7 @@ C# 7.x 在此阶段发布，配合 .NET Standard 2.0（2017）解决类库跨 Fr
 - **默认接口方法**：接口可包含实现。
 - **unmanaged 泛型约束**：`where T : unmanaged`。
 
-### 2.11 .NET 5（2020）与 C# 9.0
+### 1.11 .NET 5（2020）与 C# 9.0
 
 微软统一品牌：从此不再有 ".NET Core"，只有 ".NET"。
 
@@ -224,7 +180,7 @@ C# 7.x 在此阶段发布，配合 .NET Standard 2.0（2017）解决类库跨 Fr
 - **函数指针（delegate*）**：非托管调用零开销。
 - **源生成器（Source Generators）**：编译期代码生成，替代反射。
 
-### 2.12 .NET 6（2021 LTS）与 C# 10.0
+### 1.12 .NET 6（2021 LTS）与 C# 10.0
 
 - **全局 using**：`global using System.Linq;`。
 - **文件范围命名空间**：`namespace MyApp;` 一行声明。
@@ -236,7 +192,7 @@ C# 7.x 在此阶段发布，配合 .NET Standard 2.0（2017）解决类库跨 Fr
 - **最小 API（Minimal API）**：`app.MapGet("/", () => "Hello");`。
 - **MAUI**：跨平台 UI 框架（Android、iOS、Windows、macOS）。
 
-### 2.13 .NET 7（2022 STS）与 C# 11.0
+### 1.13 .NET 7（2022 STS）与 C# 11.0
 
 - **原始字符串字面量**：`"""..."""` 支持多行与插值。
 - **列表模式**：`[1, 2, .., 5]` 模式匹配。
@@ -247,7 +203,7 @@ C# 7.x 在此阶段发布，配合 .NET Standard 2.0（2017）解决类库跨 Fr
 - **ref struct 改进**：可扩展更多场景。
 - **Native AOT**：实验性发布 AOT 编译。
 
-### 2.14 .NET 8（2023 LTS）与 C# 12.0
+### 1.14 .NET 8（2023 LTS）与 C# 12.0
 
 - **主构造函数（Primary Constructor）**：`class Person(string name)`。
 - **集合表达式**：`int[] a = [1, 2, 3];`。
@@ -259,7 +215,7 @@ C# 7.x 在此阶段发布，配合 .NET Standard 2.0（2017）解决类库跨 Fr
 - **ASP.NET Core 8 重大性能优化**：Kestrel 与 AOT 支持最小 API。
 - **Native AOT 正式可用**：发布时无运行时依赖。
 
-### 2.15 .NET 9（2024 STS）与 C# 13.0
+### 1.15 .NET 9（2024 STS）与 C# 13.0
 
 - **params 集合增强**：`params ReadOnlySpan<int>`。
 - **lock 类型化**：`lock(obj)` 使用 `System.Threading.Lock`。
@@ -273,7 +229,7 @@ C# 7.x 在此阶段发布，配合 .NET Standard 2.0（2017）解决类库跨 Fr
 - **OpenTelemetry 内置支持**。
 - **Pgo（Profile-Guided Optimization）改进**：JIT 性能再升 15%。
 
-### 2.16 演化时间线总览
+### 1.16 演化时间线总览
 
 | 年份 | .NET 版本 | C# 版本 | 标志性特性 | LTS/STS |
 |------|----------|---------|----------|---------|
@@ -291,7 +247,7 @@ C# 7.x 在此阶段发布，配合 .NET Standard 2.0（2017）解决类库跨 Fr
 | 2023 | .NET 8 | 12.0 | 主构造、Native AOT | LTS |
 | 2024 | .NET 9 | 13.0 | HybridCache、PGO | STS |
 
-### 2.17 设计哲学小结
+### 1.17 设计哲学小结
 
 C# 的演化贯穿三大原则：
 
@@ -303,13 +259,13 @@ C# 的演化贯穿三大原则：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 C# 语言的形式化定义
+### 2.1 C# 语言的形式化定义
 
 C# 是一种**静态类型、强类型、面向对象、多范式、托管执行**的编程语言。下面从形式化角度拆解这些性质。
 
-#### 3.1.1 类型系统
+#### 2.1.1 类型系统
 
 设 $\mathcal{T}$ 为类型集合，$\Gamma$ 为类型环境（typing context），表达式 $e$ 的类型推断关系记为 $\Gamma \vdash e : \tau$。C# 的类型规则可形式化为：
 
@@ -328,7 +284,7 @@ C# 类型系统在 Hindley-Milner 之上做了若干扩展：
 - **逆变（Contravariance）**：若 `Action<in T>`，则 $T <: U \Rightarrow \text{Action}<U> <: \text{Action}<T>$。
 - **可空性（Nullability）**：引用类型 $T$ 拆为 $T$（不可空）与 $T?$（可空）。
 
-#### 3.1.2 语法与文法
+#### 2.1.2 语法与文法
 
 C# 文法以 **LL(k) 与 LR 混合**方式解析。其文法可表示为：
 
@@ -342,7 +298,7 @@ $$
 
 详细文法见 C# Language Specification（Dotnet GitHub 仓库 `dotnet/csharpstandard`）。
 
-### 3.2 .NET 平台的形式化定义
+### 2.2 .NET 平台的形式化定义
 
 .NET 平台可形式化为三元组：
 
@@ -356,7 +312,7 @@ $$
 - **BCL（Base Class Library）**：基础类库，包含集合、IO、网络、LINQ、反射等。
 - **AppModel（Application Model）**：应用模型，如 ASP.NET Core、EF Core、MAUI、WPF、WinForms。
 
-### 3.3 程序执行流程的形式化
+### 2.3 程序执行流程的形式化
 
 C# 源代码的执行流程可形式化为映射链：
 
@@ -374,7 +330,7 @@ $$
 6. **JIT 编译**：方法首次调用时，JIT 将 CIL 编译为本地机器码。
 7. **执行**：CPU 执行机器码，GC 在后台管理内存。
 
-### 3.4 内存模型形式化
+### 2.4 内存模型形式化
 
 .NET 的托管堆（Managed Heap）可形式化为：
 
@@ -396,7 +352,7 @@ $$
 \forall (a, t, g_i, s) \in \mathcal{H}_{\text{survived}} : g_i' = \min(g_i + 1, 2)
 $$
 
-### 3.5 异步执行模型形式化
+### 2.5 异步执行模型形式化
 
 `async/await` 的状态机重写可形式化为变换 $\mathcal{T}_{\text{async}}$：
 
@@ -416,9 +372,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 类型安全性证明（Sketch）
+### 3.1 类型安全性证明（Sketch）
 
 C# 类型系统满足 **Progress** 与 **Preservation** 两大性质（受 Erasure 影响，对泛型稍作调整）。
 
@@ -436,7 +392,7 @@ C# 类型系统满足 **Progress** 与 **Preservation** 两大性质（受 Erasu
 - 算术：$\Gamma \vdash v_1 + v_2 : \text{int}$，归约为 $v$（$v_1 + v_2$ 的算术结果），$\Gamma \vdash v : \text{int}$ 成立。
 - 函数调用：$(\lambda x.e) \, v \to e[x := v]$，由代入引理 $\Gamma, x : \tau_1 \vdash e : \tau_2 \Rightarrow \Gamma \vdash e[x := v] : \tau_2$。
 
-### 4.2 协变/逆变安全性证明
+### 3.2 协变/逆变安全性证明
 
 **定理 4.3（协变安全）**：若 `interface I<out T>`，且 $T <: U$，则 `I<T> <: I<U>` 类型安全。
 
@@ -446,7 +402,7 @@ C# 类型系统满足 **Progress** 与 **Preservation** 两大性质（受 Erasu
 
 **证明**：逆变要求 `T` 只出现在输入位置。设 `I<T>` 暴露 `void M(T x)`，对 `I<T>` 实例 `o` 调用 `o.M(x)` 要求 $x : T$。若将 `o` 视为 `I<U>`（即接受 `U` 类型参数），调用 `o.M(y)` 其中 $y : U$。由于 `o` 实际是 `I<T>` 实例，要求 $x : T$，而 $T <: U$ 意味着 $U$ 实例不一定是 $T$，这看似不安全——但逆变的方向相反：`I<U> <: I<T>` 意味着 `I<U>` 可用作 `I<T>`。此时调用 `o.M(x)` 其中 $x : T$，由 $T <: U$，$x$ 也是 $U$，传给 `I<U>` 的 `M(U)` 安全。证毕。
 
-### 4.3 GC 暂停时间复杂度
+### 3.3 GC 暂停时间复杂度
 
 **命题 4.5**：.NET 的分代 GC 第 $i$ 代回收时间 $T_i$ 与该代对象数量 $n_i$ 近似成正比，即 $T_i = O(n_i)$。
 
@@ -457,7 +413,7 @@ C# 类型系统满足 **Progress** 与 **Preservation** 两大性质（受 Erasu
 
 由于第 0 代存活率低（多数对象短命），$n_0^{\text{survived}} \ll n_0$，故 $T_0$ 极小。第 2 代（Gen 2）回收涉及全堆扫描，$T_2$ 较大。
 
-### 4.4 JIT 编译优化
+### 3.4 JIT 编译优化
 
 **命题 4.6**：JIT 编译产生的代码性能 $P_{\text{JIT}}$ 满足 $P_{\text{JIT}} \geq P_{\text{AOT}} - \epsilon$，其中 $\epsilon$ 为预热开销。
 
@@ -469,7 +425,7 @@ C# 类型系统满足 **Progress** 与 **Preservation** 两大性质（受 Erasu
 
 Profile-Guided Optimization（PGO）在 .NET 6+ 中将 JIT 优化推向新高度。.NET 9 的动态 PGO 进一步使 $P_{\text{JIT}} > P_{\text{AOT}}$ 的场景比例提升。
 
-### 4.5 Roslyn 编译流水线
+### 3.5 Roslyn 编译流水线
 
 Roslyn 编译器流水线可形式化为：
 
@@ -481,11 +437,11 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 安装 .NET SDK
+### 4.1 安装 .NET SDK
 
-#### 5.1.1 Windows 安装
+#### 4.1.1 Windows 安装
 
 **方式一：官方安装包**
 
@@ -505,14 +461,14 @@ winget install Microsoft.DotNet.SDK.9
 choco install dotnet-sdk -y
 ```
 
-#### 5.1.2 macOS 安装
+#### 4.1.2 macOS 安装
 
 ```bash
 # Homebrew
 brew install --cask dotnet-sdk
 ```
 
-#### 5.1.3 Linux（Ubuntu 22.04）
+#### 4.1.3 Linux（Ubuntu 22.04）
 
 ```bash
 # 添加微软源
@@ -524,7 +480,7 @@ rm packages-microsoft-prod.deb
 sudo apt-get update && sudo apt-get install -y dotnet-sdk-9.0
 ```
 
-#### 5.1.4 验证安装
+#### 4.1.4 验证安装
 
 ```bash
 dotnet --version
@@ -541,9 +497,9 @@ Microsoft.NETCore.App 9.0.0 [/usr/local/share/dotnet/shared/Microsoft.NETCore.Ap
 Microsoft.AspNetCore.App 9.0.0 [/usr/local/share/dotnet/shared/Microsoft.AspNetCore.App]
 ```
 
-### 5.2 第一个控制台应用
+### 4.2 第一个控制台应用
 
-#### 5.2.1 创建项目
+#### 4.2.1 创建项目
 
 ```bash
 mkdir HelloFandex && cd HelloFandex
@@ -566,7 +522,7 @@ flowchart TD
     T3 --> T4
 ```
 
-#### 5.2.2 默认 Program.cs
+#### 4.2.2 默认 Program.cs
 
 ```csharp
 // See https://aka.ms/new-console-template for more information
@@ -589,7 +545,7 @@ class Program
 }
 ```
 
-#### 5.2.3 csproj 文件解读
+#### 4.2.3 csproj 文件解读
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -614,9 +570,9 @@ class Program
 | `ImplicitUsings` | 是否自动 `using` 常用命名空间 |
 | `Nullable` | 启用可空引用类型检查 |
 
-### 5.3 编译与运行机制
+### 4.3 编译与运行机制
 
-#### 5.3.1 编译
+#### 4.3.1 编译
 
 ```bash
 dotnet build
@@ -629,7 +585,7 @@ dotnet build
 3. **Csc**：调用 Roslyn 编译器，输出 CIL 到 `bin/Debug/net9.0/HelloFandex.dll`。
 4. **CopyFilesMarkedCopyLocal**：拷贝 NuGet 依赖到输出目录。
 
-#### 5.3.2 运行
+#### 4.3.2 运行
 
 ```bash
 dotnet run
@@ -637,7 +593,7 @@ dotnet run
 
 `dotnet run` 等价于 `dotnet build && dotnet <assembly.dll>`，是开发期最常用命令。
 
-#### 5.3.3 发布
+#### 4.3.3 发布
 
 ```bash
 # 框架依赖发布（Framework-Dependent）
@@ -658,7 +614,7 @@ dotnet publish -c Release -r linux-x64 /p:PublishAot=true
 | 自包含 | 大（~80MB） | 中 | 无 | 离线部署 |
 | Native AOT | 中（~10MB） | 极快 | 无 | 函数计算、CLI 工具 |
 
-### 5.4 引入 NuGet 包
+### 4.4 引入 NuGet 包
 
 ```bash
 dotnet add package Newtonsoft.Json
@@ -691,7 +647,7 @@ dotnet run
 Name: Alice, Age: 30
 ```
 
-### 5.5 多项目解决方案
+### 4.5 多项目解决方案
 
 ```bash
 mkdir Demo && cd Demo
@@ -724,7 +680,7 @@ Console.WriteLine(Calculator.Add(3, 5));
 Console.WriteLine(Calculator.Multiply(3, 5));
 ```
 
-### 5.6 dotnet 命令速查表
+### 4.6 dotnet 命令速查表
 
 ```bash
 # 项目创建
@@ -763,9 +719,9 @@ dotnet ef database update
 dotnet ef dbcontext scaffold "<connection>" Microsoft.EntityFrameworkCore.SqlServer
 ```
 
-### 5.7 调试配置
+### 4.7 调试配置
 
-#### 5.7.1 VS Code `launch.json`
+#### 4.7.1 VS Code `launch.json`
 
 ```json
 {
@@ -792,7 +748,7 @@ dotnet ef dbcontext scaffold "<connection>" Microsoft.EntityFrameworkCore.SqlSer
 }
 ```
 
-#### 5.7.2 VS Code `tasks.json`
+#### 4.7.2 VS Code `tasks.json`
 
 ```json
 {
@@ -814,7 +770,7 @@ dotnet ef dbcontext scaffold "<connection>" Microsoft.EntityFrameworkCore.SqlSer
 }
 ```
 
-### 5.8 完整示例：温度转换器
+### 4.8 完整示例：温度转换器
 
 `Program.cs`：
 
@@ -874,9 +830,9 @@ dotnet run --project HelloFandex.csproj -- 100
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 C# vs Java
+### 5.1 C# vs Java
 
 | 维度 | C# | Java |
 |------|-----|------|
@@ -896,7 +852,7 @@ dotnet run --project HelloFandex.csproj -- 100
 | ORM | EF Core | Hibernate、JPA |
 | 平台 | Win/Linux/macOS/iOS/Android | 同样跨平台 |
 
-#### 6.1.1 泛型差异深度对比
+#### 5.1.1 泛型差异深度对比
 
 C#：
 
@@ -917,7 +873,7 @@ int sum = list.stream().mapToInt(Integer::intValue).sum();  // 拆箱开销
 
 C# 的 `List<int>` 在底层是 `int[]`，无装箱；Java 的 `ArrayList<Integer>` 底层是 `Object[]`，存在装箱开销。
 
-#### 6.1.2 异步对比
+#### 5.1.2 异步对比
 
 C#：
 
@@ -959,7 +915,7 @@ public String getData(String url) throws Exception {
 
 C# 的 async/await 在编译期重写为状态机，无需操作系统线程；Java 的 Virtual Thread 类似，但需要 JVM 层支持。
 
-### 6.2 C# vs TypeScript
+### 5.2 C# vs TypeScript
 
 | 维度 | C# | TypeScript |
 |------|-----|-----------|
@@ -974,7 +930,7 @@ C# 的 async/await 在编译期重写为状态机，无需操作系统线程；J
 | 反射 | 完整 | 有限（设计时 only） |
 | 装饰器 | 特性（Attribute） | 装饰器（实验性） |
 
-### 6.3 C# vs Kotlin
+### 5.3 C# vs Kotlin
 
 | 维度 | C# | Kotlin |
 |------|-----|--------|
@@ -988,7 +944,7 @@ C# 的 async/await 在编译期重写为状态机，无需操作系统线程；J
 | 函数式 | LINQ、Lambda | Collection API、Lambda |
 | 与 Java 互操作 | - | 完美 |
 
-### 6.4 C# vs Go
+### 5.4 C# vs Go
 
 | 维度 | C# | Go |
 |------|-----|-----|
@@ -1001,7 +957,7 @@ C# 的 async/await 在编译期重写为状态机，无需操作系统线程；J
 | 泛型 | C# 2.0 起 | Go 1.18 起 |
 | 包管理 | NuGet | Go Modules |
 
-### 6.5 跨语言 Hello World 对比
+### 5.5 跨语言 Hello World 对比
 
 C#：
 
@@ -1056,9 +1012,9 @@ int main() { std::cout << "Hello, World!" << std::endl; }
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 SDK 与 Runtime 版本不匹配
+### 6.1 SDK 与 Runtime 版本不匹配
 
 **症状**：
 
@@ -1083,13 +1039,13 @@ The framework 'Microsoft.NETCore.App', version '9.0.0' was not found.
 }
 ```
 
-### 7.2 顶级语句滥用
+### 6.2 顶级语句滥用
 
 **反模式**：将整个企业级应用写在 `Program.cs` 顶级语句中，文件超过 2000 行。
 
 **对策**：顶级语句仅用于启动器，业务逻辑分层到独立项目 / 类中。
 
-### 7.3 `var` 滥用
+### 6.3 `var` 滥用
 
 **反模式**：
 
@@ -1103,7 +1059,7 @@ var x = GetX();
 - 类型明显时使用 `var`：`var list = new List<int>();`。
 - 类型不明显时显式声明：`Person person = GetPerson();`。
 
-### 7.4 异常吞咽
+### 6.4 异常吞咽
 
 **反模式**：
 
@@ -1117,7 +1073,7 @@ catch (Exception) { /* 啥也不做 */ }
 - 至少记录日志：`catch (Exception e) { _logger.LogError(e, "Failed"); }`。
 - 区分可恢复与不可恢复异常。
 
-### 7.5 同步阻塞异步方法
+### 6.5 同步阻塞异步方法
 
 **反模式**：
 
@@ -1128,7 +1084,7 @@ var result = GetAsync().Wait();
 
 **对策**：异步方法应 `await`，不要 `.Result` / `.Wait()`。详见《异步编程详解》。
 
-### 7.6 装箱陷阱
+### 6.6 装箱陷阱
 
 **反模式**：
 
@@ -1142,7 +1098,7 @@ foreach (int i in list) sum += i;
 
 **对策**：始终使用泛型集合 `List<int>`。
 
-### 7.7 字符串拼接陷阱
+### 6.7 字符串拼接陷阱
 
 **反模式**：
 
@@ -1159,7 +1115,7 @@ for (int i = 0; i < 1000; i++) sb.Append(i);
 string s = sb.ToString();
 ```
 
-### 7.8 配置文件未拷贝到输出目录
+### 6.8 配置文件未拷贝到输出目录
 
 **症状**：发布后找不到 `appsettings.json`。
 
@@ -1173,7 +1129,7 @@ string s = sb.ToString();
 </ItemGroup>
 ```
 
-### 7.9 NRT 与可空警告
+### 6.9 NRT 与可空警告
 
 **症状**：开启 NRT 后大量警告 `CS8602: Dereference of a possibly null reference`。
 
@@ -1183,7 +1139,7 @@ string s = sb.ToString();
 - 重新审视 null 来源，使用 `??`、`?.`、`if (obj is not null)`。
 - 对外部输入显式校验：`ArgumentException.ThrowIfNull(arg)`。
 
-### 7.10 .NET Standard 滥用
+### 6.10 .NET Standard 滥用
 
 **反模式**：所有新类库都建为 `.NET Standard 2.0`。
 
@@ -1194,9 +1150,9 @@ string s = sb.ToString();
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 项目结构约定
+### 7.1 项目结构约定
 
 推荐的解决方案目录结构：
 
@@ -1234,7 +1190,7 @@ flowchart TD
     T9 --> T18
 ```
 
-### 8.2 `Directory.Build.props`
+### 7.2 `Directory.Build.props`
 
 集中配置所有项目的公共属性：
 
@@ -1259,7 +1215,7 @@ flowchart TD
 </Project>
 ```
 
-### 8.3 `Directory.Packages.props`
+### 7.3 `Directory.Packages.props`
 
 集中管理 NuGet 版本（Central Package Management）：
 
@@ -1279,7 +1235,7 @@ flowchart TD
 </Project>
 ```
 
-### 8.4 `global.json`
+### 7.4 `global.json`
 
 ```json
 {
@@ -1291,7 +1247,7 @@ flowchart TD
 }
 ```
 
-### 8.5 `.editorconfig`
+### 7.5 `.editorconfig`
 
 ```ini
 # Top-level EditorConfig
@@ -1326,7 +1282,7 @@ dotnet_naming_symbols.public_symbols.applicable_accessibilities = public
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 ```
 
-### 8.6 `.gitignore`
+### 7.6 `.gitignore`
 
 使用 `dotnet new gitignore` 生成默认模板，重点忽略：
 
@@ -1342,7 +1298,7 @@ publish/
 TestResults/
 ```
 
-### 8.7 代码格式化
+### 7.7 代码格式化
 
 ```bash
 # 安装 dotnet-format
@@ -1355,7 +1311,7 @@ dotnet format MySolution.sln
 dotnet format --verify-no-changes
 ```
 
-### 8.8 项目模板定制
+### 7.8 项目模板定制
 
 ```bash
 # 创建模板包
@@ -1365,7 +1321,7 @@ dotnet new install Microsoft.Maui.Templates
 dotnet new list
 ```
 
-### 8.9 单元测试
+### 7.9 单元测试
 
 ```bash
 dotnet new xunit -o tests/MyApp.Tests
@@ -1394,7 +1350,7 @@ public class CalculatorTests
 }
 ```
 
-### 8.10 CI/CD（GitHub Actions）
+### 7.10 CI/CD（GitHub Actions）
 
 `.github/workflows/ci.yml`：
 
@@ -1424,7 +1380,7 @@ jobs:
           path: ./publish
 ```
 
-### 8.11 Docker 化
+### 7.11 Docker 化
 
 `Dockerfile`：
 
@@ -1449,7 +1405,7 @@ docker build -t hello-fandex:1.0.0 .
 docker run --rm hello-fandex:1.0.0 36.5
 ```
 
-### 8.12 日志与可观测性
+### 7.12 日志与可观测性
 
 推荐使用 Serilog 或内置 `Microsoft.Extensions.Logging`：
 
@@ -1489,9 +1445,9 @@ await builder.Build().RunAsync();
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：ASP.NET Core 最小 API
+### 8.1 案例：ASP.NET Core 最小 API
 
 `Program.cs`：
 
@@ -1527,7 +1483,7 @@ dotnet run
 
 打开 <http://localhost:5000/swagger> 查看 API 文档。
 
-### 9.2 案例：Unity 中的 C# 脚本
+### 8.2 案例：Unity 中的 C# 脚本
 
 Unity 使用 C# 作为脚本语言，但运行时为 Mono / IL2CPP 而非完整 .NET Runtime。一个简单脚本：
 
@@ -1550,7 +1506,7 @@ public class PlayerController : MonoBehaviour
 
 Unity 工程通常使用 .NET Standard 2.1 兼容子集，最新 Unity 2023+ 支持 .NET 8 的子集。
 
-### 9.3 案例：MAUI 跨平台 App
+### 8.3 案例：MAUI 跨平台 App
 
 `MauiProgram.cs`：
 
@@ -1590,7 +1546,7 @@ public static class MauiProgram
 </ContentPage>
 ```
 
-### 9.4 案例：WPF 桌面应用
+### 8.4 案例：WPF 桌面应用
 
 `App.xaml.cs`：
 
@@ -1623,7 +1579,7 @@ public partial class App : Application
 </Window>
 ```
 
-### 9.5 案例：Blazor WebAssembly
+### 8.5 案例：Blazor WebAssembly
 
 `Program.cs`：
 
@@ -1656,7 +1612,7 @@ await builder.Build().RunAsync();
 }
 ```
 
-### 9.6 案例：FANDEX 项目目录结构
+### 8.6 案例：FANDEX 项目目录结构
 
 FANDEX-Web 项目本身使用 Astro 框架，但本系列文档（C# 教程）涉及的所有示例项目结构如下：
 
@@ -1687,7 +1643,7 @@ flowchart TD
 
 读者可在每篇文档末尾的"延伸阅读"找到对应的示例仓库链接。
 
-### 9.7 案例：从 .NET Framework 迁移到 .NET 9
+### 8.7 案例：从 .NET Framework 迁移到 .NET 9
 
 **初始状态**：
 
@@ -1887,7 +1843,7 @@ sw.Stop();
 Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds} ms");
 ```
 
-### 10.5 思考题
+### 9.5 思考题
 
 **常见疑问 14**：为什么微软要放弃 .NET Framework，重写 .NET Core？请从技术、商业、生态三个维度分析。
 
@@ -1907,7 +1863,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 
 风险：可能导致 ABI 不兼容；需评估 CLR 是否需要扩展。
 
-### 10.6 综合应用题
+### 9.6 综合应用题
 
 **常见疑问 16**：你要为公司搭建一个内部微服务，技术选型在 .NET 8 与 Spring Boot 3 之间犹豫。请列出选型要点，并给出推荐。
 
@@ -1927,7 +1883,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 以下参考文献遵循 **ACM Reference Format**：
 
@@ -1963,9 +1919,9 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - C# 语言参考：<https://learn.microsoft.com/dotnet/csharp/language-reference/>
 - .NET 运行时仓库：<https://github.com/dotnet/runtime>
@@ -1973,7 +1929,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 - C# 语言规范草案：<https://github.com/dotnet/csharpstandard>
 - .NET Foundation：<https://dotnetfoundation.org/>
 
-### 12.2 系列内交叉引用
+### 11.2 系列内交叉引用
 
 继续学习 C# 的下一站：
 
@@ -1987,7 +1943,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 - [async-await 状态机](./async-await状态机.md) —— 编译器重写原理
 - [Span 与 Memory](./Span与Memory.md) —— 零拷贝编程
 
-### 12.3 进阶书籍
+### 11.3 进阶书籍
 
 - Andrew Troelsen, Phil Japkiewicz. *Pro C# 10 with .NET 6* (Apress, 2022).
 - Mark Michaelis. *Essential C# 8.0* (Addison-Wesley, 2020).
@@ -1995,7 +1951,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 - Oren Eini. *Pro .NET Memory Management and Pointers* (Apress, 2022).
 - Stephen Cleary. *Concurrency in C# Cookbook* (O'Reilly, 2019).
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - .NET 官方博客：<https://devblogs.microsoft.com/dotnet/>
 - C# 设计会议记录：<https://github.com/dotnet/csharplang>
@@ -2003,7 +1959,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 - Reddit `r/csharp`：<https://www.reddit.com/r/csharp/>
 - Microsoft Learn 学习路径：<https://learn.microsoft.com/training/paths/>
 
-### 12.5 视频资源
+### 11.5 视频资源
 
 - Microsoft Build 大会 .NET Sessions：<https://build.microsoft.com/>
 - .NET Conf（每年 11 月）：<https://dotnetconf.com/>
@@ -2011,7 +1967,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 - Nick Chapsas 视频教程：<https://www.youtube.com/@nickchapsas>
 - Milan Jovanovic 工程实战：<https://www.youtube.com/@MilanJovanovicTech>
 
-### 12.6 工具与扩展
+### 11.6 工具与扩展
 
 - dotnet-format：代码格式化工具
 - dotnet-ef：EF Core CLI 工具
@@ -2023,7 +1979,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 - dotTrace：JetBrains CPU 分析（付费）
 - ILSpy / dnSpy：反编译工具
 
-### 12.7 习题答案汇总
+### 11.7 习题答案汇总
 
 | 题号 | 答案 |
 |------|------|

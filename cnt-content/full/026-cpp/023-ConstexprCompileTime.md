@@ -33,6 +33,7 @@ tags:
   - C++23
 ---
 
+
 # constexpr 与编译期计算（Constant Expression & Compile-time Computation）
 
 > 本章节系统讲解 C++ 编译期计算体系：从 C++11 引入的 `constexpr` 关键字，到 C++14 放宽的函数体约束，到 C++17 的 `constexpr if` 与 `constexpr` lambda，再到 C++20 引入的 `consteval`（立即函数）、`constinit`（编译期初始化）、constexpr 容器与 constexpr 虚函数，以及 C++23 进一步扩展的 constexpr 标准库与 constexpr 多态。内容对标 MIT 6.172 / Stanford CS106L / CMU 15-410 课程深度，融合 GCC、Clang、MSVC 三大编译器的实现差异与 Boost.Hana、Boost.Mp11、EASTL 等工业级库的实践。
@@ -56,61 +57,9 @@ tags:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-本章节遵循 Bloom 分类法（Bloom's Taxonomy）设计学习目标，自低阶认知向高阶创造逐级递进。完成本章节后，读者应能够：
-
-### 1.1 记忆（Remembering）
-
-- **R1**：复述 `constexpr`、`consteval`、`constinit` 三个关键字的语义差异：`constexpr` 表示"可"在编译期求值，`consteval` 表示"必须"在编译期求值，`constinit` 表示"必须"在编译期初始化但运行时可变。
-- **R2**：列出 `constexpr` 函数在不同标准下的能力演进：C++11 单 return、C++14 多语句与循环、C++17 constexpr if 与 lambda、C++20 consteval 与 constexpr 虚函数、C++23 constexpr 标准库扩展。
-- **R3**：背诵"常量表达式"（constant expression）的形式化条件：字面量、`constexpr` 变量、`constexpr` 函数在编译期上下文中的调用、模板参数等。
-- **R4**：识别"立即函数"（immediate function）的约束：参数必须是编译期常量、不能在运行期上下文调用、不能取地址形成运行期函数指针。
-
-### 1.2 理解（Understanding）
-
-- **U1**：解释"求值上下文"（evaluation context）的概念，阐明编译期上下文与运行期上下文对函数选择的影响，说明同一 `constexpr` 函数为何可在两种上下文中产生不同代码。
-- **U2**：阐明 `constexpr` 与 `const` 的本质区别：`const` 表示"运行期只读"，`constexpr` 表示"编译期可求值"，二者并非包含关系（如 `constexpr` 变量隐式 `const`，但 `const` 变量未必 `constexpr`）。
-- **U3**：对比 `constexpr` 函数与模板元编程（Template Metaprogramming, TMP）两种编译期计算方式，指出前者以"普通 C++ 代码"表达、后者以"模板实例化"表达的范式差异。
-- **U4**：说明"常量初始化"（constant initialization）与"动态初始化"（dynamic initialization）在静态存储期变量上的区别，指出 `constinit` 的核心价值是消除"静态初始化顺序问题"（Static Initialization Order Fiasco, SIOF）。
-
-### 1.3 应用（Applying）
-
-- **A1**：使用 `constexpr` 定义编译期常量、编译期函数、编译期类，并通过 `static_assert` 验证编译期求值结果。
-- **A2**：使用 `consteval` 实现编译期字符串哈希、编译期类型注册、编译期配置解析等"必须编译期"的场景。
-- **A3**：使用 `constinit` 替代传统全局变量初始化，避免静态初始化顺序问题，同时保留运行期可变性。
-- **A4**：使用 `constexpr if` 简化模板代码，消除 SFINAE 与标签派发（tag dispatch）的复杂写法。
-
-### 1.4 分析（Analyzing）
-
-- **An1**：分析以下代码的求值上下文，指出每个调用分别发生在编译期还是运行期：
-  ```cpp
-  constexpr int f(int n) { return n * 2; }
-  constexpr int a = f(5);       // 编译期
-  int x = std::cin.get();
-  int b = f(x);                 // 运行期
-  constexpr int c = f(a);       // 编译期
-  ```
-- **An2**：解构"编译期计算深度"（compile-time computation depth）的限制，分析递归深度、实例化深度、内存分配约束对编译期计算的边界影响。
-- **An3**：对比 `constexpr`、`consteval`、`template <int N>` 三种编译期计算的编译时间、可读性、调试性、错误信息友好度。
-
-### 1.5 评价（Evaluating）
-
-- **E1**：评价"何时使用 `constexpr`、何时使用 `consteval`、何时使用模板元编程"的决策框架，给出在库设计、应用层、嵌入式三类场景中的推荐选择。
-- **E2**：批判性分析 C++ 编译期计算的"双刃剑"特性：编译期计算提升运行期性能但显著增加编译时间，过度使用导致开发体验下降。
-- **E3**：评估 `constexpr` 标准库扩展（C++20 constexpr `std::vector`、C++23 constexpr `<cmath>`）对编译期编程范式的革命性影响，指出"编译期动态内存"的实现原理与限制。
-
-### 1.6 创造（Creating）
-
-- **C1**：设计一个编译期字符串处理库，使用 `consteval` 解析编译期字符串字面量，实现编译期正则匹配、编译期 JSON 解析、编译期 SQL 查询生成。
-- **C2**：实现一个基于 `constexpr` 的编译期状态机，使用 `constexpr` 函数描述状态转移逻辑，生成零开销的状态机实现。
-- **C3**：构建一个跨编译器的编译期性能基准测试框架，量化 `constexpr`、`consteval`、TMP 三种方式在不同编译器（GCC/Clang/MSVC）上的编译时间、内存占用、错误信息质量。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 前置背景：C 时代的 `const` 与宏（1972-1985）
+### 1.1 前置背景：C 时代的 `const` 与宏（1972-1985）
 
 C 语言通过 `#define` 宏与 `const` 关键字定义常量：
 
@@ -131,7 +80,7 @@ switch (n) {
 }
 ```
 
-### 2.2 C++98 的折中：`const` 与模板枚举
+### 1.2 C++98 的折中：`const` 与模板枚举
 
 C++98 通过放宽 `const` 整型的限制部分解决了问题，但浮点、字符串等仍无法作为常量表达式：
 
@@ -154,7 +103,7 @@ int x = Factorial<5>::value;  // 120，编译期计算
 
 模板元编程虽然强大，但语法晦涩、错误信息冗长、开发体验极差，业界急需"普通 C++ 代码表达编译期计算"的机制。
 
-### 2.3 C++11：`constexpr` 的诞生（2011）
+### 1.3 C++11：`constexpr` 的诞生（2011）
 
 C++11 引入 `constexpr` 关键字，允许在编译期求值的函数与变量：
 
@@ -174,7 +123,7 @@ C++11 `constexpr` 的核心限制：
 - 不能使用局部变量、循环、`if-else` 语句。
 - 不能调用非 `constexpr` 函数。
 
-### 2.4 C++14：放宽函数体约束（2014）
+### 1.4 C++14：放宽函数体约束（2014）
 
 C++14 大幅放宽 `constexpr` 函数的限制，允许使用局部变量、循环、条件语句、多 return：
 
@@ -209,7 +158,7 @@ C++14 仍有的限制：
 - 不能使用 `thread_local`、`static` 局部变量（C++23 部分放宽）。
 - 不能有虚函数调用（C++20 放宽）。
 
-### 2.5 C++17：`constexpr if` 与 `constexpr` lambda（2017）
+### 1.5 C++17：`constexpr if` 与 `constexpr` lambda（2017）
 
 C++17 引入 `constexpr if`，在编译期进行条件分支，未选中的分支不会被实例化：
 
@@ -238,11 +187,11 @@ auto square = [](int n) constexpr { return n * n; };
 static_assert(square(5) == 25, "");
 ```
 
-### 2.6 C++20：`consteval`、`constinit`、constexpr 容器与虚函数（2020）
+### 1.6 C++20：`consteval`、`constinit`、constexpr 容器与虚函数（2020）
 
 C++20 是编译期计算的"大爆发"标准，引入多项关键特性：
 
-#### 2.6.1 `consteval`：立即函数
+#### 1.6.1 `consteval`：立即函数
 
 ```cpp
 consteval int square(int n) { return n * n; }
@@ -253,7 +202,7 @@ constexpr int x = square(5);   // 正确：编译期调用
 
 `consteval` 强制函数在编译期执行，是"必须编译期"语义的明确表达。
 
-#### 2.6.2 `constinit`：编译期初始化
+#### 1.6.2 `constinit`：编译期初始化
 
 ```cpp
 constinit int counter = square(5);  // 编译期初始化为 25
@@ -266,7 +215,7 @@ constexpr int MAX = 100;
 
 `constinit` 解决"静态初始化顺序问题"（SIOF）：保证变量在编译期完成初始化，不依赖运行期动态初始化顺序。
 
-#### 2.6.3 constexpr 容器
+#### 1.6.3 constexpr 容器
 
 C++20 允许 `std::vector`、`std::string` 在 constexpr 上下文中使用：
 
@@ -294,7 +243,7 @@ constexpr std::string make_greeting() {
 
 constexpr 容器要求"编译期分配的内存必须在编译期释放"，称为"constexpr 内存模型"。
 
-#### 2.6.4 constexpr 虚函数
+#### 1.6.4 constexpr 虚函数
 
 ```cpp
 struct Base {
@@ -311,7 +260,7 @@ constexpr Derived d;
 static_assert(call(d) == 2, "");  // 编译期多态调用
 ```
 
-#### 2.6.5 其他 C++20 constexpr 扩展
+#### 1.6.5 其他 C++20 constexpr 扩展
 
 - `std::is_constant_evaluated()`：在运行期与编译期产生不同代码。
 - `try-catch` 在 constexpr 函数中允许（但 `throw` 仍不允许）。
@@ -319,7 +268,7 @@ static_assert(call(d) == 2, "");  // 编译期多态调用
 - `union` 的活跃成员切换允许。
 - `asm` 与 `goto` 仍不允许。
 
-### 2.7 C++23：constexpr 标准库扩展（2023）
+### 1.7 C++23：constexpr 标准库扩展（2023）
 
 C++23 进一步扩展 constexpr 的适用范围：
 
@@ -356,7 +305,7 @@ C++23 关键扩展：
 - `if consteval` 替代 `std::is_constant_evaluated()`，更清晰的编译期分支。
 - 允许 constexpr 函数中的 `static` 局部变量（受限）。
 
-### 2.8 C++26 展望：反射与编译期编程
+### 1.8 C++26 展望：反射与编译期编程
 
 C++26 提案（P2996 静态反射）将革命性扩展编译期计算能力：
 
@@ -382,9 +331,9 @@ static_assert(reflect_point() == 2, "");
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 常量表达式（Constant Expression）
+### 2.1 常量表达式（Constant Expression）
 
 **定义 3.1**（常量表达式）：常量表达式是 C++ 程序中可在编译期求值的表达式，其求值结果可作为编译期常量使用（如数组大小、模板参数、`case` 标签等）。
 
@@ -399,7 +348,7 @@ $$
 - `constexpr` 函数在编译期上下文中的调用：`factorial(5)`。
 - 模板非类型参数：`template <int N>` 中的 `N`。
 
-### 3.2 `constexpr` 函数
+### 2.2 `constexpr` 函数
 
 **定义 3.2**（constexpr 函数）：`constexpr` 函数是声明为可在编译期求值的函数，其求值上下文既可以是编译期也可以是运行期：
 
@@ -415,7 +364,7 @@ $$
 - 不能有 `try-catch` 中的 `throw` 表达式（C++20 允许 `try-catch`，但 `throw` 仍禁止）。
 - 虚函数可为 `constexpr`（C++20）。
 
-### 3.3 `consteval` 函数（立即函数）
+### 2.3 `consteval` 函数（立即函数）
 
 **定义 3.3**（立即函数）：`consteval` 函数是必须在编译期求值的函数，其求值上下文只能是编译期：
 
@@ -439,7 +388,7 @@ $$
 | 参数约束            | 无                      | 必须是常量表达式        |
 | 用途                | 双模式（编译期/运行期） | 强制编译期              |
 
-### 3.4 `constinit` 变量
+### 2.4 `constinit` 变量
 
 **定义 3.4**（constinit 变量）：`constinit` 变量是具有静态存储期（static storage duration）或线程存储期（thread storage duration）的变量，必须在编译期完成初始化：
 
@@ -453,7 +402,7 @@ $$
 - 不能与 `constexpr` 同时使用（`constexpr` 隐含 `const`，而 `constinit` 不要求 `const`）。
 - 不能与 `thread_local` 同时使用（C++20 起允许）。
 
-### 3.5 求值上下文（Evaluation Context）
+### 2.5 求值上下文（Evaluation Context）
 
 **定义 3.5**（求值上下文）：求值上下文是表达式求值发生的环境，分为编译期上下文（constant evaluation context）与运行期上下文（runtime evaluation context）：
 
@@ -487,7 +436,7 @@ int x = std::cin.get();
 int b = f(x);               // 3x（运行期）
 ```
 
-### 3.6 `if constexpr` 与 `if consteval`
+### 2.6 `if constexpr` 与 `if consteval`
 
 **定义 3.6**（`if constexpr`）：`if constexpr` 是编译期条件分支，条件必须是常量表达式，未选中分支不会被实例化：
 
@@ -510,7 +459,7 @@ $$
 | 主要用途       | 模板元编程中的类型分支    | 区分编译期与运行期代码     |
 | 引入标准       | C++17                     | C++23                      |
 
-### 3.7 字面类型（Literal Type）
+### 2.7 字面类型（Literal Type）
 
 **定义 3.8**（字面类型）：字面类型是可作为 `constexpr` 变量类型的类型，其对象可在编译期构造、析构、复制：
 
@@ -531,7 +480,7 @@ $$
 - `std::vector<T>`（C++20 起，但析构必须在编译期）。
 - `std::string`（C++20 起，同上）。
 
-### 3.8 常量初始化（Constant Initialization）
+### 2.8 常量初始化（Constant Initialization）
 
 **定义 3.9**（常量初始化）：常量初始化是静态存储期或线程存储期变量在编译期完成的初始化：
 
@@ -548,7 +497,7 @@ $$
 | 触发条件       | 初始化器是常量表达式             | 初始化器不是常量表达式             |
 | `constinit`    | 强制要求                         | 禁止                               |
 
-### 3.9 编译期内存模型
+### 2.9 编译期内存模型
 
 **定义 3.10**（编译期内存模型）：C++20 起，`constexpr` 函数中可使用 `new`/`delete` 分配内存，但所有编译期分配的内存必须在编译期释放：
 
@@ -563,9 +512,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 `constexpr` 函数的双模式正确性
+### 3.1 `constexpr` 函数的双模式正确性
 
 **定理 4.1**（constexpr 双模式正确性）：`constexpr` 函数在编译期与运行期产生相同结果（若无 `std::is_constant_evaluated()` 分支）。
 
@@ -579,7 +528,7 @@ $$
 
 **例外**：若 `f` 使用 `std::is_constant_evaluated()` 或 `if consteval`，则编译期与运行期可产生不同结果（这是 C++20 起的"上下文敏感"特性）。
 
-### 4.2 编译期计算的停机性
+### 3.2 编译期计算的停机性
 
 **定理 4.2**（编译期计算的停机性）：C++ 编译期计算保证停机，编译器通过深度限制强制终止无限递归。
 
@@ -599,7 +548,7 @@ error: constexpr evaluation exceeded maximum depth of 512 calls
 
 **推论**：C++ 编译期计算是图灵完备的（理论上），但实际受限于编译器的深度与步数限制，无法表达任意长计算。
 
-### 4.3 `constexpr` 与模板元编程的等价性
+### 3.3 `constexpr` 与模板元编程的等价性
 
 **定理 4.3**（编译期计算等价性）：`constexpr` 函数与模板元编程（TMP）在表达能力上等价（均可表达任意编译期可计算函数）。
 
@@ -624,7 +573,7 @@ error: constexpr evaluation exceeded maximum depth of 512 calls
 - TMP 在某些场景（如类型计算）仍是必要的，因为 `constexpr` 不能操作类型。
 - 现代实践倾向于"类型计算用 TMP，值计算用 `constexpr`"。
 
-### 4.4 `consteval` 的强制编译期语义
+### 3.4 `consteval` 的强制编译期语义
 
 **定理 4.4**（consteval 强制性）：`consteval` 函数的调用必然在编译期求值，不能在运行期执行。
 
@@ -649,7 +598,7 @@ consteval int g(int n) { return f(n); }  // 正确：n 在 g 内部视为常量
 
 $\square$
 
-### 4.5 `constinit` 解决 SIOF 的正确性
+### 3.5 `constinit` 解决 SIOF 的正确性
 
 **定理 4.5**（constinit 解决 SIOF）：使用 `constinit` 声明的全局变量不会受静态初始化顺序问题影响。
 
@@ -683,7 +632,7 @@ constinit int b = 20;  // 编译期初始化
 
 **注意**：`constinit` 仅保证自身初始化在编译期，不保证其引用的其他变量也是常量初始化。若 `constinit int a = b + 1;` 中 `b` 不是常量表达式，则编译失败。
 
-### 4.6 编译期与运行期开销权衡
+### 3.6 编译期与运行期开销权衡
 
 **定理 4.6**（编译期开销权衡）：将计算从运行期转移到编译期，运行期开销减少，但编译期开销增加，且增加的编译期开销可能不线性。
 
@@ -702,9 +651,9 @@ constinit int b = 20;  // 编译期初始化
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：`constexpr` 变量与函数
+### 4.1 基础：`constexpr` 变量与函数
 
 ```cpp
 // file: constexpr_basic.cpp
@@ -746,7 +695,7 @@ int main() {
 }
 ```
 
-### 5.2 `consteval`：强制编译期计算
+### 4.2 `consteval`：强制编译期计算
 
 ```cpp
 // file: consteval_demo.cpp
@@ -807,7 +756,7 @@ int main() {
 }
 ```
 
-### 5.3 `constinit`：编译期初始化与运行期可变
+### 4.3 `constinit`：编译期初始化与运行期可变
 
 ```cpp
 // file: constinit_demo.cpp
@@ -843,7 +792,7 @@ int main() {
 }
 ```
 
-### 5.4 `constexpr if`：编译期条件分支
+### 4.4 `constexpr if`：编译期条件分支
 
 ```cpp
 // file: constexpr_if_demo.cpp
@@ -912,7 +861,7 @@ int main() {
 }
 ```
 
-### 5.5 `constexpr` 类与字面类型
+### 4.5 `constexpr` 类与字面类型
 
 ```cpp
 // file: constexpr_class.cpp
@@ -1005,7 +954,7 @@ int main() {
 }
 ```
 
-### 5.6 `constexpr` Lambda
+### 4.6 `constexpr` Lambda
 
 ```cpp
 // file: constexpr_lambda.cpp
@@ -1071,7 +1020,7 @@ int main() {
 }
 ```
 
-### 5.7 C++20 constexpr 容器
+### 4.7 C++20 constexpr 容器
 
 ```cpp
 // file: constexpr_containers.cpp
@@ -1147,7 +1096,7 @@ int main() {
 }
 ```
 
-### 5.8 `std::is_constant_evaluated()` 与 `if consteval`
+### 4.8 `std::is_constant_evaluated()` 与 `if consteval`
 
 ```cpp
 // file: is_constant_evaluated.cpp
@@ -1205,7 +1154,7 @@ int main() {
 }
 ```
 
-### 5.9 编译期字符串解析
+### 4.9 编译期字符串解析
 
 ```cpp
 // file: compile_time_string.cpp
@@ -1352,7 +1301,7 @@ int main() {
 }
 ```
 
-### 5.10 编译期查找表生成
+### 4.10 编译期查找表生成
 
 ```cpp
 // file: lookup_tables.cpp
@@ -1456,9 +1405,9 @@ int main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 C++ `constexpr` vs Rust `const fn`
+### 5.1 C++ `constexpr` vs Rust `const fn`
 
 | 特性               | C++ `constexpr`                       | Rust `const fn`                       |
 | ------------------ | ------------------------------------- | ------------------------------------- |
@@ -1476,7 +1425,7 @@ int main() {
 - Rust `const fn` 更保守、更安全，但功能受限。
 - 两者均朝"扩展编译期能力"方向演进。
 
-### 6.2 C++ `constexpr` vs Zig `comptime`
+### 5.2 C++ `constexpr` vs Zig `comptime`
 
 | 特性               | C++ `constexpr`                       | Zig `comptime`                        |
 | ------------------ | ------------------------------------- | ------------------------------------- |
@@ -1491,7 +1440,7 @@ int main() {
 - C++ 的 `constexpr` 是历史演进的产物，与 TMP 并存，复杂度高。
 - Zig 的设计哲学值得 C++ 借鉴（C++26 反射提案朝此方向发展）。
 
-### 6.3 C++ `constexpr` vs D `CTFE`
+### 5.3 C++ `constexpr` vs D `CTFE`
 
 | 特性               | C++ `constexpr`                       | D `CTFE`（Compile-Time Function Evaluation） |
 | ------------------ | ------------------------------------- | --------------------------------------------- |
@@ -1506,7 +1455,7 @@ int main() {
 - C++ `constexpr` 更注重性能与安全，演进更保守。
 - D 的 CTFE 启发了 C++ 的设计（特别是 C++14 的放宽）。
 
-### 6.4 `constexpr` vs 模板元编程（TMP）
+### 5.4 `constexpr` vs 模板元编程（TMP）
 
 | 维度               | `constexpr`                           | 模板元编程（TMP）                     |
 | ------------------ | ------------------------------------- | ------------------------------------- |
@@ -1524,7 +1473,7 @@ int main() {
 - 复杂编译期逻辑用 `constexpr` 函数组织。
 - 类型与值混合计算时，TMP 与 `constexpr` 配合使用。
 
-### 6.5 `constexpr` vs `const`
+### 5.5 `constexpr` vs `const`
 
 | 特性               | `constexpr`                           | `const`                               |
 | ------------------ | ------------------------------------- | ------------------------------------- |
@@ -1546,9 +1495,9 @@ const int const_val = 42;        // 正确：可作为常量表达式（整型�
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱 1：误以为 `constexpr` 函数一定在编译期执行
+### 6.1 陷阱 1：误以为 `constexpr` 函数一定在编译期执行
 
 **问题描述**：开发者误以为 `constexpr` 函数总是在编译期执行。
 
@@ -1582,7 +1531,7 @@ int main() {
 }
 ```
 
-### 7.2 陷阱 2：`constexpr` 函数中调用非 `constexpr` 函数
+### 6.2 陷阱 2：`constexpr` 函数中调用非 `constexpr` 函数
 
 **问题描述**：在 `constexpr` 函数中调用非 `constexpr` 函数，导致编译错误或运行期降级。
 
@@ -1618,7 +1567,7 @@ constexpr int smart_func(int n) {
 }
 ```
 
-### 7.3 陷阱 3：`consteval` 函数在运行期上下文调用
+### 6.3 陷阱 3：`consteval` 函数在运行期上下文调用
 
 **问题描述**：`consteval` 函数不能在运行期上下文调用。
 
@@ -1648,7 +1597,7 @@ int main() {
 }
 ```
 
-### 7.4 陷阱 4：`constinit` 用于非静态存储期变量
+### 6.4 陷阱 4：`constinit` 用于非静态存储期变量
 
 **问题描述**：`constinit` 仅适用于静态存储期或线程存储期变量。
 
@@ -1671,7 +1620,7 @@ void foo() {
 }
 ```
 
-### 7.5 陷阱 5：过度使用编译期计算导致编译时间爆炸
+### 6.5 陷阱 5：过度使用编译期计算导致编译时间爆炸
 
 **问题描述**：将大量计算转移到编译期，导致编译时间显著增加。
 
@@ -1702,7 +1651,7 @@ constexpr int max_connections = compute_max(64);
 int runtime_hash(const std::string& input) { /* ... */ }
 ```
 
-### 7.6 陷阱 6：`constexpr` 函数中的 `std::is_constant_evaluated()` 误用
+### 6.6 陷阱 6：`constexpr` 函数中的 `std::is_constant_evaluated()` 误用
 
 **问题描述**：在非 `constexpr` 函数中使用 `std::is_constant_evaluated()` 永远返回 `false`。
 
@@ -1731,7 +1680,7 @@ constexpr int good_func(int n) {
 }
 ```
 
-### 7.7 陷阱 7：`constexpr` 容器内存泄漏到运行期
+### 6.7 陷阱 7：`constexpr` 容器内存泄漏到运行期
 
 **问题描述**：C++20 起 `constexpr` 函数可使用 `std::vector`、`std::string`，但编译期分配的内存必须在编译期释放。
 
@@ -1772,7 +1721,7 @@ int main() {
 }
 ```
 
-### 7.8 陷阱 8：编译期浮点数精度问题
+### 6.8 陷阱 8：编译期浮点数精度问题
 
 **问题描述**：`constexpr` 浮点运算的精度可能与运行期不同（实现定义行为）。
 
@@ -1799,7 +1748,7 @@ constexpr double sin_30 = compute_sin(30.0);
 static_assert(approx_equal(sin_30, 0.5), "");
 ```
 
-### 7.9 陷阱 9：递归深度超限
+### 6.9 陷阱 9：递归深度超限
 
 **问题描述**：`constexpr` 递归函数深度超过编译器限制。
 
@@ -1829,7 +1778,7 @@ constexpr int iter_loop(int n) {
 constexpr int x = iter_loop(10000);  // 正确
 ```
 
-### 7.10 陷阱 10：`constexpr` 虚函数的 ABI 影响
+### 6.10 陷阱 10：`constexpr` 虚函数的 ABI 影响
 
 **问题描述**：C++20 允许 `constexpr` 虚函数，但虚函数的 `constexpr` 性可能影响 ABI。
 
@@ -1863,9 +1812,9 @@ static_assert(compile_time_call(d) == 2, "");  // 编译期多态
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 何时使用 `constexpr`、`consteval`、`constinit`
+### 7.1 何时使用 `constexpr`、`consteval`、`constinit`
 
 **决策框架**：
 
@@ -1878,7 +1827,7 @@ static_assert(compile_time_call(d) == 2, "");  // 编译期多态
 | 全局常量                               | `constexpr`       | 既是编译期初始化又不可修改     |
 | 模板中的编译期条件分支                 | `if constexpr`    | 简化 SFINAE                    |
 
-### 8.2 `constexpr` 函数的设计原则
+### 7.2 `constexpr` 函数的设计原则
 
 1. **保持简单**：`constexpr` 函数应保持简单，避免复杂逻辑导致编译时间增加。
 2. **避免副作用**：`constexpr` 函数不能有副作用（纯函数），保证可重现性。
@@ -1886,7 +1835,7 @@ static_assert(compile_time_call(d) == 2, "");  // 编译期多态
 4. **提供运行期备选**：若 `constexpr` 函数过于复杂，提供运行期版本。
 5. **错误处理**：`constexpr` 函数中不能 `throw`，使用返回值或 `std::expected`。
 
-### 8.3 编译期计算的性能优化
+### 7.3 编译期计算的性能优化
 
 1. **避免重复计算**：使用 `constexpr` 变量缓存编译期结果。
 2. **使用查找表**：编译期生成查找表，运行期查表。
@@ -1910,7 +1859,7 @@ constexpr int factorial(int n) {
 constexpr int cached_result = factorial(10);  // 编译期缓存
 ```
 
-### 8.4 `constinit` 解决 SIOF 的工程实践
+### 7.4 `constinit` 解决 SIOF 的工程实践
 
 **问题场景**：跨翻译单元的全局变量初始化顺序不确定。
 
@@ -1936,7 +1885,7 @@ void use_config() {
 - 不能用于依赖运行期初始化的变量。
 - 跨翻译单元使用时需 `extern constinit` 声明。
 
-### 8.5 编译期字符串处理库设计
+### 7.5 编译期字符串处理库设计
 
 ```cpp
 // 编译期字符串处理库示例
@@ -1978,7 +1927,7 @@ constexpr auto greeting = hello + world;  // 编译期字符串拼接
 static_assert(greeting.length == 13, "");
 ```
 
-### 8.6 编译期状态机
+### 7.6 编译期状态机
 
 ```cpp
 // 编译期状态机示例
@@ -2023,7 +1972,7 @@ constexpr std::array<std::array<State, 4>, 4> transition_table() {
 constexpr auto TRANSITIONS = transition_table();
 ```
 
-### 8.7 跨编译器兼容性
+### 7.7 跨编译器兼容性
 
 ```cpp
 // 跨编译器兼容的 constexpr 实践
@@ -2076,7 +2025,7 @@ FORCE_CONSTEVAL uint32_t type_id() {
 }
 ```
 
-### 8.8 编译期测试与验证
+### 7.8 编译期测试与验证
 
 ```cpp
 // 编译期单元测试
@@ -2108,9 +2057,9 @@ static_assert(test_string_parsing(), "version parsing tests failed");
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究 1：Boost.Hana 的编译期元编程
+### 8.1 案例研究 1：Boost.Hana 的编译期元编程
 
 Boost.Hana 是 C++17 编译期元编程库，结合 `constexpr` 与 TMP：
 
@@ -2143,7 +2092,7 @@ auto total_size = hana::fold_left(sizes, 0, [](auto acc, auto s) {
 - 与传统 TMP 相比，语法更直观，错误信息更友好。
 - 但 Hana 仍是 TMP 的高层抽象，底层依赖模板实例化。
 
-### 9.2 案例研究 2：Boost.Mp11 的类型计算
+### 8.2 案例研究 2：Boost.Mp11 的类型计算
 
 Boost.Mp11 是纯 TMP 库，但与 `constexpr` 配合：
 
@@ -2171,7 +2120,7 @@ using first_type = mp_front<types>;  // int
 - Mp11 是纯 TMP，不使用 `constexpr` 函数。
 - 但可与 `constexpr` 配合：类型用 Mp11，值用 `constexpr`。
 
-### 9.3 案例研究 3：EASTL 的编译期容器
+### 8.3 案例研究 3：EASTL 的编译期容器
 
 EASTL（Electronic Arts Standard Template Library）是游戏行业定制的 STL 实现：
 
@@ -2195,7 +2144,7 @@ constexpr int sum_eastl_vector() {
 - EASTL 针对 game development 优化，更早支持 constexpr 容器。
 - EASTL 的设计影响了 C++20 标准 `std::vector` 的 constexpr 支持。
 
-### 9.4 案例研究 4：Folly 的编译期字符串哈希
+### 8.4 案例研究 4：Folly 的编译期字符串哈希
 
 Facebook 的 Folly 库大量使用 `consteval` 进行编译期字符串哈希：
 
@@ -2230,7 +2179,7 @@ void handle_event(const char* event_name) {
 - 适用于事件系统、配置解析、路由匹配等场景。
 - 注意：运行期哈希需与编译期哈希使用相同算法。
 
-### 9.5 案例研究 5：Chromium 的编译期配置
+### 8.5 案例研究 5：Chromium 的编译期配置
 
 Chromium 浏览器使用 `constexpr` 进行编译期配置：
 
@@ -2263,7 +2212,7 @@ void enable_feature() {
 - 适用于嵌入式、游戏等性能敏感场景。
 - 缺点：修改配置需重新编译。
 
-### 9.6 案例研究 6：Unreal Engine 的编译期反射
+### 8.6 案例研究 6：Unreal Engine 的编译期反射
 
 Unreal Engine 使用宏与 `constexpr` 实现编译期反射：
 
@@ -2306,7 +2255,7 @@ public:
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础习题
+### 9.1 基础习题
 
 **习题 1**：编写一个 `constexpr` 函数，计算第 `n` 个斐波那契数。
 
@@ -2392,7 +2341,7 @@ int main() {
 }
 ```
 
-### 10.2 进阶习题
+### 9.2 进阶习题
 
 **习题 6**：编写一个 `constexpr` 类 `Vector3D`，支持加法、减法、点积、叉积。
 
@@ -2531,7 +2480,7 @@ constexpr double sqrt_smart(double x) {
 static_assert(sqrt_smart(16.0) == 4.0, "");
 ```
 
-### 10.3 思考题
+### 9.3 思考题
 
 **思考题 1**：`constexpr` 函数在编译期与运行期产生不同结果是否是好设计？在什么场景下合理？
 
@@ -2547,7 +2496,7 @@ static_assert(sqrt_smart(16.0) == 4.0, "");
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 参考文献采用 ACM Reference Format：
 
@@ -2583,22 +2532,22 @@ static_assert(sqrt_smart(16.0) == 4.0, "");
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 标准与规范
+### 11.1 标准与规范
 
 - ISO/IEC 14882:2020（C++20 标准）第 9.2.6 节"constexpr and consteval functions"。
 - ISO/IEC 14882:2023（C++23 标准）第 9.2.6 节与"if consteval"相关章节。
 - cppreference.com 的 [constexpr](https://en.cppreference.com/w/cpp/language/constexpr)、[consteval](https://en.cppreference.com/w/cpp/language/consteval)、[constinit](https://en.cppreference.com/w/cpp/language/constinit) 条目。
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - Bjarne Stroustrup《A Tour of C++》（第三版，C++20 覆盖）。
 - Scott Meyers《Effective Modern C++》（constexpr 相关条款）。
 - David Vandevoorde, Nicolai M. Josuttis, Douglas Gregor《C++ Templates: The Complete Guide》（第二版）。
 - Klaus Iglberger《C++ Software Design》（constexpr 与设计模式）。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - C++ Reference: https://en.cppreference.com/w/cpp/language/constexpr
 - ISO C++ 委员会提案：https://wg21.link/
@@ -2608,7 +2557,7 @@ static_assert(sqrt_smart(16.0) == 4.0, "");
 - Clang constexpr 实现文档：https://clang.llvm.org/cxx_status.html
 - MSVC constexpr 实现文档：https://docs.microsoft.com/en-us/cpp/cpp/constexpr-cpp
 
-### 12.4 相关视频课程
+### 11.4 相关视频课程
 
 - Bjarne Stroustrup "C++11 Style" (CppCon 2012)。
 - Chandler Carruth "constexpr in C++14" (CppCon 2014)。
@@ -2616,7 +2565,7 @@ static_assert(sqrt_smart(16.0) == 4.0, "");
 - Jason Turner "C++17 constexpr if" (C++ Weekly 2017)。
 - Bryce Adelstein Lelbach "The C++20 Standard" (CppCon 2020)。
 
-### 12.5 附录
+### 11.5 附录
 
 #### 附录 A：术语表
 

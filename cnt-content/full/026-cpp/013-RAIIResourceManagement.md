@@ -15,22 +15,12 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # C++ RAII 资源管理
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-完成本章学习后，读者应当能够达到以下认知层级（参照 Bloom 分类法）：
-
-- **记忆（Remembering）**：复述 RAII 的全称、三要素与四类资源语义；列举 C++ 标准库中至少 8 个基于 RAII 的设施（`std::string`、`std::vector`、`std::unique_ptr`、`std::shared_ptr`、`std::lock_guard`、`std::fstream`、`std::thread`、`std::mutex` 等）。
-- **理解（Understanding）**：解释为什么 C++ 的析构保证是 RAII 成立的形式化前提；阐述对象生命周期、作用域退出与异常展开栈之间的因果关系；区分 RAII 与 GC（Garbage Collection）在资源语义上的本质差异。
-- **应用（Applying）**：为自定义资源句柄（POSIX 文件描述符、`mmap` 区域、Win32 `HANDLE`、CUDA stream、OpenGL VBO 等）实现符合 RAII 规范的包装类；使用 `std::unique_ptr` 与自定义删除器接管 C 风格 API 资源。
-- **分析（Analyzing）**：在已有代码中识别违反 RAII 的反模式（裸 `new`/`delete` 分离、`goto cleanup`、双重释放、异常路径资源泄漏）；通过控制流图（CFG）量化 RAII 对代码路径数量的削减幅度。
-- **评价（Evaluating）**：在给定场景中权衡 `unique_ptr`、`shared_ptr`、`weak_ptr` 与栈对象的资源策略选型；评估自定义删除器对运行时开销、二进制大小、异常安全等级的影响。
-- **创造（Creating）**：设计并实现一个类型安全的通用资源句柄模板 `scoped_resource<T, Deleter>`，支持移动语义、自定义删除器与 `[[nodiscard]]` 静态检查；为其编写完整的属性测试套件（property-based test）。
 
 ## 概述
 

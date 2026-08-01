@@ -16,6 +16,7 @@ related:
 prerequisites: []
 ---
 
+
 # Java 快速入门：从 Hello World 到工程化实践
 
 > 本文档对标 MIT 6.031 (Software Construction)、Stanford CS106A (Programming Methodology) 与 CMU 15-214 (Software Engineering) 教学水准，覆盖从环境搭建、第一个程序到企业级工程化工作流的完整路径。文档采用 Bloom 教育目标分类法组织学习目标，结合 JLS (Java Language Specification) 与 JVMS (Java Virtual Machine Specification) 双规范视角，兼顾原理深度与工程可用性。
@@ -39,56 +40,11 @@ prerequisites: []
 
 ---
 
-## 1. 学习目标（Bloom 分类）
-
-完成本章节学习后，学习者应当具备如下能力。每条目标后括号内为 Bloom 教育目标分类层级（Anderson & Krathwohl, 2001）。
-
-### 1.1 Remember（记忆）
-
-- **R1**：陈述 Java 语言的三大设计目标（Simple、Object-Oriented、Platform-Independent）及其原始设计动机。
-- **R2**：列出 JDK、JRE、JVM 三者的关系与边界，并指出 JDK 11 之后 JRE 模块被移除的历史背景。
-- **R3**：复述 Java 程序的"编写→编译→加载→验证→执行"五阶段流程及其对应的工具链（`javac`、`javap`、`java`、`jshell`、`jlink`）。
-- **R4**：记忆 LTS（Long Term Support）版本序列：Java 8（2014）、11（2018）、17（2021）、21（2023）、25（2025）。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 WORA（Write Once, Run Anywhere）背后的字节码与 JVM 抽象机制。
-- **U2**：用 JLS §7.6 的视角说明"包-类型-成员"三层命名空间结构。
-- **U3**：说明为什么 `public class` 必须与文件同名，而 `package-private class` 不必。
-- **U4**：描述 class 文件常量池（Constant Pool）在符号解析与运行时常量池之间的角色差异。
-
-### 1.3 Apply（应用）
-
-- **A1**：在 macOS / Windows / Linux 三平台独立完成 JDK 21 安装与多版本切换。
-- **A2**：使用 `javac`、`java`、`jar` 命令完成手工编译、运行与打包。
-- **A3**：使用 Maven 与 Gradle 双构建工具搭建可运行的最小项目骨架。
-- **A4**：用 `jshell` 完成原型验证并迁移至正式源文件。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 `javap -v -p Hello.class` 输出，指出 magic number、minor/major version、常量池入口、`main` 方法描述符 `([Ljava/lang/String;)V`。
-- **An2**：对比 `jar` 与 `jmod`（Java 9 模块系统）的结构差异与适用场景。
-- **An3**：分析 Maven 生命周期 `validate`→`compile`→`test`→`package`→`install`→`deploy` 各阶段绑定的 plugin goal。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价"是否应该在生产环境使用 `jshell` 完成快速修复"的工程合理性。
-- **E2**：在给定吞吐量与延迟需求下，选择 Serial / Parallel / G1 / ZGC 之一，并给出依据。
-- **E3**：评价 JDK 单一文件源码程序（Single-File Source-Code Program, Java 11+）在 DevOps 脚本场景中的优劣。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个"Hello World + 单元测试 + GitHub Actions CI"的最小可工作模板仓库。
-- **C2**：使用 `jlink` 制作仅包含 `java.base` 模块的自定义运行时镜像（< 50MB）。
-- **C3**：基于 GraalVM Native Image 将 Hello World 编译为原生可执行文件并测量启动耗时。
-
----
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 Java 的演化是一部面向**写时正确性**与**运行时可移植性**双重目标的语言工程史。理解其历史脉络有助于把握现代 Java 设计决策的内在逻辑。
 
-### 2.1 起源：Green Project 与 Oak（1991—1995）
+### 1.1 起源：Green Project 与 Oak（1991—1995）
 
 Java 起源于 Sun Microsystems 的 Green Project，最初代号 Oak，设计目标是消费电子（机顶盒、PDA）的嵌入式语言。Oak 团队由 James Gosling、Mike Sheridan 与 Patrick Naughton 领导，其核心设计哲学源于 C++ 在嵌入式场景中的几个痛点：
 
@@ -109,7 +65,7 @@ Java 起源于 Sun Microsystems 的 Green Project，最初代号 Oak，设计目
 9. Multithreaded（多线程）
 10. Dynamic（动态）
 
-### 2.2 Java 1.0 → 1.4：奠基期（1996—2002）
+### 1.2 Java 1.0 → 1.4：奠基期（1996—2002）
 
 | 版本 | 发布年份 | 里程碑特性 |
 | --- | --- | --- |
@@ -119,7 +75,7 @@ Java 起源于 Sun Microsystems 的 Green Project，最初代号 Oak，设计目
 | J2SE 1.3 | 2000 | HotSpot JVM（默认 JIT） |
 | J2SE 1.4 | 2002 | NIO、assert、正则表达式 |
 
-### 2.3 Java 5：现代 Java 的起点（2004）
+### 1.3 Java 5：现代 Java 的起点（2004）
 
 Java 5（J2SE 5.0，内部号 1.5）引入了 JSR 201 与 JSR 175 等多项改变语言形态的特性：
 
@@ -131,7 +87,7 @@ Java 5（J2SE 5.0，内部号 1.5）引入了 JSR 201 与 JSR 175 等多项改�
 - 变长参数；
 - `java.util.concurrent` 并发包。
 
-### 2.4 Java 8：函数式革命（2014）
+### 1.4 Java 8：函数式革命（2014）
 
 Java 8 是继 Java 5 之后最重要的版本，引入：
 
@@ -143,7 +99,7 @@ Java 8 是继 Java 5 之后最重要的版本，引入：
 - `CompletableFuture` 异步编排；
 - Nashorn JavaScript 引擎。
 
-### 2.5 Java 9—16：模块化与现代语法糖（2017—2021）
+### 1.5 Java 9—16：模块化与现代语法糖（2017—2021）
 
 | 版本 | 关键特性 |
 | --- | --- |
@@ -154,7 +110,7 @@ Java 8 是继 Java 5 之后最重要的版本，引入：
 | Java 15 | Sealed Class 预览、Text Block 正式 |
 | Java 16 | Record 正式、Pattern Matching for instanceof |
 
-### 2.6 Java 17 LTS：现代 Java 基线（2021）
+### 1.6 Java 17 LTS：现代 Java 基线（2021）
 
 Java 17 是当前企业最广泛采用的 LTS 之一，特性：
 
@@ -163,7 +119,7 @@ Java 17 是当前企业最广泛采用的 LTS 之一，特性：
 - 强封装 JDK 内部 API；
 - 移除 RMI Activation、Security Manager 弃用。
 
-### 2.7 Java 21 LTS：虚拟线程时代（2023）
+### 1.7 Java 21 LTS：虚拟线程时代（2023）
 
 Java 21 引入了**虚拟线程**（Project Loom, JEP 444），重新定义了 Java 并发模型：
 
@@ -173,7 +129,7 @@ Java 21 引入了**虚拟线程**（Project Loom, JEP 444），重新定义了 J
 - Sequenced Collections；
 - String Templates 预览（Java 21 预览，Java 23 移除重做）。
 
-### 2.8 Java 25 LTS：新一代 LTS 基线（2025）
+### 1.8 Java 25 LTS：新一代 LTS 基线（2025）
 
 Java 25 作为 2025 年 9 月发布的 LTS 版本，引入：
 
@@ -183,7 +139,7 @@ Java 25 作为 2025 年 9 月发布的 LTS 版本，引入：
 - 桶形作用域值（Scoped Values, JEP 506）正式；
 - 模式匹配中基本类型支持（Primitive Patterns, JEP 455 预览 → 转正）。
 
-### 2.9 LTS 时间轴可视化
+### 1.9 LTS 时间轴可视化
 
 ```
 1996 ── 2004 ── 2014 ────────────────────────────────────►
@@ -193,7 +149,7 @@ Java 25 作为 2025 年 9 月发布的 LTS 版本，引入：
                           LTS    LTS    LTS    LTS
 ```
 
-### 2.10 设计哲学的演进曲线
+### 1.10 设计哲学的演进曲线
 
 Java 的设计哲学可概括为"**保守演化 + 兼容性优先**"，这导致：
 
@@ -203,9 +159,9 @@ Java 的设计哲学可概括为"**保守演化 + 兼容性优先**"，这导致
 
 ---
 
-## 3. 形式化定义（JLS & JVMS 规范）
+## 2. 形式化定义（JLS & JVMS 规范）
 
-### 3.1 Java 程序的形式化定义
+### 2.1 Java 程序的形式化定义
 
 依据 JLS §3.1，一个 Java 程序由**编译单元**（Compilation Unit）组成，编译单元的文法可形式化定义为：
 
@@ -217,7 +173,7 @@ $$
 \end{aligned}
 $$
 
-### 3.2 字节码与 class 文件格式
+### 2.2 字节码与 class 文件格式
 
 依据 JVMS §4，class 文件以 8 位字节流形式存储，结构形式化如下：
 
@@ -231,7 +187,7 @@ $$
 - $\text{major\_version}$ 决定字节码兼容性，例如 JDK 21 对应 65（0x41），JDK 17 对应 61（0x3D）；
 - $\text{constant\_pool}$ 是符号表，存储类名、方法名、字段名、字符串字面量等。
 
-### 3.3 main 方法签名约定
+### 2.3 main 方法签名约定
 
 JLS §12.1 规定 JVM 启动入口的规范签名：
 
@@ -244,7 +200,7 @@ $$
 - `static`：无需实例化即可启动；
 - `void`：返回值不传递给操作系统，需用 `System.exit(int)` 设置退出码。
 
-### 3.4 类型系统的范畴论视角
+### 2.4 类型系统的范畴论视角
 
 Java 类型系统可分为四层（JLS §4）：
 
@@ -263,9 +219,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 编译期与运行期的边界
+### 3.1 编译期与运行期的边界
 
 Java 是**半编译半解释**语言。其执行流程可拆解为：
 
@@ -273,7 +229,7 @@ $$
 \underbrace{\text{.java}}_{\text{source}} \xrightarrow{\text{javac}} \underbrace{\text{.class}}_{\text{bytecode}} \xrightarrow{\text{ClassLoader}} \underbrace{\text{Runtime Constant Pool}}_{\text{memory}} \xrightarrow{\text{Interpreter + JIT}} \underbrace{\text{native code}}_{\text{execution}}
 $$
 
-#### 4.1.1 `javac` 的语义阶段
+#### 3.1.1 `javac` 的语义阶段
 
 `javac` 实质上是 JDK 自带的注解处理器宿主，编译流程大致经过：
 
@@ -285,7 +241,7 @@ $$
 6. **脱糖**（Desugaring）：Lambda → invokedynamic、泛型擦除、增强 for → Iterator；
 7. **代码生成**（Code Generation）：AST → 字节码 → class 文件。
 
-#### 4.1.2 类加载与字节码验证
+#### 3.1.2 类加载与字节码验证
 
 JVM 加载 class 时执行以下阶段（JVMS §5.4）：
 
@@ -296,7 +252,7 @@ JVM 加载 class 时执行以下阶段（JVMS §5.4）：
    - **解析**（Resolution）：将常量池符号引用转为直接引用（懒解析）；
 3. **初始化**（Initialization）：执行 `<clinit>` 方法。
 
-### 4.2 HotSpot JIT 编译原理
+### 3.2 HotSpot JIT 编译原理
 
 HotSpot JVM 包含两个 JIT 编译器：
 
@@ -309,7 +265,7 @@ $$
 T_{\text{C1}} \approx 2000, \quad T_{\text{C2}} \approx 10000 \quad (\text{method invocation count})
 $$
 
-#### 4.2.1 解释 + JIT 的混合模型
+#### 3.2.1 解释 + JIT 的混合模型
 
 混合模式（Mixed Mode，默认）的执行开销形式化为：
 
@@ -319,7 +275,7 @@ $$
 
 当 $n$ 足够大时，JIT 编译成本 $C_{\text{compile}}$ 被分摊，故 $T_{\text{exec}}(n) / n \to t_{\text{jit}}$。
 
-### 4.3 启动时间模型
+### 3.3 启动时间模型
 
 Java 程序启动时间 $T_{\text{startup}}$ 可分解为：
 
@@ -329,7 +285,7 @@ $$
 
 GraalVM Native Image 通过 AOT 编译消除前两项，将启动时间从 $\sim 500$ ms 降至 $\sim 50$ ms。
 
-### 4.4 字节码指令示例分析
+### 3.4 字节码指令示例分析
 
 考虑如下 Hello World：
 
@@ -368,9 +324,9 @@ public static void main(java.lang.String[]);
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 最小可运行 Hello World
+### 4.1 最小可运行 Hello World
 
 ```java
 // Java 21+，文件名: Hello.java
@@ -393,7 +349,7 @@ java Hello                  # 输出: Hello, World!
 java Hello Java             # 输出: Hello, Java!
 ```
 
-### 5.2 单文件源码程序（Java 11+）
+### 4.2 单文件源码程序（Java 11+）
 
 Java 11 起，单文件源码程序可直接执行，跳过显式编译步骤：
 
@@ -414,7 +370,7 @@ public class QuickDemo {
 java QuickDemo.java         # 直接运行源文件
 ```
 
-### 5.3 JShell REPL 原型验证
+### 4.3 JShell REPL 原型验证
 
 ```text
 $ jshell
@@ -437,9 +393,9 @@ jshell> /save PointDemo.java     # 将会话保存为源文件
 jshell> /exit
 ```
 
-### 5.4 Maven 工程骨架
+### 4.4 Maven 工程骨架
 
-#### 5.4.1 `pom.xml` 完整配置
+#### 4.4.1 `pom.xml` 完整配置
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -511,7 +467,7 @@ jshell> /exit
 </project>
 ```
 
-#### 5.4.2 主类与单元测试
+#### 4.4.2 主类与单元测试
 
 ```java
 // src/main/java/com/example/HelloApp.java
@@ -559,7 +515,7 @@ class HelloAppTest {
 }
 ```
 
-### 5.5 Gradle（Kotlin DSL）等价配置
+### 4.5 Gradle（Kotlin DSL）等价配置
 
 ```kotlin
 // build.gradle.kts
@@ -602,7 +558,7 @@ tasks.withType<JavaCompile> {
 }
 ```
 
-### 5.6 `jlink` 制作自定义运行时镜像
+### 4.6 `jlink` 制作自定义运行时镜像
 
 ```bash
 # 列出可解析的模块
@@ -620,7 +576,7 @@ jlink \
 ./build/myjre/bin/java -jar target/hello-java-1.0.0-SNAPSHOT.jar
 ```
 
-### 5.7 GraalVM Native Image（可选）
+### 4.7 GraalVM Native Image（可选）
 
 ```bash
 # 安装 GraalVM（C:\Atian\GraalVM）
@@ -634,7 +590,7 @@ native-image \
 ./hello-native   # 启动时间约 30 ms
 ```
 
-### 5.8 GitHub Actions CI 模板
+### 4.8 GitHub Actions CI 模板
 
 ```yaml
 # .github/workflows/ci.yml
@@ -667,9 +623,9 @@ jobs:
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Kotlin / Scala / C# / Go 对比
+### 5.1 与 Kotlin / Scala / C# / Go 对比
 
 | 维度 | Java 21 | Kotlin 2.0 | Scala 3 | C# 12 | Go 1.22 |
 | --- | --- | --- | --- | --- | --- |
@@ -682,7 +638,7 @@ jobs:
 | Value Type | Project Valhalla 孵化 | 内联类 | 已有 | struct | struct |
 | 部署大小 | 50MB+（JRE） | 50MB+ | 50MB+ | 50MB+ | 5-15MB |
 
-### 6.2 JVM 与其他运行时对比
+### 5.2 JVM 与其他运行时对比
 
 | 运行时 | 启动时间 | 峰值吞吐 | 内存占用 | AOT 支持 |
 | --- | --- | --- | --- | --- |
@@ -692,7 +648,7 @@ jobs:
 | .NET CoreCLR | ~100ms | 高 | 中 | 部分（AOT） |
 | Go runtime | ~5ms | 高 | 低 | 是 |
 
-### 6.3 构建工具对比
+### 5.3 构建工具对比
 
 | 工具 | 配置文件 | 优势 | 劣势 |
 | --- | --- | --- | --- |
@@ -703,11 +659,11 @@ jobs:
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 NPE 与 Null 处理
+### 6.1 NPE 与 Null 处理
 
-#### 7.1.1 陷阱：返回 null 而非 Optional
+#### 6.1.1 陷阱：返回 null 而非 Optional
 
 ```java
 // 反例
@@ -721,7 +677,7 @@ public Optional<User> findUser(String id) {
 }
 ```
 
-#### 7.1.2 使用 `@NonNull` 注解
+#### 6.1.2 使用 `@NonNull` 注解
 
 ```java
 import org.jspecify.annotations.NonNull;
@@ -733,7 +689,7 @@ public @NonNull User createUser(@NonNull String name, @Nullable String email) {
 }
 ```
 
-### 7.2 字符串编码陷阱
+### 6.2 字符串编码陷阱
 
 ```java
 // 反例：跨平台默认字符集不同
@@ -745,7 +701,7 @@ byte[] bytes = "Java".getBytes(StandardCharsets.UTF_8);
 
 Java 18 起（JEP 400），默认字符集统一为 UTF-8，但显式声明仍是推荐做法。
 
-### 7.3 资源未关闭导致内存泄漏
+### 6.3 资源未关闭导致内存泄漏
 
 ```java
 // 反例
@@ -761,7 +717,7 @@ try (BufferedReader reader = new BufferedReader(
 }
 ```
 
-### 7.4 误用 `var` 导致可读性下降
+### 6.4 误用 `var` 导致可读性下降
 
 ```java
 // 反例：类型不明显
@@ -771,7 +727,7 @@ var result = process(data);   // result 是什么类型？
 Map<String, List<User>> grouped = groupByCity(users);
 ```
 
-### 7.5 阻塞主线程的 I/O
+### 6.5 阻塞主线程的 I/O
 
 ```java
 // 反例
@@ -784,7 +740,7 @@ public static void main(String[] args) throws Exception {
 var data = future.orTimeout(2, TimeUnit.SECONDS).join();
 ```
 
-### 7.6 误用 System.exit
+### 6.6 误用 System.exit
 
 `System.exit(int)` 会跳过 shutdown hook，应仅在异常退出时使用：
 
@@ -801,7 +757,7 @@ public static void main(String[] args) {
 }
 ```
 
-### 7.7 误用 `printStackTrace`
+### 6.7 误用 `printStackTrace`
 
 ```java
 // 反例
@@ -815,7 +771,7 @@ public static void main(String[] args) {
 }
 ```
 
-### 7.8 工具选择决策表
+### 6.8 工具选择决策表
 
 | 场景 | 推荐工具 |
 | --- | --- |
@@ -829,9 +785,9 @@ public static void main(String[] args) {
 
 ---
 
-## 8. 工程实践（构建、JVM 调优、性能、调试）
+## 7. 工程实践（构建、JVM 调优、性能、调试）
 
-### 8.1 构建命令速查
+### 7.1 构建命令速查
 
 ```bash
 # Maven
@@ -850,7 +806,7 @@ mvn versions:display-dependency-updates   # 检查依赖更新
 ./gradlew dependencies            # 依赖树
 ```
 
-### 8.2 JVM 启动参数（生产推荐）
+### 7.2 JVM 启动参数（生产推荐）
 
 ```bash
 java \
@@ -873,7 +829,7 @@ java \
 - `AlwaysPreTouch`：启动时预触碰堆内存，减少首次访问缺页；
 - `HeapDumpOnOutOfMemoryError`：OOM 时自动 dump，便于事后分析。
 
-### 8.3 JDK 工具链速查
+### 7.3 JDK 工具链速查
 
 | 工具 | 用途 |
 | --- | --- |
@@ -888,7 +844,7 @@ java \
 | `jpackage` | 原生安装包（Java 14+） |
 | `jwebserver` | 内置 HTTP 服务器（Java 18+） |
 
-### 8.4 调试：远程调试
+### 7.4 调试：远程调试
 
 ```bash
 # 启动时开启远程调试
@@ -897,7 +853,7 @@ java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar a
 
 在 IntelliJ IDEA 中：`Run → Edit Configurations → Remote JVM Debug → Host: localhost, Port: 5005`。
 
-### 8.5 调试：本地内建 HTTP 服务器
+### 7.5 调试：本地内建 HTTP 服务器
 
 ```java
 // Java 18+ 内建 Simple Web Server（jwebserver）
@@ -905,7 +861,7 @@ $ jwebserver
 // 默认端口 8000，目录为当前目录
 ```
 
-### 8.6 性能：JMH 微基准
+### 7.6 性能：JMH 微基准
 
 ```java
 @BenchmarkMode(Mode.AverageTime)
@@ -928,7 +884,7 @@ public class HelloBenchmark {
 }
 ```
 
-### 8.7 容器化部署清单
+### 7.7 容器化部署清单
 
 ```dockerfile
 # Dockerfile
@@ -950,9 +906,9 @@ docker run --rm -p 8080:8080 --memory=512m hello-java:1.0.0
 
 ---
 
-## 9. 案例研究（Spring/Hibernate/Netty）
+## 8. 案例研究（Spring/Hibernate/Netty）
 
-### 9.1 Spring Boot 入口剖析
+### 8.1 Spring Boot 入口剖析
 
 Spring Boot 应用的 `main` 方法是 Java 工程化"Hello World"的最佳现代示例：
 
@@ -974,7 +930,7 @@ public class Application {
 5. 刷新上下文（启动内嵌 Tomcat）；
 6. 触发 `ApplicationRunner` / `CommandLineRunner`。
 
-### 9.2 Netty 的 `main` 入口
+### 8.2 Netty 的 `main` 入口
 
 ```java
 public final class EchoServer {
@@ -1007,7 +963,7 @@ public final class EchoServer {
 
 注意 Netty 使用 Reactor 模型而非 Java 21 虚拟线程，因其需要细粒度事件分发控制。
 
-### 9.3 Hibernate 的 `main` 入口
+### 8.3 Hibernate 的 `main` 入口
 
 ```java
 public class HibernateDemo {
@@ -1035,7 +991,7 @@ public class HibernateDemo {
 
 注意 `try-with-resources` 自动关闭 `SessionFactory` 与 `StandardServiceRegistry`，避免资源泄漏。
 
-### 9.4 Apache Commons CLI 命令行应用
+### 8.4 Apache Commons CLI 命令行应用
 
 ```java
 public class CliApp {
@@ -1272,7 +1228,7 @@ public class VirtualThreadDemo {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q1.** 为什么 Java 选择类型擦除（Type Erasure）而非具化泛型（Reified Generics）？这对库设计有什么影响？
 
@@ -1307,7 +1263,7 @@ public class VirtualThreadDemo {
 
 ---
 
-## 11. 参考文献（ACM Reference Format）
+## 10. 参考文献（ACM Reference Format）
 
 1. Gosling, J., Joy, B., Steele, G., et al. 2024. *The Java Language Specification, Java SE 21 Edition* (Java SE 21). Oracle America, Inc. https://docs.oracle.com/javase/specs/jls/se21/html/index.html
 
@@ -1331,21 +1287,21 @@ public class VirtualThreadDemo {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - Bloch, J. *Effective Java* (3rd ed., 2018). Addison-Wesley.
 - Urma, R.-G., Fusco, M., Myatt, A. *Modern Java in Action* (Java 21 Updated).
 - Evans, B., Verburg, M. *The Well-Grounded Java Developer* (3rd ed., 2024).
 - Naughton, P., Schildt, H. *Java: The Complete Reference* (13th ed., 2024).
 
-### 12.2 论文与技术报告
+### 11.2 论文与技术报告
 
 - Würthinger, T., Wimmer, C., Wöss, A., et al. 2013. *Self-Attribution: A Self-Profiling Approach to JIT Compilation*. ACM SIGPLAN Notices, 48(10), 75-84. https://doi.org/10.1145/2544173.2509521
 - Wimmer, C. and Mössenböck, H. 2015. *Automatic Truffle-Assisted Debugging of Compiler Optimizations*. ACM OOPSLA, 1-15. https://doi.org/10.1145/2858965
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **OpenJDK**: https://openjdk.org/
 - **Java Enhancement Proposals (JEPs)**: https://openjdk.org/jeps/0
@@ -1357,7 +1313,7 @@ public class VirtualThreadDemo {
 - **Maven Documentation**: https://maven.apache.org/guides/
 - **Gradle User Manual**: https://docs.gradle.org/current/userguide/userguide.html
 
-### 12.4 开源学习项目
+### 11.4 开源学习项目
 
 - **toBeBetterJavaer (二哥的 Java 进阶之路)**: https://github.com/itwanger/toBeBetterJavaer
 - **CS-Books (Java 部分)**: https://github.com/forthespada/CS-Books
@@ -1366,7 +1322,7 @@ public class VirtualThreadDemo {
 - **Spring Boot 示例**: https://github.com/spring-projects/spring-boot
 - **MIT 6.031 Reading**: https://web.mit.edu/6.031/www/sp21/classes/
 
-### 12.5 推荐学习路径
+### 11.5 推荐学习路径
 
 1. **入门阶段（1-2 周）**：本文档 + Oracle Java Tutorial + 在 LeetCode 上做简单题；
 2. **进阶阶段（4-6 周）**：Effective Java + Modern Java in Action + 完成一个 Spring Boot 项目；

@@ -16,60 +16,16 @@ prerequisites:
   - harmonyos/概述与环境搭建
 ---
 
+
 # 分布式数据管理：从 KVStore 到 CRDT 的跨设备一致性工程
 
 > 本章是 HarmonyOS 分布式能力的"数据底座"章节。如果说跨设备调用（参见 `harmonyos/跨设备调用`）解决了"算力迁移"问题，那么分布式数据管理则解决了"状态共识"问题——多设备如何对同一份业务数据达成一致视图。本章按 MIT 6.5840（分布式系统）、Stanford CS244B、CMU 15-721（数据库系统）等课程的标准组织，覆盖分布式 KVStore、分布式数据对象、分布式 RdbStore、同步协议、冲突解决、一致性模型、dataAbility 等核心议题，并对照 Amazon Dynamo、Google Spanner、Apple CloudKit 等业界方案。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章按照 Bloom 教育目标分类法（Bloom's Taxonomy）的六个层级组织学习目标。读者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述 HarmonyOS 分布式数据管理的五类核心 API：`distributedDataObject`、`distributedKVStore`、`distributedRdbStore`、`distributedFile`、`dataShareExtensionAbility`。
-- **R2**：列举 KVStore 提供的两种存储模型：`KVStore`（单设备 KV）与 `distributedKVStore`（跨设备 KV）。
-- **R3**：复述分布式数据的三种同步模式：自动同步（auto）、手动同步（manual pull/push）、按需同步（on-demand）。
-- **R4**：复述四种冲突解决策略：LWW（Last Write Wins）、FIFO（First In First Out）、应用自定义（custom）、版本向量（version vector）。
-- **R5**：复述 `SecurityLevel` 枚举的五个级别：S0-S4，及其对应的加密与可见性策略。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 DSoftBus 在分布式数据同步中的角色：传输层通道，与会话层 Session 复用。
-- **U2**：阐明 KVStore 与 RdbStore 在数据模型（KV vs. 关系）、查询能力（点查 vs. SQL）、一致性（最终一致 vs. 强一致）上的差异。
-- **U3**：解释 `distributedDataObject` 与 `distributedKVStore` 的区别：内存对象 vs. 持久化 KV，前者偏临时状态，后者偏持久存储。
-- **U4**：对比 HarmonyOS 分布式数据与 Amazon DynamoDB Global Tables、Google Firebase Realtime Database、Apple CloudKit 的设计取舍。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 `distributedKVStore` 实现一个跨设备待办列表同步应用。
-- **A2**：使用 `distributedDataObject` 实现一个跨设备游戏状态实时同步（< 100ms 延迟）。
-- **A3**：使用 `distributedRdbStore` 实现一个跨设备关系型数据查询应用，支持 SQL 语句。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 LWW 冲突解决在时钟不同步场景下的数据丢失风险，论证 NTP 同步的必要性。
-- **An2**：分析 KVStore 的 8MB 单条目大小限制对应用设计的影响，识别需拆分的大对象场景。
-- **An3**：分析 `dataShareExtensionAbility` 与 `dataAbility`（FA 模型）在跨进程访问、URI 设计、权限模型上的演进。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价 HarmonyOS 的"账号即同步边界"设计——同一华为账号下设备自动同步，跨账号需显式授权。
-- **E2**：评价 LWW 与 CRDT（Conflict-free Replicated Data Types）在 HarmonyOS 场景下的适用性。
-- **E3**：评价分布式 RdbStore 选择 SQLite + 增量同步而非操作日志（OpLog）的工程取舍。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个支持离线编辑、上线自动合并的多端文档应用，明确数据拆分与 CRDT 选型。
-- **C2**：设计一个分布式数据冲突解决框架，支持应用层注册自定义合并函数。
-- **C3**：基于 `dataShareExtensionAbility` 设计一个跨应用数据共享中间件，支持第三方应用读写。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 分布式数据管理的早期挑战（2015-2019）
+### 1.1 分布式数据管理的早期挑战（2015-2019）
 
 在 HarmonyOS 之前，多设备数据同步主要依赖云端：
 
@@ -82,7 +38,7 @@ prerequisites:
 
 云端方案的共性问题是：**网络不可用时数据无法同步**。HarmonyOS 的设计目标是实现"端到端直连同步"——两台设备在无云参与下也能完成数据一致。
 
-### 2.2 HarmonyOS 1.0：分布式数据雏形
+### 1.2 HarmonyOS 1.0：分布式数据雏形
 
 HarmonyOS 1.0（2019）首发仅支持智慧屏，分布式数据能力有限：
 
@@ -91,7 +47,7 @@ HarmonyOS 1.0（2019）首发仅支持智慧屏，分布式数据能力有限：
 - 无冲突解决 API，全部采用 LWW 默认策略。
 - 单条目限制 1MB，远小于现在的 8MB。
 
-### 2.3 HarmonyOS 2.0：KVStore 引入
+### 1.3 HarmonyOS 2.0：KVStore 引入
 
 HarmonyOS 2.0（2020）引入 `@ohos.data.distributedKVStore` 模块，关键改进：
 
@@ -101,7 +57,7 @@ HarmonyOS 2.0（2020）引入 `@ohos.data.distributedKVStore` 模块，关键改
 - 支持手动 `sync` API 与自动同步两种模式。
 - 单条目限制提升到 4MB。
 
-### 2.4 HarmonyOS 3.0：分布式数据对象与 RdbStore
+### 1.4 HarmonyOS 3.0：分布式数据对象与 RdbStore
 
 HarmonyOS 3.0（2022）引入两个重要模块：
 
@@ -119,7 +75,7 @@ HarmonyOS 3.0（2022）引入两个重要模块：
 - 增量同步（基于 rowid 与时间戳）。
 - 单条目限制提升到 8MB。
 
-### 2.5 HarmonyOS 4.0：冲突解决 API 完善
+### 1.5 HarmonyOS 4.0：冲突解决 API 完善
 
 HarmonyOS 4.0（2023）关键改进：
 
@@ -128,7 +84,7 @@ HarmonyOS 4.0（2023）关键改进：
 - 引入 `Query` 流式查询接口，支持类 SQL 谓词。
 - 分布式 RdbStore 性能提升 40%，1KB 数据同步延迟降至 30ms。
 
-### 2.6 HarmonyOS NEXT：超级终端数据联邦
+### 1.6 HarmonyOS NEXT：超级终端数据联邦
 
 HarmonyOS NEXT（2024）引入"数据联邦"概念：
 
@@ -137,7 +93,7 @@ HarmonyOS NEXT（2024）引入"数据联邦"概念：
 - **CRDT 内置支持**：`distributedDataObject` 内置 G-Counter、OR-Set 等 CRDT 类型。
 - **冲突可视化**：DevEco Studio 调试器支持查看冲突日志。
 
-### 2.7 OpenHarmony 演进
+### 1.7 OpenHarmony 演进
 
 OpenHarmony 中分布式数据完全开源，仓库 `foundation/distributeddatamgr`：
 
@@ -150,7 +106,7 @@ OpenHarmony 中分布式数据完全开源，仓库 `foundation/distributeddatam
 | 4.0 | 3.0 | 端云协同、Query 流式 |
 | 5.0 | 3.5 | CRDT、数据联邦 |
 
-### 2.8 时间线总览
+### 1.8 时间线总览
 
 ```mermaid
 timeline
@@ -164,9 +120,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 分布式 KVStore 的形式化定义
+### 2.1 分布式 KVStore 的形式化定义
 
 定义分布式 KVStore 为七元组：
 
@@ -184,7 +140,7 @@ $$
 - $\mathcal{L}: \mathcal{D} \to \text{SecurityLevel}$ 为安全级别映射。
 - $\mathcal{E}: \text{keys} \to \text{events}$ 为变更事件流。
 
-### 3.2 一致性模型
+### 2.2 一致性模型
 
 HarmonyOS 分布式数据采用 **最终一致性**（Eventual Consistency）：
 
@@ -198,7 +154,7 @@ $$
 2. **读己之写**（Read Your Writes）：本地写入立即可读。
 3. **因果一致**（Causal Consistency）：有因果关系的操作保持顺序。
 
-### 3.3 冲突解决语义
+### 2.3 冲突解决语义
 
 冲突发生当且仅当：
 
@@ -219,7 +175,7 @@ $$
 
 其中 $\sqcup$ 表示 CRDT 的合并算子（join semi-lattice 上的最小上界）。
 
-### 3.4 同步语义
+### 2.4 同步语义
 
 定义同步操作为：
 
@@ -237,7 +193,7 @@ $$
 \text{AutoSync} \iff \text{account}(d_0) = \text{account}(d_i) \wedge \mathcal{R}(d_0, d_i) = \text{trusted} \wedge \text{network available}
 $$
 
-### 3.5 安全级别形式化
+### 2.5 安全级别形式化
 
 `SecurityLevel` 五级：
 
@@ -255,7 +211,7 @@ $$
 
 安全级别不可降级（monotonic）：一旦创建为 $S_3$，不可改为 $S_1$。
 
-### 3.6 分布式数据对象的形式化
+### 2.6 分布式数据对象的形式化
 
 `distributedDataObject` 定义为：
 
@@ -274,9 +230,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 分布式 KVStore 同步协议
+### 3.1 分布式 KVStore 同步协议
 
 KVStore 同步采用 **反熵协议**（Anti-Entropy）+ **版本向量**（Version Vector）：
 
@@ -317,7 +273,7 @@ $$
 
 若 $\vec{v}_k \leq \vec{v}_k'$（分量序），则 $k$ 在 $\vec{v}_k'$ 中"更新"，无需冲突。
 
-### 4.2 LWW 冲突解决的时钟依赖
+### 3.2 LWW 冲突解决的时钟依赖
 
 LWW 依赖逻辑时钟或物理时钟：
 
@@ -341,7 +297,7 @@ $$
 
 LWW 基于逻辑时钟可避免物理时钟漂移问题，但需应用层维护时钟。
 
-### 4.3 CRDT 合并的正确性证明
+### 3.3 CRDT 合并的正确性证明
 
 CRDT（Conflict-free Replicated Data Type）保证：
 
@@ -373,7 +329,7 @@ $$
 
 HarmonyOS NEXT 的 `distributedDataObject` 内置 G-Counter、OR-Set、LWW-Register 三种 CRDT。
 
-### 4.4 分布式 RdbStore 的增量同步
+### 3.4 分布式 RdbStore 的增量同步
 
 RdbStore 同步基于 **rowid + 时间戳** 的增量方案：
 
@@ -394,7 +350,7 @@ flowchart TD
 
 删除采用墓碑机制：删除时不真正删除，标记 `deleted = 1`，定期 GC。
 
-### 4.5 网络分区下的可用性
+### 3.5 网络分区下的可用性
 
 CAP 定理：分布式系统在网络分区（P）时只能在一致性（C）与可用性（A）间二选一。HarmonyOS 分布式数据选择 **AP**：
 
@@ -408,7 +364,7 @@ $$
 - 网络恢复后异步合并，可能产生冲突。
 - 应用需准备冲突解决逻辑。
 
-### 4.6 同步延迟模型
+### 3.6 同步延迟模型
 
 端到端同步延迟：
 
@@ -428,7 +384,7 @@ HarmonyOS 4.0 各阶段典型延迟（1KB 数据）：
 
 `distributedDataObject` 因省略持久化，延迟可低至 10ms。
 
-### 4.7 数据量与同步时间关系
+### 3.7 数据量与同步时间关系
 
 设数据量为 $N$ KB，带宽为 $B$ KB/s：
 
@@ -449,9 +405,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 分布式 KVStore 完整企业级封装
+### 4.1 分布式 KVStore 完整企业级封装
 
 ```typescript
 // entry/src/main/ets/data/DistributedKVStore.ets
@@ -732,7 +688,7 @@ export class DistributedKVStoreManager {
 }
 ```
 
-### 5.2 分布式数据对象：实时协同状态同步
+### 4.2 分布式数据对象：实时协同状态同步
 
 ```typescript
 // entry/src/main/ets/data/DistributedDataObject.ets
@@ -880,7 +836,7 @@ export class WhiteboardSyncManager {
 }
 ```
 
-### 5.3 分布式 RdbStore：关系型数据同步
+### 4.3 分布式 RdbStore：关系型数据同步
 
 ```typescript
 // entry/src/main/ets/data/DistributedRdbStore.ets
@@ -1150,7 +1106,7 @@ export class DistributedContactsStore {
 }
 ```
 
-### 5.4 分布式文件：跨设备文件共享
+### 4.4 分布式文件：跨设备文件共享
 
 ```typescript
 // entry/src/main/ets/data/DistributedFile.ets
@@ -1270,7 +1226,7 @@ export class DistributedFileManager {
 }
 ```
 
-### 5.5 DataShareExtensionAbility：跨应用数据共享
+### 4.5 DataShareExtensionAbility：跨应用数据共享
 
 ```typescript
 // entry/src/main/ets/datashare/DataShareExtension.ets
@@ -1340,7 +1296,7 @@ export default class DataShareExtension extends dataShare {
 }
 ```
 
-### 5.6 module.json5 分布式配置
+### 4.6 module.json5 分布式配置
 
 ```json5
 // entry/src/main/module.json5
@@ -1409,9 +1365,9 @@ export default class DataShareExtension extends dataShare {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Android 多设备数据方案对比
+### 5.1 与 Android 多设备数据方案对比
 
 | 特性 | HarmonyOS 分布式数据 | Android Data Saver + Drive | Android Cross-Device SDK |
 | --- | --- | --- | --- |
@@ -1423,7 +1379,7 @@ export default class DataShareExtension extends dataShare {
 | 实时同步 | distributedDataObject (10ms) | 无 | 无 |
 | API 一致性 | 统一distributedDataObject / KVStore / RdbStore | 多套 API 拼凑 | 仅消息通道 |
 
-### 6.2 与 iOS / macOS Continuity 对比
+### 5.2 与 iOS / macOS Continuity 对比
 
 | 特性 | HarmonyOS | Apple Continuity (NSUbiquitousKeyValueStore / CloudKit) |
 | --- | --- | --- |
@@ -1434,7 +1390,7 @@ export default class DataShareExtension extends dataShare {
 | 冲突解决 | 应用可注册 | 系统 LWW |
 | 跨账号共享 | dataShareExtensionAbility | 不支持 |
 
-### 6.3 与 Flutter / React Native 跨端数据方案对比
+### 5.3 与 Flutter / React Native 跨端数据方案对比
 
 | 特性 | HarmonyOS 原生 | Flutter + SharedPreferences | RN + AsyncStorage |
 | --- | --- | --- | --- |
@@ -1444,7 +1400,7 @@ export default class DataShareExtension extends dataShare {
 | 加密 | S0-S4 五级 | 应用自实现 | 应用自实现 |
 | 冲突解决 | 系统级 | 应用自实现 | 应用自实现 |
 
-### 6.4 与后端数据库方案对比
+### 5.4 与后端数据库方案对比
 
 | 特性 | HarmonyOS 分布式数据 | Amazon DynamoDB Global Tables | Google Spanner | CloudKit |
 | --- | --- | --- | --- | --- |
@@ -1456,9 +1412,9 @@ export default class DataShareExtension extends dataShare {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 十大常见陷阱
+### 6.1 十大常见陷阱
 
 #### 陷阱 1：未调用 `init()` 直接使用 KVStore
 
@@ -1580,7 +1536,7 @@ SELECT * FROM contacts c JOIN messages m ON c.id = m.contact_id;
 -- 正确：分表查询，应用层合并
 ```
 
-### 7.2 最佳实践清单
+### 6.2 最佳实践清单
 
 | 维度 | 实践 |
 | --- | --- |
@@ -1597,9 +1553,9 @@ SELECT * FROM contacts c JOIN messages m ON c.id = m.contact_id;
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 DevEco Studio 分布式数据调试
+### 7.1 DevEco Studio 分布式数据调试
 
 DevEco Studio 提供分布式数据 Inspector：
 
@@ -1614,7 +1570,7 @@ View → Tool Windows → Distributed Data Inspector
 3. **冲突日志**：记录冲突发生时间、双方值、解决结果。
 4. **模拟设备**：在模拟器上模拟多设备同步场景。
 
-### 8.2 HDC 命令调试分布式数据
+### 7.2 HDC 命令调试分布式数据
 
 ```bash
 # 查看分布式 KVStore 列表
@@ -1634,7 +1590,7 @@ hdc shell hilog | grep -E "DistributedKVStore|DSoftBus"
 hdc shell kv_store clear --storeId todos
 ```
 
-### 8.3 性能基准测试
+### 7.3 性能基准测试
 
 **测试环境**：HarmonyOS 4.0 真机，华为 P60 + MatePad，Wi-Fi 5GHz LAN
 
@@ -1651,7 +1607,7 @@ hdc shell kv_store clear --storeId todos
 | RdbStore sync | 100 rows | 80 ms | 200 ms |
 | 分布式文件写入 | 1 MB | 120 ms | 300 ms |
 
-### 8.4 签名与权限配置
+### 7.4 签名与权限配置
 
 分布式数据需要以下权限：
 
@@ -1696,7 +1652,7 @@ hdc shell kv_store clear --storeId todos
 }
 ```
 
-### 8.5 测试策略
+### 7.5 测试策略
 
 **单元测试**（mock distributedKVStore）：
 
@@ -1725,7 +1681,7 @@ describe('DistributedKVStoreManager', () => {
 4. 断言网络分区时本地仍可读写。
 5. 断言网络恢复后最终一致。
 
-### 8.6 持续集成与发布
+### 7.6 持续集成与发布
 
 ```yaml
 # .github/workflows/harmonyos-distributed-test.yml
@@ -1753,9 +1709,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：华为备忘录跨设备编辑
+### 8.1 案例一：华为备忘录跨设备编辑
 
 华为备忘录应用使用 `distributedRdbStore` 同步笔记，关键设计：
 
@@ -1770,7 +1726,7 @@ jobs:
 - 1MB 图片同步延迟：< 200ms
 - 离线编辑恢复后合并成功率：99.7%
 
-### 9.2 案例二：跨设备拖拽（Drag Across Devices）
+### 8.2 案例二：跨设备拖拽（Drag Across Devices）
 
 华为多屏协同的"拖拽文件跨设备"功能基于 `distributedDataObject`：
 
@@ -1779,7 +1735,7 @@ jobs:
 3. 释放时触发文件传输，使用分布式文件系统。
 4. 接收端 UI 实时跟随拖拽位置（基于 OR-Set 合并多点触控）。
 
-### 9.3 案例三：FANDEX 知识地图跨设备浏览
+### 8.3 案例三：FANDEX 知识地图跨设备浏览
 
 假设 FANDEX Web 的 HarmonyOS 原生版需要支持跨设备浏览：
 
@@ -1826,7 +1782,7 @@ class FandexMapSync {
 }
 ```
 
-### 9.4 案例四：多人协作白板
+### 8.4 案例四：多人协作白板
 
 基于 `distributedDataObject` + OR-Set CRDT 实现白板：
 
@@ -2129,7 +2085,7 @@ class DistributedCounter {
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 13**：在弱网环境下（如地铁中），HarmonyOS 分布式数据的最终一致性可能延迟数分钟甚至数小时。请设计一个用户友好的 UI 反馈机制，让用户感知到"同步中"状态。
 
@@ -2188,9 +2144,9 @@ class DistributedCounter {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 [1] Vogels, W. (2009). Eventually consistent. *Communications of the ACM*, 52(1), 40-44. https://doi.org/10.1145/1435417.1435432
 
@@ -2206,7 +2162,7 @@ class DistributedCounter {
 
 [7] Corbett, J. C., Dean, J., Epstein, M., Fikes, A., Frost, C., Furman, J. J., ... & Woodford, D. (2012). Spanner: Google's globally distributed database. *ACM Transactions on Computer Systems (TOCS)*, 31(3), 1-22. https://doi.org/10.1145/2491245
 
-### 11.2 官方文档
+### 10.2 官方文档
 
 [8] Huawei Developer. (2024). *HarmonyOS Distributed Data Management Developer Guide*. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/distributed-data
 
@@ -2220,9 +2176,9 @@ class DistributedCounter {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 1. **《Designing Data-Intensive Applications》** - Martin Kleppmann
    - 第 5 章"Replication"深入讲解最终一致性、CRDT、版本向量。
@@ -2239,7 +2195,7 @@ class DistributedCounter {
 5. **《HarmonyOS 应用开发从入门到精通》** - 华为技术有限公司
    - 官方权威教程，分布式数据章节。
 
-### 12.2 论文
+### 11.2 论文
 
 1. **"Bayou: Replicated Database Services for World-Wide Applications"** - ACM TOCS 2000
 2. **"COPS: Scalable Strong Consistency for Multi-Datacenter Stores"** - SOSP 2011
@@ -2247,7 +2203,7 @@ class DistributedCounter {
 4. **"Conflict-Free Replicated Data Types for Asynchronous Collaborative Editing"** - OPODIS 2018
 5. **"HarmonyOS Distributed Soft Bus: A Unified Communication Abstraction for Multi-Device Ecosystems"** - Huawei Technical Report 2023
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 1. **HarmonyOS Developer 官方文档**: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides
 2. **OpenHarmony 开源项目**: https://www.openharmony.cn/

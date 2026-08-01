@@ -17,55 +17,10 @@ prerequisites:
   - lua/概述与环境配置
 ---
 
-## 1. 学习目标
 
-本节依据 Bloom 分类法（Bloom's Taxonomy）按认知层级组织学习目标，帮助学习者由浅入深地掌握 Lua 元表与面向对象编程体系。
+## 1. 历史动机与背景
 
-### 1.1 记忆层（Remembering）
-
-- 复述 Lua 元表（metatable）的定义、作用与基本语义。
-- 列出 Lua 5.4 中所有可用的元方法（metamethod）名称及其触发场景。
-- 回顾 `setmetatable` 与 `getmetatable` 两个标准库函数的签名与返回值。
-- 识别面向对象编程（OOP）的四大基本特征：封装、继承、多态、抽象。
-
-### 1.2 理解层（Understanding）
-
-- 解释元方法查找算法在 Lua 虚拟机内部的执行流程。
-- 对比 Lua 原型式（prototype-based）OOP 与基于类（class-based）OOP 的本质区别。
-- 阐述 `__index` 与 `__newindex` 两个元方法在读取与写入两个方向上的对称性与差异。
-- 推断多重继承中方法查找顺序对程序行为的影响。
-
-### 1.3 应用层（Applying）
-
-- 使用元方法实现自定义运算符重载（如向量加法、矩阵乘法）。
-- 基于元表实现类、对象、继承、多态等典型 OOP 构造。
-- 编写只读表、惰性求值表、默认值表等装饰性数据结构。
-- 利用 `__call` 元方法实现函数式风格的工厂模式。
-
-### 1.4 分析层（Analyzing）
-
-- 分析 Lua 元表查找算法的时间复杂度，推导深度继承链下的性能退化模型。
-- 解构元表与闭包协作实现私有成员的封装机制。
-- 比较单分派（single dispatch）与 CLOS 风格多分派在 Lua 中的可行性。
-- 辨析 `rawget`/`rawset`/`rawequal` 与普通访问在元方法触发上的差异。
-
-### 1.5 评价层（Evaluating）
-
-- 评估基于元表的 OOP 实现在生产环境中的可维护性、可测试性与可调试性。
-- 评判 `__gc` 元方法在资源管理中的可靠性边界，对比 RAII 模式的差异。
-- 评价不同 OOP 库（如 `middleclass`、`classic`、`LOOP`）的设计取舍。
-- 判定在何种业务场景下应避免使用深度元表链以防止性能问题。
-
-### 1.6 创造层（Creating）
-
-- 设计一套支持多继承、混入（mixin）、接口（interface）的完整 OOP 框架。
-- 构建基于元方法的声明式数据验证 DSL（Domain-Specific Language）。
-- 实现一个基于 `__index` 与弱引用的自动缓存系统。
-- 创造性地将元表与协程结合，实现协作式状态机抽象。
-
-## 2. 历史动机与背景
-
-### 2.1 元表的诞生背景
+### 1.1 元表的诞生背景
 
 Lua 语言诞生于 1993 年巴西里约热内卢天主教大学（PUC-Rio），由 Roberto Ierusalimschy、Luiz Henrique de Figueiredo 与 Waldemar Celes 三位研究者设计。其最初定位是作为嵌入式脚本语言用于石油行业的数据录入工具（PETROBRAS 项目）。在 Lua 1.x 与 2.x 时代，Lua 仅有非常简单的数据结构支持，缺乏扩展表行为的能力。
 
@@ -73,7 +28,7 @@ Lua 3.0（1997 年）首次引入"tag method"（标签方法）机制，这是�
 
 Lua 5.0（2003 年）正式引入现代意义上的元表（metatable）机制，将 tag method 重构为表上的元方法，并大幅简化了 API。Lua 5.1（2006 年）进一步完善元方法体系，新增 `__pairs`、`__ipairs`、`__len` 等元方法。Lua 5.2（2012 年）移除了 `setfenv`/`getfenv`，引入 `_ENV`，并新增 `__gc` 元方法（5.1 中 `_gc` 仅对 userdata 生效，5.2 后对表也生效）。Lua 5.3（2015 年）引入整数子类型，相应新增 `__band`、`__bor`、`__bxor`、`__bnot`、`__shl`、`__shr` 等位运算元方法。Lua 5.4（2020 年）新增 `__close` 元方法，用于 to-be-closed 变量的资源管理。
 
-### 2.2 设计动机
+### 1.2 设计动机
 
 元表的设计动机源于以下工程诉求：
 
@@ -85,7 +40,7 @@ Lua 5.0（2003 年）正式引入现代意义上的元表（metatable）机制�
 
 4. **与 C API 的对等性**：Lua C API 同样支持为 userdata 设置元表，使 C 扩展与 Lua 表对象在语义上对等。这种对等性是 Lua 作为嵌入式语言成功的关键之一。
 
-### 2.3 面向对象在 Lua 中的演化
+### 1.3 面向对象在 Lua 中的演化
 
 由于 Lua 不内置 `class` 关键字，OOP 实现完全由社区演化出多种风格：
 
@@ -94,9 +49,9 @@ Lua 5.0（2003 年）正式引入现代意义上的元表（metatable）机制�
 - **原型风格**：参考 Self/JavaScript，对象直接克隆自原型对象，无类与对象的二分。
 - **元类风格**：引入"类的类"（metaclass），使类本身也是对象，支持类方法、反射等高级特性。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 元表的形式化定义
+### 2.1 元表的形式化定义
 
 设 $T$ 为 Lua 全部表对象的集合，$M$ 为元方法名称的集合。一个元表是一个特殊表 $m \in T$，其关键字段为元方法名 $e \in M$，对应值为函数 $f_e: T^* \to V$（其中 $V$ 为 Lua 值域，$T^*$ 为参数列表）。
 
@@ -108,7 +63,7 @@ $$
 
 其中 $\rightharpoonup$ 表示部分函数（partial function），即并非所有表都绑定元表。`setmetatable(t, m)` 操作将 $\text{meta}(t) := m$；`getmetatable(t)` 返回 $\text{meta}(t)$。
 
-### 3.2 元方法查找算法
+### 2.2 元方法查找算法
 
 当对表 $t$ 执行运算 $e$（如 `t + x`）时，Lua 虚拟机按以下顺序查找元方法：
 
@@ -123,7 +78,7 @@ $$
 
 注意：大多数元方法仅查找一层，不递归。`__index` 与 `__newindex` 是例外，它们可触发链式查找（见 §3.4）。
 
-### 3.3 `__index` 元方法的形式语义
+### 2.3 `__index` 元方法的形式语义
 
 设读取操作 `t[k]` 的求值规则为 $\text{read}(t, k)$，定义为：
 
@@ -149,11 +104,11 @@ $$
 
 注意当 `__index` 是表时，会递归调用 `read`，从而支持继承链。
 
-### 3.4 继承链的递归深度
+### 2.4 继承链的递归深度
 
 设继承链 $t \to m_1 \to m_2 \to \dots \to m_n$（其中 $\to$ 表示"通过 `__index` 链接"），查找键 $k$ 的最大递归深度为 $n+1$。Lua 虚拟机对递归深度无硬性限制，但深度过大可能触发 C 栈溢出（默认 Lua 栈深度约 200 层）。
 
-### 3.5 面向对象的三要素在 Lua 中的映射
+### 2.5 面向对象的三要素在 Lua 中的映射
 
 | OOP 概念 | 传统语言实现 | Lua 元表实现 |
 | :--- | :--- | :--- |
@@ -165,9 +120,9 @@ $$
 | 封装（Encapsulation） | `private` 修饰符 | 闭包捕获局部变量 |
 | 抽象类（Abstract Class） | `abstract` 关键字 | 约定基类方法抛出错误 |
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 元方法查找的时间复杂度
+### 3.1 元方法查找的时间复杂度
 
 设表的字段访问平均时间为 $O(1)$（Lua 表为哈希表，平均常数时间），元方法查找时间取决于查找路径长度。
 
@@ -187,7 +142,7 @@ $$
 
 其中 $d$ 为继承链深度。深度继承链（如 $d > 10$）会显著影响性能。
 
-### 4.2 内存占用模型
+### 3.2 内存占用模型
 
 设有 $n$ 个实例共享同一个类元表，每个实例有 $p$ 个实例字段，类有 $m$ 个方法。则总内存占用为：
 
@@ -203,7 +158,7 @@ $$
 
 当 $n \gg 1$ 时，类内存 $S_{\text{class}}(m)$ 可忽略，单实例内存近似 $S_{\text{inst}}(p)$，与无 OOP 的纯表实现相同。这就是元表 OOP"零额外内存开销"的数学基础。
 
-### 4.3 闭包式 OOP 与元表式 OOP 的内存对比
+### 3.3 闭包式 OOP 与元表式 OOP 的内存对比
 
 闭包式 OOP（每个实例为独立闭包，方法为闭包内 upvalue）：
 
@@ -221,7 +176,7 @@ $$
 
 方法集中在类中，实例仅存数据。当 $n = 1000, m = 20$ 时，闭包式约为元表式的 20 倍内存。这是 Lua 社区主流选择元表式 OOP 的根本原因。
 
-### 4.4 `__index` 元方法调用的边界条件
+### 3.4 `__index` 元方法调用的边界条件
 
 考虑以下嵌套查找：
 
@@ -231,7 +186,7 @@ $$
 
 若链上某一节点 $m_i.\_\_index$ 为函数 $f$，则调用 $f(t_i, k)$（注意 $t_i$ 为触发查找的原始表，不是元表）。这一语义对实现"动态方法分派"至关重要。
 
-### 4.5 元方法触发的对称性
+### 3.5 元方法触发的对称性
 
 对于二元运算 `a op b`（如 `+`、`-`、`*`），Lua 按以下顺序尝试：
 
@@ -242,9 +197,9 @@ $$
 
 这一对称性设计使得 `vector + 1` 与 `1 + vector` 都能正确触发自定义运算符。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 元表基础：运算符重载
+### 4.1 元表基础：运算符重载
 
 以下示例演示如何通过元表重载加法、减法、相等比较运算符，实现 2D 向量类型。
 
@@ -352,7 +307,7 @@ print(v1 == Vector2(3, 4))  -- 输出 true
 print(v1 < v2)        -- 输出 false（v1 模长更大）
 ```
 
-### 5.2 基于元表的类与对象
+### 4.2 基于元表的类与对象
 
 以下实现展示 Lua 中最经典的"类"构造模式：元表 `__index` 自指 + 构造函数。
 
@@ -408,7 +363,7 @@ local generic = Animal.createDefault()
 print(generic:speak())  -- 输出 Default (Generic) makes a sound
 ```
 
-### 5.3 单继承实现
+### 4.3 单继承实现
 
 以下实现展示 Lua 中基于 `__index` 链的单继承机制，子类继承父类的所有方法。
 
@@ -472,7 +427,7 @@ print(getmetatable(dog) == Dog)                   -- true
 print(getmetatable(Dog).__index == Animal)        -- true
 ```
 
-### 5.4 多重继承实现
+### 4.4 多重继承实现
 
 Lua 不直接支持多重继承，但可通过自定义 `__index` 元方法实现方法查找的多路径搜索。
 
@@ -561,7 +516,7 @@ print(duck.canWalk) -- 输出 true
 print(duck.canSwim) -- 输出 true
 ```
 
-### 5.5 闭包式私有成员封装
+### 4.5 闭包式私有成员封装
 
 以下实现展示如何利用闭包捕获 upvalue 实现真正的私有成员，外部无法直接访问。
 
@@ -647,7 +602,7 @@ log[1].amount = 999999  -- 修改副本
 print(account.getTransactionLog()[1].amount)  -- 仍输出原值
 ```
 
-### 5.6 只读表与默认值表
+### 4.6 只读表与默认值表
 
 利用 `__index` 与 `__newindex` 可实现多种装饰性数据结构。
 
@@ -710,7 +665,7 @@ print(counter["a"])  -- 输出 5
 print(counter["c"])  -- 输出 0（仍是默认值）
 ```
 
-### 5.7 弱引用表与 `__gc` 配合
+### 4.7 弱引用表与 `__gc` 配合
 
 利用 `__mode = "k"` 弱键表与 `__gc` 元方法可实现自动资源清理。
 
@@ -786,7 +741,7 @@ collectgarbage("collect")
 print(pool.count())  -- 输出 1（r1 已被回收）
 ```
 
-### 5.8 `__call` 实现函数式工厂
+### 4.8 `__call` 实现函数式工厂
 
 `__call` 元方法允许表像函数一样被调用，常用于工厂模式与 DSL 构建。
 
@@ -835,9 +790,9 @@ local cfg = ConfigBuilder()
 print(cfg.host, cfg.port, cfg.debug)  -- 输出 0.0.0.0  8443  true
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua 元表 OOP 与主流语言 OOP 对比
+### 5.1 Lua 元表 OOP 与主流语言 OOP 对比
 
 | 特性 | Lua（元表） | Python | Java | JavaScript | C++ |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -852,7 +807,7 @@ print(cfg.host, cfg.port, cfg.debug)  -- 输出 0.0.0.0  8443  true
 | 元编程 | 强大（运行时元方法） | 强大（装饰器、元类） | 弱（注解） | 强大（Proxy） | 弱（模板编译期） |
 | 性能 | 中（动态查找） | 慢（动态） | 中（JIT 优化） | 中（V8 JIT） | 快（静态） |
 
-### 6.2 Lua OOP 实现风格对比
+### 5.2 Lua OOP 实现风格对比
 
 | 风格 | 内存开销 | 方法调用速度 | 实现复杂度 | 私有性 | 适用场景 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -861,7 +816,7 @@ print(cfg.host, cfg.port, cfg.debug)  -- 输出 0.0.0.0  8443  true
 | 原型式 | 低 | 中 | 低 | 弱 | 简单继承、快速原型 |
 | 元类式 | 中 | 中 | 高 | 中 | 需反射、ORM |
 
-### 6.3 `__index` 表与函数的选择
+### 5.3 `__index` 表与函数的选择
 
 `__index` 既可以是表也可以是函数，二者各有优劣：
 
@@ -889,9 +844,9 @@ end
 | 继承支持 | 天然（递归 `__index`） | 需手动实现 |
 | 适用场景 | 类方法、固定字段 | 计算属性、代理、DSL |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：在 `__index` 元方法中创建新字段
+### 6.1 反模式：在 `__index` 元方法中创建新字段
 
 **事故案例**：某游戏项目使用 `__index` 实现"懒加载"属性，但未注意副作用导致内存泄漏。
 
@@ -928,7 +883,7 @@ GoodClass.__index = function(t, k)
 end
 ```
 
-### 7.2 反模式：在元方法中使用 `self` 引用导致递归
+### 6.2 反模式：在元方法中使用 `self` 引用导致递归
 
 **事故案例**：某项目在 `__index` 中调用 `self:method()` 导致无限递归。
 
@@ -956,7 +911,7 @@ GoodClass.__index = function(t, k)
 end
 ```
 
-### 7.3 反模式：忘记 `__index` 自指导致方法不可见
+### 6.3 反模式：忘记 `__index` 自指导致方法不可见
 
 **事故案例**：初学者常忘记在类定义后设置 `__index = Class`，导致实例无法访问方法。
 
@@ -977,7 +932,7 @@ local good = setmetatable({}, GoodClass)
 print(good.method)  -- 输出 function
 ```
 
-### 7.4 反模式：使用 `__eq` 但未同时定义 `__lt` 与 `__le`
+### 6.4 反模式：使用 `__eq` 但未同时定义 `__lt` 与 `__le`
 
 Lua 中如果只定义 `__eq` 而不定义 `__lt`/`__le`，则 `<=` 与 `<` 仍按默认规则比较，可能导致不一致。
 
@@ -989,7 +944,7 @@ local v = setmetatable({ x = 1 }, { __eq = function(a, b) return a.x == b.x end 
 -- 修复：成组定义所有比较元方法
 ```
 
-### 7.5 反模式：在 `__gc` 中访问已回收对象
+### 6.5 反模式：在 `__gc` 中访问已回收对象
 
 **事故案例**：Lua 5.2+ 中 `__gc` 对表生效，但若在 `__gc` 中引用其他已被回收的对象会引发未定义行为。
 
@@ -1002,7 +957,7 @@ a.ref = { x = 1 }  -- 注意：ref 是强引用
 -- GC 时 b[1] 可能先被回收，导致 self.ref.x 访问失败
 ```
 
-### 7.6 反模式：多重继承方法查找顺序不确定
+### 6.6 反模式：多重继承方法查找顺序不确定
 
 当多个父类有同名方法时，查找顺序取决于 `searchBases` 实现。若依赖此顺序，代码可维护性极差。
 
@@ -1015,7 +970,7 @@ local C = createClass(A, B)  -- 哪个 method 被调用？
 -- 修复：使用 mixin 显式声明优先级，或避免多继承同名方法
 ```
 
-### 7.7 反模式：用元表模拟"接口"导致类型混乱
+### 6.7 反模式：用元表模拟"接口"导致类型混乱
 
 Lua 没有原生接口概念，使用元表模拟时容易产生"鸭子类型"陷阱。
 
@@ -1032,7 +987,7 @@ local function feed(animal)
 end
 ```
 
-### 7.8 反模式：在 `__newindex` 中直接调用 `rawset` 导致原表写入
+### 6.8 反模式：在 `__newindex` 中直接调用 `rawset` 导致原表写入
 
 ```lua
 -- 反模式：__newindex 中直接 rawset 到原表
@@ -1049,9 +1004,9 @@ t.a = 1  -- 正常工作
 -- 但若想完全禁止写入，应抛出错误而非 rawset
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 生产级 OOP 框架设计
+### 7.1 生产级 OOP 框架设计
 
 以下是一个生产环境可用的轻量级 OOP 框架，支持单继承、混入、`super` 调用、类型检查。
 
@@ -1147,7 +1102,7 @@ setmetatable(class, {
 return class
 ```
 
-### 8.2 性能优化：方法缓存
+### 7.2 性能优化：方法缓存
 
 深度继承链会导致方法查找开销增大。可在实例创建时将常用方法"扁平化"到实例表。
 
@@ -1177,7 +1132,7 @@ end
 
 注意：此优化会增加每实例内存（多保存函数引用），需在内存与 CPU 间权衡。
 
-### 8.3 调试与可观测性
+### 7.3 调试与可观测性
 
 为元表驱动的对象添加调试信息，便于排查问题。
 
@@ -1207,7 +1162,7 @@ assertType(v, "Vector2")  -- 通过
 -- assertType(v, "Vector3")  -- 抛出错误
 ```
 
-### 8.4 测试驱动开发（TDD）实践
+### 7.4 测试驱动开发（TDD）实践
 
 为元表驱动的 OOP 编写单元测试。
 
@@ -1254,7 +1209,7 @@ end)
 TestFramework.run()
 ```
 
-### 8.5 与 C 模块协作
+### 7.5 与 C 模块协作
 
 C 扩展常返回带元表的 userdata，Lua 端可透明地与表对象交互。
 
@@ -1272,9 +1227,9 @@ print(data.name, data.version)  -- Lua  5.4
 -- setmetatable(decoder, { __index = function() end })  -- 错误
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Kong API 网关的 OOP 体系
+### 8.1 案例一：Kong API 网关的 OOP 体系
 
 Kong 是基于 OpenResty 的高性能 API 罔关，其核心插件系统采用 Lua 元表 OOP 实现。
 
@@ -1341,7 +1296,7 @@ return RateLimitingHandler
 - 但缺乏编译期类型检查，配置错误需在运行时发现。
 - 通过 schema 校验弥补类型安全不足，是 Lua 大型项目的常见模式。
 
-### 9.2 案例二：LÖVE 2D 游戏引擎的对象系统
+### 8.2 案例二：LÖVE 2D 游戏引擎的对象系统
 
 LÖVE 是流行的 Lua 2D 游戏引擎，其社区惯用元表 OOP 组织游戏对象。
 
@@ -1411,7 +1366,7 @@ end
 - 显式 `Parent.method(self, ...)` 调用 super 比 `self:super()` 更直观且性能更好。
 - 实体数量大时（如弹幕游戏），考虑使用 ECS（Entity-Component-System）替代 OOP。
 
-### 9.3 案例三：Redis Lua 脚本中的元表应用
+### 8.3 案例三：Redis Lua 脚本中的元表应用
 
 Redis 内嵌 Lua 解释器（5.1），元表机制可用于构建复杂数据结构。
 
@@ -1455,7 +1410,7 @@ end
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题 1**：写出以下代码的输出，并解释原因。
 
@@ -1514,7 +1469,7 @@ counter.a = counter.a + 1
 print(counter.a)  -- 输出 2
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题 4**：实现一个支持 `super()` 调用的单继承 OOP 框架，要求 `super` 能正确解析到直接父类的同名方法。
 
@@ -1583,7 +1538,7 @@ print(obj.x)
   4. `A` 有 `x = 1`，返回 1。
 - 输出 `1`。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题 6**：实现一个支持多分派（multiple dispatch）的元方法系统。例如，`a + b` 的行为同时取决于 `a` 与 `b` 的具体类型（不仅仅是 `a` 的元表）。
 
@@ -1709,9 +1664,9 @@ print(u.name, u.age, u.active)  -- Alice  30  true
   3. 减少 `:` 调用：`obj:method()` 每次查找 `obj.method`，可改为 `local m = obj.method; m(obj, ...)`。
   4. LuaJIT：若运行在 LuaJIT 下，trace compiler 可自动优化元表查找。
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 Lua 官方文献
+### 10.1 Lua 官方文献
 
 [1] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2023. *Lua 5.4 Reference Manual*. Technical Report, PUC-Rio, Rio de Janeiro, Brazil. Available at: https://www.lua.org/manual/5.4/
 
@@ -1721,7 +1676,7 @@ print(u.name, u.age, u.active)  -- Alice  30  true
 
 [4] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2011. Passing a language through the eye of a needle: how the embeddability of Lua has affected its design. *Communications of the ACM* 54, 11 (Nov. 2011), 38-43. DOI: https://doi.org/10.1145/2018396.2018412
 
-### 11.2 元编程与面向对象理论
+### 10.2 元编程与面向对象理论
 
 [5] Abadi, M. and Cardelli, L. 1996. *A Theory of Objects*. Springer-Verlag, New York, NY, USA. DOI: https://doi.org/10.1007/978-1-4419-8598-9
 
@@ -1729,13 +1684,13 @@ print(u.name, u.age, u.active)  -- Alice  30  true
 
 [7] Lieberman, H. 1986. Using prototypical objects to implement shared behavior in object-oriented systems. In *Conference Proceedings on Object-Oriented Programming Systems, Languages and Applications (OOPSLA '86)*. ACM, New York, NY, USA, 214-223. DOI: https://doi.org/10.1145/28697.28718
 
-### 11.3 性能与实现
+### 10.3 性能与实现
 
 [8] Pall, M. 2005. The LuaJIT compiler. In *Proceedings of the Lightweight Languages 2005 (LL5)*. Available at: https://luajit.org/
 
 [9] Gudeman, D. 1993. Booleans are unsigned integers. *ACM SIGPLAN Notices* 28, 4 (April 1993), 17-24. DOI: https://doi.org/10.1145/152711.152718
 
-### 11.4 应用案例
+### 10.4 应用案例
 
 [10] Kong Inc. 2024. *Kong Plugin Development Guide*. Available at: https://docs.konghq.com/gateway/latest/plugin-development/
 
@@ -1743,21 +1698,21 @@ print(u.name, u.age, u.active)  -- Alice  30  true
 
 [12] Carlsson, M. et al. 2020. Redis Lua scripts: atomicity, performance, and best practices. *Redis Labs Technical Report*. Available at: https://redis.io/docs/manual/programmability/eval/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Lua 官方手册（5.4）：https://www.lua.org/manual/5.4/
 - Lua 与 C 交互（Programming in Lua, 4th Edition, Chapter 28-31）：https://www.lua.org/pil/
 - LuaJIT 文档：https://luajit.org/luajit.html
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Roberto Ierusalimschy. *Programming in Lua* (4th Edition). PUC-Rio, 2016. ISBN 978-8590379868.
 - Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. *The Implementation of Lua 5.0*. Journal of Universal Computer Science, 2005.
 - Paul Kimmel. *Lua Programming Gems*. Lua.org, 2008. ISBN 978-8590379868.
 
-### 12.3 前沿论文与社区资源
+### 11.3 前沿论文与社区资源
 
 - Pall, Mike. "LuaJIT 2.0 trace compiler design." *Lua Workshop 2011*. 探讨 LuaJIT 如何优化元表查找。
 - "LuaTables: Optimizing hash table lookups for dynamic languages." *ICSOFT 2017*. 讨论表查找性能。
@@ -1766,7 +1721,7 @@ print(u.name, u.age, u.active)  -- Alice  30  true
 - middleclass 库：https://github.com/kikito/middleclass，社区主流 OOP 库。
 - classic 库：https://github.com/rxi/classic，极简 OOP 库。
 
-### 12.4 拓展主题
+### 11.4 拓展主题
 
 - 弱引用表与 `__gc`：参见本系列"弱表"章节。
 - C API 与 userdata 元表：参见本系列"Lua 与 C 交互"章节。

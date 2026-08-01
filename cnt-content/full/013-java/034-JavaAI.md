@@ -16,16 +16,6 @@ prerequisites:
   - java/概述与开发环境
 ---
 
-## 学习目标
-
-完成本章学习后，你应当能够：
-
-- **Remember（记忆）**：复述 Java 在 AI 与机器学习领域的核心生态，包括 DJL（Deep Java Library）、ONNX Runtime Java、TensorFlow Java、OpenNLP、Weka、Smile、Deeplearning4j 等库的定位与典型应用场景。
-- **Understand（理解）**：解释 Java 在企业级 AI 部署中的优势——JIT 优化、GC 可控、与 Spring/Jakarta EE 生态深度集成、强类型与可观测性——并理解其在研究阶段相对 Python 的劣势。
-- **Apply（应用）**：使用 DJL 加载预训练模型（PyTorch、TensorFlow、MXNet 后端）进行图像分类、目标检测、NLP 推理；使用 ONNX Runtime Java API 在 JVM 上运行跨框架模型推理。
-- **Analyze（分析）**：分析 Java AI 推理服务的性能瓶颈——模型加载、内存映射、批处理、线程模型——并对比 JVM 推理与原生 Python 推理的吞吐与延迟。
-- **Evaluate（评价）**：评估在 Java 中调用远程模型服务（HTTP/gRPC）与本地嵌入模型推理的取舍，量化网络延迟、序列化开销、资源占用对端到端 SLA 的影响。
-- **Create（创造）**：设计一套基于 Spring Boot 的 AI 微服务，包含模型管理、推理 API、批处理、可观测性（JFR、Micrometer）、A/B 测试与灰度发布。
 
 ## 历史动机与发展脉络
 

@@ -25,57 +25,14 @@ prerequisites:
   - python/装饰器
 ---
 
+
 # Python 描述符协议：属性访问的底层机制与工程实践
 
 > 描述符协议是 Python 面向对象模型中最核心、却又最常被忽视的机制之一。`property`、`classmethod`、`staticmethod`、`super()`、ORM 字段、ORM 关系、Pydantic 字段、Django Form 字段，无一不是描述符的应用。本文从形式化定义出发，系统阐述描述符协议的工作原理、属性查找链、数据描述符与非数据描述符的优先级差异、与元类和 `__slots__` 的协作，并通过 ORM 字段、类型验证器、缓存属性、观察者模式等工程案例，帮助开发者掌握 Python 元编程的基石。
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本文依据 Bloom's Taxonomy（布鲁姆认知目标分类学）的六个层次组织学习目标，确保从低阶认知到高阶创造的渐进式掌握。
-
-### 1.1 记忆（Remembering）
-
-- 列出描述符协议的三个核心方法：`__get__`、`__set__`、`__delete__`。
-- 回忆描述符协议的扩展方法：`__set_name__`（Python 3.6+）。
-- 列出属性查找链的四个层次：数据描述符、实例属性、非数据描述符、类属性。
-- 陈述数据描述符与非数据描述符的判定条件。
-
-### 1.2 理解（Understanding）
-
-- 解释描述符协议为何必须定义为类属性而非实例属性。
-- 描述 `obj.attr` 访问时 Python 解释器的查找流程。
-- 区分数据描述符（实现 `__set__` 或 `__delete__`）与非数据描述符（仅实现 `__get__`）的优先级。
-- 解释 `__set_name__` 钩子如何解决描述符"不知道自己叫什么"的问题。
-
-### 1.3 应用（Applying）
-
-- 使用描述符实现类型验证器（TypedField）。
-- 使用描述符实现缓存属性（CachedProperty）。
-- 使用描述符实现 ORM 风格的字段定义（CharField、IntegerField）。
-- 使用描述符实现观察者模式（属性变化通知）。
-
-### 1.4 分析（Analyzing）
-
-- 分析 `property` 装饰器与描述符协议的等价关系。
-- 解构 `classmethod` 与 `staticmethod` 的描述符实现。
-- 比较描述符方案与 `__slots__`、元类方案在属性控制上的差异。
-- 分析描述符在多继承场景下的 MRO 查找行为。
-
-### 1.5 评价（Evaluating）
-
-- 评估描述符方案与 `property` 装饰器在可维护性、可复用性上的优劣。
-- 评判使用描述符存储数据于实例 `__dict__` vs 描述符自身的取舍。
-- 评价 Pydantic v2、Django ORM、SQLAlchemy 等框架对描述符的不同使用方式。
-
-### 1.6 创造（Creating）
-
-- 设计一套完整的字段验证框架（支持类型、范围、自定义校验）。
-- 实现一个支持惰性加载与缓存失效的描述符。
-- 构建一个基于描述符的领域特定语言（DSL）用于声明式配置。
-
-## 2. 历史动机与背景
-
-### 2.1 新式类的诞生（Python 2.2）
+### 1.1 新式类的诞生（Python 2.2）
 
 在 Python 2.1 及之前，类（class）与类型（type）是两个不同的概念：用户定义的类是 `classobj` 类型，而内置类型如 `int`、`list` 是 `type` 类型。这种"二元性"导致经典类（classic class）无法与内置类型统一，也无法正确支持多继承的 MRO（Method Resolution Order）。
 
@@ -87,7 +44,7 @@ prerequisites:
 
 描述符协议最初的目的，是让内置类型（如 `int`、`list`）的方法、`classmethod`、`staticmethod`、`property`、`super()` 等机制在用户定义的类中以一致的方式工作。
 
-### 2.2 描述符协议的设计动机
+### 1.2 描述符协议的设计动机
 
 描述符协议解决的核心问题是：**如何在属性访问、赋值、删除时插入自定义逻辑**。
 
@@ -99,7 +56,7 @@ prerequisites:
 - 属性逻辑可组合（一个字段可以同时具备类型验证、范围验证、默认值）。
 - 属性逻辑可测试（描述符是独立的类，可单元测试）。
 
-### 2.3 PEP 487：`__set_name__` 钩子（Python 3.6）
+### 1.3 PEP 487：`__set_name__` 钩子（Python 3.6）
 
 在 Python 3.6 之前，描述符面临一个尴尬的问题：描述符**不知道自己被绑定的属性名**。例如：
 
@@ -127,7 +84,7 @@ class Field:
 
 `__set_name__` 是描述符协议演进的重要里程碑，使得 ORM 字段、Pydantic 字段等框架的 API 更加简洁。
 
-### 2.4 现代框架中的描述符
+### 1.4 现代框架中的描述符
 
 描述符协议是现代 Python 元编程的基石，几乎所有重要的框架都依赖它：
 
@@ -139,9 +96,9 @@ class Field:
 
 理解描述符协议，是理解这些框架内部机制、进行高级定制（如自定义字段类型）的前提。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 描述符协议形式化
+### 2.1 描述符协议形式化
 
 描述符是一个对象 $d$，所属类 $D$ 满足以下条件之一：
 
@@ -159,7 +116,7 @@ $$
 \end{aligned}
 $$
 
-### 3.2 数据描述符与非数据描述符
+### 2.2 数据描述符与非数据描述符
 
 定义**数据描述符（Data Descriptor）**：
 
@@ -175,7 +132,7 @@ $$
 
 两者的关键差异在于**优先级**：数据描述符的优先级高于实例属性，非数据描述符的优先级低于实例属性。
 
-### 3.3 属性查找链形式化
+### 2.3 属性查找链形式化
 
 对于表达式 `obj.attr`，Python 解释器的查找过程可形式化为函数：
 
@@ -193,7 +150,7 @@ $$
 
 其中 $\text{mro}(type(obj))$ 是 $type(obj)$ 的方法解析顺序（Method Resolution Order），按 C3 线性化算法计算。
 
-### 3.4 赋值与删除形式化
+### 2.4 赋值与删除形式化
 
 对于赋值 `obj.attr = value`：
 
@@ -217,7 +174,7 @@ $$
 \end{cases}
 $$
 
-### 3.5 `__set_name__` 钩子形式化
+### 2.5 `__set_name__` 钩子形式化
 
 类创建时，解释器对类字典中的每个描述符调用钩子：
 
@@ -227,9 +184,9 @@ $$
 
 这个钩子在 `type.__new__` 中触发，发生在 `__init_subclass__` 之前。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 属性查找链的优先级证明
+### 3.1 属性查找链的优先级证明
 
 **命题**：数据描述符的优先级高于实例属性，实例属性的优先级高于非数据描述符。
 
@@ -255,7 +212,7 @@ print(c.d)  # 应该输出什么？
 
 这一设计使得 `classmethod`、`staticmethod`、`property` 等非数据描述符可以被实例属性"遮蔽"，提供了灵活性。而数据描述符（如 `property` 同时定义 `__set__`）则不可被遮蔽，确保了属性的访问逻辑不被绕过。
 
-### 4.2 C3 线性化与描述符查找
+### 3.2 C3 线性化与描述符查找
 
 描述符查找发生在 MRO 上，C3 线性化保证了多继承下查找顺序的一致性。对于类 $C$ 的 MRO：
 
@@ -275,7 +232,7 @@ class Derived(Base):
     x = AnotherDescriptor()  # 覆盖父类的描述符
 ```
 
-### 4.3 数据存储位置的复杂性分析
+### 3.3 数据存储位置的复杂性分析
 
 描述符有两种数据存储策略：
 
@@ -289,7 +246,7 @@ class Derived(Base):
 
 策略 1 是常见做法，但要求实例有 `__dict__`（即未使用 `__slots__`）。策略 2 适用于 `__slots__` 场景或需要跨实例共享元数据的场景。
 
-### 4.4 `__slots__` 与描述符的协作
+### 3.4 `__slots__` 与描述符的协作
 
 `__slots__` 是 Python 的内存优化机制，它禁用实例的 `__dict__`，改为固定槽位存储。`__slots__` 本质上是**数据描述符**：
 
@@ -311,7 +268,7 @@ class C:
 
 这一机制意味着：**自定义描述符在 `__slots__` 类中无法将数据存入实例 `__dict__`**，必须改用描述符自身的字典或 `WeakKeyDictionary`。
 
-### 4.5 `property` 的描述符本质
+### 3.5 `property` 的描述符本质
 
 `property` 是 Python 内置的描述符工厂，其等价实现为：
 
@@ -352,7 +309,7 @@ class Property:
 
 由于 `property` 同时定义了 `__get__`、`__set__`、`__delete__`，它是**数据描述符**，优先级高于实例属性。这就是为什么 `@property` 装饰的属性无法在实例上被覆盖的原因。
 
-### 4.6 `classmethod` 与 `staticmethod` 的描述符实现
+### 3.6 `classmethod` 与 `staticmethod` 的描述符实现
 
 `classmethod` 与 `staticmethod` 都是**非数据描述符**（仅实现 `__get__`），因此可以被实例属性遮蔽。
 
@@ -376,9 +333,9 @@ class ClassMethod:
 
 `classmethod` 的 `__get__` 返回一个绑定了类的方法，`staticmethod` 的 `__get__` 返回原函数本身。这种设计使得方法可以被实例属性覆盖（虽然不推荐）。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 类型验证描述符（TypedField）
+### 4.1 类型验证描述符（TypedField）
 
 以下示例实现一个可复用的类型验证描述符，用于确保属性值符合指定类型：
 
@@ -485,7 +442,7 @@ except TypeError as e:
 print(type(User.name))  # <class '...TypedField'>
 ```
 
-### 5.2 范围验证描述符（RangeField）
+### 4.2 范围验证描述符（RangeField）
 
 ```python
 from typing import Optional, Union
@@ -561,7 +518,7 @@ except ValueError as e:
     print(f"范围错误: {e}")
 ```
 
-### 5.3 缓存属性描述符（CachedProperty）
+### 4.3 缓存属性描述符（CachedProperty）
 
 ```python
 from typing import Callable, Any, Optional
@@ -639,7 +596,7 @@ print(processor.sum_squared)  # 直接读取缓存，无打印
 print(f"实例缓存: {list(processor.__dict__.keys())}")
 ```
 
-### 5.4 可失效的缓存属性（数据描述符版本）
+### 4.4 可失效的缓存属性（数据描述符版本）
 
 ```python
 from typing import Callable, Any, Optional
@@ -710,7 +667,7 @@ print("失效后访问:")
 print(processor.thumbnail)  # 重新计算
 ```
 
-### 5.5 ORM 风格的字段定义
+### 4.5 ORM 风格的字段定义
 
 ```python
 from typing import Any, Optional, Type, Callable
@@ -887,7 +844,7 @@ except ValueError as e:
 print(user.to_dict())  # {'id': 1, 'name': '张三', 'age': 25, 'is_active': True}
 ```
 
-### 5.6 观察者模式描述符
+### 4.6 观察者模式描述符
 
 ```python
 from typing import Callable, Any, Optional, List
@@ -976,7 +933,7 @@ print("--- 修改金额 ---")
 order.amount = 99.9         # 触发日志
 ```
 
-### 5.7 只读属性描述符
+### 4.7 只读属性描述符
 
 ```python
 from typing import Any, Optional
@@ -1039,7 +996,7 @@ except AttributeError as e:
     print(f"错误: {e}")
 ```
 
-### 5.8 惰性加载描述符（带 WeakKeyDictionary）
+### 4.8 惰性加载描述符（带 WeakKeyDictionary）
 
 ```python
 from typing import Callable, Any, Optional
@@ -1122,9 +1079,9 @@ del obj1
 # 此处 storage 中 obj1 的条目已被自动移除
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 描述符 vs `property` 装饰器
+### 5.1 描述符 vs `property` 装饰器
 
 | 维度 | 描述符 | `property` 装饰器 |
 |------|--------|-------------------|
@@ -1138,7 +1095,7 @@ del obj1
 
 **讨论**：`property` 是描述符的特例，适用于属性数量少、逻辑简单的场景。当多个属性共享相同逻辑（如类型验证、范围验证）时，描述符更具优势。Django ORM、Pydantic 等框架选择描述符而非 `property`，正是因为框架需要为大量字段提供统一行为。
 
-### 6.2 数据描述符 vs 非数据描述符
+### 5.2 数据描述符 vs 非数据描述符
 
 | 维度 | 数据描述符 | 非数据描述符 |
 |------|-----------|-------------|
@@ -1151,7 +1108,7 @@ del obj1
 
 **讨论**：非数据描述符的"可遮蔽性"是 `CachedProperty` 工作的基础——首次计算后将值存入实例 `__dict__`，后续访问直接读取实例属性，跳过描述符的 `__get__`，实现 O(1) 缓存命中。数据描述符则适用于需要严格控制属性访问的场景（如 ORM 字段需在赋值时触发校验）。
 
-### 6.3 描述符 vs 元类
+### 5.3 描述符 vs 元类
 
 | 维度 | 描述符 | 元类 |
 |------|--------|------|
@@ -1164,7 +1121,7 @@ del obj1
 
 **讨论**：元类与描述符经常协作。Django ORM 中，`ModelBase` 元类扫描类的 `Field` 描述符，构建 `_meta.fields` 元数据；描述符则负责运行时的属性访问拦截。两者分工明确：元类管理"类层面"的结构，描述符管理"实例层面"的行为。
 
-### 6.4 描述符 vs `__slots__`
+### 5.4 描述符 vs `__slots__`
 
 | 维度 | 描述符 | `__slots__` |
 |------|--------|-------------|
@@ -1177,7 +1134,7 @@ del obj1
 
 **讨论**：`__slots__` 与自定义描述符存在兼容性问题——自定义描述符默认将数据存入实例 `__dict__`，而 `__slots__` 类没有 `__dict__`。解决方法：（1）描述符使用 `WeakKeyDictionary` 存储数据；（2）在 `__slots__` 中预留私有属性名（如 `_field_name`）。
 
-### 6.5 `property` 的描述符本质验证
+### 5.5 `property` 的描述符本质验证
 
 以下代码验证 `property` 是数据描述符：
 
@@ -1209,9 +1166,9 @@ except Exception as e:
     print(e)
 ```
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 描述符定义为实例属性（不生效）
+### 6.1 描述符定义为实例属性（不生效）
 
 **反模式**：
 
@@ -1241,7 +1198,7 @@ c = C()
 print(c.attr)  # 输出 "descriptor"
 ```
 
-### 7.2 描述符自身存储数据导致实例间共享
+### 6.2 描述符自身存储数据导致实例间共享
 
 **反模式**：
 
@@ -1285,7 +1242,7 @@ class CorrectField:
         setattr(obj, self._private_name, value)
 ```
 
-### 7.3 `__get__` 中未处理 `obj is None` 的情况
+### 6.3 `__get__` 中未处理 `obj is None` 的情况
 
 **反模式**：
 
@@ -1312,7 +1269,7 @@ class GoodField:
         return obj._value
 ```
 
-### 7.4 在 `__slots__` 类中使用存入 `__dict__` 的描述符
+### 6.4 在 `__slots__` 类中使用存入 `__dict__` 的描述符
 
 **反模式**：
 
@@ -1356,7 +1313,7 @@ u.name = "张三"
 print(u.name)  # 张三
 ```
 
-### 7.5 使用描述符实现单例模式导致内存泄漏
+### 6.5 使用描述符实现单例模式导致内存泄漏
 
 **事故案例**：某服务使用描述符缓存数据库连接池，未使用弱引用，导致连接池永不释放。
 
@@ -1391,7 +1348,7 @@ class ConnectionPool:
         return self._pools[obj]
 ```
 
-### 7.6 描述符与 `__init__` 中的赋值顺序问题
+### 6.6 描述符与 `__init__` 中的赋值顺序问题
 
 **事故案例**：某 ORM 在 `__init__` 中设置字段值时，因依赖其他字段未初始化而失败。
 
@@ -1416,7 +1373,7 @@ class User:
 
 **修复方案**：（1）使用 `hasattr` 检查依赖；（2）调整初始化顺序；（3）将依赖标记为类属性默认值。
 
-### 7.7 多继承下的描述符覆盖问题
+### 6.7 多继承下的描述符覆盖问题
 
 **反模式**：
 
@@ -1444,7 +1401,7 @@ print(d.x)  # 输出 "A"，因为 Base1 在 MRO 中先于 Base2
 
 **讨论**：多继承下，MRO 顺序决定描述符查找顺序。若开发者期望 `FieldB` 优先，需调整继承顺序或显式指定。这种隐式覆盖容易导致难以排查的 bug，建议在文档中明确描述符的优先级。
 
-### 7.8 性能陷阱：过度使用数据描述符
+### 6.8 性能陷阱：过度使用数据描述符
 
 **事故案例**：某高频交易系统将所有属性定义为数据描述符，每次属性访问都经过 `__get__`，导致吞吐量下降 30%。
 
@@ -1452,9 +1409,9 @@ print(d.x)  # 输出 "A"，因为 Base1 在 MRO 中先于 Base2
 
 **优化**：对只读且计算成本高的属性使用 `CachedProperty`（非数据描述符）；对需要校验的属性使用数据描述符，但避免在 `__get__` 中执行复杂逻辑。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 生产级字段验证框架
+### 7.1 生产级字段验证框架
 
 以下是一个生产级的字段验证框架，支持类型、范围、自定义校验器，并提供详细的错误信息：
 
@@ -1665,7 +1622,7 @@ except ValueError as e:
     print(f"校验失败: {e}")
 ```
 
-### 8.2 性能优化：避免 `__get__` 中的重复计算
+### 7.2 性能优化：避免 `__get__` 中的重复计算
 
 数据描述符的 `__get__` 在每次访问时调用，若其中包含复杂逻辑，会显著影响性能。优化策略：
 
@@ -1692,7 +1649,7 @@ class OptimizedField:
 
 注意：此模式仅适用于只读属性。若需支持赋值，应保留 `__set__` 并在赋值时清除 `_private_name`。
 
-### 8.3 与 `dataclasses` 协作
+### 7.3 与 `dataclasses` 协作
 
 Python 3.7+ 的 `dataclasses` 与描述符可以协作，但需注意 `dataclass` 会在 `__init__` 中赋值，触发描述符的 `__set__`：
 
@@ -1733,7 +1690,7 @@ except ValueError as e:
 
 **注意**：`dataclass` 默认会将描述符视为类属性，需在 `field(default=...)` 中传入描述符实例。更推荐的做法是使用 `__post_init__` 进行校验。
 
-### 8.4 与 Pydantic 风格的字段定义
+### 7.4 与 Pydantic 风格的字段定义
 
 参考 Pydantic v2 的设计，实现声明式字段定义：
 
@@ -1816,7 +1773,7 @@ user = UserConfig(name="张三", age=25, email="zhang@example.com")
 print(user.to_dict())  # {'name': '张三', 'age': 25, 'email': 'zhang@example.com'}
 ```
 
-### 8.5 描述符的单元测试
+### 7.5 描述符的单元测试
 
 ```python
 import unittest
@@ -1863,9 +1820,9 @@ if __name__ == '__main__':
     unittest.main()
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Django ORM 的描述符应用
+### 8.1 案例一：Django ORM 的描述符应用
 
 Django ORM 使用描述符实现字段访问与外键关联。以 `ForeignKey` 为例：
 
@@ -1932,7 +1889,7 @@ print(order2.user)  # {'id': 2, 'name': 'User_2'}（惰性加载）
 
 **分析**：Django 的 `ForeignKey` 通过描述符实现了：（1）惰性加载——首次访问才查询数据库；（2）缓存——后续访问直接返回缓存；（3）外键 ID 与关联对象的统一管理。
 
-### 9.2 案例二：Pydantic v2 的字段验证
+### 8.2 案例二：Pydantic v2 的字段验证
 
 Pydantic v2 使用描述符实现类型验证与序列化：
 
@@ -2009,7 +1966,7 @@ user = User(name="张三", age="25", email="zhang@example.com")
 print(f"姓名: {user.name}, 年龄: {user.age}")  # 年龄被强制转换为 int
 ```
 
-### 9.3 案例三：缓存属性在生产中的应用
+### 8.3 案例三：缓存属性在生产中的应用
 
 某数据分析平台使用 `CachedProperty` 缓存数据预处理结果，将重复计算时间从 30 秒降至 0.1 秒：
 
@@ -2064,7 +2021,7 @@ print(f"二次访问耗时: {time.time() - start:.1f}s")
 
 **分析**：`CachedProperty` 通过非数据描述符特性，首次计算后存入实例 `__dict__`，后续访问直接读取实例属性，跳过描述符 `__get__`，实现 O(1) 缓存命中。多个 `CachedProperty` 之间通过实例属性传递结果，避免重复计算。
 
-### 9.4 案例四：使用描述符实现领域特定语言（DSL）
+### 8.4 案例四：使用描述符实现领域特定语言（DSL）
 
 某配置系统使用描述符实现声明式 DSL，让用户以类属性方式定义配置：
 
@@ -2160,7 +2117,7 @@ print(f"数据库（覆盖后）: {config.db_url}")  # postgresql://localhost/my
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：编写一个 `EmailField` 描述符，要求：（1）必须为字符串；（2）符合基本邮箱格式（含 `@` 与 `.`）；（3）不满足时抛出 `ValueError`。
 
@@ -2201,7 +2158,7 @@ print(c.d)
 - 实现 `__delete__` 调用 `fdel(obj)`
 - 提供 `getter`/`setter`/`deleter` 方法返回新实例
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：实现一个 `LazyForeignKey` 描述符，模拟 ORM 外键：（1）赋值时存储 ID；（2）访问时若未缓存，从"数据库"加载关联对象；（3）支持 `del` 清除缓存。
 
@@ -2235,7 +2192,7 @@ class Cache:
 - 修复：改用 `weakref.WeakKeyDictionary`
 - 实例销毁时 `WeakKeyDictionary` 自动清理对应条目
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：设计一个支持字段继承的 ORM 基类，要求：（1）子类自动继承父类字段；（2）字段顺序保持定义顺序；（3）支持 `to_dict()`、`from_dict()` 序列化；（4）支持类型注解校验。
 
@@ -2264,7 +2221,7 @@ class Cache:
 - 异常时不缓存（计算抛异常则不写入 `__dict__`）
 - 优化点：`__set_name__` 缓存属性名；`__get__` 使用 `try/except KeyError` 优化
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Guido van Rossum. 2002. Unifying types and classes in Python 2.2. Python Enhancement Proposal 253. Retrieved July 21, 2026, from https://peps.python.org/pep-0253/
 
@@ -2298,37 +2255,37 @@ class Cache:
 
 [16] Mark Lutz. 2013. Learning Python (5th ed.). O'Reilly Media, Sebastopol, CA, USA. Chapter 38: Managed Attributes.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Python Descriptor HowTo Guide: https://docs.python.org/3/howto/descriptor.html
 - The Python Language Reference - Data Model: https://docs.python.org/3/reference/datamodel.html
 - Python Glossary - descriptor: https://docs.python.org/3/glossary.html#term-descriptor
 - `functools.cached_property` 源码: https://github.com/python/cpython/blob/main/Lib/functools.py
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Luciano Ramalho. *Fluent Python* (2nd ed.), Chapter 22: Attribute Descriptors
 - David Beazley & Brian Jones. *Python Cookbook* (3rd ed.), Chapter 8: Classes and Objects
 - Mark Lutz. *Learning Python* (5th ed.), Chapter 38: Managed Attributes
 - Alex Martelli et al. *Python in a Nutshell* (3rd ed.)
 
-### 12.3 框架源码
+### 11.3 框架源码
 
 - Django ModelBase 与 Field 实现: `django/db/models/base.py`, `django/db/models/fields/__init__.py`
 - SQLAlchemy descriptors 模块: `lib/sqlalchemy/orm/descriptors.py`
 - Pydantic v2 字段实现: `pydantic/fields.py`
 - attrs 库的 Attribute 与 define: `attr/_make.py`
 
-### 12.4 前沿论文与讨论
+### 11.4 前沿论文与讨论
 
 - PEP 487: Simpler customisation of class creation — `__set_name__` 的引入动机
 - PEP 520: Preserving class attribute definition order — 对描述符收集的影响
 - PEP 557: Dataclasses — 与描述符的协作模式
 - Python-ideas 邮件列表中关于"descriptor enhancements"的讨论
 
-### 12.5 相关主题
+### 11.5 相关主题
 
 - `python/元类`: 元类与描述符的协作
 - `python/装饰器`: 装饰器与描述符的等价关系（`property` 即装饰器即描述符）

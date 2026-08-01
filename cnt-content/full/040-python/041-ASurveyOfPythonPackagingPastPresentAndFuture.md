@@ -26,103 +26,6 @@ tags:
 - wheel
 - hatch
 - poetry
-learningObjectives:
-- '{''remember'': ''复述 Python 打包标准演进的关键 PEP（517、518、621、660、440）及其核心内容''}'
-- '{''understand'': ''解释 pyproject.toml 三段式结构（build-system、project、tool）的职责划分''}'
-- '{''apply'': ''使用 hatchling/setuptools/Poetry 构建符合 PEP 621 的可发布包''}'
-- '{''apply'': ''使用 build + twine 完成 sdist/wheel 构建与 PyPI 上传''}'
-- '{''analyze'': ''对比 setuptools、hatch、Poetry、flit、pdm 五种构建后端的架构差异与适用场景''}'
-- '{''evaluate'': ''评估语义化版本（SemVer）与 PEP 440 在依赖管理中的兼容性''}'
-- '{''create'': ''设计完整的发布流水线，包含测试、签名、Provenance、多平台 wheel 构建''}'
-exercises:
-- id: pkg-ex-01
-  type: fill-blank
-  cognitiveLevel: remember
-  question: 在 pyproject.toml 中，[build-system] 段的 requires 字段声明构建依赖，build-backend 字段指定构建后端的 Python 模块路径，如 hatchling 项目应填写 ____。
-  blankCount: 1
-  answers:
-  - hatchling.build
-  caseSensitive: false
-  answer: hatchling.build
-  explanation: build-backend 是模块路径，hatchling 项目使用 hatchling.build；setuptools 使用 setuptools.build_meta。
-  difficulty: 2
-  estimatedTime: 2
-- id: pkg-ex-02
-  type: choice
-  cognitiveLevel: understand
-  question: 关于 Python 打包格式的说法，正确的是？
-  options:
-  - sdist 是源码分发，包含 .tar.gz 压缩包，安装时需在目标环境编译
-  - wheel 是预编译二进制分发，安装速度快但无法跨 Python 版本兼容
-  - universal wheel 可同时兼容 Python 2 与 Python 3，文件名以 py2.py3 标识
-  - PyPI 上传的包必须同时包含 sdist 与 wheel，缺一不可
-  correctIndex: 2
-  multiple: false
-  explanation: universal wheel（py2.py3-none-any）可在 Py2/Py3 通用；现代 PyPI 允许只上传 wheel 或 sdist 之一，但最佳实践是同时上传以兼容特殊环境。
-  difficulty: 3
-  estimatedTime: 3
-  answer: C. universal wheel（py2.py3-none-any）可在 Py2/Py3 通用；现代 PyPI 允许只上传 wheel 或 sdist 之一，但最佳实践是同时上传以兼容特殊环境。
-- id: pkg-ex-03
-  type: code-fix
-  cognitiveLevel: apply
-  question: 以下 pyproject.toml 配置存在两处不符合 PEP 621 规范的问题，请修正。
-  buggyCode: '[build-system]
-
-    requires = ["setuptools"]
-
-    build-backend = "setuptools.build_meta"
-
-
-    [project]
-
-    name = "My Package"
-
-    version = "1.0"
-
-    dependencies = "requests, numpy"
-
-    requires-python = "3.8"
-
-    '
-  language: toml
-  fixedCode: '[build-system]
-
-    requires = ["setuptools>=61.0"]
-
-    build-backend = "setuptools.build_meta"
-
-
-    [project]
-
-    name = "my-package"
-
-    version = "1.0.0"
-
-    dependencies = ["requests", "numpy"]
-
-    requires-python = ">=3.8"
-
-    '
-  errorDescription: 1) name 必须为合法包名（小写、连字符分隔，不能含空格）；2) dependencies 必须是字符串数组而非逗号分隔字符串；3) version 应符合 PEP 440；4) requires-python 应使用版本 specifier。
-  answer: name 改为 my-package；dependencies 改为数组
-  difficulty: 3
-  estimatedTime: 5
-- id: pkg-ex-04
-  type: open-ended
-  cognitiveLevel: create
-  question: 你维护一个同时包含 Rust 扩展与 Python 接口的库（如 polars/orjson 类项目），需要支持 Linux/macOS/Windows 三平台与 Python 3.9-3.13 共 5 个版本的矩阵构建。请描述完整的发布流水线，包括 CI/CD 选型、wheel 构建策略、签名与可信发布。
-  keyPoints:
-  - 构建工具选型（maturin vs PyO3 vs cibuildwheel）
-  - CI/CD 平台（GitHub Actions 矩阵、cibuildwheel）
-  - 多平台 wheel 构建（manylinux、musllinux、macosx、win_amd64）
-  - 可信发布（Trusted Publishing，OIDC）
-  - 签名（sigstore、GPG）
-  - PyPI 上传策略（twine upload、API token）
-  - 回滚预案
-  minWords: 300
-  answer: 开放性问题，参考要点：使用 maturin + PyO3 构建 Rust 扩展；GitHub Actions 矩阵构建 15 个 wheel（3 平台 x 5 Python 版本）；cibuildwheel 简化跨平台；启用 PyPI Trusted Publishing（OIDC）替代 API token；用 sigstore 签名；上传时同时发布 sdist + 多平台 wheel。
-  difficulty: 5
-  estimatedTime: 30
 references:
 - type: standard
   authors:
@@ -203,6 +106,7 @@ lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 90
 ---
+
 # Python 打包与发布
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -229,23 +133,11 @@ Python 打包发布（Packaging and Distribution）是将 Python 代码从开发
 - 引用 PEP 时给出编号与官方链接
 - Python 版本参考 3.9/3.10/3.11/3.12/3.13/3.14
 
-## 2. 学习目标
+## 2. 历史动机与演进时间线
 
-本模块采用 Bloom 分类法：
+### 2.1 打包生态的关键节点
 
-1. **记忆（remember）**：复述 Python 打包标准演进的关键 PEP（517、518、621、660、440）及其核心内容。
-2. **理解（understand）**：解释 pyproject.toml 三段式结构（build-system、project、tool）的职责划分。
-3. **应用（apply）**：使用 hatchling/setuptools/Poetry 构建符合 PEP 621 的可发布包。
-4. **应用（apply）**：使用 build + twine 完成 sdist/wheel 构建与 PyPI 上传。
-5. **分析（analyze）**：对比 setuptools、hatch、Poetry、flit、pdm 五种构建后端的架构差异与适用场景。
-6. **评价（evaluate）**：评估语义化版本（SemVer）与 PEP 440 在依赖管理中的兼容性。
-7. **创造（create）**：设计完整的发布流水线，包含测试、签名、Provenance、多平台 wheel 构建。
-
-## 3. 历史动机与演进时间线
-
-### 3.1 打包生态的关键节点
-
-#### 3.1.1 distutils 时代（1998-2008）
+#### 2.1.1 distutils 时代（1998-2008）
 
 1998 年，Python 1.6 引入 distutils 模块，由 Greg Ward 编写，提供基本的 `setup.py` 接口。distutils 是 Python 标准库的一部分，但功能有限：
 
@@ -259,7 +151,7 @@ from distutils.core import setup
 setup(name="mypackage", version="1.0")
 ```
 
-#### 3.1.2 setuptools 与 easy_install（2004-2013）
+#### 2.1.2 setuptools 与 easy_install（2004-2013）
 
 2004 年 Phillip Eby 发布 setuptools，作为 distutils 的扩展，引入：
 
@@ -270,7 +162,7 @@ setup(name="mypackage", version="1.0")
 
 setuptools 解决了 distutils 的诸多痛点，但 setup.py 同时承担配置与脚本双重职责，导致难以静态分析。
 
-#### 3.1.3 pip 与 wheel 时代（2008-2016）
+#### 2.1.3 pip 与 wheel 时代（2008-2016）
 
 2008 年 Ian Bicking 创建 pip，替代 easy_install。pip 的关键改进：
 
@@ -284,7 +176,7 @@ setuptools 解决了 distutils 的诸多痛点，但 setup.py 同时承担配置
 - 文件名编码了平台、Python 版本、ABI 信息
 - 标准 `.whl` 扩展名，本质是 ZIP 压缩包
 
-#### 3.1.4 pyproject.toml 与 PEP 517/518（2016-2018）
+#### 2.1.4 pyproject.toml 与 PEP 517/518（2016-2018）
 
 PEP 518（2016）首次引入 `pyproject.toml` 配置文件，核心动机：解决"构建 Python 包本身需要哪些依赖"的鸡生蛋问题。在此之前，构建工具的依赖只能写在 setup.py 中，但运行 setup.py 又需要这些依赖。
 
@@ -295,7 +187,7 @@ PEP 517（2017）进一步定义"构建后端接口"，让构建工具（setupto
 
 这一架构使 Python 打包生态进入"前端+后端"分层时代。
 
-#### 3.1.5 PEP 621 与现代打包（2020-至今）
+#### 2.1.5 PEP 621 与现代打包（2020-至今）
 
 PEP 621（2020）正式标准化 `[project]` 段，将项目元数据（name、version、dependencies 等）从 setup.py 迁移到 pyproject.toml，实现完全声明式配置。同期涌现的构建工具：
 
@@ -304,7 +196,7 @@ PEP 621（2020）正式标准化 `[project]` 段，将项目元数据（name、v
 - hatch（2021）：现代化全功能工具
 - pdm（2020）：符合 PEP 582 标准的依赖管理
 
-### 3.2 Guido van Rossum 与 PEP 治理
+### 2.2 Guido van Rossum 与 PEP 治理
 
 Python 增强提案（PEP）是 Python 演进的标准化机制，由 Guido van Rossum 于 2000 年正式确立。PEP 流程类似学术会议同行评审：
 
@@ -315,7 +207,7 @@ Python 增强提案（PEP）是 Python 演进的标准化机制，由 Guido van 
 
 打包相关 PEP 由 PyPA（Python Packaging Authority）维护，PyPA 是一个独立的组织，负责 pip、setuptools、build、twine 等核心工具。
 
-### 3.3 关键 PEP 速查表
+### 2.3 关键 PEP 速查表
 
 | PEP | 标题 | 年份 | 核心内容 |
 |-----|------|------|---------|
@@ -330,9 +222,9 @@ Python 增强提案（PEP）是 Python 演进的标准化机制，由 Guido van 
 | 691 | JSON-Based API | 2022 | PyPI JSON API |
 | 714 | Duplicate Dependencies | 2023 | 移除 dynamic 字段约束 |
 
-## 4. 形式化定义与数学基础
+## 3. 形式化定义与数学基础
 
-### 4.1 包元数据的形式化
+### 3.1 包元数据的形式化
 
 定义 Python 包为一个五元组：
 
@@ -348,7 +240,7 @@ $$
 - $M$ 为元数据集合（metadata，符合 PEP 566）
 - $A$ 为归档集合（archives：sdist、wheels）
 
-### 4.2 PEP 440 版本号形式化
+### 3.2 PEP 440 版本号形式化
 
 PEP 440 定义版本号语法：
 
@@ -370,7 +262,7 @@ $$
 1.0.dev1 < 1.0a1 < 1.0b1 < 1.0rc1 < 1.0 < 1.0.post1 < 1!1.0
 $$
 
-### 4.3 PEP 508 依赖规范形式化
+### 3.3 PEP 508 依赖规范形式化
 
 PEP 508 依赖声明语法：
 
@@ -384,7 +276,7 @@ $$
 - `numpy[all]>=1.20`：extras 扩展
 - `uvicorn[standard]>=0.29; python_version >= "3.11"`：环境标记
 
-### 4.4 wheel 文件名的形式化
+### 3.4 wheel 文件名的形式化
 
 PEP 427 定义的 wheel 文件名格式：
 
@@ -418,7 +310,7 @@ $$
 | win_amd64 | Windows 64 位 |
 | musllinux_1_1_x86_64 | Alpine Linux |
 
-### 4.5 哈希与完整性校验
+### 3.5 哈希与完整性校验
 
 PyPI 下载包时通过哈希校验完整性。SHA-256 是默认算法：
 
@@ -434,9 +326,9 @@ requests==2.31.0 \
     --hash=sha256:942c5a82...
 ```
 
-## 5. 理论推导与算法原理
+## 4. 理论推导与算法原理
 
-### 5.1 依赖解析算法
+### 4.1 依赖解析算法
 
 pip 自 23.2 起默认使用 backtracking 解析器（曾用 legacy resolver）。其核心思想是回溯搜索：
 
@@ -449,7 +341,7 @@ pip 自 23.2 起默认使用 backtracking 解析器（曾用 legacy resolver）�
 
 Poetry 使用更先进的 PubGrub 算法（受 Dart 启发），通过冲突驱动学习加速搜索。
 
-### 5.2 wheel 与 sdist 的对比
+### 4.2 wheel 与 sdist 的对比
 
 | 维度 | sdist | wheel |
 |------|-------|-------|
@@ -460,7 +352,7 @@ Poetry 使用更先进的 PubGrub 算法（受 Dart 启发），通过冲突驱�
 | 必要性 | 必备（备份与特殊环境） | 推荐加速 |
 | 构建依赖 | 需在目标环境 | 仅在构建环境 |
 
-### 5.3 entry_points 的实现原理
+### 4.3 entry_points 的实现原理
 
 `entry_points` 是 setuptools 引入的脚本生成机制。pyproject.toml 配置：
 
@@ -480,7 +372,7 @@ sys.exit(main())
 
 这样 `mycli` 命令即可在终端调用。
 
-### 5.4 可编辑安装（PEP 660）
+### 4.4 可编辑安装（PEP 660）
 
 可编辑安装（`pip install -e .`）让源码修改即时生效，无需重新安装。
 
@@ -492,9 +384,9 @@ pip install -e .  # 可编辑安装
 pip install .     # 普通安装
 ```
 
-## 6. 核心配置与生产级代码示例
+## 5. 核心配置与生产级代码示例
 
-### 6.1 完整的 pyproject.toml 模板
+### 5.1 完整的 pyproject.toml 模板
 
 ```toml
 # ============================================================
@@ -597,7 +489,7 @@ testpaths = ["tests"]
 addopts = "-ra -q --cov=my_awesome_lib"
 ```
 
-### 6.2 项目目录结构
+### 5.2 项目目录结构
 
 ```mermaid
 flowchart TD
@@ -640,7 +532,7 @@ flowchart TD
     T21 --> T23
 ```
 
-### 6.3 构建与发布命令
+### 5.3 构建与发布命令
 
 ```bash
 # 安装构建与发布工具
@@ -665,7 +557,7 @@ python -m twine upload dist/*
 python -m pip install --index-url https://test.pypi.org/simple/ my-awesome-lib
 ```
 
-### 6.4 使用 Poetry 构建
+### 5.4 使用 Poetry 构建
 
 Poetry 是一站式开发工具，覆盖依赖管理、构建、发布全流程：
 
@@ -715,7 +607,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 ```
 
-### 6.5 使用 hatch 构建
+### 5.5 使用 hatch 构建
 
 hatch 是 PyPA 推荐的现代化工具：
 
@@ -735,7 +627,7 @@ hatch build
 hatch publish
 ```
 
-### 6.6 包内 Python 代码示例
+### 5.6 包内 Python 代码示例
 
 ```python
 # src/my_awesome_lib/__init__.py
@@ -824,7 +716,7 @@ if __name__ == "__main__":
     sys.exit(main())
 ```
 
-### 6.7 测试代码示例
+### 5.7 测试代码示例
 
 ```python
 # tests/test_core.py
@@ -867,9 +759,9 @@ def test_calculate_mean(values, expected_mean):
     assert calculate(values)["mean"] == expected_mean
 ```
 
-## 7. 对比分析
+## 6. 对比分析
 
-### 7.1 构建后端横向对比
+### 6.1 构建后端横向对比
 
 | 工具 | 首发年份 | 后端模块 | 适用场景 | 优势 | 局限 |
 |------|---------|---------|---------|------|------|
@@ -879,7 +771,7 @@ def test_calculate_mean(values, expected_mean):
 | flit | 2017 | flit_core.buildapi | 纯 Python 简单包 | 极简 | 不支持 C 扩展 |
 | pdm | 2020 | pdm.backend | PEP 582 标准 | 不需虚拟环境 | 社区小 |
 
-### 7.2 前端工具对比
+### 6.2 前端工具对比
 
 | 前端 | 主要用途 | 命令 |
 |------|---------|------|
@@ -888,9 +780,9 @@ def test_calculate_mean(values, expected_mean):
 | twine | 上传到 PyPI | `twine upload` |
 | uv | 下一代快速工具 | `uv pip install` |
 
-### 7.3 与其他语言打包生态对比
+### 6.3 与其他语言打包生态对比
 
-#### 7.3.1 Python vs Ruby（RubyGems）
+#### 6.3.1 Python vs Ruby（RubyGems）
 
 RubyGems 是 Ruby 的标准打包系统：
 
@@ -904,7 +796,7 @@ RubyGems 是 Ruby 的标准打包系统：
 - RubyGems 集中式，配置更简单
 - Python wheel 支持二进制分发，gem 几乎纯源码
 
-#### 7.3.2 Python vs JavaScript（npm）
+#### 6.3.2 Python vs JavaScript（npm）
 
 npm 是 JavaScript 生态标准：
 
@@ -918,7 +810,7 @@ npm 是 JavaScript 生态标准：
 - Python 历史包袱重，但 pyproject.toml + PEP 621 已接近 npm 体验
 - npm 的 lock 文件成熟（package-lock.json），Python 的 uv.lock/poetry.lock 仍在演进
 
-#### 7.3.3 Python vs Go（modules）
+#### 6.3.3 Python vs Go（modules）
 
 Go modules 是 Go 1.11 起的标准：
 
@@ -932,7 +824,7 @@ Go modules 是 Go 1.11 起的标准：
 - Python 依赖 PyPI，但保证可发现性
 - Go 的二进制分发天然跨平台，Python wheel 需要按平台构建
 
-#### 7.3.4 Python vs Julia
+#### 6.3.4 Python vs Julia
 
 Julia 的 Pkg 系统：
 
@@ -945,7 +837,7 @@ Julia 的 Pkg 系统：
 - Julia 集成度高，但生态规模小
 - Python 工具丰富，社区成熟
 
-#### 7.3.5 Python vs Rust（cargo）
+#### 6.3.5 Python vs Rust（cargo）
 
 Rust 的 cargo 被认为是包管理的标杆：
 
@@ -959,9 +851,9 @@ Rust 的 cargo 被认为是包管理的标杆：
 - Python 历史包袱重，但通过 PEP 持续改进
 - Rust 一开始就考虑二进制分发与跨平台编译
 
-## 8. 常见陷阱与修复
+## 7. 常见陷阱与修复
 
-### 8.1 陷阱1：setup.py 与 pyproject.toml 混用
+### 7.1 陷阱1：setup.py 与 pyproject.toml 混用
 
 ```python
 # 错误：同时存在 setup.py 与 pyproject.toml [project]
@@ -973,7 +865,7 @@ setup(name="my-package", version="1.0")  # 与 pyproject.toml 冲突
 # 若必须保留 setup.py（如动态生成字段），使用 dynamic 字段声明
 ```
 
-### 8.2 陷阱2：版本号不符合 PEP 440
+### 7.2 陷阱2：版本号不符合 PEP 440
 
 ```python
 # 错误：使用非标准版本号
@@ -987,7 +879,7 @@ version = "1.0.0.post1"
 version = "1.0.0.dev1"
 ```
 
-### 8.3 陷阱3：忘记在 README 中声明
+### 7.3 陷阱3：忘记在 README 中声明
 
 ```toml
 # 错误：readme 字段未声明，PyPI 页面无描述
@@ -1002,7 +894,7 @@ version = "1.0.0"
 readme = "README.md"
 ```
 
-### 8.4 陷阱4：缺少长描述（long_description）
+### 7.4 陷阱4：缺少长描述（long_description）
 
 ```toml
 # 即使声明了 readme，也需检查 long_description 是否生效
@@ -1013,7 +905,7 @@ readme = "README.md"
 # 若提示 warning: long_description missing，检查 readme 路径
 ```
 
-### 8.5 陷阱5：依赖版本约束过严
+### 7.5 陷阱5：依赖版本约束过严
 
 ```toml
 # 错误：使用 == 锁定具体版本，破坏下游兼容性
@@ -1029,7 +921,7 @@ dependencies = [
 ]
 ```
 
-### 8.6 陷阱6：构建包含敏感文件
+### 7.6 陷阱6：构建包含敏感文件
 
 ```toml
 # 错误：构建产物包含 .env、.git 等敏感文件
@@ -1049,7 +941,7 @@ exclude = [
 packages = ["src/my_package"]
 ```
 
-### 8.7 陷阱7：未设置 python_requires
+### 7.7 陷阱7：未设置 python_requires
 
 ```toml
 # 错误：不限制 Python 版本，老版本安装报错
@@ -1065,7 +957,7 @@ version = "1.0.0"
 requires-python = ">=3.9"
 ```
 
-### 8.8 陷阱8：使用过时的 python setup.py 命令
+### 7.8 陷阱8：使用过时的 python setup.py 命令
 
 ```bash
 # 错误：使用过时命令
@@ -1078,7 +970,7 @@ python -m build
 pip install .
 ```
 
-### 8.9 陷阱9：开发依赖混入运行时依赖
+### 7.9 陷阱9：开发依赖混入运行时依赖
 
 ```toml
 # 错误：pytest 进入主 dependencies，污染生产环境
@@ -1093,7 +985,7 @@ dependencies = ["requests"]
 dev = ["pytest", "ruff", "mypy"]
 ```
 
-### 8.10 陷阱10：上传前未测试 TestPyPI
+### 7.10 陷阱10：上传前未测试 TestPyPI
 
 ```bash
 # 错误：直接上传 PyPI，发现元数据错误已晚
@@ -1107,9 +999,9 @@ pip install --index-url https://test.pypi.org/simple/ my-package
 twine upload dist/*
 ```
 
-## 9. 工程实践
+## 8. 工程实践
 
-### 9.1 虚拟环境与依赖锁定
+### 8.1 虚拟环境与依赖锁定
 
 ```bash
 # 使用 uv（推荐，2024 起 Python 打包新标准）
@@ -1123,7 +1015,7 @@ uv pip compile pyproject.toml -o requirements.lock
 uv pip sync requirements.lock
 ```
 
-### 9.2 CI/CD 发布流水线
+### 8.2 CI/CD 发布流水线
 
 `.github/workflows/release.yml`：
 
@@ -1168,7 +1060,7 @@ jobs:
           generate_release_notes: true
 ```
 
-### 9.3 多平台 wheel 构建（cibuildwheel）
+### 8.3 多平台 wheel 构建（cibuildwheel）
 
 对于含 C 扩展的项目，使用 cibuildwheel 自动构建多平台 wheel：
 
@@ -1201,7 +1093,7 @@ jobs:
           path: wheelhouse/
 ```
 
-### 9.4 可信发布（Trusted Publishing）
+### 8.4 可信发布（Trusted Publishing）
 
 PyPI Trusted Publishing 是 2023 年引入的基于 OIDC 的认证机制，相比传统 API token 更安全：
 
@@ -1216,7 +1108,7 @@ PyPI Trusted Publishing 是 2023 年引入的基于 OIDC 的认证机制，相�
 - 自动过期
 - 与 GitHub Actions 深度集成
 
-### 9.5 签名与 provenance
+### 8.5 签名与 provenance
 
 ```bash
 # 使用 sigstore 签名（推荐，2023 起）
@@ -1230,7 +1122,7 @@ sigstore verify --certificate-identity ci@github.com/fandex/my-package \
 # 在项目设置中启用 "Add provenance to published files"
 ```
 
-### 9.6 版本管理策略
+### 8.6 版本管理策略
 
 遵循语义化版本（Semantic Versioning）：
 
@@ -1252,7 +1144,7 @@ bump-my-version bump minor
 bump-my-version bump major
 ```
 
-### 9.7 变更日志
+### 8.7 变更日志
 
 使用 Keep a Changelog 格式：
 
@@ -1279,7 +1171,7 @@ bump-my-version bump major
 - 升级 requests 至 2.31.0 修复 CVE-2023-32681
 ```
 
-### 9.8 包的自动化测试
+### 8.8 包的自动化测试
 
 ```python
 # tests/test_packaging.py
@@ -1316,9 +1208,9 @@ def test_cli_entry_point():
     assert "Hello, World" in result.stdout
 ```
 
-## 10. 案例研究
+## 9. 案例研究
 
-### 10.1 案例1：Requests 库的发布策略
+### 9.1 案例1：Requests 库的发布策略
 
 Requests 由 Kenneth Reitz 创建，是 Python 最流行的 HTTP 库。其发布特点：
 
@@ -1333,7 +1225,7 @@ Requests 由 Kenneth Reitz 创建，是 Python 最流行的 HTTP 库。其发布
 - 元数据质量直接影响 PyPI 页面体验
 - 版本号严格遵守 PEP 440
 
-### 10.2 案例2：NumPy 的多平台 wheel 构建
+### 9.2 案例2：NumPy 的多平台 wheel 构建
 
 NumPy 是科学计算基石，wheel 构建极复杂：
 
@@ -1348,7 +1240,7 @@ NumPy 是科学计算基石，wheel 构建极复杂：
 - cibuildwheel 大幅降低跨平台构建门槛
 - 构建产物需单独存储（artifact）
 
-### 10.3 案例3：FastAPI 的现代发布
+### 9.3 案例3：FastAPI 的现代发布
 
 FastAPI 由 Sebastián Ramírez 维护，发布实践堪称标杆：
 
@@ -1364,7 +1256,7 @@ FastAPI 由 Sebastián Ramírez 维护，发布实践堪称标杆：
 - 文档即代码（mkdocs）大幅提升用户体验
 - Trusted Publishing 提升供应链安全
 
-### 10.4 案例4：Black 的极端兼容性
+### 9.4 案例4：Black 的极端兼容性
 
 Black 是 Python 代码格式化工具，其 wheel 构建特点：
 
@@ -1378,7 +1270,7 @@ Black 是 Python 代码格式化工具，其 wheel 构建特点：
 - 预编译扩展使安装复杂度上升
 - wheel 文件大小是关注的工程指标
 
-### 10.5 案例5： cryptography 库的 Rust 迁移
+### 9.5 案例5： cryptography 库的 Rust 迁移
 
 cryptography 库从 C 扩展迁移到 Rust：
 
@@ -1434,7 +1326,7 @@ build；twine
 
 解析讲解：D。classifiers 是元数据分类标签，PyPI 用于检索分类，但不强制要求列出所有支持的 Python 版本（虽为最佳实践）。
 
-### 11.3 代码修正题
+### 10.3 代码修正题
 
 **习题 11.6**（应用层）：以下 pyproject.toml 配置无法通过 `python -m build`，请找出三处问题并修正。
 
@@ -1526,7 +1418,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 ```
 
-### 11.4 开放性问题
+### 10.4 开放性问题
 
 **习题 11.8**（评价层）：评估以下三种依赖版本约束策略的优劣：
 
@@ -1569,7 +1461,7 @@ jobs:
 - 后者生成的 wheel 可缓存、可分发、可重放
 - 现代 PEP 517 工具链推荐用 `build` 隔离构建
 
-## 12. 参考文献
+## 11. 参考文献
 
 参考文献遵循 ACM Reference Format：
 
@@ -1593,14 +1485,14 @@ jobs:
 
 [10] Pustilnik, S. and Stufft, D. 2024. _PyPI trusted publishing: OIDC-based authentication for package publishers_. Python Packaging User Guide. https://docs.pypi.org/trusted-publishers/
 
-## 13. 延伸阅读
+## 12. 延伸阅读
 
-### 13.1 书籍
+### 12.1 书籍
 
 - Pine, D. 2022. _Python Packaging User Guide_. PyPA. https://packaging.python.org/ — 官方打包指南。
 - Bicking, I. 2020. _The History of Python Packaging_. Blog series. — 历史脉络深入分析。
 
-### 13.2 关键 PEP 完整列表
+### 12.2 关键 PEP 完整列表
 
 - PEP 440：版本号规范
 - PEP 503：PyPI Simple API
@@ -1613,7 +1505,7 @@ jobs:
 - PEP 691：JSON API
 - PEP 714：依赖去重
 
-### 13.3 开源项目
+### 12.3 开源项目
 
 - pip: https://github.com/pypa/pip
 - build: https://github.com/pypa/build
@@ -1626,13 +1518,13 @@ jobs:
 - maturin: https://github.com/PyO3/maturin
 - cibuildwheel: https://github.com/pypa/cibuildwheel
 
-### 13.4 在线课程
+### 12.4 在线课程
 
 - PyPA Tutorials: https://packaging.python.org/en/latest/tutorials/
 - hatch Documentation: https://hatch.pypa.io/
 - Poetry Documentation: https://python-poetry.org/docs/
 
-### 13.5 标准与规范
+### 12.5 标准与规范
 
 - PEP 8：Python 代码风格
 - PEP 440：版本号规范
@@ -1640,7 +1532,7 @@ jobs:
 - PEP 621：项目元数据
 - SemVer：语义化版本
 
-## 14. 术语表
+## 13. 术语表
 
 | 术语 | 英文 | 简要说明 |
 |------|------|---------|
@@ -1660,9 +1552,9 @@ jobs:
 | extras | Extras | 可选依赖分组 |
 | 环境标记 | Environment Marker | 条件依赖的环境判断 |
 
-## 15. 版本演进与兼容性
+## 14. 版本演进与兼容性
 
-### 15.1 Python 版本支持矩阵
+### 14.1 Python 版本支持矩阵
 
 | Python 版本 | 发布年份 | 状态 | 现代打包支持 |
 |------------|---------|------|------------|
@@ -1675,7 +1567,7 @@ jobs:
 | 3.13 | 2024 | 主流 | 完全支持（推荐） |
 | 3.14 | 2025 | 新版本 | 推荐使用 |
 
-### 15.2 主要工具版本
+### 14.2 主要工具版本
 
 - pip 24.0+：默认使用 backtracking resolver
 - setuptools 69.0+：原生 PEP 621 支持
@@ -1684,7 +1576,7 @@ jobs:
 - hatchling 1.21+：现代构建后端
 - Poetry 1.8+：完整 PEP 621 支持
 
-### 15.3 工具选型决策树
+### 14.3 工具选型决策树
 
 ```mermaid
 flowchart TD
@@ -1701,7 +1593,7 @@ flowchart TD
     T4 --> T6
 ```
 
-## 16. 总结
+## 15. 总结
 
 本模块系统讲解了 Python 打包发布的完整生态，涵盖以下要点：
 

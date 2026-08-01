@@ -30,14 +30,6 @@ related:
   - algorithm/平衡树与高级树
 prerequisites:
   - algorithm/算法分析基础与学习路线
-learningObjectives:
-  - 记忆数组作为连续内存线性表的形式化定义 $\text{address}(i) = \text{base} + i \times \text{size}$，复述静态数组/动态数组在随机访问、头部插入、尾部插入、任意位置插入删除上的时间复杂度差异
-  - 理解 Von Neumann 1945 EDVAC 报告《First Draft of a Report on the EDVAC》确立的存储程序架构、Iverson 1962 APL 语言首创数组运算符、Stepanov-Lee 1994 STL 设计 `std::vector` 的历史脉络，说明连续存储为何成为现代计算机体系结构的基石
-  - 应用顺序数组、动态数组（含倍增扩容与缩容）、二维行优先数组、稀疏数组三元组编写可运行的 Python/C++/Java 代码，解决双指针去重、滑动窗口最短子数组、前缀和区域和、差分数组区间加法等问题
-  - 分析动态数组倍增扩容的均摊时间复杂度 $O(1)$ 论证，掌握聚合分析、势能分析、核算法三种均摊分析技术，证明"扩容代价 $O(n)$ 均摊到 $n$ 次操作上为 $O(1)$"的核心不变式
-  - 评估数组相对于链表、动态数组、平衡树在"随机访问密集"问题维度上的优劣，识别 CPU 缓存行预取、SIMD 向量化、内存对齐中的选型动机
-  - 对比静态数组、动态数组、循环缓冲区、稀疏数组、交错数组在内存开销、缓存友好性、扩容代价、实现复杂度维度的差异
-  - 创造性设计基于数组的开源项目解决方案，如环形缓冲区日志系统、位图索引、Bitmap 布隆过滤器、Redis ziplist 压缩列表、TensorFlow Tensor 张量存储
 references:
   - type: technical-report
     authors:
@@ -154,6 +146,7 @@ etymology:
     english: cache line
     origin: 'cache 源自法语 cacher（隐藏），指 CPU 与主存之间隐藏的高速缓冲存储器。现代 CPU 以 64 字节为单位的 cache line（缓存行）从内存预取数据，因此数组连续存储天然具备良好的空间局部性（spatial locality），相邻元素会被一起加载到缓存中。Denning 1968 年在 *Communications of the ACM* 提出"working set"模型，奠定程序局部性原理'
 ---
+
 
 ## 1. 概述与学习目标
 

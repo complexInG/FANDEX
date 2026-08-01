@@ -17,6 +17,7 @@ prerequisites:
   - harmonyos/概述与环境搭建
 ---
 
+
 # ArkTS 语言特性：HarmonyOS 声明式应用语言的工程哲学与形式化语义
 
 > ArkTS 是华为为 HarmonyOS 自研的静态强类型应用开发语言，是 TypeScript（TS）的超集，同时为声明式 UI 与状态驱动响应式系统引入了一组严格的静态约束。本章按照 MIT 6.821（Programming Languages）、CMU 15-411（Compiler Design）、Stanford CS143（Compilers）等课程标准组织，系统讲解 ArkTS 的语言设计哲学、与 TypeScript/JavaScript 的边界、`@Component`/`@Entry`/`@Builder` 等装饰器的形式化语义、ArkUI 声明式 DSL 的代数数据类型本质、`@State`/`@Prop`/`@Link`/`@Provide`/`@Consume` 等响应式状态装饰器的可观测性原理、AOT 编译流水线、跨端（手机/平板/穿戴/车机/IoT）代码复用、ArkTS 与 TS 的禁用特性清单及工程原因，并对照 Swift/SwiftUI、Kotlin/Jetpack Compose、Dart/Flutter、Rust/Slint 等业界方案。
@@ -25,57 +26,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章按照 Bloom 教育目标分类法（Bloom's Taxonomy）的六个层级组织学习目标。读者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述 ArkTS 与 TypeScript 的关系——ArkTS 是 TS 的超集，但禁用了动态类型特性（`any`/`unknown` 在运行时为 `Object`、禁用 `eval`/`Function` 构造器、禁用对象字面量索引签名等）。
-- **R2**：列出 ArkTS 的核心装饰器清单：`@Entry`、`@Component`、`@Builder`、`@BuilderParam`、`@Extend`、`@Styles`、`@State`、`@Prop`、`@Link`、`@Provide`、`@Consume`、`@ObjectLink`、`@Watch`、`@Observed`、`@LocalStorageLink`、`@StorageLink`、`@Consume`、`@Provider`/`@Consumer`（NEXT 新增）。
-- **R3**：复述 ArkTS 源代码到 ArkByteCode（abc 文件）的编译流水线：`ArkTS Source → TypeScript AST → TypeScript IR → ArkByteCode IR → abc Bytecode`。
-- **R4**：复述 ArkTS 中的两种作用域语义：组件作用域（Component Scope）与渲染作用域（Render Scope）。
-- **R5**：复述 ArkTS AOT（Ahead-Of-Time）与 JIT（Just-In-Time）的取舍——HarmonyOS NEXT 默认全 AOT，废弃了 Ark 解释器。
-- **R6**：复述 ArkTS 禁止的特性清单：`delete` 操作符、`Object.assign` 改写原型链、`prototype` 直接访问、`arguments.callee`、`with` 语句、`for-in` 遍历原型链。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 ArkTS 为何选择"静态强类型 + AOT"而非 TS 的"动态弱类型 + JIT"路径，从启动时延、内存占用、跨端一致性、安全沙箱四个维度论证。
-- **U2**：阐明 ArkUI 声明式 DSL 与 React JSX、Vue Template 的语法差异，并解释 ArkUI 为何不使用 JSX（避免引入 JSX 转译开销与类型擦除）。
-- **U3**：解释 ArkTS 的"可观测对象（Observed Object）"语义：当 `@State` 修饰的变量被赋值时，框架如何最小化地触发重渲染。
-- **U4**：解释 ArkTS 中的"单一数据源（Single Source of Truth）"原则，与 Redux/Flux 单向数据流的异同。
-- **U5**：阐明 ArkTS 为何禁止对象字面量扩展为任意类型，即 `{ [key: string]: T }`，论证这与 JSON 反序列化安全的关系。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 `@Component` 装饰器封装一个 `Counter` 计数器组件，使用 `@State` 维护内部状态，并提供 `@Builder` 静态构造函数。
-- **A2**：使用 `@Prop` 实现父→子单向数据流，使用 `@Link` 实现父子双向数据流，并使用 `@Provide`/`@Consume` 实现跨级共享。
-- **A3**：使用 ArkTS 的 `class` 与 `interface` 设计一个领域模型，遵循 Liskov 替换原则与接口隔离原则。
-- **A4**：使用 ArkTS 的 `enum` 与 `union type` 实现受限状态机，用于订单状态流转。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 ArkTS 选择"装饰器而非宏"作为元编程机制的工程原因：装饰器运行时可校验、对 IDE 友好、避免引入宏展开的复杂性。
-- **An2**：分析 ArkTS 的 `@Builder` 函数与传统函数的差异：`@Builder` 函数的执行不产生返回值，而是产生一个"轻量 UI 描述符（UI Descriptor）"，由框架统一调度。
-- **An3**：分析 ArkTS 的"按值传递"与"按引用传递"在 `@Prop` 与 `@Link` 上的语义差异，论证为何 `@Prop` 触发深拷贝、`@Link` 触发双向绑定。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价 ArkTS 禁用 `any` 对开发效率与类型安全的权衡，对照 TypeScript 在 `strict` 模式下的策略。
-- **E2**：评价 ArkTS 的 AOT 全量编译在启动时延与安装包体积上的取舍，对照 Flutter 的 AOT 与 React Native 的 Hermes 引擎。
-- **E3**：评价 ArkTS NEXT 引入的 `@Provider`/`@Consumer` 取代 `@Provide`/`@Consume` 在类型安全上的改进。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个基于 ArkTS 的状态管理库，支持时间旅行（Time-Travel）调试、状态切片（State Slicing）、中间件（Middleware）机制。
-- **C2**：设计一个 ArkTS 跨端架构，使代码在手机、穿戴、车机上复用 80% 以上，并保留各端的 UX 差异。
-- **C3**：设计一个 ArkTS 静态分析工具，自动检测未声明依赖的 `@State`、循环引用的 `@Provide`/`@Consume`。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 移动端应用语言的演进（2008-2024）
+### 1.1 移动端应用语言的演进（2008-2024）
 
 移动应用开发语言经历了从"原生 + 解释"到"跨端 + 编译"的范式转变：
 
@@ -99,7 +52,7 @@ ArkTS 的设计目标有三个核心动机：
 2. **启动时延**：HarmonyOS 的"超级终端"理念要求应用在设备间流转时具备亚秒级启动能力，这迫使框架必须放弃 JIT。
 3. **类型安全**：HarmonyOS NEXT 引入了"应用沙箱 + 权限最小化"的安全模型，需要语言层面禁止 `eval`、`Function` 构造器等可动态执行字符串的特性。
 
-### 2.2 ArkTS 1.0（2019）：从 TypeScript 子集出发
+### 1.2 ArkTS 1.0（2019）：从 TypeScript 子集出发
 
 HarmonyOS 1.0 仅运行于智慧屏，ArkTS 1.0 的设计较为保守：
 
@@ -108,7 +61,7 @@ HarmonyOS 1.0 仅运行于智慧屏，ArkTS 1.0 的设计较为保守：
 - **UI**：ArkUI 1.0 仅支持基础的声明式 API，组件数量有限。
 - **生态**：通过 `@ohos` 命名空间提供系统能力，未对齐 Web 标准。
 
-### 2.3 ArkTS 2.0（2021-2022）：方舟编译器与 AOT
+### 1.3 ArkTS 2.0（2021-2022）：方舟编译器与 AOT
 
 HarmonyOS 2.0 引入了方舟编译器（ArkCompiler），ArkTS 进入 2.0 时代：
 
@@ -117,7 +70,7 @@ HarmonyOS 2.0 引入了方舟编译器（ArkCompiler），ArkTS 进入 2.0 时�
 - **状态管理**：引入 `@State`、`@Prop`、`@Link` 三件套，建立响应式系统。
 - **跨端调用**：引入 ` distributedObject`、`AbilityCrossDevice` 等分布式 API。
 
-### 2.4 ArkTS 3.0 与 HarmonyOS NEXT（2024）：纯鸿蒙化
+### 1.4 ArkTS 3.0 与 HarmonyOS NEXT（2024）：纯鸿蒙化
 
 HarmonyOS NEXT 是 HarmonyOS 的"纯鸿蒙"版本，移除了 AOSP 兼容层，ArkTS 进入 3.0：
 
@@ -126,7 +79,7 @@ HarmonyOS NEXT 是 HarmonyOS 的"纯鸿蒙"版本，移除了 AOSP 兼容层，A
 - **API 12+**：引入 `@Sendable` 装饰器支持跨线程共享对象，引入 `@Trace` 装饰器支持细粒度属性追踪。
 - **跨端协同**：引入 ` distributedScene`、`ServiceExtension` 等跨端 API。
 
-### 2.5 设计哲学：ArkTS 的"四项原则"
+### 1.5 设计哲学：ArkTS 的"四项原则"
 
 ArkTS 的设计遵循华为公开的"四项原则"：
 
@@ -137,9 +90,9 @@ ArkTS 的设计遵循华为公开的"四项原则"：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ArkTS 语言的形式化模型
+### 2.1 ArkTS 语言的形式化模型
 
 ArkTS 的类型系统可以用 Hindley-Milner 类型系统的扩展来形式化。定义：
 
@@ -149,7 +102,7 @@ $$
 
 其中 $\Gamma$ 是类型环境（Type Environment），$e$ 是表达式（Expression），$\tau$ 是类型（Type）。ArkTS 在 HM 系统基础上引入了以下扩展：
 
-#### 3.1.1 装饰器类型规则
+#### 2.1.1 装饰器类型规则
 
 设装饰器 $D$ 修饰声明 $d$，则其类型规则形式化为：
 
@@ -163,7 +116,7 @@ $$
 \text{constraint}(\text{State}, \tau) \equiv \tau \in \{\text{primitive}, \text{class}, \text{array}, \text{Map}, \text{Set}\} \land \tau \neq \text{undefined}
 $$
 
-#### 3.1.2 声明式 UI 的代数语义
+#### 2.1.2 声明式 UI 的代数语义
 
 ArkUI 的 UI 描述可以表示为一个代数数据类型（ADT）：
 
@@ -179,7 +132,7 @@ $$
 
 ArkUI 的 diff 算法采用"同层 key-based"策略，复杂度为 $O(n)$，其中 $n$ 是同层节点数。
 
-### 3.2 状态驱动响应式系统
+### 2.2 状态驱动响应式系统
 
 ArkTS 的响应式系统遵循"信号（Signal）"模型。定义：
 
@@ -195,7 +148,7 @@ $$
 
 每个订阅函数 $f$ 是一个渲染闭包（Render Closure），框架重新执行 $f$ 并产生新的 UI 描述符，再通过 diff 算法计算 Patch。
 
-### 3.3 AOT 编译流水线
+### 2.3 AOT 编译流水线
 
 ArkTS 到 ArkByteCode 的编译流水线形式化为：
 
@@ -210,7 +163,7 @@ ArkIR 是一个静态单赋值（SSA）形式的中间表示，支持：
 - 内联展开（Inlining）
 - 逃逸分析（Escape Analysis）
 
-### 3.4 类型安全边界
+### 2.4 类型安全边界
 
 ArkTS 的类型安全可以用以下命题描述：
 
@@ -225,9 +178,9 @@ ArkTS 通过以下机制保证 Soundness：
 
 ---
 
-## 4. 理论推导与复杂度分析
+## 3. 理论推导与复杂度分析
 
-### 4.1 响应式更新的复杂度
+### 3.1 响应式更新的复杂度
 
 设组件树 $T$ 有 $n$ 个节点，每个节点的状态变化触发 $k$ 个订阅闭包。最坏情况下，单次状态变化的更新复杂度为：
 
@@ -243,7 +196,7 @@ $$
 - **批处理（Batching）**：同一帧内多次状态变化合并为一次更新；
 - **惰性求值（Lazy Evaluation）**：未变化的子树不重新渲染。
 
-### 4.2 AOT 优化的可达性分析
+### 3.2 AOT 优化的可达性分析
 
 ArkTS 的 AOT 通过逃逸分析确定对象是否逃逸到堆（Heap）：
 
@@ -256,7 +209,7 @@ $$
 - `@State` 修饰的对象默认不逃逸（除非被 `@Link` 传递）；
 - `@Link` 修饰的对象视为逃逸（双向绑定需要跨组件引用）。
 
-### 4.3 跨端代码复用率的形式化
+### 3.3 跨端代码复用率的形式化
 
 设应用代码库 $C$，跨端目标集合 $D = \{d_1, \dots, d_k\}$。代码复用率定义为：
 
@@ -266,7 +219,7 @@ $$
 
 其中 $C_{d_i}$ 是设备 $d_i$ 上的代码子集。ArkTS 通过 `Breakpoint` 系统与响应式布局，可以在手机/平板/穿戴间实现 70-85% 的复用率。
 
-### 4.4 ArkTS 禁用特性的安全性论证
+### 3.4 ArkTS 禁用特性的安全性论证
 
 考虑以下攻击模型：恶意应用尝试通过 `eval` 执行任意字符串代码。
 
@@ -276,9 +229,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：Hello World 与组件结构
+### 4.1 基础：Hello World 与组件结构
 
 ```typescript
 // 文件：HelloWorld.ets
@@ -319,7 +272,7 @@ struct HelloWorld {
 }
 ```
 
-### 5.2 进阶：状态管理三件套（@State / @Prop / @Link）
+### 4.2 进阶：状态管理三件套（@State / @Prop / @Link）
 
 ```typescript
 // 文件：StateManagement.ets
@@ -406,7 +359,7 @@ struct ChildB {
 }
 ```
 
-### 5.3 高级：@Provide / @Consume 跨级共享
+### 4.3 高级：@Provide / @Consume 跨级共享
 
 ```typescript
 // 文件：ProvideConsume.ets
@@ -477,7 +430,7 @@ interface UserInfo {
 }
 ```
 
-### 5.4 高级：@Builder 与 @BuilderParam 实现插槽
+### 4.4 高级：@Builder 与 @BuilderParam 实现插槽
 
 ```typescript
 // 文件：BuilderDemo.ets
@@ -563,7 +516,7 @@ struct CardDemo {
 }
 ```
 
-### 5.5 高级：@Observed 与 @ObjectLink 嵌套对象响应式
+### 4.5 高级：@Observed 与 @ObjectLink 嵌套对象响应式
 
 ```typescript
 // 文件：ObservedDemo.ets
@@ -672,7 +625,7 @@ struct TodoList {
 }
 ```
 
-### 5.6 类与接口的进阶用法
+### 4.6 类与接口的进阶用法
 
 ```typescript
 // 文件：ClassInterface.ets
@@ -810,7 +763,7 @@ struct ClassDemo {
 }
 ```
 
-### 5.7 跨端响应式布局
+### 4.7 跨端响应式布局
 
 ```typescript
 // 文件：ResponsiveLayout.ets
@@ -891,7 +844,7 @@ struct ProductCard {
 }
 ```
 
-### 5.8 异步与 Promise
+### 4.8 异步与 Promise
 
 ```typescript
 // 文件：AsyncDemo.ets
@@ -1027,9 +980,9 @@ struct AsyncPage {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 ArkTS 与主流应用开发语言对比
+### 5.1 ArkTS 与主流应用开发语言对比
 
 | 维度 | ArkTS | Swift+SwiftUI | Kotlin+Compose | Dart+Flutter | TypeScript+React |
 | --- | --- | --- | --- | --- | --- |
@@ -1044,7 +997,7 @@ struct AsyncPage {
 | 生态成熟度 | 成长中 | 成熟 | 成熟 | 成熟 | 成熟 |
 | 类型安全 | 严格（无 any） | 严格（无 any） | 严格（无 any） | 严格（无 any） | 灵活（可选 any） |
 
-### 6.2 响应式模型对比
+### 5.2 响应式模型对比
 
 | 框架 | 模型 | 粒度 | 性能 | 学习曲线 |
 | --- | --- | --- | --- | --- |
@@ -1054,7 +1007,7 @@ struct AsyncPage {
 | Flutter | setState + InheritedWidget | 组件级 | 中等 | 平缓 |
 | React | Virtual DOM + diff | 组件级 | 中等 | 平缓 |
 
-### 6.3 AOT 与 JIT 的取舍
+### 5.3 AOT 与 JIT 的取舍
 
 | 指标 | AOT（ArkTS / Swift / Flutter） | JIT（React Native） | 解释器（早期 ArkTS） |
 | --- | --- | --- | --- |
@@ -1067,7 +1020,7 @@ struct AsyncPage {
 
 ArkTS 选择 AOT 的关键原因：HarmonyOS 的"超级终端"要求应用在设备间流转时具备亚秒级启动能力，JIT 无法满足。
 
-### 6.4 装饰器与宏的对比
+### 5.4 装饰器与宏的对比
 
 | 维度 | 装饰器（ArkTS） | 宏（Rust） | 注解处理器（Java/Kotlin） |
 | --- | --- | --- | --- |
@@ -1081,9 +1034,9 @@ ArkTS 选择装饰器而非宏，主要考虑是 IDE 支持（华为 DevEco Stud
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：在 @State 中直接修改对象属性
+### 6.1 陷阱：在 @State 中直接修改对象属性
 
 **错误代码**：
 
@@ -1121,7 +1074,7 @@ this.user.age = 29
 this.user = { ...this.user, age: 29 }
 ```
 
-### 7.2 陷阱：@Prop 与 @Link 混用导致数据不一致
+### 6.2 陷阱：@Prop 与 @Link 混用导致数据不一致
 
 **错误代码**：
 
@@ -1140,7 +1093,7 @@ ChildB({ count: $count })
 
 **正确做法**：同一份数据要么全部用 `@Prop`（单向），要么全部用 `@Link`（双向），避免混用。
 
-### 7.3 陷阱：在 build 方法中执行副作用
+### 6.3 陷阱：在 build 方法中执行副作用
 
 **错误代码**：
 
@@ -1173,7 +1126,7 @@ build() {
 }
 ```
 
-### 7.4 陷阱：使用 any 类型绕过类型检查
+### 6.4 陷阱：使用 any 类型绕过类型检查
 
 **错误代码**：
 
@@ -1203,7 +1156,7 @@ function safeParse(text: string): unknown {
 }
 ```
 
-### 7.5 陷阱：ForEach 的 keyGenerator 不稳定
+### 6.5 陷阱：ForEach 的 keyGenerator 不稳定
 
 **错误代码**：
 
@@ -1229,7 +1182,7 @@ ForEach(
 )
 ```
 
-### 7.6 陷阱：在 @Builder 中使用闭包捕获过期状态
+### 6.6 陷阱：在 @Builder 中使用闭包捕获过期状态
 
 **错误代码**：
 
@@ -1262,13 +1215,13 @@ this.counterBuilder(this.count)
 // 方案 2：使用 @BuilderParam 让子组件调用父组件的 @Builder
 ```
 
-### 7.7 反模式：过度使用 @Provide / @Consume
+### 6.7 反模式：过度使用 @Provide / @Consume
 
 **问题**：将所有状态都放在顶层组件 `@Provide`，导致组件树重渲染范围过大。
 
 **正确做法**：仅将真正需要跨级共享的状态（如主题、用户信息、应用配置）使用 `@Provide`/`@Consume`，局部状态用 `@State` + `@Prop`/`@Link`。
 
-### 7.8 反模式：在 @Observed 类中添加复杂业务逻辑
+### 6.8 反模式：在 @Observed 类中添加复杂业务逻辑
 
 **问题**：
 
@@ -1287,7 +1240,7 @@ class Order {
 
 **正确做法**：使用 Repository 或 Service 层处理业务逻辑，`@Observed` 类只承载数据。
 
-### 7.9 生产事故案例：内存泄漏
+### 6.9 生产事故案例：内存泄漏
 
 **事故背景**：某新闻应用在长时间运行后内存持续增长，最终 OOM 崩溃。
 
@@ -1326,7 +1279,7 @@ struct NewsPage {
 2. 引入静态分析工具检测未配对的 `on`/`off`；
 3. 在 CI 中加入内存泄漏检测（DevEco Studio 的 Profiler）。
 
-### 7.10 生产事故案例：状态同步丢失
+### 6.10 生产事故案例：状态同步丢失
 
 **事故背景**：某购物车应用在多设备同步时出现状态不一致。
 
@@ -1340,9 +1293,9 @@ struct NewsPage {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构规范
+### 7.1 项目结构规范
 
 ```mermaid
 flowchart TD
@@ -1377,7 +1330,7 @@ flowchart TD
     T22 --> T23
 ```
 
-### 8.2 类型定义规范
+### 7.2 类型定义规范
 
 ```typescript
 // 文件：commons/models/user.ts
@@ -1429,7 +1382,7 @@ export class UserService {
 }
 ```
 
-### 8.3 网络层封装
+### 7.3 网络层封装
 
 ```typescript
 // 文件：commons/network/http.ts
@@ -1529,9 +1482,9 @@ export class HttpClient {
 }
 ```
 
-### 8.4 性能优化技巧
+### 7.4 性能优化技巧
 
-#### 8.4.1 懒加载列表
+#### 7.4.1 懒加载列表
 
 ```typescript
 // 使用 LazyForEach 而非 ForEach 处理大数据列表
@@ -1544,7 +1497,7 @@ LazyForEach(
 
 `LazyForEach` 仅渲染可视区域内的项，配合 `IDataSource` 实现按需加载。
 
-#### 8.4.2 减少不必要的状态更新
+#### 7.4.2 减少不必要的状态更新
 
 ```typescript
 // 错误：高频更新导致重渲染
@@ -1573,7 +1526,7 @@ struct Clock {
 }
 ```
 
-#### 8.4.3 使用 @Watch 实现细粒度监听
+#### 7.4.3 使用 @Watch 实现细粒度监听
 
 ```typescript
 @State count: number = 0
@@ -1587,7 +1540,7 @@ onMultiplierChange() {
 }
 ```
 
-### 8.5 测试策略
+### 7.5 测试策略
 
 ```typescript
 // 文件：test/UserService.test.ets
@@ -1619,7 +1572,7 @@ describe('UserService', () => {
 })
 ```
 
-### 8.6 国际化与资源管理
+### 7.6 国际化与资源管理
 
 ```typescript
 // 使用 $r 引用资源，避免硬编码
@@ -1642,7 +1595,7 @@ Text($r('app.string.hello'))
 }
 ```
 
-### 8.7 日志规范
+### 7.7 日志规范
 
 ```typescript
 // 文件：commons/utils/logger.ts
@@ -1694,9 +1647,9 @@ Logger.info(TAG, `User ${user.id} logged in`)
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：电商商品列表的响应式优化
+### 8.1 案例一：电商商品列表的响应式优化
 
 **背景**：某电商应用的商品列表在低端设备上滚动卡顿，FPS 仅 30。
 
@@ -1793,7 +1746,7 @@ struct ProductCard {
 
 **优化效果**：FPS 从 30 提升至 60，内存占用降低 60%。
 
-### 9.2 案例二：跨设备状态同步
+### 8.2 案例二：跨设备状态同步
 
 **背景**：某笔记应用需要支持手机端编辑后平板端实时同步。
 
@@ -1836,7 +1789,7 @@ struct NoteEditor {
 }
 ```
 
-### 9.3 案例三：复杂表单的状态管理
+### 8.3 案例三：复杂表单的状态管理
 
 **背景**：某保险投保表单有 30+ 字段，分 5 个步骤，需要在步骤间共享数据。
 
@@ -1899,7 +1852,7 @@ struct Step1Form {
 }
 ```
 
-### 9.4 案例四：性能优化的真实数据
+### 8.4 案例四：性能优化的真实数据
 
 **项目**：某外卖应用商品列表页优化前后对比。
 
@@ -1922,7 +1875,7 @@ struct Step1Form {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题 1**：简述 ArkTS 与 TypeScript 的核心差异，至少列出 3 项。
 
@@ -1955,7 +1908,7 @@ add() {
 - 但若 `items` 通过 `@Prop` 传递给子组件，子组件不会更新（深拷贝语义）；
 - 修复：使用整体替换 `this.items = [...this.items, 'd']`。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题 4**：设计一个支持撤销/重做的状态管理方案。
 
@@ -1994,7 +1947,7 @@ struct Page {
 4. 安全：AOT 禁止运行时生成代码，降低注入攻击风险；
 5. 代价：包体积增大，调试需要 sourcemap。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题 7**：设计一个 ArkTS 跨端架构，使代码在手机、平板、穿戴、车机上复用 80% 以上。
 
@@ -2078,9 +2031,9 @@ class TimeTravelStore<T> {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 [1] Huawei Device Co., Ltd. 2024. ArkTS Application Development Guide. (Version 5.0). HarmonyOS Official Documentation. Retrieved July 21, 2026 from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/arkts-getting-started-V5. DOI: 10.1234/harmonyos.arkts.2024.001.
 
@@ -2088,7 +2041,7 @@ class TimeTravelStore<T> {
 
 [3] Huawei Device Co., Ltd. 2024. ArkCompiler Design and Implementation. (Technical White Paper). Huawei Research. Retrieved July 21, 2026 from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/arkcompiler-V5. DOI: 10.1234/harmonyos.arkcompiler.2024.003.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [4] Gilbert, E., Lynch, N., and Shvachko, K. 2019. Distributed state management for cross-device applications. In Proceedings of the 28th ACM Symposium on Operating Systems Principles (SOSP '19). ACM, New York, NY, USA, 245–261. DOI: 10.1145/3341301.3359642.
 
@@ -2098,7 +2051,7 @@ class TimeTravelStore<T> {
 
 [7] Myers, B. A. 2018. Past, present, and future of declarative UI frameworks. ACM Computing Surveys 51, 6, Article 121 (February 2019), 33 pages. DOI: 10.1145/3297665.
 
-### 11.3 经典教材
+### 10.3 经典教材
 
 [8] Pierce, B. C. 2002. Types and Programming Languages. MIT Press, Cambridge, MA, USA. ISBN: 978-0-262-16209-8.
 
@@ -2106,7 +2059,7 @@ class TimeTravelStore<T> {
 
 [10] Abadi, M. and Cardelli, L. 1996. A Theory of Objects. Springer-Verlag, Berlin, Germany. DOI: 10.1007/978-1-4612-0941-2.
 
-### 11.4 工程实践参考
+### 10.4 工程实践参考
 
 [11] Odersky, M., Spoon, L., and Venners, B. 2019. Programming in Scala (5th ed.). Artima Press, Walnut Creek, CA, USA. ISBN: 978-0-9815316-4-3. (作为 SwiftUI/Compose 对比参考)
 
@@ -2116,9 +2069,9 @@ class TimeTravelStore<T> {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档与资源
+### 11.1 官方文档与资源
 
 - **HarmonyOS Developer 官网**：https://developer.harmonyos.com/
   - 包含最新 API 文档、教程、示例代码
@@ -2129,7 +2082,7 @@ class TimeTravelStore<T> {
 - **HarmonyOS Sample 项目**：https://gitee.com/harmonyos_samples
   - 官方示例代码库
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - **《TypeScript Programming》** Boris Cherny 著
   - 理解 ArkTS 的 TS 基础
@@ -2140,7 +2093,7 @@ class TimeTravelStore<T> {
 - **《Structure and Interpretation of Computer Programs》** Abelson, Sussman 著
   - 理解声明式编程范式
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - **"A Survey on Declarative UI Frameworks"** ACM Computing Surveys, 2024
   - 综述主流声明式 UI 框架的设计与实现
@@ -2153,7 +2106,7 @@ class TimeTravelStore<T> {
 - **"Cross-Platform Mobile Development: A Comparative Study"** IEEE Transactions on Software Engineering, 2024
   - 跨端移动开发的对比研究
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **HarmonyOS Developers Gitee**：https://gitee.com/harmonyos
   - 官方代码仓库与开源项目
@@ -2164,7 +2117,7 @@ class TimeTravelStore<T> {
 - **Stack Overflow HarmonyOS**：https://stackoverflow.com/questions/tagged/harmonyos
   - 国际社区问答
 
-### 12.5 相关课程
+### 11.5 相关课程
 
 - **MIT 6.821 Programming Languages**：https://ocw.mit.edu/courses/6-821-programming-languages-fall-2002/
 - **CMU 15-411 Compiler Design**：https://www.cs.cmu.edu/~janh/courses/411/

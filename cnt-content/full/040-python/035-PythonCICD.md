@@ -19,51 +19,10 @@ prerequisites:
   - python/Python与虚拟环境
 ---
 
-## 1. 学习目标
 
-本节依据 Bloom 分类法，从认知层级由低到高排列学习目标。读者完成本节后应能够：
+## 1. 历史动机与背景
 
-### 1.1 记忆层（Remembering）
-
-- 复述 CI（Continuous Integration）与 CD（Continuous Delivery / Continuous Deployment）的定义与差异。
-- 列举至少 5 种主流 CI/CD 工具（GitHub Actions、GitLab CI、Jenkins、CircleCI、Drone、Buildkite、Azure Pipelines、Argo CD）。
-- 识别 Python 项目构建链中的关键工具：`pip`、`pip-tools`、`Poetry`、`uv`、`hatch`、`build`、`twine`、`auditwheel`、`maturin`。
-
-### 1.2 理解层（Understanding）
-
-- 解释流水线（Pipeline）阶段（Stage）与作业（Job）的逻辑关系。
-- 描述 Python 项目中"依赖锁定（lock）"的必要性及其与可复现构建的关系。
-- 区分"持续交付"与"持续部署"在自动化程度上的差异。
-
-### 1.3 应用层（Applying）
-
-- 使用 GitHub Actions 编写一个完整的 Python 项目流水线：lint → type-check → test → build → publish。
-- 使用 Poetry 或 uv 维护 `pyproject.toml` 与 `poetry.lock` / `uv.lock`。
-- 配置矩阵构建（matrix strategy）跨 Python 3.10/3.11/3.12/3.13 多版本验证。
-
-### 1.4 分析层（Analyzing）
-
-- 分析流水线耗时瓶颈，定位慢测试、慢构建、慢依赖解析等问题。
-- 对比"单仓库大流水线"与"多仓库微服务流水线"的工程权衡。
-- 解构一个真实事故案例，识别 CI/CD 配置缺陷的根因。
-
-### 1.5 评价层（Evaluating）
-
-- 评价缓存策略（pip cache、 Poetry cache、Docker layer cache）的有效性。
-- 评判"扁平化流水线"与"扇出-扇入（fan-out / fan-in）流水线"在特定场景下的优劣。
-- 评估发布策略（蓝绿、金丝雀、影子流量）对线上稳定性的影响。
-
-### 1.6 创造层（Creating）
-
-- 设计一个支持多环境（dev/staging/prod）的 GitOps 发布系统。
-- 构建一个自托管的 Python 包索引（PyPI 私服）并集成到 CI 流水线。
-- 实现一个渐进式金丝雀发布控制器，基于指标自动决策晋升或回滚。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 软件交付的史前时代
+### 1.1 软件交付的史前时代
 
 在 1990 年代，软件交付是一个高度手工化、间歇性、低频的过程。开发者完成编码后，由"发布工程师"在指定时间点手工打包、传输、部署。这种模式存在三个根本性痛点：
 
@@ -71,7 +30,7 @@ prerequisites:
 2. **环境漂移（Environment Drift）**：开发机、测试机、生产机的环境差异导致"在我机器上能跑"的现象频发。
 3. **回滚困难**：缺乏自动化部署意味着回滚同样需要手工操作，事故恢复时间长。
 
-### 2.2 持续集成的诞生
+### 1.2 持续集成的诞生
 
 Martin Fowler 与 Matthew Foemmel 在 2000 年的论文《Continuous Integration》中正式提出 CI 概念。其核心思想可追溯至 Kent Beck 在极限编程（Extreme Programming）中的实践。CI 的核心主张是：
 
@@ -79,7 +38,7 @@ Martin Fowler 与 Matthew Foemmel 在 2000 年的论文《Continuous Integration
 
 这一思想在 2000 年代由 CruiseControl、Hudson（后 forks 为 Jenkins）等工具落地，成为现代软件工程的基石。
 
-### 2.3 持续交付与持续部署
+### 1.3 持续交付与持续部署
 
 Jez Humble 与 David Farley 在 2010 年出版的《Continuous Delivery》一书系统化了 CD 概念，区分了两个层次：
 
@@ -91,7 +50,7 @@ Jez Humble 与 David Farley 在 2010 年出版的《Continuous Delivery》一书
 - 持续交付：$P(C) \subseteq R_{\text{ready}}(C)$，但 $R(C) \subseteq P(C)$ 由人决策。
 - 持续部署：$R(C) = P(C)$。
 
-### 2.4 Python 生态的特殊挑战
+### 1.4 Python 生态的特殊挑战
 
 Python 项目在 CI/CD 中面临若干独特挑战：
 
@@ -103,15 +62,15 @@ Python 项目在 CI/CD 中面临若干独特挑战：
 
 这些挑战催生了 `cibuildwheel`、`uv`、`maturin`、`hatch` 等新一代工具，本节将深入讨论。
 
-### 2.5 GitOps 与声明式发布
+### 1.5 GitOps 与声明式发布
 
 2017 年 Weaveworks 提出 GitOps 概念，将"期望状态"以声明式方式存储于 Git，由控制器（如 Argo CD、Flux）持续协调集群实际状态与期望状态。这一范式深刻影响了 Python 微服务的部署模式，是当前云原生 Python 项目的事实标准。
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 流水线的形式化模型
+### 2.1 流水线的形式化模型
 
 一个 CI/CD 流水线可形式化为一个有向无环图（DAG）：
 
@@ -134,7 +93,7 @@ $$
 
 最小化 $T(\mathcal{P})$ 等价于调度问题，在一般情况下是 NP-hard。
 
-### 3.2 缓存命中的概率模型
+### 2.2 缓存命中的概率模型
 
 设缓存键为 $k$，缓存容量为 $C$，作业序列为 $J_1, J_2, \ldots, J_n$。缓存命中率 $H$ 可建模为：
 
@@ -144,7 +103,7 @@ $$
 
 在 LRU 替换策略下，当缓存工作集 $W \leq C$ 时 $H \to 1$；当 $W > C$ 时 $H$ 急剧下降。Python CI 中，缓存键通常由 `pyproject.toml`、`poetry.lock`、Python 版本、操作系统 hash 组合而成。
 
-### 3.3 测试覆盖率的形式化定义
+### 2.3 测试覆盖率的形式化定义
 
 设 $M$ 为代码库中可执行语句集合，$T$ 为测试用例集合，$\text{cov}(t) \subseteq M$ 为测试 $t$ 执行到的语句集合。则：
 
@@ -154,7 +113,7 @@ $$
 
 工业实践通常要求 $\text{Cov}_{\text{branch}} \geq 0.80$ 作为流水线门禁。
 
-### 3.4 依赖解析的复杂度
+### 2.4 依赖解析的复杂度
 
 Python 依赖解析问题可形式化为：给定包需求集合 $\mathcal{R} = \{(p_i, c_i)\}$（包名 $p_i$ 与版本约束 $c_i$），求解满足所有约束的版本分配 $\sigma: \mathcal{P} \to \mathcal{V}$。
 
@@ -162,9 +121,9 @@ Python 依赖解析问题可形式化为：给定包需求集合 $\mathcal{R} = 
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 流水线并行度上界
+### 3.1 流水线并行度上界
 
 设流水线 DAG 的最大宽度为 $W$（即任意拓扑层级上的最大节点数），可用并行执行器数为 $P$，则并行加速比上界为：
 
@@ -176,7 +135,7 @@ $$
 
 **推论**：GitHub Actions 单 workflow 默认并发 180 个 job，但 Python 项目实际可并行度受限于测试可分片性。`pytest-xdist` 通过 `--numprocesss=N` 实现进程内并行，受 GIL 影响较小。
 
-### 4.2 缓存有效性证明
+### 3.2 缓存有效性证明
 
 考虑缓存键 $k$ 与文件 $f$ 的关系。当且仅当 $k$ 是 $f$ 内容的双射函数时，缓存严格正确：
 
@@ -188,7 +147,7 @@ $$
 
 **反例**：若缓存键仅使用 `requirements.txt` 而忽略 Python 版本，则不同 Python 版本可能安装不同的 wheel，缓存命中会导致环境不一致。
 
-### 4.3 测试用例隔离性
+### 3.3 测试用例隔离性
 
 定义测试用例 $t_1, t_2$ 的隔离性为：
 
@@ -198,7 +157,7 @@ $$
 
 若 $\text{Iso} < 1$，则存在测试顺序依赖。pytest 默认按文件定义顺序执行，使用 `pytest-randomly` 插件可随机化顺序以暴露隔离性问题。
 
-### 4.4 不可变工件与可复现构建
+### 3.4 不可变工件与可复现构建
 
 可复现构建（Reproducible Build）要求：相同输入产生字节级相同的输出工件。形式化地，构建函数 $B$ 应满足：
 
@@ -217,9 +176,9 @@ Python 项目实现可复现构建的难点：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 最小化 GitHub Actions 流水线
+### 4.1 最小化 GitHub Actions 流水线
 
 ```yaml
 # .github/workflows/ci.yml
@@ -334,7 +293,7 @@ jobs:
           password: ${{ secrets.PYPI_API_TOKEN }}
 ```
 
-### 5.2 pyproject.toml 现代化配置
+### 4.2 pyproject.toml 现代化配置
 
 ```toml
 # pyproject.toml
@@ -470,7 +429,7 @@ exclude_lines = [
 ]
 ```
 
-### 5.3 跨平台 wheel 构建（cibuildwheel）
+### 4.3 跨平台 wheel 构建（cibuildwheel）
 
 ```python
 # scripts/build_wheels.py
@@ -591,7 +550,7 @@ jobs:
           password: ${{ secrets.PYPI_API_TOKEN }}
 ```
 
-### 5.4 Docker 多阶段构建
+### 4.4 Docker 多阶段构建
 
 ```dockerfile
 # Dockerfile
@@ -659,7 +618,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 CMD ["python", "-m", "fandex_demo"]
 ```
 
-### 5.5 Pytest 并行测试与分片
+### 4.5 Pytest 并行测试与分片
 
 ```python
 # tests/conftest.py
@@ -757,7 +716,7 @@ def test_fibonacci_property(n: int) -> None:
     assert c == a + b
 ```
 
-### 5.6 GitOps 发布工作流
+### 4.6 GitOps 发布工作流
 
 ```yaml
 # .github/workflows/deploy.yml
@@ -847,7 +806,7 @@ spec:
             periodSeconds: 5
 ```
 
-### 5.7 渐进式金丝雀发布控制器
+### 4.7 渐进式金丝雀发布控制器
 
 ```python
 # scripts/canary_controller.py
@@ -1019,7 +978,7 @@ if __name__ == "__main__":
     print(f"金丝雀结果: {result}")
 ```
 
-### 5.8 预提交钩子配置
+### 4.8 预提交钩子配置
 
 ```yaml
 # .pre-commit-config.yaml
@@ -1067,7 +1026,7 @@ repos:
         args: ['--baseline', '.secrets.baseline']
 ```
 
-### 5.9 Makefile 流水线本地化
+### 4.9 Makefile 流水线本地化
 
 ```makefile
 # Makefile
@@ -1126,9 +1085,9 @@ help:  ## 显示帮助
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 CI/CD 平台对比
+### 5.1 CI/CD 平台对比
 
 | 平台 | 部署模式 | YAML 风格 | 并发上限 | 缓存机制 | 自托管 Runner | Python 生态支持 | 价格模型 |
 |------|----------|-----------|----------|----------|----------------|------------------|----------|
@@ -1143,7 +1102,7 @@ help:  ## 显示帮助
 
 **讨论**：GitHub Actions 因其与 GitHub 深度集成、YAML 简洁、社区 Action 海量，已成为开源 Python 项目的事实标准。GitLab CI 在企业内部 DevOps 平台占优，自托管能力更强。Jenkins 因其成熟度与插件生态，仍在传统企业占据重要地位，但 Jenkinsfile 的 Groovy DSL 学习曲线较陡。Buildkite 的"控制面 SaaS + Agent 自托管"模式在数据敏感型企业（如金融）中受欢迎。
 
-### 6.2 Python 依赖管理工具对比
+### 5.2 Python 依赖管理工具对比
 
 | 工具 | 锁文件格式 | 解析器 | 速度 | PEP 621 支持 | 多版本 Python | UV 替代 | 维护活跃度 |
 |------|------------|--------|------|--------------|----------------|---------|------------|
@@ -1157,7 +1116,7 @@ help:  ## 显示帮助
 
 **讨论**：`uv` 由 Astral（ruff 作者）开发，使用 Rust 实现依赖解析与安装，比 pip 快 10-100 倍，且兼容 `pip` 接口，是 2024 年以来 Python 生态的颠覆性工具。`Poetry` 因其成熟度与友好 CLI 仍是默认选择。`pip-tools` 在已有 `requirements.txt` 的项目中仍是平滑升级路径。`hatch` 由 PyPA 维护，是 PEP 621 的参考实现，更适合作为构建后端而非依赖管理器。
 
-### 6.3 测试框架对比
+### 5.3 测试框架对比
 
 | 框架 | 测试发现 | 参数化 | fixture | 并行 | 插件生态 | 异步支持 | 学习曲线 |
 |------|----------|----------|---------|------|----------|----------|----------|
@@ -1169,7 +1128,7 @@ help:  ## 显示帮助
 
 **讨论**：pytest 凭借 fixture、参数化、丰富插件生态，是 Python 测试的事实标准。Hypothesis 不是替代品而是补充，它提供基于属性的测试（property-based testing），能在 pytest 框架内运行，是发现边界 bug 的利器。
 
-### 6.4 发布策略对比
+### 5.4 发布策略对比
 
 | 策略 | 停机时间 | 回滚难度 | 资源开销 | 复杂度 | 适用场景 |
 |------|----------|----------|----------|--------|----------|
@@ -1184,9 +1143,9 @@ help:  ## 显示帮助
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：缓存键不完整
+### 6.1 反模式：缓存键不完整
 
 **事故案例**：某团队在 GitHub Actions 中使用 `hashFiles('requirements.txt')` 作为 pip 缓存键，但 `requirements.txt` 仅包含直接依赖。当间接依赖（如 `pydantic` 依赖 `pydantic-core`）的版本漂移时，缓存命中导致不同 Python 版本安装了不兼容的 wheel，测试在 3.13 上偶发失败。
 
@@ -1203,7 +1162,7 @@ help:  ## 显示帮助
 
 注意键中包含 `runner.os` 与 `matrix.python-version`，确保不同环境不共享缓存。
 
-### 7.2 反模式：在 CI 中使用 `latest` 标签
+### 6.2 反模式：在 CI 中使用 `latest` 标签
 
 **事故案例**：某项目 Dockerfile 使用 `FROM python:latest`，某天 Python 3.13 发布后 CI 突然失败，原因是项目依赖 `numpy<2.0` 而 3.13 上 numpy 2.0 才有 wheel。
 
@@ -1214,7 +1173,7 @@ help:  ## 显示帮助
 FROM python:3.12.4-slim AS builder
 ```
 
-### 7.3 反模式：测试覆盖率门禁过严
+### 6.3 反模式：测试覆盖率门禁过严
 
 **事故案例**：某团队设置 `--cov-fail-under=95` 作为流水线门禁，开发者为了达到覆盖率编写大量无意义的 getter/setter 测试，反而掩盖了真正重要的边界测试。
 
@@ -1222,7 +1181,7 @@ FROM python:3.12.4-slim AS builder
 
 **修复方案**：设置 `--cov-fail-under=80` 作为下限，结合变更覆盖率（diff coverage）作为 PR 评审依据，强制新增代码 100% 覆盖。
 
-### 7.4 反模式：在 `__init__.py` 中执行网络请求
+### 6.4 反模式：在 `__init__.py` 中执行网络请求
 
 **事故案例**：某包在 `__init__.py` 中调用 `requests.get(...)` 检查新版本，导致 CI 在无网络环境的隔离网段中 `import` 失败。
 
@@ -1240,7 +1199,7 @@ __version__ = requests.get("https://api.github.com/repos/org/repo/releases/lates
 __version__ = "1.0.0"  # 静态字符串，由 CI 在构建时替换
 ```
 
-### 7.5 反模式：CI 中使用 root 用户构建 Docker 镜像
+### 6.5 反模式：CI 中使用 root 用户构建 Docker 镜像
 
 **事故案例**：某团队 Docker 镜像默认以 root 运行，攻击者通过 SSRF 漏洞获得容器内 root 权限，进而通过容器逃逸攻击宿主机。
 
@@ -1248,7 +1207,7 @@ __version__ = "1.0.0"  # 静态字符串，由 CI 在构建时替换
 
 **修复方案**：在 Dockerfile 中显式创建非 root 用户（见 5.4 节）。
 
-### 7.6 反模式：长流水线阻塞 PR 反馈
+### 6.6 反模式：长流水线阻塞 PR 反馈
 
 **事故案例**：某团队流水线包含 12 个串行 job，总耗时 45 分钟，开发者频繁切换上下文导致生产力下降。
 
@@ -1259,7 +1218,7 @@ __version__ = "1.0.0"  # 静态字符串，由 CI 在构建时替换
 - 使用 `pytest-xdist` 并行测试。
 - 引入 test split：将慢测试与快测试分离，PR 流水线只跑快测试，nightly 跑全部。
 
-### 7.7 反模式：秘密泄露到日志
+### 6.7 反模式：秘密泄露到日志
 
 **事故案例**：某开发者使用 `echo $PYPI_TOKEN` 调试 CI，token 被记录到 GitHub Actions 日志，攻击者爬取后上传恶意包。
 
@@ -1276,7 +1235,7 @@ __version__ = "1.0.0"  # 静态字符串，由 CI 在构建时替换
     twine upload -u __token__ -p "$PYPI_TOKEN" dist/*
 ```
 
-### 7.8 反模式：未使用 `actions/checkout` 的 `fetch-depth`
+### 6.8 反模式：未使用 `actions/checkout` 的 `fetch-depth`
 
 **事故案例**：某项目使用 `actions/checkout@v4` 默认浅克隆（`fetch-depth=1`），导致依赖 git history 的工具（如 `setuptools_scm`、`hatch-vcs`）无法计算版本号，构建出 `0.0.0` 版本的 wheel。
 
@@ -1289,7 +1248,7 @@ __version__ = "1.0.0"  # 静态字符串，由 CI 在构建时替换
     fetch-depth: 0  # 完整克隆，确保 versioning 工具可用
 ```
 
-### 7.9 反模式：忽视 Windows 与 Linux 行尾差异
+### 6.9 反模式：忽视 Windows 与 Linux 行尾差异
 
 **事故案例**：某团队主力开发在 Windows，CI 在 Linux。pre-commit 钩子 `end-of-file-fixer` 在本地（CRLF）通过，但在 CI（LF）失败，因为 git 配置 `core.autocrlf=true` 自动转换行尾导致 diff。
 
@@ -1303,7 +1262,7 @@ __version__ = "1.0.0"  # 静态字符串，由 CI 在构建时替换
 *.png binary
 ```
 
-### 7.10 反模式：发布流程依赖单点人工
+### 6.10 反模式：发布流程依赖单点人工
 
 **事故案例**：某项目发布流程需要工程师手工执行 17 步操作，某次操作员跳过了"更新 CHANGELOG"步骤，导致下游用户无法追踪变更。
 
@@ -1313,9 +1272,9 @@ __version__ = "1.0.0"  # 静态字符串，由 CI 在构建时替换
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 流水线分层架构
+### 7.1 流水线分层架构
 
 推荐采用"快速反馈层 + 完整验证层 + 发布层"三层架构：
 
@@ -1370,7 +1329,7 @@ jobs:
     steps: [/* build, publish, deploy */]
 ```
 
-### 8.2 缓存策略最佳实践
+### 7.2 缓存策略最佳实践
 
 | 缓存对象 | 缓存键 | 路径 | 失效策略 |
 |----------|--------|------|----------|
@@ -1382,7 +1341,7 @@ jobs:
 | Docker layer | Dockerfile + 依赖清单 hash | Docker layer | 文件变更 |
 | pre-commit | pre-commit 配置 + hook 版本 | `~/.cache/pre-commit` | 配置变更 |
 
-### 8.3 矩阵构建策略
+### 7.3 矩阵构建策略
 
 ```yaml
 strategy:
@@ -1409,7 +1368,7 @@ strategy:
         python: '3.12'
 ```
 
-### 8.4 流水线耗时优化清单
+### 7.4 流水线耗时优化清单
 
 1. **并行化**：所有独立 job 并行执行。
 2. **缓存**：pip / Poetry / uv / mypy / Docker layer 全部缓存。
@@ -1432,7 +1391,7 @@ on:
       - '.github/workflows/**'
 ```
 
-### 8.5 安全最佳实践
+### 7.5 安全最佳实践
 
 1. **最小权限 Token**：`GITHUB_TOKEN` 使用 `permissions: contents: read` 最小权限。
 2. **第三方 Action 固定 SHA**：避免 tag 被劫持。
@@ -1455,7 +1414,7 @@ publish:
     - run: twine upload dist/*
 ```
 
-### 8.6 可观测性
+### 7.6 可观测性
 
 1. **测试报告**：使用 `pytest-reporter` 生成 HTML 报告并上传为 artifact。
 2. **覆盖率趋势**：Codecov / Coveralls 跟踪覆盖率历史。
@@ -1476,9 +1435,9 @@ publish:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：FastAPI 项目的流水线演进
+### 8.1 案例：FastAPI 项目的流水线演进
 
 **项目背景**：一个使用 FastAPI 的内部 API 服务，代码量约 5 万行，测试用例约 2000 个。团队 8 人，每日合并 PR 约 5 个。
 
@@ -1518,7 +1477,7 @@ publish:
 3. 金丝雀发布对生产稳定性的提升远超想象。
 4. 工具迁移（如 pip → uv）应作为最后一步，前几步的架构改进不可跳过。
 
-### 9.2 案例：含 C 扩展的包跨平台发布
+### 8.2 案例：含 C 扩展的包跨平台发布
 
 **项目背景**：`fandex-accel` 是一个包含 Cython 扩展的高性能计算库，需在 Linux / macOS / Windows 上支持 Python 3.10-3.13，并兼顾 x86_64 与 ARM64。
 
@@ -1549,7 +1508,7 @@ archs = ["AMD64"]
 
 **结果**：构建出 24 个 wheel（4 Python 版本 × 6 平台组合），总耗时约 25 分钟。通过 GitHub Releases 自动发布，PyPI 上传后用户 `pip install fanquan-accel` 自动选择对应 wheel，无需本地编译。
 
-### 9.3 案例：事故复盘 - 缓存中毒
+### 8.3 案例：事故复盘 - 缓存中毒
 
 **事件**：某次 PR 流水线在本地通过，但 CI 中测试失败，报错 `ImportError: cannot import name 'BaseModel' from 'pydantic'`。
 
@@ -1571,7 +1530,7 @@ archs = ["AMD64"]
 
 **经验**：缓存是双刃剑，错误的缓存比无缓存更危险。缓存键必须严格反映所有影响输出的因素。
 
-### 9.4 案例：迁移到 GitOps 后的部署频率提升
+### 8.4 案例：迁移到 GitOps 后的部署频率提升
 
 **项目背景**：某团队原使用 Jenkins + 手工 kubectl 部署，每周发布 1-2 次，部署窗口需提前 1 天申请。
 
@@ -1593,7 +1552,7 @@ archs = ["AMD64"]
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：以下 GitHub Actions 配置有何错误？
 
@@ -1638,7 +1597,7 @@ CMD ["python", "app.py"]
 - 未设置 `PYTHONUNBUFFERED`。
 - 未使用 `.dockerignore`。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：设计一个流水线，在 PR 中只运行受影响的测试，但在 main 分支运行全部测试。
 
@@ -1665,7 +1624,7 @@ CMD ["python", "app.py"]
 - 前者允许"低质量历史代码"存在，后者强制"新增代码高质量"。
 - 两者结合是最佳实践：绝对下限 + 增量严格。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **习题 7**：设计一个金丝雀发布系统，要求：
 - 支持 5 步金丝雀（5%, 25%, 50%, 75%, 100%）。
@@ -1734,7 +1693,7 @@ jobs:
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Fowler, M. and Foemmel, M. 2006. Continuous Integration. ThoughtWorks. Available at: https://martinfowler.com/articles/originalContinuousIntegration.html
 
@@ -1768,9 +1727,9 @@ jobs:
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - GitHub Actions 官方文档: https://docs.github.com/actions
 - GitLab CI/CD 文档: https://docs.gitlab.com/ee/ci/
@@ -1783,7 +1742,7 @@ jobs:
 - Argo Rollouts 文档: https://argo-rollouts.readthedocs.io/
 - Flagger 文档: https://flagger.app/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Humble, J., Farley, D. 《Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation》(2010)
 - Kim, G., Humble, J., Debois, P., Willis, J. 《The DevOps Handbook: How to Create World-Class Agility, Reliability, and Security in Technology Organizations》(2021, 2nd ed.)
@@ -1792,7 +1751,7 @@ jobs:
 - Bass, L., Weber, I., Zhu, L. 《DevOps: A Software Architect's Perspective》(2015)
 - Schedlbauer, J. 《Release It! Design and Deploy Production-Ready Software》(2018, 2nd ed.)
 
-### 12.3 前沿论文与博客
+### 11.3 前沿论文与博客
 
 - Schermann, G. et al. "Quality Is Belief Belief Is Experience: Experiences with Trusted CI/CD". IEEE Software (2018)
 - Rahman, A. et al. "Characterizing the Influence of Continuous Integration: Empirical Results from 250+ Open Source and Proprietary Projects". ESEM (2018)
@@ -1801,14 +1760,14 @@ jobs:
 - Weaveworks GitOps 原则白皮书: https://opengitops.dev/
 - Charney, D. "Pull Request Target: The Most Dangerous GitHub Action". GitHub Security Blog (2024)
 
-### 12.4 相关视频与课程
+### 11.4 相关视频与课程
 
 - GitHub Universe 2023: Building Reliable CI/CD Pipelines
 - KubeCon 2024: Progressive Delivery with Argo Rollouts
 - PyCon 2024: Modern Python Packaging with pyproject.toml
 - Continuous Delivery YouTube 频道 (David Farley): https://www.youtube.com/@ContinuousDelivery
 
-### 12.5 实战参考仓库
+### 11.5 实战参考仓库
 
 - FastAPI 项目模板: https://github.com/tiangolo/full-stack-fastapi-template
 - Hypermodern Python Cookiecutter: https://github.com/cjolowicz/cookiecutter-hypermodern-python

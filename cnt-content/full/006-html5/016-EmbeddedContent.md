@@ -15,63 +15,16 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+
 # 嵌入式内容 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节依据 Bloom 教育目标分类法（Bloom's Taxonomy）组织学习目标，覆盖记忆、理解、应用、分析、评价、创造六个层次。
-
-### 1.1 Remember（记忆）
-
-- **R-1**：列举 HTML5 嵌入式内容的 5 类核心元素：`<iframe>`、`<embed>`、`<object>`、`<portal>`、`<frameset>`（已废弃）。
-- **R-2**：复述 `<iframe>` 元素的 15 个标准属性：`src`、`srcdoc`、`name`、`sandbox`、`allow`、`allowfullscreen`、`width`、`height`、`loading`、`referrerpolicy`、`credentialless`、`tabindex`、`title`、`importance`、`csp`。
-- **R-3**：识别 WHATWG HTML Living Standard §4.8.5 "The iframe element" 的章节编号与适用范围。
-- **R-4**：背诵 `sandbox` 属性的 8 个授权令牌：`allow-downloads`、`allow-forms`、`allow-modals`、`allow-orientation-lock`、`allow-pointer-lock`、`allow-popups`、`allow-presentation`、`allow-same-origin`、`allow-scripts`、`allow-top-navigation`。
-
-### 1.2 Understand（理解）
-
-- **U-1**：解释 `<iframe>` 与 `<embed>`、`<object>` 三者在语义、可回退性、DOM 集成上的差异。
-- **U-2**：阐明 `sandbox` 属性的"最小权限原则"：默认拒绝全部能力，按需授权。
-- **U-3**：说明 `srcdoc` 属性如何避免外部 HTTP 请求，及其与 `src` 的优先级关系。
-- **U-4**：理解 `credentialless` 属性在隔离 Cookie 与凭据中的作用机制（COEP/CORP 体系）。
-- **U-5**：阐明 `<iframe>` 的"嵌套浏览上下文"（nested browsing context）概念及其与顶层文档的生命周期关系。
-
-### 1.3 Apply（应用）
-
-- **A-1**：实现一个安全的第三方 widget 嵌入方案，包含 `sandbox` 最小授权、`allow` 白名单、CSP 策略、Referrer Policy。
-- **A-2**：使用 `srcdoc` 实现零延迟的预渲染内容嵌入（如邮件预览、富文本编辑器沙箱）。
-- **A-3**：使用 `<object>` 实现 PDF 文档的可回退嵌入（含不支持场景的兜底提示）。
-- **A-4**：通过 `postMessage` 实现父文档与 `<iframe>` 的双向 RPC 通信管道。
-
-### 1.4 Analyze（分析）
-
-- **An-1**：剖析 `allow-scripts` 与 `allow-same-origin` 同时使用导致沙箱被绕过的攻击链路。
-- **An-2**：解构浏览器为每个 `<iframe>` 分配独立"事件循环"与"渲染上下文"的并发模型。
-- **An-3**：分析 `<iframe loading="lazy">` 的视口检测算法与主文档滚动容器的交互。
-- **An-4**：剖析 COEP（Cross-Origin Embedder Policy）下的 `<iframe>` 加载限制与 `credentialless` 的破局机制。
-
-### 1.5 Evaluate（评价）
-
-- **E-1**：评估"使用 `<iframe>` 嵌入第三方内容"与"使用 Web Components Shadow DOM"在隔离性、性能、可维护性上的取舍。
-- **E-2**：判断 `sandbox="allow-scripts allow-same-origin"` 在生产环境的安全性，并设计替代方案。
-- **E-3**：对比 `<iframe>`、`<embed>`、`<object>`、`<portal>` 在 PDF 嵌入、视频嵌入、跨域导航预渲染四类场景的优劣。
-- **E-4**：评估 `credentialless` 属性在 SaaS 嵌入式场景下的合规性（GDPR、Cookieless Tracking）。
-
-### 1.6 Create（创造）
-
-- **C-1**：设计一个微前端（micro-frontend）容器框架，基于 `<iframe>` 实现子应用隔离、路由同步、共享状态与 RPC 通信。
-- **C-2**：实现一个 PDF/Markdown/HTML 多格式预览组件，使用 `<object>` 回退 + `<iframe srcdoc>` 主路径，并支持打印、复制、下载。
-- **C-3**：构建 `<iframe>` 安全审计工具，自动检测 `sandbox` 缺失、`allow` 过度授权、`targetOrigin` 通配符等问题。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 框架集时代（1995—1999）
+### 1.1 框架集时代（1995—1999）
 
 HTML 2.0（RFC 1866, 1995）并未包含嵌入文档的能力。Netscape Navigator 2.0（1995）引入了 `<frame>` 与 `<frameset>` 元素，允许将浏览器视口划分为多个独立框架，每个框架加载独立 HTML 文档。
 
@@ -94,7 +47,7 @@ HTML 2.0（RFC 1866, 1995）并未包含嵌入文档的能力。Netscape Navigat
 4. **打印困难**：每个框架独立打印，难以整合。
 5. **链接复杂**：`target` 属性需显式指定框架名。
 
-### 2.2 内联框架 `<iframe>` 的诞生（1997）
+### 1.2 内联框架 `<iframe>` 的诞生（1997）
 
 Microsoft Internet Explorer 3.0（1996）首创 `<iframe>` 元素，作为"行内框架"嵌入文档。HTML 4.0（W3C, 1997）正式将其纳入规范：
 
@@ -112,7 +65,7 @@ Microsoft Internet Explorer 3.0（1996）首创 `<iframe>` 元素，作为"行�
 - 支持回退内容（元素内文本）。
 - 独立文档上下文，天然隔离 CSS/JS。
 
-### 2.3 `<object>` 与 `<embed>` 的多格式嵌入（1996—1999）
+### 1.3 `<object>` 与 `<embed>` 的多格式嵌入（1996—1999）
 
 HTML 4.0 同时引入 `<object>` 元素，目标是统一替代 `<img>`、`<iframe>`、`<applet>`：
 
@@ -137,7 +90,7 @@ HTML 4.0 同时引入 `<object>` 元素，目标是统一替代 `<img>`、`<ifra
 | HTML5 | 规范化（用于插件） | 规范化（用于回退） |
 | 历史用途 | Flash、Java Applet | 通用嵌入 |
 
-### 2.4 HTML5 沙箱安全革命（2010—2014）
+### 1.4 HTML5 沙箱安全革命（2010—2014）
 
 2010 年 Ian Hickson 在 WHATWG HTML Living Standard 中引入 `sandbox` 属性，将 `<iframe>` 从"被动嵌入"升级为"主动沙箱"。设计目标：
 
@@ -151,7 +104,7 @@ HTML 4.0 同时引入 `<object>` 元素，目标是统一替代 `<img>`、`<ifra
 <iframe src="untrusted.html" sandbox="allow-scripts"></iframe>
 ```
 
-### 2.5 现代化演进（2015—2024）
+### 1.5 现代化演进（2015—2024）
 
 | 年份 | 特性 | 浏览器 | 意义 |
 | ---- | ---- | ------ | ---- |
@@ -165,7 +118,7 @@ HTML 4.0 同时引入 `<object>` 元素，目标是统一替代 `<img>`、`<ifra
 | 2023 | `importance` 属性 | Chrome 110 | 优先级提示 |
 | 2024 | `csp` 属性（实验） | Chrome 122 | 嵌入文档 CSP 注入 |
 
-### 2.6 演进时间线
+### 1.6 演进时间线
 
 ```mermaid
 timeline
@@ -186,7 +139,7 @@ timeline
     2024: csp 属性、importance 属性进入 Living Standard
 ```
 
-### 2.7 规范族谱
+### 1.7 规范族谱
 
 - **HTML 2.0**（RFC 1866, 1995）：无嵌入元素。
 - **HTML 3.2**（W3C, 1997）：`<applet>` 首次出现。
@@ -199,9 +152,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 WHATWG 规范定义
+### 2.1 WHATWG 规范定义
 
 依据 WHATWG HTML Living Standard §4.8.5，`<iframe>` 元素的 Web IDL 定义：
 
@@ -255,7 +208,7 @@ interface HTMLObjectElement : HTMLElement {
 };
 ```
 
-### 3.2 sandbox 文法
+### 2.2 sandbox 文法
 
 ```
 sandbox = token *( " " token )
@@ -283,7 +236,7 @@ token = "allow-downloads"
 - 未识别的令牌被静默忽略。
 - `sandbox` 属性反射到 IDL 时为 `DOMString`，浏览器解析时按空格分词。
 
-### 3.3 嵌套浏览上下文形式化
+### 2.3 嵌套浏览上下文形式化
 
 设顶层文档为 $D_0$，其包含的 `<iframe>` 创建嵌套浏览上下文 $D_1$。$D_1$ 可继续包含 `<iframe>` 创建 $D_2$，递归形成嵌套链：
 
@@ -307,7 +260,7 @@ $$
 \text{parent}(D_i) = D_{i-1}, \quad \text{top}(D_i) = D_0
 $$
 
-### 3.4 同源策略与 sandbox 交互
+### 2.4 同源策略与 sandbox 交互
 
 设 `<iframe>` 的源为 $O_c = (\text{scheme}_c, \text{host}_c, \text{port}_c)$，父文档源为 $O_p$。
 
@@ -328,7 +281,7 @@ $$
 
 **情形 C（sandbox="allow-same-origin"）**：iframe 文档保留原始源 $O_c$，同源策略正常执行。
 
-### 3.5 srcdoc 优先级规则
+### 2.5 srcdoc 优先级规则
 
 设 `<iframe>` 同时设置 `src` 与 `srcdoc`，则 `srcdoc` 优先：
 
@@ -341,7 +294,7 @@ $$
 
 `srcdoc` 内容作为 HTML 解析，源为 `about:srcdoc`（与父文档同源，受 `sandbox` 调节）。
 
-### 3.6 allow 属性形式化
+### 2.6 allow 属性形式化
 
 `allow` 属性接受 Permissions Policy 指令：
 
@@ -358,7 +311,7 @@ origins = origin *( " " origin ) | "*"
 - `allow="geolocation 'self' https://example.com"`：仅 self 与 example.com 可用。
 - `allow="fullscreen; camera *"`：fullscreen 自身可用，camera 所有源可用。
 
-### 3.7 loading 行为形式化
+### 2.7 loading 行为形式化
 
 `loading` 属性取值 `lazy` 或 `eager`：
 
@@ -374,9 +327,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 沙箱绕过定理
+### 3.1 沙箱绕过定理
 
 **定理 4.1**：若 `<iframe sandbox="allow-scripts allow-same-origin">` 同时启用脚本与同源，则沙箱可被绕过。
 
@@ -391,7 +344,7 @@ $$
 
 **推论**：生产环境中 `allow-scripts` 与 `allow-same-origin` 不应同时使用，除非 iframe 内容完全可信。
 
-### 4.2 嵌套文档并发模型
+### 3.2 嵌套文档并发模型
 
 每个 `<iframe>` 创建独立的浏览上下文，但事件循环调度由浏览器决定。设主文档事件循环为 $L_0$，iframe 事件循环为 $L_1$。
 
@@ -403,7 +356,7 @@ $$
 T_{\text{render}}(D_0) = \max(T_{L_0}, T_{L_1}^{\text{IPC}})
 $$
 
-### 4.3 懒加载的视口检测
+### 3.3 懒加载的视口检测
 
 `<iframe loading="lazy">` 使用 IntersectionObserver 检测视口接近度。设 iframe 距视口底部距离为 $d$，触发阈值为 $d_{\text{threshold}}$。
 
@@ -416,7 +369,7 @@ $$
 
 Chrome 默认 $d_{\text{threshold}} = 3000\text{px}$（4G）/ $4000\text{px}$（3G）。可通过 `rootMargin` 自定义。
 
-### 4.4 srcdoc 的零延迟优势
+### 3.4 srcdoc 的零延迟优势
 
 `<iframe src="...">` 需经历：
 
@@ -434,7 +387,7 @@ $$
 
 节省时间 $\Delta T = T_{\text{RTT}} + T_{\text{parse}}$，典型值 50—500 ms。
 
-### 4.5 CSP 与 sandbox 协同
+### 3.5 CSP 与 sandbox 协同
 
 `Content-Security-Policy` 响应头控制资源加载，`sandbox` 控制运行时能力。两者正交：
 
@@ -460,7 +413,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self';
 <iframe src="https://widget.example.com" sandbox="allow-scripts" csp="default-src 'self'"></iframe>
 ```
 
-### 4.6 credentialless 机制
+### 3.6 credentialless 机制
 
 COEP（Cross-Origin Embedder Policy）要求页面所有跨源资源携带 CORP 头或 CORS 头。`<iframe>` 加载跨源页面时，第三方 Cookie 与凭据违反 COEP。
 
@@ -478,7 +431,7 @@ $$
 \end{cases}
 $$
 
-### 4.7 内存与进程开销
+### 3.7 内存与进程开销
 
 **同进程模式**：iframe 共享主进程堆内存，每个 iframe 约 2—5 MB 增量。
 
@@ -500,9 +453,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 完整 HTML5 文档结构
+### 4.1 完整 HTML5 文档结构
 
 ```html
 <!DOCTYPE html>
@@ -574,7 +527,7 @@ $$
 </html>
 ```
 
-### 5.2 父子 iframe 双向通信
+### 4.2 父子 iframe 双向通信
 
 ```html
 <!-- parent.html -->
@@ -632,7 +585,7 @@ $$
 </html>
 ```
 
-### 5.3 MessageChannel 私有通信管道
+### 4.3 MessageChannel 私有通信管道
 
 ```javascript
 // 父文档
@@ -673,7 +626,7 @@ window.addEventListener('message', (e) => {
 });
 ```
 
-### 5.4 srcdoc 富文本编辑器沙箱
+### 4.4 srcdoc 富文本编辑器沙箱
 
 ```html
 <!DOCTYPE html>
@@ -732,7 +685,7 @@ body { font-family: sans-serif; padding: 12px; }
 </html>
 ```
 
-### 5.5 PDF 嵌入完整方案
+### 4.5 PDF 嵌入完整方案
 
 ```html
 <!-- 主路径：object + iframe 回退 -->
@@ -763,7 +716,7 @@ body { font-family: sans-serif; padding: 12px; }
 ></iframe>
 ```
 
-### 5.6 微前端容器示例
+### 4.6 微前端容器示例
 
 ```html
 <!DOCTYPE html>
@@ -828,9 +781,9 @@ body { font-family: sans-serif; padding: 12px; }
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 嵌入元素横向对比
+### 5.1 嵌入元素横向对比
 
 | 特性 | `<iframe>` | `<embed>` | `<object>` | `<portal>` |
 | ---- | ---------- | --------- | ---------- | ---------- |
@@ -847,7 +800,7 @@ body { font-family: sans-serif; padding: 12px; }
 | 懒加载 | `loading="lazy"` | 不支持 | 不支持 | 支持 |
 | Permissions Policy | `allow` 属性 | 不支持 | 不支持 | 支持 |
 
-### 6.2 iframe 沙箱令牌对比
+### 5.2 iframe 沙箱令牌对比
 
 | 令牌 | 默认 | 启用后 | 风险等级 |
 | ---- | ---- | ------ | -------- |
@@ -866,7 +819,7 @@ body { font-family: sans-serif; padding: 12px; }
 | `allow-storage-access-by-user-activation` | 禁止 | 用户激活下访问存储 | 中 |
 | `allow-fullscreen` | 禁用 | 允许全屏 API | 低 |
 
-### 6.3 嵌入式内容 vs Web Components
+### 5.3 嵌入式内容 vs Web Components
 
 | 维度 | `<iframe>` | Web Components (Shadow DOM) |
 | ---- | ---------- | --------------------------- |
@@ -881,7 +834,7 @@ body { font-family: sans-serif; padding: 12px; }
 | 第三方库 | 完美隔离 | 样式冲突 |
 | 适用场景 | 第三方 widget、广告、微前端 | UI 组件、设计系统 |
 
-### 6.4 src vs srcdoc 选择
+### 5.4 src vs srcdoc 选择
 
 | 维度 | `src` | `srcdoc` |
 | ---- | ----- | -------- |
@@ -893,7 +846,7 @@ body { font-family: sans-serif; padding: 12px; }
 | 工具链支持 | 完善 | 较弱 |
 | 适用场景 | 第三方页面、大型内容 | 小型沙箱、富文本编辑器、邮件预览 |
 
-### 6.5 PDF 嵌入方案对比
+### 5.5 PDF 嵌入方案对比
 
 | 方案 | 浏览器支持 | 体验一致性 | 文件保护 | 实现复杂度 |
 | ---- | ---------- | ---------- | -------- | ---------- |
@@ -906,9 +859,9 @@ body { font-family: sans-serif; padding: 12px; }
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 类型与语义陷阱
+### 6.1 类型与语义陷阱
 
 **陷阱 7.1.1**：`<iframe>` 缺少 `title` 属性。
 
@@ -943,7 +896,7 @@ body { font-family: sans-serif; padding: 12px; }
 <iframe src="page.html"></iframe>
 ```
 
-### 7.2 安全反模式
+### 6.2 安全反模式
 
 **反模式 7.2.1**：`sandbox="allow-scripts allow-same-origin"` 同时使用。
 
@@ -988,7 +941,7 @@ window.addEventListener('message', (e) => {
 
 **修复**：使用 `srcdoc` 或 `about:blank` + JS 写入。
 
-### 7.3 性能反模式
+### 6.3 性能反模式
 
 **反模式 7.3.1**：首屏可视区 iframe 不加 `loading="lazy"`，但非首屏也不加。
 
@@ -1024,7 +977,7 @@ window.addEventListener('message', (e) => {
 
 **后果**：性能急剧下降，部分浏览器限制最大嵌套深度。
 
-### 7.4 可访问性陷阱
+### 6.4 可访问性陷阱
 
 **陷阱 7.4.1**：iframe 内容无键盘焦点管理。
 
@@ -1046,7 +999,7 @@ window.addEventListener('message', (e) => {
 
 **修复**：外层不设 `aria-label`，依赖 iframe `title`。
 
-### 7.5 SEO 陷阱
+### 6.5 SEO 陷阱
 
 **陷阱 7.5.1**：核心内容放入 iframe。
 
@@ -1070,9 +1023,9 @@ window.addEventListener('message', (e) => {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 TypeScript 类型定义
+### 7.1 TypeScript 类型定义
 
 ```typescript
 // iframe-secure.ts
@@ -1158,7 +1111,7 @@ const widget = createSecureIframe({
 document.body.appendChild(widget);
 ```
 
-### 8.2 React 封装
+### 7.2 React 封装
 
 ```tsx
 // SecureIframe.tsx
@@ -1268,7 +1221,7 @@ const App: React.FC = () => {
 };
 ```
 
-### 8.3 Vue 封装
+### 7.3 Vue 封装
 
 ```vue
 <!-- SecureIframe.vue -->
@@ -1340,7 +1293,7 @@ onUnmounted(() => window.removeEventListener('message', handleMessage));
 </template>
 ```
 
-### 8.4 CSP 配置实践
+### 7.4 CSP 配置实践
 
 ```http
 # 父文档 HTTP 头
@@ -1358,7 +1311,7 @@ Cross-Origin-Resource-Policy: same-site;
 Cross-Origin-Opener-Policy: same-origin;
 ```
 
-### 8.5 性能监控
+### 7.5 性能监控
 
 ```typescript
 // iframe-performance-monitor.ts
@@ -1413,7 +1366,7 @@ class IframePerformanceMonitor {
 }
 ```
 
-### 8.6 自动化测试
+### 7.6 自动化测试
 
 ```typescript
 // iframe.test.ts
@@ -1474,9 +1427,9 @@ test.describe('嵌入式 iframe', () => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 YouTube 嵌入式播放器
+### 8.1 YouTube 嵌入式播放器
 
 YouTube 提供官方 `<iframe>` 嵌入 API：
 
@@ -1500,7 +1453,7 @@ YouTube 提供官方 `<iframe>` 嵌入 API：
 
 **性能优化**：使用 `lite-youtube-embed` 替代原生 iframe，首屏延迟加载真实 iframe，节省 500KB+ 资源。
 
-### 9.2 Google Maps 嵌入
+### 8.2 Google Maps 嵌入
 
 ```html
 <iframe
@@ -1521,7 +1474,7 @@ YouTube 提供官方 `<iframe>` 嵌入 API：
 - `referrerpolicy`：控制 referrer 泄露。
 - `allowfullscreen`：支持全屏地图视图。
 
-### 9.3 Stripe 支付组件
+### 8.3 Stripe 支付组件
 
 Stripe Elements 使用 `<iframe>` 隔离支付字段，符合 PCI DSS 要求：
 
@@ -1540,7 +1493,7 @@ card.mount('#card-element');
 4. 通过 `postMessage` 与主文档通信（仅传递 token，不传递原始卡号）。
 5. 满足 PCI DSS SAQ-A 范围（主文档不接触敏感数据）。
 
-### 9.4 Twitter 嵌入推文
+### 8.4 Twitter 嵌入推文
 
 ```html
 <blockquote class="twitter-tweet">
@@ -1557,7 +1510,7 @@ card.mount('#card-element');
 3. 通过 `postMessage` 通知主文档高度变化（`tw-tweet-rendered` 事件）。
 4. `sandbox="allow-popups allow-popups-to-escape-sandbox allow-scripts allow-same-origin"`（注意：此处允许同源是因为 Twitter 完全控制 iframe 内容）。
 
-### 9.5 微前端架构：Single-SPA 与 iframe 模式
+### 8.5 微前端架构：Single-SPA 与 iframe 模式
 
 **Single-SPA 模式**：使用 JS 动态加载子应用 bundle，集成到主文档。优点是路由同步、状态共享，缺点是 CSS/JS 隔离弱。
 
@@ -1570,7 +1523,7 @@ card.mount('#card-element');
 3. 通过 `postMessage` + `MessageChannel` 统一通信层。
 4. UI 统一：iframe 内子应用使用与主应用一致的设计系统。
 
-### 9.6 GitHub Gist 嵌入
+### 8.6 GitHub Gist 嵌入
 
 ```html
 <script src="https://gist.github.com/user/abc123.js"></script>
@@ -1584,7 +1537,7 @@ card.mount('#card-element');
 4. `sandbox="allow-scripts"`（最小权限）。
 5. `style="width: 100%; height: <动态>px"`。
 
-### 9.7 CodePen 嵌入
+### 8.7 CodePen 嵌入
 
 ```html
 <p class="codepen" data-height="300" data-default-tab="html,result">
@@ -1600,7 +1553,7 @@ card.mount('#card-element');
 3. `sandbox="allow-scripts allow-forms allow-popups allow-modals"`。
 4. `allow="accelerometer; camera; encrypted-media; geolocation; gyroscope; microphone; speaker"`（编辑场景需要）。
 
-### 9.8 Adobe PDF Embed API
+### 8.8 Adobe PDF Embed API
 
 ```html
 <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
@@ -2109,7 +2062,7 @@ console.log(auditor.report());
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] WHATWG. 2024. HTML Living Standard §4.8.5 "The iframe element". WHATWG Specification. Retrieved July 20, 2026 from https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element
 
@@ -2137,41 +2090,41 @@ console.log(auditor.report());
 
 ---
 
-## 12. 扩展阅读
+## 11. 扩展阅读
 
-### 12.1 官方规范
+### 11.1 官方规范
 
 - WHATWG HTML Living Standard: https://html.spec.whatwg.org/multipage/iframe-embed-object.html
 - W3C HTML 5.3: https://www.w3.org/TR/html53/iframe-embed-object.html
 - Permissions Policy: https://www.w3.org/TR/permissions-policy-1/
 - Cross-Origin Embedder Policy: https://www.w3.org/TR/cross-origin-embedder-policy-1/
 
-### 12.2 浏览器实现
+### 11.2 浏览器实现
 
 - Chromium Iframe Rendering: https://chromium.googlesource.com/chromium/src/+/main/docs/security/iframe-pipeline.md
 - Site Isolation in Chrome: https://www.chromium.org/Home/chromium-security/site-isolation/
 - Firefox Fission (Site Isolation): https://wiki.mozilla.org/Project_Fission
 
-### 12.3 安全研究
+### 11.3 安全研究
 
 - HTML5 Security Cheatsheet: https://html5sec.org/
 - OWASP Clickjacking Defense: https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html
 - Subresource Integrity (SRI): https://www.w3.org/TR/SRI/
 
-### 12.4 性能优化
+### 11.4 性能优化
 
 - web.dev "Optimize iframe loading": https://web.dev/articles/iframe-lazy-loading
 - Chrome Developers "Third-party embeds": https://developer.chrome.com/articles/third-party-embeds/
 - LCP and iframes: https://web.dev/articles/lcp#how-to-optimize-embeds
 
-### 12.5 工程实践
+### 11.5 工程实践
 
 - Micro Frontends with iframes: https://martinfowler.com/articles/micro-frontends.html
 - Single-SPA framework: https://single-spa.js.org/
 - Stripe Elements architecture: https://stripe.com/docs/security
 - Adobe PDF Embed API: https://developer.adobe.com/document-services/apis/pdf-embed/
 
-### 12.6 浏览器兼容性矩阵
+### 11.6 浏览器兼容性矩阵
 
 | 特性 | Chrome | Firefox | Safari | Edge |
 | ---- | ------ | ------- | ------ | ---- |
@@ -2186,7 +2139,7 @@ console.log(auditor.report());
 | `<portal>` | 85+ (flag) | 未支持 | 未支持 | 85+ (flag) |
 | `sandbox="allow-storage-access-by-user-activation"` | 119+ | 未支持 | 15.4+ | 119+ |
 
-### 12.7 术语表
+### 11.7 术语表
 
 | 术语 | 全称 | 说明 |
 | ---- | ---- | ---- |
@@ -2204,7 +2157,7 @@ console.log(auditor.report());
 | SRI | Subresource Integrity | 子资源完整性 |
 | TTFB | Time to First Byte | 首字节时间 |
 
-### 12.8 学习路径
+### 11.8 学习路径
 
 **入门（1 周）**：
 

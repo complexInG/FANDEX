@@ -18,47 +18,6 @@ prerequisites:
   - kotlin/协程基础
 ---
 
-## 学习目标
-
-本章节基于 Bloom 分类法组织学习目标，按认知层级由低到高排列，读者可逐级检验自身掌握程度。
-
-### 1. 记忆层（Remembering）
-
-- 能复述 JMH（Java Microbenchmark Harness）的核心概念：`@Benchmark`、`@State`、`@Setup`、`@Warmup`、`@Measurement`、`@Fork`。
-- 能列举 JMH 的四种测量模式：`Throughput`、`AverageTime`、`SampleTime`、`SingleShotTime`。
-- 能写出 kotlinx-benchmark 插件的最小 Gradle 配置与 `@Benchmark` 注解的基本用法。
-
-### 2. 理解层（Understanding）
-
-- 能解释 JVM JIT 编译器（C1/C2、Graal）对基准测试结果的影响，包括分层编译、内联、逃逸分析、锁消除。
-- 能阐述「死代码消除」（Dead Code Elimination, DCE）为何会扭曲微基准测试结果，以及 `Blackhole` 的工作原理。
-- 能描述 JMH 的 Fork 机制为何能避免跨测试的 JIT 污染，以及预热（Warmup）的统计学意义。
-
-### 3. 应用层（Applying）
-
-- 能使用 `@State`、`@Setup`、`@TearDown` 管理测试数据的生命周期。
-- 能通过 `@Param` 进行多参数对比测试，并解读 JMH 输出的置信区间（Confidence Interval）。
-- 能为 Kotlin 协程、`Sequence`、集合操作编写公平的基准测试。
-
-### 4. 分析层（Analyzing）
-
-- 能对比 JMH 与其他基准测试框架（Google Caliper、kotlinx.benchmark 原生后端、 Gatling）的架构差异。
-- 能分析 JIT 优化（常量折叠、循环展开、栈上分配）何时会让基准测试结果失真。
-- 能定位「写测试时快、生产环境慢」或反之的性能反差根因。
-
-### 5. 评价层（Evaluating）
-
-- 能评估在 CI 流水线中集成基准测试的成本与收益，判断是否需要性能回归告警。
-- 能判定何时应使用 `kotlinx.benchmark` 而非直接依赖 JMH（如 Kotlin Multiplatform 场景）。
-- 能针对基准测试结果波动制定合理的迭代次数、Fork 数与统计策略。
-
-### 6. 创造层（Creating）
-
-- 能设计一套覆盖单元基准、集成基准、长期性能监控的完整性能工程体系。
-- 能为开源项目贡献自定义 JMH Profiler 或 kotlinx-benchmark 后端。
-- 能构建基于基准测试数据的自动性能回归检测系统（如与 GitHub Actions、PerfDog、Grafana 集成）。
-
----
 
 ## 历史动机与背景
 
@@ -73,9 +32,9 @@ prerequisites:
 
 手动使用 `System.nanoTime()` 计时几乎无法获得可信结果。Aleksey Shipilev（JMH 主作者）在多次演讲中反复强调：「微基准测试不是用秒表测时间，而是用统计学对抗 JIT 与硬件的魔法」。
 
-### 2. JVM 微基准测试的演进史
+### 1. JVM 微基准测试的演进史
 
-#### 2.1 蛮荒时代（2000s 早期）
+#### 1.1 蛮荒时代（2000s 早期）
 
 早期 Java 开发者使用 `System.currentTimeMillis()` 或 `System.nanoTime()` 在 `main` 方法中循环计时。问题：
 
@@ -84,11 +43,11 @@ prerequisites:
 - GC 时机随机，单次测量噪声极大；
 - 不同 JVM 版本、不同硬件配置结果不可比。
 
-#### 2.2 Google Caliper（2009）
+#### 1.2 Google Caliper（2009）
 
 Google 推出 Caliper，首次引入「预热 - 测量 - 多轮统计」模型。但 Caliper 长期存在模型缺陷（如对长尾分布处理不足），且维护力度有限。
 
-#### 2.3 JMH 的诞生（2013）
+#### 1.3 JMH 的诞生（2013）
 
 OpenJDK 团队由 Aleksey Shipilev 主导开发 JMH，作为 OpenJDK 子项目。JMH 的设计目标：
 
@@ -97,7 +56,7 @@ OpenJDK 团队由 Aleksey Shipilev 主导开发 JMH，作为 OpenJDK 子项目�
 - **可重复性**：默认配置即可在不同机器上获得可比结果；
 - **生态整合**：原生支持 Gradle、Maven，被 Netty、Spring、Kotlin 标准库等广泛采用。
 
-#### 2.4 kotlinx-benchmark（2020）
+#### 1.4 kotlinx-benchmark（2020）
 
 JetBrains 推出 kotlinx-benchmark，目标是：
 
@@ -105,27 +64,27 @@ JetBrains 推出 kotlinx-benchmark，目标是：
 - **统一 API**：屏蔽后端差异，让同一份基准测试代码可在 JVM/JS/Native 上运行；
 - **Gradle Kotlin DSL 友好**：与 Kotlin 项目构建系统深度集成。
 
-### 3. 为什么 Kotlin 需要专门的基准测试指南
+### 2. 为什么 Kotlin 需要专门的基准测试指南
 
 Kotlin 编译为 JVM 字节码后，与 Java 共享运行时，但其语言特性引入了独特的性能考量：
 
-#### 3.1 `inline` 函数的内联差异
+#### 2.1 `inline` 函数的内联差异
 
 Kotlin 的 `inline` 关键字让函数在编译期被内联到调用处，这会影响 JMH 的 `@CompilerControl` 行为。例如，`measureBlock` 这类内联函数可能让 JMH 的内联控制失效。
 
-#### 3.2 协程的调度开销
+#### 2.2 协程的调度开销
 
 Kotlin 协程基于状态机编译，`suspend` 函数的开销与同步函数完全不同。基准测试需特别处理 `runBlocking`、`Dispatchers.Default` 等。
 
-#### 3.3 `data class` 的自动生成代码
+#### 2.3 `data class` 的自动生成代码
 
 `data class` 生成的 `equals`、`hashCode`、`copy`、`toString` 在频繁调用时影响性能，基准测试需独立评估。
 
-#### 3.4 `Sequence` 与 `Iterable` 的延迟求值
+#### 2.4 `Sequence` 与 `Iterable` 的延迟求值
 
 Kotlin 提供两种集合处理风格，性能特征差异显著，需通过基准测试量化。
 
-### 4. 工业界的采纳
+### 3. 工业界的采纳
 
 JMH 与 kotlinx-benchmark 已成为 JVM 生态性能工程的事实标准：
 
@@ -154,7 +113,7 @@ $$
 - $M$ 是每个 Fork 的测量迭代数；
 - $\bar{X}_{f,i}$ 是第 $f$ 个 Fork 第 $i$ 次迭代内的平均执行时间。
 
-### 2. 置信区间的形式化
+### 1. 置信区间的形式化
 
 JMH 默认输出 99.9% 置信区间：
 
@@ -164,7 +123,7 @@ $$
 
 其中 $s$ 是样本标准差，$t_{\alpha/2}$ 是 Student-t 分布的临界值。置信区间宽度反映测量稳定性。
 
-### 3. 预热的数学含义
+### 2. 预热的数学含义
 
 预热阶段的目标是让 JIT 编译达到稳态。设 $J(t)$ 为 $t$ 时刻的 JIT 编译状态，预热使：
 
@@ -174,7 +133,7 @@ $$
 
 其中 $J^*$ 是稳态编译。预热后测量才反映生产环境长期运行性能。
 
-### 4. 死代码消除（DCE）的形式化
+### 3. 死代码消除（DCE）的形式化
 
 JVM JIT 会执行 DCE：若计算结果 $r$ 未被后续代码使用，则整个计算可被删除：
 
@@ -188,7 +147,7 @@ $$
 \text{Used}(\text{Blackhole.consume}(r)) = \text{true}
 $$
 
-### 5. Fork 的隔离语义
+### 4. Fork 的隔离语义
 
 不同 Fork 在独立 JVM 进程中运行，设第 $f$ 个 Fork 的 JIT 状态为 $J_f$，则：
 
@@ -198,7 +157,7 @@ $$
 
 这使得跨 Fork 的测量结果可视为独立同分布（i.i.d.）样本，支撑统计推断的有效性。
 
-### 6. 测量模式的形式化
+### 5. 测量模式的形式化
 
 JMH 四种测量模式的数学含义：
 
@@ -237,7 +196,7 @@ println((end - start) / 1_000_000.0)
 
 证毕。
 
-### 2. JMH 的统计有效性
+### 1. JMH 的统计有效性
 
 **命题**：JMH 默认配置（5 个预热迭代 + 5 个测量迭代 + 1 Fork）的均值估计在 99% 置信度下的相对误差小于 5%。
 
@@ -250,7 +209,7 @@ println((end - start) / 1_000_000.0)
 
 实际工程中变异系数更大（0.1~0.3），但通过多 Fork 与多迭代仍可控制在 5% 以内。
 
-### 3. Fork 数对结果稳定性的影响
+### 2. Fork 数对结果稳定性的影响
 
 **命题**：增加 Fork 数 $N$ 能降低跨 JVM 实例的方差，但收益递减。
 
@@ -274,7 +233,7 @@ $$
 
 从 1 Fork 增至 3 Fork 收益显著（15% → 9%），从 5 增至 10 收益有限（7% → 5%）。JMH 默认 5 Fork 在大多数场景下足够。
 
-### 4. 复杂度分析
+### 3. 复杂度分析
 
 | 操作 | 时间复杂度 | 空间复杂度 | 备注 |
 |------|-----------|-----------|------|
@@ -283,7 +242,7 @@ $$
 | `Blackhole.consume` | $O(1)$ | $O(1)$ | 基于内存屏障与假写入 |
 | 多 `@Param` 组合 | $O(\prod P_i)$ | $O(\prod P_i)$ | 笛卡尔积爆炸 |
 
-### 5. Kotlin 协程基准测试的特殊性
+### 4. Kotlin 协程基准测试的特殊性
 
 **命题**：直接在 `@Benchmark` 方法中使用 `runBlocking` 测量协程会引入调度开销噪声，需特别设计。
 
@@ -967,7 +926,7 @@ open class MultiParamBenchmark {
 | 适用场景 | 库性能基线 | 历史项目 | Kotlin 多平台 | HTTP 压测 |
 | 维护活跃度 | 高 | 低 | 中 | 高 |
 
-### 2. kotlinx-benchmark 后端对比
+### 1. kotlinx-benchmark 后端对比
 
 | 后端 | 平台 | 底层引擎 | 适用场景 |
 |------|------|---------|---------|
@@ -975,7 +934,7 @@ open class MultiParamBenchmark {
 | js | JavaScript | benchmark.js | 浏览器/Node.js 性能 |
 | native | Kotlin/Native | 自研 | 跨平台原生二进制性能 |
 
-### 3. 测量模式选择指南
+### 2. 测量模式选择指南
 
 | 模式 | 适用场景 | 输出指标 | 注意事项 |
 |------|---------|---------|---------|
@@ -984,7 +943,7 @@ open class MultiParamBenchmark {
 | SampleTime | 长尾分析 | 百分位 p50/p99/p99.9 | 关注尾部延迟 |
 | SingleShotTime | 冷启动 | 单次时间 | 模拟首次调用 |
 
-### 4. List vs Sequence 性能边界
+### 3. List vs Sequence 性能边界
 
 | 场景 | List 链式 | Sequence | 优势方 |
 |------|----------|---------|-------|
@@ -996,7 +955,7 @@ open class MultiParamBenchmark {
 | 含 short-circuit（take/first） | 劣 | 优 | Sequence |
 | 并行处理 | 中 | 劣 | List |
 
-### 5. 锁机制性能对比（高并发场景）
+### 4. 锁机制性能对比（高并发场景）
 
 | 机制 | 单线程 | 4 线程 | 16 线程 | 64 线程 | 备注 |
 |------|--------|--------|---------|---------|------|
@@ -1037,7 +996,7 @@ fun goodBenchmark2(): Int {
 
 **事故案例**：某团队测得 `Stream.filter` 比 `for` 循环快 1000 倍，根因是 `filter` 链返回值未消费被 JIT 整体优化为空操作。
 
-### 2. 常量折叠陷阱
+### 1. 常量折叠陷阱
 
 **反模式**：
 
@@ -1070,7 +1029,7 @@ open class CorrectBenchmark {
 }
 ```
 
-### 3. 循环内分配陷阱
+### 2. 循环内分配陷阱
 
 **反模式**：
 
@@ -1101,7 +1060,7 @@ open class CorrectAllocation {
 }
 ```
 
-### 4. JIT 预热不足
+### 3. JIT 预热不足
 
 **反模式**：
 
@@ -1121,7 +1080,7 @@ open class CorrectAllocation {
 @Fork(2)
 ```
 
-### 5. 跨测试状态污染
+### 4. 跨测试状态污染
 
 **反模式**：单 Fork 跑所有基准测试，前一个测试的 JIT 缓存影响后一个。
 
@@ -1129,7 +1088,7 @@ open class CorrectAllocation {
 
 **正确做法**：每个测试至少 1 Fork，重要测试 2~3 Fork。
 
-### 6. 协程基准测试的 runBlocking 陷阱
+### 5. 协程基准测试的 runBlocking 陷阱
 
 **反模式**：
 
@@ -1163,7 +1122,7 @@ fun syncBaseline(blackhole: Blackhole) {
 }
 ```
 
-### 7. 忽略 L1/L2 缓存效应
+### 6. 忽略 L1/L2 缓存效应
 
 **反模式**：
 
@@ -1188,7 +1147,7 @@ open class CacheBenchmark {
 var size: Int = 0  // 从 L1 到内存层级
 ```
 
-### 8. 错误的 @Param 笛卡尔积爆炸
+### 7. 错误的 @Param 笛卡尔积爆炸
 
 **反模式**：
 
@@ -1258,9 +1217,9 @@ flowchart TD
     T3 --> T4
 ```
 
-### 2. CI 集成策略
+### 1. CI 集成策略
 
-#### 2.1 性能回归检测
+#### 1.1 性能回归检测
 
 ```yaml
 # .github/workflows/benchmark.yml
@@ -1289,7 +1248,7 @@ jobs:
             --threshold 0.10  # 10% 回归告警
 ```
 
-#### 2.2 基线管理
+#### 1.2 基线管理
 
 ```kotlin
 // benchmarks/build.gradle.kts
@@ -1306,13 +1265,13 @@ benchmark {
 }
 ```
 
-### 3. 结果可视化
+### 2. 结果可视化
 
-#### 3.1 JMH Visualizer
+#### 2.1 JMH Visualizer
 
 将 JMH JSON 输出上传至 [JMH Visualizer](https://jmh.morethan.io/) 在线工具生成对比图表。
 
-#### 3.2 自定义 Grafana 看板
+#### 2.2 自定义 Grafana 看板
 
 将 JMH 结果写入 InfluxDB，通过 Grafana 展示性能趋势：
 
@@ -1330,7 +1289,7 @@ class InfluxDBResultFormat : ResultFormat {
 }
 ```
 
-### 4. 多平台基准测试
+### 3. 多平台基准测试
 
 ```kotlin
 // build.gradle.kts
@@ -1358,7 +1317,7 @@ benchmark {
 
 同一份基准测试代码可在三个平台运行，输出统一格式结果。
 
-### 5. 参数空间优化
+### 4. 参数空间优化
 
 对于参数众多的基准测试，使用 `@Param` 配合空字符串跳过：
 
@@ -1372,7 +1331,7 @@ fun setup() {
 }
 ```
 
-### 6. 内存分配分析
+### 5. 内存分配分析
 
 启用 `-prof gc` 获取分配速率：
 
@@ -1392,7 +1351,7 @@ MyBenchmark.test:·gc.count            avgt    5    12.00   counts
 
 `gc.alloc.rate.norm` 是关键指标，反映单次操作的对象分配量。
 
-### 7. 性能优化的决策树
+### 6. 性能优化的决策树
 
 ```mermaid
 flowchart TD

@@ -15,57 +15,16 @@ related:
 prerequisites:
   - python/语法速查
 ---
+
 # Python 虚拟环境与包管理
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章节学习后，你应当能够：
-
-### 1.1 记忆（Remember）
-
-- **R1**：列举 Python 主流虚拟环境工具（`venv`、`virtualenv`、`conda`、`poetry`、`uv`、`pixi`、`hatch`）及各自的内核实现语言与典型使用场景。
-- **R2**：复述 PEP 405（Python Virtual Environments）规范中虚拟环境的三大核心机制：`pyvenv.cfg`、`home` 键、`include-system-site-packages` 键。
-- **R3**：陈述 Python 包的四种安装来源（PyPI、私有 index、本地路径、VCS）及其在 `pip install` 中的 URL scheme。
-
-### 1.2 理解（Understand）
-
-- **U1**：解释 Python 模块搜索路径 `sys.path` 的构造顺序，以及虚拟环境通过修改 `sys.prefix` 影响搜索路径的原理。
-- **U2**：阐述依赖解析（dependency resolution）中 **PubGrub** 算法（pub.dev 作者 István Soós 等推广）与 `resolvelib`（pip 内部使用）的工作机制。
-- **U3**：描述 lockfile（如 `poetry.lock`、`uv.lock`、`pdm.lock`）相对于 `requirements.txt` 在可复现性（reproducibility）上的本质差异。
-
-### 1.3 应用（Apply）
-
-- **A1**：使用 `python -m venv` 创建一个隔离的虚拟环境，并解释其目录结构（`bin/`、`lib/`、`pyvenv.cfg`）。
-- **A2**：使用 `uv`（Astral 团队 Rust 实现）在 1 秒内完成 100+ 包的依赖解析与安装。
-- **A3**：使用 `pip-tools` 的 `pip-compile` + `pip-sync` 工作流为生产环境生成精确锁定文件。
-
-### 1.4 分析（Analyze）
-
-- **An1**：对比 `venv`、`virtualenv`、`conda` 在"Python 解释器隔离"与"非 Python 依赖管理"两个维度上的本质差异。
-- **An2**：剖析一次依赖冲突错误（`ResolutionImpossible`），定位冲突的传递依赖路径。
-- **An3**：分析 monorepo（多包仓库）中"共享虚拟环境 vs 每包独立虚拟环境"两种方案的工程权衡。
-
-### 1.5 评价（Evaluate）
-
-- **E1**：在团队工具选型会议上，论证是否应从 `pip + venv` 迁移到 `uv` 或 `poetry`。
-- **E2**：评估 `conda` 在数据科学团队中的不可替代性（CUDA、C 库、二进制 wheel 兼容性）。
-- **E3**：判断"在 Docker 容器中是否还需要虚拟环境"这一常见争论，并给出工程依据。
-
-### 1.6 创造（Create）
-
-- **C1**：设计一个支持多 Python 版本并行测试的 CI 流水线（`pyenv` + `tox` + `uv`）。
-- **C2**：实现一个 monorepo 依赖治理方案，统一公共依赖版本、自动检测漂移、生成 SBOM（Software Bill of Materials）。
-- **C3**：构建一个离线 Python 包镜像系统，支持气隙环境（air-gapped environment）下的完全可复现构建。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 前史：全局 `site-packages` 的混沌年代（1991–2007）
+### 1.1 前史：全局 `site-packages` 的混沌年代（1991–2007）
 
 Python 早期（1.x - 2.3 时代）没有内置虚拟环境概念，所有 `pip install`（或更早的 `easy_install`）的包都安装到系统全局 `site-packages` 目录：
 
@@ -81,7 +40,7 @@ Python 早期（1.x - 2.3 时代）没有内置虚拟环境概念，所有 `pip 
 
 这一时期开发者通常使用 `sudo pip install` 或 `--user` 安装，导致"系统 Python 一团糟"的普遍困境。
 
-### 2.2 `virtualenv`：第三方先驱（2007）
+### 1.2 `virtualenv`：第三方先驱（2007）
 
 2007 年 Ian Bicking（同时也是 `pip`、`Sphinx` 作者）发布 **`virtualenv`**，Python 历史上第一个实用的虚拟环境工具。`virtualenv` 的核心创新：
 
@@ -91,7 +50,7 @@ Python 早期（1.x - 2.3 时代）没有内置虚拟环境概念，所有 `pip 
 
 `virtualenv` 迅速成为 Python 开发事实标准，但存在两个问题：(1) 需要单独安装；(2) 对 Python 2 与 Python 3 的兼容性维护成本高。
 
-### 2.3 PEP 405 与 `venv` 标准化（Python 3.3，2012）
+### 1.3 PEP 405 与 `venv` 标准化（Python 3.3，2012）
 
 2012 年 PEP 405 "Python Virtual Environments" 由 Vinay Sajip 与 Nick Coghlan 撰写，在 Python 3.3 中引入标准库模块 **`venv`**。PEP 405 的关键贡献：
 
@@ -103,7 +62,7 @@ Guido van Rossum 在 PEP 405 评审中写道：
 
 > "This is a long-overdue standardization. The virtualenv approach has proven itself in production for years, and it's time to bring it into the standard library."
 
-### 2.4 `pyenv`：多版本解释器管理（2013）
+### 1.4 `pyenv`：多版本解释器管理（2013）
 
 2013 年 Yamato Ito（@yyuu）发布 **`pyenv`**，借鉴 Ruby 的 `rbenv`，允许在同一台机器上安装和管理多个 Python 版本。`pyenv` 不创建虚拟环境，而是通过 **shim**（垫片）机制拦截 `python` 命令，根据 `.python-version` 文件或全局配置选择对应版本。
 
@@ -112,7 +71,7 @@ Guido van Rossum 在 PEP 405 评审中写道：
 - `pyenv`：管理多个 Python **解释器版本**。
 - `venv`：基于已安装的 Python 解释器创建**隔离环境**。
 
-### 2.5 `conda`：数据科学的全栈方案（2012）
+### 1.5 `conda`：数据科学的全栈方案（2012）
 
 2012 年 Continuum Analytics（后更名为 Anaconda Inc.）发布 **`conda`**，定位为"通用包管理器"，不仅管理 Python 包，还管理 C/C++ 库、CUDA、R、Julia 等非 Python 依赖。`conda` 的核心创新：
 
@@ -122,7 +81,7 @@ Guido van Rossum 在 PEP 405 评审中写道：
 
 `conda` 在数据科学、机器学习领域不可替代，但存在两个缺点：(1) 仓库体积大（基础环境 3GB+）；(2) 依赖解析慢（早期版本 SAT 求解器性能差）。
 
-### 2.6 `pipenv` 与 `poetry`：项目管理一体化（2017–2018）
+### 1.6 `pipenv` 与 `poetry`：项目管理一体化（2017–2018）
 
 2017 年 Kenneth Reitz（`requests` 作者）发布 **`pipenv`**，试图将 `pip` + `virtualenv` + `requirements.txt` 统一为 `Pipfile` + `Pipfile.lock`。`pipenv` 一度成为 PyPA 推荐工具，但因维护停滞、性能问题逐渐被弃用。
 
@@ -135,7 +94,7 @@ Guido van Rossum 在 PEP 405 评审中写道：
 
 `poetry` 迅速成为 Python 开源项目事实标准，但依赖解析速度慢（大型项目可达 30s+）成为主要痛点。
 
-### 2.7 `uv`：Rust 重写的性能革命（2024）
+### 1.7 `uv`：Rust 重写的性能革命（2024）
 
 2024 年 2 月，Astral 团队（`ruff` 作者 Charlie Marsh）发布 **`uv`**，用 Rust 实现的极速 Python 包管理器。`uv` 的性能优势：
 
@@ -150,11 +109,11 @@ Charlie Marsh 在 uv 发布博文中写道：
 
 > "uv aims to be the 'Cargo for Python' — a unified, fast, reliable package manager that makes Python development feel as smooth as Rust."
 
-### 2.8 `pixi`：Conda 生态的 Rust 化（2023）
+### 1.8 `pixi`：Conda 生态的 Rust 化（2023）
 
 2023 年 prefix.dev 团队发布 **`pixi`**，用 Rust 重写的 `conda` 替代品。`pixi` 兼容 `conda-forge` 渠道，但解析速度比 `conda` 快 10-50 倍，并引入 `pixi.toml` 项目化配置。`pixi` 在 HPC（高性能计算）、生物信息学领域快速普及。
 
-### 2.9 设计哲学演进
+### 1.9 设计哲学演进
 
 Python 虚拟环境工具的演进反映四个哲学转向：
 
@@ -169,9 +128,9 @@ Nick Coghlan（PEP 405 共作者）在 2024 年 PyCon AU 演讲中提到：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 虚拟环境的形式化
+### 2.1 虚拟环境的形式化
 
 一个 Python 虚拟环境 $E$ 可形式化为七元组：
 
@@ -189,7 +148,7 @@ $$
 - $\mathcal{L}$：激活脚本集合（`activate`、`activate.bat`、`Activate.ps1` 等）。
 - $\mathcal{B}$：二进制可执行文件集合（`python`、`pip` 等，为软链接或副本）。
 
-### 3.2 模块搜索路径的形式化
+### 2.2 模块搜索路径的形式化
 
 Python 解释器启动时，`sys.path` 的构造遵循严格顺序：
 
@@ -208,7 +167,7 @@ $$
 
 虚拟环境通过设置 `sys.prefix` 为 $S_{\text{venv}}$ 的父目录，使 $S_{\text{venv}}$ 优先于 $S_{\text{global}}$ 被搜索。
 
-### 3.3 `pyvenv.cfg` 的结构
+### 2.3 `pyvenv.cfg` 的结构
 
 PEP 405 标准化的 `pyvenv.cfg` 文件结构：
 
@@ -230,7 +189,7 @@ prompt = myproject
 - `include-system-site-packages`：是否继承全局 `site-packages`（默认 `false`）。
 - `prompt`：激活后 shell 提示符前缀（PEP 405 扩展）。
 
-### 3.4 依赖解析的形式化
+### 2.4 依赖解析的形式化
 
 设项目直接依赖集合为 $D = \{d_1, d_2, \dots, d_n\}$，每个依赖 $d_i$ 有版本约束 $c_i$（如 `>=1.0,<2.0`），每个版本的包声明其传递依赖。依赖解析问题是：
 
@@ -246,7 +205,7 @@ $$
 - **PubGrub**：`pub`（Dart）首创，`uv`、`pixi` 采用，结合版本范围修剪与冲突驱动学习。
 - **resolvelib**：`pip`（>=20.3）与 `poetry` 采用，基于回溯 + 前向检查。
 
-### 3.5 PubGrub 算法核心思想
+### 2.5 PubGrub 算法核心思想
 
 PubGrub 由 Nxtra 团队为 Dart `pub` 设计，核心创新是**冲突驱动子句学习**（conflict-driven clause learning，CDCL），借鉴 SAT 求解器 DPLL-CDCL 算法。
 
@@ -266,7 +225,7 @@ $$
 
 学习 $C$ 后，PubGrub 不会再次探索相同的冲突路径，显著加速解析。
 
-### 3.6 lockfile 的形式化
+### 2.6 lockfile 的形式化
 
 `requirements.txt` 与 lockfile 的本质区别：
 
@@ -290,9 +249,9 @@ lockfile 的关键性质：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 `venv` 创建过程的内部机制
+### 3.1 `venv` 创建过程的内部机制
 
 执行 `python -m venv .venv` 时，`venv` 模块执行以下步骤：
 
@@ -328,7 +287,7 @@ flowchart TD
 4. **安装 `pip`**：通过 `ensurepip` 模块安装基础 `pip`。
 5. **生成激活脚本**：为 `bash`、`csh`、`fish`、`PowerShell` 生成对应脚本。
 
-### 4.2 激活脚本的作用机制
+### 3.2 激活脚本的作用机制
 
 `source .venv/bin/activate` 执行后，shell 环境变量变化：
 
@@ -348,7 +307,7 @@ flowchart TD
 
 IDE（如 VS Code、PyCharm）通常配置 `python.pythonPath` 指向虚拟环境，无需 shell 激活。
 
-### 4.3 `sys.prefix` 与 `sys.base_prefix` 的分离
+### 3.3 `sys.prefix` 与 `sys.base_prefix` 的分离
 
 PEP 405 的核心创新是分离 `sys.prefix`（虚拟环境）与 `sys.base_prefix`（系统 Python）：
 
@@ -371,7 +330,7 @@ CPython 解释器启动时的检测逻辑：
 3. 设置 `sys.prefix = 虚拟环境路径`，`sys.base_prefix = home`。
 4. `site` 模块据此计算 `site-packages` 路径。
 
-### 4.4 依赖解析的复杂度分析
+### 3.4 依赖解析的复杂度分析
 
 考虑一个有 $n$ 个包、每个包有 $k$ 个版本、每个版本有 $m$ 个传递依赖的依赖图。最坏情况下：
 
@@ -389,7 +348,7 @@ CPython 解释器启动时的检测逻辑：
 | uv（PubGrub） | 0.3s | Rust + PubGrub + 并行 |
 | pixi（PubGrub） | 0.5s | Rust + PubGrub |
 
-### 4.5 `pip` 安装包的完整流程
+### 3.5 `pip` 安装包的完整流程
 
 `pip install requests` 的内部流程：
 
@@ -412,7 +371,7 @@ wheel 文件命名规范（PEP 427）：
 - `cp312`：ABI 兼容 CPython 3.12
 - `manylinux_2_17_x86_64`：Linux x86_64，glibc 2.17+
 
-### 4.6 `uv` 的性能优势来源
+### 3.6 `uv` 的性能优势来源
 
 `uv` 比 `pip` 快 10-100 倍的原因：
 
@@ -434,7 +393,7 @@ $$
 
 其中 $T_{\text{resolve\_rust}} \ll T_{\text{resolve}}$，$T_{\text{hardlink}} \ll T_{\text{install}}$。
 
-### 4.7 `conda` 的环境模型
+### 3.7 `conda` 的环境模型
 
 `conda` 与 `venv` 的本质差异：
 
@@ -448,7 +407,7 @@ $$
 
 `conda` 的优势在于数据科学场景：`numpy`、`scipy`、`pytorch` 等包在 `conda` 渠道提供 MKL 优化版本，性能比 PyPI wheel 高 20-50%。
 
-### 4.8 Docker 中虚拟环境的工程权衡
+### 3.8 Docker 中虚拟环境的工程权衡
 
 在 Docker 容器中是否需要虚拟环境？这是一个长期争论。两种方案的工程权衡：
 
@@ -483,9 +442,9 @@ CMD ["python", "-m", "app"]
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 项目结构
+### 4.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -516,7 +475,7 @@ flowchart TD
     T8 --> T12
 ```
 
-### 5.2 `pyproject.toml`
+### 4.2 `pyproject.toml`
 
 ```toml
 [project]
@@ -560,7 +519,7 @@ python_version = "3.10"
 strict = true
 ```
 
-### 5.3 使用 `venv` 创建虚拟环境（Python 3.10+）
+### 4.3 使用 `venv` 创建虚拟环境（Python 3.10+）
 
 ```python
 """
@@ -657,7 +616,7 @@ if __name__ == "__main__":
         print(f"  {name}=={version}")
 ```
 
-### 5.4 使用 `uv` 进行项目管理（Python 3.10+）
+### 4.4 使用 `uv` 进行项目管理（Python 3.10+）
 
 ```bash
 # 安装 uv（独立安装，不依赖 Python）
@@ -696,7 +655,7 @@ uv lock --upgrade
 uv pip compile pyproject.toml -o requirements.txt
 ```
 
-### 5.5 使用 `poetry` 管理项目（Python 3.10+）
+### 4.5 使用 `poetry` 管理项目（Python 3.10+）
 
 ```bash
 # 安装 poetry
@@ -731,7 +690,7 @@ poetry build
 poetry publish
 ```
 
-### 5.6 `pip-tools` 工作流（Python 3.10+）
+### 4.6 `pip-tools` 工作流（Python 3.10+）
 
 ```bash
 # 安装 pip-tools
@@ -763,7 +722,7 @@ pip-sync requirements.txt
 pip-sync requirements-dev.txt
 ```
 
-### 5.7 使用 `pyenv` 管理多 Python 版本（Python 3.10+）
+### 4.7 使用 `pyenv` 管理多 Python 版本（Python 3.10+）
 
 ```bash
 # 安装 pyenv
@@ -790,7 +749,7 @@ pyenv local 3.11.7  # 创建 .python-version 文件
 pyenv versions
 ```
 
-### 5.8 使用 `conda` 管理数据科学环境（Python 3.10+）
+### 4.8 使用 `conda` 管理数据科学环境（Python 3.10+）
 
 ```bash
 # 创建环境（指定 Python 版本与关键包）
@@ -818,7 +777,7 @@ conda env list
 conda env remove -n ml
 ```
 
-### 5.9 `environment.yml` 示例
+### 4.9 `environment.yml` 示例
 
 ```yaml
 name: ml-project
@@ -841,7 +800,7 @@ dependencies:
     - pydantic>=2.7.0
 ```
 
-### 5.10 使用 `tox` 进行多版本测试（Python 3.10+）
+### 4.10 使用 `tox` 进行多版本测试（Python 3.10+）
 
 ```ini
 # tox.ini
@@ -877,7 +836,7 @@ tox -e py312
 tox -p auto
 ```
 
-### 5.11 环境检查脚本（Python 3.10+）
+### 4.11 环境检查脚本（Python 3.10+）
 
 ```python
 """
@@ -992,7 +951,7 @@ if __name__ == "__main__":
     diagnose()
 ```
 
-### 5.12 pytest 测试套件（Python 3.10+）
+### 4.12 pytest 测试套件（Python 3.10+）
 
 ```python
 """
@@ -1110,9 +1069,9 @@ class TestVenvCreation:
 
 ---
 
-## 6. 工具对比分析
+## 5. 工具对比分析
 
-### 6.1 虚拟环境工具横向对比
+### 5.1 虚拟环境工具横向对比
 
 | 工具 | 实现语言 | Python 隔离 | 非 Python 依赖 | 解析算法 | 速度 | 典型场景 |
 | ---- | -------- | ----------- | -------------- | -------- | ---- | -------- |
@@ -1126,7 +1085,7 @@ class TestVenvCreation:
 | `pixi` | Rust | 是 | 是 | PubGrub | 极快 | conda-forge 生态 |
 | `rye` | Rust | 是 | 否 | PubGrub | 极快 | uv 前身（已合并） |
 
-### 6.2 `pip` vs `uv` 性能对比
+### 5.2 `pip` vs `uv` 性能对比
 
 **测试场景**：从空白环境安装 `fastapi + uvicorn + pydantic + sqlalchemy + alembic + pytest + ruff + mypy`（约 50 个传递依赖）。
 
@@ -1140,7 +1099,7 @@ class TestVenvCreation:
 
 **结论**：`uv` 在所有场景下比 `pip` 快 10-60 倍，已成为 2024-2025 年新项目首选。
 
-### 6.3 `venv` vs `virtualenv`
+### 5.3 `venv` vs `virtualenv`
 
 | 特性 | `venv` | `virtualenv` |
 | ---- | ------ | ------------ |
@@ -1153,7 +1112,7 @@ class TestVenvCreation:
 
 **建议**：Python 3.3+ 优先使用 `venv`；需 Python 2 兼容或需要 `--python` 指定其他版本时用 `virtualenv`。
 
-### 6.4 `poetry` vs `uv` 工程决策
+### 5.4 `poetry` vs `uv` 工程决策
 
 | 维度 | `poetry` | `uv` |
 | ---- | -------- | --- |
@@ -1171,7 +1130,7 @@ class TestVenvCreation:
 - 已有 `poetry` 项目：可使用 `uv pip install` 替代 `poetry install` 获得速度提升，保持 `poetry.lock` 不变。
 - 大型 monorepo：评估 `uv` 的 workspace 功能。
 
-### 6.5 跨语言对比
+### 5.5 跨语言对比
 
 | 语言 | 包管理器 | 虚拟环境机制 | lockfile |
 | ---- | -------- | ------------ | -------- |
@@ -1186,9 +1145,9 @@ Python 的虚拟环境机制是独特的：多数现代语言（Rust、Go）已�
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 使用 `sudo pip install` 污染系统 Python
+### 6.1 使用 `sudo pip install` 污染系统 Python
 
 **错误**：
 
@@ -1216,7 +1175,7 @@ pip install --user requests
 uv pip install requests
 ```
 
-### 7.2 将 `.venv` 目录提交到 Git
+### 6.2 将 `.venv` 目录提交到 Git
 
 **错误**：
 
@@ -1243,7 +1202,7 @@ __pycache__/
 
 仅提交 `pyproject.toml`、`uv.lock` / `poetry.lock`、`requirements.txt`。
 
-### 7.3 依赖版本不锁定
+### 6.3 依赖版本不锁定
 
 **错误**：
 
@@ -1270,7 +1229,7 @@ pydantic==2.7.1
 
 或使用 lockfile（`uv.lock`、`poetry.lock`），包含哈希校验。
 
-### 7.4 激活脚本在 Windows 上的执行策略问题
+### 6.4 激活脚本在 Windows 上的执行策略问题
 
 **错误**：
 
@@ -1294,7 +1253,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 cmd> .venv\Scripts\activate.bat
 ```
 
-### 7.5 虚拟环境中 Python 版本不可更改
+### 6.5 虚拟环境中 Python 版本不可更改
 
 **误解**：在 `.venv` 创建后，升级系统 Python 不会影响虚拟环境。
 
@@ -1311,7 +1270,7 @@ pip install -r requirements.txt
 
 **最佳实践**：使用 `pyenv` 固定项目 Python 版本，`.python-version` 文件提交到 Git。
 
-### 7.6 依赖冲突（`ResolutionImpossible`）
+### 6.6 依赖冲突（`ResolutionImpossible`）
 
 **错误场景**：
 
@@ -1338,7 +1297,7 @@ The conflict is caused by:
 - 使用 `pip-audit` 检测已知漏洞。
 - 在 CI 中运行依赖一致性检查。
 
-### 7.7 `PYTHONPATH` 污染
+### 6.7 `PYTHONPATH` 污染
 
 **错误**：
 
@@ -1357,7 +1316,7 @@ export PYTHONPATH=/some/global/path:$PYTHONPATH
 - 需要本地开发包时，使用 `pip install -e .`（editable install）。
 - 必须设置时，仅在该项目的 `.envrc`（direnv）中设置。
 
-### 7.8 混用 `pip` 与 `conda` 导致环境损坏
+### 6.8 混用 `pip` 与 `conda` 导致环境损坏
 
 **错误**：
 
@@ -1385,7 +1344,7 @@ dependencies:
     - fastapi>=0.110.0
 ```
 
-### 7.9 `poetry` 虚拟环境位置混乱
+### 6.9 `poetry` 虚拟环境位置混乱
 
 **问题**：`poetry` 默认将虚拟环境创建在 `~/.cache/pypoetry/virtualenvs/`，而非项目目录。
 
@@ -1402,7 +1361,7 @@ poetry config virtualenvs.in-project true
 poetry config virtualenvs.prefer-active-python true
 ```
 
-### 7.10 依赖哈希校验失败
+### 6.10 依赖哈希校验失败
 
 **错误**：
 
@@ -1427,9 +1386,9 @@ uv pip install --require-hashes -r requirements.txt
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目初始化标准流程
+### 7.1 项目初始化标准流程
 
 ```bash
 # 1. 安装 uv（一次性）
@@ -1482,7 +1441,7 @@ git add .
 git commit -m "feat: initial project setup"
 ```
 
-### 8.2 CI/CD 中的依赖管理
+### 7.2 CI/CD 中的依赖管理
 
 **GitHub Actions 示例**（使用 `uv`）：
 
@@ -1528,7 +1487,7 @@ jobs:
         uses: codecov/codecov-action@v4
 ```
 
-### 8.3 依赖审计与安全扫描
+### 7.3 依赖审计与安全扫描
 
 ```bash
 # 使用 pip-audit 检测已知漏洞
@@ -1554,7 +1513,7 @@ updates:
     open-pull-requests-limit: 10
 ```
 
-### 8.4 monorepo 依赖治理
+### 7.4 monorepo 依赖治理
 
 **`uv` workspace 配置**：
 
@@ -1586,7 +1545,7 @@ uv sync
 uv run --package api pytest
 ```
 
-### 8.5 离线环境（air-gapped）部署
+### 7.5 离线环境（air-gapped）部署
 
 **场景**：生产环境无法访问 PyPI，需完全离线安装。
 
@@ -1615,7 +1574,7 @@ tar xzf wheels.tar.gz
 uv pip install --no-index --find-links wheels/ -r requirements.txt
 ```
 
-### 8.6 Docker 多阶段构建最佳实践
+### 7.6 Docker 多阶段构建最佳实践
 
 ```dockerfile
 # Dockerfile
@@ -1664,7 +1623,7 @@ CMD ["python", "-m", "src.main"]
 2. 多阶段构建，runtime 镜像不含构建工具。
 3. `.dockerignore` 排除 `.venv`、`__pycache__`、`.git`。
 
-### 8.7 依赖版本治理策略
+### 7.7 依赖版本治理策略
 
 **版本约束规范**：
 
@@ -1683,9 +1642,9 @@ CMD ["python", "-m", "src.main"]
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Instagram 的 Python 依赖管理
+### 8.1 Instagram 的 Python 依赖管理
 
 Instagram 后端完全基于 Python（Django），代码库超 10 万文件。其依赖管理演进：
 
@@ -1698,7 +1657,7 @@ Instagram 工程博客（2023）提到：
 
 > "Our CI pipeline installed 2000+ dependencies in 45 seconds with uv, compared to 12 minutes with pip. This 16x speedup transformed our developer experience."
 
-### 9.2 Dropbox 的 `pex` 工具
+### 8.2 Dropbox 的 `pex` 工具
 
 Dropbox 开发 **`pex`**（Python EXecutable）工具，将 Python 应用与其所有依赖打包为单一可执行文件：
 
@@ -1715,7 +1674,7 @@ pex -r requests -r fastapi -o myapp.pex
 
 `pex` 被 Twitter、Square、Pinterest 等公司采用，是大规模 Python 部署的事实标准之一。
 
-### 9.3 `conda-forge` 社区生态
+### 8.3 `conda-forge` 社区生态
 
 `conda-forge` 是社区驱动的 conda 包仓库，包含 20000+ 包，由 3000+ 贡献者维护。其工程实践：
 
@@ -1725,7 +1684,7 @@ pex -r requests -r fastapi -o myapp.pex
 
 `conda-forge` 的成功展示了社区驱动的包仓库模式，其治理模型被 `pixi` 项目继承。
 
-### 9.4 `uv` 在 Anthropic 的应用
+### 8.4 `uv` 在 Anthropic 的应用
 
 Anthropic（Claude 开发公司）工程博客（2024）报告：
 
@@ -1737,7 +1696,7 @@ Anthropic 的迁移经验：
 2. 6 个月后切换到 `uv` 原生命令（`uv sync`、`uv add`）。
 3. 完全迁移后弃用 `poetry.lock`，改用 `uv.lock`。
 
-### 9.5 NumPy 的 `meson-python` 迁移
+### 8.5 NumPy 的 `meson-python` 迁移
 
 NumPy 1.26（2023）从 `distutils` 迁移到 `meson-python` 构建系统，影响虚拟环境工具：
 
@@ -1745,7 +1704,7 @@ NumPy 1.26（2023）从 `distutils` 迁移到 `meson-python` 构建系统，影�
 - `uv` 因使用 `python-build-standalone` 预编译版本，避免此问题。
 - 推动社区加速向 `uv` 迁移。
 
-### 9.6 Jupyter 项目的 `jupyterlab` 依赖治理
+### 8.6 Jupyter 项目的 `jupyterlab` 依赖治理
 
 JupyterLab 拥有 50+ monorepo 子包，依赖管理复杂。其方案：
 
@@ -1891,7 +1850,7 @@ if __name__ == "__main__":
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 10**：为什么 `uv` 比 `pip` 快 10-100 倍？从语言、算法、缓存三个维度分析。
 
@@ -1903,7 +1862,7 @@ if __name__ == "__main__":
 
 ---
 
-## 11. 工具选型决策树
+## 10. 工具选型决策树
 
 ```mermaid
 flowchart TD
@@ -1960,9 +1919,9 @@ flowchart TD
 
 ---
 
-## 12. 参考文献
+## 11. 参考文献
 
-### 12.1 PEP 与标准
+### 11.1 PEP 与标准
 
 - [1] Smith, E. V. PEP 405: Python Virtual Environments. Python Enhancement Proposal, 2012. https://peps.python.org/pep-0405/
 - [2] Bicking, I. PEP 427: The Wheel Binary Package Format 1.0. Python Enhancement Proposal, 2012. https://peps.python.org/pep-0427/
@@ -1974,14 +1933,14 @@ flowchart TD
 - [8] Stufft, D. PEP 518: Specifying minimum build system requirements for Python projects. Python Enhancement Proposal, 2016. https://peps.python.org/pep-0518/
 - [9] Stenerson, D. PEP 621: Storing project metadata in pyproject.toml. Python Enhancement Proposal, 2020. https://peps.python.org/pep-0621/
 
-### 12.2 学术论文
+### 11.2 学术论文
 
 - [10] Bosch, J. et al. PubGrub: Next-Generation Version Solving. Dart Developer Summit, 2018. https://medium.com/@nex3/pubgrub-2fb6470504f
 - [11] Mateescu, R. et al. SAT-based Dependency Resolving. Proceedings of the 15th International Conference on Theory and Applications of Satisfiability Testing (SAT 2012), pp. 428-442. DOI: 10.1007/978-3-642-31612-2_33
 - [12] Di Cosmo, R. and Zacchiroli, S. Automatic Dependency Management for FOSS: The Mancoosi Approach. IFIP Advances in Information and Communication Technology, vol 319, 2010. DOI: 10.1007/978-3-642-15146-4_11
 - [13] Abate, P. et al. Dependency Solving: a Separate Concern in Component Evolution Management. Journal of Systems and Software, vol 85, no 10, 2012, pp. 2269-2279. DOI: 10.1016/j.jss.2012.05.016
 
-### 12.3 工具文档与博客
+### 11.3 工具文档与博客
 
 - [14] Marsh, C. uv: An Extremely Fast Python Package Installer and Resolver. Astral Blog, 2024. https://astral.sh/blog/uv
 - [15] Marsh, C. uv 0.4: Unified Project Management. Astral Blog, 2024. https://astral.sh/blog/uv-unified-project-management
@@ -1991,7 +1950,7 @@ flowchart TD
 - [19] Anaconda Inc. Conda: Package, Dependency and Environment Management. Conda Documentation. https://docs.conda.io/
 - [20] PyPA. pip-tools: A set of tools to keep your pinned Python dependencies fresh. GitHub. https://github.com/jazzband/pip-tools
 
-### 12.4 标准与规范
+### 11.4 标准与规范
 
 - [21] Python Packaging Authority. Python Packaging User Guide, 2024. https://packaging.python.org/
 - [22] OpenSSF. Software Bill of Materials (SBOM) Specification. SPDX Specification, 2024. https://spdx.dev/
@@ -1999,15 +1958,15 @@ flowchart TD
 
 ---
 
-## 13. 扩展阅读
+## 12. 扩展阅读
 
-### 13.1 书籍
+### 12.1 书籍
 
 - **《Python Packaging and Distribution》** — Paul Ganssle, O'Reilly, 2024（涵盖 pyproject.toml、wheel、虚拟环境全链路）。
 - **《Architecture Patterns with Python》** — Harry Percival, Bob Gregory, O'Reilly, 2020（第 11 章讨论依赖管理对架构的影响）。
 - **《Python Testing with pytest》** — Brian Okken, Pragmatic Bookshelf, 2nd ed., 2022（涵盖 tox、虚拟环境在测试中的应用）。
 
-### 13.2 在线资源
+### 12.2 在线资源
 
 - **[Real Python: Python Virtual Environments Primer](https://realpython.com/python-virtual-environments-a-primer/)** — 从零到一的 venv 教程。
 - **[Hynek Schlawack: Going Fast with uv](https://hynek.me/articles/going-fast-with-uv/)** — `attrs` 作者的 uv 迁移实践。
@@ -2016,13 +1975,13 @@ flowchart TD
 - **[poetry 官方文档](https://python-poetry.org/docs/)** — poetry 完整参考。
 - **[conda 用户指南](https://docs.conda.io/projects/conda/en/latest/user-guide/)** — conda 官方教程。
 
-### 13.3 视频资源
+### 12.3 视频资源
 
 - **[Charlie Marsh: uv - The Future of Python Packaging (PyCon 2024)](https://www.youtube.com/watch?v=g6DchVb1HBg)** — uv 作者的 PyCon 演讲。
 - **[Nick Coghlan: The Evolution of Python Environments (PyCon AU 2024)](https://www.youtube.com/watch?v=Z_dck3x5BdY)** — PEP 405 共作者回顾虚拟环境历史。
 - **[Hynek Schlawack: Packaging Python Right (Europython 2023)](https://www.youtube.com/watch?v=sfoF1FSwRHw)** — attrs 作者的打包实践。
 
-### 13.4 学习路线
+### 12.4 学习路线
 
 **初学者路线**（1-2 周）：
 
@@ -2048,9 +2007,9 @@ flowchart TD
 
 ---
 
-## 14. 附录
+## 13. 附录
 
-### 14.1 `pyvenv.cfg` 完整字段
+### 13.1 `pyvenv.cfg` 完整字段
 
 | 字段 | 类型 | 默认值 | 说明 |
 | ---- | ---- | ------ | ---- |
@@ -2064,7 +2023,7 @@ flowchart TD
 | `base-executable` | string | 系统默认 | 基础 Python 可执行文件路径 |
 | `prompt` | string | 目录名 | 激活后 shell 提示符前缀 |
 
-### 14.2 `pyproject.toml` 常用字段速查
+### 13.2 `pyproject.toml` 常用字段速查
 
 ```toml
 [project]
@@ -2108,7 +2067,7 @@ requires = ["hatchling"]              # 构建后端
 build-backend = "hatchling.build"
 ```
 
-### 14.3 `uv` 命令速查
+### 13.3 `uv` 命令速查
 
 | 命令 | 说明 |
 | ---- | ---- |
@@ -2134,7 +2093,7 @@ build-backend = "hatchling.build"
 | `uv tree` | 显示依赖树 |
 | `uv export -o requirements.txt` | 导出为 pip 兼容格式 |
 
-### 14.4 `poetry` 命令速查
+### 13.4 `poetry` 命令速查
 
 | 命令 | 说明 |
 | ---- | ---- |
@@ -2154,7 +2113,7 @@ build-backend = "hatchling.build"
 | `poetry show --tree` | 显示依赖树 |
 | `poetry config virtualenvs.in-project true` | 配置项目内 .venv |
 
-### 14.5 依赖冲突诊断流程
+### 13.5 依赖冲突诊断流程
 
 ```mermaid
 flowchart TD
@@ -2183,7 +2142,7 @@ flowchart TD
     T10 --> T11
 ```
 
-### 14.6 团队配置模板
+### 13.6 团队配置模板
 
 **`.editorconfig`**：
 
@@ -2264,7 +2223,7 @@ update:
 	uv sync
 ```
 
-### 14.7 错误码与排查
+### 13.7 错误码与排查
 
 | 错误 | 原因 | 解决方案 |
 | ---- | ---- | -------- |
@@ -2279,7 +2238,7 @@ update:
 | `No module named pip` | venv 未安装 pip | 重建: `python -m venv --with-pip .venv` |
 | `externally-managed-environment` | PEP 668 限制 | 使用虚拟环境或 `--break-system-packages` |
 
-### 14.8 `uv` 迁移检查清单
+### 13.8 `uv` 迁移检查清单
 
 从 `poetry` 迁移到 `uv`：
 

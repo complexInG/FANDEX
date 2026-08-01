@@ -18,28 +18,16 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # 引用
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-| Bloom 层级 | 目标描述 |
-| :--- | :--- |
-| **Remember（记忆）** | 列举 C++ 引用的 4 种形态（lvalue reference、rvalue reference、const reference、forwarding reference），复述引用折叠四规则 |
-| **Understand（理解）** | 解释引用与指针在 ABI 层面的等价性与语义差异，说明 const 引用延长临时对象生命周期的原理 |
-| **Apply（应用）** | 使用引用实现 `swap`、链式调用、运算符重载、移动构造，正确选择引用类型以避免不必要的拷贝 |
-| **Analyze（分析）** | 分析给定代码片段中引用的生命周期、绑定关系与悬空风险，识别违反 ODR 与 UB 的场景 |
-| **Evaluate（评价）** | 评估引用与指针在 API 设计、ABI 稳定性、可读性、性能上的取舍，权衡 `T*` vs `T&` vs `std::reference_wrapper` |
-| **Create（创造）** | 设计基于引用的类型安全接口，实现完美转发包装器、CRTP 基类、视图类型（`std::string_view`、`std::span`） |
-
-## 2. 历史动机与发展脉络
-
-### 2.1 C with Classes 时代（1979-1985）
+### 1.1 C with Classes 时代（1979-1985）
 
 Bjarne Stroustrup 在 *Cpre* 预处理器中首次引入引用，主要动机是支持运算符重载。考虑：
 
@@ -56,7 +44,7 @@ struct complex operator+(const struct complex& a, const struct complex& b);
 
 引用让运算符重载既保持值语义语法（`a + b`），又避免不必要的拷贝。
 
-### 2.2 C++ 引用形态的演进
+### 1.2 C++ 引用形态的演进
 
 | 标准 | 发布年 | 引用相关新特性 | 关键提案 |
 | :--- | :--- | :--- | :--- |
@@ -69,7 +57,7 @@ struct complex operator+(const struct complex& a, const struct complex& b);
 | **C++23** | 2023 | `std::reference_wrapper` 与 ranges 协作完善；`std::move_only_function` 中引用语义 | P2447 |
 | **C++26** | 草案 | Hazard pointer 与引用语义；`std::execution` 中的引用传递 | P2530 |
 
-### 2.3 关键提案与文献
+### 1.3 关键提案与文献
 
 - **Stroustrup 1985**：*An Overview of C++*，首次公开引用语法与用途。
 - **N1385 (Ellis, Stroustrup, 2002)**：*A Fix for Rvalue References*，奠定 rvalue reference 语法基础。
@@ -81,7 +69,7 @@ struct complex operator+(const struct complex& a, const struct complex& b);
 - **P0135 (Voutilainen, 2016)**：*Guaranteed copy elision through simplified value categories*。
 - **P0137 (Morrow, 2016)**：*launder: A Library Function for Optimizing the Layout of Objects*。
 
-### 2.4 与其他语言的横向对比
+### 1.4 与其他语言的横向对比
 
 | 特性 | C++ | Rust | Swift | Java | C# |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -93,9 +81,9 @@ struct complex operator+(const struct complex& a, const struct complex& b);
 | 悬空引用 | 可能（UB） | 编译期禁止（借用检查） | ARC 防止 | GC 防止 | GC 防止 |
 | 0 开销抽象 | 是 | 是 | 部分 | 否 | 否 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 引用的语法与语义
+### 2.1 引用的语法与语义
 
 C++ 中引用的形式化定义（ISO/IEC 14882:2023 §9.4.3）：
 
@@ -114,7 +102,7 @@ $$
 \text{decl} := \text{type-specifier}\ \&\&\ \text{declarator} \quad (\text{rvalue ref})
 $$
 
-### 3.2 值类别（Value Category）
+### 2.2 值类别（Value Category）
 
 C++11 重新形式化了表达式值类别（ISO/IEC 14882:2023 §6.10）：
 
@@ -135,7 +123,7 @@ $$
 \text{rvalue} = \text{xvalue} \cup \text{prvalue}
 $$
 
-### 3.3 引用绑定规则
+### 2.3 引用绑定规则
 
 引用的绑定规则可形式化为：
 
@@ -159,7 +147,7 @@ $$
 \end{cases}
 $$
 
-### 3.4 引用折叠规则
+### 2.4 引用折叠规则
 
 当模板实例化、`typedef`、`decltype` 或 `auto` 推导中出现"引用的引用"时，编译器通过引用折叠规则确定最终类型：
 
@@ -181,7 +169,7 @@ $$
 
 **核心规则**：只要其中一个是左值引用，就折叠为左值引用；只有两个都是右值引用才保持右值引用。
 
-### 3.5 const 引用与临时对象生命周期
+### 2.5 const 引用与临时对象生命周期
 
 C++ 规定：const 引用绑定到 prvalue 时，会延长该临时对象的生命周期至引用的作用域结束（ISO/IEC 14882:2023 §6.7.7）：
 
@@ -191,7 +179,7 @@ $$
 
 例外：函数返回值中的临时对象不被延长（C++12 起明确）。
 
-### 3.6 引用与对象身份
+### 2.6 引用与对象身份
 
 引用本身没有地址，但对引用取地址得到的是被引用对象的地址：
 
@@ -203,9 +191,9 @@ assert(&r == &x);  // 引用本身的地址不存在
 
 ABI 层面，引用通常实现为指针。但语义层面，引用与对象"同一化"，不能有"空引用"（虽然实践中可能因 UB 产生）。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 引用的 ABI 实现
+### 3.1 引用的 ABI 实现
 
 虽然标准未规定引用的实现方式，但主流编译器（GCC/Clang/MSVC）都将引用实现为指针。对比：
 
@@ -231,7 +219,7 @@ void g(int* x) { ++*x; }
 
 因此，引用是"编译期约束更强的指针"，运行时无开销。
 
-### 4.2 值类别推导：decltype 与 auto
+### 3.2 值类别推导：decltype 与 auto
 
 `decltype` 与 `auto` 对引用的推导规则不同：
 
@@ -257,7 +245,7 @@ decltype(auto) d1 = rx;    // d1 是 int&
 decltype(auto) d2 = (x);   // d2 是 int&
 ```
 
-### 4.3 转发引用的推导机制
+### 3.3 转发引用的推导机制
 
 模板参数推导中，`T&&` 是转发引用而非右值引用。推导规则：
 
@@ -292,7 +280,7 @@ void h(const T&& x);  // 非 forwarding reference，有 const 修饰
 void k(int&& x);  // 非 forwarding reference，非模板
 ```
 
-### 4.4 const 引用延长生命周期的细节
+### 3.4 const 引用延长生命周期的细节
 
 const 引用绑定到 prvalue 时延长生命周期，但绑定到函数返回的临时对象时不延长：
 
@@ -308,7 +296,7 @@ const std::string& bad = make_string();  // 注意：返回 prvalue → 延长
 
 C++ 规则：仅当被绑定的引用是 `const T&` 或 `T&&`，且被绑定的表达式是 prvalue 或 xvalue（且不是函数返回的引用），才延长生命周期。
 
-### 4.5 引用与多态
+### 3.5 引用与多态
 
 引用与指针一样支持多态：
 
@@ -330,7 +318,7 @@ Base b = d;  // 切片：派生部分被截断
 Base& rb = d;  // 引用：不切片，多态分派正常
 ```
 
-### 4.6 引用作为 ABI 边界
+### 3.6 引用作为 ABI 边界
 
 C++ 函数签名的 mangling：
 
@@ -343,9 +331,9 @@ void f(int&&);      // _Z1fOi
 
 可见，`T&` / `const T&` / `T&&` 在 ABI 上是不同类型，可重载。但函数返回值不参与 mangling，故返回 `int` vs `int&` 不能重载。
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 引用基础：swap 与链式调用
+### 4.1 引用基础：swap 与链式调用
 
 ```cpp
 // file: reference_basics.cpp
@@ -386,7 +374,7 @@ int main() {
 }
 ```
 
-### 5.2 const 引用与生命周期延长
+### 4.2 const 引用与生命周期延长
 
 ```cpp
 // file: const_ref_lifetime.cpp
@@ -427,7 +415,7 @@ int main() {
 }
 ```
 
-### 5.3 运算符重载与引用
+### 4.3 运算符重载与引用
 
 ```cpp
 // file: operator_overload.cpp
@@ -490,7 +478,7 @@ int main() {
 }
 ```
 
-### 5.4 引用折叠与转发引用
+### 4.4 引用折叠与转发引用
 
 ```cpp
 // file: forwarding_ref.cpp
@@ -527,7 +515,7 @@ int main() {
 }
 ```
 
-### 5.5 引用限定成员函数（C++11 ref-qualified member functions）
+### 4.5 引用限定成员函数（C++11 ref-qualified member functions）
 
 ```cpp
 // file: ref_qualified_member.cpp
@@ -573,7 +561,7 @@ int main() {
 }
 ```
 
-### 5.6 std::reference_wrapper：可重绑定的引用
+### 4.6 std::reference_wrapper：可重绑定的引用
 
 ```cpp
 // file: reference_wrapper_demo.cpp
@@ -613,7 +601,7 @@ int main() {
 }
 ```
 
-### 5.7 CRTP 中的引用
+### 4.7 CRTP 中的引用
 
 ```cpp
 // file: crtp_reference.cpp
@@ -655,7 +643,7 @@ int main() {
 }
 ```
 
-### 5.8 std::launder 与对象生命周期
+### 4.8 std::launder 与对象生命周期
 
 ```cpp
 // file: launder_demo.cpp
@@ -696,7 +684,7 @@ int main() {
 }
 ```
 
-### 5.9 视图类型：std::string_view 与 std::span
+### 4.9 视图类型：std::string_view 与 std::span
 
 ```cpp
 // file: view_types.cpp
@@ -747,7 +735,7 @@ int main() {
 }
 ```
 
-### 5.10 CMake 构建示例
+### 4.10 CMake 构建示例
 
 ```cmake
 # CMakeLists.txt
@@ -785,9 +773,9 @@ add_test(NAME reference_basics_test COMMAND reference_basics)
 add_test(NAME const_ref_test COMMAND const_ref_lifetime)
 ```
 
-## 6. 对比分析（横向对比）
+## 5. 对比分析（横向对比）
 
-### 6.1 引用 vs 指针
+### 5.1 引用 vs 指针
 
 | 维度 | 引用 `T&` | 指针 `T*` | 备注 |
 | :--- | :--- | :--- | :--- |
@@ -809,7 +797,7 @@ add_test(NAME const_ref_test COMMAND const_ref_lifetime)
 - 类成员：避免引用成员（影响赋值语义），用 `std::reference_wrapper` 或指针；
 - API 设计：参数用引用表"非空且不拥有"，用指针表"可空或可重绑定"。
 
-### 6.2 const T& vs T vs T&&（参数传递决策树）
+### 5.2 const T& vs T vs T&&（参数传递决策树）
 
 ```mermaid
 flowchart TD
@@ -834,7 +822,7 @@ flowchart TD
 | `T&&` | 0 | 是（移动后） | 移动语义重载 |
 | `T&&`（forwarding） | 0 | 取决于实参 | 模板通用包装器 |
 
-### 6.3 C++ vs Rust 借用对比
+### 5.3 C++ vs Rust 借用对比
 
 ```cpp
 // C++：引用可悬空，编译器不检查
@@ -864,7 +852,7 @@ fn dangerous() -> &'_ i32 {
 
 C++ 通过 `std::reference_wrapper`、智能指针、`gsl::not_null` 等工具减轻风险，但本质无法做到 Rust 级别的静态保证。
 
-### 6.4 引用与移动语义
+### 5.4 引用与移动语义
 
 ```cpp
 struct Widget {
@@ -886,7 +874,7 @@ take_by_value(std::move(w));      // move
 take_by_value(Widget());          // move / mandatory elision
 ```
 
-### 6.5 不同语言对引用的支持
+### 5.5 不同语言对引用的支持
 
 | 语言 | 引用语义 | 悬空风险 |
 | :--- | :--- | :--- |
@@ -898,9 +886,9 @@ take_by_value(Widget());          // move / mandatory elision
 | C# | `ref` / `out` / `in` | GC 防止 |
 | Python | 全部按对象引用 | GC 防止 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 悬空引用（Dangling Reference）
+### 6.1 悬空引用（Dangling Reference）
 
 **陷阱**：返回局部变量引用：
 
@@ -928,7 +916,7 @@ public:
 };
 ```
 
-### 7.2 临时对象生命周期误用
+### 6.2 临时对象生命周期误用
 
 **陷阱**：跨函数边界传递 const 引用：
 
@@ -949,7 +937,7 @@ std::string get_name() { return "hello"; }
 std::string extend(const std::string& s) { return s + "!"; }
 ```
 
-### 7.3 引用与范围 for 循环
+### 6.3 引用与范围 for 循环
 
 **陷阱**：默认按值拷贝：
 
@@ -972,7 +960,7 @@ for (auto& name : names) {  // 可修改
 }
 ```
 
-### 7.4 引用成员与默认赋值
+### 6.4 引用成员与默认赋值
 
 **陷阱**：引用成员导致赋值运算符被删除：
 
@@ -1003,7 +991,7 @@ public:
 };
 ```
 
-### 7.5 转发引用误用为右值引用
+### 6.5 转发引用误用为右值引用
 
 **陷阱**：在转发引用上下文使用 `std::move`：
 
@@ -1029,7 +1017,7 @@ void wrapper(T&& x) {
 }
 ```
 
-### 7.6 const 引用的隐式转换陷阱
+### 6.6 const 引用的隐式转换陷阱
 
 **陷阱**：const 引用绑定到不同类型会创建临时对象：
 
@@ -1048,7 +1036,7 @@ const char& c = "hello"[0];  // OK
 const char& bad = std::string("hello")[0];  // UB：临时 string 析构后悬空
 ```
 
-### 7.7 auto 与引用类型推导
+### 6.7 auto 与引用类型推导
 
 **陷阱**：`auto` 默认丢弃引用与 const：
 
@@ -1068,7 +1056,7 @@ auto&& b = std::move(x);   // int&&
 auto&& c = 42;              // int&&
 ```
 
-### 7.8 引用折叠陷阱
+### 6.8 引用折叠陷阱
 
 **陷阱**：`typedef` 中误用引用：
 
@@ -1085,7 +1073,7 @@ int& rx = x;
 // int& & rrx = rx;  // 错误：不能直接声明，但通过 typedef 折叠
 ```
 
-### 7.9 nullptr 与引用
+### 6.9 nullptr 与引用
 
 **陷阱**：通过空指针解引用得到"空引用"：
 
@@ -1105,7 +1093,7 @@ f(x);  // OK
 // f(*nullptr);  // 不能直接传递 nullptr
 ```
 
-### 7.10 RAII 与引用
+### 6.10 RAII 与引用
 
 **陷阱**：引用在析构顺序中悬空：
 
@@ -1124,23 +1112,23 @@ public:
 
 注意成员初始化顺序按声明顺序，析构顺序相反。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 Google C++ Style Guide 的引用规范
+### 7.1 Google C++ Style Guide 的引用规范
 
 - **输入参数**：`const T&`（若为简单类型如 `int`、`double`，按值 `T`）；
 - **输出参数**：`T*`（而非 `T&`），明确表达"将被修改"；
 - **返回值**：`const T&` 仅当返回内部对象且对象生命周期足够长；否则返回值；
 - **禁止**：返回 const 引用临时对象、返回引用局部变量。
 
-### 8.2 LLVM Coding Standards
+### 7.2 LLVM Coding Standards
 
 - 大对象按 `const T&` 传递；
 - 输入参数按值传递若为简单类型或需要拷贝；
 - 输出参数：`T&` 或 `T*` 均可；
 - 鼓励返回值（NRVO / mandatory elision）。
 
-### 8.3 性能分析：引用 vs 指针
+### 7.3 性能分析：引用 vs 指针
 
 ```cpp
 // Benchmark: reference_vs_pointer
@@ -1170,7 +1158,7 @@ BENCHMARK(BM_Pointer);
 // 实测：两者性能无差异（同汇编）
 ```
 
-### 8.4 调试引用悬空
+### 7.4 调试引用悬空
 
 启用 AddressSanitizer：
 
@@ -1188,14 +1176,14 @@ g++ -std=c++17 -O1 -fsanitize=undefined -g -o test test.cpp
 # UBSan 会报告 null pointer dereference
 ```
 
-### 8.5 静态分析工具
+### 7.5 静态分析工具
 
 - **Clang-Tidy**：`cppcoreguidelines-pro-bounds-pointer-arithmetic`、`cppcoreguidelines-pro-type-cstyle-cast` 等；
 - **Cppcheck**：检测悬空引用、无效指针算术；
 - **PVS-Studio**：检测引用生命周期问题；
 - **Visual Studio Code Analysis**：MSVC 内置分析。
 
-### 8.6 ABI 兼容性考量
+### 7.6 ABI 兼容性考量
 
 引用作为函数参数在 ABI 层面等同指针，但函数签名 mangling 不同：
 
@@ -1208,7 +1196,7 @@ void f(int* x);  // ABI 不兼容，需重新编译
 
 跨模块边界传递引用时，确保双方编译器、标准库版本一致。
 
-### 8.7 序列化与引用
+### 7.7 序列化与引用
 
 引用本身不可序列化（不持久化"绑定关系"）。序列化时按值拷贝：
 
@@ -1218,9 +1206,9 @@ void f(int* x);  // ABI 不兼容，需重新编译
 // 序列化时拷贝值，不保存引用
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：std::vector::operator[] 返回引用
+### 8.1 案例：std::vector::operator[] 返回引用
 
 ```cpp
 // std::vector 的简化实现
@@ -1252,7 +1240,7 @@ int x = v[0];  // const 版本可读
 
 **关键设计**：返回引用支持链式赋值与原地修改，避免拷贝。
 
-### 9.2 案例：std::ostream::operator<< 链式调用
+### 8.2 案例：std::ostream::operator<< 链式调用
 
 ```cpp
 class ostream {
@@ -1274,7 +1262,7 @@ std::cout << "x = " << 42 << "\n";
 
 **关键设计**：返回 `ostream&` 而非 `ostream`，避免多次拷贝流对象。
 
-### 9.3 案例：std::forward 的实现
+### 8.3 案例：std::forward 的实现
 
 ```cpp
 // C++17 简化实现
@@ -1293,7 +1281,7 @@ template<typename T>
 
 **原理**：通过 `static_cast<T&&>` 触发引用折叠，恢复原始值类别。
 
-### 9.4 案例：CRTP 与引用
+### 8.4 案例：CRTP 与引用
 
 ```cpp
 template<typename Derived>
@@ -1321,7 +1309,7 @@ Person a{"Alice", 30}, b{"Bob", 25};
 bool same = (a == b);  // false
 ```
 
-### 9.5 案例：std::function 与引用
+### 8.5 案例：std::function 与引用
 
 ```cpp
 #include <functional>
@@ -1343,7 +1331,7 @@ int main() {
 }
 ```
 
-### 9.6 案例：移动语义中的引用
+### 8.6 案例：移动语义中的引用
 
 ```cpp
 class String {
@@ -1371,7 +1359,7 @@ public:
 };
 ```
 
-### 9.7 案例：ranges 中的 dangling 检测
+### 8.7 案例：ranges 中的 dangling 检测
 
 ```cpp
 // C++20 ranges 提供 std::ranges::dangling 标记
@@ -1389,7 +1377,7 @@ auto vec = make_vec();
 auto good = std::views::reverse(vec);  // OK：vec 生命周期足够长
 ```
 
-### 9.8 案例：std::span 与 const 引用
+### 8.8 案例：std::span 与 const 引用
 
 ```cpp
 #include <span>
@@ -1412,7 +1400,7 @@ process({arr, 3});         // 显式构造子视图
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（Remember / Understand）
+### 9.1 基础题（Remember / Understand）
 
 **习题 1**：以下哪些声明是合法的引用？
 
@@ -1512,7 +1500,7 @@ int main() {
 
 修复：返回值类型 `std::string`。
 
-### 10.3 评价题（Evaluate）
+### 9.3 评价题（Evaluate）
 
 **习题 6**：对比以下两种 API 设计：
 
@@ -1546,7 +1534,7 @@ std::cout << ref;  // 安全吗？
 
 **修复**：在使用 ref 期间不修改容器，或用索引代替引用。
 
-### 10.4 创造题（Create）
+### 9.4 创造题（Create）
 
 **习题 8**：实现一个 `observer_ptr<T>`，行为类似 `T*` 但表达"非拥有"语义：
 
@@ -1637,7 +1625,7 @@ v[0] = false;   // 通过代理类型修改
 // bool& ref = v[0];  // 错误：不能绑定到代理类型
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Stroustrup, B. 1985. *An Overview of C++*. SIGPLAN Notices 20(6): 47-64. DOI: 10.1145/17919.17922.
 
@@ -1679,9 +1667,9 @@ v[0] = false;   // 通过代理类型修改
 
 [20] Stroustrup, B. and Sutter, H. (eds.) 2021. *C++ Core Guidelines*. Available: <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 标准文献
+### 11.1 标准文献
 
 - ISO/IEC 14882:2023 §9.4.3 *References*：引用的标准化定义与语义。
 - ISO/IEC 14882:2023 §6.10 *Lvalues and rvalues*：值类别形式化。
@@ -1689,7 +1677,7 @@ v[0] = false;   // 通过代理类型修改
 - ISO/IEC 14882:2023 §13.10.2 *Reference collapsing*：引用折叠规则。
 - ISO/IEC 14882:2023 §16.3.2 *Forwarding references*：转发引用定义。
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - *Effective Modern C++* by Scott Meyers, Items 23-30（右值引用、移动语义、转发引用）。
 - *C++ Templates: The Complete Guide* by Vandevoorde et al., Chapters 7-9（函数模板推导、转发引用）。
@@ -1697,7 +1685,7 @@ v[0] = false;   // 通过代理类型修改
 - *C++ Coding Standards* by Sutter & Alexandrescu, Items 88-94（参数传递、引用安全）。
 - *Exceptional C++* by Sutter, Items 16-18（编译期引用安全）。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - cppreference.com: *Reference declaration* <https://en.cppreference.com/w/cpp/language/reference>
 - cppreference.com: *Value categories* <https://en.cppreference.com/w/cpp/language/value_category>
@@ -1706,7 +1694,7 @@ v[0] = false;   // 通过代理类型修改
 - ISO C++ FAQ: *References* <https://isocpp.org/wiki/faq/references>
 - C++ Core Guidelines: *F.7: For general use, take T* or T& arguments rather than smart pointers* <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rf-conventional>
 
-### 12.4 视频与课程
+### 11.4 视频与课程
 
 - Herb Sutter, *Back to the Basics! Essentials of Modern C++ Style* (CppCon 2014).
 - Scott Meyers, *Move Semantics, auto, and Smart Pointers* (CppCon 2014).
@@ -1714,7 +1702,7 @@ v[0] = false;   // 通过代理类型修改
 - MIT 6.S192 *Software Construction* <https://ocw.mit.edu/courses/6-s192-software-construction-fall-2016/>.
 - Stanford CS106L *Standard C++ Programming* <http://web.stanford.edu/class/cs106l/>.
 
-### 12.5 历史文献
+### 11.5 历史文献
 
 - Stepanov, A. and Lee, M. 1995. *The Standard Template Library*. HP Laboratories Technical Report 95-11(R.1).
 - Koenig, A. and Stroustrup, B. 1989. *C: The Complete Answer*. AT&T Bell Labs.

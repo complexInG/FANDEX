@@ -16,16 +16,6 @@ prerequisites:
   - java/概述与开发环境
 ---
 
-## 学习目标
-
-完成本文学习后,读者应能够在以下 Bloom 认知层级上达成对应目标:
-
-- **记忆(Memory)**:复述 WebAssembly 的核心设计目标(可移植、安全、高效、紧凑);列举 Wasm 的四种值类型(i32/i64/f32/f64);说出 Java 与 Wasm 交互的两种主要方向。
-- **理解(Understand)**:解释 Wasm 的栈式虚拟机执行模型;阐述模块(module)、实例(instance)、内存(memory)、表(table)的概念;说明 Wasmtime、Chicory、Bytecoder 等运行时与编译器的差异。
-- **应用(Apply)**:使用 Chicory 在 Java 中加载并调用 Wasm 模块;通过 Bytecoder 将 Java 字节码编译为 Wasm;在 Spring Boot 应用中嵌入 Wasm 运行时执行第三方计算逻辑。
-- **分析(Analyze)**:对比 JNI、Wasm、纯 Java 三种方案在性能、安全、部署复杂度上的权衡;剖析 Wasm 的沙箱模型如何防止恶意代码逃逸;分析 WASI(WebAssembly System Interface)对系统级访问的抽象。
-- **评价(Evaluate)**:评估在给定场景下是否应引入 Wasm(如插件系统、跨语言复用、边缘计算);判断 Wasm 运行时的选型(Cranefile、Chicory、Wasmtime Java);权衡 AoT 编译与 JIT 解释执行。
-- **创造(Create)**:设计基于 Wasm 的插件式架构,支持热加载第三方代码;实现 Java 与 Rust/C++通过 Wasm 互操作的完整流水线;编写 Wasm 模块的性能基准测试套件。
 
 ## 历史动机与背景
 

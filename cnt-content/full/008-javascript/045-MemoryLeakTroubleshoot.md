@@ -16,63 +16,22 @@ prerequisites:
   - javascript/语法速查
 ---
 
+
 # 内存泄漏排查（Memory Leak Diagnosis）
 
 > 本篇对标 MIT 6.031（Software Construction）、Stanford CS107（Computer Organization & Systems）与 CMU 15-213（Introduction to Computer Systems）教学水准，系统讲授 JavaScript 运行时内存模型、垃圾回收算法、泄漏分类、检测方法与工程化治理。所有数学公式使用 KaTeX 渲染，参考文献采用 ACM Reference Format。
 
 ---
 
-## 1. 学习目标（Learning Objectives）
+## 1. 历史动机与发展脉络（Historical Motivation & Evolution）
 
-本节依据 Bloom 分类法（Bloom's Taxonomy，Anderson & Krathwohl, 2001）组织六层认知目标。完成本篇后，学习者应能在各认知层级达成如下目标。
-
-### 1.1 Remember（记忆）
-
-- **R1**：准确复述 V8 引擎的堆分区结构（Young Generation / Old Generation / Large Object Space / Code Space），列举各分区的回收算法（Scavenge / Mark-Sweep / Mark-Compact）。
-- **R2**：列出 JavaScript 七种内存泄漏典型模式（意外全局变量、遗忘定时器、闭包引用、Detached DOM、事件监听器、Map/Set 无限增长、未决 Promise）。
-- **R3**：背诵 Chrome DevTools Memory 面板三种分析模式（Heap Snapshot / Allocation Timeline / Allocation Sampling）的用途与开销特征。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 Mark-and-Sweep 算法的可达性分析（reachability analysis）原理，能引用 McCarthy 1960 年 Lisp 论文中的原始定义。
-- **U2**：阐述"Shallow Size"与"Retained Size"的形式区别，能用支配树（dominator tree）表示对象保留内存。
-- **U3**：推演闭包（closure）的 `[[Scope]]` 内部槽如何持有上层变量环境（Variable Environment），分析"意外捕获"的内存后果。
-
-### 1.3 Apply（应用）
-
-- **A1**：在 React / Vue 单页应用中正确使用 `AbortController`、`FinalizationRegistry`、`WeakRef` 清理异步资源，避免路由切换后泄漏。
-- **A2**：运用 Chrome DevTools 的三快照工作流（baseline → operation → post-GC）定位 Detached DOM 泄漏，输出 Retainers 引用链。
-- **A3**：实现一个基于 Puppeteer 的内存回归测试脚本，集成到 CI 流水线，对每 PR 自动检测堆增长超过阈值（如 5 MB）。
-
-### 1.4 Analyze（分析）
-
-- **An1**：对比 V8 的 Orinoco GC（增量标记 / 并发标记 / 并发清扫）与 SpiderMonkey 的代际 GC 在停顿时间（pause time）与吞吐量（throughput）上的权衡。
-- **An2**：拆解"Detached DOM 节点为何不被回收"的根因——DOM 节点除 JS 引用外还存在 DOM 树引用，需双引用均断开。
-- **An3**：解构 `WeakMap` / `WeakRef` / `FinalizationRegistry` 三种弱引用 API 在 GC 语义上的差异，分析其不可靠性（unreliability）边界。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评估"手动 GC 触发（`--expose-gc` + `gc()`）"在生产环境的适用性，引用 V8 团队关于"显式 GC 是反模式"的官方立场。
-- **E2**：判断何时应使用 LRU 缓存替代原生 `Map`，何时应使用 `WeakMap`，给出基于引用语义的决策矩阵。
-- **E3**：批判性分析"内存泄漏零容忍"政策的工程代价，引用 Wilson 1992 年《Uniprocessor Garbage Collection Techniques》的权衡论述。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个基于 `PerformanceObserver` 与 `Performance.measureUserAgentSpecificMemory()` 的运行时内存监控 SDK，对标 Sentry / Datadog RUM。
-- **C2**：实现一个跨浏览器内存泄漏检测库，结合 MutationObserver、Performance API、堆快照自动比对，输出泄漏报告。
-- **C3**：基于 WebAssembly + `SharedArrayBuffer` 设计零拷贝大数据可视化场景，分析其与 JS GC 的协同机制与泄漏风险。
-
----
-
-## 2. 历史动机与发展脉络（Historical Motivation & Evolution）
-
-### 2.1 垃圾回收的起源（1956–1960）
+### 1.1 垃圾回收的起源（1956–1960）
 
 自动内存管理（automatic memory management）的概念由 John McCarthy 于 1959 年在 MIT 设计 Lisp 1.5 时首次系统化。McCarthy 在 1960 年的论文《Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I》中提出 Mark-and-Sweep 算法：从根集（root set）出发遍历对象图，标记所有可达对象，清扫未标记对象。
 
 这一算法奠定了现代 GC 的基础。引用计数（reference counting，Collins 1960）作为另一种思路，由 George Collins 同年独立提出，但因无法处理循环引用而被逐步边缘化。
 
-### 2.2 代际假说与分代收集（1980s–1990s）
+### 1.2 代际假说与分代收集（1980s–1990s）
 
 1980 年代，Smalltalk-80 与 ML 语言团队观察到"多数对象朝生夕死"（weak generational hypothesis），由此发展出分代垃圾回收（generational GC）。核心思想：
 
@@ -87,7 +46,7 @@ V8（2008，Lars Bak 团队）继承这一传统，将 JavaScript 堆划分为�
 - **大对象空间**（Large Object Space）：单对象大于约 128 KB 时直接分配，含 `ArrayBuffer`、长字符串。
 - **代码空间**（Code Space）：JIT 编译后的机器码。
 
-### 2.3 浏览器时代的内存约束（1995–2010）
+### 1.3 浏览器时代的内存约束（1995–2010）
 
 早期浏览器（IE 6、Netscape 4）采用引用计数，导致著名的"循环引用泄漏"：DOM 节点与 JS 闭包相互引用时，两者引用计数均不为零，永远无法回收。IE 6 在 2000 年代因 DOM 循环引用导致大规模崩溃，催生了 jQuery 的 `$.remove()` 与 `$.empty()` 的内部清理机制。
 
@@ -97,7 +56,7 @@ V8（2008，Lars Bak 团队）继承这一传统，将 JavaScript 堆划分为�
 - **并发标记**（Concurrent Marking，2018）：标记工作线程并行执行。
 - **并发清扫**（Concurrent Sweeping，2018）：清扫阶段并行化。
 
-### 2.4 弱引用 API 的标准化（2015–2024）
+### 1.4 弱引用 API 的标准化（2015–2024）
 
 ES2015 引入 `WeakMap` / `WeakSet`，提供"键弱引用"语义。ES2021 标准化 `WeakRef` 与 `FinalizationRegistry`：
 
@@ -106,15 +65,15 @@ ES2015 引入 `WeakMap` / `WeakSet`，提供"键弱引用"语义。ES2021 标准
 
 截至 2024 年，所有主流浏览器（Chrome 84+ / Firefox 79+ / Safari 14.1+）均已支持。这两者填补了 JavaScript 长期缺失的"对象生命周期观察"能力，但其语义**不可靠**——回调可能不触发，可能延迟，可能并发，因此只能作为优化手段而非正确性保证。
 
-### 2.5 跨 Realm 通信与内存共享（2017–至今）
+### 1.5 跨 Realm 通信与内存共享（2017–至今）
 
 WebAssembly、SharedArrayBuffer、OffscreenCanvas 等 API 引入了跨线程共享内存的场景。2017 年 Spectre 漏洞导致 `SharedArrayBuffer` 暂时禁用，2018 年通过 Site Isolation 恢复。共享内存场景下的 GC 治理仍是开放问题——JS 引擎的 GC 不跟踪 `SharedArrayBuffer` 的引用，需开发者手动 `detach`。
 
 ---
 
-## 3. 形式化定义（Formal Definitions）
+## 2. 形式化定义（Formal Definitions）
 
-### 3.1 内存泄漏（Memory Leak）
+### 2.1 内存泄漏（Memory Leak）
 
 **定义 3.1.1（内存泄漏）**：在程序运行时间区间 $[0, t]$ 内，若已分配内存 $M_{\text{allocated}}(t)$ 与可达内存 $M_{\text{reachable}}(t)$ 满足：
 
@@ -124,7 +83,7 @@ $$\exists \epsilon > 0, \quad \lim_{t \to \infty} \big( M_{\text{allocated}}(t) 
 
 **注意**：在带 GC 的语言中，"未释放"通常意味着"可达但无用"——开发者逻辑上不再需要，但引用仍存在。这称为**逻辑泄漏**（logical leak），是 JavaScript 中最常见的泄漏形式。
 
-### 3.2 可达性（Reachability）
+### 2.2 可达性（Reachability）
 
 **定义 3.2.1（根集）**：GC 根集 $\mathcal{R}$ 包含：
 
@@ -139,7 +98,7 @@ $$\text{reachable}(o) \iff \exists r \in \mathcal{R}, \quad r \to^* o$$
 
 其中 $\to^*$ 表示引用关系的传递闭包。
 
-### 3.3 Shallow Size 与 Retained Size
+### 2.3 Shallow Size 与 Retained Size
 
 **定义 3.3.1（Shallow Size）**：对象 $o$ 的 Shallow Size 是其自身占用的内存，不包括其引用的对象：
 
@@ -151,7 +110,7 @@ $$\text{retained}(o) = \text{shallow}(o) + \sum_{o' \in \text{dominatedBy}(o)} \
 
 其中 $\text{dominatedBy}(o)$ 是支配树中 $o$ 直接支配的所有节点。支配关系定义为：$o$ 支配 $o'$ 当且仅当从根到 $o'$ 的所有路径都经过 $o$。
 
-### 3.4 引用计数与循环引用
+### 2.4 引用计数与循环引用
 
 **定义 3.4.1（引用计数）**：对象 $o$ 的引用计数 $\text{rc}(o)$ 是指向 $o$ 的强引用数量。当 $\text{rc}(o) = 0$ 时 $o$ 可回收。
 
@@ -161,7 +120,7 @@ $$\text{retained}(o) = \text{shallow}(o) + \sum_{o' \in \text{dominatedBy}(o)} \
 
 这解释了 IE 6 时代的 DOM 循环引用泄漏，也解释了为何现代 V8 采用 Mark-Sweep 而非引用计数。
 
-### 3.5 弱引用语义
+### 2.5 弱引用语义
 
 **定义 3.5.1（弱引用）**：弱引用不参与可达性分析。对象 $o$ 仅被弱引用时，视为不可达，可被 GC 回收。
 
@@ -176,9 +135,9 @@ JavaScript 提供：
 
 ---
 
-## 4. 理论推导与原理解析（Theoretical Derivation）
+## 3. 理论推导与原理解析（Theoretical Derivation）
 
-### 4.1 Mark-and-Sweep 的正确性
+### 3.1 Mark-and-Sweep 的正确性
 
 Mark-and-Sweep 算法分两阶段：
 
@@ -194,7 +153,7 @@ Mark-and-Sweep 算法分两阶段：
 
 注意：在并发 GC 中，对象图可能变化，需读写屏障（read/write barrier）保证不变式。$\square$
 
-### 4.2 分代假说的统计基础
+### 3.2 分代假说的统计基础
 
 **弱代际假说**（Weak Generational Hypothesis）：多数对象朝生夕死。
 
@@ -212,7 +171,7 @@ $$T_{\text{copy}} = O(|S|), \quad S = \{o \mid o \text{ survives}\}$$
 
 $$T_{\text{MS}} = O(|V| + |E|)$$
 
-### 4.3 Scavenge 算法（Cheney's Algorithm）
+### 3.3 Scavenge 算法（Cheney's Algorithm）
 
 V8 新生代使用 Cheney 1970 提出的复制算法。堆分为两个半区（semispace）：From 与 To。
 
@@ -225,7 +184,7 @@ V8 新生代使用 Cheney 1970 提出的复制算法。堆分为两个半区（s
 
 **晋升条件**：对象经历两次 Scavenge 仍存活，晋升至老生代。
 
-### 4.4 支配树（Dominator Tree）与保留大小
+### 3.4 支配树（Dominator Tree）与保留大小
 
 Retained Size 的计算依赖支配树。支配树是对象引用图的精简：若 $o$ 支配 $o'$，则 $o$ 是从根到 $o'$ 的必经节点。
 
@@ -233,7 +192,7 @@ Retained Size 的计算依赖支配树。支配树是对象引用图的精简：
 
 直觉：若删除 $o$，支配树中 $o$ 的子树全部变得不可达，故 $\text{retained}(o) = \text{shallow}(o\text{'s subtree})$。
 
-### 4.5 闭包的内存模型
+### 3.5 闭包的内存模型
 
 JavaScript 闭包（closure）通过 `[[Environment]]` 内部槽持有上层词法环境（Lexical Environment）。考虑：
 
@@ -250,7 +209,7 @@ const fn = outer(); // huge 被闭包持有，无法 GC
 
 V8 优化：仅 `inner` 实际引用的变量被捕获。但 V8 历史版本（< 8.0）有"过度捕获"问题——整个 `arguments` 与 `this` 被捕获，即使未使用。V8 8.0（2020）后引入 `escape analysis`，捕获粒度更细。
 
-### 4.6 FinalizationRegistry 的语义
+### 3.6 FinalizationRegistry 的语义
 
 `FinalizationRegistry` 的回调在对象被 GC **后**、某个微任务边界**异步**触发。形式化：
 
@@ -266,9 +225,9 @@ $$\text{GC}(o) \leq_t \text{callback}(o) \leq_t \text{undefined time}$$
 
 ---
 
-## 5. 代码示例（Production-Ready Examples）
+## 4. 代码示例（Production-Ready Examples）
 
-### 5.1 工程项目配置
+### 4.1 工程项目配置
 
 ```json
 {
@@ -287,7 +246,7 @@ $$\text{GC}(o) \leq_t \text{callback}(o) \leq_t \text{undefined time}$$
 }
 ```
 
-### 5.2 意外全局变量泄漏
+### 4.2 意外全局变量泄漏
 
 ```javascript
 // ES5 — 严格模式防止意外全局变量
@@ -313,7 +272,7 @@ console.log(globalThis.cache.length); // 1e6
 delete globalThis.cache; // 清理
 ```
 
-### 5.3 遗忘定时器泄漏
+### 4.3 遗忘定时器泄漏
 
 ```javascript
 // ES2015 — setInterval 必须清理
@@ -344,7 +303,7 @@ poller.start();
 poller.stop();
 ```
 
-### 5.4 闭包捕获泄漏
+### 4.4 闭包捕获泄漏
 
 ```javascript
 // ES2015 — 闭包捕获问题
@@ -374,7 +333,7 @@ const handlerFixed = createHandlerFixed();
 // 此时 hugeData 已可被 GC
 ```
 
-### 5.5 Detached DOM 泄漏
+### 4.5 Detached DOM 泄漏
 
 ```javascript
 // ES5 — Detached DOM 节点
@@ -401,7 +360,7 @@ function createAndRemoveFixed() {
 }
 ```
 
-### 5.6 事件监听器泄漏
+### 4.6 事件监听器泄漏
 
 ```javascript
 // ES5 — 重复添加监听器
@@ -439,7 +398,7 @@ function teardown() {
 }
 ```
 
-### 5.7 Map/Set 无限增长
+### 4.7 Map/Set 无限增长
 
 ```javascript
 // ES2015 — 缓存无限增长
@@ -498,7 +457,7 @@ class WeakCache {
 }
 ```
 
-### 5.8 Promise 未决泄漏
+### 4.8 Promise 未决泄漏
 
 ```javascript
 // ES2015 — 永远 pending 的 Promise
@@ -542,7 +501,7 @@ try {
 }
 ```
 
-### 5.9 WeakRef + FinalizationRegistry 实战
+### 4.9 WeakRef + FinalizationRegistry 实战
 
 ```javascript
 // ES2021 — WeakRef + FinalizationRegistry 缓存
@@ -576,7 +535,7 @@ class WeakCacheAdvanced {
 // 仅作为优化手段
 ```
 
-### 5.10 Puppeteer 内存回归测试
+### 4.10 Puppeteer 内存回归测试
 
 ```javascript
 // ES2017 — Puppeteer 内存回归测试
@@ -629,7 +588,7 @@ async function testMemoryLeak() {
 testMemoryLeak().catch(console.error);
 ```
 
-### 5.11 Node.js 内存监控
+### 4.11 Node.js 内存监控
 
 ```javascript
 // ES2015 — Node.js 内存监控
@@ -665,7 +624,7 @@ setInterval(() => {
 }, 5000);
 ```
 
-### 5.12 堆快照编程式生成
+### 4.12 堆快照编程式生成
 
 ```javascript
 // ES2015 — Node.js 编程式堆快照
@@ -703,9 +662,9 @@ setInterval(() => {
 
 ---
 
-## 6. 对比分析（Comparative Analysis）
+## 5. 对比分析（Comparative Analysis）
 
-### 6.1 JavaScript vs TypeScript
+### 5.1 JavaScript vs TypeScript
 
 | 维度 | JavaScript | TypeScript |
 | --- | --- | --- |
@@ -748,7 +707,7 @@ function withConnection(conn, fn) {
 }
 ```
 
-### 6.2 JavaScript vs Python
+### 5.2 JavaScript vs Python
 
 | 维度 | JavaScript | Python |
 | --- | --- | --- |
@@ -761,7 +720,7 @@ function withConnection(conn, fn) {
 
 Python 的引用计数在 CPython 中实时触发，资源释放更确定，但循环引用需依赖 `gc` 模块周期性回收。
 
-### 6.3 JavaScript vs Rust
+### 5.3 JavaScript vs Rust
 
 | 维度 | JavaScript | Rust |
 | --- | --- | --- |
@@ -773,7 +732,7 @@ Python 的引用计数在 CPython 中实时触发，资源释放更确定，但�
 
 Rust 的所有权模型在编译期保证内存安全，无 GC 停顿，但学习曲线陡峭。`Rc::new` + `Rc::clone` 形成的循环引用仍会泄漏，需用 `Weak<T>` 打破环。
 
-### 6.4 JavaScript vs WebAssembly
+### 5.4 JavaScript vs WebAssembly
 
 | 维度 | JavaScript | WebAssembly |
 | --- | --- | --- |
@@ -787,9 +746,9 @@ WASM 的线性内存不受 JS GC 管理，需 WASM 模块自行管理。Chrome D
 
 ---
 
-## 7. 常见陷阱与最佳实践（Pitfalls & Best Practices）
+## 6. 常见陷阱与最佳实践（Pitfalls & Best Practices）
 
-### 7.1 陷阱 1：闭包意外捕获
+### 6.1 陷阱 1：闭包意外捕获
 
 **问题**：
 
@@ -814,7 +773,7 @@ function setup() {
 }
 ```
 
-### 7.2 陷阱 2：Detached DOM 保留
+### 6.2 陷阱 2：Detached DOM 保留
 
 **问题**：
 
@@ -847,7 +806,7 @@ function unrender(id) {
 }
 ```
 
-### 7.3 陷阱 3：事件监听器累积
+### 6.3 陷阱 3：事件监听器累积
 
 **问题**：
 
@@ -887,7 +846,7 @@ class View {
 }
 ```
 
-### 7.4 陷阱 4：Promise 未决泄漏
+### 6.4 陷阱 4：Promise 未决泄漏
 
 **问题**：
 
@@ -910,7 +869,7 @@ function withTimeout(promise, ms) {
 }
 ```
 
-### 7.5 陷阱 5：Map/Set 缓存无上限
+### 6.5 陷阱 5：Map/Set 缓存无上限
 
 **问题**：
 
@@ -950,7 +909,7 @@ class TTLCache {
 }
 ```
 
-### 7.6 陷阱 6：定时器未清理
+### 6.6 陷阱 6：定时器未清理
 
 **问题**：
 
@@ -974,7 +933,7 @@ class Poller {
 }
 ```
 
-### 7.7 陷阱 7：依赖 FinalizationRegistry 保证正确性
+### 6.7 陷阱 7：依赖 FinalizationRegistry 保证正确性
 
 **问题**：
 
@@ -1005,7 +964,7 @@ function withFile(path, fn) {
 }
 ```
 
-### 7.8 陷阱 8：循环引用中的 WeakRef 误用
+### 6.8 陷阱 8：循环引用中的 WeakRef 误用
 
 **问题**：
 
@@ -1047,9 +1006,9 @@ class Node {
 
 ---
 
-## 8. 工程实践（Engineering Practice）
+## 7. 工程实践（Engineering Practice）
 
-### 8.1 内存预算（Memory Budget）
+### 7.1 内存预算（Memory Budget）
 
 为不同模块设定内存预算，超过预算即报警：
 
@@ -1082,7 +1041,7 @@ class MemoryBudget {
 }
 ```
 
-### 8.2 三快照工作流（Three-Snapshot Workflow）
+### 7.2 三快照工作流（Three-Snapshot Workflow）
 
 Chrome DevTools 经典泄漏定位流程：
 
@@ -1092,7 +1051,7 @@ Chrome DevTools 经典泄漏定位流程：
 
 比对 Snapshot 1 与 Snapshot 3，Delta 列显示操作后未回收的对象，即为泄漏候选。
 
-### 8.3 长任务监控
+### 7.3 长任务监控
 
 ```javascript
 // ES2015 — PerformanceObserver 监控长任务
@@ -1108,7 +1067,7 @@ observer.observe({ entryTypes: ['longtask'] });
 
 长任务（> 50 ms）可能与 GC 停顿相关，需结合内存指标分析。
 
-### 8.4 measureUserAgentSpecificMemory
+### 7.4 measureUserAgentSpecificMemory
 
 ```javascript
 // ES2019 — 浏览器内存测量 API（Chrome 89+）
@@ -1126,7 +1085,7 @@ async function measureMemory() {
 }
 ```
 
-### 8.5 内存回归 CI 集成
+### 7.5 内存回归 CI 集成
 
 ```yaml
 # .github/workflows/memory-check.yml
@@ -1156,7 +1115,7 @@ jobs:
           path: snapshots/
 ```
 
-### 8.6 生产环境内存监控
+### 7.6 生产环境内存监控
 
 ```javascript
 // ES2015 — Sentry 风格的内存上报
@@ -1200,9 +1159,9 @@ class MemoryMonitor {
 
 ---
 
-## 9. 案例研究（Case Studies）
+## 8. 案例研究（Case Studies）
 
-### 9.1 案例研究 1：React SPA 路由泄漏
+### 8.1 案例研究 1：React SPA 路由泄漏
 
 **背景**：某 React SPA 切换路由 100 次后，内存从 80 MB 增长至 350 MB。
 
@@ -1243,7 +1202,7 @@ class ViewCacheService {
 }
 ```
 
-### 9.2 案例研究 2：WebSocket 消息累积
+### 8.2 案例研究 2：WebSocket 消息累积
 
 **背景**：某聊天应用 WebSocket 连接 24 小时后内存 1.2 GB。
 
@@ -1272,7 +1231,7 @@ class MessageStore {
 }
 ```
 
-### 9.3 案例研究 3：图表库数据未释放
+### 8.3 案例研究 3：图表库数据未释放
 
 **背景**：某数据可视化应用使用 ECharts，切换图表类型 50 次后内存 800 MB。
 
@@ -1304,7 +1263,7 @@ function onUnmount() {
 }
 ```
 
-### 9.4 案例研究 4：Worker 池泄漏
+### 8.4 案例研究 4：Worker 池泄漏
 
 **背景**：某 Web Worker 池处理图片，运行 1 小时后内存 2 GB。
 
@@ -1328,7 +1287,7 @@ self.onmessage = (e) => {
 };
 ```
 
-### 9.5 案例研究 5：iframe 内存累积
+### 8.5 案例研究 5：iframe 内存累积
 
 **背景**：某仪表盘应用动态加载 iframe，切换 20 次后内存 1.5 GB。
 
@@ -1353,7 +1312,7 @@ function removeIframe(iframe) {
 }
 ```
 
-### 9.6 案例研究 6：第三方 SDK 泄漏
+### 8.6 案例研究 6：第三方 SDK 泄漏
 
 **背景**：某接入第三方分析的页面，PV 增长后内存持续上升。
 
@@ -1377,7 +1336,7 @@ setInterval(() => {
 }, 60000);
 ```
 
-### 9.7 案例研究 7：Service Worker 缓存泄漏
+### 8.7 案例研究 7：Service Worker 缓存泄漏
 
 **背景**：某 PWA 的 Service Worker 缓存持续增长。
 
@@ -1704,7 +1663,7 @@ const data = await withResourceAsync(
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 15**：为什么 `WeakRef` 与 `FinalizationRegistry` 不能用于资源正确性保证，但 `try/finally` 可以？从语义角度分析。
 
@@ -1745,7 +1704,7 @@ JavaScript 工作负载中 DOM 与闭包的循环引用非常普遍（IE 6 时�
 
 ---
 
-## 11. 参考文献（References）
+## 10. 参考文献（References）
 
 1. McCarthy, J. (1960). Recursive functions of symbolic expressions and their computation by machine, Part I. *Communications of the ACM*, 3(4), 184–195. https://doi.org/10.1145/367177.367199
 
@@ -1789,28 +1748,28 @@ JavaScript 工作负载中 DOM 与闭包的循环引用非常普遍（IE 6 时�
 
 ---
 
-## 12. 延伸阅读（Further Reading）
+## 11. 延伸阅读（Further Reading）
 
-### 12.1 学术论文
+### 11.1 学术论文
 
 - **Jones, R., & Ryder, A. (2008)**: *A survey of garbage collection and heap segmentation*. Science of Computer Programming. — 现代垃圾回收综述。
 - **Blackburn, S. M., et al. (2004)**: *Lock-free garbage collection for real-time Java*. PLDI. — 实时 GC 的工程化研究。
 - **Agesen, O., Pazel, J., & Smith, T. (1999)**: *Constraints and design of the HotSpot virtual machine*. OOPSLA. — V8 设计的前身。
 
-### 12.2 规范文档
+### 11.2 规范文档
 
 - **ECMA-262 §8.6**: Agent Clusters and Job Queue — 事件循环与微任务模型。
 - **ECMA-262 §10.3**: Memory Model — JavaScript 内存模型。
 - **HTML Living Standard §2.9**: Structured Clone Algorithm — `structuredClone` 的规范定义。
 - **W3C Web Performance Working Group**: Performance Timeline Level 2 — `PerformanceObserver` 与 `performance.memory`。
 
-### 12.3 工程实践
+### 11.3 工程实践
 
 - **V8 Blog** (https://v8.dev/blog): V8 团队技术博客，定期发布 GC、JIT、内存优化内容。
 - **Chrome DevTools Documentation** (https://developer.chrome.com/docs/devtools/memory-problems/): Chrome 内存分析官方文档。
 - **MDN Web Docs**: `WeakRef`, `FinalizationRegistry`, `Performance.memory` 的参考文档。
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **WebAssembly 内存模型**：WASM 线性内存与 JS GC 的协同，跨语言内存所有权。
 - **SharedArrayBuffer 与 Atomics**：跨线程共享内存的同步原语与泄漏风险。
@@ -1818,7 +1777,7 @@ JavaScript 工作负载中 DOM 与闭包的循环引用非常普遍（IE 6 时�
 - **OffscreenCanvas**：将 Canvas 渲染移至 Worker，避免主线程内存压力。
 - **Site Isolation 与 Spectre 缓解**：跨源内存隔离的安全机制。
 
-### 12.5 相关课程
+### 11.5 相关课程
 
 - **MIT 6.031: Software Construction** — 软件构建中的内存安全与抽象。
 - **Stanford CS107: Computer Organization & Systems** — C 语言内存模型与堆管理。

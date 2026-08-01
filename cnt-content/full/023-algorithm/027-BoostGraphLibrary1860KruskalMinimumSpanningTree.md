@@ -37,14 +37,6 @@ prerequisites:
   - algorithm/贪心算法
   - algorithm/并查集
   - cs-fundamentals/离散数学
-learningObjectives:
-  - 记忆 Kruskal 算法作为贪心范式的形式化定义，复述"按边权升序加入不形成环的边"的贪心策略、时间复杂度 $O(E \log E)$、空间复杂度 $O(V)$ 的结论
-  - 理解 Kruskal 1956《On the Shortest Spanning Subtree of a Graph》Proc. AMS 7(1):48-50 DOI:10.1090/S0002-9939-1956-0078686-7、Prim 1957《Shortest Connection Networks and Some Generalizations》Bell System Technical Journal 36(6):1389-1401、Jarník 1930、Borůvka 1926《O jistém problému minimálním》Práce Moravské Přírodovědecké Společnosti 6:57-63 的历史脉络，说明四位独立发现者的原始动机与设计思路差异
-  - 应用切割性质（Cut Property）与回路性质（Cycle Property）证明 Kruskal 算法的正确性，编写 Python/C++/Java 多语言实现，处理最小生成森林、次小生成树、最大生成树变体
-  - 分析 Kruskal 算法的贪心选择性质（Greedy-Choice Property）与最优子结构（Optimal Substructure），论证并查集路径压缩+按秩合并将 $E$ 次合并+查找的总代价降至 $O(E \cdot \alpha(V))$
-  - 评估 Kruskal（$O(E \log E)$，稀疏图优）与 Prim（$O(V^2)$ 稠密图 / $O(E \log V)$ 稀疏图）、Borůvka（$O(E \log V)$，并行友好）在不同图密度与并行化需求维度上的选型决策
-  - 对比 Kruskal 加边法与 Prim 加点法、Borůvka 分治法在算法设计思想、数据结构依赖、稀疏/稠密图性能、并行可扩展性维度的差异
-  - 创造性设计基于 Kruskal 的工业级解决方案，如电力网络最小成本规划、单链聚类（Single-Linkage Clustering）、TSP 2-近似算法、图像分割最小生成树
 references:
   - type: journal
     authors:
@@ -248,6 +240,7 @@ etymology:
     english: inverse Ackermann function
     origin: '源自 Wilhelm Ackermann 1928 年提出的快速增长函数 A(m,n)。其反函数 alpha(n) 增长极慢（alpha(10^80) ≈ 4），是 Tarjan 1975 证明的 DSU 均摊复杂度下界。在 Kruskal 算法中，E 次并查集操作总代价为 O(E alpha(V))，可视为 O(E)'
 ---
+
 
 ## 1. 概述与学习目标
 

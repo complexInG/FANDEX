@@ -16,6 +16,7 @@ prerequisites:
   - kotlin/概述与环境配置
 ---
 
+
 # Channel 与 BroadcastChannel（Channel and BroadcastChannel）
 
 > 本文档对标 MIT 6.005、Stanford CS193P、CMU 15-410 教学水准，系统讲解 Kotlin 协程中的 `Channel<T>`、`SendChannel`/`ReceiveChannel`、`BroadcastChannel`（已废弃）、`SharedFlow` 替代方案、`produce`/`actor` 构建器以及 `select` 多路复用机制。内容覆盖 CSP（Communicating Sequential Processes）理论基础、Kotlin 1.0 至 2.0 的演进、JVM 字节码实现、跨语言对比、企业级生产代码与习题解析。
@@ -37,84 +38,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述 `Channel<T>` 的核心定义：协程间传递单个元素的热（hot）数据流原语，实现 `SendChannel` 与 `ReceiveChannel` 双接口。
-- 列举 `Channel` 的四种容量类型：`RENDEZVOUS`（默认 0 缓冲）、`UNLIMITED`（无上限缓冲）、`BUFFERED`（默认 64 缓冲）、`CONFLATED`（仅保留最新值）。
-- 背诵 `send` 是挂起函数（suspend），`receive` 也是挂起函数；`trySend`/`tryReceive` 是非挂起的尝试性 API。
-- 记忆 `BroadcastChannel` 在 Kotlin 1.5 被标记为 `@ObsoleteCoroutinesApi`，Kotlin 1.7 后逐步废弃，推荐使用 `SharedFlow` 替代。
-- 列举 `produce` 构建器返回 `ReceiveChannel<T>`，是生产者协程的快捷启动方式；`actor` 构建器（已废弃）返回 `SendChannel<T>`，是状态封装协程的启动方式。
-- 记忆 `select` 表达式用于多路复用：在多个挂起操作（`onReceive`、`onSend`、`onAwait`）中等待最先就绪的一个。
-- 背诵 `Channel` 默认是**非关闭传播**的：关闭发送端不会自动关闭接收端，但 `receive` 会抛出 `ClosedReceiveChannelException`。
-
-### 1.2 Understand（理解）
-
-完成本章节后，学习者应能够解释以下概念：
-
-- 用自己的语言解释 CSP（Communicating Sequential Processes）模型的核心思想："Don't communicate by sharing memory; share memory by communicating."
-- 描述 `Channel` 在四种容量模式下的行为差异，特别是 `RENDEZVOUS` 模式下"发送方必须等待接收方就绪"的会合语义。
-- 解释 `SendChannel` 与 `ReceiveChannel` 接口分离的设计哲学：单向通信、最小权限原则。
-- 阐述 `BroadcastChannel` 被废弃的根本原因：与 `SharedFlow` 相比，缺少 replay 缓冲、缺少 `BufferOverflow` 策略、API 设计不统一。
-- 理解 `Channel` 内部的锁实现：基于 `suspend` 协程的 `LockFreeLinkedListHead` 无锁队列，避免阻塞线程。
-- 解释 `select` 表达式的执行机制：注册多个 `SelectClause`，第一个就绪的 clause 被选中执行，其余被取消。
-- 阐述 `Channel` 与 `Flow` 的本质区别：`Channel` 是热数据流（多个元素共享同一上游），`Flow` 是冷数据流（每个收集者独立触发上游执行）。
-
-### 1.3 Apply（应用）
-
-完成本章节后，学习者应能够在以下场景中应用 Channel：
-
-- 在生产者-消费者模式中使用 `Channel` 解耦生产速率与消费速率：`produce` 构建器 + `consumeEach` 消费。
-- 在协程间传递事件：使用 `Channel<Event>` 实现事件总线（Event Bus）。
-- 实现工作窃取（Work Stealing）调度器：多个消费者从共享 `Channel` 中拉取任务。
-- 使用 `select` 实现超时控制：在 `onReceive` 与 `onAwait(timeoutJob)` 之间选择。
-- 在 Android 中使用 `Channel` 实现 UI 事件队列：避免事件丢失与事件重排序。
-- 使用 `MutableSharedFlow` 替代废弃的 `BroadcastChannel` 实现广播订阅模式。
-- 在 Ktor 服务端使用 `Channel` 实现 SSE（Server-Sent Events）推送缓冲。
-
-### 1.4 Analyze（分析）
-
-完成本章节后，学习者应能够进行以下分析：
-
-- 反编译 `Channel` 的字节码，分析 `LockFreeLinkedListHead` 的无锁算法实现，识别 CAS 操作。
-- 对比同一业务场景下 `Channel` 与 `SharedFlow` 的吞吐量、内存占用、延迟表现。
-- 分析 `RENDEZVOUS` 模式下 `send` 与 `receive` 的会合点同步机制，画出协程状态转换图。
-- 解构 `select` 表达式的实现原理：`SelectInstance` 如何聚合多个 `SelectClause`，如何处理取消。
-- 分析 `Channel` 在背压（Backpressure）场景下的行为：缓冲满后 `send` 挂起，从而天然支持背压。
-- 对比 `Channel` 与 Java 的 `BlockingQueue`、Go 的 channel、Rust 的 `mpsc::channel` 在设计哲学上的差异。
-
-### 1.5 Evaluate（评价）
-
-完成本章节后，学习者应能够评价以下设计决策：
-
-- 评价 Kotlin 选择"分离 `SendChannel`/`ReceiveChannel` 接口"而非"单一 Channel 接口"的设计权衡。
-- 评价 `BroadcastChannel` 被废弃、统一到 `SharedFlow` 的设计决策是否合理。
-- 评价 `RENDEZVOUS` 作为默认容量模式的优劣：默认零缓冲 vs 默认有缓冲。
-- 评价 `select` 表达式相对回调组合的优劣：可读性 vs 性能。
-- 评价 `Channel` 不支持多订阅者（一对一通信）的设计：是否应改为默认多播。
-- 评价 Kotlin 协程选择基于 CSP 模型而非 Actor 模型的设计决策。
-
-### 1.6 Create（创造）
-
-完成本章节后，学习者应能够创造以下作品：
-
-- 设计并实现一个基于 `Channel` 的协程间通信框架，支持优先级队列、超时、取消。
-- 设计一个事件总线（Event Bus）系统：基于 `SharedFlow` 实现多播订阅、基于 `Channel` 实现点对点消息。
-- 实现一个工作池（Worker Pool）：使用 `Channel` 分发任务，支持动态扩容、负载均衡。
-- 设计一个流式处理管道（Pipeline）：`produce` → `map` → `filter` → `consume`，每一步通过 `Channel` 连接。
-- 撰写一份团队 Channel 使用规范：何时用 `Channel`、何时用 `Flow`、何时用 `SharedFlow`、何时用 `StateFlow`。
-- 实现一个自定义的 `ConflatedChannel` 变体：保留最新 N 个值而非仅 1 个。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：协程间通信的挑战
+### 1.1 问题背景：协程间通信的挑战
 
 协程的核心价值在于"以同步写法表达异步逻辑"，但多个协程之间如何安全地共享数据、传递消息，是一个长期存在的工程难题。传统的并发通信方案可分为三类：
 
@@ -143,7 +69,7 @@ Kotlin 协程选择了 **CSP 模型** 作为协程间通信的核心原语，原
 3. **类型安全**：`Channel<T>` 通过泛型保证消息类型一致，编译期检查。
 4. **与 Flow 生态统一**：`Channel` 可与 `Flow` 互转，形成统一的数据流抽象。
 
-### 2.2 学术背景：CSP 与 Go channel
+### 1.2 学术背景：CSP 与 Go channel
 
 CSP（Communicating Sequential Processes）由 Tony Hoare 于 1978 年提出，是并发计算的数学模型。其核心思想：
 
@@ -173,7 +99,7 @@ Kotlin 的 `Channel` 借鉴了 Go channel 的设计，但做了若干改进：
 | 挂起 vs 阻塞 | 阻塞（goroutine 内） | 挂起（不阻塞线程） |
 | 异常处理 | panic on close | `ClosedReceiveChannelException` |
 
-### 2.3 Kotlin 1.0（2016 年）：无 Channel 时代
+### 1.3 Kotlin 1.0（2016 年）：无 Channel 时代
 
 Kotlin 1.0 不支持协程，开发者使用传统的并发原语：
 
@@ -197,7 +123,7 @@ class Counter {
 - 难以调试。
 - 缺乏类型安全保障。
 
-### 2.4 Kotlin 1.1（2017 年 5 月）：协程实验性引入 Channel
+### 1.4 Kotlin 1.1（2017 年 5 月）：协程实验性引入 Channel
 
 Kotlin 1.1 引入协程作为实验性特性，同时引入 `Channel` 作为协程间通信原语：
 
@@ -224,7 +150,7 @@ launch {
 - `produce { ... }`：生产者构建器。
 - `actor<T> { ... }`：Actor 构建器（实验性）。
 
-### 2.5 Kotlin 1.2-1.3（2017-2018）：API 完善与 GA
+### 1.5 Kotlin 1.2-1.3（2017-2018）：API 完善与 GA
 
 Kotlin 1.2 引入 `BroadcastChannel` 作为多播方案：
 
@@ -248,7 +174,7 @@ Kotlin 1.3 将协程提升为 GA，`Channel` API 稳定化：
 3. **`select` 表达式 GA**：支持多路复用。
 4. **`consumeEach` 扩展**：安全的遍历消费。
 
-### 2.6 Kotlin 1.4-1.5（2020-2021）：`BroadcastChannel` 走向废弃
+### 1.6 Kotlin 1.4-1.5（2020-2021）：`BroadcastChannel` 走向废弃
 
 随着 `Flow` API 的成熟，`BroadcastChannel` 的局限性逐渐显现：
 
@@ -270,7 +196,7 @@ val sharedFlow = MutableSharedFlow<Int>(
 )
 ```
 
-### 2.7 Kotlin 1.6-1.7（2021-2022）：`actor` 废弃与 `select` 改进
+### 1.7 Kotlin 1.6-1.7（2021-2022）：`actor` 废弃与 `select` 改进
 
 Kotlin 1.6 将 `actor` 构建器标记为废弃，推荐使用 `Channel` + 状态封装协程：
 
@@ -308,7 +234,7 @@ Kotlin 1.7 对 `select` 进行优化：
 2. **更精确的类型推断**：分支返回类型自动收窄。
 3. **更好的诊断**：未处理的 clause 会有警告。
 
-### 2.8 Kotlin 1.8-1.9（2023 年）：`Channel` 与 `Flow` 桥接完善
+### 1.8 Kotlin 1.8-1.9（2023 年）：`Channel` 与 `Flow` 桥接完善
 
 Kotlin 1.8 引入 `receiveAsFlow()` 与 `consumeAsFlow()` 扩展，将 `Channel` 转换为 `Flow`：
 
@@ -324,7 +250,7 @@ flow.collect { value ->
 
 Kotlin 1.9 进一步引入 `Channel(capacity = Channel.RENDEZVOUS)` 的实验性变体 `Channel(Channel.RENDEZVOUS, onBufferOverflow = ...)`，允许为 `RENDEZVOUS` 模式配置溢出策略（虽然 `RENDEZVOUS` 模式下缓冲始终为 0，溢出策略仅影响 `trySend` 的行为）。
 
-### 2.9 Kotlin 2.0（2024 年 5 月）：K2 优化
+### 1.9 Kotlin 2.0（2024 年 5 月）：K2 优化
 
 Kotlin 2.0 的 K2 编译器对 `Channel` 与 `select` 进行了内部优化：
 
@@ -333,7 +259,7 @@ Kotlin 2.0 的 K2 编译器对 `Channel` 与 `select` 进行了内部优化：
 3. **`LockFreeLinkedList` 优化**：JVM 平台的 CAS 操作进一步优化，吞吐量提升约 15%。
 4. **KMP 一致性**：JVM、JS、Native、Wasm 平台的 `Channel` 行为完全一致。
 
-### 2.10 JetBrains 的设计哲学
+### 1.10 JetBrains 的设计哲学
 
 JetBrains 在设计 `Channel` 时遵循了以下哲学：
 
@@ -345,7 +271,7 @@ JetBrains 在设计 `Channel` 时遵循了以下哲学：
 6. **与 Flow 生态统一**：`Channel` 可双向转换为 `Flow`，形成统一抽象。
 7. **废弃不删除**：`BroadcastChannel`/`actor` 标记废弃但保留，向后兼容。
 
-### 2.11 时间线总览
+### 1.11 时间线总览
 
 ```
 2016  Kotlin 1.0 — 无协程，使用传统并发原语
@@ -360,9 +286,9 @@ JetBrains 在设计 `Channel` 时遵循了以下哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Channel 的类型定义
+### 2.1 Channel 的类型定义
 
 根据 Kotlin 官方文档，`Channel<T>` 的形式化定义如下：
 
@@ -377,7 +303,7 @@ $$
 
 `Channel<T>` 是这两个接口的合取，既是发送端也是接收端。若仅需发送权限，可声明为 `SendChannel<T>`；若仅需接收权限，可声明为 `ReceiveChannel<T>`。
 
-### 3.2 容量模式的形式化
+### 2.2 容量模式的形式化
 
 `Channel` 的容量（capacity）形式化定义：
 
@@ -404,7 +330,7 @@ $$
 \end{cases}
 $$
 
-### 3.3 会合语义（Rendezvous）
+### 2.3 会合语义（Rendezvous）
 
 `RENDEZVOUS` 模式下，发送方与接收方的会合点（Rendezvous Point）可形式化为：
 
@@ -418,7 +344,7 @@ $$
 2. **强同步**：发送方知道接收方已收到。
 3. **强背压**：发送速率被接收速率限制。
 
-### 3.4 FIFO 顺序保证
+### 2.4 FIFO 顺序保证
 
 `Channel` 保证 FIFO（First-In-First-Out）顺序：
 
@@ -434,7 +360,7 @@ $$
 \text{Channel} \cong \text{FIFO Queue}\langle T \rangle
 $$
 
-### 3.5 关闭语义的形式化
+### 2.5 关闭语义的形式化
 
 `close()` 操作的形式化语义：
 
@@ -454,7 +380,7 @@ $$
 \text{Open} \xrightarrow{\text{close}()} \text{Closing}(\text{buffer} \neq \emptyset) \xrightarrow{\text{drain}} \text{Closed}
 $$
 
-### 3.6 取消语义的形式化
+### 2.6 取消语义的形式化
 
 `cancel()` 操作的形式化语义：
 
@@ -474,7 +400,7 @@ $$
 \text{Open} \xrightarrow{\text{cancel}()} \text{Cancelled}(\text{cause})
 $$
 
-### 3.7 BroadcastChannel 的形式化（已废弃）
+### 2.7 BroadcastChannel 的形式化（已废弃）
 
 `BroadcastChannel<T>` 的形式化定义：
 
@@ -499,7 +425,7 @@ $$
 2. **订阅者有界**：超过 `subscribers` 上限后新订阅失败。
 3. **资源开销大**：每个订阅者维护独立的 `ReceiveChannel`。
 
-### 3.8 SharedFlow 的形式化（替代方案）
+### 2.8 SharedFlow 的形式化（替代方案）
 
 `SharedFlow<T>` 的形式化定义：
 
@@ -521,7 +447,7 @@ $$
 
 即：先回放历史值，再转发新值。
 
-### 3.9 select 表达式的形式化
+### 2.9 select 表达式的形式化
 
 `select` 表达式形式化定义：
 
@@ -545,9 +471,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 无锁队列的实现原理
+### 3.1 无锁队列的实现原理
 
 `Channel` 的核心数据结构是 `LockFreeLinkedListHead`，一种基于 CAS（Compare-And-Swap）的无锁链表：
 
@@ -588,7 +514,7 @@ $$
 
 CAS 是原子操作，由 CPU 指令直接支持（x86 的 `lock cmpxchg`、ARM 的 `ldrex`/`strex`）。
 
-### 4.2 会合点的同步机制
+### 3.2 会合点的同步机制
 
 `RENDEZVOUS` 模式下，`send` 与 `receive` 必须会合。会合点的实现机制：
 
@@ -657,7 +583,7 @@ suspend fun receive(): T {
 }
 ```
 
-### 4.3 CONFLATED 模式的实现
+### 3.3 CONFLATED 模式的实现
 
 `CONFLATED` 模式下，缓冲区仅保留最新值。实现机制：
 
@@ -696,7 +622,7 @@ $$
 
 即：每次 `send` 都覆盖缓冲区，永远只保留最新值。
 
-### 4.4 BUFFERED 模式的实现
+### 3.4 BUFFERED 模式的实现
 
 `BUFFERED` 模式下，使用环形缓冲区（Ring Buffer）：
 
@@ -746,7 +672,7 @@ $$
 
 这种设计避免了链表节点的动态分配，提升性能。
 
-### 4.5 select 表达式的实现原理
+### 3.5 select 表达式的实现原理
 
 `select` 表达式的核心是 `SelectInstance`，它聚合多个 `SelectClause`：
 
@@ -786,7 +712,7 @@ $$
 
 即：等待第一个 clause 就绪，取消其他 clause。
 
-### 4.6 关闭与取消的传播
+### 3.6 关闭与取消的传播
 
 `Channel` 的关闭与取消遵循以下传播规则：
 
@@ -804,7 +730,7 @@ Open ----------------> Closing ----------------> Closed
   +--------------------------------------------->+
 ```
 
-### 4.7 Channel 与 Flow 的桥接
+### 3.7 Channel 与 Flow 的桥接
 
 `Channel` 与 `Flow` 的桥接通过以下扩展函数实现：
 
@@ -835,7 +761,7 @@ $$
 
 这种桥接让 `Channel` 与 `Flow` 形成统一的数据流抽象，可在两种 API 间自由切换。
 
-### 4.8 JVM 字节码层面
+### 3.8 JVM 字节码层面
 
 在 JVM 平台上，`Channel` 的 `send`/`receive` 编译为带 `Continuation` 参数的方法：
 
@@ -861,9 +787,9 @@ public static Object select(SelectBuilder<R> builder, Continuation<? super R> p1
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础 Channel 使用
+### 4.1 基础 Channel 使用
 
 ```kotlin
 // Kotlin 2.0
@@ -907,7 +833,7 @@ Sent 1
 ...
 ```
 
-### 5.2 四种容量模式对比
+### 4.2 四种容量模式对比
 
 ```kotlin
 // Kotlin 2.0
@@ -972,7 +898,7 @@ suspend fun main() = coroutineScope {
 }
 ```
 
-### 5.3 produce 构建器：生产者协程
+### 4.3 produce 构建器：生产者协程
 
 ```kotlin
 // Kotlin 2.0
@@ -1008,7 +934,7 @@ Consumed: 10
 Done
 ```
 
-### 5.4 工作池模式（Worker Pool）
+### 4.4 工作池模式（Worker Pool）
 
 ```kotlin
 // Kotlin 2.0 - 企业级工作池实现
@@ -1110,7 +1036,7 @@ suspend fun main() = coroutineScope {
 }
 ```
 
-### 5.5 事件总线（基于 SharedFlow 替代 BroadcastChannel）
+### 4.5 事件总线（基于 SharedFlow 替代 BroadcastChannel）
 
 ```kotlin
 // Kotlin 2.0 - 现代事件总线实现
@@ -1198,7 +1124,7 @@ suspend fun main() = coroutineScope {
 }
 ```
 
-### 5.6 select 多路复用
+### 4.6 select 多路复用
 
 ```kotlin
 // Kotlin 2.0 - select 多路复用示例
@@ -1265,7 +1191,7 @@ suspend fun main() = coroutineScope {
 }
 ```
 
-### 5.7 管道（Pipeline）模式
+### 4.7 管道（Pipeline）模式
 
 ```kotlin
 // Kotlin 2.0 - 流式处理管道
@@ -1327,7 +1253,7 @@ Number: 100
 Pipeline complete
 ```
 
-### 5.8 自定义 Channel 配置
+### 4.8 自定义 Channel 配置
 
 ```kotlin
 // Kotlin 2.0 - 自定义 Channel 配置
@@ -1370,7 +1296,7 @@ suspend fun main() = coroutineScope {
 }
 ```
 
-### 5.9 Channel 与 Flow 互转
+### 4.9 Channel 与 Flow 互转
 
 ```kotlin
 // Kotlin 2.0
@@ -1417,7 +1343,7 @@ suspend fun main() = coroutineScope {
 }
 ```
 
-### 5.10 完整的消费者-生产者系统
+### 4.10 完整的消费者-生产者系统
 
 ```kotlin
 // Kotlin 2.0 - 企业级生产者-消费者系统
@@ -1557,7 +1483,7 @@ suspend fun main() = coroutineScope {
 }
 ```
 
-### 5.11 跨平台 Channel 使用
+### 4.11 跨平台 Channel 使用
 
 ```kotlin
 // Kotlin 2.0 - KMP 项目中的 Channel
@@ -1603,9 +1529,9 @@ class CrossPlatformApp {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Kotlin Channel vs Java BlockingQueue
+### 5.1 Kotlin Channel vs Java BlockingQueue
 
 | 维度 | Kotlin Channel | Java BlockingQueue |
 |------|---------------|-------------------|
@@ -1618,7 +1544,7 @@ class CrossPlatformApp {
 | 性能（延迟） | 低（挂起开销小） | 中（线程切换开销） |
 | 适用场景 | 协程间通信 | 跨线程通信 |
 
-### 6.2 Kotlin Channel vs Go channel
+### 5.2 Kotlin Channel vs Go channel
 
 | 维度 | Kotlin Channel | Go channel |
 |------|---------------|-----------|
@@ -1631,7 +1557,7 @@ class CrossPlatformApp {
 | 类型系统 | 协变/逆变 | 无泛型（1.18 前） |
 | 性能 | 约 70% Go channel | 基准 |
 
-### 6.3 Kotlin Channel vs Rust mpsc
+### 5.3 Kotlin Channel vs Rust mpsc
 
 | 维度 | Kotlin Channel | Rust mpsc |
 |------|---------------|-----------|
@@ -1643,7 +1569,7 @@ class CrossPlatformApp {
 | 性能 | 约 60% Rust mpsc | 基准 |
 | 异步支持 | 原生 | tokio::sync::mpsc |
 
-### 6.4 Kotlin Channel vs Scala/Akka Actor
+### 5.4 Kotlin Channel vs Scala/Akka Actor
 
 | 维度 | Kotlin Channel | Akka Actor |
 |------|---------------|-----------|
@@ -1655,7 +1581,7 @@ class CrossPlatformApp {
 | 性能 | 高（无序列化） | 中（消息序列化） |
 | 适用场景 | 单进程高并发 | 分布式系统 |
 
-### 6.5 BroadcastChannel vs SharedFlow 详细对比
+### 5.5 BroadcastChannel vs SharedFlow 详细对比
 
 | 维度 | BroadcastChannel | SharedFlow |
 |------|------------------|-----------|
@@ -1668,7 +1594,7 @@ class CrossPlatformApp {
 | 资源开销 | 每订阅者独立 Channel | 共享内部状态 |
 | API 一致性 | 与 Flow 不统一 | 与 Flow 统一 |
 
-### 6.6 Channel vs Flow vs SharedFlow vs StateFlow
+### 5.6 Channel vs Flow vs SharedFlow vs StateFlow
 
 | 类型 | 热度 | 订阅者数 | Replay | 适用场景 |
 |------|------|---------|--------|---------|
@@ -1677,7 +1603,7 @@ class CrossPlatformApp {
 | SharedFlow | 热 | 多（一对多） | 可配置 | 事件广播 |
 | StateFlow | 热 | 多（一对多） | 1（最新值） | 状态表示 |
 
-### 6.7 性能基准对比
+### 5.7 性能基准对比
 
 在 8 核 CPU、16GB RAM 的测试环境中，使用 JMH 基准测试：
 
@@ -1696,9 +1622,9 @@ class CrossPlatformApp {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：忘记关闭 Channel 导致泄漏
+### 6.1 陷阱 1：忘记关闭 Channel 导致泄漏
 
 ```kotlin
 // 反模式：忘记关闭 Channel
@@ -1729,7 +1655,7 @@ fun goodExample() = CoroutineScope(Dispatchers.Default).launch {
 
 **最佳实践**：优先使用 `produce { ... }` 构建器，它会自动管理 `Channel` 生命周期。
 
-### 7.2 陷阱 2：在 `GlobalScope` 中使用 Channel
+### 6.2 陷阱 2：在 `GlobalScope` 中使用 Channel
 
 ```kotlin
 // 反模式：GlobalScope 中创建 Channel
@@ -1749,7 +1675,7 @@ suspend fun goodExample(scope: CoroutineScope) {
 
 **最佳实践**：始终在 `CoroutineScope` 内创建 `Channel`，避免 `GlobalScope`。
 
-### 7.3 陷阱 3：误解 RENDEZVOUS 模式
+### 6.3 陷阱 3：误解 RENDEZVOUS 模式
 
 ```kotlin
 // 反模式：RENDEZVOUS 模式下接收方未启动
@@ -1782,7 +1708,7 @@ suspend fun goodExample() = coroutineScope {
 
 **最佳实践**：理解 `RENDEZVOUS` 的会合语义，必要时使用 `BUFFERED` 解耦。
 
-### 7.4 陷阱 4：在 `select` 中使用阻塞操作
+### 6.4 陷阱 4：在 `select` 中使用阻塞操作
 
 ```kotlin
 // 反模式：select 中调用阻塞操作
@@ -1804,7 +1730,7 @@ select<Unit> {
 
 **最佳实践**：`select` 的 clause 中只调用 `suspend` 函数，避免阻塞。
 
-### 7.5 陷阱 5：使用废弃的 BroadcastChannel
+### 6.5 陷阱 5：使用废弃的 BroadcastChannel
 
 ```kotlin
 // 反模式：使用废弃的 BroadcastChannel
@@ -1820,7 +1746,7 @@ val sharedFlow = MutableSharedFlow<Int>(
 
 **最佳实践**：迁移到 `SharedFlow`，享受统一的 Flow API。
 
-### 7.6 陷阱 6：使用废弃的 actor 构建器
+### 6.6 陷阱 6：使用废弃的 actor 构建器
 
 ```kotlin
 // 反模式：使用废弃的 actor 构建器
@@ -1852,7 +1778,7 @@ class CounterActor {
 
 **最佳实践**：手动封装 `Channel` 与协程，更灵活可控。
 
-### 7.7 陷阱 7：在 Channel 上调用多次 `receive`
+### 6.7 陷阱 7：在 Channel 上调用多次 `receive`
 
 ```kotlin
 // 反模式：在 for 循环外手动 receive
@@ -1878,7 +1804,7 @@ channel.consumeEach { println(it) }
 
 **最佳实践**：使用 `for (v in channel)` 或 `consumeEach`，自动处理关闭。
 
-### 7.8 陷阱 8：异常吞没
+### 6.8 陷阱 8：异常吞没
 
 ```kotlin
 // 反模式：异常未被处理
@@ -1903,7 +1829,7 @@ launch(handler) {
 
 **最佳实践**：使用 `CoroutineExceptionHandler` 或 `SupervisorJob` 处理异常。
 
-### 7.9 陷阱 9：混淆 Channel 与 SharedFlow
+### 6.9 陷阱 9：混淆 Channel 与 SharedFlow
 
 ```kotlin
 // 反模式：用 Channel 做事件广播
@@ -1921,7 +1847,7 @@ val eventFlow = MutableSharedFlow<Event>()
 - 状态表示：`StateFlow`。
 - 数据流转换：`Flow`。
 
-### 7.10 陷阱 10：在 `consumeEach` 外消费 Channel
+### 6.10 陷阱 10：在 `consumeEach` 外消费 Channel
 
 ```kotlin
 // 反模式：consumeEach 与手动 receive 混用
@@ -1940,7 +1866,7 @@ launch {
 
 **最佳实践**：`consumeEach` 会取消 Channel，避免在 `consumeEach` 外消费。
 
-### 7.11 最佳实践总结
+### 6.11 最佳实践总结
 
 1. **优先使用 `produce`**：自动管理 `Channel` 生命周期。
 2. **结构化并发**：始终在 `CoroutineScope` 内创建 `Channel`。
@@ -1955,9 +1881,9 @@ launch {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 Gradle 项目配置
+### 7.1 Gradle 项目配置
 
 ```kotlin
 // build.gradle.kts
@@ -1986,7 +1912,7 @@ tasks.test {
 }
 ```
 
-### 8.2 Android 项目配置
+### 7.2 Android 项目配置
 
 ```kotlin
 // android/app/build.gradle.kts
@@ -2005,7 +1931,7 @@ dependencies {
 }
 ```
 
-### 8.3 KMP 项目配置
+### 7.3 KMP 项目配置
 
 ```kotlin
 // build.gradle.kts
@@ -2032,7 +1958,7 @@ kotlin {
 }
 ```
 
-### 8.4 单元测试示例
+### 7.4 单元测试示例
 
 ```kotlin
 // src/test/kotlin/ChannelTest.kt
@@ -2126,7 +2052,7 @@ private fun ChannelResult<Unit>.assertSuccess() {
 }
 ```
 
-### 8.5 性能监控
+### 7.5 性能监控
 
 ```kotlin
 // 性能监控工具
@@ -2179,7 +2105,7 @@ data class ChannelStats(
 )
 ```
 
-### 8.6 集成测试示例
+### 7.6 集成测试示例
 
 ```kotlin
 // 集成测试：完整的生产者-消费者系统
@@ -2271,7 +2197,7 @@ class ProducerConsumerIntegrationTest {
 }
 ```
 
-### 8.7 调试技巧
+### 7.7 调试技巧
 
 ```kotlin
 // 启用协程调试
@@ -2309,7 +2235,7 @@ suspend fun main() = runBlocking {
 ...
 ```
 
-### 8.8 生产部署注意事项
+### 7.8 生产部署注意事项
 
 1. **资源监控**：监控 `Channel` 的缓冲区大小，避免 `UNLIMITED` 导致 OOM。
 2. **错误恢复**：使用 `SupervisorJob` 隔离故障，避免单点故障传播。
@@ -2321,9 +2247,9 @@ suspend fun main() = runBlocking {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Netflix 的协程 Channel 应用
+### 8.1 案例一：Netflix 的协程 Channel 应用
 
 Netflix 在其 Android 应用中大量使用 Kotlin 协程与 `Channel`：
 
@@ -2359,7 +2285,7 @@ class VideoPlayerEventBus {
 2. **顺序保证**：`Channel` 的 FIFO 保证事件顺序。
 3. **结构化并发**：事件处理绑定到播放器生命周期。
 
-### 9.2 案例二：Slack 的消息推送系统
+### 8.2 案例二：Slack 的消息推送系统
 
 Slack 使用 `SharedFlow` 替代废弃的 `BroadcastChannel` 实现多客户端消息推送：
 
@@ -2396,7 +2322,7 @@ class SlackClient(private val broadcaster: MessageBroadcaster) {
 2. **`DROP_OLDEST` 策略**：网络抖动时丢弃旧消息，避免内存爆炸。
 3. **多订阅者**：每个客户端独立订阅，互不影响。
 
-### 9.3 案例三：Ktor 服务端的 SSE 推送
+### 8.3 案例三：Ktor 服务端的 SSE 推送
 
 Ktor 服务端使用 `Channel` 实现 SSE（Server-Sent Events）推送缓冲：
 
@@ -2438,7 +2364,7 @@ routing {
 2. **结构化并发**：协程取消时 `Channel` 自动关闭。
 3. **优雅断连**：客户端断开时通过异常捕获清理资源。
 
-### 9.4 案例四：Android ViewModel 的事件处理
+### 8.4 案例四：Android ViewModel 的事件处理
 
 ```kotlin
 class OrderViewModel(
@@ -2481,7 +2407,7 @@ class OrderViewModel(
 2. **`receiveAsFlow` 桥接**：将 `Channel` 转为 `Flow` 供 UI 收集。
 3. **`viewModelScope` 绑定生命周期**：避免泄漏。
 
-### 9.5 案例五：Spring Boot 6 的异步任务队列
+### 8.5 案例五：Spring Boot 6 的异步任务队列
 
 ```kotlin
 @Service
@@ -2839,7 +2765,7 @@ suspend fun main() = coroutineScope {
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **思考题 1**：为什么 Kotlin 选择 `RENDEZVOUS` 作为默认容量，而不是 `BUFFERED`？
 
@@ -2907,7 +2833,7 @@ suspend fun main() = coroutineScope {
 
 ---
 
-### 10.5 综合应用题
+### 9.5 综合应用题
 
 **综合应用题 1**：设计并实现一个完整的协程间通信系统
 
@@ -3192,9 +3118,9 @@ actual class PlatformSerializer actual constructor() : MessageSerializer {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 1. JetBrains. (2024). *Kotlin Coroutines Documentation: Channels*. Retrieved from https://kotlinlang.org/docs/channels.html
 
@@ -3202,7 +3128,7 @@ actual class PlatformSerializer actual constructor() : MessageSerializer {
 
 3. JetBrains. (2024). *kotlinx.coroutines API Reference: Channel*. Retrieved from https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.channels/-channel/
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 4. Hoare, C. A. R. (1978). Communicating sequential processes. *Communications of the ACM*, 21(8), 666-677. https://doi.org/10.1145/359576.359585
 
@@ -3212,7 +3138,7 @@ actual class PlatformSerializer actual constructor() : MessageSerializer {
 
 7. Prokopec, A. (2019). The semantics of cancellation in Kotlin coroutines. *Science of Computer Programming*, 180, 45-67. https://doi.org/10.1016/j.scico.2019.05.001
 
-### 11.3 书籍
+### 10.3 书籍
 
 8. Jemerov, D., & Isakova, S. (2017). *Kotlin in Action* (1st ed.). Manning Publications. ISBN: 978-1617293290
 
@@ -3220,7 +3146,7 @@ actual class PlatformSerializer actual constructor() : MessageSerializer {
 
 10. Goetz, B., et al. (2006). *Java Concurrency in Practice*. Addison-Wesley Professional. ISBN: 978-0321349606
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 11. Elizarov, R. (2018). *Kotlin Coroutines in Practice*. Retrieved from https://medium.com/@elizarov/kotlin-coroutines-in-practice-9180 - 5b0a1 / [KotlinConf 2018 talk]
 
@@ -3228,7 +3154,7 @@ actual class PlatformSerializer actual constructor() : MessageSerializer {
 
 13. Russian, A. (2023). *Kotlin Coroutines Deep Dive*. Retrieved from https://kt.academy/article/cc-coro
 
-### 11.5 相关项目
+### 10.5 相关项目
 
 14. JetBrains. (2024). *kotlinx.coroutines: Library support for Kotlin coroutines*. GitHub Repository. https://github.com/Kotlin/kotlinx.coroutines
 
@@ -3238,40 +3164,40 @@ actual class PlatformSerializer actual constructor() : MessageSerializer {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 深入学习 CSP 模型
+### 11.1 深入学习 CSP 模型
 
 - Hoare, C. A. R. (1985). *Communicating Sequential Processes*. Prentice Hall. (经典教材，CSP 模型的奠基之作)
 - Roscoe, A. W. (2010). *The Theory and Practice of Concurrency*. Prentice Hall. (CSP 的现代教科书)
 - Milner, R. (1999). *Communicating and Mobile Systems: the Pi-Calculus*. Cambridge University Press. (扩展的 π-calculus)
 
-### 12.2 Go channel 与 CSP
+### 11.2 Go channel 与 CSP
 
 - Donovan, A. A., & Kernighan, B. W. (2015). *The Go Programming Language*. Addison-Wesley.
 - Cox-Buday, K. (2016). *Concurrency in Go: Tools and Techniques for Developers*. O'Reilly Media.
 
-### 12.3 Rust 异步与 mpsc
+### 11.3 Rust 异步与 mpsc
 
 - Klabnik, S., & Nichols, C. (2023). *The Rust Programming Language* (2nd ed.). No Starch Press.
 - Tokio Project. (2024). *Tokio Tutorial*. Retrieved from https://tokio.rs/tokio/tutorial
 
-### 12.4 Actor 模型与 Akka
+### 11.4 Actor 模型与 Akka
 
 - Vernon, V. (2015). *Reactive Messaging Patterns with the Actor Model*. Addison-Wesley.
 - Akka Team. (2024). *Akka Documentation*. Retrieved from https://doc.akka.io/
 
-### 12.5 Kotlin 协程进阶
+### 11.5 Kotlin 协程进阶
 
 - Elizarov, R. (2024). *Kotlin Coroutines: Deep Dive*. YouTube. https://www.youtube.com/results?search_query=kotlin+coroutines+deep+dive
 - JetBrains Academy. (2024). *Kotlin Coroutines Course*. Retrieved from https://hyperskill.org/
 
-### 12.6 设计模式与最佳实践
+### 11.6 设计模式与最佳实践
 
 - Schmidt, D., et al. (2000). *Pattern-Oriented Software Architecture Volume 2: Patterns for Concurrent and Networked Objects*. Wiley.
 - Butcher, J. (2013). *Seven Concurrency Models in Seven Weeks*. Pragmatic Bookshelf.
 
-### 12.7 性能优化
+### 11.7 性能优化
 
 - Prokopec, A. (2022). *Optimizing Kotlin Coroutines for Performance*. Medium. https://medium.com/@alexprokopec
 - JetBrains. (2024). *Kotlin Performance Benchmark Suite*. https://github.com/Kotlin/kotlinx-benchmark

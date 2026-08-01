@@ -15,45 +15,6 @@ related:
   - cpp/异常处理与性能优化
 prerequisites:
   - cpp/概述与现代标准
-learningObjectives:
-  - level: remember
-    objective: '能陈述函数模板、类模板、模板特化、SFINAE 与概念的定义。'
-    verifiable: '默写五种模板机制的最小示例'
-  - level: understand
-    objective: '能解释模板实例化（instantiation）的时机与两阶段查找。'
-    verifiable: '说明模板定义与实例化的分离'
-  - level: apply
-    objective: '能编写类型安全的泛型函数、类与约束版本。'
-    verifiable: '实现泛型容器与算法'
-  - level: analyze
-    objective: '能分析模板特化与函数重载的解析优先级。'
-    verifiable: '给出同签名模板/重载/特化的调用结果'
-  - level: evaluate
-    objective: '能评价 SFINAE 与 C++20 概念两种约束机制的优劣。'
-    verifiable: '对比代码可读性与错误信息质量'
-  - level: create
-    objective: '能基于模板实现可复用的泛型组件库（含概念约束）。'
-    verifiable: '完成案例研究中的泛型容器'
-exercises:
-  - id: cpp-tpl-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: '函数模板使用 template <_____> 声明，类模板使用 template <_____> 声明。'
-    answer: 'typename T；typename T'
-    explanation: '类型参数通常用 typename 或 class 关键字声明。'
-    difficulty: easy
-  - id: cpp-tpl-02
-    type: choice
-    cognitiveLevel: understand
-    question: '关于模板实例化，下列说法正确的是？'
-    options:
-      - 'A. 模板在编译时全部实例化'
-      - 'B. 只有被使用的具体类型才会触发实例化'
-      - 'C. 模板与普通函数一样在链接期生成'
-      - 'D. 实例化发生在运行期'
-    answer: 'B'
-    explanation: '模板按需实例化，未使用的类型组合不会生成代码。'
-    difficulty: medium
 references:
   - type: documentation
     authors: ['cppreference']
@@ -77,21 +38,8 @@ reviewer: fanquanpp
 updated: '2026-08-01'
 ---
 
-## 1. 学习目标（Bloom 分类）
 
-记忆层面：能够说出函数模板、类模板、模板特化（全特化/偏特化）、可变参数模板、模板元编程、别名模板、变量模板、`if constexpr` 等概念的定义与语法形态；能够复述模板实例化（instantiation）与两阶段查找（two-phase lookup）的基本含义。
-
-理解层面：能够解释模板的“编译期代码生成”本质：模板是蓝图，实例化时才生成具体代码；理解 `typename` 与 `class` 在模板参数中的等价性、依赖名（dependent name）需要 `typename` 关键字的原因。
-
-应用层面：能够编写泛型容器、通用算法、类型萃取（type traits）工具，用 `if constexpr` 实现编译期分支，用折叠表达式（fold expression）处理参数包。
-
-分析层面：能够分析模板特化与重载的解析优先级，分析 SFINAE（替换失败不是错误）机制，分析模板实例化对二进制体积与编译时间的影响。
-
-评价层面：能够评估“模板 vs 继承 vs 虚函数”的运行时开销与设计取舍（静态多态 vs 动态多态），评估 concepts（C++20 约束）对模板可读性的提升。
-
-创造层面：能够设计带 concept 约束的泛型库接口，实现类型安全的工厂、访问者与编译期分发表。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 C++ 模板由 Bjarne Stroustrup 于 1988 年前后引入 C++ 2.0 的实验版本，1990 年正式加入 C++ 标准草案，1998 年 C++98 标准化。设计动机是“参数化多态”：让同一份代码适用于多种类型，同时保持静态类型检查与零运行时开销。
 
@@ -111,9 +59,9 @@ timeline
     2023 : C++23 进一步改进
 ```
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 函数模板
+### 2.1 函数模板
 
 ```cpp
 template <typename T>
@@ -124,7 +72,7 @@ T max_value(T a, T b) {
 
 调用 `max_value(3, 5)` 时编译器按实参推断 T=int 并实例化。模板参数可以是类型参数、非类型参数（整数、枚举、指针、字面量类）与模板模板参数。
 
-### 3.2 类模板
+### 2.2 类模板
 
 ```cpp
 template <typename T, size_t N>
@@ -137,11 +85,11 @@ public:
 
 类模板本身不是类型，`Array<int, 4>` 才是类型。
 
-### 3.3 特化
+### 2.3 特化
 
 全特化：为具体类型提供专属实现；偏特化：为部分类型形态（如 `T*`、`std::vector<T>`）提供实现。函数模板只支持全特化（偏特化用重载替代）。
 
-### 3.4 可变参数模板
+### 2.4 可变参数模板
 
 ```cpp
 template <typename... Ts>
@@ -150,7 +98,7 @@ void print_all(Ts... args);
 
 `Ts` 是模板参数包，`args` 是函数参数包；展开用 `...`（如 `args...`），配合折叠表达式（C++17）计算。
 
-### 3.5 if constexpr 与 concepts
+### 2.5 if constexpr 与 concepts
 
 `if constexpr (条件)` 在编译期判断，未选中的分支不参与实例化；concepts 用 `requires` 约束模板参数，失败时给出清晰错误。
 
@@ -163,27 +111,27 @@ flowchart LR
     B --> E["运行时零抽象开销"]
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 实例化模型
+### 3.1 实例化模型
 
 模板是惰性求值的：成员函数只有在被使用时才实例化；类模板的静态成员按需实例化。因此“模板代码中写了错误但未使用的成员”不会报错。实例化发生在编译单元内，因此模板定义通常必须放在头文件。
 
-### 4.2 两阶段查找
+### 3.2 两阶段查找
 
 模板名称查找分两个阶段：定义阶段（非依赖名的普通查找）与实例化阶段（依赖名 ADL 与实例化上下文查找）。这导致“模板中使用的外部函数必须在定义时可见或通过 ADL 找到”，否则实例化失败。理解两阶段查找是排查“模板编译错误但不明显”的关键。
 
-### 4.3 SFINAE
+### 3.3 SFINAE
 
 模板参数替换失败时，该候选从重载集中移除而不报错（SFINAE：Substitution Failure Is Not An Error）。经典应用：`std::enable_if` 条件启用重载。C++20 后 concepts 是更清晰的替代。
 
-### 4.4 元编程的图灵完备性
+### 3.4 元编程的图灵完备性
 
 模板实例化系统在编译期可计算（图灵完备），代价是编译资源。C++11 后 `constexpr` 函数提供更直观的编译期计算路径，模板元编程退居“类型变换”领域（如 `std::tuple` 操作）。
 
-## 5. 代码示例（带详尽注释）
+## 4. 代码示例（带详尽注释）
 
-### 5.1 函数模板与推断
+### 4.1 函数模板与推断
 
 ```cpp
 #include <iostream>
@@ -208,7 +156,7 @@ int main() {
 
 讲解：模板推断按实参自动完成；`const T&` 避免拷贝。字符串字面量是数组类型，直接比较会退化为指针比较，因此显式指定 `std::string`。这是模板初学者最经典的坑。
 
-### 5.2 类模板
+### 4.2 类模板
 
 ```cpp
 #include <iostream>
@@ -237,7 +185,7 @@ int main() {
 
 讲解：`std::size_t N` 是非类型模板参数，在编译期确定容量，零堆分配。`at()` 带边界检查，`operator[]` 通常不检查以追求性能——两种语义的选择是容器设计的经典权衡。
 
-### 5.3 模板特化
+### 4.3 模板特化
 
 ```cpp
 #include <iostream>
@@ -270,7 +218,7 @@ int main() {
 
 讲解：特化让同一模板对不同类型提供不同实现。偏特化 `T*` 匹配任意指针，比全特化更通用。这是类型萃取（type traits）的基础模式。
 
-### 5.4 可变参数模板与折叠表达式
+### 4.4 可变参数模板与折叠表达式
 
 ```cpp
 #include <iostream>
@@ -297,7 +245,7 @@ int main() {
 
 讲解：折叠表达式把参数包展开为二元运算链。`(args + ...)` 展开为 `1 + (2 + (3 + 4))`；空包时该写法不合法，需要提供默认值（`(args + ... + 0)`）。
 
-### 5.5 if constexpr
+### 4.5 if constexpr
 
 ```cpp
 #include <iostream>
@@ -325,7 +273,7 @@ int main() {
 
 讲解：`if constexpr` 的分支在编译期选定，未选中的分支不实例化——因此两个分支可以包含对当前类型非法的代码而不会报错。这是替代 SFINAE 的现代写法。
 
-### 5.6 concepts 约束（C++20）
+### 4.6 concepts 约束（C++20）
 
 ```cpp
 #include <concepts>
@@ -352,7 +300,7 @@ int main() {
 
 讲解：concepts 把模板约束变成可命名、可复用的接口契约。错误信息从“深藏在实例化栈中”变为“约束未满足”，大幅改善模板体验。
 
-### 5.7 别名模板与变量模板
+### 4.7 别名模板与变量模板
 
 ```cpp
 #include <vector>
@@ -371,7 +319,7 @@ static_assert(!is_pointer_v<int>);
 
 讲解：别名模板简化“部分固定参数”的类型；变量模板让类型萃取以“值”形式使用（`_v` 后缀约定）。两个特性共同提升模板代码的简洁性。
 
-### 5.8 完美转发
+### 4.8 完美转发
 
 ```cpp
 #include <utility>
@@ -397,9 +345,9 @@ int main() {
 
 讲解：`Args&&...` 是转发引用，`std::forward` 按实参原始类别（左值/右值）转发，避免不必要的拷贝。这是泛型工厂、容器 emplace 的底层机制。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 模板与继承/虚函数
+### 5.1 模板与继承/虚函数
 
 | 维度 | 模板（静态多态） | 虚函数（动态多态） |
 | --- | --- | --- |
@@ -409,15 +357,15 @@ int main() {
 | 二进制体积 | 每类型实例化 | 单一实现 |
 | 适用 | 算法、容器、编译期计算 | 插件、多态对象集合 |
 
-### 6.2 if constexpr 与运行时 if
+### 5.2 if constexpr 与运行时 if
 
 `if constexpr` 删除未选分支（不影响实例化），运行时 `if` 两个分支都必须编译。前者适合“类型相关的分支”，后者适合“值相关的分支”。
 
-### 6.3 模板与宏
+### 5.3 模板与宏
 
 宏是文本替换，无类型检查与作用域；模板有完整类型系统。宏能做的“代码生成”，模板几乎都能更安全地完成。现代 C++ 中宏仅用于头文件保护与少量配置。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
 陷阱一：模板实现放在 .cpp 文件导致链接错误。实例化需要定义可见，模板定义应放头文件（或显式实例化）。
 
@@ -433,9 +381,9 @@ int main() {
 
 陷阱七：过度特化导致维护地狱。优先 concepts + 主模板，只在必要时特化。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 泛型容器接口
+### 7.1 泛型容器接口
 
 ```cpp
 // 通用迭代接口：任何提供 begin/end 的类型
@@ -457,7 +405,7 @@ double average(const Container& c) {
 
 讲解：`requires requires` 表达式约束接口能力，vector、list、array 均可传入。泛型算法只依赖最小接口（begin/end），是标准库设计哲学的缩影。
 
-### 8.2 类型萃取工具
+### 7.2 类型萃取工具
 
 ```cpp
 template <typename T>
@@ -475,7 +423,7 @@ inline constexpr bool is_smart_pointer_v = is_smart_pointer<T>::value;
 
 讲解：继承 `std::false_type/true_type` 让萃取结果具有 `.value` 与类型常量语义，配合 `_v` 变量模板统一使用方式。
 
-## 9. 案例研究：泛型缓存管理器
+## 8. 案例研究：泛型缓存管理器
 
 需求：按类型分组的对象缓存，LRU 淘汰，编译期类型安全。
 
@@ -525,7 +473,7 @@ public:
 
 讲解：该案例综合类模板（Key/Value 泛型）、容器组合（list + unordered_map）、迭代器索引与线程安全。`splice` 移动节点到头部是 O(1) 操作；`unordered_map` 存储迭代器实现 O(1) 查找。模板让缓存器适配任意键值类型。
 
-## 10. 知识要点总结与深入讲解
+## 9. 知识要点总结与深入讲解
 
 模板的本质是编译期代码生成：一份蓝图，按需实例化。理解“惰性实例化”与“定义可见性”，就理解了模板必须放头文件的工程约束。
 
@@ -533,7 +481,7 @@ public:
 
 编译期分支的三个层次：`if constexpr` 处理类型分支，折叠表达式处理参数包，模板特化处理形态差异。三者组合覆盖绝大多数泛型编程需求，运行时开销为零。
 
-## 11. 参考文献
+## 10. 参考文献
 
 cppreference, 函数模板, 访问日期 2026-08-01, https://zh.cppreference.com/w/cpp/language/function_template
 
@@ -549,7 +497,7 @@ cppreference, Concepts（requires）, 访问日期 2026-08-01, https://zh.cppref
 
 cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreference.com/w/cpp/language/template_argument_deduction
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 标准库容器与迭代器，见 026-cpp 模块的 STL 相关文档；
 
@@ -671,7 +619,7 @@ cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreferen
  }
 ```
 
-### 2. 类模板
+### 1. 类模板
 
 类模板允许定义可适用于不同类型的类。
 
@@ -729,7 +677,7 @@ cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreferen
  }
 ```
 
-#### 2.1 模板参数默认值
+#### 1.1 模板参数默认值
 
 可以为模板参数提供默认值。
 
@@ -764,7 +712,7 @@ cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreferen
  // MyVector<int, CustomAllocator<int>> v2;
 ```
 
-#### 2.2 类模板特化
+#### 1.2 类模板特化
 
 可以为特定类型提供特化版本。
 
@@ -802,7 +750,7 @@ cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreferen
  }
 ```
 
-### 3. 可变参数模板 (C++11)
+### 2. 可变参数模板 (C++11)
 
 可变参数模板允许接受任意数量的模板参数。
 
@@ -824,7 +772,7 @@ cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreferen
  }
 ```
 
-#### 3.1 折叠表达式 (C++17)
+#### 2.1 折叠表达式 (C++17)
 
 折叠表达式是一种简化可变参数模板使用的语法。
 
@@ -847,7 +795,7 @@ cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreferen
  }
 ```
 
-#### 3.2 转发引用与完美转发
+#### 2.2 转发引用与完美转发
 
 可变参数模板常与转发引用一起使用，实现完美转发。
 
@@ -865,7 +813,7 @@ cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreferen
  }
 ```
 
-### 4. 模板元编程
+### 3. 模板元编程
 
 模板元编程是一种在编译时执行计算的技术。
 
@@ -904,7 +852,7 @@ cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreferen
  }
 ```
 
-#### 4.1 类型 traits
+#### 3.1 类型 traits
 
 类型 traits 是模板元编程的重要应用，用于在编译时获取类型信息。
 
@@ -939,7 +887,7 @@ cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreferen
  }
 ```
 
-### 5. 模板的最佳实践
+### 4. 模板的最佳实践
 
 1. **使用 `auto` 推导模板参数**：减少代码冗余，提高可读性。
 2. **使用概念 (C++20)**：约束模板参数，提供更清晰的错误信息。

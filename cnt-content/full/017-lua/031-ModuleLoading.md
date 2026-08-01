@@ -14,51 +14,10 @@ prerequisites:
   - lua/概述与环境配置
 ---
 
+
 # 模块加载：`require`、`package` 与 C 模块机制
 
 > 本文档对标 MIT 6.172（Performance Engineering of Software Systems）、Stanford CS140E（Embedded Systems）、CMU 17-363（Programming Language Pragmatics）教学水准，系统剖析 Lua 模块加载机制的设计、形式化语义、API 全集与工程实践。
-
-## 0. 学习目标（Bloom 分类法）
-
-完成本章节学习后，学习者应能够：
-
-### 0.1 Remember（记忆）
-
-- **R1** 列举 `require` 的搜索顺序：`package.loaded` → `package.preload` → `package.searchers`。
-- **R2** 复述 `package.path` 与 `package.cpath` 的路径模板语法（`?`、`;` 分隔符）。
-- **R3** 陈述 `luaopen_*` 函数的命名规则及其在动态加载 C 模块中的作用。
-
-### 0.2 Understand（理解）
-
-- **U1** 解释 `require` 与 `dofile` / `loadfile` 的差异：缓存机制、错误处理、路径搜索。
-- **U2** 阐述 `package.searchers` 的工作原理：每个 searcher 函数的输入输出。
-- **U3** 解释 Lua 5.2 中 `luaL_register` 被废弃、`luaL_newlib` 取代的设计动机。
-
-### 0.3 Apply（应用）
-
-- **A1** 编写一个标准 Lua 模块，包含 `M.field`、`M.method` 等导出。
-- **A2** 创建一个 C 模块，实现 `luaopen_mymod` 函数。
-- **A3** 实现 `package.preload` 注册虚拟模块。
-
-### 0.4 Analyze（分析）
-
-- **An1** 分析 `package.loaded` 缓存机制对热重载的影响。
-- **An2** 对比 Lua 5.1 的 `module()` 函数与 Lua 5.2+ 的"返回模块表"模式。
-- **An3** 剖析 `luaL_requiref` 在 C 端主动加载模块的语义。
-
-### 0.5 Evaluate（评价）
-
-- **E1** 评估在何种场景下应使用 `package.preload` 而非 `package.path`。
-- **E2** 评价 Lua 5.2 移除 `module()` 函数的影响。
-- **E3** 判断热重载方案中清除 `package.loaded` 的副作用。
-
-### 0.6 Create（创造）
-
-- **C1** 设计一个完整的模块加载框架，支持版本化、依赖管理。
-- **C2** 实现一个自定义 searcher，从 ZIP 包加载模块。
-- **C3** 构建一个支持热重载的开发环境。
-
----
 
 ## 1. 历史动机与发展脉络
 
@@ -147,9 +106,9 @@ PUC-Rio 团队阐明模块加载的设计原则：
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 Lua Reference Manual 权威定义
+### 1.1 Lua Reference Manual 权威定义
 
 > **require (modname)** — Loads the given module. The function starts by looking into the `package.loaded` table to determine whether `modname` is already loaded. Otherwise, it tries to find a loader using the `package.searchers`.
 >
@@ -164,7 +123,7 @@ $$
 \end{cases}
 $$
 
-### 2.2 `package` 表结构
+### 1.2 `package` 表结构
 
 ```lua
 package = {
@@ -177,7 +136,7 @@ package = {
 }
 ```
 
-### 2.3 `searchers` 算法
+### 1.3 `searchers` 算法
 
 `require` 调用 `package.searchers` 中的每个函数，直到找到 loader：
 
@@ -198,7 +157,7 @@ function require(modname):
     error("module '" .. modname .. "' not found: " .. error_msg)
 ```
 
-### 2.4 路径模板语法
+### 1.4 路径模板语法
 
 `package.path` 与 `package.cpath` 使用模板：
 
@@ -218,7 +177,7 @@ package.config = "/\n;\n?\n!\n-"
 4. `!`：（已废弃）
 5. `-`：执行路径忽略前缀
 
-### 2.5 C 模块命名约定
+### 1.5 C 模块命名约定
 
 C 模块的入口函数命名规则：
 
@@ -233,9 +192,9 @@ $$
 
 ---
 
-## 3. 理论推导与原理解析
+## 2. 理论推导与原理解析
 
-### 3.1 模块加载流程
+### 2.1 模块加载流程
 
 完整加载流程：
 
@@ -268,7 +227,7 @@ require("foo.bar")
 [6] 全部失败 → 抛出 "module not found"
 ```
 
-### 3.2 缓存机制的形式化
+### 2.2 缓存机制的形式化
 
 `package.loaded` 是模块缓存：
 
@@ -286,7 +245,7 @@ $$
 \text{package.loaded}[\text{modname}] = \text{nil} \implies \text{next require reloads}
 $$
 
-### 3.3 `luaL_requiref` 的语义
+### 2.3 `luaL_requiref` 的语义
 
 C 端 `luaL_requiref(L, name, openf, glb)` 等价于：
 
@@ -310,7 +269,7 @@ function luaL_requiref(L, name, openf, glb):
     lua_pop(L, 1)  # 弹出 loaded table
 ```
 
-### 3.4 `package.preload` 的工作原理
+### 2.4 `package.preload` 的工作原理
 
 `package.preload` 是一个表，键为模块名，值为加载器函数：
 
@@ -327,7 +286,7 @@ require("virtual_mod").greet()  -- Hello from virtual!
 
 `package.preload` 优先于 `searchers` 调用。
 
-### 3.5 搜索路径的展开
+### 2.5 搜索路径的展开
 
 设 `package.path = "./?.lua;/usr/local/lua/?.lua"`，`modname = "foo.bar"`：
 
@@ -337,7 +296,7 @@ require("virtual_mod").greet()  -- Hello from virtual!
    - `/usr/local/lua/?.lua` → `/usr/local/lua/foo/bar.lua`
 3. 依次尝试每个路径，第一个存在的文件被加载。
 
-### 3.6 错误消息聚合
+### 2.6 错误消息聚合
 
 每个 searcher 失败时返回字符串描述，`require` 聚合所有错误：
 
@@ -352,9 +311,9 @@ module 'foo.bar' not found:
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 基础示例：Lua 模块
+### 3.1 基础示例：Lua 模块
 
 **`mymod.lua`**：
 
@@ -419,7 +378,7 @@ print(counter:decrement())  -- 11
 print(mymod.double(5))      -- 10
 ```
 
-### 4.2 进阶示例：C 模块
+### 3.2 进阶示例：C 模块
 
 **`cjson_lua.c`**：
 
@@ -540,7 +499,7 @@ print(value)     -- 42
 print(type(value))  -- number
 ```
 
-### 4.3 `package.preload` 示例
+### 3.3 `package.preload` 示例
 
 ```lua
 -- 注册虚拟模块
@@ -563,7 +522,7 @@ local v2 = require("virtual_mod")
 print(v2 == v)       -- true（来自缓存）
 ```
 
-### 4.4 自定义 searcher
+### 3.4 自定义 searcher
 
 ```lua
 -- 自定义 searcher：从字符串加载模块
@@ -604,7 +563,7 @@ print(math_ext.square(5))  -- 25
 print(math_ext.cube(3))   -- 27
 ```
 
-### 4.5 热重载示例
+### 3.5 热重载示例
 
 ```lua
 -- hot_reload.lua
@@ -622,7 +581,7 @@ config = hot_require("config")
 print(config.value)  -- 新值
 ```
 
-### 4.6 子模块加载
+### 3.6 子模块加载
 
 **目录结构**：
 
@@ -668,7 +627,7 @@ local session = require("myapp.auth.session")
 session.start()
 ```
 
-### 4.7 `luaL_requiref` 在 C 端
+### 3.7 `luaL_requiref` 在 C 端
 
 ```c
 #include <lua.h>
@@ -694,9 +653,9 @@ int main(void) {
 
 ---
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 Lua `require` 与其他语言模块系统对比
+### 4.1 Lua `require` 与其他语言模块系统对比
 
 | 语言 | 模块系统 | 缓存机制 | 路径配置 | 动态加载 |
 |------|----------|----------|----------|----------|
@@ -707,7 +666,7 @@ int main(void) {
 | **Go** | `import` | 编译期 | GOPATH / go.mod | 不支持运行时 |
 | **Rust** | `use` | 编译期 | cargo | 不支持运行时 |
 
-### 5.2 `require` vs `dofile` vs `loadfile`
+### 4.2 `require` vs `dofile` vs `loadfile`
 
 | API | 缓存 | 路径搜索 | 错误处理 | 用途 |
 |-----|------|----------|----------|------|
@@ -716,7 +675,7 @@ int main(void) {
 | `loadfile(path)` | 否 | 否 | 返回 nil + err | 编译脚本 |
 | `load(chunk)` | 否 | 否 | 返回 nil + err | 编译字符串 |
 
-### 5.3 Lua 5.1 `module()` vs 5.2+ 返回表
+### 4.3 Lua 5.1 `module()` vs 5.2+ 返回表
 
 **Lua 5.1 `module()` 模式**：
 
@@ -746,7 +705,7 @@ return M
 - 支持局部变量
 - 利于静态分析
 
-### 5.4 与 Python import 对比
+### 4.4 与 Python import 对比
 
 ```python
 # Python 模块
@@ -770,7 +729,7 @@ return M
 - **Python** 的模块是对象，有 `__name__`、`__file__` 等属性；Lua 模块是普通表。
 - **Python** 的 `importlib.reload` 重新加载模块；Lua 通过 `package.loaded[name] = nil` 实现。
 
-### 5.5 与 Node.js `require` 对比
+### 4.5 与 Node.js `require` 对比
 
 ```javascript
 // Node.js 模块
@@ -795,9 +754,9 @@ return M
 
 ---
 
-## 6. 常见陷阱与最佳实践
+## 5. 常见陷阱与最佳实践
 
-### 6.1 陷阱：循环依赖
+### 5.1 陷阱：循环依赖
 
 ```lua
 -- a.lua
@@ -831,7 +790,7 @@ return M
 
 2. **重构模块**：将共享代码提取到第三个模块。
 
-### 6.2 陷阱：热重载后旧引用失效
+### 5.2 陷阱：热重载后旧引用失效
 
 ```lua
 local config = require("config")
@@ -853,7 +812,7 @@ config = require("config")  -- 重新赋值
 print(config.value)  -- 2.0（新值）
 ```
 
-### 6.3 陷阱：`package.path` 顺序
+### 5.3 陷阱：`package.path` 顺序
 
 ```lua
 package.path = "./?.lua;" .. package.path  -- 优先当前目录
@@ -867,7 +826,7 @@ package.path = "./?.lua;" .. package.path  -- 优先当前目录
 package.path = package.path .. ";./lib/?.lua"
 ```
 
-### 6.4 陷阱：C 模块符号冲突
+### 5.4 陷阱：C 模块符号冲突
 
 ```c
 /* 错误：多个 C 模块导出同名函数 */
@@ -890,7 +849,7 @@ static int l_helper(lua_State *L) { /* ... */ }
 int luaopen_mod1(lua_State *L) { /* ... */ }
 ```
 
-### 6.5 陷阱：忘记 `return M`
+### 5.5 陷阱：忘记 `return M`
 
 ```lua
 -- mymod.lua
@@ -909,7 +868,7 @@ function M.greet() print("hello") end
 return M  -- 必须！
 ```
 
-### 6.6 最佳实践清单
+### 5.6 最佳实践清单
 
 1. **使用"返回表"模式**：避免 `module()`（Lua 5.1 已废弃）。
 2. **显式 require 依赖**：在文件顶部集中 require。
@@ -920,7 +879,7 @@ return M  -- 必须！
 7. **使用 `luaL_newlib`**：替代 `luaL_register`。
 8. **模块命名一致性**：文件名与模块名一致。
 
-### 6.7 错误诊断
+### 5.7 错误诊断
 
 **错误："module 'X' not found"**：
 
@@ -940,9 +899,9 @@ return M  -- 必须！
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 项目结构组织
+### 6.1 项目结构组织
 
 典型 Lua 项目结构：
 
@@ -982,7 +941,7 @@ local myproject = require("myproject")
 myproject.run()
 ```
 
-### 7.2 嵌入 Lua：C 端注册模块
+### 6.2 嵌入 Lua：C 端注册模块
 
 ```c
 #include <lua.h>
@@ -1018,7 +977,7 @@ int main(void) {
 }
 ```
 
-### 7.3 热重载实现
+### 6.3 热重载实现
 
 ```lua
 -- hotreload.lua
@@ -1046,7 +1005,7 @@ end
 return M
 ```
 
-### 7.4 性能优化
+### 6.4 性能优化
 
 **优化 1：预加载常用模块**
 
@@ -1077,7 +1036,7 @@ end
 package.preload["embedded_mod"] = load(embedded_code)
 ```
 
-### 7.5 调试技巧
+### 6.5 调试技巧
 
 **技巧 1：查看已加载模块**
 
@@ -1107,7 +1066,7 @@ local function safe_require(name)
 end
 ```
 
-### 7.6 测试策略
+### 6.6 测试策略
 
 ```lua
 -- test_mymod.lua
@@ -1134,9 +1093,9 @@ end)
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 LuaRocks 包管理器
+### 7.1 LuaRocks 包管理器
 
 LuaRocks 是 Lua 的包管理器（类似 pip、npm）：
 
@@ -1153,7 +1112,7 @@ luarocks install lua-cjson
 
 `package.path` 与 `package.cpath` 默认包含这些路径。
 
-### 8.2 Redis 中的模块加载
+### 7.2 Redis 中的模块加载
 
 Redis 在启动时预加载 Lua 模块：
 
@@ -1172,7 +1131,7 @@ local result = redis.call('SET', KEYS[1], data.value)
 return cjson.encode({ok = true, result = result})
 ```
 
-### 8.3 Neovim 的模块系统
+### 7.3 Neovim 的模块系统
 
 Neovim 在 `runtimepath` 中搜索 Lua 模块：
 
@@ -1206,7 +1165,7 @@ flowchart TD
 require("myconfig").setup()
 ```
 
-### 8.4 World of Warcraft AddOn 系统
+### 7.4 World of Warcraft AddOn 系统
 
 WoW 的 AddOn 系统基于 Lua：
 
@@ -1226,7 +1185,7 @@ addonTable.greet = function() print("Hello!") end
 
 WoW 的 `require` 被简化为 `addonName` + `addonTable` 参数传递。
 
-### 8.5 Love2D 的模块加载
+### 7.5 Love2D 的模块加载
 
 Love2D 自动加载 `main.lua`：
 
@@ -1243,7 +1202,7 @@ end
 
 Love2D 通过 `love.filesystem` 提供跨平台文件访问。
 
-### 8.6 案例对比表
+### 7.6 案例对比表
 
 | 项目 | Lua 版本 | 模块系统特点 | 包管理 |
 |------|----------|--------------|--------|
@@ -1537,7 +1496,7 @@ print(math_utils.fibonacci(20))   -- 6765
 
 ---
 
-### 9.4 思考题
+### 8.4 思考题
 
 **常见疑问 14**：. 为什么 Lua 5.2 移除了 `module()` 函数？请从语言设计角度分析。
 
@@ -1613,9 +1572,9 @@ end
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
-### 10.1 核心文献
+### 9.1 核心文献
 
 - [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, *Lua 5.4 Reference Manual*, PUC-Rio, 2020. [Online]. Available: https://www.lua.org/manual/5.4/
 
@@ -1625,13 +1584,13 @@ end
 
 - [4] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, "Lua: an extensible extension language," *Journal of the Brazilian Computer Society*, vol. 2, no. 1, pp. 27–42, 1996. doi: 10.1590/S0104-65001996000100003.
 
-### 10.2 标准与规范
+### 9.2 标准与规范
 
 - [5] PUC-Rio, "Lua 5.4 Source Code: loadlib.c," 2020. [Online]. Available: https://github.com/lua/lua/blob/master/loadlib.c
 
 - [6] H. Medeiros, "LuaRocks Package Manager," 2019. [Online]. Available: https://luarocks.org/
 
-### 10.3 应用案例文献
+### 9.3 应用案例文献
 
 - [7] S. Sanfilippo, "Redis and Lua: a love story," *Redis Labs Blog*, 2011. [Online]. Available: https://redis.io/docs/manual/programmability/lua/
 
@@ -1639,7 +1598,7 @@ end
 
 - [9] Blizzard Entertainment, *World of Warcraft AddOn Development Guide*, 2004-2024. [Online]. Available: https://wowpedia.fandom.com/wiki/AddOn
 
-### 10.4 学术引用（ACM Reference Format）
+### 9.4 学术引用（ACM Reference Format）
 
 R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 2007. The evolution of Lua. In *Proceedings of the Third ACM SIGPLAN Conference on History of Programming Languages (HOPL III)*. ACM, New York, NY, USA, 2-1–2-26. DOI: https://doi.org/10.1145/1238844.1238846
 
@@ -1647,34 +1606,34 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua: an extensible ex
 
 ---
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 书籍
+### 10.1 书籍
 
 - Roberto Ierusalimschy, *Programming in Lua*, 4th Edition, Chapter 15
 - Kurt Jung, *Lua Quick Reference*（Apress, 2018）
 - Roberto Ierusalimschy, *From Brazil to Wikipedia*
 
-### 11.2 论文与技术报告
+### 10.2 论文与技术报告
 
 - "The Implementation of Lua 5.0"（JUCS 2005）
 - "LuaRocks: A Package Manager for Lua"（Hisham Muhammad）
 
-### 11.3 在线资源
+### 10.3 在线资源
 
 - Lua 官方站点：https://www.lua.org/
 - LuaRocks：https://luarocks.org/
 - Lua Users Wiki - Modules：http://lua-users.org/wiki/ModulesTutorial
 - Lua 文档：https://www.lua.org/manual/5.4/manual.html#6.3
 
-### 11.4 开源项目参考
+### 10.4 开源项目参考
 
 - **lua-cjson**：JSON 编解码模块，C 实现
 - **lua-socket**：网络库，多文件模块组织
 - **luafilesystem**：文件系统模块
 - **lpeg**：解析表达式文法库
 
-### 11.5 与本文档相关章节
+### 10.5 与本文档相关章节
 
 - [用户数据](/lua/用户数据)：C 模块中 userdata 的使用
 - [C-API 栈操作](/lua/C-API栈操作)：`luaopen_*` 函数的栈操作

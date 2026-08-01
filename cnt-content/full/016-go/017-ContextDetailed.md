@@ -20,58 +20,16 @@ prerequisites:
   - go/接口与类型断言
 ---
 
+
 # Context 详解：取消传播、超时控制与值传递
 
 > 本文以 Go 1.22 为基准版本，深入解析 `context.Context` 接口的语义、cancelCtx 与 timerCtx 的实现、取消传播机制、值传递设计哲学及生产级最佳实践。适用于已掌握 goroutine 与 channel、希望理解 Go 并发控制标准库的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。
-
-### 1.1 Remember（记忆）
-
-- 准确复述 `context.Context` 接口的四个方法：`Deadline`、`Done`、`Err`、`Value`。
-- 列出 `context` 包提供的顶层函数：`Background`、`TODO`、`WithCancel`、`WithDeadline`、`WithTimeout`、`WithValue`、`AfterFunc`、`WithCancelCause`、`Cause`。
-- 背诵 context 的三条铁律：context 作为函数首参、context 不可存储在 struct 中、不要传 nil context。
-
-### 1.2 Understand（理解）
-
-- 解释 cancelCtx 的传播机制：父 context 取消时，如何递归取消所有子 context。
-- 描述 timerCtx 的实现：如何基于 timer + cancelCtx 实现超时取消。
-- 阐述 `context.WithValue` 的设计哲学：为何只用于请求范围数据（request-scoped data），而非业务参数。
-- 说明 Go 1.21 引入的 `WithCancelCause` 与 `Cause` 函数如何改进错误传播。
-
-### 1.3 Apply（应用）
-
-- 在 HTTP 服务器中正确传递 context，实现请求级超时与客户端取消。
-- 使用 `context.AfterFunc`（Go 1.21+）注册回调，避免 goroutine 泄漏。
-- 在 gRPC/数据库调用链中传播 context，实现端到端的取消与 trace。
-
-### 1.4 Analyze（分析）
-
-- 分析 cancelCtx 内部 `children` map 的维护成本，推导大规模 goroutine 场景下的性能瓶颈。
-- 对比 context.Value 与全局变量、依赖注入（DI）的优劣。
-- 推导 context 树形传播的时间复杂度，指出最坏情况下的 fan-out 风险。
-
-### 1.5 Evaluate（评价）
-
-- 评估"context 滥用"反模式（如用 context.Value 传递业务参数）的危害。
-- 评价 Go 1.21 引入 `Cause` 机制的必要性，对比 Java CancellationToken 与 Scala Future 的设计。
-- 判断 context 是否适合作为长生命周期任务的取消信号，提出替代方案（如 channel）。
-
-### 1.6 Create（创造）
-
-- 设计一个支持"取消 + 超时 + 重试"的 HTTP 客户端封装。
-- 实现一个 context-aware 的连接池，能在父 context 取消时释放连接。
-- 基于 context 设计一个分布式追踪（tracing）ID 传播框架。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 前史：Google 内部的 "context" 包（2014 之前）
+### 1.1 前史：Google 内部的 "context" 包（2014 之前）
 
 Go 1.0 没有 `context` 标准包。Google 内部由 Sameer Ajmani 等人在 2014 年提出 `golang.org/x/net/context` 包，解决以下痛点：
 
@@ -79,7 +37,7 @@ Go 1.0 没有 `context` 标准包。Google 内部由 Sameer Ajmani 等人在 201
 - **超时控制**：分布式系统中，调用链超时需传播到所有下游服务。
 - **请求范围数据**：trace ID、user ID 等需在调用链中传递，但不希望作为函数参数显式传递。
 
-### 2.2 Go 1.7（2016-08）：context 进入标准库
+### 1.2 Go 1.7（2016-08）：context 进入标准库
 
 Go 1.7 将 `golang.org/x/net/context` 迁移至标准库 `context`，由 Sameer Ajmani 完成。同时：
 
@@ -87,15 +45,15 @@ Go 1.7 将 `golang.org/x/net/context` 迁移至标准库 `context`，由 Sameer 
 - `database/sql` 的 `ExecContext`/`QueryContext` 接受 context 参数
 - 标准库所有阻塞 IO 操作接受 context
 
-### 2.3 Go 1.13（2019-09）： Cause 机制讨论
+### 1.3 Go 1.13（2019-09）： Cause 机制讨论
 
 Go 1.13 引入 `errors.Is`/`errors.As`，但 context 的错误传播仍受限于 `Err()` 仅返回 `context.Canceled` 或 `context.DeadlineExceeded`，无法携带自定义原因。社区开始讨论 `WithCancelCause` 提案。
 
-### 2.4 Go 1.21（2023-08）：Cause 与 AfterFunc
+### 1.4 Go 1.21（2023-08）：Cause 与 AfterFunc
 
 Go 1.21 由 Bryan C. Mills 主导，引入两个重要 API：
 
-#### 2.4.1 WithCancelCause / Cause
+#### 1.4.1 WithCancelCause / Cause
 
 ```go
 func WithCancelCause(parent Context) (ctx Context, cancel CancelCauseFunc)
@@ -106,7 +64,7 @@ func Cause(c Context) error
 
 允许 cancel 时携带原因 error，下游可通过 `Cause(ctx)` 获取原始错误而非泛化的 `context.Canceled`。
 
-#### 2.4.2 AfterFunc
+#### 1.4.2 AfterFunc
 
 ```go
 func AfterFunc(parent Context, f func()) (stop func() bool)
@@ -114,7 +72,7 @@ func AfterFunc(parent Context, f func()) (stop func() bool)
 
 注册一个回调函数 `f`，在 parent context 被取消时异步执行 `f`。返回 `stop` 函数用于取消注册。这避免了"启动 goroutine 监听 `<-ctx.Done()`"的反模式。
 
-### 2.5 Go 1.22（2024-02）：WithoutCancel 与 minor 优化
+### 1.5 Go 1.22（2024-02）：WithoutCancel 与 minor 优化
 
 Go 1.22 引入 `context.WithoutCancel`：
 
@@ -124,7 +82,7 @@ func WithoutCancel(parent Context) Context
 
 返回一个继承 parent 的 Value 与 Deadline 但**不继承取消信号**的 context。典型场景：HTTP 请求结束后仍需写日志，但日志写入不应被客户端取消影响。
 
-### 2.6 演进时间轴
+### 1.6 演进时间轴
 
 ```mermaid
 timeline
@@ -138,9 +96,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Go Language Spec 与标准库定义
+### 2.1 Go Language Spec 与标准库定义
 
 `context` 包不属于语言规范（spec），而是标准库 API。其接口定义：
 
@@ -162,7 +120,7 @@ type Context interface {
 }
 ```
 
-### 3.2 形式化语义
+### 2.2 形式化语义
 
 context 的语义可形式化为一个有向无环图（DAG）$G = (V, E)$，其中：
 
@@ -188,7 +146,7 @@ $$
 
 即：沿父链向上查找，直到 root（`Background` 或 `TODO`）返回 nil。
 
-### 3.3 类型系统视角
+### 2.3 类型系统视角
 
 `Context` 接口是 Go 的 **空 struct + channel + 方法组合**的典型应用。其设计体现了 Go 的几个核心理念：
 
@@ -197,11 +155,11 @@ $$
 3. **零值有用**：`Background()` 与 `TODO()` 返回同一个不可取消的 root context
 4. **不可变性**：context 一旦创建，其行为不可改变（cancel 是显式信号，不修改 context 内部状态）
 
-### 3.4 runtime 数据结构
+### 2.4 runtime 数据结构
 
 源码位置：`context/context.go`。
 
-#### 3.4.1 emptyCtx
+#### 2.4.1 emptyCtx
 
 ```go
 // context/context.go
@@ -230,7 +188,7 @@ func TODO() Context       { return todo }
 - `Background`：用于 main 函数、初始化、测试的 root context
 - `TODO`：用作占位符，表示"还未决定用哪个 context"
 
-#### 3.4.2 cancelCtx
+#### 2.4.2 cancelCtx
 
 ```go
 type cancelCtx struct {
@@ -249,7 +207,7 @@ type canceler interface {
 }
 ```
 
-#### 3.4.3 timerCtx
+#### 2.4.3 timerCtx
 
 ```go
 type timerCtx struct {
@@ -259,7 +217,7 @@ type timerCtx struct {
 }
 ```
 
-#### 3.4.4 valueCtx
+#### 2.4.4 valueCtx
 
 ```go
 type valueCtx struct {
@@ -272,9 +230,9 @@ type valueCtx struct {
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 取消传播算法
+### 3.1 取消传播算法
 
 `cancelCtx.cancel` 函数（简化版）：
 
@@ -319,7 +277,7 @@ func (c *cancelCtx) cancel(removeFromParent bool, err, cause error) {
 2. **递归取消**：`for child := range c.children` 递归调用每个子 context 的 `cancel`
 3. **从父节点移除**：`removeFromParent` 控制是否从父节点的 children 中移除自己
 
-### 4.2 children 集合的维护
+### 3.2 children 集合的维护
 
 `propagateCancel` 函数在创建子 context 时被调用：
 
@@ -369,7 +327,7 @@ func propagateCancel(parent Context, child canceler) {
 - 取消子 context：$O(N)$，$N$ 是直接子节点数（注意是直接子节点，非全部后代）
 - 全树取消：$O(|V|)$，所有节点都要被访问
 
-### 4.3 性能瓶颈：大规模 goroutine 场景
+### 3.3 性能瓶颈：大规模 goroutine 场景
 
 假设有 $N$ 个子 context 直接挂在同一父 context 下，取消时需遍历 $N$ 个子节点：
 
@@ -390,7 +348,7 @@ $$
 
 > **生产建议**：若 goroutine 数 > 10000，考虑分层 context（每层 100 个子节点）或改用 channel 广播。
 
-### 4.4 timerCtx 的实现
+### 3.4 timerCtx 的实现
 
 ```go
 func WithDeadline(parent Context, d time.Time) (Context, CancelFunc) {
@@ -432,7 +390,7 @@ func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
 2. timer 触发后调用 `cancel(true, DeadlineExceeded, nil)`
 3. 用户手动调用 `cancel()` 时停止 timer
 
-### 4.5 valueCtx 的查找复杂度
+### 3.5 valueCtx 的查找复杂度
 
 ```go
 func (c *valueCtx) Value(key any) any {
@@ -450,7 +408,7 @@ func (c *valueCtx) Value(key any) any {
 - 不要在热路径上频繁调用 `ctx.Value`，应一次性取出并缓存
 - 不要用 context 传递频繁访问的业务参数
 
-### 4.6 AfterFunc 的实现（Go 1.21+）
+### 3.6 AfterFunc 的实现（Go 1.21+）
 
 ```go
 func AfterFunc(parent Context, f func()) (stop func() bool) {
@@ -485,9 +443,9 @@ func AfterFunc(parent Context, f func()) (stop func() bool) {
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 go.mod 配置
+### 4.1 go.mod 配置
 
 ```go
 // go.mod
@@ -496,7 +454,7 @@ module github.com/fandex/go-context-demo
 go 1.22
 ```
 
-### 5.2 基础用法
+### 4.2 基础用法
 
 ```go
 // context_basic.go
@@ -550,7 +508,7 @@ func main() {
 }
 ```
 
-### 5.3 Production-Ready：HTTP 服务器超时控制
+### 4.3 Production-Ready：HTTP 服务器超时控制
 
 ```go
 // http_server.go
@@ -654,7 +612,7 @@ func main() {
 }
 ```
 
-### 5.4 数据库调用与 context
+### 4.4 数据库调用与 context
 
 ```go
 // db_context.go
@@ -706,7 +664,7 @@ func WithRetry(ctx context.Context, maxRetry int, interval time.Duration, fn fun
 }
 ```
 
-### 5.5 Go 1.21+ Cause 与 AfterFunc
+### 4.5 Go 1.21+ Cause 与 AfterFunc
 
 ```go
 // context_cause.go
@@ -760,7 +718,7 @@ func demoAfterFunc() {
 }
 ```
 
-### 5.6 WithoutCancel（Go 1.22+）
+### 4.6 WithoutCancel（Go 1.22+）
 
 ```go
 // without_cancel.go
@@ -792,7 +750,7 @@ func main() {
 }
 ```
 
-### 5.7 Benchmark
+### 4.7 Benchmark
 
 ```go
 // context_bench_test.go
@@ -847,9 +805,9 @@ func BenchmarkCancel1000(b *testing.B) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与主流语言取消机制对比
+### 5.1 与主流语言取消机制对比
 
 | 特性 | Go context | Java CancellationToken | C# CancellationToken | Scala Future | Rust tokio::CancellationToken |
 | --- | --- | --- | --- | --- | --- |
@@ -861,7 +819,7 @@ func BenchmarkCancel1000(b *testing.B) {
 | 标准库 | 是 | 否（JUC 辅助） | 是 | 否 | 否（tokio） |
 | 强制使用 | 是（IO 函数必接 ctx） | 否 | 否 | 否 | 否 |
 
-### 6.2 context.Value vs 全局变量 vs DI
+### 5.2 context.Value vs 全局变量 vs DI
 
 | 方案 | 优点 | 缺点 | 适用场景 |
 | --- | --- | --- | --- |
@@ -869,7 +827,7 @@ func BenchmarkCancel1000(b *testing.B) {
 | 全局变量 | 简单 | 全局状态、并发不安全、不可测试 | 进程级配置 |
 | 依赖注入（DI） | 显式依赖、可测试 | 模板代码多、需 DI 框架 | 业务逻辑依赖 |
 
-### 6.3 context 与 channel 取消对比
+### 5.3 context 与 channel 取消对比
 
 | 场景 | context | channel | 胜者 |
 | --- | --- | --- | --- |
@@ -881,9 +839,9 @@ func BenchmarkCancel1000(b *testing.B) {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：context 存储在 struct 中
+### 6.1 陷阱 1：context 存储在 struct 中
 
 ```go
 // 反模式：context 作为 struct 字段
@@ -914,7 +872,7 @@ func (s *Service) GetUser(ctx context.Context, id string) (*User, error) {
 }
 ```
 
-### 7.2 陷阱 2：忘记调用 cancel
+### 6.2 陷阱 2：忘记调用 cancel
 
 ```go
 // 反模式：未调用 cancel，导致 timerCtx 资源泄漏
@@ -936,7 +894,7 @@ func handler(ctx context.Context) {
 
 **Go 1.22+ vet 检查**：`go vet` 会检测 `WithTimeout` 后未调用 `cancel` 的情况。
 
-### 7.3 陷阱 3：用 context.Value 传业务参数
+### 6.3 陷阱 3：用 context.Value 传业务参数
 
 ```go
 // 反模式：用 context 传业务参数
@@ -961,7 +919,7 @@ func processOrder(ctx context.Context, userID int, role string) {
 }
 ```
 
-### 7.4 陷阱 4：传 nil context
+### 6.4 陷阱 4：传 nil context
 
 ```go
 // 反模式：传 nil context
@@ -981,7 +939,7 @@ func fetchUser(ctx context.Context, id string) (*User, error) {
 }
 ```
 
-### 7.5 陷阱 5：context key 用内置类型
+### 6.5 陷阱 5：context key 用内置类型
 
 ```go
 // 反模式：用 string 作为 key
@@ -1002,7 +960,7 @@ const (
 ctx = context.WithValue(ctx, keyUserID, 42)
 ```
 
-### 7.6 陷阱 6：忽略 ctx.Done() 的关闭
+### 6.6 陷阱 6：忽略 ctx.Done() 的关闭
 
 ```go
 // 反模式：长时间运算不检查 ctx
@@ -1032,7 +990,7 @@ func compute(ctx context.Context) Result {
 }
 ```
 
-### 7.7 陷阱 7：goroutine 泄漏（未监听 ctx.Done）
+### 6.7 陷阱 7：goroutine 泄漏（未监听 ctx.Done）
 
 ```go
 // 反模式：goroutine 不监听 ctx，永久阻塞
@@ -1058,7 +1016,7 @@ func fixed(ctx context.Context) {
 }
 ```
 
-### 7.8 最佳实践清单
+### 6.8 最佳实践清单
 
 | 实践 | 说明 |
 | --- | --- |
@@ -1075,9 +1033,9 @@ func fixed(ctx context.Context) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 go module 与构建
+### 7.1 go module 与构建
 
 ```bash
 mkdir go-context-demo && cd go-context-demo
@@ -1088,7 +1046,7 @@ go get go.opentelemetry.io/otel
 go get go.opentelemetry.io/otel/trace
 ```
 
-### 8.2 OpenTelemetry 集成
+### 7.2 OpenTelemetry 集成
 
 ```go
 // otel_context.go
@@ -1127,7 +1085,7 @@ func callPayment(ctx context.Context, orderID string) error {
 }
 ```
 
-### 8.3 性能分析（pprof）
+### 7.3 性能分析（pprof）
 
 ```go
 // pprof_context.go
@@ -1171,9 +1129,9 @@ go tool pprof -http=:8080 http://localhost:6060/debug/pprof/goroutine
 go tool pprof -http=:8080 http://localhost:6060/debug/pprof/profile?seconds=30
 ```
 
-### 8.4 调试技巧
+### 7.4 调试技巧
 
-#### 8.4.1 检查 context 树深度
+#### 7.4.1 检查 context 树深度
 
 ```go
 func contextDepth(ctx context.Context) int {
@@ -1190,15 +1148,15 @@ func contextDepth(ctx context.Context) int {
 }
 ```
 
-#### 8.4.2 启用竞争检测器
+#### 7.4.2 启用竞争检测器
 
 ```bash
 go test -race ./...
 ```
 
-### 8.5 性能优化
+### 7.5 性能优化
 
-#### 8.5.1 减少 context.Value 链长度
+#### 7.5.1 减少 context.Value 链长度
 
 ```go
 // 反例：链长 10
@@ -1215,7 +1173,7 @@ type RequestMeta struct {
 ctx = context.WithValue(ctx, metaKey, &RequestMeta{...})
 ```
 
-#### 8.5.2 缓存 ctx.Value 结果
+#### 7.5.2 缓存 ctx.Value 结果
 
 ```go
 // 反例：每次循环都调用 Value
@@ -1231,7 +1189,7 @@ for i := 0; i < 1000; i++ {
 }
 ```
 
-#### 8.5.3 分层 context 减少单点 fan-out
+#### 7.5.3 分层 context 减少单点 fan-out
 
 ```go
 // 反例：10 万个 goroutine 挂在同一 root
@@ -1252,9 +1210,9 @@ for i := 0; i < 100; i++ {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Kubernetes：APIServer 的请求 context
+### 8.1 Kubernetes：APIServer 的请求 context
 
 Kubernetes APIServer 为每个 HTTP 请求创建一个 context，贯穿整个处理链：
 
@@ -1279,7 +1237,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 源码：[`staging/src/k8s.io/apiserver/pkg/endpoints/request/context.go`](https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apiserver/pkg/endpoints/request/context.go)
 
-### 9.2 Docker：buildkit 的构建 context
+### 8.2 Docker：buildkit 的构建 context
 
 buildkit 为每个构建任务创建一个 context 树：
 
@@ -1300,7 +1258,7 @@ vertex := &Vertex{ctx: subCtx, cancel: cancel}
 - vertex 失败时取消所有依赖它的 vertex
 - 构建超时通过 context.Deadline 控制
 
-### 9.3 TiDB：session context
+### 8.3 TiDB：session context
 
 TiDB 的 Session 接口包含 `Context`，承载：
 
@@ -1317,7 +1275,7 @@ type Session interface {
 }
 ```
 
-### 9.4 Prometheus：scrape context
+### 8.4 Prometheus：scrape context
 
 Prometheus 为每次 scrape 创建一个 context，超时由配置控制：
 
@@ -1327,7 +1285,7 @@ defer cancel()
 resp, err := httpClient.Do(req.WithContext(ctx))
 ```
 
-### 9.5 HashiCorp Consul：RPC context
+### 8.5 HashiCorp Consul：RPC context
 
 Consul 的 RPC 框架要求所有方法首参为 `context.Context`：
 
@@ -1615,7 +1573,7 @@ func main() {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q1.** 为什么 Go 强制 context 作为函数首参，而不像 Java 那样用 ThreadLocal？
 
@@ -1681,9 +1639,9 @@ func main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档与规范
+### 10.1 官方文档与规范
 
 [1] Sameer Ajmani. 2014. Go Concurrency Patterns: Context. (July 2014). Retrieved July 20, 2026 from https://go.dev/blog/context.
 
@@ -1693,7 +1651,7 @@ func main() {
 
 [4] Bryan C. Mills. 2023. Proposal: context: add WithCancelCause and Cause. (2023). Retrieved July 20, 2026 from https://github.com/golang/go/issues/51345.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [5] Sameer Ajmani. 2014. *Contexts in Go*. (2014). Google Tech Talk.
 
@@ -1703,7 +1661,7 @@ func main() {
 
 [8] K. Mani Chandy and Jayadev Misra. 1979. Distributed Computation on Networks: The Locus of Control. In *Proceedings of the 1979 International Conference on Parallel Processing (ICPP '79)*. IEEE, 235–244.
 
-### 11.3 开源实现
+### 10.3 开源实现
 
 [9] The Go Authors. 2024. Go standard library `context/context.go`. (2024). Retrieved July 20, 2026 from https://github.com/golang/go/blob/master/src/context/context.go.
 
@@ -1715,9 +1673,9 @@ func main() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 - **Alan A. A. Donovan, Brian W. Kernighan.** *The Go Programming Language*. Addison-Wesley, 2015. ISBN 978-0-13-419044-0.
   - 第 8 章示例 8.5 "Reconciling divergent computation with channels" 引入 context 思想
@@ -1727,7 +1685,7 @@ func main() {
   - 第 8 章 "Context" 系统讲解 context 设计哲学
 - **Bryan C. Mills.** *Functional Options, Context, and the Future of Go APIs*. GopherCon 2019.
 
-### 12.2 推荐论文
+### 11.2 推荐论文
 
 - **Parnas, D. L.** "On the Criteria To Be Used in Decomposing Systems into Modules." *CACM* 15, 12 (1972), 1053–1058. DOI: 10.1145/361598.361623.
   - 信息隐藏原则，是 context 设计的理论基础
@@ -1735,7 +1693,7 @@ func main() {
   - Scala 的 Future cancellation，与 Go context 对比
 - **Bierman, G., Parkinson, M., and Pitts, A.** "MJ: An imperative core calculus for Java and Java with effects." (2003).
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **Go Blog: Context** — https://go.dev/blog/context
 - **Go Blog: Contexts and structs** — https://go.dev/blog/context-and-structs
@@ -1744,7 +1702,7 @@ func main() {
 - **Sourcegraph: Go context.go source** — https://sourcegraph.com/github.com/golang/go/-/blob/src/context/context.go
 - **OpenTelemetry Go: Context propagation** — https://opentelemetry.io/docs/instrumentation/go/
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **Structured concurrency**：将 context 与 goroutine 组结合，保证所有子 goroutine 完成后再返回（如 Rust 的 `tokio::task::JoinSet`、Kotlin 的 `coroutineScope`）
 - **Effect systems**：Scala/Kotlin 的类型化 effect，比 context 更安全的副作用管理

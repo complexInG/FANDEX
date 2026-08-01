@@ -20,6 +20,7 @@ prerequisites:
   - kotlin/类与对象
 ---
 
+
 # 作用域函数区别（Scope Functions: let, run, with, apply, also）
 
 > 本文档对标 MIT 6.005、Stanford CS193P、CMU 15-410 教学水准，系统讲解 Kotlin 标准库五大作用域函数（Scope Functions）的设计哲学、形式化定义、字节码实现与工程实践。作用域函数是 Kotlin 中最具特色的小工具集合，看似简单却蕴含深远的函数式编程思想与 API 设计智慧。本文档涵盖从零基础自学到资深架构师审查代码的全维度内容，包括跨语言对比（JavaScript、Ruby、Swift）、性能基准、案例研究与习题解析。
@@ -41,79 +42,15 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。该分类法是国际高等教育通用的学习目标设计框架，由 Benjamin Bloom 于 1956 年提出，2001 年由 Anderson 与 Krathwohl 修订。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 列举 Kotlin 五大作用域函数的名称：`let`、`run`、`with`、`apply`、`also`。
-- 复述每个作用域函数的接收者类型与返回值类型：
-  - `let`：接收 `(T) -> R`，返回 `R`。
-  - `run`：接收 `T.() -> R`，返回 `R`。
-  - `with`：接收 `T` 与 `T.() -> R`，返回 `R`（非扩展函数）。
-  - `apply`：接收 `T.() -> Unit`，返回 `T`。
-  - `also`：接收 `(T) -> Unit`，返回 `T`。
-- 背诵每个作用域函数内部对上下文对象的引用方式：
-  - `let`、`also`：通过 `it` 关键字引用。
-  - `run`、`with`、`apply`：通过 `this` 关键字引用。
-- 列举作用域函数的两个核心维度：引用方式（`it` vs `this`）与返回值（上下文对象 vs Lambda 结果）。
-- 复述作用域函数在 Kotlin 标准库中的位置：`kotlin.Standard.kt` 与 `kotlin.Util.kt`。
-
-### 1.2 Understand（理解）
-
-- 用自己的语言解释作用域函数的本质：它们是"语法糖"（syntactic sugar），用于在不引入新变量的前提下，限定一个对象的作用域并执行操作。
-- 解释 `this` 与 `it` 在作用域函数中的语义差异：`this` 是隐式接收者，可省略；`it` 是显式参数，名称可改。
-- 解释"返回上下文对象"与"返回 Lambda 结果"的工程意义：前者支持链式调用，后者支持转换计算。
-- 解释为什么 `with` 不是扩展函数：它的设计意图是"对已有对象执行一组操作"，调用形式是 `with(obj) { ... }` 而非 `obj.with { ... }`。
-- 解释为什么 `apply` 返回 `this`：它被设计用于"初始化"场景，如构造对象后设置属性。
-- 解释为什么 `also` 不使用 `this`：它被设计用于"副作用"场景，如日志、调试，不应遮蔽外部 `this`。
-
-### 1.3 Apply（应用）
-
-- 使用 `apply` 链式初始化一个对象（如 `Dialog`、`Intent`、`Builder`）。
-- 使用 `let` 处理可空类型，安全地执行操作：`nullable?.let { ... }`。
-- 使用 `run` 将多个语句组合为一个表达式：`val result = obj.run { ... }`。
-- 使用 `with` 对一个对象执行一组操作：`with(obj) { ... }`。
-- 使用 `also` 在链式调用中插入副作用：`obj.also { log(it) }.map { ... }`。
-- 使用作用域函数重构嵌套 `if` 与临时变量过多的代码。
-
-### 1.4 Analyze（分析）
-
-- 对比五个作用域函数在不同场景下的适用性，分析"为什么 Kotlin 标准库选择这五个而非三个或七个"。
-- 分析作用域函数的字节码生成结果：它们是否会被内联？是否引入额外开销？
-- 分析 `apply` 在泛型类型推断中的特殊行为：`apply` 的返回类型可能与接收者不同（如 `StringBuilder.apply { }` 返回 `StringBuilder`）。
-- 分析 `also` 与 `let` 在副作用场景的语义差异：`also` 强调"插入操作不影响主流程"，`let` 强调"转换"。
-- 分析作用域函数与作用域（scope）的关系：它们如何创建一个局部作用域？
-
-### 1.5 Evaluate（评价）
-
-- 评判一个生产代码库中的作用域函数使用是否恰当：是否存在滥用？是否存在误用？
-- 评价"作用域函数改善代码可读性"的论断：在哪些场景下成立？在哪些场景下反而降低可读性？
-- 评价 Kotlin 团队的设计选择：为什么保留五个高度相似的函数而非统一为一个？
-- 评估在 DSL 设计中使用作用域函数的利弊：何时该用 `run`，何时该用 `with`？
-- 评价作用域函数在新人入门时的认知负担：是否过度设计？
-
-### 1.6 Create（创造）
-
-- 设计一个完整的 DSL（领域特定语言），充分利用作用域函数构建流畅的 API。
-- 设计一个团队代码规范文档，明确何时使用哪个作用域函数，并给出反模式示例。
-- 实现一个自定义的作用域函数（如 `tap`，类似 Ruby 的 `tap`），并分析其与 `also` 的关系。
-- 设计一个静态分析规则（如 Detekt 规则），自动检测作用域函数的误用。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 函数式编程的背景
+### 1.1 函数式编程的背景
 
 作用域函数的思想根植于函数式编程（Functional Programming, FP）的传统。在函数式语言中，函数是一等公民（first-class citizen），可以作为参数传递、作为返回值返回。Kotlin 从 Scheme、ML、Haskell 等函数式语言中汲取灵感，将函数式编程的精髓融入面向对象体系。
 
 作用域函数的核心思想是：**将"对对象的操作"封装为一个 Lambda 表达式，并通过接收者模式（receiver pattern）将该对象暴露为 Lambda 的隐式上下文**。这一思想在 Groovy 的 `with`、Ruby 的 `tap`、JavaScript 的 Promise 链中都有体现。
 
-### 2.2 Kotlin 的设计动机
+### 1.2 Kotlin 的设计动机
 
 Kotlin 1.0 于 2016 年正式发布，目标之一是"成为比 Java 更简洁、更安全的语言"。Java 中常见的模式是：
 
@@ -138,7 +75,7 @@ def result = new StringBuilder().with {
 
 Kotlin 团队借鉴了这一思想，但进一步发展，提供了五个变体以覆盖不同场景。这五个函数的设计反映了 Kotlin 对"API 设计的精确性"的追求：每个函数对应一种明确的语义意图。
 
-### 2.3 五大函数的引入时间
+### 1.3 五大函数的引入时间
 
 - **`let`**：Kotlin 1.0 引入。源自 Scheme 的 `let` 语义，用于绑定变量。在 Kotlin 中作为"对可空值执行操作"的标准模式。
 - **`run`**：Kotlin 1.0 引入。源自"运行一个块"的语义，用于组合多个语句。
@@ -148,7 +85,7 @@ Kotlin 团队借鉴了这一思想，但进一步发展，提供了五个变体�
 
 `also` 的引入特别值得注意：它是在社区反馈"apply 遮蔽了外部 this"后加入的。`also` 使用 `it` 而非 `this`，因此可以在已有 `this` 上下文中安全使用，不会遮蔽外部接收者。
 
-### 2.4 函数式编程的启发
+### 1.4 函数式编程的启发
 
 作用域函数的设计深受函数式编程中"K 组合子"（K Combinator）与"恒等函数"（Identity Function）的影响：
 
@@ -158,7 +95,7 @@ Kotlin 团队借鉴了这一思想，但进一步发展，提供了五个变体�
 
 理解这一函数式编程背景，有助于把握作用域函数的设计哲学：它们不是简单的工具函数，而是函数式编程范式的体现。
 
-### 2.5 与 Java 演化的对比
+### 1.5 与 Java 演化的对比
 
 Java 没有直接等价的作用域函数，但有相关模式：
 
@@ -172,7 +109,7 @@ Kotlin 的作用域函数相比 Java 的优势：
 2. 灵活性：Lambda 内可执行任意代码，不限于方法调用。
 3. 函数式：与高阶函数无缝集成。
 
-### 2.6 当前状态与社区共识
+### 1.6 当前状态与社区共识
 
 经过多年的实践，Kotlin 社区形成了关于作用域函数使用的共识：
 
@@ -186,9 +123,9 @@ Google 的 Android 代码风格指南与 Jetbrains 的 Kotlin 编码规范均采
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 作用域函数的统一形式
+### 2.1 作用域函数的统一形式
 
 设 $T$ 为接收者类型，$R$ 为返回类型。作用域函数可形式化为一个二元组：
 
@@ -201,7 +138,7 @@ $$
 - $\text{ContextRef} \in \{\text{this}, \text{it}\}$：上下文对象的引用方式。
 - $\text{ReturnType} \in \{T, R\}$：返回上下文对象或 Lambda 结果。
 
-### 3.2 五大函数的形式化定义
+### 2.2 五大函数的形式化定义
 
 #### let
 
@@ -269,7 +206,7 @@ inline fun <T> T.also(block: (T) -> Unit): T { block(this); return this }
 - 引用方式：`it`（默认名，可改名）。
 - 返回值：`T`（接收者本身）。
 
-### 3.3 分类矩阵
+### 2.3 分类矩阵
 
 将五大函数按两个维度分类，得到著名的 2x2 矩阵：
 
@@ -285,7 +222,7 @@ inline fun <T> T.also(block: (T) -> Unit): T { block(this); return this }
 - 想"转换 + 不影响 this 上下文"：`let`。
 - 想"转换 + 替换 this 上下文"：`run` 或 `with`。
 
-### 3.4 内联与零开销
+### 2.4 内联与零开销
 
 五大作用域函数都标记为 `inline`，意味着：
 
@@ -301,7 +238,7 @@ $$
 
 这意味着 `x.let { f(it) }` 编译后等价于 `f(x)`，无额外开销。
 
-### 3.5 接收者 Lambda（Receiver Lambda）
+### 2.5 接收者 Lambda（Receiver Lambda）
 
 `run`、`with`、`apply` 使用 `T.() -> R` 类型，称为"接收者 Lambda"（receiver lambda）。这种 Lambda 有一个隐式接收者 `this`，类型为 `T`。
 
@@ -327,9 +264,9 @@ html {
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 五大函数的等价转换
+### 3.1 五大函数的等价转换
 
 由于所有作用域函数都是 `inline`，它们在语义上可等价转换为更基础的代码。
 
@@ -392,7 +329,7 @@ run {
 
 可见，五个函数在语义上彼此等价，只是提供了不同的"语法便利"。
 
-### 4.2 为什么需要五个函数
+### 3.2 为什么需要五个函数
 
 既然五个函数彼此等价，为什么 Kotlin 标准库要提供五个而非一个？这是 API 设计的智慧：
 
@@ -408,7 +345,7 @@ run {
    - `let`/`run`/`with` 返回 Lambda 结果，支持转换。
 4. **可读性**：使用恰当的函数能让代码意图一目了然，减少注释需求。
 
-### 4.3 接收者 Lambda 的字节码
+### 3.3 接收者 Lambda 的字节码
 
 考虑：
 
@@ -448,7 +385,7 @@ sb.append("World");
 
 同样无开销，但代码中 `it` 比 `this` 显式，更冗长。因此 `apply` 在初始化场景中更受青睐。
 
-### 4.4 可空类型的处理
+### 3.4 可空类型的处理
 
 `let` 在可空类型处理中扮演关键角色。考虑：
 
@@ -490,7 +427,7 @@ if (x != null) f(x) else null
 val length = getName()?.let { it.length } ?: 0
 ```
 
-### 4.5 `apply` 的泛型推断
+### 3.5 `apply` 的泛型推断
 
 `apply` 在泛型类型推断中有特殊行为。考虑：
 
@@ -519,7 +456,7 @@ val sb: Appendable = StringBuilder().apply {
 
 由于 `apply` 的 `T` 是 `StringBuilder`，`append` 解析为 `StringBuilder.append`，返回 `StringBuilder`。最终赋值给 `Appendable` 是安全的（向上转型）。
 
-### 4.6 `also` 与 `let` 的副作用语义
+### 3.6 `also` 与 `let` 的副作用语义
 
 `also` 与 `let` 都使用 `it`，但语义不同：
 
@@ -548,9 +485,9 @@ val list = mutableListOf(1, 2, 3)
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 编译与运行环境准备
+### 4.1 编译与运行环境准备
 
 本节所有示例可在 Kotlin 1.9+ 环境运行。最小化依赖：
 
@@ -576,7 +513,7 @@ application {
 }
 ```
 
-### 5.2 let 基础
+### 4.2 let 基础
 
 ```kotlin
 fun main() {
@@ -604,7 +541,7 @@ kotlinc let.kt -include-runtime -d let.jar
 java -jar let.jar
 ```
 
-### 5.3 run 基础
+### 4.3 run 基础
 
 ```kotlin
 fun main() {
@@ -624,7 +561,7 @@ fun main() {
 }
 ```
 
-### 5.4 with 基础
+### 4.4 with 基础
 
 ```kotlin
 fun main() {
@@ -639,7 +576,7 @@ fun main() {
 }
 ```
 
-### 5.5 apply 基础
+### 4.5 apply 基础
 
 ```kotlin
 class Person {
@@ -658,7 +595,7 @@ fun main() {
 }
 ```
 
-### 5.6 also 基础
+### 4.6 also 基础
 
 ```kotlin
 fun main() {
@@ -679,7 +616,7 @@ After add: [1, 2, 3, 4]
 After remove: [2, 3, 4]
 ```
 
-### 5.7 链式调用组合
+### 4.7 链式调用组合
 
 ```kotlin
 data class User(val name: String, val age: Int)
@@ -703,7 +640,7 @@ fun main() {
 }
 ```
 
-### 5.8 可空类型深入
+### 4.8 可空类型深入
 
 ```kotlin
 data class Config(val host: String, val port: Int)
@@ -721,7 +658,7 @@ fun main() {
 }
 ```
 
-### 5.9 配合 Java API
+### 4.9 配合 Java API
 
 ```kotlin
 import java.io.File
@@ -741,7 +678,7 @@ fun main() {
 }
 ```
 
-### 5.10 Android Builder 模式
+### 4.10 Android Builder 模式
 
 ```kotlin
 import android.content.Intent
@@ -779,7 +716,7 @@ fun main() {
 }
 ```
 
-### 5.11 完整示例：构建配置
+### 4.11 完整示例：构建配置
 
 ```kotlin
 data class ServerConfig(
@@ -809,7 +746,7 @@ fun main() {
 }
 ```
 
-### 5.12 自定义作用域函数
+### 4.12 自定义作用域函数
 
 ```kotlin
 // 模拟 Ruby 的 tap
@@ -841,9 +778,9 @@ HELLO
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 五大函数对比表
+### 5.1 五大函数对比表
 
 | 函数 | 引用方式 | 返回值 | 适用场景 | 是否扩展函数 |
 |---|---|---|---|---|
@@ -853,7 +790,7 @@ HELLO
 | `apply` | `this` | `this` | 初始化 | 是 |
 | `also` | `it` | `this` | 副作用、链式插入 | 是 |
 
-### 6.2 与 Java Builder 模式对比
+### 5.2 与 Java Builder 模式对比
 
 **Java Builder 模式**：
 
@@ -899,7 +836,7 @@ val p = Person().apply {
 | 编译期检查 | 有 | 有 |
 | 适用于任意类 | 否（需类支持） | 是 |
 
-### 6.3 与 Groovy with 对比
+### 5.3 与 Groovy with 对比
 
 **Groovy**：
 
@@ -923,7 +860,7 @@ with(sb) {
 
 两者语义几乎一致，但 Kotlin 额外提供了 `apply`、`also` 等变体，覆盖更多场景。
 
-### 6.4 与 Ruby tap 对比
+### 5.4 与 Ruby tap 对比
 
 **Ruby**：
 
@@ -942,7 +879,7 @@ val result = "Hello"
 
 `tap` 与 `also` 完全等价，都是 K 组合子的实现，用于插入副作用。
 
-### 6.5 与 Swift Optional Chaining 对比
+### 5.5 与 Swift Optional Chaining 对比
 
 **Swift**：
 
@@ -964,7 +901,7 @@ name?.let { name ->
 
 Swift 的 `if let` 是语法结构，Kotlin 的 `?.let` 是函数调用。Swift 的优势是语法更直观，Kotlin 的优势是可链式调用。
 
-### 6.6 与 JavaScript Promise 链对比
+### 5.6 与 JavaScript Promise 链对比
 
 **JavaScript**：
 
@@ -988,9 +925,9 @@ JavaScript 的 Promise 链与 Kotlin 的 `let` 链在形式上相似，但 Promi
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：滥用 let 替代 if
+### 6.1 陷阱：滥用 let 替代 if
 
 ```kotlin
 // 错误：过度使用 let
@@ -1004,7 +941,7 @@ val result = if (someCondition) doA() else doB()
 
 `let` 不应替代 `if` 表达式。`let` 的语义是"绑定值"，不是"条件分支"。
 
-### 7.2 陷阱：在 apply 中返回值
+### 6.2 陷阱：在 apply 中返回值
 
 ```kotlin
 // 错误：apply 的 Lambda 中返回值被忽略
@@ -1022,7 +959,7 @@ val result = Person().run {
 }
 ```
 
-### 7.3 陷阱：在 also 中修改对象
+### 6.3 陷阱：在 also 中修改对象
 
 ```kotlin
 // 错误：also 设计用于"只读副作用"，不应修改对象
@@ -1043,7 +980,7 @@ val list = mutableListOf(1, 2, 3).also {
 
 虽然 `also` 内可以修改对象，但语义上 `also` 表达"附加操作"，不表达"修改"。修改应使用 `apply`。
 
-### 7.4 陷阱：嵌套作用域函数导致可读性下降
+### 6.4 陷阱：嵌套作用域函数导致可读性下降
 
 ```kotlin
 // 错误：嵌套过深
@@ -1064,7 +1001,7 @@ val joined = strings.joinToString()
 val result = joined.uppercase()
 ```
 
-### 7.5 陷阱：用 apply 替代构造函数
+### 6.5 陷阱：用 apply 替代构造函数
 
 ```kotlin
 // 错误：用 apply 初始化必填字段
@@ -1088,7 +1025,7 @@ val p = Person("Alice", 30)
 
 `apply` 不应替代构造函数。必填字段应在构造函数中声明。
 
-### 7.6 陷阱：let 中的 `it` 歧义
+### 6.6 陷阱：let 中的 `it` 歧义
 
 ```kotlin
 // 错误：it 歧义
@@ -1101,7 +1038,7 @@ val result = list.map { num -> num.let { it * 2 } }
 val result = list.map { it * 2 }
 ```
 
-### 7.7 陷阱：在 run 中使用 this 导致混淆
+### 6.7 陷阱：在 run 中使用 this 导致混淆
 
 ```kotlin
 class Builder {
@@ -1119,7 +1056,7 @@ class Builder {
 
 当 `run` 出现在已有 `this` 上下文中（如成员函数），会遮蔽外部 `this`。若需访问外部 `this`，必须用 `this@Builder`。
 
-### 7.8 陷阱：also 与 apply 的语义混淆
+### 6.8 陷阱：also 与 apply 的语义混淆
 
 ```kotlin
 // 错误：用 also 修改对象（语义不准确）
@@ -1135,7 +1072,7 @@ val list = mutableListOf(1, 2, 3).apply {
 
 虽然两者等价，但 `apply` 表达"应用配置"，更符合修改语义。
 
-### 7.9 陷阱：可空类型的 let 嵌套
+### 6.9 陷阱：可空类型的 let 嵌套
 
 ```kotlin
 // 错误：嵌套 let 处理可空
@@ -1164,7 +1101,7 @@ val result = if (a != null && b != null && c != null) {
 }
 ```
 
-### 7.10 陷阱：用 with 处理可空
+### 6.10 陷阱：用 with 处理可空
 
 ```kotlin
 // 错误：with 不处理可空
@@ -1178,7 +1115,7 @@ val result = nullable?.let { it.length }
 
 `with` 是普通函数，不处理可空。`let` 是扩展函数，配合 `?.` 可处理可空。
 
-### 7.11 陷阱：在热路径中过度使用
+### 6.11 陷阱：在热路径中过度使用
 
 ```kotlin
 // 错误：性能敏感代码中过度使用
@@ -1197,7 +1134,7 @@ fun process(data: Data): Result {
 
 虽然 `let` 是 inline 无开销，但过度使用会降低可读性。在性能敏感且简单的情况下，直接函数调用更清晰。
 
-### 7.12 陷阱：apply 返回类型非预期
+### 6.12 陷阱：apply 返回类型非预期
 
 ```kotlin
 abstract class Animal
@@ -1218,9 +1155,9 @@ val animal: Animal = Dog().apply { bark() }
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 选择决策树
+### 7.1 选择决策树
 
 ```mermaid
 flowchart TD
@@ -1237,7 +1174,7 @@ flowchart TD
     T4 --> T6
 ```
 
-### 8.2 团队代码规范建议
+### 7.2 团队代码规范建议
 
 1. **`apply`**：用于对象初始化，特别是有多个属性需设置时。
 
@@ -1282,7 +1219,7 @@ flowchart TD
    }
    ```
 
-### 8.3 与扩展函数结合
+### 7.3 与扩展函数结合
 
 作用域函数常与扩展函数结合，构建流畅 API：
 
@@ -1297,7 +1234,7 @@ fun main() {
 }
 ```
 
-### 8.4 与数据类结合
+### 7.4 与数据类结合
 
 ```kotlin
 data class User(val name: String, val age: Int, val email: String)
@@ -1316,7 +1253,7 @@ fun main() {
 }
 ```
 
-### 8.5 DSL 设计中的应用
+### 7.5 DSL 设计中的应用
 
 ```kotlin
 class HTML {
@@ -1361,7 +1298,7 @@ fun main() {
 }
 ```
 
-### 8.6 测试中的应用
+### 7.6 测试中的应用
 
 ```kotlin
 import kotlin.test.Test
@@ -1392,7 +1329,7 @@ class CalculatorTest {
 }
 ```
 
-### 8.7 与 Coroutines 结合
+### 7.7 与 Coroutines 结合
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1409,7 +1346,7 @@ fun main() = runBlocking {
 
 `withContext` 是 Coroutines 中的作用域切换函数，与 `with` 在形式上相似，但功能不同。
 
-### 8.8 性能基准
+### 7.8 性能基准
 
 由于作用域函数都是 `inline`，性能与直接代码等价：
 
@@ -1433,9 +1370,9 @@ fun withRun(): Int = run {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：Android 视图绑定
+### 8.1 案例：Android 视图绑定
 
 ```kotlin
 class MainActivity : AppCompatActivity() {
@@ -1463,7 +1400,7 @@ class MainActivity : AppCompatActivity() {
 }
 ```
 
-### 9.2 案例：网络请求配置
+### 8.2 案例：网络请求配置
 
 ```kotlin
 import java.net.HttpURLConnection
@@ -1488,7 +1425,7 @@ fun main() {
 }
 ```
 
-### 9.3 案例：JSON 解析与转换
+### 8.3 案例：JSON 解析与转换
 
 ```kotlin
 data class User(val id: Int, val name: String, val email: String?)
@@ -1513,7 +1450,7 @@ fun main() {
 }
 ```
 
-### 9.4 案例：构建器模式替代
+### 8.4 案例：构建器模式替代
 
 ```kotlin
 class Pizza private constructor(
@@ -1550,7 +1487,7 @@ fun main() {
 
 这里 `apply` 用于 Builder 链式调用，使代码简洁。
 
-### 9.5 案例：日志记录链
+### 8.5 案例：日志记录链
 
 ```kotlin
 fun processData(input: List<Int>): List<Int> {
@@ -1580,7 +1517,7 @@ After sort: [4, 6, 10]
 Final: [4, 6, 10]
 ```
 
-### 9.6 案例：KMP 共享业务逻辑
+### 8.6 案例：KMP 共享业务逻辑
 
 ```kotlin
 // commonMain
@@ -1602,7 +1539,7 @@ class UserViewModel(private val repo: UserRepository) {
 // 各平台共用
 ```
 
-### 9.7 案例：服务端配置
+### 8.7 案例：服务端配置
 
 ```kotlin
 class ServerConfig {
@@ -1631,7 +1568,7 @@ fun main() {
 }
 ```
 
-### 9.8 案例：函数式错误处理
+### 8.8 案例：函数式错误处理
 
 ```kotlin
 sealed class Result<out T>
@@ -1666,7 +1603,7 @@ fun main() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：以下哪个作用域函数不是扩展函数？
 
@@ -1697,7 +1634,7 @@ println(result)
 
 `let` 返回 5（长度），`also` 打印 5 并返回 5，最终 result 是 5。
 
-### 10.2 理解题
+### 9.2 理解题
 
 **题目 3**：解释为什么 `apply` 使用 `this` 而非 `it`。
 
@@ -1766,7 +1703,7 @@ fun main() {
 }
 ```
 
-### 10.4 分析题
+### 9.4 分析题
 
 **题目 7**：以下代码有什么问题？如何改进？
 
@@ -1804,7 +1741,7 @@ val result = "Hello".length
 
 字节码中不会生成 Lambda 对象，性能与直接调用一致。
 
-### 10.5 设计题
+### 9.5 设计题
 
 **题目 9**：设计一个 DSL 用于配置 HTTP 请求，使用作用域函数构建流畅 API。
 
@@ -1864,7 +1801,7 @@ class ApplyReturnsValueRule : Rule() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] JetBrains. 2023. Kotlin Standard Library Documentation. Retrieved July 21, 2026 from https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/
 
@@ -1904,41 +1841,41 @@ class ApplyReturnsValueRule : Rule() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - [Kotlin Standard Library Reference](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/)：作用域函数的官方文档。
 - [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)：官方编码规范中关于作用域函数的建议。
 - [Android Kotlin Style Guide](https://developer.android.com/kotlin/style-guide)：Google 推荐的 Kotlin 风格指南。
 
-### 12.2 进阶书籍
+### 11.2 进阶书籍
 
 - **《Kotlin in Action》** by Dmitry Jemerov and Svetlana Isakova：Kotlin 经典教材。
 - **《Programming Kotlin》** by Venkat Subramaniam：函数式编程视角。
 - **《The Joy of Kotlin》** by Pierre-Yves Saumont：函数式编程深度。
 - **《Effective Kotlin》** by Marcin Moskała：最佳实践集合。
 
-### 12.3 学术资源
+### 11.3 学术资源
 
 - **"The Theory of Ruby's tap"**：K 组合子的函数式编程基础。
 - **"Inline Functions in Kotlin"** by Andrey Breslav：内联机制详解。
 - **"DSL Design in Kotlin"** by Roman Elizarov：DSL 设计中的应用。
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 - **KotlinConf 2018: Idiomatic Kotlin** by Svetlana Isakova。
 - **KotlinConf 2019: Effective Kotlin** by Marcin Moskała。
 - **Google I/O 2019: Kotlin Coding Conventions**。
 
-### 12.5 开源项目参考
+### 11.5 开源项目参考
 
 - **JetBrains/kotlin**：标准库源码。
 - **JetBrains/Exposed**：DSL 设计范例。
 - **Ktor**：作用域函数在服务端的应用。
 - **Android Architecture Components**：apply 在 ViewModel 中的应用。
 
-### 12.6 相关主题
+### 11.6 相关主题
 
 - **函数与Lambda**：作用域函数的函数式编程基础。
 - **类与对象**：apply 在对象初始化中的应用。
@@ -1946,13 +1883,13 @@ class ApplyReturnsValueRule : Rule() {
 - **Kotlin与DSL**：作用域函数在 DSL 中的核心作用。
 - **扩展函数**：作用域函数本质是扩展函数。
 
-### 12.7 工具与库
+### 11.7 工具与库
 
 - **Detekt**：静态分析工具，可自定义作用域函数规则。
 - **Ktlint**：代码格式化工具。
 - **IntelliJ Kotlin Plugin**：内置作用域函数建议与重构。
 
-### 12.8 学习路径建议
+### 11.8 学习路径建议
 
 1. **入门阶段**（1 周）：掌握 Kotlin 基础语法与 Lambda。
 2. **作用域函数入门**（3 天）：学习五个函数的基本用法。
@@ -1961,7 +1898,7 @@ class ApplyReturnsValueRule : Rule() {
 5. **DSL 设计**（2 周）：基于作用域函数设计 DSL。
 6. **代码审查**（持续）：审查团队代码，识别反模式。
 
-### 12.9 常见面试题
+### 11.9 常见面试题
 
 1. **let、run、with、apply、also 的区别？**
    - 引用方式：let/also 用 `it`，run/with/apply 用 `this`。
@@ -1995,7 +1932,7 @@ class ApplyReturnsValueRule : Rule() {
    - 任何类都可用 apply 模拟 Builder，无需写 Builder 类。
    - 代码更简洁，类型安全。
 
-### 12.10 附录：作用域函数速查表
+### 11.10 附录：作用域函数速查表
 
 | 函数 | 签名 | 引用 | 返回 | 用法 |
 |---|---|---|---|---|
@@ -2005,7 +1942,7 @@ class ApplyReturnsValueRule : Rule() {
 | `apply` | `T.apply(T.() -> Unit): T` | `this` | T | 初始化 |
 | `also` | `T.also((T) -> Unit): T` | `it` | T | 副作用 |
 
-### 12.11 决策流程图
+### 11.11 决策流程图
 
 ```mermaid
 flowchart TD
@@ -2025,7 +1962,7 @@ flowchart TD
     T9 --> T10
 ```
 
-### 12.12 反模式速查
+### 11.12 反模式速查
 
 | 反模式 | 正确做法 |
 |---|---|
@@ -2035,7 +1972,7 @@ flowchart TD
 | `with(nullable) { ... }` | 改用 `?.let` |
 | `let { it.let { it.let ... } }` | 用中间变量或安全调用链 |
 
-### 12.13 内联函数深度
+### 11.13 内联函数深度
 
 作用域函数之所以零开销，是因为 `inline` 关键字。其编译过程：
 
@@ -2046,7 +1983,7 @@ flowchart TD
 
 最终生成的字节码与直接代码几乎一致。这是 Kotlin 性能优化的重要手段。
 
-### 12.14 自定义作用域函数
+### 11.14 自定义作用域函数
 
 ```kotlin
 // tap: 完全等价于 also，但名称更直观
@@ -2074,7 +2011,7 @@ fun main() {
 
 自定义作用域函数可丰富 API，但应注意与标准库保持风格一致。
 
-### 12.15 总结
+### 11.15 总结
 
 至此，本文档系统讲解了 Kotlin 五大作用域函数的完整知识图谱。读者应能：
 

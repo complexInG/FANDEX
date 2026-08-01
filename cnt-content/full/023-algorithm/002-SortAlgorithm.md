@@ -33,14 +33,6 @@ related:
 prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/数组与动态数组
-learningObjectives:
-  - 记忆冒泡 $O(n^2)$、选择 $O(n^2)$、插入 $O(n^2)$ 平均/$O(n)$ 最优、希尔 $O(n^{1.3})$ 经验、归并 $O(n \log n)$、堆排 $O(n \log n)$、快排 $O(n \log n)$ 平均/$O(n^2)$ 最坏、计数 $O(n+k)$、基数 $O(d(n+k))$、桶 $O(n+k)$ 的形式化复杂度，复述稳定性与原地性差异
-  - 理解 von Neumann 1945 EDVAC 报告归并排序、Shell 1959 CACM 希尔排序、Hoare 1961 CACM 5(10):10-15 快速排序、Williams 1964 CACM Algorithm 232 堆排序、Musser 1997 DR Dobbs Journal 内省排序、Peters 2002 Timsort（Python list.sort 默认实现）的历史脉络，说明不同排序算法的设计动机
-  - 应用冒泡（含鸡尾酒优化）、选择、插入（含二分插入）、希尔（含 Knuth/Pratt/Sedgewick 增量序列）、归并（自顶向下与自底向上）、堆排、快排（Lomuto/Hoare/三路/随机化/双轴）编写可运行的 Python/C++/Java 代码，解决 LeetCode 912 排序数组、LeetCode 215 第 K 大、LeetCode 56 合并区间、LeetCode 179 最大数、LeetCode 315 计算右侧小于当前元素的个数等问题
-  - 分析比较排序 $\Omega(n \log n)$ 下界的决策树证明（$2^h \geq n!$、Stirling 公式 $n! \approx (n/e)^n \sqrt{2\pi n}$）、快排平均 $O(n \log n)$ 的期望分析、Timsort 复杂度证明，掌握"决策树归约、期望分析、势能分析"三大核心论证方法
-  - 评估各排序算法在"小数据 vs 大数据"、"内存受限 vs 内存充裕"、"稳定 vs 不稳定"、"通用数据 vs 特殊数据"维度上的优劣，识别 Python Timsort、Java DualPivotQuicksort、C++ std::sort 内省排序、V8 Timsort 的选型动机
-  - 对比 12 种排序算法在最好/平均/最坏时间、空间、稳定性、原地性、自适应性、缓存友好性维度的差异
-  - 创造性设计基于排序的开源项目解决方案，如数据库外部归并排序、MapReduce 分布式排序、Stream 分位数估算、Top-K 流式聚合、Skew-Histogram 数据倾斜检测
 references:
   - type: book
     authors:
@@ -212,6 +204,7 @@ etymology:
     english: bucket sort
     origin: 'bucket 源自古英语 bucc（容器、桶）。桶排序将元素按值域均匀分到 $k$ 个桶，每个桶内排序后合并。最坏 $O(n^2)$（所有元素入同桶），平均 $O(n+k)$（均匀分布）。是计数排序的推广，适合均匀分布的浮点数排序'
 ---
+
 
 ## 1. 概述与学习目标
 

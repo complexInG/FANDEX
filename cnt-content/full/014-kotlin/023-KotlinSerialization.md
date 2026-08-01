@@ -15,51 +15,10 @@ related:
 prerequisites:
   - kotlin/概述与环境配置
 ---
+
 # Kotlin 序列化速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
-## 学习目标
-
-本章节基于 Bloom 分类法组织学习目标，按认知层级由低到高排列，读者可逐级检验自身掌握程度。
-
-### 1. 记忆层（Remembering）
-
-- 能复述 kotlinx.serialization 的核心组件：`Serializer`、`Encoder`、`Decoder`、`SerialFormat`。
-- 能列举至少三种内置格式：`Json`、`ProtoBuf`、`CBOR`。
-- 能写出 `@Serializable` 注解的基本用法与编译器插件生成 `$serializer` 的位置。
-
-### 2. 理解层（Understanding）
-
-- 能解释 `KSerializer` 接口的核心方法 `serialize` 与 `deserialize` 的工作机制。
-- 能阐述编译期代码生成相比运行时反射的优势。
-- 能描述 `SerialDescriptor` 在序列化中的作用与树形结构。
-
-### 3. 应用层（Applying）
-
-- 能为自定义数据类型实现 `KSerializer` 并通过 `@Serializable(with = ...)` 注册。
-- 能配置 `Json { ... }` 实例以满足不同业务场景（如忽略未知字段、自定义日期格式）。
-- 能使用 `@SerialName`、`@Transient`、`@SerialInfo` 等注解控制序列化行为。
-
-### 4. 分析层（Analyzing）
-
-- 能对比 kotlinx.serialization 与 Jackson、Gson、Moshi 的架构差异与性能差异。
-- 能分析 `EncodeDecoder` 与 `StringFormat`、`BinaryFormat` 接口的层次关系。
-- 能定位 polymorphic 序列化中 `classDiscriminator` 冲突的根因。
-
-### 5. 评价层（Evaluating）
-
-- 能评估在多模块工程中采用 `ContextualSerializer` 的成本与收益。
-- 能判定何时需要自定义 `SerialFormat` 而非复用 `Json`。
-- 能针对高并发场景下的序列化性能瓶颈提出改进方案。
-
-### 6. 创造层（Creating）
-
-- 能设计一套基于 kotlinx.serialization 的领域驱动序列化框架，支持版本化与向后兼容。
-- 能为开源项目贡献新的 `SerialFormat` 实现（如 MessagePack、BSON）。
-- 能构建覆盖多平台（JVM、JS、Native、Wasm）的统一序列化层。
 
 ---
 
@@ -74,9 +33,9 @@ prerequisites:
 - **性能**：反射开销、内存分配、字符串构造都会影响吞吐量；
 - **跨平台**：JVM、JS、Native 的反射能力不同，统一抽象是难点。
 
-### 2. JVM 生态序列化方案的历史演进
+### 1. JVM 生态序列化方案的历史演进
 
-#### 2.1 Java 原生序列化（Java 1.1, 1997）
+#### 1.1 Java 原生序列化（Java 1.1, 1997）
 
 Java 早期提供的 `ObjectInputStream`/`ObjectOutputStream` 基于反射与 `Serializable` 标记接口。其问题显著：
 
@@ -85,11 +44,11 @@ Java 早期提供的 `ObjectInputStream`/`ObjectOutputStream` 基于反射与 `S
 - 跨语言不可用；
 - 版本兼容性脆弱（`serialVersionUID` 手动维护）。
 
-#### 2.2 XML 序列化（2000s）
+#### 1.2 XML 序列化（2000s）
 
 XML 时代的代表包括 JAXB（Java 6 内置）、XStream。优点是可读性好、跨语言，缺点是冗长、解析慢。
 
-#### 2.3 JSON 序列化（2010s）
+#### 1.3 JSON 序列化（2010s）
 
 JSON 因简洁性与 Web 友好性成为事实标准。JVM 生态的代表作：
 
@@ -97,34 +56,34 @@ JSON 因简洁性与 Web 友好性成为事实标准。JVM 生态的代表作：
 - **Gson**（2008）：Google 出品，API 简洁，但性能一般；
 - **Moshi**（2015）：Square 出品，Kotlin 友好，提供 CodeGen 减少反射。
 
-#### 2.4 二进制序列化
+#### 1.4 二进制序列化
 
 - **Protocol Buffers**（Google, 2001）：schema-driven，强类型，需 `.proto` 文件；
 - **Thrift**（Facebook, 2007）：类似 Protobuf，但支持更多语言；
 - **MessagePack**（2009）：二进制 JSON，更紧凑；
 - **CBOR**（RFC 7049, 2013）：标准化二进制 JSON。
 
-### 3. Kotlin 序列化的诞生动机
+### 2. Kotlin 序列化的诞生动机
 
 JetBrains 在 2017 年启动 kotlinx.serialization 项目，主要动机包括：
 
-#### 3.1 跨平台一致性
+#### 2.1 跨平台一致性
 
 Kotlin Multiplatform 的目标是「一次编写，多处运行」，但 JVM 反射在 JS、Native 平台不可用或性能差。需要一个不依赖反射的统一序列化层。
 
-#### 3.2 编译期类型安全
+#### 2.2 编译期类型安全
 
 基于反射的方案（如 Jackson、Gson）在运行时才发现类型错误。kotlinx.serialization 通过编译器插件生成类型安全的 `$serializer`，将错误前置到编译期。
 
-#### 3.3 与 Kotlin 类型系统深度融合
+#### 2.3 与 Kotlin 类型系统深度融合
 
 Kotlin 的 `data class`、`sealed class`、`value class`、`nullable`、`default value` 等特性需要序列化框架原生理解。反射方案需要大量适配代码。
 
-#### 3.4 性能
+#### 2.4 性能
 
 通过编译期生成的代码，kotlinx.serialization 在 JVM 上的吞吐量通常是 Jackson 的 2~3 倍，在 Kotlin/Native 上可达 5~10 倍（因 Native 反射开销更大）。
 
-### 4. 工业界的采纳
+### 3. 工业界的采纳
 
 kotlinx.serialization 已成为 Kotlin 生态的事实标准：
 
@@ -158,7 +117,7 @@ $$
 
 即「往返一致性」（Round-trip Consistency）。
 
-### 2. KSerializer 接口的形式化
+### 1. KSerializer 接口的形式化
 
 `KSerializer<T>` 接口的核心契约可形式化为：
 
@@ -172,7 +131,7 @@ $$
 - $\text{serialize}: \text{Encoder} \times T \to \text{Unit}$，将值写入编码器；
 - $\text{deserialize}: \text{Decoder} \to T$，从解码器读取值。
 
-### 3. SerialDescriptor 的树形结构
+### 2. SerialDescriptor 的树形结构
 
 `SerialDescriptor` 描述类型的「序列化形状」，可形式化为一棵树：
 
@@ -197,7 +156,7 @@ flowchart TD
     T3 --> T4
 ```
 
-### 4. 多态序列化的形式化
+### 3. 多态序列化的形式化
 
 多态序列化需在字节流中嵌入类型信息（class discriminator）。设 $T$ 为密封类，子类为 $T_1, T_2, \ldots, T_n$，则序列化 $v \in T_i$ 时：
 
@@ -213,7 +172,7 @@ $$
 \text{Deserialize}_{\text{poly}}(b) = \text{Deserialize}_{T_i}(\text{body}(b)), \text{ where } \text{tag}(b) = \text{className}(T_i)
 $$
 
-### 5. 编译期代码生成的形式化
+### 4. 编译期代码生成的形式化
 
 编译器插件为每个 `@Serializable` 类 $T$ 生成 `$serializer` 对象，其行为等价于：
 
@@ -243,7 +202,7 @@ $$
 
 **推论**：包含 `var` 可变字段、循环引用的类型不满足往返一致性，需特殊处理（如 `@Transient`）。
 
-### 2. 多态序列化的歧义性
+### 1. 多态序列化的歧义性
 
 **命题**：若多态类型的子类集合 $S = \{T_1, \ldots, T_n\}$ 中存在两个子类 $T_i, T_j$ 使得 $\text{Serialize}_{T_i}(v) = \text{Serialize}_{T_j}(v')$，则反序列化时存在歧义。
 
@@ -251,7 +210,7 @@ $$
 
 **推论**：`sealed class` 的子类天然有限，编译器可静态检查歧义；`open class` 的子类集合开放，需运行时注册（`SerializersModule`）。
 
-### 3. 性能模型
+### 2. 性能模型
 
 设序列化某类型 $T$ 的耗时为：
 
@@ -275,7 +234,7 @@ $$
 
 由于 $T_{\text{lookup}}$ 在大型类中可达微秒级，生成代码在批量序列化时可获得数倍加速。
 
-### 4. 复杂度对比
+### 3. 复杂度对比
 
 | 操作 | 反射方案 | 编译期生成 |
 |------|---------|----------|
@@ -597,7 +556,7 @@ fun main() {
 | 学习曲线 | 中 | 陡 | 平 | 平 | 陡 |
 | 二进制大小 | 小 | 大 | 中 | 中 | 中 |
 
-### 2. 与 Jackson 的深度对比
+### 1. 与 Jackson 的深度对比
 
 | 特性 | kotlinx.serialization | Jackson |
 |------|----------------------|---------|
@@ -611,7 +570,7 @@ fun main() {
 | 性能（吞吐） | 2~3x | 1.0x |
 | 启动时间 | 短 | 长（模块扫描） |
 
-### 3. JSON 与二进制格式对比
+### 2. JSON 与二进制格式对比
 
 | 维度 | JSON | ProtoBuf | CBOR |
 |------|------|---------|------|
@@ -623,7 +582,7 @@ fun main() {
 | 流式处理 | 受限 | 原生 | 受限 |
 | 向后兼容 | 易 | 中 | 易 |
 
-### 4. 选型决策树
+### 3. 选型决策树
 
 ```mermaid
 flowchart TD
@@ -642,7 +601,7 @@ flowchart TD
     T4 --> T6
 ```
 
-### 5. 性能基准测试
+### 4. 性能基准测试
 
 基于 100,000 次 User 对象序列化的吞吐量（JMH，JDK 17，Apple M1 Pro）：
 
@@ -678,7 +637,7 @@ class Counter {
 data class CounterState(val count: Int = 0)
 ```
 
-### 2. 反模式：循环引用
+### 1. 反模式：循环引用
 
 **事故场景**：双向关联的实体（如 `User` 与 `Order`）直接序列化导致 `StackOverflowError`。
 
@@ -690,7 +649,7 @@ data class CounterState(val count: Int = 0)
 2. 自定义 `KSerializer` 处理循环引用（如通过 `IdentityHashMap` 检测）；
 3. 使用 `@Transient` 跳过反向引用字段。
 
-### 3. 反模式：忽略 `SerializersModule` 的作用域
+### 2. 反模式：忽略 `SerializersModule` 的作用域
 
 **事故场景**：在多模块工程中，子模块 A 定义的多态子类在子模块 B 中无法反序列化，抛出 `SerializationException`。
 
@@ -713,7 +672,7 @@ val json = Json {
 }
 ```
 
-### 4. 反模式：在序列化器中执行副作用
+### 3. 反模式：在序列化器中执行副作用
 
 **事故场景**：某自定义 `KSerializer` 在 `deserialize` 中发起数据库查询以补全字段，导致在测试环境中因数据库不可用而失败。
 
@@ -721,7 +680,7 @@ val json = Json {
 
 **解决方案**：将副作用移到反序列化后的业务层处理。
 
-### 5. 反模式：滥用 `@Contextual`
+### 4. 反模式：滥用 `@Contextual`
 
 **事故场景**：某项目对所有 `Instant` 字段使用 `@Contextual`，但未在 `SerializersModule` 注册对应序列化器，运行时报错。
 
@@ -729,7 +688,7 @@ val json = Json {
 
 **解决方案**：优先使用 `@Serializable(with = ...)`，编译期即可发现错误；仅在需要动态切换序列化器时使用 `@Contextual`。
 
-### 6. 反模式：忽略 `Json` 实例的线程安全
+### 5. 反模式：忽略 `Json` 实例的线程安全
 
 **事故场景**：高并发场景下共享一个 `Json` 实例并频繁修改配置（`configure`），导致偶发 `ConcurrentModificationException`。
 
@@ -750,7 +709,7 @@ object JsonConfig {
 fun parse(json: String) = Json { ignoreUnknownKeys = true }.decodeFromString<User>(json)
 ```
 
-### 7. 反模式：直接序列化 ORM 实体
+### 6. 反模式：直接序列化 ORM 实体
 
 **事故场景**：直接对 Hibernate 实体进行序列化，输出包含 `hibernate_lazy_initializer` 等代理字段。
 
@@ -781,7 +740,7 @@ flowchart TD
     T5 --> T8
 ```
 
-### 2. Json 配置最佳实践
+### 1. Json 配置最佳实践
 
 ```kotlin
 object JsonConfig {
@@ -813,7 +772,7 @@ object JsonConfig {
 }
 ```
 
-### 3. 多模块序列化器注册
+### 2. 多模块序列化器注册
 
 ```kotlin
 // core/src/main/kotlin/com/example/core/CoreSerializers.kt
@@ -840,7 +799,7 @@ val appJson = Json {
 }
 ```
 
-### 4. 测试策略
+### 3. 测试策略
 
 ```kotlin
 class UserSerializationTest {
@@ -882,9 +841,9 @@ class UserSerializationTest {
 }
 ```
 
-### 5. 性能优化
+### 4. 性能优化
 
-#### 5.1 复用 `Json` 实例
+#### 4.1 复用 `Json` 实例
 
 ```kotlin
 // 错误：每次都构造
@@ -899,7 +858,7 @@ object JsonSingleton : Json() {
 fun parseUser(json: String): User = JsonSingleton.decodeFromString(json)
 ```
 
-#### 5.2 使用 `encodeToByteArray` 减少字符串开销
+#### 4.2 使用 `encodeToByteArray` 减少字符串开销
 
 ```kotlin
 // 对于 ProtoBuf，直接使用 ByteArray 避免中间 String
@@ -907,7 +866,7 @@ val bytes = ProtoBuf.encodeToByteArray(user)
 val decoded = ProtoBuf.decodeFromByteArray<User>(bytes)
 ```
 
-#### 5.3 流式序列化
+#### 4.3 流式序列化
 
 ```kotlin
 // 大数据集使用流式 API，避免一次性加载全部
@@ -921,7 +880,7 @@ fun serializeLargeList(users: Sequence<User>, outputStream: OutputStream) {
 }
 ```
 
-### 6. 与 Spring Boot 集成
+### 5. 与 Spring Boot 集成
 
 ```kotlin
 @Configuration
@@ -956,7 +915,7 @@ class UserController(
 }
 ```
 
-### 7. 与 Ktor 集成
+### 6. 与 Ktor 集成
 
 ```kotlin
 fun Application.configureSerialization() {
@@ -982,7 +941,7 @@ route("/users") {
 }
 ```
 
-### 8. 跨平台兼容性
+### 7. 跨平台兼容性
 
 ```kotlin
 // commonMain 中定义共享模型

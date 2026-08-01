@@ -27,96 +27,6 @@ prerequisites:
   - c/概述
   - c/指针深度解析
   - c/动态内存管理
-learningObjectives:
-  - '{''remember'': ''记忆二级指针 `T **pp` 的声明语法、内存布局（pp → p → x 三层间接）与解引用规则''}'
-  - '{''understand'': ''理解指针数组（`T *arr[N]`）与数组指针（`T (*ptr)[N]`）在类型、sizeof、运算优先级上的本质差异''}'
-  - '{''apply'': ''能够使用二级指针实现函数内修改调用者的指针变量（如动态分配、链表头插入、资源释放）''}'
-  - '{''apply'': ''能够使用函数指针数组实现跳转表（jump table）、命令分发器与策略模式''}'
-  - '{''analyze'': ''分析多维数组与指针数组的内存布局差异，理解 `a[i][j]` 与 `arr[i][j]` 的不同寻址方式''}'
-  - '{''evaluate'': ''评估二级指针、返回指针、双向链表头节点、句柄 opaque 设计等方案的工程权衡''}'
-  - '{''create'': ''设计基于二级指针的复杂数据结构（如链表链、N 叉树、动态字符串矩阵）并保证内存安全''}'
-exercises:
-  - id: ex-ptr2-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: 在 C 语言中，`int **pp;` 声明的变量 pp 称为____，它存储的是一个指向 `int *` 类型指针的____。
-    blankCount: 2
-    answers:
-      - 二级指针
-      - double pointer
-      - 地址
-      - 指针
-    caseSensitive: false
-    answer: 二级指针（double pointer）；地址（即 `int *` 类型变量的地址）
-    explanation: '`int **pp` 表示 pp 是指向 `int *` 的指针，即 pp 存储一个 `int *` 类型变量的地址。`**pp` 经过两次解引用得到最终的 int 值。这一类型在 ISO/IEC 9899:2024 §6.7.6.1 派生类型定义中形式化。'
-    difficulty: 2
-    estimatedTime: 3
-  - id: ex-ptr2-02
-    type: choice
-    cognitiveLevel: understand
-    question: 下列声明中，哪一个是"包含 5 个指向 int 的指针的数组"？
-    options:
-      - int (*arr)[5];
-      - int *arr[5];
-      - int *(arr[5]);
-      - int arr[5][5];
-    correctIndex: 1
-    answer: B
-    explanation: 根据运算符优先级，`[]` 优先级高于 `*`，因此 `int *arr[5]` 等价于 `int *(arr[5])`，即 arr 是 5 个元素的数组，每个元素是 `int *`。选项 A `int (*arr)[5]` 是"指向含 5 个 int 元素数组的指针"（数组指针），是不同的类型。选项 C 与 B 宭ij等价但书写冗余。选项 D 是二维数组。注意 `int *arr[5]` 与 `int *(arr[5])` 类型相同，但题目"哪一项"应选最规范形式 B。
-    difficulty: 3
-    estimatedTime: 5
-  - id: ex-ptr2-03
-    type: code-fix
-    cognitiveLevel: apply
-    question: 下列代码试图在函数内为调用者的指针分配内存，但调用后 `p` 仍为 NULL，发生内存泄漏。请修正。
-    buggyCode: |
-      #include <stdlib.h>
-      void allocate(int *p) {
-          p = malloc(sizeof(int));
-          *p = 42;
-      }
-      int main(void) {
-          int *p = NULL;
-          allocate(p);
-          /* 期望 *p == 42，但 p 仍为 NULL */
-          return 0;
-      }
-    language: c
-    fixedCode: |
-      #include <stdlib.h>
-      void allocate(int **pp) {
-          *pp = malloc(sizeof(int));
-          if (*pp) **pp = 42;
-      }
-      int main(void) {
-          int *p = NULL;
-          allocate(&p);   /* 传入 p 的地址，函数内修改 *pp 即修改 p */
-          /* 现在 p 指向新分配的内存，*p == 42 */
-          free(p);
-          return 0;
-      }
-    errorDescription: C 函数参数按值传递，`int *p` 形参接收的是指针值的副本，`p = malloc(...)` 只修改了副本，调用者的 `p` 不受影响。
-    answer: 见 fixedCode
-    explanation: 要在函数内修改调用者的"指针变量本身"，必须传入该指针变量的地址，即二级指针 `int **`。函数内 `*pp = malloc(...)` 修改的是调用者的指针变量。这是 C 语言中"输出参数"模式的标准实现，也是二级指针最常见的用途之一。
-    difficulty: 4
-    estimatedTime: 8
-  - id: ex-ptr2-04
-    type: open-ended
-    cognitiveLevel: create
-    question: 设计一个基于二级指针的单链表 API，要求：(1) 节点结构 `typedef struct Node { int val; struct Node *next; } Node;`；(2) 提供 `list_push_front(Node **head, int val)`、`list_remove(Node **head, int val)`、`list_free(Node **head)`、`list_reverse(Node **head)` 四个接口；(3) `list_remove` 在删除节点后能正确处理头节点变化；(4) `list_free` 在释放后将 `*head` 置为 NULL；(5) 不引入全局变量、不使用递归。请给出完整实现并说明：(a) 为什么每个接口都接受 `Node **` 而非 `Node *`；(b) `list_remove` 中"二级指针游走"技巧相比"前驱指针"技巧的优势。
-    keyPoints:
-      - 节点结构与四个函数签名正确
-      - list_push_front 使用 `*head = new_node` 修改头指针
-      - list_remove 使用 `Node **indirect = head; while (*indirect && (*indirect)->val != val) indirect = &(*indirect)->next;` 二级指针游走技巧
-      - list_free 释放后将 *head 置 NULL
-      - list_reverse 使用三指针迭代法
-      - 说明 (a)：四个接口都可能修改头指针本身，必须传入二级指针
-      - 说明 (b)：二级指针游走技巧消除了"头节点特例"分支，统一处理删除头节点和中间节点，代码更简洁、不易出 bug
-      - 不使用全局变量、不递归
-    answer: 开放性题目，参考 keyPoints 评分
-    explanation: 本题考察综合应用能力。Linus Torvalds 在 2016 年接受采访时指出，"二级指针游走"是判断一个人是否真正理解指针的标志之一。该技巧在 Linux 内核链表实现中广泛使用。优秀答案应体现对指针语义、内存安全、代码简洁性的综合把握。
-    difficulty: 5
-    estimatedTime: 45
 references:
   - type: standard
     authors: ['ISO/IEC JTC1/SC22/WG14']
@@ -189,86 +99,12 @@ lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 ---
 
+
 # 二级指针与指针数组
 
-## 1. 学习目标与导论
+## 1. 历史动机与演进
 
-### 1.1 为什么需要二级指针
-
-C 语言的指针是内存地址的抽象，允许程序以统一的方式访问不同类型的数据。但在工程实践中，有一类问题无法用一级指针优雅解决：**当函数需要修改调用者的"指针变量本身"时**。
-
-考虑一个最常见的场景：函数内动态分配内存，并将结果回传给调用者。直觉的写法是：
-
-```c
-void allocate(int *p) {
-    p = malloc(sizeof(int));   /* 错误：只修改了副本 */
-    *p = 42;
-}
-
-int main(void) {
-    int *p = NULL;
-    allocate(p);               /* p 仍为 NULL */
-    *p;                        /* 未定义行为：空指针解引用 */
-    return 0;
-}
-```
-
-C 语言的函数参数采用**按值传递**（pass by value）语义：形参 `p` 是实参 `p` 的一份拷贝。函数内 `p = malloc(...)` 只修改了这份副本，调用者的指针变量不受影响。要在函数内修改调用者的指针，必须传入该指针变量的**地址**，即二级指针：
-
-```c
-void allocate(int **pp) {
-    *pp = malloc(sizeof(int));  /* 修改调用者的指针变量 */
-    **pp = 42;
-}
-
-int main(void) {
-    int *p = NULL;
-    allocate(&p);               /* 传入 p 的地址 */
-    /* 现在 p 指向新分配的内存，*p == 42 */
-    free(p);
-    return 0;
-}
-```
-
-这一模式是 C 语言"输出参数"（output parameter）的标准实现，也是二级指针最核心的工程用途。本文档将系统讲解二级指针与指针数组的形式化语义、内存布局、工程模式与陷阱。
-
-### 1.2 适用读者
-
-- 已掌握 C 一级指针（指针声明、解引用、指针运算）的开发者
-- 希望理解链表、树等数据结构中 `Node **head` 模式的学习者
-- 需要阅读 Linux 内核、SQLite、Redis 等大型 C 项目的工程师
-- 准备设计 C 语言 API（特别是涉及内存管理、回调机制）的开发者
-
-### 1.3 学习路径
-
-```mermaid
-flowchart TD
-    P1[一级指针基础 T*] --> P2[二级指针语义 T**<br/>内存布局与解引用]
-    P2 --> PA[指针数组 T *arr[N]]
-    P2 --> AP[数组指针 T (*p)[N]]
-    PA --> MD[多维数组与指针衰减]
-    AP --> MD
-    MD --> FP[函数指针与函数指针数组]
-    FP --> ENG[二级指针工程模式 链表/树/回调]
-    ENG --> CMP[跨语言对比与陷阱分析]
-```
-
-### 1.4 学习成果评估
-
-完成本文档学习后，学习者应能够：
-
-| Bloom 层次 | 评估指标 |
-|------------|----------|
-| Remember | 默写二级指针的声明语法、三次解引用规则、指针数组与数组指针的类型差异 |
-| Understand | 用内存图解释 `int **pp` 三层间接寻址，解释 `argv` 的内存布局 |
-| Apply | 使用二级指针实现 `list_push_front`、`matrix_alloc`、`str_split` 等典型 API |
-| Analyze | 分析 `int *arr[5]` 与 `int (*arr)[5]` 在 sizeof、运算、传参上的差异 |
-| Evaluate | 对比二级指针、返回指针、句柄 opaque、双向链表头节点等设计方案的权衡 |
-| Create | 设计基于二级指针的复杂数据结构 API，并保证内存安全与异常处理 |
-
-## 2. 历史动机与演进
-
-### 2.1 K&R 时代的多级间接寻址（1978-1988）
+### 1.1 K&R 时代的多级间接寻址（1978-1988）
 
 Brian Kernighan 与 Dennis Ritchie 在《The C Programming Language》第一版（1978）中尚未正式使用"pointer to pointer"这一术语，但通过 `char **argv` 处理命令行参数的设计已经体现了多级间接寻址的核心思想。在第二版（1988）第 5.6 节"Pointer Arrays; Pointers to Pointers"中，作者正式引入了二级指针概念，并以排序月份名称为例：
 
@@ -285,7 +121,7 @@ char *month[] = {
 
 这里 `month` 是"指针数组"（array of pointers），每个元素是一个 `char *`，指向字符串字面量。这种设计避免了用二维字符数组 `char month[13][10]` 浪费空间的问题——不同月份名长度不同，二维数组必须按最长名称分配。
 
-### 2.2 C89 标准化（1989）
+### 1.2 C89 标准化（1989）
 
 ANSI X3.159-1989（C89）在 §6.5.4.1 派生类型（derived types）中正式定义了多级指针的语义：
 
@@ -293,7 +129,7 @@ ANSI X3.159-1989（C89）在 §6.5.4.1 派生类型（derived types）中正式�
 
 C89 同时定义了类型限定符（const、volatile）的组合规则，为后续 `const char *const *argv` 这类复杂声明的语义奠定了基础。
 
-### 2.3 C99 与指针算术的精确化（1999）
+### 1.3 C99 与指针算术的精确化（1999）
 
 C99 在 §6.5.6 指针算术中明确：指针加减整数运算的步长为 `sizeof(referenced type)`。对于 `int **pp`：
 
@@ -307,11 +143,11 @@ pp + 1;   /* 步长为 sizeof(int *)，即指针大小 */
 
 C99 同时引入变长数组（VLA），使 `int (*arr)[n]` 中的 n 可以是运行时值，扩展了数组指针的应用场景。
 
-### 2.4 C11/C17 的稳定化（2011-2018）
+### 1.4 C11/C17 的稳定化（2011-2018）
 
 C11 引入 `_Generic`、`_Alignas`、`_Thread_local` 等特性，与指针类型组合产生新的应用模式（如泛型选择器与指针类型分支）。C17 为缺陷修复版本，未引入新特性。
 
-### 2.5 C23/C2y 的现代化（2024+）
+### 1.5 C23/C2y 的现代化（2024+）
 
 C23（ISO/IEC 9899:2024）引入以下与指针相关的改进：
 
@@ -322,7 +158,7 @@ C23（ISO/IEC 9899:2024）引入以下与指针相关的改进：
 
 C2y 草案讨论中的模块化（modules）特性可能改变头文件中指针类型的可见性模型，但二级指针的核心语义预计保持稳定。
 
-### 2.6 Linux 内核与"二级指针游走"技巧
+### 1.6 Linux 内核与"二级指针游走"技巧
 
 Linus Torvalds 在 2016 年的一次访谈中提到，他判断一个人是否真正理解指针，关键看其能否用"二级指针游走"（pointer-to-pointer traversal）技巧简化链表删除：
 
@@ -355,9 +191,9 @@ void list_remove_elegant(Node **head, int val) {
 
 第二种写法用 `Node **indirect` 始终指向"指向当前节点的指针"，无论是 `*head` 还是某个 `prev->next`，统一处理。这一技巧在 Linux 内核 `include/linux/list.h`、SQLite、Redis 等大型项目中被广泛采用。
 
-## 3. 形式化定义与内存模型
+## 2. 形式化定义与内存模型
 
-### 3.1 指针类型的派生规则
+### 2.1 指针类型的派生规则
 
 ISO/IEC 9899:2024 §6.7.6.1 定义了指针类型的派生规则。给定任意类型 T，可以派生出 `T *`（指向 T 的指针）。这一规则可以递归应用：
 
@@ -381,9 +217,9 @@ typedef StringList *StringListPtr;  /* 字符串列表的指针 */
 StringListPtr ptr;               /* 等价于 char *** */
 ```
 
-### 3.2 二级指针的声明与初始化
+### 2.2 二级指针的声明与初始化
 
-#### 3.2.1 声明语法
+#### 2.2.1 声明语法
 
 ```c
 int **pp;        /* pp 是指向 int * 的指针 */
@@ -399,7 +235,7 @@ int *p3, p4;        /* p3 是 int *，p4 是 int！常见陷阱 */
 int **pp1, **pp2;   /* pp1 和 pp2 都是 int ** */
 ```
 
-#### 3.2.2 初始化
+#### 2.2.2 初始化
 
 ```c
 int x = 42;
@@ -412,7 +248,7 @@ int ***ppp = &pp;     /* 三级指针：指向 int ** */
 ***ppp;               /* 等价于 **pp，即 x，值为 42 */
 ```
 
-#### 3.2.3 类型推导图
+#### 2.2.3 类型推导图
 
 ```mermaid
 flowchart LR
@@ -421,7 +257,7 @@ flowchart LR
     A --- ARR
 ```
 
-### 3.3 内存布局图示
+### 2.3 内存布局图示
 
 理解二级指针的关键是绘制内存布局图。以如下代码为例：
 
@@ -455,7 +291,7 @@ int **pp = &p;
 | `**pp` | `int` | 42 | 双重解引用，得到 x 的值 |
 | `&pp` | `int ***` | 0x7fff0020 | pp 的地址 |
 
-### 3.4 三次解引用的形式化
+### 2.4 三次解引用的形式化
 
 对于 `T **pp`，解引用操作的形式化语义：
 
@@ -472,7 +308,7 @@ mov rax, [pp]      ; rax = *pp  = &p
 mov eax, [rax]     ; eax = **pp = x  (假设 int 为 32 位)
 ```
 
-### 3.5 sizeof 与指针层级
+### 2.5 sizeof 与指针层级
 
 不同层级的指针在 64 位系统上占用相同字节数（通常为 8），但指向的类型不同：
 
@@ -494,9 +330,9 @@ p + 1;    /* 步长 sizeof(int) = 4 字节，指向下一个 int */
 pp + 1;   /* 步长 sizeof(int *) = 8 字节，指向下一个 int * */
 ```
 
-## 4. 指针数组与数组指针
+## 3. 指针数组与数组指针
 
-### 4.1 声明语法的本质差异
+### 3.1 声明语法的本质差异
 
 C 语言声明语法遵循"声明模拟使用"（declaration follows use）原则：声明形式应与使用形式一致。`[]` 的优先级高于 `*`，因此：
 
@@ -508,7 +344,7 @@ int (*ptr)[5];     /* 数组指针：指向含 5 个 int 元素的数组的指�
                    /* 含义：(*ptr)[i] 是 int，故 *ptr 是 int[5]，ptr 是 int[5]* */
 ```
 
-#### 4.1.1 运算符优先级表
+#### 3.1.1 运算符优先级表
 
 | 表达式 | 含义 |
 |--------|------|
@@ -519,7 +355,7 @@ int (*ptr)[5];     /* 数组指针：指向含 5 个 int 元素的数组的指�
 | `*f()` | f 是返回指针的函数 |
 | `(*f)()` | f 是函数指针 |
 
-#### 4.1.2 螺旋法则（Spiral Rule）
+#### 3.1.2 螺旋法则（Spiral Rule）
 
 理解复杂声明的经典方法是螺旋法则。以 `int **pp` 为例：
 
@@ -565,9 +401,9 @@ flowchart TD
     T8 --> T9
 ```
 
-### 4.2 指针数组（array of pointers）
+### 3.2 指针数组（array of pointers）
 
-#### 4.2.1 定义
+#### 3.2.1 定义
 
 指针数组是"元素为指针的数组"：
 
@@ -578,7 +414,7 @@ int *arr[5];  /* arr 是 5 个 int* 元素的数组 */
 - `arr` 本身是数组，占用 `5 * sizeof(int *)` 字节（64 位下为 40 字节）
 - 每个元素 `arr[i]` 是独立的 `int *`，可指向不同的 int 变量
 
-#### 4.2.2 内存布局
+#### 3.2.2 内存布局
 
 ```c
 int a = 1, b = 2, c = 3, d = 4, e = 5;
@@ -592,7 +428,7 @@ flowchart LR
     P --- A
 ```
 
-#### 4.2.3 典型应用：字符串数组
+#### 3.2.3 典型应用：字符串数组
 
 指针数组最常见的用途是组织多个长度不一的字符串：
 
@@ -621,7 +457,7 @@ char weekdays_arr[7][10] = {
 
 而指针数组仅存储 7 个指针（56 字节）加上字符串字面量本身的存储（约 50 字节），且字符串字面量在只读段，紧凑存储。
 
-#### 4.2.4 典型应用：命令行参数
+#### 3.2.4 典型应用：命令行参数
 
 `main` 函数的 `argv` 参数是指针数组的经典案例：
 
@@ -645,9 +481,9 @@ flowchart LR
 
 注意 `argv[argc]` 标准保证为 NULL（C99 §5.1.2.2.1），便于循环遍历。
 
-### 4.3 数组指针（pointer to array）
+### 3.3 数组指针（pointer to array）
 
-#### 4.3.1 定义
+#### 3.3.1 定义
 
 数组指针是"指向数组的指针"：
 
@@ -658,7 +494,7 @@ int (*ptr)[5];  /* ptr 是指向含 5 个 int 元素的数组的指针 */
 - `ptr` 是指针，占用 `sizeof(int (*)[5])` 字节（通常 8 字节）
 - 解引用后 `*ptr` 是 `int[5]` 类型，占用 `5 * sizeof(int)` 字节
 
-#### 4.3.2 内存布局
+#### 3.3.2 内存布局
 
 ```c
 int arr[5] = {1, 2, 3, 4, 5};
@@ -672,7 +508,7 @@ flowchart LR
     P --- A
 ```
 
-#### 4.3.3 访问元素
+#### 3.3.3 访问元素
 
 ```c
 (*ptr)[0]    /* 等价于 arr[0]，值为 1 */
@@ -683,7 +519,7 @@ flowchart LR
 
 注意 `*ptr` 是数组 `int[5]`，在表达式中自动衰减为 `int *`（指向首元素），故 `**ptr` 等价于 `arr[0]`。
 
-#### 4.3.4 典型应用：二维数组传参
+#### 3.3.4 典型应用：二维数组传参
 
 数组指针最常见的用途是作为二维数组的函数参数：
 
@@ -714,7 +550,7 @@ int main(void) {
 
 `int grid[3][4]` 在内存中是**连续**的 12 个 int，`grid` 衰减为 `int (*)[4]`（指向 `int[4]` 的指针）。`matrix + 1` 跳过 4 个 int（16 字节），指向下一行。
 
-#### 4.3.5 与二级指针的本质差异
+#### 3.3.5 与二级指针的本质差异
 
 ```c
 int **matrix_pp;        /* 动态二维数组：每行独立 malloc，可能不连续 */
@@ -733,7 +569,7 @@ int (*matrix_ap)[4];    /* 指向二维数组的指针：内存连续 */
 
 二级指针 `int **` 与二维数组 `int[N][M]` 在内存布局、寻址方式、类型语义上完全不同。这是 C 语言最常见的陷阱之一。
 
-### 4.4 类型对照表
+### 3.4 类型对照表
 
 | 声明 | 类型 | sizeof | 步长 | 含义 |
 |------|------|--------|------|------|
@@ -745,9 +581,9 @@ int (*matrix_ap)[4];    /* 指向二维数组的指针：内存连续 */
 | `int arr[3][4]` | `int[3][4]` | 48 | - | 3×4 二维数组 |
 | `int (*ptr)[3][4]` | `int (*)[3][4]` | 8 | 48 | 指向 3×4 二维数组的指针 |
 
-## 5. 多维数组与指针衰减
+## 4. 多维数组与指针衰减
 
-### 5.1 数组衰减规则
+### 4.1 数组衰减规则
 
 C 语言中数组在大多数表达式中会"衰减"（decay）为指向首元素的指针。这一规则在 ISO/IEC 9899:2024 §6.3.2.1 中规定：
 
@@ -763,7 +599,7 @@ arr[0]         /* int[4]     → 衰减为 int *，指向第一个元素 */
 arr[0][0]      /* int        → 不衰减 */
 ```
 
-### 5.2 多维数组的内存布局
+### 4.2 多维数组的内存布局
 
 C 语言采用**行主序**（row-major）存储多维数组：
 
@@ -794,7 +630,7 @@ int grid[3][4] = {
 0x102c    12
 ```
 
-### 5.3 二维数组的寻址公式
+### 4.3 二维数组的寻址公式
 
 对于 `int grid[M][N]`，元素 `grid[i][j]` 的地址为：
 
@@ -810,9 +646,9 @@ int grid[3][4] = {
 4. `*(grid + i) + j` 是 `int *`，指向 `grid[i][j]`
 5. `*(*(grid + i) + j)` 是 `int`，即 `grid[i][j]` 的值
 
-### 5.4 动态二维数组的两种实现
+### 4.4 动态二维数组的两种实现
 
-#### 5.4.1 指针数组方式（不连续）
+#### 4.4.1 指针数组方式（不连续）
 
 ```c
 int **matrix_alloc_v1(int rows, int cols) {
@@ -843,7 +679,7 @@ void matrix_free_v1(int **matrix, int rows) {
 - 访问需要两次解引用
 - 释放需要逐行 free
 
-#### 5.4.2 一维数组 + 数组指针方式（连续）
+#### 4.4.2 一维数组 + 数组指针方式（连续）
 
 ```c
 int (*matrix_alloc_v2(int rows, int cols))[4] {
@@ -904,7 +740,7 @@ void matrix_free(Matrix *m) {
 }
 ```
 
-#### 5.4.3 两种方式对比
+#### 4.4.3 两种方式对比
 
 | 维度 | 指针数组方式 | 连续分配方式 |
 |------|--------------|--------------|
@@ -915,7 +751,7 @@ void matrix_free(Matrix *m) {
 | 行/列可变性 | 行长可独立 | 列宽需固定或额外存储 |
 | 应用场景 | 不规则数组（如三角形矩阵） | 规则矩阵、数值计算 |
 
-### 5.5 数组传参的退化规则
+### 4.5 数组传参的退化规则
 
 数组作为函数参数时会退化：
 
@@ -933,9 +769,9 @@ void func3(int **matrix);     /* 注意：与 int (*)[4] 完全不同！ */
 
 第一维大小会被忽略，后续维度必须保留（用于步长计算）。
 
-## 6. 函数指针与函数指针数组
+## 5. 函数指针与函数指针数组
 
-### 6.1 函数指针基础
+### 5.1 函数指针基础
 
 函数指针是指向函数的指针，调用时通过解引用执行函数：
 
@@ -950,7 +786,7 @@ int result2 = (*fp)(3, 4);      /* 调用方式 2（更明确） */
 
 函数名在表达式中退化为函数指针（类似数组名退化为数组首元素指针）。
 
-### 6.2 函数指针数组
+### 5.2 函数指针数组
 
 函数指针数组是"元素为函数指针的数组"，常用于实现**跳转表**（jump table）或命令分发器：
 
@@ -984,7 +820,7 @@ int main(void) {
 20 / 4 = 5
 ```
 
-### 6.3 跳转表应用：命令分发器
+### 5.3 跳转表应用：命令分发器
 
 跳转表是替代 `switch-case` 链的优雅方案，特别适合命令多、分支均匀的场景：
 
@@ -1047,7 +883,7 @@ int main(void) {
 }
 ```
 
-### 6.4 函数指针数组与 switch 性能对比
+### 5.4 函数指针数组与 switch 性能对比
 
 跳转表相比 `switch-case` 链的优势：
 
@@ -1059,7 +895,7 @@ int main(void) {
 | 调试难度 | 直观 | 间接调用难追踪 |
 | 适用场景 | 分支数少、逻辑复杂 | 分支数多、逻辑相似 |
 
-### 6.5 复杂声明：函数指针数组
+### 5.5 复杂声明：函数指针数组
 
 `void (*signal(int sig, void (*handler)(int)))(int);` 是 C 语言著名的复杂声明，来自 `<signal.h>`：
 
@@ -1075,9 +911,9 @@ typedef void (*SignalHandler)(int);
 SignalHandler signal(int sig, SignalHandler handler);
 ```
 
-## 7. 二级指针的工程模式
+## 6. 二级指针的工程模式
 
-### 7.1 模式一：输出参数（Output Parameter）
+### 6.1 模式一：输出参数（Output Parameter）
 
 最常见的二级指针用途——在函数内为调用者的指针分配内存：
 
@@ -1108,7 +944,7 @@ int main(void) {
 }
 ```
 
-#### 7.1.1 替代方案对比
+#### 6.1.1 替代方案对比
 
 | 方案 | 优点 | 缺点 |
 |------|------|------|
@@ -1117,7 +953,7 @@ int main(void) {
 | 返回结构体（含指针+状态） | 表达力强 | C 风格不一致 |
 | 句柄 opaque 设计 | 封装性好，扩展性强 | 实现复杂 |
 
-### 7.2 模式二：链表头指针修改
+### 6.2 模式二：链表头指针修改
 
 链表的插入、删除操作可能修改头指针，必须使用二级指针：
 
@@ -1170,7 +1006,7 @@ int main(void) {
 }
 ```
 
-### 7.3 模式三：二级指针游走（Linus 风格）
+### 6.3 模式三：二级指针游走（Linus 风格）
 
 Linus Torvalds 推崇的链表删除技巧，消除头节点特判：
 
@@ -1189,7 +1025,7 @@ void list_remove(Node **head, int val) {
 }
 ```
 
-#### 7.3.1 原理分析
+#### 6.3.1 原理分析
 
 `indirect` 始终指向"指向当前节点的指针"：
 - 初始时 `indirect = head`，即指向头指针本身
@@ -1198,7 +1034,7 @@ void list_remove(Node **head, int val) {
 
 无论删除头节点还是中间节点，代码路径完全相同，无需特判。
 
-#### 7.3.2 对比传统写法
+#### 6.3.2 对比传统写法
 
 ```c
 /* 传统写法：需要特判头节点 */
@@ -1217,7 +1053,7 @@ void list_remove_traditional(Node **head, int val) {
 
 传统写法有 4 个分支：未找到 / 删除头节点 / 删除中间节点 / 删除尾节点。二级指针游走写法只有 2 个分支：未找到 / 找到并删除。代码更简洁，bug 更少。
 
-### 7.4 模式四：链表反转
+### 6.4 模式四：链表反转
 
 使用二级指针反转链表，无需特判头节点：
 
@@ -1235,7 +1071,7 @@ void list_reverse(Node **head) {
 }
 ```
 
-### 7.5 模式五：N 叉树
+### 6.5 模式五：N 叉树
 
 N 叉树的子节点通常用"子节点 + 兄弟节点"表示（left-child right-sibling）：
 
@@ -1261,7 +1097,7 @@ TreeNode **tree_find(TreeNode **root, int target) {
 }
 ```
 
-### 7.6 模式六：动态字符串矩阵
+### 6.6 模式六：动态字符串矩阵
 
 实现一个二维字符串矩阵，每行长度可独立变化：
 
@@ -1309,7 +1145,7 @@ int main(void) {
 }
 ```
 
-### 7.7 模式七：错误处理与资源清理
+### 6.7 模式七：错误处理与资源清理
 
 二级指针在资源清理代码中可以让"释放并置空"一次完成：
 
@@ -1342,11 +1178,11 @@ int main(void) {
 }
 ```
 
-## 8. 深入内存安全
+## 7. 深入内存安全
 
-### 8.1 未定义行为陷阱
+### 7.1 未定义行为陷阱
 
-#### 8.1.1 解引用未初始化的二级指针
+#### 7.1.1 解引用未初始化的二级指针
 
 ```c
 int **pp;          /* 未初始化，值不确定 */
@@ -1355,7 +1191,7 @@ int **pp;          /* 未初始化，值不确定 */
 
 修复：始终初始化为 NULL 或有效地址。
 
-#### 8.1.2 返回局部变量的地址
+#### 7.1.2 返回局部变量的地址
 
 ```c
 int **bad_func(void) {
@@ -1368,7 +1204,7 @@ int **bad_func(void) {
 
 函数返回后栈帧销毁，pp 与 p 都成为悬垂指针。
 
-#### 8.1.3 类型不匹配
+#### 7.1.3 类型不匹配
 
 ```c
 int x = 42;
@@ -1379,7 +1215,7 @@ char **cp = (char **)&p;   /* 严格别名违规 */
 
 不同类型的指针不能通过强转相互访问（除非通过 `char *`）。
 
-### 8.2 严格别名规则
+### 7.2 严格别名规则
 
 ISO/IEC 9899:2024 §6.5p7 规定，对象只能通过以下类型的左值访问：
 
@@ -1391,7 +1227,7 @@ ISO/IEC 9899:2024 §6.5p7 规定，对象只能通过以下类型的左值访问
 
 违反严格别名规则是未定义行为，编译器优化可能导致意外结果。
 
-### 8.3 const 与二级指针
+### 7.3 const 与二级指针
 
 `const` 修饰符的位置决定不可变性层级：
 
@@ -1414,7 +1250,7 @@ const char **cpp = arr;   /* 未定义行为：类型不兼容 */
 
 原因：如果允许这样赋值，可以通过 `cpp[0] = (const char *)somewhere_non_const` 修改 `arr[0]`，绕过 const 保护。
 
-### 8.4 内存泄漏检测
+### 7.4 内存泄漏检测
 
 二级指针链式分配的内存泄漏是常见问题。推荐使用 AddressSanitizer 或 Valgrind 检测：
 
@@ -1427,7 +1263,7 @@ gcc -fsanitize=address -g -O0 source.c -o program
 valgrind --leak-check=full --show-leak-kinds=all ./program
 ```
 
-### 8.5 防御性编程清单
+### 7.5 防御性编程清单
 
 1. **初始化**：所有指针声明时立即初始化为 NULL 或有效地址
 2. **校验**：函数入口校验指针参数是否为 NULL
@@ -1437,9 +1273,9 @@ valgrind --leak-check=full --show-leak-kinds=all ./program
 6. **静态分析**：开启 `-Wall -Wextra -Werror` 与 clang-tidy
 7. **动态检测**：开发期使用 ASan/UBSan/Valgrind
 
-## 9. 工程案例研究
+## 8. 工程案例研究
 
-### 9.1 案例一：Unix `main` 函数签名
+### 8.1 案例一：Unix `main` 函数签名
 
 `int main(int argc, char **argv)` 是指针数组的经典应用。POSIX 标准规定 `argv` 是指针数组，每个元素指向以 null 结尾的字符串，最后一个元素为 NULL。
 
@@ -1466,7 +1302,7 @@ argv[2] = 0x7ffe1260 -> "arg2"
 argv[3] = (nil) (should be NULL)
 ```
 
-### 9.2 案例二：`strtok` 与 `argv` 分词
+### 8.2 案例二：`strtok` 与 `argv` 分词
 
 实现简单的命令行分词器：
 
@@ -1539,7 +1375,7 @@ int main(void) {
 }
 ```
 
-### 9.3 案例三：Linux 内核 `list_head`
+### 8.3 案例三：Linux 内核 `list_head`
 
 Linux 内核的 `struct list_head` 是双向链表的经典实现，采用"侵入式"（intrusive）设计：
 
@@ -1607,7 +1443,7 @@ list_for_each(pos, &task_list) {
 
 这种设计避免了二级指针，但需要 `container_of` 宏从成员指针反推容器结构体指针。
 
-### 9.4 案例四：SQLite 的句柄设计
+### 8.4 案例四：SQLite 的句柄设计
 
 SQLite 使用 opaque 句柄模式，隐藏实现细节：
 
@@ -1632,7 +1468,7 @@ if (sqlite3_open("test.db", &db) == SQLITE_OK) {
 - 返回值用于错误码
 - 资源管理清晰（配对 `open`/`close`）
 
-### 9.5 案例五：Redis 的字符串矩阵
+### 8.5 案例五：Redis 的字符串矩阵
 
 Redis 在处理命令行参数与配置文件时大量使用 `char **` 指针数组：
 
@@ -1646,7 +1482,7 @@ void sdsfreesplitres(sds *tokens, int count);
 
 `sdssplitlen` 返回 `sds *`（即 `char **`），是动态分配的指针数组，每个元素指向一个 sds 字符串。调用者负责通过 `sdsfreesplitres` 释放。
 
-### 9.6 案例六：解释器与 AST
+### 8.6 案例六：解释器与 AST
 
 C 语言编写的解释器（如 Lua、Python 早期版本）广泛使用三级指针处理符号表：
 
@@ -1677,9 +1513,9 @@ Symbol *scope_lookup(Scope *scope, const char *name) {
 }
 ```
 
-## 10. 跨语言对比
+## 9. 跨语言对比
 
-### 10.1 C++ 中的二级指针
+### 9.1 C++ 中的二级指针
 
 C++ 保留了 C 的二级指针语义，但推荐使用引用（reference）替代输出参数：
 
@@ -1708,7 +1544,7 @@ std::unique_ptr<std::unique_ptr<int>[]> matrix;
 
 但通常应避免，改用 `std::vector<std::vector<int>>` 或线性化的 `std::vector<int>` 配合手动计算。
 
-### 10.2 Go 中的指针
+### 9.2 Go 中的指针
 
 Go 保留了指针但移除了指针算术。Go 的多级指针罕见，因为：
 - 函数可以多返回值（无需输出参数）
@@ -1723,7 +1559,7 @@ func allocate() (*int, error) {
 }
 ```
 
-### 10.3 Rust 中的指针
+### 9.3 Rust 中的指针
 
 Rust 区分引用（`&T`、`&mut T`）与裸指针（`*const T`、`*mut T`）：
 
@@ -1740,7 +1576,7 @@ let pp: *const *const i32 = &p;
 
 Rust 的所有权系统使二级指针几乎不需要：函数返回值、`Box`、`Rc`/`Arc` 已覆盖所有合理用例。
 
-### 10.4 Java 中的引用
+### 9.4 Java 中的引用
 
 Java 只有引用（reference），没有显式指针。Java 的"对象变量"本质是指针，但不能取地址、不能算术运算：
 
@@ -1751,7 +1587,7 @@ int[][] matrix = new int[3][]; // matrix 是引用数组
 
 Java 的"二级引用"通过对象数组实现，但无需 `&` 运算符。
 
-### 10.5 跨语言对比表
+### 9.5 跨语言对比表
 
 | 语言 | 多级指针 | 输出参数 | 内存管理 | 函数指针 |
 |------|----------|----------|----------|----------|
@@ -1762,9 +1598,9 @@ Java 的"二级引用"通过对象数组实现，但无需 `&` 运算符。
 | Java | 无显式指针 | 多返回值/包装类 | GC | 函数式接口 |
 | Python | 无指针 | 多返回值/元组 | GC/引用计数 | 函数对象 |
 
-## 11. 常见陷阱与反模式
+## 10. 常见陷阱与反模式
 
-### 11.1 陷阱一：参数按值传递
+### 10.1 陷阱一：参数按值传递
 
 ```c
 void allocate_wrong(int *p) {
@@ -1778,7 +1614,7 @@ void allocate_right(int **pp) {
 
 **规则**：要修改类型 T 的变量，参数类型必须是 `T *`。要修改 `int *` 变量，参数必须是 `int **`。
 
-### 11.2 陷阱二：混淆 `int **` 与 `int (*)[N]`
+### 10.2 陷阱二：混淆 `int **` 与 `int (*)[N]`
 
 ```c
 int grid[3][4];
@@ -1792,7 +1628,7 @@ void process_right(int (*grid)[4]) { /* ... */ }
 process_right(grid);
 ```
 
-### 11.3 陷阱三：返回局部变量地址
+### 10.3 陷阱三：返回局部变量地址
 
 ```c
 int **bad_func(void) {
@@ -1805,7 +1641,7 @@ int **bad_func(void) {
 
 修复：使用 `static`、动态分配或通过输出参数。
 
-### 11.4 陷阱四：忘记释放中间层
+### 10.4 陷阱四：忘记释放中间层
 
 ```c
 int **matrix = malloc(rows * sizeof(int *));
@@ -1821,7 +1657,7 @@ for (int i = 0; i < rows; i++) free(matrix[i]);
 free(matrix);
 ```
 
-### 11.5 陷阱五：`int *p1, p2` 的声明陷阱
+### 10.5 陷阱五：`int *p1, p2` 的声明陷阱
 
 ```c
 int *p1, p2;   /* p1 是 int*，p2 是 int！ */
@@ -1838,7 +1674,7 @@ typedef int *IntPtr;
 IntPtr p1, p2;   /* 两者都是 int* */
 ```
 
-### 11.6 陷阱六：const 修饰符位置
+### 10.6 陷阱六：const 修饰符位置
 
 ```c
 const int *p;       /* 指向 const int 的指针 */
@@ -1850,7 +1686,7 @@ const char **cpp;   /* 指向 const char* 的指针 */
 char **const cpp;   /* const 指针，指向 char* */
 ```
 
-### 11.7 陷阱七：数组退化为指针丢失大小
+### 10.7 陷阱七：数组退化为指针丢失大小
 
 ```c
 void func(int arr[10]) {
@@ -1861,7 +1697,7 @@ void func(int arr[10]) {
 void func(int *arr, size_t n) { /* ... */ }
 ```
 
-### 11.8 陷阱八：`sizeof(指针数组)` 的计算
+### 10.8 陷阱八：`sizeof(指针数组)` 的计算
 
 ```c
 int *arr[5];
@@ -1876,7 +1712,7 @@ sizeof(p) / sizeof(p[0]);   /* 1，错误！ */
 
 数组退化为指针后 `sizeof` 失效。
 
-### 11.9 陷阱九：空指针解引用
+### 10.9 陷阱九：空指针解引用
 
 ```c
 int **pp = NULL;
@@ -1891,7 +1727,7 @@ if (pp && *pp) {
 }
 ```
 
-### 11.10 陷阱十：类型转换绕过 const
+### 10.10 陷阱十：类型转换绕过 const
 
 ```c
 const int x = 42;
@@ -1900,9 +1736,9 @@ int *p = (int *)cp;   /* 危险：绕过 const */
 *p = 100;             /* 未定义行为：修改 const 对象 */
 ```
 
-## 12. 调试技巧
+## 11. 调试技巧
 
-### 12.1 GDB 调试二级指针
+### 11.1 GDB 调试二级指针
 
 ```bash
 gdb ./program
@@ -1916,7 +1752,7 @@ gdb ./program
 (gdb) x/gx *pp              # 查看 *pp 指向的内存
 ```
 
-### 12.2 LLDB 调试
+### 11.2 LLDB 调试
 
 ```bash
 lldb ./program
@@ -1928,7 +1764,7 @@ lldb ./program
 (lldb) memory read --size 8 --count 1 --format x pp
 ```
 
-### 12.3 打印指针树
+### 11.3 打印指针树
 
 ```c
 void debug_pp_int(int **pp, const char *name) {
@@ -1950,7 +1786,7 @@ int main(void) {
 }
 ```
 
-### 12.4 内存可视化工具
+### 11.4 内存可视化工具
 
 - **GDB `x` 命令**：`x/Nfx addr` 查看 N 个 fmt 格式的内存
 - **Valgrind `--tool=memcheck`**：检测内存泄漏与越界
@@ -1958,9 +1794,9 @@ int main(void) {
 - **Visual Studio 内存视图**：调试 > 窗口 > 内存
 - **rr (Record and Replay)**：可逆向调试的 GDB 增强工具
 
-## 13. 性能考量
+## 12. 性能考量
 
-### 13.1 缓存友好性
+### 12.1 缓存友好性
 
 二级指针访问涉及多次内存解引用，缓存命中率较差：
 
@@ -1976,11 +1812,11 @@ int *matrix_flat;      /* 一维数组方式：连续分配 */
 
 对性能敏感的场景（如矩阵运算、图像处理），优先使用连续内存布局。
 
-### 13.2 分支预测
+### 12.2 分支预测
 
 二级指针游走的 `while` 循环通常有良好的分支预测（90%+ 命中率），但深度遍历时缓存可能成为瓶颈。
 
-### 13.3 编译器优化
+### 12.3 编译器优化
 
 `-O2`/`-O3` 优化下，编译器会：
 - 内联简单的指针解引用
@@ -1990,7 +1826,7 @@ int *matrix_flat;      /* 一维数组方式：连续分配 */
 
 但跨函数调用的二级指针操作通常难以优化（可能存在别名）。
 
-### 13.4 优化建议
+### 12.4 优化建议
 
 1. **热路径**：避免在性能关键循环中使用二级指针
 2. **批量处理**：先收集到一维数组，再批量处理
@@ -2004,7 +1840,7 @@ void add_arrays(const int *restrict a, const int *restrict b, int *restrict c, s
 }
 ```
 
-## 14. 综合示例：完整的链表库
+## 13. 综合示例：完整的链表库
 
 下面是一个综合运用本文档所有知识点的单链表库实现：
 
@@ -2218,22 +2054,22 @@ int main(void) {
 
 ## 知识讲解与要点分析（原习题）
 
-### 15.1 习题一（记忆）
+### 14.1 习题一（记忆）
 
 绘制 `int x = 10; int *p = &x; int **pp = &p;` 在 64 位系统上的内存布局图，标注每个变量的地址、内容与类型。
 
-### 15.2 习题二（理解）
+### 14.2 习题二（理解）
 
 解释为什么 `void process(int **matrix)` 不能接受 `int grid[3][4]` 作为参数。从类型、内存布局、寻址方式三个角度分析。
 
-### 15.3 习题三（应用）
+### 14.3 习题三（应用）
 
 实现函数 `int strsplit(const char *s, char sep, char ***out_tokens, int *out_count)`，将字符串 `s` 按 `sep` 分割，结果通过 `out_tokens` 返回。要求：
 - 返回 0 表示成功，-1 表示失败
 - 失败时不能有内存泄漏
 - `out_tokens` 是 `char **`，每个元素是 `strdup` 复制的字符串
 
-### 15.4 习题四（分析）
+### 14.4 习题四（分析）
 
 分析以下代码的内存泄漏点：
 
@@ -2250,7 +2086,7 @@ char **load_lines(FILE *fp, int max_lines) {
 }
 ```
 
-### 15.5 习题五（评估）
+### 14.5 习题五（评估）
 
 对比以下三种"动态二维数组"实现的优缺点：
 
@@ -2260,7 +2096,7 @@ char **load_lines(FILE *fp, int max_lines) {
 
 从内存连续性、访问速度、释放复杂度、灵活性、可读性五个维度评估。
 
-### 15.6 习题六（创造）
+### 14.6 习题六（创造）
 
 设计一个"动态字符串矩阵"API，支持：
 - 创建 `n` 行的矩阵
@@ -2272,31 +2108,31 @@ char **load_lines(FILE *fp, int max_lines) {
 
 要求：所有接口返回错误码，失败时不泄漏内存。
 
-### 15.7 习题七（记忆）
+### 14.7 习题七（记忆）
 
 写出 `int *arr[5]` 与 `int (*ptr)[5]` 的类型、sizeof、步长。
 
-### 15.8 习题八（理解）
+### 14.8 习题八（理解）
 
 解释 `argv[argc]` 为什么是 NULL。这一保证在哪个标准中引入？
 
-### 15.9 习题九（应用）
+### 14.9 习题九（应用）
 
 使用函数指针数组实现一个简单的计算器，支持 +、-、*、/ 四种运算，输入 `"20 + 4"` 输出 `24`。
 
-### 15.10 习题十（分析）
+### 14.10 习题十（分析）
 
 分析 Linus 的"二级指针游走"链表删除技巧，相比传统"前驱指针"写法，减少了哪些分支？为什么？
 
-## 16. 最佳实践总结
+## 15. 最佳实践总结
 
-### 16.1 命名规范
+### 15.1 命名规范
 
 - 二级指针变量建议以 `pp` 前缀：`pp_head`、`pp_matrix`
 - 输出参数建议以 `out_` 前缀：`out_arr`、`out_count`
 - 链表头指针变量建议命名为 `head`，函数参数为 `Node **head`
 
-### 16.2 函数设计
+### 15.2 函数设计
 
 - **单一职责**：一个函数只做一件事
 - **错误返回**：返回 int 错误码，资源通过输出参数返回
@@ -2304,7 +2140,7 @@ char **load_lines(FILE *fp, int max_lines) {
 - **参数校验**：入口校验所有指针参数是否为 NULL
 - **资源配对**：每个 alloc 函数必须有对应的 free 函数
 
-### 16.3 内存管理
+### 15.3 内存管理
 
 - **谁分配谁释放**：分配和释放在同一层级
 - **立即置空**：free 后立即置 NULL
@@ -2312,23 +2148,23 @@ char **load_lines(FILE *fp, int max_lines) {
 - **使用 ASan**：开发期开启 AddressSanitizer
 - **避免悬垂**：返回动态分配的指针时文档明确所有权
 
-### 16.4 类型安全
+### 15.4 类型安全
 
 - **避免强转**：除非必要，不要强转指针类型
 - **const 修饰**：不修改的参数加 const
 - **typedef 简化**：复杂类型用 typedef 提高可读性
 - **避免三重以上**：超过 `T ***` 的指针考虑重构
 
-### 16.5 文档与注释
+### 15.5 文档与注释
 
 - **函数注释**：说明参数语义、返回值、副作用
 - **所有权标注**：注明谁负责释放返回的指针
 - **复杂逻辑**：二级指针游走等技巧需配图注释
 - **示例代码**：提供典型用例
 
-## 17. 附录
+## 16. 附录
 
-### 17.1 附录 A：C 标准相关条款索引
+### 16.1 附录 A：C 标准相关条款索引
 
 - **§6.2.5 Types**：派生类型定义
 - **§6.3.2.1 Lvalues, arrays, and function designators**：数组衰减规则
@@ -2339,7 +2175,7 @@ char **load_lines(FILE *fp, int max_lines) {
 - **§5.1.2.2.1 Program startup**：main 函数签名与 argv 语义
 - **§6.5.16.1 Simple assignment**：const 与指针赋值约束
 
-### 17.2 附录 B：常见函数指针 typedef
+### 16.2 附录 B：常见函数指针 typedef
 
 ```c
 /* 比较函数（qsort 用） */
@@ -2358,7 +2194,7 @@ typedef unsigned long (*HashFn)(const void *key);
 typedef int (*PredicateFn)(const void *data);
 ```
 
-### 17.3 附录 C：复杂声明解析速查
+### 16.3 附录 C：复杂声明解析速查
 
 | 声明 | 含义 |
 |------|------|
@@ -2372,7 +2208,7 @@ typedef int (*PredicateFn)(const void *data);
 | `int *(*f)()` | f 是指向返回 int* 的函数的指针 |
 | `void (*signal(int, void (*)(int)))(int)` | signal 是函数，接收 int 和函数指针，返回函数指针 |
 
-### 17.4 附录 D：编译器警告推荐
+### 16.4 附录 D：编译器警告推荐
 
 ```bash
 # GCC/Clang 推荐警告选项
@@ -2390,7 +2226,7 @@ clang --analyze -Xanalyzer -analyzer-output=html source.c
 clang-tidy -checks='*' source.c -- -std=c23
 ```
 
-### 17.5 附录 E：推荐阅读
+### 16.5 附录 E：推荐阅读
 
 1. **Kernighan & Ritchie, The C Programming Language, 2nd Edition**：第 5.6 节"Pointer Arrays; Pointers to Pointers"
 2. **Peter van der Linden, Expert C Programming: Deep C Secrets**：第 3、4 章
@@ -2401,7 +2237,7 @@ clang-tidy -checks='*' source.c -- -std=c23
 7. **SQLite 源码 `src/sqlite.h.in`**：opaque 句柄设计
 8. **Redis 源码 `src/sds.c`**：动态字符串与指针数组
 
-### 17.6 附录 F：术语表
+### 16.6 附录 F：术语表
 
 | 中文术语 | 英文术语 | 简述 |
 |----------|----------|------|
@@ -2418,7 +2254,7 @@ clang-tidy -checks='*' source.c -- -std=c23
 | 侵入式链表 | intrusive list | 节点嵌入数据的链表 |
 | 严格别名 | strict aliasing | 类型别名访问规则 |
 
-### 17.7 附录 G：本文档学习路径建议
+### 16.7 附录 G：本文档学习路径建议
 
 **初学者（< 1 年 C 经验）**：
 1. 重点阅读第 3、4 节
@@ -2435,16 +2271,16 @@ clang-tidy -checks='*' source.c -- -std=c23
 2. 完成习题 6
 3. 研究大型 C 项目的指针使用模式
 
-## 18. 延伸阅读
+## 17. 延伸阅读
 
-### 18.1 标准文档
+### 17.1 标准文档
 
 - ISO/IEC 9899:2024（C23 标准）
 - ISO/IEC 9899:2018（C17 标准）
 - ANSI X3.159-1989（C89 标准，原始文档）
 - POSIX.1-2017（IEEE Std 1003.1）
 
-### 18.2 经典书籍
+### 17.2 经典书籍
 
 - Kernighan, B. W., & Ritchie, D. M. (1988). *The C Programming Language* (2nd ed.). Prentice Hall.
 - van der Linden, P. (1994). *Expert C Programming: Deep C Secrets*. SunSoft Press.
@@ -2453,7 +2289,7 @@ clang-tidy -checks='*' source.c -- -std=c23
 - Koening, A. (1989). *C Traps and Pitfalls*. Addison-Wesley.
 - Summit, S. (1995). *C Programming FAQs: Frequently Asked Questions*. Addison-Wesley.
 
-### 18.3 在线资源
+### 17.3 在线资源
 
 - cppreference.com：C 标准库参考
 - gcc.gnu.org/onlinedocs：GCC 官方文档
@@ -2462,13 +2298,13 @@ clang-tidy -checks='*' source.c -- -std=c23
 - sqlite.org/src：SQLite 源码
 - github.com/redis/redis：Redis 源码
 
-### 18.4 相关论文
+### 17.4 相关论文
 
 - Hanson, D. R. (1996). *C Interfaces and Implementations: Techniques for Creating Reusable Software*. Addison-Wesley.
 - Jones, N. D., & Muchnick, S. S. (1981). *Flow analysis and optimization of Lisp-like structures*. In *Program Flow Analysis: Theory and Applications*.
 - Torvalds, L. (2016). *Interview on Linux kernel linked-list implementation*. Linux Foundation.
 
-### 18.5 后续学习方向
+### 17.5 后续学习方向
 
 完成本文档学习后，建议继续学习：
 
@@ -2481,7 +2317,7 @@ clang-tidy -checks='*' source.c -- -std=c23
 7. **C++ 对比**：RAII、智能指针、引用语义
 8. **现代 C 演进**：C23/C2y 新特性、模块化提案
 
-## 19. 总结
+## 18. 总结
 
 二级指针与指针数组是 C 语言工程化的核心技能。掌握它们意味着：
 

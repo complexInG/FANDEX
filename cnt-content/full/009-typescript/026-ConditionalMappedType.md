@@ -22,18 +22,8 @@ prerequisites:
   - typescript/接口与类型别名
 ---
 
+
 # 条件类型与映射类型
-
-## 学习目标
-
-本节按 Bloom 认知层级组织学习目标，使读者从浅层记忆逐步达到元认知层级：
-
-- **记忆（Remember）**：能够复述条件类型与映射类型的基本语法形式，列出 `infer`、`keyof`、`in`、`as` 等关键关键字。
-- **理解（Understand）**：能够解释条件类型的分布式行为、映射类型的键重映射机制，并能用自己的语言描述 `T extends U ? X : Y` 与 `{ [K in keyof T]: ... }` 的语义。
-- **应用（Apply）**：能够在生产代码中使用条件类型实现类型分支、用映射类型批量转换对象类型字段。
-- **分析（Analyze）**：能够将复杂的类型问题拆解为条件类型与映射类型的组合，识别裸类型参数与包装类型参数在分发行为上的差异。
-- **评估（Evaluate）**：能够评估某条类型表达式在编译期复杂度、可读性、可维护性上的表现，权衡类型体操与运行时代码的取舍。
-- **创造（Create）**：能够为业务场景设计端到端的类型安全方案，例如结合模板字面量类型与映射类型构建类型安全的路由表、事件总线、配置系统。
 
 ## 历史动机与背景
 
@@ -1174,7 +1164,6 @@ type Keys = DeepKeyOf<LargeApplicationConfig>; // 假设有 1000 个嵌套属性
 - 优化 4：用 `// @ts-ignore` 在热路径上跳过类型检查，或用泛型参数延迟实例化。
 
 
-
 ## 参考文献
 
 [1] Microsoft. 2017. TypeScript 2.8 Release Notes: Conditional Types. Microsoft Developer Network. Retrieved July 21, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html
@@ -1541,9 +1530,6 @@ TypeScript 类型系统的演进方向：
 | 函数空间 | Function Space | 键到类型的映射 |
 
 通过本附录，读者可以快速对照英文术语查阅相关资料。
-
-
-
 
 
 ---

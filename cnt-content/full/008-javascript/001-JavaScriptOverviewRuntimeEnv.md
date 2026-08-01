@@ -15,28 +15,12 @@ related:
 prerequisites: []
 ---
 
+
 # JavaScript 概述与运行环境
 
-## 1. 学习目标（Bloom 分类）
+## 1. 历史动机：一门十天诞生的语言
 
-读完本文后，读者应能够达到以下认知层次：
-
-| 层次 | 行为目标 | 具体能力描述 |
-| --- | --- | --- |
-| 记忆（Remember） | 列出 JavaScript 发展关键节点与运行环境分类 | 能在 1 分钟内说出 Brendan Eich、1995、Netscape、ECMA-262、V8、Node.js、浏览器、Deno、Bun 等关键信息 |
-| 理解（Understand） | 解释 ECMAScript 标准化过程与 JavaScript 引擎工作原理 | 能说明 TC39 提案四阶段、解析 → 解释 → JIT 编译 → GC 的完整流水线，以及事件循环模型 |
-| 应用（Apply） | 在不同环境配置与运行 JavaScript 代码 | 能在浏览器、Node.js、Deno、Bun、Web Worker 中正确运行代码并选择合适的环境 |
-| 分析（Analyze） | 区分各运行环境的能力边界与 API 差异 | 能对比浏览器、Node.js、Deno、Bun 在模块系统、文件系统、网络、安全模型上的差异 |
-| 评价（Evaluate） | 评估不同 JavaScript 引擎与运行时的性能、安全、生态 | 能根据项目场景选择合适的运行时，并说明 V8、SpiderMonkey、JavaScriptCore 的取舍依据 |
-| 创造（Create） | 设计多运行时部署与同构应用架构 | 能实现一份代码运行在浏览器与服务器、边缘节点、移动端、桌面端的统一架构 |
-
-学习本课前，建议先掌握：基本编程概念（变量、函数、循环）、HTML 与 CSS 基础、命令行操作、操作系统基础概念。本文是 JavaScript 学习路线的起点，不要求任何编程经验。
-
----
-
-## 2. 历史动机：一门十天诞生的语言
-
-### 2.1 1995 年：十天的奇迹
+### 1.1 1995 年：十天的奇迹
 
 1995 年，Netscape 公司意识到万维网需要一种"脚本语言"来让网页动起来。当时 34 岁的 **Brendan Eich** 被招募加入 Netscape，公司给他十天时间设计一门新语言。这门语言最初被命名为 Mocha，随后更名为 LiveScript，最终为了营销目的（搭乘 Sun Microsystems 的 Java 热潮）更名为 JavaScript。
 
@@ -49,7 +33,7 @@ prerequisites: []
 
 这种"杂糅"的设计使 JavaScript 既有函数式编程的表达力，又有命令式编程的直观性，但也带来了一些长期争议的特性（如 `==` 隐式类型转换、变量提升）。
 
-### 2.2 浏览器战争与标准化
+### 1.2 浏览器战争与标准化
 
 1995 年 12 月，Netscape Navigator 2.0 首次发布 JavaScript 1.0。微软在 1996 年的 IE 3.0 中推出了反向工程的 JScript，导致了著名的"浏览器战争"。由于两家实现差异巨大，跨浏览器开发成为噩梦。
 
@@ -58,7 +42,7 @@ prerequisites: []
 - **JavaScript** 是 Netscape/Mozilla 的商标名（后转让给 Oracle）。
 - **ECMAScript** 是规范名称，所有实现（JavaScript、JScript、ActionScript）都遵循该规范。
 
-### 2.3 标准化时间线
+### 1.3 标准化时间线
 
 | 年份 | 版本 | 关键特性 | 历史意义 |
 | --- | --- | --- | --- |
@@ -78,13 +62,13 @@ prerequisites: []
 | 2023 | ES2023 | `findLast`、`findLastIndex`、`Symbol.metadata` | 数组与元数据增强 |
 | 2024 | ES2024 | `Promise.withResolvers`、`Object.groupBy`、Unicode 15.1 | 集合操作增强 |
 
-### 2.4 AJAX 革命与 Web 2.0
+### 1.4 AJAX 革命与 Web 2.0
 
 2005 年，Jesse James Garrett 提出 **AJAX（Asynchronous JavaScript and XML）** 概念，将 `XMLHttpRequest` 与 DOM 操作结合，使网页无需刷新即可与服务器交互。Google Maps、Gmail、Google Suggest 是 AJAX 的早期代表应用。
 
 AJAX 之前，网页交互必须整页刷新，用户体验极差。AJAX 之后，"单页应用（SPA）"成为可能，催生了 jQuery（2006）、Prototype、MooTools 等库，最终演化为 React、Vue、Angular 等现代框架。
 
-### 2.5 2009 年：Node.js 的诞生
+### 1.5 2009 年：Node.js 的诞生
 
 2009 年 5 月，**Ryan Dahl** 在 JSConf 上发布 **Node.js**，将 Chrome V8 引擎从浏览器中剥离，使其能在服务器端运行。Node.js 的核心创新：
 
@@ -94,7 +78,7 @@ AJAX 之前，网页交互必须整页刷新，用户体验极差。AJAX 之后�
 
 Node.js 的诞生让 JavaScript 走出浏览器，成为全栈语言。一个开发者可以只用一种语言完成前后端开发，大幅降低了团队协作成本。
 
-### 2.6 2015 年：ES6 重生
+### 1.6 2015 年：ES6 重生
 
 ES6（正式名 ES2015）是 JavaScript 历史上最重要的版本，历时近 6 年制定。它解决了 JavaScript 长期以来的诸多痛点：
 
@@ -107,7 +91,7 @@ ES6（正式名 ES2015）是 JavaScript 历史上最重要的版本，历时近 
 
 ES6 之后，TC39 改为**年度发布制**：每年 6 月发布一个版本，特性按成熟度逐个加入。这避免了 ES4 那样的"大爆炸式"失败。
 
-### 2.7 现代：TypeScript、Deno、Bun 的崛起
+### 1.7 现代：TypeScript、Deno、Bun 的崛起
 
 **TypeScript（2012）**：微软的 Anders Hejlsberg（C#、Turbo Pascal 之父）设计的 JavaScript 超集，引入静态类型系统。TypeScript 不是替代 JavaScript，而是编译到 JavaScript。截至 2024 年，TypeScript 已成为前端工程的事实标准。
 
@@ -115,7 +99,7 @@ ES6 之后，TC39 改为**年度发布制**：每年 6 月发布一个版本，�
 
 **Bun（2022）**：Jarred Sumner 创建的 Zig 语言实现的高性能运行时。Bun 集运行时、打包器、包管理器、测试运行器于一身，启动速度比 Node.js 快 4 倍，专注于极致性能。
 
-### 2.8 为什么理解 JavaScript 运行环境至关重要
+### 1.8 为什么理解 JavaScript 运行环境至关重要
 
 JavaScript 是一门"宿主语言"——语言本身只定义语法与核心对象（`Object`、`Array`、`Function`、`Promise`），实际能力由**运行环境（runtime）**提供：
 
@@ -128,9 +112,9 @@ JavaScript 是一门"宿主语言"——语言本身只定义语法与核心对�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 JavaScript 语言的形式化组成
+### 2.1 JavaScript 语言的形式化组成
 
 JavaScript 语言可形式化为三元组：
 
@@ -144,7 +128,7 @@ $$
 - $\text{Semantics}$：规范定义的执行语义（Execution Semantics），包括类型转换规则、`this` 绑定规则、作用域规则、原型链查找规则。
 - $\text{Runtime}$：宿主环境提供的 API 集合（Web API、Node API 等），规范不定义这部分。
 
-### 3.2 ECMAScript 规范的形式化结构
+### 2.2 ECMAScript 规范的形式化结构
 
 ECMAScript 规范文档（ECMA-262）由以下部分组成：
 
@@ -164,7 +148,7 @@ ECMAScript 规范文档（ECMA-262）由以下部分组成：
 
 规范使用"抽象操作"（Abstract Operation）描述语义，例如 `ToString(x)`、`ToNumber(x)`、`ToObject(x)` 等转换规则，是 JavaScript 隐式类型转换的根源。
 
-### 3.3 JavaScript 引擎架构
+### 2.3 JavaScript 引擎架构
 
 现代 JavaScript 引擎（以 V8 为例）的核心组件：
 
@@ -201,7 +185,7 @@ $$
 - $G$：Garbage Collector（Orinoco），分代回收内存。
 - $H$：Heap，堆内存管理。
 
-### 3.4 运行环境（Runtime）的组成
+### 2.4 运行环境（Runtime）的组成
 
 运行环境为 JavaScript 提供宿主 API，可形式化为：
 
@@ -214,7 +198,7 @@ $$
 - $L$：Event Loop，事件循环模型。
 - $C$：Console，标准输入输出与诊断接口。
 
-### 3.5 事件循环的形式化模型
+### 2.5 事件循环的形式化模型
 
 JavaScript 的事件循环可形式化为：
 
@@ -233,7 +217,7 @@ $$
 
 每次循环：执行一个宏任务 → 清空所有微任务 → 可能渲染。这个规则是 JavaScript 异步编程的核心。
 
-### 3.6 执行上下文与作用域
+### 2.6 执行上下文与作用域
 
 JavaScript 代码执行时维护一个**执行上下文栈（Execution Context Stack）**：
 
@@ -251,9 +235,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 编译型 vs 解释型 vs JIT
+### 3.1 编译型 vs 解释型 vs JIT
 
 **编译型语言**（C/C++/Rust/Go）：源代码 → 机器码 → 执行。启动慢，运行快。
 
@@ -270,7 +254,7 @@ JavaScript 引擎的 JIT 编译核心思想：
 
 这种"乐观优化 + 反优化"机制使 JavaScript 性能接近原生代码。
 
-### 4.2 Amdahl 定律在 JavaScript 中的应用
+### 3.2 Amdahl 定律在 JavaScript 中的应用
 
 Amdahl 定律描述并行计算的加速上限：
 
@@ -286,7 +270,7 @@ JavaScript 单线程执行意味着 $n = 1$，但通过 Web Worker、Node.js 的
 - 消息传递有序列化开销。
 - I/O 本身异步并发，不占主线程时间。
 
-### 4.3 V8 的分代垃圾回收
+### 3.3 V8 的分代垃圾回收
 
 V8 采用**分代回收算法（Generational GC）**：
 
@@ -314,7 +298,7 @@ $$
 
 V8 会根据历史 GC 频率动态调整阈值，平衡 GC 频率与内存使用。
 
-### 4.4 模块系统的演进
+### 3.4 模块系统的演进
 
 **CommonJS（2009）**：
 
@@ -349,7 +333,7 @@ ES Modules 的核心优势：
 - **循环引用处理**：模块导出的是"实时绑定"（Live Binding），而非值的快照。
 - **顶层 await**（ES2022）：模块顶层可使用 `await`。
 
-### 4.5 Promise 与事件循环的关系
+### 3.5 Promise 与事件循环的关系
 
 ```javascript
 console.log('1: script start');
@@ -377,7 +361,7 @@ console.log('2: script end');
 
 这解释了为什么 `Promise.resolve().then` 比 `setTimeout(0)` 更快执行。
 
-### 4.6 类型系统的形式化
+### 3.6 类型系统的形式化
 
 JavaScript 类型系统可形式化为：
 
@@ -408,7 +392,7 @@ $$
 
 注意 `typeof null === 'object'` 是历史遗留 bug（源于早期实现的位标记）。
 
-### 4.7 作用域链的查找算法
+### 3.7 作用域链的查找算法
 
 标识符查找的形式化算法：
 
@@ -425,9 +409,9 @@ function Lookup(name, scope):
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 浏览器环境：内联脚本
+### 4.1 浏览器环境：内联脚本
 
 ```html
 <!DOCTYPE html>
@@ -452,7 +436,7 @@ function Lookup(name, scope):
 </html>
 ```
 
-### 5.2 浏览器环境：外部 ESM 模块
+### 4.2 浏览器环境：外部 ESM 模块
 
 ```html
 <!DOCTYPE html>
@@ -479,7 +463,7 @@ export function greet(name) {
 }
 ```
 
-### 5.3 Node.js 环境：基础脚本
+### 4.3 Node.js 环境：基础脚本
 
 ```javascript
 // hello.js - Node.js 环境示例
@@ -519,7 +503,7 @@ console.log('空闲内存:', os.freemem() / 1024 / 1024 / 1024, 'GB');
 node hello.js
 ```
 
-### 5.4 Node.js 环境：ESM 模块
+### 4.4 Node.js 环境：ESM 模块
 
 ```javascript
 // package.json
@@ -537,7 +521,7 @@ console.log(greet('ESM'));
 console.log('CPU:', os.cpus().length);
 ```
 
-### 5.5 Node.js 环境：HTTP 服务器
+### 4.5 Node.js 环境：HTTP 服务器
 
 ```javascript
 // server.js - Node.js 内置 HTTP 服务器
@@ -560,7 +544,7 @@ server.listen(3000, () => {
 });
 ```
 
-### 5.6 Deno 环境
+### 4.6 Deno 环境
 
 ```typescript
 // deno.ts - Deno 原生支持 TypeScript
@@ -581,7 +565,7 @@ console.log('Deno 服务器运行在 http://localhost:8000');
 await serve(handler, { port: 8000 });
 ```
 
-### 5.7 Bun 环境
+### 4.7 Bun 环境
 
 ```typescript
 // bun.ts - Bun 内置 TypeScript 与 JSX 支持
@@ -604,7 +588,7 @@ const text = await file.text();
 console.log('package.json 内容:', text);
 ```
 
-### 5.8 Web Worker
+### 4.8 Web Worker
 
 ```javascript
 // main.js - 主线程
@@ -633,7 +617,7 @@ self.onmessage = (event) => {
 };
 ```
 
-### 5.9 环境检测
+### 4.9 环境检测
 
 ```javascript
 // 检测当前运行环境
@@ -676,7 +660,7 @@ const globalObj =
           : null;
 ```
 
-### 5.10 跨环境读写文件
+### 4.10 跨环境读写文件
 
 ```javascript
 // 读取 JSON 文件的跨环境实现
@@ -704,7 +688,7 @@ async function readJson(path) {
 }
 ```
 
-### 5.11 包管理器对比
+### 4.11 包管理器对比
 
 ```bash
 # npm - Node.js 内置
@@ -737,7 +721,7 @@ bun run dev
 bun update
 ```
 
-### 5.12 使用 nvm 管理多版本 Node.js
+### 4.12 使用 nvm 管理多版本 Node.js
 
 ```bash
 # 安装 nvm（Node Version Manager）
@@ -767,9 +751,9 @@ nvm use  # 自动读取 .nvmrc
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 浏览器 vs Node.js vs Deno vs Bun
+### 5.1 浏览器 vs Node.js vs Deno vs Bun
 
 | 维度 | 浏览器 | Node.js | Deno | Bun |
 | --- | --- | --- | --- | --- |
@@ -786,7 +770,7 @@ nvm use  # 自动读取 .nvmrc
 | 生态成熟度 | 极高 | 极高 | 成长中 | 成长中 |
 | 适用场景 | Web 应用 | 服务器 / CLI / 工具链 | 现代 Web 服务器 | 全栈 / 高性能 |
 
-### 6.2 JavaScript 引擎对比
+### 5.2 JavaScript 引擎对比
 
 | 引擎 | 开发者 | 首次发布 | 代表环境 | 特点 |
 | --- | --- | --- | --- | --- |
@@ -798,7 +782,7 @@ nvm use  # 自动读取 .nvmrc
 | QuickJS | Bellard | 2017 | 嵌入式 / 边缘计算 | 极小体积，可移植 |
 | JavaScriptCore (Bun) | Apple | 2008 | Bun | 性能优于 V8（部分场景） |
 
-### 6.3 CommonJS vs ESM
+### 5.3 CommonJS vs ESM
 
 | 特性 | CommonJS | ESM |
 | --- | --- | --- |
@@ -812,7 +796,7 @@ nvm use  # 自动读取 .nvmrc
 | Node.js 支持 | 完全 | 完全（13.2+） |
 | 浏览器支持 | 不支持 | 完全 |
 
-### 6.4 包管理器对比
+### 5.4 包管理器对比
 
 | 包管理器 | 速度 | 磁盘占用 | 单仓库支持 | 安全性 | 推荐场景 |
 | --- | --- | --- | --- | --- | --- |
@@ -822,7 +806,7 @@ nvm use  # 自动读取 .nvmrc
 | pnpm | 极快 | 极低（硬链接） | 原生支持 | 高 | 大型项目 |
 | Bun | 极快 | 中 | 支持 | 中 | Bun 项目 |
 
-### 6.5 编译型 vs JIT vs 解释型性能对比
+### 5.5 编译型 vs JIT vs 解释型性能对比
 
 | 语言 | 启动时间 | 运行速度 | 内存占用 | 开发效率 | 典型代表 |
 | --- | --- | --- | --- | --- | --- |
@@ -835,9 +819,9 @@ JavaScript 的 JIT 编译在现代硬件上已能达到原生代码性能的 70-
 
 ---
 
-## 7. 常见陷阱
+## 6. 常见陷阱
 
-### 7.1 全局变量污染
+### 6.1 全局变量污染
 
 ```javascript
 // 反模式：隐式全局变量
@@ -856,7 +840,7 @@ function goodExample() {
 
 **根因**：非严格模式下，未声明变量自动挂到全局对象。**防御**：始终使用 `'use strict'` 或 ESM（默认严格模式）。
 
-### 7.2 `var` 的变量提升与函数作用域
+### 6.2 `var` 的变量提升与函数作用域
 
 ```javascript
 // 陷阱：变量提升
@@ -881,7 +865,7 @@ for (let i = 0; i < 3; i++) {
 // 输出: 0, 1, 2
 ```
 
-### 7.3 `this` 绑定丢失
+### 6.3 `this` 绑定丢失
 
 ```javascript
 // 陷阱：回调中 this 丢失
@@ -921,7 +905,7 @@ const obj3 = {
 };
 ```
 
-### 7.4 `==` 与 `===` 的陷阱
+### 6.4 `==` 与 `===` 的陷阱
 
 ```javascript
 // == 会进行隐式类型转换
@@ -944,7 +928,7 @@ if (value == null) {
 }
 ```
 
-### 7.5 异步陷阱：回调地狱
+### 6.5 异步陷阱：回调地狱
 
 ```javascript
 // 反模式：回调地狱
@@ -979,7 +963,7 @@ async function main() {
 }
 ```
 
-### 7.6 模块系统混淆
+### 6.6 模块系统混淆
 
 ```javascript
 // 陷阱：CommonJS 与 ESM 混用
@@ -999,7 +983,7 @@ pkg.greet();
 import { greet } from './foo.cjs'; // Node.js 22+ 支持（实验性）
 ```
 
-### 7.7 跨环境 API 差异
+### 6.7 跨环境 API 差异
 
 ```javascript
 // 陷阱：setTimeout 参数顺序
@@ -1015,7 +999,7 @@ setTimeout((a, b) => console.log(a, b), 100, 'x', 'y'); // 输出 'x y'
 console.log(globalThis); // 浏览器: window / Node.js: global / Deno: Window
 ```
 
-### 7.8 浮点数精度问题
+### 6.8 浮点数精度问题
 
 ```javascript
 // JavaScript 使用 IEEE 754 双精度浮点数
@@ -1030,7 +1014,7 @@ Number.MAX_SAFE_INTEGER; // 9007199254740991
 9007199254740992n + 1n === 9007199254740993n; // true
 ```
 
-### 7.9 闭包内存泄漏
+### 6.9 闭包内存泄漏
 
 ```javascript
 // 反模式：闭包持有大对象
@@ -1055,7 +1039,7 @@ function createSafe() {
 }
 ```
 
-### 7.10 Promise 未捕获异常
+### 6.10 Promise 未捕获异常
 
 ```javascript
 // 陷阱：Promise 链未 catch，异常被吞没
@@ -1077,7 +1061,7 @@ Promise.resolve()
   .catch((err) => console.error(err));
 ```
 
-### 7.11 `this` 在事件回调中丢失
+### 6.11 `this` 在事件回调中丢失
 
 ```javascript
 // 反模式：DOM 事件回调中 this 不是预期对象
@@ -1113,7 +1097,7 @@ class Counter {
 document.getElementById('btn').addEventListener('click', this.increment.bind(this));
 ```
 
-### 7.12 顶层 await 在 CommonJS 中报错
+### 6.12 顶层 await 在 CommonJS 中报错
 
 ```javascript
 // CommonJS 模块（.cjs 或 package.json 无 type:module）
@@ -1135,9 +1119,9 @@ document.getElementById('btn').addEventListener('click', this.increment.bind(thi
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目初始化最佳实践
+### 7.1 项目初始化最佳实践
 
 ```bash
 # 创建项目目录
@@ -1198,7 +1182,7 @@ trim_trailing_whitespace = false
 EOF
 ```
 
-### 8.2 ESLint 配置
+### 7.2 ESLint 配置
 
 ```javascript
 // eslint.config.js - ESLint 9+ Flat Config
@@ -1223,7 +1207,7 @@ export default [
 ];
 ```
 
-### 8.3 Prettier 配置
+### 7.3 Prettier 配置
 
 ```javascript
 // .prettierrc.js
@@ -1238,7 +1222,7 @@ export default {
 };
 ```
 
-### 8.4 package.json 脚本配置
+### 7.4 package.json 脚本配置
 
 ```json
 {
@@ -1266,7 +1250,7 @@ export default {
 }
 ```
 
-### 8.5 调试技巧
+### 7.5 调试技巧
 
 ```javascript
 // 使用 console 的各种方法
@@ -1305,7 +1289,7 @@ const measures = performance.getEntriesByName('duration');
 console.log(`耗时: ${measures[0].duration}ms`);
 ```
 
-### 8.6 性能优化技巧
+### 7.6 性能优化技巧
 
 ```javascript
 // 1. 避免频繁 DOM 操作
@@ -1375,7 +1359,7 @@ worker.onmessage = (e) => {
 };
 ```
 
-### 8.7 安全最佳实践
+### 7.7 安全最佳实践
 
 ```javascript
 // 1. 防止 XSS（跨站脚本攻击）
@@ -1432,7 +1416,7 @@ const obj = JSON.parse(userInput);
 const fn = new Function('x', `return ${expression};`);
 ```
 
-### 8.8 错误处理与日志
+### 7.8 错误处理与日志
 
 ```javascript
 // 1. 全局错误捕获（浏览器）
@@ -1494,7 +1478,7 @@ function errorHandler(err, req, res, next) {
 }
 ```
 
-### 8.9 使用 TypeScript 增强类型安全
+### 7.9 使用 TypeScript 增强类型安全
 
 ```typescript
 // TypeScript 是 JavaScript 的超集，添加静态类型检查
@@ -1540,9 +1524,9 @@ const user = await fetchJson<User>('/api/users/1');
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：同构应用（Isomorphic / Universal App）
+### 8.1 案例：同构应用（Isomorphic / Universal App）
 
 同构应用指同一份代码既能运行在服务器（Node.js）也能运行在浏览器，实现首屏 SSR + 客户端水合（Hydration）。
 
@@ -1629,7 +1613,7 @@ console.log('水合数据:', initialData);
 - 服务器注入 `__INITIAL_DATA__`，客户端读取后初始化。
 - 使用环境检测避免在浏览器调用 Node.js API。
 
-### 9.2 案例：跨平台 CLI 工具
+### 8.2 案例：跨平台 CLI 工具
 
 ```javascript
 // bin/mycli.js - 跨平台 CLI 工具
@@ -1711,7 +1695,7 @@ program.parse();
 }
 ```
 
-### 9.3 案例：Electron 桌面应用
+### 8.3 案例：Electron 桌面应用
 
 ```javascript
 // main.js - Electron 主进程
@@ -1769,7 +1753,7 @@ contextBridge.exposeInMainWorld('api', {
 });
 ```
 
-### 9.4 案例：React Native 移动应用
+### 8.4 案例：React Native 移动应用
 
 ```javascript
 // App.js - React Native 应用
@@ -1819,7 +1803,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-### 9.5 案例：Cloudflare Workers 边缘计算
+### 8.5 案例：Cloudflare Workers 边缘计算
 
 ```javascript
 // worker.js - Cloudflare Workers 边缘函数
@@ -1865,7 +1849,7 @@ binding = "MY_KV"
 id = "your-kv-namespace-id"
 ```
 
-### 9.6 案例：WebSocket 实时通信
+### 8.6 案例：WebSocket 实时通信
 
 ```javascript
 // server.js - Node.js WebSocket 服务器
@@ -1930,7 +1914,7 @@ ws.onclose = () => {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：JavaScript 与 Java 有何关系？为什么它们名字相似但技术截然不同？
 
@@ -1956,7 +1940,7 @@ console.log('4: end');
 
 **习题 6**：在 Node.js 中读取并解析一个 JSON 文件，使用 ESM 语法。考虑文件不存在与 JSON 格式错误的异常。
 
-### 10.3 分析题
+### 9.3 分析题
 
 **习题 7**：分析以下代码在浏览器与 Node.js 中行为的差异：
 
@@ -1968,7 +1952,7 @@ setTimeout(() => console.log('done'), 0);
 
 **习题 8**：对比 CommonJS 与 ESM 在循环引用处理上的差异，并说明为什么 ESM 的"实时绑定"更安全。
 
-### 10.4 设计题
+### 9.4 设计题
 
 **习题 9**：设计一个跨运行时（浏览器 + Node.js + Deno + Bun）的 HTTP 客户端封装，要求：
 
@@ -1989,7 +1973,7 @@ setTimeout(() => console.log('done'), 0);
 
 ---
 
-## 11. 参考文献（ACM 格式）
+## 10. 参考文献（ACM 格式）
 
 [1] Eich, B. (1995). *JavaScript: The First Ten Years*. HOPL III (History of Programming Languages Conference), San Diego, CA, USA.
 
@@ -2021,9 +2005,9 @@ setTimeout(() => console.log('done'), 0);
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - [MDN Web Docs - JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 - [ECMAScript 规范](https://tc39.es/ecma262/)
@@ -2032,7 +2016,7 @@ setTimeout(() => console.log('done'), 0);
 - [Bun 官方文档](https://bun.sh/docs)
 - [V8 引擎博客](https://v8.dev/blog)
 
-### 12.2 进阶书籍
+### 11.2 进阶书籍
 
 - 《JavaScript 高级程序设计》（Professional JavaScript for Web Developers, Nicholas Zakas）
 - 《你不知道的 JavaScript》（You Don't Know JS, Kyle Simpson）
@@ -2041,7 +2025,7 @@ setTimeout(() => console.log('done'), 0);
 - 《JavaScript 设计模式与开发实践》（曾探）
 - 《Refactoring JavaScript》（Evan Burchard）
 
-### 12.3 在线教程
+### 11.3 在线教程
 
 - [JavaScript.info](https://javascript.info/) - 系统化现代 JavaScript 教程
 - [freeCodeCamp](https://www.freecodecamp.org/) - 免费互动式学习
@@ -2049,7 +2033,7 @@ setTimeout(() => console.log('done'), 0);
 - [Frontend Masters](https://frontendmasters.com/)
 - [Egghead.io](https://egghead.io/) - 短视频教程
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/javascript)
 - [GitHub](https://github.com/trending/javascript)
@@ -2057,7 +2041,7 @@ setTimeout(() => console.log('done'), 0);
 - [Dev.to](https://dev.to/t/javascript)
 - [JavaScript Weekly](https://javascriptweekly.com/) - 每周资讯邮件
 
-### 12.5 工具与生态
+### 11.5 工具与生态
 
 - [npm trends](https://npmtrends.com/) - 包流行度对比
 - [State of JS](https://stateofjs.com/) - 年度开发者调查
@@ -2065,7 +2049,7 @@ setTimeout(() => console.log('done'), 0);
 - [TC39 Proposals](https://github.com/tc39/proposals) - 提案追踪
 - [V8 Source](https://chromium.googlesource.com/v8/v8.git) - V8 引擎源码
 
-### 12.6 深入研究方向
+### 11.6 深入研究方向
 
 - **引擎源码阅读**：V8 的 `src/codegen/` 与 `src/compiler/` 目录是 JIT 编译器核心。
 - **ESM 规范实现**：阅读 Node.js 的 `lib/internal/modules/esm/` 源码。

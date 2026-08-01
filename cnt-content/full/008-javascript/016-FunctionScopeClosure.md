@@ -20,6 +20,7 @@ prerequisites:
   - javascript/语法速查
   - javascript/控制流
 ---
+
 # JavaScript 函数-作用域与闭包
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -32,24 +33,9 @@ prerequisites:
 
 作用域决定变量可见性，闭包决定变量生命周期，`this` 决定函数执行上下文。三者共同构成了 JavaScript 函数的执行模型。本文档从历史演进、形式化定义、理论推导、工程实践、陷阱分析、案例研究六个维度系统讲解这三个核心概念，并扩展到高阶函数、柯里化、尾调用优化等函数式编程技术。
 
-## 2. 学习目标
+## 2. 历史动机与背景
 
-本节采用 Anderson & Krathwohl 修订版 Bloom 分类法，按认知层级划分学习目标：
-
-| 认知层级 | 学习目标描述 |
-| --- | --- |
-| 记忆（Remembering） | 列举函数声明的 5 种形态；背诵作用域链查找规则；列举 `this` 的 4 种绑定规则 |
-| 理解（Understanding） | 解释词法作用域与动态作用域的差异；用自己的话描述闭包的内存模型；区分 call/apply/bind 的语义 |
-| 应用（Applying） | 在生产代码中正确使用闭包实现私有化；用柯里化构造可复用的高阶函数；用箭头函数避免 `this` 丢失问题 |
-| 分析（Analyzing） | 对比函数声明、函数表达式、箭头函数在提升、`this`、`arguments`、`prototype` 上的差异；分析循环中闭包变量共享问题的根因 |
-| 评价（Evaluating） | 评估一个高阶函数封装的内存开销；判断尾调用优化在当前引擎下的可用性；评价 React Hooks 闭包陷阱的影响 |
-| 创造（Creating） | 设计一个完整的函数式工具库（compose、pipe、curry、memoize）；基于闭包实现一个状态机库 |
-
-完成本节学习后，读者应能独立分析任意 JavaScript 函数的执行上下文、作用域链、`this` 指向，并写出符合工程规范的函数式代码。
-
-## 3. 历史动机与背景
-
-### 3.1 JavaScript 函数演化时间线
+### 2.1 JavaScript 函数演化时间线
 
 | 年份 | 关键里程碑 | 解决的核心问题 |
 | --- | --- | --- |
@@ -64,7 +50,7 @@ prerequisites:
 | 2021 | ES12 引入 `WeakRef`、`FinalizationRegistry` | 弱引用与对象终结回调 |
 | 2024 | ES15 引入 `Promise.withResolvers` | 函数式 Promise 构造简化 |
 
-### 3.2 设计动机分析
+### 2.2 设计动机分析
 
 JavaScript 函数的设计受三个历史因素影响：
 
@@ -74,9 +60,9 @@ JavaScript 函数的设计受三个历史因素影响：
 
 理解这三个历史因素，可以解释为什么 JavaScript 的函数与 `this` 看起来"奇怪"——它本质上是 Scheme 内核 + Java 语法 + 浏览器约束的混合体。
 
-## 4. 形式化定义
+## 3. 形式化定义
 
-### 4.1 函数的形式化定义
+### 3.1 函数的形式化定义
 
 JavaScript 函数可形式化为七元组：
 
@@ -92,7 +78,7 @@ $$
 - $\text{HomeObject}$：`super` 引用（仅方法定义）
 - $\text{Prototype}$：`Function.prototype` 引用
 
-### 4.2 作用域的形式化定义
+### 3.2 作用域的形式化定义
 
 作用域是一个映射 $\sigma: \text{Identifier} \rightarrow \text{Location}$。作用域链是一个栈：
 
@@ -111,7 +97,7 @@ $$
 
 JavaScript 使用**词法作用域**（lexical scope），即 $\Sigma$ 在函数定义时确定，而非调用时。这与 bash 等动态作用域语言不同。
 
-### 4.3 闭包的形式化定义
+### 3.3 闭包的形式化定义
 
 闭包是一个二元组 $\langle F, \Sigma_F \rangle$，其中：
 
@@ -126,7 +112,7 @@ $$
 
 这意味着即使函数在定义作用域外被调用，仍能访问定义时的变量。
 
-### 4.4 `this` 绑定的形式化语义
+### 3.4 `this` 绑定的形式化语义
 
 设函数 $f$ 被调用为 `obj.method(args)`，则 `this` 绑定规则（按优先级从高到低）：
 
@@ -141,7 +127,7 @@ $$
 \text{this}_{\text{arrow}} = \text{this}_{\text{enclosing}}
 $$
 
-### 4.5 高阶函数的形式化定义
+### 3.5 高阶函数的形式化定义
 
 高阶函数（Higher-Order Function, HOF）是满足下列条件之一的函数：
 
@@ -151,7 +137,7 @@ $$
 
 即接收函数作为参数或返回函数。常见高阶函数包括 `map`、`filter`、`reduce`、`compose`、`curry`。
 
-### 4.6 柯里化的形式化定义
+### 3.6 柯里化的形式化定义
 
 柯里化（Currying）将多元函数转换为一元函数链：
 
@@ -161,7 +147,7 @@ $$
 
 例如：`add(a, b)` 柯里化为 `add(a)(b)`。
 
-### 4.7 尾调用的形式化定义
+### 3.7 尾调用的形式化定义
 
 尾调用（Tail Call）指函数的最后一步是调用另一个函数：
 
@@ -177,15 +163,15 @@ $$
 
 ES6 在严格模式下规范了 TCO，但 Safari 是唯一广泛实现的引擎。
 
-## 5. 理论推导
+## 4. 理论推导
 
-### 5.1 作用域链的查找复杂度
+### 4.1 作用域链的查找复杂度
 
 设作用域链长度为 $n$，每次变量查找的最坏复杂度为 $O(n)$。优化手段：JavaScript 引擎将作用域链编译为跳表，常数因子小。
 
 推论：**避免深层嵌套**。在 100 层嵌套作用域中查找变量比顶层查找慢约 100 倍。
 
-### 5.2 闭包的内存开销
+### 4.2 闭包的内存开销
 
 闭包持有定义作用域的引用，导致该作用域中的所有变量无法被 GC。设作用域 $S$ 中变量总大小为 $|S|$，闭包 $C$ 引用 $S$ 的子集 $U_C \subseteq S$：
 
@@ -201,7 +187,7 @@ $$
 
 推论：**避免在闭包中保留大对象**，否则即使闭包只用一个变量，整个作用域也无法回收。
 
-### 5.3 `arguments` 与剩余参数的性能差异
+### 4.3 `arguments` 与剩余参数的性能差异
 
 `arguments` 是类数组对象，每次访问需要属性查找。剩余参数 `...args` 是真数组，V8 内部优化为数组结构：
 
@@ -211,7 +197,7 @@ $$
 
 差异约 5-10%，在热路径中显著。
 
-### 5.4 箭头函数与普通函数的内存对比
+### 4.4 箭头函数与普通函数的内存对比
 
 箭头函数没有 `arguments`、`this`、`super`、`new.target` 绑定，内存占用更小：
 
@@ -221,7 +207,7 @@ $$
 
 V8 中差异约 32 字节/函数。在创建大量回调的场景下（如 `Array.prototype.map` 中），箭头函数更优。
 
-### 5.5 尾调用优化的栈空间
+### 4.5 尾调用优化的栈空间
 
 未优化的尾调用：
 
@@ -237,7 +223,7 @@ $$
 
 因此递归算法在 TCO 下可处理任意深度输入，而不会栈溢出。
 
-### 5.6 闭包与不可变数据
+### 4.6 闭包与不可变数据
 
 闭包可以构造不可变数据：
 
@@ -258,9 +244,9 @@ $$
 
 这是函数式编程的核心思想。
 
-## 6. 代码示例
+## 5. 代码示例
 
-### 6.1 函数声明、表达式与箭头函数
+### 5.1 函数声明、表达式与箭头函数
 
 ```javascript
 // 函数声明：存在提升，可在声明前调用
@@ -292,7 +278,7 @@ const square = (x) => x * x;
 const makeUser = (name, age) => ({ name, age });
 ```
 
-### 6.2 函数参数
+### 5.2 函数参数
 
 ```javascript
 // 默认参数：替代 || 的 falsy 陷阱
@@ -323,7 +309,7 @@ fetchUser({ id: 123 }); // fields 默认为 ['name', 'email']
 fetchUser(); // 报错：Cannot destructure 'id' of undefined
 ```
 
-### 6.3 作用域
+### 5.3 作用域
 
 ```javascript
 // 全局作用域
@@ -358,7 +344,7 @@ console.log(i); // 输出: 3（var 泄漏到外层）
 // 仅在当前模块内可见，需通过 export 暴露
 ```
 
-### 6.4 作用域链
+### 5.4 作用域链
 
 ```javascript
 const globalVar = '全局';
@@ -381,7 +367,7 @@ function outer() {
 outer();
 ```
 
-### 6.5 闭包基础
+### 5.5 闭包基础
 
 ```javascript
 // 闭包：函数 + 其词法环境的组合
@@ -405,7 +391,7 @@ console.log(counter2()); // 1（与 counter 互不影响）
 // counter.count; // undefined
 ```
 
-### 6.6 闭包应用：计数器
+### 5.6 闭包应用：计数器
 
 ```javascript
 // 完整的计数器：封装多个操作
@@ -436,7 +422,7 @@ console.log(counter.reset());     // 10
 console.log(counter.getCount());  // 10
 ```
 
-### 6.7 闭包应用：模块模式
+### 5.7 闭包应用：模块模式
 
 ```javascript
 // 模块模式：IIFE + 闭包实现私有化
@@ -474,7 +460,7 @@ console.log(mathModule.getPI());       // 3.14159
 // console.log(mathModule.PI);         // undefined（私有）
 ```
 
-### 6.8 闭包应用：防抖与节流
+### 5.8 闭包应用：防抖与节流
 
 ```javascript
 // 防抖：高频触发仅最后一次生效
@@ -516,7 +502,7 @@ const debouncedSearch = debounce((query) => {
 }, 300);
 ```
 
-### 6.9 `this` 绑定规则
+### 5.9 `this` 绑定规则
 
 ```javascript
 // 默认绑定：独立函数调用
@@ -558,7 +544,7 @@ const p = new Person('Carol');
 console.log(p.name); // 'Carol'
 ```
 
-### 6.10 箭头函数的 `this`
+### 5.10 箭头函数的 `this`
 
 ```javascript
 // 箭头函数继承外层 this
@@ -584,7 +570,7 @@ const arrowFunc = () => console.log(this);
 arrowFunc.call({ name: 'X' }); // 仍是定义时的 this
 ```
 
-### 6.11 高阶函数
+### 5.11 高阶函数
 
 ```javascript
 // map：对每个元素应用函数
@@ -619,7 +605,7 @@ const squareThenAddOne = pipe(square, addOne);
 console.log(squareThenAddOne(3)); // 10
 ```
 
-### 6.12 柯里化
+### 5.12 柯里化
 
 ```javascript
 // 手写柯里化函数
@@ -654,7 +640,7 @@ const errorLogNow = errorLog(new Date().toISOString());
 errorLogNow('数据库连接失败');
 ```
 
-### 6.13 偏应用
+### 5.13 偏应用
 
 ```javascript
 // 偏应用：固定部分参数，返回新函数
@@ -671,7 +657,7 @@ console.log(add10(20, 30)); // 60
 // 与柯里化的区别：柯里化逐个参数，偏应用一次固定多个
 ```
 
-### 6.14 记忆化
+### 5.14 记忆化
 
 ```javascript
 // 记忆化：缓存函数结果，加速重复计算
@@ -697,7 +683,7 @@ const fib = memoize(function (n) {
 console.log(fib(40)); // 102334155（瞬间返回）
 ```
 
-### 6.15 生成器函数
+### 5.15 生成器函数
 
 ```javascript
 // 生成器：可暂停的函数，用 yield 返回值
@@ -735,7 +721,7 @@ console.log(naturals.next().value); // 1
 console.log(naturals.next().value); // 2
 ```
 
-### 6.16 IIFE（立即调用函数表达式）
+### 5.16 IIFE（立即调用函数表达式）
 
 ```javascript
 // IIFE：创建独立作用域，避免污染全局
@@ -763,7 +749,7 @@ console.log(counter.next()); // 1
 console.log(counter.next()); // 2
 ```
 
-### 6.17 尾调用与尾递归
+### 5.17 尾调用与尾递归
 
 ```javascript
 // 普通递归：可能栈溢出
@@ -784,9 +770,9 @@ console.log(factorialTail(100000)); // Infinity（数值溢出但无栈溢出）
 // 'use strict';
 ```
 
-## 7. 对比分析
+## 6. 对比分析
 
-### 7.1 函数声明 vs 函数表达式 vs 箭头函数
+### 6.1 函数声明 vs 函数表达式 vs 箭头函数
 
 | 维度 | 函数声明 | 函数表达式 | 箭头函数 |
 | --- | --- | --- | --- |
@@ -798,7 +784,7 @@ console.log(factorialTail(100000)); // Infinity（数值溢出但无栈溢出）
 | `super` | 有（仅方法） | 有（仅方法） | 词法继承 |
 | 适用场景 | 顶层函数 | 回调 | 短回调 |
 
-### 7.2 var vs let vs const
+### 6.2 var vs let vs const
 
 | 维度 | var | let | const |
 | --- | --- | --- | --- |
@@ -808,7 +794,7 @@ console.log(factorialTail(100000)); // Infinity（数值溢出但无栈溢出）
 | 重新赋值 | 允许 | 允许 | 禁止 |
 | 全局对象属性 | 是（window.x） | 否 | 否 |
 
-### 7.3 闭包 vs 类
+### 6.3 闭包 vs 类
 
 | 维度 | 闭包 | 类 |
 | --- | --- | --- |
@@ -818,7 +804,7 @@ console.log(factorialTail(100000)); // Infinity（数值溢出但无栈溢出）
 | 性能 | 每实例一份方法 | 方法在原型上共享 |
 | 内存 | 每实例一份闭包 | 方法共享，省内存 |
 
-### 7.4 call vs apply vs bind
+### 6.4 call vs apply vs bind
 
 | 方法 | 参数形式 | 立即执行 | 永久绑定 |
 | --- | --- | --- | --- |
@@ -826,7 +812,7 @@ console.log(factorialTail(100000)); // Infinity（数值溢出但无栈溢出）
 | `apply(this, [args])` | 数组 | 是 | 否 |
 | `bind(this, arg1, arg2)` | 散列 | 否（返回新函数） | 是 |
 
-### 7.5 柯里化 vs 偏应用
+### 6.5 柯里化 vs 偏应用
 
 | 维度 | 柯里化 | 偏应用 |
 | --- | --- | --- |
@@ -834,9 +820,9 @@ console.log(factorialTail(100000)); // Infinity（数值溢出但无栈溢出）
 | 链长度 | 等于参数个数 | 1 |
 | 适用场景 | 参数复用 | 固定配置 |
 
-## 8. 常见陷阱与反模式
+## 7. 常见陷阱与反模式
 
-### 8.1 循环中 var 闭包变量共享
+### 7.1 循环中 var 闭包变量共享
 
 ```javascript
 // 反模式：var 在循环中创建闭包
@@ -861,7 +847,7 @@ for (var i = 0; i < 5; i++) {
 }
 ```
 
-### 8.2 闭包导致内存泄漏
+### 7.2 闭包导致内存泄漏
 
 ```javascript
 // 反模式：闭包持有大对象
@@ -883,7 +869,7 @@ function goodClosure() {
 }
 ```
 
-### 8.3 箭头函数误用为对象方法
+### 7.3 箭头函数误用为对象方法
 
 ```javascript
 // 反模式：箭头函数作为对象方法，this 不指向对象
@@ -907,7 +893,7 @@ const obj2 = {
 obj2.greet();
 ```
 
-### 8.4 箭头函数误用为构造函数
+### 7.4 箭头函数误用为构造函数
 
 ```javascript
 // 反模式：箭头函数无法用 new 调用
@@ -931,7 +917,7 @@ class Person2 {
 }
 ```
 
-### 8.5 闭包中的 this 丢失
+### 7.5 闭包中的 this 丢失
 
 ```javascript
 // 反模式：回调中 this 丢失
@@ -976,7 +962,7 @@ start() {
 }
 ```
 
-### 8.6 闭包捕获循环变量（ES5 风格）
+### 7.6 闭包捕获循环变量（ES5 风格）
 
 ```javascript
 // 反模式：经典面试题
@@ -1002,7 +988,7 @@ for (var i = 1; i <= 3; i++) {
 }
 ```
 
-### 8.7 默认参数的 falsy 陷阱
+### 7.7 默认参数的 falsy 陷阱
 
 ```javascript
 // 反模式：用 || 作为默认值
@@ -1020,7 +1006,7 @@ greet(''); // ''（正确）
 greet();    // 'Guest'
 ```
 
-### 8.8 arguments 误用
+### 7.8 arguments 误用
 
 ```javascript
 // 反模式：直接修改 arguments
@@ -1048,7 +1034,7 @@ function goodCall() {
 }
 ```
 
-### 8.9 闭包引发 React Hooks 陷阱
+### 7.9 闭包引发 React Hooks 陷阱
 
 ```javascript
 // 反模式：React useEffect 中的闭包陷阱
@@ -1077,9 +1063,9 @@ useEffect(() => {
 }, []);
 ```
 
-## 9. 工程实践
+## 8. 工程实践
 
-### 9.1 函数式工具库
+### 8.1 函数式工具库
 
 ```javascript
 /**
@@ -1156,7 +1142,7 @@ const addLog = F.pipe(
 addLog(3); // 8
 ```
 
-### 9.2 私有化封装
+### 8.2 私有化封装
 
 ```javascript
 // 方案 1：闭包
@@ -1196,7 +1182,7 @@ class Counter2 {
 }
 ```
 
-### 9.3 状态机实现
+### 8.3 状态机实现
 
 ```javascript
 /**
@@ -1245,9 +1231,9 @@ authMachine.send('success');
 console.log(authMachine.getState()); // 'loggedIn'
 ```
 
-## 10. 案例研究
+## 9. 案例研究
 
-### 10.1 案例：Redux 的 createStore 实现
+### 9.1 案例：Redux 的 createStore 实现
 
 Redux 的核心 `createStore` 是闭包的典型应用：
 
@@ -1309,7 +1295,7 @@ unsubscribe();
 store.dispatch({ type: 'INCREMENT' }); // 无日志
 ```
 
-### 10.2 案例：Vue 3 reactive 实现原理
+### 9.2 案例：Vue 3 reactive 实现原理
 
 Vue 3 的响应式系统基于 Proxy + 闭包：
 
@@ -1372,7 +1358,7 @@ state.count = 1; // 日志：count 变化: 1
 state.count = 2; // 日志：count 变化: 2
 ```
 
-### 10.3 案例：异步流程控制
+### 9.3 案例：异步流程控制
 
 基于闭包实现 Promise 链式调用：
 
@@ -1444,7 +1430,7 @@ class MyPromise {
 
 ## 知识讲解与要点分析（原习题）
 
-### 11.1 基础题
+### 10.1 基础题
 
 **题目 1**：解释以下代码输出，并说明原因。
 
@@ -1470,7 +1456,7 @@ foo();
 - 返回获取 instance 的函数
 - 第二次调用返回缓存的 instance
 
-### 11.2 进阶题
+### 10.2 进阶题
 
 **题目 3**：实现一个 `once(fn)` 高阶函数，使 fn 仅执行一次，后续调用返回第一次的结果。
 
@@ -1497,7 +1483,7 @@ outer();
 - 非严格模式下 `this` 是 `globalThis`
 - 解释：默认绑定在严格模式下指向 undefined
 
-### 11.3 挑战题
+### 10.3 挑战题
 
 **题目 5**：实现 `curry(fn)` 函数，支持以下用法：
 
@@ -1540,7 +1526,7 @@ sum(1000000);
 - V8 暂未实现 TCO，Safari 已实现
 - 非严格模式下 V8 也不实现，需 `'use strict'`
 
-## 12. 参考文献
+## 11. 参考文献
 
 [1] ECMA International. 2024. ECMAScript 2024 Language Specification (ECMA-262, 15th Edition). Retrieved July 21, 2024 from https://tc39.es/ecma262/
 
@@ -1562,16 +1548,16 @@ sum(1000000);
 
 [10] Harold Abelson and Gerald Jay Sussman. 1996. *Structure and Interpretation of Computer Programs*, 2nd ed. MIT Press. ISBN: 978-0262510875.
 
-## 13. 延伸阅读
+## 12. 延伸阅读
 
-### 13.1 官方文档
+### 12.1 官方文档
 
 - [MDN - Functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions)
 - [MDN - Closures](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
 - [MDN - this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
 - [TC39 Proposals](https://github.com/tc39/proposals)
 
-### 13.2 经典教材与论文
+### 12.2 经典教材与论文
 
 - Kyle Simpson. *You Don't Know JS* 系列（6 卷）
 - Douglas Crockford. *JavaScript: The Good Parts*
@@ -1579,21 +1565,21 @@ sum(1000000);
 - Brendan Eich. "JavaScript at Ten Years"（2005 演讲）
 - Dean Tribble. "Closures and State in JavaScript"（2018 OOPSLA）
 
-### 13.3 函数式编程方向
+### 12.3 函数式编程方向
 
 - Brian Lonsdorf. *Professor Frisby's Mostly Adequate Guide to Functional Programming*
 - Miran Lipovača. *Learn You a Haskell for Great Good!*
 - Simon Peyton Jones. *The Implementation of Functional Programming Languages*
 
-### 13.4 引擎实现方向
+### 12.4 引擎实现方向
 
 - [V8 Blog - Understanding ECMAScript](https://v8.dev/blog)
 - [SpiderMonkey Internals](https://spidermonkey.dev/)
 - [JavaScriptCore Source](https://github.com/WebKit/WebKit/tree/main/Source/JavaScriptCore)
 
-## 14. 附录
+## 13. 附录
 
-### 14.1 函数定义方式速查
+### 13.1 函数定义方式速查
 
 | 方式 | 语法 | 提升 | this | arguments |
 | --- | --- | --- | --- | --- |
@@ -1608,7 +1594,7 @@ sum(1000000);
 | 类构造器 | `class F { constructor() {} }` | 否 | new 绑定 | 无 |
 | Function 构造器 | `new Function('a', 'return a')` | 否 | 动态 | 有 |
 
-### 14.2 `this` 绑定规则速查
+### 13.2 `this` 绑定规则速查
 
 | 调用方式 | 示例 | `this` 指向 |
 | --- | --- | --- |
@@ -1620,7 +1606,7 @@ sum(1000000);
 | 箭头函数 | `() => this` | 外层作用域的 this |
 | DOM 回调 | `btn.onclick = f` | 触发事件的元素 |
 
-### 14.3 作用域查找优先级
+### 13.3 作用域查找优先级
 
 1. 内层 `let`/`const`
 2. 内层 `var`
@@ -1629,7 +1615,7 @@ sum(1000000);
 5. 全局作用域
 6. 全局对象属性（如 `window.x`，仅未声明时）
 
-### 14.4 闭包应用场景
+### 13.4 闭包应用场景
 
 | 场景 | 描述 |
 | --- | --- |
@@ -1644,7 +1630,7 @@ sum(1000000);
 | 事件总线 | 保存订阅者列表 |
 | 状态机 | 持有当前状态与上下文 |
 
-### 14.5 更新日志
+### 13.5 更新日志
 
 - 2026-04-05：初始创建，涵盖函数定义、作用域、闭包、this 基础。
 - 2026-04-05：扩写内容，增加详细的函数定义、作用域、闭包和 this 指向的概念、示例和最佳实践。

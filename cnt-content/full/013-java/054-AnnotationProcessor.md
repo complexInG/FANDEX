@@ -16,6 +16,7 @@ prerequisites:
   - java/概述与开发环境
 ---
 
+
 # Java 注解处理器：编译时元编程的艺术
 
 > 本文档对标 MIT 6.031、Stanford CS242 (Programming Languages) 与 CMU 17-808 (Program Analysis) 教学水准，系统讲解 Java 注解处理器（Annotation Processor, JSR 269）的设计、原理与工程实践。从 JLS §9.6 / §9.7 注解规范到 javax.lang.model API，再到 Lombok、Dagger、MapStruct、Record 等真实开源项目的实现剖析，文档兼顾形式化定义、Javac 内部机制与企业级 production-ready 模板代码。
@@ -39,52 +40,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标（Bloom 分类）
+## 1. 历史动机与发展脉络
 
-### 1.1 Remember（记忆）
-
-- **R1**：陈述 JSR 175（Java 5 注解）与 JSR 269（Pluggable Annotation Processing API）的发布时间与关系。
-- **R2**：列出注解处理器的三个核心 API：`Processor`、`RoundEnvironment`、`ProcessingEnvironment`。
-- **R3**：复述注解处理器的"轮次"（Round）模型：每轮可生成新源码触发下一轮，直至无新源码为止。
-- **R4**：记忆 `@Retention` 三种策略：`SOURCE`、`CLASS`、`RUNTIME`，并指出注解处理器仅能处理 `SOURCE` 与 `CLASS` 保留期的注解。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释为什么注解处理器不能修改已有源码（JSR 269 第 2 节约束），只能**生成新源码**。
-- **U2**：说明 `Element` 与 `TypeMirror` 的差异：前者是**声明**视角，后者是**类型**视角。
-- **U3**：描述 `javax.lang.model.util.Elements` 与 `Types` 工具类的角色与典型用法。
-- **U4**：理解 `Filer` 的输出路径隔离：源码、类文件、资源文件分别由 `createSourceFile` / `createClassFile` / `createResource` 管理。
-
-### 1.3 Apply（应用）
-
-- **A1**：编写一个 `@AutoToString` 注解处理器，自动为目标类生成 `toString()` 方法。
-- **A2**：使用 JavaPoet（com.squareup.javapoet）替代手工字符串拼接生成复杂 Java 源码。
-- **A3**：通过 SPI 机制（`META-INF/services/javax.annotation.processing.Processor`）注册处理器。
-- **A4**：使用 `@AutoService` 注解（Google AutoService 库）自动生成 SPI 注册文件。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 `javac -processorpath` 与 classpath 在注解处理器加载阶段的差异。
-- **An2**：对比 `TypeElement`、`TypeVariable`、`DeclaredType`、`WildcardType` 的语义边界。
-- **An3**：分析 Lombok 为何能突破"只生成不修改"约束（其依赖 javac 内部 API `JavacProcessingEnvironment` 直接修改 AST）。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价"注解处理器 vs 反射运行时代理"的工程权衡（编译时安全 vs 运行时灵活性）。
-- **E2**：评价 Lombok 是否值得在生产环境使用（其破坏兼容性、影响调试、违反 JSR 269 设计意图）。
-- **E3**：评价 Kotlin Symbol Processing (KSP) 与 Java 注解处理器的设计差异与互操作性。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个 `@DeepCopy` 注解处理器，自动为 record / POJO 生成深拷贝方法。
-- **C2**：基于 `com.sun.source.util.Trees` 实现一个跨注解处理器与 Lint 工具的代码风格分析器。
-- **C3**：将注解处理器扩展为 IDE 增量编译友好的版本（支持 Gradle 增量注解处理 `IncrementalAnnotationProcessorType`）。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 前置：注解的诞生（Java 5, 2004）
+### 1.1 前置：注解的诞生（Java 5, 2004）
 
 注解（Annotation）是 Java 5 引入的元编程机制。其设计动机源于：
 
@@ -97,7 +55,7 @@ Java 5 引入了三大元编程特性：
 - 泛型（JSR 14）；
 - 增强 for 循环与变长参数（JSR 201）。
 
-### 2.2 JSR 269：可插拔注解处理 API（Java 6, 2006）
+### 1.2 JSR 269：可插拔注解处理 API（Java 6, 2006）
 
 Java 5 的注解处理器还是 `apt`（Annotation Processing Tool）独立工具，需要单独运行。Java 6 引入 JSR 269，将注解处理集成进 `javac`，并提供 `javax.annotation.processing` 与 `javax.lang.model` 两个包：
 
@@ -106,7 +64,7 @@ Java 5 的注解处理器还是 `apt`（Annotation Processing Tool）独立工�
 
 此后 `apt` 工具被废弃，Java 7 起所有注解处理在 `javac` 内完成。
 
-### 2.3 现代注解处理器生态（Java 8—21）
+### 1.3 现代注解处理器生态（Java 8—21）
 
 | 工具 | 发布年份 | 用途 | 实现机制 |
 | --- | --- | --- | --- |
@@ -121,7 +79,7 @@ Java 5 的注解处理器还是 `apt`（Annotation Processing Tool）独立工�
 | Spring Boot Configuration Processor | 2014 | 配置元数据生成 | 标准 JSR 269 |
 | Records (Java 14+) | 2020 | 内建不可变类 | JVM 内建 |
 
-### 2.4 Java 9—25 的注解处理器演进
+### 1.4 Java 9—25 的注解处理器演进
 
 | 版本 | 演进点 |
 | --- | --- |
@@ -133,7 +91,7 @@ Java 5 的注解处理器还是 `apt`（Annotation Processing Tool）独立工�
 | Java 23 | `-proc:full` 替换 `-proc:none` 默认行为 |
 | Java 25 | 注解处理器对 `import module` 声明的支持（JEP 511 联动） |
 
-### 2.5 设计哲学
+### 1.5 设计哲学
 
 JSR 269 的设计哲学可概括为**"非侵入式元编程"**：
 
@@ -143,7 +101,7 @@ JSR 269 的设计哲学可概括为**"非侵入式元编程"**：
 4. **类型安全**：通过 `javax.lang.model` 提供编译期类型信息，避免反射的运行时错误；
 5. **可组合**：多个 processor 可串联运行，每个独立处理自己关心的注解。
 
-### 2.6 时间线可视化
+### 1.6 时间线可视化
 
 ```
 2004 ── 2006 ── 2009 ── 2014 ── 2020 ── 2025
@@ -154,9 +112,9 @@ JSR 269 的设计哲学可概括为**"非侵入式元编程"**：
 
 ---
 
-## 3. 形式化定义（JLS & JVMS 规范）
+## 2. 形式化定义（JLS & JVMS 规范）
 
-### 3.1 注解的形式化语法
+### 2.1 注解的形式化语法
 
 依据 JLS §9.7，注解的文法定义为：
 
@@ -170,7 +128,7 @@ $$
 
 其中 `ElementValuePair ::= Identifier = ElementValue`，`ElementValue` 可以是常量、注解、数组初始化器。
 
-### 3.2 注解类型的元注解
+### 2.2 注解类型的元注解
 
 JLS §9.6.1 定义了四个元注解：
 
@@ -182,7 +140,7 @@ JLS §9.6.1 定义了四个元注解：
 | `@Documented` | 是否出现在 Javadoc 中 |
 | `@Repeatable`（Java 8+） | 允许同一位置重复使用 |
 
-### 3.3 注解处理器接口的形式化契约
+### 2.3 注解处理器接口的形式化契约
 
 `javax.annotation.processing.Processor` 接口的核心方法：
 
@@ -196,7 +154,7 @@ $$
 
 `process` 返回 `true` 表示"已认领这些注解，其他处理器不应再处理"，返回 `false` 表示"未认领"。
 
-### 3.4 Element 层次模型
+### 2.4 Element 层次模型
 
 `javax.lang.model.element.Element` 是源码声明视角的统一抽象：
 
@@ -211,7 +169,7 @@ $$
 \end{cases}
 $$
 
-### 3.5 TypeMirror 层次模型
+### 2.5 TypeMirror 层次模型
 
 `javax.lang.model.type.TypeMirror` 是类型视角的抽象：
 
@@ -230,7 +188,7 @@ $$
 \end{cases}
 $$
 
-### 3.6 处理轮次的不动点语义
+### 2.6 处理轮次的不动点语义
 
 注解处理过程可形式化为一个不动点迭代：
 
@@ -246,9 +204,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 javac 的注解处理流水线
+### 3.1 javac 的注解处理流水线
 
 javac 的完整编译流水线（com.sun.tools.javac.main.JavaCompiler）：
 
@@ -263,7 +221,7 @@ flowchart TD
     G --> H[gen → 字节码生成（.class）]
 ```
 
-### 4.2 Processor 注册与发现机制
+### 3.2 Processor 注册与发现机制
 
 Processor 的发现基于 Java SPI（Service Provider Interface）：
 
@@ -285,7 +243,7 @@ flowchart TD
     T3 --> T4
 ```
 
-### 4.3 Round 机制详解
+### 3.3 Round 机制详解
 
 每一轮 javac 都会：
 
@@ -304,7 +262,7 @@ $$
 \text{Final call}: \text{process}(\emptyset) \text{ with } \text{roundEnv.processingOver()} = \text{true}
 $$
 
-### 4.4 Filer 与文件输出隔离
+### 3.4 Filer 与文件输出隔离
 
 `Filer` 提供三个方法：
 
@@ -318,7 +276,7 @@ $$
 - 类文件 → `target/classes/`；
 - 资源 → `target/classes/META-INF/...`。
 
-### 4.5 Messager 与错误诊断
+### 3.5 Messager 与错误诊断
 
 `Messager` 用于向 javac 报告诊断信息，与 `System.err` 的关键差异：
 
@@ -334,7 +292,7 @@ processingEnv.getMessager().printMessage(
 );
 ```
 
-### 4.6 JavaPoet 与代码生成抽象
+### 3.6 JavaPoet 与代码生成抽象
 
 手工拼接字符串生成 Java 源码易出错，JavaPoet（Square 公司）提供类型安全的 API：
 
@@ -354,7 +312,7 @@ TypeSpec.builder(ClassName.get("com.example", "HelloBuilder"))
     .build();
 ```
 
-### 4.7 Lombok 的 AST 修改机制
+### 3.7 Lombok 的 AST 修改机制
 
 Lombok 突破了 JSR 269 "只生成不修改" 约束。其核心机制：
 
@@ -369,7 +327,7 @@ Lombok 突破了 JSR 269 "只生成不修改" 约束。其核心机制：
 - **IDE 兼容性**：需要 IDE 安装 Lombok 插件才能识别生成的方法；
 - **调试困难**：生成的代码不出现在源码中，无法断点调试。
 
-### 4.8 性能模型
+### 3.8 性能模型
 
 注解处理器的编译时间开销：
 
@@ -385,11 +343,11 @@ $$
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 最小化注解处理器
+### 4.1 最小化注解处理器
 
-#### 5.1.1 自定义注解定义
+#### 4.1.1 自定义注解定义
 
 ```java
 // src/main/java/com/example/autotostring/AutoToString.java
@@ -412,7 +370,7 @@ public @interface AutoToString {
 }
 ```
 
-#### 5.1.2 注解处理器实现
+#### 4.1.2 注解处理器实现
 
 ```java
 // src/main/java/com/example/autotostring/AutoToStringProcessor.java
@@ -536,7 +494,7 @@ public class AutoToStringProcessor extends AbstractProcessor {
 }
 ```
 
-#### 5.1.3 SPI 注册
+#### 4.1.3 SPI 注册
 
 手工方式：
 
@@ -555,9 +513,9 @@ com.example.autotostring.AutoToStringProcessor
 public class AutoToStringProcessor extends AbstractProcessor { ... }
 ```
 
-### 5.2 完整 Maven 项目配置
+### 4.2 完整 Maven 项目配置
 
-#### 5.2.1 处理器模块 pom.xml
+#### 4.2.1 处理器模块 pom.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -604,7 +562,7 @@ public class AutoToStringProcessor extends AbstractProcessor { ... }
 </project>
 ```
 
-#### 5.2.2 使用方模块 pom.xml
+#### 4.2.2 使用方模块 pom.xml
 
 ```xml
 <build>
@@ -630,7 +588,7 @@ public class AutoToStringProcessor extends AbstractProcessor { ... }
 </build>
 ```
 
-### 5.3 使用 JavaPoet 重写代码生成
+### 4.3 使用 JavaPoet 重写代码生成
 
 ```java
 import com.squareup.javapoet.*;
@@ -684,7 +642,7 @@ private void generateHelperWithJavaPoet(TypeElement type,
 }
 ```
 
-### 5.4 Gradle 增量注解处理
+### 4.4 Gradle 增量注解处理
 
 ```java
 // src/main/resources/META-INF/gradle/incremental.annotation.processors
@@ -714,7 +672,7 @@ tasks.withType<JavaCompile> {
 }
 ```
 
-### 5.5 测试用例：编译期测试
+### 4.5 测试用例：编译期测试
 
 使用 `compile-testing` 库（Google）测试注解处理器：
 
@@ -790,7 +748,7 @@ class AutoToStringProcessorTest {
 }
 ```
 
-### 5.6 完整 Maven 配置
+### 4.6 完整 Maven 配置
 
 ```xml
 <dependencies>
@@ -809,7 +767,7 @@ class AutoToStringProcessorTest {
 </dependencies>
 ```
 
-### 5.7 实战示例：Builder 生成器
+### 4.7 实战示例：Builder 生成器
 
 ```java
 @Retention(RetentionPolicy.SOURCE)
@@ -892,7 +850,7 @@ public class BuilderProcessor extends AbstractProcessor {
 }
 ```
 
-### 5.8 GitHub Actions CI 模板
+### 4.8 GitHub Actions CI 模板
 
 ```yaml
 name: CI
@@ -922,9 +880,9 @@ jobs:
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 注解处理器 vs 反射 vs AOP
+### 5.1 注解处理器 vs 反射 vs AOP
 
 | 维度 | 注解处理器 | 反射 | AOP (AspectJ) |
 | --- | --- | --- | --- |
@@ -934,7 +892,7 @@ jobs:
 | 灵活性 | 只能生成新源码 | 完整运行时控制 | 字节码增强 |
 | 典型工具 | Lombok, MapStruct | Spring, Hibernate | AspectJ, ByteBuddy |
 
-### 6.2 注解处理器跨语言对比
+### 5.2 注解处理器跨语言对比
 
 | 平台 | 工具 | 机制 |
 | --- | --- | --- |
@@ -947,7 +905,7 @@ jobs:
 | Go | go generate + 工具 | 外部工具调用 |
 | Python | 装饰器 | 运行时 |
 
-### 6.3 Lombok vs Java Records
+### 5.3 Lombok vs Java Records
 
 | 特性 | Lombok | Java Records (Java 14+) |
 | --- | --- | --- |
@@ -958,7 +916,7 @@ jobs:
 | 标准化 | 第三方 | 语言级 |
 | 工具兼容 | 需插件支持 | 原生支持 |
 
-### 6.4 MapStruct vs 反射映射
+### 5.4 MapStruct vs 反射映射
 
 ```java
 // MapStruct（编译期生成）
@@ -980,9 +938,9 @@ BeanUtils.copyProperties(user, userDto);
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 误用 @Retention
+### 6.1 误用 @Retention
 
 ```java
 // 反例：希望处理器处理，但保留期为 RUNTIME
@@ -996,7 +954,7 @@ public @interface MyAnno {}
 public @interface MyAnno {}
 ```
 
-### 7.2 忽略增量编译兼容性
+### 6.2 忽略增量编译兼容性
 
 Gradle 默认要求注解处理器声明是否支持增量。未声明的处理器会导致整个项目退化为非增量编译：
 
@@ -1005,7 +963,7 @@ Gradle 默认要求注解处理器声明是否支持增量。未声明的处理�
 com.example.MyProcessor,isolating   // 或 aggregating
 ```
 
-### 7.3 在 processor 中使用应用类
+### 6.3 在 processor 中使用应用类
 
 ```java
 // 反例：Processor 在 -processorpath，应用类在 classpath
@@ -1019,11 +977,11 @@ public class MyProcessor extends AbstractProcessor {
 // 正例：将依赖放到 processor 模块
 ```
 
-### 7.4 修改 Element 状态
+### 6.4 修改 Element 状态
 
 `javax.lang.model.element.Element` 是**只读**的，调用 setter 会抛异常。需要修改源码只能通过 Lombok 风格的 AST 操作（不推荐）。
 
-### 7.5 忽略 Java 模块系统
+### 6.5 忽略 Java 模块系统
 
 在 Java 9+ 模块化项目中，Processor 模块需在 `module-info.java` 中：
 
@@ -1035,7 +993,7 @@ module com.example.processor {
 }
 ```
 
-### 7.6 误用 Class.forName
+### 6.6 误用 Class.forName
 
 ```java
 // 反例：注解处理器中使用反射
@@ -1045,7 +1003,7 @@ Class<?> clazz = Class.forName("com.example.User");
 TypeElement type = elementUtils.getTypeElement("com.example.User");
 ```
 
-### 7.7 生成代码命名冲突
+### 6.7 生成代码命名冲突
 
 ```java
 // 反例：生成的类名可能与其他用户的类冲突
@@ -1055,7 +1013,7 @@ String name = simpleName + "Helper";   // 可能撞名
 String name = "_" + simpleName + "Helper";   // 或者更独特的命名
 ```
 
-### 7.8 在 process 中执行重计算
+### 6.8 在 process 中执行重计算
 
 ```java
 // 反例
@@ -1067,7 +1025,7 @@ public boolean process(...) {
 // 正例：仅处理 Element 树
 ```
 
-### 7.9 最佳实践清单
+### 6.9 最佳实践清单
 
 1. **使用 JavaPoet** 而非手工字符串拼接；
 2. **声明增量编译** 支持；
@@ -1080,9 +1038,9 @@ public boolean process(...) {
 
 ---
 
-## 8. 工程实践（构建、JVM 调优、性能、调试）
+## 7. 工程实践（构建、JVM 调优、性能、调试）
 
-### 8.1 编译时调试
+### 7.1 编译时调试
 
 ```bash
 # 启用调试输出
@@ -1104,7 +1062,7 @@ javac -XprintProcessorInfo -XprintRounds \
 #   and returns true
 ```
 
-### 8.2 IDE 调试
+### 7.2 IDE 调试
 
 IntelliJ IDEA 中：
 1. `Build → Rebuild Project` 时通过 `Run → Attach to Process...`；
@@ -1114,7 +1072,7 @@ IntelliJ IDEA 中：
    mvn compile
    ```
 
-### 8.3 性能分析
+### 7.3 性能分析
 
 使用 `-Xlog:processing`（Java 21+）输出处理器耗时：
 
@@ -1122,7 +1080,7 @@ IntelliJ IDEA 中：
 javac -Xlog:processing=info:stdout -processor com.example.MyProcessor *.java
 ```
 
-### 8.4 检查生成的源码
+### 7.4 检查生成的源码
 
 ```bash
 # Maven
@@ -1134,7 +1092,7 @@ ls target/generated-sources/annotations/com/example/
 ls build/generated/sources/annotationProcessor/java/main/com/example/
 ```
 
-### 8.5 IDE 集成
+### 7.5 IDE 集成
 
 IntelliJ IDEA 默认会自动识别 `generated-sources/annotations` 目录，标记为"Generated Source Root"。若不识别，手工配置：
 
@@ -1143,7 +1101,7 @@ File → Project Structure → Modules → Sources
   → Add → Source → 添加 generated-sources/annotations
 ```
 
-### 8.6 跨编译缓存
+### 7.6 跨编译缓存
 
 使用 Gradle 6+ 的 `compile-local` 缓存或 `compile-avoidance`：
 
@@ -1154,7 +1112,7 @@ tasks.withType<JavaCompile> {
 }
 ```
 
-### 8.7 容器化构建
+### 7.7 容器化构建
 
 ```dockerfile
 FROM maven:3.9-eclipse-temurin-21 AS builder
@@ -1169,7 +1127,7 @@ COPY --from=builder /app/target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
-### 8.8 处理器性能基线
+### 7.8 处理器性能基线
 
 参考编译时间基线（10万行代码 + Lombok + MapStruct）：
 
@@ -1182,9 +1140,9 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 ---
 
-## 9. 案例研究（Spring/Hibernate/Netty）
+## 8. 案例研究（Spring/Hibernate/Netty）
 
-### 9.1 Lombok 实现
+### 8.1 Lombok 实现
 
 Lombok 通过修改 AST 实现 `@Getter`：
 
@@ -1219,7 +1177,7 @@ Lombok 8.x 版本支持 Java 21，需要在 `pom.xml` 中配置：
 </plugin>
 ```
 
-### 9.2 Dagger 2 实现
+### 8.2 Dagger 2 实现
 
 Dagger 是 Google 的编译时依赖注入框架，使用 JSR 269 标准方式：
 
@@ -1242,7 +1200,7 @@ Dagger 处理器生成：
 2. 工厂类 `UserImpl_Factory`、`MainActivity_MembersInjector`；
 3. 编译时检查依赖图完整性，缺失依赖则报错。
 
-### 9.3 MapStruct 实现
+### 8.3 MapStruct 实现
 
 ```java
 @Mapper
@@ -1259,7 +1217,7 @@ MapStruct 处理器：
 3. 生成 `UserMapperImpl` 类，包含 `toDto` 的实现；
 4. 编译时检查类型不匹配。
 
-### 9.4 Hibernate JPA Metamodel
+### 8.4 Hibernate JPA Metamodel
 
 ```java
 @StaticMetamodel(User.class)
@@ -1272,7 +1230,7 @@ public class User_ {
 cb.equal(userRoot.get(User_.name), "Alice");   // 类型安全
 ```
 
-### 9.5 Spring Boot Configuration Processor
+### 8.5 Spring Boot Configuration Processor
 
 Spring Boot 自动生成 `spring-configuration-metadata.json`，用于 IDE 配置提示：
 
@@ -1295,7 +1253,7 @@ public class AppProperties {
 }
 ```
 
-### 9.6 Google AutoValue
+### 8.6 Google AutoValue
 
 ```java
 @AutoValue
@@ -1505,7 +1463,7 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 - 编译期类型检查，不匹配的字段给出警告；
 - 参考完整实现：MapStruct 源码 `org.mapstruct.ap.MappingProcessor`。
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q1.** 为什么 Lombok 选择突破 JSR 269 修改 AST？这种做法的长期风险是什么？
 
@@ -1544,7 +1502,7 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 
 ---
 
-## 11. 参考文献（ACM Reference Format）
+## 10. 参考文献（ACM Reference Format）
 
 1. Gosling, J., Joy, B., Steele, G., et al. 2024. *The Java Language Specification, Java SE 21 Edition* (Java SE 21). Oracle America, Inc. https://docs.oracle.com/javase/specs/jls/se21/html/index.html
 
@@ -1568,21 +1526,21 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - Evans, B., Verburg, M. *The Well-Grounded Java Developer* (3rd ed., 2024) - 第 9 章注解处理。
 - Urma, R.-G., Fusco, M., Myatt, A. *Modern Java in Action* (Java 21 Updated).
 - Warburton, R. *Java 8 Lambdas in Action* (1st ed., 2014).
 - Tate, B. *7 Languages in 7 Weeks* (1st ed., 2010) - 跨语言元编程对比。
 
-### 12.2 论文与技术报告
+### 11.2 论文与技术报告
 
 - Bracha, G. and von der Ahé, P. 2004. *Pluggable Type Systems*. OOPSLA Workshop on Revival of Dynamic Languages.
 - Kiczales, G., Lamping, J., Mendhekar, A., et al. 1997. *Aspect-Oriented Programming*. ECOOP'97, LNCS 1241, 220-242. https://doi.org/10.1007/BFb0053381
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **JSR 269 Specification**: https://jcp.org/en/jsr/detail?id=269
 - **Oracle Java Compiler API**: https://docs.oracle.com/en/java/javase/21/docs/api/javax.annotation.processing/module-summary.html
@@ -1595,7 +1553,7 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 - **KSP (Kotlin Symbol Processing)**: https://kotlinlang.org/docs/ksp-overview.html
 - **Roslyn Source Generators**: https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.md
 
-### 12.4 开源学习项目
+### 11.4 开源学习项目
 
 - **Lombok 源码**: https://github.com/projectlombok/lombok
 - **Dagger 源码**: https://github.com/google/dagger
@@ -1603,7 +1561,7 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 - **Spring Boot Configuration Processor**: https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-tools/spring-boot-configuration-processor
 - **AutoValue Examples**: https://github.com/google/auto/tree/main/value/userguide
 
-### 12.5 推荐学习路径
+### 11.5 推荐学习路径
 
 1. **入门（1-2 周）**：本文档 + JSR 269 规范 §1-3 + 实现 `@AutoToString`；
 2. **进阶（3-4 周）**：阅读 Lombok 源码 + 实现 Builder 生成器 + 学习 JavaPoet；

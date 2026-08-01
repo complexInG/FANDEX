@@ -14,67 +14,16 @@ related:
 prerequisites: []
 ---
 
+
 # 概述与环境搭建：HarmonyOS 系统架构与开发环境工程实践
 
 > 操作系统是软件世界的"地基"——它决定了上层应用能做什么、不能做什么，以及做这些事情的效率上限。HarmonyOS 作为华为面向全场景分布式时代设计的操作系统，其"一次开发、多端部署"的工程理念深刻重塑了移动应用的开发范式。本章按 MIT 6.828（Operating System Engineering）、CMU 15-410（Distributed Systems）、Stanford CS140（Operating Systems）等课程标准组织，系统讲解 HarmonyOS 的设计哲学、L0-L5 系统分层架构、分布式软总线（Distributed SoftBus）、FA 模型与 Stage 模型的演进、DevEco Studio 工具链安装配置、HarmonyOS SDK 与 OpenHarmony SDK 双轨管理、本地与云端模拟器、hvigorw 构建工具链、第一个 Hello World 应用的完整工程流程、ArkTS 项目结构约定、真机调试与 hdc 工具、CI/CD 集成等核心议题，并对照 Android Studio、Xcode、Flutter SDK 管理等业界方案。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章按照 Bloom 教育目标分类法（Bloom's Taxonomy）的六个层级组织学习目标。读者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述 HarmonyOS 的"1+8+N"全场景战略：1 部手机、8 类终端、N 种 IoT 设备。
-- **R2**：列举 HarmonyOS 的五大核心特性：分布式架构、微内核设计、一次开发多端部署、原子化服务、方舟编译器。
-- **R3**：复述 HarmonyOS 系统分层的五大层次：应用层、框架层、系统服务层、内核层、硬件抽象层。
-- **R4**：复述 FA 模型与 Stage 模型的核心差异：前者基于 Ability 单元，后者基于 UIAbility/ExtensionAbility。
-- **R5**：复述 DevEco Studio 安装的最低系统要求：Windows 10 64位或 macOS 10.15+、8GB 内存、10GB 硬盘。
-- **R6**：复述 hvigorw 构建工具的核心命令：`assembleHap`、`assembleApp`、`clean`、`build`。
-- **R7**：复述 HarmonyOS 与 OpenHarmony 的关系：前者是华为商业版，后者是开源底座。
-
-### 1.2 Understand（理解）
-
-- **U1**：阐明 HarmonyOS 选择微内核架构而非宏内核的工程动机：安全性、可裁剪性、分布式友好。
-- **U2**：解释分布式软总线（Distributed SoftBus）如何实现"多设备虚拟化为一个超级终端"。
-- **U3**：对比 FA 模型与 Stage 模型在生命周期管理、窗口管理、后台任务上的差异。
-- **U4**：解释 DevEco Studio 的双 SDK 架构：HarmonyOS SDK（闭源）与 OpenHarmony SDK（开源）并存的原因。
-- **U5**：阐明 ArkTS 与 TypeScript 的关系：前者是后者的超集，增加了 `@Component`、`@Entry` 等装饰器。
-- **U6**：解释原子化服务（Atomic Service）与传统应用的差异：免安装、即用即走、`installationFree: true`。
-
-### 1.3 Apply（应用）
-
-- **A1**：在 Windows 11 上完成 DevEco Studio 的安装与首次启动配置。
-- **A2**：使用 DevEco Studio 创建一个 Stage 模型的 Empty Ability 项目，目标设备为 Phone。
-- **A3**：配置本地 Phone 模拟器，并运行 Hello World 应用至模拟器。
-- **A4**：使用 hdc 工具连接真机，安装 HAP 包并查看 HiLog 日志。
-- **A5**：使用 hvigorw 命令行工具构建 Release APP 包。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 HarmonyOS "L0-L5" 分层架构相比 Android "Linux + HAL + Framework + App" 四层架构的优劣。
-- **An2**：分析 Stage 模型引入 `WindowStage` 抽象的工程动机：支持多窗口、分屏、自由窗口。
-- **An3**：分析 DevEco Studio 基于 IntelliJ Platform 而非自研 IDE 的决策：生态复用、插件兼容、降低维护成本。
-- **An4**：分析 OpenHarmony 开源战略对 HarmonyOS 生态的影响：吸引第三方厂商、降低合规风险、加速生态建设。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价 HarmonyOS "1+8+N" 战略相比苹果"生态闭环"与谷歌"Android + Chrome OS"双轨的优劣。
-- **E2**：评价 HarmonyOS NEXT 放弃 Android AOSP 兼容的决策：生态独立 vs 迁移成本。
-- **E3**：评价 hvigorw 相比 Gradle 在构建性能与灵活性上的权衡。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个面向团队的 HarmonyOS 开发环境标准化脚本，自动完成 SDK 安装、模拟器创建、项目模板初始化。
-- **C2**：设计一个多设备并行调试方案：在同一台开发机上同时运行手机、平板、手表三个模拟器，应用自动适配三端。
-- **C3**：设计一个 CI/CD 流水线模板：从 Git Push 触发，自动构建 HAP、运行单元测试、签名、上传内测平台。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 移动操作系统的演进（2007-2024）
+### 1.1 移动操作系统的演进（2007-2024）
 
 移动操作系统经历了从"单一设备"到"多设备协同"的范式转变：
 
@@ -92,7 +41,7 @@ prerequisites: []
 
 HarmonyOS 的核心创新在于将"多设备协同"从应用层下沉到操作系统层，通过分布式软总线实现设备间透明的能力共享。
 
-### 2.2 HarmonyOS 1.0（2019）：智慧屏首发
+### 1.2 HarmonyOS 1.0（2019）：智慧屏首发
 
 HarmonyOS 1.0 于 2019 年 8 月 9 日在华为开发者大会（HDC）发布，首发搭载于荣耀智慧屏：
 
@@ -102,7 +51,7 @@ HarmonyOS 1.0 于 2019 年 8 月 9 日在华为开发者大会（HDC）发布，
 - **分布式软总线雏形**：智慧屏与手机间的视频通话基于软总线。
 - **仅支持 Java/JS API**：尚未引入 ArkTS。
 
-### 2.3 HarmonyOS 2.0（2020）：手机适配与开源
+### 1.3 HarmonyOS 2.0（2020）：手机适配与开源
 
 2020 年 9 月发布，搭载于华为 Mate 40 系列：
 
@@ -113,7 +62,7 @@ HarmonyOS 1.0 于 2019 年 8 月 9 日在华为开发者大会（HDC）发布，
 - **多模态交互**：支持手势、语音、多屏协同。
 - **超级终端**：手机、平板、PC 可虚拟化为单一设备。
 
-### 2.4 HarmonyOS 3.0（2022）：超级终端与原子化服务
+### 1.4 HarmonyOS 3.0（2022）：超级终端与原子化服务
 
 2022 年 7 月发布，搭载于 Mate 50 系列：
 
@@ -123,7 +72,7 @@ HarmonyOS 1.0 于 2019 年 8 月 9 日在华为开发者大会（HDC）发布，
 - **方舟引擎 v2**：渲染性能提升 20%，内存占用降低 15%。
 - **隐私中心**：应用权限使用可视化。
 
-### 2.5 HarmonyOS 4.0（2023）：AI 大模型集成
+### 1.5 HarmonyOS 4.0（2023）：AI 大模型集成
 
 2023 年 8 月发布，搭载于 Mate 60 系列：
 
@@ -133,7 +82,7 @@ HarmonyOS 1.0 于 2019 年 8 月 9 日在华为开发者大会（HDC）发布，
 - **分布式能力增强**：支持 4 台设备组合超级终端。
 - **DevEco Studio 4.0**：引入 AI 代码补全、智能调试。
 
-### 2.6 HarmonyOS NEXT（2024）：纯血鸿蒙
+### 1.6 HarmonyOS NEXT（2024）：纯血鸿蒙
 
 2024 年 10 月发布，彻底脱离 AOSP：
 
@@ -145,7 +94,7 @@ HarmonyOS 1.0 于 2019 年 8 月 9 日在华为开发者大会（HDC）发布，
 - **应用市场繁荣**：Top 5000 应用已 90% 完成原生适配。
 - **性能突破**：相比 HarmonyOS 4.0，整机性能提升 30%，功耗降低 20%。
 
-### 2.7 OpenHarmony 开源生态
+### 1.7 OpenHarmony 开源生态
 
 OpenHarmony 是 HarmonyOS 的开源底座，由开放原子开源基金会管理：
 
@@ -160,7 +109,7 @@ OpenHarmony 是 HarmonyOS 的开源底座，由开放原子开源基金会管理
 
 OpenHarmony 与 HarmonyOS NEXT 的关系：前者是开源底座，后者是华为商业版，加入闭源的华为移动服务（HMS）与商业应用生态。
 
-### 2.8 时间线总览
+### 1.8 时间线总览
 
 ```mermaid
 timeline
@@ -174,9 +123,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 操作系统的形式化定义
+### 2.1 操作系统的形式化定义
 
 定义 HarmonyOS 为七元组：
 
@@ -194,7 +143,7 @@ $$
 - $\mathcal{A}: \mathcal{D} \times \mathcal{D} \to \text{Connection}$ 为设备间连接关系，由分布式软总线维护。
 - $\mathcal{P}$ 为应用层（Application），包含系统应用、第三方应用、原子化服务。
 
-### 3.2 分层架构的形式化
+### 2.2 分层架构的形式化
 
 HarmonyOS 采用 L0-L5 六层架构：
 
@@ -213,7 +162,7 @@ $$
 | L1 | Kernel | Linux / LiteOS-A / LiteOS-M | Linux Kernel |
 | L0 | Hardware | SoC、传感器、屏幕 | Hardware |
 
-### 3.3 内核的数学模型
+### 2.3 内核的数学模型
 
 HarmonyOS 支持三种内核，按设备资源选择：
 
@@ -229,7 +178,7 @@ $$
 - **LiteOS-A**：智慧屏、手表、智能音箱，支持多进程。
 - **LiteOS-M**：IoT MCU 设备（如智能门锁、传感器节点），实时性强。
 
-### 3.4 分布式软总线的形式化
+### 2.4 分布式软总线的形式化
 
 定义分布式软总线为五元组：
 
@@ -249,7 +198,7 @@ $$
 \text{Discover}(d_i) \xrightarrow{\text{auth}} \text{Connect}(d_i, d_j) \xrightarrow{\text{negotiate}} \text{SuperDevice}(d_i, d_j)
 $$
 
-### 3.5 Ability 模型的形式化
+### 2.5 Ability 模型的形式化
 
 定义 Ability 为五元组：
 
@@ -263,7 +212,7 @@ $$
 - **UI**：是否含 UI，`UIAbility` 含 UI，`ExtensionAbility` 不含。
 - **Capability**：能力声明，如可被其他应用启动、可被远程调用。
 
-### 3.6 项目结构的形式化
+### 2.6 项目结构的形式化
 
 HarmonyOS 项目的形式化定义：
 
@@ -288,7 +237,7 @@ $$
 \nexists \text{cycle}: M_1 \to M_2 \to \dots \to M_1
 $$
 
-### 3.7 构建产物的形式化
+### 2.7 构建产物的形式化
 
 构建产物分为 HAP 与 APP：
 
@@ -303,7 +252,7 @@ $$
 - HAP 是单模块安装包，可直接安装到设备调试。
 - APP 是发布包，聚合所有 HAP，提交到应用市场。
 
-### 3.8 签名配置的形式化
+### 2.8 签名配置的形式化
 
 签名配置定义：
 
@@ -319,9 +268,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 微内核 vs 宏内核：HarmonyOS 的工程选择
+### 3.1 微内核 vs 宏内核：HarmonyOS 的工程选择
 
 宏内核（如 Linux、Android）将所有系统服务运行在同一地址空间：
 
@@ -343,7 +292,7 @@ $$
 
 HarmonyOS 选择混合架构：内核层使用 Linux（手机）或 LiteOS（IoT），但在系统服务层引入微内核思想——每个系统服务运行在独立沙箱，通过 IPC 通信。
 
-### 4.2 分布式软总线的发现协议
+### 3.2 分布式软总线的发现协议
 
 设备发现基于 mDNS（Multicast DNS）与蓝牙 BLE 双轨：
 
@@ -376,7 +325,7 @@ $$
 
 其中 $\text{sessionKey}$ 由设备间账号认证派生，不直接传输。
 
-### 4.3 Stage 模型的生命周期精简
+### 3.3 Stage 模型的生命周期精简
 
 FA 模型生命周期含 7 个回调，Stage 模型精简为 6 个：
 
@@ -397,7 +346,7 @@ Stage 模型的核心改进：
 2. **生命周期简化**：合并 `onActive`/`onInactive` 为 `onForeground`/`onBackground`。
 3. **后台任务抽象**：ExtensionAbility 专门承载后台服务，职责单一。
 
-### 4.4 ArkTS 装饰器的编译期处理
+### 3.4 ArkTS 装饰器的编译期处理
 
 ArkTS 装饰器（`@Component`、`@Entry`、`@State` 等）在编译期被展开为低级调用：
 
@@ -425,7 +374,7 @@ class MyComp extends Component {
 - **类型安全**：TypeScript 类型全程保留。
 - **缺点**：调试困难，错误信息不直观。
 
-### 4.5 hvigorw 的增量构建原理
+### 3.5 hvigorw 的增量构建原理
 
 hvigorw 采用任务图（Task Graph）与增量缓存：
 
@@ -450,7 +399,7 @@ clean ─→ compileArkTS ─→ compileResources ─→ packageHap ─→ signH
 - **配置简单**：`build-profile.json5` 声明式配置。
 - **缺点**：插件生态弱于 Gradle。
 
-### 4.6 模拟器的虚拟化方案
+### 3.6 模拟器的虚拟化方案
 
 DevEco Studio 模拟器基于 QEMU 与 native hybrid：
 
@@ -468,7 +417,7 @@ $$
 
 翻译带来 20-30% 性能损耗，建议优先使用 x86 Native 模拟器。
 
-### 4.7 hdc 的设备通信协议
+### 3.7 hdc 的设备通信协议
 
 hdc（HarmonyOS Device Connector）通过 USB 或 TCP 与设备通信：
 
@@ -495,7 +444,7 @@ hdc 与 Android adb 的协议差异：
 - hdc 支持分布式调试：可转发命令到远程设备。
 - hdc 不兼容 Android 应用，仅服务于 HarmonyOS。
 
-### 4.8 多模块打包的依赖解析
+### 3.8 多模块打包的依赖解析
 
 多模块打包时，hvigorw 通过拓扑排序确定构建顺序：
 
@@ -522,7 +471,7 @@ $$
 
 hvigorw 会报错并终止构建，开发者必须消除循环。
 
-### 4.9 资源索引的编译期生成
+### 3.9 资源索引的编译期生成
 
 HarmonyOS 资源在编译期生成 `resources.index` 二进制索引：
 
@@ -542,7 +491,7 @@ $$
 - **多设备适配**：同一 ID 对应不同设备的不同资源。
 - **运行时覆盖**：原子化服务可覆盖宿主资源。
 
-### 4.10 ArkUI 的渲染管线
+### 3.10 ArkUI 的渲染管线
 
 ArkUI 渲染管线分为三阶段：
 
@@ -571,9 +520,9 @@ ArkUI 渲染管线分为三阶段：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 DevEco Studio 完整安装脚本（Windows PowerShell）
+### 4.1 DevEco Studio 完整安装脚本（Windows PowerShell）
 
 ```powershell
 # install-deveco.ps1
@@ -675,7 +624,7 @@ $zipPath = Download-DevEco
 Install-DevEco -ZipPath $zipPath
 ```
 
-### 5.2 创建第一个 Stage 模型应用
+### 4.2 创建第一个 Stage 模型应用
 
 ```typescript
 // entry/src/main/ets/entryability/EntryAbility.ets
@@ -784,7 +733,7 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-### 5.3 第一个 ArkUI 页面
+### 4.3 第一个 ArkUI 页面
 
 ```typescript
 // entry/src/main/ets/pages/Index.ets
@@ -872,7 +821,7 @@ struct Index {
 }
 ```
 
-### 5.4 module.json5 完整配置
+### 4.4 module.json5 完整配置
 
 ```json5
 // entry/src/main/module.json5
@@ -928,7 +877,7 @@ struct Index {
 }
 ```
 
-### 5.5 app.json5 全局配置
+### 4.5 app.json5 全局配置
 
 ```json5
 // AppScope/app.json5
@@ -950,7 +899,7 @@ struct Index {
 }
 ```
 
-### 5.6 build-profile.json5 构建配置
+### 4.6 build-profile.json5 构建配置
 
 ```json5
 // build-profile.json5
@@ -1016,7 +965,7 @@ struct Index {
 }
 ```
 
-### 5.7 hvigorw 命令行构建
+### 4.7 hvigorw 命令行构建
 
 ```bash
 #!/bin/bash
@@ -1048,7 +997,7 @@ echo "HAP: ./entry/build/default/outputs/default/entry-default-signed.hap"
 echo "APP: ./build/outputs/default/MyApplication-default-signed.app"
 ```
 
-### 5.8 hdc 设备调试命令
+### 4.8 hdc 设备调试命令
 
 ```bash
 #!/bin/bash
@@ -1095,7 +1044,7 @@ hdc file pull /data/local/tmp/screenshot.png ./
 hdc shell snapshot_display -r /data/local/tmp/record.mp4 -t 60
 ```
 
-### 5.9 多模块项目结构
+### 4.9 多模块项目结构
 
 ```mermaid
 flowchart TD
@@ -1152,7 +1101,7 @@ flowchart TD
     T34 --> T40
 ```
 
-### 5.10 .gitignore 配置
+### 4.10 .gitignore 配置
 
 ```gitignore
 # HarmonyOS 项目 .gitignore
@@ -1196,7 +1145,7 @@ Thumbs.db
 /secrets.local.json5
 ```
 
-### 5.11 资源文件示例
+### 4.11 资源文件示例
 
 ```json
 // entry/src/main/resources/base/element/string.json
@@ -1233,7 +1182,7 @@ Thumbs.db
 }
 ```
 
-### 5.12 单元测试示例
+### 4.12 单元测试示例
 
 ```typescript
 // entry/src/ohosTest/ets/test/Calculator.test.ets
@@ -1267,9 +1216,9 @@ export default function calculatorTest() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 HarmonyOS vs Android vs iOS 系统架构对比
+### 5.1 HarmonyOS vs Android vs iOS 系统架构对比
 
 | 维度 | HarmonyOS | Android | iOS |
 | --- | --- | --- | --- |
@@ -1285,7 +1234,7 @@ export default function calculatorTest() {
 | **多窗口支持** | 原生支持（Stage 模型） | 多窗口（API 24+） | iPad 多窗口 |
 | **原子化服务** | 原生支持 | Instant Apps | App Clips |
 
-### 6.2 FA 模型 vs Stage 模型对比
+### 5.2 FA 模型 vs Stage 模型对比
 
 | 维度 | FA 模型（已废弃） | Stage 模型（推荐） |
 | --- | --- | --- |
@@ -1299,7 +1248,7 @@ export default function calculatorTest() {
 | **跨设备调用** | startAbility | startAbility + 远程 Ability |
 | **支持版本** | 1.0-3.0 | 3.0+，NEXT 唯一 |
 
-### 6.3 DevEco Studio vs Android Studio vs Xcode
+### 5.3 DevEco Studio vs Android Studio vs Xcode
 
 | 维度 | DevEco Studio | Android Studio | Xcode |
 | --- | --- | --- | --- |
@@ -1312,7 +1261,7 @@ export default function calculatorTest() {
 | **调试器** | ArkTS Debugger | ART Debugger | LLDB |
 | **性能分析** | SmartPerf | Android Profiler | Instruments |
 
-### 6.4 hvigorw vs Gradle vs xcodebuild
+### 5.4 hvigorw vs Gradle vs xcodebuild
 
 | 维度 | hvigorw | Gradle | xcodebuild |
 | --- | --- | --- | --- |
@@ -1324,7 +1273,7 @@ export default function calculatorTest() {
 | **跨平台** | Win/Mac/Linux | Win/Mac/Linux | 仅 Mac |
 | **学习曲线** | 低 | 高 | 中 |
 
-### 6.5 ArkTS vs TypeScript vs Swift
+### 5.5 ArkTS vs TypeScript vs Swift
 
 | 维度 | ArkTS | TypeScript | Swift |
 | --- | --- | --- | --- |
@@ -1338,9 +1287,9 @@ export default function calculatorTest() {
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：使用 FA 模型开发新项目
+### 6.1 陷阱：使用 FA 模型开发新项目
 
 **反模式**：
 
@@ -1368,7 +1317,7 @@ class EntryAbility extends UIAbility {
 
 **生产事故案例**：某团队 2023 年基于 FA 模型开发了完整应用，2024 年升级到 HarmonyOS NEXT 时发现 FA 模型不再支持，被迫全量重写，耗时 3 人月。
 
-### 7.2 陷阱：硬编码 SDK 路径
+### 6.2 陷阱：硬编码 SDK 路径
 
 **反模式**：
 
@@ -1391,7 +1340,7 @@ export HOS_SDK_HOME=/path/to/sdk
 # DevEco Studio 通过 IDE 配置读取，不写入 build-profile.json5
 ```
 
-### 7.3 陷阱：提交签名材料到 Git
+### 6.3 陷阱：提交签名材料到 Git
 
 **反模式**：
 
@@ -1417,7 +1366,7 @@ git commit -m "add signing materials"
 
 **生产事故案例**：某公司 2024 年因开发者误将 release.p12 提交到 GitHub 公开仓库，导致证书泄露，应用被仿冒，损失数百万元，最终吊销证书并通知用户重新安装。
 
-### 7.4 陷阱：在 onWindowStageCreate 中执行耗时操作
+### 6.4 陷阱：在 onWindowStageCreate 中执行耗时操作
 
 **反模式**：
 
@@ -1453,7 +1402,7 @@ private async loadConfigAsync(): Promise<void> {
 }
 ```
 
-### 7.5 陷阱：使用 console.log 而非 hilog
+### 6.5 陷阱：使用 console.log 而非 hilog
 
 **反模式**：
 
@@ -1483,7 +1432,7 @@ hilog 支持：
 - `%{public}s` 格式化占位符
 - Release 包自动过滤 debug 级日志
 
-### 7.6 陷阱：模拟器调试性能差被误判为代码问题
+### 6.6 陷阱：模拟器调试性能差被误判为代码问题
 
 **反模式**：开发者在 ARM 翻译模拟器上测试应用，发现列表滚动卡顿，误以为代码性能差。
 
@@ -1495,7 +1444,7 @@ hilog 支持：
 - 性能测试必须使用真机。
 - 使用 SmartPerf Host 进行真机性能分析。
 
-### 7.7 陷阱：未配置多语言资源
+### 6.7 陷阱：未配置多语言资源
 
 **反模式**：
 
@@ -1528,7 +1477,7 @@ flowchart TD
     T0 --> T5
 ```
 
-### 7.8 陷阱：versionCode 未递增导致更新失败
+### 6.8 陷阱：versionCode 未递增导致更新失败
 
 **反模式**：
 
@@ -1557,7 +1506,7 @@ flowchart TD
 
 推荐版本号编码：`major * 10^6 + minor * 10^3 + patch`。
 
-### 7.9 陷阱：忽视 application sandbox 导致文件读写失败
+### 6.9 陷阱：忽视 application sandbox 导致文件读写失败
 
 **反模式**：
 
@@ -1584,7 +1533,7 @@ fileIo.writeSync(file.fd, data);
 fileIo.closeSync(file);
 ```
 
-### 7.10 陷阱：在 build() 中执行副作用
+### 6.10 陷阱：在 build() 中执行副作用
 
 **反模式**：
 
@@ -1618,9 +1567,9 @@ build() {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目初始化模板
+### 7.1 项目初始化模板
 
 推荐的项目模板结构：
 
@@ -1657,7 +1606,7 @@ flowchart TD
     T16 --> T21
 ```
 
-### 8.2 代码规范与 Lint
+### 7.2 代码规范与 Lint
 
 ```json5
 // .eslintrc.json5
@@ -1685,7 +1634,7 @@ flowchart TD
 }
 ```
 
-### 8.3 多环境配置
+### 7.3 多环境配置
 
 ```json5
 // build-profile.json5
@@ -1725,7 +1674,7 @@ import BuildProfile from 'BuildProfile';
 const currentConfig = config[BuildProfile.buildProfileName as keyof typeof config];
 ```
 
-### 8.4 自动化测试集成
+### 7.4 自动化测试集成
 
 ```typescript
 // entry/src/ohosTest/ets/test/List.test.ets
@@ -1747,7 +1696,7 @@ export default function abilityTest() {
 ./hvigorw test --mode module -p product=default
 ```
 
-### 8.5 CI/CD 流水线（GitHub Actions）
+### 7.5 CI/CD 流水线（GitHub Actions）
 
 ```yaml
 # .github/workflows/build.yml
@@ -1791,7 +1740,7 @@ jobs:
           path: entry/build/default/outputs/default/*.hap
 ```
 
-### 8.6 性能监控集成
+### 7.6 性能监控集成
 
 ```typescript
 // entry/src/main/ets/utils/PerformanceMonitor.ts
@@ -1837,7 +1786,7 @@ const data = await PerformanceMonitor.measure('fetchUserInfo', async () => {
 });
 ```
 
-### 8.7 日志分级策略
+### 7.7 日志分级策略
 
 | 日志级别 | 使用场景 | 是否进 Release | 示例 |
 | --- | --- | --- | --- |
@@ -1847,7 +1796,7 @@ const data = await PerformanceMonitor.measure('fetchUserInfo', async () => {
 | error | 错误，需排查 | 是 | `hilog.error(...)` 网络失败 |
 | fatal | 致命错误，应用崩溃 | 是 | `hilog.fatal(...)` 数据库损坏 |
 
-### 8.8 文档生成
+### 7.8 文档生成
 
 ```typescript
 /**
@@ -1875,7 +1824,7 @@ export class UserService {
 }
 ```
 
-### 8.9 版本管理策略
+### 7.9 版本管理策略
 
 | 版本号 | 用途 | 示例 |
 | --- | --- | --- |
@@ -1890,7 +1839,7 @@ export class UserService {
 - **minor**：向下兼容新增
 - **patch**：Bug 修复
 
-### 8.10 应用瘦身策略
+### 7.10 应用瘦身策略
 
 | 策略 | 节省比例 | 实施难度 |
 | --- | --- | --- |
@@ -1902,9 +1851,9 @@ export class UserService {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例 1：某团队从 FA 模型迁移到 Stage 模型
+### 8.1 案例 1：某团队从 FA 模型迁移到 Stage 模型
 
 **背景**：2023 年某团队基于 HarmonyOS 3.0 FA 模型开发了电商应用，2024 年计划升级到 HarmonyOS NEXT。
 
@@ -1936,7 +1885,7 @@ export class UserService {
 
 **经验教训**：新项目必须使用 Stage 模型，避免后续迁移成本。
 
-### 9.2 案例 2：CI/CD 自动化构建实践
+### 8.2 案例 2：CI/CD 自动化构建实践
 
 **背景**：某公司需要在 GitHub Actions 上实现 HarmonyOS 应用的自动化构建、签名、分发。
 
@@ -1972,7 +1921,7 @@ export class UserService {
 
 **结果**：构建时间从 25 分钟（手动）降至 8 分钟（CI），减少 68% 人工成本。
 
-### 9.3 案例 3：多设备适配实践
+### 8.3 案例 3：多设备适配实践
 
 **背景**：某应用需适配手机、平板、手表、车机四种设备。
 
@@ -2022,7 +1971,7 @@ struct AdaptivePage {
 }
 ```
 
-### 9.4 案例 4：原子化服务开发实践
+### 8.4 案例 4：原子化服务开发实践
 
 **背景**：某外卖平台希望提供"即点即用"的下单服务，无需安装完整 App。
 
@@ -2054,7 +2003,7 @@ struct AdaptivePage {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（Basic）
+### 9.1 基础题（Basic）
 
 **B1**：HarmonyOS 的"1+8+N"战略中，"8"代表什么？
 
@@ -2091,7 +2040,7 @@ B. 8710
 C. 8080
 D. 3000
 
-### 10.2 进阶题（Intermediate）
+### 9.2 进阶题（Intermediate）
 
 **I1**：分析 FA 模型与 Stage 模型的核心差异，并说明 Stage 模型引入 `WindowStage` 抽象的工程动机。
 
@@ -2105,7 +2054,7 @@ D. 3000
 
 **I6**：阐述 HarmonyOS 应用沙箱（Application Sandbox）机制，并说明其对文件访问的限制。
 
-### 10.3 挑战题（Advanced）
+### 9.3 挑战题（Advanced）
 
 **C1**：设计一个完整的 HarmonyOS 开发环境标准化方案，要求：
 
@@ -2127,7 +2076,7 @@ D. 3000
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本章参考文献遵循 ACM Reference Format，所有引用均包含 DOI 链接以供溯源。
 
@@ -2163,9 +2112,9 @@ D. 3000
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **HarmonyOS 开发者官网**：https://developer.huawei.com/consumer/cn/harmonyos
 - **HarmonyOS API 文档**：https://developer.huawei.com/consumer/cn/doc/harmonyos-references
@@ -2173,27 +2122,27 @@ D. 3000
 - **HarmonyOS 设计规范**：https://developer.huawei.com/consumer/cn/doc/design-guides
 - **HarmonyOS 应用市场**：https://developer.huawei.com/consumer/cn/agconnect
 
-### 12.2 开源项目
+### 11.2 开源项目
 
 - **OpenHarmony**：https://gitee.com/openharmony
 - **ArkUI 代码仓库**：https://gitee.com/openharmony/arkui_ace_engine
 - **ArkCompiler 代码仓库**：https://gitee.com/openharmony/arkcompiler_runtime_core
 
-### 12.3 经典书籍推荐
+### 11.3 经典书籍推荐
 
 - *Operating System Concepts* (Silberschatz, Galvin, Gagne)
 - *Modern Operating Systems* (Tanenbaum, Bos)
 - *The Design of the UNIX Operating System* (Maurice Bach)
 - *Distributed Systems: Principles and Paradigms* (Tanenbaum, Van Steen)
 
-### 12.4 学术论文与课程
+### 11.4 学术论文与课程
 
 - MIT 6.828 *Operating System Engineering*
 - CMU 15-410 *Distributed Systems: Principles and Paradigms*
 - Stanford CS140 *Operating Systems*
 - USENIX OSDI / SOSP 会议论文集
 
-### 12.5 社区与论坛
+### 11.5 社区与论坛
 
 - **HarmonyOS 开发者社区**：https://developer.huawei.com/consumer/cn/forum
 - **51CTO 鸿蒙社区**：https://os.51cto.com/harmonyos

@@ -26,67 +26,16 @@ prerequisites:
   - lua/程序结构与基本语法
   - lua/数据类型与Table详解
 ---
+
 # Lua 迭代器速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-学习本章后,读者应能在 Bloom 认知层级框架下达成下列目标。
-
-### 1.1 知识层(Remembering)
-
-- 列举 Lua 泛型 `for` 的执行流程:调用迭代器工厂、保存不可变状态、调用迭代函数、检测终止条件(nil)。
-- 复述泛型 `for` 语法 `for var_1, ..., var_n in explist do block end` 中 `explist` 的求值规则与返回值数量(1、2 或 3)。
-- 描述无状态迭代器(stateless iterator)与有状态迭代器(stateful iterator)的区别:前者通过 `explist` 返回多个值保存状态,后者通过闭包捕获状态。
-- 列举 Lua 标准库中常见的迭代器:`pairs`、`ipairs`、`string.gmatch`、`io.lines`、`coroutine.wrap`。
-- 复述 `ipairs` 与 `pairs` 的差异:`ipairs` 顺序遍历数组部分遇到 nil 停止,`pairs` 遍历所有键顺序未定义(依赖 table 实现)。
-
-### 1.2 理解层(Understanding)
-
-- 解释泛型 `for` 的内部状态机:三个隐藏变量 `f`、`s`、`var`(迭代函数、不可变状态、控制变量)。
-- 阐释无状态迭代器为何能避免闭包:利用 Lua 多返回值与不可变状态,每次调用都从相同 `s` 与递增的 `var` 派生新状态。
-- 描述 `ipairs` 的迭代函数实现:基于 `s[var]` 索引,遇到 nil 终止。
-- 解释迭代器与生成器(generator)的关系:生成器是产出值序列的函数,迭代器是泛型 `for` 接受的函数协议,二者在 Lua 中常等价。
-- 描述协程迭代器的工作原理:协程 `yield` 产出值,泛型 `for` 调用 `coroutine.wrap` 返回的函数,直到协程结束返回 nil。
-- 解释迭代器协议(iteration protocol)与可迭代对象(iterable)的概念在 Lua 中的对应:Lua 没有"可迭代对象"概念,但 `pairs(t)`/`ipairs(t)` 可视为表的可迭代适配器。
-
-### 1.3 应用层(Applying)
-
-- 编写无状态迭代器遍历数组、链表、二叉树。
-- 使用闭包实现有状态迭代器,记录访问位置、跳过元素、过滤条件。
-- 用协程实现深度优先遍历、广度优先遍历等递归算法的迭代器。
-- 实现迭代器组合子:`map`、`filter`、`take`、`drop`、`zip`、`reduce`。
-- 应用迭代器处理大文件、网络流,避免一次性加载全部数据。
-
-### 1.4 分析层(Analyzing)
-
-- 分析无状态迭代器与有状态迭代器在内存占用、GC 压力、可序列化上的差异。
-- 分析 Lua 迭代器与 Python `__iter__`/`__next__`、JavaScript `Symbol.iterator`、Java `Iterator`、Rust `Iterator` trait 的本质异同。
-- 分析 `pairs` 顺序未定义的根因:Lua 表的哈希部分实现(数组+哈希混合),遍历顺序受哈希函数与表大小影响。
-- 分析协程迭代器相比闭包迭代器的优势:递归算法自然表达,无需手动管理状态栈。
-- 分析迭代器与惰性序列(lazy sequence)的关系与差异。
-
-### 1.5 评价层(Evaluating)
-
-- 评判 Lua 迭代器设计的优劣:简洁性(`for` + 函数) vs 类型安全(无 `Iterable` 接口)。
-- 评估 `pairs` 顺序未定义在调试、序列化、测试中的影响,以及 `__pairs` 元方法(Lua 5.2+,5.4 移除)的设计演化。
-- 评判协程迭代器相比闭包迭代器在性能(切换成本)、可读性、错误处理上的取舍。
-- 评估 Lua 缺乏内建 `yield from` / `flatMap` 等迭代器组合原语对功能编程的影响。
-
-### 1.6 创造层(Creating)
-
-- 设计迭代器工具库,提供 `map`、`filter`、`reduce`、`zip`、`chain`、`takeWhile`、`dropWhile` 等函数式操作。
-- 构建惰性求值库,实现无限序列(自然数、斐波那契、素数)与按需计算。
-- 设计可序列化的迭代器,支持保存/恢复遍历状态。
-- 构建基于迭代器的流处理框架,处理 CSV、JSON、日志等结构化数据。
-- 设计迭代器调试工具,可视化迭代历史、性能 profile、状态变化。
-
-## 2. 历史动机与演化
-
-### 2.1 迭代抽象的范式演化
+### 1.1 迭代抽象的范式演化
 
 程序语言中"遍历集合"的抽象历经五个主要阶段:
 
@@ -98,7 +47,7 @@ prerequisites:
 
 Lua 选择了第 3 种范式,核心是泛型 `for` 与"迭代函数"协议。设计动机源于 CLU(Barbara Liskov,1970s)的迭代器思想:迭代器是普通函数,泛型 `for` 自动管理其调用与终止。
 
-### 2.2 Lua 迭代器 API 的版本演化
+### 1.2 Lua 迭代器 API 的版本演化
 
 | Lua 版本 | 关键变化 | 设计动机 |
 |---------|---------|---------|
@@ -110,7 +59,7 @@ Lua 选择了第 3 种范式,核心是泛型 `for` 与"迭代函数"协议。设
 | 5.4 (2020) | 移除 `__pairs`/`__ipairs` 元方法,`pairs`/`ipairs` 仅用 `next`/表长度 | 简化语义,避免元方法干扰 |
 | 5.5 (2025 规划) | 探讨 `__iter` 元方法标准化 | 统一可迭代对象协议 |
 
-### 2.3 与其他语言迭代器的对比定位
+### 1.3 与其他语言迭代器的对比定位
 
 Lua 迭代器在迭代抽象谱系中处于"函数式迭代器"位置,与 CLU、Lua、Python(早期)一致。其独有特征:
 
@@ -119,9 +68,9 @@ Lua 迭代器在迭代抽象谱系中处于"函数式迭代器"位置,与 CLU、
 - **顺序未定义**:标准 `pairs` 不保证顺序,需用户自行 `sort` 或用 `ipairs`/数组。
 - **协程友好**:协程 `wrap` 返回的函数天然符合迭代器协议,递归算法可零成本转为迭代器。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 泛型 for 的形式化语义
+### 2.1 泛型 for 的形式化语义
 
 泛型 `for` 语句:
 
@@ -156,7 +105,7 @@ $$
 \end{aligned}
 $$
 
-### 3.2 迭代器函数的协议
+### 2.2 迭代器函数的协议
 
 一个有效的迭代器函数 $f$ 满足:
 
@@ -170,7 +119,7 @@ $$
 - **确定性**:给定相同 $(s, v)$,$f$ 返回相同结果(除非有意引入随机性)。
 - **单调性**(可选):控制变量 $v_1$ 严格递增(对 `ipairs` 等有序迭代器)。
 
-### 3.3 无状态 vs 有状态迭代器
+### 2.3 无状态 vs 有状态迭代器
 
 **无状态迭代器**:所有迭代状态编码在 `(s, var)` 中,无额外内存。
 
@@ -190,7 +139,7 @@ $$
 
 调用方只看到 $v_i$,但 $\sigma$ 在闭包内部演化。这种情况下,泛型 `for` 持有的 `s`、`var` 通常是占位符(`nil`)。
 
-### 3.4 协程迭代器的形式化
+### 2.4 协程迭代器的形式化
 
 协程迭代器将协程 `wrap` 后的函数作为迭代器。设协程 $C$ 在函数体中 `yield` 产出 $v_1, \ldots, v_n$。则:
 
@@ -200,9 +149,9 @@ $$
 
 协程内部状态(局部变量、调用栈)自动保存,无需用户显式管理。
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 任意递归遍历可转为协程迭代器
+### 3.1 任意递归遍历可转为协程迭代器
 
 **命题**:对任意递归遍历算法 $T$(如树的先序、中序、后序),存在对应的协程迭代器 $C_T$,产出相同的元素序列。
 
@@ -232,7 +181,7 @@ function C_T(node):
 
 正确性:协程的"暂停-恢复"语义保证 `yield` 顺序与 $T$ 的 `visit` 顺序一致。栈自动保存,无需手动 CPS 变换。证毕。
 
-### 4.2 无状态迭代器表达能力有限
+### 3.2 无状态迭代器表达能力有限
 
 **命题**:无状态迭代器无法表达需要"已访问集合"的遍历(如图的深度优先遍历,需记录已访问节点)。
 
@@ -240,7 +189,7 @@ function C_T(node):
 
 因此,图遍历等需要 mutable 已访问集合的算法,必须用有状态迭代器(闭包或协程)。证毕。
 
-### 4.3 ipairs 与 pairs 终止条件不同
+### 3.3 ipairs 与 pairs 终止条件不同
 
 **命题**:`ipairs(t)` 在遇到第一个 nil 索引时终止,即使后续索引有值;`pairs(t)` 遍历所有键值对,不限于整数键。
 
@@ -258,7 +207,7 @@ function C_T(node):
 
 证毕。
 
-### 4.4 pairs 顺序未定义的原因
+### 3.4 pairs 顺序未定义的原因
 
 **命题**:Lua 标准 `pairs` 不保证遍历顺序,且不同 Lua 版本/实现可能产生不同顺序。
 
@@ -270,9 +219,9 @@ Lua 5.2 引入 `__pairs` 元方法允许自定义,5.4 又移除以简化语义�
 
 因此,依赖 `pairs` 顺序的代码不可移植。需排序时显式 `table.sort`。证毕。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 泛型 for 的内部机制
+### 4.1 泛型 for 的内部机制
 
 ```lua
 -- 等价转换
@@ -292,7 +241,7 @@ do
 end
 ```
 
-### 5.2 ipairs 的实现
+### 4.2 ipairs 的实现
 
 ```lua
 -- 标准库 ipairs 等价实现
@@ -315,7 +264,7 @@ for i, v in my_ipairs(arr) do
 end
 ```
 
-### 5.3 pairs 的实现(基于 next)
+### 4.3 pairs 的实现(基于 next)
 
 ```lua
 -- 标准库 pairs 等价实现
@@ -329,7 +278,7 @@ for k, v in my_pairs(t) do
 end
 ```
 
-### 5.4 无状态迭代器:遍历数字范围
+### 4.4 无状态迭代器:遍历数字范围
 
 ```lua
 local function range(start, stop, step)
@@ -355,7 +304,7 @@ for i in range(10, 1, -1) do
 end
 ```
 
-### 5.5 无状态迭代器:遍历链表
+### 4.5 无状态迭代器:遍历链表
 
 ```lua
 -- 链表节点:{ value = ..., next = ... }
@@ -376,7 +325,7 @@ for v in list_iter(list) do
 end
 ```
 
-### 5.6 有状态迭代器:带过滤
+### 4.6 有状态迭代器:带过滤
 
 ```lua
 local function filter_iter(arr, predicate)
@@ -400,7 +349,7 @@ for v in filter_iter(nums, function(x) return x % 2 == 0 end) do
 end
 ```
 
-### 5.7 有状态迭代器:跳过指定数量(take/drop)
+### 4.7 有状态迭代器:跳过指定数量(take/drop)
 
 ```lua
 local function drop(arr, n)
@@ -436,7 +385,7 @@ for v in take(arr, 5) do
 end
 ```
 
-### 5.8 协程迭代器:二叉树中序遍历
+### 4.8 协程迭代器:二叉树中序遍历
 
 ```lua
 local function inorder(root)
@@ -476,7 +425,7 @@ for v in inorder(tree) do
 end
 ```
 
-### 5.9 协程迭代器:斐波那契数列
+### 4.9 协程迭代器:斐波那契数列
 
 ```lua
 local function fib()
@@ -499,7 +448,7 @@ end
 -- 0 1 1 2 3 5 8 13 21 34
 ```
 
-### 5.10 字符串分割迭代器
+### 4.10 字符串分割迭代器
 
 ```lua
 local function split(str, sep)
@@ -529,7 +478,7 @@ end
 -- iterator
 ```
 
-### 5.11 文件行迭代器
+### 4.11 文件行迭代器
 
 ```lua
 -- io.lines 是标准库提供的迭代器
@@ -549,7 +498,7 @@ for line in read_lines("/etc/hosts") do
 end
 ```
 
-### 5.12 迭代器组合子:map
+### 4.12 迭代器组合子:map
 
 ```lua
 local function map(iter_fn, mapper)
@@ -566,7 +515,7 @@ for v in map(range(1, 5), function(x) return x * x end) do
 end
 ```
 
-### 5.13 迭代器组合子:filter
+### 4.13 迭代器组合子:filter
 
 ```lua
 local function filter(iter_fn, predicate)
@@ -587,7 +536,7 @@ for v in filter(range(1, 10), function(x) return x % 2 == 0 end) do
 end
 ```
 
-### 5.14 迭代器组合子:reduce
+### 4.14 迭代器组合子:reduce
 
 ```lua
 local function reduce(iter_fn, reducer, initial)
@@ -605,7 +554,7 @@ local sum = reduce(range(1, 100), function(a, b) return a + b end, 0)
 print(sum)  -- 5050
 ```
 
-### 5.15 迭代器组合子:zip
+### 4.15 迭代器组合子:zip
 
 ```lua
 local function zip(iter1, iter2)
@@ -623,7 +572,7 @@ for a, b in zip(range(1, 5), range(10, 14)) do
 end
 ```
 
-### 5.16 迭代器组合子:chain
+### 4.16 迭代器组合子:chain
 
 ```lua
 local function chain(...)
@@ -661,7 +610,7 @@ for v in chain(one_to_three(), four_to_six()) do
 end
 ```
 
-### 5.17 takeWhile 与 dropWhile
+### 4.17 takeWhile 与 dropWhile
 
 ```lua
 local function takeWhile(iter_fn, predicate)
@@ -706,7 +655,7 @@ end
 -- 5 6 7 8 9 10
 ```
 
-### 5.18 惰性序列库
+### 4.18 惰性序列库
 
 ```lua
 local Lazy = {}
@@ -774,7 +723,7 @@ local result = Lazy.new(nat())
 print(table.concat(result, ", "))  -- 4, 16, 36, 64, 100
 ```
 
-### 5.19 递归下降解析器作为迭代器
+### 4.19 递归下降解析器作为迭代器
 
 ```lua
 -- 简单的 token 生成器
@@ -816,7 +765,7 @@ end
 -- ident bar
 ```
 
-### 5.20 反向遍历数组
+### 4.20 反向遍历数组
 
 ```lua
 local function reversed(arr)
@@ -833,7 +782,7 @@ for v in reversed(arr) do
 end
 ```
 
-### 5.21 表的深度遍历
+### 4.21 表的深度遍历
 
 ```lua
 -- 递归遍历嵌套表,产出所有叶子节点的路径与值
@@ -877,7 +826,7 @@ end
 -- .database.credentials.password = secret
 ```
 
-### 5.22 生成排列组合
+### 4.22 生成排列组合
 
 ```lua
 -- 全排列
@@ -918,7 +867,7 @@ end
 -- 3, 1, 2
 ```
 
-### 5.23 自定义顺序的 pairs
+### 4.23 自定义顺序的 pairs
 
 ```lua
 -- 按键排序的 pairs
@@ -950,7 +899,7 @@ end
 -- date 8
 ```
 
-### 5.24 重复元素的迭代器
+### 4.24 重复元素的迭代器
 
 ```lua
 local function repeat_iter(value, n)
@@ -967,7 +916,7 @@ for v in repeat_iter("hello", 3) do
 end
 ```
 
-### 5.25 计数器迭代器
+### 4.25 计数器迭代器
 
 ```lua
 -- 无限计数器(需配合 take 或 break 使用)
@@ -991,7 +940,7 @@ end
 -- 2 4 6 8 10
 ```
 
-### 5.26 字符逐个迭代器
+### 4.26 字符逐个迭代器
 
 ```lua
 local function chars(str)
@@ -1013,7 +962,7 @@ end
 -- 5 o
 ```
 
-### 5.27 字节流分块迭代器
+### 4.27 字节流分块迭代器
 
 ```lua
 local function chunks(file_path, chunk_size)
@@ -1035,7 +984,7 @@ end
 print("Total bytes:", total)
 ```
 
-### 5.28 表的笛卡尔积迭代器
+### 4.28 表的笛卡尔积迭代器
 
 ```lua
 local function product(...)
@@ -1081,7 +1030,7 @@ end
 -- 2 y false
 ```
 
-### 5.29 生成器:素数筛
+### 4.29 生成器:素数筛
 
 ```lua
 local function primes()
@@ -1114,7 +1063,7 @@ end
 -- 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71
 ```
 
-### 5.30 完整案例:CSV 解析器
+### 4.30 完整案例:CSV 解析器
 
 ```lua
 -- 简单 CSV 解析器:逐行产出字段数组
@@ -1177,9 +1126,9 @@ end
 -- Charlie, Jr. | 40 | Guangzhou
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua 迭代器 vs Python 迭代器
+### 5.1 Lua 迭代器 vs Python 迭代器
 
 | 维度 | Lua 迭代器 | Python 迭代器 |
 |------|----------|--------------|
@@ -1193,7 +1142,7 @@ end
 
 Python 迭代器有显式协议接口(`__iter__`/`__next__`),可被类型系统检查;Lua 迭代器是普通函数,灵活但无类型保护。
 
-### 6.2 Lua 迭代器 vs JavaScript 迭代器
+### 5.2 Lua 迭代器 vs JavaScript 迭代器
 
 | 维度 | Lua 迭代器 | JavaScript 迭代器 |
 |------|----------|------------------|
@@ -1205,7 +1154,7 @@ Python 迭代器有显式协议接口(`__iter__`/`__next__`),可被类型系统�
 
 JavaScript 提供丰富的内建可迭代对象(Array、Map、Set、String)与展开运算符;Lua 仅提供 `pairs`/`ipairs`,需自行实现其他。
 
-### 6.3 Lua 迭代器 vs Java Iterator
+### 5.3 Lua 迭代器 vs Java Iterator
 
 | 维度 | Lua 迭代器 | Java Iterator |
 |------|----------|--------------|
@@ -1218,7 +1167,7 @@ JavaScript 提供丰富的内建可迭代对象(Array、Map、Set、String)与�
 
 Java Iterator 是面向对象接口,有强类型与丰富工具库;Lua 迭代器更轻量,但缺乏类型安全与标准工具。
 
-### 6.4 Lua 迭代器 vs Rust Iterator
+### 5.4 Lua 迭代器 vs Rust Iterator
 
 | 维度 | Lua 迭代器 | Rust Iterator |
 |------|----------|--------------|
@@ -1231,7 +1180,7 @@ Java Iterator 是面向对象接口,有强类型与丰富工具库;Lua 迭代器
 
 Rust 提供完整惰性迭代器组合子库,编译期优化为零成本;Lua 需手写组合子,运行时开销略高。
 
-### 6.5 Lua 迭代器 vs Haskell 列表
+### 5.5 Lua 迭代器 vs Haskell 列表
 
 | 维度 | Lua 迭代器 | Haskell 列表 |
 |------|----------|-------------|
@@ -1243,9 +1192,9 @@ Rust 提供完整惰性迭代器组合子库,编译期优化为零成本;Lua 需
 
 Haskell 列表是语言核心数据结构,与类型系统深度集成;Lua 迭代器是函数协议,更灵活但缺乏语法糖。
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 ipairs 遇到 nil 终止
+### 6.1 ipairs 遇到 nil 终止
 
 ```lua
 local t = {1, 2, nil, 4, 5}
@@ -1262,7 +1211,7 @@ for k, v in pairs(t) do
 end
 ```
 
-### 7.2 pairs 顺序未定义
+### 6.2 pairs 顺序未定义
 
 ```lua
 -- 反模式:依赖 pairs 顺序
@@ -1280,7 +1229,7 @@ table.sort(keys)
 print(keys[1])  -- 必定是 a
 ```
 
-### 7.3 在迭代中修改表
+### 6.3 在迭代中修改表
 
 ```lua
 -- 反模式:遍历时删除元素
@@ -1303,7 +1252,7 @@ for _, k in ipairs(to_remove) do
 end
 ```
 
-### 7.4 闭包迭代器忘记终止
+### 6.4 闭包迭代器忘记终止
 
 ```lua
 -- 反模式:迭代器永远不返回 nil,导致死循环
@@ -1327,7 +1276,7 @@ local function good_iter(max)
 end
 ```
 
-### 7.5 协程迭代器错误未传播
+### 6.5 协程迭代器错误未传播
 
 ```lua
 -- 协程内错误被 wrap 隐藏,直到调用时才抛出
@@ -1349,7 +1298,7 @@ if not ok then
 end
 ```
 
-### 7.6 多次调用同一迭代器实例
+### 6.6 多次调用同一迭代器实例
 
 ```lua
 -- 反模式:期望迭代器可重置
@@ -1370,7 +1319,7 @@ for v in range_iter(5) do print(v) end
 for v in range_iter(5) do print(v) end
 ```
 
-### 7.7 ipairs 与 # 长度操作符的语义差异
+### 6.7 ipairs 与 # 长度操作符的语义差异
 
 ```lua
 -- # 与 ipairs 都基于"数组部分",但对带 nil 的表行为未定义
@@ -1381,7 +1330,7 @@ print(#t)  -- 可能是 2 或 4,未定义
 -- 修正:避免在数组中留 nil 空洞;若需稀疏,用 pairs
 ```
 
-### 7.8 协程迭代器的状态丢失
+### 6.8 协程迭代器的状态丢失
 
 ```lua
 -- 协程一旦结束,无法重启
@@ -1400,7 +1349,7 @@ print(it())  -- nil,无法复活
 -- 修正:重新调用 gen() 创建新协程
 ```
 
-### 7.9 滥用闭包导致内存泄漏
+### 6.9 滥用闭包导致内存泄漏
 
 ```lua
 -- 反模式:闭包引用大对象,且迭代器长期存在
@@ -1418,7 +1367,7 @@ local it = bad_iter(huge_table)
 -- 修正:迭代结束后置空,或用无状态迭代器
 ```
 
-### 7.10 next 误用
+### 6.10 next 误用
 
 ```lua
 -- 反模式:直接用 next 不传表参数
@@ -1430,9 +1379,9 @@ local k2, v2 = next(t, k)  -- 下一个
 -- 修正:不在 next/pairs 迭代中修改表
 ```
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 优先用无状态迭代器
+### 7.1 优先用无状态迭代器
 
 ```lua
 -- 优点:无闭包开销,可序列化,易测试
@@ -1448,7 +1397,7 @@ local function range(start, stop, step)
 end
 ```
 
-### 8.2 复杂状态用协程迭代器
+### 7.2 复杂状态用协程迭代器
 
 ```lua
 -- 优点:递归算法自然,代码清晰
@@ -1465,7 +1414,7 @@ local function tree_iter(root)
 end
 ```
 
-### 8.3 迭代器命名约定
+### 7.3 迭代器命名约定
 
 ```lua
 -- 推荐命名:返回迭代器工厂的函数用名词复数或 x_iter 后缀
@@ -1477,7 +1426,7 @@ local function children(node) ... end
 local function range_iter(...) ... end
 ```
 
-### 8.4 错误处理
+### 7.4 错误处理
 
 ```lua
 -- 用 pcall 包裹可能失败的迭代器
@@ -1493,7 +1442,7 @@ local function safe_iter(iter_fn)
 end
 ```
 
-### 8.5 资源管理
+### 7.5 资源管理
 
 ```lua
 -- 文件迭代器需确保关闭
@@ -1519,7 +1468,7 @@ local function lines_54(path)
 end
 ```
 
-### 8.6 性能考量
+### 7.6 性能考量
 
 ```lua
 -- 1. 无状态迭代器比闭包快约 20-30%(无 upvalue 访问)
@@ -1544,7 +1493,7 @@ bench("ipairs", (function()
 end)(), 1000000)
 ```
 
-### 8.7 与标准库集成
+### 7.7 与标准库集成
 
 ```lua
 -- table.concat 接受数组,可用迭代器转数组
@@ -1561,7 +1510,7 @@ local arr = to_array(range(1, 10))
 print(table.concat(arr, ","))  -- 1,2,3,4,5,6,7,8,9,10
 ```
 
-### 8.8 调试迭代器
+### 7.8 调试迭代器
 
 ```lua
 -- 包装迭代器,记录每次调用
@@ -1589,9 +1538,9 @@ end
 -- [range] iter #4: terminated
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一:日志分析器
+### 8.1 案例一:日志分析器
 
 ```lua
 -- 流式分析大日志文件,统计各级别日志数
@@ -1618,7 +1567,7 @@ print(string.format("Total: %d, INFO: %d, WARN: %d, ERROR: %d, DEBUG: %d",
   result.counts.ERROR, result.counts.DEBUG))
 ```
 
-### 9.2 案例二:JSON 流式解析
+### 8.2 案例二:JSON 流式解析
 
 ```lua
 -- 简化版 JSON token 流
@@ -1672,7 +1621,7 @@ for token in json_tokens('{"name": "Alice", "age": 30, "active": true}') do
 end
 ```
 
-### 9.3 案例三:游戏背包系统
+### 8.3 案例三:游戏背包系统
 
 ```lua
 -- 遍历玩家背包,过滤指定类型物品
@@ -1714,7 +1663,7 @@ end
 -- Slot 5: Mana Potion
 ```
 
-### 9.4 案例四:WoW 插件遍历单位
+### 8.4 案例四:WoW 插件遍历单位
 
 ```lua
 -- 遍历附近所有友方单位
@@ -1740,7 +1689,7 @@ for unit in friendly_units(40) do
 end
 ```
 
-### 9.5 案例五:数据库结果集遍历
+### 8.5 案例五:数据库结果集遍历
 
 ```lua
 -- 模拟数据库游标
@@ -1777,7 +1726,7 @@ local emails = adult_emails(users)
 print(table.concat(emails, ", "))  -- alice@example.com, charlie@example.com
 ```
 
-### 9.6 案例六:文件系统遍历
+### 8.6 案例六:文件系统遍历
 
 ```lua
 -- 递归遍历目录(luarocks luafilesystem 风格)
@@ -1815,7 +1764,7 @@ print(string.format("Files: %d, Total size: %.2f MB",
   file_count, total_size / (1024 * 1024)))
 ```
 
-### 9.7 案例七:HTTP 请求流水线
+### 8.7 案例七:HTTP 请求流水线
 
 ```lua
 -- 串联多个 HTTP 请求,前一个结果作为后一个输入
@@ -1846,7 +1795,7 @@ for stage_result in pipeline, result do
 end
 ```
 
-### 9.8 案例八:数学序列库
+### 8.8 案例八:数学序列库
 
 ```lua
 local Seq = {}
@@ -1901,21 +1850,21 @@ print(sum)  -- 385 (1+4+9+...+100)
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 1. 写出泛型 `for` 的内部展开形式,说明三个隐藏变量的作用。
 2. 解释 `ipairs` 与 `pairs` 的区别,各举一个适用场景。
 3. 实现无状态迭代器 `countdown(n)`,产出 $n, n-1, \ldots, 1$。
 4. 用协程迭代器实现字符串逐字符遍历。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 5. 实现迭代器组合子 `flatMap(f, iter)`,对 `iter` 每个元素应用 `f`(返回新迭代器),串联所有结果。
 6. 实现窗口迭代器 `window(iter, size)`,产出大小为 `size` 的滑动窗口。
 7. 用协程实现二叉树层序遍历(广度优先)迭代器。
 8. 实现可重置的迭代器,支持 `reset()` 方法重新开始遍历。
 
-### 10.3 思考题
+### 9.3 思考题
 
 9. 为什么 Lua 不引入 `Iterable` 接口?这种设计的优缺点?
 10. 协程迭代器相比闭包迭代器,在性能、可读性、错误处理上有何取舍?
@@ -1924,14 +1873,14 @@ print(sum)  -- 385 (1+4+9+...+100)
 13. 比较 Lua 迭代器、Python `itertools`、Rust `Iterator` trait 在表达"取前 N 个偶数"时的代码风格。
 14. 设计一个惰性序列库,支持 `map`/`filter`/`take`/`reduce` 链式调用,描述核心数据结构。
 
-### 10.4 开放题
+### 9.4 开放题
 
 15. 调研 Lua 5.4 移除 `__pairs`/`__ipairs` 元方法的设计动机,分析利弊。
 16. 调研 Luau 是否对迭代器有类型注解支持,如 `Iterable<T>`。
 17. 若为 Lua 添加列表推导式 `[x for x in iter if x > 0]`,需要修改哪些语言组件?
 18. 调研 Haskell、Scala、Clojure 的惰性序列实现,与 Lua 协程迭代器对比性能与表达力。
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. *Lua 5.4 Reference Manual*. Section 3.3.5: For Statement, Section 6.1: Basic Functions.
 2. Roberto Ierusalimschy. *Programming in Lua* (4th Edition). Chapter 7: Iterators and the Generic for.
@@ -1944,21 +1893,21 @@ print(sum)  -- 385 (1+4+9+...+100)
 9. CMU 15-150. *Functional Programming*. Lecture on Lazy Evaluation.
 10. Python PEP 234 (Iterators): https://peps.python.org/pep-0234/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 Lua 官方资源
+### 11.1 Lua 官方资源
 
 - Lua 官方站点:https://www.lua.org/
 - Lua 5.4 参考手册:https://www.lua.org/manual/5.4/manual.html
 - Programming in Lua(第 4 版)第 7 章:https://www.lua.org/pil/7.html
 
-### 12.2 迭代器理论与历史
+### 11.2 迭代器理论与历史
 
 - Liskov, B. *A History of CLU*. Springer, 1992.
 - Kiczales, G. et al. *The Art of the Metaobject Protocol*. MIT Press, 1991.
 - SICP Section 3.5: Streams: https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-24.html
 
-### 12.3 跨语言对比
+### 11.3 跨语言对比
 
 - Python itertools 文档:https://docs.python.org/3/library/itertools.html
 - JavaScript Iteration Protocols: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
@@ -1966,14 +1915,14 @@ print(sum)  -- 385 (1+4+9+...+100)
 - Java Iterator: https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html
 - Scala Collections: https://docs.scala-lang.org/overviews/collections-2.13/introduction.html
 
-### 12.4 工业级实践
+### 11.4 工业级实践
 
 - LuaSec、LuaFileSystem 等库的迭代器设计
 - OpenResty 中的 `ngx.re.gmatch` 迭代器
 - Neovim `vim.iter` 模块(Lua 5.1+ 风格迭代器工具)
 - Penlight 库的迭代器组合子:https://github.com/lunarmodules/Penlight
 
-### 12.5 高级主题
+### 11.5 高级主题
 
 - 协程迭代器与生成器的 CPS 变换
 - 惰性求值的内存模型

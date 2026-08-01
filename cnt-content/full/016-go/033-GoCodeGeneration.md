@@ -40,57 +40,14 @@ keywords:
   - 自定义代码生成器
 ---
 
+
 # Go 与代码生成（Code Generation）
 
 > 代码生成是 Go 减少重复样板代码的核心手段。通过 `go:generate` 指令、AST 解析与第三方工具（Stringer、mockgen、sqlc、protobuf、wire），开发者可以将类型定义、接口声明、SQL 查询、Protobuf 模式自动转换为类型安全的 Go 代码。本文从代码生成的编译原理、AST 操作、工具生态、工程实践到生产案例，系统化剖析 Go 代码生成的全部要点。
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-学完本文后，读者应能够在以下认知层级上掌握 Go 代码生成（依据 Bloom 修订版分类法）：
-
-### 1.1 记忆层（Remembering）
-
-- 复述 `//go:generate` 指令的语法规则与占位符（`$GOFILE`、`$GOLINE`、`$DOLLAR` 等）。
-- 列举常用代码生成工具：`stringer`、`mockgen`、`sqlc`、`protoc-gen-go`、`wire`。
-- 说明 `go generate` 与 `go build` 的执行时机差异：前者需显式触发，后者不触发。
-
-### 1.2 理解层（Understanding）
-
-- 解释代码生成的本质：将"输入规约"（Schema、接口、SQL）通过"转换函数"映射为"Go 源代码"。
-- 阐述 AST（Abstract Syntax Tree）在代码生成中的角色：解析源码、提取元信息、生成新代码。
-- 区分"代码生成"与"反射"、"泛型"的取舍：生成期 vs 编译期 vs 运行期。
-
-### 1.3 应用层（Applying）
-
-- 使用 `stringer` 为枚举生成 `String()` 方法。
-- 使用 `mockgen` 为接口生成 Mock 实现，编写单元测试。
-- 使用 `sqlc` 从 SQL 生成类型安全的数据库访问层。
-- 使用 `protobuf` + `protoc-gen-go` 生成 gRPC 服务代码。
-- 使用 `wire` 生成依赖注入代码，避免运行时反射。
-
-### 1.4 分析层（Analyzing）
-
-- 拆解 `stringer` 的内部实现：如何用 `go/ast`、`go/types` 解析常量声明。
-- 分析 `wire` 与 `dig`（基于反射的 DI）在性能与可维护性上的差异。
-- 对比"代码生成 + 编译期检查"与"反射 + 运行时检查"的优劣。
-
-### 1.5 评价层（Evaluating）
-
-- 评价代码生成在大型项目中的可维护性：生成的代码是否应提交 Git？
-- 评估代码生成工具的选型标准：性能、生态、可调试性、IDE 支持。
-- 权衡"魔法"（生成代码不可见）与"显式"（手写代码可见）的开发体验。
-
-### 1.6 创造层（Creating）
-
-- 设计一个自定义代码生成器：从 Go 结构体生成 Builder 模式代码。
-- 实现一个基于 AST 的 API 文档生成工具，自动提取注释与签名。
-- 构建一个零反射的 ORM，通过代码生成实现类型安全的查询。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 代码生成的起源
+### 1.1 代码生成的起源
 
 代码生成（Code Generation）是编译器的最后一个阶段，将中间表示转换为目标代码。在软件工程领域，"代码生成"通常指**通过工具自动生成源代码**，而非编译器内部行为。
 
@@ -102,7 +59,7 @@ keywords:
 4. **C 预处理器宏**（1972，K&R C）：用 `#define` 生成重复代码，但缺乏类型安全。
 5. **Rust 过程宏**（2015，Rust 1.12+）：通过 `proc_macro` 在编译期生成代码。
 
-### 2.2 Go 代码生成的设计哲学
+### 1.2 Go 代码生成的设计哲学
 
 Go 团队对代码生成的立场：
 
@@ -115,7 +72,7 @@ Go 核心团队 Russ Cox 在 2014 年的博客文章 *Generating Code* 中明确
 
 > The go generate command is a way to automate the process of running code generators. It is not a build system, but it is designed to integrate well with build systems.
 
-### 2.3 Go 代码生成工具生态演进
+### 1.3 Go 代码生成工具生态演进
 
 | 年份 | 工具 | 用途 |
 |------|------|------|
@@ -128,7 +85,7 @@ Go 核心团队 Russ Cox 在 2014 年的博客文章 *Generating Code* 中明确
 | 2020 | `oapi-codegen`（github.com/oapi-codegen/oapi-codegen） | 从 OpenAPI 生成客户端 |
 | 2022 | `go:generate` 与泛型协同（Go 1.18+） | 泛型减少部分代码生成需求 |
 
-### 2.4 为什么 Go 选择代码生成而非注解
+### 1.4 为什么 Go 选择代码生成而非注解
 
 Java 注解处理器（APT）的问题：
 
@@ -144,9 +101,9 @@ Go 的方案：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 代码生成的函数模型
+### 2.1 代码生成的函数模型
 
 代码生成可形式化为函数 $G : \mathcal{S} \rightarrow \mathcal{C}$，其中：
 
@@ -158,7 +115,7 @@ $$
 G : \text{SQL} \rightarrow \text{Go}, \quad G : \text{Proto} \rightarrow \text{Go}, \quad G : \text{Interface} \rightarrow \text{Mock}
 $$
 
-### 3.2 go:generate 指令的语义
+### 2.2 go:generate 指令的语义
 
 `//go:generate` 指令可形式化为：
 
@@ -168,7 +125,7 @@ $$
 
 其中 Context 包含文件名（`$GOFILE`）、行号（`$GOLINE`）、包目录等环境变量。
 
-### 3.3 AST 的代数结构
+### 2.3 AST 的代数结构
 
 Go AST 可形式化为代数数据类型（ADT）：
 
@@ -190,7 +147,7 @@ $$
 \text{Generate}(f : \text{File}) : \text{File}' = \text{Transform}(\text{Parse}(f))
 $$
 
-### 3.4 代码生成的不变量
+### 2.4 代码生成的不变量
 
 代码生成应满足以下不变量：
 
@@ -208,7 +165,7 @@ $$
 
 3. **可读性**：生成的代码应经过 `gofmt` 格式化，符合 Go 风格。
 
-### 3.5 代码生成 vs 反射 vs 泛型
+### 2.5 代码生成 vs 反射 vs 泛型
 
 三种减少重复代码的手段的对比：
 
@@ -222,9 +179,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 go:generate 指令解析算法
+### 3.1 go:generate 指令解析算法
 
 Go 工具链解析 `//go:generate` 指令的算法：
 
@@ -236,7 +193,7 @@ Go 工具链解析 `//go:generate` 指令的算法：
 
 算法复杂度：$O(N \times M)$，$N$ 为文件数，$M$ 为每文件指令数。
 
-### 4.2 AST 遍历的算法
+### 3.2 AST 遍历的算法
 
 `go/ast` 包提供的 `ast.Inspect` 函数采用深度优先遍历：
 
@@ -250,7 +207,7 @@ func Inspect(node ast.Node, f func(ast.Node) bool)
 
 复杂度：$O(N)$，$N$ 为 AST 节点数。
 
-### 4.3 类型检查的集成
+### 3.3 类型检查的集成
 
 代码生成器常需类型信息（如结构体字段类型、接口方法签名）。Go 提供 `go/types` 包：
 
@@ -260,7 +217,7 @@ func Inspect(node ast.Node, f func(ast.Node) bool)
 
 类型检查的开销：$O(N^2)$ 最坏（因需解析依赖），实际近似线性。
 
-### 4.4 代码格式化的算法
+### 3.4 代码格式化的算法
 
 `go/format` 与 `go/printer` 包实现 Go 代码格式化，基于 Go 团队的格式化规则：
 
@@ -270,7 +227,7 @@ func Inspect(node ast.Node, f func(ast.Node) bool)
 
 复杂度：$O(N)$，$N$ 为 AST 节点数。
 
-### 4.5 复杂度分析
+### 3.5 复杂度分析
 
 | 操作 | 时间复杂度 | 备注 |
 |------|----------|------|
@@ -283,9 +240,9 @@ func Inspect(node ast.Node, f func(ast.Node) bool)
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：go:generate 指令
+### 4.1 基础：go:generate 指令
 
 ```go
 // Package main 演示 go:generate 指令的基本用法
@@ -316,7 +273,7 @@ go generate ./pkg/...
 
 **注意**：`go generate` 不会自动运行，需显式触发。`go build`、`go test` 都不会触发生成。
 
-### 5.2 Stringer：为枚举生成 String 方法
+### 4.2 Stringer：为枚举生成 String 方法
 
 ```go
 // Package status 演示 stringer 工具
@@ -377,7 +334,7 @@ s := StatusActive
 fmt.Println(s) // 输出：Active
 ```
 
-### 5.3 Mockgen：生成 Mock 对象
+### 4.3 Mockgen：生成 Mock 对象
 
 ```go
 // Package service 演示 mockgen 生成 Mock
@@ -483,7 +440,7 @@ func TestGetUser(t *testing.T) {
 }
 ```
 
-### 5.4 sqlc：从 SQL 生成类型安全代码
+### 4.4 sqlc：从 SQL 生成类型安全代码
 
 ```yaml
 # sqlc.yaml
@@ -562,7 +519,7 @@ func (h *UserHandler) ListUsers(ctx context.Context, page, size int) ([]db.User,
 }
 ```
 
-### 5.5 Protobuf：生成 gRPC 代码
+### 4.5 Protobuf：生成 gRPC 代码
 
 ```protobuf
 // api.proto
@@ -628,7 +585,7 @@ func (s *UserServer) GetUser(ctx context.Context, req *api.GetUserRequest) (*api
 }
 ```
 
-### 5.6 Wire：编译期依赖注入
+### 4.6 Wire：编译期依赖注入
 
 ```go
 // Package wire 演示 wire 依赖注入
@@ -707,7 +664,7 @@ func InitializeApp(cfg *Config) (*App, error) {
 }
 ```
 
-### 5.7 自定义代码生成器：Builder 模式
+### 4.7 自定义代码生成器：Builder 模式
 
 ```go
 // gen/main.go - 代码生成器
@@ -886,7 +843,7 @@ func (b *UserBuilder) Build() *User {
 }
 ```
 
-### 5.8 使用 go/ast 解析源码
+### 4.8 使用 go/ast 解析源码
 
 ```go
 // Package parser 演示 AST 解析
@@ -958,7 +915,7 @@ func (u *User) GetName() string {
 }
 ```
 
-### 5.9 OpenAPI 客户端生成
+### 4.9 OpenAPI 客户端生成
 
 ```yaml
 # openapi.yaml（简化）
@@ -1027,7 +984,7 @@ func main() {
 }
 ```
 
-### 5.10 Makefile 集成
+### 4.10 Makefile 集成
 
 ```makefile
 # Makefile 集成代码生成到构建流程
@@ -1061,9 +1018,9 @@ clean:
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Go 代码生成 vs Java 注解处理器
+### 5.1 Go 代码生成 vs Java 注解处理器
 
 | 维度 | Go 代码生成 | Java APT |
 |------|------------|----------|
@@ -1074,7 +1031,7 @@ clean:
 | IDE 支持 | 良好（Go 插件） | 良好（IntelliJ） |
 | 生态工具 | Stringer、mockgen、sqlc | Lombok、Dagger、AutoValue |
 
-### 6.2 Go 代码生成 vs Rust 过程宏
+### 5.2 Go 代码生成 vs Rust 过程宏
 
 | 维度 | Go 代码生成 | Rust 过程宏 |
 |------|------------|-------------|
@@ -1085,7 +1042,7 @@ clean:
 | 类型安全 | 生成代码经编译器检查 | 宏输出经编译器检查 |
 | 调试性 | 高（可见生成代码） | 中（宏展开后可见） |
 
-### 6.3 Go 代码生成 vs C 预处理器宏
+### 5.3 Go 代码生成 vs C 预处理器宏
 
 | 维度 | Go 代码生成 | C 宏 |
 |------|------------|------|
@@ -1095,7 +1052,7 @@ clean:
 | 副作用 | 无 | 多次展开、副作用问题 |
 | 适用场景 | 复杂代码生成 | 简单文本替换 |
 
-### 6.4 Go 代码生成 vs Python 装饰器
+### 5.4 Go 代码生成 vs Python 装饰器
 
 | 维度 | Go 代码生成 | Python 装饰器 |
 |------|------------|---------------|
@@ -1104,7 +1061,7 @@ clean:
 | 性能开销 | 零 | 函数调用开销 |
 | 灵活性 | 中（需重新生成） | 高（运行时动态） |
 
-### 6.5 Go 代码生成 vs 泛型
+### 5.5 Go 代码生成 vs 泛型
 
 Go 1.18+ 泛型减少了部分代码生成需求，但两者适用场景不同：
 
@@ -1120,9 +1077,9 @@ Go 1.18+ 泛型减少了部分代码生成需求，但两者适用场景不同�
 
 ---
 
-## 7. 陷阱与反模式
+## 6. 陷阱与反模式
 
-### 7.1 反模式一：注释格式错误
+### 6.1 反模式一：注释格式错误
 
 ```go
 // 错误：// 前有空格
@@ -1135,7 +1092,7 @@ Go 1.18+ 泛型减少了部分代码生成需求，但两者适用场景不同�
 //go:generate stringer -type=Status
 ```
 
-### 7.2 反模式二：手动修改生成代码
+### 6.2 反模式二：手动修改生成代码
 
 ```go
 // 反模式：手动修改生成代码
@@ -1153,7 +1110,7 @@ func (i Status) String() string {
 
 **正确做法**：修改源定义（如枚举值或注释），重新生成。
 
-### 7.3 反模式三：生成代码不提交 Git
+### 6.3 反模式三：生成代码不提交 Git
 
 ```bash
 # 反模式：将生成代码加入 .gitignore
@@ -1169,7 +1126,7 @@ mock/
 
 **推荐做法**：将生成代码提交 Git，确保 `go build` 可直接执行。
 
-### 7.4 反模式四：go generate 未集成构建
+### 6.4 反模式四：go generate 未集成构建
 
 ```bash
 # 反模式：开发者手动运行，CI 不运行
@@ -1189,7 +1146,7 @@ test: generate
     go test ./...
 ```
 
-### 7.5 反模式五：生成代码命名混乱
+### 6.5 反模式五：生成代码命名混乱
 
 ```go
 // 反模式：生成文件命名不清晰
@@ -1202,7 +1159,7 @@ test: generate
 - Protobuf：`<name>.pb.go`
 - Wire：`wire_gen.go`
 
-### 7.6 反模式六：循环依赖
+### 6.6 反模式六：循环依赖
 
 ```go
 // package a
@@ -1216,7 +1173,7 @@ test: generate
 
 **正确做法**：生成器放在独立的 `tools` 包，不依赖业务代码。
 
-### 7.7 反模式七：过度生成
+### 6.7 反模式七：过度生成
 
 ```go
 // 反模式：为简单类型生成代码
@@ -1233,7 +1190,7 @@ const (
 
 **正确做法**：仅在枚举值多、性能敏感时用 stringer。
 
-### 7.8 反模式八：生成器不可重现
+### 6.8 反模式八：生成器不可重现
 
 ```go
 // 反模式：生成器依赖当前时间
@@ -1246,9 +1203,9 @@ const (
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目目录组织
+### 7.1 项目目录组织
 
 ```mermaid
 flowchart TD
@@ -1278,7 +1235,7 @@ flowchart TD
     T18 --> T19
 ```
 
-### 8.2 Makefile 标准化
+### 7.2 Makefile 标准化
 
 ```makefile
 # 标准化 Makefile
@@ -1325,7 +1282,7 @@ clean:
 	find . -name "mock/*.go" -delete
 ```
 
-### 8.3 CI 流水线集成
+### 7.3 CI 流水线集成
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1363,7 +1320,7 @@ jobs:
         run: make lint
 ```
 
-### 8.4 模板化代码生成
+### 7.4 模板化代码生成
 
 使用 `text/template` 生成代码：
 
@@ -1437,14 +1394,14 @@ func main() {
 }
 ```
 
-### 8.5 调试生成代码
+### 7.5 调试生成代码
 
 1. **查看生成代码**：直接打开生成的 `.go` 文件。
 2. **断点调试生成器**：在生成器中加 `log.Println` 输出生成内容。
 3. **逐步生成**：先生成到 stdout，确认正确后再写入文件。
 4. **格式化检查**：用 `gofmt -l` 检查生成代码格式。
 
-### 8.6 版本控制策略
+### 7.6 版本控制策略
 
 | 策略 | 优点 | 缺点 |
 |------|------|------|
@@ -1456,9 +1413,9 @@ func main() {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Kubernetes 代码生成器
+### 8.1 案例一：Kubernetes 代码生成器
 
 Kubernetes 项目大量使用代码生成：
 
@@ -1479,7 +1436,7 @@ Kubernetes 的代码生成器包括：
 
 这些生成器共享同一套输入（API 类型定义），生成不同层次的代码。
 
-### 9.2 案例二：protobuf 的 Go 实现
+### 8.2 案例二：protobuf 的 Go 实现
 
 `google.golang.org/protobuf` 包通过 `protoc-gen-go` 生成代码：
 
@@ -1509,7 +1466,7 @@ protobuf 的代码生成实现了：
 - 高性能的序列化/反序列化（基于 Protobuf 二进制格式）。
 - gRPC 服务接口。
 
-### 9.3 案例三：sqlc 的类型安全查询
+### 8.3 案例三：sqlc 的类型安全查询
 
 `sqlc` 从 SQL 生成类型安全的 Go 代码：
 
@@ -1538,7 +1495,7 @@ func (q *Queries) GetUser(ctx context.Context, id string) (User, error) {
 - 无需 ORM 的运行时反射。
 - 性能接近手写 `database/sql`。
 
-### 9.4 案例四：wire 的依赖注入
+### 8.4 案例四：wire 的依赖注入
 
 `wire` 在编译期分析依赖图，生成 DI 代码：
 
@@ -1577,7 +1534,7 @@ func InitializeApp(cfg *Config) (*App, error) {
 - 无运行时反射开销。
 - 错误信息清晰（编译期报错）。
 
-### 9.5 案例五：ent 的图数据库 ORM
+### 8.5 案例五：ent 的图数据库 ORM
 
 `ent`（github.com/ent/ent）通过 Schema 定义生成图数据库 ORM：
 
@@ -1752,9 +1709,9 @@ func generateEqual(structName string, fields []Field) string {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 - Appel, A. W. (2004). *Modern Compiler Implementation in ML*. Cambridge University Press. https://doi.org/10.1017/CBO9780511606547
 
@@ -1766,7 +1723,7 @@ func generateEqual(structName string, fields []Field) string {
 
 - Parr, T. J., & Quong, R. W. (1995). *ANTLR: A predicated-LL(k) parser generator*. Software: Practice and Experience, 25(7), 789–810. https://doi.org/10.1002/spe.4380250705
 
-### 11.2 官方文档
+### 10.2 官方文档
 
 - Cox, R. (2014). *Generating Code*. https://go.dev/blog/generate
 
@@ -1778,7 +1735,7 @@ func generateEqual(structName string, fields []Field) string {
 
 - Go Team. (2024). *Go generate command documentation*. https://pkg.go.dev/cmd/go#hdr-Generate_Go_files_by_processing_source
 
-### 11.3 工具文档
+### 10.3 工具文档
 
 - Stringer. *Stringer: generating String methods for constants*. https://pkg.go.dev/golang.org/x/tools/cmd/stringer
 
@@ -1790,13 +1747,13 @@ func generateEqual(structName string, fields []Field) string {
 
 - protobuf. *Protocol Buffers*. https://protobuf.dev/
 
-### 11.4 标准与规范
+### 10.4 标准与规范
 
 - OpenAPI Initiative. (2024). *OpenAPI Specification 3.1*. https://spec.openapis.org/oas/v3.1.0
 
 - Google. (2024). *Protocol Buffers Language Guide (proto3)*. https://protobuf.dev/programming-guides/proto3/
 
-### 11.5 经典教材
+### 10.5 经典教材
 
 - Parr, T. (2013). *The Definitive ANTLR 4 Reference* (2nd ed.). Pragmatic Bookshelf. https://doi.org/10.5555/2501720
 
@@ -1804,40 +1761,40 @@ func generateEqual(structName string, fields []Field) string {
 
 ---
 
-## 12. 扩展阅读
+## 11. 扩展阅读
 
-### 12.1 Go AST 与类型系统
+### 11.1 Go AST 与类型系统
 
 - *Go AST 包详解*：https://pkg.go.dev/go/ast
 - *Go types 包文档*：https://pkg.go.dev/go/types
 - *Writing tools for Go*：https://github.com/golang/go/wiki/GoTools
 
-### 12.2 代码生成工具
+### 11.2 代码生成工具
 
 - *stringer 源码分析*：https://github.com/golang/tools/tree/master/cmd/stringer
 - *mockgen 设计文档*：https://github.com/uber-go/mock
 - *sqlc 架构与实现*：https://docs.sqlc.dev/en/latest/architecture.html
 - *wire 设计动机*：https://github.com/google/wire/blob/main/docs/guide.md
 
-### 12.3 相关 Go 提案
+### 11.3 相关 Go 提案
 
 - *Proposal: go:generate improvements*：https://github.com/golang/go/issues/57638
 - *Proposal: generics reduce code generation*：https://go.dev/blog/generics-proposal
 
-### 12.4 其他语言对比
+### 11.4 其他语言对比
 
 - *Java Annotation Processing*：https://docs.oracle.com/javase/8/docs/api/javax/annotation/processing/Processor.html
 - *Lombok*：https://projectlombok.org/
 - *Rust proc_macro*：https://doc.rust-lang.org/reference/procedural-macros.html
 - *Python Decorators*：https://docs.python.org/3/glossary.html#term-decorator
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - *Go Code Generation Patterns*（GopherCon talks）：https://www.youtube.com/watch?v=WiC_B2c4RLs
 - *Dave Cheney - Generating Code*：https://dave.cheney.net/2014/09/28/go-generate
 - *Kubernetes Code Generation*：https://github.com/kubernetes/code-generator
 
-### 12.6 进阶实验
+### 11.6 进阶实验
 
 - 要点：一个生成 `DeepCopy` 方法的工具。
 - 要点：一个从 Go 接口生成 TypeScript 类型定义的生成器。
@@ -1846,9 +1803,9 @@ func generateEqual(structName string, fields []Field) string {
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 go:generate 占位符速查
+### 12.1 go:generate 占位符速查
 
 | 占位符 | 含义 |
 |--------|------|
@@ -1861,7 +1818,7 @@ func generateEqual(structName string, fields []Field) string {
 | `$GOARCH` | 目标架构（如 `amd64`） |
 | `$GOOS` | 目标操作系统（如 `linux`） |
 
-### 13.2 常用工具速查
+### 12.2 常用工具速查
 
 | 工具 | 安装命令 | 用途 |
 |------|---------|------|
@@ -1875,7 +1832,7 @@ func generateEqual(structName string, fields []Field) string {
 | ent | `go run -mod=mod entgo.io/ent/cmd/ent` | 图数据库 ORM |
 | deepcopy-gen | `go install k8s.io/code-generator/cmd/deepcopy-gen@latest` | DeepCopy 方法 |
 
-### 13.3 生成代码命名约定
+### 12.3 生成代码命名约定
 
 | 工具 | 输出文件名 | 标注 |
 |------|----------|------|
@@ -1887,7 +1844,7 @@ func generateEqual(structName string, fields []Field) string {
 | oapi-codegen | `<name>.gen.go` | `Code generated by OpenAPI Generator.` |
 | ent | `ent/<entity>.go` | `Code generated by ent.` |
 
-### 13.4 AST 节点速查
+### 12.4 AST 节点速查
 
 ```go
 // 常用 AST 节点类型
@@ -1911,7 +1868,7 @@ func generateEqual(structName string, fields []Field) string {
 *ast.FuncType        // 函数类型
 ```
 
-### 13.5 命令速查
+### 12.5 命令速查
 
 ```bash
 # 运行代码生成
@@ -1936,7 +1893,7 @@ go fmt ./...
 git diff --exit-code -- '*.gen.go'
 ```
 
-### 13.6 常见问题
+### 12.6 常见问题
 
 **Q1：`go generate` 会自动运行吗？**
 A：不会。`go build`、`go test` 都不触发 `go generate`，需显式运行。
@@ -1956,7 +1913,7 @@ A：不冲突。泛型减少部分代码生成需求，但 SQL、Protobuf 等仍
 **Q6：如何在 CI 中确保生成代码最新？**
 A：在 CI 中运行 `go generate ./...` 后用 `git diff --exit-code` 检查是否有变更。
 
-### 13.7 最佳实践清单
+### 12.7 最佳实践清单
 
 - [ ] `//go:generate` 指令紧贴行首，无空格。
 - [ ] 生成代码文件标注 `DO NOT EDIT`。

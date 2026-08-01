@@ -26,42 +26,16 @@ tags:
   - d-ts
 ---
 
+
 # 模块声明与全局类型增强
 
 > 本文档对标 MIT 6.S192 与 Stanford CS142 课程标准，系统讲解 TypeScript 模块声明（Module Declaration）、声明合并（Declaration Merging）与全局类型增强（Global Augmentation）的形式语义、工程实践与生产级模式。文档面向零基础自学读者，从 JavaScript 模块系统的演化出发，逐步推导 `declare module`、`declare global`、三斜线指令与 `@types` 生态的设计动机，最终落地为可复用的工程模板。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-完成本文档学习后，读者应能够在认知（Remembering / Understanding）、应用（Applying / Analyzing）与创造（Evaluating / Creating）三个 Bloom 层次上达成以下能力：
-
-### 1.1 认知层（Remembering / Understanding）
-
-- **LO-1.1**：能够准确陈述 `.d.ts` 声明文件与 `.ts` 实现文件在 AST 层面的差异，并解释"声明即契约"的形式语义。
-- **LO-1.2**：能够复述 TypeScript 的三类环境声明（Ambient Declaration）：`declare module`、`declare global`、`declare namespace`，并说明三者的作用域边界。
-- **LO-1.3**：能够解释声明合并（Declaration Merging）的四种合并规则：接口合并、命名空间合并、命名空间与函数合并、命名空间与枚举合并。
-- **LO-1.4**：能够描述三斜线指令（Triple-Slash Directives）`/// <reference path />`、`/// <reference types />`、`/// <reference lib />` 的语义差异与编译器处理顺序。
-
-### 1.2 应用层（Applying / Analyzing）
-
-- **LO-2.1**：能够为无类型定义的第三方 JavaScript 库编写符合 DefinitelyTyped 规范的 `.d.ts` 声明文件，并通过 `dtslint` 校验。
-- **LO-2.2**：能够使用 `declare module` 扩展 Express、Vue、Fastify 等框架的内置接口，为请求对象、组件属性注入自定义类型。
-- **LO-2.3**：能够使用 `declare global` 安全地扩展 `Window`、`Array<T>`、`String` 等全局对象，并识别全局污染的风险。
-- **LO-2.4**：能够诊断"Cannot find module 'xxx'"与"Could not find a declaration file for module 'yyy'"两类常见错误，并给出至少三种解决方案。
-- **LO-2.5**：能够使用 `paths`、`baseUrl`、`typeRoots`、`types` 四个 tsconfig 选项精确控制类型解析路径。
-
-### 1.3 创造层（Evaluating / Creating）
-
-- **LO-3.1**：能够为一个 monorepo 设计分层类型声明架构，使 `apps/*` 与 `packages/*` 之间的类型既能复用又能局部增强。
-- **LO-3.2**：能够评估"全局增强 vs 模块增强 vs 类型别名"三种方案的工程权衡，并在性能、可维护性、可测试性三个维度上给出量化对比。
-- **LO-3.3**：能够设计一个类型安全的插件系统，使第三方插件可以扩展宿主框架的核心接口，并通过类型推导自动感知插件提供的功能。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 JavaScript 的"无类型"困境（1995-2010）
+### 1.1 JavaScript 的"无类型"困境（1995-2010）
 
 JavaScript 自 1995 年诞生起的十五年里，始终是一门"无类型"语言。这意味着：
 
@@ -79,7 +53,7 @@ const user = fetchUser(123);
 console.log(user.nmae); // 拼写错误，运行时才是 undefined
 ```
 
-### 2.2 TypeScript 1.0 的环境声明雏形（2014）
+### 1.2 TypeScript 1.0 的环境声明雏形（2014）
 
 TypeScript 1.0（2014 年发布）引入了"环境声明"（Ambient Declaration）的概念，其核心思想是：**为已存在的 JavaScript 代码提供类型描述，而不需要重写这些代码**。这是 `.d.ts` 文件的诞生背景。
 
@@ -102,7 +76,7 @@ $$
 
 其中 $\oplus$ 表示"类型层面的叠加"，编译器仅消费 $\text{Declaration}$ 部分。
 
-### 2.3 DefinitelyTyped 与 `@types` 生态（2015-2017）
+### 1.3 DefinitelyTyped 与 `@types` 生态（2015-2017）
 
 2015 年，社区发起 **DefinitelyTyped** 项目（https://github.com/DefinitelyTyped/DefinitelyTyped ），目标是集中维护数千个 JavaScript 库的类型声明。2016 年 TypeScript 2.0 引入 `@types` 机制，使类型声明可以通过 npm 安装：
 
@@ -112,7 +86,7 @@ npm install --save-dev @types/lodash @types/node @types/express
 
 这一机制的背后是 `typeRoots` 与 `types` 两个 tsconfig 选项的协同工作（详见第 8 节）。
 
-### 2.4 模块增强能力的引入（TypeScript 2.1, 2016）
+### 1.4 模块增强能力的引入（TypeScript 2.1, 2016）
 
 TypeScript 2.1 引入**模块增强**（Module Augmentation）能力，允许开发者在自己的文件中扩展已存在模块的类型：
 
@@ -127,7 +101,7 @@ declare module 'express' {
 
 这一能力的出现解决了"框架核心类型不可变，但需要业务层扩展"的矛盾，成为 Express 中间件、Vue 插件、React 高阶组件等模式的基础。
 
-### 2.5 全局增强与 `declare global`（TypeScript 2.1, 2016）
+### 1.5 全局增强与 `declare global`（TypeScript 2.1, 2016）
 
 与模块增强同步引入的是 `declare global` 语法。在 ES Module 普及之前，TypeScript 使用 `declare var` / `declare function` 直接污染全局命名空间；ES Module 时代，文件被视为模块（顶层有 `import` 或 `export`），全局污染被禁止，必须显式使用 `declare global` 块：
 
@@ -142,7 +116,7 @@ declare global {
 export {}; // 关键：使文件成为模块，触发 declare global 块生效
 ```
 
-### 2.6 现代 TypeScript 的声明生态（2020-至今）
+### 1.6 现代 TypeScript 的声明生态（2020-至今）
 
 随着 TypeScript 5.x 的发布，声明文件生态呈现以下趋势：
 
@@ -153,9 +127,9 @@ export {}; // 关键：使文件成为模块，触发 declare global 块生效
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 声明文件的语法范畴
+### 2.1 声明文件的语法范畴
 
 TypeScript 声明文件 `.d.ts` 的语法可形式化为以下文法（简化版 BNF）：
 
@@ -171,7 +145,7 @@ $$
 \end{aligned}
 $$
 
-### 3.2 模块增强的形式语义
+### 2.2 模块增强的形式语义
 
 设 $M$ 为一个已存在的模块，其类型为 $\tau_M$。模块增强通过 `declare module 'M'` 引入一个增量 $\Delta$，编译器将增强后的类型记为：
 
@@ -186,7 +160,7 @@ $$
 - 对于函数（Function）：形成函数重载（Overload）序列。
 - 对于枚举（Enum）：取枚举成员的并集。
 
-### 3.3 全局增强的作用域规则
+### 2.3 全局增强的作用域规则
 
 设 $\Gamma$ 为全局类型环境（Global Type Environment）。`declare global` 块将声明注入 $\Gamma$：
 
@@ -200,7 +174,7 @@ $$
 Global augmentation can only be directly nested in an external module.
 ```
 
-### 3.4 三斜线指令的依赖图
+### 2.4 三斜线指令的依赖图
 
 TypeScript 编译器维护一个依赖图 $G = (V, E)$，其中 $V$ 是所有 `.d.ts` 文件，$E$ 由三斜线指令决定：
 
@@ -212,9 +186,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 声明合并的合流性（Confluence）
+### 3.1 声明合并的合流性（Confluence）
 
 **命题 4.1**：声明合并算子 $\sqcup$ 在接口合并场景下满足合流性，即无论合并顺序如何，最终结果相同。
 
@@ -231,7 +205,7 @@ $$
 
 **工程含义**：开发者可以按任意顺序编写多个 `declare module` 增强块，最终类型一致。但**同名成员的覆盖顺序由文件加载顺序决定**，这在 monorepo 中可能因 `tsconfig` 的 `include` 顺序而产生不可预期的行为（详见第 7 节陷阱）。
 
-### 4.2 模块增强的可加性
+### 3.2 模块增强的可加性
 
 **命题 4.2**：模块增强是可加的（Additive），即增强只能添加成员，不能删除或修改已有成员的类型。
 
@@ -247,7 +221,7 @@ $$
 
 **工程含义**：不能用模块增强把 `string` 改成 `number`，但可以把 `string` 收窄为 `'admin' | 'user'`。
 
-### 4.3 全局增强的命名冲突不可判定性
+### 3.3 全局增强的命名冲突不可判定性
 
 **命题 4.3**：在多包依赖的场景下，全局增强的命名冲突在编译时是不可判定的（Undecidable）。
 
@@ -263,11 +237,11 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 声明文件基础
+### 4.1 声明文件基础
 
-#### 5.1.1 最简单的环境变量声明
+#### 4.1.1 最简单的环境变量声明
 
 ```typescript
 // env.d.ts — 描述编译时注入的全局常量
@@ -281,7 +255,7 @@ if (__DEV__) {
 }
 ```
 
-#### 5.1.2 函数与类声明
+#### 4.1.2 函数与类声明
 
 ```typescript
 // legacy-lib.d.ts — 为 JavaScript 库编写声明
@@ -304,7 +278,7 @@ const emitter = new EventEmitter<{
 emitter.on('click', (x, y) => console.log(x, y));
 ```
 
-#### 5.1.3 命名空间声明
+#### 4.1.3 命名空间声明
 
 ```typescript
 // jquery.d.ts — 模拟早期 jQuery 的命名空间风格
@@ -331,9 +305,9 @@ $.ajax({ url: '/api/users', method: 'GET' });
 const settings: $.AjaxSettings = { url: '/', method: 'GET', headers: {} };
 ```
 
-### 5.2 `declare module` 详解
+### 4.2 `declare module` 详解
 
-#### 5.2.1 为无类型模块添加类型
+#### 4.2.1 为无类型模块添加类型
 
 ```typescript
 // types/legacy-lib.d.ts
@@ -358,7 +332,7 @@ declare module 'legacy-lib' {
 }
 ```
 
-#### 5.2.2 模块增强：扩展 Express
+#### 4.2.2 模块增强：扩展 Express
 
 ```typescript
 // types/express.d.ts
@@ -407,7 +381,7 @@ app.get('/me', (req, res) => {
 });
 ```
 
-#### 5.2.3 模块增强：扩展 Vue 3
+#### 4.2.3 模块增强：扩展 Vue 3
 
 ```typescript
 // types/vue.d.ts
@@ -445,9 +419,9 @@ app.config.globalProperties.$t = i18n.global.t;
 app.mount('#app');
 ```
 
-### 5.3 `declare global` 详解
+### 4.3 `declare global` 详解
 
-#### 5.3.1 扩展 Window 对象
+#### 4.3.1 扩展 Window 对象
 
 ```typescript
 // types/global.d.ts
@@ -508,7 +482,7 @@ const arr = [1, 2, 3];
 console.log(arr.last()); // 3
 ```
 
-#### 5.3.2 全局变量声明（无 `declare global` 块）
+#### 4.3.2 全局变量声明（无 `declare global` 块）
 
 ```typescript
 // globals.d.ts — 文件不是模块（无 import/export），可直接声明
@@ -526,9 +500,9 @@ declare namespace process {
 }
 ```
 
-### 5.4 三斜线指令
+### 4.4 三斜线指令
 
-#### 5.4.1 `/// <reference path />`：显式引用文件
+#### 4.4.1 `/// <reference path />`：显式引用文件
 
 ```typescript
 // types/base.d.ts
@@ -544,7 +518,7 @@ declare interface User {
 }
 ```
 
-#### 5.4.2 `/// <reference types />`：引用 `@types` 包
+#### 4.4.2 `/// <reference types />`：引用 `@types` 包
 
 ```typescript
 // custom-node.d.ts
@@ -553,7 +527,7 @@ declare interface User {
 declare function readFile(path: string): Promise<Buffer>;
 ```
 
-#### 5.4.3 `/// <reference lib />`：引用内置 lib
+#### 4.4.3 `/// <reference lib />`：引用内置 lib
 
 ```typescript
 // es2020-features.d.ts
@@ -565,9 +539,9 @@ declare function allSettled<T>(
 ): Promise<{ status: 'fulfilled'; value: T } | { status: 'rejected'; reason: unknown }[]>;
 ```
 
-### 5.5 声明合并的四种模式
+### 4.5 声明合并的四种模式
 
-#### 5.5.1 接口合并
+#### 4.5.1 接口合并
 
 ```typescript
 interface Box {
@@ -591,7 +565,7 @@ interface Box {
 const box: Box = { width: 10, height: 20, depth: 5 };
 ```
 
-#### 5.5.2 命名空间合并
+#### 4.5.2 命名空间合并
 
 ```typescript
 namespace App {
@@ -609,7 +583,7 @@ namespace App {
 App.init({ name: 'MyApp' });
 ```
 
-#### 5.5.3 命名空间与函数合并
+#### 4.5.3 命名空间与函数合并
 
 ```typescript
 function getUser(id: string): { name: string };
@@ -628,7 +602,7 @@ getUser.ADMIN_ID;
 getUser.fromToken('xxx');
 ```
 
-#### 5.5.4 命名空间与枚举合并
+#### 4.5.4 命名空间与枚举合并
 
 ```typescript
 enum Status {
@@ -652,9 +626,9 @@ Status.LABELS[Status.Pending]; // '待处理'
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Flow 的对比
+### 5.1 与 Flow 的对比
 
 | 维度 | TypeScript `declare module` | Flow `declare module` |
 |------|-----------------------------|------------------------|
@@ -666,7 +640,7 @@ Status.LABELS[Status.Pending]; // '待处理'
 | 编译速度 | 中等 | 较慢（需完整类型环境） |
 | 工具链集成 | 与 VSCode、WebStorm 深度集成 | 与 Flow Language Service 集成 |
 
-### 6.2 与纯 JavaScript + JSDoc 的对比
+### 5.2 与纯 JavaScript + JSDoc 的对比
 
 ```javascript
 // @ts-check
@@ -706,7 +680,7 @@ async function fetchUser(id: string): Promise<User> {
 - JSDoc 方案无需编译步骤，适合渐进式迁移，但类型表达能力弱（不支持条件类型、映射类型）。
 - TypeScript 方案类型表达力强，但需要编译步骤与 `.d.ts` 维护成本。
 
-### 6.3 与 Rust 类型系统的对比
+### 5.3 与 Rust 类型系统的对比
 
 Rust 不存在"声明文件"概念，因为 Rust 是从零设计的强类型语言，所有类型信息都内嵌于源码。但 Rust 的 `extern crate` 与 trait 扩展机制与 TypeScript 的模块增强有相似之处：
 
@@ -738,9 +712,9 @@ declare module 'some-lib' {
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：`declare global` 缺少 `export {}`
+### 6.1 陷阱：`declare global` 缺少 `export {}`
 
 **错误代码**：
 
@@ -774,7 +748,7 @@ declare global {
 }
 ```
 
-### 7.2 陷阱：模块增强未导入原模块
+### 6.2 陷阱：模块增强未导入原模块
 
 **错误代码**：
 
@@ -802,7 +776,7 @@ declare module 'express' {
 }
 ```
 
-### 7.3 陷阱：在库（library）中使用 `declare global`
+### 6.3 陷阱：在库（library）中使用 `declare global`
 
 **反模式**：
 
@@ -830,7 +804,7 @@ import { install } from 'my-ui-lib';
 install(window);
 ```
 
-### 7.4 陷阱：声明合并的顺序依赖
+### 6.4 陷阱：声明合并的顺序依赖
 
 **反模式**：
 
@@ -854,7 +828,7 @@ Subsequent variable declarations must have the same type.
 
 **修复**：使用 `&` 交叉类型或在原模块中正确设计可扩展接口。
 
-### 7.5 陷阱：`@types` 与库自带类型冲突
+### 6.5 陷阱：`@types` 与库自带类型冲突
 
 **场景**：项目同时安装了 `@types/lodash` 与 `lodash@4.17.x`（自带类型），导致类型冲突。
 
@@ -878,7 +852,7 @@ npx tsc --traceResolution | grep lodash
 }
 ```
 
-### 7.6 陷阱：三斜线指令在 ES Module 中失效
+### 6.6 陷阱：三斜线指令在 ES Module 中失效
 
 **问题**：在 `module: "esnext"` 模式下，三斜线指令的 `/// <reference path />` 可能被忽略，导致依赖类型未加载。
 
@@ -894,7 +868,7 @@ npx tsc --traceResolution | grep lodash
 import type { UserID, Timestamp } from './base';
 ```
 
-### 7.7 陷阱：`declare module` 通配符的过度使用
+### 6.7 陷阱：`declare module` 通配符的过度使用
 
 **反模式**：
 
@@ -919,7 +893,7 @@ declare module '*' {  // 通配所有模块！
 
 **修复**：仅对特定的文件扩展名或路径模式使用通配符，绝不使用 `'*'`。
 
-### 7.8 陷阱：循环依赖导致声明合并失效
+### 6.8 陷阱：循环依赖导致声明合并失效
 
 **场景**：包 A 增强包 B 的类型，包 B 又增强包 A 的类型，形成循环。
 
@@ -929,11 +903,11 @@ declare module '*' {  // 通配所有模块！
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 tsconfig 配置
+### 7.1 tsconfig 配置
 
-#### 8.1.1 `typeRoots` 与 `types`
+#### 7.1.1 `typeRoots` 与 `types`
 
 ```json
 {
@@ -954,7 +928,7 @@ declare module '*' {  // 通配所有模块！
 - `typeRoots`：指定类型声明包的查找目录。
 - `types`：仅加载列出的类型包，未列出则不自动加载（避免全局污染）。
 
-#### 8.1.2 `paths` 与 `baseUrl`
+#### 7.1.2 `paths` 与 `baseUrl`
 
 ```json
 {
@@ -969,7 +943,7 @@ declare module '*' {  // 通配所有模块！
 }
 ```
 
-#### 8.1.3 完整推荐配置
+#### 7.1.3 完整推荐配置
 
 ```json
 {
@@ -1002,7 +976,7 @@ declare module '*' {  // 通配所有模块！
 }
 ```
 
-### 8.2 项目目录结构
+### 7.2 项目目录结构
 
 ```mermaid
 flowchart TD
@@ -1025,9 +999,9 @@ flowchart TD
     T11 --> T13
 ```
 
-### 8.3 为第三方库编写声明文件
+### 7.3 为第三方库编写声明文件
 
-#### 8.3.1 检查是否已有类型
+#### 7.3.1 检查是否已有类型
 
 ```bash
 # 检查 @types 是否存在
@@ -1037,7 +1011,7 @@ npm view @types/lodash
 node -e "console.log(require('lodash/package.json').types || require('lodash/package.json').typings)"
 ```
 
-#### 8.3.2 编写声明文件的标准流程
+#### 7.3.2 编写声明文件的标准流程
 
 1. **阅读库的 README 与 API 文档**：列出所有公开 API。
 2. **编写最小声明**：从最常用的 API 开始，逐步补全。
@@ -1070,7 +1044,7 @@ const client = new Client({ baseUrl: 'http://x' });
 expectType<Promise<unknown>>(client.request('/users'));
 ```
 
-### 8.4 monorepo 中的类型架构
+### 7.4 monorepo 中的类型架构
 
 ```json
 // packages/shared/tsconfig.json
@@ -1100,7 +1074,7 @@ expectType<Promise<unknown>>(client.request('/users'));
 }
 ```
 
-### 8.5 类型安全的插件系统
+### 7.5 类型安全的插件系统
 
 ```typescript
 // host.ts — 宿主框架定义插件接口
@@ -1150,7 +1124,7 @@ host.register((api) => {
 });
 ```
 
-### 8.6 性能优化
+### 7.6 性能优化
 
 1. **`skipLibCheck: true`**：跳过 `.d.ts` 文件的类型检查，显著提升编译速度。
 2. **避免深层 `declare module`**：嵌套增强会拖慢类型解析。
@@ -1159,9 +1133,9 @@ host.register((api) => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：为 Electron 项目设计类型架构
+### 8.1 案例：为 Electron 项目设计类型架构
 
 **场景**：Electron 项目有主进程、渲染进程、preload 脚本三个上下文，每个上下文的全局变量不同。
 
@@ -1222,7 +1196,7 @@ flowchart TD
 }
 ```
 
-### 9.2 案例：扩展 Fastify 的请求类型
+### 8.2 案例：扩展 Fastify 的请求类型
 
 **场景**：Fastify 是一个高性能 Node.js 框架，支持通过插件扩展请求与回复类型。
 
@@ -1266,7 +1240,7 @@ app.get('/me', async (req) => {
 });
 ```
 
-### 9.3 案例：Vue 3 的类型插件机制
+### 8.3 案例：Vue 3 的类型插件机制
 
 **场景**：Vue 3 通过 `ComponentCustomProperties` 等接口提供扩展点，Pinia、Vue Router 等库都利用这一机制。
 
@@ -1296,7 +1270,7 @@ declare module 'vue' {
 }
 ```
 
-### 9.4 案例：tRPC 的类型推导链
+### 8.4 案例：tRPC 的类型推导链
 
 **场景**：tRPC 利用 TypeScript 的类型推导与 `declare module` 实现端到端类型安全的 RPC。
 
@@ -1330,7 +1304,7 @@ const user = await client.getUser.query({ id: '1' });
 console.log(user.name);
 ```
 
-### 9.5 案例：迁移 JavaScript 项目到 TypeScript
+### 8.5 案例：迁移 JavaScript 项目到 TypeScript
 
 **场景**：一个有 5 万行 JavaScript 代码的项目需要渐进式迁移到 TypeScript。
 
@@ -1369,7 +1343,7 @@ console.log(user.name);
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 10.1**：为以下 JavaScript 模块编写 `.d.ts` 声明文件：
 
@@ -1437,7 +1411,7 @@ declare global {
 }
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 10.4**：设计一个类型安全的主题系统，要求：
 1. 主题配置对象包含 `colors`、`spacing`、`fontSize` 三类属性。
@@ -1517,7 +1491,7 @@ class Host {
 }
 ```
 
-### 10.3 思考题
+### 9.3 思考题
 
 **思考题 10.6**：为什么 TypeScript 选择"声明合并"而非"显式扩展"（如 Rust 的 trait）作为模块增强的机制？从语言设计哲学、向后兼容性、生态演进三个角度分析。
 
@@ -1547,7 +1521,7 @@ class Host {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 > 采用 ACM Reference Format。
 
@@ -1573,9 +1547,9 @@ class Host {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **TypeScript Handbook: Declaration Files** — https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
   官方对 `.d.ts` 文件的系统讲解，涵盖所有声明语法。
@@ -1586,7 +1560,7 @@ class Host {
 - **TypeScript Handbook: tsconfig Reference** — https://www.typescriptlang.org/tsconfig
   所有 tsconfig 选项的官方参考，包括 `typeRoots`、`types`、`paths` 等。
 
-### 12.2 社区资源
+### 11.2 社区资源
 
 - **DefinitelyTyped GitHub Repository** — https://github.com/DefinitelyTyped/DefinitelyTyped
   8000+ 类型声明包的集中维护仓库，是学习声明文件的最佳实践来源。
@@ -1597,13 +1571,13 @@ class Host {
 - **Effective TypeScript: Item 33-37** — Dan Vanderkam
   对声明文件、模块增强、`@types` 生态的工程化讨论。
 
-### 12.3 相关课程
+### 11.3 相关课程
 
 - **MIT 6.S192: Intermediate Software Construction** — TypeScript 模块系统的学术视角。
 - **Stanford CS142: Web Applications** — 现代 Web 框架中的类型系统集成。
 - **CMU 17-437: Software Engineering for Web Applications** — 大型 Web 项目的类型架构设计。
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **Type-Level TypeScript** — https://type-level-typescript.com/
   从类型论角度深入讲解 TypeScript 类型系统的在线教程。
@@ -1614,7 +1588,7 @@ class Host {
 - **The TypeScript Compiler API** — https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API
   通过编程方式操作 TypeScript 类型系统，理解声明合并的内部实现。
 
-### 12.5 工具链
+### 11.5 工具链
 
 - **dtslint** — https://github.com/microsoft/dtslint
   Microsoft 出品的 `.d.ts` 文件校验工具，DefinitelyTyped 的标准工具。

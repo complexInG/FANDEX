@@ -19,58 +19,16 @@ prerequisites:
   - go/接口与类型断言
 ---
 
+
 # Map 原理：从哈希表到 Swiss Table 的演进
 
 > 本文以 Go 1.22 为基准版本，覆盖 Go 1.0 至 Go 1.24 的 map 实现演进，包含 runtime 源码分析、数学推导、企业级代码示例与开源项目案例研究。适用于已掌握 Go 基础语法、希望深入理解 map 底层实现的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。Bloom 分类法将认知目标分为六个递进层级：Remember（记忆）→ Understand（理解）→ Apply（应用）→ Analyze（分析）→ Evaluate（评价）→ Create（创造）。
-
-### 1.1 Remember（记忆）
-
-- 准确复述 Go runtime 中 `hmap`、`bmap`（bucket）结构体的字段及其含义。
-- 列出 map 的三种创建方式：字面量、`make`、`var` 声明，并说明各自的初始状态。
-- 背诵 map 的核心常量：`loadFactor`（6.5）、`bucketCnt`（8）、`maxKeySize`（128）、`maxBucketSize`（8）。
-
-### 1.2 Understand（理解）
-
-- 解释 hash 函数在 map 中的作用，说明 Go 为何不暴露用户自定义 hash 函数的接口。
-- 描述 bucket 的内存布局：tophash 区、key 区、value 区、overflow 指针，并解释为何采用这种布局。
-- 阐述等量扩容（same size grow）与增量扩容（growing size）的触发条件与区别。
-- 说明 map 为何不是并发安全的，以及 `sync.Map` 如何解决并发问题。
-
-### 1.3 Apply（应用）
-
-- 在生产代码中正确选择 `map`、`sync.Map`、`concurrent-map` 等数据结构。
-- 使用 `go tool pprof` 分析 map 引发的内存与 CPU 瓶颈。
-- 编写 benchmark 验证不同 map 操作的时间复杂度。
-
-### 1.4 Analyze（分析）
-
-- 分析 map 的内存占用：给定 `N` 个键值对，估算 `hmap` 总占用字节数。
-- 对比 Go map 与 Rust `HashMap`、Java `HashMap`、C++ `unordered_map` 在哈希冲突处理策略上的差异。
-- 推导 map 在 worst-case 下的时间复杂度，并指出何种场景会触发 worst-case。
-
-### 1.5 Evaluate（评价）
-
-- 评估在何种业务场景下应使用 Swiss Table（Go 1.24+）相对于传统 bucket 实现的优势。
-- 评价 `sync.Map` 的 read/write 分离设计在 read-heavy 与 write-heavy 场景下的适用性。
-- 判断 map 内存泄漏（memory leak）的成因，并提出优化方案。
-
-### 1.6 Create（创造）
-
-- 设计一个支持 LRU 淘汰的并发安全 map，权衡锁粒度与缓存命中率。
-- 实现一个泛型 map 工具库，支持自定义 hash 函数与 equality 语义。
-- 基于 Swiss Table 思想，为一个特定领域（如 IP 路由表）定制高性能哈希表。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 Go 1.0（2012-03）：初版 map 实现
+### 1.1 Go 1.0（2012-03）：初版 map 实现
 
 Go 1.0 的 map 实现由 Stephen Ma 和 Keith Randall 设计，采用 **拉链法（chaining）的变体**：每个 bucket 容纳 8 个键值对，冲突时通过 overflow bucket 链表延伸。这一设计与传统 Java HashMap 的"每个槽位一个链表节点"不同，本质是 **块状拉链（bucket chaining）**，目的是减少指针分配与 cache miss。
 
@@ -80,11 +38,11 @@ Go 1.0 的 map 实现由 Stephen Ma 和 Keith Randall 设计，采用 **拉链�
 2. **减少 GC 压力**：相比每个节点单独分配，bucket 一次性分配 8 个槽位，减少堆对象数量。
 3. **简化实现**：Go 早期不希望暴露 hash 函数接口，因此 hash 算法由 runtime 统一管理，基于 AES 指令集加速。
 
-### 2.2 Go 1.5（2015-08）：runtime 重写
+### 1.2 Go 1.5（2015-08）：runtime 重写
 
 Go 1.5 完成自举（self-hosted），runtime 由 C 语言迁移至 Go。map 实现重新组织为 `runtime/map.go`、`runtime/map_fast64.go`、`runtime/map_faststr.go` 等文件，针对不同 key 类型（int64、string、pointer）生成特化版本，避免运行时类型判断开销。
 
-### 2.3 Go 1.9（2017-08）：sync.Map 引入
+### 1.3 Go 1.9（2017-08）：sync.Map 引入
 
 Go 1.5 引入的 `sync.RWMutex` 保护 map 在 read-heavy 场景下仍有锁竞争。Go 1.9 由 Dmitry Vyukov 实现了 `sync.Map`，采用 **read/write 分离** 设计：
 
@@ -93,7 +51,7 @@ Go 1.5 引入的 `sync.RWMutex` 保护 map 在 read-heavy 场景下仍有锁竞�
 
 `sync.Map` 适用场景明确：**写入少、读取多，或多个 goroutine 操作不同的 key**。在 write-heavy 场景下，`sync.Map` 性能可能劣于 `map + RWMutex`。
 
-### 2.4 Go 1.18（2022-03）：泛型 map
+### 1.4 Go 1.18（2022-03）：泛型 map
 
 Go 1.18 引入类型参数（type parameter），允许泛型函数操作任意类型的 map：
 
@@ -110,11 +68,11 @@ func Keys[K comparable, V any](m map[K]V) []K {
 
 注意：泛型只是语法层面的，底层 runtime 实现未变，仍是 `hmap` 结构。
 
-### 2.5 Go 1.21（2023-08）：运行时优化
+### 1.5 Go 1.21（2023-08）：运行时优化
 
 Go 1.21 引入 `maps` 与 `slices` 标准库包，提供 `maps.Clone`、`maps.Copy`、`maps.Equal` 等工具函数。runtime 层面优化了小 map（`B=0`）的内存分配路径。
 
-### 2.6 Go 1.24（2025-02）：Swiss Table 引入
+### 1.6 Go 1.24（2025-02）：Swiss Table 引入
 
 Go 1.24 由 Michael Knyszek 等人完成 map 实现的 **重大重构**，采用 Google 开源的 Swiss Table 算法（首次用于 Abseil `flat_hash_map`）。主要变化：
 
@@ -132,7 +90,7 @@ Go 1.24 由 Michael Knyszek 等人完成 map 实现的 **重大重构**，采用
 | 删除 1M 元素 | 95 ms | 68 ms | 28% |
 | 内存占用（1M int→int） | 41 MB | 32 MB | 22% |
 
-### 2.7 演进时间轴
+### 1.7 演进时间轴
 
 ```mermaid
 timeline
@@ -148,9 +106,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Go Language Spec 定义
+### 2.1 Go Language Spec 定义
 
 Go 语言规范（[Go Language Specification](https://go.dev/ref/spec#Map_types)）对 map 类型的定义：
 
@@ -169,11 +127,11 @@ KeyType = ComparableType .
 2. 接口类型作为 key 时，其动态类型必须 comparable，否则运行时 panic。
 3. map 是 **reference type**，赋值与传参共享底层 `hmap`。
 
-### 3.2 runtime 数据结构（Go 1.22 及之前）
+### 2.2 runtime 数据结构（Go 1.22 及之前）
 
 源码位置：`runtime/map.go`、`runtime/type.go`。
 
-#### 3.2.1 hmap
+#### 2.2.1 hmap
 
 ```go
 // runtime/map.go (Go 1.22)
@@ -196,7 +154,7 @@ type mapextra struct {
 }
 ```
 
-#### 3.2.2 bmap（bucket）
+#### 2.2.2 bmap（bucket）
 
 ```go
 // runtime/map.go
@@ -226,7 +184,7 @@ flowchart TD
 
 如果交替排列 `[k0,v0,k1,v1,...]`，当 `sizeof(key) != sizeof(value)` 时会产生内存对齐 padding。例如 `map[int8]int64` 交替排列时每个 `(int8, int64)` 对需 16 字节（int8 后填充 7 字节），而分开排列只需 8+64=72 字节。
 
-#### 3.2.3 内存占用估算
+#### 2.2.3 内存占用估算
 
 对于 `map[K]V`，当 `B = b`（桶数 `2^b`）时：
 
@@ -246,11 +204,11 @@ $$
 \text{Size} = 48 + 32 \times (8 + 128 + 128 + 8) = 48 + 32 \times 272 = 8752 \text{ bytes}
 $$
 
-### 3.3 runtime 数据结构（Go 1.24+，Swiss Table）
+### 2.3 runtime 数据结构（Go 1.24+，Swiss Table）
 
 源码位置：`runtime/map_swisstable.go`（实验性）、`internal/runtime/maps/swisstable.go`。
 
-#### 3.3.1 htable
+#### 2.3.1 htable
 
 ```go
 // runtime/map_swisstable.go (Go 1.24+，简化版)
@@ -282,7 +240,7 @@ type slot struct {
 }
 ```
 
-#### 3.3.2 内存布局
+#### 2.3.2 内存布局
 
 ```mermaid
 flowchart TD
@@ -295,7 +253,7 @@ flowchart TD
     G0 --> G1
 ```
 
-### 3.4 类型系统理论
+### 2.4 类型系统理论
 
 从类型论（type theory）视角，map 是 **关联数组（associative array）** 抽象数据类型（ADT）的实现。其形式化签名：
 
@@ -309,9 +267,9 @@ Go 的 `comparable` 约束对应类型论中的 `Eq` 类型类，但 Go 不要�
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 哈希函数
+### 3.1 哈希函数
 
 Go runtime 为每种 key 类型选择不同的 hash 函数，统一接口：
 
@@ -339,7 +297,7 @@ $$
 
 采用 FNV-1a 变体 + 城市哈希（CityHash）片段，性能约为 AES hash 的 1/3。
 
-### 4.2 bucket 寻址
+### 3.2 bucket 寻址
 
 给定 hash 值 $h$，bucket 索引与 tophash 计算：
 
@@ -353,7 +311,7 @@ $$
 
 其中 `bucketCntBits = 3`（因 `bucketCnt = 8 = 2^3`）。tophash 取 hash 的高 8 位（实际是中间 8 位，因为低 B 位用作 bucket 索引）。
 
-### 4.3 负载因子与扩容
+### 3.3 负载因子与扩容
 
 负载因子（load factor）定义为：
 
@@ -367,7 +325,7 @@ $$
 
 官方基于 benchmark 的经验值。bucket 容量为 8，当 $\alpha = 6.5$ 时，约 81% 的 bucket 已被占用，overflow bucket 比例约 5%。继续增加会导致查找时遍历 overflow 链表的成本显著上升。
 
-#### 4.3.1 增量扩容（growing size）
+#### 3.3.1 增量扩容（growing size）
 
 当 $\alpha \geq 6.5$ 时触发，bucket 数量翻倍：
 
@@ -381,7 +339,7 @@ $$
 \alpha_{\text{new}} = \frac{n}{2 k_{\text{old}}} = \frac{\alpha_{\text{old}}}{2} \approx 3.25
 $$
 
-#### 4.3.2 等量扩容（same size grow）
+#### 3.3.2 等量扩容（same size grow）
 
 当 overflow bucket 数量过多但 $\alpha < 6.5$ 时触发（典型场景：大量删除后再次插入）。等量扩容不增加 bucket 数量，而是重新整理所有键值对，将分散在 overflow 链表中的元素重新压缩到主 bucket 内。
 
@@ -394,7 +352,7 @@ $$
 \end{cases}
 $$
 
-### 4.4 渐进式搬迁（Go 1.22 及之前）
+### 3.4 渐进式搬迁（Go 1.22 及之前）
 
 为避免一次性扩容造成 STW（stop-the-world），Go 采用 **渐进式搬迁**：每次 `insert`/`delete` 操作搬迁至多 2 个 bucket，分摊在多次操作中完成。
 
@@ -404,7 +362,7 @@ $$
 
 每次操作额外开销 $O(1)$，但 worst-case 操作仍有 $O(\text{overflow\_len})$。
 
-### 4.5 Swiss Table 探测序列（Go 1.24+）
+### 3.5 Swiss Table 探测序列（Go 1.24+）
 
 Swiss Table 采用 **triangular probing**：
 
@@ -429,7 +387,7 @@ $$
 - $h_1$ 用于定位 group（模 $k$）。
 - $h_2$（7 bit）存储在 metadata 中，用于 SIMD 并行比较。
 
-### 4.6 SIMD 加速查找
+### 3.6 SIMD 加速查找
 
 Swiss Table 的核心优化是利用 SIMD 指令并行比较 8 个 slot 的 metadata。在 amd64 架构上使用 `_mm_cmpeq_epi8`（SSE2）比较 16 字节，arm64 使用 `vceqq_u8`（NEON）。
 
@@ -449,7 +407,7 @@ while (mask) {
 
 理论加速比：8 个 slot 顺序比较需 8 次分支，SIMD 比较只需 1 次向量操作 + 1 次 `movemask`，约 **5-8x** 加速。
 
-### 4.7 时间复杂度分析
+### 3.7 时间复杂度分析
 
 | 操作 | 平均 | Worst-case（Go 1.22） | Worst-case（Go 1.24） |
 | --- | --- | --- | --- |
@@ -470,9 +428,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 go.mod 配置
+### 4.1 go.mod 配置
 
 ```go
 // go.mod
@@ -483,7 +441,7 @@ go 1.22
 require golang.org/x/sync v0.7.0
 ```
 
-### 5.2 基础用法
+### 4.2 基础用法
 
 ```go
 // map_basic.go
@@ -520,7 +478,7 @@ func main() {
 }
 ```
 
-### 5.3 Production-Ready：并发安全的 LRU Cache
+### 4.3 Production-Ready：并发安全的 LRU Cache
 
 ```go
 // concurrent_lru.go
@@ -699,7 +657,7 @@ func fnv32(key string) uint32 {
 }
 ```
 
-### 5.4 Benchmark
+### 4.4 Benchmark
 
 ```go
 // map_bench_test.go
@@ -782,7 +740,7 @@ func BenchmarkMapAlloc(b *testing.B) {
 // BenchmarkMapAlloc/with-hint-8       8000   150000 ns/op
 ```
 
-### 5.5 完整可运行示例
+### 4.5 完整可运行示例
 
 ```go
 // main.go
@@ -865,9 +823,9 @@ func demoMemoryEstimation() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与主流语言哈希表对比
+### 5.1 与主流语言哈希表对比
 
 | 特性 | Go map (1.22) | Go map (1.24 Swiss) | Rust `HashMap` | Java `HashMap` | Python `dict` | C++ `unordered_map` |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -882,7 +840,7 @@ func demoMemoryEstimation() {
 | SIMD 加速 | 否 | 是（H2 比较用 SSE2/NEON） | 否 | 否 | 否 | 否 |
 | 删除内存释放 | 渐进式 | tombstone + 重组 | 立即 | 立即 | 立即 | 立即 |
 
-### 6.2 并发哈希表对比
+### 5.2 并发哈希表对比
 
 | 方案 | 读路径 | 写路径 | 适用场景 | 缺点 |
 | --- | --- | --- | --- | --- |
@@ -892,7 +850,7 @@ func demoMemoryEstimation() {
 | `sync.Map` (Go 1.24+) | 无锁 | Lock | 同上，但内部用 Swiss Table | 同上 |
 | CRIU/CRDB 的 `BTreeMap` | 无锁 MVCC | CAS | 事务型存储 | 实现复杂 |
 
-### 6.3 性能对比（实测数据）
+### 5.3 性能对比（实测数据）
 
 测试环境：AWS c5.4xlarge（16 vCPU），Go 1.22 vs Go 1.24，操作 100 万元素。
 
@@ -906,9 +864,9 @@ func demoMemoryEstimation() {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：并发读写 panic
+### 6.1 陷阱 1：并发读写 panic
 
 ```go
 // 错误：并发读写 map 会触发 runtime panic
@@ -946,7 +904,7 @@ v, _ := m.Load(1)
 // 见 5.3 节 ConcurrentLRU
 ```
 
-### 7.2 陷阱 2：nil map 写入 panic
+### 6.2 陷阱 2：nil map 写入 panic
 
 ```go
 // 错误：nil map 写入 panic
@@ -964,7 +922,7 @@ m["x"] = 1
 
 注意：**nil map 可以读**（返回零值），但**不能写**。这与 nil slice 不同（nil slice 可以 append）。
 
-### 7.3 陷阱 3：遍历时修改 map
+### 6.3 陷阱 3：遍历时修改 map
 
 ```go
 // 错误：遍历过程中删除未访问的 key
@@ -976,7 +934,7 @@ for k := range m {
 
 Go 规范允许在遍历时删除当前 key，但删除其他 key 的行为未定义。**安全做法**：先收集要删除的 key，遍历结束后统一删除。
 
-### 7.4 陷阱 4：取地址导致内存逃逸
+### 6.4 陷阱 4：取地址导致内存逃逸
 
 ```go
 // 反模式：取 map value 的地址
@@ -994,7 +952,7 @@ m["x"] = &[32]byte{}
 p := m["x"]
 ```
 
-### 7.5 陷阱 5：interface key 的运行时 panic
+### 6.5 陷阱 5：interface key 的运行时 panic
 
 ```go
 // 错误：interface key 动态类型不可比较
@@ -1004,7 +962,7 @@ m[[]int{1, 2}] = 1 // panic: runtime error: hash of unhashable type []int
 
 **修复**：避免用 `interface{}` 作为 key，或在写入前进行类型断言检查。
 
-### 7.6 陷阱 6：误用 `len` 与 `cap`
+### 6.6 陷阱 6：误用 `len` 与 `cap`
 
 ```go
 m := make(map[int]int, 100)
@@ -1014,7 +972,7 @@ fmt.Println(len(m), cap(m))
 
 map 没有 `cap` 概念（capacity 仅作为 `make` 的 hint，不是硬上限）。`cap()` 函数不支持 map。
 
-### 7.7 陷阱 7：内存泄漏（map value 不释放）
+### 6.7 陷阱 7：内存泄漏（map value 不释放）
 
 ```go
 // 反模式：长期持有的 map 中存放大对象，删除后内存不立即归还
@@ -1028,7 +986,7 @@ func del(k string) { delete(cache, k) } // BigObject 不会被 GC，除非其他
 1. 将 value 改为指针 + 显式置 nil。
 2. 定期重建 map（`newMap := make(map[K]V, len(old)); for k, v := range old { newMap[k] = v }; old = newMap`）。
 
-### 7.8 最佳实践清单
+### 6.8 最佳实践清单
 
 | 实践 | 说明 |
 | --- | --- |
@@ -1043,9 +1001,9 @@ func del(k string) { delete(cache, k) } // BigObject 不会被 GC，除非其他
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 go module 与构建
+### 7.1 go module 与构建
 
 ```bash
 # 初始化项目
@@ -1065,7 +1023,7 @@ go mod vendor
 go build -mod=vendor ./...
 ```
 
-### 8.2 性能分析（pprof）
+### 7.2 性能分析（pprof）
 
 ```go
 // pprof_server.go
@@ -1113,9 +1071,9 @@ go tool pprof http://localhost:6060/debug/pprof/heap
 (pprof) web  # 生成 SVG 调用图
 ```
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
-#### 8.3.1 查看 map 内部结构（dlv 调试器）
+#### 7.3.1 查看 map 内部结构（dlv 调试器）
 
 ```bash
 $ dlv debug
@@ -1126,7 +1084,7 @@ $ dlv debug
 (dlv) print (*"runtime.bmap")(m.buckets)            # 查看 bucket[0]
 ```
 
-#### 8.3.2 GODEBUG 调试 map 行为
+#### 7.3.2 GODEBUG 调试 map 行为
 
 ```bash
 # 输出 map 扩容日志（仅 debug build）
@@ -1136,9 +1094,9 @@ GODEBUG=allocfreetrace=1 ./myapp 2>trace.log
 go run -race main.go
 ```
 
-### 8.4 性能优化技巧
+### 7.4 性能优化技巧
 
-#### 8.4.1 预分配容量
+#### 7.4.1 预分配容量
 
 ```go
 // 反例
@@ -1150,7 +1108,7 @@ m := make(map[int]int, 10000)
 for i := 0; i < 10000; i++ { m[i] = i }
 ```
 
-#### 8.4.2 key 类型选择
+#### 7.4.2 key 类型选择
 
 | key 类型 | hash 函数 | 相对性能 |
 | --- | --- | --- |
@@ -1161,7 +1119,7 @@ for i := 0; i < 10000; i++ { m[i] = i }
 | `struct{...}` | `aeshash` 逐字段 | 2-3x |
 | `interface{}` | 类型断言 + 间接调用 | 3-5x |
 
-#### 8.4.3 避免大 value 直接存储
+#### 7.4.3 避免大 value 直接存储
 
 ```go
 // 反例：value 是大结构体，每次写入触发 256 字节拷贝
@@ -1173,7 +1131,7 @@ m := make(map[int]*[256]byte)
 m[1] = &[256]byte{}
 ```
 
-#### 8.4.4 Swiss Table 启用（Go 1.24）
+#### 7.4.4 Swiss Table 启用（Go 1.24）
 
 ```bash
 # Go 1.24 默认启用 Swiss Table
@@ -1183,9 +1141,9 @@ GOEXPERIMENT=noswissmap go build ./...
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Kubernetes：APIServer 的 resourceVersion 缓存
+### 8.1 Kubernetes：APIServer 的 resourceVersion 缓存
 
 Kubernetes APIServer 使用 `map[string]*cache.Shard` 实现 etcd 资源缓存。每个 Shard 内部用 `map[string]struct{ resourceVersion uint64; obj runtime.Object }`，配合 `sync.RWMutex` 实现并发读。
 
@@ -1197,7 +1155,7 @@ Kubernetes APIServer 使用 `map[string]*cache.Shard` 实现 etcd 资源缓存�
 
 源码位置：[`staging/src/k8s.io/apiserver/pkg/storage/cacher/cache_reader.go`](https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apiserver/pkg/storage/cacher/cache_reader.go)
 
-### 9.2 Docker：containerd 的 layer 元数据
+### 8.2 Docker：containerd 的 layer 元数据
 
 containerd 使用 `map[string]digest.Digest` 维护 image layer 与 blob 的映射。所有 map 操作集中在 `metadata.DB` 内，通过 boltdb 事务保护一致性。
 
@@ -1207,7 +1165,7 @@ containerd 使用 `map[string]digest.Digest` 维护 image layer 与 blob 的映�
 - map 操作不持锁，由 boltdb 事务保证隔离
 - 升级到 Go 1.24 后，metadata 加载时间下降约 30%
 
-### 9.3 TiDB：Statistics 直方图缓存
+### 8.3 TiDB：Statistics 直方图缓存
 
 TiDB 的统计信息模块用 `map[int64]*table.Hist` 缓存表级直方图。高并发更新场景下，使用 `sync.Map` + `singleflight.Group` 防止缓存击穿。
 
@@ -1232,7 +1190,7 @@ func (c *StatsCache) Get(tableID int64) (*table.Hist, error) {
 
 源码位置：[`statistics/handle.go`](https://github.com/pingcap/tidb/blob/master/statistics/handle.go)
 
-### 9.4 Prometheus：series 缓存
+### 8.4 Prometheus：series 缓存
 
 Prometheus 的 head block 用 `map[uint64]*memSeries` 缓存时序数据。key 是 series 的 hash（FNV-1a + 64-bit 拼接），value 是 `*memSeries` 指针。
 
@@ -1242,7 +1200,7 @@ Prometheus 的 head block 用 `map[uint64]*memSeries` 缓存时序数据。key �
 - value 是指针，写入开销低
 - 配合 `hashcoll` 保护：hash 碰撞时用 `labels.Equal` 二次校验
 
-### 9.5 HashiCorp Consul：service registry
+### 8.5 HashiCorp Consul：service registry
 
 Consul 的服务注册中心用 `map[string]map[string]*Service` 维护 service name → instance ID → instance 的二级映射。所有读写通过单个 `sync.RWMutex` 保护（早期版本），1.14 后改为分片 map。
 
@@ -1499,7 +1457,7 @@ func main() {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q1.** 为什么 Go runtime 不允许用户自定义 map 的 hash 函数？这种设计的优缺点是什么？
 
@@ -1568,9 +1526,9 @@ func main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档与规范
+### 10.1 官方文档与规范
 
 [1] Google LLC. 2024. The Go Programming Language Specification. (February 2024). Retrieved July 20, 2026 from https://go.dev/ref/spec. DOI: 10.25385/golang/spec-1.22.
 
@@ -1580,7 +1538,7 @@ func main() {
 
 [4] Dmitry Vyukov. 2017. sync.Map: Concurrent Map Access in Go. (August 2017). Retrieved July 20, 2026 from https://go.dev/blog/go-maps-in-action.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [5] Matt Kulukundis. 2017. Designing a Faster Hash Table. In *Proceedings of CppCon 2017*. ACM, New York, NY, USA, 1–62. DOI: 10.1145/3193271.3193275.
 
@@ -1594,7 +1552,7 @@ func main() {
 
 [10] Robert Sedgewick. 1998. Algorithms in C, Parts 1-4: Fundamentals, Data Structures, Sorting, Searching (3rd ed.). Addison-Wesley Professional, Boston, MA, USA.
 
-### 11.3 开源实现
+### 10.3 开源实现
 
 [11] Google LLC. 2024. Abseil `flat_hash_map` (Swiss Table reference implementation). (2024). Retrieved July 20, 2026 from https://github.com/abseil/abseil-cpp/blob/master/absl/container/flat_hash_map.h.
 
@@ -1606,9 +1564,9 @@ func main() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 - **Don Knuth.** *The Art of Computer Programming, Vol. 3: Sorting and Searching* (2nd ed.). Addison-Wesley, 1998. ISBN 978-0-201-89685-5.
   - 第 6 章 "Searching" 系统推导哈希表的数学性质，是哈希表理论的奠基性著作。
@@ -1619,7 +1577,7 @@ func main() {
 - **Alan A. A. Donovan, Brian W. Kernighan.** *The Go Programming Language*. Addison-Wesley, 2015. ISBN 978-0-13-419044-0.
   - 第 4 章 "Composite Types" 详述 map 的语义与陷阱。
 
-### 12.2 推荐论文
+### 11.2 推荐论文
 
 - **Knuth, D. E.** "Sorting and Searching by Hashing." *The Art of Computer Programming, Vol. 3*, Section 6.4.
 - **Pagh, R., and Rodler, F. F.** "Cuckoo Hashing." *Journal of Algorithms* 51, 2 (May 2004), 122–144. DOI: 10.1016/j.jalgor.2003.12.002.
@@ -1627,7 +1585,7 @@ func main() {
 - **Askitis, N., and Sinha, R.** "HAT-trie: A Cache-conscious Trie for String Keys." *ACM SIGMOD Record* 36, 1 (March 2007), 19–26. DOI: 10.1145/1278303.1278306.
 - **Ross, K. A.** "Efficient Hash Probes on Modern Processors." In *ICDE 2007*, IEEE, 2007, 1299–1303. DOI: 10.1109/ICDE.2007.368966.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **Go Blog: Go maps in action** — https://go.dev/blog/maps
 - **Go Blog: Inside the Map Implementation** — https://go.dev/blog/go-maps-in-action
@@ -1637,7 +1595,7 @@ func main() {
 - **Go 1.24 release notes** — https://go.dev/doc/go1.24
 - **Sourcegraph: Go map source code search** — https://sourcegraph.com/github.com/golang/go/-/blob/src/runtime/map.go
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **Cuckoo hashing**：替代开放寻址的方案，worst-case $O(1)$ 查找但插入成本高
 - **Robin Hood hashing**：开放寻址变体，使探测长度方差最小化

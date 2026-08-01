@@ -15,28 +15,16 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # C++23 新特性
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-| Bloom 层级 | 目标描述 |
-| :--- | :--- |
-| **Remember（记忆）** | 列举 C++23 至少 10 项核心新特性，复述 `std::expected` 与 `std::optional` 的差异 |
-| **Understand（理解）** | 解释 deducing this 的工作原理，说明 `std::print` 与 `printf`/`iostream` 的差异 |
-| **Apply（应用）** | 使用 `std::expected` 编写错误处理代码，使用 `std::mdspan` 处理多维数组 |
-| **Analyze（分析）** | 分析 `std::flat_map` 与 `std::map` 的性能差异及适用场景 |
-| **Evaluate（评价）** | 评估 `std::generator` 与手写迭代器的取舍，评价 `if consteval` 的实用性 |
-| **Create（创造）** | 设计基于 `std::expected` 的 monadic 错误处理链，构建基于 `std::mdspan` 的多维数值计算库 |
-
-## 2. 历史动机与发展脉络
-
-### 2.1 C++23 标准的定位
+### 1.1 C++23 标准的定位
 
 C++23 是继 C++20 之后的"完善版"标准。C++20 引入了 concepts、ranges、coroutines、modules 等大型特性，C++23 旨在：
 
@@ -47,7 +35,7 @@ C++23 是继 C++20 之后的"完善版"标准。C++20 引入了 concepts、range
 
 C++23 标准于 **2023 年 12 月**正式发布（ISO/IEC 14882:2023）。
 
-### 2.2 关键提案一览
+### 1.2 关键提案一览
 
 | 提案 | 标题 | 作者 | 特性 |
 | :--- | :--- | :--- | :--- |
@@ -67,7 +55,7 @@ C++23 标准于 **2023 年 12 月**正式发布（ISO/IEC 14882:2023）。
 | P2286 | Formatting ranges | B. Stroustrup | ranges 格式化 |
 | P2549 | `std::string::contains` | F. Erkelens | 字符串包含 |
 
-### 2.3 C++11/14/17/20/23/26 演进
+### 1.3 C++11/14/17/20/23/26 演进
 
 | 标准 | 发布年 | 关键特性 |
 | :--- | :--- | :--- |
@@ -78,7 +66,7 @@ C++23 标准于 **2023 年 12 月**正式发布（ISO/IEC 14882:2023）。
 | **C++23** | 2023 | `std::print`、`std::expected`、`std::flat_map`、`std::mdspan`、deducing this |
 | **C++26** | 草案 | Hazard pointer、`std::rcu`、reflection、`std::execution` |
 
-### 2.4 与其他语言对比
+### 1.4 与其他语言对比
 
 | 特性 | C++23 | Rust 1.70 | Swift 5.9 | Java 21 | Python 3.12 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -88,9 +76,9 @@ C++23 标准于 **2023 年 12 月**正式发布（ISO/IEC 14882:2023）。
 | 协程生成器 | `std::generator<T>` | `impl Iterator` | `AsyncStream` | `Stream<T>` | `generator` |
 | 静态调用 | `static operator()` | `Fn` trait | static func | static method | `@staticmethod` |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 `std::expected<T, E>` 的形式化
+### 2.1 `std::expected<T, E>` 的形式化
 
 `std::expected<T, E>` 表示可能成功（含 `T`）或失败（含 `E`）的运算结果。形式化定义：
 
@@ -123,7 +111,7 @@ public:
 };
 ```
 
-### 3.2 `std::mdspan` 的形式化
+### 2.2 `std::mdspan` 的形式化
 
 `std::mdspan<T, Extents, LayoutPolicy, AccessorPolicy>` 是多维数组视图：
 
@@ -136,7 +124,7 @@ $$
 - `LayoutPolicy`：布局策略（`layout_right` / `layout_left` / `layout_stride`）；
 - `AccessorPolicy`：访问策略（默认 `default_accessor`）。
 
-### 3.3 Deducing this 的形式化
+### 2.3 Deducing this 的形式化
 
 传统成员函数的 `this` 类型固定为 `T*` 或 `const T*`，无法对 cv-qualifier 或引用类别重载。C++23 允许显式声明 `this` 参数：
 
@@ -160,7 +148,7 @@ T \to U\&\&      & \text{if } e \text{ is rvalue of type } U
 \end{cases}
 $$
 
-### 3.4 `if consteval` 的形式化
+### 2.4 `if consteval` 的形式化
 
 C++23 引入 `if consteval` 替代 `if constexpr (std::is_constant_evaluated())`：
 
@@ -182,7 +170,7 @@ $$
 
 注意：`if consteval` 仅在 consteval 上下文或 `constexpr` 函数中生效。
 
-### 3.5 `std::generator<T>` 的形式化
+### 2.5 `std::generator<T>` 的形式化
 
 `std::generator<T>` 是 C++23 协程生成器：
 
@@ -212,9 +200,9 @@ public:
 
 `std::generator` 满足 `input_iterator` 概念，但不可拷贝。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 `std::expected` 与 monadic 错误处理
+### 3.1 `std::expected` 与 monadic 错误处理
 
 `std::expected` 支持 monadic 操作（`and_then`、`or_else`、`transform`），允许链式组合：
 
@@ -240,7 +228,7 @@ $$
 
 类似 Haskell 的 `>>=` 操作符。
 
-### 4.2 `std::flat_map` 的复杂度分析
+### 3.2 `std::flat_map` 的复杂度分析
 
 `std::flat_map<K, V>` 内部使用排序的连续容器（默认 `std::vector`）：
 
@@ -262,7 +250,7 @@ $$
 - `flat_map`：小数据量、读多写少、需要缓存友好；
 - `map`：大数据量、频繁插入删除。
 
-### 4.3 Deducing this 实现原理
+### 3.3 Deducing this 实现原理
 
 传统成员函数：
 
@@ -309,7 +297,7 @@ cs.data();         // Self = const String&，返回 const char*
 makeRvalue().data();  // Self = String，返回 char* (右值引用)
 ```
 
-### 4.4 `std::mdspan` 与 BLAS 集成
+### 3.4 `std::mdspan` 与 BLAS 集成
 
 `std::mdspan` 提供多维数组视图，可与 BLAS 等数值库无缝集成：
 
@@ -345,7 +333,7 @@ matrix_multiply(A, B, C);
 //   = [[4, 5], [10, 11]]
 ```
 
-### 4.5 `std::generator` 协程原理
+### 3.5 `std::generator` 协程原理
 
 `std::generator` 基于 C++20 协程，简化迭代器实现：
 
@@ -368,7 +356,7 @@ for (int x : range(0, 5)) {
 3. `begin()` / `++iter` 恢复协程执行；
 4. 协程结束时返回，迭代器变为 `end()` 状态。
 
-### 4.6 ranges 增强的算法
+### 3.6 ranges 增强的算法
 
 C++23 增强了 ranges 库，新增：
 
@@ -407,9 +395,9 @@ int main() {
 }
 ```
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 `std::print` 与格式化
+### 4.1 `std::print` 与格式化
 
 ```cpp
 // file: print_demo.cpp
@@ -445,7 +433,7 @@ int main() {
 }
 ```
 
-### 5.2 `std::expected` 错误处理
+### 4.2 `std::expected` 错误处理
 
 ```cpp
 // file: expected_demo.cpp
@@ -506,7 +494,7 @@ int main() {
 }
 ```
 
-### 5.3 `std::flat_map` 使用
+### 4.3 `std::flat_map` 使用
 
 ```cpp
 // file: flat_map_demo.cpp
@@ -543,7 +531,7 @@ int main() {
 }
 ```
 
-### 5.4 Deducing this 实现链式调用
+### 4.4 Deducing this 实现链式调用
 
 ```cpp
 // file: deducing_this.cpp
@@ -579,7 +567,7 @@ int main() {
 }
 ```
 
-### 5.5 `std::mdspan` 多维数组
+### 4.5 `std::mdspan` 多维数组
 
 ```cpp
 // file: mdspan_demo.cpp
@@ -624,7 +612,7 @@ int main() {
 }
 ```
 
-### 5.6 `std::generator` 协程生成器
+### 4.6 `std::generator` 协程生成器
 
 ```cpp
 // file: generator_demo.cpp
@@ -685,7 +673,7 @@ int main() {
 }
 ```
 
-### 5.7 `std::move_only_function`
+### 4.7 `std::move_only_function`
 
 ```cpp
 // file: move_only_function.cpp
@@ -712,7 +700,7 @@ int main() {
 }
 ```
 
-### 5.8 `if consteval` 与 `static operator()`
+### 4.8 `if consteval` 与 `static operator()`
 
 ```cpp
 // file: consteval_static.cpp
@@ -757,7 +745,7 @@ int main() {
 }
 ```
 
-### 5.9 `views::enumerate` 与 `views::zip`
+### 4.9 `views::enumerate` 与 `views::zip`
 
 ```cpp
 // file: ranges_enhanced.cpp
@@ -804,7 +792,7 @@ int main() {
 }
 ```
 
-### 5.10 CMake 项目示例
+### 4.10 CMake 项目示例
 
 ```cmake
 # CMakeLists.txt
@@ -829,7 +817,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 ```
 
-### 5.11 `std::span` 改进
+### 4.11 `std::span` 改进
 
 ```cpp
 // file: span_improved.cpp
@@ -854,9 +842,9 @@ int main() {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 `std::expected` 与 Rust `Result`
+### 5.1 `std::expected` 与 Rust `Result`
 
 | 维度 | `std::expected<T,E>` | Rust `Result<T,E>` |
 | :--- | :--- | :--- |
@@ -867,7 +855,7 @@ int main() {
 | 性能 | 与 Rust 相当（无堆分配） | 零开销 |
 | 与异常 | 可共存 | 与 `panic!` 分离 |
 
-### 6.2 `std::flat_map` 与其他语言对应
+### 5.2 `std::flat_map` 与其他语言对应
 
 | 语言 | 等价容器 | 复杂度（查找） |
 | :--- | :--- | :--- |
@@ -878,7 +866,7 @@ int main() {
 | Python | `dict` | $O(1)$（哈希） |
 | Go | `map` | $O(1)$（哈希） |
 
-### 6.3 `std::generator` 与其他语言协程
+### 5.3 `std::generator` 与其他语言协程
 
 | 语言 | 协程类型 | 关键字 |
 | :--- | :--- | :--- |
@@ -889,7 +877,7 @@ int main() {
 | Rust | `impl Iterator` (sync) / `impl Stream` (async) | `yield`（仅 nightly） |
 | Kotlin | `Sequence<T>` | `yield` |
 
-### 6.4 编译器支持矩阵
+### 5.4 编译器支持矩阵
 
 | 特性 | GCC | Clang | MSVC |
 | :--- | :--- | :--- | :--- |
@@ -906,9 +894,9 @@ int main() {
 | `ranges::to` | 14+ | 17+ | 19.32+ |
 | `std::span` 初始化列表构造 | 12+ | 15+ | 19.32+ |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：`std::expected` 与异常混用
+### 6.1 陷阱 1：`std::expected` 与异常混用
 
 ```cpp
 std::expected<int, Error> divide(int a, int b) {
@@ -925,7 +913,7 @@ int risky() {
 
 **最佳实践**：明确选择错误处理策略（异常 or expected），不要混用。
 
-### 7.2 陷阱 2：`std::flat_map` 频繁插入性能差
+### 6.2 陷阱 2：`std::flat_map` 频繁插入性能差
 
 ```cpp
 std::flat_map<int, std::string> map;
@@ -936,7 +924,7 @@ for (int i = 0; i < 100000; ++i) {
 
 **最佳实践**：批量插入时先收集所有元素再 `sort + unique`，或使用 `std::map`。
 
-### 7.3 陷阱 3：deducing this 的递归问题
+### 6.3 陷阱 3：deducing this 的递归问题
 
 ```cpp
 struct C {
@@ -949,7 +937,7 @@ struct C {
 
 **最佳实践**：避免在 deducing this 函数中调用同名函数，或在签名中明确类型。
 
-### 7.4 陷阱 4：`std::generator` 协程未恢复
+### 6.4 陷阱 4：`std::generator` 协程未恢复
 
 ```cpp
 std::generator<int> bad() {
@@ -966,7 +954,7 @@ auto it = gen.begin();
 
 **最佳实践**：确保 generator 析构前迭代完，或显式管理生命周期。
 
-### 7.5 陷阱 5：`std::mdspan` 与内存对齐
+### 6.5 陷阱 5：`std::mdspan` 与内存对齐
 
 ```cpp
 double data[12];
@@ -979,7 +967,7 @@ auto mat_col = std::mdspan<double, std::dextents<size_t, 2>,
 
 **最佳实践**：明确 LayoutPolicy，避免与 BLAS 库（默认列主序）冲突。
 
-### 7.6 陷阱 6：`std::print` 不支持所有类型
+### 6.6 陷阱 6：`std::print` 不支持所有类型
 
 ```cpp
 struct Custom {
@@ -1000,7 +988,7 @@ struct std::formatter<Custom> {
 std::print("{}", Custom{1, 2});  // OK
 ```
 
-### 7.7 UB 清单
+### 6.7 UB 清单
 
 | UB 类型 | 描述 | 检测方法 |
 | :--- | :--- | :--- |
@@ -1010,7 +998,7 @@ std::print("{}", Custom{1, 2});  // OK
 | `std::mdspan` 越界访问 | `mdspan[i,j]` 超出 extents | ASan |
 | Deducing this 误用 | 在非成员上下文使用 `this` | 编译期错误 |
 
-### 7.8 最佳实践清单
+### 6.8 最佳实践清单
 
 1. **优先 `std::expected`**：错误处理优于异常（在错误码风格代码中）。
 2. **`std::flat_map` 用于小数据**：大数据用 `std::map`。
@@ -1020,9 +1008,9 @@ std::print("{}", Custom{1, 2});  // OK
 6. **`if consteval` 替代 `is_constant_evaluated`**：更清晰直观。
 7. **`std::mdspan` 用于多维数组**：与 BLAS 集成无缝。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建与依赖
+### 7.1 构建与依赖
 
 ```cmake
 cmake_minimum_required(VERSION 3.20)
@@ -1048,7 +1036,7 @@ add_library(cpp23_lib STATIC src/lib.cpp)
 target_compile_features(cpp23_lib PUBLIC cxx_std_23)
 ```
 
-### 8.2 性能基准测试
+### 7.2 性能基准测试
 
 ```cpp
 // file: bench_cpp23.cpp
@@ -1094,7 +1082,7 @@ BM_PrintStdPrint  120 ns 120 ns  快约 4 倍
 BM_FormatString    85 ns  85 ns
 ```
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
 **1. 检查编译器版本**：
 
@@ -1121,7 +1109,7 @@ cl /std:c++latest /experimental:preprocessor file.cpp
 - Clang 17+: 直接支持
 - MSVC 19.32+: 直接支持
 
-### 8.4 跨编译器兼容性
+### 7.4 跨编译器兼容性
 
 ```cpp
 // 检测特性支持
@@ -1150,7 +1138,7 @@ void print_hello() {
 }
 ```
 
-### 8.5 CI/CD 集成
+### 7.5 CI/CD 集成
 
 ```yaml
 # .github/workflows/cpp23-ci.yml
@@ -1200,9 +1188,9 @@ jobs:
           cd build && ctest -C Release
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Chromium `base::expected`
+### 8.1 案例一：Chromium `base::expected`
 
 Chromium 在 C++23 标准化之前已经实现了 `base::expected` 模板，C++23 后逐步迁移至 `std::expected`：
 
@@ -1220,11 +1208,11 @@ std::expected<int, Error> Parse(const std::string& s) {
 }
 ```
 
-### 9.2 案例二：Meta Folly 的 `Expected`
+### 8.2 案例二：Meta Folly 的 `Expected`
 
 Folly 库的 `folly::Expected` 是 C++23 `std::expected` 的前身，提供了更丰富的 API。C++23 后部分代码可逐步迁移至标准库。
 
-### 9.3 案例三：Qt 的 `QString::contains`
+### 8.3 案例三：Qt 的 `QString::contains`
 
 C++23 起 `std::string::contains` 模仿 Qt 5.0 的 `QString::contains`：
 
@@ -1238,7 +1226,7 @@ std::string s = "Hello World";
 if (s.contains("World")) { /* ... */ }  // C++23 起合法
 ```
 
-### 9.4 案例四：HPC 中的 `std::mdspan`
+### 8.4 案例四：HPC 中的 `std::mdspan`
 
 `std::mdspan` 源自 Sandia National Laboratories 的 Kokkos 项目，已被 BLAS、LAPACK 等数值计算库采用：
 
@@ -1253,7 +1241,7 @@ void axpy(double alpha,
 }
 ```
 
-### 9.5 案例五：`std::generator` 简化迭代器实现
+### 8.5 案例五：`std::generator` 简化迭代器实现
 
 传统迭代器实现需要 100+ 行，`std::generator` 可压缩到 10 行：
 
@@ -1544,7 +1532,7 @@ int main() {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 12**：. `std::expected` 与异常处理相比，各自的优缺点？
 
@@ -1606,7 +1594,7 @@ int main() {
 
 C++23 后逐步普及，但完全替代需要数年。
 
-## 11. 参考文献
+## 10. 参考文献
 
 引用采用 ACM Reference Format，含 DOI 链接。
 
@@ -1640,16 +1628,16 @@ C++23 后逐步普及，但完全替代需要数年。
 
 15. Sutter, H. 2023. *C++23: An Overview of New Features*. ISO/IEC JTC1/SC22/WG21 P2996R0. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2996r0.html
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《C++23 — The Complete Guide》**（Nicolai M. Josuttis, 2024）：C++23 权威指南。
 - **《Professional C++》**（Marc Gregoire, 6th ed., 2024）：覆盖 C++23 实战。
 - **《Effective Modern C++》**（Scott Meyers, 2014）：C++11/14 基础，C++23 扩展。
 - **《C++ Templates: The Complete Guide》**（David Vandevoorde et al., 2nd ed., 2017）：Deducing this 与模板深度结合。
 
-### 12.2 论文与提案
+### 11.2 论文与提案
 
 - **P2096**: std::print formatting facility
 - **P0323**: std::expected
@@ -1662,7 +1650,7 @@ C++23 后逐步普及，但完全替代需要数年。
 - **P0834**: static operator()
 - **P2549**: std::string::contains
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **cppreference.com**: [C++23](https://en.cppreference.com/w/cpp/23), [std::expected](https://en.cppreference.com/w/cpp/utility/expected), [std::flat_map](https://en.cppreference.com/w/cpp/container/flat_map), [std::mdspan](https://en.cppreference.com/w/cpp/container/mdspan), [std::generator](https://en.cppreference.com/w/cpp/coroutine/generator)
 - **C++23 Compiler Status**: <https://en.cppreference.com/w/cpp/compiler_support/23> — 编译器支持进度。
@@ -1670,14 +1658,14 @@ C++23 后逐步普及，但完全替代需要数年。
 - **Sutter's Mill**: <https://herbsutter.com/> — Herb Sutter 对 C++23 的评述。
 - **C++ Weekly**: <https://www.youtube.com/@lefticus1> — Jason Turner 的 C++23 视频教程。
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 - **CPPCon 2023**: *C++23: What's New* (Marc Gregoire) — C++23 概览。
 - **CPPCon 2023**: *Deducing this* (Gašper Ažman) — Deducing this 深度讲解。
 - **Meeting C++ 2023**: *C++23 in Practice* (Rainer Grimm) — 实战演示。
 - **MIT 6.S060**: *Programming Languages* — 包含现代语言特性比较。
 
-### 12.5 开源项目源码阅读
+### 11.5 开源项目源码阅读
 
 - **range-v3**: <https://github.com/ericniebler/range-v3> — C++20 ranges 的前身，含 C++23 增强。
 - **tl::expected**: <https://github.com/TartanLlama/expected> — `std::expected` 的前身。

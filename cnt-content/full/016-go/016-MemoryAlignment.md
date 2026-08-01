@@ -16,22 +16,12 @@ prerequisites:
   - go/概述与环境配置
 ---
 
+
 # Go 内存对齐
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-完成本章学习后,读者应能够在以下 Bloom 认知层级达到对应能力:
-
-- **记忆(Memory)**:复述对齐(alignment)、填充(padding)、伪共享(false sharing)、缓存行(cache line)等基本概念,准确说出常见基本类型在 64 位平台上的对齐值与大小。
-- **理解(Understanding)**:解释为何 CPU 要求内存对齐、编译器如何在结构体中插入 padding、字节序与对齐的相互作用,以及 `unsafe.Alignof`、`unsafe.Sizeof`、`unsafe.Offsetof` 三个函数的语义。
-- **应用(Application)**:使用 `unsafe` 包计算结构体字段布局,通过字段重排序优化结构体大小,利用 `unsafe.Pointer` 进行高性能类型转换并保证安全性。
-- **分析(Analysis)**:对照 `go tool pprof` 的内存占用数据,识别因对齐导致的内存浪费,定位并发场景下的伪共享热点,分析 cache miss 与字段排布的因果关系。
-- **评价(Evaluation)**:对比字段重排、紧凑编码、`[]byte` 直接读取、内存池等多种内存优化策略的适用场景与代价,在可读性、可维护性、性能之间做出合理权衡。
-- **创造(Creation)**:为高并发数据结构设计一套包含字段重排、缓存行对齐、对象池化的完整方案,并通过 benchmark 验证优化效果。
 
 ## 历史动机与背景
 

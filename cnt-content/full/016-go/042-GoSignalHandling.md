@@ -20,59 +20,16 @@ prerequisites:
   - go/并发编程
 ---
 
+
 # Go 与信号处理：从 POSIX 信号到优雅关闭
 
 > 本文以 Go 1.22 为基准版本，覆盖 Go 1.0 至 Go 1.24 的 `os/signal` 包演进，包含 POSIX 信号理论、`signal.Notify` 机制、优雅关闭（graceful shutdown）模式、Kubernetes 信号处理实战。适用于已掌握 Go 并发基础、希望深入理解信号机制与生产级优雅关闭的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。
-
-### 1.1 Remember（记忆）
-
-- 准确复述 POSIX.1-2008 定义的 31 个标准信号（signal）名称、编号与默认动作。
-- 列出 Linux 特有的实时信号（real-time signals，`SIGRTMIN` 至 `SIGRTMAX`）范围与特征。
-- 背诵 Go `os/signal` 包的核心 API：`signal.Notify`、`signal.NotifyContext`、`signal.Stop`、`signal.Reset`、`signal.Ignored`。
-- 列出 Go 程序必须处理的核心信号：`SIGINT`（2）、`SIGTERM`（15）、`SIGHUP`（1）、`SIGQUIT`（3）。
-
-### 1.2 Understand（理解）
-
-- 解释信号（signal）与中断（interrupt）、异常（exception）、陷阱（trap）的本质区别。
-- 描述 Linux 内核信号投递的两阶段流程：生成（generation）与传递（delivery）。
-- 阐述 Go runtime 如何通过 `gsignal` goroutine 处理信号，避免与用户 goroutine 的栈冲突。
-- 说明 `signal.Notify` 的 channel 缓冲机制，为何缓冲不足会导致信号丢失。
-
-### 1.3 Apply（应用）
-
-- 在生产服务中实现优雅关闭：收到 `SIGTERM` 后停止接受新请求、等待进行中请求完成、超时强退。
-- 使用 `signal.NotifyContext` 将信号处理与 `context.Context` 集成，支持下游传播。
-- 编写 systemd unit 文件，正确配置 `KillSignal=`、`TimeoutStopSec=`、`SendSIGKILL=`。
-
-### 1.4 Analyze（分析）
-
-- 分析 Go 信号处理与 C 程序 `sigaction` 的差异：可重入性、异步信号安全函数限制。
-- 推导信号 channel 缓冲大小的下界：单位时间信号速率 × 处理延迟。
-- 解构 Kubernetes Pod 终止流程：`SIGTERM` → grace period → `SIGKILL`，分析各阶段的时序约束。
-
-### 1.5 Evaluate（评价）
-
-- 评估不同优雅关闭策略（drain-first、immediate-exit、force-kill）的适用场景与权衡。
-- 评价 Go 1.16+ `signal.NotifyContext` 相对于 `signal.Notify` + `context.WithCancel` 的工程价值。
-- 判断在容器化环境下 `SIGHUP` 用于配置热加载的可行性，对比 Node.js、Python 的同类方案。
-
-### 1.6 Create（创造）
-
-- 设计一个支持零停机重启（zero-downtime reload）的 HTTP 服务，利用 `SIGHUP` 触发 fork-exec。
-- 实现一个信号多路复用器（signal multiplexer），将单信号源分发到多个消费者 goroutine。
-- 基于 eBPF 构建信号追踪面板：实时展示进程接收信号数、平均延迟、丢失率。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 信号的起源：Multics 与 UNIX（1965-1970）
+### 1.1 信号的起源：Multics 与 UNIX（1965-1970）
 
 信号（signal）机制最早出现在 1965 年的 **Multics** 操作系统中，作为进程间通信（IPC）的简化形式。1969 年 Ken Thompson 与 Dennis Ritchie 在 **UNIX** 第一版中引入了 `signal` 系统调用，最初仅支持 4 个信号：
 
@@ -85,7 +42,7 @@ prerequisites:
 
 1971 年 UNIX V4 将信号扩展到 20 个，1980 年 BSD 4.2 引入 `sigaction` 系统调用，提供比 `signal` 更精细的控制（如 SA_RESTART 自动重启被中断的系统调用）。
 
-### 2.2 POSIX 标准化（1988）
+### 1.2 POSIX 标准化（1988）
 
 1988 年 IEEE POSIX.1-1988（IEEE Std 1003.1-1988）将信号机制标准化，定义了 28 个标准信号。后续 POSIX.1-2001 增加至 31 个，POSIX.1-2008 进一步明确语义。
 
@@ -96,7 +53,7 @@ POSIX 信号的核心特征：
 3. **可靠性**（现代）：`sigaction` 提供持久注册、信号屏蔽（signal mask）、信号集（sigset_t）。
 4. **不可捕获**：`SIGKILL`（9）与 `SIGSTOP`（19）不能被捕获、阻塞或忽略。
 
-### 2.3 Linux 的实时信号扩展（1997）
+### 1.3 Linux 的实时信号扩展（1997）
 
 Linux 2.0（1996）引入了 POSIX 实时信号（real-time signals），编号范围 `SIGRTMIN`（通常 35）至 `SIGRTMAX`（通常 64）。
 
@@ -111,7 +68,7 @@ Linux 2.0（1996）引入了 POSIX 实时信号（real-time signals），编号�
 
 实时信号常用于用户态进程间通信，如 NPTL（Native POSIX Thread Library）使用 `SIGRTMIN` 之内的信号实现线程取消。
 
-### 2.4 Go 信号处理的演进
+### 1.4 Go 信号处理的演进
 
 | 版本 | 发布 | 关键变化 |
 | --- | --- | --- |
@@ -129,7 +86,7 @@ Linux 2.0（1996）引入了 POSIX 实时信号（real-time signals），编号�
 | Go 1.22 | 2024-02 | 信号处理与 schedule delay 的优化 |
 | Go 1.24 | 2025-02 | `signal.NotifyContext` 支持 `WithCancelCause` 风格 |
 
-### 2.5 Go 信号处理的设计哲学
+### 1.5 Go 信号处理的设计哲学
 
 Go 在信号处理上选择了一条与 C/C++ 显著不同的路径：
 
@@ -147,9 +104,9 @@ Go 在信号处理上选择了一条与 C/C++ 显著不同的路径：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 信号的数学模型
+### 2.1 信号的数学模型
 
 设进程 $P$ 在时刻 $t$ 的状态为 $S_t \in \{\text{Running}, \text{Sleeping}, \text{Stopped}, \text{Zombie}\}$。信号 $\sigma$ 的**生成（generation）**定义为：
 
@@ -165,7 +122,7 @@ $$
 
 延迟 $t' - t$ 称为 **传递延迟（delivery latency）**。
 
-### 3.2 信号处置的形式化
+### 2.2 信号处置的形式化
 
 信号 $\sigma$ 的处置（disposition）$\delta(\sigma, P) \in \{\text{default}, \text{ignore}, \text{handler}\}$：
 
@@ -183,7 +140,7 @@ $$
 \end{cases}
 $$
 
-### 3.3 信号屏蔽与 pending set
+### 2.3 信号屏蔽与 pending set
 
 每个进程维护两个集合：
 
@@ -203,7 +160,7 @@ Q_t & \text{otherwise}
 \end{cases}
 $$
 
-### 3.4 信号 channel 的容量模型
+### 2.4 信号 channel 的容量模型
 
 Go 的 `signal.Notify(c, sigs...)` 将信号 $\sigma \in \text{sigs}$ 投递到 channel $c$。设 $c$ 的缓冲容量为 $B$，单位时间信号生成速率为 $\lambda$（信号/秒），处理速率为 $\mu$（信号/秒）。
 
@@ -217,7 +174,7 @@ $$
 
 当 $\rho < 1$ 且 $B \to \infty$，$P_{\text{drop}} \to 0$。实际中 $B \geq 1$ 即可避免绝大多数瞬时丢失；对突发场景建议 $B \geq 10$。
 
-### 3.5 优雅关闭的不变量
+### 2.5 优雅关闭的不变量
 
 优雅关闭（graceful shutdown）的目标是满足以下不变量：
 
@@ -233,9 +190,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 异步信号安全性的限制
+### 3.1 异步信号安全性的限制
 
 **定义 4.1（async-signal-safe）**：函数 $f$ 是 async-signal-safe 的，当且仅当 $f$ 可在信号处理器中被调用而不引发未定义行为。
 
@@ -247,7 +204,7 @@ POSIX.1-2008 列出的 async-signal-safe 函数约 100 个，包括 `_exit`、`w
 
 **Go 的优势**：Go 的信号处理在普通 goroutine 中执行，使用 channel 而非锁进行通信，天然规避此问题。
 
-### 4.2 信号传递延迟的下界
+### 3.2 信号传递延迟的下界
 
 **定理 4.2（延迟下界）**：Go 程序中信号从生成到用户处理器执行的延迟 $L$ 满足：
 
@@ -263,7 +220,7 @@ $$
 
 **实测值**：Linux x86_64，Go 1.22，空闲程序约 20-50 μs；繁忙程序可达 1-10 ms。
 
-### 4.3 信号丢失概率
+### 3.3 信号丢失概率
 
 **定理 4.3**：若 channel 缓冲为 $B$，信号生成间隔独立同分布服从指数分布（参数 $\lambda$），处理时间服从指数分布（参数 $\mu$），则稳态下信号丢失概率为：
 
@@ -278,7 +235,7 @@ $$
 - 对低频信号（如 `SIGTERM`，每秒 < 1 次），$B = 1$ 即可。
 - 对高频信号（如 `SIGCHLD`，每秒可能数百次），建议 $B \geq 100$ 或直接用 `SIG_IGN` + `waitpid`。
 
-### 4.4 优雅关闭的最优超时
+### 3.4 优雅关闭的最优超时
 
 设进行中请求数为 $N$，单请求最大处理时间为 $T_{\max}$，关闭同步开销为 $T_{\text{sync}}$。
 
@@ -294,9 +251,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 最小信号处理示例
+### 4.1 最小信号处理示例
 
 ```go
 // signal_basic.go
@@ -339,7 +296,7 @@ kill -SIGTERM $(pgrep signal_basic)
 # 或 Ctrl-C 发送 SIGINT
 ```
 
-### 5.2 使用 signal.NotifyContext（Go 1.16+）
+### 4.2 使用 signal.NotifyContext（Go 1.16+）
 
 ```go
 // signal_ctx.go
@@ -397,7 +354,7 @@ func worker(ctx context.Context) {
 }
 ```
 
-### 5.3 HTTP 服务的优雅关闭
+### 4.3 HTTP 服务的优雅关闭
 
 ```go
 // graceful_http.go
@@ -544,7 +501,7 @@ kill -SIGTERM $(pgrep graceful_http)
 # 观察日志：服务器会等待慢请求完成后再退出
 ```
 
-### 5.4 多信号处理与 SIGHUP 热重载
+### 4.4 多信号处理与 SIGHUP 热重载
 
 ```go
 // signal_reload.go
@@ -652,7 +609,7 @@ func main() {
 }
 ```
 
-### 5.5 子进程信号管理
+### 4.5 子进程信号管理
 
 ```go
 // signal_child.go
@@ -724,7 +681,7 @@ func main() {
 }
 ```
 
-### 5.6 信号屏蔽（在 Linux 上）
+### 4.6 信号屏蔽（在 Linux 上）
 
 Go 标准库不直接暴露 `pthread_sigmask`，但可通过 `syscall` 包访问：
 
@@ -773,7 +730,7 @@ func main() {
 }
 ```
 
-### 5.7 优雅关闭完整模板（生产级）
+### 4.7 优雅关闭完整模板（生产级）
 
 ```go
 // graceful_template.go
@@ -914,9 +871,9 @@ func main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 C/C++ sigaction 对比
+### 5.1 与 C/C++ sigaction 对比
 
 | 维度 | C/C++ sigaction | Go os/signal |
 | --- | --- | --- |
@@ -929,7 +886,7 @@ func main() {
 | 性能 | 极高（μs 级） | 中等（10-100 μs） |
 | 跨平台 | POSIX 系统 | Linux/macOS/Windows（部分） |
 
-### 6.2 与 Python signal 模块对比
+### 5.2 与 Python signal 模块对比
 
 | 维度 | Python signal | Go os/signal |
 | --- | --- | --- |
@@ -939,7 +896,7 @@ func main() {
 | 异步 I/O 集成 | `signal.set_wakeup_fd` | channel 原生集成 |
 | 多线程 | 仅主线程接收 | 任意 goroutine |
 
-### 6.3 与 Node.js 信号处理对比
+### 5.3 与 Node.js 信号处理对比
 
 | 维度 | Node.js | Go |
 | --- | --- | --- |
@@ -949,7 +906,7 @@ func main() {
 | 优雅关闭 | `http.Server.close()` + 手动等待 | `http.Server.Shutdown()` |
 | 工业实践 | PM2、systemd | supervisor、k8s |
 
-### 6.4 与 Java JVM 信号处理对比
+### 5.4 与 Java JVM 信号处理对比
 
 | 维度 | Java JVM | Go |
 | --- | --- | --- |
@@ -959,7 +916,7 @@ func main() {
 | SIGQUIT | 默认打印线程栈 | 默认导致 crash（可改） |
 | SIGTERM | 默认正常退出 | 默认终止进程 |
 
-### 6.5 Go 信号处理的适用边界
+### 5.5 Go 信号处理的适用边界
 
 **适合**：
 
@@ -975,9 +932,9 @@ func main() {
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：channel 缓冲不足
+### 6.1 反模式：channel 缓冲不足
 
 ```go
 // BAD: 无缓冲 channel，信号可能丢失
@@ -993,7 +950,7 @@ sigCh := make(chan os.Signal, 1)
 signal.Notify(sigCh, syscall.SIGTERM)
 ```
 
-### 7.2 反模式：信号处理器中执行耗时操作
+### 6.2 反模式：信号处理器中执行耗时操作
 
 ```go
 // BAD: 在信号 channel 接收后同步执行慢操作
@@ -1003,7 +960,7 @@ uploadLogsToRemote() // 5 秒同步操作，会阻塞后续信号接收
 
 **正确做法**：将信号事件转发到 worker goroutine 异步处理。
 
-### 7.3 反模式：忽略 SIGTERM
+### 6.3 反模式：忽略 SIGTERM
 
 ```go
 // BAD: 忽略 SIGTERM，导致容器无法正常关闭
@@ -1012,7 +969,7 @@ signal.Ignore(syscall.SIGTERM)
 
 容器编排器（Kubernetes、Docker）发送 `SIGTERM` 后等待 grace period，再 `SIGKILL`。若忽略 `SIGTERM`，进程会被强制终止，丢失进行中状态。
 
-### 7.4 反模式：使用 signal.Reset 恢复默认后忘记后果
+### 6.4 反模式：使用 signal.Reset 恢复默认后忘记后果
 
 ```go
 // 危险：恢复 SIGINT 默认行为后，Ctrl-C 会立即终止，无优雅关闭
@@ -1021,7 +978,7 @@ signal.Reset(syscall.SIGINT)
 
 应仅在确认所有清理已完成、需要立即退出时使用。
 
-### 7.5 反模式：在多 goroutine 中重复注册同一信号
+### 6.5 反模式：在多 goroutine 中重复注册同一信号
 
 ```go
 // BAD: 两个 goroutine 都注册了 SIGTERM
@@ -1042,7 +999,7 @@ go func() {
 
 Go 允许多次注册，信号会同时投递到 ch1 和 ch2。但这通常不是预期行为，且增加协调复杂度。
 
-### 7.6 反模式：将同步阻塞操作放在 ctx.Done 处理中
+### 6.6 反模式：将同步阻塞操作放在 ctx.Done 处理中
 
 ```go
 // BAD: 在 ctx.Done 后执行阻塞 I/O，可能导致超时强退
@@ -1052,7 +1009,7 @@ db.Exec("UPDATE ...") // 可能阻塞数秒
 
 **正确做法**：使用带超时的 context 进行清理操作。
 
-### 7.7 反模式：使用 SIGKILL 自杀
+### 6.7 反模式：使用 SIGKILL 自杀
 
 ```go
 // BAD: 用 SIGKILL 自杀，跳过所有清理
@@ -1061,7 +1018,7 @@ syscall.Kill(syscall.Getpid(), syscall.SIGKILL)
 
 应使用 `os.Exit(0)` 或让 `signal.NotifyContext` 触发正常退出流程。
 
-### 7.8 反模式：未处理 SIGCHLD 导致僵尸进程
+### 6.8 反模式：未处理 SIGCHLD 导致僵尸进程
 
 在 fork-exec 子进程的 Go 程序中，若未调用 `cmd.Wait()` 或忽略 `SIGCHLD`，子进程退出后会成为僵尸进程（zombie），占用 PID 资源。
 
@@ -1074,9 +1031,9 @@ cmd.Start()
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 优雅关闭的 5 个阶段
+### 7.1 优雅关闭的 5 个阶段
 
 **阶段 1：信号捕获（< 1 ms）**
 
@@ -1101,7 +1058,7 @@ cmd.Start()
 
 所有 goroutine 退出后，主 goroutine 调用 `os.Exit(0)`。
 
-### 8.2 与 Kubernetes 集成
+### 7.2 与 Kubernetes 集成
 
 **Pod 生命周期**：
 
@@ -1144,7 +1101,7 @@ spec:
           periodSeconds: 5
 ```
 
-### 8.3 与 systemd 集成
+### 7.3 与 systemd 集成
 
 ```ini
 # /etc/systemd/system/myapp.service
@@ -1165,7 +1122,7 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
-### 8.4 与负载均衡器集成
+### 7.4 与负载均衡器集成
 
 **AWS ALB / NGINX / Envoy**：使用 readiness probe 判断是否接收流量。
 
@@ -1182,7 +1139,7 @@ func readyHandler(w http.ResponseWriter, r *http.Request) {
 
 **关键**：收到 `SIGTERM` 后立即让 `/ready` 失败，但保持 `/health` 正常，避免被重启。
 
-### 8.5 信号日志记录
+### 7.5 信号日志记录
 
 ```go
 func logSignal(sig os.Signal) {
@@ -1196,7 +1153,7 @@ func logSignal(sig os.Signal) {
 
 记录信号事件有助于事后分析：是 K8s 主动重启、OOM killer、还是人工 kill。
 
-### 8.6 信号转发给子进程
+### 7.6 信号转发给子进程
 
 容器化场景下，Go 二进制常作为 PID 1 运行，需要将信号转发给子进程（如 fork-exec 的 worker）：
 
@@ -1214,7 +1171,7 @@ func forwardSignals(child *os.Process) {
 
 **注意**：Go 1.18+ 的 `os/exec` 默认不转发信号给子进程，需手动实现。
 
-### 8.7 测试信号处理
+### 7.7 测试信号处理
 
 ```go
 // signal_test.go
@@ -1256,9 +1213,9 @@ func TestGracefulShutdown(t *testing.T) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Kubernetes 中的 Pod 优雅终止
+### 8.1 案例一：Kubernetes 中的 Pod 优雅终止
 
 **场景**：Go 服务部署在 Kubernetes 上，每次滚动更新需要零停机。
 
@@ -1279,7 +1236,7 @@ atomic.StoreInt32(&shutdownStarted, 1)  // 标记关闭中
 
 **效果**：502 错误率从 0.5% 降至 0%，滚动更新完全无感知。
 
-### 9.2 案例二：Caddy 服务器的零停机重启
+### 8.2 案例二：Caddy 服务器的零停机重启
 
 **背景**：Caddy 是 Go 编写的 HTTP 服务器，支持零停机 reload。
 
@@ -1322,7 +1279,7 @@ func zeroDowntimeReload() {
 }
 ```
 
-### 9.3 案例三：Prometheus 的信号处理
+### 8.3 案例三：Prometheus 的信号处理
 
 **背景**：Prometheus 是 Go 编写的监控系统，需要处理大量并发抓取。
 
@@ -1378,7 +1335,7 @@ func main() {
 }
 ```
 
-### 9.4 案例四：Docker 容器中的 PID 1 问题
+### 8.4 案例四：Docker 容器中的 PID 1 问题
 
 **背景**：Go 二进制作为 Docker 容器 ENTRYPOINT 时，会成为 PID 1。Linux 内核对 PID 1 有特殊处理：
 
@@ -1412,7 +1369,7 @@ func init() {
 }
 ```
 
-### 9.5 案例五：etcd 的零停机 leader 切换
+### 8.5 案例五：etcd 的零停机 leader 切换
 
 **背景**：etcd 是 Go 编写的分布式 KV 存储，Raft leader 在收到 `SIGTERM` 时需要主动 transfer leadership，避免集群抖动。
 
@@ -1453,7 +1410,7 @@ func main() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：编写一个程序，捕获 `SIGINT` 后打印"Ctrl-C pressed"，但前 3 次不退出，第 4 次才退出。
 
@@ -1496,7 +1453,7 @@ signal.Notify(sigCh, syscall.SIGTERM)
 无缓冲 channel 要求发送方与接收方同时就绪。Go runtime 在投递信号时若发现 channel 已满（无缓冲即满），会丢弃信号而不阻塞。修复：`make(chan os.Signal, 1)`。
 
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 3**：实现一个 HTTP 服务，要求：
 
@@ -1527,7 +1484,7 @@ Linux 内核对 PID 1 的特殊保护：
 2. **Go 程序显式注册**：在 `main()` 中调用 `signal.Notify` 注册所有需要处理的信号。
 
 
-### 10.3 思考题
+### 9.3 思考题
 
 **思考题 1**：在微服务架构中，如何确保滚动更新期间零请求丢失？请设计完整流程，包括负载均衡器、Kubernetes、应用层的协同。
 
@@ -1541,9 +1498,9 @@ Linux 内核对 PID 1 的特殊保护：
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文与标准
+### 10.1 学术论文与标准
 
 [1] IEEE. (2008). *IEEE Standard for Information Technology - Portable Operating System Interface (POSIX) Base Specifications, Issue 7*. IEEE Std 1003.1-2008. https://doi.org/10.1109/IEEESTD.2008.4694976
 
@@ -1555,7 +1512,7 @@ Linux 内核对 PID 1 的特殊保护：
 
 [5] Ritchie, D. M., & Thompson, K. (1974). The UNIX time-sharing system. *Communications of the ACM*, 17(7), 365-375. https://doi.org/10.1145/361011.361061
 
-### 11.2 Go 官方文档
+### 10.2 Go 官方文档
 
 [6] Google Inc. (2022). *Go 1.16 release notes: signal.NotifyContext*. https://go.dev/doc/go1.16
 
@@ -1563,7 +1520,7 @@ Linux 内核对 PID 1 的特殊保护：
 
 [8] Cox-Buday, K. (2017). *Concurrency in Go: Tools and Techniques for Developers*. O'Reilly Media.
 
-### 11.3 工业实践与白皮书
+### 10.3 工业实践与白皮书
 
 [9] Burns, B., & Hightower, J. (2022). *Kubernetes Up & Running* (3rd ed.). O'Reilly Media.
 
@@ -1573,7 +1530,7 @@ Linux 内核对 PID 1 的特殊保护：
 
 [12] Docker Inc. (2014). *Docker daemon signal handling*. Technical Reference.
 
-### 11.4 RFC 与标准
+### 10.4 RFC 与标准
 
 [13] Internet Engineering Task Force. (1999). *HTTP/1.1 connections*. RFC 2616. IETF.
 
@@ -1581,23 +1538,23 @@ Linux 内核对 PID 1 的特殊保护：
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **Go Blog: Signal handling in Go** — https://go.dev/blog/signals
 - **`os/signal` 包文档** — https://pkg.go.dev/os/signal
 - **Go 1.16 release notes** — https://go.dev/doc/go1.16
 - **`signal.NotifyContext` 源码** — https://github.com/golang/go/blob/master/src/os/signal/signal.go
 
-### 12.2 进阶主题
+### 11.2 进阶主题
 
 - **`signalfd` 与 Go**：Linux 特有的 signalfd 提供文件描述符风格的信号读取，但 Go runtime 抢占了信号，需通过 cgo 使用。
 - **eBPF 信号追踪**：使用 BPF 程序追踪内核 `do_signal` 调用，分析信号传递延迟。
 - **RT signals 在 NPTL 中的应用**：Linux NPTL 线程库使用 `SIGRTMIN` 之内的信号实现线程取消、futex 同步。
 - **cgroup 与信号**：cgroup v2 的 freezer 子系统可与 SIGSTOP/SIGCONT 配合，实现容器暂停。
 
-### 12.3 开源项目
+### 11.3 开源项目
 
 - **tini** — https://github.com/krallin/tini
   最小化的容器 PID 1 init 系统，专门处理信号转发。
@@ -1610,7 +1567,7 @@ Linux 内核对 PID 1 的特殊保护：
 - **etcd** — https://github.com/etcd-io/etcd
   分布式 KV 存储，支持 leader 主动 transfer。
 
-### 12.4 相关书籍
+### 11.4 相关书籍
 
 - **Advanced Programming in the UNIX Environment**（Stevens & Rago, 3rd ed., 2013）
   UNIX 编程圣经，第 10 章详述信号机制。
@@ -1621,14 +1578,14 @@ Linux 内核对 PID 1 的特殊保护：
 - **Concurrency in Go**（Cox-Buday, 2017）
   Go 并发实战，含信号处理章节。
 
-### 12.5 会议与社区
+### 11.5 会议与社区
 
 - **USENIX ATC** —— 系统软件方向顶会。
 - **OSDI / SOSP** —— 操作系统设计顶会。
 - **KubeCon + CloudNativeCon** —— 云原生社区大会。
 - **Go Devroom @ FOSDEM** —— Go 社区年度聚会。
 
-### 12.6 进阶主题
+### 11.6 进阶主题
 
 - **PID 1 in containers**：深度解析为何容器需要 init 系统。
 - **Signal in multi-threaded programs**：POSIX 线程信号路由规则。

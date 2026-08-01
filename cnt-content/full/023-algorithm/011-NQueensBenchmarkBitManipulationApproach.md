@@ -39,14 +39,6 @@ prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/栈与队列
   - algorithm/树
-learningObjectives:
-  - 记忆阶乘 $O(n)$、斐波那契 $O(2^n)$ 无记忆化/$O(n)$ 记忆化、子集枚举 $O(n \cdot 2^n)$、全排列 $O(n \cdot n!)$、组合 $O(\binom{n}{k} \cdot k)$、N 皇后 $O(n!)$（剪枝后）、数独 $O(9^{n^2})$ 最坏/$O(1)$ 摊还（约束传播）、Dancing Links $O(c \cdot r)$ 的形式化复杂度，复述回溯三要素"选择-递归-撤销"
-  - 理解 McCarthy 1960《Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I》CACM 3(4):184-195 LISP 递归系统化、Golomb-Baumert 1965《Backtrack Programming》JACM 12(4):516-524 回溯法开山之作、Tarjan 1972《Depth-First Search and Linear Graph Algorithms》SIAM J. Comp. 1(2):146-160 DFS 线性时间、Bezzel 1848 八皇后问题原题（柏林国际象棋杂志）、Land-Doig 1960 分支限界、Knuth 2000《Dancing Links》Millennium Essay 的历史脉络，说明各算法的设计动机
-  - 应用回溯通用模板编写子集（78/90）、排列（46/47）、组合（77/39/40/216/377）、分割（131/93/784）、N 皇后（51/52）、数独（37）、括号生成（22）、单词搜索（79/212）、解数独（37）、复原 IP（93）、子集 II（90）、全排列 II（47）等高频 LeetCode 题目，使用 Python/C++/Java 实现
-  - 分析递归树模型、主定理对递归复杂度的判定（$T(n) = aT(n/b) + f(n)$）、回溯通用复杂度 $O(b^d)$（$b$ 分支因子、$d$ 递归深度）、剪枝的渐近改进分析、N 皇后位运算剪枝将 $O(n!)$ 实际加速到毫秒级、Dancing Links 双向十字链表 $O(1)$ 撤销机制，掌握"递归树归约、剪枝势能分析、对称性消去"三大核心论证方法
-  - 评估各回溯算法在"解空间形态（子集树 vs 排列树 vs 棋盘树）"、"剪枝强度"、"空间复杂度"、"是否需排序预处理"、"位运算可加速性"维度上的优劣，识别数独求解器、Prolog 推理引擎、SAT 求解器、CP/MIP 求解器、Google OR-Tools、约束传播引擎的选型动机
-  - 对比子集、排列、组合、N 皇后、数独、括号生成、单词搜索、分割回文、复原 IP 在解空间结构、剪枝策略、状态表示、复杂度上的差异
-  - 创造性设计基于递归与回溯的开源项目解决方案，如数独求解器 Web App、N 皇后可视化、Prolog 解释器、SAT 求解器、Crossword 填字游戏、Sokoban 求解器、Permutation 加密器、子集和密码分析
 references:
   - type: book
     authors:
@@ -246,6 +238,7 @@ etymology:
     english: choose-recurse-unchoose
     origin: 'choose-recurse-unchoose 是回溯算法的通用三步范式，由斯坦福 CS106B/X 课程 Julie Zelenski 系统化教学。Choose（做选择）、Recurse（递归）、Unchoose（撤销选择）形成对称结构，确保状态在递归返回后恢复。中文社区常简称为"做选择-递归-撤销"模板'
 ---
+
 
 ## 1. 概述与学习目标
 

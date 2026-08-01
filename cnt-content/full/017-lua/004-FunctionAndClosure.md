@@ -22,67 +22,28 @@ prerequisites:
   - lua/程序结构与基本语法
   - lua/数据类型与Table详解
 ---
+
 # Lua 函数与闭包速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-学习本章后，读者应能在 Bloom 认知层级框架下达成下列目标。
-
-### 1.1 知识层（Remembering）
-
-- 列举 Lua 函数定义的全部语法形式（匿名函数、具名函数、本地函数、方法语法）。
-- 复述 Lua 中 first-class function 与 closure 的定义。
-- 描述 Lua 函数值的内部表示（`lua_CFunction` 与 `LClosure` 结构）。
-
-### 1.2 理解层（Understanding）
-
-- 解释词法作用域（lexical scope）与动态作用域（dynamic scope）的区别。
-- 阐释闭包捕获变量的实际语义（捕获引用而非复制）。
-- 描述 Lua 5.x 中 upvalue 的实现机制及其与闭包生命周期管理的关系。
-
-### 1.3 应用层（Applying）
-
-- 编写高阶函数实现 `map`、`filter`、`reduce` 等通用函数式工具。
-- 在游戏脚本、Redis 脚本、Nginx 模块中应用闭包完成状态封装。
-- 使用闭包实现迭代器、生成器与状态机。
-
-### 1.4 分析层（Analyzing）
-
-- 分析闭包对垃圾回收器（GC）根集的影响。
-- 分析 Lua 闭包与 JavaScript closure 在内存模型上的差异。
-- 区分闭包泄漏与表泄漏的不同成因。
-
-### 1.5 评价层（Evaluating）
-
-- 评判闭包方案与面向对象方案在不同场景下的优劣。
-- 评估 upvalue 开销对热路径性能的影响。
-- 评判闭包捕获策略对模块可测试性的影响。
-
-### 1.6 创造层（Creating）
-
-- 设计基于闭包的领域特定语言（DSL）。
-- 构建闭包化的状态机框架。
-- 设计可重入、可并发的函数式工具库。
-
-## 2. 历史动机与演化
-
-### 2.1 函数式范式的起源
+### 1.1 函数式范式的起源
 
 函数作为一等公民（first-class citizen）的概念源自 LISP（McCarthy, 1960）。LISP 将函数视作可传递、可返回的 lambda 表达式，奠定了函数式编程的基础。Scheme 在 1975 年首次实现了词法作用域与闭包，确立了现代闭包的语义模型。
 
 Lua 在 1.0 版本（1993）就引入了一等函数，但直到 3.0 版本（1997）才引入词法作用域与 upvalue 机制，使得真正的闭包成为可能。Lua 5.0（2003）重写了闭包实现，引入了"开放式 upvalue"链表结构，将闭包性能提升至可与传统函数调用媲美的水平。
 
-### 2.2 Lua 在游戏/嵌入式/脚本领域的地位
+### 1.2 Lua 在游戏/嵌入式/脚本领域的地位
 
 Lua 长期作为游戏脚本的事实标准。World of Warcraft 自 2004 年起采用 Lua 作为 UI 脚本语言，Roblox 平台以 Luau（Lua 5.1 衍生方言）作为唯一游戏逻辑语言。嵌入式领域，Lua 占用 < 200KB 内存，被广泛集成到路由器、相机、IoT 设备。脚本领域，Redis 用 Lua 实现 atomic script，Nginx 通过 lua-nginx-module 提供高性能动态路由。
 
 函数与闭包是上述场景的核心工具。游戏脚本依赖闭包管理 UI 状态、回调注册；Redis 脚本依赖函数封装原子操作；Nginx 通过闭包管理请求上下文。
 
-### 2.3 演化时间线
+### 1.3 演化时间线
 
 | 版本 | 年份 | 关键变化 |
 | --- | --- | --- |
@@ -98,9 +59,9 @@ Lua 长期作为游戏脚本的事实标准。World of Warcraft 自 2004 年起�
 | Luau | 2021 | Roblox 推出渐进式类型检查的 Lua 方言 |
 | Lua 5.5 | 2025 | 持续优化 upvalue 与 GC 协同 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Lambda 演算基础
+### 2.1 Lambda 演算基础
 
 Lambda 演算由 Church（1936）提出，是函数式编程的形式化基础。其语法如下：
 
@@ -114,7 +75,7 @@ $$
 
 其中 $\beta$ 规约（beta reduction）是函数应用的核心语义，$\eta$ 规约描述函数外延性。Lua 函数定义 $\lambda x.M$ 对应 `function(x) return M end`，函数应用 $M\, N$ 对应 `M(N)`。
 
-### 3.2 Lua 函数的指称语义
+### 2.2 Lua 函数的指称语义
 
 设 $\Sigma$ 为环境（变量到值的映射），$v \in V$ 为值域，Lua 函数可定义为：
 
@@ -124,7 +85,7 @@ $$
 
 其中 $\Sigma|_{FV(e)}$ 为表达式 $e$ 的自由变量集合 $FV(e)$ 在环境 $\Sigma$ 上的限制，即闭包捕获的环境。这形式化了"闭包 = 函数代码 + 捕获环境"。
 
-### 3.3 闭包的形式化定义
+### 2.3 闭包的形式化定义
 
 闭包（closure）是函数值 $f$ 与其定义环境的快照 $\rho$ 的序对：
 
@@ -138,7 +99,7 @@ $$
 \frac{\langle \lambda x.e,\ \rho \rangle\ v \Downarrow w}{\rho \cup [x \mapsto v] \vdash e \Downarrow w}\ \text{(closure-app)}
 $$
 
-### 3.4 Lua 函数值的代数结构
+### 2.4 Lua 函数值的代数结构
 
 Lua 函数值集合 $F$ 形成幺半群（monoid）：
 
@@ -171,7 +132,7 @@ assert(compose(identity, inc)(5) == inc(5))
 assert(compose(inc, identity)(5) == inc(5))
 ```
 
-### 3.5 upvalue 的形式化模型
+### 2.5 upvalue 的形式化模型
 
 Lua 的 upvalue 是对词法作用域变量的引用。设 $U$ 为 upvalue 集合，闭包可形式化为：
 
@@ -188,9 +149,9 @@ v & \text{若某闭包对 } u \text{ 赋值 } v \\
 \end{cases}
 $$
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 词法作用域的封闭性
+### 3.1 词法作用域的封闭性
 
 **定理 1**（词法作用域封闭性）：设 $e$ 为 Lua 表达式，$FV(e)$ 为其自由变量集合。若 $\forall x \in FV(e)$，$x$ 在 $\Sigma$ 中有定义，则 $e$ 在 $\Sigma$ 中可求值，且求值结果与全局环境 $G$ 无关（除 $FV(e) \cap G$ 外）。
 
@@ -206,7 +167,7 @@ $$
 
 证毕。
 
-### 4.2 闭包共享变量语义
+### 3.2 闭包共享变量语义
 
 **定理 2**（共享 upvalue 一致性）：设 $f$ 与 $g$ 为同一外层函数定义的两个闭包，捕获同一 upvalue $u$。对任意赋值 $u := v$，$f$ 与 $g$ 读取的 $u$ 值一致。
 
@@ -222,7 +183,7 @@ flowchart LR
 
 证毕。
 
-### 4.3 闭包捕获的引用语义
+### 3.3 闭包捕获的引用语义
 
 **定理 3**（捕获即引用）：Lua 闭包捕获的是变量的引用，而非值的快照。
 
@@ -247,7 +208,7 @@ print(c())  -- 2
 
 若捕获为值复制，则 `count = count + 1` 修改的是闭包内部副本，`c()` 永远返回 1。但实际返回 1, 2, 3，证明闭包持有 `count` 的引用。证毕。
 
-### 4.4 高阶函数的不动点定理
+### 3.4 高阶函数的不动点定理
 
 **定理 4**（Y 组合子存在性）：在 Lua 严格 lambda 演算子集中，存在不动点组合子 $Y$ 满足 $Y f = f (Y f)$。
 
@@ -286,7 +247,7 @@ $$
 
 证毕。
 
-### 4.5 尾调用优化的正确性
+### 3.5 尾调用优化的正确性
 
 **定理 5**（尾调用不增长栈）：Lua 5.x 保证尾调用 `return f(args)` 不增长调用栈，故尾递归可处理任意深度输入。
 
@@ -315,9 +276,9 @@ end
 traverse(node, function(v) end)
 ```
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 函数定义的全部语法形式
+### 4.1 函数定义的全部语法形式
 
 ```lua
 -- lua: 函数定义语法形式
@@ -372,7 +333,7 @@ print(first(10, 20, 30))  -- 10
 print(select("#", 10, 20, 30))  -- 3
 ```
 
-### 5.2 闭包基础
+### 4.2 闭包基础
 
 ```lua
 -- lua: 闭包基础示例
@@ -388,7 +349,7 @@ print(add5(3))   -- 8
 print(add10(3))  -- 13
 ```
 
-### 5.3 计数器与状态封装
+### 4.3 计数器与状态封装
 
 ```lua
 -- lua: 计数器闭包
@@ -410,7 +371,7 @@ print(c.dec())  -- 12
 print(c.get())  -- 12
 ```
 
-### 5.4 高阶函数 map / filter / reduce
+### 4.4 高阶函数 map / filter / reduce
 
 ```lua
 -- lua: 函数式工具库
@@ -448,7 +409,7 @@ local sum = reduce(function(a, b) return a + b end, 0, squared)
 print(sum)  -- 2²+4²+6²+8²+10² = 220
 ```
 
-### 5.5 柯里化与偏应用
+### 4.5 柯里化与偏应用
 
 ```lua
 -- lua: 柯里化实现
@@ -487,7 +448,7 @@ local add5 = partial(add, 5)
 print(add5(10))  -- 15
 ```
 
-### 5.6 迭代器与生成器
+### 4.6 迭代器与生成器
 
 ```lua
 -- lua: 闭包实现迭代器
@@ -520,7 +481,7 @@ local gen = naturals()
 print(gen(), gen(), gen())  -- 1 2 3
 ```
 
-### 5.7 状态机
+### 4.7 状态机
 
 ```lua
 -- lua: 闭包实现状态机
@@ -547,7 +508,7 @@ print(door("close"))  -- true, "closed"
 print(door("close"))  -- false, "closed" (已在关闭状态)
 ```
 
-### 5.8 记忆化（Memoization）
+### 4.8 记忆化（Memoization）
 
 ```lua
 -- lua: 闭包实现记忆化
@@ -571,7 +532,7 @@ local fib = memoize(fib_raw)
 print(fib(30))  -- 832040
 ```
 
-### 5.9 函数组合
+### 4.9 函数组合
 
 ```lua
 -- lua: 函数组合
@@ -593,7 +554,7 @@ local pipeline = compose(
 print(pipeline(3))  -- (3²) * 2 + 1 = 19
 ```
 
-### 5.10 闭包泄漏与避免
+### 4.10 闭包泄漏与避免
 
 ```lua
 -- lua: 闭包泄漏示例
@@ -623,9 +584,9 @@ local function clean()
 end
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua vs Python 函数对比
+### 5.1 Lua vs Python 函数对比
 
 | 维度 | Lua | Python |
 | --- | --- | --- |
@@ -640,7 +601,7 @@ end
 | 协程与闭包 | 协程也是闭包 | 生成器与闭包分离 |
 | 性能 | ~10x Python（在 Luau JIT 下） | 慢，但生态丰富 |
 
-### 6.2 Lua vs JavaScript 闭包对比
+### 5.2 Lua vs JavaScript 闭包对比
 
 | 维度 | Lua | JavaScript |
 | --- | --- | --- |
@@ -653,7 +614,7 @@ end
 | 模块系统 | `require` + table | `import`/`export` |
 | 异步 | 协程 `coroutine` | Promise / async-await |
 
-### 6.3 Lua vs Scheme 闭包对比
+### 5.3 Lua vs Scheme 闭包对比
 
 Scheme 是闭包的发源地（1975），其闭包语义最为纯粹。Lua 与 Scheme 的关键差异：
 
@@ -662,7 +623,7 @@ Scheme 是闭包的发源地（1975），其闭包语义最为纯粹。Lua 与 S
 - Scheme 强调不可变性；Lua 默认可变。
 - Scheme 用尾递归表达循环；Lua 提供数值循环与泛型循环。
 
-### 6.4 性能对比基准
+### 5.4 性能对比基准
 
 以下基准在 Lua 5.4、Luau JIT、Python 3.11、Node.js 18 上测试闭包调用 1000 万次：
 
@@ -695,9 +656,9 @@ end
 print(sum)
 ```
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：循环中闭包捕获变量
+### 6.1 陷阱：循环中闭包捕获变量
 
 **反模式**：
 
@@ -732,7 +693,7 @@ for i = 1, 3 do
 end
 ```
 
-### 7.2 陷阱：递归全局函数
+### 6.2 陷阱：递归全局函数
 
 **反模式**：
 
@@ -758,7 +719,7 @@ local function fact(n)
 end
 ```
 
-### 7.3 陷阱：闭包泄漏大对象
+### 6.3 陷阱：闭包泄漏大对象
 
 **反模式**：
 
@@ -783,7 +744,7 @@ local function good()
 end
 ```
 
-### 7.4 陷阱：可变 upvalue 共享
+### 6.4 陷阱：可变 upvalue 共享
 
 **反模式**：
 
@@ -806,7 +767,7 @@ print(f2())  -- 2 (x 已被修改)
 
 设计时需明确闭包共享语义，避免意外的状态污染。
 
-### 7.5 反模式：滥用闭包替代对象
+### 6.5 反模式：滥用闭包替代对象
 
 **反模式**：
 
@@ -842,7 +803,7 @@ local p = Person.new("Alice", 30)
 print(p:get_name())
 ```
 
-### 7.6 陷阱：可变参数与 nil
+### 6.6 陷阱：可变参数与 nil
 
 ```lua
 -- lua: 可变参数中 nil 截断
@@ -862,7 +823,7 @@ end
 print(good_count(1, nil, 3))  -- 3
 ```
 
-### 7.7 陷阱：尾调用判定
+### 6.7 陷阱：尾调用判定
 
 ```lua
 -- lua: 不是尾调用
@@ -885,9 +846,9 @@ local function tail_call(x)
 end
 ```
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 模块封装模式
+### 7.1 模块封装模式
 
 ```lua
 -- lua: 模块封装最佳实践
@@ -913,7 +874,7 @@ end
 return M
 ```
 
-### 8.2 函数式错误处理
+### 7.2 函数式错误处理
 
 ```lua
 -- lua: 函数式错误处理（Either 模式）
@@ -947,7 +908,7 @@ end)
 print(result.ok, result.error)  -- false, "division by zero"
 ```
 
-### 8.3 函数式反应式编程（FRP）
+### 7.3 函数式反应式编程（FRP）
 
 ```lua
 -- lua: 简易信号/订阅模式
@@ -976,7 +937,7 @@ unsub()
 signal.emit("world")  -- B: world
 ```
 
-### 8.4 配置 DSL
+### 7.4 配置 DSL
 
 ```lua
 -- lua: 闭包构建配置 DSL
@@ -1004,7 +965,7 @@ for _, route in ipairs(app.routes) do
 end
 ```
 
-### 8.5 性能调优
+### 7.5 性能调优
 
 1. **避免在热路径创建闭包**：闭包创建涉及 upvalue 表分配。
 
@@ -1058,7 +1019,7 @@ local function fast(n)
 end
 ```
 
-### 8.6 测试与可调试性
+### 7.6 测试与可调试性
 
 ```lua
 -- lua: 依赖注入便于测试
@@ -1080,9 +1041,9 @@ local test_service = make_service(mock_db)
 assert(test_service.get_user(1).name == "mock")
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Redis 脚本中的函数与闭包
+### 8.1 Redis 脚本中的函数与闭包
 
 Redis 的 EVAL 命令支持 Lua 脚本，使原子操作成为可能。
 
@@ -1104,7 +1065,7 @@ return deduct(KEYS[1], tonumber(ARGV[1]))
 
 Redis 脚本中的闭包限制：不允许 upvalue 跨脚本调用持久化，每次脚本执行独立。
 
-### 9.2 Nginx 中的请求处理闭包
+### 8.2 Nginx 中的请求处理闭包
 
 OpenResty 通过 `lua-nginx-module` 提供 Lua 协程化的请求处理：
 
@@ -1144,7 +1105,7 @@ end
 handle_request()
 ```
 
-### 9.3 游戏脚本中的回调系统
+### 8.3 游戏脚本中的回调系统
 
 以魔兽世界 UI 为例，函数与闭包是事件回调的核心：
 
@@ -1169,7 +1130,7 @@ local button = create_button("MyButton", function(btn)
 end)
 ```
 
-### 9.4 Love2D 游戏循环
+### 8.4 Love2D 游戏循环
 
 ```lua
 -- lua: Love2D 游戏状态机
@@ -1201,7 +1162,7 @@ function love.update(dt) state.update(dt) end
 function love.draw() state.draw() end
 ```
 
-### 9.5 Neovim 配置中的闭包
+### 8.5 Neovim 配置中的闭包
 
 ```lua
 -- lua: Neovim 配置中的闭包
@@ -1227,7 +1188,7 @@ map("n", "<leader>w", function()
 end, { desc = "Save file" })
 ```
 
-### 9.6 企业级案例：日志中间件
+### 8.6 企业级案例：日志中间件
 
 ```lua
 -- lua: 日志中间件实现
@@ -1276,7 +1237,7 @@ print(app({method = "GET", path = "/users", token = "abc"}).status)
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：实现一个闭包 `make_stack()`，返回一个栈对象，包含 `push`、`pop`、`peek`、`size` 方法。
 
@@ -1331,7 +1292,7 @@ end)
 print(fib(10))  -- 55
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 3**：实现 `debounce` 与 `throttle` 高阶函数。
 
@@ -1412,7 +1373,7 @@ local result = lazy_take(5, lazy_map(
 print(table.concat(result, ", "))  -- 4, 16, 36, 64, 100
 ```
 
-### 10.3 思考题
+### 9.3 思考题
 
 **思考题 1**：为什么 Lua 的尾调用优化对游戏脚本重要？
 
@@ -1442,7 +1403,7 @@ print(table.concat(result, ", "))  -- 4, 16, 36, 64, 100
 
 Lua 设计哲学是保持语言核心最小化。默认参数可以通过 `param = param or default` 模式实现，且更灵活（可基于 nil 检查）。引入默认参数语法会增加语言复杂度，与 Lua 极简设计相悖。同时，Lua 的 nil 检查模式支持"使用默认值"，与 Python 显式默认参数在语义上等价。
 
-### 10.4 项目题
+### 9.4 项目题
 
 **项目题**：实现一个闭包化的 Promise 库，支持链式调用、错误处理与并发。
 
@@ -1556,9 +1517,9 @@ end):then(function(v)
 end)
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 ACM Reference Format
+### 10.1 ACM Reference Format
 
 [1] Roberto Ierusalimschy, Luiz Henrique de Figueiredo, and Waldemar Celes. 1996. Lua-an extensible extension language. _Software: Practice and Experience_ 26, 6 (1996), 635–652. DOI: https://doi.org/10.1002/(SICI)1097-024X(199606)26:6<635::AID-SPE26>3.0.CO;2-P
 
@@ -1600,22 +1561,22 @@ end)
 
 [20] Peter J. Landin. 1964. The mechanical evaluation of expressions. _The Computer Journal_ 6, 4 (Jan. 1964), 308–320. DOI: https://doi.org/10.1093/comjnl/6.4.308
 
-### 11.2 引用与扩展
+### 10.2 引用与扩展
 
 **关于 Lua 闭包实现细节**，可参考 Ierusalimschy 等人的 *The Implementation of Lua 5.0*（文献 [2]），其详述了开放式 upvalue 链表的内存模型与 GC 协同机制。
 
 **关于 lambda 演算形式化基础**，Church 1936 年论文（文献 [7]）奠定了闭包的理论根基，建议配合 Pierce 的 *Types and Programming Languages*（文献 [14]）系统学习。
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Lua 5.4 Reference Manual: https://www.lua.org/manual/5.4/
 - Lua 5.4 Source Code: https://www.lua.org/ftp/lua-5.4.7.tar.gz
 - LuaJIT Documentation: https://luajit.org/extensions.html
 - Luau Language Reference: https://luau.org/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - *Programming in Lua* (4th ed.) by Roberto Ierusalimschy - Lua 作者亲撰，权威入门
 - *Lua Programming Gems* by Luiz Henrique de Figueiredo - Lua 进阶技巧合集
@@ -1623,21 +1584,21 @@ end)
 - *Types and Programming Languages* by Benjamin C. Pierce - PLT 理论
 - *Concepts of Programming Languages* by Robert W. Sebesta - 多范式对比
 
-### 12.3 进阶论文
+### 11.3 进阶论文
 
 - *The Implementation of Lua 5.0* - 闭包与 upvalue 实现细节
 - *A No-Frills Introduction to Lua 5.1 VM Instructions* by Kein-Hong Man - 字节码层面分析
 - *Lua Performance Tips* by Roberto Ierusalimschy - 性能调优官方指南
 - *Passing Styles: Higher-Order Functions in Lua* - 高阶函数深入
 
-### 12.4 实战项目
+### 11.4 实战项目
 
 - **Lapis**: MoonScript/Web 框架，源码中大量使用闭包 - https://leafo.net/lapis/
 - **Kong**: API 网关，基于 OpenResty，闭包化中间件 - https://konghq.com/
 - **LuaNode**: Node.js 风格 Lua 框架 - https://github.com/ignacio/LuaNode
 - **LÖVE**: 2D 游戏引擎，闭包化游戏循环 - https://love2d.org/
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - Lua Users Wiki: http://lua-users.org/wiki/
 - Lua Mailing List: https://www.lua.org/lua-l.html
@@ -1645,7 +1606,7 @@ end)
 - Stack Overflow Lua tag: https://stackoverflow.com/questions/tagged/lua
 - Roblox Luau documentation: https://create.roblox.com/docs/luau
 
-### 12.6 配套实验
+### 11.6 配套实验
 
 建议结合以下实验加深理解：
 
@@ -1654,7 +1615,7 @@ end)
 3. **Redis 脚本性能对比**：对比 Lua 闭包与纯指令序列在 Redis 中的性能差异，测量闭包开销。
 4. **协程与闭包结合**：实现基于协程的 generator 与 yield 风格迭代器。
 
-### 12.7 学习路径建议
+### 11.7 学习路径建议
 
 ```mermaid
 flowchart TD

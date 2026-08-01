@@ -18,22 +18,12 @@ prerequisites:
   - csharp/基础语法
   - csharp/面向对象编程
 ---
+
 # C# 泛型与集合
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-完成本章学习后，读者应当能够达到以下认知层级（参照 Bloom 分类法）：
-
-- **记忆（Remembering）**：复述 C# 泛型的核心概念（类型参数、约束、实例化、类型擦除对比），列举 `System.Collections.Generic` 命名空间下的主要集合类型（`List<T>`、`Dictionary<TKey,TValue>`、`HashSet<T>`、`Queue<T>`、`Stack<T>`、`LinkedList<T>`、`PriorityQueue<TElement,TPriority>`、`SortedDictionary<TKey,TValue>`、`SortedSet<T>`）。
-- **理解（Understanding）**：解释泛型在 CLR 中的实例化机制（值类型各自实例化、引用类型共享实例化），阐述协变（`out`）与逆变（`in`）的类型安全保证；说明 `List<T>` 的动态扩容策略、`Dictionary<TKey,TValue>` 的哈希桶结构、`HashSet<T>` 的位图优化。
-- **应用（Applying）**：编写带有多重约束的泛型类与方法，实现自定义 `IComparer<T>`、`IEqualityComparer<T>`、`IEnumerable<T>`；使用 `yield return` 构建惰性迭代器；选择合适的集合类型满足性能与语义需求。
-- **分析（Analyzing）**：解构泛型类型的类型推断与重载解析过程；分析 `List<T>.Add` 的均摊复杂度、`Dictionary` 哈希冲突的解决策略；对比 `List<T>`、`LinkedList<T>`、`Array` 在不同访问模式下的缓存局部性。
-- **评价（Evaluating）**：评估泛型约束设计的合理性（避免过紧耦合），审查自定义集合类型的线程安全与不变量保护；对比 `ImmutableArray<T>`、`ImmutableList<T>`、`FrozenDictionary<TKey,TValue>` 在只读场景下的性能权衡。
-- **创造（Creating）**：基于泛型设计领域特定的集合类型（如 `BoundedQueue<T>`、`LruCache<TKey,TValue>`、`CircularBuffer<T>`）；构建支持 LINQ 与异步遍历的自定义集合；为高吞吐场景设计无锁并发集合。
 
 ## 历史动机与背景
 

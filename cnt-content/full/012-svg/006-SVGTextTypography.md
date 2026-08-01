@@ -14,53 +14,16 @@ related:
 prerequisites:
   - svg/基础语法与文档结构
 ---
+
 # SVG 文本与排版 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章延续 MIT 6.831《用户界面设计与实现》与 Stanford CS248《图形学导论》的教学严谨度,在路径基础上深入 SVG 文本与排版的形式化定义。学完本章后,学习者应当能够在 Bloom 教育目标分类法的六个层级上达成下列能力。
-
-### 1.1 Bloom 能力矩阵
-
-| 层级 | 行为动词 | 本章目标能力 | 评估方式 |
-| ---- | -------- | ------------ | -------- |
-| **Remember** 记忆 | 列举、复述 | 能列举 `<text>`、`<tspan>`、`<textPath>` 的核心属性与默认值 | 选择题、填空题 |
-| **Understand** 理解 | 解释、归纳 | 能解释 text-anchor、dominant-baseline、writing-mode 的语义 | 概念辨析题 |
-| **Apply** 应用 | 使用、实现 | 能编写多语言、多风格、沿路径排版的 SVG 文本 | 实操题 |
-| **Analyze** 分析 | 比较、分解 | 能分析字体度量(ascent/descent/cap-height)、基线系统的几何含义 | 推导题 |
-| **Evaluate** 评价 | 评判、推荐 | 能评估 SVG 文本可访问性,给出 ARIA 与 `<title>`/`<desc>` 配置建议 | 代码评审题 |
-| **Create** 创造 | 设计、构建 | 能设计一个支持响应式、可访问性的 SVG 文本组件库 | 架构设计题 |
-
-### 1.2 知识图谱前置依赖
-
-```mermaid
-graph LR
-    A[基础语法与文档结构] --> B[本章:文本与排版]
-    P[路径 path 详解] --> C[textPath 沿路径排版]
-    C --> B
-    T[Typography 基础] --> D[字体度量与基线]
-    D --> B
-    B --> E[动画与文字效果]
-    B --> F[响应式设计]
-    B --> G[可访问性]
-```
-
-### 1.3 学习成果清单
-
-完成本章学习后,学习者应当能够产出:
-
-1. 一份支持多语言(中文/英文/日文/阿拉伯文)的 SVG 文本示例
-2. 一份沿任意路径排版的文字(textPath)实现
-3. 一份 SVG 文本字体度量与基线系统的形式化说明
-4. 一份可访问的 SVG 数据可视化图表(含 `<title>`/`<desc>` 与 ARIA)
-
-## 2. 历史动机与发展脉络
-
-### 2.1 文本渲染的演进
+### 1.1 文本渲染的演进
 
 计算机文本渲染经历了多个阶段,SVG 文本是这一演进的集大成者:
 
@@ -73,7 +36,7 @@ graph LR
 | 2001 | SVG 1.0 `<text>` | 路径 + 字体引用 | Web 矢量文本 |
 | 2018 | SVG 2 + WOFF 2 | CSS 字体 + 字体子集 | Web 字体优化 |
 
-### 2.2 SVG 文本的特殊性
+### 1.2 SVG 文本的特殊性
 
 SVG `<text>` 与 HTML `<p>` 的核心差异:
 
@@ -90,7 +53,7 @@ SVG `<text>` 与 HTML `<p>` 的核心差异:
 
 SVG 文本"绝对坐标 + 无自动换行"的特征,使其更适合数据可视化标签、图标、装饰性文字,而非长篇内容。
 
-### 2.3 字体度量系统的起源
+### 1.3 字体度量系统的起源
 
 字体度量(typographic metrics)源自金属活字时代(15 世纪古登堡),核心概念包括:
 
@@ -104,7 +67,7 @@ SVG 文本"绝对坐标 + 无自动换行"的特征,使其更适合数据可视�
 
 SVG 的 `dominant-baseline` 属性直接引用这些字体度量,如 `alphabetic`、`central`、`hanging`、`text-before-edge` 等。
 
-### 2.4 设计哲学:文本即图形
+### 1.4 设计哲学:文本即图形
 
 SVG 文本的设计哲学可概括为"文本即图形":
 
@@ -115,9 +78,9 @@ SVG 文本的设计哲学可概括为"文本即图形":
 
 这一设计让 SVG 文本既能作为内容载体(可访问、可选),也能作为视觉元素(任意变换、填充、描边)。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 文本元素的形式化模型
+### 2.1 文本元素的形式化模型
 
 SVG 文本元素可形式化为一个嵌套结构:
 
@@ -131,7 +94,7 @@ $$
 - $S = \{font-family, font-size, font-weight, font-style, fill, stroke, ...\}$ 是样式属性
 - $G$ 是字形(glyph)序列,$G = (g_1, g_2, \ldots, g_n)$,每个字形 $g_i$ 由字体中的路径数据定义
 
-### 3.2 字体度量的数学模型
+### 2.2 字体度量的数学模型
 
 字体的度量可表示为一个度量元组 $M$:
 
@@ -148,7 +111,7 @@ $$
 
 实际像素值由 font-size 缩放:$a_{sc,px} = a_{sc} \cdot \frac{font-size}{u_{em}}$。
 
-### 3.3 text-anchor 的几何定义
+### 2.3 text-anchor 的几何定义
 
 `text-anchor` 定义文本水平锚点。设文本宽度为 $W$(由字形度量累加得到),锚点 $x_a$ 为 `x` 属性值:
 
@@ -166,7 +129,7 @@ x_a - W & \text{if text-anchor=end}
 \end{cases}
 $$
 
-### 3.4 dominant-baseline 的度量基线
+### 2.4 dominant-baseline 的度量基线
 
 `dominant-baseline` 定义文本垂直基线。设基线 $y_b$ 相对于 `y` 属性的偏移为 $\Delta y$:
 
@@ -181,7 +144,7 @@ $$
 
 这些基线对应不同书写系统的传统参考线。
 
-### 3.5 textPath 的弧长参数化
+### 2.5 textPath 的弧长参数化
 
 `<textPath>` 沿路径排列文字,核心是将字符位置映射到路径弧长。设路径 $C(s)$ 由弧长 $s \in [0, L]$ 参数化($L$ 为路径总长),字符 $i$ 的位置 $s_i$ 由 `startOffset` 与字符宽度累加得到:
 
@@ -191,7 +154,7 @@ $$
 
 其中 $s_{\text{start}}$ 是 `startOffset` 转换为弧长,$w_j$ 是字符 $j$ 的 advance width。
 
-### 3.6 writing-mode 与方向性
+### 2.6 writing-mode 与方向性
 
 `writing-mode` 控制文本方向,支持的水平与垂直模式:
 
@@ -203,9 +166,9 @@ $$
 
 文本方向还包括 `direction`(ltr/rtl)与 `unicode-bidi`,用于处理阿拉伯文、希伯来文等 RTL 语言。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 字形选择与 Unicode 映射
+### 3.1 字形选择与 Unicode 映射
 
 文本渲染的第一步是将 Unicode 码点映射到字形。设码点 $c$ 与字体 $F$,字形索引 $g$ 通过 cmap 表查找:
 
@@ -227,7 +190,7 @@ function getGlyph(codepoint, fontStack):
 
 这就是为何 SVG `<text>` 中 `font-family: 'CustomFont', sans-serif` 列表很重要:确保 fallback 字体能覆盖 CustomFont 缺失的字符。
 
-### 4.2 字符宽度与 advance width
+### 3.2 字符宽度与 advance width
 
 每个字形在字体中有 `advance width` 属性,表示渲染后字符的 advance 距离(下一字符起始位置)。设字形 $g$ 的 advance width 为 $w(g)$,文本宽度为:
 
@@ -237,7 +200,7 @@ $$
 
 字距调整(kerning)是特定字符对的间距修正,如 "AV"、"To" 等组合通常减少间距以视觉平衡。OpenType 还支持 `liga`(连字)、`calt`(上下文替代)等特性。
 
-### 4.3 文本边界框的计算
+### 3.3 文本边界框的计算
 
 文本的边界框(bounding box)由字形路径决定:
 
@@ -256,7 +219,7 @@ console.log(bbox);
 // { x, y, width, height }
 ```
 
-### 4.4 textPath 的几何变换
+### 3.4 textPath 的几何变换
 
 textPath 将字符放置在路径上,需要为每个字符应用:
 
@@ -272,7 +235,7 @@ $$
 
 字符 $i$ 的本地坐标系原点在 $P(s_i)$,x 轴沿路径切线方向。
 
-### 4.5 字体子集化与文件大小
+### 3.5 字体子集化与文件大小
 
 SVG 引用的字体文件通常很大(中文字体可达 10MB+)。字体子集化只保留实际使用的字形:
 
@@ -288,7 +251,7 @@ $$
 
 子集化可将 5MB 中文字体降至 100KB 以内,大幅提升加载性能。
 
-### 4.6 SVG 文本的可访问性
+### 3.6 SVG 文本的可访问性
 
 SVG 文本的可访问性涉及多个层面:
 
@@ -304,7 +267,7 @@ $$
 \text{accessible}(\text{Text}) = \text{hasTitle} \land \text{hasLabel} \land \text{sufficientContrast} \land \text{selectable}
 $$
 
-### 4.7 RTL 与双向文本
+### 3.7 RTL 与双向文本
 
 阿拉伯文、希伯来文等 RTL 语言的文本方向由 Unicode Bidirectional Algorithm(bidi)处理。设文本序列为 $T = (c_1, c_2, \ldots, c_n)$,bidi 算法:
 
@@ -318,7 +281,7 @@ SVG 中通过 `direction="rtl"` 与 `unicode-bidi="embed"` 控制:
 <text direction="rtl" unicode-bidi="embed">مرحبا بالعالم</text>
 ```
 
-### 4.8 多行文本的实现策略
+### 3.8 多行文本的实现策略
 
 SVG `<text>` 不支持自动换行,实现多行文本有几种策略:
 
@@ -337,9 +300,9 @@ $$
 \end{cases}
 $$
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 text 基础
+### 4.1 text 基础
 
 `<text>` 在指定坐标绘制文本。
 
@@ -349,7 +312,7 @@ $$
 </svg>
 ```
 
-#### 5.1.1 关键属性
+#### 4.1.1 关键属性
 
 | 属性 | 说明 | 默认值 |
 | ---- | ---- | ------ |
@@ -364,7 +327,7 @@ $$
 | `letter-spacing` | 字距 | normal |
 | `text-decoration` | 下划线等 | none |
 
-#### 5.1.2 y 是基线而非顶部
+#### 4.1.2 y 是基线而非顶部
 
 ```html
 <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
@@ -375,7 +338,7 @@ $$
 
 文字的基线对齐 y=50,字符主体在基线之上,下伸部分(如 g、y)在基线之下。
 
-### 5.2 text-anchor 水平对齐
+### 4.2 text-anchor 水平对齐
 
 ```html
 <svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
@@ -392,7 +355,7 @@ $$
 | `middle` | 居中 |
 | `end` | 右对齐 |
 
-### 5.3 dominant-baseline 垂直对齐
+### 4.3 dominant-baseline 垂直对齐
 
 ```html
 <svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
@@ -412,11 +375,11 @@ $$
 | `text-bottom` | 文本底部 |
 | `central` | 几何中心 |
 
-### 5.4 tspan 子文本
+### 4.4 tspan 子文本
 
 `<tspan>` 类似 HTML 的 `<span>`,可在同一 `<text>` 内切换样式或换行。
 
-#### 5.4.1 局部样式
+#### 4.4.1 局部样式
 
 ```html
 <svg viewBox="0 0 300 60" xmlns="http://www.w3.org/2000/svg">
@@ -428,7 +391,7 @@ $$
 </svg>
 ```
 
-#### 5.4.2 相对位置
+#### 4.4.2 相对位置
 
 ```html
 <text x="20" y="40" font-size="20">
@@ -441,14 +404,14 @@ $$
 - `dx` / `dy`:相对前一字符的偏移
 - `x` / `y`:绝对坐标(用于强制换行)
 
-#### 5.4.3 字距控制
+#### 4.4.3 字距控制
 
 ```html
 <text x="20" y="40" font-size="20" letter-spacing="4">字距加宽</text>
 <text x="20" y="80" font-size="20" letter-spacing="-1">字距收紧</text>
 ```
 
-### 5.5 textPath 沿路径排版
+### 4.5 textPath 沿路径排版
 
 `<textPath>` 让文字沿任意路径排列,常用于环形文字、波浪标语。
 
@@ -464,7 +427,7 @@ $$
 </svg>
 ```
 
-#### 5.5.1 startOffset 起始位置
+#### 4.5.1 startOffset 起始位置
 
 ```html
 <textPath href="#curve" startOffset="50%" text-anchor="middle"> 居中显示 </textPath>
@@ -476,7 +439,7 @@ $$
 | `50%` | 路径中点 |
 | `100%` | 路径终点 |
 
-#### 5.5.2 环形文字
+#### 4.5.2 环形文字
 
 ```html
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -489,7 +452,7 @@ $$
 </svg>
 ```
 
-#### 5.5.3 沿路径的方向计算
+#### 4.5.3 沿路径的方向计算
 
 ```javascript
 function placeTextOnPath(pathElement, text, startOffset = 0) {
@@ -516,7 +479,7 @@ function placeTextOnPath(pathElement, text, startOffset = 0) {
 }
 ```
 
-### 5.6 writing-mode 竖排文字
+### 4.6 writing-mode 竖排文字
 
 ```html
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -532,7 +495,7 @@ function placeTextOnPath(pathElement, text, startOffset = 0) {
 <text x="50" y="20" font-size="20" style="writing-mode: vertical-rl;">竖排文字</text>
 ```
 
-### 5.7 字体加载与回退
+### 4.7 字体加载与回退
 
 SVG 中的字体遵循 CSS 字体规则,可用 `@font-face` 加载自定义字体。
 
@@ -553,7 +516,7 @@ SVG 中的字体遵循 CSS 字体规则,可用 `@font-face` 加载自定义字�
 
 > 独立 .svg 文件中 `<style>` 内的 `@font-face` 仅在 `<object>` / `<iframe>` 嵌入时生效;内联 SVG 中可直接使用主页面的字体规则。
 
-#### 5.7.1 字体加载策略
+#### 4.7.1 字体加载策略
 
 ```css
 /* WOFF 2 优先(压缩率高),回退到 WOFF/TTF */
@@ -566,7 +529,7 @@ SVG 中的字体遵循 CSS 字体规则,可用 `@font-face` 加载自定义字�
 }
 ```
 
-### 5.8 文本描边与填充
+### 4.8 文本描边与填充
 
 ```html
 <svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
@@ -595,7 +558,7 @@ SVG 中的字体遵循 CSS 字体规则,可用 `@font-face` 加载自定义字�
 </svg>
 ```
 
-#### 5.8.1 paint-order 顺序
+#### 4.8.1 paint-order 顺序
 
 | 值 | 含义 |
 | -- | ---- |
@@ -605,7 +568,7 @@ SVG 中的字体遵循 CSS 字体规则,可用 `@font-face` 加载自定义字�
 
 > `stroke fill` 让描边在填充下方,避免粗描边遮挡文字主体,是描边文字的常用技巧。
 
-### 5.9 可访问文本
+### 4.9 可访问文本
 
 为屏幕阅读器提供语义化文本结构。
 
@@ -621,7 +584,7 @@ SVG 中的字体遵循 CSS 字体规则,可用 `@font-face` 加载自定义字�
 - `<desc>`:详细描述(可选)
 - `aria-hidden="true"`:装饰性文字避免重复朗读
 
-### 5.10 实战:带数据标签的图表
+### 4.10 实战:带数据标签的图表
 
 ```html
 <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
@@ -645,7 +608,7 @@ SVG 中的字体遵循 CSS 字体规则,可用 `@font-face` 加载自定义字�
 </svg>
 ```
 
-### 5.11 多语言支持
+### 4.11 多语言支持
 
 ```html
 <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
@@ -679,7 +642,7 @@ SVG 中的字体遵循 CSS 字体规则,可用 `@font-face` 加载自定义字�
 </svg>
 ```
 
-### 5.12 动态文本测量
+### 4.12 动态文本测量
 
 ```javascript
 function measureSvgText(text, fontOptions = {}) {
@@ -718,9 +681,9 @@ const m = measureSvgText('Hello SVG', { fontSize: 24, fontFamily: 'serif' });
 console.log(m); // { width: 90.3, height: 28.5 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 SVG text vs HTML text
+### 5.1 SVG text vs HTML text
 
 | 特性 | SVG `<text>` | HTML `<p>` |
 | ---- | ------------ | ---------- |
@@ -733,7 +696,7 @@ console.log(m); // { width: 90.3, height: 28.5 }
 | 性能 | 复杂文本较慢 | 优化 |
 | 适用场景 | 标签、装饰 | 长内容 |
 
-### 6.2 SVG text vs Canvas text
+### 5.2 SVG text vs Canvas text
 
 | 特性 | SVG `<text>` | Canvas `fillText` |
 | ---- | ------------ | ------------------ |
@@ -746,7 +709,7 @@ console.log(m); // { width: 90.3, height: 28.5 }
 | 国际化 | 完整支持 | 部分支持 |
 | 适用场景 | 简单文本、可访问性优先 | 复杂动画、性能优先 |
 
-### 6.3 text-anchor vs CSS text-align
+### 5.3 text-anchor vs CSS text-align
 
 | 特性 | SVG text-anchor | CSS text-align |
 | ---- | --------------- | -------------- |
@@ -755,7 +718,7 @@ console.log(m); // { width: 90.3, height: 28.5 }
 | RTL 适配 | `start`/`end` 自动适配 | `start`/`end` 自动适配 |
 | 动态计算 | 浏览器自动 | 浏览器自动 |
 
-### 6.4 dominant-baseline vs CSS vertical-align
+### 5.4 dominant-baseline vs CSS vertical-align
 
 | 特性 | SVG dominant-baseline | CSS vertical-align |
 | ---- | --------------------- | ------------------- |
@@ -764,9 +727,9 @@ console.log(m); // { width: 90.3, height: 28.5 }
 | 选项 | alphabetic、middle、central、hanging 等 | top、middle、bottom、baseline、sub、super |
 | 应用场景 | SVG 文本对齐 | HTML 行内元素对齐 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 y 是基线而非顶部
+### 6.1 y 是基线而非顶部
 
 ```html
 <!-- 错误:以为 y=50 是文字顶部,实际是基线 -->
@@ -778,7 +741,7 @@ console.log(m); // { width: 90.3, height: 28.5 }
 <!-- 现在 y=50 是文字顶部 -->
 ```
 
-### 7.2 忘记设置 font-family
+### 6.2 忘记设置 font-family
 
 ```html
 <!-- 错误:依赖浏览器默认字体,跨平台不一致 -->
@@ -788,7 +751,7 @@ console.log(m); // { width: 90.3, height: 28.5 }
 <text x="20" y="50" font-family="'Inter', 'Helvetica Neue', sans-serif">Hello</text>
 ```
 
-### 7.3 字体未加载就渲染
+### 6.3 字体未加载就渲染
 
 ```html
 <!-- 错误:字体加载前显示 fallback,加载后跳动 -->
@@ -811,7 +774,7 @@ console.log(m); // { width: 90.3, height: 28.5 }
 </style>
 ```
 
-### 7.4 中文字体文件过大
+### 6.4 中文字体文件过大
 
 ```html
 <!-- 错误:加载完整中文字体(5MB+) -->
@@ -832,7 +795,7 @@ console.log(m); // { width: 90.3, height: 28.5 }
 </style>
 ```
 
-### 7.5 textPath 字符溢出路径
+### 6.5 textPath 字符溢出路径
 
 ```html
 <!-- 错误:文字过长,超出路径长度后字符消失 -->
@@ -842,7 +805,7 @@ console.log(m); // { width: 90.3, height: 28.5 }
 <textPath href="#long-path">这是一段很长的文字,现在路径足够长</textPath>
 ```
 
-### 7.6 dominant-baseline 跨浏览器不一致
+### 6.6 dominant-baseline 跨浏览器不一致
 
 ```html
 <!-- 问题:不同浏览器对 dominant-baseline 实现略有差异 -->
@@ -854,7 +817,7 @@ console.log(m); // { width: 90.3, height: 28.5 }
 <!-- dy="0.35em" 等价于 middle,跨浏览器更一致 -->
 ```
 
-### 7.7 装饰性文字未加 aria-hidden
+### 6.7 装饰性文字未加 aria-hidden
 
 ```html
 <!-- 错误:装饰性文字被屏幕阅读器朗读,干扰内容 -->
@@ -864,7 +827,7 @@ console.log(m); // { width: 90.3, height: 28.5 }
 <text aria-hidden="true"> 装饰 </text>
 ```
 
-### 7.8 SVG 文本无法选中
+### 6.8 SVG 文本无法选中
 
 ```html
 <!-- 默认:SVG 文本不可选 -->
@@ -874,9 +837,9 @@ console.log(m); // { width: 90.3, height: 28.5 }
 <text style="user-select: text;">Hello</text>
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 Vue 3 SVG 文本组件
+### 7.1 Vue 3 SVG 文本组件
 
 ```vue
 <template>
@@ -915,7 +878,7 @@ defineProps({
 </script>
 ```
 
-### 8.2 React SVG 文本组件
+### 7.2 React SVG 文本组件
 
 ```jsx
 import { memo } from 'react';
@@ -962,7 +925,7 @@ const SVGText = memo(function SVGText({
 export default SVGText;
 ```
 
-### 8.3 字体子集化工具
+### 7.3 字体子集化工具
 
 ```javascript
 // scripts/subset-font.mjs
@@ -1006,7 +969,7 @@ writeFileSync(outputFont, subsetBuffer);
 console.log(`Subset created with ${charsArray.length} chars: ${charsArray}`);
 ```
 
-### 8.4 多行文本组件
+### 7.4 多行文本组件
 
 ```javascript
 class MultiLineText {
@@ -1050,7 +1013,7 @@ const mlt = new MultiLineText(document.querySelector('svg'), { fontSize: 14 });
 mlt.render(10, 20, ['第一行', '第二行', '第三行']);
 ```
 
-### 8.5 SVG 自动换行(SVG 2)
+### 7.5 SVG 自动换行(SVG 2)
 
 SVG 2 引入 `white-space` 属性,支持自动换行:
 
@@ -1064,7 +1027,7 @@ SVG 2 引入 `white-space` 属性,支持自动换行:
 
 > 注意:浏览器支持有限,生产环境推荐用 `<foreignObject>` 或手动换行。
 
-### 8.6 SVG 文本可访问性检查器
+### 7.6 SVG 文本可访问性检查器
 
 ```javascript
 function checkSVGTextAccessibility(svgRoot) {
@@ -1145,9 +1108,9 @@ function gamma(c) {
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一:D3.js 数据可视化
+### 8.1 案例一:D3.js 数据可视化
 
 D3.js 大量使用 SVG `<text>` 绘制坐标轴、数据标签、图例:
 
@@ -1189,7 +1152,7 @@ const legend = svg.append('g')
 });
 ```
 
-### 9.2 案例二:Material Design 数据标签
+### 8.2 案例二:Material Design 数据标签
 
 Material Design 中 SVG 文本用于卡片、列表项的数据展示:
 
@@ -1207,7 +1170,7 @@ Material Design 中 SVG 文本用于卡片、列表项的数据展示:
 </svg>
 ```
 
-### 9.3 案例三:Logo 文字
+### 8.3 案例三:Logo 文字
 
 品牌 Logo 中的文字常使用 SVG 实现矢量缩放:
 
@@ -1234,7 +1197,7 @@ Material Design 中 SVG 文本用于卡片、列表项的数据展示:
 </svg>
 ```
 
-### 9.4 案例四:环形徽章
+### 8.4 案例四:环形徽章
 
 ```xml
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -1254,7 +1217,7 @@ Material Design 中 SVG 文本用于卡片、列表项的数据展示:
 </svg>
 ```
 
-### 9.5 案例五:可访问图表
+### 8.5 案例五:可访问图表
 
 ```xml
 <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
@@ -1301,7 +1264,7 @@ Material Design 中 SVG 文本用于卡片、列表项的数据展示:
 </svg>
 ```
 
-### 9.6 案例六:FANDEX 项目知识图谱节点
+### 8.6 案例六:FANDEX 项目知识图谱节点
 
 ```html
 <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
@@ -1597,7 +1560,7 @@ component.render('沿曲线排列的文字');
 - 支持 text-anchor(2 分)
 - 溢出检测与警告(4 分)
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 13**:为什么 SVG `<text>` 默认不可选?这一设计有哪些考量?如何权衡?
 
@@ -1820,9 +1783,9 @@ $$
 3. **字体更新**:字体升级后重新子集
 4. **fallback 字体**:子集字体缺失字符时回退到系统字体
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 W3C 规范
+### 10.1 W3C 规范
 
 1. W3C. 2018. **SVG 2 Specification: Text**. W3C Recommendation. https://www.w3.org/TR/SVG2/text.html
 
@@ -1836,7 +1799,7 @@ $$
 
 6. W3C. 2023. **WCAG 2.2: Web Content Accessibility Guidelines**. W3C Recommendation. https://www.w3.org/TR/WCAG22/
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 7. Knuth, D. E. 1986. **The METAFONTbook**. Addison-Wesley Professional, Reading, MA, USA.
 
@@ -1846,7 +1809,7 @@ $$
 
 10. Haralambous, Y. and Mossé, B. 2018. **Computerized Typography and the Web**. In *Digital Typography*, R. P. Stanley (Ed.). Springer-Verlag, 45–67. https://doi.org/10.1007/978-3-319-90197-8_3
 
-### 11.3 工程实践参考
+### 10.3 工程实践参考
 
 11. Eisenberg, J. D. 2014. **SVG Essentials** (2nd ed.). O'Reilly Media, Sebastopol, CA, USA.
 
@@ -1854,7 +1817,7 @@ $$
 
 13. Bostock, M., Ogievetsky, V., and Heer, J. 2011. **D3: Data-Driven Documents**. *IEEE Transactions on Visualization and Computer Graphics* 17, 12, 2301–2309. https://doi.org/10.1109/TVCG.2011.185
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 14. MDN Web Docs. 2023. **SVG <text> element**. https://developer.mozilla.org/en-US/docs/Web/SVG/Element/text
 
@@ -1868,37 +1831,37 @@ $$
 
 19. Type Network. 2023. **Variable Fonts Introduction**. https://type.network/guide/variable-fonts
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 字体设计
+### 11.1 字体设计
 
 - **Knuth, D. E. The METAFONTbook**:字体设计算法基础
 - **Bringhurst, R. The Elements of Typographic Style**:排版美学经典
 - **Frutiger, A. Type Sign Symbol**:字体与符号设计哲学
 - **OpenType Specification**:OpenType 高级特性(liga、calt、ss01)
 
-### 12.2 国际化
+### 11.2 国际化
 
 - **W3C Internationalization (i18n)**:多语言 Web 文档
 - **Unicode Standard**:Unicode 编码与双向算法
 - **CSS Writing Modes**:vertical-rl、vertical-lr、RTL 支持
 - **Google Noto Fonts**:全球语言字体覆盖项目
 
-### 12.3 可访问性
+### 11.3 可访问性
 
 - **W3C WAI-ARIA**:SVG 文本 ARIA 属性
 - **WCAG 2.2 Guidelines**:对比度、可读性标准
 - **Inclusive Design Patterns**:包容性设计模式
 - **Deque axe DevTools**:可访问性自动化检测
 
-### 12.4 性能优化
+### 11.4 性能优化
 
 - **WOFF 2.0 Specification**:Brotli 压缩的字体格式
 - **fonttools(pyftsubset)**:Python 字体子集化工具
 - **glyphhanger**:Node.js 字体子集化工具
 - **subfont**:自动字体子集化构建工具
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - **Variable Fonts in SVG**:可变字体在 SVG 中的应用
 - **Houdini CSS Paint API**:自定义文本渲染

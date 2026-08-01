@@ -19,6 +19,7 @@ prerequisites:
   - java/概述与开发环境
   - java/并发编程详解
 ---
+
 # Java JVM 内存模型速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -46,46 +47,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，学习者应能够：
-
-### 1.1 认知层级目标（Bloom 分类法）
-
-| Bloom 层级 | 目标描述 | 可观测行为 |
-| ---------- | -------- | ---------- |
-| **Remember（记忆）** | 复述 JVM 五大运行时数据区、堆分代结构、GC Roots 类型 | 能默写 Heap/Method Area/VM Stack/Native Stack/PC Register 的语义 |
-| **Understand（理解）** | 解释 JMM happens-before 规则、volatile 内存屏障、对象 Mark Word 位布局 | 能用图示描述 Mark Word 在不同锁状态下的位布局 |
-| **Apply（应用）** | 使用 jstat/jmap/jcmd/JFR 诊断内存问题、配置 JVM 参数 | 配置 G1 收集器并生成 JFR 剖析报告 |
-| **Analyze（分析）** | 分析 OOM 成因、内存泄漏路径、Full GC 频发根因 | 用 MAT 解析 heap dump 并定位 dominator tree |
-| **Evaluate（评价）** | 比较 G1/ZGC/Shenandoah/Pauseless GC 的延迟与吞吐取舍 | 在 P99 SLA=10ms 场景下选择合适收集器 |
-| **Create（创造）** | 设计生产级 JVM 调优方案，含容器感知、CRaC、Native Image | 为 K8s 微服务编写完整的 JVM 参数与监控配置 |
-
-### 1.2 核心能力指标
-
-完成本章后，应能独立完成以下任务：
-
-1. 解释 JVM 五大运行时数据区与 Java 内存模型（JMM）的形式化语义
-2. 配置 G1/ZGC/Shenandoah 收集器并理解 Region/Card Table/SATB 机制
-3. 使用 jstat、jmap、jcmd、JFR、MAT 诊断内存问题
-4. 分析堆转储（heap dump）并定位内存泄漏
-5. 在 Docker/K8s 环境中正确配置 JVM 内存（容器感知）
-6. 评估 GraalVM Native Image 与 CRaC 的适用场景
-
-### 1.3 前置知识检查
-
-阅读本章前，建议已掌握：
-
-- Java 面向对象、集合框架、并发基础（synchronized、volatile）
-- 操作系统虚拟内存、分页、TLB 基本概念
-- 计算机体系结构：CPU 缓存层级、缓存一致性协议（MESI）
-- 基本的图论概念（可达性分析）
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 JVM 内存模型演进时间线
+### 1.1 JVM 内存模型演进时间线
 
 ```mermaid
 timeline
@@ -107,21 +71,21 @@ timeline
     2024: Java 22-25 ZGC 进一步优化：非 NMT 内存管理 GraalVM Native Image AOT 主流化 CRaC（Coordinated Restore at Checkpoint）
 ```
 
-### 2.2 三大设计哲学
+### 1.2 三大设计哲学
 
 1. **Write Once, Run Anywhere**：JVM 屏蔽硬件内存差异，JMM 提供统一的可见性/有序性保证。
 2. **Automatic Memory Management**：GC 取代手动 malloc/free，提升开发效率但引入 STW 风险。
 3. **Latency vs Throughput Trade-off**：从 Serial→Parallel→CMS→G1→ZGC，持续在延迟与吞吐间权衡。
 
-### 2.3 JMM 的诞生背景
+### 1.3 JMM 的诞生背景
 
 1990 年代 Java 多线程程序在多核 x86 与弱内存模型 Alpha 处理器上行为不一致，引发大量"双重检查锁定失效"等 bug。2004 年 JSR 133 由 Manson、Pugh、Adve 重新形式化 JMM，发表于 POPL 2005。JMM 是首个被严格形式化的工业语言内存模型，影响后续 C++11、Rust、Go 的内存模型设计。
 
 ---
 
-## 3. 形式化定义与规范基础
+## 2. 形式化定义与规范基础
 
-### 3.1 JVM 规范对运行时数据区的定义
+### 2.1 JVM 规范对运行时数据区的定义
 
 JVM Specification §2.5 将运行时数据区定义为五个区域：
 
@@ -131,7 +95,7 @@ $$
 
 其中 Heap 与 Method Area 是线程共享的，VM Stack、Native Stack、PC Register 是线程私有的。
 
-### 3.2 JMM 的形式化模型
+### 2.2 JMM 的形式化模型
 
 设 $V$ 为所有共享变量集合，$T$ 为线程集合，$A$ 为程序执行的所有内存操作序列。每个操作 $a \in A$ 形式化为五元组：
 
@@ -145,7 +109,7 @@ $$
 \text{Legal}(A) \iff \forall \text{read } r \in A: \text{value}(r) = \text{value}(w_r) \text{ where } w_r \xrightarrow{hb} r \wedge \nexists w': w_r \xrightarrow{hb} w' \xrightarrow{hb} r
 $$
 
-### 3.3 happens-before 八条规则
+### 2.3 happens-before 八条规则
 
 JLS §17.4.5 定义的 happens-before 规则：
 
@@ -158,7 +122,7 @@ JLS §17.4.5 定义的 happens-before 规则：
 7. **对象终结规则**：构造函数结束 $\xrightarrow{hb}$ finalizer 开始
 8. **传递性**：$a \xrightarrow{hb} b \wedge b \xrightarrow{hb} c \Rightarrow a \xrightarrow{hb} c$
 
-### 3.4 内存屏障的形式化
+### 2.4 内存屏障的形式化
 
 JMM 定义四种内存屏障：
 
@@ -171,7 +135,7 @@ JMM 定义四种内存屏障：
 
 HotSpot 对 volatile 写插入 `StoreStore + StoreLoad`，对 volatile 读插入 `LoadLoad + LoadStore`。在 x86 强内存模型下，仅 volatile 写需要 `lock addl` 作为 StoreLoad 屏障；ARM 弱内存模型需要全部四种屏障。
 
-### 3.5 GC Roots 的形式化定义
+### 2.5 GC Roots 的形式化定义
 
 可达性分析的起点（GC Roots）形式化为：
 
@@ -185,7 +149,7 @@ $$
 - $\text{JNIRefs}$：本地方法栈中的 JNI global reference
 - $\text{SynchronizedRefs}$：所有被 synchronized 持有的对象
 
-### 3.6 对象存活判定
+### 2.6 对象存活判定
 
 对象 $o$ 存活当且仅当：
 
@@ -197,9 +161,9 @@ $$
 
 ---
 
-## 4. 运行时数据区
+## 3. 运行时数据区
 
-### 4.1 五大区域总览
+### 3.1 五大区域总览
 
 | 区域 | 线程共享 | 存储内容 | 异常 | OutOfMemory? |
 | ---- | -------- | -------- | ---- | ------------- |
@@ -209,7 +173,7 @@ $$
 | 本地方法栈 (Native Stack) | 否 | Native 方法调用 | StackOverflowError / OOM | 是 |
 | 程序计数器 (PC Register) | 否 | 当前字节码行号 | 无 | 否 |
 
-### 4.2 堆（Heap）
+### 3.2 堆（Heap）
 
 堆是 JVM 中最大的一块内存区域，所有对象实例和数组都在堆上分配（除逃逸分析优化的栈上分配外）。堆是 GC 管理的主要区域。
 
@@ -235,7 +199,7 @@ flowchart LR
     Eden[Eden<br/>80% of young] --- S0[Survivor 0<br/>10% young] --- S1[Survivor 1<br/>10% young]
 ```
 
-### 4.3 方法区与元空间
+### 3.3 方法区与元空间
 
 方法区在 JDK 8 之前由永久代（PermGen）实现，位于 JVM 堆中，由 `-XX:PermSize` 与 `-XX:MaxPermSize` 控制。JDK 8+ 改为元空间（Metaspace），使用本地内存（native memory），通过 `-XX:MetaspaceSize` 与 `-XX:MaxMetaspaceSize` 控制。
 
@@ -271,7 +235,7 @@ public class MetaspaceOOM {
 }
 ```
 
-### 4.4 虚拟机栈（VM Stack）
+### 3.4 虚拟机栈（VM Stack）
 
 虚拟机栈描述 Java 方法执行的内存模型：每个方法调用创建一个栈帧（Stack Frame）。
 
@@ -308,7 +272,7 @@ public class StackOverflowDemo {
 }
 ```
 
-### 4.5 程序计数器（PC Register）
+### 3.5 程序计数器（PC Register）
 
 程序计数器是当前线程执行字节码的行号指示器。它是唯一不会 OOM 的区域，每个线程独立。在 native 方法执行时，PC 值为 undefined。
 
@@ -329,7 +293,7 @@ public class PCExample {
 //  5: ireturn
 ```
 
-### 4.6 直接内存（Direct Memory）
+### 3.6 直接内存（Direct Memory）
 
 JDK 1.4 NIO 引入基于 Channel 与 Buffer 的 IO，支持 native 内存分配，绕过堆，避免数据在 JVM 堆与 native 内存间拷贝。
 
@@ -359,9 +323,9 @@ public class DirectMemoryDemo {
 
 ---
 
-## 5. 对象内存布局
+## 4. 对象内存布局
 
-### 5.1 对象的三部分结构
+### 4.1 对象的三部分结构
 
 HotSpot 对象在内存中由三部分组成：
 
@@ -375,7 +339,7 @@ flowchart TD
     Obj --> PD[对齐填充<br/>对象起始地址 8 字节对齐]
 ```
 
-### 5.2 Mark Word 64 位布局
+### 4.2 Mark Word 64 位布局
 
 Mark Word 在不同锁状态下的位布局（64 位 JVM）：
 
@@ -397,7 +361,7 @@ flowchart TD
 - ptr_to_lock_record：指向线程栈中 Lock Record 的指针
 - ptr_to_heavy_monitor：指向 ObjectMonitor 的指针
 
-### 5.3 压缩指针（Compressed Oops）
+### 4.3 压缩指针（Compressed Oops）
 
 默认开启（堆小于 32GB 时），将 64 位指针压缩为 32 位：
 
@@ -442,7 +406,7 @@ public class ObjectSizeDemo {
 }
 ```
 
-### 5.4 字段对齐与填充
+### 4.4 字段对齐与填充
 
 JVM 默认 8 字节对齐，可通过 `-XX:ObjectAlignmentInBytes=16` 调整为 16 字节对齐（堆 ≥ 64GB 时使用）。
 
@@ -464,13 +428,13 @@ class FieldOrdering {
 
 ---
 
-## 6. Java 内存模型（JMM）
+## 5. Java 内存模型（JMM）
 
-### 6.1 JMM 的设计目标
+### 5.1 JMM 的设计目标
 
 JMM 屏蔽各种硬件内存访问差异，让 Java 程序在各平台下达到一致的内存访问效果。其核心是定义共享变量的可见性、有序性、原子性规则。
 
-### 6.2 主内存与工作内存
+### 5.2 主内存与工作内存
 
 JMM 抽象出主内存（Main Memory）与工作内存（Working Memory）：
 
@@ -484,9 +448,9 @@ JMM 抽象出主内存（Main Memory）与工作内存（Working Memory）：
 3. 修改后写回主内存
 4. 不同线程间无法访问彼此的工作内存
 
-### 6.3 三大特性
+### 5.3 三大特性
 
-#### 6.3.1 原子性（Atomicity）
+#### 5.3.1 原子性（Atomicity）
 
 JMM 保证以下操作原子：
 
@@ -512,7 +476,7 @@ public class AtomicityDemo {
 }
 ```
 
-#### 6.3.2 可见性（Visibility）
+#### 5.3.2 可见性（Visibility）
 
 当一个线程修改共享变量，其他线程能立即得知。
 
@@ -549,7 +513,7 @@ public class VisibilityDemo {
 }
 ```
 
-#### 6.3.3 有序性（Ordering）
+#### 5.3.3 有序性（Ordering）
 
 程序执行顺序的保证。JMM 允许编译器、处理器进行指令重排序，但通过 happens-before 规则保证结果一致性。
 
@@ -573,7 +537,7 @@ public class OrderingDemo {
 }
 ```
 
-### 6.4 volatile 的实现原理
+### 5.4 volatile 的实现原理
 
 volatile 写在 HotSpot 中插入 `StoreStore` + `StoreLoad` 屏障：
 
@@ -595,7 +559,7 @@ LoadStore 屏障  ← 防止后续写重排到 volatile 读之前
 
 x86 强内存模型下，仅 StoreLoad 屏障需要 `lock addl $0, 0(%rsp)` 指令；ARM 弱内存模型需要全部四种屏障。
 
-### 6.5 final 字段的语义
+### 5.5 final 字段的语义
 
 JMM 对 final 字段有特殊保证：构造函数结束前，final 字段的写入对所有线程可见（即使没有 volatile/synchronized）。
 
@@ -628,7 +592,7 @@ public class SafePublication {
 }
 ```
 
-### 6.6 双重检查锁定的正确实现
+### 5.6 双重检查锁定的正确实现
 
 ```java
 public class Singleton {
@@ -659,16 +623,16 @@ public class Singleton {
 
 ---
 
-## 7. 堆分代与对象晋升
+## 6. 堆分代与对象晋升
 
-### 7.1 分代假说
+### 6.1 分代假说
 
 分代收集基于两个假说：
 
 1. **弱分代假说**：绝大多数对象朝生夕死（90%+ 在新生代被回收）
 2. **强分代假说**：熬过越多次 GC 的对象越难回收
 
-### 7.2 新生代（Young Generation）
+### 6.2 新生代（Young Generation）
 
 新生代占堆的 1/3（`-XX:NewRatio=2`），分为三个区：
 
@@ -685,7 +649,7 @@ flowchart LR
 4. Survivor 区交替使用（From/To）
 5. 经历 `-XX:MaxTenuringThreshold=15` 次 GC 后晋升老年代
 
-### 7.3 TLAB（Thread Local Allocation Buffer）
+### 6.3 TLAB（Thread Local Allocation Buffer）
 
 为避免多线程分配时的 CAS 竞争，JVM 给每个线程分配一块私有的 Eden 区域（TLAB），线程内分配直接 bump pointer。
 
@@ -699,7 +663,7 @@ flowchart LR
 -XX:+PrintTLAB               # 打印 TLAB 统计
 ```
 
-### 7.4 大对象直接进入老年代
+### 6.4 大对象直接进入老年代
 
 大对象（如长数组）需要连续内存，避免在 Eden/Survivor 间复制开销：
 
@@ -708,7 +672,7 @@ flowchart LR
                                  # 仅对 Serial/ParNew 生效
 ```
 
-### 7.5 对象晋升条件
+### 6.5 对象晋升条件
 
 对象晋升老年代的几种情况：
 
@@ -723,7 +687,7 @@ flowchart LR
 -XX:+UseAdaptiveSizePolicy        # 自适应调整（可能忽略 MaxTenuringThreshold）
 ```
 
-### 7.6 老年代（Old Generation）
+### 6.6 老年代（Old Generation）
 
 老年代占堆的 2/3，存放：
 
@@ -733,7 +697,7 @@ flowchart LR
 
 老年代满时触发 Major GC / Full GC，回收速度比 Minor GC 慢 10 倍以上。
 
-### 7.7 元空间（Metaspace）
+### 6.7 元空间（Metaspace）
 
 JDK 8+ 用元空间替代永久代：
 
@@ -754,9 +718,9 @@ JDK 8+ 用元空间替代永久代：
 
 ---
 
-## 8. 垃圾回收算法
+## 7. 垃圾回收算法
 
-### 8.1 引用计数法（Reference Counting）
+### 7.1 引用计数法（Reference Counting）
 
 给对象添加引用计数器，引用加 1，失效减 1。无法解决循环引用问题，**JVM 不使用**。
 
@@ -768,7 +732,7 @@ a.append(b)
 del a, b  # 两个对象的引用计数均为 1，但已不可达
 ```
 
-### 8.2 可达性分析（Reachability Analysis）
+### 7.2 可达性分析（Reachability Analysis）
 
 从 GC Roots 出发，沿引用链搜索，不可达的对象为可回收对象。
 
@@ -781,9 +745,9 @@ GC Roots 包括：
 - synchronized 持有的对象
 - JMXBean、JVMTI 等 JVM 内部引用
 
-### 8.3 三种基础算法
+### 7.3 三种基础算法
 
-#### 8.3.1 标记-清除（Mark-Sweep）
+#### 7.3.1 标记-清除（Mark-Sweep）
 
 ```
 标记阶段：从 GC Roots 遍历，标记所有存活对象
@@ -798,7 +762,7 @@ flowchart TD
     A[标记前：占用块 + 空闲碎片] --> B[清除后：碎片残留]
 ```
 
-#### 8.3.2 标记-复制（Mark-Copy）
+#### 7.3.2 标记-复制（Mark-Copy）
 
 ```
 将堆分为两半，每次只使用一半
@@ -814,7 +778,7 @@ flowchart TD
     A[使用区 + 空闲区] --> B[复制后：紧凑排列]
 ```
 
-#### 8.3.3 标记-整理（Mark-Compact）
+#### 7.3.3 标记-整理（Mark-Compact）
 
 ```
 标记阶段：标记存活对象
@@ -829,14 +793,14 @@ flowchart TD
     A[标记前：占用块 + 空闲区] --> B[整理后：无碎片]
 ```
 
-### 8.4 分代收集策略
+### 7.4 分代收集策略
 
 | 区域 | 算法 | 理由 |
 | ---- | ---- | ---- |
 | 新生代 | 标记-复制 | 朝生夕死，复制开销小 |
 | 老年代 | 标记-清除 / 标记-整理 | 存活率高，复制开销大 |
 
-### 8.5 并发与并行的形式化定义
+### 7.5 并发与并行的形式化定义
 
 - **并行（Parallel）**：多个 GC 线程同时工作，但应用线程暂停（STW）
 - **并发（Concurrent）**：GC 线程与应用线程同时运行（部分阶段 STW）
@@ -851,7 +815,7 @@ flowchart TD
 | ZGC | 是 | 是 | 仅部分根扫描 STW（< 1ms） |
 | Shenandoah | 是 | 是 | 仅初始标记 STW（< 10ms） |
 
-### 8.6 安全点与安全区域
+### 7.6 安全点与安全区域
 
 GC 必须在安全点（Safepoint）或安全区域（Safe Region）执行，确保所有线程处于已知状态。
 
@@ -883,9 +847,9 @@ public void longLoop() {
 
 ---
 
-## 9. 现代垃圾收集器
+## 8. 现代垃圾收集器
 
-### 9.1 收集器总览
+### 8.1 收集器总览
 
 | 收集器 | 作用域 | 算法 | STW | 适用场景 |
 | ------ | ------ | ---- | --- | -------- |
@@ -899,7 +863,7 @@ public void longLoop() {
 | ZGC | 全堆 | 着色指针 + 读屏障 | < 1ms | 超低延迟 |
 | Shenandoah | 全堆 | Brooks Pointer + 写屏障 | < 10ms | 低延迟 |
 
-### 9.2 G1（Garbage-First）
+### 8.2 G1（Garbage-First）
 
 G1 是 Java 9+ 的默认收集器，将堆划分为多个 Region（1—32MB），每个 Region 可动态切换为 Eden/Survivor/Old/Humongous。
 
@@ -946,7 +910,7 @@ void satbWriteBarrier(Object* field, Object* newValue) {
 }
 ```
 
-### 9.3 ZGC（Z Garbage Collector）
+### 8.3 ZGC（Z Garbage Collector）
 
 ZGC 是 Java 11 引入的低延迟收集器，目标：< 10ms 停顿（Java 21 分代模式 < 1ms），支持 TB 级堆。
 
@@ -991,7 +955,7 @@ flowchart LR
     Old --> OR[Old Region]
 ```
 
-### 9.4 Shenandoah
+### 8.4 Shenandoah
 
 Red Hat 主导的低延迟收集器，与 ZGC 类似但实现不同。
 
@@ -1008,7 +972,7 @@ Red Hat 主导的低延迟收集器，与 ZGC 类似但实现不同。
 -XX:ShenandoahAllocationThreshold=20 # Region 触发 GC 的阈值
 ```
 
-### 9.5 CMS（已弃用）
+### 8.5 CMS（已弃用）
 
 CMS（Concurrent Mark Sweep）是 Java 5 引入的低延迟收集器，Java 9 标记弃用，Java 14 移除。
 
@@ -1026,7 +990,7 @@ CMS（Concurrent Mark Sweep）是 Java 5 引入的低延迟收集器，Java 9 �
 - 浮动垃圾
 - 对 CPU 敏感
 
-### 9.6 收集器选择决策树
+### 8.6 收集器选择决策树
 
 ```mermaid
 flowchart TD
@@ -1053,7 +1017,7 @@ flowchart TD
     T9 --> T10
 ```
 
-### 9.7 收集器对比基准测试
+### 8.7 收集器对比基准测试
 
 ```java
 // 使用 JMH 基准测试对比收集器吞吐
@@ -1101,9 +1065,9 @@ public class GCBenchmark {
 
 ---
 
-## 10. 对比分析
+## 9. 对比分析
 
-### 10.1 JVM 内存模型 vs C++ 内存模型
+### 9.1 JVM 内存模型 vs C++ 内存模型
 
 | 维度 | Java（JMM） | C++11 |
 | ---- | ----------- | ----- |
@@ -1113,7 +1077,7 @@ public class GCBenchmark {
 | GC | 强制 | 无（需手动或 RAII） |
 | 安全性 | 高（运行时检查） | 中（编译期检查） |
 
-### 10.2 JVM 内存模型 vs Go 内存模型
+### 9.2 JVM 内存模型 vs Go 内存模型
 
 | 维度 | Java | Go |
 | ---- | ---- | --- |
@@ -1123,7 +1087,7 @@ public class GCBenchmark {
 | GC | 分代（G1/ZGC） | 并发三色标记（无分代） |
 | 停顿 | G1 100ms、ZGC < 1ms | 通常 < 1ms |
 
-### 10.3 JVM 内存模型 vs Rust 内存模型
+### 9.3 JVM 内存模型 vs Rust 内存模型
 
 | 维度 | Java | Rust |
 | ---- | ---- | ---- |
@@ -1133,7 +1097,7 @@ public class GCBenchmark {
 | 内存回收 | GC | 所有权 + Drop |
 | 性能 | 中等 | 接近 C |
 
-### 10.4 垃圾收集器对比
+### 9.4 垃圾收集器对比
 
 | 收集器 | 停顿时间 | 吞吐量 | 内存开销 | 堆大小上限 | Java 版本 |
 | ------ | -------- | ------ | -------- | ---------- | ---------- |
@@ -1144,7 +1108,7 @@ public class GCBenchmark {
 | ZGC（分代） | < 1ms | 中 | 中（< 10%） | 16TB | 21+ |
 | Shenandoah | < 10ms | 中 | 中（Brooks） | 64GB | 12+ |
 
-### 10.5 Metaspace vs PermGen
+### 9.5 Metaspace vs PermGen
 
 | 维度 | PermGen | Metaspace |
 | ---- | ------- | --------- |
@@ -1157,9 +1121,9 @@ public class GCBenchmark {
 
 ---
 
-## 11. 常见陷阱与最佳实践
+## 10. 常见陷阱与最佳实践
 
-### 11.1 陷阱 1：堆内存与容器内存混淆
+### 10.1 陷阱 1：堆内存与容器内存混淆
 
 **错误**：Docker 容器限制 2GB，JVM `-Xmx2g`，但 native 内存（Metaspace、线程栈、直接内存）导致 OOM killed。
 
@@ -1176,7 +1140,7 @@ docker run -m 2g java \
   -jar app.jar
 ```
 
-### 11.2 陷阱 2：ParallelGCThreads 过多
+### 10.2 陷阱 2：ParallelGCThreads 过多
 
 ```bash
 # 错误：在 32 核机器上设置过多 GC 线程
@@ -1191,7 +1155,7 @@ docker run -m 2g java \
 -XX:ParallelGCThreads=20  # 32 核机器
 ```
 
-### 11.3 陷阱 3：忽略了 -XX:+DisableExplicitGC
+### 10.3 陷阱 3：忽略了 -XX:+DisableExplicitGC
 
 ```java
 // 业务代码调用 System.gc()，触发 Full GC
@@ -1202,7 +1166,7 @@ System.gc();  // 性能杀手
 // 或 -XX:+ExplicitGCInvokesConcurrent（G1 下转为并发 GC）
 ```
 
-### 11.4 陷阱 4：直接内存泄漏
+### 10.4 陷阱 4：直接内存泄漏
 
 ```java
 // 错误：未释放 DirectByteBuffer
@@ -1226,7 +1190,7 @@ public void safe() {
 }
 ```
 
-### 11.5 陷阱 5：ThreadLocal 内存泄漏
+### 10.5 陷阱 5：ThreadLocal 内存泄漏
 
 ```java
 // 错误：ThreadLocal 在线程池中不清理
@@ -1249,7 +1213,7 @@ public void process() {
 }
 ```
 
-### 11.6 陷阱 6：finalize 导致 OOM
+### 10.6 陷阱 6：finalize 导致 OOM
 
 ```java
 // 错误：finalize 慢导致对象堆积
@@ -1281,7 +1245,7 @@ class Resource implements AutoCloseable {
 }
 ```
 
-### 11.7 陷阱 7：String.intern() 滥用
+### 10.7 陷阱 7：String.intern() 滥用
 
 ```java
 // 错误：大量 intern 导致 PermGen/Metaspace OOM
@@ -1294,7 +1258,7 @@ for (int i = 0; i < 10000000; i++) {
 // 建议：避免 intern，使用 ConcurrentHashMap 自行缓存
 ```
 
-### 11.8 陷阱 8：堆外内存未受监控
+### 10.8 陷阱 8：堆外内存未受监控
 
 ```bash
 # 监控 native 内存（Java 23+ NMT 增强）
@@ -1306,7 +1270,7 @@ jcmd <pid> VM.native_memory baseline
 jcmd <pid> VM.native_memory detail.diff
 ```
 
-### 11.9 陷阱 9：忽略 GC 日志导致性能问题无法诊断
+### 10.9 陷阱 9：忽略 GC 日志导致性能问题无法诊断
 
 ```bash
 # Java 9+ 统一日志
@@ -1320,7 +1284,7 @@ jcmd <pid> VM.native_memory detail.diff
 -Xlog:gc+ergo*=debug            # 自适应决策
 ```
 
-### 11.10 陷阱 10：CMS 退化为 Serial Old
+### 10.10 陷阱 10：CMS 退化为 Serial Old
 
 ```bash
 # CMS 触发 Concurrent Mode Failure 时退化为 Serial Old
@@ -1335,9 +1299,9 @@ jcmd <pid> VM.native_memory detail.diff
 
 ---
 
-## 12. 工程实践
+## 11. 工程实践
 
-### 12.1 生产级 JVM 参数模板
+### 11.1 生产级 JVM 参数模板
 
 ```bash
 # 通用 4GB 堆 + G1 收集器
@@ -1390,7 +1354,7 @@ JAVA_OPTS="
 "
 ```
 
-### 12.2 Docker 容器 JVM 配置
+### 11.2 Docker 容器 JVM 配置
 
 ```dockerfile
 FROM eclipse-temurin:21-jre-alpine
@@ -1416,7 +1380,7 @@ COPY target/app.jar /app/app.jar
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
 ```
 
-### 12.3 Kubernetes Deployment JVM 配置
+### 11.3 Kubernetes Deployment JVM 配置
 
 ```yaml
 apiVersion: apps/v1
@@ -1462,7 +1426,7 @@ spec:
         emptyDir: {}
 ```
 
-### 12.4 JVM 内存监控
+### 11.4 JVM 内存监控
 
 ```java
 // 使用 ManagementFactory 监控
@@ -1504,7 +1468,7 @@ public class JVMMonitor {
 }
 ```
 
-### 12.5 使用 JFR（Java Flight Recorder）剖析
+### 11.5 使用 JFR（Java Flight Recorder）剖析
 
 ```bash
 # 启动时启用 JFR
@@ -1522,7 +1486,7 @@ jfr print --events jdk.GCPhasePause /tmp/app.jfr
 jfr print --events jdk.GCPhasePause,jdk.JavaMonitorWait /tmp/app.jfr
 ```
 
-### 12.6 使用 jcmd 诊断
+### 11.6 使用 jcmd 诊断
 
 ```bash
 # 查看 JVM 进程
@@ -1553,7 +1517,7 @@ jcmd <pid> VM.native_memory summary
 jcmd <pid> JFR.check
 ```
 
-### 12.7 使用 jstat 实时监控
+### 11.7 使用 jstat 实时监控
 
 ```bash
 # GC 概要（每 1s 输出一次，共 10 次）
@@ -1581,7 +1545,7 @@ jstat -compiler <pid>
 jstat -gccapacity <pid>
 ```
 
-### 12.8 MAT（Memory Analyzer Tool）分析 heap dump
+### 11.8 MAT（Memory Analyzer Tool）分析 heap dump
 
 ```bash
 # 生成 heap dump
@@ -1614,9 +1578,9 @@ SELECT * FROM com.example.User WHERE @retainedHeapSize > 1024
 
 ---
 
-## 13. 案例研究
+## 12. 案例研究
 
-### 13.1 案例 1：Full GC 频发导致服务雪崩
+### 12.1 案例 1：Full GC 频发导致服务雪崩
 
 **现象**：电商订单服务 P99 从 50ms 飙升至 5s，监控显示 Full GC 频次从 0.1/min 升至 30/min。
 
@@ -1663,7 +1627,7 @@ public Order createOrder(OrderRequest req) {
 }
 ```
 
-### 13.2 案例 2：Metaspace OOM
+### 12.2 案例 2：Metaspace OOM
 
 **现象**：服务运行 7 天后 OOM: Metaspace，重启后正常。
 
@@ -1716,7 +1680,7 @@ public class GroovyScriptCache {
 }
 ```
 
-### 13.3 案例 3：内存泄漏（ThreadLocal）
+### 12.3 案例 3：内存泄漏（ThreadLocal）
 
 **现象**：服务运行 14 天后 OOM: Java heap space。
 
@@ -1770,7 +1734,7 @@ public class AuthFilter {
 }
 ```
 
-### 13.4 案例 4：ZGC 应对超低延迟场景
+### 12.4 案例 4：ZGC 应对超低延迟场景
 
 **场景**：金融交易系统要求 P99 < 10ms，堆 64GB。
 
@@ -1799,7 +1763,7 @@ public class AuthFilter {
 | 吞吐量（基准） | 100% | 92% |
 | CPU 使用率 | 60% | 68% |
 
-### 13.5 案例 5：Docker 内存配置错误
+### 12.5 案例 5：Docker 内存配置错误
 
 **现象**：Java 服务在 K8s 中频繁被 OOMKilled，但 JVM 堆远未满。
 
@@ -1840,7 +1804,7 @@ JAVA_OPTS="
 # 总计: ~1.9GB < 2GB
 ```
 
-### 13.6 案例 6：堆外内存泄漏
+### 12.6 案例 6：堆外内存泄漏
 
 **现象**：服务运行 3 天后被 OS OOM Killer 杀死，JVM 堆正常。
 
@@ -2090,7 +2054,7 @@ public class VolatileDemo {
 
 ---
 
-### 14.4 分析题
+### 13.4 分析题
 
 **常见疑问 11**：分析以下代码的内存问题，并给出修复方案。
 
@@ -2294,9 +2258,9 @@ spec:
 
 ---
 
-## 15. 参考文献
+## 14. 参考文献
 
-### 15.1 规范与标准
+### 14.1 规范与标准
 
 1. Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., and Lea, D. 2006. *Java Concurrency in Practice*. Addison-Wesley Professional. DOI: 10.5555/1198453
 
@@ -2308,7 +2272,7 @@ spec:
 
 5. Pugh, W. 2004. *JSR 133: Java Memory Model and Thread Specification*. https://jcp.org/en/jsr/detail?id=133
 
-### 15.2 JVM 实现与 GC 论文
+### 14.2 JVM 实现与 GC 论文
 
 6. Click, C. 2005. *The Azul Pauseless GC Algorithm*. Azul Systems. https://www.cs.virginia.edu/~son/cs851/papers/UCAM-CL-TR-579.pdf
 
@@ -2320,7 +2284,7 @@ spec:
 
 10. Flood, C. H., Kennke, R., Dinn, A., et al. 2023. *Generational ZGC*. JEP 439. https://openjdk.org/jeps/439
 
-### 15.3 实践与调优
+### 14.3 实践与调优
 
 11. Lin, C. 2020. *Optimizing Java: A Practical Guide for Tuning HotSpot JVM and OpenJDK Applications*. O'Reilly Media. ISBN: 978-1492037250
 
@@ -2334,9 +2298,9 @@ spec:
 
 ---
 
-## 16. 延伸阅读
+## 15. 延伸阅读
 
-### 16.1 推荐书籍
+### 15.1 推荐书籍
 
 1. **《Java Performance: In-Depth Advice for Tuning and Programming Java 8, 11, and Beyond》** - Scott Oaks
    - Oracle 官方性能权威，覆盖 JIT、GC、JFR
@@ -2353,7 +2317,7 @@ spec:
 5. **《Java 17 Recipes: A Problem-Solution Approach》** - Josh Juneau
    - Java 17+ 实战
 
-### 16.2 推荐论文
+### 15.2 推荐论文
 
 1. **The Java Memory Model** - Manson, Pugh, Adve (POPL 2005)
    - JMM 形式化的开山论文
@@ -2367,7 +2331,7 @@ spec:
 4. **A Study of Concurrent Garbage Collectors** - Yang 等 (ISMM 2016)
    - 多种并发 GC 的对比
 
-### 16.3 在线资源
+### 15.3 在线资源
 
 1. **OpenJDK 官方文档**: https://openjdk.org/
 2. **JEP 索引**: https://openjdk.org/jeps/0
@@ -2378,7 +2342,7 @@ spec:
 7. **GC Viewer**: https://github.com/chewiebug/GCViewer
 8. **JITWatch**: https://github.com/AdoptOpenJDK/jitwatch
 
-### 16.4 视频课程
+### 15.4 视频课程
 
 1. **Java Memory Management (Pluralsight)** - Kevin Jones
 2. **JVM Internals (Java Brains YouTube)** - Koushik Kothagal
@@ -2386,7 +2350,7 @@ spec:
 4. **ZGC Deep Dive (Oracle Developers YouTube)** - Per Liden
 5. **JVM Engineering at Twitter (QCon)** - Alvaro Videla
 
-### 16.5 实践工具
+### 15.5 实践工具
 
 - **VisualVM**: JVM 可视化监控
 - **JProfiler**: 商业 JVM 剖析工具

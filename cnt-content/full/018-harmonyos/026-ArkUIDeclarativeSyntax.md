@@ -15,6 +15,7 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
+
 # ArkUI 组件语法 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
@@ -68,17 +69,7 @@ ArkUI 的设计目标可以概括为五点:
 
 可以看到,ArkUI 在状态管理装饰器上与 SwiftUI 最为相似,在跨平台目标上与 Flutter 类似,在编译方式上与 SwiftUI、Flutter 一致采用 AOT。
 
-## 2. 学习目标
-
-完成本章学习后,读者应能够:
-
-1. **概念层面**——理解声明式 UI 的核心思想,能够解释 ArkUI 的 `UI = f(State)` 模型
-2. **语法层面**——熟练使用 `@Component`、`@Entry`、`@Builder`、`@Extend`、`@Styles` 等装饰器构建 UI
-3. **状态层面**——掌握 `@State`、`@Prop`、`@Link`、`@Provide`、`@Consume`、`@Observed`、`@ObjectLink` 等状态管理装饰器的使用场景与区别
-4. **布局层面**——能够使用 Column、Row、Flex、Grid、List 等容器组件构建复杂布局
-5. **工程层面**——理解 ArkUI 的渲染流程与差分更新机制,能够优化 UI 性能
-
-## 3. 前置知识
+## 2. 前置知识
 
 阅读本章前,建议读者具备以下基础:
 
@@ -87,9 +78,9 @@ ArkUI 的设计目标可以概括为五点:
 - **面向对象设计**——理解组件复用、组合等设计原则
 - **声明式 UI 经验**(可选)——若有 React、Flutter、SwiftUI 经验,理解会更深入
 
-## 4. 核心概念
+## 3. 核心概念
 
-### 4.1 装饰器总览
+### 3.1 装饰器总览
 
 ArkUI 的核心是装饰器系统。下表列出所有核心装饰器及其用途:
 
@@ -111,7 +102,7 @@ ArkUI 的核心是装饰器系统。下表列出所有核心装饰器及其用�
 | 监听 | `@Watch` | 字段 | 监听状态变化 |
 | 参数传递 | `@Require` | 字段 | 必传参数(API 10+) |
 
-### 4.2 `@Component` 与 `@Entry`
+### 3.2 `@Component` 与 `@Entry`
 
 `@Component` 装饰器用于声明一个 ArkUI 自定义组件。被装饰的 `struct` 必须实现 `build()` 方法,该方法返回 UI 描述。
 
@@ -145,7 +136,7 @@ struct HomePage {
 - `@Component` 仅声明自定义组件,可在其他组件中复用
 - 一个页面文件可以包含多个 `@Component`,但只能有一个 `@Entry`
 
-### 4.3 `build()` 方法与 UI 描述
+### 3.3 `build()` 方法与 UI 描述
 
 `build()` 方法是组件的核心,返回 UI 描述。UI 描述由 ArkUI 内置组件(`Text`、`Button`、`Column`、`Row` 等)嵌套构成,采用链式调用配置样式与事件。
 
@@ -190,7 +181,7 @@ struct GreetingPage {
 4. **事件回调**——`.onClick(() => { ... })` 接收箭头函数作为点击回调
 5. **状态驱动 UI**——`this.name` 变化时,`Text` 自动重新渲染
 
-### 4.4 `@State` 状态管理
+### 3.4 `@State` 状态管理
 
 `@State` 是最基础的状态装饰器,用于声明组件内部的可变状态。当 `@State` 修饰的变量变化时,ArkUI 自动重新执行 `build()` 方法,刷新依赖该状态的 UI。
 
@@ -255,7 +246,7 @@ struct TodoListPage {
 }
 ```
 
-### 4.5 `@Prop` 单向同步
+### 3.5 `@Prop` 单向同步
 
 `@Prop` 用于父子组件间的单向数据同步。父组件的状态变化会自动同步到子组件的 `@Prop` 字段,但子组件不能反向修改 `@Prop`。
 
@@ -313,7 +304,7 @@ struct ParentComponent {
 - **类型必须匹配**——父组件传入的类型与子组件 `@Prop` 声明的类型必须一致
 - **支持默认值**——`@Prop` 字段必须有默认值
 
-### 4.6 `@Link` 双向同步
+### 3.6 `@Link` 双向同步
 
 `@Link` 用于父子组件间的双向数据同步。父组件与子组件共享同一份数据,任一方修改都会反映到另一方。
 
@@ -358,7 +349,7 @@ struct CounterParent {
 - **使用 `$` 前缀传值**——父组件传递时使用 `$变量名` 而非 `变量名`,表示传引用
 - **类型必须匹配**——父组件的 `@State` 类型与子组件 `@Link` 类型必须一致
 
-### 4.7 `@Provide` 与 `@Consume` 跨层级共享
+### 3.7 `@Provide` 与 `@Consume` 跨层级共享
 
 当组件嵌套层级较深时,通过 `@Prop`/`@Link` 逐层传递数据会变得繁琐。`@Provide` 与 `@Consume` 允许祖先组件与后代组件跨层级共享数据。
 
@@ -409,7 +400,7 @@ struct DeepChild {
 - **双向同步**——后代修改 `@Consume`,祖先的 `@Provide` 也会同步
 - **慎用**——过度使用会破坏组件封装性,建议仅用于全局性数据(主题、语言、用户信息)
 
-### 4.8 `@Builder` 与 `@BuilderParam`
+### 3.8 `@Builder` 与 `@BuilderParam`
 
 `@Builder` 用于抽取可复用的 UI 片段,类似 React 中的"渲染函数"或 SwiftUI 中的 `@ViewBuilder`。
 
@@ -510,7 +501,7 @@ struct CardPage {
 }
 ```
 
-### 4.9 `@Extend` 与 `@Styles`
+### 3.9 `@Extend` 与 `@Styles`
 
 `@Extend` 用于扩展内置组件的样式,封装复用:
 
@@ -579,7 +570,7 @@ struct StylesExample {
 | 复用范围 | 单一组件样式 | 通用样式集合 |
 | 使用场景 | 组件特有样式 | 跨组件通用样式 |
 
-### 4.10 `@Watch` 状态监听
+### 3.10 `@Watch` 状态监听
 
 `@Watch` 用于监听状态变化,在状态变化时执行副作用。
 
@@ -617,7 +608,7 @@ struct WatchExample {
 - **不应用于派生状态**——派生状态应使用 `@Computed`(若可用)或在 `build()` 中计算
 - **慎用副作用**——避免在 `@Watch` 回调中执行异步操作或修改其他状态
 
-### 4.11 `@Observed` 与 `@ObjectLink`
+### 3.11 `@Observed` 与 `@ObjectLink`
 
 `@Observed` 与 `@ObjectLink` 用于处理嵌套对象的响应式更新。当 `@State` 修饰的对象包含嵌套对象数组时,直接修改嵌套对象的属性不会触发 UI 刷新。`@Observed` + `@ObjectLink` 解决了这个问题。
 
@@ -684,7 +675,7 @@ struct TodoListPage {
 2. `@ObjectLink` 接收 `@Observed` 实例,在子组件中建立响应式依赖
 3. 修改嵌套对象的属性时,代理触发依赖刷新,子组件 UI 自动更新
 
-### 4.12 `if/else` 与 `ForEach` 控制流
+### 3.12 `if/else` 与 `ForEach` 控制流
 
 ArkUI 在 `build()` 方法中支持 `if/else` 条件渲染与 `ForEach` 列表渲染:
 
@@ -727,9 +718,9 @@ struct ControlFlowExample {
 - `ForEach` 必须提供 `keyGenerator`(第三个参数),用于 diff 算法识别项的唯一性
 - `keyGenerator` 返回的字符串必须是稳定的(同一项始终返回相同 key)
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 示例一:基础计数器
+### 4.1 示例一:基础计数器
 
 ```typescript
 @Entry
@@ -800,7 +791,7 @@ struct Counter {
 }
 ```
 
-### 5.2 示例二:表单输入
+### 4.2 示例二:表单输入
 
 ```typescript
 interface FormData {
@@ -915,7 +906,7 @@ struct FormPage {
 }
 ```
 
-### 5.3 示例三:列表与详情
+### 4.3 示例三:列表与详情
 
 ```typescript
 interface Article {
@@ -1012,7 +1003,7 @@ struct ArticleListPage {
 }
 ```
 
-### 5.4 示例四:主题切换
+### 4.4 示例四:主题切换
 
 ```typescript
 interface Theme {
@@ -1106,9 +1097,9 @@ struct ThemeCard {
 }
 ```
 
-## 6. 实战案例
+## 5. 实战案例
 
-### 6.1 案例:完整的待办事项应用
+### 5.1 案例:完整的待办事项应用
 
 这个案例综合运用所有装饰器,构建一个完整的待办事项应用。
 
@@ -1508,9 +1499,9 @@ struct TodoApp {
 - `@Builder`:抽取可复用 UI 片段(PriorityBadge、FilterButton)
 - `if/else` + `ForEach`:条件渲染与列表渲染
 
-## 7. 进阶技巧
+## 6. 进阶技巧
 
-### 7.1 自定义组件的复用
+### 6.1 自定义组件的复用
 
 通过 `@Reusable` 装饰器(API 10+)标记可复用的组件,优化列表性能:
 
@@ -1533,7 +1524,7 @@ struct ExpensiveItem {
 
 `@Reusable` 让 ArkUI 在列表滚动时复用已存在的组件实例,而不是销毁重建,显著提升长列表性能。
 
-### 7.2 自定义绘制组件
+### 6.2 自定义绘制组件
 
 通过 `@Component` + `Canvas` 实现自定义绘制:
 
@@ -1573,7 +1564,7 @@ struct CustomChart {
 }
 ```
 
-### 7.3 动画与过渡
+### 6.3 动画与过渡
 
 ArkUI 提供丰富的动画 API:
 
@@ -1620,7 +1611,7 @@ struct AnimationExample {
 }
 ```
 
-### 7.4 响应式布局
+### 6.4 响应式布局
 
 使用 `Grid`、`Flex`、`Swiper` 等组件实现响应式布局:
 
@@ -1656,9 +1647,9 @@ struct ResponsiveLayout {
 }
 ```
 
-## 8. 性能优化
+## 7. 性能优化
 
-### 8.1 渲染性能基础
+### 7.1 渲染性能基础
 
 ArkUI 的渲染流程包含三个阶段:
 
@@ -1668,7 +1659,7 @@ ArkUI 的渲染流程包含三个阶段:
 
 性能优化的目标是减少这三个阶段的耗时。
 
-### 8.2 减少 `build()` 执行频率
+### 7.2 减少 `build()` 执行频率
 
 `@State` 变化会触发 `build()` 重新执行。优化策略:
 
@@ -1714,7 +1705,7 @@ struct OptimizedPageV2 {
 }
 ```
 
-### 8.3 `ForEach` 的 key 优化
+### 7.3 `ForEach` 的 key 优化
 
 `ForEach` 的 `keyGenerator` 决定了 diff 算法的效率:
 
@@ -1732,7 +1723,7 @@ ForEach(this.items, (item: Item) => {
 // 列表变化时,只有变化的 item 重新渲染
 ```
 
-### 8.4 懒加载长列表
+### 7.4 懒加载长列表
 
 使用 `LazyForEach` 替代 `ForEach` 处理超长列表:
 
@@ -1805,7 +1796,7 @@ struct LongListPage {
 
 `LazyForEach` 只渲染可见区域的 item,滚动时动态创建与销毁,显著降低内存占用与首次渲染时间。
 
-### 8.5 避免不必要的对象创建
+### 7.5 避免不必要的对象创建
 
 ```typescript
 // 不推荐:每次 build 都创建新对象
@@ -1831,9 +1822,9 @@ struct GoodExample {
 }
 ```
 
-## 9. 调试与排错
+## 8. 调试与排错
 
-### 9.1 常见错误
+### 8.1 常见错误
 
 **错误:`@State` 修改不刷新 UI**:
 
@@ -1888,7 +1879,7 @@ async aboutToAppear(): Promise<void> {
 }
 ```
 
-### 9.2 DevEco Studio 调试工具
+### 8.2 DevEco Studio 调试工具
 
 DevEco Studio 提供 ArkUI Inspector 用于可视化调试:
 
@@ -1897,7 +1888,7 @@ DevEco Studio 提供 ArkUI Inspector 用于可视化调试:
 3. **性能分析**——分析 `build()` 执行时间与渲染性能
 4. **预览器**——实时预览组件,无需运行完整应用
 
-### 9.3 调试技巧
+### 8.3 调试技巧
 
 **技巧一:使用 `@Watch` 追踪状态变化**:
 
@@ -1923,9 +1914,9 @@ build() {
 }
 ```
 
-## 10. 最佳实践
+## 9. 最佳实践
 
-### 10.1 组件设计原则
+### 9.1 组件设计原则
 
 **单一职责原则**:每个组件只做一件事。
 
@@ -1970,7 +1961,7 @@ flowchart TD
     T5 --> T6
 ```
 
-### 10.2 状态设计原则
+### 9.2 状态设计原则
 
 **就近原则**:状态应该放在使用它的最近组件中。
 
@@ -2024,7 +2015,7 @@ struct Input {
 }
 ```
 
-### 10.3 命名约定
+### 9.3 命名约定
 
 ```typescript
 // 组件:PascalCase,以 View/Page/Component 结尾
@@ -2046,7 +2037,7 @@ ItemBuilder(item: Item) { }
 function cardStyle() { }
 ```
 
-### 10.4 文件组织
+### 9.4 文件组织
 
 ```mermaid
 flowchart TD
@@ -2078,9 +2069,9 @@ flowchart TD
     T15 --> T17
 ```
 
-## 11. 总结与回顾
+## 10. 总结与回顾
 
-### 11.1 装饰器速查表
+### 10.1 装饰器速查表
 
 | 装饰器 | 用途 | 数据流向 | 必须初始化 |
 | --- | --- | --- | --- |
@@ -2100,7 +2091,7 @@ flowchart TD
 | `@Entry` | 页面入口 | - | - |
 | `@Reusable` | 可复用组件 | - | - |
 
-### 11.2 状态管理选择决策树
+### 10.2 状态管理选择决策树
 
 1. 状态只在当前组件使用?
    - 是 → `@State`
@@ -2126,7 +2117,7 @@ flowchart TD
    - 是 → `@Watch`
    - 否 → 重新评估状态设计
 
-### 11.3 与 React/Vue/SwiftUI 的对照
+### 10.3 与 React/Vue/SwiftUI 的对照
 
 | 概念 | ArkUI | React | Vue | SwiftUI |
 | --- | --- | --- | --- | --- |
@@ -2139,7 +2130,7 @@ flowchart TD
 | 列表 | `ForEach` | `map` | `v-for` | `ForEach` |
 | 条件 | `if/else` | JSX `{cond && ...}` | `v-if` | `if` |
 
-### 11.4 学习路径建议
+### 10.4 学习路径建议
 
 完成本章后,建议按以下顺序继续学习:
 
@@ -2150,30 +2141,30 @@ flowchart TD
 5. **动画系统**——学习 `animateTo`、转场动画、属性动画
 6. **性能优化**——深入 ArkUI 渲染机制与优化技巧
 
-## 12. 参考资料
+## 11. 参考资料
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **ArkUI 开发文档**——https://developer.harmonyos.com/cn/docs/arkui/
 - **ArkUI 组件参考**——内置组件完整 API
 - **ArkUI 状态管理**——装饰器深入说明
 - **HarmonyOS 设计规范**——MD(华为移动设计规范)
 
-### 12.2 推荐阅读
+### 11.2 推荐阅读
 
 - **声明式 UI 思想**——React、Flutter、SwiftUI 的设计哲学
 - **Functional UI**——了解 `UI = f(State)` 的数学基础
 - **Reactive Programming**——响应式编程基础
 - **Composition over Inheritance**——组合优于继承的设计原则
 
-### 12.3 相关框架对比阅读
+### 11.3 相关框架对比阅读
 
 - **React 文档**——https://react.dev/
 - **Flutter 文档**——https://flutter.dev/docs
 - **SwiftUI 文档**——https://developer.apple.com/xcode/swiftui/
 - **Jetpack Compose**——https://developer.android.com/jetpack/compose
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **ArkUI 跨设备适配**——断点响应、自适应布局
 - **ArkUI 动效设计**——属性动画、转场动画、共享元素动画

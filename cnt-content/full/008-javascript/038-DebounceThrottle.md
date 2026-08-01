@@ -19,57 +19,16 @@ prerequisites:
   - javascript/函数-作用域与闭包
   - javascript/异步编程
 ---
+
 # JavaScript 防抖节流实现
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-本节采用 Bloom 分类法对学习目标进行层级化建模，确保读者能够由浅入深、由具体到抽象地掌握防抖（Debounce）与节流（Throttle）的全部要义。
-
-### 1.1 记忆层（Remember）
-
-- 准确回忆防抖与节流的定义：防抖是"等待空闲"策略（Only the last call survives），节流是"固定速率"策略（At most one call per interval）。
-- 列出 JavaScript 中实现两者的三种基础原语：`setTimeout` / `clearTimeout`、`Date.now()` 时间戳、`requestAnimationFrame`（rAF）。
-- 复述"前缘触发（Leading Edge）"与"后缘触发（Trailing Edge）"的语义区别：前者在事件流起始立即触发，后者在事件流结束后补触发。
-
-### 1.2 理解层（Understand）
-
-- 解释防抖与节流在速率限制（Rate Limiting）理论中的对应关系：节流等价于漏桶算法（Leaky Bucket），防抖等价于"空闲检测器"（Idle Detector）。
-- 阐释 `this` 绑定在防抖/节流函数中的传递机制：为何必须使用 `fn.apply(this, args)` 而非直接 `fn(args)`。
-- 说明 `requestAnimationFrame` 节流为何仅适用于视觉更新场景，以及在不可见标签页（Hidden Tab）下 rAF 会被浏览器自动暂停的特性。
-
-### 1.3 应用层（Apply）
-
-- 在生产项目中使用防抖实现搜索自动补全、表单自动保存、窗口尺寸重算等典型场景。
-- 通过节流实现滚动监听、拖拽轨迹绘制、按钮防连点、鼠标移动追踪等高频事件处理。
-- 组合使用 Lodash 的 `_.debounce` / `_.throttle` 与 React `useMemo` / Vue `ref` 实现框架级速率限制。
-
-### 1.4 分析层（Analyze）
-
-- 对比"时间戳节流"、"定时器节流"、"时间戳+定时器混合节流"三种实现各自的首次触发行为、末次触发行为与边界条件。
-- 拆解 Lodash `_.debounce` 源码：`invokeFunc` / `leadingEdge` / `trailingEdge` / `remainingTime` 四个核心方法的协作关系。
-- 分析 RxJS 的 `debounceTime` / `throttleTime` 操作符与手写实现的差异：前者基于 Observable 调度器，后者基于宿主事件循环。
-
-### 1.5 评价层（Evaluate）
-
-- 评估在同一业务场景下，"防抖方案"与"节流方案"在响应延迟、最终一致性、用户体验三维度上的得分。
-- 对给定的三套搜索补全实现（无速率限制、防抖 300ms、节流 300ms）评判其在弱网与强网环境下的服务端压力与用户感知。
-- 评审主流 UI 库（Ant Design、Element Plus、Material-UI）的速率限制默认配置，给出可量化的改进建议。
-
-### 1.6 创造层（Create）
-
-- 设计并实现一个面向团队的通用速率限制工具库，支持防抖、节流、rAF 节流、指数退避（Exponential Backoff）四种策略的统一 API。
-- 构建一套基于 Web Worker 的后台节流系统，将高频事件的计算密集型处理移出主线程。
-- 撰写一份团队级《前端事件处理工程规范》文档，包含防抖/节流使用准则、性能预算、Code Review 检查项、CI 静态分析脚本。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 速率限制的思想起源（1960-1980）
+### 1.1 速率限制的思想起源（1960-1980）
 
 速率限制（Rate Limiting）的概念最早源于 1960 年代的操作系统调度理论。1966 年，MIT 的 Multics 操作系统首次引入"CPU 时间片"机制，将处理器时间按固定配额分配给各进程，这是现代"节流"思想的鼻祖。1969 年，Leonard Kleinrock 在 ARPANET 的流量控制设计中提出"令牌桶"（Token Bucket）与"漏桶"（Leaky Bucket）两种经典算法，奠定了网络拥塞控制的理论基础。
 
@@ -85,7 +44,7 @@ $$
 
 JavaScript 的节流正是漏桶算法在事件层的应用：不管输入事件多么密集，输出执行速率恒定为 $1/T$（$T$ 为节流间隔）。
 
-### 2.2 GUI 事件系统的演化（1973-1995）
+### 1.2 GUI 事件系统的演化（1973-1995）
 
 1973 年，Xerox PARC 的 Smalltalk-80 引入了 Model-View-Controller（MVC）模式，首次将用户事件作为一等对象处理。1984 年，Apple Macintosh 的 Toolbox 事件管理器引入"事件队列"（Event Queue）概念，操作系统将硬件中断（键盘、鼠标）转换为软件事件入队，应用程序通过 `GetNextEvent` 轮询处理。
 
@@ -105,7 +64,7 @@ JavaScript 的节流正是漏桶算法在事件层的应用：不管输入事件
 
 这段代码的语义是：先取消之前的延迟执行请求，再注册一个新的延迟执行请求，延迟 0.3 秒后执行。这正是现代 JavaScript 防抖的完整语义。
 
-### 2.3 浏览器事件与早期实践（1995-2009）
+### 1.3 浏览器事件与早期实践（1995-2009）
 
 1995 年，Netscape Navigator 引入 `setTimeout` API，最初用于动画与延迟加载。`setTimeout` 的语义是：将回调放入宏任务队列（Macrotask Queue），在指定延迟后由事件循环（Event Loop）调度执行。
 
@@ -124,7 +83,7 @@ window.onresize = function () {
 
 这段代码是防抖的雏形，但当时并未明确区分"防抖"与"节流"两种模式。
 
-### 2.4 jQuery 时代与命名确立（2009-2015）
+### 1.4 jQuery 时代与命名确立（2009-2015）
 
 2009 年，John Resig 在 jQuery 1.3 中引入了 `$.throttle` 与 `$.debounce` 的概念讨论（虽未直接进入核心库）。2010 年，Ben Alman 在其开源项目 jQuery throttle / debounce 中首次明确区分两者：
 
@@ -158,7 +117,7 @@ function throttle(delay, no_trailing, callback, debounce_mode) {
 }
 ```
 
-### 2.5 Underscore / Lodash 的标准化（2012-2018）
+### 1.5 Underscore / Lodash 的标准化（2012-2018）
 
 2012 年，Jeremy Ashkenas 在 Underscore.js 1.4 中引入 `_.debounce` 与 `_.throttle`，API 简洁：
 
@@ -176,7 +135,7 @@ _.throttle(func, wait, [options])
 
 Lodash 的实现成为现代 JavaScript 防抖/节流的事实标准，被广泛引用与移植。
 
-### 2.6 现代框架集成（2018-2026）
+### 1.6 现代框架集成（2018-2026）
 
 随着 React、Vue、Angular 等现代框架的兴起，防抖与节流逐渐以 Hook / Composition API 的形式集成：
 
@@ -195,7 +154,7 @@ RxJS 的 `debounceTime` 与 `throttleTime` 基于 Observable 调度器，语义�
 - `debounceTime(n)`：发射后等待 n ms，期间若有新值则重新计时，仅发射最后一个值。
 - `throttleTime(n, { leading: true, trailing: true })`：发射后立即触发首次，n ms 内忽略后续，n ms 后发射最后一个值。
 
-### 2.7 浏览器原生 API 的演化（2015-2026）
+### 1.7 浏览器原生 API 的演化（2015-2026）
 
 随着浏览器能力的扩展，部分场景出现了原生替代方案：
 
@@ -212,15 +171,15 @@ RxJS 的 `debounceTime` 与 `throttleTime` 基于 Observable 调度器，语义�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 事件流的数学建模
+### 2.1 事件流的数学建模
 
 设事件流为一个时间序列 $E = \{e_1, e_2, \ldots, e_n\}$，其中 $e_i = (t_i, \text{payload}_i)$，$t_i$ 为事件发生时间戳，$\text{payload}_i$ 为事件负载。事件流满足单调性：$t_1 \leq t_2 \leq \ldots \leq t_n$。
 
 定义事件处理函数 $f: \text{Payload} \to \text{Output}$，速率限制函数 $R: (E, T) \to E'$ 将原始事件流 $E$ 映射为实际执行流 $E'$，其中 $T$ 为配置参数（如等待时间、间隔）。
 
-### 3.2 防抖的形式化定义
+### 2.2 防抖的形式化定义
 
 **定义 1（防抖，Debounce）**：给定事件流 $E = \{e_1, \ldots, e_n\}$ 与等待时间 $W$，防抖后的执行流 $E'_D$ 定义为：
 
@@ -239,7 +198,7 @@ $$
 \end{cases}
 $$
 
-### 3.3 节流的形式化定义
+### 2.3 节流的形式化定义
 
 **定义 2（节流，Throttle）**：给定事件流 $E = \{e_1, \ldots, e_n\}$ 与间隔时间 $T$，节流后的执行流 $E'_T$ 定义为：
 
@@ -258,7 +217,7 @@ $$
 \end{cases}
 $$
 
-### 3.4 前缘与后缘的语义
+### 2.4 前缘与后缘的语义
 
 **定义 3（前缘触发，Leading Edge）**：事件流起始的第一次事件立即执行，无需等待。
 
@@ -281,7 +240,7 @@ $$
 | true | true | 首次立即执行，末次延迟补执行（Lodash 默认） |
 | false | false | 永不执行（无意义配置） |
 
-### 3.5 maxWait 的形式化定义
+### 2.5 maxWait 的形式化定义
 
 **定义 5（最大等待时间，maxWait）**：防抖函数在连续触发下，最多延迟 maxWait 时间后必须执行一次。
 
@@ -291,7 +250,7 @@ $$
 
 即：若防抖被持续触发超过 $M$ 时间，则强制执行一次。maxWait 将防抖退化为"防抖 + 节流"的混合体：在事件流持续期间以 $M$ 为间隔节流，在事件流停止后以 $W$ 为延迟防抖。
 
-### 3.6 复杂度分析
+### 2.6 复杂度分析
 
 设事件流长度为 $n$，时间窗口为 $T$：
 
@@ -304,9 +263,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 引理：防抖的终止性
+### 3.1 引理：防抖的终止性
 
 **引理**：若事件流 $E$ 在某时刻 $t_{\text{end}}$ 后不再产生新事件，则防抖函数必在 $t_{\text{end}} + W$ 时刻执行最后一次事件。
 
@@ -324,7 +283,7 @@ $$
 
 **工程意义**：防抖保证最终一致性——只要事件流停止，最后一次事件必然被执行。这对搜索补全、表单自动保存等场景至关重要。
 
-### 4.2 定理：节流的速率上界
+### 3.2 定理：节流的速率上界
 
 **定理**：对任意事件流 $E$ 与间隔 $T$，节流后的执行速率上界为 $1/T$ 次/秒。
 
@@ -346,7 +305,7 @@ $$
 
 **工程意义**：节流提供硬性速率保证，适用于与服务端有 QPS 限制的场景（如 API 调用频率限制）。
 
-### 4.3 命题：防抖与节流的等价条件
+### 3.3 命题：防抖与节流的等价条件
 
 **命题**：当 `maxWait = W` 时，防抖退化为节流。
 
@@ -366,7 +325,7 @@ $$
 
 证毕。
 
-### 4.4 推论：rAF 节流的帧率保证
+### 3.4 推论：rAF 节流的帧率保证
 
 **推论**：基于 `requestAnimationFrame` 的节流，在浏览器可见时保证执行速率等于显示器刷新率（通常 60fps，即 16.67ms 一次）。
 
@@ -386,7 +345,7 @@ rAF 节流的实现：每次事件触发时，若未注册 rAF，则注册一个
 
 **工程意义**：rAF 节流是视觉更新的最优选择，天然对齐显示器刷新率，避免无效渲染。但不可用于后台任务或服务端场景（Node.js 无 rAF）。
 
-### 4.5 定理：防抖的内存安全性
+### 3.5 定理：防抖的内存安全性
 
 **定理**：正确实现的防抖函数不会造成内存泄漏，即使事件持续触发。
 
@@ -412,7 +371,7 @@ rAF 节流的实现：每次事件触发时，若未注册 rAF，则注册一个
 
 **反例**：若实现错误（如未 `clearTimeout` 导致多个 `setTimeout` 同时存在），则会累积内存占用，每个未触发的回调都持有 `args` 引用。
 
-### 4.6 定理：节流的最终一致性
+### 3.6 定理：节流的最终一致性
 
 **定理**：配置 `trailing: true` 的节流函数，在事件流停止后必然执行最后一次事件。
 
@@ -437,9 +396,9 @@ rAF 节流的实现：每次事件触发时，若未注册 rAF，则注册一个
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础防抖实现
+### 4.1 基础防抖实现
 
 ```javascript
 // 文件名: debounce-basic.js
@@ -482,7 +441,7 @@ mockSearch('abcde');
 // 因为前 4 次都被第 5 次取消
 ```
 
-### 5.2 支持立即触发的防抖
+### 4.2 支持立即触发的防抖
 
 ```javascript
 // 文件名: debounce-immediate.js
@@ -539,7 +498,7 @@ delayedSearch('xyz'); // 不输出
 // 500ms 后输出: 延迟搜索: xyz
 ```
 
-### 5.3 支持取消与立即执行的完整防抖
+### 4.3 支持取消与立即执行的完整防抖
 
 ```javascript
 // 文件名: debounce-full.js
@@ -626,7 +585,7 @@ setTimeout(() => {
 }, 250);
 ```
 
-### 5.4 时间戳节流（首次立即执行）
+### 4.4 时间戳节流（首次立即执行）
 
 ```javascript
 // 文件名: throttle-timestamp.js
@@ -663,7 +622,7 @@ for (let i = 0; i < 10; i++) {
 // 后续 9 次因间隔不足 100ms 被忽略
 ```
 
-### 5.5 定时器节流（末次补执行）
+### 4.5 定时器节流（末次补执行）
 
 ```javascript
 // 文件名: throttle-timer.js
@@ -705,7 +664,7 @@ for (let i = 0; i < 10; i++) {
 // 100ms 后执行 call-9（最后一次保存的参数）
 ```
 
-### 5.6 混合节流（首尾都执行）
+### 4.6 混合节流（首尾都执行）
 
 ```javascript
 // 文件名: throttle-hybrid.js
@@ -756,7 +715,7 @@ const intervalId = setInterval(() => {
 // 每 100ms 执行一次，首次立即执行
 ```
 
-### 5.7 requestAnimationFrame 节流
+### 4.7 requestAnimationFrame 节流
 
 ```javascript
 // 文件名: throttle-raf.js
@@ -799,7 +758,7 @@ document.addEventListener('mousemove', onMouseMove);
 // 若需要后台执行，应使用 setTimeout 节流
 ```
 
-### 5.8 搜索自动补全（防抖典型应用）
+### 4.8 搜索自动补全（防抖典型应用）
 
 ```javascript
 // 文件名: search-autocomplete.js
@@ -874,7 +833,7 @@ class SearchBox {
 // );
 ```
 
-### 5.9 滚动加载（节流典型应用）
+### 4.9 滚动加载（节流典型应用）
 
 ```javascript
 // 文件名: infinite-scroll.js
@@ -972,7 +931,7 @@ class InfiniteScroll {
 }
 ```
 
-### 5.10 按钮防连点（节流应用）
+### 4.10 按钮防连点（节流应用）
 
 ```javascript
 // 文件名: prevent-double-click.js
@@ -1025,7 +984,7 @@ const submitForm = preventDoubleClick(async () => {
 submitBtn.addEventListener('click', submitForm);
 ```
 
-### 5.11 Vue 3 Composition API 集成
+### 4.11 Vue 3 Composition API 集成
 
 ```javascript
 // 文件名: use-debounce.js
@@ -1133,7 +1092,7 @@ export function useThrottleFn(fn, interval = 200) {
 }
 ```
 
-### 5.12 React Hook 集成
+### 4.12 React Hook 集成
 
 ```javascript
 // 文件名: use-debounce.js
@@ -1258,7 +1217,7 @@ export function useThrottledCallback(fn, interval, deps = []) {
 }
 ```
 
-### 5.13 指数退避防抖（用于错误重试）
+### 4.13 指数退避防抖（用于错误重试）
 
 ```javascript
 // 文件名: exponential-backoff.js
@@ -1334,7 +1293,7 @@ exponentialBackoff(mockRequest, {
   .catch((err) => console.error('最终失败:', err.message));
 ```
 
-### 5.14 Lodash 风格的完整实现
+### 4.14 Lodash 风格的完整实现
 
 ```javascript
 // 文件名: lodash-style.js
@@ -1502,7 +1461,7 @@ throttled('z');
 // 200ms 后输出 z（trailing，因为 maxWait=200）
 ```
 
-### 5.15 拖拽场景的完整实现
+### 4.15 拖拽场景的完整实现
 
 ```javascript
 // 文件名: drag-demo.js
@@ -1587,9 +1546,9 @@ class Draggable {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 防抖 vs 节流 vs rAF vs requestIdleCallback
+### 5.1 防抖 vs 节流 vs rAF vs requestIdleCallback
 
 | 维度 | 防抖（Debounce） | 节流（Throttle） | rAF 节流 | requestIdleCallback |
 |------|------------------|------------------|----------|---------------------|
@@ -1602,7 +1561,7 @@ class Draggable {
 | Node.js 可用 | 是 | 是 | 否 | 否 |
 | 精度 | 毫秒级 | 毫秒级 | 帧级（16.67ms） | 不确定 |
 
-### 6.2 各框架速率限制方案对比
+### 5.2 各框架速率限制方案对比
 
 | 方案 | API | 底层机制 | 优势 | 劣势 |
 |------|-----|----------|------|------|
@@ -1614,7 +1573,7 @@ class Draggable {
 | react-use | `useDebounce` / `useThrottle` | 自实现 | React 集成 | 维护一般 |
 | use-debounce | `useDebounce` | 自实现 | 专为 React 设计 | 功能单一 |
 
-### 6.3 速率限制算法对比
+### 5.3 速率限制算法对比
 
 | 算法 | 语义 | JavaScript 对应 | 适用场景 |
 |------|------|-----------------|----------|
@@ -1624,7 +1583,7 @@ class Draggable {
 | 滑动窗口（Sliding Window） | 窗口内计数 | 自定义实现 | 精确限流（如 100 次/分钟） |
 | 指数退避（Exponential Backoff） | 失败后延迟递增 | 自定义实现 | 重试机制 |
 
-### 6.4 选择决策树
+### 5.4 选择决策树
 
 ```mermaid
 flowchart TD
@@ -1657,9 +1616,9 @@ flowchart TD
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：丢失 this 绑定
+### 6.1 反模式：丢失 this 绑定
 
 ```javascript
 // 反模式：直接调用 fn，丢失 this
@@ -1695,7 +1654,7 @@ const obj = {
 obj.greet(); // 100ms 后输出: Hello, Alice
 ```
 
-### 7.2 反模式：未清理定时器导致内存泄漏
+### 6.2 反模式：未清理定时器导致内存泄漏
 
 ```javascript
 // 反模式：组件销毁时未清理定时器
@@ -1737,7 +1696,7 @@ function MyComponent() {
 }
 ```
 
-### 7.3 反模式：事件监听器累积
+### 6.3 反模式：事件监听器累积
 
 ```javascript
 // 反模式：每次渲染都添加新监听器，未移除旧的
@@ -1771,7 +1730,7 @@ function GoodComponent() {
 }
 ```
 
-### 7.4 反模式：异步函数未取消导致竞态
+### 6.4 反模式：异步函数未取消导致竞态
 
 ```javascript
 // 反模式：防抖触发多个异步请求，结果乱序返回
@@ -1801,7 +1760,7 @@ const goodSearch = debounce(async (query) => {
 }, 300);
 ```
 
-### 7.5 反模式：节流配置不当导致末次丢失
+### 6.5 反模式：节流配置不当导致末次丢失
 
 ```javascript
 // 反模式：拖拽场景使用纯时间戳节流，末次位置丢失
@@ -1821,7 +1780,7 @@ const goodDrag = throttle(
 );
 ```
 
-### 7.6 反模式：在循环中创建防抖函数
+### 6.6 反模式：在循环中创建防抖函数
 
 ```javascript
 // 反模式：每次循环都创建新的防抖函数，防抖失效
@@ -1845,7 +1804,7 @@ function goodBatchProcess(items) {
 }
 ```
 
-### 7.7 反模式：混淆防抖与节流
+### 6.7 反模式：混淆防抖与节流
 
 ```javascript
 // 反模式：滚动监听使用防抖，导致滚动过程中无反馈
@@ -1865,7 +1824,7 @@ window.addEventListener(
 );
 ```
 
-### 7.8 反模式：rAF 节流用于非视觉场景
+### 6.8 反模式：rAF 节流用于非视觉场景
 
 ```javascript
 // 反模式：用 rAF 节流网络请求
@@ -1882,9 +1841,9 @@ const goodApiCall = throttle(() => {
 
 ---
 
-## 8. 工程最佳实践
+## 7. 工程最佳实践
 
-### 8.1 TypeScript 类型定义
+### 7.1 TypeScript 类型定义
 
 ```typescript
 // debounce.types.ts
@@ -1933,7 +1892,7 @@ declare function throttle<T extends (...args: any[]) => any>(
 ): DebouncedFunction<T>;
 ```
 
-### 8.2 ESLint 自定义规则
+### 7.2 ESLint 自定义规则
 
 ```javascript
 // eslint-no-raw-settimeout.js
@@ -2010,7 +1969,7 @@ module.exports = {
 };
 ```
 
-### 8.3 单元测试模板
+### 7.3 单元测试模板
 
 ```javascript
 // debounce.test.js
@@ -2122,7 +2081,7 @@ describe('throttle', () => {
 });
 ```
 
-### 8.4 性能基准测试
+### 7.4 性能基准测试
 
 ```javascript
 // benchmark.js
@@ -2170,7 +2129,7 @@ suite
 // 但对高频事件（< 1000 ops/sec）仍绰绰有余
 ```
 
-### 8.5 调试与可观测性
+### 7.5 调试与可观测性
 
 ```javascript
 // debug-debounce.js
@@ -2225,9 +2184,9 @@ function debugDebounce(fn, delay, name = 'debounce') {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Lodash 源码剖析
+### 8.1 Lodash 源码剖析
 
 Lodash 的 `_.debounce` 实现是业界事实标准，其核心架构值得深入剖析。
 
@@ -2344,7 +2303,7 @@ function debounce(func, wait, options) {
 3. **`leading` 与 `trailing` 协同**：通过 `lastInvokeTime` 标记确保 leading 与 trailing 不重复。
 4. **`maxing` 降级为节流**：当配置 `maxWait` 时，防抖在持续触发下退化为节流。
 
-### 9.2 VueUse useDebounceFn 实现
+### 8.2 VueUse useDebounceFn 实现
 
 VueUse 是 Vue 3 生态最流行的组合式 API 库，其 `useDebounceFn` 实现简洁优雅：
 
@@ -2383,7 +2342,7 @@ export function useDebounceFn(fn, delay = 200, options) {
 2. **极简 API**：仅暴露防抖函数本身，无 cancel/flush（可通过返回值扩展）。
 3. **无 leading/trailing 配置**：保持简单，复杂场景建议用 Lodash。
 
-### 9.3 React use-debounce 库实现
+### 8.3 React use-debounce 库实现
 
 `use-debounce` 是 React 生态最流行的防抖库，其核心 Hook `useDebouncedCallback` 实现：
 
@@ -2473,7 +2432,7 @@ export function useDebouncedCallback(
 2. **`useCallback` 包裹返回值**：保证返回的 debounced 函数引用稳定。
 3. **`useEffect` 清理副作用**：组件卸载时自动清理定时器。
 
-### 9.4 RxJS debounceTime 操作符
+### 8.4 RxJS debounceTime 操作符
 
 RxJS 的 `debounceTime` 基于 Observable 调度器，语义与 `setTimeout` 防抖略有不同：
 
@@ -2540,7 +2499,7 @@ function debounceTime(dueTime, scheduler = asyncScheduler) {
 3. **可组合**：可与 `map`、`filter`、`switchMap` 等操作符链式组合。
 4. **取消语义**：订阅取消时自动清理，无内存泄漏风险。
 
-### 9.5 真实案例：美团外卖搜索优化
+### 8.5 真实案例：美团外卖搜索优化
 
 某外卖平台搜索框优化案例（数据已脱敏）：
 
@@ -2596,7 +2555,7 @@ const wrappedSearch = throttle(async (query) => {
 
 ## 知识讲解与要点分析（原练习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：实现一个防抖函数，要求支持 `immediate` 参数（true 时首次立即执行，false 时末次延迟执行）。
 
@@ -2672,7 +2631,7 @@ function throttle(fn, interval) {
 }
 ```
 
-### 10.2 中级题
+### 9.2 中级题
 
 **题目 4**：实现一个同时支持 `leading` 和 `trailing` 的节流函数，要求配置灵活。
 
@@ -2779,7 +2738,7 @@ const search = _.debounce(fetchSuggestions, 300, {
 });
 ```
 
-### 10.3 高级题
+### 9.3 高级题
 
 **题目 7**：实现一个"指数退避重试"函数，要求：
 
@@ -3162,9 +3121,9 @@ export function createLimiter(
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 经典论文
+### 10.1 经典论文
 
 1. Kleinrock, L. (1961). *Information Flow in Large Communication Nets*. Massachusetts Institute of Technology. DOI: 10.1.1.69.5135
 
@@ -3176,7 +3135,7 @@ export function createLimiter(
 
 5. Kleene, S. C. (1956). *Representation of events in nerve nets and finite automata*. In Automata Studies (pp. 3-41). Princeton University Press. DOI: 10.1515/9781400882618-003
 
-### 11.2 速率限制理论
+### 10.2 速率限制理论
 
 6. Hashem, O. A., & Al-Raweshidy, H. S. (2019). *Performance analysis of adaptive leaky bucket algorithm for traffic control in ATM networks*. International Journal of Communication Systems, 32(16), e4127. DOI: 10.1002/dac.4127
 
@@ -3184,7 +3143,7 @@ export function createLimiter(
 
 8. Vicisano, L., Rizzo, L., & Crowcroft, J. (1998). *TCP-like congestion control for layered multicast data transfer*. IEEE INFOCOM, 3, 996-1003. DOI: 10.1109/INFOCOM.1998.662946
 
-### 11.3 用户界面与事件处理
+### 10.3 用户界面与事件处理
 
 9. Card, S. K., Moran, T. P., & Newell, A. (1983). *The Psychology of Human-Computer Interaction*. Lawrence Erlbaum Associates. DOI: 10.4324/9780203736166
 
@@ -3194,7 +3153,7 @@ export function createLimiter(
 
 12. Myers, B. A., McDaniel, R. G., & Kosbie, D. S. (1993). *Marquise: Creating complete user interfaces by demonstration*. ACM CHI, 1993, 161-170. DOI: 10.1145/169059.169156
 
-### 11.4 JavaScript 与浏览器规范
+### 10.4 JavaScript 与浏览器规范
 
 13. Ecma International. (2020). *ECMAScript 2020 Language Specification (ECMA-262 11th Edition)*. Standard ECMA-262. DOI: 10.1109/IECSTD.2020.04
 
@@ -3204,7 +3163,7 @@ export function createLimiter(
 
 16. Hickson, I. (2023). *Web Hypertext Application Technology Working Group - Timers*. https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html
 
-### 11.5 框架与库实现
+### 10.5 框架与库实现
 
 17. Dalton, J.-D. (2016). *Lodash v4.17.21 source code*. GitHub Repository. https://github.com/lodash/lodash
 
@@ -3214,7 +3173,7 @@ export function createLimiter(
 
 20. Kaarelaid, H. (2018). *use-debounce: React hook for debouncing values and callbacks*. GitHub Repository. https://github.com/xnimorz/use-debounce
 
-### 11.6 性能与优化
+### 10.6 性能与优化
 
 21. Google Chrome Team. (2024). *Web Vitals: Measuring and optimizing Core Web Vitals*. https://web.dev/vitals/
 
@@ -3222,7 +3181,7 @@ export function createLimiter(
 
 23. Russell, A. (2018). *Intro to RAIL: Measure performance with the RAIL model*. web.dev. https://web.dev/articles/rail
 
-### 11.7 相关领域
+### 10.7 相关领域
 
 24. Crockford, D. (2008). *JavaScript: The Good Parts*. O'Reilly Media. ISBN: 978-0-596-51774-8
 
@@ -3236,9 +3195,9 @@ export function createLimiter(
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档与规范
+### 11.1 官方文档与规范
 
 - **ECMAScript 规范**：https://tc39.es/ecma262/ - 了解 `setTimeout`、`clearTimeout`、Promise 的形式化语义。
 - **HTML Living Standard**：https://html.spec.whatwg.org/ - 浏览器事件循环、rAF、定时器的权威规范。
@@ -3247,35 +3206,35 @@ export function createLimiter(
 - **Vue 3 文档 - 响应式基础**：https://vuejs.org/guide/essentials/reactivity-fundamentals.html - Vue 3 响应式系统如何使用防抖/节流。
 - **React 文档 - Hooks**：https://react.dev/reference/react - React Hooks 中自定义防抖/节流 Hook 的模式。
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - **《JavaScript: The Definitive Guide, 7th Edition》**（David Flanagan, 2020）：第 14 章"事件"详细讲解浏览器事件模型，第 17 章涵盖定时器与动画。
 - **《High Performance Browser Networking》**（Ilya Grigorik, 2013）：第 2 章探讨网络延迟与速率限制的关系，对理解防抖的网络优化价值有帮助。
 - **《Designing for Performance》**（Lara Hogan, 2014）：第 4 章讲解前端性能优化，包含防抖/节流的实战案例。
 - **《JavaScript Design Patterns》**（Addy Osmani, 2017）：涵盖防抖/节流作为设计模式的应用。
 
-### 12.3 开源项目源码
+### 11.3 开源项目源码
 
 - **Lodash**：https://github.com/lodash/lodash - 阅读 `debounce.js` 与 `throttle.js` 源码，理解工业级实现。
 - **VueUse**：https://github.com/vueuse/vueuse - 阅读 `useDebounceFn`、`useThrottleFn`、`refDebounced` 的实现。
 - **use-debounce**：https://github.com/xnimorz/use-debounce - React 生态最流行的防抖库源码。
 - **RxJS**：https://github.com/ReactiveX/rxjs - 阅读 `debounceTime.ts`、`throttleTime.ts` 操作符实现。
 
-### 12.4 在线课程
+### 11.4 在线课程
 
 - **MIT 6.831: User Interface Design and Implementation**：https://ocw.mit.edu/courses/6-831-user-interface-design-and-implementation-spring-2011/ - 第 6 讲"Events and Listeners"涵盖事件处理与速率限制。
 - **CMU 17-445: Software Engineering for AI-Enabled Systems**：https://www.cs.cmu.edu/~ai-se/ - 探讨速率限制在 AI 系统中的应用。
 - **Google web.dev - Learn Performance**：https://web.dev/learn/performance/ - 浏览器性能优化的权威教程。
 - **Frontend Masters - JavaScript Performance**：https://frontendmasters.com/courses/web-performance/ - Steve Kinney 的前端性能课程。
 
-### 12.5 性能分析工具
+### 11.5 性能分析工具
 
 - **Chrome DevTools - Performance**：https://developer.chrome.com/docs/devtools/performance/ - 分析事件处理与定时器的运行时开销。
 - **Lighthouse**：https://developer.chrome.com/docs/lighthouse/ - 自动化性能审计，包含 INP（Interaction to Next Paint）指标。
 - **WebPageTest**：https://www.webpagetest.org/ - 多地点真实浏览器性能测试。
 - **React Profiler**：https://react.dev/reference/react/Profiler - 分析 React 组件渲染频率与防抖效果。
 
-### 12.6 相关主题
+### 11.6 相关主题
 
 - **IntersectionObserver**：https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver - 替代滚动节流的原生 API。
 - **ResizeObserver**：https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver - 替代 resize 节流的原生 API。
@@ -3283,7 +3242,7 @@ export function createLimiter(
 - **AbortController**：https://developer.mozilla.org/en-US/docs/Web/API/AbortController - 取消异步请求，配合防抖使用。
 - **WeakRef & FinalizationRegistry**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef - 弱引用与内存管理。
 
-### 12.7 社区资源
+### 11.7 社区资源
 
 - **Stack Overflow - debounce**：https://stackoverflow.com/questions/tagged/debounce - 大量实战问答。
 - **CSS-Tricks - Debouncing and Throttling**：https://css-tricks.com/debouncing-throttling-explained-examples/ - 经典图文讲解。

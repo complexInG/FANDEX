@@ -25,70 +25,6 @@ tags:
 - scripting
 - etl
 - rpa
-learningObjectives:
-- '{''remember'': ''复述 Python 自动化六大领域（文件、任务调度、系统、Web、DevOps、ETL）与对应工具链''}'
-- '{''understand'': ''解释 APScheduler、Celery、Airflow、Prefect、Dagster 的工作原理与适用场景''}'
-- '{''apply'': ''使用 pathlib、shutil、subprocess 编写生产级文件与系统自动化脚本''}'
-- '{''apply'': ''使用 argparse、click、typer 构建可配置的命令行自动化工具''}'
-- '{''analyze'': ''对比同步/异步、阻塞/非阻塞、单机/分布式任务调度方案的差异''}'
-- '{''evaluate'': ''评估 ETL 工作流编排工具（Airflow vs Prefect vs Dagster）的工程权衡''}'
-- '{''create'': ''设计一个端到端自动化流水线（采集、处理、调度、监控、告警）''}'
-exercises:
-- id: ex-auto-01
-  type: fill-blank
-  cognitiveLevel: remember
-  question: Python 标准库中处理路径的推荐模块是 ______，它采用 ______ 编程风格，相比 os.path 更面向对象。
-  hint: 参考 PEP 519 与 pathlib 文档。
-  answer: '["pathlib", "面向对象"]'
-  blankCount: 2
-  caseSensitive: false
-  explanation: pathlib 是 Python 3.4+ 标准库，使用 Path 对象封装路径操作；PEP 519 引入 os.PathLike 协议统一路径表示。
-  difficulty: 1
-  estimatedTime: 2
-- id: ex-auto-02
-  type: choice
-  cognitiveLevel: understand
-  question: 以下哪种调度器适合分布式、可水平扩展、含任务结果后端的场景？
-  options:
-  - APScheduler（单机进程内调度）
-  - schedule（轻量级 cron 替代）
-  - Celery（分布式任务队列）
-  - time.sleep 轮询
-  correctIndex: 2
-  multiple: false
-  explanation: Celery 基于 Redis/RabbitMQ 实现分布式任务队列，支持水平扩展、任务重试、结果后端、定时调度（Celery Beat）；APScheduler 与 schedule 仅适合单机；time.sleep 轮询既不准确也浪费资源。
-  difficulty: 2
-  estimatedTime: 3
-  answer: C. Celery 基于 Redis/RabbitMQ 实现分布式任务队列，支持水平扩展、任务重试、结果后端、定时调度（Celery Beat）；APScheduler 与 schedule 仅适合单机；time.sleep 轮询既不准确也浪费资源。
-- id: ex-auto-03
-  type: code-fix
-  cognitiveLevel: apply
-  question: 以下脚本意图批量重命名 photos 目录下所有 .jpg 文件为 IMG_<时间戳>.jpg，但存在多处缺陷，请修正。
-  buggyCode: "import os\nfor f in os.listdir('photos'):\n    if f.endswith('.jpg'):\n        os.rename(f, f'IMG_{time.time()}.jpg')\n"
-  fixedCode: "import time\nfrom pathlib import Path\n\nsrc_dir = Path('photos')\nfor f in src_dir.iterdir():\n    if f.suffix.lower() == '.jpg':\n        # 缺陷 1: 未导入 time 模块\n        # 缺陷 2: listdir 返回文件名而非完整路径，rename 时找不到文件\n        # 缺陷 3: time.time() 浮点含小数点，作为文件名不安全\n        # 缺陷 4: 大小写敏感，应统一处理 .JPG 与 .jpg\n        new_name = f'IMG_{int(time.time())}_{f.stem}.jpg'\n        f.rename(src_dir / new_name)\n"
-  errorDescription: 未导入 time 模块、路径处理错误、时间戳含小数点、大小写敏感。
-  language: python
-  explanation: 应使用 pathlib.Path 处理路径；时间戳应取 int 避免小数点；后缀比较应大小写不敏感；rename 需使用完整路径。
-  difficulty: 3
-  estimatedTime: 10
-  answer: '未导入 time 模块、路径处理错误、时间戳含小数点、大小写敏感。 关键修复：# 缺陷 1: 未导入 time 模块 | # 缺陷 2: listdir 返回文件名而非完整路径，rename 时找不到文件 | # 缺陷 3: time.time() 浮点含小数点，作为文件名不安全'
-- id: ex-auto-04
-  type: open-ended
-  cognitiveLevel: create
-  question: 你需要为一家电商公司设计一个数据流水线，每日凌晨 2 点从 MySQL 抽取订单数据，清洗后写入 ClickHouse，并在完成后发送 Slack 通知。请详细描述你会使用哪些 Python 工具链、如何设计任务依赖（DAG）、如何处理失败重试与告警，以及如何保证幂等性。
-  keyPoints:
-  - 工具链：Airflow/Prefect + SQLAlchemy + clickhouse-driver + slack-sdk
-  - DAG 设计：extract -> transform -> load -> notify
-  - 幂等性：使用订单 ID 主键 + ON CONFLICT 或 ReplacingMergeTree
-  - 重试策略：指数退避，最大 3 次
-  - 告警：Slack webhook + Airflow on_failure_callback
-  - 数据校验：行数对比、抽样检查
-  - 调度：crontab 表达式 0 2 * * *
-  - 时区处理：UTC 存储 + 本地展示
-  minWords: 300
-  difficulty: 5
-  estimatedTime: 30
-  answer: 工具链：Airflow/Prefect + SQLAlchemy + clickhouse-driver + slack-sdk；DAG 设计：extract -> transform -> load -> notify；幂等性：使用订单 ID 主键 + ON CONFLICT 或 ReplacingMergeTree；重试策略：指数退避，最大 3 次；告警：Slack webhook + Airflow on_failure_callback；数据校验：行数对比、抽样检查；调度：crontab 表达式 0 2 * * *；时区处理：UTC 存储 + 本地展示
 references:
 - type: standard
   authors:
@@ -191,42 +127,21 @@ reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 95
 ---
 
+
 # Python 与自动化
 
 > 自动化的本质不是消灭工作，而是把人从重复劳动中解放出来，专注于创造性的问题。Python 因其简洁语法、丰富生态与跨平台特性，是当今最受欢迎的自动化脚本语言之一。
 
-## 1. 学习目标与全景图
+## 1. 历史动机：从 cron 到 DataOps
 
-学习本章后，你应当能够：
-
-1. **记住（Remember）** Python 自动化的六大领域及其代表工具；
-2. **理解（Understand）** 任务调度器、工作流引擎的内部原理；
-3. **应用（Apply）** pathlib、subprocess、APScheduler、Celery、Airflow 等工具编写自动化脚本；
-4. **分析（Analyze）** 同步、异步、阻塞、分布式任务调度的差异与权衡；
-5. **评估（Evaluate）** 不同 ETL 工具链（Airflow/Prefect/Dagster）的适用场景；
-6. **创造（Create）** 设计端到端自动化流水线，覆盖采集、处理、调度、监控、告警。
-
-```
-                Python 自动化生态
-                      |
-   +-----+-----+-----+-----+-----+-----+
-   |     |     |     |     |     |     |
-  文件  任务  系统  Web  DevOps  ETL  监控
- pathlib APScheduler subprocess Playwright Fabric Airflow Prometheus
- shutil  Celery     psutil     Selenium  Ansible Prefect  Grafana
- watchdog Airflow   asyncio    Puppeteer  Rundeck Dagster  Sentry
-```
-
-## 2. 历史动机：从 cron 到 DataOps
-
-### 2.1 脚本自动化时代（1970 — 2000）
+### 1.1 脚本自动化时代（1970 — 2000）
 
 - **1970 年代**：Unix cron、at、batch 调度器诞生；
 - **1980 年代**：Shell 脚本（sh/csh/ksh/bash）成为主流；
 - **1989 年**：Python 0.9 发布，逐步替代 Shell 成为高级脚本语言；
 - **1990 年代**：Perl 与 Python 并驾齐驱，应用于系统管理。
 
-### 2.2 工作流引擎时代（2000 — 2015）
+### 1.2 工作流引擎时代（2000 — 2015）
 
 - **2005 年**：LinkedIn 开发 Azkaban；
 - **2010 年**：Facebook 开源 Airflow 雏形；
@@ -234,7 +149,7 @@ estimatedReadingTime: 95
 - **2015 年**：Airflow 开源，开启 DAG 即代码时代；
 - **2016 年**：Luigi（Spotify）、Pinball（Pinterest）相继发布。
 
-### 2.3 现代 DataOps 时代（2015 — 至今）
+### 1.3 现代 DataOps 时代（2015 — 至今）
 
 | 年份 | 事件 | 意义 |
 | ---- | ---- | ---- |
@@ -249,7 +164,7 @@ estimatedReadingTime: 95
 | 2025 | Dagster 1.7 引入 Unified Data Platform | 一体化数据平台 |
 | 2026 | Prefect 3.x 与 Airflow 3.0 并存 | 数据编排新范式 |
 
-### 2.4 Python 自动化生态演进
+### 1.4 Python 自动化生态演进
 
 - **Python 2.x**：`os.system`、`commands.getoutput`；
 - **Python 3.0 — 3.3**：引入 `subprocess` 模块；
@@ -261,9 +176,9 @@ estimatedReadingTime: 95
 - **Python 3.13**：自由线程（PEP 703）、JIT 实验；
 - **Python 3.14**：`subprocess` 增强超时控制、`asyncio` 改进。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 任务调度模型
+### 2.1 任务调度模型
 
 定义任务为 $T = \langle I, O, f, D \rangle$，其中：
 - $I$ 为输入集合；
@@ -276,7 +191,7 @@ estimatedReadingTime: 95
 2. **资源约束**：同时运行任务数 $\leq R$；
 3. **优化目标**：最小化完成时间 $\text{makespan}$ 或最大化吞吐量。
 
-### 3.2 DAG 与拓扑排序
+### 2.2 DAG 与拓扑排序
 
 工作流表示为有向无环图（DAG）$G = (V, E)$，其中节点 $V$ 为任务，边 $E$ 表示依赖。合法调度序列是 $G$ 的拓扑排序。
 
@@ -311,13 +226,13 @@ def topological_sort(graph: dict[str, list[str]]) -> list[str]:
     return result
 ```
 
-### 3.3 任务幂等性
+### 2.3 任务幂等性
 
 幂等任务 $f$ 满足：$f(f(x)) = f(x)$。在自动化中，幂等性意味着任务可重试而不产生副作用。
 
 形式化：$\forall s \in S, \text{run}(s) = \text{run}(\text{run}(s))$，其中 $S$ 为系统状态。
 
-### 3.4 at-least-once 与 exactly-once 语义
+### 2.4 at-least-once 与 exactly-once 语义
 
 | 语义 | 含义 | 实现方式 |
 | ---- | ---- | ---- |
@@ -326,9 +241,9 @@ def topological_sort(graph: dict[str, list[str]]) -> list[str]:
 | exactly-once | 任务恰好执行一次 | 重试 + 幂等 |
 | effectively-once | 业务上等效执行一次 | 重试 + 业务幂等 |
 
-## 4. 理论推导：异步与并发模型
+## 3. 理论推导：异步与并发模型
 
-### 4.1 进程 vs 线程 vs 协程
+### 3.1 进程 vs 线程 vs 协程
 
 | 维度 | 进程 | 线程 | 协程 |
 | ---- | ---- | ---- | ---- |
@@ -338,19 +253,19 @@ def topological_sort(graph: dict[str, list[str]]) -> list[str]:
 | GIL 影响 | 无 | 受限 | 不受限（IO 时让出） |
 | 适用场景 | CPU 密集 | 历史遗留 | IO 密集 |
 
-### 4.2 Amdahl 定律
+### 3.2 Amdahl 定律
 
 加速比 $S(n) = \frac{1}{(1-p) + p/n}$，其中 $p$ 为可并行比例，$n$ 为处理器数。
 
 若 50% 任务可并行，4 核理论上限加速比 $S(4) = \frac{1}{0.5 + 0.5/4} = 1.6$。
 
-### 4.3 Little 定律在任务队列中的应用
+### 3.3 Little 定律在任务队列中的应用
 
 队列平均等待时间 $W = L / \lambda$，其中 $L$ 为队列长度，$\lambda$ 为到达速率。在 Celery 中用于估算任务延迟。
 
-## 5. Python 自动化库全景
+## 4. Python 自动化库全景
 
-### 5.1 文件与目录操作
+### 4.1 文件与目录操作
 
 | 库 | 用途 | 维护方 | License |
 | --- | --- | --- | --- |
@@ -361,7 +276,7 @@ def topological_sort(graph: dict[str, list[str]]) -> list[str]:
 | `watchdog` | 文件系统监控 | Yesudeva Mangalore | Apache-2.0 |
 | `pathspec` | gitignore 风格匹配 | Coppyr | MPL-2.0 |
 
-### 5.2 任务调度
+### 4.2 任务调度
 
 | 库 | 类型 | 维护方 | License |
 | --- | --- | --- | --- |
@@ -372,7 +287,7 @@ def topological_sort(graph: dict[str, list[str]]) -> list[str]:
 | `Dramatiq` | RabbitMQ/Redis 队列 | Bogdan Popa | LGPL-3.0 |
 | `Huey` | 轻量级队列 | Charles Leifer | MIT |
 
-### 5.3 工作流引擎
+### 4.3 工作流引擎
 
 | 库 | 设计哲学 | 维护方 | License |
 | --- | --- | --- | --- |
@@ -383,7 +298,7 @@ def topological_sort(graph: dict[str, list[str]]) -> list[str]:
 | `Kedro` | 数据科学流水线 | QuantumBlack | Apache-2.0 |
 | `Flyte` | 云原生工作流 | Flyte.org | Apache-2.0 |
 
-### 5.4 系统自动化
+### 4.4 系统自动化
 
 | 库 | 用途 | 维护方 | License |
 | --- | --- | --- | --- |
@@ -394,7 +309,7 @@ def topological_sort(graph: dict[str, list[str]]) -> list[str]:
 | `fabric` | 远程执行 SSH | Jeff Forcier | BSD |
 | `paramiko` | SSH 协议 | Paramiko Project | LGPL |
 
-### 5.5 Web 自动化
+### 4.5 Web 自动化
 
 | 库 | 用途 | 维护方 | License |
 | --- | --- | --- | --- |
@@ -404,7 +319,7 @@ def topological_sort(graph: dict[str, list[str]]) -> list[str]:
 | `httpx` | 现代 HTTP 客户端 | Encode | BSD-3-Clause |
 | `aiohttp` | 异步 HTTP | aio-libs | MIT |
 
-### 5.6 配置与 CLI
+### 4.6 配置与 CLI
 
 | 库 | 用途 | 维护方 | License |
 | --- | --- | --- | --- |
@@ -415,9 +330,9 @@ def topological_sort(graph: dict[str, list[str]]) -> list[str]:
 | `pydantic` | 数据验证 | Pydantic | MIT |
 | `pydantic-settings` | 配置管理 | Pydantic | MIT |
 
-## 6. 代码示例
+## 5. 代码示例
 
-### 6.1 文件自动化：pathlib + shutil
+### 5.1 文件自动化：pathlib + shutil
 
 ```python
 """
@@ -530,7 +445,7 @@ def incremental_backup(src: Path, dst: Path, manifest_path: Path):
     manifest_path.write_text(json.dumps(new_manifest, indent=2))
 ```
 
-### 6.2 文件系统监控：watchdog
+### 5.2 文件系统监控：watchdog
 
 ```python
 """
@@ -588,7 +503,7 @@ def main():
     start_watching(target)
 ```
 
-### 6.3 子进程管理：subprocess
+### 5.3 子进程管理：subprocess
 
 ```python
 """
@@ -678,7 +593,7 @@ def git_clone_or_pull(repo_url: str, target_dir: str) -> bool:
     return result.returncode == 0
 ```
 
-### 6.4 任务调度：APScheduler
+### 5.4 任务调度：APScheduler
 
 ```python
 """
@@ -760,7 +675,7 @@ if __name__ == '__main__':
     main()
 ```
 
-### 6.5 分布式任务队列：Celery
+### 5.5 分布式任务队列：Celery
 
 ```python
 """
@@ -890,7 +805,7 @@ def get_task_status(task_id: str) -> dict:
     }
 ```
 
-### 6.6 工作流引擎：Airflow
+### 5.6 工作流引擎：Airflow
 
 ```python
 """
@@ -1020,7 +935,7 @@ with DAG(
     [extract_task, transform_task, load_task] >> notify_failure_task
 ```
 
-### 6.7 现代工作流：Prefect
+### 5.7 现代工作流：Prefect
 
 ```python
 """
@@ -1100,7 +1015,7 @@ if __name__ == '__main__':
     # )
 ```
 
-### 6.8 资产驱动：Dagster
+### 5.8 资产驱动：Dagster
 
 ```python
 """
@@ -1171,7 +1086,7 @@ defs = Definitions(
 )
 ```
 
-### 6.9 Web 自动化：Playwright
+### 5.9 Web 自动化：Playwright
 
 ```python
 """
@@ -1278,7 +1193,7 @@ if __name__ == '__main__':
     print(scrape_quotes()[:3])
 ```
 
-### 6.10 命令行工具：Click + Typer
+### 5.10 命令行工具：Click + Typer
 
 ```python
 """
@@ -1364,7 +1279,7 @@ if __name__ == '__main__':
     app()
 ```
 
-### 6.11 配置管理：pydantic-settings
+### 5.11 配置管理：pydantic-settings
 
 ```python
 """
@@ -1437,7 +1352,7 @@ if __name__ == '__main__':
     print(f'Redis: {config.redis.host}:{config.redis.port}')
 ```
 
-### 6.12 异步并发：asyncio
+### 5.12 异步并发：asyncio
 
 ```python
 """
@@ -1540,7 +1455,7 @@ if __name__ == '__main__':
         return task1.result(), task2.result()
 ```
 
-### 6.13 系统监控：psutil
+### 5.13 系统监控：psutil
 
 ```python
 """
@@ -1634,9 +1549,9 @@ def monitor_resource_usage(interval: float = 1.0, duration: float = 60.0):
     return samples
 ```
 
-## 7. 对比分析
+## 6. 对比分析
 
-### 7.1 与 Shell (Bash) 对比
+### 6.1 与 Shell (Bash) 对比
 
 ```bash
 #!/bin/bash
@@ -1655,7 +1570,7 @@ done
 - Python 适合复杂业务逻辑，Bash 适合简单系统操作；
 - 现代 DevOps 推荐将 Bash 脚本迁移到 Python。
 
-### 7.2 与 Ruby (Capistrano) 对比
+### 6.2 与 Ruby (Capistrano) 对比
 
 ```ruby
 # Ruby: Capistrano 部署脚本
@@ -1674,7 +1589,7 @@ end
 - Python Fabric 提供类似能力，且与 Python 生态集成更好；
 - 现代基础设施即代码（IaC）已转向 Ansible/Terraform。
 
-### 7.3 与 Go 对比
+### 6.3 与 Go 对比
 
 ```go
 // Go: 后台任务调度
@@ -1702,7 +1617,7 @@ func main() {
 - Go 适合高性能后端，Python 适合数据处理与 ETL；
 - Go 在 K8s Operator 场景中更受欢迎（Kubebuilder）。
 
-### 7.4 与 JavaScript (Node.js) 对比
+### 6.4 与 JavaScript (Node.js) 对比
 
 ```javascript
 // Node.js: 定时任务
@@ -1725,9 +1640,9 @@ const worker = new Worker('queue', async (job) => {
 - Node.js 在 Web 后端自动化（npm scripts、gulp）流行；
 - Python 在数据科学、AI 自动化中无可替代。
 
-## 8. 常见陷阱
+## 7. 常见陷阱
 
-### 8.1 使用 os.system 而非 subprocess
+### 7.1 使用 os.system 而非 subprocess
 
 ```python
 import os
@@ -1736,7 +1651,7 @@ os.system('rm -rf /tmp/*')  # 不安全，易被注入！
 
 应使用 `subprocess.run` 配合列表参数。
 
-### 8.2 Shell 注入
+### 7.2 Shell 注入
 
 ```python
 import subprocess
@@ -1746,7 +1661,7 @@ subprocess.run(f'echo {user_input}', shell=True)  # 危险！
 
 应使用列表参数 `subprocess.run(['echo', user_input])`，避免 `shell=True`。
 
-### 8.3 异常未处理导致任务静默失败
+### 7.3 异常未处理导致任务静默失败
 
 ```python
 # 错误示例
@@ -1757,7 +1672,7 @@ def task():
 
 应使用 try-except 包裹，并通过日志或重试机制处理。
 
-### 8.4 阻塞主线程
+### 7.4 阻塞主线程
 
 ```python
 # 错误: 在 GUI 或 Web 中调用阻塞任务
@@ -1769,7 +1684,7 @@ def long_task():
 
 应使用 Celery、BackgroundTasks、asyncio 等异步处理。
 
-### 8.5 全局可变状态
+### 7.5 全局可变状态
 
 ```python
 # 错误
@@ -1781,7 +1696,7 @@ def increment():
 
 应使用 `threading.Lock`、`multiprocessing.Value` 或原子操作。
 
-### 8.6 忽略幂等性
+### 7.6 忽略幂等性
 
 ```python
 # 错误: 多次执行结果不一致
@@ -1793,7 +1708,7 @@ def transfer(amount, from_account, to_account):
 
 应使用事务与唯一请求 ID 实现幂等。
 
-### 8.7 时区处理错误
+### 7.7 时区处理错误
 
 ```python
 # 错误
@@ -1803,7 +1718,7 @@ schedule_at = datetime(2024, 1, 1, 2, 0)  # 没有指定时区
 
 应使用 `timezone.utc` 或 `ZoneInfo('Asia/Shanghai')`。
 
-### 8.8 资源泄露
+### 7.8 资源泄露
 
 ```python
 # 错误: 未关闭文件与连接
@@ -1814,7 +1729,7 @@ def read_data():
 
 应使用 `with` 上下文管理器。
 
-### 8.9 日志缺失或过度
+### 7.9 日志缺失或过度
 
 ```python
 # 错误 1: 没有日志
@@ -1828,7 +1743,7 @@ def task():
 
 应使用 `logging` 模块并合理设置级别。
 
-### 8.10 任务超时未设置
+### 7.10 任务超时未设置
 
 ```python
 # 错误: 网络请求可能永远阻塞
@@ -1837,9 +1752,9 @@ response = requests.get(url)  # 无超时
 
 应设置 `timeout=30` 或在 Celery 配置 `task_time_limit`。
 
-## 9. 工程实践
+## 8. 工程实践
 
-### 9.1 项目结构建议
+### 8.1 项目结构建议
 
 ```mermaid
 flowchart TD
@@ -1885,7 +1800,7 @@ flowchart TD
     T30 --> T31
 ```
 
-### 9.2 日志最佳实践
+### 8.2 日志最佳实践
 
 ```python
 """
@@ -1950,7 +1865,7 @@ def setup_logging(level: str = 'INFO', json_output: bool = False):
     root.addHandler(file_handler)
 ```
 
-### 9.3 重试装饰器
+### 8.3 重试装饰器
 
 ```python
 """
@@ -2051,7 +1966,7 @@ async def async_fetch(url: str):
             return await response.json()
 ```
 
-### 9.4 通知集成：Slack / 钉钉 / 邮件
+### 8.4 通知集成：Slack / 钉钉 / 邮件
 
 ```python
 """
@@ -2107,7 +2022,7 @@ def send_email(
         server.send_message(msg)
 ```
 
-### 9.5 Docker 化部署
+### 8.5 Docker 化部署
 
 ```python
 """
@@ -2144,7 +2059,7 @@ Dockerfile 内容:
 #       - POSTGRES_PASSWORD=${DB_PASSWORD}
 ```
 
-### 9.6 Kubernetes 部署
+### 8.6 Kubernetes 部署
 
 ```yaml
 # k8s/deployment.yaml 示例
@@ -2186,9 +2101,9 @@ spec:
           periodSeconds: 60
 ```
 
-## 10. 案例研究
+## 9. 案例研究
 
-### 10.1 案例一：Netflix 的 Mesos 调度
+### 9.1 案例一：Netflix 的 Mesos 调度
 
 Netflix 使用 Apache Mesos 与 Chronos 调度数千个数据处理任务。后来迁移到 Airflow，并开发自己的扩展（Pantom）。
 
@@ -2197,7 +2112,7 @@ Netflix 使用 Apache Mesos 与 Chronos 调度数千个数据处理任务。后�
 - 监控与告警是生产关键；
 - 数据血缘有助于调试。
 
-### 10.2 案例二：Airbnb 的 Airflow 诞生
+### 9.2 案例二：Airbnb 的 Airflow 诞生
 
 Airbnb 在 2014 年开源 Airflow，解决其内部数据管道管理问题。
 
@@ -2206,7 +2121,7 @@ Airbnb 在 2014 年开源 Airflow，解决其内部数据管道管理问题。
 - 调度器、Worker、Web Server 三层架构；
 - Executer 抽象（LocalExecutor、CeleryExecutor、KubernetesExecutor）。
 
-### 10.3 案例三：Dropbox 的 Python 自动化
+### 9.3 案例三：Dropbox 的 Python 自动化
 
 Dropbox 大量使用 Python 自动化文件同步、备份与监控。
 
@@ -2215,7 +2130,7 @@ Dropbox 大量使用 Python 自动化文件同步、备份与监控。
 - 服务端使用 Python 编写 ETL；
 - 自研工具 Magic Pocket 用于冷存储。
 
-### 10.4 案例四：YouTube 的视频处理流水线
+### 9.4 案例四：YouTube 的视频处理流水线
 
 YouTube 使用 Python 编排视频转码、缩略图生成、字幕处理等任务。
 
@@ -2224,7 +2139,7 @@ YouTube 使用 Python 编排视频转码、缩略图生成、字幕处理等任�
 - 工作流引擎处理 DAG；
 - 自动重试与降级机制。
 
-### 10.5 案例五：Instagram 的 Celery 应用
+### 9.5 案例五：Instagram 的 Celery 应用
 
 Instagram 使用 Celery 处理图片处理、Feed 更新、推送通知等异步任务。
 
@@ -2233,7 +2148,7 @@ Instagram 使用 Celery 处理图片处理、Feed 更新、推送通知等异步
 - 自定义 Broker 优化（基于 Cassandra）；
 - 任务优先级队列与限流。
 
-### 10.6 案例六：Uber 的 Prefect 迁移
+### 9.6 案例六：Uber 的 Prefect 迁移
 
 Uber 从 Airflow 迁移到 Prefect 以提升开发体验。
 
@@ -2242,9 +2157,9 @@ Uber 从 Airflow 迁移到 Prefect 以提升开发体验。
 - 动态 DAG 支持；
 - 更好的本地开发体验。
 
-## 11. 性能调优
+## 10. 性能调优
 
-### 11.1 并发模型选择
+### 10.1 并发模型选择
 
 | 场景 | 推荐方案 | 原因 |
 | ---- | ---- | ---- |
@@ -2253,7 +2168,7 @@ Uber 从 Airflow 迁移到 Prefect 以提升开发体验。
 | 混合 | concurrent.futures | 统一 API |
 | 分布式 | Celery / RQ | 多机扩展 |
 
-### 11.2 性能基准
+### 10.2 性能基准
 
 | 任务类型 | 单线程 | 多线程 | 多进程 | asyncio |
 | --- | --- | --- | --- | --- |
@@ -2261,7 +2176,7 @@ Uber 从 Airflow 迁移到 Prefect 以提升开发体验。
 | IO 密集（100 HTTP） | 50s | 5s | 5s | 1s |
 | 混合 | 30s | 8s | 5s | 3s |
 
-### 11.3 优化技巧
+### 10.3 优化技巧
 
 ```python
 """
@@ -2318,9 +2233,9 @@ def process_batch(batch: list):
     return [item * 2 for item in batch]
 ```
 
-## 12. 监控与告警
+## 11. 监控与告警
 
-### 12.1 Prometheus 集成
+### 11.1 Prometheus 集成
 
 ```python
 """
@@ -2381,7 +2296,7 @@ import functools
 import time
 ```
 
-### 12.2 Sentry 异常追踪
+### 11.2 Sentry 异常追踪
 
 ```python
 """
@@ -2420,9 +2335,9 @@ def scrub_sensitive_data(event, hint):
     return event
 ```
 
-## 13. 测试与验证
+## 12. 测试与验证
 
-### 13.1 单元测试
+### 12.1 单元测试
 
 ```python
 """
@@ -2483,7 +2398,7 @@ class TestFileOps:
         assert (dst / 'b.txt').exists()
 ```
 
-### 13.2 Mock 与集成测试
+### 12.2 Mock 与集成测试
 
 ```python
 """
@@ -2518,7 +2433,7 @@ class TestETLTask:
         assert result[0]['id'] == 1
 ```
 
-### 13.3 Airflow DAG 测试
+### 12.3 Airflow DAG 测试
 
 ```python
 """
@@ -2553,9 +2468,9 @@ def test_dag_structure(dagbag):
     assert transform_task.upstream_task_ids == {'extract'}
 ```
 
-## 14. 故障排除
+## 13. 故障排除
 
-### 14.1 常见异常
+### 13.1 常见异常
 
 | 异常 | 原因 | 解决方案 |
 | --- | --- | --- |
@@ -2567,7 +2482,7 @@ def test_dag_structure(dagbag):
 | `celery.exceptions.SoftTimeLimitExceeded` | Celery 软超时 | 优化任务或增加时限 |
 | `psutil.NoSuchProcess` | 进程已退出 | 处理异常 |
 
-### 14.2 调试技巧
+### 13.2 调试技巧
 
 ```python
 """
@@ -2608,7 +2523,7 @@ def enable_asyncio_debug():
 
 ## 知识讲解与要点分析（原习题）
 
-### 15.1 综合练习：设计文件同步工具
+### 14.1 综合练习：设计文件同步工具
 
 **需求**：
 - 双向同步两个目录；
@@ -2616,7 +2531,7 @@ def enable_asyncio_debug():
 - 冲突时保留两个版本；
 - 支持忽略规则（.gitignore 风格）。
 
-### 15.2 综合练习：实现日志分析流水线
+### 14.2 综合练习：实现日志分析流水线
 
 **需求**：
 - 监控 Nginx access.log；
@@ -2624,7 +2539,7 @@ def enable_asyncio_debug():
 - 异常请求触发告警；
 - 每日生成报告发送邮件。
 
-### 15.3 综合练习：实现 CI/CD 流水线
+### 14.3 综合练习：实现 CI/CD 流水线
 
 **需求**：
 - 监听 GitHub Webhook；
@@ -2633,7 +2548,7 @@ def enable_asyncio_debug():
 - 部署到 K8s；
 - 失败时回滚。
 
-### 15.4 综合练习：实现 RPA 机器人
+### 14.4 综合练习：实现 RPA 机器人
 
 **需求**：
 - 自动登录企业 ERP；
@@ -2641,9 +2556,9 @@ def enable_asyncio_debug():
 - 填写 Excel 报表；
 - 通过邮件发送给管理者。
 
-## 16. 工程检查清单
+## 15. 工程检查清单
 
-### 16.1 上线前自检
+### 15.1 上线前自检
 
 - [ ] 是否使用 subprocess.run 而非 os.system？
 - [ ] 是否避免 shell=True 防止注入？
@@ -2659,7 +2574,7 @@ def enable_asyncio_debug():
 - [ ] 是否使用环境变量管理密钥？
 - [ ] 是否实施降级与熔断？
 
-### 16.2 性能调优清单
+### 15.2 性能调优清单
 
 - [ ] CPU 密集任务是否使用 multiprocessing？
 - [ ] IO 密集任务是否使用 asyncio？
@@ -2669,7 +2584,7 @@ def enable_asyncio_debug():
 - [ ] 是否避免全局可变状态？
 - [ ] 是否使用批处理而非单条处理？
 
-### 16.3 运维清单
+### 15.3 运维清单
 
 - [ ] 是否 Docker 化部署？
 - [ ] 是否使用 systemd 或 K8s 管理进程？
@@ -2679,9 +2594,9 @@ def enable_asyncio_debug():
 - [ ] 是否准备回滚方案？
 - [ ] 是否定期演练故障恢复？
 
-## 17. 延伸阅读
+## 16. 延伸阅读
 
-### 17.1 必读书籍
+### 16.1 必读书籍
 
 1. **Al Sweigart**. *Automate the Boring Stuff with Python*. 2nd Edition. No Starch Press, 2019. ISBN 978-1593279929.
 2. **Luciano Ramalho**. *Fluent Python*. 2nd Edition. O'Reilly, 2022. ISBN 978-1492056355.
@@ -2689,13 +2604,13 @@ def enable_asyncio_debug():
 4. **Marcin Moskwa**. *Celery: Distributed Task Queue: Fast and Reliable Asynchronous Processing*. Apress, 2023.
 5. **Bas Harenslak, Julian de Ruiter**. *Data Pipelines with Apache Airflow*. O'Reilly, 2021.
 
-### 17.2 必读论文
+### 16.2 必读论文
 
 1. **Garcia-Molina, H., Salem, K.** "Sagas." *SIGMOD 1987*. 事务工作流奠基论文。
 2. **Dean, J., Ghemawat, S.** "MapReduce: Simplified Data Processing on Large Clusters." *OSDI 2004*.
 3. **Zaharia, M. et al.** "Apache Spark: A Unified Engine for Big Data Processing." *Communications of the ACM* 2016.
 
-### 17.3 开源项目
+### 16.3 开源项目
 
 - **Airflow**: https://github.com/apache/airflow
 - **Celery**: https://github.com/celery/celery
@@ -2708,7 +2623,7 @@ def enable_asyncio_debug():
 - **Click**: https://github.com/pallets/click
 - **Typer**: https://github.com/tiangolo/typer
 
-### 17.4 在线资源
+### 16.4 在线资源
 
 - **Apache Airflow 官方教程**: https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html
 - **Prefect 官方文档**: https://docs.prefect.io/
@@ -2716,7 +2631,7 @@ def enable_asyncio_debug():
 - **Real Python 自动化系列**: https://realpython.com/tutorials/automation/
 - **Awesome Python Automation**: https://github.com/vinta/awesome-python
 
-## 18. Python 版本兼容性矩阵
+## 17. Python 版本兼容性矩阵
 
 | Python 版本 | asyncio | pathlib | subprocess | concurrent.futures | typing |
 | --- | --- | --- | --- | --- | --- |
@@ -2727,7 +2642,7 @@ def enable_asyncio_debug():
 | 3.13 | 自由线程实验 | 完整 | 改进 | 改进 | 改进 |
 | 3.14 (新) | 改进 | 完整 | 增强超时 | 改进 | 改进 |
 
-## 19. 词汇表
+## 18. 词汇表
 
 | 术语 | 英文 | 含义 |
 | --- | --- | --- |
@@ -2746,7 +2661,7 @@ def enable_asyncio_debug():
 | Preflight | Preflight | 预检任务 |
 | Backfill | Backfill | 历史数据回填 |
 
-## 20. 总结与下一步
+## 19. 总结与下一步
 
 本章系统介绍了 Python 自动化工程实践：
 
@@ -2756,7 +2671,7 @@ def enable_asyncio_debug():
 4. **案例研究**：Netflix、Airbnb、Dropbox、YouTube、Instagram、Uber；
 5. **测试与运维**：单元测试、Mock、DAG 测试、上线检查清单。
 
-### 20.1 下一步学习建议
+### 19.1 下一步学习建议
 
 - **进阶 Airflow**：学习自定义 Operator、Sensor、Hook；
 - **云原生自动化**：K8s Operator、Argo Workflows、Tekton；
@@ -2765,7 +2680,7 @@ def enable_asyncio_debug():
 - **DataOps**：dbt + Airflow + Great Expectations；
 - **MLOps**：MLflow、Kubeflow、Vertex AI Pipelines。
 
-### 20.2 FANDEX 学习路径
+### 19.2 FANDEX 学习路径
 
 继续学习：
 - `python/Python与Web爬虫`：构建数据采集流水线；

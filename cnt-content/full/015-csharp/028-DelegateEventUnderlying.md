@@ -15,63 +15,16 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
+
 # C# 委托与事件
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 分类法（Bloom's Taxonomy）设定六层认知目标，学习者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：准确陈述 `System.Delegate` 与 `System.MulticastDelegate` 的继承关系与语义差异。
-- **R2**：列举委托在 CLR 层合成的四个核心方法：`Invoke`、`BeginInvoke`、`EndInvoke`、`GetInvocationList`。
-- **R3**：回忆 `event` 关键字编译后生成的两个访问器方法 `add_*` 与 `remove_*` 的签名。
-- **R4**：背诵委托协变（covariance）与逆变（contravariance）的 C# 2.0 引入版本与方法签名匹配规则。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 `MulticastDelegate` 内部 `_invocationList` 字段如何实现多播委托链表的存储与遍历。
-- **U2**：阐述 `Delegate.Combine` 与 `Delegate.Remove` 在委托链表上的代数操作（结合律、交换律不成立）。
-- **U3**：说明闭包（closure）在 C# 编译器层面如何被翻译为显示类（display class）实例与字段捕获。
-- **U4**：描述 `event` 关键字相对于普通 `Delegate` 字段所提供的封装性（封装外部只能 `+=`/`-=`，不能赋值或 invoke）。
-
-### 1.3 Apply（应用）
-
-- **A1**：实现一个基于 `Expression<TDelegate>` 的事件聚合器（Event Aggregator），支持弱引用订阅与线程调度。
-- **A2**：使用 `Delegate.CreateDelegate` 在运行时将 `MethodInfo` 转换为强类型委托，并对比与 `MethodInfo.Invoke` 的性能。
-- **A3**：编写一个符合 .NET 事件模式（.NET Event Pattern）的事件发布者，包含 `EventArgs<T>` 子类与线程安全触发。
-- **A4**：使用 `Func<T>`、`Action<T>` 等 generic 委托替代自定义委托类型，并对兼容性进行评估。
-
-### 1.4 Analyze（分析）
-
-- **An1**：解构 lambda 表达式在 C# 编译器生成的 IL 中的两种形态（static method vs. instance method on display class）。
-- **An2**：分析闭包对局部变量捕获时，栈分配（stack allocation）与堆分配（heap allocation）的判定条件。
-- **An3**：剖析多播委托异常处理语义——链表中前一个 handler 抛出异常会中断后续 handler 的执行。
-- **An4**：对比 `Action`、`delegate` 关键字、`EventHandler` 三种委托定义方式在 IL 与语义上的差异。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评估多播委托在事件分发场景下相对于 `IObserver<T>`/`IObservable<T>`（Rx）的取舍。
-- **E2**：判断闭包捕获 `this` 引用导致的内存泄漏风险，并提出弱引用（`WeakReference`）缓解方案。
-- **E3**：审视 `event` 关键字在并发场景下的线程安全模型，并评估 `Interlocked.CompareExchange` 方案 vs. `lock` 方案。
-- **E4**：评价 C# 11+ 引入的 `funcptr`（function pointer）与 delegate 在 NativeAOT 场景下的性能差异。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个基于 `Delegate` 与 `DynamicMethod` 的高性能 RPC 框架，编译期生成委托绑定。
-- **C2**：实现一个支持过滤器管道（filter pipeline）的事件系统，基于委托链与短路语义。
-- **C3**：构建一个 Source Generator，自动为 POCO 类型生成 `INotifyPropertyChanged` 事件实现。
-- **C4**：编写一个 Roslyn 分析器，检测闭包捕获 `this` 引起的潜在内存泄漏，并给出修复建议。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 C# 1.0（2002）：委托的诞生
+### 1.1 C# 1.0（2002）：委托的诞生
 
 C# 1.0 在 ECMA-334 第 1 版中首次定义委托（delegate）类型，作为对 C/C++ 函数指针（function pointer）的安全替代。设计目标包括：
 
@@ -110,11 +63,11 @@ class Transformer : MulticastDelegate
 
 `BeginInvoke`/`EndInvoke` 实现异步调用模式（APM, Asynchronous Programming Model），是 .NET 1.0 的异步基础设施。
 
-### 2.2 C# 2.0（2005）：协变逆变与方法组转换
+### 1.2 C# 2.0（2005）：协变逆变与方法组转换
 
 C# 2.0 引入两项关键改进：
 
-#### 2.2.1 委托协变与逆变
+#### 1.2.1 委托协变与逆变
 
 协变允许委托返回派生类型，逆变允许委托参数接受基类型：
 
@@ -135,7 +88,7 @@ $$R_1 \preceq R_2 \land A_2 \preceq A_1$$
 
 其中 $\preceq$ 表示子类型关系。
 
-#### 2.2.2 隐式方法组转换
+#### 1.2.2 隐式方法组转换
 
 C# 2.0 允许直接将方法名赋给委托，无需 `new`：
 
@@ -145,7 +98,7 @@ Transformer t = Square;  // 隐式方法组转换
 
 这一改动大幅简化了委托使用语法。
 
-#### 2.2.3 匿名方法
+#### 1.2.3 匿名方法
 
 C# 2.0 引入 `delegate` 关键字定义匿名方法：
 
@@ -155,7 +108,7 @@ Transformer t = delegate(int x) { return x * x; };
 
 匿名方法是闭包的雏形，但语法冗长，且无法访问 `ref`/`out` 参数。
 
-### 2.3 C# 3.0（2007）：Lambda 表达式与 LINQ
+### 1.3 C# 3.0（2007）：Lambda 表达式与 LINQ
 
 C# 3.0 引入 lambda 表达式，从根本上改变了委托的使用方式：
 
@@ -179,7 +132,7 @@ lambda 与匿名方法的关键区别：
 2. **表达式体**：lambda 可作为表达式树（`Expression<TDelegate>`）传递。
 3. **与 `var` 兼容**：lambda 不能赋给 `var`（因为存在多重载）。
 
-### 2.4 C# 4.0（2010）：泛型委托协变逆变
+### 1.4 C# 4.0（2010）：泛型委托协变逆变
 
 C# 4.0 引入泛型接口与泛型委托的协变（`out`）与逆变（`in`）修饰符：
 
@@ -197,7 +150,7 @@ Func<Dog, Animal> f2 = f1;  // 协变返回 + 逆变参数
 
 `Func<in T, out TResult>` 与 `Action<in T>` 在 .NET 4.0 标记为协变/逆变，使得 `IEnumerable<Derived>` 可赋给 `IEnumerable<Base>`，LINQ 管道更灵活。
 
-### 2.5 C# 5.0（2012）：async/await 与编译器生成的状态机
+### 1.5 C# 5.0（2012）：async/await 与编译器生成的状态机
 
 C# 5.0 的 async/await 在底层依赖委托与 `Task`。编译器将 async 方法转换为状态机（state machine），其中 `MoveNext` 方法作为 `Action` 注册到 `TaskAwaiter`：
 
@@ -239,7 +192,7 @@ private class GetDataAsyncStateMachine : IAsyncStateMachine
 
 `MoveNext` 实质是一个 `Action` 委托，由 `TaskAwaiter` 在异步操作完成时调用。
 
-### 2.6 C# 6.0（2015）：空条件 invoke
+### 1.6 C# 6.0（2015）：空条件 invoke
 
 C# 6.0 引入 `?.` 运算符简化事件触发：
 
@@ -255,7 +208,7 @@ OnMessage?.Invoke(this, e);
 
 但需注意 `?.Invoke` 并非完全等价于传统模式——`?.` 在每次调用时进行 null 检查，但事件订阅可能在 invoke 之间被移除。
 
-### 2.7 C# 7.0（2017）：本地函数与闭包优化
+### 1.7 C# 7.0（2017）：本地函数与闭包优化
 
 C# 7.0 引入本地函数（local function），并优化闭包语义：
 
@@ -280,7 +233,7 @@ static int Add(int a, int b) => a + b;  // 静态本地函数，无闭包
 
 `static` 本地函数避免堆分配，是性能敏感场景下的推荐做法。
 
-### 2.8 C# 9.0（2020）：静态匿名方法与 Lambda 改进
+### 1.8 C# 9.0（2020）：静态匿名方法与 Lambda 改进
 
 C# 9.0 引入 `static` 修饰符于匿名方法与 lambda，禁止捕获：
 
@@ -290,7 +243,7 @@ Func<int, int> square = static x => x * x;  // 静态 lambda，无闭包
 
 同时引入"目标类型" lambda（discards 与自然委托类型），使 lambda 与重载方法的选择更智能。
 
-### 2.9 C# 10.0（2021）：Lambda 自然类型与方法组改进
+### 1.9 C# 10.0（2021）：Lambda 自然类型与方法组改进
 
 C# 10.0 显著改善 lambda 类型推断：
 
@@ -300,7 +253,7 @@ var f = x => x * 2;  // C# 10：编译器推断为 Func<int, int> 或其他最�
 
 之前版本不允许 `var` 与 lambda，C# 10 通过"自然类型"（natural type）机制解决。
 
-### 2.10 C# 11.0（2022）：funcptr 与 unsafe 委托
+### 1.10 C# 11.0（2022）：funcptr 与 unsafe 委托
 
 C# 11 引入 `delegate*`（function pointer）作为非托管函数指针，绕过委托类型系统：
 
@@ -316,7 +269,7 @@ static int Add(int a, int b) => a + b;
 
 `delegate*` 完全跳过 GC 与委托实例分配，性能接近 C 函数指针，但要求 `unsafe` 上下文，且不兼容 NativeAOT 之外的某些 trim 场景。
 
-### 2.11 C# 12.0（2023）：Lambda 参数修饰符
+### 1.11 C# 12.0（2023）：Lambda 参数修饰符
 
 C# 12 允许 lambda 参数使用 `ref`、`out`、`in`、`params` 等修饰符：
 
@@ -328,7 +281,7 @@ Modify m = (ref int x) => x *= 2;
 
 同时支持默认参数值。
 
-### 2.12 演进时间线
+### 1.12 演进时间线
 
 | 时间 | C# 版本 | 关键里程碑 |
 |------|---------|------------|
@@ -347,9 +300,9 @@ Modify m = (ref int x) => x *= 2;
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ECMA-334 委托类型定义
+### 2.1 ECMA-334 委托类型定义
 
 ECMA-334 第 6 版 §15.1 给出委托类型的语法产生式：
 
@@ -369,7 +322,7 @@ delegate_modifier
     ;
 ```
 
-#### 3.1.1 委托类型的语义
+#### 2.1.1 委托类型的语义
 
 委托类型 $D$ 是一个密封类（sealed class），继承自 `System.MulticastDelegate`。形式化地：
 
@@ -381,7 +334,7 @@ $$\Sigma(D) = (\text{ReturnType}, \text{ParameterTypes}, \text{CallingConvention
 
 两个委托类型 $D_1, D_2$ 等价当且仅当 $\Sigma(D_1) = \Sigma(D_2)$。
 
-#### 3.1.2 CLR 层面的 MulticastDelegate
+#### 2.1.2 CLR 层面的 MulticastDelegate
 
 `System.MulticastDelegate` 继承自 `System.Delegate`，其核心字段（按 ECMA-335 §I.8.9.1）：
 
@@ -404,7 +357,7 @@ public abstract class MulticastDelegate : Delegate
 
 `_invocationList` 字段是关键——它存储多播委托的链表。当只有一个委托时为 `null`（委托信息存于 `_target`/`_methodPtr`）；多个委托时为一个 `Delegate[]` 数组。
 
-### 3.2 委托实例的形式化模型
+### 2.2 委托实例的形式化模型
 
 委托实例 $d$ 是一个四元组：
 
@@ -417,13 +370,13 @@ $$d = (\text{target}, \text{method}, \text{next}, \text{type})$$
 - $\text{next} \in \text{Delegate} \cup \{\text{null}\}$：下一个委托（多播链表）。
 - $\text{type} \in \text{Type}$：委托类型。
 
-#### 3.2.1 单播委托
+#### 2.2.1 单播委托
 
 单播委托（single-cast delegate）的 `next` 为 `null`，调用语义：
 
 $$\text{Invoke}(d, \text{args}) = \text{Call}(\text{method}, \text{target}, \text{args})$$
 
-#### 3.2.2 多播委托
+#### 2.2.2 多播委托
 
 多播委托（multicast delegate）的 `next` 指向下一个委托，调用语义按顺序遍历链表：
 
@@ -434,7 +387,7 @@ $$\text{Invoke}(d, \text{args}) = \begin{cases}
 
 其中 $\oplus$ 表示"按顺序执行"。返回值取最后一个委托的结果。
 
-### 3.3 `Delegate.Combine` 的代数结构
+### 2.3 `Delegate.Combine` 的代数结构
 
 `Delegate.Combine` 是多播委托的核心操作，形式化地：
 
@@ -449,7 +402,7 @@ $$\text{Combine} : \text{Delegate} \times \text{Delegate} \to \text{Delegate}$$
 
 因此 $(\text{Delegate}, \text{Combine}, \text{null})$ 构成一个**非交换幺半群**（non-commutative monoid）。
 
-### 3.4 `event` 关键字的形式化定义
+### 2.4 `event` 关键字的形式化定义
 
 ECMA-334 §15.8 定义 `event` 关键字。形式化地，事件 $E$ 是一个二元组：
 
@@ -460,7 +413,7 @@ $$E = (\text{field}, \text{accessors})$$
 - $\text{field} \in \text{Delegate}$：内部存储的委托字段。
 - $\text{accessors} = \{\text{add}, \text{remove}\}$：两个访问器方法。
 
-#### 3.4.1 事件的访问器签名
+#### 2.4.1 事件的访问器签名
 
 ```csharp
 public event EventHandler<MessageEventArgs> OnMessage;
@@ -487,7 +440,7 @@ public event EventHandler<MessageEventArgs> OnMessage
 }
 ```
 
-#### 3.4.2 事件的封装性约束
+#### 2.4.2 事件的封装性约束
 
 事件相对于普通委托字段的差异在于**封装性**（encapsulation）：
 
@@ -505,7 +458,7 @@ $$\forall O \neq C: O \text{ 只能对 } E \text{ 执行 } \texttt{+=} \text{ �
 
 这是事件作为发布-订阅（pub-sub）模式核心抽象的根本保证。
 
-### 3.5 闭包的形式化定义
+### 2.5 闭包的形式化定义
 
 闭包（closure）是包含自由变量（free variables）的函数与其引用环境的组合。形式化地：
 
@@ -513,7 +466,7 @@ $$\text{Closure} = (\lambda x.\, e, \rho)$$
 
 其中 $\lambda x.\, e$ 是匿名函数，$\rho$ 是捕获环境（capture environment），将自由变量映射到值。
 
-#### 3.5.1 C# 闭包的语义
+#### 2.5.1 C# 闭包的语义
 
 C# 中，lambda 表达式 $\lambda$ 捕获外部变量 $v$ 时，编译器生成一个**显示类**（display class），将 $v$ 作为字段存储，lambda 方法作为该类的实例方法：
 
@@ -534,7 +487,7 @@ var display = new DisplayClass { multiplier = 10 };
 Func<int, int> f = display.Lambda;
 ```
 
-#### 3.5.2 捕获语义：by-reference vs. by-value
+#### 2.5.2 捕获语义：by-reference vs. by-value
 
 C# 闭包采用**按引用捕获**（capture by reference）语义——闭包内对捕获变量的修改对外可见：
 
@@ -550,11 +503,11 @@ Console.WriteLine(x);  // 2
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 多播委托的链表实现
+### 3.1 多播委托的链表实现
 
-#### 4.1.1 链表结构
+#### 3.1.1 链表结构
 
 `MulticastDelegate` 通过 `_invocationList` 字段实现多播。其结构有两种形态：
 
@@ -582,7 +535,7 @@ MulticastDelegate {
 
 注意：多播委托实例本身的 `_target`/`_methodPtr` 仍存储第一个委托，数组 `_invocationList` 存储所有委托（包括第一个）。这种"双存储"使得单委托场景免于数组分配。
 
-#### 4.1.2 `Combine` 算法
+#### 3.1.2 `Combine` 算法
 
 `Delegate.Combine(a, b)` 的伪代码：
 
@@ -607,7 +560,7 @@ Output: 合并后的委托
 
 时间复杂度 $O(n + m)$，空间复杂度 $O(n + m)$，其中 $n, m$ 分别为 `a` 与 `b` 的链表长度。
 
-#### 4.1.3 `Remove` 算法
+#### 3.1.3 `Remove` 算法
 
 `Delegate.Remove(source, value)` 从 `source` 中移除**最后一个**与 `value` 等价的委托：
 
@@ -633,7 +586,7 @@ Output: 移除后的委托
 
 注意 `Remove` 只移除最后一个匹配项，而 `RemoveAll` 移除所有匹配项。
 
-### 4.2 多播委托调用的控制流
+### 3.2 多播委托调用的控制流
 
 `MulticastDelegate.Invoke` 的内部实现（伪代码）：
 
@@ -657,7 +610,7 @@ public override void Invoke(params object[] args)
 }
 ```
 
-#### 4.2.1 返回值的处理
+#### 3.2.1 返回值的处理
 
 对于有返回值的委托（如 `Func<int>`），多播调用只返回**最后一个**委托的结果：
 
@@ -674,7 +627,7 @@ $$\text{Invoke}(d_1 \oplus d_2 \oplus d_3, \text{args}) = \text{Invoke}(d_3, \te
 
 （前两个委托仍被调用，但其返回值被丢弃）
 
-#### 4.2.2 异常处理
+#### 3.2.2 异常处理
 
 若链表中第 $i$ 个委托抛出异常，则第 $i+1, i+2, \ldots$ 个委托**不被执行**：
 
@@ -707,9 +660,9 @@ foreach (Action handler in a.GetInvocationList())
 }
 ```
 
-### 4.3 闭包的堆分配分析
+### 3.3 闭包的堆分配分析
 
-#### 4.3.1 不捕获的 lambda
+#### 3.3.1 不捕获的 lambda
 
 ```csharp
 Func<int, int> square = x => x * x;
@@ -730,7 +683,7 @@ Func<int, int> square = x => x * x;
 
 委托字段 `_target` 为 `null`，无堆分配（除委托本身）。
 
-#### 4.3.2 捕获局部变量
+#### 3.3.2 捕获局部变量
 
 ```csharp
 int multiplier = 10;
@@ -758,7 +711,7 @@ Func<int, int> f = display.<M>b__0;
 
 堆分配：1 个显示类实例 + 1 个委托实例。
 
-#### 4.3.3 捕获 `this`
+#### 3.3.3 捕获 `this`
 
 ```csharp
 class Calculator
@@ -787,7 +740,7 @@ class Calculator
 
 委托字段 `_target` 指向 `this`，捕获 `this` 可能导致实例长期存活，是内存泄漏常见来源。
 
-#### 4.3.4 捕获循环变量
+#### 3.3.4 捕获循环变量
 
 C# 5.0 之前，`foreach` 循环变量被闭包捕获时存在经典陷阱：
 
@@ -831,9 +784,9 @@ for (int i = 0; i < 3; i++)
 }
 ```
 
-### 4.4 事件的线程安全模型
+### 3.4 事件的线程安全模型
 
-#### 4.4.1 默认实现的线程安全
+#### 3.4.1 默认实现的线程安全
 
 编译器为字段式事件生成的 `add`/`remove` 方法使用 `[MethodImpl(MethodImplOptions.Synchronized)]`，等价于 `lock(this)`（实例事件）或 `lock(typeof(T))`（静态事件）：
 
@@ -878,7 +831,7 @@ public event EventHandler OnMessage
 }
 ```
 
-#### 4.4.2 触发的线程安全
+#### 3.4.2 触发的线程安全
 
 事件触发时的线程安全包括两个层面：
 
@@ -897,9 +850,9 @@ protected virtual void OnMessageRaised(MessageEventArgs e)
 
 `Volatile.Read` 确保读取最新值，避免指令重排导致的空引用。`?.Invoke` 是原子 null 检查 + invoke。但若 handler 在 invoke 过程中被修改，后续订阅者可能错过本次触发——这是可接受的弱一致性。
 
-### 4.5 委托调用的性能模型
+### 3.5 委托调用的性能模型
 
-#### 4.5.1 直接调用 vs 委托调用
+#### 3.5.1 直接调用 vs 委托调用
 
 设 $T_{\text{direct}}$ 为直接方法调用，$T_{\text{delegate}}$ 为委托调用：
 
@@ -921,7 +874,7 @@ BenchmarkDotNet v0.13.12
 | DelegateCreateDelegate | 4.02 ns | 3.32 |
 ```
 
-#### 4.5.2 多播委托的开销
+#### 3.5.2 多播委托的开销
 
 多播委托按链表顺序调用，每个委托的调用开销约为 3 ns。链表长度 $n$ 时总开销：
 
@@ -940,9 +893,9 @@ $$T_{\text{multicast}}(n) \approx n \cdot (T_{\text{delegate}} + T_{\text{list\_
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 委托基础（C# 1.0+）
+### 4.1 委托基础（C# 1.0+）
 
 ```csharp
 // C# 1.0+: 自定义委托类型
@@ -976,7 +929,7 @@ public class Program
 }
 ```
 
-### 5.2 Lambda 与闭包（C# 3.0+）
+### 4.2 Lambda 与闭包（C# 3.0+）
 
 ```csharp
 // C# 3.0+: Lambda 表达式与闭包
@@ -1002,7 +955,7 @@ Console.WriteLine(inc());  // 10
 Console.WriteLine(inc());  // 15
 ```
 
-### 5.3 事件模式（C# 1.0+）
+### 4.3 事件模式（C# 1.0+）
 
 ```csharp
 // .NET 标准事件模式
@@ -1068,7 +1021,7 @@ sensor.Current = 23.0;  // 触发事件
 sensor.Current = 23.01; // 不触发（变化太小）
 ```
 
-### 5.4 协变逆变（C# 2.0+）
+### 4.4 协变逆变（C# 2.0+）
 
 ```csharp
 // C# 2.0+: 委托协变与逆变
@@ -1091,7 +1044,7 @@ DogHandler dogHandler = animalHandler;  // 逆变
 dogHandler(new Dog { Name = "Max" });
 ```
 
-### 5.5 泛型委托协变逆变（C# 4.0+）
+### 4.5 泛型委托协变逆变（C# 4.0+）
 
 ```csharp
 // C# 4.0+: 泛型委托的协变（out）与逆变（in）
@@ -1104,7 +1057,7 @@ Animal result = converted(new Dog { Name = "Rex" });
 Console.WriteLine(result.Name);  // Rex
 ```
 
-### 5.6 弱引用事件（避免内存泄漏）
+### 4.6 弱引用事件（避免内存泄漏）
 
 ```csharp
 // 弱引用事件包装器：避免订阅者未取消订阅导致的内存泄漏
@@ -1143,7 +1096,7 @@ public class LongLivedPublisher
 }
 ```
 
-### 5.7 `Delegate.CreateDelegate` 高性能反射
+### 4.7 `Delegate.CreateDelegate` 高性能反射
 
 ```csharp
 // 高性能反射：MethodInfo.CreateDelegate
@@ -1176,7 +1129,7 @@ double result = squareFunc(3.5);  // 12.25
 // 性能：接近直接调用（3-5 ns vs MethodInfo.Invoke 200+ ns）
 ```
 
-### 5.8 `Expression<TDelegate>` 表达式树
+### 4.8 `Expression<TDelegate>` 表达式树
 
 ```csharp
 // 表达式树：将委托表示为数据，可分析、转换、编译
@@ -1211,7 +1164,7 @@ public static class ExpressionDemo
 }
 ```
 
-### 5.9 `delegate*` 函数指针（C# 11+）
+### 4.9 `delegate*` 函数指针（C# 11+）
 
 ```csharp
 // C# 11+: 非托管函数指针，零开销调用
@@ -1261,7 +1214,7 @@ public unsafe class QSortWrapper
 }
 ```
 
-### 5.10 `static` lambda 与本地函数（C# 9+）
+### 4.10 `static` lambda 与本地函数（C# 9+）
 
 ```csharp
 // C# 9.0+: static lambda，禁止捕获，无闭包分配
@@ -1281,7 +1234,7 @@ public class Functional
 }
 ```
 
-### 5.11 自定义事件访问器
+### 4.11 自定义事件访问器
 
 ```csharp
 // 自定义事件访问器：实现线程安全 + 日志
@@ -1322,7 +1275,7 @@ public class SecureEventSource
 }
 ```
 
-### 5.12 事件聚合器模式
+### 4.12 事件聚合器模式
 
 ```csharp
 // 事件聚合器：解耦发布者与订阅者
@@ -1419,9 +1372,9 @@ public class EmailService
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 委托 vs 函数指针 vs Lambda
+### 5.1 委托 vs 函数指针 vs Lambda
 
 | 特性 | C# 委托 | C/C++ 函数指针 | C++ `std::function` | Rust 闭包 |
 |------|---------|---------------|---------------------|-----------|
@@ -1433,7 +1386,7 @@ public class EmailService
 | 调用方式 | `del(args)` | `(*fp)(args)` | `fn(args)` | `f(args)` |
 | 元数据 | 完整（可反射） | 无 | 无 | 无 |
 
-### 6.2 `event` vs 普通 delegate 字段
+### 5.2 `event` vs 普通 delegate 字段
 
 | 维度 | `public event EventHandler E` | `public EventHandler E` |
 |------|-------------------------------|-------------------------|
@@ -1447,7 +1400,7 @@ public class EmailService
 | 接口成员 | 可以 | 不可以 |
 | 用途 | 发布-订阅模式 | 通用回调 |
 
-### 6.3 委托 vs 接口回调
+### 5.3 委托 vs 接口回调
 
 | 维度 | 委托 | 接口回调 |
 |------|------|----------|
@@ -1472,7 +1425,7 @@ Array.Sort(people, new AgeComparer());
 Array.Sort(people, (x, y) => x.Age.CompareTo(y.Age));
 ```
 
-### 6.4 `Action`/`Func` vs 自定义委托
+### 5.4 `Action`/`Func` vs 自定义委托
 
 | 维度 | `Action`/`Func` | 自定义委托 |
 |------|-----------------|------------|
@@ -1488,7 +1441,7 @@ Microsoft 设计规范（CA1711）建议：
 - 公共 API 优先使用 `Action`/`Func`/`EventHandler`。
 - 自定义委托仅用于：领域语义清晰、参数命名重要、需要泛型约束。
 
-### 6.5 多播委托 vs Rx `IObservable<T>`
+### 5.5 多播委托 vs Rx `IObservable<T>`
 
 | 维度 | 多播委托 | `IObservable<T>`（Rx） |
 |------|----------|------------------------|
@@ -1503,9 +1456,9 @@ Microsoft 设计规范（CA1711）建议：
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：多播委托的异常中断
+### 6.1 陷阱：多播委托的异常中断
 
 **反例**：
 
@@ -1550,7 +1503,7 @@ public void Broadcast(string msg)
 }
 ```
 
-### 7.2 陷阱：闭包捕获 `this` 导致内存泄漏
+### 6.2 陷阱：闭包捕获 `this` 导致内存泄漏
 
 **反例**：
 
@@ -1596,7 +1549,7 @@ public void Subscribe()
 private static void HandleUpdate(object sender, EventArgs e) { /* ... */ }
 ```
 
-### 7.3 陷阱：`?.Invoke()` 的线程安全问题
+### 6.3 陷阱：`?.Invoke()` 的线程安全问题
 
 **反例**：
 
@@ -1630,7 +1583,7 @@ public void Raise()
 }
 ```
 
-### 7.4 陷阱：`foreach` 闭包捕获（C# 5.0 前）
+### 6.4 陷阱：`foreach` 闭包捕获（C# 5.0 前）
 
 **反例（C# 4.0 及之前）**：
 
@@ -1653,7 +1606,7 @@ for (int i = 0; i < 3; i++)
 }
 ```
 
-### 7.5 陷阱：委托相等性比较
+### 6.5 陷阱：委托相等性比较
 
 ```csharp
 // 陷阱：相同 lambda 未必相等
@@ -1670,7 +1623,7 @@ Console.WriteLine(b1 == b2);  // True（同一方法）
 
 `Delegate.Equals` 比较的是 `(target, method)` 元组，而非 lambda 体。两个语义相同的 lambda 编译为不同方法，故不相等。
 
-### 7.6 陷阱：事件未取消订阅导致内存泄漏
+### 6.6 陷阱：事件未取消订阅导致内存泄漏
 
 **反例**：
 
@@ -1721,7 +1674,7 @@ using (var sub = new Subscriber(pub))
 }  // 自动取消订阅
 ```
 
-### 7.7 最佳实践总结
+### 6.7 最佳实践总结
 
 | 实践 | 说明 |
 |------|------|
@@ -1738,9 +1691,9 @@ using (var sub = new Subscriber(pub))
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 .NET 标准事件模式
+### 7.1 .NET 标准事件模式
 
 Microsoft 定义的标准事件模式（.NET Event Pattern）规范：
 
@@ -1790,7 +1743,7 @@ public class FileChangedEventArgs : EventArgs
 }
 ```
 
-### 8.2 弱事件模式（WPF）
+### 7.2 弱事件模式（WPF）
 
 WPF 提供内建 `WeakEventManager<TEventSource, TEventArgs>`：
 
@@ -1815,7 +1768,7 @@ public class WeakSubscriber
 // WeakEventManager 内部使用弱引用，订阅者可被 GC 回收
 ```
 
-### 8.3 `INotifyPropertyChanged` 实现
+### 7.3 `INotifyPropertyChanged` 实现
 
 数据绑定场景下，`INotifyPropertyChanged` 是最常见的事件接口：
 
@@ -1856,7 +1809,7 @@ public partial class ObservableModel
 }
 ```
 
-### 8.4 异步事件处理
+### 7.4 异步事件处理
 
 `async void` 事件处理器存在异常无法捕获的问题：
 
@@ -1882,7 +1835,7 @@ button.Click += async (sender, e) =>
 };
 ```
 
-### 8.5 事件溯源模式
+### 7.5 事件溯源模式
 
 ```csharp
 // 事件溯源：所有状态变化记录为不可变事件
@@ -1941,7 +1894,7 @@ public class Order : AggregateRoot
 }
 ```
 
-### 8.6 高性能 RPC 框架
+### 7.6 高性能 RPC 框架
 
 ```csharp
 // 委托缓存实现的高性能 RPC 调用
@@ -1972,7 +1925,7 @@ dispatcher.Register<UserRequest, UserResponse>("GetUser", req => new UserRespons
 var response = dispatcher.Invoke<UserRequest, UserResponse>("GetUser", new UserRequest { Id = 1 });
 ```
 
-### 8.7 Source Generator 自动实现 INotifyPropertyChanged
+### 7.7 Source Generator 自动实现 INotifyPropertyChanged
 
 ```csharp
 // Source Generator 输入
@@ -2016,7 +1969,7 @@ public partial class PersonViewModel : INotifyPropertyChanged
 }
 ```
 
-### 8.8 Roslyn 分析器：检测闭包内存泄漏
+### 7.8 Roslyn 分析器：检测闭包内存泄漏
 
 ```csharp
 // 自定义 Roslyn 分析器：检测 lambda 捕获 this
@@ -2059,9 +2012,9 @@ public class ClosureCaptureThisAnalyzer : DiagnosticAnalyzer
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：WPF 数据绑定（`INotifyPropertyChanged`）
+### 8.1 案例一：WPF 数据绑定（`INotifyPropertyChanged`）
 
 **场景**：WPF 数据绑定依赖 `INotifyPropertyChanged` 事件，UI 自动响应 ViewModel 属性变化。
 
@@ -2143,7 +2096,7 @@ public partial class MainViewModel
 
 Source Generator 的优势不在性能，而在可维护性（无反射，AOT 友好）。
 
-### 9.2 案例二：ASP.NET Core 中间件委托管道
+### 8.2 案例二：ASP.NET Core 中间件委托管道
 
 **场景**：ASP.NET Core 中间件管道本质是委托链 `RequestDelegate`：
 
@@ -2210,7 +2163,7 @@ public static class UseExtensions
 
 每次 `Use` 调用包装前一个委托，形成洋葱模型（onion model）。
 
-### 9.3 案例三：Rx.NET 响应式编程
+### 8.3 案例三：Rx.NET 响应式编程
 
 **场景**：Rx.NET 将事件表示为 `IObservable<T>`，提供 LINQ 操作符组合事件流。
 
@@ -2246,7 +2199,7 @@ var priceChanges = Observable.FromEventPattern<EventHandler<StockPrice>, StockPr
 | 组合 | 仅 `+=`/`-=` | LINQ 全套操作符 |
 | 学习曲线 | 低 | 高 |
 
-### 9.4 案例四：MassTransit 消息总线
+### 8.4 案例四：MassTransit 消息总线
 
 **场景**：MassTransit 是 .NET 流行的消息总线抽象，基于委托实现消息处理器：
 
@@ -2288,7 +2241,7 @@ services.AddMassTransit(x =>
 
 MassTransit 内部使用委托将 `IConsumer<T>` 适配为消息处理管道。
 
-### 9.5 案例五：gRPC .NET 服务端
+### 8.5 案例五：gRPC .NET 服务端
 
 **场景**：gRPC .NET 使用委托绑定 RPC 方法：
 
@@ -2320,7 +2273,7 @@ internal class GreeterServiceBinder : BinderBase
 
 gRPC 通过 `Delegate.CreateDelegate` 在启动时将 RPC 方法绑定到委托，避免运行时反射。
 
-### 9.6 案例六：xUnit 测试框架
+### 8.6 案例六：xUnit 测试框架
 
 **场景**：xUnit 使用 `Func<Task>` 委托表示测试方法：
 
@@ -2348,7 +2301,7 @@ public class CalculatorTests
 
 xUnit 通过反射发现 `[Fact]`/`[Theory]` 标注的方法，并将其转换为 `Func<Task>` 委托加入测试运行队列。
 
-### 9.7 案例七：Castle DynamicProxy AOP
+### 8.7 案例七：Castle DynamicProxy AOP
 
 **场景**：Castle DynamicProxy 运行时生成代理类，通过委托拦截方法调用：
 
@@ -2667,7 +2620,7 @@ public class WeakEventAggregator : IWeakEventAggregator
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本章节引用的学术与工程资料按 ACM Reference Format 列出：
 
@@ -2713,9 +2666,9 @@ public class WeakEventAggregator : IWeakEventAggregator
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - [.NET Events — Microsoft Learn](https://learn.microsoft.com/dotnet/standard/events/)
 - [Delegate Design — .NET Design Guidelines](https://learn.microsoft.com/dotnet/standard/design-guidelines/delegates)
@@ -2723,7 +2676,7 @@ public class WeakEventAggregator : IWeakEventAggregator
 - [Source Generators Cookbook](https://learn.microsoft.com/dotnet/csharp/roslyn-sdk/source-generators-cookbook)
 - [`Expression<TDelegate>` Class](https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression-1)
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - *CLR via C#* by Jeffrey Richter（深入 CLR 内部机制，含委托与事件的底层实现）
 - *C# in Depth* by Jon Skeet（C# 语言演进历史，含 lambda、闭包、表达式树的演化）
@@ -2731,13 +2684,13 @@ public class WeakEventAggregator : IWeakEventAggregator
 - *Concurrent Programming on Windows* by Joe Duffy（线程安全事件、并发原语）
 - *Essential LINQ* by Bart De Smet（LINQ 与表达式树深度解析）
 
-### 12.3 学术论文
+### 11.3 学术论文
 
 - Meijer, E., Beckman, B., & Bierman, G. (2003). *LINQ: Reconciling Object, Relations and XML in the .NET Framework*. SIGMOD 2003.
 - Bierman, G., Meijer, E., & Torgersen, M. (2007). *Lost in Translation: Formalizing the .NET LINQ Pattern*. SAC 2008.
 - Syme, D. (2006). *Leveraging .NET Meta-programming Components from F#*. .NET Fringe.
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **CommunityToolkit.Mvvm**：MVVM 框架，Source Generator 实现 `INotifyPropertyChanged`
   https://github.com/CommunityToolkit/dotnet
@@ -2757,7 +2710,7 @@ public class WeakEventAggregator : IWeakEventAggregator
 - **Polly**：弹性与瞬态故障处理库，基于委托的策略组合
   https://github.com/App-vNext/Polly
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 1. **Expression Trees 与 IQueryable**：将 lambda 编译为表达式树，用于 LINQ Provider 实现（如 EF Core、MongoDB Driver）。
 

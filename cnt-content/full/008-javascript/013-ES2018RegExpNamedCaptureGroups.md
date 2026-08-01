@@ -21,133 +21,6 @@ related:
 prerequisites:
   - javascript/语法速查
   - javascript/正则表达式
-learningObjectives:
-  - '{''remember'': ''复述具名捕获组 (?<name>...) 的语法形式、\\k<name> 反向引用语法、及其在 ES2018 中的标准化时间与提案作者''}'
-  - '{''understand'': ''解释具名捕获组如何提升正则可读性、可维护性，理解 groups 属性的访问机制与命名约束''}'
-  - '{''apply'': ''编写生产级 URL 解析器、模板引擎、日志解析器等实用工具，正确处理命名冲突与可选捕获组''}'
-  - '{''analyze'': ''对比具名捕获组与传统数字索引捕获组在可读性、可维护性、性能上的差异，识别重构时机''}'
-  - '{''evaluate'': ''评估具名捕获组在不同浏览器引擎中的兼容性，给出旧环境支持方案与降级策略''}'
-  - '{''create'': ''设计基于具名捕获组的领域特定语言（DSL）解析器，将业务规则与正则模式解耦''}'
-exercises:
-  - id: ex-named-capture-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: 具名捕获组使用 ______ 语法声明，通过 match.groups.______ 形式访问捕获结果。
-    hint: 语法形式为 (?<name>pattern)
-    answer: (?<name>...),name
-    answers:
-      - (?<name>...)
-      - name
-    blankCount: 2
-    caseSensitive: false
-    difficulty: 1
-    estimatedTime: 2
-  - id: ex-named-capture-02
-    type: fill-blank
-    cognitiveLevel: remember
-    question: 在正则内部引用具名捕获组使用 ______ 语法，在替换字符串中引用使用 ______ 语法。
-    hint: 前者为反向引用，后者为替换占位符
-    answer: \k<name>,$<name>
-    answers:
-      - \k<name>
-      - $<name>
-    blankCount: 2
-    caseSensitive: true
-    difficulty: 2
-    estimatedTime: 3
-  - id: ex-named-capture-03
-    type: choice
-    cognitiveLevel: understand
-    question: 下列哪项不是具名捕获组相对于数字索引捕获组的优势？
-    options:
-      - 提升正则可读性，通过语义化名称标识捕获内容
-      - 在插入新捕获组时无需调整其他捕获组的索引引用
-      - 在所有 JavaScript 引擎中性能优于数字索引捕获组
-      - 在替换字符串中通过 $<name> 引用，避免数字索引混乱
-    correctIndex: 2
-    multiple: false
-    difficulty: 3
-    explanation: 具名捕获组在性能上与数字索引捕获组相当，甚至在某些引擎中略慢（因需维护名称到索引的映射），性能并非其主要优势。
-    answer: C
-  - id: ex-named-capture-04
-    type: choice
-    cognitiveLevel: analyze
-    question: 执行 const m = '2026-07-20'.match(/(?<y>\d{4})-(?<m>\d{2})-(?<d>\d{2})/); 后，下列哪个表达式返回 '07'？
-    options:
-      - m[1]
-      - m.groups.m
-      - m.groups['m']
-      - m.groups.month
-    correctIndex: 2
-    multiple: false
-    difficulty: 3
-    explanation: 命名捕获组名为 m，因此 m.groups.m 或 m.groups['m'] 均可访问。m[1] 返回 '2026'，m.groups.month 因名称不匹配返回 undefined。
-    answer: C
-  - id: ex-named-capture-05
-    type: code-fix
-    cognitiveLevel: apply
-    question: 以下函数旨在解析 URL，但访问捕获组时出错。请修复它。
-    buggyCode: |
-      function parseUrl(url) {
-        const re = /^(?<protocol>https?):\/\/(?<host>[^:/]+)(?::(?<port>\d+))?(?<path>\/[^?#]*)?$/;
-        const m = url.match(re);
-        return {
-          protocol: m[1],
-          host: m[2],
-          port: m[3] || 80,
-          path: m[4] || '/',
-        };
-      }
-      parseUrl('https://example.com:8080/api');
-    fixedCode: |
-      function parseUrl(url) {
-        const re = /^(?<protocol>https?):\/\/(?<host>[^:/]+)(?::(?<port>\d+))?(?<path>\/[^?#]*)?$/;
-        const m = url.match(re);
-        return {
-          protocol: m.groups.protocol,
-          host: m.groups.host,
-          port: m.groups.port ? Number(m.groups.port) : 80,
-          path: m.groups.path || '/',
-        };
-      }
-    errorDescription: 使用数字索引访问捕获组时，可选捕获组（如 port）在未匹配时为 undefined，需要通过 groups 属性按名称访问，并处理类型转换。
-    language: javascript
-    answer: 改用 m.groups.name 访问并处理类型
-    difficulty: 3
-    estimatedTime: 6
-  - id: ex-named-capture-06
-    type: code-fix
-    cognitiveLevel: evaluate
-    question: 以下函数意图反转日期格式，但部分输入会产生意外结果。请修复。
-    buggyCode: |
-      function reverseDate(dateStr) {
-        return dateStr.replace(/(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/, '$3/$2/$1');
-      }
-      reverseDate('2026-07-20');
-    fixedCode: |
-      function reverseDate(dateStr) {
-        // 使用 $<name> 引用具名捕获组，避免数字索引在复杂正则中混淆
-        return dateStr.replace(/(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/, '$<day>/$<month>/$<year>');
-      }
-    errorDescription: 使用 $3/$2/$1 数字索引引用虽然功能正确，但与具名捕获组定义不匹配，可读性差且在后续扩展捕获组时易错。
-    language: javascript
-    answer: 改用 $<day>/$<month>/$<year>
-    difficulty: 3
-    estimatedTime: 4
-  - id: ex-named-capture-07
-    type: open-ended
-    cognitiveLevel: create
-    question: 你正在为一个配置文件解析器设计 DSL，要求支持复杂的变量引用与条件求值。请论述如何使用具名捕获组构建可扩展的解析器，包括：(1) 命名规范；(2) 重复捕获组的处理；(3) 可选捕获组的默认值；(4) 与 Unicode 属性转义的配合；(5) 错误处理策略。给出设计决策与示例代码。
-    keyPoints:
-      - 提出清晰的命名规范（如 snake_case 或 camelCase）
-      - 论述重复捕获组只能保留最后一次匹配，需配合 exec 循环或 g 标志
-      - 处理可选捕获组时使用 ?? 或 || 设置默认值
-      - 与 \p{L} 等 Unicode 属性转义结合支持多语言标识符
-      - 给出明确的错误处理与边界条件（如未匹配、null 检查）
-    answer: 开放性论述题，需覆盖上述关键点
-    minWords: 300
-    difficulty: 5
-    estimatedTime: 25
 references:
   - type: standard
     authors:
@@ -226,6 +99,7 @@ reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 42
 ---
 
+
 # 具名捕获组
 
 ## 0. 学习导言
@@ -246,24 +120,9 @@ estimatedReadingTime: 42
 
 ---
 
-## 1. 学习目标（Bloom 分类法）
+## 1. 历史动机
 
-本篇严格遵循 Bloom 修订版认知层次框架（Anderson & Krathwohl, 2001），按由低到高六个层次组织学习目标：
-
-| Bloom 层次 | 学习目标 | 对应章节 |
-| ---------- | -------- | -------- |
-| Remember（记忆） | 复述 `(?<name>...)`、`\k<name>`、`$<name>` 语法与 ES2018 标准化时间 | 第 2 章 |
-| Understand（理解） | 解释 `groups` 属性的访问机制与命名约束 | 第 3 章 |
-| Apply（应用） | 编写 URL 解析器、模板引擎、日志解析器 | 第 5 章 |
-| Analyze（分析） | 对比具名与数字索引捕获组在可读性、性能上的差异 | 第 6 章 |
-| Evaluate（评价） | 评估浏览器兼容性，给出降级方案 | 第 8 章 |
-| Create（创造） | 设计基于具名捕获组的 DSL 解析器 | 第 10 章 |
-
----
-
-## 2. 历史动机
-
-### 2.1 正则表达式捕获组的演进时间线
+### 1.1 正则表达式捕获组的演进时间线
 
 正则表达式的捕获组机制经历了从「无命名」到「命名」的长期演进。关键时间节点如下：
 
@@ -281,7 +140,7 @@ estimatedReadingTime: 42
 | 2017 | 提案进入 Stage 4，纳入 ES2018 标准 | TC39 |
 | 2018 | ES2018 正式发布，包含 `(?<name>...)` 语法 | Ecma International |
 
-### 2.2 数字索引捕获组的痛点
+### 1.2 数字索引捕获组的痛点
 
 在 ES2018 之前，JavaScript 正则表达式的捕获组只能通过数字索引访问，存在以下痛点：
 
@@ -310,7 +169,7 @@ const complexRegex = /^(\w+)\s+(\d+)\s+"([^"]*)"\s+(\w+)\s+(-?\d+\.?\d*)$/;
 
 具名捕获组的引入，正是为了消除上述痛点——**通过语义化命名让正则成为自文档化的代码**。
 
-### 2.3 提案作者与原始文档
+### 1.3 提案作者与原始文档
 
 具名捕获组提案由以下人员推动：
 
@@ -319,7 +178,7 @@ const complexRegex = /^(\w+)\s+(\d+)\s+"([^"]*)"\s+(\w+)\s+(-?\d+\.?\d*)$/;
 
 提案文档存档于 TC39 官方仓库：`https://github.com/tc39/proposal-regexp-named-groups`。原始提案规范对应文档为 `ECMA-262, 9th Edition, Section 21.2.1`，可通过 Ecma International 官方渠道获取（DOI: `10.1145/3178987`）。
 
-### 2.4 与其他语言实现的对比
+### 1.4 与其他语言实现的对比
 
 具名捕获组在不同语言中的语法存在差异，下表对比主流实现：
 
@@ -337,9 +196,9 @@ JavaScript 选择 `(?<name>...)` 语法与 .NET、Java 保持一致，避免 Pyt
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 语法规范
+### 2.1 语法规范
 
 根据 ECMAScript 2026 语言规范（Section 21.2.1），具名捕获组的语法定义如下：
 
@@ -371,7 +230,7 @@ GroupNameChar ::
 - 同一正则中名称必须唯一，否则抛出 `SyntaxError`
 - 必须配合 `u` 标志或非 Unicode 模式均可使用（不强制 `u`）
 
-### 3.2 形式语义
+### 2.2 形式语义
 
 设正则表达式 $R$ 包含具名捕获组 $G_1, G_2, \ldots, G_n$，每个组 $G_i$ 对应名称 $name_i$ 与模式 $pattern_i$。对于输入字符串 $s$，若 $R$ 成功匹配 $s$，则匹配结果 $m$ 满足：
 
@@ -387,7 +246,7 @@ $$
 - **参与匹配（participated）**：捕获组实际匹配了内容（即使是空字符串）
 - **未参与匹配（not participated）**：捕获组位于未匹配的可选分支中
 
-### 3.3 反向引用语义
+### 2.3 反向引用语义
 
 具名反向引用 `\k<name>` 在正则内部引用先前匹配的具名捕获组：
 
@@ -397,7 +256,7 @@ $$
 
 其中 $m.\text{groups}[name]$ 是先前同名捕获组的最新匹配内容。
 
-### 3.4 替换字符串语义
+### 2.4 替换字符串语义
 
 在 `String.prototype.replace` 中，`$<name>` 引用具名捕获组：
 
@@ -407,7 +266,7 @@ $$
 
 替换字符串中 `$<name>` 的优先级高于 `$1`、`$2` 等数字引用，二者可混用但建议统一。
 
-### 3.5 命名约束
+### 2.5 命名约束
 
 具名捕获组的名称必须满足以下约束：
 
@@ -431,9 +290,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 复杂度分析
+### 3.1 复杂度分析
 
 设正则表达式包含 $n$ 个具名捕获组，输入字符串长度为 $m$。则匹配过程的时间复杂度为：
 
@@ -443,7 +302,7 @@ $$
 
 具名捕获组相对数字索引捕获组的额外开销为构造 `groups` 对象，其时间复杂度为 $O(n)$，空间复杂度为 $O(n)$。在现代 JavaScript 引擎中，这一开销可忽略不计（通常 < 1μs）。
 
-### 4.2 空间复杂度
+### 3.2 空间复杂度
 
 匹配结果对象 $m$ 的空间复杂度为：
 
@@ -453,7 +312,7 @@ $$
 
 其中 $\bar{l}$ 为捕获组匹配内容的平均长度。`groups` 对象额外占用 $O(n)$ 指针空间。
 
-### 4.3 正确性证明
+### 3.3 正确性证明
 
 **定理 1**：对于任意正则表达式 $R$ 与输入字符串 $s$，若 $R$ 包含具名捕获组 $G$（名称为 $name$），则 $m.\text{groups}[name]$ 与对应数字索引访问 $m[i]$ 返回相同内容（其中 $i$ 为 $G$ 在正则中的捕获组序号）。
 
@@ -463,7 +322,7 @@ $$
 2. **访问等价性**：`m.groups[name]` 与 `m[i]` 在规范层面访问相同的内部槽位。
 3. **未参与匹配处理**：若 $G$ 未参与匹配，二者均返回 `undefined`。$\square$
 
-### 4.4 反向引用正确性证明
+### 3.4 反向引用正确性证明
 
 **定理 2**：对于任意正则表达式 $R$，其中包含具名捕获组 $G$（名称为 $name$）与反向引用 $\text{\k<name>}$，对输入字符串 $s$ 的匹配结果满足：$\text{\k<name>}$ 匹配的内容等于 $G$ 当前匹配的内容。
 
@@ -475,7 +334,7 @@ $$
 2. 若 $cap$ 为 `undefined`（即 $G$ 未参与匹配），反向引用匹配空字符串。
 3. 否则，反向引用匹配与 $cap$ 相同的子串。$\square$
 
-### 4.5 替换字符串正确性证明
+### 3.5 替换字符串正确性证明
 
 **定理 3**：对于 `s.replace(R, replacement)`，若 `replacement` 包含 `$<name>`，则替换结果中 `$<name>` 被替换为 $m.\text{groups}[name]$。
 
@@ -489,9 +348,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础用法
+### 4.1 基础用法
 
 ```javascript
 // 传统数字索引捕获组
@@ -514,7 +373,7 @@ console.log(namedMatch[2]);  // '07'
 console.log(namedMatch[3]);  // '20'
 ```
 
-### 5.2 与 replace 配合
+### 4.2 与 replace 配合
 
 ```javascript
 // 使用 $<name> 替换
@@ -544,7 +403,7 @@ const result3 = '2026-07-20'.replace(
 console.log(result3);  // '2026/07/20'
 ```
 
-### 5.3 具名反向引用
+### 4.3 具名反向引用
 
 ```javascript
 // 查找重复单词
@@ -571,7 +430,7 @@ quotes.forEach(m => {
 });
 ```
 
-### 5.4 生产级 URL 解析器
+### 4.4 生产级 URL 解析器
 
 ```javascript
 /**
@@ -636,7 +495,7 @@ console.log(parseQueryString('name=Alice&age=30&city=Beijing'));
 // { name: 'Alice', age: '30', city: 'Beijing' }
 ```
 
-### 5.5 模板引擎
+### 4.5 模板引擎
 
 ```javascript
 /**
@@ -672,7 +531,7 @@ console.log(templateEngine(tpl, {}));
 // 'Hello, Guest! Your score is 0.'
 ```
 
-### 5.6 日志解析器
+### 4.6 日志解析器
 
 ```javascript
 /**
@@ -720,7 +579,7 @@ console.log(parseAccessLog(log));
 // }
 ```
 
-### 5.7 CSV 解析器
+### 4.7 CSV 解析器
 
 ```javascript
 /**
@@ -757,7 +616,7 @@ console.log(parseCsvLine('"She said ""Hello""",25'));
 // ['She said "Hello"', '25']
 ```
 
-### 5.8 数学表达式解析器
+### 4.8 数学表达式解析器
 
 ```javascript
 /**
@@ -843,9 +702,9 @@ console.log(parseMathExpression('10 / 2 - 3'));       // 2
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 具名捕获组 vs 数字索引捕获组
+### 5.1 具名捕获组 vs 数字索引捕获组
 
 | 特性 | 数字索引捕获组 | 具名捕获组 |
 | ---- | -------------- | ---------- |
@@ -860,7 +719,7 @@ console.log(parseMathExpression('10 / 2 - 3'));       // 2
 | 命名冲突 | 无（索引唯一） | 同名抛出 SyntaxError |
 | 未参与匹配 | `undefined` | `undefined` |
 
-### 6.2 具名捕获组 vs 非捕获组
+### 5.2 具名捕获组 vs 非捕获组
 
 | 特性 | 非捕获组 `(?:...)` | 具名捕获组 `(?<name>...)` |
 | ---- | ------------------- | -------------------------- |
@@ -870,7 +729,7 @@ console.log(parseMathExpression('10 / 2 - 3'));       // 2
 | 适用场景 | 分组但不需引用 | 分组且需引用 |
 | 反向引用 | 不支持 | `\k<name>` |
 
-### 6.3 与 Unicode 属性转义的配合
+### 5.3 与 Unicode 属性转义的配合
 
 具名捕获组常与 Unicode 属性转义配合，构建国际化友好的正则：
 
@@ -895,7 +754,7 @@ console.log(words);
 // ]
 ```
 
-### 6.4 与 lookbehind 断言的配合
+### 5.4 与 lookbehind 断言的配合
 
 ```javascript
 // 匹配前面是 $ 的数字
@@ -907,9 +766,9 @@ console.log(prices);  // [29.99, 3.50]
 
 ---
 
-## 7. 常见陷阱
+## 6. 常见陷阱
 
-### 7.1 陷阱 1：命名冲突
+### 6.1 陷阱 1：命名冲突
 
 ```javascript
 // 错误：同一正则中重名
@@ -923,7 +782,7 @@ try {
 const re = /(?<year>\d{4})-(?<month>\d{2})/;
 ```
 
-### 7.2 陷阱 2：未参与匹配的捕获组
+### 6.2 陷阱 2：未参与匹配的捕获组
 
 ```javascript
 // 可选捕获组未参与匹配时，groups[name] 为 undefined
@@ -939,7 +798,7 @@ const port = m1.groups.port ?? 443;
 console.log(port);  // 443
 ```
 
-### 7.3 陷阱 3：重复捕获组的语义
+### 6.3 陷阱 3：重复捕获组的语义
 
 ```javascript
 // 重复捕获组只保留最后一次匹配
@@ -953,7 +812,7 @@ const words = [...'hello world foo bar'.matchAll(re2)].map(m => m.groups.word);
 console.log(words);  // ['hello', 'world', 'foo', 'bar']
 ```
 
-### 7.4 陷阱 4：替换函数中的参数顺序
+### 6.4 陷阱 4：替换函数中的参数顺序
 
 ```javascript
 // 替换函数的参数顺序：match, p1, p2, ..., offset, string, groups
@@ -970,7 +829,7 @@ const result = '2026-07-20'.replace(
 console.log(result);  // '20/07/2026'
 ```
 
-### 7.5 陷阱 5：浏览器兼容性
+### 6.5 陷阱 5：浏览器兼容性
 
 ```javascript
 // 旧浏览器（如 IE11、Chrome < 64、Firefox < 78）不支持具名捕获组
@@ -992,7 +851,7 @@ if (!supportsNamedCaptureGroups()) {
 }
 ```
 
-### 7.6 陷阱 6：与 exec 的配合
+### 6.6 陷阱 6：与 exec 的配合
 
 ```javascript
 // exec 返回的对象同样具有 groups 属性
@@ -1006,7 +865,7 @@ while ((match = re.exec('Hello 世界')) !== null) {
 // 必须循环调用直到返回 null，否则状态会保留
 ```
 
-### 7.7 陷阱 7：替换字符串中的 $ 字面量
+### 6.7 陷阱 7：替换字符串中的 $ 字面量
 
 ```javascript
 // 替换字符串中 $<name> 与 $name 的混淆
@@ -1032,9 +891,9 @@ console.log(result3);  // '$100'
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 命名规范
+### 7.1 命名规范
 
 建议遵循以下命名规范：
 
@@ -1060,7 +919,7 @@ console.log(result3);  // '$100'
 /(?<expiresAt>\d{10})/
 ```
 
-### 8.2 与 TypeScript 配合
+### 7.2 与 TypeScript 配合
 
 ```typescript
 // 定义捕获组类型
@@ -1086,7 +945,7 @@ if (result) {
 }
 ```
 
-### 8.3 与解构赋值配合
+### 7.3 与解构赋值配合
 
 ```javascript
 // 直接解构 groups 对象
@@ -1100,7 +959,7 @@ const { groups: { protocol, host, port = '80' } } = 'https://example.com'.match(
 console.log(protocol, host, port);  // 'https' 'example.com' '80'
 ```
 
-### 8.4 性能优化
+### 7.4 性能优化
 
 ```javascript
 // 1. 预编译正则
@@ -1126,7 +985,7 @@ function getCachedRegex(pattern, flags = 'u') {
 }
 ```
 
-### 8.5 ESLint 规则
+### 7.5 ESLint 规则
 
 推荐启用 ESLint 规则强制使用具名捕获组：
 
@@ -1140,7 +999,7 @@ function getCachedRegex(pattern, flags = 'u') {
 }
 ```
 
-### 8.6 测试套件
+### 7.6 测试套件
 
 ```javascript
 const assert = require('assert');
@@ -1178,9 +1037,9 @@ runNamedCaptureGroupTests();
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Vue.js 模板编译器
+### 8.1 案例一：Vue.js 模板编译器
 
 Vue.js 3 的模板编译器大量使用具名捕获组解析模板语法：
 
@@ -1194,7 +1053,7 @@ console.log(m.groups.expression.trim());  // 'user.name'
 const directiveRegex = /^v-(?<name>[a-z]+)(?<arg>:[a-z]+)?(?:\.(?<modifiers>[a-z]+))*="(?<value>[^"]*)"/;
 ```
 
-### 9.2 案例二：Babel 代码转换
+### 8.2 案例二：Babel 代码转换
 
 Babel 使用具名捕获组解析 JavaScript 语法：
 
@@ -1206,7 +1065,7 @@ console.log(m.groups.bindings);  // '{ useState, useEffect }'
 console.log(m.groups.source);    // 'react'
 ```
 
-### 9.3 案例三：Webpack 配置解析
+### 8.3 案例三：Webpack 配置解析
 
 Webpack 使用具名捕获组解析 loader 链：
 
@@ -1218,7 +1077,7 @@ console.log(m.groups.bang);    // '!'
 console.log(m.groups.loader);  // 'style-loader'
 ```
 
-### 9.4 案例四：PostCSS CSS 解析
+### 8.4 案例四：PostCSS CSS 解析
 
 PostCSS 使用具名捕获组解析 CSS 选择器：
 
@@ -1231,7 +1090,7 @@ console.log(m.groups.className);   // 'container'
 console.log(m.groups.id);          // 'main'
 ```
 
-### 9.5 案例五：GitHub Markdown 解析
+### 8.5 案例五：GitHub Markdown 解析
 
 GitHub 的 Markdown 解析器使用具名捕获组识别语法结构：
 
@@ -1270,7 +1129,7 @@ console.log(m.groups.title);  // 'GitHub Homepage'
 - C. `m.groups['m']`
 - D. `m.groups.month`
 
-### 10.3 代码修正题
+### 9.3 代码修正题
 
 **习题 6**（Apply，难度 3）：以下函数旨在解析 URL，但访问捕获组时出错。请修复它。
 
@@ -1297,7 +1156,7 @@ function reverseDate(dateStr) {
 reverseDate('2026-07-20');
 ```
 
-### 10.4 开放性问题
+### 9.4 开放性问题
 
 **习题 8**（Create，难度 5）：你正在为一个配置文件解析器设计 DSL，要求支持复杂的变量引用与条件求值。请论述如何使用具名捕获组构建可扩展的解析器，包括：(1) 命名规范；(2) 重复捕获组的处理；(3) 可选捕获组的默认值；(4) 与 Unicode 属性转义的配合；(5) 错误处理策略。给出设计决策与示例代码。
 
@@ -1305,7 +1164,7 @@ reverseDate('2026-07-20');
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 按 ACM Reference Format 列出本篇引用的主要文献：
 
@@ -1331,44 +1190,44 @@ reverseDate('2026-07-20');
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - Friedl, J. E. F. _Mastering Regular Expressions_ (3rd Edition). O'Reilly Media, 2006. —— 正则表达式领域经典著作，第 3 章详解捕获组机制
 - Goyvaerts, J., and Levithan, S. _Regular Expressions Cookbook_ (2nd Edition). O'Reilly Media, 2012. —— 实用配方集，含大量具名捕获组示例
 - Aho, A. V., Lam, M. S., Sethi, R., and Ullman, J. D. _Compilers: Principles, Techniques, and Tools_ (2nd Edition). Addison-Wesley, 2006. —— 编译原理经典教材，详解词法分析
 
-### 12.2 论文
+### 11.2 论文
 
 - Kleene, S. C. "Representation of Events in Nerve Nets and Finite Automata." In _Automata Studies_, 1956. —— 正则表达式的数学基础
 - Thompson, K. "Regular Expression Search Algorithm." _Communications of the ACM_ 11, 6 (1968), 419-422. —— 第一个正则引擎实现
 - Cox, R. "Regular Expression Matching Can Be Simple and Fast." 2007. URL: https://swtch.com/~rsc/regexp/regexp1.html —— Thompson NFA 与回溯引擎对比
 
-### 12.3 开源项目
+### 11.3 开源项目
 
 - **`xregexp`**（https://github.com/slevithan/xregexp）：扩展的正则库，提供跨浏览器具名捕获组支持
 - **`regexp-tree`**（https://github.com/DmitrySoshnikov/regexp-tree）：正则表达式 AST 处理工具
 - **`safe-regex`**（https://github.com/davisjam/safe-regex）：检测潜在的回溯灾难正则
 - **`re2`**（https://github.com/google/re2）：Google 的高性能正则引擎
 
-### 12.4 在线资源
+### 11.4 在线资源
 
 - **Regex 101**：https://regex101.com/ —— 在线正则测试（支持具名捕获组）
 - **Regexr**：https://regexr.com/ —— 在线正则学习与测试
 - **TC39 提案追踪**：https://github.com/tc39/proposals —— ECMAScript 提案动态
 - **MDN 正则指南**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions
 
-### 12.5 标准文档
+### 11.5 标准文档
 
 - **ECMAScript 2026 Language Specification**：https://tc39.es/ecma262/ —— 最新规范
 - **Unicode Technical Standard #18**：https://www.unicode.org/reports/tr18/ —— Unicode 正则表达式标准
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 具名捕获组语法速查表
+### 12.1 具名捕获组语法速查表
 
 | 语法 | 含义 | 示例 |
 | ---- | ---- | ---- |
@@ -1378,7 +1237,7 @@ reverseDate('2026-07-20');
 | `m.groups.name` | 访问具名捕获组 | `match.groups.year` |
 | `m.groups[name]` | 通过字符串访问具名捕获组 | `match.groups['year']` |
 
-### 13.2 具名捕获组兼容性表
+### 12.2 具名捕获组兼容性表
 
 | 浏览器/引擎 | 支持版本 | 发布日期 |
 | ----------- | -------- | -------- |
@@ -1391,7 +1250,7 @@ reverseDate('2026-07-20');
 | Bun | 1.0+ | 2023-09 |
 | IE11 | 不支持 | - |
 
-### 13.3 Babel 转译配置
+### 12.3 Babel 转译配置
 
 ```json
 {
@@ -1419,7 +1278,7 @@ const regex = /(\d{4})-(\d{2})-(\d{2})/;
 // 同时生成 groups 适配器
 ```
 
-### 13.4 完整的 HTTP 请求解析器
+### 12.4 完整的 HTTP 请求解析器
 
 ```javascript
 /**
@@ -1447,7 +1306,7 @@ console.log(parseHttpRequestLine('GET /api/users?id=1 HTTP/1.1'));
 // { method: 'GET', path: '/api/users', query: 'id=1', version: '1.1' }
 ```
 
-### 13.5 配置文件解析器
+### 12.5 配置文件解析器
 
 ```javascript
 /**
@@ -1503,7 +1362,7 @@ console.log(parseIni(iniContent));
 
 ---
 
-## 14. 术语表
+## 13. 术语表
 
 | 术语 | 英文 | 定义 |
 | ---- | ---- | ---- |
@@ -1518,7 +1377,7 @@ console.log(parseIni(iniContent));
 
 ---
 
-## 15. 修订记录
+## 14. 修订记录
 
 | 版本 | 日期 | 修订内容 | 修订人 |
 | ---- | ---- | -------- | ------ |
@@ -1527,13 +1386,13 @@ console.log(parseIni(iniContent));
 
 ---
 
-## 16. 致谢
+## 15. 致谢
 
 本篇文档的编写参考了 TC39 提案作者 Daniel Ehrenberg 与 Brian Terlson 的原始提案文档、Jeffrey Friedl 的《Mastering Regular Expressions》、以及 MDN Web Docs 的详尽文档。案例研究部分参考了 Vue.js、Babel、Webpack、PostCSS、GitHub 等开源项目的技术实现。习题设计参考了 MIT 6.001（Structure and Interpretation of Computer Programs）与 Stanford CS143（Compilers）课程的作业风格。
 
 ---
 
-## 17. 学习路径建议
+## 16. 学习路径建议
 
 完成本篇学习后，建议继续学习以下主题：
 
@@ -1545,9 +1404,9 @@ console.log(parseIni(iniContent));
 
 ---
 
-## 18. 教学建议
+## 17. 教学建议
 
-### 18.1 课堂讲授建议
+### 17.1 课堂讲授建议
 
 本篇内容建议分 3 个课时讲授：
 
@@ -1555,14 +1414,14 @@ console.log(parseIni(iniContent));
 - **第 2 课时**：代码示例（第 5 章）+ 对比分析（第 6 章）+ 常见陷阱（第 7 章）
 - **第 3 课时**：工程实践（第 8 章）+ 案例研究（第 9 章）+ 习题讲解（第 10 章）
 
-### 18.2 实验设计
+### 17.2 实验设计
 
 设计两个实验：
 
 - **实验 1**：使用具名捕获组重构现有的数字索引正则代码，提升可读性
 - **实验 2**：实现一个简易模板引擎，支持变量插值与条件判断
 
-### 18.3 评估标准
+### 17.3 评估标准
 
 | 层次 | 评估标准 |
 | ---- | -------- |
@@ -1573,7 +1432,7 @@ console.log(parseIni(iniContent));
 
 ---
 
-## 19. FAQ
+## 18. FAQ
 
 ### Q1：具名捕获组是否必须配合 `u` 标志？
 
@@ -1643,7 +1502,7 @@ re.test('hello hello');  // true
 
 ---
 
-## 20. 总结
+## 19. 总结
 
 具名捕获组是 ES2018 引入的关键正则表达式增强，使 JavaScript 正则真正面向工程化与可维护性。本篇文档系统讲解了：
 
@@ -1661,20 +1520,20 @@ re.test('hello hello');  // true
 
 ---
 
-## 21. 实战项目：构建多语言代码搜索工具
+## 20. 实战项目：构建多语言代码搜索工具
 
-### 21.1 项目背景
+### 20.1 项目背景
 
 本节通过一个完整的实战项目，演示具名捕获组在真实工程中的应用。我们将构建一个支持多语言标识符的代码搜索工具，能够精确定位函数定义、变量声明、字符串字面量等语法结构。
 
-### 21.2 设计目标
+### 20.2 设计目标
 
 1. 支持任意 Unicode 字母组成的标识符
 2. 区分函数定义、变量声明、字符串、注释
 3. 提供精确的行号、列号定位
 4. 性能要求：1MB 代码文件搜索时间 < 100ms
 
-### 21.3 完整实现
+### 20.3 完整实现
 
 ```javascript
 /**
@@ -1786,7 +1645,7 @@ console.log('字符串:', strings);
 // [{ type: 'string', match: "'张三'", groups: { quote: "'", content: '张三' }, ... }]
 ```
 
-### 21.4 测试覆盖
+### 20.4 测试覆盖
 
 ```javascript
 const assert = require('assert');
@@ -1816,7 +1675,7 @@ function testCodeSearcher() {
 testCodeSearcher();
 ```
 
-### 21.5 项目扩展方向
+### 20.5 项目扩展方向
 
 1. **集成到 IDE**：作为 VS Code 扩展的后端
 2. **支持更多语言**：扩展模式集合，支持 Python、Go、Rust 等
@@ -1825,9 +1684,9 @@ testCodeSearcher();
 
 ---
 
-## 22. 与未来 ECMAScript 提案的关联
+## 21. 与未来 ECMAScript 提案的关联
 
-### 22.1 RegExp Set Notation 提案
+### 21.1 RegExp Set Notation 提案
 
 TC39 正在审议的 RegExp Set Notation 提案（Stage 2）将与具名捕获组配合，支持更复杂的模式：
 
@@ -1837,7 +1696,7 @@ TC39 正在审议的 RegExp Set Notation 提案（Stage 2）将与具名捕获�
 const identifier = /(?<name>[\p{ID_Start}--[if|for|while]][\p{ID_Continue}]*)/v;
 ```
 
-### 22.2 Pattern Matching 提案
+### 21.2 Pattern Matching 提案
 
 未来可能引入的模式匹配提案将与具名捕获组配合，实现结构化匹配：
 
@@ -1850,7 +1709,7 @@ match (str) {
 }
 ```
 
-### 22.3 建议关注的提案
+### 21.3 建议关注的提案
 
 - **RegExp Set Notation**：`https://github.com/tc39/proposal-regexp-set-notation`
 - **Pattern Matching**：`https://github.com/tc39/proposal-pattern-matching`

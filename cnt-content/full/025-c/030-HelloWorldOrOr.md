@@ -26,90 +26,6 @@ prerequisites:
   - c/概述
   - c/数据类型详解
   - c/指针深度解析
-learningObjectives:
-  - '[remember] 记忆 C 标准 locale 模块的六个分类常量(LC_ALL/LC_COLLATE/LC_CTYPE/LC_MONETARY/LC_NUMERIC/LC_TIME)及其语义。'
-  - '[understand] 解释 setlocale 与 localeconv 的协作机制,以及 C 标准所规定的"当前 locale"运行时状态模型。'
-  - '[apply] 使用 wchar_t、wprintf、wscanf 与 mbrtowc/wcrtomb 在多字节与宽字符之间进行可逆转换,并处理 EILSEQ 错误码。'
-  - '[analyze] 分析 UTF-8/UTF-16/UTF-32 三种 Unicode 编码方案的字节序、代理对与可变长度特性对 C 程序的影响。'
-  - '[evaluate] 评估 volatile-like 的"C locale 全局可变状态"在多线程环境下的数据竞争风险,并给出 thread-local locale 的解决方案。'
-  - '[create] 设计一个支持运行时切换语言资源、按 locale 格式化数字与日期、并兼容 C23 char8_t 的生产级 i18n 模块骨架。'
-exercises:
-  - id: i18n-ex-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: 'C 标准中用于一次性设置所有 locale 分类的宏是 ______。'
-    hint: 该宏作为 setlocale 的第一个参数,代表"全部"。
-    answers:
-      - LC_ALL
-    blankCount: 1
-    caseSensitive: true
-    answer: 'LC_ALL'
-    explanation: ISO/IEC 9899:2024 第 7.11.1 节定义 LC_ALL 为位掩码常量,用于指定 setlocale 应修改全部 locale 分类。
-    difficulty: 1
-    estimatedTime: 1
-  - id: i18n-ex-02
-    type: choice
-    cognitiveLevel: understand
-    question: '关于 wchar_t 的下列陈述,哪一项是正确的?'
-    options:
-      - 'wchar_t 在所有平台上都是 32 位,可完整表示任意 Unicode 码点。'
-      - 'wchar_t 的宽度由实现定义,在 Linux 通常为 32 位,在 Windows 为 16 位。'
-      - 'C23 强制要求 wchar_t 至少 32 位以支持完整 Unicode。'
-      - 'wchar_t 是关键字而非类型别名,其大小由 ABI 固定。'
-    correctIndex: 1
-    answer: 'B'
-    explanation: ISO/IEC 9899:2024 §7.19 仅规定 wchar_t 为整数类型且能表示任一支持的 locale 中的最大扩展字符集;Linux glibc 用 32 位(等价于 uint32_t),Windows MSVC 用 16 位(等价于 uint16_t),这是导致跨平台代码不可移植的根本原因。
-    difficulty: 2
-    estimatedTime: 2
-  - id: i18n-ex-03
-    type: code-fix
-    cognitiveLevel: apply
-    question: '下列代码意图在 zh_CN.UTF-8 下打印宽字符串,但运行时无任何输出。请定位并修复缺陷。'
-    buggyCode: |
-      #include <stdio.h>
-      #include <wchar.h>
-
-      int main(void) {
-          wchar_t *s = L"你好,FANDEX";
-          printf("%ls\n", s);
-          return 0;
-      }
-    language: c
-    fixedCode: |
-      #include <stdio.h>
-      #include <wchar.h>
-      #include <locale.h>
-
-      int main(void) {
-          /* 必须先设置 locale,否则宽字符输出流定向为 "C" locale */
-          if (!setlocale(LC_ALL, "")) {
-              fprintf(stderr, "setlocale failed\n");
-              return 1;
-          }
-          wchar_t *s = L"你好,FANDEX";
-          wprintf(L"%ls\n", s);
-          return 0;
-      }
-    errorDescription: 原代码存在两处问题:(1) 未调用 setlocale(LC_ALL, ""),宽字符流仍处于默认 "C" locale,UTF-8 多字节终端无法正确解码宽字符输出;(2) 使用 printf 配合 %ls 不如 wprintf 可靠,wprintf 显式声明宽字符流定向。
-    answer: '调用 setlocale(LC_ALL, "") 并改用 wprintf'
-    explanation: ISO/IEC 9899:2024 §7.29.1 规定宽字符定向流的初始状态由当前 locale 决定;在 "C" locale 下,宽字符输出到非宽字符终端将产生转换失败,errno 被置为 EILSEQ。
-    difficulty: 3
-    estimatedTime: 8
-  - id: i18n-ex-04
-    type: open-ended
-    cognitiveLevel: evaluate
-    question: '某团队在多线程服务器中调用 setlocale(LC_ALL, "zh_CN.UTF-8") 后,strftime 在另一线程偶发返回英文月份名。请从 C 标准内存模型与 locale 状态模型两个层面分析根因,并给出不少于三种工程修复方案,说明各自的优劣。'
-    keyPoints:
-      - 指出 setlocale 修改的是进程级全局状态(隐式可变共享变量)。
-      - 引用 ISO/IEC 9899:2011 §7.11.1.1 第 6 段:多线程并发调用 setlocale 与受 locale 影响的函数构成数据竞争。
-      - 方案一:使用 uselocale + newlocale/freelocale 创建线程局部 locale(thread-local locale,TLS)。
-      - 方案二:使用互斥锁包裹所有 locale 相关调用,牺牲并发度。
-      - 方案三:使用第三方库(ICU)绕过 C locale 全局状态。
-      - 评估:uselocale 最贴合 C 标准,但需配对 freelocale;互斥锁简单但成为热点;ICU 体积大但功能完整。
-    answer: '关键在于 locale 是进程级全局可变状态,多线程并发访问构成数据竞争;推荐使用 uselocale/newlocale/freelocale 的线程局部 locale 方案。'
-    minWords: 200
-    difficulty: 5
-    estimatedTime: 25
 references:
   - type: standard
     authors:
@@ -184,59 +100,12 @@ reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 95
 ---
 
-## 1. 学习目标与导论
 
-本节确立学习契约,明确读者在完成本章后应达到的认知层次与工程能力。FANDEX 项目采用 Bloom 修订版分类法对学习目标进行显式标注,使读者、教师与自动化评估系统能够对学习成果进行可验证的度量。
-
-### 1.1 学习目标速览
-
-依据 Bloom 修订版分类法(Bloom's Revised Taxonomy,Anderson & Krathwohl, 2001),本章学习目标划分为六个递进层次:
-
-| Bloom 层次 | 中文术语 | 本章对应目标 |
-| :--- | :--- | :--- |
-| remember | 记忆 | 记忆 locale 六大分类常量 |
-| understand | 理解 | 解释 setlocale/localeconv 协作机制 |
-| apply | 应用 | 使用 wchar/mbrtowc 完成编码转换 |
-| analyze | 分析 | 分析 UTF-8/16/32 对 C 程序的影响 |
-| evaluate | 评价 | 评估多线程下 locale 数据竞争风险 |
-| create | 创造 | 设计生产级 i18n 模块骨架 |
-
-### 1.2 为什么 C 语言需要 i18n
-
-C 语言诞生于 1969-1972 年的 Bell Labs,最初服务于 UNIX 操作系统开发,其字符模型建立在 7 位 ASCII 之上。`char` 类型被定义为"足够小以容纳基本字符集的最小可寻址单元",其宽度由实现定义,但通常为 8 位。这一设计在英语世界游刃有余,但在全球化语境下面临三重挑战:
-
-1. **字符集扩展**:中文、日文、韩文(CJK)字符集规模远超 256,无法用单字节 `char` 完整编码。
-2. **文化惯例差异**:数字小数分隔符(`.` vs `,`)、日期格式(`YYYY-MM-DD` vs `MM/DD/YYYY`)、货币符号位置等因地区而异。
-3. **多线程安全**:C89 的 locale 是进程级全局可变状态,与现代多线程模型存在天然张力。
-
-ISO/IEC 9899 标准自 C90 起,通过 Amendment 1(1995,引入宽字符)、C99(完善多字节函数)、C11(引入 `char16_t`/`char32_t` 与 `uchar.h`)、C23(引入 `char8_t` 与 `<uchar.h>` 完善)等版本迭代,逐步构建起一套覆盖字符编码、locale 配置、文化格式化的国际化基础设施。
-
-### 1.3 本章结构
-
-本章共分 14 节,从历史动机出发,逐步推进到形式语义、工程实践与案例研究。建议读者按顺序学习,并在每节末完成对应习题以巩固理解。
-
-```
-1. 学习目标与导论
-2. 历史动机与标准演进
-3. 形式化定义:locale 抽象机模型
-4. setlocale 与 localeconv API 形式语义
-5. 宽字符与多字节字符
-6. Unicode 与 UTF 编码族
-7. C23/C2y 新特性:char8_t 与 u8string
-8. 代码示例:生产级 i18n 模块
-9. 对比分析:C/C++/Rust/Go/Zig
-10. 常见陷阱与未定义行为
-11. 工程实践:编译选项与静态分析
-12. 案例研究:glibc、SQLite、Redis
-13. 习题与参考答案
-14. 参考文献与延伸阅读
-```
-
-## 2. 历史动机与标准演进
+## 1. 历史动机与标准演进
 
 理解 C 国际化机制的设计,必须回到其历史语境。C 语言的国际化能力是标准委员会对全球化软件需求的渐进式回应,每一次标准修订都凝结着工程实践与理论权衡。
 
-### 2.1 C 语言诞生与 ASCII 时代(1969-1989)
+### 1.1 C 语言诞生与 ASCII 时代(1969-1989)
 
 1969 年,Ken Thompson 与 Dennis Ritchie 在 PDP-7 上开始 UNIX 原型开发;1972 年,Dennis Ritchie 将 B 语言改造为 C 语言,其字符模型直接继承自当时主流的 7 位 ASCII(ANSI X3.4-1963)。`char` 被定义为容纳"实现的基本字符集中任一字符"的最小单元,在 ASCII 时代等价于 8 位字节。
 
@@ -249,7 +118,7 @@ ISO/IEC 9899 标准自 C90 起,通过 Amendment 1(1995,引入宽字符)、C99(�
 
 C89 是 C 国际化的真正起点。标准委员会引入 `<locale.h>` 头文件,定义 `setlocale`、`localeconv` 与六个 `LC_*` 分类常量,首次承认"程序运行环境的文化惯例"是一个独立的可配置维度。然而 C89 的国际化能力仍极其有限:没有宽字符,没有多字节转换函数,`char` 仍被假定为单字节字符。
 
-### 2.2 C90 Amendment 1 与宽字符(1995)
+### 1.2 C90 Amendment 1 与宽字符(1995)
 
 1995 年,ISO 发布 ISO/IEC 9899:1990/Amd 1:1995(俗称 C90 Amendment 1 或 C95),引入了三项关键能力:
 
@@ -259,7 +128,7 @@ C89 是 C 国际化的真正起点。标准委员会引入 `<locale.h>` 头文�
 
 C95 标志着 C 语言正式承认"字符"与"字节"是两个不同概念:`char` 是字节单元,`wchar_t` 是逻辑字符单元。这一区分是所有后续国际化工作的理论基石。
 
-### 2.3 C99:完善多字节支持(1999)
+### 1.3 C99:完善多字节支持(1999)
 
 C99 在 C95 基础上进一步完善多字节字符处理,引入 `mbrlen`、`wcrtomb`(可重入版本)与 `<wctype.h>`(宽字符分类函数)。C99 还首次明确规定了"基础执行字符集"(basic execution character set)与"扩展执行字符集"(extended execution character set)的区分。
 
@@ -284,7 +153,7 @@ size_t convert_mb_to_wc(wchar_t *wc, const char *mb, size_t n,
 }
 ```
 
-### 2.4 C11:Unicode 友好的字符类型(2011)
+### 1.4 C11:Unicode 友好的字符类型(2011)
 
 C11 引入了 `<uchar.h>` 头文件与两个明确的 Unicode 友好类型:`char16_t` 与 `char32_t`,分别对应 UTF-16 与 UTF-32 的码单元。这一改动解决了 `wchar_t` 宽度实现定义带来的跨平台不可移植问题。
 
@@ -298,11 +167,11 @@ char32_t utf32_str[] = U"你好";   /* UTF-32 字符串字面量 */
 
 C11 同时引入了线程支持(`threads.h`)与原子操作(`stdatomic.h`),这间接暴露了 `setlocale` 的线程安全问题——标准委员会在 C11 §7.11.1.1 注中明确警告"实现应避免在多线程环境下产生数据竞争,但本国际标准不强制要求"。
 
-### 2.5 C17/C18:勘误与稳定(2018)
+### 1.5 C17/C18:勘误与稳定(2018)
 
 C17(ISO/IEC 9899:2018,俗称 C18)主要是 C11 的勘误版,未引入新的国际化特性,但修复了若干 `<uchar.h>` 的缺陷报告(DR 488 等)。
 
-### 2.6 C23:char8_t 与 u8 字符串字面量(2024)
+### 1.6 C23:char8_t 与 u8 字符串字面量(2024)
 
 C23(ISO/IEC 9899:2024)是国际化能力的又一次重大升级,核心改动包括:
 
@@ -320,7 +189,7 @@ char8_t *s8 = u8"你好,FANDEX";  /* C23 中类型为 char8_t[] */
 /* C17 中,u8"..." 类型为 char[] */
 ```
 
-### 2.7 C2y 草案动向(2026+)
+### 1.7 C2y 草案动向(2026+)
 
 截至 2026 年,WG14(N3220 之后)正在讨论的 C2y 草案(N3301+)涉及国际化的议题包括:
 
@@ -339,11 +208,11 @@ timeline
     2024: C23 char8_t u8=ch8 #embed
 ```
 
-## 3. 形式化定义:locale 抽象机模型
+## 2. 形式化定义:locale 抽象机模型
 
 本节用 ISO/IEC 9899:2024 的形式语义刻画 C 语言的 locale 抽象机,为后续 API 的语义推导建立严格的数学基础。
 
-### 3.1 locale 作为环境函数
+### 2.1 locale 作为环境函数
 
 ISO/IEC 9899:2024 §7.11 将 locale 形式化为一个对实现可见的全局状态 $\mathcal{L}$。设程序启动时 $\mathcal{L}_0$ 为"C" locale,则:
 
@@ -360,7 +229,7 @@ $$
 \end{cases}
 $$
 
-### 3.2 受 locale 影响的函数族
+### 2.2 受 locale 影响的函数族
 
 locale 状态 $\mathcal{L}$ 影响的函数族构成 locale 依赖集 $\mathcal{F}_{\text{loc}}$。下表给出 $\mathcal{F}_{\text{loc}}$ 的核心成员及其依赖的分类:
 
@@ -373,7 +242,7 @@ locale 状态 $\mathcal{L}$ 影响的函数族构成 locale 依赖集 $\mathcal{
 | `strtod` / `printf("%f")` | LC_NUMERIC | 数字解析与格式化 |
 | `localeconv` | LC_MONETARY + LC_NUMERIC | 货币与数字格式化细节 |
 
-### 3.3 数据竞争的形式化条件
+### 2.3 数据竞争的形式化条件
 
 设 $T_1, T_2$ 为两个线程,$f \in \mathcal{F}_{\text{loc}}$ 为 locale 依赖函数,$g = \text{setlocale}$ 为 locale 修改函数。C11 §7.11.1.1 第 6 段(在 C23/C2y 中保留并强化)规定:
 
@@ -383,7 +252,7 @@ $$
 
 其中 $\text{HB}$ 是 happens-before 关系。该条件意味着:任何无同步的 locale 修改与 locale 依赖函数的并发执行,均构成数据竞争,从而触发未定义行为(Undefined Behavior,UB)。
 
-### 3.4 线程局部 locale:uselocale 模型
+### 2.4 线程局部 locale:uselocale 模型
 
 C11 引入 `newlocale`/`uselocale`/`freelocale` 三元组,允许每个线程持有独立的 locale 状态 $\mathcal{L}_T$,而非共享全局 $\mathcal{L}$:
 
@@ -393,7 +262,7 @@ $$
 
 线程局部 locale 的引入将 $\mathcal{F}_{\text{loc}}$ 的依赖从全局 $\mathcal{L}$ 改为 $\mathcal{L}_T$,从而消除跨线程数据竞争。这一模型是 POSIX 2008 与 glibc 2.3+ 的事实标准。
 
-### 3.5 编码转换的形式语法
+### 2.5 编码转换的形式语法
 
 设 $B^*$ 为字节序列空间,$C^*$ 为字符(码点)序列空间。多字节编码是函数 $\mathcal{E}: C^* \to B^*$,其逆 $\mathcal{D}: B^* \to C^*$ 称为解码。C 标准要求:
 
@@ -403,11 +272,11 @@ $$
 
 但反向不成立:并非所有字节序列都是合法的多字节序列。当 $\mathcal{D}$ 遇到非法字节序列时,`mbrtowc` 返回 $(\text{size\_t})-1$ 并设置 `errno = EILSEQ`。
 
-## 4. setlocale 与 localeconv API 形式语义
+## 3. setlocale 与 localeconv API 形式语义
 
 本节深入解析 C 标准库中 locale API 的形式语义,涵盖原型、参数、返回值、错误处理与线程安全。
 
-### 4.1 setlocale 函数
+### 3.1 setlocale 函数
 
 ```c
 #include <locale.h>
@@ -443,7 +312,7 @@ char *get_current_locale(void) {
 }
 ```
 
-### 4.2 六大 locale 分类常量
+### 3.2 六大 locale 分类常量
 
 ISO/IEC 9899:2024 §7.11 定义六个 locale 分类常量,每个常量对应一个独立的 locale 维度:
 
@@ -461,7 +330,7 @@ LC_TIME       /* 时间格式化,影响 strftime/wcsftime */
 
 **注意**:标准未规定分类常量的具体数值,实现可自由选择。POSIX 在此基础上扩展了 `LC_MESSAGES`(影响错误消息语言),但严格 ISO C 程序不应依赖该常量。
 
-### 4.3 localeconv 函数
+### 3.3 localeconv 函数
 
 ```c
 #include <locale.h>
@@ -502,7 +371,7 @@ int main(void) {
 
 **线程安全警告**:`localeconv` 返回的指针指向静态存储,在多线程环境下被并发调用构成数据竞争。C23 引入了边界检查版本 `localeconv_s`(可选,见 Annex K),但实际可移植性较差。
 
-### 4.4 线程局部 locale:newlocale/uselocale/freelocale
+### 3.4 线程局部 locale:newlocale/uselocale/freelocale
 
 ```c
 #include <locale.h>
@@ -562,7 +431,7 @@ int main(void) {
 2. `freelocale` 不能释放当前线程正在使用的 locale。
 3. `newlocale` 创建的 locale 对象引用计数为 1,`uselocale` 不增加引用计数。
 
-### 4.5 POSIX 扩展:LC_MESSAGES 与 nl_langinfo
+### 3.5 POSIX 扩展:LC_MESSAGES 与 nl_langinfo
 
 POSIX.1-2008 在 ISO C 基础上扩展了 `LC_MESSAGES` 分类(影响错误消息与 yes/no 字符串)与 `nl_langinfo` 函数(精细查询 locale 信息):
 
@@ -582,11 +451,11 @@ int main(void) {
 
 **可移植性提示**:使用 `LC_MESSAGES`/`nl_langinfo` 的代码在 Windows MSVC 上不可移植。跨平台程序应通过抽象层封装。
 
-## 5. 宽字符与多字节字符
+## 4. 宽字符与多字节字符
 
 本节深入 C 语言的字符模型,辨析 `char`、`wchar_t`、`char16_t`、`char32_t`、`char8_t` 五种字符类型的语义差异。
 
-### 5.1 字节 vs 字符:概念辨析
+### 4.1 字节 vs 字符:概念辨析
 
 C 语言刻意区分两个概念:
 
@@ -595,7 +464,7 @@ C 语言刻意区分两个概念:
 
 在 ASCII 时代,1 字节 = 1 字符,这一等价性深入人心。但在 UTF-8 等可变长度编码下,一个 Unicode 码点可能由 1-4 个字节组成。C 语言用 `wchar_t` 表示"逻辑字符",用 `char` 表示"字节",从而区分两者。
 
-### 5.2 wchar_t 类型
+### 4.2 wchar_t 类型
 
 ```c
 #include <wchar.h>
@@ -615,7 +484,7 @@ wchar_t *ws = L"你好"; /* 宽字符串字面量 */
 
 **跨平台陷阱**:由于 `wchar_t` 宽度不一致,跨平台代码不应假设 `sizeof(wchar_t)`。Windows 上 `L"笑脸"`(U+1F600)需要代理对,而 Linux 上可单 `wchar_t` 表示。
 
-### 5.3 宽字符 I/O 函数
+### 4.3 宽字符 I/O 函数
 
 ```c
 #include <wchar.h>
@@ -650,7 +519,7 @@ int main(void) {
 }
 ```
 
-### 5.4 多字节字符转换函数
+### 4.4 多字节字符转换函数
 
 C 标准提供两类转换函数:不可重入(C89 风格)与可重入(C95/C99 风格)。
 
@@ -694,7 +563,7 @@ size_t utf8_to_wcs(wchar_t *dst, const char *src, size_t n) {
 }
 ```
 
-### 5.5 mbstate_t 状态机
+### 4.5 mbstate_t 状态机
 
 `mbstate_t` 是多字节转换的状态机,记录"上一个不完整多字节序列的剩余字节"。其内部结构由实现定义,典型实现是:
 
@@ -746,11 +615,11 @@ void stream_decode(FILE *in) {
 }
 ```
 
-## 6. Unicode 与 UTF 编码族
+## 5. Unicode 与 UTF 编码族
 
 Unicode 是字符编码的现代基石。本节从码点、码元、编码方案三个层次,辨析 UTF-8/UTF-16/UTF-32 的形式语义与 C 表示。
 
-### 6.1 Unicode 码点与平面
+### 5.1 Unicode 码点与平面
 
 Unicode 码点(code point)是 $U+0000$ 到 $U+10FFFF$ 范围内的整数,共 $1{,}114{,}112$ 个可能值。Unicode 码点空间划分为 17 个平面(plane),每平面 $65{,}536$ 个码点:
 
@@ -779,7 +648,7 @@ unicode_plane plane_of(uint32_t cp) {
 }
 ```
 
-### 6.2 UTF-32:定长编码
+### 5.2 UTF-32:定长编码
 
 UTF-32 将每个码点直接编码为 32 位整数。优点是定长、随机访问快;缺点是空间占用高(英文文本浪费 4 倍空间)。
 
@@ -793,7 +662,7 @@ size_t char_count = sizeof(utf32)/sizeof(utf32[0]) - 1;
 
 **字节序问题**:UTF-32 有 BE/LE 之分,跨平台数据交换需要 BOM($U+FEFF$)或显式声明字节序。
 
-### 6.3 UTF-16:变长(1-2 码元)
+### 5.3 UTF-16:变长(1-2 码元)
 
 UTF-16 将 BMP 码点编码为 1 个 16 位码元,将辅助平面码点编码为 2 个 16 位码元(代理对)。
 
@@ -819,7 +688,7 @@ void encode_utf16_surrogate(uint32_t cp, char16_t pair[2]) {
 }
 ```
 
-### 6.4 UTF-8:变长(1-4 字节)
+### 5.4 UTF-8:变长(1-4 字节)
 
 UTF-8 是互联网的事实标准,具有 ASCII 兼容、自同步、字节序无关等优良特性。其编码规则:
 
@@ -909,7 +778,7 @@ size_t utf8_decode(const uint8_t *s, size_t n, uint32_t *cp) {
 }
 ```
 
-### 6.5 BOM:字节序标记
+### 5.5 BOM:字节序标记
 
 BOM(Byte Order Mark)是 $U+FEFF$ 字符,用作 UTF-16/32 的字节序指示:
 
@@ -923,11 +792,11 @@ BOM(Byte Order Mark)是 $U+FEFF$ 字符,用作 UTF-16/32 的字节序指示:
 
 UTF-8 的 BOM 是可选的且不推荐(Unix 工具链常将其误判为有效字符)。Windows 偏好带 BOM 的 UTF-8(Unix 偏好不带)。
 
-## 7. C23/C2y 新特性:char8_t 与 u8string
+## 6. C23/C2y 新特性:char8_t 与 u8string
 
 C23 引入 `char8_t` 类型,标志着 C 语言正式将 UTF-8 提升为一等公民。本节解析这一改动的影响。
 
-### 7.1 char8_t 类型
+### 6.1 char8_t 类型
 
 ```c
 /* C23 引入 */
@@ -938,7 +807,7 @@ typedef unsigned char char8_t;  /* 语义明确为 UTF-8 码单元 */
 
 `char8_t` 与 `unsigned char` 在二进制表示上等价,但类型系统将其视为不同类型。这一区分使函数重载(C++)与类型检查能够区分"任意字节"与"UTF-8 码单元"。
 
-### 7.2 u8 字符串字面量类型变更
+### 6.2 u8 字符串字面量类型变更
 
 ```c
 /* C17 */
@@ -962,7 +831,7 @@ typedef unsigned char u8char_t;
 const u8char_t *s = (const u8char_t *)u8"hello";
 ```
 
-### 7.3 mbrtoc8 与 c8rtomb
+### 6.3 mbrtoc8 与 c8rtomb
 
 C23 在 `<uchar.h>` 中引入 `mbrtoc8` 与 `c8rtomb`,提供 UTF-8 与 `char8_t` 之间的转换:
 
@@ -996,15 +865,15 @@ void print_utf8_chars(const char *s) {
 }
 ```
 
-### 7.4 C2y 草案:边界检查版本
+### 6.4 C2y 草案:边界检查版本
 
 C2y 草案(N3357 等)正在讨论引入 `mbrtoc8_s`/`c8rtomb_s` 等边界检查版本,与 Annex K 的 `_s` 函数族一致。截至 2026 年,这些提案仍在 WG14 讨论中,实际可用性有限。
 
-## 8. 代码示例:生产级 i18n 模块
+## 7. 代码示例:生产级 i18n 模块
 
 本节给出一个生产级 i18n 模块骨架,涵盖 locale 初始化、编码转换、字符串格式化与多语言资源管理。
 
-### 8.1 模块设计
+### 7.1 模块设计
 
 ```mermaid
 flowchart TD
@@ -1024,7 +893,7 @@ flowchart TD
     T7 --> T8
 ```
 
-### 8.2 公共接口
+### 7.2 公共接口
 
 ```c
 /* i18n.h:国际化模块公共接口 */
@@ -1073,7 +942,7 @@ size_t i18n_utf8_substr(char *dst, size_t n, const char *src,
 #endif /* FANDEX_I18N_H */
 ```
 
-### 8.3 实现
+### 7.3 实现
 
 ```c
 /* i18n.c:国际化模块实现 */
@@ -1247,7 +1116,7 @@ size_t i18n_utf8_substr(char *dst, size_t n, const char *src,
 }
 ```
 
-### 8.4 使用示例
+### 7.4 使用示例
 
 ```c
 /* main.c:演示 i18n 模块 */
@@ -1292,7 +1161,7 @@ int main(int argc, char **argv) {
 }
 ```
 
-### 8.5 编译与运行
+### 7.5 编译与运行
 
 ```bash
 # 使用 gcc 编译,启用 C23 标准
@@ -1306,11 +1175,11 @@ gcc -std=c23 -Wall -Wextra -Wpedantic \
 ./demo ja_JP.UTF-8
 ```
 
-## 9. 对比分析:C/C++/Rust/Go/Zig
+## 8. 对比分析:C/C++/Rust/Go/Zig
 
 本节将 C 的国际化能力与主流系统编程语言横向对比,帮助读者理解不同设计哲学。
 
-### 9.1 C vs C++
+### 8.1 C vs C++
 
 | 维度 | C | C++ |
 | :--- | :--- | :--- |
@@ -1323,7 +1192,7 @@ gcc -std=c23 -Wall -Wextra -Wpedantic \
 
 **核心差异**:C++ 的 `std::locale` 设计更为面向对象,但 C++17 弃用 `std::wstring_convert` 后,标准库缺乏现代 Unicode 工具,实际项目多依赖 ICU。
 
-### 9.2 C vs Rust
+### 8.2 C vs Rust
 
 | 维度 | C | Rust |
 | :--- | :--- | :--- |
@@ -1336,7 +1205,7 @@ gcc -std=c23 -Wall -Wextra -Wpedantic \
 
 **核心差异**:Rust 在语言层面强制 UTF-8,消除了"字节 vs 字符"的歧义;但牺牲了对非 UTF-8 编码的原生支持。locale 在 Rust 中是第三方领域,需要 `fluent-rs` 等库。
 
-### 9.3 C vs Go
+### 8.3 C vs Go
 
 | 维度 | C | Go |
 | :--- | :--- | :--- |
@@ -1349,7 +1218,7 @@ gcc -std=c23 -Wall -Wextra -Wpedantic \
 
 **核心差异**:Go 在语言层面强制 UTF-8,标准库虽无 locale 但有强大的 `x/text` 子包,支持 BCP 47 语言标签、消息目录、货币/日期格式化。Go 的 i18n 体验优于 C,但牺牲了对非 UTF-8 编码的原生支持。
 
-### 9.4 C vs Zig
+### 8.4 C vs Zig
 
 | 维度 | C | Zig |
 | :--- | :--- | :--- |
@@ -1362,7 +1231,7 @@ gcc -std=c23 -Wall -Wextra -Wpedantic \
 
 **核心差异**:Zig 取消了 `char` 类型,字符与字节彻底分离;标准库提供完整的 UTF-8/16 解码器,但无 locale 抽象。Zig 的设计哲学是"显式优于隐式",locale 应由应用层处理。
 
-### 9.5 综合对比表
+### 8.5 综合对比表
 
 | 特性 | C11 | C23 | C++20 | Rust 1.70+ | Go 1.21+ | Zig 0.13+ |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -1375,11 +1244,11 @@ gcc -std=c23 -Wall -Wextra -Wpedantic \
 
 **结论**:C 在标准化 locale 抽象方面领先,但在现代 Unicode 工具(规范化、断词、双向算法)方面弱于 Rust/Go/Zig。生产级 i18n 项目应结合 C 标准库与 ICU。
 
-## 10. 常见陷阱与未定义行为
+## 9. 常见陷阱与未定义行为
 
 本节枚举 i18n 编程中的高频陷阱,每个陷阱给出错误代码、危害分析与修复方案。
 
-### 10.1 陷阱 1:未调用 setlocale 导致宽字符输出失败
+### 9.1 陷阱 1:未调用 setlocale 导致宽字符输出失败
 
 ```c
 /* 错误:未调用 setlocale */
@@ -1404,7 +1273,7 @@ int main(void) {
 }
 ```
 
-### 10.2 陷阱 2:多线程并发调用 setlocale 导致数据竞争
+### 9.2 陷阱 2:多线程并发调用 setlocale 导致数据竞争
 
 ```c
 /* 错误:多线程并发修改 locale */
@@ -1440,7 +1309,7 @@ int worker(void *arg) {
 }
 ```
 
-### 10.3 陷阱 3:假设 wchar_t 宽度
+### 9.3 陷阱 3:假设 wchar_t 宽度
 
 ```c
 /* 错误:假设 wchar_t 是 32 位 */
@@ -1464,7 +1333,7 @@ void correct(void) {
 }
 ```
 
-### 10.4 陷阱 4:u8 字符串赋值给 char*
+### 9.4 陷阱 4:u8 字符串赋值给 char*
 
 ```c
 /* C17 中可编译,C23 中编译失败 */
@@ -1484,7 +1353,7 @@ const char *s = u8"hello";
 #endif
 ```
 
-### 10.5 陷阱 5:mbrtowc 状态机污染
+### 9.5 陷阱 5:mbrtowc 状态机污染
 
 ```c
 /* 错误:多次使用同一 mbstate_t 但未重置 */
@@ -1507,7 +1376,7 @@ mbstate_t state = {0};  /* 零初始化 */
 /* 或:memset(&state, 0, sizeof(state)); */
 ```
 
-### 10.6 陷阱 6:localeconv 返回的静态缓冲被覆盖
+### 9.6 陷阱 6:localeconv 返回的静态缓冲被覆盖
 
 ```c
 /* 错误:多次调用 localeconv 覆盖缓冲 */
@@ -1532,7 +1401,7 @@ struct lconv *lc = localeconv();
 char *decimal_point = strdup(lc->decimal_point);  /* 立即复制 */
 ```
 
-### 10.7 陷阱 7:文件流定向不一致
+### 9.7 陷阱 7:文件流定向不一致
 
 ```c
 /* 错误:同一流混合使用窄字符与宽字符 I/O */
@@ -1555,7 +1424,7 @@ fwide(f, 1);  /* 显式宽字符定向 */
 fwprintf(f, L"你好");
 ```
 
-### 10.8 陷阱 8:UTF-8 overlong 编码
+### 9.8 陷阱 8:UTF-8 overlong 编码
 
 ```c
 /* 错误:接受 overlong 编码 */
@@ -1571,7 +1440,7 @@ uint8_t overlong[] = {0xC0, 0xAF, 0x00};
 /* 见 6.4 节 utf8_decode 函数,已包含 overlong 检查 */
 ```
 
-### 10.9 陷阱 9:locale 名不可移植
+### 9.9 陷阱 9:locale 名不可移植
 
 ```c
 /* 错误:硬编码 locale 名 */
@@ -1590,7 +1459,7 @@ setlocale(LC_ALL, "zh_CN.UTF-8");
 #endif
 ```
 
-### 10.10 陷阱 10:多字节字符串长度假设
+### 9.10 陷阱 10:多字节字符串长度假设
 
 ```c
 /* 错误:用 strlen 计算"字符数" */
@@ -1606,11 +1475,11 @@ void buggy(void) {
 
 **修复**:用 `mbrtowc` 逐字符解码,或使用 8.3 节的 `i18n_utf8_strlen`。
 
-## 11. 工程实践:编译选项与静态分析
+## 10. 工程实践:编译选项与静态分析
 
 本节给出 i18n 项目的工程实践,涵盖编译选项、静态分析、运行时检测。
 
-### 11.1 编译选项
+### 10.1 编译选项
 
 ```bash
 # C23 标准,启用所有警告
@@ -1628,7 +1497,7 @@ cl /std:c11 /utf8 /W4 /permissive- i18n.c
 # /utf8 等价于 /source-charset:utf-8 /execution-charset:utf-8
 ```
 
-### 11.2 关键警告标志
+### 10.2 关键警告标志
 
 | 标志 | GCC/Clang | MSVC | 作用 |
 | :--- | :--- | :--- | :--- |
@@ -1639,9 +1508,9 @@ cl /std:c11 /utf8 /W4 /permissive- i18n.c
 | 字符集 | `-finput-charset=UTF-8` | `/utf8` | 指定源文件字符集 |
 | 执行字符集 | `-fexec-charset=UTF-8` | `/utf8` | 指定字符串字面量编码 |
 
-### 11.3 静态分析工具
+### 10.3 静态分析工具
 
-#### 11.3.1 Clang Static Analyzer
+#### 10.3.1 Clang Static Analyzer
 
 ```bash
 # 扫描 i18n.c
@@ -1651,7 +1520,7 @@ scan-build gcc -std=c23 -Wall i18n.c
 scan-view /tmp/scan-build-XXXX
 ```
 
-#### 11.3.2 Coverity
+#### 10.3.2 Coverity
 
 ```bash
 # Coverity 商业工具,支持 locale 相关缺陷检测
@@ -1659,14 +1528,14 @@ cov-build --dir cov-int gcc -std=c23 i18n.c
 cov-analyze --dir cov-int
 ```
 
-#### 11.3.3 cppcheck
+#### 10.3.3 cppcheck
 
 ```bash
 cppcheck --enable=all --std=c23 --suppress=missingInclude \
          --inconclusive i18n.c
 ```
 
-### 11.4 运行时检测:ASan/UBSan/TSan
+### 10.4 运行时检测:ASan/UBSan/TSan
 
 ```bash
 # AddressSanitizer:检测内存越界、UAF
@@ -1695,7 +1564,7 @@ WARNING: ThreadSanitizer: data race
 ==================
 ```
 
-### 11.5 自定义 lint 规则
+### 10.5 自定义 lint 规则
 
 ```python
 # scripts/check_i18n.py:检测硬编码字符串字面量
@@ -1715,7 +1584,7 @@ if __name__ == '__main__':
         check_file(path)
 ```
 
-### 11.6 CI/CD 集成
+### 10.6 CI/CD 集成
 
 ```yaml
 # .github/workflows/i18n-check.yml
@@ -1738,11 +1607,11 @@ jobs:
           ./test_tsan
 ```
 
-## 12. 案例研究:glibc、SQLite、Redis
+## 11. 案例研究:glibc、SQLite、Redis
 
 本节分析三个真实开源项目的 i18n 实现策略,提炼可复用的工程经验。
 
-### 12.1 glibc:locale 数据库与 uselocale 实现
+### 11.1 glibc:locale 数据库与 uselocale 实现
 
 glibc(GNU C Library)是 Linux 事实标准 libc,其 locale 实现是业界最完整的之一。
 
@@ -1783,7 +1652,7 @@ flowchart TD
 - 线程局部存储:用 `__thread`/`_Thread_local` 实现 per-thread 状态。
 - 二进制兼容性:locale 二进制格式版本化,支持升级。
 
-### 12.2 SQLite:UTF-8/UTF-16 双模式
+### 11.2 SQLite:UTF-8/UTF-16 双模式
 
 SQLite 是嵌入式 SQL 数据库,其国际化策略颇具特色。
 
@@ -1819,7 +1688,7 @@ void sqlite3_utf16to8(const void *in, char **out);
 - 边界转换:在 I/O 边界处统一转换,内部保持单一编码。
 - 可扩展比较:允许注册 locale 敏感的排序函数。
 
-### 12.3 Redis:简化 i18n 与日志国际化
+### 11.3 Redis:简化 i18n 与日志国际化
 
 Redis 是内存数据库,其 i18n 策略以简化为核心。
 
@@ -1852,7 +1721,7 @@ int stringcmp(const char *a, const char *b) {
 - 字节级抽象:将字符串视为字节序列,避免编码假设。
 - 一致性优先:"C" locale 保证跨平台行为一致,便于调试。
 
-### 12.4 Linux 内核:无 locale 内核空间
+### 11.4 Linux 内核:无 locale 内核空间
 
 Linux 内核是极端案例:内核空间完全无 locale 支持。
 
@@ -1870,7 +1739,7 @@ Linux 内核是极端案例:内核空间完全无 locale 支持。
 - 关注点分离:i18n 是用户空间关注点,内核保持简单。
 - ASCII 优先:系统底层保持 ASCII,降低复杂性。
 
-### 12.5 综合比较
+### 11.5 综合比较
 
 | 项目 | locale 依赖 | 编码假设 | i18n 完整度 |
 | :--- | :--- | :--- | :--- |
@@ -1962,7 +1831,7 @@ D. 用 `atomic_store` 包装 locale 字符串。
 
 **解析讲解**：ISO/IEC 9899:2024 §7.11.2.1 规定 `uselocale` 切换当前线程的 locale,与其他线程隔离,是无数据竞争的可移植方案。A 方案可行但牺牲并发度;C 方案无意义(`setlocale` 返回值是字符串指针,非状态);D 方案无法保护 locale 全局状态。
 
-### 13.3 代码修正题
+### 12.3 代码修正题
 
 ## 知识讲解与要点分析（原习题 13.3.1(apply,难度 3)）
 
@@ -2119,7 +1988,7 @@ size_t utf8_decode_fixed(const uint8_t *s, size_t n, uint32_t *cp) {
 
 **解析讲解**：原函数接受 overlong 编码(如 `0xC0 0xAF` 解码为 `/`),可绕过路径过滤;接受代理对码点(`0xD800`-`0xDFFF`),违反 Unicode 规范。修复方案添加三项检查。
 
-### 13.4 开放性问题
+### 12.4 开放性问题
 
 ## 知识讲解与要点分析（原习题 13.4.1(evaluate,难度 4)）
 
@@ -2309,7 +2178,7 @@ size_t utf8_strlen(const char *s) {
 - `mbsrtowcs`:批量转换整个字符串(如读取文件内容到 `wchar_t` 数组)。
 - `mbrtoc8`:在 UTF-8 与其他编码(如 UTF-16/32)之间转换时的中间步骤。
 
-### 13.5 习题难度分布
+### 12.5 习题难度分布
 
 | Bloom 层次 | 习题数 | 难度范围 |
 | :--- | :--- | :--- |
@@ -2320,9 +2189,9 @@ size_t utf8_strlen(const char *s) {
 | evaluate | 2 | 4-5 |
 | create | 1 | 5 |
 
-## 14. 参考文献与延伸阅读
+## 13. 参考文献与延伸阅读
 
-### 14.1 参考文献(ACM Reference Format)
+### 13.1 参考文献(ACM Reference Format)
 
 [1] ISO/IEC JTC1/SC22/WG14. 2024. *ISO/IEC 9899:2024 - Programming languages - C (Fifth edition)*. International Organization for Standardization, Geneva, Switzerland. https://www.iso.org/standard/82075.html
 
@@ -2344,9 +2213,9 @@ size_t utf8_strlen(const char *s) {
 
 [10] Microsoft Corporation. 2023. *MSVC Language Reference: char8_t*. Microsoft Docs. https://learn.microsoft.com/en-us/cpp/char8-type
 
-### 14.2 延伸阅读
+### 13.2 延伸阅读
 
-#### 14.2.1 书籍
+#### 13.2.1 书籍
 
 - Kernighan, B. W., & Ritchie, D. M. (1988). *The C Programming Language* (2nd ed.). Prentice Hall. (K&R C,第 1 章对字符与字符串的论述仍具参考价值)
 - Harbison, S. P., & Steele, G. L. (2017). *C: A Reference Manual* (5th ed.). Pearson. (涵盖 C11 标准,对 locale 与宽字符有详尽参考)
@@ -2354,14 +2223,14 @@ size_t utf8_strlen(const char *s) {
 - Gilluwe, F. V. (1996). *The Undocumented PC: A Programmer's Guide to I/O, CPUs, and Fixed Memory Areas*. Addison-Wesley. (PC 平台字符编码历史)
 - Brown, D. E. (2003). *Unicode: A Primer*. M&T Books. (Unicode 入门)
 
-#### 14.2.2 论文
+#### 13.2.2 论文
 
 - Davis, M. (2008). *Moving to Unicode 5.1*. Proceedings of the 22nd International Unicode Conference.
 - Freytag, A. (2005). *Unicode normalization forms*. Unicode Technical Report #15.
 - Whistler, K., Davis, M., & Freytag, A. (2008). *Unicode Character Encoding Model*. Unicode Technical Report #17.
 - Davis, M., & Suess, K. (2002). *A survey of Unicode and internationalization techniques*. Software: Practice and Experience, 32(11), 1041-1073.
 
-#### 14.2.3 开源项目
+#### 13.2.3 开源项目
 
 - **glibc**: GNU C Library,https://sourceware.org/glibc/ — 业界最完整的 C locale 实现
 - **ICU**: International Components for Unicode,https://icu.unicode.org/ — 跨平台 i18n 库,支持 C/C++/Java
@@ -2371,7 +2240,7 @@ size_t utf8_strlen(const char *s) {
 - **SQLite**: https://www.sqlite.org/ — 嵌入式 SQL 数据库,UTF-8/UTF-16 双模式参考
 - **Redis**: https://redis.io/ — 内存数据库,简化 i18n 策略参考
 
-#### 14.2.4 在线资源
+#### 13.2.4 在线资源
 
 - **Unicode 官方**:https://www.unicode.org/ — Unicode 标准、技术报告
 - **WG14 N 草案**:https://www.open-std.org/jtc1/sc22/wg14/ — C 标准草案与提案
@@ -2379,7 +2248,7 @@ size_t utf8_strlen(const char *s) {
 - **Linux man-pages**:https://man7.org/linux/man-pages/man3/setlocale.3.html — Linux locale API 文档
 - **Microsoft Learn**:https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/ — MSVC CRT 参考
 
-### 14.3 致谢
+### 13.3 致谢
 
 本章内容参考了 ISO/IEC 9899:2024(C23)标准、Unicode 15.1.0 标准、glibc 源码、SQLite 文档与多篇学术论文。感谢 WG14 标准委员会、Unicode Consortium 与开源社区的无私贡献。
 

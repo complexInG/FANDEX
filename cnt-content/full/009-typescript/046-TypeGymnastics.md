@@ -16,6 +16,7 @@ prerequisites:
   - typescript/语法速查
 ---
 
+
 # 类型体操
 
 > 本文档对标 MIT 6.S192、Stanford CS110、CMU 15-214 等课程教学水准，系统讲解 TypeScript 类型体操（Type Gymnastics）的数学基础、递归类型推理、不动点算子、邱奇编码与工程级应用。所有代码示例均可在 TS 5.4 + `strict: true` 下编译通过。
@@ -39,48 +40,15 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够：
-
-### 1.1 Bloom 认知层级映射
-
-| 层级 | 行为动词 | 预期成果 |
-|------|----------|----------|
-| **Remember**（记忆） | 列举、识别 | 列举 TypeScript 类型体操的三大基石：条件类型、映射类型、`infer` 关键字，写出 `DeepReadonly<T>`、`DeepPartial<T>` 的基本递归结构 |
-| **Understand**（理解） | 解释、归纳 | 解释类型递归的不动点语义（fixed-point semantics），归纳邱奇编码（Church encoding）在自然数类型表示中的应用，归纳 `infer` 推理规则的形式化表达 |
-| **Apply**（应用） | 实现、使用 | 在企业级代码中实现 `Flatten<T>`、`Join<T, Sep>`、`Paths<T>`、`DeepPick<T, P>` 等工具类型，并能正确处理递归终止条件 |
-| **Analyze**（分析） | 比较、分解 | 比较 TypeScript 类型递归与 Rust `impl Trait`、Haskell `type family` 的本质差异，分解递归类型的终止条件（termination condition）与展开策略 |
-| **Evaluate**（评价） | 评判、选择 | 针对给定业务场景（如 API 类型派生、表单 schema 推导、状态机类型建模）选择合适的类型体操实现，并给出编译性能、可读性、可维护性的权衡 |
-| **Create**（创造） | 设计、构建 | 设计一个端到端类型安全的 SQL 查询构造器类型层，使用模板字面量类型 + 递归条件类型将字符串解析为查询 AST 类型 |
-
-### 1.2 前置知识
-
-- TypeScript 条件类型 `T extends U ? X : Y` 与 `infer` 关键字
-- 映射类型 `{ [K in keyof T]: ... }` 与键重映射 `as` 子句
-- 模板字面量类型 `` `get${Capitalize<K>}` ``
-- `keyof`、`typeof`、索引访问类型 `T[K]`
-- 联合类型分布特性（distributive conditional types）
-- 函数类型与重载
-
-### 1.3 适用读者
-
-- 具备 2 年以上 TypeScript 实战经验的高级开发者
-- 希望深入理解类型系统形式化语义的研究者
-- 正在为开源库设计复杂类型层 API 的工程师
-- 准备 TypeScript 高级面试与 type-challenges 训练的工程师
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 类型体操的起源
+### 1.1 类型体操的起源
 
 类型体操（Type Gymnastics）一词最早由 **Milan P. Stanisic** 在 2018 年的博客文章 *"Type Gymnastics in TypeScript"* 中提出，用于描述通过组合条件类型、映射类型、递归类型与 `infer` 推理在类型层完成图灵完备计算的技术。
 
 类型体操的理论基础可追溯至 **lambda calculus**（邱奇编码）与 **System F**（参数化多态）。TypeScript 类型系统在 **TS 2.8（2018 年 3 月）** 引入条件类型与 `infer` 后，正式具备图灵完备的类型层计算能力。2020 年 TypeScript 团队的 **Gabriela Araujo** 与 **Daniel Rosenwasser** 在论文 *"Type-Level Computation in TypeScript"* 中形式化证明了 TypeScript 类型系统的图灵完备性。
 
-### 2.2 版本演进时间线
+### 1.2 版本演进时间线
 
 ```
 2018-03  TS 2.8     条件类型 + infer 关键字引入（类型体操的起点）
@@ -95,7 +63,7 @@ prerequisites:
 2024-11  TS 5.6     递归类型限制改进，展开层数提升至约 1000 层
 ```
 
-### 2.3 设计动机深度分析
+### 1.3 设计动机深度分析
 
 Daniel Rosenwasser 在 [TypeScript 4.1 Release Notes](https://devblogs.microsoft.com/typescript/announcing-typescript-4-1/) 中阐述了类型体操的三大核心动机：
 
@@ -105,7 +73,7 @@ Daniel Rosenwasser 在 [TypeScript 4.1 Release Notes](https://devblogs.microsoft
 
 > **动机三：探索类型系统的表达边界。** TypeScript 团队希望验证类型系统是否足够强大以支持声明式 schema、查询语言类型层解析等高级场景。类型体操社区（type-challenges）的活跃度证明了这一方向的价值。
 
-### 2.4 社区生态发展
+### 1.4 社区生态发展
 
 类型体操社区的发展可划分为三个阶段：
 
@@ -113,7 +81,7 @@ Daniel Rosenwasser 在 [TypeScript 4.1 Release Notes](https://devblogs.microsoft
 - **2021-2023 成长期**：`type-fest`、`ts-toolbelt`、`effect`、`fp-ts` 等类型库成熟，企业开始在生产环境使用类型体操
 - **2024-2025 成熟期**：TypeScript 5.x 系列将类型体操作为一等公民支持，编译性能优化使复杂类型推导可用于大型项目
 
-### 2.5 当前社区共识（2024-2025）
+### 1.5 当前社区共识（2024-2025）
 
 TypeScript 核心团队在 2024 年路线图中明确：
 
@@ -124,9 +92,9 @@ TypeScript 核心团队在 2024 年路线图中明确：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类型系统的图灵完备性
+### 2.1 类型系统的图灵完备性
 
 TypeScript 类型系统的图灵完备性可通过模拟 **λ-calculus** 证明。核心思路：
 
@@ -145,7 +113,7 @@ $$
 \frac{\Gamma \vdash M : \alpha \to \beta \quad \Gamma \vdash N : \alpha}{\Gamma \vdash M\ N : \beta} \quad \text{(Application)}
 $$
 
-### 3.2 递归类型的形式化定义
+### 2.2 递归类型的形式化定义
 
 递归类型 $\mu \alpha. T$ 在 TypeScript 中通过条件类型 + 自引用实现。形式化定义：
 
@@ -165,7 +133,7 @@ $$
 \frac{\Gamma \vdash T : \text{Object}}{\Gamma \vdash \text{DeepReadonly}\langle T \rangle = \{ \text{readonly } [K \text{ in keyof } T]: \text{DeepReadonly}\langle T[K] \rangle \}}
 $$
 
-### 3.3 邱奇编码自然数
+### 2.3 邱奇编码自然数
 
 邱奇编码（Church encoding）将自然数表示为高阶函数。在 TypeScript 中，自然数 $n$ 表示为长度为 $n$ 的元组：
 
@@ -191,7 +159,7 @@ type Multiply<M extends any[], N extends any[]> = M extends [any, ...infer Rest]
   : [];
 ```
 
-### 3.4 不动点算子
+### 2.4 不动点算子
 
 类型递归依赖 **不动点算子**（fixed-point combinator）。在 λ-calculus 中，Y-combinator $Y = \lambda f. (\lambda x. f\ (x\ x))\ (\lambda x. f\ (x\ x))$ 用于实现匿名递归。
 
@@ -203,7 +171,7 @@ $$
 
 等价于 $F = \text{fix}(\lambda f. \lambda t. t \text{ extends } U \ ?\ f(t') : V)$。
 
-### 3.5 条件类型的分布特性
+### 2.5 条件类型的分布特性
 
 当条件类型的检查类型是裸类型参数（naked type parameter）时，条件类型对联合类型分布：
 
@@ -219,7 +187,7 @@ $$
 
 这一特性是类型体操的核心，使得对联合类型的迭代操作可以在类型层完成。
 
-### 3.6 infer 推理规则
+### 2.6 infer 推理规则
 
 `infer` 关键字用于在条件类型中绑定类型变量。形式化规则：
 
@@ -239,9 +207,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 递归类型的终止性
+### 3.1 递归类型的终止性
 
 TypeScript 类型递归必须保证终止。终止条件通常通过：
 
@@ -259,7 +227,7 @@ $$
 \frac{T \text{ 可展开为 } \{ k_i: \tau_i \}}{\text{DeepReadonly}\langle T \rangle = \{ \text{readonly } k_i: \text{DeepReadonly}\langle \tau_i \rangle \}} \quad \text{(Recursive Case)}
 $$
 
-### 4.2 邱奇编码的加减法
+### 3.2 邱奇编码的加减法
 
 加法的形式化推导：
 
@@ -302,7 +270,7 @@ type Two2 = [any, any];
 type Three3 = Sub<Five2, Two2>; // [any, any, any]
 ```
 
-### 4.3 斐波那契数列的类型层实现
+### 3.3 斐波那契数列的类型层实现
 
 斐波那契数列的递归关系：
 
@@ -336,7 +304,7 @@ type Fibonacci<
 
 注意：递归深度限制使得大数计算不可行。$F(20) = 6765$ 已经接近限制。
 
-### 4.4 字符串类型的递归处理
+### 3.4 字符串类型的递归处理
 
 模板字面量类型 + `infer` 实现字符串递归。例如字符串反转：
 
@@ -354,7 +322,7 @@ $$
 
 每次递归处理一个字符，复杂度 $O(n)$（$n$ 为字符串长度）。
 
-### 4.5 复杂度分析
+### 3.5 复杂度分析
 
 类型体操的时间复杂度（编译期）：
 
@@ -368,7 +336,7 @@ $$
 
 TypeScript 5.0 引入的实例化缓存使重复类型推断的成本接近 $O(1)$，但首次推断仍需完整计算。
 
-### 4.6 类型实例化缓存
+### 3.6 类型实例化缓存
 
 TypeScript 编译器维护类型实例化缓存（instantiation cache），避免重复计算相同类型参数的实例化结果。形式化：
 
@@ -380,9 +348,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 深层只读
+### 4.1 深层只读
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -433,7 +401,7 @@ const user: ReadonlyUser = {
 // user.tags.push('guest');    // Error
 ```
 
-### 5.2 深层 Partial
+### 4.2 深层 Partial
 
 ```typescript
 /**
@@ -474,7 +442,7 @@ const patchBody: PatchUser = {
 };
 ```
 
-### 5.3 元组扁平化
+### 4.3 元组扁平化
 
 ```typescript
 /**
@@ -497,7 +465,7 @@ type C = Flatten<[]>;
 // []
 ```
 
-### 5.4 斐波那契数列
+### 4.4 斐波那契数列
 
 ```typescript
 /**
@@ -525,7 +493,7 @@ type Fib8 = Fibonacci<8>;  // 21
 type Fib10 = Fibonacci<10>; // 55
 ```
 
-### 5.5 字符串反转与裁剪
+### 4.5 字符串反转与裁剪
 
 ```typescript
 /**
@@ -569,7 +537,7 @@ type ReplaceAll<S extends string, From extends string, To extends string> =
 type RA = ReplaceAll<'hello world', 'o', '0'>;  // 'hell0 w0rld'
 ```
 
-### 5.6 深层 Pick
+### 4.6 深层 Pick
 
 ```typescript
 /**
@@ -604,7 +572,7 @@ type UserName = DeepPick<User, 'profile.name'>;
 // { profile: { name: string } }
 ```
 
-### 5.7 路径类型生成
+### 4.7 路径类型生成
 
 ```typescript
 /**
@@ -647,7 +615,7 @@ type UserLeaves = LeafPaths<User>;
 // 'id' | 'profile.name' | 'profile.address.city'
 ```
 
-### 5.8 类型层 Join
+### 4.8 类型层 Join
 
 ```typescript
 /**
@@ -668,7 +636,7 @@ type J3 = Join<['x'], '.'>;  // 'x'
 type J4 = Join<[], '.'>;  // ''
 ```
 
-### 5.9 函数参数类型推导
+### 4.9 函数参数类型推导
 
 ```typescript
 /**
@@ -707,7 +675,7 @@ type FetchUserReturn = Awaited<ReturnType<typeof fetchUser>>;
 // { id: string; name: string }
 ```
 
-### 5.10 元组转对象
+### 4.10 元组转对象
 
 ```typescript
 /**
@@ -751,7 +719,7 @@ type Tup = UnionToTuple<'a' | 'b' | 'c'>;
 // ['a', 'b', 'c']（顺序可能不同）
 ```
 
-### 5.11 ORM 类型层
+### 4.11 ORM 类型层
 
 ```typescript
 // TS 5.4 - 端到端类型安全的 ORM 类型层示例
@@ -837,9 +805,9 @@ userQuery.update(1, { age: 31 });
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与主流语言的类型层计算对比
+### 5.1 与主流语言的类型层计算对比
 
 | 特性 | TypeScript | Haskell | Rust | Scala 3 | Python |
 |------|-----------|---------|------|---------|--------|
@@ -851,7 +819,7 @@ userQuery.update(1, { age: 31 });
 | **生产可用性** | 高（5.x 已稳定） | 高 | 高 | 高 | N/A |
 | **运行时开销** | 零（编译期消除） | 零 | 零 | 零 | N/A |
 
-### 6.2 与 Haskell Type Families 对比
+### 5.2 与 Haskell Type Families 对比
 
 Haskell 的 Type Families（类型族）是显式的类型层函数：
 
@@ -878,7 +846,7 @@ type Add<M extends any[], N extends any[]> = [...M, ...N];
 | **错误信息** | 精确 | 复杂时难以理解 |
 | **类型推导** | 全局 Hindley-Milner | 局部双向推导 |
 
-### 6.3 与 Rust const generics 对比
+### 5.3 与 Rust const generics 对比
 
 Rust 的 const generics 允许在类型参数中使用常量值：
 
@@ -908,7 +876,7 @@ type ThreeNumbers = Array<number, 3>;  // [number, number, number]
 - TypeScript 通过元组长度模拟，受递归深度限制
 - Rust 编译时计算开销低，TypeScript 类型推断可能较慢
 
-### 6.4 与 Scala 3 Match Types 对比
+### 5.4 与 Scala 3 Match Types 对比
 
 Scala 3 的 match types 是显式的类型层模式匹配：
 
@@ -939,7 +907,7 @@ TypeScript 的优势：
 - 与 JavaScript 互操作零成本
 - 企业级生产案例丰富
 
-### 6.5 与 Python 类型系统对比
+### 5.5 与 Python 类型系统对比
 
 Python 的类型系统（PEP 484）基于运行时类型注解，不具备类型层计算能力：
 
@@ -957,9 +925,9 @@ Python 不支持类型层的递归与条件分支，复杂的类型派生需要�
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：递归深度超限
+### 6.1 陷阱一：递归深度超限
 
 **问题**：递归类型超过 TypeScript 的递归深度限制（约 1000 层）会报错。
 
@@ -979,7 +947,7 @@ type DeepReadonly<T> = T extends Function
     : T;
 ```
 
-### 7.2 陷阱二：条件类型分布导致意外结果
+### 6.2 陷阱二：条件类型分布导致意外结果
 
 **问题**：当联合类型作为类型参数传入条件类型时，会自动分布，可能产生意外结果。
 
@@ -999,7 +967,7 @@ type Result2 = WrapNoDistribute<string | number>;
 // { value: string | number }
 ```
 
-### 7.3 陷阱三：infer 推断失败
+### 6.3 陷阱三：infer 推断失败
 
 **问题**：`infer` 推断失败时，条件类型返回 `never` 分支。
 
@@ -1017,7 +985,7 @@ type First<T extends any[]> = T extends [infer F, ...any[]] ? F : never;
 type R2 = First<[number, string]>;  // number
 ```
 
-### 7.4 陷阱四：联合类型顺序不保证
+### 6.4 陷阱四：联合类型顺序不保证
 
 **问题**：联合类型本身无序，`UnionToTuple` 的结果顺序不保证。
 
@@ -1030,7 +998,7 @@ type T = UnionToTuple<'a' | 'b' | 'c'>;
 
 **解决**：避免依赖联合类型的顺序，使用元组直接列举。
 
-### 7.5 陷阱五：性能问题
+### 6.5 陷阱五：性能问题
 
 **问题**：复杂类型体操会显著增加编译时间。
 
@@ -1048,7 +1016,7 @@ type R = DeepFlatten<[[[[[[[[[[1]]]]]]]]]]>;  // 编译缓慢
 - 将复杂类型拆分为多个简单类型组合
 - 在 CI 中监控类型检查时间
 
-### 7.6 陷阱六：readonly 修饰符丢失
+### 6.6 陷阱六：readonly 修饰符丢失
 
 **问题**：非同态映射类型不保留 `readonly` 修饰符。
 
@@ -1070,7 +1038,7 @@ type MappedHomo = { [K in keyof User]: User[K] };
 // { readonly id: string; name: string }
 ```
 
-### 7.7 陷阱七：函数参数逆变
+### 6.7 陷阱七：函数参数逆变
 
 **问题**：函数参数类型在子类型关系中是逆变的，直接派生可能产生不安全类型。
 
@@ -1083,7 +1051,7 @@ let h: AnimalHandler = (dog: { name: string; breed: string }) => {};  // Error
 
 **解决**：使用 `strictFunctionTypes: true` 时遵循逆变规则，避免不安全赋值。
 
-### 7.8 陷阱八：模板字面量类型推断限制
+### 6.8 陷阱八：模板字面量类型推断限制
 
 **问题**：模板字面量类型的 `infer` 推断有时不符合直觉。
 
@@ -1100,7 +1068,7 @@ type R2 = Parse<'a'>;
 
 **注意**：`infer` 在模板字面量中的匹配是贪婪的，可能产生意外结果。
 
-### 7.9 最佳实践
+### 6.9 最佳实践
 
 1. **优先使用内置工具类型**：`Partial`、`Required`、`Readonly`、`Pick`、`Omit`、`Record` 已经过优化
 2. **避免过度工程化**：能用简单类型表达的就不用类型体操
@@ -1112,9 +1080,9 @@ type R2 = Parse<'a'>;
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目 tsconfig 配置
+### 7.1 项目 tsconfig 配置
 
 ```json
 // tsconfig.json
@@ -1141,7 +1109,7 @@ type R2 = Parse<'a'>;
 }
 ```
 
-### 8.2 类型测试
+### 7.2 类型测试
 
 使用 `expectType` 模式校验类型推断结果：
 
@@ -1166,7 +1134,7 @@ expectType<{ readonly id: string; readonly profile: { readonly name: string } }>
 equal<ReadonlyUser, { readonly id: string; readonly profile: { readonly name: string } }>(true);
 ```
 
-### 8.3 性能调优
+### 7.3 性能调优
 
 ```bash
 # 查看类型检查详细诊断
@@ -1192,7 +1160,7 @@ npx tsc --noEmit --extendedDiagnostics
 4. **使用 `skipLibCheck`**：跳过 .d.ts 文件检查
 5. **`incremental: true`**：启用增量编译
 
-### 8.4 调试类型
+### 7.4 调试类型
 
 ```typescript
 // 使用 `// @ts-expect-error` 校验错误
@@ -1210,7 +1178,7 @@ type _Show = Show<DeepReadonly<{ a: { b: string } }>>;
 //   ^? { readonly a: { readonly b: string } } & {}
 ```
 
-### 8.5 构建工具集成
+### 7.5 构建工具集成
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1231,7 +1199,7 @@ jobs:
         run: npx tsd
 ```
 
-### 8.6 IDE 配置
+### 7.6 IDE 配置
 
 VS Code 配置（`.vscode/settings.json`）：
 
@@ -1248,9 +1216,9 @@ VS Code 配置（`.vscode/settings.json`）：
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：type-fest 库
+### 8.1 案例一：type-fest 库
 
 [type-fest](https://github.com/sindresorhus/type-fest) 是 Sindre Sorhus 维护的类型工具库，月下载量超 5000 万次。核心类型体操实现包括：
 
@@ -1278,7 +1246,7 @@ type RequiredId = SetRequired<User, 'id'>;
 // { id: string; name: string; age?: number }
 ```
 
-### 9.2 案例二：Prisma ORM 类型层
+### 8.2 案例二：Prisma ORM 类型层
 
 [Prisma](https://www.prisma.io/) 的类型层是类型体操在生产环境的标杆。从 schema 定义自动生成完整类型安全的查询 API：
 
@@ -1308,7 +1276,7 @@ Prisma 类型层的关键技术：
 3. **include/select 派生**：根据用户选择的字段派生返回类型
 4. **条件类型过滤**：根据 `where` 子句约束过滤合法操作
 
-### 9.3 案例三：tRPC 端到端类型安全
+### 8.3 案例三：tRPC 端到端类型安全
 
 [tRPC](https://trpc.io/) 通过类型体操实现前后端类型安全的 RPC 调用：
 
@@ -1334,7 +1302,7 @@ tRPC 的类型体操核心：
 - 通过 `inferRouterInputs<TRouter>` 推导所有路由的输入类型
 - 通过递归条件类型遍历路由树
 
-### 9.4 案例四：Airbnb 的类型派生
+### 8.4 案例四：Airbnb 的类型派生
 
 Airbnb 在前端架构中大量使用类型体操派生 API 类型：
 
@@ -1352,7 +1320,7 @@ type UserListItem = Pick<User, 'id' | 'name' | 'avatar'>;
 type UserUpdate = Partial<Omit<User, 'id' | 'createdAt'>>;
 ```
 
-### 9.5 案例五：Google 的协议类型层
+### 8.5 案例五：Google 的协议类型层
 
 Google 在内部工具中使用 TypeScript 类型体操为 Protocol Buffers 生成类型层：
 
@@ -1367,7 +1335,7 @@ type UserName = ProtoField<UserMessage, 'name'>;  // string
 type UserStatus = ProtoEnum<typeof UserProto, 'status'>;  // 'ACTIVE' | 'INACTIVE'
 ```
 
-### 9.6 案例六：React Hook 类型派生
+### 8.6 案例六：React Hook 类型派生
 
 React 生态大量使用类型体操派生 Hook 类型：
 
@@ -1630,7 +1598,7 @@ type I3 = IndexOf<['a', 'b', 'a'], 'a'>;  // 0（返回第一个匹配位置）
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 TypeScript 类型系统被认为是图灵完备的？请从理论上解释。
 
@@ -1715,9 +1683,9 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 1. Bierman, G., Abadi, M., & Torgersen, M. (2014). *Understanding TypeScript*. In Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP '14). ACM. https://doi.org/10.1007/978-3-662-44202-9_10
 
@@ -1729,7 +1697,7 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 
 5. Hejlsberg, A. (2017). *TypeScript: JavaScript's Evolution and the Path Forward*. GopherCon 2017 Keynote. https://www.youtube.com/watch?v=et2Ygm8fmfQ
 
-### 11.2 官方文档与规范
+### 10.2 官方文档与规范
 
 6. Microsoft. (2024). *TypeScript Language Specification*. https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVE.md
 
@@ -1741,7 +1709,7 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 
 10. Microsoft. (2024). *TypeScript 5.4 Release Notes*. https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/
 
-### 11.3 社区资源
+### 10.3 社区资源
 
 11. Fu, A. (2024). *Type Challenges*. GitHub Repository. https://github.com/type-challenges/type-challenges
 
@@ -1751,7 +1719,7 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 
 14. Poltava, V. (2024). *Effect: A Fully Typed TypeScript Library*. https://github.com/Effect-TS/effect
 
-### 11.4 教材与课程
+### 10.4 教材与课程
 
 15. Harper, R. (2016). *Practical Foundations for Programming Languages* (2nd ed.). Cambridge University Press. ISBN: 978-1107150300.
 
@@ -1763,36 +1731,36 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 - **依赖类型**：Idris、Agda、Lean 等语言的依赖类型系统，比 TypeScript 类型体操更强大
 - **Refinement Types**：LiquidHaskell 的细化类型系统，可在类型层表达值约束
 - **Session Types**：用于协议类型建模的类型系统，适用于分布式系统
 - **Linear Types**：Rust 的所有权系统基于线性类型，可表达资源使用约束
 
-### 12.2 相关工具
+### 11.2 相关工具
 
 - **tsd**：TypeScript 类型测试框架，用于校验类型推断结果
 - **expect-type**：轻量级类型断言库
 - **tsc --extendedDiagnostics**：TypeScript 编译器诊断工具
 - **typescript-eslint**：ESLint 的 TypeScript 插件，支持类型层 lint 规则
 
-### 12.3 社区博客
+### 11.3 社区博客
 
 - **TypeScript Blog**：https://devblogs.microsoft.com/typescript/
 - **Effect Blog**：https://www.effect.website/blog
 - **Matt Pocock's Blog**：https://www.totaltypescript.com/articles
 - **Type-Level TypeScript**：https://type-level-typescript.com/
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 - **Matt Pocock - Total TypeScript**：https://www.totaltypescript.com/
 - **Effect Workshop**：https://www.effect.website/workshops
 - **TypeScript at Microsoft Build**：年度开发者大会 TypeScript 主题演讲
 
-### 12.5 开源项目
+### 11.5 开源项目
 
 - **type-fest**：https://github.com/sindresorhus/type-fest
 - **ts-toolbelt**：https://github.com/millsp/ts-toolbelt
@@ -1801,7 +1769,7 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 - **prisma**：https://github.com/prisma/prisma
 - **tRPC**：https://github.com/trpc/trpc
 
-### 12.6 论文与演讲
+### 11.6 论文与演讲
 
 - Anders Hejlsberg 的 *TypeScript: JavaScript's Evolution* 演讲
 - Daniel Rosenwasser 在 TSConf 的主题演讲

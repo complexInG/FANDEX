@@ -21,18 +21,8 @@ prerequisites:
   - typescript/泛型
 ---
 
+
 # TypeScript 迁移实战
-
-## 学习目标
-
-本节按 Bloom 认知层级组织学习目标，从基础记忆到高级创造逐层递进：
-
-- **记忆（Remember）**：能够复述 JavaScript 到 TypeScript 迁移的四个阶段（allowJs/checkJs、类型注解、文件重命名、严格模式），列出 `tsconfig.json` 中至少 8 个关键编译选项的含义。
-- **理解（Understand）**：能够解释渐进式迁移（Progressive Migration）的设计理念，说明 `strict`、`noImplicitAny`、`strictNullChecks` 各自的作用范围，描述 JSDoc 与 TypeScript 类型声明的互操作机制。
-- **应用（Apply）**：能够在现有 JavaScript 项目中安装 TypeScript、配置 `tsconfig.json`、使用 JSDoc 注解为 `.js` 文件添加类型，并使用 `tsc --noEmit` 检查类型错误。
-- **分析（Analyze）**：能够分析迁移过程中的典型错误（`Cannot find module`、`Object is possibly null`、`Type 'X' is not assignable to type 'Y'`），识别错误根源是类型声明缺失、严格模式启用还是第三方库类型不全。
-- **评估（Evaluate）**：能够评估不同迁移策略（直接重命名法、JSDoc 桥接法、新文件法）的适用场景，判断何时引入 `@ts-expect-error`、何时必须修复类型，以及何时降级严格模式以保持迁移进度。
-- **创造（Create）**：能够为大型项目（100+ 文件）设计完整的迁移路线图，包含里程碑划分、类型覆盖率度量、CI 集成、团队培训、回滚预案，并预留扩展点支持未来类型增强。
 
 ## 历史动机与背景
 

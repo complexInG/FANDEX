@@ -42,14 +42,6 @@ related:
 prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/递归与回溯
-learningObjectives:
-  - 记忆 LeetCode 平台的发展脉络（Winston Tang 2015 创立、2018 进入中国）、十大题型分类体系（数组/链表/树/图/二分/回溯/DP/贪心/滑动窗口/单调栈）、三遍刷题法（理解-独立求解-归纳模式）与四步解题法（审题-建模-编码-验证）的核心步骤
-  - 理解算法竞赛平台演进史（ACM ICPC 1970、Google Code Jam 2003-2023、Topcoder Open 2001、Meta Hacker Cup 2011、Codeforces 2009 by Mirzayanov、AtCoder 2012）、LeetCode Hot 100/Top Interview 150/Grind 75/NeetCode 150 四大刷题清单的设计动机与适用场景
-  - 应用时间复杂度反推规则（$n \leq 20 \to O(2^n)$、$n \leq 100 \to O(n^3)$、$n \leq 10^4 \to O(n^2)$、$n \leq 10^6 \to O(n \log n)$、$n \leq 10^9 \to O(\log n)$）从题目约束反推可行算法类别，编写 Python/C++/Java 三语言模板代码并通过 LeetCode 评测
-  - 分析双指针、滑动窗口、二分查找、回溯、BFS/DFS、单调栈、前缀和、位运算八大解题模板的复杂度与正确性不变式，掌握"暴力→记忆化→DP→状态压缩→位运算"的优化链路
-  - 评估 LeetCode/LintCode/HackerRank/CodeSignal/牛客网五大面试导向平台与 Codeforces/AtCoder/Topcoder 三大竞赛导向平台在题库设计、评测机制、社区生态、面试价值维度的优劣
-  - 对比 FAANG（Google/Meta/Amazon/Microsoft/Apple）与国内大厂（字节跳动/腾讯/阿里巴巴/百度/美团）的算法面试风格、考察重点、典型题目与评分标准
-  - 创造性设计 LeetCode 题目到工业场景的映射方案，如 LRU Cache → Redis 缓存淘汰、并查集 → Kubernetes 网络策略、滑动窗口 → Prometheus 异常检测、前缀和 → Prometheus Range Query、单调栈 → Git blame 增量计算
 references:
   - type: book
     authors:
@@ -291,6 +283,7 @@ etymology:
     english: Dynamic Programming
     origin: 'Dynamic Programming 由 Bellman 1952《On the Theory of Dynamic Programming》PNAS 38(8):716-719 系统化。"Programming" 此处取 1940 年代数学优化术语含义"规划、表格化计算"，非"程序设计"。Bellman 在自传 Eye of the Hurricane 中解释：选 "dynamic" 一词是因为难以定义且具有威慑性，便于争取研究经费。LeetCode 70/198/300/322/72 等经典 DP 题目均基于 Bellman 范式'
 ---
+
 
 ## 1. 概述与学习目标
 

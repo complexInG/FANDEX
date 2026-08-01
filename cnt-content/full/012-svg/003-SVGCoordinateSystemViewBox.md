@@ -14,52 +14,16 @@ related:
 prerequisites:
   - svg/基础语法与文档结构
 ---
+
 # SVG 坐标系与 viewBox 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章延续 MIT 6.831《用户界面设计与实现》与 Stanford CS248《图形学导论》的教学严谨度,在文档结构基础上深入 SVG 坐标系的形式化定义。学完本章后,学习者应当能够在 Bloom 教育目标分类法的六个层级上达成下列能力。
-
-### 1.1 Bloom 能力矩阵
-
-| 层级 | 行为动词 | 本章目标能力 | 评估方式 |
-| ---- | -------- | ------------ | -------- |
-| **Remember** 记忆 | 列举、复述 | 能列举视口、视图框、preserveAspectRatio 三大坐标系核心概念 | 选择题、填空题 |
-| **Understand** 理解 | 解释、归纳 | 能解释 viewBox 映射矩阵、坐标系方向、meet/slice 适配策略 | 概念辨析题 |
-| **Apply** 应用 | 使用、实现 | 能编写响应式 SVG 图标,正确配置 viewBox 与 preserveAspectRatio | 实操题 |
-| **Analyze** 分析 | 比较、分解 | 能分析嵌套 svg 坐标系复合的代数性质、负坐标偏移的几何含义 | 对比分析题 |
-| **Evaluate** 评价 | 评判、推荐 | 能评估坐标系设计的合理性,给出响应式适配的工程化建议 | 代码评审题 |
-| **Create** 创造 | 设计、构建 | 能设计一个支持多分辨率自适应的 SVG 图标体系 | 架构设计题 |
-
-### 1.2 知识图谱前置依赖
-
-```mermaid
-graph LR
-    A[基础语法与文档结构] --> B[本章:坐标系与 viewBox]
-    M[Math: 线性代数基础] --> C[仿射变换矩阵]
-    C --> B
-    B --> D[基本图形详解]
-    B --> E[路径 path 详解]
-    B --> F[变换 transform]
-    B --> G[响应式设计]
-```
-
-### 1.3 学习成果清单
-
-完成本章学习后,学习者应当能够产出:
-
-1. 一份支持响应式自适应的 SVG 图标(单 viewBox 适配多分辨率)
-2. 一份带局部放大效果的 SVG 图(通过 viewBox 范围切换)
-3. 一份坐标系映射矩阵的形式化推导说明
-4. 一份 preserveAspectRatio 适配策略速查表
-
-## 2. 历史动机与发展脉络
-
-### 2.1 坐标系设计的几何渊源
+### 1.1 坐标系设计的几何渊源
 
 计算机图形学的坐标系选择并非偶然。1963 年 Ivan Sutherland 在 Sketchpad 系统中首次采用屏幕左上角为原点的坐标系,这一选择源自 CRT 显示器的电子束扫描方向:从左至右、从上至下。这一历史惯性延续至今,SVG、Canvas、HTML 布局均采用 Y 轴向下的坐标系。
 
@@ -73,7 +37,7 @@ graph LR
 
 注意 SVG 与 WebGL 的 Y 轴方向相反,这一差异在 SVG-WebGL 协作场景(如 three.js 纹理映射)中常引发坐标翻转 bug。
 
-### 2.2 viewBox 的诞生背景
+### 1.2 viewBox 的诞生背景
 
 SVG 1.0(2001 年)首次引入 viewBox 概念,旨在解决两个核心问题:
 
@@ -82,7 +46,7 @@ SVG 1.0(2001 年)首次引入 viewBox 概念,旨在解决两个核心问题:
 
 在 viewBox 之前,Web 图像只能通过 PNG/JPEG 的 width/height 被动缩放,内部坐标无法重映射。viewBox 的引入使 SVG 真正具备了"矢量"语义:图形数据保持不变,通过坐标系变换适配任意显示尺寸。
 
-### 2.3 与 HTML/CSS 视口模型的对比
+### 1.3 与 HTML/CSS 视口模型的对比
 
 SVG 的视口模型与 CSS 视口模型在概念上有共通之处,但语义不同:
 
@@ -96,7 +60,7 @@ SVG 的视口模型与 CSS 视口模型在概念上有共通之处,但语义不�
 
 理解这一差异有助于在设计响应式 SVG 时选择正确的策略:HTML 处理外层布局,SVG 内部用 viewBox 处理图形缩放,两者协同工作。
 
-### 2.4 设计哲学:数据与显示解耦
+### 1.4 设计哲学:数据与显示解耦
 
 SVG 坐标系的设计哲学可概括为"数据与显示解耦":
 
@@ -106,9 +70,9 @@ SVG 坐标系的设计哲学可概括为"数据与显示解耦":
 
 这一三层模型使 SVG 具备了分辨率无关性(resolution independence),是其与位图格式的本质区别。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 视口与视图框的数学模型
+### 2.1 视口与视图框的数学模型
 
 设视口(viewport)为矩形 $V = [0, W] \times [0, H]$,视图框(viewBox)为矩形 $B = [x_{\min}, x_{\min} + w] \times [y_{\min}, y_{\min} + h]$。SVG 的坐标系映射可形式化为一个仿射变换:
 
@@ -118,7 +82,7 @@ $$
 
 其中缩放因子 $s_x = W / w$, $s_y = H / h$。当 preserveAspectRatio 不为 none 时,$s_x = s_y = s$ 以保持宽高比。
 
-### 3.2 preserveAspectRatio 的几何约束
+### 2.2 preserveAspectRatio 的几何约束
 
 preserveAspectRatio 的对齐参数 $\alpha \in \{\text{xMin}, \text{xMid}, \text{xMax}\} \times \{\text{YMin}, \text{YMid}, \text{YMax}\}$ 决定映射时的偏移。设视口宽高比 $r_v = W/H$,视图框宽高比 $r_b = w/h$:
 
@@ -144,7 +108,7 @@ $$
 
 其中 $s = \min(W/w, H/h)$ 为 meet 模式的等比缩放因子。
 
-### 3.3 slice 模式的裁剪几何
+### 2.3 slice 模式的裁剪几何
 
 slice 模式采用 $s = \max(W/w, H/h)$,将视图框放大填满视口,超出部分被裁剪。其几何含义是:视图框的子矩形 $B' \subseteq B$ 被映射到整个视口 $V$,$B'$ 的尺寸由:
 
@@ -157,7 +121,7 @@ $$
 
 对齐参数 $\alpha$ 决定 $B'$ 在 $B$ 内的位置,从而控制可见区域。
 
-### 3.4 坐标系方向的向量空间表示
+### 2.4 坐标系方向的向量空间表示
 
 SVG 坐标系可表示为二维实数向量空间 $\mathbb{R}^2$ 上的有序基:
 
@@ -167,7 +131,7 @@ $$
 
 任意点 $P = (x, y) = x \cdot \vec{e}_x + y \cdot \vec{e}_y$。由于 Y 轴向下,向量 $(0, 1)$ 在屏幕上指向"下方",这与数学中的"向上"相反。在涉及旋转角度时需特别注意:SVG 中的正旋转角度是顺时针方向,与数学中的逆时针相反。
 
-### 3.5 user units 与物理像素的关系
+### 2.5 user units 与物理像素的关系
 
 SVG 中的"user units"默认等于 CSS 像素(1px = 1/96 inch),但通过 `svg.width` 与 `viewBox` 的比例可实现任意缩放。设 $u$ 为 user unit,$p$ 为物理像素,则:
 
@@ -177,9 +141,9 @@ $$
 
 其中 $dpr$ 为设备像素比(device pixel ratio)。这一关系是 SVG 响应式设计的数学基础。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 viewBox 映射矩阵的推导
+### 3.1 viewBox 映射矩阵的推导
 
 viewBox 到视口的映射可表示为齐次坐标下的 $3 \times 3$ 仿射变换矩阵。设视图框为 $[x_{\min}, y_{\min}, w, h]$,视口为 $[W, H]$,meet 模式下:
 
@@ -201,7 +165,7 @@ $$
 
 任意内部点 $(x, y)$ 在视口中的位置为 $M \cdot (x, y, 1)^T$。这一矩阵表示是 SVG 坐标系代数性质的基础。
 
-### 4.2 复合坐标系的代数性质
+### 3.2 复合坐标系的代数性质
 
 嵌套 `<svg>` 建立的坐标系复合满足结合律。设外层映射为 $M_1$,内层映射为 $M_2$,则复合映射 $M = M_1 \cdot M_2$。由于仿射变换集合在矩阵乘法下:
 
@@ -212,7 +176,7 @@ $$
 
 因此仿射变换集合构成一个**幺半群**(monoid),这是 SVG 坐标系复合可被任意嵌套的代数保证。
 
-### 4.3 preserveAspectRatio 的边界条件
+### 3.3 preserveAspectRatio 的边界条件
 
 当视图框宽高比与视口宽高比相等时,meet 与 slice 的行为一致,均无留白也无裁剪。形式化:
 
@@ -222,7 +186,7 @@ $$
 
 此时对齐参数 $\alpha$ 不影响结果。这一等价条件是测试 SVG 坐标系实现的边界用例。
 
-### 4.4 嵌套 svg 与 transform 的等价性
+### 3.4 嵌套 svg 与 transform 的等价性
 
 嵌套 `<svg>` 与 `<g transform>` 在某些场景下功能等价。设有嵌套:
 
@@ -244,7 +208,7 @@ $$
 
 其中 $0.25 = 50/200$ 是内层 viewBox 到内层视口的缩放因子。这一等价性是 SVG 坐标系代数性质的应用。
 
-### 4.5 坐标系变换的行列式与定向
+### 3.5 坐标系变换的行列式与定向
 
 仿射变换矩阵的左上 $2 \times 2$ 子矩阵的行列式决定坐标系的定向(preservation of orientation):
 
@@ -258,7 +222,7 @@ $$
 
 SVG 的 meet/slice 模式保证 $\det > 0$,即不改变定向。但通过 transform 可实现定向反转,这是镜像效果的基础。
 
-### 4.6 抗锯齿与小数坐标的频率分析
+### 3.6 抗锯齿与小数坐标的频率分析
 
 像素是离散的,而 SVG 坐标是连续的。当坐标落在像素边界(如 $x = 10.5$)时,浏览器需通过抗锯齿算法在多个像素间分配颜色。可形式化为低通滤波:
 
@@ -268,9 +232,9 @@ $$
 
 其中 $I_{\text{ideal}}$ 为理想连续图像,$I_{\text{display}}$ 为离散像素值。当描边恰好落在像素边界时,积分覆盖两个像素,导致 1px 描边显示为 2px 灰色描边。这就是著名的"0.5 偏移技巧"的数学原理。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 视口(viewport)与视图框(viewBox)
+### 4.1 视口(viewport)与视图框(viewBox)
 
 `<svg>` 的 `width` 和 `height` 定义视口尺寸,`viewBox` 定义内部坐标系。
 
@@ -281,7 +245,7 @@ $$
 </svg>
 ```
 
-#### 5.1.1 viewBox 语法
+#### 4.1.1 viewBox 语法
 
 ```
 viewBox = "<min-x> <min-y> <width> <height>"
@@ -294,7 +258,7 @@ viewBox = "<min-x> <min-y> <width> <height>"
 | `width` | 视图框宽度 | 正实数 |
 | `height` | 视图框高度 | 正实数 |
 
-#### 5.1.2 viewBox 的核心价值
+#### 4.1.2 viewBox 的核心价值
 
 | 价值 | 说明 |
 | ---- | ---- |
@@ -303,7 +267,7 @@ viewBox = "<min-x> <min-y> <width> <height>"
 | **局部裁剪** | 通过调整 min-x/min-y 可显示图形局部 |
 | **独立于尺寸** | 同一 SVG 可用作 16px 图标或 1920px 横幅 |
 
-### 5.2 坐标系方向
+### 4.2 坐标系方向
 
 SVG 坐标系原点在**左上角**,X 轴向右、Y 轴**向下**(与数学坐标系 Y 轴相反)。
 
@@ -324,17 +288,17 @@ flowchart LR
 
 注意 Y 轴向下意味着:在描述物理场景时(如重力下落),自然映射是"y 增大";在描述数学函数(如正弦曲线)时,需翻转 Y 轴或调整坐标系。
 
-### 5.3 preserveAspectRatio 详解
+### 4.3 preserveAspectRatio 详解
 
 当 viewBox 与视口宽高比不一致时,`preserveAspectRatio` 控制如何适配。
 
-#### 5.3.1 语法
+#### 4.3.1 语法
 
 ```
 preserveAspectRatio = "<align> <meetOrSlice>"
 ```
 
-#### 5.3.2 对齐方式 align
+#### 4.3.2 对齐方式 align
 
 | 值 | 含义 | 应用场景 |
 | ---- | ---- | ---- |
@@ -348,7 +312,7 @@ preserveAspectRatio = "<align> <meetOrSlice>"
 | `xMidYMax` | 下中对齐 | 底部居中提示 |
 | `xMaxYMax` | 右下对齐 | 右下角关闭按钮 |
 
-#### 5.3.3 适配模式 meetOrSlice
+#### 4.3.3 适配模式 meetOrSlice
 
 | 值 | 行为 | 数学含义 |
 | ---- | ---- | ---- |
@@ -356,7 +320,7 @@ preserveAspectRatio = "<align> <meetOrSlice>"
 | `slice` | 填满视口,可能裁剪 | $s = \max(W/w, H/h)$ |
 | `none` | 拉伸变形,不保持比例 | $s_x = W/w, s_y = H/h$ |
 
-#### 5.3.4 示例对比
+#### 4.3.4 示例对比
 
 ```html
 <!-- viewBox 4:3,视口 1:1,meet 模式留白 -->
@@ -375,9 +339,9 @@ preserveAspectRatio = "<align> <meetOrSlice>"
 </svg>
 ```
 
-### 5.4 响应式图标实战
+### 4.4 响应式图标实战
 
-#### 5.4.1 单 viewBox 适配多尺寸
+#### 4.4.1 单 viewBox 适配多尺寸
 
 图标 SVG 通常只声明 viewBox,不指定 width/height,由外层 CSS 控制。
 
@@ -401,7 +365,7 @@ preserveAspectRatio = "<align> <meetOrSlice>"
 <svg class="icon-lg" viewBox="0 0 24 24">...</svg>
 ```
 
-#### 5.4.2 通过 CSS 自适应父容器
+#### 4.4.2 通过 CSS 自适应父容器
 
 ```css
 .responsive-svg {
@@ -421,7 +385,7 @@ preserveAspectRatio = "<align> <meetOrSlice>"
 
 SVG 自动按 16:9 比例缩放至父容器宽度,无需 JavaScript。
 
-### 5.5 负坐标与偏移
+### 4.5 负坐标与偏移
 
 viewBox 的 min-x/min-y 可为负数,便于以原点为中心描述图形。
 
@@ -436,7 +400,7 @@ viewBox 的 min-x/min-y 可为负数,便于以原点为中心描述图形。
 
 负坐标系的优势:以原点为中心描述几何图形,简化数学计算(如极坐标转换、旋转变换)。
 
-### 5.6 局部放大
+### 4.6 局部放大
 
 通过缩小 viewBox 范围实现局部放大。
 
@@ -456,7 +420,7 @@ viewBox 的 min-x/min-y 可为负数,便于以原点为中心描述图形。
 
 应用场景:地图缩放、图表聚焦、图片裁切预览。同一份 SVG 数据,通过 viewBox 切换即可显示不同视图。
 
-### 5.7 嵌套 svg 建立子坐标系
+### 4.7 嵌套 svg 建立子坐标系
 
 ```html
 <svg viewBox="0 0 400 200" width="400" height="200" xmlns="http://www.w3.org/2000/svg">
@@ -473,7 +437,7 @@ viewBox 的 min-x/min-y 可为负数,便于以原点为中心描述图形。
 
 嵌套 `<svg>` 的语义:在外层视口中开辟一块矩形区域,内部建立独立坐标系。常用于仪表盘、地图瓦片等"图中图"场景。
 
-### 5.8 坐标系与变换
+### 4.8 坐标系与变换
 
 `transform` 属性在坐标系层面应用变换,影响后续所有子元素。
 
@@ -488,7 +452,7 @@ viewBox 的 min-x/min-y 可为负数,便于以原点为中心描述图形。
 
 变换的顺序**不可交换**:`translate(100,0) rotate(45)` 与 `rotate(45) translate(100,0)` 结果不同。变换的复合遵循矩阵乘法的非交换性。
 
-### 5.9 viewBox 动态切换
+### 4.9 viewBox 动态切换
 
 通过 JavaScript 动态修改 viewBox 实现平移与缩放:
 
@@ -573,9 +537,9 @@ svg.addEventListener('mouseup', () => {
 
 这是地图应用、图片查看器、可缩放图表的核心实现模式。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 SVG vs Canvas 坐标系
+### 5.1 SVG vs Canvas 坐标系
 
 | 特性 | SVG | Canvas |
 | ---- | --- | ----- |
@@ -588,7 +552,7 @@ svg.addEventListener('mouseup', () => {
 | 变换累积 | transform 属性链式 | ctx.translate/rotate 累积 |
 | 坐标系嵌套 | 嵌套 `<svg>` | ctx.save/restore |
 
-### 6.2 SVG vs WebGL 坐标系
+### 5.2 SVG vs WebGL 坐标系
 
 | 特性 | SVG | WebGL |
 | ---- | --- | ----- |
@@ -599,7 +563,7 @@ svg.addEventListener('mouseup', () => {
 | 单位 | user units | 像素(屏幕空间) |
 | 旋转方向 | 顺时针(正角度) | 逆时针(正角度,数学约定) |
 
-### 6.3 viewBox vs CSS transform: scale()
+### 5.3 viewBox vs CSS transform: scale()
 
 | 特性 | viewBox 缩放 | CSS scale() |
 | ---- | ----------- | ----------- |
@@ -612,7 +576,7 @@ svg.addEventListener('mouseup', () => {
 
 注意 viewBox 缩放会同步缩放描边与字号,这是与 CSS transform: scale() 的核心差异。需要保持描边宽度不变时,使用 `vector-effect="non-scaling-stroke"`。
 
-### 6.4 meet vs slice vs none 的工程选型
+### 5.4 meet vs slice vs none 的工程选型
 
 | 模式 | 适用场景 | 优势 | 劣势 |
 | ---- | ---- | ---- | ---- |
@@ -620,9 +584,9 @@ svg.addEventListener('mouseup', () => {
 | `slice` | 全屏背景、cover 模式 | 无留白 | 可能裁剪 |
 | `none` | 已知精确尺寸场景 | 完全填满 | 形变 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 viewBox 与视口比例不一致导致留白
+### 6.1 viewBox 与视口比例不一致导致留白
 
 ```html
 <!-- 错误:viewBox 4:3,视口 16:9,默认 meet 会留白 -->
@@ -637,7 +601,7 @@ svg.addEventListener('mouseup', () => {
 2. 使用 `slice` 填满视口(可能裁剪)
 3. 接受留白(某些场景需要完整显示)
 
-### 7.2 小数坐标导致抗锯齿模糊
+### 6.2 小数坐标导致抗锯齿模糊
 
 ```html
 <!-- 模糊:1px 描边落在 .5 坐标,被分配到两个像素 -->
@@ -649,7 +613,7 @@ svg.addEventListener('mouseup', () => {
 
 **原理**:1px 描边的中心在 $y = 10.5$ 时,覆盖像素 10 和像素 11 各 50%,显示为 2px 灰色描边。将描边中心对齐到 $y = 10.5$ 的像素边界(即 $x = 0.5$)可使 1px 描边恰好覆盖像素 10。
 
-### 7.3 忘记设置 viewBox 导致图标无法缩放
+### 6.3 忘记设置 viewBox 导致图标无法缩放
 
 ```html
 <!-- 错误:仅有 width/height,CSS 缩放后比例可能变形 -->
@@ -665,7 +629,7 @@ svg.addEventListener('mouseup', () => {
 
 **最佳实践**:图标 SVG 始终声明 viewBox,省略 width/height,通过 CSS 控制最终显示尺寸。
 
-### 7.4 描边宽度随缩放变化
+### 6.4 描边宽度随缩放变化
 
 ```html
 <!-- 问题:viewBox 缩放后描边被放大 -->
@@ -685,7 +649,7 @@ svg.addEventListener('mouseup', () => {
 </svg>
 ```
 
-### 7.5 Y 轴方向与数学约定相反
+### 6.5 Y 轴方向与数学约定相反
 
 ```html
 <!-- 错误:误用数学坐标系绘制正弦曲线 -->
@@ -700,7 +664,7 @@ svg.addEventListener('mouseup', () => {
 </svg>
 ```
 
-### 7.6 嵌套 svg 与 g 混淆
+### 6.6 嵌套 svg 与 g 混淆
 
 ```html
 <!-- 混淆:用嵌套 svg 实现简单变换 -->
@@ -720,7 +684,7 @@ svg.addEventListener('mouseup', () => {
 
 **选择建议**:简单平移/缩放用 `<g transform>`,需要独立 viewBox 或独立 preserveAspectRatio 时才用嵌套 `<svg>`。
 
-### 7.7 preserveAspectRatio 默认值误解
+### 6.7 preserveAspectRatio 默认值误解
 
 ```html
 <!-- 误解:以为默认是 none(拉伸填满) -->
@@ -736,11 +700,11 @@ svg.addEventListener('mouseup', () => {
 <!-- 圆形被拉伸为椭圆 -->
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 响应式 SVG 设计模式
+### 7.1 响应式 SVG 设计模式
 
-#### 8.1.1 固定宽高比容器
+#### 7.1.1 固定宽高比容器
 
 ```css
 .aspect-ratio-box {
@@ -763,7 +727,7 @@ svg.addEventListener('mouseup', () => {
 </div>
 ```
 
-#### 8.1.2 自适应图标系统
+#### 7.1.2 自适应图标系统
 
 ```html
 <!-- Vue 3 组件:可缩放图标 -->
@@ -789,7 +753,7 @@ defineProps({
 </script>
 ```
 
-#### 8.1.3 React 组件封装
+#### 7.1.3 React 组件封装
 
 ```jsx
 import { memo } from 'react';
@@ -815,7 +779,7 @@ const Icon = memo(function Icon({ path, size = 24, color = 'currentColor', viewB
 export default Icon;
 ```
 
-### 8.2 SVG 查看器:平移与缩放
+### 7.2 SVG 查看器:平移与缩放
 
 ```javascript
 class SVGViewer {
@@ -903,7 +867,7 @@ class SVGViewer {
 }
 ```
 
-### 8.3 Vite 集成:SVG as Vue Component
+### 7.3 Vite 集成:SVG as Vue Component
 
 ```javascript
 // vite.config.js
@@ -938,7 +902,7 @@ import IconHeart from './assets/icons/heart.svg?component';
 </script>
 ```
 
-### 8.4 SVG 自动校验脚本
+### 7.4 SVG 自动校验脚本
 
 ```javascript
 // scripts/validate-svg-coords.mjs
@@ -1001,9 +965,9 @@ if (issues.length > 0) {
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一:Material Design 图标体系
+### 8.1 案例一:Material Design 图标体系
 
 Google Material Icons 采用统一的 24×24 viewBox 设计,所有图标在 `0 0 24 24` 坐标系内绘制:
 
@@ -1020,7 +984,7 @@ Google Material Icons 采用统一的 24×24 viewBox 设计,所有图标在 `0 0
 3. 使用 currentColor,通过 CSS color 控制颜色
 4. 路径使用整数坐标,确保清晰渲染
 
-### 9.2 案例二:GitHub Octicon 体系
+### 8.2 案例二:GitHub Octicon 体系
 
 GitHub 的 Octicon 在 16×16 viewBox 内设计,适配密集 UI:
 
@@ -1036,7 +1000,7 @@ GitHub 的 Octicon 在 16×16 viewBox 内设计,适配密集 UI:
 2. 坐标尽量使用整数,减少抗锯齿模糊
 3. `fill-rule="evenodd"` 处理复杂路径
 
-### 9.3 案例三:Bootstrap Icons 体系
+### 8.3 案例三:Bootstrap Icons 体系
 
 Bootstrap Icons 提供 16×16 与 24×24 双 viewBox 版本,适配不同 UI 场景:
 
@@ -1052,7 +1016,7 @@ Bootstrap Icons 提供 16×16 与 24×24 双 viewBox 版本,适配不同 UI 场�
 </svg>
 ```
 
-### 9.4 案例四:FANDEX 项目图标体系
+### 8.4 案例四:FANDEX 项目图标体系
 
 FANDEX 项目采用混合策略:
 
@@ -1073,7 +1037,7 @@ FANDEX 项目采用混合策略:
 </svg>
 ```
 
-### 9.5 案例五:D3.js 数据可视化
+### 8.5 案例五:D3.js 数据可视化
 
 D3.js 利用 viewBox 实现响应式图表:
 
@@ -1340,7 +1304,7 @@ const g = svg.append('g')
 - 文字居中对齐(text-anchor)(2 分)
 - 响应式 CSS 适配(3 分)
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 13**:为什么 SVG 选择 Y 轴向下而不是数学约定的向上?这一设计在现代显示器上还有意义吗?
 
@@ -1452,9 +1416,9 @@ const g = svg.append('g')
 - 大量小图标(16px)渲染时,SVG 描边可能模糊,可考虑 PNG fallback
 - 96px 大尺寸下,SVG 矢量优势明显,无失真
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 W3C 规范
+### 10.1 W3C 规范
 
 1. W3C. 2018. **SVG 2 Specification**. W3C Recommendation. https://doi.org/10.17487/RFC8141. Available at: https://www.w3.org/TR/SVG2/
 
@@ -1466,7 +1430,7 @@ const g = svg.append('g')
 
 5. WHATWG. 2023. **HTML Living Standard**. https://html.spec.whatwg.org/
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 6. Sutherland, I. E. 1963. **Sketchpad: A Man-Machine Graphical Communication System**. In *Proceedings of the Spring Joint Computer Conference* (AFIPS '63). Association for Computing Machinery, New York, NY, USA, 329–346. https://doi.org/10.1145/1461551.1461591
 
@@ -1476,7 +1440,7 @@ const g = svg.append('g')
 
 9. Munzner, T. 2014. **Visualization Analysis and Design**. CRC Press, Boca Raton, FL, USA. https://doi.org/10.1201/b17511
 
-### 11.3 工程实践参考
+### 10.3 工程实践参考
 
 10. Pilgroom, S. 2023. **Practical SVG**. A Book Apart, New York, NY, USA.
 
@@ -1486,7 +1450,7 @@ const g = svg.append('g')
 
 13. Bostock, M., Ogievetsky, V., and Heer, J. 2011. **D3: Data-Driven Documents**. *IEEE Transactions on Visualization and Computer Graphics* 17, 12, 2301–2309. https://doi.org/10.1109/TVCG.2011.185
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 14. MDN Web Docs. 2023. **SVG viewBox attribute**. https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox
 
@@ -1498,33 +1462,33 @@ const g = svg.append('g')
 
 18. Bootstrap. 2023. **Bootstrap Icons**. https://icons.getbootstrap.com/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 计算机图形学基础
+### 11.1 计算机图形学基础
 
 - **MIT 6.837 Computer Graphics**:深入理解图形管线、变换矩阵、光栅化算法
 - **Stanford CS248 Introduction to Computer Graphics**:坐标系、投影、变换的数学基础
 - **CMU 15-462/662 Computer Graphics**:从理论到实现的完整覆盖
 
-### 12.2 用户界面设计
+### 11.2 用户界面设计
 
 - **MIT 6.831 User Interface Design and Implementation**:响应式设计、可访问性、交互模式
 - **Don Norman《设计心理学》**:坐标系选择对用户认知的影响
 - **Apple Human Interface Guidelines**:图标设计的视觉一致性原则
 
-### 12.3 Web 标准演进
+### 11.3 Web 标准演进
 
 - **W3C SVG Working Group**:跟踪 SVG 2.1、SVG Native 等新规范
 - **CSS Working Group**:CSS 与 SVG 的融合趋势(transform-box、clip-path)
 - **WHATWG HTML Living Standard**:内联 SVG 的解析规则
 
-### 12.4 相关工具
+### 11.4 相关工具
 
 - **SVGO**:SVG 优化工具,理解坐标精度对文件大小的影响
 - **Figma**:设计工具如何导出 viewBox 与坐标
 - **Inkscape**:开源 SVG 编辑器,深入理解坐标系操作
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - **SVG Native**:Adobe 提出的 SVG 子集,用于字体与印刷
 - **WebGPU + SVG**:GPU 加速的 SVG 渲染管线

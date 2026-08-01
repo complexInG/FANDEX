@@ -16,16 +16,6 @@ prerequisites:
   - java/概述与开发环境
 ---
 
-## 学习目标
-
-完成本文学习后,读者应能够在以下 Bloom 认知层级上达成对应目标:
-
-- **记忆(Memory)**:复述 Java 线程的六种状态及其转换条件;列举 `synchronized` 与 `Lock` 的核心 API;说出 `volatile` 关键字的三大语义。
-- **理解(Understand)**:解释 Java 内存模型(JMM)的主内存与工作内存抽象;阐述 happens-before 规则如何保证可见性;说明 wait/notify 机制为什么必须持有对象锁。
-- **应用(Apply)**:使用 `Thread`、`Runnable`、`Callable` 三种方式创建线程;运用 `synchronized` 与 `ReentrantLock` 实现临界区互斥;通过 `CountDownLatch`、`CyclicBarrier`、`Semaphore` 协调多线程协作。
-- **分析(Analyze)**:对比内置锁与显式锁在公平性、可中断性、条件变量数量上的差异;剖析死锁产生的四个必要条件并定位线程转储中的死锁链。
-- **评价(Evaluate)**:判断给定并发场景应选择何种同步策略(乐观/悲观、粗粒度/细粒度);评估 `volatile` 是否足以替代锁;权衡线程池参数的合理取值。
-- **创造(Create)**:设计基于生产者-消费者模式的并发流水线;实现自定义的同步工具(如线程安全的 LRU 缓存);编写可回归复现的并发测试用例。
 
 ## 历史动机与背景
 

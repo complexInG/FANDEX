@@ -20,6 +20,7 @@ prerequisites:
   - python/装饰器进阶
   - python/生成器与协程
 ---
+
 # Python 上下文管理器进阶
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -36,84 +37,9 @@ prerequisites:
 
 本篇文档将从协议形式化定义、CPython 字节码层执行机制、contextlib 工具集内部实现、异步上下文管理器、ExitStack 动态管理、与 RAII 的对比、生产级工程实践、性能分析、陷阱与反模式、真实项目案例研究等维度展开系统化论述，目标是让读者从协议层、字节码层、工程实践层全方位掌握 Python 上下文管理器。
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本篇采用 Bloom 分类法按认知层级组织学习目标。
-
-### 1.1 记忆层（Remember）
-
-学习者能够准确复述以下事实性知识：
-
-- 上下文管理器协议由 `__enter__(self)` 与 `__exit__(self, exc_type, exc_val, exc_tb)` 两个方法组成。
-- `with` 语句在进入代码块时调用 `__enter__`，其返回值通过 `as` 绑定到变量。
-- `__exit__` 方法接收三个异常相关参数；若无异常，三个参数均为 `None`。
-- `__exit__` 返回真值（truthy）会抑制异常传播；返回假值则异常继续向外抛出。
-- `contextlib.contextmanager` 装饰器基于生成器实现上下文管理器，`yield` 之前的代码对应 `__enter__`，`yield` 之后的代码对应 `__exit__`。
-- `contextlib.ExitStack` 用于动态管理多个上下文管理器，支持运行时增删。
-- `contextlib.suppress(*exceptions)` 用于忽略指定异常。
-- `contextlib.closing(thing)` 用于在退出时调用 `thing.close()`。
-- `contextlib.redirect_stdout` 与 `redirect_stderr` 重定向标准输出与错误输出。
-- `contextlib.nullcontext` 是空操作上下文管理器，用于可选场景的占位。
-- 异步上下文管理器协议由 `__aenter__` 与 `__aexit__` 组成，配合 `async with` 使用。
-- `contextlib.asynccontextmanager` 是 `@contextmanager` 的异步版本。
-- Python 3.7 引入 PEP 567 `contextvars` 模块，与上下文管理器协同管理上下文变量。
-
-### 1.2 理解层（Understand）
-
-学习者能够用自己的语言解释以下概念：
-
-- `with` 语句的字节码展开：`SETUP_WITH`、`WITH_CLEANUP`、`WITH_EXCEPT_START` 等指令的作用。
-- `__exit__` 返回值的语义：真值抑制异常，假值传播异常，与"异常是否已处理"的逻辑关系。
-- `@contextmanager` 装饰器内部如何通过 `GeneratorContextManager` 类包装生成器，使其满足 `__enter__`/`__exit__` 协议。
-- `ExitStack` 的 `push`、`callback`、`enter_context` 三个核心 API 的语义差异。
-- 异步上下文管理器与同步上下文管理器在协议上的差异：`__aenter__`/`__aexit__` 必须是协程。
-- 上下文管理器与 `try/finally` 的等价关系：`with` 是 `try/finally` 的语法糖，但更具表达力。
-- 上下文管理器与 RAII 的区别：RAII 依赖对象生命周期，Python 上下文管理器依赖 `with` 块作用域。
-- `contextlib.redirect_stdout` 的实现原理：临时替换 `sys.stdout`，退出时恢复。
-
-### 1.3 应用层（Apply）
-
-学习者能够在真实工程场景中：
-
-- 自定义类实现 `__enter__`/`__exit__`，封装数据库连接、文件句柄、网络会话等资源。
-- 使用 `@contextmanager` 装饰器编写简洁的上下文管理器，处理计时、临时环境变量、临时目录等场景。
-- 使用 `ExitStack` 动态管理不定数量的资源（如根据配置打开多个文件）。
-- 使用 `@asynccontextmanager` 实现异步资源管理，如异步数据库连接池。
-- 使用 `contextvars` 在异步任务间传递请求上下文（request context）。
-- 将上下文管理器与装饰器结合，实现"装饰器即上下文管理器"的复用模式。
-
-### 1.4 分析层（Analyze）
-
-学习者能够剖析：
-
-- 一段 `with` 语句在 CPython 解释器中的完整执行路径：从字节码到 `__enter__`/`__exit__` 调用栈。
-- `@contextmanager` 的生成器在异常传播时的行为：异常如何从 `yield` 点抛入生成器，生成器如何处理或重新抛出。
-- `ExitStack` 的 LIFO（后进先出）退出顺序与资源释放的正确性证明。
-- 异步上下文管理器在事件循环中的调度：`__aenter__` 协程如何被 `await`，`__aexit__` 如何保证在协程取消时仍执行。
-- 多个上下文管理器嵌套（`with A() as a, B() as b:`）的展开顺序与异常传播路径。
-
-### 1.5 评价层（Evaluate）
-
-学习者能够评价：
-
-- 在给定场景中，使用类实现的上下文管理器与使用 `@contextmanager` 实现的上下文管理器哪个更合适。
-- 一段资源管理代码是否应该用 `with` 还是 `try/finally`，权衡可读性与表达力。
-- `ExitStack` 的使用是否必要，是否存在过度设计。
-- 异步上下文管理器的异常处理是否完备，能否应对 `CancelledError`、`BaseException` 等边界情况。
-- 上下文管理器的复用性：是否应抽为独立类，还是内联为函数式实现。
-
-### 1.6 创造层（Create）
-
-学习者能够：
-
-- 设计一套企业级资源管理框架，统一封装数据库、缓存、消息队列、文件等资源的生命周期。
-- 构建一个支持嵌套事务的数据库会话上下文管理器，基于 `ExitStack` 实现 SAVEPOINT 管理。
-- 实现一个异步上下文管理器，支持超时、重试、熔断等弹性模式。
-- 基于上下文管理器实现请求作用域（request scope）的依赖注入容器。
-
-## 2. 历史动机与背景
-
-### 2.1 资源管理的传统痛点
+### 1.1 资源管理的传统痛点
 
 在 `with` 语句引入前，Python 资源管理依赖 `try/finally`。例如文件操作：
 
@@ -151,7 +77,7 @@ finally:
     f1.close()
 ```
 
-### 2.2 PEP 343 与 `with` 语句的诞生
+### 1.2 PEP 343 与 `with` 语句的诞生
 
 2005 年，PEP 343（The "with" Statement）由 Guido van Rossum、Nick Coghlan 等人起草，正式引入 `with` 语句。PEP 343 的设计目标：
 
@@ -162,7 +88,7 @@ finally:
 
 PEP 343 定义了上下文管理器协议（`__enter__`/`__exit__`），并将其作为 `with` 语句的底层机制。Python 2.5 通过 `__future__` 导入启用，Python 2.6 起成为默认语法。
 
-### 2.3 contextlib 的演进
+### 1.3 contextlib 的演进
 
 `contextlib` 模块与 `with` 语句同步发展，逐步丰富：
 
@@ -177,7 +103,7 @@ PEP 343 定义了上下文管理器协议（`__enter__`/`__exit__`），并将�
 | Python 3.10 | `aclosing` | 异步 `closing` |
 | Python 3.11 | `chdir` | 临时切换工作目录 |
 
-### 2.4 异步上下文管理器
+### 1.4 异步上下文管理器
 
 Python 3.5 引入 `async`/`await` 语法（PEP 492），同步带来异步上下文管理器协议：`__aenter__` 与 `__aexit__` 必须返回协程。`async with` 语句对应 `async with` 块，在协程中管理异步资源（如 aiohttp 的 ClientSession、asyncio.Lock）。
 
@@ -190,7 +116,7 @@ async with aiohttp.ClientSession() as session:
 
 异步上下文管理器的关键挑战是协程取消（cancellation）：当协程被取消时，`CancelledError` 被抛入 `await` 点，`__aexit__` 必须保证在此情况下仍执行清理。这是异步编程中的常见陷阱。
 
-### 2.5 与 RAII 的对比
+### 1.5 与 RAII 的对比
 
 C++ 的 RAII（Resource Acquisition Is Initialization）依赖对象的生命周期：对象构造时获取资源，析构时释放资源。RAII 的优势是无需显式 `with` 或 `try/finally`，资源管理自动化。但 RAII 依赖确定性的析构时机，这在 Python 的垃圾回收模型中无法保证。
 
@@ -205,9 +131,9 @@ Python 的引用计数在大多数情况下能立即回收对象（CPython），
 | 循环引用问题 | 无 | 有（GC 延迟） |
 | 适用语言 | C++、Rust | Python、C#（using）、Java（try-with-resources） |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 上下文管理器协议的形式化定义
+### 2.1 上下文管理器协议的形式化定义
 
 上下文管理器是一个实现以下两个方法的对象 $M$：
 
@@ -219,7 +145,7 @@ $$
 - $\text{enter}: M \to V$，返回值 $V$ 绑定到 `as` 变量。
 - $\text{exit}: M \times \text{ExcType} \times \text{ExcVal} \times \text{ExcTB} \to \text{Bool}$，返回真值抑制异常。
 
-### 3.2 `with` 语句的语义
+### 2.2 `with` 语句的语义
 
 `with` 语句的形式语义可表达为：
 
@@ -241,7 +167,7 @@ $$
 3. 若 $B$ 正常结束，调用 `__exit__(None, None, None)`。
 4. 若 $B$ 抛出异常 $E$，调用 `__exit__(E, e, tb)`；若返回真值，异常被抑制；否则异常重新抛出。
 
-### 3.3 异常抑制的形式化定义
+### 2.3 异常抑制的形式化定义
 
 设 `__exit__` 返回值为 $r$。异常抑制的语义：
 
@@ -253,7 +179,7 @@ $$
 
 注意：`__exit__` 返回 `True` 抑制所有异常，包括 `KeyboardInterrupt`、`SystemExit` 等 `BaseException` 子类。这可能掩盖严重错误，应谨慎使用。
 
-### 3.4 `ExitStack` 的形式化定义
+### 2.4 `ExitStack` 的形式化定义
 
 `ExitStack` 维护一个上下文管理器列表 $L = [M_1, M_2, \ldots, M_n]$。退出时按 LIFO 顺序调用每个 $M_i.\text{exit}$：
 
@@ -263,7 +189,7 @@ $$
 
 其中 $\circ$ 表示复合操作。若某个 $M_i.\text{exit}$ 抛出异常，后续 $M_{i-1}.\text{exit}$ 仍会执行，异常被收集到 `ExceptionGroup`（Python 3.11+）或附加到 `__context__` 链。
 
-### 3.5 异步上下文管理器协议
+### 2.5 异步上下文管理器协议
 
 异步上下文管理器 $M_{\text{async}}$ 实现：
 
@@ -277,7 +203,7 @@ $$
 
 `async with` 语句的语义与 `with` 类似，但所有调用都是 `await`。
 
-### 3.6 `@contextmanager` 的形式化定义
+### 2.6 `@contextmanager` 的形式化定义
 
 `@contextmanager` 装饰器将生成器函数 $g$ 转换为上下文管理器工厂：
 
@@ -300,9 +226,9 @@ $$
 
 即：正常退出时继续生成器到结束；异常退出时将异常抛入生成器的 `yield` 点，由生成器决定是否处理。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 `__exit__` 必然执行的证明
+### 3.1 `__exit__` 必然执行的证明
 
 定理：对于任意 `with M as v: B`，`M.__exit__` 必然被调用一次。
 
@@ -316,7 +242,7 @@ $$
 
 所有路径都调用 `__exit__` 一次。证毕。
 
-### 4.2 LIFO 退出顺序的正确性
+### 3.2 LIFO 退出顺序的正确性
 
 `ExitStack` 与嵌套 `with` 都采用 LIFO（后进先出）退出顺序。即：
 
@@ -331,7 +257,7 @@ with A() as a, B() as b, C() as c:
 
 形式化地，若资源依赖图 $G$ 是 DAG（有向无环图），LIFO 退出顺序是 $G$ 的逆拓扑序，保证依赖完整性。
 
-### 4.3 `@contextmanager` 的异常传播
+### 3.3 `@contextmanager` 的异常传播
 
 考虑：
 
@@ -360,7 +286,7 @@ def suppress_value_error():
 
 则 `g.throw` 返回（而非抛出），`__exit__` 返回 `True`，异常被抑制。这是 `@contextmanager` 实现异常抑制的标准模式。
 
-### 4.4 `ExitStack` 的异常聚合
+### 3.4 `ExitStack` 的异常聚合
 
 Python 3.11 前，`ExitStack` 退出时若多个 `__exit__` 抛出异常，后续异常附加到前一个异常的 `__context__` 链。Python 3.11+ 引入 `ExceptionGroup`（PEP 654），多个异常被聚合为 `ExceptionGroup` 一起抛出。
 
@@ -369,7 +295,7 @@ Python 3.11 前，`ExitStack` 退出时若多个 `__exit__` 抛出异常，后�
 - Python 3.10-：抛出 $E_1$，$E_2.\text{__context__} = E_1$，依此类推。
 - Python 3.11+：抛出 $\text{ExceptionGroup}([E_1, E_2, \ldots, E_k])$。
 
-### 4.5 异步上下文管理器的取消语义
+### 3.5 异步上下文管理器的取消语义
 
 异步上下文管理器在协程取消时面临挑战。考虑：
 
@@ -382,7 +308,7 @@ async with lock:
 
 Python 的 `asyncio` 规范要求 `__aexit__` 应使用 `try/finally` 或 `asyncio.shield` 保证清理逻辑不被取消打断。这是异步编程的常见陷阱。
 
-### 4.6 复杂度分析
+### 3.6 复杂度分析
 
 - `with` 语句的运行时开销：`__enter__` 与 `__exit__` 各一次方法调用，$O(1)$。
 - `ExitStack` 的开销：每个 `enter_context` 为 $O(1)$（追加到列表），退出时 $O(n)$（遍历列表）。
@@ -395,11 +321,11 @@ Python 的 `asyncio` 规范要求 `__aexit__` 应使用 `try/finally` 或 `async
 
 性能差异在大多数场景可忽略，但在紧密循环中可能需考虑。
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节提供多个完整可运行的代码示例，覆盖上下文管理器的核心用法与典型工程场景。
 
-### 5.1 类实现上下文管理器
+### 4.1 类实现上下文管理器
 
 ```python
 # 类实现：数据库连接上下文管理器
@@ -459,7 +385,7 @@ with DatabaseConnection('postgresql://localhost/mydb') as conn:
 # 退出 with 块后，conn 已关闭
 ```
 
-### 5.2 `@contextmanager` 装饰器
+### 4.2 `@contextmanager` 装饰器
 
 ```python
 # @contextmanager 装饰器：计时上下文管理器
@@ -512,7 +438,7 @@ with temporary_list() as items:
 # 退出后 items 已清空
 ```
 
-### 5.3 异常处理与抑制
+### 4.3 异常处理与抑制
 
 ```python
 # 异常抑制示例：忽略指定异常
@@ -569,7 +495,7 @@ with suppress(FileNotFoundError):
 print("文件不存在异常被忽略")
 ```
 
-### 5.4 事务管理
+### 4.4 事务管理
 
 ```python
 # 事务上下文管理器：自动 commit/rollback
@@ -631,7 +557,7 @@ except ValueError:
 # 退出后 session.rolled_back == True
 ```
 
-### 5.5 ExitStack 动态管理
+### 4.5 ExitStack 动态管理
 
 ```python
 # ExitStack 示例：动态管理多个资源
@@ -694,7 +620,7 @@ def with_push():
         stack.push(lambda: print("清理"))
 ```
 
-### 5.6 临时修改环境
+### 4.6 临时修改环境
 
 ```python
 # 临时修改环境变量、sys.stdout、工作目录
@@ -777,7 +703,7 @@ with redirect_stdout(output):
 print(f"内容：{output.getvalue()}")
 ```
 
-### 5.7 文件操作的原子写入
+### 4.7 文件操作的原子写入
 
 ```python
 # 原子写入：先写入临时文件，成功后重命名
@@ -843,7 +769,7 @@ def atomic_write_simple(filepath: str):
         raise
 ```
 
-### 5.8 异步上下文管理器
+### 4.8 异步上下文管理器
 
 ```python
 # 异步上下文管理器示例
@@ -937,7 +863,7 @@ async def async_data_source():
         yield await fetch_data()
 ```
 
-### 5.9 性能分析与 cProfile 集成
+### 4.9 性能分析与 cProfile 集成
 
 ```python
 # cProfile 集成上下文管理器
@@ -998,7 +924,7 @@ with profile_section("数据处理", top_n=5):
     filtered = [x for x in data if x % 2 == 0]
 ```
 
-### 5.10 锁管理
+### 4.10 锁管理
 
 ```python
 # 线程锁与超时管理
@@ -1078,7 +1004,7 @@ def write_data():
         pass
 ```
 
-### 5.11 contextvars 与请求上下文
+### 4.11 contextvars 与请求上下文
 
 ```python
 # contextvars：异步任务间的上下文传递
@@ -1134,7 +1060,7 @@ async def concurrent_tasks():
     # 每个任务的 request_id 互不干扰
 ```
 
-### 5.12 上下文管理器与装饰器结合
+### 4.12 上下文管理器与装饰器结合
 
 ```python
 # 上下文管理器转换为装饰器
@@ -1196,9 +1122,9 @@ def another_function():
 another_function()
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 类实现 vs `@contextmanager`
+### 5.1 类实现 vs `@contextmanager`
 
 | 维度 | 类实现 | @contextmanager |
 |------|--------|-----------------|
@@ -1213,7 +1139,7 @@ another_function()
 
 **结论**：简单场景优先 `@contextmanager`，复杂状态管理或需继承时用类实现。
 
-### 6.2 `with` vs `try/finally`
+### 5.2 `with` vs `try/finally`
 
 | 维度 | `with` | `try/finally` |
 |------|--------|---------------|
@@ -1224,7 +1150,7 @@ another_function()
 | 灵活性 | 协议固定 | 任意逻辑 |
 | 适用场景 | 资源管理 | 任意清理 |
 
-### 6.3 同步 vs 异步上下文管理器
+### 5.3 同步 vs 异步上下文管理器
 
 | 维度 | 同步 | 异步 |
 |------|------|------|
@@ -1235,7 +1161,7 @@ another_function()
 | 资源类型 | 文件、锁、连接 | aiohttp、asyncio.Lock |
 | `ExitStack` | `ExitStack` | `AsyncExitStack` |
 
-### 6.4 `ExitStack` vs 嵌套 `with`
+### 5.4 `ExitStack` vs 嵌套 `with`
 
 | 维度 | 嵌套 `with` | `ExitStack` |
 |------|-------------|-------------|
@@ -1245,7 +1171,7 @@ another_function()
 | 退出顺序 | LIFO（明确） | LIFO（程序化） |
 | 适用场景 | 已知固定资源 | 不定数量、配置驱动 |
 
-### 6.5 上下文管理器 vs RAII vs try-with-resources
+### 5.5 上下文管理器 vs RAII vs try-with-resources
 
 | 维度 | Python with | C++ RAII | Java try-with-resources |
 |------|-------------|----------|-------------------------|
@@ -1256,9 +1182,9 @@ another_function()
 | 多资源 | `ExitStack` 或嵌套 | 多对象 | 多资源声明 |
 | 循环引用问题 | 无（不依赖析构） | 无 | 无 |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：`__exit__` 返回 `True` 吞掉所有异常
+### 6.1 陷阱：`__exit__` 返回 `True` 吞掉所有异常
 
 **反模式**：
 
@@ -1293,7 +1219,7 @@ class GoodManager:
         return False  # 其他异常继续传播
 ```
 
-### 7.2 陷阱：`@contextmanager` 中 `yield` 后无 `try/finally`
+### 6.2 陷阱：`@contextmanager` 中 `yield` 后无 `try/finally`
 
 **反模式**：
 
@@ -1319,7 +1245,7 @@ def good_cm():
         release(resource)  # 无论异常与否都执行
 ```
 
-### 7.3 陷阱：在 `__exit__` 中抛出异常
+### 6.3 陷阱：在 `__exit__` 中抛出异常
 
 **反模式**：
 
@@ -1351,7 +1277,7 @@ class SafeExit:
         return False
 ```
 
-### 7.4 陷阱：异步上下文管理器未处理 `CancelledError`
+### 6.4 陷阱：异步上下文管理器未处理 `CancelledError`
 
 **反模式**：
 
@@ -1386,7 +1312,7 @@ class AsyncGood:
         return False
 ```
 
-### 7.5 陷阱：`ExitStack` 退出顺序假设
+### 6.5 陷阱：`ExitStack` 退出顺序假设
 
 **反模式**：
 
@@ -1410,7 +1336,7 @@ with ExitStack() as stack:
     # 退出顺序：a → b，符合依赖
 ```
 
-### 7.6 陷阱：上下文管理器复用
+### 6.6 陷阱：上下文管理器复用
 
 **反模式**：
 
@@ -1433,7 +1359,7 @@ with MyContextManager():  # 新实例
     do_other()
 ```
 
-### 7.7 陷阱：生成器提前 return
+### 6.7 陷阱：生成器提前 return
 
 **反模式**：
 
@@ -1464,7 +1390,7 @@ def fixed():
             do_other_cleanup()
 ```
 
-### 7.8 陷阱：在 `with` 块外使用资源
+### 6.8 陷阱：在 `with` 块外使用资源
 
 **反模式**：
 
@@ -1485,7 +1411,7 @@ with open('data.txt') as f:
 # 之后只用 content，不用 f
 ```
 
-### 7.9 陷阱：嵌套 `with` 的异常传播
+### 6.9 陷阱：嵌套 `with` 的异常传播
 
 **反模式**：
 
@@ -1501,7 +1427,7 @@ with outer():
 
 **正确做法**：明确每个 `__exit__` 的返回值语义，必要时在文档中标注。
 
-### 7.10 陷阱：生产事故案例——`__exit__` 中吞掉关键异常
+### 6.10 陷阱：生产事故案例——`__exit__` 中吞掉关键异常
 
 **事故经过**：某团队实现了一个数据库事务上下文管理器，`__exit__` 中执行 `rollback()` 并返回 `True` 抑制所有异常。结果：业务逻辑中的 `ValidationError` 被吞，用户看到"操作成功"但数据未提交，造成大量脏数据。
 
@@ -1513,9 +1439,9 @@ with outer():
 2. 只在特定场景（如连接断开需重试）才返回 `True`，并记录日志。
 3. 业务异常应在业务层处理，不依赖上下文管理器。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 资源管理类设计
+### 7.1 资源管理类设计
 
 ```python
 # 企业级资源管理基类
@@ -1593,7 +1519,7 @@ class RedisClient(Resource):
         client.close()
 ```
 
-### 8.2 事务管理器
+### 7.2 事务管理器
 
 ```python
 # 多层级事务管理器
@@ -1639,7 +1565,7 @@ def distributed_transaction(*sessions):
         # 所有 session 在 ExitStack 退出时按 LIFO 提交/回滚
 ```
 
-### 8.3 测试夹具集成
+### 7.3 测试夹具集成
 
 ```python
 # pytest fixture 与上下文管理器结合
@@ -1679,7 +1605,7 @@ def mock_api():
         yield mock
 ```
 
-### 8.4 日志与监控
+### 7.4 日志与监控
 
 ```python
 # 请求上下文日志
@@ -1715,7 +1641,7 @@ with request_logging("req-12345", logger) as log:
     # 日志自动带 request_id
 ```
 
-### 8.5 性能优化
+### 7.5 性能优化
 
 ```python
 # 1. 复用上下文管理器实例（无状态时）
@@ -1757,7 +1683,7 @@ class OptimizedCM:
         return False
 ```
 
-### 8.6 异步资源池
+### 7.6 异步资源池
 
 ```python
 # 异步资源池
@@ -1807,9 +1733,9 @@ async def query_database():
         return await conn.fetch("SELECT * FROM users")
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：SQLAlchemy 的会话管理
+### 8.1 案例一：SQLAlchemy 的会话管理
 
 SQLAlchemy 的 `Session` 对象实现了上下文管理器协议，简化数据库会话管理：
 
@@ -1842,7 +1768,7 @@ SQLAlchemy 的设计亮点：
 2. 始终关闭会话，避免连接泄漏。
 3. 不抑制异常，让业务层处理。
 
-### 9.2 案例二：httpx 的客户端管理
+### 8.2 案例二：httpx 的客户端管理
 
 httpx 的 `Client` 与 `AsyncClient` 实现了同步与异步上下文管理器：
 
@@ -1863,7 +1789,7 @@ httpx 的设计考虑了连接池复用：
 2. `__exit__` 关闭连接池，释放所有底层连接。
 3. 支持嵌套：`async with AsyncClient() as c1, AsyncClient() as c2:`。
 
-### 9.3 案例三：contextlib 的 `redirect_stdout` 实现
+### 8.3 案例三：contextlib 的 `redirect_stdout` 实现
 
 `redirect_stdout` 是 contextlib 的经典工具，其实现简洁而精妙：
 
@@ -1901,7 +1827,7 @@ with redirect_stdout(output):
 assert output.getvalue() == "被捕获\n"
 ```
 
-### 9.4 案例四：Django 的 `transaction.atomic`
+### 8.4 案例四：Django 的 `transaction.atomic`
 
 Django 的 `transaction.atomic` 是上下文管理器在 Web 框架中的经典应用：
 
@@ -1931,7 +1857,7 @@ Django 的 `atomic` 实现要点：
 3. 异常时回滚或回滚到 SAVEPOINT。
 4. 继承 `ContextDecorator`，可作为装饰器。
 
-### 9.5 案例五：FastAPI 的依赖注入
+### 8.5 案例五：FastAPI 的依赖注入
 
 FastAPI 利用上下文管理器实现请求作用域的依赖注入：
 
@@ -1961,7 +1887,7 @@ FastAPI 自动检测上下文管理器依赖，在请求开始时 `__enter__`，
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：实现一个 `FileReader` 上下文管理器类，要求：
 - `__init__` 接收文件路径与编码。
@@ -1993,7 +1919,7 @@ except FileNotFoundError:
 **参考答案要点**：
 - `with suppress(FileNotFoundError): os.remove('temp.txt')`。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：实现一个 `AsyncLockPool`，管理多个异步锁，`acquire(key)` 方法获取指定 key 的锁（不存在则创建）。
 
@@ -2047,7 +1973,7 @@ with tricky():
 - ValueError 场景：打印"捕获 ValueError"，异常被抑制（因为 `except` 块未 re-raise）。
 - TypeError 场景：打印"捕获其他"，异常重新抛出（`raise`）。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：实现一个 `Retry` 上下文管理器，`with` 块内的异常自动重试 N 次，N 次后仍失败则抛出。
 
@@ -2096,7 +2022,7 @@ async def fetch_all(urls):
         return await asyncio.gather(*tasks)
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Coghlan, N., and van Rossum, G. 2005. PEP 343: The "with" statement. https://peps.python.org/pep-0343/.
 
@@ -2158,9 +2084,9 @@ async def fetch_all(urls):
 
 30. Slatkin, B. 2019. *Effective Python: 90 Specific Ways to Write Better Python* (2nd ed.). Addison-Wesley. ISBN: 978-0134853987.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Python 语言参考：with 语句 https://docs.python.org/3/reference/compound_stmts.html#the-with-statement
 - Python 标准库：contextlib https://docs.python.org/3/library/contextlib.html
@@ -2170,20 +2096,20 @@ async def fetch_all(urls):
 - PEP 567：Context Variables https://peps.python.org/pep-0567/
 - PEP 654：Exception Groups https://peps.python.org/pep-0654/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Brett Slatkin《Effective Python》——第 42 条：用上下文管理器管理资源
 - Luciano Ramalho《Fluent Python》——第 15 章：上下文管理器与 else 块
 - Robert C. Martin《Clean Code》——资源管理章节
 - Martin Fowler《Refactoring》——清理资源管理反模式
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - Nick Coghlan「PEP 343: The "with" Statement」（2005）
 - Nathaniel Smith「PEP 567: Context Variables」（2018）
 - Yury Selivanov「PEP 492: Coroutines with async and await syntax」（2015）
 
-### 12.4 开源项目源码
+### 11.4 开源项目源码
 
 - CPython contextlib 实现：https://github.com/python/cpython/blob/main/Lib/contextlib.py
 - SQLAlchemy Session：https://github.com/sqlalchemy/sqlalchemy/blob/main/lib/sqlalchemy/orm/session.py
@@ -2191,7 +2117,7 @@ async def fetch_all(urls):
 - httpx Client：https://github.com/encode/httpx/blob/master/httpx/_client.py
 - FastAPI dependencies：https://github.com/tiangolo/fastapi/blob/master/fastapi/dependencies/utils.py
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - 上下文管理器协议与 `__enter__`/`__exit__` 的 C 层实现（`tp_descr_get` 等）
 - `contextvars` 在 asyncio 中的传播机制（`Context.copy()`）

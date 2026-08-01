@@ -15,6 +15,7 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
+
 # Java JVM 调优命令
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -43,45 +44,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，学习者应能够：
-
-### 1.1 认知层级目标（Bloom 分类法）
-
-| Bloom 层级 | 目标描述 | 可观测行为 |
-| ---------- | -------- | ---------- |
-| **Remember（记忆）** | 复述 JVM 内存分区、GC 算法分类、关键 JVM 参数语义 | 能默写 `-Xms`、`-Xmx`、`-XX:+UseG1GC` 等参数含义 |
-| **Understand（理解）** | 解释分代假说、CMS 漏标、G1 Region 划分、ZGC 着色指针原理 | 能用语言复述 ZGC 如何通过染色指针实现并发标记 |
-| **Apply（应用）** | 在给定生产场景下选择合适的 GC 算法与堆参数 | 对 4GB 堆、100ms SLA 的交易系统给出 G1 参数组合 |
-| **Analyze（分析）** | 解读 GC 日志、jstat 输出、heap dump 中的性能瓶颈 | 从 `-Xlog:gc*` 输出中识别出混合收集停顿过长的根因 |
-| **Evaluate（评价）** | 比较不同 GC 算法在延迟、吞吐、内存开销上的权衡 | 评估 ZGC vs G1 在 32GB 堆、P99 延迟要求下的优劣 |
-| **Create（创造）** | 设计完整的 JVM 调优方案，包含监控、告警、回滚机制 | 为电商秒杀系统设计从压测到生产的全链路调优方案 |
-
-### 1.2 核心能力指标
-
-完成本章后，应能独立完成以下任务：
-
-1. 为一个日均千万级请求的 Spring Boot 服务设计 JVM 参数方案
-2. 使用 `jcmd`、`jstat`、`jmap`、`jfr` 完成生产环境性能诊断
-3. 解读 G1 GC 日志中的 ToSpace Exhausted、Evacuation Failure 等异常
-4. 使用 Eclipse MAT 定位内存泄漏，生成 Dominator Tree 与 Leak Suspects 报告
-5. 评估并选择 ZGC、Shenandoah、G1 三者中适合特定 SLA 的收集器
-
-### 1.3 前置知识检查
-
-阅读本章前，建议已掌握：
-
-- JVM 内存模型（Heap、Metaspace、Stack、PC Register）
-- Java 字节码基础（`javap -c` 能读懂）
-- 操作系统进程/线程、虚拟内存概念
-- 基本的 Linux 命令（`top`、`vmstat`、`iostat`、`strace`）
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 GC 技术演进时间线（1995—2026）
+### 1.1 GC 技术演进时间线（1995—2026）
 
 JVM 垃圾回收的演进反映了硬件、工作负载与 SLA 需求的历史变迁。
 
@@ -107,7 +72,7 @@ timeline
     2025: Java 24-25：继续向 sub-millisecond GC 停顿推进
 ```
 
-### 2.2 三大驱动力
+### 1.2 三大驱动力
 
 GC 演进背后是三类工作负载的推动：
 
@@ -115,7 +80,7 @@ GC 演进背后是三类工作负载的推动：
 2. **延迟优先（2010—2020）**：金融交易、实时推荐，CMS→G1 主导。代表：高频交易、广告投放。
 3. **超低延迟与超大堆（2020—至今）**：云原生、内存计算，ZGC/Shenandoah 主导。代表：SAP HANA、Netflix 缓存层。
 
-### 2.3 调优方法的范式转移
+### 1.3 调优方法的范式转移
 
 | 时代 | 方法论 | 代表工具 | 核心理念 |
 | ---- | ------ | -------- | -------- |
@@ -124,7 +89,7 @@ GC 演进背后是三类工作负载的推动：
 | 2018—2023 | 可观测性 | JFR、Async-Profiler、Pyroscope | 持续监控，APM 全链路 |
 | 2023—至今 | 自适应与 AI | JFR Autonomous Tuning、Cryostat | 自适应调参、ML 异常检测 |
 
-### 2.4 Sun/Oracle/OpenJDK 三方关系
+### 1.4 Sun/Oracle/OpenJDK 三方关系
 
 - **Sun Microsystems（1995—2010）**：JVM 创始者，定义 JLS 与 JVM Specification。
 - **Oracle（2010—至今）**：收购 Sun，主导 Java 7—11。2017 年起诉 Google Android 侵权获胜。
@@ -134,9 +99,9 @@ GC 演进背后是三类工作负载的推动：
 
 ---
 
-## 3. 形式化定义与规范基础
+## 2. 形式化定义与规范基础
 
-### 3.1 JVM Specification 中的内存定义
+### 2.1 JVM Specification 中的内存定义
 
 JVM Specification（JVMS）§2.5 定义了运行时数据区，但**并未规定 GC 算法**。GC 是实现细节，规范只要求：
 
@@ -144,7 +109,7 @@ JVM Specification（JVMS）§2.5 定义了运行时数据区，但**并未规定
 2. `finalize()` 在对象被回收前调用一次（Java 9 起 deprecated）
 3. `System.gc()` 是"建议"而非"命令"
 
-### 3.2 内存分区的形式化模型
+### 2.2 内存分区的形式化模型
 
 设 $M$ 为 JVM 运行时总内存，则：
 
@@ -161,7 +126,7 @@ $$
 - $M_{\text{direct}}$：Direct ByteBuffer，堆外内存
 - $M_{\text{internal}}$：GC 内部数据结构、JVM 自身开销
 
-### 3.3 分代假说的形式化表述
+### 2.3 分代假说的形式化表述
 
 **Weak Generational Hypothesis**（弱分代假说）：
 
@@ -177,7 +142,7 @@ $$
 
 因此将堆分为新生代（Young）与老年代（Old），对新生代频繁回收、对老年代低频回收，可最小化总停顿时间。
 
-### 3.4 GC 停顿的形式化定义
+### 2.4 GC 停顿的形式化定义
 
 设一次 GC 事件 $e$ 由以下阶段构成：
 
@@ -201,17 +166,17 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 GC 算法复杂度分析
+### 3.1 GC 算法复杂度分析
 
-#### 4.1.1 标记-清除（Mark-Sweep）
+#### 3.1.1 标记-清除（Mark-Sweep）
 
 - **时间复杂度**：$O(L)$，其中 $L$ 为存活对象数 + 待回收对象数
 - **空间开销**：$O(1)$ 额外（位图）
 - **碎片**：高，需额外的 compact 过程
 
-#### 4.1.2 标记-复制（Mark-Copy）
+#### 3.1.2 标记-复制（Mark-Copy）
 
 - **时间复杂度**：$O(L_{\text{live}})$，仅扫描存活对象
 - **空间开销**：$O(|\text{region}|)$，需要 to-space
@@ -219,13 +184,13 @@ $$
 
 代价是空间利用率 50%（半区复制）或 Region 级别复制。
 
-#### 4.1.3 标记-整理（Mark-Compact）
+#### 3.1.3 标记-整理（Mark-Compact）
 
 - **时间复杂度**：$O(L \log L)$（需排序）或 $O(2L)$（两次扫描）
 - **空间开销**：$O(1)$
 - **碎片**：无
 
-#### 4.1.4 G1 Region-based 模型
+#### 3.1.4 G1 Region-based 模型
 
 G1 将堆划分为 $N$ 个等大小 Region（默认 $1\text{MB} \leq R \leq 32\text{MB}$），每个 Region 动态归属 Eden、Survivor、Old、Humongous。
 
@@ -237,7 +202,7 @@ $$
 
 G1 在每次 GC 前选择 $\arg\max \sum \text{value}(r)$，使得 $\sum \text{cost}(r) \leq T_{\text{pause target}}$。这是一个**0-1 背包问题**，G1 采用贪心近似。
 
-### 4.2 Card Table 与 Write Barrier
+### 3.2 Card Table 与 Write Barrier
 
 为支持分代回收，需记录老年代→新生代的引用。Card Table 是字节数组，每 512 字节堆对应 1 字节 Card。
 
@@ -255,15 +220,15 @@ void writeBarrier(ObjectHolder holder, Object newValue) {
 
 这引入约 5—10% 的写操作开销，是分代 GC 的固有成本。
 
-### 4.3 三色标记与漏标问题
+### 3.3 三色标记与漏标问题
 
-#### 4.3.1 三色定义
+#### 3.3.1 三色定义
 
 - **白色（White）**：尚未访问
 - **灰色（Gray）**：已访问，但子节点未全部访问
 - **黑色（Black）**：已访问且子节点全部访问
 
-#### 4.3.2 漏标条件
+#### 3.3.2 漏标条件
 
 并发标记中，若同时满足：
 
@@ -272,7 +237,7 @@ void writeBarrier(ObjectHolder holder, Object newValue) {
 
 则该白色对象被"漏标"，导致存活对象被误回收。
 
-#### 4.3.3 解决方案
+#### 3.3.3 解决方案
 
 | 方案 | 代表 | 原理 |
 | ---- | ---- | ---- |
@@ -280,7 +245,7 @@ void writeBarrier(ObjectHolder holder, Object newValue) {
 | **SATB**（Snapshot At The Beginning） | G1 | 标记开始时快照，引用断开时把白色记为灰色，重新标记 |
 | ** Brooks Pointer / Load Barrier** | ZGC | 每次读引用时检查颜色，错则修正 |
 
-#### 4.3.4 SATB 形式化
+#### 3.3.4 SATB 形式化
 
 设 $G_0$ 为 GC 开始时的对象图，则 SATB 保证回收的对象集为：
 
@@ -290,7 +255,7 @@ $$
 
 即"回收 GC 开始时不可达的对象"，但会浮动垃圾（floating garbage）。
 
-### 4.4 ZGC 着色指针原理
+### 3.4 ZGC 着色指针原理
 
 ZGC 利用 64 位指针的高 4 位作为颜色位：
 
@@ -326,9 +291,9 @@ ZGC 通过 mmap + multi-mapping 让同一物理内存对应多个虚拟地址（
 
 ---
 
-## 5. 堆内存参数体系
+## 4. 堆内存参数体系
 
-### 5.1 基础堆参数
+### 4.1 基础堆参数
 
 ```bash
 # 堆大小（建议 Xms = Xmx 以避免动态扩容停顿）
@@ -351,7 +316,7 @@ ZGC 通过 mmap + multi-mapping 让同一物理内存对应多个虚拟地址（
 -XX:ReservedCodeCacheSize=256m
 ```
 
-### 5.2 直接内存与堆外内存
+### 4.2 直接内存与堆外内存
 
 ```bash
 # Direct ByteBuffer 上限
@@ -361,7 +326,7 @@ ZGC 通过 mmap + multi-mapping 让同一物理内存对应多个虚拟地址（
 # 监控：jcmd <pid> VM.native_memory summary
 ```
 
-### 5.3 字符串去重（G1）
+### 4.3 字符串去重（G1）
 
 ```bash
 # G1 字符串去重（Java 8u20+）
@@ -371,7 +336,7 @@ ZGC 通过 mmap + multi-mapping 让同一物理内存对应多个虚拟地址（
 
 效果：对字符串密集型应用（如日志、JSON）可节省 20—40% 堆内存。
 
-### 5.4 大页内存
+### 4.4 大页内存
 
 ```bash
 # 启用大页（需 OS 配置）
@@ -385,7 +350,7 @@ echo never > /sys/kernel/mm/transparent_hugepage/enabled
 
 效果：减少 TLB miss，对大堆（>16GB）可降低 GC 停顿 10—30%。
 
-### 5.5 参数组合推荐矩阵
+### 4.5 参数组合推荐矩阵
 
 | 场景 | 堆大小 | GC | 关键参数 |
 | ---- | ------ | -- | -------- |
@@ -397,9 +362,9 @@ echo never > /sys/kernel/mm/transparent_hugepage/enabled
 
 ---
 
-## 6. GC 日志与可观测性
+## 5. GC 日志与可观测性
 
-### 6.1 JDK 8 GC 日志（旧格式）
+### 5.1 JDK 8 GC 日志（旧格式）
 
 ```bash
 # JDK 8 常用参数
@@ -415,7 +380,7 @@ echo never > /sys/kernel/mm/transparent_hugepage/enabled
 -XX:GCLogFileSize=100M
 ```
 
-### 6.2 JDK 9+ 统一日志（Xlog）
+### 5.2 JDK 9+ 统一日志（Xlog）
 
 JDK 9 引入统一日志框架（JEP 158），语法：
 
@@ -423,7 +388,7 @@ JDK 9 引入统一日志框架（JEP 158），语法：
 -Xlog:<tags>[:<output>][:<decorators>][:<level>]
 ```
 
-#### 6.2.1 常用配置
+#### 5.2.1 常用配置
 
 ```bash
 # 基础 GC 日志（生产推荐）
@@ -436,7 +401,7 @@ JDK 9 引入统一日志框架（JEP 158），语法：
 -Xlog:gc*:stdout:time,uptime,level,tags
 ```
 
-#### 6.2.2 Tag 体系
+#### 5.2.2 Tag 体系
 
 | Tag | 含义 |
 | --- | ---- |
@@ -449,9 +414,9 @@ JDK 9 引入统一日志框架（JEP 158），语法：
 | `gc+phases` | GC 阶段细节 |
 | `safepoint` | 安全点事件 |
 
-### 6.3 GC 日志解析示例
+### 5.3 GC 日志解析示例
 
-#### 6.3.1 G1 Young GC 日志（JDK 17）
+#### 5.3.1 G1 Young GC 日志（JDK 17）
 
 ```
 [2026-07-21T08:00:00.012+0800][0.123s][info][gc,start] GC(1) Pause Young (Normal) (G1 Evacuation Pause)
@@ -467,7 +432,7 @@ JDK 9 引入统一日志框架（JEP 158），语法：
 [2026-07-21T08:00:00.045+0800][0.156s][info][gc     ] GC(1) Pause Young (Normal) (G1 Evacuation Pause) 480M->96M(2048M) 33.245ms
 ```
 
-#### 6.3.2 关键指标解读
+#### 5.3.2 关键指标解读
 
 | 字段 | 含义 | 异常阈值 |
 | ---- | ---- | -------- |
@@ -475,7 +440,7 @@ JDK 9 引入统一日志框架（JEP 158），语法：
 | `Survivor regions: 0->16(16)` | Survivor 区使用 16 个 Region | 若长期 = 0，可能晋升过快 |
 | `Pause Young ... 480M->96M(2048M) 33.245ms` | 堆使用从 480M 降到 96M，总堆 2048M，停顿 33ms | 停顿 > 200ms 需调优 |
 
-#### 6.3.3 异常日志识别
+#### 5.3.3 异常日志识别
 
 **To-space Exhausted**（Evacuation Failure）：
 
@@ -494,7 +459,7 @@ JDK 9 引入统一日志框架（JEP 158），语法：
 
 含义：CMS 并发回收未赶上分配速度，退化为 Serial Old，停顿可能数秒。
 
-### 6.4 JFR（Java Flight Recorder）
+### 5.4 JFR（Java Flight Recorder）
 
 JFR 是 JDK 11+ 的低开销（<1%）持续监控方案。
 
@@ -514,7 +479,7 @@ jcmd <pid> JFR.stop name=profiling
 
 用 JDK Mission Control（JMC）或 `jfr analyze`（命令行）分析。
 
-### 6.5 jcmd 全能命令
+### 5.5 jcmd 全能命令
 
 ```bash
 # 查看所有命令
@@ -533,9 +498,9 @@ jcmd <pid> VM.native_memory        # 本地内存（需 -XX:NativeMemoryTracking
 
 ---
 
-## 7. 垃圾收集器选型与调优
+## 6. 垃圾收集器选型与调优
 
-### 7.1 GC 选型决策树
+### 6.1 GC 选型决策树
 
 ```mermaid
 flowchart TD
@@ -555,7 +520,7 @@ flowchart TD
 - 极致吞吐 + 大堆：Parallel GC
 - 实时系统：不推荐 Java（用 C/Rust），或 ZGC + Shenandoah
 
-### 7.2 Serial GC
+### 6.2 Serial GC
 
 ```bash
 -XX:+UseSerialGC
@@ -563,7 +528,7 @@ flowchart TD
 
 适用：单核、<100MB 堆、客户端、嵌入式。
 
-### 7.3 Parallel GC
+### 6.3 Parallel GC
 
 ```bash
 -XX:+UseParallelGC
@@ -574,7 +539,7 @@ flowchart TD
 
 适用：批处理、HPC、对延迟不敏感的后台任务。
 
-### 7.4 G1 GC（JDK 9+ 默认）
+### 6.4 G1 GC（JDK 9+ 默认）
 
 ```bash
 -XX:+UseG1GC
@@ -588,7 +553,7 @@ flowchart TD
 -XX:G1ReservePercent=10             # 预留内存（防止 evacuation failure）
 ```
 
-### 7.5 ZGC（JDK 15+ GA，JDK 21 分代 GA）
+### 6.5 ZGC（JDK 15+ GA，JDK 21 分代 GA）
 
 ```bash
 # JDK 21+ 分代 ZGC（推荐）
@@ -602,7 +567,7 @@ flowchart TD
 -XX:ZUncommitDelay=300s             # 未使用内存归还 OS 的延迟
 ```
 
-#### 7.5.1 ZGC 停顿分析
+#### 6.5.1 ZGC 停顿分析
 
 ZGC 设计目标：停顿 < 1ms（与堆大小无关）。实测：
 
@@ -615,7 +580,7 @@ ZGC 设计目标：停顿 < 1ms（与堆大小无关）。实测：
 
 （数据来源：OpenJDK ZGC JEP 377，JDK 15 GA 基准测试）
 
-### 7.6 Shenandoah GC（Red Hat 主导）
+### 6.6 Shenandoah GC（Red Hat 主导）
 
 ```bash
 -XX:+UseShenandoahGC
@@ -624,7 +589,7 @@ ZGC 设计目标：停顿 < 1ms（与堆大小无关）。实测：
 
 与 ZGC 类似，但采用 Brooks Pointer 而非着色指针。JDK 21+ 也支持分代。
 
-### 7.7 Epsilon GC（No-Op）
+### 6.7 Epsilon GC（No-Op）
 
 ```bash
 -XX:+UnlockExperimentalVMOptions
@@ -638,9 +603,9 @@ ZGC 设计目标：停顿 < 1ms（与堆大小无关）。实测：
 
 ---
 
-## 8. G1 调优深度实战
+## 7. G1 调优深度实战
 
-### 8.1 G1 工作流程
+### 7.1 G1 工作流程
 
 ```mermaid
 flowchart TD
@@ -654,9 +619,9 @@ flowchart TD
     M5 --> X[Mixed GC（STW）<br/>回收 Young + 部分 Old（分多次完成）<br/>选择 garbage 多的 Old Region 优先回收]
 ```
 
-### 8.2 G1 参数调优实战
+### 7.2 G1 参数调优实战
 
-#### 8.2.1 案例：电商订单服务
+#### 7.2.1 案例：电商订单服务
 
 **环境**：8C16G，4GB 堆，日均 500 万订单，SLA P99 < 200ms
 
@@ -713,7 +678,7 @@ flowchart TD
 
 **效果**：P99 降至 180ms，Young GC 停顿 80—120ms。
 
-#### 8.2.2 Evacuation Failure 处理
+#### 7.2.2 Evacuation Failure 处理
 
 **症状**：
 
@@ -731,7 +696,7 @@ flowchart TD
 3. 提前并发标记：`-XX:InitiatingHeapOccupancyPercent=30`
 4. 增加混合回收频率：`-XX:G1MixedGCCountTarget=16`
 
-### 8.3 G1 Humongous 对象
+### 7.3 G1 Humongous 对象
 
 G1 中超过 Region 一半的对象被视为 Humongous，直接分配在 Old Region 连续区间。
 
@@ -750,9 +715,9 @@ G1 中超过 Region 一半的对象被视为 Humongous，直接分配在 Old Reg
 
 ---
 
-## 9. ZGC 调优深度实战
+## 8. ZGC 调优深度实战
 
-### 9.1 ZGC 分代架构（JDK 21+）
+### 8.1 ZGC 分代架构（JDK 21+）
 
 ```mermaid
 flowchart LR
@@ -763,7 +728,7 @@ flowchart LR
     Young <-->|remembered set<br/>card table + barriers| Old
 ```
 
-### 9.2 ZGC 参数详解
+### 8.2 ZGC 参数详解
 
 ```bash
 -XX:+UseZGC
@@ -777,7 +742,7 @@ flowchart LR
 -XX:+ZUncommit                        # 允许归还内存给 OS
 ```
 
-### 9.3 ZGC vs G1 实测对比
+### 8.3 ZGC vs G1 实测对比
 
 **环境**：16C32G，16GB 堆，SpecJBB2015 基准
 
@@ -791,7 +756,7 @@ flowchart LR
 
 结论：ZGC 以轻微吞吐损失换取极致延迟。
 
-### 9.4 ZGC 调优案例：实时风控系统
+### 8.4 ZGC 调优案例：实时风控系统
 
 **场景**：金融风控，P99 < 10ms，64GB 堆，千万级规则匹配
 
@@ -832,9 +797,9 @@ java -XX:AllocatePrefetchStyle=1 \
 
 ---
 
-## 10. MAT 分析方法论
+## 9. MAT 分析方法论
 
-### 10.1 Eclipse MAT 简介
+### 9.1 Eclipse MAT 简介
 
 Eclipse Memory Analyzer Tool（MAT）是 JVM 堆转储分析的事实标准。
 
@@ -855,9 +820,9 @@ jcmd <pid> GC.heap_dump /tmp/heap.hprof
 jcmd <pid> JFR.dump name=recording filename=/tmp/rec.jfr
 ```
 
-### 10.2 MAT 核心视图
+### 9.2 MAT 核心视图
 
-#### 10.2.1 Histogram（直方图）
+#### 9.2.1 Histogram（直方图）
 
 按类统计对象数量与内存占用，是定位"哪种类型占用最多"的第一步。
 
@@ -872,7 +837,7 @@ com.example.Order                   |  89,432 |      3 MB   |    145 MB
 - **Shallow Heap**：对象自身大小
 - **Retained Heap**：对象被回收后可释放的总内存（含其支配的所有对象）
 
-#### 10.2.2 Dominator Tree（支配树）
+#### 9.2.2 Dominator Tree（支配树）
 
 展示对象的"支配关系"：若删除对象 A，所有被 A 唯一路径支配的对象都会被回收。
 
@@ -889,7 +854,7 @@ flowchart TD
 
 **经验法则**：Dominator Tree 顶部几行占 Retained Heap 70%+ 的对象即为泄漏候选。
 
-#### 10.2.3 Leak Suspects Report
+#### 9.2.3 Leak Suspects Report
 
 MAT 自动生成的泄漏嫌疑报告，包含：
 
@@ -897,9 +862,9 @@ MAT 自动生成的泄漏嫌疑报告，包含：
 - GC Root 路径
 - 对象创建栈（需 HPROF 含 -XX:+PrintReferenceGC）
 
-### 10.3 典型泄漏模式
+### 9.3 典型泄漏模式
 
-#### 10.3.1 静态集合泄漏
+#### 9.3.1 静态集合泄漏
 
 ```java
 // 反例：静态 Map 持续增长
@@ -915,7 +880,7 @@ public class Cache {
 
 **修复**：使用 Caffeine / Guava Cache 设置 TTL/Size 上限。
 
-#### 10.3.2 ThreadLocal 泄漏
+#### 9.3.2 ThreadLocal 泄漏
 
 ```java
 // 反例：线程池中 ThreadLocal 未 remove
@@ -931,7 +896,7 @@ pool.submit(() -> {
 
 **修复**：`finally { tl.remove(); }`。
 
-#### 10.3.3 监听器未注销
+#### 9.3.3 监听器未注销
 
 ```java
 // 反例：注册监听器未注销
@@ -943,7 +908,7 @@ button.addActionListener(listener);  // listener 持有大对象
 
 **修复**：在 `dispose()` 中注销。
 
-#### 10.3.4 内部类隐式引用
+#### 9.3.4 内部类隐式引用
 
 ```java
 // 反例：非静态内部类隐式持有外部类
@@ -955,7 +920,7 @@ public class Outer {
 
 **修复**：改为静态内部类 `static class Inner`。
 
-### 10.4 MAT 进阶：OQL 查询
+### 9.4 MAT 进阶：OQL 查询
 
 MAT 支持 OQL（Object Query Language），类 SQL 语法查询堆对象。
 
@@ -972,9 +937,9 @@ SELECT * FROM java.lang.Class c WHERE c.classLoader = @loaderAddress
 
 ---
 
-## 11. 对比分析
+## 10. 对比分析
 
-### 11.1 JVM GC 与其他语言运行时对比
+### 10.1 JVM GC 与其他语言运行时对比
 
 | 维度 | JVM (G1) | JVM (ZGC) | .NET CLR | Go runtime | V8 |
 | ---- | -------- | --------- | -------- | ---------- | -- |
@@ -987,7 +952,7 @@ SELECT * FROM java.lang.Class c WHERE c.classLoader = @loaderAddress
 | 写屏障 | Card Table | Load Barrier | Card Table | Hybrid | Dijkstra + Steele |
 | NUMA 感知 | 部分 | 是 | 否 | 否 | 否 |
 
-### 11.2 JVM 调优 vs C++ 手动内存管理
+### 10.2 JVM 调优 vs C++ 手动内存管理
 
 | 维度 | JVM 调优 | C++ 手动管理 |
 | ---- | -------- | ------------ |
@@ -997,7 +962,7 @@ SELECT * FROM java.lang.Class c WHERE c.classLoader = @loaderAddress
 | 调优成本 | 中（参数化） | 高（重构代码） |
 | 适合场景 | 业务系统、服务端 | 游戏、嵌入式、HFT |
 
-### 11.3 JVM 调优 vs Rust 所有权
+### 10.3 JVM 调优 vs Rust 所有权
 
 | 维度 | JVM 调优 | Rust |
 | ---- | -------- | ---- |
@@ -1009,9 +974,9 @@ SELECT * FROM java.lang.Class c WHERE c.classLoader = @loaderAddress
 
 ---
 
-## 12. 常见陷阱与最佳实践
+## 11. 常见陷阱与最佳实践
 
-### 12.1 陷阱：Xms ≠ Xmx 导致频繁扩容
+### 11.1 陷阱：Xms ≠ Xmx 导致频繁扩容
 
 **反例**：
 
@@ -1028,7 +993,7 @@ SELECT * FROM java.lang.Class c WHERE c.classLoader = @loaderAddress
 -XX:+AlwaysPreTouch  # 启动时预触页，避免运行时缺页
 ```
 
-### 12.2 陷阱：盲目使用 System.gc()
+### 11.2 陷阱：盲目使用 System.gc()
 
 **反例**：
 
@@ -1046,7 +1011,7 @@ Runtime.getRuntime().gc();
 -XX:+DisableExplicitGC  # 禁用 System.gc()
 ```
 
-### 12.3 陷阱：finalize() 导致内存延迟释放
+### 11.3 陷阱：finalize() 导致内存延迟释放
 
 **反例**：
 
@@ -1061,7 +1026,7 @@ public class Resource {
 
 **最佳实践**：使用 `try-with-resources` + `AutoCloseable`，Java 9+ 用 `Cleaner` API。
 
-### 12.4 陷阱：大对象直接进老年代
+### 11.4 陷阱：大对象直接进老年代
 
 **反例**：
 
@@ -1074,7 +1039,7 @@ byte[] buffer = new byte[2 * 1024 * 1024];
 
 **最佳实践**：使用对象池或 ThreadLocal 复用 buffer。
 
-### 12.5 陷阱：错误的锁粒度引发 safepoint 停顿
+### 11.5 陷阱：错误的锁粒度引发 safepoint 停顿
 
 **反例**：
 
@@ -1099,7 +1064,7 @@ synchronized (lock) {
 }
 ```
 
-### 12.6 陷阱：容器内 JVM 误认内存上限
+### 11.6 陷阱：容器内 JVM 误认内存上限
 
 **反例**：Docker 限制 2GB，JVM 误认 64GB 主机，`-Xmx` 自动设为 16GB，触发 OOM Kill。
 
@@ -1111,7 +1076,7 @@ synchronized (lock) {
 -XX:MaxRAMPercentage=75.0   # 使用容器内存的 75%
 ```
 
-### 12.7 陷阱：CMS 在 JDK 14+ 已移除
+### 11.7 陷阱：CMS 在 JDK 14+ 已移除
 
 **反例**：
 
@@ -1121,7 +1086,7 @@ synchronized (lock) {
 
 **最佳实践**：迁移到 G1 或 ZGC。
 
-### 12.8 最佳实践清单
+### 11.8 最佳实践清单
 
 1. **生产环境 Xms = Xmx**，配合 `-XX:+AlwaysPreTouch`
 2. **优先使用 G1**（JDK 17+），延迟敏感场景用 ZGC
@@ -1136,9 +1101,9 @@ synchronized (lock) {
 
 ---
 
-## 13. 工程实践
+## 12. 工程实践
 
-### 13.1 Maven 项目配置
+### 12.1 Maven 项目配置
 
 ```xml
 <project>
@@ -1187,7 +1152,7 @@ synchronized (lock) {
 </project>
 ```
 
-### 13.2 Dockerfile 示例
+### 12.2 Dockerfile 示例
 
 ```dockerfile
 # 多阶段构建
@@ -1227,7 +1192,7 @@ EXPOSE 8080
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 ```
 
-### 13.3 Kubernetes Deployment
+### 12.3 Kubernetes Deployment
 
 ```yaml
 apiVersion: apps/v1
@@ -1280,7 +1245,7 @@ spec:
         emptyDir: {}
 ```
 
-### 13.4 监控告警（Prometheus + Grafana）
+### 12.4 监控告警（Prometheus + Grafana）
 
 ```yaml
 # prometheus.yml
@@ -1324,7 +1289,7 @@ groups:
       severity: critical
 ```
 
-### 13.5 诊断脚本
+### 12.5 诊断脚本
 
 ```bash
 #!/bin/bash
@@ -1365,9 +1330,9 @@ echo "诊断数据已保存至 $OUT_DIR"
 
 ---
 
-## 14. 案例研究
+## 13. 案例研究
 
-### 14.1 案例一：Spring Boot 电商订单服务
+### 13.1 案例一：Spring Boot 电商订单服务
 
 **业务**：日均 500 万订单，QPS 峰值 2000，P99 SLA < 200ms
 
@@ -1437,7 +1402,7 @@ private final Cache<Long, Order> orderCache = Caffeine.newBuilder()
 | OOM Kill 频率 | 每日 2—3 次 | 0 |
 | 堆使用率 | 95% | 65% |
 
-### 14.2 案例二：Kafka 消费者内存泄漏
+### 13.2 案例二：Kafka 消费者内存泄漏
 
 **业务**：Kafka 消费者，每秒处理 10 万条消息，处理 24 小时后 OOM
 
@@ -1474,7 +1439,7 @@ public class KafkaConsumer {
 -XX:HeapDumpPath=/var/log/heapdump
 ```
 
-### 14.3 案例三：Hibernate N+1 查询引发频繁 Full GC
+### 13.3 案例三：Hibernate N+1 查询引发频繁 Full GC
 
 **业务**：管理后台列表查询，每页 100 条，加载关联实体
 
@@ -1511,7 +1476,7 @@ List<Order> findAll();
 
 **效果**：Full GC 降为 0，查询时间从 8s 降至 300ms。
 
-### 14.4 案例四：Android 应用内存泄漏
+### 13.4 案例四：Android 应用内存泄漏
 
 **业务**：Android App，长时间使用后 OOM
 
@@ -1761,7 +1726,7 @@ jcmd 1234 GC.class_histogram
 ```
 
 
-### 15.4 思考题
+### 14.4 思考题
 
 **题目 12**：为什么 ZGC 的停顿时间与堆大小无关？请从着色指针和 Load Barrier 的角度解释。
 
@@ -1884,7 +1849,7 @@ $$
 
 ---
 
-## 16. 参考文献
+## 15. 参考文献
 
 本节参考文献遵循 ACM Reference Format。
 
@@ -1920,9 +1885,9 @@ $$
 
 ---
 
-## 17. 延伸阅读
+## 16. 延伸阅读
 
-### 17.1 书籍
+### 16.1 书籍
 
 1. **《The Garbage Collection Handbook: The Art of Automatic Memory Management》**（2nd Edition）
    - 作者：Richard Jones, Antony Hosking, Eliot Moss
@@ -1952,7 +1917,7 @@ $$
    - 出版：O'Reilly Media, 2014
    - 评价：JDK 8 时代经典，许多原理仍适用
 
-### 17.2 论文
+### 16.2 论文
 
 1. **Detlefs, D., Flood, C., Heller, S., and Printezis, T. (2004). "Garbage-First Garbage Collection." ISMM '04.**
    - G1 算法的原始论文
@@ -1966,7 +1931,7 @@ $$
 4. **Lin, C. et al. (2016). "All for One and One for All: Analysing Concurrent Garbage Collection." ISMM '16.**
    - 并发 GC 的系统性分析
 
-### 17.3 在线资源
+### 16.3 在线资源
 
 1. **OpenJDK 官方文档**
    - https://openjdk.org/groups/hotspot/docs/
@@ -2008,7 +1973,7 @@ $$
     - https://pyroscope.io/
     - 持续 profiling 平台
 
-### 17.4 视频课程
+### 16.4 视频课程
 
 1. **MIT 6.172: Performance Engineering of Software Systems**
    - https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/

@@ -35,57 +35,16 @@ keywords:
   - 时区
   - 性能优化
 ---
+
 # Go time 包 语法速查手册
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-学完本文后，读者应能够在以下认知层级上掌握 Go `time` 包（依据 Bloom 修订版分类法）：
-
-### 1.1 记忆层（Remembering）
-
-- 复述 `time.Time`、`time.Duration`、`time.Location` 三大核心类型的定义与零值。
-- 列举 `time` 包的常用函数：`Now`、`Since`、`Until`、`Sleep`、`After`、`Tick`、`NewTimer`、`NewTicker`。
-- 说明 `Time` 的内部表示：wall clock + monotonic clock + location 三元组。
-
-### 1.2 理解层（Understanding）
-
-- 解释 wall clock（墙上时钟）与 monotonic clock（单调时钟）的本质区别。
-- 阐述 NTP 时间同步对分布式系统的影响，以及为什么 Go 在 1.9 引入单调时钟。
-- 区分 `Duration` 与 `Time`：前者是相对时间差，后者是绝对时刻。
-- 说明 `time.Local`、`time.UTC`、`time.LoadLocation` 的差异与适用场景。
-
-### 1.3 应用层（Applying）
-
-- 编写跨时区的时间转换工具：在 UTC、本地时区、IANA 时区之间互转。
-- 使用 `Timer` 与 `Ticker` 实现周期任务、超时控制、心跳检测。
-- 通过 `time.AfterFunc` 实现延迟回调。
-
-### 1.4 分析层（Analyzing）
-
-- 拆解 `Timer.Stop` 的正确姿势：为什么直接 `Stop` 可能丢失信号，需要 `Reset` 配合。
-- 分析 `time.Sleep` 与 `runtime.Gosched` 的差异：调度器视角。
-- 对比 `time.After` 在 for-select 循环中的内存泄漏问题。
-
-### 1.5 评价层（Evaluating）
-
-- 评价 NTP 频繁跳变对 Go 应用的影响，并设计容错策略。
-- 评估分布式系统中"逻辑时钟"（Lamport Clock、Vector Clock）与物理时钟的取舍。
-
-### 1.6 创造层（Creating）
-
-- 设计一个支持时钟漂移补偿的分布式计时器服务。
-- 实现一个高性能的定时任务调度器，支持 cron 表达式、优先级队列、动态注册。
-- 构建一个时间序列数据库的写入与查询层，处理时间精度与乱序数据。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 时间度量的物理学基础
+### 1.1 时间度量的物理学基础
 
 时间是物理学的基本维度之一。在经典力学中，时间被视为绝对流逝；而在相对论中，时间是时空的一部分，随观察者参考系而变。对于计算机系统而言，时间通常分为两类：
 
@@ -94,7 +53,7 @@ keywords:
 
 由于两者存在差异，引入了 **UTC（协调世界时）**，通过插入闰秒（leap second）保持与 UT1 的差异不超过 0.9 秒。闰秒是分布式系统的噩梦：2012 年 6 月 30 日的闰秒曾导致 Java、Linux、MySQL 多个服务异常。
 
-### 2.2 操作系统时钟
+### 1.2 操作系统时钟
 
 Linux 内核提供两种主要时钟：
 
@@ -105,7 +64,7 @@ Linux 内核提供两种主要时钟：
 | `CLOCK_BOOTTIME` | 启动时钟 | 含休眠时间 | `clock_gettime` |
 | `CLOCK_PROCESS_CPUTIME_ID` | 进程 CPU 时间 | 进程实际消耗 CPU | `clock_gettime` |
 
-### 2.3 Go time 包的设计动机
+### 1.3 Go time 包的设计动机
 
 Go 在 1.0（2012 年）引入 `time` 包时仅有 wall clock。但在分布式系统场景中暴露了若干问题：
 
@@ -115,15 +74,15 @@ Go 在 1.0（2012 年）引入 `time` 包时仅有 wall clock。但在分布式�
 
 为此，Go 1.9（2017 年 8 月）引入 **单调时钟**（monotonic clock），在 `time.Time` 中同时存储 wall clock 与 monotonic clock 两个值。`time.Since` 与 `time.Until` 优先使用单调时钟，避免 NTP 影响。
 
-### 2.4 IEEE 1588 与分布式时间同步
+### 1.4 IEEE 1588 与分布式时间同步
 
 在金融交易、工业控制等高精度场景中，NTP（精度毫秒级）不足以满足需求。IEEE 1588 PTP（Precision Time Protocol）可将网络中多个节点的时钟同步到亚微秒级。Go 标准库未直接支持 PTP，但可通过 `github.com/beevik/ntp` 等第三方库访问 NTP 服务器。
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Time 的代数结构
+### 2.1 Time 的代数结构
 
 设 $\mathcal{T}$ 为时间值集合，$\mathcal{D}$ 为 Duration 集合，$\mathcal{L}$ 为 Location 集合。`time.Time` 可形式化为三元组：
 
@@ -136,7 +95,7 @@ $$
 - $m$ 为 monotonic clock，自进程启动起的纳秒数（仅当存在时有效）。
 - $l$ 为时区信息。
 
-### 3.2 Duration 的形式化
+### 2.2 Duration 的形式化
 
 `time.Duration` 是 `int64` 纳秒值：
 
@@ -157,7 +116,7 @@ $$
 \end{aligned}
 $$
 
-### 3.3 单调时钟的不变量
+### 2.3 单调时钟的不变量
 
 单调时钟满足以下不变量：
 
@@ -171,7 +130,7 @@ $$
 \Delta = \text{mono}(t_2) - \text{mono}(t_1) \quad \text{（有意义的时长）}
 $$
 
-### 3.4 时区的形式化
+### 2.4 时区的形式化
 
 时区可视为 UTC 偏移函数：
 
@@ -185,9 +144,9 @@ IANA 时区数据库（tzdata）将全球时区分为约 400 个区域，每个�
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 时间精度的下界
+### 3.1 时间精度的下界
 
 现代 x86-64 CPU 的 `RDTSC` 指令读取时间戳计数器，精度可达纳秒级。但 `clock_gettime` 系统调用本身有开销：
 
@@ -199,7 +158,7 @@ IANA 时区数据库（tzdata）将全球时区分为约 400 个区域，每个�
 
 Go `time.Now()` 通过 vDSO（虚拟动态共享对象）避免陷入内核态，开销较低。
 
-### 4.2 单调时钟的语义推导
+### 3.2 单调时钟的语义推导
 
 为什么 Go 选择同时存储 wall clock 与 monotonic clock？设两次 `time.Now()` 得到 $t_1, t_2$：
 
@@ -217,7 +176,7 @@ $$
 
 注意：`time.Now()` 总是包含单调时钟，但 `time.Parse`、`time.Unix`、`time.Date` 构造的 `Time` 不包含单调时钟。
 
-### 4.3 Timer 的内存模型
+### 3.3 Timer 的内存模型
 
 `time.Timer` 与 `time.Ticker` 的实现基于 Go runtime 的最小堆（min-heap）。每个 P（处理器）维护独立的 timer 堆，避免全局锁。
 
@@ -232,7 +191,7 @@ Timer 的触发流程：
 - 停止 Timer：$O(\log n)$（堆删除）。
 - 触发 Timer：$O(\log n)$（堆顶弹出）。
 
-### 4.4 时区数据库的内存占用
+### 3.4 时区数据库的内存占用
 
 完整加载 IANA tzdata（约 450 个时区）大约消耗 1-2 MB 内存。Go 默认从系统读取 tzdata（Linux 在 `/usr/share/zoneinfo`，Windows 需单独安装）。
 
@@ -242,7 +201,7 @@ Go 1.15+ 支持通过 `_ "time/tzdata"` 包内嵌 tzdata，便于生成不依赖
 import _ "time/tzdata" // 将 tzdata 嵌入二进制，约 450KB
 ```
 
-### 4.5 复杂度分析
+### 3.5 复杂度分析
 
 | 操作 | 时间复杂度 | 备注 |
 |------|----------|------|
@@ -258,9 +217,9 @@ import _ "time/tzdata" // 将 tzdata 嵌入二进制，约 450KB
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：获取与格式化时间
+### 4.1 基础：获取与格式化时间
 
 ```go
 // Package main 演示 time 包最基础的时间获取与格式化
@@ -301,7 +260,7 @@ func main() {
 }
 ```
 
-### 5.2 解析与构造时间
+### 4.2 解析与构造时间
 
 ```go
 // Package main 演示时间解析与构造
@@ -348,7 +307,7 @@ func main() {
 }
 ```
 
-### 5.3 时区处理
+### 4.3 时区处理
 
 ```go
 // Package main 演示时区转换
@@ -392,7 +351,7 @@ func main() {
 }
 ```
 
-### 5.4 Duration 与时间运算
+### 4.4 Duration 与时间运算
 
 ```go
 // Package main 演示 Duration 与时间加减运算
@@ -444,7 +403,7 @@ func main() {
 }
 ```
 
-### 5.5 Timer 与 Ticker
+### 4.5 Timer 与 Ticker
 
 ```go
 // Package main 演示 Timer 与 Ticker 的使用
@@ -494,7 +453,7 @@ func main() {
 }
 ```
 
-### 5.6 超时控制模式
+### 4.6 超时控制模式
 
 ```go
 // Package main 演示基于 time 的超时控制模式
@@ -551,7 +510,7 @@ func main() {
 }
 ```
 
-### 5.7 Timer.Stop 与 Reset 的正确用法
+### 4.7 Timer.Stop 与 Reset 的正确用法
 
 ```go
 // Package main 演示 Timer.Stop 与 Reset 的正确用法
@@ -600,7 +559,7 @@ func main() {
 }
 ```
 
-### 5.8 心跳检测模式
+### 4.8 心跳检测模式
 
 ```go
 // Package main 演示基于 Ticker 的心跳检测
@@ -682,7 +641,7 @@ func main() {
 }
 ```
 
-### 5.9 时间格式化参考
+### 4.9 时间格式化参考
 
 ```go
 // Package main 演示 Go 时间格式化的特殊语法
@@ -723,7 +682,7 @@ func main() {
 }
 ```
 
-### 5.10 自定义时间解析器
+### 4.10 自定义时间解析器
 
 ```go
 // Package main 演示如何解析多种常见的时间格式
@@ -781,9 +740,9 @@ func main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Go time 与其他语言时间库对比
+### 5.1 Go time 与其他语言时间库对比
 
 | 语言 | 库 | 单调时钟 | 时区 | Duration | 易用性 |
 |------|----|--------|-----|---------|-------|
@@ -793,7 +752,7 @@ func main() {
 | Rust | `chrono` | `Instant` | `chrono-tz` | `Duration` | 高 |
 | C++ | `<chrono>` | `steady_clock` | ICU | `duration` | 低 |
 
-### 6.2 time.Sleep vs runtime.Gosched vs time.After
+### 5.2 time.Sleep vs runtime.Gosched vs time.After
 
 | 方式 | 用途 | 行为 | 精度 |
 |------|------|------|-----|
@@ -802,7 +761,7 @@ func main() {
 | `<-time.After(d)` | 等待 channel | 创建 Timer，C 接收后唤醒 | 毫秒级 |
 | `select{case <-c: case <-time.After(d):}` | 超时控制 | 创建一次性 Timer | 毫秒级 |
 
-### 6.3 time.Now 性能对比
+### 5.3 time.Now 性能对比
 
 | 语言 | 调用 | 开销（ns） |
 |------|------|---------|
@@ -811,7 +770,7 @@ func main() {
 | Java `Instant.now()` | JNI | ~80 |
 | Python `datetime.now()` | C 扩展 | ~200 |
 
-### 6.4 Timer vs Ticker vs AfterFunc
+### 5.4 Timer vs Ticker vs AfterFunc
 
 | 方式 | 触发次数 | 内存模型 | 适用场景 |
 |------|--------|---------|---------|
@@ -823,9 +782,9 @@ func main() {
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：循环中使用 time.After 导致内存泄漏
+### 6.1 反模式：循环中使用 time.After 导致内存泄漏
 
 ```go
 // 反模式：每次循环创建新 Timer，未消费的 Timer 会驻留堆中直到触发
@@ -860,7 +819,7 @@ func WatchWithoutLeak(events <-chan int) {
 }
 ```
 
-### 7.2 反模式：未处理 Timer.Stop 返回值
+### 6.2 反模式：未处理 Timer.Stop 返回值
 
 ```go
 // 反模式：未检查 Stop 返回值
@@ -887,7 +846,7 @@ if !t.Stop() {
 t.Reset(2 * time.Second)
 ```
 
-### 7.3 反模式：使用 time.Tick 而非 NewTicker
+### 6.3 反模式：使用 time.Tick 而非 NewTicker
 
 ```go
 // 反模式：time.Tick 创建的 Ticker 无法停止，导致内存泄漏
@@ -903,7 +862,7 @@ for range ticker.C {
 }
 ```
 
-### 7.4 反模式：忽略时区
+### 6.4 反模式：忽略时区
 
 ```go
 // 反模式：未指定时区，导致跨地区服务时间不一致
@@ -915,7 +874,7 @@ loc, _ := time.LoadLocation("Asia/Shanghai")
 t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 ```
 
-### 7.5 反模式：Duration 与整数混淆
+### 6.5 反模式：Duration 与整数混淆
 
 ```go
 // 反模式：未使用 time.Duration 单位
@@ -926,7 +885,7 @@ time.Sleep(5 * time.Second)
 time.Sleep(5 * time.Minute)
 ```
 
-### 7.6 反模式：在循环中重新分配 Time 字符串
+### 6.6 反模式：在循环中重新分配 Time 字符串
 
 ```go
 // 反模式：循环内反复 Format
@@ -938,7 +897,7 @@ for _, t := range timestamps {
 // （Format 本身已经较快，但极端高频场景可缓存）
 ```
 
-### 7.7 生产事故案例：闰秒导致服务挂死
+### 6.7 生产事故案例：闰秒导致服务挂死
 
 2015 年 6 月 30 日 23:59:60 的闰秒，导致大量 Java、Python、C++ 应用陷入 CPU 100% 死循环。Go 应用因使用 monotonic clock 而**未受影响**，但仍需注意：
 
@@ -947,7 +906,7 @@ for _, t := range timestamps {
 
 **缓解方案**：使用 `CLOCK_TAI`（国际原子时，无闰秒），或在闰秒前后手动暂停服务。
 
-### 7.8 生产事故案例：虚拟机迁移时钟跳变
+### 6.8 生产事故案例：虚拟机迁移时钟跳变
 
 某云服务中，Go 服务在虚拟机热迁移后，`time.Since(start)` 返回负值，导致计费逻辑异常。
 
@@ -957,7 +916,7 @@ for _, t := range timestamps {
 
 **修复**：升级到 Go 1.9+，并保证所有计时使用 `time.Since` 而非 `time.Now().Sub(start)`。
 
-### 7.9 生产事故案例：时区数据库缺失
+### 6.9 生产事故案例：时区数据库缺失
 
 某容器化部署的 Go 服务调用 `time.LoadLocation("Asia/Shanghai")` 报错，因为基础镜像（基于 Alpine）未安装 tzdata。
 
@@ -969,9 +928,9 @@ for _, t := range timestamps {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 时间存储与序列化最佳实践
+### 7.1 时间存储与序列化最佳实践
 
 1. **数据库存储 UTC 时间**：避免时区歧义，便于跨地区查询。
 2. **API 传输使用 RFC3339**：含时区信息，标准化格式。
@@ -992,7 +951,7 @@ resp := Response{Timestamp: time.Now().UTC().Format(time.RFC3339)}
 log.Printf("[%s] event", time.Now().UTC().Format(time.RFC3339))
 ```
 
-### 8.2 性能优化清单
+### 7.2 性能优化清单
 
 1. **避免在热路径 Format 时间**：缓存格式化结果。
 2. **使用 UnixNano 而非 Format**：日志时间用 UnixNano，查询时再格式化。
@@ -1000,7 +959,7 @@ log.Printf("[%s] event", time.Now().UTC().Format(time.RFC3339))
 4. **批量时间比较**：使用 Unix 时间戳而非 Time 对象比较。
 5. **使用 monotonic clock**：Go 1.9+ 默认使用，但避免 `time.Date` 构造的时间。
 
-### 8.3 测试时间相关代码
+### 7.3 测试时间相关代码
 
 测试时间相关代码的常见技巧：
 
@@ -1032,7 +991,7 @@ func TestIsExpired(t *testing.T) {
 }
 ```
 
-### 8.4 时间窗口与滑动窗口
+### 7.4 时间窗口与滑动窗口
 
 ```go
 // Package main 演示滑动窗口限流的基础实现
@@ -1083,7 +1042,7 @@ func (s *SlidingWindow) Allow() bool {
 }
 ```
 
-### 8.5 定时任务调度
+### 7.5 定时任务调度
 
 ```go
 // Package main 演示一个简单的定时任务调度器
@@ -1190,9 +1149,9 @@ func main() {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：分布式系统中的时钟同步
+### 8.1 案例一：分布式系统中的时钟同步
 
 某金融交易系统要求多节点之间事件顺序一致。原始方案使用 NTP 同步，但精度仅毫秒级，导致并发交易顺序混乱。
 
@@ -1245,7 +1204,7 @@ func (h *HLC) Update(remoteWall, remoteLogical int64) {
 }
 ```
 
-### 9.2 案例二：Kubernetes 中的 Lease 机制
+### 8.2 案例二：Kubernetes 中的 Lease 机制
 
 Kubernetes 使用 Lease 对象实现 leader election。每个节点定期（默认 10s）更新 Lease 的 `renewTime`，若超过 `leaseDurationSeconds` 未更新，则认为节点失联。
 
@@ -1277,7 +1236,7 @@ func (l *LeaderElector) Run(ctx context.Context) {
 }
 ```
 
-### 9.3 案例三：Prometheus 中的时间序列
+### 8.3 案例三：Prometheus 中的时间序列
 
 Prometheus 使用毫秒精度的时间戳存储时间序列。Go 客户端通过 `time.Now().UnixMilli()` 获取时间戳：
 
@@ -1301,7 +1260,7 @@ Prometheus 选择毫秒而非纳秒，原因：
 2. 时间精度对监控足够（采样间隔通常 ≥ 15s）。
 3. 便于与人类阅读的时间戳对齐。
 
-### 9.4 案例四：gRPC 中的超时传播
+### 8.4 案例四：gRPC 中的超时传播
 
 gRPC 通过 metadata 在调用链中传播超时：
 
@@ -1331,7 +1290,7 @@ gRPC 将 `grpc-timeout` header 编码为字符串传输，支持多种精度：
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题 1**：解释 Go `time.Time` 内部存储的字段及其作用。
 
@@ -1347,7 +1306,7 @@ fmt.Println(t2.Before(t1))
 
 **题 3**：将字符串 "2026-07-21 14:30:00" 解析为 Asia/Shanghai 时区的 `time.Time`。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题 4**：实现一个 `CronTimer`，支持解析 cron 表达式（简化版，仅支持 `* * * * *` 五段格式），并在指定时刻触发回调。
 
@@ -1367,7 +1326,7 @@ func Watch(events <-chan int) {
 
 **题 6**：实现一个 `RateLimiter`，基于滑动窗口算法，每秒允许 N 个请求。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题 7**：实现一个跨时区的时间格式化服务，要求：
 
@@ -1383,7 +1342,7 @@ func Watch(events <-chan int) {
 - 支持任务依赖与重试。
 - 考虑时钟漂移与网络延迟。
 
-### 10.4 参考答案要点
+### 9.4 参考答案要点
 
 **题 1 答案**：`time.Time` 内部存储三个字段：wall clock（自 1885 年起的秒数）、ext（扩展字段，存储单调时钟或纳秒）、loc（时区指针）。Go 1.9+ 在 wall 中通过最高位标记是否包含单调时钟。
 
@@ -1400,9 +1359,9 @@ t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 经典论文与文献
+### 10.1 经典论文与文献
 
 [1] Lamport, L. 1978. *Time, clocks, and the ordering of events in a distributed system*. Communications of the ACM 21, 7 (July 1978), 558–565. DOI: https://doi.org/10.1145/359545.359563
 
@@ -1414,13 +1373,13 @@ t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 
 [5] Kulkarni, S. S., Demirbas, M., Madappa, D., and Avula, B. 2014. *Logical physical clocks*. In *Principles of Distributed Systems*. OPODIS 2014. DOI: https://doi.org/10.4230/LIPIcs.OPODIS.2014.17
 
-### 11.2 标准与规范
+### 10.2 标准与规范
 
 [6] IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems. 2008. *IEEE Std 1588-2008*. DOI: https://doi.org/10.1109/IEEESTD.2008.4579760
 
 [7] International Telecommunication Union. 2002. *Recommendation ITU-R TF.460-6: Standard-frequency and time-signal emissions*. Available: https://www.itu.int/rec/R-REC-TF.460-6-200202-I
 
-### 11.3 Go 官方文档
+### 10.3 Go 官方文档
 
 [8] The Go Authors. 2024. *package time*. Go Standard Library Documentation. Available: https://pkg.go.dev/time
 
@@ -1428,7 +1387,7 @@ t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 
 [10] The Go Authors. 2024. *time/tzdata package*. Available: https://pkg.go.dev/time/tzdata
 
-### 11.4 经典工程案例
+### 10.4 经典工程案例
 
 [11] Popescu, A. et al. 2015. *The Leap Second's Effect on Linux and Java*. Cloudflare Blog. Available: https://blog.cloudflare.com/how-and-why-the-leap-second-affected-cloudflare-dns/
 
@@ -1438,27 +1397,27 @@ t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - Go time 包文档：https://pkg.go.dev/time
 - Go time 包源码：https://github.com/golang/go/blob/master/src/time/
 - Go 1.9 Release Notes（单调时钟引入）：https://go.dev/doc/go1.9
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - *Designing Data-Intensive Applications*（Martin Kleppmann）第 8 章
 - *Distributed Systems*（Maarten van Steen, Andrew S. Tanenbaum）第 6 章
 - *Site Reliability Engineering*（Google）第 6 章：Distributed Cron
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - *TrueTime: Clock Synchronization in Spanner*（Google, 2012）
 - *HLC: Hybrid Logical Clocks for Distributed Systems*（OPODIS 2014）
 - *CRDTs and Time in Distributed Systems*（PLOS 2022）
 
-### 12.4 相关开源项目
+### 11.4 相关开源项目
 
 - `github.com/robfig/cron`：Go 生态最流行的 cron 库
 - `github.com/go-co-op/gocron`：现代化 cron 调度器
@@ -1466,7 +1425,7 @@ t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 - `github.com/beevik/ntp`：NTP 客户端
 - `github.com/jinzhu/now`：时间工具库
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - **Cron 表达式解析**：标准 cron 与 Quartz cron 的差异。
 - **时区数据库更新**：IANA 每年发布 4-8 次更新，如何热更新？
@@ -1476,9 +1435,9 @@ t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 Go 时间格式参考表
+### 12.1 Go 时间格式参考表
 
 | 含义 | 模板 | 示例 |
 |------|------|------|
@@ -1500,7 +1459,7 @@ t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 | 时区名 | MST | UTC |
 | 时区偏移 | -07:00 | +08:00 |
 
-### 13.2 常用时间常量
+### 12.2 常用时间常量
 
 | 常量 | 值 | 说明 |
 |------|----|----|
@@ -1516,7 +1475,7 @@ t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 | `time.Stamp` | "Jan _2 15:04:05" | 时间戳 |
 | `time.StampMilli` | "Jan _2 15:04:05.000" | 含毫秒 |
 
-### 13.3 IANA 时区列表（部分）
+### 12.3 IANA 时区列表（部分）
 
 | 时区 | 偏移 | 夏令时 |
 |------|------|------|
@@ -1530,7 +1489,7 @@ t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 | Europe/Paris | +01:00 / +02:00 | 有 |
 | Australia/Sydney | +10:00 / +11:00 | 有 |
 
-### 13.4 性能基准测试模板
+### 12.4 性能基准测试模板
 
 ```go
 func BenchmarkTimeNow(b *testing.B) {
@@ -1571,7 +1530,7 @@ func BenchmarkTimeAdd(b *testing.B) {
 }
 ```
 
-### 13.5 time 包 API 速查表
+### 12.5 time 包 API 速查表
 
 | 操作 | 函数/方法 | 说明 |
 |------|---------|------|

@@ -15,28 +15,16 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # C++ 内存模型
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-| Bloom 层级 | 目标描述 |
-| :--- | :--- |
-| **Remember（记忆）** | 列出 6 种 `std::memory_order` 的名称与基本语义，复述 happens-before 与 synchronizes-with 关系的定义 |
-| **Understand（理解）** | 解释 x86 TSO 内存模型与 ARM/POWER relaxed 内存模型的差异，说明 acquire-release 配对的工作原理 |
-| **Apply（应用）** | 使用 `std::atomic` 实现自旋锁、生产者-消费者队列，正确选择内存序以平衡正确性与性能 |
-| **Analyze（分析）** | 分析给定代码片段的内存序是否过度严格或过于宽松，识别潜在数据竞争与 UB |
-| **Evaluate（评价）** | 评估无锁数据结构的性能特性（吞吐、延迟、可扩展性），权衡无锁 vs 互斥方案的取舍 |
-| **Create（创造）** | 设计并实现无锁队列、无锁栈、无锁 hashmap，处理 ABA 问题与内存回收 |
-
-## 2. 历史动机与发展脉络
-
-### 2.1 多核时代的内存模型挑战
+### 1.1 多核时代的内存模型挑战
 
 单核时代，编译器与 CPU 通过顺序一致性（sequential consistency, SC）抽象隐藏了内存访问的复杂性。但多核系统中：
 
@@ -54,7 +42,7 @@ r1 = y;            r2 = x;
 // 期望 r1=1 或 r2=1，但 ARM/POWER 上可能 r1=0, r2=0
 ```
 
-### 2.2 C++11 内存模型的引入
+### 1.2 C++11 内存模型的引入
 
 C++11 标准首次为 C++ 定义了形式化的内存模型（memory model），见 ISO/IEC 14882:2011 §1.10。关键提案：
 
@@ -67,7 +55,7 @@ C++11 标准首次为 C++ 定义了形式化的内存模型（memory model），
 
 C++11 模型基于 Java Memory Model（JSR-133）改良，但去掉了 Java 的 `volatile` 语义与 final field 规则，更接近硬件内存模型。
 
-### 2.3 C++14/17/20/23/26 演进
+### 1.3 C++14/17/20/23/26 演进
 
 | 标准 | 关键变化 | 文档编号 |
 | :--- | :--- | :--- |
@@ -78,7 +66,7 @@ C++11 模型基于 Java Memory Model（JSR-133）改良，但去掉了 Java 的 
 | **C++23** | `std::atomic_ref<T>::required_alignment`；`std::flat_map` 等容器与原子协作；`std::move_only_function` 与原子 | P1889 |
 | **C++26** | Hazard pointer（P2530）、`std::rcu`（P2545）、`std::atomic_ref` 扩展到 floating-point（P2045）；`std::execution` 与无锁并发整合（草案） | P2530, P2545 |
 
-### 2.4 与其他语言的横向对比
+### 1.4 与其他语言的横向对比
 
 | 特性 | C++ | Java | Rust | Go | C# |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -88,9 +76,9 @@ C++11 模型基于 Java Memory Model（JSR-133）改良，但去掉了 Java 的 
 | 无锁数据结构库 | 第三方（boost::lockfree） | `java.util.concurrent` | `crossbeam` | `sync/atomic` + 自实现 | `System.Collections.Concurrent` |
 | cache line padding | `alignas(64)` | `@Contended` | `#[repr(align(64))]` | `//go:noescape` + 自定义 | `[StructLayout]` |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 C++ 内存模型基础
+### 2.1 C++ 内存模型基础
 
 C++ 内存模型将程序视为对抽象机器上内存位置的访问序列。形式化定义如下（ISO/IEC 14882:2023 §6.9.2）：
 
@@ -98,7 +86,7 @@ C++ 内存模型将程序视为对抽象机器上内存位置的访问序列。�
 - **求值（evaluation）**：包括 value computation（值计算）和 side effect（副作用，如写入内存）。
 - **数据竞争（data race）**：两个线程对同一内存位置进行至少一个写操作，且无 happens-before 关系时，构成数据竞争，导致 UB。
 
-### 3.2 Happens-before 关系
+### 2.2 Happens-before 关系
 
 形式化定义 happens-before 关系 $\xrightarrow{hb}$：
 
@@ -114,7 +102,7 @@ $$
 - **sequenced-before**：单线程内，依据语言规则确定的求值顺序。
 - **synchronizes-with**：跨线程同步关系，通常由原子操作或 fence 建立。
 
-### 3.3 6 种内存序的形式化语义
+### 2.3 6 种内存序的形式化语义
 
 `std::memory_order` 枚举定义于 `<atomic>`，6 个值的语义如下：
 
@@ -133,7 +121,7 @@ $$
 - **acquire/release**：若 $A$ 为 `release` store 且 $B$ 为 `acquire` load 且读取了 $A$ 写入的值，则 $A \xrightarrow{sw} B$，进一步推导出 $A \xrightarrow{hb} B$。
 - **seq_cst**：在 acquire/release 基础上，附加存在单一全局总序 $S$，所有 seq_cst 操作按 $S$ 顺序被所有线程观察到。
 
-### 3.4 synchronizes-with 关系建立
+### 2.4 synchronizes-with 关系建立
 
 synchronizes-with $\xrightarrow{sw}$ 关系通过以下机制建立：
 
@@ -151,7 +139,7 @@ synchronizes-with $\xrightarrow{sw}$ 关系通过以下机制建立：
 4. **Seq_cst 全序**：
    - 所有 seq_cst 操作构成单一全局序 $S$，所有线程观察一致。
 
-### 3.5 内存屏障的形式化
+### 2.5 内存屏障的形式化
 
 `std::atomic_thread_fence(order)` 引入的屏障对指令重排的影响：
 
@@ -163,7 +151,7 @@ synchronizes-with $\xrightarrow{sw}$ 关系通过以下机制建立：
 | `acq_rel` | acquire + release |
 | `seq_cst` | acquire + release + 全局总序 |
 
-### 3.6 形式化示例：单生产者-单消费者
+### 2.6 形式化示例：单生产者-单消费者
 
 ```cpp
 std::atomic<bool> ready{false};
@@ -189,9 +177,9 @@ void consumer() {
 4. 由传递闭包：`(1) happens-before (4)`；
 5. 故 `(4)` 读取 `data` 时保证看到 `(1)` 写入的 42。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 为什么需要内存序
+### 3.1 为什么需要内存序
 
 考虑以下经典示例（"消息发布"模式）：
 
@@ -222,9 +210,9 @@ while (flag.load(std::memory_order_acquire) != 1);  // acquire
 print(message);  // 保证看到 42
 ```
 
-### 4.2 CPU 内存模型对比
+### 3.2 CPU 内存模型对比
 
-#### 4.2.1 x86-TSO（Total Store Order）
+#### 3.2.1 x86-TSO（Total Store Order）
 
 x86 采用 TSO 模型，比 SC 弱化一点点：
 
@@ -240,7 +228,7 @@ mov eax, [y] ; load
 # 可能被重排为：先 load [y]，再 store [x]
 ```
 
-#### 4.2.2 ARM/POWER（Relaxed Memory Model）
+#### 3.2.2 ARM/POWER（Relaxed Memory Model）
 
 ARM 与 POWER 是更弱的内存模型：
 
@@ -255,7 +243,7 @@ ldr r2, [y]   ; load
 dmb ish       ; 数据内存屏障（inner shareable）
 ```
 
-#### 4.2.3 内存序在不同架构上的成本
+#### 3.2.3 内存序在不同架构上的成本
 
 | 内存序 | x86 编译为 | ARM 编译为 | 成本（相对） |
 | :--- | :--- | :--- | :--- |
@@ -267,7 +255,7 @@ dmb ish       ; 数据内存屏障（inner shareable）
 
 **关键洞察**：在 x86 上，`acquire`/`release` 几乎免费，但 `seq_cst` 显著更贵。在 ARM 上，所有非 relaxed 内存序都有显著开销，但仍比 seq_cst 便宜。
 
-### 4.3 CAS（Compare-Exchange-Swap）原理
+### 3.3 CAS（Compare-Exchange-Swap）原理
 
 `compare_exchange_weak/strong` 是原子操作的核心原语。其语义：
 
@@ -304,7 +292,7 @@ bool ok = a.compare_exchange_strong(
 );
 ```
 
-### 4.4 ABA 问题
+### 3.4 ABA 问题
 
 CAS 检查值相等即认为 "无变化"，但值可能经历过 A→B→A 的变化：
 
@@ -322,7 +310,7 @@ CAS 检查值相等即认为 "无变化"，但值可能经历过 A→B→A 的�
 4. **Epoch-based reclamation**：分代回收，类似 RCU；
 5. **`std::rcu`**（C++26 草案 P2545）：RCU 机制标准化。
 
-### 4.5 缓存行与 False Sharing
+### 3.5 缓存行与 False Sharing
 
 CPU 缓存以缓存行（cache line）为单位（通常 64 字节）。若两个线程频繁修改位于同一缓存行的不同变量，会导致缓存行在核心间频繁迁移，性能严重退化。
 
@@ -342,7 +330,7 @@ struct Good {
 };  // a 与 b 在不同缓存行，无 false sharing
 ```
 
-### 4.6 公平性与无锁性等级
+### 3.6 公平性与无锁性等级
 
 按 Herlihy-Shavit 分类：
 
@@ -363,9 +351,9 @@ $$
 \end{cases}
 $$
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 自旋锁实现
+### 4.1 自旋锁实现
 
 ```cpp
 // file: spinlock.cpp
@@ -419,7 +407,7 @@ int main() {
 }
 ```
 
-### 5.2 生产者-消费者（无锁 SPSC 队列）
+### 4.2 生产者-消费者（无锁 SPSC 队列）
 
 ```cpp
 // file: spsc_queue.cpp
@@ -485,7 +473,7 @@ int main() {
 }
 ```
 
-### 5.3 无锁栈（带 ABA 解决方案）
+### 4.3 无锁栈（带 ABA 解决方案）
 
 ```cpp
 // file: lockfree_stack.cpp
@@ -556,7 +544,7 @@ int main() {
 }
 ```
 
-### 5.4 双检查锁定（Double-Checked Locking）
+### 4.4 双检查锁定（Double-Checked Locking）
 
 ```cpp
 // file: dclp.cpp
@@ -604,7 +592,7 @@ int main() {
 }
 ```
 
-### 5.5 false sharing 演示与修复
+### 4.5 false sharing 演示与修复
 
 ```cpp
 // file: false_sharing.cpp
@@ -659,7 +647,7 @@ GoodCounter (cache aligned): 412 ms, a=100000000 b=100000000
 
 修复后性能提升约 **3 倍**。
 
-### 5.6 CMake 项目示例
+### 4.6 CMake 项目示例
 
 ```cmake
 # CMakeLists.txt
@@ -691,7 +679,7 @@ target_compile_options(spinlock_tsan PRIVATE -O1 -fsanitize=thread)
 target_link_options(spinlock_tsan PRIVATE -fsanitize=thread)
 ```
 
-### 5.7 fetch_add 实现 Armstrong 数计算
+### 4.7 fetch_add 实现 Armstrong 数计算
 
 ```cpp
 // file: armstrong.cpp
@@ -743,9 +731,9 @@ int main() {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Rust 内存模型对比
+### 5.1 与 Rust 内存模型对比
 
 | 维度 | C++ | Rust |
 | :--- | :--- | :--- |
@@ -757,7 +745,7 @@ int main() {
 | 无锁库 | 自实现 / boost::lockfree | `crossbeam`、`tokio` |
 | cache line padding | `alignas(64)` | `#[repr(align(64))]` |
 
-### 6.2 与 Java JMM 对比
+### 5.2 与 Java JMM 对比
 
 | 维度 | C++ | Java |
 | :--- | :--- | :--- |
@@ -768,7 +756,7 @@ int main() {
 | final 字段保证 | 无 | final 字段初始化后对所有线程可见 |
 | 异常安全 | 移动语义 + noexcept | try-catch + finally |
 
-### 6.3 与 Go 内存模型对比
+### 5.3 与 Go 内存模型对比
 
 | 维度 | C++ | Go |
 | :--- | :--- | :--- |
@@ -779,7 +767,7 @@ int main() {
 | Channel 通信 | 无内置 | `chan` 内置（CSP 模型） |
 | Race Detector | TSan | `go test -race` |
 
-### 6.4 6 种内存序性能对比
+### 5.4 6 种内存序性能对比
 
 | 内存序 | x86 编译开销 | ARM 编译开销 | 适用场景 |
 | :--- | :--- | :--- | :--- |
@@ -793,9 +781,9 @@ int main() {
 
 **经验法则**：默认 `seq_cst`，性能敏感时降为 `acquire`/`release`，纯计数器用 `relaxed`。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：误用 `memory_order_relaxed`
+### 6.1 陷阱 1：误用 `memory_order_relaxed`
 
 ```cpp
 std::atomic<bool> ready{false};
@@ -812,7 +800,7 @@ print(data);  // 不保证看到 42
 
 **最佳实践**：消息发布场景必须使用 release/acquire 配对。
 
-### 7.2 陷阱 2：忘记 atomic 之外的内存访问
+### 6.2 陷阱 2：忘记 atomic 之外的内存访问
 
 ```cpp
 // 错误：data 不是 atomic
@@ -830,7 +818,7 @@ print(data);  // UB：数据竞争
 
 **最佳实践**：跨线程通信变量必须 `std::atomic`。
 
-### 7.3 陷阱 3：CAS 中的 ABA 问题
+### 6.3 陷阱 3：CAS 中的 ABA 问题
 
 ```cpp
 // 简化的无锁栈 pop
@@ -848,7 +836,7 @@ delete old_head;
 3. Hazard pointer（C++26）；
 4. Epoch-based reclamation。
 
-### 7.4 陷阱 4：`compare_exchange_weak` vs `strong`
+### 6.4 陷阱 4：`compare_exchange_weak` vs `strong`
 
 ```cpp
 // weak 版本可能"伪失败"（实际值等于 expected 但仍返回 false）
@@ -860,7 +848,7 @@ if (head.compare_exchange_strong(expected, desired)) { ... }
 
 **最佳实践**：循环场景用 `weak`，单次判断用 `strong`。
 
-### 7.5 陷阱 5：忘记 false sharing
+### 6.5 陷阱 5：忘记 false sharing
 
 ```cpp
 struct Bad {
@@ -870,7 +858,7 @@ struct Bad {
 
 **最佳实践**：高频访问的原子变量使用 `alignas(64)`。
 
-### 7.6 陷阱 6：误用 `volatile`
+### 6.6 陷阱 6：误用 `volatile`
 
 ```cpp
 volatile bool ready = false;  // C++ volatile 不保证原子性！
@@ -881,7 +869,7 @@ volatile bool ready = false;  // C++ volatile 不保证原子性！
 
 **最佳实践**：跨线程通信使用 `std::atomic`，不要用 `volatile`。
 
-### 7.7 陷阱 7：内存序不匹配
+### 6.7 陷阱 7：内存序不匹配
 
 ```cpp
 // 线程 A: data = 42; flag.store(true, release);
@@ -890,7 +878,7 @@ volatile bool ready = false;  // C++ volatile 不保证原子性！
 
 **最佳实践**：release 必须配对 acquire，否则不建立 synchronizes-with 关系。
 
-### 7.8 陷阱 8：fence 与 atomic 操作混淆
+### 6.8 陷阱 8：fence 与 atomic 操作混淆
 
 ```cpp
 // 错误：fence 不能单独起作用，必须配对原子操作
@@ -900,7 +888,7 @@ std::atomic_thread_fence(std::memory_order_release);
 
 **最佳实践**：fence 与一个原子操作配对使用，建立 release-acquire 关系。
 
-### 7.9 UB 清单
+### 6.9 UB 清单
 
 | UB 类型 | 描述 | 检测方法 |
 | :--- | :--- | :--- |
@@ -911,7 +899,7 @@ std::atomic_thread_fence(std::memory_order_release);
 | 移动后语义假设 | 假设 atomic 移动后值 | UBSan |
 | `volatile` 误用 | 跨线程非 atomic | TSan |
 
-### 7.10 最佳实践清单
+### 6.10 最佳实践清单
 
 1. **默认 `seq_cst`**：除非性能测试证明需要降低。
 2. **优先 atomic**：跨线程通信的变量必须是 `std::atomic`。
@@ -922,9 +910,9 @@ std::atomic_thread_fence(std::memory_order_release);
 7. **使用现成无锁库**：如 `boost::lockfree`、`moodycamel::ConcurrentQueue`。
 8. **慎用 consume**：C++17 起 deprecated，C++23 重新规范但仍少用。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建与依赖
+### 7.1 构建与依赖
 
 ```cmake
 cmake_minimum_required(VERSION 3.20)
@@ -950,7 +938,7 @@ if(ENABLE_TSAN)
 endif()
 ```
 
-### 8.2 性能基准测试
+### 7.2 性能基准测试
 
 ```cpp
 // file: bench_atomic.cpp
@@ -1002,7 +990,7 @@ BENCHMARK(BM_NoFalseSharing)->Threads(2);
 BENCHMARK_MAIN();
 ```
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
 **1. ThreadSanitizer（TSan）检测数据竞争**：
 
@@ -1034,7 +1022,7 @@ static_assert(std::atomic<int>::is_always_lock_free);
 // C++17 起保证某些原子操作是无锁的
 ```
 
-### 8.4 编译器内置原子操作
+### 7.4 编译器内置原子操作
 
 GCC/Clang 提供 `__atomic_*` 内置函数：
 
@@ -1050,7 +1038,7 @@ bool ok = __atomic_compare_exchange_n(&x, &expected, desired,
 
 在 C 代码或非 C++ 标准库环境下可使用。
 
-### 8.5 跨平台注意事项
+### 7.5 跨平台注意事项
 
 ```cpp
 // Windows 平台使用 Interlocked API
@@ -1066,7 +1054,7 @@ atomic_fetch_add(&counter, 1);
 int32_t old = OSAtomicAdd32(1, &counter);
 ```
 
-### 8.6 CI/CD 集成
+### 7.6 CI/CD 集成
 
 ```yaml
 # .github/workflows/concurrent-ci.yml
@@ -1098,9 +1086,9 @@ jobs:
           cd build && ctest --output-on-failure
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Linux 内核 `READ_ONCE` / `WRITE_ONCE`
+### 8.1 案例一：Linux 内核 `READ_ONCE` / `WRITE_ONCE`
 
 Linux 内核使用 `READ_ONCE(x)` 和 `WRITE_ONCE(x, v)` 替代普通访问，对应 C++ 的 `atomic.load(relaxed)` 与 `atomic.store(v, relaxed)`：
 
@@ -1113,7 +1101,7 @@ int v = READ_ONCE(x); // 类似 atomic_load(&x, relaxed)
 
 Linux 内存模型（LKMM）与 C++11 模型有细微差异，但基本概念一致。
 
-### 9.2 案例二：Folly `MicroLock`
+### 8.2 案例二：Folly `MicroLock`
 
 Facebook Folly 库的 `MicroLock` 通过位运算在单个 `uint8_t` 中存储 8 个锁状态，最大化缓存利用：
 
@@ -1131,7 +1119,7 @@ public:
 };
 ```
 
-### 9.3 案例三：Intel TBB `concurrent_vector`
+### 8.3 案例三：Intel TBB `concurrent_vector`
 
 Intel TBB 的 `concurrent_vector` 通过分段增长（segmented growth）实现并发安全的增长操作：
 
@@ -1139,7 +1127,7 @@ Intel TBB 的 `concurrent_vector` 通过分段增长（segmented growth）实现
 - 索引通过段号 + 段内偏移计算；
 - 增长时仅锁当前段。
 
-### 9.4 案例四：Java `ConcurrentHashMap`
+### 8.4 案例四：Java `ConcurrentHashMap`
 
 Java 的 `ConcurrentHashMap` 使用分段锁（Java 7）或 CAS + synchronized（Java 8+）：
 
@@ -1155,7 +1143,7 @@ if ((f = tabAt(tab, i)) == null) {
 
 C++ 等价实现可参考 `folly::AtomicHashMap` 或 `tbb::concurrent_hash_map`。
 
-### 9.5 案例五：DPDK 无锁环形缓冲
+### 8.5 案例五：DPDK 无锁环形缓冲
 
 DPDK（Data Plane Development Kit）的 `rte_ring` 是高性能无锁环形队列，支持单生产者-单消费者（SPSC）和多生产者-多消费者（MPMC）模式：
 
@@ -1338,7 +1326,7 @@ public:
 };
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 12**：. 为什么 `seq_cst` 在 x86 上比 `relaxed` 贵得多？
 
@@ -1368,7 +1356,7 @@ C++ 选择将 `volatile` 与并发分离，引入 `std::atomic` 专门处理跨�
 
 C++20 起 `volatile` 进一步被弱化（deprecate 了许多用途）。
 
-## 11. 参考文献
+## 10. 参考文献
 
 引用采用 ACM Reference Format，含 DOI 链接。
 
@@ -1402,9 +1390,9 @@ C++20 起 `volatile` 进一步被弱化（deprecate 了许多用途）。
 
 15. Lamport, L. 1979. *How to Make a Multiprocessor Computer That Correctly Executes Multiprocess Programs*. IEEE Transactions on Computers 28, 9, 690–691. DOI: 10.1109/TC.1979.1675439
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《C++ Concurrency in Action》**（Anthony Williams, 2nd ed., 2019）：C++ 并发权威著作，详细讲解内存模型与无锁编程。
 - **《The Art of Multiprocessor Programming》**（Maurice Herlihy, Nir Shavit, 2nd ed., 2012）：无锁算法理论经典。
@@ -1412,7 +1400,7 @@ C++20 起 `volatile` 进一步被弱化（deprecate 了许多用途）。
 - **《Java Concurrency in Practice》**（Brian Goetz, 2006）：JMM 详解。
 - **《Programming with POSIX Threads》**（David R. Butenhof, 1997）：低层线程 API。
 
-### 12.2 论文与提案
+### 11.2 论文与提案
 
 - **N2007**: Memory Model for C++ (Boehm, 2005) — C++ 内存模型奠基。
 - **N2348**: A Strong and Safe Memory Model for C++ (Boehm, 2007) — 最终版本。
@@ -1422,7 +1410,7 @@ C++20 起 `volatile` 进一步被弱化（deprecate 了许多用途）。
 - **P2545**: Read-Copy-Update (RCU) for C++26 — RCU 标准化。
 - **P2045**: atomic_ref<floating-point> — 浮点原子操作。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **cppreference.com**: [std::atomic](https://en.cppreference.com/w/cpp/atomic/atomic), [std::memory_order](https://en.cppreference.com/w/cpp/atomic/memory_order), [std::atomic_thread_fence](https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence)
 - **Paul McKenney's papers**: <https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2530r0.html> — RCU 与 Hazard Pointer 系列论文。
@@ -1430,7 +1418,7 @@ C++20 起 `volatile` 进一步被弱化（deprecate 了许多用途）。
 - **Jeff Preshing's Blog**: <https://preshing.com/> — 一系列深入浅出的内存模型文章。
 - **Boehm's Memory Model tutorials**: <https://www.hboehm.info/> — C++ 内存模型作者主页。
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 - **CPPCon**: *C++ Memory Model* (Herb Sutter, 2019) — 内存模型概览。
 - **CPPCon**: *Lock-Free Programming* (Fedor Pikus, 2018) — 无锁编程实战。
@@ -1438,7 +1426,7 @@ C++20 起 `volatile` 进一步被弱化（deprecate 了许多用途）。
 - **Stanford CS149**: *Parallel Computing* — 并行计算原理。
 - **CMU 15-440**: *Distributed Systems* — 分布式系统（含内存一致性模型）。
 
-### 12.5 开源项目源码阅读
+### 11.5 开源项目源码阅读
 
 - **boost::lockfree**: <https://github.com/boost-org/lockfree> — 无锁队列与栈。
 - **Folly**: <https://github.com/facebook/folly> — 包含 `MicroLock`、`HazPtr` 等。

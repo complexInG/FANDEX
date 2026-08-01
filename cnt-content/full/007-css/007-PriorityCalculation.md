@@ -19,6 +19,7 @@ prerequisites:
   - css/层叠上下文
 ---
 
+
 # 优先级计算（Specificity & Cascade）
 
 > 本文以 W3C [CSS Cascading and Inheritance Level 4](https://www.w3.org/TR/css-cascade-4/)、[Selectors Level 4](https://www.w3.org/TR/selectors-4/) 规范为基础，系统阐释 CSS 优先级（Specificity）的计算算法、层叠顺序（Cascade Order）、`!important` 与 `@layer` 的工程意义、`:where()` / `:is()` / `:has()` 等现代选择器对优先级的影响，并对接 Bootstrap、Tailwind CSS、Material Design 等主流框架的实践范式。内容涵盖从 CSS 1 到 CSS Cascade Level 4 的演进，提供生产级代码示例与工程化解决方案。
@@ -42,57 +43,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够：
-
-### 1.1 Remember（记忆）
-
-- 准确复述 CSS 优先级的 (A, B, C, D) 四元组表示法，并能识别每个分量对应的选择器类型。
-- 列出 [CSS Cascading and Inheritance Level 4](https://www.w3.org/TR/css-cascade-4/#cascade-sort) 中层叠排序的 8 个阶段：Origin & Importance → Context → Element-attached → Layer → Specificity → Order of Appearance → Animation → Transition。
-- 识别 `!important` 的两种来源：作者样式表（Author）与用户样式表（User Agent / User），并说明其优先级关系。
-- 列出 `:where()`、`:is()`、`:has()` 三个现代伪类对优先级的不同影响。
-
-### 1.2 Understand（理解）
-
-- 解释为何 ID 选择器比任意数量的类选择器优先级更高（即 (0,1,0,0) > (0,0,N,0) 对于任意有限 N）。
-- 阐述 CSS 层叠算法（Cascade Algorithm）与优先级（Specificity）的差异：前者是完整决策流程，后者仅是其中一环。
-- 论证 `@layer` 的设计动机：将「来源顺序」从隐式约束转化为显式可控的层级体系。
-- 描述 `:is()` 取参数中最高优先级、`:where()` 恒为 0 的设计原理与工程意义。
-
-### 1.3 Apply（应用）
-
-- 在生产代码中通过 (A, B, C, D) 四元组法手工计算任意复杂选择器的优先级。
-- 利用 `:where()` 重置第三方库样式的优先级，避免污染业务代码。
-- 使用 `@layer` 对设计系统（Design System）的样式进行分层管理（reset → framework → components → utilities）。
-- 在 CSS-in-JS 与 Tailwind 等工具链中正确评估优先级对样式覆盖的影响。
-
-### 1.4 Analyze（分析）
-
-- 对一段包含内联样式、`!important`、`@layer`、ID 选择器、类选择器的复杂页面进行拆解，预测最终生效的样式。
-- 区分「来源（Origin）」「层（Layer）」「优先级（Specificity）」「顺序（Order）」四个维度在层叠算法中的相对位置。
-- 评估 Bootstrap 与 Tailwind 在优先级策略上的本质差异：前者依赖类选择器堆叠，后者依赖单一类与变体系统。
-- 分析 `:has()` 选择器在优先级计算中的特殊行为（其优先级由参数中最具体的选择器决定）。
-
-### 1.5 Evaluate（评价）
-
-- 在「使用 `!important` 快速覆盖」与「重构选择器降低优先级」之间权衡短期收益与长期可维护性。
-- 评价 `@layer` 在现代前端工程中的落地难度：浏览器兼容性、构建工具支持、团队心智模型。
-- 反思 BEM / ITCSS / Atomic CSS 等架构方法论对优先级管理的不同哲学。
-- 评估「零优先级策略」（如 Tailwind 的单一类）在大规模设计系统中的优劣。
-
-### 1.6 Create（创造）
-
-- 设计一套基于 `@layer` 的企业级 CSS 架构，覆盖第三方库、设计令牌、组件、工具类四层。
-- 编写 Stylelint 自定义规则，禁止业务代码使用 ID 选择器与 `!important`。
-- 提出面向 CSS Working Group 的改进建议（如 `specificity()` 函数假想）。
-- 构建优先级可视化工具，自动解析样式表并生成 (A, B, C, D) 决策树。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 CSS 1（1996）：优先级的雏形
+### 1.1 CSS 1（1996）：优先级的雏形
 
 CSS 1 由 Håkon Wium Lie 与 Bert Bos 于 1996 年提出，首次引入「层叠」（Cascade）概念。当时规范对优先级的定义较为粗糙：
 
@@ -100,7 +53,7 @@ CSS 1 由 Håkon Wium Lie 与 Bert Bos 于 1996 年提出，首次引入「层�
 
 CSS 1 仅使用三元组 (a, b, c)，且未明确「内联样式」与 `!important` 的位置。浏览器实现差异较大，开发者常需依赖 `!important` 解决冲突。
 
-### 2.2 CSS 2（1998）：引入 `!important` 与来源排序
+### 1.2 CSS 2（1998）：引入 `!important` 与来源排序
 
 CSS 2 正式引入 `!important` 声明，并明确三类样式来源：
 
@@ -112,7 +65,7 @@ CSS 2 正式引入 `!important` 声明，并明确三类样式来源：
 
 这一阶段优先级演化为 (a, b, c, d) 四元组，其中 `a` 表示内联样式（0 或 1）。
 
-### 2.3 CSS 2.1（2011）：规范的成熟
+### 1.3 CSS 2.1（2011）：规范的成熟
 
 CSS 2.1 §6.4.3 给出经典的优先级计算规则：
 
@@ -124,7 +77,7 @@ CSS 2.1 §6.4.3 给出经典的优先级计算规则：
 
 四元组 (a, b, c, d) 沿用至今，并明确「通配符 `*`、组合符 `> + ~` 不计入优先级」。
 
-### 2.4 CSS Selectors Level 3（2011）：伪类细化
+### 1.4 CSS Selectors Level 3（2011）：伪类细化
 
 [Selectors Level 3](https://www.w3.org/TR/selectors-3/) 引入大量新伪类（`:nth-child()`、`:not()`、`:checked` 等），并明确：
 
@@ -132,7 +85,7 @@ CSS 2.1 §6.4.3 给出经典的优先级计算规则：
 - 伪元素（`::before`、`::after` 等）以 (0, 0, 0, 1) 计入。
 - 伪类（`:hover`、`:focus` 等）以 (0, 0, 1, 0) 计入。
 
-### 2.5 CSS Cascading Level 4（2016-2021）：层叠算法的规范化
+### 1.5 CSS Cascading Level 4（2016-2021）：层叠算法的规范化
 
 [CSS Cascading and Inheritance Level 4](https://www.w3.org/TR/css-cascade-4/) 将层叠算法规范化为 8 阶段排序：
 
@@ -145,7 +98,7 @@ CSS 2.1 §6.4.3 给出经典的优先级计算规则：
 7. **Animation**：动画声明。
 8. **Transition**：过渡声明（最高）。
 
-### 2.6 `@layer` 的引入（2022）
+### 1.6 `@layer` 的引入（2022）
 
 [CSS Cascading and Inheritance Level 5](https://www.w3.org/TR/css-cascade-5/) 引入 `@layer` 规则，允许开发者显式声明样式层级：
 
@@ -163,7 +116,7 @@ CSS 2.1 §6.4.3 给出经典的优先级计算规则：
 
 层内样式的优先级低于未分层样式（unlayered styles），且层的顺序由首次声明决定。`@layer` 是 CSS 自 2011 年以来对优先级管理的最大变革。
 
-### 2.7 `:where()` 与 `:is()` 的标准化（2021-2022）
+### 1.7 `:where()` 与 `:is()` 的标准化（2021-2022）
 
 [:is()](https://www.w3.org/TR/selectors-4/#matches-pseudo) 与 [:where()](https://www.w3.org/TR/selectors-4/#zero-matches) 在 Selectors Level 4 中标准化：
 
@@ -172,7 +125,7 @@ CSS 2.1 §6.4.3 给出经典的优先级计算规则：
 
 `:where()` 的零优先级特性使其成为「重置第三方库样式」的理想工具。
 
-### 2.8 `:has()` 的到来（2023）
+### 1.8 `:has()` 的到来（2023）
 
 [:has()](https://www.w3.org/TR/selectors-4/#relational) 称为「父选择器」，允许根据子元素状态选择父元素：
 
@@ -184,7 +137,7 @@ CSS 2.1 §6.4.3 给出经典的优先级计算规则：
 
 `:has()` 的优先级由其参数中最具体的选择器决定，与 `:is()` 一致。
 
-### 2.9 演进时间线
+### 1.9 演进时间线
 
 | 年份 | 规范/事件 | 核心变化 |
 | --- | --- | --- |
@@ -200,9 +153,9 @@ CSS 2.1 §6.4.3 给出经典的优先级计算规则：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 规范条款
+### 2.1 规范条款
 
 依据 [CSS Cascading and Inheritance Level 4 §6.3](https://www.w3.org/TR/css-cascade-4/#cascade-specific)：
 
@@ -212,7 +165,7 @@ CSS 2.1 §6.4.3 给出经典的优先级计算规则：
 
 > A selector's specificity is calculated as follows: count the number of ID attributes (a), other attributes and pseudo-classes (b), and element names and pseudo-elements (c) in the selector.
 
-### 3.2 核心术语
+### 2.2 核心术语
 
 | 术语 | 英文 | 定义 |
 | --- | --- | --- |
@@ -224,7 +177,7 @@ CSS 2.1 §6.4.3 给出经典的优先级计算规则：
 | 重要性 | Importance | `!important` 声明，反转来源优先级 |
 | 出现顺序 | Order of Appearance | 同优先级时，后出现的声明胜出 |
 
-### 3.3 优先级四元组
+### 2.3 优先级四元组
 
 CSS 优先级用四元组 $(A, B, C, D)$ 表示，其中：
 
@@ -235,7 +188,7 @@ CSS 优先级用四元组 $(A, B, C, D)$ 表示，其中：
 
 > **注**：部分文献采用 (a, b, c, d) 顺序，本节统一使用 $(A, B, C, D)$ 以避免与 CSS 1 的三元组混淆。
 
-### 3.4 形式化计算函数
+### 2.4 形式化计算函数
 
 设选择器 $S$ 由若干简单选择器 $s_1, s_2, \ldots, s_n$ 组合而成，定义优先级函数 $\text{Spec}(S)$：
 
@@ -269,7 +222,7 @@ $$
 \end{cases}
 $$
 
-### 3.5 比较运算
+### 2.5 比较运算
 
 两个优先级四元组 $(A_1, B_1, C_1, D_1)$ 与 $(A_2, B_2, C_2, D_2)$ 的比较遵循字典序：
 
@@ -286,7 +239,7 @@ $$
 
 注意：四元组的进位关系是「无限基数」而非十进制。即 $(0, 1, 0, 0) > (0, 0, N, 0)$ 对任意有限 $N$ 成立。
 
-### 3.6 层叠算法的形式化
+### 2.6 层叠算法的形式化
 
 [CSS Cascading and Inheritance Level 4 §6.1](https://www.w3.org/TR/css-cascade-4/#cascading) 定义层叠排序函数 $\text{Sort}(d_1, d_2)$，对两个声明 $d_1, d_2$ 比较：
 
@@ -307,7 +260,7 @@ $$
 
 其中 $\succ$ 表示「优先于」。
 
-### 3.7 来源与重要性排序
+### 2.7 来源与重要性排序
 
 | 来源 | 正常 | `!important` |
 | --- | --- | --- |
@@ -319,7 +272,7 @@ $$
 
 > **注**：CSS Cascade Level 5 引入 `@layer` 后，分层样式总是低于未分层样式（无论优先级多高）。
 
-### 3.8 `:where()` 与 `:is()` 的优先级规则
+### 2.8 `:where()` 与 `:is()` 的优先级规则
 
 设 `:is(S_1, S_2, \ldots, S_n)` 的优先级为：
 
@@ -341,9 +294,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 优先级的「基数」本质
+### 3.1 优先级的「基数」本质
 
 CSS 优先级四元组的比较并非十进制数比较，而是基于「基数」的字典序比较。形式化地：
 
@@ -358,7 +311,7 @@ $$
 
 这一设计反映了 CSS 的语义优先级：ID 选择器表达「唯一标识」，应绝对优先于「类别标识」；内联样式表达「元素级定制」，应绝对优先于「规则级声明」。
 
-### 4.2 层叠算法的决策树
+### 3.2 层叠算法的决策树
 
 层叠算法可视为一棵决策树，每个节点对应一个比较维度。浏览器从根节点开始，依次比较：
 
@@ -407,7 +360,7 @@ flowchart TD
     T19 --> T20
 ```
 
-### 4.3 `!important` 的反转机制
+### 3.3 `!important` 的反转机制
 
 `!important` 的核心机制是「反转来源优先级」：
 
@@ -433,7 +386,7 @@ $$
 \end{cases}
 $$
 
-### 4.4 `@layer` 的语义
+### 3.4 `@layer` 的语义
 
 `@layer` 引入显式的层级概念，其语义为：
 
@@ -464,7 +417,7 @@ $$
 
 未分层样式的 $\text{LayerRank}$ 总是大于任何分层样式。
 
-### 4.5 `:where()` 的零优先级设计
+### 3.5 `:where()` 的零优先级设计
 
 `:where()` 恒返回 (0, 0, 0, 0) 的设计目的是提供「无副作用的样式重置」。考虑以下场景：
 
@@ -498,7 +451,7 @@ $$
 :where(.card .title) { font-size: 1rem; }  /* (0,0,0,0) */
 ```
 
-### 4.6 内联样式与 `!important` 的关系
+### 3.6 内联样式与 `!important` 的关系
 
 内联样式（`style` 属性）的优先级为 $(1, 0, 0, 0)$，但 `!important` 仍可覆盖：
 
@@ -526,7 +479,7 @@ $$
 div { color: blue !important; }  /* 不覆盖内联 !important */
 ```
 
-### 4.7 计算示例
+### 3.7 计算示例
 
 给定选择器 `#nav .list li:hover`，计算其优先级：
 
@@ -551,7 +504,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 
 合计：$(0, 0, 0, 1)$。
 
-### 4.8 优先级与可访问性
+### 3.8 优先级与可访问性
 
 优先级直接影响可访问性（Accessibility）：
 
@@ -571,9 +524,9 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：四元组计算
+### 4.1 基础示例：四元组计算
 
 ```html
 <!DOCTYPE html>
@@ -631,7 +584,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 5.2 `!important` 与来源排序
+### 4.2 `!important` 与来源排序
 
 ```html
 <!DOCTYPE html>
@@ -664,7 +617,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 5.3 `:where()` 与 `:is()` 对比
+### 4.3 `:where()` 与 `:is()` 对比
 
 ```html
 <!DOCTYPE html>
@@ -697,7 +650,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 5.4 `@layer` 分层管理
+### 4.4 `@layer` 分层管理
 
 ```html
 <!DOCTYPE html>
@@ -751,7 +704,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 5.5 `:has()` 父选择器
+### 4.5 `:has()` 父选择器
 
 ```html
 <!DOCTYPE html>
@@ -811,7 +764,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 5.6 `:not()` 的优先级
+### 4.6 `:not()` 的优先级
 
 ```html
 <!DOCTYPE html>
@@ -849,7 +802,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 5.7 企业级：设计系统分层架构
+### 4.7 企业级：设计系统分层架构
 
 ```html
 <!DOCTYPE html>
@@ -950,7 +903,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 5.8 优先级可视化工具
+### 4.8 优先级可视化工具
 
 ```html
 <!DOCTYPE html>
@@ -1048,7 +1001,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 5.9 Stylelint 强制优先级规则
+### 4.9 Stylelint 强制优先级规则
 
 ```javascript
 // .stylelintrc.js - 企业级 Stylelint 配置
@@ -1076,7 +1029,7 @@ module.exports = {
 };
 ```
 
-### 5.10 React + CSS Modules 优先级管理
+### 4.10 React + CSS Modules 优先级管理
 
 ```jsx
 // Button.tsx - React 组件，使用 CSS Modules 隔离优先级
@@ -1168,9 +1121,9 @@ export function Button({
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 主流 CSS 方法论的优先级策略
+### 5.1 主流 CSS 方法论的优先级策略
 
 | 方法论 | 核心思想 | 优先级控制 | 优势 | 劣势 |
 | --- | --- | --- | --- | --- |
@@ -1182,7 +1135,7 @@ export function Button({
 | **CSS Modules** | 编译时生成唯一类名 | 自动隔离 | 零运行时 | 仅限组件级 |
 | **@layer** | 显式层级声明 | 层级控制 | 灵活、强大 | 兼容性、心智模型 |
 
-### 6.2 主流框架的优先级实践
+### 5.2 主流框架的优先级实践
 
 | 框架 | 策略 | 典型选择器 | 优先级 |
 | --- | --- | --- | --- |
@@ -1192,7 +1145,7 @@ export function Button({
 | **Ant Design 5** | CSS-in-JS（CSSinJS） | 动态生成类名 | (0,0,1,0) |
 | **GitHub Primer** | 工具类 + 组件类 | `.btn` `.btn-primary` | (0,0,1,0) - (0,0,2,0) |
 
-### 6.3 Tailwind vs Bootstrap 的优先级哲学
+### 5.3 Tailwind vs Bootstrap 的优先级哲学
 
 **Tailwind CSS**（Atomic CSS 哲学）：
 
@@ -1218,7 +1171,7 @@ export function Button({
 - 优势：HTML 简洁，语义清晰。
 - 劣势：覆盖时需提升优先级（如 `.my-btn.btn-primary`）。
 
-### 6.4 `@layer` vs BEM vs CSS Modules
+### 5.4 `@layer` vs BEM vs CSS Modules
 
 | 维度 | `@layer` | BEM | CSS Modules |
 | --- | --- | --- | --- |
@@ -1229,7 +1182,7 @@ export function Button({
 | **团队协作** | 需明确层级约定 | 需命名规范 | 自动隔离 |
 | **适用场景** | 大型项目、多团队 | 中小型项目 | 组件化项目 |
 
-### 6.5 预处理器对优先级的影响
+### 5.5 预处理器对优先级的影响
 
 | 预处理器 | 嵌套规则 | 编译后优先级 | 备注 |
 | --- | --- | --- | --- |
@@ -1240,7 +1193,7 @@ export function Button({
 
 > **最佳实践**：预处理器嵌套不超过 3 层，避免生成 (0,0,N,0) 的高优先级选择器。
 
-### 6.6 现代选择器优先级对比
+### 5.6 现代选择器优先级对比
 
 | 选择器 | 语法 | 优先级 | 浏览器支持 |
 | --- | --- | --- | --- |
@@ -1257,9 +1210,9 @@ export function Button({
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：ID 选择器的优先级陷阱
+### 6.1 陷阱 1：ID 选择器的优先级陷阱
 
 **问题**：使用 ID 选择器后，覆盖样式变得困难。
 
@@ -1291,7 +1244,7 @@ export function Button({
 }
 ```
 
-### 7.2 陷阱 2：`!important` 滥用
+### 6.2 陷阱 2：`!important` 滥用
 
 **问题**：`!important` 滥用导致样式难以维护，形成「优先级军备竞赛」。
 
@@ -1306,7 +1259,7 @@ export function Button({
 
 **最佳实践**：仅在第三方库覆盖或可访问性场景使用 `!important`，业务代码应通过结构化选择器解决。
 
-### 7.3 陷阱 3：深层嵌套导致优先级过高
+### 6.3 陷阱 3：深层嵌套导致优先级过高
 
 **问题**：SCSS / Less 嵌套过深，生成高优先级选择器。
 
@@ -1332,7 +1285,7 @@ export function Button({
 }
 ```
 
-### 7.4 陷阱 4：通配符与组合符误用
+### 6.4 陷阱 4：通配符与组合符误用
 
 **问题**：误以为 `*` 和 `>` `+` `~` 计入优先级。
 
@@ -1345,7 +1298,7 @@ export function Button({
 
 **最佳实践**：理解规范条款，避免误判。
 
-### 7.5 陷阱 5：`:where()` 的零优先级误用
+### 6.5 陷阱 5：`:where()` 的零优先级误用
 
 **问题**：误以为 `:where()` 能提升优先级。
 
@@ -1362,7 +1315,7 @@ export function Button({
 
 **最佳实践**：`:where()` 用于「降低副作用」，如重置样式或第三方库包装。
 
-### 7.6 陷阱 6：`@layer` 内的优先级误判
+### 6.6 陷阱 6：`@layer` 内的优先级误判
 
 **问题**：误以为层内高优先级能跨越层边界。
 
@@ -1381,7 +1334,7 @@ export function Button({
 
 **最佳实践**：理解 `@layer` 的层间不可越级特性。
 
-### 7.7 陷阱 7：内联样式与 JavaScript 设置的优先级
+### 6.7 陷阱 7：内联样式与 JavaScript 设置的优先级
 
 **问题**：通过 `element.style` 设置的样式优先级为 (1,0,0,0)，难以覆盖。
 
@@ -1407,7 +1360,7 @@ element.classList.add('active');
 .element.active { color: blue; }  /* (0,0,2,0) */
 ```
 
-### 7.8 陷阱 8：用户样式表的优先级
+### 6.8 陷阱 8：用户样式表的优先级
 
 **问题**：忽略用户样式表（如无障碍设置）的优先级。
 
@@ -1422,9 +1375,9 @@ element.classList.add('active');
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 优先级管理架构
+### 7.1 优先级管理架构
 
 ```mermaid
 flowchart TD
@@ -1437,7 +1390,7 @@ flowchart TD
     L7 --> UL[Unlayered: 业务代码<br/>最高优先级]
 ```
 
-### 8.2 Stylelint 配置实践
+### 7.2 Stylelint 配置实践
 
 ```javascript
 // .stylelintrc.js - 企业级 Stylelint 配置
@@ -1475,7 +1428,7 @@ module.exports = {
 };
 ```
 
-### 8.3 PostCSS 自动降级
+### 7.3 PostCSS 自动降级
 
 ```javascript
 // postcss.config.js - PostCSS 配置
@@ -1495,7 +1448,7 @@ module.exports = {
 };
 ```
 
-### 8.4 设计令牌（Design Tokens）
+### 7.4 设计令牌（Design Tokens）
 
 ```css
 /* tokens.css - 设计令牌层 */
@@ -1531,7 +1484,7 @@ module.exports = {
 }
 ```
 
-### 8.5 组件库优先级管理
+### 7.5 组件库优先级管理
 
 ```css
 /* components.css - 组件库层 */
@@ -1564,7 +1517,7 @@ module.exports = {
 }
 ```
 
-### 8.6 工具类优先级管理
+### 7.6 工具类优先级管理
 
 ```css
 /* utilities.css - 工具类层 */
@@ -1590,7 +1543,7 @@ module.exports = {
 
 > **注**：工具类中的 `!important` 是有意为之，确保工具类覆盖组件类。
 
-### 8.7 调试优先级
+### 7.7 调试优先级
 
 ```javascript
 // 优先级调试工具
@@ -1630,7 +1583,7 @@ const element = document.querySelector('.btn');
 console.log(debugSpecificity(element));
 ```
 
-### 8.8 Playwright 视觉回归测试
+### 7.8 Playwright 视觉回归测试
 
 ```javascript
 // priority.spec.js - Playwright 视觉回归测试
@@ -1663,7 +1616,7 @@ test.describe('优先级回归测试', () => {
 });
 ```
 
-### 8.9 浏览器兼容性处理
+### 7.9 浏览器兼容性处理
 
 ```css
 /* 兼容性处理：@layer 降级方案 */
@@ -1693,9 +1646,9 @@ test.describe('优先级回归测试', () => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Bootstrap 5 的优先级策略
+### 8.1 Bootstrap 5 的优先级策略
 
 Bootstrap 5 采用「组件类 + 修饰类」的策略：
 
@@ -1733,7 +1686,7 @@ Bootstrap 5 采用「组件类 + 修饰类」的策略：
 
 **优先级分析**：三个类组合，优先级 (0,0,3,0)，但通过类组合而非嵌套，可维护性较好。
 
-### 9.2 Tailwind CSS v3.4 的优先级策略
+### 8.2 Tailwind CSS v3.4 的优先级策略
 
 Tailwind 采用「原子工具类」策略：
 
@@ -1756,7 +1709,7 @@ Tailwind 采用「原子工具类」策略：
 
 **优先级分析**：每个类独立 (0,0,1,0)，覆盖时需通过 `!` 前缀（如 `!bg-red-500`）或自定义类。
 
-### 9.3 Material Design 3 的优先级策略
+### 8.3 Material Design 3 的优先级策略
 
 Material Design 3（MDC Web）采用「主题类 + 属性」策略：
 
@@ -1782,7 +1735,7 @@ Material Design 3（MDC Web）采用「主题类 + 属性」策略：
 }
 ```
 
-### 9.4 GitHub Primer 的优先级策略
+### 8.4 GitHub Primer 的优先级策略
 
 GitHub Primer 采用「工具类 + 组件类」混合策略：
 
@@ -1806,7 +1759,7 @@ GitHub Primer 采用「工具类 + 组件类」混合策略：
 .text-center { text-align: center !important; }
 ```
 
-### 9.5 Ant Design 5 的优先级策略
+### 8.5 Ant Design 5 的优先级策略
 
 Ant Design 5 采用 CSS-in-JS（cssinjs）方案：
 
@@ -1836,7 +1789,7 @@ import { Button } from 'antd';
 }
 ```
 
-### 9.6 生产事故：优先级军备竞赛
+### 8.6 生产事故：优先级军备竞赛
 
 **场景**：某电商平台首页按钮颜色异常，多个团队反复使用 `!important` 覆盖。
 
@@ -2165,7 +2118,7 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 **解析讲解**：生产环境推荐使用 [`specificity`](https://www.npmjs.com/package/specificity) 库，其解析更精确。
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 CSS 优先级使用四元组而非单一数字？这种设计有哪些优劣？
 
@@ -2242,9 +2195,9 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 W3C 规范
+### 10.1 W3C 规范
 
 - World Wide Web Consortium. (2021). *CSS Cascading and Inheritance Level 4*. W3C Recommendation. https://www.w3.org/TR/css-cascade-4/
 - World Wide Web Consortium. (2023). *CSS Cascading and Inheritance Level 5*. W3C Working Draft. https://www.w3.org/TR/css-cascade-5/
@@ -2254,13 +2207,13 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 - World Wide Web Consortium. (1996). *Cascading Style Sheets, Level 1*. W3C Recommendation. https://www.w3.org/TR/CSS1/
 - World Wide Web Consortium. (2024). *CSS Values and Units Module Level 4*. W3C Working Draft. https://www.w3.org/TR/css-values-4/
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 - Lie, H. W., & Bos, B. (1999). *Cascading Style Sheets: Designing for the Web*. Addison-Wesley Professional. ISBN: 978-0201419989.
 - Meyer, E. A. (2006). *Cascading Style Sheets: The Definitive Guide* (3rd ed.). O'Reilly Media. ISBN: 978-0596527334.
 - Flanagan, D. (2011). *JavaScript: The Definitive Guide* (6th ed.). O'Reilly Media. Chapter 16: Cascading Style Sheets. ISBN: 978-0596805531.
 
-### 11.3 工业实践
+### 10.3 工业实践
 
 - Bootstrap. (2024). *Bootstrap 5.4 Documentation: Components - Buttons*. https://getbootstrap.com/docs/5.4/components/buttons/
 - Tailwind Labs. (2024). *Tailwind CSS v3.4 Documentation: Handling Hover, Focus, and Other States*. https://tailwindcss.com/docs/hover-focus-and-other-states
@@ -2268,13 +2221,13 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 - Ant Design. (2024). *Ant Design 5.x Documentation: Customize Theme*. https://ant.design/docs/react/customize-theme
 - GitHub. (2024). *Primer Design System*. https://primer.style/
 
-### 11.4 工具与库
+### 10.4 工具与库
 
 - Keegan, I. (2024). *specificity: A JavaScript function to calculate the specificity of CSS selectors*. https://github.com/keeganstreet/specificity
 - Stylelint. (2024). *stylelint-selector-max-specificity*. https://stylelint.io/user-guide/rules/list/selector-max-specificity/
 - PostCSS. (2024). *@csstools/postcss-cascade-layers*. https://github.com/csstools/postcss-plugins/tree/main/plugins/postcss-cascade-layers
 
-### 11.5 ACM Reference Format
+### 10.5 ACM Reference Format
 
 引用示例（ACM Reference Format）：
 
@@ -2286,16 +2239,16 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 经典书籍
+### 11.1 经典书籍
 
 - **《CSS Secrets》** - Lea Verou 著，深入探讨 CSS 的高级技巧与优先级管理。
 - **《CSS: The Definitive Guide》** - Eric A. Meyer 著，CSS 完整参考。
 - **《CSS in Depth》** - Keith J. Grant 著，现代 CSS 工程实践。
 - **《Enduring CSS》** - Ben Frain 著，大型项目的 CSS 架构。
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 - **MDN Web Docs: Specificity** - https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity
 - **MDN Web Docs: Cascade** - https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade
@@ -2303,27 +2256,27 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 - **CSS Tricks: Specificity** - https://css-tricks.com/specifics-on-css-specificity/
 - **web.dev: Cascade Layers** - https://web.dev/articles/cascade-layers
 
-### 12.3 视频课程
+### 11.3 视频课程
 
 - **Frontend Masters: CSS Grid & Flexbox for Responsive Layouts** - Jen Kramer
 - **CSS Working Group: Cascade Layers Explained** - Miriam Suzanne
 - **Chrome Developers: Specificity and the Cascade** - Una Kravets
 
-### 12.4 社区博客
+### 11.4 社区博客
 
 - **CSS-Tricks** - https://css-tricks.com/
 - **Smashing Magazine** - https://www.smashingmagazine.com/category/css/
 - **A List Apart** - https://alistapart.com/topic/css/
 - **Miriam Suzanne's Blog** - https://miriamsuzanne.com/
 
-### 12.5 规范演进方向
+### 11.5 规范演进方向
 
 - **CSS Cascading Level 6 草案**：探讨 `@layer` 嵌套与范围查询。
 - **CSS Scope**：引入 `@scope` 规则，提供更细粒度的样式作用域。
 - **CSS Functions**：探讨 `specificity()` 函数，允许在 CSS 中查询优先级。
 - **Houdini CSS Parser API**：提供底层 CSS 解析能力，可自定义优先级算法。
 
-### 12.6 相关规范
+### 11.6 相关规范
 
 - **[CSS Box Model Module Level 3](https://www.w3.org/TR/css-box-3/)** - 盒模型规范。
 - **[CSS Display Module Level 3](https://www.w3.org/TR/css-display-3/)** - display 属性规范。

@@ -15,51 +15,10 @@ prerequisites:
   - lua/概述与环境配置
 ---
 
+
 # 用户数据（userdata）：Lua 与 C 的类型桥梁
 
 > 本文档对标 MIT 6.028、Stanford CS140E、CMU 15-410 系统编程教学水准，深入剖析 Lua userdata 机制的设计哲学、形式化语义、底层实现与工程实践。
-
-## 0. 学习目标（Bloom 分类法）
-
-完成本章节学习后，学习者应能够：
-
-### 0.1 Remember（记忆）
-
-- **R1** 列举 userdata 的两种基本形态（full userdata 与 light userdata）并陈述其差异。
-- **R2** 复述 `lua_newuserdata`、`lua_touserdata`、`luaL_checkudata`、`luaL_testudata` 四个 C API 的签名与语义。
-- **R3** 陈述 `__gc` 元方法的触发时机（仅 full userdata）以及 GC 终结顺序保证。
-
-### 0.2 Understand（理解）
-
-- **U1** 解释为何 Lua 不直接暴露 C 指针而设计 userdata 抽象，说明背后的安全性与可移植性动机。
-- **U2** 阐述 full userdata 与 GC 的协作机制：Lua 何时调用 `__gc`，何时回收内存。
-- **U3** 解释 `luaL_checkudata` 通过 metatable 标识进行类型识别的"嵌套表"结构。
-
-### 0.3 Apply（应用）
-
-- **A1** 在嵌入式 C 项目中，将一个自定义 C 结构体（如 `Point {double x, y}`）封装为 Lua 可操作对象，并提供 `getx`、`setx`、`__tostring` 等方法。
-- **A2** 为第三方 C 库（如 OpenSSL、libcurl）的关键句柄类型编写 Lua 绑定。
-- **A3** 实现一个带引用计数（reference counting）的 userdata，包装 `FILE*` 这类需要显式关闭的资源。
-
-### 0.4 Analyze（分析）
-
-- **An1** 对比 full userdata 与 light userdata 在内存布局、GC 行为、可携带性上的权衡。
-- **An2** 分析 Lua 5.1 / 5.2 / 5.3 / 5.4 在 userdata 上的 API 变化（`luaL_newuserdata` 取代 `lua_newuserdata`、`luaL_setmetatable` 等）。
-- **An3** 剖析 LuaJIT 中 userdata 的差异，特别是 cdata 类型对 userdata 的取代关系。
-
-### 0.5 Evaluate（评价）
-
-- **E1** 评估在何种场景下应选择 light userdata 而非 full userdata（如弱引用映射、`__gc` 关联表）。
-- **E2** 评价 userdata `__gc` 与 C 端 `__gc` 关联表（Lua 5.1 workaround）的取舍。
-- **E3** 判断在性能敏感场景中"userdata + 内联数据"与"userdata + 指向堆指针"两种布局的优劣。
-
-### 0.6 Create（创造）
-
-- **C1** 设计一个通用的 C 结构体到 Lua userdata 的绑定框架，支持自动生成方法表。
-- **C2** 实现一个支持继承、多态、运算符重载的 OOP 系统（基于 userdata）。
-- **C3** 为一个完整的 C 库（如 SQLite、libuv）编写 Lua 绑定层。
-
----
 
 ## 1. 历史动机与发展脉络
 
@@ -138,9 +97,9 @@ PUC-Rio 团队在《The Evolution of Lua》中阐明 userdata 设计的三大原
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 Lua Reference Manual 权威定义
+### 1.1 Lua Reference Manual 权威定义
 
 > **userdata** — userdata 提供 arbitrary C data 存储能力，由 `lua_newuserdata` 创建，等同于一等 Lua 值。Lua 中存在两类 userdata：**full userdata**（full userdata，包装一块由 Lua 管理的内存）与 **light userdata**（light userdata，仅是一个 `void*` 指针值）。
 >
@@ -158,7 +117,7 @@ $$
 \text{Userdata} = \text{FullUserdata} \cup \text{LightUserdata}
 $$
 
-### 2.2 Full Userdata 内存模型
+### 1.2 Full Userdata 内存模型
 
 full userdata 在 Lua 内部表示为 `Udata` 结构（`lobject.h`）：
 
@@ -177,7 +136,7 @@ typedef struct Udata {
 
 字节码层面，full userdata 占据一个 `TValue` 槽位，类型标签为 `LUA_TUSERDATA`（数值 7）。
 
-### 2.3 Light Userdata 内存模型
+### 1.3 Light Userdata 内存模型
 
 light userdata 是一个**值类型**（非对象类型），其内部表示仅为 `void*` 指针：
 
@@ -191,7 +150,7 @@ typedef struct {
 
 light userdata **不参与 GC**，无 metatable 关联（除非使用全局 registry 中的 `LUA_TLIGHTUSERDATA` 元表，Lua 5.4 起支持）。
 
-### 2.4 类型判定的形式化规则
+### 1.4 类型判定的形式化规则
 
 设 $\text{type}(x)$ 返回 $x$ 的类型标签，则：
 
@@ -209,7 +168,7 @@ $$
 \end{cases}
 $$
 
-### 2.5 `__gc` 终结语义
+### 1.5 `__gc` 终结语义
 
 `__gc` 元方法的形式语义：
 
@@ -228,9 +187,9 @@ $$
 
 ---
 
-## 3. 理论推导与原理解析
+## 2. 理论推导与原理解析
 
-### 3.1 内存布局与对齐
+### 2.1 内存布局与对齐
 
 假设 64 位平台、Lua 5.4，full userdata 的内存布局：
 
@@ -243,7 +202,7 @@ flowchart TD
 
 由 `lua_newuserdata(L, sz)` 返回的指针指向 `user data` 区域起始，与 `Udata` 头相距固定偏移。
 
-### 3.2 内存分配的形式化
+### 2.2 内存分配的形式化
 
 设分配的总字节为 $\text{total}(s, n)$，其中 $s$ 为用户请求大小，$n$ 为 uservalue 数量：
 
@@ -253,7 +212,7 @@ $$
 
 Lua 5.4 默认 $n = 1$，最大可配置为 `LUA_UTYPE_LIMIT`（默认为 4096）。
 
-### 3.3 GC 标记-清除算法对 userdata 的处理
+### 2.3 GC 标记-清除算法对 userdata 的处理
 
 Lua GC 采用三色标记算法（Dijkstra 风格）。userdata 节点的处理：
 
@@ -269,7 +228,7 @@ $$
 \text{GC\_cycle} = \text{Mark} \to \text{Atomic} \to \text{Sweep} \to \text{Finalize}
 $$
 
-### 3.4 类型识别算法
+### 2.4 类型识别算法
 
 `luaL_checkudata` 的算法：
 
@@ -287,7 +246,7 @@ function checkudata(L, ud, tname):
 
 由于 metatable 是按引用比较，registry 中存储的 tname 对应的 metatable 必须与设置在 userdata 上的 metatable **同一引用**。这意味着不能跨 `lua_State` 共享 metatable 字符串。
 
-### 3.5 `__gc` 终结顺序的不确定性
+### 2.5 `__gc` 终结顺序的不确定性
 
 Lua 不保证 `__gc` 的调用顺序。设 $U = \{u_1, u_2, \ldots, u_n\}$ 为待终结集合，则调用顺序 $\sigma$ 满足：
 
@@ -297,7 +256,7 @@ $$
 
 **实践含义**：如果 userdata 之间存在依赖（如 $u_1$ 持有 $u_2$ 的引用），必须在 `__gc` 中防御性检查依赖是否已释放。
 
-### 3.6 light userdata 与 GC 的特殊关系
+### 2.6 light userdata 与 GC 的特殊关系
 
 light userdata 的值是一个 `void*`，**不参与 GC**。但 Lua 5.4 起允许为 `LUA_TLIGHTUSERDATA` 类型设置全局 metatable（通过 `luaL_setmetatable` 对类型而非对象）：
 
@@ -308,9 +267,9 @@ luaL_setmetatable(L, "LightPtr");
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 基础示例：Point userdata（Lua 5.4）
+### 3.1 基础示例：Point userdata（Lua 5.4）
 
 完整可编译的 C 程序，封装 `Point {double x, y}` 为 Lua userdata。
 
@@ -509,7 +468,7 @@ print(p3:getx())        -- 100.0
 lua5.4 test_point.lua
 ```
 
-### 4.2 进阶示例：文件句柄 userdata（带 `__gc`）
+### 3.2 进阶示例：文件句柄 userdata（带 `__gc`）
 
 包装 C 标准库 `FILE*`，演示 `__gc` 自动关闭文件。
 
@@ -669,7 +628,7 @@ do
 end  -- 离开作用域时自动调用 __close，即使发生异常
 ```
 
-### 4.3 light userdata 示例：弱引用映射
+### 3.3 light userdata 示例：弱引用映射
 
 light userdata 常用作 C 端对象的"弱引用"键：
 
@@ -682,7 +641,7 @@ local cache = setmetatable({}, { __mode = "k" })
 cache[handle] = { metadata = "associated data" }
 ```
 
-### 4.4 Lua 5.4 多 uservalue
+### 3.4 Lua 5.4 多 uservalue
 
 ```c
 /* 创建带 3 个 uservalue 的 userdata */
@@ -700,9 +659,9 @@ lua_pop(L, 1);
 
 ---
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 Lua userdata 与其他语言对应机制对比
+### 4.1 Lua userdata 与其他语言对应机制对比
 
 | 语言 | 对应机制 | GC 行为 | 元方法 | 典型用途 |
 |------|----------|---------|--------|----------|
@@ -713,7 +672,7 @@ lua_pop(L, 1);
 | **Rust** | 不直接对应（通过 PyO3 / wasm-bindgen） | RAII | trait impl | 跨语言绑定 |
 | **Java** | JNI 中的 `jobject` / `DirectByteBuffer` | 受 GC | 无（需 Java 方法） | JNI 性能场景 |
 
-### 5.2 full vs light userdata 详细对比
+### 4.2 full vs light userdata 详细对比
 
 | 维度 | full userdata | light userdata |
 |------|---------------|----------------|
@@ -727,7 +686,7 @@ lua_pop(L, 1);
 | **创建 API** | `lua_newuserdata` / `lua_newuserdatauv` | `lua_pushlightuserdata` |
 | **典型用途** | C 类型绑定 | 弱引用键、C 库句柄映射 |
 
-### 5.3 与 Python C 扩展类型对比
+### 4.3 与 Python C 扩展类型对比
 
 ```python
 # Python C 扩展类型（伪代码）
@@ -751,7 +710,7 @@ static PyTypeObject PyPointType = {
 - **Python** 的类型对象是全局的，所有 Point 实例共享一个 `PyTypeObject`；Lua 允许每个 userdata 持有不同的 metatable（虽然实践中通常共享）。
 - **Python** 的 `__del__` 在循环引用场景下不可靠；Lua 的 `__gc` 与三色标记 GC 协同更健壮。
 
-### 5.4 与 LuaJIT cdata 对比
+### 4.4 与 LuaJIT cdata 对比
 
 | 维度 | Lua userdata | LuaJIT cdata |
 |------|---------------|---------------|
@@ -764,9 +723,9 @@ static PyTypeObject PyPointType = {
 
 ---
 
-## 6. 常见陷阱与最佳实践
+## 5. 常见陷阱与最佳实践
 
-### 6.1 陷阱：忘记设置 metatable
+### 5.1 陷阱：忘记设置 metatable
 
 ```c
 /* 错误：未设置 metatable，userdata 失去类型 */
@@ -784,7 +743,7 @@ luaL_setmetatable(L, POINT_MT);
 return 1;
 ```
 
-### 6.2 陷阱：`__gc` 中抛出 Lua 错误
+### 5.2 陷阱：`__gc` 中抛出 Lua 错误
 
 ```c
 /* 错误：__gc 中调用 luaL_error 会导致未定义行为 */
@@ -803,7 +762,7 @@ static int l_safe_gc(lua_State *L) {
 }
 ```
 
-### 6.3 陷阱：跨 lua_State 共享 userdata
+### 5.3 陷阱：跨 lua_State 共享 userdata
 
 ```c
 /* 错误：在不同 lua_State 之间共享 userdata */
@@ -816,7 +775,7 @@ Point *p = (Point *)lua_newuserdatauv(L1, sizeof(Point), 0);
 
 **原因**：每个 `lua_State` 独立管理内存和 metatable，跨状态共享 userdata 会导致 GC 错乱。
 
-### 6.4 陷阱：light userdata 作为 long-term 引用
+### 5.4 陷阱：light userdata 作为 long-term 引用
 
 ```c
 /* 错误：light userdata 持有的 C 对象可能已释放 */
@@ -832,7 +791,7 @@ struct Resource *res = (struct Resource *)lua_newuserdatauv(L, sizeof(struct Res
 /* 配置 __gc 释放资源 */
 ```
 
-### 6.5 陷阱：循环引用导致 `__gc` 失效
+### 5.5 陷阱：循环引用导致 `__gc` 失效
 
 ```lua
 -- 循环引用
@@ -847,7 +806,7 @@ collectgarbage()
 
 **最佳实践**：避免 userdata 之间形成循环引用；如必须，使用 weak table 或显式 `close()` 方法。
 
-### 6.6 最佳实践清单
+### 5.6 最佳实践清单
 
 1. **统一 metatable 标识**：所有同类型 userdata 共享同一 metatable，存于 registry。
 2. **`__gc` 中防御性编程**：检查资源是否已释放，避免 double-free。
@@ -858,7 +817,7 @@ collectgarbage()
 7. **`luaL_checkudata` 替代 `lua_touserdata`**：前者有类型校验。
 8. **uservalue 用于关联 Lua 对象**：避免在 C 端持有 Lua 对象引用。
 
-### 6.7 内存泄漏排查
+### 5.7 内存泄漏排查
 
 **症状**：userdata 数量持续增长，不释放。
 
@@ -887,9 +846,9 @@ collectgarbage("collect")
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 嵌入 Lua：在 C 应用中注册 userdata 类型
+### 6.1 嵌入 Lua：在 C 应用中注册 userdata 类型
 
 完整示例见 §4。要点：
 
@@ -898,7 +857,7 @@ collectgarbage("collect")
 3. `luaL_setfuncs` 注册方法。
 4. `luaopen_*` 函数返回模块表。
 
-### 7.2 热重载支持
+### 6.2 热重载支持
 
 Lua 5.4 中，模块可通过 `package.loaded[name] = nil` 实现热重载。但 userdata 的 metatable 引用必须保持稳定：
 
@@ -913,7 +872,7 @@ end
 -- 解决：在 C 端将 metatable 缓存到全局，每次创建时检查更新
 ```
 
-### 7.3 性能优化
+### 6.3 性能优化
 
 **优化 1：避免不必要的 `__index` 调用**
 
@@ -955,7 +914,7 @@ local methods = { foo = function() end, bar = function() end }
 local mt = { __index = methods }
 ```
 
-### 7.4 调试技巧
+### 6.4 调试技巧
 
 **技巧 1：`__tostring` 提供有意义的输出**
 
@@ -987,7 +946,7 @@ static int l_gc(lua_State *L) {
 }
 ```
 
-### 7.5 测试策略
+### 6.5 测试策略
 
 ```lua
 -- test_point_spec.lua
@@ -1017,9 +976,9 @@ end)
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 Redis 中的 Lua userdata
+### 7.1 Redis 中的 Lua userdata
 
 Redis 通过 `lua_newuserdata` 在 Lua 端表示 Redis 命令上下文。`scripting.c` 中：
 
@@ -1031,7 +990,7 @@ luaL_setmetatable(L, "redis.client");
 
 `__gc` 中释放 client 资源，确保脚本执行后无泄漏。
 
-### 8.2 Neovim 的 Lua API
+### 7.2 Neovim 的 Lua API
 
 Neovim 用 Lua 5.1（LuaJIT）作为配置和脚本语言。Buffer、Window、Tabpage 等对象均以 userdata 表示：
 
@@ -1043,7 +1002,7 @@ local buf = vim.api.nvim_get_current_buf()
 
 Neovim 的 userdata 实现使用 `luaL_newmetatable` 注册每种 API 对象，并通过 `__index` 暴露方法。
 
-### 8.3 World of Warcraft UI
+### 7.3 World of Warcraft UI
 
 WoW UI 完全基于 Lua（5.1），C 端定义大量 userdata 类型：
 
@@ -1059,7 +1018,7 @@ f:SetHeight(100)
 
 `CreateFrame` 在 C 端创建 userdata 并绑定 metatable，方法是 C 函数。
 
-### 8.4 LuaJIT 的 cdata
+### 7.4 LuaJIT 的 cdata
 
 LuaJIT 引入 cdata 作为 userdata 的"增强版"：
 
@@ -1077,7 +1036,7 @@ ffi.C.free(p)
 
 cdata 的优势是 JIT 编译器可内联 C 函数调用，性能远超传统 userdata。
 
-### 8.5 Love2D 的 userdata 类型
+### 7.5 Love2D 的 userdata 类型
 
 Love2D（基于 Lua 5.1 / LuaJIT）的图形、音频、物理对象均为 userdata：
 
@@ -1089,7 +1048,7 @@ end
 
 `love.graphics` 内部所有绘制状态都封装在 userdata 中，由 C 端 SDL2 管理。
 
-### 8.6 案例对比表
+### 7.6 案例对比表
 
 | 项目 | Lua 版本 | userdata 用途 | 关键 metatable |
 |------|----------|---------------|----------------|
@@ -1394,7 +1353,7 @@ int luaopen_sb(lua_State *L) {
 
 ---
 
-### 9.4 思考题
+### 8.4 思考题
 
 **常见疑问 11**：. 为什么 Lua 设计两种 userdata（full 与 light），而不是统一一种？
 
@@ -1446,9 +1405,9 @@ light userdata 的设计动机包括：
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
-### 10.1 核心文献
+### 9.1 核心文献
 
 - [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, *Lua 5.4 Reference Manual*, PUC-Rio, 2020. [Online]. Available: https://www.lua.org/manual/5.4/
 
@@ -1460,13 +1419,13 @@ light userdata 的设计动机包括：
 
 - [5] L. H. de Figueiredo, R. Ierusalimschy, and W. Celes, "LuaJIT: a just-in-time compiler for Lua," *Lua.org*, Tech. Rep., 2012.
 
-### 10.2 标准与规范
+### 9.2 标准与规范
 
 - [6] PUC-Rio, "Lua 5.4 Source Code," 2020. [GitHub repository]. Available: https://github.com/lua/lua
 
 - [7] M. Pall, "LuaJIT FFI Documentation," 2011. [Online]. Available: http://luajit.org/ext_ffi.html
 
-### 10.3 应用案例文献
+### 9.3 应用案例文献
 
 - [8] S. Sanfilippo, "Redis and Lua: a love story," *Redis Labs Blog*, 2011. [Online]. Available: https://redis.io/docs/manual/programmability/lua/
 
@@ -1474,7 +1433,7 @@ light userdata 的设计动机包括：
 
 - [10] Blizzard Entertainment, *World of Warcraft API Reference*, 2004-2024. [Online]. Available: https://wowpedia.fandom.com/wiki/World_of_Warcraft_API
 
-### 10.4 学术引用（ACM Reference Format）
+### 9.4 学术引用（ACM Reference Format）
 
 R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 2007. The evolution of Lua. In *Proceedings of the Third ACM SIGPLAN Conference on History of Programming Languages (HOPL III)*. ACM, New York, NY, USA, 2-1–2-26. DOI: https://doi.org/10.1145/1238844.1238846
 
@@ -1482,21 +1441,21 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua: an extensible ex
 
 ---
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 书籍
+### 10.1 书籍
 
 - Roberto Ierusalimschy, *Programming in Lua*, 4th Edition（Lua 5.3，但概念适用于 5.4）
 - Kurt Jung, *Lua Quick Reference*（Apress, 2018）
 - Roberto Ierusalimschy, *From Brazil to Wikipedia*（Lua 设计哲学演讲）
 
-### 11.2 论文与技术报告
+### 10.2 论文与技术报告
 
 - "The Implementation of Lua 5.0"（JLTB 2005, Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes）
 - "A Look at the Design of Lua"（Roberto Ierusalimschy）
 - "LuaJIT 2.0: A Just-In-Time Compiler for Lua"（Mike Pall）
 
-### 11.3 在线资源
+### 10.3 在线资源
 
 - Lua 官方站点：https://www.lua.org/
 - Lua Users Wiki：http://lua-users.org/wiki/
@@ -1504,14 +1463,14 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua: an extensible ex
 - Lua 文档镜像：https://www.lua.org/manual/5.4/manual.html#4.1
 - Lua 教学教程：https://learnxinyminutes.com/docs/lua/
 
-### 11.4 开源项目参考
+### 10.4 开源项目参考
 
 - **Lua-cURL**：cURL 的 Lua 绑定，大量使用 userdata 包装 `CURL*`
 - **lua-socket**：网络库，使用 userdata 包装 socket fd
 - **LuaSQLite3**：SQLite 绑定，userdata 包装 `sqlite3*`
 - **lgi**：GNOME GObject Introspection 的 Lua 绑定
 
-### 11.5 与本文档相关章节
+### 10.5 与本文档相关章节
 
 - [C-API 栈操作](/lua/C-API栈操作)：理解 userdata 在虚拟栈中的操作
 - [模块加载](/lua/模块加载)：`luaopen_*` 与 userdata 注册的关系

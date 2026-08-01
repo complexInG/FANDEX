@@ -16,60 +16,18 @@ prerequisites:
   - cpp/概述与现代标准
 ---
 
+
 # C++ 格式化输出
 
 > 本文档系统讲解 C++ 中四代格式化机制：`printf` 家族、`iostream` 抽象、C++20 `std::format` 与 C++23 `std::print`，并对比 {fmt} 库与跨语言方案。内容遵循 ISO/IEC 14882:2024 标准，覆盖语法、类型安全、性能、国际化与工程落地，目标达到海外高校教学水准。
 
 ---
 
-## 1. 学习目标
-
-本节使用 Bloom 分类法刻画学习者应达到的认知层级。每一层级对应可观测的行为动词，便于自评与教学评估。
-
-### 1.1 记忆（Remember）
-
-- 列举 C++ 中四类主流格式化 API 的名称：`std::printf`、`std::ostream`、`std::format`、`std::print`。
-- 复述 `{}` 占位符语法与 `{:N}`、`{:.Nf}`、`{:>N}` 等格式说明符的语义。
-- 背诵 `<format>`、`<print>`、`<iostream>`、`<cstdio>` 四个标准头的核心接口签名。
-
-### 1.2 理解（Understand）
-
-- 解释 `printf` 函数族如何通过 `va_list` 实现变参传递，以及由此导致的类型不安全根因。
-- 阐述 `iostream` 如何通过运算符重载与虚函数实现类型安全，并说明其性能开销来源。
-- 描述 `std::format` 基于 P0645R10 提案的解析-填充-换行三阶段执行模型。
-- 区分格式字符串编译期校验（`consteval`）与运行期校验的差异。
-
-### 1.3 应用（Apply）
-
-- 使用 `std::format` 编写支持位置参数、命名参数（C++23 `std::format_string`）的格式化代码。
-- 在 CMake 工程中集成 `<format>` 与 `<print>`，正确设置 `CMAKE_CXX_STANDARD 23`。
-- 实现自定义类型的 `std::formatter` 特化，支持用户定义类型 (UDT) 的格式化。
-
-### 1.4 分析（Analyze）
-
-- 对比 `printf`、`iostream`、`std::format` 在 GCC 13 / Clang 17 / MSVC 19.38 下的汇编输出与吞吐量。
-- 解构 `std::format` 内部的 `basic_format_arg` 与 `basic_format_context` 类型擦除机制。
-- 分析格式化字符串漏洞（format string vulnerability）在安全编程中的攻击面。
-
-### 1.5 评价（Evaluate）
-
-- 评估在嵌入式、游戏引擎、服务端三类场景下选用何种格式化 API 的合理性。
-- 判断 `fmt::format` 与 `std::format` 的功能差异是否足以左右库选型决策。
-- 评审生产代码中的格式化用法是否符合 CppCoreGuidelines F-46 ~ F-55。
-
-### 1.6 创造（Create）
-
-- 设计并实现一个支持 BNF 文法校验的编译期格式化字符串检查器。
-- 构建一个面向日志库的格式化中间层，支持运行时动态格式与编译期静态格式双模切换。
-- 为自定义数学向量类型实现完整的 `std::formatter` 特化，支持 `{:[fmt]}` 语法扩展。
-
----
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 C++ 格式化输出的演进折射出整个语言对类型安全、性能与可扩展性的持续追求。理解这条主线有助于学习者在不同标准之间做出合理选型。
 
-### 2.1 C 时代：`printf` 家族（1972 - 至今）
+### 1.1 C 时代：`printf` 家族（1972 - 至今）
 
 1972 年 Dennis Ritchie 在 BCPL 的基础上设计 C 语言时，引入了 `printf` 函数。其签名沿用至今：
 
@@ -90,7 +48,7 @@ int printf(const char *format, ...);
 | `vprintf`    | `stdout`+va_list | 行缓冲     | C89            |
 | `asprintf`   | 动态分配       | 无           | GNU/BSD 扩展   |
 
-### 2.2 C++ 早期：`iostream`（1985 - 至今）
+### 1.2 C++ 早期：`iostream`（1985 - 至今）
 
 Bjarne Stroustrup 在《The C++ Programming Language》第一版（1985）中引入 `iostream` 库，作为 `stdio.h` 的类型安全替代。其核心思想是：
 
@@ -100,7 +58,7 @@ Bjarne Stroustrup 在《The C++ Programming Language》第一版（1985）中引
 
 `iostream` 的代价是性能：每次 `<<` 调用涉及函数调用（甚至虚调用）、状态机更新（如 `flags()`、`width()`、`precision()`）、以及与 C `stdio` 同步的开销。Jerry Schwarz（`iostream` 原作者）在 AT&T 内部报告中承认，相比 `printf`，`iostream` 在 1990 年代的 SPARC 工作站上慢 3-10 倍。
 
-### 2.3 Boost.Format（2002 - 至今）
+### 1.3 Boost.Format（2002 - 至今）
 
 为弥补 `iostream` 在格式化能力上的不足，Samuel Krempp 于 2002 年向 Boost 提交了 `boost::format` 库。它将 `printf` 风格的格式串与 `iostream` 的类型安全结合：
 
@@ -112,7 +70,7 @@ std::string s = f.str();
 
 `boost::format` 的缺点是性能更差（基于 `iostream` 构建，且每次构造 `format` 对象开销显著），且 API 较为冗长。它启发了后续 {fmt} 库的设计。
 
-### 2.4 {fmt} 库（2016 - 至今）
+### 1.4 {fmt} 库（2016 - 至今）
 
 Victor Zverovich 于 2016 年开源 {fmt} 库（GitHub: `fmtlib/fmt`），灵感来自 Python `str.format` 与现代 C++ 设计。{fmt} 的关键创新：
 
@@ -123,7 +81,7 @@ Victor Zverovich 于 2016 年开源 {fmt} 库（GitHub: `fmtlib/fmt`），灵感
 
 {fmt} 成为 C++20 `std::format` 的直接蓝本。Victor 本人也是 P0645R10 提案的主要作者。
 
-### 2.5 C++20：`std::format`（ISO/IEC 14882:2020）
+### 1.5 C++20：`std::format`（ISO/IEC 14882:2020）
 
 C++20 标准引入 `<format>` 头，提供 `std::format`、`std::format_to`、`std::format_to_n`、`std::formatted_size` 等函数。其设计直接借鉴 {fmt}，但在以下方面存在差异：
 
@@ -132,7 +90,7 @@ C++20 标准引入 `<format>` 头，提供 `std::format`、`std::format_to`、`s
 - **缺少命名参数**：C++20 不支持 {fmt} 的 `fmt::arg("name", value)` 命名参数语法，C++23 才通过 P2918 补充。
 - **API 完整度**：C++20 `std::format` 不支持 {fmt} 的 `fmt::join`、`fmt::grouped_view` 等扩展。
 
-### 2.6 C++23：`std::print` 与 `std::println`（ISO/IEC 14882:2023）
+### 1.6 C++23：`std::print` 与 `std::println`（ISO/IEC 14882:2023）
 
 C++23 通过 P2093R12 引入 `<print>` 头，提供 `std::print` 与 `std::println` 函数。其核心改进：
 
@@ -140,7 +98,7 @@ C++23 通过 P2093R12 引入 `<print>` 头，提供 `std::print` 与 `std::print
 2. 支持 Unicode 输出（通过 `std::unicode_locale`），解决 Windows 控制台编码问题。
 3. 编译期格式串校验，避免运行期异常。
 
-### 2.7 C++26：`std::format` 扩展（ISO/IEC CD 14882:2026）
+### 1.7 C++26：`std::format` 扩展（ISO/IEC CD 14882:2026）
 
 C++26 草案（截稿时）已纳入或拟纳入以下改进：
 
@@ -149,7 +107,7 @@ C++26 草案（截稿时）已纳入或拟纳入以下改进：
 - **P2539R4**：`std::print` 对 `std::ostream` 的扩展，支持任意 `ostream` 目标。
 - **P3107R5**：`std::format_ostream`，统一 `ostream` 与 `format` 的格式化路径。
 
-### 2.8 演进时间线
+### 1.8 演进时间线
 
 ```text
 1972  C 语言 + printf                       K&R C
@@ -169,11 +127,11 @@ C++26 草案（截稿时）已纳入或拟纳入以下改进：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节给出 C++ 格式化机制的形式化定义，涵盖标准引用、内存模型约束与类型系统刻画。
 
-### 3.1 ISO/IEC 14882 标准引用
+### 2.1 ISO/IEC 14882 标准引用
 
 `std::format` 的权威定义见 ISO/IEC 14882:2020 第 20.20 节 [format]。关键条款：
 
@@ -191,7 +149,7 @@ string format(format_string<Args...> fmt, Args&&... args);
 
 C++23 `std::print` 见 ISO/IEC 14882:2023 第 20.21 节 [print]。
 
-### 3.2 格式字符串的 EBNF 文法
+### 2.2 格式字符串的 EBNF 文法
 
 标准 [format.string] 定义的格式串文法如下（简化版）：
 
@@ -221,7 +179,7 @@ type ::= "a" | "A" | "b" | "B" | "c" | "d" | "e" | "E" | "f" | "F"
 - `L`：使用本地化分组符号。
 - `type`：输出类型说明符，与 `printf` 类似但语义统一。
 
-### 3.3 类型系统刻画
+### 2.3 类型系统刻画
 
 `std::format` 通过 `format_string<Args...>` 在编译期绑定参数类型。其类型签名可形式化表示为：
 
@@ -245,7 +203,7 @@ $$
 | `const void*`                  | `pointer_type`              |
 | 自定义类型 + `formatter` 特化  | `handle` (类型擦除包装)     |
 
-### 3.4 内存模型与异常安全
+### 2.4 内存模型与异常安全
 
 `std::format` 的内存与异常语义遵循以下保证：
 
@@ -254,7 +212,7 @@ $$
 3. **`constexpr` 限制**：C++20 `std::format` 非 `constexpr`，C++23 部分实现支持 `constexpr`（P2918 未涵盖），C++26 拟通过 P3273 引入 `constexpr std::format`。
 4. **内存分配**：`std::format` 返回 `std::string`，至少涉及一次堆分配。`std::format_to` 写入预分配缓冲可避免分配。
 
-### 3.5 标准库概念与约束
+### 2.5 标准库概念与约束
 
 C++20 `std::format` 通过以下概念约束其模板参数：
 
@@ -272,11 +230,11 @@ concept formattable =
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
 本节深入解析格式化机制背后的算法、数据结构与复杂度。
 
-### 4.1 `printf` 的变参机制与类型不安全
+### 3.1 `printf` 的变参机制与类型不安全
 
 `printf` 基于 C 语言 `<stdarg.h>` 的 `va_list` 实现。其调用约定可形式化：
 
@@ -299,7 +257,7 @@ $$
 
 但 C/C++ 编译器仅对 `printf` 提供"最佳努力"警告（`-Wformat`），无强制校验。
 
-### 4.2 `iostream` 的运算符重载与虚函数开销
+### 3.2 `iostream` 的运算符重载与虚函数开销
 
 `iostream` 通过 `operator<<` 重载实现类型安全。对每个类型 `T`，标准库或用户重载：
 
@@ -328,7 +286,7 @@ $$
 
 省去了 $n \cdot T_{\text{virt}}$ 的虚调用开销。
 
-### 4.3 `std::format` 三阶段执行模型
+### 3.3 `std::format` 三阶段执行模型
 
 `std::format` 的执行可形式化为三阶段：
 
@@ -359,7 +317,7 @@ for each replacement-field:
     append to output
 ```
 
-### 4.4 复杂度分析
+### 3.4 复杂度分析
 
 设 $n$ 为参数数量，$s$ 为输出字符串长度，$L$ 为格式串长度。
 
@@ -372,7 +330,7 @@ for each replacement-field:
 
 其中 $c$ 为单次 `<<` 调用的常数开销（虚调用 + 状态检查）。在 $n$ 较大时 `iostream` 的劣势显著。
 
-### 4.5 编译期校验的元编程基础
+### 3.5 编译期校验的元编程基础
 
 `std::format_string` 的 `consteval` 校验依赖 C++20 的 `consteval` 关键字与 `basic_format_string` 类模板。其简化实现：
 
@@ -408,7 +366,7 @@ std::string s = std::format(runtime_fmt, 42);  // 编译错误：非常量表达
 std::string s = std::vformat(runtime_fmt, std::make_format_args(42));
 ```
 
-### 4.6 类型擦除的内存布局
+### 3.6 类型擦除的内存布局
 
 `basic_format_arg<CharT>` 的典型实现是一个 tagged union：
 
@@ -443,7 +401,7 @@ private:
 
 该结构尺寸约 16-24 字节（依实现而异），在 64 位系统上对齐良好，缓存友好。`format_args_store` 是一个 `array<basic_format_arg, N>` 加上长度信息，可通过 SIMD 批量扫描。
 
-### 4.7 性能基准的数学建模
+### 3.7 性能基准的数学建模
 
 {fmt} 与 `std::format` 的性能优势可建模为"批量处理收益"。设单次参数转换的固有成本为 $c_0$，每次 `iostream` 调用的额外开销为 $\Delta$（虚调用 + 状态检查），则：
 
@@ -468,11 +426,11 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节提供从入门到生产的完整代码示例，所有代码均经过编译验证，标注 C++ 标准版本与编译命令。
 
-### 5.1 基础用法：`std::format` 入门
+### 4.1 基础用法：`std::format` 入门
 
 **文件**：`format_basic.cpp`
 **标准**：C++20
@@ -529,7 +487,7 @@ int main() {
 }
 ```
 
-### 5.2 C++23：`std::print` 与 `std::println`
+### 4.2 C++23：`std::print` 与 `std::println`
 
 **文件**：`print_basic.cpp`
 **标准**：C++23
@@ -565,7 +523,7 @@ int main() {
 }
 ```
 
-### 5.3 自定义类型的 `std::formatter` 特化
+### 4.3 自定义类型的 `std::formatter` 特化
 
 **文件**：`custom_formatter.cpp`
 **标准**：C++20
@@ -627,7 +585,7 @@ int main() {
 }
 ```
 
-### 5.4 性能对比基准测试
+### 4.4 性能对比基准测试
 
 **文件**：`format_bench.cpp`
 **标准**：C++20
@@ -694,7 +652,7 @@ int main() {
 }
 ```
 
-### 5.5 CMake 工程配置
+### 4.5 CMake 工程配置
 
 **文件**：`CMakeLists.txt`
 
@@ -740,7 +698,7 @@ if(USE_FMT)
 endif()
 ```
 
-### 5.6 运行期格式串：`std::vformat`
+### 4.6 运行期格式串：`std::vformat`
 
 **文件**：`runtime_format.cpp`
 **标准**：C++20
@@ -777,7 +735,7 @@ int main() {
 }
 ```
 
-### 5.7 生产级日志库简化实现
+### 4.7 生产级日志库简化实现
 
 **文件**：`mini_logger.cpp`
 **标准**：C++20
@@ -851,7 +809,7 @@ int main() {
 }
 ```
 
-### 5.8 复杂格式化：表格输出
+### 4.8 复杂格式化：表格输出
 
 **文件**：`table_format.cpp`
 **标准**：C++20
@@ -934,7 +892,7 @@ int main() {
 }
 ```
 
-### 5.9 命名参数（C++26 草案 / {fmt}）
+### 4.9 命名参数（C++26 草案 / {fmt}）
 
 **文件**：`named_args.cpp`
 **标准**：C++26 草案（{fmt} 已支持）
@@ -964,11 +922,11 @@ int main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
 本节横向对比 C++ 各代格式化 API，并扩展到 C、Rust、Java、Go、Python 的对应机制。
 
-### 6.1 C++ 内部四代 API 对比
+### 5.1 C++ 内部四代 API 对比
 
 | 维度          | `printf`       | `iostream`     | `std::format`     | `std::print` (C++23) |
 | ------------- | -------------- | -------------- | ----------------- | -------------------- |
@@ -985,7 +943,7 @@ int main() {
 | 缓冲控制      | 行缓冲         | 可配           | 由用户控制        | 流固有               |
 | 异常安全      | 不抛           | 可能抛         | 强保证            | 强保证               |
 
-### 6.2 跨语言对比
+### 5.2 跨语言对比
 
 | 语言      | 主要 API                       | 类型安全 | 编译期校验 | 性能 (相对) | 备注                       |
 | --------- | ------------------------------ | -------- | ---------- | ----------- | -------------------------- |
@@ -1000,7 +958,7 @@ int main() {
 | Swift     | `"\\()"` 字符串插值            | 是       | 是         | 0.6x        | 编译期校验                 |
 | Zig       | `std.fmt` / `{}`               | 是       | 是         | 1.1x        | comptime 校验              |
 
-### 6.3 Rust `format!` 与 C++ `std::format` 深度对比
+### 5.3 Rust `format!` 与 C++ `std::format` 深度对比
 
 Rust 的 `format!` 宏通过过程宏 (proc-macro) 在编译期解析格式串，类型与位置均静态校验。两者主要差异：
 
@@ -1015,7 +973,7 @@ Rust 的 `format!` 宏通过过程宏 (proc-macro) 在编译期解析格式串�
 | 运行期格式          | 不支持                        | `std::vformat`                 |
 | 标准 vs 第三方      | 标准库                        | 标准库                         |
 
-### 6.4 {fmt} 库与 `std::format` 差异
+### 5.4 {fmt} 库与 `std::format` 差异
 
 {fmt} 是 C++20 `std::format` 的蓝本，但功能更全。差异表：
 
@@ -1032,9 +990,9 @@ Rust 的 `format!` 宏通过过程宏 (proc-macro) 在编译期解析格式串�
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：`printf` 格式串与类型不匹配（未定义行为）
+### 6.1 陷阱一：`printf` 格式串与类型不匹配（未定义行为）
 
 ```cpp
 // 错误：类型不匹配，UB
@@ -1046,7 +1004,7 @@ std::printf("%d %d", 1);       // 参数不足，读取未初始化内存
 
 **最佳实践**：启用编译器警告 `-Wformat -Wformat-security -Werror`，并迁移到 `std::format`。
 
-### 7.2 陷阱二：`snprintf` 缓冲区不足
+### 6.2 陷阱二：`snprintf` 缓冲区不足
 
 ```cpp
 char buf[8];
@@ -1069,7 +1027,7 @@ if (n < 0 || static_cast<size_t>(n) >= sizeof(buf)) {
 std::string s = std::format("{}", str);  // 自动扩容
 ```
 
-### 7.3 陷阱三：`iostream` 的 `<<` 结合性
+### 6.3 陷阱三：`iostream` 的 `<<` 结合性
 
 ```cpp
 std::cout << "a" + 1;  // 指针算术，输出乱码
@@ -1078,7 +1036,7 @@ std::cout << "a" << 1;  // 正确
 
 **最佳实践**：始终用 `<<` 分隔，不要在 `<<` 链中混入算术。
 
-### 7.4 陷阱四：`std::format` 运行期格式串
+### 6.4 陷阱四：`std::format` 运行期格式串
 
 ```cpp
 // 错误：非 consteval 格式串无法编译
@@ -1092,7 +1050,7 @@ std::string s = std::format(fmt, 42);  // 编译错误
 std::string s = std::vformat(fmt, std::make_format_args(42));
 ```
 
-### 7.5 陷阱五：`std::format` 与 C 字符串
+### 6.5 陷阱五：`std::format` 与 C 字符串
 
 ```cpp
 const char* s = nullptr;
@@ -1108,7 +1066,7 @@ std::string s = maybe_null ? maybe_null : "";
 std::string r = std::format("{}", s);  // 安全
 ```
 
-### 7.6 陷阱六：宽字符与窄字符混用
+### 6.6 陷阱六：宽字符与窄字符混用
 
 ```cpp
 std::string s = std::format("{}", L"wide");  // 编译错误或乱码
@@ -1120,7 +1078,7 @@ std::string s = std::format("{}", L"wide");  // 编译错误或乱码
 std::wstring s = std::wformat(L"{}", L"wide");  // 正确
 ```
 
-### 7.7 陷阱七：自定义 `formatter` 不处理 `parse`
+### 6.7 陷阱七：自定义 `formatter` 不处理 `parse`
 
 ```cpp
 // 错误：未解析格式说明
@@ -1141,7 +1099,7 @@ constexpr auto parse(std::format_parse_context& ctx) {
 }
 ```
 
-### 7.8 陷阱八：`std::format` 的临时对象生命周期
+### 6.8 陷阱八：`std::format` 的临时对象生命周期
 
 ```cpp
 auto s = std::format("{}", std::string("temp").substr(0, 3));
@@ -1154,7 +1112,7 @@ auto s = std::format("{}", std::string("temp").substr(0, 3));
 std::string_view sv = std::format("{}", "x");  // 危险：返回 string 转 view 悬垂
 ```
 
-### 7.9 陷阱九：格式化字符串安全漏洞
+### 6.9 陷阱九：格式化字符串安全漏洞
 
 C/C++ 中 `printf(user_input)` 是经典漏洞，攻击者可读取栈内存：
 
@@ -1171,7 +1129,7 @@ printf(buf);  // 若用户输入 "%x %x %x"，泄露栈数据
 std::cout << std::format("{}", buf);  // 安全
 ```
 
-### 7.10 陷阱十：`endl` 与 `'\n'` 性能
+### 6.10 陷阱十：`endl` 与 `'\n'` 性能
 
 ```cpp
 std::cout << "Hello" << std::endl;  // 每次刷新缓冲，性能差
@@ -1180,7 +1138,7 @@ std::cout << "Hello\n";             // 推荐
 
 `std::endl` 等价于 `<< '\n' << std::flush`，频繁 flush 显著降低吞吐。
 
-### 7.11 最佳实践清单
+### 6.11 最佳实践清单
 
 1. **新代码用 `std::format` / `std::print`**：类型安全、性能优、可扩展。
 2. **保留 `printf` 仅用于 C 接口**：与第三方 C 库交互时。
@@ -1195,11 +1153,11 @@ std::cout << "Hello\n";             // 推荐
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建系统配置
+### 7.1 构建系统配置
 
-#### 8.1.1 CMake 最低版本要求
+#### 7.1.1 CMake 最低版本要求
 
 支持 `<format>` 的最低编译器版本：
 
@@ -1230,7 +1188,7 @@ if(NOT HAVE_STD_FORMAT)
 endif()
 ```
 
-#### 8.1.2 编译选项建议
+#### 7.1.2 编译选项建议
 
 ```cmake
 # 启用所有格式相关警告
@@ -1245,9 +1203,9 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ```
 
-### 8.2 依赖管理
+### 7.2 依赖管理
 
-#### 8.2.1 vcpkg 集成 {fmt}
+#### 7.2.1 vcpkg 集成 {fmt}
 
 ```json
 // vcpkg.json
@@ -1263,7 +1221,7 @@ find_package(fmt CONFIG REQUIRED)
 target_link_libraries(my-app PRIVATE fmt::fmt)
 ```
 
-#### 8.2.2 Conan 集成 {fmt}
+#### 7.2.2 Conan 集成 {fmt}
 
 ```python
 # conanfile.py
@@ -1277,9 +1235,9 @@ class MyAppConan(ConanFile):
     default_options = {"fmt:header_only": True}
 ```
 
-### 8.3 性能优化技巧
+### 7.3 性能优化技巧
 
-#### 8.3.1 复用格式化字符串
+#### 7.3.1 复用格式化字符串
 
 `std::format_string` 在编译期解析格式串，重复使用同一 `format_string` 实例可避免重复解析：
 
@@ -1296,7 +1254,7 @@ for (int i = 0; i < 1000; ++i) {
 }
 ```
 
-#### 8.3.2 使用 `std::format_to` 避免分配
+#### 7.3.2 使用 `std::format_to` 避免分配
 
 ```cpp
 // 性能差：每次分配 string
@@ -1308,7 +1266,7 @@ auto it = std::format_to(buf.begin(), "{}", big_data);
 std::string_view sv(buf.begin(), it);
 ```
 
-#### 8.3.3 关闭 `iostream` 与 `stdio` 同步
+#### 7.3.3 关闭 `iostream` 与 `stdio` 同步
 
 ```cpp
 std::ios_base::sync_with_stdio(false);
@@ -1317,7 +1275,7 @@ std::cin.tie(nullptr);
 
 仅当程序不混用 `printf` 与 `std::cout` 时安全。
 
-#### 8.3.4 `std::print` 优于 `std::format` + `std::cout`
+#### 7.3.4 `std::print` 优于 `std::format` + `std::cout`
 
 ```cpp
 // 慢：两次内存分配 + 流操作
@@ -1327,9 +1285,9 @@ std::cout << std::format("{}\n", value);
 std::println("{}", value);
 ```
 
-### 8.4 调试技巧
+### 7.4 调试技巧
 
-#### 8.4.1 启用 `std::format` 异常
+#### 7.4.1 启用 `std::format` 异常
 
 `std::format` 默认抛 `std::format_error`。调试时可用 try-catch 定位格式串错误：
 
@@ -1341,7 +1299,7 @@ try {
 }
 ```
 
-#### 8.4.2 GDB 检查格式串
+#### 7.4.2 GDB 检查格式串
 
 ```text
 (gdb) break std::vformat
@@ -1351,16 +1309,16 @@ fmt = "{:d}"
 args = ...
 ```
 
-#### 8.4.3 ASan / UBSan 检测 UB
+#### 7.4.3 ASan / UBSan 检测 UB
 
 ```bash
 g++ -std=c++20 -fsanitize=address,undefined -g format_demo.cpp -o demo
 ./demo
 ```
 
-### 8.5 CI/CD 集成
+### 7.5 CI/CD 集成
 
-#### 8.5.1 GitHub Actions 多编译器测试
+#### 7.5.1 GitHub Actions 多编译器测试
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1381,7 +1339,7 @@ jobs:
         run: ctest --test-dir build --output-on-failure
 ```
 
-#### 8.5.2 clang-tidy 检查
+#### 7.5.2 clang-tidy 检查
 
 ```yaml
 # .clang-tidy
@@ -1399,7 +1357,7 @@ Checks: >
 clang-tidy -p build -checks='*' format_demo.cpp
 ```
 
-### 8.6 国际化与本地化
+### 7.6 国际化与本地化
 
 `std::format` 的 `L` 修饰符使用全局 locale 分组：
 
@@ -1414,9 +1372,9 @@ std::string s2 = std::format("{:L}", 3.14);    // "3.14" 或 "3,14"
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：{fmt} 库的架构设计
+### 8.1 案例：{fmt} 库的架构设计
 
 {fmt} 是 C++20 `std::format` 的直接蓝本，其架构值得深入研究。
 
@@ -1425,7 +1383,7 @@ std::string s2 = std::format("{:L}", 3.14);    // "3.14" 或 "3,14"
 **首版**：2016 年
 **Stars**：20k+ (2024)
 
-#### 9.1.1 核心架构
+#### 8.1.1 核心架构
 
 {fmt} 的核心组件层次：
 
@@ -1438,14 +1396,14 @@ flowchart TD
     FT --> WB[writer / buffer 输出缓冲]
 ```
 
-#### 9.1.2 性能优化关键
+#### 8.1.2 性能优化关键
 
 1. **编译期格式串解析**：`FMT_STRING` 宏利用 C++14 `constexpr` 解析格式串，生成编译期常量"格式计划"。
 2. **类型擦除优化**：`format_arg_store` 是 `array<basic_format_arg, N>`，连续内存布局缓存友好。
 3. **缓冲管理**：使用 `basic_memory_buffer` 提供 500 字节内联缓冲，避免小字符串分配。
 4. **整数转换算法**：使用基于查表的快速整数转字符串算法（`fmt::detail::to_decimal`），比 `snprintf` 快 2-5 倍。
 
-#### 9.1.3 编译期校验机制
+#### 8.1.3 编译期校验机制
 
 ```cpp
 // {fmt} 的编译期校验（简化）
@@ -1462,14 +1420,14 @@ struct checked_format_string {
 
 `FMT_CONSTEVAL` 在 C++14 是 `constexpr`，在 C++20 是 `consteval`。
 
-### 9.2 案例：spdlog 日志库
+### 8.2 案例：spdlog 日志库
 
 spdlog 是 C++ 最流行的日志库之一，基于 {fmt} 构建。
 
 **仓库**：`gabime/spdlog`
 **Stars**：22k+ (2024)
 
-#### 9.2.1 格式化路径
+#### 8.2.1 格式化路径
 
 spdlog 的核心格式化路径：
 
@@ -1486,13 +1444,13 @@ flowchart TD
     T3 --> T4
 ```
 
-#### 9.2.2 性能数据
+#### 8.2.2 性能数据
 
 - 单条日志 250ns（异步模式）
 - 同步模式 1.5μs
 - 比 `glog` 快 5-10 倍
 
-### 9.3 案例：LLVM `formatv`
+### 8.3 案例：LLVM `formatv`
 
 LLVM 项目内部使用 `formatv` 函数，类似 `std::format` 但更早。
 
@@ -1509,7 +1467,7 @@ llvm::outs() << formatv("{0}: {1:x}", "addr", 0xDEADBEEF);
 3. 自定义 `format_provider<T>` 特化扩展类型。
 4. LLVM 17+ 已部分迁移到 C++20 `std::format`。
 
-### 9.4 案例：Chromium `base::StringPrintf`
+### 8.4 案例：Chromium `base::StringPrintf`
 
 Chromium 使用 `base::StringPrintf`，本质是 `printf` 风格的封装。
 
@@ -1525,7 +1483,7 @@ Chromium 在 2023 年开始评估迁移到 C++20 `std::format`，但因代码库
 - 自动化重构工具（`clang-tidy` 自定义规则）可加速迁移。
 - 性能基准需重做，避免局部优化影响整体。
 
-### 9.5 案例：Qt 6 的 `QString::format`
+### 8.5 案例：Qt 6 的 `QString::format`
 
 Qt 6 引入 `QString::format`，基于 `std::format` 但适配 Qt 类型系统：
 
@@ -1540,7 +1498,7 @@ Qt 的扩展：
 - 兼容 Unicode（`QString` 内部 UTF-16）。
 - 提供 `QLocale` 集成的本地化格式化。
 
-### 9.6 案例：Meta Folly 的 `folly::format`
+### 8.6 案例：Meta Folly 的 `folly::format`
 
 Folly 库提供 `folly::format`，类似 {fmt} 但更早。
 
@@ -1828,7 +1786,7 @@ int main() {
 
 **解析讲解**：该简化工具仅支持三种说明符，实际迁移需处理宽度、精度、`%x`、`%o` 等。可结合 `clang-tidy` 自定义规则自动化迁移。
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 4.1**：为什么 `std::format` 选择编译期校验而非运行期校验？运行期校验的优势与劣势是什么？
 
@@ -1977,11 +1935,11 @@ std::string fmt_legacy(const std::string& printf_fmt, const std::string& args);
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 采用 ACM Reference Format，含 DOI。
 
-### 11.1 标准与提案
+### 10.1 标准与提案
 
 [1] International Organization for Standardization. 2020. *Information technology — Programming languages — C++* (ISO/IEC 14882:2020). ISO, Geneva, Switzerland. Section 20.20: Format.
 
@@ -1993,7 +1951,7 @@ std::string fmt_legacy(const std::string& printf_fmt, const std::string& args);
 
 [5] International Organization for Standardization. 2023. *Information technology — Programming languages — C++* (ISO/IEC 14882:2023). ISO, Geneva, Switzerland. Section 20.21: Print.
 
-### 11.2 论文与文献
+### 10.2 论文与文献
 
 [6] Zverovich, V. 2022. *{fmt} library: A modern formatting library for C++*. Retrieved from https://github.com/fmtlib/fmt. DOI: 10.5281/zenodo.3344944.
 
@@ -2005,19 +1963,19 @@ std::string fmt_legacy(const std::string& printf_fmt, const std::string& args);
 
 [10] Meyers, S. 2005. *Effective C++* (3rd ed.). Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0321334879.
 
-### 11.3 安全与漏洞
+### 10.3 安全与漏洞
 
 [11] Cowan, C., Barringer, M., Beattie, S., Kroah-Hartman, G., Frantzen, M., and Lokier, J. 2001. *FormatGuard: Automatic protection from printf format string vulnerabilities*. In *Proceedings of the 10th USENIX Security Symposium (USENIX Security '01)*. USENIX Association, Washington, DC, USA. DOI: 10.5555/1268340.1268355.
 
 [12] MITRE Corporation. 2024. *CWE-134: Use of Externally-Controlled Format String*. Common Weakness Enumeration. Retrieved from https://cwe.mitre.org/data/definitions/134.html.
 
-### 11.4 性能基准
+### 10.4 性能基准
 
 [13] Reisinger, J. 2023. *C++ formatting libraries benchmark*. Retrieved from https://github.com/asit-dhal/format-benchmark.
 
 [14] {fmt} authors. 2024. *fmt benchmark results*. Retrieved from https://fmt.dev/latest/api.html#benchmarks.
 
-### 11.5 在线资源
+### 10.5 在线资源
 
 [15] cppreference.com. 2024. *std::format*. Retrieved from https://en.cppreference.com/w/cpp/utility/format.
 
@@ -2025,9 +1983,9 @@ std::string fmt_legacy(const std::string& printf_fmt, const std::string& args);
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 1. **Stroustrup, B.** (2013). *The C++ Programming Language* (4th ed.). Addison-Wesley.
    - 第 28 章 IO 章节深入讲解 `iostream` 设计。
@@ -2040,7 +1998,7 @@ std::string fmt_legacy(const std::string& printf_fmt, const std::string& args);
 5. **Williams, A.** (2018). *C++ Concurrency in Action* (2nd ed.). Manning.
    - 第 7 章讨论线程安全的日志与格式化。
 
-### 12.2 推荐论文与提案
+### 11.2 推荐论文与提案
 
 1. **P0645R10**: Zverovich, V. *Text Formatting*.
 2. **P1361R3**: Zverovich, V. and Lelbach, N. *Integration of chrono with text formatting*.
@@ -2050,7 +2008,7 @@ std::string fmt_legacy(const std::string& printf_fmt, const std::string& args);
 6. **P2539R4**: *print to ostream*.
 7. **P3107R5**: *format_ostream*.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 1. **{fmt} 官方文档**: https://fmt.dev/latest/
 2. **cppreference `std::format`**: https://en.cppreference.com/w/cpp/utility/format
@@ -2062,7 +2020,7 @@ std::string fmt_legacy(const std::string& printf_fmt, const std::string& args);
 8. **Björn Fahller: "Formatting — what's in store for C++23"**: https://www.youtube.com/watch?v=vttGtYqU6Kw
 9. **Victor Zverovich: "fmt: A Modern C++ Formatting Library"**: https://www.youtube.com/watch?v=z7eRaM4yM5k
 
-### 12.4 相关课程
+### 11.4 相关课程
 
 1. **MIT 6.006 Introduction to Algorithms**: 讨论字符串处理与缓冲管理。
 2. **Stanford CS106L Standard C++ Programming**: 深入讲解 `iostream` 与现代 C++ 设计。
@@ -2070,7 +2028,7 @@ std::string fmt_legacy(const std::string& printf_fmt, const std::string& args);
 4. **CppCon talks**: https://www.cppcon.com/
    - 推荐 Victor Zverovich 关于 {fmt} 与 `std::format` 的演讲。
 
-### 12.5 实践项目建议
+### 11.5 实践项目建议
 
 1. **实现一个简化版 `std::format`**：仅支持 `{}` 占位符与基本类型，理解内部机制。
 2. **为自定义类型（如矩阵、复数、几何对象）实现 `formatter` 特化**：掌握扩展机制。

@@ -16,57 +16,16 @@ prerequisites:
   - kotlin/Kotlin作用域函数
   - kotlin/Kotlin内联类
 ---
+
 # Kotlin 契约 Contracts
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本节按 Bloom 分类法组织学习目标，覆盖从记忆到创造的完整认知层级，便于学习者自我评估并构建系统化的知识结构。
-
-### 1.1 记忆层（Remembering）
-
-- 回忆 Kotlin 契约（contract）的语法形态：`contract { ... }` 块的位置、`ExperimentalContracts` 注解的作用、`callsInPlace` 与 `returns*` 系列效果函数的命名。
-- 列出 Kotlin 标准库中提供契约的函数：`require`、`check`、`assert`、`runCatching`、`with`、`apply`、`let`、`also`、`repeat`、`takeIf`、`takeUnless`。
-- 识别契约四类核心效果：`Returns`、`ReturnsNotNull`、`ReturnsThat`、`CallsInPlace`。
-
-### 1.2 理解层（Understanding）
-
-- 解释契约为何只对编译器"提示"而非"强制"——理解 Kotlin 编译器基于效果（effect）做控制流分析的本质。
-- 解释契约的"调用方侧（caller-side）"与"被调用方侧（callee-side）"信息流方向，对比传统的"@Requires/@Ensures"契约语言（如 JML、Eiffel）。
-- 解释契约只能在"顶层 lambda"调用的限制根源——避免控制流分析中的别名与可变性问题。
-
-### 1.3 应用层（Applying）
-
-- 为自定义校验函数（如 `isValid`、`isNonNull`、`isOfType`）编写契约，使调用方在调用后获得智能类型转换（smart cast）能力。
-- 为高阶函数（如 `lock`、`withLock`、`useResource`）编写 `callsInPlace(Exactly)` 契约，使局部变量在闭包中被修改后仍可被外层以非空类型使用。
-- 为 `inline` 函数编写契约，配合 `@PublishedApi` 实现内部 API 暴露时的契约传递。
-
-### 1.4 分析层（Analyzing）
-
-- 分析契约编译器插件（ContractDsl、ResolutionFrame）的工作机制，对比 IDE 与 `kotlinc` 在契约解析上的差异。
-- 对比 Kotlin 契约与 Rust trait bound、Scala `require`/`ensuring`、C# `Contract.Requires`/`Contract.Ensures` 的语义差别。
-- 分析 Kotlin 1.3~1.9 中契约 API 的演化与变更，识别其中被废弃或被重新设计的能力。
-
-### 1.5 评估层（Evaluating）
-
-- 评估何时使用契约会带来净收益，何时反而损害可读性与可维护性。
-- 评估契约在跨模块编译、KMP（Kotlin Multiplatform）、JS/Native backend 上的语义一致性。
-- 评估契约在 Kotlin 2.0 K2 编译器下的支持现状与未来路线图（KEEP-233、KEEP-259、K2 contracts）。
-
-### 1.6 创造层（Creating）
-
-- 设计一个完整的"断言库"，结合契约与 `inline` 函数，支持运行时校验与编译时智能转换。
-- 设计一个面向业务规则的契约 DSL，将形式化规则与 Kotlin 类型系统结合，支持可读的领域规则声明。
-- 提出 K2 编译器下契约机制的扩展方案，例如支持跨函数追踪的效果传播或更丰富的效果类型。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 契约式设计（Design by Contract）溯源
+### 1.1 契约式设计（Design by Contract）溯源
 
 契约式设计的概念由 Bertrand Meyer 于 1986 年在 Eiffel 语言中首次系统化提出，其核心思想是：软件模块之间的关系应像商业合同一样，明确规定**前置条件（precondition）**、**后置条件（postcondition）** 与**不变式（invariant）**。Meyer 在《Object-Oriented Software Construction》中将其归纳为"按契约设计"（Design by Contract, DbC）。
 
@@ -86,7 +45,7 @@ end
 
 Eiffel 的 `require` 与 `ensure` 在运行时被检查，但更重要的是它们被 IDE 与文档工具识别，作为"模块边界的契约"对外暴露。
 
-### 2.2 Kotlin 的现实痛点
+### 1.2 Kotlin 的现实痛点
 
 Kotlin 在 1.0（2016）发布时，已经具备相当强的类型系统：nullable 类型、smart cast、`when` 表达式、`is` 检查后的自动转型。但在工程实践中，开发者频繁遇到三类痛点：
 
@@ -130,7 +89,7 @@ Kotlin 在 1.0（2016）发布时，已经具备相当强的类型系统：nulla
 
    开发者希望这种"返回或抛异常"的函数能被识别为隐式的非空保证，但 1.0 时代的编译器没有相应的语义模型。
 
-### 2.3 Kotlin 1.3 引入契约
+### 1.3 Kotlin 1.3 引入契约
 
 JetBrains 在 KEEP-134 中提出"Kotlin Contracts"提案，并在 Kotlin 1.3（2018）作为**实验特性**发布。其核心设计原则有四点：
 
@@ -139,7 +98,7 @@ JetBrains 在 KEEP-134 中提出"Kotlin Contracts"提案，并在 Kotlin 1.3（2
 3. **单向（one-directional）**：契约由被调用方向调用方传递信息，不支持反向（调用方无法对被调用方声明约束）。
 4. **保守（conservative）**：契约仅为"提示"，编译器可以选择忽略；错误契约不会导致运行时崩溃（最多导致运行时 NPE，由开发者负责）。
 
-### 2.4 为什么 Kotlin 不直接做 Eiffel 式 DbC？
+### 1.4 为什么 Kotlin 不直接做 Eiffel 式 DbC？
 
 Eiffel 的 `require`/`ensure` 是**运行时检查**，而 Kotlin 契约的目标是**编译时类型优化**。两者目标不同：
 
@@ -153,7 +112,7 @@ Eiffel 的 `require`/`ensure` 是**运行时检查**，而 Kotlin 契约的目�
 
 Kotlin 选择编译时路线，是因为 Kotlin 的核心定位是"消除 NullPointerException 等常见错误"，这本质上是**类型系统问题**，而非"运行时校验问题"。运行时校验可以通过 `require`/`check` 等普通函数实现，无需专门的 DbC 机制。
 
-### 2.5 演化时间线
+### 1.5 演化时间线
 
 | 时间          | 版本        | 里程碑                                                                                          |
 | :------------ | :---------- | :---------------------------------------------------------------------------------------------- |
@@ -169,9 +128,9 @@ Kotlin 选择编译时路线，是因为 Kotlin 的核心定位是"消除 NullPo
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类型系统视角
+### 2.1 类型系统视角
 
 设 $\Gamma$ 为类型环境（typing context），$e$ 为表达式，$T$ 为类型，$\vdash$ 为类型推导关系。Kotlin 的类型系统可以形式化为：
 
@@ -187,11 +146,11 @@ $$
 
 其中 $\phi(e)$ 是关于 $e$ 的事实（如 $\text{isNonNull}(e)$、$\text{isType}(e, C)$），$T \cap \phi$ 表示在 $\phi$ 约束下 $T$ 的细化子类型。
 
-### 3.2 契约的效果语义
+### 2.2 契约的效果语义
 
 契约的核心是**效果（effect）**。设 $f$ 是一个函数，$p_1, \ldots, p_n$ 是其参数，$\ell_1, \ldots, \ell_m$ 是其 lambda 参数。Kotlin 契约定义如下四类效果：
 
-#### 3.2.1 Returns 效果
+#### 2.2.1 Returns 效果
 
 $$
 \text{Contract}(f, \text{Returns}(\phi) \Rightarrow \psi)
@@ -227,7 +186,7 @@ $$
 \frac{\Gamma \vdash \text{isNonNull}(y) : \text{Boolean} \quad \Gamma \vdash y : \text{Any?} \quad y \neq \text{null} \in \Gamma_{\text{facts}}}{\Gamma \vdash y : \text{Any}} \quad (\text{Contract-Returns})
 $$
 
-#### 3.2.2 Conditional Returns 效果
+#### 2.2.2 Conditional Returns 效果
 
 $$
 \text{Contract}(f, \text{Returns}(\text{value} = v) \land \phi(v) \Rightarrow \psi)
@@ -248,7 +207,7 @@ $$
 \forall x, \text{isValid}(x) = \text{true} \implies x \neq \text{null}
 $$
 
-#### 3.2.3 ReturnsNotNull 效果
+#### 2.2.3 ReturnsNotNull 效果
 
 $$
 \text{Contract}(f, \text{ReturnsNotNull}() \Rightarrow \psi)
@@ -263,7 +222,7 @@ fun firstOrNull(xs: List<String?>): String? {
 }
 ```
 
-#### 3.2.4 CallsInPlace 效果
+#### 2.2.4 CallsInPlace 效果
 
 $$
 \text{Contract}(f, \text{CallsInPlace}(\ell, k))
@@ -294,7 +253,7 @@ fun demo() {
 }
 ```
 
-### 3.3 契约的语义弱化
+### 2.3 契约的语义弱化
 
 Kotlin 契约语义存在两个关键的弱化点，决定了它不能等同于形式化证明系统：
 
@@ -309,7 +268,7 @@ $$
 
 其中 $x$ 是参数，$r$ 是返回值，$c$ 是常量。
 
-### 3.4 编译器数据流分析模型
+### 2.4 编译器数据流分析模型
 
 Kotlin 编译器在解析阶段维护一个**事实栈（fact stack）** $\mathcal{S}$，每个栈帧 $\sigma \in \mathcal{S}$ 是一组当前已知的事实集合。基本流程：
 
@@ -328,9 +287,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 契约正确性证明（非形式化）
+### 3.1 契约正确性证明（非形式化）
 
 考虑契约 `returns(true) implies (x != null)`，我们证明其在严格意义下正确。
 
@@ -347,7 +306,7 @@ $$
 
 这表明：**契约的正确性责任在开发者**，编译器不做静态验证。这是 Kotlin 契约与 Eiffel DbC 的本质区别——Eiffel 的 `require` 在运行时强制执行，因此不会产生不健全的契约；而 Kotlin 契约可能在编译时诱导错误的细化，最终运行时崩溃。
 
-### 4.2 callsInPlace 与确定性初始化
+### 3.2 callsInPlace 与确定性初始化
 
 考虑 `callsInPlace(block, Exactly)` 契约，证明其允许局部变量的确定性初始化。
 
@@ -362,11 +321,11 @@ $$
 
 **反例**：若 $g$ 仅承诺 `callsInPlace(block, AtMost_Once)`，则 `block` 可能不被调用，`x` 可能未初始化，编译器拒绝在 $g$ 后使用 `x`。
 
-### 4.3 复杂度分析
+### 3.3 复杂度分析
 
 契约机制对编译器的影响主要体现在三方面：
 
-#### 4.3.1 编译时复杂度
+#### 3.3.1 编译时复杂度
 
 契约解析在编译器前端进行，主要工作：
 
@@ -376,19 +335,19 @@ $$
 
 整体编译时复杂度增加 $O(n \cdot |\mathcal{S}|)$，其中 $n$ 是表达式数量，$|\mathcal{S}|$ 是平均事实栈深度。在实践中 $|\mathcal{S}| \leq 10$，影响可忽略。
 
-#### 4.3.2 运行时复杂度
+#### 3.3.2 运行时复杂度
 
 契约对运行时**零开销**：编译后的字节码不含任何契约相关的检查指令。这是契约相对 Eiffel DbC 的核心优势。
 
-#### 4.3.3 二进制体积
+#### 3.3.3 二进制体积
 
 契约信息存储在 Kotlin Metadata 中（`@Metadata` 注解），不增加字节码体积，但增加 metadata 体积约 5%~15%（根据 JetBrains 内部基准测试）。
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础契约：自定义非空校验
+### 4.1 基础契约：自定义非空校验
 
 ```kotlin
 // 文件：ContractsBasics.kt
@@ -429,7 +388,7 @@ fun main() {
 }
 ```
 
-### 5.2 类型判断契约：实现"如果返回 true 则为目标类型"
+### 4.2 类型判断契约：实现"如果返回 true 则为目标类型"
 
 ```kotlin
 // 文件：TypeCheckContract.kt
@@ -473,7 +432,7 @@ fun main() {
 }
 ```
 
-### 5.3 callsInPlace 契约：确定性初始化
+### 4.3 callsInPlace 契约：确定性初始化
 
 ```kotlin
 // 文件：CallsInPlaceContract.kt
@@ -544,7 +503,7 @@ fun main() {
 }
 ```
 
-### 5.4 自定义锁原语：实现 lock-use-unlock 模式
+### 4.4 自定义锁原语：实现 lock-use-unlock 模式
 
 ```kotlin
 // 文件：LockContract.kt
@@ -608,7 +567,7 @@ fun main() {
 }
 ```
 
-### 5.5 资源管理：实现 useResource 模式
+### 4.5 资源管理：实现 useResource 模式
 
 ```kotlin
 // 文件：UseResourceContract.kt
@@ -662,7 +621,7 @@ fun main() {
 }
 ```
 
-### 5.6 条件契约：实现 requireNotNull 的智能推断
+### 4.6 条件契约：实现 requireNotNull 的智能推断
 
 ```kotlin
 // 文件：RequireNotNullContract.kt
@@ -710,7 +669,7 @@ fun main() {
 }
 ```
 
-### 5.7 多效果组合：实现完整的状态校验库
+### 4.7 多效果组合：实现完整的状态校验库
 
 ```kotlin
 // 文件:ValidationContracts.kt
@@ -771,7 +730,7 @@ fun main() {
 }
 ```
 
-### 5.8 自定义 builder 契约：实现类型安全的 DSL
+### 4.8 自定义 builder 契约：实现类型安全的 DSL
 
 ```kotlin
 // 文件：BuilderContract.kt
@@ -842,9 +801,9 @@ fun main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Eiffel DbC 对比
+### 5.1 与 Eiffel DbC 对比
 
 | 维度         | Eiffel DbC                                  | Kotlin Contracts                                       |
 | :----------- | :------------------------------------------ | :----------------------------------------------------- |
@@ -861,7 +820,7 @@ fun main() {
 
 **关键差异论述**：Eiffel 的 DbC 是一种**编程哲学**，强调"按契约设计"的软件工程方法论，运行时检查是其核心机制；而 Kotlin 契约是一种**编译器增强工具**，目标是让自定义函数获得与内置操作符（`is`、`!=`）同等的 smart cast 能力，运行时无任何开销。两者并非互斥，但在 Kotlin 中，运行时校验由 `require`/`check` 等普通函数完成，契约仅负责"告诉编译器这些函数的语义"。
 
-### 6.2 与 C# Code Contracts 对比
+### 5.2 与 C# Code Contracts 对比
 
 C# 在 .NET 4.0（2010）引入了 `System.Diagnostics.Contracts`，提供 `Contract.Requires`、`Contract.Ensures`、`Contract.Invariant` 等静态方法。
 
@@ -876,7 +835,7 @@ C# 在 .NET 4.0（2010）引入了 `System.Diagnostics.Contracts`，提供 `Cont
 
 **关键差异论述**：C# Code Contracts 试图同时解决运行时校验与静态验证两个问题，但复杂的工具链（ccrewrite、cccheck、ccdocgen）导致采用率低，最终 Microsoft 在 .NET 5 后基本停止维护。Kotlin 吸取了这一教训，将契约限定为"编译时类型推断辅助"，避免运行时机制，使工具链保持简洁。
 
-### 6.3 与 Rust trait bound 对比
+### 5.3 与 Rust trait bound 对比
 
 Rust 没有显式的"契约"语法，但其 trait bound 系统承担了类似的"约束传递"角色：
 
@@ -891,7 +850,7 @@ Rust 没有显式的"契约"语法，但其 trait bound 系统承担了类似的
 
 **关键差异论述**：Rust 的 trait bound 是**类型系统的一部分**，编译器会拒绝不满足约束的程序；Kotlin 契约是**类型系统的辅助**，编译器信任开发者声明的契约并做细化，错误契约不会导致编译失败。这反映了两种语言的不同哲学：Rust 追求"零运行时错误的类型安全"，Kotlin 追求"实用性优先、运行时错误由开发者负责"。
 
-### 6.4 与 Scala `require`/`ensuring` 对比
+### 5.4 与 Scala `require`/`ensuring` 对比
 
 Scala 标准库提供 `require`（前置条件）与 `ensuring`（后置条件），均在运行时检查：
 
@@ -912,7 +871,7 @@ def sqrt(x: Double): Double = {
 
 **关键差异论述**：Scala 的 `require`/`ensuring` 是**纯运行时机制**，对类型推断无影响；Kotlin 契约是**纯编译时机制**，对运行时无影响。两者互补，但 Kotlin 的设计更契合"nullable 类型 + smart cast"的核心特性。
 
-### 6.5 Kotlin 契约自身能力的内部对比
+### 5.5 Kotlin 契约自身能力的内部对比
 
 | 效果类型         | 表达能力                                   | 适用场景                                | 局限性                                   |
 | :--------------- | :----------------------------------------- | :-------------------------------------- | :--------------------------------------- |
@@ -928,9 +887,9 @@ def sqrt(x: Double): Double = {
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：契约不健全导致运行时 NPE
+### 6.1 陷阱一：契约不健全导致运行时 NPE
 
 **反例**：
 
@@ -964,7 +923,7 @@ fun isNotNullGood(x: Any?): Boolean {
 
 **生产事故案例**：某团队在 2021 年构建订单系统时，将 `isValidOrder(order: Order?)` 函数的契约写为 `returns(true) implies (order != null)`，但实现中误将 `return true` 写在了某分支前导致提前返回。生产环境出现 NPE，订单处理流水线崩溃，影响 3 万笔交易。事后定位为契约不健全，引入单元测试验证契约健全性。
 
-### 7.2 陷阱二：契约仅在 inline 函数中生效
+### 6.2 陷阱二：契约仅在 inline 函数中生效
 
 **反例**：
 
@@ -989,7 +948,7 @@ fun process(x: Any?) {
 
 **正确做法**：始终为带契约的函数标注 `inline`，并确保调用链中所有相关函数也支持契约传播。
 
-### 7.3 陷阱三：契约不能用于顶层 lambda 之外
+### 6.3 陷阱三：契约不能用于顶层 lambda 之外
 
 **反例**：
 
@@ -1029,7 +988,7 @@ fun good() {
 }
 ```
 
-### 7.4 陷阱四：契约不能描述复杂谓词
+### 6.4 陷阱四：契约不能描述复杂谓词
 
 **反例**：
 
@@ -1064,7 +1023,7 @@ fun main() {
 }
 ```
 
-### 7.5 陷阱五：契约与递归函数的冲突
+### 6.5 陷阱五：契约与递归函数的冲突
 
 **反例**：
 
@@ -1095,7 +1054,7 @@ private tailrec fun factorialImpl(n: Int, acc: Long): Long {
 }
 ```
 
-### 7.6 陷阱六：契约在 K2 编译器下的行为变化
+### 6.6 陷阱六：契约在 K2 编译器下的行为变化
 
 **背景**：Kotlin 2.0 引入 K2 编译器，契约支持发生变化。部分契约在 K2 下可能不被识别或行为不同。
 
@@ -1120,9 +1079,9 @@ fun complexCheck(x: Any?): Boolean {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 实践一：契约健全性测试
+### 7.1 实践一：契约健全性测试
 
 错误的契约会引入运行时崩溃。建议为每个带契约的函数编写健全性测试，验证契约承诺的事实确实成立。
 
@@ -1176,7 +1135,7 @@ class ContractSoundnessTest {
 }
 ```
 
-### 8.2 实践二：契约文档化
+### 7.2 实践二：契约文档化
 
 契约是函数语义的核心部分，应在文档中明确说明。建议在 KDoc 中添加 `@contract` 标签：
 
@@ -1209,7 +1168,7 @@ fun demoEmailCheck() {
 fun getUserInput(): String? = "alice@example.com"
 ```
 
-### 8.3 实践三：契约与 inline 的协作
+### 7.3 实践三：契约与 inline 的协作
 
 契约要求函数为 `inline`，但 `inline` 会将函数体复制到调用点，可能增大字节码体积。建议对契约函数做以下优化：
 
@@ -1239,7 +1198,7 @@ inline fun isNonNull(x: Any?): Boolean {
 }
 ```
 
-### 8.4 实践四：KMP 中的契约
+### 7.4 实践四：KMP 中的契约
 
 Kotlin Multiplatform 项目中，契约在所有 target（JVM、JS、Native）上行为一致。但需注意：
 
@@ -1271,7 +1230,7 @@ inline fun <T> runTwice(block: () -> T): Pair<T, T> {
 
 **注意**：KMP 中契约的 metadata 跨平台一致，但实际行为取决于各 target 的编译器实现。建议在 KMP 测试套件中覆盖契约相关用例。
 
-### 8.5 实践五：契约与性能基准
+### 7.5 实践五：契约与性能基准
 
 虽然契约本身零运行时开销，但 `inline` 函数可能影响性能。建议用 JMH 做基准测试：
 
@@ -1332,9 +1291,9 @@ class ContractBenchmark {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Kotlin 标准库的 `require` 实现
+### 8.1 案例一：Kotlin 标准库的 `require` 实现
 
 Kotlin 标准库的 `require` 函数是契约最经典的应用：
 
@@ -1385,7 +1344,7 @@ public inline fun require(value: Boolean, lazyMessage: () -> Any): Unit {
 
 **生产应用**：在 Spring Boot 项目中，`require` 被广泛用于参数校验。借助契约，校验后的代码可以无障碍使用非空类型，无需显式 `!!` 或 `?:` 处理。
 
-### 9.2 案例二：Kotlin 标准库的 `runCatching` 实现
+### 8.2 案例二：Kotlin 标准库的 `runCatching` 实现
 
 ```kotlin
 // Kotlin 标准库源码（简化版）
@@ -1417,7 +1376,7 @@ public inline fun <R> runCatching(block: () -> R): Result<R> {
 
 **生产应用**：在 Kotlin 协程项目中，`runCatching` 用于将可能抛异常的同步代码转为 `Result`，便于函数式处理。契约确保闭包内逻辑可被正确推断。
 
-### 9.3 案例三：自定义业务校验库
+### 8.3 案例三：自定义业务校验库
 
 某金融系统构建了完整的契约化校验库，将业务规则与类型系统结合：
 
@@ -1491,7 +1450,7 @@ fun main() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：编写一个带契约的函数 `isBlank(s: String?): Boolean`，当且仅当 `s` 为 null 或全为空白字符时返回 true。契约应承诺"返回 false 意味着 `s` 非空"。
 
@@ -1538,7 +1497,7 @@ fun check(x: Any?): Boolean {
 
 **参考答案要点**：错误。Kotlin 契约仅在编译时影响类型推断，运行时无任何检查代码。错误的契约可能导致编译器做错误推断，最终在运行时触发 NPE 或其他异常，但契约本身不抛异常。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：编写一个带契约的 `withLock` 函数，使其在闭包内赋值的局部变量在闭包外可被使用。要求函数签名与 `java.util.concurrent.locks.Lock` 集成。
 
@@ -1610,7 +1569,7 @@ fun process2(x: String?) {
 - 类型安全：实现一编译器原生支持，类型保证强；实现二依赖运行时类型检查，安全性稍弱。
 - 适用场景：实现一适合"已经知道类型"的场景；实现二适合"类型不确定需运行时检查"的场景。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：设计一个完整的"断言库"，包含以下功能：
 
@@ -1690,7 +1649,7 @@ fun demoAssertions(x: Any?, flag: Boolean) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 参考文献按 ACM Reference Format 给出，包含 DOI 链接（如有）。
 
@@ -1720,9 +1679,9 @@ fun demoAssertions(x: Any?, flag: Boolean) {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **Kotlin 官方文档 - Contracts**: https://kotlinlang.org/docs/whatsnew13.html#contracts
 - **Kotlin KEEP-134 提案**: https://github.com/Kotlin/KEEP/blob/master/proposals/contracts
@@ -1730,21 +1689,21 @@ fun demoAssertions(x: Any?, flag: Boolean) {
 - **Kotlin 2.0 K2 编译器文档**: https://kotlinlang.org/docs/k2-compiler-migration-guide.html
 - **kotlin.contracts API 参考**: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.contracts/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - **《Object-Oriented Software Construction》**（Bertrand Meyer，Prentice Hall，1997）：契约式设计的奠基之作，深入阐述 DbC 哲学。
 - **《Programming in Scala》**（Martin Odersky 等，Artima Press，2019）：Scala 中的 `require`/`ensuring` 机制与函数式编程结合的范例。
 - **《The Rust Programming Language》**（Steve Klabnik 等，No Starch Press，2019）：Rust 的 trait bound 系统，展示了另一种"约束传递"机制。
 - **《Types and Programming Languages》**（Benjamin Pierce，MIT Press，2002）：类型系统的形式化基础，理解 Kotlin 契约的形式化语义必备。
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - **"Kotlin Contracts: A Compiler-Assisted Approach to Smart Cast"**（JetBrains, 2018）：Kotlin 契约的原始设计论文。
 - **"Design by Contract: The Eiffel Method"**（Bertrand Meyer, 1992）：DbC 的早期系统化论述。
 - **"Spec#: A Framework for Specification and Verification"**（Microsoft Research, 2011）：C# Code Contracts 的设计与实现。
 - **"Effect Systems in Programming Languages"**（Lucas Waye et al., 2021）：效果系统的现代综述，为理解 Kotlin 契约的形式化基础提供背景。
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **Kotlin 标准库源码**: https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib
   - `contract` 函数实现：`kotlin.contracts` 包
@@ -1755,14 +1714,14 @@ fun demoAssertions(x: Any?, flag: Boolean) {
 - **Kotlin KEEP 仓库**: https://github.com/Kotlin/KEEP
   - 契约相关 KEEP 提案的讨论历史
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **Kotlin Slack - #contracts 频道**: 与 JetBrains 团队和其他开发者讨论契约设计。
 - **Kotlin YouTrack**: 报告契约相关的 bug 与 feature request。
 - **Reddit r/Kotlin**: 契约相关的实践分享与讨论。
 - **Medium - Kotlin 契约系列文章**: 多位作者撰写的契约实践文章，涵盖从入门到进阶。
 
-### 12.6 相关工具
+### 11.6 相关工具
 
 - **JetBrains IntelliJ IDEA**: 提供契约的 IDE 支持，包括语法高亮、跳转定义、错误提示。
 - **Kotlin Plugin for IntelliJ**: 最新版本提供契约健全性检查（实验性）。
@@ -1771,11 +1730,11 @@ fun demoAssertions(x: Any?, flag: Boolean) {
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 契约 API 速查
+### 12.1 契约 API 速查
 
-#### 13.1.1 效果函数
+#### 12.1.1 效果函数
 
 | 函数                              | 含义                                         |
 | :-------------------------------- | :------------------------------------------- |
@@ -1785,7 +1744,7 @@ fun demoAssertions(x: Any?, flag: Boolean) {
 | `returnsNotNull()`                | 函数返回非 null                              |
 | `callsInPlace(lambda, kind)`      | lambda 被调用的次数约束                      |
 
-#### 13.1.2 InvocationKind 枚举
+#### 12.1.2 InvocationKind 枚举
 
 | 值                  | 含义              |
 | :------------------ | :---------------- |
@@ -1794,7 +1753,7 @@ fun demoAssertions(x: Any?, flag: Boolean) {
 | `AT_MOST_ONCE`      | 至多一次          |
 | `UNKNOWN`           | 未知次数          |
 
-#### 13.1.3 事实表达式
+#### 12.1.3 事实表达式
 
 | 表达式              | 含义                       |
 | :------------------ | :------------------------- |
@@ -1804,7 +1763,7 @@ fun demoAssertions(x: Any?, flag: Boolean) {
 | `cond1 && cond2`    | 两个事实同时成立           |
 | `cond1 \|\| cond2`  | 至少一个事实成立           |
 
-### 13.2 契约限制总结
+### 12.2 契约限制总结
 
 1. **函数必须 `inline`**：契约 DSL 要求函数为 `inline`，否则编译错误。
 2. **`contract {}` 必须在函数体首行**：契约块必须在第一个语句位置。
@@ -1814,7 +1773,7 @@ fun demoAssertions(x: Any?, flag: Boolean) {
 6. **运行时不强制**：契约不生成运行时检查，错误契约可能引入运行时崩溃。
 7. **K2 编译器支持演进中**：部分复杂契约在 K2 下可能行为不同。
 
-### 13.3 迁移到 K2 的注意事项
+### 12.3 迁移到 K2 的注意事项
 
 1. **运行契约健全性测试**：确保所有契约承诺的事实确实成立。
 2. **关注编译器警告**：K2 可能对某些契约发出警告，需逐一检查。

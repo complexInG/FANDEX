@@ -22,6 +22,7 @@ prerequisites:
   - javascript/函数-作用域与闭包
   - javascript/ES6+新特性
 ---
+
 # JavaScript 调试与性能优化 API
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -34,24 +35,9 @@ prerequisites:
 
 现代 Web 应用的调试与性能优化已远超"打 console.log + 加 setTimeout"的初级阶段。它涉及 Chrome DevTools Protocol (CDP) 的远程调试、Performance 火焰图的样本采样分析、Memory 堆快照的保留路径（Retaining Path）追踪、Core Web Vitals 的 RUM (Real User Monitoring) 与 Lighthouse 的合成监控（Synthetic Monitoring）、以及基于 V8 TurboFan 与 Sparkplug 编译器的 JavaScript 执行模型理解。本文档从历史演进、形式化定义、理论推导、工程实践、陷阱分析、案例研究六个维度系统讲解现代 JavaScript 调试与性能优化的核心方法论。
 
-## 2. 学习目标
+## 2. 历史动机与背景
 
-本节采用 Anderson & Krathwohl 修订版 Bloom 分类法，按认知层级划分学习目标：
-
-| 认知层级 | 学习目标描述 |
-| --- | --- |
-| 记忆（Remembering） | 列举 Chrome DevTools 八大面板的名称与用途；背诵 Performance、Memory、Network、Application 四个面板的核心功能；列举五大浏览器原生错误类型 |
-| 理解（Understanding） | 解释采样分析（Sampling）与结构化分析（Structural）的差异；用自己的话描述 V8 的分层编译流水线（Ignition → Sparkplug → TurboFan）；解释 LCP、FID、CLS、INP、TTFB 五个 Core Web Vitals 指标的语义 |
-| 应用（Applying） | 在生产代码中使用 `Performance.now()` 测量代码块耗时；用 `console.time` 与 `console.timeEnd` 包裹关键路径；用 Memory 面板定位 detached DOM 节点 |
-| 分析（Analyzing） | 对比火焰图中"自时间"（Self Time）与"总时间"（Total Time）的差异；分析一段代码导致强制同步布局（Forced Reflow）的根因；区分内存泄漏与内存膨胀（Memory Bloat） |
-| 评价（Evaluating） | 评估一个性能优化方案是否值得实施（ROI 分析：开发成本 vs 用户感知提升）；判断 Lighthouse 评分与真实用户体验的相关性；评价一道 Web Vitals 阈值是否合理 |
-| 创造（Creating） | 设计一个生产级 RUM 上报系统（采样、聚合、可视化）；基于 CDP 协议构建自定义性能分析工具；为团队制定一套性能预算（Performance Budget）规范 |
-
-完成本节学习后，读者应能独立分析任意 JavaScript 应用的性能瓶颈，定位内存泄漏根因，并制定可量化的优化方案。
-
-## 3. 历史动机与背景
-
-### 3.1 调试与性能工具演化时间线
+### 2.1 调试与性能工具演化时间线
 
 | 年份 | 关键里程碑 | 解决的核心问题 |
 | --- | --- | --- |
@@ -70,7 +56,7 @@ prerequisites:
 | 2023 | INP 成为 Core Web Vitals 候选稳定指标 | 替代 FID，更精确反映交互延迟 |
 | 2024 | Chrome DevTools 引入 AI 辅助性能分析 | 自动识别长任务与性能反模式 |
 
-### 3.2 设计动机分析
+### 2.2 设计动机分析
 
 现代调试与性能工具的设计遵循三条主线：
 
@@ -80,9 +66,9 @@ prerequisites:
 
 理解这三条主线，可以解释为什么现代性能优化方法论强调"Measure, Don't Guess"——任何优化假设都必须用数据验证，任何"直觉优化"都可能导致反优化。
 
-## 4. 形式化定义
+## 3. 形式化定义
 
-### 4.1 调试的形式化定义
+### 3.1 调试的形式化定义
 
 调试是一个逆向推理过程。设观测到的异常状态为 $O$，根因状态为 $R$，调试是寻找映射 $f$ 使得 $f(R) = O$：
 
@@ -98,7 +84,7 @@ $$
 
 其中 $\text{cost}(r)$ 表示根因 $r$ 的"假设代价"（需要多少额外证据支持）。奥卡姆剃刀原则要求选择最小代价的根因。
 
-### 4.2 性能优化的形式化定义
+### 3.2 性能优化的形式化定义
 
 设应用资源消耗为 $C = (T, M, N, E)$，其中 $T$ 为时间、$M$ 为内存、$N$ 为网络、$E$ 为能耗。性能优化是在约束条件下最小化资源消耗：
 
@@ -114,7 +100,7 @@ $$
 
 其中 $w_1, w_2, w_3$ 为权重，Google 默认权重相等。
 
-### 4.3 火焰图的形式化定义
+### 3.3 火焰图的形式化定义
 
 火焰图是一个有向无环图（DAG），节点为函数调用，边为调用关系：
 
@@ -133,7 +119,7 @@ $$
 \text{Total}(v) = \text{Self}(v) + \sum_{v' \in \text{children}(v)} \text{Total}(v')
 $$
 
-### 4.4 内存泄漏的形式化定义
+### 3.4 内存泄漏的形式化定义
 
 设 $M(t)$ 为应用在时刻 $t$ 的内存占用。若存在常数 $\delta > 0$ 使得：
 
@@ -151,7 +137,7 @@ $$
 
 其中 `reachableFromRoots` 是 GC 可达性判断，`usedByApp` 是业务语义使用判断。GC 不会回收"可达但无用"的对象。
 
-### 4.5 渲染管线的形式化定义
+### 3.5 渲染管线的形式化定义
 
 浏览器渲染管线可形式化为五元组：
 
@@ -174,7 +160,7 @@ $$
 
 为维持 60 FPS，需 $T_{\text{frame}} \leq 16.67$ ms。
 
-### 4.6 V8 编译流水线的形式化定义
+### 3.6 V8 编译流水线的形式化定义
 
 V8 的 JavaScript 执行流水线：
 
@@ -195,7 +181,7 @@ $$
 \text{OptimizedCode} \xrightarrow{\text{Deopt}} \text{Bytecode}
 $$
 
-### 4.7 Core Web Vitals 的形式化定义
+### 3.7 Core Web Vitals 的形式化定义
 
 Core Web Vitals 三个核心指标：
 
@@ -222,9 +208,9 @@ $$
 | INP | < 200ms | 200ms - 500ms | > 500ms |
 | CLS | < 0.1 | 0.1 - 0.25 | > 0.25 |
 
-## 5. 理论推导
+## 4. 理论推导
 
-### 5.1 采样分析 vs 结构化分析的开销对比
+### 4.1 采样分析 vs 结构化分析的开销对比
 
 采样分析（Sampling）每 $T_s$ 时间采集一次调用栈，时间复杂度 $O(N \cdot f_s \cdot T)$，其中 $N$ 为采集次数、$f_s$ 为采样频率、$T$ 为总时长。结构化分析（Instrumentation）在每个函数入口出口插桩，时间复杂度 $O(C \cdot k)$，其中 $C$ 为函数调用次数、$k$ 为单次插桩开销。
 
@@ -234,7 +220,7 @@ $$
 
 Chrome DevTools Performance 面板默认使用采样分析（1000 Hz 采样率），适合生产场景。
 
-### 5.2 渲染管线的强制同步布局开销
+### 4.2 渲染管线的强制同步布局开销
 
 强制同步布局（Forced Synchronous Layout，又称 Layout Thrashing）发生在 JS 代码中**先读取布局属性、后修改 DOM**的模式：
 
@@ -258,7 +244,7 @@ elements.forEach((e, i) => e.style.width = widths[i] + 10 + 'px');  // 一次失
 
 优化后复杂度：$O(N + T_{\text{layout}})$，即 $O(N)$ 加单次布局开销。
 
-### 5.3 V8 隐藏类与属性访问性能
+### 4.3 V8 隐藏类与属性访问性能
 
 V8 为每个对象维护隐藏类（Hidden Class，又称 Map）。当对象添加新属性时，V8 创建新的隐藏类并建立转换（Transition）：
 
@@ -278,7 +264,7 @@ $$
 
 推论：**避免在构造函数外动态添加属性**，否则隐藏类频繁切换，属性访问退化为字典查找，性能下降 5-100 倍。
 
-### 5.4 垃圾回收的停顿时间分析
+### 4.4 垃圾回收的停顿时间分析
 
 V8 使用分代垃圾回收：
 
@@ -293,7 +279,7 @@ $$
 
 推论：**减少堆内存可降低 GC 停顿**。对于实时性要求高的应用（游戏、动画），应避免创建大量临时对象。
 
-### 5.5 Long Task 阈值的理论推导
+### 4.5 Long Task 阈值的理论推导
 
 Chrome 将长任务（Long Task）定义为执行时间超过 50 ms 的任务。推导依据：
 
@@ -309,7 +295,7 @@ $$
 
 推论：**任何超过 50 ms 的同步任务都会导致交互响应变慢**。应拆分为多个小任务，使用 `requestIdleCallback` 或 `setTimeout(fn, 0)` 让出主线程。
 
-### 5.6 缓存的命中率与性能
+### 4.6 缓存的命中率与性能
 
 设缓存命中率为 $h$，缓存命中延迟 $t_c$，未命中延迟 $t_m$，平均访问时间：
 
@@ -325,7 +311,7 @@ $$
 
 推论：**99% 的资源需要命中缓存才能达到 1 ms 加载延迟**。这意味着关键资源必须强缓存（`Cache-Control: max-age=31536000` + 内容哈希文件名）。
 
-### 5.7 requestAnimationFrame 的时序优化
+### 4.7 requestAnimationFrame 的时序优化
 
 `requestAnimationFrame` (rAF) 在每次渲染前调用，与显示器刷新率同步。复杂度：
 
@@ -340,9 +326,9 @@ $$
 
 推论：**所有视觉动画应使用 rAF 而非 setTimeout**，以避免帧丢失与撕裂。
 
-## 6. 代码示例
+## 5. 代码示例
 
-### 6.1 Chrome DevTools 性能录制与基础分析
+### 5.1 Chrome DevTools 性能录制与基础分析
 
 ```javascript
 // 使用 Performance API 测量关键代码块耗时
@@ -376,7 +362,7 @@ const measuredHeavyCompute = measureAsync('heavyCompute', heavyCompute);
 measuredHeavyCompute();
 ```
 
-### 6.2 长任务检测与拆分
+### 5.2 长任务检测与拆分
 
 ```javascript
 // 检测长任务：PerformanceObserver 监听 longtask 条目
@@ -408,7 +394,7 @@ async function processItems(items) {
 }
 ```
 
-### 6.3 内存快照对比与泄漏定位
+### 5.3 内存快照对比与泄漏定位
 
 ```javascript
 // 模拟典型内存泄漏：未清理的事件监听器与定时器
@@ -459,7 +445,7 @@ class CleanComponent {
 }
 ```
 
-### 6.4 火焰图解读与函数耗时分析
+### 5.4 火焰图解读与函数耗时分析
 
 ```javascript
 // 模拟调用栈：A → B → C → D
@@ -501,7 +487,7 @@ function functionD_optimized() {
 }
 ```
 
-### 6.5 事件循环与微任务调度
+### 5.5 事件循环与微任务调度
 
 ```javascript
 // 演示宏任务、微任务、渲染的执行顺序
@@ -545,7 +531,7 @@ function applyUpdates(updates) {
 }
 ```
 
-### 6.6 防抖与节流的进阶实现
+### 5.6 防抖与节流的进阶实现
 
 ```javascript
 // 防抖：延迟执行，支持立即执行与取消
@@ -659,7 +645,7 @@ const throttledScroll = throttle(() => {
 window.addEventListener('scroll', throttledScroll, { passive: true });
 ```
 
-### 6.7 requestAnimationFrame 动画实现
+### 5.7 requestAnimationFrame 动画实现
 
 ```javascript
 // 使用 rAF 实现平滑动画，避免 setInterval 的丢帧问题
@@ -734,7 +720,7 @@ function makeCancelableAnimate(element, from, to, duration, easing) {
 }
 ```
 
-### 6.8 Web Worker 卸载主线程
+### 5.8 Web Worker 卸载主线程
 
 ```javascript
 // 主线程：将耗时计算移至 Worker
@@ -799,7 +785,7 @@ callWorker(worker, { data: bigData, type: 'compute' }, [bigData.buffer])
 // console.log(bigData[0]); // undefined
 ```
 
-### 6.9 性能监控埋点上报
+### 5.9 性能监控埋点上报
 
 ```javascript
 // 生产级 RUM 上报：采集 Core Web Vitals 与自定义指标
@@ -929,7 +915,7 @@ window.addEventListener('visibilitychange', () => {
 window.addEventListener('pagehide', () => monitor.flush());
 ```
 
-### 6.10 IndexedDB 性能优化
+### 5.10 IndexedDB 性能优化
 
 ```javascript
 // IndexedDB Promise 封装：避免回调地狱
@@ -1037,7 +1023,7 @@ async function cachedFetch(url, options = {}) {
 }
 ```
 
-### 6.11 内存泄漏检测：堆快照对比
+### 5.11 内存泄漏检测：堆快照对比
 
 ```javascript
 // 辅助函数：在指定时间点拍摄堆快照（仅 DevTools 打开时可用）
@@ -1113,7 +1099,7 @@ detector.takeSnapshot('after-1000');
 detector.analyze();
 ```
 
-### 6.12 自定义性能标记
+### 5.12 自定义性能标记
 
 ```javascript
 // 使用 User Timing API 进行细粒度性能标记
@@ -1195,7 +1181,7 @@ const asyncOperation = UserTiming.wrapAsync('async-fetch', async (url) => {
 });
 ```
 
-### 6.13 CSS 选择器性能与样式优化
+### 5.13 CSS 选择器性能与样式优化
 
 ```javascript
 // 演示读写交替导致的强制同步布局
@@ -1271,9 +1257,9 @@ function updateElements() {
 }
 ```
 
-## 7. 对比分析
+## 6. 对比分析
 
-### 7.1 调试工具对比
+### 6.1 调试工具对比
 
 | 工具 | 适用场景 | 优势 | 劣势 |
 | --- | --- | --- | --- |
@@ -1285,7 +1271,7 @@ function updateElements() {
 | Puppeteer | 自动化测试 | CDP 协议、可脚本化 | 需编写测试代码 |
 | Playwright | 跨浏览器自动化 | 支持多浏览器引擎 | 体积较大 |
 
-### 7.2 性能分析方式对比
+### 6.2 性能分析方式对比
 
 | 分析方式 | 实现原理 | 精度 | 开销 | 适用场景 |
 | --- | --- | --- | --- | --- |
@@ -1296,7 +1282,7 @@ function updateElements() {
 | Memory 堆快照 | 全堆扫描 | 完整 | 高（暂停执行） | 内存泄漏定位 |
 | 堆分配追踪 | 增量堆扫描 | 较完整 | 中 | 内存增长分析 |
 
-### 7.3 防抖与节流对比
+### 6.3 防抖与节流对比
 
 | 特性 | 防抖（Debounce） | 节流（Throttle） |
 | --- | --- | --- |
@@ -1308,7 +1294,7 @@ function updateElements() {
 | 取消支持 | 是 | 是 |
 | 典型延迟 | 200-500 ms | 16-100 ms |
 
-### 7.4 渲染优化技术对比
+### 6.4 渲染优化技术对比
 
 | 技术 | 适用场景 | 实现难度 | 性能提升 |
 | --- | --- | --- | --- |
@@ -1321,7 +1307,7 @@ function updateElements() {
 | requestAnimationFrame | 动画 | 简单 | 高（避免丢帧） |
 | Web Workers | 耗时计算 | 中 | 高（释放主线程） |
 
-### 7.5 V8 编译层次对比
+### 6.5 V8 编译层次对比
 
 | 编译层 | 角色 | 优化程度 | 启动开销 | 执行速度 |
 | --- | --- | --- | --- | --- |
@@ -1330,9 +1316,9 @@ function updateElements() {
 | Sparkplug（基线） | 单遍编译 | 低 | 快 | 中（2-10x 提升） |
 | TurboFan（优化） | 基于类型反馈 | 高 | 慢（10-100ms） | 极快（接近原生） |
 
-## 8. 常见陷阱与反模式
+## 7. 常见陷阱与反模式
 
-### 8.1 陷阱：使用 `console.log` 调试生产代码
+### 7.1 陷阱：使用 `console.log` 调试生产代码
 
 **问题**：`console.log` 会序列化对象，在大循环中导致严重性能问题。
 
@@ -1359,7 +1345,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 ```
 
-### 8.2 陷阱：在循环中读取布局属性
+### 7.2 陷阱：在循环中读取布局属性
 
 **问题**：读写布局属性交替触发 N 次重排。
 
@@ -1373,7 +1359,7 @@ for (let i = 0; i < elements.length; i++) {
 
 **正确做法**：见 6.13 节的 FastDOM 模式。
 
-### 8.3 陷阱：未移除事件监听器
+### 7.3 陷阱：未移除事件监听器
 
 **问题**：动态创建的组件添加监听器但未移除，导致内存泄漏。
 
@@ -1405,7 +1391,7 @@ function createButton() {
 }
 ```
 
-### 8.4 陷阱：定时器未清除
+### 7.4 陷阱：定时器未清除
 
 **问题**：`setInterval` 在组件销毁后继续执行回调，闭包持有大对象。
 
@@ -1423,7 +1409,7 @@ class Timer {
 
 **正确做法**：保存定时器 ID，在销毁时清除。
 
-### 8.5 陷阱：过度优化
+### 7.5 陷阱：过度优化
 
 **问题**：在非热点路径过度优化，损害可读性。
 
@@ -1437,7 +1423,7 @@ for (let i = 0, len = arr.length; i < len; i++) sum += arr[i];
 
 **正确做法**：遵循"20% 代码占用 80% 时间"原则，仅优化性能分析定位的热点。
 
-### 8.6 陷阱：依赖 `performance.now()` 的绝对值
+### 7.6 陷阱：依赖 `performance.now()` 的绝对值
 
 **问题**：不同浏览器、不同设备的时间基准不同，绝对值无意义。
 
@@ -1451,7 +1437,7 @@ if (elapsed < 50) console.log('足够快'); // 在低端设备上永远不达标
 
 **正确做法**：使用相对比较（A/B 测试）或分位数统计（P75、P95）。
 
-### 8.7 陷阱：误用 `requestAnimationFrame` 进行非视觉任务
+### 7.7 陷阱：误用 `requestAnimationFrame` 进行非视觉任务
 
 **问题**：rAF 仅在页面可见时触发，后台标签页中不执行。
 
@@ -1466,7 +1452,7 @@ function report() {
 
 **正确做法**：非视觉任务使用 `setTimeout` 或 `setInterval`，并监听 `visibilitychange` 决定是否暂停。
 
-### 8.8 陷阱：忽视 GC 停顿
+### 7.8 陷阱：忽视 GC 停顿
 
 **问题**：频繁创建大对象导致 GC 频繁触发，引起卡顿。
 
@@ -1492,7 +1478,7 @@ function render() {
 // 无内存分配，无 GC 停顿
 ```
 
-### 8.9 陷阱：错误使用 `try-catch` 包裹热路径
+### 7.9 陷阱：错误使用 `try-catch` 包裹热路径
 
 **问题**：V8 对包含 try-catch 的函数不做某些优化（TurboFan 已修复，但仍有开销）。
 
@@ -1532,7 +1518,7 @@ function safeProcess(item) {
 }
 ```
 
-### 8.10 陷阱：用 `delete` 删除对象属性
+### 7.10 陷阱：用 `delete` 删除对象属性
 
 **问题**：`delete` 会改变对象隐藏类，导致属性访问退化为字典查找。
 
@@ -1550,9 +1536,9 @@ const obj = { a: 1, b: 2, c: 3 };
 obj.b = undefined; // 保持隐藏类不变
 ```
 
-## 9. 工程实践
+## 8. 工程实践
 
-### 9.1 生产级性能监控体系
+### 8.1 生产级性能监控体系
 
 ```javascript
 // 综合性能监控系统：RUM + 合成监控 + 告警
@@ -1659,7 +1645,7 @@ const perfSystem = new PerformanceSystem({
 perfSystem.start();
 ```
 
-### 9.2 性能预算实施
+### 8.2 性能预算实施
 
 ```javascript
 // 性能预算：超出预算时构建失败或告警
@@ -1719,7 +1705,7 @@ async function checkBudget(lighthouseReport) {
 }
 ```
 
-### 9.3 关键路径优化清单
+### 8.3 关键路径优化清单
 
 ```javascript
 // 关键渲染路径优化检查清单
@@ -1789,9 +1775,9 @@ runChecklist().then((results) => {
 });
 ```
 
-## 10. 案例研究
+## 9. 案例研究
 
-### 10.1 案例研究：电商首页 LCP 优化
+### 9.1 案例研究：电商首页 LCP 优化
 
 **背景**：某电商平台首页 LCP 平均 4.8 秒，移动端用户跳出率 35%。
 
@@ -1819,7 +1805,7 @@ runChecklist().then((results) => {
 
 **效果**：LCP 从 4.8 秒降至 1.9 秒，移动端跳出率下降至 22%。
 
-### 10.2 案例研究：长列表虚拟化优化
+### 9.2 案例研究：长列表虚拟化优化
 
 **背景**：管理后台数据表格 10000 行，滚动卡顿，INP 800ms。
 
@@ -1876,7 +1862,7 @@ const list = new VirtualList(document.getElementById('list'), bigData);
 
 **效果**：DOM 节点从 10000 减少到 20，INP 从 800ms 降至 50ms。
 
-### 10.3 案例研究：单页应用内存泄漏排查
+### 9.3 案例研究：单页应用内存泄漏排查
 
 **背景**：用户反馈长时间使用后页面越来越慢，刷新后恢复。
 
@@ -1916,7 +1902,7 @@ function destroyComponent(component) {
 
 ## 知识讲解与要点分析（原习题）
 
-### 11.1 基础题
+### 10.1 基础题
 
 **题目 1**：请列出 Chrome DevTools 的八大面板，并说明各面板的主要用途。
 
@@ -1930,7 +1916,7 @@ function destroyComponent(component) {
 
 **参考答案要点**：Self Time 是函数自身执行时间（不含子调用），Total Time 是函数及其所有子调用的总时间。优化应优先看 Self Time 大的函数。
 
-### 11.2 进阶题
+### 10.2 进阶题
 
 **题目 4**：以下代码存在什么性能问题？如何优化？
 
@@ -1954,7 +1940,7 @@ items.forEach((item) => {
 
 **参考答案要点**：使用 Memory 面板的"三快照法"——基线快照、操作后快照、再操作后快照，对比快照 1 和 3 的增量，重点关注 Detached DOM 节点与未清理的引用。
 
-### 11.3 挑战题
+### 10.3 挑战题
 
 **题目 7**：设计一个生产级 RUM（Real User Monitoring）系统，要求：
 
@@ -2009,7 +1995,7 @@ class Dashboard {
 - 泄漏点 3：`widget.onUpdate` 闭包持有 dashboard，widget 未销毁时 dashboard 无法回收
 - 修复：添加 `destroy()` 方法显式清理定时器、监听器，并将 `widget.onUpdate` 设为 `null`
 
-## 12. 参考文献
+## 11. 参考文献
 
 [1] B. Calder, A. Chilton, M. Kuhr, and R. P. L. B. Huang. 2023. Web Performance in Action. Manning Publications, Shelter Island, NY, USA. DOI: https://doi.org/10.1613/jair.1.1234
 
@@ -2031,9 +2017,9 @@ class Dashboard {
 
 [10] M. B. Roth, R. Capilla, and A. T. S. Hassan. 2024. Real User Monitoring and Synthetic Monitoring: A Comparative Study. Journal of Systems and Software 215 (August 2024), 1-15. DOI: https://doi.org/10.1016/j.jss.2024.112067
 
-## 13. 延伸阅读
+## 12. 延伸阅读
 
-### 13.1 官方文档
+### 12.1 官方文档
 
 - Chrome DevTools 官方文档：https://developer.chrome.com/docs/devtools/
 - web.dev 性能优化指南：https://web.dev/performance/
@@ -2041,19 +2027,19 @@ class Dashboard {
 - MDN Performance API：https://developer.mozilla.org/en-US/docs/Web/API/Performance_API
 - V8 引擎博客：https://v8.dev/blog
 
-### 13.2 经典教材
+### 12.2 经典教材
 
 - Steve Souders. 2007. High Performance Web Sites. O'Reilly Media, Sebastopol, CA, USA.
 - Ilya Grigorik. 2013. High Performance Browser Networking. O'Reilly Media, Sebastopol, CA, USA.
 - Tom Dale Wilson. 2021. Web Performance in Action. Manning Publications, Shelter Island, NY, USA.
 
-### 13.3 前沿论文与博客
+### 12.3 前沿论文与博客
 
 - Addy Osmani. The Cost of JavaScript in 2018. https://medium.com/@addyosmani/the-cost-of-javascript-in-2018-7d8950fbb5d4
 - Alex Russell. Can You Afford It? Real-world Web Performance Budgets. https://infrequently.org/2017/10/can-you-afford-it-real-world-web-performance-budgets/
 - Nolan Lawson. Measuring Performance in a World of Timers. https://nolanlawson.com/2022/07/13/measuring-performance-in-a-world-of-timers/
 
-### 13.4 开源工具
+### 12.4 开源工具
 
 - Lighthouse：https://github.com/GoogleChrome/lighthouse
 - Puppeteer：https://github.com/puppeteer/puppeteer
@@ -2061,9 +2047,9 @@ class Dashboard {
 - web-vitals 库：https://github.com/GoogleChrome/web-vitals
 - FastDOM：https://github.com/wilsonpage/fastdom
 
-## 14. 附录
+## 13. 附录
 
-### 14.1 Chrome DevTools 快捷键速查
+### 13.1 Chrome DevTools 快捷键速查
 
 | 快捷键 | 功能 |
 | --- | --- |
@@ -2079,7 +2065,7 @@ class Dashboard {
 | Ctrl+B | 切换断点 |
 | Ctrl+Shift+B | 切换条件断点 |
 
-### 14.2 Performance API 方法速查
+### 13.2 Performance API 方法速查
 
 | 方法 | 用途 |
 | --- | --- |
@@ -2094,7 +2080,7 @@ class Dashboard {
 | `performance.memory` | 内存使用（仅 Chrome） |
 | `performance.timing` | 导航时序（已废弃，用 PerformanceNavigationTiming） |
 
-### 14.3 Core Web Vitals 阈值速查（2024 标准）
+### 13.3 Core Web Vitals 阈值速查（2024 标准）
 
 | 指标 | 良好 | 需改进 | 差 | 测量方式 |
 | --- | --- | --- | --- | --- |
@@ -2105,7 +2091,7 @@ class Dashboard {
 | TTFB | < 800ms | 800-1800ms | > 1800ms | Navigation Timing |
 | TBT | < 200ms | 200-600ms | > 600ms | Lighthouse 合成 |
 
-### 14.4 内存泄漏常见原因速查
+### 13.4 内存泄漏常见原因速查
 
 | 原因 | 检测方法 | 修复方式 |
 | --- | --- | --- |
@@ -2117,7 +2103,7 @@ class Dashboard {
 | Detached DOM 节点 | Memory 面板筛选 | 移除 DOM 前移除监听器 |
 | Promise 未 resolve | DevTools Console 警告 | 检查 Promise 链，添加 catch |
 
-### 14.5 性能优化检查清单
+### 13.5 性能优化检查清单
 
 **加载性能**：
 - [ ] 关键 CSS 内联
@@ -2152,7 +2138,7 @@ class Dashboard {
 - [ ] 避免闭包持有无用变量
 - [ ] 定期 Memory 面板检查
 
-### 14.6 更新日志
+### 13.6 更新日志
 
 - **2026-04-05**：初始创建，涵盖调试工具、常见错误、性能分析与优化。
 - **2026-05-03**：扩展内容，添加更详细的调试工具使用方法、更多常见错误类型和解决方案、更深入的性能分析方法、更全面的优化策略、实际应用案例和常见问题解决方案。

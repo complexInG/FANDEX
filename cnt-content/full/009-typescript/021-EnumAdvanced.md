@@ -16,6 +16,7 @@ prerequisites:
   - typescript/语法速查
 ---
 
+
 # 枚举进阶
 
 > 本文档对标 MIT 6.S192、Stanford CS110、CMU 15-214 等课程教学水准，系统讲解 TypeScript 枚举（enum）类型的设计动机、形式化定义、运行时行为、与企业级替代方案。所有代码示例均可在 TS 5.4 + `strict: true` 下编译通过。
@@ -39,41 +40,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够：
-
-### 1.1 Bloom 认知层级映射
-
-| 层级 | 行为动词 | 预期成果 |
-|------|----------|----------|
-| **Remember**（记忆） | 列举、识别 | 列出 TypeScript 枚举的四种形态：numeric、string、heterogeneous、const enum，并写出基本语法 |
-| **Understand**（理解） | 解释、归纳 | 解释枚举在编译产物中的运行时表示（reverse mapping、IIFE 闭包），归纳结构化类型系统中枚举与字面量联合类型的等价关系 |
-| **Apply**（应用） | 实现、使用 | 在企业级项目中使用 `as const` 对象 + 联合类型替代字符串枚举，并实现 `enumValues()`、`enumKeys()` 工具函数 |
-| **Analyze**（分析） | 比较、分解 | 比较 `enum`、`const enum`、`as const` 三者在编译产物体积、tree-shaking 友好性、运行时性能上的差异 |
-| **Evaluate**（评价） | 评判、选择 | 针对给定业务场景（如国际化、状态机、配置常量）选择最合适的枚举实现方案，并给出可维护性、可测试性、可扩展性的权衡依据 |
-| **Create**（创造） | 设计、构建 | 设计一个类型安全的有限状态机（FSM）模块，使用 `as const` + conditional type 表达状态转移图，并保证非法转移在编译期被拒绝 |
-
-### 1.2 前置知识
-
-- TypeScript 基础类型系统（`string`、`number`、`boolean`、字面量类型）
-- 联合类型与字面量类型
-- `keyof` 操作符与索引访问类型
-- `typeof` 类型上下文
-- `as const` 断言
-
-### 1.3 适用读者
-
-- 具备 6 个月以上 TypeScript 实战经验的中级开发者
-- 正在为开源库设计公开 API 的工程师
-- 希望深入理解 TypeScript 编译产物的运行时开发者
-- 准备 TypeScript 高级面试的工程师
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 枚举的起源与设计动机
+### 1.1 枚举的起源与设计动机
 
 枚举（enumeration）作为一种类型构造子，最早可追溯到 1975 年 Pascal 语言规范的"标量类型"。C 语言在 1978 年 K&R 第二版中正式引入 `enum` 关键字，将其定义为"映射到整型的命名常量集合"。这一设计哲学深刻影响了后续 C++、Java、C# 等静态类型语言。
 
@@ -90,7 +59,7 @@ TypeScript 的设计者 **Anders Hejlsberg**（同时是 Turbo Pascal、Delphi�
 - TypeScript 5.0（2023）：装饰器 Stage 3 落地，配合 `as const` 可实现声明式枚举校验
 - TypeScript 5.4（2024）：`NoInfer<T>` 工具类型，使基于 `as const` 的枚举推断更精确
 
-### 2.2 设计动机分析
+### 1.2 设计动机分析
 
 Anders Hejlsberg 在 2017 年 GopherCon 的访谈中阐述 TypeScript 枚举的两个核心动机：
 
@@ -104,7 +73,7 @@ Anders Hejlsberg 在 2017 年 GopherCon 的访谈中阐述 TypeScript 枚举的�
 2. **反向映射**：数字枚举成员 `Direction.Up = 0` 会同时产生 `Direction[0] = 'Up'`
 3. **结构化不兼容**：枚举类型与字面量联合类型在结构上不兼容，无法互换赋值
 
-### 2.3 TypeScript 版本时间线
+### 1.3 TypeScript 版本时间线
 
 ```
 2012-10  TS 0.8     enum 关键字首次出现
@@ -117,7 +86,7 @@ Anders Hejlsberg 在 2017 年 GopherCon 的访谈中阐述 TypeScript 枚举的�
 2024-03  TS 5.4     NoInfer<T>，配合 as const 提升推断精度
 ```
 
-### 2.4 当前社区共识（2024-2025）
+### 1.4 当前社区共识（2024-2025）
 
 TypeScript 核心团队在 [TypeScript Roadmap 2024](https://github.com/microsoft/TypeScript/issues/57854) 中明确表态：
 
@@ -127,9 +96,9 @@ TypeScript 核心团队在 [TypeScript Roadmap 2024](https://github.com/microsof
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类型论视角
+### 2.1 类型论视角
 
 在 TypeScript 的类型系统中，枚举可形式化定义为一个 **命名常量域**（named constant domain）与一个 **底层值域**（underlying value domain）之间的双射：
 
@@ -144,7 +113,7 @@ $$
 
 这一双值-类型语义与 Haskell 的 `data` 类型、Rust 的 `enum` 类型有本质差异——后两者是**和类型**（sum type），而 TypeScript `enum` 仅为**命名常量集合**。
 
-### 3.2 编译期与运行时语义
+### 2.2 编译期与运行时语义
 
 TypeScript `enum` 在类型系统中的形式化规约（参考 [TypeScript Specification 4.6, §9.2]）：
 
@@ -161,7 +130,7 @@ $$
 - 值位置：`Direction.Up` 的类型为 `Direction`（整个枚举）
 - 类型位置：`Direction.Up` 作为类型表示单例字面量 `0`
 
-### 3.3 编译产物的形式化
+### 2.3 编译产物的形式化
 
 数字枚举 `enum Direction { Up, Down, Left, Right }` 编译后的 JavaScript 产物等价于：
 
@@ -184,7 +153,7 @@ $$
 
 字符串枚举仅保留单向映射 $\{ k_i \mapsto v_i \}$，因为字符串到名称的反向映射会破坏字符串作为业务标识符的语义。
 
-### 3.4 `as const` 对象的形式化
+### 2.4 `as const` 对象的形式化
 
 `as const` 对象 + 联合类型的现代替代方案：
 
@@ -214,9 +183,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 反向映射的数学结构
+### 3.1 反向映射的数学结构
 
 对于数字枚举，TypeScript 编译产物构造的反向映射可视为一个**自反函数** $f: \text{Names} \leftrightarrow \text{Numbers}$：
 
@@ -240,7 +209,7 @@ $$
 \forall k_i, k_j \in \text{Names}: v_i = v_j \implies f^{-1}(v_i) = k_j \quad (\text{后定义者胜出})
 $$
 
-### 4.2 字符串枚举为何不提供反向映射
+### 3.2 字符串枚举为何不提供反向映射
 
 字符串枚举 `enum Status { Active = 'ACTIVE' }` 编译后为：
 
@@ -258,7 +227,7 @@ var Status;
 
 形式化解释：字符串域 $\Sigma^*$ 与标识符域 $\text{Identifiers} \subset \Sigma^*$ 在数据上同构，但在类型系统中不是同构的——字符串字面量 `'ACTIVE'` 既是枚举值又是潜在的反向键名，会引起歧义。
 
-### 4.3 `const enum` 的内联优化
+### 3.3 `const enum` 的内联优化
 
 `const enum` 在编译期被完全内联，不产生运行时对象。形式化地说：
 
@@ -286,7 +255,7 @@ const c = "#FF0000" /* Color.Red */;
 - `const enum` 不能被字符串名动态访问（如 `Color['Red']` 在 `--isolatedModules` 下报错）
 - `const enum` 在跨文件使用时要求编译器能"看到"定义（Babel、esbuild 不支持）
 
-### 4.4 `as const` 与不可变性
+### 3.4 `as const` 与不可变性
 
 `as const` 断言的形式化语义为：将推断出的 widened 类型替换为字面量类型，并标注所有属性为 `readonly`。
 
@@ -303,7 +272,7 @@ $$
 
 这一推导是 TypeScript 3.4 引入的核心机制，是现代枚举替代方案的基石。
 
-### 4.5 可区分联合与枚举成员类型
+### 3.5 可区分联合与枚举成员类型
 
 枚举成员作为类型时，可作为可区分联合（discriminated union）的判别字段：
 
@@ -340,7 +309,7 @@ $$
 
 这一推导依赖 TypeScript 2.0 引入的控制流类型收窄（control flow type narrowing）机制，可视为基于判别字段（discriminant）的子类型消解。
 
-### 4.6 编译产物的体积模型
+### 3.6 编译产物的体积模型
 
 设枚举 $E$ 有 $n$ 个成员，则：
 
@@ -353,9 +322,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 数字枚举基础
+### 4.1 数字枚举基础
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -393,7 +362,7 @@ console.log(HttpStatus[200]);    // 'Ok'
 const code: number = HttpStatus.Ok;  // 允许：enum 是 number 的子类型
 ```
 
-### 5.2 字符串枚举
+### 4.2 字符串枚举
 
 ```typescript
 /**
@@ -431,7 +400,7 @@ const parsed = JSON.parse(json) as User;
 console.log(parsed.status === UserStatus.Active);  // true
 ```
 
-### 5.3 异构枚举（不推荐）
+### 4.3 异构枚举（不推荐）
 
 ```typescript
 /**
@@ -455,7 +424,7 @@ enum BooleanString {
 }
 ```
 
-### 5.4 `const enum` 编译期内联
+### 4.4 `const enum` 编译期内联
 
 ```typescript
 // 注意：const enum 在 isolatedModules: true 下不推荐使用
@@ -476,7 +445,7 @@ if (currentLevel >= LogLevel.Warn) {
 }
 ```
 
-### 5.5 枚举成员类型与可区分联合
+### 4.5 枚举成员类型与可区分联合
 
 ```typescript
 // TS 5.4 - 可区分联合使用枚举成员作为判别字段
@@ -524,7 +493,7 @@ function send(req: HttpRequest): Promise<Response> {
 }
 ```
 
-### 5.6 `as const` 现代替代方案（推荐）
+### 4.6 `as const` 现代替代方案（推荐）
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true, "noUncheckedIndexedAccess": true }
@@ -580,7 +549,7 @@ Object.entries(UserStatus).forEach(([key, value]) => {
 });
 ```
 
-### 5.7 完整的 `tsconfig.json` 配置
+### 4.7 完整的 `tsconfig.json` 配置
 
 ```json
 {
@@ -604,7 +573,7 @@ Object.entries(UserStatus).forEach(([key, value]) => {
 }
 ```
 
-### 5.8 枚举合并
+### 4.8 枚举合并
 
 ```typescript
 /**
@@ -631,7 +600,7 @@ enum Weekday {
 const today: Weekday = Weekday.Saturday;
 ```
 
-### 5.9 工具函数：类型安全的枚举访问
+### 4.9 工具函数：类型安全的枚举访问
 
 ```typescript
 // TS 5.4
@@ -698,7 +667,7 @@ Color.isValue('#FFF');  // false
 Color.fromValue('#FF0000');  // 'Red'
 ```
 
-### 5.10 状态机实现
+### 4.10 状态机实现
 
 ```typescript
 // TS 5.4 - 基于枚举的有限状态机
@@ -755,9 +724,9 @@ const order = new OrderStateMachine(OrderState.Pending)
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与其他语言的枚举对比
+### 5.1 与其他语言的枚举对比
 
 | 语言 | 枚举类型 | 底层类型 | 反向映射 | 和类型支持 | 方法支持 | Tree-shaking 友好 |
 |------|----------|----------|----------|------------|----------|---------------------|
@@ -771,7 +740,7 @@ const order = new OrderStateMachine(OrderState.Pending)
 | **Flow** | 字符串/数字字面量联合 | 字面量 | 不支持 | 否 | 否 | 是 |
 | **Go** | `iota` 常量 + 自定义类型 | int | 不支持 | 否 | 否 | 是 |
 
-### 6.2 与 Flow 的对比
+### 5.2 与 Flow 的对比
 
 Flow 不提供 `enum` 关键字，推荐使用字面量联合类型：
 
@@ -791,7 +760,7 @@ type Direction = (typeof Direction)[keyof typeof Direction];
 
 Flow 的方案更轻量但不便于遍历，TypeScript `as const` 兼顾了类型安全与运行时可访问性。
 
-### 6.3 与 Python type hints 的对比
+### 5.3 与 Python type hints 的对比
 
 Python 3.4 引入 `enum` 模块，3.5+ 通过 `Literal` 类型支持字面量类型：
 
@@ -818,7 +787,7 @@ DirectionLiteral = Literal['UP', 'DOWN']
 | 序列化 | 需自定义 | 字符串枚举原生 | JSON 兼容 |
 | Tree-shaking | 不适用 | 不友好 | 友好 |
 
-### 6.4 与 Rust `enum` 的对比
+### 5.4 与 Rust `enum` 的对比
 
 Rust 的 `enum` 是真正的和类型，可携带载荷：
 
@@ -861,7 +830,7 @@ TypeScript 可区分联合在表达能力上接近 Rust `enum`，但缺少：
 - **方法绑定**：Rust 可通过 `impl Shape`，TypeScript 需在函数外定义
 - **零成本抽象**：Rust 编译为标签 + 载荷，TypeScript 编译为对象
 
-### 6.5 与 Haskell `data` 的对比
+### 5.5 与 Haskell `data` 的对比
 
 Haskell 的代数数据类型是和类型 + 积类型的组合：
 
@@ -882,9 +851,9 @@ TypeScript 表达等价语义的方式与 Rust 类似（可区分联合），但
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：数字枚举的反向映射破坏对象遍历
+### 6.1 陷阱一：数字枚举的反向映射破坏对象遍历
 
 ```typescript
 // 反面示例
@@ -903,7 +872,7 @@ Object.keys(Direction);   // ['Up', 'Down', 'Left', 'Right']
 Object.values(Direction); // [0, 1, 2, 3]
 ```
 
-### 7.2 陷阱二：`const enum` 在 `isolatedModules` 下的不一致行为
+### 6.2 陷阱二：`const enum` 在 `isolatedModules` 下的不一致行为
 
 ```typescript
 // 跨文件使用 const enum
@@ -927,7 +896,7 @@ const c = Color.Red;
 - 发布到 npm 的库**禁止**使用 `const enum`
 - 在 `tsconfig.json` 中设置 `"isolatedModules": true` 提前发现问题
 
-### 7.3 陷阱三：枚举与字面量联合的结构不兼容
+### 6.3 陷阱三：枚举与字面量联合的结构不兼容
 
 ```typescript
 enum Status { Active = 'ACTIVE', Inactive = 'INACTIVE' }
@@ -943,7 +912,7 @@ const s3: Status = 'ACTIVE' as Status;
 
 **最佳实践**：在 API 边界保持一致——要么全部使用 `enum`，要么全部使用 `as const`。混合使用会引入大量类型断言。
 
-### 7.4 陷阱四：异构枚举的语义混淆
+### 6.4 陷阱四：异构枚举的语义混淆
 
 ```typescript
 // 反面示例
@@ -960,7 +929,7 @@ const y: Mixed = Mixed.Yes;      // 'YES'
 
 **最佳实践**：禁止使用异构枚举。将其拆分为独立的数字枚举与字符串枚举，或在 ESLint 中启用 `@typescript-eslint/no-mixed-enums`（待提案）规则。
 
-### 7.5 陷阱五：枚举的 `keyof typeof` 行为
+### 6.5 陷阱五：枚举的 `keyof typeof` 行为
 
 ```typescript
 enum Status { Active, Inactive }
@@ -974,7 +943,7 @@ type Keys2 = keyof Status;
 // 正确做法：始终使用 keyof typeof
 ```
 
-### 7.6 陷阱六：枚举值重复的反向映射覆盖
+### 6.6 陷阱六：枚举值重复的反向映射覆盖
 
 ```typescript
 enum E {
@@ -989,7 +958,7 @@ console.log(E.B);  // 1
 
 **最佳实践**：开启 ESLint 规则 `no-duplicate-case`，并使用 `as const` 对象，重复值会在字面量类型层面立即报错。
 
-### 7.7 陷阱七：枚举在 JSON 序列化中的语义
+### 6.7 陷阱七：枚举在 JSON 序列化中的语义
 
 ```typescript
 enum Status { Active = 'ACTIVE' }
@@ -1017,7 +986,7 @@ function parseStatus(raw: unknown): Status {
 }
 ```
 
-### 7.8 陷阱八：tree-shaking 下的运行时副作用
+### 6.8 陷阱八：tree-shaking 下的运行时副作用
 
 ```typescript
 // 库代码
@@ -1032,7 +1001,7 @@ const level = LogLevel.Info;
 
 **最佳实践**：库代码使用 `as const` 对象，使打包器能 tree-shake 未使用的属性。
 
-### 7.9 最佳实践速查表
+### 6.9 最佳实践速查表
 
 | 场景 | 推荐方案 | 理由 |
 |------|----------|------|
@@ -1045,9 +1014,9 @@ const level = LogLevel.Info;
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建配置
+### 7.1 构建配置
 
 ```json
 // tsconfig.json - 推荐配置（TS 5.4）
@@ -1069,7 +1038,7 @@ const level = LogLevel.Info;
 }
 ```
 
-### 8.2 ESLint 配置
+### 7.2 ESLint 配置
 
 ```javascript
 // .eslintrc.cjs
@@ -1095,7 +1064,7 @@ module.exports = {
 };
 ```
 
-### 8.3 编译与类型检查
+### 7.3 编译与类型检查
 
 ```bash
 # 仅类型检查（不生成产物）
@@ -1119,9 +1088,9 @@ npx tsc --noEmit --extendedDiagnostics
 # Check time:                     2.3sec
 ```
 
-### 8.4 调试技巧
+### 7.4 调试技巧
 
-#### 8.4.1 查看编译产物
+#### 7.4.1 查看编译产物
 
 ```bash
 # 单文件编译并输出到 stdout
@@ -1129,7 +1098,7 @@ npx tsc --noEmit --declaration --emitDeclarationOnly false \
         --outFile /dev/stdout src/enums.ts
 ```
 
-#### 8.4.2 查看类型推断结果
+#### 7.4.2 查看类型推断结果
 
 ```typescript
 // 使用内置工具查看类型
@@ -1140,13 +1109,13 @@ type T1 = typeof Direction;        // 查看 as const 对象的精确类型
 type T2 = (typeof Direction)[keyof typeof Direction];  // 查看联合类型
 ```
 
-#### 8.4.3 使用 TypeScript Playground
+#### 7.4.3 使用 TypeScript Playground
 
 - 网址：<https://www.typescriptlang.org/play>
 - 用途：快速验证枚举在不同 TS 版本下的行为
 - 技巧：在 URL 中通过 `ts=N` 参数指定版本，如 `?ts=5.4`
 
-#### 8.4.4 VS Code 类型可视化
+#### 7.4.4 VS Code 类型可视化
 
 在 VS Code 中：
 
@@ -1155,9 +1124,9 @@ type T2 = (typeof Direction)[keyof typeof Direction];  // 查看联合类型
 3. 右键枚举 → "Go to Type Definition"
 4. 在 "TypeScript" 输出面板查看完整的类型展开
 
-### 8.5 性能优化
+### 7.5 性能优化
 
-#### 8.5.1 避免大型 `as const` 对象
+#### 7.5.1 避免大型 `as const` 对象
 
 ```typescript
 // 反面示例：1000+ 成员的枚举
@@ -1176,7 +1145,7 @@ type LargeEnum = (typeof Module1)[keyof typeof Module1]
                | (typeof Module2)[keyof typeof Module2];
 ```
 
-#### 8.5.2 递归深度的限制
+#### 7.5.2 递归深度的限制
 
 TypeScript 类型系统对递归深度有约 1000 层的硬限制。在使用递归工具类型操作枚举时需注意：
 
@@ -1192,7 +1161,7 @@ type DeepValues<E> = E extends object
   : E;
 ```
 
-### 8.6 测试策略
+### 7.6 测试策略
 
 ```typescript
 // 使用 vitest 进行枚举测试
@@ -1223,9 +1192,9 @@ describe('UserStatus', () => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：VS Code 的枚举使用
+### 8.1 案例一：VS Code 的枚举使用
 
 VS Code（<https://github.com/microsoft/vscode>）作为 TypeScript 旗舰项目，其枚举使用模式具有参考价值。
 
@@ -1251,7 +1220,7 @@ export enum EventDeliveryQueue {
 2. **运行时反射**：某些场景需要通过 `Object.keys()` 反射枚举成员
 3. **团队心智模型**：Microsoft 团队对 `enum` 语义最熟悉
 
-### 9.2 案例二：Slack 的枚举迁移
+### 8.2 案例二：Slack 的枚举迁移
 
 Slack 桌面客户端在 2021 年完成从 `enum` 到 `as const` 的全面迁移（详见 [Slack Engineering Blog, 2021]）。
 
@@ -1267,7 +1236,7 @@ Slack 桌面客户端在 2021 年完成从 `enum` 到 `as const` 的全面迁移
 2. 数字枚举保留（涉及反向映射的业务逻辑）
 3. 渐进式迁移，分 6 个月完成
 
-### 9.3 案例三：Airbnb 风格指南
+### 8.3 案例三：Airbnb 风格指南
 
 Airbnb TypeScript Style Guide（2024 版）明确推荐：
 
@@ -1281,7 +1250,7 @@ Airbnb TypeScript Style Guide（2024 版）明确推荐：
 
 **唯一例外**：与原生库（如 Node.js `fs` 模块）互操作时，保留 `enum` 以匹配 API。
 
-### 9.4 案例四：Google 的 TypeScript 风格指南
+### 8.4 案例四：Google 的 TypeScript 风格指南
 
 Google TypeScript Style Guide（§5.2.5）：
 
@@ -1295,7 +1264,7 @@ Google 采取折中策略：
 - **开集**（如用户角色、配置选项）：使用 `as const`
 - **核心库**（Angular、gRPC）：使用 `enum` 以兼容旧版本 TypeScript
 
-### 9.5 案例五：React 项目中的状态枚举
+### 8.5 案例五：React 项目中的状态枚举
 
 ```typescript
 // React + TypeScript 状态管理
@@ -1583,7 +1552,7 @@ const m1 = new StateMachine(OrderState.Pending)
 - 转移图类型正确（10 分）
 - 编译期校验有效（10 分）
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 TypeScript 字符串枚举不提供反向映射，而数字枚举提供？请从语义和类型安全两个角度分析。
 
@@ -1671,9 +1640,9 @@ t('en-US', 'goodbye');  // 'Goodbye'
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 Bierman, G., Abadi, M., & Torgersen, M. (2014). Understanding TypeScript. In *Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP 2014)* (pp. 257–281). Springer. <https://doi.org/10.1007/978-3-662-44202-9_11>
 
@@ -1685,7 +1654,7 @@ Pierce, B. C. (2002). *Types and programming languages*. MIT Press. ISBN: 978-02
 
 Swamy, N., Hicks, M., & Bierman, G. (2014). Gradual typing for JavaScript. In *Proceedings of the 29th ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA 2014)* (pp. 1–27). ACM. <https://doi.org/10.1145/2660193.2660232>
 
-### 11.2 官方文档与规范
+### 10.2 官方文档与规范
 
 TypeScript Language Specification (2014). Microsoft. <https://github.com/microsoft/TypeScript/blob/main/doc/spec-ARCHIVED.md>
 
@@ -1695,7 +1664,7 @@ ECMAScript 2024 Language Specification (2024). ECMA International. ECMA-262, 14t
 
 TC39 Proposal: Enums (Stage 1). (2023). <https://github.com/Jack-Works/proposal-enum>
 
-### 11.3 工程实践文献
+### 10.3 工程实践文献
 
 Airbnb. (2024). *TypeScript style guide*. <https://github.com/airbnb/typescript>
 
@@ -1705,7 +1674,7 @@ Microsoft. (2024). *TypeScript 5.4 release notes*. <https://www.typescriptlang.o
 
 Rosenwasser, D. (2022). *Announcing TypeScript 4.9*. Microsoft DevBlog. <https://devblogs.microsoft.com/typescript/announcing-typescript-4-9/>
 
-### 11.4 历史资料
+### 10.4 历史资料
 
 Hejlsberg, A. (2017). *TypeScript: The first six years*. GopherCon 2017 Keynote. <https://www.youtube.com/watch?v=jXccn7GYn94>
 
@@ -1713,9 +1682,9 @@ Bierman, G. (2012). *TypeScript design notes*. Microsoft Research Cambridge.
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《Effective TypeScript》**（Dan Vanderkam，2024 第二版）- 第 6 章"类型设计"深入讨论枚举与 `as const` 的取舍
 - **《Programming TypeScript》**（Boris Cherny，2023 第三版）- 第 4 章覆盖枚举的完整语法与陷阱
@@ -1723,7 +1692,7 @@ Bierman, G. (2012). *TypeScript design notes*. Microsoft Research Cambridge.
 - **《Learning TypeScript》**（Josh Goldberg，2022）- 第 5 章枚举与现代替代方案对比
 - **《Type-Driven Development with Idris》**（Edwin Brady，2017）- 类型驱动开发的奠基之作，可借鉴其代数数据类型思想到 TypeScript
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 - **TypeScript Handbook（官方）**: <https://www.typescriptlang.org/docs/handbook/>
 - **TypeScript Deep Dive**: <https://basarat.gitbook.io/typescript/type-system>
@@ -1731,21 +1700,21 @@ Bierman, G. (2012). *TypeScript design notes*. Microsoft Research Cambridge.
 - **TypeScript Playground**: <https://www.typescriptlang.org/play> - 在线实验不同 TS 版本的枚举行为
 - **TypeScript Roadmap 2024**: <https://github.com/microsoft/TypeScript/issues/57854>
 
-### 12.3 论文与演讲
+### 11.3 论文与演讲
 
 - **"TypeScript: The first six years"**（Anders Hejlsberg, GopherCon 2017）- TypeScript 设计动机的一手资料
 - **"Understanding TypeScript"**（Gavin Bierman, ECOOP 2014）- TypeScript 类型系统的形式化分析
 - **"Gradual Typing for JavaScript"**（Swamy et al., OOPSLA 2014）- 渐进式类型系统的理论基础
 - **"Type Classes: Exploring the Design Space"**（Wadler & Blott, 1989）- Haskell typeclass 设计，可借鉴到 TypeScript 工具类型
 
-### 12.4 相关开源项目
+### 11.4 相关开源项目
 
 - **`ts-morph`**: <https://github.com/dsherret/ts-morph> - TypeScript AST 操作工具，适合编写枚举迁移 codemod
 - **`type-fest`**: <https://github.com/sindresorhus/type-fest> - 类型工具库，包含大量基于 `as const` 的实用类型
 - **`zod`**: <https://github.com/colinhacks/zod> - 运行时 schema 校验，与 `as const` 配合实现端到端类型安全
 - **`effect`**: <https://github.com/effect-ts/effect> - TypeScript 函数式编程框架，演示了基于可区分联合的高级模式
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 完成本章学习后，建议继续探索：
 

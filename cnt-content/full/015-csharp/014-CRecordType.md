@@ -20,6 +20,7 @@ prerequisites:
   - csharp/面向对象编程
 ---
 
+
 # C# 记录类型
 
 > 本篇是 FANDEX C# 系列的第五十三篇。我们将系统讲解 C# 记录类型（record）：从位置参数、`with` 表达式、值相等性、`init` 访问器到 `record struct`、`readonly record struct`、`Record` 与函数式编程、序列化、DDD 领域驱动设计、性能权衡与编译器合成代码剖析。内容对标 MIT 6.005（Software Construction）、Stanford CS110（Principles of Computer Systems）、CMU 15-214（Software Architectures）课程教学严谨度，支持 0 基础自学，同时覆盖企业级实战要点。
@@ -43,56 +44,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标（Bloom 分类法）
+## 1. 历史动机与演化
 
-### 1.1 记忆（Remember）
-
-- **R1**：能复述 `record` 关键字的语言版本（C# 9.0，2020）与 .NET 平台支持（.NET 5+）。
-- **R2**：能列举 `record`、`record class`、`record struct`、`readonly record struct` 四种声明形式及其语义差异。
-- **R3**：能背诵 `with` 表达式的语法：`var p2 = p1 with { Name = "Bob" };`，并说明其运行时调用 `<>Clone()` 与 init 访问器的过程。
-- **R4**：能复述位置参数（Positional Parameter）记录的合成成员：主构造函数、`Init` 属性、`Deconstruct`、`Equals`、`GetHashCode`、`ToString`、`operator ==`/`!=`。
-- **R5**：能识别 `init` 访问器与 `set` 访问器的差异：`init` 仅在对象初始化器阶段或 `with` 表达式中可写，构造完成后变为只读。
-
-### 1.2 理解（Understand）
-
-- **U1**：能解释 `record` 的值相等性（Value Equality）与 `class` 的引用相等性（Reference Equality）的区别，并说明合成的 `Equals` 实现细节。
-- **U2**：能说明 `with` 表达式并不修改原对象，而是通过复制并修改部分字段创建新实例的不可变更新机制。
-- **U3**：能阐述 `record` 的 `Equals` 与 `GetHashCode` 合约：若 `Equals(a, b) == true` 则 `GetHashCode(a) == GetHashCode(b)` 必须成立。
-- **U4**：能描述位置参数 `record` 的 `Deconstruct` 方法如何支持解构 `(string Name, int Age) = person;`。
-- **U5**：能说明 `record` 与不可变数据模式（Immutable Data Pattern）、函数式编程风格的关系。
-- **U6**：能解释 `record struct` 与 `record class` 在堆栈分配、内存布局、装箱行为上的差异。
-
-### 1.3 应用（Apply）
-
-- **A1**：能正确声明位置参数 `record`、非位置参数 `record` 与 `record struct`。
-- **A2**：能使用 `with` 表达式实现不可变更新，并理解其只读字段保留语义。
-- **A3**：能自定义 `record` 的相等性逻辑，覆盖默认的值相等实现。
-- **A4**：能使用 `record` 实现 DDD 领域建模，包含 Value Object 与 Aggregate。
-- **A5**：能将 `record` 与 `System.Text.Json`、`MessagePack` 序列化器集成。
-- **A6**：能使用 `record` 配合模式匹配实现函数式数据流。
-
-### 1.4 分析（Analyze）
-
-- **An1**：能分析 `record` 编译后的 IL，识别合成的 `<Clone>$`、`Equals`、`PrintMembers`、`op_Equality` 等方法。
-- **An2**：能拆解 `with` 表达式运行时调用链：`<Clone>$()` → init 访问器赋值 → 返回新实例。
-- **An3**：能分析 `record` 在 `Dictionary<TKey, TValue>` 中作为键时的 `GetHashCode` 性能与碰撞分布。
-
-### 1.5 评价（Evaluate）
-
-- **E1**：能评判 `record` vs `class with IEquatable<T>` vs `struct` 在数据建模场景的取舍。
-- **E2**：能评估 `record struct` vs `readonly record struct` vs `record class` 在堆分配、装箱、相等性、`with` 性能的差异。
-- **E3**：能评价 `record` 在函数式编程范式下的适用性，对比 F# 的 record 与 Scala 的 case class。
-
-### 1.6 创造（Create）
-
-- **C1**：能设计一个基于 `record` 的完整 DDD 领域模型，包含 Value Object、Aggregate Root、Domain Event。
-- **C2**：能为团队编写《C# 记录类型使用规范》文档，涵盖选择 `record`/`record struct`/`class` 的决策树、性能基准、序列化兼容性、与 EF Core 的集成约束。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 数据类的痛点：样板代码爆炸
+### 1.1 数据类的痛点：样板代码爆炸
 
 在 `record` 出现前，C# 中表示数据模型需大量样板代码。考虑一个简单的 `Person` 类：
 
@@ -131,11 +85,11 @@ public class Person : IEquatable<Person>
 3. **不可变性困难**：需手动声明 `init` 或 `readonly` 字段、`with` 风格的更新方法。
 4. **样板错误**：手动实现的 `GetHashCode` 易碰撞、`Equals` 易遗漏字段。
 
-### 2.2 函数式语言启发
+### 1.2 函数式语言启发
 
 C# 的 `record` 受 F#、Scala 启发：
 
-#### 2.2.1 F# Record
+#### 1.2.1 F# Record
 
 ```fsharp
 type Person = { Name: string; Age: int }
@@ -146,7 +100,7 @@ let p2 = { p1 with Age = 31 }   // 不可变更新
 
 F# 的 record 自带值相等性、解构、`with` 表达式。
 
-#### 2.2.2 Scala Case Class
+#### 1.2.2 Scala Case Class
 
 ```scala
 case class Person(name: String, age: Int)
@@ -158,7 +112,7 @@ val p2 = p1.copy(age = 31)   // 不可变更新
 
 Scala 的 case class 自带 `copy` 方法、值相等性、模式匹配、解构。
 
-### 2.3 C# 9.0：record class 诞生（2020）
+### 1.3 C# 9.0：record class 诞生（2020）
 
 C# 9.0 引入 `record` 关键字，自动生成：
 
@@ -179,7 +133,7 @@ var p2 = p1 with { Age = 31 };   // 不可变更新
 Console.WriteLine(p1 == p2 with { Age = 30 });   // true，值相等
 ```
 
-### 2.4 C# 10.0：record struct 与 record class（2021）
+### 1.4 C# 10.0：record struct 与 record class（2021）
 
 C# 10.0 进一步细化：
 
@@ -193,9 +147,9 @@ public record struct PersonStruct(string Name, int Age);   // 值类型
 public readonly record struct Point(int X, int Y);          // 不可变值类型
 ```
 
-### 2.5 C# 11.0+：record 增强
+### 1.5 C# 11.0+：record 增强
 
-#### 2.5.1 required 修饰符（C# 11）
+#### 1.5.1 required 修饰符（C# 11）
 
 ```csharp
 public record Person
@@ -208,7 +162,7 @@ public record Person
 var p = new Person { Name = "Alice", Age = 30 };
 ```
 
-#### 2.5.2 主构造函数（C# 12，泛化到所有 class/struct）
+#### 1.5.2 主构造函数（C# 12，泛化到所有 class/struct）
 
 C# 12 将主构造函数扩展到所有类与结构：
 
@@ -222,13 +176,13 @@ public class Person(string name, int age)   // 主构造函数（非 record）
 
 `record` 的位置参数本质是主构造函数的特化形式，自动合成 init 属性与相等性。
 
-#### 2.5.3 集合表达式与 record（C# 12）
+#### 1.5.3 集合表达式与 record（C# 12）
 
 ```csharp
 Point[] points = [new(1, 2), new(3, 4), new(5, 6)];   // 集合表达式
 ```
 
-### 2.6 设计哲学
+### 1.6 设计哲学
 
 `record` 的设计哲学：
 
@@ -240,9 +194,9 @@ Point[] points = [new(1, 2), new(3, 4), new(5, 6)];   // 集合表达式
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 record 的代数数据类型（ADT）视角
+### 2.1 record 的代数数据类型（ADT）视角
 
 `record` 可形式化为代数数据类型（Algebraic Data Type）的 Product Type：
 
@@ -256,7 +210,7 @@ $$
 r_1 = r_2 \iff \forall i \in [1, n]: v_i^1 = v_i^2
 $$
 
-### 3.2 with 表达式形式化
+### 2.2 with 表达式形式化
 
 `with` 表达式是不可变更新操作：
 
@@ -270,7 +224,7 @@ $$
 
 实现：`<Clone>$()` 复制所有字段，然后通过 init 访问器应用更新。
 
-### 3.3 值相等性形式化
+### 2.3 值相等性形式化
 
 设 `Record<T>` 是字段集合 $\{f_1 : \tau_1, \ldots, f_n : \tau_n\}$ 的 record，值相等性定义为：
 
@@ -287,7 +241,7 @@ v_2 = \text{null} & \text{if } v_1 = \text{null}
 \end{cases}
 $$
 
-### 3.4 Equals/GetHashCode 合约
+### 2.4 Equals/GetHashCode 合约
 
 `Equals` 与 `GetHashCode` 必须满足：
 
@@ -305,7 +259,7 @@ $$
 
 逆否命题：`GetHashCode(a) != GetHashCode(b) => Equals(a, b) == false`。
 
-### 3.5 record struct 的内存布局
+### 2.5 record struct 的内存布局
 
 `record struct` 是值类型，内存布局为字段连续：
 
@@ -321,7 +275,7 @@ $$
 
 分配在栈或字段内联（无独立堆对象），但赋值给 `object` 或接口时仍会装箱。
 
-### 3.6 record 与不可变性
+### 2.6 record 与不可变性
 
 `record` 的不可变性由 `init` 访问器实现：
 
@@ -334,7 +288,7 @@ $$
 
 `init` 访问器在编译期生成 `modreq` 标记，外部代码（非构造、非 `with`）尝试设置时编译错误。
 
-### 3.7 位置参数 record 的合成成员
+### 2.7 位置参数 record 的合成成员
 
 位置参数 `record Person(string Name, int Age)` 合成：
 
@@ -355,9 +309,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 命题：with 表达式不修改原对象
+### 3.1 命题：with 表达式不修改原对象
 
 **命题 4.1**：对任意 record `r` 与字段更新映射 $f$，`with(r, f)` 不修改 $r$。
 
@@ -374,7 +328,7 @@ return r2;
 
 对于 `record struct`，`<Clone>$()` 是按值复制（栈上拷贝），同样不修改原对象。
 
-### 4.2 命题：record 的 Equals 满足自反、对称、传递性
+### 3.2 命题：record 的 Equals 满足自反、对称、传递性
 
 **命题 4.2**：合成的 `Equals(Person?)` 满足等价关系（自反、对称、传递）。
 
@@ -384,7 +338,7 @@ return r2;
 - **对称性**：`Equals(a, b)` 与 `Equals(b, a)` 调用相同字段的相等性比较，结果一致。
 - **传递性**：若 `Equals(a, b)` 且 `Equals(b, c)`，则对每个字段 $f_i$ 有 `a.f_i == b.f_i` 且 `b.f_i == c.f_i`，由字段类型 `Equals` 的传递性得 `a.f_i == c.f_i`，故 `Equals(a, c)`。
 
-### 4.3 命题：GetHashCode 与 Equals 一致性
+### 3.3 命题：GetHashCode 与 Equals 一致性
 
 **命题 4.3**：合成的 `Equals(a, b) == true` 蕴含 `GetHashCode(a) == GetHashCode(b)`。
 
@@ -407,7 +361,7 @@ $$
 = \text{HashCode.Combine}(\text{Hash}(b.\text{Name}), \text{Hash}(b.\text{Age})) = \text{GetHashCode}(b)
 $$
 
-### 4.4 命题：record struct 装箱语义
+### 3.4 命题：record struct 装箱语义
 
 **命题 4.4**：`record struct` 赋值给 `object` 或接口时触发装箱，装箱后与原值相等。
 
@@ -422,7 +376,7 @@ Console.WriteLine(o.Equals(p2));   // true，合成的 Equals(object) 调用 Equ
 
 装箱将 `record struct` 复制到堆对象 `Boxed<Point>`，其类型句柄为 `Point`。`Equals(object)` 调用 `obj is Point other && Equals(other)`，由于 `Point` 是值类型，运行时拆箱比较，结果为 `true`。
 
-### 4.5 命题：with 表达式性能开销
+### 3.5 命题：with 表达式性能开销
 
 **命题 4.5**：`with` 表达式对 `record class` 的开销为 $O(\text{sizeof}(\text{fields}))$ 的复制 + GC 分配；对 `record struct` 的开销为 $O(\text{sizeof}(\text{struct}))$ 的栈复制，无 GC。
 
@@ -440,7 +394,7 @@ Console.WriteLine(o.Equals(p2));   // true，合成的 Equals(object) 调用 Equ
 | Equals | 8 ns | 2 ns | 2 ns |
 | GetHashCode | 15 ns | 3 ns | 3 ns |
 
-### 4.6 命题：record 与函数式不可变数据流
+### 3.6 命题：record 与函数式不可变数据流
 
 **命题 4.6**：`record` + `with` 表达式可实现纯粹的不可变数据流，满足引用透明性。
 
@@ -460,7 +414,7 @@ var p2 = IncrementAge(p1);
 // p2.Age == 31
 ```
 
-### 4.7 命题：record 在 Dictionary 中的查找复杂度
+### 3.7 命题：record 在 Dictionary 中的查找复杂度
 
 **命题 4.7**：`record` 作为 `Dictionary<TKey, TValue>` 的键，查找平均复杂度为 $O(1)$，最坏 $O(n)$（哈希碰撞）。
 
@@ -473,9 +427,9 @@ var p2 = IncrementAge(p1);
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 位置参数 record
+### 4.1 位置参数 record
 
 ```csharp
 // 基础位置参数 record（C# 9.0）
@@ -499,7 +453,7 @@ var (name, age) = p1;
 Console.WriteLine($"{name}, {age}");
 ```
 
-### 5.2 非位置参数 record
+### 4.2 非位置参数 record
 
 ```csharp
 // 非位置参数：自定义属性
@@ -522,7 +476,7 @@ var product = new Product
 var discounted = product with { Price = 899.99m };
 ```
 
-### 5.3 record struct 与 readonly record struct
+### 4.3 record struct 与 readonly record struct
 
 ```csharp
 // record struct：值类型，可变（除非字段 readonly）
@@ -541,7 +495,7 @@ var red = new Color(255, 0, 0);
 var darkRed = red with { R = 128 };
 ```
 
-### 5.4 record 继承
+### 4.4 record 继承
 
 ```csharp
 // record 支持继承（仅 record class，不支持 record struct）
@@ -560,7 +514,7 @@ Animal a2 = new Dog("Rex", "Labrador");
 Console.WriteLine(a1 == a2);   // true，运行时多态比较
 ```
 
-### 5.5 自定义相等性
+### 4.5 自定义相等性
 
 ```csharp
 // 自定义相等性：忽略大小写比较 Name
@@ -582,7 +536,7 @@ var p2 = new CaseInsensitivePerson("ALICE", 30);
 Console.WriteLine(p1 == p2);   // true，忽略大小写
 ```
 
-### 5.6 record 与模式匹配
+### 4.6 record 与模式匹配
 
 ```csharp
 public record Shape;
@@ -607,7 +561,7 @@ var shape = new Circle(5);
 Console.WriteLine($"Area: {Area(shape):F2}");
 ```
 
-### 5.7 record 序列化
+### 4.7 record 序列化
 
 ```csharp
 using System.Text.Json;
@@ -635,7 +589,7 @@ string prettyJson = JsonSerializer.Serialize(order, options);
 Console.WriteLine(prettyJson);
 ```
 
-### 5.8 record 与 DDD Value Object
+### 4.8 record 与 DDD Value Object
 
 ```csharp
 // DDD Value Object：不可变、值相等
@@ -666,7 +620,7 @@ var total = price.Add(tax);
 Console.WriteLine(total);   // Money { Amount = 108.98, Currency = USD }
 ```
 
-### 5.9 record 与 EF Core
+### 4.9 record 与 EF Core
 
 ```csharp
 // EF Core 实体（注意：record 不适合作为 EF 实体，推荐用 class）
@@ -695,7 +649,7 @@ public class ProductEntity
 }
 ```
 
-### 5.10 record 编译后 IL 分析
+### 4.10 record 编译后 IL 分析
 
 ```csharp
 // 原始代码
@@ -761,7 +715,7 @@ public class Point : IEquatable<Point>
 }
 ```
 
-### 5.11 with 表达式编译展开
+### 4.11 with 表达式编译展开
 
 ```csharp
 // 原始代码
@@ -773,7 +727,7 @@ temp.X = 5;   // init 访问器
 var p2 = temp;
 ```
 
-### 5.12 编译与运行
+### 4.12 编译与运行
 
 ```bash
 # 创建项目
@@ -789,7 +743,7 @@ dotnet run
 dotnet publish -c Release -r win-x64 /p:PublishAot=true
 ```
 
-### 5.13 BenchmarkDotNet 性能基准
+### 4.13 BenchmarkDotNet 性能基准
 
 ```csharp
 using BenchmarkDotNet.Attributes;
@@ -830,9 +784,9 @@ BenchmarkRunner.Run<RecordBenchmarks>();
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 record vs class vs struct
+### 5.1 record vs class vs struct
 
 | 特性 | `record` (class) | `class` | `struct` | `record struct` |
 |------|------------------|---------|----------|------------------|
@@ -847,7 +801,7 @@ BenchmarkRunner.Run<RecordBenchmarks>();
 | 堆分配 | 是 | 是 | 否（除非装箱） | 否（除非装箱） |
 | 适用场景 | 不可变数据模型 | 行为丰富对象 | 小型值类型 | 小型不可变值 |
 
-### 6.2 record class vs record struct vs readonly record struct
+### 5.2 record class vs record struct vs readonly record struct
 
 | 特性 | `record class` | `record struct` | `readonly record struct` |
 |------|----------------|-----------------|----------------------------|
@@ -859,7 +813,7 @@ BenchmarkRunner.Run<RecordBenchmarks>();
 | 适合场景 | 大对象、不可变数据 | 小型值、可变 | 小型值、不可变 |
 | 字段默认 | init-only | 可变 | init-only |
 
-### 6.3 record 与 F# record 对比
+### 5.3 record 与 F# record 对比
 
 ```fsharp
 // F# record
@@ -889,7 +843,7 @@ var p2 = p1 with { Age = 31 };
 | with 表达式 | `with { ... }` | `with` |
 | 位置参数 | 支持 | 不支持（命名字段） |
 
-### 6.4 record 与 Scala case class 对比
+### 5.4 record 与 Scala case class 对比
 
 ```scala
 // Scala case class
@@ -909,7 +863,7 @@ val p2 = p1.copy(age = 31)
 | 继承 | record class 支持 | 不支持（final） |
 | Algebraic Data Type | 部分（sealed record） | 完整支持（sealed + case） |
 
-### 6.5 record 与 Java Record 对比
+### 5.5 record 与 Java Record 对比
 
 ```java
 // Java record（Java 14+）
@@ -930,9 +884,9 @@ var p1 = new Person("Alice", 30);
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：record struct 可变陷阱
+### 6.1 陷阱：record struct 可变陷阱
 
 ```csharp
 // 错误：record struct 默认可变，与不可变数据流期望不符
@@ -952,7 +906,7 @@ var c = new Counter(0);
 var c2 = c with { Value = c.Value + 1 };
 ```
 
-### 7.2 陷阱：with 表达式浅拷贝
+### 6.2 陷阱：with 表达式浅拷贝
 
 ```csharp
 public record Order(string Id, List<Item> Items);
@@ -973,7 +927,7 @@ public record Order(string Id, ImmutableList<Item> Items);
 // 或自定义 <Clone>$
 ```
 
-### 7.3 陷阱：record 与 EF Core 实体冲突
+### 6.3 陷阱：record 与 EF Core 实体冲突
 
 ```csharp
 // 错误：record 作为 EF Core 实体
@@ -1000,7 +954,7 @@ public class ProductEntity
 public record ProductDto(Guid Id, string Name, decimal Price);
 ```
 
-### 7.4 陷阱：Equals 不一致
+### 6.4 陷阱：Equals 不一致
 
 ```csharp
 // 错误：自定义 Equals 未更新 GetHashCode
@@ -1019,7 +973,7 @@ Console.WriteLine(p1.GetHashCode() == p2.GetHashCode());   // false，违反合�
 
 **修复**：自定义 `Equals` 必须同步 `GetHashCode`。
 
-### 7.5 陷阱：record struct 装箱
+### 6.5 陷阱：record struct 装箱
 
 ```csharp
 public readonly record struct Point(int X, int Y);
@@ -1032,7 +986,7 @@ var p2 = (Point)o;   // 拆箱
 public static T Clone<T>(T value) where T : struct => value;
 ```
 
-### 7.6 陷阱：继承与 with 类型混淆
+### 6.6 陷阱：继承与 with 类型混淆
 
 ```csharp
 public record Animal(string Name);
@@ -1046,7 +1000,7 @@ Console.WriteLine(a2.GetType().Name);   // Dog，类型保留
 Animal a3 = a with { /* Dog 字段不能在这里访问 */ };
 ```
 
-### 7.7 陷阱：record 与反射
+### 6.7 陷阱：record 与反射
 
 ```csharp
 public record Person(string Name, int Age);
@@ -1061,7 +1015,7 @@ foreach (var prop in properties)
 }
 ```
 
-### 7.8 陷阱：record 与 JSON 序列化兼容性
+### 6.8 陷阱：record 与 JSON 序列化兼容性
 
 ```csharp
 public record Person(string Name, int Age);
@@ -1077,7 +1031,7 @@ var options = new JsonSerializerOptions
 };
 ```
 
-### 7.9 陷阱：record struct 与可空字段
+### 6.9 陷阱：record struct 与可空字段
 
 ```csharp
 public readonly record struct Person(string Name, int? Age);
@@ -1103,7 +1057,7 @@ public readonly record struct Person
 }
 ```
 
-### 7.10 陷阱：record 与哈希碰撞
+### 6.10 陷阱：record 与哈希碰撞
 
 ```csharp
 // 错误：所有字段使用相同值导致碰撞
@@ -1116,7 +1070,7 @@ var p2 = new Point(1, 1);
 
 **修复**：确保 `GetHashCode` 分布均匀，避免字段值高度相似。
 
-### 7.11 陷阱：with 表达式与 init-only 字段
+### 6.11 陷阱：with 表达式与 init-only 字段
 
 ```csharp
 public record Person
@@ -1135,7 +1089,7 @@ Console.WriteLine(p2.Hobbies.Count);   // 1，共享！
 
 **修复**：使用不可变集合或自定义克隆。
 
-### 7.12 陷阱：record 与默认值
+### 6.12 陷阱：record 与默认值
 
 ```csharp
 public record Person(string Name, int Age = 0);
@@ -1150,9 +1104,9 @@ Point p = default;   // X = 0, Y = 0，但若语义是无效点呢？
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 选择 record 还是 class
+### 7.1 选择 record 还是 class
 
 决策树：
 
@@ -1179,7 +1133,7 @@ flowchart TD
     T2 --> T9
 ```
 
-### 8.2 优先使用位置参数
+### 7.2 优先使用位置参数
 
 ```csharp
 // 推荐：位置参数，简洁且支持解构
@@ -1193,7 +1147,7 @@ public record Person
 }
 ```
 
-### 8.3 不可变集合配合 with
+### 7.3 不可变集合配合 with
 
 ```csharp
 using System.Collections.Immutable;
@@ -1211,7 +1165,7 @@ public record Customer(string Name, string Email);
 public record OrderLine(string ProductId, decimal Price, int Quantity);
 ```
 
-### 8.4 record 与 DDD Value Object
+### 7.4 record 与 DDD Value Object
 
 ```csharp
 // Value Object：不可变、值相等、无身份
@@ -1234,7 +1188,7 @@ public readonly record struct Address(
 }
 ```
 
-### 8.5 record 与 Domain Event
+### 7.5 record 与 Domain Event
 
 ```csharp
 // Domain Event：不可变、有序、可序列化
@@ -1250,7 +1204,7 @@ public record OrderShipped(Guid OrderId, string TrackingNumber)
     : DomainEvent(OrderId, 2, DateTimeOffset.UtcNow);
 ```
 
-### 8.6 record 与模式匹配深度集成
+### 7.6 record 与模式匹配深度集成
 
 ```csharp
 public abstract record OrderState
@@ -1273,7 +1227,7 @@ public string DescribeState(OrderState state) => state switch
 };
 ```
 
-### 8.7 record 与验证
+### 7.7 record 与验证
 
 ```csharp
 public record Person
@@ -1299,7 +1253,7 @@ public record Person
 }
 ```
 
-### 8.8 record 与序列化兼容性
+### 7.8 record 与序列化兼容性
 
 ```csharp
 // 使用 System.Text.Json，需配置 init 支持
@@ -1315,7 +1269,7 @@ JsonSerializerOptions.Default = options;
 // 对于 Newtonsoft.Json，需升级到 13.0+ 以支持 init
 ```
 
-### 8.9 record 与性能优化
+### 7.9 record 与性能优化
 
 ```csharp
 // 小型值类型用 readonly record struct
@@ -1334,7 +1288,7 @@ public record User(
 public readonly record struct Frame(int Index, double Timestamp);
 ```
 
-### 8.10 record 与测试
+### 7.10 record 与测试
 
 ```csharp
 // record 自动值相等，简化测试断言
@@ -1359,7 +1313,7 @@ public static class PersonTestData
 }
 ```
 
-### 8.11 record 与异步流
+### 7.11 record 与异步流
 
 ```csharp
 public record SensorReading(string SensorId, double Value, DateTimeOffset Timestamp);
@@ -1380,7 +1334,7 @@ await foreach (var reading in ReadSensorsAsync())
     Console.WriteLine(reading);
 ```
 
-### 8.12 record 与 Source Generator
+### 7.12 record 与 Source Generator
 
 ```csharp
 // 使用 Source Generator 自动生成 record 的 DTO 映射
@@ -1403,9 +1357,9 @@ public static partial class PersonMapper
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：电商订单系统
+### 8.1 案例：电商订单系统
 
 ```csharp
 // 领域模型
@@ -1454,7 +1408,7 @@ public record OrderStatus
 }
 ```
 
-### 9.2 案例：函数式数据处理管道
+### 8.2 案例：函数式数据处理管道
 
 ```csharp
 public record SalesRecord(DateTime Date, string Product, int Quantity, decimal Revenue);
@@ -1496,7 +1450,7 @@ var totalRevenue = todayRecords.TotalRevenue();
 Console.WriteLine($"Today's revenue: {totalRevenue}");
 ```
 
-### 9.3 案例：DDD Value Object 实现
+### 8.3 案例：DDD Value Object 实现
 
 ```csharp
 // Money Value Object
@@ -1552,7 +1506,7 @@ var total = price + tax;
 Console.WriteLine(total);   // 108.98 USD
 ```
 
-### 9.4 案例：配置与选项模式
+### 8.4 案例：配置与选项模式
 
 ```csharp
 public record DatabaseOptions(
@@ -1585,7 +1539,7 @@ var newOptions = options with
 };
 ```
 
-### 9.5 案例：事件溯源（Event Sourcing）
+### 8.5 案例：事件溯源（Event Sourcing）
 
 ```csharp
 public record DomainEvent(Guid EventId, Guid AggregateId, int Version, DateTimeOffset OccurredAt)
@@ -1669,7 +1623,7 @@ public class AccountAggregate
 }
 ```
 
-### 9.6 案例：HTTP API DTO
+### 8.6 案例：HTTP API DTO
 
 ```csharp
 public record UserDto(Guid Id, string Name, string Email, ImmutableList<string> Roles);
@@ -1701,7 +1655,7 @@ app.MapPut("/users/{id:guid}", async (Guid id, UpdateUserRequest req, IUserServi
 });
 ```
 
-### 9.7 案例：不可变领域状态机
+### 8.7 案例：不可变领域状态机
 
 ```csharp
 public abstract record OrderState
@@ -1745,7 +1699,7 @@ public record Order(Guid Id, Customer Customer, ImmutableList<OrderLine> Lines, 
 }
 ```
 
-### 9.8 案例：使用 BenchmarkDotNet 对比
+### 8.8 案例：使用 BenchmarkDotNet 对比
 
 ```csharp
 using BenchmarkDotNet.Attributes;
@@ -2032,7 +1986,7 @@ Console.WriteLine(dto);
 // UserDto { Id = ..., Name = Alice, Email = alice@example.com, CreatedAt = ... }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 11**：`record` 是否适合所有不可变数据建模场景？哪些情况下应避免使用？
 
@@ -2083,7 +2037,7 @@ Console.WriteLine(dto);
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] C# Language Specification, "Records (C# 9.0 Reference)," Microsoft Docs, 2020. [Online]. Available: https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/record
 
@@ -2117,9 +2071,9 @@ Console.WriteLine(dto);
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **C# Records**：https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/record
 - **Record Structs (C# 10)**：https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/record#record-struct
@@ -2127,7 +2081,7 @@ Console.WriteLine(dto);
 - **with Expression**：https://learn.microsoft.com/dotnet/csharp/language-reference/operators/with-expression
 - **Pattern Matching**：https://learn.microsoft.com/dotnet/csharp/fundamentals/functional/pattern-matching
 
-### 12.2 系列文档交叉引用
+### 11.2 系列文档交叉引用
 
 - 《C# 概述与环境配置》：.NET 平台基础、SDK 安装、dotnet CLI。
 - 《C# 基础语法》：值类型与引用类型、属性、可空性。
@@ -2137,7 +2091,7 @@ Console.WriteLine(dto);
 - 《C# .NET 平台与生态》：EF Core、`System.Text.Json`、DDD 集成。
 - 《C# 异步编程》：`record` 作为异步流元素、`Channel<SensorReading>`。
 
-### 12.3 进阶书籍
+### 11.3 进阶书籍
 
 - **C# in Depth (4th Edition)**, Jon Skeet：深入 C# 演化与设计哲学。
 - **C# 12 in a Nutshell**, Joseph Albahari：完整 C# 12 参考手册。
@@ -2146,7 +2100,7 @@ Console.WriteLine(dto);
 - **Functional Programming in C#**, Enrico Buonanno：函数式范式与 record 应用。
 - **Real-World Functional Programming**, Tomas Petricek：F# 与 C# 函数式对比。
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **C# Language Design**：https://github.com/dotnet/csharplang
 - **.NET Design Notes**：https://github.com/dotnet/designs
@@ -2154,7 +2108,7 @@ Console.WriteLine(dto);
 - **Stack Overflow C# Tag**：https://stackoverflow.com/questions/tagged/c%23
 - **Reddit r/csharp**：https://www.reddit.com/r/csharp/
 
-### 12.5 视频资源
+### 11.5 视频资源
 
 - **Microsoft Build: What's New in C# 10 Records**：https://learn.microsoft.com/events/build-2022
 - **NDC Oslo: Records and Pattern Matching in C#**：https://vimeo.com/ndcoslo
@@ -2162,7 +2116,7 @@ Console.WriteLine(dto);
 - **Nick Chapsas: C# Records Explained**：https://www.youtube.com/@nickchapsas
 - **Tim Corey: C# Records Tutorial**：https://www.youtube.com/@IAmTimCorey
 
-### 12.6 工具与诊断
+### 11.6 工具与诊断
 
 - **BenchmarkDotNet**：性能基准测试，对比 record/class/struct 性能。https://benchmarkdotnet.org/
 - **ILSpy**：反编译工具，查看 record 编译后的 IL 代码。https://github.com/icsharpcode/ILSpy

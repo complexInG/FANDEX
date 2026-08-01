@@ -15,28 +15,16 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # C++ 工具链
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-| Bloom 层级 | 目标描述 |
-| :--- | :--- |
-| **Remember（记忆）** | 列举主流 C++ 编译器、构建系统、包管理器的名称与定位，复述 CMake 的"元构建系统"概念 |
-| **Understand（理解）** | 解释 CMake 的两阶段模型（配置与生成）、target 化与现代变量化的差异、vcpkg 清单模式 vs 经典模式 |
-| **Apply（应用）** | 编写 CMakeLists.txt 构建多目标项目，使用 vcpkg/Conan 管理依赖，配置 CMake Presets 统一团队构建 |
-| **Analyze（分析）** | 分析给定 CMake 配置的正确性、可维护性、跨平台兼容性，识别反模式（全局变量污染、硬编码路径） |
-| **Evaluate（评价）** | 评估 CMake vs Bazel vs xmake 在不同规模项目上的适用性，权衡 vcpkg vs Conan 的依赖策略 |
-| **Create（创造）** | 设计完整的 CI/CD 流水线，集成静态分析、测试、覆盖率、文档生成、跨平台交叉编译 |
-
-## 2. 历史动机与发展脉络
-
-### 2.1 C++ 工具链的碎片化困境
+### 1.1 C++ 工具链的碎片化困境
 
 C++ 与 Rust、Go、Node.js 等现代语言的关键差异在于：**没有官方统一的工具链**。Rust 有 `cargo`，Go 有 `go mod`，Node.js 有 `npm`，而 C++ 自 1985 年诞生以来，工具链长期处于"百花齐放但互不兼容"的状态。
 
@@ -50,7 +38,7 @@ C++ 与 Rust、Go、Node.js 等现代语言的关键差异在于：**没有官�
 | 2015-2020 | CMake + vcpkg/Conan | 工具链成熟，但 API 不稳定 |
 | 2020-至今 | CMake 3.20+ + vcpkg 清单模式 | 现代化 API，Presets 标准化，逐步统一 |
 
-### 2.2 关键工具演进时间线
+### 1.2 关键工具演进时间线
 
 | 工具 | 首次发布 | 关键里程碑 | 当前状态（2026） |
 | :--- | :--- | :--- | :--- |
@@ -66,7 +54,7 @@ C++ 与 Rust、Go、Node.js 等现代语言的关键差异在于：**没有官�
 | **MSVC** | 1993 | Visual Studio 2019 16.11 支持 C++20；2022 支持 C++23 | VS 2022 17.10+ |
 | **Build2** | 2014 | 现代化构建系统 | 小众但活跃 |
 
-### 2.3 关键提案与文献
+### 1.3 关键提案与文献
 
 - **Kitware** — *CMake: Cross-Platform Make*, 2000.
 - **Spencer, J.** — *Ninja: a small build system with a focus on speed*, 2010.
@@ -74,7 +62,7 @@ C++ 与 Rust、Go、Node.js 等现代语言的关键差异在于：**没有官�
 - **Microsoft** — *vcpkg: C++ Library Manager*, 2016.
 - **Sborlini, J.** — *Conan 2.0: A new era for C/C++ package management*, 2022.
 
-### 2.4 与其他语言工具链的横向对比
+### 1.4 与其他语言工具链的横向对比
 
 | 维度 | C++ (CMake+vcpkg) | Rust (Cargo) | Go (go mod) | Node.js (npm) | Java (Maven) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -86,9 +74,9 @@ C++ 与 Rust、Go、Node.js 等现代语言的关键差异在于：**没有官�
 | 交叉编译 | 是（复杂） | 是（简单） | 是 | 否（语言层面） | 否（语言层面） |
 | 学习曲线 | 陡峭 | 平缓 | 平缓 | 平缓 | 中等 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 元构建系统的概念
+### 2.1 元构建系统的概念
 
 CMake 是"元构建系统"（meta build system）：它本身不直接构建，而是生成底层构建系统（Make、Ninja、Visual Studio、Xcode）的配置文件。
 
@@ -103,7 +91,7 @@ $$
 - **compile**：调用编译器编译源文件
 - **link**：链接生成可执行文件或库
 
-### 3.2 target 与 property 模型
+### 2.2 target 与 property 模型
 
 现代 CMake 围绕 **target**（目标）与 **property**（属性）组织：
 
@@ -142,7 +130,7 @@ $$
 \end{cases}
 $$
 
-### 3.3 包管理的依赖图
+### 2.3 包管理的依赖图
 
 包管理器维护一个有向无环图（DAG）：
 
@@ -158,9 +146,9 @@ $$
 
 vcpkg 清单模式通过 `builtin-baseline` 锁定版本，Conan 通过 `conan.lock` 文件锁定。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 CMake 的两阶段执行
+### 3.1 CMake 的两阶段执行
 
 CMake 的执行分为配置阶段与生成阶段：
 
@@ -178,7 +166,7 @@ CMake 的执行分为配置阶段与生成阶段：
 1. 调用底层构建工具（Make/Ninja/MSBuild）
 2. 编译、链接
 
-### 4.2 target_ vs 全局命令
+### 3.2 target_ vs 全局命令
 
 传统 CMake 使用全局变量污染：
 
@@ -208,7 +196,7 @@ target_compile_options(mylib PRIVATE -Wall)
 | 可组合性 | 差 | 好 |
 | 现代 CMake | 不推荐 | 推荐 |
 
-### 4.3 依赖查找机制
+### 3.3 依赖查找机制
 
 `find_package` 的查找顺序（CMake 3.16+）：
 
@@ -220,7 +208,7 @@ target_compile_options(mylib PRIVATE -Wall)
 
 vcpkg 通过 `CMAKE_TOOLCHAIN_FILE` 注入工具链，使 `find_package` 优先查找 vcpkg 安装的库。
 
-### 4.4 编译器与平台检测
+### 3.4 编译器与平台检测
 
 CMake 提供变量检测编译器与平台：
 
@@ -235,7 +223,7 @@ CMake 提供变量检测编译器与平台：
 | `APPLE` | 是否 macOS |
 | `CMAKE_SIZEOF_VOID_P` | 指针大小（8 表示 64 位） |
 
-### 4.5 构建类型与优化级别
+### 3.5 构建类型与优化级别
 
 CMake 的构建类型（`CMAKE_BUILD_TYPE`）：
 
@@ -253,7 +241,7 @@ CMake 的构建类型（`CMAKE_BUILD_TYPE`）：
 cmake --build build --config Release
 ```
 
-### 4.6 RPATH 与运行时库查找
+### 3.6 RPATH 与运行时库查找
 
 Unix 系统通过 `RPATH`（Run-time search Path）记录动态库搜索路径。CMake 提供策略：
 
@@ -274,9 +262,9 @@ file(RELATIVE_PATH RELATIVE_RPATH
 set(CMAKE_INSTALL_RPATH "$ORIGIN/${RELATIVE_RPATH}")
 ```
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 现代化 CMake 项目结构
+### 4.1 现代化 CMake 项目结构
 
 ```mermaid
 flowchart TD
@@ -392,7 +380,7 @@ install(FILES
 )
 ```
 
-### 5.2 库目标配置
+### 4.2 库目标配置
 
 `src/CMakeLists.txt`：
 
@@ -442,7 +430,7 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
 )
 ```
 
-### 5.3 可执行文件目标
+### 4.3 可执行文件目标
 
 `apps/CMakeLists.txt`：
 
@@ -466,7 +454,7 @@ target_compile_definitions(my_app PRIVATE
 )
 ```
 
-### 5.4 vcpkg 清单模式
+### 4.4 vcpkg 清单模式
 
 `vcpkg.json`：
 
@@ -512,7 +500,7 @@ cmake --build build --config Release
 cmake --install build --prefix ./install
 ```
 
-### 5.5 CMake Presets
+### 4.5 CMake Presets
 
 `CMakePresets.json`：
 
@@ -622,7 +610,7 @@ cmake --build --preset debug   # 构建
 ctest --preset debug           # 测试
 ```
 
-### 5.6 测试集成（GoogleTest）
+### 4.6 测试集成（GoogleTest）
 
 `tests/CMakeLists.txt`：
 
@@ -664,7 +652,7 @@ gtest_discover_tests(integration_tests
 list(APPEND CTEST_CUSTOM_TESTS_IGNORE perf_test)
 ```
 
-### 5.7 自定义 CMake 函数
+### 4.7 自定义 CMake 函数
 
 `cmake/CompilerWarnings.cmake`：
 
@@ -725,7 +713,7 @@ function(enable_warnings_globally)
 endfunction()
 ```
 
-### 5.8 Sanitizer 配置
+### 4.8 Sanitizer 配置
 
 `cmake/Sanitizers.cmake`：
 
@@ -768,7 +756,7 @@ function(enable_sanitizers target_name)
 endfunction()
 ```
 
-### 5.9 CCache 加速
+### 4.9 CCache 加速
 
 ```cmake
 # 顶层 CMakeLists.txt
@@ -794,7 +782,7 @@ ccache --clear               # 清空缓存
 ccache --zero-stats          # 重置统计
 ```
 
-### 5.10 Conan 2.x 集成
+### 4.10 Conan 2.x 集成
 
 `conanfile.txt`（传统）：
 
@@ -856,7 +844,7 @@ cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=build/build/Release/generators/conan_
 cmake --build build --config Release
 ```
 
-### 5.11 跨平台构建
+### 4.11 跨平台构建
 
 ```cmake
 # 平台检测
@@ -888,7 +876,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 endif()
 ```
 
-### 5.12 交叉编译
+### 4.12 交叉编译
 
 `cmake/arm-linux.cmake`（工具链文件）：
 
@@ -916,7 +904,7 @@ cmake -B build-arm -S . \
 cmake --build build-arm
 ```
 
-### 5.13 自定义 vcpkg 端口
+### 4.13 自定义 vcpkg 端口
 
 ```mermaid
 flowchart TD
@@ -988,7 +976,7 @@ cmake -B build -S . \
     -DVCPKG_OVERLAY_PORTS=${PWD}/my-ports
 ```
 
-### 5.14 FetchContent 与私有仓库
+### 4.14 FetchContent 与私有仓库
 
 ```cmake
 include(FetchContent)
@@ -1020,7 +1008,7 @@ FetchContent_MakeAvailable(fmt company_lib local_utils)
 target_link_libraries(my_app PRIVATE fmt::fmt company_lib::core local_utils)
 ```
 
-### 5.15 安装与打包（CPack）
+### 4.15 安装与打包（CPack）
 
 ```cmake
 # 安装规则
@@ -1068,9 +1056,9 @@ cmake --build build
 cd build && cpack
 ```
 
-## 6. 对比分析（横向对比）
+## 5. 对比分析（横向对比）
 
-### 6.1 构建系统对比
+### 5.1 构建系统对比
 
 | 维度 | CMake | Bazel | xmake | Make | Ninja |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -1083,7 +1071,7 @@ cd build && cpack
 | 大规模项目 | 中 | 强 | 中 | 弱 | 强 |
 | 主流度 | 最高 | Google 内部+OSS | 国产 | 经典 | 配合 CMake |
 
-### 6.2 包管理器对比
+### 5.2 包管理器对比
 
 | 维度 | vcpkg | Conan | CPM.cmake | FetchContent |
 | :--- | :--- | :--- | :--- | :--- |
@@ -1094,7 +1082,7 @@ cd build && cpack
 | 离线 | 是 | 是 | 否 | 否 |
 | 适合场景 | 通用 | 企业 | 小项目 | 临时依赖 |
 
-### 6.3 CMake 风格演进
+### 5.3 CMake 风格演进
 
 | 风格 | 时期 | 特征 | 评价 |
 | :--- | :--- | :--- | :--- |
@@ -1102,7 +1090,7 @@ cd build && cpack
 | 现代 | 2013-2020 | target 化、`target_include_directories`、`target_compile_features` | 推荐 |
 | 最新 | 2020-至今 | Presets、`FILE_SET`、`imported targets`、`cxx_std_20` | 推荐 |
 
-### 6.4 编译器对比
+### 5.4 编译器对比
 
 | 维度 | GCC | Clang | MSVC |
 | :--- | :--- | :--- | :--- |
@@ -1115,9 +1103,9 @@ cd build && cpack
 | 编译速度 | 中 | 快 | 中 |
 | 交叉编译 | 是 | 是 | 是 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：全局变量污染
+### 6.1 陷阱：全局变量污染
 
 ```cmake
 # 反模式
@@ -1131,7 +1119,7 @@ target_compile_definitions(mylib PRIVATE DEBUG)
 target_compile_options(mylib PRIVATE -Wall)
 ```
 
-### 7.2 陷阱：硬编码路径
+### 6.2 陷阱：硬编码路径
 
 ```cmake
 # 反模式
@@ -1144,7 +1132,7 @@ target_include_directories(mylib PUBLIC
 )
 ```
 
-### 7.3 陷阱：版本号未约束
+### 6.3 陷阱：版本号未约束
 
 ```cmake
 # 反模式
@@ -1154,7 +1142,7 @@ find_package(fmt REQUIRED)
 find_package(fmt 10.0 REQUIRED)
 ```
 
-### 7.4 陷阱：未设置 C++ 标准
+### 6.4 陷阱：未设置 C++ 标准
 
 ```cmake
 # 反模式
@@ -1168,7 +1156,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 ```
 
-### 7.5 陷阱：缺少编译警告
+### 6.5 陷阱：缺少编译警告
 
 ```cmake
 # 反模式：无警告
@@ -1181,7 +1169,7 @@ target_compile_options(mylib PRIVATE
 )
 ```
 
-### 7.6 陷阱：include 路径泄漏
+### 6.6 陷阱：include 路径泄漏
 
 ```cmake
 # 反模式：私有头文件被 PUBLIC 暴露
@@ -1194,7 +1182,7 @@ target_include_directories(mylib
 )
 ```
 
-### 7.7 陷阱：依赖传播错误
+### 6.7 陷阱：依赖传播错误
 
 ```cmake
 # 反模式：私有依赖被 PUBLIC
@@ -1204,7 +1192,7 @@ target_link_libraries(mylib PUBLIC fmt::fmt)  # fmt 是实现细节
 target_link_libraries(mylib PRIVATE fmt::fmt)  # 不传播给使用者
 ```
 
-### 7.8 陷阱：未启用测试
+### 6.8 陷阱：未启用测试
 
 ```cmake
 # 反模式：测试代码总被构建
@@ -1218,7 +1206,7 @@ if(BUILD_TESTING)
 endif()
 ```
 
-### 7.9 陷阱：Presets 版本不匹配
+### 6.9 陷阱：Presets 版本不匹配
 
 ```json
 {
@@ -1229,7 +1217,7 @@ endif()
 
 若 CMake 版本为 3.24，将报错。建议使用 `cmakeMinimumRequired` 字段明确版本要求。
 
-### 7.10 最佳实践清单
+### 6.10 最佳实践清单
 
 1. **target 化**：所有设置通过 `target_*` 命令，避免全局变量。
 2. **PUBLIC/PRIVATE 明确**：实现细节用 PRIVATE，对外接口用 PUBLIC。
@@ -1247,9 +1235,9 @@ endif()
 14. **测试发现**：`gtest_discover_tests` 自动注册。
 15. **跨平台检测**：用 `WIN32`、`APPLE`、`UNIX` 而非 `if(WIN32 AND NOT UNIX)`。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构规范
+### 7.1 项目结构规范
 
 推荐的目录布局：
 
@@ -1289,7 +1277,7 @@ flowchart TD
     T11 --> T17
 ```
 
-### 8.2 编译器检测与特性
+### 7.2 编译器检测与特性
 
 ```cmake
 # 检测编译器特性
@@ -1307,7 +1295,7 @@ check_cxx_source_compiles("
 " HAS_CONCEPTS)
 ```
 
-### 8.3 静态分析集成
+### 7.3 静态分析集成
 
 `.clang-tidy`：
 
@@ -1343,7 +1331,7 @@ if(ENABLE_CLANG_TIDY)
 endif()
 ```
 
-### 8.4 CI/CD 集成
+### 7.4 CI/CD 集成
 
 GitHub Actions 示例：
 
@@ -1384,7 +1372,7 @@ jobs:
         run: cmake --preset debug -DENABLE_CLANG_TIDY=ON && cmake --build --preset debug
 ```
 
-### 8.5 文档生成（Doxygen + Sphinx）
+### 7.5 文档生成（Doxygen + Sphinx）
 
 ```cmake
 find_package(Doxygen REQUIRED)
@@ -1401,7 +1389,7 @@ doxygen_add_docs(docs
 )
 ```
 
-### 8.6 代码覆盖率
+### 7.6 代码覆盖率
 
 ```cmake
 option(ENABLE_COVERAGE "Enable code coverage" OFF)
@@ -1421,9 +1409,9 @@ ctest --preset debug
 gcovr --xml-pretty --exclude-unreachable-branches --print-summary -o coverage.xml
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：跨平台游戏引擎构建
+### 8.1 案例：跨平台游戏引擎构建
 
 ```cmake
 cmake_minimum_required(VERSION 3.24)
@@ -1461,7 +1449,7 @@ add_executable(my_game src/main.cpp)
 target_link_libraries(my_game PRIVATE engine_core)
 ```
 
-### 9.2 案例：嵌入式固件交叉编译
+### 8.2 案例：嵌入式固件交叉编译
 
 ```cmake
 # 工具链文件：arm-none-eabi.cmake
@@ -1498,7 +1486,7 @@ add_custom_command(TARGET firmware.elf POST_BUILD
 )
 ```
 
-### 9.3 案例：插件系统构建
+### 8.3 案例：插件系统构建
 
 ```cmake
 # 主程序
@@ -1571,7 +1559,7 @@ install(TARGETS plugin_video LIBRARY DESTINATION plugins)
 
 18. **工具链统一**：若要为团队制定 C++ 工具链标准，列出关键决策点与推荐方案。
 
-## 11. 参考文献
+## 10. 参考文献
 
 ### 官方文档
 
@@ -1609,7 +1597,7 @@ install(TARGETS plugin_video LIBRARY DESTINATION plugins)
 - **Sutton, A.** *C++ Modules: What They Are and How to Use Them*, CppCon 2022.
 - **Herring, D.** *CMake 3.20+ Features*, CppCon 2021.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 ### 书籍
 

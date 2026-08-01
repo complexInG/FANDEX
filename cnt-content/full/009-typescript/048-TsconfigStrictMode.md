@@ -16,6 +16,7 @@ prerequisites:
   - typescript/语法速查
 ---
 
+
 # tsconfig严格模式
 
 > 本文档对标 MIT 6.S192、Stanford CS110、CMU 15-214 等课程教学水准，系统讲解 TypeScript `tsconfig.json` 严格模式（Strict Mode）的设计动机、形式化语义、编译器选项矩阵、类型推导算法与工程级应用。所有代码示例均可在 TS 5.4 + `strict: true` 下编译通过。
@@ -39,43 +40,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够：
-
-### 1.1 Bloom 认知层级映射
-
-| 层级 | 行为动词 | 预期成果 |
-|------|----------|----------|
-| **Remember**（记忆） | 列举、识别 | 列举 `strict: true` 总开关所启用的 8 个子选项（`strictNullChecks`、`noImplicitAny`、`strictFunctionTypes` 等），写出每个选项的语义 |
-| **Understand**（理解） | 解释、归纳 | 解释 `strictNullChecks` 与 `noImplicitAny` 的类型论基础（nullable types、gradual typing），归纳 `strictFunctionTypes` 的逆变（contravariance）规则与 `strictBindCallApply` 的元组类型推导机制 |
-| **Apply**（应用） | 实现、使用 | 在企业级项目中配置 `tsconfig.json` 严格模式，正确使用类型守卫（type guard）、确定赋值断言（definite assignment assertion）、可选链（optional chaining）解决严格模式下的类型错误 |
-| **Analyze**（分析） | 比较、分解 | 比较 `strictPropertyInitialization` 的三种解决方案（构造函数初始化、`!` 断言、可选属性），分解 `noImplicitThis` 在回调函数与高阶函数中的 `this` 绑定问题 |
-| **Evaluate**（评价） | 评判、选择 | 针对给定项目（新建项目 vs. 遗留代码库迁移）选择合适的渐进式严格模式启用策略，并给出编译性能、类型安全、迁移成本的权衡分析 |
-| **Create**（创造） | 设计、构建 | 设计一个端到端类型安全的企业级项目 `tsconfig.json` 模板，包含严格模式、模块解析、构建输出、路径映射、项目引用等完整配置 |
-
-### 1.2 前置知识
-
-- TypeScript 基础类型系统（primitive types、union types、intersection types）
-- 类与接口（class、interface、abstract class）
-- 函数类型与 `this` 绑定
-- 模块系统（ES modules、CommonJS）
-- JSON 配置文件语法
-- 编译原理基础（词法分析、语法分析、类型检查）
-
-### 1.3 适用读者
-
-- 具备 1 年以上 TypeScript 实战经验的中高级开发者
-- 正在为企业级项目设计 TypeScript 工程规范的架构师
-- 希望深入理解 TypeScript 编译器内部机制的工程师
-- 准备将 JavaScript 项目迁移至 TypeScript 的开发者
-- 准备 TypeScript 高级面试的工程师
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 严格模式的起源
+### 1.1 严格模式的起源
 
 TypeScript 由 **Anders Hejlsberg**（Delphi、C# 之父）于 2012 年在 Microsoft 主导设计。TypeScript 的核心设计哲学是**渐进式类型系统**（gradual typing）：开发者可以选择性地为 JavaScript 代码添加类型注解，未注解的部分默认为 `any`。这一设计使得 JavaScript 代码可以零成本迁移至 TypeScript，但也带来了类型安全性的妥协。
 
@@ -88,13 +55,13 @@ TypeScript 由 **Anders Hejlsberg**（Delphi、C# 之父）于 2012 年在 Micro
 
 这种宽松策略虽然降低了迁移门槛，但在大型企业级项目中暴露了严重的类型安全问题。Microsoft 内部的 Visual Studio Code 团队、Azure 团队在将大型代码库迁移至 TypeScript 时，发现大量运行时错误本可在编译期通过更严格的类型检查发现。
 
-### 2.2 严格模式的引入
+### 1.2 严格模式的引入
 
 TypeScript 在 **TS 2.3（2017 年 4 月）** 正式引入 `strict` 总开关，由 **Gabriel Soicher** 与 **Daniel Rosenwasser** 主导设计。`strict: true` 是一个**聚合选项**（aggregate flag），等价于同时启用若干个子选项。这一设计借鉴了 C# 的 `treat warnings as errors` 与 Rust 的 `#![deny(warnings)]` 哲学。
 
 > **设计动机**：开发者无需逐一记忆与启用每个严格选项，通过单一开关即可获得"最大类型安全性"。同时，`strict` 的子选项可以独立控制，便于渐进式迁移。
 
-### 2.3 版本演进时间线
+### 1.3 版本演进时间线
 
 ```
 2014-10  TS 1.0     最初发布，类型检查宽松
@@ -112,7 +79,7 @@ TypeScript 在 **TS 2.3（2017 年 4 月）** 正式引入 `strict` 总开关，
 2024-11  TS 5.6     严格模式下迭代器与 Promise 的细化检查
 ```
 
-### 2.4 `strict` 总开关的演进
+### 1.4 `strict` 总开关的演进
 
 `strict` 总开关在不同 TypeScript 版本中聚合的子选项数量逐步增加：
 
@@ -125,7 +92,7 @@ TypeScript 在 **TS 2.3（2017 年 4 月）** 正式引入 `strict` 总开关，
 | TS 4.4 | 新增 `useUnknownInCatchVariables` | 9 |
 | TS 5.x | 当前状态：8 个子选项（`useUnknownInCatchVariables` 在 TS 4.4 后默认属于 strict） | 8-9 |
 
-### 2.5 设计动机深度分析
+### 1.5 设计动机深度分析
 
 Daniel Rosenwasser 在 [TypeScript 2.3 Release Notes](https://devblogs.microsoft.com/typescript/announcing-typescript-2-3/) 中阐述了严格模式的三大核心动机：
 
@@ -135,7 +102,7 @@ Daniel Rosenwasser 在 [TypeScript 2.3 Release Notes](https://devblogs.microsoft
 
 > **动机三：与主流语言对齐。** Rust、Haskell、OCaml、Scala 等强类型语言均要求显式类型注解与空安全。TypeScript 通过严格模式向这些语言的设计哲学靠拢，提升类型系统的严谨性。
 
-### 2.6 社区生态发展
+### 1.6 社区生态发展
 
 严格模式的社区采纳可分为三个阶段：
 
@@ -143,7 +110,7 @@ Daniel Rosenwasser 在 [TypeScript 2.3 Release Notes](https://devblogs.microsoft
 - **2020-2022 主流期**：Google、Airbnb、Slack、Microsoft 等大型企业在新建 TypeScript 项目中默认启用严格模式；`create-react-app`、`Next.js`、`Vite` 等脚手架工具默认启用
 - **2023-2025 标准期**：TypeScript 5.x 时代，严格模式成为社区事实标准；`tsc --init` 生成的默认 `tsconfig.json` 启用 `strict: true`；主流开源库（RxJS、lodash-es、zod、effect）均以严格模式发布
 
-### 2.7 当前社区共识（2024-2025）
+### 1.7 当前社区共识（2024-2025）
 
 TypeScript 核心团队在 2024 年路线图中明确：
 
@@ -154,9 +121,9 @@ TypeScript 核心团队在 2024 年路线图中明确：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 严格模式的语义模型
+### 2.1 严格模式的语义模型
 
 TypeScript 类型系统在严格模式下可形式化为一个**带空值的渐变类型系统**（gradual type system with nullability）。形式化定义：
 
@@ -172,7 +139,7 @@ $$
 - $\text{Any}$ 为渐变类型（gradual type），与任意类型双向兼容
 - $\vdash$ 为类型判断关系
 
-### 3.2 `strictNullChecks` 的形式化
+### 2.2 `strictNullChecks` 的形式化
 
 在 `strictNullChecks: false` 模式下，`null` 与 `undefined` 是所有类型的子类型：
 
@@ -192,7 +159,7 @@ $$
 \frac{\Gamma \vdash x : \text{string}}{\Gamma \vdash x = \text{null} : \text{Error}} \quad \text{(Strict Null Assignment)}
 $$
 
-### 3.3 `noImplicitAny` 的形式化
+### 2.3 `noImplicitAny` 的形式化
 
 `noImplicitAny` 禁止类型系统自动推断为 `any`。形式化规则：
 
@@ -202,7 +169,7 @@ $$
 
 即：当一个变量、参数或属性无法被推断为具体类型时，编译器报错而非回退至 `any`。
 
-### 3.4 `strictFunctionTypes` 的形式化
+### 2.4 `strictFunctionTypes` 的形式化
 
 `strictFunctionTypes` 启用函数参数的**逆变**（contravariance）检查。形式化：
 
@@ -222,7 +189,7 @@ $$
 \frac{\text{Animal} <: \text{Dog} \text{ is false}}{(\text{Dog} \to \text{void}) \not<: (\text{Animal} \to \text{void})} \quad \text{(Safety)}
 $$
 
-### 3.5 `strictPropertyInitialization` 的形式化
+### 2.5 `strictPropertyInitialization` 的形式化
 
 类属性必须在使用前被初始化。形式化规则：
 
@@ -237,7 +204,7 @@ $$
 3. 确定赋值断言：`p!: T;`
 4. 可选属性：`p?: T;`
 
-### 3.6 `strictBindCallApply` 的形式化
+### 2.6 `strictBindCallApply` 的形式化
 
 `strictBindCallApply` 使 `Function.prototype.bind`、`call`、`apply` 的参数类型严格检查。形式化：
 
@@ -247,7 +214,7 @@ $$
 
 在非严格模式下，`args` 被宽松地接受为 `any[]`。
 
-### 3.7 `useUnknownInCatchVariables` 的形式化
+### 2.7 `useUnknownInCatchVariables` 的形式化
 
 `catch` 子句的变量类型从 `any` 变为 `unknown`：
 
@@ -261,7 +228,7 @@ $$
 \frac{\Gamma \vdash e : \text{unknown} \quad \Gamma \vdash e \text{ instanceof } \text{Error}}{\Gamma \vdash e : \text{Error}} \quad \text{(Type Narrowing)}
 $$
 
-### 3.8 `alwaysStrict` 的形式化
+### 2.8 `alwaysStrict` 的形式化
 
 `alwaysStrict` 在编译输出的每个文件顶部添加 `"use strict";` 指令：
 
@@ -273,9 +240,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 空类型安全的理论基础
+### 3.1 空类型安全的理论基础
 
 `strictNullChecks` 的理论基础是 **Tony Hoare** 1965 年提出的"十亿美元错误"（The Billion Dollar Mistake）—— null 引用的发明。Hoare 在 2009 年 QCon London 演讲中反思：
 
@@ -306,7 +273,7 @@ $$
 \frac{\Gamma \vdash x : T \sqcup \text{null} \quad \Gamma \vdash x \neq \text{null}}{\Gamma \vdash x : T} \quad \text{(Null Narrowing)}
 $$
 
-### 4.2 渐进式类型系统的数学模型
+### 3.2 渐进式类型系统的数学模型
 
 TypeScript 采用 **Jeremy Siek** 与 **Manuel Serrano** 在 2006 年提出的渐变类型系统（Gradual Typing）框架。形式化：
 
@@ -332,7 +299,7 @@ $$
 \frac{\Gamma \vdash x : \text{any (explicit)}}{\Gamma \vdash \text{OK}} \quad \text{(Explicit Any Allowed)}
 $$
 
-### 4.3 函数参数变型的类型论
+### 3.3 函数参数变型的类型论
 
 函数参数的变型（variance）规则是类型系统设计的核心问题。形式化定义：
 
@@ -351,7 +318,7 @@ $$
 
 TypeScript 默认采用双向兼容（`strictFunctionTypes: false`）以兼容 DOM 事件处理等场景。启用 `strictFunctionTypes: true` 后，方法（method）声明仍保持双向兼容，但函数类型字面量（function type literal）采用逆变。
 
-### 4.4 控制流分析的类型缩小
+### 3.4 控制流分析的类型缩小
 
 TypeScript 编译器通过**控制流分析**（Control Flow Analysis, CFA）实现类型缩小。形式化：
 
@@ -371,7 +338,7 @@ $$
 | 自定义类型守卫 | `isString(x)` | 用户定义缩小 |
 | 真值缩小 | `if (x)` | `null`/`undefined`/`0`/`''` 缩小 |
 
-### 4.5 确定赋值分析
+### 3.5 确定赋值分析
 
 `strictPropertyInitialization` 依赖**确定赋值分析**（Definite Assignment Analysis）。形式化：
 
@@ -404,7 +371,7 @@ class UserService {
 }
 ```
 
-### 4.6 模块解析与严格模式
+### 3.6 模块解析与严格模式
 
 严格模式与模块解析（module resolution）的交互：
 
@@ -421,7 +388,7 @@ $$
 | `bundler` | Webpack/Vite | 最灵活，推荐 |
 | `classic` | 已废弃 | 不推荐 |
 
-### 4.7 类型推断算法
+### 3.7 类型推断算法
 
 TypeScript 编译器在严格模式下采用更精确的类型推断算法。形式化：
 
@@ -436,7 +403,7 @@ $$
 3. **函数返回值推断**：根据所有 `return` 语句推断联合类型
 4. **上下文类型**（Contextual Typing）：根据使用位置反向推断
 
-### 4.8 编译期与运行时的边界
+### 3.8 编译期与运行时的边界
 
 严格模式的所有检查均在编译期完成，运行时零开销。形式化：
 
@@ -448,9 +415,9 @@ TypeScript 的类型注解在编译期被完全擦除，运行时仅保留 JavaS
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础严格模式配置
+### 4.1 基础严格模式配置
 
 ```json
 // tsconfig.json
@@ -473,7 +440,7 @@ TypeScript 的类型注解在编译期被完全擦除，运行时仅保留 JavaS
 }
 ```
 
-### 5.2 `strictNullChecks` 详细示例
+### 4.2 `strictNullChecks` 详细示例
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -519,7 +486,7 @@ function processElement(element: HTMLElement | null): void {
 }
 ```
 
-### 5.3 `noImplicitAny` 详细示例
+### 4.3 `noImplicitAny` 详细示例
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -582,7 +549,7 @@ if (typeof result === 'object' && result !== null && 'name' in result) {
 }
 ```
 
-### 5.4 `strictFunctionTypes` 详细示例
+### 4.4 `strictFunctionTypes` 详细示例
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -645,7 +612,7 @@ const dogEmitter: EventEmitter<Dog> = {
 // const animalEmitter: EventEmitter<Animal> = dogEmitter;
 ```
 
-### 5.5 `strictPropertyInitialization` 详细示例
+### 4.5 `strictPropertyInitialization` 详细示例
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -731,7 +698,7 @@ console.log(account.id);  // 'u-1'
 console.log(account.name);  // 'Alice'
 ```
 
-### 5.6 `strictBindCallApply` 详细示例
+### 4.6 `strictBindCallApply` 详细示例
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -774,7 +741,7 @@ greet.apply(null, args);  // OK
 // greet.apply(null, wrongArgs);  // Error
 ```
 
-### 5.7 `useUnknownInCatchVariables` 详细示例
+### 4.7 `useUnknownInCatchVariables` 详细示例
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -841,7 +808,7 @@ async function fetchData(url: string): Promise<unknown> {
 }
 ```
 
-### 5.8 `noUncheckedIndexedAccess` 详细示例
+### 4.8 `noUncheckedIndexedAccess` 详细示例
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true, "noUncheckedIndexedAccess": true }
@@ -902,7 +869,7 @@ if (value3 !== undefined) {
 }
 ```
 
-### 5.9 综合配置：企业级项目模板
+### 4.9 综合配置：企业级项目模板
 
 ```json
 // tsconfig.json - 企业级项目推荐配置
@@ -964,7 +931,7 @@ if (value3 !== undefined) {
 }
 ```
 
-### 5.10 渐进式迁移配置
+### 4.10 渐进式迁移配置
 
 ```json
 // tsconfig.json - 遗留项目渐进式迁移
@@ -996,9 +963,9 @@ if (value3 !== undefined) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与其他语言的类型严格性对比
+### 5.1 与其他语言的类型严格性对比
 
 | 语言 | 类型系统 | 空安全 | 隐式类型 | 严格模式 |
 |------|---------|--------|---------|---------|
@@ -1013,7 +980,7 @@ if (value3 !== undefined) {
 | **Java** | 静态、名义类型 | 否（null 普遍存在） | 否 | 默认严格 |
 | **C#** | 静态、名义类型 | 是（NRT, C# 8+） | 否 | `<Nullable>enable</Nullable>` |
 
-### 6.2 与 Flow 的对比
+### 5.2 与 Flow 的对比
 
 Flow（Facebook 开发的 JavaScript 类型检查器）与 TypeScript 在严格性上的差异：
 
@@ -1026,7 +993,7 @@ Flow（Facebook 开发的 JavaScript 类型检查器）与 TypeScript 在严格�
 | 类型推断 | 结构化推断 + 上下文类型 | 结构化推断 |
 | 渐进式迁移 | 支持（按子选项启用） | 较弱（整体启用） |
 
-### 6.3 与 Rust 类型系统的对比
+### 5.3 与 Rust 类型系统的对比
 
 Rust 的类型系统设计哲学与 TypeScript 严格模式有相似之处，但实现更严格：
 
@@ -1059,7 +1026,7 @@ match find_user("u-1") {
 }
 ```
 
-### 6.4 与 Python + mypy 的对比
+### 5.4 与 Python + mypy 的对比
 
 Python 通过 PEP 484 类型注解 + mypy 检查器实现类似的严格性：
 
@@ -1071,7 +1038,7 @@ Python 通过 PEP 484 类型注解 + mypy 检查器实现类似的严格性：
 | 函数返回值 | `noImplicitReturns` | `--warn-no-return` |
 | 未使用变量 | `noUnusedLocals` | `--warn-unused-variables` |
 
-### 6.5 与 Java 的对比
+### 5.5 与 Java 的对比
 
 Java 的类型系统相对宽松，null 普遍存在。Java 8 引入 `Optional<T>`，但非强制使用：
 
@@ -1089,9 +1056,9 @@ TypeScript 的优势在于空安全是类型系统的一等公民，而非可选
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：过度使用非空断言（`!`）
+### 6.1 陷阱一：过度使用非空断言（`!`）
 
 **问题**：非空断言绕过类型检查，可能导致运行时错误。
 
@@ -1117,7 +1084,7 @@ function findUser(id: string): User | undefined {
 }
 ```
 
-### 7.2 陷阱二：滥用 `as any` 类型断言
+### 6.2 陷阱二：滥用 `as any` 类型断言
 
 **问题**：`as any` 完全绕过类型检查，破坏类型安全。
 
@@ -1156,7 +1123,7 @@ const user = UserSchema.parse(JSON.parse(jsonString));
 // user: { id: string; name: string; age?: number }
 ```
 
-### 7.3 陷阱三：忽略 `noUncheckedIndexedAccess`
+### 6.3 陷阱三：忽略 `noUncheckedIndexedAccess`
 
 **问题**：即使启用 `strict: true`，数组与对象索引访问仍可能返回 `undefined`。
 
@@ -1171,7 +1138,7 @@ const value: number = arr[10];  // 编译期不报错，运行时 value 为 unde
 const value2: number | undefined = arr[10];  // 编译期提示 undefined
 ```
 
-### 7.4 陷阱四：catch 变量误用
+### 6.4 陷阱四：catch 变量误用
 
 **问题**：`useUnknownInCatchVariables` 下，catch 变量为 `unknown`，直接访问属性报错。
 
@@ -1195,7 +1162,7 @@ try {
 }
 ```
 
-### 7.5 陷阱五：类属性初始化顺序
+### 6.5 陷阱五：类属性初始化顺序
 
 **问题**：依赖注入框架在构造函数后注入，但 `strictPropertyInitialization` 要求构造函数中初始化。
 
@@ -1232,7 +1199,7 @@ class ServiceRuntime {
 }
 ```
 
-### 7.6 陷阱六：函数重载与严格模式
+### 6.6 陷阱六：函数重载与严格模式
 
 **问题**：重载签名与实现签名不匹配时，严格模式更严格。
 
@@ -1258,7 +1225,7 @@ function badProcess(input: string | number): boolean {
 }
 ```
 
-### 7.7 陷阱七：泛型默认值与严格模式
+### 6.7 陷阱七：泛型默认值与严格模式
 
 **问题**：泛型默认值在严格模式下可能导致意外的类型推断。
 
@@ -1288,7 +1255,7 @@ function createRequired<T>(): T {
 const obj3 = createRequired<{ name: string }>();
 ```
 
-### 7.8 陷阱八：枚举与严格模式
+### 6.8 陷阱八：枚举与严格模式
 
 **问题**：数字枚举的隐式转换在严格模式下报错。
 
@@ -1323,9 +1290,9 @@ enum HttpStatusString {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目初始化
+### 7.1 项目初始化
 
 ```bash
 # 使用 tsc --init 生成推荐的 tsconfig.json
@@ -1336,7 +1303,7 @@ npm create vite@latest my-app -- --template react-ts
 npx create-next-app@latest my-app --typescript --strict
 ```
 
-### 8.2 构建工具集成
+### 7.2 构建工具集成
 
 #### Vite 配置
 
@@ -1398,7 +1365,7 @@ module.exports = {
 };
 ```
 
-### 8.3 ESLint 集成
+### 7.3 ESLint 集成
 
 ```javascript
 // .eslintrc.js
@@ -1428,7 +1395,7 @@ module.exports = {
 };
 ```
 
-### 8.4 项目引用（Project References）
+### 7.4 项目引用（Project References）
 
 大型项目使用项目引用（Project References）组织代码：
 
@@ -1471,7 +1438,7 @@ module.exports = {
 }
 ```
 
-### 8.5 类型检查脚本
+### 7.5 类型检查脚本
 
 ```json
 // package.json
@@ -1488,7 +1455,7 @@ module.exports = {
 }
 ```
 
-### 8.6 CI/CD 集成
+### 7.6 CI/CD 集成
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1512,7 +1479,7 @@ jobs:
       - run: npm run build
 ```
 
-### 8.7 调试技巧
+### 7.7 调试技巧
 
 #### 使用 `tsc --explainFiles` 理解模块解析
 
@@ -1551,7 +1518,7 @@ type Debug<T> = { [K in keyof T]: T[K] };
 type UserDebug = Debug<User>;
 ```
 
-### 8.8 性能优化
+### 7.8 性能优化
 
 ```json
 // tsconfig.json - 性能优化配置
@@ -1577,9 +1544,9 @@ npx tsc --noEmit --extendedDiagnostics
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Visual Studio Code
+### 8.1 案例一：Visual Studio Code
 
 VS Code 是 TypeScript 严格模式的标杆项目。VS Code 团队从 2015 年开始在 codebase 中启用 `strict: true`，经历了长达 2 年的渐进式迁移。
 
@@ -1599,7 +1566,7 @@ VS Code 是 TypeScript 严格模式的标杆项目。VS Code 团队从 2015 年�
 
 > "Strict null checks was the single most impactful change we made to the VS Code codebase. It forced us to confront the null/undefined ambiguity that plagued JavaScript for decades." —— Erich Gamma, VS Code Lead Architect
 
-### 9.2 案例二：Airbnb
+### 8.2 案例二：Airbnb
 
 Airbnb 在 2017 年将前端代码库从 JavaScript 迁移至 TypeScript，采用严格模式。
 
@@ -1621,7 +1588,7 @@ Airbnb 在 2017 年将前端代码库从 JavaScript 迁移至 TypeScript，采�
 - 新员工上手时间缩短 50%
 - 重构效率提升 2 倍
 
-### 9.3 案例三：Slack
+### 8.3 案例三：Slack
 
 Slack 在 2016-2019 年将核心代码库从 JavaScript 迁移至 TypeScript。
 
@@ -1637,7 +1604,7 @@ Slack 在 2016-2019 年将核心代码库从 JavaScript 迁移至 TypeScript。
 - API 契约的类型安全保障
 - 跨团队协作效率提升
 
-### 9.4 案例四：Google
+### 8.4 案例四：Google
 
 Google 内部多个项目采用 TypeScript + 严格模式，包括 Angular、Google Cloud Console、Google Ads 前端。
 
@@ -1665,7 +1632,7 @@ Google 内部多个项目采用 TypeScript + 严格模式，包括 Angular、Goo
 - 类型检查应作为 CI 的硬性门槛
 - 团队应建立类型设计规范，避免过度使用复杂类型体操
 
-### 9.5 案例五：Microsoft Azure SDK
+### 8.5 案例五：Microsoft Azure SDK
 
 Azure SDK for JavaScript 是 Microsoft 官方维护的 Azure 服务客户端库，全部采用 TypeScript + 严格模式。
 
@@ -1676,7 +1643,7 @@ Azure SDK for JavaScript 是 Microsoft 官方维护的 Azure 服务客户端库�
 - 严格空安全，所有可空返回值显式标注
 - 使用 `@azure-tools/typespec-ts` 生成类型安全的客户端代码
 
-### 9.6 案例六：Next.js
+### 8.6 案例六：Next.js
 
 Next.js 从 v10 开始默认启用 `strict: true`，并通过 `next type-check` 命令集成类型检查。
 
@@ -2156,7 +2123,7 @@ await service.delete('1');
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **第 1 题**：为什么 TypeScript 默认不启用所有严格选项（如 `noUncheckedIndexedAccess`、`exactOptionalPropertyTypes`）？请从向后兼容性、迁移成本、社区生态三个维度分析。
 
@@ -2247,9 +2214,9 @@ TypeScript 的方案是渐进式的，允许开发者在类型安全与开发效
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档与规范
+### 10.1 官方文档与规范
 
 1. Microsoft. TypeScript Handbook: TSConfig Reference. Microsoft, 2024. https://www.typescriptlang.org/tsconfig
 
@@ -2261,7 +2228,7 @@ TypeScript 的方案是渐进式的，允许开发者在类型安全与开发效
 
 5. Microsoft. TypeScript 4.4 Release Notes: useUnknownInCatchVariables. Microsoft, 2021. https://devblogs.microsoft.com/typescript/announcing-typescript-4-4/
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 6. Siek, J. G., & Taha, W. (2006). Gradual typing for functional languages. Proceedings of the Scheme and Functional Programming Workshop, 6(2), 81-92. https://doi.org/10.1145/1146297.1146304
 
@@ -2273,7 +2240,7 @@ TypeScript 的方案是渐进式的，允许开发者在类型安全与开发效
 
 10. Pierce, B. C. (2002). Types and programming languages. MIT Press. ISBN: 978-0262162098
 
-### 11.3 工程实践与案例
+### 10.3 工程实践与案例
 
 11. Gamma, E. (2017). VS Code: The evolution of TypeScript strictness. Microsoft Build Conference. https://build.microsoft.com/sessions
 
@@ -2285,7 +2252,7 @@ TypeScript 的方案是渐进式的，允许开发者在类型安全与开发效
 
 15. Vercel. (2024). Next.js TypeScript documentation. Vercel. https://nextjs.org/docs/app/building-your-application/configuring/typescript
 
-### 11.4 社区资源
+### 10.4 社区资源
 
 16. Rosenwasser, D. (2024). TypeScript 5.4 Release Notes. Microsoft. https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/
 
@@ -2293,39 +2260,39 @@ TypeScript 的方案是渐进式的，允许开发者在类型安全与开发效
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 类型理论
+### 11.1 类型理论
 
 - *Types and Programming Languages* (Benjamin C. Pierce, 2002) —— 类型系统的经典教材，涵盖 λ-calculus、System F、子类型、递归类型等理论基础
 - *Advanced Topics in Types and Programming Languages* (Benjamin C. Pierce, 2004) —— 类型理论的进阶主题，包括依赖类型、线性类型、效果系统
 - *Practical Foundations for Programming Languages* (Robert Harper, 2016) —— 编程语言理论的实践基础
 
-### 12.2 TypeScript 深入
+### 11.2 TypeScript 深入
 
 - *Effective TypeScript* (Dan Vanderkam, 2019) —— TypeScript 工程实践指南
 - *Programming TypeScript* (Boris Cherny, 2019) —— TypeScript 全面的入门与进阶
 - TypeScript 官方博客：https://devblogs.microsoft.com/typescript/
 
-### 12.3 渐进式类型系统
+### 11.3 渐进式类型系统
 
 - Jeremy Siek 的渐变类型系统研究：https://wphomes.soic.indiana.edu/jsiek/
 - *Gradual Typing for Functional Languages* (Siek & Taha, 2006) —— 渐变类型系统的奠基性论文
 - *Contracts for Higher-Order Functions* (Findler & Felleisen, 2002) —— 高阶契约系统
 
-### 12.4 相关语言对比
+### 11.4 相关语言对比
 
 - *The Rust Programming Language* (Steve Klabnik & Carol Nichols, 2023) —— Rust 官方教材，对比 Option<T> 的设计
 - *Real World Haskell* (Bryan O'Sullivan et al., 2008) —— Haskell 实战，对比 Maybe a 的设计
 - *Kotlin in Action* (Dmitry Jemerov & Svetlana Isakova, 2017) —— Kotlin 空安全设计
 
-### 12.5 工程实践
+### 11.5 工程实践
 
 - *TypeScript at Scale* (Boris Cherny, 2024) —— 大型 TypeScript 项目的工程实践
 - *Full-Stack TypeScript with React, Node.js, and GraphQL* (David Choi, 2023) —— 全栈 TypeScript 开发
 - Airbnb TypeScript Style Guide: https://github.com/airbnb/typescript
 
-### 12.6 在线资源
+### 11.6 在线资源
 
 - TypeScript Playground: https://www.typescriptlang.org/play
 - TypeScript Type Search: https://www.typescriptlang.org/dt/search

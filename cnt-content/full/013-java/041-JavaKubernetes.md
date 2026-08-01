@@ -14,45 +14,6 @@ related:
   - java/Java文本块
 prerequisites:
   - java/概述与开发环境
-learningObjectives:
-  - level: remember
-    objective: '能陈述 Kubernetes 核心资源（Deployment/Service/ConfigMap/Secret/HPA/Ingress）的职责。'
-    verifiable: '默写资源清单与职责对照'
-  - level: understand
-    objective: '能解释 JVM 容器感知、健康检查与优雅停机的原理。'
-    verifiable: '说明 MaxRAMPercentage 与 preStop hook 的作用'
-  - level: apply
-    objective: '能编写 Java 应用的 Deployment、Service、ConfigMap 与探针配置。'
-    verifiable: '完成一个最小可部署的 YAML 集合'
-  - level: analyze
-    objective: '能分析 JVM 堆内存、容器 Limit 与 OOMKilled 之间的关系。'
-    verifiable: '根据内存配置推演 OOM 场景'
-  - level: evaluate
-    objective: '能评价不同 GC（G1/ZGC）与启动方式（JIT/Native Image）在 K8s 下的取舍。'
-    verifiable: '针对延迟/吞吐需求给出选型依据'
-  - level: create
-    objective: '能设计完整的 Java 云原生部署流水线（镜像构建、HPA、监控、滚动更新）。'
-    verifiable: '完成案例研究中的完整部署方案'
-exercises:
-  - id: java-k8s-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: 'Kubernetes 中管理无状态应用副本数的资源是 _____，提供稳定访问入口的资源是 _____。'
-    answer: 'Deployment；Service'
-    explanation: 'Deployment 管理 Pod 副本与滚动更新，Service 提供稳定的虚拟 IP 与 DNS。'
-    difficulty: easy
-  - id: java-k8s-02
-    type: choice
-    cognitiveLevel: understand
-    question: 'JVM 在容器中识别内存限制的推荐方式是？'
-    options:
-      - 'A. -Xmx 硬编码'
-      - 'B. -XX:MaxRAMPercentage=75.0'
-      - 'C. 关闭 GC'
-      - 'D. 不设置任何参数'
-    answer: 'B'
-    explanation: 'MaxRAMPercentage 按容器可用内存百分比设置堆上限，适配动态限制。'
-    difficulty: medium
 references:
   - type: documentation
     authors: ['Kubernetes 团队']
@@ -77,21 +38,8 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-## 1. 学习目标（Bloom 分类）
 
-记忆层面：能够说出 Java 应用容器化的核心要素：Dockerfile 的多阶段构建、基础镜像选择（Eclipse Temurin 等）、JVM 参数（`-XX:MaxRAMPercentage`）、Kubernetes 的 Pod/Deployment/Service/ConfigMap/Secret 等核心资源对象。
-
-理解层面：能够解释 JVM 在容器中的内存感知机制（`-XX:+UseContainerSupport`、`MaxRAMPercentage`），解释为什么 Java 应用需要就绪探针（readinessProbe）与存活探针（livenessProbe），理解滚动更新与优雅停机（SIGTERM 与 shutdown hook）的配合。
-
-应用层面：能够编写 Java 微服务的 Dockerfile 与 Kubernetes YAML 清单，配置资源请求/限制、探针、环境变量、ConfigMap 挂载、HPA 自动扩缩容。
-
-分析层面：能够分析镜像体积优化的手段（JRE 精简、jlink、distroless），分析不同部署策略（Recreate、RollingUpdate、Blue/Green）对 Java 应用的影响，分析 JVM 堆配置与容器内存限制的关系。
-
-评价层面：能够评估“胖 JAR 单体”与“多服务拆分”在 Kubernetes 上的运维复杂度，评估日志（stdout）与指标（Micrometer/Prometheus）的接入方案。
-
-创造层面：能够设计一套从源码到生产的 Java 云原生交付流水线，包括 CI 构建镜像、安全扫描、金丝雀发布、可观测性接入。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 Java 的“一次编写、到处运行”理念依赖 JVM，但传统部署中 Java 应用以 WAR 包部署到应用服务器（Tomcat、Jetty），环境差异与依赖冲突普遍存在。2013 年 Docker 兴起后，Java 应用开始容器化，但早期遇到两个典型问题：JVM 不感知容器 CPU/内存限制（导致 OOM 或被 cgroup 杀死），以及镜像体积过大（数百 MB 的 JDK 镜像）。
 
@@ -108,13 +56,13 @@ timeline
     2024+ : Java LTS 21/25 云原生优化持续演进
 ```
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 容器化定义
+### 2.1 容器化定义
 
 Java 应用的容器化是把 JVM 与应用程序封装进镜像，使其在任何符合 OCI 规范的运行时中一致运行。形式化表述：镜像 = 基础运行时（JRE）+ 应用制品（JAR）+ 启动配置（ENTRYPOINT）+ 元数据（ENV/EXPOSE/LABEL）。
 
-### 3.2 Kubernetes 核心资源
+### 2.2 Kubernetes 核心资源
 
 Pod：调度与运行的最小单位，一个 Pod 可包含一个主容器与若干 sidecar 容器；
 
@@ -128,7 +76,7 @@ Ingress：七层 HTTP 路由，把外部流量分发到 Service；
 
 HorizontalPodAutoscaler（HPA）：按 CPU/内存/自定义指标调整副本数。
 
-### 3.3 探针定义
+### 2.3 探针定义
 
 readinessProbe：就绪探针，失败时从 Service 端点摘除，但不重启容器；
 
@@ -148,25 +96,25 @@ flowchart LR
     H --> I["Ingress 对外暴露"]
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 JVM 与 cgroup 内存模型
+### 3.1 JVM 与 cgroup 内存模型
 
 JVM 的堆大小默认按物理内存的 1/4 计算。容器中物理内存是宿主机内存，若不感知 cgroup 限制，堆可能远超容器限额，触发 OOMKilled。容器感知开启后，JVM 读取 cgroup 内存上限，`-XX:MaxRAMPercentage=75` 表示堆上限为容器内存的 75%，为元空间、线程栈、直接内存等留出余量。
 
 推导公式：容器内存限制 M，堆上限 H = M × MaxRAMPercentage。若 M=512Mi，H≈384Mi。应用实际使用中还应考虑：JVM 非堆（元空间、代码缓存）与 GC 开销通常占 25%-30%，因此 75% 是平衡值。
 
-### 4.2 优雅停机推导
+### 3.2 优雅停机推导
 
 Kubernetes 滚动更新时向旧 Pod 发送 SIGTERM，等待 terminationGracePeriodSeconds（默认 30s）后发送 SIGKILL。Spring Boot 注册 shutdown hook，收到 SIGTERM 后停止接收新请求、完成进行中的请求（`server.shutdown=graceful` + `spring.lifecycle.timeout-per-shutdown-phase`）。若应用在期限内未退出，会被强杀，导致请求中断或数据不一致。
 
-### 4.3 滚动更新推导
+### 3.3 滚动更新推导
 
 Deployment 的 RollingUpdate 策略：`maxSurge`（更新期间超出期望副本数的最大增量）与 `maxUnavailable`（允许不可用的最大副本数）共同控制更新速率。例如期望 3 副本、maxSurge=1、maxUnavailable=1：先起 1 个新 Pod，再停 1 个旧 Pod，交替直到全部更新。readinessProbe 决定新 Pod 是否加入 Service，从而避免流量打到未就绪实例。
 
-## 5. 代码示例（带详尽注释）
+## 4. 代码示例（带详尽注释）
 
-### 5.1 多阶段 Dockerfile
+### 4.1 多阶段 Dockerfile
 
 ```dockerfile
 # 第一阶段：构建环境（包含完整 JDK 与构建工具）
@@ -201,7 +149,7 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 
 讲解：多阶段构建把构建工具链与运行环境分离，最终镜像只含 JRE 与 JAR。`dependency:go-offline` 预下载依赖以利用缓存层；`USER appuser` 避免以 root 运行；`MaxRAMPercentage` 是容器 Java 的核心参数。
 
-### 5.2 Deployment 清单
+### 4.2 Deployment 清单
 
 ```yaml
 apiVersion: apps/v1
@@ -273,7 +221,7 @@ spec:
 
 讲解：该清单是 Java 服务的标准模板。resources 的 limits 与 JVM 的 `MaxRAMPercentage` 必须联动（内存限制 768Mi 时 JVM 堆约 576Mi）；三个探针分工明确，避免滚动更新期间流量中断与故障实例无法恢复。
 
-### 5.3 Service 与 Ingress
+### 4.3 Service 与 Ingress
 
 ```yaml
 apiVersion: v1
@@ -309,7 +257,7 @@ spec:
 
 讲解：Service 提供集群内稳定的访问入口；Ingress 负责外部 HTTP 路由、TLS 终止与路径转发。`targetPort` 指向容器端口 8080，Service 端口 80 是集群内虚拟端口。
 
-### 5.4 ConfigMap 与 Secret
+### 4.4 ConfigMap 与 Secret
 
 ```yaml
 apiVersion: v1
@@ -331,7 +279,7 @@ stringData:
 
 讲解：配置与敏感信息从镜像剥离，镜像因此可在多环境复用。Secret 的 value 以 base64 存储（并非加密），生产环境应配合外部密钥管理（如 External Secrets Operator、Vault）。
 
-### 5.5 HPA 自动扩缩容
+### 4.5 HPA 自动扩缩容
 
 ```yaml
 apiVersion: autoscaling/v2
@@ -356,7 +304,7 @@ spec:
 
 讲解：HPA 按平均 CPU 利用率 60% 调整副本数。Java 应用扩缩容时注意：JVM 冷启动慢，建议配合 startupProbe 与就绪探针，避免扩容期间流量损失。
 
-### 5.6 Spring Boot 优雅停机配置
+### 4.6 Spring Boot 优雅停机配置
 
 ```yaml
 # application.yml
@@ -370,7 +318,7 @@ spring:
 
 讲解：`server.shutdown=graceful` 让 Web 容器停止接收新请求并等待进行中请求完成；`timeout-per-shutdown-phase` 限制最长等待，避免无限挂起。该配置必须与 Pod 的 `terminationGracePeriodSeconds`（默认 30s）协调：停机等待应小于终止宽限期。
 
-### 5.7 Java 代码中的优雅停机
+### 4.7 Java 代码中的优雅停机
 
 ```java
 // 应用关闭时执行清理：释放连接、保存状态
@@ -388,9 +336,9 @@ public class GracefulShutdownListener {
 
 讲解：`@PreDestroy` 回调在 Spring 容器关闭时执行。配合 SIGTERM，Pod 删除时应用先清理资源再退出，避免强制杀死导致的数据损坏。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 部署形态对比
+### 5.1 部署形态对比
 
 | 维度 | 传统虚拟机部署 | Docker 容器 | Kubernetes |
 | --- | --- | --- | --- |
@@ -399,7 +347,7 @@ public class GracefulShutdownListener {
 | 故障恢复 | 手工重启 | 单机守护 | 自愈与滚动更新 |
 | 运维成本 | 高 | 中 | 需要集群管理 |
 
-### 6.2 镜像方案对比
+### 5.2 镜像方案对比
 
 | 方案 | 体积 | 启动速度 | 适用 |
 | --- | --- | --- | --- |
@@ -408,11 +356,11 @@ public class GracefulShutdownListener {
 | Distroless | 小（50-100MB） | 一般 | 安全敏感生产 |
 | GraalVM Native | 极小（30-60MB） | 极快（毫秒级） | 无反射/低内存场景 |
 
-### 6.3 探针组合对比
+### 5.3 探针组合对比
 
 只配 liveness 不配 readiness：滚动更新时新 Pod 未就绪就接收流量，导致 502；只配 readiness 不配 liveness：死锁应用永远不被重启。三探针齐备是生产基线。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
 陷阱一：JVM 堆按宿主机内存计算，容器内 OOM。最佳实践：`-XX:MaxRAMPercentage=75` 并保持 resources.limits.memory 与之一致。
 
@@ -428,9 +376,9 @@ public class GracefulShutdownListener {
 
 陷阱七：HPA 与 JVM 堆固定值冲突（堆按启动时容器限制计算，扩缩容后实例规格不变则无问题；但限制变化需重启）。理解 HPA 只调副本数，不调整单实例规格。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 CI/CD 流水线
+### 7.1 CI/CD 流水线
 
 ```yaml
 # .github/workflows/deploy.yml 片段
@@ -447,7 +395,7 @@ jobs:
 
 讲解：镜像 tag 使用 commit SHA 保证可追溯；`kubectl set image` 触发滚动更新。生产环境应增加镜像签名、漏洞扫描与金丝雀验证阶段。
 
-### 8.2 可观测性接入
+### 7.2 可观测性接入
 
 ```xml
 <!-- pom.xml：Micrometer 指标与 Prometheus 暴露 -->
@@ -467,7 +415,7 @@ annotations:
 
 讲解：Java 应用通过 Micrometer 输出 JVM 指标（堆内存、GC、线程），Prometheus 按注解抓取。配合 Grafana 仪表盘与告警规则，形成完整可观测性。
 
-## 9. 案例研究：订单服务的云原生改造
+## 8. 案例研究：订单服务的云原生改造
 
 需求：把单体订单服务改造为 Kubernetes 部署，要求：滚动更新零中断、自动扩缩容、配置外置、优雅停机。
 
@@ -489,13 +437,13 @@ annotations:
 
 验证要点：滚动发布期间压测观察错误率（应为 0）；模拟 Pod 崩溃观察自动重启；模拟流量高峰观察 HPA 扩容；删除 Pod 观察优雅停机日志与连接清理。
 
-## 10. 知识要点总结与深入讲解
+## 9. 知识要点总结与深入讲解
 
 Java 上 Kubernetes 的三个关键数字：`MaxRAMPercentage=75`（堆占容器内存比例）、`terminationGracePeriodSeconds > 优雅停机超时`、`readiness 先行、liveness 兜底`。理解这三个数字，就掌握了 Java 容器化的主线。
 
 镜像分层与多阶段构建解决体积与安全问题；ConfigMap/Secret 解决配置外置；探针解决流量与自愈；HPA 解决弹性。每一层都对应一个明确的运维问题。
 
-## 11. 参考文献
+## 10. 参考文献
 
 Kubernetes 官方文档, Pod Lifecycle（探针）, 访问日期 2026-08-01, https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/
 
@@ -509,7 +457,7 @@ Eclipse Adoptium 文档, Eclipse Temurin Docker 镜像, 访问日期 2026-08-01,
 
 Docker 官方文档, Multi-stage builds, 访问日期 2026-08-01, https://docs.docker.com/build/building/multi-stage/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 Kubernetes 原理与集群架构，见 031-devops 模块与 034-cloud-computing 模块相关文档；
 

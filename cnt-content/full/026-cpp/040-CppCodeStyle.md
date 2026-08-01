@@ -16,6 +16,7 @@ prerequisites:
   - cpp/概述与现代标准
 ---
 
+
 # C++ 代码规范
 
 > 本文档系统讲解 C++ 代码规范的形式化基础、主流规范体系、工具链落地与工程实践。内容覆盖 ISO/IEC 14882:2023 中与编码约束相关的条款、MISRA C++:2023、AUTOSAR C++14、Google C++ Style Guide、LLVM Coding Standards、CppCoreGuidelines、clang-tidy、clang-format 等主流规范与工具，目标达到海外高校教学水准。
@@ -54,57 +55,11 @@ class Widget {};
 
 ---
 
-## 1. 学习目标
-
-本节使用 Bloom 分类法刻画学习者应达到的认知层级。每一层级对应可观测的行为动词，便于自评与教学评估。
-
-### 1.1 记忆（Remember）
-
-- 列举五大主流 C++ 代码规范体系的名称：MISRA C++、AUTOSAR C++、Google C++ Style Guide、LLVM Coding Standards、CppCoreGuidelines。
-- 复述命名规范的四种主流风格：PascalCase、camelCase、snake_case、UPPER_CASE。
-- 背诵 `clang-format` 的核心配置项：`BasedOnStyle`、`IndentWidth`、`ColumnLimit`、`AllowShortFunctionsOnASingleLine`。
-- 列举 `clang-tidy` 的六类检查类别：`bugprone-`、`cert-`、`cppcoreguidelines-`、`google-`、`llvm-`、`modernize-`。
-
-### 1.2 理解（Understand）
-
-- 解释 C++ 代码规范存在的根本动机：可读性、可维护性、安全性、可移植性、团队协作。
-- 阐述 MISRA C++ 与 AUTOSAR C++ 在安全关键系统中的作用，以及它们与 ISO 26262、IEC 61508 的关系。
-- 描述 `clang-format` 与 `clang-tidy` 的分工：前者负责格式化（syntax-level），后者负责语义检查（semantic-level）。
-- 区分"规则 (rule)"、"指南 (guideline)"、"约定 (convention)"三者的层次差异。
-
-### 1.3 应用（Apply）
-
-- 使用 `clang-format` 配置文件为项目统一格式化风格。
-- 使用 `clang-tidy` 配置文件启用特定检查类别，并修复报告的违规。
-- 在 CMake 工程中集成 `clang-format` 与 `clang-tidy`，实现提交前自动检查。
-- 实现符合 Google C++ Style Guide 的命名、头文件、类设计规范。
-
-### 1.4 分析（Analyze）
-
-- 对比五大主流规范在命名、异常、模板、并发等核心议题上的立场差异。
-- 解构 CppCoreGuidelines 的设计哲学：类型安全、资源安全、错误处理的统一框架。
-- 分析 `clang-tidy` 静态分析的能力边界与误报率控制策略。
-- 评估特定规则（如"禁用异常"、"禁用 RTTI"）在不同应用场景下的合理性。
-
-### 1.5 评价（Evaluate）
-
-- 评估在创业团队、大型企业、开源社区、安全关键系统四类组织下应采用何种规范策略。
-- 判断特定代码片段违反了哪些规范条目，并给出修复优先级。
-- 评审一份既有项目的代码规范合规度，给出改进路线图。
-
-### 1.6 创造（Create）
-
-- 设计一份适合团队规模的内部 C++ 代码规范文档，融合主流规范的优点。
-- 构建一套基于 `clang-tidy` 自定义检查的工程化方案，捕获项目特定模式。
-- 为开源项目编写 `CONTRIBUTING.md` 中的代码规范章节，配套自动化校验工具链。
-
----
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 C++ 代码规范的演进反映了语言复杂度、工程实践与安全需求之间的持续博弈。
 
-### 2.1 早期：无规范时代（1985 - 1995）
+### 1.1 早期：无规范时代（1985 - 1995）
 
 C++ 早期（Cfront 时代）几乎没有统一的代码规范。Bjarne Stroustrup 在《The C++ Programming Language》第一版（1985）中给出了一些命名建议（如类型名首字母大写、变量名小写），但并未形成系统性规范。各组织自行约定，代码风格差异巨大。
 
@@ -115,7 +70,7 @@ C++ 早期（Cfront 时代）几乎没有统一的代码规范。Bjarne Stroustr
 3. 资源管理依赖手工 `new`/`delete`，内存泄漏频发。
 4. 异常安全意识薄弱，构造函数抛异常导致资源泄漏。
 
-### 2.2 企业规范的兴起（1995 - 2005）
+### 1.2 企业规范的兴起（1995 - 2005）
 
 随着 C++ 在电信、金融、航空等领域的普及，企业开始制定内部规范：
 
@@ -124,7 +79,7 @@ C++ 早期（Cfront 时代）几乎没有统一的代码规范。Bjarne Stroustr
 - **2000 年**：Google 内部 C++ Style Guide 起步（基于 C++98）。
 - **2003 年**：Sutter 与 Alexandrescu 出版《C++ Coding Standards: 101 Rules, Guidelines, and Best Practices》，成为业界广泛参考。
 
-### 2.3 MISRA C++ 与 AUTOSAR C++（2008 - 至今）
+### 1.3 MISRA C++ 与 AUTOSAR C++（2008 - 至今）
 
 **MISRA C++:2008** 由 MISRA 联盟发布，基于 C++03，提供 200+ 条规则，覆盖安全关键系统。规则分级：
 
@@ -141,7 +96,7 @@ C++ 早期（Cfront 时代）几乎没有统一的代码规范。Bjarne Stroustr
 - A18-5-2：禁用全局 `new`/`delete`，必须用 placement new。
 - A27-0-1：禁用 `std::shared_ptr`（在安全关键场景）。
 
-### 2.4 Google C++ Style Guide（2003 - 至今）
+### 1.4 Google C++ Style Guide（2003 - 至今）
 
 Google C++ Style Guide 是业界最有影响力的开源 C++ 规范之一。其设计哲学：
 
@@ -157,7 +112,7 @@ Google 规范的若干争议点：
 - **头文件包含顺序**：强制按"对应头文件、C 系统头、C++ 系统头、其他库头、本项目头"排序。
 - **命名风格**：类型 `PascalCase`、函数 `CamelCase`、变量 `snake_case`、常量 `kCamelCase`。
 
-### 2.5 LLVM Coding Standards（2003 - 至今）
+### 1.5 LLVM Coding Standards（2003 - 至今）
 
 LLVM 项目的编码规范服务于编译器、调试器、JIT 等系统软件的开发。与 Google 规范的差异：
 
@@ -166,7 +121,7 @@ LLVM 项目的编码规范服务于编译器、调试器、JIT 等系统软件�
 - 强调"避免过早抽象"。
 - 对 `auto` 的使用更宽松。
 
-### 2.6 CppCoreGuidelines（2015 - 至今）
+### 1.6 CppCoreGuidelines（2015 - 至今）
 
 CppCoreGuidelines 由 Bjarne Stroustrup 与 Herb Sutter 主导，目标是"帮助程序员编写更现代、更安全的 C++"。其核心思想：
 
@@ -177,7 +132,7 @@ CppCoreGuidelines 由 Bjarne Stroustrup 与 Herb Sutter 主导，目标是"帮�
 
 CppCoreGuidelines 配套 GSL (Guideline Support Library) 与 `clang-tidy` 检查，实现"可执行的规范"。
 
-### 2.7 工具链的成熟（2010 - 至今）
+### 1.7 工具链的成熟（2010 - 至今）
 
 代码规范的工程化落地依赖工具链：
 
@@ -187,7 +142,7 @@ CppCoreGuidelines 配套 GSL (Guideline Support Library) 与 `clang-tidy` 检查
 - **cppcheck**（2007）：独立静态分析工具，专注常见错误模式。
 - **PC-lint Plus**（2019）：商业静态分析工具，支持 MISRA C++、AUTOSAR C++ 规则集。
 
-### 2.8 演进时间线
+### 1.8 演进时间线
 
 ```text
 1985  C++ 1.0                       Stroustrup
@@ -210,11 +165,11 @@ CppCoreGuidelines 配套 GSL (Guideline Support Library) 与 `clang-tidy` 检查
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节给出 C++ 代码规范相关的形式化定义，涵盖标准引用、规则建模与工具能力刻画。
 
-### 3.1 ISO/IEC 14882 标准中的约束条款
+### 2.1 ISO/IEC 14882 标准中的约束条款
 
 C++ 标准本身不规定"代码规范"，但若干条款与规范直接相关：
 
@@ -226,7 +181,7 @@ C++ 标准本身不规定"代码规范"，但若干条款与规范直接相关�
 - **[expr.const]** 常量表达式：`constexpr` 的求值约束。
 - **[except]** 异常处理：异常安全保证的形式化模型。
 
-### 3.2 规则的形式化建模
+### 2.2 规则的形式化建模
 
 一条代码规范规则可形式化为四元组：
 
@@ -251,7 +206,7 @@ $$
 C = \text{no such cast exists}, \quad S = \text{required}, \quad L = \text{safety}
 $$
 
-### 3.3 命名规范的形式语法
+### 2.3 命名规范的形式语法
 
 命名规范可形式化为上下文无关文法 (CFG)。例如 Google 风格：
 
@@ -276,7 +231,7 @@ file-name        ::= lower-case-with-dashes
 - `snake_case`：`[a-z][a-z0-9_]*`
 - `UPPER_CASE`：`[A-Z][A-Z0-9_]*`
 
-### 3.4 格式化的形式化模型
+### 2.4 格式化的形式化模型
 
 `clang-format` 的格式化过程可建模为语法树变换：
 
@@ -300,7 +255,7 @@ $$
 | `BreakBeforeBraces`       | `enum`         | 大括号前的换行策略（`Allman`、`K&R`、等） |
 | `PointerAlignment`        | `enum`         | 指针 `*` 的对齐方式                       |
 
-### 3.5 静态分析的可判定性
+### 2.5 静态分析的可判定性
 
 静态分析的核心问题是：给定规则 $R = (P, C, S, L)$，判断程序 $\Pi$ 是否违反 $R$。
 
@@ -320,11 +275,11 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
 本节深入解析代码规范背后的理论原理。
 
-### 4.1 命名规范的可读性模型
+### 3.1 命名规范的可读性模型
 
 命名规范的核心目标是降低阅读成本。可读性可形式化为：
 
@@ -341,7 +296,7 @@ $$
 
 实证研究（Lawrie et al., 2007）表明，描述性比长度更重要。例如 `calculateTotalPrice` 比 `calcTP` 可读性高，尽管前者更长。
 
-### 4.2 异常安全的数学保证
+### 3.2 异常安全的数学保证
 
 异常安全保证分为四级：
 
@@ -368,7 +323,7 @@ T& T::operator=(const T& other) {
 }
 ```
 
-### 4.3 RAII 的资源安全证明
+### 3.3 RAII 的资源安全证明
 
 RAII (Resource Acquisition Is Initialization) 保证资源生命周期与对象生命周期绑定。形式化地：
 
@@ -398,7 +353,7 @@ void f() {
 }
 ```
 
-### 4.4 头文件依赖的编译时间模型
+### 3.4 头文件依赖的编译时间模型
 
 C++ 头文件包含是文本展开，导致依赖传递。设文件 $F$ 包含头文件集合 $H(F)$，则其传递闭包：
 
@@ -429,7 +384,7 @@ $$
 
 即 PImpl 版本的头文件依赖严格减少。
 
-### 4.5 类型安全的数学刻画
+### 3.5 类型安全的数学刻画
 
 类型安全可分为三级：
 
@@ -454,7 +409,7 @@ $$
 3. C 风格转换 `(T)x`：等价于多种 cast 的组合，最危险。
 4. `void*` 中转：丢失类型信息。
 
-### 4.6 一致性与团队协作的博弈
+### 3.6 一致性与团队协作的博弈
 
 代码规范在团队中的一致性可建模为协调博弈 (coordination game)。设团队有 $n$ 个开发者，每人选择风格 $s_i \in S$（风格集合）。收益函数：
 
@@ -466,7 +421,7 @@ $$
 
 代码规范的强制工具（如 `clang-format`）将博弈转化为单点解：开发者无选择权，一致性自动达成。
 
-### 4.7 静态分析的复杂度
+### 3.7 静态分析的复杂度
 
 `clang-tidy` 检查的复杂度因规则而异：
 
@@ -482,9 +437,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 命名规范示例
+### 4.1 命名规范示例
 
 **标准**：C++17，Google C++ Style Guide
 
@@ -539,7 +494,7 @@ std::uint64_t CalculateTotalValue(const std::vector<std::string>& order_ids);
 }  // namespace inventory
 ```
 
-### 5.2 RAII 资源管理示例
+### 4.2 RAII 资源管理示例
 
 **标准**：C++17，CppCoreGuidelines
 
@@ -606,7 +561,7 @@ private:
 };
 ```
 
-### 5.3 PImpl 惯用法示例
+### 4.3 PImpl 惯用法示例
 
 **标准**：C++17，Google C++ Style Guide
 
@@ -678,7 +633,7 @@ void Widget::DoSomething() { impl_->DoSomething(); }
 std::string Widget::GetName() const { return impl_->GetName(); }
 ```
 
-### 5.4 `.clang-format` 配置示例
+### 4.4 `.clang-format` 配置示例
 
 ```yaml
 # .clang-format
@@ -749,7 +704,7 @@ SortIncludes: true
 SpacesBeforeTrailingComments: 2
 ```
 
-### 5.5 `.clang-tidy` 配置示例
+### 4.5 `.clang-tidy` 配置示例
 
 ```yaml
 # .clang-tidy
@@ -799,7 +754,7 @@ CheckOptions:
 ...
 ```
 
-### 5.6 CMake 集成示例
+### 4.6 CMake 集成示例
 
 ```cmake
 # CMakeLists.txt
@@ -862,7 +817,7 @@ add_executable(app src/main.cpp)
 target_include_directories(app PRIVATE src)
 ```
 
-### 5.7 Pre-Commit Hook 示例
+### 4.7 Pre-Commit Hook 示例
 
 ```bash
 #!/bin/bash
@@ -901,9 +856,9 @@ exit 0
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 五大主流规范对比
+### 5.1 五大主流规范对比
 
 | 维度          | MISRA C++:2023        | AUTOSAR C++14         | Google C++ Style      | LLVM Coding Standards | CppCoreGuidelines     |
 | ------------- | --------------------- | --------------------- | --------------------- | --------------------- | --------------------- |
@@ -920,7 +875,7 @@ exit 0
 | 严重性分级    | Mandatory/Required/Advisory | 类似 MISRA      | 无明确分级            | 无明确分级            | 无明确分级            |
 | 与 ISO 26262  | 直接关联              | 直接关联              | 无关联                | 无关联                | 无关联                |
 
-### 6.2 命名规范对比
+### 5.2 命名规范对比
 
 | 类型         | Google        | LLVM          | MISRA C++     | CppCoreGuidelines | 本文档推荐    |
 | ------------ | ------------- | ------------- | ------------- | ----------------- | ------------- |
@@ -933,7 +888,7 @@ exit 0
 | 命名空间     | snake_case    | lower-case    | snake_case    | snake_case        | lower-case    |
 | 文件名       | lower-case    | PascalCase    | 无规定        | snake_case        | lower-case    |
 
-### 6.3 格式化工具对比
+### 5.3 格式化工具对比
 
 | 工具          | 语言支持       | 配置方式              | 速度     | 集成度   | 推荐度 |
 | ------------- | -------------- | --------------------- | -------- | -------- | ------ |
@@ -945,7 +900,7 @@ exit 0
 
 `clang-format` 因基于 Clang 前端，对 C++ 语法理解最准确，是当前主流选择。
 
-### 6.4 静态分析工具对比
+### 5.4 静态分析工具对比
 
 | 工具          | 检查类型       | 误报率 | 速度     | 规则集                  | 商业/开源 | 推荐度 |
 | ------------- | -------------- | ------ | -------- | ----------------------- | --------- | ------ |
@@ -956,7 +911,7 @@ exit 0
 | PVS-Studio    | 语义           | 中     | 中       | 自有                    | 商业      | 中     |
 | SonarQube     | 语义、风格     | 中     | 中       | 自有                    | 商业      | 中     |
 
-### 6.5 异常使用对比
+### 5.5 异常使用对比
 
 | 规范              | 立场              | 理由                                  | 适用场景                |
 | ----------------- | ----------------- | ------------------------------------- | ----------------------- |
@@ -969,9 +924,9 @@ exit 0
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 十大常见陷阱
+### 6.1 十大常见陷阱
 
 #### 陷阱 1：过度依赖 `auto`
 
@@ -1152,7 +1107,7 @@ public:
 // vector 优先使用移动
 ```
 
-### 7.2 最佳实践清单
+### 6.2 最佳实践清单
 
 1. **使用 RAII 管理所有资源**：内存、文件、锁、网络连接。
 2. **优先 `const`**：变量、参数、成员函数能 `const` 则 `const`。
@@ -1177,9 +1132,9 @@ public:
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目规范落地流程
+### 7.1 项目规范落地流程
 
 引入代码规范到既有项目的标准流程：
 
@@ -1238,7 +1193,7 @@ flowchart TD
     T22 --> T25
 ```
 
-### 8.2 CI/CD 集成
+### 7.2 CI/CD 集成
 
 GitHub Actions 示例：
 
@@ -1305,7 +1260,7 @@ jobs:
             -I src src/
 ```
 
-### 8.3 编译器警告策略
+### 7.3 编译器警告策略
 
 ```cmake
 # CMake 警告配置
@@ -1361,7 +1316,7 @@ if(MSVC)
 endif()
 ```
 
-### 8.4 Code Review 检查清单
+### 7.4 Code Review 检查清单
 
 ```markdown
 # Code Review Checklist
@@ -1403,7 +1358,7 @@ endif()
 - [ ] 测试命名清晰
 ```
 
-### 8.5 文档生成
+### 7.5 文档生成
 
 使用 Doxygen 生成 API 文档：
 
@@ -1472,9 +1427,9 @@ private:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Chromium 项目
+### 8.1 案例一：Chromium 项目
 
 Chromium 是 Google 主导的开源浏览器项目，代码量超过 3000 万行 C++。其规范特点：
 
@@ -1486,7 +1441,7 @@ Chromium 是 Google 主导的开源浏览器项目，代码量超过 3000 万行
 
 Chromium 的规范文档：`https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md`
 
-### 9.2 案例二：LLVM 项目
+### 8.2 案例二：LLVM 项目
 
 LLVM 是编译器基础设施项目，代码量约 200 万行 C++。其规范特点：
 
@@ -1498,7 +1453,7 @@ LLVM 是编译器基础设施项目，代码量约 200 万行 C++。其规范特
 
 LLVM 规范的启示：系统软件项目常因性能与二进制体积考虑，禁用 RTTI 与异常，需配套的自有抽象。
 
-### 9.3 案例三：Tesla Autopilot
+### 8.3 案例三：Tesla Autopilot
 
 Tesla Autopilot 是自动驾驶系统，需满足 ISO 26262 ASIL-D 安全等级。其规范特点：
 
@@ -1509,7 +1464,7 @@ Tesla Autopilot 是自动驾驶系统，需满足 ISO 26262 ASIL-D 安全等级�
 5. **代码覆盖率要求**：MC/DC 100% 覆盖。
 6. **形式化验证**：关键算法通过 TLA+ 或 Coq 验证。
 
-### 9.4 案例四：SpaceX 飞行软件
+### 8.4 案例四：SpaceX 飞行软件
 
 SpaceX 的 Dragon 飞船与 Falcon 火箭使用 C++ 开发飞行软件。规范特点：
 
@@ -1519,7 +1474,7 @@ SpaceX 的 Dragon 飞船与 Falcon 火箭使用 C++ 开发飞行软件。规范�
 4. **三模冗余**：关键计算三份独立执行，多数表决。
 5. **代码审查极其严格**：每行代码至少两人审查。
 
-### 9.5 案例五：Folly（Facebook）
+### 8.5 案例五：Folly（Facebook）
 
 Folly 是 Facebook 的 C++ 基础库，代码量约 50 万行。规范特点：
 
@@ -1531,7 +1486,7 @@ Folly 是 Facebook 的 C++ 基础库，代码量约 50 万行。规范特点：
 
 Folly 的启示：互联网服务端项目可激进采用现代 C++ 特性，与安全关键项目的保守策略形成对比。
 
-### 9.6 案例六：Qt 6
+### 8.6 案例六：Qt 6
 
 Qt 6 是跨平台 GUI 框架，代码量约 100 万行 C++。规范特点：
 
@@ -1899,7 +1854,7 @@ CheckOptions:
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 Google 禁用异常，而 CppCoreGuidelines 推荐异常？这种分歧的根本原因是什么？
 
@@ -2025,9 +1980,9 @@ Month 7+: 持续改进、外部审计准备
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准与规范
+### 10.1 标准与规范
 
 1. ISO/IEC. *ISO/IEC 14882:2023 Information technology — Programming languages — C++*. International Organization for Standardization, 2023.
 
@@ -2043,7 +1998,7 @@ Month 7+: 持续改进、外部审计准备
 
 7. Stroustrup, B. and Sutter, H. *C++ Core Guidelines*. ISO C++ Foundation, 2024. Available: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 8. Sutter, H. and Alexandrescu, A. *C++ Coding Standards: 101 Rules, Guidelines, and Best Practices*. Addison-Wesley Professional, 2004. ISBN: 978-0321113580.
 
@@ -2055,7 +2010,7 @@ Month 7+: 持续改进、外部审计准备
 
 12. Cifuentes, C. and Ho, A. "Static Analysis of C++ Code: A Tool Perspective." *Proceedings of the 2015 ACM SIGPLAN International Conference on Systems, Programming, Languages and Applications: Software for Humanity (SPLASH)*, 2015, pp. 12-15. DOI: 10.1145/2814189.2814195.
 
-### 11.3 工具与文档
+### 10.3 工具与文档
 
 13. LLVM Project. *Clang-Format Documentation*. LLVM Foundation, 2024. Available: https://clang.llvm.org/docs/ClangFormat.html
 
@@ -2069,7 +2024,7 @@ Month 7+: 持续改进、外部审计准备
 
 18. Sutter, H. and Alexandrescu, A. *C++ Coding Standards*. Addison-Wesley, 2004. DOI: 10.5555/996352.
 
-### 11.4 行业报告
+### 10.4 行业报告
 
 19. Coverity. *Coverity Scan: Open Source Report*. Synopsys, 2023. Available: https://scan.coverity.com/
 
@@ -2077,9 +2032,9 @@ Month 7+: 持续改进、外部审计准备
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **Sutter, H. and Alexandrescu, A.** *C++ Coding Standards: 101 Rules, Guidelines, and Best Practices*. Addison-Wesley, 2004. 经典入门，虽基于 C++03 但思想历久弥新。
 - **Meyers, S.** *Effective Modern C++*. O'Reilly, 2014. 现代 C++ 最佳实践。
@@ -2087,7 +2042,7 @@ Month 7+: 持续改进、外部审计准备
 - **Williams, A.** *C++ Concurrency in Action*. 2nd ed., Manning, 2019. 并发编程规范。
 - **Dewhurst, S.** *C++ Common Knowledge*. Addison-Wesley, 2005. C++ 常见陷阱。
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 - **CppCoreGuidelines**：https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
 - **Google C++ Style Guide**：https://google.github.io/styleguide/cppguide.html
@@ -2097,14 +2052,14 @@ Month 7+: 持续改进、外部审计准备
 - **AUTOSAR C++ Guidelines**：https://www.autosar.org/standards/
 - **MISRA 官方**：https://www.misra.org.uk/
 
-### 12.3 课程
+### 11.3 课程
 
 - **MIT 6.172 Performance Engineering**：涉及代码规范对性能的影响。
 - **Stanford CS106L**：C++ 高级主题，涵盖规范与最佳实践。
 - **CMU 15-411 Compiler Design**：理解静态分析的底层原理。
 - **CppCon YouTube 频道**：年度 C++ 大会，多个规范相关讲座。
 
-### 12.4 实践项目
+### 11.4 实践项目
 
 - **阅读 LLVM 源码**：学习系统软件的规范实践。
 - **阅读 Chromium 源码**：学习大规模项目的规范落地。
@@ -2112,7 +2067,7 @@ Month 7+: 持续改进、外部审计准备
 - **贡献 Boost 项目**：参与开源，接受规范审查。
 - **实现 MISRA 规则检查器**：深入理解规则的形式化建模。
 
-### 12.5 社区
+### 11.5 社区
 
 - **ISO C++ Foundation**：https://isocpp.org/
 - **Reddit r/cpp**：https://www.reddit.com/r/cpp/

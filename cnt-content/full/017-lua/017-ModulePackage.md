@@ -25,72 +25,16 @@ prerequisites:
   - lua/函数与闭包
   - lua/元表与元方法详解
 ---
+
 # Lua 模块与包速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-学习本章后,读者应能在 Bloom 认知层级框架下达成下列目标。
-
-### 1.1 知识层（Remembering）
-
-- 列举 Lua 5.0、5.1、5.2、5.3、5.4、5.5 中模块系统的演化路径:`module()` 函数从有到废、`require` searchers 的演化。
-- 复述 `require` 的四个 searchers（Lua 5.2+）或 loaders（Lua 5.1）的执行顺序:preload、path、cpath、all-in-one。
-- 描述 `package.loaded`、`package.path`、`package.cpath`、`package.preload`、`package.searchers` 的语义与初始值。
-- 列出 LuaRocks 的核心命令:`install`、`remove`、`list`、`search`、`make`、`pack`、`upload`、`config`。
-- 列举 Lua C API 中 `luaopen_*`、`luaL_register`、`luaL_newlib`、`lua_require` 的签名与适用版本。
-
-### 1.2 理解层（Understanding）
-
-- 解释 `require` 的查找顺序与 `package.loaded` 缓存的交互:命中即返回,未命中才触发 searcher。
-- 阐释 Lua 5.1 `module()` 函数被废弃的设计动机:全局副作用、隐式 `setfenv`、难静态分析。
-- 描述 searcher 函数的契约:接收模块名,返回加载函数或找不到的原因字符串。
-- 解释 `package.path` 中 `?` 与 `;` 的语义,以及 `?.lua` vs `?/init.lua` 的目录式模块约定。
-- 描述 Lua C 模块的动态链接机制:Windows `LoadLibrary`、POSIX `dlopen`、嵌入式环境的静态链接替代。
-- 解释 LuaJIT FFI 的 `ffi.cdef`/`ffi.C` 如何替代传统 C 模块,以及其优势与限制。
-- 描述 Luau 渐进式类型系统对模块契约的影响:`export type`、`--!strict`、`require` 路径解析。
-
-### 1.3 应用层（Applying）
-
-- 编写符合 Lua 5.2+ 风格的模块（`local M = {}; ... return M`）,避免全局污染。
-- 使用 `package.path` 自定义模块搜索路径,支持项目内多版本共存。
-- 应用 `package.preload` 预加载模块,实现单文件分发或测试桩（test stub）。
-- 编写 C 扩展模块,通过 `luaopen_<modname>` 导出,使用 `luaL_newlib` 注册函数表。
-- 使用 LuaRocks 创建、打包、发布 Lua 模块,编写 `rockspec` 文件管理依赖。
-- 实现模块热重载（hot reload）:清除 `package.loaded` 后重新 `require`,处理 upvalue 状态保留。
-- 在 OpenResty、WoW、Neovim 等宿主中应用其模块约定（`ngx.*`、`addon namespace`、`vim.*`）。
-
-### 1.4 分析层（Analyzing）
-
-- 分析 Lua 模块与 JavaScript CommonJS、ES Modules、Python `import`、Go packages、Rust crates 的本质差异。
-- 分析循环依赖（cyclic dependency）的成因:模块 A `require` B,B `require` A,加载顺序与 `package.loaded` 时机。
-- 区分 Lua 5.1 `module()` 与 5.2+ 显式 `local M` 模式的可测试性、可静态分析性、可热重载性。
-- 分析 LuaJIT、Luau、PicoLua 等方言对 `require` 语义的扩展或限制（FFI 替代 C 模块、类型注解、子集加载）。
-- 分析 WoW、Roblox、Neovim 等宿主的自定义模块加载策略,识别其对标准 `require` 的偏差。
-- 分析 `require` 在沙箱环境中的逃逸风险（`package.loaders` 注入、`loadfile` 泄露）。
-
-### 1.5 评价层（Evaluating）
-
-- 评判 Lua 模块系统设计的优劣:简洁性（表 + 返回值） vs 表达力（无命名空间层次、无访问控制）。
-- 评估 LuaRocks 与 npm、pip、cargo、go mod 在依赖解析、版本锁定、离线支持方面的差异。
-- 评判 `package.loaded` 缓存策略对内存占用与一致性的影响,以及热重载场景的取舍。
-- 评估 Lua C 模块 ABI 稳定性:Lua 5.1、5.2、5.3、5.4、5.5 之间的兼容性窗口与迁移成本。
-- 评判 OpenResty `resty` 命令、WoW AddOn 加载器、Neovim `runtimepath` 等宿主扩展的工程合理性。
-
-### 1.6 创造层（Creating）
-
-- 设计基于元表的命名空间层级系统,模拟 `foo.bar.baz` 的多层级模块组织。
-- 构建支持依赖注入（DI）的模块框架,实现可测试、可替换的组件装配。
-- 设计模块版本协商机制:运行时检测模块的 `_VERSION`,降级或升级 API 适配。
-- 构建热重载开发工具,监听文件变化自动清理 `package.loaded` 并重新 `require`,保留运行时状态。
-- 设计跨 Lua 版本（5.1/5.2/5.3/5.4/5.5/LuaJIT/Luau）的模块兼容层,抽象差异（`module()`、`setfenv`、`load`、`unpack`）。
-
-## 2. 历史动机与演化
-
-### 2.1 模块系统的范式演化
+### 1.1 模块系统的范式演化
 
 程序语言的模块系统历经四个主要阶段:
 
@@ -101,7 +45,7 @@ prerequisites:
 
 Lua 的模块系统演化浓缩了上述阶段。Lua 1.0（1993）无模块系统,所有函数全局可见;Lua 3.0（1997）引入词法作用域,但全局变量仍是主要组织方式;Lua 5.0（2003）引入 `module()` 函数与 `require` 机制,提供正式模块支持;Lua 5.1（2006）完善 `package` 库,被 LuaJIT、WoW、Redis 广泛采用;Lua 5.2（2011）废弃 `module()`,转向显式 `local M = {}; return M` 模式;Lua 5.3+（2015+）持续优化 `require` 的 searcher 机制;Lua 5.4（2020）引入 `<const>`/`<close>` 属性,提升模块资源管理;Lua 5.5（2025）优化模块加载性能。
 
-### 2.2 Lua 在游戏/嵌入式/脚本领域的地位
+### 1.2 Lua 在游戏/嵌入式/脚本领域的地位
 
 Lua 模块系统在主要应用场景中扮演核心角色:
 
@@ -112,7 +56,7 @@ Lua 模块系统在主要应用场景中扮演核心角色:
 - **Neovim**:Vimscript 与 Lua 共存,Lua 模块通过 `runtimepath` 加载,`vim.api`、`vim.fn`、`vim.g` 作为宿主 API 模块。
 - **桌面应用**:Lua 与 C 宿主通过 `luaopen_*` 注册扩展模块,实现插件架构。
 
-### 2.3 演化时间线
+### 1.3 演化时间线
 
 | 版本 | 年份 | 模块系统变化 |
 | --- | --- | --- |
@@ -133,7 +77,7 @@ Lua 模块系统在主要应用场景中扮演核心角色:
 | OpenResty | 2012 | `resty` 命令行工具,`lua_package_path`/`lua_package_cpath` 指令 |
 | Neovim | 2019 | 嵌入式 Lua,`runtimepath` 加载 Lua 模块,`vim.api` 宿主 API |
 
-### 2.4 设计动机总结
+### 1.4 设计动机总结
 
 Lua 引入模块系统的设计动机:
 
@@ -144,9 +88,9 @@ Lua 引入模块系统的设计动机:
 5. **可嵌入性**:模块系统是纯库实现,无运行时依赖,便于嵌入 C 程序。
 6. **教学简洁**:模块即表,`require` 即函数调用,概念极简,易于学习与推理。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 模块的代数模型
+### 2.1 模块的代数模型
 
 设 $\mathcal{M}$ 为模块集合,每个模块 $m \in \mathcal{M}$ 是一个命名空间到导出值的映射:
 
@@ -177,7 +121,7 @@ m & \text{otherwise}
 \end{cases}
 $$
 
-### 3.2 `require` 的状态机模型
+### 2.2 `require` 的状态机模型
 
 `require` 的执行可形式化为状态机:
 
@@ -229,7 +173,7 @@ $$
 
 注:`package.loaded[name]` 在 `LOAD` 状态开始前即被设置为 `true`（或占位值）,以检测循环依赖,见 §4.3。
 
-### 3.3 searcher 的契约
+### 2.3 searcher 的契约
 
 `package.searchers` 是一个函数列表,每个 searcher $s_i$ 满足契约:
 
@@ -248,7 +192,7 @@ Lua 5.2+ 默认四个 searchers:
 3. **cpath searcher**:在 `package.cpath` 中查找 `.so`/`.dll` C 扩展。
 4. **all-in-one searcher**:对 `a.b.c` 这样的点分模块名,查找 `a/b/c` 路径下的 C 库,并自动调用子模块的 `luaopen_b_c` 函数。
 
-### 3.4 `package.path` 的模式匹配
+### 2.4 `package.path` 的模式匹配
 
 `package.path` 是分号分隔的模板列表,每个模板含 `?` 占位符:
 
@@ -267,7 +211,7 @@ $$
 - $t_1 = $ `./?.lua` → `./foo/bar.lua`
 - $t_2 = $ `./?/init.lua` → `./foo/bar/init.lua`
 
-### 3.5 循环依赖的图论模型
+### 2.5 循环依赖的图论模型
 
 模块依赖关系可形式化为有向图 $G = (V, E)$,其中 $V$ 是模块集合,$E$ 是依赖边。
 
@@ -284,7 +228,7 @@ $$
 
 若 $\text{exec}(A)$ 中调用 $\text{require}(B)$,而 B 又调用 $\text{require}(A)$,则后者返回 `true`（占位）,B 获得不完整的 A。
 
-### 3.6 模块缓存的代数定律
+### 2.6 模块缓存的代数定律
 
 `package.loaded` 缓存遵循以下代数定律:
 
@@ -302,7 +246,7 @@ $$
 
 注意第三定律:`require` 返回的是缓存的引用,修改之会影响后续 `require`。这是 Lua 模块系统的关键语义,也是热重载的基础。
 
-### 3.7 模块导出的范畴论模型
+### 2.7 模块导出的范畴论模型
 
 模块可视为范畴论中的对象,导出函数为态射。模块的组合是范畴的积（product）:
 
@@ -318,7 +262,7 @@ $$
 
 模块图 $G$ 的拓扑序是范畴的合成序。无环模块图对应自由范畴（free category）,有环则需余极限（colimit）处理。
 
-### 3.8 LuaRocks 依赖解析的形式化
+### 2.8 LuaRocks 依赖解析的形式化
 
 LuaRocks 的依赖声明可形式化为约束满足问题（CSP）:
 
@@ -334,9 +278,9 @@ $$
 
 LuaRocks 3.x 使用 SemVer 约束（`>= 1.0`, `< 2.0`, `~> 1.2`）,解析器采用回溯算法求解,类似 pip 与 cargo。
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 `require` 的幂等性定理
+### 3.1 `require` 的幂等性定理
 
 **定理 1**（`require` 的幂等性）:对同一模块名 $n$,在同一 Lua 状态机内,重复 `require(n)` 返回相同的引用,且模块代码仅执行一次。
 
@@ -397,7 +341,7 @@ end
 
 注:若模块代码在加载时抛出错误,`cache[n]` 会被重置为 nil,允许重试。
 
-### 4.2 循环依赖返回不完整模块定理
+### 3.2 循环依赖返回不完整模块定理
 
 **定理 2**（循环依赖返回不完整模块）:若模块 A 与 B 循环依赖（A `require` B,B `require` A）,且 B 在加载时立即访问 A 的字段,则 B 获得的 A 是不完整的（仅含占位 `true` 或部分字段）。
 
@@ -448,7 +392,7 @@ end
 return B
 ```
 
-### 4.3 searcher 链单调性定理
+### 3.3 searcher 链单调性定理
 
 **定理 3**（searcher 链单调性）:若 `package.searchers` 列表为 $[s_1, s_2, \ldots, s_n]$,且每个 $s_i$ 满足"找到即返回 loader,未找到返回字符串",则 `require` 必然返回第一个找到的 loader,或抛出"module not found"错误。
 
@@ -473,7 +417,7 @@ error("module '" .. name .. "' not found: " .. table.concat(reasons, "\n\t"))
 
 证毕。
 
-### 4.4 `module()` 废弃的合理性定理
+### 3.4 `module()` 废弃的合理性定理
 
 **定理 4**（`module()` 函数的可静态分析性弱于显式 `local M`）:Lua 5.0/5.1 的 `module("foo")` 函数隐式创建模块表、设置环境、注册全局,比 Lua 5.2+ 的 `local M = {}; return M` 模式更难静态分析。
 
@@ -502,7 +446,7 @@ error("module '" .. name .. "' not found: " .. table.concat(reasons, "\n\t"))
 
 证毕。
 
-### 4.5 模块热重载的语义保持定理
+### 3.5 模块热重载的语义保持定理
 
 **定理 5**（模块热重载的语义保持条件）:若模块 M 无外部可变状态（仅导出纯函数与常量）,则清除 `package.loaded[M]` 并重新 `require` 等价于重启 Lua 状态机,语义保持。
 
@@ -526,7 +470,7 @@ error("module '" .. name .. "' not found: " .. table.concat(reasons, "\n\t"))
 
 注:实践中,热重载常需配合状态迁移（state migration）,将旧状态注入新模块。
 
-### 4.6 LuaRocks 依赖解析的完备性定理
+### 3.6 LuaRocks 依赖解析的完备性定理
 
 **定理 6**（LuaRocks 依赖解析的完备性）:若依赖图无环且版本约束可满足,则 LuaRocks 的回溯算法必能在有限步内找到解,或确定无解。
 
@@ -550,7 +494,7 @@ LuaRocks 的依赖解析是 CSP（约束满足问题）:
 
 注:实际 LuaRocks 3.x 还考虑平台兼容性、构建依赖、可选依赖等,增加 CSP 复杂度。
 
-### 4.7 模块缓存与 GC 的交互定理
+### 3.7 模块缓存与 GC 的交互定理
 
 **定理 7**（模块缓存对 GC 的影响）:`package.loaded` 持有模块的强引用,模块及其 upvalue 不会被 GC 回收,直至显式清除 `package.loaded[name]`。
 
@@ -569,9 +513,9 @@ collectgarbage("collect")  -- 现在可回收 M（若无其他引用）
 
 注:热重载时需注意清除 `package.loaded` 后,旧模块的 upvalue 可能仍被其他模块的函数捕获（通过闭包）,导致内存无法立即释放。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础:表模块模式
+### 4.1 基础:表模块模式
 
 ```lua
 -- lua: 表模块模式（Lua 5.2+ 推荐风格）
@@ -606,7 +550,7 @@ return M
 -- print(mymath.circle_area(5))  -- 78.5398...
 ```
 
-### 5.2 基础:`require` 与缓存
+### 4.2 基础:`require` 与缓存
 
 ```lua
 -- lua: require 与缓存演示
@@ -626,7 +570,7 @@ print(M3 == M1)  -- false,新加载的模块
 print(M3.added_field)  -- nil,新模块无此字段
 ```
 
-### 5.3 `package.path` 自定义
+### 4.3 `package.path` 自定义
 
 ```lua
 -- lua: 自定义 package.path
@@ -644,7 +588,7 @@ package.path = "./v1/?.lua;" .. package.path .. ";./v2/?.lua"
 -- 推荐:require("v1.foo") vs require("v2.foo")
 ```
 
-### 5.4 `package.preload` 预加载
+### 4.4 `package.preload` 预加载
 
 ```lua
 -- lua: package.preload 预加载模块
@@ -674,7 +618,7 @@ local db = require("db")
 print(db.query("SELECT * FROM users"))  -- {{"mock", "data"}}
 ```
 
-### 5.5 自定义 searcher
+### 4.5 自定义 searcher
 
 ```lua
 -- lua: 自定义 searcher（Lua 5.2+）
@@ -711,7 +655,7 @@ local mathx = require("math_extra")
 print(mathx.square(5))  -- 25
 ```
 
-### 5.6 Lua 5.1 `module()` 函数（已废弃,仅作了解）
+### 4.6 Lua 5.1 `module()` 函数（已废弃,仅作了解）
 
 ```lua
 -- lua 5.1: module() 函数（已废弃,不推荐使用）
@@ -742,7 +686,7 @@ end
 -- print(old.add(1, 2))  -- 3
 ```
 
-### 5.7 C 扩展模块基础
+### 4.7 C 扩展模块基础
 
 ```c
 // c: C 扩展模块示例
@@ -788,7 +732,7 @@ print(mycmod.mul(4, 5))  -- 20
 */
 ```
 
-### 5.8 LuaJIT FFI 替代 C 模块
+### 4.8 LuaJIT FFI 替代 C 模块
 
 ```lua
 -- lua: LuaJIT FFI 替代 C 扩展模块
@@ -836,7 +780,7 @@ return M
 -- print(clib.strlen("hello"))  -- 5
 ```
 
-### 5.9 命名空间层级
+### 4.9 命名空间层级
 
 ```lua
 -- lua: 命名空间层级模块
@@ -879,7 +823,7 @@ return utils
 -- print(app.utils.split("a,b,c", ","))  -- {"a", "b", "c"}
 ```
 
-### 5.10 模块继承与混入
+### 4.10 模块继承与混入
 
 ```lua
 -- lua: 模块继承与混入
@@ -930,7 +874,7 @@ return DerivedModule
 -- print(p:is_adult())  -- true
 ```
 
-### 5.11 混入（Mixin）模式
+### 4.11 混入（Mixin）模式
 
 ```lua
 -- lua: Mixin 模式
@@ -1021,7 +965,7 @@ return User
 -- u:emit("click")  -- clicked
 ```
 
-### 5.12 模块单例模式
+### 4.12 模块单例模式
 
 ```lua
 -- lua: 模块单例模式
@@ -1072,7 +1016,7 @@ return Config
 -- print(c1 == c2)  -- true
 ```
 
-### 5.13 循环依赖处理
+### 4.13 循环依赖处理
 
 ```lua
 -- lua: 循环依赖的正确处理
@@ -1115,7 +1059,7 @@ return B
 -- print(A.process("hello"))  -- hello [B with A.helper] [A]
 ```
 
-### 5.14 热重载工具
+### 4.14 热重载工具
 
 ```lua
 -- lua: 模块热重载工具
@@ -1188,7 +1132,7 @@ return HotReload
 -- local cleared = HotReload.clear_pattern("^myapp%.")  -- 清除所有 myapp.* 模块
 ```
 
-### 5.15 LuaRocks rockspec 文件
+### 4.15 LuaRocks rockspec 文件
 
 ```lua
 -- lua: LuaRocks rockspec 文件示例
@@ -1243,7 +1187,7 @@ build = {
 -- luarocks upload myapp-1.0-1.rockspec  # 上传到 LuaRocks.org
 ```
 
-### 5.16 模块版本协商
+### 4.16 模块版本协商
 
 ```lua
 -- lua: 模块版本协商
@@ -1293,7 +1237,7 @@ return M
 -- print(v2.process(5))  -- 30
 ```
 
-### 5.17 依赖注入框架
+### 4.17 依赖注入框架
 
 ```lua
 -- lua: 简易依赖注入框架
@@ -1358,7 +1302,7 @@ return DI
 -- print(repo.db.query())  -- data
 ```
 
-### 5.18 OpenResty 风格模块
+### 4.18 OpenResty 风格模块
 
 ```lua
 -- lua: OpenResty 风格模块
@@ -1430,7 +1374,7 @@ return _M
 -- }
 ```
 
-### 5.19 WoW AddOn 风格模块
+### 4.19 WoW AddOn 风格模块
 
 ```lua
 -- lua: WoW AddOn 风格模块（Lua 5.1）
@@ -1471,7 +1415,7 @@ end
 -- Utils.lua
 ```
 
-### 5.20 Neovim Lua 模块
+### 4.20 Neovim Lua 模块
 
 ```lua
 -- lua: Neovim Lua 模块
@@ -1529,9 +1473,9 @@ return M
 -- print(require("myplugin").greet("Lua"))
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 JavaScript 模块系统对比
+### 5.1 与 JavaScript 模块系统对比
 
 | 维度 | Lua 模块 | JavaScript CommonJS | JavaScript ES Modules |
 | --- | --- | --- | --- |
@@ -1547,7 +1491,7 @@ return M
 
 Lua 模块与 CommonJS 在缓存机制上最相似,但 Lua 更简洁（无 `module.exports` 中间层）。ES Modules 的静态分析能力远超 Lua,但 Lua 的动态特性更灵活。
 
-### 6.2 与 Python 模块对比
+### 5.2 与 Python 模块对比
 
 | 维度 | Lua 模块 | Python 模块 |
 | --- | --- | --- |
@@ -1563,7 +1507,7 @@ Lua 模块与 CommonJS 在缓存机制上最相似,但 Lua 更简洁（无 `modu
 
 Lua 与 Python 模块都基于"文件即模块"思想,但 Python 的 `import` 是语法级,Lua 的 `require` 是函数级。Python 的相对导入与命名空间包是 Lua 缺失的。
 
-### 6.3 与 Go packages 对比
+### 5.3 与 Go packages 对比
 
 | 维度 | Lua 模块 | Go packages |
 | --- | --- | --- |
@@ -1578,7 +1522,7 @@ Lua 与 Python 模块都基于"文件即模块"思想,但 Python 的 `import` �
 
 Go 的访问控制（大小写约定）比 Lua 更系统化,编译期检测循环依赖更安全。
 
-### 6.4 与 Rust crates 对比
+### 5.4 与 Rust crates 对比
 
 | 维度 | Lua 模块 | Rust crates |
 | --- | --- | --- |
@@ -1593,7 +1537,7 @@ Go 的访问控制（大小写约定）比 Lua 更系统化,编译期检测循�
 
 Rust 的访问控制与特性开关是 Lua 完全缺失的,Lua 依赖约定（`_` 前缀）实现私有。
 
-### 6.5 与 Java packages 对比
+### 5.5 与 Java packages 对比
 
 | 维度 | Lua 模块 | Java packages |
 | --- | --- | --- |
@@ -1606,7 +1550,7 @@ Rust 的访问控制与特性开关是 Lua 完全缺失的,Lua 依赖约定（`_
 
 Java 的访问控制最完善,但 Lua 的灵活性更适合嵌入式脚本场景。
 
-### 6.6 与 Ruby `require` 对比
+### 5.6 与 Ruby `require` 对比
 
 | 维度 | Lua 模块 | Ruby |
 | --- | --- | --- |
@@ -1619,9 +1563,9 @@ Java 的访问控制最完善,但 Lua 的灵活性更适合嵌入式脚本场景
 
 Ruby 的元编程能力更强,但 Lua 的简洁性更适合嵌入。
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱:全局污染
+### 6.1 陷阱:全局污染
 
 ```lua
 -- lua: 全局污染陷阱
@@ -1651,7 +1595,7 @@ return {
 }
 ```
 
-### 7.2 陷阱:循环依赖立即访问
+### 6.2 陷阱:循环依赖立即访问
 
 ```lua
 -- lua: 循环依赖立即访问陷阱
@@ -1678,7 +1622,7 @@ end
 return B
 ```
 
-### 7.3 陷阱:修改 `package.loaded` 影响全局
+### 6.3 陷阱:修改 `package.loaded` 影响全局
 
 ```lua
 -- lua: 修改 package.loaded 影响全局陷阱
@@ -1696,7 +1640,7 @@ mymod_ext.added = "local extension"
 -- 原 mymod 不受影响
 ```
 
-### 7.4 陷阱:热重载丢失状态
+### 6.4 陷阱:热重载丢失状态
 
 ```lua
 -- lua: 热重载丢失状态陷阱
@@ -1730,7 +1674,7 @@ return M
 -- 热重载后:require("counter").count = saved_count
 ```
 
-### 7.5 陷阱:`module()` 遗留代码
+### 6.5 陷阱:`module()` 遗留代码
 
 ```lua
 -- lua: module() 遗留代码陷阱（Lua 5.1 风格）
@@ -1755,7 +1699,7 @@ end
 return M
 ```
 
-### 7.6 陷阱:错误的相对路径
+### 6.6 陷阱:错误的相对路径
 
 ```lua
 -- lua: 错误的相对路径陷阱
@@ -1770,7 +1714,7 @@ local utils = require("utils")  -- 从 /project/utils.lua 加载
 -- local utils = dofile("/project/utils.lua")
 ```
 
-### 7.7 陷阱:C 模块版本不兼容
+### 6.7 陷阱:C 模块版本不兼容
 
 ```lua
 -- lua: C 模块版本不兼容陷阱
@@ -1787,7 +1731,7 @@ local mod = require("mycmod")  -- error: multiple Lua VMs detected
 -- ffi.cdef[[ ... ]]
 ```
 
-### 7.8 陷阱:require 在协程中阻塞
+### 6.8 陷阱:require 在协程中阻塞
 
 ```lua
 -- lua: require 在协程中阻塞陷阱
@@ -1804,7 +1748,7 @@ local co = coroutine.create(function()
 end)
 ```
 
-### 7.9 陷阱:沙箱逃逸
+### 6.9 陷阱:沙箱逃逸
 
 ```lua
 -- lua: 沙箱逃逸陷阱
@@ -1837,7 +1781,7 @@ local sandbox_env = {
 }
 ```
 
-### 7.10 陷阱:`_G` 与 `_ENV` 混淆
+### 6.10 陷阱:`_G` 与 `_ENV` 混淆
 
 ```lua
 -- lua: _G 与 _ENV 混淆陷阱
@@ -1857,7 +1801,7 @@ M.MY_GLOBAL = "hello"
 return M
 ```
 
-### 7.11 陷阱:`package.loaded` 持久引用导致内存泄漏
+### 6.11 陷阱:`package.loaded` 持久引用导致内存泄漏
 
 ```lua
 -- lua: package.loaded 持久引用内存泄漏陷阱
@@ -1870,7 +1814,7 @@ package.loaded["huge_module"] = nil
 collectgarbage("collect")  -- 释放内存
 ```
 
-### 7.12 陷阱:Luau 类型注解与运行时不符
+### 6.12 陷阱:Luau 类型注解与运行时不符
 
 ```lua
 -- luau: Luau 类型注解与运行时不符陷阱
@@ -1894,7 +1838,7 @@ return M
 -- 类型系统仅静态检查,不阻止运行时错误
 ```
 
-### 7.13 反模式:过度抽象模块系统
+### 6.13 反模式:过度抽象模块系统
 
 ```lua
 -- lua: 过度抽象反模式
@@ -1914,9 +1858,9 @@ local mymod = require("mymod")
 -- 何时不用:简单工具、原型、单文件脚本
 ```
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 命名规范
+### 7.1 命名规范
 
 - **模块名**:全小写,点分命名空间（`myapp.utils.string`）。
 - **文件名**:与模块名一致,`myapp/utils/string.lua` 或 `myapp/utils/string/init.lua`。
@@ -1924,7 +1868,7 @@ local mymod = require("mymod")
 - **私有变量**:`local` 声明,以下划线前缀标识内部使用（`_internal`）。
 - **常量**:全大写下划线（`MAX_RETRIES`）。
 
-### 8.2 模块结构模板
+### 7.2 模块结构模板
 
 ```lua
 -- lua: 模块结构模板
@@ -1990,7 +1934,7 @@ _init()
 return M
 ```
 
-### 8.3 错误处理
+### 7.3 错误处理
 
 ```lua
 -- lua: 模块错误处理最佳实践
@@ -2030,7 +1974,7 @@ end
 return M
 ```
 
-### 8.4 测试桩与依赖注入
+### 7.4 测试桩与依赖注入
 
 ```lua
 -- lua: 可测试模块设计
@@ -2069,7 +2013,7 @@ return M
 -- local user = repo:get_user(1)
 ```
 
-### 8.5 版本管理
+### 7.5 版本管理
 
 ```lua
 -- lua: 模块版本管理
@@ -2112,7 +2056,7 @@ end
 return M
 ```
 
-### 8.6 文档注释
+### 7.6 文档注释
 
 ```lua
 -- lua: 模块文档注释（LDoc 风格）
@@ -2152,7 +2096,7 @@ return M
 -- ldoc .  # 在当前目录生成 HTML 文档
 ```
 
-### 8.7 性能优化
+### 7.7 性能优化
 
 ```lua
 -- lua: 模块性能优化
@@ -2190,7 +2134,7 @@ end
 local function helper(x) return x * 2 end  -- 比 function helper 快
 ```
 
-### 8.8 跨版本兼容
+### 7.8 跨版本兼容
 
 ```lua
 -- lua: 跨版本兼容层
@@ -2244,7 +2188,7 @@ end
 return M
 ```
 
-### 8.9 日志与可观测性
+### 7.9 日志与可观测性
 
 ```lua
 -- lua: 模块日志与可观测性
@@ -2284,7 +2228,7 @@ end
 return M
 ```
 
-### 8.10 安全沙箱
+### 7.10 安全沙箱
 
 ```lua
 -- lua: 安全沙箱模块加载器
@@ -2344,9 +2288,9 @@ return M
 -- fn()
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究:Lapis Web 框架
+### 8.1 案例研究:Lapis Web 框架
 
 Lapis 是 Lua 的 Web 框架,运行在 OpenResty 或 Cqueues 之上。其模块组织体现 Lua 工程级实践:
 
@@ -2396,7 +2340,7 @@ Lapis 的设计要点:
 - 模块化中间件（每个中间件是独立模块）。
 - 配置通过环境变量与 Lua 文件分离。
 
-### 9.2 案例研究:OpenResty `lua_package_path`
+### 8.2 案例研究:OpenResty `lua_package_path`
 
 ```lua
 -- lua: OpenResty 模块路径配置
@@ -2459,7 +2403,7 @@ OpenResty 的模块系统特点:
 - `init_by_lua_block` 预加载模块,所有 worker 共享。
 - 连接池模式:模块持有 C 模块实例,通过 `set_keepalive` 复用。
 
-### 9.3 案例研究:WoW AddOn 系统
+### 8.3 案例研究:WoW AddOn 系统
 
 WoW 使用 Lua 5.1 + 自定义加载器管理 AddOn:
 
@@ -2534,7 +2478,7 @@ WoW 模块系统特点:
 - 显式依赖声明（`Dependencies`、`OptionalDeps`）。
 - `SavedVariables` 实现跨会话持久化。
 
-### 9.4 案例研究:Neovim Lua 模块
+### 8.4 案例研究:Neovim Lua 模块
 
 Neovim 0.5+ 全面引入 Lua,模块系统基于标准 `require` + `runtimepath`:
 
@@ -2601,7 +2545,7 @@ Neovim 模块系统特点:
 - 惰性加载插件（`pcall(require, ...)` 检测存在性）。
 - 子模块通过 `require("parent.child")` 组织。
 
-### 9.5 案例研究:LuaJIT FFI 模块
+### 8.5 案例研究:LuaJIT FFI 模块
 
 LuaJIT 的 FFI 替代传统 C 模块,无需编译:
 
@@ -2654,7 +2598,7 @@ return M
 -- 3. 调试困难（C 与 Lua 边界）
 ```
 
-### 9.6 案例研究:LuaRocks 包发布流程
+### 8.6 案例研究:LuaRocks 包发布流程
 
 完整 LuaRocks 包发布流程:
 
@@ -2726,7 +2670,7 @@ build = {
 }
 ```
 
-### 9.7 案例研究:Redis Functions 模块
+### 8.7 案例研究:Redis Functions 模块
 
 Redis 7+ 引入 Functions 持久化脚本,支持模块化组织:
 
@@ -2764,7 +2708,7 @@ Redis Functions 特点:
 - 命名空间（`#!lua name=mylib`）。
 - 无 `require`,但函数库内可定义辅助函数。
 
-### 9.8 案例研究:Luau 渐进式类型模块
+### 8.8 案例研究:Luau 渐进式类型模块
 
 Roblox Luau 支持渐进式类型系统,模块可声明类型契约:
 
@@ -2816,7 +2760,7 @@ Luau 类型化模块特点:
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**（模块创建）:编写一个 `string_utils` 模块,包含以下函数:
 - `split(s, sep)`:分割字符串
@@ -2851,7 +2795,7 @@ function B.helper() return A.data end
 return B
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**（自定义 searcher）:实现一个 searcher,从 ZIP 文件中加载 Lua 模块（提示:使用 `lua-zlib` 或 `ffi`）。
 
@@ -2865,7 +2809,7 @@ return B
 - `fibonacci(n)`:斐波那契
 - `is_prime(n)`:素数判断
 
-### 10.3 综合应用题
+### 9.3 综合应用题
 
 **习题 7**（模块系统设计）:设计一个插件系统,要求:
 - 插件以 Lua 模块形式提供
@@ -2881,7 +2825,7 @@ return B
 - 含 C 扩展模块
 - 提供 `mylib` 命令行工具
 
-### 10.4 思考题
+### 9.4 思考题
 
 **思考题 1**:Lua 模块系统为何不引入命名空间层级（如 `foo.bar.baz` 的语法级支持）?这对 Lua 的设计哲学有何影响?
 
@@ -2891,7 +2835,7 @@ return B
 
 **思考题 4**:`package.loaded` 的全局缓存设计在多线程 Lua（如 Lua-ML、LuaJIT 多线程）中会有什么问题?如何解决?
 
-### 10.5 参考答案
+### 9.5 参考答案
 
 **习题 2 答案**:
 - `m1.count` 输出 `10`（m1 仍持有旧模块表引用）。
@@ -2920,7 +2864,7 @@ end
 return B
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, "Lua 5.0 Reference Manual," Technical Report PUC-Rio, 2003. [Online]. Available: https://www.lua.org/manual/5.0/
 
@@ -2972,22 +2916,22 @@ return B
 
 [25] D. Turner, "Some History of Functional Programming Languages," in Proc. of the 2012 Symposium on History of Programming Languages (HOPL IV), 2012, pp. 1-20. doi: 10.1145/2368116.2368120
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 Lua 官方资源
+### 11.1 Lua 官方资源
 
 - **Lua 官方文档**（https://www.lua.org/docs.html）:Lua 各版本参考手册、教程、论文。
 - **Programming in Lua**（https://www.lua.org/pil/）:Roberto Ierusalimschy 所著官方教程,第 4 版覆盖 Lua 5.3。
 - **Lua Users Wiki**（http://lua-users.org/wiki/）:社区维护的教程、技巧、模块列表。
 - **Lua mailing list**（https://www.lua.org/lua-l.html）:Lua 官方邮件列表,讨论设计与实现。
 
-### 12.2 LuaRocks 与包管理
+### 11.2 LuaRocks 与包管理
 
 - **LuaRocks 官方文档**（https://github.com/luarocks/luarocks/wiki）:LuaRocks 使用、开发、贡献指南。
 - **LuaRocks.org**（https://luarocks.org/）:Lua 包仓库,搜索与安装模块。
 - **rockspec 参考**（https://github.com/luarocks/luarocks/wiki/rockspec-format）:rockspec 文件格式详解。
 
-### 12.3 宿主环境
+### 11.3 宿主环境
 
 - **OpenResty 文档**（https://openresty.org/en/docs.html）:OpenResty 模块系统、`lua_package_path`、`init_by_lua` 等。
 - **Lapis 框架**（https://leafo.net/lapis/）:Lua Web 框架,模块组织参考。
@@ -2995,7 +2939,7 @@ return B
 - **Neovim Lua**（https://neovim.io/doc/user/lua.html）:Neovim Lua API 与模块组织。
 - **Roblox Luau**（https://luau-lang.org/）:Luau 类型系统与模块契约。
 
-### 12.4 跨语言模块系统参考
+### 11.4 跨语言模块系统参考
 
 - **ES Modules 规范**（https://tc39.es/ecma262/#sec-modules）:JavaScript 标准 ES Modules 规范。
 - **CommonJS**（http://www.commonjs.org/）:Node.js 模块系统原始规范。
@@ -3003,14 +2947,14 @@ return B
 - **Go packages**（https://golang.org/ref/spec#Packages）:Go 模块与 import 语法。
 - **Rust crates**（https://doc.rust-lang.org/cargo/）:Cargo 与 crates.io 系统。
 
-### 12.5 理论与历史
+### 11.5 理论与历史
 
 - **HOPL III: Lua 演化**（https://dl.acm.org/doi/10.1145/1238844.1238846）:Roberto Ierusalimschy 主讲 Lua 语言演化史。
 - **A Look at the Design of Lua**（https://cacm.acm.org/magazines/2018/11/231879-a-look-at-the-design-of-lua/fulltext）:Lua 设计哲学 ACM 文章。
 - **Modules in Standard ML**（https://www.smlnj.org/doc/modules.html）:ML 模块系统,最严谨的模块理论之一。
 - **Mixin Modules**（https://dl.acm.org/doi/10.1145/301618.301636）:混入模块理论。
 
-### 12.6 进阶主题
+### 11.6 进阶主题
 
 - **Lua 沙箱设计**（http://lua-users.org/wiki/SandBoxes）:Lua 沙箱模式与陷阱。
 - **Lua 元编程**（https://www.lua.org/pil/13.html）:Lua 元表与元方法,模块系统的基础。

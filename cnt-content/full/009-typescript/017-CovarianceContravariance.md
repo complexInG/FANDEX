@@ -20,59 +20,6 @@ related:
   - typescript/符号与唯一类型
 prerequisites:
   - typescript/语法速查
-learningObjectives:
-  - '记住协变、逆变、不变与双变四种型变关系的基本定义与符号表示'
-  - '理解函数类型的子类型化规则 S <: T 推导出的参数位置逆变与返回位置协变'
-  - '在 TypeScript 工程中正确配置 strictFunctionTypes，并运用 in/out 修饰符标注泛型型变方向'
-  - '分析数组协变与 React props 逆变在真实代码中的类型安全隐患'
-  - '评估 TypeScript 选择双变默认行为与严格逆变检查之间的工程权衡'
-  - '设计类型安全的回调注册器与事件派发系统，规避型变陷阱'
-exercises:
-  fill-blank:
-    - question: 在 TypeScript 中，函数参数在 strictFunctionTypes 启用后处于____位置，子类型关系会____。
-      answer: 逆变；反转
-      bloom: remember
-    - question: 数组在 TypeScript 中默认是____的，这是历史性的类型不安全设计，源于对 Java 数组协变的兼容借鉴。
-      answer: 协变
-      bloom: remember
-  choice:
-    - question: 下列哪个泛型修饰符组合表示"不变"（invariance）？
-      options:
-        - "out T"
-        - "in T"
-        - "in out T"
-        - "T（无修饰符）"
-      answer: "in out T"
-      bloom: understand
-    - question: 关于 TypeScript 中 strictFunctionTypes 的描述，正确的是？
-      options:
-        - "启用后所有函数都会被严格逆变检查"
-        - "启用后只有泛型函数参数会严格逆变检查，方法参数仍保持双变"
-        - "禁用后函数返回类型也会变为逆变"
-        - "启用后数组将变为不变类型"
-      answer: "启用后只有泛型函数参数会严格逆变检查，方法参数仍保持双变"
-      bloom: analyze
-  code-fix:
-    - question: |
-        以下代码启用了 strictFunctionTypes，但赋值会失败。请修复类型签名以使其通过类型检查。
-
-        ```typescript
-        type Callback<T> = (payload: T) => void;
-
-        declare const dogCallback: Callback<Dog>;
-        const animalCallback: Callback<Animal> = dogCallback;
-        ```
-      answer: |
-        将 Callback 的参数改为逆变位置。由于函数本身就是逆变的，正确做法是确保 Dog 是 Animal 的子类型即可赋值。但若希望 Callback<Animal> 可接收 Callback<Dog>，需要将 Callback 设计为按需协变容器（如 Reader 模式）或使用 unknown 上界。最直接的修复：`const animalCallback: Callback<Animal> = (a: Animal) => dogCallback(a as Dog);` 不安全。安全做法是：声明 `type Callback<in T> = (payload: T) => void;` 并使用 `type CovariantCallback<out T> = () => T;` 来获得协变。
-      bloom: apply
-  open-ended:
-    - question: |
-        在 React 中，假设有 `interface Props { onClick: (e: MouseEvent) => void }`。
-        父组件渲染 `<Child onClick={handleChildClick} />`，其中 `handleChildClick: (e: MouseEvent<HTMLButtonElement>) => void`。
-        请从型变角度论证为什么这种赋值在 strictFunctionTypes 下是危险的，并说明 React 18+ 内部为何使用泛型分发规避此问题。
-      answer: |
-        `MouseEvent<HTMLButtonElement>` 是 `MouseEvent<Element>` 的子类型，因此 `handleChildClick` 的参数类型更具体。按逆变规则，`(e: MouseEvent<HTMLButtonElement>) => void` 不是 `(e: MouseEvent<Element>) => void` 的子类型；将其赋给后者意味着调用方可能传入任意 Element 的事件，而处理器只接受 button。React 18 通过 `ButtonHTMLAttributes` 等泛型约束让事件类型在分发时被锁定到具体元素，从而避免不安全的向上分发。
-      bloom: evaluate
 references:
   - |
     Cardelli, L. and Wegner, P. 1985. On understanding types, data abstraction, and polymorphism. ACM Computing Surveys 17, 4 (Dec. 1985), 471–523. DOI: https://doi.org/10.1145/6041.6042
@@ -95,6 +42,7 @@ etymology:
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---
+
 
 # 协变与逆变
 

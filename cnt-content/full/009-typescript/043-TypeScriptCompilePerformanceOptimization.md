@@ -25,42 +25,16 @@ tags:
   - build-tools
 ---
 
+
 # TypeScript 编译与性能优化
 
 > 本文档对标 MIT 6.035 与 Stanford CS143 课程标准，系统讲解 TypeScript 编译流程、增量编译算法、类型检查优化与构建工具集成的形式语义、性能模型与生产级实践。TypeScript 编译器是一个工业级的类型检查器与转译器，其性能直接影响大型项目的开发体验与 CI/CD 效率。本文档面向零基础自学读者，从编译器架构出发，逐步推导编译流程的复杂度分析、增量编译的图论基础、类型检查的优化策略，最终落地为可复用的性能调优方案。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-完成本文档学习后，读者应能在三个 Bloom 层次上达成以下能力：
-
-### 1.1 认知层（Remembering / Understanding）
-
-- **LO-1.1**：能够准确陈述 TypeScript 编译器的三大阶段——扫描（Scanner）、解析（Parser）、类型检查（Checker），并解释每个阶段的输入输出。
-- **LO-1.2**：能够描述增量编译（Incremental Compilation）的核心思想——基于文件依赖图（Dependency Graph）的变更传播，并说明 `.tsbuildinfo` 文件的作用。
-- **LO-1.3**：能够解释项目引用（Project References）的形式语义——将大型项目分解为可独立编译的子图，并说明 `composite` 选项的约束。
-- **LO-1.4**：能够复述 TypeScript 性能问题的五大根因——类型复杂度、文件数量、配置开销、构建工具集成、CI/CD 瓶颈。
-
-### 1.2 应用层（Applying / Analyzing）
-
-- **LO-2.1**：能够使用 `tsc --extendedDiagnostics` 与 `tsc --generateTrace` 生成编译诊断报告，并解读关键指标（Types、Memory、Time）。
-- **LO-2.2**：能够配置 `tsconfig.json` 的性能相关选项：`incremental`、`composite`、`skipLibCheck`、`isolatedModules`、`disableSourceOfProjectReferenceRedirect`。
-- **LO-2.3**：能够使用项目引用将大型 monorepo 拆分为可并行编译的子项目，并配置 `references` 字段。
-- **LO-2.4**：能够集成 Vite、Webpack、esbuild 等构建工具，配置 `transpileOnly` 模式与独立类型检查进程。
-- **LO-2.5**：能够诊断常见性能问题：编译时间过长、内存溢出、类型检查循环、递归类型深度超限。
-
-### 1.3 创造层（Evaluating / Creating）
-
-- **LO-3.1**：能够设计一个 monorepo 的 TypeScript 编译策略，平衡编译速度、类型安全与 CI/CD 效率。
-- **LO-3.2**：能够评估"全量类型检查 vs 增量类型检查 vs 跳过类型检查"三种方案在不同场景下的权衡，并给出量化对比。
-- **LO-3.3**：能够设计一个类型安全与性能兼顾的工具类型库，避免常见的性能陷阱（深度递归、联合爆炸、条件类型链）。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 早期 TypeScript 的编译挑战（2012-2015）
+### 1.1 早期 TypeScript 的编译挑战（2012-2015）
 
 TypeScript 1.0 时代的编译器性能面临严峻挑战：
 
@@ -77,7 +51,7 @@ TypeScript 1.0 时代的编译器性能面临严峻挑战：
 
 开发者只能依赖 `tsc --watch` 的文件监听机制，但底层仍是全量重编译。
 
-### 2.2 增量编译的引入（TypeScript 2.0, 2016）
+### 1.2 增量编译的引入（TypeScript 2.0, 2016）
 
 TypeScript 2.0 引入 `--watch` 模式的增量编译，但仅限于开发模式。TypeScript 3.0 引入项目引用（Project References），允许将大型项目拆分为可独立编译的子项目。
 
@@ -93,7 +67,7 @@ TypeScript 2.0 引入 `--watch` 模式的增量编译，但仅限于开发模式
 }
 ```
 
-### 2.3 增量编译的全场景支持（TypeScript 3.4, 2019）
+### 1.3 增量编译的全场景支持（TypeScript 3.4, 2019）
 
 TypeScript 3.4 引入 `incremental` 选项，使增量编译可用于生产构建：
 
@@ -108,14 +82,14 @@ TypeScript 3.4 引入 `incremental` 选项，使增量编译可用于生产构�
 
 `.tsbuildinfo` 文件记录了上次编译的文件哈希、类型版本、依赖关系，使下次编译只需处理变更部分。
 
-### 2.4 现代编译优化（TypeScript 4.0 - 5.0）
+### 1.4 现代编译优化（TypeScript 4.0 - 5.0）
 
 - **TypeScript 4.0**：变型注解（Variance Annotations）草案。
 - **TypeScript 4.1**：模板字面量类型，带来新的性能挑战。
 - **TypeScript 4.5**：尾递归类型推断（Tail-Recursive Type Inference），将递归深度限制从 50 提升至 1000。
 - **TypeScript 5.0**：全新编译器架构（tsc-go），使用 Go 语言重写部分核心模块，性能提升 10 倍。
 
-### 2.5 构建工具的演化
+### 1.5 构建工具的演化
 
 | 时代 | 工具 | 特点 | 性能 |
 |------|------|------|------|
@@ -129,9 +103,9 @@ TypeScript 3.4 引入 `incremental` 选项，使增量编译可用于生产构�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 编译流程的数学模型
+### 2.1 编译流程的数学模型
 
 TypeScript 编译过程可形式化为五元组：
 
@@ -146,7 +120,7 @@ $$
 - $E$：发射器（Emitter），将 AST 转换为目标代码。
 - $\Sigma$：符号表（Symbol Table），存储类型信息。
 
-### 3.2 编译复杂度模型
+### 2.2 编译复杂度模型
 
 设项目有 $n$ 个文件，每个文件平均有 $m$ 行代码，类型复杂度为 $c$（条件类型、递归类型等），则：
 
@@ -172,7 +146,7 @@ $$
 
 （并行编译时，$\log p$ 为调度开销。）
 
-### 3.3 增量编译的图论基础
+### 2.3 增量编译的图论基础
 
 TypeScript 项目的文件依赖关系构成有向无环图（DAG）：
 
@@ -197,7 +171,7 @@ $$
 
 3. 仅重新编译 $\text{Affected}(\Delta V)$ 中的文件。
 
-### 3.4 类型检查的复杂度
+### 2.4 类型检查的复杂度
 
 TypeScript 类型检查的复杂度取决于类型表达式的深度与广度：
 
@@ -220,7 +194,7 @@ $$
 \end{cases}
 $$
 
-### 3.5 内存模型
+### 2.5 内存模型
 
 TypeScript 编译器的内存使用主要来自：
 
@@ -236,9 +210,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 增量编译的正确性
+### 3.1 增量编译的正确性
 
 **命题 4.1**：增量编译的结果与全量编译一致，即对于任意变更 $\Delta V$，增量编译的输出等于全量编译的输出。
 
@@ -252,7 +226,7 @@ $$
 
 **工程含义**：增量编译是安全的，不会牺牲类型安全性。
 
-### 4.2 项目引用的并行性
+### 3.2 项目引用的并行性
 
 **命题 4.2**：若项目引用图 $G$ 是 DAG，则存在拓扑排序使子项目可并行编译，最大并行度为 $G$ 的宽度（Width）。
 
@@ -269,7 +243,7 @@ core → utils → ui
 
 **工程含义**：合理设计项目引用结构可显著提升编译速度。
 
-### 4.3 类型检查的不可判定性
+### 3.3 类型检查的不可判定性
 
 **命题 4.3**：TypeScript 的类型检查是不可判定的（Undecidable）。
 
@@ -279,7 +253,7 @@ TypeScript 编译器通过设置递归深度限制（50/1000 层）与类型实�
 
 **工程含义**：理论上无法保证所有 TypeScript 代码都能在有限时间内完成类型检查，需依赖工程约束。
 
-### 4.4 `isolatedModules` 的语义约束
+### 3.4 `isolatedModules` 的语义约束
 
 **命题 4.4**：`isolatedModules` 选项要求每个文件可独立转译，这限制了类型重导出与常量枚举的使用。
 
@@ -294,11 +268,11 @@ $\blacksquare$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 编译配置优化
+### 4.1 编译配置优化
 
-#### 5.1.1 基础配置
+#### 4.1.1 基础配置
 
 ```jsonc
 // tsconfig.json - 生产级配置
@@ -341,7 +315,7 @@ $\blacksquare$
 }
 ```
 
-#### 5.1.2 性能相关配置
+#### 4.1.2 性能相关配置
 
 ```jsonc
 {
@@ -368,9 +342,9 @@ $\blacksquare$
 }
 ```
 
-### 5.2 增量编译
+### 4.2 增量编译
 
-#### 5.2.1 配置增量编译
+#### 4.2.1 配置增量编译
 
 ```jsonc
 // tsconfig.json
@@ -382,7 +356,7 @@ $\blacksquare$
 }
 ```
 
-#### 5.2.2 验证增量编译效果
+#### 4.2.2 验证增量编译效果
 
 ```bash
 # 首次编译（全量）
@@ -415,7 +389,7 @@ npx tsc --diagnostics
 # Total time: 800ms（仅编译受影响文件）
 ```
 
-#### 5.2.3 增量编译最佳实践
+#### 4.2.3 增量编译最佳实践
 
 ```bash
 # .gitignore 添加
@@ -427,9 +401,9 @@ rm -f .tsbuildinfo
 npx tsc --noEmit
 ```
 
-### 5.3 项目引用
+### 4.3 项目引用
 
-#### 5.3.1 项目结构
+#### 4.3.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -454,7 +428,7 @@ flowchart TD
     T13 --> T15
 ```
 
-#### 5.3.2 子项目配置
+#### 4.3.2 子项目配置
 
 ```jsonc
 // packages/utils/tsconfig.json
@@ -496,7 +470,7 @@ flowchart TD
 }
 ```
 
-#### 5.3.3 根项目配置
+#### 4.3.3 根项目配置
 
 ```jsonc
 // tsconfig.json（根）
@@ -510,7 +484,7 @@ flowchart TD
 }
 ```
 
-#### 5.3.4 编译命令
+#### 4.3.4 编译命令
 
 ```bash
 # 编译所有项目（按依赖顺序）
@@ -527,9 +501,9 @@ npx tsc -b
 npx tsc -b --verbose
 ```
 
-### 5.4 构建工具集成
+### 4.4 构建工具集成
 
-#### 5.4.1 Vite 集成
+#### 4.4.1 Vite 集成
 
 ```typescript
 // vite.config.ts
@@ -571,7 +545,7 @@ export default defineConfig({
 });
 ```
 
-#### 5.4.2 Webpack 集成
+#### 4.4.2 Webpack 集成
 
 ```typescript
 // webpack.config.ts
@@ -624,7 +598,7 @@ const config: Configuration = {
 export default config;
 ```
 
-#### 5.4.3 esbuild 集成
+#### 4.4.3 esbuild 集成
 
 ```typescript
 // build.ts
@@ -650,9 +624,9 @@ const options: BuildOptions = {
 await build(options);
 ```
 
-### 5.5 CI/CD 优化
+### 4.5 CI/CD 优化
 
-#### 5.5.1 GitHub Actions 配置
+#### 4.5.1 GitHub Actions 配置
 
 ```yaml
 # .github/workflows/ci.yml
@@ -700,7 +674,7 @@ jobs:
         run: npm run build
 ```
 
-#### 5.5.2 并行类型检查
+#### 4.5.2 并行类型检查
 
 ```yaml
 # .github/workflows/parallel-check.yml
@@ -730,9 +704,9 @@ jobs:
       - run: npx tsc -b packages/ui --noEmit
 ```
 
-### 5.6 性能诊断
+### 4.6 性能诊断
 
-#### 5.6.1 编译诊断
+#### 4.6.1 编译诊断
 
 ```bash
 # 基础诊断
@@ -745,7 +719,7 @@ npx tsc --extendedDiagnostics
 npx tsc --generateTrace ./trace-dir
 ```
 
-#### 5.6.2 解读诊断输出
+#### 4.6.2 解读诊断输出
 
 ```
 Files:                          100    # 文件数
@@ -770,7 +744,7 @@ Total time:                  5,600ms    # 总时间
 - `Check time`：类型检查时间，占总时间 50%+ 属正常。
 - `Memory used`：内存使用，超过 1GB 需关注。
 
-#### 5.6.3 性能追踪分析
+#### 4.6.3 性能追踪分析
 
 ```bash
 # 生成追踪文件
@@ -786,9 +760,9 @@ npx tsc --generateTrace ./trace-dir
 - 类型检查的热点函数。
 - 内存分配情况。
 
-### 5.7 类型优化
+### 4.7 类型优化
 
-#### 5.7.1 避免深度递归
+#### 4.7.1 避免深度递归
 
 ```typescript
 // 不好的做法：深度递归类型
@@ -808,7 +782,7 @@ type DeepReadonly<T, Depth extends number = 10> = Depth extends 0
 type Decrement<N extends number> = N extends 10 ? 9 : N extends 9 ? 8 : /* ... */ never;
 ```
 
-#### 5.7.2 使用类型别名
+#### 4.7.2 使用类型别名
 
 ```typescript
 // 不好的做法：重复复杂类型
@@ -822,7 +796,7 @@ function processA(data: User): void {}
 function processB(data: User): void {}
 ```
 
-#### 5.7.3 限制泛型复杂度
+#### 4.7.3 限制泛型复杂度
 
 ```typescript
 // 不好的做法：过度嵌套的泛型
@@ -844,9 +818,9 @@ type SimplifiedType<T> = UnwrapArray<UnwrapPromise<UnwrapArray<UnwrapPromise<T>>
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 编译策略对比
+### 5.1 编译策略对比
 
 | 策略 | 编译时间 | 类型安全 | 适用场景 |
 |------|----------|----------|----------|
@@ -856,7 +830,7 @@ type SimplifiedType<T> = UnwrapArray<UnwrapPromise<UnwrapArray<UnwrapPromise<T>>
 | 跳过类型检查 | 极快（0.1s） | 无 | 快速预览 |
 | esbuild 转译 | 极快（0.1s） | 无 | 开发服务器 |
 
-### 6.2 构建工具对比
+### 5.2 构建工具对比
 
 | 工具 | 语言 | 类型检查 | 转译速度 | 生态 |
 |------|------|----------|----------|------|
@@ -867,7 +841,7 @@ type SimplifiedType<T> = UnwrapArray<UnwrapPromise<UnwrapArray<UnwrapPromise<T>>
 | swc | Rust | 否 | 极快（100x） | Next.js/独立 |
 | tsgo | Go | 是 | 极快（10x tsc） | 实验性 |
 
-### 6.3 增量编译 vs 项目引用
+### 5.3 增量编译 vs 项目引用
 
 | 维度 | 增量编译 | 项目引用 |
 |------|----------|----------|
@@ -878,7 +852,7 @@ type SimplifiedType<T> = UnwrapArray<UnwrapPromise<UnwrapArray<UnwrapPromise<T>>
 | 复杂度 | 低 | 中 |
 | 适用规模 | 中小型项目 | 大型 monorepo |
 
-### 6.4 与其他语言编译器对比
+### 5.4 与其他语言编译器对比
 
 | 语言 | 编译器 | 增量编译 | 类型检查 | 性能 |
 |------|--------|----------|----------|------|
@@ -892,9 +866,9 @@ type SimplifiedType<T> = UnwrapArray<UnwrapPromise<UnwrapArray<UnwrapPromise<T>>
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 过度使用复杂类型
+### 6.1 过度使用复杂类型
 
 **陷阱**：过度使用条件类型、递归类型导致编译变慢。
 
@@ -919,7 +893,7 @@ type Result = ComplexType<BigUnion>; // 26! 种组合
 
 **修复**：限制递归深度，简化类型逻辑，避免联合爆炸。
 
-### 7.2 忽视 `skipLibCheck`
+### 6.2 忽视 `skipLibCheck`
 
 **陷阱**：不开启 `skipLibCheck` 导致第三方库类型被重复检查。
 
@@ -942,7 +916,7 @@ type Result = ComplexType<BigUnion>; // 26! 种组合
 }
 ```
 
-### 7.3 滥用 `any`
+### 6.3 滥用 `any`
 
 **陷阱**：滥用 `any` 会导致类型检查失效，但不一定提升性能（反而可能因类型推断混乱变慢）。
 
@@ -961,7 +935,7 @@ function processData(data: { items: Array<{ name: string }> }): string[] {
 }
 ```
 
-### 7.4 项目引用循环依赖
+### 6.4 项目引用循环依赖
 
 **陷阱**：项目引用形成循环依赖，导致编译失败。
 
@@ -979,7 +953,7 @@ function processData(data: { items: Array<{ name: string }> }): string[] {
 
 **修复**：重新设计项目结构，消除循环依赖。
 
-### 7.5 未配置 `isolatedModules`
+### 6.5 未配置 `isolatedModules`
 
 **陷阱**：未开启 `isolatedModules`，使用 `const enum` 或类型重导出导致 esbuild 转译失败。
 
@@ -1001,7 +975,7 @@ export { User } from './types';  // User 是类型还是值？
 export type { User } from './types';
 ```
 
-### 7.6 缓存陈旧导致类型错误
+### 6.6 缓存陈旧导致类型错误
 
 **陷阱**：`.tsbuildinfo` 缓存陈旧，导致类型检查不正确。
 
@@ -1018,7 +992,7 @@ rm -f .tsbuildinfo
 npx tsc --noEmit  # 全量检查
 ```
 
-### 7.7 开发模式未启用 `transpileOnly`
+### 6.7 开发模式未启用 `transpileOnly`
 
 **陷阱**：开发模式使用全量类型检查，导致 HMR 变慢。
 
@@ -1061,7 +1035,7 @@ module.exports = {
 };
 ```
 
-### 7.8 递归类型深度超限
+### 6.8 递归类型深度超限
 
 **陷阱**：递归类型深度超过编译器限制。
 
@@ -1086,11 +1060,11 @@ type Flatten<T> = T extends Array<infer U>
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 配置最佳实践
+### 7.1 配置最佳实践
 
-#### 8.1.1 开发环境配置
+#### 7.1.1 开发环境配置
 
 ```jsonc
 // tsconfig.dev.json
@@ -1106,7 +1080,7 @@ type Flatten<T> = T extends Array<infer U>
 }
 ```
 
-#### 8.1.2 生产环境配置
+#### 7.1.2 生产环境配置
 
 ```jsonc
 // tsconfig.prod.json
@@ -1122,7 +1096,7 @@ type Flatten<T> = T extends Array<infer U>
 }
 ```
 
-#### 8.1.3 CI/CD 配置
+#### 7.1.3 CI/CD 配置
 
 ```jsonc
 // tsconfig.ci.json
@@ -1136,9 +1110,9 @@ type Flatten<T> = T extends Array<infer U>
 }
 ```
 
-### 8.2 代码最佳实践
+### 7.2 代码最佳实践
 
-#### 8.2.1 类型定义组织
+#### 7.2.1 类型定义组织
 
 ```typescript
 // types/index.ts - 集中导出类型
@@ -1150,7 +1124,7 @@ export type { Comment } from './comment';
 // 将复杂类型抽取到 types/ 目录
 ```
 
-#### 8.2.2 模块化类型定义
+#### 7.2.2 模块化类型定义
 
 ```typescript
 // types/user.ts
@@ -1166,7 +1140,7 @@ export type UserUpdate = Partial<Omit<User, 'id'>>;
 // 避免在单个文件中定义所有类型
 ```
 
-#### 8.2.3 使用类型守卫
+#### 7.2.3 使用类型守卫
 
 ```typescript
 // 使用类型守卫替代复杂的条件类型
@@ -1182,9 +1156,9 @@ function isUser(obj: unknown): obj is User {
 type UserFromUnknown<T> = T extends User ? T : never;
 ```
 
-### 8.3 工具链最佳实践
+### 7.3 工具链最佳实践
 
-#### 8.3.1 ESLint 集成
+#### 7.3.1 ESLint 集成
 
 ```jsonc
 // .eslintrc.json
@@ -1207,7 +1181,7 @@ type UserFromUnknown<T> = T extends User ? T : never;
 }
 ```
 
-#### 8.3.2 Prettier 集成
+#### 7.3.2 Prettier 集成
 
 ```jsonc
 // .prettierrc.json
@@ -1220,7 +1194,7 @@ type UserFromUnknown<T> = T extends User ? T : never;
 }
 ```
 
-#### 8.3.3 Husky 预提交钩子
+#### 7.3.3 Husky 预提交钩子
 
 ```jsonc
 // package.json
@@ -1244,9 +1218,9 @@ type UserFromUnknown<T> = T extends User ? T : never;
 }
 ```
 
-### 8.4 性能监控
+### 7.4 性能监控
 
-#### 8.4.1 性能基线
+#### 7.4.1 性能基线
 
 ```bash
 #!/bin/bash
@@ -1266,7 +1240,7 @@ echo "--- 诊断信息 ---"
 npx tsc --extendedDiagnostics | grep -E "(Files|Lines|Types|Instantiations|Check time|Total time)"
 ```
 
-#### 8.4.2 性能预警
+#### 7.4.2 性能预警
 
 ```yaml
 # .github/workflows/perf-check.yml
@@ -1305,9 +1279,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 大型 Monorepo 优化
+### 8.1 大型 Monorepo 优化
 
 **背景**：某公司 monorepo 包含 50 个包，5000+ 文件，全量编译时间 5 分钟。
 
@@ -1379,7 +1353,7 @@ type DeepReadonly<T, D extends number = 5> = D extends 0
 - 增量编译时间：1 分钟 → 10 秒
 - CI/CD 时间：8 分钟 → 2 分钟
 
-### 9.2 类型检查优化
+### 8.2 类型检查优化
 
 **背景**：某项目类型检查时间 2 分钟，`Instantiations` 达 5,000,000。
 
@@ -1433,7 +1407,7 @@ type B = CachedString;
 - 类型检查时间：2 分钟 → 20 秒
 - `Instantiations`：5,000,000 → 500,000
 
-### 9.3 Vite 开发服务器优化
+### 8.3 Vite 开发服务器优化
 
 **背景**：某 Vite 项目开发服务器启动时间 30 秒，HMR 响应时间 5 秒。
 
@@ -1494,7 +1468,7 @@ export default defineConfig({
 - 开发服务器启动：30 秒 → 3 秒
 - HMR 响应：5 秒 → 100 毫秒
 
-### 9.4 CI/CD 流水线优化
+### 8.4 CI/CD 流水线优化
 
 **背景**：某项目 CI 流水线耗时 15 分钟，其中 TypeScript 编译占 8 分钟。
 
@@ -1570,7 +1544,7 @@ jobs:
 
 ## 知识讲解与要点分析（原练习）
 
-### 10.1 基础练习
+### 9.1 基础练习
 
 **练习 10.1**：配置一个支持增量编译的 `tsconfig.json`，要求：
 
@@ -1609,7 +1583,7 @@ jobs:
 - `Check time` 通常占总时间 50%-70%，属于正常范围。
 - 使用 `tsc --generateTrace ./trace-dir` 生成追踪文件，用 Chrome DevTools 分析。
 
-### 10.2 中级练习
+### 9.2 中级练习
 
 **练习 10.3**：设计一个包含 3 个子项目的 monorepo 项目引用结构，要求：
 
@@ -1714,7 +1688,7 @@ type BigUnion = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j';
 type Mapped = { [K in BigUnion]: K };  // 简化，避免不必要的递归
 ```
 
-### 10.3 高级练习
+### 9.3 高级练习
 
 **练习 10.5**：设计一个 GitHub Actions 工作流，要求：
 
@@ -1784,7 +1758,7 @@ jobs:
       - run: npm test
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **思考题 10.6**：为什么 TypeScript 的类型检查是不可判定的？这对编译性能有什么影响？
 
@@ -1796,7 +1770,7 @@ jobs:
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Rosenwasser, D. (2019). Project references. Microsoft TypeScript Blog. https://devblogs.microsoft.com/typescript/announcing-typescript-3-0/
 
@@ -1820,43 +1794,43 @@ jobs:
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - [TypeScript Wiki: Performance](https://github.com/microsoft/TypeScript/wiki/Performance)
 - [TypeScript Handbook: Project References](https://www.typescriptlang.org/docs/handbook/project-references.html)
 - [TypeScript Handbook: tsconfig.json](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
 - [TypeScript Release Notes](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html)
 
-### 12.2 构建工具文档
+### 11.2 构建工具文档
 
 - [esbuild Documentation](https://esbuild.github.io/)
 - [Vite Documentation](https://vitejs.dev/guide/)
 - [swc Documentation](https://swc.rs/)
 - [ForkTsCheckerWebpackPlugin](https://github.com/TypeStrong/fork-ts-checker-webpack-plugin)
 
-### 12.3 社区资源
+### 11.3 社区资源
 
 - [TypeScript Performance Issues](https://github.com/microsoft/TypeScript/issues?q=performance)
 - [TypeScript Benchmark](https://github.com/as-com/ts-benchmark)
 - [tsgo (Go implementation)](https://github.com/microsoft/typescript-go)
 
-### 12.4 课程与教程
+### 11.4 课程与教程
 
 - [MIT 6.035: Compilers](https://ocw.mit.edu/courses/6-035-computer-language-engineering-sma-5502-fall-2005/)
 - [Stanford CS143: Compilers](https://web.stanford.edu/class/cs143/)
 - [CMU 15-411: Compiler Design](https://www.cs.cmu.edu/~fp/courses/15411-f08/)
 - [Total TypeScript](https://www.totaltypescript.com/)
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - [TypeScript Compiler Internals](https://github.com/microsoft/TypeScript/wiki/Architectural-Overview)
 - [Tail-Recursive Type Inference](https://devblogs.microsoft.com/typescript/announcing-typescript-4-5/#tail-rec-recursive-inference)
 - [TypeScript 5.0: tsgo Preview](https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/)
 - [Incremental Compilation Algorithm](https://github.com/microsoft/TypeScript/blob/main/src/compiler/watch.ts)
 
-### 12.6 相关论文
+### 11.6 相关论文
 
 - Aho, A. V., et al. (2006). Compilers: Principles, techniques, and tools. Pearson.
 - Appel, A. W. (1998). Modern compiler implementation. Cambridge University Press.

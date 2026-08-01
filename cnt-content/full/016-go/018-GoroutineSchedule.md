@@ -16,53 +16,6 @@ prerequisites:
   - go/概述与环境配置
 ---
 
-## 学习目标
-
-本章节对标 MIT 6.5840（Distributed Systems）与 CMU 15-440（Distributed Systems）的并发调度教学水准，融合 Go runtime 的工程实现细节。完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-### Remember（记忆）
-
-- **R1**：复述 GMP 模型的三个核心组件（G/M/P）及其职责
-- **R2**：列出 Go 1.0 至 1.22 中调度器的关键演进节点
-- **R3**：背诵 goroutine 初始栈大小（2KB）、最大栈大小（1GB）、M 默认上限（10000）
-- **R4**：识别 Work Stealing、Syscall Handoff、Network Poller 三大机制
-
-### Understand（理解）
-
-- **U1**：解释为什么 Go 选择用户态调度而非 1:1 线程模型
-- **U2**：阐述 P 的本地队列与全局队列的协作关系
-- **U3**：说明 Go 1.14 异步抢占式调度如何解决 tight loop 饿死问题
-- **U4**：推演 GOMAXPROCS 对吞吐与时延的双重影响
-
-### Apply（应用）
-
-- **A1**：使用 `runtime.GOMAXPROCS`、`runtime.Gosched`、`runtime.LockOSThread` 编写可控并发程序
-- **A2**：基于 channel 信号量模式控制并发数
-- **A3**：通过 `runtime/trace` 与 `go tool trace` 分析调度瓶颈
-- **A4**：在容器（cgroup）环境下正确配置 P 的数量
-
-### Analyze（分析）
-
-- **An1**：分析 goroutine 泄漏的根因（channel 阻塞、锁未释放、context 未取消）
-- **An2**：对比 CPU 密集型与 I/O 密集型任务的调度策略差异
-- **An3**：解构 `runtime.GOMAXPROCS` 在 cgroup v1/v2 下的行为差异
-- **An4**：剖析 work stealing 算法的复杂度与公平性
-
-### Evaluate（评估）
-
-- **E1**：评估异步抢占对长尾延迟的改善幅度
-- **E2**：评判 `LockOSThread` 在 GUI、CGO、runtime syscall 场景下的必要性
-- **E3**：权衡 P 数量与 GC 暂停时间、cache 局部性的关系
-- **E4**：评估 Go 调度器与 Erlang BEAM、Java Loom、Rust tokio 的设计取舍
-
-### Create（创造）
-
-- **C1**：设计一个支持优先级的 goroutine 调度器（基于多 P 队列）
-- **C2**：实现一个 goroutine 泄漏检测器（基于 `runtime.Stack` 与弱引用）
-- **C3**：构建一个对 work stealing 进行可视化追踪的工具
-- **C4**：为分布式批处理系统设计背压（backpressure）与 goroutine 池的协同机制
-
----
 
 ## 历史动机与发展脉络
 
@@ -301,7 +254,7 @@ $$
 \frac{T_{\text{pthread switch}}}{T_{\text{goroutine switch}}} \approx 10
 $$
 
-### 2. GMP 状态机
+### 1. GMP 状态机
 
 每个 goroutine 有以下状态（简化版，实际 runtime 中有更多细节）：
 
@@ -341,7 +294,7 @@ $$
 - $\delta(\text{Running}, \text{preempt}) = \text{Runnable}$
 - $\delta(\text{Running}, \text{return}) = \text{Dead}$
 
-### 3. P 的状态转移
+### 2. P 的状态转移
 
 P 的状态包括：
 
@@ -351,7 +304,7 @@ P 的状态包括：
 - `_Pgcstop`：被 GC 暂停
 - `_Pdead`：已销毁（GOMAXPROCS 减少）
 
-### 4. Syscall Handoff 机制
+### 3. Syscall Handoff 机制
 
 当 M 执行的 G 进行阻塞 syscall 时：
 
@@ -369,7 +322,7 @@ $$
 \end{cases}
 $$
 
-### 5. Network Poller 的非阻塞模型
+### 4. Network Poller 的非阻塞模型
 
 Go 的网络 I/O 通过 epoll（Linux）/kqueue（BSD）/IOCP（Windows）实现非阻塞：
 
@@ -390,7 +343,7 @@ Go 的网络 I/O 通过 epoll（Linux）/kqueue（BSD）/IOCP（Windows）实现
 
 当 $W \gg P$（典型 I/O 密集场景），NIO 节省的线程数接近 $N$。
 
-### 6. 异步抢占的实现细节
+### 5. 异步抢占的实现细节
 
 Go 1.14 的异步抢占流程：
 
@@ -413,7 +366,7 @@ asyncPreempt:
 
 数学上，异步抢占使得调度延迟上界从 $\infty$（协作式无法抢占 tight loop）降低到约 10-20ms。
 
-### 7. GOMAXPROCS 与吞吐量关系
+### 6. GOMAXPROCS 与吞吐量关系
 
 根据 Amdahl 定律的变体，设 $\alpha$ 为串行比例，$N$ 为 P 数量：
 
@@ -1213,7 +1166,7 @@ go build -ldflags="-s -w" -o myapp ./cmd/server  # 移除调试信息
 upx --best --ultra-brute myapp                    # UPX 压缩
 ```
 
-### 2. Go Module 配置
+### 1. Go Module 配置
 
 ```text
 # go.mod
@@ -1230,7 +1183,7 @@ require (
 require go.uber.org/automaxprocs v1.5.3 // 间接依赖自动启用
 ```
 
-### 3. pprof 在线调试
+### 2. pprof 在线调试
 
 ```go
 package main
@@ -1265,7 +1218,7 @@ watch -n 1 'curl -s http://localhost:6060/debug/pprof/goroutine?debug=1 | head -
 go tool pprof -http=:8080 http://localhost:6060/debug/pprof/profile?seconds=30
 ```
 
-### 4. 调度器 debug 信息
+### 3. 调度器 debug 信息
 
 ```go
 // 通过 runtime/trace 输出调度器内部状态
@@ -1307,7 +1260,7 @@ SCHED 0ms: gomaxprocs=8 idleprocs=5 threads=10 spinningthreads=1 idlethreads=4 r
 - `runqueue`：全局队列长度
 - `[...]`：每个 P 的本地队列长度
 
-### 5. 容器化部署
+### 4. 容器化部署
 
 #### Dockerfile 最佳实践
 
@@ -1356,7 +1309,7 @@ spec:
           value: "2"        # 与 limits.cpu 一致
 ```
 
-### 6. 监控指标（Prometheus）
+### 5. 监控指标（Prometheus）
 
 ```go
 package main
@@ -1385,7 +1338,7 @@ func CollectRuntimeMetrics() {
 }
 ```
 
-### 7. 调试技巧
+### 6. 调试技巧
 
 #### 使用 delve 调试 goroutine
 

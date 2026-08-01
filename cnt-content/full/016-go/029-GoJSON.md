@@ -16,22 +16,12 @@ prerequisites:
   - go/概述与环境配置
 ---
 
+
 # Go JSON 编解码
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-完成本章学习后,读者应能够在以下 Bloom 认知层级达到对应能力:
-
-- **记忆(Memory)**:复述 JSON 标准的六种数据类型(null/boolean/number/string/array/object),`encoding/json` 包的 Marshal/Unmarshal/Encoder/Decoder API 签名,常见结构体标签(`json:"name,omitempty,omitempty"`)的语义。
-- **理解(Understanding)**:解释 Go 结构体与 JSON 之间的双向映射规则,反射在序列化过程中的角色,流式编码(Encoder/Decoder)与一次性编码(Marshal/Unmarshal)的区别与适用场景。
-- **应用(Application)**:使用结构体标签、自定义 MarshalJSON/UnmarshalJSON、json.RawMessage、json.Decoder 等机制处理真实场景下的复杂 JSON 数据,如配置文件、API 请求/响应、流式日志。
-- **分析(Analysis)**:对照 `go tool pprof` 与 benchmark 结果,识别 JSON 序列化的反射开销、内存分配热点、字节切片扩容代价,定位性能瓶颈。
-- **评价(Evaluation)**:对比 `encoding/json`、`jsoniter`、`easyjson`、`sonic`、`go-json` 等多种 JSON 库的性能、易用性、兼容性,在标准库与第三方库之间做出合理选择。
-- **创造(Creation)**:为高 QPS API 服务设计一套包含零拷贝解析、对象池化、流式处理的 JSON 序列化方案,并通过压测验证 P99 延迟低于 1ms。
 
 ## 历史动机与背景
 

@@ -18,26 +18,16 @@ prerequisites:
   - c/数据类型详解
   - c/指针详解
 ---
+
 # C 文件系统操作
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-完成本章学习后，你应当能够（Bloom 分类法）：
-
-- **记忆（Remembering）**：列出 POSIX 文件系统相关的头文件（`<dirent.h>`、`<sys/stat.h>`、`<unistd.h>`、`<fcntl.h>`、`<sys/inotify.h>`、`<ftw.h>`）；复述 `stat`、`fstat`、`lstat` 的差异；说明 `DIR*`、`struct dirent`、`struct stat` 各字段的语义；列出文件权限位（`S_IRUSR`、`S_IWUSR`、`S_IXUSR` 等）的值。
-- **理解（Understanding）**：解释文件描述符（file descriptor）与 `FILE*` 的关系；阐明硬链接（hard link）与符号链接（symbolic link）的区别；说明 TOCTOU（Time-Of-Check-Time-Of-Use）竞态条件的安全影响；理解 inotify 的事件模型与 epoll 的集成方式。
-- **应用（Applying）**：实现递归目录遍历、文件搜索、目录大小统计；使用 `nftw`/`fts` 进行高效遍历；使用 `openat`、`fstatat` 等 `*at` 系列函数避免路径竞态；使用 inotify 监控文件变化；编写跨平台（Linux/macOS/Windows）的文件操作抽象层。
-- **分析（Analyzing）**：通过 `strace`、`ltrace` 追踪文件系统调用的实际行为；定位文件描述符泄漏、缓冲区未刷新、竞态条件等问题；分析不同目录遍历算法（递归、迭代、并行）的性能特征。
-- **评价（Evaluating）**：在 `readdir`+递归、`nftw`、`fts`、`find` 命令调用四种目录遍历方案间做权衡，论证各自的可读性、性能与可维护性；评价 `FILE*` 缓冲与直接 `read`/`write` 的适用场景。
-- **创造（Creating）**：设计一个支持增量遍历、并行处理、断点续传的目录扫描框架；实现一个基于 inotify + epoll 的实时文件同步工具；设计一个跨平台、支持原子操作的文件锁库。
-
-## 2. 历史动机与演化
-
-### 2.1 Unix 文件系统的设计哲学（1970s）
+### 1.1 Unix 文件系统的设计哲学（1970s）
 
 Ken Thompson 与 Dennis Ritchie 在 1969-1971 年设计 Unix 文件系统时，确立了几个核心原则：
 
@@ -48,7 +38,7 @@ Ken Thompson 与 Dennis Ritchie 在 1969-1971 年设计 Unix 文件系统时，�
 
 这种设计极大简化了系统接口，使得 Unix 文件系统 API 至今仍在使用，几乎没有改动。
 
-### 2.2 POSIX 标准化（1988）
+### 1.2 POSIX 标准化（1988）
 
 POSIX.1-1988（IEEE Std 1003.1-1988）将 Unix 文件系统 API 标准化，引入：
 
@@ -61,7 +51,7 @@ POSIX.1-1988（IEEE Std 1003.1-1988）将 Unix 文件系统 API 标准化，引�
 
 POSIX 同时定义了 `struct stat` 的标准字段：`st_mode`、`st_ino`、`st_dev`、`st_size`、`st_mtime` 等。
 
-### 2.3 BSD 与 SVR4 的扩展（1980s-1990s）
+### 1.3 BSD 与 SVR4 的扩展（1980s-1990s）
 
 BSD Unix 与 System V Release 4 引入了若干扩展：
 
@@ -71,7 +61,7 @@ BSD Unix 与 System V Release 4 引入了若干扩展：
 - `mkstemp` 安全的临时文件创建
 - `flock`/`fcntl` 文件锁
 
-### 2.4 Linux 特有扩展（2000s）
+### 1.4 Linux 特有扩展（2000s）
 
 Linux 内核引入了若干新特性：
 
@@ -82,7 +72,7 @@ Linux 内核引入了若干新特性：
 - **copy_file_range**（Linux 4.5, 2016）：内核态文件复制，支持跨文件系统
 - **io_uring**（Linux 5.1, 2019）：高性能异步 I/O，取代 AIO
 
-### 2.5 Windows 文件 API 的差异
+### 1.5 Windows 文件 API 的差异
 
 Windows 采用 Win32 API，与 POSIX 差异较大：
 
@@ -99,7 +89,7 @@ Windows 采用 Win32 API，与 POSIX 差异较大：
 
 Windows 也支持路径分隔符 `\` 与 `/`，但 `\` 是首选。Windows NT 内核支持硬链接（`CreateHardLink`）与符号链接（`CreateSymbolicLink`，需管理员权限或开发者模式）。
 
-### 2.6 现代 C 标准的尝试
+### 1.6 现代 C 标准的尝试
 
 C17 引入了一些文件系统相关的边界检查函数（Annex K，可选）：
 
@@ -108,9 +98,9 @@ C17 引入了一些文件系统相关的边界检查函数（Annex K，可选）
 
 C23 未引入文件系统模块（C++17 已引入 `<filesystem>`），C 仍依赖 POSIX 或平台 API。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 文件描述符的语义
+### 2.1 文件描述符的语义
 
 文件描述符（file descriptor, fd）是进程级整数索引，指向内核维护的"打开文件表"（open file table）条目。
 
@@ -126,7 +116,7 @@ $$
 
 新打开的文件总是使用最小的可用 fd 值。
 
-### 3.2 文件偏移量与并发
+### 2.2 文件偏移量与并发
 
 每个打开文件描述（open file description）有一个文件偏移量 `offset`，可被 `lseek` 修改：
 
@@ -146,7 +136,7 @@ $$
 
 多线程共享 fd 时，应使用 `pread`/`pwrite` 避免竞态。
 
-### 3.3 文件权限的位掩码
+### 2.3 文件权限的位掩码
 
 `st_mode` 包含文件类型与权限信息：
 
@@ -198,7 +188,7 @@ flowchart TD
 - `S_ISGID = 02000`：set-group-ID
 - `S_ISVTX = 01000`：sticky bit
 
-### 3.4 目录遍历的形式化
+### 2.4 目录遍历的形式化
 
 目录遍历可形式化为对文件系统树的深度优先搜索（DFS）或广度优先搜索（BFS）：
 
@@ -210,7 +200,7 @@ $$
 
 递归实现的栈深度等于树的高度，对于深层目录可能栈溢出。迭代实现可显式管理栈或队列。
 
-### 3.5 inotify 事件模型
+### 2.5 inotify 事件模型
 
 inotify 使用文件描述符 + 读取事件流的方式工作：
 
@@ -227,9 +217,9 @@ $$
 
 事件通过 `read(inotify_fd, buf, len)` 读取，`buf` 包含一个或多个 `struct inotify_event`。
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 定理：`readdir` 的非线程安全性
+### 3.1 定理：`readdir` 的非线程安全性
 
 **定理**：`readdir` 使用静态缓冲区，多线程同时调用同一 `DIR*` 时是未定义行为；多线程调用不同 `DIR*` 在 POSIX.1-2008 起为线程安全。
 
@@ -245,7 +235,7 @@ $$
 2. 现代实现通过 TLS（Thread-Local Storage）使 `readdir` 在不同 `DIR*` 上线程安全。
 3. 同一 `DIR*` 上的并发访问应由调用方加锁。
 
-### 4.2 定理：硬链接与符号链接的差异
+### 3.2 定理：硬链接与符号链接的差异
 
 **定理**：硬链接共享 inode，删除原文件后硬链接仍可访问内容；符号链接是独立文件，删除原文件后符号链接失效（dangling）。
 
@@ -261,7 +251,7 @@ $$
 - 符号链接可以跨文件系统、可以指向目录。
 - `stat` 跟随符号链接，`lstat` 不跟随。
 
-### 4.3 定理：TOCTOU 竞态条件
+### 3.3 定理：TOCTOU 竞态条件
 
 **定理**："检查-使用"模式（Time-Of-Check-Time-Of-Use）在多进程环境下存在竞态条件，可被利用进行安全攻击。
 
@@ -288,7 +278,7 @@ if (st.st_uid != getuid()) { close(fd); /* reject */ }
 write(fd, data, len);
 ```
 
-### 4.4 定理：`*at` 系列函数的原子性
+### 3.4 定理：`*at` 系列函数的原子性
 
 **定理**：`openat`、`fstatat`、`unlinkat` 等 `*at` 函数相对于目录 fd 是原子的，避免了相对路径的竞态。
 
@@ -300,7 +290,7 @@ write(fd, data, len);
 2. 避免了 `access` + `open` 的 TOCTOU 竞态。
 3. 支持线程安全的相对路径操作。
 
-### 4.5 定理：`O_APPEND` 的原子性
+### 3.5 定理：`O_APPEND` 的原子性
 
 **定理**：`O_APPEND` 标志保证每次 `write` 的"定位偏移量 + 写入"操作是原子的。
 
@@ -310,9 +300,9 @@ write(fd, data, len);
 
 **推论**：多进程追加日志应使用 `O_APPEND`，而非 `lseek` + `write`。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础目录遍历
+### 4.1 基础目录遍历
 
 ```c
 #include <stdio.h>
@@ -369,7 +359,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 5.2 递归目录遍历（带深度限制）
+### 4.2 递归目录遍历（带深度限制）
 
 ```c
 #include <stdio.h>
@@ -448,7 +438,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 5.3 使用 `nftw` 进行高效遍历
+### 4.3 使用 `nftw` 进行高效遍历
 
 ```c
 #include <stdio.h>
@@ -510,7 +500,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 5.4 文件属性查询与时间戳
+### 4.4 文件属性查询与时间戳
 
 ```c
 #include <stdio.h>
@@ -598,7 +588,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 5.5 文件权限操作
+### 4.5 文件权限操作
 
 ```c
 #include <stdio.h>
@@ -674,7 +664,7 @@ int main(void) {
 }
 ```
 
-### 5.6 使用 `*at` 函数避免竞态
+### 4.6 使用 `*at` 函数避免竞态
 
 ```c
 #include <stdio.h>
@@ -760,7 +750,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 5.7 inotify 实时监控
+### 4.7 inotify 实时监控
 
 ```c
 #include <stdio.h>
@@ -868,7 +858,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 5.8 路径操作与规范化
+### 4.8 路径操作与规范化
 
 ```c
 #include <stdio.h>
@@ -957,7 +947,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 5.9 临时文件创建
+### 4.9 临时文件创建
 
 ```c
 #include <stdio.h>
@@ -1056,7 +1046,7 @@ int main(void) {
 }
 ```
 
-### 5.10 文件锁
+### 4.10 文件锁
 
 ```c
 #include <stdio.h>
@@ -1144,9 +1134,9 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 目录遍历方案对比
+### 5.1 目录遍历方案对比
 
 | 方案                  | 优点                         | 缺点                            | 适用场景                     |
 | --------------------- | ---------------------------- | ------------------------------- | ---------------------------- |
@@ -1158,7 +1148,7 @@ int main(int argc, char *argv[]) {
 | `find` 命令 + `popen` | 功能强大、一行代码           | 进程创建开销、解析输出         | 脚本、原型                   |
 | 多线程并行遍历        | 利用多核、加速大规模扫描     | 同步复杂、fd 资源消耗          | 大规模文件系统扫描           |
 
-### 6.2 文件锁方案对比
+### 5.2 文件锁方案对比
 
 | 方案                | 语义           | 粒度       | 强制性     | 平台支持              |
 | ------------------- | -------------- | ---------- | ---------- | --------------------- |
@@ -1169,7 +1159,7 @@ int main(int argc, char *argv[]) {
 | Linux `O_CREAT`+`O_EXCL` | 锁文件     | 文件存在性 | 强制性     | 所有 POSIX            |
 | Windows `LockFileEx`| 记录锁         | 字节区域   | 强制性     | Windows               |
 
-### 6.3 文件 I/O 方案对比
+### 5.3 文件 I/O 方案对比
 
 | 方案              | 缓冲    | 优点                   | 缺点                  | 适用场景               |
 | ----------------- | ------- | ---------------------- | --------------------- | ---------------------- |
@@ -1180,7 +1170,7 @@ int main(int argc, char *argv[]) {
 | `io_uring`        | 无      | 异步、批量、高性能     | 接口复杂、Linux 专用  | 高性能服务器           |
 | `aio_read/write`  | 无      | 异步、POSIX 标准       | 实现差异大            | 跨平台异步 I/O         |
 
-### 6.4 跨平台抽象层设计
+### 5.4 跨平台抽象层设计
 
 ```c
 /* fs.h：跨平台文件系统抽象层 */
@@ -1227,7 +1217,7 @@ bool fs_rename(const char *old_path, const char *new_path);
 #endif /* FS_H */
 ```
 
-### 6.5 选型决策
+### 5.5 选型决策
 
 **默认选择**：
 
@@ -1237,9 +1227,9 @@ bool fs_rename(const char *old_path, const char *new_path);
 4. **临时文件**：优先 `mkstemp`；Linux 3.11+ 用 `O_TMPFILE`；标准库用 `tmpfile`。
 5. **路径处理**：用 `realpath` 规范化；用 `openat` 避免竞态；避免 `dirname`/`basename`（会修改参数）。
 
-## 7. 常见陷阱
+## 6. 常见陷阱
 
-### 7.1 `readdir` 的 `errno` 处理
+### 6.1 `readdir` 的 `errno` 处理
 
 ```c
 /* 错误：无法区分"遍历结束"与"出错" */
@@ -1251,7 +1241,7 @@ while ((entry = readdir(dir)) != NULL) { ... }
 if (errno != 0) { /* 出错处理 */ }
 ```
 
-### 7.2 路径长度溢出
+### 6.2 路径长度溢出
 
 ```c
 /* 错误：固定大小缓冲区可能溢出 */
@@ -1266,7 +1256,7 @@ if (n < 0 || n >= (int)sizeof(full_path)) {
 }
 ```
 
-### 7.3 符号链接导致循环
+### 6.3 符号链接导致循环
 
 ```c
 /* 错误：使用 stat 会跟随符号链接，可能造成循环 */
@@ -1283,7 +1273,7 @@ if (S_ISDIR(st.st_mode)) {
 }
 ```
 
-### 7.4 文件描述符泄漏
+### 6.4 文件描述符泄漏
 
 ```c
 /* 错误：异常路径未关闭 fd */
@@ -1302,7 +1292,7 @@ if (read(fd, buf, n) < 0) {
 close(fd);
 ```
 
-### 7.5 TOCTOU 竞态
+### 6.5 TOCTOU 竞态
 
 ```c
 /* 错误：access + open 之间存在竞态 */
@@ -1321,7 +1311,7 @@ if (!S_ISREG(st.st_mode) || st.st_uid != getuid()) {
 }
 ```
 
-### 7.6 `rename` 的非原子性
+### 6.6 `rename` 的非原子性
 
 ```c
 /* 陷阱：rename 跨文件系统时非原子 */
@@ -1332,7 +1322,7 @@ rename("/tmp/file", "/home/user/file");  /* 若 /tmp 与 /home 是不同文件�
 rename("/home/user/.tmpfile", "/home/user/file");  /* 原子 */
 ```
 
-### 7.7 `fclose` 与缓冲未刷新
+### 6.7 `fclose` 与缓冲未刷新
 
 ```c
 /* 陷阱：程序崩溃时缓冲区数据丢失 */
@@ -1346,7 +1336,7 @@ fflush(fp);        /* 刷新到内核 */
 fsync(fileno(fp)); /* 刷到磁盘 */
 ```
 
-### 7.8 `O_APPEND` 与 `lseek` 的混用
+### 6.8 `O_APPEND` 与 `lseek` 的混用
 
 ```c
 /* 陷阱：O_APPEND 下 lseek 无效 */
@@ -1360,9 +1350,9 @@ lseek(fd, 10, SEEK_SET);
 write(fd, "x", 1);  /* 写入偏移 10 处 */
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 资源管理宏
+### 7.1 资源管理宏
 
 ```c
 #include <stdio.h>
@@ -1388,7 +1378,7 @@ int read_file(const char *path) {
 }
 ```
 
-### 8.2 增量目录遍历
+### 7.2 增量目录遍历
 
 ```c
 #include <stdio.h>
@@ -1450,7 +1440,7 @@ int scan_incremental(IncrementalScanner *s, const char *path) {
 }
 ```
 
-### 8.3 多线程并行遍历
+### 7.3 多线程并行遍历
 
 ```c
 #include <stdio.h>
@@ -1532,7 +1522,7 @@ void *worker(void *arg) {
 }
 ```
 
-### 8.4 跨平台文件操作库
+### 7.4 跨平台文件操作库
 
 ```c
 /* cross_fs.c：跨平台文件操作 */
@@ -1617,7 +1607,7 @@ int fs_path_join(char *dst, size_t size, const char *a, const char *b) {
 }
 ```
 
-### 8.5 文件系统事件日志
+### 7.5 文件系统事件日志
 
 ```c
 #include <stdio.h>
@@ -1701,7 +1691,7 @@ void fs_logger_destroy(FsLogger *l) {
 }
 ```
 
-### 8.6 原子文件写入
+### 7.6 原子文件写入
 
 ```c
 #include <stdio.h>
@@ -1755,9 +1745,9 @@ int save_config(const char *path, const char *json) {
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 `find` 命令的实现
+### 8.1 `find` 命令的实现
 
 GNU `find` 的核心遍历逻辑：
 
@@ -1833,7 +1823,7 @@ static void find_walk(const char *path, const FindOptions *opts) {
 }
 ```
 
-### 9.2 `cp` 命令的实现
+### 8.2 `cp` 命令的实现
 
 ```c
 #include <stdio.h>
@@ -1901,7 +1891,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 9.3 Linux 内核的 `VFS` 抽象
+### 8.3 Linux 内核的 `VFS` 抽象
 
 Linux 内核通过 VFS（Virtual File System）层抽象不同文件系统：
 
@@ -1932,7 +1922,7 @@ struct inode_operations {
 /* 用户态的 open/read/write 通过系统调用进入 VFS，再分派到具体文件系统 */
 ```
 
-### 9.4 SQLite 的文件锁策略
+### 8.4 SQLite 的文件锁策略
 
 SQLite 使用 `fcntl` 锁实现事务隔离：
 
@@ -1950,7 +1940,7 @@ typedef enum {
 /* 写事务：SHARED -> RESERVED -> PENDING -> EXCLUSIVE */
 ```
 
-### 9.5 Redis 的 RDB 持久化
+### 8.5 Redis 的 RDB 持久化
 
 Redis 通过 `fork` + `COW`（Copy-On-Write）实现非阻塞持久化：
 
@@ -1983,7 +1973,7 @@ int rdb_save_background(const char *filename) {
 }
 ```
 
-### 9.6 `git` 的对象存储
+### 8.6 `git` 的对象存储
 
 Git 使用基于 SHA-1 哈希的对象存储：
 
@@ -2027,7 +2017,7 @@ int git_write_object(const char *sha1, const void *data, size_t len) {
 }
 ```
 
-### 9.7 Dropbox 的增量同步
+### 8.7 Dropbox 的增量同步
 
 Dropbox 通过分块哈希实现增量同步：
 
@@ -2336,7 +2326,7 @@ void file_lock_release(file_lock_t lock) {
 
 **提示**：内核在每次 `write` 前原子地将偏移量设为文件末尾，整个"定位 + 写入"在 inode 锁保护下完成。
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1]  IEEE. (2017). _IEEE Standard for Information Technology—Portable Operating System Interface (POSIX) Base Specifications, Issue 7, IEEE Std 1003.1-2017_. — POSIX 标准。
 
@@ -2362,7 +2352,7 @@ void file_lock_release(file_lock_t lock) {
 
 [12] Silberschatz, A., Galvin, P. B., & Gagne, G. (2018). _Operating System Concepts_ (10th ed.). Wiley. — 文件系统原理。
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 - **Linux man pages: section 2 (syscalls), section 3 (library functions)** — 最权威的 API 文档。
 - **Linux Kernel Documentation: filesystems/** — 各文件系统的内核文档。

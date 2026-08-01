@@ -16,52 +16,14 @@ prerequisites:
   - javascript/语法速查
 ---
 
+
 # Records 与 Tuples：JavaScript 不可变值语义数据结构
 
 > "Mutable state is the new goto." —— 一句流传于函数式编程社区的格言，道出了可变状态在大型系统中的复杂性根源。
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节依据 Bloom 分类法设定六个层次的认知目标，帮助学习者系统掌握 Record 与 Tuple 这两项 TC39 提案。
-
-### 1.1 Remember（记忆）
-
-- 复述 Record（`#{}`）与 Tuple（`#[]`）的字面量语法。
-- 列出至少 5 种 Record/Tuple 内部允许存放的值类型。
-- 说明 TC39 提案当前的 Stage 状态与进入标准流程的关键里程碑。
-
-### 1.2 Understand（理解）
-
-- 解释"值语义（value semantics）"与"引用语义（reference semantics）"在 `===` 比较中的差异。
-- 阐述 Record/Tuple 深度不可变约束如何与 JavaScript 现有对象模型共存。
-- 推断 `Map`/`Set` 在键为 Record/Tuple 时为什么不再需要序列化。
-
-### 1.3 Apply（应用）
-
-- 在 React/Redux 场景中以 Record 作为状态容器，结合 `React.memo` 实现零成本相等比较。
-- 使用 `Tuple.from` 与 `Record` 将可变输入转换为不可变缓存键。
-- 在 Node.js 服务端用 Tuple 表达多列主键，作为 LRU 缓存的复合键。
-
-### 1.4 Analyze（分析）
-
-- 对比 `Object.freeze`、Immutable.js、Immer 与 Record/Tuple 四种不可变方案在内存表示、比较开销、序列化兼容性上的差异。
-- 拆解 V8（或 JSC）对 Record/Tuple 的内部表示（`HeapNumber`、`Tuple` 内部槽）对 GC 与内联缓存（inline cache）的影响。
-
-### 1.5 Evaluate（评价）
-
-- 评估在大型电商订单系统中采用 Record/Tuple 作为领域模型载体的收益与代价（迁移成本、库生态兼容、性能）。
-- 判定哪些场景更适合 `structuredClone` + `Object.freeze`，哪些场景必须使用 Record/Tuple。
-
-### 1.6 Create（创造）
-
-- 设计一个基于 Record/Tuple 的轻量级不可变状态管理库，对外暴露 `atom`、`selector`、`transaction` API。
-- 实现一个支持复合键的记忆化装饰器，用 Tuple 自动捕获函数参数。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 JavaScript 的"可变之痛"
+### 1.1 JavaScript 的"可变之痛"
 
 JavaScript 自 ES1（1997 年）起即采用**引用语义对象模型**：`{a:1} === {a:1}` 返回 `false`，因为比较的是堆地址。这一设计在浏览器脚本时代足够简洁，但随着应用规模扩张，带来了三类系统性问题：
 
@@ -69,7 +31,7 @@ JavaScript 自 ES1（1997 年）起即采用**引用语义对象模型**：`{a:1
 2. **状态共享易错**：`const a = b` 后修改 `a.nested` 会污染 `b`，是"React 不要直接修改 state"规则的根因。
 3. **缓存键不可用**：`Map` 以对象为键时，每次 `{x:1}` 都是新键，导致 memoize、Reselect 必须自行序列化参数。
 
-### 2.2 ES5 时代：Object.freeze 的局限
+### 1.2 ES5 时代：Object.freeze 的局限
 
 ES5（2009）引入 `Object.freeze`，提供浅层不可变：
 
@@ -88,7 +50,7 @@ frozen.b.c = 200;        // 仍然可以修改！
 | 引用语义 | `Object.freeze({})===Object.freeze({})` 仍为 `false` |
 | 性能开销 | V8 将冻结对象降级为 dictionary mode，丧失隐藏类优化 |
 
-### 2.3 ES6 时代：外部库填补空白
+### 1.3 ES6 时代：外部库填补空白
 
 2015 年前后，Facebook 推出 **Immutable.js**，以持久化数据结构（persistent data structures）提供 `O(log32 n)` 的结构共享：
 
@@ -119,7 +81,7 @@ const next = produce({ a: 1, b: { c: 2 } }, draft => {
 
 Immer 解决了 API 一致性，但仍是**引用语义**，无法直接用作 Map 键。
 
-### 2.4 TC39 提案：从 Stage 1 到 Stage 2
+### 1.4 TC39 提案：从 Stage 1 到 Stage 2
 
 2017 年，Robin Morissett 在 TC39 会议上首次提出"Records & Tuples"提案，目标：
 
@@ -137,7 +99,7 @@ Immer 解决了 API 一致性，但仍是**引用语义**，无法直接用作 M
 | 2023-08 | Stage 2 | 关于"是否允许 `null` 原型"的讨论 |
 | 2024-02 | Stage 2 | 暂未进入 Stage 3，等待 V8/SpiderMonkey 实现反馈 |
 
-### 2.5 与 ES2024 的关系
+### 1.5 与 ES2024 的关系
 
 截至 ES2024，Record/Tuple **尚未**进入正式标准。当前可在以下环境通过 polyfill 提前体验：
 
@@ -149,9 +111,9 @@ Immer 解决了 API 一致性，但仍是**引用语义**，无法直接用作 M
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 规范文本定位
+### 2.1 规范文本定位
 
 Record/Tuple 提案在 ECMAScript 规范中新增两个章节（草案）：
 
@@ -161,7 +123,7 @@ Record/Tuple 提案在 ECMAScript 规范中新增两个章节（草案）：
 - **§13.2.5** Record Literals
 - **§13.2.6** Tuple Literals
 
-### 3.2 Record 的形式化定义
+### 2.2 Record 的形式化定义
 
 一个 Record `r` 是一个有限的字符串键到值的映射，满足：
 
@@ -181,7 +143,7 @@ $$
 - 其他 Record
 - 其他 Tuple
 
-### 3.3 Tuple 的形式化定义
+### 2.3 Tuple 的形式化定义
 
 一个 Tuple `t` 是一个有限长度的有序值序列：
 
@@ -191,7 +153,7 @@ $$
 
 即 Tuple 与 Record 共享同一值域，但以整数下标访问，且有序。
 
-### 3.4 值语义相等的形式化定义
+### 2.4 值语义相等的形式化定义
 
 定义 $=_{v}$ 为值语义相等关系：
 
@@ -205,7 +167,7 @@ $$
 
 此关系是**同余关系（congruence relation）**：自反、对称、传递，且对嵌套结构保持。这意味着 Record/Tuple 可以作为 `Map` 的键，因为 `Map` 内部使用 `SameValueZero` 比较，而 Record/Tuple 将 `=_{v}` 作为 `SameValueZero` 的实现。
 
-### 3.5 与 SameValueZero 的关系
+### 2.5 与 SameValueZero 的关系
 
 ECMAScript 现有的 `SameValueZero(x, y)` 抽象操作对原始值已实现值语义（`NaN === NaN` 为 `true`），对对象则比较引用。提案扩展 `SameValueZero` 如下：
 
@@ -219,7 +181,7 @@ SameValueZero(x, y):
 
 `RecordEqual` 与 `TupleEqual` 按 §3.4 定义递归执行，且对循环引用返回 `false`（Record/Tuple 不允许循环，因其值域不可包含引用对象）。
 
-### 3.6 时间复杂度
+### 2.6 时间复杂度
 
 | 操作 | 复杂度 | 说明 |
 | --- | --- | --- |
@@ -232,9 +194,9 @@ V8 实现草案中，Record/Tuple 内部存储 64 位哈希值，首次比较后
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 不可变性与引用透明性
+### 3.1 不可变性与引用透明性
 
 函数式编程的核心原则之一是**引用透明性（referential transparency）**：表达式可被其值替换而不改变程序行为。可变对象破坏这一性质：
 
@@ -257,7 +219,7 @@ function increment(c) { return #{ count: c.count + 1 }; }
 // increment(counter) === increment(counter) 始终成立
 ```
 
-### 4.2 持久化数据结构 vs. 值语义
+### 3.2 持久化数据结构 vs. 值语义
 
 Immutable.js 与 Record/Tuple 都提供不可变性，但实现路径不同：
 
@@ -266,7 +228,7 @@ Immutable.js 与 Record/Tuple 都提供不可变性，但实现路径不同：
 
 权衡：Record/Tuple 牺牲**更新性能**换取**比较与缓存键查找**的常数复杂度。这对读多写少的场景（如 React props 比较）尤其有利。
 
-### 4.3 哈希与缓存键的数学基础
+### 3.3 哈希与缓存键的数学基础
 
 `Map`/`Set` 的键查找依赖哈希函数。Record/Tuple 作为键时，引擎需计算其哈希：
 
@@ -288,7 +250,7 @@ $$
 #[1, 2, 3] === #[3, 2, 1]            // false — 元素顺序相关
 ```
 
-### 4.4 与对象图的关系
+### 3.4 与对象图的关系
 
 JavaScript 程序的运行时状态可视为一个**有向对象图**：节点是对象，边是属性引用。可变对象图中存在环（`obj.self = obj`），使得深拷贝、序列化、比较都需特殊处理。
 
@@ -300,7 +262,7 @@ $$
 
 这简化了 GC 的可达性分析：ValueForest 中的节点只能被 ObjectGraph 引用，反向不可能。
 
-### 4.5 类型系统的形式化
+### 3.5 类型系统的形式化
 
 在 TypeScript 类型系统中，Record 与 Tuple 类型可定义为：
 
@@ -316,9 +278,9 @@ type Tuple<T extends readonly (Primitive | Record<unknown> | Tuple<unknown>)[]>
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 项目结构
+### 4.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -341,7 +303,7 @@ flowchart TD
     T9 --> T10
 ```
 
-### 5.2 package.json 配置
+### 4.2 package.json 配置
 
 ```json
 {
@@ -361,7 +323,7 @@ flowchart TD
 }
 ```
 
-### 5.3 babel.config.json
+### 4.3 babel.config.json
 
 ```json
 {
@@ -374,7 +336,7 @@ flowchart TD
 }
 ```
 
-### 5.4 复合键缓存（ES2024 兼容）
+### 4.4 复合键缓存（ES2024 兼容）
 
 ```javascript
 // src/cache.js
@@ -427,7 +389,7 @@ expensiveQuery(1, { status: 'active' });
 expensiveQuery(1, { status: 'active' }); // 命中缓存
 ```
 
-### 5.5 React 状态优化
+### 4.5 React 状态优化
 
 ```javascript
 // src/react-state.js
@@ -462,7 +424,7 @@ export function UserList({ users }) {
 }
 ```
 
-### 5.6 领域模型：订单系统
+### 4.6 领域模型：订单系统
 
 ```javascript
 // src/domain.js
@@ -521,7 +483,7 @@ export function totalPrice(order) {
 }
 ```
 
-### 5.7 测试用例
+### 4.7 测试用例
 
 ```javascript
 // test/cache.test.js
@@ -556,9 +518,9 @@ test('memoize with array args', () => {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 TypeScript / Python / Ruby / Rust 的对比
+### 5.1 与 TypeScript / Python / Ruby / Rust 的对比
 
 | 维度 | JavaScript Record/Tuple | TypeScript (类型层) | Python `frozendict`/`tuple` | Ruby `Hash`/`Array`.freeze | Rust `HashMap`/`Vec` |
 | --- | --- | --- | --- | --- | --- |
@@ -568,7 +530,7 @@ test('memoize with array args', () => {
 | 深度不可变 | 编译期强制 | 类型层不强制 | 否（frozendict 浅层） | 否（freeze 浅层） | 编译期强制 |
 | 性能 | 引擎优化哈希 | 无运行时影响 | 哈希计算 | 慢（每比较一次） | 编译期内联 |
 
-### 6.2 与 Immutable.js 的详细对比
+### 5.2 与 Immutable.js 的详细对比
 
 ```javascript
 // Immutable.js
@@ -589,7 +551,7 @@ r1 === r2;  // true — 值未变，引用也相等
 - Immutable.js：值不变时仍生成新引用（除非使用 `withMutations`），需要手写 `equals`。
 - Record/Tuple：值不变时引擎返回相同引用（值语义的天然结果），`===` 即深比较。
 
-### 6.3 与 Immer 的对比
+### 5.3 与 Immer 的对比
 
 | 维度 | Immer | Record/Tuple |
 | --- | --- | --- |
@@ -601,9 +563,9 @@ r1 === r2;  // true — 值未变，引用也相等
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：误以为展开是深拷贝
+### 6.1 陷阱：误以为展开是深拷贝
 
 ```javascript
 // 陷阱：展开只复制一层引用
@@ -620,7 +582,7 @@ console.log(bad.a.x); // 999 — 共享引用
 
 **最佳实践**：在 Record/Tuple 上下文内始终使用 `#{}` / `#[]` 字面量，避免混入可变对象。
 
-### 7.2 陷阱：函数不能放入 Record
+### 6.2 陷阱：函数不能放入 Record
 
 ```javascript
 // 陷阱：函数是引用类型，不可放入Record
@@ -633,7 +595,7 @@ handlers.set('onClick', fn);
 const eventSpec = #{ handlerKey: 'onClick' };
 ```
 
-### 7.3 陷阱：Map 与 Record 的区别
+### 6.3 陷阱：Map 与 Record 的区别
 
 Record 的键只能是字符串或 Symbol，与 Map 不同：
 
@@ -647,7 +609,7 @@ m.set(#{ x: 1 }, 'point');
 m.get(#{ x: 1 }); // 'point'
 ```
 
-### 7.4 陷阱：性能反模式
+### 6.4 陷阱：性能反模式
 
 ```javascript
 // 反模式：频繁更新大Record
@@ -664,7 +626,7 @@ for (let i = 0; i < 1000; i++) {
 const state = Record(Object.fromEntries(entries));
 ```
 
-### 7.5 最佳实践清单
+### 6.5 最佳实践清单
 
 1. **领域模型用 Record**：订单、用户、配置等不可变实体。
 2. **复合键用 Tuple**：多列主键、缓存参数。
@@ -675,11 +637,11 @@ const state = Record(Object.fromEntries(entries));
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建配置
+### 7.1 构建配置
 
-#### 8.1.1 Webpack 集成
+#### 7.1.1 Webpack 集成
 
 ```javascript
 // webpack.config.js
@@ -706,7 +668,7 @@ module.exports = {
 };
 ```
 
-#### 8.1.2 Vite 配置
+#### 7.1.2 Vite 配置
 
 ```javascript
 // vite.config.js
@@ -736,7 +698,7 @@ export default defineConfig({
 });
 ```
 
-### 8.2 性能基准
+### 7.2 性能基准
 
 ```javascript
 // benchmark.js
@@ -775,13 +737,13 @@ await run();
 | Immutable.js `equals` | 1000项深比较 | ~1.6ms |
 | fast-deep-equal | 1000项深比较 | ~1.1ms |
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
-#### 8.3.1 DevTools 检查
+#### 7.3.1 DevTools 检查
 
 Chrome DevTools（实验性 flag 启用后）将 Record/Tuple 显示为 `Record {a: 1, b: 2}` 与 `Tuple [1, 2, 3]`，区别于普通对象。
 
-#### 8.3.2 断言辅助
+#### 7.3.2 断言辅助
 
 ```javascript
 function assertRecord(actual, expected) {
@@ -794,7 +756,7 @@ function assertRecord(actual, expected) {
 }
 ```
 
-#### 8.3.3 序列化
+#### 7.3.3 序列化
 
 ```javascript
 // Record/Tuple兼容JSON
@@ -813,7 +775,7 @@ const parsedDeep = (function convert(v) {
 })(JSON.parse('{"a":1,"b":[2,3]}'));
 ```
 
-### 8.4 与 TypeScript 集成
+### 7.4 与 TypeScript 集成
 
 ```typescript
 // types/record-tuple.d.ts
@@ -833,9 +795,9 @@ const t: Tuple<[number, number, number]> = #[1, 2, 3];
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Bloomberg 的生产实践
+### 8.1 Bloomberg 的生产实践
 
 Bloomberg 是 Record/Tuple 提案的主要推动者，其内部金融数据系统采用类似机制处理股票行情：
 
@@ -849,7 +811,7 @@ Bloomberg 工程团队报告，在迁移到值语义数据结构后：
 
 来源：[Bloomberg TC39 提案演示](https://github.com/bloomberg/record-tuple-polyfill)
 
-### 9.2 React 团队的探索
+### 8.2 React 团队的探索
 
 React 团队长期以来一直关注"自动 memo 化"问题。Sebastian Markbåge 在 2022 年的 React Labs 文章中提到：
 
@@ -857,7 +819,7 @@ React 团队长期以来一直关注"自动 memo 化"问题。Sebastian Markbåg
 
 Record/Tuple 若进入标准，将使 React 19+ 的"编译时 memo 化"（React Forget）显著简化：编译器只需确保状态保存在 Record 中，相等比较由引擎保证。
 
-### 9.3 V8 引擎实现草案
+### 8.3 V8 引擎实现草案
 
 V8 团队发布的 [Record/Tuple 实现草案](https://v8.dev/blog/records-tuples) 描述了内部表示：
 
@@ -868,7 +830,7 @@ V8 团队发布的 [Record/Tuple 实现草案](https://v8.dev/blog/records-tuple
 
 实测在 V8 v11.5 实验性构建中，`#{a:1} === #{a:1}` 的耗时约为 `{a:1} === {a:1}` 的 0.3 倍（后者永远为 `false`，但比较操作本身需查隐藏类）。
 
-### 9.4 Redux Toolkit 的潜在演进
+### 8.4 Redux Toolkit 的潜在演进
 
 Redux Toolkit 当前使用 Immer 实现"不可变更新"。若 Record/Tuple 进入标准，Redux Toolkit 可能提供新模式：
 
@@ -889,7 +851,7 @@ const selectCount = (state) => state.counter.count;
 
 ---
 
-## 10. 知识讲解与要点分析（原习题）
+## 9. 知识讲解与要点分析（原习题）
 
 ### 选择题知识点讲解
 
@@ -1045,7 +1007,7 @@ console.log(lru.get(#[2, 'b']));  // 'second'
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 9**：为什么 Record/Tuple 不允许包含函数？这对函数式编程有何影响？如何绕过这一限制？
 
@@ -1071,14 +1033,14 @@ console.log(lru.get(#[2, 'b']));  // 'second'
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 规范与提案
+### 10.1 规范与提案
 
 - TC39 Proposal: Records & Tuples [Online]. Available: https://github.com/tc39/proposal-record-tuple
 - ECMAScript 2024 Language Specification, ECMA International, 2024. [Online]. Available: https://tc39.es/ecma262/
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 - Baker, H. G. 1993. "Equal Rights for Functional Objects or, The More Things Change, The More They Are the Same." *OOPSLA '93 Workshop on Object-Based Concurrent Programming*. DOI: 10.1145/165180.165183.
 
@@ -1086,7 +1048,7 @@ console.log(lru.get(#[2, 'b']));  // 'second'
 
 - Okasaki, C. 1999. "Purely Functional Data Structures." *Cambridge University Press*. ISBN: 978-0521663502.
 
-### 11.3 工业实践
+### 10.3 工业实践
 
 - Bloomberg Engineering. 2023. "Record & Tuple Polyfill." [Online]. Available: https://github.com/bloomberg/record-tuple-polyfill.
 
@@ -1094,7 +1056,7 @@ console.log(lru.get(#[2, 'b']));  // 'second'
 
 - Abramov, D. 2022. "React Labs: What We've Been Up To." *React Blog*. [Online]. Available: https://react.dev/blog/2022/06/15/react-labs-what-we-have-been-up-to.
 
-### 11.4 引用格式（ACM Reference Format）
+### 10.4 引用格式（ACM Reference Format）
 
 Robin Morissett, Ashley Cagle, Nicolò Ribaudo, and Jordan Harband. 2024. *Records & Tuples for JavaScript: A Stage 2 Proposal*. TC39 / ECMA International. Retrieved July 20, 2026 from https://github.com/tc39/proposal-record-tuple
 
@@ -1104,9 +1066,9 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **Okasaki, C.** *Purely Functional Data Structures*. Cambridge University Press, 1999. — 持久化数据结构的奠基之作，理解 Record/Tuple 性能权衡的理论基础。
 
@@ -1114,13 +1076,13 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 - **Elliott, C.** *What is Functional Programming?* 2018. [Online]. Available: https://github.com/conal/what-is-functional-programming
 
-### 12.2 论文
+### 11.2 论文
 
 - **Baker, H. G.** "USE-LIVE Variable Analysis". *SIGPLAN Notices*, 1995. — 关于引用语义与值语义在 GC 中的影响。
 
 - **Appel, A. W.** "A Profiling Method for Automatic Cycle Removal in Purely Functional Collections". *Journal of Functional Programming*, 1994.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **TC39 提案仓库**：https://github.com/tc39/proposal-record-tuple — 提案最新进展、规范文本、会议记录。
 
@@ -1134,7 +1096,7 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 - **Immer 文档**：https://immerjs.github.io/immer/ — 对比理解写时复制。
 
-### 12.4 相关 FANDEX 文档
+### 11.4 相关 FANDEX 文档
 
 - [迭代器帮助器](./迭代器帮助器) — 与 Record/Tuple 配合实现惰性不可变流水线。
 - [Promise构造器](./Promise构造器) — Promise resolve 值的不可变保证。
@@ -1212,7 +1174,6 @@ new Set().add(#[1,2]).has(#[1,2]);        // true
 ## 参考文献
 
 
-
 MDN JavaScript 文档：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript
 ECMAScript 规范：https://tc39.es/ecma262/
 Node.js 官方文档：https://nodejs.org/docs/latest/api/
@@ -1220,7 +1181,6 @@ JavaScript 秘密花园：https://bonsaiden.github.io/JavaScript-Garden/
 Can I use：https://caniuse.com/
 
 ## 延伸阅读
-
 
 
 JavaScript 基础语法，见 008-javascript 模块文档。

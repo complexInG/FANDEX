@@ -16,63 +16,18 @@ prerequisites:
   - cpp/概述与现代标准
 ---
 
+
 # C++ 嵌入式开发
 
 > 本文档系统讲解 C++ 在嵌入式系统中的应用，涵盖裸机编程、内存映射 I/O、`volatile` 语义、中断处理、实时性约束、跨编译工具链、嵌入式 C++ 子集 (EC++) 与现代 C++（C++17/C++20/C++23）在资源受限环境中的落地。内容遵循 ISO/IEC 14882:2023 与 IEC 60559 浮点标准，参考 MISRA C++:2023、AUTOSAR C++14、JSF AV C++ Coding Standards 等行业规范。
 
 ---
 
-## 1. 学习目标
-
-本节使用 Bloom 分类法刻画学习者应达到的认知层级。
-
-### 1.1 记忆（Remember）
-
-- 列举嵌入式系统的四个层次：裸机 (bare-metal)、RTOS、嵌入式 Linux、混合系统。
-- 复述 `volatile` 关键字的三种标准语义（[dcl.type.cv]）。
-- 背诵 Cortex-M、RISC-V、ESP32 三类常见 MCU 的内存映射布局。
-- 列举嵌入式 C++ 子集 (EC++) 排除的 6 类语言特性（异常、RTTI、模板递归实例化、`new`/`delete`、`stream`、`STL`）。
-
-### 1.2 理解（Understand）
-
-- 解释内存映射 I/O (MMIO) 的工作原理，说明为何编译器不能对设备寄存器做常规优化。
-- 阐述 `volatile` 与原子操作 (`std::atomic`) 的本质区别：`volatile` 阻止编译器优化但不保证 CPU 内存序，`std::atomic` 保证内存序但不阻止编译器重排。
-- 描述中断服务例程 (ISR) 的调用约定与上下文保存机制。
-- 区分硬实时 (hard real-time) 与软实时 (soft real-time) 系统的截止期限 (deadline) 语义。
-
-### 1.3 应用（Apply）
-
-- 使用 GCC ARM 工具链 (`arm-none-eabi-g++`) 交叉编译一个最小嵌入式 C++ 程序。
-- 编写链接脚本 (linker script) 控制代码与数据在 Flash/RAM 中的布局。
-- 实现基于 `volatile std::uint32_t*` 的设备寄存器访问封装。
-- 实现基于优先级向量表 (vector table) 的中断处理框架。
-
-### 1.4 分析（Analyze）
-
-- 对比 FreeRTOS、Zephyr、ThreadX、embOS 四类 RTOS 的 C++ 友好度。
-- 解构 CMSIS-Core 头文件对 Cortex-M 寄存器的抽象层次。
-- 分析缓存一致性 (cache coherency) 在 DMA 场景下的潜在问题与解决路径。
-- 评估 C++20 `std::format` 在 Cortex-M0+ 上的可行性。
-
-### 1.5 评价（Evaluate）
-
-- 评估在 32KB Flash / 8KB RAM 的 MCU 上是否应使用 `std::vector`。
-- 判断特定嵌入式场景下禁用异常 (`-fno-exceptions`) 与启用异常的工程权衡。
-- 评审 AUTOSAR C++14 规则在安全关键系统 (ISO 26262 ASIL-D) 中的适用性。
-
-### 1.6 创造（Create）
-
-- 设计一个零分配、零异常的嵌入式 C++ 容器库（替代 STL）。
-- 构建一个支持协程 (C++20 coroutine) 的轻量级 RTOS 任务调度器。
-- 为特定 SoC 实现完整的中断安全驱动框架，支持优先级继承与优先级天花板。
-
----
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 嵌入式 C++ 的演进反映了语言标准化与资源受限硬件之间的持续张力。
 
-### 2.1 C 语言主导期（1970s - 1990s）
+### 1.1 C 语言主导期（1970s - 1990s）
 
 嵌入式系统早期几乎完全使用汇编与 C。原因：
 
@@ -83,7 +38,7 @@ prerequisites:
 
 1990 年代，8 位 MCU（8051、AVR、PIC）流行，C 已成事实标准。
 
-### 2.2 嵌入式 C++ 子集（1990s）
+### 1.2 嵌入式 C++ 子集（1990s）
 
 1996 年，日本嵌入式系统工程师协会牵头制定 "Embedded C++ Specification" (EC++)。EC++ 是 C++ 的子集，排除：
 
@@ -106,7 +61,7 @@ EC++ 的局限：
 
 EC++ 在 2000 年代后逐渐式微，但 MISRA C++ 与 AUTOSAR C++ 继承了其"约束使用"的思想。
 
-### 2.3 MISRA C++ 与 AUTOSAR C++（2008 - 至今）
+### 1.3 MISRA C++ 与 AUTOSAR C++（2008 - 至今）
 
 **MISRA C++:2008** 由 MISRA 联盟发布，基于 C++03，提供 200+ 条规则，覆盖安全关键系统。规则分级：
 
@@ -124,7 +79,7 @@ EC++ 在 2000 年代后逐渐式微，但 MISRA C++ 与 AUTOSAR C++ 继承了其
 
 **JSF AV C++ Coding Standards**（洛克希德马丁 F-35 项目）类似 MISRA，更侧重军用航空电子。
 
-### 2.4 现代 C++ 在嵌入式的复兴（C++11 - 至今）
+### 1.4 现代 C++ 在嵌入式的复兴（C++11 - 至今）
 
 C++11 的若干特性显著改善了嵌入式可用性：
 
@@ -145,7 +100,7 @@ C++14/17/20 进一步改进：
 - **`consteval`**（C++20）：强制编译期求值。
 - **`<bit>`**（C++20）：`std::bit_cast`、`std::endian`、位操作标准化。
 
-### 2.5 演进时间线
+### 1.5 演进时间线
 
 ```text
 1972  C 语言                      K&R C
@@ -167,11 +122,11 @@ C++14/17/20 进一步改进：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节给出嵌入式 C++ 开发相关的形式化定义。
 
-### 3.1 ISO/IEC 14882 标准中的嵌入式相关条款
+### 2.1 ISO/IEC 14882 标准中的嵌入式相关条款
 
 C++ 标准并未为嵌入式定义专门子集，但以下条款与嵌入式密切相关：
 
@@ -182,7 +137,7 @@ C++ 标准并未为嵌入式定义专门子集，但以下条款与嵌入式密�
 - **[support.dynamic]** 动态内存：`new`/`delete`，嵌入式常禁用。
 - **[except]** 异常处理：嵌入式常禁用。
 
-### 3.2 `volatile` 的形式化语义
+### 2.2 `volatile` 的形式化语义
 
 ISO/IEC 14882 [dcl.type.cv] 第 6.9.10 节定义 `volatile` 语义：
 
@@ -200,7 +155,7 @@ ISO/IEC 14882 [dcl.type.cv] 第 6.9.10 节定义 `volatile` 语义：
 - 内存序 (memory ordering)：不阻止 CPU 重排其他非 `volatile` 访问。
 - 跨核可见性 (visibility)：不保证写入对其他核心立即可见。
 
-### 3.3 内存映射 I/O 的形式化模型
+### 2.3 内存映射 I/O 的形式化模型
 
 设物理地址空间 $\mathcal{A}$ 为 $[0, 2^N)$，其中 $N$ 为地址总线宽度。MMIO 将设备寄存器映射到 $\mathcal{A}$ 的子集 $\mathcal{D} \subset \mathcal{A}$。对地址 $a \in \mathcal{D}$ 的访问被总线路由到对应设备，而非 RAM。
 
@@ -221,7 +176,7 @@ volatile std::uint32_t* uart_dr = reinterpret_cast<volatile std::uint32_t*>(0x40
 
 `reinterpret_cast` 将整数地址转为指针，`volatile` 保证每次访问都被生成实际内存指令。
 
-### 3.4 实时性约束的形式化
+### 2.4 实时性约束的形式化
 
 实时系统的截止期限可形式化为：
 
@@ -239,7 +194,7 @@ $$
 
 其中 $C_i$ 为最坏执行时间 (WCET)，$T_i$ 为周期。该不等式为充分非必要条件。
 
-### 3.5 C++ 类型系统与硬件
+### 2.5 C++ 类型系统与硬件
 
 C++ 类型系统对硬件的抽象遵循以下规则：
 
@@ -252,9 +207,9 @@ C++ 类型系统对硬件的抽象遵循以下规则：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 `volatile` 的优化行为分析
+### 3.1 `volatile` 的优化行为分析
 
 考虑以下代码：
 
@@ -286,7 +241,7 @@ jz .loop_forever   ; 死循环，因为编译器认为 *flag 不会变
 
 形式化地，`volatile` 对象的每次访问是一个 observable side effect ([intro.execution] 第 6.9.2.1 节)，编译器不得消除。
 
-### 4.2 内存屏障与 `std::atomic`
+### 3.2 内存屏障与 `std::atomic`
 
 `volatile` 不保证 CPU 内存序。在多核或 DMA 场景，需 `std::atomic` 或内存屏障：
 
@@ -312,7 +267,7 @@ assert(data == 42);  // 保证
 
 `volatile` 仅提供第 1 项的部分保证（取决于访问宽度与对齐），不提供第 2、3 项。
 
-### 4.3 中断延迟的数学分析
+### 3.3 中断延迟的数学分析
 
 中断延迟 (interrupt latency) $L$ 由几部分组成：
 
@@ -335,7 +290,7 @@ C++ 特性对延迟的影响：
 - 模板：编译期展开，无运行时开销，但增加代码体积。
 - `new`/`delete`：不确定时间，禁用。
 
-### 4.4 DMA 与缓存一致性
+### 3.4 DMA 与缓存一致性
 
 DMA 直接访问物理内存，绕过 CPU 缓存。若 CPU 写入数据后未刷新缓存，DMA 读取到旧值：
 
@@ -359,7 +314,7 @@ $$
 
 MESI 协议保证 CPU 核间一致，但 DMA 不参与 MESI，故需手动维护。
 
-### 4.5 链接脚本与内存布局
+### 3.5 链接脚本与内存布局
 
 链接脚本 (linker script) 控制 ELF 段在物理内存的布局。典型 Cortex-M 链接脚本：
 
@@ -394,7 +349,7 @@ $$
 3. 设置栈指针：`msp = &__stack_top`。
 4. 调用 `main()`。
 
-### 4.6 WCET 静态分析
+### 3.6 WCET 静态分析
 
 最坏执行时间 (WCET) 分析是硬实时系统的核心。方法：
 
@@ -418,7 +373,7 @@ C++ 特性对 WCET 的影响：
 - 虚函数：增加间接调用，但调用图分析可处理。
 - 模板：编译期展开，无运行时开销。
 
-### 4.7 启动代码与运行时
+### 3.7 启动代码与运行时
 
 C++ 嵌入式程序需要"启动代码"完成硬件初始化与 C++ 运行时准备：
 
@@ -454,9 +409,9 @@ C++ 全局对象的构造在 `main()` 之前完成。这要求：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 最小嵌入式 C++ 程序
+### 4.1 最小嵌入式 C++ 程序
 
 **目标**：STM32F103C8 (Cortex-M3)，让 PC13 引脚 LED 闪烁。
 
@@ -547,7 +502,7 @@ int main() {
 }
 ```
 
-### 5.2 链接脚本与启动代码
+### 4.2 链接脚本与启动代码
 
 **文件**：`STM32F1.ld`
 
@@ -669,7 +624,7 @@ hang:
     b hang
 ```
 
-### 5.3 CMake 交叉编译配置
+### 4.3 CMake 交叉编译配置
 
 **文件**：`toolchain-arm-none-eabi.cmake`
 
@@ -733,7 +688,7 @@ add_custom_command(TARGET firmware.elf POST_BUILD
 )
 ```
 
-### 5.4 中断处理框架
+### 4.4 中断处理框架
 
 **文件**：`interrupt.hpp`
 **标准**：C++17
@@ -831,7 +786,7 @@ extern "C" void UART1_IRQHandler() {
 }
 ```
 
-### 5.5 零分配容器
+### 4.5 零分配容器
 
 **文件**：`static_vector.hpp`
 **标准**：C++17
@@ -936,7 +891,7 @@ void example() {
 }
 ```
 
-### 5.6 对象池模式
+### 4.6 对象池模式
 
 **文件**：`object_pool.hpp`
 **标准**：C++17
@@ -1015,7 +970,7 @@ void use_pool() {
 }
 ```
 
-### 5.7 实时任务调度器（极简）
+### 4.7 实时任务调度器（极简）
 
 **文件**：`mini_rtos.hpp`
 **标准**：C++17
@@ -1094,7 +1049,7 @@ void rtos_main() {
 }
 ```
 
-### 5.8 UART 驱动（C++ RAII）
+### 4.8 UART 驱动（C++ RAII）
 
 **文件**：`uart.hpp`
 **标准**：C++17
@@ -1190,9 +1145,9 @@ void uart_demo() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 C++ 与 C 在嵌入式的对比
+### 5.1 C++ 与 C 在嵌入式的对比
 
 | 维度          | C                       | C++                          |
 | ------------- | ----------------------- | ---------------------------- |
@@ -1207,7 +1162,7 @@ void uart_demo() {
 | 行业标准      | MISRA C                 | MISRA C++ / AUTOSAR C++      |
 | RTOS 支持     | 全部                    | 部分（FreeRTOS、Zephyr）     |
 
-### 6.2 C++ 与 Rust 在嵌入式的对比
+### 5.2 C++ 与 Rust 在嵌入式的对比
 
 | 维度          | C++                     | Rust                          |
 | ------------- | ----------------------- | ----------------------------- |
@@ -1221,7 +1176,7 @@ void uart_demo() {
 | 静态分析      | clang-tidy、cppcheck    | 编译器内置                    |
 | 行业采用      | 广泛（汽车、航空）      | 增长（汽车 ISO 26262 认证中） |
 
-### 6.3 RTOS C++ 友好度对比
+### 5.3 RTOS C++ 友好度对比
 
 | RTOS         | C++ API | 异常支持 | STL 兼容 | 模板友好 | 文档 |
 | ------------ | ------- | -------- | -------- | -------- | ---- |
@@ -1233,7 +1188,7 @@ void uart_demo() {
 | NuttX        | 是      | 是       | 是       | 是       | 良好 |
 | Mbed OS      | 是      | 是       | 是       | 是       | 优秀 |
 
-### 6.4 MISRA C++ vs AUTOSAR C++ vs JSF C++
+### 5.4 MISRA C++ vs AUTOSAR C++ vs JSF C++
 
 | 维度        | MISRA C++:2008       | AUTOSAR C++14        | JSF AV C++           |
 | ----------- | -------------------- | -------------------- | -------------------- |
@@ -1247,7 +1202,7 @@ void uart_demo() {
 | 模板        | 限制深度             | 允许                 | 限制                 |
 | 动态内存    | 限制                 | 禁用全局 new         | 禁用                 |
 
-### 6.5 8 位 vs 32 位 vs 64 位 MCU 上 C++ 的可行性
+### 5.5 8 位 vs 32 位 vs 64 位 MCU 上 C++ 的可行性
 
 | MCU 架构     | 代表型号        | Flash/RAM       | C++ 可行性 | 推荐标准 |
 | ------------ | --------------- | --------------- | ---------- | -------- |
@@ -1263,9 +1218,9 @@ void uart_demo() {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：未使用 `volatile` 访问 MMIO
+### 6.1 陷阱一：未使用 `volatile` 访问 MMIO
 
 ```cpp
 // 错误：未加 volatile，编译器优化掉循环
@@ -1280,7 +1235,7 @@ volatile std::uint32_t* status = reinterpret_cast<volatile std::uint32_t*>(0x400
 while (*status == 0) {}
 ```
 
-### 7.2 陷阱二：`volatile` 误用为原子操作
+### 6.2 陷阱二：`volatile` 误用为原子操作
 
 ```cpp
 // 错误：volatile 不保证原子性，64 位变量在 32 位 MCU 上可能撕裂
@@ -1302,7 +1257,7 @@ counter++;
 __enable_irq();
 ```
 
-### 7.3 陷阱三：未禁用异常导致 ROM 膨胀
+### 6.3 陷阱三：未禁用异常导致 ROM 膨胀
 
 ```cmake
 # 错误：未禁用异常，链接 libstdc++ 异常代码，增加 ~100KB ROM
@@ -1312,7 +1267,7 @@ set(CMAKE_CXX_FLAGS "-std=c++17")
 set(CMAKE_CXX_FLAGS "-std=c++17 -fno-exceptions -fno-unwind-tables -fno-threadsafe-statics")
 ```
 
-### 7.4 陷阱四：全局对象构造顺序未定义
+### 6.4 陷阱四：全局对象构造顺序未定义
 
 ```cpp
 // 错误：跨翻译单元的全局对象构造顺序未定义
@@ -1335,7 +1290,7 @@ Logger& logger() {
 
 但嵌入式常禁用 `static` 局部变量的线程安全初始化（`-fno-threadsafe-statics`），需手工保证。
 
-### 7.5 陷阱五：UB 与 strict aliasing
+### 6.5 陷阱五：UB 与 strict aliasing
 
 ```cpp
 // 错误：违反 strict aliasing，UB
@@ -1354,7 +1309,7 @@ std::uint32_t bits;
 std::memcpy(&bits, &f, sizeof(bits));
 ```
 
-### 7.6 陷阱六：DMA 缓冲区未对齐或缓存不一致
+### 6.6 陷阱六：DMA 缓冲区未对齐或缓存不一致
 
 ```cpp
 // 错误：DMA 缓冲区未考虑缓存一致性
@@ -1373,7 +1328,7 @@ uart_start_dma(dma_buf.data(), dma_buf.size());
 alignas(32) std::array<std::uint8_t, 64> dma_buf;
 ```
 
-### 7.7 陷阱七：栈溢出
+### 6.7 陷阱七：栈溢出
 
 嵌入式栈空间有限（典型 1-4KB），递归或大局部变量易溢出：
 
@@ -1391,7 +1346,7 @@ void parse() {
 2. 启用栈保护（`-fstack-protector-strong`，MPU 栈溢出检测）。
 3. 链接器生成栈使用报告（`-Wl,--print-memory-usage`）。
 
-### 7.8 陷阱八：中断中的 C++ 操作
+### 6.8 陷阱八：中断中的 C++ 操作
 
 ```cpp
 // 错误：ISR 中分配内存，可能阻塞或中断嵌套异常
@@ -1408,7 +1363,7 @@ extern "C" void UART_ISR() {
 3. 清中断标志。
 4. 设置 volatile 标志通知主循环。
 
-### 7.9 陷阱九：未使用 `noexcept`
+### 6.9 陷阱九：未使用 `noexcept`
 
 ```cpp
 // 隐含可能抛异常，编译器生成更多代码
@@ -1421,7 +1376,7 @@ void critical_task() { ... }
 void critical_task() noexcept { ... }
 ```
 
-### 7.10 陷阱十：模板膨胀
+### 6.10 陷阱十：模板膨胀
 
 ```cpp
 // 每种 T 实例化一份代码，ROM 膨胀
@@ -1437,7 +1392,7 @@ void process(T v) { /* 大量代码 */ }
 2. 用 `if constexpr` 分支而非多实例化。
 3. 链接器 LTO (`-flto`) 合并相似实例。
 
-### 7.11 最佳实践清单
+### 6.11 最佳实践清单
 
 1. **禁用异常与 RTTI**：`-fno-exceptions -fno-rtti`。
 2. **禁用全局 `new`/`delete`**：用对象池或 `static_vector`。
@@ -1454,11 +1409,11 @@ void process(T v) { /* 大量代码 */ }
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 工具链选择与配置
+### 7.1 工具链选择与配置
 
-#### 8.1.1 主流交叉编译工具链
+#### 7.1.1 主流交叉编译工具链
 
 | 工具链                | 厂商         | 支持架构              | C++ 标准 | License  |
 | --------------------- | ------------ | --------------------- | -------- | -------- |
@@ -1469,7 +1424,7 @@ void process(T v) { /* 大量代码 */ }
 | Green Hills           | GHS          | 全部                  | C++20    | 商用     |
 | Arduino (GCC)         | Arduino      | AVR、ARM              | C++17    | GPL      |
 
-#### 8.1.2 推荐编译选项（Cortex-M）
+#### 7.1.2 推荐编译选项（Cortex-M）
 
 ```cmake
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
@@ -1487,9 +1442,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
 ")
 ```
 
-### 8.2 调试技巧
+### 7.2 调试技巧
 
-#### 8.2.1 OpenOCD + GDB
+#### 7.2.1 OpenOCD + GDB
 
 ```bash
 # 启动 OpenOCD
@@ -1504,7 +1459,7 @@ arm-none-eabi-gdb firmware.elf
 (gdb) continue
 ```
 
-#### 8.2.2 Semihosting 输出
+#### 7.2.2 Semihosting 输出
 
 ```cpp
 extern "C" void initialise_monitor_handles(void);
@@ -1516,7 +1471,7 @@ int main() {
 }
 ```
 
-#### 8.2.3 SWO Trace
+#### 7.2.3 SWO Trace
 
 ```bash
 # OpenOCD 配置 SWO
@@ -1524,16 +1479,16 @@ trace source core 0
 trace perf
 ```
 
-### 8.3 性能优化
+### 7.3 性能优化
 
-#### 8.3.1 代码体积优化
+#### 7.3.1 代码体积优化
 
 - `-Os`：体积优先。
 - `-ffunction-sections -fdata-sections -Wl,--gc-sections`：去除未用代码。
 - LTO (`-flto`)：跨模块内联与死代码消除。
 - 模板实例化控制：`extern template` 显式实例化。
 
-#### 8.3.2 速度优化
+#### 7.3.2 速度优化
 
 - `-O2` 或 `-O3`：性能优先。
 - `-mcpu=` 与 `-mfpu=`：硬件浮点。
@@ -1541,23 +1496,23 @@ trace perf
 - 数据对齐：`alignas(16)` 启用 SIMD。
 - 缓存对齐：`alignas(32)` 避免 false sharing。
 
-#### 8.3.3 功耗优化
+#### 7.3.3 功耗优化
 
 - WFI/WFE：等待中断时进入低功耗。
 - 时钟门控：不用的外设关闭时钟。
 - DMA 代替 CPU 拷贝：CPU 可休眠。
 - DVFS：动态电压频率调节。
 
-### 8.4 静态分析
+### 7.4 静态分析
 
-#### 8.4.1 cppcheck
+#### 7.4.1 cppcheck
 
 ```bash
 cppcheck --enable=all --suppress=missingIncludeSystem \
          --check-config --std=c++17 main.cpp
 ```
 
-#### 8.4.2 clang-tidy
+#### 7.4.2 clang-tidy
 
 ```yaml
 # .clang-tidy
@@ -1576,7 +1531,7 @@ Checks: >
   -readability-magic-numbers
 ```
 
-#### 8.4.3 MISRA C++ 检查
+#### 7.4.3 MISRA C++ 检查
 
 ```bash
 coverity --misra-cpp-config misra.config build
@@ -1584,7 +1539,7 @@ coverity --misra-cpp-config misra.config build
 qa-cpp --misra-cpp-2008 main.cpp
 ```
 
-### 8.5 单元测试
+### 7.5 单元测试
 
 嵌入式 C++ 单元测试常在主机上执行，通过抽象硬件层 (HAL) 隔离硬件依赖。
 
@@ -1617,7 +1572,7 @@ TEST_CASE("LED toggles") {
 }
 ```
 
-### 8.6 OTA 升级
+### 7.6 OTA 升级
 
 嵌入式 OTA (Over-The-Air) 升级涉及：
 
@@ -1634,22 +1589,22 @@ C++ 实现 Bootloader 的优势：
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：Zephyr RTOS 的 C++ 支持
+### 8.1 案例：Zephyr RTOS 的 C++ 支持
 
 **仓库**：`zephyrproject-rtos/zephyr`
 
 Zephyr 是 Linux Foundation 维护的开源 RTOS，原生支持 C++。
 
-#### 9.1.1 C++ 特性支持
+#### 8.1.1 C++ 特性支持
 
 - C++14/17/20 可选。
 - 提供 `libcpp` 接口（自定义全局构造、`__cxa_pure_virtual`）。
 - 内置 `sys::clock`、`sys::mutex` 等 C++ 封装。
 - 支持 `std::thread`、`std::mutex`（基于 Zephyr 内核）。
 
-#### 9.1.2 工程实践
+#### 8.1.2 工程实践
 
 ```cpp
 #include <zephyr/zephyr.h>
@@ -1672,20 +1627,20 @@ int main() {
 }
 ```
 
-### 9.2 案例：Arduino 框架
+### 8.2 案例：Arduino 框架
 
 **仓库**：`arduino/Arduino`
 
 Arduino 是最流行的入门级嵌入式 C++ 框架。
 
-#### 9.2.1 设计哲学
+#### 8.2.1 设计哲学
 
 - 极简 API：`setup()` + `loop()`。
 - 隐藏硬件细节：`digitalWrite(13, HIGH)`。
 - 使用 C++ 类封装外设：`Serial`、`Wire`、`SPI`。
 - 支持中断、定时器。
 
-#### 9.2.2 代码示例
+#### 8.2.2 代码示例
 
 ```cpp
 void setup() {
@@ -1704,20 +1659,20 @@ void loop() {
 
 Arduino 的成功证明 C++ 在入门级嵌入式的可行性。
 
-### 9.3 案例：Mbed OS
+### 8.3 案例：Mbed OS
 
 **仓库**：`ARMmbed/mbed-os`
 
 ARM 官方嵌入式 OS，深度使用 C++。
 
-#### 9.3.1 设计模式
+#### 8.3.1 设计模式
 
 - RTOS API 类封装：`rtos::Thread`、`rtos::Mutex`、`rtos::Semaphore`。
 - I/O 抽象：`DigitalOut`、`InterruptIn`、`AnalogIn`。
 - 网络：`NetworkInterface`、`WiFiInterface`、`CellularInterface`。
 - 安全：`mbedtls` 集成，TLS/SSL 类封装。
 
-#### 9.3.2 代码示例
+#### 8.3.2 代码示例
 
 ```cpp
 #include "mbed.h"
@@ -1740,11 +1695,11 @@ int main() {
 }
 ```
 
-### 9.4 案例：特斯拉汽车 ECU
+### 8.4 案例：特斯拉汽车 ECU
 
 特斯拉 Model 3 的车身控制器使用 C++（基于 FreeRTOS）。AUTOSAR C++14 规范，ISO 26262 ASIL-B 安全等级。
 
-#### 9.4.1 工程实践
+#### 8.4.1 工程实践
 
 - 全局禁用异常与 RTTI。
 - 自定义 `new`/`delete` 走对象池。
@@ -1752,18 +1707,18 @@ int main() {
 - WCET 工具链：aiT。
 - 代码生成器：EB tresos。
 
-### 9.5 案例：SpaceX 飞行软件
+### 8.5 案例：SpaceX 飞行软件
 
 SpaceX Dragon 飞船与 Falcon 9 火箭的飞行软件大量使用 C++（基于 VxWorks）。
 
-#### 9.5.1 关键设计
+#### 8.5.1 关键设计
 
 - 三机冗余（triple modular redundancy）。
 - 实时调度，WCET 严格分析。
 - 静态内存分配，禁用堆。
 - 自有编码规范（参考 JSF AV C++）。
 
-### 9.6 案例：ESP-IDF 的 C++ 支持
+### 8.6 案例：ESP-IDF 的 C++ 支持
 
 乐鑫 ESP32 的官方 SDK ESP-IDF 全面支持 C++。
 
@@ -2068,7 +2023,7 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 
 **解析讲解**：`constexpr` 允许编译期计算 CRC，将固件校验值预计算到 Flash，无运行时开销。
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 4.1**：为什么 `volatile` 不能替代 `std::atomic`？两者本质区别是什么？
 
@@ -2208,9 +2163,9 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准与规范
+### 10.1 标准与规范
 
 [1] International Organization for Standardization. 2020. *Information technology — Programming languages — C++* (ISO/IEC 14882:2020). ISO, Geneva, Switzerland.
 
@@ -2224,7 +2179,7 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 
 [6] IEC. 2019. *Programmable controllers — Part 3: Programming languages* (IEC 61131-3:2019). IEC, Geneva, Switzerland.
 
-### 11.2 论文与文献
+### 10.2 论文与文献
 
 [7] Stroustrup, B. 1985. *An extension of C for generic programming*. In *Proceedings of the 1985 ACM SIGPLAN conference on Programming language design and implementation (PLDI '85)*. ACM, New York, NY, USA, 12-19. DOI: 10.1145/319838.319847.
 
@@ -2236,7 +2191,7 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 
 [11] Wilhelm, R., Engblom, J., Ermedahl, A., Holsti, N., Thesing, S., Whalley, D., Bernat, G., Ferdinand, C., Heckmann, R., Mitra, T., Mueller, F., Puaut, I., Puschner, P., Staschulat, J., and Stenström, P. 2008. *The worst-case execution-time problem—overview of methods and survey of tools*. ACM Transactions on Embedded Computing Systems 7, 3, Article 36 (April 2008), 53 pages. DOI: 10.1145/1347375.1347389.
 
-### 11.3 嵌入式 C++ 专题
+### 10.3 嵌入式 C++ 专题
 
 [12] Embedded C++ Technical Committee. 1996. *The Embedded C++ Specification*. Retrieved from https://www.caravan.net/ec2plus/.
 
@@ -2244,7 +2199,7 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 
 [14] Saks, D. 2012. * volatile: The programmer's enemy*. CppCon talk. Retrieved from https://www.youtube.com/watch?v=QqMCKwYBsKE.
 
-### 11.4 工具链文档
+### 10.4 工具链文档
 
 [15] ARM Ltd. 2024. *ARM Compiler User Guide*. Retrieved from https://developer.arm.com/documentation/.
 
@@ -2254,7 +2209,7 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 
 [18] IAR Systems. 2024. *IAR Embedded Workbench*. Retrieved from https://www.iar.com/.
 
-### 11.5 在线资源
+### 10.5 在线资源
 
 [19] cppreference.com. 2024. *std::atomic*. Retrieved from https://en.cppreference.com/w/cpp/atomic/atomic.
 
@@ -2262,9 +2217,9 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 推荐书籍
+### 11.1 推荐书籍
 
 1. **Sutter, H. and Alexandrescu, A.** (2004). *C++ Coding Standards: 101 Rules, Guidelines, and Best Practices*. Addison-Wesley.
    - 适用所有 C++ 项目，包括嵌入式。
@@ -2277,7 +2232,7 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 6. **Henzinger, T. A. and Sifakis, J.** (2006). *The Embedded Systems Design Challenge* (LNCS 3950). Springer.
 7. **Brown, J. W. and Martin, B.** (2010). *How C++ Conformity Impacts Embedded Applications*. Embedded.com.
 
-### 12.2 推荐论文与规范
+### 11.2 推荐论文与规范
 
 1. **ISO/IEC TR 18015**: *Technical Report on C++ Performance*. 2006.
    - 分析 C++ 特性的性能开销。
@@ -2286,7 +2241,7 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 4. **P1645R1**: *constexpr for embedded systems*.
 5. **AUTOSAR Classic Platform**: *General Specification of C++14 Guidelines*.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 1. **Embedded C++ community**: https://www.embedded.com/c-plus-plus/
 2. **ARM Developer**: https://developer.arm.com/
@@ -2298,7 +2253,7 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 8. **CMSIS**: https://developer.arm.com/tools-and-software/embedded/cmsis
 9. **CppCon: Embedded track**: https://www.cppcon.com/
 
-### 12.4 相关课程
+### 11.4 相关课程
 
 1. **MIT 6.331 Advanced Embedded Systems**: 实时系统与 WCET 分析。
 2. **Berkeley EECS 149/249A Embedded Systems**: 嵌入式建模与验证。
@@ -2306,7 +2261,7 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 4. **Stanford CS241 Embedded Systems Workshop**: 嵌入式 Linux 与 RTOS。
 5. **MIT 6.172 Performance Engineering**: C++ 性能优化（适用嵌入式）。
 
-### 12.5 实践项目建议
+### 11.5 实践项目建议
 
 1. **STM32 LED 闪烁与 UART 通信**：入门裸机 C++。
 2. **FreeRTOS 任务调度与队列**：RTOS + C++。

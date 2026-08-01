@@ -16,6 +16,7 @@ prerequisites:
   - typescript/语法速查
 ---
 
+
 # 装饰器标准实现
 
 > 本文档对标 MIT 6.S192、Stanford CS110、CMU 15-214 等课程教学水准，系统讲解 TypeScript 装饰器（Decorators）从 Legacy 到 Stage 3 标准的演进、形式化语义、元数据协议与工程级应用。所有代码示例均可在 TS 5.4 + `target: ES2022` 下编译通过。
@@ -39,48 +40,15 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应能够：
-
-### 1.1 Bloom 认知层级映射
-
-| 层级 | 行为动词 | 预期成果 |
-|------|----------|----------|
-| **Remember**（记忆） | 列举、识别 | 列举 TC39 装饰器提案的 Stage 1/2/3 演进历程，写出 Stage 3 装饰器三种基本形态（类、方法、属性）的语法 |
-| **Understand**（理解） | 解释、归纳 | 解释 Stage 3 装饰器与 Legacy 装饰器（`experimentalDecorators`）的核心差异，归纳上下文对象（context object）的设计动机与元数据（metadata）协议 |
-| **Apply**（应用） | 实现、使用 | 在企业级项目中实现 `@logged`、`@debounce`、`@memoize`、`@deprecated`、`@route` 等装饰器，并正确使用 `context.metadata` 共享状态 |
-| **Analyze**（分析） | 比较、分解 | 比较 TypeScript 装饰器与 Java 注解、Python 装饰器、C# Attribute 的本质差异，分解装饰器组合（composition）的执行顺序与代数性质 |
-| **Evaluate**（评价） | 评判、选择 | 针对给定业务场景（如 NestJS 依赖注入、TypeORM 实体映射、Angular DI）选择合适的装饰器实现方案，并给出可维护性、运行时性能、类型安全的权衡 |
-| **Create**（创造） | 设计、构建 | 设计一个端到端类型安全的 IoC 容器，使用 Stage 3 装饰器 + 元数据协议实现声明式依赖注入、AOP 切面、配置注入 |
-
-### 1.2 前置知识
-
-- TypeScript 类与继承
-- `this` 绑定与箭头函数
-- `Reflect.metadata` 与 `Symbol.metadata`
-- ES2022 类字段（class fields）
-- 闭包与高阶函数
-- 设计模式：装饰器模式、代理模式、依赖注入
-
-### 1.3 适用读者
-
-- 具备 1 年以上 TypeScript 实战经验的高级开发者
-- 正在使用 NestJS、TypeORM、MikroORM、Angular 等依赖装饰器的框架的工程师
-- 希望深入理解 TC39 提案演进过程的语言研究者
-- 准备 TypeScript 高级面试的工程师
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 装饰器的起源
+### 1.1 装饰器的起源
 
 装饰器（Decorator）的概念最早可追溯到 1960 年代的 Lisp 语言，其在函数定义时通过 `defadvice` 修饰函数行为。Python 在 2004 年的 PEP 318 中正式引入 `@decorator` 语法，Java 在 JSR 250（2006 年）中引入注解（Annotation），C# 在 2.0（2005 年）引入 Attribute。
 
 JavaScript 装饰器提案由 **Yehuda Katz** 与 **Brian Terlson** 在 2014 年首次提交至 TC39，历经 Stage 1（2014）、Stage 2（2017）、Stage 3（2022）三个阶段。整个提案历时 8 年，是 TC39 历史上耗时最长的提案之一。
 
-### 2.2 Stage 1 → Stage 2 → Stage 3 的演进
+### 1.2 Stage 1 → Stage 2 → Stage 3 的演进
 
 #### Stage 1（2014-2017）：Legacy 时代
 
@@ -109,7 +77,7 @@ Stage 2 提案引入了更严格的类型签名，但仍基于描述符。这一
 
 TypeScript 在 **TS 5.0（2023 年 3 月）** 正式支持 Stage 3 装饰器，无需 `experimentalDecorators` 标志。
 
-### 2.3 版本演进时间线
+### 1.3 版本演进时间线
 
 ```
 2014-04  TC39 Stage 1   Yehuda Katz 提交初版装饰器提案
@@ -122,7 +90,7 @@ TypeScript 在 **TS 5.0（2023 年 3 月）** 正式支持 Stage 3 装饰器，�
 2024-11  TS 5.6         装饰器在严格模式下的稳定性改进
 ```
 
-### 2.4 设计动机深度分析
+### 1.4 设计动机深度分析
 
 Daniel Ehrenberg 在 [TC39 Stage 3 提案](https://github.com/tc39/proposal-decorators) 中阐述了 Stage 3 装饰器的三大核心动机：
 
@@ -132,7 +100,7 @@ Daniel Ehrenberg 在 [TC39 Stage 3 提案](https://github.com/tc39/proposal-deco
 
 > **动机三：与类字段语义对齐。** ES2022 类字段引入后，属性装饰器需要处理"字段尚未赋值"的情况。Stage 3 属性装饰器返回一个初始化函数 `(initialValue) => initialValue`，与类字段语义自然对齐。
 
-### 2.5 社区生态发展
+### 1.5 社区生态发展
 
 装饰器社区的发展可划分为三个阶段：
 
@@ -140,7 +108,7 @@ Daniel Ehrenberg 在 [TC39 Stage 3 提案](https://github.com/tc39/proposal-deco
 - **2020-2023 过渡期**：TC39 提案演进至 Stage 3，框架开始评估迁移路径
 - **2023-2025 Stage 3 时代**：TS 5.0 落地后，新项目默认采用 Stage 3；旧项目通过兼容层逐步迁移
 
-### 2.6 当前社区共识（2024-2025）
+### 1.6 当前社区共识（2024-2025）
 
 TypeScript 核心团队在 2024 年路线图中明确：
 
@@ -151,9 +119,9 @@ TypeScript 核心团队在 2024 年路线图中明确：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 装饰器的代数语义
+### 2.1 装饰器的代数语义
 
 装饰器可形式化为一个**高阶函数**（higher-order function），接收被装饰的实体（entity）与上下文（context），返回同类型的实体或 `void`：
 
@@ -167,7 +135,7 @@ $$
 - $C$ 为上下文对象（包含 `kind`、`name`、`metadata` 等字段）
 - $\bot$ 表示 `void`（不替换原实体）
 
-### 3.2 类装饰器的形式化
+### 2.2 类装饰器的形式化
 
 类装饰器接收一个类（构造函数）与类上下文，返回一个新类或 `void`：
 
@@ -181,7 +149,7 @@ $$
 \text{ClassDecoratorContext} \triangleq \{ \text{kind}: \text{'class'}, \text{name}: \text{string} \cup \text{undefined}, \text{metadata}: \text{Metadata} \}
 $$
 
-### 3.3 方法装饰器的形式化
+### 2.3 方法装饰器的形式化
 
 方法装饰器接收一个函数与方法上下文，返回一个新函数或 `void`：
 
@@ -201,7 +169,7 @@ $$
 - `addInitializer` 允许在类实例化时执行额外的初始化逻辑
 - `metadata` 是类级别的元数据对象，所有装饰器共享
 
-### 3.4 属性装饰器的形式化
+### 2.4 属性装饰器的形式化
 
 属性装饰器接收 `undefined`（属性尚无值）与属性上下文，返回一个初始化函数：
 
@@ -211,7 +179,7 @@ $$
 
 属性装饰器返回的初始化函数 `init: (initialValue) => initialValue` 在实例化时被调用，可修改初始值。
 
-### 3.5 元数据协议的形式化
+### 2.5 元数据协议的形式化
 
 Stage 3 装饰器通过 `Symbol.metadata` 在类上挂载元数据对象。形式化定义：
 
@@ -225,7 +193,7 @@ $$
 \text{Metadata} \triangleq \{ k_i \mapsto v_i \} \quad \text{(mutable, shared across decorators)}
 $$
 
-### 3.6 装饰器组合的代数结构
+### 2.6 装饰器组合的代数结构
 
 多个装饰器叠加应用时，构成**函数组合**（function composition）的代数结构：
 
@@ -246,9 +214,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 装饰器求值时机
+### 3.1 装饰器求值时机
 
 装饰器在**类定义时**求值（class evaluation time），而非实例化时。形式化：
 
@@ -273,7 +241,7 @@ class User {
 3. `@logged` 应用于 `User` 类，返回新类
 4. 类定义完成，可被实例化
 
-### 4.2 addInitializer 机制
+### 3.2 addInitializer 机制
 
 `context.addInitializer(fn)` 允许在类实例化时执行额外逻辑。形式化：
 
@@ -302,7 +270,7 @@ const log = logger.log;
 log('hello');  // 'hello'（已绑定 this）
 ```
 
-### 4.3 元数据传播机制
+### 3.3 元数据传播机制
 
 `context.metadata` 是一个共享对象，所有装饰器对同一个类的元数据写入都汇聚到同一个对象。形式化：
 
@@ -332,7 +300,7 @@ console.log(ApiController[Symbol.metadata].routes);
 // { getUsers: '/users', getUser: '/users/:id' }
 ```
 
-### 4.4 自动访问器（Auto-Accessor）的特殊语义
+### 3.4 自动访问器（Auto-Accessor）的特殊语义
 
 ES2022 引入自动访问器语法 `accessor field`，Stage 3 装饰器对自动访问器有专门的处理。形式化：
 
@@ -361,7 +329,7 @@ function tracked(target, context) {
 }
 ```
 
-### 4.5 装饰器组合的结合律
+### 3.5 装饰器组合的结合律
 
 装饰器组合满足**结合律**（associativity）：
 
@@ -387,7 +355,7 @@ const _temp = validate(class Service {});
 const _final = log(_temp);
 ```
 
-### 4.6 装饰器与继承的交互
+### 3.6 装饰器与继承的交互
 
 装饰器在子类继承父类时，**不会被继承**。形式化：
 
@@ -410,7 +378,7 @@ d.greet();  // 'hello'（greet 方法被 @logged 修饰的逻辑会被继承）
 // 但 Derived 类本身没有 @logged 装饰器
 ```
 
-### 4.7 编译产物的形式化
+### 3.7 编译产物的形式化
 
 Stage 3 装饰器编译产物使用 `applyDecs2312`（或类似运行时辅助函数）应用装饰器。形式化：
 
@@ -447,9 +415,9 @@ let _initClass;
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 类装饰器：日志记录
+### 4.1 类装饰器：日志记录
 
 ```typescript
 // TS 5.4, tsconfig.json: { "target": "ES2022" }
@@ -477,7 +445,7 @@ new User('Alice', 30);
 // 输出：[logged] Creating User with args: ['Alice', 30]
 ```
 
-### 5.2 方法装饰器：防抖
+### 4.2 方法装饰器：防抖
 
 ```typescript
 /**
@@ -509,7 +477,7 @@ search.handleInput('abc');
 // 300ms 后输出：Searching: abc
 ```
 
-### 5.3 方法装饰器：节流
+### 4.3 方法装饰器：节流
 
 ```typescript
 /**
@@ -537,7 +505,7 @@ class ScrollHandler {
 }
 ```
 
-### 5.4 方法装饰器：记忆化
+### 4.4 方法装饰器：记忆化
 
 ```typescript
 /**
@@ -577,7 +545,7 @@ console.log(calc.fibonacci(40));  // 102334155（缓存命中）
 console.timeEnd('second');  // ~0ms
 ```
 
-### 5.5 属性装饰器：必填校验
+### 4.5 属性装饰器：必填校验
 
 ```typescript
 /**
@@ -610,7 +578,7 @@ new User('Alice', 'a@x.com');  // OK
 // new User('', '');  // Error: name is required
 ```
 
-### 5.6 属性装饰器：默认值
+### 4.6 属性装饰器：默认值
 
 ```typescript
 /**
@@ -642,7 +610,7 @@ console.log(config.host);  // 'localhost'（使用默认值）
 console.log(config.debug); // true
 ```
 
-### 5.7 元数据：路由注册
+### 4.7 元数据：路由注册
 
 ```typescript
 /**
@@ -699,7 +667,7 @@ console.log(methods);
 // { getUsers: 'GET', getUser: 'GET', createUser: 'POST' }
 ```
 
-### 5.8 自动访问器：响应式状态
+### 4.8 自动访问器：响应式状态
 
 ```typescript
 /**
@@ -744,7 +712,7 @@ counter.count = 1;  // 触发通知
 counter.count = 2;  // 触发通知
 ```
 
-### 5.9 装饰器组合：API 服务
+### 4.9 装饰器组合：API 服务
 
 ```typescript
 /**
@@ -820,7 +788,7 @@ class UserService {
 }
 ```
 
-### 5.10 依赖注入装饰器
+### 4.10 依赖注入装饰器
 
 ```typescript
 /**
@@ -896,9 +864,9 @@ service.getUser(1);  // [Logger] Getting user 1
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Java 注解对比
+### 5.1 与 Java 注解对比
 
 Java 注解（Annotation）是元数据标记，本身不含逻辑：
 
@@ -939,7 +907,7 @@ class UserController {
 | **类型安全** | 编译期校验 | Stage 3 编译期校验 |
 | **运行时开销** | 反射开销 | 装饰器求值开销（一次性） |
 
-### 6.2 与 Python 装饰器对比
+### 5.2 与 Python 装饰器对比
 
 Python 装饰器是高阶函数，接收函数返回函数：
 
@@ -968,7 +936,7 @@ TypeScript 装饰器与 Python 装饰器在概念上相似，但有关键差异�
 | **类型安全** | 鸭子类型 | 静态类型校验 |
 | **私有性** | 无法访问私有属性 | 通过 `context.access` 安全访问 |
 
-### 6.3 与 C# Attribute 对比
+### 5.3 与 C# Attribute 对比
 
 C# Attribute 是元数据标记，类似 Java 注解：
 
@@ -988,7 +956,7 @@ public class OldClass {
 - TypeScript 装饰器在类定义时立即执行
 - C# Attribute 不能修改被装饰的实体，TypeScript 装饰器可以
 
-### 6.4 与 Legacy 装饰器对比
+### 5.4 与 Legacy 装饰器对比
 
 | 特性 | Legacy (`experimentalDecorators`) | Stage 3（标准） |
 |------|----------------------------------|-----------------|
@@ -1000,7 +968,7 @@ public class OldClass {
 | **参数装饰器** | 支持 | 不支持（Stage 3 暂未包含） |
 | **生态成熟度** | 极成熟（Angular/NestJS/TypeORM） | 新生态，逐步成熟 |
 
-### 6.5 与 Scala Annotations 对比
+### 5.5 与 Scala Annotations 对比
 
 Scala 的注解类似 Java，但支持宏（macro）实现编译期代码生成：
 
@@ -1014,9 +982,9 @@ TypeScript 装饰器在运行时执行，而 Scala 宏在编译期生成代码�
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：箭头函数丢失 this
+### 6.1 陷阱一：箭头函数丢失 this
 
 **问题**：装饰器返回的箭头函数无法绑定实例 `this`。
 
@@ -1039,7 +1007,7 @@ function good(value: Function, context: ClassMethodDecoratorContext) {
 }
 ```
 
-### 7.2 陷阱二：装饰器执行顺序误解
+### 6.2 陷阱二：装饰器执行顺序误解
 
 **问题**：误以为装饰器从上到下执行。
 
@@ -1054,7 +1022,7 @@ class X {}
 
 **解决**：记住"求值从上到下，应用从下到上"。装饰器作为函数调用时，先调用最下方的。
 
-### 7.3 陷阱三：元数据未共享
+### 6.3 陷阱三：元数据未共享
 
 **问题**：在多个装饰器中独立创建元数据对象，而非共享 `context.metadata`。
 
@@ -1079,7 +1047,7 @@ function goodRoute(path: string) {
 }
 ```
 
-### 7.4 陷阱四：属性装饰器返回值错误
+### 6.4 陷阱四：属性装饰器返回值错误
 
 **问题**：属性装饰器返回静态值而非初始化函数。
 
@@ -1103,7 +1071,7 @@ function goodDefault(defaultVal: any) {
 }
 ```
 
-### 7.5 陷阱五：装饰器与继承冲突
+### 6.5 陷阱五：装饰器与继承冲突
 
 **问题**：装饰器修改类后，子类的 `super` 调用可能失败。
 
@@ -1122,7 +1090,7 @@ class Derived extends Base {
 
 **解决**：装饰器修改方法时，保留原方法引用；或在文档中明确说明装饰器对继承的影响。
 
-### 7.6 陷阱六：私有字段访问受限
+### 6.6 陷阱六：私有字段访问受限
 
 **问题**：装饰器无法直接访问私有字段（`#field`）。
 
@@ -1139,7 +1107,7 @@ class User {
 
 **解决**：Stage 3 装饰器通过 `context.access` 提供安全访问，但仍有限制。考虑将私有字段改为 `private`（编译期私有）而非 `#`（运行时私有）。
 
-### 7.7 陷阱七：Symbol.metadata 未定义
+### 6.7 陷阱七：Symbol.metadata 未定义
 
 **问题**：旧版 TypeScript 或未正确配置时，`Symbol.metadata` 未定义。
 
@@ -1153,7 +1121,7 @@ console.log(MyClass[Symbol.metadata]);  // undefined
 - 添加 polyfill：`Symbol.metadata ??= Symbol('Symbol.metadata');`
 - 检查 `target` 配置：`"target": "ES2022"` 或更高
 
-### 7.8 陷阱八：Legacy 与 Stage 3 混用
+### 6.8 陷阱八：Legacy 与 Stage 3 混用
 
 **问题**：同时启用 `experimentalDecorators` 与 Stage 3 装饰器会导致冲突。
 
@@ -1172,7 +1140,7 @@ console.log(MyClass[Symbol.metadata]);  // undefined
 - 新项目：移除 `experimentalDecorators`，使用 Stage 3
 - 旧项目：保持 `experimentalDecorators: true`，等待框架迁移后切换
 
-### 7.9 最佳实践
+### 6.9 最佳实践
 
 1. **新项目优先使用 Stage 3 装饰器**，避免 Legacy 装饰器的类型不安全
 2. **装饰器应保持单一职责**，复杂逻辑通过组合实现
@@ -1184,9 +1152,9 @@ console.log(MyClass[Symbol.metadata]);  // undefined
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目 tsconfig 配置
+### 7.1 项目 tsconfig 配置
 
 ```json
 // tsconfig.json - Stage 3 装饰器
@@ -1214,7 +1182,7 @@ console.log(MyClass[Symbol.metadata]);  // undefined
 }
 ```
 
-### 8.2 元数据 polyfill
+### 7.2 元数据 polyfill
 
 ```typescript
 // src/polyfills/metadata.ts
@@ -1226,7 +1194,7 @@ console.log(MyClass[Symbol.metadata]);  // undefined
 // import 'reflect-metadata';
 ```
 
-### 8.3 装饰器测试
+### 7.3 装饰器测试
 
 ```typescript
 // src/decorators/__tests__/logged.test.ts
@@ -1269,7 +1237,7 @@ describe('@logged', () => {
 });
 ```
 
-### 8.4 性能调优
+### 7.4 性能调优
 
 ```typescript
 // 装饰器在类定义时求值，影响启动时间
@@ -1301,7 +1269,7 @@ function memoizedDecorator(value: Function, context: ClassMethodDecoratorContext
 // 装饰器适用于初始化、配置、AOP 切面，不适用于高频调用
 ```
 
-### 8.5 调试技巧
+### 7.5 调试技巧
 
 ```typescript
 // 1. 打印装饰器上下文
@@ -1324,7 +1292,7 @@ console.log((MyService as any)[Symbol.metadata]);
 // tsconfig.json: { "sourceMap": true }
 ```
 
-### 8.6 构建工具集成
+### 7.6 构建工具集成
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1347,9 +1315,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：NestJS 依赖注入
+### 8.1 案例一：NestJS 依赖注入
 
 [NestJS](https://nestjs.com/) 是基于装饰器的 Node.js 框架，使用 `@Injectable`、`@Controller`、`@Module` 等装饰器实现 IoC：
 
@@ -1389,7 +1357,7 @@ NestJS 装饰器特点：
 - 通过 `@Module` 元数据组织依赖图
 - 控制器方法装饰器（`@Get`、`@Post`）注册路由
 
-### 9.2 案例二：TypeORM 实体映射
+### 8.2 案例二：TypeORM 实体映射
 
 [TypeORM](https://typeorm.io/) 使用装饰器将类映射到数据库表：
 
@@ -1431,7 +1399,7 @@ CREATE TABLE user (id INTEGER PRIMARY KEY, name VARCHAR, email VARCHAR UNIQUE);
 CREATE TABLE post (id INTEGER PRIMARY KEY, title VARCHAR, authorId INTEGER REFERENCES user(id));
 ```
 
-### 9.3 案例三：MikroORM 实体映射
+### 8.3 案例三：MikroORM 实体映射
 
 [MikroORM](https://mikro-orm.io/) 是另一个基于装饰器的 ORM，使用更现代的装饰器 API：
 
@@ -1451,7 +1419,7 @@ class User {
 }
 ```
 
-### 9.4 案例四：Angular 依赖注入
+### 8.4 案例四：Angular 依赖注入
 
 Angular 从 v20 开始支持 Stage 3 装饰器，取代旧的 `experimentalDecorators`：
 
@@ -1476,7 +1444,7 @@ class UserService {
 }
 ```
 
-### 9.5 案例五：tsoa OpenAPI 生成
+### 8.5 案例五：tsoa OpenAPI 生成
 
 [tsoa](https://github.com/lukeautry/tsoa) 使用装饰器从 TypeScript 类生成 OpenAPI 规范：
 
@@ -1498,7 +1466,7 @@ class UsersController extends Controller {
 // 自动生成 openapi.json
 ```
 
-### 9.6 案例六：typestack class-validator
+### 8.6 案例六：typestack class-validator
 
 [class-validator](https://github.com/typestack/class-validator) 使用装饰器声明校验规则：
 
@@ -1788,7 +1756,7 @@ console.log((DataService as any)[Symbol.metadata].measurements);
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 TC39 装饰器提案耗时 8 年才进入 Stage 3？请分析主要争议点。
 
@@ -1884,9 +1852,9 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文与提案
+### 10.1 学术论文与提案
 
 1. Ehrenberg, D., & Katz, Y. (2022). *Decorators Proposal (Stage 3)*. TC39. https://github.com/tc39/proposal-decorators
 
@@ -1896,7 +1864,7 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 4. Forman, I., & Danforth, S. (1999). *Putting Metaclasses to Work: A New Dimension in Object-Oriented Programming*. Addison-Wesley. ISBN: 978-0201433052.
 
-### 11.2 官方文档与规范
+### 10.2 官方文档与规范
 
 5. Microsoft. (2024). *TypeScript 5.0 Release Notes: Decorators*. https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/#decorators
 
@@ -1906,7 +1874,7 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 8. Microsoft. (2024). *TypeScript 5.2 Release Notes: Symbol.metadata*. https://devblogs.microsoft.com/typescript/announcing-typescript-5-2/
 
-### 11.3 社区资源
+### 10.3 社区资源
 
 9. Ehrenberg, D. (2022). *Decorators: Moving to Stage 3*. TC39 Presentation. https://docs.google.com/presentation/d/1s4gHH2b5NhFw8ONUWMg0B3faRj9jO9vH8XQ6q8W8g
 
@@ -1916,7 +1884,7 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 12. Angular. (2024). *Angular Documentation: Dependency Injection*. https://angular.io/guide/dependency-injection
 
-### 11.4 教材与课程
+### 10.4 教材与课程
 
 13. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley. ISBN: 978-0201633610.
 
@@ -1928,16 +1896,16 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 - **AOP（面向切面编程）**：装饰器是 AOP 在 TypeScript 中的实现方式，可与 Spring AOP、AspectJ 对比学习
 - **元编程**：`Proxy`、`Reflect` 与装饰器的关系，理解 JavaScript 元编程全景
 - **依赖注入模式**：Martin Fowler 的 *Inversion of Control* 文章，深入理解 IoC 容器设计
 - **Mixin 与 Trait**：装饰器与 Mixin 模式的对比，何时使用何种技术
 
-### 12.2 相关工具
+### 11.2 相关工具
 
 - **reflect-metadata**：Legacy 装饰器的元数据 polyfill
 - **tsyringe**：Microsoft 出品的轻量级 DI 容器
@@ -1945,20 +1913,20 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 - **class-validator**：基于装饰器的校验库
 - **class-transformer**：基于装饰器的对象转换库
 
-### 12.3 社区博客
+### 11.3 社区博客
 
 - **TypeScript Blog**：https://devblogs.microsoft.com/typescript/
 - **NestJS Blog**：https://nestjs.com/blog
 - **Daniel Ehrenberg's Blog**：https://thewayofcode.wordpress.com/
 - **Marius Schulz's Blog**：https://mariusschulz.com/
 
-### 12.4 视频课程
+### 11.4 视频课程
 
 - **NestJS - The Complete Guide**：Maximilian Schwarzmüller
 - **TypeScript: The Complete Developer's Guide**：Stephen Grider
 - **Angular - The Complete Guide**：Maximilian Schwarzmüller
 
-### 12.5 开源项目
+### 11.5 开源项目
 
 - **NestJS**：https://github.com/nestjs/nest
 - **TypeORM**：https://github.com/typeorm/typeorm
@@ -1967,7 +1935,7 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 - **tsoa**：https://github.com/lukeautry/tsoa
 - **class-validator**：https://github.com/typestack/class-validator
 
-### 12.6 相关 TC39 提案
+### 11.6 相关 TC39 提案
 
 - **Decorators (Stage 3)**：https://github.com/tc39/proposal-decorators
 - **Decorator Metadata (Stage 3)**：https://github.com/tc39/proposal-decorator-metadata
@@ -2396,7 +2364,7 @@ class S { private _v = 1; @Log get v() { return this._v } }
 
 ---
 
-## 5.0 新版装饰器
+## 4.0 新版装饰器
 
 **基本写法：Stage 3 装饰器**
 `function <装饰器>(<target>, <context>) { }`

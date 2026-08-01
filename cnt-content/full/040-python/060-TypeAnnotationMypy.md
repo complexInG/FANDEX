@@ -19,6 +19,7 @@ prerequisites:
   - python/面向对象编程
   - python/描述符
 ---
+
 # 类型注解与mypy
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -33,77 +34,9 @@ PEP 484（Type Hints，2014）奠定了类型注解的标准语法与语义，�
 
 本篇文档将系统论述 Python 类型注解的语法、语义、类型系统理论、mypy 工程实践、与第三方库（Pydantic、TypedDict、dataclasses）的协作、性能分析、陷阱与反模式、真实案例研究等。目标是让读者从理论、语法、工具、工程四个维度全面掌握 Python 类型系统。
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本篇采用 Bloom 分类法按认知层级组织学习目标。
-
-### 1.1 记忆层（Remember）
-
-学习者能够准确复述以下事实性知识：
-
-- Python 类型注解由 PEP 484 引入，标准语法为 `def f(x: int) -> str:`。
-- `typing` 模块提供 `List`、`Dict`、`Tuple`、`Set`、`Optional`、`Union`、`Callable`、`TypeVar`、`Generic`、`Protocol`、`Literal`、`TypedDict`、`Final`、`ClassVar`、`NewType`、`Any`、`Never`、`NoReturn` 等核心类型。
-- Python 3.9+ 支持内置泛型（如 `list[int]`、`dict[str, int]`），无需导入 `typing.List`。
-- Python 3.10+ 支持 `X | Y` 联合类型语法，等价于 `Union[X, Y]`。
-- Python 3.12+ 引入 PEP 695 类型参数语法，支持 `def f[T](x: T) -> T:` 与 `class C[T]:`。
-- mypy 是 PEP 484 的参考实现，由 Jukka Lehtosalo 开发。
-- 类型注解在运行时不强制执行，仅由静态检查工具（mypy、pyright）验证。
-- `from __future__ import annotations` 使注解延迟求值（PEP 563）。
-
-### 1.2 理解层（Understand）
-
-学习者能够用自己的语言解释以下概念：
-
-- 渐进式类型系统（Gradual Typing）的核心思想：允许部分代码有类型，部分代码无类型。
-- 子类型（Subtyping）与 номинальное（Nominal）子类型、结构化（Structural）子类型的区别。
-- 协变（Covariance）、逆变（Contravariance）、不变（Invariance）的形式化定义。
-- `Any` 与 `object` 的区别：`Any` 关闭类型检查，`object` 接受任意值但限制操作。
-- `TypeVar`、`Generic`、`Protocol` 三者的关系与适用场景。
-- `mypy` 的类型推断算法：局部推断、双向推断（bidirectional inference）。
-- `@overload` 装饰器的作用：为同一函数提供多个类型签名。
-
-### 1.3 应用层（Apply）
-
-学习者能够在真实工程场景中：
-
-- 为现有 Python 项目添加类型注解，并通过 mypy 严格模式检查。
-- 使用 `TypeVar` 与 `Generic` 实现类型安全的泛型容器与函数。
-- 使用 `Protocol` 实现"鸭子类型"的静态化，避免继承耦合。
-- 使用 `TypedDict` 为字典数据结构添加类型约束。
-- 使用 `Literal` 类型约束字符串或字面值，实现字面值类型安全。
-- 配置 mypy（`mypy.ini` 或 `pyproject.toml`），适配大型项目的渐进式迁移。
-
-### 1.4 分析层（Analyze）
-
-学习者能够剖析：
-
-- 同一段代码在 `Any`、`object`、`Protocol` 三种类型约束下的安全性差异。
-- mypy 的类型推断失败案例，分析根因并给出修复方案。
-- 类型注解对运行时性能的影响（注解求值开销、`from __future__ import annotations` 的优化）。
-- Pydantic v2 如何在类型注解基础上构建运行时校验系统。
-- TypeScript 与 Python 类型系统的异同：结构化 vs 名义、严格模式、推断能力。
-
-### 1.5 评价层（Evaluate）
-
-学习者能够评价：
-
-- 在给定项目中，是否值得引入类型注解？引入到什么程度？
-- mypy、pyright、pytype、pyre 四个工具的选型权衡。
-- 一段类型注解的精度与可读性是否平衡？是否过度使用复杂类型？
-- `Any` 的使用是否合理？是否有更精确的替代方案？
-
-### 1.6 创造层（Create）
-
-学习者能够：
-
-- 设计一套企业级类型注解规范，覆盖命名、精度、Protocol 使用、TypedDict 使用等。
-- 构建自定义 mypy 插件，实现业务特定的类型检查规则。
-- 基于类型注解实现运行时校验库（类似 Pydantic）。
-- 设计类型安全的领域模型，使用 `Literal`、`TypedDict`、`Protocol` 表达业务约束。
-
-## 2. 历史动机与背景
-
-### 2.1 动态类型的双刃剑
+### 1.1 动态类型的双刃剑
 
 Python 作为动态类型语言，其灵活性是早期快速发展的关键。但随项目规模扩大，动态类型的代价逐渐显现：
 
@@ -112,7 +45,7 @@ Python 作为动态类型语言，其灵活性是早期快速发展的关键。�
 3. **IDE 智能补全受限**：IDE 难以提供精确的属性与方法补全。
 4. **大型项目维护成本高**：Dropbox、Google 等公司在百万行级 Python 代码中遇到严重的维护问题。
 
-### 2.2 渐进式类型系统的提出
+### 1.2 渐进式类型系统的提出
 
 Jeremy Siek 与 Walid Taha 在 2006 年的论文"Gradual Typing for Functional Languages"中首次提出渐进式类型系统的概念。其核心思想是：
 
@@ -122,7 +55,7 @@ Jeremy Siek 与 Walid Taha 在 2006 年的论文"Gradual Typing for Functional L
 
 这一思想完美契合 Python 的实际情况：既有大量遗留无类型代码，又希望新代码获得类型安全。PEP 484 借鉴了渐进式类型系统理论，定义了 Python 类型注解的标准。
 
-### 2.3 PEP 演进时间线
+### 1.3 PEP 演进时间线
 
 | PEP | 年份 | 标题 | 核心内容 |
 |-----|------|------|----------|
@@ -149,13 +82,13 @@ Jeremy Siek 与 Walid Taha 在 2006 年的论文"Gradual Typing for Functional L
 | PEP 698 | 2024 | `@override` | 覆盖检查装饰器 |
 | PEP 702 | 2024 | `@deprecated` | 弃用标记装饰器 |
 
-### 2.4 mypy 的诞生与演进
+### 1.4 mypy 的诞生与演进
 
 mypy 由 Jukka Lehtosalo 在剑桥大学攻读博士期间开发，最初是一种带类型推断的 Python 方言。2012 年起，mypy 重新定位为标准 Python 的静态类型检查器，成为 PEP 484 的参考实现。
 
 Dropbox 是 mypy 的早期主要赞助商，其 Python 代码库约 400 万行，mypy 帮助 Dropbox 显著降低了运行时错误率。随后 Google、Microsoft、Meta 等公司均在其 Python 项目中采用类型注解。
 
-### 2.5 类型检查工具生态
+### 1.5 类型检查工具生态
 
 | 工具 | 开发者 | 实现语言 | 特点 |
 |------|--------|----------|------|
@@ -165,9 +98,9 @@ Dropbox 是 mypy 的早期主要赞助商，其 Python 代码库约 400 万行�
 | pyre | Meta | OCaml | 性能极快，支持增量检查 |
 | pylance | Microsoft | TypeScript | pyright 的 LSP 封装 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类型系统的形式化定义
+### 2.1 类型系统的形式化定义
 
 类型系统（Type System）是一个由类型规则组成的系统，用于在编译时或运行时检查程序的类型正确性。形式化定义为：
 
@@ -181,7 +114,7 @@ $$
 - $\text{Rules}$ 是类型规则（typing rules）。
 - $\vdash$ 是类型判断关系，$\Gamma \vdash e : T$ 表示在环境 $\Gamma$ 下，表达式 $e$ 的类型为 $T$。
 
-### 3.2 子类型关系的形式化定义
+### 2.2 子类型关系的形式化定义
 
 子类型关系 $\sqsubseteq$ 满足以下性质：
 
@@ -194,7 +127,7 @@ $$
 \frac{\Gamma \vdash e : T_1 \quad T_1 \sqsubseteq T_2}{\Gamma \vdash e : T_2} \text{(Subsumption)}
 $$
 
-### 3.3 名义子类型 vs 结构子类型
+### 2.3 名义子类型 vs 结构子类型
 
 **名义子类型（Nominal Subtyping）**：子类型关系由显式声明决定。
 
@@ -212,7 +145,7 @@ $$
 
 Python 通过 `Protocol`（PEP 544）支持结构子类型。
 
-### 3.4 协变、逆变与不变
+### 2.4 协变、逆变与不变
 
 设 $F$ 是类型构造子（如 `List`、`Callable`）。
 
@@ -241,7 +174,7 @@ Python 中：
 - `TypeVar('T', covariant=True)` 声明协变 TypeVar。
 - `TypeVar('T', contravariant=True)` 声明逆变 TypeVar。
 
-### 3.5 渐进式类型系统的形式化
+### 2.5 渐进式类型系统的形式化
 
 渐进式类型系统引入 `Any` 类型，与任意类型双向兼容：
 
@@ -253,9 +186,9 @@ $$
 
 `object` 与 `Any` 的区别：`object` 是所有类型的顶层超类型（top type），但接受 `object` 类型的变量后，只能调用 `object` 自身的方法（如 `__str__`、`__eq__`）。`Any` 则允许任意操作，不进行类型检查。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 mypy 的类型推断算法
+### 3.1 mypy 的类型推断算法
 
 mypy 使用局部类型推断（local type inference）与双向类型检查（bidirectional type checking）相结合的策略。
 
@@ -280,7 +213,7 @@ def f(x: int) -> int:
 # 期望返回 int，mypy 检查 return x 的类型是否为 int
 ```
 
-### 4.2 协变与逆变的推导
+### 3.2 协变与逆变的推导
 
 为什么 `List[T]` 是不变的？考虑以下反例：
 
@@ -319,7 +252,7 @@ callback(animal)  # 实际调用 handle_dog(animal)，但 animal 可能不是 Do
 
 因此函数参数必须逆变。
 
-### 4.3 Protocol 的结构子类型推导
+### 3.3 Protocol 的结构子类型推导
 
 设 `Protocol P` 定义了方法 `m`：
 
@@ -336,7 +269,7 @@ $$
 
 这是结构子类型的核心。Protocol 让 Python 在保留鸭子类型灵活性的同时，获得了静态类型检查的能力。
 
-### 4.4 类型检查的时间复杂度
+### 3.4 类型检查的时间复杂度
 
 mypy 的类型检查时间复杂度与代码规模、注解密度、类型复杂度相关。一般而言：
 
@@ -346,7 +279,7 @@ $$
 
 其中 $n$ 是代码行数，$m$ 是平均类型复杂度。对于大型项目（百万行），mypy 检查可能耗时数分钟。mypy 提供增量检查（incremental checking）与守护进程模式（daemon mode）以加速。
 
-### 4.5 `from __future__ import annotations` 的语义
+### 3.5 `from __future__ import annotations` 的语义
 
 PEP 563 引入注解延迟求值。默认情况下，注解在模块加载时求值，可能导致前向引用问题：
 
@@ -367,11 +300,11 @@ class Node:
 
 这简化了前向引用，但也带来运行时反射的复杂性（`typing.get_type_hints()` 需重新求值）。Python 3.14 计划将此行为设为默认。
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节提供多个完整可运行的代码示例，覆盖类型注解的核心用法与典型工程场景。
 
-### 5.1 基础类型注解
+### 4.1 基础类型注解
 
 ```python
 # 基础类型注解示例：函数参数、返回值、变量
@@ -431,7 +364,7 @@ def process_new(value: int | str | float) -> str:
     return str(value)
 ```
 
-### 5.2 TypeVar 与泛型
+### 4.2 TypeVar 与泛型
 
 ```python
 # TypeVar 与泛型示例：实现类型安全的容器
@@ -520,7 +453,7 @@ def concat(a: AnyStr, b: AnyStr) -> AnyStr:
     return a + b
 ```
 
-### 5.3 Protocol 结构化类型
+### 4.3 Protocol 结构化类型
 
 ```python
 # Protocol 示例：结构化子类型（鸭子类型的静态化）
@@ -593,7 +526,7 @@ print(isinstance(Circle(1.0), Drawable))  # True
 print(isinstance(TextLabel('hi'), Drawable))  # False
 ```
 
-### 5.4 TypedDict 字典类型
+### 4.4 TypedDict 字典类型
 
 ```python
 # TypedDict 示例：为字典添加类型约束
@@ -683,7 +616,7 @@ def create_user(data: UserInfo) -> UserWithAddress:
     }
 ```
 
-### 5.5 Literal 字面值类型
+### 4.5 Literal 字面值类型
 
 ```python
 # Literal 类型示例：约束字符串或字面值
@@ -759,7 +692,7 @@ host: str = get_config('host')
 debug: bool = get_config('debug')
 ```
 
-### 5.6 Callable 类型
+### 4.6 Callable 类型
 
 ```python
 # Callable 类型示例：函数作为参数
@@ -826,7 +759,7 @@ print(greet('Alice', 2))
 # mypy 知道 greet('Alice', 2) 返回 str，参数是 (name: str, times: int = 1)
 ```
 
-### 5.7 ClassVar 与 Final
+### 4.7 ClassVar 与 Final
 
 ```python
 # ClassVar 与 Final 示例
@@ -879,7 +812,7 @@ class Base:
 #         print('child method')
 ```
 
-### 5.8 NewType
+### 4.8 NewType
 
 ```python
 # NewType 示例：创建语义化的类型别名
@@ -923,7 +856,7 @@ user = create_user(
 print(user)
 ```
 
-### 5.9 overload 函数重载
+### 4.9 overload 函数重载
 
 ```python
 # overload 示例：函数重载
@@ -989,7 +922,7 @@ single: dict | None = query('SELECT * FROM users LIMIT 1', fetch_one=True)
 multi: list[dict] = query('SELECT * FROM users')
 ```
 
-### 5.10 TypeGuard 与 TypeIs
+### 4.10 TypeGuard 与 TypeIs
 
 ```python
 # TypeGuard 与 TypeIs 示例：用户定义类型守卫
@@ -1041,7 +974,7 @@ def classify(x: object) -> str:
         return f'其他: {x}'
 ```
 
-### 5.11 dataclass 与类型注解
+### 4.11 dataclass 与类型注解
 
 ```python
 # dataclass 与类型注解示例
@@ -1102,7 +1035,7 @@ class SlottedUser:
     name: str
 ```
 
-### 5.12 mypy 配置
+### 4.12 mypy 配置
 
 ```python
 # mypy 配置示例（pyproject.toml）
@@ -1162,7 +1095,7 @@ disallow_untyped_defs = false
 """
 ```
 
-### 5.13 渐进式迁移策略
+### 4.13 渐进式迁移策略
 
 ```python
 # 渐进式迁移示例：为遗留代码添加类型注解
@@ -1226,7 +1159,7 @@ def unsafe_cast(data: Any) -> dict[str, int]:
     return cast(dict[str, int], data)
 ```
 
-### 5.14 自定义 mypy 插件
+### 4.14 自定义 mypy 插件
 
 ```python
 # 自定义 mypy 插件示例：扩展 mypy 的类型检查能力
@@ -1269,9 +1202,9 @@ plugins = my_mypy_plugin.py
 """
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Python 类型系统 vs TypeScript 类型系统
+### 5.1 Python 类型系统 vs TypeScript 类型系统
 
 | 维度 | Python 类型注解 | TypeScript |
 |------|-----------------|------------|
@@ -1291,7 +1224,7 @@ plugins = my_mypy_plugin.py
 
 Python 与 TypeScript 都采用渐进式类型系统，但 TypeScript 的类型系统表达能力更强（条件类型、映射类型、模板字面量类型等）。Python 的优势是与运行时对象模型深度整合，且 `Protocol` 支持结构子类型，灵活性高。TypeScript 的优势在前端生态统治地位与极强的类型推断能力。
 
-### 6.2 mypy vs pyright vs pytype vs pyre
+### 5.2 mypy vs pyright vs pytype vs pyre
 
 | 维度 | mypy | pyright | pytype | pyre |
 |------|------|---------|--------|------|
@@ -1311,7 +1244,7 @@ Python 与 TypeScript 都采用渐进式类型系统，但 TypeScript 的类型�
 - pytype 类型推断能力极强，能为无类型注解的代码推断类型，适合遗留代码迁移。
 - pyre 性能极快，但生态较小，主要在 Meta 内部使用。
 
-### 6.3 Pydantic vs dataclasses vs attrs vs TypedDict
+### 5.3 Pydantic vs dataclasses vs attrs vs TypedDict
 
 | 维度 | Pydantic | dataclasses | attrs | TypedDict |
 |------|----------|-------------|-------|-----------|
@@ -1329,9 +1262,9 @@ Python 与 TypeScript 都采用渐进式类型系统，但 TypeScript 的类型�
 - attrs 比 dataclasses 更早，功能更丰富，但社区热度下降。
 - TypedDict 适合需要类型约束的字典数据，如 JSON 解析。
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：滥用 Any
+### 6.1 陷阱一：滥用 Any
 
 **问题描述**：开发者为图方便大量使用 `Any`，使类型检查形同虚设。
 
@@ -1359,7 +1292,7 @@ def process(data: HasKey) -> str:
     return data['key']  # mypy 检查 data 支持 [] 操作
 ```
 
-### 7.2 陷阱二：可变默认值
+### 6.2 陷阱二：可变默认值
 
 **问题描述**：函数参数使用可变默认值（如 `def f(x=[])`），多次调用共享同一对象。
 
@@ -1389,7 +1322,7 @@ def add_item(item: str, items: Optional[list[str]] = None) -> list[str]:
     return items
 ```
 
-### 7.3 陷阱三：误用 Optional
+### 6.3 陷阱三：误用 Optional
 
 **问题描述**：`Optional[T]` 等价于 `T | None`，但开发者常误以为 `Optional[T]` 表示"可选参数"。
 
@@ -1412,7 +1345,7 @@ def greet(name: str | None = None) -> str:
     return f'Hello, {name}!'
 ```
 
-### 7.4 陷阱四：忽略协变与逆变
+### 6.4 陷阱四：忽略协变与逆变
 
 **问题描述**：误以为 `list[Dog]` 是 `list[Animal]` 的子类型。
 
@@ -1446,7 +1379,7 @@ def count_animals(animals: Sequence[Animal]) -> int:
 count_animals(dogs)  # 正确
 ```
 
-### 7.5 陷阱五：TypeVar 作用域错误
+### 6.5 陷阱五：TypeVar 作用域错误
 
 **问题描述**：在函数内部定义 TypeVar，导致类型推断失败。
 
@@ -1469,7 +1402,7 @@ def first(items: list[T]) -> T:
     return items[0]
 ```
 
-### 7.6 陷阱六：前向引用
+### 6.6 陷阱六：前向引用
 
 **问题描述**：在类定义中引用尚未定义的类型。
 
@@ -1490,7 +1423,7 @@ class Node:
     def set_next(self, next: Node) -> None: ...  # 正确
 ```
 
-### 7.7 陷阱七：运行时类型检查缺失
+### 6.7 陷阱七：运行时类型检查缺失
 
 **问题描述**：类型注解仅在静态检查时生效，运行时不强制。外部输入仍需运行时校验。
 
@@ -1525,7 +1458,7 @@ raw = json.loads('{"a": "not an int"}')
 # Data(**raw)  # Pydantic 在运行时校验，抛出 ValidationError
 ```
 
-### 7.8 陷阱八：过度复杂的类型
+### 6.8 陷阱八：过度复杂的类型
 
 **问题描述**：为追求类型精确，写出难以理解的复杂类型。
 
@@ -1555,7 +1488,7 @@ def simple_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
     ...
 ```
 
-### 7.9 陷阱九：mypy 配置不当
+### 6.9 陷阱九：mypy 配置不当
 
 **问题描述**：mypy 配置过严或过松，导致开发体验差或类型检查形同虚设。
 
@@ -1564,7 +1497,7 @@ def simple_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
 - 遗留项目迁移：先关闭严格选项，逐步启用。
 - 测试代码：放宽 `disallow_untyped_defs`。
 
-### 7.10 陷阱十：注解求值开销
+### 6.10 陷阱十：注解求值开销
 
 **问题描述**：复杂的注解在模块加载时求值，影响启动性能。
 
@@ -1578,9 +1511,9 @@ def process(data: list[dict[str, int]]) -> int:
     return sum(sum(d.values()) for d in data)
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 类型注解规范
+### 7.1 类型注解规范
 
 **函数签名**：所有公开函数必须有完整类型注解。
 
@@ -1617,7 +1550,7 @@ def process(items: list) -> dict:
     ...
 ```
 
-### 8.2 mypy 工程配置
+### 7.2 mypy 工程配置
 
 ```toml
 # pyproject.toml
@@ -1649,7 +1582,7 @@ disallow_untyped_defs = false
 disallow_untyped_calls = false
 ```
 
-### 8.3 CI/CD 集成
+### 7.3 CI/CD 集成
 
 ```yaml
 # .github/workflows/typecheck.yml
@@ -1669,7 +1602,7 @@ jobs:
       - run: mypy --strict src/
 ```
 
-### 8.4 性能优化
+### 7.4 性能优化
 
 **策略一：使用 `from __future__ import annotations`**
 
@@ -1691,7 +1624,7 @@ dmypy run -- src/
 
 `dmypy` 启动守护进程，避免每次启动 mypy 的开销，增量检查速度提升 10 倍以上。
 
-### 8.5 与第三方库协作
+### 7.5 与第三方库协作
 
 **Pydantic**：类型注解 + 运行时校验。
 
@@ -1734,9 +1667,9 @@ def get_user(user_id: int) -> dict:
     return {'id': user_id, 'name': 'Alice'}
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Dropbox 的类型注解迁移
+### 8.1 案例一：Dropbox 的类型注解迁移
 
 Dropbox 是 mypy 的主要赞助商，其 Python 代码库约 400 万行。Dropbox 在 2015-2019 年间完成了全量类型注解迁移：
 
@@ -1755,7 +1688,7 @@ Dropbox 是 mypy 的主要赞助商，其 Python 代码库约 400 万行。Dropb
 - mypy 配置需根据团队成熟度调整。
 - TypeGuard 与 Protocol 是处理复杂场景的利器。
 
-### 9.2 案例二：FastAPI 的类型驱动设计
+### 8.2 案例二：FastAPI 的类型驱动设计
 
 FastAPI 是基于 Starlette 与 Pydantic 的现代 Web 框架，其设计哲学是"类型驱动"：
 
@@ -1784,7 +1717,7 @@ def create_item(item: Item) -> dict:
 3. OpenAPI 文档自动从类型注解生成。
 4. Pydantic 提供运行时校验，mypy 提供静态检查。
 
-### 9.3 案例三：typeshed 的 stub 生态
+### 8.3 案例三：typeshed 的 stub 生态
 
 typeshed 是 Python 类型 stub 文件的中央仓库，包含标准库与第三方库的 stub：
 
@@ -1794,7 +1727,7 @@ typeshed 是 Python 类型 stub 文件的中央仓库，包含标准库与第三
 
 typeshed 是 Python 类型生态的基石，mypy、pyright 等工具均依赖 typeshed。
 
-### 9.4 案例四：SQLAlchemy 2.0 的类型系统
+### 8.4 案例四：SQLAlchemy 2.0 的类型系统
 
 SQLAlchemy 2.0 引入了完整的类型系统：
 
@@ -1819,7 +1752,7 @@ class User(Base):
 - `mapped_column` 关联数据库列定义。
 - mypy 能检查字段类型与查询结果类型。
 
-### 9.5 案例五：Pydantic v2 的 Rust 核心
+### 8.5 案例五：Pydantic v2 的 Rust 核心
 
 Pydantic v2 用 Rust 重写核心，性能提升 5-50 倍：
 
@@ -1844,7 +1777,7 @@ user = User(id=1, name='Alice', email='alice@example.com')
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：为以下函数添加类型注解。
 
@@ -1872,7 +1805,7 @@ def calculate_total(prices, discount=0):
 - `object` 是顶层类型，接受任意值但限制操作（只能调用 object 方法）。
 - `Any` 是逃生舱，`object` 是安全约束。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：实现一个类型安全的 `first` 函数，返回列表第一个元素，列表为空时抛出异常。
 
@@ -1894,7 +1827,7 @@ def calculate_total(prices, discount=0):
 - `id: Required[int]`、`name: Required[str]`。
 - `email: NotRequired[str]`、`age: NotRequired[int]`。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：实现一个类型安全的 `memoize` 装饰器，使用 `ParamSpec` 保留函数签名。
 
@@ -1926,7 +1859,7 @@ def calculate_total(prices, discount=0):
 - 字典数据使用 `TypedDict`。
 - `Any` 仅用于过渡期，必须有 `# type: ignore` 与注释。
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Lehtosalo, J. 2014. PEP 484: Type Hints. Python Enhancement Proposals. https://peps.python.org/pep-0484/
 
@@ -1988,9 +1921,9 @@ def calculate_total(prices, discount=0):
 
 [30] SQLAlchemy 2.0 documentation. 2024. https://docs.sqlalchemy.org/en/20/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Python typing module: https://docs.python.org/3/library/typing.html
 - PEP 484: Type Hints: https://peps.python.org/pep-0484/
@@ -2001,13 +1934,13 @@ def calculate_total(prices, discount=0):
 - PEP 604: Union Types: https://peps.python.org/pep-0604/
 - PEP 695: Type Parameter Syntax: https://peps.python.org/pep-0695/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Benjamin C. Pierce. Types and Programming Languages. MIT Press, 2002.（类型理论经典教材）
 - Luciano Ramalho. Fluent Python, 2nd Edition. O'Reilly Media, 2022.（第 8 章深入类型注解）
 - David Beazley, Brian K. Jones. Python Cookbook, 3rd Edition. O'Reilly Media, 2013.
 
-### 12.3 前沿论文与演讲
+### 11.3 前沿论文与演讲
 
 - Jeremy Siek, Walid Taha. Gradual Typing for Functional Languages. SFPW 2006.
 - Jeremy Siek, Walid Taha. Gradual Typing for Objects. ECOOP 2007.
@@ -2015,7 +1948,7 @@ def calculate_total(prices, discount=0):
 - Greg Price. Typeshed: Type Stubs for Python. PyCon 2017.
 - Samuel Colvin. Pydantic v2: Rust-Powered Validation. PyCon 2023.
 
-### 12.4 开源项目源码
+### 11.4 开源项目源码
 
 - mypy: https://github.com/python/mypy
 - pyright: https://github.com/microsoft/pyright
@@ -2025,7 +1958,7 @@ def calculate_total(prices, discount=0):
 - Pydantic: https://github.com/pydantic/pydantic
 - FastAPI: https://github.com/tiangolo/fastapi
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - 类型推断算法：Hindley-Milner 类型系统。
 - 渐进式类型系统理论：Siek & Taha 的系列论文。

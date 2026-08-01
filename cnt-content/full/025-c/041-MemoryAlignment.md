@@ -16,6 +16,7 @@ prerequisites:
   - c/概述
 ---
 
+
 # 内存对齐（Memory Alignment）
 
 > "The cost of misalignment is paid not in correctness, but in cycles, cache misses, and bus errors."
@@ -29,74 +30,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy，Revised 2001）描述完成本文学习后学习者应当具备的认知层级。Bloom 分类法将认知目标从低阶到高阶划分为六个层次：remember（记忆）、understand（理解）、apply（应用）、analyze（分析）、evaluate（评价）、create（创造）。
-
-### 1.1 Remember（记忆）
-
-完成本节后，学习者应当能够准确回忆以下事实性知识：
-
-- 对齐值（alignment）的定义：某类型对象地址必须满足的最小地址间隔倍数。
-- 基本标量类型的典型对齐值：`char` 为 1，`short` 为 2，`int` 为 4，`long long` 与 `double` 在 64 位 LP64/LLP64 模型下为 8。
-- ISO/IEC 9899 标准要求 `malloc` 返回的指针必须对齐到足以容纳任何标准标量类型（C11 起为 `max_align_t` 所规定的对齐值）。
-- `_Alignof` 与 `alignof` 的语法与语义等价性（后者由 `<stdalign.h>` 提供）。
-- `_Alignas` 与 `alignas` 的语法与语义等价性。
-- `#pragma pack`、`__attribute__((packed))`、`__attribute__((aligned(N)))` 三种控制对齐的方式分属不同抽象层级。
-
-### 1.2 Understand（理解）
-
-学习者应当能够解释：
-
-- 为什么 x86/x86_64 架构允许未对齐访问但性能下降，而 ARMv7 之前的部分架构会触发 `SIGBUS` 信号。
-- 编译器在 struct 布局时插入填充字节（padding）的两条规则：成员对齐规则、整体尾部对齐规则。
-- 数组布局为何要求 `sizeof(struct S)` 必须是其成员最大对齐值的整数倍（保证 `S arr[N]` 中 `arr[i]` 全部满足成员对齐）。
-- 对齐与原子性的关系：C11 `<stdatomic.h>` 中原子操作要求操作数地址满足对应类型的对齐要求，否则行为未定义（undefined behavior, UB）。
-- 缓存行（通常 64 字节）对齐对多核并发性能的影响，特别是伪共享（false sharing）现象。
-- ABI（如 System V AMD64 ABI）规定的 struct 内存布局算法如何跨编译器统一二进制兼容性。
-
-### 1.3 Apply（应用）
-
-学习者应当能够：
-
-- 给定任意 struct 定义，手工计算其 `sizeof` 与每个成员的 `offsetof`。
-- 使用 `alignas`、`#pragma pack`、`__attribute__((packed))` 控制特定 struct 的内存布局。
-- 在网络协议头、磁盘格式、设备 MMIO 寄存器等场景选择合适的对齐策略。
-- 使用 `posix_memalign`、`aligned_alloc`（C11）、`_aligned_malloc`（MSVC）分配对齐内存。
-- 使用 `__builtin_assume_aligned` 提示编译器进行向量化优化。
-
-### 1.4 Analyze（分析）
-
-学习者应当能够：
-
-- 分析给定二进制输出中 struct 布局是否符合目标平台 ABI 规范。
-- 通过 `pahole`、`clang -Wpadded`、`gcc -Wpadded` 等工具诊断 struct 布局中的填充浪费。
-- 在多核并发代码中识别伪共享（false sharing）瓶颈，并通过缓存行对齐消除之。
-- 在反汇编输出中识别未对齐访问产生的多条指令序列（如 x86 上的 `movdqu` vs `movdqa`）。
-
-### 1.5 Evaluate（评价）
-
-学习者应当能够评估：
-
-- 在特定硬件平台（x86_64、ARMv8-A、RISC-V、LoongArch）上，未对齐访问的相对性能损失（cycles/byte 模型）。
-- AoS（Array of Structures）与 SoA（Structure of Arrays）数据布局在特定访问模式下的缓存效率对比。
-- `#pragma pack(1)` 节省的空间与可能产生的未对齐访问性能损失之间的权衡。
-- 对齐分配器（aligned allocator）相对 `malloc` 的额外内存开销是否可接受。
-
-### 1.6 Create（创造）
-
-学习者应当能够：
-
-- 设计跨平台、跨编译器、跨 ABI 的二进制兼容 struct 布局方案。
-- 实现一个支持任意对齐要求的自定义内存分配器（aligned allocator）。
-- 在嵌入式裸机环境中通过链接器脚本（linker script）配合 `__attribute__((section))` 与 `alignas` 实现对设备寄存器的精确内存映射。
-- 设计无锁（lock-free）数据结构时正确处理缓存行对齐以避免伪共享。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 硬件根源：总线、字大小与跨周期访问
+### 1.1 硬件根源：总线、字大小与跨周期访问
 
 内存对齐的根源可追溯至 1960 年代的大型机（mainframe）总线设计。早期 IBM System/360（1964）采用 32 位字（word）边界，存储控制器一次总线传输（bus cycle）只能读写一个完整字，跨字边界的访问需要两次总线传输并拼接。这一硬件约束直接催生了"对齐访问"概念：若数据物理地址是其大小的整数倍，则单次总线周期即可完成访问。
 
@@ -104,7 +40,7 @@ DEC PDP-11（1970）系列将此约束显式化：16 位字必须从偶地址开
 
 Dennis Ritchie 在 1972 年设计 C 语言时，必须同时为 PDP-11 的字节寻址（byte-addressable）模型与字对齐访问约束服务。C 语言的"接近硬件"（close to the metal）哲学使得编译器必须暴露对齐约束，而非像 Lisp 或 BCPL 那样在虚拟机层屏蔽之。这奠定了 C struct 布局算法的硬件根基。
 
-### 2.2 C 标准演化中的对齐支持
+### 1.2 C 标准演化中的对齐支持
 
 C 语言标准对对齐的支持经历了从隐式约定到显式语言特性的渐进过程：
 
@@ -169,7 +105,7 @@ C23 进一步强化对齐支持：
 - 跨语言 ABI（C/C++/Rust）对齐约定统一的可能性。
 - 显式"对齐值推导"机制，使函数可声明参数对齐要求。
 
-### 2.3 编译器实现演化
+### 1.3 编译器实现演化
 
 各主流编译器对对齐支持的历史：
 
@@ -183,7 +119,7 @@ C23 进一步强化对齐支持：
 | MSVC | 19.29（2020） | 完整支持 C11/C17 `<stdatomic.h>` 与对齐原语 |
 | ICC | 13.0（2012） | 兼容 GCC 与 MSVC 双套扩展 |
 
-### 2.4 ABI 规范的角色
+### 1.4 ABI 规范的角色
 
 平台 ABI（Application Binary Interface）规范是编译器对齐行为的最终仲裁者。以下 ABI 文档详细规定了 struct 布局算法：
 
@@ -199,9 +135,9 @@ ABI 规范的存在使得由不同编译器编译的 `.o` 文件可链接，由�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ISO/IEC 9899 标准定义
+### 2.1 ISO/IEC 9899 标准定义
 
 ISO/IEC 9899:2024（C23）§6.2.8 对"对齐"作如下定义：
 
@@ -217,7 +153,7 @@ $$
 
 即 $\text{alignof}(T) \mid \text{addr}(o)$（$\text{alignof}(T)$ 整除 $\text{addr}(o)$）。
 
-### 3.2 对齐值的偏序关系
+### 2.2 对齐值的偏序关系
 
 C23 §6.2.8 进一步规定：对齐值构成偏序关系（partial order），若 $A_1 \mid A_2$（$A_1$ 整除 $A_2$），则称 $A_2$ 比 $A_1$ "更严格"（stricter），$A_1$ 比 $A_2$ "更弱"（weaker）。即：
 
@@ -227,7 +163,7 @@ $$
 
  weakest 对齐为 1（任何地址都满足），stricter 对齐为更大的 2 的幂（如 16、32、64）。
 
-### 3.3 struct 对齐规则的形式化
+### 2.3 struct 对齐规则的形式化
 
 设 `struct S` 有成员 $m_1, m_2, \ldots, m_n$，各成员的对齐值分别为 $a_1, a_2, \ldots, a_n$，大小分别为 $s_1, s_2, \ldots, s_n$。System V ABI / Itanium C++ ABI 定义如下布局算法：
 
@@ -260,7 +196,7 @@ $$
 \text{sizeof}(S) = \left\lceil \frac{\text{offset}(m_n) + s_n}{A_S} \right\rceil \times A_S
 $$
 
-### 3.4 union 对齐规则
+### 2.4 union 对齐规则
 
 `union U` 的成员共享同一地址（偏移量均为 0），其总大小为最大成员的大小（向上取整到整体对齐值），整体对齐值为所有成员对齐值的最大值：
 
@@ -272,7 +208,7 @@ $$
 A_U = \max_{k=1}^{n} a_k
 $$
 
-### 3.5 数组对齐规则
+### 2.5 数组对齐规则
 
 数组 `T arr[N]` 的对齐值与元素类型 $T$ 相同：
 
@@ -286,14 +222,14 @@ $$
 
 数组元素之间**无填充**，这是 C 标准的硬性要求（C23 §6.5.3.4）。
 
-### 3.6 位域（bit-field）对齐
+### 2.6 位域（bit-field）对齐
 
 位域的对齐规则在 C 标准中是实现定义（implementation-defined），但 System V ABI 给出了精确定义：
 
 - 位域的"存储单元"（storage unit）是其声明类型的对齐单位。如 `int x : 5` 以 `int`（4 字节）为存储单元。
 - 跨存储单元边界的位域是否压缩由实现定义。GCC/Clang 默认不跨边界，可通过 `__attribute__((packed))` 强制跨边界。
 
-### 3.7 未定义行为（UB）
+### 2.7 未定义行为（UB）
 
 C23 §6.2.8 明确以下为未定义行为：
 
@@ -308,9 +244,9 @@ C23 §6.2.8 明确以下为未定义行为：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 硬件总线模型
+### 3.1 硬件总线模型
 
 考虑一个简化的 32 位总线系统：地址总线宽度 $A$，数据总线宽度 $D=32$ 位（4 字节）。存储控制器以"字（word）"为单位进行访问，每字 4 字节，地址低 2 位为字内偏移。
 
@@ -328,7 +264,7 @@ $$
 
 其中 $\Delta T_{\text{bus}}$ 为额外总线传输周期。在 x86 上，未对齐访问可能触发"split load"微架构事件，引入 1-3 个额外周期；在 ARMv7 上未对齐访问触发异常，开销达数百至数千周期；在 Itanium 上未对齐访问由操作系统软件模拟，开销可达数万周期。
 
-### 4.2 缓存行与空间局部性
+### 3.2 缓存行与空间局部性
 
 现代 CPU 缓存以缓存行（cache line）为单位，典型为 64 字节（Intel/AMD/ARMv8）或 128 字节（部分 Apple Silicon L2）。一次缓存行加载的开销约 4-10ns（L1）、10-20ns（L2）、40-100ns（L3）、100-300ns（DRAM）。
 
@@ -344,7 +280,7 @@ $$
 
 理论加速比上限为 $64/24 \approx 2.67 \times$（受限于其他瓶颈，实测通常为 1.5-2.5 倍）。
 
-### 4.3 伪共享（False Sharing）分析
+### 3.3 伪共享（False Sharing）分析
 
 考虑两个线程分别更新 `counters[i].a` 与 `counters[i].b`，其中：
 
@@ -367,7 +303,7 @@ $$
 
 消除伪共享后，吞吐量仅受限于核内执行速度，通常可提升 10-100 倍。
 
-### 4.4 ABI 兼容性推导
+### 3.4 ABI 兼容性推导
 
 跨编译器二进制兼容性要求所有编译器对同一 struct 生成相同的 `sizeof`、`offsetof`、整体对齐值。System V ABI 通过形式化算法保证此性质：
 
@@ -377,7 +313,7 @@ $$
 
 **反例**：MSVC 在 `#pragma pack` 默认值（8）下，对 `long double`（80 位扩展精度）的处理与 GCC 不同：MSVC 视其为 8 字节，GCC 视其为 12 或 16 字节（取决于平台），导致同一 struct 在两编译器下布局不同。
 
-### 4.5 对齐分配的内存模型
+### 3.5 对齐分配的内存模型
 
 `aligned_alloc(alignment, size)` 的内存模型可形式化为：
 
@@ -404,11 +340,11 @@ C11 `aligned_alloc` 的实现可由 glibc 2.16+ 直接调用 `memalign` 系统�
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节提供从入门到生产级的代码示例，均标注 C 标准版本，并附 CMake/Makefile 构建配置。
 
-### 5.1 入门：基本对齐计算
+### 4.1 入门：基本对齐计算
 
 ```c
 /* file: examples/alignment_basic.c
@@ -474,7 +410,7 @@ offset b = 0
 offset c = 4
 ```
 
-### 5.2 进阶：`alignas` 强制对齐
+### 4.2 进阶：`alignas` 强制对齐
 
 ```c
 /* file: examples/alignment_alignas.c
@@ -509,7 +445,7 @@ int main(void) {
 }
 ```
 
-### 5.3 高级：防伪共享缓存行对齐
+### 4.3 高级：防伪共享缓存行对齐
 
 ```c
 /* file: examples/false_sharing.c
@@ -583,7 +519,7 @@ int main(void) {
 - 未对齐（`-DNO_ALIGN`）：`sizeof = 8`，约 8-12 秒。
 - 缓存行对齐：`sizeof = 64`，约 0.5-1 秒。
 
-### 5.4 生产级：网络协议头定义
+### 4.4 生产级：网络协议头定义
 
 ```c
 /* file: examples/network_headers.h
@@ -672,7 +608,7 @@ _Static_assert(sizeof(TCPHeader) == 20,
 #endif /* NETWORK_HEADERS_H */
 ```
 
-### 5.5 CMake 构建配置
+### 4.5 CMake 构建配置
 
 ```cmake
 # file: CMakeLists.txt
@@ -710,7 +646,7 @@ if(ENABLE_SANITIZER)
 endif()
 ```
 
-### 5.6 Makefile 配置
+### 4.6 Makefile 配置
 
 ```makefile
 # file: Makefile
@@ -738,9 +674,9 @@ sanitizer: all
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 C / C++ / Rust / Go / Zig 对齐机制对比
+### 5.1 C / C++ / Rust / Go / Zig 对齐机制对比
 
 | 特性 | C89 | C99 | C11 | C23 | C++11 | C++17 | Rust 1.x | Go 1.x | Zig 0.11 |
 | ---- | --- | --- | --- | --- | ----- | ----- | -------- | ------ | --------- |
@@ -755,7 +691,7 @@ sanitizer: all
 | 跨语言 ABI 兼容 | 是 | 是 | 是 | 是 | 是（C ABI） | 是（C ABI） | `extern "C"` | `//go:cgo_export` | `export` |
 | 编译期对齐检查 | 无 | `_Static_assert` | `_Static_assert` | `static_assert` | `static_assert` | `static_assert` | `const` | `const` | `comptime` |
 
-### 6.2 与 C++ 对比
+### 5.2 与 C++ 对比
 
 C++ 在 C 的对齐机制基础上扩展了：
 
@@ -767,7 +703,7 @@ C++ 在 C 的对齐机制基础上扩展了：
 
 C++ 不支持 C 的位域（虽然语法相同但语义略异），且对位域的内存布局更严格。
 
-### 6.3 与 Rust 对比
+### 5.3 与 Rust 对比
 
 Rust 的对齐机制：
 
@@ -780,7 +716,7 @@ Rust 的对齐机制：
 
 Rust 相对 C 的优势：编译期防止未对齐指针解引用，避免 UB。C 仍需程序员手工保证。
 
-### 6.4 与 Go 对比
+### 5.4 与 Go 对比
 
 Go 的对齐机制由运行时（runtime）管理：
 
@@ -794,7 +730,7 @@ Go 的对齐机制由运行时（runtime）管理：
 
 Go 的对齐模型简化了开发，但牺牲了对底层布局的控制力，不适合编写二进制协议解析器或设备驱动。
 
-### 6.5 与汇编对比
+### 5.5 与汇编对比
 
 汇编层面对齐由 CPU 指令直接处理：
 
@@ -808,9 +744,9 @@ C 编译器在生成代码时自动选择对齐/未对齐指令版本，受 `ali
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：未对齐指针转换
+### 6.1 陷阱：未对齐指针转换
 
 ```c
 /* BAD: 将 char* 强转 int* 访问，可能未对齐 */
@@ -827,7 +763,7 @@ int v;
 memcpy(&v, &buf[1], sizeof(int));  /* 安全且高效 */
 ```
 
-### 7.2 陷阱：`#pragma pack` 副作用
+### 6.2 陷阱：`#pragma pack` 副作用
 
 ```c
 /* BAD: 全局 pragma pack 影响所有后续 struct */
@@ -848,7 +784,7 @@ struct PackedA { char a; int b; };
 struct NormalB { char a; int b; };  /* 8 字节，正常对齐 */
 ```
 
-### 7.3 陷阱：原子操作未对齐
+### 6.3 陷阱：原子操作未对齐
 
 ```c
 /* BAD: 原子操作未对齐，UB */
@@ -876,7 +812,7 @@ struct Aligned2 {
 };
 ```
 
-### 7.4 陷阱：跨平台对齐假设
+### 6.4 陷阱：跨平台对齐假设
 
 ```c
 /* BAD: 假设 int 总是 4 字节对齐 */
@@ -900,7 +836,7 @@ if ((uintptr_t)p % _Alignof(int) == 0) {
 }
 ```
 
-### 7.5 陷阱：`sizeof` 与指针衰减
+### 6.5 陷阱：`sizeof` 与指针衰减
 
 ```c
 /* BAD: 数组退化为指针后 sizeof 不再是数组大小 */
@@ -914,7 +850,7 @@ void process_good(const int *arr, size_t n) {
 }
 ```
 
-### 7.6 陷阱：`packed` 与取地址
+### 6.6 陷阱：`packed` 与取地址
 
 ```c
 /* BAD: packed struct 成员取地址得到未对齐指针 */
@@ -937,7 +873,7 @@ tmp += 1;
 memcpy(&p.b, &tmp, sizeof(int));  /* 安全写回 */
 ```
 
-### 7.7 陷阱：误用 `aligned_alloc`
+### 6.7 陷阱：误用 `aligned_alloc`
 
 ```c
 /* BAD: size 不是 alignment 的整数倍，UB */
@@ -954,7 +890,7 @@ size_t align_up(size_t n, size_t a) {
 void *p = aligned_alloc(16, align_up(20, 16));  /* 32 字节 */
 ```
 
-### 7.8 最佳实践总结
+### 6.8 最佳实践总结
 
 1. **按对齐值降序排列 struct 成员**：最小化填充。
 2. **使用 `_Static_assert` / `static_assert` 验证关键布局**：保证 ABI 兼容性。
@@ -967,9 +903,9 @@ void *p = aligned_alloc(16, align_up(20, 16));  /* 32 字节 */
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建系统配置
+### 7.1 构建系统配置
 
 **CMake 启用对齐警告**：
 
@@ -988,7 +924,7 @@ WARN_FLAGS = -Wall -Wextra -Wpedantic -Wpadded -Wpacked
 SANITIZE_FLAGS = -fsanitize=address,undefined,alignment
 ```
 
-### 8.2 静态分析
+### 7.2 静态分析
 
 **clang-tidy** 配置 `.clang-tidy`：
 
@@ -1014,7 +950,7 @@ CheckOptions:
 - `cppcoreguidelines-pro-type-cstyle-cast`：禁止 C 风格强转，减少未对齐转换。
 - `bugprone-narrowing-conversions`：避免窄化转换引起对齐失配。
 
-### 8.3 运行时检测：Sanitizer
+### 7.3 运行时检测：Sanitizer
 
 **UBSan（UndefinedBehaviorSanitizer）** 可检测对齐违反：
 
@@ -1026,7 +962,7 @@ gcc -fsanitize=undefined -fno-sanitize-recover=alignment test.c -o test
 
 **ASan（AddressSanitizer）** 不直接检测对齐，但配合 UBSan 可同时检测内存越界与对齐违反。
 
-### 8.4 调试工具
+### 7.4 调试工具
 
 **pahole（Poke Around Hole）**：分析 struct 布局，显示填充：
 
@@ -1057,7 +993,7 @@ struct Example {
 end
 ```
 
-### 8.5 性能剖析
+### 7.5 性能剖析
 
 **perf（Linux）** 检测未对齐访问：
 
@@ -1076,7 +1012,7 @@ perf stat -e mem_inst_retired.split_loads,mem_inst_retired.split_stores ./progra
 bpftrace -e 'tracepoint:exceptions:page_fault_user /comm == "myapp"/ { @[kstack] = count(); }'
 ```
 
-### 8.6 CI/CD 集成
+### 7.6 CI/CD 集成
 
 GitHub Actions 配置示例：
 
@@ -1112,9 +1048,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Linux Kernel：`struct list_head` 的对齐设计
+### 8.1 Linux Kernel：`struct list_head` 的对齐设计
 
 Linux Kernel 的双向链表实现 `include/linux/list.h`：
 
@@ -1137,7 +1073,7 @@ struct list_head {
 
 `offsetof` 依赖于 struct 布局规则，对齐错误会导致 `container_of` 计算错误地址。
 
-### 9.2 glibc：`malloc` 的对齐保证
+### 8.2 glibc：`malloc` 的对齐保证
 
 glibc `malloc` 实现保证返回的指针至少对齐到 `2 * sizeof(size_t)`（32 位为 8，64 位为 16），远超 C 标准要求的 `alignof(max_align_t)`（通常 8 或 16）。
 
@@ -1151,7 +1087,7 @@ glibc `malloc` 实现保证返回的指针至少对齐到 `2 * sizeof(size_t)`�
 
 `aligned_alloc` 在 glibc 2.16+ 直接通过 `memalign` 系统调用实现，开销接近 `malloc`。
 
-### 9.3 SQLite：变长记录的对齐优化
+### 8.3 SQLite：变长记录的对齐优化
 
 SQLite 的 B-tree 页面布局中，每个记录由头部（header）与数据区（payload）组成。SQLite 不依赖 C struct 直接映射，而是手工解析字节序列，避免平台对齐差异：
 
@@ -1165,7 +1101,7 @@ static u64 sqlite3GetVarint(const unsigned char *p, u64 *v) {
 
 这一设计使 SQLite 数据库文件跨平台二进制兼容，可在 x86、ARM、RISC-V 间无缝迁移。
 
-### 9.4 Redis：SDS（Simple Dynamic String）布局
+### 8.4 Redis：SDS（Simple Dynamic String）布局
 
 Redis 的字符串类型 SDS 通过对齐布局优化短字符串存储：
 
@@ -1186,7 +1122,7 @@ struct sdshdr8 {
 
 这是 packed 与非 packed 混合使用的典范：仅在确定字段不频繁访问时使用 packed。
 
-### 9.5 Nginx：内存池对齐
+### 8.5 Nginx：内存池对齐
 
 Nginx 内存池（`ngx_palloc.c`）将所有分配对齐到 `NGX_ALIGNMENT`（16 字节）：
 
@@ -1199,7 +1135,7 @@ Nginx 内存池（`ngx_palloc.c`）将所有分配对齐到 `NGX_ALIGNMENT`（16
 
 每次内存分配自动向上对齐，保证后续对象访问对齐，避免未对齐访问性能损失。
 
-### 9.6 DPDK：缓存行对齐网络包描述符
+### 8.6 DPDK：缓存行对齐网络包描述符
 
 DPDK（Data Plane Development Kit）的 `rte_mbuf` 结构体大量使用 `__rte_cache_aligned`（即 `__attribute__((aligned(RTE_CACHE_LINE_SIZE)))`）：
 
@@ -1439,7 +1375,7 @@ int main(void) {
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题 8**：为什么 `aligned_alloc(16, 20)` 在 C 标准下是 UB？请从内存分配器实现角度解释。
 
@@ -1535,9 +1471,9 @@ void *p = aligned_alloc(alignment, safe_size);
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准文档
+### 10.1 标准文档
 
 [1] International Organization for Standardization. *ISO/IEC 9899:2024 Information technology — Programming languages — C* (Fifth edition) [Standard]. Geneva: ISO; 2024. Available from: https://www.iso.org/standard/82075.html
 
@@ -1547,7 +1483,7 @@ void *p = aligned_alloc(alignment, safe_size);
 
 [4] American National Standards Institute. *ANSI X3.159-1989 Programming Language C* [Standard]. New York: ANSI; 1989.
 
-### 11.2 学术论文与技术报告
+### 10.2 学术论文与技术报告
 
 [5] Hennessy JL, Patterson DA. *Computer Architecture: A Quantitative Approach* 6th ed. San Francisco: Morgan Kaufmann; 2017. ISBN: 978-0128119051
 
@@ -1561,7 +1497,7 @@ void *p = aligned_alloc(alignment, safe_size);
 
 [10] Bhattacharya S, Asanović K. *Alignment-Aware Data Layout for Memory Hierarchy Optimization* [conference paper]. In: Proceedings of the 2018 IEEE International Symposium on Performance Analysis of Systems and Software (ISPASS); 2018 Apr 22-24; Belfast, UK. Piscataway (NJ): IEEE; 2018. p. 142-152. DOI: 10.1109/ISPASS.2018.00026
 
-### 11.3 ABI 规范
+### 10.3 ABI 规范
 
 [11] System V Application Binary Interface AMD64 Architecture Processor Supplement (Draft Version 1.0) [Internet]. [cited 2026 Jul 21]. Available from: https://gitlab.com/x86-psABIs/x86-64-ABI
 
@@ -1571,7 +1507,7 @@ void *p = aligned_alloc(alignment, safe_size);
 
 [14] RISC-V ELF psABI Document [Internet]. RISC-V International; [cited 2026 Jul 21]. Available from: https://github.com/riscv-non-isa/riscv-elf-psabi-doc
 
-### 11.4 编译器文档
+### 10.4 编译器文档
 
 [15] Free Software Foundation. *GCC Online Documentation: Type Attributes* [Internet]. GCC; [cited 2026 Jul 21]. Available from: https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html
 
@@ -1579,7 +1515,7 @@ void *p = aligned_alloc(alignment, safe_size);
 
 [17] Microsoft. *MSVC Compiler Reference: align (C++)* [Internet]. Microsoft; [cited 2026 Jul 21]. Available from: https://learn.microsoft.com/en-us/cpp/cpp/align-cpp
 
-### 11.5 经典教材
+### 10.5 经典教材
 
 [18] Kernighan BW, Ritchie DM. *The C Programming Language* 2nd ed. Englewood Cliffs (NJ): Prentice Hall; 1988. ISBN: 978-0131103627
 
@@ -1593,9 +1529,9 @@ void *p = aligned_alloc(alignment, safe_size);
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《Computer Systems: A Programmer's Perspective（CSAPP）》** Randal E. Bryant, David R. O'Hallaron 著。第 3 章深入讲解机器级表示，第 6 章讨论存储器层次结构，第 9 章虚拟内存，对理解对齐的硬件根源至关重要。
 - **《Computer Architecture: A Quantitative Approach》** John L. Hennessy, David A. Patterson 著。附录 B 讨论缓存与对齐的交互，是量化性能分析的经典。
@@ -1603,7 +1539,7 @@ void *p = aligned_alloc(alignment, safe_size);
 - **《Modern C》** Jens Gustedt 著（开源）。第 13 章专门讨论对齐与对象模型。
 - **《C in a Nutshell》** Peter Prinz, Tony Crawford 著。第 17 章系统讲解 struct 与对齐。
 
-### 12.2 在线课程
+### 11.2 在线课程
 
 - **MIT 6.172 Performance Engineering of Software Systems**（MIT OpenCourseWare）：课程 5、6 讲解缓存行对齐与伪共享对性能的影响，包含真实的 false sharing 实验。
   - https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/
@@ -1617,7 +1553,7 @@ void *p = aligned_alloc(alignment, safe_size);
 - **CMU 15-445 Database Systems**：Lecture 5 讨论 B+Tree 页面布局与对齐。
   - https://15445.courses.cs.cmu.edu/
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **cppreference.com "Alignment" 词条**：标准对齐特性的权威参考。
   - https://en.cppreference.com/w/c/language/object/alignment
@@ -1634,7 +1570,7 @@ void *p = aligned_alloc(alignment, safe_size);
 - **"Data alignment for speed: myth or reality?"**（Embedded.com）：实测各架构未对齐访问开销。
   - https://www.embedded.com/data-alignment-for-speed-myth-or-reality/
 
-### 12.4 开源项目学习
+### 11.4 开源项目学习
 
 - **Linux Kernel**：`include/linux/list.h`、`include/linux/types.h`、`arch/x86/include/asm/` 大量使用对齐原语，是学习内核级对齐实践的最佳材料。
   - https://github.com/torvalds/linux
@@ -1651,7 +1587,7 @@ void *p = aligned_alloc(alignment, safe_size);
 - **glibc**：`malloc/malloc.c` 与 `bits/stdalign.h` 揭示标准库对齐实现细节。
   - https://www.gnu.org/software/libc/
 
-### 12.5 工具
+### 11.5 工具
 
 - **pahole / dwarves**：分析 struct 布局，可视化填充。
   - https://git.kernel.org/pub/scm/linux/kernel/git/acme/dwarves.git/

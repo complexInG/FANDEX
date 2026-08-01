@@ -15,59 +15,16 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+
 # 自定义数据属性 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数 | `{ }` 分组 | `|` 或 | `...` 重复
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节依据 Bloom 教育目标分类法组织学习目标。
-
-### 1.1 Remember（记忆）
-
-- **R-1**：复述 `data-*` 属性的命名规则：以 `data-` 开头，后续可包含小写字母 `a-z`、数字 `0-9`、连字符 `-`。
-- **R-2**：列举 `HTMLElement.dataset` 属性的三条核心规则：连字符转驼峰、只读、值为字符串。
-- **R-3**：识别 WHATWG HTML Living Standard §3.2.6.8 中"data attributes"的章节编号。
-- **R-4**：背诵 `data-*` 属性不能用于 SVG 元素的 XML 命名空间机制。
-
-### 1.2 Understand（理解）
-
-- **U-1**：解释 `data-*` 属性与微数据（microdata，`itemprop`）、ARIA（`aria-*`）三者的语义差异。
-- **U-2**：阐明 `dataset` API 的"连字符转驼峰"规则：`data-user-id` → `dataset.userId`。
-- **U-3**：说明 `data-*` 属性不参与 SEO 索引与可访问性树，仅用于应用私有数据。
-- **U-4**：理解 `data-*` 属性值的字符串化机制及其对类型转换的要求。
-
-### 1.3 Apply（应用）
-
-- **A-1**：使用 `data-*` + 事件委托实现高效列表交互（无需为每个 `<li>` 绑定监听器）。
-- **A-2**：使用 CSS `attr(data-x)` 与属性选择器实现工具提示、状态样式。
-- **A-3**：在 React/Vue 中合理使用 `data-*` 作为框架外通信通道（如 E2E 测试钩子）。
-
-### 1.4 Analyze（分析）
-
-- **An-1**：剖析 `dataset` API 与 `getAttribute`/`setAttribute` 在性能、可读性、维护性上的差异。
-- **An-2**：解构"将大对象 JSON.stringify 后存入 `data-*`"的反模式及其性能后果。
-- **An-3**：分析 `data-*` 属性在 SSR（服务端渲染）场景下的数据传递机制。
-
-### 1.5 Evaluate（评价）
-
-- **E-1**：评估"使用 `data-*` 存储状态"与"使用 `WeakMap` 关联 DOM"在内存、GC、可序列化上的取舍。
-- **E-2**：判断以下方案的安全性：将用户输入直接写入 `data-*` 属性并在 CSS `content: attr()` 中渲染。
-- **E-3**：对比 `data-*` 与 `localStorage`、`sessionStorage`、IndexedDB 在持久化、容量、生命周期上的差异。
-
-### 1.6 Create（创造）
-
-- **C-1**：设计一个基于 `data-*` 的声明式事件绑定库（类似 `data-action="click->controller#method"`）。
-- **C-2**：实现一个 `data-*` 属性审计工具，检测反模式（大对象、敏感数据、类型滥用）。
-- **C-3**：构建 `data-*` 与 TypeScript 装饰器的类型安全桥接层。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 前自定义属性时代（1995—2006）
+### 1.1 前自定义属性时代（1995—2006）
 
 早期 HTML 不允许在元素上添加任意属性。开发者为了关联数据，常用以下反模式：
 
@@ -79,7 +36,7 @@ prerequisites:
 | 隐藏子元素 | `<li>张三<span class="hidden" data-id="123"></span></li>` | DOM 节点膨胀 |
 | 注释数据 | `<li>张三<!-- id:123 --></li>` | 无法通过 DOM API 访问 |
 
-### 2.2 HTML5 规范化（2007—2014）
+### 1.2 HTML5 规范化（2007—2014）
 
 2007 年 WHATWG 在 HTML5 草案中首次提出 `data-*` 属性，目的是为应用提供"私有的、非可见的数据存储"机制。设计目标：
 
@@ -90,7 +47,7 @@ prerequisites:
 
 2009 年 W3C HTML5 Working Draft 正式纳入 §3.2.4 "Embedding custom non-visible data with the data-* attributes"。2014 年 HTML5 成为 W3C 推荐标准。
 
-### 2.3 演进时间线
+### 1.3 演进时间线
 
 ```mermaid
 timeline
@@ -108,14 +65,14 @@ timeline
     2024: data-* 属性在 Web Components 中作为属性反射机制
 ```
 
-### 2.4 规范族谱
+### 1.4 规范族谱
 
 - **HTML 4.01**（W3C, 1999）：无自定义属性支持。
 - **HTML5**（W3C, 2014）：首次纳入 `data-*` 与 `dataset` API。
 - **HTML 5.1 / 5.2 / 5.3**（W3C, 2016—2018）：API 稳定。
 - **WHATWG HTML Living Standard**（持续更新）：§3.2.6 "Embedding custom non-visible data" 为权威参考。
 
-### 2.5 与相关规范的对比
+### 1.5 与相关规范的对比
 
 | 规范 | 命名空间 | 语义 | SEO | 可访问性 |
 | ---- | -------- | ---- | --- | -------- |
@@ -127,9 +84,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 WHATWG 规范定义
+### 2.1 WHATWG 规范定义
 
 依据 WHATWG HTML Living Standard §3.2.6.8，`data-*` 属性的 BNF 文法定法：
 
@@ -147,7 +104,7 @@ name-char      = lowercase-alpha / digit
 - 不允许大写字母（HTML 属性不区分大小写，但 `dataset` API 会转换为驼峰）。
 - 不允许 XML 命名空间前缀（如 `xml:data-`、`svg:data-`）。
 
-### 3.2 HTMLElement.dataset IDL
+### 2.2 HTMLElement.dataset IDL
 
 ```webidl
 [Exposed=Window]
@@ -165,7 +122,7 @@ interface DOMStringMap {
 
 `DOMStringMap` 是一个类 Map 接口，所有键值对均为 `DOMString`（字符串）。
 
-### 3.3 命名转换规则形式化
+### 2.3 命名转换规则形式化
 
 设 HTML 属性名为 $p = \text{"data-"} + s$，其中 $s$ 为后缀字符串。`dataset` 键 $k$ 的转换算法：
 
@@ -189,7 +146,7 @@ $$
 | `data--foo` | `Foo`（连字符后为空，capitalize("")="" 但首字母大写规则生效） |
 | `data--` | `` （空字符串键） |
 
-### 3.4 类型语义形式化
+### 2.4 类型语义形式化
 
 `data-*` 属性值在 DOM 中**始终是字符串**。设原始 JS 值为 $v$，存入 `data-*` 后为 $v' = \text{String}(v)$，取出时为 $v'' = v'$。
 
@@ -209,7 +166,7 @@ $$
 | `[1,2]` | `"1,2"` | `"1,2"` | `JSON.parse('[' + s + ']')` |
 | `Date` | `"Thu Jul 20 2026..."` | 字符串 | `new Date(s)` |
 
-### 3.5 DOMStringMap 不变量
+### 2.5 DOMStringMap 不变量
 
 **不变量 3.5.1**：`element.dataset.foo === undefined` 当且仅当 `element` 不含 `data-foo` 属性。
 
@@ -221,15 +178,15 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 命名空间隔离原理
+### 3.1 命名空间隔离原理
 
 **定理 4.1**：`data-*` 前缀保证了与未来 HTML 规范扩展的兼容性。
 
 **证明**：HTML 规范演进时新增的属性不会以 `data-` 开头（规范约定）。故 `data-` 前缀构成"应用私有命名空间"，浏览器永不占用。$\square$
 
-### 4.2 dataset 与 getAttribute 性能对比
+### 3.2 dataset 与 getAttribute 性能对比
 
 设 `dataset` 访问时间为 $T_d$，`getAttribute` 访问时间为 $T_g$。
 
@@ -248,7 +205,7 @@ $$
 
 **结论**：`dataset` 略慢（约 20%~30%），但可读性优势远大于性能差异，除非在热点路径（每秒 100k+ 次访问），否则应优先使用 `dataset`。
 
-### 4.3 反射机制（Reflection）
+### 3.3 反射机制（Reflection）
 
 部分 HTML 属性具有"IDL 反射"特性：JS 属性与 HTML 属性双向同步（如 `id`、`className`）。`data-*` 属性通过 `dataset` 反射：
 
@@ -258,7 +215,7 @@ $$
 
 但反射不直接发生在 `data-*` 本身，而是通过 `DOMStringMap` 代理。
 
-### 4.4 CSS 属性选择器匹配复杂度
+### 3.4 CSS 属性选择器匹配复杂度
 
 CSS 属性选择器 `[data-x]`、`[data-x=val]`、`[data-x^=val]` 的匹配复杂度：
 
@@ -276,7 +233,7 @@ CSS 属性选择器 `[data-x]`、`[data-x=val]`、`[data-x^=val]` 的匹配复�
 | `[data-id^='user-']` | 1.2 ms |
 | `[data-id*='user']` | 2.1 ms |
 
-### 4.5 attr() 函数的限制
+### 3.5 attr() 函数的限制
 
 CSS `attr(data-x)` 在 CSS 2.1 中仅支持 `content` 属性使用，且仅返回字符串。CSS Values Level 5 扩展了 `attr()`，但浏览器支持有限（2024 年仅 Firefox 实验性支持）。
 
@@ -288,7 +245,7 @@ CSS `attr(data-x)` 在 CSS 2.1 中仅支持 `content` 属性使用，且仅返�
 .box { width: attr(data-width px, 100px); }
 ```
 
-### 4.6 内存模型
+### 3.6 内存模型
 
 `data-*` 属性值存储在 DOM 元素的属性列表中，与元素生命周期绑定。设元素 $e$ 有 $n$ 个 `data-*` 属性，每个值平均长度 $L$ 字节，则内存占用：
 
@@ -310,9 +267,9 @@ data.set(element, { userId: 123, role: 'admin' });
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 完整 HTML5 文档结构
+### 4.1 完整 HTML5 文档结构
 
 ```html
 <!DOCTYPE html>
@@ -416,7 +373,7 @@ data.set(element, { userId: 123, role: 'admin' });
 </html>
 ```
 
-### 5.2 dataset 完整 API 演示
+### 4.2 dataset 完整 API 演示
 
 ```javascript
 const el = document.createElement('div');
@@ -458,7 +415,7 @@ el.setAttribute('data-last-modified', '2026-07-20');
 console.log(el.dataset.lastModified); // "2026-07-20"
 ```
 
-### 5.3 getAttribute / setAttribute 对比
+### 4.3 getAttribute / setAttribute 对比
 
 ```javascript
 const el = document.getElementById('user');
@@ -480,7 +437,7 @@ el.removeAttribute('data-user-id');
 console.log(el.dataset.userId); // undefined
 ```
 
-### 5.4 事件委托模式
+### 4.4 事件委托模式
 
 ```html
 <ul id="todo-list">
@@ -522,7 +479,7 @@ console.log(el.dataset.userId); // undefined
 </script>
 ```
 
-### 5.5 CSS 联动
+### 4.5 CSS 联动
 
 ```html
 <style>
@@ -589,7 +546,7 @@ console.log(el.dataset.userId); // undefined
 </script>
 ```
 
-### 5.6 声明式事件绑定（Stimulus 风格）
+### 4.6 声明式事件绑定（Stimulus 风格）
 
 ```html
 <div data-controller="counter">
@@ -649,7 +606,7 @@ console.log(el.dataset.userId); // undefined
 </script>
 ```
 
-### 5.7 SSR 数据传递
+### 4.7 SSR 数据传递
 
 ```html
 <!-- 服务端渲染（Node.js + Express） -->
@@ -667,7 +624,7 @@ console.log(el.dataset.userId); // undefined
 </script>
 ```
 
-### 5.8 React/Vue 中的 E2E 测试钩子
+### 4.8 React/Vue 中的 E2E 测试钩子
 
 ```jsx
 // React - 使用 data-testid 作为 E2E 选择器
@@ -700,7 +657,7 @@ test('登录流程', async ({ page }) => {
 </template>
 ```
 
-### 5.9 WeakMap 替代方案（大数据）
+### 4.9 WeakMap 替代方案（大数据）
 
 ```javascript
 // 反模式：将大对象 JSON.stringify 后存入 data-*
@@ -721,9 +678,9 @@ const user = userData.get(listItem); // 直接对象引用
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 数据存储方案对比
+### 5.1 数据存储方案对比
 
 | 方案 | 生命周期 | 容量 | 类型 | 可序列化 | CSS 访问 | 适用场景 |
 | ---- | -------- | ---- | ---- | -------- | -------- | -------- |
@@ -735,7 +692,7 @@ const user = userData.get(listItem); // 直接对象引用
 | 闭包变量 | JS 引用 | 无限 | 任意 | 否 | 否 | 元素私有状态 |
 | `dataset` | DOM 元素 | 字符串 | 字符串 | 是 | 是 | `data-*` 的 JS 接口 |
 
-### 6.2 dataset vs getAttribute
+### 5.2 dataset vs getAttribute
 
 | 维度 | `element.dataset.x` | `element.getAttribute('data-x')` |
 | ---- | ------------------- | --------------------------------- |
@@ -747,7 +704,7 @@ const user = userData.get(listItem); // 直接对象引用
 | 浏览器支持 | IE 11+ | 全部 |
 | 推荐场景 | 现代浏览器 | 兼容老浏览器 |
 
-### 6.3 data-\* vs ARIA
+### 5.3 data-\* vs ARIA
 
 | 维度 | `data-*` | `aria-*` |
 | ---- | -------- | -------- |
@@ -758,7 +715,7 @@ const user = userData.get(listItem); // 直接对象引用
 | 命名规则 | `data-` 前缀 + 任意 | `aria-` 前缀 + 限定集 |
 | 示例 | `data-user-id` | `aria-label`, `aria-expanded` |
 
-### 6.4 data-\* vs 微数据
+### 5.4 data-\* vs 微数据
 
 | 维度 | `data-*` | 微数据 `itemprop` |
 | ---- | -------- | ----------------- |
@@ -768,7 +725,7 @@ const user = userData.get(listItem); // 直接对象引用
 | 命名规则 | 任意 | Schema.org 属性名 |
 | 示例 | `data-price` | `itemprop="price"` |
 
-### 6.5 与 React props / Vue attrs 对比
+### 5.5 与 React props / Vue attrs 对比
 
 | 维度 | `data-*` | React `props` | Vue `attrs` |
 | ---- | -------- | ------------- | ----------- |
@@ -781,9 +738,9 @@ const user = userData.get(listItem); // 直接对象引用
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 类型陷阱
+### 6.1 类型陷阱
 
 #### 陷阱 7.1.1：忘记字符串化
 
@@ -821,7 +778,7 @@ el.dataset.user = JSON.stringify({ id: 1 });
 const user = JSON.parse(el.dataset.user);
 ```
 
-### 7.2 性能陷阱
+### 6.2 性能陷阱
 
 #### 陷阱 7.2.1：大对象存入 data-\*
 
@@ -860,7 +817,7 @@ window.addEventListener('scroll', () => {
 });
 ```
 
-### 7.3 安全陷阱
+### 6.3 安全陷阱
 
 #### 陷阱 7.3.1：XSS via innerHTML
 
@@ -898,7 +855,7 @@ el.dataset.userContent = '"; } @import url(evil.css); /*';
 <!-- 任何人 F12 即可查看 -->
 ```
 
-### 7.4 可访问性陷阱
+### 6.4 可访问性陷阱
 
 #### 陷阱 7.4.1：用 data-\* 替代 ARIA
 
@@ -920,7 +877,7 @@ el.dataset.userContent = '"; } @import url(evil.css); /*';
 <img src="photo.jpg" alt="风景照" />
 ```
 
-### 7.5 SEO 陷阱
+### 6.5 SEO 陷阱
 
 #### 陷阱 7.5.1：用 data-\* 替代微数据
 
@@ -935,7 +892,7 @@ el.dataset.userContent = '"; } @import url(evil.css); /*';
 </div>
 ```
 
-### 7.6 命名陷阱
+### 6.6 命名陷阱
 
 #### 陷阱 7.6.1：大写字母
 
@@ -958,7 +915,7 @@ el.dataset.userContent = '"; } @import url(evil.css); /*';
 <div xml:data="123"></div> <!-- 无效 -->
 ```
 
-### 7.7 最佳实践清单
+### 6.7 最佳实践清单
 
 - [ ] 使用 `data-*` 存储元素私有数据，而非全局变量。
 - [ ] 命名使用小写 + 连字符（`data-user-id`，而非 `data-userId`）。
@@ -973,9 +930,9 @@ el.dataset.userContent = '"; } @import url(evil.css); /*';
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建工具集成
+### 7.1 构建工具集成
 
 **TypeScript 类型扩展**：
 
@@ -1010,7 +967,7 @@ module.exports = {
 };
 ```
 
-### 8.2 React 中的 data-\* 模式
+### 7.2 React 中的 data-\* 模式
 
 ```jsx
 // 1. E2E 测试钩子
@@ -1041,7 +998,7 @@ function App({ initialState }) {
 }
 ```
 
-### 8.3 Vue 中的 data-\* 模式
+### 7.3 Vue 中的 data-\* 模式
 
 ```vue
 <template>
@@ -1061,7 +1018,7 @@ const props = defineProps({
 </script>
 ```
 
-### 8.4 调试技巧
+### 7.4 调试技巧
 
 ```javascript
 // 控制台快捷查看所有 data-* 属性
@@ -1081,7 +1038,7 @@ Element.prototype.setAttribute = function(name, value) {
 };
 ```
 
-### 8.5 Lighthouse 性能审计
+### 7.5 Lighthouse 性能审计
 
 Lighthouse 不直接审计 `data-*`，但相关审计：
 
@@ -1089,7 +1046,7 @@ Lighthouse 不直接审计 `data-*`，但相关审计：
 - `no-vulnerable-libraries`：某些库（如旧版 jQuery `.data()`）存在 XSS。
 - `uses-rel-preconnect`：`data-*` 用于懒加载 URL 时应预连接。
 
-### 8.6 性能优化清单
+### 7.6 性能优化清单
 
 - [ ] 大对象使用 `WeakMap` 替代 `data-*`。
 - [ ] 高频更新使用 `requestAnimationFrame` 节流。
@@ -1098,7 +1055,7 @@ Lighthouse 不直接审计 `data-*`，但相关审计：
 - [ ] 优先使用 `textContent` 而非 `innerHTML`。
 - [ ] E2E 测试钩子统一命名空间（如 `data-testid`）。
 
-### 8.7 测试策略
+### 7.7 测试策略
 
 **单元测试**（Jest + jsdom）：
 
@@ -1144,9 +1101,9 @@ test('点击列表项应读取 data-user-id', async ({ page }) => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Stimulus.js 框架
+### 8.1 Stimulus.js 框架
 
 Stimulus（Basecamp, 2017）是基于 `data-*` 的轻量级 MVC 框架，核心模式：
 
@@ -1159,7 +1116,7 @@ Stimulus（Basecamp, 2017）是基于 `data-*` 的轻量级 MVC 框架，核心�
 
 约定优于配置：通过 `data-controller`、`data-action`、`data-{controller}-target` 实现声明式绑定。
 
-### 9.2 Turbo Drive / Turbo Frames
+### 8.2 Turbo Drive / Turbo Frames
 
 Hotwire Turbo 使用 `data-turbo-frame`、`data-turbo-action` 控制 SPA 式导航：
 
@@ -1169,7 +1126,7 @@ Hotwire Turbo 使用 `data-turbo-frame`、`data-turbo-action` 控制 SPA 式导�
 </turbo-frame>
 ```
 
-### 9.3 GitHub 的 data-\* 实践
+### 8.3 GitHub 的 data-\* 实践
 
 GitHub 大量使用 `data-*` 关联 DOM 与 JS 控制器：
 
@@ -1184,7 +1141,7 @@ GitHub 大量使用 `data-*` 关联 DOM 与 JS 控制器：
 </div>
 ```
 
-### 9.4 Twitter / X 的 data-\* 实践
+### 8.4 Twitter / X 的 data-\* 实践
 
 Twitter 使用 `data-testid` 作为 E2E 测试钩子（避免与样式 class 冲突）：
 
@@ -1193,7 +1150,7 @@ Twitter 使用 `data-testid` 作为 E2E 测试钩子（避免与样式 class 冲
 <a data-testid="homeLink" href="/home">主页</a>
 ```
 
-### 9.5 Bootstrap 5
+### 8.5 Bootstrap 5
 
 Bootstrap 5 使用 `data-bs-*` 命名空间初始化组件：
 
@@ -1427,7 +1384,7 @@ app.start();
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 8**：为什么 `data-*` 属性值始终是字符串？请从 HTML 规范、DOM 序列化、跨平台三个角度分析。
 
@@ -1547,7 +1504,7 @@ export class DataAttrAuditor {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] WHATWG. 2024. **HTML Living Standard §3.2.6 Embedding custom non-visible data with the data-* attributes**. WHATWG, Geneva, Switzerland. Retrieved July 20, 2026 from https://html.spec.whatwg.org/multipage/dom.html#embedding-custom-non-visible-data-with-the-data-*-attributes
 
@@ -1575,22 +1532,22 @@ export class DataAttrAuditor {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **"Maintainable JavaScript"**, Nicholas C. Zakas, 2016, O'Reilly Media, ISBN 978-1491933759.
 - **"JavaScript: The Good Parts"**, Douglas Crockford, 2008, O'Reilly Media, ISBN 978-0596517748.
 - **"High Performance Web Sites"**, Steve Souders, 2007, O'Reilly Media, ISBN 978-0596529307.
 - **"DOM Scripting: Web Design with JavaScript and the Document Object Model"**, Jeremy Keith, 2010, friends of ED, ISBN 978-1430233893.
 
-### 12.2 论文
+### 11.2 论文
 
 - **"A Study on Web Frameworks and DOM Manipulation"**, A. Smith et al., ICSE 2019.
 - **"Performance Analysis of HTML5 Custom Data Attributes"**, J. Lee et al., WWW 2018.
 - **"Event Delegation Patterns in Modern Web Applications"**, M. Chen, WWW 2020.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **MDN Web Docs - dataset**: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset
 - **WHATWG HTML Living Standard**: https://html.spec.whatwg.org/multipage/dom.html
@@ -1598,14 +1555,14 @@ export class DataAttrAuditor {
 - **Hotwire Turbo Reference**: https://turbo.hotwired.dev/
 - **Google Web Fundamentals - DOM Performance**: https://developers.google.com/web/fundamentals/performance/
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **Stimulus**: A modest JavaScript framework. https://github.com/hotwired/stimulus
 - **Catalyst**: TypeScript decorators for custom elements. https://github.com/github/catalyst
 - **Alpine.js**: Minimal JavaScript framework. https://github.com/alpinejs/alpine
 - **DOMPurify**: XSS sanitizer. https://github.com/cure53/DOMPurify
 
-### 12.5 课程
+### 11.5 课程
 
 - **MIT 6.S192**: Software Engineering for Web Applications. MIT OpenCourseWare.
 - **Stanford CS142**: Web Applications. Stanford University. https://web.stanford.edu/class/cs142/

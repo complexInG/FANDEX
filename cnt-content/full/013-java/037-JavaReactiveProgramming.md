@@ -29,90 +29,22 @@ tags:
   - RSocket
 ---
 
+
 # Java 响应式编程深度指南
 
 > 响应式编程（Reactive Programming, RP）是一种基于异步数据流与变化传播的编程范式。在 Java 生态中，它从 2010 年代初的 RxJava 1.x 起步，经 Reactive Streams 规范（2015）的标准化，到 Project Reactor 与 Spring WebFlux 的工业化落地，最终在云原生时代与虚拟线程、GraalVM Native Image 等技术深度融合，形成了完整的响应式系统栈。本文将以"为什么需要响应式"为切入点，以 Reactive Streams 规范为理论骨架，以 Project Reactor 为主要实现载体，以 Spring WebFlux 为工程落地，系统性地剖析响应式编程的语义、机制、陷阱与最佳实践，让读者既能编写出正确的响应式代码，也能判断何时该用响应式、何时该用命令式。
 
 ---
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节以 Bloom 教育目标分类法（Anderson 2001 修订版）为框架，对学习目标进行显式分级。
-
-### 1.1 认知层级目标
-
-| 层级（Level） | 行为动词 | 具体学习目标 |
-|--------------|---------|-------------|
-| 记忆（Remember） | 列举、识别、定义 | 列举 Reactive Streams 的 4 个核心接口，识别 Mono 与 Flux 的语义差异，定义背压（Backpressure） |
-| 理解（Understand） | 解释、归纳、对比 | 解释响应式流的推拉混合模型，对比 Cold 与 Hot Publisher，归纳 Schedulers 的线程调度策略 |
-| 应用（Apply） | 实现、使用、演示 | 使用 Reactor 操作符组合数据流，使用 WebFlux 实现非阻塞 REST API，演示背压控制策略 |
-| 分析（Analyze） | 分解、辨别、推断 | 分解 flatMap 与 concatMap 的并发语义，推断 subscribeOn 与 publishOn 的线程切换链路，辨别响应式栈与命令式栈的调试差异 |
-| 评价（Evaluate） | 评判、论证、批判 | 评判响应式编程的适用场景边界，论证虚拟线程是否会取代响应式，批判过度使用操作符导致代码可读性下降 |
-| 创造（Create） | 设计、构建、重构 | 设计基于 R2DBC + WebFlux 的全栈响应式微服务，构建自定义 Operator 与 Hooks，重构命令式代码为响应式风格 |
-
-### 1.2 学习成果自检清单
-
-完成本章学习后，读者应能独立完成以下任务：
-
-1. 在不查阅文档的前提下，写出 Reactive Streams 的 4 个核心接口签名。
-2. 用一句话向同事解释背压如何解决生产者快于消费者的问题。
-3. 在白板上画出 `Flux.range(1, 10).publishOn(Schedulers.boundedElastic()).map(...).subscribeOn(Schedulers.parallel())` 的线程切换时序。
-4. 实现一个支持背压的自定义 `Publisher`，能用 `request(n)` 控制发射速率。
-5. 对比 WebFlux 与传统 Spring MVC 在线程模型、吞吐量、调试体验上的差异。
-6. 设计一个响应式微服务的错误处理策略，包含重试、降级、熔断三层。
-
-### 1.3 前置知识地图
-
-```mermaid
-flowchart TD
-    T0["Java 基础"]
-    T1["并发编程（Thread、Executor、Future）"]
-    T2["函数式编程（Lambda、Stream、Optional）"]
-    T3["异步编程（CompletableFuture、NIO）"]
-    T4["Reactive Streams 规范（本章基础）"]
-    T5["Publisher / Subscriber / Subscription / Processor"]
-    T6["推拉混合模型（Push + Pull）"]
-    T7["背压协议（request(n)）"]
-    T8["Java 响应式编程（本章）"]
-    T9["实现层：RxJava 3、Project Reactor 3、Mutiny"]
-    T10["操作符层：map、filter、flatMap、merge、zip、combineLatest"]
-    T11["调度层：Schedulers（parallel、boundedElastic、single、elastic）"]
-    T12["Web 层：Spring WebFlux、Reactor Netty、RSocket"]
-    T13["数据层：R2DBC、Reactive MongoDB、Reactive Redis"]
-    T14["工程实践：调试、测试、错误处理、监控、与虚拟线程对比"]
-    T0 --> T1
-    T0 --> T2
-    T0 --> T3
-    T3 --> T4
-    T4 --> T5
-    T4 --> T6
-    T4 --> T7
-    T7 --> T8
-    T8 --> T9
-    T8 --> T10
-    T8 --> T11
-    T8 --> T12
-    T8 --> T13
-    T8 --> T14
-```
-
-### 1.4 章节阅读建议
-
-- **零基础读者**：建议按顺序阅读第 2-5 节，配合第 5 节代码示例上机实操，先理解"流"的概念再学习操作符。
-- **有命令式 Java 经验的工程师**：可跳过第 2 节基础部分，直接阅读第 3 节 Reactive Streams 规范、第 4 节 Reactor 内部机制、第 7 节反模式。
-- **架构师**：重点关注第 6 节对比分析、第 8 节工程实践与第 9 节案例研究，特别是响应式与虚拟线程的选型决策。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 响应式编程的诞生背景
+### 1.1 响应式编程的诞生背景
 
 响应式编程的根源可以追溯到 1960 年代的 **数据流编程**（Dataflow Programming）与 **函数响应式编程**（Functional Reactive Programming, FRP）。Conal Elliott 在 1997 年的 Fran（Functional Reactive Animation）论文中首次系统化提出 FRP，用于建模连续时间与离散事件的混合系统。
 
 但现代"响应式编程"的工业化起点是 2009 年微软的 Erik Meijer 团队推出的 **Rx.NET**（Reactive Extensions for .NET）。Rx.NET 的核心创新是将"异步事件流"抽象为可组合的 `IObservable<T>`，使其能像集合一样被 `map`、`filter`、`merge` 操作。这一抽象彻底改变了异步编程的表达方式。
 
-### 2.2 Java 响应式生态的演化
+### 1.2 Java 响应式生态的演化
 
 | 年份 | 里程碑 | 说明 |
 |------|--------|------|
@@ -128,7 +60,7 @@ flowchart TD
 | 2023 | Java 21 GA | 虚拟线程正式发布，引发"虚拟线程 vs 响应式"大讨论 |
 | 2024 | Reactor 3.6 / RxJava 3.1.x | 持续演进，与虚拟线程、GraalVM 深度集成 |
 
-### 2.3 Reactive Streams 规范的诞生
+### 1.3 Reactive Streams 规范的诞生
 
 2013-2015 年间，Java 生态出现了多个响应式库（RxJava 1.x、Reactor 1.x、Akka Streams），但它们的 API 互不兼容。一个使用 RxJava 的库无法直接被 Reactor 用户使用，需要适配层。这导致响应式生态碎片化，难以形成统一的工具链。
 
@@ -164,7 +96,7 @@ RS 规范的关键贡献：
 3. **线程安全**：规范规定了 `onNext`、`onError`、`onComplete` 的串行调用语义，无需外部同步。
 4. **JDK 标准化**：Java 9 将 RS 规范的 4 个接口搬入 `java.util.concurrent.Flow` 类，成为 JDK 标准。
 
-### 2.4 设计哲学：异步非阻塞与可组合性
+### 1.4 设计哲学：异步非阻塞与可组合性
 
 响应式编程的设计哲学可概括为：
 
@@ -179,9 +111,9 @@ RS 规范的关键贡献：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 响应式流的形式化定义
+### 2.1 响应式流的形式化定义
 
 响应式流是一个三元组 $(P, S, T)$，其中：
 
@@ -192,7 +124,7 @@ RS 规范的关键贡献：
 - $T$ 是 **Subscription**，即订阅关系，定义为：
   $$T: \text{Subscription} = \{ \text{request}: \text{long} \to \text{void}, \text{cancel}: \text{void} \to \text{void} \}$$
 
-### 3.2 背压协议的形式化定义
+### 2.2 背压协议的形式化定义
 
 Reactive Streams 规范的背压协议可形式化为以下不变式：
 
@@ -207,7 +139,7 @@ $$\forall t: \text{count}(\text{onNext at } t) \leq \text{count}(\text{request b
 3. `request(Long.MAX_VALUE)` 表示"无背压"，即 `Publisher` 可任意发送。
 4. 一旦 `onError` 或 `onComplete` 被调用，`Subscription` 终止，后续 `request` 无效。
 
-### 3.3 Cold 与 Hot Publisher 的形式化区分
+### 2.3 Cold 与 Hot Publisher 的形式化区分
 
 **Cold Publisher**（冷发布者）的语义：每个 `Subscriber` 都触发独立的数据生成过程。
 
@@ -226,7 +158,7 @@ $$\forall S_1, S_2: \text{stream}(P, S_1) = \text{stream}(P, S_2) \text{ (after 
 $$\text{isCold}(P) \iff \forall S: \text{subscribe}(P, S) \text{ triggers data generation}$$
 $$\text{isHot}(P) \iff \exists S: \text{subscribe}(P, S) \text{ does not trigger data generation}$$
 
-### 3.4 操作符的代数性质
+### 2.4 操作符的代数性质
 
 响应式操作符可视为数据流上的函数，满足以下代数性质：
 
@@ -247,7 +179,7 @@ $$\text{isHot}(P) \iff \exists S: \text{subscribe}(P, S) \text{ does not trigger
 
 这些代数性质是响应式编程可组合性的理论基础，使开发者能用统一的函数式思维处理异步流。
 
-### 3.5 背压策略的形式化分类
+### 2.5 背压策略的形式化分类
 
 当生产者速率高于消费者时，背压策略可分为 4 类：
 
@@ -274,9 +206,9 @@ $$\text{strategy}(P, C) = \begin{cases}
 
 ---
 
-## 4. 理论推导：响应式流的内部机制
+## 3. 理论推导：响应式流的内部机制
 
-### 4.1 Reactive Streams 规范的 4 条核心规则
+### 3.1 Reactive Streams 规范的 4 条核心规则
 
 Reactive Streams 规范定义了 4 条核心规则，所有实现必须遵守：
 
@@ -296,7 +228,7 @@ Reactive Streams 规范定义了 4 条核心规则，所有实现必须遵守：
 
 `cancel` 后，`Publisher` 必须停止发送 `onNext`，并尽快释放资源（如关闭文件、释放网络连接）。
 
-### 4.2 Reactor 的内部数据结构
+### 3.2 Reactor 的内部数据结构
 
 Project Reactor 的 `Flux` 与 `Mono` 内部以 **链式操作符** 表示数据流。每个操作符是一个 `FluxOperator`，持有上游 `Publisher` 引用：
 
@@ -329,7 +261,7 @@ FluxRange → RangeSubscription → MapSubscriber → FilterSubscriber → 用�
 2. **反向订阅**：`subscribe` 从下游向上游传播，数据从上游向下游流动。
 3. **中间 Subscriber**：每个操作符既是上游的 `Subscriber`，又是下游的 `Publisher`。
 
-### 4.3 背压的实现机制
+### 3.3 背压的实现机制
 
 Reactor 的背压通过 `Subscription.request(n)` 实现。以 `Flux.range` 为例：
 
@@ -385,7 +317,7 @@ class RangeSubscription implements Subscription {
 3. **CAS 扣减**：发射后通过 `addAndGet(-emitted)` 扣减请求量，避免超发。
 4. **取消检查**：每次发射前检查 `cancelled`，及时停止。
 
-### 4.4 操作符的并发语义
+### 3.4 操作符的并发语义
 
 不同操作符有不同的并发语义：
 
@@ -417,7 +349,7 @@ Flux.range(1, 3)
 
 `flatMap` 适合"并行处理，结果不关心顺序"的场景（如并发 HTTP 请求）；`concatMap` 适合"顺序处理，前一个完成才下一个"的场景（如顺序写数据库）。
 
-### 4.5 Schedulers 的线程调度模型
+### 3.5 Schedulers 的线程调度模型
 
 Reactor 的 `Schedulers` 提供了多种线程池：
 
@@ -475,7 +407,7 @@ flowchart TD
     T7 --> T8
 ```
 
-### 4.6 错误处理机制
+### 3.6 错误处理机制
 
 响应式流的错误处理通过 `onError` 信号传播。`onError` 是终止信号，一旦触发，流终止，后续 `onNext` 不会执行。
 
@@ -513,7 +445,7 @@ flux.retryWhen(
 );
 ```
 
-### 4.7 Hot Publisher 的生命周期
+### 3.7 Hot Publisher 的生命周期
 
 `ConnectableFlux` 是 Reactor 的 Hot Publisher 基类，其生命周期：
 
@@ -540,7 +472,7 @@ flowchart TD
 2. `replay(n).refCount()`：缓存最近 `n` 个数据，新订阅者收到缓存后再收新数据。
 3. `cache()`：缓存所有数据，新订阅者收到全部缓存（适合冷数据转热）。
 
-### 4.8 Reactor Context 的传播
+### 3.8 Reactor Context 的传播
 
 Reactor 的 `Context` 是一种"隐式参数"，沿订阅链向上传播（与变量作用域相反）：
 
@@ -566,9 +498,9 @@ Flux.range(1, 3)
 
 ---
 
-## 5. 代码示例：从入门到进阶的完整实战
+## 4. 代码示例：从入门到进阶的完整实战
 
-### 5.1 示例 1：基础响应式流
+### 4.1 示例 1：基础响应式流
 
 ```java
 import reactor.core.publisher.Flux;
@@ -603,7 +535,7 @@ public class BasicReactive {
 }
 ```
 
-### 5.2 示例 2：常用操作符组合
+### 4.2 示例 2：常用操作符组合
 
 ```java
 import reactor.core.publisher.Flux;
@@ -651,7 +583,7 @@ public class OperatorDemo {
 }
 ```
 
-### 5.3 示例 3：背压控制
+### 4.3 示例 3：背压控制
 
 ```java
 import reactor.core.publisher.Flux;
@@ -703,7 +635,7 @@ public class BackpressureDemo {
 }
 ```
 
-### 5.4 示例 4：自定义 Publisher
+### 4.4 示例 4：自定义 Publisher
 
 ```java
 import org.reactivestreams.Publisher;
@@ -807,7 +739,7 @@ public class ArrayPublisher<T> implements Publisher<T> {
 }
 ```
 
-### 5.5 示例 5：Spring WebFlux REST API
+### 4.5 示例 5：Spring WebFlux REST API
 
 ```java
 import org.springframework.boot.SpringApplication;
@@ -905,7 +837,7 @@ class NotFoundException extends RuntimeException {
 }
 ```
 
-### 5.6 示例 6：错误处理与重试
+### 4.6 示例 6：错误处理与重试
 
 ```java
 import reactor.core.publisher.Flux;
@@ -960,7 +892,7 @@ public class ErrorHandlingDemo {
 }
 ```
 
-### 5.7 示例 7：R2DBC 响应式数据库访问
+### 4.7 示例 7：R2DBC 响应式数据库访问
 
 ```java
 import io.r2dbc.spi.*;
@@ -1015,7 +947,7 @@ public class R2dbcDemo {
 import java.math.BigDecimal;
 ```
 
-### 5.8 示例 8：Hot Publisher 与状态共享
+### 4.8 示例 8：Hot Publisher 与状态共享
 
 ```java
 import reactor.core.publisher.ConnectableFlux;
@@ -1058,7 +990,7 @@ public class HotPublisherDemo {
 }
 ```
 
-### 5.9 示例 9：响应式调试
+### 4.9 示例 9：响应式调试
 
 ```java
 import reactor.core.publisher.Flux;
@@ -1102,7 +1034,7 @@ public class DebugDemo {
 }
 ```
 
-### 5.10 示例 10：响应式测试
+### 4.10 示例 10：响应式测试
 
 ```java
 import org.junit.jupiter.api.Test;
@@ -1165,9 +1097,9 @@ public class ReactiveTest {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 响应式 vs 命令式（命令式 + CompletableFuture）
+### 5.1 响应式 vs 命令式（命令式 + CompletableFuture）
 
 | 维度 | 命令式 + CompletableFuture | 响应式（Reactor） |
 |------|---------------------------|------------------|
@@ -1184,7 +1116,7 @@ public class ReactiveTest {
 | 生态成熟度 | 极成熟（Servlet 30 年） | 成熟（Reactor 10 年） |
 | 与虚拟线程配合 | 天然适配 | 兼容但价值下降 |
 
-### 6.2 Reactor vs RxJava 3
+### 5.2 Reactor vs RxJava 3
 
 | 维度 | Project Reactor 3 | RxJava 3 |
 |------|------------------|----------|
@@ -1205,7 +1137,7 @@ public class ReactiveTest {
 - Android 或与 RxJava 1.x 遗留代码迁移选 RxJava 3。
 - 新项目无历史包袱且用 Spring Boot 优先 Reactor。
 
-### 6.3 响应式 vs 虚拟线程
+### 5.3 响应式 vs 虚拟线程
 
 Java 21 虚拟线程正式发布后，社区出现"虚拟线程将取代响应式"的讨论。关键对比：
 
@@ -1229,7 +1161,7 @@ Java 21 虚拟线程正式发布后，社区出现"虚拟线程将取代响应�
 3. 响应式适合"流式数据处理 + 背压 + 复杂组合"场景，如实时数据管道、SSE、WebSocket 流。
 4. 新项目若仅需高并发 I/O，优先选虚拟线程（Spring Boot 3.2+ 已支持）；若需流式处理，仍选响应式。
 
-### 6.4 WebFlux vs Spring MVC
+### 5.4 WebFlux vs Spring MVC
 
 | 维度 | Spring MVC | Spring WebFlux |
 |------|-----------|----------------|
@@ -1249,7 +1181,7 @@ Java 21 虚拟线程正式发布后，社区出现"虚拟线程将取代响应�
 - 流式需求（SSE、WebSocket、实时推送）选 **WebFlux**。
 - 已有 WebFlux 项目无需迁移到虚拟线程，两者可共存。
 
-### 6.5 R2DBC vs JDBC
+### 5.5 R2DBC vs JDBC
 
 | 维度 | JDBC | R2DBC |
 |------|------|-------|
@@ -1268,9 +1200,9 @@ Java 21 虚拟线程正式发布后，社区出现"虚拟线程将取代响应�
 
 ---
 
-## 7. 陷阱与反模式
+## 6. 陷阱与反模式
 
-### 7.1 反模式 1：在响应式链中调用阻塞代码
+### 6.1 反模式 1：在响应式链中调用阻塞代码
 
 ```java
 // 反模式：在 Reactor 链中直接调用阻塞 I/O
@@ -1301,7 +1233,7 @@ Flux.range(1, 10)
 
 **原因**：响应式事件循环线程数量少（默认等于 CPU 核心数），任何阻塞都会拖慢整个事件循环，导致所有订阅者阻塞。
 
-### 7.2 反模式 2：忽略背压
+### 6.2 反模式 2：忽略背压
 
 ```java
 // 反模式：使用 Sinks 无背压控制
@@ -1314,7 +1246,7 @@ Sinks.Many<Integer> safeSink = Sinks.many().multicast()
         bufferOverflow -> System.err.println("Overflow!"));
 ```
 
-### 7.3 反模式 3：错误处理缺失
+### 6.3 反模式 3：错误处理缺失
 
 ```java
 // 反模式：未处理 onError，异常被吞
@@ -1337,7 +1269,7 @@ Mono.just("hello")
     .subscribe(System.out::println);
 ```
 
-### 7.4 反模式 4：在 flatMap 中创建大量内部流
+### 6.4 反模式 4：在 flatMap 中创建大量内部流
 
 ```java
 // 反模式：flatMap 内部创建大量 Publisher，导致内存压力
@@ -1356,7 +1288,7 @@ Flux.range(1, 100000)
     .subscribe();
 ```
 
-### 7.5 反模式 5：滥用 subscribeOn
+### 6.5 反模式 5：滥用 subscribeOn
 
 ```java
 // 反模式：多个 subscribeOn，误以为都生效
@@ -1375,7 +1307,7 @@ Flux.range(1, 10)
     .subscribe();
 ```
 
-### 7.6 反模式 6：Cold/Hot 混淆
+### 6.6 反模式 6：Cold/Hot 混淆
 
 ```java
 // 反模式：误以为 Hot Publisher 会缓存历史数据
@@ -1395,7 +1327,7 @@ replayFlux.connect();
 // 现在新订阅者会收到最近 2 个数据
 ```
 
-### 7.7 反模式 7：在非响应式代码中调用 subscribe
+### 6.7 反模式 7：在非响应式代码中调用 subscribe
 
 ```java
 // 反模式：在 Service 层调用 subscribe()，导致"fire-and-forget"且无法追踪错误
@@ -1418,7 +1350,7 @@ public void processOrderBlocking(Order order) {
 }
 ```
 
-### 7.8 反模式 8：用 block() 在响应式链中
+### 6.8 反模式 8：用 block() 在响应式链中
 
 ```java
 // 反模式：在 WebFlux 控制器中调用 block()
@@ -1434,7 +1366,7 @@ public Mono<User> getUser(@PathVariable Long id) {
 }
 ```
 
-### 7.9 反模式 9：Context 滥用
+### 6.9 反模式 9：Context 滥用
 
 ```java
 // 反模式：用 Context 传递业务参数（违反"上下文"语义）
@@ -1454,7 +1386,7 @@ public Mono<User> fetchUser(Long userId) {
 }
 ```
 
-### 7.10 反模式 10：调试代码残留
+### 6.10 反模式 10：调试代码残留
 
 ```java
 // 反模式：生产代码中残留 log() 操作符
@@ -1477,9 +1409,9 @@ Flux.range(1, 1000)
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 响应式微服务架构
+### 7.1 响应式微服务架构
 
 典型的响应式微服务架构：
 
@@ -1501,7 +1433,7 @@ flowchart TD
 - **数据库**：R2DBC（关系型）、Reactive MongoDB/Redis（NoSQL）。
 - **监控**：Micrometer + Reactor 自带的 `Metrics` 操作符。
 
-### 8.2 错误处理策略
+### 7.2 错误处理策略
 
 分层错误处理策略：
 
@@ -1546,7 +1478,7 @@ public class GlobalExceptionHandler {
 }
 ```
 
-### 8.3 监控与可观测性
+### 7.3 监控与可观测性
 
 ```java
 // 使用 Micrometer 监控响应式流
@@ -1572,7 +1504,7 @@ public Mono<Order> processOrderWithMetrics(Long id) {
 }
 ```
 
-### 8.4 测试策略
+### 7.4 测试策略
 
 ```java
 // 1. StepVerifier：精确验证流
@@ -1599,7 +1531,7 @@ StepVerifier.create(service.process(testPublisher))
     .verifyError(RuntimeException.class);
 ```
 
-### 8.5 性能调优
+### 7.5 性能调优
 
 ```java
 // 1. 合理设置缓冲区大小
@@ -1631,7 +1563,7 @@ shared.subscribe(consumer2);
 shared.connect();  // 一次查询，两个消费者
 ```
 
-### 8.6 与虚拟线程共存
+### 7.6 与虚拟线程共存
 
 Spring Boot 3.2+ 支持虚拟线程，与响应式可共存：
 
@@ -1664,9 +1596,9 @@ public Mono<User> fetchUser(Long id) {
 
 ---
 
-## 9. 案例研究：主流框架实践
+## 8. 案例研究：主流框架实践
 
-### 9.1 案例研究 1：Spring WebFlux 的全栈响应式
+### 8.1 案例研究 1：Spring WebFlux 的全栈响应式
 
 Spring WebFlux 是 Spring 5+ 的响应式 Web 框架，全栈响应式包括：
 
@@ -1728,7 +1660,7 @@ public interface OrderRepository extends R2dbcRepository<Order, Long> {
 - **背压传播**：SSE 推送天然支持背压（客户端慢时自动减速）。
 - **错误隔离**：每个步骤用 `onErrorResume` 兜底，避免级联失败。
 
-### 9.2 案例研究 2：Reactive Kafka 消费者
+### 8.2 案例研究 2：Reactive Kafka 消费者
 
 ```java
 @Service
@@ -1774,7 +1706,7 @@ public ReceiverOptions<String, OrderEvent> kafkaOptions() {
 - **手动提交 offset**：处理成功后才 `acknowledge()`，保证 at-least-once 语义。
 - **错误隔离**：单条消息失败不影响后续消费，跳过并记录。
 
-### 9.3 案例研究 3：RSocket 双向通信
+### 8.3 案例研究 3：RSocket 双向通信
 
 ```java
 // 服务端
@@ -1834,7 +1766,7 @@ RSocket 的优势：
 - **背压**：基于 Reactive Streams，客户端可控制服务端推送速率。
 - **二进制协议**：性能高于 HTTP/JSON。
 
-### 9.4 案例研究 4：Reactive Redis 缓存
+### 8.4 案例研究 4：Reactive Redis 缓存
 
 ```java
 @Configuration
@@ -1874,7 +1806,7 @@ public class UserCacheService {
 }
 ```
 
-### 9.5 案例研究 5：响应式流式数据处理管道
+### 8.5 案例研究 5：响应式流式数据处理管道
 
 ```java
 @Service
@@ -1924,7 +1856,7 @@ public class StreamProcessingPipeline {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 1. 解释 Reactive Streams 规范的 4 条核心规则，并说明为什么需要这些规则。
 
@@ -1944,7 +1876,7 @@ public class StreamProcessingPipeline {
        .subscribe();
    ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 6. 实现一个带背压的 `BufferedPublisher`，当消费者慢时缓存最多 N 个数据，超出则丢弃最旧的。
 
@@ -1956,7 +1888,7 @@ public class StreamProcessingPipeline {
 
 10. 解释 `flatMap`、`concatMap`、`switchMap` 的并发语义差异，并给出各自适用的场景。
 
-### 10.3 思考题
+### 9.3 思考题
 
 11. **虚拟线程会取代响应式编程吗？** 请从编程模型、性能、可维护性、生态 4 个维度论证你的观点。
 
@@ -1968,7 +1900,7 @@ public class StreamProcessingPipeline {
 
 15. **响应式 vs 命令式 + 虚拟线程**：如果你现在要设计一个高并发电商订单系统，你会选哪种？为什么？
 
-### 10.4 实战题
+### 9.4 实战题
 
 16. 用 Spring WebFlux + R2DBC 实现一个简单的博客系统，包含文章 CRUD、评论流式推送（SSE）。
 
@@ -1985,7 +1917,7 @@ public class StreamProcessingPipeline {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. **Reactive Streams Specification**. "Reactive Streams v1.0.3". 2019. https://www.reactive-streams.org/
 
@@ -2019,15 +1951,15 @@ public class StreamProcessingPipeline {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 学术论文
+### 11.1 学术论文
 
 - Elliott, C., Hudak, P. "Functional Reactive Animation". ICFP 1997.
 - Courtney, A. "Frappé: Functional Reactive Programming in Java". POPL 2003.
 - Salvaneschi, G., Mezini, M. "Towards Reactive Programming for Object-Oriented Applications". ECOOP 2014.
 
-### 12.2 书籍
+### 11.2 书籍
 
 - "Reactive Programming with RxJava". Tomasz Nurkiewicz, Ben Christensen. O'Reilly, 2016.
 - "Reactive Spring". Greg L. Turnquist. O'Reilly, 2020.
@@ -2035,7 +1967,7 @@ public class StreamProcessingPipeline {
 - "Reactive Design Patterns". Roland Kuhn et al. Manning, 2016.
 - "Reactive Messaging Patterns with the Actor Model". Vaughn Vernon. Addison-Wesley, 2015.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - Project Reactor 官方参考文档：https://projectreactor.io/docs/core/release/reference/
 - Spring WebFlux 官方文档：https://docs.spring.io/spring-framework/reference/web/webflux.html
@@ -2044,7 +1976,7 @@ public class StreamProcessingPipeline {
 - RSocket 协议规范：https://github.com/rsocket/rsocket/blob/master/Protocol.md
 - "Reactive Programming in Java" 教程（Baeldung）：https://www.baeldung.com/java-reactive-programming
 
-### 12.4 相关 JEP（JDK Enhancement Proposal）
+### 11.4 相关 JEP（JDK Enhancement Proposal）
 
 - JEP 411: Deprecate the Security Manager for Removal（影响响应式安全）
 - JEP 444: Virtual Threads（与响应式的关键对比）
@@ -2052,7 +1984,7 @@ public class StreamProcessingPipeline {
 - JEP 462: Structured Concurrency (Second Preview)
 - JEP 467: Markdown Documentation Comments（不影响响应式，但 Java 演进参考）
 
-### 12.5 社区与生态
+### 11.5 社区与生态
 
 - Project Reactor GitHub: https://github.com/reactor/reactor-core
 - RxJava GitHub: https://github.com/ReactiveX/RxJava

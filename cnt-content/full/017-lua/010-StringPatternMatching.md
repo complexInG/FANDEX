@@ -17,60 +17,16 @@ prerequisites:
   - lua/概述与环境配置
   - lua/标准库详解
 ---
+
 # Lua 字符串模式匹配速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本节依据 Bloom 分类法（Bloom's Taxonomy）按认知层级组织学习目标，学习者完成本章后应具备以下能力。
-
-### 1.1 记忆层（Remember）
-
-- 能够准确复述 Lua 模式匹配（Pattern Matching）与正则表达式（Regular Expression）的核心差异。
-- 能够默写出 Lua 模式中全部字符类（Character Class）`%a %d %l %u %w %s %p %c %x` 的语义。
-- 能够列出四种量词（Quantifier）`+ * - ?` 的含义及贪婪/非贪婪属性。
-- 能够写出 `string.find / string.match / string.gmatch / string.gsub` 四个 API 的函数签名。
-
-### 1.2 理解层（Understand）
-
-- 能够解释 Lua 模式匹配为什么不是正则表达式（语法、表达力、引擎实现三个维度）。
-- 能够说明捕获组（Capture）与位置捕获（Position Capture）的区别。
-- 能够阐述 `%b` 平衡匹配与 `%f` 前沿匹配（Frontier Pattern）的工作原理。
-- 能够描述 `string.gsub` 中替换值（replacement）支持的三种类型：字符串、函数、表。
-
-### 1.3 应用层（Apply）
-
-- 能够使用 `string.match` 从结构化字符串（日期、URL、邮箱、IPv4）中提取字段。
-- 能够使用 `string.gmatch` 实现词法分析器（Tokenizer）。
-- 能够使用 `string.gsub` 配合函数实现动态替换（如模板渲染）。
-- 能够使用 `%b() %b[]` 解析嵌套结构。
-
-### 1.4 分析层（Analyze）
-
-- 能够分析给定模式在特定输入下的匹配行为，绘制状态转移过程。
-- 能够识别贪心量词与非贪心量词在实际匹配中的差异。
-- 能够分析模式的回溯成本，识别潜在的 ReDoS（Regular Expression Denial of Service）风险。
-
-### 1.5 评估层（Evaluate）
-
-- 能够评估在特定场景下应选择 Lua 模式、LPeg 还是引入 POSIX 正则库。
-- 能够评估某个模式的可读性、可维护性与性能表现。
-- 能够评判生产代码中模式匹配的安全性（输入校验、超时保护、资源限制）。
-
-### 1.6 创造层（Create）
-
-- 能够设计一套基于模式匹配的配置文件解析器。
-- 能够基于 Lua 模式构建轻量级日志解析流水线。
-- 能够编写防御 ReDoS 的输入校验工具库。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 Lua 模式匹配的诞生背景
+### 1.1 Lua 模式匹配的诞生背景
 
 Lua 语言诞生于 1993 年巴西里约热内卢天主教大学（PUC-Rio）的 TECGraf 实验室，由 Roberto Ierusalimschy、Waldemar Celes 和 Luiz Henrique de Figueiredo 三人设计。Lua 最初的定位是一种嵌入式脚本语言，用于替代当时在巴西工程数据录入系统中使用的 SOL（Simple Object Language）与 DEL（Data-Entry Language）。
 
@@ -86,7 +42,7 @@ Roberto Ierusalimschy 在《Programming in Lua》第四版第 10 章中明确指
 
 > "Lua 的模式匹配虽然没有正则表达式强大，但足够用于大多数常见的文本处理任务，并且更高效、更简单。"
 
-### 2.2 设计哲学：少即是多
+### 1.2 设计哲学：少即是多
 
 Lua 模式匹配的设计哲学与 Lua 语言本身一脉相承：**提供最少但足够的特性，保持实现简单、行为可预测**。这一哲学体现在：
 
@@ -96,7 +52,7 @@ Lua 模式匹配的设计哲学与 Lua 语言本身一脉相承：**提供最少
 - **统一的 `%` 转义**：不同于正则用 `\` 转义（在 Lua 字符串中需要 `\\` 双重转义），Lua 模式用 `%` 转义，与字符串字面量解耦，可读性更高。
 - **位置捕获 `()`**：返回匹配位置而非匹配内容，便于构建解析器。
 
-### 2.3 与 LPeg 的关系
+### 1.3 与 LPeg 的关系
 
 Lua 团队后来意识到，某些场景下需要比模式匹配更强的表达能力，但又不想引入完整正则的复杂性。Roberto Ierusalimschy 等人设计了 **LPeg**（Lua Pattern Expression），一种基于 Parsing Expression Grammar（PEG）的匹配库。LPeg 是 Lua 模式匹配的精神继承者：
 
@@ -108,15 +64,15 @@ Lua 团队后来意识到，某些场景下需要比模式匹配更强的表达�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节给出 Lua 模式匹配的形式化定义。我们首先定义字符集、模式语法，再给出匹配语义的形式化描述。
 
-### 3.1 基本符号
+### 2.1 基本符号
 
 设 $\Sigma$ 为字符集（在 Lua 5.4 中为 Unicode 码点序列的字节序列，即 $\Sigma = \{0, 1, \dots, 255\}$），$\Sigma^*$ 为 $\Sigma$ 上的所有有限字符串集合（含空串 $\epsilon$）。设 $s \in \Sigma^*$ 为待匹配字符串，$p$ 为模式（pattern）。
 
-### 3.2 模式语法的形式化定义
+### 2.2 模式语法的形式化定义
 
 Lua 模式由若干**模式项（Pattern Item）**组成。每个模式项的语法如下（采用 EBNF 描述）：
 
@@ -133,7 +89,7 @@ $$
 \end{aligned}
 $$
 
-### 3.3 字符类的形式化定义
+### 2.3 字符类的形式化定义
 
 Lua 模式中的字符类（character class）定义如下，其中 $\Sigma$ 为完整字符集：
 
@@ -161,7 +117,7 @@ Lua 模式中的字符类（character class）定义如下，其中 $\Sigma$ 为
 
 注意：Lua 5.4 中 `%a` 仅匹配 ASCII 字母（即 `[a-zA-Z]`），并不匹配 Unicode 字母。要匹配 UTF-8 字母需借助 `[\x80-\xff]` 字节范围或使用 LPeg。
 
-### 3.4 量词的形式化语义
+### 2.4 量词的形式化语义
 
 设 $c$ 为一个字符类匹配的字符集合，$m$ 为量词。量词的语义如下（其中 $|$ 表示字符串长度）：
 
@@ -174,7 +130,7 @@ c\text{?} &\triangleq \text{匹配 } k \text{ 个 } c \text{ 字符}, k \in \{0,
 \end{aligned}
 $$
 
-### 3.5 匹配关系的形式化定义
+### 2.5 匹配关系的形式化定义
 
 定义匹配关系 $\text{match}(p, s, i) \to \mathbb{N} \cup \{\bot\}$，表示模式 $p$ 在字符串 $s$ 的位置 $i$（1-based）开始匹配，返回匹配结束位置（含）或失败 $\bot$。
 
@@ -189,7 +145,7 @@ $$
 7. **锚点** `$`：仅当 $i = |s|+1$ 时匹配（即模式到达字符串末尾）。
 8. **捕获** `(p_inner)`：记录捕获内容，递归匹配 $p_{\text{inner}}$。
 
-### 3.6 复杂度的形式化分析
+### 2.6 复杂度的形式化分析
 
 设模式 $p$ 长度为 $m$，字符串 $s$ 长度为 $n$，则：
 
@@ -200,9 +156,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 贪心 vs 非贪心量词的匹配差异
+### 3.1 贪心 vs 非贪心量词的匹配差异
 
 考虑模式 `a+` 与 `a-` 在字符串 `"aaab"` 上的匹配行为：
 
@@ -226,7 +182,7 @@ $$
 
 最终匹配整个字符串 `"aaab"`，但 `a-` 捕获 `"aaa"`。
 
-### 4.2 回溯成本的数学推导
+### 3.2 回溯成本的数学推导
 
 考虑模式 `(a+)(a+)(a+)` 在字符串 `a^n`（$n$ 个 `a`）上的匹配：
 
@@ -236,7 +192,7 @@ $$
 
 回溯次数为 $\Theta(n^2)$。具体地，第一个 `a+` 取值 $n-2, n-3, \dots, 1$，每种取值下第二个 `a+` 取值 $1, 2, \dots, n-k_1-1$，平均回溯次数为 $\sum_{k_1=1}^{n-2} (n-k_1-1) = \frac{(n-2)(n-1)}{2} = \Theta(n^2)$。
 
-### 4.3 NFA 视角下的模式匹配
+### 3.3 NFA 视角下的模式匹配
 
 Lua 模式匹配本质上是 NFA（Nondeterministic Finite Automaton）的贪心回溯模拟。每个模式可编译为一个 NFA：
 
@@ -247,7 +203,7 @@ Lua 模式匹配本质上是 NFA（Nondeterministic Finite Automaton）的贪心
 
 与标准 NFA 不同，Lua 模式的 NFA 在分支选择时遵循固定优先级（贪心优先长匹配，非贪心优先短匹配），而非并行探索。这种"先尝试优先分支，失败再回溯"的策略对应 Thomason 风格的 NFA 模拟。
 
-### 4.4 与正则表达式表达力的对比
+### 3.4 与正则表达式表达力的对比
 
 正则表达式（Regular Expression）在 Chomsky 文法层级中对应 Type-3 文法（正则文法），可识别正则语言。Lua 模式是正则表达式的子集，但增加了非正则特性：
 
@@ -265,11 +221,11 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节通过多个完整可运行示例演示 Lua 模式匹配的核心 API 与典型用法。所有示例均经过 Lua 5.4 验证。
 
-### 5.1 基础查找：string.find
+### 4.1 基础查找：string.find
 
 `string.find(s, pattern, init?, plain?)` 返回匹配的起止位置（1-based，闭区间），未匹配返回 `nil`。
 
@@ -296,7 +252,7 @@ local pos2 = string.find("a.b.c", ".")
 print(pos2)  -- 1  (匹配 'a')
 ```
 
-### 5.2 提取匹配：string.match
+### 4.2 提取匹配：string.match
 
 `string.match(s, pattern, init?)` 返回匹配内容；若模式中有捕获组，则返回所有捕获。
 
@@ -318,7 +274,7 @@ local pos = string.match("hello world", "hello() world")
 print(pos)  -- 6  (hello 后的位置)
 ```
 
-### 5.3 全局迭代：string.gmatch
+### 4.3 全局迭代：string.gmatch
 
 `string.gmatch(s, pattern)` 返回一个迭代器，每次调用返回下一次匹配的捕获（无捕获则返回整个匹配）。
 
@@ -346,7 +302,7 @@ end
 -- numbers = {1, 22, 333}
 ```
 
-### 5.4 全局替换：string.gsub
+### 4.4 全局替换：string.gsub
 
 `string.gsub(s, pattern, repl, n?)` 返回替换后的字符串与替换次数。`repl` 可为字符串、函数或表。
 
@@ -378,7 +334,7 @@ local r6 = string.gsub("I like apple and cherry", "%a+", dict)
 print(r6)  -- I like 苹果 and cherry (cherry 不在表中保持原样)
 ```
 
-### 5.5 捕获组与位置捕获
+### 4.5 捕获组与位置捕获
 
 ```lua
 -- 普通捕获组
@@ -401,7 +357,7 @@ for pos in string.gmatch("abcde", "()()()") do
 end
 ```
 
-### 5.6 平衡匹配 %b
+### 4.6 平衡匹配 %b
 
 `%bxy` 匹配以 `x` 开始、以 `y` 结束且 `x` 与 `y` 数量平衡的字符串，常用于解析嵌套结构。
 
@@ -432,7 +388,7 @@ local block = string.match(func, "%bdo")
 print(block)  -- 整个字符串 (因为 do 与 end 平衡)
 ```
 
-### 5.7 前沿匹配 %f[set]
+### 4.7 前沿匹配 %f[set]
 
 `%f[set]` 是零宽断言，匹配位置满足"前一字符不在 set 中，且当前字符在 set 中"。等价于其他正则的边界断言 `\b` 的泛化形式。
 
@@ -455,7 +411,7 @@ print(r)  -- abcNUM_123defNUM_456
 -- 字符串结尾也视为"当前字符是 \0"
 ```
 
-### 5.8 字符集合 [set]
+### 4.8 字符集合 [set]
 
 ```lua
 -- 简单集合
@@ -479,7 +435,7 @@ local m5 = string.match("2026-07-21", "[%d-/]+")
 print(m5)  -- 2026-07-21
 ```
 
-### 5.9 IPv4 地址解析
+### 4.9 IPv4 地址解析
 
 ```lua
 -- 解析 IPv4 地址
@@ -514,7 +470,7 @@ local function strict_ipv4(s)
 end
 ```
 
-### 5.10 URL 解析
+### 4.10 URL 解析
 
 ```lua
 -- 解析 URL：协议、主机、端口、路径、查询串
@@ -543,7 +499,7 @@ local u = parse_url("https://example.com:8080/api/users?page=1&size=10")
 -- u.query = "page=1&size=10"
 ```
 
-### 5.11 日志解析器
+### 4.11 日志解析器
 
 ```lua
 -- 解析 Nginx access log 格式：
@@ -583,7 +539,7 @@ local parsed = parse_nginx_log(log_line)
 -- parsed.status = 200
 ```
 
-### 5.12 模板渲染
+### 4.12 模板渲染
 
 ```lua
 -- 简单模板引擎：替换 {{ key }} 为字典中的值
@@ -604,7 +560,7 @@ local rendered = render_template(tpl, {
 -- rendered = "Hello, Alice! Your order #A12345 will ship on 2026-07-25."
 ```
 
-### 5.13 词法分析器
+### 4.13 词法分析器
 
 ```lua
 -- 简单词法分析器：将表达式分词
@@ -659,9 +615,9 @@ local tokens = tokenize("3.14 + foo * (2 - bar)")
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua 模式 vs POSIX 正则
+### 5.1 Lua 模式 vs POSIX 正则
 
 | 维度 | Lua 模式 | POSIX 正则（ERE） |
 | :--- | :--- | :--- |
@@ -680,7 +636,7 @@ local tokens = tokenize("3.14 + foo * (2 - bar)")
 | ReDoS 风险 | 低 | 中-高 |
 | 体积 | ~600 行 C | 数千行 C |
 
-### 6.2 Lua 模式 vs PCRE
+### 5.2 Lua 模式 vs PCRE
 
 PCRE（Perl Compatible Regular Expressions）是功能最全的正则引擎，支持几乎所有现代正则特性。
 
@@ -694,7 +650,7 @@ PCRE（Perl Compatible Regular Expressions）是功能最全的正则引擎，�
 | 递归模式 | 不支持 | `(?R) (?1)` |
 | 子程序调用 | 不支持 | `(?1)` |
 
-### 6.3 Lua 模式 vs LPeg
+### 5.3 Lua 模式 vs LPeg
 
 LPeg 是 Lua 团队官方的 PEG 库，是 Lua 模式的"加强版"。
 
@@ -726,7 +682,7 @@ local kv = word * "=" * word
 local k2, v2 = kv:match("name=Lua")
 ```
 
-### 6.4 Lua 模式 vs Python re
+### 5.4 Lua 模式 vs Python re
 
 | 维度 | Lua 模式 | Python re |
 | :--- | :--- | :--- |
@@ -738,7 +694,7 @@ local k2, v2 = kv:match("name=Lua")
 | 编译缓存 | 无（每次解析） | `re.compile` |
 | 全局标志 | 无 | `re.I re.M re.S` |
 
-### 6.5 Lua 模式 vs JavaScript RegExp
+### 5.5 Lua 模式 vs JavaScript RegExp
 
 | 维度 | Lua 模式 | JavaScript RegExp |
 | :--- | :--- | :--- |
@@ -750,7 +706,7 @@ local k2, v2 = kv:match("name=Lua")
 | 后瞻断言 | 不支持 | `(?<=...) (?<!...)` |
 | Unicode | 字节级 | `u` 标志 |
 
-### 6.6 API 内部对比
+### 5.6 API 内部对比
 
 Lua 字符串模式 API 内部的语义对比：
 
@@ -763,9 +719,9 @@ Lua 字符串模式 API 内部的语义对比：
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：贪心量词过度匹配
+### 6.1 陷阱：贪心量词过度匹配
 
 ```lua
 -- 反模式：贪心量词导致过度匹配
@@ -779,7 +735,7 @@ print(m_bad)  -- <a>foo</a><b>bar</b>
 -- 教训：处理边界明确的文本时优先用非贪心 -
 ```
 
-### 7.2 陷阱：忘记 `%` 转义
+### 6.2 陷阱：忘记 `%` 转义
 
 ```lua
 -- 反模式：忘记转义特殊字符
@@ -800,7 +756,7 @@ local m_safe = string.match(s, escape_pattern("$") .. "%d+")
 print(m_safe)  -- $42
 ```
 
-### 7.3 陷阱：误以为 Lua 模式是正则
+### 6.3 陷阱：误以为 Lua 模式是正则
 
 ```lua
 -- 反模式：误用正则语法
@@ -823,7 +779,7 @@ local m2 = string.match("a1b2", "[ab]%d")
 print(m2)  -- a1
 ```
 
-### 7.4 陷阱：捕获组数量与返回值不匹配
+### 6.4 陷阱：捕获组数量与返回值不匹配
 
 ```lua
 -- 反模式：捕获组数量与变量不匹配
@@ -837,7 +793,7 @@ print(m)  -- 2026-07-21
 -- 教训：始终核对捕获组数量
 ```
 
-### 7.5 陷阱：`string.gsub` 替换字符串中的 `%` 误解
+### 6.5 陷阱：`string.gsub` 替换字符串中的 `%` 误解
 
 ```lua
 -- 反模式：替换字符串中误用 %
@@ -858,7 +814,7 @@ print(r_good)  -- 100%
 -- %% 字面 %
 ```
 
-### 7.6 陷阱：Unicode 字符的字节级匹配
+### 6.6 陷阱：Unicode 字符的字节级匹配
 
 ```lua
 -- 反模式：误以为 %a 匹配 Unicode 字母
@@ -875,7 +831,7 @@ print(m2)  -- 你 (匹配第一个 UTF-8 字符的字节序列)
 -- 或使用 lua-utils utf8 库、LPeg 的 unicode 支持
 ```
 
-### 7.7 陷阱：`string.find` 的 plain 参数误用
+### 6.7 陷阱：`string.find` 的 plain 参数误用
 
 ```lua
 -- 反模式：用模式匹配查找字面字符串（含特殊字符）
@@ -893,7 +849,7 @@ print(pos_good)  -- 8
 -- 教训：查找字面字符串（用户输入、文件路径等）务必使用 plain=true
 ```
 
-### 7.8 陷阱：模式回溯爆炸
+### 6.8 陷阱：模式回溯爆炸
 
 ```lua
 -- 反模式：构造导致回溯爆炸的模式
@@ -909,7 +865,7 @@ local pattern = "(a+)(a+)(a+)(a+)(a+)$"  -- 5 个贪心量词 + 锚点
 -- 或使用 LPeg（PEG 保证线性时间）
 ```
 
-### 7.9 陷阱：忘记 `^$` 锚点的位置语义
+### 6.9 陷阱：忘记 `^$` 锚点的位置语义
 
 ```lua
 -- 反模式：^ 只能在模式开头，$ 只能在模式结尾
@@ -926,7 +882,7 @@ print(m3)  -- c
 -- string.gsub 中 ^ 在模式开头表示"不替换开头匹配项之外的内容"
 ```
 
-### 7.10 陷阱：`%b` 平衡匹配的字符限制
+### 6.10 陷阱：`%b` 平衡匹配的字符限制
 
 ```lua
 -- 反模式：%b 只能用单字符作为边界
@@ -960,9 +916,9 @@ end
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 模式预编译与缓存
+### 7.1 模式预编译与缓存
 
 Lua 标准库的 `string.find/match/gmatch/gsub` 每次调用都会重新解析模式字符串。对于高频调用的模式，应通过 `local` 缓存解析后的内部状态：
 
@@ -1005,7 +961,7 @@ local function parse_lines_lpeg(lines)
 end
 ```
 
-### 8.2 输入校验与白名单
+### 7.2 输入校验与白名单
 
 模式匹配常用于输入校验。生产代码中应遵循"白名单优于黑名单"原则：
 
@@ -1033,7 +989,7 @@ print(is_safe_username_v2("al;ice"))    -- false
 print(is_safe_username_v2("ab"))        -- false (太短)
 ```
 
-### 8.3 防御 ReDoS
+### 7.3 防御 ReDoS
 
 虽然 Lua 模式比正则表达式更难触发 ReDoS，但仍需注意：
 
@@ -1069,7 +1025,7 @@ end
 local r = string.match("aaa,bbb,ccc", "^([^,]+),([^,]+),([^,]+)$")
 ```
 
-### 8.4 模式 DSL 与构建器
+### 7.4 模式 DSL 与构建器
 
 对于复杂场景，可构建 DSL 简化模式编写：
 
@@ -1143,7 +1099,7 @@ local y, m, d = string.match("2026-07-21", p)
 print(y, m, d)  -- 2026  07  21
 ```
 
-### 8.5 单元测试模式
+### 7.5 单元测试模式
 
 ```lua
 -- 模式匹配的单元测试框架
@@ -1209,7 +1165,7 @@ PatternTest.new("IPv4", "^%d+%.%d+%.%d+%.%d+$")
     :run()
 ```
 
-### 8.6 性能基准测试
+### 7.6 性能基准测试
 
 ```lua
 -- 性能基准：对比不同模式的执行时间
@@ -1252,9 +1208,9 @@ end)
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究：OpenResty 中的请求路由
+### 8.1 案例研究：OpenResty 中的请求路由
 
 OpenResty（基于 Nginx + LuaJIT）广泛使用 Lua 模式匹配实现 HTTP 请求路由。以下是简化版路由器：
 
@@ -1319,7 +1275,7 @@ router:dispatch("GET", "/users/42")              -- 获取用户: 42
 router:dispatch("POST", "/users/42/posts/100")   -- 用户 42 的文章 100
 ```
 
-### 9.2 案例研究：日志分析流水线
+### 8.2 案例研究：日志分析流水线
 
 某游戏公司使用 Lua 处理游戏服务器日志，要求从原始日志中提取玩家行为、统计在线时长、识别异常。
 
@@ -1407,7 +1363,7 @@ print(string.format("INFO: %d, WARN: %d, ERROR: %d",
     stats.by_level.INFO, stats.by_level.WARN, stats.by_level.ERROR))
 ```
 
-### 9.3 案例研究：配置文件解析器
+### 8.3 案例研究：配置文件解析器
 
 某嵌入式项目使用类 INI 格式的配置文件，需用 Lua 模式解析：
 
@@ -1493,7 +1449,7 @@ print(config.database.url)      -- postgres://localhost:5432/mydb
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：编写模式，从字符串 `"Hello, World! 2026"` 中提取 `"Hello"` 和 `"World"` 两个单词。
 
@@ -1520,7 +1476,7 @@ end
 
 参考答案要点：`^[%a_][%w_]*$`
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：编写函数 `parse_csv(line)`，解析 CSV 行。要求支持引号包裹的字段（字段内可包含逗号）。
 
@@ -1560,7 +1516,7 @@ end
 
 参考答案要点：使用 `string.gsub` 配合函数替换，注意顺序（注释 > 字符串 > 关键字 > 数字）。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **习题 7**：实现一个递归下降解析器，使用 Lua 模式匹配解析 JSON 字符串。要求支持对象、数组、字符串、数字、布尔、null。
 
@@ -1580,7 +1536,7 @@ end
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本节参考文献遵循 ACM Reference Format。
 
@@ -1610,42 +1566,42 @@ end
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **Lua 5.4 Reference Manual**（https://www.lua.org/manual/5.4/manual.html#6.4）：官方模式匹配 API 文档，覆盖 `string.find/match/gmatch/gsub` 完整语义。
 - **Lua 5.4 模式匹配章节**（https://www.lua.org/manual/5.4/manual.html#6.4.1）：模式语法的权威定义。
 - **LPeg 官方文档**（http://www.inf.puc-rio.br/~roberto/lpeg/）：Lua PEG 库的官方文档，包含完整 API 与示例。
 - **Lua-users Wiki: Patterns Tutorial**（http://lua-users.org/wiki/PatternsTutorial）：社区维护的模式匹配教程，含大量实战示例。
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - **《Programming in Lua》第 4 版**（Roberto Ierusalimschy, 2016）：第 10 章"Pattern Matching"深入讲解 Lua 模式的设计哲学与使用技巧。
 - **《Lua Quick Start Guide》**（Kurt J. Guida, 2018）：第 5 章覆盖字符串与模式匹配基础。
 - **《Mastering Lua》**（Kurt Jung, 2015）：第 7 章高级模式匹配与性能优化。
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - Ierusalimschy, R., de Figueiredo, L. H. 2018. *A Look at the Design of Lua*. Communications of the ACM. 回顾 Lua 设计决策，包括为何选择自研模式匹配。
 - Medeiros, S., Ierusalimschy, R., Bastos, R. 2012. *The LuaJIT Project: Performance, Embeddability, and Portability*. 讨论 LuaJIT 对模式匹配的优化。
 - Grune, D., Jacobs, C. J. H. 2008. *Parsing Techniques: A Practical Guide*, 2nd ed. Springer. 详述 NFA/DFA/PEG 等匹配算法的理论基础。
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **LPeg**（https://github.com/keplerproject/lpeg）：Lua PEG 库，Lua 模式的精神继承者。
 - **LuaJIT**（https://luajit.org/）：高性能 Lua 实现，对模式匹配有专门优化。
 - **OpenResty**（https://openresty.org/）：Nginx + LuaJIT 平台，大量使用模式匹配实现 Web 路由与解析。
 - **Kong**（https://konghq.com/）：API 网关，基于 OpenResty，含大量模式匹配实战代码。
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **Lua Users Wiki**（http://lua-users.org/wiki/）：社区知识库，含大量模式匹配技巧。
 - **Stack Overflow Lua 标签**（https://stackoverflow.com/questions/tagged/lua）：活跃的问答社区。
 - **Lua 邮件列表**（https://www.lua.org/lua-l.html）：Lua 官方邮件列表，设计讨论与经验分享。
 - **Reddit /r/lua**（https://www.reddit.com/r/lua/）：Lua 社区讨论区。
 
-### 12.6 相关工具
+### 11.6 相关工具
 
 - **lua-pattern-debugger**：第三方调试工具，可视化模式匹配过程。
 - **regex101.com**（https://regex101.com/）：在线正则测试工具，可对比 Lua 模式与正则的差异。

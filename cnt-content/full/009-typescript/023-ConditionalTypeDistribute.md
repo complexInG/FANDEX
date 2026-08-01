@@ -26,42 +26,16 @@ tags:
   - union-types
 ---
 
+
 # 条件类型分发
 
 > 本文档对标 MIT 6.S192 与 Stanford CS143 课程标准，系统讲解 TypeScript 分布式条件类型（Distributive Conditional Types）的形式语义、控制策略、类型级算法与生产级应用。分布式条件类型是 TypeScript 类型系统的核心计算机制之一，它使联合类型能够像集合一样参与类型层面的映射与过滤。本文档面向零基础自学读者，从集合论的基本概念出发，逐步推导分发行为的设计动机、数学语义、控制技巧与实战模式，最终落地为可复用的类型工具库。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-完成本文档学习后，读者应能在三个 Bloom 层次上达成以下能力：
-
-### 1.1 认知层（Remembering / Understanding）
-
-- **LO-1.1**：能够准确陈述分布式条件类型的触发条件——"裸类型参数"（Naked Type Parameter）直接出现在 `extends` 左侧，并区分裸类型参数与被包裹类型参数的行为差异。
-- **LO-1.2**：能够描述分发的求值规则——对联合类型 $T = T_1 \cup T_2 \cup \cdots \cup T_n$，条件类型分别对每个 $T_i$ 求值，再合并为新的联合类型。
-- **LO-1.3**：能够解释 `never` 类型在分布式条件类型中的"空集"语义，并说明 `never` 不触发分发的根本原因（空集无成员可分发）。
-- **LO-1.4**：能够复述阻止分发的两种主要技巧——元组包裹 `[T] extends [U]` 与交叉类型包裹 `T & {} extends U`，并说明其形式语义依据。
-
-### 1.2 应用层（Applying / Analyzing）
-
-- **LO-2.1**：能够使用分布式条件类型实现类型过滤（`Filter<T, U>`）、类型排除（`Exclude<T, U>`）、类型提取（`Extract<T, U>`）三类基础模式。
-- **LO-2.2**：能够使用 `[T] extends [U]` 阻止分发，实现 `IsNever`、`IsUnion`、`IsAny`、`IsUnknown` 等类型检测工具。
-- **LO-2.3**：能够使用分布式条件类型与 `infer` 组合，实现 `Awaited`、`Flatten`、`DeepReadonly` 等递归工具类型。
-- **LO-2.4**：能够诊断分发相关的编译错误，如"Type instantiation is excessively deep"、"boolean 分发为 true | false"等常见陷阱。
-- **LO-2.5**：能够使用分布式条件类型实现类型级布尔运算（`And`、`Or`、`Not`、`Xor`）、排列组合（`Combine`）、类型级链表与树。
-
-### 1.3 创造层（Evaluating / Creating）
-
-- **LO-3.1**：能够设计一个类型安全的联合类型分解器，将复杂联合类型拆解为元组形式以便运行时遍历。
-- **LO-3.2**：能够评估"分布式 vs 非分布式"两种方案在 API 设计中的权衡，并给出量化对比（编译时间、类型推断精度、错误信息质量）。
-- **LO-3.3**：能够设计一个类型安全的状态机定义工具，利用分布式条件类型推导状态转移表的合法路径。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 联合类型的"分支困境"（2015-2017）
+### 1.1 联合类型的"分支困境"（2015-2017）
 
 在 TypeScript 2.8 引入条件类型之前，开发者面对联合类型时无法在类型层面进行分支决策。例如，无法表达"如果 T 是字符串联合，则将每个成员转为数组"：
 
@@ -84,7 +58,7 @@ function toArray(x: any): any[] {
 // 无法处理 string | number 的联合
 ```
 
-### 2.2 条件类型的诞生与分发语义（TypeScript 2.8, 2018）
+### 1.2 条件类型的诞生与分发语义（TypeScript 2.8, 2018）
 
 TypeScript 2.8 引入条件类型，核心语法：
 
@@ -104,7 +78,7 @@ $$
 
 其中 $S$ 是联合类型，$f$ 是条件类型 $T \texttt{ extends } U \texttt{ ? } X \texttt{ : } Y$。
 
-### 2.3 分发控制的演化（TypeScript 2.8 - 5.0）
+### 1.3 分发控制的演化（TypeScript 2.8 - 5.0）
 
 随着条件类型的广泛应用，开发者发现分发的"自动性"有时是负担而非便利。例如，检测 `never` 类型时：
 
@@ -119,7 +93,7 @@ type A = IsNever<never>; // never —— 而非预期的 true！
 - **交叉类型包裹**（TypeScript 4.0+）：`T & {} extends U`，利用交叉类型破坏裸类型参数。
 - **条件类型包裹**（TypeScript 4.5+）：使用 `extends infer` 重新绑定类型变量。
 
-### 2.4 现代分布式条件类型的工程化应用
+### 1.4 现代分布式条件类型的工程化应用
 
 今天，分布式条件类型已成为 TypeScript 类型编程的核心基石：
 
@@ -131,9 +105,9 @@ type A = IsNever<never>; // never —— 而非预期的 true！
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 分布式条件类型的语法
+### 2.1 分布式条件类型的语法
 
 条件类型的 BNF 文法：
 
@@ -148,7 +122,7 @@ $$
 - **NakedTypeParameter**：直接出现在 `extends` 左侧的类型参数 `T`。
 - **WrappedTypeParameter**：被元组、数组、交叉类型等构造器包裹的类型参数，如 `[T]`、`T[]`、`T & {}`。
 
-### 3.2 联合类型的集合语义
+### 2.2 联合类型的集合语义
 
 TypeScript 中的联合类型 $T_1 \cup T_2 \cup \cdots \cup T_n$ 对应集合论中的并集：
 
@@ -162,7 +136,7 @@ $$
 \texttt{never} = \emptyset = \{ \}
 $$
 
-### 3.3 分布式条件类型的求值规则
+### 2.3 分布式条件类型的求值规则
 
 设 $T = T_1 \cup T_2 \cup \cdots \cup T_n$ 为联合类型，条件类型 $C = T \texttt{ extends } U \texttt{ ? } X \texttt{ : } Y$ 的求值规则为：
 
@@ -172,7 +146,7 @@ $$
 
 关键前提"$T$ is naked"——$T$ 直接出现在 `extends` 左侧，未被元组、函数等构造器包裹。
 
-### 3.4 非分布式条件类型的求值规则
+### 2.4 非分布式条件类型的求值规则
 
 若 $T$ 被包裹（如 $[T]$ extends $[U]$），则不分发：
 
@@ -182,7 +156,7 @@ $$
 
 此时 $[T_1 \cup T_2] <: [U]$ 当且仅当 $(T_1 \cup T_2) <: U$（元组的协变规则）。
 
-### 3.5 `never` 的空集语义
+### 2.5 `never` 的空集语义
 
 对于分布式条件类型：
 
@@ -200,7 +174,7 @@ $$
 
 解释：$[\emptyset]$ 是单元素元组，其元素类型为 `never`，但元组本身存在，因此仍参与条件判断。`[never] extends [any]` 为 `true`（因为 `never <: any`）。
 
-### 3.6 分发的代数性质
+### 2.6 分发的代数性质
 
 分布式条件类型满足以下代数性质：
 
@@ -230,9 +204,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 分配律的证明
+### 3.1 分配律的证明
 
 **命题 4.1**：分布式条件类型对联合类型满足分配律，即：
 
@@ -250,7 +224,7 @@ $$
 
 **工程含义**：分布式条件类型天然支持"类型过滤"——对于联合类型 $T$，可过滤出满足某条件的成员。
 
-### 4.2 空集律的证明
+### 3.2 空集律的证明
 
 **命题 4.2**：对于任意条件类型 $C = T \texttt{ extends } U \texttt{ ? } X \texttt{ : } Y$，若 $T = \texttt{never}$（空集），则 $C \Downarrow \texttt{never}$，无论 $U$、$X$、$Y$ 是什么。
 
@@ -277,7 +251,7 @@ type A = IsNever<never>; // true
 type B = IsNever<string>; // false
 ```
 
-### 4.3 `boolean` 的分解性
+### 3.3 `boolean` 的分解性
 
 **命题 4.3**：`boolean` 类型在 TypeScript 中等价于 `true | false` 联合类型，因此在分布式条件类型中会分解为两个成员。
 
@@ -298,7 +272,7 @@ $\blacksquare$
 
 **工程含义**：处理 `boolean` 时需特别小心，若不希望分解，需用元组包裹。
 
-### 4.4 阻止分发的正确性
+### 3.4 阻止分发的正确性
 
 **命题 4.4**：使用元组包裹 `[T] extends [U]` 可以正确阻止分发，且不改变子类型判定结果。
 
@@ -314,7 +288,7 @@ $$
 
 这正是不分发的预期行为。$\blacksquare$
 
-### 4.5 `IsUnion` 的正确性
+### 3.5 `IsUnion` 的正确性
 
 **命题 4.5**：以下 `IsUnion` 实现能正确检测联合类型：
 
@@ -367,11 +341,11 @@ type IsUnion<T, C = T> = [T] extends [never]
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 分发行为演示
+### 4.1 分发行为演示
 
-#### 5.1.1 自动分发
+#### 4.1.1 自动分发
 
 ```typescript
 type ToArray<T> = T extends any ? T[] : never;
@@ -387,7 +361,7 @@ type Result3 = ToArray<'a' | 'b' | 'c'>;
 // 'a'[] | 'b'[] | 'c'[]
 ```
 
-#### 5.1.2 阻止分发
+#### 4.1.2 阻止分发
 
 ```typescript
 type ToArrayNoDistribute<T> = [T] extends [any] ? T[] : never;
@@ -399,7 +373,7 @@ type Result2 = ToArrayNoDistribute<boolean>;
 // 结果：boolean[] —— 不分解为 true[] | false[]
 ```
 
-#### 5.1.3 `never` 的行为
+#### 4.1.3 `never` 的行为
 
 ```typescript
 type ToArray<T> = T extends any ? T[] : never;
@@ -410,9 +384,9 @@ type Result2 = ToArray<string | never>; // string[] —— never 被吸收
 // 等价于 ToArray<string>
 ```
 
-### 5.2 类型过滤
+### 4.2 类型过滤
 
-#### 5.2.1 基础过滤
+#### 4.2.1 基础过滤
 
 ```typescript
 type Filter<T, U> = T extends U ? T : never;
@@ -432,7 +406,7 @@ type Result = NonNull<string | null | number | undefined>;
 // string | number
 ```
 
-#### 5.2.2 类型排除（Exclude）
+#### 4.2.2 类型排除（Exclude）
 
 ```typescript
 type MyExclude<T, U> = T extends U ? never : T;
@@ -447,7 +421,7 @@ type Result3 = MyExclude<string | number | (() => void), Function>;
 // string | number
 ```
 
-#### 5.2.3 类型提取（Extract）
+#### 4.2.3 类型提取（Extract）
 
 ```typescript
 type MyExtract<T, U> = T extends U ? T : never;
@@ -459,7 +433,7 @@ type Result2 = MyExtract<string | number | boolean, string | boolean>;
 // string | boolean
 ```
 
-#### 5.2.4 复杂过滤
+#### 4.2.4 复杂过滤
 
 ```typescript
 // 过滤出对象类型
@@ -479,9 +453,9 @@ type Result2 = OnlyLiterals<'hello' | string | 42 | number | true>;
 // 'hello' | 42 | true
 ```
 
-### 5.3 类型映射
+### 4.3 类型映射
 
-#### 5.3.1 成员替换
+#### 4.3.1 成员替换
 
 ```typescript
 type MapType<T, U, V> = T extends U ? V : T;
@@ -499,7 +473,7 @@ type Result = DescribeFunctions<string | (() => void) | number | ((x: number) =>
 // string | "function" | number | "function"
 ```
 
-#### 5.3.2 类型包装
+#### 4.3.2 类型包装
 
 ```typescript
 type Wrap<T> = T extends any ? { value: T } : never;
@@ -518,9 +492,9 @@ type Result2 = WrapLiterals<'hello' | string | 42>;
 // { value: 'hello' } | string | { value: 42 }
 ```
 
-### 5.4 控制分发
+### 4.4 控制分发
 
-#### 5.4.1 元组包裹阻止分发
+#### 4.4.1 元组包裹阻止分发
 
 ```typescript
 type NoDistribute<T> = [T] extends [never] ? true : false;
@@ -530,7 +504,7 @@ type B = NoDistribute<never>; // true（never 是 never）
 type C = NoDistribute<string>; // false
 ```
 
-#### 5.4.2 交叉类型包裹阻止分发
+#### 4.4.2 交叉类型包裹阻止分发
 
 ```typescript
 type NoDistribute2<T> = T & {} extends never ? true : false;
@@ -539,7 +513,7 @@ type A = NoDistribute2<string | number>; // false
 type B = NoDistribute2<never>; // true（never & {} 仍为 never）
 ```
 
-#### 5.4.3 条件分发
+#### 4.4.3 条件分发
 
 ```typescript
 // 只对非 never 分发
@@ -551,9 +525,9 @@ type A = Wrap<string | number>;
 type B = Wrap<never>; // never
 ```
 
-### 5.5 检测类型
+### 4.5 检测类型
 
-#### 5.5.1 IsNever
+#### 4.5.1 IsNever
 
 ```typescript
 type IsNever<T> = [T] extends [never] ? true : false;
@@ -563,7 +537,7 @@ type B = IsNever<string>; // false
 type C = IsNever<string | never>; // false（never 被吸收）
 ```
 
-#### 5.5.2 IsUnion
+#### 4.5.2 IsUnion
 
 ```typescript
 type IsUnion<T, C = T> = [T] extends [never]
@@ -580,7 +554,7 @@ type C = IsUnion<never>; // false
 type D = IsUnion<boolean>; // true（boolean 是 true | false）
 ```
 
-#### 5.5.3 IsAny
+#### 4.5.3 IsAny
 
 ```typescript
 type IsAny<T> = 0 extends 1 & T ? true : false;
@@ -591,7 +565,7 @@ type C = IsAny<unknown>; // false
 type D = IsAny<never>; // false
 ```
 
-#### 5.5.4 IsUnknown
+#### 4.5.4 IsUnknown
 
 ```typescript
 type IsUnknown<T> = IsAny<T> extends true
@@ -605,9 +579,9 @@ type B = IsUnknown<any>; // false
 type C = IsUnknown<string>; // false
 ```
 
-### 5.6 递归展开
+### 4.6 递归展开
 
-#### 5.6.1 Flatten
+#### 4.6.1 Flatten
 
 ```typescript
 type Flatten<T> = T extends Array<infer U> ? Flatten<U> : T;
@@ -626,7 +600,7 @@ type Deep = Array<Promise<Array<Promise<number>>>>;
 type Unwrapped = DeepUnwrap<Deep>; // number
 ```
 
-#### 5.6.2 Awaited
+#### 4.6.2 Awaited
 
 ```typescript
 type Awaited<T> = T extends Promise<infer U>
@@ -640,7 +614,7 @@ type B = Awaited<Promise<Promise<number>>>; // number
 type C = Awaited<string | Promise<number>>; // string | number
 ```
 
-### 5.7 类型级布尔运算
+### 4.7 类型级布尔运算
 
 ```typescript
 type And<A extends boolean, B extends boolean> = A extends true
@@ -664,7 +638,7 @@ type Test4 = Not<true>;         // false
 type Test5 = Xor<true, false>;  // true
 ```
 
-### 5.8 联合类型排列组合
+### 4.8 联合类型排列组合
 
 ```typescript
 // 生成两个联合类型的笛卡尔积
@@ -683,7 +657,7 @@ type Obj = ObjectFromEntries<Entries>;
 // { name: string; age: number; active: boolean }
 ```
 
-### 5.9 条件类型链
+### 4.9 条件类型链
 
 ```typescript
 // 多层条件类型链，类似模式匹配
@@ -705,7 +679,7 @@ type ArrayMatch = Match<string[]>;   // { type: 'array'; value: string[] }
 type ObjectMatch = Match<{ id: 1 }>; // { type: 'object'; value: { id: 1 } }
 ```
 
-### 5.10 类型级链表
+### 4.10 类型级链表
 
 ```typescript
 // 类型级链表
@@ -734,9 +708,9 @@ type Apply<F, X> = F extends (x: X) => infer R ? R : never;
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Flow 的对比
+### 5.1 与 Flow 的对比
 
 | 维度 | TypeScript 分布式条件类型 | Flow |
 |------|--------------------------|------|
@@ -749,7 +723,7 @@ type Apply<F, X> = F extends (x: X) => infer R ? R : never;
 
 **分析**：Flow 的类型系统更保守，不提供条件类型与分发机制。开发者需依赖函数重载或 `union` 手动处理，类型安全性较弱。
 
-### 6.2 与 Rust Traits 的对比
+### 5.2 与 Rust Traits 的对比
 
 | 维度 | TypeScript 分布式条件类型 | Rust Traits |
 |------|--------------------------|-------------|
@@ -761,7 +735,7 @@ type Apply<F, X> = F extends (x: X) => infer R ? R : never;
 
 **分析**：Rust 的 Trait 系统更严格，但缺乏 TypeScript 的灵活性。TypeScript 的分发机制适合动态语言的类型增强，Rust 的 Trait 适合零成本抽象。
 
-### 6.3 与 Haskell Type Families 的对比
+### 5.3 与 Haskell Type Families 的对比
 
 | 维度 | TypeScript 分布式条件类型 | Haskell Type Families |
 |------|--------------------------|----------------------|
@@ -773,7 +747,7 @@ type Apply<F, X> = F extends (x: X) => infer R ? R : never;
 
 **分析**：Haskell 的 Type Families 更形式化，有编译器一致性检查。TypeScript 的条件类型更灵活但安全性较低。
 
-### 6.4 与纯 JavaScript 的对比
+### 5.4 与纯 JavaScript 的对比
 
 | 维度 | TypeScript 分布式条件类型 | 纯 JavaScript |
 |------|--------------------------|---------------|
@@ -787,9 +761,9 @@ type Apply<F, X> = F extends (x: X) => infer R ? R : never;
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 `never` 检测陷阱
+### 6.1 `never` 检测陷阱
 
 **陷阱**：使用裸类型参数检测 `never` 总是返回 `never`。
 
@@ -807,7 +781,7 @@ type IsNever<T> = [T] extends [never] ? true : false;
 type A = IsNever<never>; // true
 ```
 
-### 7.2 `boolean` 分解陷阱
+### 6.2 `boolean` 分解陷阱
 
 **陷阱**：`boolean` 在分发中会分解为 `true | false`。
 
@@ -825,7 +799,7 @@ type ToArrayNoDistribute<T> = [T] extends [any] ? T[] : never;
 type Result = ToArrayNoDistribute<boolean>; // boolean[]
 ```
 
-### 7.3 函数重载 `infer` 陷阱
+### 6.3 函数重载 `infer` 陷阱
 
 **陷阱**：对函数重载使用 `infer` 只能提取最后一个签名。
 
@@ -844,7 +818,7 @@ type R = ReturnOf<Fn>; // string —— 只取最后一个签名的返回值
 
 **修复**：无法直接修复，需重构为联合类型或使用其他模式。
 
-### 7.4 递归深度陷阱
+### 6.4 递归深度陷阱
 
 **陷阱**：深度递归条件类型会触发编译器限制。
 
@@ -868,7 +842,7 @@ type DeepReadonly<T> = T extends object
   : T;
 ```
 
-### 7.5 分发与映射类型交互陷阱
+### 6.5 分发与映射类型交互陷阱
 
 **陷阱**：映射类型中的条件类型也会触发分发。
 
@@ -893,7 +867,7 @@ type Result = Wrap<{ a: string; b: number; c: string | number }>;
 // { a: 'string'; b: 'other'; c: 'other' }
 ```
 
-### 7.6 `any` 交互陷阱
+### 6.6 `any` 交互陷阱
 
 **陷阱**：`any` 在条件类型中有特殊行为。
 
@@ -911,7 +885,7 @@ type IsAny<T> = 0 extends 1 & T ? true : false;
 type A = IsAny<any>; // true
 ```
 
-### 7.7 `unknown` 推断陷阱
+### 6.7 `unknown` 推断陷阱
 
 **陷阱**：`unknown` 不触发分发，但也不匹配大多数条件。
 
@@ -933,7 +907,7 @@ type IsString<T> = [T] extends [never]
     : false;
 ```
 
-### 7.8 分发性能陷阱
+### 6.8 分发性能陷阱
 
 **陷阱**：大型联合类型的分发会显著拖慢编译。
 
@@ -947,9 +921,9 @@ type Mapped = { [K in BigUnion]: K extends `a${string}` ? 'starts-with-a' : K };
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 标准工具类型实现
+### 7.1 标准工具类型实现
 
 ```typescript
 // 基于分发的标准工具类型
@@ -968,7 +942,7 @@ type IsUnion<T, C = T> = [T] extends [never]
     : never;
 ```
 
-### 8.2 深度操作工具
+### 7.2 深度操作工具
 
 ```typescript
 // 深度只读
@@ -992,7 +966,7 @@ type DeepRequired<T> = T extends object
   : T;
 ```
 
-### 8.3 类型过滤器
+### 7.3 类型过滤器
 
 ```typescript
 // 按值类型过滤属性
@@ -1020,7 +994,7 @@ type NonStringProps = OmitByValue<User, string>;
 // { id: number; age: number; active: boolean }
 ```
 
-### 8.4 路径工具
+### 7.4 路径工具
 
 ```typescript
 // 获取对象所有路径
@@ -1039,7 +1013,7 @@ type ConfigPaths = Path<Config>;
 // '' | 'api' | 'api.baseURL' | 'api.timeout' | 'ui' | 'ui.theme' | 'ui.locale'
 ```
 
-### 8.5 类型安全 API
+### 7.5 类型安全 API
 
 ```typescript
 // 类型安全的 API 响应处理
@@ -1065,7 +1039,7 @@ const res: ApiResponse<{ id: number; name: string }, { code: number; message: st
 const data = handleResponse(res); // { id: number; name: string }
 ```
 
-### 8.6 类型安全 SQL 查询构建器
+### 7.6 类型安全 SQL 查询构建器
 
 ```typescript
 // 类型安全的 SQL 查询构建器（简化版）
@@ -1092,7 +1066,7 @@ const result = select(users, ['id', 'name']);
 // SelectResult<Users, 'id' | 'name'>[] = { id: number; name: string }[]
 ```
 
-### 8.7 性能优化
+### 7.7 性能优化
 
 ```typescript
 // 避免深度递归
@@ -1110,9 +1084,9 @@ type Mapped<T> = { [K in keyof T]: T[K] };
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 SetRequired 工具
+### 8.1 SetRequired 工具
 
 **需求**：将对象的部分属性从可选改为必选。
 
@@ -1139,7 +1113,7 @@ type RequiredUser = SetRequired<User, 'name' | 'email'>;
 
 **分析**：使用 `Omit` 与 `Required` 组合实现，分发行为用于 `K extends keyof T` 的过滤。
 
-### 9.2 Path 类型工具
+### 8.2 Path 类型工具
 
 **需求**：获取对象所有嵌套路径。
 
@@ -1172,7 +1146,7 @@ type TimeoutType = PathValue<Config, 'api.timeout'>; // number
 
 **分析**：利用分发与模板字面量类型组合，递归遍历对象结构。
 
-### 9.3 React Router 参数提取
+### 8.3 React Router 参数提取
 
 **需求**：从路由模式提取参数名。
 
@@ -1203,7 +1177,7 @@ type Params = ExtractParams2<'/users/:userId/posts/:postId?'>;
 
 **分析**：利用条件类型与模板字面量类型的组合，实现路由参数的类型推导。
 
-### 9.4 Zod 风格类型推导
+### 8.4 Zod 风格类型推导
 
 **需求**：从运行时模式推导编译期类型。
 
@@ -1245,7 +1219,7 @@ type User = InferType<typeof userSchema>;
 
 **分析**：利用条件类型链与递归，从运行时模式推导编译期类型。
 
-### 9.5 React useState 泛型推导
+### 8.5 React useState 泛型推导
 
 **需求**：根据初始值推导状态类型。
 
@@ -1276,7 +1250,7 @@ const [expensive, setExpensive] = useState(() => computeExpensiveValue());
 
 ## 知识讲解与要点分析（原练习）
 
-### 10.1 基础练习
+### 9.1 基础练习
 
 **练习 10.1**：实现 `Includes<T, U>`，判断联合类型 `T` 是否包含类型 `U`。
 
@@ -1314,7 +1288,7 @@ type IsString<T> = T extends string ? true : false;
 
 注意：`string | number` 会分发为 `true | false = boolean`。
 
-### 10.2 中级练习
+### 9.2 中级练习
 
 **练习 10.3**：实现 `UnionToTuple<T>`，将联合类型转为元组（简化版，不保证顺序）。
 
@@ -1358,7 +1332,7 @@ type LastOfUnion<T, U = T> = [T] extends [never]
     : never;
 ```
 
-### 10.3 高级练习
+### 9.3 高级练习
 
 **练习 10.5**：实现 `TupleToUnion<T>`，将元组转为联合类型。
 
@@ -1392,7 +1366,7 @@ type Without<T, U> = T extends U ? never : T;
 
 这就是内置的 `Exclude`。
 
-### 10.4 思考题
+### 9.4 思考题
 
 **思考题 10.7**：为什么 `IsUnion` 需要引入额外参数 `C = T`？如果去掉 `C` 会发生什么？
 
@@ -1404,7 +1378,7 @@ type Without<T, U> = T extends U ? never : T;
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Rosenwasser, D. (2018). Conditional types. Microsoft TypeScript Blog. https://devblogs.microsoft.com/typescript/announcing-typescript-2-8/
 
@@ -1428,37 +1402,37 @@ type Without<T, U> = T extends U ? never : T;
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - [TypeScript Handbook: Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html)
 - [TypeScript Handbook: Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html)
 - [TypeScript Handbook: Template Literal Types](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html)
 - [TypeScript Release Notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html)
 
-### 12.2 社区资源
+### 11.2 社区资源
 
 - [Type Challenges](https://github.com/type-challenges/type-challenges) - 类型体操练习
 - [type-fest](https://github.com/sindresorhus/type-fest) - 实用工具类型库
 - [utility-types](https://github.com/piotrwitek/utility-types) - 工具类型集合
 - [ts-toolbelt](https://github.com/millsp/ts-toolbelt) - 类型工具集
 
-### 12.3 课程与教程
+### 11.3 课程与教程
 
 - [MIT 6.S192: Software Construction](https://ocw.mit.edu/) - 软件构造
 - [Stanford CS143: Compilers](https://web.stanford.edu/class/cs143/) - 编译原理
 - [CMU 15-411: Compiler Design](https://www.cs.cmu.edu/~fp/courses/15411-f08/) - 编译器设计
 - [Total TypeScript](https://www.totaltypescript.com/) - TypeScript 进阶教程
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - [TypeScript Type Gymnastics](https://type-level-typescript.com/) - 类型体操
 - [Recursive Types in TypeScript](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#inferring-within-conditional-types) - 递归类型
 - [Tail-Recursive Type Inference](https://devblogs.microsoft.com/typescript/announcing-typescript-4-5/#tail-rec-recursive-inference) - 尾递归类型推断
 - [Variance in TypeScript](https://github.com/microsoft/TypeScript/issues/9825) - 变型
 
-### 12.5 相关论文
+### 11.5 相关论文
 
 - Bierman, G., Abadi, M., & Torgersen, M. (2014). Understanding TypeScript. ECOOP 2014.
 - Pierce, B. C., & Turner, D. N. (2000). Local type inference. ACM TOPLAS.

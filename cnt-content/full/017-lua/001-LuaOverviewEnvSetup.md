@@ -16,64 +16,16 @@ related:
   - lua/Lua与C交互
 prerequisites: []
 ---
+
 # Lua 概览与环境配置
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本节依据 Bloom 分类法（Bloom's Taxonomy）按认知层级组织学习目标，学习者完成本章后应具备以下能力。
-
-### 1.1 记忆层（Remember）
-
-- 能够准确复述 Lua 语言的诞生时间（1993 年）、诞生地（巴西里约热内卢天主教大学 PUC-Rio）与三位设计者（Roberto Ierusalimschy、Waldemar Celes、Luiz Henrique de Figueiredo）。
-- 能够默写出 Lua 语言的核心设计目标：可嵌入、轻量、可扩展、可移植。
-- 能够列出 Lua 的八个基本数据类型：`nil`、`boolean`、`number`、`string`、`table`、`function`、`userdata`、`thread`（以及 Lua 5.4 引入的 `integer` 子类型）。
-- 能够写出 Lua 解释器的主流程：词法分析（Lexical Analysis）→ 语法分析（Syntax Analysis）→ 字节码生成（Bytecode Generation）→ 字节码执行（Bytecode Execution）。
-- 能够列出 Lua 的主要版本发布时间：Lua 1.0（1993）、Lua 2.0（1994）、Lua 3.0（1997）、Lua 4.0（2000）、Lua 5.0（2003）、Lua 5.1（2006）、Lua 5.2（2011）、Lua 5.3（2015）、Lua 5.4（2020）。
-
-### 1.2 理解层（Understand）
-
-- 能够解释 Lua 作为"嵌入式脚本语言"的设计哲学，以及它如何通过 C API 实现与宿主程序的双向交互。
-- 能够阐述 Lua 选择 table 作为唯一复合数据结构的原因：统一数组、记录、集合、对象等多种抽象。
-- 能够说明 Lua 的元表（Metatable）机制如何实现动态派发、运算符重载、面向对象模拟。
-- 能够描述 Lua 的垃圾回收器演进：从 Lua 5.0 的标记-清除（Mark-Sweep）到 Lua 5.1 的增量式（Incremental），再到 Lua 5.4 的分代回收（Generational）。
-- 能够解释 Lua 与 LuaJIT 的关系：语法兼容 Lua 5.1，运行时实现完全独立，性能差异可达 30-100 倍。
-
-### 1.3 应用层（Apply）
-
-- 能够在 Windows、Linux、macOS 三大平台上从源码编译安装 Lua 5.4。
-- 能够使用 `lua` 命令行解释器执行脚本、交互式求值、加载字节码文件。
-- 能够编写 `luaconf.h` 自定义配置（如修改 `LUAI_MAXSHORTLEN`、`LUA_NUMBER` 类型）。
-- 能够使用 LuaRocks 包管理器安装、管理第三方模块。
-- 能够配置 VS Code、IntelliJ IDEA（EmmyLua 插件）、Vim/Neovim 三种主流 IDE 的 Lua 开发环境。
-
-### 1.4 分析层（Analyze）
-
-- 能够分析 Lua 字节码与 Python 字节码、JavaScript V8 字节码在指令集设计上的差异。
-- 能够分析 Lua 的栈式虚拟机（Stack-based VM）与 LuaJIT 的寄存器式虚拟机（Register-based VM）的性能影响。
-- 能够分析给定 Lua 代码片段的内存布局：哪些对象由 GC 管理、何时被回收、是否存在循环引用。
-- 能够解读 `luac` 输出的字节码清单，分析函数的常量表、局部变量表、跳转指令。
-
-### 1.5 评估层（Evaluate）
-
-- 能够评估在特定项目场景下是否应选择 Lua 作为脚本层（基于性能需求、生态成熟度、团队熟悉度、嵌入成本）。
-- 能够评估 Lua 与 Python、JavaScript、Scheme 等其他嵌入式脚本语言的取舍。
-- 能够评估在生产环境中使用 PUC-Rio Lua 还是 LuaJIT 的决策依据（兼容性、性能、平台支持、维护周期）。
-
-### 1.6 创造层（Create）
-
-- 能够设计一个完整的 Lua 项目结构：模块划分、依赖管理、测试框架、构建脚本。
-- 能够设计 Lua 与 C 的混合项目架构，明确脚本层与原生层的职责边界。
-- 能够编写可跨 Lua 5.1/5.2/5.3/5.4 与 LuaJIT 兼容的可移植代码。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 Lua 的诞生背景
+### 1.1 Lua 的诞生背景
 
 Lua 诞生于 1993 年巴西里约热内卢天主教大学（Pontifical Catholic University of Rio de Janeiro，PUC-Rio）的 TECGraf 实验室。其设计动机源于一个具体的工程问题：当时 TECGraf 为巴西国家石油公司（Petrobras）开发石油工程数据录入系统，需要一种灵活的配置与脚本语言。
 
@@ -97,7 +49,7 @@ Lua 诞生于 1993 年巴西里约热内卢天主教大学（Pontifical Catholic
 3. **可嵌入设计**：从一开始就将 Lua 设计为可被 C 程序嵌入的库，而非独立运行的解释器。
 4. **可移植性优先**：核心目标是用纯 ANSI C 编写，可在任何符合 ANSI C 标准的平台上编译运行。
 
-### 2.2 设计哲学
+### 1.2 设计哲学
 
 Lua 的设计哲学可概括为"机制而非策略（Mechanism, not Policy）"：语言提供最小但足够的原语，将具体实现策略留给用户。这一哲学贯穿 Lua 的所有设计决策：
 
@@ -114,7 +66,7 @@ Roberto Ierusalimschy 在《Programming in Lua》第四版前言中写道：
 
 > "Lua 不是为追求功能完备而设计的语言，而是为追求简洁、可嵌入、可扩展而设计的语言。我们更愿意提供一组小而精的原语，让用户组合出他们需要的任何抽象。"
 
-### 2.3 版本演进
+### 1.3 版本演进
 
 Lua 的版本演进遵循"稳定优先、谨慎新增"的策略，每个主版本都伴随显著的语义改进：
 
@@ -141,7 +93,7 @@ Lua 的版本演进遵循"稳定优先、谨慎新增"的策略，每个主版�
 4. **Lua 5.3（2015）**：原生 64 位整数与位运算符使 Lua 可用于系统编程、加密算法、网络协议等场景。
 5. **Lua 5.4（2020）**：分代垃圾回收对小对象密集场景性能提升显著（短命对象回收开销降低 50% 以上）。
 
-### 2.4 应用场景
+### 1.4 应用场景
 
 Lua 因其可嵌入、轻量、高性能的特性，在多个领域得到广泛应用：
 
@@ -172,11 +124,11 @@ Lua 因其可嵌入、轻量、高性能的特性，在多个领域得到广泛�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节给出 Lua 语言核心概念的形式化定义，包括值域、环境表、元方法系统、垃圾回收模型。
 
-### 3.1 值域的形式化定义
+### 2.1 值域的形式化定义
 
 Lua 是动态类型语言，变量本身无类型，值有类型。Lua 的值域 $\mathcal{V}$ 定义为：
 
@@ -195,7 +147,7 @@ $$
 - $\mathcal{C}$：协程域，即 `thread` 类型（注意：Lua 的 `thread` 指协程而非 OS 线程）。
 - $\text{nil}$：特殊值，表示"无值"。
 
-### 3.2 类型判断的形式化定义
+### 2.2 类型判断的形式化定义
 
 类型判断函数 $\text{type}: \mathcal{V} \to \Sigma$，其中 $\Sigma$ 为类型名集合：
 
@@ -222,7 +174,7 @@ $$
 \end{cases}
 $$
 
-### 3.3 环境表的形式化定义
+### 2.3 环境表的形式化定义
 
 Lua 5.2+ 引入 `_ENV` 机制，全局变量访问被语义化为对环境表的索引。设 $\rho$ 为当前环境表，全局变量访问的语义规则：
 
@@ -236,7 +188,7 @@ $$
 
 每个函数闭包捕获一个 `_ENV` 上值（upvalue），默认为全局表 `_G`。这种设计使 Lua 5.2+ 的"全局变量"成为纯粹的语法糖，简化了语义模型。
 
-### 3.4 元方法系统的形式化定义
+### 2.4 元方法系统的形式化定义
 
 元表（Metatable）机制通过元方法（Metamethod）实现动态派发。设 $t \in \mathcal{T}$，$\text{mt}(t)$ 为 $t$ 的元表（可能为 `nil`）。元方法查找规则：
 
@@ -262,7 +214,7 @@ $$
 | GC | `__gc` | 对象被回收时调用 |
 | 弱引用 | `__mode` | 控制 table 的弱引用模式 |
 
-### 3.5 字节码执行模型的形式化定义
+### 2.5 字节码执行模型的形式化定义
 
 Lua 5.x 使用寄存器式字节码。设函数 $f$ 的字节码为指令序列 $\text{Instr}_1, \text{Instr}_2, \dots, \text{Instr}_n$，每个指令格式为：
 
@@ -283,7 +235,7 @@ $$
 - $\text{Stack}$：调用栈，存储活跃函数帧。
 - $\text{Upvalues}$：闭包捕获的上值。
 
-### 3.6 垃圾回收模型的形式化定义
+### 2.6 垃圾回收模型的形式化定义
 
 Lua 5.4 的垃圾回收器采用分代回收（Generational GC）与增量回收（Incremental GC）混合模式。设对象集合 $O$，回收过程可形式化为：
 
@@ -308,9 +260,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 寄存器式虚拟机的性能优势推导
+### 3.1 寄存器式虚拟机的性能优势推导
 
 设一段计算表达式 `a = b + c * d`，比较栈式与寄存器式虚拟机的指令数。
 
@@ -344,7 +296,7 @@ ADD R_a, R_b, R_tmp    ; R_a = b + R_tmp
 
 实测数据（Roberto Ierusalimschy 等人 2005 年论文）：Lua 5.0 寄存器式 VM 相比 Lua 4.0 栈式 VM，整体性能提升 30-50%，部分密集计算场景提升 70%。
 
-### 4.2 增量式垃圾回收的暂停时间分析
+### 3.2 增量式垃圾回收的暂停时间分析
 
 设对象总数为 $N$，单次标记-清除时间为 $T_{\text{full}} = c \cdot N$（$c$ 为常数，约 $1\mu s$/对象）。
 
@@ -366,7 +318,7 @@ $$
 
 当 $K = 100$ 时，$\text{Pause}_{\text{incremental}} \approx 10\text{ms}$，可接受。
 
-### 4.3 弱引用表的内存释放推导
+### 3.3 弱引用表的内存释放推导
 
 弱引用表（Weak Table）通过 `__mode` 元方法控制键值的引用强度。设 $T$ 为弱引用表，$o$ 为 $T$ 的某个键或值：
 
@@ -378,7 +330,7 @@ $$
 
 应用场景：缓存、对象注册表、临时映射。
 
-### 4.4 字符串内部化的性能推导
+### 3.4 字符串内部化的性能推导
 
 Lua 的字符串采用内部化（Interning）策略：相同内容的字符串在内存中只有一份副本。设 $S$ 为字符串集合，$\text{intern}(s)$ 操作：
 
@@ -399,11 +351,11 @@ Lua 的字符串采用内部化（Interning）策略：相同内容的字符串�
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
 本节通过多个完整可运行示例演示 Lua 环境搭建、基础语法、调试配置。
 
-### 5.1 多平台源码编译安装
+### 4.1 多平台源码编译安装
 
 **Linux/macOS（从源码编译）**：
 
@@ -457,7 +409,7 @@ cmake -G "Visual Studio 17 2022" -A x64 ..
 cmake --build . --config Release
 ```
 
-### 5.2 第一个 Lua 程序
+### 4.2 第一个 Lua 程序
 
 **Hello World（脚本式）**：
 
@@ -489,7 +441,7 @@ Hello, World!
 > -- 按 Ctrl+D 退出
 ```
 
-### 5.3 命令行解释器详解
+### 4.3 命令行解释器详解
 
 ```bash
 # 执行脚本文件
@@ -523,7 +475,7 @@ export LUA_CPATH="/usr/local/lib/lua/5.4/?.so;./?.so"
 lua script.lua
 ```
 
-### 5.4 字节码编译与反汇编
+### 4.4 字节码编译与反汇编
 
 ```bash
 # 编译源码为字节码文件
@@ -547,7 +499,7 @@ luac -l -l hello.lua
 luac -p hello.lua
 ```
 
-### 5.5 模块与 require
+### 4.5 模块与 require
 
 **编写模块（mod.lua）**：
 
@@ -605,7 +557,7 @@ print(counter.inc())  -- 输出: 2
 print(counter.get())  -- 输出: 2
 ```
 
-### 5.6 LuaRocks 包管理
+### 4.6 LuaRocks 包管理
 
 ```bash
 # 安装 LuaRocks（Linux/macOS）
@@ -667,7 +619,7 @@ build = {
 }
 ```
 
-### 5.7 元表与面向对象
+### 4.7 元表与面向对象
 
 ```lua
 -- 实现简单的类系统
@@ -709,7 +661,7 @@ print(kitty:speak())  -- 输出: Kitty purrs: Meow
 print(getmetatable(kitty) == Cat)  -- 输出: true
 ```
 
-### 5.8 协程基础
+### 4.8 协程基础
 
 ```lua
 -- 生产者-消费者模式
@@ -739,7 +691,7 @@ consumer()
 -- Consumed: 5
 ```
 
-### 5.9 错误处理
+### 4.9 错误处理
 
 ```lua
 -- 使用 pcall 保护调用
@@ -780,7 +732,7 @@ if not ok3 then
 end
 ```
 
-### 5.10 VS Code 开发环境配置
+### 4.10 VS Code 开发环境配置
 
 **安装扩展**：
 
@@ -848,7 +800,7 @@ end
 }
 ```
 
-### 5.11 Neovim 配置示例
+### 4.11 Neovim 配置示例
 
 ```lua
 -- ~/.config/nvim/init.lua（Neovim 配置示例）
@@ -889,9 +841,9 @@ require('lspconfig').lua_ls.setup({
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua 与其他脚本语言对比
+### 5.1 Lua 与其他脚本语言对比
 
 | 维度 | Lua | Python | JavaScript | Ruby | Scheme |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -906,7 +858,7 @@ require('lspconfig').lua_ls.setup({
 | 性能（基准 1.0） | 1.0 | 0.3-0.5 | 1-3（V8） | 0.2-0.5 | 0.1-0.3 |
 | 生态成熟度 | 中等 | 极高 | 极高 | 高 | 低 |
 
-### 6.2 Lua 与 LuaJIT 对比
+### 5.2 Lua 与 LuaJIT 对比
 
 | 维度 | PUC-Rio Lua 5.4 | LuaJIT 2.1 |
 | :--- | :--- | :--- |
@@ -923,7 +875,7 @@ require('lspconfig').lua_ls.setup({
 | 维护状态 | 活跃（Roberto 等人） | 社区维护（OpenResty 团队） |
 | 典型用户 | 教学嵌入式 | 游戏、Web 网关、高性能 |
 
-### 6.3 Lua 嵌入方案对比
+### 5.3 Lua 嵌入方案对比
 
 | 方案 | 嵌入成本 | 性能 | 灵活性 | 适用场景 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -933,7 +885,7 @@ require('lspconfig').lua_ls.setup({
 | Fengari（JS 实现） | 低（无 C 依赖） | 低 | 极高 | Web 浏览器、Node.js |
 | Terra（Lua + C） | 中 | 极高 | 中 | 科学计算、JIT 研究 |
 
-### 6.4 编辑器与 IDE 对比
+### 5.4 编辑器与 IDE 对比
 
 | 工具 | Lua 支持 | 调试 | LuaJIT 支持 | 推荐场景 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -945,9 +897,9 @@ require('lspconfig').lua_ls.setup({
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 全局变量泄漏
+### 6.1 全局变量泄漏
 
 **反模式**：
 
@@ -999,7 +951,7 @@ strict()
 print(undefined_var)  -- 抛出错误: attempt to read undeclared global: undefined_var
 ```
 
-### 7.2 require 路径错误
+### 6.2 require 路径错误
 
 **反模式**：
 
@@ -1017,7 +969,7 @@ Lua 的 `require` 按 `LUA_PATH` 配置的模板搜索文件。模板中 `?` 会
 - 文件名与 require 参数严格一致（推荐用下划线）。
 - 配置 `LUA_PATH` 包含工作目录：`export LUA_PATH=";;./?.lua;./?/init.lua"`（`;;` 表示保留默认路径）。
 
-### 7.3 浮点数精度问题（Lua 5.1/5.2/5.3 float 模式）
+### 6.3 浮点数精度问题（Lua 5.1/5.2/5.3 float 模式）
 
 **反模式**：
 
@@ -1042,7 +994,7 @@ end
 print(approxEqual(0.1 + 0.2, 0.3))  -- 输出: true
 ```
 
-### 7.4 表长度运算符 `#` 的不确定性
+### 6.4 表长度运算符 `#` 的不确定性
 
 **反模式**：
 
@@ -1074,7 +1026,7 @@ table.insert(t2, 2)
 print(#t2)  -- 输出: 2
 ```
 
-### 7.5 字符串编码陷阱
+### 6.5 字符串编码陷阱
 
 **反模式**：
 
@@ -1101,7 +1053,7 @@ local first = utf8.sub(s, 1, 1)
 print(first)  -- 输出: 你
 ```
 
-### 7.6 协程不能跨 Lua 调用栈
+### 6.6 协程不能跨 Lua 调用栈
 
 **反模式**：
 
@@ -1126,7 +1078,7 @@ end)
 -- 或使用 LuaJIT 的 FFI 回调（注意限制）
 ```
 
-### 7.7 忽略 pcall 的第一个返回值
+### 6.7 忽略 pcall 的第一个返回值
 
 **反模式**：
 
@@ -1146,7 +1098,7 @@ end
 -- 使用 result
 ```
 
-### 7.8 元方法循环调用
+### 6.8 元方法循环调用
 
 **反模式**：
 
@@ -1175,9 +1127,9 @@ print(t.foo)  -- 输出: default
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构规范
+### 7.1 项目结构规范
 
 **推荐的项目目录结构**：
 
@@ -1223,7 +1175,7 @@ flowchart TD
     T19 --> T25
 ```
 
-### 8.2 代码规范（.luacheckrc 示例）
+### 7.2 代码规范（.luacheckrc 示例）
 
 ```lua
 -- .luacheckrc
@@ -1261,7 +1213,7 @@ read_globals = {
 }
 ```
 
-### 8.3 测试框架（busted）
+### 7.3 测试框架（busted）
 
 **安装 busted**：
 
@@ -1316,7 +1268,7 @@ busted --output=TAP
 busted --watch
 ```
 
-### 8.4 性能基准测试
+### 7.4 性能基准测试
 
 ```lua
 -- benchmark/bench.lua
@@ -1364,7 +1316,7 @@ bench("direct index", function()
 end)
 ```
 
-### 8.5 模块化设计原则
+### 7.5 模块化设计原则
 
 **单一职责原则**：
 
@@ -1420,7 +1372,7 @@ end
 return { new = createLogger }
 ```
 
-### 8.6 跨版本兼容层
+### 7.6 跨版本兼容层
 
 ```lua
 -- compat.lua：跨 Lua 5.1/5.2/5.3/5.4 与 LuaJIT 的兼容层
@@ -1468,7 +1420,7 @@ M.unpack = table.unpack or unpack
 return M
 ```
 
-### 8.7 构建脚本
+### 7.7 构建脚本
 
 ```lua
 -- scripts/build.lua
@@ -1535,9 +1487,9 @@ main()
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Redis 中的 Lua 嵌入
+### 8.1 Redis 中的 Lua 嵌入
 
 Redis 从 2.6 版本开始内置 Lua 5.1 解释器，用于实现原子事务。`EVAL` 命令接收一段 Lua 脚本，在 Redis 服务器端执行，保证整个脚本执行期间无其他客户端干扰。
 
@@ -1573,7 +1525,7 @@ return new
    - 修改 `loadlib` 函数，禁止加载 C 模块。
    - 替换 `print`、`pcall` 等函数，使输出重定向到 Redis 日志。
 
-### 9.2 Neovim 配置系统
+### 8.2 Neovim 配置系统
 
 Neovim 从 0.5 版本开始支持 Lua 作为配置语言，相比 VimScript 具有显著优势：
 
@@ -1624,7 +1576,7 @@ require('lspconfig').lua_ls.setup({
 4. **可测试**：Lua 代码可用 busted 测试，VimScript 难以测试。
 5. **数据结构**：Lua 的 table 比 VimScript 的字典/列表更强大。
 
-### 9.3 魔兽世界 UI 开发
+### 8.3 魔兽世界 UI 开发
 
 魔兽世界（World of Warcraft）的 UI 系统完全使用 Lua 编写，是 Lua 在游戏领域最知名的应用。
 
@@ -1689,7 +1641,7 @@ MyAddon.message:SetText("Hello, World!")
 3. **C API 扩展**：通过 FrameXML 暴露大量游戏 API（如 `CreateFrame`、`RegisterEvent`）。
 4. **性能考量**：UI 代码在主线程执行，必须避免长时间阻塞。复杂计算通过 C 层实现，Lua 仅做调度。
 
-### 9.4 OpenResty 高性能 Web 平台
+### 8.4 OpenResty 高性能 Web 平台
 
 OpenResty 是基于 Nginx 与 LuaJIT 的高性能 Web 平台，用于构建动态 Web 应用、API 网关、WAF 等。
 
@@ -1964,11 +1916,11 @@ return M
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 本节参考文献按 ACM Reference Format 格式组织，包含 DOI 链接。
 
-### 11.1 Lua 语言核心文献
+### 10.1 Lua 语言核心文献
 
 [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua-an extensible extension language. *Software: Practice and Experience* 26, 6 (June 1996), 635-652. DOI: https://doi.org/10.1002/(SICI)1097-024X(199606)26:6%3C635::AID-SPE26%3E3.0.CO;2-P
 
@@ -1980,31 +1932,31 @@ return M
 
 [5] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 2020. Lua 5.4 Reference Manual. *Lua.org*. Retrieved from https://www.lua.org/manual/5.4/
 
-### 11.2 垃圾回收与运行时
+### 10.2 垃圾回收与运行时
 
 [6] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 2012. Passing a language through the eye of a needle. *Communications of the ACM* 55, 7 (July 2012), 38-43. DOI: https://doi.org/10.1145/2209249.2209267
 
 [7] L. H. de Figueiredo, R. Ierusalimschy, and W. Celes. 2008. Generational garbage collection in Lua. In *Proceedings of the 2008 ACM Symposium on Applied Computing* (SAC '08), 214-218. DOI: https://doi.org/10.1145/1363686.1363747
 
-### 11.3 嵌入式应用
+### 10.3 嵌入式应用
 
 [8] D. Tiecher and R. Ierusalimschy. 2014. Lua in embedded systems. In *Proceedings of the 13th Brazilian Symposium on Programming Languages* (SBLP 2014).
 
 [9] M. Pall. 2009. LuaJIT 2.0 - A JIT compiler for Lua. Retrieved from http://luajit.org/luajit.html
 
-### 11.4 性能优化
+### 10.4 性能优化
 
 [10] M. Pall. 2011. LuaJIT 2.0 performance benchmarks. Retrieved from http://luajit.org/performance.html
 
 [11] Y. Zhou and C. Zhang. 2018. Performance analysis of LuaJIT in web gateway scenarios. *Software: Practice and Experience* 48, 10 (October 2018), 1845-1865. DOI: https://doi.org/10.1002/spe.2605
 
-### 11.5 相关语言与系统
+### 10.5 相关语言与系统
 
 [12] B. W. Kernighan. 1988. *The AWK Programming Language*. Addison-Wesley, Reading, MA. ISBN: 978-0201079814.
 
 [13] T. A. D. Team. 1996. *The Annotated C++ Reference Manual*. Addison-Wesley. (用于对比元表机制与 C++ 运算符重载)
 
-### 11.6 工具与生态
+### 10.6 工具与生态
 
 [14] T. A. S. Schmidt. 2011. ZeroBrane Studio: A Lua IDE with debugging capabilities. Retrieved from https://studio.zerobrane.com/
 
@@ -2012,9 +1964,9 @@ return M
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档与资源
+### 11.1 官方文档与资源
 
 - **Lua 官方网站**：https://www.lua.org/
   - 包含语言规范、教程、论文、邮件列表归档。
@@ -2025,7 +1977,7 @@ return M
 - **Lua 邮件列表归档**：https://www.lua.org/lua-l.html
   - 历史讨论、设计决策、技术细节。
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - *Programming in Lua* (Fourth Edition) by Roberto Ierusalimschy
   - Lua 设计者亲笔，权威且深入。覆盖 Lua 5.3。
@@ -2034,13 +1986,13 @@ return M
 - *The Little Book of Lua* by Paul Schmerer
   - 入门读物，适合初学者。
 
-### 12.3 前沿论文与演讲
+### 11.3 前沿论文与演讲
 
 - Roberto Ierusalimschy 在 Lua Workshop 的历届演讲
 - Mike Pall 关于 LuaJIT 设计的演讲（Lua Workshop 2011、2013）
 - "Passing a language through the eye of a needle" (CACM 2012)
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **LuaJIT**：https://github.com/LuaJIT/LuaJIT
 - **OpenResty**：https://github.com/openresty/openresty
@@ -2050,13 +2002,13 @@ return M
 - **Neovim**：https://neovim.io/
 - **Luau**：https://luau-lang.org/（Roblox 的 Lua 衍生分支，渐进式类型）
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **Lua Users Community**：http://lua-users.org/
 - **Reddit r/lua**：https://www.reddit.com/r/lua/
 - **Stack Overflow Lua 标签**：https://stackoverflow.com/questions/tagged/lua
 
-### 12.6 相关工具
+### 11.6 相关工具
 
 - **LuaRocks**：https://luarocks.org/（包管理器）
 - **LuaCheck**：https://github.com/mpeterv/luacheck（静态检查工具）
@@ -2064,7 +2016,7 @@ return M
 - **EmmyLua**：https://github.com/EmmyLua/IntelliJ-EmmyLua（IntelliJ 插件）
 - **Busted**：https://lunarmodules.github.io/busted/（测试框架）
 
-### 12.7 性能调优工具
+### 11.7 性能调优工具
 
 - **LuaJIT 的 `-jv` 与 `-jdump`**：Trace 日志与调试
 - **LuaProfiler**：https://github.com/charlesmallah/lua-profiler

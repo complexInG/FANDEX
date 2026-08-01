@@ -16,16 +16,6 @@ prerequisites:
   - go/概述与环境配置
 ---
 
-## 学习目标
-
-完成本章学习后,读者应能够在以下 Bloom 认知层级达到对应能力:
-
-- **记忆(Memory)**:复述 Go GC 的并发三色标记清除算法、STW 阶段划分、GOGC/GOMEMLIMIT 参数语义。
-- **理解(Understanding)**:解释写屏障(write barrier)的必要性、三色不变式(tricolor invariant)成立条件、并发标记如何与用户协程交错执行。
-- **应用(Application)**:使用 `GODEBUG=gctrace=1`、`runtime.ReadMemStats`、`pprof` 采集 GC 数据,并通过 `debug.SetGCPercent` 在运行时调整 GC 触发频率。
-- **分析(Analysis)**:对照 GC trace 日志,识别每次 GC 的 STW 时长、并发标记耗时、堆增长率,定位内存压力来源。
-- **评价(Evaluation)**:对比 GOGC、GOMEMLIMIT、off-heap、sync.Pool 等多种优化策略的适用场景与代价,选择最契合业务 SLA 的方案。
-- **创造(Creation)**:为高吞吐低延迟服务设计一套包含对象池、分代假设近似、GC 抖动监控的完整内存治理体系。
 
 ## 历史动机与背景
 

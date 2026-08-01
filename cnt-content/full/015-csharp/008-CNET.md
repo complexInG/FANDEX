@@ -20,6 +20,7 @@ prerequisites:
   - csharp/异步编程
 ---
 
+
 # C# .NET 平台与生态
 
 > 本篇是 FANDEX C# 系列的第八篇。我们将系统讲解 .NET 平台架构与生态：从 CLR/CoreCLR 运行时、BCL 基础类库、NuGet 包管理、依赖注入、配置系统、日志、中间件管道、ASP.NET Core、EF Core 到 .NET MAUI 跨平台 UI。内容对标 MIT 6.172（Performance Engineering）、Stanford CS142（Web Applications）、CMU 15-440（Distributed Systems）课程教学严谨度，支持 0 基础自学，同时覆盖企业级实战要点。
@@ -43,56 +44,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标（Bloom 分类法）
+## 1. 历史动机与演化
 
-### 1.1 记忆（Remember）
-
-- **R1**：能复述 .NET 平台的层次结构：应用程序代码 → CoreCLR/CLR → BCL → 操作系统抽象层。
-- **R2**：能列举 CLR 的核心组件：JIT 编译器、GC 垃圾回收、类型系统、异常处理、线程池、同步原语。
-- **R3**：能识别 .NET 三种发布模式：Framework-dependent（FDD）、Self-contained（SCD）、Native AOT。
-- **R4**：能背诵 NuGet 常用命令：`add`、`remove`、`list`、`search`、`restore`、`nuget locals`。
-- **R5**：能复述 DI 三种生命周期：Transient（瞬态）、Scoped（范围）、Singleton（单例）。
-
-### 1.2 理解（Understand）
-
-- **U1**：能解释 JIT 与 AOT 编译的差异：JIT 在运行时编译，AOT 在发布时预编译。
-- **U2**：能说明 GC 三代机制（Gen0/Gen1/Gen2）与大对象堆（LOH）的工作原理。
-- **U3**：能阐述 DI 容器的作用：注册、解析、生命周期管理。
-- **U4**：能描述 ASP.NET Core 中间件管道的请求处理流程。
-- **U5**：能说明 EF Core 的 Change Tracking 与迁移机制。
-- **U6**：能解释 .NET MAUI 跨平台架构：单一项目 → 平台特定代码生成。
-
-### 1.3 应用（Apply）
-
-- **A1**：能使用 `dotnet` CLI 创建、构建、发布项目。
-- **A2**：能配置 DI 容器，注册服务并解析。
-- **A3**：能使用 `IConfiguration` 与 `IOptions<T>` 实现强类型配置。
-- **A4**：能编写 ASP.NET Core 最小 API 与中间件。
-- **A5**：能定义 EF Core `DbContext` 与实体映射，执行 CRUD。
-- **A6**：能使用 .NET MAUI 创建跨平台 UI 应用。
-
-### 1.4 分析（Analyze）
-
-- **An1**：能分析 GC 压力原因，识别装箱、大对象分配、频繁字符串拼接。
-- **An2**：能拆解中间件管道执行顺序，识别性能瓶颈。
-- **An3**：能分析 EF Core 查询生成的 SQL，识别 N+1 问题。
-
-### 1.5 评价（Evaluate）
-
-- **E1**：能评判 FDD vs SCD vs AOT 在启动速度、内存占用、部署复杂度的取舍。
-- **E2**：能评估 Transient vs Scoped vs Singleton 在不同服务的适用性。
-- **E3**：能评价 EF Core vs Dapper vs ADO.NET 在生产力与性能的权衡。
-
-### 1.6 创造（Create）
-
-- **C1**：能设计一个完整的 .NET 微服务架构，包含 DI、配置、日志、数据库、HTTP 客户端。
-- **C2**：能为团队编写《.NET 工程实践规范》文档，涵盖项目结构、命名约定、CI/CD、性能基准。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 .NET Framework 时代（2002-2014）
+### 1.1 .NET Framework 时代（2002-2014）
 
 2002 年微软发布 .NET Framework 1.0，核心目标：与 Java 竞争企业级开发市场。
 
@@ -111,7 +65,7 @@ prerequisites:
 3. **部署复杂**：依赖系统级安装，容器化困难。
 4. **Windows-only**：无法满足云原生跨平台需求。
 
-### 2.2 Mono 与 Xamarin（2004-2016）
+### 1.2 Mono 与 Xamarin（2004-2016）
 
 Miguel de Icaza 创建 Mono 项目，将 .NET 移植到 Linux。后被 Xamarin 收购，专注移动端跨平台。
 
@@ -121,7 +75,7 @@ Miguel de Icaza 创建 Mono 项目，将 .NET 移植到 Linux。后被 Xamarin �
 
 2016 年微软收购 Xamarin，开源 Mono。
 
-### 2.3 .NET Core 时代（2016-2020）
+### 1.3 .NET Core 时代（2016-2020）
 
 2016 年微软发布 .NET Core 1.0，全面重构：
 
@@ -140,7 +94,7 @@ Miguel de Icaza 创建 Mono 项目，将 .NET 移植到 Linux。后被 Xamarin �
 - **.NET Core 3.0**（2019）：WPF/WinForms 支持（仅 Windows）、`System.Text.Json`。
 - **.NET Core 3.1**（2019）：LTS 版本，企业级稳定。
 
-### 2.4 .NET 5+ 统一时代（2020-至今）
+### 1.4 .NET 5+ 统一时代（2020-至今）
 
 2020 年微软发布 .NET 5.0，统一 .NET Core 与 .NET Framework（部分）与 Mono（Xamarin），不再分叉：
 
@@ -150,30 +104,30 @@ Miguel de Icaza 创建 Mono 项目，将 .NET 移植到 Linux。后被 Xamarin �
 - **.NET 8.0**（2023）：LTS，C# 12.0，`PrimaryConstructor`、`CollectionExpression`、`KeyedServices`。
 - **.NET 9.0**（2024）：C# 13.0，`params ReadOnlySpan`、新 `lock`、`field` 关键字、AOT 增强。
 
-### 2.5 关键技术演化
+### 1.5 关键技术演化
 
-#### 2.5.1 JIT 编译演化
+#### 1.5.1 JIT 编译演化
 
 - **JIT 1.0**（.NET Framework 1.0）：基础 JIT。
 - **R2R (ReadyToRun)**（.NET Core 3+）：预编译 IL 到本机码，加快启动。
 - **Tiered Compilation**（.NET Core 3+）：分层编译，先快速编译，后优化重编译。
 - **Dynamic PGO**（.NET 6+，默认 .NET 8）：动态配置文件引导优化，性能提升 10-30%。
 
-#### 2.5.2 GC 演化
+#### 1.5.2 GC 演化
 
 - **Server GC**：多核优化，每 CPU 一个堆。
 - **Background GC**（.NET 4.0+）：后台并发回收，减少暂停。
 - **LOH 压缩**（.NET 8+）：大对象堆可压缩。
 - **DATAS**（Dynamic Adaptation To Application Sizes，.NET 9）：动态调整堆大小适配容器。
 
-#### 2.5.3 AOT 演化
+#### 1.5.3 AOT 演化
 
 - **NGen**（.NET Framework）：预编译，但依赖 Framework。
 - **Crossgen**（.NET Core）：跨平台预编译。
 - **ReadyToRun**（.NET Core 3+）：标准化 R2R 格式。
 - **Native AOT**（.NET 7+，GA .NET 8）：完全预编译为本机码，无运行时 JIT，启动毫秒级。
 
-#### 2.5.4 ASP.NET 演化
+#### 1.5.4 ASP.NET 演化
 
 - **ASP.NET Web Forms**（.NET Framework 1.0）：拖拽式 UI，事件驱动。
 - **ASP.NET MVC**（.NET Framework 3.5+）：MVC 架构。
@@ -186,9 +140,9 @@ Miguel de Icaza 创建 Mono 项目，将 .NET 移植到 Linux。后被 Xamarin �
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 .NET 平台架构
+### 2.1 .NET 平台架构
 
 .NET 平台可形式化为分层架构：
 
@@ -205,7 +159,7 @@ $$
 - **BCL**：基础类库，提供集合、IO、网络、LINQ 等 API。
 - **OS Abstraction**：PAL（Platform Adaptation Layer），抽象操作系统差异。
 
-### 3.2 类型系统形式化
+### 2.2 类型系统形式化
 
 .NET CTS（Common Type System）定义：
 
@@ -223,7 +177,7 @@ $$
 \text{Object} \supset \{\text{ValueType} \supset \{\text{Enum}, \text{struct}\}, \text{String}, \text{Array}\langle T \rangle, \text{Delegate}, \text{Interface}\}
 $$
 
-### 3.3 GC 形式化
+### 2.3 GC 形式化
 
 设堆为 $H = \bigcup_{i=0}^{2} G_i \cup \text{LOH} \cup \text{POH}$，其中：
 
@@ -243,7 +197,7 @@ $$
 \end{cases}
 $$
 
-### 3.4 DI 容器形式化
+### 2.4 DI 容器形式化
 
 DI 容器是服务注册表 + 生命周期管理器：
 
@@ -263,7 +217,7 @@ $$
 - **Scoped**：每个 scope 创建一个实例，scope 内复用。
 - **Singleton**：应用生命周期内单一实例。
 
-### 3.5 配置系统形式化
+### 2.5 配置系统形式化
 
 配置源是键值映射：
 
@@ -285,7 +239,7 @@ $$
 
 通过反射或源生成器实现属性赋值。
 
-### 3.6 中间件管道形式化
+### 2.6 中间件管道形式化
 
 中间件管道是函数组合：
 
@@ -312,7 +266,7 @@ $$
 
 其中 `ctx` 包含请求与响应对象。
 
-### 3.7 EF Core 形式化
+### 2.7 EF Core 形式化
 
 EF Core 是对象关系映射（ORM）：
 
@@ -334,9 +288,9 @@ $$
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 GC 暂停时间复杂度
+### 3.1 GC 暂停时间复杂度
 
 **命题 4.1**：分代 GC 的平均暂停时间远小于全堆标记-压缩。
 
@@ -363,7 +317,7 @@ $$
 
 **推论**：短命对象（局部变量）保持在 Gen0，频繁分配不会引发 Full GC。
 
-### 4.2 DI 容器解析复杂度
+### 3.2 DI 容器解析复杂度
 
 **命题 4.2**：构造函数注入的解析复杂度为 $O(V + E)$，其中 $V$ 为服务数，$E$ 为依赖边数。
 
@@ -380,7 +334,7 @@ DI 容器维护依赖图 $G = (V, E)$，每个服务 $v \in V$ 依赖其构造�
 
 若存在循环依赖，拓扑排序检测出环，抛 `InvalidOperationException`。
 
-### 4.3 中间件管道执行顺序
+### 3.3 中间件管道执行顺序
 
 **命题 4.3**：中间件按注册顺序执行，前置处理在 `next` 之前，后置处理在 `next` 之后。
 
@@ -409,7 +363,7 @@ $$
 - 路由（`UseRouting`）必须在端点映射（`MapControllers`）之前。
 - 静态文件（`UseStaticFiles`）应在路由之前短路静态请求。
 
-### 4.4 EF Core N+1 问题
+### 3.4 EF Core N+1 问题
 
 **命题 4.4**：若在循环中访问导航属性且未 `Include`，则产生 $N+1$ 次查询。
 
@@ -438,7 +392,7 @@ var orders = await _db.Orders
     .ToListAsync();   // 1 次查询（JOIN）
 ```
 
-### 4.5 AOT 编译限制
+### 3.5 AOT 编译限制
 
 **命题 4.5**：Native AOT 编译应用无法运行时反射生成代码。
 
@@ -455,9 +409,9 @@ Native AOT 在发布时将 IL 编译为本机码，并裁剪未引用的代码�
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 dotnet CLI 命令
+### 4.1 dotnet CLI 命令
 
 ```bash
 # 创建控制台应用
@@ -505,7 +459,7 @@ dotnet --list-sdks
 dotnet --list-runtimes
 ```
 
-### 5.2 Runtime 架构示例
+### 4.2 Runtime 架构示例
 
 ```csharp
 // 查看 Runtime 信息
@@ -529,7 +483,7 @@ GC.Collect();
 Console.WriteLine($"Tiered Compilation: {System.Runtime.CompilerServices.RuntimeFeature.IsSupported("TieredCompilation")}");
 ```
 
-### 5.3 GC 与对象池
+### 4.3 GC 与对象池
 
 ```csharp
 using System.Buffers;
@@ -573,7 +527,7 @@ unsafe
 }
 ```
 
-### 5.4 NuGet 包管理
+### 4.4 NuGet 包管理
 
 ```bash
 # 搜索包
@@ -606,7 +560,7 @@ dotnet pack -c Release
 dotnet nuget push bin/Release/MyPackage.1.0.0.nupkg --api-key YOUR_KEY --source https://api.nuget.org/v3/index.json
 ```
 
-### 5.5 依赖注入
+### 4.5 依赖注入
 
 ```csharp
 // 注册：Program.cs
@@ -680,7 +634,7 @@ public class OrderService(
 }
 ```
 
-### 5.6 配置系统
+### 4.6 配置系统
 
 ```csharp
 // appsettings.json
@@ -759,7 +713,7 @@ public class EnvConfigProvider : ConfigurationProvider
 builder.Configuration.Add(new EnvConfigSource());
 ```
 
-### 5.7 日志
+### 4.7 日志
 
 ```csharp
 using Serilog;
@@ -812,7 +766,7 @@ public partial class UserService
 }
 ```
 
-### 5.8 ASP.NET Core 最小 API
+### 4.8 ASP.NET Core 最小 API
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
@@ -867,7 +821,7 @@ app.MapGet("/users/{id}", async (int id, IUserService svc) =>
 });
 ```
 
-### 5.9 中间件管道
+### 4.9 中间件管道
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
@@ -930,7 +884,7 @@ public static class RequestLoggingExtensions
 app.UseRequestLogging();
 ```
 
-### 5.10 EF Core 数据访问
+### 4.10 EF Core 数据访问
 
 ```csharp
 // 定义实体
@@ -1034,7 +988,7 @@ public class UserRepository(AppDbContext db)
 }
 ```
 
-### 5.11 EF Core 迁移
+### 4.11 EF Core 迁移
 
 ```bash
 # 安装工具
@@ -1063,7 +1017,7 @@ var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 await db.Database.MigrateAsync();
 ```
 
-### 5.12 .NET MAUI 跨平台
+### 4.12 .NET MAUI 跨平台
 
 ```csharp
 // MauiProgram.cs
@@ -1127,7 +1081,7 @@ public partial class MainViewModel : ObservableObject
 }
 ```
 
-### 5.13 性能诊断工具
+### 4.13 性能诊断工具
 
 ```bash
 # dotnet-counters 实时监控
@@ -1151,7 +1105,7 @@ dotnet-gcdump collect --process-id <PID>
 # https://github.com/microsoft/perfview
 ```
 
-### 5.14 BenchmarkDotNet 性能基准
+### 4.14 BenchmarkDotNet 性能基准
 
 ```csharp
 // dotnet add package BenchmarkDotNet
@@ -1186,9 +1140,9 @@ BenchmarkRunner.Run<AllocationBenchmarks>();
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 .NET vs Java (Spring)
+### 5.1 .NET vs Java (Spring)
 
 | 维度 | .NET 9 / ASP.NET Core | Java 21 / Spring Boot |
 | :--- | :--- | :--- |
@@ -1205,7 +1159,7 @@ BenchmarkRunner.Run<AllocationBenchmarks>();
 | **协程** | async/await | Virtual Threads（Loom） |
 | **启动速度** | 毫秒级（AOT） | 秒级（Native Image 毫秒） |
 
-### 6.2 .NET vs Node.js (Express/NestJS)
+### 5.2 .NET vs Node.js (Express/NestJS)
 
 | 维度 | .NET 9 | Node.js |
 | :--- | :--- | :--- |
@@ -1221,7 +1175,7 @@ BenchmarkRunner.Run<AllocationBenchmarks>();
 | **Web 框架** | ASP.NET Core | Express / NestJS / Fastify |
 | **启动速度** | 毫秒级 | 秒级 |
 
-### 6.3 .NET vs Python (Django/FastAPI)
+### 5.3 .NET vs Python (Django/FastAPI)
 
 | 维度 | .NET 9 | Python |
 | :--- | :--- | :--- |
@@ -1236,7 +1190,7 @@ BenchmarkRunner.Run<AllocationBenchmarks>();
 | **包管理** | NuGet | pip / poetry |
 | **部署** | 单文件 / 容器 | 容器（需 Python 环境） |
 
-### 6.4 .NET vs Go
+### 5.4 .NET vs Go
 
 | 维度 | .NET 9 | Go |
 | :--- | :--- | :--- |
@@ -1251,7 +1205,7 @@ BenchmarkRunner.Run<AllocationBenchmarks>();
 | **Web 框架** | ASP.NET Core | net/http / Gin / Echo |
 | **学习曲线** | 较陡（丰富特性） | 平缓（极简） |
 
-### 6.5 发布模式对比
+### 5.5 发布模式对比
 
 | 模式 | 二进制大小 | 启动速度 | 内存占用 | 部署依赖 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -1264,9 +1218,9 @@ BenchmarkRunner.Run<AllocationBenchmarks>();
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 Singleton 注入 Scoped（俘虏依赖）
+### 6.1 Singleton 注入 Scoped（俘虏依赖）
 
 ```csharp
 // 反模式：Singleton 注入 Scoped
@@ -1304,7 +1258,7 @@ public class MySingletonService(IServiceScopeFactory scopeFactory)
 }
 ```
 
-### 7.2 DbContext 线程安全问题
+### 6.2 DbContext 线程安全问题
 
 ```csharp
 // 反模式：DbContext 在多线程并发使用
@@ -1338,7 +1292,7 @@ public class MyService(IServiceScopeFactory scopeFactory)
 }
 ```
 
-### 7.3 中间件注册顺序错误
+### 6.3 中间件注册顺序错误
 
 ```csharp
 // 反模式：路由在异常处理之前
@@ -1354,7 +1308,7 @@ app.UseAuthorization();
 app.MapControllers();
 ```
 
-### 7.4 EF Core N+1 查询
+### 6.4 EF Core N+1 查询
 
 ```csharp
 // 反模式：循环中访问导航属性
@@ -1376,7 +1330,7 @@ var query = from o in db.Orders
 var results = await query.ToListAsync();
 ```
 
-### 7.5 未释放 DbContext
+### 6.5 未释放 DbContext
 
 ```csharp
 // 反模式：手动 new DbContext 但不 Dispose
@@ -1396,7 +1350,7 @@ using (var db = new AppDbContext(/* options */))
 // DI 注入时由 DI 容器管理生命周期（Scoped 自动 Dispose）
 ```
 
-### 7.6 异常处理吞噬
+### 6.6 异常处理吞噬
 
 ```csharp
 // 反模式：捕获异常不处理
@@ -1424,7 +1378,7 @@ public async Task DoWorkAsync()
 }
 ```
 
-### 7.7 GC.Collect 滥用
+### 6.7 GC.Collect 滥用
 
 ```csharp
 // 反模式：手动触发 GC
@@ -1441,7 +1395,7 @@ public void ProcessLargeData()
 // 或使用 using / Dispose 释放非托管资源
 ```
 
-### 7.8 大对象堆碎片
+### 6.8 大对象堆碎片
 
 ```csharp
 // 反模式：频繁分配大对象
@@ -1471,7 +1425,7 @@ public byte[] Process(byte[] input)
 }
 ```
 
-### 7.9 反射性能问题
+### 6.9 反射性能问题
 
 ```csharp
 // 反模式：频繁反射
@@ -1497,7 +1451,7 @@ public object CreateInstance(string typeName)
 }
 ```
 
-### 7.10 配置硬编码
+### 6.10 配置硬编码
 
 ```csharp
 // 反模式：硬编码连接字符串
@@ -1519,7 +1473,7 @@ public class MyService(IConfiguration config)
 }
 ```
 
-### 7.11 同步 IO 在异步方法中
+### 6.11 同步 IO 在异步方法中
 
 ```csharp
 // 反模式：异步方法中使用同步 IO
@@ -1537,7 +1491,7 @@ public async Task ProcessAsync()
 }
 ```
 
-### 7.12 未使用 CancellationToken
+### 6.12 未使用 CancellationToken
 
 ```csharp
 // 反模式：未传 CancellationToken
@@ -1557,9 +1511,9 @@ public async Task ProcessAsync(CancellationToken ct = default)
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 项目结构分层
+### 7.1 项目结构分层
 
 ```
 src/
@@ -1581,7 +1535,7 @@ tests/
   MyApp.IntegrationTests/
 ```
 
-### 8.2 DI 注册最佳实践
+### 7.2 DI 注册最佳实践
 
 ```csharp
 // 服务接口与实现分离
@@ -1595,7 +1549,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<UserService>();   // 难以测试与替换
 ```
 
-### 8.3 配置强类型化
+### 7.3 配置强类型化
 
 ```csharp
 // 使用 IOptions<T> 绑定强类型
@@ -1611,7 +1565,7 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 // 使用 IOptionsSnapshot 在请求范围获取最新
 ```
 
-### 8.4 日志结构化
+### 7.4 日志结构化
 
 ```csharp
 // 使用结构化日志（参数化）
@@ -1621,7 +1575,7 @@ logger.LogInformation("User {UserId} logged in from {IP}", userId, ip);
 logger.LogInformation($"User {userId} logged in from {ip}");
 ```
 
-### 8.5 异步端到端
+### 7.5 异步端到端
 
 ```csharp
 // 控制器异步
@@ -1643,7 +1597,7 @@ public async Task<User> FindAsync(int id)
 }
 ```
 
-### 8.6 EF Core 性能优化
+### 7.6 EF Core 性能优化
 
 ```csharp
 // 使用 AsNoTracking 提升只读查询
@@ -1671,7 +1625,7 @@ var page = await db.Users
     .ToListAsync();
 ```
 
-### 8.7 中间件异常处理
+### 7.7 中间件异常处理
 
 ```csharp
 // 全局异常处理中间件
@@ -1707,7 +1661,7 @@ builder.Services.AddProblemDetails();
 app.UseExceptionHandler();
 ```
 
-### 8.8 健康检查
+### 7.8 健康检查
 
 ```csharp
 builder.Services.AddHealthChecks()
@@ -1722,7 +1676,7 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 });
 ```
 
-### 8.9 限流与熔断
+### 7.9 限流与熔断
 
 ```csharp
 // .NET 7+ 内置限流
@@ -1754,7 +1708,7 @@ builder.Services.AddHttpClient<IApiClient, ApiClient>()
         p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
 ```
 
-### 8.10 性能优化技巧
+### 7.10 性能优化技巧
 
 ```csharp
 // 使用 Span<T> 与 stackalloc 减少分配
@@ -1789,7 +1743,7 @@ for (int i = 0; i < 1000; i++)
 var result = sb.ToString();
 ```
 
-### 8.11 部署与容器化
+### 7.11 部署与容器化
 
 ```dockerfile
 # Dockerfile
@@ -1818,7 +1772,7 @@ docker run -d -p 8080:80 myapp:latest
 docker build -t myapp:alpine -f Dockerfile.alpine .
 ```
 
-### 8.12 CI/CD GitHub Actions
+### 7.12 CI/CD GitHub Actions
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1848,9 +1802,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 电商订单系统
+### 8.1 电商订单系统
 
 ```csharp
 // 领域实体
@@ -1898,7 +1852,7 @@ public class OrderService(
 }
 ```
 
-### 9.2 限流 API 网关
+### 8.2 限流 API 网关
 
 ```csharp
 // Program.cs
@@ -1933,7 +1887,7 @@ app.UseRateLimiter();
 app.MapGet("/api/data", () => "data").RequireRateLimiting("user");
 ```
 
-### 9.3 健康检查仪表板
+### 8.3 健康检查仪表板
 
 ```csharp
 // 自定义健康检查
@@ -1967,7 +1921,7 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 });
 ```
 
-### 9.4 异步消息总线
+### 8.4 异步消息总线
 
 ```csharp
 // 使用 MassTransit（RabbitMQ / Azure Service Bus / Kafka）
@@ -2015,7 +1969,7 @@ public class OrderService(IPublishEndpoint publish)
 public record OrderCreatedEvent(int OrderId, int UserId);
 ```
 
-### 9.5 跨平台 MAUI 待办应用
+### 8.5 跨平台 MAUI 待办应用
 
 ```csharp
 // Todo.cs
@@ -2082,7 +2036,7 @@ public partial class TodoViewModel : ObservableObject
 }
 ```
 
-### 9.6 高性能 Web API
+### 8.6 高性能 Web API
 
 ```csharp
 // 使用 Span 与 ArrayPool
@@ -2105,7 +2059,7 @@ app.MapGet("/process/{size:int}", (int size) =>
 // 启动 < 100ms，内存 < 50MB
 ```
 
-### 9.7 gRPC 服务
+### 8.7 gRPC 服务
 
 ```csharp
 // dotnet add package Grpc.AspNetCore
@@ -2129,7 +2083,7 @@ builder.Services.AddGrpc();
 app.MapGrpcService<GreeterService>();
 ```
 
-### 9.8 SignalR 实时通信
+### 8.8 SignalR 实时通信
 
 ```csharp
 // Hubs/ChatHub.cs
@@ -2347,7 +2301,7 @@ builder.Services.AddSingleton<BackgroundTaskQueue>();
 builder.Services.AddHostedService<BackgroundTaskWorker>();
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 8**：在微服务架构中，何时选择 gRPC，何时选择 REST API？
 
@@ -2400,7 +2354,7 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 > 采用 ACM Reference Format。
 
@@ -2436,9 +2390,9 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **.NET 文档**：https://learn.microsoft.com/en-us/dotnet/
 - **ASP.NET Core 文档**：https://learn.microsoft.com/en-us/aspnet/core/
@@ -2447,7 +2401,7 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 - **NuGet 文档**：https://learn.microsoft.com/en-us/nuget/
 - **性能文档**：https://learn.microsoft.com/en-us/dotnet/core/performance/
 
-### 12.2 系列交叉引用
+### 11.2 系列交叉引用
 
 - FANDEX C# 系列：[概述与环境配置](./概述与环境配置.md)
 - FANDEX C# 系列：[基础语法](./基础语法.md)
@@ -2459,7 +2413,7 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 - FANDEX C# 系列：[测试与工程化](./测试与工程化.md)
 - FANDEX C# 系列：[游戏开发与 Unity](./游戏开发与Unity.md)
 
-### 12.3 进阶书籍
+### 11.3 进阶书籍
 
 - Mark Michaelis. 2022. *Essential C# 11.0*. Addison-Wesley Professional.
 - Joseph Albahari. 2023. *C# 12 in a Nutshell*. O'Reilly Media.
@@ -2468,7 +2422,7 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 - Paul DeCarlo. 2023. *Practical .NET MAUI*. Apress.
 - Matthew Groves. 2022. *Microservices in .NET Core*. Manning Publications.
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **Andrew Lock's Blog**：https://andrewlock.net/（ASP.NET Core 深度分析）
 - **Khalid Abuhakmeh**：https://khalidabuhakmeh.com/
@@ -2478,7 +2432,7 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 - **dotnet/maui 仓库**：https://github.com/dotnet/maui
 - **.NET Foundation**：https://dotnetfoundation.org/
 
-### 12.5 视频资源
+### 11.5 视频资源
 
 - **Microsoft Learn**：https://learn.microsoft.com/training/paths/dotnet/
 - **.NET Conf**：https://www.dotnetconf.net/
@@ -2487,7 +2441,7 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 - **Microsoft Build**：https://build.microsoft.com/
 - **.NET YouTube**：https://www.youtube.com/@dotnet
 
-### 12.6 工具
+### 11.6 工具
 
 - **BenchmarkDotNet**：https://benchmarkdotnet.org/（性能基准）
 - **dotnet-counters**：实时性能监控
@@ -2500,7 +2454,7 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 - **kubectl / Docker**：容器化部署
 - **Seq / Grafana / Kibana**：日志聚合
 
-### 12.7 实战案例参考
+### 11.7 实战案例参考
 
 - **eShopOnContainers**：https://github.com/dotnet-architecture/eShopOnContainers
 - **Clean Architecture Template**：https://github.com/jasontaylordev/CleanArchitecture

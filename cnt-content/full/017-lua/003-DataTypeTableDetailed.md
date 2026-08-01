@@ -15,82 +15,16 @@ related:
   - lua/元表与面向对象编程
 prerequisites: []
 ---
+
 # Lua 数据类型与 Table 详解速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标（Bloom 分类法）
+## 1. 历史动机与背景
 
-本篇文档采用 Bloom 认知分类法组织学习目标，覆盖从基础记忆到高阶创造的六个层级，帮助读者系统化掌握 Lua 的数据类型系统与 Table 这一核心容器类型。
-
-### 1.1 记忆层（Remember）
-
-完成本节后，学习者应能：
-
-- 列举 Lua 的 8 种基础数据类型（`nil`、`boolean`、`number`、`string`、`function`、`table`、`thread`、`userdata`）。
-- 复述 `type()` 函数的返回值形式（字符串）与各类型的对应关系。
-- 说出 Table 作为 Lua 唯一容器类型的语义定位及其作为数组、字典、对象、命名空间的多重角色。
-- 列举至少 6 个常用的 `table` 库函数（`insert`、`remove`、`concat`、`sort`、`unpack`、`pack`）及其签名。
-- 复述 `ipairs` 与 `pairs` 的遍历语义差异，包括终止条件与顺序保证。
-- 列出 Lua 5.3 引入的整数/浮点数子类型及其相互转换规则。
-
-### 1.2 理解层（Understand）
-
-完成本节后，学习者应能：
-
-- 解释 Lua 动态类型系统的设计动机，对比静态类型语言（如 Java、C++）的差异。
-- 阐述 Table 作为"关联数组"的本质，说明其底层基于哈希表与数组的混合实现。
-- 描述 Table 的引用语义，说明为什么 `local t2 = t1` 不会复制表内容。
-- 解释 `nil` 在 Table 中作为"键不存在"的语义，说明为何不能在表中存储 `nil` 值。
-- 说明元表（metatable）的查找机制，包括 `__index`、`__newindex` 的触发条件。
-- 阐述弱表（weak table）的工作原理及其在缓存场景中的应用。
-
-### 1.3 应用层（Apply）
-
-完成本节后，学习者应能：
-
-- 编写代码使用 `type()` 与 `tonumber()` 完成类型判断与安全转换。
-- 使用 Table 实现数组、字典、集合、队列、栈等常见数据结构。
-- 通过 `ipairs`、`pairs`、数值 `for` 三种方式遍历 Table，并选择合适的方式。
-- 使用 `table.insert`、`table.remove`、`table.concat`、`table.sort` 完成数组操作。
-- 通过 `setmetatable` 与 `__index` 实现简单的类与继承。
-- 使用元方法（`__add`、`__eq`、`__lt`、`__tostring`、`__call`）扩展 Table 行为。
-
-### 1.4 分析层（Analyze）
-
-完成本节后，学习者应能：
-
-- 拆解一段复杂的 Table 操作代码，识别其中的引用共享、浅拷贝、深拷贝边界。
-- 分析 Table 在 Lua 虚拟机中的内存布局，估算不同规模 Table 的内存占用。
-- 比较 `ipairs` 与 `pairs` 在含有"空洞"（hole）的数组中的行为差异，指出潜在陷阱。
-- 解构一个基于元表的面向对象实现，识别其中的 `__index` 链、`self` 参数、构造函数模式。
-- 分析弱表的垃圾回收时机，解释为何弱表的值在 GC 后变为 `nil`。
-
-### 1.5 评价层（Evaluate）
-
-完成本节后，学习者应能：
-
-- 评估某段 Lua 代码在类型使用上的合理性，指出潜在的 `nil` 传播与类型混淆风险。
-- 评判 Table 作为万能容器的优缺点，给出在大型项目中引入 schema 校验的建议。
-- 评估元表的使用是否过度，提出在简单场景下避免元表的设计建议。
-- 对比 Lua Table 与 Python dict、JavaScript Object、Java HashMap 的性能特征。
-- 评判某段面向对象代码是否符合 SOLID 原则，提出重构建议。
-
-### 1.6 创造层（Create）
-
-完成本节后，学习者应能：
-
-- 设计一个支持多种数据结构（栈、队列、集合、图）的 Lua 容器库。
-- 实现一个基于元表的领域特定语言（DSL），如数学向量运算或矩阵运算。
-- 构建一套 Table 序列化与反序列化工具，支持循环引用与元表保留。
-- 编写一个支持不可变表（immutable table）的库，通过元表拦截写操作。
-- 设计一个基于弱表的缓存系统，支持 LRU 淘汰与自动 GC 回收。
-
-## 2. 历史动机与背景
-
-### 2.1 Lua 的诞生与设计哲学
+### 1.1 Lua 的诞生与设计哲学
 
 Lua 由巴西里约热内卢天主教大学（PUC-Rio）的 Roberto Ierusalimschy、Luiz Henrique de Figueiredo 和 Waldemar Celes 三人于 1993 年创建。其设计初衷是为巴西石油公司（Petrobras）的数据录入系统提供一种可嵌入的配置语言，替代当时使用的 SOL（Simple Object Language）与 DEL（Data-Entry Language）。
 
@@ -101,7 +35,7 @@ Lua 的核心设计哲学可以概括为"少即是多"（less is more）：
 3. **元表机制**：通过元表实现运算符重载、继承、代理等高级语义，而非引入专门的语言特性。
 4. **可嵌入性**：Lua 从一开始就设计为可嵌入宿主程序的脚本语言，其类型系统需与 C 语言高效互操作。
 
-### 2.2 Table 的演化历史
+### 1.2 Table 的演化历史
 
 Table 是 Lua 最具特色的设计之一，其演化反映了 Lua 团队对性能与简洁性的持续追求。
 
@@ -123,7 +57,7 @@ Table 是 Lua 最具特色的设计之一，其演化反映了 Lua 团队对性�
 
 **Lua 5.4（2020）**：引入 `__close` 元方法与 `<close>` 变量，Table 可作为资源句柄实现 RAII；优化了垃圾回收器，支持分代 GC。
 
-### 2.3 设计权衡：为什么是 Table
+### 1.3 设计权衡：为什么是 Table
 
 大多数脚本语言选择为不同用途提供不同类型：Python 同时有 `list`、`dict`、`set`、`tuple`；JavaScript 有 `Array`、`Object`、`Map`、`Set`；Ruby 有 `Array`、`Hash`、`Set`。Lua 选择"一种类型走天下"，这背后的设计权衡值得深入理解。
 
@@ -143,7 +77,7 @@ Table 是 Lua 最具特色的设计之一，其演化反映了 Lua 团队对性�
 
 Lua 团队选择了统一性，这一决策使得 Lua 极其适合作为嵌入式脚本语言，但在大型项目开发中需要额外的工程规范来弥补类型安全的不足。
 
-### 2.4 关键里程碑
+### 1.4 关键里程碑
 
 | 时间 | 版本 | 事件 | 意义 |
 | :--- | :--- | :--- | :--- |
@@ -157,9 +91,9 @@ Lua 团队选择了统一性，这一决策使得 Lua 极其适合作为嵌入�
 | 2020 | Lua 5.4 | 引入 `__close` 元方法 | 支持 RAII 资源管理 |
 | 2024 | Lua 5.4.7 | 持续优化 Table 性能 | 内存占用与访问速度持续改进 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类型系统形式化
+### 2.1 类型系统形式化
 
 Lua 的类型系统可形式化为以下集合：
 
@@ -192,7 +126,7 @@ $$
 
 其中 $V$ 为所有可能值的集合，$\Sigma^*$ 为字符串的字母表闭包。
 
-### 3.2 Table 的形式化定义
+### 2.2 Table 的形式化定义
 
 Table 是 Lua 中唯一的复合数据结构，形式化定义为二元组：
 
@@ -219,7 +153,7 @@ $$
 v \in \text{Values} = V \setminus \{\text{NaN}\}
 $$
 
-### 3.3 Table 的访问语义
+### 2.3 Table 的访问语义
 
 Table 的读写操作形式化定义如下：
 
@@ -246,7 +180,7 @@ $$
 
 特别注意：将键的值设为 `nil` 等价于删除该键，这是 Lua Table 的核心语义之一。
 
-### 3.4 数组长度的形式化定义
+### 2.4 数组长度的形式化定义
 
 Lua 中数组长度 `#t` 的定义较为微妙，形式化为：
 
@@ -258,7 +192,7 @@ $$
 
 对于无空洞的密集数组，`#t` 唯一确定为 $n$。对于稀疏数组，应避免依赖 `#t`，改用显式计数或 `table.maxn`（Lua 5.1 已废弃，需自行实现）。
 
-### 3.5 元表查找算法
+### 2.5 元表查找算法
 
 元表的查找算法形式化为递归过程：
 
@@ -282,7 +216,7 @@ $$
 
 这一递归过程实现了原型链查找，是 Lua 面向对象编程的理论基础。
 
-### 3.6 弱表的形式化定义
+### 2.6 弱表的形式化定义
 
 弱表通过 `__mode` 元方法声明，其取值组合为：
 
@@ -303,9 +237,9 @@ $$
 \text{GC triggers: } \forall (k, v) \in t, \text{ if } \text{refcount}(k) = 1 \text{ and } \_\_\text{mode} \ni \text{"k"}, \text{ then } t[k] \leftarrow \text{nil}
 $$
 
-## 4. 理论推导与复杂度分析
+## 3. 理论推导与复杂度分析
 
-### 4.1 Table 的内存布局
+### 3.1 Table 的内存布局
 
 Lua Table 在虚拟机内部由 `Table` 结构体表示，其内存布局可抽象为：
 
@@ -325,7 +259,7 @@ $$
 
 对于 100 个键值对的纯字典，内存占用约为 $80 + 128 \times 32 \approx 4.2\text{KB}$。
 
-### 4.2 哈希表的平均复杂度
+### 3.2 哈希表的平均复杂度
 
 Lua 哈希表采用链地址法解决冲突，在负载因子合理（$\alpha \leq 1$）的情况下，平均查找复杂度为 $O(1)$：
 
@@ -337,7 +271,7 @@ $$
 
 **Rehash 触发条件**：当哈希表负载因子超过 1 或插入新键时无空槽，Lua 触发 rehash，容量翻倍。Rehash 的复杂度为 $O(n)$，但均摊到每次插入为 $O(1)$。
 
-### 4.3 数组部分的优化
+### 3.3 数组部分的优化
 
 Lua Table 的数组部分针对连续整数键 $1, 2, \ldots, n$ 做了专门优化：
 
@@ -347,7 +281,7 @@ Lua Table 的数组部分针对连续整数键 $1, 2, \ldots, n$ 做了专门优
 
 Lua 在插入键时会自动判断是否应放入数组部分。判断算法基于"边界"概念：若插入键 $k$ 后，$t[1], t[2], \ldots, t[k]$ 均非 `nil`，则将 $k$ 纳入数组部分。
 
-### 4.4 `ipairs` 与 `pairs` 的复杂度
+### 3.4 `ipairs` 与 `pairs` 的复杂度
 
 **`ipairs`** 遍历数组部分，复杂度为 $O(n_a)$，其中 $n_a$ 为第一个 `nil` 值的位置：
 
@@ -363,7 +297,7 @@ $$
 
 对于大规模 Table，`ipairs` 通常快于 `pairs`，因为数组部分缓存友好且无需哈希计算。
 
-### 4.5 `table.sort` 的算法与复杂度
+### 3.5 `table.sort` 的算法与复杂度
 
 Lua 标准库的 `table.sort` 采用快速排序的改进版本（结合插入排序），平均复杂度为 $O(n \log n)$，最坏复杂度为 $O(n^2)$（极少触发，因为 Lua 选择了中位数作为 pivot）。
 
@@ -376,7 +310,7 @@ $$
 
 对于小数组（$n \leq 16$），`table.sort` 切换为插入排序以减少递归开销。
 
-### 4.6 `table.concat` 的性能优势
+### 3.6 `table.concat` 的性能优势
 
 字符串拼接 `a .. b .. c` 的时间复杂度为 $O(n^2)$（每次拼接都创建新字符串并复制内容）。`table.concat` 预先计算总长度，一次性分配内存，复杂度为 $O(n)$：
 
@@ -386,7 +320,7 @@ $$
 
 其中 $L$ 为结果字符串总长度。对于 10000 个字符串的拼接，`table.concat` 通常比 `..` 运算符快 100 倍以上。
 
-### 4.7 弱表的 GC 开销
+### 3.7 弱表的 GC 开销
 
 弱表在每次 GC 时都需要扫描，复杂度为 $O(n)$：
 
@@ -396,9 +330,9 @@ $$
 
 其中 $n_{\text{weak}}$ 为所有弱表的键值对总数。对于大规模弱表缓存，GC 开销可能成为性能瓶颈。生产环境应控制弱表规模，或采用分代 GC（Lua 5.4+）。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 类型判断与转换
+### 4.1 类型判断与转换
 
 ```lua
 -- 类型判断与转换示例
@@ -469,7 +403,7 @@ print(10 .. "5")                    -- 105（数值转字符串）
 -- print(10..20)                    -- 报错：malformed number
 ```
 
-### 5.2 Table 的创建与基本操作
+### 4.2 Table 的创建与基本操作
 
 ```lua
 -- Table 的创建与基本操作示例
@@ -542,7 +476,7 @@ t.age = nil
 print(t.age)                         -- nil（键不存在）
 ```
 
-### 5.3 Table 的遍历
+### 4.3 Table 的遍历
 
 ```lua
 -- Table 的三种遍历方式
@@ -620,7 +554,7 @@ for k, v in pairs(to_add) do
 end
 ```
 
-### 5.4 table 标准库函数
+### 4.4 table 标准库函数
 
 ```lua
 -- table 标准库函数演示
@@ -696,7 +630,7 @@ table.move(src, 1, 3, 3)             -- src[1..3] 移动到 src[3..5]
 print(table.concat(src, ", "))       -- 1, 2, 1, 2, 3
 ```
 
-### 5.5 元表与元方法
+### 4.5 元表与元方法
 
 ```lua
 -- 元表与元方法示例
@@ -810,7 +744,7 @@ local obj = setmetatable({name = "obj"}, {
 print(obj)                            -- Object(obj)（print 自动调用 __tostring）
 ```
 
-### 5.6 面向对象编程
+### 4.6 面向对象编程
 
 ```lua
 -- 基于 Table 与元表的面向对象编程
@@ -946,7 +880,7 @@ print(c:value())                      -- 12
 -- print(c.count)                     -- nil（无法直接访问私有变量）
 ```
 
-### 5.7 弱表与缓存
+### 4.7 弱表与缓存
 
 ```lua
 -- 弱表（weak table）示例：自动 GC 的缓存
@@ -1037,7 +971,7 @@ release_table(t)
 -- 表被回收进池，下次 acquire_table 可复用
 ```
 
-### 5.8 数据结构实现
+### 4.8 数据结构实现
 
 ```lua
 -- 使用 Table 实现常见数据结构
@@ -1248,7 +1182,7 @@ list:forEach(function(v) io.write(v, " ") end)  -- 0 1 2
 print()
 ```
 
-### 5.9 Table 序列化
+### 4.9 Table 序列化
 
 ```lua
 -- Table 序列化与反序列化
@@ -1341,7 +1275,7 @@ cyclic.self = cyclic
 print(serialize_safe(cyclic))         -- {name = "cyclic", self = "[circular: ...]"}
 ```
 
-### 5.10 不可变表
+### 4.10 不可变表
 
 ```lua
 -- 通过元方法实现不可变表
@@ -1409,9 +1343,9 @@ print(new_config.port)                -- 9090
 print(config.port)                    -- 8080（原表不变）
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua Table 与其他语言的容器类型对比
+### 5.1 Lua Table 与其他语言的容器类型对比
 
 | 特性 | Lua Table | Python dict/list | JavaScript Object/Array | Java HashMap/ArrayList | Ruby Hash/Array |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -1427,7 +1361,7 @@ print(config.port)                    -- 8080（原表不变）
 
 **论述**：Lua Table 的"统一类型"哲学在学习成本与互操作性上具有显著优势，但在大型项目中可能因语义模糊导致维护困难。Python、JavaScript 等语言选择多类型方案，通过明确的类型区分提升了代码可读性，但增加了学习负担。Java 的集合框架最为庞大，提供了精细化的类型选择，但 API 复杂度也最高。
 
-### 6.2 `ipairs` 与 `pairs` 对比
+### 5.2 `ipairs` 与 `pairs` 对比
 
 | 特性 | `ipairs` | `pairs` |
 | :--- | :--- | :--- |
@@ -1441,7 +1375,7 @@ print(config.port)                    -- 8080（原表不变）
 
 **论述**：`ipairs` 与 `pairs` 的核心差异在于遍历范围与顺序保证。对于纯数组（无空洞），两者行为一致；对于含空洞的数组，`ipairs` 会在第一个 `nil` 处停止，可能遗漏后续元素；对于字典，必须使用 `pairs`。生产环境应养成"数组用 `ipairs`，字典用 `pairs`"的明确习惯，避免混用导致的潜在 bug。
 
-### 6.3 浅拷贝与深拷贝对比
+### 5.3 浅拷贝与深拷贝对比
 
 | 特性 | 浅拷贝 | 深拷贝 |
 | :--- | :--- | :--- |
@@ -1455,7 +1389,7 @@ print(config.port)                    -- 8080（原表不变）
 
 **论述**：浅拷贝适用于"覆盖默认值"等简单场景，性能高且无循环引用风险。深拷贝适用于"完全独立的副本"场景，如状态快照、并发修改等。生产环境应根据实际需求选择，避免一律使用深拷贝导致的性能问题。对于含循环引用的复杂表，深拷贝必须维护 `seen` 表避免无限递归。
 
-### 6.4 元表 vs 继承 vs 闭包
+### 5.4 元表 vs 继承 vs 闭包
 
 | 特性 | 元表继承 | 闭包封装 | 闭包 + 元表混合 |
 | :--- | :--- | :--- | :--- |
@@ -1468,7 +1402,7 @@ print(config.port)                    -- 8080（原表不变）
 
 **论述**：元表继承是 Lua 最常见的 OOP 模式，性能高但缺乏私有性。闭包封装提供了真正的私有变量，但内存占用较高且不支持继承。混合模式结合两者优点，适合复杂业务对象，但实现复杂度较高。生产环境应根据对象的复杂度与性能要求选择合适的模式。
 
-### 6.5 Lua 不同版本的 Table 特性
+### 5.5 Lua 不同版本的 Table 特性
 
 | 特性 | Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -1486,9 +1420,9 @@ print(config.port)                    -- 8080（原表不变）
 
 **论述**：Lua 5.3 是 Table 演化的重要分水岭，引入了整数子类型与 `table.move`，显著提升了数值处理能力。Lua 5.4 引入的 `__close` 元方法与分代 GC 是面向生产环境的重要改进，使得 Table 可作为资源句柄实现 RAII。生产环境建议使用 Lua 5.4 或 LuaJIT（基于 5.1 但有 JIT 加速），根据场景选择。
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 空洞数组与 `#` 运算符
+### 6.1 空洞数组与 `#` 运算符
 
 **陷阱描述**：Lua 的 `#` 运算符对含"空洞"（hole，即中间出现 `nil`）的数组返回值不确定，可能返回任意一个边界。
 
@@ -1531,7 +1465,7 @@ local count = 0
 for _ in pairs(sparse) do count = count + 1 end  -- 显式计数
 ```
 
-### 7.2 引用共享导致的意外修改
+### 6.2 引用共享导致的意外修改
 
 **陷阱描述**：Lua Table 是引用类型，`local t2 = t1` 不会复制表内容，修改 `t2` 会影响 `t1`。
 
@@ -1587,7 +1521,7 @@ print(config.host)                    -- 0.0.0.0
 print(defaults.host)                  -- localhost
 ```
 
-### 7.3 遍历时修改表
+### 6.3 遍历时修改表
 
 **陷阱描述**：在 `pairs` 遍历过程中添加或删除键，会导致未定义行为（跳过元素、重复遍历、死循环等）。
 
@@ -1630,7 +1564,7 @@ end
 t = new_t                               -- 替换引用
 ```
 
-### 7.4 `nil` 作为 Table 值
+### 6.4 `nil` 作为 Table 值
 
 **陷阱描述**：在 Lua Table 中，`t[k] = nil` 等价于删除键 `k`，而非存储 `nil` 值。这导致无法在表中存储 `nil`，需要特殊处理。
 
@@ -1672,7 +1606,7 @@ local config = {timeout = wrap(nil)}
 -- 读取时：if config.timeout then return config.timeout.value end
 ```
 
-### 7.5 元表循环引用
+### 6.5 元表循环引用
 
 **陷阱描述**：通过 `__index` 链形成的循环引用会导致栈溢出。
 
@@ -1717,7 +1651,7 @@ local function safe_index(t, k, seen)
 end
 ```
 
-### 7.6 弱表误用导致数据丢失
+### 6.6 弱表误用导致数据丢失
 
 **陷阱描述**：弱表的键或值可能被 GC 意外回收，导致数据丢失。
 
@@ -1756,7 +1690,7 @@ local function cache_evict(key)
 end
 ```
 
-### 7.7 浮点数键的精度问题
+### 6.7 浮点数键的精度问题
 
 **陷阱描述**：Lua 5.3 之前，所有数字都是双精度浮点数，作为键时存在精度问题。Lua 5.3+ 虽然区分整数与浮点数，但 `1` 与 `1.0` 仍可能被视为不同的键。
 
@@ -1797,7 +1731,7 @@ t[normalize_key(1)] = "value"
 t[normalize_key(1.0)] = "value"        -- 相同键
 ```
 
-### 7.8 `table.concat` 对非字符串元素的处理
+### 6.8 `table.concat` 对非字符串元素的处理
 
 **陷阱描述**：`table.concat` 要求所有元素为字符串或数字，否则报错。
 
@@ -1839,9 +1773,9 @@ end
 print(table.concat(parts, ","))        -- 1,2,hello
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 Table 设计规范
+### 7.1 Table 设计规范
 
 ```lua
 -- 1. 明确区分数组与字典
@@ -1903,7 +1837,7 @@ local DEFAULT_CONFIG = readonly({
 })
 ```
 
-### 8.2 Table 校验
+### 7.2 Table 校验
 
 ```lua
 -- 实现 Table 结构校验，用于 API 入参检查
@@ -2026,7 +1960,7 @@ local ok2, err2 = user_schema:validate({
 print(ok2, err2)                       -- false    root.age must be <= 150
 ```
 
-### 8.3 Table 性能优化
+### 7.3 Table 性能优化
 
 ```lua
 -- Table 性能优化技巧
@@ -2127,7 +2061,7 @@ local function shallow_merge(dst, src)
 end
 ```
 
-### 8.4 Table 调试技巧
+### 7.4 Table 调试技巧
 
 ```lua
 -- Table 调试辅助函数
@@ -2252,7 +2186,7 @@ print(string.format("数组: %d, 字典: %d, 总计: %d",
 print("有空洞:", has_holes(data.values))
 ```
 
-### 8.5 单元测试模式
+### 7.5 单元测试模式
 
 ```lua
 -- Table 相关的单元测试模式
@@ -2352,9 +2286,9 @@ t:assertEqual(proxy.x, 10, "should get value from metatable")
 t:report()
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Kong API 网关的插件系统
+### 8.1 案例一：Kong API 网关的插件系统
 
 **背景**：Kong 是基于 OpenResty 的云原生 API 网关，其插件系统大量使用 Lua Table 实现插件配置、生命周期管理与数据传递。
 
@@ -2426,7 +2360,7 @@ return KeyAuthHandler
 
 **经验总结**：Kong 的插件系统展示了 Table 作为"接口 + 数据 + 行为"三位一体的优雅用法。通过元表实现继承，通过 Table 字段声明配置，通过 Table 在阶段间传递上下文，体现了 Lua Table 的极简与灵活。
 
-### 9.2 案例二：LÖVE 2D 游戏引擎的实体系统
+### 8.2 案例二：LÖVE 2D 游戏引擎的实体系统
 
 **背景**：LÖVE 是流行的 Lua 2D 游戏引擎，其游戏对象管理大量使用 Table 实现。
 
@@ -2601,7 +2535,7 @@ end
 
 **经验总结**：LÖVE 的实体系统展示了 Table 在游戏开发中的典型用法。相比 C++ 或 Java 的类继承体系，Lua Table 的灵活性使得原型式编程更加自然，但需要开发者自觉遵守设计规范。
 
-### 9.3 案例三：Neovim 配置系统
+### 8.3 案例三：Neovim 配置系统
 
 **背景**：Neovim 是现代化的 Vim 编辑器，其配置系统从 VimScript 迁移到 Lua（Neovim 0.5+），大量使用 Table 表达配置。
 
@@ -2766,7 +2700,7 @@ end
 
 **经验总结**：Neovim 的 Lua 配置系统展示了 Table 在配置驱动开发中的优势。相比 VimScript 的命令式风格，Lua Table 的声明式配置更具可读性与可维护性。这一设计思路被众多工具（如 VS Code 的 JSON 配置、Emacs 的 use-package）借鉴。
 
-### 9.4 案例四：Redis 客户端的响应解析
+### 8.4 案例四：Redis 客户端的响应解析
 
 **背景**：Redis 客户端库（如 lua-resty-redis）需要将 Redis 响应解析为 Lua Table，这一过程涉及大量的类型映射与嵌套结构处理。
 
@@ -2912,7 +2846,7 @@ print(cmd)                                        -- *3\r\n$3\r\nSET\r\n$5\r\nmy
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：判断以下代码的输出，并解释原因。
 
@@ -3039,7 +2973,7 @@ for k, v in pairs(to_add) do
 end
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：实现一个支持观察者模式（Observer Pattern）的事件系统，使用 Table 管理事件与监听器。
 
@@ -3147,7 +3081,7 @@ local function deep_copy(t, seen)
 end
 ```
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **习题 6**：实现一个不可变持久化数据结构（Persistent Data Structure）库，支持以下操作：
 1. `create(initial)`：创建持久化 Table。
@@ -3442,7 +3376,7 @@ local function process_users(users)
 end
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Ierusalimschy R, de Figueiredo L H, Celes W. Lua 5.4 Reference Manual[M]. Geneva: Lua.org, 2020. DOI: 10.5555/3508499
 
@@ -3468,9 +3402,9 @@ end
 
 [12] Tratt L. Dynamically Typed Languages[J]. Advances in Computers, 2005, 77: 149-184. DOI: 10.1016/S0065-2458(09)01005-4
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档与规范
+### 11.1 官方文档与规范
 
 - **Lua 官方网站**：https://www.lua.org/
   - Lua 5.4 Reference Manual：类型系统与 Table API 的权威定义。
@@ -3483,7 +3417,7 @@ end
   - LuaJIT 2.1 与 Lua 5.1 的差异说明。
   - FFI（Foreign Function Interface）扩展能力。
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - **Programming in Lua (4th Edition)** by Roberto Ierusalimschy
   - 第 1-5 章：类型系统与 Table 基础。
@@ -3495,7 +3429,7 @@ end
 - **Building Impressive Presentations with Lua** by L. H. de Figueiredo
   - 展示了 Lua 在特定领域的应用。
 
-### 12.3 社区与博客
+### 11.3 社区与博客
 
 - **Lua mailing list**：https://www.lua.org/lua-l.html
   - Lua 设计者亲自参与讨论，历史归档丰富。
@@ -3506,7 +3440,7 @@ end
 - **OpenResty 中文社区**：https://github.com/openresty
   - OpenResty 生态下的 Lua 实践。
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **LuaJIT FFI**：通过 FFI 直接调用 C 库，绕过 Lua C API，性能接近原生。
 - **Lua 协程**：`coroutine` 模块与协作式多任务，理解 Table 在协程间传递的语义。
@@ -3514,7 +3448,7 @@ end
 - **LuaJIT trace 编译**：理解 JIT 如何优化 Table 访问，避免 NYI（Not Yet Implemented）操作。
 - **Lua 5.4 分代 GC**：理解弱表在分代 GC 下的行为差异。
 
-### 12.5 相关项目
+### 11.5 相关项目
 
 - **Luarocks**：https://luarocks.org/
   - Lua 包管理器，大量 Table 相关的库（如 penlight、lua-cjson）。

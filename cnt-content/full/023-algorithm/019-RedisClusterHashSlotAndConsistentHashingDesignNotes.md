@@ -30,14 +30,6 @@ prerequisites:
   - algorithm/树
   - algorithm/图算法
   - cs-fundamentals/离散数学
-learningObjectives:
-  - 记忆并查集作为不相交集合森林的形式化定义，复述 find / union / connected 三种操作的均摊 O(α(n)) 复杂度结论
-  - 理解 Galler-Fischer 1964 早期形式化与 Tarjan 1975 给出 O(m·α(n)) 上界的历史脉络，说明反 Ackermann 函数为何"对所有实际问题可视为常数"
-  - 应用路径压缩与按秩合并两种优化，针对动态连通性、最小生成树、连通分量统计编写可运行的 Python/C++/Java 代码
-  - 分析 Ackermann 函数 A(m,n) 与其反函数 α(n) 的定义，论证 m 次 find 操作在 n 个元素上的总代价为 O(m·α(n)) 的均摊上界
-  - 评估并查集相对于哈希集合、树状数组、线段树在"动态连通性"问题维度上的优劣，识别其在 Kruskal / Tarjan 离线 LCA / 网络连通判定中的选型动机
-  - 对比朴素 union、按秩合并、按大小合并、路径压缩（递归/迭代）、双优化结合等变体在最坏与均摊复杂度维度的差异
-  - 创造性设计基于并查集的开源项目解决方案，如社交网络关系聚类、最小生成树并行构建、游戏内连通区域判定
 references:
   - type: journal
     authors:
@@ -148,6 +140,7 @@ etymology:
     english: amortized complexity
     origin: '均摊分析（amortized analysis）由 Robert Tarjan 1985 年系统化（参见 "Amortized Computational Complexity" SIAM Journal on Algebraic Discrete Methods），用于评估操作序列的整体代价，而非单次最坏'
 ---
+
 
 ## 1. 概述与学习目标
 

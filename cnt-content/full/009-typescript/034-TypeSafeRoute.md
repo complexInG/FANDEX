@@ -16,47 +16,6 @@ prerequisites:
   - typescript/语法速查
 ---
 
-## 学习目标
-
-本文按 Bloom 分类法分层组织学习目标，使读者从对路由系统的"机械使用"走向"形式化建模与设计"。
-
-### 1. 记忆层（Remember）
-
-- 复述前端路由的两类基本形态：Hash 路由（基于 `location.hash`）与 History 路由（基于 `history.pushState`）。
-- 列出 TypeScript 模板字面量类型在路由中至少 3 个应用：路径参数提取、查询字符串解析、路径前缀拼接。
-- 默写 `Route<TPath, TParams, TQuery>` 三元组语义，并说明每元独立可演化方向。
-
-### 2. 理解层（Understand）
-
-- 用自己的语言解释"路径模板"与"路径实例"的对应关系，并对照函数签名与函数调用。
-- 解释 `infer` 在路径参数提取中的合一过程，至少给出 2 个具体路径示例的合一解。
-- 在白板上对比"运行时路由匹配"与"编译期类型推导"两条管线，标注二者在何处产生耦合（schema 同源）。
-
-### 3. 应用层（Apply）
-
-- 实现一个最小可用的类型安全路由器（不含 History API 集成），支持路径参数与查询参数类型推导。
-- 为现有 React/Vue 项目接入类型安全路由，覆盖至少 3 个典型路由（嵌套、动态、查询）。
-- 实现一个"路由生成器"函数 `route<Path>(path: Path): RouteBuilder<Path>`，链式构造查询与参数约束。
-
-### 4. 分析层（Analyze）
-
-- 比较 Next.js App Router、TanStack Router、React Router 4 三者的类型安全实现策略，归纳至少 4 条差异化设计决策。
-- 拆解一段 30 行的路径模板字面量递归类型，识别每层 `infer` 的合一点与终止条件。
-- 分析 TanStack Router 的 `navigate` 函数签名，指出其约束层次：路径约束、参数约束、查询约束、状态约束。
-
-### 5. 评价层（Evaluate）
-
-- 评判"路由 schema 单源真"与"路由分散声明"两种架构在大型项目中的优劣，给出至少 3 条决策准则。
-- 评估第三方路由库的类型签名设计，指出"过度约束"与"约束不足"各一处，并给出改进方案。
-- 在团队 Code Review 中，制定"路由类型评审清单"，含必查项（路径拼写、参数类型、查询可选性）与推荐项（状态隔离、跳转守卫）。
-
-### 6. 创造层（Create）
-
-- 设计一套支持"路由即接口"（Route as API）的元路由框架，使路由可被前后端共享并自动生成 OpenAPI 文档。
-- 重构一个已有项目的路由层，将字符串路由迁移到类型安全路由，输出迁移前后 bug 率对比报告。
-- 撰写一篇"路由类型系统形式化"的技术文章，提出度量路由类型复杂度的指标并给出案例验证。
-
----
 
 ## 历史动机与背景
 
@@ -80,7 +39,7 @@ window.onhashchange = function() {
 
 Hash 路由的优势是不需要服务器配合，劣势是 URL 不美观（`#/users` 而非 `/users`）。
 
-### 2. History API 与现代路由
+### 1. History API 与现代路由
 
 HTML5 引入 `history.pushState` 与 `popstate` 事件，使前端能"无刷新"修改 URL 路径，并保持浏览器后退按钮工作。这催生了 React Router（2014）、Vue Router（2014）、Angular Router（2016）等现代路由库。
 
@@ -102,7 +61,7 @@ const userId = this.props.match.params.id; // 类型为 string，可能是 undef
 
 这里 `params.id` 在运行时可能是 `undefined`（用户访问 `/users/`）或非数字字符串（用户访问 `/users/abc`），但编译期完全无感知。
 
-### 3. 类型安全路由的演化
+### 2. 类型安全路由的演化
 
 #### 阶段 1：参数类型显式标注（2017-2019）
 
@@ -161,7 +120,7 @@ router.navigate({
 });
 ```
 
-### 4. 现代路由的核心矛盾
+### 3. 现代路由的核心矛盾
 
 现代类型安全路由面临三个核心矛盾：
 
@@ -183,7 +142,7 @@ router.navigate({
 - $S$：路由状态类型（route state）
 - $M$：匹配函数（match function）
 
-### 2. 路径模板与参数提取
+### 1. 路径模板与参数提取
 
 路径模板 $p \in P$ 是形如 `"/users/:id/posts/:postId"` 的字符串。定义参数提取函数：
 
@@ -203,7 +162,7 @@ $$
 \text{seg} ::= \text{literal} \mid \text{":"} \text{param} \mid \text{"*"} \text{wildcard}
 $$
 
-### 3. 模板字面量类型的形式化
+### 2. 模板字面量类型的形式化
 
 TypeScript 模板字面量类型 `` `${Prefix}/${Suffix}` `` 可形式化为字符串级联：
 
@@ -221,7 +180,7 @@ $$
 \end{cases}
 $$
 
-### 4. 查询参数的形式化
+### 3. 查询参数的形式化
 
 查询参数类型 $Q$ 通常定义为接口：
 
@@ -237,7 +196,7 @@ $$
 
 类型安全的查询参数要求 $\forall (k, v) \in \text{ParseQuery}(s)$，$(k, \text{typeof } v) \in Q$。
 
-### 5. 路由匹配函数
+### 4. 路由匹配函数
 
 匹配函数 $M : \text{Path} \times P \to \Pi \cup \{\bot\}$，将实际路径与模板匹配，返回参数或失败：
 
@@ -250,7 +209,7 @@ $$
 
 类型安全的路由器要求 $M$ 在编译期可计算，即给定 $\text{path}: \text{PathType}$ 与 $p: P$，编译器能推导 $\pi$ 的类型。
 
-### 6. 路由状态的形式化
+### 5. 路由状态的形式化
 
 路由状态 $S$ 包含导航历史、滚动位置、表单草稿等。形式化为带类型的可变引用：
 
@@ -278,7 +237,7 @@ $$
 
 推论：参数提取的复杂度为 $O(|p|)$，与路径长度线性相关。
 
-### 2. 查询参数类型与运行时校验的对偶性
+### 1. 查询参数类型与运行时校验的对偶性
 
 查询参数类型 $Q$ 与运行时校验函数 $V_Q$ 之间存在对偶关系：
 
@@ -291,7 +250,7 @@ $$
 - **类型驱动校验**：从 $Q$ 自动生成 $V_Q$（如 zod、io-ts）。
 - **校验驱动类型**：从 $V_Q$ 推断 $Q$（如 zod 的 `z.infer<typeof schema>`）。
 
-### 3. 路由树的类型合成
+### 2. 路由树的类型合成
 
 设路由树 $\mathcal{T}$ 由若干路由 $r_1, r_2, \ldots, r_n$ 组成，每路由 $r_i$ 有路径 $p_i$。路由树的类型为：
 
@@ -305,7 +264,7 @@ $$
 \text{Navigate}(p, \pi, q) : p \in \text{RouteTreeType} \land \pi : \text{Params}(p) \land q : Q(p)
 $$
 
-### 4. 路由匹配的歧义性
+### 3. 路由匹配的歧义性
 
 定理（路由匹配歧义性）：若两条路由 $p_1, p_2$ 的"路径模式集合"相交，则存在歧义匹配。
 
@@ -324,7 +283,7 @@ type IsAmbiguous<P1 extends string, P2 extends string> =
 
 但实际上 `Pattern` 是无穷集合，编译期只能近似检测（如检测字面量冲突）。
 
-### 5. 查询参数序列化的复杂度
+### 4. 查询参数序列化的复杂度
 
 查询参数序列化 $S_Q : Q \to \text{string}$ 与反序列化 $P_Q : \text{string} \to Q$ 的复杂度取决于值类型：
 
@@ -334,7 +293,7 @@ type IsAmbiguous<P1 extends string, P2 extends string> =
 
 工程实践通常限制嵌套深度为 1（即不支持嵌套对象查询参数），以保持 URL 可读性与解析性能。
 
-### 6. 路由状态的可序列化性
+### 5. 路由状态的可序列化性
 
 路由状态 $S$ 必须"可序列化"，因为浏览器刷新后状态需从 URL 或 sessionStorage 恢复。形式化：
 
@@ -970,7 +929,7 @@ const routeConfig = {
 
 React Router v6 的类型安全较弱，路径参数是 `string | undefined`，查询参数需手动 cast。TanStack Router 是当前类型安全最强的路由库，路径、参数、查询、状态全部从 schema 推导，但代价是学习曲线陡峭。Next.js App Router 基于文件系统，路径类型自动从文件路径推断，但查询参数仍是 `string | null`。Vue Router 4 的类型安全接近 React Router v6，较弱。
 
-### 2. 字符串路由 vs 类型安全路由
+### 1. 字符串路由 vs 类型安全路由
 
 ```typescript
 // 方案 A：字符串路由（React Router v3 风格）
@@ -996,7 +955,7 @@ const { userId } = userRoute.useParams(); // userId: string，非 undefined
 | 学习成本 | 低 | 中 |
 | 编译性能 | 快 | 中 |
 
-### 3. 路径模板语法对比
+### 2. 路径模板语法对比
 
 ```typescript
 // React Router: :param 语法
@@ -1018,7 +977,7 @@ const { userId } = userRoute.useParams(); // userId: string，非 undefined
 | `$param` | 与 JS 语法无冲突 | 不直观，类 PHP |
 | `[param]` | 文件系统友好 | 路径模板中不直观 |
 
-### 4. 路由状态管理方案
+### 3. 路由状态管理方案
 
 ```typescript
 // 方案 A：URL 即状态（search params）
@@ -1316,7 +1275,7 @@ function navigate(key: RouteKey, params?: any, query?: any) {
 }
 ```
 
-### 2. 性能优化
+### 1. 性能优化
 
 **策略 1：路由代码分割**
 
@@ -1371,7 +1330,7 @@ function matchRoute(path: string): RouteConfig | null {
 }
 ```
 
-### 3. 测试策略
+### 2. 测试策略
 
 **类型级测试**：
 
@@ -1407,7 +1366,7 @@ describe("Router", () => {
 });
 ```
 
-### 4. 渐进式迁移
+### 3. 渐进式迁移
 
 **第 1 步**：引入类型定义
 
@@ -1451,7 +1410,7 @@ navigate("/users/" + userId);
 typedNavigate("/users/:id", { id: userId }, {});
 ```
 
-### 5. 与状态管理集成
+### 4. 与状态管理集成
 
 ```typescript
 import { create } from "zustand";
@@ -1495,7 +1454,7 @@ function Component() {
 }
 ```
 
-### 6. SSR 与路由
+### 5. SSR 与路由
 
 ```typescript
 // SSR 友好的路由器

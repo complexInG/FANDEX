@@ -16,66 +16,16 @@ prerequisites:
   - go/概述与环境配置
 ---
 
+
 # Go 与文件监控：从 fsnotify 到跨平台事件流的工程实践
 
 > 本文以 Go 1.22 与 fsnotify v1.7 为基准版本，覆盖文件系统监控的全链路：Linux inotify、BSD/macOS kqueue、Windows ReadDirectoryChangesW、Go fsnotify 抽象层、事件去重与合并、递归监听、热重载（hot reload）、配置自动加载、日志轮转、构建工具增量编译、分布式文件同步。适用于已掌握 Go 基础与操作系统基本概念、希望深入理解文件监控机制的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。Bloom 分类法将认知目标分为六个递进层级：Remember（记忆）→ Understand（理解）→ Apply（应用）→ Analyze（分析）→ Evaluate（评价）→ Create（创造）。
-
-### 1.1 Remember（记忆）
-
-- 准确复述三大平台的原生监控 API：Linux `inotify`、BSD/macOS `kqueue`、Windows `ReadDirectoryChangesW`。
-- 列出 fsnotify 的核心 API：`Watcher.Add(path)`、`Watcher.Events`、`Watcher.Errors`、`Watcher.Close()`。
-- 背诵 fsnotify 的事件类型：`Create`、`Write`、`Remove`、`Rename`、`Chmod`。
-- 列出 inotify 的核心系统调用：`inotify_init1`、`inotify_add_watch`、`read`、`inotify_rm_watch`。
-- 复述 inotify 的 `/proc/sys/fs/inotify/max_user_watches`、`max_user_instances`、`max_queued_events` 三个内核参数的默认值与作用。
-
-### 1.2 Understand（理解）
-
-- 解释 inotify 基于 inode 标记（mark）的监控机制，对比轮询（polling）模型的优势。
-- 描述 kqueue 基于 `EVFILT_VNODE` 的事件过滤机制，说明为何 macOS 上 fsnotify 不支持递归监听。
-- 阐述 `ReadDirectoryChangesW` 的 IOCP（IO Completion Port）异步模型与缓冲区设计。
-- 说明 fsnotify 事件去重的必要性：编辑器（Vim、Emacs、VSCode）保存文件时常触发 Write-Rename-Create 多事件序列。
-- 解释为何 inotify 不监听子目录的创建，需要用户态手动 `Add` 新目录。
-
-### 1.3 Apply（应用）
-
-- 使用 `fsnotify.NewWatcher()` 创建监控器，监听配置文件变化并热加载。
-- 实现 `INSERT`、`MODIFY`、`DELETE` 事件的去重逻辑，使用 debounce 机制合并短时间内的多次事件。
-- 编写递归监控工具，对新创建的子目录自动添加 watch。
-- 集成 fsnotify 与 viper、air、realize 等工具，实现 Go 项目热重载。
-- 使用 fsnotify 监控日志目录，结合 logrotate 实现日志轮转的实时压缩与归档。
-
-### 1.4 Analyze（分析）
-
-- 分析 inotify watch 描述符泄漏的成因：忘记 `Remove` 已删除目录的 watch。
-- 对比 fsnotify 与 systemd path units、`find -modified`、FSEvents（macOS）在精确度、延迟、资源占用上的差异。
-- 推导 inotify 事件队列溢出（`IN_Q_OVERFLOW`）的成因与处理策略。
-- 分析 NFS、FUSE、overlayfs 等网络/虚拟文件系统上 inotify 行为不一致的根因。
-
-### 1.5 Evaluate（评价）
-
-- 评估在大型项目（10 万文件）中应使用单 watcher 递归监听还是多 watcher 分区监听。
-- 评价 fsnotify 与自研 epoll+inotify 方案在性能、可维护性、跨平台兼容性上的权衡。
-- 判断 macOS FSEvents 与 kqueue 在不同业务场景下的选择策略。
-- 评估文件监控在分布式系统中的作用：是否能替代消息队列？
-
-### 1.6 Create（创造）
-
-- 设计一个支持百万级文件监控的分布式事件流系统，基于 fsnotify + Kafka。
-- 实现一个跨平台热重载框架，集成 fsnotify、debounce、process supervision、graceful restart。
-- 构建一个配置中心同步工具，监控本地 YAML 变化并推送到 etcd。
-- 设计一个基于文件监控的安全审计系统，记录敏感目录（`/etc`、`/root/.ssh`）的所有变更。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 文件监控的史前时代（1990s-2000s）
+### 1.1 文件监控的史前时代（1990s-2000s）
 
 早期的文件变更检测依赖轮询（polling）：应用程序周期性调用 `stat()` 获取文件元数据，比较 `mtime`、`size` 字段。这种方式的缺陷：
 
@@ -89,7 +39,7 @@ prerequisites:
 - 目录被删除时，进程收到 `SIGIO` 但无法定位具体文件。
 - 不支持单文件监控，只能监控目录。
 
-### 2.2 inotify 的诞生（2005）
+### 1.2 inotify 的诞生（2005）
 
 2005 年，Robert Love（当时在 Google）提交 inotify 补丁，Linux 2.6.13 合并主线。inotify 的核心改进：
 
@@ -104,7 +54,7 @@ inotify 的局限：
 - 不报告被监控路径下的子目录创建（需用户态监听 `IN_CREATE` 后手动添加）。
 - watch 数量受 `/proc/sys/fs/inotify/max_user_watches` 限制（默认 8192，常需调到 524288）。
 
-### 2.3 kqueue 与 FSEvents（2000-2007）
+### 1.3 kqueue 与 FSEvents（2000-2007）
 
 **kqueue**：FreeBSD 4.1（2000 年）引入 `kqueue`/`kevent` 机制，支持文件、socket、信号、定时器、进程等多种事件源。`EVFILT_VNODE` 过滤器提供文件变更通知，但每个 watch 需要打开一个文件描述符，资源消耗高于 inotify。
 
@@ -116,7 +66,7 @@ inotify 的局限：
 
 fsnotify 在 macOS 上默认使用 kqueue（FSEvents 支持作为可选 backend）。
 
-### 2.4 Windows ReadDirectoryChangesW（2000+）
+### 1.4 Windows ReadDirectoryChangesW（2000+）
 
 Windows 2000 引入 `ReadDirectoryChangesW` API，支持异步 IO 与 IOCP：
 
@@ -124,7 +74,7 @@ Windows 2000 引入 `ReadDirectoryChangesW` API，支持异步 IO 与 IOCP：
 - 事件以 `FILE_NOTIFY_CHANGE_*` 掩码组合，包括 `FILE_ACTION_ADDED`、`FILE_ACTION_REMOVED`、`FILE_ACTION_MODIFIED`、`FILE_ACTION_RENAMED_OLD_NAME`、`FILE_ACTION_RENAMED_NEW_NAME`。
 - 缓冲区溢出时返回 `ERROR_NOTIFY_ENUM_DIR`，客户端需重新枚举目录。
 
-### 2.5 fsnotify 的演进（2010-至今）
+### 1.5 fsnotify 的演进（2010-至今）
 
 **fsnotify v0（2010）**：由 Mikkel Krautz 发起，最初是 Go 的跨平台文件监控库。
 
@@ -136,7 +86,7 @@ Windows 2000 引入 `ReadDirectoryChangesW` API，支持异步 IO 与 IOCP：
 
 **fsnotify v1.7（2024）**：引入 `Watcher.AddWith`、支持 `IN_DONT_FOLLOW`、`IN_EXCL_UNLINK` 等 inotify 标志。重构内部 buffer 管理，事件吞吐量提升 30%。
 
-### 2.6 演进时间轴
+### 1.6 演进时间轴
 
 ```mermaid
 timeline
@@ -154,9 +104,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 文件监控事件流形式化定义
+### 2.1 文件监控事件流形式化定义
 
 文件监控系统可形式化为：
 
@@ -169,7 +119,7 @@ $$
 - $P$：谓词函数，决定哪些事件传递给用户态，$P: E \to \{0, 1\}$。
 - $H$：用户态 handler，$H: E \to \text{Action}$。
 
-### 3.2 inotify 事件结构
+### 2.2 inotify 事件结构
 
 inotify_event 结构定义：
 
@@ -189,7 +139,7 @@ $$
 \text{mask} \in 2^{\{\text{IN_ACCESS}, \text{IN_MODIFY}, \text{IN_ATTRIB}, \text{IN_CLOSE_WRITE}, \text{IN_CLOSE_NOWRITE}, \text{IN_OPEN}, \text{IN_MOVED_FROM}, \text{IN_MOVED_TO}, \text{IN_CREATE}, \text{IN_DELETE}, \text{IN_DELETE_SELF}, \text{IN_MOVE_SELF}, \text{IN_UNMOUNT}, \text{IN_Q_OVERFLOW}, \text{IN_IGNORED}\}}
 $$
 
-### 3.3 事件去重的形式化定义
+### 2.3 事件去重的形式化定义
 
 编辑器保存文件常产生事件序列：
 
@@ -206,7 +156,7 @@ D(\langle e_2, \ldots, e_n \rangle, \Delta) & \text{otherwise}
 \end{cases}
 $$
 
-### 3.4 watch 描述符生命周期
+### 2.4 watch 描述符生命周期
 
 inotify 的 watch 描述符（wd）生命周期可形式化为状态机：
 
@@ -222,7 +172,7 @@ $$
 
 **关键约束**：忽略 `IN_IGNORED` 事件会导致 wd 泄漏。fsnotify 在收到 `IN_IGNORED` 时自动从内部 map 移除 wd。
 
-### 3.5 跨平台事件映射
+### 2.5 跨平台事件映射
 
 fsnotify 将平台原生事件统一映射：
 
@@ -240,9 +190,9 @@ fsnotify 将平台原生事件统一映射：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 inotify 的内核实现
+### 3.1 inotify 的内核实现
 
 inotify 在 Linux 内核中的实现位于 `fs/notify/inotify/`：
 
@@ -300,7 +250,7 @@ fsnotify_modify(file)
 3. 释放事件内存
 ```
 
-### 4.2 inotify 的资源限制
+### 3.2 inotify 的资源限制
 
 inotify 受三个内核参数限制：
 
@@ -330,7 +280,7 @@ sudo sysctl -p
 
 **资源估算**：监控 100 万文件，每个 watch 占用约 1 KB 内核内存，共约 1 GB。生产环境需评估容量。
 
-### 4.3 kqueue 的 EVFILT_VNODE 机制
+### 3.3 kqueue 的 EVFILT_VNODE 机制
 
 kqueue 通过 `kevent` 注册对文件描述符的监控：
 
@@ -348,7 +298,7 @@ kevent(kq, &change, 1, NULL, 0, NULL);
 2. **不支持目录递归**：macOS 上 fsnotify 需用户态递归。
 3. **fd 上限**：默认 `ulimit -n` 为 256，需调高至 65536+。
 
-### 4.4 Windows ReadDirectoryChangesW 的 IOCP 模型
+### 3.4 Windows ReadDirectoryChangesW 的 IOCP 模型
 
 Windows 使用异步 IO 与 IOCP（IO Completion Port）实现高效监控：
 
@@ -374,7 +324,7 @@ parseNotifyInformation(buffer, bytes)
 
 **缓冲区溢出**：若变更速度超过处理速度，`ReadDirectoryChangesW` 返回 `ERROR_NOTIFY_ENUM_DIR`，客户端需重新枚举目录。
 
-### 4.5 事件去重的必要性
+### 3.5 事件去重的必要性
 
 主流编辑器保存文件的行为：
 
@@ -420,7 +370,7 @@ func (d *Debouncer) Trigger(path string) {
 }
 ```
 
-### 4.6 递归监控的实现
+### 3.6 递归监控的实现
 
 inotify 不支持递归，需用户态遍历目录树：
 
@@ -465,7 +415,7 @@ for {
 - 监控 10 万目录需 10 万 watch，内存约 100 MB。
 - 大型项目（如 Linux kernel 源码）需调高 `max_user_watches`。
 
-### 4.7 网络文件系统的局限
+### 3.7 网络文件系统的局限
 
 inotify 在网络文件系统上行为不一致：
 
@@ -482,9 +432,9 @@ inotify 在网络文件系统上行为不一致：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：监控单文件变化
+### 4.1 基础：监控单文件变化
 
 ```go
 package main
@@ -525,7 +475,7 @@ func main() {
 }
 ```
 
-### 5.2 进阶：递归监控 + 事件去重
+### 4.2 进阶：递归监控 + 事件去重
 
 ```go
 package main
@@ -622,7 +572,7 @@ func main() {
 }
 ```
 
-### 5.3 配置文件热重载
+### 4.3 配置文件热重载
 
 ```go
 package main
@@ -750,7 +700,7 @@ func main() {
 }
 ```
 
-### 5.4 热重载 HTTP 服务器
+### 4.4 热重载 HTTP 服务器
 
 ```go
 package main
@@ -845,7 +795,7 @@ func (hr *HotReloader) Run() {
 }
 ```
 
-### 5.5 监控日志目录 + logrotate
+### 4.5 监控日志目录 + logrotate
 
 ```go
 package main
@@ -955,7 +905,7 @@ func main() {
 }
 ```
 
-### 5.6 构建工具增量编译
+### 4.6 构建工具增量编译
 
 ```go
 package main
@@ -1067,9 +1017,9 @@ func main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 文件监控方案对比
+### 5.1 文件监控方案对比
 
 | 方案 | 延迟 | 资源占用 | 跨平台 | 递归支持 | 适用场景 |
 | --- | --- | --- | --- | --- | --- |
@@ -1081,7 +1031,7 @@ func main() {
 | fsnotify | 毫秒级 | 低 | 是 | 否（需用户态） | Go 跨平台 |
 | systemd path | 秒级 | 低 | 否 | 否 | 系统服务 |
 
-### 6.2 fsnotify vs 自研 epoll+inotify
+### 5.2 fsnotify vs 自研 epoll+inotify
 
 | 维度 | fsnotify | 自研 epoll+inotify |
 | --- | --- | --- |
@@ -1092,7 +1042,7 @@ func main() {
 | 可维护性 | 高（社区维护） | 低（自维护） |
 | 适用场景 | 通用 | 极致性能需求 |
 
-### 6.3 文件监控 vs 消息队列
+### 5.3 文件监控 vs 消息队列
 
 | 维度 | 文件监控 | 消息队列（Kafka） |
 | --- | --- | --- |
@@ -1104,7 +1054,7 @@ func main() {
 
 **结论**：文件监控适合单机本地场景，分布式系统应使用消息队列。
 
-### 6.4 热重载工具对比
+### 5.4 热重载工具对比
 
 | 工具 | 实现方式 | 优点 | 缺点 |
 | --- | --- | --- | --- |
@@ -1116,9 +1066,9 @@ func main() {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：watch 描述符泄漏
+### 6.1 陷阱：watch 描述符泄漏
 
 **问题**：删除目录后未 `Remove` watch，导致 wd 泄漏，最终触发 `EMFILE`。
 
@@ -1136,7 +1086,7 @@ case event := <-watcher.Events:
 
 fsnotify v1.4+ 在收到 `IN_IGNORED` 时自动清理，但仍建议显式 `Remove`。
 
-### 7.2 陷阱：事件丢失
+### 6.2 陷阱：事件丢失
 
 **问题**：处理事件耗时过长，事件队列溢出，`IN_Q_OVERFLOW` 触发，后续事件丢失。
 
@@ -1167,7 +1117,7 @@ for {
 }
 ```
 
-### 7.3 陷阱：max_user_watches 不足
+### 6.3 陷阱：max_user_watches 不足
 
 **问题**：监控大型项目时，`inotify_add_watch` 返回 `ENOSPC`。
 
@@ -1182,7 +1132,7 @@ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 ```
 
-### 7.4 陷阱：macOS fd 耗尽
+### 6.4 陷阱：macOS fd 耗尽
 
 **问题**：macOS 上 kqueue 每个 watch 占用一个 fd，监控大量目录触发 `too many open files`。
 
@@ -1198,7 +1148,7 @@ ulimit -n 65536
 # 永久生效：编辑 /etc/launchd.conf 或 ~/.zshrc
 ```
 
-### 7.5 陷阱：编辑器原子保存
+### 6.5 陷阱：编辑器原子保存
 
 **问题**：Vim/VSCode 使用原子保存（写临时文件 + rename），原文件的 watch 失效。
 
@@ -1222,7 +1172,7 @@ if event.Op&fsnotify.Rename == fsnotify.Rename {
 }
 ```
 
-### 7.6 陷阱：网络文件系统行为不一致
+### 6.6 陷阱：网络文件系统行为不一致
 
 **问题**：NFS/CIFS 上的 inotify 不可靠，跨主机变更可能不触发事件。
 
@@ -1232,7 +1182,7 @@ if event.Op&fsnotify.Rename == fsnotify.Rename {
 2. 使用分布式锁 + 通知机制（如 etcd watch）。
 3. 应用层主动同步（rsync cron）。
 
-### 7.7 陷阱：goroutine 泄漏
+### 6.7 陷阱：goroutine 泄漏
 
 **问题**：`watcher.Close()` 后，仍有 goroutine 阻塞在 `<-watcher.Events`。
 
@@ -1257,7 +1207,7 @@ close(done)
 watcher.Close()
 ```
 
-### 7.8 陷阱：符号链接
+### 6.8 陷阱：符号链接
 
 **问题**：inotify 默认跟随符号链接，但链接目标变更不触发事件。
 
@@ -1267,7 +1217,7 @@ watcher.Close()
 watcher.AddWith(path, fsnotify.WithFlags{DontFollow: true})
 ```
 
-### 7.9 陷阱：相对路径
+### 6.9 陷阱：相对路径
 
 **问题**：使用相对路径添加 watch，事件返回相对路径，难以定位。
 
@@ -1281,7 +1231,7 @@ if err != nil {
 watcher.Add(absPath)
 ```
 
-### 7.10 陷阱：事件顺序假设
+### 6.10 陷阱：事件顺序假设
 
 **问题**：假设 Create 一定在 Write 之前到达，但内核调度可能乱序。
 
@@ -1289,9 +1239,9 @@ watcher.Add(absPath)
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 生产级热重载框架
+### 7.1 生产级热重载框架
 
 ```go
 package hotreload
@@ -1408,7 +1358,7 @@ func (m *Manager) Close() error {
 }
 ```
 
-### 8.2 集成 viper 配置热重载
+### 7.2 集成 viper 配置热重载
 
 ```go
 package config
@@ -1468,7 +1418,7 @@ func Load(path string) (*Config, *viper.Viper, error) {
 }
 ```
 
-### 8.3 监控系统目录的安全审计
+### 7.3 监控系统目录的安全审计
 
 ```go
 package audit
@@ -1572,9 +1522,9 @@ func (a *Auditor) Close() {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Kubernetes 配置热重载
+### 8.1 案例一：Kubernetes 配置热重载
 
 **背景**：某微服务通过 ConfigMap 挂载配置文件至 `/etc/myapp/config.yaml`，需在 ConfigMap 更新时自动重载。
 
@@ -1607,7 +1557,7 @@ metadata:
     reloader.stakater.com/auto: "true"
 ```
 
-### 9.2 案例二：CDN 边缘节点缓存失效
+### 8.2 案例二：CDN 边缘节点缓存失效
 
 **背景**：CDN 边缘节点监控源站文件变化，文件更新时主动失效缓存。
 
@@ -1647,7 +1597,7 @@ func (ci *CacheInvalidator) worker() {
 }
 ```
 
-### 9.3 案例三：Git 仓库变更同步
+### 8.3 案例三：Git 仓库变更同步
 
 **背景**：监控本地 Git 仓库的 `.git` 目录，自动触发 CI 流水线。
 
@@ -1692,7 +1642,7 @@ func (gw *GitWatcher) checkNewCommit() {
 }
 ```
 
-### 9.4 案例四：日志实时分析
+### 8.4 案例四：日志实时分析
 
 **背景**：监控 Nginx access log，实时统计请求量、状态码分布。
 
@@ -1803,7 +1753,7 @@ D. 性能考虑
 
 5. 说明 debounce 与 coalesce 在事件去重中的差异，并各举一例。
 
-### 10.3 实践题
+### 9.3 实践题
 
 **1. 配置热重载**
 
@@ -1821,7 +1771,7 @@ D. 性能考虑
 
 实现 HTTP 服务器的热重载：监控二进制文件变化，优雅重启服务。
 
-### 10.4 思考题
+### 9.4 思考题
 
 1. 在分布式系统中，文件监控能否替代消息队列？为什么？
 
@@ -1833,9 +1783,9 @@ D. 性能考虑
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 1. fsnotify Documentation. https://github.com/fsnotify/fsnotify
 2. Linux man-pages. *inotify(7)*. https://man7.org/linux/man-pages/man7/inotify.7.html
@@ -1843,33 +1793,33 @@ D. 性能考虑
 4. Microsoft Learn. *ReadDirectoryChangesW*. https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-readdirectorychangesw
 5. Apple Developer. *FSEvents*. https://developer.apple.com/documentation/coreservices/file_system_events
 
-### 11.2 内核源码
+### 10.2 内核源码
 
 6. Linux Kernel Source. *fs/notify/inotify/*. https://github.com/torvalds/linux/tree/master/fs/notify/inotify
 7. Linux Kernel Source. *fs/notify/fanotify/*. https://github.com/torvalds/linux/tree/master/fs/notify/fanotify
 8. FreeBSD Source. *sys/kern/kern_event.c*. https://github.com/freebsd/freebsd-src/blob/main/sys/kern/kern_event.c
 
-### 11.3 经典论文
+### 10.3 经典论文
 
 9. Love, R. (2005). *inotify: A modern file system event monitor*. Linux Symposium.
 10. Lemon, J. (2001). *Kqueue: A generic and scalable event notification facility*. USENIX BSDCon.
 11. Maccormick, J. (2003). *Continuous file system consistency checking and recovery*. FAST.
 
-### 11.4 工程实践资料
+### 10.4 工程实践资料
 
 12. Donovan, A. A., & Kernighan, B. W. (2015). *The Go Programming Language*. Addison-Wesley.
 13. Takanen, A. et al. (2018). *Operating System Concepts* (10th ed.). Wiley.
 
-### 11.5 Go 官方博客
+### 10.5 Go 官方博客
 
 14. The Go Blog. *Go 1.22: Enhanced HTTP Routing*. https://go.dev/blog/routing-enhancements
 15. Andrew Gerrand. *Go tools & file watching*. https://pkg.go.dev/github.com/fsnotify/fsnotify
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 相关 Go 库
+### 11.1 相关 Go 库
 
 - **fsnotify**：https://github.com/fsnotify/fsnotify
 - **air**：热重载工具 https://github.com/cosmtrek/air
@@ -1877,7 +1827,7 @@ D. 性能考虑
 - **gin**：代理热重载 https://github.com/codegangsta/gin
 - **rjyh**：监控工具 https://github.com/rjyh/rjyh
 
-### 12.2 内核机制
+### 11.2 内核机制
 
 - **inotify**：Linux 文件事件监控
 - **fanotify**：inotify 的继任者，支持全局监控
@@ -1885,7 +1835,7 @@ D. 性能考虑
 - **FSEvents**：macOS 文件事件流
 - **IOCP**：Windows 异步 IO
 
-### 12.3 系统级工具
+### 11.3 系统级工具
 
 - **inotifywait**：命令行 inotify 工具
 - **fswatch**：跨平台文件监控 CLI
@@ -1893,21 +1843,21 @@ D. 性能考虑
 - **watchman**：Facebook 文件监控服务
 - **systemd.path**：systemd 路径单元
 
-### 12.4 分布式文件同步
+### 11.4 分布式文件同步
 
 - **rsync**：增量同步
 - **Syncthing**：P2P 同步
 - **lsyncd**：基于 inotify + rsync
 - **Docker volume watch**：容器卷监控
 
-### 12.5 安全审计
+### 11.5 安全审计
 
 - **auditd**：Linux 审计框架
 - **OSSEC**：开源 HIDS
 - **Wazuh**：企业 SIEM
 - **Falco**：CNCF 云原生运行时安全
 
-### 12.6 相关主题
+### 11.6 相关主题
 
 - [Go 与信号处理](./Go与信号处理.md)：SIGTERM、SIGINT、优雅关闭
 - [Go 与配置管理](./Go与配置管理.md)：viper、envconfig、环境变量优先级

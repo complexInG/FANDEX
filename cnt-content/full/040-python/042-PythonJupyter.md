@@ -25,57 +25,14 @@ prerequisites:
   - python/列表推导式进阶
 ---
 
+
 # Python 与 Jupyter：交互式计算、数据分析与可复现研究
 
 > 本文系统阐述 Jupyter 生态的核心机制与工程实践，包括 IPython 内核、Jupyter Message Protocol、Notebook 文档格式（.ipynb）、魔法命令系统、富显示对象、交互式 Widgets、可视化集成、性能优化（Cython、numba、joblib）、企业级部署（JupyterHub、Enterprise Gateway）与可复现研究实践。内容兼顾形式化定义与生产级应用，旨在帮助开发者建立对交互式计算的完整认知框架，具备构建数据科学工作流与生产级 Jupyter 平台的能力。
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本文依据 Bloom's Taxonomy（布鲁姆认知目标分类学）的六个层次组织学习目标，确保从低阶认知到高阶创造的渐进式掌握。
-
-### 1.1 记忆（Remembering）
-
-- 列出 Jupyter 项目的五大组成：Notebook、Lab、Hub、Enterprise Gateway、Voila。
-- 回忆 IPython 内核的五大魔法命令分类：行魔法、单元格魔法、Shell 魔法、调试魔法、配置魔法。
-- 列出 Notebook 文档（.ipynb）的 JSON 结构：`cells`、`metadata`、`nbformat`、`nbformat_minor`。
-- 陈述 Jupyter Message Protocol 的消息类型：`execute_request`、`execute_result`、`display_data`、`stream`、`error`。
-
-### 1.2 理解（Understanding）
-
-- 解释 Jupyter 前端（Notebook/Lab）与后端（Kernel）的解耦架构。
-- 描述消息协议中 ZeroMQ 的四个套接字：Shell、IOPub、Stdin、Control。
-- 区分行魔法（`%magic`）与单元格魔法（`%%magic`）的作用范围与语法。
-- 解释 Kernel 的执行模型：单线程事件循环、REPL 语义、命名空间持久化。
-
-### 1.3 应用（Applying）
-
-- 使用 `%%timeit`、`%prun`、`%lprun` 进行性能剖析。
-- 通过 `IPython.display` 模块展示 HTML、Markdown、Image、JSON 等富对象。
-- 使用 `ipywidgets` 构建交互式控件（滑块、下拉、按钮）。
-- 编写自定义魔法命令扩展 IPython 功能。
-
-### 1.4 分析（Analyzing）
-
-- 分析 Notebook 在版本控制中的挑战（输出嵌入、执行顺序）与解决方案（nbstripout、jupytext）。
-- 解构 Kernel 重启对状态的影响：变量丢失、导入丢失、连接保持。
-- 比较不同可视化库（Matplotlib、Plotly、Bokeh、Altair）在 Jupyter 中的集成方式与适用场景。
-- 分析 Notebook 的"隐式状态"问题：单元格执行顺序导致的可复现性陷阱。
-
-### 1.5 评价（Evaluating）
-
-- 评估 Jupyter Notebook 在生产环境（模型训练、报表生成）中的适用性。
-- 评判 nbconvert 与 papermill 在批量执行 Notebook 时的优劣。
-- 评价 JupyterHub 多租户方案在团队数据科学平台中的设计合理性。
-
-### 1.6 创造（Creating）
-
-- 设计一套基于 papermill + Airflow 的可复现数据分析流水线。
-- 构建自定义 Jupyter Kernel（如 Bash Kernel、SQL Kernel）。
-- 实现一个基于 Voila 的交互式数据仪表板。
-
-## 2. 历史动机与背景
-
-### 2.1 IPython 的诞生
+### 1.1 IPython 的诞生
 
 2001 年，Fernando Pérez 在科罗拉多大学攻读物理学博士时，为了方便科学计算，开发了 IPython（Interactive Python）。IPython 最初是对 Python 默认 REPL 的增强，提供了：
 
@@ -85,7 +42,7 @@ prerequisites:
 - Shell 命令集成（`!ls`、`!pwd`）
 - 调试器集成（`%debug`、`%pdb`）
 
-### 2.2 从 IPython 到 Jupyter
+### 1.2 从 IPython 到 Jupyter
 
 2014 年，IPython 项目拆分为两部分：
 
@@ -98,7 +55,7 @@ Jupyter 名字来源于三大初始语言：**Ju**lia、**Pyt**hon、**R**。拆
 2. 治理独立：Jupyter 成为独立项目，由 NumFOCUS 基金会管理。
 3. 生态扩展：衍生 JupyterLab（IDE 式界面）、JupyterHub（多用户平台）、Voila（仪表板）等。
 
-### 2.3 JupyterLab 的演进
+### 1.3 JupyterLab 的演进
 
 2018 年发布 JupyterLab 1.0，作为 Notebook 的下一代界面：
 
@@ -109,7 +66,7 @@ Jupyter 名字来源于三大初始语言：**Ju**lia、**Pyt**hon、**R**。拆
 
 2023 年的 JupyterLab 4.x 进一步优化性能（CodeMirror 6）、增强调试器、改进 RTL 支持。
 
-### 2.4 企业级应用
+### 1.4 企业级应用
 
 Jupyter 从科研工具演变为企业数据科学平台的核心组件：
 
@@ -118,9 +75,9 @@ Jupyter 从科研工具演变为企业数据科学平台的核心组件：
 - **Voila**：将 Notebook 转换为交互式 Web 应用。
 - **Jupyter Enterprise**：云厂商提供托管服务（AWS SageMaker、GCP Vertex AI、Azure ML）。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Jupyter 架构形式化
+### 2.1 Jupyter 架构形式化
 
 Jupyter 可形式化为四元组：
 
@@ -136,7 +93,7 @@ $$
 - $P$：协议（Protocol），Jupyter Message Protocol（基于 ZeroMQ + WebSocket）
 - $M$：消息集合，$M = \{ execute\_request, execute\_result, display\_data, stream, error, ... \}$
 
-### 3.2 Notebook 文档形式化
+### 2.2 Notebook 文档形式化
 
 Notebook 文档 $N$ 是 JSON 对象：
 
@@ -155,7 +112,7 @@ $$
 - $outputs$：执行输出（仅 code 单元格）
 - $execution\_count$：执行序号
 
-### 3.3 消息协议形式化
+### 2.3 消息协议形式化
 
 Jupyter 消息 $msg$ 可形式化为五元组：
 
@@ -167,7 +124,7 @@ $$
 - $msg\_type \in \{ execute\_request, execute\_reply, execute\_result, ... \}$
 - $content$：消息体，结构随 $msg\_type$ 变化
 
-### 3.4 执行模型形式化
+### 2.4 执行模型形式化
 
 Kernel 的执行模型可形式化为状态机：
 
@@ -181,7 +138,7 @@ $$
 
 关键性质：**命名空间持久化**。同一 Kernel 会话内，所有单元格共享 $\sigma$，后执行单元格可访问前序单元格的变量。这是 Notebook "状态ful"特性的根源。
 
-### 3.5 魔法命令形式化
+### 2.5 魔法命令形式化
 
 魔法命令可形式化为函数映射：
 
@@ -192,11 +149,11 @@ $$
 - **行魔法**（Line Magic）：$magic(\%cmd, line) \to output$，作用于单行。
 - **单元格魔法**（Cell Magic）：$magic(\%\%cmd, cell) \to output$，作用于整个单元格。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 Jupyter Message Protocol
+### 3.1 Jupyter Message Protocol
 
-#### 4.1.1 ZeroMQ 套接字模型
+#### 3.1.1 ZeroMQ 套接字模型
 
 Jupyter Kernel 与前端通过 ZeroMQ 的四个套接字通信：
 
@@ -218,7 +175,7 @@ flowchart TD
 - **Stdin 套接字**：处理 `input()` 调用，前端弹出输入框。
 - **Control 套接字**：处理中断、关闭等控制命令，独立线程。
 
-#### 4.1.2 执行流程
+#### 3.1.2 执行流程
 
 用户执行单元格的完整流程：
 
@@ -233,7 +190,7 @@ flowchart TD
 5. 执行结束，Kernel 通过 IOPub 广播 `status: idle`。
 6. 通过 Shell 发送 `execute_reply`（状态 `ok` 或 `error`）。
 
-#### 4.1.3 消息示例
+#### 3.1.3 消息示例
 
 ```python
 # execute_request 消息结构（简化）
@@ -271,9 +228,9 @@ flowchart TD
 }
 ```
 
-### 4.2 IPython 内核的执行引擎
+### 3.2 IPython 内核的执行引擎
 
-#### 4.2.1 输入转换
+#### 3.2.1 输入转换
 
 IPython 在执行代码前进行输入转换：
 
@@ -294,7 +251,7 @@ get_ipython().run_line_magic('timeit', 'sum(range(100))')
 get_ipython().run_cell_magic('timeit', '', 'sum(range(100))')
 ```
 
-#### 4.2.2 显示钩子
+#### 3.2.2 显示钩子
 
 IPython 重写 `sys.displayhook`，使表达式最后一行的值自动显示：
 
@@ -310,7 +267,7 @@ def displayhook(value):
     send_execute_result(format_dict, metadata)
 ```
 
-#### 4.2.3 富显示协议
+#### 3.2.3 富显示协议
 
 任何对象可通过 `_repr_*_()` 方法定义多种格式的显示：
 
@@ -345,9 +302,9 @@ class RichObject:
 
 前端根据优先级选择最适合的格式显示（JupyterLab 优先 HTML/SVG，纯文本回退）。
 
-### 4.3 魔法命令系统
+### 3.3 魔法命令系统
 
-#### 4.3.1 内置魔法命令
+#### 3.3.1 内置魔法命令
 
 ```python
 # 性能剖析
@@ -382,7 +339,7 @@ files = !ls                        # 将 Shell 输出赋值给变量
 %rerun                             # 重新执行历史
 ```
 
-#### 4.3.2 单元格魔法
+#### 3.3.2 单元格魔法
 
 ```python
 # 性能剖析单元格
@@ -423,7 +380,7 @@ def fib(int n):
     return a
 ```
 
-#### 4.3.3 自定义魔法命令
+#### 3.3.3 自定义魔法命令
 
 ```python
 from IPython.core.magic import Magics, magics_class, line_magic, cell_magic
@@ -459,9 +416,9 @@ def load_ipython_extension(ipython):
 # 然后调用：%greet world --upper
 ```
 
-### 4.4 ipywidgets 交互式控件
+### 3.4 ipywidgets 交互式控件
 
-#### 4.4.1 核心控件
+#### 3.4.1 核心控件
 
 ```python
 import ipywidgets as widgets
@@ -506,7 +463,7 @@ button.on_click(on_button_click)
 display(button, output)
 ```
 
-#### 4.4.2 interact 装饰器
+#### 3.4.2 interact 装饰器
 
 ```python
 from ipywidgets import interact
@@ -522,7 +479,7 @@ def func(x=5, y='a'):
     print(f"x={x}, y={y}")
 ```
 
-#### 4.4.3 复杂布局
+#### 3.4.3 复杂布局
 
 ```python
 # 水平布局
@@ -548,9 +505,9 @@ grid = widgets.GridBox(
 display(grid)
 ```
 
-### 4.5 可视化集成
+### 3.5 可视化集成
 
-#### 4.5.1 Matplotlib
+#### 3.5.1 Matplotlib
 
 ```python
 import matplotlib.pyplot as plt
@@ -579,7 +536,7 @@ ax.grid(True)
 plt.show()
 ```
 
-#### 4.5.2 Plotly 交互式可视化
+#### 3.5.2 Plotly 交互式可视化
 
 ```python
 import plotly.graph_objects as go
@@ -599,7 +556,7 @@ fig.update_layout(
 fig.show()
 ```
 
-#### 4.5.3 Altair 声明式可视化
+#### 3.5.3 Altair 声明式可视化
 
 ```python
 import altair as alt
@@ -616,9 +573,9 @@ chart = alt.Chart(df).mark_line().encode(
 chart.show()
 ```
 
-### 4.6 Notebook 文档格式
+### 3.6 Notebook 文档格式
 
-#### 4.6.1 .ipynb 结构
+#### 3.6.1 .ipynb 结构
 
 ```json
 {
@@ -661,15 +618,15 @@ chart.show()
 }
 ```
 
-#### 4.6.2 nbformat 版本
+#### 3.6.2 nbformat 版本
 
 - **nbformat 4**：当前主流版本，2014 年随 Jupyter 发布。
 - **nbformat 3**：旧 IPython 格式，已被淘汰。
 - **nbformat_minor**：小版本号，引入新特性（如 `cell_id`）。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 IPython 基础：内省与帮助
+### 4.1 IPython 基础：内省与帮助
 
 ```python
 """
@@ -701,7 +658,7 @@ print(f"当前用户: {user}")
 # %history -n 1-5  # 查看前 5 条历史
 ```
 
-### 5.2 性能剖析完整示例
+### 4.2 性能剖析完整示例
 
 ```python
 """
@@ -738,7 +695,7 @@ def fast_function(n):
 # %memit big = list(range(10**7))
 ```
 
-### 5.3 富显示对象
+### 4.3 富显示对象
 
 ```python
 """
@@ -800,7 +757,7 @@ display(Markdown(f"""
 """))
 ```
 
-### 5.4 交互式数据分析
+### 4.4 交互式数据分析
 
 ```python
 """
@@ -883,7 +840,7 @@ widgets.interactive(update_chart,
                     chart_type=chart_type)
 ```
 
-### 5.5 自定义内核示例
+### 4.5 自定义内核示例
 
 ```python
 """
@@ -930,7 +887,7 @@ class EchoKernel(JupyterKernel):
 # }
 ```
 
-### 5.6 nbconvert 批量转换
+### 4.6 nbconvert 批量转换
 
 ```python
 """
@@ -971,7 +928,7 @@ subprocess.run([
 ])
 ```
 
-### 5.7 papermill 参数化执行
+### 4.7 papermill 参数化执行
 
 ```python
 """
@@ -1005,7 +962,7 @@ for i, params in enumerate(parameter_sets):
     )
 ```
 
-### 5.8 Voila 仪表板
+### 4.8 Voila 仪表板
 
 ```python
 """
@@ -1060,9 +1017,9 @@ display(dashboard)
 # voila dashboard.ipynb --port 8866
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Jupyter 界面对比
+### 5.1 Jupyter 界面对比
 
 | 特性 | Notebook 7 | JupyterLab 4 | VS Code Notebook |
 |------|-----------|-------------|------------------|
@@ -1074,7 +1031,7 @@ display(dashboard)
 | 文件管理 | 简单 | 完整 | 完整 |
 | 性能 | 中等 | 良好 | 优秀 |
 
-### 6.2 可视化库对比
+### 5.2 可视化库对比
 
 | 库 | 类型 | 交互性 | 适用场景 | 输出格式 |
 |------|------|--------|----------|---------|
@@ -1085,7 +1042,7 @@ display(dashboard)
 | Seaborn | 命令式 | 静态 | 统计可视化 | PNG/SVG |
 | HoloViews | 声明式 | 强 | 探索性分析 | 多种 |
 
-### 6.3 Notebook 格式对比
+### 5.3 Notebook 格式对比
 
 | 格式 | 优势 | 劣势 | 适用场景 |
 |------|------|------|---------|
@@ -1094,7 +1051,7 @@ display(dashboard)
 | .md (jupytext markdown) | 可读、兼容 Markdown | 需转换 | 文档分享 |
 | .Rmd (R Markdown) | 集成 knitr | R 生态为主 | R 用户 |
 
-### 6.4 批量执行工具对比
+### 5.4 批量执行工具对比
 
 | 工具 | 定位 | 参数化 | 并行 | 调度 | 适用场景 |
 |------|------|--------|------|------|---------|
@@ -1104,9 +1061,9 @@ display(dashboard)
 | Apache Airflow + papermill | 工作流 | 支持 | 支持 | 支持 | 生产调度 |
 | Prefect + papermill | 工作流 | 支持 | 支持 | 支持 | 现代数据流 |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：单元格执行顺序混乱
+### 6.1 反模式：单元格执行顺序混乱
 
 **问题**：Notebook 中单元格的执行顺序与物理顺序不一致，导致状态不可预测。
 
@@ -1131,7 +1088,7 @@ x = 20
 - 定期执行 `Kernel → Restart & Run All` 验证一致性。
 - 使用 `jupytext` 将 Notebook 同步为纯 Python 脚本，便于审查执行顺序。
 
-### 7.2 反模式：在 Notebook 中导入自身模块
+### 6.2 反模式：在 Notebook 中导入自身模块
 
 **问题**：
 
@@ -1156,7 +1113,7 @@ import mymodule
 importlib.reload(mymodule)
 ```
 
-### 7.3 反模式：隐式状态依赖
+### 6.3 反模式：隐式状态依赖
 
 **问题**：单元格 A 初始化变量，单元格 B 使用，但 A 未执行时 B 报错。
 
@@ -1180,7 +1137,7 @@ assert 'df' in dir(), "请先执行数据加载单元格"
 df.head()
 ```
 
-### 7.4 反模式：将 Notebook 提交到 Git 含输出
+### 6.4 反模式：将 Notebook 提交到 Git 含输出
 
 **问题**：Notebook 的输出可能包含：
 
@@ -1204,7 +1161,7 @@ nbstripout --install
 
 - 配合 `jupytext` 同步 `.py` 版本用于审查。
 
-### 7.5 反模式：循环导入大对象
+### 6.5 反模式：循环导入大对象
 
 **问题**：
 
@@ -1229,7 +1186,7 @@ for file in files:
     process(data)
 ```
 
-### 7.6 反模式：在生产环境用 Notebook 做服务
+### 6.6 反模式：在生产环境用 Notebook 做服务
 
 **问题**：直接将 Notebook 作为 Web 服务暴露，存在：
 
@@ -1239,7 +1196,7 @@ for file in files:
 
 **修复**：用 Voila 或 nbconvert 转换为无状态应用，或将逻辑提取到 `.py` 模块。
 
-### 7.7 反模式：魔法命令滥用
+### 6.7 反模式：魔法命令滥用
 
 **问题**：在 Notebook 中大量使用 `%cd`、`%env` 改变全局状态，导致：
 
@@ -1259,7 +1216,7 @@ DATA_DIR = Path('/data/project')
 df = pd.read_csv(DATA_DIR / 'input.csv')
 ```
 
-### 7.8 反模式：过度依赖 Matplotlib 全局状态
+### 6.8 反模式：过度依赖 Matplotlib 全局状态
 
 **问题**：
 
@@ -1276,9 +1233,9 @@ ax.plot(x, y)
 ax.plot(x, y2)
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 可复现 Notebook 实践
+### 7.1 可复现 Notebook 实践
 
 ```python
 """
@@ -1321,7 +1278,7 @@ assert not df.isnull().any().any(), "数据存在缺失值"
 print(f"数据形状: {df.shape}")
 ```
 
-### 8.2 性能优化
+### 7.2 性能优化
 
 ```python
 """
@@ -1362,7 +1319,7 @@ import numpy as np
 big_array = np.memmap('large.dat', dtype='float32', mode='r', shape=(10000, 10000))
 ```
 
-### 8.3 jupytext 版本控制
+### 7.3 jupytext 版本控制
 
 ```bash
 # 安装 jupytext
@@ -1381,7 +1338,7 @@ jupytext --sync analysis.ipynb
 # 生成 analysis.py（percent 格式）
 ```
 
-### 8.4 JupyterHub 部署
+### 7.4 JupyterHub 部署
 
 ```yaml
 # jupyterhub_config.py 核心配置
@@ -1436,9 +1393,9 @@ singleuser:
     capacity: 10Gi
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：数据科学团队的可复现研究平台
+### 8.1 案例：数据科学团队的可复现研究平台
 
 **场景**：某 AI 公司的数据科学团队有 20 名成员，使用 Jupyter 进行模型实验，遇到：
 
@@ -1460,7 +1417,7 @@ singleuser:
 - 模型版本与代码可追溯
 - 资源利用率提升 30%（自动 culler 回收空闲 Kernel）
 
-### 9.2 案例：Notebook 导致的 OOM
+### 8.2 案例：Notebook 导致的 OOM
 
 **场景**：数据科学家在 Notebook 中加载 50GB 的 CSV 文件，导致 Kernel 崩溃。
 
@@ -1496,7 +1453,7 @@ import modin.pandas as pd
 df = pd.read_csv('huge.csv')
 ```
 
-### 9.3 案例：Notebook 生产化部署
+### 8.3 案例：Notebook 生产化部署
 
 **场景**：数据科学家开发了一个数据清洗 Notebook，需要每日定时执行并生成报表。
 
@@ -1549,7 +1506,7 @@ task = PythonOperator(
 )
 ```
 
-### 9.4 案例：自定义 SQL Kernel
+### 8.4 案例：自定义 SQL Kernel
 
 **场景**：数据分析师希望直接在 Jupyter 中编写 SQL 查询数据库，而非嵌套 Python。
 
@@ -1576,7 +1533,7 @@ df = result.DataFrame()  # 转为 Pandas DataFrame
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：解释 Jupyter 的前端与内核分离架构的优势。
 
@@ -1606,7 +1563,7 @@ df = result.DataFrame()  # 转为 Pandas DataFrame
 - code 单元格含 `source`（代码）、`outputs`（输出）、`execution_count`（执行序号）
 - 输出可包含文本、HTML、图像（base64 编码）
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：详细解释 Jupyter Message Protocol 的 ZeroMQ 套接字模型。
 
@@ -1636,7 +1593,7 @@ df = result.DataFrame()  # 转为 Pandas DataFrame
 - Matplotlib 适合论文、报告；Plotly 适合仪表板、交互探索
 - Matplotlib 全局状态易污染，Plotly 面向对象更清晰
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：设计一个基于 Jupyter 的数据科学团队协作平台，要求支持：
 
@@ -1687,7 +1644,7 @@ df = result.DataFrame()  # 转为 Pandas DataFrame
 - 用 papermill + Airflow 调度，而非直接暴露 Notebook
 - 敏感操作（Shell 命令）移除或限制权限
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Pérez, F., & Granger, B. E. (2007). *IPython: A System for Interactive Scientific Computing*. Computing in Science and Engineering, 9(3), 21-29. DOI: 10.1109/MCSE.2007.53.
 
@@ -1719,9 +1676,9 @@ df = result.DataFrame()  # 转为 Pandas DataFrame
 
 [15] McKinney, W. (2017). *Python for Data Analysis: Data Wrangling with Pandas, NumPy, and IPython*. O'Reilly Media. ISBN: 978-1491957660.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Project Jupyter: https://jupyter.org/
 - Jupyter Documentation: https://docs.jupyter.org/
@@ -1729,13 +1686,13 @@ df = result.DataFrame()  # 转为 Pandas DataFrame
 - JupyterLab Documentation: https://jupyterlab.readthedocs.io/
 - ipywidgets Documentation: https://ipywidgets.readthedocs.io/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Wes McKinney, *Python for Data Analysis*（数据分析必备）
 - Jake VanderPlas, *Python Data Science Handbook*（数据科学全栈，含 Jupyter 实践）
 - Cyrille Rossant, *IPython Interactive Computing and Visualization Cookbook*（IPython 深度）
 
-### 12.3 源码与进阶
+### 11.3 源码与进阶
 
 - Jupyter 源码: https://github.com/jupyter/
 - JupyterHub: https://github.com/jupyterhub/jupyterhub
@@ -1743,14 +1700,14 @@ df = result.DataFrame()  # 转为 Pandas DataFrame
 - jupytext: https://github.com/mwouts/jupytext
 - nbstripout: https://github.com/kynan/nbstripout
 
-### 12.4 前沿论文与文章
+### 11.4 前沿论文与文章
 
 - *A Large-Scale Study About Quality and Reproducibility of Jupyter Notebooks*（Notebook 质量研究）
 - *Exploration and Explanation in Computational Notebooks*（Notebook 使用行为研究）
 - JEP 444: Virtual Threads（与 Kernel 并发优化相关）
 - Voila: From Notebooks to Dashboards（Notebook 应用化）
 
-### 12.5 相关主题
+### 11.5 相关主题
 
 - *Python 与设计模式*：Notebook 中的设计模式应用
 - *Python 与打包发布*：将 Notebook 打包为可执行应用

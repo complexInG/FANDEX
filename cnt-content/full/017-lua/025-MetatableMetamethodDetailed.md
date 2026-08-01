@@ -15,51 +15,10 @@ related:
 prerequisites:
   - lua/概述与环境配置
 ---
+
 # Lua 元表与元方法详解速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
-## 0. 学习目标（Bloom 分类法）
-
-完成本章节学习后，学习者应能够：
-
-### 0.1 Remember（记忆）
-
-- **R1** 列举 Lua 全部元方法类别：算术（`__add`/`__sub`/`__mul`/`__div`/`__mod`/`__pow`/`__idiv`/`__unm`）、关系（`__eq`/`__lt`/`__le`）、位运算（`__band`/`__bor`/`__bxor`/`__bnot`/`__shl`/`__shr`）、字符串化（`__tostring`/`__concat`）、长度与迭代（`__len`/`__pairs`/`__ipairs`）、索引访问（`__index`/`__newindex`）、调用与保护（`__call`/`__gc`/`__close`/`__metatable`）。
-- **R2** 复述 `__index` 元方法的三种形态：table、function、table+`__index` 链式查找。
-- **R3** 陈述 `setmetatable` / `getmetatable` 的 API 签名与限制（字符串与 userdata 有 metatable 限制）。
-
-### 0.2 Understand（理解）
-
-- **U1** 解释 metatable 与"类"（class）的语义差异：Lua 无内置类系统，metatable 通过 `__index` 实现原型继承。
-- **U2** 阐述 `__index` 查找链的形式化语义：原表查找 → metatable.`__index` → 若为 table 则递归 → 若为 function 则调用。
-- **U3** 解释 `rawget` / `rawset` 为何能绕过元方法，以及在性能优化中的意义。
-
-### 0.3 Apply（应用）
-
-- **A1** 实现一个完整的 OOP 类系统：构造、方法、继承、`super` 调用。
-- **A2** 通过 `__call` 实现函数式 API（如默认参数、可调用对象）。
-- **A3** 利用 `__tostring` 与 `__eq` 为自定义类型定义可读、可比较的语义。
-
-### 0.4 Analyze（分析）
-
-- **An1** 分析 `__index` 链式查找的时间复杂度与循环检测机制。
-- **An2** 对比 `__newindex` 的 function 与 table 两种实现：触发时机、性能、副作用。
-- **An3** 剖析 Lua 5.4 中 `__close` 与 `__gc` 的协作：确定性终结 vs GC 终结。
-
-### 0.5 Evaluate（评价）
-
-- **E1** 评估保护元表 `__metatable` 的安全性：能否真正防止篡改？
-- **E2** 评价 Lua 5.2 移除 `__gc` on table 的影响与 Lua 5.3 / 5.4 的恢复路径。
-- **E3** 判断在性能敏感场景中 `rawget` 与 `__index` function 的取舍。
-
-### 0.6 Create（创造）
-
-- **C1** 设计一个支持多重继承的 Lua 类系统（基于 `__index` 链）。
-- **C2** 实现一个基于 `__call` 与 `__index` 的 DSL（领域特定语言）。
-- **C3** 构建一个元方法调试器，可视化 `__index` 查找链与元方法触发。
 
 ---
 
@@ -195,9 +154,9 @@ PUC-Rio 团队在《The Evolution of an Extension Language》中阐明 metatable
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 Lua Reference Manual 权威定义
+### 1.1 Lua Reference Manual 权威定义
 
 > **Metatables** — Every value in Lua can have a metatable. This metatable is an ordinary Lua table that defines the behavior of the original value under certain events. Each event has a corresponding key (a string) in the metatable. By default, a value's metatable is `nil`.
 >
@@ -215,7 +174,7 @@ $$
 \text{metamethod}(v, e) = \text{metatable}(v)[\text{"}\_\_e\text{"}] \quad \text{if exists, else nil}
 $$
 
-### 2.2 元方法事件全集
+### 1.2 元方法事件全集
 
 Lua 5.4 定义的事件集合：
 
@@ -232,7 +191,7 @@ Lua 5.4 定义的事件集合：
 | 元表保护       | `__metatable`                                                          | `getmetatable()`                      |
 | 类型比较       | `__name`                                                               | 错误信息中的类型名                    |
 
-### 2.3 `__index` 的形式化语义
+### 1.3 `__index` 的形式化语义
 
 设 $t$ 为表，$k$ 为键，定义查找函数：
 
@@ -255,7 +214,7 @@ $$
 
 若 $\text{mm}$ 为 table，则递归应用 $\text{index}$（形成原型链查找）。
 
-### 2.4 `__newindex` 的形式化语义
+### 1.4 `__newindex` 的形式化语义
 
 $$
 \text{newindex}(t, k, v) = \begin{cases}
@@ -274,7 +233,7 @@ $$
 \end{cases}
 $$
 
-### 2.5 算术元方法的二分派
+### 1.5 算术元方法的二分派
 
 对于 `a + b`，Lua 执行二分派（binary dispatch）：
 
@@ -300,7 +259,7 @@ function try_mm(a, b, mm_name):
 
 注意：左操作数优先（先查 $a$ 的 metatable，再查 $b$）。
 
-### 2.6 关系元方法的语义
+### 1.6 关系元方法的语义
 
 `==`（`__eq`）：
 
@@ -325,7 +284,7 @@ $$
 - 若存在 `__le`，直接调用。
 - **否则**：通过 `not (b < a)` 推导，即 `__le(a, b)` ≡ `not __lt(b, a)`。
 
-### 2.7 `rawget` / `rawset` 的形式化
+### 1.7 `rawget` / `rawset` 的形式化
 
 $$
 \text{rawget}(t, k) = t[k] \quad \text{(never triggers } \_\_\text{index)}
@@ -335,7 +294,7 @@ $$
 \text{rawset}(t, k, v) = (t[k] := v) \quad \text{(never triggers } \_\_\text{newindex)}
 $$
 
-### 2.8 `__metatable` 保护语义
+### 1.8 `__metatable` 保护语义
 
 $$
 \text{getmetatable}(t) = \begin{cases}
@@ -354,9 +313,9 @@ $$
 
 ---
 
-## 3. 理论推导与原理解析
+## 2. 理论推导与原理解析
 
-### 3.1 metatable 的内存表示
+### 2.1 metatable 的内存表示
 
 在 Lua 源码 `lobject.h` 中，`Table` 结构包含 `metatable` 字段：
 
@@ -404,7 +363,7 @@ const TValue *luaH_getshortstr(Table *t, TString *key);  /* 短字符串快速�
 #define TM_N        17  /* 元方法总数 */
 ```
 
-### 3.2 `flags` 位图优化
+### 2.2 `flags` 位图优化
 
 当 `setmetatable(t, mt)` 被调用时，Lua 通过 `luaH_resize` 计算 `mt` 的 `flags`：
 
@@ -439,7 +398,7 @@ const TValue *getstr event(Table *t, TString *key) {
 
 这一优化使无 metatable 的表访问开销几乎为零。
 
-### 3.3 `__index` 查找链算法
+### 2.3 `__index` 查找链算法
 
 完整算法（伪代码）：
 
@@ -466,7 +425,7 @@ function gettable(t, key):
 
 **深度限制**：理论上无限制，但受栈深度约束（`LUAI_MAXSTACK`，默认 1,000,000）。
 
-### 3.4 二元算术元方法查找顺序
+### 2.4 二元算术元方法查找顺序
 
 对于 `a + b`：
 
@@ -489,7 +448,7 @@ local t = {}
 print(t .. "world")  -- error: attempt to concatenate a table value
 ```
 
-### 3.5 关系元方法的对偶性
+### 2.5 关系元方法的对偶性
 
 Lua 通过 `__lt` 推导其他关系运算：
 
@@ -499,7 +458,7 @@ Lua 通过 `__lt` 推导其他关系运算：
 
 这一设计使仅需实现两个元方法即可覆盖所有关系运算。
 
-### 3.6 `__eq` 的特殊语义
+### 2.6 `__eq` 的特殊语义
 
 `__eq` 仅在两个操作数**类型相同**且**共享 metatable**时才触发：
 
@@ -515,7 +474,7 @@ print(a == b)  -- false，因为 mt1 != mt2
 
 这一限制避免 `__eq` 被任意类型的对象误触发。
 
-### 3.7 `__call` 的内部实现
+### 2.7 `__call` 的内部实现
 
 `__call` 让 table 可像函数一样调用：
 
@@ -542,7 +501,7 @@ void luaV_call(lua_State *L, TValue *fn, int nresults) {
 }
 ```
 
-### 3.8 `__gc` 终结顺序
+### 2.8 `__gc` 终结顺序
 
 Lua 5.4 的三色标记 GC 对带 `__gc` 的对象：
 
@@ -564,7 +523,7 @@ void luaC_finalize(lua_State *L) {
 }
 ```
 
-### 3.9 `__close` 与 `__gc` 的协作
+### 2.9 `__close` 与 `__gc` 的协作
 
 `__close` 在 `to-be-closed` 变量离开作用域时**立即**调用，而 `__gc` 由 GC 决定时机：
 
@@ -585,9 +544,9 @@ end
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 基础示例：`__index` 实现默认值
+### 3.1 基础示例：`__index` 实现默认值
 
 ```lua
 -- Lua 5.4
@@ -601,7 +560,7 @@ print(config.x)  -- 10（覆盖默认值）
 print(rawget(config, "y"))  -- nil（y 不在 config 中）
 ```
 
-### 4.2 进阶示例：`__index` 实现继承
+### 3.2 进阶示例：`__index` 实现继承
 
 ```lua
 -- Lua 5.4
@@ -653,7 +612,7 @@ print(d:introduce()) -- I am Buddy（继承自 Animal）
 print(d:fetch())     -- Buddy fetches the ball!
 ```
 
-### 4.3 算术元方法：复数类
+### 3.3 算术元方法：复数类
 
 ```lua
 -- Lua 5.4
@@ -721,7 +680,7 @@ print(z1 == Complex.new(3, 4))  -- true
 print(z1:abs())        -- 5.0
 ```
 
-### 4.4 `__call`：可调用对象
+### 3.4 `__call`：可调用对象
 
 ```lua
 -- Lua 5.4
@@ -768,7 +727,7 @@ print(c2.timeout)    -- 60
 print(c2.retries)    -- 3
 ```
 
-### 4.5 `__tostring` 与 `__eq`：自定义类型
+### 3.5 `__tostring` 与 `__eq`：自定义类型
 
 ```lua
 -- Lua 5.4
@@ -811,7 +770,7 @@ print(v1 < v3)   -- true
 print(#v1)        -- 3.74166（模长）
 ```
 
-### 4.6 `__newindex`：拦截赋值
+### 3.6 `__newindex`：拦截赋值
 
 ```lua
 -- Lua 5.4
@@ -836,7 +795,7 @@ print(readonly_config.host)  -- localhost
 readonly_config.port = 9090  -- error: attempt to modify read-only table
 ```
 
-### 4.7 `__pairs` / `__ipairs`：自定义迭代
+### 3.7 `__pairs` / `__ipairs`：自定义迭代
 
 ```lua
 -- Lua 5.4
@@ -886,7 +845,7 @@ end
 -- cherry = 3 (reverse: cherry)
 ```
 
-### 4.8 `rawget` / `rawset`：绕过元方法
+### 3.8 `rawget` / `rawset`：绕过元方法
 
 ```lua
 -- Lua 5.4
@@ -913,7 +872,7 @@ print(rawget(t, "baz"))  -- 100
 print(rawget(t, "bar"))  -- nil（因为 __newindex 未写入 t）
 ```
 
-### 4.9 保护元表 `__metatable`
+### 3.9 保护元表 `__metatable`
 
 ```lua
 -- Lua 5.4
@@ -949,7 +908,7 @@ local mt = debug.getmetatable(obj)
 print(mt == SecretClass)  -- true（debug 库无视保护）
 ```
 
-### 4.10 `__gc` 与 `__close`：资源管理
+### 3.10 `__gc` 与 `__close`：资源管理
 
 ```lua
 -- Lua 5.4
@@ -1015,7 +974,7 @@ collectgarbage()
 -- 输出：[gc] finalizing config.txt
 ```
 
-### 4.11 位运算元方法（Lua 5.3+）
+### 3.11 位运算元方法（Lua 5.3+）
 
 ```lua
 -- Lua 5.3+
@@ -1070,7 +1029,7 @@ print(~a)     -- 0xFFFFFFFFFFFFFF00（64位）
 print(a << 8) -- 0xFF00
 ```
 
-### 4.12 综合示例：可链式调用的流式 API
+### 3.12 综合示例：可链式调用的流式 API
 
 ```lua
 -- Lua 5.4
@@ -1131,7 +1090,7 @@ print(sql)
 -- SELECT * FROM users WHERE age > 18 AND status = 'active' ORDER BY name DESC LIMIT 10
 ```
 
-### 4.13 C 端 metatable 操作
+### 3.13 C 端 metatable 操作
 
 ```c
 /* Lua 5.4 C-API */
@@ -1267,9 +1226,9 @@ print(p1 == Point.new(1, 2))  -- 触发 __eq: true
 
 ---
 
-## 5. 元方法对比分析
+## 4. 元方法对比分析
 
-### 5.1 与 Python 的对比
+### 4.1 与 Python 的对比
 
 | 特性              | Lua metatable                 | Python __dunder__                       |
 | ----------------- | ----------------------------- | -------------------------------------- |
@@ -1287,7 +1246,7 @@ print(p1 == Point.new(1, 2))  -- 触发 __eq: true
 **Lua 的优势**：轻量、显式、无运行时开销（无元方法时）。
 **Python 的优势**：MRO 处理复杂继承、`@property` 装饰器、描述符协议。
 
-### 5.2 与 JavaScript 的对比
+### 4.2 与 JavaScript 的对比
 
 | 特性            | Lua                        | JavaScript                          |
 | --------------- | -------------------------- | ----------------------------------- |
@@ -1303,7 +1262,7 @@ print(p1 == Point.new(1, 2))  -- 触发 __eq: true
 **Lua 的优势**：运算符重载完整、原型链显式（无 `__proto__` 隐式继承）。
 **JS 的优势**：Proxy 提供更全面的拦截能力、Symbol 提供内置协议扩展点。
 
-### 5.3 与 Scheme 的对比
+### 4.3 与 Scheme 的对比
 
 | 特性           | Lua                         | Scheme（R7RS）                       |
 | -------------- | --------------------------- | ----------------------------------- |
@@ -1316,7 +1275,7 @@ print(p1 == Point.new(1, 2))  -- 触发 __eq: true
 **Lua 的优势**：简单、易学、元方法机制直观。
 **Scheme 的优势**：宏系统更强大、CLOS 提供完整多分派。
 
-### 5.4 `__index` 与原型继承性能对比
+### 4.4 `__index` 与原型继承性能对比
 
 不同语言的属性查找性能（每秒操作数，越大越快，相对值）：
 
@@ -1331,9 +1290,9 @@ Lua 在简单访问上有明显优势（flags 位图优化），但 `__index` �
 
 ---
 
-## 6. 常见陷阱与最佳实践
+## 5. 常见陷阱与最佳实践
 
-### 6.1 陷阱：`__index` 循环
+### 5.1 陷阱：`__index` 循环
 
 ```lua
 -- 错误：__index 指向自己导致死循环
@@ -1348,7 +1307,7 @@ local obj = setmetatable({}, { __index = proto })
 print(obj.greet())  -- hi
 ```
 
-### 6.2 陷阱：`__newindex` 不写入原表
+### 5.2 陷阱：`__newindex` 不写入原表
 
 ```lua
 local t = setmetatable({}, {
@@ -1372,7 +1331,7 @@ t.foo = 42
 print(t.foo)  -- 42
 ```
 
-### 6.3 陷阱：`__eq` 要求同 metatable
+### 5.3 陷阱：`__eq` 要求同 metatable
 
 ```lua
 local mt1 = { __eq = function(a, b) return true end }
@@ -1384,7 +1343,7 @@ local b = setmetatable({}, mt2)
 print(a == b)  -- false（mt1 != mt2，__eq 未触发）
 ```
 
-### 6.4 陷阱：`__len` 在字符串上无效
+### 5.4 陷阱：`__len` 在字符串上无效
 
 ```lua
 local s = setmetatable("hello", { __len = function() return 100 end })
@@ -1393,7 +1352,7 @@ print(#s)  -- 5（字符串的 # 不触发 __len）
 -- __len 仅对 table 与 userdata（在 5.4 中）有效
 ```
 
-### 6.5 陷阱：metatable 被共享导致意外修改
+### 5.5 陷阱：metatable 被共享导致意外修改
 
 ```lua
 local mt = {}
@@ -1409,7 +1368,7 @@ end
 -- 正确：每个实例可有自己的 metatable（但开销大），或共享 metatable 但不修改
 ```
 
-### 6.6 陷阱：`__call` 优先级低于函数
+### 5.6 陷阱：`__call` 优先级低于函数
 
 ```lua
 local f = print
@@ -1419,7 +1378,7 @@ local t = setmetatable({}, { __call = function() print("table called") end })
 f()  -- print nothing
 ```
 
-### 6.7 陷阱：`__gc` 在 5.2 中对 table 失效
+### 5.7 陷阱：`__gc` 在 5.2 中对 table 失效
 
 ```lua
 -- Lua 5.1 / 5.2: table 的 __gc 不会触发！
@@ -1439,7 +1398,7 @@ local function track_table(t)
 end
 ```
 
-### 6.8 陷阱：`__metatable` 防护可被 debug 绕过
+### 5.8 陷阱：`__metatable` 防护可被 debug 绕过
 
 ```lua
 local t = setmetatable({}, { __metatable = "protected" })
@@ -1450,7 +1409,7 @@ local mt = debug.getmetatable(t)
 print(mt)  -- 真实 metatable
 ```
 
-### 6.9 最佳实践：原型继承使用 `__index` 指向自身
+### 5.9 最佳实践：原型继承使用 `__index` 指向自身
 
 ```lua
 -- 推荐：类表自身的 __index 指向类表
@@ -1466,7 +1425,7 @@ function Animal:speak()
 end
 ```
 
-### 6.10 最佳实践：使用 `rawget` 检测实例字段
+### 5.10 最佳实践：使用 `rawget` 检测实例字段
 
 ```lua
 function Animal:has_field(k)
@@ -1475,7 +1434,7 @@ end
 -- 避免触发 __index 导致误判（继承的方法会被认为是字段）
 ```
 
-### 6.11 最佳实践：保护 `__gc` 关联 metatable
+### 5.11 最佳实践：保护 `__gc` 关联 metatable
 
 ```lua
 -- Lua 5.4：通过 luaL_setmetatable 自动标记 __gc
@@ -1488,7 +1447,7 @@ int luaopen_mylib(lua_State *L) {
 }
 ```
 
-### 6.12 最佳实践：避免 `__index` 函数
+### 5.12 最佳实践：避免 `__index` 函数
 
 ```lua
 -- 避免：__index 是 function 会增加调用开销
@@ -1502,9 +1461,9 @@ local t = setmetatable({}, { __index = defaults })
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 完整的 OOP 类系统
+### 6.1 完整的 OOP 类系统
 
 ```lua
 -- Lua 5.4
@@ -1574,7 +1533,7 @@ print(d:isInstanceOf(Animal))  -- true
 print(d:isInstanceOf(Dog))      -- true
 ```
 
-### 7.2 不可变对象
+### 6.2 不可变对象
 
 ```lua
 -- Lua 5.4
@@ -1608,7 +1567,7 @@ print(p.x)     -- 1
 -- print(p.z) -- error: no such field
 ```
 
-### 7.3 属性访问器
+### 6.3 属性访问器
 
 ```lua
 -- Lua 5.4
@@ -1668,7 +1627,7 @@ print(p.age)     -- 31
 -- p.name = ""  -- error: invalid name
 ```
 
-### 7.4 多重继承
+### 6.4 多重继承
 
 ```lua
 -- Lua 5.4
@@ -1706,7 +1665,7 @@ print(c:methodA())  -- A
 print(c:methodB())  -- B
 ```
 
-### 7.5 弱引用与 metatable
+### 6.5 弱引用与 metatable
 
 ```lua
 -- Lua 5.4
@@ -1732,7 +1691,7 @@ print(slow_square(5))  -- computing for 5; 25
 print(slow_square(5))  -- 25（来自缓存）
 ```
 
-### 7.6 元方法调试器
+### 6.6 元方法调试器
 
 ```lua
 -- Lua 5.4
@@ -1770,7 +1729,7 @@ local c = a + b  -- 打印: [Complex] __add called with 2 args
 print(c)         -- 打印: [Complex] __tostring called with 1 args; Complex(3)
 ```
 
-### 7.7 与 C 模块协作
+### 6.7 与 C 模块协作
 
 ```lua
 -- Lua 5.4
@@ -1807,7 +1766,7 @@ print(v3)        -- (5, 7, 9)
 print(v3:length())  -- 11.53...
 ```
 
-### 7.8 性能优化
+### 6.8 性能优化
 
 ```lua
 -- Lua 5.4
@@ -1835,7 +1794,7 @@ local MT = { __add = function(a, b) return setmetatable({}, MT) end }  -- 共享
 if rawget(obj, "field") then ... end  -- 比 if obj.field then ... 快（避免触发 __index）
 ```
 
-### 7.9 测试
+### 6.9 测试
 
 ```lua
 -- Lua 5.4
@@ -1877,9 +1836,9 @@ test_inheritance()
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 Redis：Lua 脚本中的 metatable
+### 7.1 Redis：Lua 脚本中的 metatable
 
 Redis 的 EVAL 命令允许执行 Lua 脚本。Redis 内置的 Lua 解释器对 metatable 有限制：
 
@@ -1899,7 +1858,7 @@ Redis 限制：
 - `__gc` 对 table 不生效（5.1 兼容性）。
 - `require` 被禁用，模块加载受限。
 
-### 8.2 Neovim：Lua 5.1 API 与 metatable
+### 7.2 Neovim：Lua 5.1 API 与 metatable
 
 Neovim 0.5+ 使用 Lua 5.1 作为配置语言，大量使用 metatable 包装 Vim API：
 
@@ -1919,7 +1878,7 @@ local api = setmetatable({}, {
 
 Neovim 的 `vim.api` 是一个**虚拟表**，通过 `__index` 动态生成 API 调用，避免预先导入所有函数。
 
-### 8.3 World of Warcraft：基于 metatable 的 UI 框架
+### 7.3 World of Warcraft：基于 metatable 的 UI 框架
 
 WoW 使用 Lua 5.1，其 UI 框架（FrameXML）大量使用 metatable 实现 OOP：
 
@@ -1949,7 +1908,7 @@ WoW 限制：
 - 字符串的 metatable 不可修改（沙箱保护）。
 - 部分全局函数被替换为安全版本。
 
-### 8.4 LuaJIT：FFI 与 cdata 的 metatable
+### 7.4 LuaJIT：FFI 与 cdata 的 metatable
 
 LuaJIT 的 FFI 允许为 cdata 类型设置 metatable：
 
@@ -2000,7 +1959,7 @@ LuaJIT 优势：
 - cdata 性能接近 C 原生代码。
 - metatable 与 userdata 兼容。
 
-### 8.5 Love2D：游戏对象系统
+### 7.5 Love2D：游戏对象系统
 
 Love2D 是 2D 游戏框架，基于 Lua 5.1 + LuaJIT：
 
@@ -2066,7 +2025,7 @@ Love2D 的设计哲学：
 - 每帧调用 `update` / `draw`，metatable 不影响热路径性能（LuaJIT JIT 优化）。
 - 通过 `__index` 实现继承，简洁直观。
 
-### 8.6 Kong：API 网关中的元编程
+### 7.6 Kong：API 网关中的元编程
 
 Kong 是基于 OpenResty（LuaJIT）的 API 网关，使用 metatable 实现插件系统：
 
@@ -2407,7 +2366,7 @@ print(result)  -- 60
 ```
 
 
-### 9.4 思考题
+### 8.4 思考题
 
 **常见疑问 14**：. 为什么 Lua 不内置类系统，而通过 metatable 模拟？
 
@@ -2439,7 +2398,7 @@ Lua 的设计哲学是"提供元机制，而非具体特性"。metatable 作为�
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
 1. **Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes.** *Lua 5.4 Reference Manual.* PUC-Rio, 2020. ISBN 978-85-903998-6-3. DOI: 10.13140/RG.2.2.15643.92964.
 
@@ -2467,40 +2426,40 @@ Lua 的设计哲学是"提供元机制，而非具体特性"。metatable 作为�
 
 ---
 
-## 11. 扩展阅读
+## 10. 扩展阅读
 
-### 11.1 官方资料
+### 10.1 官方资料
 
 - [Lua 官方网站](https://www.lua.org/)
 - [Lua 5.4 Reference Manual - Metatables](https://www.lua.org/manual/5.4/manual.html#2.4)
 - [Programming in Lua - Metatables](https://www.lua.org/pil/13.html)
 - [The Evolution of Lua](https://www.lua.org/doc/hopl.pdf)
 
-### 11.2 进阶书籍
+### 10.2 进阶书籍
 
 - Ierusalimschy, R. *Lua: The Programming Language.* PUC-Rio, 2020.
 - Jung, K. *Beginning Lua Programming.* Wrox, 2007.
 - URI, *Programming in Lua* 4th Edition, PUC-Rio, 2016.
 
-### 11.3 社区资源
+### 10.3 社区资源
 
 - [Lua Users Wiki - Metamethods Tutorial](http://lua-users.org/wiki/MetatableEvents)
 - [Lua Users Wiki - Object Orientation Tutorial](http://lua-users.org/wiki/ObjectOrientationTutorial)
 - [lua-l Mailing List Archive](https://www.lua.org/lua-l.html)
 
-### 11.4 源码分析
+### 10.4 源码分析
 
 - [Lua 5.4 源码 lobject.h](https://www.lua.org/source/5.4/lobject.h.html)
 - [Lua 5.4 源码 ltable.c](https://www.lua.org/source/5.4/ltable.c.html)
 - [Lua 5.4 源码 lvm.c](https://www.lua.org/source/5.4/lvm.c.html)
 - [LuaJIT 源码 lj_obj.h](https://github.com/LuaJIT/LuaJIT/blob/v2.1/src/lj_obj.h)
 
-### 11.5 相关论文
+### 10.5 相关论文
 
 - Ierusalimschy, R., Figueiredo, L. H. D., Celes, W. *The Design and Implementation of Lua 5.0.* Journal of Universal Computer Science, vol. 11, no. 7, 2005.
 - Hosoya, H., Pierce, B. C. *Regular Expression Pattern Matching for XML.* Journal of Functional Programming, vol. 13, no. 6, 2003.
 
-### 11.6 实战项目
+### 10.6 实战项目
 
 - [Kong API Gateway - Lua 插件](https://docs.konghq.com/gateway-oss/)
 - [Neovim Lua 文档](https://neovim.io/doc/user/lua.html)

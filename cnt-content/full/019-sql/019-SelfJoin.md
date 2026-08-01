@@ -14,45 +14,6 @@ related:
   - sql/LATERAL派生表
 prerequisites:
   - sql/概述与标准
-learningObjectives:
-  - level: remember
-    objective: '能陈述自连接的基本语法与表别名（alias）的必要性。'
-    verifiable: '默写自连接最小 SQL'
-  - level: understand
-    objective: '能解释同一张表如何通过两个别名扮演两个逻辑角色。'
-    verifiable: '说明 JOIN 两边的表实体与角色'
-  - level: apply
-    objective: '能实现层级查询、相邻行比较、重复检测与中转路径等典型场景。'
-    verifiable: '编写四种场景的完整 SQL'
-  - level: analyze
-    objective: '能分析自连接与递归 CTE 在可变层级查询上的边界。'
-    verifiable: '对比固定层级与任意层级方案'
-  - level: evaluate
-    objective: '能评价 < 与 <> 在去重配对中的性能差异。'
-    verifiable: '说明 n(n-1)/2 与 n(n-1) 的差异'
-  - level: create
-    objective: '能独立设计组织架构报表查询并配套索引优化。'
-    verifiable: '完成案例研究中的完整方案'
-exercises:
-  - id: sql-selfjoin-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: '自连接中同一表需要两个不同的 _____ 来区分两个角色。'
-    answer: '别名'
-    explanation: '使用 AS a / AS b 区分连接两侧。'
-    difficulty: easy
-  - id: sql-selfjoin-02
-    type: choice
-    cognitiveLevel: understand
-    question: '自连接的本质是？'
-    options:
-      - 'A. 复制表后再连接'
-      - 'B. 同一表逻辑上扮演两个角色进行连接'
-      - 'C. 与临时表连接'
-      - 'D. 递归查询'
-    answer: 'B'
-    explanation: '物理上只有一张表，逻辑上通过别名呈现两个角色。'
-    difficulty: medium
 references:
   - type: documentation
     authors: ['PostgreSQL 团队']
@@ -77,21 +38,8 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-## 1. 学习目标（Bloom 分类）
 
-记忆层面：能够说出自连接（self join）的定义——同一张表与自身连接，必须使用表别名区分两侧；能够复述内连接、左连接、右连接、全连接在自连接中的语义。
-
-理解层面：能够解释自连接解决的两类问题：同表行之间的关系（组织结构、好友关系、商品分类层级）与行间对比（找相同属性、找差值、找连续记录）；理解为什么要用别名与连接条件。
-
-应用层面：能够编写员工-经理层级查询、好友关系去重、同城市用户匹配、日期序列对比、连续登录检测等典型自连接 SQL，并能结合窗口函数选择更优方案。
-
-分析层面：能够分析自连接与递归 CTE（`WITH RECURSIVE`）的边界：有限层数用自连接，未知深度层级用递归；能够分析自连接在索引利用与性能上的特点。
-
-评价层面：能够评估“自连接 vs 窗口函数 vs 子查询”的实现选择，根据数据量与可读性做决策。
-
-创造层面：能够设计基于自连接的通用查询模板（父子层级、相邻记录、重复检测），并写出可维护的复杂业务查询。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 关系模型的奠基人 E. F. Codd 在 1970 年论文《A Relational Model of Data for Large Shared Data Banks》中定义了关系代数，连接（join）是核心运算。自连接并非特殊语法，而是连接运算的自然应用：把一张表同时当作两个关系实例使用。SQL 标准从一开始就允许表与自身连接，通过别名区分。
 
@@ -108,7 +56,7 @@ timeline
     2020+ : 窗口函数与自连接互补成为主流
 ```
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 自连接是表 T 与自身的连接，形式化表示为：
 
@@ -137,23 +85,23 @@ flowchart LR
     D --> E["层级关系结果"]
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 自连接与关系代数
+### 3.1 自连接与关系代数
 
 自连接本质是 `σ(条件)(T × T)` 的过滤投影。例如员工表 E，员工-经理查询等价于选择 E1.manager_id = E2.id 的笛卡尔积行。理解这一点可以推导：索引利用取决于连接列（manager_id、id）上的索引；无索引时是嵌套循环或哈希连接。
 
-### 4.2 去重配对推导
+### 3.2 去重配对推导
 
 好友关系表通常每对好友只存一行（如 user_a < user_b）。若要查询“所有好友对”，无需去重；若表中同时存在 (1,2) 与 (2,1)，自连接 `a.id < b.id` 保证每对只出现一次（取较小 id 在前）。推导：对任意无序对 {x, y}，条件 a.id < b.id 唯一确定一个方向。
 
-### 4.3 自连接与递归 CTE 的分工
+### 3.3 自连接与递归 CTE 的分工
 
 自连接固定一次连接，表达“一层关系”（直接下属）；要表达“所有层级”（组织树全展开）需要递归 CTE。递归 CTE 由锚点成员（顶层行）与递归成员（自连接下一层）构成，数据库迭代执行直到无新行。推导：树的深度 D 决定迭代次数，自连接写法需要 D-1 次手动连接，因此未知深度必须用递归。
 
-## 5. 代码示例（带详尽注释）
+## 4. 代码示例（带详尽注释）
 
-### 5.1 员工-经理层级（内连接）
+### 4.1 员工-经理层级（内连接）
 
 ```sql
 -- 员工表：id、姓名、直属经理 id
@@ -174,7 +122,7 @@ JOIN employee AS m
 
 讲解：`e` 代表员工侧，`m` 代表经理侧，连接条件 `e.manager_id = m.id` 把每行员工与其经理行配对。INNER JOIN 会排除没有经理的顶层员工；需要包含顶层员工时改用 LEFT JOIN。
 
-### 5.2 左连接保留顶层
+### 4.2 左连接保留顶层
 
 ```sql
 -- 包含没有经理的 CEO（manager_id 为 NULL）
@@ -188,7 +136,7 @@ LEFT JOIN employee AS m
 
 讲解：LEFT JOIN 保留 e 侧全部行，`COALESCE` 把 NULL 显示为“无上级”。这是组织架构查询的完整形态。
 
-### 5.3 同表行间对比：同城市用户
+### 4.3 同表行间对比：同城市用户
 
 ```sql
 -- 找出同一城市的用户对（每对只出现一次）
@@ -204,7 +152,7 @@ JOIN users AS b
 
 讲解：`a.city = b.city` 配对同城用户，`a.id < b.id` 消除 (A,B) 与 (B,A) 的重复行。若去掉 `<` 条件，结果行数翻倍且含自配对（同一用户与自己）。
 
-### 5.4 相邻记录对比：价格变化
+### 4.4 相邻记录对比：价格变化
 
 ```sql
 -- 商品价格历史：找出价格变动的相邻记录
@@ -232,7 +180,7 @@ SELECT product_id, price, changed_at,
 FROM price_history;
 ```
 
-### 5.5 连续登录检测
+### 4.5 连续登录检测
 
 ```sql
 -- 找出连续两天登录的用户：今天登录且昨天也登录
@@ -246,7 +194,7 @@ JOIN login_log AS yesterday
 
 讲解：自连接把“今天的行”与“昨天的行”配对，`INTERVAL '1 day'` 表达日期差。连续 N 天可以递归推广，但窗口函数（`DATE - ROW_NUMBER()` 分组）在长序列上更高效。
 
-### 5.6 递归 CTE：全层级展开
+### 4.6 递归 CTE：全层级展开
 
 ```sql
 -- 以 CEO 为根，展开整棵组织树
@@ -272,7 +220,7 @@ ORDER BY depth, id;
 
 讲解：递归 CTE 的锚点选择根节点，递归成员用自连接把下一层并入结果集，`depth` 记录层级。数据库迭代直到没有新行；若数据存在环（manager 循环引用），需在递归成员中去重或限制深度防止无限循环。
 
-### 5.7 重复数据检测
+### 4.7 重复数据检测
 
 ```sql
 -- 找出 email 重复的用户
@@ -285,7 +233,7 @@ JOIN users AS b
 
 讲解：按 email 配对并去重，命中的行表示存在重复。更高效的做法是 `GROUP BY email HAVING COUNT(*) > 1`，但自连接可以进一步展示重复行明细。
 
-### 5.8 组合查询：第二高工资
+### 4.8 组合查询：第二高工资
 
 ```sql
 -- 自连接求第二高工资（经典方案）
@@ -299,9 +247,9 @@ HAVING COUNT(DISTINCT e2.salary) = 1;
 
 讲解：e1 是候选行，e2 是比 e1 高的行；`COUNT(DISTINCT e2.salary) = 1` 表示恰好只有一档工资高于 e1，即 e1 是第二高。现代写法 `OFFSET 1` 或窗口函数更简洁，但该自连接方案展示了连接运算的表达能力。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 自连接 vs 窗口函数
+### 5.1 自连接 vs 窗口函数
 
 | 维度 | 自连接 | 窗口函数 |
 | --- | --- | --- |
@@ -310,15 +258,15 @@ HAVING COUNT(DISTINCT e2.salary) = 1;
 | 可读性 | 层级关系直观 | 序列计算直观 |
 | 适用 | 层级、配对 | 排名、差值、累计 |
 
-### 6.2 自连接 vs 子查询
+### 5.2 自连接 vs 子查询
 
 子查询适合“每行一个标量结果”；自连接适合“行与行配对后联合输出”。多数场景可互换，但自连接能同时输出两侧字段（如员工与经理姓名），子查询难以做到。
 
-### 6.3 邻接表 vs 物化路径 vs 嵌套集
+### 5.3 邻接表 vs 物化路径 vs 嵌套集
 
 邻接表（parent_id）配合递归 CTE 最灵活；物化路径（path 字段）读快写慢，适合读多写少的分类树；嵌套集（left/right）查询子树 O(1) 但更新成本高。现代 OLTP 首选邻接表 + 递归，OLAP 树结构可用物化路径。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
 陷阱一：忘记表别名，出现列歧义错误。自连接必须给两侧起不同别名。
 
@@ -332,9 +280,9 @@ HAVING COUNT(DISTINCT e2.salary) = 1;
 
 陷阱六：用自连接做大量行对比（O(N²)）而不加索引。连接列必须有索引；大数据量考虑窗口函数或物化聚合。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 组织架构通用查询模板
+### 7.1 组织架构通用查询模板
 
 ```sql
 -- 查询某员工的完整汇报链（向上）
@@ -352,7 +300,7 @@ SELECT name FROM report_chain;
 
 讲解：模板把“从某节点向上遍历”表达为递归 CTE，业务层只需替换参数。配合视图或函数封装，团队可复用。
 
-### 8.2 性能验证
+### 7.2 性能验证
 
 ```sql
 -- 查看自连接的执行计划：确认索引被使用
@@ -364,7 +312,7 @@ JOIN employee AS m ON e.manager_id = m.id;
 
 讲解：`EXPLAIN ANALYZE` 显示实际执行计划与耗时。连接列（manager_id、id）应有索引；若出现 Hash Join 且表很大，评估是否需要维护冗余层级表。
 
-## 9. 案例研究：电商分类树的商品统计
+## 8. 案例研究：电商分类树的商品统计
 
 需求：分类表（id、parent_id、name），统计每个分类（含子分类）下的商品数。
 
@@ -392,7 +340,7 @@ ORDER BY ct.ancestor;
 
 讲解：递归 CTE 先构造“祖先-后代”闭包，再连接商品表聚合。该模式把任意深度层级问题转化为平面配对问题，是分类树统计的标准解法。自连接在递归成员中承担“逐层下钻”的职责。
 
-## 10. 知识要点总结与深入讲解
+## 9. 知识要点总结与深入讲解
 
 自连接的三个要点：别名（区分两侧）、连接条件（定义配对语义）、连接类型（控制保留行为）。掌握这三点，自连接就是普通连接。
 
@@ -400,7 +348,7 @@ ORDER BY ct.ancestor;
 
 性能上自连接的最大风险是笛卡尔积与缺少索引。写完后用 EXPLAIN 验证，是每个 SQL 开发者的基本素养。
 
-## 11. 参考文献
+## 10. 参考文献
 
 PostgreSQL 官方文档, WITH 查询（递归 CTE）, 访问日期 2026-08-01, https://www.postgresql.org/docs/current/queries-with.html
 
@@ -412,7 +360,7 @@ E. F. Codd, A Relational Model of Data for Large Shared Data Banks, Communicatio
 
 SQL 标准 ISO/IEC 9075-2（SQL:2023）中连接与递归查询相关条款。
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 连接类型详解与索引优化，见 019-sql 模块的 JOIN 文档；
 
@@ -441,9 +389,9 @@ FROM table_name AS a
 JOIN table_name AS b ON a.some_id = b.some_id;
 ```
 
-### 2. 典型场景
+### 1. 典型场景
 
-#### 2.1 层级结构查询
+#### 1.1 层级结构查询
 
 ```sql
 -- 员工-经理关系
@@ -470,7 +418,7 @@ FROM employees e1
 JOIN employees e2 ON e1.manager_id = e2.manager_id AND e1.emp_id < e2.emp_id;
 ```
 
-#### 2.2 同表比较
+#### 1.2 同表比较
 
 ```sql
 -- 查找薪资高于所在部门平均薪资的员工
@@ -493,7 +441,7 @@ FROM daily_sales curr
 JOIN daily_sales prev ON curr.order_date = prev.order_date + INTERVAL '1 day';
 ```
 
-#### 2.3 查找重复数据
+#### 1.3 查找重复数据
 
 ```sql
 -- 查找重复记录
@@ -511,7 +459,7 @@ JOIN (
 ) b ON a.user_id = b.user_id AND a.created_at < b.latest;
 ```
 
-#### 2.4 路径与距离计算
+#### 1.4 路径与距离计算
 
 ```sql
 -- 航班中转查询
@@ -533,9 +481,9 @@ JOIN flights f2 ON f1.to_city = f2.from_city
 WHERE f1.from_city = '北京' AND f2.to_city = '上海';
 ```
 
-### 3. 自连接与递归查询
+### 2. 自连接与递归查询
 
-#### 3.1 自连接的局限
+#### 2.1 自连接的局限
 
 ```sql
 -- 自连接只能查询固定层级
@@ -553,7 +501,7 @@ LEFT JOIN employees m2 ON m1.manager_id = m2.emp_id;
 -- 层级不确定时，应使用递归 CTE
 ```
 
-#### 3.2 递归 CTE 替代方案
+#### 2.2 递归 CTE 替代方案
 
 ```sql
 -- 使用递归 CTE 查询任意层级
@@ -573,9 +521,9 @@ WITH RECURSIVE org_chart AS (
 SELECT * FROM org_chart ORDER BY level, name;
 ```
 
-### 4. 性能优化
+### 3. 性能优化
 
-#### 4.1 索引策略
+#### 3.1 索引策略
 
 ```sql
 -- 自连接的连接列需要索引
@@ -585,7 +533,7 @@ CREATE INDEX idx_employees_manager_id ON employees(manager_id);
 CREATE INDEX idx_employees_manager_cover ON employees(manager_id, name, salary);
 ```
 
-#### 4.2 避免笛卡尔积
+#### 3.2 避免笛卡尔积
 
 ```sql
 -- 错误：缺少连接条件导致笛卡尔积
@@ -598,7 +546,7 @@ FROM employees a
 JOIN employees b ON a.manager_id = b.emp_id;
 ```
 
-#### 4.3 使用不等条件控制结果
+#### 3.3 使用不等条件控制结果
 
 ```sql
 -- 使用 < 而非 <> 避免重复对

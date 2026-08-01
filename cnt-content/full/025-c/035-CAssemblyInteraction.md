@@ -16,6 +16,7 @@ prerequisites:
   - c/概述
 ---
 
+
 # C 与汇编交互（C and Assembly Interaction）
 
 > "It is difficult to prevent the C compiler from generating good code. But sometimes the only way to get the code you need is to write it yourself in assembly language. ... GCC's extended `asm` syntax lets you embed assembly instructions within C functions, specify input and output operands, and tell the compiler what registers and memory your instructions modify."
@@ -29,92 +30,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy, Revised 2001）描述完成本文学习后学习者应当具备的认知层级。Bloom 分类法将认知目标从低阶到高阶划分为六个层次：remember（记忆）、understand（理解）、apply（应用）、analyze（分析）、evaluate（评价）、create（创造）。
-
-### 1.1 Remember（记忆）
-
-完成本节后，学习者应当能够准确回忆以下事实性知识：
-
-- 内联汇编（inline assembly）的两种形式：基础内联汇编（basic asm）与扩展内联汇编（extended asm）。
-- GCC/Clang 扩展内联汇编的语法骨架：`__asm__ __volatile__("模板" : 输出 : 输入 : clobber);`。
-- AT&T 语法与 Intel 语法的核心差异：操作数顺序（源在前 vs 目的在前）、寄存器前缀（`%` vs 无）、立即数前缀（`$` vs 无）。
-- 常用操作数约束字符：`r`（通用寄存器）、`m`（内存）、`i`（立即数）、`a`/`b`/`c`/`d`（eax/ebx/ecx/edx）、`D`/`S`（edi/esi）、`=r`（只写输出）、`+r`（读写）。
-- `__volatile__` 修饰符的作用：禁止编译器将汇编代码优化掉或与其他内存操作重排。
-- `clobber list`（修改列表）的常见条目：`"memory"`（内存副作用）、`"cc"`（条件码）、寄存器名（如 `"eax"`、`"xmm0"`）。
-- `rdtsc` 指令读取 x86 时间戳计数器（Time Stamp Counter），结果存入 `edx:eax`。
-- `cpuid` 指令获取 CPU 特性信息，输入 `eax`（leaf），输出 `eax/ebx/ecx/edx`。
-- `lock` 前缀实现原子内存操作，如 `lock cmpxchg`（原子比较交换）。
-- 内存屏障指令：x86 的 `mfence`/`lfence`/`sfence`，ARM 的 `dmb`/`dsb`/`isb`，RISC-V 的 `fence`。
-- 外部汇编通过 `extern` 声明，遵循调用约定（System V AMD64 ABI、AAPCS64 等）。
-- MSVC 使用 `__asm { }` 块语法（Intel 语法），且在 x64 模式下不支持内联汇编。
-
-### 1.2 Understand（理解）
-
-学习者应当能够解释：
-
-- 为什么需要内联汇编：访问 C 无法直接生成的指令（如 `cpuid`、`rdtsc`、`invlpg`）、实现精确的内存序控制（memory ordering）、手写 SIMD 优化（SIMD optimization）、操作系统上下文切换（context switch）等。
-- 为什么 GCC 选择"扩展内联汇编"语法而非简单字符串替换：扩展语法允许编译器理解汇编代码的数据流（输入/输出操作数），从而更好地分配寄存器与进行优化。
-- `__volatile__` 的语义：防止编译器删除"看似无副作用"的汇编代码（如 `rdtsc`），防止将汇编代码与周围内存操作重排；但不能阻止 CPU 层面的乱序执行（需要硬件内存屏障）。
-- `"memory"` clobber 的作用：告诉编译器汇编代码可能修改任意内存，强制编译器在汇编前后将所有相关变量从寄存器回写到内存。
-- AT&T 与 Intel 语法的选用权衡：GCC 默认 AT&T 语法，可通过 `.intel_syntax noprefix` 切换；MSVC 仅支持 Intel 语法；AT&T 语法与 GCC 工具链（`as`、`gdb`、`objdump`）一致。
-- 为什么 MSVC x64 不支持内联汇编：Microsoft 选择通过编译器内建函数（intrinsic）提供等价功能，简化编译器实现。
-- 内联汇编与外部汇编的权衡：内联汇编允许编译器优化寄存器分配，但可移植性差；外部汇编可独立编译与优化，但调用约定需手动维护。
-- `asm goto`（GCC 4.5+）的用途：允许汇编代码跳转到 C 标签，常用于实现自适应锁（adaptive lock）的快速路径。
-- `__builtin_expect` 与内联汇编的配合：分支预测提示与汇编代码的协同优化。
-- 跨架构汇编的可移植性挑战：x86、ARM、RISC-V 的指令集与寄存器完全不同，需要通过 `#if defined(__x86_64__)` 等预处理宏隔离。
-
-### 1.3 Apply（应用）
-
-学习者应当能够：
-
-- 使用 `__asm__ __volatile__` 编写 `rdtsc`、`cpuid`、`mfence` 等常用指令的内联汇编。
-- 使用操作数约束将 C 变量绑定到汇编操作数（如 `"=a"(result)` 将 eax 绑定到 result）。
-- 使用 `clobber list` 正确声明汇编代码修改的寄存器与内存。
-- 使用 `#ifdef __x86_64__` / `#ifdef __aarch64__` / `#ifdef __riscv` 编写跨架构汇编代码。
-- 编写外部汇编函数（`.s` 文件），通过 `extern` 声明并在 C 中调用。
-- 使用 GCC intrinsics（如 `__builtin_ia32_rdtsc`、`__sync_bool_compare_and_swap`）替代手写汇编。
-- 使用 `_mm_load_ps` 等 SIMD intrinsics 实现向量加速。
-- 使用 `asm goto` 实现带快速路径的并发原语。
-
-### 1.4 Analyze（分析）
-
-学习者应当能够：
-
-- 分析 `gcc -S` 生成的汇编代码，识别内联汇编与编译器生成代码的边界。
-- 通过 `objdump -d` 反汇编二进制，验证内联汇编是否被正确编译。
-- 分析内存屏障在多线程代码中的作用，识别所需的屏障类型（`mfence`/`lfence`/`sfence` 或 `dmb`/`dsb`/`isb`）。
-- 分析内联汇编的性能：寄存器分配、内存 clobber 的副作用、指令流水线停顿。
-- 分析 `asm goto` 与传统 `asm` 的控制流差异：前者允许跳转到 C 标签，后者只能通过输出操作数影响控制流。
-- 分析跨编译器（GCC vs Clang vs MSVC）的内联汇编兼容性问题。
-
-### 1.5 Evaluate（评价）
-
-学习者应当能够评估：
-
-- 内联汇编 vs intrinsics 的权衡：intrinsics 可移植性更好、编译器可优化，但某些指令无对应 intrinsic（如 `invlpg`）。
-- AT&T vs Intel 语法的选用：AT&T 与 GCC 工具链一致，Intel 更易读且被 MSVC 用户熟悉。
-- 内联汇编 vs 外部汇编的选用：内联汇编允许编译器优化，外部汇编可独立测试与维护。
-- 在性能关键路径上，手写汇编 vs 编译器自动向量化的收益：手写通常更快 10-30%，但维护成本高。
-- `__volatile__` 的使用场景：仅在汇编代码有副作用（如 I/O 端口访问、rdtsc）时使用，无副作用的汇编应允许编译器优化。
-
-### 1.6 Create（创造）
-
-学习者应当能够：
-
-- 实现一个跨架构的高精度计时器，x86 用 `rdtsc`，ARM 用 `mrs x0, cntvct_el0`，RISC-V 用 `rdcycle`。
-- 实现一个无锁（lock-free）队列，使用 `lock cmpxchg` 实现 CAS 原语。
-- 实现一个 SIMD 加速的字符串查找函数，使用 AVX2 `VPCMPESTRI` 指令。
-- 设计一个自适应自旋锁，使用 `asm goto` 实现快速路径跳转。
-- 实现一个用户级线程（coroutine）库，使用内联汇编进行上下文切换（保存/恢复 callee-saved 寄存器）。
-- 在裸机嵌入式环境中实现 `memcpy` 的优化版本，利用对齐访问与 SIMD 指令。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 早期 C 与汇编的紧密耦合
+### 1.1 早期 C 与汇编的紧密耦合
 
 C 语言诞生于 1972 年的 Bell Labs，最初目的是编写 UNIX 操作系统。Dennis Ritchie 设计 C 时，C 与汇编的关系极为紧密：UNIX 内核中大量使用 PDP-11 汇编（通过 `asm` 语句嵌入），用于实现上下文切换、中断处理、I/O 端口访问等底层操作。
 
@@ -133,7 +51,7 @@ asm("assembly instruction");
 
 这种混乱促使 ANSI C 委员会（X3J11）在 C89 中将 `asm` 归为"实现定义"（implementation-defined），不强制语法。
 
-### 2.2 GCC 扩展内联汇编的诞生
+### 1.2 GCC 扩展内联汇编的诞生
 
 Richard Stallman 在 1987 年开始开发 GCC（GNU Compiler Collection）时，意识到简单的 `asm("...")` 语法无法满足 GCC 的优化需求：编译器无法理解汇编代码的数据流，导致无法正确分配寄存器或进行常量传播。
 
@@ -156,11 +74,11 @@ __asm__ (
 
 GCC 扩展内联汇编迅速成为 Unix/Linux 生态的事实标准，被 Linux Kernel、glibc、GCC runtime（libgcc）广泛采用。
 
-### 2.3 Clang 与 GCC 兼容
+### 1.3 Clang 与 GCC 兼容
 
 Clang（2007 起）作为 GCC 的替代品，完全兼容 GCC 的扩展内联汇编语法。这使得 Linux Kernel、glibc 等项目可用 Clang 编译，同时保持汇编代码不变。
 
-### 2.4 MSVC 的分道扬镳
+### 1.4 MSVC 的分道扬镳
 
 Microsoft Visual C++（MSVC）选择不同的路线：
 
@@ -173,7 +91,7 @@ Microsoft Visual C++（MSVC）选择不同的路线：
 
 这一决定导致大量依赖内联汇编的代码（如 OpenSSL 早期版本）需要为 MSVC x64 单独维护 intrinsic 版本。
 
-### 2.5 C11 与 C23 的标准化努力
+### 1.5 C11 与 C23 的标准化努力
 
 C11（ISO/IEC 9899:2011）未引入标准化的内联汇编语法，但引入了 `_Atomic` 类型与原子操作库（`<stdatomic.h>`），为部分原子操作场景提供了汇编的替代方案。
 
@@ -183,15 +101,15 @@ C23（ISO/IEC 9899:2024）仍未标准化内联汇编，但：
 2. 强化 `constexpr` 支持，允许编译期常量传递给汇编。
 3. C2y（下一个标准）正在讨论将 GCC 扩展内联汇编语法纳入标准。
 
-### 2.6 C++ 的标准化尝试
+### 1.6 C++ 的标准化尝试
 
 C++ 标准委员会（WG21）在 C++23 周期中提出了 P1668（Standardized Inline Assembly），建议采用 GCC 扩展语法作为标准。该提案尚未通过，但反映了业界对标准化内联汇编的需求。
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 内联汇编的形式化语法
+### 2.1 内联汇编的形式化语法
 
 GCC/Clang 扩展内联汇编的形式化语法：
 
@@ -207,7 +125,7 @@ $$
 - $\text{clobbers}$：clobber 列表，形如 `"memory", "cc", "rax", ...`。
 - $\text{labels}$：`asm goto` 的目标标签列表（GCC 4.5+）。
 
-### 3.2 操作数约束的形式化定义
+### 2.2 操作数约束的形式化定义
 
 操作数约束（operand constraint）是一个字符串，描述汇编操作数的属性：
 
@@ -221,7 +139,7 @@ $$
 - $\text{type}$：`r`（通用寄存器）、`m`（内存）、`i`（立即数）、`a`/`b`/`c`/`d`/`S`/`D`（特定寄存器）、`f`（浮点寄存器）、`x`（SSE 寄存器）、`v`（AVX 寄存器）等。
 - $\text{size}$：可选，指定操作数大小（如 `b` 字节、`h` 半字、`w` 字、`k` 32 位、`q` 64 位）。
 
-### 3.3 操作数编号规则
+### 2.3 操作数编号规则
 
 操作数按"输出在前，输入在后"的顺序编号：
 
@@ -235,7 +153,7 @@ $$
 
 在模板中，`%0` 引用 $o_0$，`%n` 引用 $i_n$，依此类推。`%%` 引用字面寄存器名（如 `%%eax`）。
 
-### 3.4 `__volatile__` 的形式化语义
+### 2.4 `__volatile__` 的形式化语义
 
 `__volatile__` 修饰符对编译器施加以下约束：
 
@@ -250,7 +168,7 @@ $$
 
 但若 $S_1$ 或 $S_2$ 是普通内存访问（非 `volatile`），编译器可能将其与 $\text{asm}_v$ 重排，除非 $\text{asm}_v$ 的 clobber 包含 `"memory"`。
 
-### 3.5 `"memory"` clobber 的形式化语义
+### 2.5 `"memory"` clobber 的形式化语义
 
 `"memory"` clobber 告诉编译器：汇编代码可能读取或修改任意内存地址。编译器必须：
 
@@ -266,7 +184,7 @@ $$
 
 等价于 GCC 内建 `__sync_synchronize()` 的编译器部分（不含硬件屏障）。
 
-### 3.6 `asm goto` 的形式化语法
+### 2.6 `asm goto` 的形式化语法
 
 `asm goto`（GCC 4.5+）允许汇编代码跳转到 C 标签：
 
@@ -283,9 +201,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 扩展内联汇编的工作原理
+### 3.1 扩展内联汇编的工作原理
 
 当编译器遇到扩展内联汇编时，执行以下步骤：
 
@@ -296,7 +214,7 @@ $$
 5. **插入 clobber 保存/恢复**：若 clobber 列表中的寄存器包含 callee-saved 寄存器且被使用，生成保存/恢复指令。
 6. **应用 `__volatile__` 与 `"memory"` 语义**：禁止删除与重排，spill/reload 内存变量。
 
-### 4.2 操作数约束的详细语义
+### 3.2 操作数约束的详细语义
 
 **输出约束**：
 
@@ -320,7 +238,7 @@ $$
 
 - `"=&r"(x)`：输出操作数在汇编代码执行前就被修改，编译器不得将任何输入分配到同一寄存器。常用于循环中多个输出复用寄存器的场景。
 
-### 4.3 `__volatile__` 与 `asm` 的对比
+### 3.3 `__volatile__` 与 `asm` 的对比
 
 考虑：
 
@@ -363,7 +281,7 @@ asm __volatile__("nop" ::: "memory");  /* memory clobber */
 flag = 1;
 ```
 
-### 4.4 内存屏障的层次
+### 3.4 内存屏障的层次
 
 内存屏障分为两层：
 
@@ -390,7 +308,7 @@ flag = 1;
 #define smp_mb() asm __volatile__("fence rw, rw" ::: "memory")
 ```
 
-### 4.5 AT&T vs Intel 语法对比
+### 3.5 AT&T vs Intel 语法对比
 
 | 特性 | AT&T 语法 | Intel 语法 |
 | --- | --- | --- |
@@ -412,7 +330,7 @@ asm __volatile__(".intel_syntax noprefix\n\t"
 
 注意切换后需切回 AT&T 语法，否则后续汇编代码会解析错误。
 
-### 4.6 外部汇编的调用约定
+### 3.6 外部汇编的调用约定
 
 外部汇编函数需遵循目标平台的调用约定（calling convention），否则会导致参数传递错误或寄存器损坏。
 
@@ -442,9 +360,9 @@ asm __volatile__(".intel_syntax noprefix\n\t"
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：读取时间戳计数器
+### 4.1 基础示例：读取时间戳计数器
 
 ```c
 /* rdtsc.c - 读取 x86 时间戳计数器
@@ -494,7 +412,7 @@ int main(void) {
 }
 ```
 
-### 5.2 进阶示例：CPUID 获取 CPU 信息
+### 4.2 进阶示例：CPUID 获取 CPU 信息
 
 ```c
 /* cpuid.c - 获取 CPU 信息
@@ -552,7 +470,7 @@ int main(void) {
 }
 ```
 
-### 5.3 进阶示例：原子比较交换（CAS）
+### 4.3 进阶示例：原子比较交换（CAS）
 
 ```c
 /* atomic_cas.c - 原子比较交换
@@ -615,7 +533,7 @@ int main(void) {
 }
 ```
 
-### 5.4 进阶示例：内存屏障
+### 4.4 进阶示例：内存屏障
 
 ```c
 /* memory_barrier.c - 内存屏障示例
@@ -672,7 +590,7 @@ int main(void) {
 }
 ```
 
-### 5.5 高级示例：SIMD 加速
+### 4.5 高级示例：SIMD 加速
 
 ```c
 /* simd_sum.c - 使用 SSE/AVX2 指令加速数组求和
@@ -763,7 +681,7 @@ int main(void) {
 }
 ```
 
-### 5.6 高级示例：外部汇编函数
+### 4.6 高级示例：外部汇编函数
 
 ```c
 /* main.c - 调用外部汇编函数
@@ -822,7 +740,7 @@ factorial_asm:
     ret
 ```
 
-### 5.7 高级示例：`asm goto` 自适应锁
+### 4.7 高级示例：`asm goto` 自适应锁
 
 ```c
 /* asm_goto_lock.c - 使用 asm goto 实现快速路径锁
@@ -869,7 +787,7 @@ int main(void) {
 }
 ```
 
-### 5.8 生产级示例：跨架构高精度计时器
+### 4.8 生产级示例：跨架构高精度计时器
 
 ```c
 /* timer.c - 跨架构高精度计时器
@@ -944,7 +862,7 @@ int main(void) {
 }
 ```
 
-### 5.9 CMake 配置
+### 4.9 CMake 配置
 
 ```cmake
 # CMakeLists.txt - C 与汇编交互示例
@@ -1001,7 +919,7 @@ endif()
 install(TARGETS asm_demo external_asm DESTINATION bin)
 ```
 
-### 5.10 Makefile 配置
+### 4.10 Makefile 配置
 
 ```makefile
 # Makefile - C 与汇编交互示例
@@ -1063,9 +981,9 @@ test: $(TARGETS)
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 内联汇编 vs Intrinsics vs 外部汇编
+### 5.1 内联汇编 vs Intrinsics vs 外部汇编
 
 | 维度 | 内联汇编 | Intrinsics | 外部汇编 |
 | --- | --- | --- | --- |
@@ -1077,7 +995,7 @@ test: $(TARGETS)
 | 适用场景 | 无 intrinsic 的指令 | SIMD、原子操作 | 完整函数、上下文切换 |
 | 典型例子 | `rdtsc`、`invlpg` | `_mm_add_ps`、`__sync_...` | `setjmp`、`longjmp` |
 
-### 6.2 AT&T vs Intel 语法对比
+### 5.2 AT&T vs Intel 语法对比
 
 | 特性 | AT&T 语法 | Intel 语法 |
 | --- | --- | --- |
@@ -1091,7 +1009,7 @@ test: $(TARGETS)
 | 跳转标签 | `.L1:` | `L1:` |
 | 全局符号 | `.globl` | `global`（NASM）/ `PUBLIC`（MASM） |
 
-### 6.3 跨编译器内联汇编对比
+### 5.3 跨编译器内联汇编对比
 
 | 编译器 | 语法 | x86 支持 | x64 支持 | ARM 支持 |
 | --- | --- | --- | --- | --- |
@@ -1100,7 +1018,7 @@ test: $(TARGETS)
 | MSVC | `__asm { }` | 是 | **否** | 是（ARM64） |
 | ICC | `__asm__("..." : : :);` | 是 | 是 | 是 |
 
-### 6.4 跨架构内存屏障对比
+### 5.4 跨架构内存屏障对比
 
 | 架构 | 全屏障 | 读屏障 | 写屏障 | 指令屏障 |
 | --- | --- | --- | --- | --- |
@@ -1110,7 +1028,7 @@ test: $(TARGETS)
 | RISC-V | `fence rw, rw` | `fence r, r` | `fence w, w` | `fence.i` |
 | PowerPC | `sync` | `lwsync` | `lwsync` | `isync` |
 
-### 6.5 跨架构时间戳指令对比
+### 5.5 跨架构时间戳指令对比
 
 | 架构 | 指令 | 寄存器 | 频率 | 可靠性 |
 | --- | --- | --- | --- | --- |
@@ -1122,9 +1040,9 @@ test: $(TARGETS)
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：clobber 列表遗漏寄存器
+### 6.1 陷阱一：clobber 列表遗漏寄存器
 
 ```c
 /* 错误：汇编修改了 ebx 但未声明 */
@@ -1159,7 +1077,7 @@ __asm__(
 );
 ```
 
-### 7.2 陷阱二：缺少 `__volatile__` 导致代码被删除
+### 6.2 陷阱二：缺少 `__volatile__` 导致代码被删除
 
 ```c
 /* 错误：rdtsc 可能被编译器删除 */
@@ -1178,7 +1096,7 @@ uint64_t bad_rdtsc(void) {
 __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
 ```
 
-### 7.3 陷阱三：缺少 `"memory"` clobber 导致内存重排
+### 6.3 陷阱三：缺少 `"memory"` clobber 导致内存重排
 
 ```c
 /* 错误：缺少 memory clobber，编译器可能重排 */
@@ -1197,7 +1115,7 @@ __asm__ __volatile__("mfence" ::: "memory");
 flag = 1;
 ```
 
-### 7.4 陷阱四：AT&T 与 Intel 语法混淆
+### 6.4 陷阱四：AT&T 与 Intel 语法混淆
 
 ```c
 /* 错误：在 AT&T 语法中使用 Intel 风格 */
@@ -1218,7 +1136,7 @@ __asm__(".intel_syntax noprefix\n\t"
         ".att_syntax prefix");
 ```
 
-### 7.5 陷阱五：外部汇编调用约定不匹配
+### 6.5 陷阱五：外部汇编调用约定不匹配
 
 ```asm
 /* 错误：未遵循 System V AMD64 ABI */
@@ -1242,7 +1160,7 @@ good_add:
     ret
 ```
 
-### 7.6 陷阱六：`asm goto` 误用输出操作数
+### 6.6 陷阱六：`asm goto` 误用输出操作数
 
 ```c
 /* 错误：GCC 4.5-9 的 asm goto 不支持输出 */
@@ -1271,7 +1189,7 @@ __asm__(
 if (equal) goto label;
 ```
 
-### 7.7 陷阱七：MSVC x64 不支持内联汇编
+### 6.7 陷阱七：MSVC x64 不支持内联汇编
 
 ```c
 /* 错误：MSVC x64 不支持 __asm */
@@ -1291,7 +1209,7 @@ uint64_t rdtsc_msvc(void) {
 }
 ```
 
-### 7.8 陷阱八：SIMD 指令对齐要求
+### 6.8 陷阱八：SIMD 指令对齐要求
 
 ```c
 /* 错误：_mm_load_ps 要求 16 字节对齐 */
@@ -1310,7 +1228,7 @@ __m128 v = _mm_load_ps(data);
 __m128 v = _mm_loadu_ps(data);  /* 不要求对齐 */
 ```
 
-### 7.9 最佳实践
+### 6.9 最佳实践
 
 1. **优先使用 intrinsics 而非内联汇编**：intrinsics 可移植性更好，编译器可优化。
 2. **仅在必要时使用 `__volatile__`**：无副作用的汇编应允许编译器优化。
@@ -1323,9 +1241,9 @@ __m128 v = _mm_loadu_ps(data);  /* 不要求对齐 */
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 调试与检查工具
+### 7.1 调试与检查工具
 
 | 工具 | 用途 | 平台 |
 | --- | --- | --- |
@@ -1340,7 +1258,7 @@ __m128 v = _mm_loadu_ps(data);  /* 不要求对齐 */
 | `perf` | 性能分析 | Linux |
 | `VTune` | 性能分析 | Windows/Linux |
 
-### 8.2 编译选项
+### 7.2 编译选项
 
 | 选项 | 作用 | 编译器 |
 | --- | --- | --- |
@@ -1355,7 +1273,7 @@ __m128 v = _mm_loadu_ps(data);  /* 不要求对齐 */
 | `-Winline` | 警告内联失败 | GCC, Clang |
 | `-fno-inline-asm` | 禁止内联汇编（调试用） | GCC |
 
-### 8.3 静态分析
+### 7.3 静态分析
 
 | 工具 | 能力 |
 | --- | --- |
@@ -1364,7 +1282,7 @@ __m128 v = _mm_loadu_ps(data);  /* 不要求对齐 */
 | `Coverity` | 商业静态分析，含汇编规则 |
 | `CodeQL` | GitHub 代码扫描 |
 
-### 8.4 CI/CD 集成
+### 7.4 CI/CD 集成
 
 ```yaml
 # .github/workflows/asm-check.yml
@@ -1404,7 +1322,7 @@ jobs:
           grep -q "rdtsc\|mrs.*cntvct" out.s || exit 1
 ```
 
-### 8.5 跨平台汇编抽象层
+### 7.5 跨平台汇编抽象层
 
 ```c
 /* asm_compat.h - 跨平台内联汇编抽象
@@ -1488,9 +1406,9 @@ static inline void asm_serialize(void) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Linux Kernel：内联汇编的广泛使用
+### 8.1 Linux Kernel：内联汇编的广泛使用
 
 Linux Kernel 大量使用内联汇编实现底层操作：
 
@@ -1516,7 +1434,7 @@ static inline int atomic_cmpxchg(atomic_t *v, int old, int new) {
 
 `LOCK_PREFIX` 宏在 SMP 系统下展开为 `lock` 前缀，单处理器系统下为空。
 
-### 9.2 glibc：原子操作实现
+### 8.2 glibc：原子操作实现
 
 glibc 的 `<bits/atomic.h>` 在不同架构上使用内联汇编实现原子操作：
 
@@ -1532,7 +1450,7 @@ typedef int __atomic_lock_t;
      ret; })
 ```
 
-### 9.3 OpenSSL：加密算法的汇编优化
+### 8.3 OpenSSL：加密算法的汇编优化
 
 OpenSSL 为每种支持的架构提供手写汇编优化：
 
@@ -1551,7 +1469,7 @@ AES_encrypt:
 
 OpenSSL 的汇编代码由 Perl 脚本生成，支持 x86、x86_64、ARM、AArch64 等多种架构。
 
-### 9.4 Redis：原子操作的使用
+### 8.4 Redis：原子操作的使用
 
 Redis 使用 GCC 内建原子操作（基于内联汇编）实现无锁数据结构：
 
@@ -1571,7 +1489,7 @@ while (1) {
 }
 ```
 
-### 9.5 DPDK：高性能网络包处理
+### 8.5 DPDK：高性能网络包处理
 
 DPDK 使用内联汇编实现极速的内存屏障与原子操作：
 
@@ -1602,7 +1520,7 @@ static inline int rte_atomic32_cmpset(rte_atomic32_t *dst, uint32_t exp, uint32_
 }
 ```
 
-### 9.6 SQLite：跨平台原子操作
+### 8.6 SQLite：跨平台原子操作
 
 SQLite 通过抽象层支持多种编译器与架构：
 
@@ -1755,7 +1673,7 @@ locked:
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 9**：为什么 MSVC 在 x64 模式下移除了内联汇编支持？这一决定有哪些利弊？
 
@@ -1806,7 +1724,7 @@ locked:
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Brian W. Kernighan and Dennis M. Ritchie. 1988. *The C Programming Language*, 2nd ed. Prentice Hall, Englewood Cliffs, NJ. ISBN 0-13-110362-8.
 
@@ -1856,9 +1774,9 @@ locked:
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - Bryant, R. E., & O'Hallaron, D. R. *Computer Systems: A Programmer's Perspective*, 3rd ed. Pearson, 2015.（第 3 章机器级表示）
 - Patterson, D. A., & Hennessy, J. L. *Computer Organization and Design RISC-V Edition*, 2nd ed. Morgan Kaufmann, 2020.（附录 A 汇编语言）
@@ -1866,7 +1784,7 @@ locked:
 - ARM. *ARM Architecture Reference Manual*（ARMv8-A）. ARM DDI 0487.（ARM 指令集）
 - RISC-V International. *RISC-V Instruction Set Manual*.（RISC-V 指令集）
 
-### 12.2 在线课程
+### 11.2 在线课程
 
 - MIT 6.087 *Practical Programming in C*（2009）— Lecture 11: Low-Level Programming
 - Stanford CS107 *Programming Paradigms* — Lecture 13-15: Assembly Language
@@ -1874,7 +1792,7 @@ locked:
 - Berkeley CS61C *Great Ideas in Computer Architecture* — Lecture 4-6: Assembly
 - MIT 6.172 *Performance Engineering* — Lecture 8: Memory Hierarchy & Vectorization
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - GCC Manual: *Extended Asm* — https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html
 - GCC Manual: *Constraints* — https://gcc.gnu.org/onlinedocs/gcc/Constraints.html
@@ -1883,7 +1801,7 @@ locked:
 - Compiler Explorer (godbolt.org) — https://godbolt.org/
 - x86 Instruction Reference — https://www.felixcloutier.com/x86/
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - Linux Kernel `arch/x86/include/asm/` — x86 内联汇编头文件
 - glibc `sysdeps/x86_64/` — x86_64 原子操作实现
@@ -1891,7 +1809,7 @@ locked:
 - DPDK `lib/librte_eal/` — 高性能网络底层
 - Redis `src/` — 原子操作与内存屏障使用
 
-### 12.5 标准规范
+### 11.5 标准规范
 
 - ISO/IEC 9899:2024 (C23) §6.10.1 Conditional inclusion（架构检测宏）
 - ISO/IEC 9899:2024 (C23) §7.17 Atomics `<stdatomic.h>`

@@ -15,55 +15,16 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # C++ 折叠表达式
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 认知分类法组织学习目标，使读者能够循序渐进地掌握 C++ 可变参数模板（Variadic Templates）与折叠表达式（Fold Expressions）。
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述参数包（parameter pack）的三种形式：模板参数包、非类型参数包、模板模板参数包。
-- **R2**：背出折叠表达式的四种形式（一元左折叠、一元右折叠、二元左折叠、二元右折叠）的语法与展开规则。
-- **R3**：列出 C++11/14/17/20/23 五代标准对可变参数模板的主要增补项。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释参数包展开（pack expansion）的本质——将每个包元素按"模式（pattern）"生成新的语法构造。
-- **U2**：阐明折叠表达式相对于递归展开的优势：编译时间、可读性、空包处理。
-- **U3**：描述 `sizeof...(pack)` 与 `sizeof(pack)` 的本质区别。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用折叠表达式实现类型安全的 `printf` 风格函数，支持任意数量与类型的参数。
-- **A2**：使用参数包展开实现完美转发工厂函数，将所有参数转发到构造函数。
-- **A3**：使用继承的参数包展开实现 Mixin 模式（多基类组合）。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析四种折叠形式在不同运算符下的语义差异（特别是 `&&`、`||`、`,` 三种特殊运算符）。
-- **An2**：分析 C++20 Lambda 捕获包展开（pack expansion in init-capture）的语义与限制。
-- **An3**：对比递归展开与折叠表达式在编译期内存占用、实例化深度、错误信息可读性上的差异。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价给定变参模板代码在可维护性、可读性、编译时间上的表现。
-- **E2**：判断在何种场景下应优先使用 tuple+apply 而非变参模板。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个完整的类型安全的信号-槽（signal-slot）系统，基于变参模板支持任意参数的回调。
-- **C2**：实现一个编译期字符串拼接函数，使用非类型参数包与字面量运算符模板。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 史前时代：变长参数的 C 时代
+### 1.1 史前时代：变长参数的 C 时代
 
 C 语言时代处理变长参数依赖 `<stdarg.h>` 中的 `va_list`、`va_start`、`va_arg`、`va_end` 宏，典型应用是 `printf`。这一机制有致命缺陷：
 
@@ -71,13 +32,13 @@ C 语言时代处理变长参数依赖 `<stdarg.h>` 中的 `va_list`、`va_start
 2. **无参数数量信息**：调用方需通过格式串或哨兵值隐式约定数量。
 3. **不支持非平凡类型**：C 的 `va_arg` 无法处理 C++ 的类对象（构造、析构、拷贝）。
 
-### 2.2 C++98：变长参数的无奈
+### 1.2 C++98：变长参数的无奈
 
 C++98 兼容 C 的 `<stdarg.h>`，但同样是类型不安全的。早期的 `boost::format`、`boost::bind`、`boost::function` 通过复杂的宏与重载模拟变长参数，每个支持的参数数量（arity）都需要单独的特化——`boost::bind` 的源码包含大量重复的 `arity=1, arity=2, arity=3, ..., arity=9` 实现。
 
 这种"硬编码 arity"的模式是变参模板引入前的最大痛点：每增加一个参数支持，就需要重复实现一套代码。
 
-### 2.3 C++11：Variadic Templates 革命
+### 1.3 C++11：Variadic Templates 革命
 
 C++11 (N2159, N2242, Douglas Gregor) 引入可变参数模板，从根本上解决了 arity 问题：
 
@@ -99,7 +60,7 @@ C++11 的核心机制：
 
 C++11 的痛点：处理参数包需要递归展开，每个递归层增加实例化深度，编译时间长，代码冗长。
 
-### 2.4 C++14：Generic Lambda 与变参模板
+### 1.4 C++14：Generic Lambda 与变参模板
 
 C++14 引入 Generic Lambda（`auto` 参数），使 Lambda 可以接受任意类型参数：
 
@@ -109,7 +70,7 @@ auto f = [](auto x, auto y) { return x + y; };
 
 但 C++14 的 Generic Lambda 不能直接接受变长参数，需要通过递归或 `std::tuple` 间接实现。
 
-### 2.5 C++17：Fold Expressions 的革命
+### 1.5 C++17：Fold Expressions 的革命
 
 C++17 (N4295, Andrew Sutton) 引入折叠表达式（Fold Expressions），极大简化了参数包的处理：
 
@@ -146,7 +107,7 @@ C++17 同时引入了：
 - `std::apply`：将 tuple 元素展开为函数参数。
 - `std::make_from_tuple`：从 tuple 构造对象。
 
-### 2.6 C++20：Lambda 捕获包展开
+### 1.6 C++20：Lambda 捕获包展开
 
 C++20 引入 Lambda 初始化捕获的包展开（P0780、P2095），使 Lambda 可以捕获参数包：
 
@@ -165,7 +126,7 @@ C++20 同时引入：
 - 简化函数模板：`void f(auto x)` 等价于 `template<typename T> void f(T x)`。
 - `std::source_location`：与变参模板结合可追踪调用链。
 
-### 2.7 C++23：完善与边界情况
+### 1.7 C++23：完善与边界情况
 
 C++23 在可变参数模板领域的主要改进：
 
@@ -173,11 +134,11 @@ C++23 在可变参数模板领域的主要改进：
 - 静态调用运算符（`static operator()`）：与变参模板结合可创建无状态调用对象。
 - 显式对象参数（`this auto self`）：与变参模板结合实现递归 Lambda。
 
-### 2.8 C++26：反射与静态分析
+### 1.8 C++26：反射与静态分析
 
 C++26 反射提案（P2996）将与变参模板深度整合，允许通过反射枚举类型成员并展开为参数包，使元编程进入新阶段。
 
-### 2.9 时间线总结表
+### 1.9 时间线总结表
 
 | 标准版本 | 年份 | 可变参数模板关键里程碑 |
 | -------- | ---- | ----------------------- |
@@ -191,9 +152,9 @@ C++26 反射提案（P2996）将与变参模板深度整合，允许通过反射
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ISO/IEC 14882 中的可变参数模板定义
+### 2.1 ISO/IEC 14882 中的可变参数模板定义
 
 ISO/IEC 14882:2020 §13.7.4 [temp.variadic] 给出可变参数模板的形式化定义：
 
@@ -203,11 +164,11 @@ ISO/IEC 14882:2020 §13.7.4 [temp.variadic] 给出可变参数模板的形式化
 
 注意"零个或多个"——空包是合法的，这在折叠表达式的二元形式中至关重要。
 
-### 3.2 参数包的语法形式
+### 2.2 参数包的语法形式
 
 C++ 支持三种参数包：
 
-#### 3.2.1 模板参数包（Type Template Parameter Pack）
+#### 2.2.1 模板参数包（Type Template Parameter Pack）
 
 ```cpp
 template<typename... Types>
@@ -216,7 +177,7 @@ struct Tuple {};
 
 形式化地：`Types = (T_1, T_2, \ldots, T_n)`，其中 $n \geq 0$。
 
-#### 3.2.2 非类型参数包（Non-Type Template Parameter Pack）
+#### 2.2.2 非类型参数包（Non-Type Template Parameter Pack）
 
 ```cpp
 template<int... Values>
@@ -225,7 +186,7 @@ struct IntSequence {};
 
 形式化地：`Values = (v_1, v_2, \ldots, v_n)`，其中 $n \geq 0$，每个 $v_i$ 是 `int` 类型常量。
 
-#### 3.2.3 模板模板参数包（Template Template Parameter Pack）
+#### 2.2.3 模板模板参数包（Template Template Parameter Pack）
 
 ```cpp
 template<template<typename> class... Tmpls>
@@ -234,7 +195,7 @@ struct Container {};
 
 形式化地：`Tmpls = (T_1, T_2, \ldots, T_n)`，其中每个 $T_i$ 是模板。
 
-### 3.3 `sizeof...` 运算符
+### 2.3 `sizeof...` 运算符
 
 `sizeof...(pack)` 返回参数包的元素数量，是编译期常量：
 
@@ -244,7 +205,7 @@ $$
 
 `sizeof...` 不展开包，仅返回数量。
 
-### 3.4 参数包展开（Pack Expansion）
+### 2.4 参数包展开（Pack Expansion）
 
 参数包展开的形式化语法为 `pattern...`，其中 `pattern` 是包含包名的表达式。展开结果为：
 
@@ -258,11 +219,11 @@ $$
 - `std::vector<Args>...` 展开为 `std::vector<int>, std::vector<double>, std::vector<std::string>`。
 - `func(Args())...` 展开为 `func(int()), func(double()), func(std::string())`。
 
-### 3.5 折叠表达式的形式化定义
+### 2.5 折叠表达式的形式化定义
 
 ISO/IEC 14882:2020 §7.5.19 [expr.prim.fold] 定义折叠表达式：
 
-#### 3.5.1 一元右折叠（Unary Right Fold）
+#### 2.5.1 一元右折叠（Unary Right Fold）
 
 语法：`(pack op ...)`
 
@@ -272,7 +233,7 @@ ISO/IEC 14882:2020 §7.5.19 [expr.prim.fold] 定义折叠表达式：
 
 边界：$\text{foldr}(op, ()) = \text{error}$（空包非 `&&`、`||`、`,` 时编译错误）
 
-#### 3.5.2 一元左折叠（Unary Left Fold）
+#### 2.5.2 一元左折叠（Unary Left Fold）
 
 语法：`(... op pack)`
 
@@ -280,7 +241,7 @@ ISO/IEC 14882:2020 §7.5.19 [expr.prim.fold] 定义折叠表达式：
 
 形式化：$\text{foldl}(op, (e_1, e_2, \ldots, e_n)) = \text{foldl}(op, (e_1, \ldots, e_{n-1})) \text{ op } e_n$
 
-#### 3.5.3 二元右折叠（Binary Right Fold）
+#### 2.5.3 二元右折叠（Binary Right Fold）
 
 语法：`(pack op ... op init)`
 
@@ -288,7 +249,7 @@ ISO/IEC 14882:2020 §7.5.19 [expr.prim.fold] 定义折叠表达式：
 
 边界：$\text{foldr}(op, init, ()) = init$（空包返回 init）
 
-#### 3.5.4 二元左折叠（Binary Left Fold）
+#### 2.5.4 二元左折叠（Binary Left Fold）
 
 语法：`(init op ... op pack)`
 
@@ -296,7 +257,7 @@ ISO/IEC 14882:2020 §7.5.19 [expr.prim.fold] 定义折叠表达式：
 
 边界：$\text{foldl}(op, init, ()) = init$（空包返回 init）
 
-### 3.6 折叠表达式的运算符限制
+### 2.6 折叠表达式的运算符限制
 
 折叠表达式仅支持以下运算符（ISO/IEC 14882:2020 §7.5.19）：
 
@@ -311,7 +272,7 @@ ISO/IEC 14882:2020 §7.5.19 [expr.prim.fold] 定义折叠表达式：
 
 自定义运算符**不能**用于折叠表达式。
 
-### 3.7 空包的特殊处理
+### 2.7 空包的特殊处理
 
 不同运算符的一元折叠对空包的处理（ISO/IEC 14882:2020 §7.5.19 第 3 段）：
 
@@ -326,9 +287,9 @@ ISO/IEC 14882:2020 §7.5.19 [expr.prim.fold] 定义折叠表达式：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 参数包展开的"模式"概念
+### 3.1 参数包展开的"模式"概念
 
 参数包展开的关键是"模式"——即每个元素按什么模式生成新代码。模式可以非常复杂：
 
@@ -351,7 +312,7 @@ void f(Args... args) {
 
 每个 `...` 之前的语法构造就是模式。模式中可以包含多个包，所有包必须同时展开（C++26 的"部分展开"提案正在审议中）。
 
-### 4.2 递归展开的执行模型
+### 3.2 递归展开的执行模型
 
 C++11/14 的递归展开模式：
 
@@ -376,7 +337,7 @@ void print(T first, Args... rest) {
 
 每次递归实例化一个新的函数模板，实例化深度为 $O(n)$。
 
-### 4.3 折叠表达式的执行模型
+### 3.3 折叠表达式的执行模型
 
 折叠表达式通过单次实例化完成，无需递归：
 
@@ -398,11 +359,11 @@ auto sum(Args... args) {
 2. **代码体积**：生成的代码更小。
 3. **错误信息**：单点失败 vs 递归的链式失败。
 
-### 4.4 折叠表达式与运算符结合性
+### 3.4 折叠表达式与运算符结合性
 
 不同运算符的结合性影响一元左/右折叠的结果：
 
-#### 4.4.1 加法（左结合）
+#### 3.4.1 加法（左结合）
 
 ```cpp
 template<typename... Args>
@@ -416,7 +377,7 @@ sumLeft(1, 2, 3);   // (1 + 2) + 3 = 6
 
 对于加法，左右折叠结果相同（结合律成立）。
 
-#### 4.4.2 减法（左结合，无结合律）
+#### 3.4.2 减法（左结合，无结合律）
 
 ```cpp
 template<typename... Args>
@@ -430,7 +391,7 @@ subLeft(10, 3, 2);   // (10 - 3) - 2 = 7 - 2 = 5
 
 减法无结合律，左右折叠结果不同。
 
-#### 4.4.3 移位（左结合，无结合律）
+#### 3.4.3 移位（左结合，无结合律）
 
 ```cpp
 template<typename... Args>
@@ -442,7 +403,7 @@ shrRight(256, 2, 1);  // 256 >> (2 >> 1) = 256 >> 1 = 128
 shrLeft(256, 2, 1);   // (256 >> 2) >> 1 = 64 >> 1 = 32
 ```
 
-#### 4.4.4 逻辑运算（短路求值）
+#### 3.4.4 逻辑运算（短路求值）
 
 ```cpp
 template<typename... Args>
@@ -455,7 +416,7 @@ allTrue(true, false, /* never evaluated */);  // 在第二个 false 短路
 
 左折叠保证从左到右求值，配合短路求值，可实现"找到第一个 false 即停止"的语义。
 
-### 4.5 二元折叠的空包安全性
+### 3.5 二元折叠的空包安全性
 
 一元折叠对空包的处理有限制，二元折叠通过 init 值解决：
 
@@ -479,7 +440,7 @@ allTrueSafe();  // 返回 true
 
 **最佳实践**：始终使用二元折叠，避免空包导致的编译错误。
 
-### 4.6 逗号折叠的应用
+### 3.6 逗号折叠的应用
 
 逗号折叠是折叠表达式中最常用的形式之一，用于"对每个元素执行操作"：
 
@@ -504,7 +465,7 @@ void forEach(Args... args) {
 
 C++17 引入了 `<<` 折叠的简写形式 `(std::cout << ... << args)`，这是二元左折叠的特殊情况，专为 IO 流设计。
 
-### 4.7 参数包展开的语法位置
+### 3.7 参数包展开的语法位置
 
 参数包可在以下位置展开：
 
@@ -520,7 +481,7 @@ C++17 引入了 `<<` 折叠的简写形式 `(std::cout << ... << args)`，这是
 | 属性列表 | `[[attr(args)...]]` | 属性参数展开 |
 | 表达式列表 | `(expr(args))...` | 表达式展开 |
 
-### 4.8 多包同时展开
+### 3.8 多包同时展开
 
 C++17 之前，一次只能展开一个包。C++17 起允许在同一个表达式中同时展开多个包（必须大小相同）：
 
@@ -537,9 +498,9 @@ auto make_zip(Types... types, Values... values) {
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：折叠表达式打印
+### 4.1 基础示例：折叠表达式打印
 
 **示例 5.1.1**：使用折叠表达式打印所有参数。
 
@@ -569,7 +530,7 @@ int main() {
 }
 ```
 
-### 5.2 折叠表达式的四种形式
+### 4.2 折叠表达式的四种形式
 
 **示例 5.2.1**：四种折叠形式的对比。
 
@@ -613,7 +574,7 @@ int main() {
 }
 ```
 
-### 5.3 递归式参数包处理（C++11 兼容）
+### 4.3 递归式参数包处理（C++11 兼容）
 
 **示例 5.3.1**：C++11 风格的递归展开。
 
@@ -641,7 +602,7 @@ int main() {
 }
 ```
 
-### 5.4 完美转发参数包
+### 4.4 完美转发参数包
 
 **示例 5.4.1**：完美转发的工厂函数。
 
@@ -677,7 +638,7 @@ int main() {
 }
 ```
 
-### 5.5 Mixin 模式：变参继承
+### 4.5 Mixin 模式：变参继承
 
 **示例 5.5.1**：通过参数包实现 Mixin 模式。
 
@@ -723,7 +684,7 @@ int main() {
 }
 ```
 
-### 5.6 折叠表达式的多种运算符
+### 4.6 折叠表达式的多种运算符
 
 **示例 5.6.1**：使用不同运算符的折叠表达式。
 
@@ -776,7 +737,7 @@ int main() {
 }
 ```
 
-### 5.7 Overloaded：通用访问者
+### 4.7 Overloaded：通用访问者
 
 **示例 5.7.1**：使用变参继承实现 `std::variant` 的通用访问者。
 
@@ -828,7 +789,7 @@ int main() {
 }
 ```
 
-### 5.8 编译期类型检查
+### 4.8 编译期类型检查
 
 **示例 5.8.1**：使用折叠表达式检查所有类型是否满足条件。
 
@@ -871,7 +832,7 @@ int main() {
 }
 ```
 
-### 5.9 类型安全的 printf
+### 4.9 类型安全的 printf
 
 **示例 5.9.1**：使用变参模板实现类型安全的 `printf`。
 
@@ -916,7 +877,7 @@ int main() {
 }
 ```
 
-### 5.10 企业级示例：信号槽系统
+### 4.10 企业级示例：信号槽系统
 
 **示例 5.10.1**：基于变参模板的信号-槽系统。
 
@@ -1064,7 +1025,7 @@ cmake --build build
 ./build/demo
 ```
 
-### 5.11 C++20 Lambda 捕获包展开
+### 4.11 C++20 Lambda 捕获包展开
 
 **示例 5.11.1**：在 Lambda 中捕获参数包。
 
@@ -1106,7 +1067,7 @@ int main() {
 }
 ```
 
-### 5.12 编译期字符串哈希
+### 4.12 编译期字符串哈希
 
 **示例 5.12.1**：使用非类型参数包与字面量运算符实现编译期字符串哈希。
 
@@ -1159,7 +1120,7 @@ int main() {
 }
 ```
 
-### 5.13 std::tuple 与 std::apply
+### 4.13 std::tuple 与 std::apply
 
 **示例 5.13.1**：使用 `std::tuple` 与 `std::apply` 配合变参模板。
 
@@ -1214,7 +1175,7 @@ int main() {
 }
 ```
 
-### 5.14 std::integer_sequence 元编程
+### 4.14 std::integer_sequence 元编程
 
 **示例 5.14.1**：使用 `std::integer_sequence` 展开索引序列。
 
@@ -1267,9 +1228,9 @@ int main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Rust Variadic Generics（实验性）的对比
+### 5.1 与 Rust Variadic Generics（实验性）的对比
 
 Rust 目前不支持稳定的 variadic generics（变参泛型），但社区提案一直在推进。Rust 的现状：
 
@@ -1280,7 +1241,7 @@ Rust 目前不支持稳定的 variadic generics（变参泛型），但社区提
 | 完美转发 | `std::forward` | `Into`/`From` trait |
 | 应用场景 | 信号槽、Mixin、tuple | 受限 |
 
-### 6.2 与 Java Varargs 的对比
+### 5.2 与 Java Varargs 的对比
 
 Java 的 varargs（`T... args`）是语法糖，编译器将其转换为数组：
 
@@ -1291,7 +1252,7 @@ Java 的 varargs（`T... args`）是语法糖，编译器将其转换为数组�
 | 编译期计算 | 支持 | 不支持 |
 | 性能 | 零开销 | 数组分配开销 |
 
-### 6.3 与 Go Variadic 的对比
+### 5.3 与 Go Variadic 的对比
 
 Go 的 variadic 函数（`func f(args ...int)`）类似 Java，转换为切片：
 
@@ -1301,7 +1262,7 @@ Go 的 variadic 函数（`func f(args ...int)`）类似 Java，转换为切片�
 | 折叠 | 折叠表达式 | 不支持 |
 | 性能 | 零开销 | 切片分配开销 |
 
-### 6.4 与 C# params 的对比
+### 5.4 与 C# params 的对比
 
 C# 的 `params` 关键字与 Java 类似：
 
@@ -1311,7 +1272,7 @@ C# 的 `params` 关键字与 Java 类似：
 | 泛型约束 | 支持 concepts | where 子句 |
 | 折叠 | 折叠表达式 | 不支持 |
 
-### 6.5 横向对比汇总表
+### 5.5 横向对比汇总表
 
 | 语言 | 变参机制 | 类型安全 | 折叠 | 编译期 | 性能 |
 | ---- | -------- | -------- | ---- | ------ | ---- |
@@ -1323,9 +1284,9 @@ C# 的 `params` 关键字与 Java 类似：
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：一元折叠的空包错误
+### 6.1 陷阱一：一元折叠的空包错误
 
 **反例**：
 
@@ -1347,7 +1308,7 @@ auto sum(Args... args) {
 }
 ```
 
-### 7.2 陷阱二：折叠表达式中使用自定义运算符
+### 6.2 陷阱二：折叠表达式中使用自定义运算符
 
 **反例**：
 
@@ -1380,7 +1341,7 @@ auto dotProduct(const Args&... args) {
 }
 ```
 
-### 7.3 陷阱三：参数包展开中的模式不一致
+### 6.3 陷阱三：参数包展开中的模式不一致
 
 **反例**：
 
@@ -1400,7 +1361,7 @@ void f(Types... args) {
 }
 ```
 
-### 7.4 陷阱四：递归展开的实例化深度
+### 6.4 陷阱四：递归展开的实例化深度
 
 **反例**：
 
@@ -1430,7 +1391,7 @@ void print(Args... args) {
 }
 ```
 
-### 7.5 陷阱五：参数包展开与完美转发的混淆
+### 6.5 陷阱五：参数包展开与完美转发的混淆
 
 **反例**：
 
@@ -1452,7 +1413,7 @@ void f(Args&&... args) {
 }
 ```
 
-### 7.6 陷阱六：`sizeof...` 与 `sizeof` 的混淆
+### 6.6 陷阱六：`sizeof...` 与 `sizeof` 的混淆
 
 **反例**：
 
@@ -1472,7 +1433,7 @@ void f(Args... args) {
 }
 ```
 
-### 7.7 最佳实践清单
+### 6.7 最佳实践清单
 
 1. **优先使用折叠表达式替代递归展开**（C++17+）。
 2. **使用二元折叠避免空包错误**：`(args + ... + 0)` 比 `(args + ...)` 更安全。
@@ -1487,9 +1448,9 @@ void f(Args... args) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建系统：CMake 配置
+### 7.1 构建系统：CMake 配置
 
 ```cmake
 cmake_minimum_required(VERSION 3.20)
@@ -1522,7 +1483,7 @@ if(Catch2_FOUND)
 endif()
 ```
 
-### 8.2 性能考量：编译时间
+### 7.2 性能考量：编译时间
 
 变参模板的编译时间随参数数量增长：
 
@@ -1539,9 +1500,9 @@ endif()
 3. **使用 C++20 modules**：减少 SFINAE 重实例化。
 4. **限制参数包大小**：运行时检查 `sizeof...(args) <= MAX_ARGS`。
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
-#### 8.3.1 打印参数包大小
+#### 7.3.1 打印参数包大小
 
 ```cpp
 template<typename... Args>
@@ -1550,7 +1511,7 @@ void debug_size(Args... args) {
 }
 ```
 
-#### 8.3.2 编译期类型列表打印
+#### 7.3.2 编译期类型列表打印
 
 ```cpp
 template<typename... Args>
@@ -1560,11 +1521,11 @@ void print_types() {
 }
 ```
 
-#### 8.3.3 使用 Compiler Explorer
+#### 7.3.3 使用 Compiler Explorer
 
 [godbolt.org](https://godbolt.org/) 可视化折叠表达式的展开结果，使用 `-O2` 优化可观察折叠后的代码生成。
 
-### 8.4 依赖管理
+### 7.4 依赖管理
 
 变参模板是 C++17+ 的标准特性，无需额外依赖。但若使用 Boost.Hana（元编程库），需引入 Boost：
 
@@ -1575,7 +1536,7 @@ target_link_libraries(my_app PRIVATE Boost::hana)
 
 Boost.Hana 在 C++17 折叠表达式出现后已大多被取代，仅在维护遗留代码时使用。
 
-### 8.5 CI/CD 配置
+### 7.5 CI/CD 配置
 
 ```yaml
 name: CI
@@ -1602,9 +1563,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 LLVM/Clang 中的变参模板应用
+### 8.1 LLVM/Clang 中的变参模板应用
 
 LLVM 在 `llvm/ADT/STLExtras.h` 中广泛使用变参模板：
 
@@ -1627,7 +1588,7 @@ using common_type_t = std::common_type_t<Ts...>;
 }  // namespace llvm
 ```
 
-### 9.2 Chromium 中的变参回调
+### 8.2 Chromium 中的变参回调
 
 Chromium 在 `base/callback.h` 中使用变参模板实现类型擦除的回调：
 
@@ -1651,7 +1612,7 @@ public:
 }  // namespace base
 ```
 
-### 9.3 Qt 中的变参信号槽（Qt 5+）
+### 8.3 Qt 中的变参信号槽（Qt 5+）
 
 Qt 5+ 支持基于函数指针的信号槽连接，使用变参模板：
 
@@ -1665,7 +1626,7 @@ QMetaObject::Connection connect(const Sender* sender, SignalType signal,
 
 Qt 6 进一步使用变参模板重写了信号槽系统，移除了旧的字符串匹配机制。
 
-### 9.4 Boost.Hana 的元编程
+### 8.4 Boost.Hana 的元编程
 
 Boost.Hana 使用变参模板实现"第一类"类型列表：
 
@@ -1688,7 +1649,7 @@ constexpr auto total = hana::fold_left(sizes, 0, [](auto acc, auto s) {
 
 C++17 折叠表达式出现后，Boost.Hana 的大部分功能可由原生代码实现。
 
-### 9.5 std::variant 与 std::visit
+### 8.5 std::variant 与 std::visit
 
 C++17 的 `std::variant` 是变参模板的典型应用：
 
@@ -1706,7 +1667,7 @@ constexpr decltype(auto) visit(Visitor&& vis, Variants&&... vars);
 
 `std::visit` 的实现展示了变参模板的极致复杂度——它需要为所有可能的类型组合生成访问者调用。
 
-### 9.6 folly/FBVector 的变参优化
+### 8.6 folly/FBVector 的变参优化
 
 Facebook 的 Folly 库在 `folly/FBVector.h` 中使用变参模板优化 vector 操作：
 
@@ -1721,7 +1682,7 @@ class FBVector {
 };
 ```
 
-### 9.7 std::function 的变参实现
+### 8.7 std::function 的变参实现
 
 标准库的 `std::function<R(Args...)>` 使用变参模板：
 
@@ -1977,7 +1938,7 @@ int main() {
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 14**：为什么折叠表达式不能使用自定义运算符？这一限制的工程权衡是什么？
 
@@ -2031,9 +1992,9 @@ int main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准与规范
+### 10.1 标准与规范
 
 - [1] International Organization for Standardization. 2020. *Information technology — Programming languages — C++ (ISO/IEC 14882:2020)*. Geneva, Switzerland: ISO. DOI: 10.3403/30199258U.
 
@@ -2041,7 +2002,7 @@ int main() {
 
 - [3] International Organization for Standardization. 2012. *Information technology — Programming languages — C++ (ISO/IEC 14882:2011)*. Geneva, Switzerland: ISO. DOI: 10.3403/30007020U.
 
-### 11.2 提案与缺陷报告
+### 10.2 提案与缺陷报告
 
 - [4] Douglas Gregor and Jaakko Järvi. 2007. *Variadic Templates for C++ (N2159)*. ISO/IEC JTC1/SC22/WG21. Available at: https://wg21.link/n2159.
 
@@ -2053,7 +2014,7 @@ int main() {
 
 - [8] ISO C++ Core Issue 1647: *Fold expression with `->*` operator*. Available at: https://wg21.link/cwg1647.
 
-### 11.3 学术论文
+### 10.3 学术论文
 
 - [9] Douglas Gregor, Jaakko Järvi, Jeremiah Willcock, Andrew Lumsdaine, and Bjarne Stroustrup. 2006. *Variadic Templates for C++*. In Proceedings of the 2006 ACM SIGPLAN symposium on Library-centric software design (LCSD '06). ACM, New York, NY, USA, 1–14. DOI: 10.1145/1237849.1237853.
 
@@ -2061,7 +2022,7 @@ int main() {
 
 - [11] Bjarne Stroustrup and Gabriel Dos Reis. 2003. *A Brief Look at C++0x*. In Proceedings of the 2003 ACCU conference. Available at: https://www.stroustrup.com/N1453.pdf.
 
-### 11.4 教材与专著
+### 10.4 教材与专著
 
 - [12] Bjarne Stroustrup. 2013. *The C++ Programming Language* (4th ed.). Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0321563842.
 
@@ -2077,9 +2038,9 @@ int main() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《C++ Templates: The Complete Guide》** — Vandevoorde, Josuttis, Gregor（2017, 2nd ed.）：第 4 章介绍变参模板，第 9 章详述折叠表达式。
 - **《Effective Modern C++》** — Scott Meyers（2014）：第 33 项讨论变参模板与完美转发。
@@ -2087,7 +2048,7 @@ int main() {
 - **《C++17 - The Complete Guide》** — Nicolai Josuttis（2019）：第 4 章全面介绍折叠表达式。
 - **《C++20 - The Complete Guide》** — Nicolai Josuttis（2021）：第 7 章介绍 Lambda 捕获包展开。
 
-### 12.2 在线资源
+### 11.2 在线资源
 
 - **cppreference.com**：可变参数模板参考。https://en.cppreference.com/w/cpp/language/parameter_pack
 - **cppreference.com**：折叠表达式参考。https://en.cppreference.com/w/cpp/language/fold
@@ -2095,13 +2056,13 @@ int main() {
 - **Compiler Explorer**：在线编译器。https://godbolt.org/
 - **C++ Insights**：将 C++ 源码转换为编译器视角。https://cppinsights.io/
 
-### 12.3 视频课程
+### 11.3 视频课程
 
 - **Andrei Alexandrescu: "Variadic Templates" (CppCon 2015)**：变参模板的深度解析。
 - **Andrew Sutton: "Fold Expressions" (CppCon 2016)**：折叠表达式的设计与实现。
 - **Bjarne Stroustrup: "C++11 Style: A Tour" (CppCon 2014)**：C++11 风格的变参模板应用。
 
-### 12.4 开源项目参考
+### 11.4 开源项目参考
 
 - **LLVM/Clang**：`llvm/ADT/STLExtras.h` 中的变参模板应用。https://github.com/llvm/llvm-project
 - **Boost.Hana**：现代元编程库。https://github.com/boostorg/hana
@@ -2109,13 +2070,13 @@ int main() {
 - **range-v3**：C++20 ranges 的前身，大量使用变参模板。https://github.com/ericniebler/range-v3
 - **Folly**：Facebook 的 C++ 库。https://github.com/facebook/folly
 
-### 12.5 相关文档
+### 11.5 相关文档
 
 - **C++ Reference: Parameter Pack**：https://en.cppreference.com/w/cpp/language/parameter_pack
 - **C++ Reference: Fold Expressions**：https://en.cppreference.com/w/cpp/language/fold
 - **C++ Core Guidelines: T.20-Concepts**：与变参模板结合的概念使用。https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
 
-### 12.6 进阶主题
+### 11.6 进阶主题
 
 - **C++26 反射（P2996）**：与变参模板深度整合。https://wg21.link/p2996
 - **C++20 Lambda Templates**：`[]<typename T>(T x)` 简化变参 Lambda。https://en.cppreference.com/w/cpp/language/lambda
@@ -2124,11 +2085,11 @@ int main() {
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 折叠表达式速查表
+### 12.1 折叠表达式速查表
 
-#### 13.1.1 四种折叠形式
+#### 12.1.1 四种折叠形式
 
 | 形式 | 语法 | 展开规则 | 空包处理 |
 | ---- | ---- | -------- | -------- |
@@ -2137,7 +2098,7 @@ int main() {
 | 二元右折叠 | `(pack op ... op init)` | $e_1 \text{ op } (e_2 \text{ op } \ldots \text{ op } \text{init})$ | 返回 init |
 | 二元左折叠 | `(init op ... op pack)` | $((\text{init } \text{ op } e_1) \text{ op } \ldots)$ | 返回 init |
 
-#### 13.1.2 支持的运算符
+#### 12.1.2 支持的运算符
 
 | 类别 | 运算符 | 典型应用 |
 | ---- | ------ | -------- |
@@ -2148,7 +2109,7 @@ int main() {
 | 逻辑 | `&&` `\|\|` | 条件组合 |
 | 其他 | `,` `->*` | 副作用序列 |
 
-### 13.2 参数包展开位置速查
+### 12.2 参数包展开位置速查
 
 | 位置 | 语法 | 示例 |
 | ---- | ---- | ---- |
@@ -2162,7 +2123,7 @@ int main() {
 | 属性 | `[[attr(args)...]]` | 属性参数 |
 | 表达式 | `(expr(args))...` | 表达式展开 |
 
-### 13.3 编译器支持矩阵
+### 12.3 编译器支持矩阵
 
 | 特性 | GCC | Clang | MSVC |
 | ---- | --- | ----- | ---- |
@@ -2172,7 +2133,7 @@ int main() {
 | Lambda 捕获包 | 10.0+ | 10.0+ | 2019 19.14+ |
 | 模板 Lambda | 10.0+ | 10.0+ | 2019 19.14+ |
 
-### 13.4 术语表
+### 12.4 术语表
 
 | 术语 | 英文原名 | 解释 |
 | ---- | ------- | ---- |
@@ -2188,7 +2149,7 @@ int main() {
 
 ---
 
-## 14. 总结
+## 13. 总结
 
 C++ 可变参数模板与折叠表达式是现代 C++ 泛型编程的核心基础设施。本章节从历史脉络（C++98→11→14→17→20→23→26）追溯了变参模板的演化，从形式化定义（ISO/IEC 14882 §13.7.4）阐述了参数包与折叠表达式的语义，通过理论推导（执行模型、运算符结合性、空包处理）揭示了其工作机制。
 

@@ -19,18 +19,8 @@ prerequisites:
   - typescript/字面量类型
 ---
 
+
 # 类型安全的环境变量
-
-## 学习目标
-
-本节按 Bloom 认知层级组织学习目标，从基础记忆到高级创造逐层递进：
-
-- **记忆（Remember）**：能够复述 `process.env`、`import.meta.env` 的访问语义，列出 Node.js 与 Vite 中环境变量的差异，说出至少 5 种常见环境变量类型（字符串、数字、布尔、URL、枚举）。
-- **理解（Understand）**：能够解释环境变量为何天生缺乏类型安全（字符串字典的局限），说明 `declare global` 与 `interface` 扩展的合并机制，描述运行时校验与编译期类型声明的分工。
-- **应用（Apply）**：能够在 Node.js、Vite、Next.js 项目中编写 `.d.ts` 声明文件，封装类型安全的访问器函数（`getEnv`、`getNumberEnv`、`getBooleanEnv`），并使用 Zod 构建运行时校验 Schema。
-- **分析（Analyze）**：能够分析环境变量泄漏风险（前端 bundle 中暴露密钥），识别 `.env`、`.env.local`、`.env.production` 的加载优先级，并对比构建时替换与运行时注入两种策略的优劣。
-- **评估（Evaluate）**：能够评估 Zod、envalid、dotenv-flow 等方案的取舍，判断在何种规模的项目中应引入运行时校验，以及何时纯编译期声明已足够。能够评估默认值策略的安全性边界。
-- **创造（Create）**：能够为大型 Monorepo 设计统一的环境变量管理体系，包含 Schema 集中定义、文档自动生成、CI 校验流水线、密钥脱敏日志、多环境配置编排，并预留扩展点支持未来新增环境。
 
 ## 历史动机与背景
 

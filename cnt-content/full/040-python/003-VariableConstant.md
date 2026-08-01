@@ -19,57 +19,16 @@ prerequisites:
   - python/程序结构与基本语法
 ---
 
+
 # 变量与常量（Variables & Constants）
 
 > "In Python, variables are not boxes; they are labels on boxes." —— Ned Batchelder, *Python Names and Values*
 
 > "Constants are not a language feature in Python; they are a discipline." —— Brandon Rhodes, *Practices of the Pythonic Pro*
 
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节按 Bloom 认知层次（Bloom's Taxonomy）逐级给出可观察、可测量的学习目标。完成本节后，学习者应能：
-
-### 1.1 记忆层（Remember）
-
-- **R1**：准确陈述 Python 变量的本质——"变量是名字（name）到对象（object）的绑定（binding）"，能复述 Ned Batchelder 在 *Python Names and Values* 演讲中对"变量即标签"（variables as labels）而非"变量即盒子"（variables as boxes）的原始论述。
-- **R2**：列出 Python 的四种赋值语法：单变量赋值 `x = 1`、多重赋值 `x, y = 1, 2`、链式赋值 `a = b = c = 0`、增量赋值 `x += 1`，并能说明每种语法对应的字节码（`STORE_NAME`、`UNPACK_SEQUENCE`、`STORE_SUBSCR` 等）。
-- **R3**：背诵 LEGB 作用域查找规则（Local → Enclosing → Global → Built-in）的完整名称解析顺序，并能列出 `global` 与 `nonlocal` 关键字的使用场景。
-
-### 1.2 理解层（Understand）
-
-- **U1**：解释 Python 的"名字绑定"（name binding）模型——赋值语句将名字绑定到对象，而非将对象存入命名的内存容器，能对比 C 语言"变量即内存槽位"与 Python"变量即引用标签"的本质差异。
-- **U2**：阐述可变（mutable）与不可变（immutable）类型的语义差异——不可变类型的"修改"实际是新对象的创建与重新绑定，可变类型的"修改"是原地（in-place）变更，能区分 `int`、`str`、`tuple` 与 `list`、`dict`、`set` 的行为。
-- **U3**：说明 `is`（身份相等，identity equality）与 `==`（值相等，value equality）的区别，能阐述 `id()` 函数返回对象内存地址的语义，并解释整数缓存 `[-5, 256]` 与字符串驻留（string interning）机制的实现原理。
-
-### 1.3 应用层（Apply）
-
-- **A1**：使用 `global` 与 `nonlocal` 关键字正确修改全局作用域与嵌套作用域中的变量，避免 `UnboundLocalError`。
-- **A2**：实现至少三种 Python 常量方案——命名约定（`UPPER_CASE`）、`__setattr__` 拦截的不可变类、`enum.Enum` 枚举常量、`typing.Final` 类型注解、`@dataclass(frozen=True)` 冻结数据类，并能说明每种方案的优缺点。
-- **A3**：使用 `copy.copy`（浅拷贝）与 `copy.deepcopy`（深拷贝）正确处理嵌套可变对象的复制，能识别浅拷贝的"共享引用"陷阱。
-
-### 1.4 分析层（Analyze）
-
-- **An1**：分析"可变默认参数陷阱"（mutable default argument trap）的根因——默认参数在函数定义时求值一次，后续调用共享同一对象，能给出使用 `None` 哨兵与 `factory` 函数的修复方案。
-- **An2**：解构"闭包延迟绑定"（closure late binding）现象——循环中创建的闭包捕获的是变量名而非值，所有闭包在调用时访问的是循环结束时变量的最终值，能给出使用默认参数绑定当前值的解决方案。
-- **An3**：剖析 CPython 的引用计数（reference counting）与循环垃圾收集器（cyclic garbage collector）的协作机制，能说明 `sys.getrefcount()` 的"额外引用"来源与 `gc.collect()` 的触发条件。
-
-### 1.5 评价层（Evaluate）
-
-- **E1**：评价 Python"无常量关键字"设计的合理性，对比 C/C++ 的 `const`、Java 的 `final`、Rust 的 `let`/`const`，判断 Python"约定优于强制"哲学的适用边界。
-- **E2**：审查一段生产代码中的变量使用，识别潜在的"可变默认参数"、"循环变量泄漏"、"全局可变状态"、"浅拷贝共享引用"等反模式，并给出重构建议。
-- **E3**：对比 Python 的引用语义与 C++ 的值语义、Java 的引用语义（基本类型值语义、对象引用语义）、Go 的值语义与指针语义，判断各语言在参数传递、赋值行为上的设计权衡。
-
-### 1.6 创造层（Create）
-
-- **C1**：设计一个支持"运行时不可变 + 类型注解"的企业级配置管理模块，结合 `typing.Final`、`@dataclass(frozen=True)`、`__slots__`、`__setattr__` 拦截，提供配置加载、校验、热更新（原子替换）能力。
-- **C2**：实现一个"变量可观测性"装饰器，自动追踪函数内所有局部变量的赋值历史，输出变量轨迹（variable trace），用于调试与教学可视化。
-- **C3**：构建一个"作用域可视化"工具，给定一段 Python 代码，自动绘制 LEGB 查找树，标注每个名字的绑定来源（local/enclosing/global/builtin），并检测潜在的作用域遮蔽（shadowing）问题。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 Python 变量模型的哲学起源
+### 1.1 Python 变量模型的哲学起源
 
 Python 的变量模型与 C、Pascal 等静态语言截然不同，其设计哲学可追溯至 1989 年 Guido van Rossum 在 CWI（荷兰国家数学与计算机科学研究所）开发 ABC 语言的经历。ABC 采用"变量即盒子"模型，要求变量先声明后使用，但 Guido 在设计 Python 时选择了截然不同的路径——"变量即标签"模型，灵感来自 Modula-3 与 Lisp 的符号绑定（symbol binding）语义。
 
@@ -80,7 +39,7 @@ Python 的变量模型与 C、Pascal 等静态语言截然不同，其设计哲�
 3. **动态类型支持**：变量不绑定类型，对象才有类型，这使得 Python 天然支持动态类型，一个名字可在不同时刻绑定不同类型的对象。
 4. **引用语义的简洁性**：赋值即绑定，参数传递即绑定共享，无需区分值传递与引用传递（Python 采用"对象引用传递"，pass-by-object-reference）。
 
-### 2.2 变量模型的演化路径
+### 1.2 变量模型的演化路径
 
 **Python 0.9.0（1991）**：最初版本即采用"名字绑定"模型，但早期的局部变量查找规则较为简单，仅有 Local 与 Global 两层。
 
@@ -100,7 +59,7 @@ Python 的变量模型与 C、Pascal 等静态语言截然不同，其设计哲�
 
 **Python 3.12（2023）**：PEP 695 引入类型参数语法（type parameter syntax），`type` 语句定义类型别名，`def f[T](x: T) -> T:` 简化泛型定义，进一步强化类型注解体系。
 
-### 2.3 常量机制的演化
+### 1.3 常量机制的演化
 
 Python 至今未引入 `const` 关键字，这是有意为之的设计决策：
 
@@ -122,7 +81,7 @@ MAX_CONNECTIONS = 200  # mypy 报错，运行时不报错
 - 模块级常量：命名约定 + 模块即单例
 - 不可变集合：`types.MappingProxyType`、`frozenset`、`tuple`
 
-### 2.4 与其他语言的对比演化
+### 1.4 与其他语言的对比演化
 
 | 语言 | 变量模型 | 常量机制 | 作用域规则 |
 |------|----------|----------|------------|
@@ -138,9 +97,9 @@ Python 的"无常量关键字"设计源于其动态性与鸭子类型哲学—�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 名字绑定的形式化定义
+### 2.1 名字绑定的形式化定义
 
 **定义 3.1（名字绑定）**：给定 Python 运行时环境 $E$，名字 $n \in \text{Names}$，对象 $o \in \text{Objects}$，名字绑定是一个三元组 $(n, o, s)$，其中 $s \in \{\text{local}, \text{enclosing}, \text{global}, \text{builtin}\}$ 表示作用域。绑定操作记作：
 
@@ -154,7 +113,7 @@ $$\text{evaluate}(\text{`x = 1'}) = \text{bind}(\text{`x'}, \text{int}(1), \text
 
 即：在当前作用域的命名空间中，将名字 `x` 绑定到整数对象 `1`。
 
-### 3.2 对象身份与相等性的形式化定义
+### 2.2 对象身份与相等性的形式化定义
 
 **定义 3.2（对象身份）**：给定对象 $o$，其身份 $\text{id}(o) \in \mathbb{N}$ 是对象在内存中的唯一标识（CPython 中为内存地址）。两个对象 $o_1, o_2$ 身份相等当且仅当：
 
@@ -168,7 +127,7 @@ $$o_1 = o_2 \iff o_1.\text{\_\_eq\_\_}(o_2) = \text{True}$$
 
 默认情况下，`object.__eq__` 退化为身份相等：$o_1 = o_2 \iff o_1 \equiv o_2$。自定义类型可重写 `__eq__` 实现值语义。
 
-### 3.3 可变性的形式化定义
+### 2.3 可变性的形式化定义
 
 **定义 3.4（可变性）**：给定对象 $o$，其类型 $T = \text{type}(o)$。称 $T$ 为可变类型（mutable）若存在操作 $\text{op}$ 使得：
 
@@ -181,7 +140,7 @@ $$\exists \text{op}, \text{op}(o) \land \text{id}(o) \text{ 不变} \land \text{
 - **不可变类型**：`int`、`float`、`bool`、`str`、`tuple`、`frozenset`、`bytes`、`NoneType`
 - **可变类型**：`list`、`dict`、`set`、`bytearray`、自定义类实例
 
-### 3.4 LEGB 作用域的形式化定义
+### 2.4 LEGB 作用域的形式化定义
 
 **定义 3.5（LEGB 查找规则）**：给定名字 $n$ 与当前执行上下文 $\text{ctx}$，名字解析函数 $\text{resolve}(n, \text{ctx})$ 定义为：
 
@@ -199,7 +158,7 @@ $$\text{resolve}(n, \text{ctx}) = \begin{cases}
 - $\text{global}$：当前模块的全局命名空间（`globals()`）
 - $\text{builtin}$：`builtins` 模块的命名空间
 
-### 3.5 引用计数的形式化定义
+### 2.5 引用计数的形式化定义
 
 **定义 3.6（引用计数）**：给定对象 $o$，其引用计数 $\text{refcount}(o) \in \mathbb{N}$ 表示指向 $o$ 的引用数量。引用计数变化规则：
 
@@ -212,7 +171,7 @@ $$\text{resolve}(n, \text{ctx}) = \begin{cases}
 
 当 $\text{refcount}(o) = 0$ 时，CPython 立即回收 $o$（调用 `__del__` 并释放内存）。
 
-### 3.6 常量的形式化定义
+### 2.6 常量的形式化定义
 
 **定义 3.7（常量）**：给定名字 $n$ 与对象 $o$，称 $n$ 为常量若满足以下任一条件：
 
@@ -226,7 +185,7 @@ $$\forall t_1, t_2 \in \text{Time}, \text{bind}(n, o, t_1) \land \text{bind}(n, 
 
 即名字 $n$ 在任意时刻绑定的对象相同。
 
-### 3.7 作用域修改的形式化定义
+### 2.7 作用域修改的形式化定义
 
 **定义 3.8（`global` 声明）**：在函数 $f$ 内声明 `global n`，使得 $f$ 内对 $n$ 的赋值作用于全局命名空间：
 
@@ -238,7 +197,7 @@ $$\text{bind}(n, o, \text{local}) \xrightarrow{\text{nonlocal } n} \text{bind}(n
 
 其中 $k$ 是最小的使得 $n \in \text{enclosing}_k$ 的深度。
 
-### 3.8 浅拷贝与深拷贝的形式化定义
+### 2.8 浅拷贝与深拷贝的形式化定义
 
 **定义 3.10（浅拷贝）**：给定对象 $o$，其浅拷贝 $o'$ 满足：
 - $\text{id}(o) \neq \text{id}(o')$（新对象）
@@ -254,9 +213,9 @@ $$\text{bind}(n, o, \text{local}) \xrightarrow{\text{nonlocal } n} \text{bind}(n
 
 ---
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 名字绑定等价性
+### 3.1 名字绑定等价性
 
 **命题 4.1**：赋值语句 `y = x` 后，`x is y` 为真，且对可变对象的原地修改会反映在两个名字上。
 
@@ -278,7 +237,7 @@ $$\text{bind}(n, o, \text{local}) \xrightarrow{\text{nonlocal } n} \text{bind}(n
 
 **推论 4.1**：对不可变对象的"修改"（如 `x += 1` 对 `int`）实际是重新绑定，不会影响其他名字。
 
-### 4.2 不可变对象修改的正确性
+### 3.2 不可变对象修改的正确性
 
 **命题 4.2**：对不可变对象 $o$ 执行 `x = x + 1`（$x$ 绑定 $o$），不会修改 $o$，而是创建新对象 $o'$ 并重新绑定 $x$。
 
@@ -296,7 +255,7 @@ $$\text{bind}(n, o, \text{local}) \xrightarrow{\text{nonlocal } n} \text{bind}(n
 
 故 `x = x + 1` 后 `x` 与 `y` 指向不同对象，`x is y` 为假。$\blacksquare$
 
-### 4.3 LEGB 查找的正确性
+### 3.3 LEGB 查找的正确性
 
 **命题 4.3**：LEGB 查找规则保证名字解析的确定性——对同一名字，查找顺序固定为 Local → Enclosing → Global → Built-in。
 
@@ -324,7 +283,7 @@ $$\text{resolve}(n) = \begin{cases}
 
 **推论 4.2**：内层作用域的同名名字会"遮蔽"（shadow）外层作用域的名字，需通过 `global` 或 `nonlocal` 声明显式访问外层。
 
-### 4.4 可变默认参数陷阱
+### 3.4 可变默认参数陷阱
 
 **命题 4.4**：函数定义 `def f(x=[])` 中，默认参数 `[]` 在函数定义时求值一次，所有调用共享同一列表对象。
 
@@ -364,7 +323,7 @@ def f(x=None):
     return x
 ```
 
-### 4.5 闭包延迟绑定
+### 3.5 闭包延迟绑定
 
 **命题 4.5**：在循环中创建的闭包，所有闭包在调用时访问的是循环结束时变量的最终值，而非创建时的值。
 
@@ -407,7 +366,7 @@ from functools import partial
 funcs = [partial(lambda x: x, i) for i in range(3)]
 ```
 
-### 4.6 整数缓存
+### 3.6 整数缓存
 
 **命题 4.6**：CPython 缓存 `[-5, 256]` 范围内的整数对象，使得 `a = 256; b = 256; a is b` 为真，但 `a = 257; b = 257; a is b` 不保证为真。
 
@@ -430,9 +389,9 @@ CPython 启动时预创建 `[-5, 256]` 范围内的整数对象，存入 `small_
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 名字绑定与引用语义
+### 4.1 名字绑定与引用语义
 
 ```python
 """
@@ -507,7 +466,7 @@ print(s3 is s4)  # 不保证（含空格的字符串可能不驻留）
 print(s3 == s4)  # True
 ```
 
-### 5.2 LEGB 作用域演示
+### 4.2 LEGB 作用域演示
 
 ```python
 """
@@ -623,7 +582,7 @@ print(add5.__closure__)  # (<cell at 0x...: int object at 0x...>,)
 print(add5.__closure__[0].cell_contents)  # 5
 ```
 
-### 5.3 global 与 nonlocal 的陷阱
+### 4.3 global 与 nonlocal 的陷阱
 
 ```python
 """
@@ -707,7 +666,7 @@ funcs = [make_func(i) for i in range(3)]
 print([f() for f in funcs])  # [0, 1, 2]
 ```
 
-### 5.4 多重赋值与解包
+### 4.4 多重赋值与解包
 
 ```python
 """
@@ -820,7 +779,7 @@ print(handle_command("add 3 5"))  # 8
 print(handle_command("ls -l -a"))  # Listing with args: ['-l', '-a']
 ```
 
-### 5.5 可变与不可变类型
+### 4.5 可变与不可变类型
 
 ```python
 """
@@ -910,7 +869,7 @@ a += 5  # 重新绑定
 print(a is b)  # False
 ```
 
-### 5.6 浅拷贝与深拷贝
+### 4.6 浅拷贝与深拷贝
 
 ```python
 """
@@ -1020,7 +979,7 @@ print(root_copy.children[0].parent is root_copy)  # True（新对象的循环引
 print(root_copy.children[0] is root.children[0])  # False（新对象）
 ```
 
-### 5.7 常量实现方案
+### 4.7 常量实现方案
 
 ```python
 """
@@ -1210,7 +1169,7 @@ except AttributeError as e:
     print(f"Error: {e}")
 ```
 
-### 5.8 类型注解与变量
+### 4.8 类型注解与变量
 
 ```python
 """
@@ -1387,9 +1346,9 @@ name = get_user(user_id)
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Python vs Ruby
+### 5.1 Python vs Ruby
 
 | 维度 | Python | Ruby |
 |------|--------|------|
@@ -1410,7 +1369,7 @@ name = get_user(user_id)
 3. **常量强制**：Ruby 大写开头的变量是常量，修改会触发警告（但不阻止）；Python 完全依赖约定。
 4. **冻结机制**：Ruby 的 `Object.freeze` 可冻结任意对象（运行时强制）；Python 的 `frozen dataclass` 仅适用于数据类。
 
-### 6.2 Python vs JavaScript
+### 5.2 Python vs JavaScript
 
 | 维度 | Python | JavaScript |
 |------|--------|-----------|
@@ -1429,7 +1388,7 @@ name = get_user(user_id)
 3. **提升**：JS 的 `var` 与函数声明会被提升到作用域顶部，Python 无此行为。
 4. **基本类型**：Python 的整数是任意精度，JS 的 `number` 是 IEEE 754 双精度浮点（无真正的整数类型，`BigInt` 是后引入的）。
 
-### 6.3 Python vs Go
+### 5.3 Python vs Go
 
 | 维度 | Python | Go |
 |------|--------|-----|
@@ -1449,7 +1408,7 @@ name = get_user(user_id)
 3. **参数传递**：Python 是"对象引用传递"（pass-by-object-reference），Go 是值传递（pass-by-value，指针也是值）。
 4. **类型系统**：Python 动态类型，Go 静态类型，编译期检查更严格。
 
-### 6.4 综合对比表
+### 5.4 综合对比表
 
 | 特性 | Python | Ruby | JavaScript | Go | Rust | Java |
 |------|--------|------|-----------|-----|------|------|
@@ -1465,9 +1424,9 @@ name = get_user(user_id)
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 可变默认参数陷阱
+### 6.1 可变默认参数陷阱
 
 ```python
 # 反模式：可变默认参数
@@ -1493,7 +1452,7 @@ print(add_item_fixed(1))  # [1]
 print(add_item_fixed(2))  # [2]
 ```
 
-### 7.2 闭包延迟绑定
+### 6.2 闭包延迟绑定
 
 ```python
 # 反模式：循环中的闭包
@@ -1522,7 +1481,7 @@ funcs = [partial(lambda x: x, i) for i in range(3)]
 print([f() for f in funcs])  # [0, 1, 2]
 ```
 
-### 7.3 循环变量泄漏
+### 6.3 循环变量泄漏
 
 ```python
 # Python 3 中 for 循环变量不会泄漏到外层作用域
@@ -1543,7 +1502,7 @@ for n in numbers:
 # print(f"Last: {n}")  # 3
 ```
 
-### 7.4 `is` 与 `==` 的误用
+### 6.4 `is` 与 `==` 的误用
 
 ```python
 # 反模式：用 is 比较值
@@ -1573,7 +1532,7 @@ if x == None:  # 不推荐（PEP 8 警告）
     print("x == None")
 ```
 
-### 7.5 全局可变状态
+### 6.5 全局可变状态
 
 ```python
 # 反模式：全局可变状态
@@ -1625,7 +1584,7 @@ def handle_request():
     # ...
 ```
 
-### 7.6 浅拷贝陷阱
+### 6.6 浅拷贝陷阱
 
 ```python
 import copy
@@ -1658,7 +1617,7 @@ deep["a"].append(100)
 print(original)  # {'a': [1, 2], 'b': [3, 4]}
 ```
 
-### 7.7 常量被意外修改
+### 6.7 常量被意外修改
 
 ```python
 # 反模式：依赖命名约定的常量
@@ -1699,7 +1658,7 @@ class Limits(Enum):
 # Limits.MAX_SIZE = 200  # AttributeError（运行时报错）
 ```
 
-### 7.8 类型注解混淆
+### 6.8 类型注解混淆
 
 ```python
 # 反模式：注解与实际类型不符
@@ -1757,9 +1716,9 @@ print(u2.tags)  # []（独立列表）
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 命名规范
+### 7.1 命名规范
 
 遵循 PEP 8 命名规范：
 
@@ -1826,7 +1785,7 @@ K = TypeVar('K')
 V = TypeVar('V')
 ```
 
-### 8.2 作用域管理
+### 7.2 作用域管理
 
 ```python
 # 最佳实践：最小作用域原则
@@ -1910,7 +1869,7 @@ print(counter.increment())  # 1
 print(counter.increment())  # 2
 ```
 
-### 8.3 常量管理
+### 7.3 常量管理
 
 ```python
 """
@@ -2018,7 +1977,7 @@ class MathConstants:
 print(MathConstants.PI)  # 3.141592653589793
 ```
 
-### 8.4 类型注解最佳实践
+### 7.4 类型注解最佳实践
 
 ```python
 """
@@ -2140,7 +2099,7 @@ print(user.name)  # Alice
 # User(id="1", name="Alice", email="alice@example.com", age="thirty")  # ValidationError
 ```
 
-### 8.5 变量可观测性
+### 7.5 变量可观测性
 
 ```python
 """
@@ -2243,9 +2202,9 @@ print(greet.__doc__)  # 问候函数
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：Django Settings 模块
+### 8.1 案例：Django Settings 模块
 
 Django 使用 Python 模块机制实现配置管理，是"模块即单例"模式的典型应用。
 
@@ -2320,7 +2279,7 @@ def get_database_url():
 # 3. 配置变更需重启应用
 ```
 
-### 9.2 案例：pydantic-settings 配置管理
+### 8.2 案例：pydantic-settings 配置管理
 
 现代 Python 应用倾向于使用 pydantic-settings 进行类型安全的配置管理。
 
@@ -2393,7 +2352,7 @@ class Settings(BaseSettings):
 # 2. 启动时校验开销（对大型配置）
 ```
 
-### 9.3 案例：Feature Flags 模式
+### 8.3 案例：Feature Flags 模式
 
 ```python
 """
@@ -2477,7 +2436,7 @@ print(render_dashboard())  # New Dashboard
 print(FeatureFlags.is_enabled("ai_assistant"))  # False
 ```
 
-### 9.4 案例：Flask 配置模式
+### 8.4 案例：Flask 配置模式
 
 ```python
 """
@@ -2539,7 +2498,7 @@ print(app.config["DEBUG"])  # True
 print(app.config["SQLALCHEMY_DATABASE_URI"])  # sqlite:///dev.db
 ```
 
-### 9.5 案例：Pandas 与 NumPy 的内存模型
+### 8.5 案例：Pandas 与 NumPy 的内存模型
 
 ```python
 """
@@ -2602,7 +2561,7 @@ c[0, 0] = 2
 print(a[0, 0])  # 2.0
 ```
 
-### 9.6 案例：多线程变量隔离
+### 8.6 案例：多线程变量隔离
 
 ```python
 """
@@ -2689,7 +2648,7 @@ def process_with_context():
 process_with_context()
 ```
 
-### 9.7 案例：调试变量与内存
+### 8.7 案例：调试变量与内存
 
 ```python
 """
@@ -2818,7 +2777,7 @@ print(f"Cell contents: {counter.__closure__[0].cell_contents}")
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：以下代码的输出是什么？解释原因。
 
@@ -3062,7 +3021,7 @@ with RequestContext("req-123", 1001):
 print(get_current_request_id())  # （恢复默认值）
 ```
 
-### 10.3 分析题
+### 9.3 分析题
 
 **题目 1**：分析以下代码的内存使用情况，是否存在内存泄漏？
 
@@ -3152,7 +3111,7 @@ for _ in range(10):
 print(counter.get())  # 10
 ```
 
-### 10.4 评价题
+### 9.4 评价题
 
 **题目**：评价 Python"无常量关键字"设计的优缺点，给出你的观点。
 
@@ -3182,7 +3141,7 @@ Python 的"无常量"设计是合理的，符合其动态语言哲学。但生�
 
 这样既保留了 Python 的灵活性，又获得了常量的安全性。
 
-### 10.5 创造题
+### 9.5 创造题
 
 **题目**：设计一个支持"运行时不可变 + 类型注解 + 配置热更新"的企业级配置管理模块。
 
@@ -3348,7 +3307,7 @@ if __name__ == "__main__":
     manager.reload(new_config)  # Config updated: debug True -> False
 ```
 
-### 10.6 思考题
+### 9.6 思考题
 
 **思考题 1**：为什么 Python 不引入 `const` 关键字？如果引入会有什么问题？
 
@@ -3358,9 +3317,9 @@ if __name__ == "__main__":
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 1. Python Software Foundation. *The Python Language Reference* [EB/OL]. (2024-10-07). https://docs.python.org/3/reference/.
 2. Python Software Foundation. *The Python Tutorial: Classes* [EB/OL]. (2024-10-07). https://docs.python.org/3/tutorial/classes.html.
@@ -3373,7 +3332,7 @@ if __name__ == "__main__":
 9. Eddington, C. *PEP 572: Assignment Expressions* [EB/OL]. (2018-02-28). https://peps.python.org/pep-0572/.
 10. Brandl, G. *PEP 634: Structural Pattern Matching* [EB/OL]. (2020-09-12). https://peps.python.org/pep-0634/.
 
-### 11.2 经典书籍
+### 10.2 经典书籍
 
 11. Lutz, M. *Learning Python* [M]. 5th ed. Sebastopol: O'Reilly Media, 2013.
 12. Ramalho, L. *Fluent Python* [M]. 2nd ed. Sebastopol: O'Reilly Media, 2022.
@@ -3381,22 +3340,22 @@ if __name__ == "__main__":
 14. Beazley, D., Jones, B. K. *Python Cookbook* [M]. 3rd ed. Sebastopol: O'Reilly Media, 2013.
 15. Hettinger, R. *Beyond PEP 8 -- Best Practices for Beautiful Intelligible Code* [C]. PyCon 2015, 2015.
 
-### 11.3 论文与演讲
+### 10.3 论文与演讲
 
 16. Batchelder, N. *Python Names and Values* [C]. PyCon 2015, 2015. https://www.youtube.com/watch?v=_AEJHKGk9ns.
 17. Rhodes, B. *Practices of the Pythonic Pro* [C]. PyCon 2018, 2018. https://www.youtube.com/watch?v=Ljx7mOlOLgE.
 18. Shaw, Z. D. *Learn Python 3 the Hard Way* [M]. Boston: Addison-Wesley, 2017.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 19. Python Software Foundation. *Python Module of the Week: copy* [EB/OL]. https://pymotw.com/3/copy/.
 20. Real Python. *Python Variables* [EB/OL]. https://realpython.com/python-variables/.
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 - **Python 内存模型**：深入理解 CPython 的内存管理、对象分配与回收机制。
 - **描述符协议**：理解属性访问的底层机制，`property`、`classmethod`、`staticmethod` 的实现原理。
@@ -3404,7 +3363,7 @@ if __name__ == "__main__":
 - **数据类**：PEP 557 的完整设计，`field`、`default_factory`、`frozen` 的实践。
 - **类型注解系统**：PEP 484、PEP 526、PEP 612、PEP 695 的演化路径。
 
-### 12.2 相关文档
+### 11.2 相关文档
 
 - *python/基础数据类型*：Python 内置类型的完整参考。
 - *python/函数参数与返回值*：参数传递机制、默认参数、可变参数的深入分析。
@@ -3413,7 +3372,7 @@ if __name__ == "__main__":
 - *python/面向对象编程*：类、继承、多态、封装的实践。
 - *python/内存模型与垃圾回收*：引用计数、循环 GC、内存优化的深入剖析。
 
-### 12.3 工具与库
+### 11.3 工具与库
 
 - **mypy**：Python 静态类型检查器，支持 `Final`、`ClassVar` 等注解。
 - **Pyright**：微软的 Python 类型检查器，VS Code 默认集成。
@@ -3423,7 +3382,7 @@ if __name__ == "__main__":
 - **cachetools**：缓存库，提供 `TTLCache`、`LRUCache` 等。
 - **objgraph**：内存分析工具，可视化对象引用关系。
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **Python 官方论坛**：https://discuss.python.org/
 - **Reddit r/Python**：https://reddit.com/r/Python
@@ -3431,7 +3390,7 @@ if __name__ == "__main__":
 - **Python Weekly**：每周 Python 新闻邮件
 - **Talk Python To Me**：Python 播客
 
-### 12.5 学习路径
+### 11.5 学习路径
 
 1. **入门**：掌握基本赋值、作用域、类型分类。
 2. **进阶**：理解名字绑定模型、引用语义、可变性。

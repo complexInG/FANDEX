@@ -15,6 +15,7 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
+
 # C# Span 与 Memory
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -38,53 +39,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（1956 年原版 + 2001 年修订版）的六个认知层次。完成本章学习后，读者应能：
-
-### 1.1 Remember（记忆）
-
-- 复述 `Span<T>`、`ReadOnlySpan<T>`、`Memory<T>`、`ReadOnlyMemory<T>` 四个核心类型的设计动机与差异。
-- 列出 `ref struct` 在 C# 7.2 引入时的六条约束（不能装箱、不能作为类字段、不能跨 `await`/`yield`、不能实现接口（C# 11 前）、不能被 `object`/`dynamic` 引用、不能作为类型参数泛型实参）。
-- 说出 `stackalloc`、`ArrayPool<T>.Shared`、`MemoryMarshal.CreateSpan`、`MemoryMarshal.Cast`、`MemoryMarshal.Read`、`MemoryMarshal.AsBytes` 等核心 API 的签名与用途。
-- 描述 `MemoryManager<T>`、`MemoryPool<T>`、`IMemoryOwner<T>` 三者的协作关系。
-
-### 1.2 Understand（理解）
-
-- 解释 `Span<T>` 作为 `ref struct` 为何只能在栈上存活，以及这一约束如何被编译器与运行时联合保证。
-- 用自己的语言说明 `Span<T>` 与 `Memory<T>` 在 GC 跟踪、`async` 兼容性、间接访问成本上的差异。
-- 推导切片运算 `span[start..end]` 为何是 $O(1)$ 复杂度而非 $O(n)$。
-- 区分 `MemoryMarshal.Cast<TFrom, TTo>` 与 `BitConverter.ToXXX` 在零拷贝与字节序处理上的差异。
-
-### 1.3 Apply（应用）
-
-- 为热路径代码（JSON 解析、协议解析、I/O 处理）设计零分配缓冲区方案。
-- 在 `csproj` 中配置 `AllowUnsafeBlocks`、`LangVersion`、`Nullable` 以启用 `Span<T>` 高级特性。
-- 使用 `ArrayPool<T>.Shared.Rent`/`Return` 替代 `new T[]`，降低 GC 压力。
-
-### 1.4 Analyze（分析）
-
-- 对照 CoreCLR `SpanHelpers.cs` 源码分析 `Span<T>.ctor`、`Slice`、`CopyTo`、`SequenceEqual` 的实现策略与 SIMD 优化。
-- 解构 `Memory<T>` 内部的 `MemoryManager<T>`、`ArraySegment<T>`、`String` 三种后端存储的差异化路径。
-- 对比 `Span<T>` 与 Rust `&[T]`/`&mut [T]`、Go `[]T`、C++ `std::span`、Java `ByteBuffer` 的内存安全模型。
-
-### 1.5 Evaluate（评价）
-
-- 评估在库公共 API 中默认使用 `ReadOnlySpan<T>` 而非 `T[]` 的兼容性与性能权衡。
-- 评判 `ArrayPool<T>.Shared` 的线程局部缓存（thread-local cache）策略在容器化部署中的内存放大问题。
-- 比较 `stackalloc`、`ArrayPool`、`MemoryPool`、`NativeMemory.Alloc` 在生命周期、性能、安全性的取舍。
-
-### 1.6 Create（创造）
-
-- 设计一个基于 `Span<byte>` 的零拷贝二进制协议解析器，支持大端/小端、变长字段、嵌套消息。
-- 实现一个自定义 `MemoryManager<T>`，包装原生内存（`NativeMemory.Alloc`）或内存映射文件（`MemoryMappedViewAccessor`）。
-- 构建一个基于 Roslyn 的静态分析器，检测代码库中潜在的 `Span<T>` 误用（跨 `async`、装箱、字段捕获）。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 C/C++ 时代：指针与缓冲区溢出（1970s-2000s）
+### 1.1 C/C++ 时代：指针与缓冲区溢出（1970s-2000s）
 
 C 与 C++ 通过裸指针（`T*`）操作连续内存，性能极高但安全性极差。典型缺陷包括：
 
@@ -94,7 +51,7 @@ C 与 C++ 通过裸指针（`T*`）操作连续内存，性能极高但安全性
 
 1988 年 Morris 蠕虫利用 `fingerd` 缓冲区溢出感染数千台机器，成为安全史上里程碑事件。2014 年 Heartbleed（OpenSSL CVE-2014-0160）同样是缓冲区过度读取漏洞，影响全球 17% 的 HTTPS 服务器。
 
-### 2.2 .NET 早期：托管数组与 IEnumerable（2002-2010）
+### 1.2 .NET 早期：托管数组与 IEnumerable（2002-2010）
 
 .NET 1.0 通过托管堆（managed heap）与 `T[]` 数组提供内存安全：
 
@@ -116,7 +73,7 @@ int n = stream.Read(buffer, 0, buffer.Length);
 - **切片低效**：`Array.Copy` 是 $O(n)$，无法 $O(1)$ 切片。
 - **跨 P/Invoke 不便**：`byte[]` 需要 `fixed` 固定才能传给原生代码。
 
-### 2.3 C# 7.2：Span<T> 的诞生（2017）
+### 1.3 C# 7.2：Span<T> 的诞生（2017）
 
 `Span<T>` 由 Krzysztof Cwalina（.NET BCL 标准库首席架构师）与 Stephen Toub（.NET 性能团队负责人）主导设计。设计动机：
 
@@ -135,7 +92,7 @@ ReadOnlySpan<char> hello = "Hello, World".AsSpan()[..5];
 // hello = "Hello"，零分配
 ```
 
-### 2.4 .NET Core 2.1：Span 标准化与生态（2018）
+### 1.4 .NET Core 2.1：Span 标准化与生态（2018）
 
 .NET Core 2.1 是 `Span<T>` 的"产业级发布"：
 
@@ -144,13 +101,13 @@ ReadOnlySpan<char> hello = "Hello, World".AsSpan()[..5];
 - ASP.NET Core 2.1 的 Kestrel 全面采用 `Span<T>` 重写，吞吐量提升 2-3 倍。
 - `ArrayPool<T>.Shared` 引入线程局部缓存，降低 `new T[]` 的分配压力。
 
-### 2.5 .NET Core 3.0-3.1：性能优化（2019-2020）
+### 1.5 .NET Core 3.0-3.1：性能优化（2019-2020）
 
 - .NET Core 3.0 引入 `MemoryMarshal`、`CollectionsMarshal`、`BinaryPrimitives`。
 - `Span<T>.SequenceEqual`、`IndexOf`、`Contains` 采用 SIMD（SSE2/AVX2）向量化，性能 5-10 倍提升。
 - `Utf8JsonReader`、`Utf8JsonWriter` 零分配 JSON API 发布。
 
-### 2.6 .NET 5-7：内存模型扩展（2020-2022）
+### 1.6 .NET 5-7：内存模型扩展（2020-2022）
 
 | 版本 | 年份 | Span/Memory 关键改进 |
 |------|------|----------------------|
@@ -158,12 +115,12 @@ ReadOnlySpan<char> hello = "Hello, World".AsSpan()[..5];
 | .NET 6 | 2021 | `SearchValues<T>`、`Span<T>.Trim`、`HashSet<T>.IntersectWith(Span)` |
 | .NET 7 | 2022 | `MemoryMarshal.Read<T>` 泛型化、`CollectionsMarshal.AsSpan`、`Span<T>.GetEnumerator` 优化 |
 
-### 2.7 .NET 8-9：极致性能（2023-2024）
+### 1.7 .NET 8-9：极致性能（2023-2024）
 
 - **.NET 8（2023）**：`Span<T>` 内部布局优化（`ByReference<T>` 改为原生 ref 字段）、`CompositeFormat`、`TensorPrimitives`、`Random.GetItems(Span<T>)`。
 - **.NET 9（2024）**：`Span<T>.GetEnumerator` 进一步优化、`Memory<T>.Pin` 改进、`SearchValues<T>.Create` 支持 ASCII、`ZipFile.ExtractToDirectory` 使用 `Span`、`Order`/`OrderDescending` 对 `Span<T>` 原地排序。
 
-### 2.8 学术背景与理论渊源
+### 1.8 学术背景与理论渊源
 
 `Span<T>` 的设计综合了多门内存管理研究：
 
@@ -176,9 +133,9 @@ ReadOnlySpan<char> hello = "Hello, World".AsSpan()[..5];
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Span<T> 的形式化
+### 2.1 Span<T> 的形式化
 
 `Span<T>` 是一个**只读的内存视图**（read-only view of memory），形式化为：
 
@@ -203,7 +160,7 @@ $$
 \text{Cost}(\text{slice}(s, i, j)) = O(1)
 $$
 
-### 3.2 ReadOnlySpan<T> 的形式化
+### 2.2 ReadOnlySpan<T> 的形式化
 
 `ReadOnlySpan<T>` 是 `Span<T>` 的只读版本：
 
@@ -217,7 +174,7 @@ $$
 \forall s: \text{ROS}(T),\ \forall i,\ s[i] \text{ is read-only}
 $$
 
-### 3.3 Memory<T> 的形式化
+### 2.3 Memory<T> 的形式化
 
 `Memory<T>` 是 `Span<T>` 的"堆可存储"包装：
 
@@ -237,7 +194,7 @@ $$
 \text{Memory}.\text{Span}: \text{Memory}(T) \to \text{Span}(T)
 $$
 
-### 3.4 ref struct 的形式化
+### 2.4 ref struct 的形式化
 
 `ref struct` 是 C# 7.2 引入的栈约束类型：
 
@@ -254,7 +211,7 @@ $$
 5. **不可实现接口**（No interface，C# 11 前）：`ref struct` 不能实现接口。
 6. **不可作为类型参数**（No generic type arg）：不能作为 `T` 在 `List<T>` 等泛型中使用。
 
-### 3.5 切片运算的形式化
+### 2.5 切片运算的形式化
 
 切片 `span[start..end]` 定义为：
 
@@ -278,7 +235,7 @@ $$
 \text{Cost}(\text{Array.Copy}) = O(n)
 $$
 
-### 3.6 零拷贝的形式化
+### 2.6 零拷贝的形式化
 
 零拷贝（zero-copy）定义为：
 
@@ -300,7 +257,7 @@ $$
 \text{ZeroCopy}(\text{span.ToArray}()) = \text{false}\quad (\text{Alloc} = n \cdot \text{sizeof}(T))
 $$
 
-### 3.7 ECMA-334 的视角
+### 2.7 ECMA-334 的视角
 
 ECMA-334 §16.4.14（C# 7.2 起）定义 `ref struct`：
 
@@ -310,7 +267,7 @@ ECMA-334 §12.3.2.7 定义 `stackalloc`：
 
 > The `stackalloc` expression allocates a block of memory on the evaluation stack. The block is automatically reclaimed when the enclosing method returns.
 
-### 3.8 ECMA-335 的视角
+### 2.8 ECMA-335 的视角
 
 ECMA-335 Partition I §8.7 定义托管指针（managed pointer）：
 
@@ -318,7 +275,7 @@ ECMA-335 Partition I §8.7 定义托管指针（managed pointer）：
 
 `Span<T>` 的内部 `ref T` 字段本质是 ECMA-335 中的 `byref`，由 GC 跟踪其指向的对象，避免对象移动时悬垂。
 
-### 3.9 MemoryManager<T> 的形式化
+### 2.9 MemoryManager<T> 的形式化
 
 `MemoryManager<T>` 是 `Memory<T>` 的扩展点：
 
@@ -340,9 +297,9 @@ public abstract class MemoryManager<T> : MemoryManager<T>, IMemoryOwner<T>, IDis
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 Span<T> 的内部布局
+### 3.1 Span<T> 的内部布局
 
 CoreCLR 中 `Span<T>` 的内部字段（简化自 `System.Memory.cs`）：
 
@@ -374,7 +331,7 @@ flowchart TD
     S --> P[padding 4 bytes<br/>对齐填充]
 ```
 
-### 4.2 ref struct 的栈约束保证
+### 3.2 ref struct 的栈约束保证
 
 `Span<T>` 是 `ref struct`，编译器与运行时联合保证其栈约束：
 
@@ -388,7 +345,7 @@ GC 跟踪 `ref T` 的关键：
 - 压缩阶段，若 `_reference` 指向的对象被移动，GC 更新 `_reference` 为新地址。
 - 这保证 `Span<T>` 包装托管对象时的安全性。
 
-### 4.3 切片的 $O(1)$ 实现
+### 3.3 切片的 $O(1)$ 实现
 
 `Span<T>.Slice(int start, int length)` 实现：
 
@@ -407,7 +364,7 @@ public Span<T> Slice(int start, int length)
 - 仅校验边界，不复制数据。
 - 返回新的 `Span<T>`，其 `_reference` 指向原内存偏移 `start * sizeof(T)` 处。
 
-### 4.4 Memory<T> 的三后端架构
+### 3.4 Memory<T> 的三后端架构
 
 `Memory<T>` 内部根据后端存储选择不同路径：
 
@@ -439,7 +396,7 @@ public readonly struct Memory<T>
 2. **`MemoryManager<T>`**：自定义内存管理器（如 `NativeMemoryManager`、`MmfMemoryManager`）。
 3. **`String`**：仅 `Memory<char>` 时使用，字符串数据无需复制。
 
-### 4.5 ArrayPool<T> 的分层缓存
+### 3.5 ArrayPool<T> 的分层缓存
 
 `ArrayPool<T>.Shared` 采用分层缓存策略（共享池实现 `ConfigurableArrayPool<T>`）：
 
@@ -467,7 +424,7 @@ flowchart LR
 4. TLS 满则放入 central pool（容量上限内）。
 5. Central 满则丢弃，由 GC 回收。
 
-### 4.6 stackalloc 的栈分配
+### 3.6 stackalloc 的栈分配
 
 `stackalloc` 在栈上分配内存，由 CLR 在方法返回时自动释放：
 
@@ -496,7 +453,7 @@ call instance void Span`1<uint8>::.ctor(void*, int32)
 
 **风险**：`stackalloc` 过大（如 `stackalloc byte[1024*1024]`）会触发 `StackOverflowException`，进程直接终止无法捕获。
 
-### 4.7 MemoryMarshal 的高级操作
+### 3.7 MemoryMarshal 的高级操作
 
 `MemoryMarshal` 提供低级 reinterpret 操作：
 
@@ -512,7 +469,7 @@ call instance void Span`1<uint8>::.ctor(void*, int32)
 
 **字节序处理**：`MemoryMarshal.Read<T>` 直接按机器字节序读取，跨平台需配合 `BinaryPrimitives.ReadXxxBigEndian`/`LittleEndian`。
 
-### 4.8 P/Invoke 与 Span 的零拷贝
+### 3.8 P/Invoke 与 Span 的零拷贝
 
 P/Invoke 与 `Span<T>` 结合实现零拷贝原生互操作：
 
@@ -541,7 +498,7 @@ public static extern void ProcessSpan(Span<byte> buffer);
 
 CLR 自动将 `Span<T>` 的 `_reference` 固定（pin）后传给原生代码，无需显式 `fixed`。
 
-### 4.9 Utf8JsonReader 的零分配设计
+### 3.9 Utf8JsonReader 的零分配设计
 
 `Utf8JsonReader` 是结构体（struct），直接在调用栈上分配，无堆分配：
 
@@ -561,7 +518,7 @@ public ref struct Utf8JsonReader
 - 不能装箱，避免堆分配。
 - `_buffer` 是 `ReadOnlySpan<byte>`，零拷贝包装原始字节。
 
-### 4.10 Span 与 GC 的交互
+### 3.10 Span 与 GC 的交互
 
 `Span<T>` 与 GC 的交互复杂：
 
@@ -571,7 +528,7 @@ public ref struct Utf8JsonReader
 
 `Memory<T>` 通过 `_owner` 字段让 GC 知道后端存储类型，正确处理。
 
-### 4.11 SIMD 向量化优化
+### 3.11 SIMD 向量化优化
 
 `Span<T>` 的 `SequenceEqual`、`IndexOf`、`Contains` 等方法采用 SIMD 向量化：
 
@@ -597,9 +554,9 @@ SIMD 优化使 `SequenceEqual` 性能比逐字节快 8-32 倍（AVX2 一次比�
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：Span<T> 与 ReadOnlySpan<T>（C# 12, .NET 8）
+### 4.1 基础：Span<T> 与 ReadOnlySpan<T>（C# 12, .NET 8）
 
 ```csharp
 // File: SpanBasics.cs
@@ -643,7 +600,7 @@ public static class SpanBasics
 }
 ```
 
-### 5.2 Memory<T> 异步使用（C# 12, .NET 8）
+### 4.2 Memory<T> 异步使用（C# 12, .NET 8）
 
 ```csharp
 // File: MemoryAsync.cs
@@ -698,7 +655,7 @@ public static class MemoryAsync
 }
 ```
 
-### 5.3 ArrayPool<T> 池化（C# 12, .NET 8）
+### 4.3 ArrayPool<T> 池化（C# 12, .NET 8）
 
 ```csharp
 // File: ArrayPoolDemo.cs
@@ -777,7 +734,7 @@ public class Example
 }
 ```
 
-### 5.4 MemoryMarshal 高级操作（C# 12, .NET 8）
+### 4.4 MemoryMarshal 高级操作（C# 12, .NET 8）
 
 ```csharp
 // File: MemoryMarshalDemo.cs
@@ -841,7 +798,7 @@ public static class MemoryMarshalDemo
 }
 ```
 
-### 5.5 自定义 SpanWriter/SpanReader（C# 12, .NET 8）
+### 4.5 自定义 SpanWriter/SpanReader（C# 12, .NET 8）
 
 ```csharp
 // File: SpanWriter.cs
@@ -1003,7 +960,7 @@ public class ProtocolExample
 }
 ```
 
-### 5.6 Utf8JsonReader 零分配 JSON 解析（C# 12, .NET 8）
+### 4.6 Utf8JsonReader 零分配 JSON 解析（C# 12, .NET 8）
 
 ```csharp
 // File: ZeroAllocJson.cs
@@ -1095,7 +1052,7 @@ public static class ZeroAllocJson
 }
 ```
 
-### 5.7 零拷贝字符串解析（C# 12, .NET 8）
+### 4.7 零拷贝字符串解析（C# 12, .NET 8）
 
 ```csharp
 // File: ZeroAllocString.cs
@@ -1224,7 +1181,7 @@ public static class ZeroAllocString
 }
 ```
 
-### 5.8 自定义 MemoryManager<T>（C# 12, .NET 8）
+### 4.8 自定义 MemoryManager<T>（C# 12, .NET 8）
 
 ```csharp
 // File: NativeMemoryManager.cs
@@ -1361,7 +1318,7 @@ public class NativeMemoryExample
 }
 ```
 
-### 5.9 P/Invoke 零拷贝（C# 12, .NET 8）
+### 4.9 P/Invoke 零拷贝（C# 12, .NET 8）
 
 ```csharp
 // File: PInvokeSpan.cs
@@ -1441,7 +1398,7 @@ public static class PInvokeSpan
 }
 ```
 
-### 5.10 高性能字符串拼接（C# 12, .NET 8）
+### 4.10 高性能字符串拼接（C# 12, .NET 8）
 
 ```csharp
 // File: StringConcat.cs
@@ -1526,7 +1483,7 @@ public static class StringConcat
 }
 ```
 
-### 5.11 SearchValues<T> 高性能查找（C# 12, .NET 8）
+### 4.11 SearchValues<T> 高性能查找（C# 12, .NET 8）
 
 ```csharp
 // File: SearchValuesDemo.cs
@@ -1579,7 +1536,7 @@ public static class SearchValuesDemo
 }
 ```
 
-### 5.12 BinaryPrimitives 字节序处理（C# 12, .NET 8）
+### 4.12 BinaryPrimitives 字节序处理（C# 12, .NET 8）
 
 ```csharp
 // File: BinaryPrimitivesDemo.cs
@@ -1635,9 +1592,9 @@ public static class BinaryPrimitivesDemo
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Rust `&[T]` / `&mut [T]` 对比
+### 5.1 与 Rust `&[T]` / `&mut [T]` 对比
 
 | 特性 | C# `Span<T>` | Rust `&[T]` / `&mut [T]` |
 |------|-------------|--------------------------|
@@ -1653,7 +1610,7 @@ public static class BinaryPrimitivesDemo
 
 **设计差异**：Rust 借用检查器是编译期完全静态的，而 C# `ref struct` 的栈约束也是编译期静态的，但 C# 仍允许 `unsafe` 直接操作指针，安全性略弱于 Rust。
 
-### 6.2 与 Go `[]T` slice 对比
+### 5.2 与 Go `[]T` slice 对比
 
 | 特性 | C# `Span<T>` | Go `[]T` |
 |------|-------------|----------|
@@ -1667,7 +1624,7 @@ public static class BinaryPrimitivesDemo
 
 **设计差异**：Go slice 是堆可存储的，因此可以跨 goroutine 传递，但 GC 必须跟踪每个 slice 的指针。C# `Span<T>` 通过栈约束避免 GC 跟踪复杂化，但代价是不能跨 `async`。
 
-### 6.3 与 Java `ByteBuffer` 对比
+### 5.3 与 Java `ByteBuffer` 对比
 
 | 特性 | C# `Span<T>` | Java `ByteBuffer` |
 |------|-------------|-------------------|
@@ -1683,7 +1640,7 @@ public static class BinaryPrimitivesDemo
 
 **设计差异**：Java `ByteBuffer` 是堆上对象，无法栈分配，每次创建都有堆分配开销。C# `Span<T>` 通过 `stackalloc` 实现真正的栈分配，零 GC 压力。
 
-### 6.4 与 C++ `std::span`（C++20）对比
+### 5.4 与 C++ `std::span`（C++20）对比
 
 | 特性 | C# `Span<T>` | C++ `std::span` |
 |------|-------------|------------------|
@@ -1699,7 +1656,7 @@ public static class BinaryPrimitivesDemo
 
 **设计差异**：C++ `std::span` 是 C# `Span<T>` 的"无栈约束版本"，更灵活但更危险。C# 通过 `ref struct` 强制栈约束，避免悬垂指针。
 
-### 6.5 与 Swift `ArraySlice` 对比
+### 5.5 与 Swift `ArraySlice` 对比
 
 | 特性 | C# `Span<T>` | Swift `ArraySlice` |
 |------|-------------|---------------------|
@@ -1711,7 +1668,7 @@ public static class BinaryPrimitivesDemo
 | GC/ARC | GC 跟踪 | ARC 引用计数 |
 | 内存安全 | 编译器 + 运行时 | 编译器 + 运行时 |
 
-### 6.6 与 Python `memoryview` 对比
+### 5.6 与 Python `memoryview` 对比
 
 | 特性 | C# `Span<T>` | Python `memoryview` |
 |------|-------------|---------------------|
@@ -1723,7 +1680,7 @@ public static class BinaryPrimitivesDemo
 | GIL | 无 | 受 GIL 限制 |
 | 用途 | 性能关键路径 | 缓冲区协议 |
 
-### 6.7 综合对比表
+### 5.7 综合对比表
 
 | 语言 | 类型 | 栈分配 | 切片 $O(1)$ | GC 跟踪 | 内存安全 |
 |------|------|--------|-------------|---------|----------|
@@ -1737,9 +1694,9 @@ public static class BinaryPrimitivesDemo
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：Span<T> 跨 async/await
+### 6.1 陷阱：Span<T> 跨 async/await
 
 ```csharp
 // 不支持 错误：Span<T> 不能跨 await
@@ -1769,7 +1726,7 @@ public async Task GoodAsync()
 
 **原理**：`async` 方法被编译为状态机，`Span<T>` 作为 `ref struct` 不能作为状态机字段（因为状态机是类，类字段不能是 `ref struct`）。
 
-### 7.2 陷阱：Span<T> 作为类字段
+### 6.2 陷阱：Span<T> 作为类字段
 
 ```csharp
 // 不支持 错误：ref struct 不能作为类字段
@@ -1796,7 +1753,7 @@ public ref struct SpanWriter
 }
 ```
 
-### 7.3 陷阱：Span<T> 在 Lambda 捕获
+### 6.3 陷阱：Span<T> 在 Lambda 捕获
 
 ```csharp
 // 不支持 错误：Lambda 不能捕获 Span<T>
@@ -1818,7 +1775,7 @@ private void Process<T>(Span<T> data, Action<T> action)
 }
 ```
 
-### 7.4 陷阱：stackalloc 返回
+### 6.4 陷阱：stackalloc 返回
 
 ```csharp
 // 不支持 错误：返回 stackalloc 内存
@@ -1841,7 +1798,7 @@ public Memory<byte> GoodReturnPooled()
 }
 ```
 
-### 7.5 陷阱：Memory<T>.Span 频繁访问
+### 6.5 陷阱：Memory<T>.Span 频繁访问
 
 ```csharp
 // 不支持 低效：每次访问 .Span 都有开销
@@ -1866,7 +1823,7 @@ public void GoodProcess(Memory<int> mem)
 
 **原理**：`Memory<T>.Span` 属性内部需要判断后端类型（`T[]`、`MemoryManager<T>`、`String`），开销虽小但循环中累积。
 
-### 7.6 陷阱：ArrayPool 未归还
+### 6.6 陷阱：ArrayPool 未归还
 
 ```csharp
 // 不支持 错误：忘记 Return
@@ -1906,7 +1863,7 @@ public IMemoryOwner<byte> ProcessWithOwner(byte[] input)
 }
 ```
 
-### 7.7 陷阱：ReadOnlySpan 误用为可写
+### 6.7 陷阱：ReadOnlySpan 误用为可写
 
 ```csharp
 // 不支持 错误：字符串是只读的，不能修改
@@ -1925,7 +1882,7 @@ public string GoodModify(string s)
 }
 ```
 
-### 7.8 陷阱：Span 切片越界
+### 6.8 陷阱：Span 切片越界
 
 ```csharp
 // 不支持 错误：越界抛 IndexOutOfRangeException
@@ -1948,7 +1905,7 @@ public void SafeSlice(Span<int> data)
 }
 ```
 
-### 7.9 陷阱：固定对象与 GC
+### 6.9 陷阱：固定对象与 GC
 
 ```csharp
 // 不支持 错误：长时间固定 byte[]
@@ -1979,7 +1936,7 @@ public void FixedShort(byte[] data)
 }
 ```
 
-### 7.10 陷阱：多线程共享 Span<T>
+### 6.10 陷阱：多线程共享 Span<T>
 
 ```csharp
 // 不支持 错误：Span<T> 跨线程不安全
@@ -2002,7 +1959,7 @@ private void Process(Span<int> data)
 }
 ```
 
-### 7.11 陷阱：ref struct 实现接口（C# 11 前）
+### 6.11 陷阱：ref struct 实现接口（C# 11 前）
 
 ```csharp
 // C# 11 前的错误
@@ -2017,7 +1974,7 @@ public ref struct MySpan : IDisposable
 // IDisposable d = new MySpan();  // 编译错误！
 ```
 
-### 7.12 陷阱：忽略字节序
+### 6.12 陷阱：忽略字节序
 
 ```csharp
 // 不支持 错误：跨平台字节序问题
@@ -2035,9 +1992,9 @@ public int GoodRead(ReadOnlySpan<byte> data)
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 csproj 配置
+### 7.1 csproj 配置
 
 ```xml
 <!-- File: Fandex.SpanDemo.csproj -->
@@ -2088,7 +2045,7 @@ T[] System.MemoryExtensions.ToArray<T>(this S);     "Avoid ToArray on hot path"
 S System.Collections.Generic.List<T>.GetEnumerator(); "Use CollectionsMarshal.AsSpan"
 ```
 
-### 8.2 ASP.NET Core Span 优化
+### 7.2 ASP.NET Core Span 优化
 
 ```csharp
 // File: SpanController.cs
@@ -2185,7 +2142,7 @@ public class DataController : ControllerBase
 public record MyData(string Name, int Age);
 ```
 
-### 8.3 BenchmarkDotNet 性能基准
+### 7.3 BenchmarkDotNet 性能基准
 
 ```csharp
 // File: SpanBenchmarks.cs
@@ -2324,7 +2281,7 @@ public class Program
 }
 ```
 
-### 8.4 诊断工具
+### 7.4 诊断工具
 
 ```bash
 # dotnet-counters 监控 GC 与内存
@@ -2354,7 +2311,7 @@ kubectl exec <pod> -- dotnet-counters monitor \
     --counters System.Runtime[gc-heap-size,gc-gen-0-collection-count,gc-gen-1-collection-count,gc-gen-2-collection-count]
 ```
 
-### 8.5 性能调优决策树
+### 7.5 性能调优决策树
 
 ```mermaid
 flowchart TD
@@ -2390,7 +2347,7 @@ flowchart TD
     T19 --> T21
 ```
 
-### 8.6 NativeAOT 与 Span
+### 7.6 NativeAOT 与 Span
 
 .NET 8+ 的 NativeAOT 对 `Span<T>` 有额外优化：
 
@@ -2414,7 +2371,7 @@ NativeAOT 优势：
 - 无 JIT 启动开销，冷启动 < 50ms。
 - 二进制体积小（10-20MB）。
 
-### 8.7 单元测试
+### 7.7 单元测试
 
 ```csharp
 // File: SpanTests.cs
@@ -2494,9 +2451,9 @@ public class SpanTests
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究：ASP.NET Core Kestrel 的 Span 优化
+### 8.1 案例研究：ASP.NET Core Kestrel 的 Span 优化
 
 Kestrel 是 ASP.NET Core 的默认 Web 服务器。从 2.1 开始全面采用 `Span<T>` 重写 I/O 路径：
 
@@ -2559,7 +2516,7 @@ private bool TryParseRequest(
 - 每请求分配从 ~2KB 降到 ~50 字节（仅必要对象）。
 - GC 暂停时间从 100ms 降到 10ms。
 
-### 9.2 案例研究：Utf8JsonReader 的零分配设计
+### 8.2 案例研究：Utf8JsonReader 的零分配设计
 
 `Utf8JsonReader` 是 .NET Core 3.0 引入的零分配 JSON 解析器：
 
@@ -2592,7 +2549,7 @@ public ref struct Utf8JsonReader
 | `JsonDocument.Parse` | 8.7 μs | 1.8 KB |
 | `Utf8JsonReader` | 3.2 μs | 0 字节 |
 
-### 9.3 案例研究：.NET 5+ Socket 缓冲区 POH
+### 8.3 案例研究：.NET 5+ Socket 缓冲区 POH
 
 .NET 5 之前，`Socket` 的接收缓冲区使用 `byte[]` + `GCHandle.Pinned`，造成 SOH 碎片化：
 
@@ -2631,7 +2588,7 @@ socket.Receive(buffer);
 - Gen 2 GC 频率降低 50%。
 - 高并发 Socket 场景吞吐量提升 20%。
 
-### 9.4 案例研究：.NET 6 SearchValues 高性能查找
+### 8.4 案例研究：.NET 6 SearchValues 高性能查找
 
 .NET 6 引入 `SearchValues<T>`，预计算 SIMD 查找表：
 
@@ -2659,7 +2616,7 @@ int idx = text.AsSpan().IndexOfAny(sv);
 | `Regex.Match` | 8.5 ms | 0.14x |
 | `SearchValues<char>` | 0.04 ms | 30x |
 
-### 9.5 案例研究：.NET Runtime 源码
+### 8.5 案例研究：.NET Runtime 源码
 
 CoreCLR `System.Private.CoreLib` 大量使用 `Span<T>`：
 
@@ -2697,7 +2654,7 @@ public static int IndexOfChar(ReadOnlySpan<char> span, char value)
 }
 ```
 
-### 9.6 案例研究：游戏引擎 Span 应用
+### 8.6 案例研究：游戏引擎 Span 应用
 
 Unity 2021.2+ 与 .NET 8 Span 在游戏引擎中的应用：
 
@@ -2758,7 +2715,7 @@ private Texture ParseTexture(ReadOnlySpan<byte> data)
 }
 ```
 
-### 9.7 案例研究：EF Core Span 优化
+### 8.7 案例研究：EF Core Span 优化
 
 EF Core 7+ 使用 `Span<T>` 优化 SQL 生成与结果映射：
 
@@ -2794,7 +2751,7 @@ public static T MapValue<T>(ReadOnlySpan<char> value)
 }
 ```
 
-### 9.8 案例研究：协议解析器
+### 8.8 案例研究：协议解析器
 
 设计一个零拷贝二进制协议解析器：
 
@@ -3119,7 +3076,7 @@ buf[0] = 42;
 // manager.Dispose 释放原生内存
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 14**：为什么 `Span<T>` 不能跨 `async`/`await`，而 `Memory<T>` 可以？
 
@@ -3409,7 +3366,7 @@ dotnet-counters monitor --counters System.Runtime \
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 参考文献采用 ACM Reference Format。
 
@@ -3505,9 +3462,9 @@ dotnet-counters monitor --counters System.Runtime \
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **Skeet, J.** *C# in Depth* (4th ed., 2019)：第 13 章"Span<T> and Memory<T>"深入讲解 ref struct。
 - **Wagner, B.** *Effective C#* (2023)：第 14 章"Minimize garbage collection with Span<T>"。
@@ -3520,7 +3477,7 @@ dotnet-counters monitor --counters System.Runtime \
 - **Cleary, S.** *Concurrency in C# Cookbook* (2nd ed., 2014)：异步并发模式。
 - **Richter, J.** *CLR via C#* (4th ed., 2012)：CLR 内部机制。
 
-### 12.2 论文
+### 11.2 论文
 
 - **Ungar 1984**：Generation Scavenging，分代 GC 奠基。
 - **Lieberman-Hewitt 1983**：基于对象生命周期的 GC。
@@ -3535,7 +3492,7 @@ dotnet-counters monitor --counters System.Runtime \
 - **Hoare 1978**：CSP（Communicating Sequential Processes）。
 - **Wadler 1992**：Monad 函数式编程本质。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **.NET 官方文档**：[Memory and Span](https://learn.microsoft.com/en-us/dotnet/standard/memory-and-spans/)
 - **Stephen Toub 博客**：[Performance Improvements in .NET 5/6/7/8/9](https://devblogs.microsoft.com/dotnet/author/stoub/)
@@ -3550,7 +3507,7 @@ dotnet-counters monitor --counters System.Runtime \
 - **dotnet/runtime GitHub**：[Issues](https://github.com/dotnet/runtime/issues) 与 [Discussions](https://github.com/dotnet/runtime/discussions)
 - **.NET Performance Lab**：[performance-dotnet](https://github.com/dotnet/performance)
 
-### 12.4 视频资源
+### 11.4 视频资源
 
 - **NDC 2018 - Stephen Toub**: *Span<T>: A New .NET Cornerstone*
 - **DotNext 2019 - Krzysztof Cwalina**: *Memory<T> and Span<T>: Design and Implementation*
@@ -3560,7 +3517,7 @@ dotnet-counters monitor --counters System.Runtime \
 - **NDC 2023 - Nick Chapsas**: *High-Performance C# with Span<T>*
 - **DotNext 2022 - Sergey Teplyakov**: *Span<T> Under the Hood*
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **dotnet/runtime GitHub**：[Issues](https://github.com/dotnet/runtime/issues) 与 [Discussions](https://github.com/dotnet/runtime/discussions)
 - **Stack Overflow**：[span] 标签

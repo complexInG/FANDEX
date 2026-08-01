@@ -44,14 +44,6 @@ related:
 prerequisites:
   - algorithm/算法分析基础与学习路线
   - algorithm/动态规划
-learningObjectives:
-  - 记忆 Turing 1936《On Computable Numbers, with an Application to the Entscheidungsproblem》Proc. LMS 42:230-265 图灵机模型、Church 1936 λ-演算、Gödel 1931 不完备性定理、Rice 1953《Classes of Recursively Enumerable Sets and Their Decision Problems》Trans. AMS 74:358-366、Hartmanis-Stearns 1965《On the Computational Complexity of Algorithms》Trans. AMS 117:285-306 复杂性类奠基、Cook 1971 STOC 151-158 Cook-Levin 定理、Karp 1972《Reducibility Among Combinatorial Problems》21 个 NP 完全问题、Levin 1973 独立发现、Savitch 1970 JCSS 4(2):177-192、Baker-Gill-Solovay 1975 SICOMP 4(4):431-442、Ladner 1975 JACM 22(1):155-171、PCP 定理（Arora-Safra 1998 JACM 45(1):70-122；Dinur 2007）的历史脉络，复述 P/NP/NP-Hard/NP-Complete 形式化定义与多项式归约的数学语义
-  - 理解图灵机模型与非确定性图灵机的本质差异、Cook-Levin 定理的证明思路（将非确定性图灵机计算归约为 SAT 实例）、Karp 21 NP 完全问题的归约链结构、Savitch 定理 NSPACE(f(n)) ⊆ DSPACE(f²(n)) 的证明、Baker-Gill-Solovay 相对化屏障为何阻拦 P vs NP 的传统证明技术、Ladner 定理 P≠NP 蕴含 NP-intermediate 问题存在、PCP 定理与不可近似性的关系
-  - 应用多项式归约证明新问题 NP 完全（4 步法）、使用聚合/核算/势能三方法分析动态数组、二项堆、Splay 树的摊还代价、使用竞争分析评估 LRU、k-Server、租借-购买等在线算法、设计 c-竞争的确定性或随机化在线算法
-  - 分析经典归约链 SAT → 3-SAT → CLIQUE → VERTEX-COVER → HAMILTONIAN-CYCLE → TSP 的正确性、设计 2-近似（度量 TSP）、1.5-近似（Christofides 算法）、ln(n)-近似（集合覆盖贪心）的近似算法并证明近似比、分析 Count-Min Sketch、HyperLogLog、Boyer-Moore 投票等数据流算法的空间复杂度
-  - 评估各复杂性类（P、NP、co-NP、NP-Complete、NP-Hard、PSPACE、EXPTIME）的包含关系、识别 P vs NP 千禧年大奖问题为何难以解决、评估摊还分析三方法的适用场景、识别在线算法竞争比的下界证明（Yao 原理）
-  - 对比摊还分析 vs 平均情况分析 vs 最坏情况分析的本质差异、确定性在线算法 vs 随机化在线算法的竞争比差距、精确算法 vs 近似算法 vs 启发式算法的工程权衡、SAT 求解器（DPLL、CDCL）vs CP-SAT vs ILP 求解器在工业级组合优化问题上的优劣
-  - 创造性设计基于复杂性理论的工业解决方案，如 SAT 求解器在硬件验证（形式化验证芯片）、软件验证（程序分析）、密码学（抗碰撞哈希函数设计）、调度优化（员工排班、车辆路径）、推荐系统（约束求解）中的应用，并预留扩展接口以适配未来量子计算时代（BQP 类、Shor 算法对 RSA 的威胁）
 references:
   - type: journal
     authors:
@@ -359,6 +351,7 @@ etymology:
     english: Millennium Prize Problems
     origin: '由 Clay Mathematics Institute 2000 年设立，7 个未解决数学问题各悬赏 $1,000,000。P vs NP 是其中唯一的计算机科学问题，由 Cook 1971 在 Clay 官方陈述中形式化'
 ---
+
 
 ## 1. 概述与学习目标
 

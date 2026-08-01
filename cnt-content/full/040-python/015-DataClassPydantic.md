@@ -15,57 +15,16 @@ related:
 prerequisites:
   - python/语法速查
 ---
+
 # Python pydantic 数据验证
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章节学习后，你应当能够：
-
-### 1.1 记忆（Remember）
-
-- **R1**：复述 PEP 557 `@dataclass` 装饰器的核心功能（自动生成 `__init__`/`__repr__`/`__eq__`）。
-- **R2**：列举 Pydantic v1 与 v2 在内核（pydantic-core）、性能（5-50x）、API（`model_dump` vs `dict`）上的关键差异。
-- **R3**：陈述 `frozen=True`、`slots=True`、`kw_only=True` 三个 dataclass 参数的语义与典型使用场景。
-
-### 1.2 理解（Understand）
-
-- **U1**：解释 nominal typing（名义类型）与 structural typing（结构类型）的区别，及 Python 类型系统属于哪一类。
-- **U2**：阐述 Pydantic 的运行时验证（runtime validation）与 mypy 的静态检查（static check）的互补关系。
-- **U3**：描述 `field(default_factory=list)` 解决"可变默认值"陷阱的原理，与 `__init__` 中的 `if x is None: x = []` 写法等价性证明。
-
-### 1.3 应用（Apply）
-
-- **A1**：使用 `@dataclass(frozen=True, slots=True)` 设计一个不可变且内存高效的值对象（Value Object）。
-- **A2**：使用 Pydantic v2 的 `BaseModel` + `Field` + `field_validator` + `model_validator` 构建一个支持嵌套校验、自定义错误、JSON 序列化的领域模型。
-- **A3**：使用 `pydantic-settings` 管理从环境变量、`.env` 文件、命令行参数三处加载的配置。
-
-### 1.4 分析（Analyze）
-
-- **An1**：对比 `dataclass` + `pydantic.dataclasses` + `pydantic.BaseModel` 在性能、类型严格性、序列化能力上的差异。
-- **An2**：剖析一段 Pydantic v1 代码，识别 v2 迁移需修改的 API（`dict()`→`model_dump()`、`parse_obj()`→`model_validate()`、`@validator`→`field_validator`）。
-- **An3**：分析一个使用 `model_config = ConfigDict(frozen=True)` 的不可变模型在并发场景下的线程安全性。
-
-### 1.5 评价（Evaluate）
-
-- **E1**：在 FastAPI 项目中，论证是否应使用 `pydantic.BaseModel` 还是 `msgspec.Struct` 作为 API schema。
-- **E2**：评估 `@dataclass` 替代普通类的迁移成本，包括 `__hash__`、`__setattr__`、序列化等隐性依赖。
-- **E3**：判断 Pydantic v2 引入 Rust 内核（pydantic-core）对供应链安全（supply chain security）的影响。
-
-### 1.6 创造（Create）
-
-- **C1**：设计一个支持版本化（schema versioning）、向前兼容（forward compatibility）的 Pydantic 模型基类。
-- **C2**：实现一个基于 `typing.Annotated` + `pydantic.AfterValidator` 的领域特定类型（Domain-Specific Type）系统，例如 `Email`、`PositiveInt`、`ISBN`。
-- **C3**：构建一个 monorepo 多服务共享 schema 方案，支持 Pydantic 模型在前后端 TypeScript 类型生成。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 前史：手工 `__init__` 与命名元组（1991–2017）
+### 1.1 前史：手工 `__init__` 与命名元组（1991–2017）
 
 Python 早期版本中，定义数据载体类需要手写冗长的 `__init__`、`__repr__`、`__eq__`：
 
@@ -95,13 +54,13 @@ User = namedtuple("User", ["name", "age", "email"])
 
 但 `namedtuple` 有三大缺陷：(1) 不可变，无法修改字段；(2) 通过元组索引访问（`u[0]`）降低可读性；(3) 默认值需通过 `defaults` 参数逆序指定，易出错。
 
-### 2.2 attrs：第三方先驱（2015）
+### 1.2 attrs：第三方先驱（2015）
 
 Hynek Schlawack 于 2015 年发布 `attrs` 库，引入 `@attr.s`（后更名为 `@define`）装饰器，自动生成 `__init__`/`__repr__`/`__eq__`/`__hash__`，并支持类型注解、默认值工厂、校验器、slots。`attrs` 的影响力深远——PEP 557 的 `dataclasses` 在设计时明确借鉴了 `attrs`，Guido 在 PEP 557 中致谢：
 
 > "This PEP is essentially a simplification of attrs ... without some of the more advanced features."
 
-### 2.3 PEP 557 dataclasses（Python 3.7，2018）
+### 1.3 PEP 557 dataclasses（Python 3.7，2018）
 
 PEP 557 由 Eric V. Smith 撰写，于 2018 年 6 月随 Python 3.7 正式发布。`dataclasses` 模块的核心设计目标：
 
@@ -121,7 +80,7 @@ class User:
     tags: list[str] = field(default_factory=list)
 ```
 
-### 2.4 Pydantic v1：运行时验证的崛起（2018）
+### 1.4 Pydantic v1：运行时验证的崛起（2018）
 
 Samuel Colvin 于 2018 年发布 Pydantic v1，定位为"基于 Python 类型注解的数据验证库"。核心创新：
 
@@ -132,7 +91,7 @@ Samuel Colvin 于 2018 年发布 Pydantic v1，定位为"基于 Python 类型注
 
 Pydantic v1 的性能瓶颈：基于 Python 实现，单次验证约 1-5μs，复杂嵌套模型可达数十微秒，在亿级请求场景下成为热点。
 
-### 2.5 Pydantic v2：Rust 内核重生（2023）
+### 1.5 Pydantic v2：Rust 内核重生（2023）
 
 2023 年 6 月，Pydantic v2 正式发布，进行了几乎完全的重写：
 
@@ -148,13 +107,13 @@ Samuel Colvin 在 Pydantic v2 发布博客中写道：
 >
 > —— Samuel Colvin, Pydantic Blog 2023
 
-### 2.6 现代竞争：msgspec 与 attrs 的回应
+### 1.6 现代竞争：msgspec 与 attrs 的回应
 
 2022 年 Jim Crist-Haruf 发布 `msgspec`，定位为"高性能序列化与验证库"，性能比 Pydantic v2 再快 2-10x，支持 `Struct` 类（类似 dataclass 但更紧凑）与 MessagePack 原生支持。
 
 `attrs` 在 2023 年发布 23.1 版本，引入 NG API（`@define`、`@frozen`），保留其在细粒度配置上的优势。
 
-### 2.7 设计哲学演进
+### 1.7 设计哲学演进
 
 Python 数据建模库的演进反映了三个哲学转向：
 
@@ -168,9 +127,9 @@ Guido van Rossum 在 2023 年 PyCon 关于类型系统的演讲中提到：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 数据类（Data Class）的形式化
+### 2.1 数据类（Data Class）的形式化
 
 一个数据类 $D$ 可形式化为五元组：
 
@@ -186,7 +145,7 @@ $$
 - $\mathcal{S}$：序列化器集合（serializers），可为空。
 - $\mathcal{C}$：配置（config），如 `frozen`、`slots`、`kw_only`。
 
-### 3.2 类型验证的形式化
+### 2.2 类型验证的形式化
 
 类型验证函数 $\text{validate}$ 接受值 $v$ 与类型 $\tau$，返回验证结果：
 
@@ -209,7 +168,7 @@ $$
 \text{validate}_{\text{strict}}("42", \text{int}) = \text{Err}(\text{"int expected, got str"})
 $$
 
-### 3.3 nominal typing 与 structural typing
+### 2.3 nominal typing 与 structural typing
 
 **Nominal typing**（名义类型）：类型等价基于类型名称。$A$ 是 $B$ 的子类型当且仅当 $A$ 显式声明继承 $B$。
 
@@ -236,7 +195,7 @@ greet(User("Alice"))  # OK
 
 Pydantic 模型采用 **nominal typing**：`User` 与 `Admin` 即使字段相同，也是不同类型。
 
-### 3.4 不可变性的形式化
+### 2.4 不可变性的形式化
 
 `frozen=True` 等价于在 `__setattr__` 与 `__delattr__` 中抛出 `FrozenInstanceError`：
 
@@ -250,7 +209,7 @@ $$
 2. **可哈希**：可作为字典键、集合元素（`__hash__` 基于 $\mathcal{F}$ 计算）。
 3. **引用透明**（referential transparency）：相同输入始终产生相同输出，便于推理。
 
-### 3.5 slots 的内存模型
+### 2.5 slots 的内存模型
 
 `slots=True` 使 dataclass 使用 `__slots__` 替代 `__dict__`。形式化地，普通类的实例内存布局：
 
@@ -274,9 +233,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 `@dataclass` 的代码生成
+### 3.1 `@dataclass` 的代码生成
 
 `@dataclass` 装饰器本质是一个**编译期（导入时）代码生成器**。它读取类的 `__annotations__`，生成 `__init__`、`__repr__`、`__eq__` 等方法并绑定到类。形式化地：
 
@@ -298,7 +257,7 @@ def __init__(self, name: str, age: int, tags: list[str] = MISSING):
 
 关键点：`default_factory` 在 `__init__` 内部调用，每次实例化生成新对象，避免"共享可变默认值"陷阱。
 
-### 4.2 可变默认值陷阱的形式化证明
+### 3.2 可变默认值陷阱的形式化证明
 
 考虑错误代码：
 
@@ -328,7 +287,7 @@ $$
 \forall i \in \text{instances}: \text{id}(i.\text{items}) \text{ is unique}
 $$
 
-### 4.3 Pydantic 验证的多阶段流水线
+### 3.3 Pydantic 验证的多阶段流水线
 
 Pydantic v2 的验证过程分为多个阶段：
 
@@ -345,7 +304,7 @@ $$
 \text{Model}(d) = \text{ModelValidator}(\text{FieldValidators}(\text{Constraints}(\text{Coerce}(d))))
 $$
 
-### 4.4 Pydantic v2 性能优势：Rust 内核
+### 3.4 Pydantic v2 性能优势：Rust 内核
 
 Pydantic v1 的验证循环用 Python 实现，每次字段访问都经过 Python 解释器。Pydantic v2 将验证逻辑编译为 Rust 函数（pydantic-core），仅边界处经过 Python-Rust FFI。
 
@@ -367,7 +326,7 @@ $$
 
 实测 10 倍以上加速。
 
-### 4.5 序列化的对称性
+### 3.5 序列化的对称性
 
 理想的序列化应满足**往返一致性**（round-trip consistency）：
 
@@ -377,7 +336,7 @@ $$
 
 Pydantic v2 的 `model_dump_json()` → `model_validate_json()` 满足此性质（在无信息丢失的类型上）。但有损类型（`datetime` → ISO 字符串 → `datetime` 在时区处理上可能丢失）需注意。
 
-### 4.6 继承与 MRO 的交互
+### 3.6 继承与 MRO 的交互
 
 Pydantic v2 模型继承时，字段合并遵循 **MRO**（Method Resolution Order）：
 
@@ -397,9 +356,9 @@ class User(Base):
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 项目结构
+### 4.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -430,7 +389,7 @@ flowchart TD
     T5 --> T12
 ```
 
-### 5.2 pyproject.toml
+### 4.2 pyproject.toml
 
 ```toml
 [project]
@@ -468,7 +427,7 @@ strict = true
 plugins = ["pydantic.mypy"]
 ```
 
-### 5.3 requirements.txt
+### 4.3 requirements.txt
 
 ```
 pydantic==2.7.1
@@ -478,7 +437,7 @@ fastapi==0.110.0
 uvicorn==0.29.0
 ```
 
-### 5.4 不可变值对象（Python 3.10+）
+### 4.4 不可变值对象（Python 3.10+）
 
 ```python
 """
@@ -571,7 +530,7 @@ if __name__ == "__main__":
         print(f"不可变: {type(e).__name__}")
 ```
 
-### 5.5 Pydantic 领域模型（Python 3.12+）
+### 4.5 Pydantic 领域模型（Python 3.12+）
 
 ```python
 """
@@ -711,7 +670,7 @@ if __name__ == "__main__":
             print(f"  - {err['loc']}: {err['msg']}")
 ```
 
-### 5.6 pydantic-settings 配置管理（Python 3.10+）
+### 4.6 pydantic-settings 配置管理（Python 3.10+）
 
 ```python
 """
@@ -816,7 +775,7 @@ if __name__ == "__main__":
     print(f"密码: {settings.database.password.get_secret_value()[:3]}***")
 ```
 
-### 5.7 自定义类型（Python 3.12+）
+### 4.7 自定义类型（Python 3.12+）
 
 ```python
 """
@@ -897,7 +856,7 @@ if __name__ == "__main__":
             print(f"  - {err['loc']}: {err['msg']}")
 ```
 
-### 5.8 FastAPI 集成（Python 3.10+）
+### 4.8 FastAPI 集成（Python 3.10+）
 
 ```python
 """
@@ -996,7 +955,7 @@ async def list_users(
 # 启动：uvicorn fastapi_app:app --reload
 ```
 
-### 5.9 完整测试套件（pytest）
+### 4.9 完整测试套件（pytest）
 
 ```python
 """
@@ -1154,9 +1113,9 @@ class TestUser:
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 dataclass vs attrs vs Pydantic vs msgspec
+### 5.1 dataclass vs attrs vs Pydantic vs msgspec
 
 | 特性 | `dataclass` | `attrs` | `Pydantic v2` | `msgspec` |
 | ---- | ---------- | ------- | -------------- | --------- |
@@ -1174,7 +1133,7 @@ class TestUser:
 | 学习成本 | 低 | 中 | 中 | 中 |
 | 生态成熟度 | 高 | 高 | 极高 | 成长中 |
 
-### 6.2 Pydantic v1 vs v2 API 对照
+### 5.2 Pydantic v1 vs v2 API 对照
 
 | v1 API | v2 API | 说明 |
 | ------ | ------ | ---- |
@@ -1190,7 +1149,7 @@ class TestUser:
 | `.copy()` | `.model_copy()` | 复制 |
 | `update_forward_refs()` | `model_rebuild()` | 前向引用 |
 
-### 6.3 跨语言对比
+### 5.3 跨语言对比
 
 | 语言 | 等价方案 | 特点 |
 | ---- | ------- | ---- |
@@ -1201,7 +1160,7 @@ class TestUser:
 | Java | `Lombok` / `Record` | 注解处理器，`Record` 是 Java 14+ 标准方案 |
 | Swift | `Codable` | 协议驱动，编译期生成 |
 
-### 6.4 何时选择哪个？
+### 5.4 何时选择哪个？
 
 **`dataclass` 适用场景：**
 - 内部数据结构，无序列化需求
@@ -1229,9 +1188,9 @@ class TestUser:
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 可变默认值
+### 6.1 可变默认值
 
 **错误：**
 
@@ -1251,7 +1210,7 @@ class Good:
     items: list[int] = field(default_factory=list)
 ```
 
-### 7.2 frozen 类的 `__post_init__`
+### 6.2 frozen 类的 `__post_init__`
 
 `frozen=True` 类中无法直接赋值 `self.x = ...`，需使用 `object.__setattr__`：
 
@@ -1267,9 +1226,9 @@ class Point:
         object.__setattr__(self, "norm", (self.x**2 + self.y**2) ** 0.5)
 ```
 
-### 7.3 Pydantic v1 → v2 迁移陷阱
+### 6.3 Pydantic v1 → v2 迁移陷阱
 
-#### 7.3.1 `@validator` 语义变化
+#### 6.3.1 `@validator` 语义变化
 
 ```python
 # v1
@@ -1289,7 +1248,7 @@ def to_lower(cls, v):
 - v1 的 `pre=True` → v2 的 `mode="before"`
 - v1 的 `each_item=True` → v2 需手动遍历
 
-#### 7.3.2 `Optional` 语义
+#### 6.3.2 `Optional` 语义
 
 ```python
 # v1
@@ -1304,7 +1263,7 @@ class M(BaseModel):
 
 v2 不再隐式为 `Optional` 添加默认值 `None`。
 
-### 7.4 校验器顺序
+### 6.4 校验器顺序
 
 Pydantic v2 的字段验证器执行顺序：
 
@@ -1335,7 +1294,7 @@ M(x="42")
 # after: 42 (int)
 ```
 
-### 7.5 `validate_assignment` 性能陷阱
+### 6.5 `validate_assignment` 性能陷阱
 
 `validate_assignment=True` 使每次属性赋值都触发校验，在循环中性能损失显著：
 
@@ -1359,7 +1318,7 @@ for i in range(1000000):
 Fast.model_validate(obj.__dict__)  # 最后统一校验
 ```
 
-### 7.6 `SecretStr` 的 JSON 序列化
+### 6.6 `SecretStr` 的 JSON 序列化
 
 ```python
 from pydantic import BaseModel, SecretStr
@@ -1377,7 +1336,7 @@ print(c.password.get_secret_value())  # 'secret123' 显式获取
 - 日志框架若调用 `str()` 仍可能泄露（Pydantic v2 已优化为 `**********`）
 - 持久化前需显式调用 `get_secret_value()`
 
-### 7.7 继承中的 `model_config` 合并
+### 6.7 继承中的 `model_config` 合并
 
 ```python
 class Base(BaseModel):
@@ -1391,7 +1350,7 @@ class Child2(Base):
     model_config = ConfigDict(**Base.model_config, extra="allow")
 ```
 
-### 7.8 dataclass 继承中的默认值顺序
+### 6.8 dataclass 继承中的默认值顺序
 
 ```python
 @dataclass
@@ -1414,7 +1373,7 @@ class Child2(Base2):
     y: int = 10
 ```
 
-### 7.9 `kw_only` 的使用
+### 6.9 `kw_only` 的使用
 
 Python 3.10+ 的 `@dataclass(kw_only=True)` 使所有字段只能通过关键字参数传递：
 
@@ -1442,7 +1401,7 @@ class Child(Base):
 Child(1, y=2)  # 正确
 ```
 
-### 7.10 JSON Schema 生成
+### 6.10 JSON Schema 生成
 
 Pydantic 自动生成 JSON Schema，但部分类型需注意：
 
@@ -1462,9 +1421,9 @@ print(json.dumps(M.model_json_schema(), indent=2))
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 渐进式迁移：dict → dataclass → Pydantic
+### 7.1 渐进式迁移：dict → dataclass → Pydantic
 
 **阶段 1：dict 直接传递（原型期）**
 
@@ -1499,7 +1458,7 @@ async def create_user(req: UserCreate) -> UserResponse:
     ...
 ```
 
-### 8.2 monorepo 共享 schema
+### 7.2 monorepo 共享 schema
 
 ```mermaid
 flowchart TD
@@ -1526,7 +1485,7 @@ flowchart TD
 pydantic2ts --module schemas.user --output frontend/src/types/user.ts
 ```
 
-### 8.3 版本化 schema（向前兼容）
+### 7.3 版本化 schema（向前兼容）
 
 ```python
 from pydantic import BaseModel, Field, model_validator
@@ -1561,7 +1520,7 @@ user = UserV2(**v1_data)
 print(user.contact)  # alice@example.com
 ```
 
-### 8.4 自定义 JSON 编码器
+### 7.4 自定义 JSON 编码器
 
 ```python
 from pydantic import BaseModel, field_serializer
@@ -1594,7 +1553,7 @@ class Record(BaseModel):
         return v.value
 ```
 
-### 8.5 ORM 互操作（SQLAlchemy）
+### 7.5 ORM 互操作（SQLAlchemy）
 
 ```python
 from pydantic import BaseModel, ConfigDict
@@ -1632,9 +1591,9 @@ schema_user = UserSchema.model_validate(orm_user)
 print(schema_user.model_dump_json())
 ```
 
-### 8.6 性能优化
+### 7.6 性能优化
 
-#### 8.6.1 `model_construct` 绕过校验
+#### 7.6.1 `model_construct` 绕过校验
 
 ```python
 class M(BaseModel):
@@ -1644,7 +1603,7 @@ class M(BaseModel):
 m = M.model_construct(x=42)  # 比 M(x=42) 快 5-10 倍
 ```
 
-#### 8.6.2 `Tag` 缓存 schema
+#### 7.6.2 `Tag` 缓存 schema
 
 ```python
 # Pydantic v2 内部缓存了 schema，但复杂继承可能重建
@@ -1655,7 +1614,7 @@ class M(BaseModel):
 M.model_rebuild()  # 编译 schema
 ```
 
-#### 8.6.3 批量验证
+#### 7.6.3 批量验证
 
 ```python
 from pydantic import TypeAdapter
@@ -1666,7 +1625,7 @@ adapter = TypeAdapter(list[User])
 users = adapter.validate_python([{"id": i, "username": f"u{i}", ...} for i in range(1000)])
 ```
 
-### 8.7 CI/CD 集成
+### 7.7 CI/CD 集成
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1695,9 +1654,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 FastAPI：Pydantic 的旗舰应用
+### 8.1 FastAPI：Pydantic 的旗舰应用
 
 **背景**：Sebastián Ramírez 2018 年发布 FastAPI，完全基于 Pydantic 构建 API schema。FastAPI 的核心价值主张：**类型即文档**——开发者声明 Pydantic 模型，FastAPI 自动生成 OpenAPI 文档、请求校验、响应序列化。
 
@@ -1709,7 +1668,7 @@ jobs:
 
 **数据**：截至 2024 年，FastAPI GitHub Star 73k+，PyPI 月下载 5000 万+，被 Uber、Netflix、Microsoft 等大型企业采用。
 
-### 9.2 Uber：Pydantic 在大数据场景的应用
+### 8.2 Uber：Pydantic 在大数据场景的应用
 
 **背景**：Uber 的 Michelangelo 机器学习平台使用 Pydantic 定义模型 schema，确保训练/推理时数据一致性。
 
@@ -1723,7 +1682,7 @@ jobs:
 - 使用 `model_construct` 处理可信数据
 - 嵌套深度控制在 5 层以内，避免 schema 编译慢
 
-### 9.3 Microsoft：TypeScript 类型生成
+### 8.3 Microsoft：TypeScript 类型生成
 
 **背景**：Microsoft 的部分内部服务采用 Python 后端 + TypeScript 前端，需要保持类型一致。
 
@@ -1737,7 +1696,7 @@ jobs:
 - API 变更自动触发类型重新生成
 - 新增字段时 TypeScript 编译期报错，防止遗漏
 
-### 9.4 Pydantic v2 迁移：Django Ninja
+### 8.4 Pydantic v2 迁移：Django Ninja
 
 **背景**：Django Ninja 是 Django 生态的 FastAPI 替代品，完全基于 Pydantic。
 
@@ -1751,7 +1710,7 @@ jobs:
 - 类型错误在 v2 下更精确（错误定位到字段而非模型）
 - 迁移工作量约 2 人周（约 200 个模型）
 
-### 9.5 NumPy：dataclass 在科学计算中的应用
+### 8.5 NumPy：dataclass 在科学计算中的应用
 
 **背景**：NumPy 内部用 `dataclass` 定义数组元数据（dtype、shape、strides）。
 
@@ -1779,7 +1738,7 @@ class ArrayMeta:
 - `slots=True` 节省内存（NumPy 创建大量元数据对象）
 - 自动 `__eq__` 便于比较两个数组元数据
 
-### 9.6 Django：Model 与 dataclass 互操作
+### 8.6 Django：Model 与 dataclass 互操作
 
 Django 4.0+ 引入 `django.core.serializers.json`，支持将 Django Model 序列化为 dataclass 友好的格式。常见模式：
 
@@ -1963,7 +1922,7 @@ class Order(BaseModel):
         return self
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 11**：为什么 `@dataclass(frozen=True, slots=True)` 在 Python 3.10+ 才能同时使用？3.10 之前有什么限制？
 
@@ -2008,7 +1967,7 @@ class Order(BaseModel):
 
 ---
 
-## 11. 工具选型决策树
+## 10. 工具选型决策树
 
 ```mermaid
 flowchart TD
@@ -2040,63 +1999,63 @@ flowchart TD
 
 ---
 
-## 12. 参考资料
+## 11. 参考资料
 
-### 12.1 规范与 PEP
+### 11.1 规范与 PEP
 
 - Smith, E. V. (2017). PEP 557: Data Classes. Python Enhancement Proposals. https://peps.python.org/pep-0557/
 - van Rossum, G., Lehtosalo, J., & Langa, Ł. (2014). PEP 484: Type Hints. Python Enhancement Proposals. https://peps.python.org/pep-0484/
 - Levy, S. (2015). PEP 526: Syntax for Variable Annotations. Python Enhancement Proposals. https://peps.python.org/pep-0526/
 - Bond, M. (2019). PEP 544: Protocols: Structural subtyping. Python Enhancement Proposals. https://peps.python.org/pep-0544/
 
-### 12.2 官方文档
+### 11.2 官方文档
 
 - Python Software Foundation. (2024). dataclasses — Data Classes. Python 3.12 Documentation. https://docs.python.org/3/library/dataclasses.html
 - Pydantic Team. (2024). Pydantic v2 Documentation. https://docs.pydantic.dev/latest/
 - Schlawack, H. (2024). attrs Documentation. https://www.attrs.org/
 - Crist-Haruf, J. (2024). msgspec Documentation. https://jcristharif.com/msgspec/
 
-### 12.3 学术论文
+### 11.3 学术论文
 
 - Pierce, B. C. (2002). Types and Programming Languages. MIT Press. ISBN: 978-0262162098.
 - Cardelli, L., & Wegner, P. (1985). On Understanding Types, Data Abstraction, and Polymorphism. ACM Computing Surveys, 17(4), 471-523. https://doi.org/10.1145/6041.6042
 - Appel, A. W. (1998). Modern Compiler Implementation. Cambridge University Press. ISBN: 978-0521586034.
 
-### 12.4 工程实践
+### 11.4 工程实践
 
 - Colvin, S. (2023). Pydantic V2: A Complete Rewrite. Pydantic Blog. https://pydantic.dev/articles/pydantic-v2-final
 - Ramírez, S. (2023). FastAPI Documentation. https://fastapi.tiangolo.com/
 - Schlawack, H. (2022). Why I Don't Like Data Classes. Hynek Schlawack Blog. https://hynek.me/articles/why-i-dont-like-dataclasses/
 
-### 12.5 性能基准
+### 11.5 性能基准
 
 - Pydantic Team. (2024). Pydantic V2 Benchmarks. https://pydantic.dev/articles/pydantic-v2-performance
 - Crist-Haruf, J. (2023). msgspec vs Pydantic vs dataclasses Benchmark. https://jcristharif.com/msgspec/benchmarks.html
 
 ---
 
-## 13. 延伸阅读
+## 12. 延伸阅读
 
-### 13.1 书籍
+### 12.1 书籍
 
 - Ramalho, L. (2022). Fluent Python: Clear, Concise, and Effective Programming (2nd ed.). O'Reilly Media. ISBN: 978-1492056355.（第 5 章"一等函数"与第 8 章"对象引用、可变性和垃圾回收"）
 - Bader, D. (2017). Python Tricks: A Buffet of Awesome Python Features. DBader Publishing. ISBN: 978-1775093313.（"Data Classes" 章节）
 - Summerfield, M. (2021). Programming in Python 3: A Complete Introduction to the Python Language (3rd ed.). Addison-Wesley. ISBN: 978-0321680563.
 
-### 13.2 论文与标准
+### 12.2 论文与标准
 
 - JSON Schema Specification. (2020). JSON Schema Draft 2020-12. https://json-schema.org/draft/2020-12/json-schema.html
 - ISO/IEC 9899:2018. Information technology — Programming languages — C.（参考 C struct 内存布局）
 - ISO 4217:2015. Codes for the representation of currencies.（货币代码标准）
 
-### 13.3 在线资源
+### 12.3 在线资源
 
 - Pydantic GitHub: https://github.com/pydantic/pydantic
 - attrs GitHub: https://github.com/python-attrs/attrs
 - msgspec GitHub: https://github.com/jcrist/msgspec
 - mypy plugin for Pydantic: https://docs.pydantic.dev/latest/integrations/mypy/
 
-### 13.4 学习路线
+### 12.4 学习路线
 
 ```
 初级：dataclass 基础
@@ -2112,9 +2071,9 @@ flowchart TD
 
 ---
 
-## 14. 附录
+## 13. 附录
 
-### 14.1 `@dataclass` 参数速查
+### 13.1 `@dataclass` 参数速查
 
 | 参数 | 默认值 | 说明 |
 | ---- | ------ | ---- |
@@ -2127,7 +2086,7 @@ flowchart TD
 | `slots` | `False`（3.10+） | 使用 `__slots__` |
 | `kw_only` | `False`（3.10+） | 仅关键字参数 |
 
-### 14.2 `field()` 参数速查
+### 13.2 `field()` 参数速查
 
 | 参数 | 说明 |
 | ---- | ---- |
@@ -2139,7 +2098,7 @@ flowchart TD
 | `compare` | 是否参与 `__eq__`（默认 True） |
 | `metadata` | 元数据字典 |
 
-### 14.3 Pydantic v2 `Field` 常用约束
+### 13.3 Pydantic v2 `Field` 常用约束
 
 | 约束 | 类型 | 示例 |
 | ---- | ---- | ---- |
@@ -2155,7 +2114,7 @@ flowchart TD
 | `examples` | 任意 | `Field(examples=["alice"])` |
 | `deprecated` | 任意 | `Field(deprecated="使用 new_field 替代")` |
 
-### 14.4 `ConfigDict` 常用选项
+### 13.4 `ConfigDict` 常用选项
 
 | 选项 | 默认值 | 说明 |
 | ---- | ------ | ---- |
@@ -2172,9 +2131,9 @@ flowchart TD
 | `json_encoders` | `{}` | 自定义 JSON 编码器 |
 | `json_schema_extra` | `{}` | 额外 JSON Schema 信息 |
 
-### 14.5 团队规范模板
+### 13.5 团队规范模板
 
-#### 14.5.1 `pyproject.toml` 模板
+#### 13.5.1 `pyproject.toml` 模板
 
 ```toml
 [tool.pydantic-mypy]
@@ -2188,7 +2147,7 @@ plugins = ["pydantic.mypy"]
 strict = true
 ```
 
-#### 14.5.2 团队代码规范
+#### 13.5.2 团队代码规范
 
 1. **优先使用 `Annotated` 写法**：`Annotated[int, Field(gt=0)]` 而非 `int = Field(gt=0)`。
 2. **值对象用 `frozen=True, slots=True`**：保证不可变与内存高效。
@@ -2199,7 +2158,7 @@ strict = true
 7. **测试覆盖率 >= 90%**：覆盖校验失败路径。
 8. **CI 集成 `pydantic.mypy` 插件**：静态检查 Pydantic 模型。
 
-### 14.6 常见错误码对照
+### 13.6 常见错误码对照
 
 | 错误类型 | 触发场景 | 解决方案 |
 | -------- | -------- | -------- |
@@ -2209,7 +2168,7 @@ strict = true
 | `ConfigError` | 配置错误 | 检查 `model_config` |
 | `SchemaError` | schema 编译失败 | 检查类型注解与 forward ref |
 
-### 14.7 迁移检查清单（v1 → v2）
+### 13.7 迁移检查清单（v1 → v2）
 
 - [ ] `.dict()` → `.model_dump()`
 - [ ] `.json()` → `.model_dump_json()`

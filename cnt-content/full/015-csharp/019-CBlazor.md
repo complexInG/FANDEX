@@ -16,44 +16,16 @@ prerequisites:
   - csharp/概述与环境配置
 ---
 
-## 1. 学习目标与 Bloom 分类法
 
-本节遵循 Benjamin Bloom 于 1956 年提出、Anderson 等人于 2001 年修订的认知能力分类体系，将学习目标按六个层级进行显式标注，便于学习者自评与教师评估。
+## 1. 历史动机与演进脉络
 
-### 1.1 学习目标矩阵
-
-| 层级 | Bloom 类别 | 行为动词 | 学习成果描述 |
-| :--- | :--------- | :------- | :----------- |
-| L1 | 记忆（Remember） | 列举、回忆 | 能够列举 Blazor 的四种托管模型及其部署形态 |
-| L2 | 理解（Understand） | 解释、对比 | 能够解释 Server / WebAssembly / Auto 三种渲染模式的运行机制差异 |
-| L3 | 应用（Apply） | 实现、演示 | 能够独立实现包含数据绑定、路由、依赖注入的 Blazor 组件 |
-| L4 | 分析（Analyze） | 区分、解构 | 能够分析 Blazor 渲染树的差分算法并定位性能瓶颈 |
-| L5 | 评价（Evaluate） | 评估、批判 | 能够评估给定业务场景下应采用何种托管模型并论证决策 |
-| L6 | 创造（Create） | 设计、构建 | 能够设计并实现一个端到端的企业级 Blazor 应用，覆盖状态管理、认证、测试与部署 |
-
-### 1.2 预期先修知识
-
-- C# 基础语法（类型系统、泛型、异步编程）
-- .NET 平台基础（SDK、运行时、项目结构）
-- HTML/CSS/JavaScript 基础概念
-- HTTP 协议与 REST API 设计
-- 数据结构与算法基础（树、图、动态规划入门）
-
-### 1.3 学习评估方式
-
-- **L1-L2**：通过课后习题的选择题与简答题评估
-- **L3-L4**：通过编程实践作业（实现指定功能组件）评估
-- **L5-L6**：通过课程项目（设计完整应用并撰写技术决策报告）评估
-
-## 2. 历史动机与演进脉络
-
-### 2.1 Web 前端的 JavaScript 垄断期（1995-2015）
+### 1.1 Web 前端的 JavaScript 垄断期（1995-2015）
 
 1995 年 Brendan Eich 在 Netscape 用十天时间设计出 JavaScript，自此浏览器端的脚本编程被这一语言长期垄断。尽管 JavaScript 凭借 ECMAScript 标准化与 V8 引擎的极致优化逐步成为通用前端语言，但其设计历史遗留的诸多问题（隐式类型转换、原型继承混乱、`this` 绑定诡异）始终困扰开发者。
 
 2009 年 Node.js 的出现使 JavaScript 渗透到服务端，TypeScript（2012）通过类型系统缓解了大规模工程的维护痛点，但前端生态仍被 Webpack、Babel、Rollup 等构建工具链所主导，对 C#/.NET 开发者而言存在显著的认知迁移成本。
 
-### 2.2 WebAssembly 的诞生与机遇（2015-2017）
+### 1.2 WebAssembly 的诞生与机遇（2015-2017）
 
 WebAssembly（简称 Wasm）是 2015 年由所有主流浏览器厂商联合宣布的二进制指令格式标准，2017 年成为第四种浏览器原生支持的语言（与 HTML、CSS、JavaScript 并列）。Wasm 的关键特性在于：
 
@@ -64,13 +36,13 @@ WebAssembly（简称 Wasm）是 2015 年由所有主流浏览器厂商联合宣�
 
 Wasm 的出现为非 JavaScript 语言进入浏览器打开了大门，Mozilla 于 2017 年发起的 `blazor` 实验项目即是其中之一。
 
-### 2.3 Blazor 的诞生与命名由来
+### 1.3 Blazor 的诞生与命名由来
 
 Blazor 的命名来源于 **B**rowser + R**azor**，即"运行在浏览器中的 Razor 视图引擎"。Razor 是 ASP.NET MVC 时代引入的视图引擎，支持在 HTML 中嵌入 C# 代码。Steve Sanderson（ASP.NET MVC 的原作者之一）于 2017 年在 GitHub 上发布了原型项目 `SteveSandersonMS/blazor`，使用 Mono 的 Wasm 编译后端将 .NET 程序集在浏览器中运行。
 
 微软于 2018 年正式接手该项目，2019 年发布 Blazor Server 1.0，2020 年发布 Blazor WebAssembly 3.2。.NET 5（2020 年 11 月）将两者合并为统一的 Blazor 框架，.NET 8（2023 年 11 月）引入了 **Blazor Auto** 渲染模式，标志着 Blazor 进入成熟期。
 
-### 2.4 渲染模式的代际演进
+### 1.4 渲染模式的代际演进
 
 | 代际 | 版本 | 时间 | 关键特性 | 主要缺陷 |
 | :--- | :--- | :--- | :------- | :------- |
@@ -80,11 +52,11 @@ Blazor 的命名来源于 **B**rowser + R**azor**，即"运行在浏览器中的
 | 第四代 | Blazor Auto | 2023 | 自动从 Server 切换至 WASM | 复杂度提升，调试困难 |
 | 第五代 | Blazor United | 2024+ | 静态服务端渲染 + 流式渲染 + 交互组件融合 | 演进中 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节使用形式化语言严格定义 Blazor 的核心概念，便于后续理论推导与性能分析。
 
-### 3.1 渲染树的代数定义
+### 2.1 渲染树的代数定义
 
 **定义 3.1（渲染树）**：Blazor 组件的渲染结果是一棵有序有根树 $T = (V, E, r)$，其中：
 - $V$ 是节点集合，每个节点 $v \in V$ 是一个二元组 $v = (\text{type}, \text{attrs})$，其中 $\text{type} \in \{\text{Element}, \text{Component}, \text{Text}\}$，$\text{attrs}: \text{Key} \to \text{Value}$ 是属性映射
@@ -95,7 +67,7 @@ Blazor 的命名来源于 **B**rowser + R**azor**，即"运行在浏览器中的
 
 **定义 3.3（差分渲染）**：设 $T_{n-1}$ 为上一次渲染的树，$T_n$ 为本次渲染的树，差分函数 $\text{Diff}: (T_{n-1}, T_n) \to \Delta$ 输出一组编辑操作 $\Delta = \{(\text{op}, v_i, v_j)\}$，其中 $\text{op} \in \{\text{Insert}, \text{Delete}, \text{Update}, \text{Move}\}$。Blazor 的差分算法基于 **顺序键匹配**：对每对兄弟节点列表，按顺序比较并优先匹配 `@key` 标注的节点。
 
-### 3.2 SignalR 通信模型
+### 2.2 SignalR 通信模型
 
 **定义 3.4（SignalR 连接）**：Blazor Server 通过 SignalR 建立持久连接 $\mathcal{C} = (\text{client}, \text{server}, \text{transport})$，其中 $\text{transport} \in \{\text{WebSocket}, \text{SSE}, \text{LongPolling}\}$。连接上的消息流可建模为双向队列：
 
@@ -114,7 +86,7 @@ $$\tau = \tau_{\text{net}}^{(c \to s)} + \tau_{\text{queue}}^{s} + \tau_{\text{r
 - $\tau_{\text{net}}^{(s \to c)}$：DOM 更新指令下行网络延迟
 - $\tau_{\text{apply}}^{c}$：客户端应用 DOM diff 时间
 
-### 3.3 WebAssembly 加载模型
+### 2.3 WebAssembly 加载模型
 
 **定义 3.6（WASM 应用加载时间）**：Blazor WebAssembly 应用的首屏加载时间 $T_{\text{load}}$ 由以下分量构成：
 
@@ -127,7 +99,7 @@ $$T_{\text{load}} = T_{\text{fetch}} + T_{\text{parse}} + T_{\text{instantiate}}
 - $T_{\text{init}}$：.NET 运行时初始化时间
 - $T_{\text{firstRender}}$：首屏渲染时间
 
-### 3.4 组件状态机
+### 2.4 组件状态机
 
 **定义 3.7（组件生命周期状态机）**：Blazor 组件的状态可建模为有限状态机 $\mathcal{M} = (S, \Sigma, \delta, s_0, F)$，其中：
 
@@ -149,9 +121,9 @@ $$\delta(\text{Rendered}, \text{paramsSet}) = \text{ParametersSet}$$
 $$\delta(\text{Rendered}, \text{dispose}) = \text{Disposing}$$
 $$\delta(\text{Disposing}, \_) = \text{Disposed}$$
 
-## 4. 理论推导与性能分析
+## 3. 理论推导与性能分析
 
-### 4.1 差分渲染算法复杂度
+### 3.1 差分渲染算法复杂度
 
 **定理 4.1（差分渲染复杂度）**：设两棵兄弟节点列表长度分别为 $m$ 与 $n$，若所有节点均使用 `@key` 标注且键唯一，则 Blazor 的差分算法时间复杂度为 $\mathcal{O}(m + n)$；若不使用 `@key`，最坏情况为 $\mathcal{O}(m \cdot n)$。
 
@@ -159,7 +131,7 @@ $$\delta(\text{Disposing}, \_) = \text{Disposed}$$
 
 **推论 4.1**：在动态列表场景（如表格排序、过滤）中，未标注 `@key` 会造成 $n$ 倍的性能退化，应强制使用 `@key`。
 
-### 4.2 SignalR 延迟下界
+### 3.2 SignalR 延迟下界
 
 **定理 4.2（最小交互延迟）**：在 Blazor Server 模式下，单次用户交互的最小端到端延迟 $\tau_{\min}$ 满足：
 
@@ -177,7 +149,7 @@ $$\tau_{\min} \geq 2 \cdot \text{RTT} + \tau_{\text{render}}^{s}$$
 | 200（跨国） | ~410 | 难以交互 |
 | 300（洲际） | ~610 | 不可用 |
 
-### 4.3 WebAssembly 加载时间下界
+### 3.3 WebAssembly 加载时间下界
 
 **定理 4.3（WASM 首屏加载下界）**：在带宽 $B$ 与最小应用体积 $V$ 给定时，Blazor WebAssembly 应用的首屏加载时间下界为：
 
@@ -194,7 +166,7 @@ $$T_{\text{load}} \geq \frac{V}{B} + T_{\text{instantiate}}$$
 
 通过 **Trimmer 裁剪** 与 **AOT 编译** 可将体积压缩至 2-3 MB，加载时间降至 2-3 秒。
 
-### 4.4 内存占用模型
+### 3.4 内存占用模型
 
 **定理 4.4（组件内存占用）**：Blazor 应用中，单个组件实例的内存占用 $M$ 近似为：
 
@@ -204,11 +176,11 @@ $$M \approx M_{\text{base}} + |\text{state}| + |\text{refs}| \cdot 8 + |\text{ha
 
 **工程含义**：复杂表格中若有 10000 行，每行 5 个事件处理器，则仅事件处理器开销即 $10000 \times 5 \times 32 = 1.6$ MB。应通过虚拟化（`<Virtualize>`）限制同时渲染的行数。
 
-## 5. 代码示例与实战演示
+## 4. 代码示例与实战演示
 
 本节通过完整代码示例演示 Blazor 的核心功能，所有代码均包含中文工程级注释，遵循可维护性优先原则。
 
-### 5.1 基础组件：计数器
+### 4.1 基础组件：计数器
 
 ```razor
 @* Counter.razor - 最基础的 Blazor 组件，演示状态与事件绑定 *@
@@ -250,7 +222,7 @@ $$M \approx M_{\text{base}} + |\text{state}| + |\text{refs}| \cdot 8 + |\text{ha
 }
 ```
 
-### 5.2 组件参数与父子通信
+### 4.2 组件参数与父子通信
 
 ```razor
 @* ProductCard.razor - 子组件，演示参数接收与事件回调 *@
@@ -377,7 +349,7 @@ public class ThemeInfo
 }
 ```
 
-### 5.3 双向绑定与表单
+### 4.3 双向绑定与表单
 
 ```razor
 @* FormDemo.razor - 演示双向绑定、表单验证、模型驱动 *@
@@ -493,7 +465,7 @@ public class GenderOption
 }
 ```
 
-### 5.4 生命周期方法详解
+### 4.4 生命周期方法详解
 
 ```razor
 @* LifecycleDemo.razor - 完整生命周期演示 *@
@@ -604,7 +576,7 @@ public class GenderOption
 }
 ```
 
-### 5.5 路由与导航
+### 4.5 路由与导航
 
 ```csharp
 // Program.cs - 配置路由
@@ -708,7 +680,7 @@ app.Run();
 }
 ```
 
-### 5.6 依赖注入与服务生命周期
+### 4.6 依赖注入与服务生命周期
 
 ```csharp
 // Program.cs - 注册服务
@@ -769,7 +741,7 @@ app.Run();
 }
 ```
 
-### 5.7 JavaScript 互操作
+### 4.7 JavaScript 互操作
 
 ```razor
 @* JsInterop.razor - JS 互操作完整示例 *@
@@ -882,7 +854,7 @@ window.showToast = function(message) {
 };
 ```
 
-### 5.8 状态管理：Scoped 服务与容器组件
+### 4.8 状态管理：Scoped 服务与容器组件
 
 ```csharp
 // CartService.cs - 全局购物车状态
@@ -994,7 +966,7 @@ public class CartItem
 }
 ```
 
-### 5.9 认证与授权
+### 4.9 认证与授权
 
 ```csharp
 // Program.cs - 配置认证
@@ -1179,7 +1151,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 </AuthorizeView>
 ```
 
-### 5.10 虚拟化与性能优化
+### 4.10 虚拟化与性能优化
 
 ```razor
 @* VirtualizedList.razor - 大数据列表虚拟化 *@
@@ -1263,9 +1235,9 @@ public record RemoteItem(string Title);
 public record PagedResult<T>(IReadOnlyList<T> Items, int TotalCount);
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Blazor 托管模型对比
+### 5.1 Blazor 托管模型对比
 
 | 维度 | Blazor Server | Blazor WebAssembly | Blazor Auto | Blazor MAUI |
 | :--- | :------------ | :------------------ | :---------- | :---------- |
@@ -1278,7 +1250,7 @@ public record PagedResult<T>(IReadOnlyList<T> Items, int TotalCount);
 | 安全性 | 高（代码不外泄） | 中（DLL 可下载） | 中 | 高 |
 | 适用场景 | 内网企业应用 | 公开 Web 应用 | 渐进式迁移 | 跨平台桌面 |
 
-### 6.2 Blazor 与其他前端框架对比
+### 5.2 Blazor 与其他前端框架对比
 
 | 框架 | 语言 | 运行时 | 包大小 | 学习曲线 | 生态成熟度 | 性能 |
 | :--- | :--- | :----- | :----- | :------- | :--------- | :--- |
@@ -1289,7 +1261,7 @@ public record PagedResult<T>(IReadOnlyList<T> Items, int TotalCount);
 | Svelte | JS/TS | 无运行时 | ~10KB | 中 | 中 | 极高 |
 | Elmish | F# | .NET | ~3MB | 高 | 低 | 中 |
 
-### 6.3 渲染模式选择决策矩阵
+### 5.3 渲染模式选择决策矩阵
 
 ```mermaid
 flowchart TD
@@ -1315,9 +1287,9 @@ flowchart TD
     T9 --> T11
 ```
 
-## 7. 常见陷阱与误区
+## 6. 常见陷阱与误区
 
-### 7.1 渲染相关陷阱
+### 6.1 渲染相关陷阱
 
 **陷阱 7.1：在 `OnParametersSet` 中触发状态变化**
 
@@ -1370,7 +1342,7 @@ protected override bool ShouldRender()
 protected override bool ShouldRender() => _shouldRender;
 ```
 
-### 7.2 异步陷阱
+### 6.2 异步陷阱
 
 **陷阱 7.4：未 await 异步操作**
 
@@ -1409,7 +1381,7 @@ private async Task LoadData()
 // 但在按钮点击等事件处理器中需要手动调用（实际上 Blazor 会自动处理）
 ```
 
-### 7.3 内存泄漏陷阱
+### 6.3 内存泄漏陷阱
 
 **陷阱 7.6：未取消事件订阅**
 
@@ -1458,7 +1430,7 @@ public async ValueTask DisposeAsync()
 }
 ```
 
-### 7.4 Blazor Server 特有陷阱
+### 6.4 Blazor Server 特有陷阱
 
 **陷阱 7.8：长时间运行的任务阻塞电路**
 
@@ -1500,7 +1472,7 @@ public class BigStateService
 builder.Services.AddSingleton<SharedCacheService>();
 ```
 
-### 7.5 Blazor WebAssembly 特有陷阱
+### 6.5 Blazor WebAssembly 特有陷阱
 
 **陷阱 7.10：同步阻塞操作**
 
@@ -1529,9 +1501,9 @@ var response = await httpClient.GetAsync("https://api.example.com/data");
 // 方案 3：使用同源策略
 ```
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 项目结构规范
+### 7.1 项目结构规范
 
 ```mermaid
 flowchart TD
@@ -1563,7 +1535,7 @@ flowchart TD
     T21 --> T22
 ```
 
-### 8.2 组件设计原则
+### 7.2 组件设计原则
 
 **原则 8.1：单一职责**
 
@@ -1608,7 +1580,7 @@ flowchart TD
 }
 ```
 
-### 8.3 性能优化清单
+### 7.3 性能优化清单
 
 ```csharp
 // 1. 启用 AOT 编译（WASM 模式）
@@ -1635,7 +1607,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents(prerender: true);
 ```
 
-### 8.4 错误处理与日志
+### 7.4 错误处理与日志
 
 ```csharp
 // Program.cs - 全局异常处理
@@ -1683,7 +1655,7 @@ public class GlobalExceptionHandler : IExceptionHandler
 }
 ```
 
-### 8.5 测试策略
+### 7.5 测试策略
 
 ```csharp
 // 组件单元测试（使用 bUnit）
@@ -1751,7 +1723,7 @@ public class ProductListTests : TestContext
 }
 ```
 
-### 8.6 端到端测试
+### 7.6 端到端测试
 
 ```csharp
 // 使用 Playwright 进行 E2E 测试
@@ -1786,9 +1758,9 @@ public class BlazorE2ETests
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：企业管理后台（Blazor Server）
+### 8.1 案例一：企业管理后台（Blazor Server）
 
 **场景描述**：一家中型企业需要构建内部管理系统，包含员工管理、审批流程、报表导出等功能。用户约 200 人，主要在内网使用。
 
@@ -1909,7 +1881,7 @@ app.Run();
 }
 ```
 
-### 9.2 案例二：实时协作应用（Blazor Server + SignalR）
+### 8.2 案例二：实时协作应用（Blazor Server + SignalR）
 
 **场景描述**：在线协作白板，多人实时编辑，需要低延迟通信。
 
@@ -2024,7 +1996,7 @@ public record Point(double X, double Y);
 public class Stroke { public List<Point> Points { get; } = new(); }
 ```
 
-### 9.3 案例三：PWA 离线应用（Blazor WebAssembly）
+### 8.3 案例三：PWA 离线应用（Blazor WebAssembly）
 
 **场景描述**：现场作业人员使用的离线巡检应用，需要离线数据存储与同步。
 
@@ -2167,7 +2139,7 @@ public class OfflineSyncService
 }
 ```
 
-### 9.4 案例四：Blazor Auto 渐进式迁移
+### 8.4 案例四：Blazor Auto 渐进式迁移
 
 **场景描述**：将现有 ASP.NET MVC 应用逐步迁移到 Blazor，避免一次性重写。
 
@@ -2209,7 +2181,7 @@ app.MapRazorComponents<App>()
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（L1-L2：记忆与理解）
+### 9.1 基础题（L1-L2：记忆与理解）
 
 **习题 10.1.1**：列举 Blazor 的四种托管模型，并简述各自的运行位置。
 
@@ -2323,7 +2295,7 @@ app.MapRazorComponents<App>()
 }
 ```
 
-### 10.3 分析题（L4：分析）
+### 9.3 分析题（L4：分析）
 
 **习题 10.3.1**：分析以下代码的性能问题并给出优化方案。
 
@@ -2366,7 +2338,7 @@ Blazor Server 通过 SignalR 维持长连接。长时间运行的任务会：
 - 分批处理并定期 `StateHasChanged` 报告进度
 - 使用消息队列（如 Azure Service Bus）异步处理
 
-### 10.4 评价题（L5：评价）
+### 9.4 评价题（L5：评价）
 
 **习题 10.4.1**：评估以下场景应选择哪种 Blazor 托管模型，并论证你的决策。
 
@@ -2388,7 +2360,7 @@ Blazor Server 通过 SignalR 维持长连接。长时间运行的任务会：
 - 并发限制：使用负载均衡横向扩展
 - 掉线重连：实现状态持久化与自动恢复
 
-### 10.5 创造题（L6：创造）
+### 9.5 创造题（L6：创造）
 
 **习题 10.5.1**：设计一个支持多人协作的在线文档编辑器，描述架构与关键技术选型。
 
@@ -2444,7 +2416,7 @@ public class DocumentCollaborationService
 }
 ```
 
-## 11. ACM 参考文献
+## 10. ACM 参考文献
 
 本节参考文献遵循 ACM Reference Format，包含 DOI 信息便于读者检索原文。
 
@@ -2484,9 +2456,9 @@ public class DocumentCollaborationService
 
 [18] Kleppmann, M. 2017. Designing Data-Intensive Applications. O'Reilly Media. ISBN: 978-1-4493-7332-0
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档与教程
+### 11.1 官方文档与教程
 
 - **Microsoft Learn - Blazor**：https://learn.microsoft.com/aspnet/core/blazor/
   官方权威教程，涵盖从入门到高级的所有主题
@@ -2497,7 +2469,7 @@ public class DocumentCollaborationService
 - **ASP.NET Core source code**：https://github.com/dotnet/aspnetcore
   阅读源码是理解 Blazor 内部机制的最佳方式
 
-### 12.2 进阶书籍
+### 11.2 进阶书籍
 
 - **《Blazor in Action》**（Chris Sainty, 2022, Manning）
   面向中高级开发者，覆盖企业级应用开发实践
@@ -2508,7 +2480,7 @@ public class DocumentCollaborationService
 - **《Blazor WebAssembly by Example》**（Toi B. Wright, 2022, Packt）
   以实战案例驱动，适合动手学习者
 
-### 12.3 相关技术与生态
+### 11.3 相关技术与生态
 
 - **MudBlazor**：https://mudblazor.com/
   最流行的开源 Blazor UI 组件库，Material Design 风格
@@ -2525,7 +2497,7 @@ public class DocumentCollaborationService
 - **Blazored**：https://github.com/Blazored
   社区组件集合，包含 LocalStorage、Toast、Modal 等常用组件
 
-### 12.4 性能与优化资源
+### 11.4 性能与优化资源
 
 - **Blazor WebAssembly 性能优化指南**：https://learn.microsoft.com/aspnet/core/blazor/webassembly-performance-best-practices
 
@@ -2533,7 +2505,7 @@ public class DocumentCollaborationService
 
 - **.NET 性能团队博客**：https://devblogs.microsoft.com/dotnet/category/performance/
 
-### 12.5 社区与交流
+### 11.5 社区与交流
 
 - **Blazor Gitter**：https://gitter.im/aspnet/Blazor
   官方社区聊天室，开发者交流经验
@@ -2544,14 +2516,14 @@ public class DocumentCollaborationService
 - **Blazor Weekly Newsletter**：https://blazorweekly.com/
   每周精选 Blazor 相关新闻、文章、视频
 
-### 12.6 未来发展方向
+### 11.6 未来发展方向
 
 - **Blazor United**：微软正在开发的统一 Web UI 框架，融合 MVC、Razor Pages、Blazor 的优势
 - **.NET 9+ 增强功能**：流式渲染、静态服务端渲染（SSR）与交互组件的无缝融合
 - **WebAssembly 2.0**：即将支持异常处理、垃圾回收、SIMD 等高级特性
 - **NativeAOT for WASM**：原生 AOT 编译将进一步缩小包体积并提升启动速度
 
-## 13. 总结
+## 12. 总结
 
 Blazor 作为 .NET 生态在 Web 前端的重要布局，通过 WebAssembly 与 SignalR 两种技术路径，使 C# 开发者能够使用熟悉的语言与工具链构建现代 Web 应用。其核心价值在于：
 

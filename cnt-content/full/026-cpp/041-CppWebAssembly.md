@@ -16,16 +16,6 @@ prerequisites:
   - cpp/概述与现代标准
 ---
 
-## 学习目标
-
-完成本章学习后，读者应当能够达到以下认知层级（参照 Bloom 分类法）：
-
-- **记忆（Remembering）**：复述 WebAssembly（Wasm）的核心特征（栈式虚拟机、紧凑二进制格式、结构化控制流、沙箱执行模型）；列举 Wasm 1.0/2.0/3.0 各版本的关键能力（SIMD、threads、GC、exception handling）；列举 Emscripten 工具链的主要组件（emcc、em++、Emscripten-Linker、embind、file packager）。
-- **理解（Understanding）**：解释 C++ 源代码到 Wasm 模块的端到端编译流水线（预处理 → C++ → LLVM IR → Wasm）；阐述 Wasm 的线性内存模型与 C++ 指针语义的对应关系；区分 `wasm32`、`wasm64`、`wasm-ld` 链接器、`emscripten` 与 `wasi-sdk` 的角色差异。
-- **应用（Applying）**：使用 Emscripten 将现有 C++ 库（如 OpenCV、Eigen、Boost）编译为可在浏览器运行的 Wasm 模块；使用 `embind` 或 `WebIDL` 绑定层暴露 C++ API 给 JavaScript 调用；实现文件系统、网络、Canvas、WebGL 等 Web API 的桥接。
-- **分析（Analyzing）**：在 Chrome DevTools、`wasm-objdump`、`wabt` 工具链下分析 Wasm 模块的段结构、导入导出表、调用图与内存布局；识别 C++ 异常、RTTI、动态链接对 Wasm 模块体积与启动时间的影响。
-- **评价（Evaluating）**：在给定的性能预算与浏览器兼容性需求下，权衡是否将 C++ 代码编译为 Wasm、选择 `asm.js` 回退、还是改用纯 JS 实现；评估 WASI（WebAssembly System Interface）相比传统 Emscripten 在服务端的优劣。
-- **创造（Creating）**：设计并实现一个端到端的 C++/Wasm 项目，包含 CMake 构建脚本、embind 接口定义、自动化测试套件、CI/CD 部署到 NPM 包的完整流水线，并在 GitHub Pages 上发布交互式 Demo。
 
 ## 概述
 

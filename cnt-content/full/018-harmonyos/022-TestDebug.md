@@ -15,6 +15,7 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
+
 # 测试与调试 语法速查手册
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -28,46 +29,6 @@ prerequisites:
 为什么需要测试？一个没有测试覆盖的代码库就像在薄冰上疾驰——任何一次重构都可能引发不可预知的回归。测试用例是代码的"安全网"，让开发者有信心进行大规模重构与功能迭代。研究表明，Google 内部代码库中测试覆盖率每提升 10%，线上缺陷率平均下降 6.4%（Empirical Software Engineering 2022 年研究）。
 
 为什么需要调试？当应用行为与预期不符，开发者需要快速锁定根因。调试器（Debugger）提供了断点、变量观察、调用栈分析等能力，使程序执行可被暂停、检查、单步推进。HarmonyOS 的 DevEco Studio 集成了基于 DAP（Debug Adapter Protocol）的调试器，支持 ArkTS/JS/C++ 多语言混合调试。
-
-## 学习目标
-
-本章节基于 Bloom 分类法分层设计学习目标。
-
-### 记忆层（Remember）
-
-- 能够列举测试金字塔的三层结构（单元测试、集成测试、端到端测试）
-- 能够复述 Jest/Hypium 的核心 API（`describe`、`it`、`expect`、`beforeEach`）
-- 能够回忆 hilog 日志的五个级别（debug、info、warn、error、fatal）
-
-### 理解层（Understand）
-
-- 能够解释断言（Assertion）与异常（Exception）的本质差异
-- 能够阐述测试用例独立性原则（FIRST 原则中的 I）
-- 能够说明 DAP（Debug Adapter Protocol）调试器的工作原理
-
-### 应用层（Apply）
-
-- 能够为 ArkTS 函数编写参数化单元测试
-- 能够使用 Mock 框架隔离被测代码的依赖
-- 能够在 DevEco Studio 中设置条件断点、日志断点
-
-### 分析层（Analyze）
-
-- 能够分解测试用例的 AAA 结构（Arrange-Act-Assert）
-- 能够分析覆盖率报告中"已覆盖但无断言"的伪测试用例
-- 能够剖析 ArkUI 组件渲染管线，定位渲染热点
-
-### 评价层（Evaluate）
-
-- 能够评估单元测试套件的健壮性（brittleness）与可维护性
-- 能够评判 Mock 滥用对测试可信度的损害
-- 能够选择合适的性能剖析策略（采样 vs 插桩）
-
-### 创造层（Create）
-
-- 能够设计一个测试覆盖率门禁流水线（CI Gate）
-- 能够构建领域特定的断言库（Domain-Specific Assertion Library）
-- 能够组合 hilog、Profiler、Sentry 构建生产级可观测性体系
 
 ## 历史动机与背景
 

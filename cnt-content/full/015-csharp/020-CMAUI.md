@@ -16,71 +16,6 @@ prerequisites:
   - csharp/概述与环境配置
 ---
 
-## 0. 学习目标
-
-本章节基于 Bloom 分类法组织学习目标，按认知层级递进，帮助学习者系统掌握 .NET MAUI 跨平台应用开发。
-
-### 0.1 记忆层（Remember）
-
-完成本章学习后，学习者应当能够：
-
-- 复述 MAUI 的全称（.NET Multi-platform App UI）及其定位
-- 列举 MAUI 支持的目标平台：Android、iOS、macOS、Windows
-- 识别 MAUI 的核心命名空间 `Microsoft.Maui`、`Microsoft.Maui.Controls`
-- 回忆 MAUI 项目结构中的关键目录：`Platforms/`、`Resources/`、`MauiProgram.cs`
-- 列举至少 8 个常用 MAUI 控件：`Page`、`View`、`Button`、`Entry`、`Label`、`CollectionView`、`ScrollView`、`StackLayout`
-
-### 0.2 理解层（Understand）
-
-完成本章学习后，学习者应当应当能够：
-
-- 解释 MAUI 与 Xamarin.Forms 的关系及演进路径
-- 阐述 MAUI 的渲染机制（Handler vs Renderer）
-- 说明 MAUI 如何通过单一项目结构管理多平台代码
-- 解释 XAML 的编译过程与代码隐藏（Code-behind）模型
-- 阐述数据绑定的模式（OneWay、TwoWay、OneWayToSource、OneTime）
-
-### 0.3 应用层（Apply）
-
-完成本章学习后，学习者应当能够：
-
-- 使用 .NET CLI 或 Visual Studio 创建 MAUI 项目
-- 在 XAML 中布局页面，并实现响应式设计
-- 实现 ViewModel 与 View 之间的数据绑定
-- 使用平台特定代码调用原生 API（如相机、地理位置）
-- 使用 .NET MAUI Community Toolkit 扩展应用功能
-
-### 0.4 分析层（Analyze）
-
-完成本章学习后，学习者应当能够：
-
-- 分析 MAUI 应用的启动流程与依赖注入配置
-- 比较 MAUI Handler 架构与 Xamarin.Forms Renderer 架构的差异
-- 拆解数据绑定的传播路径与变更通知机制
-- 分析跨平台代码复用与平台特定代码的边界
-- 识别 MAUI 应用的性能瓶颈（布局、绑定、图像）
-
-### 0.5 评价层（Evaluate）
-
-完成本章学习后，学习者应当能够：
-
-- 评估 MAUI 相对于 Flutter、React Native、Kotlin Multiplatform 的优劣
-- 判断何时应使用 MAUI 而非原生开发
-- 评价 MAUI 应用的性能与启动时间是否符合生产标准
-- 评估 MAUI 在大型企业应用中的可维护性
-- 评估社区生态成熟度与长期支持前景
-
-### 0.6 创造层（Create）
-
-完成本章学习后，学习者应当能够：
-
-- 设计并实现完整的 MAUI 跨平台应用，覆盖四端发布
-- 构建自定义控件并实现跨平台 Handler
-- 设计基于 MVVM 模式的可测试应用架构
-- 实现自定义的依赖注入与配置系统
-- 创造性地将 MAUI 与 .NET Aspire、Blazor Hybrid 等技术融合
-
----
 
 ## 1. 历史动机与背景
 
@@ -149,9 +84,9 @@ MAUI 基于统一的 .NET 6+ 运行时，移除了 Xamarin 时代的 Mono 与 .N
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 MAUI 架构的形式化模型
+### 1.1 MAUI 架构的形式化模型
 
 MAUI 的架构可以形式化为一个分层模型：
 
@@ -167,7 +102,7 @@ $$
 - $\text{Platforms}$：平台层，Android、iOS、macOS、Windows 的原生实现
 - $\text{Services}$：服务层，提供设备能力访问（如文件、网络、传感器）
 
-### 2.2 控件到原生控件的映射
+### 1.2 控件到原生控件的映射
 
 每个 MAUI 控件 $C$ 通过 Handler $H$ 映射到平台原生控件 $V_{\text{platform}}$：
 
@@ -187,7 +122,7 @@ $$
 \text{PropertyChanged}(C, P, V) \xrightarrow{H} \text{UpdateNativeView}(V_P, V)
 $$
 
-### 2.3 数据绑定的形式化
+### 1.3 数据绑定的形式化
 
 数据绑定是 MAUI 的核心机制，可形式化为一个三元组：
 
@@ -210,7 +145,7 @@ $$
 
 绑定生效的前提是 Source 实现 `INotifyPropertyChanged`，目标属性是 `BindableProperty`。
 
-### 2.4 MVVM 模式的代数表示
+### 1.4 MVVM 模式的代数表示
 
 MVVM（Model-View-ViewModel）可形式化为：
 
@@ -230,9 +165,9 @@ $$
 
 ---
 
-## 3. 理论推导
+## 2. 理论推导
 
-### 3.1 Handler 架构的性能分析
+### 2.1 Handler 架构的性能分析
 
 Xamarin.Forms 的 Renderer 架构中，每个控件实例对应一个 Renderer，Renderer 持有原生控件的强引用。这导致：
 
@@ -252,7 +187,7 @@ MAUI 的 Handler 架构改进为：
 | 内存占用 | $O(n \times k)$ | $O(n + k)$ | 显著降低 |
 | 属性变更响应 | 通过虚方法重写 | 通过映射表查找 | 更快 |
 
-### 3.2 布局性能的复杂度分析
+### 2.2 布局性能的复杂度分析
 
 MAUI 的布局算法复杂度：
 
@@ -265,7 +200,7 @@ MAUI 的布局算法复杂度：
 
 对于大量数据展示，`CollectionView` 通过虚拟化（Virtualization）将复杂度降为 $O(\text{visible})$，仅渲染可见项。
 
-### 3.3 XAML 编译的理论
+### 2.3 XAML 编译的理论
 
 XAML 编译分为两个阶段：
 
@@ -294,7 +229,7 @@ $$
 
 启用 XamlC 可显著提升页面加载性能（约 5-10 倍），并减少内存分配。
 
-### 3.4 跨平台资源解析
+### 2.4 跨平台资源解析
 
 MAUI 的资源系统通过 **SVG 矢量图** + **多分辨率栅格化** 实现跨平台图像：
 
@@ -313,9 +248,9 @@ $$
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 创建第一个 MAUI 应用
+### 3.1 创建第一个 MAUI 应用
 
 ```csharp
 // MauiProgram.cs
@@ -385,7 +320,7 @@ public partial class App : Application
 }
 ```
 
-### 4.2 XAML 页面与代码隐藏
+### 3.2 XAML 页面与代码隐藏
 
 ```xml
 <!-- MainPage.xaml -->
@@ -489,7 +424,7 @@ public partial class MainPage : ContentPage
 }
 ```
 
-### 4.3 MVVM 与数据绑定
+### 3.3 MVVM 与数据绑定
 
 ```csharp
 using System.Collections.ObjectModel;
@@ -624,7 +559,7 @@ public class TaskItem : INotifyPropertyChanged
 }
 ```
 
-### 4.4 平台特定代码
+### 3.4 平台特定代码
 
 ```csharp
 using System;
@@ -753,7 +688,7 @@ public static class MauiProgram
 }
 ```
 
-### 4.5 调用原生 API：相机示例
+### 3.5 调用原生 API：相机示例
 
 ```csharp
 using System.Threading.Tasks;
@@ -810,7 +745,7 @@ public class CameraService : ICameraService
 }
 ```
 
-### 4.6 自定义控件与 Handler
+### 3.6 自定义控件与 Handler
 
 ```csharp
 using Microsoft.Maui.Controls;
@@ -907,7 +842,7 @@ public partial class CardViewHandler : ViewHandler<CardView, object>
 }
 ```
 
-### 4.7 依赖注入与服务注册
+### 3.7 依赖注入与服务注册
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
@@ -962,7 +897,7 @@ public static class MauiProgram
 }
 ```
 
-### 4.8 网络请求与错误处理
+### 3.8 网络请求与错误处理
 
 ```csharp
 using System;
@@ -1035,7 +970,7 @@ public class ApiService : IApiService
 }
 ```
 
-### 4.9 本地数据存储
+### 3.9 本地数据存储
 
 ```csharp
 using System.Collections.Generic;
@@ -1091,7 +1026,7 @@ public class SqliteDatabaseService : IDatabaseService
 }
 ```
 
-### 4.10 响应式布局
+### 3.10 响应式布局
 
 ```xml
 <!-- ResponsivePage.xaml：响应不同屏幕尺寸 -->
@@ -1156,9 +1091,9 @@ public partial class ResponsivePage : ContentPage
 
 ---
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 MAUI 与 Xamarin.Forms 对比
+### 4.1 MAUI 与 Xamarin.Forms 对比
 
 | 维度 | Xamarin.Forms | .NET MAUI |
 |------|--------------|-----------|
@@ -1173,7 +1108,7 @@ public partial class ResponsivePage : ContentPage
 | 学习曲线 | 平缓 | 中等（迁移成本） |
 | 生态成熟度 | 高（多年积累） | 增长中 |
 
-### 5.2 Handler vs Renderer 架构对比
+### 4.2 Handler vs Renderer 架构对比
 
 | 特性 | Renderer（Xamarin.Forms） | Handler（MAUI） |
 |------|--------------------------|-----------------|
@@ -1184,7 +1119,7 @@ public partial class ResponsivePage : ContentPage
 | 性能 | 中等 | 更优 |
 | 生命周期 | 与控件绑定 | 按需创建 |
 
-### 5.3 MAUI 与 Blazor Hybrid 对比
+### 4.3 MAUI 与 Blazor Hybrid 对比
 
 | 特性 | .NET MAUI | Blazor Hybrid |
 |------|-----------|---------------|
@@ -1196,7 +1131,7 @@ public partial class ResponsivePage : ContentPage
 | 适用场景 | 性能敏感、原生体验 | Web 技术栈团队、内容应用 |
 | 包体积 | 中等 | 较大（含 WebView） |
 
-### 5.4 数据绑定模式对比
+### 4.4 数据绑定模式对比
 
 | 模式 | 数据流向 | 适用场景 |
 |------|----------|----------|
@@ -1205,7 +1140,7 @@ public partial class ResponsivePage : ContentPage
 | OneWayToSource | Target → Source | 用户输入仅写回源 |
 | OneTime | 初始化时同步 | 静态数据展示 |
 
-### 5.5 跨平台方案选型决策矩阵
+### 4.5 跨平台方案选型决策矩阵
 
 | 场景 | 推荐方案 | 理由 |
 |------|----------|------|
@@ -1220,9 +1155,9 @@ public partial class ResponsivePage : ContentPage
 
 ---
 
-## 6. 常见陷阱与反模式
+## 5. 常见陷阱与反模式
 
-### 6.1 在主线程执行阻塞操作
+### 5.1 在主线程执行阻塞操作
 
 **生产事故**：某 MAUI 应用在加载数据时调用 `Task.Result` 阻塞主线程，导致 iOS 应用启动时被系统强杀。
 
@@ -1242,7 +1177,7 @@ public async Task LoadDataAsync()
 }
 ```
 
-### 6.2 在数据绑定中使用匿名类型
+### 5.2 在数据绑定中使用匿名类型
 
 ```csharp
 // 反模式：匿名类型无法实现 INotifyPropertyChanged
@@ -1253,7 +1188,7 @@ var items = tasks.Select(t => new { t.Title, t.IsCompleted });
 var items = tasks.Select(t => new TaskItemViewModel(t));
 ```
 
-### 6.3 内存泄漏：事件订阅未取消
+### 5.3 内存泄漏：事件订阅未取消
 
 ```csharp
 // 反模式：订阅事件未取消订阅
@@ -1282,7 +1217,7 @@ public class MyPage : ContentPage
 }
 ```
 
-### 6.4 ObservableCollection 在后台线程修改
+### 5.4 ObservableCollection 在后台线程修改
 
 ```csharp
 // 反模式：在后台线程直接修改 ObservableCollection
@@ -1308,7 +1243,7 @@ async Task LoadDataAsync()
 }
 ```
 
-### 6.5 过度使用绝对布局
+### 5.5 过度使用绝对布局
 
 ```xml
 <!-- 反模式：使用 AbsoluteLayout 硬编码坐标，无法适配不同屏幕 -->
@@ -1324,7 +1259,7 @@ async Task LoadDataAsync()
 </StackLayout>
 ```
 
-### 6.6 在 XAML 中使用字符串硬编码
+### 5.6 在 XAML 中使用字符串硬编码
 
 ```xml
 <!-- 反模式：硬编码字符串，无法本地化 -->
@@ -1336,7 +1271,7 @@ async Task LoadDataAsync()
 <Button Text="{x:Static resources:AppResources.OkButton}" />
 ```
 
-### 6.7 频繁触发数据绑定
+### 5.7 频繁触发数据绑定
 
 ```csharp
 // 反模式：高频更新 ObservableCollection
@@ -1354,7 +1289,7 @@ foreach (var item in Enumerable.Range(0, 1000))
 // .NET 8+ 支持 ObservableCollection.AddRange，单次刷新
 ```
 
-### 6.8 在构造函数中执行耗时操作
+### 5.8 在构造函数中执行耗时操作
 
 ```csharp
 // 反模式：构造函数中执行网络请求
@@ -1385,9 +1320,9 @@ public class MainPage : ContentPage
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 项目架构分层
+### 6.1 项目架构分层
 
 ```mermaid
 flowchart TD
@@ -1428,7 +1363,7 @@ flowchart TD
     T29 --> T31
 ```
 
-### 7.2 BaseViewModel 抽象
+### 6.2 BaseViewModel 抽象
 
 ```csharp
 using System.ComponentModel;
@@ -1479,7 +1414,7 @@ public abstract class BaseViewModel : INotifyPropertyChanged
 }
 ```
 
-### 7.3 命令封装
+### 6.3 命令封装
 
 ```csharp
 using System.Windows.Input;
@@ -1561,7 +1496,7 @@ public class AsyncCommand<T> : ICommand
 }
 ```
 
-### 7.4 性能优化策略
+### 6.4 性能优化策略
 
 **策略一：启用 XAML 编译**
 
@@ -1625,7 +1560,7 @@ using (Binding.Batch())
 }  // 一次触发变更通知
 ```
 
-### 7.5 测试策略
+### 6.5 测试策略
 
 ```csharp
 using NUnit.Framework;
@@ -1695,9 +1630,9 @@ public class MainViewModelTests
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 案例一：跨平台任务管理应用
+### 7.1 案例一：跨平台任务管理应用
 
 **项目背景**：某团队需要开发跨四端（iOS、Android、Windows、macOS）的任务管理应用，要求代码复用率 90%+。
 
@@ -1780,7 +1715,7 @@ public class SyncService
 }
 ```
 
-### 8.2 案例二：设备管理应用
+### 7.2 案例二：设备管理应用
 
 **项目背景**：企业设备管理应用，需要调用蓝牙、NFC、相机等原生能力，覆盖 iOS 与 Android。
 
@@ -1805,7 +1740,7 @@ public interface IBluetoothService
 // 在 MauiProgram.cs 中按平台注册
 ```
 
-### 8.3 案例三：离线优先应用
+### 7.3 案例三：离线优先应用
 
 **项目背景**：野外作业场景，网络不稳定，需要离线可用、在线同步。
 
@@ -1864,7 +1799,7 @@ public class OfflineFirstRepository<T> where T : class, ISyncable, new()
 
 ## 知识讲解与要点分析（原习题）
 
-### 9.1 基础题
+### 8.1 基础题
 
 **习题 1**：使用 .NET CLI 创建一个新的 MAUI 项目，并说明项目结构中 `Platforms/`、`Resources/`、`MauiProgram.cs` 的作用。
 
@@ -1901,7 +1836,7 @@ public class SimpleViewModel : BaseViewModel
 }
 ```
 
-### 9.2 进阶题
+### 8.2 进阶题
 
 **习题 4**：实现一个自定义控件 `CircularProgress`，显示圆形进度条，并通过 Handler 在各平台实现。
 
@@ -1929,7 +1864,7 @@ public class SimpleViewModel : BaseViewModel
 
 参考答案要点：嵌套属性的绑定需要中间属性也实现 `INotifyPropertyChanged`，或使用 `BindingMode.OneWay` + 手动触发变更通知。
 
-### 9.3 挑战题
+### 8.3 挑战题
 
 **习题 7**：设计一个 MAUI 应用的完整测试策略，包括单元测试、集成测试、UI 测试。
 
@@ -1975,7 +1910,7 @@ public class SimpleViewModel : BaseViewModel
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
 1. Microsoft. (2024). *.NET MAUI documentation*. Microsoft Learn. Retrieved from https://learn.microsoft.com/dotnet/maui/
 
@@ -2003,9 +1938,9 @@ public class SimpleViewModel : BaseViewModel
 
 ---
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 - **.NET MAUI 文档**：https://learn.microsoft.com/dotnet/maui/
 - **MAUI 教程**：https://learn.microsoft.com/dotnet/maui/tutorials/
@@ -2013,21 +1948,21 @@ public class SimpleViewModel : BaseViewModel
 - **MAUI 性能优化**：https://learn.microsoft.com/dotnet/maui/performance
 - **MAUI 部署发布**：https://learn.microsoft.com/dotnet/maui/deployment
 
-### 11.2 经典教材
+### 10.2 经典教材
 
 - **Mobile Development with .NET MAUI** (Jesse Bartolucci)：MAUI 实战指南
 - **Building Cross-Platform Applications with .NET MAUI** (Konsantas Peppas)：跨平台开发详解
 - **C# in Depth** (Jon Skeet)：C# 语言深度
 - **Pro .NET MAUI** (Matthew Soucoup)：高级 MAUI 开发
 
-### 11.3 前沿论文与社区资源
+### 10.3 前沿论文与社区资源
 
 - **.NET MAUI GitHub**：https://github.com/dotnet/maui —— 源码与 issue 跟踪
 - **MAUI 博客**：https://devblogs.microsoft.com/dotnet/category/maui/
 - **James Montemagno 博客**：https://montemagno.com/ —— MAUI 大神
 - **MAUI 中文社区**：https://github.com/dotnet/maui/discussions
 
-### 11.4 相关开源项目
+### 10.4 相关开源项目
 
 - **MAUI Community Toolkit**：https://github.com/CommunityToolkit/Maui
 - **MAUI Samples**：https://github.com/dotnet/maui-samples
@@ -2035,7 +1970,7 @@ public class SimpleViewModel : BaseViewModel
 - **MvvmCross**：https://github.com/MvvmCross/MvvmCross —— MVVM 框架
 - **SQLite-net**：https://github.com/praeclarum/sqlite-net —— 跨平台 SQLite
 
-### 11.5 进阶主题
+### 10.5 进阶主题
 
 - **.NET 8 Native AOT for MAUI**：编译期优化，减少启动时间
 - **Blazor Hybrid 与 MAUI 集成**：Web 技术栈与原生混合
@@ -2045,7 +1980,7 @@ public class SimpleViewModel : BaseViewModel
 
 ---
 
-## 12. 小结
+## 11. 小结
 
 .NET MAUI 是微软跨平台应用开发的下一代框架，通过统一的项目结构、Handler 架构、XAML 与 C# 技术栈，为开发者提供了四端统一的开发体验。掌握 MAUI 不仅是掌握一组 API，更是理解跨平台开发的核心思想：
 

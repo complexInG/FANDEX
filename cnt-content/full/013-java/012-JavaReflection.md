@@ -25,6 +25,7 @@ tags:
   - JVM
 ---
 
+
 # Java 反射（Reflection）
 
 > 反射是 Java 提供的一种在运行期（runtime）审视并操作自身结构的元编程（meta-programming）能力。它使得程序可以在运行时探查类的字段、方法、构造器、注解，并能动态调用方法、构造对象、读写字段值。反射既是 Spring、Hibernate、MyBatis、JUnit 等几乎所有 Java 主流框架的基石，也是理解 Java 类型系统、字节码、JVM 行为的钥匙。
@@ -256,73 +257,9 @@ boolean isRec = Point.class.isRecord();
 // 获取 Record 的组件
 RecordComponent[] comps = Point.class.getRecordComponents();
 ```
-## 1. 学习目标（基于 Bloom 分类法）
+## 1. 历史动机与演化
 
-本节以 Bloom 教育目标分类法（1956 版本，Anderson 2001 修订版）为框架，对学习目标进行显式分级，便于读者自检学习成果与认知深度。
-
-### 1.1 认知层级目标
-
-| 层级（Level） | 行为动词 | 具体学习目标 |
-|--------------|---------|-------------|
-| 记忆（Remember） | 列举、识别、定义 | 识别 `java.lang.reflect` 包中 `Class`、`Field`、`Method`、`Constructor`、`Modifier`、`Annotation` 等核心类型，列举其常用方法签名 |
-| 理解（Understand） | 解释、归纳、对比 | 解释反射与封装的张力，对比反射调用与直接调用的差异，归纳反射性能开销的来源 |
-| 应用（Apply） | 实现、使用、演示 | 使用反射读取注解、动态构造对象、调用私有方法、读写私有字段，演示动态代理模式 |
-| 分析（Analyze） | 分解、辨别、推断 | 分解 `Method.invoke` 的字节码与 JVM 调用链路，推断反射方法缓存的命中条件，辨别 `setAccessible(true)` 的安全语义 |
-| 评价（Evaluate） | 评判、论证、批判 | 评判反射在框架设计中的优劣，论证反射的性能优化策略，批判反射破坏封装可能引发的工程问题 |
-| 创造（Create） | 设计、构建、重构 | 设计一个基于反射的轻量级 IoC 容器，构建动态代理 AOP 切面，重构反模式代码为更安全的替代方案 |
-
-### 1.2 学习成果自检清单
-
-完成本章学习后，读者应能独立完成以下任务：
-
-1. 在不查阅文档的前提下，编写出通过反射读取类全部成员信息的小工具。
-2. 用一句话向同事解释反射的"动态分派"与"性能代价"之间的关系。
-3. 在 Spring 源码中定位出至少 3 处反射调用，并说明其用途。
-4. 识别生产代码中滥用反射的反模式，并给出替换方案（如 `MethodHandle`、`VarHandle`、`LambdaMetafactory`）。
-5. 在白板上画出 `Class.forName` → 类加载 → 方法区元数据 → `Method` 对象 → `invoke` 调用栈 的完整链路图。
-
-### 1.3 前置知识地图
-
-```mermaid
-flowchart TD
-    T0["面向对象编程（OOP）"]
-    T1["类与对象"]
-    T2["封装、继承、多态"]
-    T3["接口与抽象类"]
-    T4["JVM 类加载机制"]
-    T5["加载 → 链接（验证、准备、解析）→ 初始化"]
-    T6["双亲委派模型"]
-    T7["方法区与元数据"]
-    T8["Java 反射（本章）"]
-    T9["java.lang.Class"]
-    T10["java.lang.reflect.*"]
-    T11["动态代理（JDK Proxy / CGLIB）"]
-    T12["MethodHandle / VarHandle"]
-    T0 --> T1
-    T0 --> T2
-    T0 --> T3
-    T3 --> T4
-    T4 --> T5
-    T4 --> T6
-    T4 --> T7
-    T7 --> T8
-    T8 --> T9
-    T8 --> T10
-    T8 --> T11
-    T8 --> T12
-```
-
-### 1.4 章节阅读建议
-
-- **零基础读者**：建议按顺序阅读第 2–5 节，配合第 5 节代码示例上机实操，再回到第 3、4 节深化理论。
-- **有 Java 经验的工程师**：可跳过第 2、3 节基础部分，直接阅读第 4 节字节码分析、第 7 节反模式、第 9 节案例研究。
-- **框架开发者**：重点关注第 8 节工程实践与第 9 节案例研究，特别是 Spring、MyBatis、Hibernate 的反射使用模式。
-
----
-
-## 2. 历史动机与演化
-
-### 2.1 反射的起源：从静态语言到动态审视
+### 1.1 反射的起源：从静态语言到动态审视
 
 Java 1.0（1996 年 1 月发布）最初并不包含反射 API。彼时 Java 的设计哲学是"静态、安全、显式"——所有类型信息在编译期确定，编译器对成员可见性进行严格检查。这种设计对于编写应用程序足够，但对于构建 **开发工具（IDE、调试器、文档生成器）** 与 **组件框架（如可视化 Bean 拼装器）** 则力不从心。
 
@@ -332,7 +269,7 @@ Java 1.0（1996 年 1 月发布）最初并不包含反射 API。彼时 Java 的
 2. **Object Serialization（对象序列化）**：JDK 1.1 引入的 `java.io.ObjectInputStream` / `ObjectOutputStream` 需要在运行时读取对象字段并写入字节流，或从字节流中读取字段并赋值。没有反射，这一能力几乎无法实现。
 3. **远程方法调用（RMI）**：RMI 需要在客户端生成 stub，在服务端根据方法签名分发调用——这正是动态代理与反射的天然场景。
 
-### 2.2 关键里程碑时间线
+### 1.2 关键里程碑时间线
 
 | 时间 | JDK 版本 | 反射相关演进 |
 |------|---------|-------------|
@@ -353,7 +290,7 @@ Java 1.0（1996 年 1 月发布）最初并不包含反射 API。彼时 Java 的
 | 2022-09 | JDK 19 | 虚拟线程预览（Project Loom）；反射调用对虚拟线程透明 |
 | 2023-09 | JDK 21 (LTS) | 虚拟线程正式版；Record Patterns、Pattern Matching for `switch`，反射需识别 record 组件 |
 
-### 2.3 设计哲学：为什么 Java 反射"重"且"慢"
+### 1.3 设计哲学：为什么 Java 反射"重"且"慢"
 
 Java 反射的"重"源于其 **元对象协议（Meta-Object Protocol, MOP）** 的设计取向。Gregor Kiczales 等人在 1991 年的《The Art of the Metaobject Protocol》（AMOP）一书中区分了两类 MOP：
 
@@ -368,7 +305,7 @@ Java 选择了内省式 MOP，原因有三：
 
 这一选择的代价是：反射调用必须经过"运行时可见性检查 → 方法签名匹配 → 参数装箱/拆箱 → 实际方法分派 → 返回值装箱/拆箱"的多重步骤，无法像普通方法调用那样在编译期就完成分派。这就是反射"慢"的根源——后面第 4 节会从字节码层面深入分析。
 
-### 2.4 JEP 与反射相关提案
+### 1.4 JEP 与反射相关提案
 
 | JEP 编号 | 标题 | 状态 | 与反射的关系 |
 |---------|------|------|-------------|
@@ -379,7 +316,7 @@ Java 选择了内省式 MOP，原因有三：
 | JEP 403 | Strongly Encapsulate JDK Internals | Final (JDK 17) | 完全移除 `--illegal-access`，仅 `--add-opens` 可用 |
 | JEP 411 | Deprecate the Security Manager for Removal | Candidate (JDK 17) | Security Manager 弃用，反射权限检查模型面临重构 |
 
-### 2.5 反射与 Java 生态的共生关系
+### 1.5 反射与 Java 生态的共生关系
 
 Java 反射并非孤立存在，它与以下生态形成了共生关系：
 
@@ -394,9 +331,9 @@ Java 反射并非孤立存在，它与以下生态形成了共生关系：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 反射的形式化定义
+### 2.1 反射的形式化定义
 
 设 $J$ 为一个 Java 程序的运行时状态空间，$C$ 为所有已加载类的集合，$M_c$ 为类 $c \in C$ 的方法集合，$F_c$ 为类 $c$ 的字段集合，$K_c$ 为类 $c$ 的构造器集合，$A_c$ 为类 $c$ 上声明的注解集合。
 
@@ -418,7 +355,7 @@ $$
 \end{cases}
 $$
 
-### 3.2 类型系统与 `Class` 对象的关系
+### 2.2 类型系统与 `Class` 对象的关系
 
 每个已加载的类 $c$ 在 JVM 中对应一个唯一的 `Class` 对象 $\kappa_c$。这一对应关系满足：
 
@@ -435,7 +372,7 @@ $$
 - `getComponentType()`：若为数组类型，返回元素类型；否则 `null`。
 - `isAssignableFrom(Class<?>)`：判断类型赋值兼容性，等价于 $c_1 \sqsupseteq c_2$（$c_2$ 是 $c_1$ 的子类型）。
 
-### 3.3 类型擦除与泛型反射
+### 2.3 类型擦除与泛型反射
 
 Java 泛型采用 **擦除（erasure）** 实现：编译后泛型类型参数 $\langle T \rangle$ 被擦除为其上界（默认 `Object`）。这导致运行时 `List<String>` 与 `List<Integer>` 共享同一个 `Class` 对象（`java.util.List`）。
 
@@ -455,7 +392,7 @@ $$
 \text{Class<?>}(\tau) = \text{Class<?>}(\text{erase}(\tau)), \quad \text{Type}(\tau) = \text{sig}(\tau) \text{（若存在）}
 $$
 
-### 3.4 `Method.invoke` 的复杂度下界
+### 2.4 `Method.invoke` 的复杂度下界
 
 设 $n$ 为方法参数个数，反射调用 `Method.invoke` 的复杂度下界为：
 
@@ -467,7 +404,7 @@ $$
 
 HotSpot JIT 在 JDK 7+ 对反射调用做了内联缓存（inline cache）优化：当 `Method.invoke` 的目标方法稳定不变时，JIT 会生成直接的调用点，使反射调用接近直接调用的性能。这一优化在 JDK 8 的 `LambdaMetafactory` 中被进一步强化。
 
-### 3.5 `setAccessible` 的形式化语义
+### 2.5 `setAccessible` 的形式化语义
 
 `AccessibleObject.setAccessible(boolean flag)` 改变反射对象的访问检查行为。其形式化语义为：
 
@@ -490,9 +427,9 @@ $$
 
 ---
 
-## 4. 理论推导：JVM 视角下的反射机制
+## 3. 理论推导：JVM 视角下的反射机制
 
-### 4.1 `Class` 对象在 JVM 中的存储
+### 3.1 `Class` 对象在 JVM 中的存储
 
 JVM 规范（JVMS §2.5.1）规定，每个已加载的类在方法区（HotSpot 中称为 Metaspace，JDK 8 前 PermGen）中存储一个 **类元数据（Class Metadata）** 结构。这一结构包含：
 
@@ -525,7 +462,7 @@ flowchart TD
     C2_0 --> C3_0
 ```
 
-### 4.2 `Class.forName` 的字节码与调用链
+### 3.2 `Class.forName` 的字节码与调用链
 
 `Class.forName(String className)` 是反射的入口。其内部调用链：
 
@@ -552,7 +489,7 @@ flowchart TD
     T6 --> T7
 ```
 
-### 4.3 `Method.invoke` 的字节码与分派
+### 3.3 `Method.invoke` 的字节码与分派
 
 反射方法调用的核心是 `Method.invoke(Object obj, Object... args)`。其字节码层调用链：
 
@@ -562,7 +499,7 @@ flowchart TD
    - **GeneratedMethodAccessorImpl**：当同一 `Method` 被调用次数超过阈值（默认 15 次，由 `-Dsun.reflect.inflationThreshold` 控制）后，JVM 通过 ASM 生成一个专门的字节码类，直接调用目标方法，跳过 native 转换。
 3. **实际调用**：根据方法是否为 `static`、是否为虚方法，执行不同的分派策略。
 
-#### 4.3.1 Inflation 机制推导
+#### 3.3.1 Inflation 机制推导
 
 设 $T_{\text{native}}$ 为 native accessor 的调用时间，$T_{\text{generated}}$ 为生成 accessor 的调用时间，$T_{\text{gen}}$ 为生成字节码的一次性开销。则 $n$ 次调用的总时间为：
 
@@ -575,13 +512,13 @@ $$
 
 当 $n \to \infty$ 时，平均每次调用时间趋近于 $T_{\text{generated}}$，这是反射调用性能接近直接调用的根本原因。但 $T_{\text{gen}}$ 较大（生成字节码、类加载、JIT 编译），因此短生命周期、低频调用场景不划算。
 
-#### 4.3.2 vtable 与 itable 的角色
+#### 3.3.2 vtable 与 itable 的角色
 
 对于虚方法调用，`GeneratedMethodAccessorImpl` 生成的字节码包含 `invokevirtual` 指令，由 JVM 根据 vtable 分派到具体方法。这与普通虚方法调用相同，因此反射调用的"分派开销"在 JIT 优化后接近于零。
 
 但对于接口方法调用（`invokeinterface`），JVM 需要查找 itable，开销略高于 vtable。这就是为什么"基于接口的动态代理"比"基于类的动态代理"在某些场景下略慢——但 JIT 的去虚化（devirtualization）可以消除这一差异。
 
-### 4.4 安全检查的开销分析
+### 3.4 安全检查的开销分析
 
 反射的安全检查包括：
 
@@ -591,7 +528,7 @@ $$
 
 `setAccessible(true)` 跳过 1–3 的所有检查，因此能显著提升性能。但 JDK 9+ 后，跨模块 `setAccessible` 受 `opens` 约束，违反会抛出 `InaccessibleObjectException`。
 
-### 4.5 `MethodHandle` 的设计动机
+### 3.5 `MethodHandle` 的设计动机
 
 `MethodHandle`（JDK 7）的设计目标是"反射的现代替代品"。其优势：
 
@@ -609,11 +546,11 @@ $$
 
 ---
 
-## 5. 代码示例（可运行 Java 代码）
+## 4. 代码示例（可运行 Java 代码）
 
 本节提供一组可直接编译运行的 Java 反射示例。所有代码在 JDK 17+ 验证通过。
 
-### 5.1 环境准备
+### 4.1 环境准备
 
 ```bash
 # 创建工作目录
@@ -625,7 +562,7 @@ java -version
 # 应输出 openjdk version "17.x.x" 或更高
 ```
 
-### 5.2 示例 1：获取 `Class` 对象的三种方式
+### 4.2 示例 1：获取 `Class` 对象的三种方式
 
 ```java
 // file: GetClassDemo.java
@@ -670,7 +607,7 @@ c1 == c2: true
 c1 == c3: true
 ```
 
-### 5.3 示例 2：枚举类的字段、方法、构造器
+### 4.3 示例 2：枚举类的字段、方法、构造器
 
 ```java
 // file: InspectClassDemo.java
@@ -758,7 +695,7 @@ javac -parameters InspectClassDemo.java
 java InspectClassDemo
 ```
 
-### 5.4 示例 3：动态构造对象与调用方法
+### 4.4 示例 3：动态构造对象与调用方法
 
 ```java
 // file: DynamicInvokeDemo.java
@@ -799,7 +736,7 @@ public class DynamicInvokeDemo {
 }
 ```
 
-### 5.5 示例 4：读写私有字段
+### 4.5 示例 4：读写私有字段
 
 ```java
 // file: AccessPrivateFieldDemo.java
@@ -833,7 +770,7 @@ public class AccessPrivateFieldDemo {
 }
 ```
 
-### 5.6 示例 5：动态代理（JDK Proxy）
+### 4.6 示例 5：动态代理（JDK Proxy）
 
 ```java
 // file: DynamicProxyDemo.java
@@ -905,7 +842,7 @@ javac DynamicProxyDemo.java
 java DynamicProxyDemo
 ```
 
-### 5.7 示例 6：注解的读取与处理
+### 4.7 示例 6：注解的读取与处理
 
 ```java
 // file: AnnotationDemo.java
@@ -983,7 +920,7 @@ public class AnnotationDemo {
 }
 ```
 
-### 5.8 示例 7：泛型类型信息恢复
+### 4.8 示例 7：泛型类型信息恢复
 
 ```java
 // file: GenericTypeDemo.java
@@ -1068,7 +1005,7 @@ public class GenericTypeDemo {
 }
 ```
 
-### 5.9 示例 8：MethodHandle 替代反射
+### 4.9 示例 8：MethodHandle 替代反射
 
 ```java
 // file: MethodHandleDemo.java
@@ -1114,7 +1051,7 @@ public class MethodHandleDemo {
 }
 ```
 
-### 5.10 示例 9：模块系统下的反射开放
+### 4.10 示例 9：模块系统下的反射开放
 
 在 JDK 9+ 模块系统中，跨模块反射需要显式 `--add-opens`：
 
@@ -1151,7 +1088,7 @@ java --add-opens java.base/java.util=ALL-UNNAMED ModuleReflectionDemo
 # 应输出 setAccessible 成功
 ```
 
-### 5.11 示例 10：反射性能基准
+### 4.11 示例 10：反射性能基准
 
 ```java
 // file: ReflectionBenchmark.java
@@ -1247,9 +1184,9 @@ Lambda:        ~15 ms (sum=6172500000)  倍数: ~1.0x
 
 ---
 
-## 6. 对比分析：Java 反射 vs 其他语言元编程
+## 5. 对比分析：Java 反射 vs 其他语言元编程
 
-### 6.1 总体对比表
+### 5.1 总体对比表
 
 | 特性 | Java 反射 | C# 反射 | Kotlin 反射 | Scala 反射 | Go 反射 | Python 内省 |
 |------|-----------|---------|-------------|-----------|---------|------------|
@@ -1262,11 +1199,11 @@ Lambda:        ~15 ms (sum=6172500000)  倍数: ~1.0x
 | 注解支持 | 强（RUNTIME 保留） | 强（Attribute） | 强 | 强 | 弱 | 弱（decorator） |
 | 字节码生成 | ASM、ByteBuddy | Reflection.Emit | 同 Java | 同 Java | 无 | 无原生 |
 
-### 6.2 Java vs C# 反射
+### 5.2 Java vs C# 反射
 
 C# 反射（`System.Reflection`）与 Java 反射在设计上有显著相似性，但有几个关键差异：
 
-#### 6.2.1 Reified Generics（具体化泛型）
+#### 5.2.1 Reified Generics（具体化泛型）
 
 C# 的泛型在运行时是 **具体化（reified）** 的——`List<int>` 与 `List<string>` 是不同的类型，运行时可获取泛型参数。Java 的泛型是擦除的，反射只能通过 `Signature` 属性间接获取泛型签名。
 
@@ -1282,15 +1219,15 @@ Class<?> c = List.class; // List<Integer>.class 不存在
 System.out.println(c.getTypeParameters()[0].getName()); // 输出 "E"
 ```
 
-#### 6.2.2 Reflection.Emit 动态生成类型
+#### 5.2.2 Reflection.Emit 动态生成类型
 
 C# 提供了 `System.Reflection.Emit` 命名空间，允许在运行时生成新的类型、方法、IL 指令。Java 没有等价的官方 API，需借助 ASM、ByteBuddy 等第三方库。
 
-#### 6.2.3 性能
+#### 5.2.3 性能
 
 C# 反射在 .NET Core 3.0+ 后引入了"动态方法委托缓存"，性能与 Java 反射的 Inflation 机制类似。但 C# 的 `MethodInfo.CreateDelegate` 比反射调用快 5–10 倍，类似于 Java 的 `MethodHandle`。
 
-### 6.3 Java vs Kotlin 反射
+### 5.3 Java vs Kotlin 反射
 
 Kotlin 提供了独立的反射库 `kotlin-reflect`，对 Java 反射做了若干改进：
 
@@ -1309,7 +1246,7 @@ println(kClass.primaryConstructor?.parameters?.map { it.type }) // [String, Int]
 
 代价是 `kotlin-reflect` 库体积较大（约 3MB），且首次调用有初始化开销。
 
-### 6.4 Java vs Scala 反射
+### 5.4 Java vs Scala 反射
 
 Scala 反射分为两层：
 
@@ -1318,7 +1255,7 @@ Scala 反射分为两层：
 
 Scala 的反射 API 比 Java 复杂得多，但能处理 Java 反射无法表达的高阶类型。性能上，Scala 反射比 Java 反射慢 2–5 倍（由于类型系统的额外抽象层）。
 
-### 6.5 Java vs Go 反射
+### 5.5 Java vs Go 反射
 
 Go 反射（`reflect` 包）设计哲学与 Java 完全不同：
 
@@ -1339,7 +1276,7 @@ f, _ := t.FieldByName("Name")
 fmt.Println(f.Tag.Get("json")) // 输出 "name"
 ```
 
-### 6.6 Java vs Python 内省
+### 5.6 Java vs Python 内省
 
 Python 反射（`getattr`、`setattr`、`inspect` 模块）是 **干预式 MOP** 的典型代表：
 
@@ -1363,7 +1300,7 @@ User.greet = greet
 print(u.greet())  # Hello, Alice
 ```
 
-### 6.7 选型建议
+### 5.7 选型建议
 
 | 场景 | 推荐技术 | 理由 |
 |------|---------|------|
@@ -1375,9 +1312,9 @@ print(u.greet())  # Hello, Alice
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式 1：在热点路径中使用反射
+### 6.1 反模式 1：在热点路径中使用反射
 
 **问题描述**：在请求处理循环中反复使用 `Class.forName` + `getMethod`，导致性能瓶颈。
 
@@ -1426,7 +1363,7 @@ public class GoodRouter {
 }
 ```
 
-### 7.2 反模式 2：滥用 `setAccessible(true)` 绕过封装
+### 6.2 反模式 2：滥用 `setAccessible(true)` 绕过封装
 
 **问题描述**：在生产代码中频繁调用 `setAccessible(true)` 读写第三方库的私有字段，导致升级时出现兼容性问题。
 
@@ -1479,7 +1416,7 @@ public class ArrayListReflectionUtils {
 }
 ```
 
-### 7.3 反模式 3：忽略 `InvocationTargetException`
+### 6.3 反模式 3：忽略 `InvocationTargetException`
 
 **问题描述**：反射调用抛出的 `InvocationTargetException` 包装了目标方法的真实异常，但开发者直接 catch 并忽略，导致异常信息丢失。
 
@@ -1507,7 +1444,7 @@ try {
 }
 ```
 
-### 7.4 反模式 4：反射构造对象时忽略异常
+### 6.4 反模式 4：反射构造对象时忽略异常
 
 **问题描述**：`clazz.newInstance()`（已弃用）会吞掉构造器抛出的受检异常，导致问题难追踪。JDK 9+ 已弃用 `newInstance()`，推荐 `getDeclaredConstructor().newInstance()`。
 
@@ -1526,7 +1463,7 @@ Object obj = clazz.getDeclaredConstructor().newInstance();
 // 这会抛出 InvocationTargetException，能正确传播构造器异常
 ```
 
-### 7.5 反模式 5：在静态初始化器中使用反射
+### 6.5 反模式 5：在静态初始化器中使用反射
 
 **问题描述**：在 `static {}` 块中调用 `Class.forName` 或反射初始化字段，会导致类初始化变慢，且异常会触发 `ExceptionInInitializerError`，难以处理。
 
@@ -1549,7 +1486,7 @@ public class BadConfig {
 
 **正确做法**：使用懒加载（懒汉单例）或工厂方法，避免静态初始化器中的反射。
 
-### 7.6 反模式 6：泛型类型推断误用
+### 6.6 反模式 6：泛型类型推断误用
 
 **问题描述**：误以为 `List<String>.class` 存在，或误以为 `Method.getReturnType()` 能返回泛型参数。
 
@@ -1573,7 +1510,7 @@ Class<List> rawClass = List.class;
 // 或者通过子类捕获泛型
 ```
 
-### 7.7 反模式 7：忽略模块系统的 `opens` 约束
+### 6.7 反模式 7：忽略模块系统的 `opens` 约束
 
 **问题描述**：JDK 9+ 后，跨模块反射需要 `--add-opens` 或模块描述符中声明 `opens`。生产环境部署时未配置，导致运行时 `InaccessibleObjectException`。
 
@@ -1593,7 +1530,7 @@ Class<List> rawClass = List.class;
 
 3. 使用 `Module` API 编程式开放（仅限同模块）。
 
-### 7.8 反模式 8：动态代理泄漏
+### 6.8 反模式 8：动态代理泄漏
 
 **问题描述**：`Proxy.newProxyInstance` 生成的代理类会一直存活在 `ProxyCache` 中，类加载器无法回收，导致内存泄漏（特别是在频繁创建临时类加载器的场景）。
 
@@ -1602,7 +1539,7 @@ Class<List> rawClass = List.class;
 - 使用 `WeakReference` 持有代理。
 - 考虑 CGLIB 或 ByteBuddy，它们的类缓存机制更可控。
 
-### 7.9 反模式 9：误用 `Class.isInstance` 与 `instanceof`
+### 6.9 反模式 9：误用 `Class.isInstance` 与 `instanceof`
 
 ```java
 // instanceof 在编译期检查类型
@@ -1619,7 +1556,7 @@ if (c.isAssignableFrom(o.getClass())) { ... } // false，Object 不是 String
 if (o.getClass().isAssignableFrom(c)) { ... } // true，Object 是 String 的父类
 ```
 
-### 7.10 反模式 10：忽视反射的线程安全
+### 6.10 反模式 10：忽视反射的线程安全
 
 `Class`、`Method`、`Field` 等反射对象本身是线程安全的（不可变），但 `Method.invoke` 调用的目标方法可能不是线程安全的。常见误解：
 
@@ -1635,11 +1572,11 @@ m.invoke(target); // 内部可能读写非线程安全字段
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 反射性能优化策略
+### 7.1 反射性能优化策略
 
-#### 8.1.1 缓存反射对象
+#### 7.1.1 缓存反射对象
 
 ```java
 public class ReflectionCache {
@@ -1660,7 +1597,7 @@ public class ReflectionCache {
 }
 ```
 
-#### 8.1.2 使用 MethodHandle 替代高频反射调用
+#### 7.1.2 使用 MethodHandle 替代高频反射调用
 
 ```java
 public class MethodHandleCache {
@@ -1680,7 +1617,7 @@ public class MethodHandleCache {
 }
 ```
 
-#### 8.1.3 使用 LambdaMetafactory 实现近乎零开销的反射
+#### 7.1.3 使用 LambdaMetafactory 实现近乎零开销的反射
 
 ```java
 public class LambdaFactory {
@@ -1712,7 +1649,7 @@ public class LambdaFactory {
 }
 ```
 
-### 8.2 反射与 AOP 切面
+### 7.2 反射与 AOP 切面
 
 ```java
 // 简化的 AOP 切面实现
@@ -1738,7 +1675,7 @@ public class SimpleAOP {
 }
 ```
 
-### 8.3 反射在配置系统中的应用
+### 7.3 反射在配置系统中的应用
 
 ```java
 // 基于注解的配置绑定
@@ -1783,7 +1720,7 @@ public class ConfigBinder {
 }
 ```
 
-### 8.4 反射工具类设计原则
+### 7.4 反射工具类设计原则
 
 设计企业级反射工具类时，应遵循以下原则：
 
@@ -1828,7 +1765,7 @@ public final class ReflectionUtils {
 }
 ```
 
-### 8.5 模块系统下的反射兼容策略
+### 7.5 模块系统下的反射兼容策略
 
 JDK 9+ 模块系统引入后，框架需要显式声明对目标模块的开放。三种策略：
 
@@ -1859,7 +1796,7 @@ if (!targetModule.isOpen("com.example.app.domain")) {
 }
 ```
 
-### 8.6 反射与序列化框架的协作
+### 7.6 反射与序列化框架的协作
 
 JSON 序列化框架（如 Jackson）使用反射的常见模式：
 
@@ -1894,13 +1831,13 @@ public class SimpleJsonSerializer {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例研究 1：Spring Framework 的反射使用
+### 8.1 案例研究 1：Spring Framework 的反射使用
 
 Spring Framework 是反射的重度使用者。以下分析其核心反射使用点。
 
-#### 9.1.1 IoC 容器的 Bean 创建
+#### 8.1.1 IoC 容器的 Bean 创建
 
 `org.springframework.beans.factory.support.SimpleInstantiationStrategy` 使用反射创建 Bean 实例：
 
@@ -1926,7 +1863,7 @@ public abstract class BeanUtils {
 }
 ```
 
-#### 9.1.2 `@Autowired` 注入
+#### 8.1.2 `@Autowired` 注入
 
 `org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor` 通过反射注入依赖：
 
@@ -1958,7 +1895,7 @@ class AutowiredFieldElement extends InjectedElement {
 }
 ```
 
-#### 9.1.3 AOP 动态代理
+#### 8.1.3 AOP 动态代理
 
 Spring AOP 使用 JDK Proxy（接口代理）或 CGLIB（类代理）：
 
@@ -1983,7 +1920,7 @@ class JdkDynamicAopProxy implements InvocationHandler {
 }
 ```
 
-### 9.2 案例研究 2：MyBatis 的反射映射
+### 8.2 案例研究 2：MyBatis 的反射映射
 
 MyBatis 通过反射将数据库结果集映射到 Java 对象：
 
@@ -2029,7 +1966,7 @@ public class Reflector {
 }
 ```
 
-### 9.3 案例研究 3：Hibernate 的实体管理
+### 8.3 案例研究 3：Hibernate 的实体管理
 
 Hibernate 使用反射读写实体字段，实现脏检查（dirty checking）：
 
@@ -2058,7 +1995,7 @@ public class PojoEntityTuplizer implements EntityTuplizer {
 
 Hibernate 还使用字节码增强（Bytecode Enhancement）替代反射，以提升性能——通过 ASM 在编译期或加载期生成直接的 getter/setter 调用代码。
 
-### 9.4 案例研究 4：JUnit 的测试方法发现
+### 8.4 案例研究 4：JUnit 的测试方法发现
 
 ```java
 // JUnit 5 源码简化版
@@ -2078,7 +2015,7 @@ public class JUnit5TestDiscovery {
 }
 ```
 
-### 9.5 案例研究 5：Hadoop 的反射序列化
+### 8.5 案例研究 5：Hadoop 的反射序列化
 
 Hadoop 使用反射实现 Writable 接口的序列化：
 
@@ -2103,7 +2040,7 @@ public class WritableSerializer {
 }
 ```
 
-### 9.6 案例研究 6：Elasticsearch 的字段映射
+### 8.6 案例研究 6：Elasticsearch 的字段映射
 
 ```java
 public class ElasticsearchMapper {
@@ -2131,7 +2068,7 @@ public class ElasticsearchMapper {
 }
 ```
 
-### 9.7 案例研究 7：Jackson 的 JSON 序列化
+### 8.7 案例研究 7：Jackson 的 JSON 序列化
 
 ```java
 public class JacksonSerializer {
@@ -2173,7 +2110,7 @@ public class JacksonSerializer {
 }
 ```
 
-### 9.8 案例研究 8：字节码增强替代反射（ByteBuddy）
+### 8.8 案例研究 8：字节码增强替代反射（ByteBuddy）
 
 ```java
 // ByteBuddy 创建运行时类
@@ -2200,7 +2137,7 @@ public class ByteBuddyDemo {
 - 不需要每次调用都做反射检查。
 - 适合在启动期生成代理类，运行期零开销。
 
-### 9.9 案例研究 9：Lombok 与编译期注解处理器
+### 8.9 案例研究 9：Lombok 与编译期注解处理器
 
 Lombok 不使用反射，而是在编译期通过注解处理器修改 AST：
 
@@ -2230,7 +2167,7 @@ public class GetterAnnotationProcessor extends AbstractProcessor {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（记忆与理解）
+### 9.1 基础题（记忆与理解）
 
 **习题 1**：写出获取 `java.util.HashMap` 的 `Class` 对象的三种方式。
 
@@ -2320,7 +2257,7 @@ public class CacheProxy {
 }
 ```
 
-### 10.3 分析题
+### 9.3 分析题
 
 **习题 6**：以下代码在 JDK 17 下运行会抛出什么异常？如何修复？
 
@@ -2361,7 +2298,7 @@ public Object invokeDynamic(String className, String methodName, Object[] args) 
 2. 显式声明参数类型而非推断。
 3. 高频调用改用 `MethodHandle` 或 `LambdaMetafactory`。
 
-### 10.4 评价题
+### 9.4 评价题
 
 **习题 8**：评价"在所有需要动态调用方法的场景都应使用反射"这一观点。
 
@@ -2384,7 +2321,7 @@ public Object invokeDynamic(String className, String methodName, Object[] args) 
 - 可维护性差（重构工具难以追踪反射调用）。
 - 模块系统兼容性问题（JDK 9+）。
 
-### 10.5 创造题
+### 9.5 创造题
 
 **习题 9**：设计一个轻量级 IoC 容器，支持 `@Component`、`@Autowired` 注解，能自动扫描指定包下的类并管理 Bean 生命周期。
 
@@ -2438,7 +2375,7 @@ public class MiniIoC {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 采用 ACM Reference Format：
 
@@ -2474,9 +2411,9 @@ public class MiniIoC {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **Java Reflection Tutorial**（Oracle）：https://docs.oracle.com/javase/tutorial/reflect/
 - **JEP 118: Access to Parameter Names at Runtime**：https://openjdk.org/jeps/118
@@ -2484,14 +2421,14 @@ public class MiniIoC {
 - **JEP 396: Strongly Encapsulate JDK Internals by Default**：https://openjdk.org/jeps/396
 - **JEP 411: Deprecate the Security Manager for Removal**：https://openjdk.org/jeps/411
 
-### 12.2 进阶书籍
+### 11.2 进阶书籍
 
 - *Java Reflection in Action*（Ira R. Forman, Nate Forman, 2004）：虽然基于 JDK 1.4，但概念阐释清晰。
 - *The Art of the Metaobject Protocol*（Kiczales et al., 1991）：MOP 设计的奠基之作。
 - *Java Performance*（Scott Oaks, 2020）：第 6 章 "Java Native Interface and Reflection" 详细分析反射性能。
 - *Spring源码深度解析*（郝佳）：深入剖析 Spring 框架对反射的使用。
 
-### 12.3 开源项目源码
+### 11.3 开源项目源码
 
 - **Spring Framework**：`org.springframework.util.ReflectionUtils`、`org.springframework.beans.BeanUtils`
 - **MyBatis**：`org.apache.ibatis.reflection.Reflector`、`MetaObject`
@@ -2500,13 +2437,13 @@ public class MiniIoC {
 - **ByteBuddy**：`net.bytebuddy.ByteBuddy`，运行时字节码增强
 - **ASM**：`org.objectweb.asm.ClassVisitor`，字节码操作库
 
-### 12.4 学术论文
+### 11.4 学术论文
 
 - Forman, I. R., and Forman, N. 2005. Java reflection in action. *ACM SIGPLAN Notices* 40, 7 (July 2005), 12–14.
 - Rose, J. 2010. *Bytecodes meet combinators: invokedynamic instructions*. JVM Language Summit.
 - Würthinger, T., et al. 2013. One VM to rule them all. In *Proceedings of the 2013 ACM international symposium on New ideas, new paradigms, and reflections on programming & software (Onward! 2013)*, 187–204.
 
-### 12.5 演进趋势
+### 11.5 演进趋势
 
 Java 反射正经历以下演进：
 

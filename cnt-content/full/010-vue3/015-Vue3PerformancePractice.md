@@ -16,6 +16,7 @@ prerequisites:
   - vue3/语法速查
 ---
 
+
 # Vue3 性能优化实践 | Vue3 Performance Optimization in Practice
 
 > 本文档对标 MIT 6.170、Stanford CS142、CMU 17-437 软件工程课程水准，系统化阐述 Vue 3 应用的性能优化理论与实践。涵盖响应式系统优化、渲染优化、打包优化、运行时优化、网络层优化等核心主题，并辅以数学建模、对比分析、案例研究与习题。
@@ -39,72 +40,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标 | Learning Objectives
+## 1. 历史动机与发展脉络 | Historical Motivation and Evolution
 
-本章节基于 Bloom 教育目标分类法（Bloom's Taxonomy）设计学习目标，覆盖记忆、理解、应用、分析、评价、创造六个层次，确保学习者从基础认知走向高阶工程实践能力。
-
-### 1.1 记忆层（Remember）
-
-完成本章节学习后，学习者应当能够：
-
-- **R1**：准确陈述 Vue 3 响应式系统的核心实现机制（Proxy、Reflect、Effect、Track、Trigger）。
-- **R2**：列举 Vue 3 提供的性能优化相关 API 与指令（`shallowRef`、`shallowReactive`、`markRaw`、`triggerRef`、`v-once`、`v-memo`、`<KeepAlive>`、`defineAsyncComponent`、`computed`、`watchEffect`）。
-- **R3**：复述 Vue 3 渲染管线的主要阶段：模板编译 → 渲染函数 → 虚拟 DOM 树 → Diff 算法 → 真实 DOM 更新。
-- **R4**：背记 Vite 在开发环境与生产环境所采用的不同打包策略（开发环境 ESM 原生模块，生产环境 Rollup 打包）。
-- **R5**：识别 Vue 3.2+ 引入的关键性能优化特性：静态提升（Static Hoisting）、PatchFlag、Block Tree、缓存事件处理器。
-
-### 1.2 理解层（Understand）
-
-完成本章节学习后，学习者应当能够：
-
-- **U1**：解释为何 Vue 3 使用 Proxy 替代 Vue 2 的 `Object.defineProperty`，并说明两者在性能与能力上的差异。
-- **U2**：阐述响应式依赖收集与触发更新的完整流程，并说明为什么 Vue 3 采用惰性收集（Lazy Tracking）策略。
-- **U3**：描述 `shallowRef`、`shallowReactive`、`markRaw` 的语义差异及各自适用场景。
-- **U4**：理解 `<KeepAlive>` 的 LRU 缓存算法、`include`/`exclude`/`max` 三个属性的协作机制。
-- **U5**：说明 `v-memo` 指令如何通过依赖数组比对避免不必要的子树重渲染。
-
-### 1.3 应用层（Apply）
-
-完成本章节学习后，学习者应当能够：
-
-- **A1**：在真实项目中正确使用 `shallowRef` 处理大型列表数据，避免深度响应式开销。
-- **A2**：使用 `vue-virtual-scroller` 或 `@tanstack/vue-virtual` 实现万级数据列表的虚拟滚动。
-- **A3**：使用 `defineAsyncComponent` 结合路由懒加载实现按需加载，并通过 `webpackChunkName` 或 `viteManualChunks` 控制分包策略。
-- **A4**：使用 Chrome DevTools Performance 面板与 Vue DevTools 分析组件渲染性能瓶颈。
-- **A5**：应用 Tree Shaking、Code Splitting、Scope Hoisting、压缩混淆等手段优化生产包体积。
-
-### 1.4 分析层（Analyze）
-
-完成本章节学习后，学习者应当能够：
-
-- **An1**：分析一个 Vue 3 应用的渲染性能瓶颈，定位是响应式追踪开销、Diff 开销、布局抖动（Layout Thrashing）还是网络请求阻塞。
-- **An2**：对比 `computed` 与 `watch` 的执行时机、缓存策略、适用场景，分析何时使用何者更优。
-- **An3**：解构 Vue 3 编译器生成的渲染函数，识别 PatchFlag、动态节点、静态节点，分析编译优化的收益。
-- **An4**：分析一个慢速列表的渲染流程，识别 Key 复用错误、内联函数导致的子组件重渲染、深度响应式开销等问题。
-
-### 1.5 评价层（Evaluate）
-
-完成本章节学习后，学习者应当能够：
-
-- **E1**：评估一个 Vue 3 应用的 Core Web Vitals（LCP、FID、INP、CLS、TTFB、TBT）指标，并给出优化优先级建议。
-- **E2**：判断何时应当牺牲代码可读性换取性能（如手动 `markRaw`、`shallowRef`），何时不应当。
-- **E3**：评价不同的状态管理方案（Pinia、Provide/Inject、props 传递、Composition API 共享）在大规模应用中的性能权衡。
-- **E4**：权衡 SSR、SSG、ISR、CSR 四种渲染策略在不同业务场景下的性能与开发成本。
-
-### 1.6 创造层（Create）
-
-完成本章节学习后，学习者应当能够：
-
-- **C1**：设计一套针对企业级 Vue 3 应用的性能监控体系，涵盖运行时指标采集、上报、可视化、告警全链路。
-- **C2**：基于 Web Worker 与 Vue 3 的响应式系统，实现 CPU 密集型任务的并行计算方案。
-- **C3**：设计一个性能基线（Performance Budget）系统，在 CI/CD 中自动检测性能回退。
-- **C4**：构建一个可插拔的 Vue 3 性能优化 Babel/Vite 插件，自动注入 `v-memo`、自动标记 `markRaw`。
-
----
-
-## 2. 历史动机与发展脉络 | Historical Motivation and Evolution
-
-### 2.1 Vue 1.0 时代（2014-2016）：响应式的诞生
+### 1.1 Vue 1.0 时代（2014-2016）：响应式的诞生
 
 Vue.js 由 Evan You（尤雨溪）于 2014 年 2 月发布，其设计哲学受到 Angular、Knockout 与 React 的多重影响。Vue 1.0 的响应式系统基于 `Object.defineProperty` 实现，采用细粒度依赖追踪：每个属性都对应一个 Dep（依赖收集器），每个观察者（Watcher）订阅相关的 Dep。
 
@@ -130,7 +68,7 @@ Object.defineProperty(obj, key, {
 });
 ```
 
-### 2.2 Vue 2.0 时代（2016-2020）：虚拟 DOM 的引入
+### 1.2 Vue 2.0 时代（2016-2020）：虚拟 DOM 的引入
 
 Vue 2.0 于 2016 年 9 月发布，引入了虚拟 DOM（Virtual DOM），将响应式系统从"细粒度属性级"调整为"组件级 + 属性级"的混合模式。每个组件对应一个 Watcher，组件内部的数据变化触发组件重新渲染，Diff 算法在虚拟 DOM 树上执行。
 
@@ -146,7 +84,7 @@ Vue 2.0 于 2016 年 9 月发布，引入了虚拟 DOM（Virtual DOM），将响
 - 大型对象的递归响应式转换在初始化阶段开销大。
 - 模板编译对静态节点缺乏优化（Vue 2.6 引入静态节点提升部分缓解）。
 
-### 2.3 Vue 3.0 时代（2020-2023）：Proxy 与编译优化
+### 1.3 Vue 3.0 时代（2020-2023）：Proxy 与编译优化
 
 Vue 3.0 于 2020 年 9 月正式发布，是一次完整的重写。核心变化包括：
 
@@ -156,7 +94,7 @@ Vue 3.0 于 2020 年 9 月正式发布，是一次完整的重写。核心变化
 4. **Tree Shaking**：将全局 API 改为模块化导入，支持按需引入，包体积从 Vue 2 的 30KB+ 降至 10KB+（按使用情况）。
 5. **TypeScript 重写**：源码使用 TypeScript 重写，类型推断更准确。
 
-### 2.4 Vue 3.2+ 时代（2021-2024）：编译时优化深化
+### 1.4 Vue 3.2+ 时代（2021-2024）：编译时优化深化
 
 Vue 3.2 引入 `<script setup>` 语法糖，进一步简化 Composition API 写法。Vue 3.3 引入 `defineSlots`、`defineModel`（实验性）。Vue 3.4 重写模板解析器，性能提升约 3 倍。Vue 3.5 引入响应式系统重写（Reactive System Destructuring），减少内存占用。
 
@@ -170,7 +108,7 @@ Vue 3.2 引入 `<script setup>` 语法糖，进一步简化 Composition API 写�
 | Vue 3.4 | 2023-12 | 模板解析器重写、解析速度 3x、更精确的 PatchFlag |
 | Vue 3.5 | 2024-09 | 响应式系统重写、内存优化、`useId`、`useTemplateRef` |
 
-### 2.5 Evan You 的设计哲学
+### 1.5 Evan You 的设计哲学
 
 Evan You 在多次演讲与博客中阐述 Vue 的设计哲学，对性能优化有直接影响：
 
@@ -184,9 +122,9 @@ Evan You 在多次演讲与博客中阐述 Vue 的设计哲学，对性能优化
 
 ---
 
-## 3. 形式化定义 | Formal Definitions
+## 2. 形式化定义 | Formal Definitions
 
-### 3.1 响应式系统的形式化定义
+### 2.1 响应式系统的形式化定义
 
 **定义 3.1（响应式对象）**：给定一个对象 $o \in \text{Object}$，其响应式代理记为 $\text{reactive}(o)$，满足：
 
@@ -214,7 +152,7 @@ $$
 
 其中 $\text{schedule}$ 是将 Effect 加入微任务队列的调度操作，Vue 3 使用 `Promise.resolve().then` 实现。
 
-### 3.2 虚拟 DOM 的形式化定义
+### 2.2 虚拟 DOM 的形式化定义
 
 **定义 3.4（虚拟 DOM 节点）**：虚拟 DOM 节点 $v$ 是一个三元组：
 
@@ -235,7 +173,7 @@ $$
 
 Vue 3 的 Diff 算法在最坏情况下复杂度为 $O(n)$，但通过 PatchFlag 与 Block Tree 可以将实际复杂度降至 $O(d)$，其中 $d$ 为动态节点数。
 
-### 3.3 PatchFlag 的形式化定义
+### 2.3 PatchFlag 的形式化定义
 
 **定义 3.6（PatchFlag）**：PatchFlag 是编译器为每个动态节点附加的整数标记 $f \in \mathbb{Z}$，表示该节点在更新时需要被 Patch 的部分：
 
@@ -257,7 +195,7 @@ Vue 3 的 Diff 算法在最坏情况下复杂度为 $O(n)$，但通过 PatchFlag
 
 **编译时优化收益**：若一个组件有 $n$ 个节点，其中 $d$ 个动态节点，传统 Diff 复杂度为 $O(n)$，Vue 3 优化后为 $O(d)$。当 $d \ll n$ 时（典型场景 $d/n < 0.1$），性能提升可达 10 倍以上。
 
-### 3.4 KeepAlive 的形式化定义
+### 2.4 KeepAlive 的形式化定义
 
 **定义 3.7（KeepAlive 缓存）**：KeepAlive 维护一个 LRU（最近最少使用）缓存 $\mathcal{C}$，容量上限为 $k$。当组件切换时：
 
@@ -270,7 +208,7 @@ $$
 
 LRU 缓存的查询、插入、淘汰均可在 $O(1)$ 时间复杂度内完成（基于双向链表 + 哈希表实现）。
 
-### 3.5 性能指标的形式化定义
+### 2.5 性能指标的形式化定义
 
 **定义 3.8（Core Web Vitals）**：Google 定义的三项核心性能指标：
 
@@ -292,11 +230,11 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析 | Theoretical Derivation
+## 3. 理论推导与原理解析 | Theoretical Derivation
 
-### 4.1 响应式系统的复杂度分析
+### 3.1 响应式系统的复杂度分析
 
-#### 4.1.1 Vue 2 的响应式初始化复杂度
+#### 3.1.1 Vue 2 的响应式初始化复杂度
 
 Vue 2 使用 `Object.defineProperty` 递归遍历对象的所有属性。设对象有 $n$ 个属性，深度为 $d$，平均每个属性有 $k$ 个子属性，则初始化复杂度为：
 
@@ -306,7 +244,7 @@ $$
 
 对于深度嵌套的大型对象（如 1000 条记录的列表，每条 10 个字段，深度 3 层），$T_{\text{init}}$ 约为 $10^7$ 次属性遍历，在低端设备上可能导致数百毫秒的初始化延迟。
 
-#### 4.1.2 Vue 3 的响应式初始化复杂度
+#### 3.1.2 Vue 3 的响应式初始化复杂度
 
 Vue 3 使用 Proxy 实现惰性响应式：只对被访问的属性进行响应式转换。
 
@@ -320,7 +258,7 @@ $$
 
 **收益分析**：若一个大型对象有 $n$ 个属性，但组件只访问了 $m$ 个（$m \ll n$），则 Vue 3 的响应式转换次数从 $O(n)$ 降至 $O(m)$。
 
-#### 4.1.3 依赖追踪的复杂度
+#### 3.1.3 依赖追踪的复杂度
 
 设一个组件的渲染函数访问了 $k$ 个响应式属性，每次属性变化触发的更新调度复杂度为：
 
@@ -330,9 +268,9 @@ $$
 
 Vue 3 使用 `Set` 数据结构存储依赖，去重操作为 $O(1)$ 均摊。
 
-### 4.2 虚拟 DOM Diff 算法的复杂度
+### 3.2 虚拟 DOM Diff 算法的复杂度
 
-#### 4.2.1 传统 Diff 算法（React 风格）
+#### 3.2.1 传统 Diff 算法（React 风格）
 
 传统 Diff 算法对同层节点进行逐个比对，时间复杂度：
 
@@ -342,7 +280,7 @@ $$
 
 其中 $n$ 为同层节点总数。
 
-#### 4.2.2 Vue 3 Block Tree + PatchFlag 优化
+#### 3.2.2 Vue 3 Block Tree + PatchFlag 优化
 
 Vue 3 将模板划分为 Block，每个 Block 的根节点收集所有动态子节点（Dynamic Children）到一个数组中。Diff 时只比对动态节点数组：
 
@@ -356,7 +294,7 @@ $$
 
 **典型情况**：在大多数模板中，动态节点占比 $d/n \approx 5\% \sim 20\%$，性能提升 5-20 倍。
 
-#### 4.2.3 Keyed List Diff 算法
+#### 3.2.3 Keyed List Diff 算法
 
 Vue 3 的 Keyed List Diff 算法使用最长递增子序列（LIS）算法最小化 DOM 移动操作。LIS 算法的复杂度为 $O(n \log n)$，但实际应用中移动操作通常较少，性能优于朴素的逐个比对。
 
@@ -364,7 +302,7 @@ Vue 3 的 Keyed List Diff 算法使用最长递增子序列（LIS）算法最小
 
 **证明**：LIS 中的节点保持相对顺序不变，因此无需移动；非 LIS 节点需要移动到正确位置。移动次数最小化当且仅当保持顺序的节点数最大化，即 LIS。
 
-### 4.3 KeepAlive 的 LRU 缓存分析
+### 3.3 KeepAlive 的 LRU 缓存分析
 
 KeepAlive 维护容量为 $k$ 的 LRU 缓存。设组件切换序列长度为 $n$，命中率 $h$ 为命中缓存的访问比例。
 
@@ -382,7 +320,7 @@ $$
 
 当 $k = 5$ 时，$h \approx 0.67$；当 $k = 10$ 时，$h \approx 0.89$。因此实践中 `max` 属性设置为 5-10 通常能覆盖大部分场景。
 
-### 4.4 计算属性缓存的复杂度
+### 3.4 计算属性缓存的复杂度
 
 `computed` 属性基于依赖追踪实现缓存。设依赖数量为 $k$，依赖变化的频率为 $f$，计算属性的访问频率为 $a$。
 
@@ -400,7 +338,7 @@ $$
 
 当任一依赖变化时，`dirty` 标记为 `true`，下次访问时重新计算。
 
-### 4.5 v-memo 的优化收益分析
+### 3.5 v-memo 的优化收益分析
 
 `v-memo="[deps]"` 指令在子树重渲染前检查依赖数组是否变化。设子树节点数为 $n$，依赖数组长度为 $k$。
 
@@ -416,7 +354,7 @@ $$
 
 当 $p \ll 1$ 且 $k \ll n$ 时，$E[T] \approx O(k)$，优化显著。
 
-### 4.6 包体积的数学建模
+### 3.6 包体积的数学建模
 
 设应用源码体积为 $S$，按需引入后的体积为 $S'$，Tree Shaking 效率为 $\eta$：
 
@@ -441,7 +379,7 @@ $$
 | Vue + Vue Router + Pinia | 130 KB | 45 KB |
 | 完整企业应用（含 UI 库） | 500-1000 KB | 150-300 KB |
 
-### 4.7 网络传输优化建模
+### 3.7 网络传输优化建模
 
 设资源体积为 $S$，网络带宽为 $B$，RTT 为 $R$，HTTP/2 多路复用下的并发数为 $C$。
 
@@ -461,7 +399,7 @@ $$
 
 **收益**：HTTP/2 相比 HTTP/1.1，在 $N = 50$、$R = 100\text{ms}$、$B = 10\text{Mbps}$、$S = 50\text{KB}$ 的典型场景下，加载时间从 $1.2\text{s}$ 降至 $0.4\text{s}$。
 
-### 4.8 渲染性能的帧预算分析
+### 3.8 渲染性能的帧预算分析
 
 浏览器渲染帧率为 60 FPS（每帧 16.67 ms）。Vue 应用的渲染流程：
 
@@ -480,11 +418,11 @@ $$
 
 ---
 
-## 5. 代码示例 | Code Examples
+## 4. 代码示例 | Code Examples
 
-### 5.1 响应式系统优化
+### 4.1 响应式系统优化
 
-#### 5.1.1 shallowRef 处理大型列表
+#### 4.1.1 shallowRef 处理大型列表
 
 ```vue
 <!-- LargeList.vue —— Vue 3.4+ -->
@@ -534,7 +472,7 @@ async function loadMore(): Promise<void> {
 </template>
 ```
 
-#### 5.1.2 shallowReactive 优化嵌套对象
+#### 4.1.2 shallowReactive 优化嵌套对象
 
 ```typescript
 import { shallowReactive, watchEffect } from 'vue';
@@ -560,7 +498,7 @@ formConfig.validation.rules = { required: true }; // 不触发更新
 formConfig.validation = { rules: { required: true }, messages: {} }; // 触发更新
 ```
 
-#### 5.1.3 markRaw 跳过响应式转换
+#### 4.1.3 markRaw 跳过响应式转换
 
 ```typescript
 import { reactive, markRaw, readonly } from 'vue';
@@ -593,7 +531,7 @@ const state2 = reactive({
 });
 ```
 
-#### 5.1.4 triggerRef 手动触发更新
+#### 4.1.4 triggerRef 手动触发更新
 
 ```typescript
 import { shallowRef, triggerRef, watch } from 'vue';
@@ -616,9 +554,9 @@ watch(map, (newMap) => {
 });
 ```
 
-### 5.2 虚拟列表实现
+### 4.2 虚拟列表实现
 
-#### 5.2.1 使用 vue-virtual-scroller
+#### 4.2.1 使用 vue-virtual-scroller
 
 ```vue
 <!-- VirtualList.vue —— Vue 3.3+ -->
@@ -709,7 +647,7 @@ function onVisibleChange(startIndex: number, endIndex: number): void {
 </style>
 ```
 
-#### 5.2.2 自定义虚拟滚动（教学实现）
+#### 4.2.2 自定义虚拟滚动（教学实现）
 
 ```vue
 <!-- CustomVirtualScroll.vue —— Vue 3.4+ -->
@@ -825,9 +763,9 @@ onUnmounted(() => {
 </style>
 ```
 
-### 5.3 异步组件与代码分割
+### 4.3 异步组件与代码分割
 
-#### 5.3.1 defineAsyncComponent 完整配置
+#### 4.3.1 defineAsyncComponent 完整配置
 
 ```typescript
 import { defineAsyncComponent, type Component } from 'vue';
@@ -866,7 +804,7 @@ const ChartEditor = defineAsyncComponent({
 export { HomeView, PDFViewer, ChartEditor };
 ```
 
-#### 5.3.2 Vite 手动分包配置
+#### 4.3.2 Vite 手动分包配置
 
 ```typescript
 // vite.config.ts
@@ -903,9 +841,9 @@ export default defineConfig({
 });
 ```
 
-### 5.4 v-once 与 v-memo
+### 4.4 v-once 与 v-memo
 
-#### 5.4.1 v-once 静态内容
+#### 4.4.1 v-once 静态内容
 
 ```vue
 <!-- StaticContent.vue -->
@@ -937,7 +875,7 @@ const counter = ref(0);
 </template>
 ```
 
-#### 5.4.2 v-memo 条件性缓存
+#### 4.4.2 v-memo 条件性缓存
 
 ```vue
 <!-- DataTable.vue —— Vue 3.2+ -->
@@ -1025,7 +963,7 @@ const selectedCount = computed(() => rows.value.filter((r) => r.selected).length
 </style>
 ```
 
-### 5.5 计算属性缓存与执行时机
+### 4.5 计算属性缓存与执行时机
 
 ```typescript
 import { ref, computed, watch, watchEffect } from 'vue';
@@ -1065,7 +1003,7 @@ lastName.value = 'Smith'; // 触发：computed 失效、watch 回调、watchEffe
 age.value = 31;           // 仅触发 watchEffect 回调（computed 不依赖 age）
 ```
 
-### 5.6 KeepAlive 优化
+### 4.6 KeepAlive 优化
 
 ```vue
 <!-- App.vue -->
@@ -1166,7 +1104,7 @@ onUnmounted(() => {
 </template>
 ```
 
-### 5.7 生产环境性能监控
+### 4.7 生产环境性能监控
 
 ```typescript
 // utils/performance.ts —— Vue 3.4+
@@ -1270,7 +1208,7 @@ class PerformanceMonitor {
 export const performanceMonitor = new PerformanceMonitor();
 ```
 
-### 5.8 路由懒加载与预加载策略
+### 4.8 路由懒加载与预加载策略
 
 ```typescript
 // router/index.ts —— Vue Router 4 + Vue 3.4+
@@ -1340,7 +1278,7 @@ router.afterEach((to) => {
 export default router;
 ```
 
-### 5.9 图片懒加载与响应式图片
+### 4.9 图片懒加载与响应式图片
 
 ```vue
 <!-- LazyImage.vue —— Vue 3.4+ -->
@@ -1405,7 +1343,7 @@ img[src]:not([src*="data:"]) {
 </style>
 ```
 
-### 5.10 Tree Shaking 与按需引入
+### 4.10 Tree Shaking 与按需引入
 
 ```typescript
 // 优化的 Element Plus 按需引入
@@ -1447,7 +1385,7 @@ const debouncedSearch = debounce((query: string) => {
 }, 300);
 ```
 
-### 5.11 Web Worker 计算卸载
+### 4.11 Web Worker 计算卸载
 
 ```typescript
 // workers/heavy-compute.worker.ts
@@ -1508,7 +1446,7 @@ function compute(): void {
 </template>
 ```
 
-### 5.12 请求缓存与去重
+### 4.12 请求缓存与去重
 
 ```typescript
 // utils/request-cache.ts —— Vue 3.4+
@@ -1574,9 +1512,9 @@ export const requestCache = new RequestCache();
 
 ---
 
-## 6. 对比分析 | Comparative Analysis
+## 5. 对比分析 | Comparative Analysis
 
-### 6.1 Vue 3 与其他主流框架的性能对比
+### 5.1 Vue 3 与其他主流框架的性能对比
 
 | 维度 | Vue 3 | React 18 | Angular 17 | Svelte 4 | SolidJS |
 |------|-------|----------|------------|----------|---------|
@@ -1592,7 +1530,7 @@ export const requestCache = new RequestCache();
 | 生态成熟度 | 高 | 极高 | 高 | 中 | 中 |
 | SSR 性能 | 高 | 中 | 中 | 高 | 高 |
 
-### 6.2 响应式系统对比
+### 5.2 响应式系统对比
 
 | 特性 | Vue 3（Proxy） | React（Hooks） | Svelte（编译时） | Solid（Signal） |
 |------|----------------|----------------|------------------|-----------------|
@@ -1603,7 +1541,7 @@ export const requestCache = new RequestCache();
 | 性能开销 | 中（Proxy 拦截） | 低（无拦截） | 极低（编译时） | 极低（Signal） |
 | 学习曲线 | 中 | 高（Hooks 规则） | 低 | 中 |
 
-### 6.3 编译优化策略对比
+### 5.3 编译优化策略对比
 
 | 优化策略 | Vue 3 | React | Svelte | Solid |
 |----------|-------|-------|--------|-------|
@@ -1614,7 +1552,7 @@ export const requestCache = new RequestCache();
 | 死代码消除 | 部分 | 否 | 是 | 是 |
 | Tree Shaking | 是 | 否 | 是 | 是 |
 
-### 6.4 状态管理方案对比
+### 5.4 状态管理方案对比
 
 | 方案 | 适用场景 | 性能 | 复杂度 | Vue 3 推荐 |
 |------|----------|------|--------|-----------|
@@ -1625,7 +1563,7 @@ export const requestCache = new RequestCache();
 | Redux | 跨框架共享 | 中 | 高 | 否 |
 | 直接 props 传递 | 浅层组件 | 极高 | 低 | 是（≤3 层） |
 
-### 6.5 渲染策略对比
+### 5.5 渲染策略对比
 
 | 策略 | 首屏速度 | SEO | 开发成本 | 适用场景 |
 |------|----------|-----|----------|----------|
@@ -1637,11 +1575,11 @@ export const requestCache = new RequestCache();
 
 ---
 
-## 7. 常见陷阱与最佳实践 | Pitfalls and Best Practices
+## 6. 常见陷阱与最佳实践 | Pitfalls and Best Practices
 
-### 7.1 响应式陷阱
+### 6.1 响应式陷阱
 
-#### 7.1.1 解构 reactive 对象丢失响应性
+#### 6.1.1 解构 reactive 对象丢失响应性
 
 **陷阱**：
 
@@ -1682,7 +1620,7 @@ function increment(state: { count: number }) {
 increment(state);
 ```
 
-#### 7.1.2 ref 在模板中的自动解包陷阱
+#### 6.1.2 ref 在模板中的自动解包陷阱
 
 ```vue
 <script setup lang="ts">
@@ -1707,7 +1645,7 @@ const state = reactive({ count: ref(0) });
 
 **注意**：在 JS/TS 中访问 ref 必须使用 `.value`，仅在模板中自动解包。这是 Vue 3 最常见的陷阱之一。
 
-#### 7.1.3 reactive 重新赋值丢失响应性
+#### 6.1.3 reactive 重新赋值丢失响应性
 
 ```typescript
 import { reactive } from 'vue';
@@ -1730,7 +1668,7 @@ const state = reactive({ count: 0 });
 state.count = 1;
 ```
 
-#### 7.1.4 watch 监听 reactive 对象的深度问题
+#### 6.1.4 watch 监听 reactive 对象的深度问题
 
 ```typescript
 import { reactive, watch } from 'vue';
@@ -1761,9 +1699,9 @@ watch(
 );
 ```
 
-### 7.2 渲染性能陷阱
+### 6.2 渲染性能陷阱
 
-#### 7.2.1 v-for 缺少 key 或使用 index 作为 key
+#### 6.2.1 v-for 缺少 key 或使用 index 作为 key
 
 **陷阱**：
 
@@ -1792,7 +1730,7 @@ watch(
 </template>
 ```
 
-#### 7.2.2 内联函数导致子组件重渲染
+#### 6.2.2 内联函数导致子组件重渲染
 
 **陷阱**：
 
@@ -1829,7 +1767,7 @@ const getFilter = (id: number) => (x: { id: number }) => x.id === id;
 </template>
 ```
 
-#### 7.2.3 大型列表未使用虚拟滚动
+#### 6.2.3 大型列表未使用虚拟滚动
 
 **陷阱**：
 
@@ -1849,9 +1787,9 @@ const getFilter = (id: number) => (x: { id: number }) => x.id === id;
 
 **正确做法**：使用虚拟滚动（参见 5.2 节）。
 
-### 7.3 内存泄漏陷阱
+### 6.3 内存泄漏陷阱
 
-#### 7.3.1 定时器与事件监听未清理
+#### 6.3.1 定时器与事件监听未清理
 
 ```typescript
 import { onMounted, onUnmounted } from 'vue';
@@ -1885,7 +1823,7 @@ onUnmounted(() => {
 });
 ```
 
-#### 7.3.2 响应式数据未释放
+#### 6.3.2 响应式数据未释放
 
 ```typescript
 import { reactive, onUnmounted } from 'vue';
@@ -1905,7 +1843,7 @@ onUnmounted(() => {
 });
 ```
 
-### 7.4 可访问性（A11y）最佳实践
+### 6.4 可访问性（A11y）最佳实践
 
 ```vue
 <script setup lang="ts">
@@ -1937,13 +1875,13 @@ const panelId = computed(() => `panel-${Math.random().toString(36).slice(2)}`);
 </template>
 ```
 
-### 7.5 SEO 优化陷阱
+### 6.5 SEO 优化陷阱
 
 - **CSR 应用 SEO 差**：纯客户端渲染的应用，搜索引擎爬虫可能无法获取动态内容。解决方案：使用 SSR（Nuxt）或 SSG。
 - **缺少 meta 信息**：使用 `@unhead/vue` 或 `vue-router-meta` 动态设置 `title`、`description`、`og:` 等 meta 标签。
 - **缺少语义化标签**：使用 `<main>`、`<article>`、`<nav>`、`<aside>` 等语义化标签。
 
-### 7.6 最佳实践清单
+### 6.6 最佳实践清单
 
 1. **响应式**：优先使用 `ref`，仅对需要深度响应式的对象使用 `reactive`；大型数据使用 `shallowRef`；第三方实例使用 `markRaw`。
 2. **计算属性**：优先使用 `computed` 缓存计算结果，避免在模板中写复杂表达式。
@@ -1958,11 +1896,11 @@ const panelId = computed(() => `panel-${Math.random().toString(36).slice(2)}`);
 
 ---
 
-## 8. 工程实践 | Engineering Practice
+## 7. 工程实践 | Engineering Practice
 
-### 8.1 Vite 构建优化
+### 7.1 Vite 构建优化
 
-#### 8.1.1 开发环境优化
+#### 7.1.1 开发环境优化
 
 ```typescript
 // vite.config.ts —— 开发环境
@@ -2008,7 +1946,7 @@ export default defineConfig(({ mode }) => ({
 }));
 ```
 
-#### 8.1.2 生产环境优化
+#### 7.1.2 生产环境优化
 
 ```typescript
 // vite.config.ts —— 生产环境
@@ -2101,7 +2039,7 @@ export default defineConfig({
 });
 ```
 
-### 8.2 Vue Router 优化
+### 7.2 Vue Router 优化
 
 ```typescript
 // router/index.ts
@@ -2146,7 +2084,7 @@ router.afterEach((to) => {
 export default router;
 ```
 
-### 8.3 Pinia 状态管理优化
+### 7.3 Pinia 状态管理优化
 
 ```typescript
 // stores/useUserStore.ts
@@ -2182,9 +2120,9 @@ export const useUserStore = defineStore('user', () => {
 });
 ```
 
-### 8.4 调试工具
+### 7.4 调试工具
 
-#### 8.4.1 Vue DevTools
+#### 7.4.1 Vue DevTools
 
 ```typescript
 // main.ts
@@ -2205,7 +2143,7 @@ if (import.meta.env.DEV) {
 app.mount('#app');
 ```
 
-#### 8.4.2 Chrome DevTools Performance 面板
+#### 7.4.2 Chrome DevTools Performance 面板
 
 **分析步骤**：
 
@@ -2218,7 +2156,7 @@ app.mount('#app');
    - 强制同步布局（Forced Synchronous Layout）
    - 脚本执行时间过长
 
-#### 8.4.3 Lighthouse 审计
+#### 7.4.3 Lighthouse 审计
 
 ```bash
 # 命令行运行 Lighthouse
@@ -2231,7 +2169,7 @@ npx lighthouse https://example.com --output html --output-path ./lighthouse-repo
 # - SEO（搜索引擎优化）
 ```
 
-### 8.5 CI/CD 性能基线
+### 7.5 CI/CD 性能基线
 
 ```yaml
 # .github/workflows/performance.yml
@@ -2287,9 +2225,9 @@ jobs:
 
 ---
 
-## 9. 案例研究 | Case Studies
+## 8. 案例研究 | Case Studies
 
-### 9.1 Vue 官网（vuejs.org）性能优化
+### 8.1 Vue 官网（vuejs.org）性能优化
 
 Vue 官网使用 VitePress（基于 Vue 3 的静态站点生成器）构建，是 Vue 3 性能优化的标杆案例。
 
@@ -2309,7 +2247,7 @@ Vue 官网使用 VitePress（基于 Vue 3 的静态站点生成器）构建，�
 - CLS: 0
 - TBT: 0ms
 
-### 9.2 Nuxt 3（Nuxt.com）
+### 8.2 Nuxt 3（Nuxt.com）
 
 Nuxt 3 是基于 Vue 3 的元框架，提供 SSR、SSG、ISR 等多种渲染模式。
 
@@ -2335,7 +2273,7 @@ const { data: posts, pending, error } = await useFetch('/api/posts', {
 </script>
 ```
 
-### 9.3 Element Plus 组件库优化
+### 8.3 Element Plus 组件库优化
 
 Element Plus 是 Vue 3 最流行的 UI 组件库之一，其性能优化策略包括：
 
@@ -2365,7 +2303,7 @@ export default defineConfig({
 });
 ```
 
-### 9.4 Vuetify 3 性能考量
+### 8.4 Vuetify 3 性能考量
 
 Vuetify 3 是基于 Material Design 的 Vue 3 UI 库，其性能特点：
 
@@ -2374,7 +2312,7 @@ Vuetify 3 是基于 Material Design 的 Vue 3 UI 库，其性能特点：
 3. **Tree Shaking**：Vuetify 3 完全重写为 Tree Shakable。
 4. **指令系统**：`v-ripple`、`v-intersect` 等指令使用 IntersectionObserver 等高效 API。
 
-### 9.5 GitLab Vue 3 迁移性能案例
+### 8.5 GitLab Vue 3 迁移性能案例
 
 GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其性能优化经验：
 
@@ -2690,7 +2628,7 @@ export function useCachedRequest<T>(
 }
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 1**：为什么 Vue 3 选择 Proxy 而不是 `Object.defineProperty`？请从能力、性能、兼容性三个维度分析。
 
@@ -2801,7 +2739,7 @@ export function useCachedRequest<T>(
 
 ---
 
-## 11. 参考文献 | References
+## 10. 参考文献 | References
 
 1. You, E. (2020). *Vue.js 3.0 Release Notes*. Vue.js Foundation. https://github.com/vuejs/core/releases/tag/v3.0.0
 
@@ -2845,9 +2783,9 @@ export function useCachedRequest<T>(
 
 ---
 
-## 12. 延伸阅读 | Further Reading
+## 11. 延伸阅读 | Further Reading
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **Vue.js 官方文档**：https://vuejs.org/
 - **Vue.js GitHub 仓库**：https://github.com/vuejs/core
@@ -2855,7 +2793,7 @@ export function useCachedRequest<T>(
 - **Vue Conf 演讲视频**：https://www.vuemastery.com/conferences/
 - **Evan You 个人博客**：https://evanyou.me/
 
-### 12.2 进阶书籍
+### 11.2 进阶书籍
 
 - **《Vue.js 3 从入门到实战》**：杨志坚、张志美著，电子工业出版社，2023。
 - **《Vue.js 3 Cookbook》**：Heitor Ribeiro 著，Packt Publishing，2024。
@@ -2863,14 +2801,14 @@ export function useCachedRequest<T>(
 - **《High Performance Web Sites》**：Steve Souders 著，O'Reilly Media，2007。
 - **《Even Faster Web Sites》**：Steve Souders 著，O'Reilly Media，2009。
 
-### 12.3 在线课程
+### 11.3 在线课程
 
 - **Vue Mastery**：https://www.vuemastery.com/
 - **Vue School**：https://vueschool.io/
 - **Frontend Masters: Vue 3 Fundamentals**：https://frontendmasters.com/courses/vue-3-fundamentals/
 - **Egghead: Build Vue 3 Apps with the Composition API**：https://egghead.io/courses/build-vue-3-apps-with-the-composition-api
 
-### 12.4 论文与技术报告
+### 11.4 论文与技术报告
 
 - **"Vue.js: The Progressive Framework"**：Evan You, VueConf 2020.
 - **"Reactivity in Vue 3"**：Evan You, JSConf EU 2020.
@@ -2878,7 +2816,7 @@ export function useCachedRequest<T>(
 - **"Performance Analysis of Modern Web Frameworks"**：Krause et al., ICSE 2023.
 - **"A Comparative Study of React, Vue, and Angular"**：Zhang et al., IEEE Software 2023.
 
-### 12.5 工具与库
+### 11.5 工具与库
 
 - **Vue DevTools**：https://devtools.vuejs.org/
 - **Vite**：https://vitejs.dev/
@@ -2891,7 +2829,7 @@ export function useCachedRequest<T>(
 - **Vue Virtual Scroller**：https://github.com/Akryum/vue-virtual-scroller
 - **Vue Performance Observer**：https://github.com/vuejs/core/tree/main/packages/runtime-core
 
-### 12.6 社区与博客
+### 11.6 社区与博客
 
 - **Vue.js 论坛**：https://forum.vuejs.org/
 - **Vue.js Discord**：https://discord.com/invite/vue
@@ -2901,7 +2839,7 @@ export function useCachedRequest<T>(
 - **CSS-Tricks Vue 文章**：https://css-tricks.com/guides/vue/
 - **Smashing Magazine Vue 文章**：https://www.smashingmagazine.com/category/vue
 
-### 12.7 性能基准与监控
+### 11.7 性能基准与监控
 
 - **Lighthouse**：https://developers.google.com/web/tools/lighthouse
 - **WebPageTest**：https://www.webpagetest.org/
@@ -2910,7 +2848,7 @@ export function useCachedRequest<T>(
 - **SpeedCurve**：https://www.speedcurve.com/
 - **Calibre**：https://calibreapp.com/
 
-### 12.8 学习路径建议
+### 11.8 学习路径建议
 
 1. **入门阶段**：
    - Vue 3 官方文档基础部分

@@ -20,77 +20,6 @@ related:
   - typescript/类型安全的API客户端
 prerequisites:
   - typescript/语法速查
-learningObjectives:
-  - '记住 .d.ts 文件的基本结构与三种模块声明形式（namespace/module/global）'
-  - '理解 TypeScript 的四种模块解析策略（classic/node/node16/nodenext/bundler）的差异与适用场景'
-  - '在 tsconfig.json 中正确配置 paths/exports/types/typeRoots，并书写符合 NodeNext 规范的导入路径'
-  - '分析 ESM 与 CJS 互操作中 esModuleInterop/allowSyntheticDefaultImports 的运行时与类型层差异'
-  - '评估一个 npm 包的 package.json exports 字段是否符合 TypeScript 子路径导出与类型解析要求'
-  - '设计一个 monorepo 项目的模块解析策略，覆盖前后端共享类型、子路径导出与多入口声明'
-exercises:
-  fill-blank:
-    - question: TypeScript 5.0+ 推荐的现代模块解析策略中，____适合打包器工程，____适合 Node.js ESM 工程。
-      answer: Bundler；NodeNext
-      bloom: remember
-    - question: 在 NodeNext 解析策略下，相对路径导入必须显式包含____扩展名，且 .ts 源文件对应的运行时导入路径应写为____。
-      answer: .js；.js
-      bloom: remember
-    - question: package.json 的 exports 字段中，____条件用于声明 TypeScript 类型入口，其值必须以____开头。
-      answer: types；.d.ts
-      bloom: understand
-  choice:
-    - question: 下列哪种情况必须使用 declare module 而非 declare global？
-      options:
-        - "扩展 Window 接口"
-        - "为无类型的 npm 包提供类型"
-        - "在模块文件中新增全局变量"
-        - "声明 process.env 类型"
-      answer: "为无类型的 npm 包提供类型"
-      bloom: understand
-    - question: '关于 moduleResolution: bundler 的描述，错误的是？'
-      options:
-        - "支持不写扩展名的相对路径导入"
-        - "要求 package.json 必须设置 type: module"
-        - "适用于 Vite/Webpack/Rollup 等打包器工程"
-        - "不支持 Node.js 原生运行"
-      answer: "要求 package.json 必须设置 type: module"
-      bloom: analyze
-  code-fix:
-    - question: |
-        以下 NodeNext 工程代码报错 "Could not find a declaration file for module './utils'"。
-        请修复导入语句。
-
-        ```typescript
-        // src/index.ts
-        import { helper } from './utils';
-        ```
-      answer: |
-        NodeNext 要求相对路径导入显式写 .js 扩展名（即使源文件是 .ts）。
-        ```typescript
-        import { helper } from './utils.js';
-        ```
-      bloom: apply
-  open-ended:
-    - question: |
-        你正在为一个同时支持 ESM 与 CJS 双格式发布的 npm 包编写 package.json。
-        请描述 exports 字段的完整结构，包括 main、module、import、require、types 条目，
-        并说明为什么 types 条目必须放在最前面。
-      answer: |
-        ```json
-        {
-          "exports": {
-            ".": {
-              "types": "./dist/index.d.ts",
-              "import": "./dist/index.mjs",
-              "require": "./dist/index.cjs"
-            }
-          }
-        }
-        ```
-        types 必须放在最前面，因为 TypeScript 解析 exports 时使用 first-match 策略，
-        如果 import 在 types 之前，TypeScript 可能匹配到 .mjs 入口但找不到对应的 .d.ts。
-        将 types 放在首位确保类型解析优先。
-      bloom: create
 references:
   - |
     Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In 28th European Conference on Object-Oriented Programming (ECOOP 2014). LIPIcs 33, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
@@ -114,6 +43,7 @@ etymology:
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---
+
 # TypeScript 模块声明
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数

@@ -15,59 +15,16 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+
 # 图像与响应式图片 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节依据 Bloom 教育目标分类法组织学习目标。
-
-### 1.1 Remember（记忆）
-
-- **R-1**：列举 `<img>` 元素的 12 个标准属性（`src`、`alt`、`srcset`、`sizes`、`width`、`height`、`loading`、`decoding`、`referrerpolicy`、`crossorigin`、`usemap`、`ismap`）。
-- **R-2**：复述 `srcset` 的两种描述符语法：宽度描述符（`400w`）与像素密度描述符（`2x`）。
-- **R-3**：识别 `sizes` 属性的媒体条件语法：`(media-condition) length`。
-- **R-4**：背诵 WHATWG HTML Living Standard §4.8.3 中"图像选择算法"的 6 个步骤。
-
-### 1.2 Understand（理解）
-
-- **U-1**：解释 `srcset` + `sizes` 的"自适应图像选择"机制如何避免下载过大图片。
-- **U-2**：阐明 `<picture>` 元素的 `<source>` 子元素如何基于媒体查询与格式协商实现艺术指导（art direction）。
-- **U-3**：说明 WebP/AVIF/JPEG XL 三种现代格式的编码原理差异（VP8/AV1/JPEG XL）。
-- **U-4**：理解设备像素比（Device Pixel Ratio, DPR）对图像选择的影响。
-
-### 1.3 Apply（应用）
-
-- **A-1**：为电商产品页实现完整的响应式图片方案，覆盖手机/平板/桌面三档断点。
-- **A-2**：使用 `<picture>` 实现艺术指导，在不同视口下裁切图片焦点。
-- **A-3**：使用 `loading="lazy"` 与 `fetchpriority="high"` 优化首屏 LCP。
-
-### 1.4 Analyze（分析）
-
-- **An-1**：解构浏览器图像选择算法的决策树，分析 DPR、视口宽度、网络状况的权重。
-- **An-2**：剖析 JPEG 与 WebP 在 DCT（离散余弦变换）系数编码上的差异。
-- **An-3**：分析"布局偏移"（CLS）与 `<img width/height>` 比例盒子的因果关系。
-
-### 1.5 Evaluate（评价）
-
-- **E-1**：评估"使用同一张 2x 图 + CSS 缩放"与"srcset 多档图"在性能与质量上的取舍。
-- **E-2**：判断 AVIF 在 2026 年的生产可用性，包括浏览器支持、编码耗时、CDN 兼容性。
-- **E-3**：对比 `<picture>` 媒体查询与 CSS `image-set()` 的优劣。
-
-### 1.6 Create（创造）
-
-- **C-1**：设计一个自动生成 srcset 多档图的构建流水线（基于 Sharp / Squoosh）。
-- **C-2**：实现一个图像懒加载 + 占位符（LQIP/SQIP）的 React 组件库。
-- **C-3**：构建图像性能监控 SDK，自动采集 LCP、CLS、下载字节数并上报。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 早期图像时代（1993—2000）
+### 1.1 早期图像时代（1993—2000）
 
 Tim Berners-Lee 在 1991 年的 WorldWideWeb 浏览器中仅支持文本。1993 年 Marc Andreessen 在 NCSA Mosaic 中引入 `<img>` 标签，引发"图像爆炸"。
 
@@ -84,7 +41,7 @@ Tim Berners-Lee 在 1991 年的 WorldWideWeb 浏览器中仅支持文本。1993 
 | JPEG | 1992 | DCT 有损 | 不支持 | 不支持 | 24 bit |
 | PNG | 1996 | DEFLATE 无损 | 8 bit alpha | 不支持 | 48 bit |
 
-### 2.2 移动互联网的挑战（2007—2013）
+### 1.2 移动互联网的挑战（2007—2013）
 
 iPhone（2007）开启移动互联网时代。2010 年 retina 显示屏（DPR=2）发布，传统单图方案导致：
 
@@ -113,7 +70,7 @@ iPhone（2007）开启移动互联网时代。2010 年 retina 显示屏（DPR=2�
 
 这些方案的缺陷：JS 方案阻塞渲染、CSS 方案无法用于内容图片、HTTP 缓存易失效。
 
-### 2.3 HTML5 响应式图片规范（2012—2016）
+### 1.3 HTML5 响应式图片规范（2012—2016）
 
 2012 年 W3C HTML Responsive Images Community Group 提出 `srcset` 与 `<picture>` 提案。2014 年 HTML5.1 草案正式纳入：
 
@@ -123,7 +80,7 @@ iPhone（2007）开启移动互联网时代。2010 年 retina 显示屏（DPR=2�
 
 2016 年 HTML5.1 成为 W3C 推荐标准，响应式图片 API 全面落地。
 
-### 2.4 现代图像格式时代（2010—2024）
+### 1.4 现代图像格式时代（2010—2024）
 
 | 格式 | 发布年 | 编码器 | 压缩率（vs JPEG） | 浏览器支持 |
 | ---- | ------ | ------ | ------------------ | ---------- |
@@ -132,7 +89,7 @@ iPhone（2007）开启移动互联网时代。2010 年 retina 显示屏（DPR=2�
 | AVIF | 2019 | libavif (AV1) | -50%~-70% | 92%+ |
 | JPEG XL | 2022 | libjxl | -60% | 70%（需 feature flag） |
 
-### 2.5 演进时间线
+### 1.5 演进时间线
 
 ```mermaid
 timeline
@@ -153,7 +110,7 @@ timeline
     2024: AVIF 全球支持率 >92%；JPEG XL 仍在 Chrome flag 阶段
 ```
 
-### 2.6 规范族谱
+### 1.6 规范族谱
 
 - **HTML 2.0**（RFC 1866, 1995）：`<img>` 基本语法。
 - **HTML 4.01**（W3C, 1999）：增加 `longdesc`、`usemap`、`ismap`。
@@ -164,9 +121,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 WHATWG 规范定义
+### 2.1 WHATWG 规范定义
 
 依据 WHATWG HTML Living Standard §4.8.3，`<img>` 元素的 Web IDL 定义：
 
@@ -208,7 +165,7 @@ interface HTMLSourceElement : HTMLElement {
 };
 ```
 
-### 3.2 srcset 文法
+### 2.2 srcset 文法
 
 ```
 srcset = candidate ( "," candidate )*
@@ -223,7 +180,7 @@ pixel-density-descriptor = positive-floating-point "x"
 - 同一 `srcset` 中所有 `candidate` 必须使用**相同类型**的描述符（不能 `w` 与 `x` 混用）。
 - 默认描述符为 `1x`（即未显式指定时）。
 
-### 3.3 sizes 文法
+### 2.3 sizes 文法
 
 ```
 sizes = size-source ( "," size-source )*
@@ -231,7 +188,7 @@ size-source = [ media-condition ] length
 length = CSS <length> 值（如 100vw, 50vw, 800px）
 ```
 
-### 3.4 图像选择算法形式化
+### 2.4 图像选择算法形式化
 
 设浏览器视口宽度为 $V$（CSS 像素），设备像素比为 $D$，`sizes` 计算出的渲染宽度为 $R$（CSS 像素）。
 
@@ -249,7 +206,7 @@ $$
 
 **示例**：$V = 400\text{px}$, $D = 2$, `sizes="(max-width: 600px) 100vw, 50vw"`。则 $R = 400\text{px}$（命中媒体条件），$\text{targetWidth} = 800\text{px}$。若 `srcset="small.jpg 400w, medium.jpg 800w, large.jpg 1200w"`，则选择 `medium.jpg`。
 
-### 3.5 LCP（Largest Contentful Paint）形式化
+### 2.5 LCP（Largest Contentful Paint）形式化
 
 设图像 $I$ 的下载时间为 $T_{\text{download}}$，解码时间为 $T_{\text{decode}}$，渲染时间为 $T_{\text{render}}$。LCP 时刻：
 
@@ -265,7 +222,7 @@ $$
 
 故减小 $B$（响应式图片）直接降低 LCP。
 
-### 3.6 布局偏移（CLS）形式化
+### 2.6 布局偏移（CLS）形式化
 
 设图像加载前容器高度为 $h_0$，加载后为 $h_1$。布局偏移量：
 
@@ -283,9 +240,9 @@ CSS 自动按此比例计算高度，避免布局偏移。
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 设备像素比（DPR）的物理意义
+### 3.1 设备像素比（DPR）的物理意义
 
 设物理像素数为 $P_{\text{physical}}$，CSS 像素数为 $P_{\text{css}}$。
 
@@ -295,7 +252,7 @@ $$
 
 **示例**：iPhone 12 物理分辨率 1170×2532，CSS 视口 390×844，则 $D = 3$。
 
-### 4.2 图像字节量与质量关系
+### 3.2 图像字节量与质量关系
 
 JPEG 质量参数 $q \in [1, 100]$，字节数 $B(q)$ 与峰值信噪比（PSNR）近似：
 
@@ -312,7 +269,7 @@ $$
 | 70 | 72 KB | 50 KB | 35 KB | 35 dB |
 | 50 | 48 KB | 33 KB | 22 KB | 31 dB |
 
-### 4.3 响应式图片的带宽节省
+### 3.3 响应式图片的带宽节省
 
 设传统方案下载固定 $B_{\text{fixed}} = 1\text{MB}$ 图片。响应式方案按视口选择 $B(v)$：
 
@@ -328,7 +285,7 @@ $$
 \eta = 1 - \frac{B(400)}{B_{\text{fixed}}} = 1 - \frac{2.7 \times 10^{-4} \times 400^2}{1024} \approx 95.8\%
 $$
 
-### 4.4 DCT 与压缩原理
+### 3.4 DCT 与压缩原理
 
 JPEG 使用 $8 \times 8$ 块的二维 DCT：
 
@@ -340,7 +297,7 @@ $$
 
 低频系数（左上角）集中能量，高频系数（右下角）可被量化丢弃。WebP（VP8）使用 $4 \times 4$ 块 + 帧内预测，AVIF（AV1）使用 $4 \times 4$ 到 $64 \times 64$ 自适应块 + 多参考帧预测，压缩率更高。
 
-### 4.5 懒加载的视口检测算法
+### 3.5 懒加载的视口检测算法
 
 浏览器原生懒加载（`loading="lazy"`）使用 IntersectionObserver 替代（用户不可见）。设图片距视口底部距离为 $d$，懒加载触发距离 $d_{\text{threshold}}$（默认 1250px on 4G，3000px on 3G）。
 
@@ -351,7 +308,7 @@ $$
 \end{cases}
 $$
 
-### 4.6 解码异步化
+### 3.6 解码异步化
 
 `decoding="async"` 将解码移出主线程，避免阻塞首次渲染。
 
@@ -363,9 +320,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 完整 HTML5 文档结构
+### 4.1 完整 HTML5 文档结构
 
 ```html
 <!DOCTYPE html>
@@ -424,7 +381,7 @@ $$
 </html>
 ```
 
-### 5.2 srcset 完整示例（宽度描述符）
+### 4.2 srcset 完整示例（宽度描述符）
 
 ```html
 <img
@@ -456,7 +413,7 @@ $$
 />
 ```
 
-### 5.3 像素密度描述符
+### 4.3 像素密度描述符
 
 ```html
 <!-- 适用于图标、Logo 等固定尺寸场景 -->
@@ -469,7 +426,7 @@ $$
 />
 ```
 
-### 5.4 艺术指导（Art Direction）
+### 4.4 艺术指导（Art Direction）
 
 ```html
 <!-- 桌面版显示完整合影，移动版聚焦人脸 -->
@@ -494,7 +451,7 @@ $$
 </picture>
 ```
 
-### 5.5 现代格式协商
+### 4.5 现代格式协商
 
 ```html
 <picture>
@@ -529,7 +486,7 @@ $$
 </picture>
 ```
 
-### 5.6 生产级 React 组件
+### 4.6 生产级 React 组件
 
 ```jsx
 // ResponsiveImage.jsx
@@ -641,7 +598,7 @@ function checkFormatSupport(mimeType) {
 // />
 ```
 
-### 5.7 LQIP（低质量占位符）
+### 4.7 LQIP（低质量占位符）
 
 ```html
 <!-- 1. 使用 BlurHash 生成占位符 -->
@@ -672,7 +629,7 @@ function checkFormatSupport(mimeType) {
 </style>
 ```
 
-### 5.8 内容图片与背景图片选择
+### 4.8 内容图片与背景图片选择
 
 ```html
 <!-- 内容图片（语义化，应使用 <img>） -->
@@ -693,9 +650,9 @@ function checkFormatSupport(mimeType) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 图像格式对比
+### 5.1 图像格式对比
 
 | 格式 | 压缩类型 | 透明度 | 动画 | 颜色深度 | 压缩率 | 浏览器支持 | 适用场景 |
 | ---- | -------- | ------ | ---- | -------- | ------ | ---------- | -------- |
@@ -708,7 +665,7 @@ function checkFormatSupport(mimeType) {
 | JPEG XL | 有损/无损 | 8 bit alpha | 支持 | 24/32 bit | -60% | ~70% | 下一代格式 |
 | SVG | 矢量 | 支持 | 支持 | 无限 | 无损 | 100% | 图标、Logo |
 
-### 6.2 srcset vs picture
+### 5.2 srcset vs picture
 
 | 维度 | srcset + sizes | `<picture>` + `<source>` |
 | ---- | -------------- | ------------------------ |
@@ -719,7 +676,7 @@ function checkFormatSupport(mimeType) {
 | 代码复杂度 | 低 | 中 |
 | 适用场景 | 同图不同分辨率 | 不同图、不同格式 |
 
-### 6.3 原生懒加载 vs IntersectionObserver
+### 5.3 原生懒加载 vs IntersectionObserver
 
 | 维度 | `loading="lazy"` | IntersectionObserver |
 | ---- | ---------------- | -------------------- |
@@ -730,7 +687,7 @@ function checkFormatSupport(mimeType) {
 | 占位符 | 不支持 | 支持 |
 | 推荐场景 | 一般懒加载 | 复杂场景（LQIP/SQIP） |
 
-### 6.4 响应式图片 vs CSS background-image
+### 5.4 响应式图片 vs CSS background-image
 
 | 维度 | `<img srcset>` | CSS `background-image` + `image-set()` |
 | ---- | -------------- | -------------------------------------- |
@@ -741,7 +698,7 @@ function checkFormatSupport(mimeType) {
 | 懒加载 | 原生支持 | 需 JS |
 | 推荐场景 | 内容图片 | 装饰背景 |
 
-### 6.5 与 React/Vue 组件方案对比
+### 5.5 与 React/Vue 组件方案对比
 
 | 维度 | 原生 HTML `<picture>` | Next.js `<Image>` | Nuxt `<NuxtImg>` |
 | ---- | --------------------- | ----------------- | ---------------- |
@@ -753,9 +710,9 @@ function checkFormatSupport(mimeType) {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 性能陷阱
+### 6.1 性能陷阱
 
 #### 陷阱 7.1.1：未设置 width/height 导致 CLS
 
@@ -787,7 +744,7 @@ function checkFormatSupport(mimeType) {
 <img srcset="small.jpg 400w, large.jpg 800w" sizes="(max-width: 600px) 100vw, 50vw" alt="统一" />
 ```
 
-### 7.2 可访问性陷阱
+### 6.2 可访问性陷阱
 
 #### 陷阱 7.2.1：装饰图片使用非空 alt
 
@@ -809,7 +766,7 @@ function checkFormatSupport(mimeType) {
 <img src="chart-2024.png" alt="2024 年销售柱状图，第三季度销售额 500 万元" />
 ```
 
-### 7.3 SEO 陷阱
+### 6.3 SEO 陷阱
 
 #### 陷阱 7.3.1：图片无 alt 影响图片搜索排名
 
@@ -831,7 +788,7 @@ function checkFormatSupport(mimeType) {
 <img src="mount-huang-sunrise-2024.jpg" alt="黄山日出 2024" />
 ```
 
-### 7.4 格式选择最佳实践
+### 6.4 格式选择最佳实践
 
 ```html
 <!-- 照片：优先 AVIF → WebP → JPEG -->
@@ -856,7 +813,7 @@ function checkFormatSupport(mimeType) {
 </video>
 ```
 
-### 7.5 CDN 与缓存策略
+### 6.5 CDN 与缓存策略
 
 ```http
 # .htaccess / nginx.conf
@@ -874,9 +831,9 @@ RewriteRule ^(.*)\.(jpg|jpeg|png)$ $1.avif [L,T=image/avif]
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建工具：自动生成多档图
+### 7.1 构建工具：自动生成多档图
 
 **Sharp（Node.js）**：
 
@@ -962,7 +919,7 @@ export default defineConfig({
 });
 ```
 
-### 8.2 Next.js `<Image>` 最佳实践
+### 7.2 Next.js `<Image>` 最佳实践
 
 ```jsx
 // Next.js 14+
@@ -984,7 +941,7 @@ export default function Article() {
 }
 ```
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
 **Chrome DevTools**：
 
@@ -1017,7 +974,7 @@ Promise.all([
 ]).then(([avif, webp]) => console.log({ avif, webp }));
 ```
 
-### 8.4 Lighthouse 性能审计
+### 7.4 Lighthouse 性能审计
 
 Lighthouse 提供 6 项图像相关审计：
 
@@ -1028,7 +985,7 @@ Lighthouse 提供 6 项图像相关审计：
 - `offscreen-images`：是否启用懒加载。
 - `cumulative-layout-shift`：图片是否声明尺寸。
 
-### 8.5 性能优化清单
+### 7.5 性能优化清单
 
 - [ ] 所有内容图片使用 `<img>`，装饰图片使用 CSS。
 - [ ] 所有 `<img>` 声明 `width` 与 `height`。
@@ -1041,7 +998,7 @@ Lighthouse 提供 6 项图像相关审计：
 - [ ] 设置 `Vary: Accept` 协商格式。
 - [ ] 使用 CDN 自动裁剪与格式转换（如 Cloudinary、Imgix）。
 
-### 8.6 测试策略
+### 7.6 测试策略
 
 **单元测试**（Jest + Testing Library）：
 
@@ -1080,9 +1037,9 @@ test('应正确加载响应式图片', async ({ page }) => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 MDN Web Docs 实践
+### 8.1 MDN Web Docs 实践
 
 MDN 文档站点使用 Hugo 静态生成，图片采用 `<picture>` + WebP/JPEG 格式协商：
 
@@ -1093,7 +1050,7 @@ MDN 文档站点使用 Hugo 静态生成，图片采用 `<picture>` + WebP/JPEG 
 </picture>
 ```
 
-### 9.2 BBC 新闻
+### 8.2 BBC 新闻
 
 BBC 采用自定义 `<noscript>` 回退 + JS 懒加载方案（兼容老浏览器），并在 2018 年迁移到原生 `loading="lazy"`：
 
@@ -1112,7 +1069,7 @@ BBC 采用自定义 `<noscript>` 回退 + JS 懒加载方案（兼容老浏览�
 />
 ```
 
-### 9.3 Amazon 电商
+### 8.3 Amazon 电商
 
 Amazon 采用动态图床服务，根据用户设备与网络生成最优图：
 
@@ -1130,7 +1087,7 @@ Amazon 采用动态图床服务，根据用户设备与网络生成最优图：
 />
 ```
 
-### 9.4 Unsplash
+### 8.4 Unsplash
 
 Unsplash 提供 Srcset API，自动生成多档图：
 
@@ -1149,7 +1106,7 @@ Unsplash 提供 Srcset API，自动生成多档图：
 />
 ```
 
-### 9.5 Cloudinary CDN
+### 8.5 Cloudinary CDN
 
 Cloudinary 提供 `f_auto,q_auto` 自动格式与质量协商：
 
@@ -1360,7 +1317,7 @@ export function useResponsiveImage(sources, defaultUrl) {
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 8**：为什么 `srcset` 让浏览器选择而非开发者用 JS 选择？请从性能、缓存、SSR 三个角度分析。
 
@@ -1505,7 +1462,7 @@ export class ImagePerfSDK {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] WHATWG. 2024. **HTML Living Standard §4.8.3 The img element**. WHATWG, Geneva, Switzerland. Retrieved July 20, 2026 from https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element
 
@@ -1533,22 +1490,22 @@ export class ImagePerfSDK {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **"Image Optimization"**, Addy Osmani, 2020, O'Reilly Media, ISBN 978-1492055388.
 - **"High Performance Browser Networking"**, Ilya Grigorik, 2016, O'Reilly Media, ISBN 978-1491901266.
 - **"Web Performance in Action"**, Jeremy Wagner, 2017, Manning Publications, ISBN 978-1617293375.
 - **"High Performance Images"**, Colin Bendell et al., 2016, O'Reilly Media, ISBN 978-1491925795.
 
-### 12.2 论文
+### 11.2 论文
 
 - **"AV1 Image File Format (AVIF)"**, Cyril Concolato, MMSys 2020.
 - **"JPEG XL Next-Generation Image Compression"**, J. Sneyers et al., ICASSP 2022.
 - **"A Study on WebP Image Compression"**, J. Bankoski et al., SPIE 2011.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **MDN Web Docs - Responsive images**: https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images
 - **web.dev - Optimize images**: https://web.dev/learn/images/
@@ -1556,7 +1513,7 @@ export class ImagePerfSDK {
 - **Cloudinary Image Optimization Guide**: https://cloudinary.com/documentation/image_optimization
 - **Squoosh App**（在线图像压缩工具）: https://squoosh.app/
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **sharp**: High performance Node.js image processing. https://github.com/lovell/sharp
 - **Squoosh**: Make images smaller using best-in-class codecs. https://github.com/GoogleChromeLabs/squoosh
@@ -1564,7 +1521,7 @@ export class ImagePerfSDK {
 - **image-webpack-loader**: Webpack image loader. https://github.com/tcoopman/image-webpack-loader
 - **BlurHash**: Encode an image as a compact string. https://github.com/woltapp/blurhash
 
-### 12.5 课程
+### 11.5 课程
 
 - **MIT 6.S192**: Software Engineering for Web Applications. MIT OpenCourseWare.
 - **Stanford CS142**: Web Applications. Stanford University. https://web.stanford.edu/class/cs142/

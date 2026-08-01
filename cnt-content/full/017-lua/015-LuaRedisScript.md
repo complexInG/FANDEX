@@ -16,70 +16,10 @@ prerequisites:
   - lua/概述与环境配置
 ---
 
-## 1. 学习目标（Bloom 分类法）
 
-本篇文档采用 Bloom 认知分类法组织学习目标，帮助读者从基础认知到高阶创造系统化掌握 Redis 中的 Lua 脚本编程。
+## 1. 历史动机与背景
 
-### 1.1 记忆层（Remember）
-
-完成本节后，学习者应能：
-
-- 列举 Redis 执行 Lua 脚本的两条主要命令（`EVAL` 与 `EVALSHA`）及其区别。
-- 复述 `redis.call` 与 `redis.pcall` 的语义差异与错误处理行为。
-- 说出 `KEYS` 与 `ARGV` 两个全局变量的用途与索引约定。
-- 列出 Redis Lua 沙箱中禁止使用的 API（如 `os.execute`、`io.open`、`require`）。
-- 复述 Redis 7.0 引入的 Functions 机制与传统 Lua 脚本的区别。
-
-### 1.2 理解层（Understand）
-
-完成本节后，学习者应能：
-
-- 解释 Redis Lua 脚本的原子性原理，说明它如何保证多条命令不可分割。
-- 阐述 Redis 与 Lua 之间的类型转换规则，特别是 `nil → false` 的特殊映射。
-- 对比 `EVAL` 与 `EVALSHA` 的网络开销，解释为什么生产环境推荐使用 `EVALSHA`。
-- 描述 Redis Cluster 中脚本执行的键分布约束（hash tag 机制）。
-- 说明 `lua-time-limit` 配置的作用与 `SCRIPT KILL` 的局限性。
-
-### 1.3 应用层（Apply）
-
-完成本节后，学习者应能：
-
-- 使用 `EVAL` 执行包含条件判断的复合命令（如"仅当键不存在时设置"）。
-- 编写 Lua 脚本实现可重入的分布式锁（包含加锁、解锁、续期三件套）。
-- 实现滑动窗口与令牌桶两种限流算法，并理解其性能差异。
-- 使用 `SCRIPT LOAD` 与 `EVALSHA` 优化客户端的脚本调用性能。
-- 编写基于 Stream 与消费者组的消息处理脚本。
-
-### 1.4 分析层（Analyze）
-
-完成本节后，学习者应能：
-
-- 拆解一段复杂的 Lua 脚本，识别其中的原子性边界、错误处理路径与性能热点。
-- 分析 Redis 单线程模型下脚本执行对整体吞吐量的影响。
-- 比较分布式锁的多种实现方案（SETNX、Redlock、Redisson），指出各自的可靠性边界。
-- 解构限流算法的数学模型，将其分解为计数器更新、时间窗口滑动、过期清理等子任务。
-
-### 1.5 评价层（Evaluate）
-
-完成本节后，学习者应能：
-
-- 评估某段 Lua 脚本是否会阻塞 Redis 主线程，给出量化的执行时间预估。
-- 评判 Redis Cluster 中脚本的键分布是否合理，提出 hash tag 优化方案。
-- 评估 Functions 与传统 Lua 脚本在不同业务场景下的选型依据。
-- 评判 Redis 实现分布式锁的可靠性边界，指出其在网络分区下的失效场景。
-
-### 1.6 创造层（Create）
-
-完成本节后，学习者应能：
-
-- 设计一个基于 Redis Lua 脚本的秒杀系统，支持库存预热、原子扣减、订单记录。
-- 实现一个支持优先级与延迟的消息队列，基于 Redis Sorted Set 与 Stream 组合。
-- 构建一套脚本版本管理工具，支持灰度发布与回滚。
-- 编写自定义的 Redis Function 库，封装常用业务逻辑（如计数器、排行榜、布隆过滤器）。
-
-## 2. 历史动机与背景
-
-### 2.1 Redis 早期局限与 MULTI/EXEC 事务的不足
+### 1.1 Redis 早期局限与 MULTI/EXEC 事务的不足
 
 Redis 自 2009 年由 Salvatore Sanfilippo（antirez）开源以来，以其纯内存、单线程、丰富数据结构的特性迅速成为缓存与队列的首选。然而，随着业务复杂度提升，开发者很快遇到了"多命令原子性"问题。
 
@@ -91,7 +31,7 @@ Redis 提供了 `MULTI`/`EXEC` 事务机制，允许将多条命令打包执行�
 
 例如，"仅当库存大于 0 且用户未下单时才扣减库存"这一逻辑，无法用 `MULTI`/`EXEC` 表达。
 
-### 2.2 Lua 脚本的引入
+### 1.2 Lua 脚本的引入
 
 为解决上述问题，Redis 2.6（2012 年发布）引入了 `EVAL` 命令，允许在服务端执行 Lua 脚本。Lua 脚本在 Redis 主线程中原子性执行，期间不会穿插其他客户端命令，天然保证了多命令的原子性。
 
@@ -102,7 +42,7 @@ Redis 提供了 `MULTI`/`EXEC` 事务机制，允许将多条命令打包执行�
 3. **性能可控**：Lua 脚本在主线程执行，与 Redis 单线程模型契合，无锁竞争。
 4. **生态成熟**：Lua 已在游戏（World of Warcraft）、Nginx（OpenResty）等场景验证。
 
-### 2.3 关键里程碑
+### 1.3 关键里程碑
 
 | 时间 | 版本 | 事件 |
 | :--- | :--- | :--- |
@@ -114,7 +54,7 @@ Redis 提供了 `MULTI`/`EXEC` 事务机制，允许将多条命令打包执行�
 | 2022 | Redis 7.0 | 引入 Functions，替代部分 Lua 脚本场景 |
 | 2024 | Redis 7.4 | 优化 Lua 沙箱，限制部分不安全 API |
 
-### 2.4 设计哲学
+### 1.4 设计哲学
 
 Redis Lua 脚本的设计哲学可归纳为四点：
 
@@ -123,9 +63,9 @@ Redis Lua 脚本的设计哲学可归纳为四点：
 3. **键显式声明**：通过 `KEYS` 数组显式声明操作的键，便于 Cluster 路由与审计。
 4. **客户端缓存**：服务端缓存脚本编译结果，客户端通过 SHA1 引用，减少网络开销。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 EVAL 命令语义
+### 2.1 EVAL 命令语义
 
 `EVAL` 命令的形式化语义为：
 
@@ -142,7 +82,7 @@ $$
 - $\text{ENV}_{K,A}$ 为 Lua 执行环境，包含全局变量 `KEYS = K`、`ARGV = A`。
 - $\sigma$ 为 Redis 与 Lua 之间的类型映射函数。
 
-### 3.2 原子性形式化
+### 2.2 原子性形式化
 
 设 Redis 主线程在时刻 $t$ 接收到脚本执行请求，其原子性可形式化为：
 
@@ -152,7 +92,7 @@ $$
 
 即在脚本执行的整个时间区间 $[t_{\text{start}}, t_{\text{end}}]$ 内，主线程不处理任何其他客户端命令。这一性质保证了脚本内的所有 Redis 命令作为一个不可分割的整体被执行。
 
-### 3.3 沙箱模型
+### 2.3 沙箱模型
 
 Redis Lua 沙箱通过移除以下 API 实现：
 
@@ -178,7 +118,7 @@ $$
 - `redis.log(level, msg)`：写入 Redis 日志。
 - `redis.LOG_DEBUG`、`redis.LOG_VERBOSE`、`redis.LOG_NOTICE`、`redis.LOG_WARNING`：日志级别常量。
 
-### 3.4 类型映射
+### 2.4 类型映射
 
 Redis 与 Lua 之间的类型映射 $\sigma$ 定义为：
 
@@ -206,7 +146,7 @@ Redis 与 Lua 之间的类型映射 $\sigma$ 定义为：
 
 特别需要注意：**Redis 的 nil（键不存在）映射为 Lua 的 `false`，而非 `nil`**。这是初学者最常踩的坑。
 
-### 3.5 Cluster 路由约束
+### 2.5 Cluster 路由约束
 
 在 Redis Cluster 中，脚本的所有键必须位于同一哈希槽。形式化定义为：
 
@@ -225,9 +165,9 @@ user:{1000}:orders
 
 大括号内的 `1000` 参与 CRC16 计算，大括号外的部分被忽略，从而保证两个键映射到同一槽。
 
-## 4. 理论推导与复杂度分析
+## 3. 理论推导与复杂度分析
 
-### 4.1 脚本执行时间模型
+### 3.1 脚本执行时间模型
 
 设脚本中包含 $n$ 条 Redis 命令，每条命令的平均执行时间为 $t_i$，Lua 解释执行开销为 $t_{\text{lua}}$，则脚本总执行时间为：
 
@@ -243,7 +183,7 @@ $$
 
 为避免雪崩，Redis 设置了 `lua-time-limit`（默认 5 秒），超时后允许 `SCRIPT KILL` 中止脚本。但若脚本已执行写命令，`SCRIPT KILL` 将拒绝执行，只能通过 `SHUTDOWN NOSAVE` 强制重启。
 
-### 4.2 EVALSHA 网络优化
+### 3.2 EVALSHA 网络优化
 
 设脚本长度为 $L$ 字节，网络带宽为 $B$ 字节/秒，则 `EVAL` 的网络传输时间为：
 
@@ -268,7 +208,7 @@ T_{\text{evalsha}} + T_{\text{eval}} & \text{if cache miss}
 \end{cases}
 $$
 
-### 4.3 分布式锁正确性分析
+### 3.3 分布式锁正确性分析
 
 基于 Redis 的分布式锁存在一个经典争议：在网络分区下，锁可能被多个客户端同时持有。
 
@@ -284,7 +224,7 @@ $$
 
 当 $p$ 较小时，$P_{\text{redlock}} \approx 10 p^3$，显著优于单实例。但需注意，这仅在节点完全独立的假设下成立。
 
-### 4.4 滑动窗口限流的复杂度
+### 3.4 滑动窗口限流的复杂度
 
 滑动窗口限流使用 Sorted Set 存储请求时间戳。设窗口大小为 $W$，请求速率为 $\lambda$，则 Sorted Set 中的元素数量约为 $\lambda \times W$。
 
@@ -302,7 +242,7 @@ $$
 redis.call('EXPIRE', key, window + 1)
 ```
 
-### 4.5 令牌桶算法的数学模型
+### 3.5 令牌桶算法的数学模型
 
 令牌桶算法的核心是按速率 $r$ 补充令牌，桶容量为 $C$。设当前令牌数为 $T_{\text{now}}$，上次更新时间为 $t_{\text{last}}$，当前时间为 $t_{\text{now}}$，则：
 
@@ -321,9 +261,9 @@ $$
 
 令牌桶允许突发流量（最多 $C$ 个），适合票务、秒杀等场景。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础 EVAL
+### 4.1 基础 EVAL
 
 最简单的 Lua 脚本，返回固定字符串：
 
@@ -342,7 +282,7 @@ redis-cli EVAL "return 'Hello, Lua!'" 0
 redis-cli EVAL "local old = redis.call('GET', KEYS[1]); redis.call('SET', KEYS[1], ARGV[1]); return old" 1 mykey newvalue
 ```
 
-### 5.2 条件判断脚本
+### 4.2 条件判断脚本
 
 实现"仅当键不存在时设置"：
 
@@ -371,7 +311,7 @@ redis-cli --eval setnx.lua mykey , "hello" 60
 
 注意 `--eval` 语法：逗号前为 KEYS，逗号后为 ARGV。
 
-### 5.3 类型转换注意事项
+### 4.3 类型转换注意事项
 
 演示 Redis 与 Lua 之间的类型转换：
 
@@ -410,7 +350,7 @@ return {
 }
 ```
 
-### 5.4 分布式锁（可重入）
+### 4.4 分布式锁（可重入）
 
 完整的可重入分布式锁实现：
 
@@ -512,7 +452,7 @@ redis.call('PEXPIRE', lock_key, ttl)
 return 1  -- 续期成功
 ```
 
-### 5.5 滑动窗口限流
+### 4.5 滑动窗口限流
 
 ```lua
 -- sliding_window.lua：滑动窗口限流
@@ -554,7 +494,7 @@ redis.call('EXPIRE', key, window + 1)
 return {1, limit - current - 1, 0}  -- 允许、剩余配额、无需等待
 ```
 
-### 5.6 令牌桶限流
+### 4.6 令牌桶限流
 
 ```lua
 -- token_bucket.lua：令牌桶限流
@@ -606,7 +546,7 @@ else
 end
 ```
 
-### 5.7 库存扣减（秒杀场景）
+### 4.7 库存扣减（秒杀场景）
 
 ```lua
 -- seckill.lua：秒杀库存扣减
@@ -647,7 +587,7 @@ return 1  -- 秒杀成功
 redis-cli --eval seckill.lua stock:{item1000} orders:{item1000} , user123 1
 ```
 
-### 5.8 消息队列（优先级）
+### 4.8 消息队列（优先级）
 
 ```lua
 -- pq_producer.lua：优先级队列生产者
@@ -721,7 +661,7 @@ end
 return 1  -- ACK 成功
 ```
 
-### 5.9 Stream 消费者组
+### 4.9 Stream 消费者组
 
 ```lua
 -- stream_consumer.lua：Stream 消费者组处理
@@ -755,7 +695,7 @@ end
 return messages
 ```
 
-### 5.10 缓存击穿防护
+### 4.10 缓存击穿防护
 
 ```lua
 -- cache_lock.lua：缓存击穿防护
@@ -808,7 +748,7 @@ redis.call('DEL', lock_key)
 return 1
 ```
 
-### 5.11 计数器（防刷）
+### 4.11 计数器（防刷）
 
 ```lua
 -- counter.lua：带过期时间的计数器
@@ -835,7 +775,7 @@ end
 return {1, current, ttl}  -- 允许
 ```
 
-### 5.12 排行榜
+### 4.12 排行榜
 
 ```lua
 -- leaderboard.lua：排行榜操作
@@ -871,9 +811,9 @@ local total = redis.call('ZCARD', key)
 return {rank, total, score}
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 EVAL vs EVALSHA
+### 5.1 EVAL vs EVALSHA
 
 | 维度 | EVAL | EVALSHA |
 | :--- | :--- | :--- |
@@ -884,7 +824,7 @@ return {rank, total, score}
 | 客户端库 | 简单 | 需实现"先 EVALSHA 后 EVAL"回退 |
 | 推荐场景 | 调试、一次性脚本 | 生产环境、高频调用 |
 
-### 6.2 Lua 脚本 vs Functions（Redis 7.0+）
+### 5.2 Lua 脚本 vs Functions（Redis 7.0+）
 
 | 维度 | Lua 脚本 | Functions |
 | :--- | :--- | :--- |
@@ -897,7 +837,7 @@ return {rank, total, score}
 | 集群同步 | 需客户端在每节点加载 | 自动同步到所有节点 |
 | 推荐场景 | 简单一次性脚本 | 复杂业务逻辑、需持久化 |
 
-### 6.3 分布式锁实现对比
+### 5.3 分布式锁实现对比
 
 | 方案 | 实现复杂度 | 可靠性 | 性能 | 适用场景 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -908,7 +848,7 @@ return {rank, total, score}
 | Zookeeper | 高 | 极高 | 低 | 强一致性需求 |
 | etcd | 高 | 极高 | 中 | 云原生场景 |
 
-### 6.4 限流算法对比
+### 5.4 限流算法对比
 
 | 算法 | 复杂度 | 突发流量 | 精确性 | 内存占用 | 适用场景 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -918,9 +858,9 @@ return {rank, total, score}
 | 漏桶 | O(1) | 不支持 | 高 | 低 | 平滑流量 |
 | 滑动日志 | O(n) | 不支持 | 极高 | 高（n=窗口内请求数） | 审计场景 |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：硬编码键名（生产事故案例）
+### 6.1 陷阱一：硬编码键名（生产事故案例）
 
 **事故背景**：某电商在 Redis Cluster 中使用 Lua 脚本查询用户信息，脚本中硬编码了键名 `user:1000`，导致 Cluster 路由错误，部分请求返回错误。
 
@@ -948,7 +888,7 @@ return user
 redis-cli --eval script.lua user:1000 ,
 ```
 
-### 7.2 陷阱二：长脚本阻塞 Redis
+### 6.2 陷阱二：长脚本阻塞 Redis
 
 **事故背景**：某团队在 Lua 脚本中使用 `KEYS *` 遍历所有键，在百万级键的实例上执行，导致 Redis 阻塞 30 秒，所有客户端超时。
 
@@ -986,7 +926,7 @@ return result
 
 **更佳实践**：避免在 Lua 脚本中执行全量扫描，改为在客户端分批处理。
 
-### 7.3 陷阱三：误判 nil 与 false
+### 6.3 陷阱三：误判 nil 与 false
 
 **事故背景**：开发者检查 `GET` 返回值时，用 `== nil` 判断键不存在，结果永远不成立。
 
@@ -1023,7 +963,7 @@ if not value then
 end
 ```
 
-### 7.4 陷阱四：浮点数精度丢失
+### 6.4 陷阱四：浮点数精度丢失
 
 **事故背景**：某计费系统使用 Lua 脚本累加金额，运行一段时间后金额出现微小偏差，导致对账失败。
 
@@ -1055,7 +995,7 @@ return amount_cents
 redis.call('INCRBY', KEYS[1], tonumber(ARGV[1]))
 ```
 
-### 7.5 陷阱五：未设置 TTL 导致内存泄漏
+### 6.5 陷阱五：未设置 TTL 导致内存泄漏
 
 **事故背景**：某限流服务使用 Sorted Set 存储请求时间戳，未设置 TTL，导致 Sorted Set 无限增长，最终 Redis 内存耗尽。
 
@@ -1076,7 +1016,7 @@ redis.call('ZADD', KEYS[1], now, member)
 redis.call('EXPIRE', KEYS[1], window + 1)  -- 设置 TTL
 ```
 
-### 7.6 陷阱六：SCRIPT KILL 无法中止写脚本
+### 6.6 陷阱六：SCRIPT KILL 无法中止写脚本
 
 **事故背景**：某脚本因逻辑错误进入死循环，运维尝试 `SCRIPT KILL` 中止，但 Redis 返回 "UNKILLABLE" 错误。
 
@@ -1099,9 +1039,9 @@ end
 
 3. 上线前充分测试，避免长循环。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 脚本版本管理
+### 7.1 脚本版本管理
 
 为避免脚本变更导致的不一致，建议建立版本管理流程：
 
@@ -1133,7 +1073,7 @@ for script in scripts/*.lua; do
 done
 ```
 
-### 8.2 客户端封装
+### 7.2 客户端封装
 
 主流客户端库（如 Python redis-py、Java Jedis、Go go-redis）均提供脚本封装：
 
@@ -1187,7 +1127,7 @@ public class RedisLuaExample {
 }
 ```
 
-### 8.3 错误处理与日志
+### 7.3 错误处理与日志
 
 在脚本中使用 `redis.log` 记录日志：
 
@@ -1239,9 +1179,9 @@ end
 -- 正常逻辑...
 ```
 
-### 8.4 性能优化
+### 7.4 性能优化
 
-#### 8.4.1 减少 Redis 命令调用
+#### 7.4.1 减少 Redis 命令调用
 
 每次 `redis.call` 都涉及 Lua 与 Redis 之间的上下文切换，应尽量合并：
 
@@ -1256,7 +1196,7 @@ local fields = redis.call('HMGET', KEYS[1], 'name', 'age', 'email')
 local name, age, email = fields[1], fields[2], fields[3]
 ```
 
-#### 8.4.2 使用 pipeline 友好的命令
+#### 7.4.2 使用 pipeline 友好的命令
 
 某些命令的批量版本性能优于循环单条：
 
@@ -1270,7 +1210,7 @@ end
 redis.call('SADD', KEYS[1], unpack(members))
 ```
 
-#### 8.4.3 避免大表序列化
+#### 7.4.3 避免大表序列化
 
 Lua 返回值需序列化为 RESP 协议，大表序列化开销大：
 
@@ -1292,7 +1232,7 @@ end
 return {result, start + batch_size}  -- 返回下一批游标
 ```
 
-### 8.5 监控指标
+### 7.5 监控指标
 
 监控 Redis Lua 脚本执行情况的关键指标：
 
@@ -1312,7 +1252,7 @@ redis-cli CONFIG SET slowlog-log-slower-than 10000  # 10ms
 redis-cli SLOWLOG GET 10
 ```
 
-### 8.6 安全审计
+### 7.6 安全审计
 
 审计 Lua 脚本的安全性：
 
@@ -1337,9 +1277,9 @@ redis-cli SLOWLOG GET 10
 -- [AUDIT] resources: table max size 100
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：某电商秒杀系统
+### 8.1 案例一：某电商秒杀系统
 
 **项目背景**：某电商在双十一大促期间，热门商品秒杀 QPS 达 10 万级，使用 Redis Lua 脚本实现原子库存扣减。
 
@@ -1398,7 +1338,7 @@ return {1, "success", stock - quantity}
 - 订单异步落库，避免数据库成为瓶颈。
 - 使用 hash tag 保证 Cluster 路由：`stock:{item1000}`、`seckill:{item1000}:users`、`seckill:{item1000}:orders`。
 
-### 9.2 案例二：某社交平台动态计数
+### 8.2 案例二：某社交平台动态计数
 
 **项目背景**：某社交平台需要实时统计每条动态的点赞数、评论数、转发数，QPS 达 50 万级。
 
@@ -1455,7 +1395,7 @@ return {1, new_value, all}
 - Lua 脚本保证原子更新与负数检查。
 - 异步同步到数据库，避免数据库压力。
 
-### 9.3 案例三：某金融系统风控
+### 8.3 案例三：某金融系统风控
 
 **项目背景**：某金融系统需要实时检测异常交易（如短时间高频转账、异地登录等），使用 Redis Lua 脚本实现规则引擎。
 
@@ -1525,7 +1465,7 @@ return {1, "passed", count + 1}
 - Sorted Set 存储时间序列数据，便于窗口统计。
 - 规则可动态调整（通过 ARGV 传入参数）。
 
-### 9.4 案例四：某 IoT 平台设备状态
+### 8.4 案例四：某 IoT 平台设备状态
 
 **项目背景**：某 IoT 平台管理百万级设备，需实时维护设备在线状态、传感器数据。
 
@@ -1593,7 +1533,7 @@ return offline_devices
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：以下哪个命令用于执行已缓存的 Lua 脚本？
 
@@ -1622,7 +1562,7 @@ D. 创建时间相近
 
 **答案要点**：B。Cluster 中脚本的所有键必须位于同一哈希槽，否则 Cluster 无法正确路由。通常使用 hash tag（如 `user:{1000}:profile`）保证。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：设计一个基于 Redis 的延迟队列，要求：
 
@@ -1711,7 +1651,7 @@ return 1
 3. **使用特定前缀**：通过 `KEYS user:*` 缩小范围（但仍不推荐）。
 4. **业务设计**：避免全量扫描需求，通过精确键名查询。
 
-## 10.3 挑战题
+## 9.3 挑战题
 
 **题目 6**：设计一个基于 Redis 的分布式限流集群，要求：
 
@@ -1876,7 +1816,7 @@ redis-cli FCALL queue.push 1 my_queue "task1" 1
 redis-cli FCALL queue.pop 1 my_queue
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Salvatore Sanfilippo. 2012. Redis 2.6.0 Release Notes: Lua Scripts Support. Redis Project. https://raw.githubusercontent.com/redis/redis/2.6/00-RELEASENOTES
 
@@ -1902,9 +1842,9 @@ redis-cli FCALL queue.pop 1 my_queue
 
 [12] Zhang Wei and Li Ming. 2020. Designing a High-Throughput Seckill System with Redis. In Proceedings of the IEEE International Conference on Web Services (ICWS 2020). IEEE, 312–319. DOI: 10.1109/ICWS49710.2020.00047
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **Redis Lua 脚本文档**：https://redis.io/docs/manual/programmability/lua/
   涵盖 `EVAL`、`EVALSHA`、`redis.call`、类型转换等核心概念。
@@ -1915,13 +1855,13 @@ redis-cli FCALL queue.pop 1 my_queue
 - **Redis Cluster 规范**：https://redis.io/docs/reference/cluster-spec/
   理解 Cluster 中的键分布约束与 hash tag 机制。
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - **《Redis 设计与实现》**（黄健宏 著）：深入理解 Redis 内部机制，包括 Lua 脚本执行流程。
 - **《Redis 实战》**（Josiah L. Carlson 著）：包含大量 Lua 脚本实战案例。
 - **《数据密集型应用系统设计》**（Martin Kleppmann 著）：分布式系统理论的经典之作，含分布式锁的深度讨论。
 
-### 12.3 社区资源
+### 11.3 社区资源
 
 - **Redis GitHub**：https://github.com/redis/redis
   源码、issue、PR，跟踪最新进展。
@@ -1932,7 +1872,7 @@ redis-cli FCALL queue.pop 1 my_queue
 - **Redis 中文社区**：https://redis.cn/
   中文文档与讨论。
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **Redis Modules**：通过 C 模块扩展 Redis，可实现比 Lua 脚本更高性能的自定义命令。
 - **Redis Streams**：Redis 5.0 引入的消息队列数据结构，支持消费者组。
@@ -1940,7 +1880,7 @@ redis-cli FCALL queue.pop 1 my_queue
 - **RediSearch**：全文搜索引擎模块，支持复杂查询。
 - **RedisTimeSeries**：时序数据模块，适合 IoT 与监控场景。
 
-### 12.5 相关项目
+### 11.5 相关项目
 
 - **Redisson**：https://redisson.org/
   Java 生态的 Redis 客户端，封装了分布式锁、限流器等常用组件。

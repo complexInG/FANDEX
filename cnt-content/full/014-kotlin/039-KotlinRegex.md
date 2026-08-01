@@ -15,57 +15,16 @@ related:
 prerequisites:
   - kotlin/Kotlin作用域函数
 ---
+
 # Kotlin 正则表达式
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本节按 Bloom 分类法组织学习目标，覆盖从记忆到创造的完整认知层级，便于学习者自我评估并构建系统化的知识结构。
-
-### 1.1 记忆层（Remembering）
-
-- 回忆 Kotlin 中正则表达式的基本构造方式：`Regex` 类、`String.matches`、`String.contains`、`String.replace`、`String.split`。
-- 列出 `Regex` 类的核心方法：`matches`、`containsMatchIn`、`find`、`findAll`、`replace`、`split`、`matchEntire`。
-- 识别 Kotlin 正则的语法基础：字符类、量词、锚点、分组、捕获组、命名捕获组、零宽断言、回溯引用。
-
-### 1.2 理解层（Understanding）
-
-- 解释 Kotlin `Regex` 与 Java `java.util.regex.Pattern` 的关系——Kotlin 是 JDK 正则的封装而非独立实现。
-- 解释贪心（greedy）、勉强（reluctant/lazy）、占有（possessive）三种量词的语义差别及回溯行为。
-- 解释正则表达式引擎的 NFA（Nondeterministic Finite Automaton）与 DFA（Deterministic Finite Automaton）实现差异，以及 Kotlin 默认使用 NFA 的影响。
-
-### 1.3 应用层（Applying）
-
-- 使用 `Regex` 与 `when` 表达式结合，实现文本分类器（如日志级别识别、协议字段提取）。
-- 使用命名捕获组与 `MatchResult` 解析复杂结构化文本（如 HTTP 请求头、CSV 行、JSON 片段）。
-- 使用 `replace` 与 lambda 函数实现动态替换（如模板字符串、URL 重写）。
-
-### 1.4 分析层（Analyzing）
-
-- 分析正则表达式的时间复杂度与"灾难性回溯（Catastrophic Backtracking）"的成因，识别潜在 ReDoS（Regular Expression Denial of Service）漏洞。
-- 对比 Kotlin 正则与 Python `re`、JavaScript `RegExp`、Rust `regex` crate 的语法与性能差异。
-- 分析 JDK 正则引擎的优化点（如 `Pattern.SOURCE`、`Pattern.UNICODE_CHARACTER_CLASS`）在 Kotlin 中的可用性。
-
-### 1.5 评估层（Evaluating）
-
-- 评估何时使用正则表达式，何时使用解析器组合子（parser combinator）或 ANTLR 等专用工具。
-- 评估正则表达式的可读性 vs. 简洁性权衡，决定何时拆分多个小正则 vs. 一个大正则。
-- 评估跨平台（JVM、JS、Native）的正则行为一致性，识别 KMP 中正则的局限性。
-
-### 1.6 创造层（Creating）
-
-- 设计一个完整的"日志解析库"，使用正则表达式提取时间戳、级别、消息、堆栈跟踪。
-- 设计一个面向 DSL 的"正则构建器"，用类型安全的方式构造正则表达式，避免字符串拼接错误。
-- 提出一套正则表达式性能基准测试套件，覆盖常见模式（email、URL、IP、日期）的匹配性能。
-
----
-
-## 2. 历史动机与背景
-
-### 2.1 正则表达式的起源
+### 1.1 正则表达式的起源
 
 正则表达式的数学基础可追溯至 1943 年，美国数学家 Stephen Cole Kleene 在《神经元与事件中有限自动机》中提出"正则集合（regular sets）"概念，并用"正则事件（regular events）"描述其代数性质。Kleene 证明正则集合等价于有限状态自动机所识别的语言，奠定了正则表达式的理论基础。
 
@@ -73,13 +32,13 @@ prerequisites:
 
 1968 年，Ken Thompson 在《Programming Techniques: Regular expression search algorithm》中实现了第一个正则表达式搜索引擎，用于 QED 编辑器。该引擎采用 NFA（Nondeterministic Finite Automaton）算法，时间复杂度 $O(mn)$，其中 $m$ 是正则长度，$n$ 是输入长度。Thompson 的实现后来被集成到 Unix 的 `grep`、`sed`、`awk` 等工具中，成为 Unix 文本处理文化的核心。
 
-### 2.2 POSIX 正则与 Perl 正则的分化
+### 1.2 POSIX 正则与 Perl 正则的分化
 
 1986 年，POSIX 标准化正则表达式，定义了 Basic Regular Expression（BRE）与 Extended Regular Expression（ERE）两种风格。POSIX 正则强调可移植性，但表达能力有限。
 
 1994 年，Perl 5 引入了 PCRE（Perl Compatible Regular Expressions）风格，新增了非捕获组、命名捕获组、零宽断言、回溯引用、非贪心量词等高级特性。PCRE 成为事实标准，被 PCRE 库、Java `java.util.regex`、.NET `System.Text.RegularExpressions`、Python `re`、JavaScript `RegExp` 等广泛采纳。
 
-### 2.3 JDK 正则的演化
+### 1.3 JDK 正则的演化
 
 Java 在 1.4（2002）正式引入 `java.util.regex` 包，提供 Pattern 与 Matcher 类，支持 PCRE 风格。JDK 正则在多年演化中加入了如下关键能力：
 
@@ -94,7 +53,7 @@ Java 在 1.4（2002）正式引入 `java.util.regex` 包，提供 Pattern 与 Ma
 | 17        | 2021   | 性能优化，改进回溯算法                                                     |
 | 21       | 2023   | 进一步 Unicode 支持，区域设置感知                                          |
 
-### 2.4 Kotlin 的正则定位
+### 1.4 Kotlin 的正则定位
 
 Kotlin 1.0（2016）发布时，正则表达式直接基于 JDK 的 `java.util.regex`，未引入独立引擎。JetBrains 的设计哲学是"不重复造轮子"，而是提供更 Kotlin 风格的 API：
 
@@ -115,7 +74,7 @@ Kotlin 的改进点：
 3. **`MatchResult` 类型**：提供 destructure 解构、`groupValues`、`next()` 等便捷 API。
 4. **lambda 替换**：`replace(Regex) { matchResult -> ... }` 支持动态替换。
 
-### 2.5 KMP 中的正则挑战
+### 1.5 KMP 中的正则挑战
 
 Kotlin Multiplatform（KMP）中，正则在不同 target 上的行为差异显著：
 
@@ -130,9 +89,9 @@ Kotlin Multiplatform（KMP）中，正则在不同 target 上的行为差异显�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 正则语言的代数定义
+### 2.1 正则语言的代数定义
 
 设 $\Sigma$ 为有限字母表（alphabet），$\Sigma^*$ 为 $\Sigma$ 上所有字符串（包括空串 $\epsilon$）的集合。正则表达式 $r$ 在 $\Sigma$ 上递归定义为：
 
@@ -162,11 +121,11 @@ L(r^*) &= \bigcup_{i=0}^{\infty} L(r)^i
 \end{aligned}
 $$
 
-### 3.2 Kotlin 正则的扩展语法
+### 2.2 Kotlin 正则的扩展语法
 
 Kotlin（基于 JDK）在代数定义基础上扩展了实用语法：
 
-#### 3.2.1 字符类
+#### 2.2.1 字符类
 
 $$
 [abc] := a | b | c
@@ -180,7 +139,7 @@ $$
 [a-z] := \text{字符 'a' 到 'z' 的并集}
 $$
 
-#### 3.2.2 预定义字符类
+#### 2.2.2 预定义字符类
 
 | 语法     | 等价形式                          | 含义                          |
 | :------- | :-------------------------------- | :---------------------------- |
@@ -192,7 +151,7 @@ $$
 | `\s`     | `[ \t\n\x0B\f\r]`                 | 空白字符                      |
 | `\S`     | `[^\s]`                           | 非空白字符                    |
 
-#### 3.2.3 量词
+#### 2.2.3 量词
 
 | 语法       | 含义                | 类型       |
 | :--------- | :------------------ | :--------- |
@@ -209,11 +168,11 @@ $$
 | `X*+`      | X 出现 0 次或多次   | 占有       |
 | `X++`      | X 出现 1 次或多次   | 占有       |
 
-### 3.3 NFA 与 DFA 形式化
+### 2.3 NFA 与 DFA 形式化
 
 正则表达式可被两种自动机识别：
 
-#### 3.3.1 NFA
+#### 2.3.1 NFA
 
 NFA 是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$：
 
@@ -225,13 +184,13 @@ NFA 是一个五元组 $M = (Q, \Sigma, \delta, q_0, F)$：
 
 NFA 在每个状态可对同一输入有多种转移，需要回溯探索所有可能路径。JDK 正则引擎基于 NFA，时间复杂度最坏 $O(2^n)$（灾难性回溯）。
 
-#### 3.3.2 DFA
+#### 2.3.2 DFA
 
 DFA 是 NFA 的特例，转移函数 $\delta : Q \times \Sigma \to Q$ 为单值。DFA 无回溯，时间复杂度 $O(n)$，但状态数可能指数爆炸。
 
 Rust 的 `regex` crate 采用 DFA（带懒惰构造），保证线性时间；JDK 与 Kotlin 默认 NFA，需注意性能陷阱。
 
-### 3.4 匹配的代数性质
+### 2.4 匹配的代数性质
 
 设 $r_1, r_2$ 为正则表达式，以下代数律成立：
 
@@ -246,9 +205,9 @@ Rust 的 `regex` crate 采用 DFA（带懒惰构造），保证线性时间；JD
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 NFA 匹配的时间复杂度
+### 3.1 NFA 匹配的时间复杂度
 
 **命题**：NFA 匹配的最坏时间复杂度为 $O(2^n)$，其中 $n$ 是输入长度。
 
@@ -265,7 +224,7 @@ Rust 的 `regex` crate 采用 DFA（带懒惰构造），保证线性时间；JD
 
 **实际影响**：这种"灾难性回溯"是 ReDoS 攻击的根源。攻击者构造特殊输入，使正则匹配消耗 CPU 数秒甚至数分钟，导致服务不可用。
 
-### 4.2 DFA 的状态爆炸
+### 3.2 DFA 的状态爆炸
 
 **命题**：将正则 $r$ 转换为等价 DFA，状态数最坏为 $O(2^{|r|})$。
 
@@ -277,7 +236,7 @@ Rust 的 `regex` crate 采用 DFA（带懒惰构造），保证线性时间；JD
 
 **实际影响**：Rust `regex` 采用懒惰 DFA（lazy DFA），仅在需要时构造状态，避免了启动时的爆炸，但内存占用仍可能较高。
 
-### 4.3 Kotlin 正则的编译与匹配分离
+### 3.3 Kotlin 正则的编译与匹配分离
 
 Kotlin `Regex` 类将正则编译为内部表示（基于 `java.util.regex.Pattern`），编译一次可多次匹配：
 
@@ -292,7 +251,7 @@ for (line in lines) {
 
 编译复杂度 $O(|r|)$，匹配复杂度 $O(|r| \cdot |s|)$（NFA），其中 $|r|$ 是正则长度，$|s|$ 是输入长度。
 
-### 4.4 贪心 vs. 勉强 vs. 占有的复杂度
+### 3.4 贪心 vs. 勉强 vs. 占有的复杂度
 
 设正则 $r$ 包含量词 $X^*$，输入 $s$ 包含 $n$ 个匹配 $X$ 的字符：
 
@@ -304,9 +263,9 @@ for (line in lines) {
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：构造与匹配
+### 4.1 基础：构造与匹配
 
 ```kotlin
 // 文件：RegexBasics.kt
@@ -335,7 +294,7 @@ fun main() {
 }
 ```
 
-### 5.2 查找与提取
+### 4.2 查找与提取
 
 ```kotlin
 // 文件：RegexFind.kt
@@ -365,7 +324,7 @@ fun main() {
 }
 ```
 
-### 5.3 分组与命名捕获
+### 4.3 分组与命名捕获
 
 ```kotlin
 // 文件：RegexGroups.kt
@@ -399,7 +358,7 @@ fun main() {
 }
 ```
 
-### 5.4 替换
+### 4.4 替换
 
 ```kotlin
 // 文件：RegexReplace.kt
@@ -440,7 +399,7 @@ fun main() {
 }
 ```
 
-### 5.5 分割
+### 4.5 分割
 
 ```kotlin
 // 文件：RegexSplit.kt
@@ -472,7 +431,7 @@ fun main() {
 }
 ```
 
-### 5.6 零宽断言
+### 4.6 零宽断言
 
 ```kotlin
 // 文件：RegexAssertions.kt
@@ -508,7 +467,7 @@ fun main() {
 }
 ```
 
-### 5.7 验证邮箱格式
+### 4.7 验证邮箱格式
 
 ```kotlin
 // 文件：EmailValidation.kt
@@ -555,7 +514,7 @@ fun main() {
 }
 ```
 
-### 5.8 解析日志
+### 4.8 解析日志
 
 ```kotlin
 // 文件：LogParser.kt
@@ -602,7 +561,7 @@ fun main() {
 }
 ```
 
-### 5.9 解析 URL
+### 4.9 解析 URL
 
 ```kotlin
 // 文件：UrlParser.kt
@@ -664,7 +623,7 @@ fun main() {
 }
 ```
 
-### 5.10 性能优化：预编译
+### 4.10 性能优化：预编译
 
 ```kotlin
 // 文件：RegexOptimization.kt
@@ -700,7 +659,7 @@ fun main() {
 }
 ```
 
-### 5.11 流式处理
+### 4.11 流式处理
 
 ```kotlin
 // 文件：RegexStream.kt
@@ -739,9 +698,9 @@ fun main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Java 正则对比
+### 5.1 与 Java 正则对比
 
 | 维度         | Java `java.util.regex`                  | Kotlin `Regex`                              |
 | :----------- | :-------------------------------------- | :------------------------------------------ |
@@ -756,7 +715,7 @@ fun main() {
 
 **关键差异论述**：Kotlin `Regex` 在 JVM 上完全委托给 JDK，未引入独立引擎。优势是 API 更 Kotlin 风格（三引号、lambda、解构），劣势是跨平台行为不一致（JS/Native 引擎不同）。
 
-### 6.2 与 Python `re` 对比
+### 5.2 与 Python `re` 对比
 
 | 维度         | Python `re`                             | Kotlin `Regex`                              |
 | :----------- | :-------------------------------------- | :------------------------------------------ |
@@ -771,7 +730,7 @@ fun main() {
 
 **关键差异论述**：Python 的命名组语法 `(?P<name>...)` 与 Kotlin/Java 的 `(?<name>...)` 不同，跨语言迁移需注意。Python 的 `re.findall` 返回列表，Kotlin 的 `findAll` 返回惰性 Sequence，更适合大文本处理。
 
-### 6.3 与 JavaScript `RegExp` 对比
+### 5.3 与 JavaScript `RegExp` 对比
 
 | 维度         | JavaScript `RegExp`                     | Kotlin `Regex`                              |
 | :----------- | :-------------------------------------- | :------------------------------------------ |
@@ -785,7 +744,7 @@ fun main() {
 
 **关键差异论述**：JavaScript 不支持占有量词（possessive），因此在 JS target 上 Kotlin 的 `X*+` 会被降级为 `X*`，可能影响性能。开发者需注意 KMP 中跨平台的语义差异。
 
-### 6.4 与 Rust `regex` crate 对比
+### 5.4 与 Rust `regex` crate 对比
 
 | 维度         | Rust `regex`                            | Kotlin `Regex`                              |
 | :----------- | :-------------------------------------- | :------------------------------------------ |
@@ -799,7 +758,7 @@ fun main() {
 
 **关键差异论述**：Rust `regex` 的核心优势是 DFA 引擎保证线性时间，避免 ReDoS。Kotlin/JVM 开发者若需类似保证，可考虑引入第三方库（如 `com.github.tomokinakamura:re-dfa`），但生态较弱。
 
-### 6.5 Kotlin 正则 API 的内部对比
+### 5.5 Kotlin 正则 API 的内部对比
 
 | API                          | 用途                          | 返回值                  | 性能            |
 | :--------------------------- | :---------------------------- | :---------------------- | :-------------- |
@@ -816,9 +775,9 @@ fun main() {
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：灾难性回溯（ReDoS）
+### 6.1 陷阱一：灾难性回溯（ReDoS）
 
 **反例**：
 
@@ -849,7 +808,7 @@ fun main() {
 
 **生产事故案例**：2019 年某云服务商的 API 网关因正则 `(.*\.)*\.zip` 在处理长文件名时触发 ReDoS，导致网关服务不可用 15 分钟。攻击者通过上传特殊文件名触发漏洞。事后排查发现正则在 NFA 引擎下的最坏复杂度为 $O(2^n)$。
 
-### 7.2 陷阱二：未预编译导致性能下降
+### 6.2 陷阱二：未预编译导致性能下降
 
 **反例**：
 
@@ -880,7 +839,7 @@ fun validateEmails(emails: List<String>): List<String> {
 | 10000  | 1200           | 150          | 8x     |
 | 100000 | 12000          | 1500         | 8x     |
 
-### 7.3 陷阱三：三引号字符串中的 `$` 转义
+### 6.3 陷阱三：三引号字符串中的 `$` 转义
 
 **反例**：
 
@@ -904,7 +863,7 @@ val regex3 = Regex("""${'$'}\d+""")  // 匹配 $123
 
 **最佳实践**：在正则中使用 `$` 时，用 `${'$'}` 显式表达，避免歧义。
 
-### 7.4 陷阱四：贪心量词导致过度匹配
+### 6.4 陷阱四：贪心量词导致过度匹配
 
 **反例**：
 
@@ -929,7 +888,7 @@ matches.forEach { println(it.value) }
 //   <div>world</div>
 ```
 
-### 7.5 陷阱五：Unicode 字符的误解
+### 6.5 陷阱五：Unicode 字符的误解
 
 **反例**：
 
@@ -955,7 +914,7 @@ println(allWords)
 // 输出：[你好, 世界, Hello, World]
 ```
 
-### 7.6 陷阱六：跨平台行为不一致
+### 6.6 陷阱六：跨平台行为不一致
 
 **反例**：
 
@@ -985,9 +944,9 @@ actual fun isValidEmail(s: String): Boolean {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 实践一：正则性能基准测试
+### 7.1 实践一：正则性能基准测试
 
 ```kotlin
 import kotlin.system.measureNanoTime
@@ -1027,7 +986,7 @@ fun main() {
 }
 ```
 
-### 8.2 实践二：正则单元测试
+### 7.2 实践二：正则单元测试
 
 ```kotlin
 import kotlin.test.Test
@@ -1073,7 +1032,7 @@ class RegexTest {
 }
 ```
 
-### 8.3 实践三：正则 DSL 构建器
+### 7.3 实践三：正则 DSL 构建器
 
 ```kotlin
 // 文件：RegexBuilder.kt
@@ -1198,7 +1157,7 @@ fun main() {
 }
 ```
 
-### 8.4 实践四：日志解析器
+### 7.4 实践四：日志解析器
 
 ```kotlin
 // 文件：AdvancedLogParser.kt
@@ -1277,7 +1236,7 @@ fun main() {
 }
 ```
 
-### 8.5 实践五：KMP 中的正则隔离
+### 7.5 实践五：KMP 中的正则隔离
 
 ```kotlin
 // common 模块
@@ -1309,9 +1268,9 @@ fun validateEmail(s: String): Boolean {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Spring Boot 中的请求参数验证
+### 8.1 案例一：Spring Boot 中的请求参数验证
 
 某 Spring Boot 项目使用正则验证请求参数（手机号、邮箱、身份证号）：
 
@@ -1381,7 +1340,7 @@ class EmailValidator : ConstraintValidator<Email, String> {
 
 **生产收益**：某电商项目采用此模式后，参数验证相关代码减少 60%，验证错误率降低 80%。
 
-### 9.2 案例二：Nginx 日志分析
+### 8.2 案例二：Nginx 日志分析
 
 某运维团队使用 Kotlin 正则解析 Nginx 访问日志，统计 QPS、状态码分布、慢请求：
 
@@ -1458,7 +1417,7 @@ fun main() {
 3. **流式统计**：结合 Kotlin 集合操作，简洁实现 QPS、状态码统计。
 4. **错误容忍**：`mapNotNull` 跳过解析失败的行。
 
-### 9.3 案例三：DSL 模板引擎
+### 8.3 案例三：DSL 模板引擎
 
 某团队构建了基于正则的轻量级模板引擎：
 
@@ -1534,7 +1493,7 @@ fun main() {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：编写一个正则表达式，匹配中国大陆手机号（以 1 开头，第二位为 3-9，共 11 位数字）。
 
@@ -1566,7 +1525,7 @@ val urls = urlRegex.findAll(html).map { it.groupValues[1] }.toList()
 println(urls)  // [https://example.com, https://test.org]
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：编写一个正则，匹配 IPv4 地址（0.0.0.0 到 255.255.255.255），并验证以下输入：
 
@@ -1611,7 +1570,7 @@ val r2 = Regex("""\d\d\d\d-\d\d-\d\d""")
 - 可读性上方式一更清晰。
 - 实际选择应基于可读性，方式一更推荐。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：设计一个完整的"配置文件解析器"，支持 INI 格式：
 
@@ -1680,7 +1639,7 @@ fun parseIni(text: String): Map<String, Map<String, String>> {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 参考文献按 ACM Reference Format 给出，包含 DOI 链接（如有）。
 
@@ -1710,28 +1669,28 @@ fun parseIni(text: String): Map<String, Map<String, String>> {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **Kotlin `Regex` 官方文档**: https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-regex/
 - **Java `Pattern` 文档**: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html
 - **PCRE 文档**: https://www.pcre.org/original/doc/html/
 - **Unicode 正则技术报告**: https://www.unicode.org/reports/tr18/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - **《Mastering Regular Expressions》**（Jeffrey E. F. Friedl，O'Reilly Media，2006）：正则表达式的权威指南，深入讲解各语言引擎差异。
 - **《Introduction to Automata Theory, Languages, and Computation》**（John E. Hopcroft 等，Addison-Wesley，2006）：自动机理论经典教材，理解 NFA/DFA 的数学基础。
 - **《Structure and Interpretation of Computer Programs》**（Harold Abelson 等，MIT Press，1996）：第 2 章包含正则表达式的 Scheme 实现，展示其本质。
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - **"Regular Expression Denial of Service (ReDoS)"**（James C. Davis 等，2018）：ReDoS 漏洞的系统化研究。
 - **"Matching Regular Expressions with Derivatives"**（Nicolas Weideman 等，2019）：基于 Brzozowski 导数的正则匹配算法，提供线性时间保证。
 - **"Regular Expression Matching in the Wild"**（Russ Cox，2010）：Google Code Search 的正则实现经验。
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **Kotlin 标准库源码**: https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib
   - `Regex` 类实现：`kotlin.text.Regex`
@@ -1742,14 +1701,14 @@ fun parseIni(text: String): Map<String, Map<String, String>> {
 - **PCRE 库**: https://github.com/PCRE2Project/pcre2
   - Perl 兼容正则的 C 实现
 
-### 12.5 在线工具
+### 11.5 在线工具
 
 - **Regex101**: https://regex101.com/ —— 在线正则测试，支持多种语言。
 - **Regexr**: https://regexr.com/ —— 交互式正则学习与测试。
 - **Debuggex**: https://www.debuggex.com/ —— 正则可视化（绘制 DFA 图）。
 - **Kotlin Playground**: https://play.kotlinlang.org/ —— 在线运行 Kotlin 代码，测试正则。
 
-### 12.6 安全资源
+### 11.6 安全资源
 
 - **OWASP ReDoS 指南**: https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
 - **CAPEC-118: Resource Exhaustion**: https://capec.mitre.org/data/definitions/118.html
@@ -1757,11 +1716,11 @@ fun parseIni(text: String): Map<String, Map<String, String>> {
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 正则速查表
+### 12.1 正则速查表
 
-#### 13.1.1 字符类
+#### 12.1.1 字符类
 
 | 语法      | 含义                                |
 | :-------- | :---------------------------------- |
@@ -1771,7 +1730,7 @@ fun parseIni(text: String): Map<String, Map<String, String>> {
 | `[a-zA-Z]`| a 到 z 或 A 到 Z                   |
 | `.`       | 任意字符（默认除换行）             |
 
-#### 13.1.2 预定义字符类
+#### 12.1.2 预定义字符类
 
 | 语法 | 等价                 | 含义           |
 | :--- | :------------------- | :------------- |
@@ -1782,7 +1741,7 @@ fun parseIni(text: String): Map<String, Map<String, String>> {
 | `\w` | `[a-zA-Z0-9_]`       | 单词字符       |
 | `\W` | `[^\w]`              | 非单词字符     |
 
-#### 13.1.3 量词
+#### 12.1.3 量词
 
 | 语法     | 含义                | 类型 |
 | :------- | :------------------ | :--- |
@@ -1799,7 +1758,7 @@ fun parseIni(text: String): Map<String, Map<String, String>> {
 | `X*+`    | 0 次或多次          | 占有 |
 | `X++`    | 1 次或多次          | 占有 |
 
-#### 13.1.4 锚点
+#### 12.1.4 锚点
 
 | 语法 | 含义                 |
 | :--- | :------------------- |
@@ -1810,7 +1769,7 @@ fun parseIni(text: String): Map<String, Map<String, String>> {
 | `\A` | 输入开头             |
 | `\Z` | 输入结尾             |
 
-#### 13.1.5 分组
+#### 12.1.5 分组
 
 | 语法                | 含义                            |
 | :------------------ | :------------------------------ |
@@ -1823,9 +1782,9 @@ fun parseIni(text: String): Map<String, Map<String, String>> {
 | `(?<!X)`            | 负向后向断言                    |
 | `(?>X)`             | 原子组（不回溯）                |
 
-### 13.2 常用正则模式
+### 12.2 常用正则模式
 
-#### 13.2.1 数字
+#### 12.2.1 数字
 
 ```kotlin
 val integer = Regex("""^-?\d+$""")  // 整数
@@ -1834,7 +1793,7 @@ val positive = Regex("""^[1-9]\d*$""")  // 正整数
 val negative = Regex("""^-[1-9]\d*$""")  // 负整数
 ```
 
-#### 13.2.2 字符串
+#### 12.2.2 字符串
 
 ```kotlin
 val chinese = Regex("""[\u4e00-\u9fa5]+""")  // 中文字符
@@ -1845,7 +1804,7 @@ val idCard = Regex("""^\d{17}[\dXx]$""")  // 身份证号
 val postcode = Regex("""^\d{6}$""")  // 邮编
 ```
 
-#### 13.2.3 时间
+#### 12.2.3 时间
 
 ```kotlin
 val date = Regex("""\d{4}-\d{2}-\d{2}""")  // YYYY-MM-DD
@@ -1854,7 +1813,7 @@ val datetime = Regex("""\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}""")  // YYYY-MM-DD H
 val iso8601 = Regex("""\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?""")
 ```
 
-### 13.3 ReDoS 检查清单
+### 12.3 ReDoS 检查清单
 
 在审查正则时，检查以下高风险模式：
 

@@ -20,26 +20,16 @@ related:
 prerequisites:
   - c/概述
 ---
+
 # 数据类型详解
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-完成本章学习后，你应当能够（Bloom 分类法）：
-
-- **记忆（Remembering）**：列出 C89/C99/C11/C17/C23 标准定义的全部基本类型、派生类型与空类型；复述 `<stdint.h>`、`<stddef.h>`、`<stdbool.h>`、`<stdbit.h>`（C23）提供的标准类型别名；说明 `char`、`short`、`int`、`long`、`long long` 在 ILP32、LP64、LLP64 数据模型下的字节数。
-- **理解（Understanding）**：解释整数提升（integer promotion）与默认参数提升（default argument promotion）的规则；阐明 IEEE 754 浮点数的舍入模式与异常处理；说明结构体内存对齐、填充（padding）与 `#pragma pack` 的影响；区分指针类型、数组类型与指针衰减（decay）的语义。
-- **应用（Applying）**：使用 `<stdint.h>` 的固定宽度整型编写可移植代码；使用 `alignof`、`alignas`、`_Alignas` 控制内存对齐；使用 `union` 实现类型双关（type punning）；使用 `_Generic`（C11）实现编译期类型分发；使用 `_BitInt(N)`（C23）声明任意宽度整数。
-- **分析（Analyzing）**：通过 `sizeof`、`_Alignof`、`offsetof` 分析结构体的内存布局；通过反汇编代码追踪整数提升与类型转换的实际行为；定位因对齐错误、严格别名违规、未定义行为导致的诡异 bug。
-- **评价（Evaluating）**：在"基本类型 + `typedef`"、"固定宽度整型"、"位域"、"`_BitInt(N)`"四种方案间做权衡，论证各自的可移植性、性能与可维护性；评价不同数据模型（ILP32/LP64/LLP64）对历史代码的影响。
-- **创造（Creating）**：设计一个跨平台、跨编译器、跨 ABI 的类型抽象层；实现一个支持运行时类型信息（RTTI）的 C 类型系统；设计一个内存对齐敏感的高性能数据结构（如无锁队列、环形缓冲区）。
-
-## 2. 历史动机与演化
-
-### 2.1 K&R C 时代：类型系统的雏形（1972-1989）
+### 1.1 K&R C 时代：类型系统的雏形（1972-1989）
 
 C 语言由 Dennis Ritchie 于 1972 年在 PDP-11 上为重写 Unix 内核而设计。早期 C 的类型系统非常简陋：
 
@@ -50,7 +40,7 @@ C 语言由 Dennis Ritchie 于 1972 年在 PDP-11 上为重写 Unix 内核而设
 
 K&R C 的《The C Programming Language》（1978）第一版仅用 6 页描述全部类型系统，反映了当时的极简主义设计哲学。
 
-### 2.2 C89：标准化的开端（1989）
+### 1.2 C89：标准化的开端（1989）
 
 ISO/IEC 9899:1990（C89/C90）首次将 C 语言标准化，引入：
 
@@ -64,7 +54,7 @@ ISO/IEC 9899:1990（C89/C90）首次将 C 语言标准化，引入：
 
 C89 同时明确了"实现定义行为"（implementation-defined behavior）的概念：标准规定每种实现必须文档化其选择（如 `int` 的大小、字节序、对齐要求）。
 
-### 2.3 C99：固定宽度整型与 `_Bool`（1999）
+### 1.3 C99：固定宽度整型与 `_Bool`（1999）
 
 C99 引入了重大改进：
 
@@ -77,7 +67,7 @@ C99 引入了重大改进：
 
 `<stdint.h>` 的引入解决了长期困扰 C 程序员的"int 到底多大"问题，使得编写跨平台代码不再需要 `typedef` 黑魔法。
 
-### 2.4 C11：泛型选择与对齐控制（2011）
+### 1.4 C11：泛型选择与对齐控制（2011）
 
 C11 引入：
 
@@ -89,11 +79,11 @@ C11 引入：
 - 匿名结构体/联合体成员
 - 边界检查库 Annex K（`printf_s`、`scanf_s` 等，可选实现）
 
-### 2.5 C17：缺陷修复（2018）
+### 1.5 C17：缺陷修复（2018）
 
 C17（ISO/IEC 9899:2018）主要是 C11 的缺陷修复版本，未引入新类型，但明确了若干未定义行为与实现定义行为的细节。
 
-### 2.6 C23：现代 C 的飞跃（2023）
+### 1.6 C23：现代 C 的飞跃（2023）
 
 C23（ISO/IEC 9899:2024）是 C 语言历史上最大的标准更新之一：
 
@@ -109,7 +99,7 @@ C23（ISO/IEC 9899:2024）是 C 语言历史上最大的标准更新之一：
 - `<stdbit.h>` 位操作宏（`stdc_leading_zeros`、`stdc_trailing_ones` 等）
 - `_Decimal32`、`_Decimal64`、`_Decimal128` 十进制浮点（IEC 60559）
 
-### 2.7 数据模型演化
+### 1.7 数据模型演化
 
 C 语言的整型大小由"数据模型"（data model）决定：
 
@@ -124,9 +114,9 @@ C 语言的整型大小由"数据模型"（data model）决定：
 
 现代 64 位平台分化为 LLP64（Windows）与 LP64（Unix 系），导致 `long` 在跨平台代码中是不可靠的，应优先使用 `int32_t`、`int64_t`。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类型系统层级
+### 2.1 类型系统层级
 
 C 语言的类型系统可形式化为以下层级：
 
@@ -142,7 +132,7 @@ $$
 \text{DerivedType} = \text{ArrayType} \mid \text{PointerType} \mid \text{StructureType} \mid \text{UnionType} \mid \text{EnumType} \mid \text{AtomicType}
 $$
 
-### 3.2 整数提升的形式化规则
+### 2.2 整数提升的形式化规则
 
 设 $T$ 为整型，$\text{rank}(T)$ 为转换等级（conversion rank），定义为：
 
@@ -162,7 +152,7 @@ $$
 
 例如，`char c = 'A';` 在表达式 `c + 1` 中，`c` 首先被提升为 `int`，再做加法。
 
-### 3.3 寻常算术转换
+### 2.3 寻常算术转换
 
 当两个整型参与二元运算时，执行"寻常算术转换"（usual arithmetic conversions）：
 
@@ -175,7 +165,7 @@ $$
 
 **陷阱**：`-1 < 1U` 的结果是 `false`！因为 `1U` 是 `unsigned int`，`-1` 被转换为 `unsigned int`（变成 `UINT_MAX`），而 `UINT_MAX < 1U` 为假。
 
-### 3.4 IEEE 754 浮点数表示
+### 2.4 IEEE 754 浮点数表示
 
 IEEE 754 双精度（`double`）的位布局：
 
@@ -207,7 +197,7 @@ flowchart TD
     C2_0 --> C3_0
 ```
 
-### 3.5 内存对齐的形式化定义
+### 2.5 内存对齐的形式化定义
 
 设类型 $T$ 的对齐要求为 $\text{align}(T)$，则：
 
@@ -225,9 +215,9 @@ $$
 \text{offset}(m) \equiv 0 \pmod{\text{align}(\text{type}(m))}
 $$
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 定理：`char` 类型的符号性
+### 3.1 定理：`char` 类型的符号性
 
 **定理**：C 标准不规定 `char` 是 `signed char` 还是 `unsigned char`，由实现定义。
 
@@ -246,7 +236,7 @@ $$
 
 **推论**：跨平台代码不应假定 `char` 的符号性。若需明确符号，使用 `signed char` 或 `unsigned char`。
 
-### 4.2 定理：`sizeof` 运算符的返回类型
+### 3.2 定理：`sizeof` 运算符的返回类型
 
 **定理**：`sizeof` 运算符返回 `size_t` 类型，而非 `int` 或 `unsigned long`。
 
@@ -260,7 +250,7 @@ $$
 for (size_t i = 0; i < sizeof(arr)/sizeof(arr[0]); i++) { ... }
 ```
 
-### 4.3 定理：整数溢出的行为
+### 3.3 定理：整数溢出的行为
 
 **定理**：无符号整数溢出是良定义的（modulo $2^N$），有符号整数溢出是未定义行为。
 
@@ -279,7 +269,7 @@ int foo(int x) {
 
 GCC 在 `-O2` 下会将 `foo` 优化为 `return 1;`。若需检测溢出，应使用 `__builtin_add_overflow`（GCC/Clang 扩展）。
 
-### 4.4 定理：严格别名规则
+### 3.4 定理：严格别名规则
 
 **定理**：通过不兼容类型的指针访问对象是未定义行为，少数例外除外。
 
@@ -302,7 +292,7 @@ float *fp = (float *)&x;
 
 类型双关的正确做法是 `memcpy` 或 `union`（C99 允许联合体读取非活跃成员，但 C++ 仍为 UB）。
 
-### 4.5 定理：指针衰减
+### 3.5 定理：指针衰减
 
 **定理**：在大多数表达式中，数组类型的左值会衰减为指向首元素的指针。
 
@@ -318,9 +308,9 @@ sizeof(arr + 0); /* 8（64 位），arr 衰减为 int* */
 &arr[0];         /* int*，等同于 arr 衰减后的指针 */
 ```
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 固定宽度整型的可移植代码
+### 4.1 固定宽度整型的可移植代码
 
 ```c
 #include <stdint.h>
@@ -354,7 +344,7 @@ int main(void) {
 }
 ```
 
-### 5.2 结构体内存布局分析
+### 4.2 结构体内存布局分析
 
 ```c
 #include <stdio.h>
@@ -415,7 +405,7 @@ struct B: size=8, align=4
 struct Packed: size=6, align=1
 ```
 
-### 5.3 类型双关的正确做法
+### 4.3 类型双关的正确做法
 
 ```c
 #include <stdio.h>
@@ -460,7 +450,7 @@ int main(void) {
 }
 ```
 
-### 5.4 `_Generic` 泛型选择（C11）
+### 4.4 `_Generic` 泛型选择（C11）
 
 ```c
 #include <stdio.h>
@@ -511,7 +501,7 @@ int main(void) {
 }
 ```
 
-### 5.5 C23 `_BitInt` 任意宽度整数
+### 4.5 C23 `_BitInt` 任意宽度整数
 
 ```c
 #include <stdio.h>
@@ -544,7 +534,7 @@ int main(void) {
 }
 ```
 
-### 5.6 C23 `#embed` 二进制嵌入
+### 4.6 C23 `#embed` 二进制嵌入
 
 ```c
 #include <stdio.h>
@@ -565,7 +555,7 @@ int main(void) {
 }
 ```
 
-### 5.7 C23 `constexpr` 与 `auto`
+### 4.7 C23 `constexpr` 与 `auto`
 
 ```c
 #include <stdio.h>
@@ -590,7 +580,7 @@ int main(void) {
 }
 ```
 
-### 5.8 对齐控制与缓存行对齐
+### 4.8 对齐控制与缓存行对齐
 
 ```c
 #include <stdio.h>
@@ -624,7 +614,7 @@ int main(void) {
 }
 ```
 
-### 5.9 位域与 ABI
+### 4.9 位域与 ABI
 
 ```c
 #include <stdio.h>
@@ -685,7 +675,7 @@ uint32_t parse_be32(const uint8_t *p) {
 }
 ```
 
-### 5.10 `_Static_assert` 编译期断言
+### 4.10 `_Static_assert` 编译期断言
 
 ```c
 #include <assert.h>
@@ -710,9 +700,9 @@ int main(void) {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 整型选择方案对比
+### 5.1 整型选择方案对比
 
 | 方案                   | 优点                       | 缺点                              | 适用场景                         |
 | ---------------------- | -------------------------- | --------------------------------- | -------------------------------- |
@@ -723,7 +713,7 @@ int main(void) {
 | `_BitInt(N)` (C23)     | 任意宽度、明确语义         | 编译器支持有限、性能可能较差     | 硬件寄存器、位精确算法           |
 | `enum`                 | 可读性好、类型安全         | 实际是 `int`、可能溢出           | 状态机、配置选项                 |
 
-### 6.2 浮点型方案对比
+### 5.2 浮点型方案对比
 
 | 方案                 | 精度（位） | 范围                              | 性能     | 适用场景                 |
 | -------------------- | ---------- | --------------------------------- | -------- | ------------------------ |
@@ -734,7 +724,7 @@ int main(void) {
 | `_Decimal64` (C23)   | 16         | $\pm 1 \times 10^{-383}$ 至 $\pm 9.9 \times 10^{384}$ | 慢       | 财务计算                 |
 | `_Fract` (嵌入式)    | 定点       | 依赖实现                          | 极快     | DSP、嵌入式音频          |
 
-### 6.3 C 与其他语言的类型系统对比
+### 5.3 C 与其他语言的类型系统对比
 
 | 特性             | C            | C++             | Rust             | Go              | Java          |
 | ---------------- | ------------ | --------------- | ---------------- | --------------- | ------------- |
@@ -748,7 +738,7 @@ int main(void) {
 | 位域             | 有           | 有              | 无               | 无              | 无            |
 | 函数指针         | 有           | 有（更复杂）    | 有（闭包）       | 有（函数值）    | 有（函数式接口） |
 
-### 6.4 选型决策
+### 5.4 选型决策
 
 **默认选择**：
 
@@ -759,9 +749,9 @@ int main(void) {
 5. **结构体**：按成员大小从大到小排列以减少填充。
 6. **位精确**：硬件寄存器用 `_BitInt(N)`（C23），位标志用位运算而非位域（可移植性更好）。
 
-## 7. 常见陷阱
+## 6. 常见陷阱
 
-### 7.1 整数提升导致的符号错误
+### 6.1 整数提升导致的符号错误
 
 ```c
 char c = 0x80;          /* signed char: -128，unsigned char: 128 */
@@ -778,7 +768,7 @@ if (a == b) { /* 在 signed char 平台上为 true！ */
 }
 ```
 
-### 7.2 `sizeof` 与指针衰减
+### 6.2 `sizeof` 与指针衰减
 
 ```c
 void print_size(int arr[]) {
@@ -794,7 +784,7 @@ int main(void) {
 }
 ```
 
-### 7.3 严格别名违规
+### 6.3 严格别名违规
 
 ```c
 int x = 0x41424344;
@@ -806,7 +796,7 @@ float f;
 memcpy(&f, &x, sizeof(f));
 ```
 
-### 7.4 未初始化变量
+### 6.4 未初始化变量
 
 ```c
 int x;  /* 自动变量，未初始化 */
@@ -816,7 +806,7 @@ printf("%d\n", x);  /* UB：读取未初始化变量 */
 static int y;  /* y == 0 */
 ```
 
-### 7.5 对齐错误
+### 6.5 对齐错误
 
 ```c
 /* 在要求 4 字节对齐的平台上，以下代码是 UB */
@@ -830,7 +820,7 @@ int *ip = (int *)buf;
 *ip = 42;  /* 合法 */
 ```
 
-### 7.6 `char` 符号性陷阱
+### 6.6 `char` 符号性陷阱
 
 ```c
 /* 在 ARM 平台上 char 是 unsigned，以下代码行为不同 */
@@ -846,7 +836,7 @@ if (uc > 128) { /* 总是 true */
 }
 ```
 
-### 7.7 浮点数精度陷阱
+### 6.7 浮点数精度陷阱
 
 ```c
 /* 0.1 在二进制浮点中无法精确表示 */
@@ -870,7 +860,7 @@ if (nan != nan) { /* true */
 }
 ```
 
-### 7.8 数组越界与 `VLA` 陷阱
+### 6.8 数组越界与 `VLA` 陷阱
 
 ```c
 int n = 1000000;
@@ -882,9 +872,9 @@ int *arr2 = malloc(n * sizeof(int));
 if (!arr2) { /* 处理失败 */ }
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 类型抽象层
+### 7.1 类型抽象层
 
 ```c
 /* types.h：跨平台类型抽象层 */
@@ -932,7 +922,7 @@ typedef i32 err_t;
 #endif /* TYPES_H */
 ```
 
-### 8.2 编译器属性辅助类型检查
+### 7.2 编译器属性辅助类型检查
 
 ```c
 /* format 属性：让编译器检查 printf/scanf 类函数的参数 */
@@ -953,7 +943,7 @@ int main(void) {
 }
 ```
 
-### 8.3 字节序处理
+### 7.3 字节序处理
 
 ```c
 #include <stdint.h>
@@ -993,7 +983,7 @@ int is_little_endian(void) {
 }
 ```
 
-### 8.4 结构体序列化（跨平台）
+### 7.4 结构体序列化（跨平台）
 
 ```c
 #include <stdint.h>
@@ -1031,7 +1021,7 @@ void deserialize_header(struct PacketHeader *h, const uint8_t *buf) {
 }
 ```
 
-### 8.5 类型安全的 API 设计
+### 7.5 类型安全的 API 设计
 
 ```c
 #include <stdint.h>
@@ -1073,7 +1063,7 @@ int main(void) {
 }
 ```
 
-### 8.6 编译期类型检查
+### 7.6 编译期类型检查
 
 ```c
 #include <stdint.h>
@@ -1110,7 +1100,7 @@ int main(void) {
 }
 ```
 
-### 8.7 内存对齐的 SIMD 优化
+### 7.7 内存对齐的 SIMD 优化
 
 ```c
 #include <immintrin.h>
@@ -1138,9 +1128,9 @@ int main(void) {
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Linux 内核 `container_of` 宏
+### 8.1 Linux 内核 `container_of` 宏
 
 Linux 内核大量使用 `CONTAINER_OF` 模式实现基于链表等通用数据结构的面向对象风格：
 
@@ -1165,7 +1155,7 @@ struct task_struct {
 struct task_struct *task = container_of(node, struct task_struct, tasks);
 ```
 
-### 9.2 SQLite 的可移植整型
+### 8.2 SQLite 的可移植整型
 
 SQLite 使用 `u8`、`u16`、`u32`、`u64`、`i64` 等别名，在 `sqlite3.h` 中定义：
 
@@ -1179,7 +1169,7 @@ typedef signed char   i8;
 
 并提供 `sqlite3_int64`、`sqlite3_uint64` 作为公开 API 类型，保证跨 32/64 位平台一致。
 
-### 9.3 Redis 的字符串 `SDS`
+### 8.3 Redis 的字符串 `SDS`
 
 Redis 的 Simple Dynamic Strings（SDS）根据字符串长度选择不同的头部类型：
 
@@ -1201,7 +1191,7 @@ static inline char sds_req_type(size_t len) {
 }
 ```
 
-### 9.4 POSIX `ssize_t` 的争议
+### 8.4 POSIX `ssize_t` 的争议
 
 POSIX 定义 `ssize_t` 为"有符号的 `size_t`"，用于表示可能失败（返回 -1）的大小操作：
 
@@ -1215,7 +1205,7 @@ ssize_t read(int fd, void *buf, size_t count);
 - 在 32 位平台上，`read` 一次最多只能读取 2GB（`SSIZE_MAX`），即使 `count` 可以更大
 - C 标准委员会曾讨论引入 `ssize_t`，但因设计争议未通过
 
-### 9.5 Google Protocol Buffers 的 varint
+### 8.5 Google Protocol Buffers 的 varint
 
 Protobuf 使用变长整数编码，根据值的大小选择 1-10 字节存储：
 
@@ -1250,7 +1240,7 @@ size_t decode_varint(const uint8_t *buf, size_t len, uint64_t *value) {
 }
 ```
 
-### 9.6 FFmpeg 的 DSP 类型
+### 8.6 FFmpeg 的 DSP 类型
 
 FFmpeg 定义了精确宽度的音频/视频样本类型：
 
@@ -1269,7 +1259,7 @@ typedef uint32_t uint32_pixel_t; /* 32 位 RGBA */
 typedef int32_t aligned_int32_t __attribute__((aligned(16)));
 ```
 
-### 9.7 `jemalloc` 的对齐分配
+### 8.7 `jemalloc` 的对齐分配
 
 `jemalloc` 提供对齐分配，支持 16/32/64/128/256 字节对齐：
 
@@ -1493,7 +1483,7 @@ struct Flags {
 
 **提示**：`char*` 是"字节指针"，访问内存的任何字节都是合法的。这是为了支持 `memcpy`、`memset` 等字节级操作的实现。
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1]  Kernighan, B. W., & Ritchie, D. M. (1988). _The C Programming Language_ (2nd ed.). Prentice Hall. — K&R 经典，第 2 版覆盖 C89。
 
@@ -1519,7 +1509,7 @@ struct Flags {
 
 [12] Drepper, U. (2007). _What Every Programmer Should Know About Memory_. Red Hat, Inc. — 内存对齐与缓存。
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 - **GCC Manual: Type Attributes** — `__attribute__((aligned))`、`__attribute__((packed))` 等。
 - **Clang Language Extensions: Type Safety** — `_Generic`、`_Static_assert` 的扩展用法。

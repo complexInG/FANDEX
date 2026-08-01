@@ -15,6 +15,7 @@ related:
 prerequisites:
   - kotlin/概述与环境配置
 ---
+
 # Kotlin 协程调度器与上下文
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -38,76 +39,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述 Kotlin 协程四大内置调度器的名称与用途：`Dispatchers.Default`、`Dispatchers.IO`、`Dispatchers.Main`、`Dispatchers.Unconfined`。
-- 列举 `CoroutineContext` 的核心元素：`Job`、`CoroutineDispatcher`、`CoroutineName`、`CoroutineExceptionHandler`、`CoroutineExceptionHandler`。
-- 背诵 `withContext` 与 `launch` 的语义差异：`withContext` 切换上下文后恢复到原上下文，`launch` 不恢复。
-- 记忆 `Dispatchers.IO` 的默认线程数上限是 64，可通过 `kotlinx.coroutines.io.parallelism` 系统属性调整。
-- 列举 `Dispatchers.Default` 的线程数等于 `Runtime.getRuntime().availableProcessors()`，最小为 2。
-- 记忆 `CoroutineContext` 的索引结构是基于 `Element` 接口的有序集合，通过 `CoroutineContext.Key` 查找。
-
-### 1.2 Understand（理解）
-
-完成本章节后，学习者应能够解释以下概念：
-
-- 用自己的语言解释"结构化并发"（Structured Concurrency）的语义含义与实现机制。
-- 描述 `ContinuationInterceptor` 与 `CoroutineDispatcher` 的关系：调度器是拦截器的子接口。
-- 解释 `CoroutineContext` 的组合规则：`+` 运算符的优先级与覆盖语义。
-- 阐述 `Dispatchers.Main` 在 Android、JavaFX、Swing 中的不同实现机制：通过 `MainCoroutineDispatcher` 的平台扩展。
-- 理解 `Dispatchers.Unconfined` 的语义：在当前调用栈恢复协程，直到第一个挂起点。
-- 解释 `LimitedDispatcher` 的作用：将调度器限制为单线程执行，用于实现 `launch(newSingleThreadContext("name"))`。
-
-### 1.3 Apply（应用）
-
-完成本章节后，学习者应能够在以下场景中应用协程调度器：
-
-- 在 Android 项目中正确使用 `Dispatchers.Main` 更新 UI、`Dispatchers.IO` 进行网络/数据库操作、`Dispatchers.Default` 进行 CPU 密集型计算。
-- 在 Spring Boot 服务端使用 `Dispatchers.Default` 处理高并发请求、`Dispatchers.IO` 访问阻塞式 JDBC。
-- 在 KMP 项目中通过 `Dispatchers.Default` 共享调度器、通过 `Dispatchers.Main` 切换到平台主线程。
-- 使用 `withContext(Dispatchers.IO)` 包装阻塞式 API 调用，避免阻塞调度器线程。
-- 自定义调度器：实现 `CoroutineDispatcher` 接口，封装 `ExecutorService` 作为线程池。
-- 使用 `CoroutineContext` 的 `+` 运算符组合多个元素：`Dispatchers.IO + CoroutineName("network") + CoroutineExceptionHandler { ... }`。
-
-### 1.4 Analyze（分析）
-
-完成本章节后，学习者应能够进行以下分析：
-
-- 反编译协程字节码，分析 `suspend` 函数编译为状态机的过程，识别 `Continuation` 参数与 `Label` 字段。
-- 对比同一业务逻辑在"阻塞式线程"、"回调（Callback）"、"Promise/Future"、"协程"四种方案下的代码复杂度与执行效率。
-- 分析 `Dispatchers.IO` 与 `Dispatchers.Default` 共享线程池的内部机制：`LimitingDispatcher` 的复用策略。
-- 解构 `kotlinx.coroutines` 源码中 `DispatchedContinuation`、`Runnable`、`CancellableContinuation` 的协作关系。
-
-### 1.5 Evaluate（评价）
-
-完成本章节后，学习者应能够评价以下设计决策：
-
-- 评价 Kotlin 选择"基于 Continuation 的 CPS 转换"而非"绿色线程"的设计权衡。
-- 评价 `Dispatchers.IO` 与 `Dispatchers.Default` 共享线程池的设计优劣。
-- 评价 `Dispatchers.Unconfined` 作为"危险工具"的存在价值。
-- 评价 `CoroutineContext` 使用 `Element` 集合而非 `Map` 的设计选择。
-- 评价结构化并发相对传统线程池管理的优势。
-
-### 1.6 Create（创造）
-
-完成本章节后，学习者应能够创造以下作品：
-
-- 设计并实现一个自定义调度器，支持优先级队列与任务抢占。
-- 设计一个跨平台的并发原语库：`Mutex`、`Semaphore`、`Channel`、`Flow`，全部基于协程实现。
-- 实现一个协程监控工具：跟踪所有活跃协程的上下文、状态、调度器，可视化展示。
-- 撰写一份团队协程使用规范：何时用 `Dispatchers.IO`、何时用 `Dispatchers.Default`、何时自定义调度器。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：异步编程的复杂性
+### 1.1 问题背景：异步编程的复杂性
 
 异步编程长期面临三个核心问题：
 
@@ -122,7 +56,7 @@ Kotlin 协程的设计目标：
 - **结构化并发**：父子协程生命周期绑定，避免"泄漏协程"。
 - **跨平台一致**：JVM、JS、Native、Wasm 行为一致。
 
-### 2.2 学术背景：CPS 转换与协程
+### 1.2 学术背景：CPS 转换与协程
 
 协程的理论基础来自 1963 年 Conway 的协程论文与 1975 年 Reynolds 的 defunctionalization 研究：
 
@@ -132,7 +66,7 @@ Kotlin 协程的设计目标：
 
 Kotlin 协程采用 **CPS + Defunctionalization** 的组合：编译器将 `suspend` 函数转换为带 `Continuation` 参数的状态机方法。
 
-### 2.3 Kotlin 1.0-1.2（2016-2017）：协程实验性阶段
+### 1.3 Kotlin 1.0-1.2（2016-2017）：协程实验性阶段
 
 Kotlin 1.0 不支持协程，但语言设计已经预留了 `suspend` 关键字。Kotlin 1.1（2017 年 5 月）正式引入协程作为实验性特性：
 
@@ -154,7 +88,7 @@ launch {
 - `runBlocking`：阻塞当前线程等待协程完成（主要用于测试）。
 - `withContext`：切换上下文执行代码块。
 
-### 2.4 Kotlin 1.3（2018 年 10 月）：协程 GA
+### 1.4 Kotlin 1.3（2018 年 10 月）：协程 GA
 
 Kotlin 1.3 将协程提升为稳定状态（GA），同时引入：
 
@@ -163,7 +97,7 @@ Kotlin 1.3 将协程提升为稳定状态（GA），同时引入：
 3. **`Channel` GA**：协程间的通信原语。
 4. **结构化并发正式化**：`CoroutineScope` 强制要求，禁止"裸" `launch`。
 
-### 2.5 Kotlin 1.4-1.5（2020-2021）：调度器优化
+### 1.5 Kotlin 1.4-1.5（2020-2021）：调度器优化
 
 Kotlin 1.4-1.5 期间，调度器有以下优化：
 
@@ -172,7 +106,7 @@ Kotlin 1.4-1.5 期间，调度器有以下优化：
 3. **`CoroutineDispatcher.limitedParallelism(n)`**（Kotlin 1.6+）：限制调度器的并行度，用于隔离资源。
 4. **`Dispatchers.Main` 的平台扩展**：Android、JavaFX、Swing 自动注入正确的 Main 调度器。
 
-### 2.6 Kotlin 1.6-1.7（2021-2022）：K2 与协程
+### 1.6 Kotlin 1.6-1.7（2021-2022）：K2 与协程
 
 Kotlin 1.6 引入 K2 编译器预览，Kotlin 1.7 进一步完善 K2。K2 对协程的影响：
 
@@ -180,7 +114,7 @@ Kotlin 1.6 引入 K2 编译器预览，Kotlin 1.7 进一步完善 K2。K2 对协
 2. **更优的诊断**：K2 能更精确地报告 `suspend` 函数的错误使用。
 3. **IR 优化**：K2 的 IR 后端能更好地内联 `suspend` 函数，减少状态机对象分配。
 
-### 2.7 Kotlin 1.8-1.9（2023 年）：Virtual Threads 集成
+### 1.7 Kotlin 1.8-1.9（2023 年）：Virtual Threads 集成
 
 Kotlin 1.8-1.9 开始与 JVM 21 的 Virtual Threads（Project Loom）集成：
 
@@ -188,7 +122,7 @@ Kotlin 1.8-1.9 开始与 JVM 21 的 Virtual Threads（Project Loom）集成：
 2. **`asCoroutineDispatcher()` 扩展**：`ExecutorService` 与 `VirtualThread` 互操作。
 3. **`newVirtualThreadContext()`**（实验性）：直接创建基于 Virtual Threads 的调度器。
 
-### 2.8 Kotlin 2.0（2024 年 5 月）：K2 与协程全面成熟
+### 1.8 Kotlin 2.0（2024 年 5 月）：K2 与协程全面成熟
 
 Kotlin 2.0 的 K2 编译器对协程进行全面优化：
 
@@ -197,7 +131,7 @@ Kotlin 2.0 的 K2 编译器对协程进行全面优化：
 3. **结构化并发改进**：更严格的 `CoroutineScope` 检查，避免泄漏。
 4. **KMP 一致性**：JVM、JS、Native、Wasm 平台的协程行为完全一致。
 
-### 2.9 JetBrains 的设计哲学
+### 1.9 JetBrains 的设计哲学
 
 JetBrains 在设计协程调度器时遵循了以下哲学：
 
@@ -208,7 +142,7 @@ JetBrains 在设计协程调度器时遵循了以下哲学：
 5. **可取消性**：协程支持协作式取消，通过 `isActive` 与 `ensureActive()` 检查。
 6. **可观测性**：通过 `CoroutineContext` 元素（`CoroutineName`、`CoroutineExceptionHandler`）支持调试与监控。
 
-### 2.10 时间线总览
+### 1.10 时间线总览
 
 ```
 2017  Kotlin 1.1 — 协程实验性引入
@@ -222,9 +156,9 @@ JetBrains 在设计协程调度器时遵循了以下哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 协程上下文（CoroutineContext）
+### 2.1 协程上下文（CoroutineContext）
 
 根据 Kotlin 官方文档，`CoroutineContext` 的形式化定义如下：
 
@@ -238,7 +172,7 @@ $$
 - $K_i = \text{Key}(E_i)$ 是元素的键（通过 `public val key: Key<*>` 属性获取）。
 - 上下文是一个**无序键值对集合**，键唯一。
 
-### 3.2 上下文组合的代数
+### 2.2 上下文组合的代数
 
 上下文支持 `+` 运算符，组合规则：
 
@@ -261,7 +195,7 @@ $$
 \text{Dispatchers.IO} + \text{CoroutineName("network")} + \text{Dispatchers.Default} + \text{CoroutineName("compute")} = \text{Dispatchers.Default} + \text{CoroutineName("compute")}
 $$
 
-### 3.3 调度器（CoroutineDispatcher）的形式化
+### 2.3 调度器（CoroutineDispatcher）的形式化
 
 `CoroutineDispatcher` 继承自 `ContinuationInterceptor`：
 
@@ -282,7 +216,7 @@ $$
 - `dispatch`：将 `Runnable` 提交到调度器执行。
 - `isDispatchNeeded`：判断是否需要调度（如 `Unconfined` 返回 `false`）。
 
-### 3.4 挂起函数的 CPS 转换
+### 2.4 挂起函数的 CPS 转换
 
 考虑 `suspend` 函数：
 
@@ -324,7 +258,7 @@ $$
 
 返回值 `Any?` 表示：要么是真实结果 `R`，要么是 `COROUTINE_SUSPENDED` 标记。
 
-### 3.5 结构化并发
+### 2.5 结构化并发
 
 结构化并发的核心约束：
 
@@ -340,7 +274,7 @@ $$
 2. **父取消传递**：父协程取消时，所有子协程被取消。
 3. **子失败传递**：子协程抛出未捕获异常时，父协程被取消（结构化异常传播）。
 
-### 3.6 调度器的拦截模型
+### 2.6 调度器的拦截模型
 
 调度器作为 `ContinuationInterceptor`，在协程恢复时拦截：
 
@@ -356,7 +290,7 @@ $$
 
 即：恢复操作被拦截，提交到调度器的线程池执行。
 
-### 3.7 JVM 字节码规范
+### 2.7 JVM 字节码规范
 
 在 JVM 平台上，`suspend` 函数编译为带 `Continuation` 参数的方法：
 
@@ -382,9 +316,9 @@ public interface Continuation<in T> {
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 CPS 转换的代数模型
+### 3.1 CPS 转换的代数模型
 
 考虑嵌套 `suspend` 调用：
 
@@ -435,7 +369,7 @@ $$
 \text{SM}(f, \text{label}_i) \xrightarrow{\text{resume}(v)} \text{SM}(f, \text{label}_{i+1})[v/x_i]
 $$
 
-### 4.2 状态机对象的生命周期
+### 3.2 状态机对象的生命周期
 
 状态机对象（`Continuation` 实现）的生命周期：
 
@@ -452,7 +386,7 @@ $$
 
 在 $t_{\text{create}}$ 与 $t_{\text{complete}}$ 之间，状态机对象可能被多次挂起与恢复。
 
-### 4.3 调度器的线程池模型
+### 3.3 调度器的线程池模型
 
 `Dispatchers.Default` 与 `Dispatchers.IO` 共享一个底层线程池，但有不同的并行度限制：
 
@@ -470,7 +404,7 @@ $$
 \end{cases}
 $$
 
-### 4.4 `Dispatchers.IO` 与 `Dispatchers.Default` 的复用
+### 3.4 `Dispatchers.IO` 与 `Dispatchers.Default` 的复用
 
 `Dispatchers.IO` 与 `Dispatchers.Default` 共享 `CoroutineScheduler`：
 
@@ -498,7 +432,7 @@ $$
 
 线程根据当前任务的类型在两种队列间切换。
 
-### 4.5 `Dispatchers.Main` 的平台注入
+### 3.5 `Dispatchers.Main` 的平台注入
 
 `Dispatchers.Main` 是平台特定的，需要通过 `ServiceLoader`（JVM）或类似机制注入：
 
@@ -518,7 +452,7 @@ $$
 \text{Dispatchers.Main} = \text{PlatformExtension.lookup}(\text{MainCoroutineDispatcher::class})
 $$
 
-### 4.6 `Dispatchers.Unconfined` 的语义
+### 3.6 `Dispatchers.Unconfined` 的语义
 
 `Dispatchers.Unconfined` 的语义：
 
@@ -534,7 +468,7 @@ $$
 
 不切换线程，直接在当前线程执行。
 
-### 4.7 `withContext` 的实现原理
+### 3.7 `withContext` 的实现原理
 
 `withContext` 的语义：切换上下文执行代码块，完成后恢复到原上下文。
 
@@ -562,7 +496,7 @@ $$
 3. 执行 `block`，得到结果 $r$。
 4. 在 $C_{\text{old}}$ 的调度器上恢复协程，返回 $r$。
 
-### 4.8 `CoroutineContext` 的索引结构
+### 3.8 `CoroutineContext` 的索引结构
 
 `CoroutineContext` 内部使用**链表 + 索引表**的混合结构：
 
@@ -578,7 +512,7 @@ $$
 \end{cases}
 $$
 
-### 4.9 结构化并发的取消传播
+### 3.9 结构化并发的取消传播
 
 取消传播的形式化规则：
 
@@ -598,7 +532,7 @@ scope.launch {
 parent.cancel()
 ```
 
-### 4.10 `CoroutineExceptionHandler` 的处理
+### 3.10 `CoroutineExceptionHandler` 的处理
 
 `CoroutineExceptionHandler` 是上下文元素，用于处理未捕获异常：
 
@@ -630,9 +564,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础调度器使用
+### 4.1 基础调度器使用
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -676,7 +610,7 @@ fun updateUI() {
 }
 ```
 
-### 5.2 `withContext` 上下文切换
+### 4.2 `withContext` 上下文切换
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -704,7 +638,7 @@ suspend fun loadUserProfileManual(userId: Int): UserProfile {
 }
 ```
 
-### 5.3 自定义调度器
+### 4.3 自定义调度器
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -735,7 +669,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.4 `limitedParallelism` 资源隔离
+### 4.4 `limitedParallelism` 资源隔离
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -757,7 +691,7 @@ suspend fun processImage(image: Image): Image = withContext(cpuDispatcher) {
 }
 ```
 
-### 5.5 结构化并发
+### 4.5 结构化并发
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -790,7 +724,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.6 `CoroutineName` 调试
+### 4.6 `CoroutineName` 调试
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -808,7 +742,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.7 `CoroutineExceptionHandler` 异常处理
+### 4.7 `CoroutineExceptionHandler` 异常处理
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -829,7 +763,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.8 `SupervisorJob` 异常隔离
+### 4.8 `SupervisorJob` 异常隔离
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -853,7 +787,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.9 取消与超时
+### 4.9 取消与超时
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -889,7 +823,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.10 协程上下文组合
+### 4.10 协程上下文组合
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -909,7 +843,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.11 自定义 `CoroutineDispatcher`
+### 4.11 自定义 `CoroutineDispatcher`
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -949,7 +883,7 @@ fun main() = runBlocking {
 }
 ```
 
-### 5.12 跨平台调度器使用
+### 4.12 跨平台调度器使用
 
 ```kotlin
 // commonMain
@@ -989,9 +923,9 @@ actual fun currentThreadName(): String = "JavaScript-${js("Math.random().toStrin
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Java `CompletableFuture` 对比
+### 5.1 与 Java `CompletableFuture` 对比
 
 | 维度 | Kotlin 协程 | Java CompletableFuture |
 |------|------------|------------------------|
@@ -1006,7 +940,7 @@ actual fun currentThreadName(): String = "JavaScript-${js("Math.random().toStrin
 
 **结论**：协程在语法简洁性、结构化并发、取消语义上优于 `CompletableFuture`，但 `CompletableFuture` 在 Java 生态成熟度上有优势。
 
-### 6.2 与 Go Goroutine 对比
+### 5.2 与 Go Goroutine 对比
 
 | 维度 | Kotlin 协程 | Go Goroutine |
 |------|------------|--------------|
@@ -1021,7 +955,7 @@ actual fun currentThreadName(): String = "JavaScript-${js("Math.random().toStrin
 
 **结论**：协程与 Goroutine 都实现了轻量级并发，但 Kotlin 协程是编译期 CPS 转换，Go Goroutine 是运行时 M:N 调度。Goroutine 在调度透明度上更优，Kotlin 协程在跨平台与 Java 生态集成上更优。
 
-### 6.3 与 Rust `async/await` 对比
+### 5.3 与 Rust `async/await` 对比
 
 | 维度 | Kotlin 协程 | Rust async/await |
 |------|------------|------------------|
@@ -1035,7 +969,7 @@ actual fun currentThreadName(): String = "JavaScript-${js("Math.random().toStrin
 
 **结论**：Rust async/await 在性能与内存上更优，Kotlin 协程在易用性与生态上更优。
 
-### 6.4 与 C# `async/await` 对比
+### 5.4 与 C# `async/await` 对比
 
 | 维度 | Kotlin 协程 | C# async/await |
 |------|------------|-----------------|
@@ -1049,7 +983,7 @@ actual fun currentThreadName(): String = "JavaScript-${js("Math.random().toStrin
 
 **结论**：两者设计高度相似，Kotlin 借鉴了 C# 的 `async/await`，但增加了结构化并发与跨平台支持。
 
-### 6.5 与 JavaScript `async/await` 对比
+### 5.5 与 JavaScript `async/await` 对比
 
 | 维度 | Kotlin 协程 | JavaScript async/await |
 |------|------------|------------------------|
@@ -1062,7 +996,7 @@ actual fun currentThreadName(): String = "JavaScript-${js("Math.random().toStrin
 
 **结论**：JavaScript 的 `async/await` 基于 Promise，语义与 Kotlin 协程相似，但 Kotlin 协程支持更丰富的并发原语（`Channel`、`Flow`）与结构化并发。
 
-### 6.6 与 Project Loom Virtual Threads 对比
+### 5.6 与 Project Loom Virtual Threads 对比
 
 | 维度 | Kotlin 协程 | JVM Virtual Threads |
 |------|------------|---------------------|
@@ -1076,7 +1010,7 @@ actual fun currentThreadName(): String = "JavaScript-${js("Math.random().toStrin
 
 **结论**：Virtual Threads 在兼容性上更优（无需重写为 `suspend`），Kotlin 协程在跨平台与结构化并发上更优。两者可共存：Kotlin 协程可在 Virtual Threads 上运行（Kotlin 1.9+）。
 
-### 6.7 综合对比总结
+### 5.7 综合对比总结
 
 | 方案 | 易用性 | 性能 | 跨平台 | 生态 | 推荐场景 |
 |------|-------|------|-------|------|---------|
@@ -1090,9 +1024,9 @@ actual fun currentThreadName(): String = "JavaScript-${js("Math.random().toStrin
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：在 `Dispatchers.Default` 上执行阻塞操作
+### 6.1 陷阱一：在 `Dispatchers.Default` 上执行阻塞操作
 
 **错误示例**：
 
@@ -1113,7 +1047,7 @@ launch(Dispatchers.IO) {
 }
 ```
 
-### 7.2 陷阱二：忘记切换调度器
+### 6.2 陷阱二：忘记切换调度器
 
 **错误示例**：
 
@@ -1132,7 +1066,7 @@ suspend fun loadUser(): User = withContext(Dispatchers.IO) {
 }
 ```
 
-### 7.3 陷阱三：`GlobalScope` 滥用
+### 6.3 陷阱三：`GlobalScope` 滥用
 
 **错误示例**：
 
@@ -1168,7 +1102,7 @@ class MyActivity : CoroutineScope by MainScope() {
 }
 ```
 
-### 7.4 陷阱四：`Dispatchers.Unconfined` 误用
+### 6.4 陷阱四：`Dispatchers.Unconfined` 误用
 
 **错误示例**：
 
@@ -1191,7 +1125,7 @@ launch(Dispatchers.Default) {
 }
 ```
 
-### 7.5 陷阱五：`async` 异常未处理
+### 6.5 陷阱五：`async` 异常未处理
 
 **错误示例**：
 
@@ -1220,7 +1154,7 @@ try {
 }
 ```
 
-### 7.6 陷阱六：`runBlocking` 在生产代码中使用
+### 6.6 陷阱六：`runBlocking` 在生产代码中使用
 
 **错误示例**：
 
@@ -1249,7 +1183,7 @@ fun onClick() {
 
 `runBlocking` 仅用于测试或 `main` 函数。
 
-### 7.7 陷阱七：`SupervisorJob` 误用
+### 6.7 陷阱七：`SupervisorJob` 误用
 
 **错误示例**：
 
@@ -1283,7 +1217,7 @@ scope.launch {
 }
 ```
 
-### 7.8 陷阱八：未取消的协程
+### 6.8 陷阱八：未取消的协程
 
 **错误示例**：
 
@@ -1318,7 +1252,7 @@ class Repository(scope: CoroutineScope) {
 }
 ```
 
-### 7.9 陷阱九：异常吞没
+### 6.9 陷阱九：异常吞没
 
 **错误示例**：
 
@@ -1345,7 +1279,7 @@ launch {
 }
 ```
 
-### 7.10 陷阱十：`ThreadLocal` 在协程中不传递
+### 6.10 陷阱十：`ThreadLocal` 在协程中不传递
 
 **错误示例**：
 
@@ -1374,7 +1308,7 @@ launch(Dispatchers.IO + requestIdElement) {
 }
 ```
 
-### 7.11 最佳实践总结
+### 6.11 最佳实践总结
 
 1. **业务逻辑层使用 `suspend fun`**：不要在 `suspend` 函数内部显式切换调度器，由调用者决定。
 2. **阻塞操作包装在 `withContext(Dispatchers.IO)`**：避免阻塞 Default 调度器。
@@ -1389,9 +1323,9 @@ launch(Dispatchers.IO + requestIdElement) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 Android 中的调度器使用
+### 7.1 Android 中的调度器使用
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1427,7 +1361,7 @@ class UserRepository {
 }
 ```
 
-### 8.2 Spring Boot 中的调度器使用
+### 7.2 Spring Boot 中的调度器使用
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1463,7 +1397,7 @@ class UserService(
 }
 ```
 
-### 8.3 KMP 项目中的调度器
+### 7.3 KMP 项目中的调度器
 
 ```kotlin
 // commonMain
@@ -1481,7 +1415,7 @@ class SharedRepository {
 }
 ```
 
-### 8.4 调度器监控
+### 7.4 调度器监控
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1513,7 +1447,7 @@ class DispatcherMonitor {
 }
 ```
 
-### 8.5 资源池化与隔离
+### 7.5 资源池化与隔离
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1548,7 +1482,7 @@ class ExternalApiClient {
 }
 ```
 
-### 8.6 测试调度器
+### 7.6 测试调度器
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1584,7 +1518,7 @@ class UserRepositoryTest {
 }
 ```
 
-### 8.7 结构化并发的最佳实践
+### 7.7 结构化并发的最佳实践
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1615,7 +1549,7 @@ class OrderProcessor {
 }
 ```
 
-### 8.8 协程上下文传递
+### 7.8 协程上下文传递
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1653,9 +1587,9 @@ fun main() = runBlocking {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Netflix 高并发数据采集
+### 8.1 案例一：Netflix 高并发数据采集
 
 **背景**：Netflix 使用协程调度器在高并发数据采集场景下实现高效的资源利用。
 
@@ -1688,7 +1622,7 @@ class NetflixCollector {
 2. 结构化并发（`coroutineScope`）确保任一任务失败时全部取消。
 3. 合理设置并行度：IO 密集型 50-100，CPU 密集型 8-16。
 
-### 9.2 案例二：Slack 实时消息系统
+### 8.2 案例二：Slack 实时消息系统
 
 **背景**：Slack 使用协程调度器处理实时消息推送，支持百万级并发连接。
 
@@ -1727,7 +1661,7 @@ class SlackMessageServer {
 2. 数据库等阻塞操作使用独立调度器，避免阻塞事件循环。
 3. 协程取消语义（`isActive`）与连接生命周期绑定。
 
-### 9.3 案例三：Android Jetpack Compose 集成
+### 8.3 案例三：Android Jetpack Compose 集成
 
 **背景**：Jetpack Compose 与协程深度集成，`rememberCoroutineScope` 自动绑定到 Composable 生命周期。
 
@@ -1762,7 +1696,7 @@ fun UserScreen(userId: Int) {
 2. `LaunchedEffect` 绑定到 Composable 生命周期，参数变化时自动重启。
 3. UI 状态使用 `StateFlow` 或 `mutableStateOf`，保证线程安全。
 
-### 9.4 案例四：Spring Boot 6 协程支持
+### 8.4 案例四：Spring Boot 6 协程支持
 
 **背景**：Spring Boot 6 原生支持 `suspend` 函数，控制器可直接声明为 `suspend`。
 
@@ -1798,7 +1732,7 @@ class UserService {
 2. 业务逻辑显式使用 `withContext(Dispatchers.IO)` 包装阻塞操作。
 3. 事务管理（`@Transactional`）与协程兼容（Spring 5.2+）。
 
-### 9.5 案例五：Ktor 服务端架构
+### 8.5 案例五：Ktor 服务端架构
 
 **背景**：Ktor 是 JetBrains 官方的跨平台服务端框架，深度集成协程。
 
@@ -2079,7 +2013,7 @@ class PriorityContext(val priority: Int) : AbstractCoroutineContextElement(Prior
 fun CoroutinePriority(priority: Int) = PriorityContext(priority)
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 4.1**：为什么 Kotlin 协程选择 CPS 转换而非绿色线程（Green Thread）？请从实现复杂度、跨平台、性能三个角度论证。
 
@@ -2216,7 +2150,7 @@ suspend fun <T> monitoredLaunch(
 }
 ```
 
-### 10.5 综合应用题
+### 9.5 综合应用题
 
 **题目 5.1**：设计一个支持高并发的文件下载服务，要求：
 
@@ -2362,9 +2296,9 @@ class GoodRepository {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 [1] JetBrains. Kotlin Coroutines Documentation [EB/OL]. (2024-05-20) [2026-07-20]. https://kotlinlang.org/docs/coroutines-overview.html.
 
@@ -2374,7 +2308,7 @@ class GoodRepository {
 
 [4] JetBrains. kotlinx.coroutines GitHub Repository [EB/OL]. (2024-05-20) [2026-07-20]. https://github.com/Kotlin/kotlinx.coroutines.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [5] Conway, M. E. 1963. Design of a Separable Transition-Diagram Compiler. Communications of the ACM, 6(7), 396-408. https://doi.org/10.1145/366663.366704.
 
@@ -2384,7 +2318,7 @@ class GoodRepository {
 
 [8] Prokopec, A. et al. 2019. On the Cost of Concurrency in Scala. Proceedings of the 10th ACM SIGPLAN Conference on Scala (Scala '19), 1-12. https://doi.org/10.1145/3341080.3341082.
 
-### 11.3 技术博客
+### 10.3 技术博客
 
 [9] Elizarov, R. 2018. Structured Concurrency. JetBrains Blog. https://elizarov.medium.com/structured-concurrency-722d765aa952.
 
@@ -2392,7 +2326,7 @@ class GoodRepository {
 
 [11] Elizarov, R. 2022. Kotlin Coroutines Design: The Early Years. JetBrains Blog. https://blog.jetbrains.com/kotlin/2022/08/coroutines-design/.
 
-### 11.4 开源项目
+### 10.4 开源项目
 
 [12] JetBrains. kotlinx.coroutines: Library Support for Kotlin Coroutines [Source Code]. https://github.com/Kotlin/kotlinx.coroutines.
 
@@ -2402,49 +2336,49 @@ class GoodRepository {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **Kotlin Coroutines Tutorial**：https://kotlinlang.org/docs/coroutines-guide.html
 - **kotlinx.coroutines 源码**：https://github.com/Kotlin/kotlinx.coroutines
 - **Kotlin Conf 录像**：https://www.youtube.com/c/Kotlin
 - **Roman Elizarov 博客**：https://elizarov.medium.com/
 
-### 12.2 进阶主题
+### 11.2 进阶主题
 
 - **Flow 与 SharedFlow**：协程的响应式编程支持。
 - **Channel 与 Select**：协程间的通信原语。
 - **协程测试**：`kotlinx-coroutines-test` 库的使用。
 - **协程与 RxJava 互操作**：`kotlinx-coroutines-rx3` 库。
 
-### 12.3 跨平台协程
+### 11.3 跨平台协程
 
 - **KMP 中的协程**：跨平台一致的并发模型。
 - **Kotlin/Native 协程**：基于新内存管理器的协程支持。
 - **Kotlin/JS 协程**：基于 Promise 的协程实现。
 - **Kotlin/Wasm 协程**：基于 WasmGC 的协程。
 
-### 12.4 性能优化
+### 11.4 性能优化
 
 - **协程性能调优**：https://kotlinlang.org/docs/coroutines-performance.html
 - **`Dispatchers.IO` 调优**：调整并行度、任务队列。
 - **状态机优化**：K2 编译器的对象复用。
 - **与 Project Loom 集成**：JVM 21+ 的 Virtual Threads 支持。
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **Kotlin Slack 工作区**：https://kotlinlang.slack.com/
 - **kotlinx.coroutines Issues**：https://github.com/Kotlin/kotlinx.coroutines/issues
 - **Stack Overflow**：`kotlin-coroutines` 标签。
 
-### 12.6 相关书籍
+### 11.6 相关书籍
 
 - **《Kotlin Coroutines in Practice》**（Dmitry Kovalenko, Packt Publishing, 2024）
 - **《Coroutines and Flow in Practice》**（Roman Elizarov, Manning, 2024）
 - **《The Joy of Kotlin》**（Pierre-Yves Saumont, Manning, 2024）
 
-### 12.7 演进趋势
+### 11.7 演进趋势
 
 - **K2 编译器优化**：更高效的状态机生成。
 - **Virtual Threads 集成**：JVM 21+ 的深度集成。

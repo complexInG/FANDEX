@@ -14,61 +14,16 @@ related:
   - lua/函数与闭包
 prerequisites: []
 ---
+
 # Lua 程序结构与基本语法速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本节依据 Bloom 分类法（Bloom's Taxonomy）按认知层级组织学习目标，帮助学习者由浅入深地掌握 Lua 程序结构与基本语法体系。
-
-### 1.1 记忆层（Remembering）
-
-- 复述 Lua 的 8 种基本数据类型名称与字面量表示。
-- 列出 Lua 的所有运算符及其优先级顺序。
-- 回顾 `local`、`global`、`do...end` 三种作用域控制手段的语法。
-- 识别 `if/elseif/else`、`while`、`repeat...until`、`for`（数值型与泛型）四种控制结构的语法形式。
-
-### 1.2 理解层（Understanding）
-
-- 解释 Lua 中"一切皆值"（everything is a value）的设计哲学及其对语言一致性的影响。
-- 阐述 Lua 作用域规则的词法作用域（lexical scoping）特性，对比动态作用域的差异。
-- 推断多重赋值在右值数量与左值数量不匹配时的行为。
-- 区分 `nil` 在"无值"与"删除表字段"两种语义下的双重作用。
-
-### 1.3 应用层（Applying）
-
-- 编写符合 Lua 风格的变量声明、赋值与作用域控制代码。
-- 使用控制结构实现常见算法（如二分查找、冒泡排序、斐波那契数列）。
-- 利用 `break` 与 `return` 控制循环退出语义。
-- 应用泛型 `for` 与迭代器遍历表、数组、字符串等数据结构。
-
-### 1.4 分析层（Analyzing）
-
-- 分析 Lua 数值类型的双精度浮点表示带来的精度问题与整数子类型（5.3+）的修复。
-- 解构短路求值（short-circuit evaluation）在条件表达式中的执行流程。
-- 比较数值型 `for` 与泛型 `for` 在性能、可读性、安全性上的差异。
-- 辨析 `and`/`or`/`not` 三个逻辑运算符的返回值语义（返回操作数而非布尔值）。
-
-### 1.5 评价层（Evaluating）
-
-- 评估"全局变量默认开启"设计在生产环境中的可维护性风险。
-- 评判 Lua 不支持 `++`/`--` 自增运算符与 `+=` 复合赋值的取舍。
-- 评价 `repeat...until` 与 `while...do...end` 在不同场景下的可读性。
-- 判定在何种业务场景下应使用显式 `local` 声明以避免全局污染。
-
-### 1.6 创造层（Creating）
-
-- 设计一套基于元表的全局变量访问拦截与告警机制。
-- 构建一个支持提前退出（early return）与标签跳转（goto）的复杂控制流。
-- 实现一个自定义迭代器，遍历文件行、目录树或图节点。
-- 创造性地利用 `goto` 实现状态机或异常处理模拟。
-
-## 2. 历史动机与背景
-
-### 2.1 Lua 的设计背景
+### 1.1 Lua 的设计背景
 
 Lua 由巴西里约热内卢天主教大学（PUC-Rio）的 Roberto Ierusalimschy、Luiz Henrique de Figueiredo 与 Waldemar Celes 三人于 1993 年设计。其最初目标是为 PETROBRAS（巴西石油公司）的工程数据录入系统提供可扩展的脚本语言。在此之前，该团队先后开发了 SOL（Simple Object Language）与 DEL（Data-Entry Language），Lua 是二者融合的产物。
 
@@ -80,7 +35,7 @@ Lua 由巴西里约热内卢天主教大学（PUC-Rio）的 Roberto Ierusalimsch
 - **AWK**：关联数组（Lua 的 table 概念来源）。
 - **Modula**：模块系统思想。
 
-### 2.2 语法设计动机
+### 1.2 语法设计动机
 
 Lua 语法设计的核心目标是"简洁、一致、易嵌入"，具体体现为：
 
@@ -92,7 +47,7 @@ Lua 语法设计的核心目标是"简洁、一致、易嵌入"，具体体现�
 
 4. **可扩展语义**：元表机制允许扩展运算符与字段访问行为，使语法表面简洁但语义可扩展。
 
-### 2.3 语法演化
+### 1.3 语法演化
 
 - **Lua 1.x（1993）**：基础语法成型，包括 `local`、`if`、`while`、`for`。
 - **Lua 2.x（1996）**：引入 `局部函数` 简写（`local function f`）。
@@ -104,9 +59,9 @@ Lua 语法设计的核心目标是"简洁、一致、易嵌入"，具体体现�
 - **Lua 5.3（2015）**：引入 64 位整数子类型、位运算符（`&`、`|`、`~`、`<<`、`>>`）。
 - **Lua 5.4（2020）**：引入常量声明 `local const`、`<close>` 属性、整型除法 `//`。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 值域与类型系统
+### 2.1 值域与类型系统
 
 Lua 是动态类型语言，变量无类型，值有类型。设 $V$ 为 Lua 全部值的集合，类型系统 $\tau: V \to T$ 定义为：
 
@@ -122,7 +77,7 @@ $$
 
 形式化地，整数与浮点在运行时通过子类型标记区分，但二者都是 `number` 类型。
 
-### 3.2 表达式求值
+### 2.2 表达式求值
 
 Lua 表达式 $e$ 的求值规则 $\mathcal{E}: e \to V$ 可形式化为：
 
@@ -138,7 +93,7 @@ $$
 
 其中 $\rho$ 是当前环境（变量绑定），$\mathcal{F}$ 是函数应用，$\mathcal{B}$ 是二元运算求值。
 
-### 3.3 作用域与环境
+### 2.3 作用域与环境
 
 Lua 使用词法作用域（lexical scoping）。设环境 $\rho$ 是变量名到值的映射，作用域嵌套关系可表示为：
 
@@ -158,7 +113,7 @@ $$
 \end{cases}
 $$
 
-### 3.4 控制流的形式语义
+### 2.4 控制流的形式语义
 
 控制流可用状态转换规则描述。设程序状态 $\sigma = (\rho, pc)$，其中 $pc$ 是程序计数器。
 
@@ -191,9 +146,9 @@ $$
 
 当 $e_3 > 0$ 且 $v \leq e_2$ 时继续，或 $e_3 < 0$ 且 $v \geq e_2$ 时继续。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 短路求值的复杂度
+### 3.1 短路求值的复杂度
 
 `and` 与 `or` 运算符采用短路求值（short-circuit evaluation）：
 
@@ -207,7 +162,7 @@ $$
 
 时间复杂度最坏为 $O(|a| + |b|)$，但若 $a$ 为假，$b$ 不求值，节省 $O(|b|)$。
 
-### 4.2 多重赋值的语义
+### 3.2 多重赋值的语义
 
 多重赋值 `x, y = a, b` 的求值规则：
 
@@ -218,7 +173,7 @@ $$
 
 注意：步骤 1 在步骤 4 之前完成，因此 `x, y = y, x` 能正确交换两个变量的值。
 
-### 4.3 数值型 for 的循环次数
+### 3.3 数值型 for 的循环次数
 
 设 `for v = e1, e2, e3 do ... end`，循环次数 $N$：
 
@@ -230,7 +185,7 @@ $$
 
 注意浮点 `e3` 时，由于精度问题，$N$ 可能与预期不符。Lua 5.3+ 建议用整数 `e3` 避免此问题。
 
-### 4.4 整数与浮点的混合运算
+### 3.4 整数与浮点的混合运算
 
 Lua 5.3+ 引入整数子类型后，运算规则：
 
@@ -248,15 +203,15 @@ a \mathbin{//} b =
 \end{cases}
 $$
 
-### 4.5 字符串驻留与比较
+### 3.5 字符串驻留与比较
 
 Lua 内部对短字符串（≤40 字节）进行驻留（interning），即相同内容的字符串在内存中只有一份副本。这使得字符串相等比较 $O(1)$（指针比较）。
 
 长字符串（>40 字节）不驻留，相等比较为 $O(n)$（逐字节比较）。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 变量与赋值
+### 4.1 变量与赋值
 
 ```lua
 -- 变量声明与赋值示例
@@ -302,7 +257,7 @@ person.age = 30
 print(person.name, person.age)  -- 输出 Alice  30
 ```
 
-### 5.2 作用域控制
+### 4.2 作用域控制
 
 ```lua
 -- 作用域控制：local、do...end、块作用域
@@ -359,7 +314,7 @@ end
 processFile()
 ```
 
-### 5.3 运算符与表达式
+### 4.3 运算符与表达式
 
 ```lua
 -- 运算符完整示例
@@ -426,7 +381,7 @@ local status = age >= 18 and "adult" or "minor"
 print(status)  -- adult
 ```
 
-### 5.4 控制结构：条件判断
+### 4.4 控制结构：条件判断
 
 ```lua
 -- if/elseif/else 完整示例
@@ -493,7 +448,7 @@ print(dayName(3))   -- Wednesday
 print(dayName(99))  -- Invalid
 ```
 
-### 5.5 控制结构：循环
+### 4.5 控制结构：循环
 
 ```lua
 -- 循环结构完整示例
@@ -591,7 +546,7 @@ end
 process({{1, 2}, {3, -1}, {5, 6}})
 ```
 
-### 5.6 字符串与模式匹配
+### 4.6 字符串与模式匹配
 
 ```lua
 -- 字符串与模式匹配
@@ -645,7 +600,7 @@ print(string.match("hello", "^h"))  -- h
 print(string.match("hello", "o$"))  -- o
 ```
 
-### 5.7 函数定义与调用
+### 4.7 函数定义与调用
 
 ```lua
 -- 函数定义与调用
@@ -717,7 +672,7 @@ end
 print(apply(function(x) return x + 1 end, 10))  -- 11
 ```
 
-### 5.8 表的高级用法
+### 4.8 表的高级用法
 
 ```lua
 -- 表的高级用法：数组、记录、命名空间
@@ -789,9 +744,9 @@ clone.a = 999
 print(original.a)  -- 1（原表未被修改）
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Lua 与主流脚本语言语法对比
+### 5.1 Lua 与主流脚本语言语法对比
 
 | 特性 | Lua | Python | JavaScript | Ruby |
 | :--- | :--- | :--- | :--- | :--- |
@@ -807,7 +762,7 @@ print(original.a)  -- 1（原表未被修改）
 | 复合赋值 | 不支持 | `+=` 等 | `+=` 等 | `+=` 等 |
 | 三元运算 | `a and b or c` | `b if a else c` | `a ? b : c` | `a ? b : c` |
 
-### 6.2 Lua 与 Python 控制结构对比
+### 5.2 Lua 与 Python 控制结构对比
 
 ```lua
 -- Lua 数值型 for
@@ -839,7 +794,7 @@ for k, v in t.items():
 | 跳出循环 | `break`（无 continue） | `break` 与 `continue` |
 | 异常处理 | `pcall`/`xpcall` | `try/except` |
 
-### 6.3 全局变量策略对比
+### 5.3 全局变量策略对比
 
 | 语言 | 默认作用域 | 显式声明 | 优势 | 劣势 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -850,9 +805,9 @@ for k, v in t.items():
 
 Lua 的"默认全局"在嵌入式脚本场景下方便快速原型，但大型项目必须配合 linter（如 `luacheck`）严格审查。
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：忘记 `local` 导致全局污染
+### 6.1 反模式：忘记 `local` 导致全局污染
 
 **事故案例**：某项目在 1000+ 行脚本中忘记 `local`，导致多个变量泄漏到全局表，引发难以排查的副作用。
 
@@ -890,7 +845,7 @@ setmetatable(_G, {
 -- 或使用 luacheck 静态检查工具
 ```
 
-### 7.2 反模式：误用 `or` 作为默认值
+### 6.2 反模式：误用 `or` 作为默认值
 
 **事故案例**：当变量可能为 `false` 时，`x or default` 会错误地返回 `default`。
 
@@ -909,7 +864,7 @@ local function getTimeout(config)
 end
 ```
 
-### 7.3 反模式：浮点 `for` 循环的精度问题
+### 6.3 反模式：浮点 `for` 循环的精度问题
 
 **事故案例**：浮点步长导致循环次数与预期不符。
 
@@ -927,7 +882,7 @@ for i = 0, 10 do
 end
 ```
 
-### 7.4 反模式：修改循环变量
+### 6.4 反模式：修改循环变量
 
 **事故案例**：在数值型 `for` 中修改循环变量不影响下一次迭代。
 
@@ -947,7 +902,7 @@ while i <= 5 do
 end
 ```
 
-### 7.5 反模式：`ipairs` 在稀疏数组上的行为
+### 6.5 反模式：`ipairs` 在稀疏数组上的行为
 
 **事故案例**：`ipairs` 遇到 `nil` 即停止，导致稀疏数组数据丢失。
 
@@ -968,7 +923,7 @@ for i = 1, #arr do
 end
 ```
 
-### 7.6 反模式：误用 `#` 运算符
+### 6.6 反模式：误用 `#` 运算符
 
 **事故案例**：`#` 对非序列表的行为未定义。
 
@@ -983,7 +938,7 @@ table.insert(t.items, 1)
 t.count = t.count + 1
 ```
 
-### 7.7 反模式：`and/or` 三元运算符的优先级陷阱
+### 6.7 反模式：`and/or` 三元运算符的优先级陷阱
 
 ```lua
 -- 反模式：未用括号导致优先级错误
@@ -1002,7 +957,7 @@ local function classify(n)
 end
 ```
 
-### 7.8 反模式：循环中创建闭包捕获循环变量
+### 6.8 反模式：循环中创建闭包捕获循环变量
 
 ```lua
 -- 反模式：闭包捕获循环变量
@@ -1022,9 +977,9 @@ for i = 1, 3 do
 end
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 全局变量治理
+### 7.1 全局变量治理
 
 生产环境应严格限制全局变量。以下是一套完整的治理方案：
 
@@ -1073,7 +1028,7 @@ setmetatable(_G, {
 -- unused_globals = true  -- 警告未使用的全局
 ```
 
-### 8.2 模块化封装
+### 7.2 模块化封装
 
 将相关功能封装为模块，避免全局污染。
 
@@ -1119,7 +1074,7 @@ return MathUtils
 -- print(MathUtils.clamp(15, 0, 10))  -- 10
 ```
 
-### 8.3 性能优化
+### 7.3 性能优化
 
 ```lua
 -- 性能优化技巧
@@ -1176,7 +1131,7 @@ end
 local s = table.concat(parts, ",")
 ```
 
-### 8.4 错误处理
+### 7.4 错误处理
 
 ```lua
 -- 错误处理最佳实践
@@ -1244,7 +1199,7 @@ if not ok then
 end
 ```
 
-### 8.5 单元测试模式
+### 7.5 单元测试模式
 
 ```lua
 -- 简易单元测试框架
@@ -1299,9 +1254,9 @@ end)
 TestSuite.run()
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Luarocks 包管理器的模块结构
+### 8.1 案例一：Luarocks 包管理器的模块结构
 
 Luarocks 是 Lua 的包管理器，其源码充分体现了良好的模块化与作用域控制。
 
@@ -1349,7 +1304,7 @@ return M
 - 模块返回一个表，作为命名空间。
 - 私有工具函数不导出，仅公共 API 在返回表中。
 
-### 9.2 案例二：Kong 配置解析器
+### 8.2 案例二：Kong 配置解析器
 
 Kong 网关的配置解析器展示了如何利用 Lua 的多重返回值与 `or` 默认值实现灵活配置。
 
@@ -1403,7 +1358,7 @@ print(cfg.host, cfg.port, cfg.timeout)
 - `or` 运算符用于默认值简洁优雅，但需注意 `false` 边界情况。
 - 类型检查在生产代码中必不可少。
 
-### 9.3 案例三：Redis Lua 脚本中的控制流
+### 8.3 案例三：Redis Lua 脚本中的控制流
 
 Redis 内嵌 Lua 5.1 解释器，脚本中常使用基本语法实现原子操作。
 
@@ -1442,7 +1397,7 @@ return new_count
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题 1**：写出以下代码的输出。
 
@@ -1494,7 +1449,7 @@ end
 print(sum)  -- 5050
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题 4**：分析以下代码的输出，并解释 `goto` 的行为。
 
@@ -1546,7 +1501,7 @@ for v in range(10, 1, -2) do
 end
 ```
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题 6**：实现一个支持 `continue` 语义的宏（通过 `goto` 模拟）。
 
@@ -1607,9 +1562,9 @@ print(10.0 // 3)
 - `10 // 3` 输出 `3`（整数）。
 - `10.0 // 3` 输出 `3.0`（浮点）：有浮点参与时返回浮点。
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 Lua 官方文献
+### 10.1 Lua 官方文献
 
 [1] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2023. *Lua 5.4 Reference Manual*. Technical Report, PUC-Rio, Rio de Janeiro, Brazil. Available at: https://www.lua.org/manual/5.4/
 
@@ -1619,7 +1574,7 @@ print(10.0 // 3)
 
 [4] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2015. The design and implementation of a language for extending applications. In *Proceedings of the XXI Brazilian Symposium on Programming Languages (SBLP 2015)*. SBC, 1-10.
 
-### 11.2 程序语言理论
+### 10.2 程序语言理论
 
 [5] Abelson, H. and Sussman, G. J. 1996. *Structure and Interpretation of Computer Programs* (2nd Edition). MIT Press, Cambridge, MA, USA.（Scheme 对 Lua 闭包设计的影响）
 
@@ -1627,33 +1582,33 @@ print(10.0 // 3)
 
 [7] Felleisen, M., Findler, R. B., and Flatt, M. 2009. *Semantics Engineering with PLT Redex*. MIT Press, Cambridge, MA, USA.
 
-### 11.3 Lua 实现细节
+### 10.3 Lua 实现细节
 
 [8] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2005. The implementation of Lua 5.0. *Journal of Universal Computer Science* 11, 7 (July 2005), 1159-1176. DOI: https://doi.org/10.3217/jucs-011-07-1159
 
 [9] Pall, M. 2005. The LuaJIT compiler. In *Proceedings of the Lightweight Languages 2005 (LL5)*. Available at: https://luajit.org/
 
-### 11.4 静态分析与工具
+### 10.4 静态分析与工具
 
 [10] Mateescu, R. 2013. Static analysis of Lua programs. *Electronic Notes in Theoretical Computer Science* 298, 1 (Dec. 2013), 101-115. DOI: https://doi.org/10.1016/j.entcs.2013.09.014
 
 [11] luacheck 文档：https://luacheck.readthedocs.io/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Lua 5.4 Reference Manual：https://www.lua.org/manual/5.4/
 - Programming in Lua (4th Edition)，第 1-4 章：https://www.lua.org/pil/contents.html
 - Lua 5.4 源码：https://www.lua.org/source/5.4/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Roberto Ierusalimschy. *Programming in Lua* (4th Edition). PUC-Rio, 2016. ISBN 978-8590379868.
 - Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. *The Implementation of Lua 5.0*. JUCS, 2005.
 - Paul Kimmel. *Lua Programming Gems*. Lua.org, 2008.
 
-### 12.3 前沿论文与社区资源
+### 11.3 前沿论文与社区资源
 
 - "Lua: an extensible extension language" - Ierusalimschy 等人原始论文。
 - "The evolution of an extension language: a history of Lua" - HOPL III 演讲。
@@ -1662,7 +1617,7 @@ print(10.0 // 3)
 - luacheck 静态检查工具：https://github.com/lunarmodules/luacheck
 - LuaJIT 项目：https://luajit.org/
 
-### 12.4 拓展主题
+### 11.4 拓展主题
 
 - 数据类型与 Table 详解：参见本系列"数据类型与 Table 详解"章节。
 - 函数与闭包：参见本系列"函数与闭包"章节。

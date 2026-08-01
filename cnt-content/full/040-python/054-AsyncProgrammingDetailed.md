@@ -16,50 +16,12 @@ prerequisites:
   - python/语法速查
 ---
 
-## 1. 学习目标
 
-本章节对标 MIT 6.006 算法导论、Stanford CS246 并发系统、CMU 15-440 计算机网络、UC Berkeley CS162 操作系统等顶级高校课程对并发与异步编程的教学水准，系统讲解 Python `asyncio` 库的工程化使用与底层理论。完成本章节学习后，读者应能够：
-
-### 1.1 Bloom 认知层级目标
-
-| 层级 | 关键动词 | 具体能力描述 |
-| :--- | :--- | :--- |
-| Remember（记忆） | 列举、识别 | 列举 `asyncio` 的核心组件（`EventLoop`、`Coroutine`、`Task`、`Future`、`gather`、`wait`、`create_task`、`Queue`、`Lock`、`Semaphore`）与 async/await 语法规则 |
-| Understand（理解） | 解释、归纳 | 解释事件循环的调度模型、协程状态机、合作式并发与抢占式并发的差异、GIL 与异步的关系 |
-| Apply（应用） | 实现、编写 | 编写生产级异步程序：并发 HTTP 请求、异步数据库访问、生产者-消费者队列、超时控制、优雅关闭 |
-| Analyze（分析） | 比较、拆解 | 比较 `asyncio` 与 Go goroutine、JavaScript async/await、Rust async、Java CompletableFuture 的语义差异与性能权衡 |
-| Evaluate（评价） | 评估、选择 | 评估在何种场景下应使用异步、多线程或多进程，识别阻塞调用、设计可扩展的异步架构 |
-| Create（创造） | 设计、优化 | 设计异步微服务、实现自定义事件循环后端、构建可观测的异步任务编排系统 |
-
-### 1.2 知识地图
-
-```
-[理论基础] 并发 vs 并行 | 协作式调度 | 有限状态机 | CSP 模型
-    ↓
-[Python 实现] async/await | Coroutine | Task | Future | EventLoop
-    ↓
-[同步原语] Lock | Semaphore | Event | Condition | Queue | Barrier
-    ↓
-[工程实战] HTTP 并发 | 数据库异步 | 限流 | 超时 | 优雅关闭
-    ↓
-[高级话题] TaskGroup | Task 取消语义 | 异步生成器 | uvloop | anyio
-```
-
-### 1.3 前置知识检查
-
-学习本章节前，请确认你已掌握：
-
-1. Python 函数、装饰器、上下文管理器基础；
-2. 迭代器协议（`__iter__`、`__next__`）与生成器（`yield`）；
-3. 操作系统线程、进程的基本概念；
-4. TCP/IP 网络编程基础（socket、I/O 多路复用）；
-5. 集合论与状态机的基本概念。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 异步编程并非 Python 独有概念，其根源可追溯至 1960 年代的操作系统 I/O 调度理论与 1980 年代的事件驱动编程模型。
 
-### 2.1 异步编程的理论起源
+### 1.1 异步编程的理论起源
 
 - **1965**：Multics 操作系统引入中断驱动 I/O 模型；
 - **1969**：Unix 引入 `select` 系统调用（1971 年 V4 版本正式稳定），允许进程同时等待多个文件描述符；
@@ -67,7 +29,7 @@ prerequisites:
 - **1990s**：Windows NT 完成 IOCP（I/O Completion Port）模型；
 - **2000s**：Linux 2.6 引入 `epoll`，FreeBSD 引入 `kqueue`，高性能事件循环成熟。
 
-### 2.2 Python 异步演进时间线
+### 1.2 Python 异步演进时间线
 
 | 时间 | 版本 | 重要变化 |
 | :--- | :--- | :--- |
@@ -85,7 +47,7 @@ prerequisites:
 | 2023 | Python 3.12 | `asyncio` 性能优化，`Task` 不再是 Future 子类（PEP 703 前期工作） |
 | 2025 | Python 3.13+ | 实验性无 GIL 构建（PEP 703），asyncio 与多线程协同模型改进 |
 
-### 2.3 第三方生态演进
+### 1.3 第三方生态演进
 
 | 库 | 出现时间 | 贡献 |
 | :--- | :--- | :--- |
@@ -98,7 +60,7 @@ prerequisites:
 | Starlette | 2018 | 轻量 ASGI 框架，FastAPI 底座 |
 | FastAPI | 2018 | 基于 Starlette + Pydantic 的高性能 API 框架 |
 
-### 2.4 设计哲学
+### 1.4 设计哲学
 
 Python asyncio 的设计原则（PEP 3156）：
 
@@ -108,9 +70,9 @@ Python asyncio 的设计原则（PEP 3156）：
 4. **Future 统一抽象**：Future 表示异步结果，跨线程、跨进程通用；
 5. **与同步代码兼容**：通过 `asyncio.to_thread()` 桥接阻塞调用。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 协程的代数定义
+### 2.1 协程的代数定义
 
 设 $S$ 为程序状态集合，$E$ 为事件集合，$T : S \times E \to S$ 为状态转移函数。协程（coroutine）是一个五元组：
 
@@ -126,7 +88,7 @@ $$
 - $T : S \times E \to S$ 为状态转移函数；
 - $Y : S \to V \times S$ 为 yield 函数，返回一个值与新状态。
 
-### 3.2 协程状态机
+### 2.2 协程状态机
 
 Python 协程在执行过程中处于以下状态之一：
 
@@ -156,7 +118,7 @@ $$
 \end{cases}
 $$
 
-### 3.3 事件循环的形式化模型
+### 2.3 事件循环的形式化模型
 
 事件循环（Event Loop）可建模为一个无限循环，等待事件并调度对应的回调：
 
@@ -188,7 +150,7 @@ def run(loop):
         loop.process_signals()
 ```
 
-### 3.4 Task 的调度语义
+### 2.4 Task 的调度语义
 
 `Task` 是对协程的包装，由事件循环调度执行。其语义可形式化为：
 
@@ -202,7 +164,7 @@ $$
 - 若协程 `await` 另一个协程，Task 嵌套等待子协程完成；
 - 若协程 `return`，Task 完成，结果存入 Future。
 
-### 3.5 async/await 的语义等价
+### 2.5 async/await 的语义等价
 
 `async def f()` 等价于：
 
@@ -225,9 +187,9 @@ $$
 \text{awaitable} ::= \text{Coroutine} \mid \text{Task} \mid \text{Future} \mid \text{object with } \texttt{\_\_await\_\_}
 $$
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 协作式 vs 抢占式调度
+### 3.1 协作式 vs 抢占式调度
 
 操作系统线程采用抢占式调度（preemptive scheduling）：
 
@@ -253,7 +215,7 @@ $$
 2. 不能利用多核 CPU；
 3. 需要严格的异步纪律（async all the way down）。
 
-### 4.2 单线程并发的数学分析
+### 3.2 单线程并发的数学分析
 
 设 $n$ 个 I/O 任务，每个任务平均等待时间 $w$，CPU 处理时间 $c$。则：
 
@@ -267,7 +229,7 @@ $$
 
 当 $w \gg c$（I/O 密集型），$S \approx n$；当 $c \gg w$（CPU 密集型），$S \approx 1$。
 
-### 4.3 GIL 与异步的关系
+### 3.3 GIL 与异步的关系
 
 Python GIL（Global Interpreter Lock）确保同一时刻只有一个线程执行 Python 字节码：
 
@@ -283,7 +245,7 @@ $$
 
 但若异步代码调用 CPU 密集型函数（无 `await`），GIL 仍会阻塞事件循环。
 
-### 4.4 回调地狱与 async/await 的关系
+### 3.4 回调地狱与 async/await 的关系
 
 回调风格的异步代码：
 
@@ -312,7 +274,7 @@ async def pipeline():
 
 形式化地，async/await 通过 **CPS（Continuation-Passing Style）变换** 将回调链转换为状态机，编译器（CPython 解释器）自动生成状态转移代码。
 
-### 4.5 Future 的代数性质
+### 3.5 Future 的代数性质
 
 `Future` 可视为单子（Monad）：
 
@@ -327,9 +289,9 @@ async def pipeline():
 
 这使得 Python 异步代码可以组合，如同同步代码一样。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 第一个异步程序
+### 4.1 第一个异步程序
 
 ```python
 """第一个异步程序。Python 3.12+。"""
@@ -363,7 +325,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 5.2 Task 与 Future
+### 4.2 Task 与 Future
 
 ```python
 """Task 与 Future 示例。Python 3.12+。"""
@@ -415,7 +377,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 5.3 同步原语
+### 4.3 同步原语
 
 ```python
 """asyncio 同步原语示例。Python 3.12+。"""
@@ -512,7 +474,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 5.4 超时控制
+### 4.4 超时控制
 
 ```python
 """超时控制示例。Python 3.11+。"""
@@ -565,7 +527,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 5.5 异步迭代器与生成器
+### 4.5 异步迭代器与生成器
 
 ```python
 """异步迭代器与生成器示例。Python 3.12+。"""
@@ -668,7 +630,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 5.6 异步队列与生产者-消费者
+### 4.6 异步队列与生产者-消费者
 
 ```python
 """异步队列与生产者-消费者模式。Python 3.12+。"""
@@ -727,7 +689,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 5.7 并发 HTTP 请求
+### 4.7 并发 HTTP 请求
 
 ```python
 """并发 HTTP 请求示例。Python 3.12+。
@@ -819,7 +781,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 5.8 异步数据库访问
+### 4.8 异步数据库访问
 
 ```python
 """异步数据库访问示例（PostgreSQL）。Python 3.12+。
@@ -898,7 +860,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 5.9 优雅关闭与信号处理
+### 4.9 优雅关闭与信号处理
 
 ```python
 """优雅关闭与信号处理示例。Python 3.12+。"""
@@ -983,7 +945,7 @@ if __name__ == "__main__":
         print("\n强制退出")
 ```
 
-### 5.10 asyncio 与多进程结合
+### 4.10 asyncio 与多进程结合
 
 ```python
 """asyncio 与多进程结合处理 CPU 密集型任务。Python 3.12+。"""
@@ -1036,9 +998,9 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Python asyncio vs Go goroutine
+### 5.1 Python asyncio vs Go goroutine
 
 | 维度 | Python asyncio | Go goroutine |
 | :--- | :--- | :--- |
@@ -1052,7 +1014,7 @@ if __name__ == "__main__":
 | 错误处理 | 异常 | 多返回值 |
 | 生态成熟度 | 中（持续改进） | 高（语言核心） |
 
-### 6.2 Python asyncio vs JavaScript async/await
+### 5.2 Python asyncio vs JavaScript async/await
 
 | 维度 | Python asyncio | JavaScript async/await |
 | :--- | :--- | :--- |
@@ -1064,7 +1026,7 @@ if __name__ == "__main__":
 | 顶层 await | Python 3.8+（REPL） | ES2022+（模块） |
 | 阻塞调用 | 阻塞整个循环 | 阻塞整个循环 |
 
-### 6.3 Python asyncio vs Rust async
+### 5.3 Python asyncio vs Rust async
 
 | 维度 | Python asyncio | Rust async |
 | :--- | :--- | :--- |
@@ -1076,7 +1038,7 @@ if __name__ == "__main__":
 | 学习曲线 | 低 | 高（生命周期、Pin） |
 | 零成本抽象 | 否 | 是 |
 
-### 6.4 Python asyncio vs Java CompletableFuture
+### 5.4 Python asyncio vs Java CompletableFuture
 
 | 维度 | Python asyncio | Java CompletableFuture |
 | :--- | :--- | :--- |
@@ -1087,7 +1049,7 @@ if __name__ == "__main__":
 | 异常处理 | 异常 | `exceptionally` |
 | 多核利用 | 否（GIL） | 是 |
 
-### 6.5 异步 vs 多线程 vs 多进程
+### 5.5 异步 vs 多线程 vs 多进程
 
 | 场景 | 推荐方案 | 理由 |
 | :--- | :--- | :--- |
@@ -1098,9 +1060,9 @@ if __name__ == "__main__":
 | 简单并发（少量任务） | 多线程（threading） | 代码简单，无需 async 改造 |
 | 极致性能 | Rust + tokio 或 Go | Python 性能上限较低 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：忘记 await
+### 6.1 陷阱：忘记 await
 
 ```python
 # 错误：忘记 await，协程不会执行
@@ -1122,7 +1084,7 @@ logging.basicConfig(level=logging.DEBUG)
 asyncio.get_event_loop().set_debug(True)
 ```
 
-### 7.2 陷阱：在异步代码中调用阻塞函数
+### 6.2 陷阱：在异步代码中调用阻塞函数
 
 ```python
 # 错误：time.sleep 会阻塞整个事件循环
@@ -1144,7 +1106,7 @@ async def good_with_blocking():
 
 **最佳实践**：使用 `asyncio.to_thread()`（Python 3.9+）或 `loop.run_in_executor()` 包装阻塞调用。
 
-### 7.3 陷阱：嵌套 asyncio.run()
+### 6.3 陷阱：嵌套 asyncio.run()
 
 ```python
 # 错误：嵌套调用 asyncio.run
@@ -1158,7 +1120,7 @@ async def good():
 
 **最佳实践**：`asyncio.run()` 只在程序入口调用一次。
 
-### 7.4 陷阱：Task 未被引用被垃圾回收
+### 6.4 陷阱：Task 未被引用被垃圾回收
 
 ```python
 # 错误：Task 可能被垃圾回收
@@ -1183,7 +1145,7 @@ async def better():
     # 退出 with 块时自动等待所有 Task 完成
 ```
 
-### 7.5 陷阱：异常被吞没
+### 6.5 陷阱：异常被吞没
 
 ```python
 # 错误：gather 默认会延迟异常到所有任务完成
@@ -1205,7 +1167,7 @@ async def good():
             print(f"任务失败: {r}")
 ```
 
-### 7.6 陷阱：取消传播不正确
+### 6.6 陷阱：取消传播不正确
 
 ```python
 # 错误：吞掉 CancelledError
@@ -1226,7 +1188,7 @@ async def good():
         print(f"其他异常: {e}")
 ```
 
-### 7.7 陷阱：在多线程中使用 asyncio
+### 6.7 陷阱：在多线程中使用 asyncio
 
 ```python
 # 错误：跨线程操作事件循环
@@ -1246,7 +1208,7 @@ def good():
         loop.close()
 ```
 
-### 7.8 陷阱：AsyncIterator 未实现 __aiter__
+### 6.8 陷阱：AsyncIterator 未实现 __aiter__
 
 ```python
 # 错误：缺少 __aiter__
@@ -1263,7 +1225,7 @@ class GoodAsyncIter:
         return 1
 ```
 
-### 7.9 最佳实践总结
+### 6.9 最佳实践总结
 
 1. **全链路异步**：异步代码必须从入口到底层全部异步，不能中间穿插同步阻塞调用；
 2. **使用 TaskGroup**（Python 3.11+）替代裸 `create_task`，获得结构化并发；
@@ -1274,9 +1236,9 @@ class GoodAsyncIter:
 7. **测试覆盖**：使用 `pytest-asyncio` 编写异步测试；
 8. **可观测性**：集成 structlog/loguru 异步日志、Prometheus 异步指标。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构
+### 7.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -1307,7 +1269,7 @@ flowchart TD
     T18 --> T19
 ```
 
-### 8.2 pyproject.toml 配置
+### 7.2 pyproject.toml 配置
 
 ```toml
 [build-system]
@@ -1344,7 +1306,7 @@ line-length = 100
 target-version = "py312"
 ```
 
-### 8.3 性能优化
+### 7.3 性能优化
 
 ```python
 """asyncio 性能优化技巧。Python 3.12+。"""
@@ -1447,7 +1409,7 @@ class BoundedProcessor:
             asyncio.create_task(self.worker())
 ```
 
-### 8.4 调试技巧
+### 7.4 调试技巧
 
 ```python
 """asyncio 调试技巧。"""
@@ -1498,7 +1460,7 @@ async def monitor():
         print("请安装 aiomonitor: pip install aiomonitor")
 ```
 
-### 8.5 测试
+### 7.5 测试
 
 ```python
 """异步测试示例。Python 3.12+。
@@ -1554,7 +1516,7 @@ async def test_cancel():
         await task
 ```
 
-### 8.6 部署
+### 7.6 部署
 
 ```dockerfile
 # Dockerfile 示例
@@ -1579,9 +1541,9 @@ EXPOSE 8000
 CMD ["uvicorn", "myapp.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Instagram 异步架构
+### 8.1 Instagram 异步架构
 
 Instagram 早期基于 Django（同步框架），随着用户增长遇到 I/O 瓶颈：
 
@@ -1609,7 +1571,7 @@ async def upload_pipeline(image: bytes, user_id: int):
     await db.save_record(user_id, metadata)
 ```
 
-### 9.2 YouTube 视频处理
+### 8.2 YouTube 视频处理
 
 YouTube 使用 Python + asyncio 处理视频元数据的异步聚合：
 
@@ -1648,7 +1610,7 @@ async def get_video_page(video_id: str):
     }
 ```
 
-### 9.3 Dropbox 文件同步
+### 8.3 Dropbox 文件同步
 
 Dropbox 使用 asyncio 重构桌面客户端：
 
@@ -1714,7 +1676,7 @@ class FileSync:
         await self.watch()
 ```
 
-### 9.4 Django 异步视图
+### 8.4 Django 异步视图
 
 Django 3.1+ 引入异步视图，4.0+ 完整支持异步 ORM：
 
@@ -1770,7 +1732,7 @@ class AsyncDashboardView(View):
         return [{"id": 1, "text": "Hello"}]
 ```
 
-### 9.5 FastAPI 高性能 API
+### 8.5 FastAPI 高性能 API
 
 FastAPI 基于 Starlette，原生支持异步：
 
@@ -2246,7 +2208,7 @@ async def main():
 asyncio.run(main())
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **1. 为什么 asyncio 不能很好地处理 CPU 密集型任务？如何解决？**
 
@@ -2356,9 +2318,9 @@ AsyncioInstrumentor().instrument()
 
 **7. 火焰图分析**：使用 `py-spy` 抓取 CPU 火焰图，识别热点函数。
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准与规范
+### 10.1 标准与规范
 
 - [1] Python Software Foundation. *Python Language Reference*. Python 3.12. https://docs.python.org/3.12/reference/index.html
 - [2] PEP 255 - Simple Generators. 2001. https://peps.python.org/pep-0255/
@@ -2368,14 +2330,14 @@ AsyncioInstrumentor().instrument()
 - [6] PEP 3156 - Asynchronous IO Support Rebooted. 2012. https://peps.python.org/pep-3156/
 - [7] PEP 654 - Exception Groups and except*. 2021. https://peps.python.org/pep-0654/
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 - [8] Hoare, C. A. R. (1978). Communicating sequential processes. *Communications of the ACM*, 21(8), 666-677. https://doi.org/10.1145/359576.359585
 - [9] Lattner, C., & Adve, V. (2004). LLVM: A compilation framework for lifelong program analysis & transformation. *Proceedings of the International Symposium on Code Generation and Optimization*, 75-86. https://doi.org/10.1109/CGO.2004.1281665
 - [10] Marlow, S., Peyton Jones, S., & Singh, S. (2009). Runtime support for multicore Haskell. *Proceedings of the 14th ACM SIGPLAN International Conference on Functional Programming*, 65-78. https://doi.org/10.1145/1596550.1596564
 - [11] Srinivasan, S., & Mycroft, A. (2009). Kilim: Isolation-typed actors for Java. *European Conference on Object-Oriented Programming*, 104-128. https://doi.org/10.1007/978-3-642-03013-0_6
 
-### 11.3 技术文档
+### 10.3 技术文档
 
 - [12] asyncio — Asynchronous I/O. *Python 3.12 Documentation*. https://docs.python.org/3.12/library/asyncio.html
 - [13] uvloop Documentation. MagicStack. https://uvloop.readthedocs.io/
@@ -2383,16 +2345,16 @@ AsyncioInstrumentor().instrument()
 - [15] FastAPI Documentation. https://fastapi.tiangolo.com/
 - [16] Starlette Documentation. https://www.starlette.io/
 
-### 11.4 书籍
+### 10.4 书籍
 
 - [17] Ramalho, L. (2022). *Fluent Python* (2nd ed.). O'Reilly Media.
 - [18] Beazley, D., & Jones, B. K. (2013). *Python Cookbook* (3rd ed.). O'Reilly Media.
 - [19] Cui, Y. (2023). *Architecture Patterns with Python*. O'Reilly Media.
 - [20] Kleppmann, M. (2017). *Designing Data-Intensive Applications*. O'Reilly Media.
 
-## 12. 进一步阅读
+## 11. 进一步阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 1. **asyncio 源码分析**：阅读 CPython `Lib/asyncio/` 目录源码，理解事件循环、Future、Task 的实现细节；
 2. **uvloop 性能优化**：MagicStack 博客文章 "Making 1 million requests with python asyncio"；
@@ -2400,14 +2362,14 @@ AsyncioInstrumentor().instrument()
 4. **trio 框架**：对比 asyncio 与 trio 的设计差异；
 5. **PEP 703**：无 GIL Python 提案及其对 asyncio 的影响。
 
-### 12.2 相关论文
+### 11.2 相关论文
 
 - "Structured Concurrency" - Martin Sústrik (2016)
 - "The C10K Problem" - Dan Kegel (1999)
 - "Reactive Streams" - JVM 规范，与 asyncio 互补
 - "Actor Model" - Hewitt, Bishop, Steiger (1973)
 
-### 12.3 实战项目
+### 11.3 实战项目
 
 1. **实现一个简单的 HTTP 服务器**：基于 `asyncio.start_server`，支持路由和中间件；
 2. **实现一个 WebSocket 服务器**：理解帧解析和长连接；
@@ -2415,14 +2377,14 @@ AsyncioInstrumentor().instrument()
 4. **参与 FastAPI 开源贡献**：阅读 Starlette 源码，提交 PR；
 5. **性能基准测试**：对比 asyncio、uvloop、Go、Node.js 在 HTTP 服务的吞吐量。
 
-### 12.4 在线资源
+### 11.4 在线资源
 
 - **Real Python - Async IO in Python**：https://realpython.com/async-io-python/
 - **Stack Overflow - asyncio 标签**：https://stackoverflow.com/questions/tagged/asyncio
 - **Python Asyncio Examples**：https://github.com/asyncio-docs/asyncio-examples
 - **Awesome Asyncio**：https://github.com/timofurrer/awesome-asyncio
 
-### 12.5 视频课程
+### 11.5 视频课程
 
 - **Nathaniel J. Smith - Trio: Async I/O for Humans**（PyCon 2017）
 - **Yury Selivanov - async/await in Python 3.5 and Why It Is Awesome**（PyCon 2016）

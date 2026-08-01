@@ -18,6 +18,7 @@ prerequisites:
   - kotlin/类与对象
   - kotlin/属性与字段
 ---
+
 # Kotlin 委托属性速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -41,70 +42,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。
-
-### 1.1 Remember（记忆）
-
-- 列举 Kotlin 标准库提供的四大内置委托：`lazy`、`Delegates.observable`、`Delegates.vetoable`、`Delegates.notNull`。
-- 复述委托属性的核心接口：`ReadOnlyProperty<in T, out V>` 与 `ReadWriteProperty<in T, out V>`。
-- 背诵两个核心运算符方法的签名：`operator fun getValue(thisRef: T, property: KProperty<*>): V` 与 `operator fun setValue(thisRef: T, property: KProperty<*>, value: V)`。
-- 记忆 `lazy` 的三个线程安全模式：`SYNCHRONIZED`、`PUBLICATION`、`NONE`。
-- 列举 `provideDelegate` 的作用：在属性初始化时（而非读写时）执行逻辑，可用于属性验证。
-- 复述 `Map` 委托的语法：`val name: String by map`，要求 Map 的键与属性名匹配。
-- 列举委托属性的核心应用场景：延迟初始化、属性监听、属性映射、依赖注入、Android ViewBinding。
-
-### 1.2 Understand（理解）
-
-- 用自己的语言解释委托属性的本质：将属性的 getter/setter 委托给另一个对象，实现"组合优于继承"。
-- 解释 `lazy` 的 `SYNCHRONIZED` 模式与 `PUBLICATION` 模式的差异：前者使用 `synchronized` 双重检查锁，后者使用 `AtomicReference` 的 CAS。
-- 描述 `observable` 与 `vetoable` 的语义差异：前者在赋值后通知，后者在赋值前决策是否接受。
-- 阐述 `provideDelegate` 的设计动机：解决"属性元信息在创建时不可用"的问题，例如属性名验证。
-- 解释 `KProperty<*>` 参数的作用：在委托方法中提供属性的反射信息（名称、类型、签名）。
-- 理解委托属性与属性代理（Property Delegate）的关系：委托是代理模式在属性层面的应用。
-- 解释为什么 `lazy` 默认是 `SYNCHRONIZED`：避免多线程下重复初始化，但会带来同步开销。
-
-### 1.3 Apply（应用）
-
-- 使用 `lazy` 实现昂贵的资源延迟初始化，如数据库连接、配置加载。
-- 使用 `Delegates.observable` 实现属性变更监听，配合观察者模式。
-- 使用 `Delegates.vetoable` 实现属性值校验，如年龄必须非负、邮箱必须匹配正则。
-- 使用 `Map` 委托解析 JSON 响应，将 JSON 字段映射为对象属性。
-- 自定义委托实现 SharedPreferences 的封装，提供类型安全的 API。
-- 使用 `provideDelegate` 在 DSL 中验证属性名，如 HTML 构建器检查标签合法性。
-- 在 Android 中使用委托封装 ViewBinding，避免 `findViewById` 样板代码。
-
-### 1.4 Analyze（分析）
-
-- 反编译委托属性的字节码，分析 `by` 关键字如何转换为 `getValue`/`setValue` 调用。
-- 对比 `lazy` 的三种线程安全模式在不同场景下的性能差异。
-- 分析 `provideDelegate` 相比 `getValue` 中验证的优势：前者只在初始化时执行一次，后者每次读取都执行。
-- 解构 `Lazy` 接口的源码：`value` 属性如何与 `SYNCHRONIZED`、`PUBLICATION` 模式协作。
-- 分析 `Map` 委托在泛型擦除下的实现：如何通过 `@Suppress("UNCHECKED_CAST")` 处理类型转换。
-
-### 1.5 Evaluate（评价）
-
-- 评价委托属性相比直接写 getter/setter 的优劣：灵活性 vs 可读性。
-- 评价 `lazy` 默认 `SYNCHRONIZED` 的设计：在单线程场景下是否过度？
-- 评价 `provideDelegate` 的引入时机：Kotlin 1.1 加入是否过晚？
-- 评估 `Map` 委托在类型安全上的妥协：是否值得用 `UNCHECKED_CAST` 换取便利？
-- 评价委托属性在 DSL 设计中的角色：是否被过度使用？
-- 评估自定义委托的性能开销：每次属性访问都创建对象？
-
-### 1.6 Create（创造）
-
-- 设计并实现一个完整的属性绑定框架：支持双向绑定、转换器、验证器。
-- 设计一个基于委托属性的依赖注入容器：通过 `by inject<T>()` 获取依赖。
-- 实现一个"可观察集合"：使用 `observable` 委托监听 List/Map 变化。
-- 撰写一份团队委托属性使用规范：何时用 `lazy`、何时用 `observable`、何时自定义。
-- 设计一个跨平台的配置管理库：基于委托属性封装 SharedPreferences、UserDefaults、LocalStorage。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：样板代码的烦恼
+### 1.1 问题背景：样板代码的烦恼
 
 在传统 Java 中，属性的 getter/setter 往往包含大量样板代码：
 
@@ -132,7 +72,7 @@ Kotlin 的设计目标：
 - **可组合性**：多个委托可组合（如 `lazy + observable`）。
 - **零开销抽象**：委托通过 `inline` 与运算符重载实现，无运行时开销。
 
-### 2.2 学术背景：代理模式与组合优于继承
+### 1.2 学术背景：代理模式与组合优于继承
 
 委托属性的思想根植于面向对象设计原则：
 
@@ -142,7 +82,7 @@ Kotlin 的设计目标：
 
 Kotlin 的委托属性将这些原则应用到属性层面，形成"属性级代理"。
 
-### 2.3 Kotlin 1.0（2016）：委托属性初版
+### 1.3 Kotlin 1.0（2016）：委托属性初版
 
 Kotlin 1.0 引入委托属性作为核心特性：
 
@@ -163,7 +103,7 @@ class Example {
 4. `Map` 委托（`by map`）。
 5. 自定义委托接口 `ReadOnlyProperty` 与 `ReadWriteProperty`。
 
-### 2.4 Kotlin 1.1（2017）：provideDelegate 引入
+### 1.4 Kotlin 1.1（2017）：provideDelegate 引入
 
 Kotlin 1.1 引入了 `provideDelegate` 运算符：
 
@@ -188,7 +128,7 @@ class MyDelegate {
 2. **依赖属性元信息**：某些委托需要属性的类型信息，而 `getValue` 时才有。
 3. **延迟委托创建**：根据属性上下文决定使用哪个委托实例。
 
-### 2.5 Kotlin 1.2-1.3（2018）：稳定与优化
+### 1.5 Kotlin 1.2-1.3（2018）：稳定与优化
 
 Kotlin 1.2-1.3 期间，委托属性有以下改进：
 
@@ -197,7 +137,7 @@ Kotlin 1.2-1.3 期间，委托属性有以下改进：
 3. **`Map` 委托的 `MutableMap` 支持**：允许通过 `MutableMap` 实现可变属性。
 4. **KMP 支持**：委托属性在 JS、Native 平台行为一致。
 
-### 2.6 Kotlin 1.4-1.5（2020-2021）：标准库扩展
+### 1.6 Kotlin 1.4-1.5（2020-2021）：标准库扩展
 
 Kotlin 1.4-1.5 扩展了标准库委托：
 
@@ -205,7 +145,7 @@ Kotlin 1.4-1.5 扩展了标准库委托：
 2. **`Flow` 与 `StateFlow` 的互操作**：通过 `stateIn` 转换为 `StateFlow`。
 3. **`nullable` 委托**：第三方库（如 Kotest）提供 `nullable` 委托。
 
-### 2.7 Kotlin 1.6-1.7（2021-2022）：K2 预览与字节码优化
+### 1.7 Kotlin 1.6-1.7（2021-2022）：K2 预览与字节码优化
 
 Kotlin 1.6-1.7 的 K2 编译器预览对委托属性进行了优化：
 
@@ -213,14 +153,14 @@ Kotlin 1.6-1.7 的 K2 编译器预览对委托属性进行了优化：
 2. **`KProperty` 引用优化**：K2 生成的 `KProperty` 引用对象更少，减少 GC 压力。
 3. **诊断改进**：K2 能更精确地报告委托使用错误。
 
-### 2.8 Kotlin 1.8-1.9（2023）：与 Virtual Threads 集成
+### 1.8 Kotlin 1.8-1.9（2023）：与 Virtual Threads 集成
 
 Kotlin 1.8-1.9 与 JVM 21 的 Virtual Threads 集成：
 
 1. **`lazy` 在 Virtual Thread 下的行为**：`SYNCHRONIZED` 模式仍使用 `synchronized`，但不会阻塞 Virtual Thread 的载体线程。
 2. **`StateFlow` 与 `MutableStateFlow`**：在 Virtual Thread 下可作为"协程安全属性"使用。
 
-### 2.9 Kotlin 2.0（2024 年 5 月）：K2 全面成熟
+### 1.9 Kotlin 2.0（2024 年 5 月）：K2 全面成熟
 
 Kotlin 2.0 的 K2 编译器对委托属性进行了全面优化：
 
@@ -229,7 +169,7 @@ Kotlin 2.0 的 K2 编译器对委托属性进行了全面优化：
 3. **DSL 友好**：委托属性在 DSL 中的使用更自然，错误信息更清晰。
 4. **KMP 一致性**：JVM、JS、Native、Wasm 平台的委托属性行为完全一致。
 
-### 2.10 JetBrains 的设计哲学
+### 1.10 JetBrains 的设计哲学
 
 JetBrains 在设计委托属性时遵循了以下哲学：
 
@@ -240,7 +180,7 @@ JetBrains 在设计委托属性时遵循了以下哲学：
 5. **平台无关**：委托属性在 JVM、JS、Native、Wasm 行为一致。
 6. **渐进式复杂度**：初学者用 `lazy`，高级用户用 `provideDelegate`。
 
-### 2.11 时间线总览
+### 1.11 时间线总览
 
 ```
 2016  Kotlin 1.0 — 委托属性初版，lazy、observable、vetoable、Map 委托
@@ -254,9 +194,9 @@ JetBrains 在设计委托属性时遵循了以下哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 委托属性的统一形式
+### 2.1 委托属性的统一形式
 
 设 $T$ 为接收者类型（属性所属类），$V$ 为属性值类型。委托属性可形式化为一个三元组：
 
@@ -270,7 +210,7 @@ $$
 - $\text{Getter} : \text{Delegate} \times T \times \text{KProperty} \to V$。
 - $\text{Setter} : \text{Delegate} \times T \times \text{KProperty} \times V \to \text{Unit}$（可选）。
 
-### 3.2 只读委托接口
+### 2.2 只读委托接口
 
 `ReadOnlyProperty` 接口的形式化定义：
 
@@ -284,7 +224,7 @@ public interface ReadOnlyProperty<in T, out V> {
 }
 ```
 
-### 3.3 可变委托接口
+### 2.3 可变委托接口
 
 `ReadWriteProperty` 接口的形式化定义：
 
@@ -298,7 +238,7 @@ public interface ReadWriteProperty<in T, out V> : ReadOnlyProperty<T, V> {
 }
 ```
 
-### 3.4 lazy 委托的形式化
+### 2.4 lazy 委托的形式化
 
 `lazy` 函数的形式化定义：
 
@@ -321,7 +261,7 @@ $$
 \end{cases}
 $$
 
-### 3.5 observable 委托的形式化
+### 2.5 observable 委托的形式化
 
 `Delegates.observable` 的形式化：
 
@@ -337,7 +277,7 @@ $$
 
 即：先存储新值，再通知观察者。
 
-### 3.6 vetoable 委托的形式化
+### 2.6 vetoable 委托的形式化
 
 `Delegates.vetoable` 的形式化：
 
@@ -356,7 +296,7 @@ $$
 
 即：先调用决策函数，决定是否接受新值。
 
-### 3.7 Map 委托的形式化
+### 2.7 Map 委托的形式化
 
 `Map` 委托的形式化：
 
@@ -370,7 +310,7 @@ $$
 \text{getValue}(\text{map}, \text{key} = \text{property.name}) = \text{map}[\text{key}] \text{ as } V
 $$
 
-### 3.8 provideDelegate 的形式化
+### 2.8 provideDelegate 的形式化
 
 `provideDelegate` 运算符的形式化：
 
@@ -389,7 +329,7 @@ $$
 
 即：如果 `provideDelegate` 存在，则在初始化时调用；否则直接使用 `p` 作为委托。
 
-### 3.9 JVM 字节码层面的委托属性
+### 2.9 JVM 字节码层面的委托属性
 
 在 JVM 字节码层面，委托属性编译为：
 
@@ -413,9 +353,9 @@ class Example {
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 委托属性的代数模型
+### 3.1 委托属性的代数模型
 
 考虑：
 
@@ -447,7 +387,7 @@ $$
 \text{var } x : V \text{ by } d \equiv \text{private val } d, \text{ var } x : \text{get} = d.\text{getValue}, \text{set} = d.\text{setValue}
 $$
 
-### 4.2 lazy 的双重检查锁实现
+### 3.2 lazy 的双重检查锁实现
 
 `lazy` 的 `SYNCHRONIZED` 模式使用双重检查锁（Double-Check Locking）：
 
@@ -494,7 +434,7 @@ $$
 
 `@Volatile` 确保多线程可见性，双重检查避免每次访问都加锁。
 
-### 4.3 lazy 的 PUBLICATION 模式
+### 3.3 lazy 的 PUBLICATION 模式
 
 `PUBLICATION` 模式使用 `AtomicReference` 的 CAS：
 
@@ -536,7 +476,7 @@ $$
 
 `PUBLICATION` 允许多个线程同时计算，但只有一个结果会被存储。
 
-### 4.4 observable 的实现
+### 3.4 observable 的实现
 
 ```kotlin
 public inline fun <T> observable(
@@ -577,7 +517,7 @@ $$
 \end{cases}
 $$
 
-### 4.5 Map 委托的实现
+### 3.5 Map 委托的实现
 
 `Map` 委托通过扩展函数实现：
 
@@ -603,7 +543,7 @@ $$
 \text{getValue}(\text{map}, \text{property}) = \text{map}[\text{property.name}]
 $$
 
-### 4.6 provideDelegate 的执行时机
+### 3.6 provideDelegate 的执行时机
 
 考虑：
 
@@ -641,7 +581,7 @@ $$
 \end{cases}
 $$
 
-### 4.7 委托对象的存储
+### 3.7 委托对象的存储
 
 委托对象作为字段存储在类中：
 
@@ -668,7 +608,7 @@ class Example {
 
 每个委托属性对应一个 `$delegate` 字段，在构造函数中初始化。
 
-### 4.8 KProperty 引用的生成
+### 3.8 KProperty 引用的生成
 
 `::name` 语法生成 `KProperty` 引用对象：
 
@@ -682,9 +622,9 @@ Kotlin 编译器生成一个静态数组，存储所有 `KProperty` 引用，避
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：lazy 委托
+### 4.1 基础：lazy 委托
 
 ```bash
 # 编译运行
@@ -724,7 +664,7 @@ fun main() {
 }
 ```
 
-### 5.2 observable：属性监听
+### 4.2 observable：属性监听
 
 ```kotlin
 import kotlin.properties.Delegates
@@ -747,7 +687,7 @@ fun main() {
 }
 ```
 
-### 5.3 vetoable：值校验
+### 4.3 vetoable：值校验
 
 ```kotlin
 import kotlin.properties.Delegates
@@ -782,7 +722,7 @@ fun main() {
 }
 ```
 
-### 5.4 Map 委托：JSON 解析
+### 4.4 Map 委托：JSON 解析
 
 ```kotlin
 class UserResponse(map: Map<String, Any?>) {
@@ -805,7 +745,7 @@ fun main() {
 }
 ```
 
-### 5.5 MutableMap 委托：双向绑定
+### 4.5 MutableMap 委托：双向绑定
 
 ```kotlin
 class MutableUser(map: MutableMap<String, Any?>) {
@@ -830,7 +770,7 @@ fun main() {
 }
 ```
 
-### 5.6 自定义委托：SharedPreferences
+### 4.6 自定义委托：SharedPreferences
 
 ```kotlin
 import android.content.SharedPreferences
@@ -880,7 +820,7 @@ class AppSettings(prefs: SharedPreferences) {
 }
 ```
 
-### 5.7 自定义委托：可观察属性
+### 4.7 自定义委托：可观察属性
 
 ```kotlin
 class ObservableProperty<T>(
@@ -918,7 +858,7 @@ class FormViewModel {
 }
 ```
 
-### 5.8 provideDelegate：属性验证
+### 4.8 provideDelegate：属性验证
 
 ```kotlin
 import kotlin.properties.ReadOnlyProperty
@@ -954,7 +894,7 @@ class Config {
 }
 ```
 
-### 5.9 Android ViewBinding 委托
+### 4.9 Android ViewBinding 委托
 
 ```kotlin
 import android.app.Activity
@@ -987,7 +927,7 @@ class MainActivity : AppCompatActivity() {
 }
 ```
 
-### 5.10 依赖注入委托
+### 4.10 依赖注入委托
 
 ```kotlin
 class DependencyContainer {
@@ -1017,7 +957,7 @@ class MyViewModel(container: DependencyContainer) {
 }
 ```
 
-### 5.11 属性绑定框架
+### 4.11 属性绑定框架
 
 ```kotlin
 class PropertyBinder<T>(initialValue: T) {
@@ -1065,7 +1005,7 @@ fun main() {
 }
 ```
 
-### 5.12 KMP 跨平台委托
+### 4.12 KMP 跨平台委托
 
 ```kotlin
 // commonMain
@@ -1114,9 +1054,9 @@ actual class PlatformPreferences(private val defaults: NSUserDefaults) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Java 属性的对比
+### 5.1 与 Java 属性的对比
 
 | 维度 | Java | Kotlin 委托属性 |
 |---|---|---|
@@ -1127,7 +1067,7 @@ actual class PlatformPreferences(private val defaults: NSUserDefaults) {
 | Map 解析 | 手写取值 | `by map` |
 | 复用性 | 继承或工具类 | 委托对象 |
 
-### 6.2 与 C# 属性的对比
+### 5.2 与 C# 属性的对比
 
 | 维度 | C# | Kotlin |
 |---|---|---|
@@ -1137,7 +1077,7 @@ actual class PlatformPreferences(private val defaults: NSUserDefaults) {
 | 属性变更通知 | `INotifyPropertyChanged` | `observable` |
 | 自定义委托 | 无原生支持 | `by` 关键字 |
 
-### 6.3 与 Swift 属性的对比
+### 5.3 与 Swift 属性的对比
 
 | 维度 | Swift | Kotlin |
 |---|---|---|
@@ -1147,7 +1087,7 @@ actual class PlatformPreferences(private val defaults: NSUserDefaults) {
 | 自定义委托 | 无 | `by` 关键字 |
 | 属性包装器 | `@propertyWrapper` | `by` 委托 |
 
-### 6.4 与 Python 描述符的对比
+### 5.4 与 Python 描述符的对比
 
 | 维度 | Python Descriptor | Kotlin 委托属性 |
 |---|---|---|
@@ -1156,7 +1096,7 @@ actual class PlatformPreferences(private val defaults: NSUserDefaults) {
 | 类型安全 | 运行时 | 编译时 |
 | 性能 | 解释执行 | 编译内联 |
 
-### 6.5 与 JavaScript Proxy 的对比
+### 5.5 与 JavaScript Proxy 的对比
 
 | 维度 | JavaScript Proxy | Kotlin 委托属性 |
 |---|---|---|
@@ -1165,7 +1105,7 @@ actual class PlatformPreferences(private val defaults: NSUserDefaults) {
 | 类型 | 动态 | 静态 |
 | 性能 | 拦截开销 | 编译期优化 |
 
-### 6.6 与 Swift @propertyWrapper 的对比
+### 5.6 与 Swift @propertyWrapper 的对比
 
 | 维度 | Swift @propertyWrapper | Kotlin 委托属性 |
 |---|---|---|
@@ -1174,7 +1114,7 @@ actual class PlatformPreferences(private val defaults: NSUserDefaults) {
 | 元信息 | `wrappedValue` | `KProperty` 参数 |
 | 组合性 | 单层包装 | 可组合 |
 
-### 6.7 跨语言对比总结
+### 5.7 跨语言对比总结
 
 ```
                   延迟初始化    属性监听    值校验    自定义委托
@@ -1188,9 +1128,9 @@ JavaScript Proxy     √           √          √           △
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：lazy 默认 SYNCHRONIZED 在单线程场景过度
+### 6.1 陷阱：lazy 默认 SYNCHRONIZED 在单线程场景过度
 
 **反模式**：
 
@@ -1216,7 +1156,7 @@ class Config {
 }
 ```
 
-### 7.2 陷阱：lazy 的初始化抛异常会重试
+### 6.2 陷阱：lazy 的初始化抛异常会重试
 
 **反模式**：
 
@@ -1245,7 +1185,7 @@ val config: Config
     get() = _config ?: loadConfig().also { _config = it }
 ```
 
-### 7.3 陷阱：observable 在多线程下不安全
+### 6.3 陷阱：observable 在多线程下不安全
 
 **反模式**：
 
@@ -1283,7 +1223,7 @@ class AtomicCounter {
 }
 ```
 
-### 7.4 陷阱：Map 委托的类型不匹配
+### 6.4 陷阱：Map 委托的类型不匹配
 
 **反模式**：
 
@@ -1315,7 +1255,7 @@ class User(private val map: Map<String, Any?>) {
 }
 ```
 
-### 7.5 陷阱：vetoable 的决策函数有副作用
+### 6.5 陷阱：vetoable 的决策函数有副作用
 
 **反模式**：
 
@@ -1351,7 +1291,7 @@ class User {
 }
 ```
 
-### 7.6 陷阱：委托对象在循环中被创建
+### 6.6 陷阱：委托对象在循环中被创建
 
 **反模式**：
 
@@ -1378,7 +1318,7 @@ class Item {
 }
 ```
 
-### 7.7 陷阱：provideDelegate 误用
+### 6.7 陷阱：provideDelegate 误用
 
 **反模式**：
 
@@ -1416,7 +1356,7 @@ class ValidatedDelegate {
 }
 ```
 
-### 7.8 陷阱：委托属性的可见性
+### 6.8 陷阱：委托属性的可见性
 
 **反模式**：
 
@@ -1439,7 +1379,7 @@ class User {
 }
 ```
 
-### 7.9 陷阱：委托属性与序列化
+### 6.9 陷阱：委托属性与序列化
 
 **反模式**：
 
@@ -1484,7 +1424,7 @@ class SerializableLazy<T>(initializer: () -> T) : Lazy<T>, Serializable {
 }
 ```
 
-### 7.10 陷阱：委托属性的反射
+### 6.10 陷阱：委托属性的反射
 
 **反模式**：
 
@@ -1512,7 +1452,7 @@ class User {
 }
 ```
 
-### 7.11 陷阱：委托属性的初始化顺序
+### 6.11 陷阱：委托属性的初始化顺序
 
 **反模式**：
 
@@ -1545,7 +1485,7 @@ class User(name: String) {
 }
 ```
 
-### 7.12 陷阱：Map 委托的键名拼写错误
+### 6.12 陷阱：Map 委托的键名拼写错误
 
 **反模式**：
 
@@ -1586,9 +1526,9 @@ class SafeMapDelegate<T>(
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 团队规范
+### 7.1 团队规范
 
 建议在团队中制定以下规范：
 
@@ -1609,7 +1549,7 @@ class SafeMapDelegate<T>(
    - 优先使用 `ReadOnlyProperty` / `ReadWriteProperty` 接口。
    - 复杂委托使用 `provideDelegate` 进行初始化验证。
 
-### 8.2 性能基准
+### 7.2 性能基准
 
 ```kotlin
 // 性能测试：lazy 的三种模式
@@ -1644,7 +1584,7 @@ publicationLazy     3.8 ns
 noneLazy            1.1 ns
 ```
 
-### 8.3 调试委托属性
+### 7.3 调试委托属性
 
 ```kotlin
 // 启用调试日志
@@ -1669,7 +1609,7 @@ fun main() {
 }
 ```
 
-### 8.4 单元测试
+### 7.4 单元测试
 
 ```kotlin
 import org.junit.Test
@@ -1740,7 +1680,7 @@ class DelegateTest {
 }
 ```
 
-### 8.5 Detekt 规则
+### 7.5 Detekt 规则
 
 ```yaml
 # detekt.yml
@@ -1759,9 +1699,9 @@ complexity:
         threshold: 5  # 单个委托方法超过 5 行需重构
 ```
 
-### 8.6 与其他库集成
+### 7.6 与其他库集成
 
-#### 8.6.1 与 RxJava 集成
+#### 7.6.1 与 RxJava 集成
 
 ```kotlin
 import io.reactivex.rxjava3.subjects.BehaviorSubject
@@ -1796,7 +1736,7 @@ fun main() {
 }
 ```
 
-#### 8.6.2 与 LiveData 集成
+#### 7.6.2 与 LiveData 集成
 
 ```kotlin
 import androidx.lifecycle.LiveData
@@ -1824,7 +1764,7 @@ class MyViewModel : ViewModel() {
 }
 ```
 
-### 8.7 与协程集成
+### 7.7 与协程集成
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1861,9 +1801,9 @@ data class MyState(val name: String, val age: Int)
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：Android SharedPreferences 封装
+### 8.1 案例：Android SharedPreferences 封装
 
 **场景**：封装 SharedPreferences，提供类型安全的属性访问。
 
@@ -1934,7 +1874,7 @@ class AppSettings(context: Context) {
 - 自动持久化：赋值即写入 SharedPreferences。
 - 属性名作为键：使用 `property.name` 自动生成键。
 
-### 9.2 案例：MVVM 数据绑定
+### 8.2 案例：MVVM 数据绑定
 
 **场景**：在 MVVM 架构中实现 ViewModel 的可观察属性。
 
@@ -1994,7 +1934,7 @@ class LoginViewModel : ViewModel() {
 }
 ```
 
-### 9.3 案例：JSON 配置解析
+### 8.3 案例：JSON 配置解析
 
 **场景**：解析 JSON 配置文件，提供类型安全的访问。
 
@@ -2048,7 +1988,7 @@ fun main() {
 }
 ```
 
-### 9.4 案例：响应式表单验证
+### 8.4 案例：响应式表单验证
 
 **场景**：实现一个响应式表单，字段变化时自动触发验证。
 
@@ -2101,7 +2041,7 @@ class RegistrationForm {
 }
 ```
 
-### 9.5 案例：KMP 跨平台配置管理
+### 8.5 案例：KMP 跨平台配置管理
 
 **场景**：在 KMP 项目中实现跨平台的配置管理。
 
@@ -2169,7 +2109,7 @@ class UserDefaultsStorage(private val defaults: NSUserDefaults) : KeyValueStorag
 }
 ```
 
-### 9.6 案例：DSL 属性验证
+### 8.6 案例：DSL 属性验证
 
 **场景**：在 HTML DSL 中验证标签名。
 
@@ -2223,7 +2163,7 @@ class HTMLBuilder {
 }
 ```
 
-### 9.7 案例：缓存委托
+### 8.7 案例：缓存委托
 
 **场景**：实现一个带 TTL 的缓存委托。
 
@@ -2281,7 +2221,7 @@ class UserService {
 }
 ```
 
-### 9.8 案例：双重委托组合
+### 8.8 案例：双重委托组合
 
 **场景**：组合 `lazy` 与 `observable`，实现延迟初始化 + 变更监听。
 
@@ -2337,7 +2277,7 @@ class CachedConfig {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：以下代码的输出是什么？
 
@@ -2381,7 +2321,7 @@ println(x)  // hello
 println(x)  // IllegalStateException
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 3**：实现一个带 TTL 的缓存委托。
 
@@ -2457,7 +2397,7 @@ class Form {
 }
 ```
 
-### 10.4 分析题
+### 9.4 分析题
 
 **题目 6**：分析以下代码的性能问题。
 
@@ -2499,7 +2439,7 @@ class User {
 
 只有在初始化开销大的场景才使用 `lazy`。
 
-### 10.5 设计题
+### 9.5 设计题
 
 **题目 7**：设计一个支持"事务"的属性委托，多个属性可以一起提交。
 
@@ -2576,9 +2516,9 @@ fun main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 1. JetBrains. "Delegated Properties." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/delegated-properties.html
 
@@ -2586,7 +2526,7 @@ fun main() {
 
 3. JetBrains. "Lazy." *Kotlin API Reference*, 2024. https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/lazy.html
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 4. Gamma, Erich, et al. "Design Patterns: Elements of Reusable Object-Oriented Software." *Addison-Wesley Professional*, 1994.
 
@@ -2594,13 +2534,13 @@ fun main() {
 
 6. Meyer, Bertrand. "Object-Oriented Software Construction." *Prentice Hall*, 1997.
 
-### 11.3 Kotlin 提案与演进
+### 10.3 Kotlin 提案与演进
 
 7. JetBrains. "KEEP-7: Property delegation." *Kotlin Evolution and Enhancement Process*, 2015. https://github.com/Kotlin/KEEP/blob/master/proposals/signature-polymorphic-callables.md
 
 8. Belyaev, Andrey. "KEEP-17: provideDelegate operator." *Kotlin Evolution and Enhancement Process*, 2016. https://github.com/Kotlin/KEEP/blob/master/proposals/provide-delegate.md
 
-### 11.4 跨语言参考
+### 10.4 跨语言参考
 
 9. Apple. "Property Wrappers." *Swift Language Guide*, 2024. https://docs.swift.org/swift-book/LanguageGuide/Properties.html
 
@@ -2610,37 +2550,37 @@ fun main() {
 
 12. ECMA International. "ECMAScript 2024: Proxy." *ECMA-262 Specification*, 2024.
 
-### 11.5 工程实践
+### 10.5 工程实践
 
 13. Google. "Android Kotlin Guides: Delegates." *Android Developers Documentation*, 2024. https://developer.android.com/kotlin/ delegates
 
 14. Jetbrains. "Kotlin stdlib: Delegates object." *Kotlin Source Code*, 2024. https://github.com/JetBrains/kotlin/blob/master/libraries/stdlib/src/kotlin/properties/Delegates.kt
 
-### 11.6 KMP 与跨平台
+### 10.6 KMP 与跨平台
 
 15. JetBrains. "Kotlin Multiplatform: Platform-specific declarations." *KMP Documentation*, 2024. https://kotlinlang.org/docs/multiplatform.html
 
 16. Touchlab. "KMP state management best practices." *Touchlab Blog*, 2024. https://touchlab.co/kmp-state
 
-### 11.7 性能与基准
+### 10.7 性能与基准
 
 17. Elizarov, Roman. "Kotlin coroutines and lazy performance." *Roman Elizarov Blog*, 2020.
 
 18. Panteleyev, Andrey. "Kotlin property delegation performance analysis." *Medium*, 2023.
 
-### 11.8 测试与调试
+### 10.8 测试与调试
 
 19. JetBrains. "Kotlin property delegation testing." *Kotlin Testing Documentation*, 2024.
 
 20. Kotest Team. "Kotest property delegates for testing." *Kotest Documentation*, 2024. https://kotest.io/docs/propertytesting.html
 
-### 11.9 DSL 与高级用法
+### 10.9 DSL 与高级用法
 
 21. JetBrains. "Type-safe builders." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/type-safe-builders.html
 
 22. Hracek, Jakub. "DSL design with delegated properties." *KotlinConf 2023*, 2023.
 
-### 11.10 Spring 与框架集成
+### 10.10 Spring 与框架集成
 
 23. Pivotal Software. "Spring Framework: Kotlin support." *Spring Documentation*, 2024. https://docs.spring.io/spring-framework/reference/languages/kotlin.html
 
@@ -2648,9 +2588,9 @@ fun main() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 - **Kotlin 2.0 K2 编译器对委托属性的内联优化**：理解 K2 如何减少委托方法调用开销。
 - **委托属性与 `inline` 函数的交互**：`inline` 委托是否能零开销？
@@ -2658,28 +2598,28 @@ fun main() {
 - **`StateFlow` 与 `mutableStateOf` 的关系**：现代 Kotlin 中"可观察属性"的演进。
 - **Swift `@propertyWrapper` 与 Kotlin 委托属性的对比**：两种语言对"属性级代理"的不同实现。
 
-### 12.2 相关项目
+### 11.2 相关项目
 
 - **kotlinx.coroutines**：`StateFlow` 与 `MutableStateFlow` 的实现，与委托属性的集成。
 - **Jetpack Compose**：`mutableStateOf` 与委托属性的关系。
 - **Arrow-kt**：函数式委托，如 `Either`、`Validated` 作为委托。
 - **Kotest**：测试专用委托，如 `forAll` 属性测试。
 
-### 12.3 相关书籍
+### 11.3 相关书籍
 
 - **《Kotlin in Action》**（Dmitry Jemerov, Svetlana Isakova）：第 7 章 委托属性。
 - **《Effective Kotlin》**（Marcin Moskala）：第 3 章 委托属性最佳实践。
 - **《Functional Programming in Kotlin》**（Marco Vermeulen）：函数式委托。
 - **《Kotlin Cookbook》**（Ken Kousen）：委托属性实战技巧。
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **Kotlin Slack**：`#delegates` 频道。
 - **Kotlin Discussions**：https://discuss.kotlinlang.org/，委托属性讨论。
 - **Stack Overflow**：`kotlin-delegated-properties` 标签。
 - **GitHub Issues**：https://github.com/JetBrains/kotlin/issues，官方追踪。
 
-### 12.5 实践项目
+### 11.5 实践项目
 
 建议实践以下项目以巩固委托属性：
 

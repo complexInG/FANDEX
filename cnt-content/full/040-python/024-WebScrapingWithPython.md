@@ -28,72 +28,6 @@ tags:
 - httpx
 - async
 - data-engineering
-learningObjectives:
-- '{''remember'': ''复述 Python 爬虫六大组件（调度器、下载器、解析器、存储器、中间件、监控）及代表工具链''}'
-- '{''understand'': ''解释 Scrapy 引擎的异步数据流与 Twisted 事件循环工作原理''}'
-- '{''apply'': ''使用 requests、httpx、aiohttp 编写生产级 HTTP 客户端，处理重试、超时、会话、代理''}'
-- '{''apply'': ''使用 BeautifulSoup、lxml、parsel、selectolax 进行高性能 HTML 解析与数据抽取''}'
-- '{''analyze'': ''对比静态爬取与动态渲染爬取的工程权衡，识别何时使用 Playwright/Selenium''}'
-- '{''evaluate'': ''评估反爬策略（UA 轮换、代理池、验证码识别、指纹伪装）的法律合规与道德边界''}'
-- '{''create'': ''设计一个分布式爬虫系统，覆盖调度、下载、解析、去重、存储、监控与告警''}'
-exercises:
-- id: ex-scraper-01
-  type: fill-blank
-  cognitiveLevel: remember
-  question: Scrapy 框架的核心数据流由 ______ 驱动，它负责协调调度器、下载器、爬虫与管道之间的异步事件传递；默认基于 ______ 异步网络框架实现。
-  hint: 参考 Scrapy 架构文档与 Twisted 事件循环。
-  answer: '["Engine", "Twisted"]'
-  blankCount: 2
-  caseSensitive: false
-  explanation: Scrapy Engine 是中枢神经，负责事件分发；底层网络层基于 Twisted 的 Deferred 与 @inlineCallbacks 实现，3.x 之后已开始逐步向 asyncio 过渡。
-  difficulty: 2
-  estimatedTime: 3
-- id: ex-scraper-02
-  type: choice
-  cognitiveLevel: understand
-  question: 关于 HTTP 客户端库的并发性能，以下描述哪个最准确？
-  options:
-  - requests 在并发场景下比 httpx 快 2-4 倍，因其在底层使用了 urllib3 连接池
-  - httpx 在并发场景下通常比 requests 快 2-4 倍，因原生支持异步与 HTTP/2
-  - aiohttp 仅在 Python 2.7 环境下可用，Python 3 中已被 httpx 取代
-  - Scrapy 内置使用 requests 作为默认下载器，因此性能受 GIL 限制
-  correctIndex: 1
-  multiple: false
-  explanation: requests 是同步库且不支持 HTTP/2，在并发 IO 场景受 GIL 限制明显；httpx 同时提供同步与异步 API，原生支持 HTTP/2，在并发场景下性能显著优于 requests。aiohttp 仅支持 Python 3.5+ 且需异步上下文。Scrapy 使用 Twisted 而非 requests。
-  difficulty: 3
-  estimatedTime: 4
-  answer: B. requests 是同步库且不支持 HTTP/2，在并发 IO 场景受 GIL 限制明显；httpx 同时提供同步与异步 API，原生支持 HTTP/2，在并发场景下性能显著优于 requests。aiohttp 仅支持 Python 3.5+ 且需异步上下文。Scrapy 使用 Twisted 而...
-- id: ex-scraper-03
-  type: code-fix
-  cognitiveLevel: apply
-  question: 以下爬虫代码意图抓取 quotes.toscrape.com 的所有名言并翻页，但存在多处缺陷。请修正。
-  buggyCode: "import requests\nfrom bs4 import BeautifulSoup\n\nurl = 'https://quotes.toscrape.com/page/1/'\nwhile url:\n    resp = requests.get(url)\n    soup = BeautifulSoup(resp.text)\n    for q in soup.find_all('div', class_='quote'):\n        print(q.find('span', class_='text').text)\n    next_btn = soup.find('li', class_='next')\n    url = next_btn.a['href']\n"
-  fixedCode: "import requests\nfrom bs4 import BeautifulSoup\nfrom urllib.parse import urljoin\n\n# 缺陷 1: 未设置 User-Agent，易被 403 拒绝\n# 缺陷 2: 未处理请求异常与重试\n# 缺陷 3: 未使用 Session 复用连接，性能差\n# 缺陷 4: next_btn 为 None 时仍访问 .a['href'] 触发 AttributeError\n# 缺陷 5: 相对路径未转换为绝对 URL\n# 缺陷 6: 缺少延迟，可能触发反爬封禁\nimport time\n\nHEADERS = {\n    'User-Agent': 'Mozilla/5.0 (compatible; FANDEXBot/1.0; +https://fandex.example/bot)'\n}\n\ndef scrape_quotes(start_url: str) -> list[dict]:\n    \"\"\"抓取所有名言并返回结构化数据。\"\"\"\n    results: list[dict] = []\n    url = start_url\n    with requests.Session() as session:\n        session.headers.update(HEADERS)\n        while url:\n            try:\n                resp = session.get(url, timeout=10)\n                resp.raise_for_status()\n            except requests.RequestException as exc:\n                print(f'请求失败 {url}: {exc}')\n                break\n            soup = BeautifulSoup(resp.text, 'html.parser')\n            for q in soup.find_all('div', class_='quote'):\n                text_tag = q.find('span', class_='text')\n                author_tag = q.find('small', class_='author')\n                if text_tag and author_tag:\n                    results.append({\n                        'text': text_tag.text,\n                        'author': author_tag.text,\n                    })\n            next_btn = soup.find('li', class_='next')\n            if next_btn and next_btn.a:\n                url = urljoin(url, next_btn.a['href'])\n                time.sleep(1)  # 礼貌爬取，每页间隔 1 秒\n            else:\n                url = None\n    return results\n\nif __name__ == '__main__':\n    quotes = scrape_quotes('https://quotes.toscrape.com/page/1/')\n    print(f'共抓取 {len(quotes)} 条名言')\n"
-  errorDescription: 未设置 User-Agent、未处理异常、未使用 Session、None 引用错误、相对路径未转换、缺少延迟。
-  language: python
-  explanation: 生产级爬虫必须包含请求头、异常处理、连接复用、空值检查、URL 拼接与速率限制，否则容易被反爬或运行时崩溃。
-  difficulty: 3
-  estimatedTime: 15
-  answer: '未设置 User-Agent、未处理异常、未使用 Session、None 引用错误、相对路径未转换、缺少延迟。 关键修复：# 缺陷 1: 未设置 User-Agent，易被 403 拒绝 | # 缺陷 2: 未处理请求异常与重试 | # 缺陷 3: 未使用 Session 复用连接，性能差'
-- id: ex-scraper-04
-  type: open-ended
-  cognitiveLevel: create
-  question: 你需要为一个新闻聚合平台设计分布式爬虫系统，每日抓取 50+ 新闻站点共约 100 万篇文章，要求支持增量更新、失败重试、断点续爬、IP 轮换、去重存储、监控告警。请详细描述架构设计、技术选型、数据流、合规策略与容灾方案。
-  keyPoints:
-  - 架构分层：调度层（Scrapy Cloud / Airflow）+ 下载层（Scrapy + httpx）+ 解析层（parsel + pydantic）+ 存储层（PostgreSQL + ClickHouse）
-  - 去重策略：URL 指纹（MD5/xxHash）+ Bloom Filter + 文章内容 simhash 近似去重
-  - IP 轮换：代理池服务（Bright Data / 自建 squid + Luminati）+ 故障切换
-  - 增量爬取：记录每站点 last_crawled_at + ETag/Last-Modified 协商缓存
-  - 分布式调度：Scrapy + Redis 队列 + Scrapy-Redis 组件
-  - 合规：遵守 robots.txt、限定 QPS（≤1 req/s）、识别 CC-BY 版权
-  - 监控：Prometheus + Grafana + Sentry，告警规则（失败率 > 5%）
-  - 容灾：幂等性设计、断点续爬、双机房热备
-  - 数据治理：GDPR 合规、用户数据脱敏、审计日志
-  - 性能指标：日抓取量、去重率、平均延迟、成功率
-  minWords: 400
-  difficulty: 5
-  estimatedTime: 40
-  answer: 架构分层：调度层（Scrapy Cloud / Airflow）+ 下载层（Scrapy + httpx）+ 解析层（parsel + pydantic）+ 存储层（PostgreSQL + ClickHouse）；去重策略：URL 指纹（MD5/xxHash）+ Bloom Filter + 文章内容 simhash 近似去重；IP 轮换：代理池服务（Bright Data / 自建 squid + Luminati）+ 故障切换；增量爬取：记录每站点 last_crawled_at + ETag/Last-Modified 协商缓存；分布式调度：Scrapy + Redis 队列 + Scrapy-Redis 组件；合规：遵守 robots.txt、限定 QPS（≤1 req/s）、识别 CC-BY 版权；监控：Prometheus + Grafana + Sentry，告警规则（失败率 > 5%）；容灾：幂等性设计、断点续爬、双机房热备；数据治理：GDPR 合规、用户数据脱敏、审计日志；性能指标：日抓取量、去重率、平均延迟、成功率
 references:
 - type: standard
   authors:
@@ -209,36 +143,14 @@ reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 95
 ---
 
+
 # Python 与 Web 爬虫
 
 > 爬虫的本质是互联网的"自动化浏览器"，它以代码代替人眼读取网页，以结构化数据代替非结构化 HTML。Python 凭借 requests、BeautifulSoup、Scrapy、Playwright 等生态成为爬虫工程的事实标准语言。但爬虫也是法律与道德的灰色地带：抓什么、怎么抓、抓多快，都需要工程师作出审慎判断。
 
-## 1. 学习目标与全景图
+## 1. 历史动机：从 W3-mirror 到 LLM 数据管道
 
-学习本章后，你应当能够：
-
-1. **记住（Remember）** Python 爬虫的六大组件与代表工具链；
-2. **理解（Understand）** Scrapy 引擎的异步数据流与 Twisted 事件循环；
-3. **应用（Apply）** requests、httpx、aiohttp、BeautifulSoup、lxml、parsel 编写生产级爬虫；
-4. **分析（Analyze）** 静态爬取与动态渲染爬取的工程权衡；
-5. **评估（Evaluate）** 反爬策略的法律合规与道德边界；
-6. **创造（Create）** 设计一个分布式爬虫系统，覆盖调度、下载、解析、去重、存储、监控。
-
-```
-                Python 爬虫生态
-                      |
-   +-----+-----+-----+-----+-----+-----+
-   |     |     |     |     |     |     |
-  HTTP   解析  框架  动态  反爬  分布式  存储
- requests BS4   Scrapy  Selenium UA池   Scrapy-Redis
- httpx   lxml   PySpider Playwright 代理池  PostgreSQL
- aiohttp  parsel Crawlee  Puppeteer  验证码  ClickHouse
- selectolax requests-html Splash  打码平台 Elasticsearch
-```
-
-## 2. 历史动机：从 W3-mirror 到 LLM 数据管道
-
-### 2.1 早期互联网时代（1993 — 2000）
+### 1.1 早期互联网时代（1993 — 2000）
 
 - **1993 年**：Matthew Gray 开发 *World Wide Web Wanderer*，首个万维网爬虫，用于统计网站数量；
 - **1994 年**：Brian Pinkerton 发布 *WebCrawler*，首个全文搜索引擎；
@@ -246,7 +158,7 @@ estimatedReadingTime: 95
 - **1996 年**：Googlebot 雏形 BackRub 上线；
 - **1998 年**：Google 发布 PageRank 算法，爬虫与索引分离。
 
-### 2.2 Python 爬虫萌芽时代（2000 — 2010）
+### 1.2 Python 爬虫萌芽时代（2000 — 2010）
 
 | 年份 | 事件 | 意义 |
 | ---- | ---- | ---- |
@@ -256,7 +168,7 @@ estimatedReadingTime: 95
 | 2011 | Kenneth Reitz 发布 requests | "HTTP for Humans" |
 | 2013 | lxml.html 成熟 | 高性能 XML/HTML 解析 |
 
-### 2.3 现代爬虫时代（2010 — 2020）
+### 1.3 现代爬虫时代（2010 — 2020）
 
 - **2010 年**：Selenium 2.0 集成 WebDriver，动态渲染爬取成为主流；
 - **2013 年**：Python 3.3 引入 `yield from`，简化协程；
@@ -265,7 +177,7 @@ estimatedReadingTime: 95
 - **2018 年**：RFC 7231 标准化 HTTP/1.1 语义；
 - **2020 年**：Playwright 1.0 发布，跨浏览器自动化新范式。
 
-### 2.4 大模型时代（2020 — 至今）
+### 1.4 大模型时代（2020 — 至今）
 
 | 年份 | 事件 | 意义 |
 | ---- | ---- | ---- |
@@ -276,7 +188,7 @@ estimatedReadingTime: 95
 | 2025 | Scrapy 3.0 完全迁移到 asyncio | 摆脱 Twisted 历史包袱 |
 | 2026 | Playwright 2.x 引入 AI 驱动的元素定位 | 爬虫自动化进入 LLM 时代 |
 
-### 2.5 Python 爬虫生态演进
+### 1.5 Python 爬虫生态演进
 
 - **Python 2.x**：urllib2、httplib、BeautifulSoup 3；
 - **Python 3.0 — 3.3**：urllib 合并、`io.StringIO` 统一；
@@ -288,9 +200,9 @@ estimatedReadingTime: 95
 - **Python 3.13**：自由线程（PEP 703）解锁 GIL；
 - **Python 3.14**：`asyncio` 进一步优化、JIT 实验性稳定。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 爬虫系统模型
+### 2.1 爬虫系统模型
 
 定义爬虫系统为 $\mathcal{C} = \langle Q, D, P, S, M, \Sigma \rangle$，其中：
 
@@ -308,7 +220,7 @@ estimatedReadingTime: 95
 3. **去重约束**：$|Q| \leq |Q_{\text{unique}}|$，URL 指纹唯一；
 4. **资源约束**：$\sum_{i} \text{mem}(d_i) \leq M_{\max}$。
 
-### 3.2 Frontier 调度策略
+### 2.2 Frontier 调度策略
 
 URL Frontier 的目标是在有限内存与带宽下，选择"最有价值"的 URL 优先抓取。常见策略：
 
@@ -319,7 +231,7 @@ URL Frontier 的目标是在有限内存与带宽下，选择"最有价值"的 U
 | 优先级 | $F(u) = \text{PageRank}(u) + \alpha \cdot \text{freshness}(u)$ | 搜索引擎 |
 | 礼貌策略 | $\Delta t(u, t) = \max(\Delta t_{\min}, \frac{1}{\text{QPS}_{\max}(u)})$ | 通用爬虫 |
 
-### 3.3 URL 指纹与去重
+### 2.3 URL 指纹与去重
 
 URL 标准化为 $\text{canonical}(u) = \text{scheme} + \text{netloc} + \text{path} + \text{sorted(query)}$。
 
@@ -331,13 +243,13 @@ $$P_{\text{false}} = \left(1 - e^{-kn/m}\right)^k$$
 
 其中 $k$ 为哈希函数数，$n$ 为元素数，$m$ 为位数组大小。当 $k = (m/n) \ln 2$ 时误判率最低。
 
-### 3.4 礼貌爬取数学模型
+### 2.4 礼貌爬取数学模型
 
 爬虫的礼貌度量化为：$\text{politeness}(\text{site}) = \frac{1}{\text{QPS}(\text{site})} + \beta \cdot \text{backoff}(\text{error})$。
 
 指数退避：$t_{\text{wait}} = t_0 \cdot 2^{\min(n, n_{\max})}$，其中 $n$ 为连续失败次数。
 
-### 3.5 内容相似度去重
+### 2.5 内容相似度去重
 
 文章级去重使用 SimHash：
 
@@ -345,9 +257,9 @@ $$\text{SimHash}(s) = \bigoplus_{i=1}^{L} \left( \text{hash}(w_i) \cdot \text{si
 
 其中 $w_i$ 为分词后的词，海明距离 $\leq 3$ 视为近似重复。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 I/O 密集型任务的异步模型
+### 3.1 I/O 密集型任务的异步模型
 
 爬虫典型场景：网络 IO 占 90%+，CPU 解析占 10%。在 CPython GIL 限制下：
 
@@ -356,7 +268,7 @@ $$\text{SimHash}(s) = \bigoplus_{i=1}^{L} \left( \text{hash}(w_i) \cdot \text{si
 - **协程**：$T \approx \max_i t_{\text{io}, i} + \sum_i t_{\text{parse}, i}$，但无线程切换开销；
 - **多进程**：$T \approx \frac{\max_i t_{\text{io}, i}}{N} + \frac{\sum_i t_{\text{parse}, i}}{N}$，但内存翻倍。
 
-### 4.2 Scrapy 异步引擎
+### 3.2 Scrapy 异步引擎
 
 Scrapy 基于 Twisted 的 `Deferred` 与 `@inlineCallbacks`：
 
@@ -387,13 +299,13 @@ async def scrapy_engine_loop(spider, scheduler, downloader, pipeline):
                 await scheduler.put(item_or_request)
 ```
 
-### 4.3 Amdahl 定律在爬虫中的应用
+### 3.3 Amdahl 定律在爬虫中的应用
 
 加速比 $S(n) = \frac{1}{(1-p) + p/n}$。若 95% 时间在 IO 等待，则单机 $S(\infty) = 20$。
 
 实际分布式爬虫扩展性受限于：调度器瓶颈、网络带宽、目标站点 QPS 限制。
 
-### 4.4 Little 定律在队列中的应用
+### 3.4 Little 定律在队列中的应用
 
 任务在系统中平均停留时间 $W = L / \lambda$，其中 $L$ 为队列长度，$\lambda$ 为吞吐量。
 
@@ -401,7 +313,7 @@ async def scrapy_engine_loop(spider, scheduler, downloader, pipeline):
 
 $$T_{\text{ETA}} = \frac{|Q_{\text{redis}}|}{\text{QPS}_{\text{avg}} \cdot N_{\text{workers}}}$$
 
-### 4.5 网络吞吐量与礼貌约束
+### 3.5 网络吞吐量与礼貌约束
 
 若目标站点 QPS 限制为 $Q_{\max}$，则单机最大并发：
 
@@ -409,9 +321,9 @@ $$N_{\max} = \min\left(\frac{Q_{\max}}{1/T_{\text{io}}}, \frac{M_{\text{budget}}
 
 即受 IO 等待时间与内存预算双重约束。
 
-## 5. Python 爬虫库全景
+## 4. Python 爬虫库全景
 
-### 5.1 HTTP 客户端
+### 4.1 HTTP 客户端
 
 | 库 | 同步/异步 | HTTP/2 | 维护方 | License |
 | --- | --- | --- | --- | --- |
@@ -423,7 +335,7 @@ $$N_{\max} = \min\left(\frac{Q_{\max}}{1/T_{\text{io}}}, \frac{M_{\text{budget}}
 | `niquests` | 同步+异步 | 是 | Ousret | MIT |
 | `httpcore` | 异步 | 是 | Encode | BSD-3-Clause |
 
-### 5.2 HTML/XML 解析器
+### 4.2 HTML/XML 解析器
 
 | 库 | 后端 | 速度（相对） | 维护方 | License |
 | --- | --- | --- | --- | --- |
@@ -435,7 +347,7 @@ $$N_{\max} = \min\left(\frac{Q_{\max}}{1/T_{\text{io}}}, \frac{M_{\text{budget}}
 | `pyquery` | lxml | 10x | Olivier Lauzanne | BSD |
 | `selenium` | 浏览器 | 0.5x | Selenium HQ | Apache-2.0 |
 
-### 5.3 爬虫框架
+### 4.3 爬虫框架
 
 | 框架 | 异步引擎 | 设计哲学 | 维护方 | License |
 | --- | --- | --- | --- | --- |
@@ -445,7 +357,7 @@ $$N_{\max} = \min\left(\frac{Q_{\max}}{1/T_{\text{io}}}, \frac{M_{\text{budget}}
 | `Cola` | 多进程 | 分布式爬虫框架 | lionheart | MIT |
 | `feapder` | 协程 | 中文社区工业级 | Boris Code | Apache-2.0 |
 
-### 5.4 动态渲染工具
+### 4.4 动态渲染工具
 
 | 工具 | 引擎 | 异步 | 维护方 | License |
 | --- | --- | --- | --- | --- |
@@ -455,7 +367,7 @@ $$N_{\max} = \min\left(\frac{Q_{\max}}{1/T_{\text{io}}}, \frac{M_{\text{budget}}
 | `Splash` | WebKit | 是 | Scrapy Project | BSD-3-Clause |
 | `Pyppeteer` | Chrome | 是 | miyakogi | MIT |
 
-### 5.5 反爬对抗
+### 4.5 反爬对抗
 
 | 库 | 用途 | 维护方 | License |
 | --- | --- | --- | --- |
@@ -465,7 +377,7 @@ $$N_{\max} = \min\left(\frac{Q_{\max}}{1/T_{\text{io}}}, \frac{M_{\text{budget}}
 | `captcha-solver` | 验证码识别 | 2captcha | MIT |
 | `tldextract` | 域名解析 | John Kurkowski | BSD-3-Clause |
 
-### 5.6 分布式与存储
+### 4.6 分布式与存储
 
 | 库 | 用途 | 维护方 | License |
 | --- | --- | --- | --- |
@@ -475,9 +387,9 @@ $$N_{\max} = \min\left(\frac{Q_{\max}}{1/T_{\text{io}}}, \frac{M_{\text{budget}}
 | `datasketch` | HyperLogLog + MinHash | Ekki | MIT |
 | `simhash` | SimHash 去重 | Leo | MIT |
 
-## 6. 代码示例
+## 5. 代码示例
 
-### 6.1 requests：基础 HTTP 客户端
+### 5.1 requests：基础 HTTP 客户端
 
 ```python
 """
@@ -549,7 +461,7 @@ if __name__ == '__main__':
     print(f'获取 {len(html)} 字节')
 ```
 
-### 6.2 httpx：现代异步 HTTP 客户端
+### 5.2 httpx：现代异步 HTTP 客户端
 
 ```python
 """
@@ -608,7 +520,7 @@ if __name__ == '__main__':
         print(f'{url}: {len(body)} bytes')
 ```
 
-### 6.3 aiohttp：纯异步 HTTP
+### 5.3 aiohttp：纯异步 HTTP
 
 ```python
 """
@@ -656,7 +568,7 @@ if __name__ == '__main__':
     print(f'抓取 {sum(1 for r in results if r)} 个页面')
 ```
 
-### 6.4 BeautifulSoup：HTML 解析
+### 5.4 BeautifulSoup：HTML 解析
 
 ```python
 """
@@ -706,7 +618,7 @@ def parse_table(html: str) -> list[dict]:
     return rows
 ```
 
-### 6.5 lxml + parsel：高性能解析
+### 5.5 lxml + parsel：高性能解析
 
 ```python
 """
@@ -757,7 +669,7 @@ def parse_with_parsel(html_text: str) -> list[dict]:
     return results
 ```
 
-### 6.6 Scrapy：工业级爬虫框架
+### 5.6 Scrapy：工业级爬虫框架
 
 ```python
 """
@@ -897,7 +809,7 @@ class JsonWriterPipeline:
 from scrapy.exceptions import DropItem  # noqa: E402
 ```
 
-### 6.7 Scrapy 下载中间件：UA 轮换与代理
+### 5.7 Scrapy 下载中间件：UA 轮换与代理
 
 ```python
 """
@@ -1005,7 +917,7 @@ class ProxyMiddleware:
         return request.copy()
 ```
 
-### 6.8 Playwright：动态渲染爬取
+### 5.8 Playwright：动态渲染爬取
 
 ```python
 """
@@ -1116,7 +1028,7 @@ if __name__ == '__main__':
     print(f'获取 {len(html)} 字节')
 ```
 
-### 6.9 Selenium：传统动态渲染
+### 5.9 Selenium：传统动态渲染
 
 ```python
 """
@@ -1169,7 +1081,7 @@ def scrape_with_selenium(url: str) -> list[dict]:
         driver.quit()
 ```
 
-### 6.10 aiohttp 异步爬虫框架
+### 5.10 aiohttp 异步爬虫框架
 
 ```python
 """
@@ -1304,7 +1216,7 @@ if __name__ == '__main__':
     print(json.dumps(results[:3], ensure_ascii=False, indent=2))
 ```
 
-### 6.11 Scrapy-Redis：分布式爬虫
+### 5.11 Scrapy-Redis：分布式爬虫
 
 ```python
 """
@@ -1381,7 +1293,7 @@ class DistributedQuotesSpider(RedisSpider):
 # scrapy crawl distributed_quotes  # 在多台机器上执行
 ```
 
-### 6.12 数据存储：PostgreSQL + ClickHouse
+### 5.12 数据存储：PostgreSQL + ClickHouse
 
 ```python
 """
@@ -1525,7 +1437,7 @@ class ClickHouseStorage:
         return [{'site': r[0], 'count': r[1], 'avg_length': r[2]} for r in result]
 ```
 
-### 6.13 robots.txt 合规检查
+### 5.13 robots.txt 合规检查
 
 ```python
 """
@@ -1598,7 +1510,7 @@ if __name__ == '__main__':
         print(f'robots.txt 禁止抓取 {url}')
 ```
 
-### 6.14 Bloom Filter URL 去重
+### 5.14 Bloom Filter URL 去重
 
 ```python
 """
@@ -1691,7 +1603,7 @@ if __name__ == '__main__':
     assert 'https://example.com/page/99999' not in bf  # 可能误判
 ```
 
-### 6.15 代理池管理
+### 5.15 代理池管理
 
 ```python
 """
@@ -1823,7 +1735,7 @@ if __name__ == '__main__':
     print(f'加载 {len(pool.proxies)} 个代理')
 ```
 
-### 6.16 监控与告警
+### 5.16 监控与告警
 
 ```python
 """
@@ -1953,7 +1865,7 @@ class AlertManager:
 # }
 ```
 
-### 6.17 单元测试与 Mock
+### 5.17 单元测试与 Mock
 
 ```python
 """
@@ -2069,9 +1981,9 @@ if __name__ == '__main__':
     unittest.main()
 ```
 
-## 7. 对比分析：Python vs 其他语言
+## 6. 对比分析：Python vs 其他语言
 
-### 7.1 爬虫生态对比
+### 6.1 爬虫生态对比
 
 | 维度 | Python | JavaScript (Node.js) | Go | Java | Ruby |
 | --- | --- | --- | --- | --- | --- |
@@ -2084,7 +1996,7 @@ if __name__ == '__main__':
 | 学习曲线 | 低 | 中 | 中 | 高 | 低 |
 | 开发效率 | 极高 | 高 | 中 | 中 | 高 |
 
-### 7.2 Python vs JavaScript (Node.js)
+### 6.2 Python vs JavaScript (Node.js)
 
 ```python
 # Python httpx 异步爬虫
@@ -2111,7 +2023,7 @@ async function crawl() {
 - JavaScript 优势：原生异步、与浏览器同语言、前端工程师友好
 - 共同点：都有 Playwright、Puppeteer 等浏览器自动化工具
 
-### 7.3 Python vs Go
+### 6.3 Python vs Go
 
 ```go
 // Go 实现高并发爬虫
@@ -2149,7 +2061,7 @@ func main() {
 - Go 优势：goroutine 极轻量、单机可处理 100K+ 并发、内存占用低
 - Python 在 GIL 限制下，单机 1K 并发已是上限，需要多进程扩展
 
-### 7.4 Python vs Julia
+### 6.4 Python vs Julia
 
 ```julia
 # Julia 实现爬虫（使用 HTTP.jl）
@@ -2168,9 +2080,9 @@ end
 - Python 优势：生态成熟、社区庞大、爬虫框架齐全
 - Julia 劣势：爬虫生态薄弱，缺乏 Scrapy 等成熟框架
 
-## 8. 常见陷阱与修复
+## 7. 常见陷阱与修复
 
-### 8.1 默认 User-Agent 被识别为爬虫
+### 7.1 默认 User-Agent 被识别为爬虫
 
 **问题**：requests 默认 UA 为 `python-requests/2.x.x`，被多数反爬识别。
 
@@ -2187,7 +2099,7 @@ HEADERS = {
 resp = requests.get('https://example.com', headers=HEADERS)
 ```
 
-### 8.2 忘记设置超时导致无限等待
+### 7.2 忘记设置超时导致无限等待
 
 ```python
 # 错误：无限等待
@@ -2197,7 +2109,7 @@ resp = requests.get('https://slow-site.com')
 resp = requests.get('https://slow-site.com', timeout=(5, 30))  # (connect, read)
 ```
 
-### 8.3 未使用 Session 导致性能差
+### 7.3 未使用 Session 导致性能差
 
 ```python
 # 错误：每次请求新建 TCP 连接
@@ -2211,7 +2123,7 @@ with requests.Session() as s:
         s.get(url)  # 复用 keep-alive 连接
 ```
 
-### 8.4 解析器选择错误导致性能差
+### 7.4 解析器选择错误导致性能差
 
 ```python
 # 慢：内置 html.parser
@@ -2225,7 +2137,7 @@ from selectolax.parser import HTMLParser
 tree = HTMLParser(html)  # 30x
 ```
 
-### 8.5 相对路径未转换
+### 7.5 相对路径未转换
 
 ```python
 # 错误：相对路径无法访问
@@ -2237,7 +2149,7 @@ from urllib.parse import urljoin
 next_url = urljoin(base_url, soup.find('a')['href'])
 ```
 
-### 8.6 编码处理错误导致乱码
+### 7.6 编码处理错误导致乱码
 
 ```python
 # 错误：强制 UTF-8
@@ -2253,7 +2165,7 @@ encoding = chardet.detect(resp.content)['encoding']
 content = resp.content.decode(encoding or 'utf-8', errors='replace')
 ```
 
-### 8.7 异步爬虫未限制并发
+### 7.7 异步爬虫未限制并发
 
 ```python
 # 错误：10000 个 URL 同时请求
@@ -2267,7 +2179,7 @@ async def bounded_fetch(url):
         return await fetch(url)
 ```
 
-### 8.8 Playwright headless 被检测
+### 7.8 Playwright headless 被检测
 
 ```python
 # 错误：默认 headless 模式易被检测
@@ -2284,7 +2196,7 @@ page = await context.new_page()
 await stealth_async(page)
 ```
 
-### 8.9 未遵守 robots.txt
+### 7.9 未遵守 robots.txt
 
 ```python
 # 错误：忽略 robots.txt
@@ -2299,7 +2211,7 @@ if rp.can_fetch('*', 'https://example.com/private'):
     resp = requests.get('https://example.com/private')
 ```
 
-### 8.10 内存泄漏：未关闭资源
+### 7.10 内存泄漏：未关闭资源
 
 ```python
 # 错误：未关闭 Session / Browser
@@ -2323,7 +2235,7 @@ async def crawl():
             await browser.close()
 ```
 
-### 8.11 分布式爬虫重复抓取
+### 7.11 分布式爬虫重复抓取
 
 ```python
 # 错误：各 worker 各自去重，导致重复
@@ -2339,7 +2251,7 @@ class DistributedSpider:
         return not r.sadd('crawled:urls', url)  # 原子操作
 ```
 
-### 8.12 SSL 证书验证失败
+### 7.12 SSL 证书验证失败
 
 ```python
 # 错误：禁用证书验证（不安全）
@@ -2353,9 +2265,9 @@ resp = requests.get(url, verify=certifi.where())
 resp = requests.get(url, verify='/path/to/ca.pem')
 ```
 
-## 9. 工程实践
+## 8. 工程实践
 
-### 9.1 项目结构
+### 8.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -2404,7 +2316,7 @@ flowchart TD
     T30 --> T32
 ```
 
-### 9.2 配置管理
+### 8.2 配置管理
 
 ```python
 """
@@ -2457,7 +2369,7 @@ class CrawlerSettings(BaseSettings):
 settings = CrawlerSettings()
 ```
 
-### 9.3 Docker 部署
+### 8.3 Docker 部署
 
 ```dockerfile
 # Dockerfile
@@ -2546,7 +2458,7 @@ volumes:
   pg-data:
 ```
 
-### 9.4 Kubernetes 部署
+### 8.4 Kubernetes 部署
 
 ```yaml
 # k8s/deployment.yaml
@@ -2608,7 +2520,7 @@ spec:
         averageUtilization: 60
 ```
 
-### 9.5 日志与追踪
+### 8.5 日志与追踪
 
 ```python
 """
@@ -2661,7 +2573,7 @@ def crawl(url: str) -> dict:
         raise
 ```
 
-### 9.6 性能调优
+### 8.6 性能调优
 
 ```python
 """
@@ -2737,9 +2649,9 @@ Go (goroutine)                3s      100MB   10K goroutine
 """
 ```
 
-## 10. 案例研究
+## 9. 案例研究
 
-### 10.1 Googlebot：搜索引擎爬虫
+### 9.1 Googlebot：搜索引擎爬虫
 
 **架构**：
 - 分布式爬虫集群，覆盖万亿级 URL；
@@ -2753,7 +2665,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 - 自适应礼貌策略；
 - 增量爬取与 ETag 协商缓存。
 
-### 10.2 Common Crawl：开源网页数据集
+### 9.2 Common Crawl：开源网页数据集
 
 **架构**：
 - AWS EC2 集群，每月抓取 30+ 亿页面；
@@ -2766,7 +2678,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 - 列式存储（Parquet）优化分析；
 - 数据开放与 LLM 训练管道。
 
-### 10.3 Scrapy Cloud (Zyte)
+### 9.3 Scrapy Cloud (Zyte)
 
 **架构**：
 - 托管式 Scrapy 服务；
@@ -2779,7 +2691,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 - 自动化运维与扩缩容；
 - 反爬对抗即服务。
 
-### 10.4 Apify：爬虫与数据采集平台
+### 9.4 Apify：爬虫与数据采集平台
 
 **架构**：
 - 基于 Playwright/Puppeteer 的爬虫平台；
@@ -2792,7 +2704,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 - Actor 模型实现爬虫隔离；
 - 一站式数据采集平台。
 
-### 10.5 Diffbot：AI 驱动的网页解析
+### 9.5 Diffbot：AI 驱动的网页解析
 
 **架构**：
 - 使用计算机视觉识别页面结构；
@@ -2805,7 +2717,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 - 自动化结构化数据提取；
 - 通用爬虫与垂直爬虫结合。
 
-### 10.6 12306 票务监控爬虫
+### 9.6 12306 票务监控爬虫
 
 **场景**：定时监控余票，余票出现立即通知。
 
@@ -2834,22 +2746,22 @@ Go (goroutine)                3s      100MB   10K goroutine
 3. `ex-scraper-03`（apply）：修复爬虫代码缺陷；
 4. `ex-scraper-04`（create）：设计分布式新闻聚合爬虫系统。
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - Mitchell, R. (2018). *Web Scraping with Python* (2nd ed.). O'Reilly Media.
 - Lawson, J. (2015). *Web Scraping with Python*. Packt Publishing.
 - Broucke, S. (2020). *Python Web Scraping Cookbook*. Packt Publishing.
 -子林, 林志强 (2021). 《Python3 网络爬虫开发实战》（第二版）. 人民邮电出版社.
 
-### 12.2 论文
+### 11.2 论文
 
 - Cho, J., & Garcia-Molina, H. (2002). *The Evolution of the Web and Implications for an Incremental Crawler*. VLDB.
 - Heydon, A., Najork, M. (1999). *Mercator: A Scalable, Extensible Web Crawler*. World Wide Web.
 - Olston, C., & Najork, M. (2010). *Web Crawling*. Foundations and Trends in Information Retrieval.
 
-### 12.3 开源项目
+### 11.3 开源项目
 
 - [Scrapy](https://github.com/scrapy/scrapy) - 工业级爬虫框架
 - [Playwright](https://github.com/microsoft/playwright) - 浏览器自动化
@@ -2859,14 +2771,14 @@ Go (goroutine)                3s      100MB   10K goroutine
 - [scrapy-redis](https://github.com/rmax/scrapy-redis) - 分布式爬虫
 - [playwright-stealth](https://github.com/Mattwmaster58/pw-stealth) - Playwright 反检测
 
-### 12.4 在线课程
+### 11.4 在线课程
 
 - Scrapy Official Documentation: https://docs.scrapy.org/
 - Playwright Python Docs: https://playwright.dev/python/
 - Real Python Web Scraping Tutorial: https://realpython.com/beautiful-soup-web-scraper-python/
 - MDN HTTP: https://developer.mozilla.org/en-US/docs/Web/HTTP
 
-### 12.5 标准与规范
+### 11.5 标准与规范
 
 - RFC 9309: Robots Exclusion Protocol (2022)
 - RFC 9110: HTTP Semantics (2022)
@@ -2875,7 +2787,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 - RFC 9204: HPACK (2022)
 - robots.txt 说明：https://www.rfc-editor.org/rfc/rfc9309
 
-### 12.6 合规与伦理资源
+### 11.6 合规与伦理资源
 
 - [Google Webmaster Guidelines](https://developers.google.com/search/docs/essentials)
 - [Bing Webmaster Guidelines](https://www.bing.com/webmasters/help/webmaster-guidelines-30fba23a)
@@ -2883,9 +2795,9 @@ Go (goroutine)                3s      100MB   10K goroutine
 - [GDPR Compliance for Scraping](https://gdpr.eu/)
 - [CCPA Compliance](https://oag.ca.gov/privacy/ccpa)
 
-## 13. 总结
+## 12. 总结
 
-### 13.1 核心要点
+### 12.1 核心要点
 
 1. **工具选型**：静态页面用 `requests/httpx + BeautifulSoup/lxml`，动态页面用 `Playwright`，大规模用 `Scrapy`，分布式用 `Scrapy-Redis`；
 2. **性能优化**：HTTP/2 多路复用、连接池、DNS 缓存、异步并发、解析器选择；
@@ -2893,7 +2805,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 4. **工程化**：配置管理、监控告警、容器化部署、断点续爬、容灾备份；
 5. **反爬对抗**：UA 轮换、代理池、指纹伪装、行为模拟。
 
-### 13.2 未来趋势
+### 12.2 未来趋势
 
 | 趋势 | 描述 | 影响 |
 | ---- | ---- | ---- |
@@ -2906,7 +2818,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 | Web3 数据爬取 | 链上数据 + IPFS | 新的数据源与协议 |
 | 边缘计算爬虫 | Cloudflare Workers / V8 Isolates | 就近抓取，降低延迟 |
 
-### 13.3 扩展点
+### 12.3 扩展点
 
 - **多模态爬虫**：图像、视频、音频抓取与处理；
 - **实时爬虫**：WebSocket、SSE 协议爬取；
@@ -2914,7 +2826,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 - **暗网爬虫**：Tor 网络爬取，需特别注意法律合规；
 - **IoT 数据采集**：MQTT、CoAP 协议爬取。
 
-### 13.4 学习路径建议
+### 12.4 学习路径建议
 
 1. **入门**：requests + BeautifulSoup 抓取简单静态页面；
 2. **进阶**：httpx 异步 + lxml/parsel 高性能解析；

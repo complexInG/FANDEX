@@ -14,6 +14,7 @@ prerequisites:
   - kotlin/概述与环境配置
 ---
 
+
 # Kotlin 跨平台（Kotlin Multiplatform）
 
 > 本文档对标 MIT 6.005、Stanford CS193P、CMU 15-410 教学水准，系统讲解 Kotlin Multiplatform（KMP）从设计哲学到编译器后端实现的完整链路。内容覆盖 Kotlin/JVM、Kotlin/JS、Kotlin/Native、Kotlin/Wasm 四大目标平台，配套企业级生产代码、跨语言对比、形式化推导与习题解析。
@@ -35,77 +36,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述 Kotlin Multiplatform（KMP）的核心目标：在多平台间共享业务逻辑，保留各平台原生 UI 实现。
-- 列举 KMP 的四大编译目标：JVM、JS、Native（LLVM）、Wasm。
-- 背诵 `expect` 与 `actual` 机制的核心约束：签名必须一致、可见性必须匹配、返回类型必须兼容。
-- 记忆 Kotlin/Native 的内存管理模型：默认自动引用计数（ARC），Kotlin 1.7+ 引入新内存管理器（New Memory Manager）。
-- 列举 Kotlin/JS 的两种产物模式：JS（传统 UMD）、IR（基于 Intermediate Representation，Kotlin 1.5+ 默认）。
-- 记忆 Kotlin/Wasm 在 Kotlin 1.9.20 进入实验状态，2.0 后开始稳定演进。
-
-### 1.2 Understand（理解）
-
-完成本章节后，学习者应能够解释以下概念：
-
-- 用自己的语言解释"共享业务逻辑、保留原生 UI"这一架构哲学与 React Native / Flutter 的根本差异。
-- 描述 `commonMain`、`platformMain`、`intermediateMain` 三个源集（Source Set）的层次关系，并能画出层次图。
-- 解释 `expect`/`actual` 机制的工作原理：编译期符号绑定、链接期校验、运行时无反射开销。
-- 阐述 Kotlin/Native 从 LLVM IR 到原生二进制的编译流水线：Frontend → FIR → IR → LLVM IR → Object Code → Linker。
-- 理解 Kotlin/JS 的 IR 编译器与旧版 UMD 编译器在产物体积、Tree-shaking、模块系统上的核心差异。
-- 解释 Kotlin/Wasm 与 Kotlin/JS 的本质区别：Wasm 是字节码虚拟机，JS 是解释执行；Wasm 提供更好的启动性能与可移植性。
-
-### 1.3 Apply（应用）
-
-完成本章节后，学习者应能够在以下场景中应用 KMP：
-
-- 在 Android + iOS 双端项目中，将网络层（Ktor Client）、数据层（SQLDelight）、业务逻辑层共享至 `commonMain`。
-- 使用 `expect`/`actual` 机制封装平台 API：如 `UUID`、`Date`、`File`、`System.currentTimeMillis`。
-- 在 Kotlin/JS 项目中通过 `external` 互操作调用浏览器 DOM、Node.js API、npm 包。
-- 在 Kotlin/Native 项目中通过 `cinterop` 调用 C/C++ 库，如 SQLite、libcurl、OpenSSL。
-- 使用 Compose Multiplatform 构建 Android、iOS、Desktop、Web 共用的 UI 层。
-- 通过 Gradle 的 `kotlin-multipartform` 插件发布跨平台库到 Maven Central。
-
-### 1.4 Analyze（分析）
-
-完成本章节后，学习者应能够进行以下分析：
-
-- 反编译 KMP 项目的 Gradle 构建输出，分析 `common` 与 `platform` 模块的产物分离策略。
-- 对比同一业务逻辑在"纯原生方案"、"React Native 方案"、"Flutter 方案"、"KMP 方案"下的性能、可维护性、团队成本。
-- 分析 `expect`/`actual` 与 Java 的 SPI（Service Provider Interface）、Rust 的 `cfg` 条件编译、C# 的 `partial class` 在抽象机制上的差异。
-- 解构 `kotlinx.coroutines`、`kotlinx.serialization`、`Ktor` 等官方库的多平台源码组织方式，总结共享模式。
-
-### 1.5 Evaluate（评价）
-
-完成本章节后，学习者应能够评价以下设计决策：
-
-- 评价 JetBrains 选择"共享逻辑、保留原生 UI"而非"全栈共享 UI"（如 Flutter）的设计权衡。
-- 评价 Kotlin/Native 选择 LLVM 而非自研后端的技术决策：生态、性能、维护成本三个维度。
-- 评价 Kotlin/Wasm 相对 Kotlin/JS 的优劣：启动速度、产物体积、调试体验、生态成熟度。
-- 评价 `expect`/`actual` 机制相对接口注入（DI）在编译期安全性上的优势与局限。
-- 评价 Compose Multiplatform 在 iOS 上的渲染路径（Skia vs UIKit 互操作）的设计取舍。
-
-### 1.6 Create（创造）
-
-完成本章节后，学习者应能够创造以下作品：
-
-- 设计并实现一个三端共享（Android + iOS + Web）的 TODO 应用，业务逻辑在 `commonMain`，UI 使用 Compose Multiplatform。
-- 设计一个跨平台的日志门面（Logging Facade）：`commonMain` 定义 `expect fun log(message: String)`，各平台 `actual` 实现 Console、NSLog、`console.log`。
-- 实现一个跨平台的 HTTP 客户端封装：基于 Ktor Core，封装统一的请求、响应、错误处理 API。
-- 撰写一份 KMP 项目团队规范：何时共享、何时分离、`commonMain` 依赖策略、版本同步规则。
-- 设计一个跨平台数据持久化层：SQLDelight + expect/actual 平台驱动注入，支持 Android、iOS、JVM。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：跨平台开发的工程困境
+### 1.1 问题背景：跨平台开发的工程困境
 
 移动应用开发长期面临一个核心矛盾：**业务逻辑的跨平台共享** 与 **原生 UI 体验** 的取舍。在 KMP 出现之前，主流方案可分为三类：
 
@@ -131,7 +64,7 @@ Kotlin Multiplatform 提出了第四种范式：**共享业务逻辑、保留原
 3. **零桥接开销**：Kotlin/Native 直接编译为原生二进制，无运行时虚拟机、无 JS Bridge。
 4. **生态统一**：Java/Kotlin 库可在 JVM 平台直接复用，C/C++ 库可通过 cinterop 在 Native 平台复用。
 
-### 2.2 学术背景：多平台语言研究
+### 1.2 学术背景：多平台语言研究
 
 KMP 的理论基础来自编程语言理论中的**多目标编译**（Multi-Target Compilation）与**目标无关中间表示**（Target-Independent IR）研究：
 
@@ -146,7 +79,7 @@ Kotlin 的设计借鉴了上述经验，提出了**统一前端 + 多后端 IR**
 2. **平台后端**：JVM 后端生成 `.class`/`.jar`，JS 后端生成 `.js`，Native 后端生成 LLVM IR，Wasm 后端生成 `.wasm`。
 3. **跨平台 IR**：K2 编译器统一了所有后端的 IR，便于跨平台优化与一致性。
 
-### 2.3 Kotlin 1.0（2016 年 2 月）：Kotlin/JVM 首发
+### 1.3 Kotlin 1.0（2016 年 2 月）：Kotlin/JVM 首发
 
 Kotlin 1.0 仅支持 JVM 平台，但其语言设计已经为后续的多平台扩展预留了空间：
 
@@ -156,7 +89,7 @@ Kotlin 1.0 仅支持 JVM 平台，但其语言设计已经为后续的多平台�
 
 此时跨平台能力由 `kotlin-platform` 实验性模块承担，但未正式发布。
 
-### 2.4 Kotlin 1.1（2017 年 5 月）：JVM / JS 双平台
+### 1.4 Kotlin 1.1（2017 年 5 月）：JVM / JS 双平台
 
 Kotlin 1.1 正式引入 Kotlin/JS 作为 Beta 平台：
 
@@ -173,7 +106,7 @@ fun main(args: Array<String>) {
 - 产物体积大（包含完整的 Kotlin 运行时）。
 - 缺乏 Tree-shaking 支持。
 
-### 2.5 Kotlin 1.2（2017 年 11 月）：多平台项目雏形
+### 1.5 Kotlin 1.2（2017 年 11 月）：多平台项目雏形
 
 Kotlin 1.2 引入了**多平台项目**（Multiplatform Projects）的实验性特性：
 
@@ -190,7 +123,7 @@ actual class Platform {
 
 此时多平台项目仅支持 JVM + JS，且 API 不稳定。但已确立 `expect`/`actual` 的核心机制。
 
-### 2.6 Kotlin 1.3（2018 年 10 月）：Kotlin/Native 加入
+### 1.6 Kotlin 1.3（2018 年 10 月）：Kotlin/Native 加入
 
 Kotlin 1.3 将 Kotlin/Native 提升至 Beta，多平台项目正式支持三大目标：JVM、JS、Native。同时引入协程 GA，为跨平台异步编程奠定基础。
 
@@ -201,7 +134,7 @@ Kotlin/Native 的核心特性：
 3. 旧内存管理器：基于 ARC（自动引用计数）+ 工作线程隔离。
 4. 通过 `cinterop` 工具调用 C/C++ 库。
 
-### 2.7 Kotlin 1.4（2020 年 8 月）：多平台项目稳定化
+### 1.7 Kotlin 1.4（2020 年 8 月）：多平台项目稳定化
 
 Kotlin 1.4 将多平台项目提升为稳定状态（Alpha → Beta → Stable），并引入：
 
@@ -210,7 +143,7 @@ Kotlin 1.4 将多平台项目提升为稳定状态（Alpha → Beta → Stable�
 3. **Kotlin/JS IR 编译器**：引入基于 IR 的新编译器，支持 Tree-shaking、减小产物体积。
 4. **Kotlin/Native 与 SwiftUI 互操作**：通过 `@ObjCName` 注解暴露 Kotlin 类给 Swift。
 
-### 2.8 Kotlin 1.5（2021 年 5 月）：Kotlin/JS IR 默认
+### 1.8 Kotlin 1.5（2021 年 5 月）：Kotlin/JS IR 默认
 
 Kotlin 1.5 将 Kotlin/JS IR 编译器设为默认（仍可回退到旧编译器），并引入：
 
@@ -219,7 +152,7 @@ Kotlin 1.5 将 Kotlin/JS IR 编译器设为默认（仍可回退到旧编译器�
 3. **更激进的 Tree-shaking**：移除未使用的 Kotlin 标准库代码。
 4. **`kotlinx-nodejs` 实验性支持**：直接调用 Node.js API。
 
-### 2.9 Kotlin 1.6-1.7（2021-2022 年）：Kotlin/Native 新内存管理器
+### 1.9 Kotlin 1.6-1.7（2021-2022 年）：Kotlin/Native 新内存管理器
 
 Kotlin 1.6 引入了 Kotlin/Native 新内存管理器（New Memory Manager）的实验版本，1.7.20 提升为 Beta，1.9 默认启用。新内存管理器的核心改进：
 
@@ -228,7 +161,7 @@ Kotlin 1.6 引入了 Kotlin/Native 新内存管理器（New Memory Manager）的
 3. **支持 Compose Multiplatform iOS**：新内存管理器是 Compose iOS 的前置条件。
 4. **移除 ` freezes` API**：旧版的 `freeze()`、`isFrozen` 等手动冻结 API 被废弃。
 
-### 2.10 Kotlin 1.8-1.9（2023 年）：Kotlin/Wasm 实验性
+### 1.10 Kotlin 1.8-1.9（2023 年）：Kotlin/Wasm 实验性
 
 Kotlin 1.8 引入 Kotlin/Wasm（WebAssembly）的实验版本，1.9.20 提升为 Alpha：
 
@@ -246,7 +179,7 @@ Kotlin/Wasm 的核心特性：
 3. 产物体积小（无运行时虚拟机）。
 4. 与浏览器 `import.meta` 集成，支持 ES 模块。
 
-### 2.11 Kotlin 2.0（2024 年 5 月）：K2 与 KMP 全面成熟
+### 1.11 Kotlin 2.0（2024 年 5 月）：K2 与 KMP 全面成熟
 
 Kotlin 2.0 是 KMP 发展的里程碑：
 
@@ -256,7 +189,7 @@ Kotlin 2.0 是 KMP 发展的里程碑：
 4. **Kotlin/Wasm Beta**：从 Alpha 提升至 Beta。
 5. **Expect/Actual 改进**：支持 `expect` 属性、`expect` 类型别名、更严格的签名校验。
 
-### 2.12 JetBrains 的设计哲学
+### 1.12 JetBrains 的设计哲学
 
 JetBrains 在设计 KMP 时遵循了以下哲学：
 
@@ -267,7 +200,7 @@ JetBrains 在设计 KMP 时遵循了以下哲学：
 5. **生态开放**：标准库（`kotlinx.coroutines`、`kotlinx.serialization`）跨平台一致，第三方库（Ktor、SQLDelight）支持 KMP。
 6. **不锁定技术栈**：UI 层可选 Compose Multiplatform、SwiftUI、Jetpack Compose、React 等，业务逻辑层独立。
 
-### 2.13 时间线总览
+### 1.13 时间线总览
 
 ```
 2010  Kotlin 项目启动
@@ -285,9 +218,9 @@ JetBrains 在设计 KMP 时遵循了以下哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 多平台项目的 Gradle 模型
+### 2.1 多平台项目的 Gradle 模型
 
 根据 Kotlin 官方文档，KMP 项目的 Gradle 配置可形式化定义如下：
 
@@ -302,7 +235,7 @@ $$
 - $\text{SourceSets}$：源集层次结构，包含 `commonMain`、`jvmMain`、`iosMain` 等。
 - $\text{Dependencies}$：依赖配置，分为 `commonMain` 依赖、平台特定依赖、`androidMain` 实现。
 
-### 3.2 源集层次结构（Hierarchical Source Sets）
+### 2.2 源集层次结构（Hierarchical Source Sets）
 
 KMP 的源集层次结构是一棵树：
 
@@ -330,7 +263,7 @@ $$
 
 形式化地，源集树是一个有向无环图（DAG），每个子源集继承父源集的所有源文件与依赖。
 
-### 3.3 Expect/Actual 机制的形式化
+### 2.3 Expect/Actual 机制的形式化
 
 `expect`/`actual` 是 KMP 的核心抽象机制。其形式化定义：
 
@@ -347,7 +280,7 @@ $$
 3. **类型参数一致**：泛型参数数量与约束一致。
 4. **`@Throws` 一致**：声明的异常表一致（JVM 平台）。
 
-### 3.4 平台声明的语义
+### 2.4 平台声明的语义
 
 `expect` 声明在 `commonMain` 中只是一个**契约**（Contract），不包含实现。其语义：
 
@@ -367,7 +300,7 @@ $$
 \text{link}_{P_i}(\text{SymbolRef}(\text{foo})) = A_i
 $$
 
-### 3.5 Kotlin/Native 编译流水线
+### 2.5 Kotlin/Native 编译流水线
 
 Kotlin/Native 的编译流水线可形式化为：
 
@@ -383,7 +316,7 @@ $$
 - $\text{LLVM}$：LLVM 编译器优化与代码生成，产出 Object 文件。
 - $\text{Linker}$：链接器（ld、lld）合并 Object 文件，生成可执行文件或动态库。
 
-### 3.6 Kotlin/JS 编译流水线
+### 2.6 Kotlin/JS 编译流水线
 
 Kotlin/JS 的编译流水线（IR 编译器）：
 
@@ -397,7 +330,7 @@ $$
 - $\text{Generator}$：从 AST 生成 JavaScript 源码（或直接字节码），输出 `.js` 文件。
 - **可选步骤**：通过 Webpack 或 esbuild 打包，进行 Tree-shaking 与压缩。
 
-### 3.7 Kotlin/Wasm 编译流水线
+### 2.7 Kotlin/Wasm 编译流水线
 
 Kotlin/Wasm 的编译流水线：
 
@@ -410,7 +343,7 @@ $$
 - $\text{Wasm Module}$：标准的 WebAssembly 模块结构（Section、Function、Table、Memory）。
 - $\text{GC Pass}$：基于 WasmGC 提案的垃圾回收，无需自带 GC（依赖宿主环境）。
 
-### 3.8 与其他跨平台方案的形式化对比
+### 2.8 与其他跨平台方案的形式化对比
 
 | 维度 | KMP | React Native | Flutter | Qt |
 |------|-----|--------------|---------|-----|
@@ -431,9 +364,9 @@ KMP 选择了高 $P$、中 $S$ 的组合。
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 源集继承的代数模型
+### 3.1 源集继承的代数模型
 
 源集层次结构可以形式化为偏序集（Partial Order Set）：
 
@@ -461,7 +394,7 @@ commonMain + nativeMain + appleMain + iosMain + iosArm64Main
 
 这五层源集的源文件共同构成最终的编译单元。
 
-### 4.2 Expect/Actual 的类型检查
+### 3.2 Expect/Actual 的类型检查
 
 考虑以下 `expect`/`actual` 声明：
 
@@ -494,7 +427,7 @@ $$
 \text{TypeCheck}_{P_i}(\text{expect}, \text{actual}) = \text{match}(\sigma_{\text{expect}}, \sigma_{\text{actual}}^{P_i})
 $$
 
-### 4.3 跨平台类型映射
+### 3.3 跨平台类型映射
 
 KMP 标准库在 `commonMain` 中定义的 `kotlin.*` 类型，在各平台有不同的底层实现：
 
@@ -516,7 +449,7 @@ $$
 \text{Map}_{\text{JS}}(\text{Int}) = \text{number}
 $$
 
-### 4.4 Kotlin/Native 内存模型
+### 3.4 Kotlin/Native 内存模型
 
 Kotlin/Native 的新内存管理器（1.9+ 默认）采用**全局垃圾回收器**：
 
@@ -533,7 +466,7 @@ $$
 
 其中 $\text{Roots}$ 是 GC 根集合（栈变量、全局变量、寄存器）。新内存管理器移除了旧版的"线程隔离"约束，允许对象在任意线程间自由传递。
 
-### 4.5 Kotlin/JS IR 与 Tree-shaking
+### 3.5 Kotlin/JS IR 与 Tree-shaking
 
 Kotlin/JS IR 编译器的 Tree-shaking 算法：
 
@@ -554,7 +487,7 @@ $$
 
 实测数据：Kotlin/JS IR 编译器相对旧编译器可减小 30%-50% 的产物体积。
 
-### 4.6 互操作：Kotlin/Native 与 C
+### 3.6 互操作：Kotlin/Native 与 C
 
 Kotlin/Native 通过 `cinterop` 工具调用 C 库：
 
@@ -597,7 +530,7 @@ $$
 \text{C} \; \text{CURL* curl_easy_init()} \;\;\xrightarrow{\text{cinterop}}\;\; \text{Kotlin} \; \text{fun curl_easy_init(): COpaquePointer}
 $$
 
-### 4.7 互操作：Kotlin/JS 与 JavaScript
+### 3.7 互操作：Kotlin/JS 与 JavaScript
 
 Kotlin/JS 通过 `external` 修饰符调用 JavaScript：
 
@@ -629,7 +562,7 @@ $$
 \text{Kotlin} \; \text{external fun f()} \;\;\xrightarrow{\text{compile}}\;\; \text{JS} \; \text{import f from "<module>"}
 $$
 
-### 4.8 互操作：Kotlin/Native 与 Swift/Objective-C
+### 3.8 互操作：Kotlin/Native 与 Swift/Objective-C
 
 Kotlin/Native 编译为 Apple 框架（Framework）后，可被 Swift 直接调用：
 
@@ -657,7 +590,7 @@ $$
 \text{Kotlin class K} \;\;\xrightarrow{\text{compile}}\;\; \text{Objective-C class K} \;\;\xrightarrow{\text{bridging}}\;\; \text{Swift class K}
 $$
 
-### 4.9 Compose Multiplatform 编译路径
+### 3.9 Compose Multiplatform 编译路径
 
 Compose Multiplatform 的编译流水线：
 
@@ -688,7 +621,7 @@ fun Greeting(name: String, $composer: Composer, $changed: Int) {
 }
 ```
 
-### 4.10 跨平台依赖解析
+### 3.10 跨平台依赖解析
 
 KMP 的依赖解析在 Gradle 层完成：
 
@@ -727,9 +660,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 最小化 KMP 项目结构
+### 4.1 最小化 KMP 项目结构
 
 一个典型的 KMP 项目目录结构：
 
@@ -777,7 +710,7 @@ flowchart TD
     T30 --> T33
 ```
 
-### 5.2 根 `build.gradle.kts`
+### 4.2 根 `build.gradle.kts`
 
 ```kotlin
 // build.gradle.kts (root)
@@ -812,7 +745,7 @@ include(":androidApp")
 include(":desktopApp")
 ```
 
-### 5.3 `shared` 模块的 Gradle 配置
+### 4.3 `shared` 模块的 Gradle 配置
 
 ```kotlin
 // shared/build.gradle.kts
@@ -882,7 +815,7 @@ android {
 }
 ```
 
-### 5.4 `expect`/`actual` 平台声明
+### 4.4 `expect`/`actual` 平台声明
 
 `commonMain` 中的 `expect`：
 
@@ -1019,7 +952,7 @@ actual class AtomicRef<T> actual constructor(value: T) {
 }
 ```
 
-### 5.5 共享业务逻辑
+### 4.5 共享业务逻辑
 
 `commonMain` 中的纯逻辑代码：
 
@@ -1060,7 +993,7 @@ class Calculator {
 }
 ```
 
-### 5.6 跨平台 HTTP 客户端
+### 4.6 跨平台 HTTP 客户端
 
 `commonMain` 中定义 HTTP 客户端接口：
 
@@ -1129,7 +1062,7 @@ actual fun createHttpClient(): HttpClient = HttpClient(Darwin) {
 }
 ```
 
-### 5.7 跨平台持久化（SQLDelight）
+### 4.7 跨平台持久化（SQLDelight）
 
 ```kotlin
 // shared/build.gradle.kts
@@ -1194,7 +1127,7 @@ actual class DatabaseDriverFactory {
 }
 ```
 
-### 5.8 跨平台日志门面
+### 4.8 跨平台日志门面
 
 `commonMain` 中的日志接口：
 
@@ -1306,7 +1239,7 @@ actual fun log(level: LogLevel, tag: String, message: String, throwable: Throwab
 }
 ```
 
-### 5.9 Compose Multiplatform UI
+### 4.9 Compose Multiplatform UI
 
 ```kotlin
 // shared/src/commonMain/kotlin/com/example/shared/ui/App.kt
@@ -1379,7 +1312,7 @@ actual fun Button(onClick: () -> Unit, content: @Composable () -> Unit) {
 }
 ```
 
-### 5.10 跨平台协程测试
+### 4.10 跨平台协程测试
 
 ```kotlin
 // shared/src/commonTest/kotlin/com/example/shared/CalculatorTest.kt
@@ -1422,7 +1355,7 @@ class CalculatorTest {
 }
 ```
 
-### 5.11 发布跨平台库
+### 4.11 发布跨平台库
 
 ```kotlin
 // shared/build.gradle.kts
@@ -1495,7 +1428,7 @@ signing {
 }
 ```
 
-### 5.12 Kotlin/Wasm 配置
+### 4.12 Kotlin/Wasm 配置
 
 ```kotlin
 // shared/build.gradle.kts
@@ -1559,9 +1492,9 @@ HTML 宿主页：
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 React Native 对比
+### 5.1 与 React Native 对比
 
 | 维度 | Kotlin Multiplatform | React Native |
 |------|---------------------|-------------|
@@ -1578,7 +1511,7 @@ HTML 宿主页：
 
 **结论**：KMP 适合需要高性能、强类型、与原生深度集成的应用；React Native 适合 Web 团队快速迁移、生态丰富的场景。
 
-### 6.2 与 Flutter 对比
+### 5.2 与 Flutter 对比
 
 | 维度 | Kotlin Multiplatform | Flutter |
 |------|---------------------|---------|
@@ -1594,7 +1527,7 @@ HTML 宿主页：
 
 **结论**：KMP 适合保留原生 UI 体验、深度集成平台特性的应用；Flutter 适合追求 UI 一致性、快速迭代的应用。
 
-### 6.3 与 Java 多平台对比
+### 5.3 与 Java 多平台对比
 
 | 维度 | Kotlin Multiplatform | Java（JVM 多平台） |
 |------|---------------------|------------------|
@@ -1608,7 +1541,7 @@ HTML 宿主页：
 
 **结论**：KMP 在保留 JVM 生态的同时扩展到非 JVM 平台（iOS、嵌入式、Wasm），是 Java 多平台的进化版。
 
-### 6.4 与 C# 多平台对比
+### 5.4 与 C# 多平台对比
 
 | 维度 | Kotlin Multiplatform | C#（.NET MAUI） |
 |------|---------------------|-----------------|
@@ -1620,7 +1553,7 @@ HTML 宿主页：
 | 互操作 | 编译期 + 平台 API | .NET 抽象 + 平台绑定 |
 | 生态 | JVM + 原生 | .NET 生态 |
 
-### 6.5 与 Swift 跨平台对比
+### 5.5 与 Swift 跨平台对比
 
 | 维度 | Kotlin Multiplatform | Swift |
 |------|---------------------|-------|
@@ -1631,7 +1564,7 @@ HTML 宿主页：
 | UI | Compose Multiplatform | SwiftUI |
 | 互操作 | C/C++、Java、JavaScript、Swift/Objective-C | C/C++、Objective-C |
 
-### 6.6 与 Rust 跨平台对比
+### 5.6 与 Rust 跨平台对比
 
 | 维度 | Kotlin Multiplatform | Rust |
 |------|---------------------|------|
@@ -1656,9 +1589,9 @@ HTML 宿主页：
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：在 `commonMain` 中直接使用平台 API
+### 6.1 陷阱一：在 `commonMain` 中直接使用平台 API
 
 **错误示例**：
 
@@ -1685,7 +1618,7 @@ actual fun currentTime(): Long = System.currentTimeMillis()
 actual fun currentTime(): Long = NSDate().timeIntervalSince1970.toLong() * 1000
 ```
 
-### 7.2 陷阱二：`expect` 与 `actual` 签名不一致
+### 6.2 陷阱二：`expect` 与 `actual` 签名不一致
 
 **错误示例**：
 
@@ -1712,7 +1645,7 @@ actual fun parseDate(input: String): Date {
 }
 ```
 
-### 7.3 陷阱三：在 `commonMain` 中使用 `java.*` 包
+### 6.3 陷阱三：在 `commonMain` 中使用 `java.*` 包
 
 **错误示例**：
 
@@ -1732,7 +1665,7 @@ import kotlinx.datetime.Instant
 fun now(): Instant = Clock.System.now()
 ```
 
-### 7.4 陷阱四：忘记为每个平台提供 `actual`
+### 6.4 陷阱四：忘记为每个平台提供 `actual`
 
 **错误示例**：定义 `expect` 但忘记为 iOS 提供 `actual`：
 
@@ -1755,7 +1688,7 @@ actual class FileStorage actual constructor(path: String) {
 
 **正确做法**：为所有目标平台提供 `actual`。
 
-### 7.5 陷阱五：在 `commonMain` 中使用反射
+### 6.5 陷阱五：在 `commonMain` 中使用反射
 
 **错误示例**：
 
@@ -1777,7 +1710,7 @@ interface Factory<T> {
 fun <T> createInstance(factory: Factory<T>): T = factory.create()
 ```
 
-### 7.6 陷阱六：忽略 Kotlin/Native 的新旧内存管理器差异
+### 6.6 陷阱六：忽略 Kotlin/Native 的新旧内存管理器差异
 
 **旧内存管理器**（Kotlin 1.6 之前）：
 
@@ -1798,7 +1731,7 @@ backgroundScope.launch {
 
 **正确做法**：升级到 Kotlin 1.9+ 后移除所有 `freeze()` 调用。
 
-### 7.7 陷阱七：在 Kotlin/JS 中滥用 `external`
+### 6.7 陷阱七：在 Kotlin/JS 中滥用 `external`
 
 **错误示例**：
 
@@ -1817,7 +1750,7 @@ external interface User {
 external fun fetchUser(): Promise<User>
 ```
 
-### 7.8 陷阱八：在 Kotlin/Native 中滥用全局状态
+### 6.8 陷阱八：在 Kotlin/Native 中滥用全局状态
 
 **错误示例**：
 
@@ -1842,7 +1775,7 @@ fun increment() {
 }
 ```
 
-### 7.9 陷阱九：发布 KMP 库时遗漏平台构件
+### 6.9 陷阱九：发布 KMP 库时遗漏平台构件
 
 **错误示例**：发布时仅包含 JVM 构件，导致 iOS 用户无法使用。
 
@@ -1860,7 +1793,7 @@ publishing {
 }
 ```
 
-### 7.10 陷阱十：Compose Multiplatform 滥用 `expect` UI
+### 6.10 陷阱十：Compose Multiplatform 滥用 `expect` UI
 
 **错误示例**：为每个平台写一份 Compose UI：
 
@@ -1896,7 +1829,7 @@ fun MyButton(text: String, onClick: () -> Unit) {
 }
 ```
 
-### 7.11 最佳实践总结
+### 6.11 最佳实践总结
 
 1. **业务逻辑在 `commonMain`**：将所有平台无关的逻辑放入 `commonMain`，最大化复用。
 2. **平台 API 用 `expect`/`actual`**：仅对真正需要平台差异的代码使用 `expect`/`actual`。
@@ -1909,9 +1842,9 @@ fun MyButton(text: String, onClick: () -> Unit) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目分层架构
+### 7.1 项目分层架构
 
 推荐的 KMP 项目分层架构：
 
@@ -1926,7 +1859,7 @@ flowchart TD
     PUI --> SUI --> SP --> SD --> SData --> PI
 ```
 
-### 8.2 共享 ViewModel
+### 7.2 共享 ViewModel
 
 ```kotlin
 // shared/src/commonMain/kotlin/com/example/shared/viewmodel/UserViewModel.kt
@@ -1965,7 +1898,7 @@ class UserViewModel(
 }
 ```
 
-### 8.3 Android 集成
+### 7.3 Android 集成
 
 ```kotlin
 // androidApp/src/main/java/com/example/android/MainActivity.kt
@@ -1991,7 +1924,7 @@ class MainActivity : ComponentActivity() {
 }
 ```
 
-### 8.4 iOS 集成（SwiftUI 调用 Kotlin）
+### 7.4 iOS 集成（SwiftUI 调用 Kotlin）
 
 发布 iOS Framework：
 
@@ -2059,7 +1992,7 @@ class UserViewModelWrapper: ObservableObject {
 }
 ```
 
-### 8.5 跨平台依赖注入
+### 7.5 跨平台依赖注入
 
 使用 Koin 实现跨平台 DI：
 
@@ -2107,7 +2040,7 @@ class MyApplication : Application() {
 }
 ```
 
-### 8.6 测试策略
+### 7.6 测试策略
 
 跨平台测试金字塔：
 
@@ -2153,7 +2086,7 @@ class UserRepositoryTest {
 }
 ```
 
-### 8.7 CI/CD 配置
+### 7.7 CI/CD 配置
 
 GitHub Actions 多平台构建示例：
 
@@ -2215,7 +2148,7 @@ jobs:
         run: ./gradlew androidTest androidDebugBuild
 ```
 
-### 8.8 性能调优
+### 7.8 性能调优
 
 Kotlin/Native 编译优化：
 
@@ -2260,9 +2193,9 @@ kotlin {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：JetBrains Space 跨平台架构
+### 8.1 案例一：JetBrains Space 跨平台架构
 
 **背景**：JetBrains Space 是一个团队协作平台，支持 Web、Android、iOS、Desktop 多端。Space 团队采用 KMP 共享业务逻辑。
 
@@ -2287,7 +2220,7 @@ flowchart TD
 3. Ktor + SQLDelight 是经过验证的数据层方案。
 4. Compose Multiplatform 用于 Web 与 Desktop，移动端可选 SwiftUI/Jetpack Compose。
 
-### 9.2 案例二：Netflix 跨平台数据分析
+### 8.2 案例二：Netflix 跨平台数据分析
 
 **背景**：Netflix 使用 KMP 在 Android、iOS 间共享数据分析 SDK，统一事件采集逻辑。
 
@@ -2321,7 +2254,7 @@ class AnalyticsClient(
 2. 通过 `expect`/`actual` 注入平台特定信息（设备 ID、操作系统版本等）。
 3. 与原生分析 SDK（Firebase Analytics、iOS Analytics）通过适配器模式集成。
 
-### 9.3 案例三：Philips Health Suite 健康设备 SDK
+### 8.3 案例三：Philips Health Suite 健康设备 SDK
 
 **背景**：飞利浦健康套件使用 KMP 为 Android、iOS 共享蓝牙设备通信 SDK。
 
@@ -2350,7 +2283,7 @@ class HealthDeviceClient(private val bluetooth: BluetoothManager) {
 2. 平台特定的蓝牙 API（`android.bluetooth`、`CoreBluetooth`）通过 `expect`/`actual` 抽象。
 3. 数据解析层（字节流到结构化数据）100% 跨平台。
 
-### 9.4 案例四：VMware 跨平台管理工具
+### 8.4 案例四：VMware 跨平台管理工具
 
 **背景**：VMware 使用 Kotlin/Native 构建跨平台 CLI 工具，运行于 Linux、macOS、Windows。
 
@@ -2379,7 +2312,7 @@ fun main(args: Array<String>) {
 2. 通过 `clikt` 跨平台 CLI 库实现统一的命令行解析。
 3. 使用 `kotlinx-serialization` 实现配置文件读写。
 
-### 9.5 案例五：Ktor 官方多平台 HTTP 客户端
+### 8.5 案例五：Ktor 官方多平台 HTTP 客户端
 
 **背景**：Ktor Client 是 JetBrains 官方的跨平台 HTTP 客户端，支持 JVM、Android、iOS、JS、Wasm、Native。
 
@@ -2776,7 +2709,7 @@ actual fun getPlatformName(): String = "JavaScript"
 actual fun getHourOfDay(): Int = js("new Date().getHours()")
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 4.1**：为什么 KMP 选择"共享业务逻辑、保留原生 UI"而非"全栈共享"（如 Flutter）？请从架构、性能、生态三个维度论证。
 
@@ -2877,7 +2810,7 @@ Composable
 2. 包体积增加（Skiko 约 5-10MB）。
 3. Apple 平台新特性（如 Live Activities、Dynamic Type）支持滞后。
 
-### 10.5 综合应用题
+### 9.5 综合应用题
 
 **题目 5.1**：设计一个跨平台的"待办事项"应用，要求：
 
@@ -3106,9 +3039,9 @@ class IosStorage(private val path: String) : Storage {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 [1] JetBrains. Kotlin Multiplatform Documentation [EB/OL]. (2024-05-20) [2026-07-20]. https://kotlinlang.org/docs/multiplatform.html.
 
@@ -3120,7 +3053,7 @@ class IosStorage(private val path: String) : Storage {
 
 [5] JetBrains. Compose Multiplatform [EB/OL]. (2024-05-20) [2026-07-20]. https://www.jetbrains.com/lp/compose-multiplatform/.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [6] Wadler, P. 1998. The Expression Problem. Email posting to Java Genericity mailing list. https://homepages.inf.ed.ac.uk/wadler/papers/expression/expression.txt.
 
@@ -3132,7 +3065,7 @@ class IosStorage(private val path: String) : Storage {
 
 [10] Haas, A. et al. 2017. Bringing the Web up to Speed with WebAssembly. Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI '17), 185-200. https://doi.org/10.1145/3062341.3062363.
 
-### 11.3 技术博客
+### 10.3 技术博客
 
 [11] Shafiev, A. 2022. Kotlin/Native New Memory Manager: How It Works. JetBrains Blog. https://blog.jetbrains.com/kotlin/2022/08/kotlin-native-new-memory-manager/.
 
@@ -3140,7 +3073,7 @@ class IosStorage(private val path: String) : Storage {
 
 [13] Belyaev, J. 2024. Compose Multiplatform iOS Stable Release. JetBrains Blog. https://blog.jetbrains.com/kotlin/2024/04/compose-multiplatform-ios-stable/.
 
-### 11.4 开源项目
+### 10.4 开源项目
 
 [14] JetBrains. kotlinx.coroutines: Library Support for Kotlin Coroutines [Source Code]. https://github.com/Kotlin/kotlinx.coroutines.
 
@@ -3154,50 +3087,50 @@ class IosStorage(private val path: String) : Storage {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 Kotlin 官方资源
+### 11.1 Kotlin 官方资源
 
 - **Kotlin Multiplatform 样板项目**：https://kmp.jetbrains.com/
 - **KMP Samples 仓库**：https://github.com/Kotlin/kmp-full-stack-template
 - **Kotlin/Native 源码**：https://github.com/JetBrains/kotlin/tree/master/kotlin-native
 - **Compose Multiplatform 文档**：https://www.jetbrains.com/help/kotlin-multiplatform-dev/
 
-### 12.2 跨平台架构模式
+### 11.2 跨平台架构模式
 
 - **Clean Architecture for KMP**：https://github.com/InsertKoinIO/koin
 - **MVIKotlin**：https://github.com/arkivanov/MVIKotlin
 - **Decompose**（生命周期感知）：https://github.com/arkivanov/Decompose
 - **Multiplatform Settings**：https://github.com/russhwolf/multiplatform-settings
 
-### 12.3 平台特定资源
+### 11.3 平台特定资源
 
 - **Kotlin/Native 与 C 互操作**：https://kotlinlang.org/docs/native-c-interop.html
 - **Kotlin/JS 与 npm 互操作**：https://kotlinlang.org/docs/js-modules.html
 - **Kotlin/Wasm 与浏览器集成**：https://kotlinlang.org/docs/wasm-js-browser.html
 - **Kotlin/Native 与 Swift/Objective-C**：https://kotlinlang.org/docs/native-objc-interop.html
 
-### 12.4 性能优化
+### 11.4 性能优化
 
 - **Kotlin/Native 性能调优**：https://kotlinlang.org/docs/native-performance.html
 - **Kotlin/JS 产物优化**：https://kotlinlang.org/docs/js-project-setup.html#webpack
 - **Compose Multiplatform 性能**：https://github.com/JetBrains/compose-multiplatform/blob/master/tutorials/Performance
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **Kotlin Slack 工作区**：https://kotlinlang.slack.com/
 - **KMP Reddit 社区**：https://www.reddit.com/r/KotlinMultiplatform/
 - **Kotlin Weekly**：https://kotlinweekly.net/
 - **KotlinConf 录像**：https://www.youtube.com/@Kotlin
 
-### 12.6 相关书籍
+### 11.6 相关书籍
 
 - **《Kotlin in Action》**（Dmitry Jemerov, Svetlana Isakova, Manning, 2nd Edition, 2024）
 - **《Programming Kotlin》**（Stephen Chin, Jonathan Allen, Venkat Subramaniam, O'Reilly, 2024）
 - **《Compose Multiplatform by Tutorials》**（raywenderlich.com, 2024）
 - **《Hands-On Kotlin Multiplatform》**（Piyush Agarwal, Packt Publishing, 2024）
 
-### 12.7 演进趋势与未来方向
+### 11.7 演进趋势与未来方向
 
 - **K2 编译器全面替代 K1**：Kotlin 2.0 后 K2 成为默认，未来版本将进一步优化 IR 生成质量。
 - **Compose Multiplatform Web Stable**：Compose for Web 即将从 Alpha 升级至 Stable。

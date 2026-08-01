@@ -16,6 +16,7 @@ prerequisites:
   - csharp/概述与环境配置
 ---
 
+
 # LINQ 延迟与立即执行：从迭代器到表达式树的全景解析
 
 > 本章对标 MIT 6.1020（Software Construction）与 Stanford CS107（Programming Paradigms）的延迟求值教学深度，结合 ECMA-335（CLI 规范）与 Roslyn 编译器源码，深入剖析 LINQ 中延迟执行（lazy evaluation）与立即执行（eager evaluation）的本质区别、`IEnumerable<T>` 与 `IQueryable<T>` 的双轨模型、`yield return` 状态机、表达式树（expression tree）的编译与翻译、`ToList`/`ToArray` 的强制求值语义，以及在 EF Core、ASP.NET Core 中的工程实践。
@@ -37,53 +38,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（1956 年原版 + 2001 年修订版）的六个认知层次。完成本章学习后，读者应能：
-
-### 1.1 Remember（记忆）
-
-- 复述 LINQ 在 C# 3.0（2007）引入时的设计动机与"语言集成查询"（Language Integrated Query）口号。
-- 列出 `IEnumerable<T>`、`IEnumerable`、`IQueryable<T>`、`IQueryable` 四个核心接口的成员。
-- 说出 `Where`、`Select`、`OrderBy`、`GroupBy`、`Join` 等延迟操作符与 `ToList`、`ToArray`、`ToDictionary`、`First`、`Count` 等立即操作符的分类。
-- 描述 `yield return` 编译为状态机的字段命名约定（`<>1__state`、`<>2__current`、`<>4__this` 等）。
-
-### 1.2 Understand（理解）
-
-- 解释延迟执行的本质是"构建查询描述而非执行查询"。
-- 用自己的语言说明 `IEnumerable<T>` 与 `IQueryable<T>` 在执行位置（client vs server）上的差异。
-- 推导 `yield return` 状态机在 `MoveNext` 与 `Current` 之间的状态转移逻辑。
-- 区分表达式树（`Expression<TDelegate>`）与委托（`Func<T,TResult>`）在 LINQ 中的角色差异。
-
-### 1.3 Apply（应用）
-
-- 为大型数据集设计流式处理管道，避免一次性加载到内存。
-- 在自定义集合类型上实现 `IEnumerable<T>` 与 `IQueryable<T>`。
-- 使用 `Expression<TDelegate>` 构建动态查询过滤器（filter builder）。
-
-### 1.4 Analyze（分析）
-
-- 对照 Roslyn 源码分析 `yield return` 重写（`IteratorRewriter`）与 `async` 重写（`AsyncRewriter`）的相似与差异。
-- 解构 `System.Linq.Enumerable.Where` 与 `System.Linq.Queryable.Where` 的实现差异。
-- 对比 `GroupBy` 延迟返回 `IEnumerable<IGrouping<K,T>>` 但内部 `Lookup` 已构造的两面性。
-
-### 1.5 Evaluate（评价）
-
-- 评估在 EF Core 中过早调用 `AsEnumerable()` 的性能代价。
-- 评判 LINQ 表达式树作为"代码即数据"（code as data）的元编程能力与限制。
-- 比较 PLINQ（`AsParallel`）与 `IAsyncEnumerable<T>` 在并行/异步场景下的适用性。
-
-### 1.6 Create（创造）
-
-- 设计一个自定义 LINQ Provider（如 Elasticsearch LINQ Provider），将 `IQueryable<T>` 翻译为 DSL 查询。
-- 实现一个表达式树可视化工具，将 `Expression` 转换为 SQL/JSON/可视化 AST。
-- 构建一个静态分析器（基于 Roslyn），检测代码库中潜在的多次枚举陷阱。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 LINQ 之前：命令式查询的时代（C# 1.x-2.0，2002-2005）
+### 1.1 LINQ 之前：命令式查询的时代（C# 1.x-2.0，2002-2005）
 
 在 LINQ 之前，C# 开发者处理集合数据需要：
 
@@ -109,7 +66,7 @@ string sql = "SELECT * FROM Customers WHERE Age > 18 AND City = 'Shanghai'";
 - **类型不安全**：SQL 字符串编译期无法检查。
 - **不同数据源不同语言**：SQL、XML、对象各有查询方式。
 
-### 2.2 C# 3.0 与 LINQ 的诞生（2007）
+### 1.2 C# 3.0 与 LINQ 的诞生（2007）
 
 C# 3.0 引入 LINQ（Language Integrated Query），设计目标：
 
@@ -127,7 +84,7 @@ C# 3.0 引入 LINQ（Language Integrated Query），设计目标：
 - **隐式类型**：`var` 让编译器推断查询结果类型。
 - **对象初始化器**：`new Customer { Name = "x" }`。
 
-### 2.3 .NET Framework 3.5 的 LINQ 实现
+### 1.3 .NET Framework 3.5 的 LINQ 实现
 
 LINQ 在 .NET Framework 3.5 中首次发布，包含三个核心实现：
 
@@ -142,7 +99,7 @@ LINQ 在 .NET Framework 3.5 中首次发布，包含三个核心实现：
 - **Parallel LINQ（PLINQ）**：基于 `ParallelQuery<T>`，并行执行。
 - **Entity Framework Core**：跨平台 ORM，支持 `IQueryable<T>` 翻译。
 
-### 2.4 后续演进：从 C# 3.0 到 C# 12
+### 1.4 后续演进：从 C# 3.0 到 C# 12
 
 | 版本 | 年份 | 关键特性 | 对 LINQ 的影响 |
 |------|------|----------|----------------|
@@ -158,7 +115,7 @@ LINQ 在 .NET Framework 3.5 中首次发布，包含三个核心实现：
 | C# 12.0 | 2023 | 集合表达式、主构造函数 | `int[] x = [1,2,3]` 简化源数据 |
 | C# 13.0 | 2024 | `params ReadOnlySpan<T>` | LINQ 操作符可接受 `ReadOnlySpan` |
 
-### 2.5 .NET Runtime 中 LINQ 的演进
+### 1.5 .NET Runtime 中 LINQ 的演进
 
 - **.NET Framework 3.5（2007）**：`System.Core.dll` 引入 `Enumerable`、`Queryable` 静态类。
 - **.NET Framework 4.0（2010）**：PLINQ（`AsParallel`）。
@@ -172,7 +129,7 @@ LINQ 在 .NET Framework 3.5 中首次发布，包含三个核心实现：
 - **.NET 8（2023）**：`Enumerable.AggregateBy`、`CountBy`、`Index` 操作符。
 - **.NET 9（2024）**：`Enumerable.AsSpan` 扩展、`Where<T>(IEnumerable<T>, Index)` 重载。
 
-### 2.6 学术背景与理论渊源
+### 1.6 学术背景与理论渊源
 
 LINQ 的设计灵感来自多门学科：
 
@@ -185,9 +142,9 @@ Erik Meijer（LINQ 主设计师）在多个场合提到，LINQ 的本质是"对 
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 延迟执行与立即执行的数学定义
+### 2.1 延迟执行与立即执行的数学定义
 
 设 $Q$ 为一个查询表达式，$D$ 为数据源，$R$ 为结果。
 
@@ -207,7 +164,7 @@ $$
 
 即调用时立即求值并返回结果。
 
-### 3.2 IEnumerable<T> 的形式化定义
+### 2.2 IEnumerable<T> 的形式化定义
 
 `IEnumerable<T>` 接口在 ECMA-335（CLI 规范）Partition IV 中定义：
 
@@ -237,7 +194,7 @@ $$
 
 其中 `IEnumerator<T>` 是一个**有状态的流**（stateful stream），每次 `MoveNext` 推进一个元素，`Current` 返回当前元素。
 
-### 3.3 迭代器模式的形式化
+### 2.3 迭代器模式的形式化
 
 迭代器（iterator）遵循如下协议：
 
@@ -249,7 +206,7 @@ $$
 
 `yield return` 编译器生成的状态机正是实现了这个协议。
 
-### 3.4 IQueryable<T> 与表达式树
+### 2.4 IQueryable<T> 与表达式树
 
 `IQueryable<T>` 接口定义：
 
@@ -279,7 +236,7 @@ $$
 
 其中 `Expression` 是描述查询的表达式树，`Provider` 是将表达式翻译为目标语言（如 SQL）并执行的对象。
 
-### 3.5 表达式树的形式化
+### 2.5 表达式树的形式化
 
 `Expression<TDelegate>` 是 C# 编译器对 Lambda 表达式的"数据化"表示。形式上：
 
@@ -296,7 +253,7 @@ Func<int, bool> f = x => x > 0;                  // 委托（IL 代码）
 Expression<Func<int, bool>> e = x => x > 0;      // 表达式树（AST 数据）
 ```
 
-### 3.6 操作符分类
+### 2.6 操作符分类
 
 LINQ 操作符按求值时机分类：
 
@@ -316,7 +273,7 @@ $$
 \end{cases}
 $$
 
-### 3.7 ECMA-334 与 ECMA-335 的视角
+### 2.7 ECMA-334 与 ECMA-335 的视角
 
 - **ECMA-334（C# 语言规范）**：第 8.2 节定义查询表达式（query expression）的语法。
 - **ECMA-335（CLI 规范）**：Partition IV 定义 `System.Collections.Generic.IEnumerable<T>`、`IEnumerator<T>` 的 IL 签名。
@@ -349,9 +306,9 @@ var q = customers.Where(c => c.Age > 18).Select(c => c.Name);
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 yield return 状态机重写
+### 3.1 yield return 状态机重写
 
 考虑以下迭代器方法：
 
@@ -424,7 +381,7 @@ private sealed class GenerateIterator : IEnumerable<int>,
 }
 ```
 
-### 4.2 yield 状态机的状态转移图
+### 3.2 yield 状态机的状态转移图
 
 设 `Generate(3)` 的执行过程：
 
@@ -440,7 +397,7 @@ $$
 
 每次 `MoveNext` 返回 `true` 时，`Current` 被设置为下一个 `yield return` 的值。
 
-### 4.3 延迟执行的"洋葱"模型
+### 3.3 延迟执行的"洋葱"模型
 
 LINQ 查询是嵌套的迭代器：
 
@@ -464,7 +421,7 @@ IEnumerable<int> q = new SelectIterator<int, int>(
 
 这是**拉取模型**（pull-based），消费者拉一个元素，源头流式过滤一个元素。
 
-### 4.4 OrderBy 的缓冲特性
+### 3.4 OrderBy 的缓冲特性
 
 `OrderBy` 是延迟但缓冲的操作符：
 
@@ -488,7 +445,7 @@ $$
 
 即"先全量缓冲，再排序，最后流式输出"。
 
-### 4.5 GroupBy 的两面性
+### 3.5 GroupBy 的两面性
 
 `GroupBy` 返回 `IEnumerable<IGrouping<K,T>>`，看起来是延迟的，但实际上：
 
@@ -502,9 +459,9 @@ $$
 \text{GroupBy}(src, key) = \text{Lazy}(\text{Build}(\text{Lookup}, src, key))
 $$
 
-### 4.6 IEnumerable vs IQueryable 的执行模型
+### 3.6 IEnumerable vs IQueryable 的执行模型
 
-#### 4.6.1 IEnumerable<T> 模型
+#### 3.6.1 IEnumerable<T> 模型
 
 ```csharp
 // 客户端执行
@@ -517,7 +474,7 @@ var q = dbContext.Users.AsEnumerable()
 1. `AsEnumerable()` 触发数据库查询 `SELECT * FROM Users`，全量加载。
 2. `Where` 在内存中逐个过滤。
 
-#### 4.6.2 IQueryable<T> 模型
+#### 3.6.2 IQueryable<T> 模型
 
 ```csharp
 // 服务端执行
@@ -531,7 +488,7 @@ var q = dbContext.Users
 2. 枚举时（`foreach` 或 `ToListAsync`），EF Core 将表达式树翻译为 SQL。
 3. 数据库执行 `SELECT * FROM Users WHERE Age > 18`，仅返回匹配行。
 
-#### 4.6.3 形式化对比
+#### 3.6.3 形式化对比
 
 $$
 \text{IEnumerable}(T): \text{Client-side}, \text{streaming}, \text{in-memory}
@@ -541,7 +498,7 @@ $$
 \text{IQueryable}(T): \text{Server-side}, \text{translated}, \text{query language}
 $$
 
-### 4.7 表达式树的遍历与翻译
+### 3.7 表达式树的遍历与翻译
 
 表达式树是 C# 的"代码即数据"实现。EF Core 通过 `ExpressionVisitor` 遍历树并翻译为 SQL。
 
@@ -587,7 +544,7 @@ WHERE u.Age > 18 AND u.City = 'Shanghai'
 ORDER BY u.Name
 ```
 
-### 4.8 表达式树的不可变性与重建
+### 3.8 表达式树的不可变性与重建
 
 `Expression` 是不可变的。修改表达式树需要创建新的节点。`ExpressionVisitor` 提供了遍历与重建的便捷模式：
 
@@ -617,7 +574,7 @@ var newBody = visitor.Visit(expr.Body);
 var newExpr = Expression.Lambda<Func<User, bool>>(newBody, newParam);
 ```
 
-### 4.9 多次枚举的代价
+### 3.9 多次枚举的代价
 
 延迟执行的副作用：每次枚举都重新执行查询。
 
@@ -641,7 +598,7 @@ $$
 \text{Cost}(\text{ToList}(q)) = \text{Cost}(\text{Eval}(q)) + O(1) \cdot \text{access}
 $$
 
-### 4.10 闭包与变量捕获
+### 3.10 闭包与变量捕获
 
 Lambda 捕获外部变量时，编译器生成闭包类：
 
@@ -672,7 +629,7 @@ threshold = 21;  // 修改
 foreach (var u in q) { /* 使用 threshold=21 */ }
 ```
 
-### 4.11 性能模型
+### 3.11 性能模型
 
 设 $n$ 为源大小，$m$ 为操作符数量，$c$ 为单元素处理成本。
 
@@ -702,9 +659,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：延迟 vs 立即
+### 4.1 基础示例：延迟 vs 立即
 
 ```csharp
 using System;
@@ -752,7 +709,7 @@ public class Program
 }
 ```
 
-### 5.2 yield return 自定义操作符
+### 4.2 yield return 自定义操作符
 
 ```csharp
 using System;
@@ -847,7 +804,7 @@ public class Program
 }
 ```
 
-### 5.3 EF Core 中的 IQueryable 翻译
+### 4.3 EF Core 中的 IQueryable 翻译
 
 ```csharp
 // 项目结构
@@ -1003,7 +960,7 @@ public class Program
 }
 ```
 
-### 5.4 流式处理大文件
+### 4.4 流式处理大文件
 
 ```csharp
 using System;
@@ -1047,7 +1004,7 @@ public class Program
 }
 ```
 
-### 5.5 表达式树可视化
+### 4.5 表达式树可视化
 
 ```csharp
 using System;
@@ -1137,7 +1094,7 @@ public class User
 }
 ```
 
-### 5.6 企业级：自定义 LINQ Provider
+### 4.6 企业级：自定义 LINQ Provider
 
 下面演示一个简化的自定义 LINQ Provider，将 `IQueryable<T>` 翻译为简单的 DSL。
 
@@ -1313,9 +1270,9 @@ public class Program
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 与 Java Stream API 的对比
+### 5.1 与 Java Stream API 的对比
 
 | 维度 | C# LINQ | Java Stream |
 |------|---------|-------------|
@@ -1327,7 +1284,7 @@ public class Program
 | 数据库集成 | EF Core 原生支持 | JPA Criteria（受限） |
 | 并行 | PLINQ（`AsParallel`） | `parallelStream()` |
 
-#### 6.1.1 Java 示例
+#### 5.1.1 Java 示例
 
 ```java
 // Java Stream
@@ -1342,7 +1299,7 @@ s.filter(u -> u.getAge() > 18);  // OK
 s.filter(u -> u.getAge() > 18);  // IllegalStateException: stream has already been operated upon
 ```
 
-#### 6.1.2 C# 等价
+#### 5.1.2 C# 等价
 
 ```csharp
 // C# LINQ
@@ -1357,7 +1314,7 @@ var r1 = e.Where(u => u.Age > 18);
 var r2 = e.Where(u => u.Age > 18);  // OK，重新执行
 ```
 
-### 6.2 与 Kotlin Sequences 的对比
+### 5.2 与 Kotlin Sequences 的对比
 
 | 维度 | C# LINQ | Kotlin Sequences |
 |------|---------|-------------------|
@@ -1367,7 +1324,7 @@ var r2 = e.Where(u => u.Age > 18);  // OK，重新执行
 | 表达式树 | 有 | 无 |
 | 数据库 | EF Core | Exposed（受限） |
 
-#### 6.2.1 Kotlin 示例
+#### 5.2.1 Kotlin 示例
 
 ```kotlin
 // Kotlin Sequence
@@ -1382,7 +1339,7 @@ val listResult = users
     .map { it.name }
 ```
 
-### 6.3 与 JavaScript Array 方法的对比
+### 5.3 与 JavaScript Array 方法的对比
 
 | 维度 | C# LINQ | JavaScript Array |
 |------|---------|------------------|
@@ -1391,7 +1348,7 @@ val listResult = users
 | 数据源 | `IEnumerable<T>` | `Array`、`Iterable` |
 | 惰性 | `yield` | Generator（`function*`） |
 
-#### 6.3.1 JavaScript 示例
+#### 5.3.1 JavaScript 示例
 
 ```javascript
 // JavaScript：立即求值
@@ -1407,7 +1364,7 @@ function* filter(iterable, pred) {
 }
 ```
 
-### 6.4 与 Haskell List Comprehension 的对比
+### 5.4 与 Haskell List Comprehension 的对比
 
 | 维度 | C# LINQ | Haskell |
 |------|---------|---------|
@@ -1417,7 +1374,7 @@ function* filter(iterable, pred) {
 | Monad | `SelectMany` 是 bind | `>>=` 是 bind |
 | 无限列表 | 需 `yield` | 原生支持 |
 
-#### 6.4.1 Haskell 示例
+#### 5.4.1 Haskell 示例
 
 ```haskell
 -- Haskell list comprehension
@@ -1431,7 +1388,7 @@ primes = sieve [2..]
   where sieve (p:xs) = p : sieve [x | x <- xs, x `mod` p /= 0]
 ```
 
-### 6.5 与 Python 生成器的对比
+### 5.5 与 Python 生成器的对比
 
 | 维度 | C# LINQ | Python |
 |------|---------|--------|
@@ -1440,7 +1397,7 @@ primes = sieve [2..]
 | 表达式树 | 有 | 无（有 `ast` 模块） |
 | 数据库 | EF Core | SQLAlchemy |
 
-#### 6.5.1 Python 示例
+#### 5.5.1 Python 示例
 
 ```python
 # Python generator
@@ -1455,7 +1412,7 @@ def squares(n):
 # }
 ```
 
-### 6.6 综合对比表
+### 5.6 综合对比表
 
 | 特性 | C# 12 LINQ | Java 21 Stream | Kotlin 1.9 | JS ES2024 | Haskell | Python 3.12 |
 |------|-----------|----------------|------------|-----------|---------|-------------|
@@ -1468,9 +1425,9 @@ def squares(n):
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：多次枚举
+### 6.1 陷阱一：多次枚举
 
 ```csharp
 // 错误：多次枚举，每次重新执行
@@ -1485,7 +1442,7 @@ foreach (var x in cached) { /* 已缓存 */ }
 var count = cached.Count;
 ```
 
-### 7.2 陷阱二：修改源数据
+### 6.2 陷阱二：修改源数据
 
 ```csharp
 var list = new List<int> { 1, 2, 3 };
@@ -1499,7 +1456,7 @@ list.Add(5);
 foreach (var x in frozen) { /* 不包含 5 */ }
 ```
 
-### 7.3 陷阱三：闭包捕获循环变量
+### 6.3 陷阱三：闭包捕获循环变量
 
 ```csharp
 // C# 5.0+ 修复了 foreach 循环变量捕获，但 for 循环仍有问题
@@ -1518,7 +1475,7 @@ for (int i = 0; i < 3; i++)
 }
 ```
 
-### 7.4 陷阱四：过早 AsEnumerable
+### 6.4 陷阱四：过早 AsEnumerable
 
 ```csharp
 // 错误：过早 AsEnumerable，后续在内存中执行
@@ -1531,7 +1488,7 @@ var q = dbContext.Users
     .Where(u => u.Age > 18);  // 服务端过滤
 ```
 
-### 7.5 陷阱五：在表达式中调用 C# 方法
+### 6.5 陷阱五：在表达式中调用 C# 方法
 
 ```csharp
 // 错误：EF Core 无法翻译自定义方法
@@ -1541,7 +1498,7 @@ var q = dbContext.Users.Where(u => IsValidUser(u));
 var q = dbContext.Users.Where(u => u.Age >= 18 && u.IsActive);
 ```
 
-### 7.6 陷阱六：First on empty
+### 6.6 陷阱六：First on empty
 
 ```csharp
 // 错误：空序列抛异常
@@ -1552,7 +1509,7 @@ var first = numbers.FirstOrDefault();  // 返回 default(T)
 if (first != null) { /* ... */ }
 ```
 
-### 7.7 陷阱七：Count > 0 vs Any
+### 6.7 陷阱七：Count > 0 vs Any
 
 ```csharp
 // 不推荐：Count 需要枚举整个序列（对 IEnumerable）
@@ -1562,7 +1519,7 @@ if (numbers.Count() > 0) { }
 if (numbers.Any()) { }
 ```
 
-### 7.8 陷阱八：SelectMany 嵌套
+### 6.8 陷阱八：SelectMany 嵌套
 
 ```csharp
 // 复杂的 SelectMany
@@ -1578,7 +1535,7 @@ var q = from o in orders
         select new { OrderId = o.Id, ItemName = i.Name };
 ```
 
-### 7.9 陷阱九：OrderBy 与 ThenBy
+### 6.9 陷阱九：OrderBy 与 ThenBy
 
 ```csharp
 // 错误：第二个 OrderBy 覆盖第一个
@@ -1588,7 +1545,7 @@ var q = users.OrderBy(u => u.Age).OrderBy(u => u.Name);  // 仅按 Name 排序
 var q = users.OrderBy(u => u.Age).ThenBy(u => u.Name);  // 先按 Age，再按 Name
 ```
 
-### 7.10 陷阱十：Distinct 自定义比较
+### 6.10 陷阱十：Distinct 自定义比较
 
 ```csharp
 // 默认 Distinct 使用 EqualityComparer<T>.Default
@@ -1607,7 +1564,7 @@ var distinctByName = users.Distinct(new UserByNameComparer());
 var distinctByName2 = users.DistinctBy(u => u.Name);
 ```
 
-### 7.11 最佳实践总结
+### 6.11 最佳实践总结
 
 1. **流式处理大数据**：使用 `File.ReadLines` + LINQ 链。
 2. **缓存多次枚举**：用 `ToList` / `ToArray` 冻结结果。
@@ -1622,9 +1579,9 @@ var distinctByName2 = users.DistinctBy(u => u.Name);
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目配置
+### 7.1 项目配置
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -1647,7 +1604,7 @@ var distinctByName2 = users.DistinctBy(u => u.Name);
 </Project>
 ```
 
-### 8.2 性能基准
+### 7.2 性能基准
 
 ```csharp
 using BenchmarkDotNet.Attributes;
@@ -1690,9 +1647,9 @@ public class Program
 }
 ```
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
-#### 8.3.1 查看生成的 SQL
+#### 7.3.1 查看生成的 SQL
 
 ```csharp
 // EF Core 日志
@@ -1702,7 +1659,7 @@ services.AddDbContext<AppDbContext>(options =>
            .EnableSensitiveDataLogging());
 ```
 
-#### 8.3.2 查看 ToQueryString
+#### 7.3.2 查看 ToQueryString
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
@@ -1712,11 +1669,11 @@ Console.WriteLine(q.ToQueryString());
 // 输出：SELECT * FROM Users WHERE Age > 18
 ```
 
-#### 8.3.3 表达式树可视化
+#### 7.3.3 表达式树可视化
 
 Visual Studio 2022 调试时，表达式树有内置可视化器（`Expression Tree Visualizer`）。
 
-### 8.4 异步 LINQ
+### 7.4 异步 LINQ
 
 ```csharp
 using System.Linq.Async;  // System.Linq.Async NuGet 包
@@ -1744,7 +1701,7 @@ var users = await db.Users
     .ToListAsync();
 ```
 
-### 8.5 PLINQ 并行
+### 7.5 PLINQ 并行
 
 ```csharp
 using System.Linq;
@@ -1766,7 +1723,7 @@ var ordered = Enumerable.Range(0, 1_000_000)
     .ToList();
 ```
 
-### 8.6 NuGet 包
+### 7.6 NuGet 包
 
 ```xml
 <ItemGroup>
@@ -1783,9 +1740,9 @@ var ordered = Enumerable.Range(0, 1_000_000)
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 .NET Runtime 中的 Enumerable 实现
+### 8.1 .NET Runtime 中的 Enumerable 实现
 
 源码：[dotnet/runtime/libraries/System.Linq/src/System/Linq/Enumerable.cs](https://github.com/dotnet/runtime)
 
@@ -1841,7 +1798,7 @@ private sealed class WhereIterator<TSource> : Iterator<TSource>
 }
 ```
 
-### 9.2 EF Core 中的表达式树翻译
+### 8.2 EF Core 中的表达式树翻译
 
 源码：[dotnet/efcore/src/EFCore/Query/](https://github.com/dotnet/efcore)
 
@@ -1875,7 +1832,7 @@ public class SqlTranslatingExpressionVisitor : ExpressionVisitor
 }
 ```
 
-### 9.3 ASP.NET Core 中的 LINQ
+### 8.3 ASP.NET Core 中的 LINQ
 
 ```csharp
 // API 端点动态过滤
@@ -1893,7 +1850,7 @@ app.MapGet("/users", async (AppDbContext db, string? city, int? minAge) =>
 });
 ```
 
-### 9.4 PLINQ 内部实现
+### 8.4 PLINQ 内部实现
 
 PLINQ 使用 `Parallel.For` 与 `Partitioner` 将工作分块并行：
 
@@ -1927,7 +1884,7 @@ internal sealed class ParallelWhereIterator<T> : ParallelQuery<T>
 }
 ```
 
-### 9.5 System.Linq.Async 的异步 LINQ
+### 8.5 System.Linq.Async 的异步 LINQ
 
 ```csharp
 // 异步 LINQ 操作符实现（简化）
@@ -2260,7 +2217,7 @@ public class Program
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 9**：为什么 `IEnumerable<T>` 支持多次枚举，而 `IObservable<T>` 与 Java `Stream<T>` 不支持？
 
@@ -2320,9 +2277,9 @@ Console.WriteLine(compiled(5));  // 26
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 规范与官方文档
+### 10.1 规范与官方文档
 
 [1] Ecma International. 2023. *ECMA-334: The C# Language Specification (6th edition)*. Geneva, Switzerland: Ecma International. https://www.ecma-international.org/wp-content/uploads/ECMA-334_6th_edition_december_2022.pdf
 
@@ -2332,7 +2289,7 @@ Console.WriteLine(compiled(5));  // 26
 
 [4] Microsoft. 2024. *Expression trees documentation*. .NET documentation. https://learn.microsoft.com/dotnet/csharp/expression-trees
 
-### 11.2 设计论文与博客
+### 10.2 设计论文与博客
 
 [5] Meijer, E., Beckman, B., Bierman, G. 2007. *LINQ: Reconciling Object, Relations and XML in the .NET Framework*. In Proceedings of the 2007 ACM SIGMOD International Conference on Management of Data (SIGMOD '07). Association for Computing Machinery, New York, NY, USA, 703–704. https://doi.org/10.1145/1247480.1247569
 
@@ -2342,7 +2299,7 @@ Console.WriteLine(compiled(5));  // 26
 
 [8] Microsoft. 2007. *The LINQ Project*. MSDN. https://learn.microsoft.com/archive/blogs/dotnet/the-linq-project
 
-### 11.3 学术论文
+### 10.3 学术论文
 
 [9] Chafe, P., Black, A. P. 2010. *LINQ as a Domain-Specific Language*. In Proceedings of the 48th Annual Southeast Regional Conference (ACMSE '10). Association for Computing Machinery, New York, NY, USA. https://doi.org/10.1145/1900008.1900053
 
@@ -2350,7 +2307,7 @@ Console.WriteLine(compiled(5));  // 26
 
 [11] Okur, S., Hartveld, D. L., Dig, D., et al. 2014. *A study and toolkit for asynchronous programming in C#. In Proceedings of the 36th International Conference on Software Engineering (ICSE 2014)*. https://doi.org/10.1145/2568225.2568267
 
-### 11.4 书籍
+### 10.4 书籍
 
 [12] Albahari, J. 2020. *C# in a Nutshell: The Definitive Reference*. O'Reilly Media, Sebastopol, CA, USA. ISBN: 978-1492051017.
 
@@ -2360,7 +2317,7 @@ Console.WriteLine(compiled(5));  // 26
 
 [15] Calvert, C., Kulkarni, D. 2007. *Essential LINQ*. Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0321564160.
 
-### 11.5 源码
+### 10.5 源码
 
 [16] Microsoft. 2024. *dotnet/runtime LINQ source*. GitHub. https://github.com/dotnet/runtime/tree/main/src/libraries/System.Linq
 
@@ -2370,35 +2327,35 @@ Console.WriteLine(compiled(5));  // 26
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶书籍
+### 11.1 进阶书籍
 
 - **Jon Skeet**. *C# in Depth (4th ed.)* — 第 9-12 章深入讲解 LINQ。
 - **Joseph Albahari**. *C# in a Nutshell* — 第 8 章"LINQ Operators"是权威参考。
 - **Bart De Smet**. *Programming Reactive Extensions and LINQ* — Rx 与 LINQ 的关系。
 
-### 12.2 学术资源
+### 11.2 学术资源
 
 - **MIT 6.1020 Software Construction** — https://ocw.mit.edu/ — 抽象数据类型与迭代器。
 - **Stanford CS107 Programming Paradigms** — https://web.stanford.edu/class/cs107/ — 函数式编程基础。
 - **CMU 15-411 Compiler Design** — http://www.cs.cmu.edu/~fp/courses/15411-f08/ — 表达式树与 AST。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **101 LINQ Samples** — https://learn.microsoft.com/dotnet/csharp/linq/standard-query-operators/ — 官方示例集。
 - **LINQ Pad** — https://www.linqpad.net/ — Joe Albahari 的交互式 LINQ 工具，必备。
 - **EF Core documentation** — https://learn.microsoft.com/ef/core/ — 官方 EF Core 文档。
 - **Stephen Toub's Performance Blog** — https://devblogs.microsoft.com/dotnet/ — LINQ 性能优化。
 
-### 12.4 相关源码
+### 11.4 相关源码
 
 - **dotnet/runtime/src/libraries/System.Linq/** — LINQ to Objects 实现。
 - **dotnet/efcore/src/EFCore/Query/** — EF Core 查询翻译。
 - **dotnet/roslyn/src/Compilers/CSharp/Portable/Lowering/IteratorRewriter/** — `yield return` 状态机重写。
 - **dotnet/reactive/** — System.Reactive（IObservable）实现。
 
-### 12.5 视频资源
+### 11.5 视频资源
 
 - **Channel 9: LINQ Series** — https://channel9.msdn.com/ — Bart De Smet 系列。
 - **Erik Meijer's Talks** — LINQ 设计师的多次演讲。

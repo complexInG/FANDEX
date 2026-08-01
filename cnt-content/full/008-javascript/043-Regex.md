@@ -18,32 +18,16 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
+
 # JavaScript 正则表达式
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标（Bloom 分类）
+## 1. 历史动机：正则表达式的起源
 
-读完本文后，读者应能够达到以下认知层次：
-
-| 层次 | 行为目标 | 具体能力描述 |
-| --- | --- | --- |
-| 记忆（Remember） | 列出正则表达式核心语法元素 | 能在 1 分钟内说出字符类、量词、锚点、分组、修饰符的符号与含义 |
-| 理解（Understand） | 解释正则引擎的工作原理 | 能说明 NFA 与 DFA 的差异，以及回溯机制如何影响性能 |
-| 应用（Apply） | 在 JavaScript 中编写与使用正则 | 能使用 `RegExp`、`String.match`、`String.replace`、`String.split` 解决实际字符串处理问题 |
-| 分析（Analyze） | 区分贪婪、非贪婪、占有量词的行为 | 能预测复杂正则在不同输入下的匹配结果与回溯次数 |
-| 评价（Evaluate） | 评估正则的性能与可读性 | 能识别灾难性回溯风险，重构正则以避免 ReDoS 漏洞 |
-| 创造（Create） | 设计完整的文本处理 DSL | 能实现模板引擎、配置解析器、Markdown 解析器等基于正则的工具 |
-
-学习本课前，建议先掌握：JavaScript 字符串方法、字面量、模板字符串、ES6 解构、Symbol、迭代器。
-
----
-
-## 2. 历史动机：正则表达式的起源
-
-### 2.1 从神经学到数学：1956 年的奠基
+### 1.1 从神经学到数学：1956 年的奠基
 
 正则表达式的起源可以追溯到 1943 年 Warren McCulloch 与 Walter Pitts 的神经元数学模型研究。两位研究者将神经元抽象为"被激活或未被激活"的二值单元，并提出用形式语言描述其行为。
 
@@ -55,13 +39,13 @@ prerequisites:
 
 这三类运算构成正则语言的完整描述能力，与有限状态自动机（Finite State Automaton, FSA）等价。
 
-### 2.2 Unix 之父 Ken Thompson 的工程实现
+### 1.2 Unix 之父 Ken Thompson 的工程实现
 
 1968 年，Ken Thompson（Unix 与 C 语言的共同创造者）在 *Regular Expression Search Algorithm* 论文中实现了首个正则引擎，将其集成到 Unix 的 `ed` 编辑器中。命令 `g/re/p`（global regex print）后来演变为独立的 `grep` 工具，至今仍是开发者最常用的命令之一。
 
 Thompson 的实现采用**NFA（非确定有限自动机）**算法，通过构造状态转移图，回溯式搜索匹配。这一选择深远影响了后续几乎所有正则引擎，包括 JavaScript 的 V8 实现。
 
-### 2.3 POSIX 标准与 Perl 革命
+### 1.3 POSIX 标准与 Perl 革命
 
 1986 年 POSIX 标准化正则表达式，定义了 BRE（Basic Regular Expression）与 ERE（Extended Regular Expression）两种方言。
 
@@ -74,7 +58,7 @@ Thompson 的实现采用**NFA（非确定有限自动机）**算法，通过构�
 
 这些扩展被统称为 PCRE（Perl Compatible Regular Expressions），JavaScript 的正则语法基本是 PCRE 的子集。
 
-### 2.4 ECMAScript 正则的演进
+### 1.4 ECMAScript 正则的演进
 
 | 版本 | 年份 | 关键特性 |
 | --- | --- | --- |
@@ -86,7 +70,7 @@ Thompson 的实现采用**NFA（非确定有限自动机）**算法，通过构�
 | ES2022 | 2022 | `d` 修饰符（indices 属性） |
 | ES2024 | 2024 | Unicode 15.1 属性支持、`v` 修饰符（集合操作） |
 
-### 2.5 为什么 JavaScript 正则值得深入学习
+### 1.5 为什么 JavaScript 正则值得深入学习
 
 正则表达式是 JavaScript 工程师的"瑞士军刀"：
 
@@ -101,9 +85,9 @@ Thompson 的实现采用**NFA（非确定有限自动机）**算法，通过构�
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 正则语言的形式化
+### 2.1 正则语言的形式化
 
 **定义（正则语言）**：设 $\Sigma$ 为有限字母表，正则语言 $R$ 递归定义如下：
 
@@ -115,7 +99,7 @@ Thompson 的实现采用**NFA（非确定有限自动机）**算法，通过构�
 
 **Kleene 定理**：正则语言与有限状态自动机（FSA）等价。
 
-### 3.2 正则表达式的代数性质
+### 2.2 正则表达式的代数性质
 
 正则表达式构成代数系统 $(RE, \cup, \circ, *)$，满足：
 
@@ -159,7 +143,7 @@ $$
 
 注意：连接运算**不满足交换律**，即 $A \circ B \neq B \circ A$。这与正则表达式中的字符顺序一致。
 
-### 3.3 NFA 与 DFA 的等价性
+### 2.3 NFA 与 DFA 的等价性
 
 正则引擎有两种实现模型：
 
@@ -179,7 +163,7 @@ $$
 - 在最坏情况下性能退化为指数级。
 - 需要警惕灾难性回溯。
 
-### 3.4 正则表达式的语义函数
+### 2.4 正则表达式的语义函数
 
 定义匹配函数 $M : RE \times \Sigma^* \to \mathcal{P}(\Sigma^*)$：
 
@@ -195,7 +179,7 @@ $$
 \text{test}(R, s) = M(R, s) \neq \emptyset
 $$
 
-### 3.5 匹配模式的形式化
+### 2.5 匹配模式的形式化
 
 不同修饰符改变匹配语义：
 
@@ -209,9 +193,9 @@ $$
 
 ---
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 字符类的代数化简
+### 3.1 字符类的代数化简
 
 字符类 `[abc]` 等价于并集：
 
@@ -244,7 +228,7 @@ $$
 | `.` | `[^\n]`（默认） | 任意字符（除换行） |
 | `.` + `s` | `[\s\S]` | 任意字符 |
 
-### 4.2 量词的递归展开
+### 3.2 量词的递归展开
 
 量词的语义是递归定义的：
 
@@ -278,7 +262,7 @@ $$
 A^{n,m} = \bigcup_{i=n}^{m} A^i
 $$
 
-### 4.3 贪婪与懒惰的回溯差异
+### 3.3 贪婪与懒惰的回溯差异
 
 **贪婪量词** `.*` 优先匹配最长串，失败后回溯：
 
@@ -310,7 +294,7 @@ $$
 | 贪婪 | `.*foo` | $n$ | $O(n)$ |
 | 懒惰 | `.*?foo` | $n$ | $O(1)$（首次匹配即成功） |
 
-### 4.4 灾难性回溯的形式化
+### 3.4 灾难性回溯的形式化
 
 **定义**：正则 $R$ 在输入 $s$ 上发生灾难性回溯，当且仅当其 NFA 模拟步数关于 $|s|$ 指数增长。
 
@@ -331,7 +315,7 @@ $$
 - 使用原子组 `(?>...)`（JavaScript 不支持）。
 - 重构正则：用 `a+b` 替代 `(a+)+b`。
 
-### 4.5 反向引用与捕获组的状态
+### 3.5 反向引用与捕获组的状态
 
 捕获组 `(...)` 在 NFA 中保存最近匹配的子串，反向引用 `\1` 在后续位置匹配相同子串：
 
@@ -349,7 +333,7 @@ $$
 - DFA 无法实现（DFA 无状态）。
 - 部分引擎在含反向引用时退化为慢速回溯。
 
-### 4.6 零宽断言的语义
+### 3.6 零宽断言的语义
 
 **前瞻** `(?=...)` 与 **负前瞻** `(?!...)` 是零宽断言：匹配位置而非字符，不消耗输入。
 
@@ -369,7 +353,7 @@ $$
 
 后瞻在 JavaScript 中是 ES2018 引入，性能不如前瞻（需回溯）。
 
-### 4.7 Unicode 处理与 UTF-16
+### 3.7 Unicode 处理与 UTF-16
 
 JavaScript 字符串以 UTF-16 编码存储。BMP 之外的字符（如 emoji）占用 2 个码元：
 
@@ -396,9 +380,9 @@ console.log(emoji.charCodeAt(1)); // 56877 (0xDDD7)
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 创建正则表达式
+### 4.1 创建正则表达式
 
 ```javascript
 // 方式一：字面量（推荐用于静态模式）
@@ -434,7 +418,7 @@ console.log(/abc/gi.flags); // "gi"
 console.log(/abc/gi.source); // "abc"
 ```
 
-### 5.2 基础语法：字符类与量词
+### 4.2 基础语法：字符类与量词
 
 ```javascript
 // 字符类
@@ -468,7 +452,7 @@ console.log(str.match(/<.+>/)[0]); // "<div>hello</div>"（贪婪）
 console.log(str.match(/<.+?>/)[0]); // "<div>"（非贪婪）
 ```
 
-### 5.3 边界与锚点
+### 4.3 边界与锚点
 
 ```javascript
 // ^ 与 $（行/字符串边界）
@@ -490,7 +474,7 @@ console.log(/\bword\b/.test('password')); // false
 console.log(/\Bword\B/.test('password')); // true
 ```
 
-### 5.4 分组与反向引用
+### 4.4 分组与反向引用
 
 ```javascript
 // 捕获分组
@@ -523,7 +507,7 @@ const htmlTag = /<(\w+)>.*<\/\1>/.exec('<div>content</div>');
 console.log(htmlTag[1]); // "div"
 ```
 
-### 5.5 前瞻与后瞻
+### 4.5 前瞻与后瞻
 
 ```javascript
 // 正向前瞻
@@ -548,7 +532,7 @@ const prices = text.match(/(?<=[$¥€])\d+/g);
 console.log(prices); // ['100', '200', '50']
 ```
 
-### 5.6 Unicode 处理
+### 4.6 Unicode 处理
 
 ```javascript
 // u 修饰符：正确处理 Unicode
@@ -581,7 +565,7 @@ console.log(codePointLength(emoji)); // 1
 console.log(emoji.length); // 2（按码元）
 ```
 
-### 5.7 修饰符组合与 lastIndex
+### 4.7 修饰符组合与 lastIndex
 
 ```javascript
 // g 修饰符与 lastIndex
@@ -621,7 +605,7 @@ console.log(result.indices); // [[0, 7], [0, 4], [5, 7]]
 console.log(result.indices.groups); // undefined（无命名组）
 ```
 
-### 5.8 String 方法与正则
+### 4.8 String 方法与正则
 
 ```javascript
 const text = 'Hello World, hello JavaScript';
@@ -666,7 +650,7 @@ console.log('one,two;three|four'.split(/[,;|]/)); // ['one', 'two', 'three', 'fo
 console.log('a1b2c3'.split(/(\d)/)); // ['a', '1', 'b', '2', 'c', '3', '']
 ```
 
-### 5.9 实用模式：表单验证
+### 4.9 实用模式：表单验证
 
 ```javascript
 // 邮箱
@@ -717,7 +701,7 @@ console.log(validate('user@example.com', emailRegex, '邮箱格式错误'));
 console.log(validate('13800138000', phoneRegex, '手机号格式错误'));
 ```
 
-### 5.10 实用模式：文本处理
+### 4.10 实用模式：文本处理
 
 ```javascript
 // 提取所有 URL
@@ -810,7 +794,7 @@ console.log(checkPasswordStrength('Pass123!@#xyz'));
 // { score: 6, level: 'very strong' }
 ```
 
-### 5.11 性能优化：预编译
+### 4.11 性能优化：预编译
 
 ```javascript
 // 反模式：每次循环创建新正则
@@ -836,7 +820,7 @@ goodPractice(items);
 console.timeEnd('good'); // ~10ms
 ```
 
-### 5.12 性能优化：避免灾难性回溯
+### 4.12 性能优化：避免灾难性回溯
 
 ```javascript
 // 危险：嵌套量词导致指数回溯
@@ -858,7 +842,7 @@ console.timeEnd('safe'); // <1ms
 // 安全：[\w.+-]+@[\w-]+\.[\w.-]+
 ```
 
-### 5.13 测试与调试
+### 4.13 测试与调试
 
 ```javascript
 // 详细匹配信息
@@ -905,7 +889,7 @@ debugNamed(
 );
 ```
 
-### 5.14 正则的子类化（ES6）
+### 4.14 正则的子类化（ES6）
 
 ```javascript
 class ExtendedRegExp extends RegExp {
@@ -939,9 +923,9 @@ console.log(ext.execAll('a1b22c333').map(m => m[0])); // ['1', '22', '333']
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 字符串方法对比
+### 5.1 字符串方法对比
 
 | 方法 | 返回类型 | 全局支持 | 用途 |
 | --- | --- | --- | --- |
@@ -954,7 +938,7 @@ console.log(ext.execAll('a1b22c333').map(m => m[0])); // ['1', '22', '333']
 | `RegExp.exec(str)` | Array \| null | g 时推进 lastIndex | 详细匹配 |
 | `RegExp.test(str)` | Boolean | g 时推进 lastIndex | 检测匹配 |
 
-### 6.2 量词行为对比
+### 5.2 量词行为对比
 
 | 量词 | 含义 | 贪婪 | 回溯行为 |
 | --- | --- | --- | --- |
@@ -969,7 +953,7 @@ console.log(ext.execAll('a1b22c333').map(m => m[0])); // ['1', '22', '333']
 | `??` | 0 或 1 次 | 否 | 优先匹配 0 次 |
 | `*+` | 占有 | - | 不回溯（JS 不支持） |
 
-### 6.3 修饰符对比
+### 5.3 修饰符对比
 
 | 修饰符 | 引入版本 | 作用 | 性能影响 |
 | --- | --- | --- | --- |
@@ -981,7 +965,7 @@ console.log(ext.execAll('a1b22c333').map(m => m[0])); // ['1', '22', '333']
 | `y` | ES6 | 粘性 | 微小 |
 | `d` | ES2022 | indices | 微小 |
 
-### 6.4 NFA vs DFA 引擎对比
+### 5.4 NFA vs DFA 引擎对比
 
 | 维度 | NFA（JavaScript） | DFA（如 RE2） |
 | --- | --- | --- |
@@ -993,7 +977,7 @@ console.log(ext.execAll('a1b22c333').map(m => m[0])); // ['1', '22', '333']
 | 灾难性回溯 | 可能 | 不可能 |
 | 典型库 | JavaScript RegExp、PCRE | RE2、Rust regex |
 
-### 6.5 与其他语言正则对比
+### 5.5 与其他语言正则对比
 
 | 特性 | JavaScript | Python | Java | Go | Rust |
 | --- | --- | --- | --- | --- | --- |
@@ -1004,7 +988,7 @@ console.log(ext.execAll('a1b22c333').map(m => m[0])); // ['1', '22', '333']
 | 占有量词 | 不支持 | 支持 | 支持 | 不支持 | 不支持 |
 | 原子组 | 不支持 | 支持 | 支持 | 不适用 | 不支持 |
 
-### 6.6 字符串处理方案对比
+### 5.6 字符串处理方案对比
 
 | 方案 | 适用场景 | 优势 | 劣势 |
 | --- | --- | --- | --- |
@@ -1015,9 +999,9 @@ console.log(ext.execAll('a1b22c333').map(m => m[0])); // ['1', '22', '333']
 
 ---
 
-## 7. 常见陷阱
+## 6. 常见陷阱
 
-### 7.1 陷阱：`test` 与 `lastIndex` 副作用
+### 6.1 陷阱：`test` 与 `lastIndex` 副作用
 
 ```javascript
 // 错误：g 修饰符让 test 改变状态
@@ -1033,7 +1017,7 @@ console.log(pattern.test('123')); // true
 console.log('123'.match(/\d+/g)); // ['123']
 ```
 
-### 7.2 陷阱：特殊字符未转义
+### 6.2 陷阱：特殊字符未转义
 
 ```javascript
 // 错误：用户输入直接拼接正则
@@ -1049,7 +1033,7 @@ const safeRegex = new RegExp(escapeRegExp(userInput));
 console.log(safeRegex.test('price: $50')); // true
 ```
 
-### 7.3 陷阱：贪婪匹配导致过度消费
+### 6.3 陷阱：贪婪匹配导致过度消费
 
 ```javascript
 // 错误：贪婪匹配吞掉多个标签
@@ -1062,7 +1046,7 @@ const right = html.match(/<a>.+?<\/a>/g);
 // right = ["<a>1</a>", "<a>2</a>"]
 ```
 
-### 7.4 陷阱：Unicode 字符被拆分
+### 6.4 陷阱：Unicode 字符被拆分
 
 ```javascript
 // 错误：未加 u，emoji 被拆为两个码元
@@ -1075,7 +1059,7 @@ console.log(/^.$/u.test(emoji)); // true
 console.log([...emoji].length); // 1
 ```
 
-### 7.5 陷阱：`String.replace` 的 `$` 特殊含义
+### 6.5 陷阱：`String.replace` 的 `$` 特殊含义
 
 ```javascript
 // 错误：替换字符串含 $ 时被特殊解释
@@ -1087,7 +1071,7 @@ const safe = 'price'.replace(/price/, () => '$100');
 console.log(safe); // "$100"
 ```
 
-### 7.6 陷阱：捕获组与 `(?:...)` 混淆
+### 6.6 陷阱：捕获组与 `(?:...)` 混淆
 
 ```javascript
 // 错误：以为 (?:...) 会捕获
@@ -1096,7 +1080,7 @@ console.log(match[1]); // "123"
 console.log(match[2]); // undefined（只有 1 个捕获组）
 ```
 
-### 7.7 陷阱：`^` 与 `$` 的多行模式
+### 6.7 陷阱：`^` 与 `$` 的多行模式
 
 ```javascript
 const multiline = `line1
@@ -1109,7 +1093,7 @@ console.log(/^line\d$/.test(multiline)); // false（不匹配多行）
 console.log(/^line\d$/m.test(multiline)); // true
 ```
 
-### 7.8 陷阱：反向引用的空匹配
+### 6.8 陷阱：反向引用的空匹配
 
 ```javascript
 // 错误：反向引用在空捕获时行为不一致
@@ -1121,7 +1105,7 @@ console.log(match[0]); // ""
 const safe = /(a)?(?:\1)?/.exec('b');
 ```
 
-### 7.9 陷阱：`split` 与捕获组的交互
+### 6.9 陷阱：`split` 与捕获组的交互
 
 ```javascript
 // 捕获组会被包含在结果中
@@ -1133,7 +1117,7 @@ console.log('a1b2c'.split(/(?:\d)/));
 // ['a', 'b', 'c']
 ```
 
-### 7.10 陷阱：ReDoS 攻击
+### 6.10 陷阱：ReDoS 攻击
 
 ```javascript
 // 漏洞代码：用户输入可触发灾难性回溯
@@ -1154,9 +1138,9 @@ const safeEmailRegex = /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]{1,253}\.[a-zA-Z]{2
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 类型安全的正则封装
+### 7.1 类型安全的正则封装
 
 ```javascript
 /**
@@ -1227,7 +1211,7 @@ const emailRegex = new SafeRegex(/^[a-z]+@[a-z]+\.[a-z]+$/i);
 console.log(emailRegex.test('user@example.com')); // true
 ```
 
-### 8.2 正则表达式生成器
+### 7.2 正则表达式生成器
 
 ```javascript
 /**
@@ -1293,7 +1277,7 @@ console.log(RegexBuilder.email().test('user@example.com'));
 console.log(RegexBuilder.phone('CN').test('13812345678'));
 ```
 
-### 8.3 模板引擎实现
+### 7.3 模板引擎实现
 
 ```javascript
 /**
@@ -1353,7 +1337,7 @@ console.log(
 );
 ```
 
-### 8.4 Markdown 解析器（简化）
+### 7.4 Markdown 解析器（简化）
 
 ```javascript
 class MarkdownParser {
@@ -1413,7 +1397,7 @@ console.log(parser.parse('# Title\n\nSome **bold** text.'));
 // "<h1>Title</h1>\n<p>Some <strong>bold</strong> text.</p>"
 ```
 
-### 8.5 路由匹配
+### 7.5 路由匹配
 
 ```javascript
 /**
@@ -1458,7 +1442,7 @@ router.match('/users/123'); // User: 123
 router.match('/posts/2026/07'); // Posts: { year: '2026', month: '07' }
 ```
 
-### 8.6 词法分析器
+### 7.6 词法分析器
 
 ```javascript
 /**
@@ -1519,7 +1503,7 @@ console.log(lexer.tokenize('(1 + 2) * 3'));
 // ]
 ```
 
-### 8.7 XSS 防御过滤器
+### 7.7 XSS 防御过滤器
 
 ```javascript
 /**
@@ -1556,7 +1540,7 @@ console.log(XSSFilter.sanitize('<img src="x" onerror="alert(1)">'));
 // "<img src="x" >"
 ```
 
-### 8.8 配置文件解析
+### 7.8 配置文件解析
 
 ```javascript
 /**
@@ -1620,9 +1604,9 @@ console.log(parser.parse(ini));
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：完整表单验证库
+### 8.1 案例一：完整表单验证库
 
 ```javascript
 class FormValidator {
@@ -1687,7 +1671,7 @@ console.log(errors);
 // { email: 'Invalid email', phone: 'Invalid phone', website: 'Invalid URL', age: 'Age must be 18-120' }
 ```
 
-### 9.2 案例二：日志解析器
+### 8.2 案例二：日志解析器
 
 ```javascript
 /**
@@ -1756,7 +1740,7 @@ const entries = parser.parseAll(log);
 console.log(parser.summarize(entries));
 ```
 
-### 9.3 案例三：SQL 防注入
+### 8.3 案例三：SQL 防注入
 
 ```javascript
 /**
@@ -1799,7 +1783,7 @@ console.log(detector.detect("' OR 1=1 --")); // { safe: false, ... }
 console.log(detector.detect('normal input')); // { safe: true }
 ```
 
-### 9.4 案例四：代码高亮器
+### 8.4 案例四：代码高亮器
 
 ```javascript
 /**
@@ -1851,7 +1835,7 @@ console.log(highlighter.highlight(code));
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：写出匹配以下内容的正则：
 
@@ -1867,7 +1851,7 @@ console.log(highlighter.highlight(code));
 
 **题目 3**：给定字符串 `"Hello, World! 123"`，写出能提取 `"Hello"`、`"World"`、`"123"` 的正则。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：实现一个函数 `camelToKebab(str)`，将驼峰命名转为短横线命名（如 `myVariableName` → `my-variable-name`）。
 
@@ -1875,13 +1859,13 @@ console.log(highlighter.highlight(code));
 
 **题目 6**：写一个正则，匹配合法的 JSON 字符串（仅字符串值，不含对象/数组）。
 
-### 10.3 思考题
+### 9.3 思考题
 
 **题目 7**：为什么 `(a+)+b` 在输入 `aaaa...a!` 上会发生灾难性回溯？请从 NFA 角度分析。
 
 **题目 8**：JavaScript 的正则引擎是 NFA 还是 DFA？这对开发者意味着什么？
 
-### 10.4 设计题
+### 9.4 设计题
 
 **题目 9**：设计一个完整的路由匹配系统，支持：
 
@@ -1897,7 +1881,7 @@ console.log(highlighter.highlight(code));
 - 它的 `isEmail` 实现考虑了哪些边界情况？
 - 为什么它使用大量正则而不是手写解析器？
 
-### 10.5 参考答案
+### 9.5 参考答案
 
 **题目 3 答案**：
 
@@ -1933,7 +1917,7 @@ console.log(camelToKebab('HTMLElement')); // "html-element"
 
 ---
 
-## 11. 参考文献（ACM 格式）
+## 10. 参考文献（ACM 格式）
 
 [1] S. C. Kleene, "Representation of events in nerve nets and finite automata," in *Automata Studies*, C. E. Shannon and J. McCarthy, Eds. Princeton, NJ: Princeton University Press, 1956, pp. 3-42.
 
@@ -1961,7 +1945,7 @@ console.log(camelToKebab('HTMLElement')); // "html-element"
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 - [MDN - Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
 - [MDN - RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)

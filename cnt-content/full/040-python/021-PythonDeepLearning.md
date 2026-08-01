@@ -16,6 +16,7 @@ prerequisites:
   - python/语法速查
 ---
 
+
 # Python 与深度学习：从感知机到 Transformer 的工程化全景
 
 > "Deep learning is a particular kind of machine learning that achieves great power and flexibility by representing the world as a nested hierarchy of concepts, with each concept defined in relation to simpler concepts." —— Ian Goodfellow, *Deep Learning* (2016)
@@ -26,35 +27,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-### 1.1 Bloom 认知层级映射
-
-| 层级 | 行为动词 | 具体目标 |
-| ---- | -------- | -------- |
-| Remember（记忆） | 列举、识别 | 列出 PyTorch/TensorFlow 核心组件（Tensor、autograd、nn.Module、optimizer） |
-| Understand（理解） | 解释、归纳 | 解释自动微分、反向传播、计算图的原理与区别 |
-| Apply（应用） | 实现、训练 | 实现并训练 MLP、CNN、RNN、Transformer 等典型模型 |
-| Analyze（分析） | 比较、解构 | 比较 PyTorch 动态图与 TensorFlow 静态图的优劣 |
-| Evaluate（评价） | 评判、辩护 | 选择合适的优化器、学习率策略、正则化方法 |
-| Create（创造） | 设计、部署 | 设计端到端深度学习流水线：数据处理→训练→评估→部署 |
-
-### 1.2 预期能力
-
-阅读完毕后，读者应能够：
-
-1. 精确描述前向传播、反向传播、链式法则的数学推导
-2. 在 PyTorch 与 TensorFlow 中实现自定义层、损失函数、优化器
-3. 使用混合精度训练（AMP）、分布式数据并行（DDP）加速训练
-4. 通过 ONNX、TorchScript、TensorRT 将模型部署到生产环境
-5. 诊断并修复梯度消失/爆炸、过拟合、欠拟合等典型问题
-6. 评估 Transformer、扩散模型等前沿架构的工程化适配
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 神经网络的前 Python 时代（1943-2006）
+### 1.1 神经网络的前 Python 时代（1943-2006）
 
 深度学习的数学根基可追溯至 1943 年 McCulloch-Pitts 神经元模型：
 
@@ -72,7 +47,7 @@ $$
 
 此阶段主流实现为 C/C++/MATLAB，Python 仅作为脚本语言辅助实验。
 
-### 2.2 Theano：Python 深度学习的奠基（2007-2017）
+### 1.2 Theano：Python 深度学习的奠基（2007-2017）
 
 2007 年蒙特利尔大学 MILA 实验室（Yoshua Bengio 团队）发布 Theano，首次将 Python 与符号微分结合：
 
@@ -96,7 +71,7 @@ Theano 的核心贡献：
 
 2017 年 Theano 停止维护，但其设计思想被 TensorFlow 与 PyTorch 继承。
 
-### 2.3 TensorFlow：Google 的工业级框架（2015-）
+### 1.3 TensorFlow：Google 的工业级框架（2015-）
 
 2015 年 11 月 Google Brain 团队发布 TensorFlow 1.0，核心特征：
 
@@ -132,7 +107,7 @@ with tf.GradientTape() as tape:
 grad = tape.gradient(y, x)  # 即时求导
 ```
 
-### 2.4 PyTorch：Meta 的动态图革命（2016-）
+### 1.4 PyTorch：Meta 的动态图革命（2016-）
 
 2016 年 1 月 Meta AI（原 Facebook AI Research）发布 PyTorch 0.1，核心创新：
 
@@ -152,7 +127,7 @@ print(x.grad)  # tensor([2., 4., 6.])
 
 PyTorch 在研究领域迅速占据主导地位。NeurIPS 2023 论文中 PyTorch 占比超过 80%。
 
-### 2.5 Keras：高层 API 的标准化（2015-）
+### 1.5 Keras：高层 API 的标准化（2015-）
 
 2015 年 François Chollet 发布 Keras，提供高层神经网络 API：
 
@@ -171,7 +146,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 
 2019 年 Keras 成为 TensorFlow 2.x 的官方高级 API。
 
-### 2.6 Hugging Face Transformers：模型生态统一（2018-）
+### 1.6 Hugging Face Transformers：模型生态统一（2018-）
 
 2018 年 Hugging Face 发布 Transformers 库，统一了 BERT、GPT、T5 等预训练模型接口：
 
@@ -184,7 +159,7 @@ result = classifier("Deep learning with Python is amazing!")
 
 Transformers 已成为 NLP 与多模态模型的事实标准，支持 PyTorch 与 TensorFlow 后端。
 
-### 2.7 JAX：下一代数值计算（2018-）
+### 1.7 JAX：下一代数值计算（2018-）
 
 Google DeepMind 与 Google Brain 联合开发 JAX，提供：
 
@@ -205,7 +180,7 @@ print(grad_fn(jnp.array([1.0, 2.0, 3.0])))  # [2. 4. 6.]
 
 JAX 在 AlphaFold 2、Gemini 等大型项目中扮演重要角色。
 
-### 2.8 时间线一览
+### 1.8 时间线一览
 
 | 年份 | 框架/事件 | 影响 |
 | ---- | --------- | ---- |
@@ -222,9 +197,9 @@ JAX 在 AlphaFold 2、Gemini 等大型项目中扮演重要角色。
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 神经网络的数学定义
+### 2.1 神经网络的数学定义
 
 设深度神经网络 $f_\theta: \mathbb{R}^{d_\text{in}} \to \mathbb{R}^{d_\text{out}}$，由 $L$ 层组成：
 
@@ -240,7 +215,7 @@ $$
 
 其中 $\sigma$ 为激活函数，$\theta = \{\mathbf{W}^{(l)}, \mathbf{b}^{(l)}\}_{l=1}^{L}$ 为参数集合。
 
-### 3.2 损失函数
+### 2.2 损失函数
 
 给定训练集 $\mathcal{D} = \{(\mathbf{x}_i, \mathbf{y}_i)\}_{i=1}^{N}$，损失函数定义为：
 
@@ -254,7 +229,7 @@ $$
 - **交叉熵**：$\ell(\hat{\mathbf{y}}, \mathbf{y}) = -\sum_k y_k \log \hat{y}_k$
 - **对比损失**：$\ell = -\log\left(\frac{\exp(\text{sim}(\mathbf{z}_i, \mathbf{z}_j^+))}{\sum_k \exp(\text{sim}(\mathbf{z}_i, \mathbf{z}_k^-))}\right)$
 
-### 3.3 梯度下降与反向传播
+### 2.3 梯度下降与反向传播
 
 梯度下降更新规则：
 
@@ -278,7 +253,7 @@ $$
 \frac{\partial \mathcal{L}}{\partial \mathbf{W}^{(l)}} = \delta^{(l)} \left(\mathbf{h}^{(l-1)}\right)^\top, \quad \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(l)}} = \delta^{(l)}
 $$
 
-### 3.4 计算图形式化
+### 2.4 计算图形式化
 
 计算图为有向无环图（DAG）$G = (V, E)$，节点 $v \in V$ 表示张量或操作，边 $e \in E$ 表示数据依赖。
 
@@ -294,7 +269,7 @@ $$
 \frac{\partial \mathcal{L}}{\partial v_j} = \sum_{i: (v_j, v_i) \in E} \frac{\partial \mathcal{L}}{\partial v_i} \cdot \frac{\partial v_i}{\partial v_j}
 $$
 
-### 3.5 自动微分（Autodiff）
+### 2.5 自动微分（Autodiff）
 
 自动微分分为两种模式：
 
@@ -316,7 +291,7 @@ $$
 
 PyTorch 与 TensorFlow 默认使用反向模式自动微分。
 
-### 3.6 Tensor 对象协议
+### 2.6 Tensor 对象协议
 
 PyTorch Tensor 与 TensorFlow Tensor 都遵循类似的张量协议：
 
@@ -328,7 +303,7 @@ PyTorch Tensor 与 TensorFlow Tensor 都遵循类似的张量协议：
 | 梯度 | `tensor.grad` | `tensor`（在 GradientTape 中） | 反向传播梯度 |
 | 计算图 | `tensor.grad_fn` | `tensor`（KerasTape） | 构造图的函数 |
 
-### 3.7 优化器形式化
+### 2.7 优化器形式化
 
 **SGD（随机梯度下降）**：
 
@@ -362,9 +337,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 反向传播的链式法则
+### 3.1 反向传播的链式法则
 
 考虑 3 层网络 $f(\mathbf{x}) = \sigma_3(\mathbf{W}_3 \sigma_2(\mathbf{W}_2 \sigma_1(\mathbf{W}_1 \mathbf{x})))$，损失 $\mathcal{L} = \|f(\mathbf{x}) - \mathbf{y}\|^2$。
 
@@ -382,7 +357,7 @@ $$
 \frac{\partial \mathcal{L}}{\partial \mathbf{W}_1} = \left(\mathbf{W}_2^\top \delta_2\right) \odot \sigma_1'(\mathbf{z}_1) \cdot \mathbf{x}^\top
 $$
 
-### 4.2 梯度消失与梯度爆炸
+### 3.2 梯度消失与梯度爆炸
 
 对于深度 $L$ 层网络，梯度包含 $\prod_{l=1}^{L} \mathbf{W}^{(l)} \odot \sigma'(\mathbf{z}^{(l)})$ 项。
 
@@ -398,7 +373,7 @@ $$
 3. **LayerNorm**：稳定激活值分布
 4. **梯度裁剪**：$\mathbf{g} \leftarrow \min(1, \|\mathbf{g}\|_{\max} / \|\mathbf{g}\|) \cdot \mathbf{g}$
 
-### 4.3 卷积运算的形式化
+### 3.3 卷积运算的形式化
 
 二维卷积定义：
 
@@ -417,7 +392,7 @@ $$
 - **参数量**：$C_\text{out} \times C_\text{in} \times k_h \times k_w + C_\text{out}$（含偏置）
 - **计算量（FLOPs）**：$2 \times C_\text{out} \times C_\text{in} \times k_h \times k_w \times H_\text{out} \times W_\text{out}$
 
-### 4.4 Transformer 自注意力机制
+### 3.4 Transformer 自注意力机制
 
  scaled dot-product attention：
 
@@ -443,7 +418,7 @@ $$
 - FFN：$O(n \cdot d^2)$
 - 总计：$O(n^2 \cdot d + n \cdot d^2)$
 
-### 4.5 反向传播的时间复杂度
+### 3.5 反向传播的时间复杂度
 
 对于含 $P$ 个参数的网络，反向传播的计算量约为前向的 2-3 倍：
 
@@ -457,7 +432,7 @@ $$
 T_\text{train} \approx 3 \cdot N_\text{batch} \cdot N_\text{epoch} \cdot T_\text{forward}
 $$
 
-### 4.6 混合精度训练原理
+### 3.6 混合精度训练原理
 
 混合精度使用 FP16（半精度）存储与计算，FP32（单精度）累积梯度：
 
@@ -480,7 +455,7 @@ scaler.update()
 
 实测加速：NVIDIA A100 上 ResNet-50 训练速度提升 2-3 倍。
 
-### 4.7 分布式数据并行（DDP）
+### 3.7 分布式数据并行（DDP）
 
 DDP 核心思想：每个 GPU 持有完整模型副本，处理不同数据分片，反向传播后通过 AllReduce 同步梯度。
 
@@ -500,9 +475,9 @@ $$
 
 ---
 
-## 5. 代码示例（企业级 production-ready）
+## 4. 代码示例（企业级 production-ready）
 
-### 5.1 项目配置：`pyproject.toml`
+### 4.1 项目配置：`pyproject.toml`
 
 ```toml
 [project]
@@ -547,7 +522,7 @@ ignore_missing_imports = true
 testpaths = ["tests"]
 ```
 
-### 5.2 PyTorch 基础：MLP 训练 MNIST
+### 4.2 PyTorch 基础：MLP 训练 MNIST
 
 ```python
 """PyTorch 实现 MLP 训练 MNIST。
@@ -650,7 +625,7 @@ if __name__ == "__main__":
     main()
 ```
 
-### 5.3 CNN：CIFAR-10 图像分类
+### 4.3 CNN：CIFAR-10 图像分类
 
 ```python
 """CNN 实现 CIFAR-10 分类（ResNet-18 微调）。
@@ -729,7 +704,7 @@ def train_one_epoch(
     return total_loss / total
 ```
 
-### 5.4 自定义层与激活函数
+### 4.4 自定义层与激活函数
 
 ```python
 """自定义层与激活函数。
@@ -802,7 +777,7 @@ if __name__ == "__main__":
     print(f"Self-Attention output shape: {attn(x).shape}")
 ```
 
-### 5.5 自定义损失函数
+### 4.5 自定义损失函数
 
 ```python
 """自定义损失函数。
@@ -874,7 +849,7 @@ if __name__ == "__main__":
     print(f"Contrastive Loss: {contrastive(z_i, z_j):.4f}")
 ```
 
-### 5.6 自定义优化器
+### 4.6 自定义优化器
 
 ```python
 """自定义 AdamW 优化器（解耦权重衰减）。
@@ -941,7 +916,7 @@ class AdamW(Optimizer):
         return loss
 ```
 
-### 5.7 数据加载与增强
+### 4.7 数据加载与增强
 
 ```python
 """数据加载与增强流水线。
@@ -1013,7 +988,7 @@ def get_eval_transforms(image_size: int = 224) -> transforms.Compose:
     ])
 ```
 
-### 5.8 混合精度训练
+### 4.8 混合精度训练
 
 ```python
 """混合精度训练（AMP）。
@@ -1063,7 +1038,7 @@ def train_with_amp(
     return total_loss / total
 ```
 
-### 5.9 分布式训练（DDP）
+### 4.9 分布式训练（DDP）
 
 ```python
 """分布式数据并行训练（DDP）。
@@ -1129,7 +1104,7 @@ if __name__ == "__main__":
     mp.spawn(train_ddp, args=(world_size,), nprocs=world_size, join=True)
 ```
 
-### 5.10 模型导出与推理优化
+### 4.10 模型导出与推理优化
 
 ```python
 """模型导出：TorchScript 与 ONNX。
@@ -1200,7 +1175,7 @@ if __name__ == "__main__":
     print(f"推理延迟: {latency:.3f} ms")
 ```
 
-### 5.11 TensorFlow 2.x 等价实现
+### 4.11 TensorFlow 2.x 等价实现
 
 ```python
 """TensorFlow 2.x Keras 实现 MNIST 分类。
@@ -1250,7 +1225,7 @@ if __name__ == "__main__":
     main()
 ```
 
-### 5.12 Hugging Face Transformers 调用
+### 4.12 Hugging Face Transformers 调用
 
 ```python
 """Hugging Face Transformers 文本分类。
@@ -1296,9 +1271,9 @@ if __name__ == "__main__":
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 PyTorch vs TensorFlow vs JAX
+### 5.1 PyTorch vs TensorFlow vs JAX
 
 | 维度 | PyTorch | TensorFlow 2.x | JAX |
 | ---- | ------- | -------------- | --- |
@@ -1312,7 +1287,7 @@ if __name__ == "__main__":
 | 研究占比 | 80%+ (NeurIPS 2023) | <15% | 增长中 |
 | 工业部署 | TorchServe, Triton | TF Serving | 较少 |
 
-### 6.2 PyTorch 与 TensorFlow 代码对比
+### 5.2 PyTorch 与 TensorFlow 代码对比
 
 ```python
 # PyTorch 风格
@@ -1342,7 +1317,7 @@ model = keras.Sequential([
 ])
 ```
 
-### 6.3 与 Go/Rust/C++ 性能对比
+### 5.3 与 Go/Rust/C++ 性能对比
 
 | 任务 | Python (PyTorch) | C++ (libtorch) | Rust (tch-rs) | Go (GoNN) |
 | ---- | ---------------- | -------------- | ------------- | --------- |
@@ -1352,7 +1327,7 @@ model = keras.Sequential([
 | 生态 | 主流 | 跟随 | 跟随 | 边缘 |
 | 推理延迟 | 持平 | 持平 | 持平 | 慢 |
 
-### 6.4 训练框架对比
+### 5.4 训练框架对比
 
 | 框架 | 训练范式 | 适用场景 |
 | ---- | -------- | -------- |
@@ -1365,9 +1340,9 @@ model = keras.Sequential([
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱 1：忘记 `model.train()` / `model.eval()`
+### 6.1 陷阱 1：忘记 `model.train()` / `model.eval()`
 
 ```python
 # 反例：评估时未切换 eval 模式，Dropout/BatchNorm 行为异常
@@ -1381,7 +1356,7 @@ acc = evaluate(model, ...)
 model.train()  # 切回训练模式
 ```
 
-### 7.2 陷阱 2：未使用 `torch.no_grad()` 进行评估
+### 6.2 陷阱 2：未使用 `torch.no_grad()` 进行评估
 
 ```python
 # 反例：评估时未禁用梯度，内存爆炸
@@ -1402,7 +1377,7 @@ def evaluate_correct(model, loader):
     return total
 ```
 
-### 7.3 陷阱 3：设备不一致
+### 6.3 陷阱 3：设备不一致
 
 ```python
 # 反例：模型在 GPU，数据在 CPU
@@ -1414,7 +1389,7 @@ data = data.cuda()
 out = model(data)
 ```
 
-### 7.4 陷阱 4：学习率设置不当
+### 6.4 陷阱 4：学习率设置不当
 
 ```python
 # 反例：固定学习率过大
@@ -1431,7 +1406,7 @@ for epoch in range(100):
     scheduler.step()
 ```
 
-### 7.5 陷阱 5：梯度未清零
+### 6.5 陷阱 5：梯度未清零
 
 ```python
 # 反例：梯度累积
@@ -1451,7 +1426,7 @@ for x, y in loader:
     optimizer.step()
 ```
 
-### 7.6 陷阱 6：数据泄露
+### 6.6 陷阱 6：数据泄露
 
 ```python
 # 反例：训练集与测试集混淆
@@ -1469,7 +1444,7 @@ train = (train - mean) / std
 test = (test - mean) / std  # 用训练集统计量归一化测试集
 ```
 
-### 7.7 陷阱 7：BatchNorm 在小 batch 下失效
+### 6.7 陷阱 7：BatchNorm 在小 batch 下失效
 
 ```python
 # 反例：BatchNorm 在 batch=1 时方差未定义
@@ -1480,7 +1455,7 @@ out = model(torch.randn(1, 64, 32, 32))  # 训练模式下方差为 NaN
 model = nn.GroupNorm(8, 64)  # 8 个 group
 ```
 
-### 7.8 陷阱 8：保存模型仅保存 state_dict
+### 6.8 陷阱 8：保存模型仅保存 state_dict
 
 ```python
 # 反例：仅保存 state_dict，丢失优化器状态
@@ -1497,7 +1472,7 @@ checkpoint = {
 torch.save(checkpoint, "checkpoint.pth")
 ```
 
-### 7.9 陷阱 9：未设置随机种子
+### 6.9 陷阱 9：未设置随机种子
 
 ```python
 # 反例：每次运行结果不可复现
@@ -1519,7 +1494,7 @@ def set_seed(seed: int = 42) -> None:
 set_seed(42)
 ```
 
-### 7.10 陷阱 10：过度拟合训练集
+### 6.10 陷阱 10：过度拟合训练集
 
 ```python
 # 反例：训练集准确率 99%，验证集 70%（过拟合）
@@ -1533,7 +1508,7 @@ scheduler = CosineAnnealingLR(optimizer, T_max=100)
 early_stopping = EarlyStopping(patience=10)
 ```
 
-### 7.11 最佳实践清单
+### 6.11 最佳实践清单
 
 1. **设备管理**：统一使用 `device = torch.device("cuda" if available else "cpu")`
 2. **数据加载**：`num_workers > 0` + `pin_memory=True` 加速 IO
@@ -1548,9 +1523,9 @@ early_stopping = EarlyStopping(patience=10)
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构
+### 7.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -1594,7 +1569,7 @@ flowchart TD
     T28 --> T29
 ```
 
-### 8.2 配置管理（Hydra）
+### 7.2 配置管理（Hydra）
 
 ```python
 # configs/default.yaml
@@ -1627,7 +1602,7 @@ def main(cfg: DictConfig) -> None:
     train(model, train_loader, optimizer, cfg.train)
 ```
 
-### 8.3 实验追踪（MLflow）
+### 7.3 实验追踪（MLflow）
 
 ```python
 """MLflow 实验追踪。
@@ -1667,7 +1642,7 @@ def train_with_mlflow(cfg, model, train_loader, test_loader):
         mlflow.pytorch.log_model(model, "model")
 ```
 
-### 8.4 模型量化与压缩
+### 7.4 模型量化与压缩
 
 ```python
 """模型量化。
@@ -1707,7 +1682,7 @@ def quantize_static(model: nn.Module, calibration_loader) -> nn.Module:
 # INT8 静态量化: 25MB, 推理 15ms
 ```
 
-### 8.5 TensorRT 加速
+### 7.5 TensorRT 加速
 
 ```python
 """TensorRT 加速推理。
@@ -1731,7 +1706,7 @@ def optimize_with_tensorrt(model: nn.Module, input_shape: tuple = (1, 3, 224, 22
 # FP16 TensorRT: 1.8 ms (加速 2.9x)
 ```
 
-### 8.6 性能基准测试
+### 7.6 性能基准测试
 
 ```python
 """训练与推理性能基准。
@@ -1800,7 +1775,7 @@ def benchmark_inference(
     }
 ```
 
-### 8.7 调试技巧
+### 7.7 调试技巧
 
 ```python
 """调试神经网络。
@@ -1855,9 +1830,9 @@ def check_activation_stats(model: nn.Module, input_data: torch.Tensor) -> dict:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 OpenAI GPT 系列：从 GPT-1 到 GPT-4
+### 8.1 OpenAI GPT 系列：从 GPT-1 到 GPT-4
 
 GPT 系列采用 Decoder-only Transformer 架构：
 
@@ -1893,7 +1868,7 @@ GPT-3 参数规模：
 | GPT-3 | 96 | 12288 | 96 | 175B |
 | GPT-4 | MoE | - | - | ~1.8T（估计） |
 
-### 9.2 Meta LLaMA：开源大模型
+### 8.2 Meta LLaMA：开源大模型
 
 LLaMA 系列采用 RMSNorm、RoPE、SwiGLU 等改进：
 
@@ -1918,7 +1893,7 @@ def precompute_rope(dim: int, max_seq_len: int, theta: float = 10000.0) -> torch
     return torch.polar(torch.ones_like(freqs), freqs)  # 复数形式
 ```
 
-### 9.3 Google AlphaFold 2：蛋白质结构预测
+### 8.3 Google AlphaFold 2：蛋白质结构预测
 
 AlphaFold 2 使用 JAX 实现高效推理：
 
@@ -1943,7 +1918,7 @@ def distributed_forward(params, inputs):
     return forward(params, inputs)
 ```
 
-### 9.4 Stable Diffusion：扩散模型
+### 8.4 Stable Diffusion：扩散模型
 
 ```python
 """Stable Diffusion 简化实现。
@@ -1980,7 +1955,7 @@ if __name__ == "__main__":
     img.save("cat_piano.png")
 ```
 
-### 9.5 Instagram：图像推荐系统
+### 8.5 Instagram：图像推荐系统
 
 Instagram 的图像推荐使用 PyTorch 训练 ResNet/efficientnet 提取特征：
 
@@ -1999,7 +1974,7 @@ class FeatureExtractor(nn.Module):
 # 在线推荐时，查询 Faiss 找到相似图像
 ```
 
-### 9.6 Tesla Autopilot：CV 模型部署
+### 8.6 Tesla Autopilot：CV 模型部署
 
 Tesla 使用 PyTorch 训练，导出为 ONNX 后部署到车载芯片：
 
@@ -2007,7 +1982,7 @@ Tesla 使用 PyTorch 训练，导出为 ONNX 后部署到车载芯片：
 - 部署：ONNX → TensorRT，FP16 推理
 - 延迟：单帧推理 < 10ms（HW3.0 芯片）
 
-### 9.7 DeepMind AlphaCode：代码生成
+### 8.7 DeepMind AlphaCode：代码生成
 
 AlphaCode 使用 JAX 训练，参数规模 41B：
 
@@ -2015,7 +1990,7 @@ AlphaCode 使用 JAX 训练，参数规模 41B：
 - 数据：GitHub 代码 + 竞赛题
 - 推理：模型蒸馏 + 采样 + 聚类
 
-### 9.8 Stable Diffusion 在 Hugging Face 的部署
+### 8.8 Stable Diffusion 在 Hugging Face 的部署
 
 Hugging Face 使用 ONNX Runtime + Triton Inference Server 部署 Stable Diffusion：
 
@@ -2322,7 +2297,7 @@ augmented = transform(img)  # (3, 224, 224) tensor
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q1.** 为什么 PyTorch 在研究领域胜过 TensorFlow？请从 API 设计、调试体验、社区生态三个维度分析。
 
@@ -2380,9 +2355,9 @@ augmented = transform(img)  # (3, 224, 224) tensor
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 基础论文
+### 10.1 基础论文
 
 [1] Rumelhart, D.E., Hinton, G.E., and Williams, R.J. 1986. Learning representations by back-propagating errors. Nature 323, 6088 (Oct. 1986), 533–536. DOI: 10.1038/323533a0.
 
@@ -2394,7 +2369,7 @@ augmented = transform(img)  # (3, 224, 224) tensor
 
 [5] Vaswani, A., Shazeer, N., Parmar, N., et al. 2017. Attention is all you need. In Advances in Neural Information Processing Systems 30 (NeurIPS '17). Curran Associates, 5998–6008.
 
-### 11.2 优化算法
+### 10.2 优化算法
 
 [6] Kingma, D.P. and Ba, J. 2015. Adam: A method for stochastic optimization. In Proceedings of the 3rd International Conference on Learning Representations (ICLR '15). arXiv:1412.6980.
 
@@ -2402,7 +2377,7 @@ augmented = transform(img)  # (3, 224, 224) tensor
 
 [8] Reddi, S.J., Kale, S., and Kumar, S. 2018. On the convergence of Adam and beyond. In Proceedings of the 6th International Conference on Learning Representations (ICLR '18). arXiv:1904.09237.
 
-### 11.3 框架与系统
+### 10.3 框架与系统
 
 [9] Abadi, M., Agarwal, A., Barham, P., et al. 2016. TensorFlow: A system for large-scale machine learning. In Proceedings of the 12th USENIX Symposium on Operating Systems Design and Implementation (OSDI '16). USENIX Association, 265–283.
 
@@ -2410,7 +2385,7 @@ augmented = transform(img)  # (3, 224, 224) tensor
 
 [11] Bradbury, J., Frostig, R., Hawkins, P., et al. 2018. JAX: Composable transformations of Python+NumPy programs. Version 0.2.5. http://github.com/google/jax.
 
-### 11.4 大模型与扩散
+### 10.4 大模型与扩散
 
 [12] Devlin, J., Chang, M.-W., Lee, K., and Toutanova, K. 2019. BERT: Pre-training of deep bidirectional transformers for language understanding. In Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics (NAACL '19). ACL, 4171–4186. DOI: 10.18653/v1/N19-1423.
 
@@ -2418,7 +2393,7 @@ augmented = transform(img)  # (3, 224, 224) tensor
 
 [14] Rombach, R., Blattmann, A., Lorenz, D., Esser, P., and Ommer, B. 2022. High-resolution image synthesis with latent diffusion models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR '22). IEEE, 10684–10695. DOI: 10.1109/CVPR52688.2022.01042.
 
-### 11.5 工业实践
+### 10.5 工业实践
 
 [15] Anil, R., Gupta, V., Koren, T., and Singer, Y. 2019. Scalable second order optimization for deep learning. arXiv:2002.09018.
 
@@ -2428,9 +2403,9 @@ augmented = transform(img)  # (3, 224, 224) tensor
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **Goodfellow, I., Bengio, Y., and Courville, A. 2016.** *Deep Learning*. MIT Press. — 深度学习圣经，涵盖数学基础与现代方法。
 - **Ramalho, L. 2022.** *Fluent Python (2nd ed.)*. O'Reilly Media. — 第 11 章"Interfaces and Protocols"对 PyTorch 风格 API 设计有启发。
@@ -2438,7 +2413,7 @@ augmented = transform(img)  # (3, 224, 224) tensor
 - **Chollet, F. 2021.** *Deep Learning with Python (2nd ed.)*. Manning Publications. — Keras 创始人的实战指南。
 - **Geron, A. 2022.** *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow (3rd ed.)*. O'Reilly Media.
 
-### 12.2 课程
+### 11.2 课程
 
 - **MIT 6.S191: Introduction to Deep Learning** — http://introtodeeplearning.com/
 - **Stanford CS231n: Convolutional Neural Networks for Visual Recognition** — http://cs231n.stanford.edu/
@@ -2446,7 +2421,7 @@ augmented = transform(img)  # (3, 224, 224) tensor
 - **CMU 11-785: Introduction to Deep Learning** — http://deeplearning.cs.cmu.edu/
 - **fast.ai Practical Deep Learning** — https://course.fast.ai/
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **PyTorch 官方文档与教程** — https://pytorch.org/tutorials/
 - **TensorFlow 官方文档** — https://www.tensorflow.org/tutorials
@@ -2454,7 +2429,7 @@ augmented = transform(img)  # (3, 224, 224) tensor
 - **Papers with Code** — https://paperswithcode.com/
 - **The Gradient** — https://thegradient.pub/
 
-### 12.4 经典论文合集
+### 11.4 经典论文合集
 
 - **Attention is All You Need** (Vaswani et al. 2017)
 - **BERT** (Devlin et al. 2019)
@@ -2465,7 +2440,7 @@ augmented = transform(img)  # (3, 224, 224) tensor
 - **Batch Normalization** (Ioffe & Szegedy 2015)
 - **Layer Normalization** (Ba et al. 2016)
 
-### 12.5 工具与库
+### 11.5 工具与库
 
 - **PyTorch Lightning** — 高层训练框架
 - **Hugging Face Transformers** — 预训练模型库

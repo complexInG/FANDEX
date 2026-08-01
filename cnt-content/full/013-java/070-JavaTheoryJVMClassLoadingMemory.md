@@ -21,59 +21,20 @@ prerequisites:
   - java/面向对象基础
 ---
 
+
 # Java 理论知识点：JVM 原理、类加载机制与内存管理
 
 > 本文系统阐述 Java 虚拟机（JVM）的内部架构与运行机制，包括类加载子系统、运行时数据区、字节码执行引擎、即时编译器、垃圾回收器、内存模型与性能调优等核心理论。内容兼顾形式化定义与工程实践，旨在帮助开发者建立对 JVM 的完整认知框架，具备诊断生产环境 JVM 问题与执行性能调优的能力。
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本文依据 Bloom's Taxonomy（布鲁姆认知目标分类学）的六个层次组织学习目标，确保从低阶认知到高阶创造的渐进式掌握。
-
-### 1.1 记忆（Remembering）
-
-- 回忆 JVM 的三大主要子系统：类加载子系统、运行时数据区、执行引擎。
-- 列出 Java 运行时数据区的七个核心区域：方法区、堆、虚拟机栈、本地方法栈、程序计数器、直接内存、运行时常量池。
-- 陈述 JDK、JRE、JVM 三者的层级关系与组成。
-
-### 1.2 理解（Understanding）
-
-- 解释类加载的双亲委派模型及其设计意图。
-- 描述 Java 内存模型（JMM）中主内存与工作内存的交互协议。
-- 区分强、软、弱、虚四种引用类型在 GC 中的不同行为。
-
-### 1.3 应用（Applying）
-
-- 使用 `jstat`、`jmap`、`jstack`、`jcmd` 等工具诊断 JVM 运行状态。
-- 通过 JVM 启动参数配置堆大小、垃圾回收器、GC 日志。
-- 编写自定义 ClassLoader 实现类的隔离加载。
-
-### 1.4 分析（Analyzing）
-
-- 分析 GC 日志判断停顿时间、回收效率、内存碎片化程度。
-- 解构一次 Full GC 触发的原因链：从内存分配失败到 System.gc() 调用。
-- 比较不同垃圾回收器（Serial、Parallel、CMS、G1、ZGC、Shenandoah）的算法复杂度与适用场景。
-
-### 1.5 评价（Evaluating）
-
-- 评估某次 OOM 故障的根因并提出修复方案。
-- 评判在不同业务场景下选择 G1 还是 ZGC 的合理性。
-- 评价某 JIT 编译优化（如方法内联、逃逸分析）对特定代码的性能影响。
-
-### 1.6 创造（Creating）
-
-- 设计一套适配高并发交易系统的 JVM 参数调优方案。
-- 构建基于 JMX 与 Micrometer 的 JVM 监控告警体系。
-- 实现一个用于热部署的自定义 ClassLoader 框架。
-
-## 2. 历史动机与背景
-
-### 2.1 JVM 的诞生背景
+### 1.1 JVM 的诞生背景
 
 1995 年 Sun Microsystems 发布 Java 语言，其核心理念是 **"Write Once, Run Anywhere"（一次编写，到处运行）**。这一理念源于 1990 年代计算环境的多元化：Windows、Solaris、HP-UX、AIX、Linux 等操作系统并存，C/C++ 程序员需要为不同平台重新编译、处理平台相关 API，开发成本高昂。
 
 Java 的解决方案是引入一个虚拟的中间层——**Java 虚拟机（JVM）**。源代码先编译为平台无关的字节码（`.class` 文件），再由各平台特定的 JVM 实现解释或编译执行。这一架构使得同一份字节码可以运行在任何实现了 JVM 规范的平台上。
 
-### 2.2 JVM 规范与实现
+### 1.2 JVM 规范与实现
 
 Java 虚拟机规范由 Oracle（原 Sun）维护，目前最新版本为 Java SE 22 Specification。规范只定义行为，不限制实现方式。常见的 JVM 实现包括：
 
@@ -85,7 +46,7 @@ Java 虚拟机规范由 Oracle（原 Sun）维护，目前最新版本为 Java S
 | Zing | Azul Systems | 针对低延迟优化的商业 JVM，使用 C4 GC |
 | Avian | Twitter（已停止维护） | 嵌入式场景的轻量级 JVM |
 
-### 2.3 字节码设计的动机
+### 1.3 字节码设计的动机
 
 字节码（Bytecode）是一种紧凑的、基于栈的中间表示。选择栈式而非寄存器式的设计有以下考量：
 
@@ -95,7 +56,7 @@ Java 虚拟机规范由 Oracle（原 Sun）维护，目前最新版本为 Java S
 
 代价是执行效率：相同逻辑栈式字节码通常需要更多指令条数。HotSpot 通过 JIT 编译器将热点字节码编译为本地机器码以弥补这一差距。
 
-### 2.4 现代演进
+### 1.4 现代演进
 
 近十年 JVM 的主要演进方向：
 
@@ -104,9 +65,9 @@ Java 虚拟机规范由 Oracle（原 Sun）维护，目前最新版本为 Java S
 3. **轻量并发**：JDK 21（2023）正式发布 Virtual Threads（JEP 444），让 Java 拥有类似 Go goroutine 的高并发能力。
 4. **内存效率**：Project Lilliput 探索减小对象头（从 12~16 字节降至 4~8 字节），降低堆内存占用。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 JVM 的形式化模型
+### 2.1 JVM 的形式化模型
 
 一个 Java 虚拟机可形式化为一个七元组：
 
@@ -124,7 +85,7 @@ $$
 - $JMM$：Java 内存模型（Java Memory Model），定义多线程可见性与有序性语义。
 - $T$：本地接口（Native Interface），包含 JNI 与本地方法栈。
 
-### 3.2 类加载的形式化
+### 2.2 类加载的形式化
 
 类加载过程可定义为函数：
 
@@ -143,7 +104,7 @@ $$
 
 其中 $parent(l)$ 表示类加载器 $l$ 的父加载器。
 
-### 3.3 内存区域的形式化
+### 2.3 内存区域的形式化
 
 JVM 在时刻 $t$ 的运行时数据区状态可表示为：
 
@@ -161,7 +122,7 @@ $$
 Young(t) = Eden(t) \cup Survivor_0(t) \cup Survivor_1(t)
 $$
 
-### 3.4 GC 根的形式化
+### 2.4 GC 根的形式化
 
 垃圾回收从 GC Roots 出发进行可达性分析。GC Roots 集合 $R$ 定义为：
 
@@ -181,7 +142,7 @@ $$
 U = \{ o \in Heap \mid \neg reachable(o) \}
 $$
 
-### 3.5 JMM 的 happens-before 关系
+### 2.5 JMM 的 happens-before 关系
 
 Java 内存模型通过 happens-before 偏序关系 $\xrightarrow{hb}$ 定义操作间的可见性：
 
@@ -197,11 +158,11 @@ $$
 4. **线程启动规则**：`Thread.start()` happens-before 该线程内的任意操作。
 5. **传递性**：若 $a \xrightarrow{hb} b$ 且 $b \xrightarrow{hb} c$，则 $a \xrightarrow{hb} c$。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 类加载的双亲委派模型
+### 3.1 类加载的双亲委派模型
 
-#### 4.1.1 模型结构
+#### 3.1.1 模型结构
 
 JVM 内置三种类加载器，形成层次结构：
 
@@ -215,7 +176,7 @@ Application ClassLoader (加载应用 classpath)
 User-defined ClassLoader (用户自定义)
 ```
 
-#### 4.1.2 委派逻辑推导
+#### 3.1.2 委派逻辑推导
 
 类加载器 $L$ 接到加载类 $C$ 的请求时：
 
@@ -256,7 +217,7 @@ protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundE
 }
 ```
 
-#### 4.1.3 设计意图
+#### 3.1.3 设计意图
 
 双亲委派模型的核心价值是 **类型安全**：
 
@@ -264,7 +225,7 @@ protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundE
 - 同一类由同一加载器加载，保证 `instanceof` 语义一致。
 - 避免重复加载，节省内存。
 
-#### 4.1.4 委派破坏场景
+#### 3.1.4 委派破坏场景
 
 部分场景需破坏双亲委派：
 
@@ -272,7 +233,7 @@ protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundE
 - **OSGi**：网状类加载模型，模块间可自定义委派路径。
 - **Tomcat**：每个 Web 应用独立 ClassLoader，实现应用隔离，违反双亲委派以保证应用优先。
 
-### 4.2 对象内存布局
+### 3.2 对象内存布局
 
 HotSpot 中对象在堆中的内存布局为三部分：
 
@@ -285,7 +246,7 @@ flowchart TD
     B1 --> B2
 ```
 
-#### 4.2.1 Mark Word 的状态机
+#### 3.2.1 Mark Word 的状态机
 
 Mark Word 在 64 位 JVM 中占 8 字节，根据锁状态有多种布局：
 
@@ -297,7 +258,7 @@ Mark Word 在 64 位 JVM 中占 8 字节，根据锁状态有多种布局：
 | 重量级锁   | 指向 Monitor 对象指针                       |                | 10           |
 | GC 标记    | -                                          |                | 11           |
 
-#### 4.2.2 锁升级路径
+#### 3.2.2 锁升级路径
 
 ```
 无锁 -> 偏向锁 -> 轻量级锁 -> 重量级锁
@@ -305,9 +266,9 @@ Mark Word 在 64 位 JVM 中占 8 字节，根据锁状态有多种布局：
 
 升级为单向不可逆。JDK 15 起偏向锁默认禁用（JEP 374），因其维护成本高、现代 CAS 已经很快。
 
-### 4.3 内存分配与逃逸分析
+### 3.3 内存分配与逃逸分析
 
-#### 4.3.1 对象分配流程
+#### 3.3.1 对象分配流程
 
 新对象分配遵循以下决策树：
 
@@ -317,7 +278,7 @@ Mark Word 在 64 位 JVM 中占 8 字节，根据锁状态有多种布局：
 4. **大对象直接进入老年代**：避免在 Eden 与 Survivor 间多次复制。
 5. **老年代分配**：长期存活对象或大对象进入老年代。
 
-#### 4.3.2 逃逸分析
+#### 3.3.2 逃逸分析
 
 JIT 编译器通过逃逸分析（Escape Analysis）判断对象作用域：
 
@@ -327,9 +288,9 @@ JIT 编译器通过逃逸分析（Escape Analysis）判断对象作用域：
 
 逃逸分析的复杂度：基于连接图（Connection Graph）的算法复杂度约为 $O(V + E)$，其中 $V$ 为对象节点数，$E$ 为引用边数。
 
-### 4.4 垃圾回收算法
+### 3.4 垃圾回收算法
 
-#### 4.4.1 标记-清除（Mark-Sweep）
+#### 3.4.1 标记-清除（Mark-Sweep）
 
 分两阶段：
 
@@ -338,26 +299,26 @@ JIT 编译器通过逃逸分析（Escape Analysis）判断对象作用域：
 
 缺点：内存碎片化，分配大对象时可能触发 Full GC。
 
-#### 4.4.2 标记-复制（Copying）
+#### 3.4.2 标记-复制（Copying）
 
 将堆分为两块，每次只用一块。GC 时将存活对象复制到另一块，原块整体清空。
 
 适合新生代（存活率低），代价是浪费一半内存。
 
-#### 4.4.3 标记-整理（Mark-Compact）
+#### 3.4.3 标记-整理（Mark-Compact）
 
 标记后让存活对象向一端移动，消除碎片。
 
 适合老年代（存活率高），代价是移动成本高、停顿时间长。
 
-#### 4.4.4 分代收集
+#### 3.4.4 分代收集
 
 JVM 综合上述算法：
 
 - 新生代用复制算法（Eden + 2 Survivor，内存利用 90%）。
 - 老年代用标记-清除（CMS）或标记-整理（Serial Old、Parallel Old、G1）。
 
-#### 4.4.5 算法复杂度分析
+#### 3.4.5 算法复杂度分析
 
 设堆大小为 $H$，存活对象大小为 $L$，存活率 $\rho = L/H$。
 
@@ -369,9 +330,9 @@ JVM 综合上述算法：
 
 新生代 $\rho \approx 1\% \sim 10\%$，复制算法只需复制少量对象，效率高。
 
-### 4.5 G1 GC 算法详解
+### 3.5 G1 GC 算法详解
 
-#### 4.5.1 Region 化堆布局
+#### 3.5.1 Region 化堆布局
 
 G1 将堆划分为多个等大 Region（默认 2048 个），每个 Region 可动态归属为 Eden、Survivor、Old、Humongous。
 
@@ -381,13 +342,13 @@ $$
 
 $RegionSize$ 取值范围 1MB~32MB，需为 2 的幂。
 
-#### 4.5.2 SATB 与 RSet
+#### 3.5.2 SATB 与 RSet
 
 G1 使用 **Snapshot-At-The-Beginning（SATB）** 算法保证并发标记的正确性。在 GC 开始时建立存活对象快照，并发期间被修改的引用记录到 SATB 队列，最终一起标记。
 
 **Remembered Set（RSet）** 记录 "谁引用了我"（点入引用），使得 GC 时无需全堆扫描即可找到跨 Region 引用。
 
-#### 4.5.3 Mixed GC
+#### 3.5.3 Mixed GC
 
 G1 的核心回收模式为 Mixed GC：
 
@@ -403,7 +364,7 @@ $$
 
 G1 优先回收 $reclaim(r)$ 高的 Region。
 
-### 4.6 ZGC 的着色指针
+### 3.6 ZGC 的着色指针
 
 ZGC（JDK 15 转正）通过 **着色指针（Colored Pointer）** 在 64 位指针的高位嵌入 GC 元数据：
 
@@ -414,11 +375,11 @@ ZGC（JDK 15 转正）通过 **着色指针（Colored Pointer）** 在 64 位指
 
 通过虚拟内存映射技术，同一物理对象在不同指针颜色下映射到不同的虚拟地址，实现并发移动对象而无需 STW。ZGC 的 STW 时间稳定在 < 1ms（堆大小无关）。
 
-### 4.7 JIT 编译优化
+### 3.7 JIT 编译优化
 
 HotSpot 包含两个 JIT 编译器：C1（Client，快速编译，简单优化）与 C2（Server，慢速编译，激进优化）。
 
-#### 4.7.1 分层编译
+#### 3.7.1 分层编译
 
 JDK 8 起默认启用分层编译（Tiered Compilation）：
 
@@ -432,7 +393,7 @@ JDK 8 起默认启用分层编译（Tiered Compilation）：
 
 方法从层级 0 逐级晋升至 4，热点方法最终由 C2 优化。
 
-#### 4.7.2 关键优化
+#### 3.7.2 关键优化
 
 1. **方法内联（Method Inlining）**：将被调用方法体直接嵌入调用点，消除调用开销，扩大优化范围。C2 默认内联 < 35 字节码的方法。
 2. **逃逸分析**：见 4.3.2，可触发标量替换、栈上分配、锁消除。
@@ -440,7 +401,7 @@ JDK 8 起默认启用分层编译（Tiered Compilation）：
 4. **向量化**：利用 SIMD 指令并行处理多个数据。
 5. **去虚化**：基于类型 profile 将虚方法调用转换为直接调用。
 
-#### 4.7.3 优化触发阈值
+#### 3.7.3 优化触发阈值
 
 方法热度由 **方法调用计数器** 与 **回边计数器** 跟踪：
 
@@ -450,9 +411,9 @@ $$
 
 当 $counter_{method} \geq Threshold$（默认 10000）时触发编译。阈值由 `-XX:CompileThreshold` 调整。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 查看 JVM 启动参数与系统属性
+### 4.1 查看 JVM 启动参数与系统属性
 
 ```java
 import java.lang.management.ManagementFactory;
@@ -495,7 +456,7 @@ public class JvmInfoPrinter {
 }
 ```
 
-### 5.2 自定义 ClassLoader 实现类隔离加载
+### 4.2 自定义 ClassLoader 实现类隔离加载
 
 ```java
 import java.io.IOException;
@@ -561,7 +522,7 @@ public class FileSystemClassLoader extends ClassLoader {
 }
 ```
 
-### 5.3 对象内存布局与大小计算
+### 4.3 对象内存布局与大小计算
 
 ```java
 import java.lang.instrument.Instrumentation;
@@ -621,7 +582,7 @@ public class ObjectSizeAgent {
 }
 ```
 
-### 5.4 手动触发 GC 与监控内存
+### 4.4 手动触发 GC 与监控内存
 
 ```java
 import java.util.ArrayList;
@@ -669,7 +630,7 @@ public class GcMonitorDemo {
 }
 ```
 
-### 5.5 使用 ManagementFactory 监控 GC
+### 4.5 使用 ManagementFactory 监控 GC
 
 ```java
 import java.lang.management.GarbageCollectorMXBean;
@@ -716,7 +677,7 @@ public class GcMonitoring {
 }
 ```
 
-### 5.6 volatile 与 happens-before 演示
+### 4.6 volatile 与 happens-before 演示
 
 ```java
 /**
@@ -766,7 +727,7 @@ public class HappensBeforeDemo {
 }
 ```
 
-### 5.7 引用类型与 GC 行为
+### 4.7 引用类型与 GC 行为
 
 ```java
 import java.lang.ref.PhantomReference;
@@ -819,7 +780,7 @@ public class ReferenceTypeDemo {
 }
 ```
 
-### 5.8 ThreadLocal 与内存泄漏分析
+### 4.8 ThreadLocal 与内存泄漏分析
 
 ```java
 /**
@@ -855,7 +816,7 @@ public class ThreadLocalLeakDemo {
 }
 ```
 
-### 5.9 JMX 远程监控配置示例
+### 4.9 JMX 远程监控配置示例
 
 ```java
 import javax.management.MBeanServer;
@@ -922,7 +883,7 @@ interface JmxCustomMetricsMBean {
 }
 ```
 
-### 5.10 解析 class 文件结构
+### 4.10 解析 class 文件结构
 
 ```java
 import java.io.DataInputStream;
@@ -972,9 +933,9 @@ public class ClassFileParser {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 JVM 实现 vs 其他语言运行时
+### 5.1 JVM 实现 vs 其他语言运行时
 
 | 维度 | HotSpot JVM | V8（JS） | .NET CLR | Go Runtime | Python CPython |
 |------|-------------|----------|----------|------------|----------------|
@@ -985,7 +946,7 @@ public class ClassFileParser {
 | 部署体积 | JRE ~200MB | Node.js ~40MB | .NET Runtime ~80MB | 单二进制 ~10MB | 解释器 ~30MB |
 | 生态成熟度 | 极高 | 极高 | 高 | 中高 | 高 |
 
-### 6.2 主流垃圾回收器对比
+### 5.2 主流垃圾回收器对比
 
 | 回收器 | JDK 引入 | 算法 | 停顿时间 | 吞吐量 | 堆大小建议 | 适用场景 |
 |--------|----------|------|----------|--------|------------|----------|
@@ -996,7 +957,7 @@ public class ClassFileParser {
 | ZGC | 11 (实验) 15 (转正) | 着色指针 + 读屏障 | **< 1ms** | 中 | 8GB~16TB | 低延迟、大堆 |
 | Shenandoah | 12 (实验) 15 (转正) | Brooks 转发指针 | < 10ms | 中 | 4GB~1TB | 低延迟 |
 
-### 6.3 JIT vs AOT 编译
+### 5.3 JIT vs AOT 编译
 
 | 维度 | JIT（HotSpot） | AOT（GraalVM Native Image） | C++ 静态编译 |
 |------|----------------|------------------------------|--------------|
@@ -1008,7 +969,7 @@ public class ClassFileParser {
 | 调试体验 | 好 | 较差 | 中 |
 | 适用场景 | 长期运行的服务 | Serverless、CLI、微服务 | 系统、嵌入式 |
 
-### 6.4 Java 内存模型与 C++ 内存模型
+### 5.4 Java 内存模型与 C++ 内存模型
 
 | 维度 | JMM | C++11 内存模型 |
 |------|-----|-----------------|
@@ -1018,9 +979,9 @@ public class ClassFileParser {
 | 顺序保证 | happens-before 偏序关系 | 6 种 memory_order |
 | 安全性 | 较高（默认安全） | 较低（默认 relaxed 易出错） |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：使用 System.gc() 强制回收
+### 6.1 反模式：使用 System.gc() 强制回收
 
 **问题代码**：
 
@@ -1041,7 +1002,7 @@ public void processData() {
 2. 若必须控制 GC 时机，使用 `-XX:+DisableExplicitGC` 禁用 `System.gc()`。
 3. 对延迟敏感的临时对象，考虑使用对象池或 TLAB 优化。
 
-### 7.2 反模式：finalize() 中执行资源释放
+### 6.2 反模式：finalize() 中执行资源释放
 
 **问题代码**：
 
@@ -1108,7 +1069,7 @@ public class FileHandler implements AutoCloseable {
 }
 ```
 
-### 7.3 反模式：ThreadLocal 不 remove
+### 6.3 反模式：ThreadLocal 不 remove
 
 **问题代码**：
 
@@ -1139,7 +1100,7 @@ public void handle(UserContext ctx) {
 }
 ```
 
-### 7.4 反模式：盲目使用大堆
+### 6.4 反模式：盲目使用大堆
 
 **问题代码**：
 
@@ -1161,7 +1122,7 @@ java -Xms32g -Xmx32g -XX:+UseG1GC MyApp
 2. 使用 ZGC 处理大堆（32GB~16TB），其停顿时间与堆大小无关。
 3. 横向扩展：用 4 个 8GB 实例替代 1 个 32GB 实例。
 
-### 7.5 反模式：锁粒度过粗
+### 6.5 反模式：锁粒度过粗
 
 **问题代码**：
 
@@ -1196,7 +1157,7 @@ public class Cache {
 }
 ```
 
-### 7.6 反模式：滥用反射
+### 6.6 反模式：滥用反射
 
 **问题代码**：
 
@@ -1232,7 +1193,7 @@ public Object invoke(Object target, String method, Object... args) throws Except
 }
 ```
 
-### 7.7 反模式：static 集合持有大对象
+### 6.7 反模式：static 集合持有大对象
 
 **问题代码**：
 
@@ -1267,7 +1228,7 @@ public class DataCache {
 }
 ```
 
-### 7.8 反模式：错误的 equals/hashCode 实现
+### 6.8 反模式：错误的 equals/hashCode 实现
 
 **问题代码**：
 
@@ -1303,11 +1264,11 @@ public record User(String name, int age) {}
 // 自动生成 equals、hashCode、toString
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 JVM 参数调优方法论
+### 7.1 JVM 参数调优方法论
 
-#### 8.1.1 调优决策树
+#### 7.1.1 调优决策树
 
 ```mermaid
 flowchart TD
@@ -1338,7 +1299,7 @@ flowchart TD
     T8 --> T12
 ```
 
-#### 8.1.2 推荐的通用参数（JDK 17+ Web 服务）
+#### 7.1.2 推荐的通用参数（JDK 17+ Web 服务）
 
 ```bash
 java \
@@ -1355,7 +1316,7 @@ java \
   -jar app.jar
 ```
 
-#### 8.1.3 监控与告警
+#### 7.1.3 监控与告警
 
 必须监控的 JVM 指标：
 
@@ -1369,9 +1330,9 @@ java \
 | 线程 | deadlocked_threads | > 0 立即告警 |
 | 类加载 | loaded_classes | 突然增长 > 1000 警告 |
 
-### 8.2 GC 日志分析
+### 7.2 GC 日志分析
 
-#### 8.2.1 JDK 9+ 统一日志格式
+#### 7.2.1 JDK 9+ 统一日志格式
 
 ```bash
 -Xlog:gc*=info:file=gc.log:time,uptime,level,tags:filecount=10,filesize=100M
@@ -1395,15 +1356,15 @@ java \
 - `1024M->640M(2048M)`：回收前 1024MB，回收后 640MB，堆总大小 2048MB。
 - `448.123ms`：本次 GC 停顿 448ms（STW）。
 
-#### 8.2.2 GC 日志分析工具
+#### 7.2.2 GC 日志分析工具
 
 1. **GCViewer**（开源）：可视化 GC 日志，统计停顿、吞吐量。
 2. **GCEasy**（在线）：上传日志自动分析，给出调优建议。
 3. **JDK Mission Control（JMC）**：Oracle 官方，支持 JDK Flight Recorder（JFR）数据。
 
-### 8.3 堆 dump 分析
+### 7.3 堆 dump 分析
 
-#### 8.3.1 获取堆 dump
+#### 7.3.1 获取堆 dump
 
 ```bash
 # 方式一：OOM 时自动 dump
@@ -1416,13 +1377,13 @@ jmap -dump:format=b,file=/tmp/heapdump.hprof <pid>
 jcmd <pid> GC.heap_dump /tmp/heapdump.hprof
 ```
 
-#### 8.3.2 分析工具链
+#### 7.3.2 分析工具链
 
 1. **MAT（Eclipse Memory Analyzer）**：自动检测泄漏嫌疑，支持 OQL 查询。
 2. **VisualVM**：轻量级，适合快速查看。
 3. **JProfiler / YourKit**：商业工具，功能强大。
 
-#### 8.3.3 分析步骤
+#### 7.3.3 分析步骤
 
 1. **查看 Dominator Tree**：找出占内存最大的对象。
 2. **Path to GC Roots**：分析对象为何无法被回收。
@@ -1434,9 +1395,9 @@ jcmd <pid> GC.heap_dump /tmp/heapdump.hprof
 SELECT * FROM byte[] s WHERE s.@retainedHeapSize > 1048576
 ```
 
-### 8.4 线程 dump 分析
+### 7.4 线程 dump 分析
 
-#### 8.4.1 获取线程 dump
+#### 7.4.1 获取线程 dump
 
 ```bash
 jstack <pid> > thread_dump.txt
@@ -1445,7 +1406,7 @@ jcmd <pid> Thread.print > thread_dump.txt
 # 或 kill -3 <pid>（输出到 stderr）
 ```
 
-#### 8.4.2 线程状态解读
+#### 7.4.2 线程状态解读
 
 | 状态 | 含义 | 健康度 |
 |------|------|--------|
@@ -1454,7 +1415,7 @@ jcmd <pid> Thread.print > thread_dump.txt
 | WAITING | 调用 wait/join/LockSupport.park | 正常 |
 | TIMED_WAITING | 带超时的等待 | 正常 |
 
-#### 8.4.3 死锁检测
+#### 7.4.3 死锁检测
 
 ```bash
 jcmd <pid> Thread.print
@@ -1471,9 +1432,9 @@ if (deadlocks != null) {
 }
 ```
 
-### 8.5 JIT 编译优化实践
+### 7.5 JIT 编译优化实践
 
-#### 8.5.1 强制编译热点方法
+#### 7.5.1 强制编译热点方法
 
 ```java
 import java.lang.management.ManagementFactory;
@@ -1505,16 +1466,16 @@ public class JitWarmup {
 }
 ```
 
-#### 8.5.2 JIT 优化失效场景
+#### 7.5.2 JIT 优化失效场景
 
 1. **方法过大**：超过 `-XX:MaxInlineSize`（默认 35 字节）不会被内联。
 2. **接口调用过多**：虚方法调用难以去虚化，需 profile 支撑。
 3. **异常频繁抛出**：JIT 不会优化异常路径。
 4. **反射调用**：JIT 难以优化反射，需使用 `MethodHandle`。
 
-### 8.6 类加载隔离实践
+### 7.6 类加载隔离实践
 
-#### 8.6.1 Tomcat 类加载模型
+#### 7.6.1 Tomcat 类加载模型
 
 ```
 Bootstrap
@@ -1530,7 +1491,7 @@ WebApp1 ClassLoader  |  WebApp2 ClassLoader  |  ...
 
 每个 WebApp 独立 ClassLoader，应用间类隔离。违反双亲委派：WebApp 优先加载自己的类，再委派父加载器。
 
-#### 8.6.2 OSGi 模块化
+#### 7.6.2 OSGi 模块化
 
 OSGi 使用网状类加载模型，每个 Bundle 有独立 ClassLoader，可定义导入/导出包。
 
@@ -1546,9 +1507,9 @@ public class MyActivator implements BundleActivator {
 }
 ```
 
-### 8.7 内存泄漏排查
+### 7.7 内存泄漏排查
 
-#### 8.7.1 排查步骤
+#### 7.7.1 排查步骤
 
 1. **监控堆增长**：若堆持续增长且不下降，可能泄漏。
 2. **多次 dump 对比**：取两次 dump，对比对象增长。
@@ -1556,7 +1517,7 @@ public class MyActivator implements BundleActivator {
 4. **追溯 GC Roots**：找到引用链，理解为何不释放。
 5. **修复代码**：通常需在适当位置 remove/clear。
 
-#### 8.7.2 常见泄漏源
+#### 7.7.2 常见泄漏源
 
 - ThreadLocal 未 remove（见 7.3）。
 - static 集合累积（见 7.7）。
@@ -1565,9 +1526,9 @@ public class MyActivator implements BundleActivator {
 - 类加载器泄漏（动态加载未卸载）。
 - 连接池未释放。
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：电商系统 Full GC 频繁
+### 8.1 案例一：电商系统 Full GC 频繁
 
 **背景**：某电商订单系统（JDK 8，4 核 8GB，G1），大促期间 QPS 从 2000 升至 8000，Full GC 频率从 0.1 次/小时升至 5 次/小时，每次停顿 3~5 秒。
 
@@ -1588,7 +1549,7 @@ public class MyActivator implements BundleActivator {
 
 **效果**：Full GC 频率降至 0.1 次/天，P99 延迟从 2.5s 降至 80ms。
 
-### 9.2 案例二：微服务启动慢
+### 8.2 案例二：微服务启动慢
 
 **背景**：Spring Boot 微服务启动时间 45 秒，影响弹性伸缩效率。
 
@@ -1615,7 +1576,7 @@ java -Xshare:on -XX:SharedArchiveFile=app.jsa -jar app.jar
 
 **效果**：AppCDS 启动时间 45s → 30s；Native Image 0.1s 但峰值性能下降 15%；CRaC 0.1s 且无性能损失（推荐）。
 
-### 9.3 案例三：线程死锁导致服务无响应
+### 8.3 案例三：线程死锁导致服务无响应
 
 **背景**：支付系统在高峰期出现请求超时，监控显示所有线程处于 BLOCKED 状态。
 
@@ -1678,7 +1639,7 @@ if (from.getLock().tryLock(1, TimeUnit.SECONDS)) {
 
 **效果**：死锁问题根除，P99 延迟从超时（30s）降至 50ms。
 
-### 9.4 案例四：Metaspace OOM
+### 8.4 案例四：Metaspace OOM
 
 **背景**：动态代码生成系统运行 2 周后 OOM：`java.lang.OutOfMemoryError: Metaspace`。
 
@@ -1709,7 +1670,7 @@ public Class<?> getMapper(String sql) {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：简述 JVM 运行时数据区的组成，并说明哪些区域是线程私有的，哪些是线程共享的。
 
@@ -1745,7 +1706,7 @@ public class Test {
 - `Integer` 对 -128~127 范围内的值启用缓存（`IntegerCache`），`a` 与 `b` 引用同一对象。
 - 128 超出缓存范围，`c` 与 `d` 是不同对象，`==` 比较引用地址返回 `false`。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：某服务使用 G1 GC，堆 8GB，发现 Mixed GC 后老年代仍有 6GB 占用，回收效果不佳。请分析可能原因并给出调优建议。
 
@@ -1804,7 +1765,7 @@ public class VolatileAtomicity {
 - `+UseStringDeduplication`：G1 字符串去重，节省堆内存。
 - `+HeapDumpOnOutOfMemoryError`：OOM 时自动 dump 堆到指定路径。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **习题 7**：设计一个高并发交易系统的 JVM 调优方案，要求 P99 < 100ms，单实例 QPS 5000，堆内存 16GB。请给出 GC 选择、参数配置、监控方案。
 
@@ -1915,7 +1876,7 @@ public class NetworkClassLoader extends ClassLoader {
 // loader = null; GC 时该 ClassLoader 加载的所有类都会被卸载
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
 本文引用的学术文献与权威资料，遵循 ACM Reference Format。
 
@@ -1949,9 +1910,9 @@ public class NetworkClassLoader extends ClassLoader {
 
 [15] Bloch, J. 2018. Effective Java (3rd ed.). Addison-Wesley Professional. ISBN: 978-0134685991
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **Oracle JVM Specification**: https://docs.oracle.com/javase/specs/jvms/se22/html/
   Java 虚拟机规范，最权威的 JVM 行为定义。
@@ -1960,7 +1921,7 @@ public class NetworkClassLoader extends ClassLoader {
 - **JEP Index**: https://openjdk.org/jeps/0
   JDK Enhancement Proposals，了解最新特性演进。
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - **《深入理解 Java 虚拟机》（第 3 版）** 周志明 著
   国内 JVM 学习的标杆著作，覆盖规范、实现、调优全栈知识。
@@ -1971,7 +1932,7 @@ public class NetworkClassLoader extends ClassLoader {
 - **《The Java Memory Model》** Jeremy Manson 博士论文
   JMM 的权威来源，深入理解 happens-before 与内存屏障。
 
-### 12.3 前沿论文与技术报告
+### 11.3 前沿论文与技术报告
 
 - **Shenandoah GC 设计**：https://wiki.openjdk.org/display/shenandoah
   Red Hat 主导的低延迟 GC，与 ZGC 竞争。
@@ -1982,7 +1943,7 @@ public class NetworkClassLoader extends ClassLoader {
 - **CRaC (Coordinated Restore at Checkpoint)**：https://openjdk.org/jeps/451
   JVM 快照恢复，毫秒级启动。
 
-### 12.4 开源工具
+### 11.4 开源工具
 
 - **JITWatch**: https://github.com/AdoptOpenJDK/jitwatch
   分析 JIT 编译日志，可视化热点代码。
@@ -1995,7 +1956,7 @@ public class NetworkClassLoader extends ClassLoader {
 - **Eclipse MAT**: https://www.eclipse.org/mat/
   堆 dump 分析利器，自动检测泄漏嫌疑。
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - **元空间调优**：理解 Metaspace 与 CompressedClassSpaceSize。
 - **JFR (Java Flight Recorder)**：JDK 内置的低开销事件录制器。

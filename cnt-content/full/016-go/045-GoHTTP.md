@@ -15,57 +15,10 @@ related:
 prerequisites:
   - go/概述与环境配置
 ---
+
 # Go HTTP 服务端
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
-## 学习目标
-
-本章节对标 MIT 6.172（Performance Engineering of Software Systems）与 CMU 15-440（Distributed Systems）的网络服务教学水准，融合 Go 1.22 `net/http` 增强路由的工程实践细节。完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-### Remember（记忆）
-
-- **R1**：复述 Go `net/http` 包的演进历史（Go 1.0 → 1.22 增强路由）
-- **R2**：列出 `http.Handler`、`http.ServeMux`、`http.Server`、`http.ResponseWriter` 四个核心抽象的职责
-- **R3**：背诵 HTTP/1.1、HTTP/2、HTTP/3 的核心差异
-- **R4**：识别 Go 1.22 路由模式语法（`{id}`、`{id...}`、`GET /users`）
-
-### Understand（理解）
-
-- **U1**：解释 `ServeMux` 模式匹配规则（最长前缀优先、末尾斜杠语义）
-- **U2**：阐述 `http.Server` 的 `ReadTimeout`、`WriteTimeout`、`IdleTimeout` 三大超时参数的协作
-- **U3**：说明 HTTP/2 多路复用与 HTTP/1.1 keep-alive 的区别
-- **U4**：推演 `r.Context()` 在客户端断开时的取消传播路径
-
-### Apply（应用）
-
-- **A1**：使用 `http.NewServeMux` 与 Go 1.22 增强路由构建 RESTful API
-- **A2**：实现优雅关闭（graceful shutdown）
-- **A3**：编写 HTTP 中间件链
-- **A4**：使用 SSE（Server-Sent Events）实现服务端推送
-
-### Analyze（分析）
-
-- **An1**：分析 `net/http` 与 nginx/envoy 等 C/C++ 服务器的事件模型差异
-- **An2**：对比 Go 1.22 增强路由与 chi/gorilla/gin 的设计取舍
-- **An3**：解构 `http.Server` 的连接管理（conn goroutine 模型）
-- **An4**：剖析 `ResponseWriter` 的接口设计与 `http.Flusher`/`http.Hijacker` 扩展点
-
-### Evaluate（评估）
-
-- **E1**：评估 `net/http` 在高并发场景下的性能（goroutine-per-conn 模型）
-- **E2**：评判超时配置对慢客户端攻击的防护效果
-- **E3**：权衡标准库与第三方框架（gin/echo/fiber）的选型
-- **E4**：评估 HTTP/2 server push 的实际收益与坑
-
-### Create（创造）
-
-- **C1**：设计一个支持限流、熔断、链路追踪的 HTTP 中间件框架
-- **C2**：实现一个基于 HTTP/2 的 gRPC-like RPC 框架
-- **C3**：构建一个支持 WebSocket 与 SSE 双协议的实时通信网关
-- **C4**：为微服务架构设计统一 HTTP 服务模板（日志/指标/追踪/健康检查）
 
 ---
 
@@ -303,7 +256,7 @@ for {
 | **代码复杂度** | 低 | 低 | 高（回调地狱） |
 | **调试难度** | 低 | 低 | 高 |
 
-### 2. HTTP/2 多路复用
+### 1. HTTP/2 多路复用
 
 HTTP/2 引入流（stream）的概念，单个 TCP 连接可承载多个请求：
 
@@ -333,7 +286,7 @@ handler := h2c.NewHandler(mux, h2s)
 server := &http.Server{Addr: ":8080", Handler: handler}
 ```
 
-### 3. Context 取消传播
+### 2. Context 取消传播
 
 `r.Context()` 在客户端断开时自动取消：
 
@@ -355,7 +308,7 @@ flowchart TD
 - Context 取消是 O(1) 的 channel close 操作
 - 子 context 的级联取消通过链表实现，O(n) 但 n 通常很小
 
-### 4. 中间件链的代数性质
+### 3. 中间件链的代数性质
 
 中间件是 Handler 的装饰器，构成代数结构：
 
@@ -378,7 +331,7 @@ $$
 - 外层中间件先进入
 - 内层 Handler 先返回
 
-### 5. ServeMux 的模式匹配复杂度
+### 4. ServeMux 的模式匹配复杂度
 
 Go 1.22 之前，模式匹配是 $O(\text{patterns})$ 的线性扫描。
 
@@ -1370,7 +1323,7 @@ flowchart TD
     T26 --> T27
 ```
 
-### 2. 统一响应格式
+### 1. 统一响应格式
 
 ```go
 package handler
@@ -1408,7 +1361,7 @@ func WriteError(w http.ResponseWriter, status int, message string) {
 }
 ```
 
-### 3. 健康检查端点
+### 2. 健康检查端点
 
 ```go
 package handler
@@ -1462,7 +1415,7 @@ func (h *HealthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-### 4. 与 OpenTelemetry 集成
+### 3. 与 OpenTelemetry 集成
 
 ```go
 package main
@@ -1494,7 +1447,7 @@ func main() {
 }
 ```
 
-### 5. 与 Prometheus 指标集成
+### 4. 与 Prometheus 指标集成
 
 ```go
 package middleware
@@ -1548,7 +1501,7 @@ func normalizePath(path string) string {
 }
 ```
 
-### 6. 反向代理
+### 5. 反向代理
 
 ```go
 package main

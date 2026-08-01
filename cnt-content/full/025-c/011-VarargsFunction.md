@@ -15,32 +15,22 @@ related:
 prerequisites:
   - c/概述
 ---
+
 # 可变参数函数
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与演化
 
-完成本章学习后，你应当能够（Bloom 分类法）：
-
-- **记忆（Remembering）**：复述 `<stdarg.h>` 提供的 `va_list`、`va_start`、`va_arg`、`va_end`、`va_copy` 五个宏的类型签名与使用约束，列出 C 标准库中常见的可变参数函数（`printf`、`scanf`、`open`、`execl`、`syslog` 等）。
-- **理解（Understanding）**：解释可变参数函数在栈帧上的布局，说明不同调用约定（CDECL、STDCALL、FASTCALL、System V AMD64、ARM AAPCS）下参数传递的差异，并阐明 `va_arg` 在整数提升与默认参数提升下的行为。
-- **应用（Applying）**：独立实现自定义可变参数函数，包括类型安全的包装器、日志函数、错误报告函数、配置解析器；正确使用 `va_copy` 在多个函数间传递可变参数列表。
-- **分析（Analyzing）**：通过反汇编代码（`objdump -d`、`gdb disassemble`）追踪可变参数函数的栈布局，定位参数读取错位、栈失衡、未定义行为等问题。
-- **评价（Evaluating）**：在"可变参数 + 格式字符串"、"可变参数 + 计数器"、"可变参数 + 哨兵值"、"变参宏 + 计数器"四种参数传递方案间做权衡，论证各自的安全性与可维护性。
-- **创造（Creating）**：设计一个支持编译期类型检查的可变参数 API（如 `printf` 的 `__attribute__((format))` 扩展），或实现一个跨平台（Linux/macOS/Windows/ARM/x86）的可变参数调度框架。
-
-## 2. 历史动机与演化
-
-### 2.1 早期 C 语言的"参数不检查"传统
+### 1.1 早期 C 语言的"参数不检查"传统
 
 C 语言的早期版本（K&R C，1978）允许函数在声明时不指定参数列表，仅写 `()` 表示"接受任意参数"，且不会进行参数类型与数量检查。这一设计源自 Unix 系统编程的灵活性需求：`printf`、`open`、`exec` 等系统调用必须接受可变数量的参数。
 
 K&R C 时期，编译器不检查函数调用与定义之间的参数匹配。`printf("%d %d", 1)` 这种错误只能等到运行时才暴露（甚至不暴露，直接读取栈上的垃圾数据）。
 
-### 2.2 C89 标准化：`<stdarg.h>` 与 `<varargs.h>`
+### 1.2 C89 标准化：`<stdarg.h>` 与 `<varargs.h>`
 
 C89（ISO/IEC 9899:1990）正式引入 `<stdarg.h>` 头文件，提供标准化的可变参数访问机制：
 
@@ -51,23 +41,23 @@ C89（ISO/IEC 9899:1990）正式引入 `<stdarg.h>` 头文件，提供标准化�
 
 C89 同时废弃了 K&R 时代的 `<varargs.h>`（无命名参数，无法跳过最后一个命名参数）。`<varargs.h>` 在 System V 早期 Unix 中存在，但已被 GCC 标记为过时。
 
-### 2.3 C99：`va_copy`
+### 1.3 C99：`va_copy`
 
 C99 引入 `va_copy(dest, src)` 宏，用于复制 `va_list`。这是因为在某些 ABI（如 IA-64）上，`va_list` 是数组类型，直接赋值 `dest = src` 实际是把数组首地址赋给指针，导致 `dest` 与 `src` 共享状态，遍历其中一个会破坏另一个。`va_copy` 提供了语义正确的深拷贝。
 
-### 2.4 C11 与原子化
+### 1.4 C11 与原子化
 
 C11 引入 `_Generic` 泛型选择宏，使得"类型安全的可变参数"成为可能。例如，可以编写一个宏，根据参数类型分发到不同的强类型函数，避免 `va_arg` 的类型不安全。
 
 C11 的 Annex K（边界检查库）提供了 `printf_s`、`scanf_s` 等带额外大小参数的可变参数函数，但被广泛批评为"安全假象"，Microsoft 与 GNU/Clang 之间未能达成一致，导致 Annex K 在 C17 中被标记为可选。
 
-### 2.5 C23 与未来
+### 1.5 C23 与未来
 
 C23 引入 `_BitInt(N)` 类型，扩展了整型家族，但默认参数提升规则不变（小于 `int` 的整型提升为 `int`，`float` 提升为 `double`）。C23 也强化了 `[[deprecated]]`、`[[nodiscard]]` 等属性，可用于增强可变参数 API 的可诊断性。
 
 C2y 草案中讨论的"反射"与"契约"特性，若通过，将允许在编译期检查可变参数的类型签名，从根本上消除 `printf` 类函数的安全隐患。
 
-### 2.6 调用约定演进
+### 1.6 调用约定演进
 
 | 时代       | 平台          | 调用约定             | 可变参数实现要点                              |
 | ---------- | ------------- | -------------------- | --------------------------------------------- |
@@ -79,9 +69,9 @@ C2y 草案中讨论的"反射"与"契约"特性，若通过，将允许在编译
 | 2010s      | ARM           | AAPCS（ARM 调用标准）| 前 4 个参数通过 R0-R3，剩余通过栈              |
 | 2020s      | RISC-V        | RISC-V calling ABI   | 前 8 个整型参数通过 a0-a7，浮点通过 fa0-fa7    |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 可变参数函数的签名
+### 2.1 可变参数函数的签名
 
 设函数 $f$ 的签名为：
 
@@ -91,7 +81,7 @@ $$
 
 其中 $T_1, \ldots, T_n$ 为命名参数（必须至少 1 个），" $\ldots$" 表示可变参数部分（variadic arguments），其类型与数量在编译期不固定。
 
-### 3.2 默认参数提升
+### 2.2 默认参数提升
 
 可变参数部分会发生"默认参数提升"（default argument promotions）：
 
@@ -105,7 +95,7 @@ $$
 
 因此 `va_arg(ap, char)` 是未定义行为（UB），正确写法是 `va_arg(ap, int)`，然后显式转换为 `char`。
 
-### 3.3 `va_list` 的形式化语义
+### 2.3 `va_list` 的形式化语义
 
 `va_list` 是一个不透明类型，封装了遍历可变参数的状态。其操作语义为：
 
@@ -114,7 +104,7 @@ $$
 - $\text{va\_copy}(ap_2, ap_1)$：将 $ap_1$ 的当前状态深拷贝到 $ap_2$。
 - $\text{va\_end}(ap)$：使 $ap$ 处于"已完成"状态，后续使用是 UB。
 
-### 3.4 调用约定的栈布局（x86-64 System V）
+### 2.4 调用约定的栈布局（x86-64 System V）
 
 设可变参数函数 `void f(int count, ...)` 被调用为 `f(3, 10, 20, 30)`。System V AMD64 ABI 下栈布局：
 
@@ -133,9 +123,9 @@ flowchart TD
 
 `va_start` 通过 `%al` 寄存器（调用方需告知使用了多少个 SSE 寄存器参数）决定是否保存 XMM 寄存器。`va_arg` 根据类型从寄存器保存区或栈上参数区读取。
 
-## 4. 理论推导与证明
+## 3. 理论推导与证明
 
-### 4.1 可变参数函数的不可类型安全定理
+### 3.1 可变参数函数的不可类型安全定理
 
 **命题**：C 语言的可变参数机制无法在编译期保证类型安全。
 
@@ -143,7 +133,7 @@ flowchart TD
 
 **推论**：所有可变参数函数都必须依赖某种"运行期类型识别"机制（如 `printf` 的格式字符串、`open` 的标志位）来推断参数类型，否则必然存在 UB 风险。
 
-### 4.2 默认参数提升的等价性
+### 3.2 默认参数提升的等价性
 
 **命题**：对于任何整型 $T$ 满足 $\text{sizeof}(T) \leq \text{sizeof}(\text{int})$，可变参数传递时 $T$ 被提升为 `int`，且 `va_arg(ap, int)` 读取的值与原值在数值上相等。
 
@@ -151,7 +141,7 @@ flowchart TD
 
 **反例**：若 $T = \text{long long}$（64 位），而 `va_arg(ap, int)` 读取（32 位），则只读取了 $v'$ 的低 32 位，高 32 位丢失，行为未定义。
 
-### 4.3 调用约定与可变参数的兼容性
+### 3.3 调用约定与可变参数的兼容性
 
 **命题**：在 System V AMD64 ABI 下，可变参数函数与固定参数函数使用不同的调用序列。
 
@@ -159,9 +149,9 @@ flowchart TD
 
 **推论**：将可变参数函数的地址赋给固定参数函数指针，调用时行为未定义（虽然 GCC 在某些情况下能工作）。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础示例：求和函数
+### 4.1 基础示例：求和函数
 
 ```c
 #include <stdio.h>
@@ -199,7 +189,7 @@ gcc -Wall -Wextra -std=c11 sum.c -o sum
 #       sum(5, 10,20,30,40,50) = 150
 ```
 
-### 5.2 哨兵终止的可变参数
+### 4.2 哨兵终止的可变参数
 
 ```c
 #include <stdio.h>
@@ -242,7 +232,7 @@ int main(void)
 }
 ```
 
-### 5.3 自定义 printf 实现
+### 4.3 自定义 printf 实现
 
 ```c
 #include <stdio.h>
@@ -311,7 +301,7 @@ int main(void)
 }
 ```
 
-### 5.4 `va_copy` 多次遍历
+### 4.4 `va_copy` 多次遍历
 
 ```c
 #include <stdio.h>
@@ -350,7 +340,7 @@ int main(void)
 }
 ```
 
-### 5.5 跨平台调用约定验证
+### 4.5 跨平台调用约定验证
 
 以下代码通过汇编分析，展示不同 ABI 下可变参数的栈布局：
 
@@ -415,7 +405,7 @@ variadic_sum:
       (ap).gp_offset += 8, ...))
 ```
 
-### 5.6 类型属性 `__attribute__((format))`
+### 4.6 类型属性 `__attribute__((format))`
 
 GCC/Clang 提供 `format` 属性，让编译器检查可变参数与格式字符串的类型匹配：
 
@@ -448,7 +438,7 @@ int main(void)
 - `2`：格式字符串是第 2 个参数（`fmt`）
 - `3`：可变参数从第 3 个参数开始
 
-### 5.7 可变参数与 `va_list` 的转发
+### 4.7 可变参数与 `va_list` 的转发
 
 当需要把可变参数转发给另一个可变参数函数时，必须使用 `vprintf` / `vfprintf` / `vsprintf` 系列"v"前缀函数：
 
@@ -479,7 +469,7 @@ int main(void)
 }
 ```
 
-### 5.8 C11 `_Generic` 实现类型安全"伪可变参数"
+### 4.8 C11 `_Generic` 实现类型安全"伪可变参数"
 
 ```c
 #include <stdio.h>
@@ -508,9 +498,9 @@ int main(void)
 
 `_Generic` 在编译期完成类型分发，无 UB 风险，但只能处理固定数量参数。可配合宏递归实现"N 个参数"的类型安全调度。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 可变参数方案的四种模式
+### 5.1 可变参数方案的四种模式
 
 | 方案                    | 代表                  | 优点                     | 缺点                                |
 | ----------------------- | --------------------- | ------------------------ | ----------------------------------- |
@@ -519,9 +509,9 @@ int main(void)
 | 格式字符串              | `printf(fmt, ...)`    | 类型信息丰富             | 格式字符串与参数不匹配是经典 UB     |
 | 计数器 + 类型标签数组  | `syscall(SYS_xxx, ...)` | 类型安全           | API 啰嗦                            |
 
-### 6.2 与其他语言的对比
+### 5.2 与其他语言的对比
 
-#### 6.2.1 C++ 的可变参数模板
+#### 5.2.1 C++ 的可变参数模板
 
 C++11 引入可变参数模板（variadic templates），在编译期展开参数包：
 
@@ -534,7 +524,7 @@ void print(Args... args) {
 
 优势：类型安全（编译期检查每个参数类型）、零开销（编译期展开）、无栈遍历。劣势：编译时间长、错误信息晦涩、不能跨翻译单元隐藏实现。
 
-#### 6.2.2 Rust 的可变参数
+#### 5.2.2 Rust 的可变参数
 
 Rust 标准库不直接支持 C 风格可变参数，但通过 `extern "C"` 函数可与 C 可变参数交互：
 
@@ -552,7 +542,7 @@ fn main() {
 
 Rust 推荐使用宏（`println!`、`format!`）实现类型安全的"伪可变参数"，宏在编译期展开为强类型代码。
 
-#### 6.2.3 Go 的可变参数
+#### 5.2.3 Go 的可变参数
 
 Go 内置支持可变参数，语法为 `func f(args ...int)`，参数被收集为切片：
 
@@ -572,7 +562,7 @@ sum(nums...)         // 切片展开
 
 优势：类型安全、无 UB；劣势：必须同类型，跨类型需 `interface{}` 与类型断言。
 
-#### 6.2.4 Java 的可变参数
+#### 5.2.4 Java 的可变参数
 
 Java 5 引入可变参数，语法为 `void f(Object... args)`，参数被收集为数组：
 
@@ -584,16 +574,16 @@ void log(String fmt, Object... args) {
 
 优势：类型安全（编译期检查数组元素类型）；劣势：基本类型需装箱（autoboxing）有性能开销。
 
-### 6.3 选型决策
+### 5.3 选型决策
 
 - **必须同类型 + 类型安全**：优先用 C11 `_Generic` 宏或自定义结构体数组。
 - **必须异类型 + 编译期已知类型列表**：用宏递归 + `_Generic`。
 - **必须异类型 + 运行期类型**：用 C 可变参数 + 格式字符串（务必启用 `format` 属性检查）。
 - **跨语言接口（FFI）**：C 可变参数是事实标准，几乎所有 FFI 都支持。
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 类型不匹配
+### 6.1 类型不匹配
 
 ```c
 /* 反模式 */
@@ -615,7 +605,7 @@ void bad_print(const char *fmt, ...)
 
 **正确做法**：格式字符串与参数类型必须严格对应，或使用 `__attribute__((format))` 启用编译期检查。
 
-### 7.2 忘记 `va_end`
+### 6.2 忘记 `va_end`
 
 ```c
 /* 反模式：提前 return 而未 va_end */
@@ -651,7 +641,7 @@ cleanup:
 }
 ```
 
-### 7.3 `va_arg` 读取错误类型
+### 6.3 `va_arg` 读取错误类型
 
 ```c
 /* 反模式：调用方传入 short，用 short 读取 */
@@ -674,7 +664,7 @@ int i = va_arg(ap, int);
 short s = (short)i;
 ```
 
-### 7.4 传递 `va_list` 时未用 `va_copy`
+### 6.4 传递 `va_list` 时未用 `va_copy`
 
 ```c
 /* 反模式：直接传 va_list（在某些 ABI 上是数组，按值传递会退化为指针） */
@@ -726,7 +716,7 @@ void caller(int n, ...)
 }
 ```
 
-### 7.5 哨兵值遗漏
+### 6.5 哨兵值遗漏
 
 ```c
 /* 反模式：忘记 NULL 终止 */
@@ -740,7 +730,7 @@ execl("/bin/ls", "ls", "-l", (char *)NULL);
 /* 注意：必须强制转换 NULL 为 char*，避免在 64 位系统上 0 被解释为 int */
 ```
 
-### 7.6 在可变参数中使用 `_Bool` / `enum`
+### 6.6 在可变参数中使用 `_Bool` / `enum`
 
 ```c
 /* 反模式：传递 _Bool */
@@ -757,7 +747,7 @@ my_func("%d", RED);  /* enum 提升为 int */
 int v = va_arg(ap, int);
 ```
 
-### 7.7 跨调用约定混用
+### 6.7 跨调用约定混用
 
 ```c
 /* 反模式：将可变参数函数地址赋给固定参数函数指针 */
@@ -766,9 +756,9 @@ sum_fn fn = (sum_fn)sum;  /* sum 是 int sum(int n, ...) */
 fn(3, 4);  /* UB：调用约定可能不同 */
 ```
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 提供 `v` 前缀版本
+### 7.1 提供 `v` 前缀版本
 
 每个可变参数函数都应提供一个 `v` 前缀版本，接收 `va_list`，便于其他函数转发：
 
@@ -788,7 +778,7 @@ void my_vlog(int level, const char *fmt, va_list ap)
 }
 ```
 
-### 8.2 启用 `format` 属性
+### 7.2 启用 `format` 属性
 
 所有接收 `printf`/`scanf`/`strftime` 风格格式字符串的函数都应启用 `format` 属性：
 
@@ -800,7 +790,7 @@ __attribute__((format(scanf, 2, 3)))
 int my_scanf(FILE *fp, const char *fmt, ...);
 ```
 
-### 8.3 优先使用哨兵或计数器，避免纯格式字符串
+### 7.3 优先使用哨兵或计数器，避免纯格式字符串
 
 若 API 不需要类型推断，优先使用哨兵或计数器：
 
@@ -819,7 +809,7 @@ typedef struct { int type; union { int i; double d; } val; } arg_t;
 void append_typed(char *buf, const arg_t *args, size_t n);
 ```
 
-### 8.4 错误处理：可变参数函数的失败模式
+### 7.4 错误处理：可变参数函数的失败模式
 
 可变参数函数失败时（如参数数量不足、类型不匹配），由于无法在函数内检测，应采用以下策略：
 
@@ -828,7 +818,7 @@ void append_typed(char *buf, const arg_t *args, size_t n);
 3. **哨兵模式**：限制哨兵值的总数量，防止无限循环。
 4. **返回值**：明确返回成功/失败，调用方需检查。
 
-### 8.5 与宏结合：编译期类型检查
+### 7.5 与宏结合：编译期类型检查
 
 ```c
 /* 类型安全的"add"宏，编译期检查参数数量 */
@@ -848,7 +838,7 @@ int main(void)
 }
 ```
 
-### 8.6 性能考量
+### 7.6 性能考量
 
 可变参数函数的性能开销：
 
@@ -863,7 +853,7 @@ int main(void)
 - 用结构体数组 + 循环替代。
 - 用 SIMD 一次处理多个同类型参数。
 
-### 8.7 与 C++ 异常的交互
+### 7.7 与 C++ 异常的交互
 
 C 函数中抛出 C++ 异常是未定义行为。可变参数函数中如果调用方传入 C++ 对象，析构顺序无法保证。最佳实践：
 
@@ -871,9 +861,9 @@ C 函数中抛出 C++ 异常是未定义行为。可变参数函数中如果调�
 - 不要在 C 接口中传递 C++ 对象指针。
 - 使用 `noexcept` 确保 C++ 实现不抛异常。
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 `printf` 的实现：glibc `vfprintf`
+### 8.1 `printf` 的实现：glibc `vfprintf`
 
 glibc 的 `vfprintf` 是工业级可变参数函数的标杆，处理以下复杂场景：
 
@@ -886,7 +876,7 @@ glibc 的 `vfprintf` 是工业级可变参数函数的标杆，处理以下复�
 
 源码位置：`glibc/stdio-common/vfprintf-internal.c`，约 2000 行 C 代码。
 
-### 9.2 `open` 系统调用的可变参数
+### 8.2 `open` 系统调用的可变参数
 
 POSIX `open` 函数签名：
 
@@ -912,7 +902,7 @@ int open(const char *pathname, int flags, ...)
 
 注意：若调用方在 `O_CREAT` 时忘记传 `mode`，则 `va_arg` 读取栈上垃圾，UB。这是 POSIX 设计的妥协——若使用固定参数，则非 `O_CREAT` 调用必须传 `0`，冗余且易错。
 
-### 9.3 `execl` / `execv` 系列的可变参数
+### 8.3 `execl` / `execv` 系列的可变参数
 
 ```c
 int execl(const char *path, const char *arg0, ... /*, (char *)NULL */);
@@ -954,7 +944,7 @@ int execl(const char *path, const char *arg0, ...)
 }
 ```
 
-### 9.4 `syslog` 的可变参数
+### 8.4 `syslog` 的可变参数
 
 ```c
 void syslog(int priority, const char *format, ...);
@@ -969,7 +959,7 @@ void vsyslog(int priority, const char *format, va_list ap);
 
 实现要点：通过 `vsyslog` 提供 `va_list` 版本，避免代码重复。
 
-### 9.5 Linux 内核的 `printk`
+### 8.5 Linux 内核的 `printk`
 
 Linux 内核的 `printk` 是可变参数函数的内核实现：
 
@@ -985,7 +975,7 @@ int printk(const char *fmt, ...);
 - 支持内核特定格式说明符：`%pK`（受 `kptr_restrict` 限制）、`%pOF`（设备树节点）、`%pV`（递归 `va_format`）。
 - 在中断上下文也可安全调用（使用 lock-free ring buffer）。
 
-### 9.6 Windows API 的 `wsprintf`
+### 8.6 Windows API 的 `wsprintf`
 
 Windows 的 `wsprintf` 是可变参数函数，但不支持浮点（早期 Windows 节省浮点库）：
 
@@ -996,7 +986,7 @@ int WINAPIV wsprintfW(LPWSTR buf, LPCWSTR fmt, ...);
 
 `WINAPIV` 表示使用 CDECL 调用约定（`__cdecl`），而非 Windows API 默认的 STDCALL。这是为了支持可变参数。
 
-### 9.7 PostgreSQL 的 `elog` / `ereport`
+### 8.7 PostgreSQL 的 `elog` / `ereport`
 
 PostgreSQL 数据库的错误报告 API `elog` 是可变参数函数：
 
@@ -1544,7 +1534,7 @@ int open(const char *pathname, int flags, ...) {
 
 这种设计的优点是用户接口简洁（不需要 `creat` 时不必传 mode），缺点是 `O_CREAT` 漏传 mode 时会读取栈上垃圾数据，是常见的潜在安全漏洞。现代 GCC 通过 `__attribute__((warn_unused_result))` 和静态分析器缓解这一问题。
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1]  Kernighan, B. W., & Ritchie, D. M. (1988). _The C Programming Language_ (2nd ed.). Prentice Hall.
 
@@ -1566,7 +1556,7 @@ int open(const char *pathname, int flags, ...) {
 
 [10] Linux Kernel Organization. (2025). _Linux Kernel: printk documentation_.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 - **Plauger, P. J.** _The Standard C Library_ — 详细讲解 `<stdarg.h>` 实现原理。
 - **GCC Internals Manual.** _Variadic Functions_ 章节 — `va_arg` 在 GCC 内部如何展开。

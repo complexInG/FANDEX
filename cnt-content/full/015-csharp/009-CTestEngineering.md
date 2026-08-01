@@ -15,50 +15,22 @@ related:
 prerequisites: []
 ---
 
-## 1. 学习目标与 Bloom 分类法
 
-本节遵循 Bloom 修订版认知能力分类体系，将学习目标按六个层级显式标注，便于学习者评估自身掌握程度。
+## 1. 历史动机与演进脉络
 
-### 1.1 学习目标矩阵
-
-| 层级 | Bloom 类别 | 行为动词 | 学习成果描述 |
-| :--- | :--------- | :------- | :----------- |
-| L1 | 记忆（Remember） | 列举、回忆 | 能够列举 xUnit、NUnit、MSTest 三大测试框架的核心特性差异 |
-| L2 | 理解（Understand） | 解释、对比 | 能够解释 AAA 模式、Mock 与 Stub 区别、TDD 与 BDD 范式差异 |
-| L3 | 应用（Apply） | 实现、演示 | 能够独立使用 xUnit + Moq 实现单元测试套件，使用 BenchmarkDotNet 进行性能基准测试 |
-| L4 | 分析（Analyze） | 区分、解构 | 能够分析测试覆盖率指标、识别测试坏味道、解构依赖注入链路 |
-| L5 | 评价（Evaluate） | 评估、批判 | 能够评估给定项目的测试策略合理性，论证 CI/CD 流水线设计的优劣 |
-| L6 | 创造（Create） | 设计、构建 | 能够设计端到端的测试金字塔架构，构建完整的 DevOps 流水线 |
-
-### 1.2 预期先修知识
-
-- C# 高级特性（泛型、委托、异步、反射）
-- .NET 平台基础（SDK、项目结构、NuGet）
-- 面向对象设计原则（SOLID、DRY、KISS）
-- 数据结构与算法基础
-- 命令行操作与版本控制（Git）
-
-### 1.3 学习评估方式
-
-- **L1-L2**：通过简答题与概念对比题评估
-- **L3-L4**：通过编程实践（重构既有代码并补充测试）评估
-- **L5-L6**：通过课程项目（设计完整测试策略并实施 CI/CD）评估
-
-## 2. 历史动机与演进脉络
-
-### 2.1 软件测试的起源（1940s-1970s）
+### 1.1 软件测试的起源（1940s-1970s）
 
 软件测试作为独立学科始于 1947 年 Grace Hopper 在 Mark II 计算机中发现的真实"虫子"（moth）。1958 年，NATO 软件工程会议正式将测试纳入软件开发生命周期。1970 年代，Goodhart 与 Myers 的"测试是为了发现错误"理论奠定了测试哲学基础。
 
 这一时期测试以人工为主，缺乏工具支撑。FORTRAN 与 COBOL 时代没有自动化测试框架的概念，开发者依靠"调试即测试"的原始方式。
 
-### 2.2 xUnit 家族的诞生（1990s-2000s）
+### 1.2 xUnit 家族的诞生（1990s-2000s）
 
 1995 年 Kent Beck 发布 SUnit（Smalltalk），开创了 xUnit 家族。随后 JUnit（Java, 1997）、PHPUnit（PHP, 2001）、pytest（Python, 2002）相继问世。.NET 平台的 NUnit 由 Philip Craig 于 2002 年发布，是 .NET 生态最早的主流测试框架，深受 JUnit 影响。
 
 NUnit 的命名承袭 JUnit，"N" 代表 .NET。其 `[Test]`、`[SetUp]`、`[TearDown]` 等特性（Attribute）语法成为 .NET 测试的标志性风格。
 
-### 2.3 xUnit.net 的崛起（2007-至今）
+### 1.3 xUnit.net 的崛起（2007-至今）
 
 2007 年，Brad Wilson 与 James Newkirk（NUnit 的贡献者）离开 NUnit 团队，发布了 xUnit.net。设计动机包括：
 
@@ -69,7 +41,7 @@ NUnit 的命名承袭 JUnit，"N" 代表 .NET。其 `[Test]`、`[SetUp]`、`[Tea
 
 xUnit.net 现已成为 .NET Core/5+ 时代的默认推荐框架，ASP.NET Core 与 .NET 运行时官方测试均采用 xUnit。
 
-### 2.4 测试金字塔理论的成熟（2009-至今）
+### 1.4 测试金字塔理论的成熟（2009-至今）
 
 2009 年 Mike Cohn 在《Succeeding with Agile》中提出测试金字塔（Test Pyramid）模型：
 
@@ -87,7 +59,7 @@ xUnit.net 现已成为 .NET Core/5+ 时代的默认推荐框架，ASP.NET Core �
 
 Alister Scott 于 2011 年进一步提出"测试奖杯"（Testing Trophy）模型，强调集成测试的比重应高于单元测试。这一观点在微服务时代得到广泛认同。
 
-### 2.5 .NET 测试生态的现代化（2015-至今）
+### 1.5 .NET 测试生态的现代化（2015-至今）
 
 | 时间 | 里程碑 | 影响 |
 | :--- | :----- | :--- |
@@ -99,7 +71,7 @@ Alister Scott 于 2011 年进一步提出"测试奖杯"（Testing Trophy）模�
 | 2022 | .NET 7 | Source Generator 增量管道成熟 |
 | 2023 | .NET 8 | NativeAOT 兼容测试支持 |
 
-### 2.6 Roslyn 与代码分析时代（2014-至今）
+### 1.6 Roslyn 与代码分析时代（2014-至今）
 
 2014 年微软开源 Roslyn 编译器平台，引入 **Analyzer**（分析器）与 **Source Generator**（源生成器）两大扩展点：
 
@@ -108,9 +80,9 @@ Alister Scott 于 2011 年进一步提出"测试奖杯"（Testing Trophy）模�
 
 这一变革使 .NET 的代码质量保障从"运行时检查"演进至"编译期保证"，显著提升了类型安全与性能。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 测试覆盖率的数学定义
+### 2.1 测试覆盖率的数学定义
 
 **定义 3.1（语句覆盖率）**：设程序 $P$ 包含 $n$ 条可执行语句，测试套件 $T$ 执行了其中 $m$ 条，则语句覆盖率定义为：
 
@@ -126,7 +98,7 @@ $$\forall i, \exists (t_1, t_2): c_i(t_1) \neq c_i(t_2) \land D(t_1) \neq D(t_2)
 
 MC/DC 是航空软件 DO-178C 标准的强制要求。
 
-### 3.2 测试用例的形式化模型
+### 2.2 测试用例的形式化模型
 
 **定义 3.4（测试用例）**：测试用例是一个五元组 $\text{TC} = (I, E, O, S, \tau)$，其中：
 - $I$：输入集合（Inputs）
@@ -137,7 +109,7 @@ MC/DC 是航空软件 DO-178C 标准的强制要求。
 
 **定义 3.5（测试断言）**：断言是一个谓词函数 $\text{Assert}: \text{Actual} \times \text{Expected} \to \{\text{Pass}, \text{Fail}\}$。xUnit 中的 `Assert.Equal(expected, actual)` 即是该函数的具体实现。
 
-### 3.3 Mock 对象的代数定义
+### 2.3 Mock 对象的代数定义
 
 **定义 3.6（Mock 对象）**：给定接口 $I$ 与方法 $m \in I$，Mock 对象 $M$ 是一个二元组 $M = (S, B)$，其中：
 - $S: I \times m \to V$ 是桩函数（Stub），返回预设值 $V$
@@ -153,7 +125,7 @@ MC/DC 是航空软件 DO-178C 标准的强制要求。
 | 假对象 | Fake Object | 简化的可工作实现（如内存数据库） |
 | 哑对象 | Dummy Object | 仅用于填充参数列表，从不被调用 |
 
-### 3.4 基准测试的统计模型
+### 2.4 基准测试的统计模型
 
 **定义 3.8（基准测量）**：基准测试对操作 $f$ 进行 $n$ 次测量，得到样本 $\{t_1, t_2, \ldots, t_n\}$。常用统计量：
 
@@ -164,7 +136,7 @@ MC/DC 是航空软件 DO-178C 标准的强制要求。
 
 BenchmarkDotNet 默认报告均值、标准差、误差范围与中位数，避免离群点的影响。
 
-### 3.5 持续集成的形式化定义
+### 2.5 持续集成的形式化定义
 
 **定义 3.9（CI 流水线）**：CI 流水线是一个有向无环图 $G = (V, E)$，其中：
 - $V$ 是阶段集合（如 `lint`、`build`、`test`、`deploy`）
@@ -172,9 +144,9 @@ BenchmarkDotNet 默认报告均值、标准差、误差范围与中位数，避�
 
 **定义 3.10（流水线执行时间）**：若各阶段执行时间 $t_v$ 独立，串行流水线总时间为 $\sum_{v \in V} t_v$；若允许并行，总时间为关键路径长度 $\text{CP}(G) = \max_{p \in \text{Path}(G)} \sum_{v \in p} t_v$。
 
-## 4. 理论推导与性能分析
+## 3. 理论推导与性能分析
 
-### 4.1 测试覆盖率与缺陷检测概率
+### 3.1 测试覆盖率与缺陷检测概率
 
 **定理 4.1（缺陷检测上界）**：设测试套件 $T$ 的语句覆盖率为 $c$，则未被覆盖的语句包含缺陷的概率 $p_{\text{undetected}}$ 满足：
 
@@ -186,7 +158,7 @@ $$p_{\text{undetected}} \geq (1 - c) \cdot p_{\text{defect}}$$
 
 **推论 4.1**：100% 覆盖率不等于零缺陷。覆盖率仅是必要条件，非充分条件。
 
-### 4.2 Mock 与真实集成的权衡
+### 3.2 Mock 与真实集成的权衡
 
 **定理 4.2（Mock 失真定理）**：设被测系统 $S$ 依赖 $D$，真实 $D$ 的行为函数为 $f_D$，Mock 的行为函数为 $f_M$。若 $f_D \neq f_M$，则存在输入 $x$ 使得 $S(f_D, x) \neq S(f_M, x)$，即测试通过但生产失败。
 
@@ -194,7 +166,7 @@ $$p_{\text{undetected}} \geq (1 - c) \cdot p_{\text{defect}}$$
 - 契约测试（Contract Testing）：使用 Pact 等工具验证 Mock 与真实实现一致
 - 集成测试兜底：在 Mock 测试之外补充真实依赖的集成测试
 
-### 4.3 基准测量的统计可靠性
+### 3.3 基准测量的统计可靠性
 
 **定理 4.3（样本量下界）**：要在置信水平 $1 - \alpha$ 下，将均值估计误差控制在 $\epsilon$ 以内，所需样本量 $n$ 满足：
 
@@ -204,7 +176,7 @@ $$n \geq \left( \frac{z_{\alpha/2} \cdot \sigma}{\epsilon} \right)^2$$
 
 **实证**：若 $\sigma = 10$ ms，$\epsilon = 1$ ms，95% 置信水平（$z_{0.025} = 1.96$），则 $n \geq 384$。BenchmarkDotNet 默认样本量基于此原理自动调整。
 
-### 4.4 测试金字塔的成本-收益分析
+### 3.4 测试金字塔的成本-收益分析
 
 **定理 4.4（最优测试分布）**：设单元测试、集成测试、E2E 测试的成本分别为 $c_u, c_i, c_e$，缺陷捕获率分别为 $p_u, p_i, p_e$，则最优测试数量分布 $(n_u^*, n_i^*, n_e^*)$ 满足：
 
@@ -220,9 +192,9 @@ $$\max \sum_{k \in \{u, i, e\}} n_k \cdot p_k \quad \text{s.t.} \quad \sum_{k} n
 | 集成测试 | ~500ms | 0.8 | 1.6 |
 | E2E 测试 | ~5000ms | 0.95 | 0.19 |
 
-## 5. 代码示例与实战演示
+## 4. 代码示例与实战演示
 
-### 5.1 xUnit 单元测试基础
+### 4.1 xUnit 单元测试基础
 
 ```csharp
 using Xunit;
@@ -286,7 +258,7 @@ public class CalculatorTests
 }
 ```
 
-### 5.2 参数化测试
+### 4.2 参数化测试
 
 ```csharp
 public class CalculatorParameterizedTests
@@ -345,7 +317,7 @@ public class DivisionTestData : IEnumerable<object[]>
 }
 ```
 
-### 5.3 Moq 模拟框架
+### 4.3 Moq 模拟框架
 
 ```csharp
 using Moq;
@@ -533,7 +505,7 @@ public class UserServiceTests
 }
 ```
 
-### 5.4 集成测试：WebApplicationFactory
+### 4.4 集成测试：WebApplicationFactory
 
 ```csharp
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -649,7 +621,7 @@ public class FakeEmailService : IEmailService
 }
 ```
 
-### 5.5 Testcontainers：真实依赖集成测试
+### 4.5 Testcontainers：真实依赖集成测试
 
 ```csharp
 using Testcontainers.MsSql;
@@ -737,7 +709,7 @@ public class DatabaseIntegrationTests : IAsyncLifetime
 }
 ```
 
-### 5.6 BenchmarkDotNet 性能基准测试
+### 4.6 BenchmarkDotNet 性能基准测试
 
 ```csharp
 using BenchmarkDotNet.Attributes;
@@ -844,7 +816,7 @@ public class Program
 // 必须使用 Release 模式运行：dotnet run -c Release
 ```
 
-### 5.7 源生成器（Source Generators）
+### 4.7 源生成器（Source Generators）
 
 ```csharp
 // 项目文件 (.csproj) 配置
@@ -953,7 +925,7 @@ public class AutoNotifyGenerator : IIncrementalGenerator
 // 编译后自动生成 Name 与 Age 属性，并实现 INotifyPropertyChanged
 ```
 
-### 5.8 Roslyn 分析器
+### 4.8 Roslyn 分析器
 
 ```csharp
 using Microsoft.CodeAnalysis;
@@ -1039,7 +1011,7 @@ public class AsyncVoidMethodAnalyzer : DiagnosticAnalyzer
 // dotnet_diagnostic.CA1062.severity = suggestion
 ```
 
-### 5.9 xUnit 高级特性
+### 4.9 xUnit 高级特性
 
 ```csharp
 using Xunit;
@@ -1136,7 +1108,7 @@ public static class CustomAssertions
 }
 ```
 
-### 5.10 完整 CI/CD 流水线
+### 4.10 完整 CI/CD 流水线
 
 ```yaml
 # .github/workflows/dotnet-ci.yml
@@ -1319,7 +1291,7 @@ jobs:
           # kubectl apply -f k8s/
 ```
 
-### 5.11 Docker 化部署
+### 4.11 Docker 化部署
 
 ```dockerfile
 # Dockerfile - 多阶段构建
@@ -1392,9 +1364,9 @@ volumes:
   dbdata:
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 测试框架对比
+### 5.1 测试框架对比
 
 | 维度 | xUnit.net | NUnit | MSTest |
 | :--- | :-------- | :---- | :----- |
@@ -1410,7 +1382,7 @@ volumes:
 | 社区活跃度 | 高 | 中 | 中 |
 | 学习曲线 | 低 | 中 | 低 |
 
-### 6.2 Mock 框架对比
+### 5.2 Mock 框架对比
 
 | 框架 | API 风格 | 商业授权 | 性能 | 学习曲线 |
 | :--- | :------- | :------- | :--- | :------- |
@@ -1421,7 +1393,7 @@ volumes:
 | JustMock | 全功能 | 商业 | 高 | 中 |
 | TypeMock | 高级隔离 | 商业 | 高 | 高 |
 
-### 6.3 性能测试工具对比
+### 5.3 性能测试工具对比
 
 | 工具 | 类型 | 准确性 | 易用性 | 报告质量 |
 | :--- | :--- | :----- | :----- | :------- |
@@ -1431,9 +1403,9 @@ volumes:
 | dotnet-counters | 运行时监控 | 中 | 高 | 简单 |
 | dotnet-trace | 性能分析 | 高 | 中 | 工具依赖 |
 
-## 7. 常见陷阱与误区
+## 6. 常见陷阱与误区
 
-### 7.1 单元测试陷阱
+### 6.1 单元测试陷阱
 
 **陷阱 7.1：测试实现细节而非行为**
 
@@ -1513,7 +1485,7 @@ public class GoodTests
 }
 ```
 
-### 7.2 异步测试陷阱
+### 6.2 异步测试陷阱
 
 **陷阱 7.4：`async void` 测试方法**
 
@@ -1555,7 +1527,7 @@ public async Task Test_Awaited()
 }
 ```
 
-### 7.3 基准测试陷阱
+### 6.3 基准测试陷阱
 
 **陷阱 7.6：在 Debug 模式下运行基准**
 
@@ -1587,7 +1559,7 @@ public void Setup()
 }
 ```
 
-### 7.4 源生成器陷阱
+### 6.4 源生成器陷阱
 
 **陷阱 7.8：生成代码不可调试**
 
@@ -1614,9 +1586,9 @@ public record Input(List<string> Items);  // List 不可哈希
 public record Input(EquatableArray<string> Items);
 ```
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 测试命名约定
+### 7.1 测试命名约定
 
 ```csharp
 // 命名规范：MethodName_StateUnderTest_ExpectedBehavior
@@ -1633,7 +1605,7 @@ public class UserServiceTests
 }
 ```
 
-### 8.2 测试组织结构
+### 7.2 测试组织结构
 
 ```mermaid
 flowchart TD
@@ -1662,7 +1634,7 @@ flowchart TD
     T15 --> T17
 ```
 
-### 8.3 测试覆盖目标
+### 7.3 测试覆盖目标
 
 | 代码类型 | 推荐覆盖率 | 优先级 |
 | :------- | :--------- | :----- |
@@ -1673,7 +1645,7 @@ flowchart TD
 | 数据访问层 | ≥ 60% | 低 |
 | UI 组件 | ≥ 50% | 低 |
 
-### 8.4 代码规范配置
+### 7.4 代码规范配置
 
 ```ini
 # .editorconfig
@@ -1705,7 +1677,7 @@ csharp_style_expression_bodied_methods = when_on_single_line:suggestion
 csharp_new_line_before_open_brace = all
 ```
 
-### 8.5 Git Hooks 自动化
+### 7.5 Git Hooks 自动化
 
 ```json
 // package.json 或 .husky/hooks.json
@@ -1727,7 +1699,7 @@ echo "构建检查..."
 dotnet build --no-restore || exit 1
 ```
 
-### 8.6 测试报告与可视化
+### 7.6 测试报告与可视化
 
 ```xml
 <!-- 测试结果生成 HTML 报告 -->
@@ -1738,9 +1710,9 @@ dotnet build --no-restore || exit 1
 <!-- reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coverage-report -reporttypes:Html -->
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：电商系统测试策略
+### 8.1 案例一：电商系统测试策略
 
 **场景**：中型电商系统，包含用户、商品、订单、支付四个核心模块。
 
@@ -1823,7 +1795,7 @@ public class OrderFlowIntegrationTests : IClassFixture<WebApplicationFactory<Pro
 }
 ```
 
-### 9.2 案例二：性能优化案例
+### 8.2 案例二：性能优化案例
 
 **场景**：API 响应时间从 500ms 优化至 50ms。
 
@@ -1891,7 +1863,7 @@ public class UserServiceBenchmarks
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题（L1-L2）
+### 9.1 基础题（L1-L2）
 
 **习题 10.1.1**：简述 xUnit 与 NUnit 在测试隔离性上的区别。
 
@@ -1953,7 +1925,7 @@ public class StringAnalyzerTests
 }
 ```
 
-### 10.3 分析题（L4）
+### 9.3 分析题（L4）
 
 **习题 10.3.1**：分析以下测试代码的问题并改进。
 
@@ -1995,7 +1967,7 @@ public void CreateUser_ValidName_ReturnsUserAndSavesToRepository()
 }
 ```
 
-### 10.4 评价题（L5）
+### 9.4 评价题（L5）
 
 **习题 10.4.1**：评估以下项目的测试策略是否合理。
 
@@ -2016,7 +1988,7 @@ public void CreateUser_ValidName_ReturnsUserAndSavesToRepository()
 3. 对关键业务流程补充 E2E 测试
 4. 引入负载测试验证服务性能
 
-### 10.5 创造题（L6）
+### 9.5 创造题（L6）
 
 **习题 10.5.1**：设计一个支持并行执行的测试框架扩展，要求避免测试间资源竞争。
 
@@ -2081,7 +2053,7 @@ public class DatabaseTests
 }
 ```
 
-## 11. ACM 参考文献
+## 10. ACM 参考文献
 
 [1] Beck, K. 2003. Test-Driven Development: By Example. Addison-Wesley Professional. ISBN: 978-0-321-14653-3
 
@@ -2123,9 +2095,9 @@ public class DatabaseTests
 
 [20] Fowler, M. 2006. Continuous Integration. https://martinfowler.com/articles/continuousIntegration.html
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档与教程
+### 11.1 官方文档与教程
 
 - **Microsoft Learn - .NET 测试**：https://learn.microsoft.com/dotnet/core/testing/
   .NET 官方测试文档，覆盖 xUnit、NUnit、MSTest
@@ -2136,7 +2108,7 @@ public class DatabaseTests
 - **Moq Quickstart**：https://github.com/devlooped/moq/wiki/Quickstart
   Moq 快速入门指南
 
-### 12.2 进阶书籍
+### 11.2 进阶书籍
 
 - **《单元测试的艺术》**（Roy Osherove, 2013）
   .NET 测试领域经典著作，覆盖从入门到高级的所有主题
@@ -2147,7 +2119,7 @@ public class DatabaseTests
 - **《持续交付：发布可靠软件的系统方法》**（Jez Humble, 2010）
   DevOps 经典著作，CI/CD 实践指南
 
-### 12.3 开源项目与工具
+### 11.3 开源项目与工具
 
 - **xUnit**：https://github.com/xunit/xunit
   测试框架源码
@@ -2170,7 +2142,7 @@ public class DatabaseTests
 - **Verify**：https://github.com/VerifyTests/Verify
   快照测试工具
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **.NET 测试社区**：https://github.com/dotnet/testing
   微软官方测试相关项目集合
@@ -2181,7 +2153,7 @@ public class DatabaseTests
 - **Gitter - xUnit**：https://gitter.im/xunit/xunit
   xUnit 社区讨论
 
-## 13. 总结
+## 12. 总结
 
 C# 测试与工程化是现代 .NET 应用开发不可或缺的核心能力。本文档从测试金字塔理论出发，系统介绍了单元测试（xUnit）、Mock 框架（Moq）、集成测试（WebApplicationFactory + Testcontainers）、性能测试（BenchmarkDotNet）、代码分析（Roslyn Analyzer）、代码生成（Source Generators）以及 CI/CD 流水线等关键工程实践。
 

@@ -18,6 +18,7 @@ prerequisites:
   - harmonyos/ArkTS语言特性
 ---
 
+
 # 状态管理：ArkUI 响应式系统的形式化语义与工程实践
 
 > 状态管理是声明式 UI 框架的"中枢神经"——UI 是状态的函数 `UI = f(State)`，状态管理决定了应用的复杂度、可维护性与性能上限。本章按照 MIT 6.831（User Interface Design）、CMU 17-645（Distributed Systems）、Stanford CS147（Introduction to Human-Computer Interaction）等课程标准组织，系统讲解 ArkUI 的状态管理装饰器矩阵（`@State`/`@Prop`/`@Link`/`@Provide`/`@Consume`/`@ObjectLink`/`@Observed`/`@Watch`/`@StorageLink`/`@StorageProp`/`@LocalStorageLink`/`@LocalStorageProp`）、响应式系统的形式化语义（信号模型、依赖追踪、最小化重渲染）、复杂度分析、跨组件数据流的工程模式、不可变更新与可变更新的边界、与 Redux/MobX/Zustand/Recoil 的对比、生产级状态架构、时间旅行调试、跨设备状态同步等核心议题，并对照 React、Vue、SwiftUI、Flutter、Jetpack Compose 等业界方案。
@@ -26,57 +27,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章按照 Bloom 教育目标分类法（Bloom's Taxonomy）的六个层级组织学习目标。读者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述 ArkUI 状态管理装饰器的完整矩阵：`@State`、`@Prop`、`@Link`、`@Provide`、`@Consume`、`@ObjectLink`、`@Observed`、`@Watch`、`@StorageLink`、`@StorageProp`、`@LocalStorageLink`、`@LocalStorageProp`。
-- **R2**：复述每个装饰器的数据流方向：`@State`（组件内）、`@Prop`（父→子，单向，深拷贝）、`@Link`（父↔子，双向，引用）、`@Provide`/`@Consume`（跨级，双向）、`@ObjectLink`（嵌套对象，双向）。
-- **R3**：复述 AppStorage、LocalStorage 两个全局状态容器的差异：AppStorage 应用级、LocalStorage Ability 内级。
-- **R4**：复述 `@Watch` 的回调签名：`@Watch('callbackName')`，回调接收 `propName: string` 参数。
-- **R5**：复述 `@Observed` 与 `@ObjectLink` 的协作关系：`@Observed` 装饰类使其属性可被追踪，`@ObjectLink` 接收 `@Observed` 类的实例。
-- **R6**：复述 `$$` 双向绑定运算符的使用场景：将 `@State` 变量以引用形式传入子组件的 `@Link`。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释 ArkUI 响应式系统采用"信号（Signal）"模型而非"脏标记（Dirty Bit）"或"虚拟 DOM Diff"的原因。
-- **U2**：阐明 `@Prop` 的深拷贝语义在性能上的代价，以及何时应该避免使用 `@Prop` 传递大对象。
-- **U3**：解释 `@Link` 双向绑定如何避免无限循环——框架的"赋值抑制"机制。
-- **U4**：阐明 `@Provide`/`@Consume` 与 React Context 的差异：前者支持双向，后者单向。
-- **U5**：解释 `@ObjectLink` 必须与 `@Observed` 配对使用的根本原因——`@Observed` 在类的属性上安装 getter/setter，`@ObjectLink` 让子组件订阅这些 setter。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 `@State`、`@Prop`、`@Link` 实现父子组件的双向计数器。
-- **A2**：使用 `@Provide`/`@Consume` 实现主题切换功能，跨 3 层组件共享。
-- **A3**：使用 `@Observed`/`@ObjectLink` 实现嵌套对象的响应式更新（如购物车商品列表）。
-- **A4**：使用 `AppStorage` + `@StorageLink` 实现全局登录状态管理。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 `@Prop` 与 `@Link` 在数据流方向上的差异，论证"单向数据流"原则的重要性。
-- **An2**：分析 `@Provide`/`@Consume` 与 Redux 在大型应用中的适用性差异。
-- **An3**：分析 `@State` 修饰数组时，`push`/`pop`/`splice` 与直接赋值在响应式触发上的差异。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价 ArkUI 选择"装饰器矩阵"而非"统一状态管理库"的设计哲学。
-- **E2**：评价 `@StorageLink` 全局状态的引入是否违背了"状态最小化"原则。
-- **E3**：评价 `@ObjectLink` 的双向绑定与 React 的"单一数据源"原则的冲突与调和。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个基于 `@StorageLink` 的全局状态管理库，支持分片（Slicing）、中间件（Middleware）、时间旅行（Time-Travel）。
-- **C2**：设计一个跨设备状态同步方案，使用 `distributedDataObject` + `@StorageLink`。
-- **C3**：设计一个状态管理静态分析工具，自动检测循环依赖、未订阅的状态、过度渲染。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 前端状态管理的演进（2010-2024）
+### 1.1 前端状态管理的演进（2010-2024）
 
 前端状态管理经历了从"组件内 state"到"全局 store"再到"原子化状态"的范式转变：
 
@@ -101,7 +54,7 @@ ArkUI 的状态管理设计动机有三个：
 2. **AOT 友好**：装饰器是编译期可分析的元编程机制，适合 AOT 优化；
 3. **降低心智负担**：前端开发者熟悉装饰器（如 Java 注解、Python 装饰器），学习曲线平缓。
 
-### 2.2 ArkUI 1.0（2019）：基础三件套
+### 1.2 ArkUI 1.0（2019）：基础三件套
 
 ArkUI 1.0 引入了基础的状态管理装饰器：
 
@@ -111,7 +64,7 @@ ArkUI 1.0 引入了基础的状态管理装饰器：
 
 这一阶段的设计借鉴了 SwiftUI 的 `@State`/`@Binding`，但简化了泛型约束。
 
-### 2.3 ArkUI 2.0（2021-2022）：跨级共享与全局状态
+### 1.3 ArkUI 2.0（2021-2022）：跨级共享与全局状态
 
 ArkUI 2.0 引入了跨级与全局状态管理：
 
@@ -125,7 +78,7 @@ ArkUI 2.0 引入了跨级与全局状态管理：
 
 这一阶段的设计受 React Context 与 Vue Provide/Inject 影响，但保留了装饰器风格。
 
-### 2.4 ArkUI 3.0 与 NEXT（2024）：细粒度追踪
+### 1.4 ArkUI 3.0 与 NEXT（2024）：细粒度追踪
 
 HarmonyOS NEXT 引入了更细粒度的状态追踪：
 
@@ -133,7 +86,7 @@ HarmonyOS NEXT 引入了更细粒度的状态追踪：
 - `@Provider`/`@Consumer`：类型安全的跨级共享，取代 `@Provide`/`@Consume`；
 - `@Sendable`：跨线程共享对象（用于 Worker 间通信）。
 
-### 2.5 设计哲学：ArkUI 状态管理的"五项原则"
+### 1.5 设计哲学：ArkUI 状态管理的"五项原则"
 
 ArkUI 状态管理遵循华为公开的"五项原则"：
 
@@ -145,9 +98,9 @@ ArkUI 状态管理遵循华为公开的"五项原则"：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 响应式系统的信号模型
+### 2.1 响应式系统的信号模型
 
 ArkUI 的响应式系统遵循"信号（Signal）"模型。定义：
 
@@ -167,9 +120,9 @@ $$
 \text{notify}(v) = \forall f \in \text{subscribers}(v), \text{re-execute}(f)
 $$
 
-### 3.2 装饰器的形式化语义
+### 2.2 装饰器的形式化语义
 
-#### 3.2.1 @State 的语义
+#### 2.2.1 @State 的语义
 
 `@State` 装饰器将字段 $f$ 转换为带 getter/setter 的属性：
 
@@ -180,7 +133,7 @@ $$
 \end{cases}
 $$
 
-#### 3.2.2 @Prop 的语义
+#### 2.2.2 @Prop 的语义
 
 `@Prop` 在父组件状态变化时，对子组件做深拷贝：
 
@@ -191,7 +144,7 @@ $$
 \end{cases}
 $$
 
-#### 3.2.3 @Link 的语义
+#### 2.2.3 @Link 的语义
 
 `@Link` 建立父子间的双向绑定：
 
@@ -202,7 +155,7 @@ $$
 \end{cases}
 $$
 
-#### 3.2.4 @Provide/@Consume 的语义
+#### 2.2.4 @Provide/@Consume 的语义
 
 `@Provide` 在祖先组件注册状态，`@Consume` 在后代组件订阅：
 
@@ -214,9 +167,9 @@ $$
 \text{@Consume}(k) = \text{lookup}(k) \text{ and subscribe}
 $$
 
-### 3.3 复杂度分析
+### 2.3 复杂度分析
 
-#### 3.3.1 单次状态更新的复杂度
+#### 2.3.1 单次状态更新的复杂度
 
 设组件树 $T$ 有 $n$ 个节点，状态变化触发 $k$ 个订阅闭包。单次更新复杂度：
 
@@ -226,7 +179,7 @@ $$
 
 其中 $\text{cost}(r)$ 是渲染闭包执行成本，$\text{cost}(\text{diff}) = O(m)$（$m$ 是同层节点数）。
 
-#### 3.3.2 深拷贝的代价
+#### 2.3.2 深拷贝的代价
 
 `@Prop` 的深拷贝复杂度：
 
@@ -236,7 +189,7 @@ $$
 
 其中 $|o|$ 是对象大小，$d$ 是嵌套深度。对于大数组（1000+ 元素），深拷贝可能耗时 10-50ms。
 
-#### 3.3.3 @ObjectLink vs @Prop 的性能对比
+#### 2.3.3 @ObjectLink vs @Prop 的性能对比
 
 | 场景 | @Prop | @ObjectLink |
 | --- | --- | --- |
@@ -246,7 +199,7 @@ $$
 | 内存占用 | 副本 + 原始 | 单一引用 |
 | 适用场景 | 简单值传递 | 嵌套对象共享 |
 
-### 3.4 响应式更新的不变量
+### 2.4 响应式更新的不变量
 
 **命题 1**（响应式一致性）：若 `@State` 变量 $v$ 被修改，则所有依赖 $v$ 的 UI 部分在下一帧渲染前被更新。
 
@@ -256,9 +209,9 @@ $$
 
 ---
 
-## 4. 理论推导与复杂度分析
+## 3. 理论推导与复杂度分析
 
-### 4.1 依赖追踪的最小化
+### 3.1 依赖追踪的最小化
 
 ArkUI 的依赖追踪采用"读取时订阅"策略：
 
@@ -273,7 +226,7 @@ $$
 
 **推论 1**：若 `@State showB: boolean = false`，且 `build()` 中有 `if (this.showB) { Text(this.textB) }`，则 `textB` 变化仅在 `showB == true` 时触发重渲染。
 
-### 4.2 批处理与异步更新
+### 3.2 批处理与异步更新
 
 ArkUI 默认采用"批处理"策略：
 
@@ -285,7 +238,7 @@ $$
 
 **推论 2**：在 `onClick` 回调中连续修改 10 个 `@State` 变量，只触发一次重渲染。
 
-### 4.3 @Watch 的执行时机
+### 3.3 @Watch 的执行时机
 
 `@Watch` 回调在状态变化"之后、重渲染之前"执行：
 
@@ -295,7 +248,7 @@ $$
 
 这意味着 `@Watch` 可以在重渲染前修改其他状态，所有修改合并为一次重渲染。
 
-### 4.4 嵌套对象的响应式追踪
+### 3.4 嵌套对象的响应式追踪
 
 `@Observed` 在类的所有属性上安装 getter/setter：
 
@@ -312,7 +265,7 @@ $$
 1. 使用 `@ObjectLink` 在子组件中接收 `items[0]`；
 2. 或在 `@Observed` 类内部修改属性（被 `@Observed` 装饰的类，其属性 setter 触发响应式）。
 
-### 4.5 AppStorage 与 LocalStorage 的作用域
+### 3.5 AppStorage 与 LocalStorage 的作用域
 
 AppStorage 是应用级单例，所有 Ability 共享；LocalStorage 是 Ability 级，每个 Ability 独立。
 
@@ -324,9 +277,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：@State 单组件状态
+### 4.1 基础：@State 单组件状态
 
 ```typescript
 // 文件：StateBasic.ets
@@ -395,7 +348,7 @@ struct Counter {
 }
 ```
 
-### 5.2 进阶：@Prop 单向数据流
+### 4.2 进阶：@Prop 单向数据流
 
 ```typescript
 // 文件：PropDemo.ets
@@ -487,7 +440,7 @@ interface User {
 }
 ```
 
-### 5.3 进阶：@Link 双向绑定
+### 4.3 进阶：@Link 双向绑定
 
 ```typescript
 // 文件：LinkDemo.ets
@@ -554,7 +507,7 @@ struct Child {
 }
 ```
 
-### 5.4 高级：@Provide / @Consume 跨级共享
+### 4.4 高级：@Provide / @Consume 跨级共享
 
 ```typescript
 // 文件：ProvideConsumeDemo.ets
@@ -657,7 +610,7 @@ interface UserInfo {
 }
 ```
 
-### 5.5 高级：@Observed 与 @ObjectLink 嵌套对象
+### 4.5 高级：@Observed 与 @ObjectLink 嵌套对象
 
 ```typescript
 // 文件：ObservedDemo.ets
@@ -794,7 +747,7 @@ struct TodoList {
 }
 ```
 
-### 5.6 高级：@Watch 状态监听
+### 4.6 高级：@Watch 状态监听
 
 ```typescript
 // 文件：WatchDemo.ets
@@ -899,7 +852,7 @@ interface CartItem {
 }
 ```
 
-### 5.7 高级：AppStorage 全局状态
+### 4.7 高级：AppStorage 全局状态
 
 ```typescript
 // 文件：AppStorageDemo.ets
@@ -1034,7 +987,7 @@ interface UserInfo {
 }
 ```
 
-### 5.8 高级：LocalStorage Ability 级状态
+### 4.8 高级：LocalStorage Ability 级状态
 
 ```typescript
 // 文件：LocalStorageDemo.ets
@@ -1095,7 +1048,7 @@ struct HomePage {
 }
 ```
 
-### 5.9 综合：完整购物车案例
+### 4.9 综合：完整购物车案例
 
 ```typescript
 // 文件：ShoppingCart.ets
@@ -1321,9 +1274,9 @@ struct ShoppingCartPage {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 ArkUI 状态管理装饰器矩阵
+### 5.1 ArkUI 状态管理装饰器矩阵
 
 | 装饰器 | 数据流 | 适用场景 | 性能 | 复杂度 |
 | --- | --- | --- | --- | --- |
@@ -1338,7 +1291,7 @@ struct ShoppingCartPage {
 | `@LocalStorageLink` | Ability 双向 | 页面状态 | 中 | 低 |
 | `@LocalStorageProp` | Ability 单向 | 只读配置 | 高 | 低 |
 
-### 6.2 与 React 状态管理对比
+### 5.2 与 React 状态管理对比
 
 | 维度 | ArkUI | React Hooks | Redux | MobX | Zustand |
 | --- | --- | --- | --- | --- | --- |
@@ -1350,7 +1303,7 @@ struct ShoppingCartPage {
 | 跨组件 | @Provide | Context | Provider | 全局 | 全局 |
 | 调试工具 | DevEco | DevTools | DevTools | DevTools | DevTools |
 
-### 6.3 与 Vue 状态管理对比
+### 5.3 与 Vue 状态管理对比
 
 | 维度 | ArkUI | Vue 3 Composition | Pinia |
 | --- | --- | --- | --- |
@@ -1362,7 +1315,7 @@ struct ShoppingCartPage {
 | 类型安全 | 严格 | 严格 | 严格 |
 | 装饰器 | 必须 | 可选 | 不必须 |
 
-### 6.4 与 SwiftUI 状态管理对比
+### 5.4 与 SwiftUI 状态管理对比
 
 | 装饰器 | ArkUI | SwiftUI | 差异 |
 | --- | --- | --- | --- |
@@ -1373,7 +1326,7 @@ struct ShoppingCartPage {
 | 可观察对象 | @Observed/@ObjectLink | @Observable/@Bindable | NEXT 后对齐 |
 | 全局状态 | AppStorage | UserDefaults/AppStorage | 概念类似 |
 
-### 6.5 不可变更新 vs 可变更新
+### 5.5 不可变更新 vs 可变更新
 
 | 维度 | 不可变更新（React 风格） | 可变更新（ArkUI @Observed） |
 | --- | --- | --- |
@@ -1388,9 +1341,9 @@ ArkUI 同时支持两种风格，开发者可按场景选择。
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：在 @State 中直接修改对象属性
+### 6.1 陷阱：在 @State 中直接修改对象属性
 
 **错误代码**：
 
@@ -1426,7 +1379,7 @@ this.user.age = 29
 this.user = { ...this.user, age: 29 }
 ```
 
-### 7.2 陷阱：@Prop 与 @Link 混用导致数据不一致
+### 6.2 陷阱：@Prop 与 @Link 混用导致数据不一致
 
 **错误代码**：
 
@@ -1444,7 +1397,7 @@ ChildB({ count: $count })
 
 **正确做法**：同一份数据要么全用 `@Prop`（单向），要么全用 `@Link`（双向）。
 
-### 7.3 陷阱：在 build 方法中修改状态
+### 6.3 陷阱：在 build 方法中修改状态
 
 **错误代码**：
 
@@ -1461,7 +1414,7 @@ build() {
 
 **正确做法**：在事件回调或生命周期中修改状态。
 
-### 7.4 陷阱：@Watch 中引发循环依赖
+### 6.4 陷阱：@Watch 中引发循环依赖
 
 **错误代码**：
 
@@ -1487,7 +1440,7 @@ onBChange() {
 
 **正确做法**：避免 `@Watch` 回调中修改互相依赖的状态；若必须，使用标志位避免循环。
 
-### 7.5 陷阱：@Provide 未配合 @State
+### 6.5 陷阱：@Provide 未配合 @State
 
 **错误代码**：
 
@@ -1504,7 +1457,7 @@ onBChange() {
 @Provide('theme') @State theme: string = 'light'
 ```
 
-### 7.6 陷阱：@ObjectLink 接收非 @Observed 对象
+### 6.6 陷阱：@ObjectLink 接收非 @Observed 对象
 
 **错误代码**：
 
@@ -1531,7 +1484,7 @@ class Item {
 }
 ```
 
-### 7.7 反模式：所有状态都用 @StorageLink
+### 6.7 反模式：所有状态都用 @StorageLink
 
 **问题**：将所有状态放入 AppStorage，导致：
 
@@ -1541,7 +1494,7 @@ class Item {
 
 **正确做法**：仅将真正需要全局共享的状态（如登录、主题）放入 AppStorage，局部状态用 `@State`。
 
-### 7.8 反模式：在 @Observed 类中混入业务逻辑
+### 6.8 反模式：在 @Observed 类中混入业务逻辑
 
 **问题**：
 
@@ -1558,7 +1511,7 @@ class Order {
 
 **正确做法**：`@Observed` 类应是纯数据模型，业务逻辑放在 Service 层。
 
-### 7.9 生产事故：状态丢失
+### 6.9 生产事故：状态丢失
 
 **事故背景**：某应用在后台被系统杀死后重启，用户购物车数据丢失。
 
@@ -1591,7 +1544,7 @@ struct CartPage {
 }
 ```
 
-### 7.10 生产事故：过度渲染
+### 6.10 生产事故：过度渲染
 
 **事故背景**：某列表页滚动卡顿，FPS 仅 20。
 
@@ -1607,9 +1560,9 @@ struct CartPage {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 状态管理分层架构
+### 7.1 状态管理分层架构
 
 ```mermaid
 flowchart TD
@@ -1640,7 +1593,7 @@ flowchart TD
     T14 --> T17
 ```
 
-### 8.2 状态管理设计原则
+### 7.2 状态管理设计原则
 
 1. **就近原则**：状态尽量放在使用它的组件内；
 2. **最小化原则**：能用 `@State` 解决的，不用 `@Provide`；
@@ -1648,7 +1601,7 @@ flowchart TD
 4. **单一职责**：每个状态变量只承担一个职责；
 5. **持久化关键状态**：用户数据、配置等需要持久化。
 
-### 8.3 状态持久化模式
+### 7.3 状态持久化模式
 
 ```typescript
 // 文件：utils/PersistHelper.ts
@@ -1723,7 +1676,7 @@ export function Persistent(key: string) {
 }
 ```
 
-### 8.4 时间旅行调试
+### 7.4 时间旅行调试
 
 ```typescript
 // 文件：utils/TimeTravel.ts
@@ -1800,7 +1753,7 @@ export class TimeTravel<T> {
 }
 ```
 
-### 8.5 跨设备状态同步
+### 7.5 跨设备状态同步
 
 ```typescript
 // 文件：utils/DistributedState.ts
@@ -1876,9 +1829,9 @@ struct SharedNotePage {
 }
 ```
 
-### 8.6 状态管理性能优化
+### 7.6 状态管理性能优化
 
-#### 8.6.1 减少 @Prop 的深拷贝
+#### 7.6.1 减少 @Prop 的深拷贝
 
 ```typescript
 // 错误：大数组用 @Prop
@@ -1897,7 +1850,7 @@ struct GoodList {
 }
 ```
 
-#### 8.6.2 使用 @Watch 替代 computed
+#### 7.6.2 使用 @Watch 替代 computed
 
 ```typescript
 // 错误：每次重渲染都计算
@@ -1923,7 +1876,7 @@ build() {
 }
 ```
 
-#### 8.6.3 避免在 build 中创建新对象
+#### 7.6.3 避免在 build 中创建新对象
 
 ```typescript
 // 错误：每次 build 创建新对象
@@ -1945,7 +1898,7 @@ build() {
 }
 ```
 
-### 8.7 状态管理测试
+### 7.7 状态管理测试
 
 ```typescript
 // 文件：test/CartStore.test.ets
@@ -1987,9 +1940,9 @@ describe('CartStore', () => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：电商购物车的状态架构
+### 8.1 案例一：电商购物车的状态架构
 
 **背景**：某电商应用购物车需要支持：
 
@@ -2033,7 +1986,7 @@ struct CartPage {
 }
 ```
 
-### 9.2 案例二：表单状态管理
+### 8.2 案例二：表单状态管理
 
 **背景**：某保险投保表单 30+ 字段，需要：
 
@@ -2072,7 +2025,7 @@ struct Step1Form {
 }
 ```
 
-### 9.3 案例三：实时协作编辑
+### 8.3 案例三：实时协作编辑
 
 **背景**：某文档应用需要支持多人实时协作编辑。
 
@@ -2105,7 +2058,7 @@ struct DocEditor {
 }
 ```
 
-### 9.4 案例四：性能优化前后对比
+### 8.4 案例四：性能优化前后对比
 
 **项目**：某新闻应用列表页优化。
 
@@ -2127,7 +2080,7 @@ struct DocEditor {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题 1**：简述 `@State`、`@Prop`、`@Link` 的区别。
 
@@ -2158,7 +2111,7 @@ updateAge() {
 - `updateAge` 不会触发重渲染；
 - 修复：用 `@Observed` + `@ObjectLink`，或整体替换 `this.user = { ...this.user, age: 29 }`。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题 4**：设计一个支持撤销/重做的状态管理方案。
 
@@ -2182,7 +2135,7 @@ updateAge() {
 - 限制：不能在回调中修改自身状态（循环依赖）；
 - 限制：不能在回调中执行耗时操作（阻塞重渲染）。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题 7**：设计一个跨设备状态同步方案。
 
@@ -2240,9 +2193,9 @@ class StateManager<T> {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 官方文档
+### 10.1 官方文档
 
 [1] Huawei Device Co., Ltd. 2024. ArkUI State Management Guide. (Version 5.0). HarmonyOS Official Documentation. Retrieved July 21, 2026 from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/arkui-state-management-V5. DOI: 10.1234/harmonyos.state.2024.001.
 
@@ -2250,7 +2203,7 @@ class StateManager<T> {
 
 [3] Huawei Device Co., Ltd. 2024. Distributed Data Object API. (Version 5.0). HarmonyOS Official Documentation. Retrieved July 21, 2026 from https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/distributed-data-object-V5. DOI: 10.1234/harmonyos.distdata.2024.003.
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 [4] Salvaneschi, G. and Mezini, M. 2016. Debugging for reactive programming. In Proceedings of the 38th International Conference on Software Engineering (ICSE '16). ACM, New York, NY, USA, 796–807. DOI: 10.1145/2884781.2884816.
 
@@ -2260,7 +2213,7 @@ class StateManager<T> {
 
 [7] Duregard, J. and Jansson, P. 2019. Time-travel debugging for reactive systems. In Proceedings of the 2019 ACM SIGPLAN International Symposium on New Ideas, New Paradigms, and Reflections on Programming and Software (Onward! 2019). ACM, New York, NY, USA, 145–158. DOI: 10.1145/3359591.3359734.
 
-### 11.3 经典教材
+### 10.3 经典教材
 
 [8] Bainbridge, D. 2019. Reactive Programming with RxJS 5. Manning Publications, Shelter Island, NY, USA. ISBN: 978-1-61729-381-3.
 
@@ -2268,7 +2221,7 @@ class StateManager<T> {
 
 [10] Chong, N. and Gudeman, D. 2021. Formal semantics of decorator-based metaprogramming. In Proceedings of the 2021 ACM SIGPLAN International Symposium on New Ideas, New Paradigms, and Reflections on Programming and Software (Onward! 2021). ACM, New York, NY, USA, 1–15. DOI: 10.1145/3486606.3496952.
 
-### 11.4 工程实践参考
+### 10.4 工程实践参考
 
 [11] Abramov, D. and Clark, A. 2015. Redux: Predictable state container for JavaScript apps. Retrieved July 21, 2026 from https://redux.js.org/.
 
@@ -2278,16 +2231,16 @@ class StateManager<T> {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档与资源
+### 11.1 官方文档与资源
 
 - **ArkUI 状态管理**：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/arkui-state-management-V5
 - **AppStorage API**：https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/appstorage-V5
 - **Distributed Data Object**：https://developer.huawei.com/consumer/cn/doc/harmonyos-references-V5/distributed-data-object-V5
 - **状态管理示例代码**：https://gitee.com/harmonyos_samples/state-management
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - **《Reactive Programming with RxJS》** Bainbridge 著
   - 响应式编程基础
@@ -2296,20 +2249,20 @@ class StateManager<T> {
 - **《Structure and Interpretation of Computer Programs》** Abelson 著
   - 函数式编程范式
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - **"Algebraic Effects for Reactive Programming"** ACM SIGPLAN Notices, 2023
 - **"Time-Travel Debugging for Distributed Systems"** IEEE Transactions on Software Engineering, 2024
 - **"Cross-Device State Synchronization"** ACM Computing Surveys, 2023
 - **"Fine-grained Reactivity in Declarative UIs"** Proceedings of the ACM on Programming Languages, 2024
 
-### 12.4 社区资源
+### 11.4 社区资源
 
 - **HarmonyOS State Management Sample**：https://gitee.com/harmonyos_samples/state-management
 - **51CTO 状态管理专栏**：https://harmonyos.51cto.com/posts/state
 - **掘金 ArkUI 标签**：https://juejin.cn/tag/ArkUI
 
-### 12.5 相关课程
+### 11.5 相关课程
 
 - **MIT 6.831 User Interface Design**：https://ocw.mit.edu/courses/6-831-user-interface-design-and-implementation-spring-2011/
 - **Stanford CS147 Introduction to HCI**：https://cs147.stanford.edu/

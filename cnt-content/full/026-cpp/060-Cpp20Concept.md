@@ -16,64 +16,18 @@ prerequisites:
   - cpp/概述与现代标准
 ---
 
+
 # C++20 概念 (Concepts)
 
 > 本文档系统讲解 C++20 Concepts 机制的形式化基础、语法体系、语义模型、标准库概念族、子句驱动重载解析与工程实践。内容覆盖 ISO/IEC 14882:2020 [temp.concepts]、[temp.constr]、[temp.req] 等核心条款，对照 SFINAE、`std::enable_if`、标签分发等历史方案，结合 `<concepts>`、`<ranges>`、`<iterator>` 标准库设计实践，目标达到海外高校教学水准。
 
 ---
 
-## 1. 学习目标
-
-本节使用 Bloom 分类法刻画学习者应达到的认知层级。每一层级对应可观测的行为动词，便于自评与教学评估。
-
-### 1.1 记忆（Remember）
-
-- 列举 C++20 Concepts 的三大核心语法元素：`concept` 定义、`requires` 表达式、`requires` 子句。
-- 复述 `requires` 表达式的四种要求类型：简单要求、类型要求、复合要求、嵌套要求。
-- 背诵标准库 `<concepts>` 头文件的九大概念族：语言相关、类型关系、比较、对象语义、可调用、范围、迭代器、算法、可构造。
-- 列举 C++20 Concepts 的四种使用形式：尾置 `requires` 子句、`requires` 子句前置、概念名替代 `typename`、简写模板（abbreviated template）。
-
-### 1.2 理解（Understand）
-
-- 解释 SFINAE 与 Concepts 的本质差异：前者基于"替换失败即非错误"的隐式机制，后者基于显式约束的语义建模。
-- 阐述原子约束 (atomic constraint) 与约束归一化 (constraint normalization) 的过程：将复杂约束表达式分解为合取/析取的原子命题。
-- 描述子句包含 (subsumption) 关系：当且仅当一个约束蕴含另一个约束时，重载解析才能基于约束排序。
-- 区分 `requires` 表达式与 `requires` 子句：前者求值为 `bool` 常量表达式，后者引入约束谓词参与重载解析。
-- 解释简写模板 `void f(auto x)` 与 `void f(std::integral auto x)` 的等价关系：前者等价于 `template<typename T> void f(T x)`，后者等价于 `template<std::integral T> void f(T x)`。
-
-### 1.3 应用（Apply）
-
-- 使用 `concept` 定义自定义概念，覆盖算术类型、容器接口、可调用对象等多种语义。
-- 使用 `requires` 子句为模板添加约束，支持基于约束的重载分发。
-- 使用简写模板语法简化常见模板声明，提升可读性。
-- 在项目中替换既有 `std::enable_if` 代码为 `requires` 子句，保持向后兼容。
-
-### 1.4 分析（Analyze）
-
-- 对比 Concepts 与 Rust trait bounds、Haskell type classes、Swift protocols、Java bounded generics 在表达能力、推导机制、运行时开销上的差异。
-- 解构约束归一化的算法步骤：将 `concept C = A && B || C;` 分解为合取范式 (CNF) 或析取范式 (DNF) 的原子约束集。
-- 分析子句包含关系的判定算法：基于原子约束的偏序关系，构建蕴含图。
-- 评估 C++20 Concepts 在编译时间、二进制体积、错误信息质量上的工程影响。
-
-### 1.5 评价（Evaluate）
-
-- 评估在库设计中应采用 SFINAE 还是 Concepts：考虑目标 C++ 标准版本、编译器支持、用户迁移成本。
-- 判断特定 `requires` 表达式是否存在过度约束（如要求 `operator+` 但实际仅需 `operator+=`）。
-- 评审一份使用 Concepts 的模板代码，识别约束不充分（漏约束）、约束过强（阻止合理实例化）、约束冗余（与已有约束重复）等问题。
-
-### 1.6 创造（Create）
-
-- 设计一套面向领域的概念层级（如数值分析、线性代数、图形渲染），包含基础概念、组合概念、特定领域概念。
-- 构建一个完全基于 Concepts 的泛型算法库，提供清晰错误信息与强类型保证。
-- 为开源项目编写 Concepts 迁移指南，覆盖从 SFINAE 到 Concepts 的逐步重构路径。
-
----
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 C++ Concepts 的演进是 C++ 标准化史上最漫长、最曲折的提案之一，历经近二十年才最终落地。
 
-### 2.1 模板的诞生与"无约束泛型"困境（1990s）
+### 1.1 模板的诞生与"无约束泛型"困境（1990s）
 
 C++ 模板由 Bjarne Stroustrup 在 1980 年代末设计，C++98 标准化时正式纳入。模板的初衷是支持泛型编程 (generic programming)，让算法与数据结构能跨类型复用。Alexander Stepanov 据此设计了 STL（Standard Template Library），成为 C++ 标准库的核心组成部分。
 
@@ -93,7 +47,7 @@ T find_max(T a, T b) {
 3. **无契约文档**：模板参数的语义要求未在源码中明示，依赖注释或文档。
 4. **重载分发困难**：基于模板参数特性选择不同实现需要复杂的 SFINAE 技巧。
 
-### 2.2 SFINAE：权宜之计（2003 - 2010s）
+### 1.2 SFINAE：权宜之计（2003 - 2010s）
 
 C++03 引入 SFINAE (Substitution Failure Is Not An Error) 原则，提供了一种"软"约束机制。David Vandevoorde 首次形式化该原则，Jaakko Järvi 等人基于此设计 `boost::enable_if`，后被纳入 C++11 标准库为 `std::enable_if`。
 
@@ -131,7 +85,7 @@ struct has_value_type<T, std::void_t<typename T::value_type>> : std::true_type {
 
 但 `void_t` 仍是 SFINAE 技巧，未从根本上解决模板约束问题。
 
-### 2.3 Concepts 的早期提案（2003 - 2009）
+### 1.3 Concepts 的早期提案（2003 - 2009）
 
 C++ Concepts 的最初构想可追溯到 2003 年，由 Bjarne Stroustrup、Gabriel Dos Reis 等人推动。其设计目标：
 
@@ -162,7 +116,7 @@ bool find(T* first, T* last, T value);
 3. **与现有代码不兼容**：需要重写大量 STL 代码以使用概念。
 4. **性能担忧**：早期实现报告指出部分用例编译时间增加。
 
-### 2.4 Concepts Lite 与 C++20 标准化（2013 - 2020）
+### 1.4 Concepts Lite 与 C++20 标准化（2013 - 2020）
 
 2009 年提案否决后，Bjarne Stroustrup、Andrew Sutton 等人重启简化版设计，称为 "Concepts Lite"。核心简化：
 
@@ -174,7 +128,7 @@ bool find(T* first, T* last, T value);
 
 2017 年 Jacksonville 会议，Concepts 正式进入 C++20 工作草案。2018 年 Rapperswil 会议，`<concepts>` 标准库头文件确定。2020 年 9 月，ISO/IEC 14882:2020 正式发布，Concepts 成为 C++20 四大核心特性之一（与 Ranges、Modules、Coroutines 并列）。
 
-### 2.5 Ranges：Concepts 的旗舰应用（2018 - 2020）
+### 1.5 Ranges：Concepts 的旗舰应用（2018 - 2020）
 
 C++20 Ranges 库由 Eric Niebler 主导设计，是 Concepts 的首个大规模应用。Ranges 完全基于概念设计：
 
@@ -194,7 +148,7 @@ Ranges 的设计展示了 Concepts 的核心价值：
 2. **错误信息可读**：用 `std::list<int>::iterator` 调用 `sort` 会得到"不满足 `random_access_iterator`"的明确错误。
 3. **投影与组合**：`Proj` 投影类型通过 `indirectly_readable` 等概念约束，支持复杂组合。
 
-### 2.6 C++23 与 C++26 的演进（2021 - 至今）
+### 1.6 C++23 与 C++26 的演进（2021 - 至今）
 
 C++23 在 Concepts 上做了小幅增强：
 
@@ -209,7 +163,7 @@ C++26 草案中的相关进展：
 3. **`<linalg>` 线性代数库**：P1673 提案，基于概念约束矩阵类型。
 4. **Pattern Matching**：P2688 提案，模式匹配与概念约束结合。
 
-### 2.7 演进时间线
+### 1.7 演进时间线
 
 ```text
 1988  C++ 模板设计               Stroustrup
@@ -232,11 +186,11 @@ C++26 草案中的相关进展：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 本节给出 C++20 Concepts 相关的形式化定义，涵盖标准条款引用、概念的形式语义、约束归一化算法与子句包含关系。
 
-### 3.1 ISO/IEC 14882:2020 标准条款
+### 2.1 ISO/IEC 14882:2020 标准条款
 
 C++20 Concepts 的标准化分布在以下核心条款：
 
@@ -249,7 +203,7 @@ C++20 Concepts 的标准化分布在以下核心条款：
 - **[temp.req]** 要求：`requires` 表达式的四种要求类型。
 - **[temp.pre]** 前置条件：模板参数的隐式约束。
 
-### 3.2 概念的形式化定义
+### 2.2 概念的形式化定义
 
 概念 (concept) 是一个命名的模板，其求值为 `bool` 类型的编译期常量。形式化地，概念 $C$ 是一个谓词：
 
@@ -274,7 +228,7 @@ concept Integral = std::is_integral_v<T>;
 
 这里 $E = \texttt{std::is\_integral\_v<T>}$，$C = \text{Integral}$。
 
-### 3.3 约束归一化 (Constraint Normalization)
+### 2.3 约束归一化 (Constraint Normalization)
 
 约束归一化是将复杂的约束表达式转换为原子约束的逻辑组合的过程。形式化地，定义归一化函数：
 
@@ -315,7 +269,7 @@ concept Signed = std::signed_integral<T> || (std::floating_point<T> && std::is_s
 
 `Number<int>` 归一化为 $\texttt{integral<int>} \lor \texttt{floating\_point<int>}$，求值为 $\text{true} \lor \text{false} = \text{true}$。
 
-### 3.4 原子约束的等价性
+### 2.4 原子约束的等价性
 
 两个原子约束 $P_1 = (C_1, \text{mapping}_1)$ 与 $P_2 = (C_2, \text{mapping}_2)$ 等价，当且仅当：
 
@@ -330,7 +284,7 @@ $$
 
 注意：两个不同概念即使语义相同（如自定义 `MyIntegral` 与 `std::integral`），其原子约束不等价，无法触发子句包含。
 
-### 3.5 子句包含 (Subsumption)
+### 2.5 子句包含 (Subsumption)
 
 子句包含是约束之间的偏序关系。定义约束 $A$ 包含约束 $B$（记 $A \models B$，或 $B \sqsubseteq A$），当且仅当：
 
@@ -352,7 +306,7 @@ $$
 - 若约束 $A \models B$ 且 $B \not\models A$，则 $A$ 比 $B$ 更严格 (more constrained)。
 - 在重载解析中，更严格的候选优先选择。
 
-### 3.6 `requires` 表达式的形式语义
+### 2.6 `requires` 表达式的形式语义
 
 `requires` 表达式 (requires expression) 是 C++20 引入的求值为 `bool` 常量的语法结构。形式化地：
 
@@ -375,7 +329,7 @@ $$
 
 其中 $\llbracket r_i \rrbracket$ 是要求 $r_i$ 的求值结果。
 
-### 3.7 简写模板的形式化
+### 2.7 简写模板的形式化
 
 简写模板 (abbreviated template) 是 C++20 引入的语法糖。形式化等价：
 
@@ -388,7 +342,7 @@ $$
 
 简写模板的约束同样参与重载解析与子句包含判定。
 
-### 3.8 模板实参推导与约束
+### 2.8 模板实参推导与约束
 
 C++20 的模板实参推导 (template argument deduction) 与约束协同工作。形式化地，对于函数模板：
 
@@ -408,11 +362,11 @@ void f(T x);
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
 本节深入解析 Concepts 背后的理论原理，包括约束逻辑、归一化算法、子句包含判定与重载解析的形式语义。
 
-### 4.1 约束的命题逻辑模型
+### 3.1 约束的命题逻辑模型
 
 C++20 Concepts 的约束表达式可建模为命题逻辑。设原子约束为命题变量 $p_1, p_2, \ldots, p_n$，则约束表达式 $E$ 是命题逻辑公式：
 
@@ -440,7 +394,7 @@ concept B = !(!std::integral<T> && !std::floating_point<T>);  // 逻辑等价 A
 
 虽然 $A$ 与 $B$ 在经典逻辑下等价，但 $B$ 的归一化涉及 `!`（非操作），C++ 标准不支持原子约束的否定，故 $B$ 无法归一化为 DNF，无法参与子句包含。
 
-### 4.2 归一化算法的形式描述
+### 3.2 归一化算法的形式描述
 
 约束归一化算法形式描述如下：
 
@@ -466,7 +420,7 @@ $$
 \text{distribute\_and}\left(\bigvee_i A_i, \bigvee_j B_j\right) = \bigvee_{i,j} (A_i \land B_j)
 $$
 
-### 4.3 子句包含的判定复杂度
+### 3.3 子句包含的判定复杂度
 
 子句包含判定的算法复杂度：
 
@@ -485,7 +439,7 @@ $$
 
 实际工程中，概念定义通常较简单（$n_A, n_B \leq 5$，$m \leq 10$），判定开销可忽略。但深层组合概念可能产生 DNF 爆炸，编译器实现需优化。
 
-### 4.4 重载解析的约束排序
+### 3.4 重载解析的约束排序
 
 C++20 重载解析中，约束参与候选函数排序。形式化地，对于两个候选函数 $f_1$ 与 $f_2$，约束分别为 $C_1$ 与 $C_2$：
 
@@ -509,7 +463,7 @@ f(42u);   // 仅 f1 满足（unsigned 不满足 signed_integral），选 f1
 
 `std::signed_integral<T>` 标准库定义为 `std::integral<T> && std::is_signed_v<T>`，故 `signed_integral ⊨ integral`，但 `integral ⊨ signed_integral` 不成立（`unsigned` 是 `integral` 但非 `signed_integral`）。
 
-### 4.5 约束的传递性
+### 3.5 约束的传递性
 
 子句包含关系具有传递性：
 
@@ -529,7 +483,7 @@ template<typename T> concept Numeric = Ordered<T> && std::regular<T> /* ... */;
 
 `Numeric ⊨ Ordered ⊨ Regular`，调用时优先选择 `Numeric` 约束的版本。
 
-### 4.6 错误信息的语义模型
+### 3.6 错误信息的语义模型
 
 C++20 Concepts 改善错误信息的核心机制：
 
@@ -556,7 +510,7 @@ note: because 'std::_List_iterator<int>' does not satisfy 'random_access_iterato
 
 对比 SFINAE 的典型错误（数百行模板实例化栈），Concepts 错误信息可读性提升数十倍。
 
-### 4.7 概念与类型类 (Type Class) 的对比
+### 3.7 概念与类型类 (Type Class) 的对比
 
 Haskell 类型类 (type class) 与 C++ 概念在形式上有相似性，但本质不同：
 
@@ -573,9 +527,9 @@ Haskell 类型类 (type class) 与 C++ 概念在形式上有相似性，但本�
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 概念定义基础示例
+### 4.1 概念定义基础示例
 
 **标准**：C++20
 
@@ -634,7 +588,7 @@ concept ReturnableCallable = requires(F f, Args... args) {
 };
 ```
 
-### 5.1.5 概念的组合
+### 4.1.5 概念的组合
 
 **标准**：C++20
 
@@ -660,7 +614,7 @@ concept NumericType = Ordered<T> && requires(T a, T b) {
 };
 ```
 
-### 5.2 使用概念的四种语法形式
+### 4.2 使用概念的四种语法形式
 
 **标准**：C++20
 
@@ -715,7 +669,7 @@ int main() {
 }
 ```
 
-### 5.3 `requires` 表达式的四种要求
+### 4.3 `requires` 表达式的四种要求
 
 **标准**：C++20
 
@@ -773,7 +727,7 @@ concept MyInputIterator = requires(T it) {
 static_assert(MyInputIterator<typename std::vector<int>::iterator>);
 ```
 
-### 5.4 基于约束的重载分发
+### 4.4 基于约束的重载分发
 
 **标准**：C++20
 
@@ -826,7 +780,7 @@ int main() {
 }
 ```
 
-### 5.5 替代 `std::enable_if` 的典型场景
+### 4.5 替代 `std::enable_if` 的典型场景
 
 **标准**：C++20
 
@@ -883,7 +837,7 @@ auto compute(T x) -> T {
 }
 ```
 
-### 5.6 自定义容器概念与算法
+### 4.6 自定义容器概念与算法
 
 **标准**：C++20
 
@@ -958,7 +912,7 @@ int main() {
 }
 ```
 
-### 5.7 数值算法的概念层级
+### 4.7 数值算法的概念层级
 
 **标准**：C++20
 
@@ -1029,7 +983,7 @@ int main() {
 }
 ```
 
-### 5.8 接口设计：可打印概念
+### 4.8 接口设计：可打印概念
 
 **标准**：C++20
 
@@ -1086,7 +1040,7 @@ int main() {
 }
 ```
 
-### 5.9 RAII 容器与资源管理概念
+### 4.9 RAII 容器与资源管理概念
 
 **标准**：C++20
 
@@ -1160,7 +1114,7 @@ static_assert(ResourceType<FileResource>);
 using FileGuard = RaiiWrapper<FileResource>;
 ```
 
-### 5.10 完整的 Range 适配器示例
+### 4.10 完整的 Range 适配器示例
 
 **标准**：C++20
 
@@ -1232,9 +1186,9 @@ int main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 C++20 Concepts 与 SFINAE / `std::enable_if` 对比
+### 5.1 C++20 Concepts 与 SFINAE / `std::enable_if` 对比
 
 | 维度 | SFINAE + `std::enable_if` | C++20 Concepts |
 | ---- | ------------------------- | -------------- |
@@ -1249,7 +1203,7 @@ int main() {
 | **向后兼容** | C++11/14/17/20/23 全支持 | 仅 C++20+ |
 | **编译器支持** | 所有主流编译器 | GCC 10+, Clang 10+, MSVC 19.29+ |
 
-### 6.2 C++20 Concepts 与 Rust Trait Bounds 对比
+### 5.2 C++20 Concepts 与 Rust Trait Bounds 对比
 
 | 维度 | C++20 Concepts | Rust Trait Bounds |
 | ---- | -------------- | ------------------ |
@@ -1263,7 +1217,7 @@ int main() {
 | **概念地图** | 无（结构式） | 显式 impl（声明式） |
 | **错误信息** | 较好，但深度概念可能复杂 | 优秀，明确指出缺失的 trait |
 
-### 6.3 C++20 Concepts 与 Haskell Type Classes 对比
+### 5.3 C++20 Concepts 与 Haskell Type Classes 对比
 
 | 维度 | C++20 Concepts | Haskell Type Classes |
 | ---- | -------------- | -------------------- |
@@ -1276,7 +1230,7 @@ int main() {
 | **类型族** | 无对应概念 | `type family F a` 关联类型族 |
 | **性能** | 零运行时开销 | 零（特化）或字典传递开销 |
 
-### 6.4 C++20 Concepts 与 Java Bounded Generics 对比
+### 5.4 C++20 Concepts 与 Java Bounded Generics 对比
 
 | 维度 | C++20 Concepts | Java Bounded Generics |
 | ---- | -------------- | --------------------- |
@@ -1288,7 +1242,7 @@ int main() {
 | **运行时开销** | 零 | 装箱/拆箱 + 虚调用 |
 | **错误信息** | 编译期明确 | 编译期一般 |
 
-### 6.5 C++20 Concepts 与 Swift Protocols 对比
+### 5.5 C++20 Concepts 与 Swift Protocols 对比
 
 | 维度 | C++20 Concepts | Swift Protocols |
 | ---- | -------------- | --------------- |
@@ -1299,7 +1253,7 @@ int main() {
 | **关联类型** | 通过 `typename T::U` | `associatedtype Item` |
 | **Witness Table** | 无 | 有（动态分发用） |
 
-### 6.6 概念的"结构式"vs"声明式"权衡
+### 5.6 概念的"结构式"vs"声明式"权衡
 
 C++20 Concepts 采用**结构式** (structural) 约束：类型 T 满足概念 C 的所有要求即视为 T 建模 C，无需显式声明。这与 Rust/Haskell/Java 的**声明式** (nominal) 约束相反。
 
@@ -1319,9 +1273,9 @@ C++0x 早期提案（2008-2009）曾包含概念地图 (concept maps)，允许�
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 常见陷阱
+### 6.1 常见陷阱
 
 #### 陷阱 1：过度约束
 
@@ -1515,7 +1469,7 @@ g(42);   // 选 IntegralAndSigned
 g(42u);  // 选 IntegralAndUnsigned
 ```
 
-### 7.2 最佳实践
+### 6.2 最佳实践
 
 #### 实践 1：命名概念，避免内联约束
 
@@ -1669,9 +1623,9 @@ T add_one(T x) { return x + 1; }
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构组织
+### 7.1 项目结构组织
 
 推荐的项目结构：
 
@@ -1702,7 +1656,7 @@ flowchart TD
     T16 --> T17
 ```
 
-### 8.2 概念库的组织模式
+### 7.2 概念库的组织模式
 
 **`include/mylib/concepts/numeric.hpp`**：
 
@@ -1756,7 +1710,7 @@ concept FloatingPointLike = std::floating_point<T> && Field<T>;
 }  // namespace mylib
 ```
 
-### 8.3 CMake 集成
+### 7.3 CMake 集成
 
 **`CMakeLists.txt`**：
 
@@ -1793,7 +1747,7 @@ add_executable(demo examples/demo.cpp)
 target_link_libraries(demo PRIVATE mylib)
 ```
 
-### 8.4 概念的单元测试
+### 7.4 概念的单元测试
 
 **`tests/concepts/test_numeric.cpp`**：
 
@@ -1831,7 +1785,7 @@ template<typename T> requires OrderedField<T> void f2(T);
 int main() { return 0; }
 ```
 
-### 8.5 编译器支持矩阵
+### 7.5 编译器支持矩阵
 
 | 编译器 | 版本 | Concepts 支持 | 备注 |
 | ------ | ---- | -------------- | ---- |
@@ -1843,7 +1797,7 @@ int main() { return 0; }
 | MSVC | 19.32+ | 完整支持 | 含 `<ranges>` |
 | Apple Clang | 13+ | 完整支持 | macOS 12+ |
 
-### 8.6 CI/CD 配置
+### 7.6 CI/CD 配置
 
 **`.github/workflows/ci.yml`**：
 
@@ -1872,7 +1826,7 @@ jobs:
         run: cd build && ctest --output-on-failure
 ```
 
-### 8.7 性能影响分析
+### 7.7 性能影响分析
 
 Concepts 对编译时间与运行时性能的影响：
 
@@ -1894,7 +1848,7 @@ Concepts 对编译时间与运行时性能的影响：
 - 基于约束的重载分发可能导致多个特化版本，增加体积。
 - 实践中影响可忽略（<1%）。
 
-### 8.8 与既有代码兼容
+### 7.8 与既有代码兼容
 
 C++20 Concepts 与 C++17 代码共存策略：
 
@@ -1928,9 +1882,9 @@ T add_one(T x) { return x + 1; }
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：标准库 `<ranges>` 设计
+### 8.1 案例一：标准库 `<ranges>` 设计
 
 C++20 `<ranges>` 库是 Concepts 应用的旗舰案例。其设计原则：
 
@@ -1959,7 +1913,7 @@ concept sortable =
 
 层层递归的概念约束，确保 `sort` 仅在合理类型上实例化，错误信息清晰。
 
-### 9.2 案例二：`std::expected` (C++23)
+### 8.2 案例二：`std::expected` (C++23)
 
 C++23 引入的 `std::expected<T, E>` 大量使用概念约束：
 
@@ -1990,7 +1944,7 @@ requires std::invocable<F, T> {
 }
 ```
 
-### 9.3 案例三：协程 (Coroutines) 与概念
+### 8.3 案例三：协程 (Coroutines) 与概念
 
 C++20 协程的 `promise_type` 接口可通过概念约束：
 
@@ -2016,7 +1970,7 @@ private:
 };
 ```
 
-### 9.4 案例四：数值线性代数库
+### 8.4 案例四：数值线性代数库
 
 P1673 `<linalg>` 提案基于概念约束矩阵类型：
 
@@ -2044,7 +1998,7 @@ void copy_matrix(InMat src, OutMat dst) {
 }
 ```
 
-### 9.5 案例五：Boost 1.75+ 的 Concepts 迁移
+### 8.5 案例五：Boost 1.75+ 的 Concepts 迁移
 
 Boost 库在 1.75 起逐步迁移至 C++20 Concepts。以 Boost.Multiprecision 为例：
 
@@ -2073,7 +2027,7 @@ T compute(T a, T b) {
 2. **重载分发清晰**：基于概念自动选择 `int`、`float`、`boost::multiprecision::cpp_int` 等实现。
 3. **文档化语义**：概念显式声明类型的语义要求，替代散落的 `static_assert`。
 
-### 9.6 案例六：企业级 ORM 库
+### 8.6 案例六：企业级 ORM 库
 
 某企业 ORM 库使用概念约束查询构建器：
 

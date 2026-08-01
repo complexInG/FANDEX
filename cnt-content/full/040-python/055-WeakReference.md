@@ -15,55 +15,18 @@ related:
 prerequisites:
   - python/语法速查
 ---
+
 # Python weakref 弱引用
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
-
-本章节对标 MIT 6.004 计算机结构、Stanford CS143 编译原理、CMU 15-410 操作系统、UC Berkeley CS169 软件工程等顶级高校课程对内存管理与对象生命周期的研究水准，系统讲解 Python `weakref` 模块的工程化使用与底层理论。完成本章节学习后，读者应能够：
-
-### 1.1 Bloom 认知层级目标
-
-| 层级 | 关键动词 | 具体能力描述 |
-| :--- | :--- | :--- |
-| Remember（记忆） | 列举、识别 | 列举 `weakref` 的核心 API（`ref`、`proxy`、`WeakKeyDictionary`、`WeakValueDictionary`、`WeakSet`、`finalize`、`ReferenceType`）与适用类型限制 |
-| Understand（理解） | 解释、归纳 | 解释引用计数模型、强引用与弱引用的语义差异、垃圾回收器（GC）与弱引用的协作机制、`__weakref__` 槽位的作用 |
-| Apply（应用） | 实现、编写 | 编写生产级代码：对象缓存、观察者模式、循环引用规避、资源自动清理、单例注册表 |
-| Analyze（分析） | 比较、拆解 | 比较 `WeakValueDictionary` 与 `WeakKeyDictionary` 的语义、分析弱引用回调的执行时机、识别不支持弱引用的内置类型的原因 |
-| Evaluate（评价） | 评估、选择 | 评估在何种场景下应使用弱引用而非显式资源管理、选择合适的弱引用容器 |
-| Create（创造） | 设计、优化 | 设计可观测的对象生命周期管理系统、实现自定义弱引用描述符、构建分布式对象缓存层 |
-
-### 1.2 知识地图
-
-```
-[理论基础] 引用计数 | 标记-清除 GC | 对象图 | 强可达性
-    ↓
-[Python 实现] weakref 模块 | ref | proxy | Weak* 容器
-    ↓
-[工程实战] 对象缓存 | 观察者模式 | 循环引用规避 | 资源清理
-    ↓
-[高级话题] finalize | __slots__ 交互 | 描述符联动 | CPython 内部实现
-```
-
-### 1.3 前置知识检查
-
-学习本章节前，请确认你已掌握：
-
-1. Python 对象模型（`id`、`type`、引用计数 `sys.getrefcount`）；
-2. 垃圾回收器（GC）基础概念：引用计数、标记-清除、分代回收；
-3. 字典、集合的内部实现（哈希表）；
-4. 描述符协议（`__get__`、`__set__`、`__delete__`）；
-5. `__slots__` 与实例字典的关系；
-6. 闭包与函数对象的基本概念。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 弱引用的提出源于编程语言对"对象生命周期管理"的长期探索，其本质是区分"知道对象存在"与"保持对象存活"两种语义。
 
-### 2.1 内存管理的理论起源
+### 1.1 内存管理的理论起源
 
 - **1960**：John McCarthy 在 Lisp 中实现首个垃圾回收器，采用标记-清除算法；
 - **1962**：Harold MacLean 在 IBM 7090 上实现引用计数；
@@ -73,7 +36,7 @@ prerequisites:
 - **1990s**：Java 引入 `WeakReference`、`SoftReference`、`PhantomReference` 三层引用体系；
 - **1990s**：C++ 标准库引入 `weak_ptr` 配合 `shared_ptr`。
 
-### 2.2 Python weakref 演进时间线
+### 1.2 Python weakref 演进时间线
 
 | 时间 | 版本 | 重要变化 |
 | :--- | :--- | :--- |
@@ -88,7 +51,7 @@ prerequisites:
 | 2023 | Python 3.12 | `WeakSet` 支持 `typing.MutableSet` 协议；性能优化 |
 | 2025 | Python 3.13+ | 弱引用在 free-threaded 构建（PEP 703）中的语义调整 |
 
-### 2.3 PEP 205 的设计目标
+### 1.3 PEP 205 的设计目标
 
 PEP 205（*Weak References in Python*，由 Fred L. Drake, Jr. 与 Neil Schemenauer 于 2001 年提出）明确了弱引用的设计目标：
 
@@ -98,7 +61,7 @@ PEP 205（*Weak References in Python*，由 Fred L. Drake, Jr. 与 Neil Schemena
 4. **回调机制**：对象被回收时可触发回调，便于资源清理；
 5. **代理对象**：`proxy` 提供透明访问，简化调用语法。
 
-### 2.4 与其他语言的对比
+### 1.4 与其他语言的对比
 
 | 语言 | 弱引用类型 | 主要用途 |
 | :--- | :--- | :--- |
@@ -111,9 +74,9 @@ PEP 205（*Weak References in Python*，由 Fred L. Drake, Jr. 与 Neil Schemena
 | Swift | `weak`、`unowned` | 闭包与代理模式 |
 | Python | `weakref.ref`、`Weak*` | 缓存、观察者、单例 |
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 对象图的代数定义
+### 2.1 对象图的代数定义
 
 设 $O$ 为对象集合，$R \subseteq O \times O$ 为引用关系。对象 $o$ 的引用集合定义为：
 
@@ -137,7 +100,7 @@ $$
 
 **垃圾对象**：$o \in O \setminus \text{Reach}(G)$ 且 $\text{refcount}(o) = 0$（仅考虑强引用）。
 
-### 3.2 弱引用的形式化
+### 2.2 弱引用的形式化
 
 弱引用是一类特殊引用，不参与可达性分析：
 
@@ -153,7 +116,7 @@ $$
 
 当对象 $o$ 的所有强引用消失（$\text{refcount}(o) = 0$）时，$o$ 被 GC 回收，所有弱引用 $r$ 自动变为"失效"（dereferenced），$r()$ 返回 `None`。
 
-### 3.3 弱引用的有效性条件
+### 2.3 弱引用的有效性条件
 
 Python 对象支持弱引用的充要条件：
 
@@ -177,7 +140,7 @@ wl = WeakList([1, 2, 3])
 ref = weakref.ref(wl)  # OK
 ```
 
-### 3.4 弱引用回调的时序
+### 2.4 弱引用回调的时序
 
 当对象 $o$ 被回收时，弱引用回调按以下顺序执行：
 
@@ -197,7 +160,7 @@ $$
 
 **关键性质**：回调执行时对象 $o$ 已部分析构，**不可**在回调中重新访问 $o$（会得到 `None` 或已失效的对象）。
 
-### 3.5 Weak* 容器的语义
+### 2.5 Weak* 容器的语义
 
 | 容器 | 键 | 值 | 回收触发条件 |
 | :--- | :--- | :--- | :--- |
@@ -213,9 +176,9 @@ $$
 
 当 $\text{refcount}(k) \to 0$，GC 回收 $k$，触发弱键回调，从字典中删除 $(k, v)$ 条目。
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 引用计数模型
+### 3.1 引用计数模型
 
 CPython 默认使用引用计数（reference counting）作为主要 GC 策略。每个对象 $o$ 维护一个引用计数 $\text{refcount}(o)$：
 
@@ -236,7 +199,7 @@ $$
 
 当 $\text{refcount}(o) = 0$ 时，对象立即被回收。
 
-### 4.2 循环引用问题
+### 3.2 循环引用问题
 
 引用计数无法处理循环引用：
 
@@ -265,7 +228,7 @@ class Child:
 
 此时 $\text{refcount}(\text{parent})$ 不含 child 的引用，parent 可被正常回收。
 
-### 4.3 三代分代 GC 的数学模型
+### 3.3 三代分代 GC 的数学模型
 
 CPython 分代 GC 将对象分为三代：
 
@@ -291,7 +254,7 @@ $$
 2. 调用弱引用的回调函数（如果设置了）；
 3. 实际释放对象内存。
 
-### 4.4 弱引用与线程安全
+### 3.4 弱引用与线程安全
 
 CPython 的 GIL 保证了字节码级别的原子性，但弱引用操作仍需注意：
 
@@ -299,7 +262,7 @@ CPython 的 GIL 保证了字节码级别的原子性，但弱引用操作仍需�
 - `WeakKeyDictionary` 内部使用锁保护，但跨线程访问仍可能产生竞态；
 - 在 free-threaded 模式（PEP 703）下，弱引用语义可能调整。
 
-### 4.5 弱引用的内存开销
+### 3.5 弱引用的内存开销
 
 每个弱引用对象占用约 64 字节（CPython 3.12 x86_64）：
 
@@ -314,9 +277,9 @@ CPython 的 GIL 保证了字节码级别的原子性，但弱引用操作仍需�
 - 调用 `ref()`：~50ns；
 - 弱引用回调：~1μs。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基本弱引用
+### 4.1 基本弱引用
 
 ```python
 """weakref 基础示例。Python 3.12+。"""
@@ -359,7 +322,7 @@ if __name__ == "__main__":
     basic_weakref()
 ```
 
-### 5.2 弱引用回调
+### 4.2 弱引用回调
 
 ```python
 """弱引用回调示例。"""
@@ -404,7 +367,7 @@ if __name__ == "__main__":
     callback_demo()
 ```
 
-### 5.3 WeakKeyDictionary
+### 4.3 WeakKeyDictionary
 
 ```python
 """WeakKeyDictionary 示例：基于对象实例的元数据。"""
@@ -451,7 +414,7 @@ if __name__ == "__main__":
     weak_key_dict_demo()
 ```
 
-### 5.4 WeakValueDictionary
+### 4.4 WeakValueDictionary
 
 ```python
 """WeakValueDictionary 示例：对象缓存。"""
@@ -510,7 +473,7 @@ if __name__ == "__main__":
     weak_value_dict_demo()
 ```
 
-### 5.5 WeakSet
+### 4.5 WeakSet
 
 ```python
 """WeakSet 示例：观察者模式。"""
@@ -570,7 +533,7 @@ if __name__ == "__main__":
     weak_set_demo()
 ```
 
-### 5.6 弱引用代理（proxy）
+### 4.6 弱引用代理（proxy）
 
 ```python
 """弱引用代理示例。"""
@@ -618,7 +581,7 @@ if __name__ == "__main__":
     proxy_demo()
 ```
 
-### 5.7 finalize 自动资源清理
+### 4.7 finalize 自动资源清理
 
 ```python
 """finalize 示例：替代 __del__ 的资源清理。"""
@@ -683,7 +646,7 @@ if __name__ == "__main__":
     finalize_demo()
 ```
 
-### 5.8 循环引用规避
+### 4.8 循环引用规避
 
 ```python
 """循环引用规避示例：父子结构。"""
@@ -746,7 +709,7 @@ if __name__ == "__main__":
     cyclic_ref_demo()
 ```
 
-### 5.9 单例注册表
+### 4.9 单例注册表
 
 ```python
 """单例注册表示例。"""
@@ -826,7 +789,7 @@ if __name__ == "__main__":
     singleton_demo()
 ```
 
-### 5.10 弱引用描述符
+### 4.10 弱引用描述符
 
 ```python
 """弱引用描述符示例：可观察属性。"""
@@ -908,9 +871,9 @@ if __name__ == "__main__":
     descriptor_demo()
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 WeakValueDictionary vs WeakKeyDictionary
+### 5.1 WeakValueDictionary vs WeakKeyDictionary
 
 | 维度 | WeakValueDictionary | WeakKeyDictionary |
 | :--- | :--- | :--- |
@@ -921,7 +884,7 @@ if __name__ == "__main__":
 | 内部实现 | 键 + 弱值引用 + 回调 | 弱键引用 + 值 |
 | 性能 | 略慢（需管理弱值） | 略快 |
 
-### 6.2 weakref.ref vs weakref.proxy
+### 5.2 weakref.ref vs weakref.proxy
 
 | 维度 | `ref` | `proxy` |
 | :--- | :--- | :--- |
@@ -932,7 +895,7 @@ if __name__ == "__main__":
 | 类型检查 | `isinstance(x, weakref.ref)` | `isinstance(x, weakref.ProxyType)` |
 | 适用场景 | 需要明确控制访问 | 需要透明代理 |
 
-### 6.3 weakref.finalize vs __del__
+### 5.3 weakref.finalize vs __del__
 
 | 维度 | `weakref.finalize` | `__del__` |
 | :--- | :--- | :--- |
@@ -942,7 +905,7 @@ if __name__ == "__main__":
 | 测试性 | 可手动调用 `finalizer()` | 难以测试 |
 | 优先级 | 推荐使用 | 不推荐 |
 
-### 6.4 weakref vs Java WeakReference
+### 5.4 weakref vs Java WeakReference
 
 | 维度 | Python weakref | Java WeakReference |
 | :--- | :--- | :--- |
@@ -952,7 +915,7 @@ if __name__ == "__main__":
 | ReferenceQueue | 无 | 有 |
 | 性能 | 较高 | 中等（需 GC 协调） |
 
-### 6.5 weakref vs JavaScript WeakMap
+### 5.5 weakref vs JavaScript WeakMap
 
 | 维度 | Python weakref | JavaScript WeakMap |
 | :--- | :--- | :--- |
@@ -963,9 +926,9 @@ if __name__ == "__main__":
 | 全局弱引用列表 | 支持 | 不支持 |
 | 用途 | 缓存、观察者、单例 | 元数据附加 |
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：内置类型不支持弱引用
+### 6.1 陷阱：内置类型不支持弱引用
 
 ```python
 # 错误：int 不支持弱引用
@@ -990,7 +953,7 @@ w = IntWrapper(42)
 ref = weakref.ref(w)
 ```
 
-### 7.2 陷阱：弱引用回调中访问对象
+### 6.2 陷阱：弱引用回调中访问对象
 
 ```python
 # 错误：回调中尝试访问已回收的对象
@@ -1012,7 +975,7 @@ ref = weakref.ref(resource, lambda r: good_callback(r, "my_resource"))
 del resource
 ```
 
-### 7.3 陷阱：__slots__ 未声明 __weakref__
+### 6.3 陷阱：__slots__ 未声明 __weakref__
 
 ```python
 # 错误：__slots__ 未包含 __weakref__
@@ -1030,7 +993,7 @@ obj.value = 42
 ref = weakref.ref(obj)
 ```
 
-### 7.4 陷阱：WeakKeyDictionary 的键必须可哈希
+### 6.4 陷阱：WeakKeyDictionary 的键必须可哈希
 
 ```python
 # 错误：列表不支持弱引用也不可哈希
@@ -1053,7 +1016,7 @@ k = Key("user_1")
 metadata[k] = {"name": "Alice"}
 ```
 
-### 7.5 陷阱：弱引用回调时序不可控
+### 6.5 陷阱：弱引用回调时序不可控
 
 ```python
 # 错误：依赖回调的执行时序
@@ -1076,7 +1039,7 @@ gc.collect()  # 显式触发 GC
 # tasks_completed 可能为空（GC 尚未执行）
 ```
 
-### 7.6 陷阱：finalize 闭包捕获 self
+### 6.6 陷阱：finalize 闭包捕获 self
 
 ```python
 # 错误：闭包捕获 self，导致对象无法回收
@@ -1101,7 +1064,7 @@ class Good:
         print(f"清理 {path}")
 ```
 
-### 7.7 陷阱：跨线程使用弱引用容器
+### 6.7 陷阱：跨线程使用弱引用容器
 
 ```python
 # 错误：跨线程并发访问 WeakKeyDictionary
@@ -1142,7 +1105,7 @@ class SafeWeakDict:
             return self._data[key]
 ```
 
-### 7.8 最佳实践总结
+### 6.8 最佳实践总结
 
 1. **优先使用 finalize 而非 __del__**：更安全，可测试；
 2. **避免在回调中访问对象**：仅使用闭包外部捕获的信息；
@@ -1152,9 +1115,9 @@ class SafeWeakDict:
 6. **使用弱引用打破循环**：在父子、观察者等结构中；
 7. **测试时强制 GC**：`gc.collect()` 确保回调触发。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构
+### 7.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -1175,7 +1138,7 @@ flowchart TD
     T9 --> T10
 ```
 
-### 8.2 pyproject.toml 配置
+### 7.2 pyproject.toml 配置
 
 ```toml
 [build-system]
@@ -1201,7 +1164,7 @@ line-length = 100
 target-version = "py312"
 ```
 
-### 8.3 完整缓存实现
+### 7.3 完整缓存实现
 
 ```python
 """基于弱引用的多级缓存实现。Python 3.12+。"""
@@ -1287,7 +1250,7 @@ if __name__ == "__main__":
     print(f"same: {result1 is result2}")
 ```
 
-### 8.4 观察者模式
+### 7.4 观察者模式
 
 ```python
 """弱引用观察者模式。Python 3.12+。"""
@@ -1350,7 +1313,7 @@ if __name__ == "__main__":
     # 仅输出：用户创建: ...
 ```
 
-### 8.5 资源管理
+### 7.5 资源管理
 
 ```python
 """基于 finalize 的资源管理。Python 3.12+。"""
@@ -1425,7 +1388,7 @@ if __name__ == "__main__":
     gc.collect()
 ```
 
-### 8.6 调试与测试
+### 7.6 调试与测试
 
 ```python
 """弱引用调试与测试示例。Python 3.12+。"""
@@ -1512,9 +1475,9 @@ if __name__ == "__main__":
     print("所有测试通过")
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Python 标准库中的弱引用应用
+### 8.1 Python 标准库中的弱引用应用
 
 #### `functools.lru_cache`
 
@@ -1536,7 +1499,7 @@ CPython 内部使用 `WeakValueDictionary` 缓存已导入的模块，当模块�
 
 `unittest.mock` 使用弱引用跟踪 mock 对象，便于自动清理。
 
-### 9.2 Django 中的弱引用
+### 8.2 Django 中的弱引用
 
 Django 使用 `WeakValueDictionary` 缓存查询集：
 
@@ -1554,7 +1517,7 @@ class QuerySetCache:
         cls._cache[key] = value
 ```
 
-### 9.3 Flask 中的弱引用
+### 8.3 Flask 中的弱引用
 
 Flask 使用 `WeakKeyDictionary` 跟踪应用上下文：
 
@@ -1568,7 +1531,7 @@ class AppContext:
         AppContext._apps[app] = self
 ```
 
-### 9.4 SQLAlchemy 中的弱引用
+### 8.4 SQLAlchemy 中的弱引用
 
 SQLAlchemy 使用 `WeakIdentityMap` 缓存 ORM 对象，避免内存泄漏：
 
@@ -1587,7 +1550,7 @@ class IdentityMap:
         return self._map.get(key)
 ```
 
-### 9.5 PyTorch 中的弱引用
+### 8.5 PyTorch 中的弱引用
 
 PyTorch 使用 `WeakValueDictionary` 管理张量缓存：
 
@@ -2043,7 +2006,7 @@ if __name__ == "__main__":
     print(f"活跃数: {manager.active_count}")  # 0
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 **1. 为什么 Python 的 `int`、`str`、`list` 等内置类型不支持弱引用？这样设计有什么好处？**
 
@@ -2133,36 +2096,36 @@ class Good:
 5. **多线程高并发**：弱引用容器非线程安全，需加锁；
 6. **关键业务逻辑**：弱引用的"可能失效"特性增加代码不确定性，关键路径应使用强引用。
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准与规范
+### 10.1 标准与规范
 
 - [1] Python Software Foundation. *Python Language Reference - Data Model*. Python 3.12. https://docs.python.org/3.12/reference/datamodel.html
 - [2] PEP 205 - Weak References. 2001. https://peps.python.org/pep-0205/
 - [3] PEP 442 - Safe object finalization. 2013. https://peps.python.org/pep-0442/
 - [4] PEP 703 - Making the Global Interpreter Lock Optional. 2023. https://peps.python.org/pep-0703/
 
-### 11.2 学术论文
+### 10.2 学术论文
 
 - [5] McCarthy, J. (1960). Recursive functions of symbolic expressions and their computation by machine, Part I. *Communications of the ACM*, 3(4), 184-195. https://doi.org/10.1145/367177.367199
 - [6] Liskov, B., & Zilles, S. (1974). Programming with abstract data types. *Proceedings of the ACM SIGPLAN Symposium on Very High Level Languages*, 50-59. https://doi.org/10.1145/800233.807045
 - [7] Bacon, D. F., & Rajan, V. T. (2001). Concurrent cycle collection in reference counted systems. *European Conference on Object-Oriented Programming*, 207-235. https://doi.org/10.1007/3-540-45337-8_12
 
-### 11.3 技术文档
+### 10.3 技术文档
 
 - [8] weakref — Weak references. *Python 3.12 Documentation*. https://docs.python.org/3.12/library/weakref.html
 - [9] gc — Garbage Collector interface. *Python 3.12 Documentation*. https://docs.python.org/3.12/library/gc.html
 - [10] CPython Source Code: Modules/_weakref.c. https://github.com/python/cpython/blob/main/Modules/_weakref.c
 
-### 11.4 书籍
+### 10.4 书籍
 
 - [11] Ramalho, L. (2022). *Fluent Python* (2nd ed.). O'Reilly Media.
 - [12] Beazley, D., & Jones, B. K. (2013). *Python Cookbook* (3rd ed.). O'Reilly Media.
 - [13] Jones, M. T. (2023). *Python Object-Oriented Programming* (4th ed.). Packt Publishing.
 
-## 12. 进一步阅读
+## 11. 进一步阅读
 
-### 12.1 进阶主题
+### 11.1 进阶主题
 
 1. **CPython `weakref` 源码分析**：阅读 `Modules/_weakref.c` 与 `Objects/weakrefobject.c`，理解弱引用的 C 层实现；
 2. **free-threaded 模式下的弱引用**：PEP 703 引入的无 GIL 构建对弱引用语义的影响；
@@ -2170,13 +2133,13 @@ class Good:
 4. **分布式对象缓存**：Redis + 弱引用的混合方案；
 5. **跨语言对比**：Java `ReferenceQueue`、C++ `weak_ptr::lock()`、Rust `Weak<T>::upgrade()`。
 
-### 12.2 相关论文
+### 11.2 相关论文
 
 - "Reference Counting" - George Collins (1960)
 - "On the Cost of Concurrent Garbage Collection" - Kafura et al. (1992)
 - "A Unified Theory of Garbage Collection" - Bacon et al. (2004)
 
-### 12.3 实战项目
+### 11.3 实战项目
 
 1. **实现 LRU 缓存**：结合 `WeakValueDictionary` 与 `OrderedDict`；
 2. **实现事件总线**：基于 `WeakSet` 的发布订阅系统；
@@ -2184,14 +2147,14 @@ class Good:
 4. **资源池管理**：数据库连接池、线程池；
 5. **内存分析工具**：统计弱引用使用情况，识别内存泄漏。
 
-### 12.4 在线资源
+### 11.4 在线资源
 
 - **Python weakref 文档**：https://docs.python.org/3.12/library/weakref.html
 - **Real Python - Memory Management**：https://realpython.com/python-memory-management/
 - **Stack Overflow - weakref**：https://stackoverflow.com/questions/tagged/weakref
 - **Awesome Python GC**：https://github.com/vinta/awesome-python#garbage-collection
 
-### 12.5 视频课程
+### 11.5 视频课程
 
 - **Ned Batchelder - Python Memory Management**（PyCon 2019）
 - **Larry Hastings - Memory in Python**（PyCon 2016）

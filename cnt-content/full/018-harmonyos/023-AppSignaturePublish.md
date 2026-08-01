@@ -16,66 +16,16 @@ prerequisites:
   - harmonyos/概述与环境搭建
 ---
 
+
 # 应用签名与发布：HarmonyOS 代码签名体系与分发工程实践
 
 > 应用签名是移动操作系统安全模型的"信任锚点"——它不仅是应用身份的数字证明，更是整个分发链条的完整性保障。本章按 CMU 15-410（Distributed Systems）、MIT 6.858（Computer Systems Security）、Stanford CS155（Computer and Network Security）等课程标准组织，系统讲解 HarmonyOS 代码签名体系、PKI（Public Key Infrastructure）信任链、SHA256withECDSA 算法、HAP/APP 包格式、Debug/Release 签名 Profile、`build-profile.json5` 签名配置、`hvigorw` 构建工具链、应用市场分发流程、多模块打包、版本管理、应用加固、CI/CD 自动化构建、签名证书生命周期管理等核心议题，并对照 Android APK Signing v2/v3、iOS Code Signing、Windows Authenticode 等业界方案。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章按照 Bloom 教育目标分类法（Bloom's Taxonomy）的六个层级组织学习目标。读者完成本章后应能够：
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述 HarmonyOS 签名体系的三个核心组件：签名证书（.p12/.jks）、签名 Profile（.p7b）、应用包（HAP/APP）。
-- **R2**：列举 HarmonyOS 支持的签名算法：SHA256withRSA、SHA256withECDSA、SHA384withECDSA。
-- **R3**：复述 HAP 与 APP 的区别：HAP 是单模块安装包，APP 是多 HAP 聚合的发布包。
-- **R4**：复述 `build-profile.json5` 中 `signingConfigs` 字段的结构：`name`、`type`、`material`。
-- **R5**：复述 `app.json5` 中版本相关字段：`bundleName`、`versionCode`、`versionName`、`minCompatibleVersionCode`。
-- **R6**：复述华为应用市场的审核流程：提交 → 自动检测 → 人工审核 → 上架。
-
-### 1.2 Understand（理解）
-
-- **U1**：阐明 PKI 信任链的五个层级：根 CA → 中间 CA → 开发者证书 → 应用签名 → 设备验证。
-- **U2**：解释 SHA256withECDSA 相比 SHA256withRSA 的优势：更短密钥、更快验证、同等安全强度。
-- **U3**：解释签名 Profile（.p7b）的作用：绑定包名、开发者、权限声明，由华为签发。
-- **U4**：对比 Debug 签名与 Release 签名的差异：前者仅限调试设备，后者可分发。
-- **U5**：解释 `versionCode` 必须递增的原因：应用市场通过 versionCode 判断升级关系。
-- **U6**：阐明签名一致性原则：同一应用的更新必须使用相同签名，否则无法覆盖安装。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 OpenSSL 生成 ECC P-256 私钥与 CSR，打包为 .p12 格式。
-- **A2**：在 `build-profile.json5` 中配置 Debug 与 Release 两套签名。
-- **A3**：使用 `hvigorw assembleApp --mode release` 构建 Release APP 包。
-- **A4**：在华为开发者平台创建应用，上传 APP 包并提交审核。
-- **A5**：使用 `jarsigner` 或 `apksigner` 验证已签名 HAP 的完整性。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 HarmonyOS 选择 PKI 而非 Web of Trust 的工程动机：集中可控、审计方便。
-- **An2**：分析签名 Profile 过期后的影响：已发布应用可继续运行，但无法发布更新。
-- **An3**：分析多模块打包中 `entry`/`feature`/`shared` 三种模块类型的依赖关系。
-- **An4**：分析应用加固的代价：安全性提升 vs 启动时间增加、包体积增大。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价 HarmonyOS 的"华为根 CA"模式相比 Android 的"Google 根 CA + 第三方 CA"在安全与开放间的权衡。
-- **E2**：评价 `versionCode` 单调递增约束在多渠道分发场景下的合理性。
-- **E3**：评价应用加固对启动性能的影响，给出"何时加固、何时不加固"的决策建议。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个企业级签名证书管理系统：包含证书申请、轮换、吊销、审计。
-- **C2**：设计一个 CI/CD 流水线：从代码提交到应用市场发布全自动化，包含签名、加固、分发。
-- **C3**：设计一个多渠道分发方案：同一 APP 包适配华为应用市场、企业内测、灰度发布。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 移动应用签名的演进（2008-2024）
+### 1.1 移动应用签名的演进（2008-2024）
 
 移动应用签名体系经历了从"简单哈希"到"分级信任链"的演进：
 
@@ -93,7 +43,7 @@ prerequisites:
 
 HarmonyOS 签名体系吸收了 iOS Code Signing 的 Profile 机制与 Android APK Signing v2 的全文件校验思想，同时强制使用更先进的 ECDSA 算法。
 
-### 2.2 HarmonyOS 1.0（2019）：基础签名
+### 1.2 HarmonyOS 1.0（2019）：基础签名
 
 HarmonyOS 1.0 仅运行于智慧屏：
 
@@ -102,7 +52,7 @@ HarmonyOS 1.0 仅运行于智慧屏：
 - 应用通过华为内部渠道分发，无公开市场。
 - 签名工具为 `hapkgsign` 命令行工具。
 
-### 2.3 HarmonyOS 2.0（2020）：Profile 引入
+### 1.3 HarmonyOS 2.0（2020）：Profile 引入
 
 HarmonyOS 2.0 随手机形态发布：
 
@@ -112,7 +62,7 @@ HarmonyOS 2.0 随手机形态发布：
 - DevEco Studio 集成自动签名功能。
 - 上架华为应用市场（AppGallery）。
 
-### 2.4 HarmonyOS 3.0（2022）：多模块打包
+### 1.4 HarmonyOS 3.0（2022）：多模块打包
 
 HarmonyOS 3.0 引入多模块：
 
@@ -122,7 +72,7 @@ HarmonyOS 3.0 引入多模块：
 - 支持应用加固（VMP、混淆）。
 - 引入 `hvigorw` 构建工具，替代 `gradle`。
 
-### 2.5 HarmonyOS 4.0（2023）：ECDSA 默认
+### 1.5 HarmonyOS 4.0（2023）：ECDSA 默认
 
 HarmonyOS 4.0 签名体系升级：
 
@@ -132,7 +82,7 @@ HarmonyOS 4.0 签名体系升级：
 - 引入 `signAlg` 字段，显式声明算法。
 - 应用加固升级：支持代码混淆、资源加密、反调试。
 
-### 2.6 HarmonyOS NEXT（2024）：强制 ECDSA
+### 1.6 HarmonyOS NEXT（2024）：强制 ECDSA
 
 HarmonyOS NEXT 进一步强化签名：
 
@@ -142,7 +92,7 @@ HarmonyOS NEXT 进一步强化签名：
 - 引入"运行时完整性校验"：系统周期性校验应用签名。
 - 支持"多签名"：同一应用可由多方联合签名（如 OEM + 开发者）。
 
-### 2.7 OpenHarmony 签名演进
+### 1.7 OpenHarmony 签名演进
 
 | OpenHarmony 版本 | 签名方案 | 关键特性 |
 | --- | --- | --- |
@@ -152,7 +102,7 @@ HarmonyOS NEXT 进一步强化签名：
 | 4.0 | ECDSA 默认 | P-256 算法 |
 | 5.0 | 强制 ECDSA | 运行时完整性校验 |
 
-### 2.8 时间线总览
+### 1.8 时间线总览
 
 ```mermaid
 timeline
@@ -166,9 +116,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 代码签名的形式化定义
+### 2.1 代码签名的形式化定义
 
 定义 HarmonyOS 代码签名为六元组：
 
@@ -185,7 +135,7 @@ $$
 - $\mathcal{V}: \text{AppPackage} \times \text{Signature} \times k_{pub} \to \{\text{valid}, \text{invalid}\}$ 为验证函数。
 - $\mathcal{T}: \text{RootCA} \to \text{IntermediateCA} \to \text{DeveloperCert}$ 为信任链。
 
-### 3.2 签名算法的数学定义
+### 2.2 签名算法的数学定义
 
 **SHA256withECDSA**：
 
@@ -208,7 +158,7 @@ $$
 
 其中 $d$ 为私钥指数，$n$ 为模数。验证：$m \equiv \text{Sig}^e \mod n$，$e$ 为公钥指数。
 
-### 3.3 信任链的形式化
+### 2.3 信任链的形式化
 
 信任链为有向无环图（DAG）：
 
@@ -224,7 +174,7 @@ $$
 
 任一环节失败则验证失败。
 
-### 3.4 签名 Profile 的结构
+### 2.4 签名 Profile 的结构
 
 Profile .p7b 文件包含：
 
@@ -238,7 +188,7 @@ $$
 - $\text{Validity}$：有效期。
 - $\text{Devices}$：允许安装的设备清单（仅企业 Profile）。
 
-### 3.5 HAP 包结构
+### 2.5 HAP 包结构
 
 HAP 文件为 ZIP 格式：
 
@@ -252,7 +202,7 @@ $$
 - `META-INF/CERT.SF`：签名清单。
 - `META-INF/MANIFEST.MF`：文件哈希清单。
 
-### 3.6 APP 包结构
+### 2.6 APP 包结构
 
 APP 包聚合多个 HAP：
 
@@ -262,7 +212,7 @@ $$
 
 APP 包本身不签名，内部每个 HAP 独立签名。
 
-### 3.7 版本号约束
+### 2.7 版本号约束
 
 版本号约束：
 
@@ -274,7 +224,7 @@ $$
 - `bundleName` 不可更改。
 - 签名必须一致。
 
-### 3.8 签名一致性
+### 2.8 签名一致性
 
 签名一致性约束：
 
@@ -286,9 +236,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 PKI 信任链的安全性
+### 3.1 PKI 信任链的安全性
 
 PKI 的安全性基于非对称加密的单向性：
 
@@ -301,7 +251,7 @@ $$
 
 对于 ECDSA P-256，破解需要 $O(2^{128})$ 次运算，按当前算力不可行。
 
-### 4.2 ECDSA vs RSA 的性能对比
+### 3.2 ECDSA vs RSA 的性能对比
 
 | 算法 | 密钥长度 | 签名速度 | 验证速度 | 签名长度 | 安全强度 |
 | --- | --- | --- | --- | --- | --- |
@@ -312,7 +262,7 @@ $$
 
 ECDSA 在相同安全强度下，密钥更短、签名更小、速度更快，是 HarmonyOS NEXT 的默认选择。
 
-### 4.3 签名覆盖范围
+### 3.3 签名覆盖范围
 
 HarmonyOS 签名覆盖 HAP 包的所有文件：
 
@@ -322,7 +272,7 @@ $$
 
 这意味着任何文件修改（包括 resources、ets、libs）都会导致签名失效。相比 Android v1 签名仅覆盖 ZIP 内容，HarmonyOS 签名更严格。
 
-### 4.4 签名验证流程
+### 3.4 签名验证流程
 
 设备安装应用时的验证流程：
 
@@ -339,7 +289,7 @@ $$
 10. 全部通过，允许安装
 ```
 
-### 4.5 密钥轮换的安全性
+### 3.5 密钥轮换的安全性
 
 HarmonyOS 4.0+ 支持密钥轮换：
 
@@ -349,7 +299,7 @@ $$
 
 但要求 $k_2$ 由 $k_1$ 签发信任。这样即使 $k_1$ 泄露，新版本仍可由 $k_2$ 签发，无需重新发布应用。
 
-### 4.6 应用加固的原理
+### 3.6 应用加固的原理
 
 应用加固通过以下手段提升逆向难度：
 
@@ -366,7 +316,7 @@ $$
 - 包体积增加 10-20%。
 - 内存占用增加。
 
-### 4.7 多模块打包的依赖关系
+### 3.7 多模块打包的依赖关系
 
 多模块打包的依赖规则：
 
@@ -384,7 +334,7 @@ $$
 \nexists \text{cycle}: A \to B \to C \to A
 $$
 
-### 4.8 版本号设计
+### 3.8 版本号设计
 
 `versionCode` 与 `versionName` 的设计建议：
 
@@ -399,7 +349,7 @@ $$
 
 例如 `1.2.3` → `1002003`。预留 3 位给 minor 与 patch，支持 0-999 的子版本。
 
-### 4.9 签名证书的生命周期
+### 3.9 签名证书的生命周期
 
 证书生命周期：
 
@@ -415,7 +365,7 @@ $$
 
 建议证书有效期 3-5 年，并建立轮换计划。
 
-### 4.10 CI/CD 中的签名安全
+### 3.10 CI/CD 中的签名安全
 
 CI/CD 中签名的安全要点：
 
@@ -427,9 +377,9 @@ CI/CD 中签名的安全要点：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 使用 OpenSSL 生成 ECC 证书
+### 4.1 使用 OpenSSL 生成 ECC 证书
 
 ```bash
 #!/bin/bash
@@ -453,7 +403,7 @@ openssl pkcs12 -export -out keystore.p12 \
 openssl pkcs12 -in keystore.p12 -info -noout -passin pass:your_password
 ```
 
-### 5.2 build-profile.json5 签名配置
+### 4.2 build-profile.json5 签名配置
 
 ```json5
 // build-profile.json5
@@ -523,7 +473,7 @@ openssl pkcs12 -in keystore.p12 -info -noout -passin pass:your_password
 }
 ```
 
-### 5.3 app.json5 应用配置
+### 4.3 app.json5 应用配置
 
 ```json5
 // AppScope/app.json5
@@ -540,7 +490,7 @@ openssl pkcs12 -in keystore.p12 -info -noout -passin pass:your_password
 }
 ```
 
-### 5.4 module.json5 模块配置
+### 4.4 module.json5 模块配置
 
 ```json5
 // entry/src/main/module.json5
@@ -576,7 +526,7 @@ openssl pkcs12 -in keystore.p12 -info -noout -passin pass:your_password
 }
 ```
 
-### 5.5 使用 hvigorw 构建发布包
+### 4.5 使用 hvigorw 构建发布包
 
 ```bash
 #!/bin/bash
@@ -598,7 +548,7 @@ ls -la build/outputs/releases/
 # myapp-default-signed.app
 ```
 
-### 5.6 自动化构建脚本（CI/CD）
+### 4.6 自动化构建脚本（CI/CD）
 
 ```bash
 #!/bin/bash
@@ -640,7 +590,7 @@ curl -X POST https://connect-api.cloud.huawei.com/api/publish/v2/app/upload \
 echo "=== 构建完成 ==="
 ```
 
-### 5.7 多模块项目结构
+### 4.7 多模块项目结构
 
 ```mermaid
 flowchart TD
@@ -678,7 +628,7 @@ flowchart TD
     T20 --> T23
 ```
 
-### 5.8 版本管理示例
+### 4.8 版本管理示例
 
 ```json5
 // 版本演进示例
@@ -711,7 +661,7 @@ flowchart TD
 // versionCode = 2 * 10^6 + 0 * 10^3 + 0 = 2000000
 ```
 
-### 5.9 .gitignore 配置
+### 4.9 .gitignore 配置
 
 ```gitignore
 # .gitignore - 防止敏感信息泄露
@@ -745,7 +695,7 @@ Thumbs.db
 .env.local
 ```
 
-### 5.10 应用加固配置
+### 4.10 应用加固配置
 
 ```json5
 // app.json5 中配置加固（需华为应用市场支持）
@@ -769,7 +719,7 @@ Thumbs.db
 }
 ```
 
-### 5.11 综合案例：企业级发布流程
+### 4.11 综合案例：企业级发布流程
 
 ```typescript
 // scripts/release.ts - 企业级发布脚本
@@ -873,9 +823,9 @@ manager.run().catch(console.error);
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 HarmonyOS 签名 vs Android APK Signing
+### 5.1 HarmonyOS 签名 vs Android APK Signing
 
 | 维度 | HarmonyOS | Android v2 | Android v3 |
 | --- | --- | --- | --- |
@@ -886,7 +836,7 @@ manager.run().catch(console.error);
 | 信任链 | 华为根 CA | Google 根 CA | Google 根 CA |
 | 签名验证 | 安装时 + 运行时 | 安装时 | 安装时 |
 
-### 6.2 HarmonyOS 签名 vs iOS Code Signing
+### 5.2 HarmonyOS 签名 vs iOS Code Signing
 
 | 维度 | HarmonyOS | iOS |
 | --- | --- | --- |
@@ -897,7 +847,7 @@ manager.run().catch(console.error);
 | 分发渠道 | AppGallery + 企业 MDM | App Store + TestFlight + 企业 |
 | 证书有效期 | 3-5 年 | 1 年（个人） |
 
-### 6.3 HarmonyOS 签名 vs Windows Authenticode
+### 5.3 HarmonyOS 签名 vs Windows Authenticode
 
 | 维度 | HarmonyOS | Windows |
 | --- | --- | --- |
@@ -907,7 +857,7 @@ manager.run().catch(console.error);
 | 分发 | AppGallery | Microsoft Store |
 | 驱动签名 | 不适用 | WHQL 签名 |
 
-### 6.4 HAP vs APK vs IPA
+### 5.4 HAP vs APK vs IPA
 
 | 维度 | HAP | APK | IPA |
 | --- | --- | --- | --- |
@@ -917,7 +867,7 @@ manager.run().catch(console.error);
 | 字节码 | .abc | .dex | .bitcode |
 | 多架构 | libs/{abi} | lib/{abi} | 单架构 |
 
-### 6.5 应用加固方案对比
+### 5.5 应用加固方案对比
 
 | 方案 | 混淆 | 加密 | 反调试 | VMP | 性能损耗 |
 | --- | --- | --- | --- | --- | --- |
@@ -928,9 +878,9 @@ manager.run().catch(console.error);
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱：将签名证书提交到 Git
+### 6.1 陷阱：将签名证书提交到 Git
 
 ```bash
 # 反模式：证书在 Git 仓库中
@@ -948,7 +898,7 @@ echo "*.p12" >> .gitignore
 
 **事故案例**：某公司开发人员将 Release 证书提交到公开 GitHub 仓库，导致证书泄露，被迫吊销重发，影响 10 万用户升级。
 
-### 7.2 陷阱：versionCode 未递增
+### 6.2 陷阱：versionCode 未递增
 
 ```json5
 // 反模式：versionCode 相同或倒退
@@ -962,7 +912,7 @@ echo "*.p12" >> .gitignore
 { "versionCode": 1000001 }
 ```
 
-### 7.3 陷阱：更换签名证书导致无法升级
+### 6.3 陷阱：更换签名证书导致无法升级
 
 ```bash
 # 反模式：v2.0 使用新证书，用户无法从 v1.x 升级
@@ -974,7 +924,7 @@ v2.0 signed by cert_B  # 用户安装失败，需先卸载
 # v2.0 signed by cert_B，但 cert_B 由 cert_A 签发信任
 ```
 
-### 7.4 陷阱：Debug 签名用于发布
+### 6.4 陷阱：Debug 签名用于发布
 
 ```json5
 // 反模式：Release 产品使用 Debug 签名
@@ -998,7 +948,7 @@ v2.0 signed by cert_B  # 用户安装失败，需先卸载
 }
 ```
 
-### 7.5 陷阱：证书过期未续期
+### 6.5 陷阱：证书过期未续期
 
 ```bash
 # 反模式：证书有效期 1 年，过期后忘记续期
@@ -1011,7 +961,7 @@ openssl x509 -in certificate.cer -noout -enddate
 # notAfter=Dec 31 23:59:59 2034
 ```
 
-### 7.6 陷阱：包名包含保留字
+### 6.6 陷阱：包名包含保留字
 
 ```json5
 // 反模式：包名包含保留字
@@ -1025,7 +975,7 @@ openssl x509 -in certificate.cer -noout -enddate
 }
 ```
 
-### 7.7 陷阱：未配置 .gitignore 导致证书泄露
+### 6.7 陷阱：未配置 .gitignore 导致证书泄露
 
 ```bash
 # 反模式：无 .gitignore
@@ -1044,7 +994,7 @@ build/
 EOF
 ```
 
-### 7.8 陷阱：加固影响启动性能
+### 6.8 陷阱：加固影响启动性能
 
 ```json5
 // 反模式：对所有模块开启 VMP
@@ -1068,7 +1018,7 @@ EOF
 }
 ```
 
-### 7.9 陷阱：多模块循环依赖
+### 6.9 陷阱：多模块循环依赖
 
 ```json5
 // 反模式：entry 依赖 feature，feature 又依赖 entry
@@ -1083,7 +1033,7 @@ EOF
 // 无环
 ```
 
-### 7.10 陷阱：未设置 minCompatibleVersionCode
+### 6.10 陷阱：未设置 minCompatibleVersionCode
 
 ```json5
 // 反模式：未设置，导致旧版本无法升级
@@ -1103,9 +1053,9 @@ EOF
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 证书管理流程
+### 7.1 证书管理流程
 
 企业级证书管理流程：
 
@@ -1116,7 +1066,7 @@ EOF
 5. **轮换**：每年轮换一次，旧证书保留 6 个月后销毁。
 6. **吊销**：泄露后立即吊销，通知所有分发渠道。
 
-### 8.2 多环境签名配置
+### 7.2 多环境签名配置
 
 ```json5
 // 三套环境：dev、staging、production
@@ -1136,7 +1086,7 @@ EOF
 }
 ```
 
-### 8.3 灰度发布
+### 7.3 灰度发布
 
 ```typescript
 // 灰度发布：先向 10% 用户发布，观察后逐步扩大
@@ -1163,7 +1113,7 @@ class CanaryRelease {
 }
 ```
 
-### 8.4 应用市场审核优化
+### 7.4 应用市场审核优化
 
 提高审核通过率：
 
@@ -1174,7 +1124,7 @@ class CanaryRelease {
 5. **测试账号**：提供测试账号供审核员使用。
 6. **适配测试**：确保在主流设备上无崩溃。
 
-### 8.5 签名验证工具
+### 7.5 签名验证工具
 
 ```bash
 #!/bin/bash
@@ -1219,7 +1169,7 @@ fi
 rm -rf "$TMP_DIR"
 ```
 
-### 8.6 版本号自动化
+### 7.6 版本号自动化
 
 ```typescript
 // scripts/bump_version.ts - 自动化版本号管理
@@ -1262,7 +1212,7 @@ const manager = new VersionManager();
 manager.bumpPatch();
 ```
 
-### 8.7 应用大小优化
+### 7.7 应用大小优化
 
 ```bash
 #!/bin/bash
@@ -1291,9 +1241,9 @@ du -sh build/outputs/releases/*.app
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：证书泄露应急响应
+### 8.1 案例一：证书泄露应急响应
 
 **场景**：某公司发现 Release 证书被员工误提交到公开 GitHub 仓库。
 
@@ -1307,7 +1257,7 @@ du -sh build/outputs/releases/*.app
 
 **结果**：24 小时内完成吊销与重新签发，无用户损失。
 
-### 9.2 案例二：多渠道分发
+### 8.2 案例二：多渠道分发
 
 **场景**：某企业需要将应用分发到华为应用市场、企业内测、灰度发布三个渠道。
 
@@ -1331,7 +1281,7 @@ const channels: Channel[] = [
 ];
 ```
 
-### 9.3 案例三：CI/CD 自动化
+### 8.3 案例三：CI/CD 自动化
 
 **场景**：某公司需要实现从代码提交到应用市场发布的全自动化。
 
@@ -1373,7 +1323,7 @@ jobs:
           AGC_TOKEN: ${{ secrets.AGC_TOKEN }}
 ```
 
-### 9.4 案例四：应用加固决策
+### 8.4 案例四：应用加固决策
 
 **场景**：某金融应用需要高安全，但启动时间敏感。
 
@@ -1388,7 +1338,7 @@ jobs:
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **常见疑问 1**：HarmonyOS 签名体系的三个核心组件是什么？分别说明作用。
 
@@ -1400,7 +1350,7 @@ jobs:
 
 **常见疑问 5**：Debug 签名与 Release 签名的区别是什么？能否用 Debug 签名发布应用？
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **常见疑问 6**：描述 PKI 信任链的五个层级，并解释每一层的作用。
 
@@ -1412,7 +1362,7 @@ jobs:
 
 **常见疑问 10**：设计一个企业级证书管理流程，包含申请、审批、分发、轮换、吊销五个环节。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **常见疑问 11**：某应用的 Release 证书泄露，设计一个完整的应急响应方案，包含：
 1. 确认泄露范围。
@@ -1436,7 +1386,7 @@ jobs:
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 1. Huawei. HarmonyOS Application Signing. HarmonyOS 5.0. 2024. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-signing-0000001583489144
 
@@ -1466,7 +1416,7 @@ jobs:
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 - **HarmonyOS 官方文档**：[应用签名](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-signing-0000001583489144)
 - **AppGallery Connect**：[应用发布指南](https://developer.huawei.com/consumer/cn/doc/agc-guides)

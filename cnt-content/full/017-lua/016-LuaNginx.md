@@ -16,70 +16,10 @@ prerequisites:
   - lua/概述与环境配置
 ---
 
-## 1. 学习目标（Bloom 分类法）
 
-本篇文档采用 Bloom 认知分类法组织学习目标，覆盖从基础记忆到高阶创造的六个层级，帮助读者系统化掌握 OpenResty 与 Lua 在 Nginx 中的工程实践。
+## 1. 历史动机与背景
 
-### 1.1 记忆层（Remember）
-
-完成本节后，学习者应能：
-
-- 列举 OpenResty 的核心组件（ngx_lua、lua-resty-* 库、LuaJIT）。
-- 复述 Nginx 请求处理的 11 个阶段（rewrite、access、content、log 等）及其执行顺序。
-- 说出 `ngx.shared.DICT`、`cosocket`、`ngx.timer` 三大核心机制的定义。
-- 列举至少 6 个常用的 `lua-resty-*` 库及其用途。
-- 复述 `init_by_lua`、`init_worker_by_lua`、`rewrite_by_lua` 等 11 个 `*_by_lua` 指令的作用域与执行时机。
-
-### 1.2 理解层（Understand）
-
-完成本节后，学习者应能：
-
-- 解释 OpenResty 如何将 Lua 嵌入 Nginx worker 进程，并保持非阻塞 I/O 特性。
-- 阐述 cosocket 基于协程的调度原理，说明它为何不会阻塞 worker。
-- 对比 `ngx.shared.DICT` 与进程内 Lua 表的语义差异，解释为何前者是跨 worker 共享的。
-- 描述 `ngx.ctx` 的生命周期与作用域限制。
-- 说明 `lua_code_cache` 开关在开发与生产环境中的不同影响。
-
-### 1.3 应用层（Apply）
-
-完成本节后，学习者应能：
-
-- 在 `nginx.conf` 中配置 `content_by_lua_block`，实现 Hello World 接口。
-- 使用 `lua-resty-redis` 实现简单的缓存读穿透防护逻辑。
-- 编写 `access_by_lua_block` 完成 JWT 认证与权限校验。
-- 使用 `ngx.shared.DICT` 实现基于滑动窗口的限流器。
-- 通过 `ngx.timer.at` 注册后台任务，定时刷新共享内存中的配置。
-
-### 1.4 分析层（Analyze）
-
-完成本节后，学习者应能：
-
-- 拆解一个 OpenResty 应用的请求处理链路，识别每个阶段执行的 Lua 代码与原生 Nginx 模块。
-- 分析连接池参数（`set_keepalive(max_idle, pool_size)`）对吞吐量与资源占用的影响。
-- 比较子请求（`ngx.location.capture`）与 cosocket（`lua-resty-http`）在内部调用场景下的优劣。
-- 解构一个限流算法（如令牌桶），将其分解为共享内存原子操作、时间戳计算、超时处理等子任务。
-
-### 1.5 评价层（Evaluate）
-
-完成本节后，学习者应能：
-
-- 评估在生产环境关闭 `lua_code_cache` 的代价，并给出量化指标。
-- 评判某段 Lua 代码是否存在阻塞风险，提出改造方案。
-- 评估共享内存字典容量的合理性，给出基于 QPS 与 TTL 的容量估算公式。
-- 对比 OpenResty 与 APISIX、Kong 等上层网关的选型决策依据。
-
-### 1.6 创造层（Create）
-
-完成本节后，学习者应能：
-
-- 设计一个支持动态路由、熔断、灰度发布的 API 网关架构。
-- 实现一个基于 OpenResty 的分布式限流集群，使用共享内存 + Redis 二级存储。
-- 构建一套 OpenResty 应用的可观测性体系，包含 trace、metrics、logs 三位一体。
-- 编写自定义的 `balancer_by_lua` 模块，支持加权轮询与一致性哈希混合策略。
-
-## 2. 历史动机与背景
-
-### 2.1 Nginx 的诞生与架构局限
+### 1.1 Nginx 的诞生与架构局限
 
 Nginx 由 Igor Sysoev 于 2002 年开始开发，2004 年发布首个公开版本，初衷是为高并发的俄罗斯门户网站 Rambler 提供静态资源服务。其核心设计哲学是事件驱动（event-driven）与非阻塞 I/O，通过 epoll/kqueue 多路复用实现单 worker 进程处理数万并发连接。
 
@@ -91,13 +31,13 @@ Nginx 由 Igor Sysoev 于 2002 年开始开发，2004 年发布首个公开版�
 
 这些方案都无法满足"在 Nginx 进程内完成复杂逻辑"这一诉求。
 
-### 2.2 OpenResty 的诞生
+### 1.2 OpenResty 的诞生
 
 2009 年，章亦春（agentzh）发起了 ngx_lua 项目，将 LuaJIT 嵌入 Nginx worker 进程，并通过协程（coroutine）机制实现非阻塞 I/O。2011 年，章亦春加入 Cloudflare，将 ngx_lua 与一系列 `lua-resty-*` 库打包为 OpenResty 软件包，正式对外发布。
 
 OpenResty 的命名源自 agentzh 早期的一个play on words："Open"代表开放源代码，"Resty"则取自 "REST" 与 "Y"（意指 "Why not REST?"）。其设计目标是让开发者用 Lua 脚本直接处理 HTTP 请求的各个阶段，构建高并发、低延迟的 Web 应用与 API 网关。
 
-### 2.3 关键里程碑
+### 1.3 关键里程碑
 
 | 时间 | 版本/事件 | 意义 |
 | :--- | :--- | :--- |
@@ -111,7 +51,7 @@ OpenResty 的命名源自 agentzh 早期的一个play on words："Open"代表开
 | 2023 | OpenResty 1.25 | 跟随 Nginx 1.25，支持 HTTP/3 |
 | 2025 | OpenResty 1.27 | 性能与稳定性持续优化 |
 
-### 2.4 设计哲学
+### 1.4 设计哲学
 
 OpenResty 的核心设计哲学可归纳为四点：
 
@@ -120,9 +60,9 @@ OpenResty 的核心设计哲学可归纳为四点：
 3. **阶段化处理**：复用 Nginx 的 11 阶段模型，开发者可在任意阶段插入 Lua 逻辑。
 4. **共享内存优先**：跨 worker 数据共享通过 `ngx.shared.DICT` 实现，避免文件锁与外部存储依赖。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Nginx 多进程模型
+### 2.1 Nginx 多进程模型
 
 设 Nginx 主进程为 $M$，worker 进程集合为 $W = \{w_1, w_2, \ldots, w_n\}$，每个 worker 进程独立持有 LuaJIT 虚拟机 $V_i$。请求 $r$ 由内核负载均衡到某个 worker $w_i$，其 Lua 代码在 $V_i$ 中执行：
 
@@ -138,7 +78,7 @@ $$
 
 其中 $D$ 通过 `lua_shared_dict` 在 `nginx.conf` 中声明，所有 worker 通过原子操作访问。
 
-### 3.2 请求处理阶段状态机
+### 2.2 请求处理阶段状态机
 
 Nginx 将 HTTP 请求处理划分为 11 个阶段，OpenResty 为关键阶段提供 Lua 入口。形式化定义为一个状态机 $\mathcal{M} = (S, \Sigma, \delta, s_0, F)$，其中：
 
@@ -158,7 +98,7 @@ s_{\text{log}} & \text{if } \text{lua\_result} = \text{exit}(n)
 \end{cases}
 $$
 
-### 3.3 cosocket 调度模型
+### 2.3 cosocket 调度模型
 
 cosocket（coroutine-based socket）基于 Lua 协程实现非阻塞网络 I/O。设当前协程为 $c$，发起 socket 操作 $op$（如 `connect`、`receive`），其执行流程可形式化为：
 
@@ -173,7 +113,7 @@ $$
 
 在协程让出期间，Nginx worker 可继续处理其他请求，实现高并发。关键特性是：从 Lua 代码视角看，cosocket 是同步阻塞调用；从 worker 视角看，它是非阻塞的。
 
-### 3.4 共享内存原子性
+### 2.4 共享内存原子性
 
 `ngx.shared.DICT` 提供的原子操作（如 `incr`、`add`）基于 Nginx 自旋锁实现。设操作 $op$ 对键 $k$ 执行，其语义为：
 
@@ -190,7 +130,7 @@ $$
 
 由于自旋锁是忙等待锁，在高并发场景下可能成为瓶颈。设计时应尽量减少锁持有时间，避免在锁内执行耗时操作。
 
-### 3.5 协程并发度
+### 2.5 协程并发度
 
 设 worker 进程数为 $n$，每个 worker 的最大协程数为 $m$（由 `lua_max_running_timers` 等配置控制），则集群总并发协程数为：
 
@@ -206,9 +146,9 @@ $$
 
 其中 $C_{\text{cpu}}$ 为 CPU 核心数，$\beta$ 为 I/O 等待比（通常 $\beta \in [10, 100]$）。
 
-## 4. 理论推导与复杂度分析
+## 3. 理论推导与复杂度分析
 
-### 4.1 cosocket 吞吐量模型
+### 3.1 cosocket 吞吐量模型
 
 设单次 cosocket 请求的 I/O 等待时间为 $t_{\text{io}}$，CPU 处理时间为 $t_{\text{cpu}}$，则单协程吞吐量为：
 
@@ -224,7 +164,7 @@ $$
 
 当 $t_{\text{io}} \gg t_{\text{cpu}}$ 时（典型场景，如等待 Redis 响应），$T_{\text{worker}} \approx k / t_{\text{io}}$，即吞吐量随并发数线性增长。当 $t_{\text{cpu}} \gg t_{\text{io}}$ 时（CPU 密集型任务），吞吐量受限于 CPU，增加并发数无益。
 
-### 4.2 共享内存锁竞争
+### 3.2 共享内存锁竞争
 
 设 $N$ 个 worker 同时争抢同一键的自旋锁，单次锁获取的期望等待时间为：
 
@@ -238,7 +178,7 @@ $$
 2. **本地缓存**：worker 内缓存热点数据，定期从共享内存刷新。
 3. **批量操作**：合并多次小操作为一次大操作，减少锁获取次数。
 
-### 4.3 LuaJIT trace 编译
+### 3.3 LuaJIT trace 编译
 
 LuaJIT 的 trace 编译器将热点循环编译为本地机器码，性能接近 C。设某段 Lua 代码的解释执行时间为 $t_{\text{interp}}$，JIT 编译后执行时间为 $t_{\text{jit}}$，编译开销为 $t_{\text{compile}}$，则总执行时间为：
 
@@ -251,7 +191,7 @@ $$
 
 JIT 触发条件通常为循环执行次数超过阈值（默认 1000 次）。对于短生命周期的请求处理代码，JIT 可能来不及触发，导致性能不如预期。生产环境应通过 `lua_code_cache on` 确保编译结果被复用。
 
-### 4.4 连接池效率
+### 3.4 连接池效率
 
 设连接池大小为 $P$，单次请求的平均连接获取时间为 $t_{\text{acquire}}$，新建连接时间为 $t_{\text{new}}$（含 TCP 握手与认证），则连接池命中率 $\eta$ 满足：
 
@@ -261,7 +201,7 @@ $$
 
 其中 $\lambda$ 为请求到达率，$\mu$ 为单连接处理速率。当 $\lambda / \mu \ll P$ 时，命中率接近 100%，平均连接获取时间近似为 $t_{\text{acquire}}$（常数）。当 $\lambda / \mu \geq P$ 时，部分请求需要新建连接，平均获取时间上升。
 
-### 4.5 内存占用模型
+### 3.5 内存占用模型
 
 设 worker 进程的基础内存为 $M_{\text{base}}$，每个协程的栈空间为 $M_{\text{coroutine}}$，共享内存字典总大小为 $M_{\text{shared}}$，则 worker 进程的 RSS 近似为：
 
@@ -271,9 +211,9 @@ $$
 
 其中 $k$ 为当前协程数，$n$ 为 worker 进程数（共享内存由所有 worker 共享，但通过 mmap 映射到各自地址空间，故 RSS 中按 $1/n$ 计入）。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 Hello World
+### 4.1 Hello World
 
 最基础的 OpenResty 应用，在 `content_by_lua_block` 中返回响应：
 
@@ -309,7 +249,7 @@ curl http://localhost:8080/hello
 # 输出: Hello, OpenResty!
 ```
 
-### 5.2 多阶段协同处理
+### 4.2 多阶段协同处理
 
 展示 set、rewrite、access、content、log 五个阶段的协同工作：
 
@@ -393,7 +333,7 @@ server {
 }
 ```
 
-### 5.3 共享内存限流器
+### 4.3 共享内存限流器
 
 利用 `ngx.shared.DICT` 实现固定窗口限流：
 
@@ -441,7 +381,7 @@ http {
 }
 ```
 
-### 5.4 滑动窗口限流器
+### 4.4 滑动窗口限流器
 
 更精确的滑动窗口限流，使用 `ngx.shared.DICT` 存储时间戳：
 
@@ -527,7 +467,7 @@ location /api {
 }
 ```
 
-### 5.5 cosocket HTTP 请求
+### 4.5 cosocket HTTP 请求
 
 使用 `lua-resty-http` 发起非阻塞 HTTP 请求：
 
@@ -566,7 +506,7 @@ end
 ngx.print(res.body)
 ```
 
-### 5.6 Redis 连接池
+### 4.6 Redis 连接池
 
 使用 `lua-resty-redis` 并启用连接池：
 
@@ -605,7 +545,7 @@ end
 return res
 ```
 
-### 5.7 MySQL 查询
+### 4.7 MySQL 查询
 
 使用 `lua-resty-mysql` 查询数据库：
 
@@ -650,7 +590,7 @@ db:set_keepalive(10000, 50)
 return res
 ```
 
-### 5.8 定时器任务
+### 4.8 定时器任务
 
 使用 `ngx.timer.at` 注册后台任务：
 
@@ -701,7 +641,7 @@ http {
 }
 ```
 
-### 5.9 balancer 负载均衡
+### 4.9 balancer 负载均衡
 
 使用 `balancer_by_lua_block` 实现自定义负载均衡：
 
@@ -737,7 +677,7 @@ http {
 }
 ```
 
-### 5.10 JWT 认证中间件
+### 4.10 JWT 认证中间件
 
 完整的 JWT 验证示例：
 
@@ -832,7 +772,7 @@ location /api {
 }
 ```
 
-### 5.11 响应缓存
+### 4.11 响应缓存
 
 基于共享内存的响应缓存：
 
@@ -879,7 +819,7 @@ end
 return _M
 ```
 
-### 5.12 链路追踪
+### 4.12 链路追踪
 
 生成与传播 trace ID：
 
@@ -936,9 +876,9 @@ end
 return _M
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 OpenResty 与其他 Web 技术栈对比
+### 5.1 OpenResty 与其他 Web 技术栈对比
 
 | 维度 | OpenResty | Node.js | Go (net/http) | Java Servlet |
 | :--- | :--- | :--- | :--- | :--- |
@@ -949,7 +889,7 @@ return _M
 | 典型 QPS | 5万+ | 1万+ | 3万+ | 5000+ |
 | 适用场景 | API 网关、限流、缓存 | Web 应用、SSR | 微服务、CLI | 企业应用 |
 
-### 6.2 OpenResty 与 APISIX、Kong 对比
+### 5.2 OpenResty 与 APISIX、Kong 对比
 
 | 维度 | OpenResty | APISIX | Kong |
 | :--- | :--- | :--- | :--- |
@@ -961,7 +901,7 @@ return _M
 | 商业支持 | OpenResty Inc. | Apache 2.0 | Kong Inc. |
 | 学习曲线 | 陡峭（需懂 Nginx+Lua） | 中等 | 中等 |
 
-### 6.3 共享内存 vs Redis vs 进程内缓存
+### 5.3 共享内存 vs Redis vs 进程内缓存
 
 | 维度 | ngx.shared.DICT | Redis | 进程内 Lua 表 |
 | :--- | :--- | :--- | :--- |
@@ -972,7 +912,7 @@ return _M
 | 容量限制 | 配置时固定 | 受内存限制 | 受 worker 内存限制 |
 | 适用场景 | 高频热点数据 | 大容量缓存 | 单请求临时数据 |
 
-### 6.4 cosocket vs ngx.location.capture
+### 5.4 cosocket vs ngx.location.capture
 
 | 维度 | cosocket | ngx.location.capture |
 | :--- | :--- | :--- |
@@ -983,9 +923,9 @@ return _M
 | 并发支持 | 是（可并发多个） | 是（可并发多个） |
 | 推荐场景 | 调用后端微服务 | 复用本机 location 逻辑 |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：使用阻塞 I/O（生产事故案例）
+### 6.1 陷阱一：使用阻塞 I/O（生产事故案例）
 
 **事故背景**：某电商网站使用 OpenResty 作为 API 网关，开发者在 `content_by_lua_block` 中调用 `io.open` 读取本地配置文件，导致 QPS 从 5 万骤降至 200。
 
@@ -1034,7 +974,7 @@ init_by_lua_block {
 }
 ```
 
-### 7.2 陷阱二：连接泄漏
+### 6.2 陷阱二：连接泄漏
 
 **事故背景**：某限流服务运行 2 小时后开始报 "too many connections"，最终 Redis 连接数耗尽。
 
@@ -1083,7 +1023,7 @@ end
 return err  -- pcall 成功时第二个返回值是业务结果
 ```
 
-### 7.3 陷阱三：全局变量污染
+### 6.3 陷阱三：全局变量污染
 
 **事故背景**：某网关在不同请求间出现"用户 A 看到 用户 B 的订单"的串号问题。
 
@@ -1121,7 +1061,7 @@ local function handle_request()
 end
 ```
 
-### 7.4 陷阱四：错误的热加载策略
+### 6.4 陷阱四：错误的热加载策略
 
 **事故背景**：某团队在配置文件中设置 `lua_code_cache off` 以便调试，上线后忘记改回，导致 QPS 从 5 万降至 100。
 
@@ -1152,7 +1092,7 @@ http {
 nginx -s reload
 ```
 
-### 7.5 陷阱五：共享内存数据膨胀
+### 6.5 陷阱五：共享内存数据膨胀
 
 **事故背景**：某缓存服务运行一周后，共享内存字典写满，新数据无法写入，导致缓存命中率从 90% 降至 10%。
 
@@ -1177,7 +1117,7 @@ dict:set("user:" .. user_id, user_data, 3600)
 dict:add("user:" .. user_id, user_data, 3600)
 ```
 
-### 7.6 陷阱六：协程上下文丢失
+### 6.6 陷阱六：协程上下文丢失
 
 **事故背景**：开发者在 `ngx.timer.at` 回调中尝试访问 `ngx.var.uri`，结果报错 "no request found"。
 
@@ -1206,9 +1146,9 @@ end
 ngx.timer.at(10, timer_callback, ngx.var.uri)
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 项目结构规范
+### 7.1 项目结构规范
 
 推荐的 OpenResty 项目目录结构：
 
@@ -1255,7 +1195,7 @@ http {
 }
 ```
 
-### 8.2 连接池管理
+### 7.2 连接池管理
 
 统一的连接池管理模块：
 
@@ -1313,7 +1253,7 @@ end
 return _M
 ```
 
-### 8.3 错误处理与日志
+### 7.3 错误处理与日志
 
 统一的错误处理与结构化日志：
 
@@ -1375,9 +1315,9 @@ end
 return _M
 ```
 
-### 8.4 性能调优
+### 7.4 性能调优
 
-#### 8.4.1 LuaJIT 优化
+#### 7.4.1 LuaJIT 优化
 
 ```nginx
 http {
@@ -1392,7 +1332,7 @@ http {
 }
 ```
 
-#### 8.4.2 共享内存优化
+#### 7.4.2 共享内存优化
 
 ```nginx
 http {
@@ -1406,7 +1346,7 @@ http {
 }
 ```
 
-#### 8.4.3 连接池优化
+#### 7.4.3 连接池优化
 
 ```lua
 -- 根据后端服务能力调整连接池大小
@@ -1417,9 +1357,9 @@ local IDLE_TIME = 60000  -- 60 秒空闲超时
 red:set_keepalive(IDLE_TIME, POOL_SIZE)
 ```
 
-### 8.5 监控指标
+### 7.5 监控指标
 
-#### 8.5.1 Prometheus 指标暴露
+#### 7.5.1 Prometheus 指标暴露
 
 ```lua
 -- metrics.lua：Prometheus 指标模块
@@ -1466,7 +1406,7 @@ end
 return _M
 ```
 
-#### 8.5.2 日志聚合
+#### 7.5.2 日志聚合
 
 ```lua
 -- 在 log_by_lua_block 中聚合日志
@@ -1477,9 +1417,9 @@ log_by_lua_block {
 }
 ```
 
-### 8.6 CI/CD 集成
+### 7.6 CI/CD 集成
 
-#### 8.6.1 测试（Test::Nginx）
+#### 7.6.1 测试（Test::Nginx）
 
 ```perl
 # t/auth.t
@@ -1510,7 +1450,7 @@ GET /api
 --- error_code: 401
 ```
 
-#### 8.6.2 部署脚本
+#### 7.6.2 部署脚本
 
 ```bash
 #!/bin/bash
@@ -1534,9 +1474,9 @@ $NGINX_BIN -s reload -p $APP_DIR -c conf/nginx.conf
 echo "部署完成"
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Kong API 网关
+### 8.1 案例一：Kong API 网关
 
 **项目背景**：Kong 是基于 OpenResty 的开源 API 网关，由 Mashape 于 2015 年开源，目前是 CNCF 旗下的知名项目。Kong 利用 OpenResty 的阶段化处理能力，实现了插件化的网关功能。
 
@@ -1594,7 +1534,7 @@ return MyPlugin
 - 插件化设计允许功能扩展而不修改核心代码。
 - 共享内存缓存大幅降低数据库压力，支持高并发。
 
-### 9.2 案例二：APISIX 云原生网关
+### 8.2 案例二：APISIX 云原生网关
 
 **项目背景**：APISIX 由支流云（API7）于 2019 年开源，定位为云原生 API 网关。与 Kong 不同，APISIX 使用 etcd 作为配置存储，实现真正的动态配置。
 
@@ -1653,7 +1593,7 @@ end
 - radixtree 提供了 O(log n) 的路由匹配性能，支持复杂规则。
 - 插件机制与 Kong 类似，但配置动态化是关键差异。
 
-### 9.3 案例三：Bilibili 动态分发
+### 8.3 案例三：Bilibili 动态分发
 
 **项目背景**：Bilibili 在视频动态分发场景中使用 OpenResty 作为接入层，处理每秒数十万级的请求。
 
@@ -1709,7 +1649,7 @@ end
 - 限流降级是系统稳定性保障，避免后端雪崩。
 - 灰度发布是平滑升级的核心，降低发布风险。
 
-### 9.4 案例四：12306 票务系统
+### 8.4 案例四：12306 票务系统
 
 **项目背景**：12306 在春运期间的峰值 QPS 达数十万，使用 OpenResty 作为接入层进行限流与缓存。
 
@@ -1769,7 +1709,7 @@ return _M
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：OpenResty 的请求处理阶段顺序是？
 
@@ -1798,7 +1738,7 @@ D. 仅新值
 
 **答案要点**：B。`incr` 返回 `new_value, err`，其中 `new_value` 为递增后的新值，`err` 为错误信息（成功时为 nil）。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：设计一个基于 `ngx.shared.DICT` 的熔断器，要求：
 
@@ -1890,7 +1830,7 @@ return _M
 - **Redis**：跨请求或跨 worker 共享大数据。
 - **文件描述符传递**：对于流式数据，使用 `ngx.pipe` 或 cosocket 传递。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 6**：设计一个基于 OpenResty 的分布式限流集群，要求：
 
@@ -2053,7 +1993,7 @@ end
 return _M
 ```
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Agentzh. 2015. OpenResty Documentation. OpenResty Inc. https://openresty.org/en/docs.html
 
@@ -2079,9 +2019,9 @@ return _M
 
 [12] OpenResty Inc. 2023. lua-resty-core Documentation. https://github.com/openresty/lua-resty-core
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - **OpenResty 官方文档**：https://openresty.org/en/docs.html
   涵盖所有 `*_by_lua` 指令的详细说明、API 参考与最佳实践。
@@ -2092,13 +2032,13 @@ return _M
 - **LuaJIT 文档**：https://luajit.org/luajit.html
   LuaJIT 的 JIT 编译原理、FFI 接口、性能优化技巧。
 
-### 12.2 经典书籍
+### 11.2 经典书籍
 
 - **《OpenResty 完全开发指南》**（罗曼·季先科 著）：系统讲解 OpenResty 开发，包含大量实战案例。
 - **《Lua 程序设计》**（Roberto Ierusalimschy 著）：Lua 语言作者亲笔，深入理解 Lua 设计哲学。
 - **《Nginx 高性能 Web 服务器详解》**：理解 Nginx 架构，为 OpenResty 开发打下基础。
 
-### 12.3 社区资源
+### 11.3 社区资源
 
 - **OpenResty GitHub**：https://github.com/openresty
   源码、issue、PR，跟踪最新进展。
@@ -2109,7 +2049,7 @@ return _M
 - **lua-resty-* 库集合**：https://github.com/openresty/lua-resty-*
   官方维护的库集合，涵盖 Redis、MySQL、HTTP、JWT 等常用组件。
 
-### 12.4 进阶主题
+### 11.4 进阶主题
 
 - **lua-resty-core 与 FFI**：理解如何使用 LuaJIT FFI 直接调用 C 函数，绕过 Lua/C API，获得极致性能。
 
@@ -2121,7 +2061,7 @@ return _M
 
 - **WebAssembly 支持**：通过 lua-resty-wasm 在 OpenResty 中运行 WebAssembly 模块，实现多语言插件。
 
-### 12.5 相关项目
+### 11.5 相关项目
 
 - **Kong**：https://konghq.com/
   基于 OpenResty 的 API 网关，插件生态丰富。

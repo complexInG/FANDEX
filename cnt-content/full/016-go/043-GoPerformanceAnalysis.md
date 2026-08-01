@@ -21,67 +21,22 @@ prerequisites:
   - go/Map原理
 ---
 
+
 # Go 性能分析：从 pprof 采样到连续剖析
 
 > 本文以 Go 1.22 为基准版本，覆盖 Go 1.0 至 Go 1.24 的 pprof 与 runtime 生态演进，包括采样剖析的数学基础、CPU/堆/Goroutine/锁/阻塞剖析的运行时机制、`runtime/trace` 时间线分析、火焰图形式化、连续剖析（continuous profiling）平台与典型企业级调优案例研究。适用于已掌握 Go 基础语法与并发模型、希望系统化构建性能调优方法论与工程化能力的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。Bloom 分类法将认知目标分为六个递进层级：Remember（记忆）→ Understand（理解）→ Apply（应用）→ Analyze（分析）→ Evaluate（评价）→ Create（创造）。
-
-### 1.1 Remember（记忆）
-
-- 准确复述 Go `runtime/pprof` 与 `net/http/pprof` 两个包的职责边界与典型使用场景。
-- 列出 pprof 支持的剖析类型：`goroutine`、`heap`、`threadcreate`、`block`、`mutex`、`cpu`，并说明各类型的采样触发机制。
-- 背诵 CPU 剖析的默认采样频率：100 Hz（每秒 100 次），通过 `runtime.SetCPUProfileRate` 调整。
-- 列出 `go tool pprof` 交互式命令：`top`、`list`、`web`、`tree`、`flame`、`peek`、`disasm`、`tags`。
-
-### 1.2 Understand（理解）
-
-- 解释 **统计采样剖析**（statistical sampling profiling）的原理，说明其与 **确定性插桩**（deterministic instrumentation）的本质差异。
-- 描述 Go 堆剖析的两种模式：`alloc_objects`/`alloc_space`（分配统计）与 `inuse_objects`/`inuse_space`（在用统计），并说明 GC 对两者的影响。
-- 阐述 SIGPROF 信号在 CPU 剖析中的作用：信号触发 → 调用栈采样 → runtime 写入 profile buffer。
-- 说明 `runtime/trace` 与 pprof 的差异：trace 记录事件流，pprof 记录聚合统计。
-
-### 1.3 Apply（应用）
-
-- 在生产代码中通过 `net/http/pprof` 暴露剖析端点，使用 `go tool pprof -http=:8080` 在 Web 界面查看火焰图。
-- 使用 `go test -bench=. -cpuprofile=cpu.prof -memprofile=mem.prof` 对基准测试生成 CPU 与内存剖析文件。
-- 编写自定义 `pprof.Profile` 跟踪业务级事件（如缓存命中率、数据库查询耗时）。
-- 使用 `benchstat` 对比优化前后基准结果，确认性能改善的统计显著性。
-
-### 1.4 Analyze（分析）
-
-- 分析 CPU 剖析的采样偏差：高频短函数可能被低估，低频长函数可能被高估，推导置信区间。
-- 对比 Go pprof 与 Linux `perf`、eBPF `bpftrace`、Pyroscope、Parca、Datadog Continuous Profiler 的实现差异与适用场景。
-- 推导堆剖析的内存归因（memory attribution）问题：GC 后 `inuse` 统计可能丢失已被回收的分配。
-- 分析 mutex 剖析的 `SetMutexProfileFraction(1)` 与 `SetMutexProfileFraction(N)` 在精度与开销间的权衡。
-
-### 1.5 Evaluate（评价）
-
-- 评估在何种业务场景下应使用连续剖析（continuous profiling）平台相对于临时抓取 pprof 的优势。
-- 评价 `runtime.GC()` 在堆剖析中的必要性：调用前后的 `inuse` 差异是否能反映真实泄漏。
-- 判断 pprof 端点的安全风险：`/debug/pprof/` 暴露的调用栈、堆内容是否构成信息泄漏。
-
-### 1.6 Create（创造）
-
-- 设计一个支持多实例、长期存储、按服务/版本/commit 维度检索的连续剖析平台。
-- 实现一个基于 eBPF 的 Go 程序剖析器，绕过 SIGPROF 信号路径，降低采样开销。
-- 基于火焰图形式化定义，构建支持跨服务调用链追踪的 **分布式火焰图**（distributed flame graph）。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 性能剖析的起源（1970s-2000s）
+### 1.1 性能剖析的起源（1970s-2000s）
 
 性能剖析（profiling）一词源于 1970s 的 Unix `prof` 与 `gprof` 工具，由 Susan Graham、Peter Kessler、Marshall McKusick 在 1982 年的论文 *"gprof: A Call Graph Execution Profiler"* 中系统化。gprof 引入 **调用图剖析**（call graph profiling）概念，记录函数调用关系与耗时。
 
 **统计采样剖析**的奠基性工作来自 B. B. Bond 与 M. C. Harrison 在 IBM 的研究（1974），随后被 Sun Solaris `collect`、Linux `oprofile`、Google `gperftools`（2005）推广。Google 工程师 Sanjay Ghemawat 等人开发的 gperftools（含 CPUProfile）是 Go pprof 的直接前身。
 
-### 2.2 Go 1.0（2012-03）：runtime/pprof 引入
+### 1.2 Go 1.0（2012-03）：runtime/pprof 引入
 
 Go 1.0 即内置 `runtime/pprof` 包，提供 CPU、堆、Goroutine、线程创建、阻塞、锁六类剖析能力。初版实现借鉴 Google 内部 perftools 设计：
 
@@ -97,7 +52,7 @@ pprof.StopCPUProfile()
 
 CPU 剖析基于 **SIGPROF 信号**：runtime 每秒 100 次发送 SIGPROF，信号处理器记录当前 goroutine 的调用栈。这一机制继承自 gperftools 的 `CPUPROFILE_REALTIME=1` 模式。
 
-### 2.3 Go 1.1（2013-05）：net/http/pprof
+### 1.3 Go 1.1（2013-05）：net/http/pprof
 
 Go 1.1 引入 `net/http/pprof` 包，通过 `init()` 自动注册 `/debug/pprof/` 路由。这一设计极大降低了线上服务的剖析门槛，开发者无需重启服务即可抓取 profile：
 
@@ -110,7 +65,7 @@ func main() {
 }
 ```
 
-### 2.4 Go 1.5（2015-08）：runtime 自举与 trace 引入
+### 1.4 Go 1.5（2015-08）：runtime 自举与 trace 引入
 
 Go 1.5 完成 runtime 自举（C → Go），pprof 实现也由 C 迁移为 Go。同年 Go 1.5 引入 `runtime/trace` 包，由 Dmitry Vyukov 设计，支持 **事件级时间线分析**：
 
@@ -125,11 +80,11 @@ trace.Stop()
 
 `go tool trace trace.out` 启动 Web 界面，可视化 goroutine 调度、GC、网络、系统调用等事件。
 
-### 2.5 Go 1.9（2017-08）：mutex 剖析
+### 1.5 Go 1.9（2017-08）：mutex 剖析
 
 Go 1.9 由 Dmitry Vyukov 实现 mutex 剖析，通过 `runtime.SetMutexProfileFraction(N)` 控制采样比例：每 N 次锁竞争事件采样一次。在此之前，开发者只能通过 `block` 剖析粗略定位锁问题。
 
-### 2.6 Go 1.10（2017-12）：pprof label
+### 1.6 Go 1.10（2017-12）：pprof label
 
 Go 1.10 引入 `pprof.Do(ctx, pprof.Labels("key", "value"), func(ctx))` API，支持给 goroutine 打标签。标签会随采样记录到 profile，便于在火焰图中区分请求来源：
 
@@ -139,21 +94,21 @@ pprof.Do(ctx, pprof.Labels("user_id", "12345", "route", "/api/users"), func(ctx 
 })
 ```
 
-### 2.7 Go 1.18（2022-03）：pprof 与 cgo 改进
+### 1.7 Go 1.18（2022-03）：pprof 与 cgo 改进
 
 Go 1.18 优化 cgo 调用下的 CPU 剖析：此前 cgo 调用期间 SIGPROF 被忽略，导致 cgo 重负载场景下 profile 失真。Go 1.18 通过在 cgo 入口保存 Go 调用栈，修复了这一问题。
 
-### 2.8 Go 1.21（2023-08）：PGO 与 trace 改进
+### 1.8 Go 1.21（2023-08）：PGO 与 trace 改进
 
 Go 1.21 引入 **Profile-Guided Optimization (PGO)**：基于生产 pprof 数据指导编译器内联、函数布局优化，平均提升 2-7% 性能。同年 `runtime/trace` 大幅重写，支持 32 倍更小的 trace 文件与更细粒度事件。
 
-### 2.9 Go 1.22-1.24（2024-2025）：pprof 工具链增强
+### 1.9 Go 1.22-1.24（2024-2025）：pprof 工具链增强
 
 - **Go 1.22**：`go tool pprof` 默认启用 Web 界面，集成 d3-flame-graph。
 - **Go 1.23**：`runtime/trace` 引入 flight recorder，支持滚动记录最近 N 秒事件。
 - **Go 1.24**：pprof 支持压缩格式（gzip），减少跨网络传输开销；`testing` 包支持 `-test.gocoverdir` 与 pprof 联合分析。
 
-### 2.10 演进时间轴
+### 1.10 演进时间轴
 
 ```mermaid
 timeline
@@ -174,9 +129,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 采样剖析的数学模型
+### 2.1 采样剖析的数学模型
 
 设程序在时间区间 $[0, T]$ 内执行，函数集合 $F = \{f_1, f_2, \ldots, f_n\}$。定义函数 $f_i$ 的 **真实 CPU 占用** 为：
 
@@ -206,7 +161,7 @@ $$
 
 其中 $z_{0.025} = 1.96$ 对应 95% 置信度。
 
-### 3.2 Go CPU Profile 的采样机制
+### 2.2 Go CPU Profile 的采样机制
 
 Go runtime 通过 `runtime.SetCPUProfileRate(hz)` 设置采样频率（默认 100 Hz）。实现机制：
 
@@ -217,7 +172,7 @@ Go runtime 通过 `runtime.SetCPUProfileRate(hz)` 设置采样频率（默认 10
 
 **采样精度**：由于信号触发依赖 OS 调度，实际频率可能低于设定值。在高负载系统上，SIGPROF 可能丢失，导致采样偏差。
 
-### 3.3 堆剖析的形式化
+### 2.3 堆剖析的形式化
 
 定义分配事件流 $\{(a_i, s_i, t_i)\}$，其中 $a_i$ 是分配大小，$s_i$ 是调用栈，$t_i$ 是时间戳。设对象 $i$ 在 $t_i^{\text{free}}$ 时刻被 GC 回收（若未被回收则 $t_i^{\text{free}} = \infty$）。
 
@@ -235,7 +190,7 @@ $$
 
 **采样率**：`runtime.MemProfileRate`（默认 512 KB），每分配 512 KB 记录一次。设为 1 可记录所有分配（开销大）。
 
-### 3.4 火焰图形式化
+### 2.4 火焰图形式化
 
 火焰图（flame graph）由 Brendan Gregg 在 2011 年提出，是一种 **调用栈聚合可视化**。形式化：
 
@@ -253,7 +208,7 @@ $$
 
 **性质 3.2（深度单调）**：火焰图从下向上深度递增，根节点（`runtime.main` 或 `main.main`）在底部。
 
-### 3.5 pprof Profile 格式
+### 2.5 pprof Profile 格式
 
 pprof 使用 Protocol Buffers 编码（`profile.proto`），核心字段：
 
@@ -281,9 +236,9 @@ message Sample {
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 采样偏差分析
+### 3.1 采样偏差分析
 
 **定理 4.1（短函数低估偏差）**：设函数 $f$ 的单次执行时长为 $\tau$，采样周期为 $\Delta t = 1/\lambda$。若 $\tau \ll \Delta t$，则 $f$ 被采样的概率为：
 
@@ -297,7 +252,7 @@ $$
 
 **实践影响**：高频短函数（如 `sync.Mutex.Lock`、`runtime.nanotime`）在 CPU profile 中可能被显著低估。可通过提高 `SetCPUProfileRate(1000)` 缓解，但开销从 1% 上升到 5-10%。
 
-### 4.2 统计显著性
+### 3.2 统计显著性
 
 **定理 4.2（采样次数下界）**：要在 95% 置信度下检测函数 $f$ 占比 $p = C_f / T$ 的相对误差不超过 $\epsilon$，所需采样次数：
 
@@ -315,7 +270,7 @@ $$
 
 按 100 Hz 采样，需采集 $T = 7291 / 100 \approx 73$ 秒。这解释了为何生产环境建议至少采集 60 秒 CPU profile。
 
-### 4.3 内存剖析的归因问题
+### 3.3 内存剖析的归因问题
 
 **问题**：`inuse_space` 在 GC 后统计，可能丢失已回收对象的归因。
 
@@ -326,7 +281,7 @@ $$
 
 **推论**：排查内存泄漏应使用 `inuse_space`，分析分配热点应使用 `alloc_space`。
 
-### 4.4 采样开销模型
+### 3.4 采样开销模型
 
 设单次采样的处理时间为 $c$（包括信号处理、栈展开、buffer 写入），采样频率 $\lambda$。采样开销占比：
 
@@ -340,7 +295,7 @@ $$
 - Block 剖析（`SetBlockProfileRate(1)`）：开销 $\approx 5-15\%$（每次阻塞事件记录）。
 - Mutex 剖析（`SetMutexProfileFraction(1)`）：开销 $\approx 3-10\%$。
 
-### 4.5 PGO 的理论基础
+### 3.5 PGO 的理论基础
 
 **Profile-Guided Optimization** 利用生产 CPU profile 指导编译器决策：
 
@@ -352,7 +307,7 @@ $$
 
 Go 1.21+ PGO 实测平均提升 2-7%，部分场景（如 JSON 序列化）可达 10%+。
 
-### 4.6 trace 的因果一致性
+### 3.6 trace 的因果一致性
 
 `runtime/trace` 记录事件流 $(e_i, t_i, \text{meta}_i)$，其中 $e_i \in \{\text{goroutine start, end, block, unblock, GC start, end, syscall}\}$。事件间存在 **happens-before** 关系：
 
@@ -367,9 +322,9 @@ trace 工具基于这些关系构建 **有向无环图**（DAG），用于检测
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：CPU 剖析
+### 4.1 基础：CPU 剖析
 
 ```go
 package main
@@ -419,7 +374,7 @@ go tool pprof cpu.prof
 #   quit
 ```
 
-### 5.2 堆剖析
+### 4.2 堆剖析
 
 ```go
 package main
@@ -479,7 +434,7 @@ go tool pprof -alloc_objects heap.prof
 (pprof) list allocateMemory
 ```
 
-### 5.3 HTTP 服务集成 pprof
+### 4.3 HTTP 服务集成 pprof
 
 ```go
 package main
@@ -525,7 +480,7 @@ go tool pprof -http=:8080 http://localhost:6060/debug/pprof/heap
 curl "http://localhost:6060/debug/pprof/goroutine?debug=2" > goroutines.txt
 ```
 
-### 5.4 Goroutine 泄漏排查
+### 4.4 Goroutine 泄漏排查
 
 ```go
 package main
@@ -578,7 +533,7 @@ go tool pprof -http=:8080 http://localhost:6060/debug/pprof/goroutine
 # 5. 在 "Top" 视图查看哪个函数创建了最多 goroutine
 ```
 
-### 5.5 阻塞与锁剖析
+### 4.5 阻塞与锁剖析
 
 ```go
 package main
@@ -637,7 +592,7 @@ go tool pprof mutex.prof
 go tool pprof -http=:8080 mutex.prof
 ```
 
-### 5.6 runtime/trace 时间线分析
+### 4.6 runtime/trace 时间线分析
 
 ```go
 package main
@@ -688,7 +643,7 @@ go tool trace trace.out
 #   - Scheduler latency profile  调度延迟
 ```
 
-### 5.7 benchmark 与 pprof 联合分析
+### 4.7 benchmark 与 pprof 联合分析
 
 ```go
 // fib_test.go
@@ -731,7 +686,7 @@ go test -bench=. -count=10 -benchmem > new.txt
 benchstat old.txt new.txt
 ```
 
-### 5.8 自定义 pprof label
+### 4.8 自定义 pprof label
 
 ```go
 package main
@@ -793,9 +748,9 @@ go tool pprof -tags http://localhost:6060/debug/pprof/profile?seconds=30
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Go pprof vs Linux perf vs eBPF
+### 5.1 Go pprof vs Linux perf vs eBPF
 
 | 维度 | Go pprof | Linux perf | eBPF (bpftrace) |
 | --- | --- | --- | --- |
@@ -813,7 +768,7 @@ go tool pprof -tags http://localhost:6060/debug/pprof/profile?seconds=30
 - **Linux perf**：系统级性能分析、混合语言服务、PMU 事件（cache miss、branch miss）。
 - **eBPF**：低开销持续剖析、内核态事件、自定义探针。
 
-### 6.2 Go pprof vs Pyroscope vs Parca vs Datadog
+### 5.2 Go pprof vs Pyroscope vs Parca vs Datadog
 
 | 维度 | Go pprof | Pyroscope | Parca | Datadog CP |
 | --- | --- | --- | --- | --- |
@@ -831,7 +786,7 @@ go tool pprof -tags http://localhost:6060/debug/pprof/profile?seconds=30
 - **中大型团队**：Pyroscope 或 Parca 自建，集成 Grafana。
 - **企业级/跨云**：Datadog Continuous Profiler，零运维。
 
-### 6.3 Go pprof vs Java JFR vs Python cProfile
+### 5.3 Go pprof vs Java JFR vs Python cProfile
 
 | 维度 | Go pprof | Java JFR | Python cProfile |
 | --- | --- | --- | --- |
@@ -844,7 +799,7 @@ go tool pprof -tags http://localhost:6060/debug/pprof/profile?seconds=30
 
 **关键差异**：Java JFR 设计目标是 <1% 开销持续运行，得益于 JVM safepoint 机制；Go pprof 默认 1-3% 开销适合短期抓取；Python cProfile 是确定性插桩，开销巨大不适合生产。
 
-### 6.4 CPU vs 堆 vs Goroutine vs 锁剖析对比
+### 5.4 CPU vs 堆 vs Goroutine vs 锁剖析对比
 
 | 剖析类型 | 触发机制 | 默认采样率 | 开销 | 典型问题 |
 | --- | --- | --- | --- | --- |
@@ -857,9 +812,9 @@ go tool pprof -tags http://localhost:6060/debug/pprof/profile?seconds=30
 
 ---
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 陷阱一：CPU profile 采集时间过短
+### 6.1 陷阱一：CPU profile 采集时间过短
 
 **BAD**：
 
@@ -877,7 +832,7 @@ go tool pprof http://localhost:6060/debug/pprof/profile?seconds=60
 
 **理论依据**：由定理 4.2，检测占比 5% 的函数，95% 置信度，相对误差 10%，需 7291 次采样。按 100 Hz，需 73 秒。
 
-### 7.2 陷阱二：混淆 alloc 与 inuse
+### 6.2 陷阱二：混淆 alloc 与 inuse
 
 **BAD**：
 
@@ -898,7 +853,7 @@ go tool pprof -inuse_objects http://localhost:6060/debug/pprof/heap
 go tool pprof -base heap1.prof heap2.prof
 ```
 
-### 7.3 陷阱三：生产环境暴露 pprof 端点
+### 6.3 陷阱三：生产环境暴露 pprof 端点
 
 **BAD**：
 
@@ -946,7 +901,7 @@ func pprofAuthMiddleware(next http.Handler) http.Handler {
 }
 ```
 
-### 7.4 陷阱四：阻塞剖析开启 rate=1
+### 6.4 陷阱四：阻塞剖析开启 rate=1
 
 **BAD**：
 
@@ -968,7 +923,7 @@ runtime.SetBlockProfileRate(0) // 关闭
 pprof.Lookup("block").WriteTo(f, 0)
 ```
 
-### 7.5 陷阱五：MemProfileRate=1 用于生产
+### 6.5 陷阱五：MemProfileRate=1 用于生产
 
 **BAD**：
 
@@ -986,7 +941,7 @@ runtime.MemProfileRate = 4 * 1024 * 1024 // 4MB
 // 仅在排查特定问题时临时设为 1
 ```
 
-### 7.6 陷阱六：benchmark 单次运行得出结论
+### 6.6 陷阱六：benchmark 单次运行得出结论
 
 **BAD**：
 
@@ -1012,7 +967,7 @@ benchstat old.txt new.txt
 # Fib-8       100ns ± 5%   90ns ± 4%   -10.00%  (p=0.001 n=10+10)
 ```
 
-### 7.7 陷阱七：忽略 pprof label
+### 6.7 陷阱七：忽略 pprof label
 
 **BAD**：
 
@@ -1038,7 +993,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-### 7.8 陷阱八：trace 文件过大无法分析
+### 6.8 陷阱八：trace 文件过大无法分析
 
 **BAD**：
 
@@ -1071,9 +1026,9 @@ go func() {
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 生产环境 pprof 部署架构
+### 7.1 生产环境 pprof 部署架构
 
 **推荐架构**：
 
@@ -1121,7 +1076,7 @@ func main() {
 }
 ```
 
-### 8.2 CI/CD 集成 benchmark 回归检测
+### 7.2 CI/CD 集成 benchmark 回归检测
 
 **.github/workflows/benchmark.yml**：
 
@@ -1168,7 +1123,7 @@ jobs:
           fi
 ```
 
-### 8.3 连续剖析平台集成
+### 7.3 连续剖析平台集成
 
 **Pyroscope 集成示例**：
 
@@ -1208,7 +1163,7 @@ func main() {
 }
 ```
 
-### 8.4 PGO 构建流程
+### 7.4 PGO 构建流程
 
 **步骤一：采集生产 profile**
 
@@ -1241,7 +1196,7 @@ go version -m myapp | grep pgo
 # 输出：build   -pgo=default.pgo
 ```
 
-### 8.5 pprof 端点安全加固
+### 7.5 pprof 端点安全加固
 
 ```go
 package main
@@ -1308,7 +1263,7 @@ func main() {
 }
 ```
 
-### 8.6 Prometheus 指标 + pprof 联合分析
+### 7.6 Prometheus 指标 + pprof 联合分析
 
 ```go
 package main
@@ -1361,9 +1316,9 @@ func instrumentedHandler(w http.ResponseWriter, r *http.Request) {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Kubernetes API Server 性能调优
+### 8.1 案例一：Kubernetes API Server 性能调优
 
 **背景**：Kubernetes API Server 在大规模集群（5000+ 节点）下，list pods 请求 P99 延迟超过 10 秒。
 
@@ -1396,7 +1351,7 @@ go tool pprof -alloc_space apiserver-heap.prof
 
 **效果**：P99 延迟从 10 秒降至 800 毫秒。
 
-### 9.2 案例二：Prometheus 抓取内存泄漏
+### 8.2 案例二：Prometheus 抓取内存泄漏
 
 **背景**：Prometheus v2.30 在抓取 100 万 series 时内存从 8 GB 涨到 32 GB，触发 OOM。
 
@@ -1424,7 +1379,7 @@ go tool pprof -inuse_space http://prometheus:9090/debug/pprof/heap
 
 **效果**：内存从 32 GB 降至 6 GB。
 
-### 9.3 案例三：Hugo 静态站点生成器构建优化
+### 8.3 案例三：Hugo 静态站点生成器构建优化
 
 **背景**：Hugo 在生成 10 万页面站点时，构建时间从 30 秒退化到 5 分钟。
 
@@ -1447,7 +1402,7 @@ go tool pprof cpu.prof
 
 **效果**：构建时间从 5 分钟降至 25 秒。
 
-### 9.4 案例四：Docker 容器内 Go 服务 goroutine 泄漏
+### 8.4 案例四：Docker 容器内 Go 服务 goroutine 泄漏
 
 **背景**：容器化 Go 服务运行 7 天后，goroutine 数从 100 涨到 50000，响应延迟线性上升。
 
@@ -1486,7 +1441,7 @@ client := &http.Client{
 
 **效果**：goroutine 数稳定在 200 左右。
 
-### 9.5 案例五：TikTok Go 微服务 PGO 优化
+### 8.5 案例五：TikTok Go 微服务 PGO 优化
 
 **背景**：TikTok 视频 metadata 服务在 2024 年 Q1 优化，单实例 QPS 从 8000 提升到 12000。
 
@@ -1738,9 +1693,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 - Graham, S. L., Kessler, P. B., & McKusick, M. K. (1982). *gprof: A call graph execution profiler*. Proceedings of the 1982 SIGPLAN Symposium on Compiler Construction, 52–57. https://doi.org/10.1145/800230.806987
 
@@ -1756,7 +1711,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 - Mytkowicz, T., Diwan, A., Hauswirth, M., & Sweeney, P. F. (2009). *Producing wrong data without doing anything obviously wrong!* ASPLOS 2009. (相关于性能测量偏差)
 
-### 11.2 官方文档
+### 10.2 官方文档
 
 - Go Project. (2024). *Go diagnostics* (Go 1.22 documentation). https://golang.org/doc/diagnostics
 
@@ -1770,7 +1725,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 - Gregg, B. (2024). *Flame graphs* (Online resource). http://www.brendangregg.com/flamegraphs.html
 
-### 11.3 开源项目
+### 10.3 开源项目
 
 - Google. (2024). *gperftools* (Version 2.13). GitHub. https://github.com/gperftools/gperftools
 
@@ -1784,7 +1739,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 - iovisor. (2024). *bpftrace: High-level tracing language for Linux eBPF*. GitHub. https://github.com/iovisor/bpftrace
 
-### 11.4 书籍
+### 10.4 书籍
 
 - Gregg, B. (2020). *Systems performance: Enterprise and the cloud* (2nd ed.). Addison-Wesley Professional. ISBN 978-0136820154.
 
@@ -1796,9 +1751,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 ---
 
-## 12. 扩展阅读
+## 11. 扩展阅读
 
-### 12.1 官方资源
+### 11.1 官方资源
 
 - **Go Blog - Diagnostics**：https://go.dev/blog/diagnostics
 - **Go Blog - PGO**：https://go.dev/blog/pgo
@@ -1806,7 +1761,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 - **Go Wiki - Benchmarking**：https://github.com/golang/go/wiki/Benchmarks
 - **Go Source - runtime/pprof**：https://cs.opensource.google/go/go/+/master:src/runtime/pprof/
 
-### 12.2 前沿论文
+### 11.2 前沿论文
 
 - **Litzel, B. et al. (2023)**. *Reducing production overhead of continuous profiling*. USENIX ATC 2023. (eBPF-based continuous profiling with <0.5% overhead)
 
@@ -1814,7 +1769,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 - **Begehr, L. et al. (2021)**. *Treat pprof like your database: A query-driven approach to profiling*. ICSE 2021 SEIP track.
 
-### 12.3 开源项目
+### 11.3 开源项目
 
 - **Pyroscope**：https://github.com/grafana/pyroscope
 - **Parca**：https://github.com/parca-dev/parca
@@ -1823,7 +1778,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 - **gops**：https://github.com/google/gops (Go 进程诊断工具)
 - **fgprof**：https://github.com/felixge/fgprof (function-level profiler，无采样偏差)
 
-### 12.4 书籍推荐
+### 11.4 书籍推荐
 
 - **Brendan Gregg, *Systems Performance* (2nd ed.)**：性能分析领域的圣经，涵盖采样剖析、火焰图、eBPF 等通用方法论。
 
@@ -1831,7 +1786,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 - **Katherine Cox-Buday, *Concurrency in Go***：Go 并发性能优化的实战指南。
 
-### 12.5 会议与社区
+### 11.5 会议与社区
 
 - **GopherCon**：年度 Go 大会，常有 pprof 与性能优化主题演讲。https://www.gophercon.com/
 

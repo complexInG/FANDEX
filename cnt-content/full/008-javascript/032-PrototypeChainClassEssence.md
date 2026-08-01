@@ -16,28 +16,12 @@ prerequisites:
   - javascript/语法速查
 ---
 
+
 # 原型链继承与 class 本质
 
-## 1. 学习目标（Bloom 分类）
+## 1. 历史动机：为什么 JavaScript 选择原型继承
 
-读完本文后，读者应能够达到以下认知层次（Bloom 分类法）：
-
-| 层次 | 行为目标 | 具体能力描述 |
-| --- | --- | --- |
-| 记忆（Remember） | 列出 `[[Prototype]]`、`prototype`、`constructor` 三个概念的定义 | 能在 30 秒内说出每个属性指向的对象 |
-| 理解（Understand） | 解释原型链查找过程 | 能画出 `obj.x` 属性访问的完整查找路径 |
-| 应用（Apply） | 用构造函数+原型实现单继承与多继承 | 能写出 `extends` 的等价 ES5 实现 |
-| 分析（Analyze） | 区分 `class` 与传统构造函数在原型链上的差异 | 能指出 `super()` 内部机制与 `Parent.call(this)` 的区别 |
-| 评价（Evaluate） | 评估不同继承方案的内存、性能与可维护性 | 能针对真实场景给出方案选型建议 |
-| 创造（Create） | 设计元对象系统与混入（mixin）框架 | 能实现一个支持多继承且类型安全的工具函数 |
-
-学习本课前，建议先掌握：对象的基本操作、函数调用、`this` 绑定规则、`new` 关键字的执行步骤。
-
----
-
-## 2. 历史动机：为什么 JavaScript 选择原型继承
-
-### 2.1 设计背景：十天的妥协
+### 1.1 设计背景：十天的妥协
 
 1995 年 5 月，Brendan Eich 受 Netscape 委托，要在 10 天内为 Netscape Navigator 浏览器实现一门"嵌入网页的脚本语言"。最初他向管理层推荐的方案是 Scheme（Lisp 方言），强调函数是一等公民、闭包天然支持。但 Netscape 与 Sun Microsystems 的商业协议要求这门语言必须"看起来像 Java"，以便市场推广。
 
@@ -49,7 +33,7 @@ prerequisites:
 
 这种"语法像 Java，灵魂像 Self/Scheme"的混合血统，决定了 JavaScript 既没有真正的类，又必须有"看起来像类"的语法。`class` 关键字直到 ES6（2015）才被引入，但它仅是构造函数+原型继承的语法糖，并未改变语言的原型本质。
 
-### 2.2 类继承 vs 原型继承的本质差异
+### 1.2 类继承 vs 原型继承的本质差异
 
 | 维度 | 类继承（Java/C++） | 原型继承（JavaScript） |
 | --- | --- | --- |
@@ -60,7 +44,7 @@ prerequisites:
 | 类型判定 | 通过类层级（is-a）判定 | 通过原型链（duck-typing 或 `instanceof`）判定 |
 | 内存模型 | 实例独立持有字段，方法走虚表 | 实例只持有自有属性，方法共享于原型 |
 
-### 2.3 为什么 `class` 只是语法糖
+### 1.3 为什么 `class` 只是语法糖
 
 ES6 引入 `class` 语法后，开发者可以写：
 
@@ -99,9 +83,9 @@ console.log(Object.getPrototypeOf(a) === Animal.prototype); // true
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 内部槽 `[[Prototype]]` 与 `prototype` 属性
+### 2.1 内部槽 `[[Prototype]]` 与 `prototype` 属性
 
 JavaScript 规范定义了两个容易混淆但本质上完全不同的概念：
 
@@ -121,7 +105,7 @@ $$
 \text{对于 } x = new F(): \quad x.[[Prototype]] === F.prototype
 $$
 
-### 3.2 原型链的形式化描述
+### 2.2 原型链的形式化描述
 
 定义"原型链"为对象 $o$ 的属性查找路径 $P(o)$：
 
@@ -140,7 +124,7 @@ $$
 
 注意：查找会停在第一个具有该属性（own 或继承）的对象上；若属性是访问器（getter），则会触发 getter 调用，而不是直接返回值。
 
-### 3.3 `Object.create` 与 `new` 的等价关系
+### 2.3 `Object.create` 与 `new` 的等价关系
 
 `Object.create(proto)` 是直接指定原型创建对象的原语，`new F()` 是通过构造函数间接指定原型：
 
@@ -164,7 +148,7 @@ $$
 
 即如果构造函数返回了一个对象，`new` 表达式的结果就是该对象；否则返回新创建的 `x`。这一规则常被工厂函数利用。
 
-### 3.4 `instanceof` 的形式化语义
+### 2.4 `instanceof` 的形式化语义
 
 `x instanceof F` 的判定规则：
 
@@ -186,9 +170,9 @@ console.log(x instanceof F); // false （因为新 prototype 不在 x 的原型�
 
 ---
 
-## 4. 理论推导：属性查找的算法
+## 3. 理论推导：属性查找的算法
 
-### 4.1 `[[Get]]` 内部方法的递归形式
+### 3.1 `[[Get]]` 内部方法的递归形式
 
 ECMAScript 规范定义 `[[Get]](P, Receiver)` 算法（简化版）：
 
@@ -211,7 +195,7 @@ ECMAScript 规范定义 `[[Get]](P, Receiver)` 算法（简化版）：
 - 原型链查找是**递归**的，每层未命中就向上一级查找。
 - 访问器属性会触发 getter，且 `this` 绑定到最初的 `Receiver`（即调用点对象），而不是原型链中找到 getter 的对象。
 
-### 4.2 `this` 在原型方法中的绑定
+### 3.2 `this` 在原型方法中的绑定
 
 ```javascript
 const proto = {
@@ -228,7 +212,7 @@ console.log(obj.greet()); // "Hi, I'm obj"
 
 虽然 `greet` 定义在 `proto` 上，但 `this` 绑定到 `obj`。这是因为方法调用 `obj.greet()` 中，`this` 是调用点 `obj`，而不是方法定义所在对象。这一机制使得"共享方法 + 实例独立数据"成为可能，是原型继承的核心优势。
 
-### 4.3 性能推导：内联缓存（Inline Cache, IC）
+### 3.3 性能推导：内联缓存（Inline Cache, IC）
 
 V8 等引擎为每个属性访问点生成"内联缓存"，记录上次命中的"形状（shape）"和"偏移（offset）"。
 
@@ -243,7 +227,7 @@ V8 等引擎为每个属性访问点生成"内联缓存"，记录上次命中的
 - 短原型链 + 形状稳定的对象，性能极佳。
 - 长原型链 + 多次动态添加属性的对象，会破坏 IC，性能下降 5-50 倍。
 
-### 4.4 实测：原型链深度对性能的影响
+### 3.4 实测：原型链深度对性能的影响
 
 ```javascript
 // 构造深度为 N 的原型链
@@ -280,9 +264,9 @@ for (const obj of targets) {
 
 ---
 
-## 5. 代码示例：从原型到 class 的完整演进
+## 4. 代码示例：从原型到 class 的完整演进
 
-### 5.1 原始原型继承
+### 4.1 原始原型继承
 
 ```javascript
 // 父对象
@@ -309,7 +293,7 @@ console.log(Object.getPrototypeOf(rex) === dogProto); // true
 console.log(Object.getPrototypeOf(dogProto) === animalProto); // true
 ```
 
-### 5.2 构造函数 + 原型
+### 4.2 构造函数 + 原型
 
 ```javascript
 function Animal(name) {
@@ -342,7 +326,7 @@ console.log(rex instanceof Animal); // true
 2. `Dog.prototype = Object.create(Animal.prototype)` 让 `Dog` 实例共享 `Animal` 的方法。
 3. 重新赋值 `prototype` 后必须修复 `constructor`，否则 `rex.constructor === Animal`，反直觉。
 
-### 5.3 ES6 `class` 语法糖
+### 4.3 ES6 `class` 语法糖
 
 ```javascript
 class Animal {
@@ -371,7 +355,7 @@ console.log(rex instanceof Dog); // true
 console.log(rex instanceof Animal); // true
 ```
 
-### 5.4 `class` 相对构造函数的额外约束
+### 4.4 `class` 相对构造函数的额外约束
 
 `class` 语法不只是简化，还增加了若干**硬性约束**：
 
@@ -412,7 +396,7 @@ try {
 }
 ```
 
-### 5.5 `super` 的内部机制
+### 4.5 `super` 的内部机制
 
 `super` 不仅仅是"调用父类构造函数"，它通过 `HomeObject` 与 `[[MethodHome]]` 协同工作：
 
@@ -462,9 +446,9 @@ console.log(new C().m()); // "ABC"
 
 ---
 
-## 6. 对比分析：常见继承方案
+## 5. 对比分析：常见继承方案
 
-### 6.1 方案概览
+### 5.1 方案概览
 
 | 方案 | 实现方式 | 优点 | 缺点 | 适用场景 |
 | --- | --- | --- | --- | --- |
@@ -476,9 +460,9 @@ console.log(new C().m()); // "ABC"
 | 寄生组合式 | 组合 + 寄生 | 完美、高效 | 代码量大 | ES5 最佳实践 |
 | ES6 class | `extends` + `super` | 简洁、安全 | 仍为语法糖 | 现代标准方案 |
 
-### 6.2 详细对比
+### 5.2 详细对比
 
-#### 6.2.1 原型链继承
+#### 5.2.1 原型链继承
 
 ```javascript
 function Parent() {
@@ -495,7 +479,7 @@ console.log(c2.colors); // ['red', 'blue', 'green'] —— 共享问题！
 
 致命缺陷：所有实例共享父类的引用类型属性，导致状态污染。
 
-#### 6.2.2 借用构造函数
+#### 5.2.2 借用构造函数
 
 ```javascript
 function Parent(name) {
@@ -517,7 +501,7 @@ console.log(c2.greet); // undefined —— 无法继承原型方法
 
 解决了共享问题，但丢失了原型方法继承。
 
-#### 6.2.3 组合继承
+#### 5.2.3 组合继承
 
 ```javascript
 function Parent(name) {
@@ -540,7 +524,7 @@ console.log(c1.colors); // ['red'] —— 独立
 
 但 `Parent` 被调用 2 次：一次用于建立原型链，一次用于复制实例属性。性能浪费，且第一次调用会创建 `colors` 等无用属性（被原型链引用，但又被第二次调用覆盖）。
 
-#### 6.2.4 寄生组合式（ES5 最佳）
+#### 5.2.4 寄生组合式（ES5 最佳）
 
 ```javascript
 function inherit(Child, Parent) {
@@ -567,7 +551,7 @@ console.log(c1.greet()); // "Hi A"
 
 这是 ES5 时代最优方案，YUI、Backbone 等库的 `extend` 函数都基于此实现。
 
-#### 6.2.5 ES6 `class`
+#### 5.2.5 ES6 `class`
 
 ```javascript
 class Parent {
@@ -592,9 +576,9 @@ ES6 `class extends` 内部实现等价于寄生组合式，但更简洁、更安
 
 ---
 
-## 7. 常见陷阱
+## 6. 常见陷阱
 
-### 7.1 修改 `prototype` 时机
+### 6.1 修改 `prototype` 时机
 
 ```javascript
 function F() {}
@@ -612,7 +596,7 @@ console.log(y.bar); // 2 —— 新实例指向新 prototype
 
 陷阱：替换 `prototype` 不会更新已有实例的 `[[Prototype]]`。如果需要在运行时更换原型链，必须用 `Object.setPrototypeOf`（性能差，不推荐）。
 
-### 7.2 `instanceof` 与跨 realm
+### 6.2 `instanceof` 与跨 realm
 
 ```javascript
 // 在浏览器中，主文档与 iframe 是不同 realm
@@ -625,7 +609,7 @@ console.log(Array.isArray(arr)); // true
 
 `arr` 来自 iframe 的 realm，其 `[[Prototype]]` 是 iframe 的 `Array.prototype`，与主文档的 `Array.prototype` 不是同一对象。`instanceof` 失效。
 
-### 7.3 箭头函数没有 `prototype`
+### 6.3 箭头函数没有 `prototype`
 
 ```javascript
 const F = () => {};
@@ -641,7 +625,7 @@ try {
 
 箭头函数不能作为构造函数，因为它没有 `[[Construct]]` 内部方法，也没有 `prototype` 属性。
 
-### 7.4 `class` 字段与原型方法
+### 6.4 `class` 字段与原型方法
 
 ```javascript
 class Counter {
@@ -668,7 +652,7 @@ console.log(c1.decrement === c2.decrement); // false （独立）
 
 `increment` 是原型方法（共享），`decrement` 是实例字段（每实例一份，多消耗内存）。需根据是否需要稳定 `this` 绑定来选择。
 
-### 7.5 `super` 在解构后失效
+### 6.5 `super` 在解构后失效
 
 ```javascript
 class A {
@@ -690,7 +674,7 @@ class B2 extends A {
 
 `super` 是语法层面的关键字，依赖 `HomeObject` 静态绑定，解构后无法找到正确上下文。
 
-### 7.6 静态方法与原型方法不互通
+### 6.6 静态方法与原型方法不互通
 
 ```javascript
 class A {
@@ -711,9 +695,9 @@ console.log(B.prototype.im); // [Function: im]
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 使用 `Object.create(null)` 创建无原型字典
+### 7.1 使用 `Object.create(null)` 创建无原型字典
 
 ```javascript
 const dict = Object.create(null);
@@ -727,7 +711,7 @@ console.log(dict.hasOwnProperty); // undefined
 
 用于实现纯净的字典 / Map（替代品，在 Map 不支持的环境下）。
 
-### 8.2 用 `Object.setPrototypeOf` 警惕性能问题
+### 7.2 用 `Object.setPrototypeOf` 警惕性能问题
 
 ```javascript
 const obj = { a: 1 };
@@ -744,7 +728,7 @@ obj2.a = 1;
 
 `Object.setPrototypeOf` 会让引擎去修改已存在对象的形状，所有相关的内联缓存失效。在性能敏感场景避免使用。
 
-### 8.3 Mixin 模式
+### 7.3 Mixin 模式
 
 ```javascript
 // 多继承在 JS 中只能通过 mixin 实现
@@ -781,7 +765,7 @@ console.log(u.serialize()); // '{"name":"Alice"}'
 console.log(u.clone() !== u); // true
 ```
 
-### 8.4 类层级深度控制
+### 7.4 类层级深度控制
 
 ```javascript
 // 反模式：层级过深
@@ -810,7 +794,7 @@ class Car {
 }
 ```
 
-### 8.5 用 `#private` 字段真正封装
+### 7.5 用 `#private` 字段真正封装
 
 ```javascript
 class BankAccount {
@@ -848,9 +832,9 @@ console.log(acc.#balance); // SyntaxError: Private field '#balance' must be decl
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：实现一个类型化的事件总线
+### 8.1 案例：实现一个类型化的事件总线
 
 需求：实现一个支持类型推断的事件总线，能正确继承并扩展事件类型。
 
@@ -904,7 +888,7 @@ bus.emit('data', { id: 2 }); // 无输出（已注销）
 - `on` 返回注销函数，符合 RAII 模式。
 - 子类通过 `super.on` 复用父类逻辑，避免重复实现。
 
-### 9.2 案例：错误类型层级设计
+### 8.2 案例：错误类型层级设计
 
 ```javascript
 class AppError extends Error {
@@ -960,7 +944,7 @@ try {
 - 通过 `instanceof` 链路可以做错误分类处理。
 - 使用 ES2022 `cause` 字段保留原始错误链，避免 `error.message` 字符串拼接。
 
-### 9.3 案例：实现 React 风格的组件继承
+### 8.3 案例：实现 React 风格的组件继承
 
 ```javascript
 class Component {
@@ -1018,7 +1002,7 @@ console.log(JSON.stringify(btn.render(), null, 2));
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 1. 写出以下代码的输出：
 
@@ -1046,7 +1030,7 @@ function myInstanceof(obj, F) {
 }
 ```
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 3. 解释以下代码为什么输出 `1` 而不是 `2`：
 
@@ -1130,7 +1114,7 @@ console.log(e.describe());
 // "Vehicle with 4 wheels, max 200 km/h, brand Tesla, fuel electric, battery 75 kWh"
 ```
 
-### 10.4 思考题
+### 9.4 思考题
 
 6. 为什么 `class` 不能像 Java 一样支持多重继承？JavaScript 是如何"绕过"这一限制的？
 
@@ -1155,7 +1139,7 @@ new B();
 // 输出：B.new.target = B
 ```
 
-### 10.5 调试题
+### 9.5 调试题
 
 9. 找出以下代码的 bug 并修复：
 
@@ -1201,7 +1185,7 @@ console.log(Object.getPrototypeOf(B) === A); // true （class 自身也构成原
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 以下引用采用 ACM 参考文献格式（ACM Reference Format）：
 
@@ -1231,16 +1215,16 @@ console.log(Object.getPrototypeOf(B) === A); // true （class 自身也构成原
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 规范与标准
+### 11.1 规范与标准
 
 - **ECMA-262 规范**（最新版）：<https://tc39.es/ecma262/>
   关注 6.1 ECMAScript Data Types and Values、6.1.7 The Object Type、10.4 Ordinary Object Internal Methods and Internal Slots、13.3 Class Definitions。
 - **TC39 Proposals**：<https://github.com/tc39/proposals>
   关注已进入 Stage 4 的私有字段、静态初始化块、装饰器等提案。
 
-### 12.2 引擎实现
+### 11.2 引擎实现
 
 - **V8 Blog**：<https://v8.dev/blog>
   特别推荐《Fast properties in V8》、《Understanding V8's inline cache》。
@@ -1249,7 +1233,7 @@ console.log(Object.getPrototypeOf(B) === A); // true （class 自身也构成原
 - **JavaScriptCore**：<https://developer.apple.com/documentation/javascriptcore>
   关注 WebKit 引擎的 DFG/FTL JIT 优化。
 
-### 12.3 经典书籍
+### 11.3 经典书籍
 
 - **《JavaScript: The Good Parts》**（Douglas Crockford, 2008）
   原型继承的"思想启蒙"之作，但部分观点已过时（如不推荐使用 `new`），需结合现代实践阅读。
@@ -1260,7 +1244,7 @@ console.log(Object.getPrototypeOf(B) === A); // true （class 自身也构成原
 - **《Deep JavaScript: Theory and Techniques》**（Axel Rauschmayer, 2020）
   聚焦原理，深入到内部槽、规范算法层面。
 
-### 12.4 学术论文
+### 11.4 学术论文
 
 - **"Self: The Power of Simplicity"**（Ungar & Smith, 1987）
   原型继承思想的奠基论文，理解 JavaScript 设计哲学的关键。
@@ -1269,7 +1253,7 @@ console.log(Object.getPrototypeOf(B) === A); // true （class 自身也构成原
 - **"JavaScript: The First 20 Years"**（Wirfs-Brock & Eich, 2020）
   JavaScript 历史的权威回顾，由规范作者与语言作者合著。
 
-### 12.5 在线资源
+### 11.5 在线资源
 
 - **MDN Web Docs**：<https://developer.mozilla.org/>
   权威参考，特别推荐《Classes》、《Inheritance and the prototype chain》。
@@ -1278,7 +1262,7 @@ console.log(Object.getPrototypeOf(B) === A); // true （class 自身也构成原
 - **Exploring JS**：<https://exploringjs.com/>
   Axel Rauschmayer 维护的免费在线书籍，覆盖 ES1 到 ES2024。
 
-### 12.6 推荐练习
+### 11.6 推荐练习
 
 - 实现 lodash `_.create`、`_.assign`、`_.defaults` 函数，深入理解原型与属性合并。
 - 实现一个简易 ORM，通过继承 `Model` 基类提供 CRUD 方法。

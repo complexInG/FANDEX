@@ -16,6 +16,7 @@ prerequisites:
   - csharp/概述与环境配置
 ---
 
+
 # .NET GC 代机制：从弱分代假说到内存回收的全景解析
 
 > 本章对标 MIT 6.1020（Software Construction）与 Stanford CS107（Programming Paradigms）的内存管理教学深度，结合 ECMA-335（CLI 规范）、CoreCLR 源码（`gc.cpp`、`gcee.cpp`）与 Andrew D. Wilson 等人的经典 GC 论文，深入剖析 .NET 垃圾回收器的分代模型、标记清除算法、压缩策略、固定对象机制、Server GC vs Workstation GC 的差异，以及在 ASP.NET Core、EF Core、高性能 I/O 路径中的工程实践。
@@ -37,53 +38,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（1956 年原版 + 2001 年修订版）的六个认知层次。完成本章学习后，读者应能：
-
-### 1.1 Remember（记忆）
-
-- 复述"弱分代假说"（Weak Generational Hypothesis）的两条核心命题。
-- 列出 .NET GC 中 Generation 0、Generation 1、Generation 2、LOH（Large Object Heap）、POH（Pinned Object Heap）的容量阈值与分配策略。
-- 说出 `GC.Collect`、`GC.GetGeneration`、`GC.CollectionCount`、`GC.GetTotalMemory`、`GC.TryStartNoGCRegion` 等核心 API 的签名。
-- 描述 `GCHandle` 的 5 种类型（`Normal`、`Pinned`、`Weak`、`WeakTrackResurrection`、`Allocated`）的语义。
-
-### 1.2 Understand（理解）
-
-- 解释为何将堆划分为三代能显著降低平均回收成本。
-- 用自己的语言说明标记清除（mark-sweep）与压缩（compaction）两个阶段的协同。
-- 推导 LOH 不默认压缩的设计权衡（CPU 开销 vs 内存碎片）。
-- 区分 Server GC、Workstation GC、Background GC、Concurrent GC 的运行模型。
-
-### 1.3 Apply（应用）
-
-- 使用 `dotnet-counters`、`dotnet-trace`、`PerfView` 诊断线上应用的 GC 停顿与内存压力。
-- 在 `csproj` 或 `runtimeconfig.json` 中配置 Server GC、Heap Count、Background GC。
-- 使用 `ArrayPool<T>`、`ObjectPool<T>`、`Memory<T>` 降低热路径分配压力。
-
-### 1.4 Analyze（分析）
-
-- 对照 CoreCLR `gc.cpp` 源码分析一次 Gen 2 GC 的完整流程（标记根 → 标记阶段 → 计划阶段 → 重定位 → 压缩）。
-- 解构固定对象（pinned object）对堆碎片化的影响路径。
-- 对比 .NET GC 与 Java HotSpot G1/ZGC、Go GC、V8 Orinoco 的算法选择。
-
-### 1.5 Evaluate（评价）
-
-- 评估在微服务架构中默认启用 Server GC 的内存代价（每个堆约 16MB 起步）。
-- 评判 `GC.Collect()` 手动触发的反模式（disrupting heuristic）与少数合法场景（服务启动后预热）。
-- 比较 `POH`（.NET 5 引入）与 `GCHandle.Pinned` 在固定语义上的差异。
-
-### 1.6 Create（创造）
-
-- 设计一个面向实时游戏引擎的 GC 监控面板，集成 `EventSource` 与 `EventCounter`。
-- 实现一个自定义的对象池（`ObjectPool<T>`），支持 `Rent`/`Return`、容量限制、超时回收。
-- 构建一个基于 Roslyn 的静态分析器，检测代码库中潜在的固定对象（`fixed` 语句、`GCHandle.Alloc`）分布。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 GC 的史前时代：手动内存管理（1950s-1990s）
+### 1.1 GC 的史前时代：手动内存管理（1950s-1990s）
 
 在垃圾回收（Garbage Collection, GC）一词正式出现之前，程序员需要手动调用 `malloc`/`free`（C）、`new`/`delete`（C++）来管理内存。这带来了两类典型错误：
 
@@ -92,7 +49,7 @@ prerequisites:
 
 1959 年，John McCarthy 在 LISP 中首次提出**垃圾回收**一词，使用标记清除（mark-sweep）算法自动回收不可达对象。但早期的 GC 是"全堆回收"（full heap collection），停顿时间随堆大小线性增长。
 
-### 2.2 分代假说的诞生：Ungar（1984）
+### 1.2 分代假说的诞生：Ungar（1984）
 
 1984 年，David Ungar 在 Berkeley Smalltalk 系统中提出**分代垃圾回收**（generational GC），核心思想基于两条经验假说：
 
@@ -101,7 +58,7 @@ prerequisites:
 
 Ungar 将堆划分为新生代（nursery）与老年代（old generation），频繁回收新生代，偶尔回收老年代。这把平均回收成本从 $O(N)$（全堆）降到接近 $O(N_{\text{young}})$（仅新生代），是 GC 史上最重要的优化之一。
 
-### 2.3 .NET Framework 1.0-2.0：奠基期（2002-2005）
+### 1.3 .NET Framework 1.0-2.0：奠基期（2002-2005）
 
 .NET 1.0 引入了**三代模型**（Gen 0/1/2）与 **LOH**（Large Object Heap，>=85KB 直接进 LOH）。设计由 Patrick Dussud 主导，参考了 Ungar 分代、Boehm-Demers-Weiser 标记清除与 Java HotSpot 的早期设计。
 
@@ -113,20 +70,20 @@ GC.CollectionCount(0);              // 查询 Gen 0 回收次数
 GC.WaitForPendingFinalizers();      // 等待终结器执行
 ```
 
-### 2.4 .NET Framework 3.5-4.5：Server GC 与 Background GC（2007-2012）
+### 1.4 .NET Framework 3.5-4.5：Server GC 与 Background GC（2007-2012）
 
 - **.NET 3.5（2007）**：Server GC 在多核服务器上启用，每核一个堆，并行标记。
 - **.NET 4.0（2010）**：引入 **Background GC**，Gen 2 回收时 Gen 0/1 分配不阻塞。
 - **.NET 4.5（2012）**：Server Background GC，吞吐量进一步提升。
 
-### 2.5 .NET Core 与跨平台时代（2016-2019）
+### 1.5 .NET Core 与跨平台时代（2016-2019）
 
 .NET Core 1.0/2.0（2016-2017）重写 GC 为跨平台实现（C++ 跨平台代码），支持 Linux、macOS。引入 `Memory<T>`/`Span<T>` 降低分配压力。
 
 - **.NET Core 2.1（2018）**：`ArrayPool<T>.Shared`、`MemoryMappedFile` 优化。
 - **.NET Core 3.0（2019）**：Default Server GC on multi-core containers、`GC.AllocateArray` 引入（zero-copy）。
 
-### 2.6 .NET 5-9：现代 GC（2020-2024）
+### 1.6 .NET 5-9：现代 GC（2020-2024）
 
 | 版本 | 年份 | GC 关键改进 |
 |------|------|-------------|
@@ -136,7 +93,7 @@ GC.WaitForPendingFinalizers();      // 等待终结器执行
 | .NET 8 | 2023 | DATAS（Dynamic Adaptive To Application Sizes）正式启用 |
 | .NET 9 | 2024 | GC 暂停时间优化，`GC.CollectAsync` 实验性 API |
 
-### 2.7 学术背景与理论渊源
+### 1.7 学术背景与理论渊源
 
 .NET GC 的设计综合了多门 GC 研究：
 
@@ -148,9 +105,9 @@ GC.WaitForPendingFinalizers();      // 等待终结器执行
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 垃圾回收的数学定义
+### 2.1 垃圾回收的数学定义
 
 设 $H$ 为堆（heap），$R$ 为根集（root set：静态字段、栈局部变量、CPU 寄存器、GCHandle），$\to$ 为对象引用关系。
 
@@ -170,7 +127,7 @@ $$
 
 GC 的目标就是回收 $\text{Garbage}(H, R)$ 占用的内存。
 
-### 3.2 分代的形式化
+### 2.2 分代的形式化
 
 将堆 $H$ 划分为 $n$ 代：
 
@@ -192,7 +149,7 @@ $$
 
 即第 $i$ 代回收会同时回收 $0..i$ 代（带记忆集 remembered set 跨代引用）。
 
-### 3.3 标记清除的形式化
+### 2.3 标记清除的形式化
 
 **标记阶段**（mark phase）：
 
@@ -212,7 +169,7 @@ $$
 \text{Compact}(H) = \text{relocate}(H, \text{freeList}) \text{ to remove fragmentation}
 $$
 
-### 3.4 .NET 的代划分
+### 2.4 .NET 的代划分
 
 ```mermaid
 flowchart TD
@@ -224,7 +181,7 @@ flowchart TD
     MH --> POH[POH pinned objects .NET 5+<br/>collected with Gen 2]
 ```
 
-### 3.5 LOH 与 SOH 的形式化
+### 2.5 LOH 与 SOH 的形式化
 
 设 $S_{\text{threshold}} = 85{,}000$ 字节。
 
@@ -237,7 +194,7 @@ $$
 
 LOH 不默认压缩，避免大对象复制开销。
 
-### 3.6 POH（Pinned Object Heap）
+### 2.6 POH（Pinned Object Heap）
 
 .NET 5 引入 POH：
 
@@ -247,7 +204,7 @@ $$
 
 POH 中的对象不会被 GC 移动，专门为跨 P/Invoke、`fixed` 场景设计，避免污染 SOH。
 
-### 3.7 ECMA-335 的视角
+### 2.7 ECMA-335 的视角
 
 ECMA-335 Partition I §10.2 定义了托管堆（managed heap）的语义：
 
@@ -270,7 +227,7 @@ public static class GC
 }
 ```
 
-### 3.8 弱分代假说的形式化
+### 2.8 弱分代假说的形式化
 
 设 $P(o, t)$ 表示对象 $o$ 在 $t$ 时刻存活的概率。
 
@@ -284,9 +241,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 分代回收的成本模型
+### 3.1 分代回收的成本模型
 
 设堆总大小为 $N$，新生代大小为 $N_0$。全堆回收成本：
 
@@ -312,7 +269,7 @@ $$
 
 当 $\alpha \ll 1$ 且 $|R_{\text{remset}}| \ll N_0$ 时，加速比 $\approx 1/\alpha$。
 
-### 4.2 .NET GC 的标记阶段
+### 3.2 .NET GC 的标记阶段
 
 CoreCLR `gc.cpp` 中标记阶段流程：
 
@@ -336,7 +293,7 @@ function Mark(roots):
                     grey_queue.enqueue(child)
 ```
 
-### 4.3 计划阶段与压缩决策
+### 3.3 计划阶段与压缩决策
 
 GC 在标记后进入**计划阶段**（plan phase），决定哪些代需要压缩：
 
@@ -353,7 +310,7 @@ $$
 
 若 $\text{Fragmentation}(G_i) > \tau_{\text{compact}}$（默认 25%-50%），则压缩。
 
-### 4.4 重定位与固定对象
+### 3.4 重定位与固定对象
 
 压缩需要**移动对象**，因此所有指向被移动对象的引用必须更新。这是通过**重定位表**（relocation table）完成的：
 
@@ -368,7 +325,7 @@ $$
 - 碎片化（fragmentation）：固定对象之间形成"洞"。
 - 大对象固定（如 `byte[]` for P/Invoke）尤其严重。
 
-### 4.5 Server GC vs Workstation GC
+### 3.5 Server GC vs Workstation GC
 
 **Workstation GC**：
 
@@ -391,7 +348,7 @@ $$
 
 分配时按当前线程的堆亲和性（heap affinity）选择 $H_k$。
 
-### 4.6 Background GC
+### 3.6 Background GC
 
 Background GC 在 Gen 2 回收时，Gen 0/1 分配不阻塞。流程：
 
@@ -405,7 +362,7 @@ Background GC 在 Gen 2 回收时，Gen 0/1 分配不阻塞。流程：
 - 长时间运行的服务（Web 服务、长连接）。
 - 不能容忍秒级停顿的应用。
 
-### 4.7 终结器与 Finalization Queue
+### 3.7 终结器与 Finalization Queue
 
 对象有终结器时，GC 不立即回收，而是放入**终结队列**（finalization queue）：
 
@@ -425,7 +382,7 @@ Background GC 在 Gen 2 回收时，Gen 0/1 分配不阻塞。流程：
 - 终结器线程串行执行，可能成为瓶颈。
 - 终结器顺序不确定，无法保证及时释放资源。
 
-### 4.8 LOH 的回收策略
+### 3.8 LOH 的回收策略
 
 LOH 仅在 Gen 2 GC 时回收，且默认不压缩。原因：
 
@@ -437,7 +394,7 @@ LOH 碎片化处理：
 - .NET 8+ 默认在 Gen 2 GC 时压缩 LOH（如果碎片率高）。
 - 旧版本需手动 `GC.Collect(2, GCCollectionMode.Aggressive, blocking: true, compacting: true)`。
 
-### 4.9 POH 的设计动机
+### 3.9 POH 的设计动机
 
 POH（.NET 5+）解决"固定对象污染 SOH"问题：
 
@@ -449,7 +406,7 @@ POH 适用于：
 - P/Invoke 缓冲区（如 `byte[]` for `ReadFile`）。
 - 长生命周期的固定缓冲区（如 `NetworkStream` 的 Socket 缓冲区）。
 
-### 4.10 GC 触发条件
+### 3.10 GC 触发条件
 
 GC 在以下情况触发：
 
@@ -466,9 +423,9 @@ GC 在以下情况触发：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础：查询 GC 状态（C# 12, .NET 8）
+### 4.1 基础：查询 GC 状态（C# 12, .NET 8）
 
 ```csharp
 // File: GcStats.cs
@@ -500,7 +457,7 @@ public static class GcStats
 GcStats.Print();
 ```
 
-### 5.2 企业级：使用 EventSource 监听 GC 事件（.NET 8）
+### 4.2 企业级：使用 EventSource 监听 GC 事件（.NET 8）
 
 ```csharp
 // File: GcEventListener.cs
@@ -537,7 +494,7 @@ using var listener = new GcEventListener();
 // 执行业务代码，GC 事件将被捕获
 ```
 
-### 5.3 自定义对象池：降低 GC 压力（C# 12, .NET 8）
+### 4.3 自定义对象池：降低 GC 压力（C# 12, .NET 8）
 
 ```csharp
 // File: ObjectPool.cs
@@ -597,7 +554,7 @@ public sealed class StringBuilderPool : ObjectPool<System.Text.StringBuilder>
 }
 ```
 
-### 5.4 固定对象：P/Invoke 场景（C# 12, .NET 8）
+### 4.4 固定对象：P/Invoke 场景（C# 12, .NET 8）
 
 ```csharp
 // File: PinnedBuffer.cs
@@ -645,7 +602,7 @@ public static class NativeInterop
 }
 ```
 
-### 5.5 csproj 配置：Server GC 与 Background GC
+### 4.5 csproj 配置：Server GC 与 Background GC
 
 ```xml
 <!-- File: FandexApp.csproj -->
@@ -669,7 +626,7 @@ public static class NativeInterop
 </Project>
 ```
 
-### 5.6 runtimeconfig.json 配置
+### 4.6 runtimeconfig.json 配置
 
 ```json
 {
@@ -687,7 +644,7 @@ public static class NativeInterop
 }
 ```
 
-### 5.7 GC 通知：服务端优雅停机（C# 12, .NET 8）
+### 4.7 GC 通知：服务端优雅停机（C# 12, .NET 8）
 
 ```csharp
 // File: GcNotification.cs
@@ -737,7 +694,7 @@ public static class GcNotification
 }
 ```
 
-### 5.8 NoGCRegion：关键路径禁用 GC（.NET 9）
+### 4.8 NoGCRegion：关键路径禁用 GC（.NET 9）
 
 ```csharp
 // File: CriticalPath.cs
@@ -780,7 +737,7 @@ public static class CriticalPath
 }
 ```
 
-### 5.9 Memory Pressure：模拟非托管内存（C# 12, .NET 8）
+### 4.9 Memory Pressure：模拟非托管内存（C# 12, .NET 8）
 
 ```csharp
 // File: UnmanagedResource.cs
@@ -825,7 +782,7 @@ public sealed class UnmanagedBuffer : IDisposable
 }
 ```
 
-### 5.10 BenchmarkDotNet：测量 GC 分配
+### 4.10 BenchmarkDotNet：测量 GC 分配
 
 ```csharp
 // File: GcBenchmark.cs
@@ -884,9 +841,9 @@ BenchmarkRunner.Run<GcBenchmark>();
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 .NET GC vs Java HotSpot G1/ZGC
+### 5.1 .NET GC vs Java HotSpot G1/ZGC
 
 | 特性 | .NET GC | Java G1 | Java ZGC |
 |------|---------|---------|----------|
@@ -899,7 +856,7 @@ BenchmarkRunner.Run<GcBenchmark>();
 | 大对象 | >=85KB 进 LOH | 进入 Humongous Region | 进入大对象区 |
 | 固定对象 | POH（.NET 5+） | 不支持显式固定 | 不支持显式固定 |
 
-### 6.2 .NET GC vs Go GC
+### 5.2 .NET GC vs Go GC
 
 | 特性 | .NET GC | Go GC |
 |------|---------|-------|
@@ -911,7 +868,7 @@ BenchmarkRunner.Run<GcBenchmark>();
 | 大对象 | LOH | 直接分配大页 |
 | 固定对象 | POH | 不需要（无压缩） |
 
-### 6.3 .NET GC vs V8 Orinoco
+### 5.3 .NET GC vs V8 Orinoco
 
 | 特性 | .NET GC | V8 Orinoco |
 |------|---------|-----------|
@@ -922,7 +879,7 @@ BenchmarkRunner.Run<GcBenchmark>();
 | 增量 | 否 | 是（incremental marking） |
 | 大对象 | LOH | Large Object Space |
 
-### 6.4 .NET GC vs Python 引用计数 + 分代
+### 5.4 .NET GC vs Python 引用计数 + 分代
 
 | 特性 | .NET GC | Python |
 |------|---------|--------|
@@ -933,7 +890,7 @@ BenchmarkRunner.Run<GcBenchmark>();
 | 内存占用 | 较高 | 较高（对象字典 + 计数器） |
 | 固定对象 | 支持 | 不适用 |
 
-### 6.5 综合对比表
+### 5.5 综合对比表
 
 | 语言 | 分代 | 压缩 | 并发 | 增量 | 大对象 | 停顿目标 |
 |------|------|------|------|------|--------|----------|
@@ -946,9 +903,9 @@ BenchmarkRunner.Run<GcBenchmark>();
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：手动调用 GC.Collect()
+### 6.1 陷阱：手动调用 GC.Collect()
 
 **问题**：开发者误以为手动调用 `GC.Collect()` 能"清理内存"。
 
@@ -964,7 +921,7 @@ BenchmarkRunner.Run<GcBenchmark>();
   - 大量短寿命对象 + 关键路径前。
   - 用户显式触发"释放内存"按钮。
 
-### 7.2 陷阱：大对象滥用 LOH
+### 6.2 陷阱：大对象滥用 LOH
 
 **问题**：分配 85KB+ 数组频繁触发 LOH 分配。
 
@@ -993,7 +950,7 @@ finally
 }
 ```
 
-### 7.3 陷阱：终结器滥用
+### 6.3 陷阱：终结器滥用
 
 **问题**：所有类都加 `~Finalize()`。
 
@@ -1034,7 +991,7 @@ public sealed class ManagedResource : IDisposable
 }
 ```
 
-### 7.4 陷阱：fixed 语句滥用
+### 6.4 陷阱：fixed 语句滥用
 
 **问题**：在热路径中频繁 `fixed`。
 
@@ -1068,7 +1025,7 @@ unsafe
 }
 ```
 
-### 7.5 陷阱：async void 引发的 GC 异常
+### 6.5 陷阱：async void 引发的 GC 异常
 
 **问题**：`async void` 异常逃逸到 `SynchronizationContext`，可能引发终结器与状态机异常。
 
@@ -1076,7 +1033,7 @@ unsafe
 - 避免使用 `async void`（事件处理器除外）。
 - 使用 `async Task` 配合 `try/catch`。
 
-### 7.6 陷阱：ValueTask 多次 await
+### 6.6 陷阱：ValueTask 多次 await
 
 **问题**：`ValueTask` 是结构体，多次 await 行为未定义。
 
@@ -1099,7 +1056,7 @@ int r1 = await task;
 int r2 = await task; // Task 可多次 await
 ```
 
-### 7.7 陷阱：忽略 CancellationToken
+### 6.7 陷阱：忽略 CancellationToken
 
 **问题**：异步操作无超时，导致任务长时间挂起，相关对象无法回收。
 
@@ -1123,7 +1080,7 @@ public async Task<string> FetchAsync(string url, CancellationToken ct = default)
 }
 ```
 
-### 7.8 陷阱：在 SOH 分配大字符串
+### 6.8 陷阱：在 SOH 分配大字符串
 
 **问题**：`string.Concat`、`StringBuilder.ToString()` 频繁分配大字符串。
 
@@ -1132,7 +1089,7 @@ public async Task<string> FetchAsync(string url, CancellationToken ct = default)
 - 使用 `ArrayPool<char>.Shared` 复用字符缓冲区。
 - 大字符串切片使用 `ReadOnlySpan<char>`。
 
-### 7.9 陷阱：忽略 LOH 压缩
+### 6.9 陷阱：忽略 LOH 压缩
 
 **问题**：长期运行服务 LOH 碎片化严重，OOM。
 
@@ -1141,7 +1098,7 @@ public async Task<string> FetchAsync(string url, CancellationToken ct = default)
 - 旧版本定期调用 `GC.Collect(2, GCCollectionMode.Aggressive, blocking: true, compacting: true)`。
 - 监控 `GCMemoryInfo.FragmentedBytes` 与 `HeapSizeBytes` 比例。
 
-### 7.10 陷阱：误用 WeakReference
+### 6.10 陷阱：误用 WeakReference
 
 **问题**：`WeakReference` 用于缓存，但缓存策略不当导致频繁 GC。
 
@@ -1152,9 +1109,9 @@ public async Task<string> FetchAsync(string url, CancellationToken ct = default)
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 csproj 配置示例
+### 7.1 csproj 配置示例
 
 ```xml
 <!-- File: FandexServer.csproj -->
@@ -1179,7 +1136,7 @@ public async Task<string> FetchAsync(string url, CancellationToken ct = default)
 </Project>
 ```
 
-### 8.2 容器环境配置
+### 7.2 容器环境配置
 
 ```dockerfile
 # Dockerfile
@@ -1196,7 +1153,7 @@ ENV DOTNET_GCConcurrent=1
 ENV DOTNET_GCHeapCount=4
 ```
 
-### 8.3 K8s 部署配置
+### 7.3 K8s 部署配置
 
 ```yaml
 # k8s-deployment.yaml
@@ -1226,9 +1183,9 @@ spec:
           value: "1"
 ```
 
-### 8.4 性能诊断工具
+### 7.4 性能诊断工具
 
-#### 8.4.1 dotnet-counters
+#### 7.4.1 dotnet-counters
 
 ```bash
 # 实时监控 GC 指标
@@ -1246,7 +1203,7 @@ System.Runtime
     # of Assemblies Loaded          : 142
 ```
 
-#### 8.4.2 dotnet-trace
+#### 7.4.2 dotnet-trace
 
 ```bash
 # 捕获 GC 事件 30 秒
@@ -1256,7 +1213,7 @@ dotnet-trace collect -p <pid> --providers Microsoft-Windows-DotNETRuntime:0x1:1 
 dotnet-trace convert trace.nettrace --format speedscope
 ```
 
-#### 8.4.3 PerfView
+#### 7.4.3 PerfView
 
 ```bash
 # Windows 专用，强大但复杂
@@ -1264,7 +1221,7 @@ PerfView.exe /OnlyProviders=*Microsoft-Windows-DotNETRuntime:0x1:5 collect
 # 收集后查看 GC Stats 视图
 ```
 
-#### 8.4.4 dotnet-dump
+#### 7.4.4 dotnet-dump
 
 ```bash
 # 捕获堆转储
@@ -1276,9 +1233,9 @@ dotnet-dump analyze dump.dmp
 > gcroot <address>
 ```
 
-### 8.5 调试技巧
+### 7.5 调试技巧
 
-#### 8.5.1 WinDbg + SOS
+#### 7.5.1 WinDbg + SOS
 
 ```
 0:000> .loadby sos coreclr
@@ -1306,7 +1263,7 @@ Thread 1234:
     -> 0000020d12345678(System.String)
 ```
 
-#### 8.5.2 lldb + SOS（Linux）
+#### 7.5.2 lldb + SOS（Linux）
 
 ```bash
 lldb dotnet -p <pid>
@@ -1315,7 +1272,7 @@ lldb dotnet -p <pid>
 (lldb) gcroot 0x0000020d12345678
 ```
 
-### 8.6 GC 调优决策树
+### 7.6 GC 调优决策树
 
 ```mermaid
 flowchart TD
@@ -1358,9 +1315,9 @@ flowchart TD
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：ASP.NET Core 服务的 GC 优化
+### 8.1 案例一：ASP.NET Core 服务的 GC 优化
 
 **场景**：某电商 API 服务，QPS 5000，P99 延迟 200ms，但 GC 停顿导致偶发 2s 延迟。
 
@@ -1381,7 +1338,7 @@ flowchart TD
 - P99 延迟从 2s 降到 50ms。
 - LOH 碎片化从 40% 降到 5%。
 
-### 9.2 案例二：游戏引擎的 GC 停顿优化
+### 8.2 案例二：游戏引擎的 GC 停顿优化
 
 **场景**：Unity 游戏每帧 16ms 预算，但 Gen 0 GC 偶发占用 5ms。
 
@@ -1400,7 +1357,7 @@ flowchart TD
 - Gen 0 GC 频率从每 60 帧（1s）降到每 600 帧（10s）。
 - 帧停顿从 5ms 降到 < 0.5ms。
 
-### 9.3 案例三：EF Core 的 GC 压力
+### 8.3 案例三：EF Core 的 GC 压力
 
 **场景**：EF Core 查询大量实体，内存暴涨，GC 频繁。
 
@@ -1430,7 +1387,7 @@ await foreach (var user in _context.Users
 }
 ```
 
-### 9.4 案例四：Socket 缓冲区的 POH
+### 8.4 案例四：Socket 缓冲区的 POH
 
 **场景**：高性能 TCP 服务器，每秒 10 万连接，Socket 缓冲区分配压力大。
 
@@ -1468,7 +1425,7 @@ public class SocketServer
 }
 ```
 
-### 9.5 案例五：.NET Runtime 源码中的 GC 实现
+### 8.5 案例五：.NET Runtime 源码中的 GC 实现
 
 CoreCLR `gc.cpp` 中 Gen 0 GC 的核心流程（简化）：
 
@@ -1515,7 +1472,7 @@ void mark_phase()
 }
 ```
 
-### 9.6 案例六：GC 与 Docker 内存限制
+### 8.6 案例六：GC 与 Docker 内存限制
 
 **场景**：Docker 容器限制 1GB 内存，但 .NET 进程 OOM。
 
@@ -1697,7 +1654,7 @@ public sealed class GcMonitor : IDisposable
 
 ---
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题目 9**：为什么 .NET GC 选择 3 代而不是 2 代或 5 代？
 
@@ -1729,9 +1686,9 @@ public sealed class GcMonitor : IDisposable
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 经典论文
+### 10.1 经典论文
 
 [1] D. Ungar. 1984. Generation scavenging: A non-disruptive high performance storage reclamation algorithm. In *Proceedings of the 1984 ACM Symposium on LISP and Functional Programming* (LFP '84). ACM, New York, NY, USA, 157-164. DOI: https://doi.org/10.1145/800055.802042
 
@@ -1743,7 +1700,7 @@ public sealed class GcMonitor : IDisposable
 
 [5] C. Click, G. Tene, and M. Wolf. 2005. The pauseless GC algorithm. In *Proceedings of the 1st ACM/USENIX International Conference on Virtual Execution Environments* (VEE '05). ACM, New York, NY, USA, 46-56. DOI: https://doi.org/10.1145/1064979.1064988
 
-### 11.2 .NET 官方文档
+### 10.2 .NET 官方文档
 
 [6] Microsoft. 2024. *Garbage collection in .NET*. .NET documentation. Available: https://learn.microsoft.com/dotnet/standard/garbage-collection/
 
@@ -1755,7 +1712,7 @@ public sealed class GcMonitor : IDisposable
 
 [10] Microsoft. 2024. *Background garbage collection*. .NET documentation. Available: https://learn.microsoft.com/dotnet/standard/garbage-collection/background-gc
 
-### 11.3 CoreCLR 源码与设计
+### 10.3 CoreCLR 源码与设计
 
 [11] Microsoft. 2024. *CoreCLR GC source code*. GitHub repository. Available: https://github.com/dotnet/runtime/tree/main/src/coreclr/gc
 
@@ -1767,13 +1724,13 @@ public sealed class GcMonitor : IDisposable
 
 [15] M. Morrison. 2018. *GC internals - Sweep phase*. .NET Runtime blog. Available: https://devblogs.microsoft.com/dotnet/gc-internals-sweep-phase/
 
-### 11.4 ECMA 规范
+### 10.4 ECMA 规范
 
 [16] Ecma International. 2012. *ECMA-335: Common Language Infrastructure (CLI) Standard*, 6th edition. Geneva, Switzerland. Available: https://www.ecma-international.org/publications/standards/Ecma-335.htm
 
 [17] Ecma International. 2023. *ECMA-334: C# Language Specification*, 6th edition. Geneva, Switzerland. Available: https://www.ecma-international.org/publications/standards/Ecma-334.htm
 
-### 11.5 性能与诊断
+### 10.5 性能与诊断
 
 [18] S. Toub. 2020. *PerfView: Performance Analysis Tool*. Microsoft. Available: https://github.com/microsoft/perfview
 
@@ -1783,7 +1740,7 @@ public sealed class GcMonitor : IDisposable
 
 [21] Microsoft. 2024. *dotnet-dump*. .NET diagnostic tools. Available: https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-dump
 
-### 11.6 .NET 5+/8+ 新特性
+### 10.6 .NET 5+/8+ 新特性
 
 [22] M. Coulson. 2020. *DATAS: Dynamic Adaptation To Application Sizes*. .NET Runtime blog. Available: https://devblogs.microsoft.com/dotnet/dynamic-adaptation-to-application-sizes/
 
@@ -1791,7 +1748,7 @@ public sealed class GcMonitor : IDisposable
 
 [24] M. Morrison. 2023. *GC improvements in .NET 8*. .NET Runtime blog. Available: https://devblogs.microsoft.com/dotnet/gc-improvements-in-net-8/
 
-### 11.7 学术教材
+### 10.7 学术教材
 
 [25] R. Jones, A. Hosking, and E. Moss. 2011. *The Garbage Collection Handbook: The Art of Automatic Memory Management*. Chapman & Hall/CRC, Boca Raton, FL, USA. ISBN: 978-1420082791
 
@@ -1799,22 +1756,22 @@ public sealed class GcMonitor : IDisposable
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《The Garbage Collection Handbook》**（Jones, Hosking, Moss）：GC 算法圣经，涵盖所有主流 GC 算法。
 - **《Pro .NET Memory Management》**（Konrad Kokosa）：.NET 内存管理深度指南，含 CoreCLR 源码分析。
 - **《Writing High-Performance .NET Code》**（Ben Watson）：.NET 性能优化实战，含 GC 调优章节。
 - **《CLR via C#》**（Jeffrey Richter）：CLR 经典教材，第 21 章详述 GC。
 
-### 12.2 论文
+### 11.2 论文
 
 - **Wilson, Johnstone, Neely, Boles (1992)**: *Dynamic Storage Allocation: A Survey and Critical Review* —— 内存分配综述。
 - **Jones, Ryder (2008)**: *A Study of Java Object Demographics* —— 对象生命周期统计研究。
 - **Yang, Leung, Soffa (2014)**: *Generational Garbage Collection* —— 分代 GC 综述。
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **.NET Runtime GitHub**: https://github.com/dotnet/runtime
 - **CoreCLR GC 源码**: https://github.com/dotnet/runtime/tree/main/src/coreclr/gc
@@ -1822,14 +1779,14 @@ public sealed class GcMonitor : IDisposable
 - **Maoni Stephens GC 博客**: https://devblogs.microsoft.com/dotnet/author/maoni/
 - **Pro .NET Memory Management 配套代码**: https://github.com/sidristij/dotnet-memory
 
-### 12.4 视频与课程
+### 11.4 视频与课程
 
 - **MIT 6.1020 Software Construction**: 内存管理与 GC 章节。
 - **Stanford CS107 Programming Paradigms**: 内存模型与 GC。
 - **.NET Performance Tuning (Pluralsight)**: 实战性能调优。
 - **Maoni0's GC Talks (YouTube)**: .NET GC 团队的演讲合集。
 
-### 12.5 工具
+### 11.5 工具
 
 - **PerfView**: Windows 专用，强大但复杂。
 - **dotnet-counters**: 实时计数器监控。

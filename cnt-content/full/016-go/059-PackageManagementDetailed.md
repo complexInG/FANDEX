@@ -14,53 +14,6 @@ prerequisites:
   - go/概述与环境配置
 ---
 
-## 学习目标
-
-本章节对标 MIT 6.172（Performance Engineering of Software Systems）与 Stanford CS107E（Computer Organization and Systems）的工具链教学水准，融合 Go Modules 的工程实践细节。完成本章学习后，读者应能够达成以下 Bloom 认知层级目标：
-
-### Remember（记忆）
-
-- **R1**：复述 Go 包管理的演进历史（GOPATH → dep → vgo → Go Modules）
-- **R2**：列出 `go.mod` 文件的全部指令（`module`、`go`、`require`、`replace`、`exclude`、`retract`）
-- **R3**：背诵语义化版本（SemVer）规范与 Go 的 Major 版本兼容规则
-- **R4**：识别 `go.sum`、`go.work`、`vendor/modules.txt` 三类辅助文件的作用
-
-### Understand（理解）
-
-- **U1**：解释最小版本选择（MVS）与 SAT 求解器的差异
-- **U2**：阐述 `replace` 与 `exclude` 指令的语义边界
-- **U3**：说明 GOPROXY 链式代理与 GOPRIVATE/GONOSUMCHECK 的协作
-- **U4**：推演 `go mod tidy` 在依赖图变更时的修复行为
-
-### Apply（应用）
-
-- **A1**：使用 `go mod init`、`go get`、`go mod tidy` 管理项目依赖
-- **A2**：通过 `replace` 实现本地多模块开发
-- **A3**：使用 `go work` 编排 monorepo 中的多模块构建
-- **A4**：配置 GOPROXY/GOPRIVATE 处理私有模块与镜像源
-
-### Analyze（分析）
-
-- **An1**：分析依赖冲突的根因（ diamond dependency problem）
-- **An2**：对比 Go MVS 与 npm/cargo 的版本选择算法
-- **An3**：解构 `go.sum` 的校验和机制（zip hash 与 mod hash）
-- **An4**：剖析 vendor 模式与 module 模式的构建差异
-
-### Evaluate（评估）
-
-- **E1**：评估 `replace` 在生产环境的安全性（不传递到下游）
-- **E2**：评判 monorepo 与 multi-repo 在 Go 工具链下的取舍
-- **E3**：权衡 vendor 模式与 module cache 模式的优劣
-- **E4**：评估 Go Modules 与 Rust cargo、Java Maven 的设计哲学
-
-### Create（创造）
-
-- **C1**：设计一个企业级 monorepo 的 go.work 拓扑结构
-- **C2**：实现一个依赖安全扫描工具（基于 SBOM 与 CVE 数据库）
-- **C3**：构建一个 CI/CD 依赖锁定与升级流水线
-- **C4**：为多版本 API 共存设计 module path 与 build tag 方案
-
----
 
 ## 历史动机与发展脉络
 
@@ -359,7 +312,7 @@ import (
 )
 ```
 
-### 2. Module Graph Pruning 的性能模型
+### 1. Module Graph Pruning 的性能模型
 
 Go 1.17 之前，构建需要加载完整的 module graph（所有间接依赖的 go.mod）。
 
@@ -370,7 +323,7 @@ Go 1.17 之前，构建需要加载完整的 module graph（所有间接依赖�
 
 实测在大型项目中（依赖数百个模块），构建时间从 ~30s 降到 ~5s。
 
-### 3. replace 指令的传递性分析
+### 2. replace 指令的传递性分析
 
 `replace` 指令的传递规则：
 
@@ -390,7 +343,7 @@ $$
 
 形式化：若库 A 的 `go.mod` 中有 `replace B => ../B-local`，当应用 M 依赖 A 时，M 构建时使用原始 B（而非 A 的 replace）。
 
-### 4. GOPROXY 链式代理的失败模型
+### 3. GOPROXY 链式代理的失败模型
 
 GOPROXY 支持逗号分隔的代理列表，依次尝试：
 
@@ -411,7 +364,7 @@ $$
 
 注意：仅 404/410 触发下一代理；500/503 等服务端错误不会触发 fallback。
 
-### 5. workspace 模式的优先级
+### 4. workspace 模式的优先级
 
 当 `go.work` 存在时，版本选择优先级：
 
@@ -1078,7 +1031,7 @@ go test -race -cover ./...
 go mod vendor
 ```
 
-### 2. CI/CD 配置
+### 1. CI/CD 配置
 
 ```yaml
 # .github/workflows/ci.yml
@@ -1124,7 +1077,7 @@ jobs:
           file: ./coverage.out
 ```
 
-### 3. 发布流程
+### 2. 发布流程
 
 ```bash
 #!/bin/bash
@@ -1167,7 +1120,7 @@ git push origin $VERSION
 gh release create $VERSION --generate-notes
 ```
 
-### 4. 私有模块代理搭建
+### 3. 私有模块代理搭建
 
 企业内部搭建 Athens（Go module proxy 服务器）：
 
@@ -1198,7 +1151,7 @@ go env -w GOPROXY=http://athens.internal.fandex.com:3000,direct
 go env -w GOPRIVATE=github.com/fandex/*
 ```
 
-### 5. 依赖分析与监控
+### 4. 依赖分析与监控
 
 ```bash
 # 查看依赖树
@@ -1218,7 +1171,7 @@ go install github.com/psampaz/go-mod-outdated@latest
 go list -m -u all | go-mod-outdated -update -direct
 ```
 
-### 6. 多版本共存（高级）
+### 5. 多版本共存（高级）
 
 当一个项目需要同时使用 v1 与 v2 的库：
 
@@ -1251,7 +1204,7 @@ func main() {
 }
 ```
 
-### 7. Build Tag 与文件分隔（v1/v2 共存方案 2）
+### 6. Build Tag 与文件分隔（v1/v2 共存方案 2）
 
 ```go
 //go:build !v2
@@ -1277,7 +1230,7 @@ const Version = "v2"
 go build -tags v2 ./...
 ```
 
-### 8. 调试技巧
+### 7. 调试技巧
 
 #### 查看构建时使用的版本
 

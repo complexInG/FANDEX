@@ -15,6 +15,7 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
+
 # 路由跳转与路由栈 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
@@ -91,18 +92,7 @@ Web 路由(History API)与 HarmonyOS 路由有相似之处,但实现机制不同
 - **模块化**——通过命名路由解耦页面引用,支持动态加载模块
 - **可测试性**——声明式路由(Navigation)更易进行单元测试与状态快照
 
-## 2. 学习目标
-
-完成本章学习后,读者应能够:
-
-1. **概念层面**——准确解释路由栈的工作原理,以及 `pushUrl`、`replaceUrl`、`back` 三者的区别
-2. **代码层面**——熟练使用 `@ohos.router` API 实现页面跳转、参数传递、返回控制
-3. **架构层面**——理解何时使用命令式 router API,何时使用声明式 Navigation 组件
-4. **进阶应用**——掌握 `RouterMode.Single`、命名路由、动态路由、深度链接等高级特性
-5. **性能优化**——能够通过路由预加载、参数优化、栈清理等手段提升应用性能
-6. **调试排错**——能够诊断路由栈溢出、参数丢失、白屏等常见问题
-
-## 3. 前置知识
+## 2. 前置知识
 
 阅读本章前,建议读者具备以下基础:
 
@@ -111,9 +101,9 @@ Web 路由(History API)与 HarmonyOS 路由有相似之处,但实现机制不同
 - **ArkTS 异步**——熟悉 `async/await`、Promise,因为路由跳转多为异步操作
 - **Stage 模型**——了解 UIAbility、windowStage 等基础概念
 
-## 4. 核心概念
+## 3. 核心概念
 
-### 4.1 路由 API 总览
+### 3.1 路由 API 总览
 
 HarmonyOS 提供 `@ohos.router` 模块作为命令式路由 API,核心方法如下:
 
@@ -131,7 +121,7 @@ HarmonyOS 提供 `@ohos.router` 模块作为命令式路由 API,核心方法如�
 | `router.hideAlertBeforeBackPage()` | 隐藏返回确认弹窗 | - | 否 |
 | `router.getParams()` | 获取上一页传递的参数 | - | 否 |
 
-### 4.2 路由配置 `main_pages.json`
+### 3.2 路由配置 `main_pages.json`
 
 HarmonyOS 应用启动时,会从 `resources/base/profile/main_pages.json` 读取路由表,声明所有可访问的页面路径:
 
@@ -154,7 +144,7 @@ HarmonyOS 应用启动时,会从 `resources/base/profile/main_pages.json` 读取
 - 未在 `main_pages.json` 中声明的页面无法被 `router.pushUrl` 访问
 - 路由跳转的 `url` 参数必须与 `main_pages.json` 中的路径完全匹配
 
-### 4.3 `router.pushUrl` 压栈跳转
+### 3.3 `router.pushUrl` 压栈跳转
 
 `pushUrl` 是最常用的路由跳转方法,将新页面压入路由栈,保留原页面在栈中,支持返回。
 
@@ -203,7 +193,7 @@ async function goToDetail() {
 | `url` | `string` | 是 | 目标页面路径(与 `main_pages.json` 中声明一致) |
 | `params` | `object` | 否 | 传递给目标页面的参数,任意可序列化对象 |
 
-### 4.4 `router.replaceUrl` 替换跳转
+### 3.4 `router.replaceUrl` 替换跳转
 
 `replaceUrl` 替换栈顶页面,**不增加栈深度**,常用于"不可返回"的场景,如登录成功后跳转首页。
 
@@ -248,7 +238,7 @@ async function onSplashFinished() {
 | 表单提交 → 结果页 | `replaceUrl` | 提交后不应返回表单 |
 | 引导页 → 主页 | `replaceUrl` | 引导完成后不应返回引导页 |
 
-### 4.5 `router.back` 返回
+### 3.5 `router.back` 返回
 
 `back` 方法用于返回上一页或指定页面。如果不传参数,默认返回上一页。
 
@@ -275,7 +265,7 @@ router.back({ url: 'pages/Home' });
 - `back` 是**弹栈**操作,栈深度减少
 - `pushUrl` 是**压栈**操作,栈深度增加
 
-### 4.6 路由参数传递
+### 3.6 路由参数传递
 
 路由参数是页面间通信的主要方式。在源页面通过 `params` 传递,在目标页面通过 `router.getParams()` 接收。
 
@@ -363,7 +353,7 @@ struct DetailPage {
 - 支持 `number`、`string`、`boolean`、`null`、`undefined`、普通对象、数组
 - 对象深度无限制,但建议控制在 3 层以内
 
-### 4.7 `RouterMode` 路由模式
+### 3.7 `RouterMode` 路由模式
 
 `pushUrl` 与 `replaceUrl` 都接受可选的 `RouterMode` 参数,决定页面的入栈行为:
 
@@ -403,7 +393,7 @@ router.pushUrl({ url: 'pages/Detail' }, router.RouterMode.Single);
 - **详情页**:每次查看不同内容应创建新实例——使用 `Standard` 模式
 - **搜索结果页**:保留搜索历史——使用 `Standard` 模式
 
-### 4.8 路由与组件生命周期的协作
+### 3.8 路由与组件生命周期的协作
 
 路由跳转触发的组件生命周期变化是理解路由行为的关键。
 
@@ -454,7 +444,7 @@ router.pushUrl({ url: 'pages/List' }, RouterMode.Single)
 [List] onPageShow  (List 重新可见,但 aboutToAppear 不触发,因为 List 未被销毁)
 ```
 
-### 4.9 路由栈状态查询
+### 3.9 路由栈状态查询
 
 `router` 模块提供了查询路由栈状态的方法,用于诊断与监控:
 
@@ -486,7 +476,7 @@ stack.forEach((s: router.RouterState, i: number) => {
 | `name` | `string` | 页面名称 |
 | `path` | `string` | 页面路径(如 `pages/Detail`) |
 
-### 4.10 返回前确认弹窗
+### 3.10 返回前确认弹窗
 
 `router.showAlertBeforeBackPage` 用于在返回前显示确认弹窗,常用于表单未保存提示。
 
@@ -541,7 +531,7 @@ struct EditFormPage {
 }
 ```
 
-### 4.11 Navigation 声明式路由(API 10+)
+### 3.11 Navigation 声明式路由(API 10+)
 
 `Navigation` 组件是 API 10 引入的声明式路由方案,提供了更灵活的路由管理能力。与命令式 `router` API 相比,`Navigation` 通过组件嵌套描述路由结构,更易于组合与测试。
 
@@ -634,7 +624,7 @@ struct SettingsPage {
 | 跨平台一致性 | 仅 HarmonyOS | 仅 HarmonyOS |
 | 推荐度 | 旧项目兼容 | 新项目首选 |
 
-### 4.12 命名路由
+### 3.12 命名路由
 
 命名路由(named route)允许通过名称而非路径引用页面,提升代码可读性与可维护性。
 
@@ -667,9 +657,9 @@ navigate('detail', { id: 123 })
 3. **可读性**——`navigate('detail')` 比 `router.pushUrl({ url: 'pages/Detail' })` 更清晰
 4. **可扩展**——易于添加路由守卫、日志、权限检查等中间件
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 示例一:基础列表-详情跳转
+### 4.1 示例一:基础列表-详情跳转
 
 ```typescript
 // pages/List.ets
@@ -786,7 +776,7 @@ struct ArticleDetailPage {
 }
 ```
 
-### 5.2 示例二:登录-首页-退出流程
+### 4.2 示例二:登录-首页-退出流程
 
 展示登录成功后跳转首页,退出时清空栈的完整流程。
 
@@ -930,7 +920,7 @@ struct HomePage {
 }
 ```
 
-### 5.3 示例三:返回指定页面
+### 4.3 示例三:返回指定页面
 
 展示如何从深层页面返回到中间页面,而非逐层返回。
 
@@ -967,7 +957,7 @@ async function mockCreateOrder(): Promise<void> {
 }
 ```
 
-### 5.4 示例四:Navigation 声明式路由
+### 4.4 示例四:Navigation 声明式路由
 
 展示使用 `Navigation` 组件实现完整的多页面应用。
 
@@ -1058,11 +1048,11 @@ struct DetailPageContent {
 }
 ```
 
-## 6. 实战案例:电商应用路由架构
+## 5. 实战案例:电商应用路由架构
 
 本节通过一个电商应用的完整路由架构,展示如何在实际项目中组织路由代码。
 
-### 6.1 需求分析
+### 5.1 需求分析
 
 一个典型电商应用包含以下页面:
 - 启动页(Splash)
@@ -1083,7 +1073,7 @@ struct DetailPageContent {
 - 结账完成后清空购物车相关页面,返回首页
 - 设置页使用 `Single` 模式避免重复创建
 
-### 6.2 路由表设计
+### 5.2 路由表设计
 
 ```typescript
 // common/RouteTable.ets
@@ -1101,7 +1091,7 @@ export class RouteTable {
 }
 ```
 
-### 6.3 路由管理器
+### 5.3 路由管理器
 
 ```typescript
 // common/RouterManager.ets
@@ -1171,7 +1161,7 @@ export class RouterManager {
 }
 ```
 
-### 6.4 启动流程
+### 5.4 启动流程
 
 ```typescript
 // pages/Splash.ets
@@ -1218,7 +1208,7 @@ struct SplashPage {
 }
 ```
 
-### 6.5 商品详情页(支持多入口跳转)
+### 5.5 商品详情页(支持多入口跳转)
 
 ```typescript
 // pages/Detail.ets
@@ -1294,7 +1284,7 @@ struct ProductDetailPage {
 interface Product { id: number; name: string; price: number; }
 ```
 
-### 6.6 结账完成清空栈
+### 5.6 结账完成清空栈
 
 ```typescript
 // pages/Checkout.ets
@@ -1334,9 +1324,9 @@ struct CheckoutPage {
 }
 ```
 
-## 7. 进阶技巧
+## 6. 进阶技巧
 
-### 7.1 路由守卫
+### 6.1 路由守卫
 
 实现类似 Vue Router 的前置守卫,在跳转前进行权限检查。
 
@@ -1403,7 +1393,7 @@ function checkLoginStatus(): boolean {
 guardRouter.push('pages/Home');
 ```
 
-### 7.2 路由预加载
+### 6.2 路由预加载
 
 预加载即将跳转的页面资源,减少首次渲染耗时。
 
@@ -1445,7 +1435,7 @@ struct ListPage {
 }
 ```
 
-### 7.3 深度链接
+### 6.3 深度链接
 
 通过 URI scheme 或统一资源标识符从外部跳转到应用内特定页面。
 
@@ -1490,7 +1480,7 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-### 7.4 路由跳转动画
+### 6.4 路由跳转动画
 
 自定义路由跳转动画,提升用户体验。
 
@@ -1510,7 +1500,7 @@ router.pushUrl({
 });
 ```
 
-### 7.5 跨 Ability 路由
+### 6.5 跨 Ability 路由
 
 跨 UIAbility 跳转使用 `Want` 与 `startAbility`。
 
@@ -1532,9 +1522,9 @@ async function startOtherAbility(context: common.UIAbilityContext) {
 }
 ```
 
-## 8. 性能优化
+## 7. 性能优化
 
-### 8.1 合理使用 `RouterMode.Single`
+### 7.1 合理使用 `RouterMode.Single`
 
 避免重复创建相同页面,减少内存占用与启动耗时。
 
@@ -1548,7 +1538,7 @@ router.pushUrl({ url: 'pages/Settings' }, router.RouterMode.Single);
 // 栈变为 [Home, Settings]
 ```
 
-### 8.2 路由栈深度控制
+### 7.2 路由栈深度控制
 
 路由栈过深会消耗大量内存,需要主动清理。
 
@@ -1572,7 +1562,7 @@ router.pushUrl({ url: 'pages/Detail' }).then(() => {
 });
 ```
 
-### 8.3 参数大小优化
+### 7.3 参数大小优化
 
 避免在路由参数中传递大对象,使用全局状态或本地存储替代。
 
@@ -1600,7 +1590,7 @@ async aboutToAppear() {
 }
 ```
 
-### 8.4 避免在 `build()` 中执行路由跳转
+### 7.4 避免在 `build()` 中执行路由跳转
 
 `build()` 必须保持纯净,路由跳转应在事件回调中触发。
 
@@ -1629,7 +1619,7 @@ struct GoodPage {
 }
 ```
 
-### 8.5 LazyForEach 与路由跳转的协作
+### 7.5 LazyForEach 与路由跳转的协作
 
 长列表中点击跳转时,确保点击事件正确绑定。
 
@@ -1665,9 +1655,9 @@ interface MyData { id: string; title: string; }
 import router from '@ohos.router';
 ```
 
-## 9. 调试排错
+## 8. 调试排错
 
-### 9.1 路由栈溢出
+### 8.1 路由栈溢出
 
 **症状**:`router.pushUrl` 抛出异常,提示栈满。
 
@@ -1693,7 +1683,7 @@ function safePush(url: string, params?: Record<string, unknown>): Promise<void> 
 }
 ```
 
-### 9.2 参数丢失
+### 8.2 参数丢失
 
 **症状**:目标页面 `router.getParams()` 返回 `null` 或 `undefined`。
 
@@ -1721,7 +1711,7 @@ aboutToAppear() {
 }
 ```
 
-### 9.3 页面白屏
+### 8.3 页面白屏
 
 **症状**:路由跳转后页面空白,无报错。
 
@@ -1758,7 +1748,7 @@ struct DebugPage {
 }
 ```
 
-### 9.4 返回键无效
+### 8.4 返回键无效
 
 **症状**:点击返回键无反应或行为异常。
 
@@ -1795,9 +1785,9 @@ struct DebugBackPage {
 import router from '@ohos.router';
 ```
 
-## 10. 最佳实践
+## 9. 最佳实践
 
-### 10.1 路由设计原则
+### 9.1 路由设计原则
 
 1. **单一入口**——所有跳转通过路由管理器,便于统一拦截与日志
 2. **命名路由**——使用常量定义路径,避免硬编码字符串
@@ -1805,7 +1795,7 @@ import router from '@ohos.router';
 4. **明确模式**——每个跳转明确使用 `pushUrl` 或 `replaceUrl`,避免混淆
 5. **栈深度监控**——长流程定期清理栈
 
-### 10.2 路由参数规范
+### 9.2 路由参数规范
 
 ```typescript
 // 反例:参数无类型
@@ -1840,7 +1830,7 @@ struct DetailPage {
 }
 ```
 
-### 10.3 模块化路由
+### 9.3 模块化路由
 
 将路由按业务模块拆分,便于团队协作。
 
@@ -1867,7 +1857,7 @@ export class OrderRoutes {
 }
 ```
 
-### 10.4 路由跳转日志
+### 9.4 路由跳转日志
 
 在路由管理器中添加日志,便于调试与监控。
 
@@ -1887,7 +1877,7 @@ export class RouterManager {
 }
 ```
 
-### 10.5 状态恢复
+### 9.5 状态恢复
 
 应用被系统杀死后重启,需恢复用户上次浏览的页面。
 
@@ -1935,9 +1925,9 @@ struct SplashPage {
 }
 ```
 
-## 11. 总结回顾
+## 10. 总结回顾
 
-### 11.1 核心知识点回顾
+### 10.1 核心知识点回顾
 
 1. **路由栈模型**——LIFO 结构,`pushUrl` 压栈、`back` 弹栈、`replaceUrl` 替换
 2. **三种跳转方法**——`pushUrl`(可返回)、`replaceUrl`(不可返回)、`back`(返回)
@@ -1948,7 +1938,7 @@ struct SplashPage {
 7. **Navigation 组件**——API 10+ 推荐的声明式路由方案
 8. **命名路由**——通过常量定义路径,提升可维护性
 
-### 11.2 速查表
+### 10.2 速查表
 
 | 场景 | 推荐方法 | 注意事项 |
 | --- | --- | --- |
@@ -1962,7 +1952,7 @@ struct SplashPage {
 | 声明式路由 | `Navigation` 组件 | API 10+ 推荐 |
 | 深度链接 | URI scheme | 在 UIAbility 中处理 |
 
-### 11.3 常见错误清单
+### 10.3 常见错误清单
 
 1. **路径拼写错误**——大小写敏感,必须与 `main_pages.json` 完全匹配
 2. **参数不可序列化**——包含函数或循环引用导致丢失
@@ -1975,7 +1965,7 @@ struct SplashPage {
 9. **返回键拦截忘记返回 `true`**——导致系统执行默认行为
 10. **未清理路由栈**——长流程后栈过深,影响性能
 
-### 11.4 进阶学习路径
+### 10.4 进阶学习路径
 
 1. **学习 Navigation 组件**——掌握声明式路由的高级用法
 2. **研究 NavPathStack**——理解声明式路由的状态管理
@@ -1983,9 +1973,9 @@ struct SplashPage {
 4. **研究分布式路由**——跨设备路由跳转
 5. **学习路由动画**——自定义转场动画
 
-## 12. 参考资料
+## 11. 参考资料
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 1. **HarmonyOS Developer——Navigation and Routing**
    - Router API: `https://developer.harmonyos.com/cn/docs/router`
@@ -1996,20 +1986,20 @@ struct SplashPage {
    - `@ohos.app.ability.Want`
    - `@ohos.app.ability.common`
 
-### 12.2 推荐书籍
+### 11.2 推荐书籍
 
 1. **《HarmonyOS 应用开发实战》**——华为专家团队著,包含完整路由章节
 2. **《移动应用架构设计》**——对比各平台路由方案的设计哲学
 3. **《声明式 UI 编程范式》**——理解命令式与声明式路由的取舍
 
-### 12.3 相关章节
+### 11.3 相关章节
 
 - **ArkUI 声明式语法**——理解 `@Entry`、`@Component` 等概念,路由基于这些基础
 - **组件生命周期详解**——路由跳转触发生命周期变化的详细机制
 - **权限申请**——部分页面跳转需要先检查权限
 - **分布式数据管理**——跨设备路由需要协同分布式状态
 
-### 12.4 练习题
+### 11.4 练习题
 
 #### 基础题
 
@@ -2048,7 +2038,7 @@ struct SplashPage {
 
 7. 比较命令式 `router` API 与声明式 `Navigation` 组件的优劣,说明何时选择哪种方案。
 
-### 12.5 术语表
+### 11.5 术语表
 
 | 术语 | 英文 | 定义 |
 | --- | --- | --- |

@@ -16,68 +16,16 @@ prerequisites:
   - go/概述与环境配置
 ---
 
+
 # Go 与正则表达式：从 Thompson NFA 到 Pike VM 的工程实践
 
 > 本文以 Go 1.22 与 `regexp` 标准库为基准版本，覆盖正则表达式的全链路：形式语言理论基础（Chomsky 文法层级、Kleene 代数）、Thompson 构造法（1968）、子集构造法（NFA → DFA）、Pike 虚拟机算法（Russ Cox 2007）、RE2 语法与语义、Go `regexp` 包 API 设计、回溯引擎与自动机引擎的本质差异、线性时间复杂度证明、Unicode 与 `\p{}` 属性转义、性能调优、并发安全、跨语言引擎对比（PCRE、Java `java.util.regex`、Python `re`、Rust `regex`）、生产级模式库（邮箱、手机号、URL、IPv6、HTML 标签、CSV、JSON 提取、日志解析）。适用于已掌握 Go 基础与算法导论中自动机理论、希望深入理解正则引擎实现与工程化使用的工程师。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节使用 Bloom 分类法（Bloom's Taxonomy）描述完成本文学习后应达到的认知层级。Bloom 分类法将认知目标分为六个递进层级：Remember（记忆）→ Understand（理解）→ Apply（应用）→ Analyze（分析）→ Evaluate（评价）→ Create（创造）。
-
-### 1.1 Remember（记忆）
-
-- 准确复述 Kleene 闭包运算符 $A^*$、$A^+$、$A^?$ 的形式定义。
-- 列出 Go `regexp` 包的核心 API：`Compile`、`MustCompile`、`Match`、`MatchString`、`FindString`、`FindAllString`、`FindStringSubmatch`、`FindStringIndex`、`ReplaceAllString`、`ReplaceAllStringFunc`、`Split`、`Longest`、`SubexpIndex`、`Expand`、`ExpandString`。
-- 背诵 RE2 不支持的特性清单：反向引用（backreferences，如 `\1`）、零宽断言（lookahead/lookbehind，如 `(?=...)`、`(?<=...)`）、命名引用在条件分支中的使用。
-- 列出 Go `regexp` 的标志位：`i`（大小写不敏感）、`m`（多行模式）、`s`（`.` 匹配换行）、`U`（交换贪婪语义）。
-- 复述 Thompson 构造法的五条基础规则：空转移 $\epsilon$、字符 $a$、连接 $AB$、选择 $A|B$、闭包 $A^*$。
-
-### 1.2 Understand（理解）
-
-- 解释 Chomsky 文法层级中正则语言（Type-3）与上下文无关文法（Type-2）的本质差异。
-- 描述 Thompson 构造法将正则表达式转换为 NFA 的过程，说明为何转换后状态数与正则长度成线性关系。
-- 阐述子集构造法（subset construction）将 NFA 转换为 DFA 的算法，说明最坏情况下 DFA 状态数为 $2^n$（$n$ 为 NFA 状态数）的原因。
-- 解释 Pike VM（Pike's Virtual Machine）算法如何用线程列表模拟 NFA 的并行执行，保证 $O(nm)$ 时间复杂度（$n$ 为输入长度，$m$ 为正则长度）。
-- 说明 Go `regexp` 为何对 `(.+)\1` 这类反向引用直接拒绝编译，而 PCRE 接受但运行时进入 NPC 问题。
-- 阐释贪婪（greedy）、非贪婪（lazy）、占有（possessive）三种量词语义的本质差异。
-
-### 1.3 Apply（应用）
-
-- 使用 `regexp.MustCompile` 在包级变量初始化阶段编译常用模式，避免运行时重复编译开销。
-- 使用 `FindStringSubmatch` 与命名捕获组 `(?P<name>...)`，提取日期、邮箱、URL 中的子部分。
-- 使用 `ReplaceAllStringFunc` 实现基于匹配内容的动态替换（如数值翻倍、模板变量插值）。
-- 使用 `regexp` 包实现 CSV 解析器，处理引号转义、字段分隔符灵活配置。
-- 使用 `(?i)`、`(?m)`、`(?s)` 标志位实现大小写不敏感、多行模式、dotall 模式的匹配。
-
-### 1.4 Analyze（分析）
-
-- 分析回溯爆炸（catastrophic backtracking）的成因：以 `(a+)+$` 为例，构造指数级回溯路径。
-- 对比 Go `regexp`、PCRE、Java `java.util.regex`、Rust `regex` 在 ReDoS（Regular Expression Denial of Service）下的表现。
-- 推导 Pike VM 的空间复杂度：每个字符位置最多 $m$ 个活跃线程，总空间 $O(nm)$。
-- 分析 Go 1.22 中 `regexp` 引擎对长输入的优化：`inputString`、`inputBytes`、`inputReader` 三种输入抽象的权衡。
-- 分析 Unicode 模式匹配中字节匹配与码点匹配的差异，说明为何 `[\p{L}]` 比 `[a-zA-Z]` 在国际化场景下更稳健。
-
-### 1.5 Evaluate（评价）
-
-- 评估在 JSON 解析场景中应使用 `regexp` 还是 `encoding/json`：性能、可维护性、错误处理三维度。
-- 评价 Rust `regex` crate 的 DFA 缓存策略（lazy DFA + cache 淘汰）与 Go `regexp` 的 Pike VM 在大规模文本检索中的性能差异。
-- 判断 ReDoS 防御方案：是否应引入超时机制（`context.WithTimeout`）、是否应限制输入长度、是否应静态分析正则模式。
-- 评估正则表达式可读性 vs 可维护性：是否应将复杂正则拆分为多步匹配 + 字符串操作。
-
-### 1.6 Create（创造）
-
-- 设计一个支持热加载模式的正则验证库，集成 `viper` 配置中心与 `regexp.Compile`，支持运行时模式更新。
-- 实现一个 ReDoS 静态检测器，基于 NFA 状态冲突图识别潜在回溯爆炸模式。
-- 构建一个日志聚合系统的解析层，支持多格式日志（syslog、JSON、logfmt）自动识别与字段提取。
-- 设计一个 Unicode 感知的分词器，使用 `\p{L}`、`\p{N}`、`\p{P}` 实现国际化文本切分。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 正则表达式的数学起源（1956）
+### 1.1 正则表达式的数学起源（1956）
 
 正则表达式的数学基础源于 1956 年 Stephen Kleene 在论文《Representation of Events in Nerve Nets and Finite Automata》中提出的**正则集合**（regular sets）与**Kleene 代数**。Kleene 用三个基本运算描述正则集合：
 
@@ -87,7 +35,7 @@ prerequisites:
 
 Kleene 证明：正则集合恰好与有限状态自动机（FSA）所识别的语言等价。这一对偶性奠定了正则表达式的可计算性边界。
 
-### 2.2 Thompson 构造法（1968）
+### 1.2 Thompson 构造法（1968）
 
 1968 年，Ken Thompson（UNIX 与 B 语言的共同创造者）在《Communications of the ACM》发表论文《Programming Techniques: Regular expression search algorithm》，首次给出将正则表达式编译为 NFA 并在计算机上高效执行的算法。Thompson 的关键贡献：
 
@@ -97,7 +45,7 @@ Kleene 证明：正则集合恰好与有限状态自动机（FSA）所识别的�
 
 Thompson 算法保证 $O(nm)$ 时间复杂度（$n$ 输入长度，$m$ 正则长度），是现代 RE2 与 Go `regexp` 的鼻祖。
 
-### 2.3 POSIX 与 Perl 时代（1980s-1990s）
+### 1.3 POSIX 与 Perl 时代（1980s-1990s）
 
 1986 年，POSIX.2 标准化正则表达式，定义 BRE（Basic Regular Expressions）与 ERE（Extended Regular Expressions）两个方言。POSIX 强调**最左最长匹配**（leftmost-longest）语义。
 
@@ -110,7 +58,7 @@ Thompson 算法保证 $O(nm)$ 时间复杂度（$n$ 输入长度，$m$ 正则长
 
 Perl 兼容正则（PCRE, Perl Compatible Regular Expressions）由 Philip Hazel 于 1997 年实现，成为事实标准。但 PCRE 的**回溯算法**（backtracking）在最坏情况下时间复杂度为 $O(2^n)$，存在 ReDoS 风险。
 
-### 2.4 RE2 与线性时间引擎（2010）
+### 1.4 RE2 与线性时间引擎（2010）
 
 2010 年，Russ Cox（Go 团队核心成员）在 Google 发布 RE2 引擎，回归 Thompson 算法路线。RE2 的设计目标：
 
@@ -120,7 +68,7 @@ Perl 兼容正则（PCRE, Perl Compatible Regular Expressions）由 Philip Hazel
 
 Russ Cox 在 2007 年发表系列文章《Regular Expression Matching Can Be Simple And Fast》（regex.learncodethehardway.com），系统对比 Thompson NFA、回溯算法、DFA 三种引擎的性能，成为正则引擎领域的经典文献。
 
-### 2.5 Go regexp 包（2010-至今）
+### 1.5 Go regexp 包（2010-至今）
 
 Go 1.0（2012 年 3 月）发布时即包含 `regexp` 标准库，由 Russ Cox 亲自实现，基于 RE2 算法。Go `regexp` 的演进：
 
@@ -133,7 +81,7 @@ Go 1.0（2012 年 3 月）发布时即包含 `regexp` 标准库，由 Russ Cox �
 - **Go 1.18（2022）**：修复 `(?P<name>)` 与 `Longest()` 交互的边界 bug。
 - **Go 1.22（2024）**：增强 Unicode 15.1 支持，优化 `ReplaceAllStringFunc` 性能。
 
-### 2.6 演进时间轴
+### 1.6 演进时间轴
 
 ```mermaid
 timeline
@@ -153,9 +101,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 正则表达式的代数定义
+### 2.1 正则表达式的代数定义
 
 设 $\Sigma$ 为有限字母表，$\epsilon$ 表示空字符串，$\emptyset$ 表示空语言。正则表达式 $r$ 递归定义如下：
 
@@ -177,7 +125,7 @@ $$
 r^+ = r \cdot r^*, \quad r^? = \epsilon | r, \quad r\{n\} = \underbrace{r \cdot r \cdots r}_{n}
 $$
 
-### 3.2 有限状态自动机的形式化定义
+### 2.2 有限状态自动机的形式化定义
 
 **确定性有限自动机（DFA）**：
 
@@ -201,7 +149,7 @@ $$
 
 **关键定理**（Kleene 定理）：正则表达式、NFA、DFA 三者表达的语言类等价，即正则语言类。
 
-### 3.3 Thompson 构造法
+### 2.3 Thompson 构造法
 
 Thompson 构造法将正则表达式 $r$ 转换为 NFA $N(r)$，满足：
 
@@ -257,7 +205,7 @@ flowchart LR
     T -->|ε| N
 ```
 
-### 3.4 Pike 虚拟机算法
+### 2.4 Pike 虚拟机算法
 
 Pike VM（Russ Cox 命名，致敬 Rob Pike 在 1980 年代的 sam 编辑器实现）用线程列表模拟 NFA 的并行执行。每个线程保存：
 
@@ -294,7 +242,7 @@ for each character c in input:
 return any thread in current with match instruction
 ```
 
-### 3.5 时间复杂度形式化证明
+### 2.5 时间复杂度形式化证明
 
 **定理**：Pike VM 在输入长度 $n$、正则长度 $m$ 上的匹配时间为 $O(nm)$。
 
@@ -307,7 +255,7 @@ return any thread in current with match instruction
 
 **对比**：回溯算法的最坏时间为 $O(2^n)$，因为每个量词可能产生二叉回溯决策树。
 
-### 3.6 Go regexp 的输入抽象
+### 2.6 Go regexp 的输入抽象
 
 Go `regexp` 定义三种输入类型：
 
@@ -323,9 +271,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 Thompson 构造法详细示例
+### 3.1 Thompson 构造法详细示例
 
 以正则 `a(b|c)*d` 为例，Thompson 构造法步骤：
 
@@ -361,7 +309,7 @@ flowchart LR
 
 最终 NFA 约 18 个状态，正则长度 8，符合 $|Q| \leq 2m$ 的界。
 
-### 4.2 子集构造法与状态爆炸
+### 3.2 子集构造法与状态爆炸
 
 子集构造法将 NFA 转换为 DFA，每个 DFA 状态是 NFA 状态的一个子集：
 
@@ -375,7 +323,7 @@ $$
 
 **RE2 的折中策略**：不预编译为 DFA，而是用 NFA + Pike VM 在线模拟。对热点模式可选地缓存 DFA（lazy DFA），但 Go `regexp` 为简化实现未引入 lazy DFA，Rust `regex` 则采用了该优化。
 
-### 4.3 Pike VM 的指令编译
+### 3.3 Pike VM 的指令编译
 
 Go `regexp` 将正则编译为 `re.Prog`（`*syntax.Prog`），指令类型：
 
@@ -420,7 +368,7 @@ const (
 4: InstMatch
 ```
 
-### 4.4 Pike VM 的执行流程
+### 3.4 Pike VM 的执行流程
 
 Pike VM 维护两个线程列表 `current` 与 `next`：
 
@@ -469,7 +417,7 @@ func (re *Regexp) match(input Input, pos int) ([]int, bool) {
 2. **优先级排序**：`InstAlt` 分裂时，贪婪量词把"继续匹配"的线程放前，非贪婪把"跳过"的线程放前。
 3. **早停**：若 `current` 中已有 `InstMatch` 线程且后续无可改进，可提前结束。
 
-### 4.5 OnePass 优化
+### 3.5 OnePass 优化
 
 Go 1.1 引入 OnePass 优化：对简单模式（无 `|` 嵌套、无复杂量词），编译为单趟 DFA。OnePass 判定条件：
 
@@ -480,7 +428,7 @@ OnePass 模式示例：`a(b|c)*d` 可 OnePass，但 `(a|ab)*` 不可（在 `a` �
 
 **性能提升**：OnePass 模式匹配速度比 Pike VM 快 3-5 倍。
 
-### 4.6 贪婪、非贪婪、占有量词
+### 3.6 贪婪、非贪婪、占有量词
 
 **贪婪**（greedy，默认）：`a*` 匹配尽可能多。
 
@@ -507,7 +455,7 @@ OnePass 模式示例：`a(b|c)*d` 可 OnePass，但 `(a|ab)*` 不可（在 `a` �
 非贪婪 a*?: split L_exit, L_continue  ; 优先 exit
 ```
 
-### 4.7 回溯爆炸的形式化分析
+### 3.7 回溯爆炸的形式化分析
 
 回溯引擎（PCRE、Java、Python）在 `(a+)+$` 这类模式上表现灾难性：
 
@@ -527,7 +475,7 @@ OnePass 模式示例：`a(b|c)*d` 可 OnePass，但 `(a|ab)*` 不可（在 `a` �
 | Rust `regex` | 0.1 ms | 0.1 ms |
 | PCRE（回溯模式） | > 60 s | > 60 s |
 
-### 4.8 Unicode 与字节级匹配
+### 3.8 Unicode 与字节级匹配
 
 Go `regexp` 默认基于 UTF-8 码点（rune）匹配，而非字节。`a` 匹配单字节，`\u4e2d` 匹配 3 字节 UTF-8 序列。
 
@@ -544,7 +492,7 @@ Go `regexp` 默认基于 UTF-8 码点（rune）匹配，而非字节。`a` 匹�
 
 **Unicode 边界**：`\b` 在 Unicode 模式下基于 `\p{L}` 与 `\p{N}` 判断边界，而非 ASCII 字母。
 
-### 4.9 POSIX 最左最长 vs Perl 最左最短
+### 3.9 POSIX 最左最长 vs Perl 最左最短
 
 POSIX 语义：在所有匹配中选最长。Perl 语义：选最左第一个子匹配的开始，然后贪婪/非贪婪决定长度。
 
@@ -558,7 +506,7 @@ re.Longest()
 re.FindString("abc") // "abc"（POSIX 语义）
 ```
 
-### 4.10 Go regexp 的内存模型
+### 3.10 Go regexp 的内存模型
 
 `*Regexp` 对象包含：
 
@@ -579,9 +527,9 @@ re.FindString("abc") // "abc"（POSIX 语义）
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础编译与匹配
+### 4.1 基础编译与匹配
 
 ```go
 package main
@@ -614,7 +562,7 @@ func main() {
 }
 ```
 
-### 5.2 捕获组与命名捕获
+### 4.2 捕获组与命名捕获
 
 ```go
 package main
@@ -652,7 +600,7 @@ func main() {
 }
 ```
 
-### 5.3 替换与函数替换
+### 4.3 替换与函数替换
 
 ```go
 package main
@@ -695,7 +643,7 @@ func main() {
 }
 ```
 
-### 5.4 字符串分割
+### 4.4 字符串分割
 
 ```go
 package main
@@ -717,7 +665,7 @@ func main() {
 }
 ```
 
-### 5.5 标志位与模式切换
+### 4.5 标志位与模式切换
 
 ```go
 package main
@@ -750,7 +698,7 @@ func main() {
 }
 ```
 
-### 5.6 字符类与 Unicode 属性
+### 4.6 字符类与 Unicode 属性
 
 ```go
 package main
@@ -786,7 +734,7 @@ func main() {
 }
 ```
 
-### 5.7 锚点与边界
+### 4.7 锚点与边界
 
 ```go
 package main
@@ -819,7 +767,7 @@ func main() {
 }
 ```
 
-### 5.8 Longest 模式
+### 4.8 Longest 模式
 
 ```go
 package main
@@ -847,7 +795,7 @@ func main() {
 }
 ```
 
-### 5.9 流式匹配 Reader
+### 4.9 流式匹配 Reader
 
 ```go
 package main
@@ -879,7 +827,7 @@ func main() {
 }
 ```
 
-### 5.10 字节切片匹配
+### 4.10 字节切片匹配
 
 ```go
 package main
@@ -916,9 +864,9 @@ func main() {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Go regexp vs PCRE vs Rust regex vs Python re
+### 5.1 Go regexp vs PCRE vs Rust regex vs Python re
 
 | 特性 | Go `regexp` | PCRE | Rust `regex` | Python `re` |
 | --- | --- | --- | --- | --- |
@@ -934,7 +882,7 @@ func main() {
 | 并发安全 | 是（`*Regexp` 可共享） | 否 | 是 | 否 |
 | 模式编译期检查 | 否（运行时） | 否 | 否 | 否 |
 
-### 6.2 Rust regex 的 lazy DFA 优化
+### 5.2 Rust regex 的 lazy DFA 优化
 
 Rust `regex` crate（Burntsushi 维护）的核心创新是 **lazy DFA**（惰性 DFA）：
 
@@ -953,7 +901,7 @@ Rust `regex` crate（Burntsushi 维护）的核心创新是 **lazy DFA**（惰�
 
 Rust 的优势主要来自 lazy DFA 缓存命中后的 $O(n)$ 单趟扫描。
 
-### 6.3 Go regexp 的设计权衡
+### 5.3 Go regexp 的设计权衡
 
 Go `regexp` 选择 Pike VM 而非 lazy DFA 的原因：
 
@@ -968,7 +916,7 @@ Go `regexp` 选择 Pike VM 而非 lazy DFA 的原因：
 - 无多模式同时匹配（PCRE 的 alternation 优化、Hyperscan 的 FSM）。
 - 不支持 backtracking semantics 的特定场景（如某些 legacy 模式依赖回溯）。
 
-### 6.4 与字符串操作的权衡
+### 5.4 与字符串操作的权衡
 
 简单场景下，`strings.Contains`、`strings.HasPrefix`、`strings.Split` 比 `regexp` 快 10-100 倍：
 
@@ -990,7 +938,7 @@ regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`).MatchString(s)
 4. 复杂模式 → `regexp`。
 5. 极致性能 + 多模式 → Rust `regex` 或 Hyperscan（cgo 绑定）。
 
-### 6.5 与 encoding/json 的对比
+### 5.5 与 encoding/json 的对比
 
 JSON 解析场景：
 
@@ -1012,9 +960,9 @@ json.Unmarshal([]byte(jsonStr), &data)
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 反斜杠转义陷阱
+### 6.1 反斜杠转义陷阱
 
 Go 双引号字符串中 `\` 是转义字符，正则的 `\d` 需写成 `\\d` 或使用反引号：
 
@@ -1029,7 +977,7 @@ re := regexp.MustCompile("\\d+")
 re := regexp.MustCompile(`\d+`)
 ```
 
-### 7.2 编译开销与复用
+### 6.2 编译开销与复用
 
 `regexp.Compile` 与 `regexp.MustCompile` 编译开销大，应全局复用：
 
@@ -1050,7 +998,7 @@ func validate(email string) bool {
 
 **性能差异**：编译耗时约 10-100 微秒，匹配耗时约 0.1-10 微秒。在热路径中重复编译会降低性能 1000 倍以上。
 
-### 7.3 MustCompile 的 panic 风险
+### 6.3 MustCompile 的 panic 风险
 
 `MustCompile` 在正则语法错误时 panic，仅适用于硬编码模式：
 
@@ -1064,7 +1012,7 @@ func userPattern(input string) (*regexp.Regexp, error) {
 }
 ```
 
-### 7.4 贪婪匹配陷阱
+### 6.4 贪婪匹配陷阱
 
 HTML 标签提取的贪婪陷阱：
 
@@ -1078,7 +1026,7 @@ re2 := regexp.MustCompile(`<div>.*?</div>`)
 re2.FindAllString("<div>a</div><div>b</div>", -1) // ["<div>a</div>" "<div>b</div>"]
 ```
 
-### 7.5 字符类中的特殊字符位置
+### 6.5 字符类中的特殊字符位置
 
 `[]` 内的特殊字符规则：
 
@@ -1099,7 +1047,7 @@ re6 := regexp.MustCompile(`[]abc]`)  // 匹配 ]/a/b/c
 re7 := regexp.MustCompile(`[\^\]\-]`) // 匹配 ^/]/-
 ```
 
-### 7.6 反向引用的替代方案
+### 6.6 反向引用的替代方案
 
 Go `regexp` 不支持 `(.)\1` 这类反向引用。替代方案：
 
@@ -1128,7 +1076,7 @@ re2 := regexp2.MustCompile(`(.)\1`, 0)
 m, _ := re2.FindStringMatch("aabbcc")
 ```
 
-### 7.7 Unicode 字符类陷阱
+### 6.7 Unicode 字符类陷阱
 
 ```go
 // 陷阱 1：[a-z] 不匹配中文
@@ -1152,7 +1100,7 @@ re5 := regexp.MustCompile(`\p{Z}+`)
 re5.FindAllString("a b　c", -1) // [" " "　"]
 ```
 
-### 7.8 多行模式的边界
+### 6.8 多行模式的边界
 
 ```go
 // 陷阱：默认 ^ 与 $ 仅匹配整个输入的开头与结尾
@@ -1168,7 +1116,7 @@ re3 := regexp.MustCompile(`(?m)\A\w+`)
 re3.FindAllString("line1\nline2", -1) // ["line1"]（仅开头）
 ```
 
-### 7.9 Reader 模式的 API 限制
+### 6.9 Reader 模式的 API 限制
 
 ```go
 // Reader 模式仅支持以下 API：
@@ -1193,7 +1141,7 @@ func scanLargeFile(r io.Reader, pattern *regexp.Regexp) []string {
 }
 ```
 
-### 7.10 并发安全
+### 6.10 并发安全
 
 `*Regexp` 的所有匹配方法（`Match`、`Find`、`Replace`、`Split` 等）都是并发安全的，可被多 goroutine 共享。但 `Longest()` 方法会修改内部状态，不是并发安全的：
 
@@ -1214,7 +1162,7 @@ reLong.Longest() // 仅修改 reLong
 // 因 *Regexp 已并发安全，无需 Copy
 ```
 
-### 7.11 子匹配索引的边界
+### 6.11 子匹配索引的边界
 
 ```go
 re := regexp.MustCompile(`(\d+)-(\d+)`)
@@ -1240,7 +1188,7 @@ if idx != nil {
 }
 ```
 
-### 7.12 编译期语法检查
+### 6.12 编译期语法检查
 
 Go 不提供编译期正则检查，但可在测试中验证：
 
@@ -1265,9 +1213,9 @@ func TestPatternsCompile(t *testing.T) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 性能基准测试
+### 7.1 性能基准测试
 
 ```go
 package main
@@ -1307,7 +1255,7 @@ BenchmarkEmailMatchParallel-8        16000000      85 ns/op
 
 并行场景下 Pike VM 的无锁设计提供接近线性扩展。
 
-### 8.2 编译期预编译模式库
+### 7.2 编译期预编译模式库
 
 将常用模式集中管理，启动时编译：
 
@@ -1331,7 +1279,7 @@ var (
 )
 ```
 
-### 8.3 ReDoS 防御
+### 7.3 ReDoS 防御
 
 Go `regexp` 因线性时间保证，天然免疫 ReDoS。但若使用第三方库（如 `regexp2` 支持 PCRE 语法），需防御：
 
@@ -1377,7 +1325,7 @@ func validateWithLimit(input string, maxLen int) bool {
 // 使用 github.com/google/re2 社区工具或自研 NFA 冲突检测
 ```
 
-### 8.4 配置热加载正则
+### 7.4 配置热加载正则
 
 ```go
 package main
@@ -1456,7 +1404,7 @@ func (h *HotRegex) Watch() error {
 }
 ```
 
-### 8.5 日志解析器
+### 7.5 日志解析器
 
 ```go
 package main
@@ -1527,7 +1475,7 @@ func ParseLog(line string) (*LogEntry, error) {
 }
 ```
 
-### 8.6 模板引擎中的变量插值
+### 7.6 模板引擎中的变量插值
 
 ```go
 package main
@@ -1577,9 +1525,9 @@ func RenderTemplateWithDefault(tmpl string, vars map[string]string) string {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：高并发 API 的输入验证
+### 8.1 案例一：高并发 API 的输入验证
 
 **场景**：电商系统商品搜索 API，需对用户输入的查询关键词做安全过滤与字段提取，QPS 5000+。
 
@@ -1656,7 +1604,7 @@ func ParseSearchQuery(input string) (*SearchQuery, error) {
 
 **性能数据**：单次解析 < 5 微秒，QPS 5000 下 CPU 占用 < 5%。
 
-### 9.2 案例二：日志聚合系统的多格式解析
+### 8.2 案例二：日志聚合系统的多格式解析
 
 **场景**：日志聚合系统接收多源日志（Nginx access log、Java Spring Boot log、Go zap log），需统一解析为结构化数据。
 
@@ -1745,7 +1693,7 @@ func statusLevel(status int) string {
 2. 按 prefix 快速分发，避免每行试三个正则。
 3. 命名捕获组用 `SubexpIndex` 取，避免硬编码索引。
 
-### 9.3 案例三：CSV 解析器
+### 8.3 案例三：CSV 解析器
 
 **场景**：解析含引号转义的 CSV，标准 `encoding/csv` 不够灵活（需自定义分隔符、引号字符）。
 
@@ -1801,7 +1749,7 @@ func ParseCSVCustom(line, separator string) []string {
 
 **注意**：动态构建正则有编译开销，应缓存。对高频调用的自定义分隔符场景，推荐 `strings.Split` + 手工处理引号。
 
-### 9.4 案例四：URL 路由匹配
+### 8.4 案例四：URL 路由匹配
 
 **场景**：自研 HTTP 框架，需支持路径参数（`/users/:id`）、通配符（`/static/*`）、可选段（`/api(/v\d)?/users`）。
 
@@ -1867,7 +1815,7 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **习题 1**：编写正则匹配 IPv4 地址，要求每段 0-255。
 
@@ -1877,7 +1825,7 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 
 **习题 3**：编写正则从字符串 `"name=alice, age=30, city=beijing"` 中提取所有 key-value 对。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **习题 4**：解释为何 Go `regexp` 拒绝编译 `(.)\1`，而 PCRE 接受。从理论与工程两个角度分析。
 
@@ -1891,7 +1839,7 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 3. ^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$
 ```
 
-### 10.3 实战题
+### 9.3 实战题
 
 **习题 7**：实现一个函数 `ExtractURLs(text string) []string`，从 Markdown 文本中提取所有 URL（含 `[text](url)` 与裸 URL 两种形式）。
 
@@ -1899,7 +1847,7 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 
 **习题 9**：实现一个支持热加载的验证器，从 YAML 配置文件读取多个正则模式，监听文件变化自动重新编译，提供 `Validate(field, value string) bool` 接口。
 
-### 10.4 思考题
+### 9.4 思考题
 
 **习题 10**：为何 Russ Cox 选择 Pike VM 而非 lazy DFA 作为 Go `regexp` 的引擎？从实现复杂度、内存可预测性、捕获组支持、性能权衡四个维度分析。
 
@@ -1907,9 +1855,9 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 经典论文
+### 10.1 经典论文
 
 1. Kleene, S. C. (1956). *Representation of Events in Nerve Nets and Finite Automata*. Automata Studies, Princeton University Press.
 2. Thompson, K. (1968). *Programming Techniques: Regular Expression Search Algorithm*. Communications of the ACM, 11(6), 419-422.
@@ -1917,66 +1865,66 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 4. Cox, R. (2007). *Regular Expression Matching Can Be Simple And Fast*. https://swtch.com/~rsc/regexp/regexp1.html
 5. Cox, R. (2010). *Regular Expression Matching: the Virtual Machine Approach*. https://swtch.com/~rsc/regexp/regexp2.html
 
-### 11.2 标准与规范
+### 10.2 标准与规范
 
 6. ISO/IEC 9945-2:1993. *Information technology — Portable Operating System Interface (POSIX) — Part 2: Shell and Utilities*.（POSIX BRE/ERE 定义）
 7. OCI (Open Container Initiative). *Regular Expressions*. https://github.com/google/re2/wiki/Syntax（RE2 语法参考）
 8. Unicode Consortium. *Unicode Standard Annex #44: Unicode Character Database*.（`\p{}` 属性定义）
 9. Unicode Consortium. *Unicode Default Case Folding*. https://unicode.org/Public/UNIDATA/CaseFolding.txt
 
-### 11.3 Go 官方资料
+### 10.3 Go 官方资料
 
 10. Go Documentation. *regexp package*. https://pkg.go.dev/regexp
 11. Cox, R. *Go regexp: Design Notes*. https://github.com/golang/go/blob/master/src/regexp/regexp.go
 12. Go Blog. *Regular Expressions in Go*. https://go.dev/blog/regexp
 
-### 11.4 实现源码
+### 10.4 实现源码
 
 13. Go `regexp` 包源码：`src/regexp/regexp.go`、`src/regexp/backtrack.go`、`src/regexp/onepass.go`、`src/regexp/exec.go`
 14. RE2 源码：https://github.com/google/re2
 15. Rust `regex` crate：https://github.com/rust-lang/regex
 16. PCRE2 源码：https://github.com/PCRE2Project/pcre2
 
-### 11.5 性能基准
+### 10.5 性能基准
 
 17. Burntsushi. *Regex Performance in Rust*. https://github.com/rust-lang/regex/blob/master/PERFORMANCE.md
 18. Google RE2 Performance Benchmarks. https://github.com/google/re2/wiki/Performance
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 形式语言理论
+### 11.1 形式语言理论
 
 - Hopcroft, J. E., Motwani, R., Ullman, J. D. *Introduction to Automata Theory, Languages, and Computation* (3rd Edition). Addison-Wesley, 2006.
 - Sipser, M. *Introduction to the Theory of Computation* (3rd Edition). Cengage Learning, 2013.
 - Kozen, D. *Automata and Computability*. Springer, 1997.
 
-### 12.2 编译原理
+### 11.2 编译原理
 
 - Aho, A. V., Lam, M. S., Sethi, R., Ullman, J. D. *Compilers: Principles, Techniques, and Tools* (2nd Edition). Pearson, 2006.（龙书，第 3 章词法分析）
 - Appel, A. W. *Modern Compiler Implementation in ML*. Cambridge University Press, 2004.
 
-### 12.3 正则引擎深入
+### 11.3 正则引擎深入
 
 - Cox, R. *Regular Expression Matching in the Wild*. https://swtch.com/~rsc/regexp/regexp3.html
 - Cox, R. *Regular Expression Matching with a Trigram Index*. https://swtch.com/~rsc/regexp/regexp4.html
 - Kerr, A. *PCRE Performance*. https://www.pcre.org/original/doc/html/pcreapi.html
 
-### 12.4 Go 相关
+### 11.4 Go 相关
 
 - Donovan, A. A. A., Kernighan, B. W. *The Go Programming Language*. Addison-Wesley, 2015.（第 8 章 IO 与正则）
 - Cox, R. *Go Data Structures: Interfaces*. https://research.swtch.com/interfaces
 - Go Source Code: `src/regexp/syntax/regexp.go`（正则语法树）
 - Go Source Code: `src/regexp/syntax/compile.go`（NFA 编译）
 
-### 12.5 安全与 ReDoS
+### 11.5 安全与 ReDoS
 
 - Davis, J. et al. *Why aren't regular expressions a lingua franca? An empirical study on the re-use and portability of regular expressions*. ECOOP 2019.
 - Weideman, N. et al. *Analyzing the Impact of ReDoS Vulnerabilities at an Internet Scale*. ACM CCS 2022.
 - Davis, J. *Regular Expression Denial of Service (ReDoS) Mitigation*. https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-source-generators
 
-### 12.6 相关 Go 标准库
+### 11.6 相关 Go 标准库
 
 - `strconv`：字符串与数值转换，常与正则配合提取数字。
 - `unicode` 与 `unicode/utf8`：rune 与字节转换。
@@ -1985,7 +1933,7 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 - `bufio`：流式读取大文件，配合 `regexp` 逐行匹配。
 - `text/template` 与 `html/template`：模板引擎，可与正则结合实现变量插值。
 
-### 12.7 第三方库
+### 11.7 第三方库
 
 - `github.com/dlclark/regexp2`：完整 PCRE 语法支持（含反向引用、零宽断言），性能略低于标准库 `regexp`。
 - `github.com/grafana/regexp`：Go `regexp` 的安全 fork，修复了若干 CVE。

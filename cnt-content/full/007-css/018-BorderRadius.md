@@ -14,45 +14,6 @@ related:
   - css/容器查询
 prerequisites:
   - css/概述与基本语法
-learningObjectives:
-  - level: remember
-    objective: '能陈述 border-radius 的 1-4 值展开规则与斜杠（/）分隔的椭圆半径语法。'
-    verifiable: '默写四种简写示例并标注对应角'
-  - level: understand
-    objective: '能解释百分比半径如何参照元素尺寸计算，以及圆角曲线与边框的交集关系。'
-    verifiable: '用 100px 宽 200px 高的元素说明 50% 圆角结果'
-  - level: apply
-    objective: '能实现圆形、胶囊、叶片、对话框气泡等常见形状。'
-    verifiable: '编写五种形状的完整 CSS 代码'
-  - level: analyze
-    objective: '能分析圆角不裁剪内容的原因以及 overflow: hidden 的作用。'
-    verifiable: '对比有无 overflow 时的渲染差异'
-  - level: evaluate
-    objective: '能评价百分比与固定值在不同场景下的可维护性。'
-    verifiable: '给出响应式设计的选值依据'
-  - level: create
-    objective: '能独立设计一套带圆角体系的设计令牌并应用到组件库。'
-    verifiable: '完成案例研究中的按钮与卡片组件'
-exercises:
-  - id: radius-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: 'border-radius: 10px 20px 30px 40px 中，第二个值 20px 作用于_____角。'
-    answer: '右上角'
-    explanation: '四值顺序为左上、右上、右下、左下（顺时针）。'
-    difficulty: easy
-  - id: radius-02
-    type: choice
-    cognitiveLevel: understand
-    question: '一个 200px 宽、100px 高的元素设置 border-radius: 50%，渲染结果是什么？'
-    options:
-      - 'A. 正圆形'
-      - 'B. 椭圆形（横向椭圆）'
-      - 'C. 胶囊形'
-      - 'D. 无变化'
-    answer: 'B'
-    explanation: '50% 的水平和垂直半径分别按宽高的一半计算，宽高不同因此得到椭圆。'
-    difficulty: medium
 references:
   - type: documentation
     authors: ['MDN Web Docs']
@@ -77,21 +38,8 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-## 1. 学习目标（Bloom 分类）
 
-记忆层面：能够说出 `border-radius` 的简写语法（一至四个值对应四角）与斜杠分隔的椭圆半径语法（水平/垂直半径），能够复述 `border-top-left-radius` 等四个长写属性的名称。
-
-理解层面：能够解释圆角半径的几何含义：水平半径与垂直半径共同定义椭圆角，百分比值相对于元素盒子的宽高计算，以及相邻圆角在空间不足时的等比收缩规则。
-
-应用层面：能够实现圆形头像、胶囊按钮、对话框圆角、响应式椭圆等常见设计，并处理圆角与边框、背景、阴影、裁剪（`overflow: hidden`）的配合。
-
-分析层面：能够分析 `border-radius` 与 `clip-path`、`mask`、`border-image` 等机制的边界行为差异，能够解释为什么 `border-radius` 不影响元素盒模型的尺寸。
-
-评价层面：能够评估不同浏览器的渲染一致性（如圆角处背景抗锯齿、嵌套圆角比例），并判断何时使用圆角、何时使用其他形状方案。
-
-创造层面：能够构建带圆角的高级 UI（聊天气泡、环形进度、标签页），并将圆角纳入设计令牌（design token）体系统一管理。
-
-## 2. 历史动机与发展脉络
+## 1. 历史动机与发展脉络
 
 圆角在平面设计中长期用于柔化界面。CSS 2.1 没有圆角能力，开发者只能使用背景图片（九个切片）模拟圆角，成本高且难以缩放。2005 年起 Mozilla 率先在 Firefox 中实现 `-moz-border-radius`，WebKit 随后跟进 `-webkit-border-radius`；2010 年 CSS Backgrounds and Borders Level 3 工作草案将 `border-radius` 标准化，2017 年该规范成为 W3C Recommendation。如今 `border-radius` 是支持度最完整的 CSS 属性之一。
 
@@ -108,7 +56,7 @@ timeline
     2020+ : 所有现代浏览器无前缀支持
 ```
 
-## 3. 形式化定义
+## 2. 形式化定义
 
 `border-radius` 的正式语法：
 
@@ -136,9 +84,9 @@ flowchart LR
     G["border-radius: 10px 20px 30px 40px"] --> H["四角依次不同"]
 ```
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 椭圆参数方程
+### 3.1 椭圆参数方程
 
 圆角曲线是四分之一椭圆弧。设水平半径 rx、垂直半径 ry，角部曲线上的点满足椭圆参数方程：
 
@@ -146,17 +94,17 @@ $$ x = rx \cdot \cos\theta,\quad y = ry \cdot \sin\theta,\quad \theta \in [0, \p
 
 当 rx = ry 时退化为圆弧。浏览器绘制圆角时，把该曲线光栅化为路径；背景、边框、内阴影、外阴影都沿着这条路径裁剪或扩展。
 
-### 4.2 百分比半径与盒子尺寸
+### 3.2 百分比半径与盒子尺寸
 
 半径百分比参照边框盒。对 200px 宽、100px 高的元素，`border-radius: 50%` 产生 rx=100px、ry=50px 的椭圆角，四角连接后元素内部剩余区域呈“胶囊竖切”形状。这也是为什么 50% 只在正方形上产生正圆。
 
-### 4.3 相邻圆角的收缩推导
+### 3.3 相邻圆角的收缩推导
 
 设上边长为 W，左上角水平半径 r1、右上角水平半径 r2。若 r1 + r2 > W，则按比例因子 f = W / (r1 + r2) 同时缩放两角（垂直半径同比例）。该规则保证角部曲线不相交，是 CSS 规范的强制行为，开发者无法覆盖。
 
-## 5. 代码示例（带详尽注释）
+## 4. 代码示例（带详尽注释）
 
-### 5.1 基础圆角
+### 4.1 基础圆角
 
 ```css
 .card {
@@ -174,7 +122,7 @@ $$ x = rx \cdot \cos\theta,\quad y = ry \cdot \sin\theta,\quad \theta \in [0, \p
 
 讲解：`12px` 是卡片圆角的中性值；`50%` 配合正方形宽高形成圆形，是头像、状态点的标准写法。
 
-### 5.2 胶囊按钮
+### 4.2 胶囊按钮
 
 ```css
 .pill-button {
@@ -189,7 +137,7 @@ $$ x = rx \cdot \cos\theta,\quad y = ry \cdot \sin\theta,\quad \theta \in [0, \p
 
 讲解：`999px` 是“足够大”的半径，浏览器会自动收缩到高度一半，形成胶囊形状。该写法无需精确计算高度，是弹性高度的推荐方案。
 
-### 5.3 椭圆角与局部圆角
+### 4.3 椭圆角与局部圆角
 
 ```css
 .dialog {
@@ -210,7 +158,7 @@ $$ x = rx \cdot \cos\theta,\quad y = ry \cdot \sin\theta,\quad \theta \in [0, \p
 
 讲解：`border-radius` 的四值顺序是左上、右上、右下、左下。聊天气泡的典型处理是“指向源头的一角更尖”。
 
-### 5.4 与 overflow 配合裁剪图片
+### 4.4 与 overflow 配合裁剪图片
 
 ```html
 <div class="avatar-frame">
@@ -235,7 +183,7 @@ $$ x = rx \cdot \cos\theta,\quad y = ry \cdot \sin\theta,\quad \theta \in [0, \p
 
 讲解：`border-radius` 只作用于元素自身的背景与边框，不会自动裁剪子内容；必须配合 `overflow: hidden` 才能让图片呈现圆形。`object-fit: cover` 保证图片不变形地填满。
 
-### 5.5 响应式椭圆
+### 4.5 响应式椭圆
 
 ```css
 .ellipse {
@@ -248,7 +196,7 @@ $$ x = rx \cdot \cos\theta,\quad y = ry \cdot \sin\theta,\quad \theta \in [0, \p
 
 讲解：`50% / 25%` 表示水平半径是宽度一半、垂直半径是高度四分之一。配合 `aspect-ratio` 固定宽高比，可以构造稳定的椭圆装饰。
 
-### 5.6 圆角与阴影/边框的配合
+### 4.6 圆角与阴影/边框的配合
 
 ```css
 .elevated {
@@ -261,7 +209,7 @@ $$ x = rx \cdot \cos\theta,\quad y = ry \cdot \sin\theta,\quad \theta \in [0, \p
 
 讲解：`box-shadow` 与 `border-radius` 共享同一路径计算，阴影自动贴合圆角。但注意：`outline` 在旧浏览器中不贴合圆角；现代浏览器（Chrome 94+、Firefox 88+）的 `outline` 已跟随圆角。
 
-### 5.7 设计令牌管理
+### 4.7 设计令牌管理
 
 ```css
 :root {
@@ -279,9 +227,9 @@ $$ x = rx \cdot \cos\theta,\quad y = ry \cdot \sin\theta,\quad \theta \in [0, \p
 
 讲解：把圆角收敛为有限梯度，保证全站视觉一致性，也方便主题切换。这是设计系统的基础实践。
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 border-radius 与 clip-path
+### 5.1 border-radius 与 clip-path
 
 | 维度 | border-radius | clip-path |
 | --- | --- | --- |
@@ -291,15 +239,15 @@ $$ x = rx \cdot \cos\theta,\quad y = ry \cdot \sin\theta,\quad \theta \in [0, \p
 | 性能 | 极好 | 好（复杂路径略差） |
 | 典型场景 | 卡片、头像 | 异形图形、动画遮罩 |
 
-### 6.2 简写与长写属性对比
+### 5.2 简写与长写属性对比
 
 简写可读性好，但会同时重置四个角；长写属性可以精确控制单个角。动画中若只改变一个角，使用长写属性避免隐式重置。
 
-### 6.3 圆角与 border-image 的冲突
+### 5.3 圆角与 border-image 的冲突
 
 `border-image` 与 `border-radius` 不兼容：使用 `border-image` 时圆角失效。需要同时满足时，用嵌套元素或 SVG 背景替代。
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
 陷阱一：忘记 `overflow: hidden`，子图片溢出圆角。
 
@@ -315,9 +263,9 @@ $$ x = rx \cdot \cos\theta,\quad y = ry \cdot \sin\theta,\quad \theta \in [0, \p
 
 最佳实践：设计令牌统一管理半径；头像与胶囊用 50%/999px；图片裁剪记得 overflow；动画优先长写属性。
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 主题化圆角
+### 7.1 主题化圆角
 
 ```ts
 // theme.ts：设计令牌类型约束
@@ -333,7 +281,7 @@ export type RadiusToken = keyof typeof radii
 
 讲解：类型约束防止团队使用随意数值，配合 CSS 变量实现运行时主题切换。
 
-### 8.2 圆角头像组件
+### 7.2 圆角头像组件
 
 ```vue
 <script setup>
@@ -371,7 +319,7 @@ defineProps<{
 
 讲解：组件把“圆角+裁剪+图片填充”三件套封装，调用方只传尺寸与形状模式，避免每个页面重复踩坑。
 
-## 9. 案例研究：环形进度与圆角卡片
+## 8. 案例研究：环形进度与圆角卡片
 
 场景一：圆形进度环。用圆角 50% 的容器加 conic-gradient 实现：
 
@@ -415,7 +363,7 @@ defineProps<{
 
 讲解：嵌套圆角遵循“内层半径 ≈ 外层半径 - padding”的经验公式，视觉上保持平行曲线。12px padding 对应 4px 差值，曲线近似同心，观感统一。
 
-## 10. 知识要点总结与深入讲解
+## 9. 知识要点总结与深入讲解
 
 `border-radius` 的语法分两段：前段四角水平半径，后段（斜杠后）垂直半径。一值全同、二值对角、三值、四值顺时针，与 margin 的记忆方式完全一致。
 
@@ -423,7 +371,7 @@ defineProps<{
 
 圆角不会裁剪子内容，`overflow: hidden` 才负责裁剪。阴影与背景跟随圆角，outline 在现代浏览器中也跟随。理解这些边界行为，才能避免“圆角了但图片还是方的”这类问题。
 
-## 11. 参考文献
+## 10. 参考文献
 
 W3C, CSS Backgrounds and Borders Module Level 3, border-radius, 访问日期 2026-08-01, https://www.w3.org/TR/css-backgrounds-3/#border-radius
 
@@ -433,7 +381,7 @@ MDN Web Docs, border-image 与 border-radius 兼容性说明, 访问日期 2026-
 
 CSS-Tricks, border-radius 完整指南, 访问日期 2026-08-01, https://css-tricks.com/almanac/properties/b/border-radius/
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
 圆角常与盒阴影、渐变配合，见 007-css 模块的盒模型、渐变、阴影相关文档；
 
@@ -465,7 +413,7 @@ MDN 圆角实战教程：https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_ba
 } /* 水平/垂直半径 */
 ```
 
-### 2. 常见形状
+### 1. 常见形状
 
 ```css
 .circle {
@@ -485,7 +433,7 @@ MDN 圆角实战教程：https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_ba
 }
 ```
 
-### 3. 实战效果
+### 2. 实战效果
 
 ```css
 .bubble {
@@ -505,7 +453,7 @@ MDN 圆角实战教程：https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_ba
 }
 ```
 
-### 4. 注意事项
+### 3. 注意事项
 
 - 百分比参照元素尺寸
 - 圆角不会裁剪溢出内容（需配合 `overflow: hidden`）

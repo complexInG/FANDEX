@@ -25,59 +25,20 @@ tags:
   - netty
 ---
 
+
 # Java 网络编程
 
 > 本文系统阐述 Java 网络编程的理论基础、API 演进、工程实践与生产级案例。从 BSD Socket 的历史源流出发，经过 `java.net` 阻塞 IO 模型，到 NIO 多路复用、Netty 事件驱动架构，再到现代 HTTP/2、HTTP/3 与虚拟线程（Project Loom）下的网络编程新范式，覆盖协议、模型、源码、陷阱与性能调优全链路。
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本节按 Bloom 认知层级（Anderson & Krathwohl, 2001）组织学习目标，读者可逐层自检掌握程度。
-
-### 1.1 记忆层（Remember）
-
-- 复述 OSI 七层模型与 TCP/IP 四层模型的对应关系，列出各层典型协议。
-- 列举 `java.net` 与 `java.nio.channels` 中至少 8 个核心类与接口。
-- 描述 TCP 三次握手与四次挥手的报文序列号变化过程。
-
-### 1.2 理解层（Understand）
-
-- 解释阻塞 IO（BIO）、非阻塞 IO（NIO）、IO 多路复用（IO Multiplexing）、异步 IO（AIO）的语义差异。
-- 用自己的语言说明 `Selector`、`SelectionKey`、`Channel` 三者协作机制。
-- 阐述 Nagle 算法与延迟确认（Delayed ACK）的交互作用及其对延迟的影响。
-
-### 1.3 应用层（Apply）
-
-- 使用 `Socket` / `ServerSocket` 实现一个支持并发的回声（Echo）服务器。
-- 基于 `Selector` 实现一个可同时处理 10000 连接的 HTTP 长连接服务。
-- 使用 `java.net.http.HttpClient`（JDK 11+）发起 HTTP/2 请求并处理响应流。
-
-### 1.4 分析层（Analyze）
-
-- 对比 Reactor 与 Proactor 模式的本质差异，指出 Java NIO 属于哪一类。
-- 分析 `Epoll` 边沿触发（ET）与水平触发（LT）的语义区别及其在 JVM 层的映射。
-- 拆解 Netty 的 `EventLoop` 模型，指出 boss group 与 worker group 的职责边界。
-
-### 1.5 评价层（Evaluate）
-
-- 评估在微服务场景下使用原生 NIO 还是 Netty 的取舍维度。
-- 评判虚拟线程（Virtual Thread, JEP 444）对传统 Reactor 模式的颠覆性影响。
-- 论证连接池大小与吞吐量的关系，识别"连接越多越好"的反模式。
-
-### 1.6 创造层（Create）
-
-- 设计一个支持百万长连接的 IM 推送系统架构，并给出关键参数选型。
-- 实现一个简易的 RPC 框架，覆盖序列化、长连接、心跳、重连等关键机制。
-- 构建一个可观测的网络中间件，集成 metrics、tracing 与 connection dump 能力。
-
-## 2. 历史动机与背景
-
-### 2.1 网络编程的史前时代
+### 1.1 网络编程的史前时代
 
 1969 年，ARPANET 的诞生标志着计算机网络从理论走向实践。当时不同厂商的主机使用各异的应用层协议，开发者必须为每种主机编写定制的通信代码。这一时期网络编程是高度耦合、平台特定的工程活动。
 
 1983 年 1 月 1 日，ARPANET 全面切换到 TCP/IP 协议族，这一天被业界称为"Flag Day"。统一的协议栈为可移植网络编程奠定了基础，但 API 仍然因操作系统而异。
 
-### 2.2 BSD Socket 的诞生
+### 1.2 BSD Socket 的诞生
 
 1983 年，加州大学伯克利分校在 4.2BSD 中发布了 Socket API，由 Bill Joy 与 Samuel Leffler 设计。Socket API 将网络通信抽象为类似文件 IO 的操作，提供 `socket()`、`bind()`、`listen()`、`accept()`、`connect()`、`send()`、`recv()` 七个核心系统调用。
 
@@ -88,7 +49,7 @@ BSD Socket 的伟大之处在于其**双重抽象**：
 
 这一设计深刻影响了此后四十年的网络编程范式。POSIX 标准、Windows Winsock、Linux glibc 均沿用此模型。
 
-### 2.3 Java 网络编程的演进
+### 1.3 Java 网络编程的演进
 
 Java 自 1995 年诞生之初便内置网络能力，但其 API 演进经历了若干重要阶段：
 
@@ -101,7 +62,7 @@ Java 自 1995 年诞生之初便内置网络能力，但其 API 演进经历了�
 | 2018 | Java SE 11 | `java.net.http.HttpClient` | 内置 HTTP/2、WebSocket 客户端 |
 | 2023 | Java SE 21 | 虚拟线程（JEP 444） | 用同步风格编写高并发网络代码 |
 
-### 2.4 为什么需要 NIO
+### 1.4 为什么需要 NIO
 
 早期 `java.net.Socket` 是阻塞的：当线程调用 `InputStream.read()` 时，若对端没有数据，线程会被挂起直到数据到达或连接关闭。这意味着一个服务器要服务 N 个并发客户端，就必须开启 N 个线程。
 
@@ -113,7 +74,7 @@ Java 自 1995 年诞生之初便内置网络能力，但其 API 演进经历了�
 
 当连接数上升到万级（如 IM、推送、行情订阅），`thread-per-connection` 模型崩溃。这是 NIO 出现的根本动机：**用少量线程服务大量连接**。
 
-### 2.5 Netty 的崛起
+### 1.5 Netty 的崛起
 
 尽管 NIO 解决了伸缩性问题，但其 API 复杂、易用性差。开发者需要处理半包、粘包、断线重连、心跳、序列化、线程模型等大量样板代码。一个常见的误用是直接在 Selector 线程中执行业务逻辑，导致整个服务无响应。
 
@@ -126,7 +87,7 @@ Java 自 1995 年诞生之初便内置网络能力，但其 API 演进经历了�
 
 Netty 成为现代 Java 网络中间件的事实标准，被 Dubbo、gRPC-Java、Spring WebFlux、Spark、Cassandra 等项目采用。
 
-### 2.6 虚拟线程的范式转变
+### 1.6 虚拟线程的范式转变
 
 JDK 21 正式发布虚拟线程（Project Loom）。虚拟线程是用户态调度的轻量级线程，创建成本接近普通对象，单 JVM 可承载数百万个。
 
@@ -134,9 +95,9 @@ JDK 21 正式发布虚拟线程（Project Loom）。虚拟线程是用户态调�
 
 这是网络编程范式的重大转变：从"避免阻塞"回到"阻塞无所谓"，简化了心智模型。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Socket 的代数语义
+### 2.1 Socket 的代数语义
 
 设 $\Sigma$ 为字节序集合 $\{0, 1, \dots, 255\}$，$\Sigma^*$ 为字节序列。一个 Socket 连接可形式化为五元组：
 
@@ -154,7 +115,7 @@ $$
 
 状态转移函数 $\delta: S \times E \to S$，其中 $E$ 为事件集合（应用调用或网络报文）。
 
-### 3.2 IO 模型的形式化
+### 2.2 IO 模型的形式化
 
 设 $I$ 为输入操作，$t_0$ 为发起时刻，$t_1$ 为完成时刻。$I$ 的总耗时为 $T = t_1 - t_0$，由两部分组成：
 
@@ -173,7 +134,7 @@ IO 多路复用满足：调用方在 `select/poll/epoll_wait` 上阻塞，当任
 
 异步 IO 满足：调用方发起后立即返回，内核在 $t_1$ 时刻通过回调或信号通知完成。
 
-### 3.3 吞吐量上界
+### 2.3 吞吐量上界
 
 设 RTT 为 $R$（秒），拥塞窗口为 $W$（字节），$MSS$ 为最大段长度。则 TCP 单连接吞吐量上界（忽略接收窗口限制）为：
 
@@ -199,7 +160,7 @@ $$
 \text{Throughput}_{actual} = \min\left(\sum_{i=1}^{N} \frac{W_i}{R_i}, B, P \cdot \text{payload}_{avg}\right)
 $$
 
-### 3.4 Reactor 模式形式化
+### 2.4 Reactor 模式形式化
 
 Reactor 模式可形式化为五元组：
 
@@ -215,9 +176,9 @@ $$
 
 Reactor 的核心不变量：**所有 IO 事件由统一的 demultiplexer 收集，再分发到对应的 handler**。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 TCP 三次握手的时序分析
+### 3.1 TCP 三次握手的时序分析
 
 设客户端发送 SYN 时刻为 $t_0$，服务端收到 SYN 时刻为 $t_1 = t_0 + \text{RTT}/2$。服务端回送 SYN+ACK 时刻为 $t_1 + \epsilon$（$\epsilon$ 为处理时间）。客户端收到 SYN+ACK 时刻为 $t_2 = t_1 + \epsilon + \text{RTT}/2 = t_0 + \text{RTT} + \epsilon$。
 
@@ -231,7 +192,7 @@ $$
 
 这是连接池减少延迟的理论依据：复用已建立连接可节省约 $1.5 \cdot \text{RTT}$ 的握手开销。对于跨洲 200ms RTT，这意味着每次请求节省 300ms。
 
-### 4.2 TIME_WAIT 状态的数学分析
+### 3.2 TIME_WAIT 状态的数学分析
 
 四次挥手后，主动关闭方进入 TIME_WAIT 状态，持续 $2 \cdot \text{MSL}$（Maximum Segment Lifetime）。MSL 在 RFC 793 中定义为 2 分钟，现代 Linux 默认为 30 秒。
 
@@ -248,7 +209,7 @@ $$
 
 若 $C = 10000$，$T_{tw} = 60$s，则 $N_{tw} = 600000$。每个套接字占用约 1.5 KB 内核内存，共约 900 MB。这解释了高并发短连接场景下为何要使用长连接或调小 `tcp_max_tw_buckets`。
 
-### 4.3 Epoll 的复杂度分析
+### 3.3 Epoll 的复杂度分析
 
 不同 IO 多路复用机制的时间复杂度：
 
@@ -266,7 +227,7 @@ epoll 优势的核心来自两点：
 
 当连接数 $N \gg k$（活跃数）时，epoll 性能远超 select。这是 C10K 问题在 Linux 上的解决方案。
 
-### 4.4 Netty Reactor 模型的吞吐量模型
+### 3.4 Netty Reactor 模型的吞吐量模型
 
 设 boss 线程数为 $B$，worker 线程数为 $W$，每个 worker 处理连接数为 $L$，则总连接数为：
 
@@ -288,7 +249,7 @@ $$
 
 其中 $L_{max}$ 为单 worker 可承载的连接数上限（受线程栈、堆内存、IO 带宽限制）。
 
-### 4.5 虚拟线程的内存模型
+### 3.5 虚拟线程的内存模型
 
 虚拟线程的栈存储在堆上的 `Stacklet` 结构中，按需分配与释放。设虚拟线程初始栈大小为 $s_0$（通常 256 B），最大栈大小为 $s_{max}$（受 `jdk.virtualThreadMaxStackSize` 控制，默认无上限）。
 
@@ -301,9 +262,9 @@ JVM 载体线程数为 CPU 核数 $C$。设虚拟线程数为 $V$，每虚拟线
 
 这是虚拟线程支撑百万长连接的理论基础。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 示例一：阻塞式 Echo Server（thread-per-connection）
+### 4.1 示例一：阻塞式 Echo Server（thread-per-connection）
 
 本示例展示最基础的 TCP 服务，每连接一线程。代码经详细注释，便于理解 Socket API 与线程模型。
 
@@ -494,7 +455,7 @@ public class BioEchoClient {
 }
 ```
 
-### 5.2 示例二：NIO 多路复用 HTTP Server
+### 4.2 示例二：NIO 多路复用 HTTP Server
 
 本示例使用 `Selector` 实现单线程服务多连接。代码刻意保持简洁但功能完整，包含连接建立、读取、解析、响应全流程。
 
@@ -649,7 +610,7 @@ public class NioHttpServer {
 }
 ```
 
-### 5.3 示例三：JDK 11 HttpClient 发起 HTTP/2 请求
+### 4.3 示例三：JDK 11 HttpClient 发起 HTTP/2 请求
 
 JDK 11 引入的 `java.net.http.HttpClient` 内置支持 HTTP/2 与 WebSocket，是现代 Java 应用的首选 HTTP 客户端。
 
@@ -782,7 +743,7 @@ public class ModernHttpClientDemo {
 }
 ```
 
-### 5.4 示例四：Netty 实现的高性能 TCP 服务
+### 4.4 示例四：Netty 实现的高性能 TCP 服务
 
 Netty 简化了 NIO 的样板代码，提供优雅的事件链模型。
 
@@ -933,7 +894,7 @@ public class NettyEchoServer {
 }
 ```
 
-### 5.5 示例五：基于虚拟线程的 HTTP 服务器
+### 4.5 示例五：基于虚拟线程的 HTTP 服务器
 
 JDK 21 虚拟线程让"thread-per-connection"模型在高并发下重新可用。
 
@@ -1021,7 +982,7 @@ public class VirtualThreadHttpServer {
 }
 ```
 
-### 5.6 示例六：UDP 客户端与服务端
+### 4.6 示例六：UDP 客户端与服务端
 
 UDP 无连接，适用于 DNS、视频流、游戏等场景。
 
@@ -1108,9 +1069,9 @@ public class UdpEchoExample {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 IO 模型对比
+### 5.1 IO 模型对比
 
 | 维度 | BIO | NIO | AIO | 虚拟线程 |
 |------|-----|-----|-----|----------|
@@ -1126,7 +1087,7 @@ public class UdpEchoExample {
 
 **结论**：在新项目且 JDK 21+ 可用时，优先考虑虚拟线程模型；如需精细控制或追求极致性能，使用 Netty；遗留系统或简单场景，BIO 仍可用。
 
-### 6.2 HTTP 客户端对比
+### 5.2 HTTP 客户端对比
 
 | 客户端 | HTTP/2 | 异步 | WebSocket | 内存占用 | 维护状态 |
 |--------|--------|------|-----------|----------|----------|
@@ -1143,7 +1104,7 @@ public class UdpEchoExample {
 - 极致性能、需要细粒度控制：Netty 直接编程。
 - 兼容老系统：Apache HttpClient 5（API 设计成熟）。
 
-### 6.3 主流网络框架对比
+### 5.3 主流网络框架对比
 
 | 框架 | 核心模型 | 性能 | 易用性 | 典型用户 |
 |------|----------|------|--------|----------|
@@ -1154,7 +1115,7 @@ public class UdpEchoExample {
 | Spring WebFlux | Reactor | 高 | 高 | Spring 应用 |
 | Undertow | XNIO | 高 | 中 | WildFly/JBoss |
 
-### 6.4 Reactor 与 Proactor 的本质差异
+### 5.4 Reactor 与 Proactor 的本质差异
 
 **Reactor**（同步 IO 多路复用）：
 
@@ -1170,9 +1131,9 @@ public class UdpEchoExample {
 
 Java NIO.2 的 `AsynchronousChannel` 在 Linux 上其实是用 epoll 模拟的，并非真正的 AIO。这也是 Netty 在 Linux 上推荐使用 NIO 而非 AIO 的原因。
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式一：Selector 线程执行耗时业务
+### 6.1 反模式一：Selector 线程执行耗时业务
 
 **事故案例**：某电商订单服务使用 NIO，开发者将订单处理逻辑（含数据库查询、远程调用）直接写在 `SelectionKey` 处理回调中。大促时数据库慢查询导致 Selector 线程阻塞 5 秒，整个服务无法 accept 新连接，最终雪崩。
 
@@ -1197,7 +1158,7 @@ if (key.isReadable()) {
 }
 ```
 
-### 7.2 反模式二：忽略半包粘包
+### 6.2 反模式二：忽略半包粘包
 
 **事故案例**：某 IM 服务使用 NIO 直接按字节流读取消息，未做帧解析。客户端发送的两条消息被合并为一次 `read()`，导致 JSON 解析失败。生产环境 30% 消息丢失。
 
@@ -1220,7 +1181,7 @@ ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(
 ));
 ```
 
-### 7.3 反模式三：未设置 SO_TIMEOUT 导致永久阻塞
+### 6.3 反模式三：未设置 SO_TIMEOUT 导致永久阻塞
 
 **事故案例**：某支付回调服务接收客户端 Socket 但未设置 `SO_TIMEOUT`。攻击者建立连接后不发任何数据，线程永久阻塞。数千个连接耗尽线程池，正常请求无法处理。
 
@@ -1231,7 +1192,7 @@ socket.setSoTimeout(30_000); // 30 秒超时
 // 同时配合心跳机制，空闲连接主动关闭
 ```
 
-### 7.4 反模式四：连接泄漏未关闭
+### 6.4 反模式四：连接泄漏未关闭
 
 **事故案例**：某爬虫服务使用 `HttpURLConnection` 但异常路径未关闭连接，导致 CLOSE_WAIT 堆积，最终 `Too many open files`。
 
@@ -1248,7 +1209,7 @@ try (Socket socket = new Socket(host, port)) {
 }
 ```
 
-### 7.5 反模式五：在 Selector 上空轮询
+### 6.5 反模式五：在 Selector 上空轮询
 
 **事故案例**：某服务在 Linux 上遭遇 JDK epoll bug，`selector.select()` 立即返回 0 但不阻塞，CPU 飙到 100%。Netty 通过重建 Selector 解决此问题。
 
@@ -1263,7 +1224,7 @@ if (ready == 0 && elapsed < 100_000) { // < 100 微秒，疑似空轮询
 }
 ```
 
-### 7.6 反模式六：未配置 SO_BACKLOG 导致连接拒绝
+### 6.6 反模式六：未配置 SO_BACKLOG 导致连接拒绝
 
 **事故案例**：某秒杀服务默认 `SO_BACKLOG=50`，瞬时大量 SYN 到达，连接队列溢出，内核回送 RST，客户端报 `Connection reset`。
 
@@ -1279,7 +1240,7 @@ server.setReuseAddress(true);
 server.bind(new InetSocketAddress(port), 8192); // backlog = 8192
 ```
 
-### 7.7 反模式七：错误的线程模型
+### 6.7 反模式七：错误的线程模型
 
 **事故案例**：某中间件在 Netty worker 线程中调用 `Thread.sleep` 模拟业务延迟，导致 worker 线程被占用，其他连接饥饿。
 
@@ -1290,7 +1251,7 @@ ch.pipeline().addLast(ioGroup, new IoHandler());
 ch.pipeline().addLast(bizGroup, new BusinessHandler()); // 单独的业务线程组
 ```
 
-### 7.8 反模式八：ByteBuf 泄漏
+### 6.8 反模式八：ByteBuf 泄漏
 
 **事故案例**：某服务直接使用 `ByteBuf` 但未释放，长期运行后堆内存耗尽。Netty 通过 `ResourceLeakDetector` 检测泄漏。
 
@@ -1306,9 +1267,9 @@ public class MyHandler extends SimpleChannelInboundHandler<ByteBuf> {
 }
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 连接池设计
+### 7.1 连接池设计
 
 连接池是降低握手开销的关键。设计要点：
 
@@ -1394,7 +1355,7 @@ public class SocketConnectionPool {
 }
 ```
 
-### 8.2 性能优化清单
+### 7.2 性能优化清单
 
 **JVM 层**：
 
@@ -1416,7 +1377,7 @@ public class SocketConnectionPool {
 - 合理设置 worker 线程数，默认 `CPU * 2` 在 IO 密集场景偏多。
 - 业务线程池与 IO 线程池隔离。
 
-### 8.3 监控指标
+### 7.3 监控指标
 
 关键监控指标：
 
@@ -1428,7 +1389,7 @@ public class SocketConnectionPool {
 
 Netty 内置 `ChannelTrafficShapingHandler` 可统计流量。Prometheus + Micrometer 可暴露指标。
 
-### 8.4 安全实践
+### 7.4 安全实践
 
 - **TLS 必选**：内部服务也建议启用 mTLS（双向认证）。
 - **协议版本**：禁用 SSLv3、TLS 1.0/1.1，仅启用 TLS 1.2/1.3。
@@ -1453,9 +1414,9 @@ engine.setEnabledCipherSuites(new String[]{
 });
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：某电商订单服务从 BIO 迁移到 Netty
+### 8.1 案例一：某电商订单服务从 BIO 迁移到 Netty
 
 **背景**：日订单量 5000 万，原有 BIO 服务使用 2000 线程，单机 QPS 上限 5000，集群 30 台机器。机器成本高，扩容频繁。
 
@@ -1498,7 +1459,7 @@ bootstrap.group(boss, worker)
          });
 ```
 
-### 9.2 案例二：某 IM 系统支撑百万长连接
+### 8.2 案例二：某 IM 系统支撑百万长连接
 
 **背景**：社交 IM，峰值在线 500 万，需要长连接保持消息推送。
 
@@ -1535,7 +1496,7 @@ bootstrap.group(boss, worker)
 - 集群 10 台机器支撑 500 万在线。
 - 单条消息推送延迟 P99 < 100ms。
 
-### 9.3 案例三：从 Netty Reactor 迁移到虚拟线程
+### 8.3 案例三：从 Netty Reactor 迁移到虚拟线程
 
 **背景**：内部 RPC 框架基于 Netty，业务代码以回调风格编写，可读性差、调试困难。JDK 21 GA 后考虑迁移到虚拟线程。
 
@@ -1575,7 +1536,7 @@ bootstrap.group(boss, worker)
 - 业务异常排查时间从平均 1 小时降到 10 分钟。
 - 性能持平（虚拟线程在 IO 密集场景下与 Reactor 相当）。
 
-### 9.4 案例四：HTTP/2 多路复用优化微服务通信
+### 8.4 案例四：HTTP/2 多路复用优化微服务通信
 
 **背景**：微服务集群内部调用频繁，使用 HTTP/1.1 短连接，每次调用握手开销 50ms（跨可用区）。
 
@@ -1597,7 +1558,7 @@ HttpClient client = HttpClient.newBuilder()
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题 1**：解释 TCP 三次握手为什么不是两次或四次。
 
@@ -1623,7 +1584,7 @@ HttpClient client = HttpClient.newBuilder()
 - 非阻塞 IO：数据未就绪时立即返回 EAGAIN，需轮询。
 - 非阻塞本身不能节省 CPU，但配合多路复用可避免无效轮询。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题 4**：分析 Netty 主从 Reactor 模型中 boss 与 worker 的线程数该如何选择。
 
@@ -1697,7 +1658,7 @@ public class SimplePool<T> {
 - `SimpleChannelInboundHandler` 在 `channelRead0` 完成后自动 release。
 - 对出站 ByteBuf，需在 ChannelPipeline 末尾由 HeadContext 释放。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题 7**：设计一个支持百万长连接的 IM 推送系统，画出架构图并说明关键技术选型。
 
@@ -1740,7 +1701,7 @@ public class SimplePool<T> {
 - SSE 在 HTTP/2 上自然多路复用，无需多连接。
 - 关键点：响应头 `Content-Type: text/event-stream`，按 `data: ...\n\n` 格式发送。
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Postel, J. 1981. *Transmission Control Protocol* (RFC 793). Internet Engineering Task Force. DOI: https://doi.org/10.17487/RFC0793
 
@@ -1774,9 +1735,9 @@ public class SimplePool<T> {
 
 [16] Marow, A. (Ed.) 2022. *The C10K Problem*. https://www.kegel.com/c10k.html (经典问题页面，持续维护)
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Oracle Java Tutorials: *Custom Networking*. https://docs.oracle.com/en/java/javase/21/docs/api/java.net/module-summary.html
 - Netty Official Documentation. https://netty.io/wiki/
@@ -1784,7 +1745,7 @@ public class SimplePool<T> {
 - Linux epoll(7) man page. https://man7.org/linux/man-pages/man7/epoll.7.html
 - Linux io_uring documentation. https://unixism.net/loti/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - W. Richard Stevens, Bill Fenner, Andrew M. Rudoff. *UNIX Network Programming, Volume 1: The Sockets Networking API* (3rd ed.). Addison-Wesley, 2003.
 - W. Richard Stevens. *TCP/IP Illustrated, Volume 1: The Protocols*. Addison-Wesley, 1994.
@@ -1792,7 +1753,7 @@ public class SimplePool<T> {
 - Elliotte Rusty Harold. *Java Network Programming* (4th ed.). O'Reilly, 2013.
 - Norman Maurer, Marvin Allen Wolfthal. *Netty in Action*. Manning, 2014.
 
-### 12.3 前沿论文
+### 11.3 前沿论文
 
 - Pressler, R., Bolshy, A. 2022. *JEP 425: Virtual Threads (Preview)*. OpenJDK. https://openjdk.org/jeps/425
 - Pressler, R. 2022. *JEP 428: Structured Concurrency (Incubator)*. OpenJDK. https://openjdk.org/jeps/428
@@ -1800,7 +1761,7 @@ public class SimplePool<T> {
 - Marow, D. Kegel. 1999. *The C10K Problem*. https://www.kegel.com/c10k.html
 - Welsh, M., Culler, D., Brewer, E. 2001. *SEDA: An Architecture for Well-Conditioned, Scalable Internet Services*. SOSP 2001. DOI: https://doi.org/10.1145/502034.502023
 
-### 12.4 优秀博客与开源项目
+### 11.4 优秀博客与开源项目
 
 - Netty Source Code. https://github.com/netty/netty
 - Project Loom Early-Access Builds. https://jdk.java.net/loom/
@@ -1808,7 +1769,7 @@ public class SimplePool<T> {
 - Martin Thompson. *Mechanical Sympathy* blog. https://mechanical-sympathy.blogspot.com/
 - Jean-Philippe Bempel. *NIO.2 Async Channel* deep dive. https://www.javaadvent.com/
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - **JEP 428 结构化并发**：简化并发错误处理与取消传播。
 - **JEP 453 作用域值（Scoped Values）**：替代 ThreadLocal 的不可变共享机制。

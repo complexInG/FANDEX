@@ -25,75 +25,6 @@ prerequisites:
   - c/概述
   - c/指针深度解析
   - c/数据类型详解
-learningObjectives:
-  - '[remember] 记忆 C 声明的语法文法(declaration-specifiers declarator-list),以及 *、[]、() 三个声明符运算符的优先级与结合性。'
-  - '[understand] 解释"右左法则"(right-left rule)的形式步骤,并将其应用于解析任意嵌套深度的 C 声明。'
-  - '[apply] 使用 typedef 将复杂声明分解为可读的多层类型别名,提升代码可维护性。'
-  - '[analyze] 分析函数指针数组、返回数组指针的函数、返回函数指针的数组等极端声明的内存布局与 ABI 约定。'
-  - '[evaluate] 评估 C 声明语法在可读性、可扩展性与类型表达力上的设计权衡,对比 C++/Rust/Go/Zig 的类型声明语法。'
-  - '[create] 设计一个生产级的事件循环库,使用函数指针表与回调注册机制,并保证跨平台 ABI 兼容。'
-exercises:
-  - id: decl-ex-01
-    type: fill-blank
-    cognitiveLevel: remember
-    question: '在 C 声明 `int *arr[10];` 中,运算符优先级最高的是 ______,因此 arr 的类型是 ______。'
-    hint: 数组下标 [] 的优先级高于解引用 *。
-    answers:
-      - '[]'
-      - '由 10 个 int 指针构成的数组'
-    blankCount: 2
-    caseSensitive: false
-    answer: '[] / 由 10 个 int 指针构成的数组'
-    explanation: ISO/IEC 9899:2024 §6.5.1 规定后缀运算符 [] 优先级高于前缀运算符 *,因此 arr 先与 [10] 结合为数组,再与 * 结合为指针。
-    difficulty: 1
-    estimatedTime: 1
-  - id: decl-ex-02
-    type: choice
-    cognitiveLevel: understand
-    question: '下列声明中,哪一项表示"函数指针数组,每个函数接受 int 返回 int"?'
-    options:
-      - 'int *func[10](int);'
-      - 'int (*func[10])(int);'
-      - 'int (*func)(int)[10];'
-      - 'int func[10](*int);'
-    correctIndex: 1
-    answer: 'B'
-    explanation: A 语法非法(函数不能作为数组元素);C 语法非法(函数不能返回数组);D 语法非法。B 中 func 先与 [10] 结合为数组,再与 *(int) 结合为函数指针,每个元素是 int(*)(int)。
-    difficulty: 2
-    estimatedTime: 2
-  - id: decl-ex-03
-    type: code-fix
-    cognitiveLevel: apply
-    question: '下列声明意图定义"指向返回 int 的函数的指针",但无法编译。请定位并修复。'
-    buggyCode: |
-      int *func(void);
-      func = &my_function;
-    language: c
-    fixedCode: |
-      int (*func)(void);
-      func = &my_function;
-    errorDescription: 原代码声明 func 为"返回 int* 的函数",而非"指向返回 int 的函数的指针"。函数声明与函数指针声明语法不同,需用括号将 *func 括起。
-    answer: '将 int *func(void); 改为 int (*func)(void);'
-    explanation: ISO/IEC 9899:2024 §6.7.6.3 规定函数声明符语法为 direct-declarator(parameter-list);函数指针声明符为 (pointer) direct-declarator(parameter-list)。
-    difficulty: 3
-    estimatedTime: 5
-  - id: decl-ex-04
-    type: open-ended
-    cognitiveLevel: evaluate
-    question: 'C 语言的声明语法被广泛批评为"螺旋式"难以阅读。请分析这种设计的深层原因(包括与表达式语法的对称性、历史兼容性约束),并讨论 C++、Rust、Go、Zig 各自如何改进类型声明语法,各自的优劣。'
-    keyPoints:
-      - 指出 C 声明遵循"声明模拟使用"(declaration follows use)原则:声明形式与使用形式对称。
-      - 引用 Stroustrup "C 声明语法是表达式语法的镜像" 论述。
-      - 解释 []、() 后缀优先于 * 前缀的历史来源(BCPL/B 语言继承)。
-      - C++ 引入 using、auto、模板别名,但保留 C 声明语法基础。
-      - 'Rust 采用 "name: Type" 语法,类型在后,消除螺旋式解析。'
-      - Go 采用 "var name Type" 语法,左到右阅读。
-      - Zig 采用 "var name = Type" 语法,完全前缀。
-      - 评估:Rust/Go/Zig 语法更易读但偏离 C 传统;C++ 在兼容与可读性间妥协。
-    answer: 'C 声明遵循"声明模拟使用"原则,导致螺旋式解析;Rust/Go/Zig 通过类型后置或前缀语法彻底改进,但牺牲了与 C 的兼容性。'
-    minWords: 200
-    difficulty: 5
-    estimatedTime: 30
 references:
   - type: standard
     authors:
@@ -174,58 +105,12 @@ reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 90
 ---
 
-## 1. 学习目标与导论
 
-C 语言的声明语法以"难以阅读"著称,但其设计并非随意。本章从形式文法、历史动因、工程实践三个维度,系统性地解析 C 复杂声明的设计哲学与阅读方法,使读者能够准确解析任意嵌套深度的声明,并生产性地使用 typedef 与函数指针表。
-
-### 1.1 学习目标速览
-
-| Bloom 层次 | 中文术语 | 本章对应目标 |
-| :--- | :--- | :--- |
-| remember | 记忆 | 记忆声明符运算符优先级 |
-| understand | 理解 | 解释右左法则的形式步骤 |
-| apply | 应用 | 用 typedef 分解复杂声明 |
-| analyze | 分析 | 分析函数指针数组的 ABI |
-| evaluate | 评价 | 评估 C 声明语法的设计权衡 |
-| create | 创造 | 设计事件循环库 |
-
-### 1.2 为什么 C 声明如此复杂
-
-一段经典的"迷宫式"声明:
-
-```c
-int (*(*foo)(double))[3];
-```
-
-这是"foo 是一个指针,指向一个函数,函数接受 double 参数,返回一个指针,指向包含 3 个 int 的数组"。对初学者而言,这段代码几乎不可读。但其设计遵循严格的语法规则,且与表达式语法对称——这正是 C 声明的核心设计原则:**声明模拟使用**(declaration follows use)。
-
-### 1.3 本章结构
-
-本章共分 14 节,从历史动机出发,逐步推进到形式文法、工程实践与案例研究。
-
-```
-1. 学习目标与导论
-2. 历史动机:C 声明语法的演进
-3. 形式化定义:C 声明的 BNF 文法
-4. 右左法则:解析算法
-5. 三大声明符运算符
-6. 函数指针详解
-7. 数组指针与指针数组
-8. 复杂声明案例库
-9. typedef:声明的分解工具
-10. 对比分析:C/C++/Rust/Go/Zig
-11. 常见陷阱与未定义行为
-12. 工程实践:编译选项与静态分析
-13. 案例研究:Linux 内核、SQLite、Redis
-14. 习题与参考答案
-15. 参考文献与延伸阅读
-```
-
-## 2. 历史动机:C 声明语法的演进
+## 1. 历史动机:C 声明语法的演进
 
 理解 C 声明语法,必须回到其 BCPL/B 语言根源,以及 Dennis Ritchie 在 1972 年的设计决策。
 
-### 2.1 BCPL 与 B 语言:类型无关的先驱(1967-1969)
+### 1.1 BCPL 与 B 语言:类型无关的先驱(1967-1969)
 
 1967 年,Martin Richards 在剑桥设计 BCPL(Basic Combined Programming Language),这是一种无类型语言:所有变量都是"机器字"(machine word)。声明语法极为简单:
 
@@ -239,7 +124,7 @@ LET FOO = 42
 foo = 42;
 ```
 
-### 2.2 C 语言的类型化革命(1972)
+### 1.2 C 语言的类型化革命(1972)
 
 1972 年,Dennis Ritchie 在 B 语言基础上引入类型系统,创造 C 语言。他面临的核心设计问题是:如何在保留 B 语言"声明模拟使用"风格的同时,引入类型标注?
 
@@ -268,7 +153,7 @@ Ritchie 在《The Development of the C Language》(1993)中写道:
 使用:  int x = f(42);  // f(42) 的类型是 int
 ```
 
-### 2.3 优先级的来源:BCPL 的遗产
+### 1.3 优先级的来源:BCPL 的遗产
 
 C 声明中,后缀运算符 `[]` 与 `()` 的优先级高于前缀运算符 `*`。这一选择继承自表达式语法:
 
@@ -280,7 +165,7 @@ int c = *b;     // *b 是 int
 
 如果 `[]` 与 `*` 优先级相同(或 `*` 更高),则 `int *a[10]` 会被解析为"指向 10 个 int 的指针",而非"10 个 int 指针的数组",破坏了"声明模拟使用"原则。
 
-### 2.4 螺旋式解析:复杂性的根源
+### 1.4 螺旋式解析:复杂性的根源
 
 当 `[]`、`()`、`*` 嵌套时,"声明模拟使用"原则导致声明必须从内向外螺旋式阅读:
 
@@ -297,7 +182,7 @@ int (*foo)(int);
 
 这种"螺旋式"阅读正是 C 声明被批评的根源。Peter van der Linden 在《Expert C Programming》(1994)中专门用一章讨论"声明语法的恐怖"。
 
-### 2.5 标准化历程
+### 1.5 标准化历程
 
 | 版本 | 年份 | 声明相关改动 |
 | :--- | :--- | :--- |
@@ -318,11 +203,11 @@ int (*callback)(int, double) = get_handler();
 auto callback = get_handler();  // 类型由编译器推断
 ```
 
-## 3. 形式化定义:C 声明的 BNF 文法
+## 2. 形式化定义:C 声明的 BNF 文法
 
 本节用 ISO/IEC 9899:2024 附录 A 的 BNF 文法,严格刻画 C 声明的语法结构。
 
-### 3.1 声明的顶层结构
+### 2.1 声明的顶层结构
 
 ISO/IEC 9899:2024 §6.7 将声明(declaration)定义为:
 
@@ -344,7 +229,7 @@ $$
 \text{init-declarator} \to \text{declarator} \mid \text{declarator} = \text{initializer}
 $$
 
-### 3.2 声明符的递归文法
+### 2.2 声明符的递归文法
 
 声明符(declarator)是声明的核心,递归定义:
 
@@ -360,7 +245,7 @@ $$
 \text{pointer} \to *\ \text{type-qualifier-list}_{\text{opt}} \mid *\ \text{type-qualifier-list}_{\text{opt}}\ \text{pointer}
 $$
 
-### 3.3 文法的关键性质
+### 2.3 文法的关键性质
 
 从 BNF 文法可推导出 C 声明的关键性质:
 
@@ -368,7 +253,7 @@ $$
 2. **结合性**:`direct-declarator [ ]` 与 `direct-declarator ()` 是后缀运算,优先级高于前缀 `*`。
 3. **括号消除歧义**:`(declarator)` 允许用括号改变默认优先级,这是 `int (*p)[10]` 与 `int *p[10]` 区别的根源。
 
-### 3.4 类型构造的方向性
+### 2.4 类型构造的方向性
 
 C 的类型构造遵循"由内向外"的方向:
 
@@ -385,7 +270,7 @@ $$
 
 最终 $\text{foo}: T_2 = \text{int}(*)(\text{int})$。
 
-### 3.5 抽象声明符
+### 2.5 抽象声明符
 
 当省略标识符时,declarator 退化为抽象声明符(abstract declarator),用于 `sizeof`、类型转换、函数原型:
 
@@ -397,11 +282,11 @@ int (*signal(int, int (*)(int)))(int);  /* signal 函数原型 */
 
 抽象声明符在函数原型中尤为重要:它允许省略参数名,仅保留类型信息。
 
-## 4. 右左法则:解析算法
+## 3. 右左法则:解析算法
 
 右左法则是 Bell Labs 工程师总结的口语化算法,用于解析任意 C 声明。本节给出其形式化步骤。
 
-### 4.1 算法形式描述
+### 3.1 算法形式描述
 
 **输入**:C 声明 `D`
 
@@ -420,7 +305,7 @@ int (*signal(int, int (*)(int)))(int);  /* signal 函数原型 */
 4. 跳出括号对,回到步骤 2,直到处理完所有符号。
 5. 将记录的描述按相反顺序组合(最内层最先记录,最后组合时在最前)。
 
-### 4.2 算法的伪代码描述
+### 3.2 算法的伪代码描述
 
 ```
 function parse_declaration(decl):
@@ -454,7 +339,7 @@ function parse_declaration(decl):
         cursor -= 1  # skip '('
 ```
 
-### 4.3 示例:解析经典复杂声明
+### 3.3 示例:解析经典复杂声明
 
 **示例 1**:`int *arr[10];`
 
@@ -510,7 +395,7 @@ function parse_declaration(decl):
 
 **组合**:"foo 是指针,指向接受 (double) 返回指针的函数,该指针指向含 3 个 int 的数组"
 
-### 4.4 算法的局限性
+### 3.4 算法的局限性
 
 右左法则是一个口语化算法,存在以下局限:
 
@@ -520,7 +405,7 @@ function parse_declaration(decl):
 
 生产代码建议使用 `cdecl` 工具(见 §4.5)或编译器错误信息验证。
 
-### 4.5 cdecl 工具
+### 3.5 cdecl 工具
 
 `cdecl` 是经典工具,可在 C 声明与英语之间互译:
 
@@ -535,11 +420,11 @@ int (*(*foo)(double))[3]
 
 在线版:https://cdecl.org/
 
-## 5. 三大声明符运算符
+## 4. 三大声明符运算符
 
 本节深入分析 C 声明的三大运算符:`*`、`[]`、`()`。
 
-### 5.1 运算符优先级
+### 4.1 运算符优先级
 
 ISO/IEC 9899:2024 §6.5.1 规定声明符运算符优先级:
 
@@ -552,7 +437,7 @@ ISO/IEC 9899:2024 §6.5.1 规定声明符运算符优先级:
 
 **关键规则**:后缀 `[]` 与 `()` 优先级相同且高于前缀 `*`;包围括号 `()` 可改变优先级。
 
-### 5.2 数组声明符 []
+### 4.2 数组声明符 []
 
 `[]` 声明数组,语法:
 
@@ -581,7 +466,7 @@ int vla[n];  /* C99 VLA,大小运行时确定 */
 
 VLA 在 C11 中变为可选特性(`__STDC_NO_VLA__` 宏检测)。
 
-### 5.3 函数声明符 ()
+### 4.3 函数声明符 ()
 
 `()` 声明函数,语法:
 
@@ -600,7 +485,7 @@ int (*op)(int);           /* op 是函数指针 */
 - `int f()` 与 `int f(void)` 不同:前者是"接受未指定参数的函数"(K&R 风格),后者是"无参函数"。C23 弃用 `f()` 空参数列表,推荐 `f(void)`。
 - 函数不能返回数组或函数,但可以返回指向数组或函数的指针。
 
-### 5.4 指针声明符 *
+### 4.4 指针声明符 *
 
 `*` 声明指针,语法:
 
@@ -626,7 +511,7 @@ const int *const p = &x;  /* 双 const:p 与 *p 均 const */
 
 记忆口诀:"const 修饰其左侧的声明符;若 const 在最左,则修饰第一个声明符"。
 
-### 5.5 包围括号 ()
+### 4.5 包围括号 ()
 
 包围括号 `()` 改变优先级,是 C 声明复杂性的核心:
 
@@ -641,11 +526,11 @@ int *a[10](void);  /* 非法!函数不能作为数组元素 */
 int (*a[10])(void);/* a 是数组,含 10 个函数指针 */
 ```
 
-## 6. 函数指针详解
+## 5. 函数指针详解
 
 函数指针是 C 类型系统中最强大也最易混淆的特性之一。
 
-### 6.1 函数指针的基本形式
+### 5.1 函数指针的基本形式
 
 ```c
 int (*fp)(int, double);  /* fp 是函数指针 */
@@ -653,7 +538,7 @@ int (*fp)(int, double);  /* fp 是函数指针 */
 
 **含义**:`fp` 是一个指针,指向一个函数,该函数接受 `(int, double)` 参数,返回 `int`。
 
-### 6.2 函数指针的赋值与调用
+### 5.2 函数指针的赋值与调用
 
 ```c
 int add(int a, int b) { return a + b; }
@@ -674,7 +559,7 @@ int main(void) {
 - 函数名在表达式中退化为指向该函数的指针(类似数组名退化为指向首元素的指针)。
 - `fp(arg)` 与 `(*fp)(arg)` 完全等价,标准明确允许。
 
-### 6.3 函数指针数组
+### 5.3 函数指针数组
 
 ```c
 int add(int a, int b) { return a + b; }
@@ -704,7 +589,7 @@ int main(void) {
 
 **跳转表(jump table)** 是函数指针数组的经典应用,替代 `switch-case` 链,提升性能(常量时间分发)。
 
-### 6.4 返回函数指针的函数
+### 5.4 返回函数指针的函数
 
 ```c
 int add(int a, int b) { return a + b; }
@@ -728,7 +613,7 @@ int main(void) {
 
 **解析讲解**：`get_op(char op)` 是函数,接受 `char`,返回 `int (*)(int, int)`(函数指针)。
 
-### 6.5 接受函数指针的函数:回调
+### 5.5 接受函数指针的函数:回调
 
 ```c
 /* qsort 接受比较函数指针 */
@@ -750,7 +635,7 @@ int main(void) {
 }
 ```
 
-### 6.6 signal:经典复杂声明
+### 5.6 signal:经典复杂声明
 
 POSIX `signal` 函数是 C 复杂声明的经典案例:
 
@@ -772,11 +657,11 @@ sighandler_t signal(int sig, sighandler_t func);
 
 POSIX `<signal.h>` 正是这样定义 `sighandler_t` 的。
 
-## 7. 数组指针与指针数组
+## 6. 数组指针与指针数组
 
 数组指针与指针数组是 C 声明中最易混淆的一对概念。
 
-### 7.1 指针数组(array of pointers)
+### 6.1 指针数组(array of pointers)
 
 ```c
 int *arr[5];  /* arr 是数组,含 5 个 int* */
@@ -799,7 +684,7 @@ arr: [0]-----> int
 - 不规则矩阵:每行长度不同
 - 命令行参数:`int main(int argc, char **argv)`
 
-### 7.2 数组指针(pointer to array)
+### 6.2 数组指针(pointer to array)
 
 ```c
 int (*ptr)[5];  /* ptr 是指针,指向 int[5] */
@@ -817,14 +702,14 @@ ptr -----> [int][int][int][int][int]
 - 传递二维数组:`void f(int (*matrix)[5], size_t rows);`
 - 动态分配二维数组:`int (*matrix)[5] = malloc(rows * sizeof(int[5]));`
 
-### 7.3 对比表
+### 6.3 对比表
 
 | 声明 | 类型 | 含义 | sizeof(arr) | sizeof(arr[0]) |
 | :--- | :--- | :--- | :--- | :--- |
 | `int *arr[5]` | `int *[5]` | 5 个 int 指针的数组 | 5 * sizeof(int*) | sizeof(int*) |
 | `int (*arr)[5]` | `int (*)[5]` | 指向 int[5] 的指针 | sizeof(int(*)[5]) | sizeof(int[5]) |
 
-### 7.4 二维数组作为函数参数
+### 6.4 二维数组作为函数参数
 
 ```c
 /* 三种等价写法 */
@@ -845,7 +730,7 @@ $$
 \text{addr}(\text{matrix}[i][j]) = \text{base} + i \times \text{cols} \times \text{sizeof(int)} + j \times \text{sizeof(int)}
 $$
 
-### 7.5 动态分配二维数组
+### 6.5 动态分配二维数组
 
 ```c
 /* 方法 1:数组指针 + 一次性分配(推荐) */
@@ -875,11 +760,11 @@ free(matrix2);
 - 方法 1:一次 `malloc`,内存连续,缓存友好
 - 方法 2/3:多次 `malloc`,内存不连续,缓存不友好
 
-## 8. 复杂声明案例库
+## 7. 复杂声明案例库
 
 本节给出 12 个复杂声明案例,涵盖实际工程中常见的类型。
 
-### 8.1 案例 1:标准库 signal
+### 7.1 案例 1:标准库 signal
 
 ```c
 void (*signal(int sig, void (*func)(int)))(int);
@@ -887,7 +772,7 @@ void (*signal(int sig, void (*func)(int)))(int);
 
 **解析讲解**：signal 是函数,接受 (int, void (*)(int)),返回 void (*)(int)。
 
-### 8.2 案例 2:atexit
+### 7.2 案例 2:atexit
 
 ```c
 int atexit(void (*func)(void));
@@ -895,7 +780,7 @@ int atexit(void (*func)(void));
 
 **解析讲解**：atexit 是函数,接受 (void (*)(void)),返回 int。
 
-### 8.3 案例 3:qsort 比较函数
+### 7.3 案例 3:qsort 比较函数
 
 ```c
 int (*compar)(const void *, const void *);
@@ -903,7 +788,7 @@ int (*compar)(const void *, const void *);
 
 **解析讲解**：compar 是函数指针,接受 (const void *, const void *),返回 int。
 
-### 8.4 案例 4:返回数组指针的函数
+### 7.4 案例 4:返回数组指针的函数
 
 ```c
 int (*get_array(void))[5] {
@@ -914,7 +799,7 @@ int (*get_array(void))[5] {
 
 **解析讲解**：get_array 是函数,接受 (void),返回 int (*)[5](指向 int[5] 的指针)。
 
-### 8.5 案例 5:函数指针数组的指针
+### 7.5 案例 5:函数指针数组的指针
 
 ```c
 int (*(*ops)[4])(int, int);
@@ -922,7 +807,7 @@ int (*(*ops)[4])(int, int);
 
 **解析讲解**：ops 是指针,指向含 4 个函数指针的数组,每个函数指针接受 (int, int),返回 int。
 
-### 8.6 案例 6:返回函数指针数组的函数
+### 7.6 案例 6:返回函数指针数组的函数
 
 ```c
 int (**get_handlers(void))(int);
@@ -930,7 +815,7 @@ int (**get_handlers(void))(int);
 
 **解析讲解**：get_handlers 是函数,接受 (void),返回 int (**)(int)(指向函数指针的指针)。
 
-### 8.7 案例 7:Linux 内核常见声明
+### 7.7 案例 7:Linux 内核常见声明
 
 ```c
 /* 文件操作结构体 */
@@ -944,7 +829,7 @@ struct file_operations {
 
 **解析讲解**：`read` 是函数指针,接受 (struct file *, char __user *, size_t, loff_t *),返回 ssize_t。
 
-### 8.8 案例 8:线程入口函数
+### 7.8 案例 8:线程入口函数
 
 ```c
 /* POSIX 线程 */
@@ -954,7 +839,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 
 **解析讲解**：start_routine 是函数指针,接受 (void *),返回 void *。
 
-### 8.9 案例 9:跳转表
+### 7.9 案例 9:跳转表
 
 ```c
 typedef enum { OP_ADD, OP_SUB, OP_MUL, OP_DIV } opcode_t;
@@ -968,7 +853,7 @@ int dispatch(opcode_t op, int a, int b) {
 }
 ```
 
-### 8.10 案例 10:回调链
+### 7.10 案例 10:回调链
 
 ```c
 typedef void (*callback_t)(const char *event, void *user_data);
@@ -986,7 +871,7 @@ void fire_event(struct callback_node *head, const char *event) {
 }
 ```
 
-### 8.11 案例 11:状态机
+### 7.11 案例 11:状态机
 
 ```c
 typedef enum { S_INIT, S_RUNNING, S_STOPPED } state_t;
@@ -1007,7 +892,7 @@ state_t run_state_machine(state_t current, int event) {
 }
 ```
 
-### 8.12 案例 12:C23 typeof 与 auto
+### 7.12 案例 12:C23 typeof 与 auto
 
 ```c
 /* C23 之前 */
@@ -1020,11 +905,11 @@ auto complex_ptr2 = some_function;  /* 类型自动推断 */
 typeof(some_function) complex_ptr3;  /* 同 some_function 的类型 */
 ```
 
-## 9. typedef:声明的分解工具
+## 8. typedef:声明的分解工具
 
 `typedef` 是分解复杂声明的核心工具。本节给出系统化的 typedef 用法。
 
-### 9.1 typedef 的语义
+### 8.1 typedef 的语义
 
 `typedef` 创建类型别名,语法与变量声明相同,只是 `typedef` 关键字使其变为类型定义:
 
@@ -1037,7 +922,7 @@ typedef int *int_ptr;
 int_ptr q;  /* q 是 int* */
 ```
 
-### 9.2 函数指针的 typedef
+### 8.2 函数指针的 typedef
 
 ```c
 /* 不用 typedef:难以阅读 */
@@ -1060,7 +945,7 @@ int arr[] = {3, 1, 4, 1, 5};
 sort(arr, 5, cmp_int);
 ```
 
-### 9.3 数组类型的 typedef
+### 8.3 数组类型的 typedef
 
 ```c
 typedef int matrix_t[3][4];  /* matrix_t 是 int[3][4] 的别名 */
@@ -1069,7 +954,7 @@ matrix_t m;  /* m 是 int[3][4] */
 void f(matrix_t m);  /* f 接受 int[3][4](实际退化为 int(*)[4]) */
 ```
 
-### 9.4 多层 typedef
+### 8.4 多层 typedef
 
 ```c
 /* 分解三层嵌套 */
@@ -1084,7 +969,7 @@ typedef dispatcher_t (*factory_t)(void);      /* 工厂 */
 factory_t make_factory(void);
 ```
 
-### 9.5 typedef 与 #define 的区别
+### 8.5 typedef 与 #define 的区别
 
 ```c
 /* typedef:类型别名,作用域受限 */
@@ -1098,7 +983,7 @@ const INT_PTR p2 = NULL;  /* p2 是 const int*,文本替换后是 const int * */
 
 **关键区别**:`typedef` 是真正的类型别名,`const int_ptr` 是"const 指针"(顶层 const);`#define` 是文本替换,`const INT_PTR` 展开为 `const int *` 是"指向 const int 的指针"(底层 const)。
 
-### 9.6 C23 using 关键字(C++ 风格)
+### 8.6 C23 using 关键字(C++ 风格)
 
 C23 引入 `using` 关键字(C++17 风格),作为 `typedef` 的更易读替代:
 
@@ -1114,11 +999,11 @@ typedef void (*sighandler_t)(int);
 
 `using` 语法将别名放在左侧,类型放在右侧,更符合现代语言习惯。
 
-## 10. 对比分析:C/C++/Rust/Go/Zig
+## 9. 对比分析:C/C++/Rust/Go/Zig
 
 本节横向对比主流系统语言的类型声明语法。
 
-### 10.1 C vs C++
+### 9.1 C vs C++
 
 C++ 保留了 C 的声明语法,但引入了多项改进:
 
@@ -1146,7 +1031,7 @@ auto [a, b] = std::make_pair(1, 2);
 | 模板 | 无 | C++ 模板 |
 | 函数返回类型后置 | 无 | C++11 `auto f() -> int` |
 
-### 10.2 C vs Rust
+### 9.2 C vs Rust
 
 Rust 采用"name: Type"语法,彻底消除螺旋式解析:
 
@@ -1171,7 +1056,7 @@ let ops: [BinaryOp; 4] = [add, sub, mul, div];
 | 模板 | 无 | 泛型(`fn f<T>()`) |
 | 内存安全 | UB 频发 | 编译期保证 |
 
-### 10.3 C vs Go
+### 9.3 C vs Go
 
 Go 采用 "var name Type" 语法,左到右阅读:
 
@@ -1195,7 +1080,7 @@ var ops = []BinaryOp{add, sub, mul, div}
 | 泛型 | 无 | Go 1.18+ 泛型 |
 | 内存安全 | UB 频发 | GC + 运行时检查 |
 
-### 10.4 C vs Zig
+### 9.4 C vs Zig
 
 Zig 采用 "var name = Type" 语法,完全前缀:
 
@@ -1219,7 +1104,7 @@ var ops = [_]BinaryOp{ add, sub, mul, div };
 | 泛型 | 无 | 编译期 `comptime` |
 | 内存安全 | UB 频发 | 编译期 + 运行期检查 |
 
-### 10.5 综合对比
+### 9.5 综合对比
 
 ```c
 /* C:函数指针数组 */
@@ -1248,9 +1133,9 @@ var ops = [_]*const fn(i32, i32) i32{ add, sub, mul, div };
 
 **结论**:C 的螺旋式声明语法在 1972 年是合理的(为保持与 B 语言的对称性),但在现代语言中已被 Rust/Go/Zig 的左到右语法取代。C23 引入 `auto`/`typeof`/`using` 部分缓解了可读性问题,但无法彻底改变。
 
-## 11. 常见陷阱与未定义行为
+## 10. 常见陷阱与未定义行为
 
-### 11.1 陷阱 1:函数声明与函数指针混淆
+### 10.1 陷阱 1:函数声明与函数指针混淆
 
 ```c
 /* 错误:意图是函数指针,实际是函数声明 */
@@ -1262,7 +1147,7 @@ int (*func)(void);  /* func 是函数指针 */
 func = &my_func;
 ```
 
-### 11.2 陷阱 2:指针数组与数组指针混淆
+### 10.2 陷阱 2:指针数组与数组指针混淆
 
 ```c
 /* 错误:意图是数组指针,实际是指针数组 */
@@ -1274,7 +1159,7 @@ int (*arr)[5];      /* 指向 int[5] 的指针 */
 arr = &matrix;
 ```
 
-### 11.3 陷阱 3:函数指针类型不匹配
+### 10.3 陷阱 3:函数指针类型不匹配
 
 ```c
 int add(int a, int b) { return a + b; }
@@ -1291,7 +1176,7 @@ int main(void) {
 
 **修复**:确保函数指针类型与函数类型完全匹配。
 
-### 11.4 陷阱 4:未初始化的函数指针
+### 10.4 陷阱 4:未初始化的函数指针
 
 ```c
 int (*fp)(int, int);
@@ -1307,7 +1192,7 @@ int (*fp)(int, int) = NULL;
 if (fp) fp(1, 2);  /* 显式 NULL 检查 */
 ```
 
-### 11.5 陷阱 5:const 位置错误
+### 10.5 陷阱 5:const 位置错误
 
 ```c
 const int *p;       /* 指向 const int 的指针 */
@@ -1319,7 +1204,7 @@ int * const p;      /* const 指针 */
 int const * p;      /* 指向 const 的指针 */
 ```
 
-### 11.6 陷阱 6:数组退化为指针
+### 10.6 陷阱 6:数组退化为指针
 
 ```c
 int arr[10];
@@ -1332,7 +1217,7 @@ void f(int arr[10]) {
 }
 ```
 
-### 11.7 陷阱 7:多维数组参数省略
+### 10.7 陷阱 7:多维数组参数省略
 
 ```c
 /* 错误:省略第二维 */
@@ -1346,7 +1231,7 @@ void f(int matrix[][4]) {  /* OK */
 }
 ```
 
-### 11.8 陷阱 8:函数返回栈上指针
+### 10.8 陷阱 8:函数返回栈上指针
 
 ```c
 /* 错误:返回栈上地址 */
@@ -1362,7 +1247,7 @@ int *f(void) {
 }
 ```
 
-### 11.9 陷阱 9:typedef 与 #define 混淆
+### 10.9 陷阱 9:typedef 与 #define 混淆
 
 ```c
 typedef int *int_ptr;
@@ -1377,7 +1262,7 @@ p2 = &x;   /* OK:p2 不是 const */
 *p2 = 0;   /* 编译错误:*p2 是 const */
 ```
 
-### 11.10 陷阱 10:函数指针与成员函数指针混淆(C++)
+### 10.10 陷阱 10:函数指针与成员函数指针混淆(C++)
 
 ```cpp
 // C++ 中,成员函数指针与普通函数指针不同
@@ -1389,9 +1274,9 @@ int (Foo::*mfp)(int) = &Foo::bar;  // 成员函数指针
 int (*fp)(int) = &Foo::bar;        // 错误!类型不匹配
 ```
 
-## 12. 工程实践:编译选项与静态分析
+## 11. 工程实践:编译选项与静态分析
 
-### 12.1 编译选项
+### 11.1 编译选项
 
 ```bash
 # 启用所有警告,严格 ISO C
@@ -1404,7 +1289,7 @@ gcc -std=c23 -Wall -Wextra -Wpedantic -Wformat=2 \
 # -Wold-style-definition:拒绝 K&R 风格函数定义
 ```
 
-### 12.2 关键警告标志
+### 11.2 关键警告标志
 
 | 标志 | 作用 |
 | :--- | :--- |
@@ -1416,7 +1301,7 @@ gcc -std=c23 -Wall -Wextra -Wpedantic -Wformat=2 \
 | `-Wcast-function-type` | 警告函数指针类型不匹配的转换 |
 | `-Wpointer-sign` | 警告 signed/unsigned 指针不匹配 |
 
-### 12.3 静态分析
+### 11.3 静态分析
 
 ```bash
 # Clang Static Analyzer
@@ -1429,7 +1314,7 @@ cppcheck --enable=all --std=c23 complex_decl.c
 pvs-studio --source-file complex_decl.c
 ```
 
-### 12.4 cdecl 工具集成
+### 11.4 cdecl 工具集成
 
 ```bash
 # 安装 cdecl
@@ -1443,7 +1328,7 @@ cdecl declare "foo as pointer to function (double) returning pointer to array 3 
 # 输出: int (*(*foo)(double))[3]
 ```
 
-### 12.5 编译器错误信息利用
+### 11.5 编译器错误信息利用
 
 ```c
 /* 故意写错的声明 */
@@ -1457,7 +1342,7 @@ _Static_assert(
     "foo type mismatch");
 ```
 
-### 12.6 运行时检测
+### 11.6 运行时检测
 
 ```bash
 # UBSan:检测函数指针类型不匹配
@@ -1471,9 +1356,9 @@ UBSan 的 `-fsanitize=function` 在函数指针调用时检查类型签名,不�
 runtime error: call to function fadd through pointer to incorrect function type 'int (*)(int, int)'
 ```
 
-## 13. 案例研究:Linux 内核、SQLite、Redis
+## 12. 案例研究:Linux 内核、SQLite、Redis
 
-### 13.1 Linux 内核:file_operations
+### 12.1 Linux 内核:file_operations
 
 Linux 内核的 `file_operations` 结构体是函数指针表的经典案例:
 
@@ -1506,7 +1391,7 @@ else
     ret = -EINVAL;
 ```
 
-### 13.2 SQLite:回调与虚拟机
+### 12.2 SQLite:回调与虚拟机
 
 SQLite 大量使用函数指针实现 SQL 虚拟机与回调机制:
 
@@ -1532,7 +1417,7 @@ int sqlite3_exec(
 1. **回调机制**:`sqlite3_exec` 接受用户提供的回调,每行结果调用一次。
 2. **虚拟机指令**:SQLite 内部的 VDBE(Virtual Database Engine)用函数指针表实现指令分发。
 
-### 13.3 Redis:命令分发
+### 12.3 Redis:命令分发
 
 Redis 用函数指针表实现命令分发:
 
@@ -1561,7 +1446,7 @@ struct redisCommand redisCommandTable[] = {
 2. **运行时分发**:服务器解析命令后,查找表并调用对应函数指针。
 3. **性能**:相比 `if-else` 链,函数指针表是 O(1) 分发。
 
-### 13.4 综合比较
+### 12.4 综合比较
 
 | 项目 | 函数指针用法 | 设计模式 |
 | :--- | :--- | :--- |
@@ -1651,7 +1536,7 @@ D. `auto` 推断的类型与初始化表达式类型完全相同,包括顶层 co
 
 **解析讲解**：C23 的 `auto` 只能用于变量定义,不能用于函数参数或返回类型;C23 没有 lambda,不能与 C++ 的 `auto` 完全等价;`auto` 推断会丢失顶层 const(与 C++ 一致)。
 
-### 14.3 代码修正题
+### 13.3 代码修正题
 
 ## 知识讲解与要点分析（原习题 14.3.1(apply,难度 3)）
 
@@ -1734,7 +1619,7 @@ handler *signal(int sig, handler *func);  /* 错误! */
 
 **解析讲解**：`handler` 已是指针类型,`handler *` 是双重指针。typedef 简化时需注意别名的指针层级。
 
-### 14.4 开放性问题
+### 13.4 开放性问题
 
 ## 知识讲解与要点分析（原习题 14.4.1(evaluate,难度 5)）
 
@@ -1851,9 +1736,9 @@ struct file_operations {
 
 简化后,`struct file_operations` 的成员类型一目了然,无需在每次使用时解析复杂声明。
 
-## 15. 参考文献与延伸阅读
+## 14. 参考文献与延伸阅读
 
-### 15.1 参考文献(ACM Reference Format)
+### 14.1 参考文献(ACM Reference Format)
 
 [1] ISO/IEC JTC1/SC22/WG14. 2024. *ISO/IEC 9899:2024 - Programming languages - C (Fifth edition)*. International Organization for Standardization, Geneva, Switzerland. https://www.iso.org/standard/82075.html
 
@@ -1871,9 +1756,9 @@ struct file_operations {
 
 [8] Richard C. Murphy and William Newman. 2018. Type inference and declaration syntax in modern systems languages. In *Proceedings of the ACM SIGPLAN International Conference on Systems Programming*. ACM, New York, NY, USA, 45-58. https://doi.org/10.1145/3210977.3210985
 
-### 15.2 延伸阅读
+### 14.2 延伸阅读
 
-#### 15.2.1 书籍
+#### 14.2.1 书籍
 
 - Kernighan, B. W., & Ritchie, D. M. (1988). *The C Programming Language* (2nd ed.). Prentice Hall. (K&R C,第 5 章对指针与数组的论述是经典)
 - van der Linden, P. (1994). *Expert C Programming: Deep C Secrets*. Prentice Hall. (第 3 章"Unscrambling Declarations in C"是复杂声明的最佳指南)
@@ -1881,13 +1766,13 @@ struct file_operations {
 - Prata, S. (2013). *C Primer Plus* (6th ed.). Addison-Wesley. (入门级,第 14 章涵盖结构与其他数据形式)
 - Stroustrup, B. (2013). *The C++ Programming Language* (4th ed.). Addison-Wesley. (C++ 视角的类型系统)
 
-#### 15.2.2 论文
+#### 14.2.2 论文
 
 - Ritchie, D. M. (1993). *The Development of the C Language*. ACM SIGPLAN Notices, 28(3), 201-208.
 - Stroustrup, B. (1994). *The Design and Evolution of C++*. Addison-Wesley. (C++ 设计哲学,对 C 声明语法的反思)
 - Murphy, R. C., & Newman, W. (2018). *Type inference and declaration syntax in modern systems languages*. Proceedings of the ACM SIGPLAN International Conference on Systems Programming, 45-58.
 
-#### 15.2.3 开源项目
+#### 14.2.3 开源项目
 
 - **Linux Kernel**: https://www.kernel.org/ — file_operations 是函数指针表的经典案例
 - **SQLite**: https://www.sqlite.org/ — 回调机制与 VDBE 虚拟机
@@ -1895,7 +1780,7 @@ struct file_operations {
 - **cdecl**: https://cdecl.org/ — C 声明 ↔ 英语互译工具
 - **FreeBSD libc**: https://github.com/freebsd/freebsd-src — signal 等复杂声明的实现
 
-#### 15.2.4 在线资源
+#### 14.2.4 在线资源
 
 - **cppreference**: https://en.cppreference.com/w/c/language/declarations — C 声明语法参考
 - **WG14 N 草案**: https://www.open-std.org/jtc1/sc22/wg14/ — C 标准草案

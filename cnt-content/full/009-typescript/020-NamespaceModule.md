@@ -20,16 +20,6 @@ prerequisites:
   - typescript/语法速查
 ---
 
-## 学习目标
-
-完成本章学习后，读者应能够在以下认知层级（Bloom 分类法）达到相应能力：
-
-1. **记忆（Remember）**：复述命名空间（Namespace）与模块（Module）的语法差异，列举 TypeScript 的四种模块解析策略（Classic、Node、Node16、Bundler），写出 `import`、`export`、`declare`、`namespace` 关键字的基本用法。
-2. **理解（Understand）**：解释 JavaScript 模块系统的演化历程（IIFE、CommonJS、AMD、UMD、ESM），说明 TypeScript 命名空间在编译后的结构，对比命名空间与模块在作用域、依赖管理、Tree-shaking 等维度的差异。
-3. **应用（Apply）**：使用 ES 模块组织中型项目，编写 `.d.ts` 声明文件为 JavaScript 库提供类型，配置 `tsconfig.json` 的 `moduleResolution` 与 `paths` 别名。
-4. **分析（Analyze）**：解构复杂模块依赖图，识别循环依赖，分析模块解析失败的根本原因，判断何时应使用命名空间而非模块。
-5. **评价（Evaluate）**：评估不同模块解析策略对构建产物、运行时性能、工具链兼容性的影响，为项目选择合适的 `module` 与 `moduleResolution` 配置。
-6. **创造（Create）**：设计并发布一个完整的 TypeScript 库，包含多模块入口、类型声明文件、Tree-shaking 友好的导出结构、支持 CommonJS 与 ESM 双格式。
 
 ## 历史动机与背景
 

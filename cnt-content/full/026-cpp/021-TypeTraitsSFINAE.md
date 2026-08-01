@@ -15,61 +15,16 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+
 # C++ 类型萃取与 SFINAE
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 认知分类法组织学习目标，使读者能够循序渐进地掌握 C++ 类型特征（Type Traits）与 SFINAE（Substitution Failure Is Not An Error）机制，并具备在生产环境中应用、评估、设计的能力。
-
-### 1.1 Remember（记忆）
-
-- **R1**：复述 `<type_traits>` 头文件中至少 20 个常用类型特征的名称、语义与返回值类型。
-- **R2**：背出 SFINAE 缩写展开（Substitution Failure Is Not An Error）及其在 ISO/IEC 14882:2020 中的原始定义位置（§13.9.2 [temp.deduct]）。
-- **R3**：列出 C++11/14/17/20/23 五代标准对类型特征库的主要增补项（如 `_t`/`_v` 后缀、`void_t`、concepts、`is_constant_evaluated` 等）。
-- **R4**：记住"即时上下文（immediate context）"与"非即时上下文"的边界，理解为何函数体内的错误不属于 SFINAE。
-
-### 1.2 Understand（理解）
-
-- **U1**：解释模板参数替换（substitution）的完整流程：模板实参推导 → 替换 → SFINAE → 重载决议。
-- **U2**：阐明 `std::enable_if`、`std::void_t`、`std::conditional` 三者的设计动机、运行机制与适用场景差异。
-- **U3**：描述重载决议（overload resolution）中 SFINAE 如何"剔除"不合格候选的过程，给出形式化伪代码。
-- **U4**：解释"成员检测器习语（member detector idiom）"的工作原理，阐明 `void_t` 如何检测类型成员是否存在。
-
-### 1.3 Apply（应用）
-
-- **A1**：使用 `std::enable_if_t` 为模板函数添加条件启用，使整数族与浮点族走不同重载。
-- **A2**：使用 `std::void_t` 实现成员检测器，自动检测 `T::iterator`、`T::size()`、`T::value_type` 等成员是否存在。
-- **A3**：使用 `if constexpr`（C++17）将运行期分支提升为编译期分支，消除模板实例化中的二义性。
-- **A4**：使用 `std::conditional_t` 实现编译期类型选择，例如根据指针大小选择 `int32_t` 或 `int64_t`。
-
-### 1.4 Analyze（分析）
-
-- **An1**：分析 `std::enable_if` 三种典型书写位置（默认模板参数 / 返回类型 / 尾随实参）在重载歧义场景中的差异，给出每种写法的优劣对比。
-- **An2**：分析 `void_t` 在 CWG 1558 提案之前的非标准地位及其对编译器实现的依赖性。
-- **An3**：对比 SFINAE 与 C++20 concepts 在错误信息可读性、约束传播、子集化等维度上的优劣。
-- **An4**：分析模板实例化深度对编译时间与二进制体积的影响，对比 SFINAE 与 concepts 的编译期开销。
-
-### 1.5 Evaluate（评价）
-
-- **E1**：评价一段给定的 SFINAE 代码在可维护性、可读性、编译期开销上的表现，给出 1-10 分的工程化评分。
-- **E2**：判断在生产环境中应选用 SFINAE 还是 concepts，给出基于团队、编译器、C++ 标准版本、ABI 兼容性的决策树。
-- **E3**：评估"过度使用 SFINAE"导致的代码可读性灾难，识别何时应该重构成普通函数重载或运行期分支。
-
-### 1.6 Create（创造）
-
-- **C1**：设计一个完整的 type-erased 容器（基于 `std::any` + 类型特征），支持任意可比较类型的有序存储。
-- **C2**：实现一个自定义的 `is_printable` 类型特征，覆盖所有满足 `std::ostream& << T` 约束的类型，并给出概念等价的 C++20 版本。
-- **C3**：设计一个基于 SFINAE 的"协议检测器"，自动检测类是否满足 Serializable、Iterable、Comparable 等协议。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 史前时代：C++ 时代的类型查询困境（pre-1998）
+### 1.1 史前时代：C++ 时代的类型查询困境（pre-1998）
 
 C 语言时代不存在编译期类型查询这一概念，宏（macro）是唯一的"泛型"工具。C++ 早期模板的引入让泛型编程成为可能，但缺乏类型自省（introspection）能力——一个函数模板 `template<typename T> void f(T)` 无法在编译期回答"T 是整数吗？"、"T 有 size() 方法吗？"等问题。
 
@@ -95,13 +50,13 @@ struct iterator_traits<T*> {
 
 这种"用模板结构体包装类型信息"的模式是类型特征的雏形。
 
-### 2.2 C++98：TR1 与 type_traits 的诞生
+### 1.2 C++98：TR1 与 type_traits 的诞生
 
 C++98 标准本身不含 `<type_traits>`，但 Boost.TypeTraits 库（由 John Maddock、Steve Cleary 等人于 2002 年开发）填补了这一空白。Boost.TypeTraits 提供了 `is_integral`、`is_pointer`、`is_class`、`is_base_of` 等数十个类型查询工具，并通过复杂的宏与模板特化技巧实现。
 
 C++ 技术报告 1（TR1，ISO/IEC TR 19768:2007）正式将 Boost.TypeTraits 标准化为 `<tr1/type_traits>`，作为对 C++98 标准库的扩展。
 
-### 2.3 C++11：type_traits 与 SFINAE 标准化
+### 1.3 C++11：type_traits 与 SFINAE 标准化
 
 C++11（ISO/IEC 14882:2011）将 TR1 内容纳入正式标准，引入 `<type_traits>` 头文件，包含：
 
@@ -116,7 +71,7 @@ C++11（ISO/IEC 14882:2011）将 TR1 内容纳入正式标准，引入 `<type_tr
 
 同时，C++11 标准化了 `std::enable_if`、`std::conditional`、`std::common_type`、`std::declval` 等核心元编程工具。SFINAE 规则也在 C++11 中得到更严格的规范（§14.8.2 [temp.deduct]）。
 
-### 2.4 C++14：_t 与 _v 后缀变量模板
+### 1.4 C++14：_t 与 _v 后缀变量模板
 
 C++14 引入变量模板（variable template），使类型特征可以用更简洁的语法访问：
 
@@ -134,11 +89,11 @@ C++14 同时为所有类型变换添加 `_t` 后缀（如 `std::remove_const_t`�
 
 C++14 还引入了 `std::enable_if_t`、`std::conditional_t`、`std::decay_t`、`std::add_pointer_t` 等简化版本。
 
-### 2.5 C++17：void_t 与 if constexpr
+### 1.5 C++17：void_t 与 if constexpr
 
 C++17 的两个关键改进：
 
-#### 2.5.1 `std::void_t`（CWG 1558）
+#### 1.5.1 `std::void_t`（CWG 1558）
 
 `std::void_t` 看似无用：
 
@@ -160,7 +115,7 @@ struct has_iterator<T, std::void_t<typename T::iterator>>
 
 CWG 1558 提案（2015 年）明确了 SFINAE 对"无效类型或表达式"的处理规则，使 `void_t` 在所有主流编译器上行为一致。
 
-#### 2.5.2 `if constexpr`（P0128）
+#### 1.5.2 `if constexpr`（P0128）
 
 `if constexpr` 是 SFINAE 的语法糖替代，让编译期分支变得直观：
 
@@ -179,7 +134,7 @@ void process(T value) {
 
 `if constexpr` 仅编译被选中的分支，避免了对未选中分支的实例化错误。
 
-### 2.6 C++20：Concepts 革命
+### 1.6 C++20：Concepts 革命
 
 C++20（ISO/IEC 14882:2020）引入概念（Concepts），是类型特征与 SFINAE 的革命性升级。Concepts 提供：
 
@@ -208,7 +163,7 @@ auto add(std::integral auto a, std::integral auto b) {
 
 C++20 同时引入 `std::is_constant_evaluated()`（P0588），允许在运行期检测是否处于常量求值上下文。
 
-### 2.7 C++23：完善与扩展
+### 1.7 C++23：完善与扩展
 
 C++23 的主要增补：
 
@@ -218,7 +173,7 @@ C++23 的主要增补：
 4. `static operator()`：与类型特征结合创建无状态调用对象。
 5. `std::expected`：与类型特征结合实现错误处理。
 
-### 2.8 C++26：反射与静态分析
+### 1.8 C++26：反射与静态分析
 
 C++26 反射提案（P2996）将引入 `^T` 反射运算符，允许在编译期枚举类型的成员、查询属性、生成代码。这将从根本上改变类型特征的使用方式：
 
@@ -232,7 +187,7 @@ void print_members() {
 }
 ```
 
-### 2.9 时间线总结表
+### 1.9 时间线总结表
 
 | 标准版本 | 年份 | 类型特征关键里程碑 |
 | -------- | ---- | ------------------ |
@@ -247,9 +202,9 @@ void print_members() {
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 ISO/IEC 14882 中的类型特征定义
+### 2.1 ISO/IEC 14882 中的类型特征定义
 
 ISO/IEC 14882:2020 §20.15 [meta] 给出类型特征的形式化定义：
 
@@ -259,7 +214,7 @@ ISO/IEC 14882:2020 §20.15 [meta] 给出类型特征的形式化定义：
 
 类型特征的所有查询结果都是 `std::integral_constant` 的派生类，继承 `value`（静态常量）、`type`（自身）、`operator bool()`（隐式转换）。
 
-### 3.2 SFINAE 规则的形式化定义
+### 2.2 SFINAE 规则的形式化定义
 
 ISO/IEC 14882:2020 §13.9.2 [temp.deduct] 第 8 段：
 
@@ -269,29 +224,29 @@ ISO/IEC 14882:2020 §13.9.2 [temp.deduct] 第 8 段：
 
 关键概念："即时上下文（immediate context）"——即函数签名本身及其模板参数列表。函数体内的错误不属于即时上下文，是硬错误。
 
-### 3.3 类型特征的语义分类
+### 2.3 类型特征的语义分类
 
 ISO/IEC 14882:2020 §20.15.2 [meta.rqmts] 将类型特征分为三大类：
 
-#### 3.3.1 Unary Type Traits（一元类型特征）
+#### 2.3.1 Unary Type Traits（一元类型特征）
 
 形式：`template<typename T> struct Trait;`
 
 接受一个类型实参，返回布尔值或类型信息。例如 `is_integral`、`remove_const`。
 
-#### 3.3.2 Binary Type Traits（二元类型特征）
+#### 2.3.2 Binary Type Traits（二元类型特征）
 
 形式：`template<typename T, typename U> struct Trait;`
 
 接受两个类型实参，返回布尔值。例如 `is_same`、`is_base_of`、`is_convertible`。
 
-#### 3.3.3 Transformation Traits（变换类型特征）
+#### 2.3.3 Transformation Traits（变换类型特征）
 
 形式：`template<typename T> struct Trait { using type = ...; };`
 
 接受一个类型实参，产生一个新类型。例如 `remove_const`、`add_pointer`、`decay`。
 
-### 3.4 `std::enable_if` 的形式化定义
+### 2.4 `std::enable_if` 的形式化定义
 
 ISO/IEC 14882:2020 §20.15.3 [meta.help]：
 
@@ -310,7 +265,7 @@ using enable_if_t = typename enable_if<Cond, T>::type;
 
 当 `Cond` 为 `true` 时，`enable_if<true, T>::type` 存在且为 `T`；当 `Cond` 为 `false` 时，`enable_if<false, T>` 无 `type` 成员，导致 SFINAE。
 
-### 3.5 `std::void_t` 的形式化定义
+### 2.5 `std::void_t` 的形式化定义
 
 ISO/IEC 14882:2020 §20.15.3.7 [meta.trans.other]：
 
@@ -321,7 +276,7 @@ using void_t = void;
 
 `void_t` 看似无用——它总是别名 `void`。但其真正价值在于"包内表达式替换失败"时，整个 `void_t` 实例化失败，触发 SFINAE。
 
-### 3.6 `std::conditional` 的形式化定义
+### 2.6 `std::conditional` 的形式化定义
 
 ISO/IEC 14882:2020 §20.15.3.6 [meta.trans.other]：
 
@@ -342,7 +297,7 @@ using conditional_t = typename conditional<B, T, F>::type;
 
 `conditional` 是编译期三元运算符，根据 `B` 选择 `T` 或 `F`。
 
-### 3.7 `std::declval` 的形式化定义
+### 2.7 `std::declval` 的形式化定义
 
 ISO/IEC 14882:2020 §20.15.7.3 [declval]：
 
@@ -368,7 +323,7 @@ struct has_minus<T, std::void_t<decltype(std::declval<T>() - std::declval<T>())>
     : std::true_type {};
 ```
 
-### 3.8 `std::integral_constant` 的形式化定义
+### 2.8 `std::integral_constant` 的形式化定义
 
 ISO/IEC 14882:2020 §20.15.3 [meta.help]：
 
@@ -395,7 +350,7 @@ using false_type = bool_constant<false>;
 - 使用 `::type` 获取类型自身（用于元函数组合）。
 - 隐式转换为 `bool`。
 
-### 3.9 Concepts 的形式化定义
+### 2.9 Concepts 的形式化定义
 
 ISO/IEC 14882:2020 §17 [concepts]：
 
@@ -415,9 +370,9 @@ Concepts 的核心优势：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 模板实参推导与替换流程
+### 3.1 模板实参推导与替换流程
 
 C++ 模板实例化的完整流程：
 
@@ -445,7 +400,7 @@ function overload_resolution(candidates, args):
     return select_best(viable)
 ```
 
-### 4.2 即时上下文（Immediate Context）的边界
+### 3.2 即时上下文（Immediate Context）的边界
 
 "即时上下文"是 SFINAE 最微妙的概念。ISO/IEC 14882:2020 §13.9.2 [temp.deduct] 第 8 段明确：
 
@@ -479,7 +434,7 @@ void g(T t) {
 }
 ```
 
-### 4.3 SFINAE 在重载决议中的作用
+### 3.3 SFINAE 在重载决议中的作用
 
 SFINAE 的核心作用是从重载候选集中"剔除"不合格的模板。考虑：
 
@@ -504,11 +459,11 @@ abs_value("hi");    // 错误：两个重载都被剔除
 3. 对 B：替换 `T=int`，`enable_if<is_floating_point<int>::value, int>::type`——`is_floating_point<int>::value = false`，`enable_if<false, int>` 无 `type` 成员 → SFINAE 剔除 B。
 4. 重载决议：可行集 `{A}`，唯一候选，调用 A。
 
-### 4.4 `enable_if` 三种书写位置的语义差异
+### 3.4 `enable_if` 三种书写位置的语义差异
 
 `enable_if` 有三种典型书写位置，每种有不同的语义与重载歧义特性：
 
-#### 4.4.1 作为默认模板参数
+#### 3.4.1 作为默认模板参数
 
 ```cpp
 template<typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
@@ -530,7 +485,7 @@ template<typename T, std::enable_if_t<std::is_floating_point_v<T>, int> = 0>
 void f(T value) { /* 浮点版 */ }
 ```
 
-#### 4.4.2 作为返回类型
+#### 3.4.2 作为返回类型
 
 ```cpp
 template<typename T>
@@ -544,7 +499,7 @@ f(T value) { return value; }
 
 优势：两个 `f` 的签名不同（返回类型不同），不会重定义。但返回类型不能用于 C++14 的 `auto` 推导。
 
-#### 4.4.3 作为尾随模板参数
+#### 3.4.3 作为尾随模板参数
 
 ```cpp
 template<typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
@@ -558,7 +513,7 @@ void f(T value) { /* 浮点版 */ }
 
 **最佳实践**：优先使用尾随模板参数方式（4.4.3），避免重定义歧义，且兼容 `auto` 返回类型。
 
-### 4.5 `void_t` 的工作原理
+### 3.5 `void_t` 的工作原理
 
 `void_t` 的核心是 CWG 1558 提案，明确了"别名模板实例化失败"应被 SFINAE 处理。
 
@@ -582,7 +537,7 @@ struct has_size<T, std::void_t<decltype(std::declval<T>().size())>>
 
 CWG 1558 之前的行为：某些编译器（如 GCC 4.9）不会将别名模板失败视为 SFINAE，导致 `void_t` 不可移植。
 
-### 4.6 `if constexpr` 的语义
+### 3.6 `if constexpr` 的语义
 
 `if constexpr`（C++17）是 SFINAE 的语法糖替代，但语义不同：
 
@@ -616,7 +571,7 @@ void process(T value) {
 - 不能用于需要不同返回类型的场景（返回类型必须一致）。
 - 不能完全替代 SFINAE（如需在签名层剔除候选时仍需 SFINAE）。
 
-### 4.7 Concepts 的子集化（Subsumption）
+### 3.7 Concepts 的子集化（Subsumption）
 
 Concepts 的核心优势是"子集化"——更严格的约束优先：
 
@@ -644,7 +599,7 @@ f(42u);   // unsigned int 是 UnsignedIntegral（非 SignedIntegral）→ 仅 A 
 
 SFINAE 无法表达子集化，因此 SFINAE 的重载歧义需要手动避免。
 
-### 4.8 `std::decay` 的语义
+### 3.8 `std::decay` 的语义
 
 `std::decay` 是最重要的类型变换之一，模拟"按值传递"时的类型变换：
 
@@ -685,7 +640,7 @@ f(42);   // T = int
 f(3.14); // T = double
 ```
 
-### 4.9 类型特征的编译期开销
+### 3.9 类型特征的编译期开销
 
 类型特征的实现通常基于编译器内建（intrinsic）或模板特化：
 
@@ -709,7 +664,7 @@ struct is_constructible : bool_constant<__is_constructible(T, Args...)> {};
 
 `__is_constructible` 是编译器内建，由前端（clang、gcc、msvc）实现，避免复杂的 SFINAE 模拟。
 
-### 4.10 类型特征的 ABI 兼容性
+### 3.10 类型特征的 ABI 兼容性
 
 类型特征在不同编译器上的实现可能不同，但标准保证语义一致。然而：
 
@@ -721,9 +676,9 @@ struct is_constructible : bool_constant<__is_constructible(T, Args...)> {};
 
 ---
 
-## 5. 代码示例与实践
+## 4. 代码示例与实践
 
-### 5.1 基础：常用类型特征
+### 4.1 基础：常用类型特征
 
 ```cpp
 #include <type_traits>
@@ -759,7 +714,7 @@ using IntPtr = std::conditional_t<true, int*, int>;  // int*
 using SafeSize = std::conditional_t<sizeof(void*) == 8, int64_t, int32_t>;  // 64 位平台为 int64_t
 ```
 
-### 5.2 `enable_if` 实战
+### 4.2 `enable_if` 实战
 
 ```cpp
 #include <type_traits>
@@ -799,7 +754,7 @@ int main() {
 }
 ```
 
-### 5.3 类型变换
+### 4.3 类型变换
 
 ```cpp
 #include <type_traits>
@@ -835,7 +790,7 @@ static_assert(std::is_same_v<T9, int>);
 static_assert(std::is_same_v<T10, int*>);
 ```
 
-### 5.4 成员检测器习语
+### 4.4 成员检测器习语
 
 ```cpp
 #include <type_traits>
@@ -899,7 +854,7 @@ static_assert(is_ostreamable_v<int>);             // true
 static_assert(is_ostreamable_v<std::string>);     // true
 ```
 
-### 5.5 SFINAE 与重载决议
+### 4.5 SFINAE 与重载决议
 
 ```cpp
 #include <type_traits>
@@ -938,7 +893,7 @@ int main() {
 }
 ```
 
-### 5.6 `if constexpr` 替代 SFINAE
+### 4.6 `if constexpr` 替代 SFINAE
 
 ```cpp
 #include <type_traits>
@@ -987,7 +942,7 @@ int main() {
 }
 ```
 
-### 5.7 自定义类型特征
+### 4.7 自定义类型特征
 
 ```cpp
 #include <type_traits>
@@ -1049,7 +1004,7 @@ public:
 static_assert(is_serializable_v<Serializable>);    // true
 ```
 
-### 5.8 编译期类型分发
+### 4.8 编译期类型分发
 
 ```cpp
 #include <type_traits>
@@ -1086,7 +1041,7 @@ int main() {
 }
 ```
 
-### 5.9 C++20 Concepts 替代 SFINAE
+### 4.9 C++20 Concepts 替代 SFINAE
 
 ```cpp
 #include <concepts>
@@ -1150,7 +1105,7 @@ int main() {
 }
 ```
 
-### 5.10 `is_constant_evaluated` 与 `if consteval`
+### 4.10 `is_constant_evaluated` 与 `if consteval`
 
 ```cpp
 #include <type_traits>
@@ -1198,9 +1153,9 @@ int main() {
 
 ---
 
-## 6. 跨语言对比
+## 5. 跨语言对比
 
-### 6.1 C++ vs Rust：Trait 与 Concept
+### 5.1 C++ vs Rust：Trait 与 Concept
 
 Rust 的 trait 系统与 C++ 的 concepts 有相似之处，但实现机制不同：
 
@@ -1234,7 +1189,7 @@ fn print_all<T: Printable>(items: &[T]) {
 | 动态分发 | 不支持（需 type erasure） | `dyn Trait` |
 | 错误信息 | 友好 | 友好 |
 
-### 6.2 C++ vs Java：泛型与类型擦除
+### 5.2 C++ vs Java：泛型与类型擦除
 
 Java 的泛型使用类型擦除，编译期不保留类型信息：
 
@@ -1264,7 +1219,7 @@ public class NumberBox<T extends Number> {
 | 约束 | concepts / SFINAE | `<T extends X>` |
 | 特化 | 支持全/偏特化 | 不支持 |
 
-### 6.3 C++ vs Go：接口与隐式实现
+### 5.3 C++ vs Go：接口与隐式实现
 
 Go 的接口采用隐式实现（duck typing）：
 
@@ -1294,7 +1249,7 @@ func (m MyInt) String() string { return fmt.Sprintf("%d", int(m)) }
 | 性能 | 零开销 | 接口分发开销 |
 | 灵活性 | 静态 | 静态+动态 |
 
-### 6.4 C++ vs C#：泛型与约束
+### 5.4 C++ vs C#：泛型与约束
 
 C# 的泛型使用约束（constraints）：
 
@@ -1326,7 +1281,7 @@ public class Container<T> where T : IComparable<T>, new() {
 | 约束表达 | 任意表达式 | 限制（接口、基类、构造器） |
 | 反射 | 不支持 | 支持 |
 
-### 6.5 总结对比表
+### 5.5 总结对比表
 
 | 语言 | 类型查询机制 | 约束机制 | 实现方式 | 性能 |
 | ---- | ------------ | -------- | -------- | ---- |
@@ -1338,9 +1293,9 @@ public class Container<T> where T : IComparable<T>, new() {
 
 ---
 
-## 7. 常见陷阱与避坑指南
+## 6. 常见陷阱与避坑指南
 
-### 7.1 陷阱一：SFINAE 条件依赖非模板参数
+### 6.1 陷阱一：SFINAE 条件依赖非模板参数
 
 ```cpp
 // 错误：SFINAE 条件不能依赖非模板参数
@@ -1355,7 +1310,7 @@ template<typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
 void f(T value) { /* ... */ }
 ```
 
-### 7.2 陷阱二：两个 enable_if 重载条件重叠
+### 6.2 陷阱二：两个 enable_if 重载条件重叠
 
 ```cpp
 // 错误：is_arithmetic 包含 is_integral，导致歧义
@@ -1381,7 +1336,7 @@ g(42);   // 调用整数版
 g(3.14); // 调用浮点版
 ```
 
-### 7.3 陷阱三：函数体内的错误不属于 SFINAE
+### 6.3 陷阱三：函数体内的错误不属于 SFINAE
 
 ```cpp
 // 错误：函数体内的错误是硬错误
@@ -1405,7 +1360,7 @@ void h_safe(T value) {
 }
 ```
 
-### 7.4 陷阱四：`_v` 后缀在 C++14 之前不可用
+### 6.4 陷阱四：`_v` 后缀在 C++14 之前不可用
 
 ```cpp
 // C++11：必须使用 ::value
@@ -1417,7 +1372,7 @@ static_assert(std::is_integral_v<int>, "...");
 
 如果项目必须支持 C++11，需要使用 `::value` 形式。
 
-### 7.5 陷阱五：`void_t` 在 C++17 之前不可移植
+### 6.5 陷阱五：`void_t` 在 C++17 之前不可移植
 
 ```cpp
 // C++17 之前：手动定义 void_t
@@ -1433,7 +1388,7 @@ struct has_size<T, decltype(std::declval<T>().size(), void())>
     : std::true_type {};
 ```
 
-### 7.6 陷阱六：`enable_if` 作为默认模板参数时的重定义
+### 6.6 陷阱六：`enable_if` 作为默认模板参数时的重定义
 
 ```cpp
 // 错误：两个重载签名相同，导致重定义
@@ -1454,7 +1409,7 @@ template<typename T, std::enable_if_t<std::is_floating_point_v<T>, int> = 0>
 void f(T) {}
 ```
 
-### 7.7 陷阱七：`std::declval` 不能在求值上下文使用
+### 6.7 陷阱七：`std::declval` 不能在求值上下文使用
 
 ```cpp
 // 错误：declval 仅用于非求值上下文
@@ -1465,7 +1420,7 @@ using T = decltype(std::declval<int>() + std::declval<double>());  // double
 static_assert(sizeof(std::declval<int>()) == sizeof(int));
 ```
 
-### 7.8 陷阱八：`is_convertible` 的双向语义
+### 6.8 陷阱八：`is_convertible` 的双向语义
 
 ```cpp
 static_assert(std::is_convertible_v<int, double>);   // true
@@ -1476,7 +1431,7 @@ static_assert(!std::is_convertible_v<std::string, const char*>); // false
 
 注意 `is_convertible` 对窄化转换的处理：`double` → `int` 是 `false`，因为隐式转换会窄化。
 
-### 7.9 陷阱九：`decay` 与 `remove_cvref` 的差异
+### 6.9 陷阱九：`decay` 与 `remove_cvref` 的差异
 
 ```cpp
 using T1 = std::decay_t<int[10]>;        // int*
@@ -1488,7 +1443,7 @@ using T4 = std::remove_cvref_t<int(int)>; // int(int)
 
 `decay` 模拟按值传递的完整变换（衰变数组、函数），`remove_cvref` 仅移除 cv 与引用。
 
-### 7.10 陷阱十：Concepts 与 SFINAE 混用时的歧义
+### 6.10 陷阱十：Concepts 与 SFINAE 混用时的歧义
 
 ```cpp
 // C++20：同时使用 concepts 和 SFINAE 可能产生歧义
@@ -1505,9 +1460,9 @@ f(42);  // 歧义错误：两个重载都匹配
 
 ---
 
-## 8. 工程实践与最佳实践
+## 7. 工程实践与最佳实践
 
-### 8.1 何时使用 SFINAE，何时使用 Concepts
+### 7.1 何时使用 SFINAE，何时使用 Concepts
 
 **使用 Concepts（C++20+）的场景**：
 
@@ -1528,7 +1483,7 @@ f(42);  // 歧义错误：两个重载都匹配
 - 不需要剔除重载候选。
 - 不同分支的返回类型相同。
 
-### 8.2 SFINAE 代码风格规范
+### 7.2 SFINAE 代码风格规范
 
 ```cpp
 // 推荐：尾随模板参数方式
@@ -1544,7 +1499,7 @@ template<typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
 void process(T value);
 ```
 
-### 8.3 类型特征命名规范
+### 7.3 类型特征命名规范
 
 ```cpp
 // 查询类：has_ 前缀
@@ -1560,7 +1515,7 @@ template<typename T> struct remove_const { using type = ...; };
 template<typename T> using remove_const_t = typename remove_const<T>::type;
 ```
 
-### 8.4 成员检测器模板
+### 7.4 成员检测器模板
 
 ```cpp
 // 通用成员检测器模板
@@ -1579,7 +1534,7 @@ DEFINE_MEMBER_DETECTOR(end)
 DEFINE_MEMBER_DETECTOR(c_str)
 ```
 
-### 8.5 类型特征的单元测试
+### 7.5 类型特征的单元测试
 
 ```cpp
 #include <type_traits>
@@ -1605,7 +1560,7 @@ static_assert(has_size_v<std::vector<int>>);
 static_assert(has_size_v<std::string>);
 ```
 
-### 8.6 SFINAE 的可读性优化
+### 7.6 SFINAE 的可读性优化
 
 复杂的 SFINAE 代码可以通过别名模板提升可读性：
 
@@ -1635,7 +1590,7 @@ template<NonBoolIntegral T>
 void process(T value) { /* ... */ }
 ```
 
-### 8.7 编译时间优化
+### 7.7 编译时间优化
 
 SFINAE 会增加模板实例化深度，影响编译时间。优化策略：
 
@@ -1644,7 +1599,7 @@ SFINAE 会增加模板实例化深度，影响编译时间。优化策略：
 3. **减少不必要的 SFINAE**：能用普通函数重载解决的，不要用 SFINAE。
 4. **使用前置声明**：减少重复实例化。
 
-### 8.8 跨编译器兼容性
+### 7.8 跨编译器兼容性
 
 ```cpp
 // 跨编译器兼容的 void_t
@@ -1665,9 +1620,9 @@ SFINAE 会增加模板实例化深度，影响编译时间。优化策略：
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：类型安全的序列化系统
+### 8.1 案例一：类型安全的序列化系统
 
 ```cpp
 #include <type_traits>
@@ -1744,7 +1699,7 @@ int main() {
 }
 ```
 
-### 9.2 案例二：编译期类型分发系统
+### 8.2 案例二：编译期类型分发系统
 
 ```cpp
 #include <type_traits>
@@ -1817,7 +1772,7 @@ int main() {
 }
 ```
 
-### 9.3 案例三：协议检测器
+### 8.3 案例三：协议检测器
 
 ```cpp
 #include <type_traits>
@@ -1893,7 +1848,7 @@ int main() {
 }
 ```
 
-### 9.4 案例四：编译期 JSON 序列化
+### 8.4 案例四：编译期 JSON 序列化
 
 ```cpp
 #include <type_traits>
@@ -1968,7 +1923,7 @@ int main() {
 }
 ```
 
-### 9.5 案例五：C++20 Concepts 实现协议
+### 8.5 案例五：C++20 Concepts 实现协议
 
 ```cpp
 #include <concepts>
@@ -2059,7 +2014,7 @@ int main() {
 
 ## 知识讲解与要点分析（原练习题）
 
-### 10.1 基础题（记忆与理解）
+### 9.1 基础题（记忆与理解）
 
 **常见疑问 1**：SFINAE 缩写展开是什么？它在 ISO/IEC 14882 中的定义位置是？
 
@@ -2174,7 +2129,7 @@ int main() {
 }
 ```
 
-### 10.3 进阶题（分析与评价）
+### 9.3 进阶题（分析与评价）
 
 **常见疑问 9**：分析以下代码的问题并修正：
 
@@ -2251,7 +2206,7 @@ template<ProcessableInteger T>
 void process(T value) { /* ... */ }
 ```
 
-### 10.4 创造题（设计与实现）
+### 9.4 创造题（设计与实现）
 
 **常见疑问 11**：设计一个完整的 type-erased 容器，基于 `std::any` 与类型特征，支持任意可比较类型的有序存储。
 
@@ -2360,7 +2315,7 @@ int main() {
 }
 ```
 
-### 10.5 综合应用题
+### 9.5 综合应用题
 
 **常见疑问 13**：设计并实现一个基于类型特征的"调度器"，根据类型特征自动选择最优实现策略。
 
@@ -2449,9 +2404,9 @@ int main() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准文档
+### 10.1 标准文档
 
 [1] International Organization for Standardization. ISO/IEC 14882:2020 Information technology — Programming languages — C++ [S]. 5th ed. Geneva: ISO, 2020. https://www.iso.org/standard/79758.html
 
@@ -2461,7 +2416,7 @@ int main() {
 
 [4] International Organization for Standardization. ISO/IEC 14882:2017 Information technology — Programming languages — C++ [S]. Geneva: ISO, 2017. https://www.iso.org/standard/68564.html
 
-### 11.2 提案文档
+### 10.2 提案文档
 
 [5] Maddock J, Cleary S, et al. N1836: C++ Standard Library Technical Report 1 [R]. ISO/IEC JTC1/SC22/WG21, 2005. http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1836.pdf
 
@@ -2473,7 +2428,7 @@ int main() {
 
 [9] Sutton A. P2996: Reflection for C++26 [R]. ISO/IEC JTC1/SC22/WG21, 2023. http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2996r1.html
 
-### 11.3 经典书籍
+### 10.3 经典书籍
 
 [10] Alexandrescu A. Modern C++ Design: Generic Programming and Design Patterns Applied [M]. Boston: Addison-Wesley, 2001. ISBN: 978-0201704310
 
@@ -2489,7 +2444,7 @@ int main() {
 
 [16] Stroustrup B. A Tour of C++ [M]. 3rd ed. Boston: Addison-Wesley, 2022. ISBN: 978-0136816485
 
-### 11.4 学术论文
+### 10.4 学术论文
 
 [17] Stroustrup B, Sutton A, et al. Concepts: Linguistic Support for Generic Programming in C++ [C]// Proceedings of the 21st ACM SIGPLAN Conference on Object-Oriented Programming Languages, Systems, and Applications (OOPSLA '06). New York: ACM, 2006: 298-310. DOI: 10.1145/1167473.1167499
 
@@ -2499,7 +2454,7 @@ int main() {
 
 [20] Siek J, Lumsdaine A. Essential Requirements for Concepts [C]// Proceedings of the 10th International Conference on Object-Oriented Information Systems (OOIS '04). Berlin: Springer, 2004: 232-245. DOI: 10.1007/978-3-540-30187-6_24
 
-### 11.5 在线资源
+### 10.5 在线资源
 
 [21] cppreference.com. Standard library header <type_traits> [EB/OL]. (2023-07-15) [2026-07-21]. https://en.cppreference.com/w/cpp/header/type_traits
 
@@ -2511,7 +2466,7 @@ int main() {
 
 [25] Sutton A. The C++20 Concepts Story [EB/OL]. (2020-10-15) [2026-07-21]. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2009r0.pdf
 
-### 11.6 编译器文档
+### 10.6 编译器文档
 
 [26] GCC Team. Type Traits [EB/OL]. (2024-01-15) [2026-07-21]. https://gcc.gnu.org/onlinedocs/libstdc++/manual/std/typetraits.html
 
@@ -2521,36 +2476,36 @@ int main() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 进阶书籍
+### 11.1 进阶书籍
 
 - **《C++ Templates: The Complete Guide》(第 2 版)**：David Vandevoorde 等著，深入讲解模板与类型特征的方方面面。
 - **《Modern C++ Design》**：Andrei Alexandrescu 著，介绍高级模板元编程技巧，包括 SFINAE 的早期应用。
 - **《C++ Template Metaprogramming》**：David Abrahams 与 Aleksey Gurtovoy 著，Boost.MPL 的理论与实践。
 
-### 12.2 标准提案
+### 11.2 标准提案
 
 - **P0857 `if consteval`**：C++23 引入，替代 `is_constant_evaluated()` 的复杂写法。
 - **P2996 Reflection for C++26**：反射提案，将彻底改变类型特征的实现方式。
 - **P1985 `std::is_implicit_lifetime`**：C++23 引入，检测隐式生命周期类型。
 - **P1041 `std::is_scoped_enum`**：C++23 引入，检测作用域枚举。
 
-### 12.3 开源项目
+### 11.3 开源项目
 
 - **Boost.TypeTraits**：标准 `<type_traits>` 的前身，包含更丰富的类型特征。
 - **Boost.MPL**：模板元编程库，提供编译期容器与算法。
 - **Boost.Hana**：现代 C++ 元编程库，基于 C++14，提供更简洁的元编程接口。
 - **Folly**：Facebook 的 C++ 库，包含大量基于类型特征的实用工具。
 
-### 12.4 在线课程
+### 11.4 在线课程
 
 - **cppreference.com**：最权威的 C++ 标准库参考。
 - **The Cherno (YouTube)**：C++ 系列教程，包含类型特征专题。
 - **C++ Weekly (Jason Turner)**：每周 C++ 技巧，涵盖 SFINAE 与 concepts。
 - **Andrei Alexandrescu: The C++ Concepts Story**：concepts 的历史与设计哲学。
 
-### 12.5 社区资源
+### 11.5 社区资源
 
 - **ISO C++ 标准委员会邮件列表**：std-discussion@iso.org
 - **Stack Overflow [c++] 标签**：大量类型特征与 SFINAE 的实战问答。
@@ -2558,11 +2513,11 @@ int main() {
 
 ---
 
-## 13. 附录
+## 12. 附录
 
-### 13.1 类型特征速查表
+### 12.1 类型特征速查表
 
-#### 13.1.1 类型分类（Primary Type Categories）
+#### 12.1.1 类型分类（Primary Type Categories）
 
 | 类型特征 | 语义 | 示例 |
 | -------- | ---- | ---- |
@@ -2580,7 +2535,7 @@ int main() {
 | `is_class` | 是否为类 | `is_class_v<std::string> = true` |
 | `is_function` | 是否为函数 | `is_function_v<void()> = true` |
 
-#### 13.1.2 复合类型分类（Composite Type Categories）
+#### 12.1.2 复合类型分类（Composite Type Categories）
 
 | 类型特征 | 语义 |
 | -------- | ---- |
@@ -2592,7 +2547,7 @@ int main() {
 | `is_compound` | 是否为复合类型（非基础类型） |
 | `is_member_pointer` | 是否为成员指针 |
 
-#### 13.1.3 类型属性（Type Properties）
+#### 12.1.3 类型属性（Type Properties）
 
 | 类型特征 | 语义 |
 | -------- | ---- |
@@ -2610,7 +2565,7 @@ int main() {
 | `is_aggregate` | 是否为聚合类型 |
 | `has_unique_object_representations` | 是否有唯一对象表示 |
 
-#### 13.1.4 类型关系（Type Relationships）
+#### 12.1.4 类型关系（Type Relationships）
 
 | 类型特征 | 语义 |
 | -------- | ---- |
@@ -2620,7 +2575,7 @@ int main() {
 | `is_trivially_assignable` | T 是否可平凡赋值为 U |
 | `is_nothrow_assignable` | T 是否可 noexcept 赋值为 U |
 
-#### 13.1.5 类型变换（Type Transformations）
+#### 12.1.5 类型变换（Type Transformations）
 
 | 类型特征 | 语义 |
 | -------- | ---- |
@@ -2643,9 +2598,9 @@ int main() {
 | `enable_if` / `enable_if_t` | 条件启用 |
 | `void_t` | void 别名（用于 SFINAE） |
 
-### 13.2 SFINAE 速查表
+### 12.2 SFINAE 速查表
 
-#### 13.2.1 `enable_if` 三种书写位置
+#### 12.2.1 `enable_if` 三种书写位置
 
 ```cpp
 // 方式一：默认模板参数（注意重定义歧义）
@@ -2661,7 +2616,7 @@ template<typename T, std::enable_if_t<Cond<T>, int> = 0>
 void f(T);
 ```
 
-#### 13.2.2 成员检测器模板
+#### 12.2.2 成员检测器模板
 
 ```cpp
 // 检测成员函数
@@ -2686,7 +2641,7 @@ struct has_plus<T, std::void_t<decltype(std::declval<T>() + std::declval<T>())>>
     : std::true_type {};
 ```
 
-#### 13.2.3 C++20 Concepts 等价
+#### 12.2.3 C++20 Concepts 等价
 
 ```cpp
 // enable_if → requires 子句
@@ -2708,7 +2663,7 @@ template<HasMethod T>
 void f(T);
 ```
 
-### 13.3 编译器支持矩阵
+### 12.3 编译器支持矩阵
 
 | 类型特征 | C++11 | C++14 | C++17 | C++20 | GCC | Clang | MSVC |
 | -------- | ----- | ----- | ----- | ----- | --- | ----- | ---- |
@@ -2722,7 +2677,7 @@ void f(T);
 | `is_constant_evaluated` | - | - | - | √ | 10.0 | 10.0 | 19.25 |
 | `if consteval` | - | - | - | C++23 | 12.0 | 14.0 | 19.32 |
 
-### 13.4 常用宏与类型特征组合
+### 12.4 常用宏与类型特征组合
 
 ```cpp
 // 检测类型是否有特定成员（宏）
@@ -2756,7 +2711,7 @@ struct is_hashable<T, std::void_t<
 >> : std::true_type {};
 ```
 
-### 13.5 CMake 检测类型特征支持
+### 12.5 CMake 检测类型特征支持
 
 ```cmake
 # 检测编译器是否支持 C++17 void_t
@@ -2783,9 +2738,9 @@ check_cxx_source_compiles("
 
 ---
 
-## 14. 总结
+## 13. 总结
 
-### 14.1 核心要点回顾
+### 13.1 核心要点回顾
 
 1. **类型特征是 C++ 编译期类型自省的标准工具**：通过 `<type_traits>` 头文件提供数十个类型查询与变换工具，是泛型编程的基础设施。
 
@@ -2801,14 +2756,14 @@ check_cxx_source_compiles("
 
 7. **跨编译器兼容性是生产环境的关注点**：`void_t` 在 C++17 之前的非标准地位、`is_trivially_copyable` 的实现差异，都需要在跨平台库中谨慎处理。
 
-### 14.2 学习路径建议
+### 13.2 学习路径建议
 
 1. **入门阶段**：掌握 `<type_traits>` 中常用类型特征的语义，理解 `enable_if` 的基本用法。
 2. **进阶阶段**：深入理解 SFINAE 机制，掌握成员检测器习语，能编写自定义类型特征。
 3. **高级阶段**：理解 `if constexpr` 与 SFINAE 的差异，掌握 C++20 Concepts 的子集化与约束传播。
 4. **专家阶段**：能在生产环境中设计基于类型特征的复杂系统，权衡 SFINAE 与 Concepts 的取舍，处理跨编译器兼容性。
 
-### 14.3 工程化建议
+### 13.3 工程化建议
 
 1. **优先使用 C++20 Concepts**：如果项目支持 C++20，优先使用 concepts 替代 SFINAE，获得更好的错误信息与可维护性。
 
@@ -2820,7 +2775,7 @@ check_cxx_source_compiles("
 
 5. **类型特征应有单元测试**：使用 `static_assert` 验证类型特征的行为，确保跨编译器一致。
 
-### 14.4 未来展望
+### 13.4 未来展望
 
 1. **C++26 反射**：反射提案（P2996）将引入 `^T` 反射运算符，允许在编译期枚举类型成员，从根本上改变类型特征的实现方式。
 
@@ -2830,7 +2785,7 @@ check_cxx_source_compiles("
 
 4. **类型特征与新标准特性整合**：`is_implicit_lifetime`（C++23）、`if consteval`（C++23）等新特性将与类型特征深度整合。
 
-### 14.5 结语
+### 13.5 结语
 
 类型特征与 SFINAE 是 C++ 泛型编程的基石，理解它们是成为高级 C++ 开发者的必经之路。虽然 C++20 Concepts 提供了更优雅的替代方案，但 SFINAE 仍然是阅读和维护现有代码的必要技能，且在某些场景下 Concepts 无法完全替代 SFINAE。
 

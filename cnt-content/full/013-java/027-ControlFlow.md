@@ -16,22 +16,12 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
+
 # Java 控制流
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
-
-## 学习目标
-
-完成本文学习后，读者应能够在以下 Bloom 认知层级上达成对应目标：
-
-- **记忆（Memory）**：复述 Java 控制流的五大基本结构（顺序、分支、循环、跳转、异常）；列举 `if-else`、`switch`、`for`、`while`、`do-while`、`break`、`continue`、`return`、`try-catch-finally`、`assert` 的语法形式；说出 Java 5 至 Java 21 在控制流方向引入的关键特性。
-- **理解（Understand）**：解释 `switch` 表达式与 `switch` 语句的本质区别；阐述异常处理机制中 `try-with-resources` 的资源释放顺序；说明 `break` 与带标签 `break` 在控制流转移上的差异；理解 `assert` 与 `if` 检查在语义和运行时行为上的不同。
-- **应用（Apply）**：使用卫语句（guard clause）重构深层嵌套的条件分支；运用 `switch` 表达式与 `yield` 简化状态映射逻辑；通过 `try-with-resources` 管理多个 `AutoCloseable` 资源；使用带标签的 `break` 跳出多层循环。
-- **分析（Analyze）**：对比 `if-else` 链与 `switch` 在可读性、可维护性、JIT 优化潜力上的差异；剖析 `finally` 块中 `return` 语句吞掉异常的根因；分析异常表（exception table）如何决定 `try-catch` 的执行路径。
-- **评价（Evaluate）**：评估给定业务场景应使用受检异常（checked exception）还是非受检异常（unchecked exception）；判断循环中是否应提取循环不变量（loop invariant）；权衡 `assert` 在生产代码中的适用边界。
-- **创造（Create）**：设计基于状态机（state machine）与 `switch` 表达式的订单流程编排；实现自定义 `AutoCloseable` 资源池；编写可读性高且防御性强的参数校验流水线。
 
 ## 历史动机与背景
 

@@ -24,67 +24,6 @@ tags:
   - TC39
   - Sentry
   - ExceptionHandling
-learningObjectives:
-  - '列举 ECMAScript 内置错误类型体系（Error、TypeError、RangeError、SyntaxError、ReferenceError、URIError、EvalError）及各自触发场景'
-  - '解释 ES6 类继承 Error 的原型链陷阱——为何必须 Object.setPrototypeOf(this, new.target.prototype) 才能保证 instanceof 正确工作'
-  - '使用 ES2022 Error Cause 与 ES2021 AggregateError 构建可追溯的错误链与批量错误聚合'
-  - '拆解 V8 堆栈追踪格式（CallSite 对象、stackTraceLimit、Error.captureStackTrace）与 SpiderMonkey/JavaScriptCore 实现差异'
-  - '评估自定义错误层次设计——扁平式 vs 层次式——在大型项目可维护性、Sentry 分组、TypeScript 类型推导上的权衡'
-  - '设计一个生产级错误监控 SDK，集成 window.onerror、unhandledrejection、Error Cause 链解析、Sentry 上报与采样降级策略'
-exercises:
-  - type: fill-blank
-    bloom: remember
-    question: "在 ES6 中继承 Error 类时，为了保证 `err instanceof MyError` 返回 true，必须在 constructor 中调用 ______ 重新设置原型；其根本原因是 ES5 的继承机制在 transpile 后会丢失 ______ 链。"
-    answer: "Object.setPrototypeOf(this, new.target.prototype)；原型（prototype）"
-  - type: choice
-    bloom: analyze
-    question: "下列代码的输出是？\n```javascript\nclass BaseError extends Error {}\nclass ChildError extends BaseError {}\nconst err = new ChildError('test');\nconsole.log(err instanceof ChildError);\nconsole.log(err instanceof BaseError);\nconsole.log(err instanceof Error);\nconsole.log(err.name);\n```"
-    options:
-      - "A. true true true 'ChildError'"
-      - "B. true true true 'Error'"
-      - "C. true false true 'ChildError'"
-      - "D. true true false 'ChildError'"
-    answer: "A"
-    explanation: "正确实现 Object.setPrototypeOf 后 instanceof 链完整（ChildError -> BaseError -> Error）；name 属性若未在子类中显式设置，默认读取 this.constructor.name，即 'ChildError'。"
-  - type: code-fix
-    bloom: analyze
-    question: |
-      以下代码尝试构建错误链，但生产环境中无法通过 `err.cause` 拿到原始错误。请修复：
-      ```javascript
-      class AppError extends Error {
-        constructor(message, cause) {
-          super(message);
-          this.cause = cause;
-        }
-      }
-      try {
-        JSON.parse('invalid');
-      } catch (e) {
-        throw new AppError('解析失败', e);
-      }
-      ```
-    answer: |
-      ```javascript
-      class AppError extends Error {
-        constructor(message, options = {}) {
-          // 使用 ES2022 标准 cause 选项传入 super
-          super(message, options);
-          this.name = this.constructor.name;
-          if (options.code) this.code = options.code;
-          Object.setPrototypeOf(this, new.target.prototype);
-        }
-      }
-      try {
-        JSON.parse('invalid');
-      } catch (e) {
-        throw new AppError('解析失败', { cause: e, code: 'PARSE_ERROR' });
-      }
-      ```
-      原代码问题：手动赋值 `this.cause` 在某些 polyfill 或老引擎下不会触发原生 Error 的 cause 内部槽位；正确做法是直接传 options 给 super()，由原生构造器写入 cause。
-  - type: open-ended
-    bloom: create
-    question: "请设计一个生产级错误监控 SDK，要求：(1) 捕获同步异常与未处理的 Promise 拒绝；(2) 解析 Error Cause 链与 AggregateError.errors；(3) 集成 Sentry 或自建上报通道；(4) 支持采样率、用户脱敏、Source Map 还原；(5) 提供 React/Vue 错误边界集成。请描述架构、核心模块与数据流。"
-    answer: "应包括：全局监听器层（window.onerror、window.onunhandledrejection、Error.captureStackTrace 包装）、错误标准化层（统一为 Event 对象，提取 name/message/stack/cause 链/errors 数组）、增强层（SourceMap 还原、设备指纹、用户上下文注入）、上报层（批量队列、指数退避重试、采样降级）、框架集成层（React ErrorBoundary、Vue app.config.errorHandler）、可观测层（自身 SDK 健康监控、错误风暴抑制）。"
 references:
   - author: [ECMA International]
     title: "ECMAScript 2026 Language Specification - Error Objects"
@@ -117,6 +56,7 @@ etymology:
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---
+
 # JavaScript 自定义 Error
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
@@ -139,83 +79,9 @@ JavaScript 从 1995 年的 `Error` 单一对象，到 ES3 的 6 个子类，再�
 
 ---
 
-## 1. 学习目标与认知地图
+## 1. 历史动机与技术演进
 
-完成本章后，学习者应能够：
-
-1. **复述**（remember）ECMAScript 内置错误类型体系与各自触发场景。
-2. **解释**（understand）ES6 继承 Error 的原型链陷阱及 `Object.setPrototypeOf` 的修复原理。
-3. **应用**（apply）Error Cause 与 AggregateError 构建可追溯的错误链与批量错误聚合。
-4. **分析**（analyze）V8 堆栈追踪格式与跨引擎实现差异。
-5. **评估**（evaluate）自定义错误层次设计在大型项目中的可维护性权衡。
-6. **设计**（create）一个生产级错误监控 SDK，集成全局监听、错误链解析与上报降级。
-
-### 1.1 知识体系
-
-```mermaid
-flowchart TD
-    T0["自定义 Error 体系"]
-    T1["内置错误类型"]
-    T2["Error（根类）"]
-    T3["TypeError（类型错误）"]
-    T4["RangeError（范围错误）"]
-    T5["ReferenceError（引用错误）"]
-    T6["SyntaxError（语法错误）"]
-    T7["URIError（URI 处理错误）"]
-    T8["EvalError（已废弃，仅保留兼容）"]
-    T9["AggregateError（ES2021 新增）"]
-    T10["自定义子类"]
-    T11["ES5 函数式继承"]
-    T12["ES6 class extends Error"]
-    T13["原型链陷阱与 setPrototypeOf 修复"]
-    T14["层次化错误体系设计"]
-    T15["错误链（Error Cause）"]
-    T16["ES2022 cause 选项"]
-    T17["错误链遍历与根因分析"]
-    T18["与 Java Throwable.getCause 对比"]
-    T19["聚合错误（AggregateError）"]
-    T20["Promise.any 失败语义"]
-    T21["errors 数组结构"]
-    T22["并发任务批量失败处理"]
-    T23["堆栈追踪"]
-    T24["V8 CallSite 结构"]
-    T25["Error.captureStackTrace"]
-    T26["Error.stackTraceLimit"]
-    T27["SpiderMonkey 与 JSC 实现"]
-    T28["SourceMap 还原"]
-    T29["序列化"]
-    T30["JSON.stringify 的 toJSON"]
-    T31["结构化克隆支持"]
-    T32["跨进程传输"]
-    T33["工程实践"]
-    T34["全局错误监听"]
-    T35["window.onerror"]
-    T36["window.onunhandledrejection"]
-    T37["React ErrorBoundary / Vue errorHandler"]
-    T38["错误监控（Sentry/Bugsnag）"]
-    T39["采样与降噪"]
-    T40["安全脱敏"]
-    T0 --> T1
-    T9 --> T10
-    T14 --> T15
-    T18 --> T19
-    T22 --> T23
-    T28 --> T29
-    T32 --> T33
-    T33 --> T34
-    T33 --> T35
-    T33 --> T36
-    T33 --> T37
-    T37 --> T38
-    T37 --> T39
-    T37 --> T40
-```
-
----
-
-## 2. 历史动机与技术演进
-
-### 2.1 JavaScript 错误处理的史前时代（1995-1999）
+### 1.1 JavaScript 错误处理的史前时代（1995-1999）
 
 Brendan Eich 在 1995 年实现 JavaScript 1.0 时，错误处理极为原始：
 
@@ -245,7 +111,7 @@ try {
 | 无结构化字段 | 不能附加 errorCode、statusCode | 业务集成受限 |
 | `catch` 不能类型匹配 | 一个 catch 必须处理所有错误 | 错误处理代码冗长 |
 
-### 2.2 ES3 标准化：Error 对象与子类（1999）
+### 1.2 ES3 标准化：Error 对象与子类（1999）
 
 ES3 引入了 `Error` 对象与 6 个子类，奠定现代 JavaScript 错误处理基础：
 
@@ -269,7 +135,7 @@ ES3 引入了 `Error` 对象与 6 个子类，奠定现代 JavaScript 错误处�
 - `stack`：堆栈追踪字符串（V8、SpiderMonkey、JSC 各自实现）
 - `fileName`、`lineNumber`、`columnNumber`（SpiderMonkey 专有）
 
-### 2.3 ES5 时代：函数式继承（2009）
+### 1.3 ES5 时代：函数式继承（2009）
 
 ES5 之前，自定义错误需手动操作原型链：
 
@@ -297,7 +163,7 @@ console.log(err instanceof Error);     // true
 console.log(err.name);                 // 'AppError'
 ```
 
-### 2.4 ES6 革命：class extends Error（2015）
+### 1.4 ES6 革命：class extends Error（2015）
 
 ES6 引入 class 语法后，继承 Error 看起来更优雅，但隐藏陷阱：
 
@@ -332,7 +198,7 @@ class AppError extends Error {
 
 现代原生 ES6+ 环境（无 transpile）已无此问题，但作为兼容性最佳实践，仍建议保留 `Object.setPrototypeOf` 调用。
 
-### 2.5 ES2021：AggregateError 与 Promise.any
+### 1.5 ES2021：AggregateError 与 Promise.any
 
 ES2021 引入 `Promise.any`，与 `Promise.all` 的"全部成功才成功"不同，`Promise.any` 是"任意一个成功就成功，全部失败才失败"：
 
@@ -359,7 +225,7 @@ Promise.any(promises).catch((aggregateErr) => {
 | 表单校验多个字段 | 需手动收集错误 | 一次性抛出全部校验失败 |
 | 多源降级查询（CDN/缓存/主站） | 失败信息丢失 | 保留所有失败原因用于排查 |
 
-### 2.6 ES2022：Error Cause
+### 1.6 ES2022：Error Cause
 
 ES2022 引入 `cause` 选项，由阿里巴巴 Hemanth HM 主导推进，是 TC39 历史上首个由中国公司主导的语言级提案：
 
@@ -392,7 +258,7 @@ try {
 | 根因分析困难 | 需手工拼接日志 | Sentry 等工具原生识别 cause 链 |
 | 多层包装语义模糊 | 难以区分"包装层错误"与"原始错误" | cause 是结构化字段 |
 
-### 2.7 TC39 提案时间线
+### 1.7 TC39 提案时间线
 
 | 时间 | 事件 | 影响 |
 | --- | --- | --- |
@@ -411,9 +277,9 @@ try {
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 Error 对象的代数模型
+### 2.1 Error 对象的代数模型
 
 形式化地，一个 Error 对象可表示为五元组：
 
@@ -429,7 +295,7 @@ $$
 - `cause`：Error 对象或 `undefined`，错误链上游（ES2022）
 - `properties`：附加业务字段（如 `code`、`statusCode`、`fields`）
 
-### 3.2 错误链的形式化定义
+### 2.2 错误链的形式化定义
 
 `cause` 字段构成错误链，形式化为有向链表：
 
@@ -448,7 +314,7 @@ e & \text{if } e.\text{cause} = \text{undefined} \\
 \end{cases}
 $$
 
-### 3.3 AggregateError 的形式化定义
+### 2.3 AggregateError 的形式化定义
 
 `AggregateError` 是 Error 的子类，额外包含 `errors` 数组：
 
@@ -465,7 +331,7 @@ $$
 \end{cases}
 $$
 
-### 3.4 instanceof 的形式化语义
+### 2.4 instanceof 的形式化语义
 
 `x instanceof C` 沿原型链查找：
 
@@ -477,7 +343,7 @@ $$
 
 这解释了为何 `Object.setPrototypeOf(this, new.target.prototype)` 是必要的——若原型链未正确建立，`instanceof` 会返回 `false`。
 
-### 3.5 堆栈追踪的形式化表示
+### 2.5 堆栈追踪的形式化表示
 
 V8 堆栈追踪是 `CallSite` 对象序列的字符串化表示：
 
@@ -493,7 +359,7 @@ $$
 
 `Error.captureStackTrace(target, constructorOpt)` 会在 `target.stack` 上写入从调用点开始到 `constructorOpt` 之前的所有 CallSite。
 
-### 3.6 try/catch/finally 的执行语义
+### 2.6 try/catch/finally 的执行语义
 
 `try/catch/finally` 块的执行流程形式化为：
 
@@ -515,9 +381,9 @@ $$
 
 ---
 
-## 4. 内置 Error 类型详解
+## 3. 内置 Error 类型详解
 
-### 4.1 Error：根类
+### 3.1 Error：根类
 
 ```javascript
 // Error 构造器签名（ES2022+）
@@ -535,7 +401,7 @@ const wrapped = new Error('用户加载失败', { cause: new TypeError('Network 
 console.log(wrapped.cause);  // TypeError: Network response was undefined
 ```
 
-### 4.2 TypeError：类型错误
+### 3.2 TypeError：类型错误
 
 最常见的内置错误之一，当值不是期望类型时抛出：
 
@@ -549,7 +415,7 @@ Symbol() + '';              // TypeError: Cannot convert a Symbol value to a str
 Object.defineProperty(1, 'x', {});  // TypeError: Object.defineProperty called on non-object
 ```
 
-### 4.3 RangeError：范围错误
+### 3.3 RangeError：范围错误
 
 值不在合法范围内时抛出：
 
@@ -561,7 +427,7 @@ const arr = new Array(10);
 arr.length = 2 ** 53;                // RangeError: Invalid array length
 ```
 
-### 4.4 ReferenceError：引用错误
+### 3.4 ReferenceError：引用错误
 
 引用不存在的变量时抛出：
 
@@ -572,7 +438,7 @@ console.log(notDefined);             // ReferenceError: notDefined is not define
 undeclaredVar = 1;                   // ReferenceError: undeclaredVar is not defined
 ```
 
-### 4.5 SyntaxError：语法错误
+### 3.5 SyntaxError：语法错误
 
 代码语法错误，通常在解析阶段抛出：
 
@@ -582,7 +448,7 @@ JSON.parse('{invalid}');             // SyntaxError: Unexpected token i in JSON
 new Function('} else {');            // SyntaxError: Unexpected token '}'
 ```
 
-### 4.6 URIError：URI 处理错误
+### 3.6 URIError：URI 处理错误
 
 `decodeURIComponent` 等函数处理非法 URI 时抛出：
 
@@ -591,7 +457,7 @@ decodeURIComponent('%');             // URIError: URI malformed
 decodeURIComponent('%ZZ');           // URIError: URI malformed
 ```
 
-### 4.7 AggregateError：聚合错误（ES2021）
+### 3.7 AggregateError：聚合错误（ES2021）
 
 ```javascript
 // 直接构造
@@ -627,9 +493,9 @@ try {
 
 ---
 
-## 5. 自定义 Error 子类
+## 4. 自定义 Error 子类
 
-### 5.1 ES6 标准写法
+### 4.1 ES6 标准写法
 
 ```javascript
 /**
@@ -684,7 +550,7 @@ function serializeError(err) {
 }
 ```
 
-### 5.2 错误类型层次设计
+### 4.2 错误类型层次设计
 
 层次化错误体系让上层调用者既能用基类捕获，又能精确分支：
 
@@ -761,7 +627,7 @@ try {
 }
 ```
 
-### 5.3 ES5 函数式继承（兼容老环境）
+### 4.3 ES5 函数式继承（兼容老环境）
 
 ```javascript
 /**
@@ -796,9 +662,9 @@ console.log(err.toString());              // 'LegacyError: 操作失败 (code: O
 
 ---
 
-## 6. Error Cause 错误链（ES2022）
+## 5. Error Cause 错误链（ES2022）
 
-### 6.1 基本用法
+### 5.1 基本用法
 
 ```javascript
 // ES2022 标准 cause 选项
@@ -837,7 +703,7 @@ async function loadDashboard() {
 }
 ```
 
-### 6.2 错误链遍历工具
+### 5.2 错误链遍历工具
 
 ```javascript
 /**
@@ -905,7 +771,7 @@ try {
 }
 ```
 
-### 6.3 与 Java Throwable.getCause 对比
+### 5.3 与 Java Throwable.getCause 对比
 
 | 特性 | JavaScript Error Cause | Java Throwable getCause |
 | --- | --- | --- |
@@ -918,9 +784,9 @@ try {
 
 ---
 
-## 7. AggregateError 聚合错误（ES2021）
+## 6. AggregateError 聚合错误（ES2021）
 
-### 7.1 Promise.any 失败语义
+### 6.1 Promise.any 失败语义
 
 ```javascript
 /**
@@ -956,7 +822,7 @@ async function fetchConfigFromMultiSource() {
 }
 ```
 
-### 7.2 表单批量校验
+### 6.2 表单批量校验
 
 ```javascript
 /**
@@ -1027,7 +893,7 @@ try {
 }
 ```
 
-### 7.3 自定义 AggregateError 子类
+### 6.3 自定义 AggregateError 子类
 
 ```javascript
 /**
@@ -1104,9 +970,9 @@ try {
 
 ---
 
-## 8. 堆栈追踪（Stack Trace）
+## 7. 堆栈追踪（Stack Trace）
 
-### 8.1 V8 堆栈格式
+### 7.1 V8 堆栈格式
 
 V8 引擎（Chrome、Node.js）的 `Error.stack` 是字符串，格式如下：
 
@@ -1149,7 +1015,7 @@ try {
 }
 ```
 
-### 8.2 Error.stackTraceLimit
+### 7.2 Error.stackTraceLimit
 
 ```javascript
 // 默认 stackTraceLimit = 10
@@ -1159,7 +1025,7 @@ Error.stackTraceLimit = 50;  // 增加堆栈深度，便于调试深层递归
 // Error.stackTraceLimit = 0;
 ```
 
-### 8.3 CallSite 对象
+### 7.3 CallSite 对象
 
 V8 在 `Error.prepareStackTrace` 中暴露原始 `CallSite` 数组：
 
@@ -1193,7 +1059,7 @@ console.log(err.stack[0].lineNumber);
 delete Error.prepareStackTrace;
 ```
 
-### 8.4 跨引擎差异
+### 7.4 跨引擎差异
 
 | 特性 | V8（Chrome/Node） | SpiderMonkey（Firefox） | JavaScriptCore（Safari） |
 | --- | --- | --- | --- |
@@ -1265,7 +1131,7 @@ function parseStackTrace(stackStr) {
 }
 ```
 
-### 8.5 SourceMap 还原
+### 7.5 SourceMap 还原
 
 生产环境通常压缩混淆，需通过 SourceMap 还原真实位置：
 
@@ -1327,9 +1193,9 @@ class SourceMapResolver {
 
 ---
 
-## 9. 错误序列化与跨进程传输
+## 8. 错误序列化与跨进程传输
 
-### 9.1 JSON.stringify 陷阱
+### 8.1 JSON.stringify 陷阱
 
 `Error` 对象的属性默认不可枚举，`JSON.stringify` 不会输出：
 
@@ -1367,7 +1233,7 @@ console.log(JSON.stringify(errorToObject(new Error('test'))));
 // 输出：'{"name":"Error","message":"test","stack":"..."}'
 ```
 
-### 9.2 structuredClone 支持
+### 8.2 structuredClone 支持
 
 `structuredClone`（ES2022+）原生支持 Error 对象克隆：
 
@@ -1385,7 +1251,7 @@ console.log(cloned.cause instanceof TypeError);  // true
 console.log(cloned.code);  // undefined（code 是后加的可枚举属性，会保留）
 ```
 
-### 9.3 跨进程传输协议
+### 8.3 跨进程传输协议
 
 ```javascript
 /**
@@ -1460,9 +1326,9 @@ worker.onmessage = (e) => {
 
 ---
 
-## 10. 对比分析
+## 9. 对比分析
 
-### 10.1 JavaScript vs Java 异常体系
+### 9.1 JavaScript vs Java 异常体系
 
 | 特性 | JavaScript | Java |
 | --- | --- | --- |
@@ -1476,7 +1342,7 @@ worker.onmessage = (e) => {
 | 堆栈格式 | 字符串（V8）/对象（SpiderMonkey） | `StackTraceElement[]` |
 | 性能 | throw 较慢（V8 优化中） | throw 较慢（JIT 优化中） |
 
-### 10.2 JavaScript vs Python 异常体系
+### 9.2 JavaScript vs Python 异常体系
 
 | 特性 | JavaScript | Python |
 | --- | --- | --- |
@@ -1490,7 +1356,7 @@ worker.onmessage = (e) => {
 | finally | 支持 | 支持 |
 | else 子句 | 无 | `try ... except ... else ...` |
 
-### 10.3 自定义错误 vs 错误码（返回值）
+### 9.3 自定义错误 vs 错误码（返回值）
 
 | 维度 | 自定义 Error 抛出 | 错误码返回 |
 | --- | --- | --- |
@@ -1523,9 +1389,9 @@ function parseIntOrResult(s: string): Result<number, ValidationError> {
 
 ---
 
-## 11. 常见陷阱与修复
+## 10. 常见陷阱与修复
 
-### 11.1 instanceof 失效陷阱
+### 10.1 instanceof 失效陷阱
 
 ```javascript
 // 错误：Babel transpile 后 instanceof 失效
@@ -1550,7 +1416,7 @@ const err2 = new GoodError('test');
 console.log(err2 instanceof GoodError);  // true
 ```
 
-### 11.2 name 属性错误
+### 10.2 name 属性错误
 
 ```javascript
 // 错误：name 始终是 'Error'
@@ -1582,7 +1448,7 @@ class DynamicNameError extends Error {
 }
 ```
 
-### 11.3 错误链断裂
+### 10.3 错误链断裂
 
 ```javascript
 // 错误：手动拼接字符串，丢失原始 Error 对象
@@ -1604,7 +1470,7 @@ async function goodWrapper() {
 }
 ```
 
-### 11.4 Promise.all 错误丢失
+### 10.4 Promise.all 错误丢失
 
 ```javascript
 // 错误：Promise.all 在第一个失败时 reject，丢失其他错误
@@ -1633,7 +1499,7 @@ async function fetchAny(urls) {
 }
 ```
 
-### 11.5 异步错误未捕获
+### 10.5 异步错误未捕获
 
 ```javascript
 // 错误：异步错误未 catch，成为 unhandledrejection
@@ -1670,7 +1536,7 @@ window.addEventListener('error', (event) => {
 });
 ```
 
-### 11.6 错误对象被复用
+### 10.6 错误对象被复用
 
 ```javascript
 // 错误：复用 Error 实例，堆栈信息混乱
@@ -1687,7 +1553,7 @@ function getConfigGood(key) {
 }
 ```
 
-### 11.7 finally 吞掉错误
+### 10.7 finally 吞掉错误
 
 ```javascript
 // 错误：finally 抛出错误会覆盖 try 中的错误
@@ -1729,9 +1595,9 @@ function goodFinally() {
 
 ---
 
-## 12. 工程实践
+## 11. 工程实践
 
-### 12.1 错误监控 SDK 设计
+### 11.1 错误监控 SDK 设计
 
 ```javascript
 /**
@@ -1935,7 +1801,7 @@ class ErrorMonitor {
 }
 ```
 
-### 12.2 React 错误边界集成
+### 11.2 React 错误边界集成
 
 ```jsx
 import React from 'react';
@@ -1993,7 +1859,7 @@ function App() {
 }
 ```
 
-### 12.3 Vue 错误处理集成
+### 11.3 Vue 错误处理集成
 
 ```javascript
 import { createApp } from 'vue';
@@ -2027,7 +1893,7 @@ app.config.warnHandler = (msg, instance, trace) => {
 app.mount('#app');
 ```
 
-### 12.4 try/catch 性能考量
+### 11.4 try/catch 性能考量
 
 ```javascript
 /**
@@ -2100,9 +1966,9 @@ class ErrorThrottle {
 
 ---
 
-## 13. 案例研究
+## 12. 案例研究
 
-### 13.1 案例：电商订单系统错误体系
+### 12.1 案例：电商订单系统错误体系
 
 ```javascript
 /**
@@ -2236,7 +2102,7 @@ try {
 }
 ```
 
-### 13.2 案例：API SDK 错误处理
+### 12.2 案例：API SDK 错误处理
 
 ```javascript
 /**
@@ -2359,7 +2225,7 @@ class ApiClient {
 }
 ```
 
-### 13.3 案例：表单校验器
+### 12.3 案例：表单校验器
 
 ```javascript
 /**
@@ -2507,7 +2373,7 @@ try {
 }
 ```
 
-### 13.4 案例：Worker 错误传递
+### 12.4 案例：Worker 错误传递
 
 ```javascript
 /**
@@ -2609,7 +2475,7 @@ self.onmessage = async (e) => {
 };
 ```
 
-### 13.5 案例：GraphQL 错误处理
+### 12.5 案例：GraphQL 错误处理
 
 ```javascript
 /**
@@ -2747,7 +2613,7 @@ Promise.any([p1, p2, p3]).catch(e => {
 
    **解释**：过深的层次增加维护成本，过浅无法精确分支；按业务域分组并控制深度是工业实践推荐方案。
 
-### 14.3 代码修复题（code-fix）
+### 13.3 代码修复题（code-fix）
 
 1. **（analyze）** 以下代码期望打印所有失败原因，但实际只打印了一个。请修复：
 ```javascript
@@ -2840,7 +2706,7 @@ class AppError extends Error {
 }
 ```
 
-### 14.4 开放题（open-ended）
+### 13.4 开放题（open-ended）
 
 1. **（create）** 请设计一个支持以下能力的企业级错误处理体系：
    - 跨前端（React/Vue）与后端（Node.js）统一错误类型
@@ -2877,9 +2743,9 @@ class AppError extends Error {
 
 ---
 
-## 15. 延伸阅读
+## 14. 延伸阅读
 
-### 15.1 官方规范与提案
+### 14.1 官方规范与提案
 
 - **ECMAScript 2026 Language Specification** - ECMA-262, 17th Edition. Error Objects 章节。https://tc39.es/ecma262/#sec-error-objects
 - **TC39 Error Cause Proposal** - https://github.com/tc39/proposal-error-cause
@@ -2887,20 +2753,20 @@ class AppError extends Error {
 - **TC39 Error.isError Proposal**（Stage 1） - 跨 realm 错误判定标准化
 - **WHATWG HTML Living Standard** - Web Worker 错误传递规范
 
-### 15.2 经典书籍
+### 14.2 经典书籍
 
 - **Flanagan, D. (2020). *JavaScript: The Definitive Guide*, 7th Edition. O'Reilly.** - 第 11 章深入讲解 Error 与异常处理
 - **Haverbeke, M. (2018). *Eloquent JavaScript*, 3rd Edition.** - 第 8 章错误处理哲学
 - **Crockford, D. (2008). *JavaScript: The Good Parts*. O'Reilly.** - 早期对 throw 设计的批判与建议
 - **Simpson, K. (2019). *You Don't Know JS Yet: Scope & Closures*, 2nd Edition.** - 异常对作用域与闭包的影响
 
-### 15.3 论文与学术资料
+### 14.3 论文与学术资料
 
 - **Goodenough, J. B. (1975). "Exception handling: issues and a proposed notation."** *Communications of the ACM*, 18(12), 683-696. DOI: 10.1145/361227.361230 - 异常处理设计的经典论文，奠定现代 try/catch 语义
 - **Liskov, B. H., & Snyder, A. (1979). "Exception handling in CLU."** *IEEE Transactions on Software Engineering*, (6), 546-558. DOI: 10.1109/TSE.1979.234169 - 最早的形式化异常处理系统之一
 - **Miller, R., & Tripathi, A. (1987). "Issues with exception handling."** *ACM SIGPLAN Notices*, 22(12), 59-64. DOI: 10.1145/38877.38883 - 异常处理的开放问题
 
-### 15.4 开源项目
+### 14.4 开源项目
 
 - **Sentry JavaScript SDK** - https://github.com/getsentry/sentry-javascript - 业界标杆错误监控
 - **tracekit** - https://github.com/csnover/TraceKit - 跨浏览器堆栈追踪归一化
@@ -2910,7 +2776,7 @@ class AppError extends Error {
 - **zod** - https://github.com/colinhacks/zod - TypeScript 优先的 Schema 校验库
 - **superstruct** - https://github.com/ianstormtaylor/superstruct - 另一个流行的校验库
 
-### 15.5 在线资源
+### 14.5 在线资源
 
 - **MDN Error Reference** - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
 - **V8 Stack Trace API** - https://v8.dev/docs/stack-trace-api
@@ -2919,7 +2785,7 @@ class AppError extends Error {
 
 ---
 
-## 16. 附录
+## 15. 附录
 
 ### 附录 A：内置 Error 类型快速参考
 
@@ -3030,7 +2896,7 @@ function isAggregateError(e: unknown): e is AggregateError {
 
 ---
 
-## 17. 修订日志
+## 16. 修订日志
 
 | 日期 | 版本 | 修订内容 | 修订人 |
 | --- | --- | --- | --- |

@@ -25,59 +25,16 @@ prerequisites:
   - java/面向对象基础
   - java/Java与数据库连接
 ---
+
 # Spring 框架核心注解速查
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与背景
 
-本文依据 Bloom's Taxonomy（布鲁姆认知目标分类学）的六个层次组织学习目标，确保从低阶认知到高阶创造的渐进式掌握。
-
-### 1.1 记忆（Remembering）
-
-- 列出 Spring 框架的七大核心模块：Core、Context、AOP、DAO、ORM、Web、MVC。
-- 回忆 IoC 容器的两种主要实现：`BeanFactory` 与 `ApplicationContext`。
-- 列出 Bean 的五种作用域：`singleton`、`prototype`、`request`、`session`、`application`。
-- 陈述 Bean 生命周期的十三阶段：实例化、属性赋值、Aware 回调、BeanPostProcessor 前置、初始化、BeanPostProcessor 后置、使用、销毁。
-
-### 1.2 理解（Understanding）
-
-- 解释 IoC（控制反转）与 DI（依赖注入）的关系与区别。
-- 描述 Bean 的循环依赖问题及 Spring 的三级缓存解决方案。
-- 区分构造器注入、Setter 注入与字段注入的优劣。
-- 解释 AOP 中 JoinPoint、Pointcut、Advice、Aspect、Weaving 的概念与关系。
-
-### 1.3 应用（Applying）
-
-- 使用 `@Component`、`@Service`、`@Repository`、`@Controller` 注解声明 Bean。
-- 通过 `@Autowired`、`@Resource`、`@Inject` 实现依赖注入。
-- 使用 `@Aspect`、`@Before`、`@After`、`@Around` 编写切面。
-- 通过 `@Transactional` 注解管理声明式事务。
-
-### 1.4 分析（Analyzing）
-
-- 分析 Spring 启动过程中 Bean 的创建顺序与依赖解析机制。
-- 解构 `@SpringBootApplication` 注解的组合语义。
-- 比较不同 Advice 类型（Before、After、Around、AfterReturning、AfterThrowing）的执行时序。
-- 分析事务失效的常见原因（自调用、非 public 方法、异常被吞等）。
-
-### 1.5 评价（Evaluating）
-
-- 评估某 Spring 项目中 Bean 注入方式选型的合理性。
-- 评判 AOP 切面在性能敏感场景下的适用性。
-- 评价某次线上事务失效故障的根因分析与修复方案。
-
-### 1.6 创造（Creating）
-
-- 设计一套基于 Spring 的微服务架构方案。
-- 构建自定义的 `BeanPostProcessor` 实现日志、监控、链路追踪。
-- 实现一个支持动态数据源切换的 Spring Boot Starter。
-
-## 2. 历史动机与背景
-
-### 2.1 EJB 时代的痛点
+### 1.1 EJB 时代的痛点
 
 2000 年代初，Java 企业级开发由 EJB（Enterprise JavaBeans）主导。EJB 2.x 的核心问题包括：
 
@@ -88,7 +45,7 @@ prerequisites:
 
 Rod Johnson 在 2002 年出版的 *Expert One-on-One J2EE Design and Development* 一书中批判了 EJB 的复杂性，并提出了基于普通 Java 对象（POJO）的轻量级方案。这一思想催生了 Spring 框架。
 
-### 2.2 Spring 的诞生
+### 1.2 Spring 的诞生
 
 2003 年 6 月，Spring 框架 0.9 版本在 SourceForge 上发布。其核心理念是：
 
@@ -97,7 +54,7 @@ Rod Johnson 在 2002 年出版的 *Expert One-on-One J2EE Design and Development
 3. **AOP**：将横切关注点（日志、事务、安全）与业务逻辑分离。
 4. **声明式编程**：通过配置或注解描述"做什么"，由框架实现"怎么做"。
 
-### 2.3 Spring 的演进
+### 1.3 Spring 的演进
 
 | 版本 | 发布年份 | 核心特性 |
 |------|----------|----------|
@@ -110,7 +67,7 @@ Rod Johnson 在 2002 年出版的 *Expert One-on-One J2EE Design and Development
 | Spring 6.0 | 2022 | JDK 17+ 基线、Jakarta EE 9+ 迁移 |
 | Spring Boot 3.0 | 2022 | 原生镜像支持、Jakarta EE 迁移 |
 
-### 2.4 Spring Boot 的革命
+### 1.4 Spring Boot 的革命
 
 2014 年发布的 Spring Boot 解决了 Spring 的"配置地狱"问题：
 
@@ -122,9 +79,9 @@ Rod Johnson 在 2002 年出版的 *Expert One-on-One J2EE Design and Development
 
 Spring Boot 让 Spring 应用的启动时间从分钟级降至秒级，部署从 WAR 改为可执行 JAR，推动了微服务与云原生的普及。
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 IoC 容器的形式化模型
+### 2.1 IoC 容器的形式化模型
 
 IoC 容器可形式化为三元组：
 
@@ -140,7 +97,7 @@ $$
 
 容器启动时构建 $D$（有向图），通过拓扑排序确定创建顺序，对每个 $b \in B$ 调用 $M(b)$ 生成实例并注入依赖。
 
-### 3.2 依赖注入的形式化
+### 2.2 依赖注入的形式化
 
 依赖注入是 IoC 的具体实现机制，形式化为：
 
@@ -154,7 +111,7 @@ $$
 2. **Setter 注入**：$b_i.setDep_j(M(b_j))$，依赖通过 setter 方法注入。
 3. **字段注入**：$b_i.dep_j = M(b_j)$，依赖通过反射直接赋值字段。
 
-### 3.3 Bean 生命周期形式化
+### 2.3 Bean 生命周期形式化
 
 Bean 生命周期可形式化为状态机：
 
@@ -174,7 +131,7 @@ $$
 - $s_7$：Bean 就绪，可被使用
 - $s_8$：销毁完成
 
-### 3.4 AOP 的形式化定义
+### 2.4 AOP 的形式化定义
 
 AOP（Aspect-Oriented Programming）可形式化为：
 
@@ -189,7 +146,7 @@ $$
 
 Spring AOP 仅支持方法级 JoinPoint，使用动态代理（JDK Proxy 或 CGLIB）在运行时织入。
 
-### 3.5 事务传播行为形式化
+### 2.5 事务传播行为形式化
 
 事务传播行为定义了事务方法的嵌套语义：
 
@@ -207,11 +164,11 @@ $$
 - **NEVER**：若 $T_{outer}$ 存在则抛异常。
 - **MANDATORY**：若 $T_{outer}$ 不存在则抛异常。
 
-## 4. 理论推导
+## 3. 理论推导
 
-### 4.1 IoC 容器的依赖图构建
+### 3.1 IoC 容器的依赖图构建
 
-#### 4.1.1 BeanDefinition 的注册
+#### 3.1.1 BeanDefinition 的注册
 
 Spring 启动时扫描 classpath，对每个标注 `@Component` 的类创建 `BeanDefinition` 对象：
 
@@ -230,7 +187,7 @@ public class GenericBeanDefinition implements BeanDefinition {
 
 `BeanDefinition` 注册到 `DefaultListableBeanFactory.beanDefinitionMap`（ConcurrentHashMap）。
 
-#### 4.1.2 依赖图的拓扑排序
+#### 3.1.2 依赖图的拓扑排序
 
 `DefaultListableBeanFactory.preInstantiateSingletons()` 按依赖顺序创建 Bean：
 
@@ -241,7 +198,7 @@ public class GenericBeanDefinition implements BeanDefinition {
 
 若依赖图中存在环，则触发循环依赖处理（见 4.2）。
 
-#### 4.1.3 创建过程的核心代码
+#### 3.1.3 创建过程的核心代码
 
 ```java
 // DefaultListableBeanFactory.doGetBean 简化逻辑
@@ -274,9 +231,9 @@ protected <T> T doGetBean(String name, Class<T> requiredType) {
 }
 ```
 
-### 4.2 循环依赖与三级缓存
+### 3.2 循环依赖与三级缓存
 
-#### 4.2.1 问题场景
+#### 3.2.1 问题场景
 
 ```java
 @Service
@@ -292,7 +249,7 @@ public class B {
 
 创建 A 时需要 B，创建 B 时又需要 A，形成死循环。
 
-#### 4.2.2 三级缓存结构
+#### 3.2.2 三级缓存结构
 
 Spring 使用三级缓存解决单例 Bean 的循环依赖：
 
@@ -309,7 +266,7 @@ public class DefaultSingletonBeanRegistry {
 }
 ```
 
-#### 4.2.3 解决流程
+#### 3.2.3 解决流程
 
 1. 创建 A，实例化后（属性未填充）将 A 的工厂放入三级缓存。
 2. A 开始填充属性 B，触发 `getBean(B)`。
@@ -321,7 +278,7 @@ public class DefaultSingletonBeanRegistry {
 5. B 拿到 A 的早期引用，完成属性填充，初始化完成，放入一级缓存。
 6. A 继续填充属性 B，从一级缓存获取 B（已就绪），完成填充与初始化，放入一级缓存。
 
-#### 4.2.4 三级缓存的作用
+#### 3.2.4 三级缓存的作用
 
 - **一级缓存**：存放完整 Bean，避免重复创建。
 - **二级缓存**：存放早期 Bean，避免循环依赖中重复创建。
@@ -329,7 +286,7 @@ public class DefaultSingletonBeanRegistry {
 
 为什么需要三级而非二级？当 Bean 需要 AOP 代理时，ObjectFactory 在被调用时才生成代理对象。若只有二级缓存，AOP 代理必须提前生成，违反"代理在初始化后生成"的设计原则。三级缓存使代理生成时机保持灵活。
 
-#### 4.2.5 循环依赖的局限
+#### 3.2.5 循环依赖的局限
 
 Spring 的三级缓存方案**仅支持单例 Bean 的 setter 注入循环依赖**，以下情况无法解决：
 
@@ -337,9 +294,9 @@ Spring 的三级缓存方案**仅支持单例 Bean 的 setter 注入循环依赖
 - **prototype 作用域循环依赖**：prototype 每次创建新实例，无缓存。
 - **@Async 标注的 Bean 循环依赖**：`@Async` 的代理在初始化后生成，与三级缓存机制冲突。
 
-### 4.3 Bean 生命周期详解
+### 3.3 Bean 生命周期详解
 
-#### 4.3.1 完整生命周期
+#### 3.3.1 完整生命周期
 
 ```java
 // Bean 生命周期的完整流程（伪代码）
@@ -388,7 +345,7 @@ private Object initializeBean(String beanName, Object bean, RootBeanDefinition m
 }
 ```
 
-#### 4.3.2 销毁流程
+#### 3.3.2 销毁流程
 
 容器关闭时，对每个单例 Bean 执行销毁：
 
@@ -396,9 +353,9 @@ private Object initializeBean(String beanName, Object bean, RootBeanDefinition m
 2. `DisposableBean.destroy()` 接口方法
 3. 自定义 `destroy-method`
 
-### 4.4 AOP 实现原理
+### 3.4 AOP 实现原理
 
-#### 4.4.1 动态代理的选择
+#### 3.4.1 动态代理的选择
 
 Spring AOP 支持两种代理方式：
 
@@ -411,7 +368,7 @@ Spring 默认策略：
 - 目标类无接口 → 使用 CGLIB
 - 显式 `proxyTargetClass=true` → 强制 CGLIB（Spring Boot 2.x 起默认）
 
-#### 4.4.2 JDK 动态代理示例
+#### 3.4.2 JDK 动态代理示例
 
 ```java
 // JDK 动态代理核心代码
@@ -451,7 +408,7 @@ public class JdkProxyFactory implements InvocationHandler {
 }
 ```
 
-#### 4.4.3 CGLIB 代理示例
+#### 3.4.3 CGLIB 代理示例
 
 ```java
 // CGLIB 代理核心代码
@@ -474,7 +431,7 @@ public class CglibProxyFactory implements MethodInterceptor {
 }
 ```
 
-#### 4.4.4 Spring AOP 的织入时机
+#### 3.4.4 Spring AOP 的织入时机
 
 Spring AOP 在 `BeanPostProcessor#postProcessAfterInitialization` 阶段织入代理：
 
@@ -503,7 +460,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport {
 }
 ```
 
-#### 4.4.5 Advice 执行时序
+#### 3.4.5 Advice 执行时序
 
 ```java
 // @Around 通知的执行模型
@@ -529,9 +486,9 @@ public Object aroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
 
 多个 Aspect 的执行顺序由 `@Order` 决定，数值小的先执行（外层）。
 
-### 4.5 Spring 事务原理
+### 3.5 Spring 事务原理
 
-#### 4.5.1 声明式事务的实现
+#### 3.5.1 声明式事务的实现
 
 `@Transactional` 基于 AOP 代理实现。Spring 创建事务代理的核心是 `TransactionInterceptor`：
 
@@ -568,7 +525,7 @@ public class TransactionInterceptor extends TransactionAspectSupport {
 }
 ```
 
-#### 4.5.2 事务传播行为的实现
+#### 3.5.2 事务传播行为的实现
 
 ```java
 // AbstractPlatformTransactionManager.getTransaction 简化逻辑
@@ -596,7 +553,7 @@ public TransactionStatus getTransaction(TransactionDefinition definition) {
 }
 ```
 
-#### 4.5.3 事务失效的根因
+#### 3.5.3 事务失效的根因
 
 事务失效的根本原因都是"未通过代理对象调用"：
 
@@ -607,9 +564,9 @@ public TransactionStatus getTransaction(TransactionDefinition definition) {
 5. **异常类型不匹配**：默认仅回滚 `RuntimeException` 与 `Error`，checked 异常需 `rollbackFor` 指定。
 6. **多线程**：事务基于 ThreadLocal，子线程无法继承事务上下文。
 
-### 4.6 Spring MVC 请求处理流程
+### 3.6 Spring MVC 请求处理流程
 
-#### 4.6.1 核心组件
+#### 3.6.1 核心组件
 
 - `DispatcherServlet`：前端控制器，所有请求入口。
 - `HandlerMapping`：映射请求到 Handler（Controller 方法）。
@@ -617,7 +574,7 @@ public TransactionStatus getTransaction(TransactionDefinition definition) {
 - `ViewResolver`：解析视图名到 View（前后端分离时由 MessageConverter 替代）。
 - `HandlerInterceptor`：拦截器，在 Handler 执行前后插入逻辑。
 
-#### 4.6.2 请求处理流程
+#### 3.6.2 请求处理流程
 
 ```
 请求 → DispatcherServlet
@@ -632,7 +589,7 @@ public TransactionStatus getTransaction(TransactionDefinition definition) {
     → 响应
 ```
 
-#### 4.6.3 关键源码
+#### 3.6.3 关键源码
 
 ```java
 // DispatcherServlet.doDispatch 简化逻辑
@@ -674,9 +631,9 @@ protected void doDispatch(HttpServletRequest request, HttpServletResponse respon
 }
 ```
 
-### 4.7 Spring Boot 自动配置
+### 3.7 Spring Boot 自动配置
 
-#### 4.7.1 @SpringBootApplication 的组成
+#### 3.7.1 @SpringBootApplication 的组成
 
 ```java
 @SpringBootConfiguration  // 等同于 @Configuration，标记主配置类
@@ -687,7 +644,7 @@ public @interface SpringBootApplication {
 }
 ```
 
-#### 4.7.2 @EnableAutoConfiguration 的原理
+#### 3.7.2 @EnableAutoConfiguration 的原理
 
 `@EnableAutoConfiguration` 通过 `@Import(AutoConfigurationImportSelector.class)` 加载自动配置类：
 
@@ -712,7 +669,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector {
 - `@ConditionalOnProperty`：配置属性满足条件时生效
 - `@ConditionalOnWebApplication`：Web 应用时生效
 
-#### 4.7.3 自动配置示例
+#### 3.7.3 自动配置示例
 
 ```java
 // DataSourceAutoConfiguration 简化版
@@ -733,9 +690,9 @@ public class DataSourceAutoConfiguration {
 
 逻辑：当 classpath 存在 `DataSource` 类、容器中无 `DataSource` Bean 时，根据 classpath 中的连接池（HikariCP 优先）自动配置数据源。
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 IoC 容器基础：XML 配置与注解配置对比
+### 4.1 IoC 容器基础：XML 配置与注解配置对比
 
 ```java
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -815,7 +772,7 @@ public class UserRepository {
 }
 ```
 
-### 5.2 三种依赖注入方式对比
+### 4.2 三种依赖注入方式对比
 
 ```java
 import org.springframework.beans.factory.annotation.Autowired;
@@ -880,7 +837,7 @@ public class ResourceVsAutowiredDemo {
 }
 ```
 
-### 5.3 Bean 生命周期监听
+### 4.3 Bean 生命周期监听
 
 ```java
 import org.springframework.beans.BeansException;
@@ -982,7 +939,7 @@ public class LifecycleBeanPostProcessor implements BeanPostProcessor {
 }
 ```
 
-### 5.4 AOP 切面实现
+### 4.4 AOP 切面实现
 
 ```java
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -1094,7 +1051,7 @@ public class PerformanceAspect {
 public @interface Monitored {}
 ```
 
-### 5.5 声明式事务
+### 4.5 声明式事务
 
 ```java
 import org.springframework.stereotype.Service;
@@ -1189,7 +1146,7 @@ public class BusinessException extends RuntimeException {
 }
 ```
 
-### 5.6 Spring MVC RESTful 接口
+### 4.6 Spring MVC RESTful 接口
 
 ```java
 import org.springframework.http.ResponseEntity;
@@ -1310,7 +1267,7 @@ public class ErrorResponse {
 }
 ```
 
-### 5.7 自定义 Spring Boot Starter
+### 4.7 自定义 Spring Boot Starter
 
 ```java
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -1385,7 +1342,7 @@ public class SmsService {
 com.example.sms.SmsAutoConfiguration
 ```
 
-### 5.8 自定义 BeanPostProcessor 实现日志埋点
+### 4.8 自定义 BeanPostProcessor 实现日志埋点
 
 ```java
 import org.springframework.beans.BeansException;
@@ -1445,9 +1402,9 @@ public class ServiceLoggingBeanPostProcessor implements BeanPostProcessor {
 }
 ```
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 IoC 容器实现对比
+### 5.1 IoC 容器实现对比
 
 | 特性 | BeanFactory | ApplicationContext |
 |------|-------------|---------------------|
@@ -1460,7 +1417,7 @@ public class ServiceLoggingBeanPostProcessor implements BeanPostProcessor {
 | 性能 | 启动快 | 启动稍慢 |
 | 适用场景 | 资源受限环境 | 企业级应用（默认选择） |
 
-### 6.2 依赖注入方式对比
+### 5.2 依赖注入方式对比
 
 | 注入方式 | 可变性 | 非空保证 | 循环依赖 | 测试性 | 推荐度 |
 |----------|--------|----------|----------|--------|--------|
@@ -1468,7 +1425,7 @@ public class ServiceLoggingBeanPostProcessor implements BeanPostProcessor {
 | Setter 注入 | 可变 | 运行时可能空 | 支持 | 良 | 可选依赖时使用 |
 | 字段注入 | 可变 | 运行时可能空 | 支持 | 差 | 不推荐 |
 
-### 6.3 AOP 实现对比
+### 5.3 AOP 实现对比
 
 | 特性 | Spring AOP | AspectJ |
 |------|-----------|---------|
@@ -1478,7 +1435,7 @@ public class ServiceLoggingBeanPostProcessor implements BeanPostProcessor {
 | 配置 | 简单 | 需 ajc 编译器或 LTW |
 | 适用场景 | 企业应用（事务、日志） | 性能敏感、细粒度切面 |
 
-### 6.4 代理方式对比
+### 5.4 代理方式对比
 
 | 特性 | JDK 动态代理 | CGLIB 代理 |
 |------|-------------|-----------|
@@ -1488,7 +1445,7 @@ public class ServiceLoggingBeanPostProcessor implements BeanPostProcessor {
 | Spring 默认 | 接口存在时使用 | 无接口或强制时使用 |
 | Spring Boot 2.x | 默认 CGLIB | 默认 CGLIB |
 
-### 6.5 事务管理方式对比
+### 5.5 事务管理方式对比
 
 | 特性 | 编程式事务 | 声明式事务 |
 |------|-----------|-----------|
@@ -1498,7 +1455,7 @@ public class ServiceLoggingBeanPostProcessor implements BeanPostProcessor {
 | 可读性 | 差 | 优 |
 | 适用场景 | 细粒度控制、复杂事务边界 | 常规业务（90% 场景） |
 
-### 6.6 Spring Web 框架对比
+### 5.6 Spring Web 框架对比
 
 | 框架 | 编程模型 | 并发模型 | 适用场景 |
 |------|---------|---------|---------|
@@ -1506,9 +1463,9 @@ public class ServiceLoggingBeanPostProcessor implements BeanPostProcessor {
 | WebFlux | Reactive（非阻塞） | 少量线程 + EventLoop | 高并发 I/O 密集 |
 | Spring GraphQL | GraphQL | 依赖底层 | 灵活查询、聚合多源 |
 
-## 7. 常见陷阱与反模式
+## 6. 常见陷阱与反模式
 
-### 7.1 反模式：字段注入导致测试困难
+### 6.1 反模式：字段注入导致测试困难
 
 **问题**：
 
@@ -1545,7 +1502,7 @@ public class UserService {
 
 **生产事故案例**：某团队使用字段注入，单元测试覆盖率达 80% 但生产频繁出 bug。原因是测试用 `@MockBean` 替换依赖，掩盖了真实依赖关系；重构时漏改一个依赖，测试全过但生产 NPE。改为构造器注入后，编译期即可发现缺失依赖。
 
-### 7.2 反模式：自调用导致事务失效
+### 6.2 反模式：自调用导致事务失效
 
 **问题**：
 
@@ -1598,7 +1555,7 @@ public class OrderBatchService {
 }
 ```
 
-### 7.3 反模式：循环依赖
+### 6.3 反模式：循环依赖
 
 **问题**：
 
@@ -1641,7 +1598,7 @@ public class B {
    }
    ```
 
-### 7.4 反模式：@Transactional 标注在 private 方法
+### 6.4 反模式：@Transactional 标注在 private 方法
 
 **问题**：
 
@@ -1659,7 +1616,7 @@ public class UserService {
 
 **修复**：将方法改为 `public`，或抽取到单独的 Service 类。
 
-### 7.5 反模式：异常被吞导致事务不回滚
+### 6.5 反模式：异常被吞导致事务不回滚
 
 **问题**：
 
@@ -1694,7 +1651,7 @@ public void transfer(Long from, Long to, BigDecimal amount) {
 }
 ```
 
-### 7.6 反模式：checked 异常不回滚
+### 6.6 反模式：checked 异常不回滚
 
 **问题**：
 
@@ -1720,7 +1677,7 @@ public void importUsers(File file) throws IOException {
 }
 ```
 
-### 7.7 反模式：AOP 切面过于宽泛导致性能下降
+### 6.7 反模式：AOP 切面过于宽泛导致性能下降
 
 **问题**：
 
@@ -1749,7 +1706,7 @@ public Object log(ProceedingJoinPoint pjp) throws Throwable {
 }
 ```
 
-### 7.8 反模式：Bean 作用域误用
+### 6.8 反模式：Bean 作用域误用
 
 **问题**：
 
@@ -1785,9 +1742,9 @@ public class UserController {
 }
 ```
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 生产级 Spring Boot 配置
+### 7.1 生产级 Spring Boot 配置
 
 ```yaml
 # application.yml 推荐配置
@@ -1854,7 +1811,7 @@ spring.lifecycle:
   timeout-per-shutdown-phase: 30s
 ```
 
-### 8.2 性能优化实践
+### 7.2 性能优化实践
 
 1. **Bean 懒加载**：非启动必需的 Bean 标注 `@Lazy`，加快启动速度。
 2. **排除自动配置**：在 `@SpringBootApplication(exclude = {...})` 排除未使用的自动配置。
@@ -1907,7 +1864,7 @@ public class CacheConfig {
 }
 ```
 
-### 8.3 监控与可观测性
+### 7.3 监控与可观测性
 
 ```java
 /**
@@ -1949,7 +1906,7 @@ public class OrderMetrics {
 }
 ```
 
-### 8.4 优雅停机
+### 7.4 优雅停机
 
 ```java
 /**
@@ -1968,9 +1925,9 @@ public class GracefulShutdownHook implements ApplicationListener<ContextClosedEv
 }
 ```
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例：Bean 内存泄漏导致 OOM
+### 8.1 案例：Bean 内存泄漏导致 OOM
 
 **场景**：某电商系统上线 3 个月后频繁 OOM，重启后恢复正常。
 
@@ -2019,7 +1976,7 @@ public class UserService {
 }
 ```
 
-### 9.2 案例：事务传播导致死锁
+### 8.2 案例：事务传播导致死锁
 
 **场景**：某银行转账系统高峰期出现死锁，数据库报 `Deadlock found when trying to get lock; try restarting transaction`。
 
@@ -2063,7 +2020,7 @@ public void transfer(Long from, Long to, BigDecimal amount) {
 }
 ```
 
-### 9.3 案例：AOP 代理导致类型转换异常
+### 8.3 案例：AOP 代理导致类型转换异常
 
 **场景**：某项目将 `@Service` 标注的类强制转换为具体类型时报 `ClassCastException`。
 
@@ -2085,7 +2042,7 @@ UserServiceImpl impl = (UserServiceImpl) context.getBean(UserService.class);
 - 方案一：面向接口编程，使用 `UserService` 而非 `UserServiceImpl`。
 - 方案二：强制使用 CGLIB 代理 `@EnableAspectJAutoProxy(proxyTargetClass = true)`。
 
-### 9.4 案例：Spring Boot 启动慢优化
+### 8.4 案例：Spring Boot 启动慢优化
 
 **场景**：某微服务启动耗时 90 秒，影响弹性伸缩。
 
@@ -2115,7 +2072,7 @@ public class Application {
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：Spring IoC 容器的核心作用是什么？`BeanFactory` 与 `ApplicationContext` 有何区别？
 
@@ -2143,7 +2100,7 @@ public class Application {
 - `@Resource`：JSR-250 标准注解，默认按名称注入，找不到再按类型。
 - `@Autowired` 可用于构造器、方法、字段；`@Resource` 仅字段与 setter。
 
-### 10.2 进阶题
+### 9.2 进阶题
 
 **题目 4**：详细解释 Spring 如何解决单例 Bean 的循环依赖，为什么需要三级缓存而非二级？
 
@@ -2174,7 +2131,7 @@ public class Application {
 5. checked 异常：`@Transactional(rollbackFor = Exception.class)`。
 6. 多线程：使用编程式事务或事务同步器传播上下文。
 
-### 10.3 挑战题
+### 9.3 挑战题
 
 **题目 7**：设计一个支持多数据源动态切换的 Spring Boot Starter，要求：
 
@@ -2219,7 +2176,7 @@ public class Application {
    - 检查 `@ConditionalOnMissingBean` 是否被用户自定义 Bean 覆盖。
    - 检查自动配置类是否在 imports 文件中注册。
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] Johnson, R. (2004). *Expert One-on-One J2EE Design and Development*. Wrox Press. ISBN: 978-0-7645-4385-2.
 
@@ -2251,37 +2208,37 @@ public class Application {
 
 [15] Laddad, R. (2009). *AspectJ in Action: Enterprise AOP with Spring*. Manning Publications. ISBN: 978-1933988054.
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 官方文档
+### 11.1 官方文档
 
 - Spring Framework Reference: https://docs.spring.io/spring-framework/reference/
 - Spring Boot Reference: https://docs.spring.io/spring-boot/docs/current/reference/
 - Spring Guides: https://spring.io/guides
 - Spring Initializr: https://start.spring.io/
 
-### 12.2 经典教材
+### 11.2 经典教材
 
 - Craig Walls, *Spring in Action, Sixth Edition*（Spring 实战，最权威入门）
 - Iuliana Cosmina 等, *Pro Spring 6*（Spring 深度剖析）
 - Craig MacKenzie 等, *Spring Boot in Action*（Spring Boot 实战）
 - Grzegorz Piwowarek, *Spring Boot: Up and Running*（Spring Boot 快速上手）
 
-### 12.3 源码与进阶
+### 11.3 源码与进阶
 
 - Spring Framework 源码: https://github.com/spring-projects/spring-framework
 - Spring Boot 源码: https://github.com/spring-projects/spring-boot
 - *Spring 源码深度解析*（郝佳，国内最详细的源码剖析）
 - *Spring 技术内幕*（计文柯，深入 Spring 设计思想）
 
-### 12.4 前沿论文与文章
+### 11.4 前沿论文与文章
 
 - JEP 444: Virtual Threads（与 Spring 6 协同的轻量并发）
 - Spring Framework 6.0 Release Notes（Jakarta EE 9 迁移、AOT 编译）
 - Spring Boot 3.0 Release Notes（Native Image、Observability）
 - GraalVM Native Image 与 Spring Boot 的集成实践
 
-### 12.5 相关主题
+### 11.5 相关主题
 
 - *Java 与数据库连接*：Spring 事务管理与 JPA 集成
 - *Java 理论知识点*：JVM 对 Spring AOP 代理的影响

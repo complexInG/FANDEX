@@ -15,57 +15,10 @@ related:
 prerequisites:
   - go/概述与环境配置
 ---
+
 # Go goroutine 与 channel
 
 > **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
-## 0. 学习目标
-
-本篇依据 Bloom 分类法构建学习路径,覆盖从记忆到创造的六个认知层次。
-
-### 0.1 Remember(记忆)
-
-- 列举 goroutine 的核心特征:用户态、初始栈 2KB、由 runtime 调度、`GOMAXPROCS` 控制并行度。
-- 复述 GMP 调度模型的三要素:G(goroutine)、M(机器/线程)、P(处理器)。
-- 背诵 `hchan` 结构体的核心字段:`qcount`、`dataqsiz`、`buf`、`sendx`、`recvx`、`sendq`、`recvq`、`lock`。
-- 描述 channel 的三种状态:nil、open、closed,以及各自的发送/接收行为。
-
-### 0.2 Understand(理解)
-
-- 解释 goroutine 栈的"栈拷贝"机制:从 2KB 起步,按需倍增,采用连续栈(continuous stack)或 Go 1.14+ 的栈拷贝。
-- 阐述 `make(chan T, N)` 中 N=0(无缓冲)与 N>0(有缓冲)的语义差异及同步/异步行为。
-- 理解 channel 发送/接收的状态机:从 `chansend` 到 `park` 到 `ready` 到 `unpark` 的完整流程。
-- 说明 `select` 语句的随机选择算法与 `scase` 结构。
-
-### 0.3 Apply(应用)
-
-- 编写 fan-in/fan-out 模式,利用 channel 实现 goroutine 间通信。
-- 使用 `context.WithCancel` + channel 实现可取消的 goroutine 池。
-- 通过 `runtime.GOMAXPROCS` 控制并行度,并通过 `GODEBUG=schedtrace=1000` 观察调度状态。
-- 利用 `runtime.Stack`、`pprof` 诊断 goroutine 泄漏。
-
-### 0.4 Analyze(分析)
-
-- 分析 GMP 调度器在系统调用阻塞时的 hand-off 机制:P 与 M 解绑,新 M 接管 P。
-- 解构 channel 在关闭时的广播语义:`close(ch)` 唤醒所有等待的 `recvq`/`sendq` 中的 goroutine。
-- 对比 Go CSP 模型与 Erlang Actor 模型、Rust async/await 的并发原语差异。
-- 分析 `sysmon` 监控线程的作用:抢占长时间运行的 goroutine、回收syscall 阻塞的 P、触发 GC。
-
-### 0.5 Evaluate(评价)
-
-- 评价"通过通信共享内存,而非通过共享内存通信"的设计哲学,论述其利弊。
-- 评价 channel vs mutex 在不同场景的取舍:高吞吐数据流 vs 短临界区保护。
-- 评价 Go 1.14 引入的基于信号的异步抢占(preemption)对长循环 goroutine 的影响。
-- 评价 work-stealing 调度算法在 NUMA 架构下的局限性。
-
-### 0.6 Create(创造)
-
-- 设计一个基于 channel 的有限状态机(FSM)框架,支持状态转换、事件分发、错误恢复。
-- 构建一个可观测的 goroutine 调度器模拟器,可视化 GMP 状态变化。
-- 实现一个高性能的无锁队列,与 channel 对比吞吐量与延迟。
-- 创造一个基于 eBPF 的 goroutine 追踪工具,采集调度延迟、阻塞时长。
 
 ---
 
@@ -127,9 +80,9 @@ CSP 的形式化语义:设进程 $P_1, P_2, \ldots, P_n$ 通过 channel $c_1, c_
 
 ---
 
-## 2. 形式化定义
+## 1. 形式化定义
 
-### 2.1 goroutine 的运行时表示
+### 1.1 goroutine 的运行时表示
 
 依据 `runtime/runtime2.go`,goroutine 在运行时由 `g` 结构体表示:
 
@@ -170,7 +123,7 @@ type stack struct {
 }
 ```
 
-### 2.2 GMP 调度模型
+### 1.2 GMP 调度模型
 
 GMP 由 Dmitry Vyukov 在 "Scalable Go Scheduler Design Doc"(2014)中提出:
 
@@ -214,7 +167,7 @@ type m struct {
 }
 ```
 
-### 2.3 channel 的运行时结构
+### 1.3 channel 的运行时结构
 
 channel 在运行时由 `hchan` 结构体表示(`runtime/chan.go`):
 
@@ -254,7 +207,7 @@ type sudog struct {
 }
 ```
 
-### 2.4 G 的状态机
+### 1.4 G 的状态机
 
 goroutine 状态转换图:
 
@@ -279,9 +232,9 @@ _Gidle -> _Grunnable -> _Grunning -> _Gsyscall -> _Grunnable
 
 ---
 
-## 3. 理论推导与原理解析
+## 2. 理论推导与原理解析
 
-### 3.1 goroutine 创建成本的形式化推导
+### 2.1 goroutine 创建成本的形式化推导
 
 设 OS 线程创建成本为 $C_t$,包括:
 
@@ -303,7 +256,7 @@ $$
 
 goroutine 创建成本约为 OS 线程的 $1/20$。
 
-### 3.2 栈增长的形式化算法
+### 2.2 栈增长的形式化算法
 
 Go 1.3+ 采用连续栈(continuous stack)策略:
 
@@ -334,9 +287,9 @@ $$
 \bar{C} = \frac{\sum_{i=0}^{n} C_{\text{copy}}(i)}{\sum_{i=0}^{n} S_i} = \frac{O(2^{n+1})}{O(2^{n+1})} = O(1)
 $$
 
-### 3.3 channel 发送/接收状态机
+### 2.3 channel 发送/接收状态机
 
-#### 3.3.1 发送(`chansend`)
+#### 2.3.1 发送(`chansend`)
 
 ```
 chansend(c, v):
@@ -363,7 +316,7 @@ chansend(c, v):
     // 唤醒后继续
 ```
 
-#### 3.3.2 接收(`chanrecv`)
+#### 2.3.2 接收(`chanrecv`)
 
 ```
 chanrecv(c, &v):
@@ -395,7 +348,7 @@ chanrecv(c, &v):
     gopark(chanpark, c, waitReasonChanRecv)
 ```
 
-### 3.4 happens-before 关系
+### 2.4 happens-before 关系
 
 Go 内存模型定义以下 happens-before 关系(参考 Go Memory Model):
 
@@ -413,7 +366,7 @@ $$
 A \xrightarrow{hb} B \land B \xrightarrow{hb} C \Rightarrow A \xrightarrow{hb} C
 $$
 
-### 3.5 work-stealing 调度算法
+### 2.5 work-stealing 调度算法
 
 当 P 的本地队列为空时,执行 work-stealing:
 
@@ -431,7 +384,7 @@ $$
 
 work-stealing 的复杂度:$O(\log n)$ 平均(随机化)。
 
-### 3.6 异步抢占(Go 1.14+)
+### 2.6 异步抢占(Go 1.14+)
 
 Go 1.14 引入基于信号的异步抢占,解决长循环导致的调度饥饿:
 
@@ -453,9 +406,9 @@ $$
 
 ---
 
-## 4. 代码示例
+## 3. 代码示例
 
-### 4.1 项目结构
+### 3.1 项目结构
 
 ```mermaid
 flowchart TD
@@ -486,7 +439,7 @@ require (
 )
 ```
 
-### 4.2 goroutine 基础
+### 3.2 goroutine 基础
 
 ```go
 // goroutine.go
@@ -626,7 +579,7 @@ func InspectGoroutines() {
 }
 ```
 
-### 4.3 channel 基础
+### 3.3 channel 基础
 
 ```go
 // channel.go
@@ -831,7 +784,7 @@ func FanOutFanIn() {
 }
 ```
 
-### 4.4 select 多路复用
+### 3.4 select 多路复用
 
 ```go
 // select.go
@@ -1019,7 +972,7 @@ func SelectTee() {
 }
 ```
 
-### 4.5 运行时观测
+### 3.5 运行时观测
 
 ```go
 // runtime_inspect.go
@@ -1092,7 +1045,7 @@ func SetGCPercent() {
 }
 ```
 
-### 4.6 完整示例:并发爬虫
+### 3.6 完整示例:并发爬虫
 
 ```go
 // crawler.go
@@ -1198,7 +1151,7 @@ func (c *Crawler) fetch(ctx context.Context, url string) Result {
 }
 ```
 
-### 4.7 errgroup 示例
+### 3.7 errgroup 示例
 
 ```go
 // errgroup_demo.go
@@ -1312,9 +1265,9 @@ func fetchURL(ctx context.Context, url string) error {
 
 ---
 
-## 5. 对比分析
+## 4. 对比分析
 
-### 5.1 并发原语对比
+### 4.1 并发原语对比
 
 | 原语 | Go | Rust | Java | Python | C++ |
 |------|-----|------|------|--------|-----|
@@ -1327,7 +1280,7 @@ func fetchURL(ctx context.Context, url string) error {
 | 条件变量 | sync.Cond | std::sync::Condvar | Object.wait/notify | threading.Condition | std::condition_variable |
 | 一次性执行 | sync.Once | std::sync::Once | 无标准 | 无标准 | std::call_once |
 
-### 5.2 channel vs mutex 取舍
+### 4.2 channel vs mutex 取舍
 
 ```go
 // 方案 A:channel 模式
@@ -1381,7 +1334,7 @@ func (c *CounterMutex) Get() int {
 - 简单计数器:用 atomic。
 - 复杂状态机:用 mutex + 条件变量。
 
-### 5.3 CSP vs Actor 对比
+### 4.3 CSP vs Actor 对比
 
 | 维度 | Go CSP | Erlang Actor | Akka Actor |
 |------|--------|--------------|------------|
@@ -1394,9 +1347,9 @@ func (c *CounterMutex) Get() int {
 
 ---
 
-## 6. 常见陷阱与最佳实践
+## 5. 常见陷阱与最佳实践
 
-### 6.1 陷阱一:goroutine 泄漏
+### 5.1 陷阱一:goroutine 泄漏
 
 ```go
 // 泄漏:goroutine 永远阻塞
@@ -1432,7 +1385,7 @@ func NoLeakClose() {
 }
 ```
 
-### 6.2 陷阱二:向已关闭 channel 发送
+### 5.2 陷阱二:向已关闭 channel 发送
 
 ```go
 // panic: send on closed channel
@@ -1459,7 +1412,7 @@ func SafeClose() {
 }
 ```
 
-### 6.3 陷阱三:循环变量捕获
+### 5.3 陷阱三:循环变量捕获
 
 ```go
 // Go 1.21 及以下:所有 goroutine 共享 i
@@ -1481,7 +1434,7 @@ func LoopVarFix() {
 }
 ```
 
-### 6.4 陷阱四:无缓冲 channel 的 happens-before 误解
+### 5.4 陷阱四:无缓冲 channel 的 happens-before 误解
 
 ```go
 // 错误:认为无缓冲 channel 一定同步
@@ -1497,7 +1450,7 @@ func Misunderstand() {
 }
 ```
 
-### 6.5 陷阱五:select 中的 nil channel
+### 5.5 陷阱五:select 中的 nil channel
 
 ```go
 // 陷阱:nil channel 让 select 永远阻塞
@@ -1531,7 +1484,7 @@ func NilChannelTrick(done chan struct{}) {
 }
 ```
 
-### 6.6 最佳实践清单
+### 5.6 最佳实践清单
 
 1. **发送方关闭 channel**:接收方关闭可能导致发送方 panic。
 2. **避免 goroutine 泄漏**:每个 goroutine 都有明确退出路径(context、done channel、close)。
@@ -1546,9 +1499,9 @@ func NilChannelTrick(done chan struct{}) {
 
 ---
 
-## 7. 工程实践
+## 6. 工程实践
 
-### 7.1 调试 goroutine
+### 6.1 调试 goroutine
 
 ```bash
 # 查看所有 goroutine 栈
@@ -1567,7 +1520,7 @@ GODEBUG=schedtrace=1000,scheddetail=1 ./program
 GODEBUG=schedtrace=1000 ./program 2>&1 | grep "runqueue"
 ```
 
-### 7.2 pprof 集成
+### 6.2 pprof 集成
 
 ```go
 package main
@@ -1586,7 +1539,7 @@ func main() {
 }
 ```
 
-### 7.3 goroutine 泄漏检测
+### 6.3 goroutine 泄漏检测
 
 ```go
 package main
@@ -1609,7 +1562,7 @@ func TestNoLeak(t *testing.T) {
 }
 ```
 
-### 7.4 GODEBUG 调度追踪
+### 6.4 GODEBUG 调度追踪
 
 ```bash
 # 基本调度追踪
@@ -1633,7 +1586,7 @@ go test -trace=trace.out ./...
 go tool trace trace.out
 ```
 
-### 7.5 执行追踪(go tool trace)
+### 6.5 执行追踪(go tool trace)
 
 ```go
 package main
@@ -1666,7 +1619,7 @@ go tool trace trace.out
 # - 调度延迟
 ```
 
-### 7.6 GOMAXPROCS 调优
+### 6.6 GOMAXPROCS 调优
 
 ```go
 // 在容器环境中,GOMAXPROCS 可能不正确
@@ -1685,9 +1638,9 @@ func init() {
 
 ---
 
-## 8. 案例研究
+## 7. 案例研究
 
-### 8.1 Kubernetes 中的 goroutine
+### 7.1 Kubernetes 中的 goroutine
 
 Kubernetes 大量使用 goroutine 与 channel:
 
@@ -1723,7 +1676,7 @@ func (q *delayingType) waitingLoop() {
 }
 ```
 
-### 8.2 Docker 中的并发
+### 7.2 Docker 中的并发
 
 Docker daemon 使用 goroutine 处理:
 
@@ -1731,7 +1684,7 @@ Docker daemon 使用 goroutine 处理:
 - **stream pipe**:stdout/stderr 通过 goroutine 转发。
 - **health check**:定时执行健康检查的 goroutine。
 
-### 8.3 TiDB 中的并发
+### 7.3 TiDB 中的并发
 
 TiDB 利用 goroutine 实现:
 
@@ -1739,7 +1692,7 @@ TiDB 利用 goroutine 实现:
 - **pipeline**:SQL 执行计划通过 channel 串联。
 - **scheduler**:每个 region 一个 goroutine 处理请求。
 
-### 8.4 Prometheus 中的并发
+### 7.4 Prometheus 中的并发
 
 Prometheus 的 scrape、ingest、query 都基于 goroutine:
 
@@ -1942,7 +1895,7 @@ func main() {
 }
 ```
 
-### 9.4 思考题
+### 8.4 思考题
 
 **题目 1**:为什么 Go 选择 CSP 模型而非 Actor 模型?两者在工程实践中有何差异?
 
@@ -2048,7 +2001,7 @@ func main() {
 
 ---
 
-## 10. 参考文献
+## 9. 参考文献
 
 [1] Hoare, C. A. R. (1978). Communicating Sequential Processes. *Communications of the ACM*, 21(8), 666–677. https://doi.org/10.1145/359576.359585
 
@@ -2082,9 +2035,9 @@ func main() {
 
 ---
 
-## 11. 延伸阅读
+## 10. 延伸阅读
 
-### 11.1 书籍
+### 10.1 书籍
 
 - Cox-Buday, K. (2016). *Concurrency in Go*. O'Reilly Media.
 - Donovan, A. A., & Kernighan, B. W. (2015). *The Go Programming Language*. Addison-Wesley.
@@ -2092,14 +2045,14 @@ func main() {
 - Kleppmann, M. (2017). *Designing Data-Intensive Applications*. O'Reilly Media.
 - Armstrong, J. (2003). *Making Reliable Distributed Systems in the Presence of Software Errors*. PhD Thesis, KTH.
 
-### 11.2 论文
+### 10.2 论文
 
 - Hoare, C. A. R. (1978). "Communicating Sequential Processes." *CACM*.
 - Vyukov, D. (2014). "Scalable Go Scheduler Design Doc."
 - Chase, D., & Lev, Y. (2005). "Dynamic Circular Work-Stealing Deque." *SPAA*. https://doi.org/10.1145/1073970.1073974
 - Clements, A. T., et al. (2013). "RadixVM: Scalable address space management for multicores." *SOCC*.
 
-### 11.3 在线资源
+### 10.3 在线资源
 
 - Go 内存模型:https://go.dev/ref/mem
 - Go 并发教程:https://go.dev/tour/concurrency
@@ -2108,14 +2061,14 @@ func main() {
 - go.uber.org/goleak:https://github.com/uber-go/goleak
 - go.uber.org/automaxprocs:https://github.com/uber-go/automaxprocs
 
-### 11.4 视频资源
+### 10.4 视频资源
 
 - GopherCon 2018: "Scheduler Wars" by Kavya Joshi
 - GopherCon 2017: "Concurrency in Go" by Kavya Joshi
 - GopherCon 2020: "Asynchronous Preemption" by Austin Clements
 - Rob Pike: "Concurrency Is Not Parallelism"
 
-### 11.5 工具一览
+### 10.5 工具一览
 
 | 工具 | 用途 | 链接 |
 |------|------|------|
@@ -2130,7 +2083,7 @@ func main() {
 
 ---
 
-## 12. 总结
+## 11. 总结
 
 本篇系统阐述了 Go goroutine 与 channel 的完整原理:
 

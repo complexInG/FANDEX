@@ -16,6 +16,7 @@ prerequisites:
   - c/概述
 ---
 
+
 # 指针与数组的区别（Pointers vs Arrays）
 
 > "In C, there is a strong relationship between pointers and arrays, strong enough that pointers and arrays should be discussed simultaneously. Any operation that can be achieved by array subscripting can also be done with pointers. The pointer version will in general be faster but, at least to the uninitiated, harder to read."
@@ -29,78 +30,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-### 1.1 Remember（记忆）
-
-完成本节后，学习者应当能够准确回忆：
-
-- 数组到指针的隐式转换（decay）规则及其例外情况（`sizeof`、`&`、`sizeof` 字符串字面量初始化等）。
-- `sizeof(arr)` 与 `sizeof(ptr)` 的区别：前者返回数组总字节数，后者返回指针大小（x86_64 上为 8）。
-- `&arr` 与 `arr` 的类型差异：前者类型为 `int (*)[N]`，后者类型为 `int *`。
-- 数组名不可作为左值（lvalue）赋值或自增，指针变量可以。
-- 数组作为函数参数时退化为指针，函数内 `sizeof` 得到指针大小。
-- 多维数组（如 `int matrix[3][4]`）的内存布局是行优先连续存储，类型层次为 `int [3][4]` → `int [4]` → `int`。
-- C99 引入变长数组（VLA），C11 起变为可选特性。
-- 字符串字面量（string literal）的类型为 `char[N+1]`（含 `\0`），存储于只读段。
-
-### 1.2 Understand（理解）
-
-学习者应当能够解释：
-
-- 为什么 C 设计者选择"数组退化"机制：源于 BCPL/B 语言的指针语义遗留与早期 PDP-11 内存模型的硬件约束。
-- 数组与指针在底层表示上的差异：数组是"地址常量"（address constant），指针是"地址变量"（address variable）。
-- `int arr[10]` 与 `int *ptr = arr` 在编译器符号表中的不同表示：前者是 `arr` 绑定到栈区一段连续内存，后者是 `ptr` 绑定到栈区一个指针变量。
-- `&arr + 1` 为何跨越整个数组（偏移 `sizeof(arr)`），而 `arr + 1` 仅偏移 `sizeof(int)`：源于指针算术的"按指向类型大小缩放"规则。
-- 多维数组 `int matrix[3][4]` 中 `matrix`、`matrix[0]`、`matrix[0][0]` 三者地址值相同但类型不同的语义含义。
-- 为什么 `void f(int arr[10])` 与 `void f(int *arr)` 完全等价：函数参数声明的"数组退化"规则。
-- 字符串字面量为何不可修改：C 标准允许将其存储于只读存储区。
-- 变长数组（VLA）与静态数组在栈帧分配、生命周期、错误处理上的差异。
-
-### 1.3 Apply（应用）
-
-学习者应当能够：
-
-- 区分并正确使用 `int *p[N]`（指针数组）与 `int (*p)[N]`（数组指针）。
-- 编写遍历多维数组的函数，正确传递参数（如 `void process(int (*matrix)[4], int rows)`）。
-- 在性能关键代码中选择数组下标访问或指针算术访问，并理解编译器优化后二者通常等价。
-- 使用 `_Static_assert` / `static_assert` 验证数组大小与类型。
-- 实现 `strlen`、`memcpy`、`memcmp` 等字符串/内存函数的标准模式。
-- 使用 `sizeof(arr) / sizeof(arr[0])` 宏模式计算数组元素数，并理解其在函数参数内的失效。
-
-### 1.4 Analyze（分析）
-
-学习者应当能够：
-
-- 分析编译器生成的汇编代码，识别数组下标访问与指针算术访问的等价性（如 `arr[i]` 与 `*(arr + i)`）。
-- 在反汇编输出中识别"数组退化"导致的类型信息丢失。
-- 通过 `clang -Warray-parameter`、`gcc -Wsizeof-array-argument` 等警告诊断函数参数中的数组大小信息丢失。
-- 识别二进制协议解析中"数组指针"与"指针数组"的混用陷阱。
-- 分析 `int arr[N]` 在栈上分配与 `malloc(N * sizeof(int))` 在堆上分配的内存布局与生命周期差异。
-
-### 1.5 Evaluate（评价）
-
-学习者应当能够评估：
-
-- 在特定场景下（小数组、栈分配、缓存局部性）使用数组 vs 指针 + malloc 的性能权衡。
-- 多维数组 `int matrix[N][M]` 与指针数组 `int **matrix` 在内存连续性、缓存友好性、释放复杂度上的对比。
-- C99 VLA 在嵌入式系统中的适用性（栈大小限制、错误处理）。
-- 在跨语言互操作（FFI）中传递 C 数组给 Rust/Go/Python 时的 ABI 兼容性考虑。
-
-### 1.6 Create（创造）
-
-学习者应当能够：
-
-- 设计一个安全的动态二维数组接口，封装 `int **` 的内存管理（分配、释放、越界检查）。
-- 实现一个通用的 `foreach` 宏，对任意类型数组进行迭代。
-- 在跨平台代码中正确处理"数组退化"导致的类型信息丢失，使用结构体封装数组大小。
-- 设计一个二进制协议解析器，正确处理网络字节序与平台对齐差异，避免依赖"数组与指针等价"的假设。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 BCPL/B 时代的指针语义
+### 1.1 BCPL/B 时代的指针语义
 
 C 语言的指针与数组语义直接继承自 Martin Richards 的 BCPL（1967）与 Ken Thompson 的 B（1969）。BCPL 与 B 是无类型语言，所有数据均视为"字"（word），内存是连续的 `cell` 数组。指针与数组本质相同：指针是 cell 的索引，数组是 cell 索引的连续区。
 
@@ -114,7 +46,7 @@ let v = p[3];      /* 等价于 *(p + 3) */
 
 这一无类型模型简化了语言设计，但牺牲了类型安全。Dennis Ritchie 在 1972 年设计 C 语言时引入了类型系统，但仍保留了 BCPL/B 的"指针即数组首地址"语义，并由此产生"数组退化"机制：数组在大多数表达式中自动转换为指向首元素的指针。
 
-### 2.2 K&R C（1978）：规则确立
+### 1.2 K&R C（1978）：规则确立
 
 Kernighan & Ritchie 在 *The C Programming Language* 第一版第 5 章明确指出：
 
@@ -130,7 +62,7 @@ K&R 确立的规则包括：
 
 但 K&R 对 `&arr` 的类型差异、多维数组的复杂声明、字符串字面量的存储类等议题描述模糊，导致早期 C 编译器（如 VAX VMS C、Microsoft C 4.0）行为不一致。
 
-### 2.3 C89 / ANSI C（1989）：形式化规则
+### 1.3 C89 / ANSI C（1989）：形式化规则
 
 C89 标准（ISO/IEC 9899:1990）首次将"数组退化"规则形式化：
 
@@ -144,7 +76,7 @@ C89 明确了数组退化的"例外清单"：
 
 C89 还规定了多维数组的递归布局规则、`arr[i][j]` 与 `*(*(arr + i) + j)` 的等价性。
 
-### 2.4 C99（1999）：VLA 与复合字面量
+### 1.4 C99（1999）：VLA 与复合字面量
 
 C99 引入两项与数组相关的重要特性：
 
@@ -173,7 +105,7 @@ int *p = (int[]){1, 2, 3, 4};   /* 匿名数组，类型 int[4] */
 
 复合字面量创建匿名数组对象，其生命周期与所在作用域一致（块作用域）或静态（文件作用域）。
 
-### 2.5 C11（2011）：VLA 可选化
+### 1.5 C11（2011）：VLA 可选化
 
 C11 将 VLA 从"必需"改为"可选"特性，编译器可通过 `__STDC_NO_VLA__` 宏声明不支持。这一改变源于嵌入式系统对栈大小严格限制的考虑，以及 VLA 错误处理（`alloca` 失败）的困难。
 
@@ -187,7 +119,7 @@ C11 还引入 `_Generic`，可用于编写对数组与指针差异化处理的�
 )
 ```
 
-### 2.6 C23（2024）：`[[...]]` 属性与空数组
+### 1.6 C23（2024）：`[[...]]` 属性与空数组
 
 C23 进一步规范化：
 
@@ -195,7 +127,7 @@ C23 进一步规范化：
 - 空数组 `int arr[0]`（灵活数组成员的早期形式）的语义澄清。
 - `static_assert` 成为关键字，可用于编译期验证数组大小。
 
-### 2.7 编译器实现演化
+### 1.7 编译器实现演化
 
 | 编译器 | 版本 | 重要特性 |
 | ------ | ---- | -------- |
@@ -208,9 +140,9 @@ C23 进一步规范化：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 数组类型的形式化定义
+### 2.1 数组类型的形式化定义
 
 ISO/IEC 9899:2024（C23）§6.2.5 定义数组类型：
 
@@ -228,7 +160,7 @@ $$
 
 数组元素在内存中连续存放，无填充，这是 C 标准的硬性要求。
 
-### 3.2 指针类型的形式化定义
+### 2.2 指针类型的形式化定义
 
 指针类型记为 $T^*$（指向 $T$ 的指针），其属性：
 
@@ -242,7 +174,7 @@ $$
 
 指针变量存储某个 $T$ 类型对象的地址，可被赋值、自增、自减。
 
-### 3.3 数组到指针的隐式转换（Decay）
+### 2.3 数组到指针的隐式转换（Decay）
 
 C23 §6.3.2.1 规定数组到指针的隐式转换规则：
 
@@ -264,7 +196,7 @@ $$
 6. `a.x` / `a->x`：保留数组类型。
 7. `char str[] = "literal"`：字符串字面量初始化数组，不退化。
 
-### 3.4 指针算术的形式化定义
+### 2.4 指针算术的形式化定义
 
 设 $p$ 为类型 $T^*$ 的指针，指向数组中第 $i$ 个元素。则：
 
@@ -286,7 +218,7 @@ $$
 
 最后一种形式 `i[p]` 在 C 标准中合法，但极少使用，是 C 语言的"奇技淫巧"。
 
-### 3.5 多维数组的形式化定义
+### 2.5 多维数组的形式化定义
 
 `int matrix[M][N]` 的类型为 `int [M][N]`，是"由 M 个 `int [N]` 组成的数组"。其递归布局：
 
@@ -300,7 +232,7 @@ $$
 \text{addr}(\text{matrix}[i][j]) = \text{addr}(\text{matrix}) + (i \times N + j) \times \text{sizeof}(\text{int})
 $$
 
-### 3.6 `&arr` 与 `arr` 的类型差异
+### 2.6 `&arr` 与 `arr` 的类型差异
 
 设 `int arr[10]`，则：
 
@@ -316,7 +248,7 @@ $$
 | `arr + 1` | `int *` | `&arr[1]` | - |
 | `&arr + 1` | `int (*)[10]` | `&arr[10]`（越过数组末尾，合法作为哨兵） | - |
 
-### 3.7 函数参数的退化规则
+### 2.7 函数参数的退化规则
 
 C23 §6.7.6.3 规定函数参数中的数组类型自动转换为指针：
 
@@ -335,7 +267,7 @@ C23 §6.7.6.3 规定函数参数中的数组类型自动转换为指针：
 
 注意：**只有最外层数组维度退化**。`int matrix[3][4]` 退化为 `int (*matrix)[4]`，而非 `int **matrix`。这是 C 程序员最常犯的错误之一。
 
-### 3.8 未定义行为（UB）
+### 2.8 未定义行为（UB）
 
 C 标准规定以下与指针/数组相关的 UB：
 
@@ -349,9 +281,9 @@ C 标准规定以下与指针/数组相关的 UB：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 数组退化机制的设计原理
+### 3.1 数组退化机制的设计原理
 
 C 设计者选择"数组退化"机制的三个动机：
 
@@ -367,7 +299,7 @@ C 函数参数采用值传递（pass by value）。若数组按值传递，需�
 
 数组大小在编译期已知（除 VLA），但函数参数大小可能跨翻译单元不可见。"退化"机制使函数参数类型固定为指针，无需数组大小信息，简化链接器与调用约定。
 
-### 4.2 `sizeof` 的编译期求值原理
+### 3.2 `sizeof` 的编译期求值原理
 
 `sizeof` 是 C 标准规定的"非退化上下文"之一。其求值规则：
 
@@ -400,7 +332,7 @@ size_t s = sizeof(p);   /* 编译期求值，返回 8（64 位） */
 
 `p` 的类型为 `int *`，`sizeof` 返回指针大小。
 
-### 4.3 `&arr` 的类型推导
+### 3.3 `&arr` 的类型推导
 
 考虑 `int arr[10]`：
 
@@ -427,7 +359,7 @@ $$
 
 这正是"越过数组末尾"的位置，作为哨兵合法，但解引用 UB。
 
-### 4.4 多维数组的递归退化
+### 3.4 多维数组的递归退化
 
 `int matrix[3][4]` 在表达式中的递归退化：
 
@@ -454,7 +386,7 @@ $$
 \text{matrix}[i][j] \equiv *(*(\text{matrix} + i) + j)
 $$
 
-### 4.5 数组指针 vs 指针数组的类型推导
+### 3.5 数组指针 vs 指针数组的类型推导
 
 `int *p[10]`（指针数组）：
 
@@ -493,7 +425,7 @@ flowchart TD
     T5 --> T9
 ```
 
-### 4.6 字符串字面量的存储类
+### 3.6 字符串字面量的存储类
 
 字符串字面量 `"hello"` 的类型为 `char [6]`（含 `\0`），存储类为静态（static），位于只读数据段（`.rodata`）。
 
@@ -506,7 +438,7 @@ char arr[] = "hello";  /* arr 是栈数组，拷贝字面量内容，arr[0] = 'H
 
 第二种模式触发了"字符串字面量初始化数组"的非退化例外：字面量不退化为指针，而是直接拷贝到数组。
 
-### 4.7 ABI 与调用约定
+### 3.7 ABI 与调用约定
 
 System V AMD64 ABI 规定：
 
@@ -519,9 +451,9 @@ System V AMD64 ABI 规定：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 入门：`sizeof` 与 `&` 的差异
+### 4.1 入门：`sizeof` 与 `&` 的差异
 
 ```c
 /* file: examples/ptr_arr_basics.c
@@ -555,7 +487,7 @@ int main(void) {
 }
 ```
 
-### 5.2 进阶：多维数组遍历
+### 4.2 进阶：多维数组遍历
 
 ```c
 /* file: examples/multidim_array.c
@@ -616,7 +548,7 @@ int main(void) {
 }
 ```
 
-### 5.3 高级：函数参数退化
+### 4.3 高级：函数参数退化
 
 ```c
 /* file: examples/param_decay.c
@@ -675,7 +607,7 @@ int main(void) {
 }
 ```
 
-### 5.4 生产级：安全的动态二维数组
+### 4.4 生产级：安全的动态二维数组
 
 ```c
 /* file: examples/safe_2d_array.h
@@ -790,7 +722,7 @@ void matrix_print(const Matrix *m) {
 }
 ```
 
-### 5.5 CMake 构建配置
+### 4.5 CMake 构建配置
 
 ```cmake
 # file: CMakeLists.txt
@@ -823,7 +755,7 @@ add_executable(safe_2d_test examples/safe_2d_test.c)
 target_link_libraries(safe_2d_test safe_2d_array)
 ```
 
-### 5.6 Makefile 配置
+### 4.6 Makefile 配置
 
 ```makefile
 # file: Makefile
@@ -855,9 +787,9 @@ clean:
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 指针与数组核心差异表
+### 5.1 指针与数组核心差异表
 
 | 维度 | 数组 `int arr[N]` | 指针 `int *ptr` |
 | ---- | ----------------- | --------------- |
@@ -877,7 +809,7 @@ clean:
 | 初始化 | `int arr[10] = {0}` | `int *ptr = NULL` 或 `malloc` |
 | `const` 修饰 | `const int arr[N]` 元素只读 | `int *const ptr` 指针只读；`const int *ptr` 元素只读 |
 
-### 6.2 与 C++ 对比
+### 5.2 与 C++ 对比
 
 C++ 在 C 基础上扩展了指针与数组语义：
 
@@ -897,7 +829,7 @@ void process(std::span<int> data) {
 }
 ```
 
-### 6.3 与 Rust 对比
+### 5.3 与 Rust 对比
 
 Rust 严格区分数组与切片（slice）：
 
@@ -917,7 +849,7 @@ process(&arr);                   // 自动转换为切片
 
 Rust 的"胖指针"模型避免了 C"数组退化"导致的大小信息丢失，是更安全的设计。
 
-### 6.4 与 Go 对比
+### 5.4 与 Go 对比
 
 Go 的数组与切片语义清晰分离：
 
@@ -941,7 +873,7 @@ processSlice(arr[:])             // 传递胖指针，高效
 
 Go 的设计避免了 C 的"退化"混淆，但要求开发者明确选择数组或切片。
 
-### 6.5 与 Assembly 对比
+### 5.5 与 Assembly 对比
 
 汇编层面，数组与指针都是地址。区别在于：
 
@@ -962,9 +894,9 @@ mov   eax, [rax + 4*rdi]        ; ptr[i]
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：函数内 `sizeof` 数组参数
+### 6.1 陷阱：函数内 `sizeof` 数组参数
 
 ```c
 /* BAD: 函数内 sizeof 得到指针大小，非数组大小 */
@@ -987,7 +919,7 @@ void process(const int *arr, size_t n) {
 #define ARRAY_LEN(a) (sizeof(a) / sizeof((a)[0]))
 ```
 
-### 7.2 陷阱：返回栈数组指针
+### 6.2 陷阱：返回栈数组指针
 
 ```c
 /* BAD: 返回栈数组指针，悬垂引用 */
@@ -1020,7 +952,7 @@ int *make_array(size_t n) {
 }
 ```
 
-### 7.3 陷阱：`int **` 与 `int (*)[N]` 混用
+### 6.3 陷阱：`int **` 与 `int (*)[N]` 混用
 
 ```c
 /* BAD: int ** 与 int (*)[4] 类型不兼容 */
@@ -1044,7 +976,7 @@ int main(void) {
 }
 ```
 
-### 7.4 陷阱：修改字符串字面量
+### 6.4 陷阱：修改字符串字面量
 
 ```c
 /* BAD: 修改字符串字面量，UB */
@@ -1056,7 +988,7 @@ char s[] = "hello";
 s[0] = 'H';   /* 合法：s 是栈数组 */
 ```
 
-### 7.5 陷阱：`i[p]` 奇技淫巧
+### 6.5 陷阱：`i[p]` 奇技淫巧
 
 ```c
 /* 合法但极易误读 */
@@ -1067,7 +999,7 @@ arr[5] = 42;
 
 C 标准 `a[b]` ≡ `*(a + b)` ≡ `*(b + a)` ≡ `b[a]`，但后者可读性极差，应避免。
 
-### 7.6 陷阱：变长数组（VLA）栈溢出
+### 6.6 陷阱：变长数组（VLA）栈溢出
 
 ```c
 /* BAD: VLA 大小来自用户输入，可能栈溢出 */
@@ -1097,7 +1029,7 @@ void func(size_t n) {
 }
 ```
 
-### 7.7 陷阱：`restrict` 别名违反
+### 6.7 陷阱：`restrict` 别名违反
 
 ```c
 /* BAD: restrict 指针被别名访问，UB */
@@ -1115,7 +1047,7 @@ int main(void) {
 
 `restrict` 是编译器优化提示，违反导致 UB。
 
-### 7.8 陷阱：指针算术越过数组末尾 +1
+### 6.8 陷阱：指针算术越过数组末尾 +1
 
 ```c
 /* BAD: 越过 +1 哨兵位置 */
@@ -1127,7 +1059,7 @@ int *end = &arr[10]; /* 合法 */
 /* 但 *end UB */
 ```
 
-### 7.9 最佳实践总结
+### 6.9 最佳实践总结
 
 1. **使用 `ARRAY_LEN` 宏计算数组长度，但仅对真实数组**。
 2. **函数参数显式传递数组长度**，不依赖 `sizeof`。
@@ -1140,9 +1072,9 @@ int *end = &arr[10]; /* 合法 */
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建系统配置
+### 7.1 构建系统配置
 
 启用关键警告：
 
@@ -1159,7 +1091,7 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 ```
 
-### 8.2 静态分析
+### 7.2 静态分析
 
 **clang-tidy 配置**：
 
@@ -1180,7 +1112,7 @@ Checks: >
 - `cppcoreguidelines-pro-bounds-pointer-arithmetic`：警告指针算术。
 - `cert-arr39-c`：禁止在函数参数中使用 `[]` 语法（建议 `*` 显式）。
 
-### 8.3 运行时检测
+### 7.3 运行时检测
 
 **ASan（AddressSanitizer）** 检测数组越界：
 
@@ -1197,7 +1129,7 @@ gcc -fsanitize=undefined -g ptr_test.c -o ptr_test
 ./ptr_test
 ```
 
-### 8.4 调试工具
+### 7.4 调试工具
 
 **GDB 检查数组与指针**：
 
@@ -1218,7 +1150,7 @@ $4 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 valgrind --tool=memcheck --track-origins=yes ./program
 ```
 
-### 8.5 性能剖析
+### 7.5 性能剖析
 
 **perf** 检测缓存命中率（数组 vs 指针访问）：
 
@@ -1233,7 +1165,7 @@ gcc -O3 -fopt-info-vec-optimized program.c
 # 输出向量化信息，验证数组访问被向量化
 ```
 
-### 8.6 CI/CD 集成
+### 7.6 CI/CD 集成
 
 ```yaml
 # .github/workflows/ptr-array-check.yml
@@ -1256,9 +1188,9 @@ jobs:
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Linux Kernel：`container_of` 宏
+### 8.1 Linux Kernel：`container_of` 宏
 
 Linux Kernel 的 `container_of` 宏利用 `offsetof` 与指针算术实现"成员指针→容器指针"的转换：
 
@@ -1276,7 +1208,7 @@ Linux Kernel 的 `container_of` 宏利用 `offsetof` 与指针算术实现"成�
 
 这一模式广泛应用于内核链表、kfifo、waitqueue 等数据结构，是 C 指针与 struct 联合使用的典范。
 
-### 9.2 glibc：`memcpy` 实现优化
+### 8.2 glibc：`memcpy` 实现优化
 
 glibc 的 `memcpy` 实现根据对齐与大小选择不同代码路径：
 
@@ -1294,7 +1226,7 @@ void *memcpy(void *dest, const void *src, size_t n) {
 
 数组与指针的差异在此被消解：底层都通过指针访问，对齐决定性能。
 
-### 9.3 Redis：SDS 字符串
+### 8.3 Redis：SDS 字符串
 
 Redis 的 SDS（Simple Dynamic String）通过结构体封装 `char *` 与长度信息，避免 C 字符串的"指针无长度"问题：
 
@@ -1308,7 +1240,7 @@ struct sdshdr {
 
 `char buf[]` 是 C99 灵活数组成员（flexible array member），与 `char *buf` 不同：buf 与 len/free 在同一段连续内存中，缓存友好。
 
-### 9.4 SQLite：varint 编码
+### 8.4 SQLite：varint 编码
 
 SQLite 的 varint（变长整数）编码使用 `unsigned char *` 而非数组，以避免"数组退化"导致的长度丢失：
 
@@ -1322,7 +1254,7 @@ static int sqlite3GetVarint(const unsigned char *p, u64 *v) {
 
 调用方需显式传递最大字节数，避免越界。
 
-### 9.5 Nginx：内存池与数组
+### 8.5 Nginx：内存池与数组
 
 Nginx 内存池提供 `ngx_array_create` 创建动态数组：
 
@@ -1338,7 +1270,7 @@ typedef struct {
 
 封装 `void *elts + size + nelts + nalloc` 三元组，保留完整数组信息，避免 C"退化"导致的大小丢失。
 
-### 9.6 DPDK：`rte_memcpy` 优化
+### 8.6 DPDK：`rte_memcpy` 优化
 
 DPDK 的 `rte_memcpy` 针对网络数据包拷贝极致优化：
 
@@ -1568,7 +1500,7 @@ int main(void) {
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **题 8**：为什么 C 标准规定函数参数中的数组类型自动退化为指针？请从历史、实现、性能三个角度分析。
 
@@ -1688,9 +1620,9 @@ void process(IntSpan span) {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 标准文档
+### 10.1 标准文档
 
 [1] International Organization for Standardization. *ISO/IEC 9899:2024 Information technology — Programming languages — C* (Fifth edition) [Standard]. Geneva: ISO; 2024. Available from: https://www.iso.org/standard/82075.html
 
@@ -1698,7 +1630,7 @@ void process(IntSpan span) {
 
 [3] American National Standards Institute. *ANSI X3.159-1989 Programming Language C* [Standard]. New York: ANSI; 1989.
 
-### 11.2 学术论文与技术报告
+### 10.2 学术论文与技术报告
 
 [4] Ritchie DM. *The Development of the C Language* [conference paper]. In: Proceedings of the 2nd ACM SIGPLAN Conference on History of Programming Languages (HOPL II); 1993 Apr 20-23; Cambridge, MA. New York: ACM; 1993. p. 201-208. DOI: 10.1145/154766.155580
 
@@ -1712,19 +1644,19 @@ void process(IntSpan span) {
 
 [9] Merry M, Du Toit J. *C++ Core Guidelines: Bounds Safety* [Internet]. ISO C++ Foundation; [cited 2026 Jul 21]. Available from: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#SS-bounds
 
-### 11.3 ABI 规范
+### 10.3 ABI 规范
 
 [10] System V Application Binary Interface AMD64 Architecture Processor Supplement (Draft Version 1.0) [Internet]. [cited 2026 Jul 21]. Available from: https://gitlab.com/x86-psABIs/x86-64-ABI
 
 [11] Itanium C++ ABI [Internet]. Itanium ABI Committee; [cited 2026 Jul 21]. Available from: https://itanium-cxx-abi.github.io/cxx-abi/abi.html
 
-### 11.4 编译器文档
+### 10.4 编译器文档
 
 [12] Free Software Foundation. *GCC Manual: Warning Options* [Internet]. GCC; [cited 2026 Jul 21]. Available from: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 
 [13] LLVM Project. *Clang Compiler User's Manual: Diagnostics* [Internet]. LLVM; [cited 2026 Jul 21]. Available from: https://clang.llvm.org/docs/UsersManual.html#diagnostics
 
-### 11.5 经典教材
+### 10.5 经典教材
 
 [14] Bryant RE, O'Hallaron DR. *Computer Systems: A Programmer's Perspective* 3rd ed. Boston: Pearson; 2015. ISBN: 978-0134092669
 
@@ -1736,9 +1668,9 @@ void process(IntSpan span) {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **《The C Programming Language》** Brian W. Kernighan, Dennis M. Ritchie 著。第 5 章"Pointers and Arrays"是 C 指针与数组语义的权威论述，必读。
 - **《Computer Systems: A Programmer's Perspective（CSAPP）》** Randal E. Bryant, David R. O'Hallaron 著。第 3 章机器级表示讲解数组与指针的汇编实现。
@@ -1746,7 +1678,7 @@ void process(IntSpan span) {
 - **《C in a Nutshell》** Peter Prinz, Tony Crawford 著。第 4 章"Type Conversions"与第 9 章"Pointers"详细讲解。
 - **《Expert C Programming: Deep C Secrets》** Peter van der Linden 著。第 3 章"Unscrambling Declarations in C"讲解复杂声明的解析。
 
-### 12.2 在线课程
+### 11.2 在线课程
 
 - **MIT 6.087 Practical Programming in C**（MIT OpenCourseWare）：Lecture 4 详细讲解指针与数组。
   - https://ocw.mit.edu/courses/6-087-practical-programming-in-c-january-iap-2010/
@@ -1760,7 +1692,7 @@ void process(IntSpan span) {
 - **Harvard CS50 Introduction to Computer Science**：Week 4 讲解指针与内存。
   - https://cs50.harvard.edu/
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **cppreference.com "Arrays" 词条**：标准数组特性的权威参考。
   - https://en.cppreference.com/w/c/language/array
@@ -1777,7 +1709,7 @@ void process(IntSpan span) {
 - **"C Arrays and Pointers: A Different Perspective"**（N1169）：C 标准委员会提案。
   - http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1169.pdf
 
-### 12.4 开源项目学习
+### 11.4 开源项目学习
 
 - **Linux Kernel**：`include/linux/list.h`、`include/linux/kernel.h`（`container_of` 宏）、`lib/` 大量使用指针与数组。
   - https://github.com/torvalds/linux
@@ -1794,7 +1726,7 @@ void process(IntSpan span) {
 - **Nginx**：`src/core/ngx_array.c` 展示动态数组封装。
   - https://nginx.org/
 
-### 12.5 工具
+### 11.5 工具
 
 - **cdecl.org**：将 C 声明翻译为英语，辅助理解复杂指针声明。
   - https://cdecl.org/

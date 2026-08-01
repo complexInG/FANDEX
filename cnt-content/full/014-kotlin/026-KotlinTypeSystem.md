@@ -20,6 +20,7 @@ prerequisites:
   - kotlin/类与对象
 ---
 
+
 # Kotlin 类型系统深度解析（Kotlin Type System in Depth）
 
 > 本文档对标 MIT 6.005 Software Construction、Stanford CS193P、CMU 15-312 Principles of Programming Languages 等海外名校课程的教学水准，系统讲解 Kotlin 类型系统的核心机制：泛型（Generics）、型变（Variance）、星投影（Star Projection）、类型擦除（Type Erasure）、`reified` 类型参数、上下界约束（Bounds）。本文不假设读者具备 Scala 或 Haskell 的类型理论前置知识，所有概念均从"为什么需要"出发，逐步深入到 JVM 字节码与 K2 编译器实现层面。完成本文学习后，读者将能够独立设计类型安全的泛型 API、正确使用 `out`/`in`/`*` 修饰符、理解协变与逆变的本质区别，并能在 Android、KMP、Spring 等工程实践中应用类型系统理论。
@@ -41,79 +42,9 @@ prerequisites:
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本章节遵循 Bloom 教育目标分类学（Bloom's Taxonomy）的六个认知层级，由低阶到高阶逐层递进。
-
-### 1.1 Remember（记忆）
-
-完成本章节后，学习者应能够准确记忆以下知识点：
-
-- 复述 Kotlin 泛型（Generics）的语法形式：`class Box<T>(val value: T)`、`fun <T> identity(x: T): T = x`。
-- 列举型变（Variance）的三种形式：协变（covariant, `out`）、逆变（contravariant, `in`）、不变（invariant, 默认）。
-- 背诵星投影（Star Projection, `*`）的语义：`List<*>` 表示"未知类型参数的 List"，等价于 `List<out Any?>`。
-- 记忆类型擦除（Type Erasure）的规则：JVM 平台上 `List<String>` 与 `List<Int>` 在运行时都是 `List`，类型参数 `<String>` 与 `<Int>` 不存在于字节码中。
-- 复述 `reified` 关键字的作用：在 `inline` 函数中保留类型参数到运行时，可通过 `T::class.java` 访问。
-- 列举上界约束（Upper Bound）的语法：`<T : Comparable<T>>` 与 `where T : Comparable<T>, T : Any`。
-- 记忆 `out` 与 `in` 的语义差异：`out T` 表示 T 只能出现在"产出"位置（返回值），`in T` 表示 T 只能出现在"消费"位置（参数）。
-- 背诵 declaration-site variance（声明处型变）与 use-site variance（使用处型变）的区别：前者在类声明处用 `out`/`in`，后者在使用处用 `out`/`in` 投影。
-- 记忆 Kotlin 集合的型变设计：`List<out E>` 是协变的，`MutableList<E>` 是不变的。
-
-### 1.2 Understand（理解）
-
-- 用自己的语言解释为什么 `List<String>` 不能赋给 `List<Any>`：因为 `List` 默认不变（invariant），即使 `String` 是 `Any` 的子类型，`List<String>` 也不是 `List<Any>` 的子类型。这是为了类型安全（避免通过 `List<Any>` 写入非 String 元素）。
-- 解释协变（covariant）的本质：如果 `Producer<out T>` 协变，则 `Producer<String>` 是 `Producer<Any>` 的子类型，因为 Producer 只"产出" T 而不"消费" T，不会发生类型污染。
-- 解释逆变（contravariant）的本质：如果 `Consumer<in T>` 逆变，则 `Consumer<Any>` 是 `Consumer<String>` 的子类型，因为 Consumer 只"消费" T，接受 `Any` 的消费者可以安全地接受 `String`。
-- 阐述星投影 `*` 的类型推断：`List<*>` 读取元素得到 `Any?`（因为类型参数上界未知），但写入元素受限（除了 `null`）。
-- 解释类型擦除的历史原因：Java 5 引入泛型时为了向后兼容 Java 1.4 的非泛型集合，选择擦除类型参数到上界（默认 `Object`）。
-- 描述 `reified` 的实现原理：`inline` 函数被内联展开时，调用处的类型实参会被替换进函数体，因此 `T::class.java` 实际访问的是调用处的具体类型。
-- 理解 `where` 子句的多重约束：`<T> where T : Comparable<T>, T : Any` 表示 T 必须同时实现 `Comparable<T>` 且非空。
-- 解释型变与继承的独立性：`class Derived : Base()` 并不自动让 `Generic<Derived>` 成为 `Generic<Base>` 的子类型，型变需要显式声明。
-
-### 1.3 Apply（应用）
-
-- 设计一个协变的不可变容器 `class ImmutableList<out T>`，确保 T 只出现在返回位置。
-- 设计一个逆变的回调接口 `interface Listener<in T> { fun onEvent(event: T) }`，确保 T 只出现在参数位置。
-- 使用 `reified` 实现类型安全的 JSON 反序列化：`inline fun <reified T> parse(json: String): T = mapper.readValue(json, T::class.java)`。
-- 使用星投影处理"未知类型参数"的场景：`fun printList(list: List<*>) { list.forEach { println(it) } }`。
-- 使用 `where` 子句约束类型参数：`fun <T> sort(list: List<T>): List<T> where T : Comparable<T> { return list.sorted() }`。
-- 在函数式 API 中使用 `in` 投影：`fun consume(consumer: Consumer<in String>) { consumer.onEvent("hello") }`。
-- 实现一个类型安全的 `Result<out T>` 密封类，利用协变让 `Result<Nothing>` 是 `Result<T>` 的子类型。
-
-### 1.4 Analyze（分析）
-
-- 反编译 Kotlin 泛型代码，分析 JVM 字节码中类型参数被擦除为 `Object` 或上界的过程。
-- 对比 `List<out E>`（声明处协变）与 `List<out E>` 投影（使用处协变）在字节码层面的差异：无差异，都是通过 `out` 修饰符标记，编译器在调用处检查。
-- 分析 `inline` + `reified` 的性能权衡：内联消除了函数调用开销，但增加了字节码体积；reified 保留了类型信息，但仅限于内联函数。
-- 解构 Kotlin 编译器的型变检查机制：在赋值、参数传递、返回值时，编译器检查源类型是否为目标类型的子类型，考虑型变修饰符。
-- 分析星投影 `*` 在不同型变下的语义：
-  - `Covariant<*>` 等价于 `Covariant<out Any?>`。
-  - `Contravariant<*>` 等价于 `Contravariant<in Nothing>`。
-  - `Invariant<*>` 同时具有 `out Any?`（读）与 `in Nothing`（写）的限制。
-- 分析 `List<*>` 与 `List<Any?>` 的区别：前者类型参数未知，只能读不能写；后者类型参数是 `Any?`，可以读写。
-
-### 1.5 Evaluate（评价）
-
-- 评价 Kotlin 选择 declaration-site variance（与 Java 不同）的设计权衡：声明处型变让库作者一次性声明，使用方无需重复投影，但牺牲了使用方的灵活性。
-- 评价 Kotlin 选择类型擦除（与 Java 一致）而非实化（与 C# 不同）的策略：兼容 Java 生态，但运行时无法获取泛型类型信息，需用 `reified` 弥补。
-- 评估 `reified` 的局限性：只能在 `inline` 函数中使用，无法在普通类、普通函数、属性类型中使用。
-- 评价 Kotlin 默认不变（invariant）的选择：相比 Scala 默认不变，Kotlin 强制开发者显式声明型变，提高类型安全性但增加代码量。
-- 评估星投影 `*` 的实用性：在处理"未知类型参数"时有用，但牺牲了类型信息，应优先使用具体类型。
-- 评价 Kotlin 类型系统的"实用优于纯粹"取向：不引入高级类型（higher-kinded types）、不引入隐式参数，换取了简洁性与可维护性。
-
-### 1.6 Create（创造）
-
-- 设计并实现一个完整的类型安全的 ORM 框架，利用泛型、型变、`reified` 实现 `Repository<T : Entity>`、`Query<T>`、`Mapper<T>` 等核心抽象。
-- 设计一个函数式效果系统 `Effect<out A, out E>`，利用密封类与协变建模成功、失败、未决三种状态。
-- 实现一个类型类（typeclass）模拟库，通过 `interface` + 扩展函数 + 上下文参数模拟 Haskell 的 typeclass，绕过 Kotlin 不支持高级类型的限制。
-- 撰写一份团队泛型 API 设计规范：何时用 `out`、何时用 `in`、何时用 `*`、何时用 `reified`、何时用 `where`。
-- 设计一个基于 `reified` 的依赖注入容器，实现 `inline fun <reified T : Any> get(): T = container[T::class]!!`。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 问题背景：Java 泛型的痛点
+### 1.1 问题背景：Java 泛型的痛点
 
 Java 5（2004）引入泛型（Generics），目的是让集合类型安全。但 Java 泛型有几个痛点：
 
@@ -136,7 +67,7 @@ Kotlin 的设计目标：
 - **简洁语法**：用 `out T`/`in T` 替代 `? extends T`/`? super T`，语义更清晰。
 - **保持类型擦除**：为了 JVM 互操作，保留类型擦除，但提供 `reified` 弥补运行时类型信息缺失。
 
-### 2.2 学术背景：型变理论
+### 1.2 学术背景：型变理论
 
 型变（Variance）的概念源于类型理论（Type Theory）：
 
@@ -155,7 +86,7 @@ Kotlin 的设计目标：
 
 这一理论由 Luca Cardelli 在 1988 年的论文《On Understanding Types, Data Abstraction, and Polymorphism》中形式化。
 
-### 2.3 Scala 的影响：declaration-site variance
+### 1.3 Scala 的影响：declaration-site variance
 
 Scala（2004）首次在主流语言中引入 declaration-site variance：
 
@@ -181,7 +112,7 @@ Kotlin 选择 `out`/`in` 的理由：
 2. **避免与算术运算符混淆**：`+`/`-` 在数学上下文中容易引起误解。
 3. **与 Kotlin 的 `in` 操作符统一**：`in` 既用于"包含检查"也用于"逆变声明"，语义一致。
 
-### 2.4 Kotlin 1.0（2016）：泛型初版
+### 1.4 Kotlin 1.0（2016）：泛型初版
 
 Kotlin 1.0 引入完整的泛型系统：
 
@@ -213,7 +144,7 @@ val list: List<String> = listOf("a", "b")
 5. 多重约束 `where`。
 6. 类型擦除（与 Java 互操作）。
 
-### 2.5 Kotlin 1.1-1.2（2017-2018）：泛型改进
+### 1.5 Kotlin 1.1-1.2（2017-2018）：泛型改进
 
 Kotlin 1.1 引入：
 
@@ -225,14 +156,14 @@ Kotlin 1.2 引入：
 - **`Array<out T>` 投影优化**：编译器对数组协变检查更精确。
 - **KMP 中的泛型一致性**：JVM、JS、Native 平台的泛型行为一致。
 
-### 2.6 Kotlin 1.3（2018）：inline class 与契约
+### 1.6 Kotlin 1.3（2018）：inline class 与契约
 
 Kotlin 1.3 引入实验性特性：
 
 - **inline class**：`inline class UserId(val value: Long)`，在运行时表示为 `Long`，零开销的类型包装。
 - **契约（Contracts）**：`contract { callsInPlace(lambda, EXACTLY_ONCE) }`，让编译器知道 lambda 的调用次数，改进类型推断。
 
-### 2.7 Kotlin 1.4-1.5（2020-2021）：泛型推断改进
+### 1.7 Kotlin 1.4-1.5（2020-2021）：泛型推断改进
 
 Kotlin 1.4 改进：
 
@@ -244,7 +175,7 @@ Kotlin 1.5 改进：
 - **`value class` 稳定**：从 `inline class` 升级为 `value class`，允许实现接口。
 - **密封类跨文件**：密封类子类可在同一包内任意文件声明，配合泛型建模更灵活。
 
-### 2.8 Kotlin 1.6-1.7（2021-2022）：递归类型推断
+### 1.8 Kotlin 1.6-1.7（2021-2022）：递归类型推断
 
 Kotlin 1.6-1.7 改进：
 
@@ -252,7 +183,7 @@ Kotlin 1.6-1.7 改进：
 - **`Builder Inference`**：在构建器模式中推断类型参数，如 `buildList { add("a") }` 推断为 `List<String>`。
 - **K2 编译器 Alpha**：新编译器对泛型推断重写，更准确。
 
-### 2.9 Kotlin 1.8-1.9（2023）：K2 Beta 与跨平台泛型
+### 1.9 Kotlin 1.8-1.9（2023）：K2 Beta 与跨平台泛型
 
 Kotlin 1.8-1.9 改进：
 
@@ -260,7 +191,7 @@ Kotlin 1.8-1.9 改进：
 - **`@JvmName` 与泛型**：在 KMP 项目中，泛型函数的 JVM 名称可以定制。
 - **跨平台泛型一致性**：JS、Native 平台的泛型行为与 JVM 一致（尽管 JS/Native 无类型擦除问题）。
 
-### 2.10 Kotlin 2.0（2024）：K2 稳定与 Builder Inference
+### 1.10 Kotlin 2.0（2024）：K2 稳定与 Builder Inference
 
 Kotlin 2.0 的 K2 编译器对泛型进行全面优化：
 
@@ -269,7 +200,7 @@ Kotlin 2.0 的 K2 编译器对泛型进行全面优化：
 3. **跨模块泛型一致性**：K2 在编译时检查跨模块的泛型类型一致性。
 4. **更友好的错误信息**：K2 能精确指出型变违反的位置与原因。
 
-### 2.11 时间线总览
+### 1.11 时间线总览
 
 ```
 2004  Java 5 — 引入泛型，类型擦除，使用处型变
@@ -283,7 +214,7 @@ Kotlin 2.0 的 K2 编译器对泛型进行全面优化：
 2024  Kotlin 2.0 — K2 稳定，Builder Inference 稳定
 ```
 
-### 2.12 JetBrains 的设计哲学
+### 1.12 JetBrains 的设计哲学
 
 JetBrains 在设计 Kotlin 类型系统时遵循以下哲学：
 
@@ -295,9 +226,9 @@ JetBrains 在设计 Kotlin 类型系统时遵循以下哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 类型系统的结构
+### 2.1 类型系统的结构
 
 设 $\tau$ 为 Kotlin 的类型集合。Kotlin 的类型系统可形式化为：
 
@@ -314,7 +245,7 @@ $$
 - $\text{Function}(\tau^*, \tau)$ 是函数类型，如 `(Int) -> String`。
 - $\text{TypeAlias}(\tau)$ 是类型别名。
 
-### 3.2 子类型关系（Subtyping）
+### 2.2 子类型关系（Subtyping）
 
 子类型关系 $\sqsubseteq$ 是类型集合 $\tau$ 上的偏序关系，满足：
 
@@ -330,7 +261,7 @@ Kotlin 的子类型关系包括：
 - **底层类型**：`Nothing $\sqsubseteq$ T`（`Nothing` 是所有类型的子类型）。
 - **顶层类型**：`T $\sqsubseteq$ Any?`（`Any?` 是所有类型的父类型）。
 
-### 3.3 泛型类型构造器
+### 2.3 泛型类型构造器
 
 泛型类型构造器（Type Constructor）是一个从类型到类型的函数：
 
@@ -348,7 +279,7 @@ $$
 - `List` 是类型构造器（kind: $\tau \to \tau$）。
 - `List<String>` 是类型（kind: $\tau$）。
 
-### 3.4 型变（Variance）的形式化定义
+### 2.4 型变（Variance）的形式化定义
 
 设 $C$ 是 arity 为 1 的类型构造器，$S \sqsubseteq T$ 是子类型关系。$C$ 的型变分为四种：
 
@@ -378,7 +309,7 @@ $$
 S \sqsubseteq T \implies C<S> \sqsubseteq C<T> \land C<T> \sqsubseteq C<S>
 $$
 
-### 3.5 declaration-site variance 的形式化
+### 2.5 declaration-site variance 的形式化
 
 declaration-site variance 在类声明处指定型变：
 
@@ -400,7 +331,7 @@ $$
 
 协变声明 `out T` 要求 $T$ 只出现在协变位置；逆变声明 `in T` 要求 $T$ 只出现在逆变位置。
 
-### 3.6 use-site variance（投影）的形式化
+### 2.6 use-site variance（投影）的形式化
 
 use-site variance 在使用处（变量声明、参数、返回值）临时指定型变：
 
@@ -415,7 +346,7 @@ $$
 - 读取元素得到 $T$（因为 $T'$ 是 $T$ 的子类型，可以安全赋值）。
 - 写入元素受限（因为编译器不知道具体 $T'$，写入任何非 `null` 值都不安全）。
 
-### 3.7 星投影（Star Projection）的形式化
+### 2.7 星投影（Star Projection）的形式化
 
 星投影 $C\langle * \rangle$ 的语义取决于 $C$ 的 declaration-site variance：
 
@@ -443,7 +374,7 @@ $$
 
 即"未知类型，可读（得到 `Any?`）不可写"。
 
-### 3.8 类型参数约束的形式化
+### 2.8 类型参数约束的形式化
 
 类型参数约束（Bounds）的形式化：
 
@@ -461,7 +392,7 @@ $$
 
 即 $T$ 必须同时是 $B_1$ 与 $B_2$ 的子类型（交集类型）。
 
-### 3.9 类型擦除的形式化
+### 2.9 类型擦除的形式化
 
 JVM 平台上的类型擦除（Type Erasure）规则：
 
@@ -485,7 +416,7 @@ $$
 2. 重载冲突：`fun foo(list: List<String>)` 与 `fun foo(list: List<Int>)` 在 JVM 上签名相同，需要 `@JvmName` 区分。
 3. `is` 检查受限：`list is List<String>` 编译错误，只能 `list is List<*>` 或 `list is List`。
 
-### 3.10 reified 的形式化
+### 2.10 reified 的形式化
 
 `reified` 类型参数的形式化：
 
@@ -507,7 +438,7 @@ $$
 
 即 `reified` 让 $T$ 在编译时被替换为调用处的具体类型。
 
-### 3.11 型变的安全条件
+### 2.11 型变的安全条件
 
 型变的安全条件（Soundness Condition）由以下定理保证：
 
@@ -525,7 +456,7 @@ $$
 
 **逆变安全**类似：由于 $T$ 只出现在逆变位置，$c$ 只"消费" $T$。如果 $c$ 是 $C<T>$，则它可接受 $T$ 类型的值；由于 $S \sqsubseteq T$，它也能接受 $S$ 类型的值。因此 $c$ 可安全用作 $C<S>$。$\square$
 
-### 3.12 Liskov 替换原则
+### 2.12 Liskov 替换原则
 
 型变安全性的理论基础是 Liskov 替换原则（LSP）：
 
@@ -540,9 +471,9 @@ LSP 对型变的约束：
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 为什么默认不变（Invariance）
+### 3.1 为什么默认不变（Invariance）
 
 考虑 Java 早期没有泛型时的问题：
 
@@ -582,7 +513,7 @@ String s = strings.get(1);  // ClassCastException！
 
 Kotlin 继承了这一设计：默认不变，强制显式声明型变。
 
-### 4.2 协变（Covariance）的安全条件
+### 3.2 协变（Covariance）的安全条件
 
 协变的必要条件：类型参数只出现在"产出"位置。
 
@@ -613,7 +544,7 @@ class BadProducer<out T>(private var value: T) {
 
 编译器会拒绝，因为 `consume` 会破坏协变安全性。
 
-### 4.3 逆变（Contravariance）的安全条件
+### 3.3 逆变（Contravariance）的安全条件
 
 逆变的必要条件：类型参数只出现在"消费"位置。
 
@@ -645,7 +576,7 @@ interface BadConsumer<in T> {
 }
 ```
 
-### 4.4 declaration-site vs use-site variance
+### 3.4 declaration-site vs use-site variance
 
 Kotlin 同时支持 declaration-site（声明处）与 use-site（使用处）型变：
 
@@ -677,7 +608,7 @@ Kotlin 的策略：
 - 标准库中的只读集合（`List`、`Set`、`Map`）用 declaration-site 协变。
 - 可变集合（`MutableList`、`MutableSet`、`MutableMap`）不变，使用时按需投影。
 
-### 4.5 星投影 `*` 的语义
+### 3.5 星投影 `*` 的语义
 
 星投影 `*` 表示"未知类型参数"，在不同型变下语义不同：
 
@@ -724,7 +655,7 @@ val v: Any? = c.value  // 读取得到 Any?
 // c.value = "world"  // 编译错误：不能写入
 ```
 
-### 4.6 类型擦除的实现机制
+### 3.6 类型擦除的实现机制
 
 JVM 平台上类型擦除的实现：
 
@@ -757,7 +688,7 @@ Map map = CollectionsKt.mapOf(Pair("a", 1));  // <String, Int> 被擦除
 2. 重载冲突：`fun foo(list: List<String>)` 与 `fun foo(list: List<Int>)` 在 JVM 上签名相同。
 3. 反射受限：无法通过反射获取 `List<String>` 的 `<String>`。
 
-### 4.7 reified 的实现机制
+### 3.7 reified 的实现机制
 
 `reified` 通过 `inline` 实现：
 
@@ -784,7 +715,7 @@ val intClass = Int::class  // T 被替换为 Int
 2. 不能在普通类、普通函数、属性类型中使用。
 3. 不能作为类型参数传递给非 `reified` 的函数。
 
-### 4.8 型变检查的编译器实现
+### 3.8 型变检查的编译器实现
 
 Kotlin 编译器在以下位置进行型变检查：
 
@@ -800,7 +731,7 @@ Kotlin 编译器在以下位置进行型变检查：
 3. 检查 declaration-site variance 声明与实际位置是否一致。
 4. 对 use-site variance 投影，检查读写操作的安全性。
 
-### 4.9 Builder Inference 的原理
+### 3.9 Builder Inference 的原理
 
 Kotlin 2.0 的 Builder Inference 让构建器函数能推断类型参数：
 
@@ -819,7 +750,7 @@ val list = buildList {
 3. 结合所有候选类型，求最公共父类型（common supertype）。
 4. 将推断出的 `T` 应用于 `buildList<T>`。
 
-### 4.10 K2 编译器对泛型的优化
+### 3.10 K2 编译器对泛型的优化
 
 K2 编译器对泛型处理的改进：
 
@@ -830,9 +761,9 @@ K2 编译器对泛型处理的改进：
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 基础泛型
+### 4.1 基础泛型
 
 ```kotlin
 // 泛型类
@@ -854,7 +785,7 @@ val list = listOf("a", "b", "c")
 val second: String? = list.second()
 ```
 
-### 5.2 declaration-site variance
+### 4.2 declaration-site variance
 
 ```kotlin
 // 协变：Producer 只产出 T
@@ -892,7 +823,7 @@ fun main() {
 }
 ```
 
-### 5.3 use-site variance（投影）
+### 4.3 use-site variance（投影）
 
 ```kotlin
 // 不变类型，使用时投影
@@ -917,7 +848,7 @@ fun printAll(containers: List<Container<*>>) {
 }
 ```
 
-### 5.4 上界约束
+### 4.4 上界约束
 
 ```kotlin
 // 单上界
@@ -948,7 +879,7 @@ repo.add(User("1", "Alice"))
 val user = repo.find("1")
 ```
 
-### 5.5 reified 类型参数
+### 4.5 reified 类型参数
 
 ```kotlin
 // reified：在 inline 函数中保留类型信息
@@ -973,7 +904,7 @@ val json = """{"name":"Alice","age":30}"""
 val user: User = json.parseJson()
 ```
 
-### 5.6 协变集合 API 设计
+### 4.6 协变集合 API 设计
 
 ```kotlin
 // 协变 List（标准库的设计）
@@ -1004,7 +935,7 @@ val strings: MyList<String> = ...
 process(strings)  // 协变：MyList<String> 是 MyList<Any> 的子类型
 ```
 
-### 5.7 递归泛型类型
+### 4.7 递归泛型类型
 
 ```kotlin
 // 递归类型约束：Comparable<T> 中 T 是当前类
@@ -1019,7 +950,7 @@ val numbers = listOf(NaturalNumber(3), NaturalNumber(1), NaturalNumber(2))
 val sorted = numbers.sorted()  // [1, 2, 3]
 ```
 
-### 5.8 高阶类型模拟
+### 4.8 高阶类型模拟
 
 ```kotlin
 // Kotlin 不支持高级类型（Higher-Kinded Types），但可以模拟
@@ -1048,7 +979,7 @@ class JustMonad<A>(val value: A) : MonadOf<A> {
 }
 ```
 
-### 5.9 星投影的实际应用
+### 4.9 星投影的实际应用
 
 ```kotlin
 // 处理未知类型参数的集合
@@ -1075,7 +1006,7 @@ printList(listOf("a", 1, true))
 inspectClass(String::class)
 ```
 
-### 5.10 类型别名（typealias）
+### 4.10 类型别名（typealias）
 
 ```kotlin
 // 类型别名：让复杂泛型类型更易读
@@ -1091,7 +1022,7 @@ val isPositive: Predicate<Int> = { it > 0 }
 val onResult: Callback<Result> = { result -> println(result) }
 ```
 
-### 5.11 不可空类型参数
+### 4.11 不可空类型参数
 
 ```kotlin
 // 不可空类型参数：T : Any
@@ -1111,7 +1042,7 @@ fun <T> process(value: T?) {
 val s: String = requireNotNull(getName())
 ```
 
-### 5.12 协变密封类与 `Nothing`
+### 4.12 协变密封类与 `Nothing`
 
 ```kotlin
 // 协变密封类：用 Nothing 表示"失败"或"空"
@@ -1137,7 +1068,7 @@ println(r2.getOrElse("default"))  // default
 println(r3.getOrElse("default"))  // default
 ```
 
-### 5.13 逆变的实际应用：事件处理器
+### 4.13 逆变的实际应用：事件处理器
 
 ```kotlin
 // 逆变事件处理器
@@ -1162,7 +1093,7 @@ val handler: EventHandler<ClickEvent> = AnyEventHandler()
 handler.handle(ClickEvent(100, 200))
 ```
 
-### 5.14 协变的实际应用：工厂模式
+### 4.14 协变的实际应用：工厂模式
 
 ```kotlin
 // 协变工厂
@@ -1185,7 +1116,7 @@ val anyFactory: Factory<Any> = StringFactory()  // 协变
 val result: Any = useFactory(anyFactory)
 ```
 
-### 5.15 多重约束的实战
+### 4.15 多重约束的实战
 
 ```kotlin
 // 类型参数同时满足多个约束
@@ -1213,9 +1144,9 @@ val maxUser = findMax(users)
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 Kotlin vs Java 泛型
+### 5.1 Kotlin vs Java 泛型
 
 | 维度                | Kotlin                                      | Java                                                |
 | ------------------- | ------------------------------------------- | --------------------------------------------------- |
@@ -1230,7 +1161,7 @@ val maxUser = findMax(users)
 | 不可空类型参数      | `<T : Any>`                                 | 不支持                                              |
 | 语法简洁性          | `out T`/`in T`                              | `? extends T`/`? super T`                           |
 
-### 6.2 Kotlin vs Scala 泛型
+### 5.2 Kotlin vs Scala 泛型
 
 | 维度                | Kotlin                       | Scala                           |
 | ------------------- | ---------------------------- | ------------------------------- |
@@ -1244,7 +1175,7 @@ val maxUser = findMax(users)
 | 实化                | `reified`                    | `ClassTag`/`TypeTag`            |
 | 学习曲线            | 平缓                         | 陡峭                            |
 
-### 6.3 Kotlin vs C# 泛型
+### 5.3 Kotlin vs C# 泛型
 
 | 维度                | Kotlin                          | C#                              |
 | ------------------- | ------------------------------- | ------------------------------- |
@@ -1256,7 +1187,7 @@ val maxUser = findMax(users)
 | 性能                | 擦除，无运行时开销              | 实化，有运行时开销              |
 | 互操作              | 与 Java 互操作                  | 与 .NET 互操作                  |
 
-### 6.4 Kotlin vs TypeScript 泛型
+### 5.4 Kotlin vs TypeScript 泛型
 
 | 维度                | Kotlin                       | TypeScript                              |
 | ------------------- | ---------------------------- | --------------------------------------- |
@@ -1268,7 +1199,7 @@ val maxUser = findMax(users)
 | 映射类型            | 不支持                       | 支持（`{ [K in keyof T]: ... }`）      |
 | 运行时检查          | `is`                         | `typeof`、`instanceof`                  |
 
-### 6.5 Kotlin vs Rust 泛型
+### 5.5 Kotlin vs Rust 泛型
 
 | 维度                | Kotlin                       | Rust                                  |
 | ------------------- | ---------------------------- | ------------------------------------- |
@@ -1279,7 +1210,7 @@ val maxUser = findMax(users)
 | Trait 约束          | `<T : Comparable<T>>`         | `<T: Comparable>`                     |
 | 性能                | 擦除，无代码膨胀             | 单态化，代码膨胀                      |
 
-### 6.6 declaration-site vs use-site variance 对比
+### 5.6 declaration-site vs use-site variance 对比
 
 **declaration-site 的优势**：
 
@@ -1314,9 +1245,9 @@ fun copy(from: Container<out Number>, to: Container<in Number>) {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱：误用协变导致类型不安全
+### 6.1 陷阱：误用协变导致类型不安全
 
 ```kotlin
 // 错误：试图让可变容器协变
@@ -1328,7 +1259,7 @@ class BadList<out T>(private val items: MutableList<T>) {
 
 **最佳实践**：可变容器必须不变，只有只读容器才能协变。
 
-### 7.2 陷阱：类型擦除导致的重载冲突
+### 6.2 陷阱：类型擦除导致的重载冲突
 
 ```kotlin
 // 错误：JVM 上签名相同
@@ -1346,7 +1277,7 @@ fun process(list: List<String>) { println("strings") }
 fun process(list: List<Int>) { println("ints") }
 ```
 
-### 7.3 陷阱：`is` 检查无法获取泛型类型
+### 6.3 陷阱：`is` 检查无法获取泛型类型
 
 ```kotlin
 // 错误：无法检查泛型类型
@@ -1370,7 +1301,7 @@ fun isStringList(list: Any): Boolean {
 }
 ```
 
-### 7.4 陷阱：星投影的读写限制
+### 6.4 陷阱：星投影的读写限制
 
 ```kotlin
 class Container<T>(var value: T)
@@ -1384,7 +1315,7 @@ fun main() {
 
 **最佳实践**：需要写入时，使用具体类型或逆变投影 `Container<in String>`。
 
-### 7.5 陷阱：`reified` 只能在 inline 函数中使用
+### 6.5 陷阱：`reified` 只能在 inline 函数中使用
 
 ```kotlin
 // 错误：reified 不能在普通函数中使用
@@ -1396,7 +1327,7 @@ inline fun <reified T> foo() { println(T::class) }
 
 **最佳实践**：需要运行时类型信息时，用 `inline` + `reified`，但注意字节码膨胀。
 
-### 7.6 陷阱：协变类型的继承
+### 6.6 陷阱：协变类型的继承
 
 ```kotlin
 // 错误：继承协变类时，子类不能消费 T
@@ -1412,7 +1343,7 @@ class BadProducer<T>(private var value: T) : Producer<T>() {
 
 **最佳实践**：继承协变类时，子类也必须遵守协变约束。
 
-### 7.7 陷阱：逆变类型的产出
+### 6.7 陷阱：逆变类型的产出
 
 ```kotlin
 // 错误：逆变类不能产出 T
@@ -1424,7 +1355,7 @@ interface Consumer<in T> {
 
 **最佳实践**：如果需要同时产出 T，改为不变或拆分为两个接口。
 
-### 7.8 陷阱：递归类型约束的复杂性
+### 6.8 陷阱：递归类型约束的复杂性
 
 ```kotlin
 // 递归类型约束：T : Comparable<T>
@@ -1438,7 +1369,7 @@ class Tree<T : Tree<T>>(val children: List<T>)  // 递归约束，难以理解
 
 **最佳实践**：递归类型约束应谨慎使用，确保文档清晰。
 
-### 7.9 陷阱：平台类型与泛型
+### 6.9 陷阱：平台类型与泛型
 
 ```kotlin
 // Java 互操作：平台类型
@@ -1449,7 +1380,7 @@ list.add(null as String?)  // 运行时可能 NPE
 
 **最佳实践**：从 Java 接收的泛型集合，应显式标注可空性。
 
-### 7.10 陷阱：协变与 in/out 投影的混淆
+### 6.10 陷阱：协变与 in/out 投影的混淆
 
 ```kotlin
 // 混淆：declaration-site 与 use-site
@@ -1462,7 +1393,7 @@ fun main() {
 
 **最佳实践**：declaration-site 已声明型变时，无需 use-site 投影。
 
-### 7.11 陷阱：泛型数组的协变
+### 6.11 陷阱：泛型数组的协变
 
 ```kotlin
 // Kotlin 数组：不变
@@ -1475,7 +1406,7 @@ val strings: Array<String> = arrayOf("a", "b")
 
 **最佳实践**：Kotlin 数组不变，避免 Java 的 ArrayStoreException。
 
-### 7.12 陷阱：`*` 投影的方法调用限制
+### 6.12 陷阱：`*` 投影的方法调用限制
 
 ```kotlin
 class Container<T>(var value: T) {
@@ -1492,7 +1423,7 @@ fun main() {
 
 **最佳实践**：`*` 投影限制写操作，需要写操作时用具体类型。
 
-### 7.13 陷阱：型变与反射
+### 6.13 陷阱：型变与反射
 
 ```kotlin
 // 反射无法获取泛型类型参数
@@ -1503,7 +1434,7 @@ val cls: KClass<out List<*>> = list::class
 
 **最佳实践**：需要运行时泛型类型信息时，用 `reified` 或显式传递 `KClass`。
 
-### 7.14 陷阱：泛型函数的默认参数
+### 6.14 陷阱：泛型函数的默认参数
 
 ```kotlin
 // 错误：默认参数中无法引用 T
@@ -1520,7 +1451,7 @@ inline fun <reified T> create(factory: () -> T = { T::class.java.newInstance() }
 }
 ```
 
-### 7.15 陷阱：型变与扩展函数
+### 6.15 陷阱：型变与扩展函数
 
 ```kotlin
 // 错误：扩展函数中误用型变
@@ -1534,9 +1465,9 @@ fun <T> List<T>.firstOrDefault(default: T): T =
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 设计协变集合 API
+### 7.1 设计协变集合 API
 
 ```kotlin
 // 协变只读集合
@@ -1559,7 +1490,7 @@ val strings: ReadOnlyCollection<String> = ...
 val anys: ReadOnlyCollection<Any> = strings  // 协变
 ```
 
-### 8.2 设计逆变事件处理器
+### 7.2 设计逆变事件处理器
 
 ```kotlin
 // 逆变事件处理器
@@ -1583,7 +1514,7 @@ val listener: EventListener<ClickEvent> = UniversalEventListener()
 listener.onEvent(ClickEvent(100, 200))
 ```
 
-### 8.3 实现 reified JSON 解析器
+### 7.3 实现 reified JSON 解析器
 
 ```kotlin
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -1610,7 +1541,7 @@ val users = listOf(User("A", 1), "hello", User("B", 2), 42)
 val onlyUsers: List<User> = users.filterByType()
 ```
 
-### 8.4 设计类型安全的 Repository
+### 7.4 设计类型安全的 Repository
 
 ```kotlin
 // 抽象实体
@@ -1663,7 +1594,7 @@ when (val result = repo.findById("1")) {
 }
 ```
 
-### 8.5 设计协变 Either 类型
+### 7.5 设计协变 Either 类型
 
 ```kotlin
 // 协变 Either 类型（函数式错误处理）
@@ -1705,7 +1636,7 @@ when (val result = processAge("25")) {
 }
 ```
 
-### 8.6 设计类型安全的 ORM 模型
+### 7.6 设计类型安全的 ORM 模型
 
 ```kotlin
 // 类型安全的列定义
@@ -1752,7 +1683,7 @@ val query = QueryBuilder(userTable)
 println(query)  // SELECT * FROM users WHERE name = 'Alice' AND age > 18
 ```
 
-### 8.7 设计协变 Result 与异常处理
+### 7.7 设计协变 Result 与异常处理
 
 ```kotlin
 // 协变 Result 类型
@@ -1798,7 +1729,7 @@ when (val result = processUser("1")) {
 }
 ```
 
-### 8.8 设计类型安全的依赖注入
+### 7.8 设计类型安全的依赖注入
 
 ```kotlin
 // 类型安全的 DI 容器
@@ -1828,7 +1759,7 @@ val userRepo: UserRepository = container.get()
 val auth: AuthService = container.get()
 ```
 
-### 8.9 设计逆变日志适配器
+### 7.9 设计逆变日志适配器
 
 ```kotlin
 // 逆变日志适配器
@@ -1848,7 +1779,7 @@ val userLogger: Logger<User> = AnyLogger()
 println(userLogger.log(User("Alice", 30)))  // [INFO] User(name=Alice, age=30)
 ```
 
-### 8.10 设计类型安全的路由 DSL
+### 7.10 设计类型安全的路由 DSL
 
 ```kotlin
 // 类型安全的 HTTP 路由 DSL
@@ -1898,9 +1829,9 @@ object EmptyBody
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 案例一：Kotlin 标准库的 `List<out E>` 设计
+### 8.1 案例一：Kotlin 标准库的 `List<out E>` 设计
 
 Kotlin 标准库的 `List` 接口采用 declaration-site 协变：
 
@@ -1929,7 +1860,7 @@ interface MutableList<E> : List<E>, MutableCollection<E> {
 
 `indexOf(element: E)` 接受 E 类型参数，这在逆变位置。如果 List 协变，这会违反型变约束。但实际上 `indexOf` 只是查询，不修改列表，所以是安全的。`@UnsafeVariance` 告诉编译器"我知道这看起来不安全，但实际上是安全的"。
 
-### 9.2 案例二：Jetpack Compose 的 `StateFlow<out T>`
+### 8.2 案例二：Jetpack Compose 的 `StateFlow<out T>`
 
 Jetpack Compose 的 `StateFlow` 是协变的：
 
@@ -1951,7 +1882,7 @@ interface MutableStateFlow<T> : StateFlow<T> {
 2. `MutableStateFlow<T>` 不变，因为它同时读写 T。
 3. 这让 ViewModel 可以暴露 `StateFlow<User>`（只读），内部用 `MutableStateFlow<User>`（可写）。
 
-### 9.3 案例三：Arrow 库的 `Either<out L, out R>`
+### 8.3 案例三：Arrow 库的 `Either<out L, out R>`
 
 Arrow 库（Kotlin 函数式编程库）的 `Either` 是双重协变的：
 
@@ -1968,7 +1899,7 @@ sealed class Either<out A, out B> {
 2. `Left<A>` 是 `Either<A, Nothing>`，因为 Left 不持有 B（用 `Nothing` 占位）。
 3. 这让 `Left<String>("error")` 可以作为 `Either<String, Int>` 使用。
 
-### 9.4 案例四：Retrofit 的 reified API
+### 8.4 案例四：Retrofit 的 reified API
 
 Retrofit 的 `@GET` 与 `@POST` 方法可以配合 `reified` 实现类型安全的 HTTP 客户端：
 
@@ -1991,7 +1922,7 @@ inline fun <reified T : Any> String.parse(): T =
     jacksonMapper.readValue(this, T::class.java)
 ```
 
-### 9.5 案例五：Spring Framework 的 Kotlin 扩展
+### 8.5 案例五：Spring Framework 的 Kotlin 扩展
 
 Spring Framework 5.0+ 提供了 Kotlin 扩展，利用泛型与 `reified` 简化 API：
 
@@ -2008,7 +1939,7 @@ inline fun <reified T : Any, ID> CrudRepository<T, ID>.findById(id: ID): T? {
 val user: User = applicationContext.getBean()
 ```
 
-### 9.6 案例六：Kotlin Coroutines 的 `Deferred<out T>`
+### 8.6 案例六：Kotlin Coroutines 的 `Deferred<out T>`
 
 Kotlin Coroutines 的 `Deferred` 接口是协变的：
 
@@ -2026,7 +1957,7 @@ val deferred2: Deferred<Int> = async { 42 }
 val results = listOf(defer1, deferred2)  // List<Deferred<Any>>
 ```
 
-### 9.7 案例七：Kotlinx Serialization 的泛型
+### 8.7 案例七：Kotlinx Serialization 的泛型
 
 Kotlinx Serialization 利用泛型实现类型安全的序列化：
 
@@ -2042,7 +1973,7 @@ val json = """{"name":"Alice","age":30}"""
 val user: User = json.decode<User>()
 ```
 
-### 9.8 案例八：KMP 的 expect/actual 泛型
+### 8.8 案例八：KMP 的 expect/actual 泛型
 
 Kotlin Multiplatform 中的 `expect`/`actual` 可以声明泛型：
 
@@ -2075,7 +2006,7 @@ actual class AtomicRef<T> {
 }
 ```
 
-### 9.9 案例九：协变密封类构建有限状态机
+### 8.9 案例九：协变密封类构建有限状态机
 
 ```kotlin
 // 协变密封类表示状态机
@@ -2110,7 +2041,7 @@ when (val s = machine.map { it.length }) {
 }
 ```
 
-### 9.10 案例十：ArrowFx 的 Resource 管理
+### 8.10 案例十：ArrowFx 的 Resource 管理
 
 Arrow 库的 `Resource` 类型利用泛型管理资源生命周期：
 
@@ -2143,7 +2074,7 @@ val content = fileResource.use { it.readBytes() }
 
 ## 知识讲解与要点分析（原习题）
 
-### 10.1 基础题
+### 9.1 基础题
 
 **题目 1**：判断以下代码是否能编译，并解释原因。
 
@@ -2163,7 +2094,7 @@ println(list.first()::class)
 
 **解析讲解**：输出 `class kotlin.String`。`List<out E>` 协变，`listOf("a", "b", "c")` 返回 `List<String>`，可以赋给 `List<Any>`。但运行时元素类型仍是 `String`。
 
-### 10.2 型变题
+### 9.2 型变题
 
 **题目 3**：为以下接口选择正确的型变修饰符，并说明理由。
 
@@ -2189,7 +2120,7 @@ class Box<out T>(var value: T)  // 注意 var
 
 **解析讲解**：不能编译。`var value: T` 让 T 在 in 位置（setter），与 `out T` 矛盾。应改为 `val` 或去掉 `out`。
 
-### 10.3 星投影题
+### 9.3 星投影题
 
 **题目 5**：以下代码输出什么？
 
@@ -2209,7 +2140,7 @@ list.add(4)
 
 **解析讲解**：不能编译。`MutableList<*>` 是星投影，不能写入元素（除了 `null`，但 Kotlin 不允许 `add(null)` 在 `MutableList<*>` 上）。
 
-### 10.4 reified 题
+### 9.4 reified 题
 
 **题目 7**：为什么以下代码不能编译？
 
@@ -2275,9 +2206,9 @@ val v: Any? = cache.get("a")  // hello
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 1. Cardelli, L., & Wegner, P. (1985). "On Understanding Types, Data Abstraction, and Polymorphism." *ACM Computing Surveys*, 17(4), 471-523.
 2. Liskov, B. H., & Wing, J. M. (1994). "A Behavioral Notion of Subtyping." *ACM Transactions on Programming Languages and Systems*, 16(6), 1811-1841.
@@ -2285,7 +2216,7 @@ val v: Any? = cache.get("a")  // hello
 4. Torgersen, M., Ernst, E., Hansen, C. P., von der Ahé, P., Bracha, G., & Gafter, N. (2004). "Adding Wildcards to the Java Programming Language." *Journal of Object Technology*, 3(11), 97-116.
 5. Tate, R., Lepiller, A., & Huang, M. (2010). "Java Wildcards Are Hard." *Proceedings of the 9th International Conference on Generative Programming and Component Engineering*.
 
-### 11.2 官方文档
+### 10.2 官方文档
 
 6. JetBrains. (2024). "Kotlin Generics." *Kotlin Documentation*. https://kotlinlang.org/docs/generics.html
 7. JetBrains. (2024). "Variance." *Kotlin Documentation*. https://kotlinlang.org/docs/generics.html#variance
@@ -2294,7 +2225,7 @@ val v: Any? = cache.get("a")  // hello
 10. JetBrains. (2024). "Generic Constraint." *Kotlin Documentation*. https://kotlinlang.org/docs/generics.html#generic-constraints
 11. Oracle. (2024). "Java Generics." *Java Documentation*. https://docs.oracle.com/javase/tutorial/java/generics/
 
-### 11.3 经典教材
+### 10.3 经典教材
 
 12. Eckel, B. (2006). *Thinking in Java* (4th ed.). Prentice Hall. （Java 泛型章节）
 13. Bloch, J. (2018). *Effective Java* (3rd ed.). Addison-Wesley. （Item 28-33: Generics）
@@ -2303,7 +2234,7 @@ val v: Any? = cache.get("a")  // hello
 16. Pierce, B. C. (2002). *Types and Programming Languages*. MIT Press.
 17. Cline, M. (2019). *Kotlin in Action* (2nd ed.). Manning Publications.
 
-### 11.4 在线资源
+### 10.4 在线资源
 
 18. Kotlin Playground. https://play.kotlinlang.org/
 19. Kotlin by Example: Generics. https://play.kotlinlang.org/byExample/01_introduction/05_Functions
@@ -2313,9 +2244,9 @@ val v: Any? = cache.get("a")  // hello
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 高级类型理论
+### 11.1 高级类型理论
 
 - **Higher-Kinded Types (HKT)**：Kotlin 不支持 HKT（如 `F[_>`），但可通过接口模拟。参考 Arrow 库的 `Kind<F, A>` 实现。
 - **Dependent Types**：依赖类型（如 `Vec(n)` 表示长度为 n 的向量），Kotlin 不支持。
@@ -2323,14 +2254,14 @@ val v: Any? = cache.get("a")  // hello
 - **Intersection Types**：交集类型，Kotlin 通过 `where T : A, T : B` 模拟。
 - **Union Types**：联合类型，Kotlin 不支持，但可通过密封类模拟。
 
-### 12.2 Kotlin 类型系统的演进
+### 11.2 Kotlin 类型系统的演进
 
 - **K2 编译器**：FIR 与 IR 的分离，让类型推断更准确、更快速。
 - **Builder Inference**：在构建器模式中推断类型参数。
 - **Context Receivers**（实验）：让函数依赖上下文，模拟 typeclass。
 - **Contract DSL**：让编译器知道函数行为，改进类型推断。
 
-### 12.3 与其他语言的对比
+### 11.3 与其他语言的对比
 
 - **Scala**：支持 HKT、隐式参数、更强大的类型系统，但学习曲线陡峭。
 - **Rust**：单态化（monomorphization）替代类型擦除，性能更好但代码膨胀。
@@ -2338,7 +2269,7 @@ val v: Any? = cache.get("a")  // hello
 - **TypeScript**：结构类型系统，支持条件类型、映射类型等高级特性。
 - **Haskell**：完全的 H-M 类型系统，支持 HKT、typeclass、更高阶的多态。
 
-### 12.4 工程实践深入
+### 11.4 工程实践深入
 
 - **Kotlin Coroutines 中的泛型**：`Flow<out T>`、`Channel<T>`、`StateFlow<out T>` 等。
 - **Jetpack Compose 中的泛型**：`@Composable` 函数的泛型约束、`MutableState<T>` 等。
@@ -2346,13 +2277,13 @@ val v: Any? = cache.get("a")  // hello
 - **Arrow 库**：`Either<out L, out R>`、`Validated<out E, out A>`、`Option<out A>` 等函数式类型。
 - **Kotlinx Serialization**：`KSerializer<T>`、`@Serializable`、泛型序列化等。
 
-### 12.5 形式化验证
+### 11.5 形式化验证
 
 - **Kotline 类型系统的健全性证明**：参考 Igarashi 等人的 Featherweight Java，扩展至 Kotlin。
 - **型变安全性的形式化**：基于 Cardelli & Wegner 的型变理论。
 - **类型擦除的语义**：参考 Java 的类型擦除形式化，扩展至 Kotlin。
 
-### 12.6 未来方向
+### 11.6 未来方向
 
 - **Kotlin 2.x 的类型系统改进**：Context Receivers、Builder Inference 的进一步完善。
 - **Value class 与泛型结合**：`value class UserId<T>` 等类型安全的 ID 类型。

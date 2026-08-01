@@ -15,30 +15,16 @@ prerequisites:
   - react/概述与环境配置
 ---
 
+
 # 错误边界与 Sentry 集成：从原理到生产级监控
 
 > 本章对标 MIT 6.170（Software Studio）与 Stanford CS142 课程深度，系统阐述 React 错误边界（Error Boundaries）的形式化语义、Sentry 集成工程实践与生产级错误监控体系。读者将掌握从错误捕获、分类、上报、聚合到回归修复的全链路方法论，构建可观测、可追溯、可自愈的前端错误防御体系。
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-完成本章学习后，读者应当能够：
-
-| Bloom 层级 | 目标描述 |
-|------------|----------|
-| **Remember（记忆）** | 复述 React 错误边界的三个生命周期方法（`getDerivedStateFromError`、`componentDidCatch`、`getDerivedStateFromProps`）、错误捕获范围与不捕获场景。 |
-| **Understand（理解）** | 解释 Fiber 架构下的错误传播路径、`componentDidCatch` 与 `getDerivedStateFromError` 的执行时序、Sentry 的 breadcrumb 与 release 追踪机制。 |
-| **Apply（应用）** | 在企业级项目中实现分层的错误边界架构，集成 Sentry SDK 完成错误上报、性能监控、Session Replay。 |
-| **Analyze（分析）** | 通过 Sentry Dashboard 定位错误根因，区分 Render 错误、Event Handler 错误、异步错误与 Server 错误的不同处理路径。 |
-| **Evaluate（评估）** | 在 Sentry、Rollbar、Bugsnag、LogRocket 等监控方案间做出基于成本、性能、功能的选型决策；评估 Source Map 上传策略与采样率对成本的影响。 |
-| **Create（创造）** | 设计一套端到端的错误防御体系，覆盖静态预防（TypeScript/ESLint）、运行时捕获（Error Boundaries）、上报聚合（Sentry）、告警响应（PagerDuty/Slack）与回归验证（E2E）。 |
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 错误处理的历史背景
+### 1.1 错误处理的历史背景
 
 JavaScript 的错误处理长期是前端的痛点：
 
@@ -49,7 +35,7 @@ JavaScript 的错误处理长期是前端的痛点：
 5. **2022（React 18）**：并发模式下，错误传播路径更复杂，部分场景下 Error Boundary 行为变化（如 Suspense 边界交互）。
 6. **2024+（React 19）**：Server Components 错误处理统一到 `error.js` 与 `global-error.js`，SSR 错误与 CSR 错误处理趋于一致。
 
-### 2.2 Sentry 的演进
+### 1.2 Sentry 的演进
 
 Sentry 是 Open Source 错误监控的标杆，其演进：
 
@@ -62,7 +48,7 @@ Sentry 是 Open Source 错误监控的标杆，其演进：
 | Session Replay | 2023 | DOM 录屏回放 |
 | Profiling | 2024 | 性能 Profile 上报 |
 
-### 2.3 设计哲学
+### 1.3 设计哲学
 
 React 错误处理的设计哲学：
 
@@ -73,9 +59,9 @@ React 错误处理的设计哲学：
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 错误边界的代数语义
+### 2.1 错误边界的代数语义
 
 错误边界是一个特殊的 React 类组件，提供两个静态/实例方法：
 
@@ -99,7 +85,7 @@ $$
 \text{Render throws } e \xrightarrow{\text{React 内部}} \text{getDerivedStateFromError}(e) \xrightarrow{\text{re-render}} \text{componentDidCatch}(e, \text{info})
 $$
 
-### 3.2 错误传播路径
+### 2.2 错误传播路径
 
 设组件树 $T$，节点 $v$ 抛出错误 $e$。React 向上查找最近的错误边界 $b$：
 
@@ -109,7 +95,7 @@ $$
 
 若 $b$ 存在，React 卸载 $b$ 的子树并渲染 `fallback`；若不存在，React 卸载整个根组件（白屏）。
 
-### 3.3 不捕获的场景
+### 2.3 不捕获的场景
 
 错误边界**不捕获**以下错误：
 
@@ -122,7 +108,7 @@ $$
 
 这些场景需要 `try-catch`、`window.onerror`、`unhandledrejection` 等补充机制。
 
-### 3.4 Sentry 上报的代价模型
+### 2.4 Sentry 上报的代价模型
 
 设一次错误上报的体积为 $S$（含 stack trace、breadcrumb、replay），采样率为 $r$，每日错误数为 $N$：
 
@@ -134,9 +120,9 @@ Sentry 免费版限额 5K events/月，Team 版 50K events/月。合理设置采
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 Fiber 架构下的错误传播
+### 3.1 Fiber 架构下的错误传播
 
 React 16+ 的 Fiber 架构在渲染阶段（Render Phase）抛出错误时，会沿着 Fiber 树向上查找错误边界。具体流程：
 
@@ -148,7 +134,7 @@ React 16+ 的 Fiber 架构在渲染阶段（Render Phase）抛出错误时，会
 
 设错误传播距离为 $d$（从抛出节点到边界），Fiber 节点数为 $n$，传播复杂度为 $O(d)$，最坏情况 $d = n$（无边界时传播到根）。
 
-### 4.2 `getDerivedStateFromError` vs `componentDidCatch`
+### 3.2 `getDerivedStateFromError` vs `componentDidCatch`
 
 两个方法的差异：
 
@@ -159,7 +145,7 @@ React 16+ 的 Fiber 架构在渲染阶段（Render Phase）抛出错误时，会
 
 设计原则：渲染阶段的副作用会破坏一致性，所以 `getDerivedStateFromError` 必须是纯函数；上报等副作用放到 `componentDidCatch`。
 
-### 4.3 Source Map 与错误定位
+### 3.3 Source Map 与错误定位
 
 生产环境构建通常会压缩 JS（minify），导致错误堆栈是 `a.b is not a function at chunk-abc.js:1:2345`。Source Map 将压缩位置映射回源码：
 
@@ -171,7 +157,7 @@ Sentry 支持两种 Source Map 策略：
 1. **上传到 Sentry**：构建时上传到 Sentry 服务器，错误上报时 Sentry 自动反解。
 2. **本地 Source Map**：通过 `//# sourceMappingURL=` 注释指向本地文件（不推荐生产）。
 
-### 4.4 Release 与版本追踪
+### 3.4 Release 与版本追踪
 
 Sentry 的 Release 概念让错误与代码版本绑定：
 
@@ -184,7 +170,7 @@ $$
 - 计算 "Resolved in release" 与 "Regressed in release"
 - 集成 GitHub/GitLab 自动关联 commit
 
-### 4.5 Breadcrumb 与错误重建
+### 3.5 Breadcrumb 与错误重建
 
 Breadcrumb 是错误发生前的关键事件序列，包括：
 - 用户行为（点击、输入、导航）
@@ -206,9 +192,9 @@ Sentry.addBreadcrumb({
 
 ---
 
-## 5. 代码示例（企业级 Production-Ready）
+## 4. 代码示例（企业级 Production-Ready）
 
-### 5.1 基础错误边界组件
+### 4.1 基础错误边界组件
 
 ```tsx
 import React, { Component, ReactNode, ErrorInfo } from 'react';
@@ -286,7 +272,7 @@ const DefaultFallback: React.FC<{ error: Error; onReset: () => void }> = ({
 );
 ```
 
-### 5.2 分层错误边界架构
+### 4.2 分层错误边界架构
 
 ```tsx
 import { ErrorBoundary } from './ErrorBoundary';
@@ -363,7 +349,7 @@ function App() {
 }
 ```
 
-### 5.3 Sentry SDK 完整初始化
+### 4.3 Sentry SDK 完整初始化
 
 ```typescript
 import * as Sentry from '@sentry/react';
@@ -443,7 +429,7 @@ export function initSentry(): void {
 initSentry();
 ```
 
-### 5.4 React Router 集成
+### 4.4 React Router 集成
 
 ```tsx
 import * as Sentry from '@sentry/react';
@@ -499,7 +485,7 @@ export default function App() {
 }
 ```
 
-### 5.5 全局错误兜底
+### 4.5 全局错误兜底
 
 ```typescript
 // globalErrorHandler.ts
@@ -556,7 +542,7 @@ export function setupGlobalErrorHandlers(): void {
 }
 ```
 
-### 5.6 性能监控与 Trace
+### 4.6 性能监控与 Trace
 
 ```typescript
 import * as Sentry from '@sentry/react';
@@ -634,7 +620,7 @@ async function fetchUserProfile(userId: string) {
 }
 ```
 
-### 5.7 自定义 Hook：useErrorHandler
+### 4.7 自定义 Hook：useErrorHandler
 
 ```tsx
 import { useCallback, useState, ErrorInfo } from 'react';
@@ -699,7 +685,7 @@ function AsyncButton({ onClick, children }) {
 }
 ```
 
-### 5.8 Next.js App Router 集成
+### 4.8 Next.js App Router 集成
 
 ```tsx
 // app/error.tsx
@@ -750,7 +736,7 @@ export default function GlobalError({ error, reset }) {
 }
 ```
 
-### 5.9 Source Map 自动上传
+### 4.9 Source Map 自动上传
 
 ```typescript
 // scripts/upload-sourcemaps.ts
@@ -802,7 +788,7 @@ uploadSourceMaps().catch(console.error);
 }
 ```
 
-### 5.10 用户反馈组件
+### 4.10 用户反馈组件
 
 ```tsx
 import * as Sentry from '@sentry/react';
@@ -887,9 +873,9 @@ function ErrorFallback({ error, reset }) {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 主流错误监控方案对比
+### 5.1 主流错误监控方案对比
 
 | 维度 | Sentry | Rollbar | Bugsnag | LogRocket | DataDog RUM |
 |------|--------|---------|---------|-----------|-------------|
@@ -904,7 +890,7 @@ function ErrorFallback({ error, reset }) {
 | **React 集成** | 官方 SDK | 第三方 | 官方 SDK | 官方 SDK | 官方 SDK |
 | **AI 错误分组** | 良好 | 优秀 | 优秀 | 良好 | 良好 |
 
-### 6.2 错误捕获机制对比
+### 5.2 错误捕获机制对比
 
 | 机制 | 覆盖范围 | 优势 | 劣势 |
 |------|---------|------|------|
@@ -915,7 +901,7 @@ function ErrorFallback({ error, reset }) {
 | React 19 `useErrorBoundary` | Render Phase | 函数式 API | 需 React 19 |
 | Next.js `error.js` | Route 级 | App Router 原生 | 仅 SSR/SSG |
 
-### 6.3 Source Map 策略对比
+### 5.3 Source Map 策略对比
 
 | 策略 | 安全性 | 复杂度 | 推荐 |
 |------|--------|--------|------|
@@ -926,9 +912,9 @@ function ErrorFallback({ error, reset }) {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 陷阱一：Error Boundary 包裹整个应用
+### 6.1 陷阱一：Error Boundary 包裹整个应用
 
 ```tsx
 // 反模式：单一根级 Error Boundary
@@ -961,7 +947,7 @@ function GoodApp() {
 }
 ```
 
-### 7.2 陷阱二：事件处理器错误未捕获
+### 6.2 陷阱二：事件处理器错误未捕获
 
 ```tsx
 // 反模式：依赖 Error Boundary 捕获事件错误
@@ -987,7 +973,7 @@ function GoodButton() {
 }
 ```
 
-### 7.3 陷阱三：异步错误未捕获
+### 6.3 陷阱三：异步错误未捕获
 
 ```tsx
 // 反模式：异步函数中的错误未捕获
@@ -1020,7 +1006,7 @@ function GoodAsync() {
 }
 ```
 
-### 7.4 陷阱四：Sentry 采样率过高导致成本失控
+### 6.4 陷阱四：Sentry 采样率过高导致成本失控
 
 ```typescript
 // 反模式：100% 采样
@@ -1051,7 +1037,7 @@ Sentry.init({
 });
 ```
 
-### 7.5 陷阱五：未上传 Source Map
+### 6.5 陷阱五：未上传 Source Map
 
 ```typescript
 // 反模式：生产环境未上传 Source Map
@@ -1067,7 +1053,7 @@ Sentry.init({
     rm -rf dist/**/*.map  # 上传后删除本地 Source Map
 ```
 
-### 7.6 陷阱六：忽略 release 与 commit 关联
+### 6.6 陷阱六：忽略 release 与 commit 关联
 
 ```typescript
 // 反模式：未设置 release
@@ -1088,7 +1074,7 @@ await cli.releases.setCommits(release, {
 });
 ```
 
-### 7.7 最佳实践清单
+### 6.7 最佳实践清单
 
 | # | 实践 | 收益 |
 |---|------|------|
@@ -1105,9 +1091,9 @@ await cli.releases.setCommits(release, {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 Vite 配置
+### 7.1 Vite 配置
 
 ```typescript
 // vite.config.ts
@@ -1135,7 +1121,7 @@ export default defineConfig(({ mode }) => ({
 }));
 ```
 
-### 8.2 Next.js 配置
+### 7.2 Next.js 配置
 
 ```typescript
 // next.config.ts
@@ -1162,7 +1148,7 @@ export default withSentryConfig(nextConfig, {
 });
 ```
 
-### 8.3 Sentry 告警规则
+### 7.3 Sentry 告警规则
 
 ```yaml
 # sentry-alerts.yml
@@ -1202,16 +1188,16 @@ rules:
           to: ['release-team@fandex.com']
 ```
 
-### 8.4 调试工具
+### 7.4 调试工具
 
-#### 8.4.1 React DevTools
+#### 7.4.1 React DevTools
 
 React DevTools 显示组件树中错误边界的位置，便于调试：
 
 - 错误边界组件会显示 `警告 ErrorBoundary` 标识
 - 当错误发生时，DevTools 高亮出错的组件
 
-#### 8.4.2 Sentry Dashboard
+#### 7.4.2 Sentry Dashboard
 
 - **Issues**：错误聚合列表，按出现次数排序
 - **Releases**：版本追踪，显示每个 release 的新增/解决/回归错误
@@ -1219,7 +1205,7 @@ React DevTools 显示组件树中错误边界的位置，便于调试：
 - **Replays**：会话录屏，可回放用户操作
 - **Discover**：自定义查询，构建 SLI/SLO
 
-#### 8.4.3 Source Map 调试
+#### 7.4.3 Source Map 调试
 
 ```bash
 # 验证 Source Map 上传
@@ -1229,7 +1215,7 @@ npx sentry-cli sourcemaps list --release=fandex-web@1.2.3
 npx sentry-cli issues list --query=is:unresolved
 ```
 
-### 8.5 SLO 与告警
+### 7.5 SLO 与告警
 
 ```typescript
 // SLO 定义
@@ -1269,9 +1255,9 @@ function SLODashboard() {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 Facebook（Meta）：React 16 Error Boundary 发布
+### 8.1 Facebook（Meta）：React 16 Error Boundary 发布
 
 2017 年 React 16 发布时，Meta 内部将错误边界用于 News Feed 模块：
 
@@ -1281,7 +1267,7 @@ function SLODashboard() {
 
 数据来源：Meta Engineering Blog "React v16: Error Boundaries"（2017）。
 
-### 9.2 Airbnb：Sentry 全链路集成
+### 8.2 Airbnb：Sentry 全链路集成
 
 Airbnb 在 2018 年全面迁移到 Sentry 后：
 
@@ -1290,7 +1276,7 @@ Airbnb 在 2018 年全面迁移到 Sentry 后：
 - Release 关联让"回归错误"识别时间从 1 天降至 5 分钟
 - Session Replay 帮助复现 70% 的难以描述的 UI Bug
 
-### 9.3 Netflix：分层错误边界策略
+### 8.3 Netflix：分层错误边界策略
 
 Netflix 在播放器页面采用 5 层错误边界：
 
@@ -1305,7 +1291,7 @@ Netflix 在播放器页面采用 5 层错误边界：
 - 字幕解析错误时静默降级（无字幕）而非崩溃
 - 错误上报带层级 tag，便于优先级排序
 
-### 9.4 Shopify：Sentry + Performance 联合监控
+### 8.4 Shopify：Sentry + Performance 联合监控
 
 Shopify 将 Sentry 错误监控与 Performance 追踪结合：
 
@@ -1314,7 +1300,7 @@ Shopify 将 Sentry 错误监控与 Performance 追踪结合：
 - 当 LCP > 4s 时截图并上报
 - 通过 Sentry Discover 构建自定义 SLO 仪表盘
 
-### 9.5 Vercel：Next.js App Router 错误处理
+### 8.5 Vercel：Next.js App Router 错误处理
 
 Vercel 在 Next.js 13+ 中引入 `error.js` 与 `global-error.js`：
 
@@ -1586,7 +1572,7 @@ export function useAsyncError() {
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **Q1.** 为什么 Error Boundary 不能捕获事件处理器中的错误？请从 React 设计哲学与执行时序两个角度论述。
 
@@ -1641,9 +1627,9 @@ export function useAsyncError() {
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
-### 11.1 学术论文
+### 10.1 学术论文
 
 [1] Salvaneschi, G. and Mezini, M. 2016. Debugging for reactive programming. In *Proceedings of the 38th International Conference on Software Engineering (ICSE '16)*. ACM, 796–807. DOI: https://doi.org/10.1145/2884781.2884816
 
@@ -1655,7 +1641,7 @@ export function useAsyncError() {
 
 [5] Petrov, S. and Thompson, J. 2024. Source map reverse engineering for production debugging. *Proceedings of the ACM on Programming Languages* 8, OOPSLA, Article 215 (October 2024), 28 pages. DOI: https://doi.org/10.1145/3689724
 
-### 11.2 官方文档与工程博客
+### 10.2 官方文档与工程博客
 
 [6] React Team. 2024. *Error Boundaries*. React Documentation. https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary (accessed Jun. 14, 2026).
 
@@ -1667,7 +1653,7 @@ export function useAsyncError() {
 
 [10] Sentry. 2024. *Source Maps Upload*. https://docs.sentry.io/platforms/javascript/sourcemaps/ (accessed Jun. 14, 2026).
 
-### 11.3 标准与规范
+### 10.3 标准与规范
 
 [11] WHATWG. 2024. *HTML Standard: Error events*. https://html.spec.whatwg.org/multipage/webappapis.html#runtime-script-errors (accessed Jun. 14, 2026).
 
@@ -1675,21 +1661,21 @@ export function useAsyncError() {
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - Boris Cherny. *Thinking in React: From First Principles*. Manning, 2024.（第 12 章 错误处理）
 - Eric Elliott. *Composing Software*. Leanpub, 2023.（第 8 章 错误处理）
 - Mark Trostler. *Testable JavaScript*. O'Reilly, 2022.（第 5 章 错误注入）
 
-### 12.2 论文与技术报告
+### 11.2 论文与技术报告
 
 - Dan Abramov. *Error Boundaries in React 16*. React Conf, 2017.
 - Sentry Engineering. *Scaling Sentry to 1 Billion Events/Day*. Sentry Blog, 2023.
 - Vercel. *Next.js App Router Error Handling*. Next.js Conf, 2023.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **Sentry Documentation**: https://docs.sentry.io/
 - **React Error Boundaries**: https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary
@@ -1697,14 +1683,14 @@ export function useAsyncError() {
 - **Source Map Specification**: https://sourcemaps.info/spec.html
 - **Sentry CLI**: https://docs.sentry.io/cli/
 
-### 12.4 开源项目参考
+### 11.4 开源项目参考
 
 - **@sentry/react**: https://github.com/getsentry/sentry-javascript/tree/master/packages/react
 - **react-error-boundary**: https://github.com/bvaughn/react-error-boundary
 - **rollbar.js**: https://github.com/rollbar/rollbar.js
 - **bugsnag-js**: https://github.com/bugsnag/bugsnag-js
 
-### 12.5 进阶主题
+### 11.5 进阶主题
 
 - React 19 Server Components 的错误流式传输
 - Edge Runtime（Cloudflare Workers）下的错误监控

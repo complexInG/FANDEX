@@ -15,59 +15,16 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+
 # 跨文档通信 语法速查手册
 
 > **符号约定**:`< >` 必填参数 | `[ ]` 可选参数 | `{ }` 分组 | `|` 或 | `...` 重复
 
 ---
 
-## 1. 学习目标
+## 1. 历史动机与发展脉络
 
-本节依据 Bloom 教育目标分类法（Bloom's Taxonomy）组织学习目标，覆盖记忆、理解、应用、分析、评价、创造六个层次。
-
-### 1.1 Remember（记忆）
-
-- **R-1**：复述 `window.postMessage(message, targetOrigin, transfer)` 的三参数语义。
-- **R-2**：列举 `MessageEvent` 接口的五个核心属性（`data`、`origin`、`source`、`ports`、`lastEventId`）。
-- **R-3**：识别 WHATWG Living Standard 中 §9.5 "Cross-document messaging" 的章节编号与适用范围。
-- **R-4**：背诵同源策略（Same-Origin Policy, SOP）的三个组成部分：scheme、host、port。
-
-### 1.2 Understand（理解）
-
-- **U-1**：解释 `targetOrigin` 参数在防御 MITM 攻击中的作用机制。
-- **U-2**：对比 `postMessage` 与 CORS、WebSocket 三种跨源通信方案的差异。
-- **U-3**：阐明 `MessagePort` 的"端口转移"（port transfer）如何通过 `transferable` 对象实现所有权转移。
-- **U-4**：说明 `BroadcastChannel` 与 `postMessage` 在多标签页广播场景下的性能差异。
-
-### 1.3 Apply（应用）
-
-- **A-1**：实现一个父页面与 `<iframe>` 之间双向通信的完整 demo，包含身份握手、消息序列化、错误处理。
-- **A-2**：使用 `MessageChannel` 构建一对一的私有通信管道，避免广播泄露。
-- **A-3**：在生产环境中实现 `targetOrigin` 校验、消息白名单、协议版本协商三道安全防线。
-
-### 1.4 Analyze（分析）
-
-- **An-1**：剖析"恶意 iframe 通过 `*` 通配符泄露父窗口数据"的攻击链路。
-- **An-2**：解构 Chrome 浏览器 `postMessage` 调度机制（任务队列、microtask、task source）。
-- **An-3**：分析 `structured clone` 算法对循环引用、`Date`、`RegExp`、`Map`、`Set`、`ArrayBuffer` 的处理差异。
-
-### 1.5 Evaluate（评价）
-
-- **E-1**：评估"使用 `JSON.stringify` 自行序列化"与"依赖 `structured clone`"在性能、安全、可维护性上的取舍。
-- **E-2**：判断以下方案在 GDPR 合规审计下的合法性：第三方分析脚本通过 `postMessage` 上传用户行为数据。
-- **E-3**：对比 OAuth 2.0 弹窗回传 token 时使用 `postMessage` 与 URL fragment redirect 的优劣。
-
-### 1.6 Create（创造）
-
-- **C-1**：设计一个跨域微前端框架（micro-frontend）的通信层，要求支持 RPC、事件总线、能力协商。
-- **C-2**：实现一个基于 `BroadcastChannel` 的多标签页状态同步库，支持 CRDT 合并策略。
-- **C-3**：构建一个 postMessage 消息审计工具，自动检测不安全的 `*` 通配符使用。
-
----
-
-## 2. 历史动机与发展脉络
-
-### 2.1 前同源策略时代（1995—1999）
+### 1.1 前同源策略时代（1995—1999）
 
 JavaScript 诞生之初（Netscape Navigator 2.0, 1995），并未严格区分文档来源。任意框架可通过 `parent.document` 访问父窗口 DOM，导致跨域攻击频发。Netscape 在 Navigator 3.0（1996）引入同源策略（Same-Origin Policy, SOP），将文档访问权限与协议+主机+端口三元组绑定。
 
@@ -77,7 +34,7 @@ $$
 
 其中 $u$ 为 URL。两文档同源当且仅当三元组完全相等。
 
-### 2.2 同源策略的局限（2000—2006）
+### 1.2 同源策略的局限（2000—2006）
 
 随着 Web 应用复杂化，跨域通信需求激增（如 OAuth 弹窗、嵌入式 widget、广告 iframe）。早期绕过方案包括：
 
@@ -89,7 +46,7 @@ $$
 | 代理页面 + `Flash` | 利用 `ExternalInterface` | 依赖 Flash 插件；2020 年全面退役 |
 | JSONP | `<script src>` 标签跨域 | 仅 GET；XSS 风险 |
 
-### 2.3 HTML5 规范化（2007—2014）
+### 1.3 HTML5 规范化（2007—2014）
 
 2007 年 WHATWG 在 HTML5 草案中首次提出 `postMessage` API，2009 年 W3C HTML5 Working Draft 正式纳入 §5.3 "Cross-document messaging"。设计目标：
 
@@ -98,7 +55,7 @@ $$
 3. **结构性**：原生支持结构化克隆，无需手动 `JSON.stringify`。
 4. **可转移性**：`transferable` 参数支持 `MessagePort`、`ArrayBuffer` 等所有权转移，零拷贝。
 
-### 2.4 演进时间线
+### 1.4 演进时间线
 
 ```mermaid
 timeline
@@ -117,7 +74,7 @@ timeline
     2024: HTML Living Standard 持续演进，postMessage §9.5 稳定
 ```
 
-### 2.5 规范族谱
+### 1.5 规范族谱
 
 - **HTML 2.0**（RFC 1866, 1995）：无相关 API。
 - **HTML 4.01**（W3C, 1999）：无跨文档通信。
@@ -127,9 +84,9 @@ timeline
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 WHATWG 规范定义
+### 2.1 WHATWG 规范定义
 
 依据 WHATWG HTML Living Standard §9.5.1，`window.postMessage` 的 Web IDL 定义如下：
 
@@ -160,7 +117,7 @@ interface MessageEvent : Event {
 };
 ```
 
-### 3.2 形式化语义
+### 2.2 形式化语义
 
 设发送方窗口为 $W_s$，其源为 $o_s = \text{origin}(W_s.\text{location})$；接收方窗口为 $W_r$，其源为 $o_r$。
 
@@ -184,7 +141,7 @@ $$
 
 依据 HTML §8.1.7.1.2 "Nested timeouts" 节流策略。
 
-### 3.3 同源策略形式化
+### 2.3 同源策略形式化
 
 $$
 \text{SameOrigin}(u_1, u_2) \iff
@@ -200,7 +157,7 @@ $$
 - `https://a.com` 与 `https://b.a.com` 不同源（host 不同）。
 - `https://a.com` 与 `https://a.com` 同源。
 
-### 3.4 structured clone 算法
+### 2.4 structured clone 算法
 
 依据 HTML §2.9.1，结构化克隆算法递归地复制 JS 值，支持类型：
 
@@ -218,7 +175,7 @@ $$
 | DOM 节点 | 否 | 抛出 DataCloneError |
 | Symbol | 否 | 抛出 DataCloneError |
 
-### 3.5 MessagePort 状态机
+### 2.5 MessagePort 状态机
 
 `MessagePort` 具有 **未发送**（disentangled）、**已发送**（entangled）、**已关闭**（closed）三态：
 
@@ -236,9 +193,9 @@ $$
 
 ---
 
-## 4. 理论推导与原理解析
+## 3. 理论推导与原理解析
 
-### 4.1 同源策略与跨文档通信的关系
+### 3.1 同源策略与跨文档通信的关系
 
 **定理 4.1**：`postMessage` 是 SOP 的"受控逃逸口"。即对于任意两个不同源文档 $D_1, D_2$，它们之间的同步 DOM 访问被 SOP 阻断，但可通过 `postMessage` 异步交换数据，前提是双方显式同意。
 
@@ -250,7 +207,7 @@ $$
 
 整个流程异步、显式、可校验，故"受控"成立。$\square$
 
-### 4.2 targetOrigin 的安全语义
+### 3.2 targetOrigin 的安全语义
 
 **定理 4.2**：若发送方使用 `targetOrigin = "*"`，则消息可能泄露给任何接管该窗口的恶意文档。
 
@@ -261,7 +218,7 @@ $$
 - 公开信息广播（如版本号、UI 状态）。
 - 目标源未知且消息不含敏感数据（如初次握手）。
 
-### 4.3 消息调度的时间复杂度
+### 3.3 消息调度的时间复杂度
 
 设消息大小为 $n$ 字节，结构化克隆时间为 $T_{\text{clone}}(n)$，事件队列入队时间为 $T_{\text{enqueue}}$，事件循环派发延迟为 $T_{\text{dispatch}}$。
 
@@ -280,7 +237,7 @@ $$
 | 1 MB | 18 ms | 0.2 ms | 18.2 ms |
 | 10 MB | 185 ms | 0.5 ms | 185.5 ms |
 
-### 4.4 MessageChannel 的零拷贝转移
+### 3.4 MessageChannel 的零拷贝转移
 
 设发送方持有 `ArrayBuffer` $B$，大小 $N$ 字节。普通 `postMessage(B)` 会触发结构化克隆，复制 $B$ 的字节到接收方上下文，开销 $O(N)$。
 
@@ -292,7 +249,7 @@ $$
 
 字节缓冲区所有权转移，原上下文 `B.byteLength === 0`（detached）。
 
-### 4.5 BroadcastChannel 的扇出模型
+### 3.5 BroadcastChannel 的扇出模型
 
 设同一源下有 $k$ 个标签页订阅同一 `BroadcastChannel`，单次 `postMessage` 触发 $k-1$ 个 `MessageEvent`。
 
@@ -304,9 +261,9 @@ $$
 
 ---
 
-## 5. 代码示例
+## 4. 代码示例
 
-### 5.1 完整 HTML5 文档结构（父页面）
+### 4.1 完整 HTML5 文档结构（父页面）
 
 ```html
 <!DOCTYPE html>
@@ -369,7 +326,7 @@ $$
 </html>
 ```
 
-### 5.2 子页面（iframe 内）
+### 4.2 子页面（iframe 内）
 
 ```html
 <!DOCTYPE html>
@@ -408,7 +365,7 @@ $$
 </html>
 ```
 
-### 5.3 MessageChannel 一对一私有管道
+### 4.3 MessageChannel 一对一私有管道
 
 ```javascript
 // 父页面
@@ -442,7 +399,7 @@ window.addEventListener('message', (event) => {
 });
 ```
 
-### 5.4 BroadcastChannel 多标签页同步
+### 4.4 BroadcastChannel 多标签页同步
 
 ```javascript
 // 同源下的多个标签页
@@ -465,7 +422,7 @@ channel.onmessage = (event) => {
 window.addEventListener('beforeunload', () => channel.close());
 ```
 
-### 5.5 生产级封装：类型安全的 postMessage RPC
+### 4.5 生产级封装：类型安全的 postMessage RPC
 
 ```javascript
 // postmessage-rpc.js
@@ -568,7 +525,7 @@ export class PostMessageRPC {
 }
 ```
 
-### 5.6 OAuth 2.0 弹窗 token 回传
+### 4.6 OAuth 2.0 弹窗 token 回传
 
 ```html
 <!-- 主页面 -->
@@ -602,9 +559,9 @@ export class PostMessageRPC {
 
 ---
 
-## 6. 对比分析
+## 5. 对比分析
 
-### 6.1 跨源通信方案对比
+### 5.1 跨源通信方案对比
 
 | 方案 | 通信方向 | 数据格式 | 性能 | 安全 | 适用场景 |
 | ---- | -------- | -------- | ---- | ---- | -------- |
@@ -616,7 +573,7 @@ export class PostMessageRPC {
 | SSE | 服务器→客户端 | 文本 | 中 | 中 | 实时推送 |
 | `document.domain` | 双向同步（DOM） | DOM 直接访问 | 极高 | 低（已废弃） | 同主域子域（已不推荐） |
 
-### 6.2 postMessage vs CORS
+### 5.2 postMessage vs CORS
 
 | 维度 | postMessage | CORS |
 | ---- | ----------- | ---- |
@@ -626,7 +583,7 @@ export class PostMessageRPC {
 | 异步模型 | 事件驱动 | Promise / 回调 |
 | 适用场景 | 微前端、OAuth、iframe widget | API 请求 |
 
-### 6.3 postMessage vs MessageChannel
+### 5.3 postMessage vs MessageChannel
 
 | 维度 | postMessage | MessageChannel |
 | ---- | ----------- | -------------- |
@@ -636,7 +593,7 @@ export class PostMessageRPC {
 | 复杂度 | 低 | 中 |
 | 推荐场景 | 简单通信 | RPC、长会话 |
 
-### 6.4 BroadcastChannel vs localStorage 事件
+### 5.4 BroadcastChannel vs localStorage 事件
 
 | 维度 | BroadcastChannel | localStorage `storage` 事件 |
 | ---- | ---------------- | --------------------------- |
@@ -646,7 +603,7 @@ export class PostMessageRPC {
 | 大小限制 | 浏览器内存 | 5~10MB |
 | 推荐场景 | 实时状态同步 | 持久化配置同步 |
 
-### 6.5 与 React/Vue 组件通信对比
+### 5.5 与 React/Vue 组件通信对比
 
 | 维度 | postMessage（跨文档） | React Context | Vue EventBus | Redux |
 | ---- | --------------------- | -------------- | ------------ | ----- |
@@ -657,9 +614,9 @@ export class PostMessageRPC {
 
 ---
 
-## 7. 常见陷阱与最佳实践
+## 6. 常见陷阱与最佳实践
 
-### 7.1 安全陷阱
+### 6.1 安全陷阱
 
 #### 陷阱 7.1.1：使用 `*` 通配符
 
@@ -719,7 +676,7 @@ window.addEventListener('message', (event) => {
 event.source.postMessage('ack', event.origin);
 ```
 
-### 7.2 性能陷阱
+### 6.2 性能陷阱
 
 #### 陷阱 7.2.1：高频小消息
 
@@ -755,7 +712,7 @@ iframe.contentWindow.postMessage({ buf: largeBuffer }, 'https://child.com');
 iframe.contentWindow.postMessage({ buf: largeBuffer }, 'https://child.com', [largeBuffer]);
 ```
 
-### 7.3 可访问性最佳实践
+### 6.3 可访问性最佳实践
 
 - **ARIA Live Region**：跨文档消息更新 UI 时，使用 `aria-live="polite"` 通知辅助技术。
 
@@ -771,13 +728,13 @@ iframe.contentWindow.postMessage({ buf: largeBuffer }, 'https://child.com', [lar
 
 - **焦点管理**：iframe 内交互完成后，应通过 `postMessage` 通知父页面转移焦点。
 
-### 7.4 SEO 与语义化
+### 6.4 SEO 与语义化
 
 - 跨文档通信不影响 SEO（搜索引擎爬虫不执行 iframe 内 JS）。
 - 关键内容应直接放在主文档中，避免依赖 iframe 加载。
 - 使用 `<iframe title="...">` 提供可访问名称。
 
-### 7.5 兼容性最佳实践
+### 6.5 兼容性最佳实践
 
 ```javascript
 // 检测 BroadcastChannel 支持
@@ -791,9 +748,9 @@ if ('BroadcastChannel' in window) {
 
 ---
 
-## 8. 工程实践
+## 7. 工程实践
 
-### 8.1 构建工具集成
+### 7.1 构建工具集成
 
 **Webpack 配置**（postMessage 跨域开发代理）：
 
@@ -823,7 +780,7 @@ export default {
 };
 ```
 
-### 8.2 CSP 配置
+### 7.2 CSP 配置
 
 ```http
 Content-Security-Policy:
@@ -833,7 +790,7 @@ Content-Security-Policy:
   script-src 'self' 'nonce-abc123';
 ```
 
-### 8.3 调试技巧
+### 7.3 调试技巧
 
 **Chrome DevTools**：
 
@@ -857,7 +814,7 @@ window.addEventListener('message', (event) => {
 }, true);
 ```
 
-### 8.4 Lighthouse 性能审计
+### 7.4 Lighthouse 性能审计
 
 Lighthouse 6+ 提供 `cross-origin-communication` 审计项，检测：
 
@@ -865,7 +822,7 @@ Lighthouse 6+ 提供 `cross-origin-communication` 审计项，检测：
 - 是否在 `sandbox` 属性中使用 `allow-scripts allow-same-origin`（危险组合）。
 - iframe 是否设置 `loading="lazy"`（性能优化）。
 
-### 8.5 性能优化清单
+### 7.5 性能优化清单
 
 - [ ] 使用具体 `targetOrigin` 而非 `*`。
 - [ ] 高频消息使用 `requestAnimationFrame` 批处理。
@@ -876,7 +833,7 @@ Lighthouse 6+ 提供 `cross-origin-communication` 审计项，检测：
 - [ ] 关闭未使用的 `MessagePort`。
 - [ ] `BroadcastChannel` 使用后调用 `close()`。
 
-### 8.6 测试策略
+### 7.6 测试策略
 
 **单元测试**（Jest + jsdom）：
 
@@ -919,9 +876,9 @@ test('iframe 通信应正常工作', async ({ page }) => {
 
 ---
 
-## 9. 案例研究
+## 8. 案例研究
 
-### 9.1 MDN Web Docs 实践
+### 8.1 MDN Web Docs 实践
 
 MDN 在嵌入交互式示例（如 `<iframe src="/en-US/docs/Web/API/Window/postMessage/_samples_/frame1">`）时使用 `postMessage` 同步示例代码与预览框架：
 
@@ -935,7 +892,7 @@ window.addEventListener('message', (event) => {
 });
 ```
 
-### 9.2 Google Maps Embed API
+### 8.2 Google Maps Embed API
 
 Google Maps Embed API 通过 `postMessage` 暴露交互事件：
 
@@ -953,7 +910,7 @@ Google Maps Embed API 通过 `postMessage` 暴露交互事件：
 
 父页面可监听地图点击事件（需 API Key 与签名）。
 
-### 9.3 微前端框架 single-spa
+### 8.3 微前端框架 single-spa
 
 single-spa 通过 `postMessage` 在主应用与子应用之间传递路由变更：
 
@@ -975,7 +932,7 @@ function navigateInChild(path) {
 }
 ```
 
-### 9.4 Stripe Checkout
+### 8.4 Stripe Checkout
 
 Stripe 在嵌入支付表单时使用 `MessageChannel` 建立安全管道：
 
@@ -995,7 +952,7 @@ channel.port1.onmessage = (e) => {
 };
 ```
 
-### 9.5 YouTube IFrame Player API
+### 8.5 YouTube IFrame Player API
 
 YouTube 嵌入式播放器通过 `postMessage` 暴露播放控制：
 
@@ -1306,7 +1263,7 @@ export class TabAuthSync {
 ```
 
 
-### 10.4 思考题
+### 9.4 思考题
 
 **常见疑问 8**：为什么 WHATWG 规范要求 `postMessage` 异步派发（而非同步调用）？请从事件循环、安全、性能三个角度分析。
 
@@ -1377,7 +1334,7 @@ type Message =
 
 ---
 
-## 11. 参考文献
+## 10. 参考文献
 
 [1] WHATWG. 2024. **HTML Living Standard §9.5 Cross-document messaging**. WHATWG, Geneva, Switzerland. Retrieved July 20, 2026 from https://html.spec.whatwg.org/multipage/web-messaging.html
 
@@ -1405,22 +1362,22 @@ type Message =
 
 ---
 
-## 12. 延伸阅读
+## 11. 延伸阅读
 
-### 12.1 书籍
+### 11.1 书籍
 
 - **"Web Security: A WhiteHat Perspective"**, Chang Liu, 2019, ISBN 978-7-121-35900-1.（中文版《Web 安全之机器学习入门》延伸阅读）
 - **"The Tangled Web: A Guide to Securing Modern Web Applications"**, Michal Zalewski, 2011, ISBN 978-1593273880.
 - **"Browser Hacker's Handbook"**, Wade Alcorn, Christian Frichot, Michele Orru, 2014, ISBN 978-1118662090.
 - **"HTML5 Up and Running"**, Mark Pilgrim, 2010, O'Reilly Media, ISBN 978-0596806026.
 
-### 12.2 论文
+### 11.2 论文
 
 - **"On the Security of HTML5 Cross-Origin Communication"**, Liang Zhang et al., IEEE S&P 2017.
 - **"postMessage Security in the Wild"**, Thomas Schmitt et al., USENIX Security 2020.
 - **"Towards a Formal Model of the HTML5 Web Messaging Security"**, A. Doupé et al., ACM CCS 2016.
 
-### 12.3 在线资源
+### 11.3 在线资源
 
 - **MDN Web Docs - Cross-document messaging**: https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
 - **WHATWG HTML Living Standard**: https://html.spec.whatwg.org/multipage/web-messaging.html
@@ -1428,13 +1385,13 @@ type Message =
 - **web.dev - Cross-origin isolation**: https://web.dev/cross-origin-isolation-guide/
 - **Chrome Developers - postMessage guide**: https://developer.chrome.com/docs/extensions/mv3/messaging/
 
-### 12.4 开源项目
+### 11.4 开源项目
 
 - **penpal**: A secure postMessage-based RPC library. https://github.com/Aaronius/penpal
 - **postmate**: A powerful, simple promise-based postMessage library. https://github.com/dollarshaveclub/postmate
 - **zustand-multicast**: Multi-tab state sync via BroadcastChannel. https://github.com/zustand-multicast/zustand-multicast
 
-### 12.5 课程
+### 11.5 课程
 
 - **MIT 6.S192**: Software Engineering for Web Applications. MIT OpenCourseWare.
 - **Stanford CS142**: Web Applications. Stanford University. https://web.stanford.edu/class/cs142/

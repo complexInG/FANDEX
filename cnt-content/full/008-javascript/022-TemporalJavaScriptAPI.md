@@ -25,58 +25,6 @@ tags:
   - TC39
   - Calendar
   - iCalendar
-learningObjectives:
-  - '列举 Temporal API 的核心类型体系（Instant、ZonedDateTime、PlainDateTime、PlainDate、PlainTime、Duration、Now），复述每个类型的语义边界'
-  - '解释 Date 对象的设计缺陷（可变性、月份零基、时区缺失）以及 Temporal 如何通过类型分离解决这些问题'
-  - '使用 Temporal.Instant、Temporal.ZonedDateTime、Temporal.PlainDate 进行日期时间创建、运算、格式化与时区转换'
-  - '拆解 ISO 8601 字符串解析规则、IANA 时区数据库结构、夏令时（DST）转换的边界情况'
-  - '评估不同时区存储策略（UTC 存储 + 本地展示 vs 本地存储）的适用场景与一致性风险'
-  - '设计一个跨时区的会议调度系统，集成 Temporal.ZonedDateTime、DST 容错、用户偏好持久化与冲突检测'
-exercises:
-  - type: fill-blank
-    bloom: remember
-    question: 'Temporal API 中表示"绝对时刻"（与时区无关）的类型是 ______，而表示"带时区的日期时间"的类型是 ______。'
-    answer: "Temporal.Instant；Temporal.ZonedDateTime"
-  - type: choice
-    bloom: analyze
-    question: "下列 Temporal 代码的输出是？\n```javascript\nconst zdt = Temporal.ZonedDateTime.from('2026-03-15T10:00:00[America/New_York]');\nconst shifted = zdt.toPlainDateTime().toPlainDate().add({ days: 1 });\nconsole.log(shifted.toString());\n```"
-    options:
-      - "A. 2026-03-16"
-      - "B. 2026-03-16T10:00:00"
-      - "C. 2026-03-16T10:00:00[America/New_York]"
-      - "D. 抛出 RangeError"
-    answer: "A"
-    explanation: "toPlainDateTime 丢弃时区信息得到无时区日期时间，toPlainDate 进一步丢弃时间得到纯日期，add({days:1}) 得到 2026-03-16。"
-  - type: code-fix
-    bloom: analyze
-    question: |
-      以下代码尝试计算两个时间点之间的小时差，但在跨夏令时切换时返回错误结果。请修复：
-      ```javascript
-      function hoursBetween(startISO, endISO) {
-        const start = new Date(startISO);
-        const end = new Date(endISO);
-        return Math.round((end - start) / 3600000);
-      }
-      // 纽约 2026-03-08（DST 开始）前一天到后一天
-      console.log(hoursBetween('2026-03-07T10:00:00', '2026-03-08T10:00:00'));
-      ```
-    answer: |
-      ```javascript
-      function hoursBetween(startISO, endISO, timeZone = 'UTC') {
-        // 使用 Temporal.ZonedDateTime 正确处理 DST
-        const start = Temporal.ZonedDateTime.from(startISO + '[' + timeZone + ']');
-        const end = Temporal.ZonedDateTime.from(endISO + '[' + timeZone + ']');
-        // until 默认返回基于时钟时间的 Duration，DST 转换会自动处理
-        const duration = start.until(end);
-        return duration.total({ unit: 'hour' });
-      }
-      console.log(hoursBetween('2026-03-07T10:00:00', '2026-03-08T10:00:00', 'America/New_York'));
-      // DST 切换日时钟跳过 1 小时，actual = 23 小时
-      ```
-  - type: open-ended
-    bloom: create
-    question: "请设计一个跨时区会议调度系统，要求：(1) 参与者来自不同时区；(2) 自动避开每位参与者的非工作时间（22:00-07:00）；(3) 正确处理 DST 切换；(4) 支持历法偏好（公历/农历/希伯来历）；(5) 持久化到数据库。请描述数据模型、调度算法与时间存储策略。"
-    answer: "应包括：所有时间以 Temporal.Instant（UTC）存储，展示层用 Temporal.ZonedDateTime 转换为各参与者本地时间；调度算法用 ZonedDateTime 的 until/since 计算 Duration，遍历候选时段过滤；DST 容错用 Temporal.PlainTime 比较小时数；历法支持通过 calendar 选项指定（'chinese'、'hebrew'）；数据库以 BIGINT 存储纳秒时间戳或 ISO 8601 字符串。"
 references:
   - author: [TC39]
     title: "Proposal: Temporal - Modern Date Time API"
@@ -110,6 +58,7 @@ lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---
 
+
 # Temporal 现代日期时间 API
 
 ## 0. 导言
@@ -128,82 +77,9 @@ reviewer: FANDEX Content Engineering Team
 
 ---
 
-## 1. 学习目标与认知地图
+## 1. 历史动机与技术演进
 
-完成本章后，学习者应能够：
-
-1. **复述**（remember）Temporal API 的核心类型体系与语义边界。
-2. **解释**（understand）`Date` 对象的设计缺陷与 Temporal 的解决思路。
-3. **应用**（apply）Temporal API 进行日期时间创建、运算、格式化与时区转换。
-4. **分析**（analyze）ISO 8601 字符串解析规则、IANA 时区数据库、DST 转换的边界情况。
-5. **评估**（evaluate）不同时区存储策略的适用场景与一致性风险。
-6. **设计**（create）一个跨时区的会议调度系统，集成 DST 容错、历法偏好与冲突检测。
-
-### 1.1 知识体系
-
-```mermaid
-flowchart TD
-    T0["Temporal API"]
-    T1["核心类型"]
-    T2["Instant（绝对时刻，UTC 纳秒）"]
-    T3["ZonedDateTime（带时区与历法的完整日期时间）"]
-    T4["PlainDateTime（无时区的墙上时钟时间）"]
-    T5["PlainDate（纯日期）"]
-    T6["PlainTime（纯时间）"]
-    T7["PlainYearMonth（年-月，无日）"]
-    T8["PlainMonthDay（月-日，无年）"]
-    T9["Duration（时间段）"]
-    T10["入口"]
-    T11["Temporal.Now（当前时刻工厂）"]
-    T12["时区"]
-    T13["IANA 时区数据库（tzdata）"]
-    T14["夏令时（DST）处理"]
-    T15["时区转换与歧义消除"]
-    T16["UTC 偏移量"]
-    T17["历法"]
-    T18["iso8601（默认）"]
-    T19["chinese（农历）"]
-    T20["hebrew（希伯来历）"]
-    T21["islamic（伊斯兰历）"]
-    T22["japanese（日本年号历）"]
-    T23["buddhist（佛历）"]
-    T24["字符串格式"]
-    T25["ISO 8601 基础语法"]
-    T26["RFC 3339（互联网格式）"]
-    T27["Temporal 扩展（时区方括号、历法方括号）"]
-    T28["运算"]
-    T29["加减 Duration"]
-    T30["until / since 计算差值"]
-    T31["compare 比较"]
-    T32["round 取整"]
-    T33["格式化"]
-    T34["toString（ISO 8601 标准输出）"]
-    T35["toLocaleString（Intl 集成）"]
-    T36["toJSON（JSON 序列化）"]
-    T37["工程实践"]
-    T38["Polyfill（@js-temporal/polyfill）"]
-    T39["数据库存储策略"]
-    T40["序列化与反序列化"]
-    T41["与 Date 互操作"]
-    T0 --> T1
-    T9 --> T10
-    T11 --> T12
-    T16 --> T17
-    T23 --> T24
-    T27 --> T28
-    T32 --> T33
-    T36 --> T37
-    T37 --> T38
-    T37 --> T39
-    T37 --> T40
-    T37 --> T41
-```
-
----
-
-## 2. 历史动机与技术演进
-
-### 2.1 Date 对象的诞生（1995）
+### 1.1 Date 对象的诞生（1995）
 
 `Date` 由 Brendan Eich 在 1995 年实现，灵感来自 Java 1.0 的 `java.util.Date`。继承自 Java 的设计缺陷加上 JavaScript 自身的简化，导致一系列问题：
 
@@ -218,7 +94,7 @@ flowchart TD
 | 无历法支持 | 仅公历（格里高利历） | 国际化困难 |
 | 2038 年问题 | 32 位系统 `getTime()` 在 2038 年溢出 | 部分嵌入式系统受影响 |
 
-### 2.2 失败的修复尝试
+### 1.2 失败的修复尝试
 
 历史上多次尝试修复 Date，均未成功：
 
@@ -231,7 +107,7 @@ flowchart TD
 | 2017 | Luxon（Moment.js 作者） | 改进版，基于 Intl API，但仍非原生 |
 | 2018 | Day.js | 轻量替代，API 与 Moment 一致 |
 
-### 2.3 Temporal 提案时间线
+### 1.3 Temporal 提案时间线
 
 | 时间 | 事件 | 影响 |
 | --- | --- | --- |
@@ -243,7 +119,7 @@ flowchart TD
 | 2024-06 | Stage 4，进入 ES2025 | 正式标准化 |
 | 2026-01 | 主流浏览器全面支持 | Chrome/Edge/Firefox/Safari 全覆盖 |
 
-### 2.4 关键人物与论文
+### 1.4 关键人物与论文
 
 - **Maggie Johnson-Pint**：Moment.js 核心贡献者，Temporal 提案 champion。
 - **Philipp Dunkel**： polyfill 主要实现者，规范文本撰写人。
@@ -258,9 +134,9 @@ flowchart TD
 
 ---
 
-## 3. 形式化定义
+## 2. 形式化定义
 
-### 3.1 绝对时刻的数学模型
+### 2.1 绝对时刻的数学模型
 
 绝对时刻（Instant）是时间轴上的一个点，与历法、时区无关。形式化定义为 UNIX 时间戳（纳秒精度）：
 
@@ -276,7 +152,7 @@ $$
 
 约对应 ±275,760 年。
 
-### 3.2 时区与墙上时钟时间的关系
+### 2.2 时区与墙上时钟时间的关系
 
 墙上时钟时间（Wall Time）由 Instant + 时区规则决定：
 
@@ -290,7 +166,7 @@ $$
 \text{ZonedDateTime} = (\text{Instant}, \text{TimeZone}, \text{Calendar})
 $$
 
-### 3.3 Plain 类型的语义
+### 2.3 Plain 类型的语义
 
 `PlainDateTime` 等类型表示"墙上看到的日期时间"，无时区关联：
 
@@ -304,7 +180,7 @@ $$
 - 日历事件（"每天 09:00 开会"）
 - 历史日期（"1066 年 10 月 14 日"，无精确时刻）
 
-### 3.4 Duration 的形式化定义
+### 2.4 Duration 的形式化定义
 
 Duration 是带单位的"时间段"：
 
@@ -329,7 +205,7 @@ $$
 \text{isLeapYear}(y) = (y \bmod 4 = 0 \land y \bmod 100 \neq 0) \lor y \bmod 400 = 0
 $$
 
-### 3.5 DST 转换的形式化
+### 2.5 DST 转换的形式化
 
 夏令时（Daylight Saving Time）转换时，墙上时钟时间出现歧义或缺失：
 
@@ -343,7 +219,7 @@ $$
 
 例如，美国东部时间 2026-03-08 02:30 不存在（春季前拨跳过），而 2026-11-01 01:30 出现两次（秋季回拨）。
 
-### 3.6 时区偏移与标识符
+### 2.6 时区偏移与标识符
 
 每个时区有两个标识：
 
@@ -358,9 +234,9 @@ $$
 
 ---
 
-## 4. Temporal 类型详解
+## 3. Temporal 类型详解
 
-### 4.1 Temporal.Now：当前时刻工厂
+### 3.1 Temporal.Now：当前时刻工厂
 
 ```javascript
 // 获取当前时刻（不同精度的入口）
@@ -377,7 +253,7 @@ const epochNanos = Temporal.Now.instant().epochNanoseconds;  // BigInt
 
 `Temporal.Now` 是工厂对象，所有方法都返回当前时刻，不能 `new` 实例化。
 
-### 4.2 Temporal.Instant：绝对时刻
+### 3.2 Temporal.Instant：绝对时刻
 
 ```javascript
 // 创建方式
@@ -403,7 +279,7 @@ console.log(Temporal.Instant.compare(a, b));  // -1（a 早于 b）
 console.log(a.equals(b));  // false
 ```
 
-### 4.3 Temporal.ZonedDateTime：带时区与历法的完整日期时间
+### 3.3 Temporal.ZonedDateTime：带时区与历法的完整日期时间
 
 ```javascript
 // 创建方式
@@ -475,7 +351,7 @@ const later = Temporal.ZonedDateTime.from(
 console.log(later.toString());  // 2026-03-08T03:30:00-04:00
 ```
 
-### 4.4 Temporal.PlainDateTime：无时区的墙上时间
+### 3.4 Temporal.PlainDateTime：无时区的墙上时间
 
 ```javascript
 // 创建
@@ -501,7 +377,7 @@ const birthday = Temporal.PlainDate.from('1990-06-14');
 console.log(birthday instanceof Temporal.PlainDate);  // true
 ```
 
-### 4.5 Temporal.PlainDate 与 PlainTime
+### 3.5 Temporal.PlainDate 与 PlainTime
 
 ```javascript
 // PlainDate：纯日期
@@ -528,7 +404,7 @@ const datePart = pdt.toPlainDate();
 const timePart = pdt.toPlainTime();
 ```
 
-### 4.6 Temporal.Duration：时间段
+### 3.6 Temporal.Duration：时间段
 
 ```javascript
 // 创建
@@ -569,7 +445,7 @@ console.log(diff.toString());  // 'P364D'
 console.log(diff.total({ unit: 'day' }));  // 364
 ```
 
-### 4.7 Temporal.PlainYearMonth 与 PlainMonthDay
+### 3.7 Temporal.PlainYearMonth 与 PlainMonthDay
 
 ```javascript
 // PlainYearMonth：年-月（用于月份规划）
@@ -591,9 +467,9 @@ console.log(`2026 年生日是周${weekday}`);  // 周日（7）
 
 ---
 
-## 5. 字符串格式与解析
+## 4. 字符串格式与解析
 
-### 5.1 ISO 8601 基础语法
+### 4.1 ISO 8601 基础语法
 
 ```
 2026-07-20T10:30:45.123456789+08:00[America/Shanghai][u-ca=chinese]
@@ -611,7 +487,7 @@ console.log(`2026 年生日是周${weekday}`);  // 周日（7）
 | 时区方括号 | ZonedDateTime 必需 | `[America/New_York]` |
 | 历法方括号 | 否（默认 iso8601） | `[u-ca=chinese]` |
 
-### 5.2 解析与生成
+### 4.2 解析与生成
 
 ```javascript
 // 解析（自动检测类型）
@@ -639,7 +515,7 @@ console.log(zdt.toString({
 }));  // '2026-07-20T10:30:00.000+08:00[Asia/Shanghai]'
 ```
 
-### 5.3 解析选项
+### 4.3 解析选项
 
 ```javascript
 // 严格模式（默认）
@@ -662,9 +538,9 @@ const legacy = new Date(zdt.epochMilliseconds);
 
 ---
 
-## 6. 时区与夏令时
+## 5. 时区与夏令时
 
-### 6.1 IANA 时区数据库
+### 5.1 IANA 时区数据库
 
 ```javascript
 // 获取所有支持时区
@@ -684,7 +560,7 @@ console.log(summer.offset);   // '-04:00'（EDT，夏令时）
 console.log(winter.offset);   // '-05:00'（EST，标准时）
 ```
 
-### 6.2 DST 转换的边界情况
+### 5.2 DST 转换的边界情况
 
 ```javascript
 // 春季前拨：2026-03-08 02:00-03:00 不存在
@@ -716,7 +592,7 @@ const diff = start.until(end);
 console.log(diff.total({ unit: 'hour' }));  // 23（因前拨少了 1 小时）
 ```
 
-### 6.3 时区转换实战
+### 5.3 时区转换实战
 
 ```javascript
 // 全球团队会议时间显示
@@ -744,9 +620,9 @@ console.table(formatMeetingTime(meeting, zones));
 
 ---
 
-## 7. 历法支持
+## 6. 历法支持
 
-### 7.1 内置历法
+### 6.1 内置历法
 
 ```javascript
 // 公历（默认）
@@ -774,7 +650,7 @@ console.log(japanese.era);         // 'reiwa'
 console.log(japanese.eraYear);     // 8（令和 8 年）
 ```
 
-### 7.2 历法转换的语义
+### 6.2 历法转换的语义
 
 ```javascript
 // 同一时刻在不同历法下的表示
@@ -810,9 +686,9 @@ console.log(gregorianToChineseLunar(2026, 7, 20));
 
 ---
 
-## 8. 运算与比较
+## 7. 运算与比较
 
-### 8.1 加减运算
+### 7.1 加减运算
 
 ```javascript
 // PlainDate 加减
@@ -840,7 +716,7 @@ const result = pdt.add(dur);
 console.log(result.toString());  // '2026-07-20T13:15:00'
 ```
 
-### 8.2 until 与 since
+### 7.2 until 与 since
 
 ```javascript
 // 计算两个日期的差值
@@ -868,7 +744,7 @@ const nyDiff = ny1.until(ny2);
 console.log(nyDiff.total({ unit: 'hour' }));  // 23（DST 切换日）
 ```
 
-### 8.3 比较与排序
+### 7.3 比较与排序
 
 ```javascript
 // Instant 比较
@@ -898,7 +774,7 @@ dates.sort(Temporal.PlainDate.compare);
 console.log(dates.map(d => d.toString()));
 ```
 
-### 8.4 取整（round）
+### 7.4 取整（round）
 
 ```javascript
 // 时间取整
@@ -923,9 +799,9 @@ console.log(quarterHour.toString());  // '10:45:00'
 
 ---
 
-## 9. 格式化与国际化
+## 8. 格式化与国际化
 
-### 9.1 toString 与自定义输出
+### 8.1 toString 与自定义输出
 
 ```javascript
 const zdt = Temporal.ZonedDateTime.from('2026-07-20T10:30:45.123456789[Asia/Shanghai]');
@@ -948,7 +824,7 @@ console.log(zdt.toPlainDate().toString());  // '2026-07-20'
 console.log(zdt.toPlainTime().toString());  // '10:30:45.123456789'
 ```
 
-### 9.2 toLocaleString 与 Intl 集成
+### 8.2 toLocaleString 与 Intl 集成
 
 ```javascript
 const zdt = Temporal.ZonedDateTime.from('2026-07-20T10:30:00[Asia/Shanghai]');
@@ -983,7 +859,7 @@ console.log(zdt.toLocaleString('en-US', {
 // 'Sunday, July 20, 2026, 03:30 AM BST'
 ```
 
-### 9.3 Intl.DateTimeFormat 与 Temporal
+### 8.3 Intl.DateTimeFormat 与 Temporal
 
 ```javascript
 // 创建 DateTimeFormat 实例
@@ -1011,7 +887,7 @@ for (const part of parts) {
 // second: 00
 ```
 
-### 9.4 JSON 序列化
+### 8.4 JSON 序列化
 
 ```javascript
 // toJSON 返回 ISO 8601 字符串
@@ -1030,9 +906,9 @@ console.log(date.toJSON());  // '2026-07-20'
 
 ---
 
-## 10. 工程实践
+## 9. 工程实践
 
-### 10.1 Polyfill 使用
+### 9.1 Polyfill 使用
 
 ```javascript
 // 截至 2026 年，部分旧环境仍需 polyfill
@@ -1046,7 +922,7 @@ import '@js-temporal/polyfill/auto';
 const now = Temporal.Now.instant();
 ```
 
-### 10.2 数据库存储策略
+### 9.2 数据库存储策略
 
 ```javascript
 /**
@@ -1086,7 +962,7 @@ const display = loaded.toZonedDateTimeISO(userTimezone);
 console.log(display.toLocaleString('en-US'));
 ```
 
-### 10.3 定时任务调度
+### 9.3 定时任务调度
 
 ```javascript
 /**
@@ -1153,7 +1029,7 @@ scheduler.scheduleDaily('09:00', 'America/New_York', async () => {
 });
 ```
 
-### 10.4 倒计时与计时器
+### 9.4 倒计时与计时器
 
 ```javascript
 /**
@@ -1199,7 +1075,7 @@ countdown.start((remaining) => {
 });
 ```
 
-### 10.5 工作日计算
+### 9.5 工作日计算
 
 ```javascript
 /**
@@ -1267,9 +1143,9 @@ console.log(tenBusinessDaysLater.toString());
 
 ---
 
-## 11. 案例研究
+## 10. 案例研究
 
-### 11.1 案例 1：日历应用的事件存储
+### 10.1 案例 1：日历应用的事件存储
 
 ```javascript
 /**
@@ -1338,7 +1214,7 @@ const birthday = new CalendarEvent({
 console.log(birthday.format('UTC'));
 ```
 
-### 11.2 案例 2：跨时区航班调度
+### 10.2 案例 2：跨时区航班调度
 
 ```javascript
 /**
@@ -1393,7 +1269,7 @@ console.log(flight.summary());
 // 飞行时长约 13.5 小时（考虑 12 小时时差 + DST）
 ```
 
-### 11.3 案例 3：订阅计费周期
+### 10.3 案例 3：订阅计费周期
 
 ```javascript
 /**
@@ -1456,7 +1332,7 @@ console.log(billing.checkStatus(subscription));
 // 2026-07-20 时返回 active，nextBilling 为 2026-07-20
 ```
 
-### 11.4 案例 4：日志时间戳聚合
+### 10.4 案例 4：日志时间戳聚合
 
 ```javascript
 /**
@@ -1520,7 +1396,7 @@ const aggregator = new LogAggregator('hour');
 console.table(aggregator.stats(logs, 'Asia/Shanghai'));
 ```
 
-### 11.5 案例 5：农历节日提醒
+### 10.5 案例 5：农历节日提醒
 
 ```javascript
 /**
@@ -1589,9 +1465,9 @@ console.table(springFestivals);
 
 ---
 
-## 12. 对比分析
+## 11. 对比分析
 
-### 12.1 Temporal vs Date
+### 11.1 Temporal vs Date
 
 | 特性 | Date | Temporal |
 | --- | --- | --- |
@@ -1606,7 +1482,7 @@ console.table(springFestivals);
 | 2038 问题 | 32 位有 | 无（BigInt 纳秒） |
 | 浏览器支持 | 全部 | ES2025+（旧环境需 polyfill） |
 
-### 12.2 Temporal vs moment.js vs date-fns vs Luxon
+### 11.2 Temporal vs moment.js vs date-fns vs Luxon
 
 | 特性 | Temporal | moment.js | date-fns | Luxon |
 | --- | --- | --- | --- | --- |
@@ -1620,7 +1496,7 @@ console.table(springFestivals);
 | 学习曲线 | 陡（类型多） | 平缓 | 平缓 | 中等 |
 | 推荐度（2026） | 高（未来标准） | 低（已废弃） | 中 | 中 |
 
-### 12.3 Instant vs ZonedDateTime vs PlainDateTime
+### 11.3 Instant vs ZonedDateTime vs PlainDateTime
 
 | 类型 | 含义 | 时区 | 典型场景 |
 | --- | --- | --- | --- |
@@ -1632,9 +1508,9 @@ console.table(springFestivals);
 
 ---
 
-## 13. 常见陷阱与修复
+## 12. 常见陷阱与修复
 
-### 13.1 陷阱：用 Date 处理跨时区
+### 12.1 陷阱：用 Date 处理跨时区
 
 ```javascript
 // 问题：用 Date 计算跨时区时间
@@ -1648,7 +1524,7 @@ const nyZdt = zdt.withTimeZone('America/New_York');
 console.log(nyZdt.toString());  // '2026-07-19T22:00:00-04:00[America/New_York]'
 ```
 
-### 13.2 陷阱：忽略 DST 切换
+### 12.2 陷阱：忽略 DST 切换
 
 ```javascript
 // 问题：用毫秒数计算"明天"
@@ -1662,7 +1538,7 @@ const tomorrow = today.add({ days: 1 });
 console.log(tomorrow.toString());
 ```
 
-### 13.3 陷阱：用 JSON.stringify 序列化 Date
+### 12.3 陷阱：用 JSON.stringify 序列化 Date
 
 ```javascript
 // 问题：JSON 序列化 Date 转为 ISO 字符串，反序列化变字符串
@@ -1680,7 +1556,7 @@ const restoredTime = Temporal.Instant.from(parsed2.time);
 console.log(restoredTime.equals(event2.time));  // true
 ```
 
-### 13.4 陷阱：本地时间转 UTC 时丢失信息
+### 12.4 陷阱：本地时间转 UTC 时丢失信息
 
 ```javascript
 // 问题：本地时间字符串不带时区，转 UTC 时假设运行环境时区
@@ -1695,7 +1571,7 @@ const utcInstant = zdt.toInstant();
 console.log(utcInstant.toString());  // '2026-07-20T02:30:00Z'（无论在哪运行）
 ```
 
-### 13.5 陷阱：误用月份天数
+### 12.5 陷阱：误用月份天数
 
 ```javascript
 // 问题：假设所有月份都是 30 天
@@ -1709,7 +1585,7 @@ const nextMonth = date.add({ months: 1 });
 console.log(nextMonth.toString());  // '2026-02-28'（自动处理月末）
 ```
 
-### 13.6 陷阱：时区缩写歧义
+### 12.6 陷阱：时区缩写歧义
 
 ```javascript
 // 问题：CST 有多种含义
@@ -1723,7 +1599,7 @@ const nyTime = Temporal.ZonedDateTime.from('2026-07-20T10:00:00[America/Chicago]
 const beijingTime = Temporal.ZonedDateTime.from('2026-07-20T10:00:00[Asia/Shanghai]');
 ```
 
-### 13.7 陷阱：Duration 换算为秒
+### 12.7 陷阱：Duration 换算为秒
 
 ```javascript
 // 问题：Duration 不能简单换算为秒
@@ -1803,7 +1679,7 @@ console.log(exactSeconds);  // 2678400（31 天）
 
    解释：默认 overflow 为 'constrain'，2 月无 31 日，自动截断到月末。
 
-### 14.3 代码修复题（code-fix）
+### 13.3 代码修复题（code-fix）
 
 1. **（apply）** 以下代码尝试计算会议结束时间，但忽略了时区：
 
@@ -1844,7 +1720,7 @@ console.log(exactSeconds);  // 2678400（31 天）
    }
    ```
 
-### 14.4 开放题（open-ended）
+### 13.4 开放题（open-ended）
 
 1. **（evaluate）** 比较"UTC 存储 + 本地展示"与"本地存储 + 本地展示"两种时间存储策略，从数据一致性、查询性能、迁移成本、可读性四个维度评估。
 
@@ -1863,22 +1739,22 @@ console.log(exactSeconds);  // 2678400（31 天）
 
 ---
 
-## 15. 延伸阅读
+## 14. 延伸阅读
 
-### 15.1 书籍
+### 14.1 书籍
 
 - **David Flanagan**：《JavaScript: The Definitive Guide, 7th Edition》（O'Reilly, 2020）——第 15 章日期与时间。
 - **J. R. Stockton**：《Date and Time in JavaScript》——在线资源，深入讨论 Date 的边界情况。
 - **Edsger W. Dijkstra**：《On the cruelty of really teaching computing science》——讨论时间表示的哲学问题。
 
-### 15.2 论文与规范
+### 14.2 论文与规范
 
 - **ISO 8601:2019**：日期时间表示的国际标准。
 - **RFC 3339**：互联网上的日期时间格式（ISO 8601 的 profile）。
 - **IANA tzdata**：时区数据库的源代码与文档。
 - **TC39 Temporal Proposal** (https://tc39.es/proposal-temporal/)：完整规范文本。
 
-### 15.3 开源项目
+### 14.3 开源项目
 
 - **@js-temporal/polyfill** (https://github.com/js-temporal/temporal-polyfill)：官方 polyfill。
 - **Luxon** (https://github.com/moment/luxon)：Moment.js 作者的改进版，基于 Intl API。
@@ -1886,7 +1762,7 @@ console.log(exactSeconds);  // 2678400（31 天）
 - **Day.js** (https://github.com/iamkun/dayjs)：轻量 Date 替代。
 - **chrono-node** (https://github.com/wanasit/chrono)：自然语言日期解析。
 
-### 15.4 在线资源
+### 14.4 在线资源
 
 - **MDN: Temporal** (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal)：完整 API 参考。
 - **Temporal Docs** (https://tc39.es/proposal-temporal/docs/)：TC39 官方教程。
@@ -1895,9 +1771,9 @@ console.log(exactSeconds);  // 2678400（31 天）
 
 ---
 
-## 16. 附录
+## 15. 附录
 
-### 16.1 Temporal 类型速查表
+### 15.1 Temporal 类型速查表
 
 | 类型 | 含义 | 是否含时区 | 是否含历法 | 典型场景 |
 | --- | --- | --- | --- | --- |
@@ -1913,7 +1789,7 @@ console.log(exactSeconds);  // 2678400（31 天）
 | TimeZone | 时区对象 | 是 | 否 | 时区操作 |
 | Calendar | 历法对象 | 否 | 是 | 历法操作 |
 
-### 16.2 ISO 8601 字符串格式速查
+### 15.2 ISO 8601 字符串格式速查
 
 | 格式 | 含义 | 示例 |
 | --- | --- | --- |
@@ -1927,7 +1803,7 @@ console.log(exactSeconds);  // 2678400（31 天）
 | `PnYnMnD` | Duration | `P1Y2M3D`（1 年 2 月 3 日） |
 | `PTnHnMnS` | 时间段 Duration | `PT2H30M`（2 时 30 分） |
 
-### 16.3 IANA 时区命名规则
+### 15.3 IANA 时区命名规则
 
 ```mermaid
 flowchart TD
@@ -1962,7 +1838,7 @@ flowchart TD
     T15 --> T18
 ```
 
-### 16.4 常用时区偏移量
+### 15.4 常用时区偏移量
 
 | 时区 | IANA 名称 | 标准时偏移 | 夏令时偏移 |
 | --- | --- | --- | --- |
@@ -1977,7 +1853,7 @@ flowchart TD
 | 悉尼 | Australia/Sydney | +10:00 (AEST) | +11:00 (AEDT) |
 | 迪拜 | Asia/Dubai | +04:00 | — |
 
-### 16.5 浏览器支持矩阵（截至 2026-07）
+### 15.5 浏览器支持矩阵（截至 2026-07）
 
 | 浏览器 | 版本 | 支持情况 |
 | --- | --- | --- |
@@ -1994,7 +1870,7 @@ flowchart TD
 
 ---
 
-## 17. 修订日志
+## 16. 修订日志
 
 | 日期 | 版本 | 修订内容 | 修订人 |
 | --- | --- | --- | --- |
