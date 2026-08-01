@@ -1935,13 +1935,13 @@ print(hero.inventory)  # [InventoryItem(name='Potion', quantity=3, weight=0.5)]
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
 **题目 10.1.1**：使用 `@dataclass` 实现一个 `Book` 类，包含字段：`title`（必填）、`author`（必填）、`isbn`（可选，默认空字符串）、`price`（默认 0.0）、`tags`（默认空列表）。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from dataclasses import dataclass, field
@@ -1970,7 +1970,7 @@ class Config:
     host: str  # 无默认值
 ```
 
-**参考答案**：
+**解析讲解**：
 
 **错误原因**：违反字段顺序约束——有默认值的字段（`debug`）不能在无默认值字段（`host`）之前。
 
@@ -1992,11 +1992,11 @@ class Config:
     host: str = "localhost"
 ```
 
-### 10.2 应用题
+### 应用题知识点讲解
 
 **题目 10.2.1**：实现一个不可变的 `Money` 类，支持加法与比较运算。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from dataclasses import dataclass
@@ -2026,7 +2026,7 @@ print(m1 < m2)  # False
 
 **题目 10.2.2**：为 dataclass 实现 `update` 方法，支持部分更新。
 
-**参考答案**：见 5.19 节代码示例。
+**解析讲解**：见 5.19 节代码示例。
 
 ### 10.3 分析题
 
@@ -2057,7 +2057,7 @@ print(c1.history)
 print(c2.history)
 ```
 
-**参考答案**：
+**解析讲解**：
 
 输出：
 
@@ -2072,7 +2072,7 @@ print(c2.history)
 
 **题目 10.3.2**：为何 `frozen=True` 的 dataclass 可以作为字典键，而普通 dataclass 不行？
 
-**参考答案**：
+**解析讲解**：
 
 - **普通 dataclass**：`__hash__` 被设为 `None`，表示不可哈希。这是因为实例可变，若允许作为键，修改字段后哈希值变化，字典会"丢失"该键。
 - **`frozen=True` dataclass**：实例不可变，字段值固定，哈希值不变，可安全作为键。`@dataclass(frozen=True)` 自动生成 `__hash__`，基于 `compare=True` 的字段计算。
@@ -2081,7 +2081,7 @@ print(c2.history)
 
 **题目 10.4.1**：评价"所有数据模型都应使用 Pydantic 而非 dataclass"的观点。
 
-**参考答案**：
+**解析讲解**：
 
 该观点过于绝对。两者各有适用场景：
 
@@ -2110,7 +2110,7 @@ print(c2.history)
 
 **题目 10.5.1**：设计一个"验证型 dataclass"装饰器，在 `__post_init__` 中自动调用字段的验证函数。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from dataclasses import dataclass, field, fields
@@ -2801,7 +2801,3 @@ dataclass 与 attrs 的"竞争"是 Python 生态健康的体现。attrs 推动�
 
 ---
 
-### 更新日志（Changelog）
-
-- 2026-07-21：完整重写至金标准教学水准，新增 12 项结构化内容，覆盖 dataclass 装饰器、field 配置、可变默认值、不可变性、继承、KW_ONLY、slots 与企业级案例研究，新增约 2400 行。
-- 2026-06-14：初版，基础 dataclass 与字段默认值介绍。

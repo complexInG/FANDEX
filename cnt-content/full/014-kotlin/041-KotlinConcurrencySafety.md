@@ -2366,13 +2366,13 @@ class AtomicCounterImpl {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
 **习题 1**：什么是数据竞争？请给出形式化定义。
 
-**答案**：数据竞争是两个或多个线程并发访问同一变量，至少一个是写操作，且它们之间没有 happens-before 关系。形式化：
+**解析讲解**：数据竞争是两个或多个线程并发访问同一变量，至少一个是写操作，且它们之间没有 happens-before 关系。形式化：
 
 $$
 \text{DataRace}(t_1, t_2, x) \iff t_1 \neq t_2 \land x \in S \land (\text{write}(t_1, x) \lor \text{write}(t_2, x)) \land \neg \text{HB}(t_1, t_2) \land \neg \text{HB}(t_2, t_1)
@@ -2380,7 +2380,7 @@ $$
 
 **习题 2**：`@Volatile` 能否解决 `count++` 的线程安全问题？为什么？
 
-**答案**：不能。`@Volatile` 保证可见性，但不保证原子性。`count++` 是"读-改-写"三步，可能被打断。应该使用 `AtomicInteger.incrementAndGet()`。
+**解析讲解**：不能。`@Volatile` 保证可见性，但不保证原子性。`count++` 是"读-改-写"三步，可能被打断。应该使用 `AtomicInteger.incrementAndGet()`。
 
 ### 10.2 型变题
 
@@ -2400,7 +2400,7 @@ class Cache {
 }
 ```
 
-**答案**：不安全。`check-then-act`（`if (existing == null) map[key] = value`）不是原子的。应该使用 `ConcurrentHashMap.putIfAbsent(key, value)`。
+**解析讲解**：不安全。`check-then-act`（`if (existing == null) map[key] = value`）不是原子的。应该使用 `ConcurrentHashMap.putIfAbsent(key, value)`。
 
 ### 10.3 星投影题
 
@@ -2410,7 +2410,7 @@ class Cache {
 2. 多线程访问安全。
 3. 性能优化（避免每次访问都加锁）。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 class ThreadSafeLazy<T>(private val initializer: () -> T) : Lazy<T> {
@@ -2442,7 +2442,7 @@ class ThreadSafeLazy<T>(private val initializer: () -> T) : Lazy<T> {
 2. 多线程访问安全。
 3. 不使用 `synchronized`。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 class Singleton private constructor() {
@@ -2454,7 +2454,7 @@ class Singleton private constructor() {
 
 `lazy` 默认使用 `LazyThreadSafetyMode.SYNCHRONIZED`，内部通过 DCL + `@Volatile` 实现。
 
-### 10.5 综合题
+### 综合题知识点讲解
 
 **习题 6**：以下代码是否有数据竞争？如何修复？
 
@@ -2470,7 +2470,7 @@ class Counter {
 }
 ```
 
-**答案**：有数据竞争。多个协程并发调用 `increment()` 时，`count++` 不是原子的。
+**解析讲解**：有数据竞争。多个协程并发调用 `increment()` 时，`count++` 不是原子的。
 
 **修复 1**：使用 `Mutex`：
 
@@ -2510,7 +2510,7 @@ fun increment() {
 2. 借出与归还操作线程安全。
 3. 池耗尽时阻塞等待。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 import kotlinx.coroutines.channels.Channel
@@ -2560,7 +2560,7 @@ class BankAccount {
 }
 ```
 
-**答案**：存在死锁风险。如果 A 转账给 B，B 同时转账给 A，可能发生：
+**解析讲解**：存在死锁风险。如果 A 转账给 B，B 同时转账给 A，可能发生：
 
 ```
 A: lock(A) → waiting for B
@@ -2597,7 +2597,7 @@ class Counter {
 }
 ```
 
-**答案**：`get()` 使用锁影响性能。可以：
+**解析讲解**：`get()` 使用锁影响性能。可以：
 
 1. 使用 `AtomicInteger`：`count.incrementAndGet()`、`count.get()`。
 2. 使用 `@Volatile`（仅读，但 `count++` 仍需锁）。
@@ -2612,7 +2612,7 @@ class Counter {
 3. 任务超时自动取消。
 4. 结果通过回调返回。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 import kotlinx.coroutines.*

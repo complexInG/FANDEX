@@ -3033,7 +3033,7 @@ const user = await request('/users/{id}', {
 
 ## 附录 D 练习题
 
-### 练习 1：扩展 API 客户端
+## 知识讲解与要点分析（原练习 1：扩展 API 客户端）
 
 为以下 API 路由添加类型定义：
 
@@ -3073,7 +3073,7 @@ interface APIClient {
 }
 ```
 
-### 练习 2：实现类型安全的分页查询
+## 知识讲解与要点分析（原练习 2：实现类型安全的分页查询）
 
 实现一个类型安全的分页查询 Hook，支持：
 
@@ -3126,7 +3126,7 @@ function usePaginatedFetch<
 }
 ```
 
-### 练习 3：实现类型安全的批量请求
+## 知识讲解与要点分析（原练习 3：实现类型安全的批量请求）
 
 实现一个类型安全的批量请求函数，支持：
 
@@ -3191,7 +3191,7 @@ results.forEach((result, index) => {
 });
 ```
 
-### 练习 4：实现类型安全的 WebSocket 客户端
+## 知识讲解与要点分析（原练习 4：实现类型安全的 WebSocket 客户端）
 
 实现一个类型安全的 WebSocket 客户端，支持：
 
@@ -3266,7 +3266,7 @@ wsClient.on('/chat', (data) => {
 wsClient.send('/chat', { type: 'message', content: 'Hello' });
 ```
 
-### 练习 5：实现类型安全的 API Mock
+## 知识讲解与要点分析（原练习 5：实现类型安全的 API Mock）
 
 实现一个类型安全的 API Mock 工具，用于测试：
 

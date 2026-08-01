@@ -1134,37 +1134,37 @@ console.log(clone.map instanceof Map);   // true
 
 ---
 
-## 10. 习题（Exercises）
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪种方法可以正确深拷贝含 `Date` 对象的数据？
+**常见疑问 1**：以下哪种方法可以正确深拷贝含 `Date` 对象的数据？
 
 - A. `JSON.parse(JSON.stringify(obj))`
 - B. `Object.assign({}, obj)`
 - C. `structuredClone(obj)`
 - D. `{ ...obj }`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：A 将 Date 转为字符串；B、D 是浅拷贝；C 是原生深拷贝，支持 Date。
+**解析讲解**：A 将 Date 转为字符串；B、D 是浅拷贝；C 是原生深拷贝，支持 Date。
 
 ---
 
-**Q2**：`structuredClone` **不支持**以下哪种类型？
+**常见疑问 2**：`structuredClone` **不支持**以下哪种类型？
 
 - A. `Map`
 - B. `Date`
 - C. `Function`
 - D. `RegExp`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`structuredClone` 不支持函数，会抛 `DataCloneError`。Map / Date / RegExp 均支持。
+**解析讲解**：`structuredClone` 不支持函数，会抛 `DataCloneError`。Map / Date / RegExp 均支持。
 
 ---
 
-**Q3**：以下代码输出什么？
+**常见疑问 3**：以下代码输出什么？
 
 ```javascript
 const a = { x: 1 };
@@ -1178,81 +1178,81 @@ console.log(a.x);
 - C. `undefined`
 - D. 抛错
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`b = a` 是引用赋值，`a` 与 `b` 指向同一对象，修改 `b.x` 即修改 `a.x`。
+**解析讲解**：`b = a` 是引用赋值，`a` 与 `b` 指向同一对象，修改 `b.x` 即修改 `a.x`。
 
 ---
 
-**Q4**：循环引用检测推荐使用哪种数据结构？
+**常见疑问 4**：循环引用检测推荐使用哪种数据结构？
 
 - A. `Array`
 - B. `Set`
 - C. `WeakMap`
 - D. `Map`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`WeakMap` 的键是弱引用，不影响 GC，且查找 $O(1)$。`Map` 也可用但会阻止对象回收。
+**解析讲解**：`WeakMap` 的键是弱引用，不影响 GC，且查找 $O(1)$。`Map` 也可用但会阻止对象回收。
 
 ---
 
-**Q5**：Immer 的 `produce` 采用的核心技术是？
+**常见疑问 5**：Immer 的 `produce` 采用的核心技术是？
 
 - A. 深拷贝整个状态树
 - B. 写时复制（Copy-on-Write）
 - C. JSON 序列化
 - D. 递归遍历
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Immer 用 Proxy 跟踪修改，仅复制被修改路径上的节点，实现结构性共享。
-
----
-
-### 10.2 填空题
-
-**Q1**：JavaScript 中基本类型有 ____ 种（含 ES2020 新增）。
-
-**答案**：7（`undefined` / `null` / `boolean` / `number` / `string` / `symbol` / `bigint`）
+**解析讲解**：Immer 用 Proxy 跟踪修改，仅复制被修改路径上的节点，实现结构性共享。
 
 ---
 
-**Q2**：`Object.assign` 执行的是 ____ 拷贝。
+### 填空题知识点讲解
 
-**答案**：浅
+**常见疑问 6**：JavaScript 中基本类型有 ____ 种（含 ES2020 新增）。
 
----
-
-**Q3**：`structuredClone` 的第二参数是 ____，用于转移 ____ 对象的所有权。
-
-**答案**：transfer list；Transferable（如 ArrayBuffer）
+**解析讲解**：7（`undefined` / `null` / `boolean` / `number` / `string` / `symbol` / `bigint`）
 
 ---
 
-**Q4**：深拷贝循环引用检测时，`WeakMap` 的键是 ____，值是 ____。
+**常见疑问 7**：`Object.assign` 执行的是 ____ 拷贝。
 
-**答案**：原对象；克隆对象
-
----
-
-**Q5**：JSON 方案的七大限制中，`NaN` 与 `Infinity` 会被转为 ____。
-
-**答案**：`null`
+**解析讲解**：浅
 
 ---
 
-### 10.3 编程题
+**常见疑问 8**：`structuredClone` 的第二参数是 ____，用于转移 ____ 对象的所有权。
 
-**Q1**：实现一个 `deepClone` 函数，支持循环引用、Date、RegExp、Map、Set。
-
-**参考答案**：见 5.5 节完整实现。
+**解析讲解**：transfer list；Transferable（如 ArrayBuffer）
 
 ---
 
-**Q2**：实现一个 `shallowEqual(obj1, obj2)` 函数，浅比较两个对象。
+**常见疑问 9**：深拷贝循环引用检测时，`WeakMap` 的键是 ____，值是 ____。
 
-**参考答案**：
+**解析讲解**：原对象；克隆对象
+
+---
+
+**常见疑问 10**：JSON 方案的七大限制中，`NaN` 与 `Infinity` 会被转为 ____。
+
+**解析讲解**：`null`
+
+---
+
+### 编程题知识点讲解
+
+**常见疑问 11**：实现一个 `deepClone` 函数，支持循环引用、Date、RegExp、Map、Set。
+
+**解析讲解**：见 5.5 节完整实现。
+
+---
+
+**常见疑问 12**：实现一个 `shallowEqual(obj1, obj2)` 函数，浅比较两个对象。
+
+**解析讲解**：
 
 ```javascript
 // ES2015 — 浅相等比较
@@ -1273,9 +1273,9 @@ console.log(shallowEqual({ a: 1 }, { a: 1, b: 2 }));       // false
 
 ---
 
-**Q3**：实现一个 `deepEqual(a, b)` 函数，递归比较两个值。
+**常见疑问 13**：实现一个 `deepEqual(a, b)` 函数，递归比较两个值。
 
-**参考答案**：
+**解析讲解**：
 
 ```javascript
 // ES2015 — 深相等比较
@@ -1299,9 +1299,9 @@ console.log(deepEqual(new Date('2024-01-01'), new Date('2024-01-01'))); // true
 
 ---
 
-**Q4**：用 Immer 的 `produce` 实现一个"向嵌套数组添加元素"的不可变更新。
+**常见疑问 14**：用 Immer 的 `produce` 实现一个"向嵌套数组添加元素"的不可变更新。
 
-**参考答案**：
+**解析讲解**：
 
 ```javascript
 import { produce } from 'immer';
@@ -1329,7 +1329,7 @@ console.log(state.groups[1] === nextState.groups[1]); // true（结构性共享�
 
 ### 10.4 思考题
 
-**Q1**：为什么 `structuredClone` 不支持克隆函数？请从语言设计与安全角度分析。
+**常见疑问 15**：为什么 `structuredClone` 不支持克隆函数？请从语言设计与安全角度分析。
 
 **参考答案要点**：
 
@@ -1340,7 +1340,7 @@ console.log(state.groups[1] === nextState.groups[1]); // true（结构性共享�
 
 ---
 
-**Q2**：深拷贝与不可变数据结构（Immer / Immutable.js）在状态管理中各自的优劣？
+**常见疑问 16**：深拷贝与不可变数据结构（Immer / Immutable.js）在状态管理中各自的优劣？
 
 **参考答案要点**：
 
@@ -1356,7 +1356,7 @@ console.log(state.groups[1] === nextState.groups[1]); // true（结构性共享�
 
 ---
 
-**Q3**：为什么 `WeakMap` 适合用于循环引用检测，而 `Map` 不适合？
+**常见疑问 17**：为什么 `WeakMap` 适合用于循环引用检测，而 `Map` 不适合？
 
 **参考答案要点**：
 
@@ -1367,7 +1367,7 @@ console.log(state.groups[1] === nextState.groups[1]); // true（结构性共享�
 
 ---
 
-**Q4**：`structuredClone` 在跨 Worker 通信中的优势是什么？请结合 `postMessage` 分析。
+**常见疑问 18**：`structuredClone` 在跨 Worker 通信中的优势是什么？请结合 `postMessage` 分析。
 
 **参考答案要点**：
 
@@ -1452,3 +1452,326 @@ console.log(state.groups[1] === nextState.groups[1]); // true（结构性共享�
 ---
 
 > **结语**：深拷贝与浅拷贝是 JavaScript 工程师必须掌握的基础概念，但其背后的值语义、引用语义、引用图同构、写时复制等理论，是通往高级架构的必经之路。`structuredClone` 的标准化终结了"深拷贝方案碎片化"的时代，但在性能敏感场景，Immer 的不可变更体系仍是首选。本篇对标 MIT 6.031 / Stanford CS107 / CMU 15-213 的教学水准，旨在为学习者提供从语法到理论、从原理到工程的完整视角。
+## 浅拷贝
+
+**基本写法：Object.assign**
+`Object.assign({}, <源对象>)`
+```javascript
+// 浅拷贝一级属性嵌套仍引用
+let copy = Object.assign({}, obj);
+```
+
+---
+
+**基本写法：展开运算符**
+`{ ...<对象> }`
+```javascript
+// 对象展开为浅拷贝
+let copy = { ...obj };
+```
+
+---
+
+**基本写法：数组展开**
+`[ ...<数组> ]`
+```javascript
+// 数组展开为浅拷贝
+let copy = [...arr];
+```
+
+---
+
+**基本写法：slice 浅拷贝数组**
+`<数组>.slice()`
+```javascript
+// slice 无参返回新数组
+let copy = arr.slice();
+```
+
+---
+
+**基本写法：concat 浅拷贝数组**
+`<数组>.concat()`
+```javascript
+// concat 无参返回新数组
+let copy = arr.concat();
+```
+
+---
+
+**基本写法：Array.from**
+`Array.from(<数组>)`
+```javascript
+// 从可迭代对象创建新数组
+let copy = Array.from(arr);
+```
+
+---
+
+## JSON 深拷贝
+
+**基本写法：JSON 序列化**
+`JSON.parse(JSON.stringify(<对象>))`
+```javascript
+// 简单深拷贝但无法处理函数 undefined 循环引用
+let deep = JSON.parse(JSON.stringify(obj));
+```
+
+---
+
+**基本写法：JSON 限制**
+`JSON.parse(JSON.stringify(<含 Date 对象>))`
+```javascript
+// Date 会变成字符串 Map Set 丢失
+let obj = { d: new Date() };
+let copy = JSON.parse(JSON.stringify(obj));  // d 变为字符串
+```
+
+---
+
+## 递归深拷贝
+
+**基本写法：基础递归深拷贝**
+`function <深拷贝>(<对象>) { }`
+```javascript
+// 递归处理对象和数组
+function deepClone(obj) {
+    if (obj === null || typeof obj !== "object") return obj;
+    if (Array.isArray(obj)) return obj.map(deepClone);
+    let copy = {};
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) copy[key] = deepClone(obj[key]);
+    }
+    return copy;
+}
+```
+
+---
+
+**基本写法：处理 Date RegExp**
+`function <深拷贝>(<对象>) { }`
+```javascript
+// 处理特殊对象类型
+function deepClone(obj) {
+    if (obj instanceof Date) return new Date(obj);
+    if (obj instanceof RegExp) return new RegExp(obj);
+    if (obj === null || typeof obj !== "object") return obj;
+    let copy = Array.isArray(obj) ? [] : {};
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) copy[key] = deepClone(obj[key]);
+    }
+    return copy;
+}
+```
+
+---
+
+## 循环引用处理
+
+**基本写法：使用 WeakMap 解决循环引用**
+`function <深拷贝>(<对象>, <hash>) { }`
+```javascript
+// WeakMap 记录已拷贝对象避免重复
+function deepClone(obj, hash = new WeakMap()) {
+    if (obj === null || typeof obj !== "object") return obj;
+    if (hash.has(obj)) return hash.get(obj);
+    let copy = Array.isArray(obj) ? [] : {};
+    hash.set(obj, copy);
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) copy[key] = deepClone(obj[key], hash);
+    }
+    return copy;
+}
+```
+
+---
+
+## Map Set 拷贝
+
+**基本写法：拷贝 Map**
+`new Map(<源 Map>)`
+```javascript
+// Map 浅拷贝
+let copy = new Map(map);
+```
+
+---
+
+**基本写法：深拷贝 Map**
+`function <深拷贝Map>(<源>) { }`
+```javascript
+// 递归拷贝 Map 值
+function deepCloneMap(map, hash = new WeakMap()) {
+    if (hash.has(map)) return hash.get(map);
+    let copy = new Map();
+    hash.set(map, copy);
+    for (let [k, v] of map) copy.set(deepClone(k, hash), deepClone(v, hash));
+    return copy;
+}
+```
+
+---
+
+**基本写法：拷贝 Set**
+`new Set(<源 Set>)`
+```javascript
+// Set 浅拷贝
+let copy = new Set(set);
+```
+
+---
+
+## structuredClone
+
+**基本写法：structuredClone**
+`structuredClone(<对象>)`
+```javascript
+// 原生深拷贝支持循环引用 Date Map Set
+let deep = structuredClone(obj);
+```
+
+---
+
+**基本写法：transfer 转移**
+`structuredClone(<对象>, { transfer: [<可转移对象>] })`
+```javascript
+// 转移 ArrayBuffer 提升性能源对象失效
+let buf = new ArrayBuffer(8);
+let copy = structuredClone(buf, { transfer: [buf] });
+```
+
+---
+
+**基本写法：structuredClone 限制**
+`structuredClone(<含函数对象>)`
+```javascript
+// 不支持函数 DOM 节点抛出异常
+let obj = { fn: () => {} };
+structuredClone(obj);  // 抛出 DataCloneError
+```
+
+---
+
+## 特殊对象拷贝
+
+**基本写法：拷贝 RegExp**
+`new RegExp(<源>)`
+```javascript
+// 复制正则对象
+let copy = new RegExp(regex);
+```
+
+---
+
+**基本写法：拷贝 Date**
+`new Date(<源>)`
+```javascript
+// 复制日期对象
+let copy = new Date(date);
+```
+
+---
+
+**基本写法：拷贝 Error**
+`new <Error类型>(<源>.message)`
+```javascript
+// 复制错误对象
+let copy = new Error(err.message);
+```
+
+---
+
+## 自定义类拷贝
+
+**基本写法：通过构造器重建**
+`new <类>(<源对象>)`
+```javascript
+// 调用构造器重新创建实例
+class Point {
+    constructor(x, y) { this.x = x; this.y = y; }
+    clone() { return new Point(this.x, this.y); }
+}
+```
+
+---
+
+## 性能对比
+
+**基本写法：浅拷贝性能最优**
+`{ ...<对象> }`
+```javascript
+// 浅拷贝最快但只复制一层
+let copy = { ...obj };
+```
+
+---
+
+**基本写法：structuredClone 平衡**
+`structuredClone(<对象>)`
+```javascript
+// 原生 API 性能优于递归实现
+let copy = structuredClone(obj);
+```
+
+---
+
+**基本写法：JSON 适合纯数据**
+`JSON.parse(JSON.stringify(<对象>))`
+```javascript
+// 纯数据场景 JSON 最快
+let copy = JSON.parse(JSON.stringify(data));
+```
+
+---
+
+## 实用工具函数
+
+**基本写法：通用深拷贝工具**
+`function <deepClone>(<对象>) { }`
+```javascript
+// 综合处理各种类型的深拷贝
+function deepClone(obj, hash = new WeakMap()) {
+    if (obj === null || typeof obj !== "object") return obj;
+    if (obj instanceof Date) return new Date(obj);
+    if (obj instanceof RegExp) return new RegExp(obj);
+    if (obj instanceof Map) {
+        let copy = new Map(); hash.set(obj, copy);
+        for (let [k, v] of obj) copy.set(deepClone(k, hash), deepClone(v, hash));
+        return copy;
+    }
+    if (obj instanceof Set) {
+        let copy = new Set(); hash.set(obj, copy);
+        for (let v of obj) copy.add(deepClone(v, hash));
+        return copy;
+    }
+    if (hash.has(obj)) return hash.get(obj);
+    let copy = Array.isArray(obj) ? [] : {};
+    hash.set(obj, copy);
+    for (let key of Reflect.ownKeys(obj)) copy[key] = deepClone(obj[key], hash);
+    return copy;
+}
+```
+
+---
+
+## 引用关系
+
+**基本写法：浅拷贝引用关系**
+`let <副本> = { ...<对象> }`
+```javascript
+// 嵌套对象仍共享引用
+let obj = { nested: { a: 1 } };
+let copy = { ...obj };
+copy.nested.a = 2;  // obj.nested.a 也变为 2
+```
+
+---
+
+**基本写法：深拷贝独立**
+`let <副本> = structuredClone(<对象>)`
+```javascript
+// 深拷贝完全独立互不影响
+let obj = { nested: { a: 1 } };
+let copy = structuredClone(obj);
+copy.nested.a = 2;  // obj.nested.a 仍为 1
+```

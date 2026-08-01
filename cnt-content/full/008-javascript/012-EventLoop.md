@@ -137,28 +137,37 @@ reviewer: FANDEX Content Engineering Team
 
 ### 1.1 知识体系
 
-```
-事件循环
-├── 浏览器实现
-│   ├── HTML 规范处理模型
-│   ├── 任务队列（task queue）
-│   ├── 微任务队列（microtask queue）
-│   ├── 渲染时机（rendering steps）
-│   └── requestAnimationFrame / requestIdleCallback
-├── Node.js 实现
-│   ├── libuv 事件循环
-│   ├── 六个阶段（timers/pending/idle/poll/check/close）
-│   ├── process.nextTick vs Promise
-│   └── setImmediate vs setTimeout(0)
-├── ECMAScript 抽象
-│   ├── Job Queue（NewPromiseReactionJob）
-│   ├── Agent（执行代理）
-│   └── Job vs Task
-└── 工程实践
-    ├── 长任务优化（Task Splitting）
-    ├── 背压控制（Backpressure）
-    ├── 调度器（Scheduler API）
-    └── 调试技巧
+```mermaid
+flowchart TD
+    T0["事件循环"]
+    T1["浏览器实现"]
+    T2["HTML 规范处理模型"]
+    T3["任务队列（task queue）"]
+    T4["微任务队列（microtask queue）"]
+    T5["渲染时机（rendering steps）"]
+    T6["requestAnimationFrame / requestIdleCallback"]
+    T7["Node.js 实现"]
+    T8["libuv 事件循环"]
+    T9["六个阶段（timers/pending/idle/poll/check/close）"]
+    T10["process.nextTick vs Promise"]
+    T11["setImmediate vs setTimeout(0)"]
+    T12["ECMAScript 抽象"]
+    T13["Job Queue（NewPromiseReactionJob）"]
+    T14["Agent（执行代理）"]
+    T15["Job vs Task"]
+    T16["工程实践"]
+    T17["长任务优化（Task Splitting）"]
+    T18["背压控制（Backpressure）"]
+    T19["调度器（Scheduler API）"]
+    T20["调试技巧"]
+    T0 --> T1
+    T6 --> T7
+    T11 --> T12
+    T15 --> T16
+    T16 --> T17
+    T16 --> T18
+    T16 --> T19
+    T16 --> T20
 ```
 
 ---
@@ -520,30 +529,14 @@ V8 7.2+ 的优化（Fast Async Functions）减少了 `await` 产生的微任务�
 
 Node.js 使用 libuv 作为事件循环实现，与浏览器事件循环差异显著。libuv 事件循环分为 6 个阶段：
 
-```
-┌───────────────────────────┐
-│   timers (setTimeout)     │  执行到期的定时器回调
-└─────────────┬─────────────┘
-              ↓
-┌───────────────────────────┐
-│   pending callbacks       │  执行上一轮延迟的 I/O 回调
-└─────────────┬─────────────┘
-              ↓
-┌───────────────────────────┐
-│   idle, prepare           │  内部使用
-└─────────────┬─────────────┘
-              ↓
-┌───────────────────────────┐
-│   poll                    │  检索新 I/O 事件，执行回调
-└─────────────┬─────────────┘
-              ↓
-┌───────────────────────────┐
-│   check (setImmediate)    │  执行 setImmediate 回调
-└─────────────┬─────────────┘
-              ↓
-┌───────────────────────────┐
-│   close callbacks         │  执行 close 事件（如 socket.on('close'))
-└───────────────────────────┘
+```mermaid
+flowchart TD
+    Timers[timers（setTimeout）<br/>执行到期的定时器回调] --> Pending[ pending callbacks<br/>执行上一轮延迟的 I/O 回调]
+    Pending --> Idle[idle, prepare<br/>内部使用]
+    Idle --> Poll[poll<br/>检索新 I/O 事件，执行回调]
+    Poll --> Check[check（setImmediate）<br/>执行 setImmediate 回调]
+    Check --> Close[close callbacks<br/>执行 close 事件（如 socket.on('close')）]
+    Poll --> Timers
 ```
 
 ### 5.2 各阶段详解
@@ -1614,9 +1607,9 @@ measureTimeout();  // 通常 1-4ms
 
 ---
 
-## 12. 习题
+## 知识讲解与要点分析（原习题）
 
-### 12.1 填空题
+### 填空题知识点讲解
 
 1. （remember）在浏览器事件循环中，每执行完一个宏任务后会清空 ______ 队列中的所有任务。
 2. （understand）HTML 规范规定嵌套超过 ______ 层的 setTimeout 最小延迟为 4ms。
@@ -1624,7 +1617,7 @@ measureTimeout();  // 通常 1-4ms
 4. （understand）`async/await` 中 `await` 后的代码等价于 ______ 的回调，进入微任务队列。
 5. （remember）`requestAnimationFrame` 在 ______ 前执行，`requestIdleCallback` 在 ______ 后执行。
 
-### 12.2 选择题
+### 选择题知识点讲解
 
 1. （analyze）下列代码的输出顺序是？
 
@@ -1641,9 +1634,9 @@ console.log('E');
 - C. A E D C B
 - D. A E C B D
 
-答案：B
+解析讲解：B
 
-解析：同步代码先执行（A, E），然后清空微任务队列，按 FIFO 顺序执行 C（Promise.then 先入队）、D（queueMicrotask 后入队），最后执行宏任务 B。
+解析讲解：同步代码先执行（A, E），然后清空微任务队列，按 FIFO 顺序执行 C（Promise.then 先入队）、D（queueMicrotask 后入队），最后执行宏任务 B。
 
 2. （analyze）在 Node.js 中，下列代码的输出顺序是？
 
@@ -1659,7 +1652,7 @@ process.nextTick(() => console.log('nextTick'));
 - C. promise, nextTick, timeout, immediate
 - D. timeout, immediate, nextTick, promise
 
-答案：A（在大多数情况下，immediate 先于 timeout，但主模块中顺序不确定）
+解析讲解：A（在大多数情况下，immediate 先于 timeout，但主模块中顺序不确定）
 
 3. （understand）下列关于 `requestAnimationFrame` 的描述，错误的是？
 
@@ -1668,7 +1661,7 @@ process.nextTick(() => console.log('nextTick'));
 - C. 接收时间戳参数
 - D. 适合处理非紧急任务
 
-答案：D（rAF 适合动画等视觉更新，非紧急任务应使用 rIC）
+解析讲解：D（rAF 适合动画等视觉更新，非紧急任务应使用 rIC）
 
 4. （evaluate）以下哪种方式最适合实现高优先级任务的立即执行？
 
@@ -1677,7 +1670,7 @@ process.nextTick(() => console.log('nextTick'));
 - C. `requestIdleCallback(fn)`
 - D. `requestAnimationFrame(fn)`
 
-答案：B（微任务优先级高于宏任务，会在当前任务后立即执行）
+解析讲解：B（微任务优先级高于宏任务，会在当前任务后立即执行）
 
 5. （remember）Node.js 中 `process.nextTick` 的优先级与 `Promise.then` 相比？
 
@@ -1686,7 +1679,7 @@ process.nextTick(() => console.log('nextTick'));
 - C. 相同
 - D. 不确定
 
-答案：A
+解析讲解：A
 
 ### 12.3 代码修复题
 
@@ -1699,7 +1692,7 @@ setInterval(() => {
 }, 100);
 ```
 
-参考答案：
+解析讲解：
 
 ```javascript
 // 使用递归 setTimeout 替代 setInterval，基于绝对时间补偿漂移
@@ -1725,7 +1718,7 @@ items.forEach(async (item) => {
 });
 ```
 
-参考答案：
+解析讲解：
 
 ```javascript
 // 使用 for...of 顺序执行
@@ -1748,7 +1741,7 @@ await Promise.all(items.map(async (item) => {
 - 不阻塞主线程
 - 支持取消
 
-参考答案：
+解析讲解：
 
 ```javascript
 class TimeSlicedProcessor {

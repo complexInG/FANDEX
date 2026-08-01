@@ -138,24 +138,18 @@ Windows 2000 引入 `ReadDirectoryChangesW` API，支持异步 IO 与 IOCP：
 
 ### 2.6 演进时间轴
 
-```
-2000 ── dnotify（Linux 2.4）失败
-   │
-2000 ── kqueue（FreeBSD 4.1）
-   │
-2005 ── inotify（Linux 2.6.13）
-   │
-2007 ── FSEvents（macOS 10.5）
-   │
-2010 ── fsnotify v0（Go 跨平台抽象）
-   │
-2017 ── fsnotify v1.4 稳定 API
-   │
-2020 ── fsnotify v1.5 重构事件类型
-   │
-2022 ── fsnotify v1.6 Windows 修复
-   │
-2024 ── fsnotify v1.7 性能优化
+```mermaid
+timeline
+    title 发展时间线
+    2000: dnotify（Linux 2.4）失败
+    2000: kqueue（FreeBSD 4.1）
+    2005: inotify（Linux 2.6.13）
+    2007: FSEvents（macOS 10.5）
+    2010: fsnotify v0（Go 跨平台抽象）
+    2017: fsnotify v1.4 稳定 API
+    2020: fsnotify v1.5 重构事件类型
+    2022: fsnotify v1.6 Windows 修复
+    2024: fsnotify v1.7 性能优化
 ```
 
 ---
@@ -1758,9 +1752,9 @@ func (la *LogAnalyzer) parseLine(line string) {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **1. inotify 的 watch 描述符上限由哪个内核参数控制？**
 
@@ -1797,7 +1791,7 @@ B. inotify 不支持递归
 C. 跨平台差异
 D. 性能考虑
 
-### 10.2 简答题
+### 简答题知识点讲解
 
 1. 解释 inotify 的 `IN_Q_OVERFLOW` 事件成因，并提出三种应对策略。
 

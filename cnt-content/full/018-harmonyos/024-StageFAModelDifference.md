@@ -135,13 +135,15 @@ OpenHarmony 是 HarmonyOS 的开源版本，由 OpenAtom 基金会托管。其�
 
 ### 2.7 FA 与 Stage 模型时间线总览
 
-```
-2019 ──── HarmonyOS 1.0 ──── FA 模型唯一
-2020 ──── HarmonyOS 2.0 ──── FA + 原子化服务
-2022 ──── HarmonyOS 3.0 ──── FA + Stage 并存（Stage 推荐）
-2023 ──── HarmonyOS 3.1 ──── Stage API 9 稳定
-2023 ──── HarmonyOS 4.0  ──── Stage 默认，FA 收起
-2024 ──── HarmonyOS NEXT ─── Stage 唯一，FA 移除
+```mermaid
+timeline
+    title 应用模型演进时间线
+    2019: HarmonyOS 1.0 FA 模型唯一
+    2020: HarmonyOS 2.0 FA + 原子化服务
+    2022: HarmonyOS 3.0 FA + Stage 并存（Stage 推荐）
+    2023: HarmonyOS 3.1 Stage API 9 稳定
+    2023: HarmonyOS 4.0 Stage 默认，FA 收起
+    2024: HarmonyOS NEXT Stage 唯一，FA 移除
 ```
 
 ---
@@ -1138,15 +1140,23 @@ onUpdateForm(formId: string): void {
 
 **正确做法**：使用 HSP（Harmony Shared Package）抽取公共代码。
 
-```text
-project/
-├── entry/                  # 主应用（UIAbility）
-├── form_feature/           # 卡片模块（FormExtensionAbility）
-└── common/                 # HSP 公共模块
-    └── src/main/ets/
-        ├── constants/      # 共享常量
-        ├── utils/          # 共享工具
-        └── models/         # 共享数据模型
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["entry/                  # 主应用（UIAbility）"]
+    T2["form_feature/           # 卡片模块（FormExtensionAbility）"]
+    T3["common/                 # HSP 公共模块"]
+    T4["src/main/ets/"]
+    T5["constants/      # 共享常量"]
+    T6["utils/          # 共享工具"]
+    T7["models/         # 共享数据模型"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
 ```
 
 ### 7.3 跨设备迁移陷阱
@@ -1256,38 +1266,50 @@ onWindowStageCreate(windowStage: window.WindowStage): void {
 
 DevEco Studio 5.0+ 创建 Stage 模型工程的默认结构：
 
-```text
-FandexApp/
-├── AppScope/                     # 应用级配置
-│   ├── app.json5                 # 应用全局配置（bundleName、版本）
-│   └── resources/                # 应用级资源（图标、字符串）
-├── entry/                        # 主入口模块（HAP）
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── ets/              # ArkTS 源码
-│   │   │   │   ├── entryability/
-│   │   │   │   │   └── EntryAbility.ets
-│   │   │   │   ├── pages/        # ArkUI 页面
-│   │   │   │   │   └── Index.ets
-│   │   │   │   ├── components/   # 自定义组件
-│   │   │   │   ├── model/        # 数据模型
-│   │   │   │   └── utils/
-│   │   │   ├── resources/        # 模块资源
-│   │   │   └── module.json5      # 模块配置（Stage 模型核心）
-│   │   ├── ohosTest/             # 单元测试
-│   │   └── test/                 # UITest
-│   ├── build-profile.json5       # 模块构建配置
-│   ├── hvigorfile.ts             # Hvigor 构建脚本
-│   └── obfuscation-rules.txt     # 代码混淆规则
-├── library/                      # HSP 共享模块（可选）
-├── feature_form/                 # 卡片特性模块（可选）
-├── build-profile.json5           # 工程级构建配置
-├── hvigorfile.ts                 # 工程级 Hvigor 脚本
-├── hvigorw                       # Hvigor 包装器（Unix）
-├── hvigorw.bat                   # Hvigor 包装器（Windows）
-├── hvigorw.js                    # Hvigor 包装器入口
-├── oh-package.json5              # 工程依赖配置
-└── code-linter.json5             # 代码检查配置
+```mermaid
+flowchart TD
+    T0["FandexApp/"]
+    T1["AppScope/                     # 应用级配置"]
+    T2["app.json5                 # 应用全局配置（bundleName、版本）"]
+    T3["resources/                # 应用级资源（图标、字符串）"]
+    T4["entry/                        # 主入口模块（HAP）"]
+    T5["src/"]
+    T6["main/"]
+    T7["ets/              # ArkTS 源码"]
+    T8["entryability/"]
+    T9["EntryAbility.ets"]
+    T10["pages/        # ArkUI 页面"]
+    T11["Index.ets"]
+    T12["components/   # 自定义组件"]
+    T13["model/        # 数据模型"]
+    T14["utils/"]
+    T15["resources/        # 模块资源"]
+    T16["module.json5      # 模块配置（Stage 模型核心）"]
+    T17["ohosTest/             # 单元测试"]
+    T18["test/                 # UITest"]
+    T19["build-profile.json5       # 模块构建配置"]
+    T20["hvigorfile.ts             # Hvigor 构建脚本"]
+    T21["obfuscation-rules.txt     # 代码混淆规则"]
+    T22["library/                      # HSP 共享模块（可选）"]
+    T23["feature_form/                 # 卡片特性模块（可选）"]
+    T24["build-profile.json5           # 工程级构建配置"]
+    T25["hvigorfile.ts                 # 工程级 Hvigor 脚本"]
+    T26["hvigorw                       # Hvigor 包装器（Unix）"]
+    T27["hvigorw.bat                   # Hvigor 包装器（Windows）"]
+    T28["hvigorw.js                    # Hvigor 包装器入口"]
+    T29["oh-package.json5              # 工程依赖配置"]
+    T30["code-linter.json5             # 代码检查配置"]
+    T0 --> T1
+    T3 --> T4
+    T21 --> T22
+    T21 --> T23
+    T21 --> T24
+    T21 --> T25
+    T21 --> T26
+    T21 --> T27
+    T21 --> T28
+    T21 --> T29
+    T21 --> T30
 ```
 
 ### 8.2 app.json5 全局配置
@@ -1370,14 +1392,21 @@ Stage 模型应用签名流程：
 
 大型 Stage 模型项目推荐多模块结构：
 
-```text
-FandexApp/
-├── entry/              # 主入口 HAP
-├── common/             # HSP 公共代码
-├── feature_home/       # HSP 首页特性
-├── feature_form/       # HSP 卡片特性
-├── feature_share/      # HSP 分享特性
-└── feature_data/       # HSP 数据共享特性
+```mermaid
+flowchart TD
+    T0["FandexApp/"]
+    T1["entry/              # 主入口 HAP"]
+    T2["common/             # HSP 公共代码"]
+    T3["feature_home/       # HSP 首页特性"]
+    T4["feature_form/       # HSP 卡片特性"]
+    T5["feature_share/      # HSP 分享特性"]
+    T6["feature_data/       # HSP 数据共享特性"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
 ```
 
 HSP 模块配置：
@@ -1497,9 +1526,9 @@ FANDEX 项目本身的迁移路径：
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题 1.1**：关于 Stage 模型与 FA 模型的核心差异，下列说法正确的是：
 
@@ -1508,18 +1537,15 @@ B. FA 模型在 HarmonyOS NEXT 中仍可创建新工程
 C. Stage 模型的 UIAbility 显式分离了窗口创建与前台切换  
 D. FA 模型支持 multiton 启动模式  
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：
+**解析讲解**：
 - A 错：Stage 模型仅推荐 ArkTS，HarmonyOS NEXT 仅支持 ArkTS。
 - B 错：HarmonyOS NEXT 已完全移除 FA 模型，无法创建新工程。
 - C 正确：Stage 模型的 `onWindowStageCreate` 与 `onForeground` 是分离的两个回调，FA 模型的 Page Ability 没有这种分离。
 - D 错：FA 模型仅有 `singleton` 与 `standard` 两种启动模式，`multiton` 是 Stage 模型新增。
 
-</details>
 
 **题 1.2**：HarmonyOS NEXT 的应用配置文件是：
 
@@ -1528,14 +1554,11 @@ B. `config.json`
 C. `module.json5`  
 D. `Info.plist`  
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：HarmonyOS NEXT 仅支持 Stage 模型，配置文件为 `module.json5`（JSON5 格式，支持注释）。`config.json` 是 FA 模型的配置文件，在 NEXT 中已移除。
+**解析讲解**：HarmonyOS NEXT 仅支持 Stage 模型，配置文件为 `module.json5`（JSON5 格式，支持注释）。`config.json` 是 FA 模型的配置文件，在 NEXT 中已移除。
 
-</details>
 
 **题 1.3**：下列哪种 ExtensionAbility 类型用于实现桌面卡片？
 
@@ -1544,14 +1567,11 @@ B. `FormExtensionAbility`
 C. `ShareExtensionAbility`  
 D. `DataShareExtensionAbility`  
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`FormExtensionAbility` 专门用于桌面卡片服务，对应 FA 模型的 Form Ability。`ServiceExtensionAbility` 用于后台服务，`ShareExtensionAbility` 用于跨应用分享，`DataShareExtensionAbility` 用于数据共享。
+**解析讲解**：`FormExtensionAbility` 专门用于桌面卡片服务，对应 FA 模型的 Form Ability。`ServiceExtensionAbility` 用于后台服务，`ShareExtensionAbility` 用于跨应用分享，`DataShareExtensionAbility` 用于数据共享。
 
-</details>
 
 **题 1.4**：跨设备迁移数据量的上限是（HarmonyOS 4.0）：
 
@@ -1560,14 +1580,11 @@ B. 10 KB
 C. 100 KB  
 D. 1 MB  
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：HarmonyOS 4.0 中 `onSaveData` 序列化数据上限为 100 KB。超出会被截断，大数据应通过分布式 KV 或分布式文件同步。
+**解析讲解**：HarmonyOS 4.0 中 `onSaveData` 序列化数据上限为 100 KB。超出会被截断，大数据应通过分布式 KV 或分布式文件同步。
 
-</details>
 
 **题 1.5**：Stage 模型的 launchType 不包含以下哪种？
 
@@ -1576,73 +1593,55 @@ B. multiton
 C. specified  
 D. standard  
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：Stage 模型支持 `singleton`（单例）、`multiton`（多实例）、`specified`（指定实例）三种启动模式。`standard` 是 FA 模型的启动模式之一，Stage 模型已用 `multiton` 取代。
+**解析讲解**：Stage 模型支持 `singleton`（单例）、`multiton`（多实例）、`specified`（指定实例）三种启动模式。`standard` 是 FA 模型的启动模式之一，Stage 模型已用 `multiton` 取代。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题 2.1**：FA 模型支持四种 Ability 类型，分别是 ________、________、________、________。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：Page Ability、Service Ability、Data Ability、Form Ability
+**解析讲解**：Page Ability、Service Ability、Data Ability、Form Ability
 
-**解析**：FA 模型的四种 Ability 类型对应不同的应用场景。Page Ability 用于 UI 页面，Service Ability 用于后台服务，Data Ability 用于数据共享，Form Ability 用于桌面卡片。
+**解析讲解**：FA 模型的四种 Ability 类型对应不同的应用场景。Page Ability 用于 UI 页面，Service Ability 用于后台服务，Data Ability 用于数据共享，Form Ability 用于桌面卡片。
 
-</details>
 
 **题 2.2**：Stage 模型中，UIAbility 的 `onCreate` 回调之后、`onForeground` 之前，必经的回调是 ________。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`onWindowStageCreate`
+**解析讲解**：`onWindowStageCreate`
 
-**解析**：Stage 模型 UIAbility 的标准生命周期顺序为：`onCreate` → `onWindowStageCreate` → `onForeground` → `onBackground` → `onWindowStageDestroy` → `onDestroy`。
+**解析讲解**：Stage 模型 UIAbility 的标准生命周期顺序为：`onCreate` → `onWindowStageCreate` → `onForeground` → `onBackground` → `onWindowStageDestroy` → `onDestroy`。
 
-</details>
 
 **题 2.3**：跨设备迁移时，源端调用 ________ 序列化状态，目标端调用 ________ 反序列化状态。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`onSaveData`、`onRestoreData`
+**解析讲解**：`onSaveData`、`onRestoreData`
 
-**解析**：Stage 模型跨设备迁移由 `distributedScheduler` 触发，源端 UIAbility 的 `onSaveData(wantParam)` 将状态写入 `wantParam`，目标端 UIAbility 的 `onRestoreData(wantParam)` 读取并恢复。
+**解析讲解**：Stage 模型跨设备迁移由 `distributedScheduler` 触发，源端 UIAbility 的 `onSaveData(wantParam)` 将状态写入 `wantParam`，目标端 UIAbility 的 `onRestoreData(wantParam)` 读取并恢复。
 
-</details>
 
 **题 2.4**：HSP 模块在 `module.json5` 中的 `type` 字段值为 ________。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`shared`
+**解析讲解**：`shared`
 
-**解析**：HAP 模块类型为 `entry` 或 `feature`，HSP 模块类型为 `shared`。
+**解析讲解**：HAP 模块类型为 `entry` 或 `feature`，HSP 模块类型为 `shared`。
 
-</details>
 
 **题 2.5**：HarmonyOS 4.0 中跨设备启动性能相比 FA 模型提升约 ________ %。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：40
+**解析讲解**：40
 
-**解析**：根据华为官方基准，HarmonyOS 4.0 Stage 模型的分布式软总线 v3 对接 `distributedScheduler`，跨设备启动性能提升 40%。
+**解析讲解**：根据华为官方基准，HarmonyOS 4.0 Stage 模型的分布式软总线 v3 对接 `distributedScheduler`，跨设备启动性能提升 40%。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题 3.1**：实现一个 Stage 模型 UIAbility，满足以下需求：
 
@@ -1652,8 +1651,6 @@ D. standard
 4. 在 `onSaveData` 中持久化 `userId` 与最近访问时间。
 5. 在 `onRestoreData` 中恢复上述状态。
 
-<details>
-<summary>参考答案</summary>
 
 ```typescript
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
@@ -1707,7 +1704,6 @@ export default class UserAbility extends UIAbility {
 }
 ```
 
-</details>
 
 **题 3.2**：编写一个 `module.json5`，配置：
 
@@ -1716,8 +1712,6 @@ export default class UserAbility extends UIAbility {
 3. FormExtAbility（form 类型）。
 4. 申请 INTERNET 权限（安装即授予）与 CAMERA 权限（运行时申请，EntryAbility 使用，inuse 时机）。
 
-<details>
-<summary>参考答案</summary>
 
 ```json5
 {
@@ -1779,14 +1773,11 @@ export default class UserAbility extends UIAbility {
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **题 4.1**：为什么 HarmonyOS NEXT 选择彻底移除 FA 模型？请从系统性能、生态演进、开发体验三个维度分析。
 
-<details>
-<summary>参考答案要点</summary>
 
 **性能维度**：
 - FA 模型同进程模型导致内存浪费，移除后系统进程调度更精细。
@@ -1807,12 +1798,9 @@ export default class UserAbility extends UIAbility {
 - 旧 FA 应用迁移成本高，可能流失部分开发者。
 - 通过提供 FA→Stage 迁移工具与文档缓解。
 
-</details>
 
 **题 4.2**：在多账号聊天应用中，如何选择 `launchType`？说明理由。
 
-<details>
-<summary>参考答案要点</summary>
 
 **推荐 `multiton`**：
 
@@ -1835,12 +1823,9 @@ class MyAbilityStage {
 }
 ```
 
-</details>
 
 **题 4.3**：分析 Stage 模型中 `WindowStage` 抽象对 ArkUI 与窗口管理的影响。
 
-<details>
-<summary>参考答案要点</summary>
 
 **ArkUI 影响**：
 - ArkUI 页面树挂在 `WindowStage` 上，与 UIAbility 解耦。
@@ -1856,12 +1841,9 @@ class MyAbilityStage {
 - 开发者需理解 WindowStage 概念，学习曲线略陡。
 - 跨窗口状态管理需要通过 `AppStorage` 或 `eventHub` 协调。
 
-</details>
 
 **题 4.4**：FA 模型 `config.json` 中 `module.abilities[].type` 与 Stage 模型 `module.json5` 中 `extensionAbilities[].type` 的设计差异背后反映的架构思想是什么？
 
-<details>
-<summary>参考答案要点</summary>
 
 **差异**：
 - FA 模型 `type` 字段统一描述 Page/Service/Data/Form，所有 Ability 在同一列表中。
@@ -1874,7 +1856,6 @@ class MyAbilityStage {
 - **生命周期差异**：UIAbility 有完整窗口生命周期，ExtensionAbility 仅有 onCreate/onConnect/onDisconnect。
 - **可扩展性**：新增 ExtensionAbility 类型（如 InputMethod、Accessibility）不影响 UIAbility 设计。
 
-</details>
 
 ---
 
@@ -2031,3 +2012,259 @@ class MyAbilityStage {
 ---
 
 > **本章总结**：Stage 模型代表了 HarmonyOS 应用框架从"模仿 Android"到"分布式原生"的范式跃迁。其核心创新在于：(1) UIAbility/ExtensionAbility 的职责分离；(2) WindowStage 的窗口抽象；(3) 多实例与按需加载模型；(4) 原生分布式调度。掌握 Stage 模型是开发 HarmonyOS NEXT 应用的必经之路，也是理解 HarmonyOS 分布式架构的基础。后续章节将深入跨设备调用、分布式数据管理、调试与权限等专题。
+## 模型概述
+
+**基本写法：Stage 模型（API 9+ 主推）**
+`export default class <Ability名> extends UIAbility { }`
+```typescript
+// Stage 模型 UIAbility 入口
+import { UIAbility } from '@kit.AbilityKit';
+
+export default class EntryAbility extends UIAbility {
+  onCreate(want, launchParam) { }
+  onWindowStageCreate(windowStage) { }
+}
+```
+
+---
+
+**基本写法：FA 模型（API 8 及以前 旧模型）**
+`export default { onCreate(want) { }, onActive() { } }`
+```typescript
+// FA 模型 PageAbility 匿名对象导出
+export default {
+  onCreate(want) { console.info('onCreate') },
+  onActive() { console.info('onActive') },
+  onDestroy() { console.info('onDestroy') }
+}
+```
+
+---
+
+## 配置文件差异
+
+**基本写法：Stage 模型 module.json5**
+`{ "module": { "type": "entry", "abilities": [{ "name": "<Ability名>", "srcEntry": "<路径>", "startWindowIcon": "<资源>" }] } }`
+```json5
+// Stage 模型使用 module.json5
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "deviceTypes": ["phone", "tablet"],
+    "abilities": [
+      {
+        "name": "EntryAbility",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
+        "startWindowIcon": "$media:icon",
+        "startWindowBackground": "$color:start_window_background"
+      }
+    ]
+  }
+}
+```
+
+---
+
+**基本写法：FA 模型 config.json**
+`{ "module": { "abilities": [{ "name": "<Ability名>", "type": "page" }] } }`
+```json5
+// FA 模型使用 config.json
+{
+  "app": { "bundleName": "com.example.app" },
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "abilities": [
+      { "name": "MainAbility", "type": "page", "visible": true }
+    ]
+  }
+}
+```
+
+---
+
+## 组件类型对比
+
+**基本写法：Stage UIAbility**
+`export default class <名> extends UIAbility { onWindowStageCreate(<stage>) { <stage>.loadContent('<页面>') } }`
+```typescript
+// Stage UIAbility 加载页面
+import { UIAbility } from '@kit.AbilityKit';
+
+export default class EntryAbility extends UIAbility {
+  onWindowStageCreate(windowStage) {
+    windowStage.loadContent('pages/Index', (err) => {
+      if (err) console.error('加载失败');
+    });
+  }
+}
+```
+
+---
+
+**基本写法：Stage ExtensionAbility**
+`export default class <名> extends FormExtensionAbility { onAddForm(<want>) { } }`
+```typescript
+// Stage 卡片扩展能力
+import { FormExtensionAbility } from '@kit.FormKit';
+
+export default class CardAbility extends FormExtensionAbility {
+  onAddForm(want) {
+    return { formData: { title: '卡片标题' } };
+  }
+}
+```
+
+---
+
+**基本写法：FA PageAbility**
+`export default { onCreate(<want>) { this.context.setDisplayedContent('<页面>') } }`
+```typescript
+// FA 模型 PageAbility
+export default {
+  onCreate(want) {
+    this.context.setDisplayedContent('pages/index', {});
+  }
+}
+```
+
+---
+
+## 生命周期对比
+
+**基本写法：Stage UIAbility 生命周期**
+`onCreate -> onWindowStageCreate -> onForeground -> onBackground -> onWindowStageDestroy -> onDestroy`
+```typescript
+// Stage 生命周期回调
+export default class EntryAbility extends UIAbility {
+  onCreate(want, launchParam) { }
+  onWindowStageCreate(windowStage) { }
+  onForeground() { }
+  onBackground() { }
+  onWindowStageDestroy() { }
+  onDestroy() { }
+}
+```
+
+---
+
+**基本写法：FA PageAbility 生命周期**
+`onCreate -> onStart -> onActive -> onInactive -> onBackground -> onForeground -> onDestroy`
+```typescript
+// FA 生命周期回调
+export default {
+  onCreate(want) { },
+  onStart() { },
+  onActive() { },
+  onInactive() { },
+  onBackground() { },
+  onForeground() { },
+  onDestroy() { }
+}
+```
+
+---
+
+## 进程与引擎
+
+**基本写法：Stage 共享 ArkTS 引擎**
+`// 同进程多个 UIAbility 共享引擎实例`
+```typescript
+// Stage 模型：同一 HAP 中的 UIAbility 共享 ArkTS 引擎
+// 内存占用更低，组件间可直接共享对象
+```
+
+---
+
+**基本写法：FA 独享引擎实例**
+`// 每个 Ability 独享 ArkTS 引擎实例`
+```typescript
+// FA 模型：每个 PageAbility 独立引擎实例
+// 内存占用更高，组件间通过 IPC 通信
+```
+
+---
+
+## 页面加载方式
+
+**基本写法：Stage 通过 WindowStage 加载**
+`<windowStage>.loadContent('<页面路径>', <回调>);`
+```typescript
+// Stage 模型在 onWindowStageCreate 中加载页面
+onWindowStageCreate(windowStage) {
+  windowStage.loadContent('pages/Index');
+}
+```
+
+---
+
+**基本写法：FA 通过 context 加载**
+`this.context.setDisplayedContent('<页面路径>', <参数>);`
+```typescript
+// FA 模型在 onCreate 中加载页面
+onCreate(want) {
+  this.context.setDisplayedContent('pages/index', {});
+}
+```
+
+---
+
+## 工程结构对比
+
+**基本写法：Stage 工程结构**
+`entry/src/main/ets/entryability/ + entry/src/main/ets/pages/`
+```text
+// Stage 模型目录
+entry/src/main/
+  ets/
+    entryability/EntryAbility.ets
+    pages/Index.ets
+  resources/
+  module.json5
+```
+
+---
+
+**基本写法：FA 工程结构**
+`entry/src/main/js/default/pages/ + entry/src/main/config.json`
+```text
+// FA 模型目录
+entry/src/main/
+  js/default/
+    pages/index/index.js
+    pages/index/index.hml
+  config.json
+```
+
+---
+
+## AbilityStage 应用级回调
+
+**基本写法：Stage AbilityStage**
+`export default class <名> extends AbilityStage { onCreate() { } }`
+```typescript
+// Stage 模型应用级生命周期
+import { AbilityStage } from '@kit.AbilityKit';
+
+export default class MyAbilityStage extends AbilityStage {
+  onCreate() {
+    console.info('应用启动');
+  }
+}
+```
+
+---
+
+**基本写法：注册 AbilityStage**
+`// 在 module.json5 中配置 srcEntry`
+```json5
+// module.json5 注册 AbilityStage
+{
+  "module": {
+    "name": "entry",
+    "srcEntry": "./ets/myabilitystage/MyAbilityStage.ets",
+    "abilities": []
+  }
+}
+```

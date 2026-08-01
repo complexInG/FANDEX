@@ -15,10 +15,11 @@ related:
 prerequisites:
   - lua/概述与环境配置
 ---
+# Lua 元表与元方法详解速查
 
-# 元表与元方法详解：Lua 的元编程基石
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.001（Structure and Interpretation of Computer Programs）、Stanford CS242（Programming Languages）、CMU 15-312（Foundations of Programming Languages）教学水准，系统剖析 Lua metatable 与 metamethod 机制的设计哲学、形式化语义、底层实现与工程实践。
+---
 
 ## 0. 学习目标（Bloom 分类法）
 
@@ -2095,11 +2096,11 @@ Kong 的 metatable 用途：
 
 ---
 
-## 9. 练习题
+## 知识讲解与要点分析（原练习题）
 
-### 9.1 选择题
+### 选择题知识点讲解
 
-**Q1**. 下列代码的输出是什么？
+**常见疑问 1**：. 下列代码的输出是什么？
 
 ```lua
 local t = setmetatable({}, {
@@ -2119,9 +2120,8 @@ D. `nil`
 
 **C**. `__newindex` 拦截赋值，`rawset` 写入 `t.foo = "bar_modified"`。后续读取 `t.foo` 直接命中（不触发 `__index`），返回 `bar_modified`。
 
-</details>
 
-**Q2**. 下列代码的输出是什么？
+**常见疑问 2**：. 下列代码的输出是什么？
 
 ```lua
 local mt = {
@@ -2141,9 +2141,8 @@ D. `nil`
 
 **B**. `t1` 和 `t2` 是两个不同的表对象（引用不同），且没有 `__eq` 元方法。Lua 默认使用引用相等，返回 `false`。
 
-</details>
 
-**Q3**. 下列代码的输出是什么？
+**常见疑问 3**：. 下列代码的输出是什么？
 
 ```lua
 local t = setmetatable({ a = 1 }, { __index = { b = 2, c = 3 } })
@@ -2159,9 +2158,8 @@ D. `nil 2 3 nil`
 
 **A**. `t.a` 直接命中（1）。`t.b`、`t.c` 触发 `__index`，从 `{ b = 2, c = 3 }` 表中查找。`t.d` 触发 `__index`，但表中无 `d`，返回 `nil`。
 
-</details>
 
-**Q4**. 下列关于 `__gc` 的说法正确的是？
+**常见疑问 4**：. 下列关于 `__gc` 的说法正确的是？
 
 A. Lua 5.1 中 table 可以设置 `__gc` 并会被自动调用
 B. Lua 5.2 中 table 的 `__gc` 不会被调用
@@ -2172,9 +2170,8 @@ D. `__gc` 可被多次调用
 
 **C**. Lua 5.1 / 5.2 不支持 table 的 `__gc`（仅 userdata）。Lua 5.3+ 通过 `luaL_setmetatable` 在创建 metatable 时标记 `__gc`，但 `setmetatable` 后再添加 `__gc` 字段无效。`__gc` 每个对象最多调用一次。
 
-</details>
 
-**Q5**. 下列代码的输出是什么？
+**常见疑问 5**：. 下列代码的输出是什么？
 
 ```lua
 local t = setmetatable({}, {
@@ -2193,11 +2190,10 @@ D. `nil 1`
 
 **A**. `t(5)` 触发 `__call`，返回 `5 * 2 = 10`。`t.x` 触发 `__index`，返回 1。
 
-</details>
 
-### 9.2 填空题
+### 填空题知识点讲解
 
-**Q1**. 完成以下代码，使 `t` 的访问返回 `42`：
+**常见疑问 6**：. 完成以下代码，使 `t` 的访问返回 `42`：
 
 ```lua
 local t = setmetatable({}, {
@@ -2212,9 +2208,8 @@ print(t.anything)  -- 42
 __index
 ```
 
-</details>
 
-**Q2**. 下列代码的输出是 `_____`：
+**常见疑问 7**：. 下列代码的输出是 `_____`：
 
 ```lua
 local mt = { __eq = function(a, b) return true end }
@@ -2231,9 +2226,8 @@ true
 
 因为 `a` 和 `b` 共享同一个 metatable（`mt`），且 `__eq` 返回 true。
 
-</details>
 
-**Q3**. `getmetatable` 返回的值取决于 metatable 的 `_____` 字段。
+**常见疑问 8**：. `getmetatable` 返回的值取决于 metatable 的 `_____` 字段。
 
 <details><summary>答案</summary>
 
@@ -2243,9 +2237,8 @@ __metatable
 
 如果存在，`getmetatable` 返回该字段的值；否则返回真实 metatable。
 
-</details>
 
-**Q4**. 下列代码的输出是 `_____`：
+**常见疑问 9**：. 下列代码的输出是 `_____`：
 
 ```lua
 local t = setmetatable({ x = 1 }, { __index = function() return 999 end })
@@ -2260,9 +2253,8 @@ print(t.x, t.y)
 
 `t.x` 直接命中，返回 1。`t.y` 不在 `t` 中，触发 `__index`，返回 999。
 
-</details>
 
-**Q5**. 在 Lua 5.4 中，`#t` 对 table 触发 `_____` 元方法。
+**常见疑问 10**：. 在 Lua 5.4 中，`#t` 对 table 触发 `_____` 元方法。
 
 <details><summary>答案</summary>
 
@@ -2272,11 +2264,10 @@ __len
 
 Lua 5.2+ 支持 table 的 `__len`。
 
-</details>
 
-### 9.3 编程题
+### 编程题知识点讲解
 
-**Q1**. 实现一个 `Vector3` 类，支持：
+**常见疑问 11**：. 实现一个 `Vector3` 类，支持：
 - 构造 `Vector3.new(x, y, z)`
 - 加法 `a + b`
 - 点积 `a:dot(b)`
@@ -2318,9 +2309,8 @@ print(#v1)              -- 3.74166
 print(v1:dot(v2))       -- 32
 ```
 
-</details>
 
-**Q2**. 实现一个 `Lazy` 类，延迟计算值：
+**常见疑问 12**：. 实现一个 `Lazy` 类，延迟计算值：
 - `Lazy.new(fn)`：创建延迟对象
 - `Lazy:value()`：首次调用时计算，后续返回缓存
 - `__tostring`：返回值的字符串表示
@@ -2364,9 +2354,8 @@ print(lazy:value()) -- 42（不重新计算）
 print(lazy())       -- 42
 ```
 
-</details>
 
-**Q3**. 实现一个链式 Builder，使以下代码工作：
+**常见疑问 13**：. 实现一个链式 Builder，使以下代码工作：
 
 ```lua
 local result = Chain.new()
@@ -2417,19 +2406,17 @@ local result = Chain.new()
 print(result)  -- 60
 ```
 
-</details>
 
 ### 9.4 思考题
 
-**Q1**. 为什么 Lua 不内置类系统，而通过 metatable 模拟？
+**常见疑问 14**：. 为什么 Lua 不内置类系统，而通过 metatable 模拟？
 
 <details><summary>答案</summary>
 
 Lua 的设计哲学是"提供元机制，而非具体特性"。metatable 作为元编程工具，允许用户根据需要实现不同的范式（OOP、函数式、原型继承等），而非被锁定在单一模型中。这与 Scheme 的"最小核心 + 宏"哲学一致。如果内置类系统，会引入类型系统的复杂度（如 MRO、`instanceof`、访问控制），与 Lua 的极简目标冲突。
 
-</details>
 
-**Q2**. 为什么 `__eq` 要求两个操作数共享 metatable？
+**常见疑问 15**：. 为什么 `__eq` 要求两个操作数共享 metatable？
 
 <details><summary>答案</summary>
 
@@ -2438,9 +2425,8 @@ Lua 的设计哲学是"提供元机制，而非具体特性"。metatable 作为�
 - 要求共享 metatable 确保类型一致性，避免"苹果等于橘子"的逻辑错误（如 `Point(1,2) == Complex(1,2)` 应返回 false）。
 - 简化了实现：Lua 只需检查类型与 metatable 是否相同，无需复杂的多分派。
 
-</details>
 
-**Q3**. `__index` 链的循环检测为何不由 Lua 自动处理？
+**常见疑问 16**：. `__index` 链的循环检测为何不由 Lua 自动处理？
 
 <details><summary>答案</summary>
 
@@ -2450,7 +2436,6 @@ Lua 的设计哲学是"提供元机制，而非具体特性"。metatable 作为�
 
 实际上 Lua 会在递归深度达到 `LUAI_MAXSTACK` 时抛出 "stack overflow" 错误，相当于间接的循环检测。
 
-</details>
 
 ---
 
@@ -2665,3 +2650,420 @@ end
 ---
 
 *文档版本：v2.0  金标准升级  最后更新：2026-06-14*
+## 元表基础
+
+**基本写法：setmetatable 设置元表**
+`setmetatable(<table>, <metatable>)`
+```lua
+-- 设置元表
+local t = {}
+local mt = {}
+setmetatable(t, mt)
+```
+
+**基本写法：getmetatable 获取元表**
+`getmetatable(<table>)`
+```lua
+-- 获取元表
+local mt = getmetatable(t)
+```
+
+**基本写法：链式设置元表**
+`local <table> = setmetatable({}, <metatable>)`
+```lua
+-- 创建表并设置元表
+local obj = setmetatable({}, {
+    __index = function(t, k)
+        return "default"
+    end
+})
+```
+
+---
+
+## 算术元方法
+
+**基本写法：__add 加法**
+`<metatable>.__add = function(<a>, <b>) <body> end`
+```lua
+-- 自定义加法运算
+local mt = {}
+mt.__add = function(a, b)
+    return {value = a.value + b.value}
+end
+local v1 = setmetatable({value = 10}, mt)
+local v2 = setmetatable({value = 20}, mt)
+local result = v1 + v2
+```
+
+**基本写法：__sub 减法**
+`<metatable>.__sub = function(<a>, <b>) <body> end`
+```lua
+-- 自定义减法运算
+mt.__sub = function(a, b)
+    return {value = a.value - b.value}
+end
+```
+
+**基本写法：__mul 乘法**
+`<metatable>.__mul = function(<a>, <b>) <body> end`
+```lua
+-- 自定义乘法运算
+mt.__mul = function(a, b)
+    return {value = a.value * b.value}
+end
+```
+
+**基本写法：__div 除法**
+`<metatable>.__div = function(<a>, <b>) <body> end`
+```lua
+-- 自定义除法运算
+mt.__div = function(a, b)
+    return {value = a.value / b.value}
+end
+```
+
+**基本写法：__mod 取模**
+`<metatable>.__mod = function(<a>, <b>) <body> end`
+```lua
+-- 自定义取模运算
+mt.__mod = function(a, b)
+    return {value = a.value % b.value}
+end
+```
+
+**基本写法：__pow 幂运算**
+`<metatable>.__pow = function(<a>, <b>) <body> end`
+```lua
+-- 自定义幂运算
+mt.__pow = function(a, b)
+    return {value = a.value ^ b.value}
+end
+```
+
+**基本写法：__unm 一元负号**
+`<metatable>.__unm = function(<a>) <body> end`
+```lua
+-- 自定义一元负号
+mt.__unm = function(a)
+    return {value = -a.value}
+end
+```
+
+---
+
+## 关系元方法
+
+**基本写法：__eq 相等**
+`<metatable>.__eq = function(<a>, <b>) <body> end`
+```lua
+-- 自定义相等比较
+mt.__eq = function(a, b)
+    return a.value == b.value
+end
+```
+
+**基本写法：__lt 小于**
+`<metatable>.__lt = function(<a>, <b>) <body> end`
+```lua
+-- 自定义小于比较
+mt.__lt = function(a, b)
+    return a.value < b.value
+end
+```
+
+**基本写法：__le 小于等于**
+`<metatable>.__le = function(<a>, <b>) <body> end`
+```lua
+-- 自定义小于等于比较
+mt.__le = function(a, b)
+    return a.value <= b.value
+end
+```
+
+---
+
+## 字符串元方法
+
+**基本写法：__concat 连接**
+`<metatable>.__concat = function(<a>, <b>) <body> end`
+```lua
+-- 自定义字符串连接
+mt.__concat = function(a, b)
+    return tostring(a.value) .. tostring(b.value)
+end
+```
+
+**基本写法：__tostring 转字符串**
+`<metatable>.__tostring = function(<a>) <body> end`
+```lua
+-- 自定义转字符串
+mt.__tostring = function(a)
+    return "Value(" .. a.value .. ")"
+end
+```
+
+---
+
+## 索引元方法
+
+**基本写法：__index 表查找**
+`<metatable>.__index = <table>`
+```lua
+-- __index 为表（继承）
+local base = {greet = function() return "Hello" end}
+local mt = {__index = base}
+local obj = setmetatable({}, mt)
+print(obj.greet())
+```
+
+**基本写法：__index 函数查找**
+`<metatable>.__index = function(<table>, <key>) <body> end`
+```lua
+-- __index 为函数
+local mt = {
+    __index = function(t, key)
+        return "Key not found: " .. key
+    end
+}
+local obj = setmetatable({}, mt)
+print(obj.missing)
+```
+
+**基本写法：__newindex 新索引**
+`<metatable>.__newindex = <table>`
+```lua
+-- __newindex 为表（重定向）
+local storage = {}
+local mt = {__newindex = storage}
+local obj = setmetatable({}, mt)
+obj.x = 10
+print(storage.x)
+```
+
+**基本写法：__newindex 函数拦截**
+`<metatable>.__newindex = function(<table>, <key>, <value>) <body> end`
+```lua
+-- __newindex 为函数（拦截赋值）
+local mt = {
+    __newindex = function(t, key, value)
+        if type(value) == "number" then
+            rawset(t, key, value)
+        end
+    end
+}
+local obj = setmetatable({}, mt)
+obj.x = 10
+obj.y = "hello"
+```
+
+**基本写法：rawget 绕过元方法**
+`rawget(<table>, <key>)`
+```lua
+-- rawget 绕过 __index
+local obj = setmetatable({}, {__index = function() return "default" end})
+print(rawget(obj, "x"))
+```
+
+**基本写法：rawset 绕过元方法**
+`rawset(<table>, <key>, <value>)`
+```lua
+-- rawset 绕过 __newindex
+local obj = setmetatable({}, {__newindex = function() end})
+rawset(obj, "x", 10)
+```
+
+---
+
+## 调用元方法
+
+**基本写法：__call 可调用对象**
+`<metatable>.__call = function(<self>, <params>) <body> end`
+```lua
+-- __call 使表可像函数一样调用
+local mt = {
+    __call = function(self, x)
+        return x * self.factor
+    end
+}
+local multiplier = setmetatable({factor = 2}, mt)
+print(multiplier(5))
+```
+
+---
+
+## 长度元方法
+
+**基本写法：__len 长度**
+`<metatable>.__len = function(<self>) <body> end`
+```lua
+-- __len 自定义长度运算
+local mt = {
+    __len = function(self)
+        local count = 0
+        for _ in pairs(self.data) do
+            count = count + 1
+        end
+        return count
+    end
+}
+local obj = setmetatable({data = {a = 1, b = 2}}, mt)
+print(#obj)
+```
+
+---
+
+## 迭代元方法
+
+**基本写法：__pairs 自定义遍历**
+`<metatable>.__pairs = function(<self>) <body> end`
+```lua
+-- __pairs 自定义 pairs 遍历
+local mt = {
+    __pairs = function(self)
+        return coroutine.wrap(function()
+            for k, v in pairs(self.data) do
+                coroutine.yield(k, v)
+            end
+        end)
+    end
+}
+local obj = setmetatable({data = {a = 1, b = 2}}, mt)
+for k, v in pairs(obj) do
+    print(k, v)
+end
+```
+
+**基本写法：__ipairs 自定义数组遍历**
+`<metatable>.__ipairs = function(<self>) <body> end`
+```lua
+-- __ipairs 自定义 ipairs 遍历
+local mt = {
+    __ipairs = function(self)
+        return coroutine.wrap(function()
+            for i, v in ipairs(self.items) do
+                coroutine.yield(i, v)
+            end
+        end)
+    end
+}
+local obj = setmetatable({items = {10, 20, 30}}, mt)
+for i, v in ipairs(obj) do
+    print(i, v)
+end
+```
+
+---
+
+## 类型元方法
+
+**基本写法：__type 类型判断**
+`<metatable>.__type = "<type>"`
+```lua
+-- __type 自定义类型（需要库支持）
+local mt = {__type = "Vector"}
+local v = setmetatable({x = 1, y = 2}, mt)
+```
+
+---
+
+## 元表保护
+
+**基本写法：__metatable 保护元表**
+`<metatable>.__metatable = "<value>"`
+```lua
+-- __metatable 保护元表不被修改
+local mt = {__index = {}, __metatable = "protected"}
+local obj = setmetatable({}, mt)
+print(getmetatable(obj))
+```
+
+---
+
+## 元表组合
+
+**换行写法：多元方法元表**
+`local <mt> = { __index = <...>, __newindex = <...>, __add = <...>, __tostring = <...> }`
+```lua
+-- 组合多个元方法
+local mt = {
+    __index = function(t, k) return nil end,
+    __newindex = function(t, k, v) rawset(t, k, v) end,
+    __add = function(a, b) return setmetatable({}, getmetatable(a)) end,
+    __tostring = function(a) return "Object" end
+}
+local obj = setmetatable({}, mt)
+```
+
+---
+
+## 元表继承
+
+**基本写法：元表链式继承**
+`setmetatable(<child>, {__index = <parent>})`
+```lua
+-- 元表链式继承
+local animal = {sound = "Some sound"}
+local dog = setmetatable({}, {__index = animal})
+print(dog.sound)
+```
+
+**基本写法：多级继承**
+`setmetatable(<child>, {__index = <parent>}); setmetatable(<parent>, {__index = <grandparent>})`
+```lua
+-- 多级继承
+local creature = {alive = true}
+local animal = setmetatable({sound = "Some sound"}, {__index = creature})
+local dog = setmetatable({breed = "Lab"}, {__index = animal})
+print(dog.alive)
+print(dog.sound)
+```
+
+---
+
+## 元表实战
+
+**基本写法：向量运算**
+`local <mt> = { __add = <...>, __sub = <...>, __tostring = <...> }`
+```lua
+-- 向量运算元表
+local Vector = {}
+Vector.__index = Vector
+Vector.__add = function(a, b)
+    return Vector.new(a.x + b.x, a.y + b.y)
+end
+Vector.__tostring = function(v)
+    return "(" .. v.x .. ", " .. v.y .. ")"
+end
+function Vector.new(x, y)
+    return setmetatable({x = x, y = y}, Vector)
+end
+```
+
+**基本写法：只读表**
+`local <mt> = { __index = <table>, __newindex = function() error("...") end }`
+```lua
+-- 只读表实现
+local function readOnly(t)
+    local mt = {
+        __index = t,
+        __newindex = function(t, k, v)
+            error("attempt to update a read-only table", 2)
+        end
+    }
+    return setmetatable({}, mt)
+end
+```
+
+**基本写法：默认值表**
+`local <mt> = { __index = function() return <default> end }`
+```lua
+-- 默认值表
+local function defaultTable(default)
+    return setmetatable({}, {
+        __index = function(t, k)
+            return default
+        end
+    })
+end
+```

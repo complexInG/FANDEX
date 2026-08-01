@@ -1248,9 +1248,9 @@ const errors = await validate(dto);
 // [{ property: 'age', constraints: { max: 'age must not be greater than 150' } }]
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下关于 TS 5.0 标准装饰器的描述，哪个是错误的？
 
@@ -1259,9 +1259,9 @@ const errors = await validate(dto);
 - C. 完全向后兼容实验性装饰器
 - D. 支持 `addInitializer` 钩子用于初始化逻辑
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：TS 5.0 标准装饰器与实验性装饰器语法相似但语义不同，不能在同一项目混用。标准装饰器使用 context-based API，实验性装饰器使用 positional parameters，两者元数据机制也不同（`Symbol.metadata` vs `Reflect.metadata`）。
+**解析讲解**：TS 5.0 标准装饰器与实验性装饰器语法相似但语义不同，不能在同一项目混用。标准装饰器使用 context-based API，实验性装饰器使用 positional parameters，两者元数据机制也不同（`Symbol.metadata` vs `Reflect.metadata`）。
 
 ---
 
@@ -1278,9 +1278,9 @@ class X {}
 - C. 求值：B→A；应用：A→B
 - D. 求值：B→A；应用：B→A
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：装饰器**求值**是自顶向下（A→B），即装饰器表达式本身先求值；**应用**是自底向上（B→A），即 `A(B(X))`。最终效果是 `A` 包裹 `B`，`B` 包裹 `X`。
+**解析讲解**：装饰器**求值**是自顶向下（A→B），即装饰器表达式本身先求值；**应用**是自底向上（B→A），即 `A(B(X))`。最终效果是 `A` 包裹 `B`，`B` 包裹 `X`。
 
 ---
 
@@ -1291,33 +1291,33 @@ class X {}
 - C. 自定义对象
 - D. `Record<string, unknown>`
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：TC39 提案规定 `context.metadata` 是一个 `Map<string, unknown>`，每个类共享同一个 Map 实例，装饰器通过 `set/get` 操作元数据。TS 5.2+ 通过 `Symbol.metadata` 暴露此 Map。
+**解析讲解**：TC39 提案规定 `context.metadata` 是一个 `Map<string, unknown>`，每个类共享同一个 Map 实例，装饰器通过 `set/get` 操作元数据。TS 5.2+ 通过 `Symbol.metadata` 暴露此 Map。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 4**：实验性装饰器需要导入的 polyfill 是 ______。
 
-**答案**：`reflect-metadata`
+**解析讲解**：`reflect-metadata`
 
 ---
 
 **题目 5**：TS 5.0 标准装饰器中，方法装饰器的 context.kind 是 ______。
 
-**答案**：`'method'`
+**解析讲解**：`'method'`
 
 ---
 
 **题目 6**：装饰器组合的最终效果 `@A @B class X` 等价于函数调用 ______。
 
-**答案**：`A(B(X))`
+**解析讲解**：`A(B(X))`
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 7**：实现一个 `@memoize` 方法装饰器，缓存方法返回值（基于参数），并在 TS 5.0+ 标准装饰器语法下编写。
 
-**参考答案**：
+**解析讲解**：
 
 ```typescript
 export function memoize<T extends (...args: any[]) => any>(
@@ -1356,7 +1356,7 @@ console.log(svc.fib(40));  // 第二次命中缓存
 
 **题目 8**：装饰器与高阶组件（HOC）在 React 中的相似之处与差异？请从类型论角度分析。
 
-**参考答案**：
+**解析讲解**：
 
 **相似之处**：
 1. 都是高阶函数：装饰器 `D(C) = D(C)`，HOC `H(Component) = Component'`
@@ -1373,7 +1373,7 @@ console.log(svc.fib(40));  // 第二次命中缓存
 
 **题目 9**：为什么 TS 5.0 标准装饰器放弃了实验性装饰器的位置参数风格？请从类型安全与可扩展性角度论证。
 
-**参考答案**：
+**解析讲解**：
 
 **类型安全**：位置参数风格难以类型检查。如方法装饰器有 3 个参数，但属性装饰器只有 2 个，易混淆。context 对象通过 `kind` 字段区分类型，类型系统可精确匹配。
 
@@ -1514,7 +1514,3 @@ console.log(svc.fib(40));  // 第二次命中缓存
 
 ---
 
-## 更新日志
-
-- 2026-07-20: 第三批金标准升级，对标 MIT/Stanford/CMU 教学水准，从 88 行扩展至约 1800 行，补全 12 项质量基准，新增 TC39 Stage 3 标准装饰器内容。
-- 2026-06-14: 初始版本，仅含实验性装饰器基础示例。

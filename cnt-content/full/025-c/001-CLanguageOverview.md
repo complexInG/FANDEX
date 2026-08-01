@@ -236,34 +236,23 @@ ISO/IEC 9899 在多个条款中阐述了 C 语言的设计哲学，可归纳为�
 
 ### 2.6 时间线总览
 
-```text
-1967 ──── BCPL（Martin Richards, Cambridge）
-  │
-1969 ──── B 语言（Ken Thompson, Bell Labs, PDP-7）
-  │
-1972 ──── C 语言诞生（Dennis Ritchie, Bell Labs, PDP-11）
-  │
-1973 ──── UNIX 内核用 C 重写
-  │
-1978 ──── K&R《The C Programming Language》出版
-  │
-1983 ──── ANSI X3J11 委员会成立
-  │
-1989 ──── ANSI C89 标准发布
-  │
-1990 ──── ISO C90 标准发布
-  │
-1995 ──── C95 (AMD1) 修订
-  │
-1999 ──── ISO C99 标准发布
-  │
-2011 ──── ISO C11 标准发布
-  │
-2018 ──── ISO C17 (C18) 标准发布
-  │
-2024 ──── ISO C23 标准发布
-  │
-2025+ ─── C2y 草案讨论中
+```mermaid
+timeline
+    title C 语言发展时间线
+    1967: BCPL（Martin Richards, Cambridge）
+    1969: B 语言（Ken Thompson, Bell Labs, PDP-7）
+    1972: C 语言诞生（Dennis Ritchie, Bell Labs, PDP-11）
+    1973: UNIX 内核用 C 重写
+    1978: K&R《The C Programming Language》出版
+    1983: ANSI X3J11 委员会成立
+    1989: ANSI C89 标准发布
+    1990: ISO C90 标准发布
+    1995: C95 (AMD1) 修订
+    1999: ISO C99 标准发布
+    2011: ISO C11 标准发布
+    2018: ISO C17 (C18) 标准发布
+    2024: ISO C23 标准发布
+    2025+: C2y 草案讨论中
 ```
 
 ---
@@ -632,17 +621,24 @@ gcc -std=c23 -Wall -Wextra -O2 hello23.c -o hello23
 
 #### 5.5.1 项目结构
 
-```text
-project/
-├── Makefile
-├── CMakeLists.txt
-├── include/
-│   └── mathutil.h
-├── src/
-│   ├── main.c
-│   └── mathutil.c
-└── tests/
-    └── test_mathutil.c
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["Makefile"]
+    T2["CMakeLists.txt"]
+    T3["include/"]
+    T4["mathutil.h"]
+    T5["src/"]
+    T6["main.c"]
+    T7["mathutil.c"]
+    T8["tests/"]
+    T9["test_mathutil.c"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T4 --> T5
+    T7 --> T8
+    T8 --> T9
 ```
 
 #### 5.5.2 `include/mathutil.h`
@@ -1430,9 +1426,9 @@ curl 是网络传输的事实标准库，用 C 编写，支持 80+ 协议。curl
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题 1**：以下哪个不是 C 语言的基本关键字（C89）？
 
@@ -1441,7 +1437,7 @@ B. `bool`
 C. `volatile`
 D. `typedef`
 
-**答案**：B。`bool` 在 C89 中不是关键字，需通过 `<stdbool.h>` 引入（C99 起）。
+**解析讲解**：B。`bool` 在 C89 中不是关键字，需通过 `<stdbool.h>` 引入（C99 起）。
 
 **题 2**：C23 标准引入的关键字是？
 
@@ -1450,7 +1446,7 @@ B. `nullptr`
 C. `inline`
 D. `_Atomic`
 
-**答案**：B。`nullptr` 是 C23 新增。`auto` 在 K&R C 中已存在（C23 重定义为类型推断）。`inline` 是 C99，`_Atomic` 是 C11。
+**解析讲解**：B。`nullptr` 是 C23 新增。`auto` 在 K&R C 中已存在（C23 重定义为类型推断）。`inline` 是 C99，`_Atomic` 是 C11。
 
 **题 3**：以下代码的输出是？
 
@@ -1469,7 +1465,7 @@ B. 2
 C. 3
 D. 未定义行为
 
-**答案**：B。`p` 指向 `a[3]`，`p[-2]` 即 `a[1]`，值为 2。
+**解析讲解**：B。`p` 指向 `a[3]`，`p[-2]` 即 `a[1]`，值为 2。
 
 **题 4**：以下代码行为是？
 
@@ -1483,7 +1479,7 @@ B. `x` 变为 1
 C. 未定义行为
 D. 实现定义行为
 
-**答案**：C。同一表达式内多次修改 `x`，违反序列点规则，是 UB。
+**解析讲解**：C。同一表达式内多次修改 `x`，违反序列点规则，是 UB。
 
 **题 5**：`sizeof('a')` 在 C 中等于？
 
@@ -1492,7 +1488,7 @@ B. 2
 C. 4
 D. 实现定义
 
-**答案**：C。在 C 中 `'a'` 是 `int` 类型字面量，`sizeof('a') == sizeof(int)`，通常为 4。注意：在 C++ 中 `'a'` 是 `char`，`sizeof('a') == 1`。
+**解析讲解**：C。在 C 中 `'a'` 是 `int` 类型字面量，`sizeof('a') == sizeof(int)`，通常为 4。注意：在 C++ 中 `'a'` 是 `char`，`sizeof('a') == 1`。
 
 **题 6**：以下哪个是 C23 引入的特性？
 
@@ -1501,7 +1497,7 @@ B. `static_assert`
 C. `#embed`
 D. `__attribute__`
 
-**答案**：C。`#embed` 是 C23 新增，用于嵌入二进制文件。`_Generic` 是 C11，`static_assert` 是 C11（C23 中可省略消息），`__attribute__` 是 GCC 扩展。
+**解析讲解**：C。`#embed` 是 C23 新增，用于嵌入二进制文件。`_Generic` 是 C11，`static_assert` 是 C11（C23 中可省略消息），`__attribute__` 是 GCC 扩展。
 
 **题 7**：`int` 类型在 64 位 Linux 上通常占多少字节？
 
@@ -1510,7 +1506,7 @@ B. 4
 C. 8
 D. 实现定义
 
-**答案**：B。在 LP64 数据模型（Linux/macOS）上 `int` 为 4 字节，`long` 为 8 字节。在 LLP64 模型（Windows）上 `int` 与 `long` 都为 4 字节，`long long` 为 8 字节。
+**解析讲解**：B。在 LP64 数据模型（Linux/macOS）上 `int` 为 4 字节，`long` 为 8 字节。在 LLP64 模型（Windows）上 `int` 与 `long` 都为 4 字节，`long long` 为 8 字节。
 
 **题 8**：以下代码在 C23 中的行为是？
 
@@ -1524,47 +1520,47 @@ B. 触发段错误
 C. 未定义行为
 D. 编译错误
 
-**答案**：C。修改字符串字面量是 UB，实际可能段错误（字符串常量在只读段）或正常运行（编译器将字面量放在可写段）。
+**解析讲解**：C。修改字符串字面量是 UB，实际可能段错误（字符串常量在只读段）或正常运行（编译器将字面量放在可写段）。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题 1**：C 语言由 ________ 于 ________ 年在 ________ 设计。
 
-**答案**：Dennis Ritchie；1972；Bell Labs。
+**解析讲解**：Dennis Ritchie；1972；Bell Labs。
 
 **题 2**：C99 标准引入了 ________ 类型用于布尔值（通过宏），C23 将 ________ 提升为关键字。
 
-**答案**：`_Bool`；`bool`。
+**解析讲解**：`_Bool`；`bool`。
 
 **题 3**：`va_list`、`va_start`、`va_arg`、`va_end` 定义在 ________ 头文件中。
 
-**答案**：`<stdarg.h>`。
+**解析讲解**：`<stdarg.h>`。
 
 **题 4**：C 语言中，未初始化的自动变量读取会导致 ________。
 
-**答案**：未定义行为（UB）。
+**解析讲解**：未定义行为（UB）。
 
 **题 5**：ISO/IEC 9899:2024 是 ________ 标准的正式名称。
 
-**答案**：C23。
+**解析讲解**：C23。
 
 **题 6**：`restrict` 关键字是 ________ 标准引入的，用于 ________。
 
-**答案**：C99；指针别名优化提示。
+**解析讲解**：C99；指针别名优化提示。
 
 **题 7**：C 语言程序的入口函数是 ________，其完整原型为 ________。
 
-**答案**：`main`；`int main(int argc, char *argv[])` 或 `int main(void)`。
+**解析讲解**：`main`；`int main(int argc, char *argv[])` 或 `int main(void)`。
 
 **题 8**：在 C23 中，二进制字面量前缀为 ________，分隔符为 ________。
 
-**答案**：`0b`；`'`。
+**解析讲解**：`0b`；`'`。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题 1**：编写一个 C 程序，使用 C23 标准，输出"Hello, FANDEX!"，并附带编译命令。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 // hello_fandex.c
@@ -1586,7 +1582,7 @@ gcc -std=c23 -Wall -Wextra -O2 hello_fandex.c -o hello_fandex
 
 **题 2**：编写一个程序，使用 `<stdint.h>` 中的类型，计算 100 以内所有素数之和，并验证结果。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 // primes.c
@@ -1625,7 +1621,7 @@ int main(void)
 
 **题 3**：编写一个跨平台（Linux/macOS/Windows）的程序，输出当前操作系统名称。要求使用预处理器宏区分平台。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 // platform.c
@@ -1652,7 +1648,7 @@ int main(void)
 
 **题 4**：编写一个程序，演示三种常见 UB（整数溢出、未初始化变量、空指针解引用），并使用 UBSan 编译验证。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 // ub_demo.c
@@ -1794,7 +1790,7 @@ int main(void) {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 UB：
 
@@ -2181,14 +2177,6 @@ thread_local  static_assert  alignas   alignof
 8. 泛型选择
 9. 构建系统
 10. 静态分析与调试
-
----
-
-## 更新日志 (Changelog)
-
-- 2026-04-05: 初始版本创建。
-- 2026-04-05: 详细扩写内容，增加了发展背景、核心特点详解、应用领域细分、学习建议和第一个 C 程序示例。
-- 2026-07-20: 第二批金标准升级（对标 MIT/Stanford/CMU 教学水准）。重构为 12 章结构，新增 Bloom 学习目标、形式化定义、UB 理论、内存模型、对比分析、案例研究、习题与参考文献。行数从 154 扩展至约 1500 行。
 
 ---
 

@@ -648,19 +648,27 @@ public static class UseMiddlewareExtensions
 
 Endpoint Routing 的三阶段流程：
 
-```
-1. UseRouting()
-   ├── 在 routing 中间件中调用 RouteMatcher.Match(path, method)
-   ├── 将匹配的 Endpoint 存入 HttpContext.Features
-   └── 后续中间件可读取 endpoint 元数据
-
-2. 中间件阶段（鉴权、CORS、限流等）
-   ├── 读取 endpoint 元数据（[Authorize]、[EnableCors] 等）
-   └── 基于元数据决策（是否需要鉴权）
-
-3. UseEndpoints()
-   ├── 调用 Endpoint.RequestDelegate 执行端点逻辑
-   └── 端点可能是 MVC Controller、Razor Page、Minimal API delegate
+```mermaid
+flowchart TD
+    T0["1. UseRouting()"]
+    T1["在 routing 中间件中调用 RouteMatcher.Match(path, method)"]
+    T2["将匹配的 Endpoint 存入 HttpContext.Features"]
+    T3["后续中间件可读取 endpoint 元数据"]
+    T4["2. 中间件阶段（鉴权、CORS、限流等）"]
+    T5["读取 endpoint 元数据（[Authorize]、[EnableCors] 等）"]
+    T6["基于元数据决策（是否需要鉴权）"]
+    T7["3. UseEndpoints()"]
+    T8["调用 Endpoint.RequestDelegate 执行端点逻辑"]
+    T9["端点可能是 MVC Controller、Razor Page、Minimal API delegate"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T6 --> T7
+    T7 --> T8
+    T7 --> T9
 ```
 
 为何拆分为 `UseRouting` 与 `UseEndpoints`？
@@ -1931,26 +1939,32 @@ app.MapControllers();
 
 ### 8.1 中间件项目结构
 
-```
-MyApp.Middleware/
-├── Extensions/
-│   ├── ExceptionHandlingMiddlewareExtensions.cs
-│   ├── RequestLoggingMiddlewareExtensions.cs
-│   └── TenantMiddlewareExtensions.cs
-├── Middlewares/
-│   ├── ExceptionHandlingMiddleware.cs
-│   ├── RequestLoggingMiddleware.cs
-│   ├── TenantResolutionMiddleware.cs
-│   └── ResponseCachingMiddleware.cs
-├── Options/
-│   ├── ExceptionHandlingOptions.cs
-│   ├── RequestLoggingOptions.cs
-│   └── TenantOptions.cs
-├── Services/
-│   ├── ITenantStore.cs
-│   ├── InMemoryTenantStore.cs
-│   └── RedisTenantStore.cs
-└── MyApp.Middleware.csproj
+```mermaid
+flowchart TD
+    T0["MyApp.Middleware/"]
+    T1["Extensions/"]
+    T2["ExceptionHandlingMiddlewareExtensions.cs"]
+    T3["RequestLoggingMiddlewareExtensions.cs"]
+    T4["TenantMiddlewareExtensions.cs"]
+    T5["Middlewares/"]
+    T6["ExceptionHandlingMiddleware.cs"]
+    T7["RequestLoggingMiddleware.cs"]
+    T8["TenantResolutionMiddleware.cs"]
+    T9["ResponseCachingMiddleware.cs"]
+    T10["Options/"]
+    T11["ExceptionHandlingOptions.cs"]
+    T12["RequestLoggingOptions.cs"]
+    T13["TenantOptions.cs"]
+    T14["Services/"]
+    T15["ITenantStore.cs"]
+    T16["InMemoryTenantStore.cs"]
+    T17["RedisTenantStore.cs"]
+    T18["MyApp.Middleware.csproj"]
+    T0 --> T1
+    T4 --> T5
+    T9 --> T10
+    T13 --> T14
+    T17 --> T18
 ```
 
 ### 8.2 中间件单元测试
@@ -3162,13 +3176,13 @@ CPU 使用率：60%
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
 **习题 10.1.1**（记忆）：列出 ASP.NET Core 官方推荐的中间件注册顺序，并解释为何 `UseAuthentication` 必须在 `UseRouting` 之后。
 
-**参考答案**：
+**解析讲解**：
 
 推荐顺序：
 1. `UseExceptionHandler` / `UseDeveloperExceptionPage`
@@ -3188,7 +3202,7 @@ CPU 使用率：60%
 
 **习题 10.1.2**（理解）：解释洋葱模型的工作原理，并画出三层中间件的执行流程。
 
-**参考答案**：
+**解析讲解**：
 
 洋葱模型描述中间件的双阶段执行：每个中间件在 `await next()` 之前的代码（前置阶段）按注册顺序执行，`await next()` 之后的代码（后置阶段）按注册顺序的逆序执行。
 
@@ -3224,7 +3238,7 @@ $$M.\text{Invoke}(ctx) = \text{Pre}_M(ctx) \oplus \text{await next}(ctx) \oplus 
 
 **习题 10.1.3**（应用）：编写一个中间件，记录每个请求的 traceId、方法、路径、状态码和耗时，输出为结构化 JSON 日志。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public sealed class RequestLoggingMiddleware
@@ -3306,7 +3320,7 @@ public class CachingMiddleware
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 问题：
 
@@ -3371,7 +3385,7 @@ public async Task InvokeAsync(HttpContext context)
 
 **习题 10.2.2**（评价）：评估在中间件中使用 `AsyncLocal<T>` 存储"请求作用域"数据 vs. 使用 `HttpContext.Items` 的优劣，并给出推荐方案。
 
-**参考答案**：
+**解析讲解**：
 
 | 维度 | `AsyncLocal<T>` | `HttpContext.Items` |
 |------|----------------|--------------------|
@@ -3393,7 +3407,7 @@ public async Task InvokeAsync(HttpContext context)
 
 **习题 10.2.3**（创造）：设计一个支持"中间件元数据"的扩展框架，允许在编译期声明中间件依赖关系，运行时验证管道完整性。
 
-**参考答案**（设计草案）：
+**解析讲解**：（设计草案）：
 
 ```csharp
 // 中间件元数据特性
@@ -3463,11 +3477,11 @@ validator.Validate(app);  // 若顺序错误，抛异常
 
 未来可结合 Source Generator 在编译期生成验证代码，避免运行时反射。
 
-### 10.3 综合题
+### 综合题知识点讲解
 
 **习题 10.3.1**（综合）：实现一个支持"请求优先级"的中间件，允许通过请求头指定优先级（`X-Priority: high|normal|low`），高优先级请求优先处理，低优先级请求在系统繁忙时被拒绝。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public sealed class PriorityQueueMiddleware

@@ -152,12 +152,14 @@ OpenHarmony 中分布式数据完全开源，仓库 `foundation/distributeddatam
 
 ### 2.8 时间线总览
 
-```
-2019 ──── HarmonyOS 1.0 ──── distributedData 雏形
-2020 ──── HarmonyOS 2.0 ──── KVStore 引入
-2022 ──── HarmonyOS 3.0 ──── distributedDataObject + RdbStore
-2023 ──── HarmonyOS 4.0  ──── 冲突解决 API、端云协同
-2024 ──── HarmonyOS NEXT ─── CRDT、数据联邦
+```mermaid
+timeline
+    title 分布式数据时间线
+    2019: HarmonyOS 1.0 distributedData 雏形
+    2020: HarmonyOS 2.0 KVStore 引入
+    2022: HarmonyOS 3.0 distributedDataObject + RdbStore
+    2023: HarmonyOS 4.0 冲突解决 API、端云协同
+    2024: HarmonyOS NEXT CRDT、数据联邦
 ```
 
 ---
@@ -278,21 +280,27 @@ $$
 
 KVStore 同步采用 **反熵协议**（Anti-Entropy）+ **版本向量**（Version Vector）：
 
-```
-Device A                              Device B
-    │                                     │
-    │ 1. push(local keys + versions)      │
-    │────────────────────────────────────>│
-    │                                     │ 2. diff: which keys B lacks?
-    │                                     │
-    │ 3. response(missing keys + values)  │
-    │<────────────────────────────────────│
-    │                                     │
-    │ 4. apply to local store             │
-    │                                     │
-    │ 5. push(missing keys from A)        │
-    │────────────────────────────────────>│
-    │                                     │ 6. apply
+```mermaid
+flowchart TD
+    T0["Device A                              Device B"]
+    T1["1. push(local keys + versions)"]
+    T2[">"]
+    T3["2. diff: which keys B lacks?"]
+    T4["3. response(missing keys + values)"]
+    T5["<"]
+    T6["4. apply to local store"]
+    T7["5. push(missing keys from A)"]
+    T8[">"]
+    T9["6. apply"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T0 --> T8
+    T0 --> T9
 ```
 
 版本向量 $\vec{v}_k$ 记录键 $k$ 在各设备上的版本：
@@ -369,15 +377,13 @@ HarmonyOS NEXT 的 `distributedDataObject` 内置 G-Counter、OR-Set、LWW-Regis
 
 RdbStore 同步基于 **rowid + 时间戳** 的增量方案：
 
-```
-本地 SQLite 表:
-┌──────┬─────┬────────────┬──────────────┐
-│ rowid │ id  │ data       │ last_modified │
-├──────┼─────┼────────────┼──────────────┤
-│ 1     │ A   │ "hello"    │ 1700000000   │
-│ 2     │ B   │ "world"    │ 1700000005   │
-│ 3     │ C   │ "updated"  │ 1700000010   │
-└──────┴─────┴────────────┴──────────────┘
+```mermaid
+flowchart TD
+    subgraph Table[本地 SQLite 表]
+        R1[rowid 1 / id A / data hello / last_modified 1700000000]
+        R2[rowid 2 / id B / data world / last_modified 1700000005]
+        R3[rowid 3 / id C / data updated / last_modified 1700000010]
+    end
 ```
 
 同步流程：
@@ -1871,140 +1877,110 @@ class CollaborativeWhiteboard {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：HarmonyOS 分布式 KVStore 单条目最大支持多少数据？
+**常见疑问 1**：HarmonyOS 分布式 KVStore 单条目最大支持多少数据？
 
 - A. 1 MB
 - B. 4 MB
 - C. 8 MB
 - D. 16 MB
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：HarmonyOS 4.0 起，`distributedKVStore` 单条目最大支持 8MB。HarmonyOS 1.0 时为 1MB，2.0 提升到 4MB，3.0 起稳定在 8MB。超过限制会抛出 15100003 错误码。
+**解析讲解**：HarmonyOS 4.0 起，`distributedKVStore` 单条目最大支持 8MB。HarmonyOS 1.0 时为 1MB，2.0 提升到 4MB，3.0 起稳定在 8MB。超过限制会抛出 15100003 错误码。
 
-</details>
 
-**Q2**：以下哪种冲突解决策略能保证无数据丢失？
+**常见疑问 2**：以下哪种冲突解决策略能保证无数据丢失？
 
 - A. LWW (Last Write Wins)
 - B. FIFO (First In First Out)
 - C. CRDT 合并
 - D. 默认策略
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：CRDT（Conflict-free Replicated Data Type）通过数学结构保证合并的交换律、结合律、幂等性，永远不会丢失数据。LWW 在时钟不同步时会丢失并发写入；FIFO 保留最早写入，可能丢失更新；默认策略即 LWW。
+**解析讲解**：CRDT（Conflict-free Replicated Data Type）通过数学结构保证合并的交换律、结合律、幂等性，永远不会丢失数据。LWW 在时钟不同步时会丢失并发写入；FIFO 保留最早写入，可能丢失更新；默认策略即 LWW。
 
-</details>
 
-**Q3**：`distributedDataObject` 与 `distributedKVStore` 的核心区别是什么？
+**常见疑问 3**：`distributedDataObject` 与 `distributedKVStore` 的核心区别是什么？
 
 - A. 前者持久化，后者不持久化
 - B. 前者不持久化，后者持久化
 - C. 前者仅本地，后者跨设备
 - D. 两者完全相同
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`distributedDataObject` 是内存级数据对象，不持久化，应用退出即销毁，适合临时状态（如游戏进度、白板）；`distributedKVStore` 是持久化 KV 存储，写入即落盘，适合持久业务数据。
+**解析讲解**：`distributedDataObject` 是内存级数据对象，不持久化，应用退出即销毁，适合临时状态（如游戏进度、白板）；`distributedKVStore` 是持久化 KV 存储，写入即落盘，适合持久业务数据。
 
-</details>
 
-**Q4**：以下哪个 `SecurityLevel` 表示"硬件 TEE 加密，仅本机可见"？
+**常见疑问 4**：以下哪个 `SecurityLevel` 表示"硬件 TEE 加密，仅本机可见"？
 
 - A. S0
 - B. S1
 - C. S3
 - D. S4
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：S4 是顶级保护，使用 AES-256 + 硬件 TEE（Trusted Execution Environment），仅本机可见，不参与跨设备同步。S0 无保护，S1 低级保护，S2 中级保护，S3 高级保护。
+**解析讲解**：S4 是顶级保护，使用 AES-256 + 硬件 TEE（Trusted Execution Environment），仅本机可见，不参与跨设备同步。S0 无保护，S1 低级保护，S2 中级保护，S3 高级保护。
 
-</details>
 
-**Q5**：分布式 RdbStore 的增量同步基于以下哪个机制？
+**常见疑问 5**：分布式 RdbStore 的增量同步基于以下哪个机制？
 
 - A. 操作日志（OpLog）
 - B. rowid + 时间戳
 - C. MVCC 多版本
 - D. 全量对比
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：HarmonyOS 分布式 RdbStore 基于 `rowid + last_modified` 字段做增量同步，同步时查询 `WHERE last_modified > last_sync_ts`，仅传输变更行。删除采用墓碑标记（deleted=1）。
+**解析讲解**：HarmonyOS 分布式 RdbStore 基于 `rowid + last_modified` 字段做增量同步，同步时查询 `WHERE last_modified > last_sync_ts`，仅传输变更行。删除采用墓碑标记（deleted=1）。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**：HarmonyOS 分布式数据采用 ______ 一致性模型，保证网络分区时可用性。
+**常见疑问 6**：HarmonyOS 分布式数据采用 ______ 一致性模型，保证网络分区时可用性。
 
-<details>
-<summary>答案</summary>
 
 最终一致性（Eventual Consistency）
 
-</details>
 
-**Q2**：KVStore 同步协议使用 ______ 协议 + 版本向量（Version Vector）实现增量同步。
+**常见疑问 7**：KVStore 同步协议使用 ______ 协议 + 版本向量（Version Vector）实现增量同步。
 
-<details>
-<summary>答案</summary>
 
 反熵（Anti-Entropy）
 
-</details>
 
-**Q3**：`distributedDataObject` 的字段级同步粒度指的是 ______。
+**常见疑问 8**：`distributedDataObject` 的字段级同步粒度指的是 ______。
 
-<details>
-<summary>答案</summary>
 
 仅传输变更字段，而非整个对象
 
-</details>
 
-**Q4**：CAP 定理中，HarmonyOS 分布式数据选择 ______ 优先。
+**常见疑问 9**：CAP 定理中，HarmonyOS 分布式数据选择 ______ 优先。
 
-<details>
-<summary>答案</summary>
 
 AP（可用性 + 分区容错性）
 
-</details>
 
-**Q5**：跨应用共享数据必须通过 ______ ExtensionAbility。
+**常见疑问 10**：跨应用共享数据必须通过 ______ ExtensionAbility。
 
-<details>
-<summary>答案</summary>
 
 DataShare
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q1**：实现一个跨设备待办列表应用的核心数据层
+**常见疑问 11**：实现一个跨设备待办列表应用的核心数据层
 
 要求：
 1. 使用 `distributedKVStore` 存储待办项
@@ -2012,8 +1988,6 @@ DataShare
 3. 自动同步到同账号可信设备
 4. 注册自定义冲突解决（按 lastModified 合并）
 
-<details>
-<summary>参考答案</summary>
 
 ```typescript
 import distributedKVStore from '@ohos.data.distributedKVStore';
@@ -2097,12 +2071,9 @@ class TodoStore {
 }
 ```
 
-</details>
 
-**Q2**：实现一个基于 `distributedDataObject` 的多人计数器，要求支持 G-Counter CRDT 合并
+**常见疑问 12**：实现一个基于 `distributedDataObject` 的多人计数器，要求支持 G-Counter CRDT 合并
 
-<details>
-<summary>参考答案</summary>
 
 ```typescript
 import distributedDataObject from '@ohos.data.distributedDataObject';
@@ -2157,14 +2128,11 @@ class DistributedCounter {
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
-**Q1**：在弱网环境下（如地铁中），HarmonyOS 分布式数据的最终一致性可能延迟数分钟甚至数小时。请设计一个用户友好的 UI 反馈机制，让用户感知到"同步中"状态。
+**常见疑问 13**：在弱网环境下（如地铁中），HarmonyOS 分布式数据的最终一致性可能延迟数分钟甚至数小时。请设计一个用户友好的 UI 反馈机制，让用户感知到"同步中"状态。
 
-<details>
-<summary>参考思路</summary>
 
 1. **状态指示器**：在标题栏显示同步状态图标（已同步/同步中/同步失败/离线）。
 2. **本地操作回执**：本地写入立即显示"已保存"，同步完成后变更为"已同步"。
@@ -2173,24 +2141,18 @@ class DistributedCounter {
 5. **同步历史**：记录同步日志，用户可查看"上次同步时间"。
 6. **重试策略**：失败后指数退避重试（1s, 2s, 4s, ...），上限 5 分钟。
 
-</details>
 
-**Q2**：为什么 HarmonyOS 选择最终一致性而非强一致性？请从 CAP 定理、用户体验、网络条件三个角度论证。
+**常见疑问 14**：为什么 HarmonyOS 选择最终一致性而非强一致性？请从 CAP 定理、用户体验、网络条件三个角度论证。
 
-<details>
-<summary>参考思路</summary>
 
 1. **CAP 定理**：网络分区不可避免（P 必选），强一致（C）会牺牲可用性（A），导致网络差时应用不可用。
 2. **用户体验**：用户期望"立即响应"，强一致会阻塞本地写入，体验差；最终一致允许本地立即可读，体验流畅。
 3. **网络条件**：移动网络下网络中断频繁，强一致会让应用频繁不可用；最终一致允许离线操作，恢复后合并。
 4. **场景匹配**：HarmonyOS 多设备协同多为个人数据（笔记、设置、状态），对实时一致性要求低，最终一致足够。
 
-</details>
 
-**Q3**：假设你要设计一个跨设备多人协作文档编辑器，会选择 `distributedKVStore` 还是 `distributedDataObject`？为什么？如何处理文档冲突？
+**常见疑问 15**：假设你要设计一个跨设备多人协作文档编辑器，会选择 `distributedKVStore` 还是 `distributedDataObject`？为什么？如何处理文档冲突？
 
-<details>
-<summary>参考思路</summary>
 
 选择 `distributedDataObject` + CRDT，理由：
 
@@ -2204,12 +2166,9 @@ class DistributedCounter {
 - 图片附件用分布式文件，引用路径用 OR-Set。
 - 历史版本用 OpLog，支持撤销/重做。
 
-</details>
 
-**Q4**：HarmonyOS 的"同账号自动同步"边界设计（即仅同账号设备自动同步）有哪些优点与局限？在什么场景下需要突破这一边界？
+**常见疑问 16**：HarmonyOS 的"同账号自动同步"边界设计（即仅同账号设备自动同步）有哪些优点与局限？在什么场景下需要突破这一边界？
 
-<details>
-<summary>参考思路</summary>
 
 **优点**：
 1. **安全**：账号即信任边界，避免未授权设备访问。
@@ -2226,7 +2185,6 @@ class DistributedCounter {
 2. **企业 MDM**：通过设备管理 API 配置企业设备圈。
 3. **临时协作**：扫码建立临时会话，会话结束即解除信任。
 
-</details>
 
 ---
 
@@ -2419,3 +2377,301 @@ class DistributedCounter {
 | `fileIO.closeSync(fd)` | 关闭 |
 | `fileIO.unlinkSync(path)` | 删除 |
 | `fileIO.listFileSync(dir)` | 列目录 |
+## KV 数据库
+
+**基本写法：创建 KVManager**
+`const <manager> = distributedKVStore.createKVStoreManager(<配置>)`
+```typescript
+// 创建分布式键值数据库管理器
+import { distributedKVStore } from '@kit.ArkData'
+
+let manager = distributedKVStore.createKVStoreManager({
+  context: getContext(this),
+  bundleName: 'com.example.myapp'
+})
+```
+
+---
+
+**基本写法：创建 KVStore**
+`manager.getKVStore<KVStore>(<storeId>, <options>)`
+```typescript
+// 创建键值数据库
+let options: distributedKVStore.Options = {
+  createIfMissing: true,
+  encrypt: false,
+  backup: false,
+  autoSync: true,
+  kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
+  securityLevel: distributedKVStore.SecurityLevel.S1
+}
+
+manager.getKVStore('my_kvstore', options, (err, store) => {
+  if (err) { console.error('创建失败'); return }
+  let kvStore = store as distributedKVStore.SingleKVStore
+})
+```
+
+---
+
+**基本写法：写入数据**
+`<kvStore>.put(<键>, <值>)`
+```typescript
+// 写入键值对
+kvStore.put('username', 'Alice').then(() => {
+  console.info('写入成功')
+})
+```
+
+---
+
+**基本写法：读取数据**
+`<kvStore>.get(<键>)`
+```typescript
+// 读取指定键的值
+kvStore.get('username').then((value) => {
+  console.info(`读取: ${value}`)
+})
+```
+
+---
+
+**基本写法：删除数据**
+`<kvStore>.delete(<键>)`
+```typescript
+// 删除指定键值对
+kvStore.delete('username').then(() => {
+  console.info('删除成功')
+})
+```
+
+---
+
+**基本写法：监听数据变化**
+`<kvStore>.on('dataChange', <回调>)`
+```typescript
+// 监听分布式数据同步变化
+kvStore.on('dataChange', distributedKVStore.SubscribeType.SUBSCRIBE_TYPE_REMOTE, (data) => {
+  for (const entry of data.insertEntries) {
+    console.info(`新增: ${entry.key} = ${entry.value.value}`)
+  }
+  for (const entry of data.updateEntries) {
+    console.info(`更新: ${entry.key} = ${entry.value.value}`)
+  }
+  for (const entry of data.deleteEntries) {
+    console.info(`删除: ${entry.key}`)
+  }
+})
+```
+
+---
+
+**基本写法：批量写入**
+`<kvStore>.putBatch(<entries>)`
+```typescript
+// 批量写入键值对
+let entries: distributedKVStore.Entry[] = [
+  { key: 'key1', value: { type: distributedKVStore.ValueType.STRING, value: 'v1' } },
+  { key: 'key2', value: { type: distributedKVStore.ValueType.INTEGER, value: 42 } }
+]
+kvStore.putBatch(entries).then(() => {
+  console.info('批量写入成功')
+})
+```
+
+---
+
+**基本写法：批量读取**
+`<kvStore>.getEntries('<前缀>')`
+```typescript
+// 按前缀查询批量数据
+kvStore.getEntries('key').then((entries) => {
+  for (const entry of entries) {
+    console.info(`${entry.key}: ${entry.value.value}`)
+  }
+})
+```
+
+---
+
+## 关系型数据库（分布式）
+
+**基本写法：创建 RDB**
+`const <rdb> = relationalStore.getRdbStore(<context>, <配置>)`
+```typescript
+// 创建分布式关系型数据库
+import { relationalStore } from '@kit.ArkData'
+
+const config: relationalStore.StoreConfig = {
+  name: 'my_db.db',
+  securityLevel: relationalStore.SecurityLevel.S1
+}
+
+relationalStore.getRdbStore(getContext(this), config, (err, store) => {
+  let rdbStore = store as relationalStore.RdbStore
+})
+```
+
+---
+
+**基本写法：创建表**
+`const <sql> = 'CREATE TABLE IF NOT EXISTS <表名> (<列定义>)'`
+```typescript
+// 执行建表 SQL
+const SQL = `CREATE TABLE IF NOT EXISTS USER (
+  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  NAME TEXT NOT NULL,
+  AGE INTEGER
+)`
+rdbStore.executeSql(SQL)
+```
+
+---
+
+**基本写法：插入数据**
+`rdbStore.insert('<表名>', <值桶>)`
+```typescript
+// 插入一行数据
+const valueBucket: relationalStore.ValuesBucket = {
+  NAME: 'Alice',
+  AGE: 25
+}
+rdbStore.insert('USER', valueBucket, (err, rowId) => {
+  console.info(`插入行 ID: ${rowId}`)
+})
+```
+
+---
+
+**基本写法：查询数据**
+`rdbStore.query(<谓词>, <列数组>)`
+```typescript
+// 使用 RdbPredicates 查询
+let predicates = new relationalStore.RdbPredicates('USER')
+predicates.greaterThan('AGE', 18)
+predicates.orderByAsc('AGE')
+
+let resultSet = await rdbStore.query(predicates, ['ID', 'NAME', 'AGE'])
+while (resultSet.goToNextRow()) {
+  let id = resultSet.getLong(resultSet.getColumnIndex('ID'))
+  let name = resultSet.getString(resultSet.getColumnIndex('NAME'))
+  console.info(`${id}: ${name}`)
+}
+```
+
+---
+
+**基本写法：更新数据**
+`rdbStore.update(<值桶>, <谓词>)`
+```typescript
+// 更新满足条件的数据
+let predicates = new relationalStore.RdbPredicates('USER')
+predicates.equalTo('NAME', 'Alice')
+
+const valueBucket: relationalStore.ValuesBucket = {
+  AGE: 26
+}
+let rows = await rdbStore.update(valueBucket, predicates)
+console.info(`更新 ${rows} 行`)
+```
+
+---
+
+**基本写法：删除数据**
+`rdbStore.delete(<谓词>)`
+```typescript
+// 删除满足条件的数据
+let predicates = new relationalStore.RdbPredicates('USER')
+predicates.equalTo('NAME', 'Alice')
+let rows = await rdbStore.delete(predicates)
+console.info(`删除 ${rows} 行`)
+```
+
+---
+
+**基本写法：设置分布式表**
+`rdbStore.setDistributedTables(['<表名>'])`
+```typescript
+// 将表标记为分布式同步表
+await rdbStore.setDistributedTables(['USER'])
+```
+
+---
+
+**基本写法：监听分布式数据变化**
+`rdbStore.on('dataChange', <类型>, <回调>)`
+```typescript
+// 监听远程设备数据变更
+rdbStore.on('dataChange', relationalStore.SubscribeType.SUBSCRIBE_TYPE_REMOTE, (data) => {
+  for (const table of data.tables) {
+    console.info(`表 ${table.tableName} 数据变更`)
+  }
+})
+```
+
+---
+
+## 用户首选项
+
+**基本写法：获取 Preferences**
+`const <prefs> = preferences.getPreferences(<context>, '<名称>')`
+```typescript
+// 获取轻量级数据存储
+import { preferences } from '@kit.ArkData'
+
+let prefs = await preferences.getPreferences(getContext(this), 'my_prefs')
+```
+
+---
+
+**基本写法：写入首选项**
+`prefs.put('<键>', <值>)`
+```typescript
+// 写入配置项
+await prefs.put('theme', 'dark')
+await prefs.put('fontSize', 14)
+await prefs.flush()
+```
+
+---
+
+**基本写法：读取首选项**
+`prefs.get('<键>', <默认值>)`
+```typescript
+// 读取配置项，不存在时返回默认值
+let theme = await prefs.get('theme', 'light')
+let fontSize = await prefs.get('fontSize', 12)
+console.info(`主题: ${theme}, 字号: ${fontSize}`)
+```
+
+---
+
+**基本写法：删除首选项**
+`prefs.delete('<键>')`
+```typescript
+// 删除指定配置项
+await prefs.delete('theme')
+await prefs.flush()
+```
+
+---
+
+**基本写法：检查键是否存在**
+`prefs.has('<键>')`
+```typescript
+// 判断配置项是否存在
+let exists = await prefs.has('theme')
+if (exists) {
+  console.info('存在该配置')
+}
+```
+
+---
+
+**基本写法：清除所有数据**
+`prefs.clear()`
+```typescript
+// 清空所有首选项
+await prefs.clear()
+await prefs.flush()
+```

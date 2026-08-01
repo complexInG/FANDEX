@@ -410,12 +410,13 @@ size_t s = sizeof(p);   /* 编译期求值，返回 8（64 位） */
 
 类型推导链：
 
-```
-arr (expression): int[10]
-   │
-   ├─ decay context: int* (pointing to arr[0])
-   │
-   └─ & operator: int(*)[10] (pointing to the array itself)
+```mermaid
+flowchart TD
+    T0["arr (expression): int[10]"]
+    T1["decay context: int* (pointing to arr[0])"]
+    T2["& operator: int(*)[10] (pointing to the array itself)"]
+    T0 --> T1
+    T0 --> T2
 ```
 
 `&arr + 1` 的指针算术按 `int [10]` 的大小（40 字节）缩放：
@@ -430,20 +431,21 @@ $$
 
 `int matrix[3][4]` 在表达式中的递归退化：
 
-```
-matrix (type: int[3][4])
-   │
-   ├─ decay to: int(*)[4]  (pointing to matrix[0])
-   │
-   │   matrix + i (type: int(*)[4], pointing to matrix[i])
-   │
-   ├─ *(matrix + i) = matrix[i] (type: int[4])
-   │
-   │   matrix[i] decays to: int* (pointing to matrix[i][0])
-   │
-   │   matrix[i] + j (type: int*, pointing to matrix[i][j])
-   │
-   ├─ *(matrix[i] + j) = matrix[i][j] (type: int)
+```mermaid
+flowchart TD
+    T0["matrix (type: int[3][4])"]
+    T1["decay to: int(*)[4]  (pointing to matrix[0])"]
+    T2["matrix + i (type: int(*)[4], pointing to matrix[i])"]
+    T3["*(matrix + i) = matrix[i] (type: int[4])"]
+    T4["matrix[i] decays to: int* (pointing to matrix[i][0])"]
+    T5["matrix[i] + j (type: int*, pointing to matrix[i][j])"]
+    T6["*(matrix[i] + j) = matrix[i][j] (type: int)"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T0 --> T4
+    T0 --> T5
+    T5 --> T6
 ```
 
 由此可推导 `matrix[i][j]` 的等价指针表达式：
@@ -468,20 +470,27 @@ $$
 
 **解析规则**：C 声明的"螺旋法则"（spiral rule）：
 
-```
-int *p[10];
-    │
-    ├─ p is...
-    ├─ [10] array of 10...
-    ├─ * pointer to...
-    └─ int int
-
-int (*p)[10];
-    │
-    ├─ p is...
-    ├─ ( * ) pointer to...
-    ├─ [10] array of 10...
-    └─ int int
+```mermaid
+flowchart TD
+    T0["int *p[10];"]
+    T1["p is..."]
+    T2["[10] array of 10..."]
+    T3["* pointer to..."]
+    T4["int int"]
+    T5["int (*p)[10];"]
+    T6["p is..."]
+    T7["( * ) pointer to..."]
+    T8["[10] array of 10..."]
+    T9["int int"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T4 --> T5
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T5 --> T9
 ```
 
 ### 4.6 字符串字面量的存储类
@@ -1345,9 +1354,9 @@ rte_memcpy(void *dst, const void *src, size_t n) {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题 1**：以下代码输出？
 
@@ -1362,17 +1371,14 @@ B. 20 20
 C. 20 8  
 D. 8 8
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：
+**解析讲解**：
 
 - `sizeof(arr)`：arr 是真实数组，不退化，返回 `5 * sizeof(int)` = 20。
 - `sizeof(p)`：p 是指针，返回 `sizeof(int *)` = 8（64 位系统）。
 
-</details>
 
 **题 2**：以下代码在 64 位 Linux x86_64 上的输出？
 
@@ -1386,12 +1392,10 @@ B. `arr` 与 `&arr[0]` 相同，`&arr` 不同
 C. 三者都不同  
 D. 编译错误
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：
+**解析讲解**：
 
 - `arr` 退化为 `&arr[0]`，类型 `int *`，值为数组首元素地址。
 - `&arr[0]` 显式取首元素地址，类型 `int *`，值同上。
@@ -1399,7 +1403,6 @@ D. 编译错误
 
 三者**数值相同**（都是数组起始地址），但**类型不同**。
 
-</details>
 
 **题 3**：以下哪个声明与 `int matrix[3][4]` 退化的函数参数等价？
 
@@ -1415,21 +1418,18 @@ B. A、B、C 等价
 C. A、B、C、D 都等价  
 D. 仅 A、B 等价
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：
+**解析讲解**：
 
 - A、B、C 完全等价，函数参数中第一维退化，类型均为 `int (*)[4]`。
 - D 的类型是 `int **`（指向 `int *` 的指针），与 `int (*)[4]` 不兼容。`int[3][4]` 退化为 `int(*)[4]`，不是 `int**`。
 
 这是 C 程序员最常犯的错误：误以为二维数组退化为"指针的指针"。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题 4**：以下代码输出：
 
@@ -1441,12 +1441,10 @@ printf("%d\n", 2[arr]);
 
 输出是 _____。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：3
+**解析讲解**：3
 
-**解析**：
+**解析讲解**：
 
 C 标准 `a[b]` ≡ `*(a + b)` ≡ `*(b + a)` ≡ `b[a]`。
 
@@ -1454,7 +1452,6 @@ C 标准 `a[b]` ≡ `*(a + b)` ≡ `*(b + a)` ≡ `b[a]`。
 
 合法但应避免使用，可读性差。
 
-</details>
 
 **题 5**：以下代码 `sizeof(s)` 的值是 _____。
 
@@ -1463,20 +1460,17 @@ char s[] = "hello";
 printf("%zu\n", sizeof(s));
 ```
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：6
+**解析讲解**：6
 
-**解析**：
+**解析讲解**：
 
 `"hello"` 字面量类型为 `char [6]`（含 `\0`）。`char s[] = "hello"` 触发"字符串字面量初始化数组"的非退化例外，s 是 6 字节数组（含 `\0`），`sizeof(s)` = 6。
 
 对比 `char *p = "hello";`，`sizeof(p)` = 8（指针大小）。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题 6**：实现一个安全的 `array_foreach` 宏，遍历任意类型数组，对每个元素调用回调函数。要求：
 
@@ -1484,8 +1478,6 @@ printf("%zu\n", sizeof(s));
 - 编译期检查参数是否为数组（非指针）。
 - 传递元素索引给回调。
 
-<details>
-<summary>参考答案</summary>
 
 ```c
 #include <stddef.h>
@@ -1525,7 +1517,6 @@ int main(void) {
 }
 ```
 
-</details>
 
 **题 7**：给定函数 `void matrix_transpose(int (*dst)[N], int (*src)[M], int rows, int cols)`，实现矩阵转置。要求：
 
@@ -1533,8 +1524,6 @@ int main(void) {
 - 处理 M ≠ N 的情况。
 - 使用 `_Static_assert` 验证编译期常量。
 
-<details>
-<summary>参考答案</summary>
 
 ```c
 #include <stdio.h>
@@ -1578,14 +1567,11 @@ int main(void) {
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **题 8**：为什么 C 标准规定函数参数中的数组类型自动退化为指针？请从历史、实现、性能三个角度分析。
 
-<details>
-<summary>参考答案</summary>
 
 **历史角度**：
 
@@ -1610,12 +1596,9 @@ C 继承自 BCPL/B 语言，后者无类型系统，数组与指针本就等价�
 
 这是 C 语言"接近硬件"哲学的典型权衡：以类型安全换取性能与实现简洁。
 
-</details>
 
 **题 9**：`int arr[N]` 在栈上分配与 `int *p = malloc(N * sizeof(int))` 在堆上分配，在内存布局、生命周期、性能、安全性上有何异同？
 
-<details>
-<summary>参考答案</summary>
 
 **相同点**：
 
@@ -1645,12 +1628,9 @@ C 继承自 BCPL/B 语言，后者无类型系统，数组与指针本就等价�
 - 大数组、跨函数传递、动态调整大小：用 `malloc`。
 - 嵌入式系统：优先栈数组（无 `malloc` 开销），但注意栈溢出。
 
-</details>
 
 **题 10**：C++ 的 `std::span<T>`（C++20）如何解决 C"数组退化"导致的大小丢失问题？请对比设计哲学。
 
-<details>
-<summary>参考答案</summary>
 
 **`std::span<T>` 设计**：
 
@@ -1705,7 +1685,6 @@ void process(IntSpan span) {
 
 但 C 缺乏自动构造与范围迭代，使用体验不如 C++ `std::span`。
 
-</details>
 
 ---
 
@@ -1954,41 +1933,17 @@ int **alloc_matrix(int rows, int cols) {
 
 ## 附录 D：标准演化时间线
 
-```
-1967  BCPL（Martin Richards）
-  │   - 无类型，数组与指针等价
-  │
-1969  B（Ken Thompson）
-  │   - 继承 BCPL 语义
-  │
-1972  C（Dennis Ritchie）
-  │   - 引入类型系统
-  │   - 保留"数组退化"机制
-  │
-1978  K&R C
-  │   - 形式化数组退化规则
-  │   - 例外清单：sizeof、&、字符串字面量初始化
-  │
-1989  C89
-  │   - 标准化数组退化（§6.2.2.1）
-  │   - 多维数组递归布局规则
-  │
-1999  C99
-  │   - 变长数组（VLA）
-  │   - 复合字面量
-  │   - 灵活数组成员（FAM）
-  │   - restrict 限定符
-  │   - static 修饰数组参数
-  │
-2011  C11
-  │   - VLA 可选化
-  │   - _Generic 类型推导
-  │   - 匿名结构体/联合
-  │
-2024  C23
-      - typeof 关键字（非退化上下文）
-      - [[...]] 标准属性
-      - 空数组语义澄清
+```mermaid
+timeline
+    title 发展时间线
+    1967: BCPL（Martin Richards） - 无类型，数组与指针等价
+    1969: B（Ken Thompson） - 继承 BCPL 语义
+    1972: C（Dennis Ritchie） - 引入类型系统 - 保留'数组退化'机制
+    1978: K&R C - 形式化数组退化规则 - 例外清单：sizeof、&、字符串字面量初始化
+    1989: C89 - 标准化数组退化（§6.2.2.1） - 多维数组递归布局规则
+    1999: C99 - 变长数组（VLA） - 复合字面量 - 灵活数组成员（FAM） - restrict 限定符 - static 修饰数组参数
+    2011: C11 - VLA 可选化 - _Generic 类型推导 - 匿名结构体/联合
+    2024: C23 - typeof 关键字（非退化上下文） - [[...]] 标准属性 - 空数组语义澄清
 ```
 
 ## 附录 E：编译器警告速查

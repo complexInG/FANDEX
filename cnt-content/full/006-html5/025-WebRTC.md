@@ -15,10 +15,11 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+# 实时通信 语法速查手册
 
-# WebRTC 实时通信（Web Real-Time Communication）
+> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数 | `{ }` 分组 | `|` 或 | `...` 重复
 
-> 本文档依据 W3C WebRTC 1.0: Real-Time Communication Between Browsers 与 WHATWG HTML Living Standard 媒体捕获章节，系统阐述 WebRTC 体系：`getUserMedia`、`RTCPeerConnection`、`RTCDataChannel`、ICE/STUN/TURN 协议族、SDP 会话描述、媒体编解码与安全模型，对标 MIT 6.S192、Stanford CS142 与 CMU 15-410 教学深度。
+---
 
 ## 1. 学习目标
 
@@ -129,38 +130,25 @@ prerequisites:
 
 ### 2.5 演进时间线
 
-```
-1995  Web 诞生，无实时通信能力
-  │
-2000  Flash Communication Server / RTMP
-  │
-2008  WebSocket（HTML5 草案）
-  │
-2010  Google 收购 GIPS + On2，启动 WebRTC 项目
-  │
-2011  W3C + IETF 启动 WebRTC 标准化
-  │
-2012  Chrome 18 首发 WebRTC（flag）
-  │
-2013  Firefox 22 默认启用
-  │
-2014  WebRTC 1.0 Working Draft
-  │
-2016  Safari / Edge 支持
-  │
-2017  WebRTC 1.0 Candidate Recommendation
-  │
-2018  getUserMedia 取代旧 API
-  │
-2020  COVID 推动视频会议爆发
-  │
-2021  Insertable Streams
-  │
-2022  AV1 编解码器支持；WebRTC 1.0 Recommendation
-  │
-2023  WebTransport 实验性替代
-  │
-2024  WebRTC NV（RTCRtpScriptTransform）
+```mermaid
+timeline
+    title 发展时间线
+    1995: Web 诞生，无实时通信能力
+    2000: Flash Communication Server / RTMP
+    2008: WebSocket（HTML5 草案）
+    2010: Google 收购 GIPS + On2，启动 WebRTC 项目
+    2011: W3C + IETF 启动 WebRTC 标准化
+    2012: Chrome 18 首发 WebRTC（flag）
+    2013: Firefox 22 默认启用
+    2014: WebRTC 1.0 Working Draft
+    2016: Safari / Edge 支持
+    2017: WebRTC 1.0 Candidate Recommendation
+    2018: getUserMedia 取代旧 API
+    2020: COVID 推动视频会议爆发
+    2021: Insertable Streams
+    2022: AV1 编解码器支持；WebRTC 1.0 Recommendation
+    2023: WebTransport 实验性替代
+    2024: WebRTC NV（RTCRtpScriptTransform）
 ```
 
 ### 2.6 规范族谱
@@ -1603,23 +1591,23 @@ Excalidraw 在线白板使用 WebRTC：
 
 ---
 
-## 10. 练习题与答案
+## 知识讲解与要点分析（原练习题）
 
-### 练习 1（基础）
+## 知识讲解与要点分析（原练习 1（基础））
 
 **题目**：列出 WebRTC 的三大核心 API，并简述各自作用。
 
-**答案**：
+**解析讲解**：
 
 1. **`getUserMedia`**（`MediaDevices.getUserMedia`）：从摄像头、麦克风采集 `MediaStream`。
 2. **`RTCPeerConnection`**：建立点对点连接，处理 ICE、DTLS、SRTP，传输音视频轨道与数据通道。
 3. **`RTCDataChannel`**：在 P2P 连接上创建双向数据通道，支持有序/无序、可靠/不可靠传输。
 
-### 练习 2（基础）
+## 知识讲解与要点分析（原练习 2（基础））
 
 **题目**：实现一个 `getUserMedia` 调用，要求采集 720p/30fps 视频 + 降噪音频，并处理权限拒绝。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 async function startCamera() {
@@ -1642,11 +1630,11 @@ async function startCamera() {
 }
 ```
 
-### 练习 3（理解）
+## 知识讲解与要点分析（原练习 3（理解））
 
 **题目**：解释 ICE、STUN、TURN 三者的关系与作用。
 
-**答案**：
+**解析讲解**：
 
 **ICE（Interactive Connectivity Establishment）**：一个框架协议，用于在两个处于 NAT 后的主机之间找到可通信路径。它通过尝试多种候选地址（host/srflx/relay）找到最佳路径。
 
@@ -1656,11 +1644,11 @@ async function startCamera() {
 
 **关系**：ICE 在 STUN 帮助下尝试 P2P（host/srflx），失败则使用 TURN 中继（relay）。三者在 WebRTC 中协同完成 NAT 穿透。
 
-### 练习 4（理解）
+## 知识讲解与要点分析（原练习 4（理解））
 
 **题目**：为什么 WebRTC 必须使用 HTTPS？解释安全原理。
 
-**答案**：
+**解析讲解**：
 
 WebRTC 必须在 HTTPS（或 `localhost`）环境运行，原因：
 
@@ -1672,7 +1660,7 @@ WebRTC 必须在 HTTPS（或 `localhost`）环境运行，原因：
 
 `localhost` 例外：本地开发无需 HTTPS，浏览器将其视为安全上下文。
 
-### 练习 5（应用）
+## 知识讲解与要点分析（原练习 5（应用））
 
 **题目**：实现一个 `RTCDataChannel` 文件传输函数，支持：
 
@@ -1681,7 +1669,7 @@ WebRTC 必须在 HTTPS（或 `localhost`）环境运行，原因：
 - 取消传输
 - 错误处理
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 class FileTransfer {
@@ -1763,7 +1751,7 @@ class FileReceiver {
 }
 ```
 
-### 练习 6（应用）
+## 知识讲解与要点分析（原练习 6（应用））
 
 **题目**：实现一个屏幕共享 demo，要求：
 
@@ -1772,7 +1760,7 @@ class FileReceiver {
 - 支持停止共享
 - 共享过程中检测用户切换标签页并提示
 
-**答案**：
+**解析讲解**：
 
 ```html
 <!DOCTYPE html>
@@ -1838,11 +1826,11 @@ class FileReceiver {
 </html>
 ```
 
-### 练习 7（分析）
+## 知识讲解与要点分析（原练习 7（分析））
 
 **题目**：分析 Symmetric NAT 为何无法通过 STUN 穿透，必须使用 TURN。
 
-**答案**：
+**解析讲解**：
 
 **Symmetric NAT 特性**：根据目标 $(IP, P)$ 分配不同的 $(IP^{\text{pub}}, P^{\text{pub}})$ 映射。
 
@@ -1864,11 +1852,11 @@ class FileReceiver {
 
 **结论**：Symmetric NAT 的"每目标不同端口"特性使得 STUN 学习的 srflx 无效，必须使用 TURN 中继。
 
-### 练习 8（分析）
+## 知识讲解与要点分析（原练习 8（分析））
 
 **题目**：解构 SFU 与 MCU 在 10 人会议中的带宽与算力开销。
 
-**答案**：
+**解析讲解**：
 
 **SFU（Selective Forwarding Unit）**：
 
@@ -1899,11 +1887,11 @@ class FileReceiver {
 
 10 人会议：SFU 通常更经济（带宽便宜，算力贵）。1000 人会议：MCU 更经济（带宽线性增长，算力可堆叠）。
 
-### 练习 9（评价）
+## 知识讲解与要点分析（原练习 9（评价））
 
 **题目**：评估 WebRTC vs WebTransport 在实时通信场景下的优劣，并预测未来趋势。
 
-**答案**：
+**解析讲解**：
 
 | 维度 | WebRTC | WebTransport |
 | ---- | ------ | ------------ |
@@ -1943,7 +1931,7 @@ class FileReceiver {
 - 云游戏、远程桌面、IoT：WebTransport（极低延迟）。
 - 新项目：评估两者，WebRTC 优先，WebTransport 作为未来扩展点。
 
-### 练习 10（创造）
+## 知识讲解与要点分析（原练习 10（创造））
 
 **题目**：设计一个 WebRTC 网络诊断工具，能自动检测：
 
@@ -1953,7 +1941,7 @@ class FileReceiver {
 - 丢包率
 - 抖动
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 // webrtc-diagnostics.ts
@@ -2290,14 +2278,14 @@ console.table(result);
 **进阶（2 周）**：
 
 1. 阅读 WebRTC for the Curious 全书。
-2. 实现 Perfect Negotiation 模式。
+2. 要点： Perfect Negotiation 模式。
 3. 部署 coturn TURN 服务器并测试。
 4. 使用 `getStats()` 监控媒体质量。
 
 **高级（1 月）**：
 
 1. 集成 mediasoup 或 LiveKit SFU，构建多人会议。
-2. 实现 Simulcast 与带宽自适应。
+2. 要点： Simulcast 与带宽自适应。
 3. 研究 Insertable Streams 端到端加密。
 4. 调试 WebRTC 网络问题（Wireshark、chrome://webrtc-internals）。
 
@@ -2307,3 +2295,277 @@ console.table(result);
 2. 研究 AV1 在 WebRTC 中的落地。
 3. 探索 WebTransport 替代 WebRTC 的可能性。
 4. 阅读 Chromium WebRTC 源码（pc/、api/、media/）。
+## WebRTC 核心组件
+
+**WebRTC 三大组件表**
+
+| 组件                      | 作用                       | 主要对象/方法                |
+| ------------------------- | -------------------------- | ---------------------------- |
+| **getUserMedia**          | 获取本地媒体流(摄像头/麦克风) | `navigator.mediaDevices.getUserMedia()` |
+| **RTCPeerConnection**     | 建立点对点连接             | `new RTCPeerConnection()`    |
+| **RTCDataChannel**        | 传输任意数据               | `pc.createDataChannel()`     |
+
+---
+
+## getUserMedia 媒体捕获
+
+**获取本地媒体流**
+`const stream = await navigator.mediaDevices.getUserMedia(<constraints>)`
+
+```javascript
+// 获取摄像头和麦克风媒体流
+const stream = await navigator.mediaDevices.getUserMedia({
+  video: true,   // 启用视频
+  audio: true    // 启用音频
+});
+
+// 将媒体流绑定到 video 元素
+const video = document.querySelector('#localVideo');
+video.srcObject = stream;
+await video.play();
+```
+
+**媒体约束条件**
+`{ video: { width, height, facingMode }, audio: { echoCancellation, noiseSuppression } }`
+
+```javascript
+// 精细化约束视频和音频参数
+const stream = await navigator.mediaDevices.getUserMedia({
+  video: {
+    width: { ideal: 1280 },      // 理想宽度
+    height: { ideal: 720 },      // 理想高度
+    frameRate: { ideal: 30 },    // 理想帧率
+    facingMode: 'user'           // 前置摄像头(user | environment)
+  },
+  audio: {
+    echoCancellation: true,      // 回声消除
+    noiseSuppression: true,      // 降噪
+    autoGainControl: true        // 自动增益
+  }
+});
+```
+
+**屏幕共享**
+`const stream = await navigator.mediaDevices.getDisplayMedia(<constraints>)`
+
+```javascript
+// 捕获屏幕、窗口或浏览器标签页(需用户选择)
+const stream = await navigator.mediaDevices.getDisplayMedia({
+  video: { cursor: 'always' },  // 始终显示鼠标
+  audio: false                   // 是否捕获系统音频
+});
+```
+
+---
+
+## 媒体轨道操作
+
+**MediaStreamTrack 方法表**
+
+| 方法                       | 说明                       |
+| -------------------------- | -------------------------- |
+| `track.stop()`             | 停止轨道                   |
+| `track.enabled = false`    | 静音/禁用轨道              |
+| `track.getSettings()`      | 获取当前轨道配置           |
+| `track.getCapabilities()`  | 获取设备支持的配置范围     |
+| `track.applyConstraints()` | 动态修改约束               |
+
+```javascript
+// 遍历并操作媒体轨道
+stream.getTracks().forEach((track) => {
+  console.log(`轨道类型: ${track.kind}, 状态: ${track.readyState}`);
+  // track.stop();        // 停止
+  // track.enabled = false; // 禁用
+});
+
+// 动态切换摄像头
+async function switchCamera() {
+  const videoTrack = stream.getVideoTracks()[0];
+  const newConstraints = { facingMode: 'environment' };
+  await videoTrack.applyConstraints(newConstraints);
+}
+```
+
+---
+
+## RTCPeerConnection 点对点连接
+
+**创建 PeerConnection**
+`const pc = new RTCPeerConnection(<configuration>)`
+
+```javascript
+// 创建点对点连接,配置 ICE 服务器(STUN/TURN)
+const pc = new RTCPeerConnection({
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },                        // STUN 服务器
+    { urls: 'turn:turn.example.com', username: 'user', credential: 'pass' } // TURN 服务器
+  ],
+  iceTransportPolicy: 'all' // all | relay
+});
+```
+
+**添加本地媒体流**
+`stream.getTracks().forEach(track => pc.addTrack(track, stream))`
+
+```javascript
+// 将本地媒体轨道添加到连接中
+const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+stream.getTracks().forEach((track) => {
+  pc.addTrack(track, stream);
+});
+```
+
+**接收远端媒体流**
+`pc.ontrack = (event) => { event.streams[0] }`
+
+```javascript
+// 监听远端媒体流到达
+pc.ontrack = (event) => {
+  console.log('收到远端轨道:', event.track.kind);
+  const remoteVideo = document.getElementById('remote');
+  remoteVideo.srcObject = event.streams[0];
+};
+```
+
+---
+
+## ICE 候选交换
+
+**监听 ICE 候选**
+`pc.onicecandidate = (event) => { event.candidate }`
+
+```javascript
+// 监听本地 ICE 候选,通过信令服务器发送给对端
+pc.onicecandidate = (event) => {
+  if (event.candidate) {
+    // 将候选发送给对端
+    sendSignal({ type: 'candidate', candidate: event.candidate });
+  } else {
+    console.log('ICE 候选收集完成');
+  }
+};
+
+// 接收对端 ICE 候选
+function handleRemoteCandidate(candidate) {
+  pc.addIceCandidate(new RTCIceCandidate(candidate));
+}
+```
+
+**ICE 连接状态**
+`pc.oniceconnectionstatechange = () => { pc.iceConnectionState }`
+
+```javascript
+// 监听 ICE 连接状态变化
+pc.oniceconnectionstatechange = () => {
+  const state = pc.iceConnectionState;
+  console.log('ICE 状态:', state);
+  // checking | connected | completed | disconnected | failed | closed
+};
+```
+
+---
+
+## SDP 信令交换
+
+**创建并设置 Offer**
+`const offer = await pc.createOffer([options])`
+
+```javascript
+// 主叫方创建 Offer
+const offer = await pc.createOffer({
+  offerToReceiveAudio: true,
+  offerToReceiveVideo: true
+});
+await pc.setLocalDescription(offer);
+// 通过信令服务器发送 offer 给被叫方
+sendSignal({ type: 'offer', sdp: offer });
+```
+
+**接收并应答 Offer**
+`const answer = await pc.createAnswer()`
+
+```javascript
+// 被叫方处理 Offer 并创建 Answer
+async function handleOffer(offer) {
+  await pc.setRemoteDescription(offer);
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  sendSignal({ type: 'answer', sdp: answer });
+}
+
+// 主叫方接收 Answer
+async function handleAnswer(answer) {
+  await pc.setRemoteDescription(answer);
+}
+```
+
+---
+
+## RTCDataChannel 数据通道
+
+**创建数据通道**
+`const channel = pc.createDataChannel(<label>, [options])`
+
+```javascript
+// 创建有序数据通道
+const channel = pc.createDataChannel('chat', {
+  ordered: true,           // 保证送达顺序
+  maxRetransmits: 3,       // 最大重传次数
+  // maxPacketLifeTime: 3000  // 最大生存时间(毫秒,与 maxRetransmits 二选一)
+});
+
+channel.onopen = () => {
+  console.log('通道已打开');
+  channel.send('Hello!');
+};
+
+channel.onmessage = (event) => {
+  console.log('收到:', event.data);
+};
+
+channel.onclose = () => console.log('通道已关闭');
+channel.onerror = (err) => console.error('通道错误:', err);
+```
+
+**接收对端数据通道**
+`pc.ondatachannel = (event) => { event.channel }`
+
+```javascript
+// 被叫方监听对端创建的数据通道
+pc.ondatachannel = (event) => {
+  const channel = event.channel;
+  channel.onmessage = (e) => console.log('收到:', e.data);
+  channel.onopen = () => channel.send('已连接');
+};
+```
+
+---
+
+## 连接关闭与状态
+
+**关闭连接**
+`pc.close()`
+
+```javascript
+// 关闭点对点连接,释放资源
+pc.close();
+```
+
+**RTCPeerConnection 状态表**
+
+| 属性                    | 值                                                  |
+| ----------------------- | --------------------------------------------------- |
+| `connectionState`       | new \| connecting \| connected \| disconnected \| failed \| closed |
+| `iceConnectionState`    | new \| checking \| connected \| completed \| disconnected \| failed \| closed |
+| `iceGatheringState`     | new \| gathering \| complete                        |
+| `signalingState`        | stable \| have-local-offer \| have-remote-offer \| have-local-pranswer \| have-remote-pranswer \| closed |
+
+---
+
+## 安全与权限
+
+- **HTTPS 要求**:WebRTC API 仅在安全上下文(HTTPS 或 localhost)中可用
+- **用户授权**:`getUserMedia` 首次调用会弹出权限请求
+- **权限查询**:`navigator.permissions.query({ name: 'camera' })` 或 `'microphone'`
+- **加密传输**:WebRTC 所有的媒体流和数据通道均强制使用 SRTP/DTLS 加密
+- **隐私保护**:摄像头/麦克风指示灯会亮起,提醒用户媒体正在被捕获

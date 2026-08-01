@@ -1119,26 +1119,26 @@ int main() {
 
 `make_shared` 的内存布局：
 
-```text
-+-----------------------------------+
-| 控制块 | Big 对象本体              |
-+-----------------------------------+
-^        ^
-|        |
-|        +-- shared_ptr 内部对象指针
-+-- shared_ptr/weak_ptr 内部控制块指针
+```mermaid
+flowchart TD
+    B0["控制块 | Big 对象本体"]
+    B1["shared_ptr 内部对象指针"]
+    B0 --> B1
 ```
 
 `new` 方式的内存布局：
 
-```text
-+-------------+         +-------------+
-| 控制块      |         | Big 对象    |
-+-------------+         +-------------+
-^                        ^
-|                        |
-+-- shared_ptr           +-- shared_ptr 内部对象指针
-    内部控制块指针
+```mermaid
+flowchart TD
+    C0_0["^                        ^"]
+    C0_1["shared_ptr           +-- shared_ptr 内部对象指针"]
+    C0_2["内部控制块指针"]
+    C1_0["控制块"]
+    C3_0["Big 对象"]
+    C0_0 --> C0_1
+    C0_1 --> C0_2
+    C0_0 --> C1_0
+    C1_0 --> C3_0
 ```
 
 **优势 1：单次分配**：减少一次 `operator new` 调用，提升性能。
@@ -1774,16 +1774,11 @@ std::shared_ptr<T> make_shared(Args&&... args) {
 
 控制块典型结构：
 
-```text
-+---------------------------+
-| vptr (虚函数表指针)         |
-| strong count (atomic)     |
-| weak count (atomic)       |
-| deleter (类型擦除)         |
-| allocator (类型擦除)       |
-+---------------------------+
-| T 对象存储                 |
-+---------------------------+
+```mermaid
+flowchart TD
+    B0["vptr (虚函数表指针) / strong count (atomic) / weak count (atomic) / deleter (类型擦除) / allocator (类型擦除)"]
+    B1["T 对象存储"]
+    B0 --> B1
 ```
 
 ### 7.4 性能对比
@@ -2992,39 +2987,30 @@ class atomic_shared_ptr {
 
 ## 第 13 章 习题与解答
 
-### 13.1 填空题
+### 填空题知识点讲解
 
 **习题 1**（remember，难度 1）：`std::unique_ptr` 的复制构造函数被声明为 ____（C++ 关键字），因此它是 move-only 类型。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：`delete`（或 `= delete`）
+**解析讲解**：`delete`（或 `= delete`）
 
-**解析**：C++11 起将 `unique_ptr` 的拷贝构造与拷贝赋值显式声明为 `= delete`，强制所有权转移通过 `std::move` 完成，对应标准 [unique.ptr.single.ctor] 与 [unique.ptr.single.asgn]。这是 `auto_ptr` 设计缺陷的根本修复。
-</details>
+**解析讲解**：C++11 起将 `unique_ptr` 的拷贝构造与拷贝赋值显式声明为 `= delete`，强制所有权转移通过 `std::move` 完成，对应标准 [unique.ptr.single.ctor] 与 [unique.ptr.single.asgn]。这是 `auto_ptr` 设计缺陷的根本修复。
 
 **习题 2**（understand，难度 2）：`std::shared_ptr` 的控制块包含两个原子计数器：strong count 与 ____ count；后者由 `weak_ptr` 维护。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：weak
+**解析讲解**：weak
 
-**解析**：shared_ptr 控制块同时维护 strong count（强引用计数，shared_ptr 维护）与 weak count（弱引用计数，weak_ptr 维护）。weak count 大于 0 时控制块本身不被释放，避免 weak_ptr::lock 的竞态。
-</details>
+**解析讲解**：shared_ptr 控制块同时维护 strong count（强引用计数，shared_ptr 维护）与 weak count（弱引用计数，weak_ptr 维护）。weak count 大于 0 时控制块本身不被释放，避免 weak_ptr::lock 的竞态。
 
 **习题 3**（apply，难度 3）：调用 `std::shared_ptr::reset()` 后，若 strong count 减为 0，对象析构；若同时 weak count 也为 0，则 ____ 被释放。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：控制块（control block）
+**解析讲解**：控制块（control block）
 
-**解析**：shared_ptr 的两级回收机制：strong count 归零时调用析构函数释放托管对象；weak count 也归零时才释放控制块本身。这是 `weak_ptr::lock` 必须原子读取 strong count 的根本原因。
-</details>
+**解析讲解**：shared_ptr 的两级回收机制：strong count 归零时调用析构函数释放托管对象；weak count 也归零时才释放控制块本身。这是 `weak_ptr::lock` 必须原子读取 strong count 的根本原因。
 
-### 13.2 选择题
+### 选择题知识点讲解
 
 **习题 4**（understand，难度 2）：关于 `std::make_shared` 与直接 `std::shared_ptr<T>(new T)` 的对比，下列哪项正确？
 
@@ -3033,13 +3019,10 @@ class atomic_shared_ptr {
 - C. 两者性能完全相同
 - D. `make_shared` 不构造控制块
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`make_shared` 将对象本体与控制块合并为单次堆分配，提升缓存局部性并减少分配次数。直接构造方式先 `new` 分配对象、再在 `shared_ptr` 构造内部分配控制块，共两次堆分配。
-</details>
+**解析讲解**：`make_shared` 将对象本体与控制块合并为单次堆分配，提升缓存局部性并减少分配次数。直接构造方式先 `new` 分配对象、再在 `shared_ptr` 构造内部分配控制块，共两次堆分配。
 
 **习题 5**（analyze，难度 3）：以下关于 `std::weak_ptr::lock()` 的描述，哪项正确？
 
@@ -3048,13 +3031,10 @@ class atomic_shared_ptr {
 - C. `lock()` 是非原子操作，多线程下不安全
 - D. `lock()` 等价于 `expired()`
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`lock()` 原子地执行"检查 strong count 是否为 0 + 若不为 0 则 +1"的复合操作，避免 TOCTOU 竞态。返回一个新的 `shared_ptr`；若 strong count 已为 0（对象已析构）则返回空 `shared_ptr`。
-</details>
+**解析讲解**：`lock()` 原子地执行"检查 strong count 是否为 0 + 若不为 0 则 +1"的复合操作，避免 TOCTOU 竞态。返回一个新的 `shared_ptr`；若 strong count 已为 0（对象已析构）则返回空 `shared_ptr`。
 
 **习题 6**（evaluate，难度 4）：某类继承 `std::enable_shared_from_this<T>`，在其构造函数中调用 `shared_from_this()` 会发生什么？
 
@@ -3063,13 +3043,10 @@ class atomic_shared_ptr {
 - C. 抛出 `std::bad_weak_ptr` 异常
 - D. 编译错误
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`enable_shared_from_this` 内部持有一个 `weak_ptr`，仅在 `shared_ptr` 首次构造该对象时被初始化。构造函数执行期间尚未被 `shared_ptr` 管理，`weak_ptr` 为空，`shared_from_this` 调用 `weak_ptr::lock` 抛出 `std::bad_weak_ptr`。
-</details>
+**解析讲解**：`enable_shared_from_this` 内部持有一个 `weak_ptr`，仅在 `shared_ptr` 首次构造该对象时被初始化。构造函数执行期间尚未被 `shared_ptr` 管理，`weak_ptr` 为空，`shared_from_this` 调用 `weak_ptr::lock` 抛出 `std::bad_weak_ptr`。
 
 ### 13.3 代码修正题
 
@@ -3086,8 +3063,6 @@ a->next = b;
 b->prev = a;
 ```
 
-<details>
-<summary>参考答案</summary>
 
 **修正方案**：
 
@@ -3104,8 +3079,7 @@ b->prev = a;                       // 弱引用不增加 strong count
 // 访问前驱时需 lock()：if (auto p = b->prev.lock()) { ... }
 ```
 
-**解析**：形式化分析：设 strong(a)=1+prev(b)（外部的 a 加 b->prev），strong(b)=1+next(a)。当外部 a、b 离开作用域后 strong(a)=prev(b)=1，strong(b)=next(a)=1，两者相互维持非零，构成不动点。改 `weak_ptr` 后 weak 引用不进入 strong count，环路被打破。
-</details>
+**解析讲解**：形式化分析：设 strong(a)=1+prev(b)（外部的 a 加 b->prev），strong(b)=1+next(a)。当外部 a、b 离开作用域后 strong(a)=prev(b)=1，strong(b)=next(a)=1，两者相互维持非零，构成不动点。改 `weak_ptr` 后 weak 引用不进入 strong count，环路被打破。
 
 **习题 8**（evaluate，难度 3）：以下代码会触发 double-free，请指出并修正：
 
@@ -3115,8 +3089,6 @@ std::shared_ptr<int> p1(raw);
 std::shared_ptr<int> p2(raw);
 ```
 
-<details>
-<summary>参考答案</summary>
 
 **修正方案**：
 
@@ -3128,8 +3100,7 @@ auto p2 = p1;                     // 共享同一控制块
 // 方案 2：若必须从 raw 构造，使用 enable_shared_from_this
 ```
 
-**解析**：`p1` 与 `p2` 各自独立构造了控制块，strong count 各为 1。两者析构时均会对同一地址调用 `delete`，第二次 `delete` 触发未定义行为（double-free）。C++ Core Guidelines R.34：禁止从同一裸指针构造多个 `shared_ptr`。
-</details>
+**解析讲解**：`p1` 与 `p2` 各自独立构造了控制块，strong count 各为 1。两者析构时均会对同一地址调用 `delete`，第二次 `delete` 触发未定义行为（double-free）。C++ Core Guidelines R.34：禁止从同一裸指针构造多个 `shared_ptr`。
 
 **习题 9**（analyze，难度 4）：以下代码在异步回调中可能崩溃，请修正：
 
@@ -3145,8 +3116,6 @@ public:
 };
 ```
 
-<details>
-<summary>参考答案</summary>
 
 **修正方案**：
 
@@ -3167,8 +3136,7 @@ public:
 // svc->startAsync();
 ```
 
-**解析**：捕获 `this` 不延长对象生命周期，`detach` 后主线程可能先析构 `Service`，回调线程访问已析构对象触发 UB。`shared_from_this` 返回与控制块关联的 `shared_ptr`，使 strong count +1，回调线程持有 self 期间对象不会析构。注意：调用 `shared_from_this` 前 `Service` 必须已被 `shared_ptr` 管理，否则抛出 `bad_weak_ptr`。
-</details>
+**解析讲解**：捕获 `this` 不延长对象生命周期，`detach` 后主线程可能先析构 `Service`，回调线程访问已析构对象触发 UB。`shared_from_this` 返回与控制块关联的 `shared_ptr`，使 strong count +1，回调线程持有 self 期间对象不会析构。注意：调用 `shared_from_this` 前 `Service` 必须已被 `shared_ptr` 管理，否则抛出 `bad_weak_ptr`。
 
 ### 13.4 开放性问题
 
@@ -3180,8 +3148,6 @@ public:
 
 给出核心代码并说明设计思路。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <memory>
@@ -3231,7 +3197,6 @@ public:
 5. **使用 `list::splice` 实现 O(1) 的 LRU 更新**。
 
 `weak_ptr` 的核心价值是"观察但不拥有"。在反向链、观察者、缓存等场景中，对象生命周期应由"主体"决定，观察者通过 `weak_ptr` 安全查询是否存活。若反向链使用 `shared_ptr`，则客户端释放后对象仍被反向链持有，形成隐性泄漏。
-</details>
 
 **习题 11**（evaluate，难度 5）：对比 C++ 的 `std::shared_ptr` 与 Rust 的 `std::sync::Arc<T>`，从以下维度分析：
 
@@ -3242,8 +3207,6 @@ public:
 
 给出两个等价示例代码并论证设计哲学差异。
 
-<details>
-<summary>参考答案</summary>
 
 **C++ shared_ptr**：
 
@@ -3270,7 +3233,6 @@ let w = Arc::downgrade(&p);           // 弱引用 +1
 4. **控制块布局**：C++ `make_shared` 将对象与控制块合并为单次堆分配；Rust `Arc::new` 同样将 `ArcInner<T>` 与 T 放在同一分配，但 Rust 没有"非 `make_shared` 的两次分配"形式。
 
 **设计哲学差异**：C++ 信任程序员，`shared_ptr` 可绕过类型系统（裸指针构造、custom deleter）但易错；Rust 将所有权提升为类型系统规则，`Arc<T>` 必须通过 `Arc::clone` 共享，避免 double-free。Rust 鼓励生命周期静态分析为主、`Arc<T>` 为辅，C++ 则将 `shared_ptr` 作为通用动态所有权方案。
-</details>
 
 ## 第 14 章 参考文献
 
@@ -3414,33 +3376,3 @@ let w = Arc::downgrade(&p);           // 弱引用 +1
 - Scott Meyers、Herb Sutter、Bjarne Stroustrup、Andrei Alexandrescu 等专家的著作与演讲
 - MIT 6.001、Stanford CS106L、CMU 15-410 等顶尖课程的教学范式
 
-## 更新日志
-
-### 2026-07-18 — Phase 2 企业级内容升级（FANDEX Content Engineering）
-
-**升级范围**：从原 339 行基础文档扩展至约 3320 行论文级教材。
-
-**核心改进**：
-
-1. **学术化改造**：补充第 3 章形式化定义（所有权语义、引用计数状态机、代数性质、不变量），第 7 章异常安全的数学论证，第 6 章循环引用的形式化分析。
-2. **历史脉络梳理**：新增第 2 章，覆盖 1980s RAII 范式诞生、1990s Boehm GC 与 auto_ptr 折中、1998 auto_ptr 缺陷、2001 Boost 影响、2011 C++11 革命、2014 make_unique 补完、2017/2023 精细化演进。
-3. **教学化改造**：前置 Bloom 分类法学习目标（6 条），中段穿插思考题，末尾配 11 道习题（3 填空 + 3 选择 + 3 代码修正 + 2 开放性），覆盖 remember/understand/apply/analyze/evaluate/create 全认知层级。
-4. **工程实践深化**：新增第 11 章，涵盖 Pimpl、工厂模式、依赖注入、ABI 稳定性、线程安全单例、对象池、多态克隆、C++ Core Guidelines、C API 互操作 9 个生产级模式。
-5. **案例研究拓展**：新增第 12 章，对比 LLVM `IntrusiveRefCntPtr`、Chromium `scoped_refptr`/`WeakPtr`、Qt `QSharedPointer`、Boost `shared_ptr`、Folly `SharedPtr` 五大工业实现。
-6. **跨语言对比**：新增第 9 章，从设计哲学层面对比 C++/Rust/Java/Go 的所有权与内存管理范式。
-7. **常见陷阱系统化**：新增第 10 章 10 个陷阱，每个含错误示例、原因分析、修正方案。
-8. **可视化增强**：新增 3 个 Mermaid 图（引用计数状态机、引用计数流转图、weak_ptr lock 原子性时序图）与多个 KaTeX 数学公式（引用计数代数性质、不变量、循环引用不动点分析）。
-9. **词源标注**：frontmatter `etymology` 字段标注 7 条术语词源（智能指针、RAII、引用计数、悬垂指针、所有权语义、控制块、别名构造）。
-10. **参考文献规范**：frontmatter `references` 字段含 10 条 ACM Reference Format 引用，正文第 14 章完整呈现。
-
-**质量校验**：
-
-- 通过 `npm run type-check`（0 errors）
-- 覆盖 FANDEX 内容工程规范 12 项质量基准
-- 代码示例通过 `g++ -std=c++20 -Wall` 语法校验
-- 严禁 emoji 表情，全部使用中文工程级注释
-
-### 2026-05-30 — 初始版本
-
-- 创建基础文档，覆盖 `unique_ptr`、`shared_ptr`、`weak_ptr` 的基础用法
-- 含少量代码示例与简要对比表

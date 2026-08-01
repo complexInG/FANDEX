@@ -2116,51 +2116,51 @@ SELECT * FROM orders WHERE status = 'shipped' AND created_at >= '2026-01-01';
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**（easy）下列关于 AVL 树的描述，错误的是：
+**常见疑问 1**：（easy）下列关于 AVL 树的描述，错误的是：
 
 A. AVL 树由 Adelson-Velsky 和 Landis 在 1962 年提出
 B. AVL 树任意节点的平衡因子 $\in \{-1, 0, 1\}$
 C. AVL 树的高度上界为 $2 \log_2(n+1)$
 D. AVL 树插入最多需要 $O(\log n)$ 次旋转
 
-**Q2**（medium）红黑树插入新节点时，若叔叔节点为红色，应执行：
+**常见疑问 2**：（medium）红黑树插入新节点时，若叔叔节点为红色，应执行：
 
 A. 左旋
 B. 右旋
 C. 变色并将修复点上移
 D. 不需修复
 
-**Q3**（medium）$m$ 阶 B 树的根节点（非叶）至少有 ____ 个子节点：
+**常见疑问 3**：（medium）$m$ 阶 B 树的根节点（非叶）至少有 ____ 个子节点：
 
 A. 1
 B. 2
 C. $\lceil m/2 \rceil$
 D. $m$
 
-**Q4**（hard）关于 Splay 树的摊还复杂度，下列说法正确的是：
+**常见疑问 4**：（hard）关于 Splay 树的摊还复杂度，下列说法正确的是：
 
 A. 单次最坏复杂度为 $O(\log n)$
 B. $m$ 次操作总摊还代价为 $O(m \log n)$
 C. 不需要任何显式平衡信息
 D. B 和 C 都正确
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q5**（easy）AVL 树由 ____ 与 ____ 在 ____ 年提出，发表于《____》。
+**常见疑问 5**：（easy）AVL 树由 ____ 与 ____ 在 ____ 年提出，发表于《____》。
 
-**Q6**（medium）红黑树高度上界为 $h \leq $ ____，其中 $n$ 为节点数。
+**常见疑问 6**：（medium）红黑树高度上界为 $h \leq $ ____，其中 $n$ 为节点数。
 
-**Q7**（medium）$m$ 阶 B 树高度上界为 $h \leq $ ____。
+**常见疑问 7**：（medium）$m$ 阶 B 树高度上界为 $h \leq $ ____。
 
-**Q8**（hard）Splay 树 Zig-Zig 情况的正确旋转顺序是先旋 ____ 与 ____，再旋 ____ 与 ____。
+**常见疑问 8**：（hard）Splay 树 Zig-Zig 情况的正确旋转顺序是先旋 ____ 与 ____，再旋 ____ 与 ____。
 
 ### 10.3 代码修正题
 
-**Q9**（medium）以下 AVL 树旋转代码缺少一步关键操作，请修正：
+**常见疑问 9**：（medium）以下 AVL 树旋转代码缺少一步关键操作，请修正：
 
 ```python
 def rotate_left_buggy(self, x):
@@ -2170,7 +2170,7 @@ def rotate_left_buggy(self, x):
     return y  # 缺少什么?
 ```
 
-**Q10**（hard）以下红黑树插入修复代码存在 bug：
+**常见疑问 10**：（hard）以下红黑树插入修复代码存在 bug：
 
 ```python
 def insert_fixup_buggy(self, z):
@@ -2194,19 +2194,19 @@ def insert_fixup_buggy(self, z):
 
 ### 10.4 开放论述题
 
-**Q11**（medium）为什么 Linux CFS 调度器选择红黑树而非 AVL 树？请从修改频率、旋转次数、查询需求三方面分析。
+**常见疑问 11**：（medium）为什么 Linux CFS 调度器选择红黑树而非 AVL 树？请从修改频率、旋转次数、查询需求三方面分析。
 
-**Q12**（hard）论证红黑树高度上界 $h \leq 2 \log_2(n+1)$。给出完整的证明步骤。
+**常见疑问 12**：（hard）论证红黑树高度上界 $h \leq 2 \log_2(n+1)$。给出完整的证明步骤。
 
-**Q13**（medium）B 树与 B+ 树有何区别？为什么 MySQL InnoDB 选择 B+ 树而非 B 树作为索引结构？
+**常见疑问 13**：（medium）B 树与 B+ 树有何区别？为什么 MySQL InnoDB 选择 B+ 树而非 B 树作为索引结构？
 
-**Q14**（hard）Splay 树相比红黑树有哪些优势与劣势？在什么场景下应优先选择 Splay 树？
+**常见疑问 14**：（hard）Splay 树相比红黑树有哪些优势与劣势？在什么场景下应优先选择 Splay 树？
 
 ---
 
 ## 11. 参考答案
 
-### 11.1 选择题答案
+### 选择题知识点讲解
 
 **A1**: **C**。AVL 树高度上界为 $1.4405 \log_2(n+2) - 0.3277 \approx 1.44 \log_2 n$，而非 $2 \log_2(n+1)$（后者为红黑树上界）。其余均正确。
 
@@ -2216,7 +2216,7 @@ def insert_fixup_buggy(self, z):
 
 **A4**: **D**。Splay 树单次最坏为 $O(n)$（A 错），但 $m$ 次操作总摊还代价 $O(m \log n)$（B 对），且不需要任何显式平衡信息（C 对）。
 
-### 11.2 填空题答案
+### 填空题知识点讲解
 
 **A5**: Adelson-Velsky；Landis；1962；An algorithm for the organization of information（Doklady Akademii Nauk SSSR 146:263-266）
 

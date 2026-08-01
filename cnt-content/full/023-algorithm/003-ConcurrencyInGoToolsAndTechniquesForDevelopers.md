@@ -169,19 +169,14 @@ etymology:
 - **栈**遵循 **LIFO**（Last In First Out，后进先出）原则，所有插入与删除仅在**栈顶**（top）一端进行；
 - **队列**遵循 **FIFO**（First In First Out，先进先出）原则，插入在**队尾**（rear）进行、删除在**队首**（front）进行。
 
-```
-栈（LIFO）             队列（FIFO）
-push/pop               enqueue        dequeue
-   ↓                      ↓              ↑
- ┌───┐                 ┌───┬───┬───┬───┐
- │ 5 │ ← top           │ 7 │ 1 │ 3 │ 5 │
- ├───┤                 └───┴───┴───┴───┘
- │ 3 │                  rear           front
- ├───┤
- │ 1 │
- ├───┤
- │ 7 │ ← bottom
- └───┘
+```mermaid
+flowchart LR
+    subgraph Stack[栈 LIFO push/pop]
+        S1[5 top] S2[3] S3[1] S4[7 bottom]
+    end
+    subgraph Queue[队列 FIFO enqueue/dequeue]
+        Q[7 | 1 | 3 | 5<br/>rear → front]
+    end
 ```
 
 > 一句话定义：**栈 = LIFO 单端操作，队列 = FIFO 双端分工，双端队列 = 双端可操作；三者是受限线性表的代表，操作简单但应用极其广泛，从函数调用栈到操作系统调度都依赖它们。**
@@ -951,20 +946,11 @@ def largest_rectangle_area(heights: list[int]) -> int:
 
 问题：出队后 `front` 前方空间无法复用，`rear` 到达数组末尾时即使前方有空位也无法入队，称为**假溢出**（false overflow）。
 
-```
-入队 7, 1, 3, 5 后出队 7, 1：
-  ┌───┬───┬───┬───┬───┬───┐
-  │   │   │ 3 │ 5 │   │   │
-  └───┴───┴───┴───┴───┴───┘
-              ↑       ↑
-            front   rear
-
-继续入队 9, 8：
-  ┌───┬───┬───┬───┬───┬───┐
-  │   │   │ 3 │ 5 │ 9 │ 8 │
-  └───┴───┴───┴───┴───┴───┘
-              ↑               ← rear 越界！前方空间无法使用
-            front
+```mermaid
+flowchart LR
+    Q1[入队 7,1,3,5 后出队 7,1：空 空 3 5 空 空<br/>front ↑ rear ↑]
+    Q2[继续入队 9,8：空 空 3 5 9 8<br/>front ↑ rear 越界 前方空间无法使用]
+    Q1 --> Q2
 ```
 
 ### 6.2 循环队列（解决假溢出）
@@ -1245,14 +1231,9 @@ public class LinkedQueue<E> {
 - 作为栈使用：`push = addFirst`、`pop = removeFirst`
 - 作为队列使用：`enqueue = addLast`、`dequeue = removeFirst`
 
-```
-左端操作: addFirst / removeFirst / getFirst
-右端操作: addLast  / removeLast  / getLast
-
-  ┌───┬───┬───┬───┬───┐
-  │ 5 │ 3 │ 1 │ 7 │ 9 │
-  └───┴───┴───┴───┴───┘
-  ←left              right→
+```mermaid
+flowchart LR
+    D[双端队列<br/>左端 addFirst/removeFirst/getFirst<br/>5 | 3 | 1 | 7 | 9<br/>右端 addLast/removeLast/getLast]
 ```
 
 ### 7.2 双端队列的实现
@@ -2048,9 +2029,9 @@ def deep_iteration(n):
 
 ---
 
-## 13. 习题与解答
+## 知识讲解与要点分析（原习题）
 
-### 13.1 选择题
+### 选择题知识点讲解
 
 **1.** 下列关于栈与队列的描述，错误的是：
 
@@ -2059,12 +2040,9 @@ def deep_iteration(n):
 - C. 循环队列的判空条件 `front == rear` 与判满条件 `front == rear` 相同，无法区分
 - D. 双端队列可同时作为栈和队列使用
 
-<details>
-<summary>答案与解析</summary>
 
 **C**。维护 `size` 变量可区分空与满；或浪费一个槽位，判满用 `(rear + 1) % capacity == front`。A、B、D 均正确。
 
-</details>
 
 **2.** 给定入栈序列 `1, 2, 3, 4, 5`，下列哪个序列**不可能是**合法出栈序列？
 
@@ -2074,8 +2052,6 @@ def deep_iteration(n):
 - D. `2, 1, 4, 3, 5`
 - E. `3, 5, 4, 2, 1`
 
-<details>
-<summary>答案与解析</summary>
 
 **E**。出栈序列 `3, 5, 4, 2, 1`：
 - push 1, 2, 3 → pop 3（栈剩 1, 2）
@@ -2095,7 +2071,6 @@ def deep_iteration(n):
 
 实际上 E 是合法的。正确答案应为：所有给出的都可能是合法出栈序列。本题原意考察 Catalan 数，建议重读题意。
 
-</details>
 
 **3.** 单调递减栈处理数组 `[3, 1, 4, 1, 5, 9, 2, 6]` 时，栈内最多同时有多少个元素？
 
@@ -2104,8 +2079,6 @@ def deep_iteration(n):
 - C. 5
 - D. 6
 
-<details>
-<summary>答案与解析</summary>
 
 **B**。模拟过程：
 - 3 入栈：[3]
@@ -2119,23 +2092,17 @@ def deep_iteration(n):
 
 栈最多 4 个元素（[3, 1] 与 [4, 1] 时，但 [9, 2] 仅 2 个）。实际最大值出现在 [3, 1]（2 个）和 [4, 1]（2 个）。重新数：栈最大为 2 个元素，无 4 个的情况。**正确答案应重新分析**。
 
-</details>
 
-### 13.2 填空题
+### 填空题知识点讲解
 
 **1.** 循环队列存储在数组 `Q[0..n-1]` 中，`front` 指向队首元素、`rear` 指向下一个待插入位置。当 `front = 3`、`rear = 3` 时，队列长度可能是 ____ 或 ____。
 
-<details>
-<summary>答案</summary>
 
 `0` 或 `n`。`front == rear` 既可能是空队列（长度 0），也可能是满队列（长度 $n$）。维护 `size` 变量可区分。
 
-</details>
 
 **2.** 已知栈的入栈序列为 `a, b, c, d, e`，出栈序列为 `c, e, d, b, a`，则栈的容量至少为 ____。
 
-<details>
-<summary>答案</summary>
 
 `4`。模拟：
 - push a, b, c → pop c（栈：a, b）
@@ -2146,7 +2113,6 @@ def deep_iteration(n):
 
 栈最大容量为 3（push d, e 时栈有 a, b, d, e 共 4 个）。**答案：4**。
 
-</details>
 
 ### 13.3 代码修正题
 
@@ -2167,8 +2133,6 @@ def is_palindrome(head) -> bool:
     return True
 ```
 
-<details>
-<summary>答案</summary>
 
 代码逻辑正确，但空间复杂度 $O(n)$。可用快慢指针 + 半栈优化至 $O(n/2)$：
 
@@ -2198,14 +2162,11 @@ def is_palindrome(head) -> bool:
     return True
 ```
 
-</details>
 
 ### 13.4 开放论述题
 
 **1.** 论述"为什么 Go 语言选择 channel（基于队列）而非共享变量作为并发同步的首选原语"，并分析其优缺点。
 
-<details>
-<summary>参考答案</summary>
 
 **Go 选择 channel 的原因**：
 
@@ -2226,12 +2187,9 @@ def is_palindrome(head) -> bool:
 
 **结论**：channel 适合"高层次并发编排"（任务分发、流水线、状态机），共享内存+锁适合"低层次细粒度同步"（计数器、缓存）。Go 鼓励前者但保留 `sync.Mutex` 用于后者，体现"工具选型"而非"教条主义"。
 
-</details>
 
 **2.** 论述"单调栈解决'下一个更大元素'问题的核心不变式"，并证明其时间复杂度为 $O(n)$。
 
-<details>
-<summary>参考答案</summary>
 
 **核心不变式**：单调栈在处理第 $i$ 个元素时，栈内元素（的索引）对应原数组中的值**严格单调递减**（或非严格，取决于变体）。
 
@@ -2247,7 +2205,6 @@ def is_palindrome(head) -> bool:
 
 **对比朴素算法**：朴素双重循环 $O(n^2)$，单调栈优化至 $O(n)$，本质是用空间换时间，通过栈保存"待解决"的元素。
 
-</details>
 
 ---
 

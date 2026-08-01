@@ -15,6 +15,11 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
+# 网络请求 语法速查手册
+
+> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 概述
 
@@ -1544,21 +1549,29 @@ httpRequest.request(url, { usingProxy: false, usingProtocol: true, caVerify: fal
 
 ### 实践 1：API 层架构设计
 
-```
-src/main/ets/api/
-├── HttpClient.ets          # 基础 HTTP 客户端
-├── ApiClient.ets           # 业务 API 客户端（继承 HttpClient）
-├── interceptors/           # 请求/响应拦截器
-│   ├── AuthInterceptor.ets
-│   ├── LogInterceptor.ets
-│   └── RetryInterceptor.ets
-├── endpoints/              # 按业务划分 API
-│   ├── UserApi.ets
-│   ├── OrderApi.ets
-│   └── ProductApi.ets
-└── types/                  # 接口类型定义
-    ├── User.ts
-    └── Order.ts
+```mermaid
+flowchart TD
+    T0["src/main/ets/api/"]
+    T1["HttpClient.ets          # 基础 HTTP 客户端"]
+    T2["ApiClient.ets           # 业务 API 客户端（继承 HttpClient）"]
+    T3["interceptors/           # 请求/响应拦截器"]
+    T4["AuthInterceptor.ets"]
+    T5["LogInterceptor.ets"]
+    T6["RetryInterceptor.ets"]
+    T7["endpoints/              # 按业务划分 API"]
+    T8["UserApi.ets"]
+    T9["OrderApi.ets"]
+    T10["ProductApi.ets"]
+    T11["types/                  # 接口类型定义"]
+    T12["User.ts"]
+    T13["Order.ts"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T6 --> T7
+    T10 --> T11
+    T11 --> T12
+    T11 --> T13
 ```
 
 ### 实践 2：统一错误处理
@@ -1714,28 +1727,12 @@ export class CdnUrlBuilder {
 
 #### 架构设计
 
-```
-┌─────────────────────────────────────────┐
-│            UI 层（ArkUI 组件）            │
-└───────────────┬─────────────────────────┘
-                │
-┌───────────────▼─────────────────────────┐
-│       ViewModel 层（@Observed）          │
-│   - 持有 UI 状态                          │
-│   - 调用 Repository                       │
-└───────────────┬─────────────────────────┘
-                │
-┌───────────────▼─────────────────────────┐
-│      Repository 层（数据源抽象）          │
-│   - 优先读取本地缓存                      │
-│   - 联网时拉取远端数据                     │
-│   - 离线时写入待同步队列                    │
-└───────┬───────────────┬─────────────────┘
-        │               │
-┌───────▼───────┐   ┌───▼───────────────┐
-│  LocalCache   │   │  RemoteApi        │
-│  （RelationalStore）│   （HttpClient + Retry）│
-└───────────────┘   └───────────────────┘
+```mermaid
+flowchart TD
+    UI[UI 层 ArkUI 组件] --> VM[ViewModel 层 @Observed<br/>持有 UI 状态<br/>调用 Repository]
+    VM --> Repo[Repository 层 数据源抽象<br/>优先读取本地缓存<br/>联网时拉取远端数据<br/>离线时写入待同步队列]
+    Repo --> LC[LocalCache<br/>RelationalStore]
+    Repo --> RA[RemoteApi<br/>HttpClient + Retry]
 ```
 
 #### 实现
@@ -1813,7 +1810,7 @@ export class NewsRepository {
 2. **缓存过期策略要灵活**：新闻列表可接受 5 分钟过期，但用户收藏必须立即生效
 3. **后台刷新要节流**：避免短时间内多次刷新同一资源
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 
@@ -2076,3 +2073,419 @@ await ws.close({ code: 1000, reason: 'Normal Closure' });
 ### 修订历史
 
 - 2026-07-21：完成金标准升级，从 451 行扩展至 1500+ 行，补充 Bloom 学习目标、OSI 模型、HTTP 协议演化、TLS 握手、形式化定义、3 个定理证明、8 个代码示例、4 个对比表、8 个常见陷阱、5 个工程实践、新闻应用离线优先案例、6 道分层习题、12 篇 ACM 参考文献、6 个附录
+## HTTP 模块导入
+
+**导入 @ohos.net.http 模块**
+`import http from '@ohos.net.http'`
+```typescript
+import http from '@ohos.net.http';
+```
+
+**通过 NetworkKit 导入**
+`import { http } from '@kit.NetworkKit'`
+```typescript
+import { http } from '@kit.NetworkKit';
+```
+
+**权限声明(module.json5)**
+```json5
+{
+  module: {
+    requestPermissions: [
+      { name: 'ohos.permission.INTERNET' }
+    ]
+  }
+}
+```
+
+---
+
+## HTTP 请求对象
+
+**创建请求对象**
+`http.createHttp(): HttpRequest`
+```typescript
+const httpRequest = http.createHttp();
+```
+
+**销毁请求对象**
+`httpRequest.destroy(): void`
+```typescript
+httpRequest.destroy();
+```
+
+**请求方法枚举**
+`http.RequestMethod`
+```typescript
+enum RequestMethod {
+  OPTIONS = 'OPTIONS',
+  GET = 'GET',
+  HEAD = 'HEAD',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+  TRACE = 'TRACE',
+  CONNECT = 'CONNECT'
+}
+```
+
+---
+
+## HTTP 请求 API
+
+**发起请求(Promise)**
+`httpRequest.request(url: string, options?: HttpRequestOptions): Promise<HttpResponse>`
+```typescript
+const response = await httpRequest.request('https://api.example.com/data', {
+  method: http.RequestMethod.GET,
+  header: { 'Content-Type': 'application/json' },
+  connectTimeout: 60000,
+  readTimeout: 60000,
+  expectDataType: http.HttpDataType.STRING,
+  usingCache: true,
+  priority: 0,
+});
+```
+
+**发起请求(回调)**
+`httpRequest.request(url: string, options: HttpRequestOptions, callback: AsyncCallback<HttpResponse>): void`
+```typescript
+httpRequest.request('https://api.example.com/data', {
+  method: http.RequestMethod.GET,
+  header: { 'Content-Type': 'application/json' }
+}, (err, data) => {
+  if (!err) {
+    console.info(`响应码: ${data.responseCode}`);
+    console.info(`响应体: ${data.result}`);
+  }
+  httpRequest.destroy();
+});
+```
+
+---
+
+## HttpRequestOptions 配置
+
+**请求配置项**
+```typescript
+interface HttpRequestOptions {
+  method?: http.RequestMethod;          // 请求方法,默认 GET
+  header?: Object;                       // 请求头
+  extraData?: string | Object | ArrayBuffer; // 请求体
+  connectTimeout?: number;               // 连接超时(ms)
+  readTimeout?: number;                  // 读取超时(ms)
+  expectDataType?: http.HttpDataType;    // 期望数据类型
+  usingCache?: boolean;                  // 是否使用缓存
+  priority?: number;                     // 请求优先级
+  usingProxy?: boolean;                  // 是否使用代理
+}
+```
+
+**HttpDataType 枚举**
+```typescript
+enum HttpDataType {
+  STRING = 0,
+  OBJECT = 1,
+  ARRAY_BUFFER = 2
+}
+```
+
+---
+
+## HttpResponse 响应
+
+**响应对象结构**
+```typescript
+interface HttpResponse {
+  responseCode: number;          // HTTP 状态码
+  header: Object;                // 响应头
+  cookies: string;               // 响应 Cookie
+  result: string | Object | ArrayBuffer; // 响应体
+  responseTime: number;          // 响应时间(ms)
+  remoteTimings: Object;         // 远程时序信息
+}
+```
+
+---
+
+## GET 请求示例
+
+**基础 GET 请求**
+```typescript
+async function getRequest(): Promise<void> {
+  const httpRequest = http.createHttp();
+  try {
+    const response = await httpRequest.request('https://api.example.com/users', {
+      method: http.RequestMethod.GET,
+      header: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer token_value'
+      },
+      connectTimeout: 10000,
+      readTimeout: 30000
+    });
+    if (response.responseCode === 200) {
+      const data = JSON.parse(response.result as string);
+      console.info(`数据: ${JSON.stringify(data)}`);
+    }
+  } finally {
+    httpRequest.destroy();
+  }
+}
+```
+
+---
+
+## POST 请求示例
+
+**提交 JSON 数据**
+```typescript
+async function postRequest(): Promise<void> {
+  const httpRequest = http.createHttp();
+  try {
+    const response = await httpRequest.request('https://api.example.com/login', {
+      method: http.RequestMethod.POST,
+      header: { 'Content-Type': 'application/json' },
+      extraData: {
+        username: 'admin',
+        password: '123456'
+      }
+    });
+    console.info(`响应码: ${response.responseCode}`);
+  } finally {
+    httpRequest.destroy();
+  }
+}
+```
+
+**上传文件**
+```typescript
+async function uploadFile(filePath: string): Promise<void> {
+  const httpRequest = http.createHttp();
+  try {
+    const response = await httpRequest.request('https://api.example.com/upload', {
+      method: http.RequestMethod.POST,
+      header: { 'Content-Type': 'multipart/form-data' },
+      extraData: { file: filePath }
+    });
+    console.info(`上传结果: ${response.responseCode}`);
+  } finally {
+    httpRequest.destroy();
+  }
+}
+```
+
+---
+
+## 请求事件监听
+
+**监听响应头事件**
+`httpRequest.on('headersReceive', callback: (header: Object) => void): void`
+```typescript
+httpRequest.on('headersReceive', (header) => {
+  console.info(`收到响应头: ${JSON.stringify(header)}`);
+});
+```
+
+**取消监听响应头事件**
+`httpRequest.off('headersReceive'): void`
+```typescript
+httpRequest.off('headersReceive');
+```
+
+---
+
+## HTTP 请求封装
+
+**HttpClient 封装**
+```typescript
+interface RequestConfig {
+  url: string;
+  method?: http.RequestMethod;
+  data?: object;
+  header?: object;
+  timeout?: number;
+}
+
+interface ApiResponse<T> {
+  code: number;
+  message: string;
+  data: T;
+}
+
+class HttpClient {
+  private baseUrl: string = 'https://api.example.com';
+  private token: string = '';
+
+  setToken(token: string): void {
+    this.token = token;
+  }
+
+  async request<T>(config: RequestConfig): Promise<ApiResponse<T>> {
+    const httpRequest = http.createHttp();
+    try {
+      const header: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...(config.header as Record<string, string>)
+      };
+      if (this.token) {
+        header['Authorization'] = `Bearer ${this.token}`;
+      }
+      const response = await httpRequest.request(`${this.baseUrl}${config.url}`, {
+        method: config.method || http.RequestMethod.GET,
+        header: header,
+        extraData: config.data,
+        connectTimeout: config.timeout || 10000,
+        readTimeout: config.timeout || 30000
+      });
+      if (response.responseCode === 200) {
+        return JSON.parse(response.result as string) as ApiResponse<T>;
+      } else if (response.responseCode === 401) {
+        throw new Error('未授权,请重新登录');
+      } else {
+        throw new Error(`请求失败: ${response.responseCode}`);
+      }
+    } finally {
+      httpRequest.destroy();
+    }
+  }
+
+  async get<T>(url: string): Promise<ApiResponse<T>> {
+    return this.request<T>({ url, method: http.RequestMethod.GET });
+  }
+
+  async post<T>(url: string, data?: object): Promise<ApiResponse<T>> {
+    return this.request<T>({ url, method: http.RequestMethod.POST, data });
+  }
+
+  async put<T>(url: string, data?: object): Promise<ApiResponse<T>> {
+    return this.request<T>({ url, method: http.RequestMethod.PUT, data });
+  }
+
+  async delete<T>(url: string): Promise<ApiResponse<T>> {
+    return this.request<T>({ url, method: http.RequestMethod.DELETE });
+  }
+}
+```
+
+---
+
+## 请求重试机制
+
+**带重试的请求**
+```typescript
+async function requestWithRetry(url: string, maxRetries: number = 3): Promise<string> {
+  let lastError: Error | null = null;
+  for (let i = 0; i < maxRetries; i++) {
+    const httpRequest = http.createHttp();
+    try {
+      const response = await httpRequest.request(url, {
+        method: http.RequestMethod.GET,
+        connectTimeout: 10000,
+        readTimeout: 30000
+      });
+      if (response.responseCode === 200) {
+        return response.result as string;
+      }
+      if (response.responseCode >= 500) {
+        lastError = new Error(`服务器错误: ${response.responseCode}`);
+        continue;
+      }
+      throw new Error(`请求失败: ${response.responseCode}`);
+    } catch (error) {
+      lastError = error as Error;
+    } finally {
+      httpRequest.destroy();
+    }
+    if (i < maxRetries - 1) {
+      await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
+    }
+  }
+  throw lastError;
+}
+```
+
+---
+
+## WebSocket 模块
+
+**导入 WebSocket 模块**
+`import webSocket from '@ohos.net.webSocket'`
+```typescript
+import webSocket from '@ohos.net.webSocket';
+```
+
+**创建 WebSocket 实例**
+`webSocket.createWebSocket(): WebSocket`
+```typescript
+const ws = webSocket.createWebSocket();
+```
+
+---
+
+## WebSocket 连接 API
+
+**建立连接**
+`ws.connect(url: string, options?: WebSocketRequestOptions): Promise<boolean>`
+```typescript
+await ws.connect('wss://api.example.com/ws', {
+  header: { 'Authorization': 'Bearer token' }
+});
+```
+
+**发送消息**
+`ws.send(data: string | ArrayBuffer): Promise<boolean>`
+```typescript
+await ws.send('Hello Server');
+await ws.send(JSON.stringify({ type: 'ping' }));
+```
+
+**关闭连接**
+`ws.close(options?: WebSocketCloseOptions): Promise<boolean>`
+```typescript
+await ws.close({
+  code: 1000,
+  reason: 'Normal closure'
+});
+```
+
+---
+
+## WebSocket 事件监听
+
+**监听连接打开**
+`ws.on('open', callback: (err: BusinessError, value: Object) => void): void`
+```typescript
+ws.on('open', (err, value) => {
+  if (!err) {
+    console.info('WebSocket 连接已建立');
+  }
+});
+```
+
+**监听消息接收**
+`ws.on('message', callback: (err: BusinessError, value: string | ArrayBuffer) => void): void`
+```typescript
+ws.on('message', (err, value) => {
+  if (!err) {
+    console.info(`收到消息: ${value}`);
+  }
+});
+```
+
+**监听连接关闭**
+`ws.on('close', callback: (err: BusinessError, value: WebSocketCloseOptions) => void): void`
+```typescript
+ws.on('close', (err, value) => {
+  console.info(`连接关闭: code=${value.code}, reason=${value.reason}`);
+});
+```
+
+**监听错误事件**
+`ws.on('error', callback: (err: BusinessError) => void): void`
+```typescript
+ws.on('error', (err) => {
+  console.error(`WebSocket 错误: ${JSON.stringify(err)}`);
+});
+```
+

@@ -15,10 +15,11 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
+# JavaScript Symbol 与迭代协议语法速查
 
-# 迭代器帮助器：JavaScript 惰性计算与流式 API 详解
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> "The best code is no code at all." —— 但当你必须写代码时，惰性求值（lazy evaluation）让你只为真正需要的结果付出代价。
+---
 
 ## 1. 学习目标
 
@@ -404,16 +405,21 @@ Iterator.prototype.map(mapper):
 
 ### 5.1 项目结构
 
-```
-iterator-helpers-demo/
-├── package.json
-├── src/
-│   ├── etl.js              # ETL流水线
-│   ├── log-stream.js       # 日志流处理
-│   ├── pagination.js       # 分页加载
-│   └── index.js
-└── test/
-    └── etl.test.js
+```mermaid
+flowchart TD
+    T0["iterator-helpers-demo/"]
+    T1["package.json"]
+    T2["src/"]
+    T3["etl.js              # ETL流水线"]
+    T4["log-stream.js       # 日志流处理"]
+    T5["pagination.js       # 分页加载"]
+    T6["index.js"]
+    T7["test/"]
+    T8["etl.test.js"]
+    T0 --> T1
+    T0 --> T2
+    T6 --> T7
+    T7 --> T8
 ```
 
 ### 5.2 package.json
@@ -1191,9 +1197,9 @@ for await (const line of lineStream) {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下代码的输出是什么？
 
@@ -1210,14 +1216,11 @@ B. `[6, 8, 10]` 和 `[]`
 C. `[]` 和 `[]`
 D. `[6, 8, 10]` 和 `[2, 4, 6, 8, 10]`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 迭代器是一次性的。`[...filtered]` 消耗了 `it`（通过 `mapped` 与 `filtered` 链路）。第二次 `console.log([...it])` 时 `it` 已耗尽。
 
-</details>
 
 **题目 2**：以下哪个表达式会抛出 `RangeError`？
 
@@ -1226,14 +1229,11 @@ B. `[1,2,3].values().take(-1)`
 C. `[1,2,3].values().take(NaN)`
 D. B 和 C
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：D**
 
 `take(0)` 返回空迭代器，合法。`take(-1)` 与 `take(NaN)` 抛出 `RangeError`，因 limit 必须是非负整数。
 
-</details>
 
 **题目 3**：以下哪个方法属于"惰性"方法（不立即消耗迭代器）？
 
@@ -1242,50 +1242,36 @@ B. `reduce()`
 C. `forEach()`
 D. `flatMap()`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：D**
 
 `flatMap` 返回新的 Iterator，是惰性的。`toArray`、`reduce`、`forEach` 都是终结方法，立即消耗迭代器。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 4**：Iterator 协议要求对象实现 ______ 方法，可迭代协议要求对象实现 ______ 方法。
 
-<details>
-<summary>答案</summary>
 
 `next()`、`[Symbol.iterator]`
 
-</details>
 
 **题目 5**：`Iterator.from` 的作用是将 ______ 转为 Iterator 对象。
 
-<details>
-<summary>答案</summary>
 
 任意可迭代对象或迭代器
 
-</details>
 
 **题目 6**：Iterator Helpers 链式调用中，`take(n)` 的复杂度是 ______，因为它是 ______ 求值。
 
-<details>
-<summary>答案</summary>
 
 `O(1)`、惰性
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 7**：实现一个 `range(start, end, step)` 函数，返回惰性 Iterator。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 function range(start, end, step = 1) {
@@ -1315,12 +1301,9 @@ const result = range(0, 100)
 // [0, 9, 36, 81, 144]
 ```
 
-</details>
 
 **题目 8**：实现一个 `zip(iter1, iter2)` 函数，将两个迭代器"拉链"合并。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 function zip(iter1, iter2) {
@@ -1355,12 +1338,9 @@ const result2 = zip(naturals(), fib)
 // [[7, 13], [8, 21], [9, 34]]
 ```
 
-</details>
 
 **题目 9**：实现一个 `chunk(iter, size)` 函数，将迭代器按定长分块。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 function* chunk(iter, size) {
@@ -1390,14 +1370,11 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **题目 10**：为什么 Iterator Helpers 没有提供 `sort()` 方法？如何对迭代器排序？
 
-<details>
-<summary>参考思路</summary>
 
 1. **原因**：排序需要看到所有元素才能确定顺序，与惰性求值矛盾。`sort()` 必须缓存全部数据，等价于 `toArray().sort()`。
 2. **方法**：
@@ -1407,12 +1384,9 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
 3. **替代方案**：若数据源本身有序（如已索引数据库），用 `drop` + `take` 实现分页，无需排序。
 4. **特殊场景**：若只需前 K 个最大/小元素，用最小堆/最大堆维护，避免全排序。
 
-</details>
 
 **题目 11**：Iterator Helpers 与 Generator 函数在功能上重合，何时该用哪个？
 
-<details>
-<summary>参考思路</summary>
 
 1. **用 Iterator Helpers**：
    - 简单的 map/filter/take 链
@@ -1438,7 +1412,6 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
      .toArray();
    ```
 
-</details>
 
 ---
 
@@ -1631,3 +1604,218 @@ const result = [1, 2, 3, 4, 5].values()
 ---
 
 *本文档基于 ES2024 正式规范撰写。生产环境使用前请确认目标环境支持，旧环境请引入 core-js polyfill。*
+## Symbol 基础
+
+**基本写法：创建唯一值**
+`Symbol([<描述>])`
+```javascript
+// 每次创建独一无二，不可强制转换
+const s1 = Symbol("id");
+const s2 = Symbol("id");
+s1 === s2; // false
+s1.description; // "id"
+```
+
+---
+
+**基本写法：作为对象键**
+`{ [<symbol>]: <值> }`
+```javascript
+// Symbol 键不会被 for-in/Object.keys 枚举
+const KEY = Symbol("hidden");
+const obj = { [KEY]: "secret", name: "Tom" };
+Object.keys(obj);          // ["name"]
+Object.getOwnPropertySymbols(obj); // [Symbol(hidden)]
+```
+
+---
+
+**基本写法：全局注册**
+`Symbol.for(<键>)` | `Symbol.keyFor(<symbol>)`
+```javascript
+// 同键返回同一 Symbol
+const a = Symbol.for("shared");
+const b = Symbol.for("shared");
+a === b;            // true
+Symbol.keyFor(a);   // "shared"
+```
+
+---
+
+## 内置 Symbol
+
+**基本写法：常用内置 Symbol**
+`Symbol.<wellKnown>`
+```javascript
+Symbol.iterator;       // 自定义迭代器
+Symbol.asyncIterator;  // 自定义异步迭代器
+Symbol.toPrimitive;    // 类型转换
+Symbol.toStringTag;    // toString 标识
+Symbol.hasInstance;    // instanceof 行为
+```
+
+---
+
+## 迭代协议
+
+**基本写法：iterable 协议**
+`[Symbol.iterator]() { return <iterator> }`
+```javascript
+// 实现 Symbol.iterator 即可迭代
+const range = {
+  from: 1, to: 3,
+  [Symbol.iterator]() {
+    let cur = this.from;
+    const last = this.to;
+    return {
+      next() {
+        return cur <= last
+          ? { value: cur++, done: false }
+          : { value: undefined, done: true };
+      }
+    };
+  }
+};
+[...range]; // [1, 2, 3]
+```
+
+---
+
+**基本写法：iterator 协议**
+`next() { return { value, done } }`
+```javascript
+// 迭代器对象须有 next 方法
+const it = range[Symbol.iterator]();
+it.next(); // { value: 1, done: false }
+it.next(); // { value: 2, done: false }
+it.next(); // { value: 3, done: false }
+it.next(); // { value: undefined, done: true }
+```
+
+---
+
+**基本写法：return 提前终止**
+`return(<值>) { ... }`
+```javascript
+// for-of 提前 break/throw 时调用
+return {
+  next() { /* ... */ },
+  return(v) { console.log("清理"); return { value: v, done: true }; }
+};
+```
+
+---
+
+## 生成器函数
+
+**基本写法：声明生成器**
+`function* <名>() { yield <值> }`
+```javascript
+// 生成器函数返回迭代器
+function* gen() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+const it = gen();
+it.next(); // { value: 1, done: false }
+[...gen()]; // [1, 2, 3]
+```
+
+---
+
+**基本写法：yield 委托**
+`yield* <可迭代>`
+```javascript
+// 委托给另一个可迭代对象
+function* inner() { yield "a"; yield "b"; }
+function* outer() { yield 1; yield* inner(); yield 2; }
+[...outer()]; // [1, "a", "b", 2]
+```
+
+---
+
+**基本写法：双向通信**
+`<变量> = yield <值>`
+```javascript
+// next 参数回传到 yield
+function* dialog() {
+  const x = yield 1;
+  console.log("收到", x); // 收到 hi
+}
+const it = dialog();
+it.next();      // { value: 1 }
+it.next("hi");  // 输出 收到 hi
+```
+
+---
+
+**基本写法：生成器作迭代器**
+`{ [Symbol.iterator]: function* () {} }`
+```javascript
+// 用生成器简化可迭代对象
+const obj = {
+  data: [10, 20, 30],
+  *[Symbol.iterator]() {
+    for (const v of this.data) yield v;
+  }
+};
+[...obj]; // [10, 20, 30]
+```
+
+---
+
+## 异步迭代
+
+**基本写法：异步可迭代协议**
+`[Symbol.asyncIterator]() { return { next() } }`
+```javascript
+// 异步迭代器返回 Promise
+const src = {
+  async *[Symbol.asyncIterator]() {
+    yield 1;
+    yield 2;
+  }
+};
+for await (const v of src) console.log(v);
+```
+
+---
+
+**基本写法：for await 遍历**
+`for await (const <v> of <异步可迭代>) {}`
+```javascript
+// 消费异步迭代器
+async function* lines() {
+  yield "a"; yield "b";
+}
+for await (const line of lines()) {
+  console.log(line);
+}
+```
+
+---
+
+## 默认可迭代对象
+
+**基本写法：内置可迭代类型**
+`for (const <v> of <可迭代>) {}`
+```javascript
+// Array Map Set String arguments NodeLists 均可迭代
+for (const x of [1, 2]) {}
+for (const [k, v] of new Map()) {}
+for (const c of "abc") {}
+```
+
+---
+
+## 解构与展开
+
+**基本写法：展开可迭代**
+`[...<可迭代>]`
+```javascript
+// 任何可迭代对象都能展开
+const arr = [...new Set([1, 2]), ...range];
+```
+
+---

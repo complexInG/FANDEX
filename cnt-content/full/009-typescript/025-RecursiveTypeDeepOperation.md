@@ -388,10 +388,11 @@ etymology:
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---
+# TypeScript 递归类型与 infer 语法速查
 
-# TypeScript 递归类型与深度操作
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文系统阐述 TypeScript 递归条件类型与深度类型操作的形式化语义、尾递归优化机制、DeepReadonly/DeepPartial/DeepRequired/DeepPick/DeepOmit 等核心工具的实现原理、JSON 类型推导、循环引用处理与编译性能优化。所有数学公式使用 KaTeX 语法，所有代码示例使用 TypeScript 5.4+ 编译验证。
+---
 
 ## 目录
 
@@ -2113,9 +2114,9 @@ type User = z.infer<typeof UserSchema>;
 
 ---
 
-## 18. 习题
+## 知识讲解与要点分析（原习题）
 
-### 18.1 填空题
+### 填空题知识点讲解
 
 1. TypeScript 4.5 引入的____优化使得尾位置的递归调用不再增加栈深度，识别条件是递归调用必须出现在条件类型的____。
    - **答案**：尾递归；直接分支位置
@@ -2141,7 +2142,7 @@ type User = z.infer<typeof UserSchema>;
    - **答案**：`-?`；`?`
    - **Bloom**：apply
 
-### 18.2 选择题
+### 选择题知识点讲解
 
 1. 下列关于 TypeScript 递归类型的描述，正确的是？
    - A. TypeScript 4.5 之前完全不支持递归类型
@@ -2500,56 +2501,78 @@ type Tail<S, Acc extends string = ''> =
 
 ### D.1 是否使用递归类型
 
-```
-开始
-  │
-  ├─ 输入是否为静态类型？
-  │   ├─ 否 → 不使用，回退到运行时校验
-  │   └─ 是 ↓
-  │
-  ├─ 是否需要深度嵌套操作？
-  │   ├─ 否 → 使用非递归类型
-  │   └─ 是 ↓
-  │
-  ├─ 是否存在循环引用？
-  │   ├─ 是 → 使用深度限制或运行时方案
-  │   └─ 否 ↓
-  │
-  ├─ 递归深度是否 < 30 层？
-  │   ├─ 否 → 考虑运行时校验或拆分类型
-  │   └─ 是 ↓
-  │
-  ├─ 是否可改写为尾递归？
-  │   ├─ 是 → 使用尾递归优化
-  │   └─ 否 → 评估性能影响
-  │
-  └─ 使用递归类型
+```mermaid
+flowchart TD
+    T0["开始"]
+    T1["输入是否为静态类型？"]
+    T2["否 → 不使用，回退到运行时校验"]
+    T3["是"]
+    T4["是否需要深度嵌套操作？"]
+    T5["否 → 使用非递归类型"]
+    T6["是"]
+    T7["是否存在循环引用？"]
+    T8["是 → 使用深度限制或运行时方案"]
+    T9["否"]
+    T10["递归深度是否 < 30 层？"]
+    T11["否 → 考虑运行时校验或拆分类型"]
+    T12["是"]
+    T13["是否可改写为尾递归？"]
+    T14["是 → 使用尾递归优化"]
+    T15["否 → 评估性能影响"]
+    T16["使用递归类型"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T0 --> T5
+    T0 --> T6
+    T6 --> T7
+    T0 --> T8
+    T0 --> T9
+    T9 --> T10
+    T0 --> T11
+    T0 --> T12
+    T12 --> T13
+    T0 --> T14
+    T0 --> T15
+    T15 --> T16
 ```
 
 ### D.2 选择深度操作工具
 
-```
-需要深度操作
-  │
-  ├─ 只读化？
-  │   ├─ 是 → DeepReadonly<T>
-  │   └─ 否 ↓
-  │
-  ├─ 可选化？
-  │   ├─ 是 → DeepPartial<T>
-  │   └─ 否 ↓
-  │
-  ├─ 必填化？
-  │   ├─ 是 → DeepRequired<T>
-  │   └─ 否 ↓
-  │
-  ├─ 选取/移除？
-  │   ├─ 选取 → DeepPick<T, Path>
-  │   └─ 移除 → DeepOmit<T, Path>
-  │
-  └─ 路径操作？
-      ├─ 生成 → PathKeys<T>
-      └─ 访问 → GetByPath<T, Path>
+```mermaid
+flowchart TD
+    T0["需要深度操作"]
+    T1["只读化？"]
+    T2["是 → DeepReadonly<T>"]
+    T3["否"]
+    T4["可选化？"]
+    T5["是 → DeepPartial<T>"]
+    T6["否"]
+    T7["必填化？"]
+    T8["是 → DeepRequired<T>"]
+    T9["否"]
+    T10["选取/移除？"]
+    T11["选取 → DeepPick<T, Path>"]
+    T12["移除 → DeepOmit<T, Path>"]
+    T13["路径操作？"]
+    T14["生成 → PathKeys<T>"]
+    T15["访问 → GetByPath<T, Path>"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T0 --> T5
+    T0 --> T6
+    T6 --> T7
+    T0 --> T8
+    T0 --> T9
+    T9 --> T10
+    T0 --> T11
+    T0 --> T12
+    T12 --> T13
+    T13 --> T14
+    T13 --> T15
 ```
 
 ---
@@ -2610,3 +2633,211 @@ type Tail<S, Acc extends string = ''> =
 ---
 
 > 本文最后审阅日期：2026-07-20。审阅团队：FANDEX Content Engineering Team。如发现错误或建议改进，请提交 issue 至 FANDEX 仓库。
+## infer 基础
+
+**基本写法：infer 提取类型**
+`<T> extends <模式> ? infer <X> : <never>`
+```typescript
+// 从函数返回类型提取
+type Return<T> = T extends (...args: never[]) => infer R ? R : never;
+type R = Return<() => string>; // string
+```
+
+---
+
+**基本写法：提取函数参数**
+`infer <Args>`
+```typescript
+// 提取参数元组
+type Params<T> = T extends (...args: infer P) => unknown ? P : never;
+type P = Params<(a: number, b: string) => void>; // [number, string]
+```
+
+---
+
+**基本写法：提取数组元素**
+`infer <E>`
+```typescript
+// 提取元组/数组元素类型
+type Item<T> = T extends (infer E)[] ? E : never;
+type A = Item<string[]>;       // string
+type B = Item<[1, 2, 3]>;      // 1 | 2 | 3
+```
+
+---
+
+## 多 infer 与约束
+
+**基本写法：多个 infer**
+`<T> extends <模式1> extends <模式2> ? infer <X> : never`
+```typescript
+// 嵌套条件约束
+type First<T> = T extends [infer F, ...unknown[]] ? F : never;
+type F = First<[1, 2, 3]>; // 1
+```
+
+---
+
+**基本写法：infer 约束（TS 4.7+）**
+`infer <X> extends <约束>`
+```typescript
+// 限定推断类型范围
+type FirstString<T> =
+  T extends [infer F extends string, ...unknown[]] ? F : never;
+type S = FirstString<["a", 2]>; // "a"
+```
+
+---
+
+## 递归类型基础
+
+**基本写法：自引用递归**
+`type <名> = <终止> | { <字段>: <名> }`
+```typescript
+// 递归定义树形结构
+type Tree = number | { children: Tree[] };
+const t: Tree = { children: [1, { children: [2] }] };
+```
+
+---
+
+**基本写法：深度只读**
+`type <名> = <T> extends object ? { readonly [K in keyof <T>]: <名> } : <T>`
+```typescript
+// 递归遍历所有层级
+type DeepReadonly<T> =
+  T extends object ? { readonly [K in keyof T]: DeepReadonly<T[K]> } : T;
+type R = DeepReadonly<{ a: { b: 1 } }>; // { readonly a: { readonly b: 1 } }
+```
+
+---
+
+## 元组递归操作
+
+**基本写法：反转元组**
+`<T> extends [infer <H>, ...infer <R>] ? <递归> : []`
+```typescript
+// 递归反转元组类型
+type Reverse<T extends unknown[]> =
+  T extends [infer H, ...infer R] ? [...Reverse<R>, H] : [];
+type R = Reverse<[1, 2, 3]>; // [3, 2, 1]
+```
+
+---
+
+**基本写法：拼接元组**
+`[...<A>, ...<B>]`
+```typescript
+// 利用展开拼接
+type Concat<A extends unknown[], B extends unknown[]> = [...A, ...B];
+type R = Concat<[1], [2, 3]>; // [1, 2, 3]
+```
+
+---
+
+**基本写法：元组转对象**
+`<T> extends [infer <K>, ...infer <R>] ? { ... } : {}`
+```typescript
+// 递归构造键值对象
+type PairToObj<T extends unknown[]> =
+  T extends [infer K extends string, infer V, ...infer R]
+    ? { [P in K]: V } & PairToObj<R>
+    : {};
+```
+
+---
+
+## 字符串递归
+
+**基本写法：字符串拆分**
+`<S> extends `${infer <Head>}${infer <Rest>}``
+```typescript
+// 逐字符递归
+type Split<S extends string> =
+  S extends `${infer H}${infer R}` ? [H, ...Split<R>] : [];
+type R = Split<"abc">; // ["a", "b", "c"]
+```
+
+---
+
+**基本写法：联合字符**
+`type <R> = <递归>`
+```typescript
+// 字符串转字符联合
+type Chars<S extends string> =
+  S extends `${infer H}${infer R}` ? H | Chars<R> : never;
+type R = Chars<"abc">; // "a" | "b" | "c"
+```
+
+---
+
+## 递归深度限制
+
+**基本写法：递归层级计数**
+`<T, N extends number>`
+```typescript
+// 用元组长度计数器限制递归深度，避免无限递归
+type Depth<T extends unknown[]> = T["length"];
+type Repeat<S extends string, N extends number, A extends string[] = []> =
+  A["length"] extends N ? "" : `${S}${Repeat<S, N, [S, ...A]>}`;
+type R = Repeat<"ab", 3>; // "ababab"
+```
+
+---
+
+## infer 在 Promise
+
+**基本写法：递归解包 Promise**
+`<T> extends Promise<infer <U>> ? <递归> : <T>`
+```typescript
+// 提取深层 Promise 值类型
+type Unwrap<T> = T extends Promise<infer U> ? Unwrap<U> : T;
+type R = Unwrap<Promise<Promise<number>>>; // number
+```
+
+---
+
+## 递归实例：DeepPartial
+
+**基本写法：深度可选**
+`type DeepPartial<<T>> = ...`
+```typescript
+// 所有层级属性可选
+type DeepPartial<T> =
+  T extends object ? { [K in keyof T]?: DeepPartial<T[K]> } : T;
+type R = DeepPartial<{ a: { b: number } }>; // { a?: { b?: number } }
+```
+
+---
+
+## 递归实例：Paths
+
+**基本写法：对象路径联合**
+`<T> extends object ? ...`
+```typescript
+// 生成对象所有路径字符串联合
+type Paths<T, P extends string = ""> =
+  T extends object
+    ? { [K in keyof T & string]:
+        Paths<T[K], `${P}${P extends "" ? "" : "."}${K}`> }[keyof T & string] | P
+    : P;
+type R = Paths<{ a: { b: number } }>; // "a" | "a.b"
+```
+
+---
+
+## 尾递归优化
+
+**基本写法：尾递归形式**
+`<递归> extends <终止> ? <结果> : <递归(缩小)>`
+```typescript
+// TS 4.5+ 对尾递归类型优化，避免栈溢出
+// 写法：递归调用作为最后操作且不包裹展开
+type Join<S extends string[], D extends string> =
+  S extends [] ? ""
+  : S extends [infer H extends string] ? H
+  : S extends [infer H extends string, ...infer R extends string[]]
+    ? `${H}${D}${Join<R, D>}` : never;
+```
+
+---

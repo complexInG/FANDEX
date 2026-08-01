@@ -143,22 +143,17 @@ distroless 镜像基础版本：
 
 ### 2.7 演进时间轴
 
-```
-2008 ── Linux cgroups/namespaces 内核特性
-   │
-2013 ── Docker 发布，引入 Dockerfile、UnionFS、Docker Hub
-   │
-2015 ── OCI 成立，runc 捐赠，containerd 项目启动
-   │
-2017 ── BuildKit 发布，distroless 开源
-   │
-2019 ── Docker 18.09 默认启用 BuildKit
-   │
-2020 ── BuildX 多架构构建成熟，cosign 镜像签名
-   │
-2023 ── Docker 25.0 发布，OCI Image Spec v1.1
-   │
-2024 ── Wolfi、Chainguard Images 兴起，零 CVE 镜像
+```mermaid
+timeline
+    title 发展时间线
+    2008: Linux cgroups/namespaces 内核特性
+    2013: Docker 发布，引入 Dockerfile、UnionFS、Docker Hub
+    2015: OCI 成立，runc 捐赠，containerd 项目启动
+    2017: BuildKit 发布，distroless 开源
+    2019: Docker 18.09 默认启用 BuildKit
+    2020: BuildX 多架构构建成熟，cosign 镜像签名
+    2023: Docker 25.0 发布，OCI Image Spec v1.1
+    2024: Wolfi、Chainguard Images 兴起，零 CVE 镜像
 ```
 
 ---
@@ -903,14 +898,21 @@ go tool pprof http://localhost:9090/debug/pprof/heap
 
 **选择决策树**：
 
-```
-是否需要 shell 调试？
-├── 是 → distroless:debug 或 debian-slim
-└── 否
-    ├── CGO_ENABLED=0 → distroless/static 或 scratch
-    └── CGO_ENABLED=1
-        ├── 链接 glibc → distroless/base 或 debian-slim
-        └── 链接 musl → alpine
+```mermaid
+flowchart TD
+    T0["是否需要 shell 调试？"]
+    T1["是 → distroless:debug 或 debian-slim"]
+    T2["否"]
+    T3["CGO_ENABLED=0 → distroless/static 或 scratch"]
+    T4["CGO_ENABLED=1"]
+    T5["链接 glibc → distroless/base 或 debian-slim"]
+    T6["链接 musl → alpine"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T4 --> T5
+    T4 --> T6
 ```
 
 ### 6.2 Go 与其他语言的容器化对比
@@ -1573,9 +1575,9 @@ spec:
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **1. 以下哪种基础镜像最适合 `CGO_ENABLED=0` 编译的 Go 程序？**
 
@@ -1619,7 +1621,7 @@ B. 10 秒
 C. 30 秒
 D. 60 秒
 
-### 10.2 简答题
+### 简答题知识点讲解
 
 1. 解释为何 `scratch` 镜像中 Go 程序调用 `http.Get("https://example.com")` 会失败，并提出两种解决方案。
 

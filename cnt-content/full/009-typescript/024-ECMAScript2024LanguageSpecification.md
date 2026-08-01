@@ -1703,9 +1703,9 @@ Zod 的 `z.infer` 实现简化版：
 type infer<T extends ZodType> = T extends ZodType<infer Output, any> ? Output : never;
 ```
 
-## 13. 习题
+## 知识讲解与要点分析（原习题）
 
-### 13.1 填空题
+### 填空题知识点讲解
 
 1. **（remember）** TypeScript 2.8 引入 `infer` 的 PR 编号是 ______。
 
@@ -1717,7 +1717,7 @@ type infer<T extends ZodType> = T extends ZodType<infer Output, any> ? Output : 
 
 5. **（evaluate）** TypeScript 4.5 引入的 `Awaited<T>` 内置类型，其对 `Promise<Promise<Promise<T>>>` 的求值结果是 ______。
 
-### 13.2 选择题
+### 选择题知识点讲解
 
 1. **（understand）** 下列哪种 `infer` 写法是合法的？
    - A. `type F<T> = infer U extends T ? U : never;`

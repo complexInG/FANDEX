@@ -15,6 +15,11 @@ related:
 prerequisites:
   - python/语法速查
 ---
+# Python weakref 弱引用
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -1151,18 +1156,23 @@ class SafeWeakDict:
 
 ### 8.1 项目结构
 
-```
-my_app/
-├── pyproject.toml
-├── src/
-│   └── myapp/
-│       ├── __init__.py
-│       ├── cache.py          # 基于 WeakValueDictionary 的缓存
-│       ├── observer.py       # 基于 WeakSet 的观察者
-│       ├── resources.py      # 基于 finalize 的资源管理
-│       └── descriptors.py    # 弱引用描述符
-└── tests/
-    └── test_cache.py
+```mermaid
+flowchart TD
+    T0["my_app/"]
+    T1["pyproject.toml"]
+    T2["src/"]
+    T3["myapp/"]
+    T4["__init__.py"]
+    T5["cache.py          # 基于 WeakValueDictionary 的缓存"]
+    T6["observer.py       # 基于 WeakSet 的观察者"]
+    T7["resources.py      # 基于 finalize 的资源管理"]
+    T8["descriptors.py    # 弱引用描述符"]
+    T9["tests/"]
+    T10["test_cache.py"]
+    T0 --> T1
+    T0 --> T2
+    T8 --> T9
+    T9 --> T10
 ```
 
 ### 8.2 pyproject.toml 配置
@@ -1596,9 +1606,9 @@ class TensorCache:
         return tensor
 ```
 
-## 10. 练习
+## 知识讲解与要点分析（原练习）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **1. 以下哪种类型不支持弱引用？**
 
@@ -1607,8 +1617,6 @@ B. 函数对象
 C. `list` 实例
 D. 类型对象
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
@@ -1625,7 +1633,6 @@ ref = weakref.ref(wl)  # OK
 ```
 
 其他选项都支持弱引用：自定义类、函数对象、类型对象。
-</details>
 
 ---
 
@@ -1648,13 +1655,10 @@ B. `None`
 C. `False`
 D. 抛出 `ReferenceError`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `weakref.ref` 在对象被回收后返回 `None`。若使用 `weakref.proxy`，访问失效代理会抛出 `ReferenceError`。
-</details>
 
 ---
 
@@ -1665,13 +1669,10 @@ B. 自动删除该条目
 C. 保留键为 `None`
 D. 抛出异常
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `WeakKeyDictionary` 在键对象被回收时，通过弱引用回调自动删除对应的 `(key, value)` 条目。这是其与普通字典的核心区别。
-</details>
 
 ---
 
@@ -1682,8 +1683,6 @@ B. `__weakref__`
 C. `__ref__`
 D. 不需要额外声明
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -1693,7 +1692,6 @@ D. 不需要额外声明
 class MyClass:
     __slots__ = ("value", "__weakref__")
 ```
-</details>
 
 ---
 
@@ -1723,67 +1721,49 @@ B. 1
 C. 2
 D. 不确定
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 对象被回收时，弱引用回调会被调用一次。即使有多个弱引用指向同一对象，每个弱引用的回调都会被调用，但本题只有一个弱引用，所以 `callback_called` 长度为 1。
 
 注意：必须显式调用 `gc.collect()` 确保回收，否则可能延迟。
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **1.** Python 中获取对象引用计数的函数是 `________`。
 
-<details>
-<summary>答案</summary>
 
 `sys.getrefcount`
-</details>
 
 ---
 
 **2.** `WeakValueDictionary` 在 ________ 被回收时自动删除对应条目。
 
-<details>
-<summary>答案</summary>
 
 值对象
-</details>
 
 ---
 
 **3.** `weakref.finalize` 的回调函数中 ________（能/不能）访问被回收的对象。
 
-<details>
-<summary>答案</summary>
 
 不能（应使用静态方法，通过参数传递所需信息）
-</details>
 
 ---
 
 **4.** 使用 `weakref.proxy` 时，若目标对象已被回收，访问代理会抛出 `________` 异常。
 
-<details>
-<summary>答案</summary>
 
 `ReferenceError`
-</details>
 
 ---
 
 **5.** `WeakSet` 中的元素被回收时，会自动从集合中 ________。
 
-<details>
-<summary>答案</summary>
 
 移除
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **1. 实现对象池**
 
@@ -1804,8 +1784,6 @@ class ObjectPool:
         # ...
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```python
 import weakref
@@ -1873,7 +1851,6 @@ if __name__ == "__main__":
     c3 = pool.acquire()  # 复用 c1
     print(f"再借出: {c3}")
 ```
-</details>
 
 ---
 
@@ -1900,8 +1877,6 @@ class ObservableProperty:
         # ...
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```python
 import weakref
@@ -1969,7 +1944,6 @@ if __name__ == "__main__":
     config.debug = True   # 输出：debug: False -> True
     config.timeout = 60    # 输出：timeout: 30 -> 60
 ```
-</details>
 
 ---
 
@@ -1990,8 +1964,6 @@ class ResourceManager:
         # ...
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```python
 import weakref
@@ -2070,14 +2042,11 @@ if __name__ == "__main__":
     gc.collect()  # 触发 finalize
     print(f"活跃数: {manager.active_count}")  # 0
 ```
-</details>
 
 ### 10.4 思考题
 
 **1. 为什么 Python 的 `int`、`str`、`list` 等内置类型不支持弱引用？这样设计有什么好处？**
 
-<details>
-<summary>参考答案</summary>
 
 **设计原因**：
 
@@ -2096,14 +2065,11 @@ if __name__ == "__main__":
 
 - 无法直接对 `int`、`str` 等创建弱引用；
 - 需通过子类化或包装类间接实现。
-</details>
 
 ---
 
 **2. 描述 `weakref.finalize` 与 `__del__` 的区别，并说明为什么推荐使用 `finalize`。**
 
-<details>
-<summary>参考答案</summary>
 
 **区别**：
 
@@ -2143,14 +2109,11 @@ class Good:
     def close(self):
         self._finalizer()
 ```
-</details>
 
 ---
 
 **3. 在什么场景下应该使用弱引用？什么时候应该避免使用？**
 
-<details>
-<summary>参考答案</summary>
 
 **适合使用弱引用的场景**：
 
@@ -2169,7 +2132,6 @@ class Good:
 4. **内置不可变类型**：`int`、`str` 等不支持，需子类化或包装，增加复杂度；
 5. **多线程高并发**：弱引用容器非线程安全，需加锁；
 6. **关键业务逻辑**：弱引用的"可能失效"特性增加代码不确定性，关键路径应使用强引用。
-</details>
 
 ## 11. 参考文献
 
@@ -2270,26 +2232,26 @@ class Good:
 
 | 类型 | 支持弱引用 | 备注 |
 | :--- | :--- | :--- |
-| 用户自定义类 | ✓ | 默认支持 |
-| 函数 `def` | ✓ | |
-| 方法（绑定） | ✓ | 通过 `WeakMethod` |
-| 类型对象 `type` | ✓ | |
-| `bytearray` | ✓ | |
-| `memoryview` | ✓ | |
-| `array.array` | ✓ | |
-| `socket` | ✓ | |
-| `int` | ✗ | 子类化可支持 |
-| `float` | ✗ | 子类化可支持 |
-| `complex` | ✗ | |
-| `str` | ✗ | 子类化可支持 |
-| `bytes` | ✗ | |
-| `tuple` | ✗ | |
-| `frozenset` | ✗ | |
-| `list` | ✗ | 子类化可支持 |
-| `dict` | ✗ | 子类化可支持 |
-| `set` | ✗ | 子类化可支持 |
-| `bool` | ✗ | |
-| `NoneType` | ✗ | |
+| 用户自定义类 | √ | 默认支持 |
+| 函数 `def` | √ | |
+| 方法（绑定） | √ | 通过 `WeakMethod` |
+| 类型对象 `type` | √ | |
+| `bytearray` | √ | |
+| `memoryview` | √ | |
+| `array.array` | √ | |
+| `socket` | √ | |
+| `int` | × | 子类化可支持 |
+| `float` | × | 子类化可支持 |
+| `complex` | × | |
+| `str` | × | 子类化可支持 |
+| `bytes` | × | |
+| `tuple` | × | |
+| `frozenset` | × | |
+| `list` | × | 子类化可支持 |
+| `dict` | × | 子类化可支持 |
+| `set` | × | 子类化可支持 |
+| `bool` | × | |
+| `NoneType` | × | |
 
 ## 附录 C：性能基准
 
@@ -2348,3 +2310,232 @@ typedef struct _object {
 - `ctypes`：C 级别弱引用操作；
 - `multiprocessing.shared_memory`：跨进程共享内存；
 - `tracemalloc`：内存分配追踪。
+## 弱引用基础
+
+**基本写法：创建弱引用**
+`weakref.ref(<对象>)`
+```python
+# 创建弱引用
+import weakref
+
+class Obj:
+    pass
+
+obj = Obj()
+r = weakref.ref(obj)
+print(r())        # 引用对象
+print(r() is obj) # True
+```
+
+**基本写法：访问引用对象**
+`r()`
+```python
+# 调用弱引用获取对象
+obj_ref = r()
+if obj_ref is not None:
+    print("对象存在")
+else:
+    print("对象已回收")
+```
+
+**基本写法：对象回收后**
+`del <对象>`
+```python
+# 删除强引用后弱引用返回 None
+del obj
+print(r())  # None
+```
+
+---
+
+## WeakValueDictionary
+
+**基本写法：值弱引用字典**
+`weakref.WeakValueDictionary()`
+```python
+# 字典值为弱引用，对象可被回收
+d = weakref.WeakValueDictionary()
+o = Obj()
+d["key"] = o
+print(d["key"] is o)  # True
+del o
+print("key" in d)     # False，对象回收后自动移除
+```
+
+---
+
+## WeakKeyDictionary
+
+**基本写法：键弱引用字典**
+`weakref.WeakKeyDictionary()`
+```python
+# 字典键为弱引用
+d = weakref.WeakKeyDictionary()
+o = Obj()
+d[o] = "value"
+print(d.get(o))  # value
+del o
+print(len(d))    # 0
+```
+
+---
+
+## WeakSet
+
+**基本写法：弱引用集合**
+`weakref.WeakSet()`
+```python
+# 集合中元素为弱引用
+s = weakref.WeakSet()
+o = Obj()
+s.add(o)
+print(o in s)  # True
+del o
+print(len(s))  # 0
+```
+
+---
+
+## finalize 终结回调
+
+**基本写法：注册终结回调**
+`weakref.finalize(<对象>, <函数>, *<参数>)`
+```python
+# 对象回收时调用回调
+def cleanup(name):
+    print(f"{name} 被回收")
+
+o = Obj()
+f = weakref.finalize(o, cleanup, "myobj")
+del o  # 打印 "myobj 被回收"
+```
+
+**基本写法：取消终结**
+`f.detach()`
+```python
+# 取消终结器
+f = weakref.finalize(o, cleanup, "myobj")
+f.detach()  # 取消回调
+```
+
+**基本写法：检查是否存活**
+`f.alive`
+```python
+# 检查终结器是否仍存活
+print(f.alive)
+```
+
+---
+
+## WeakMethod 方法弱引用
+
+**基本写法：方法弱引用**
+`weakref.WeakMethod(<绑定方法>)`
+```python
+# 对绑定方法创建弱引用
+class Service:
+    def run(self):
+        pass
+
+s = Service()
+m = weakref.WeakMethod(s.run)
+print(m() is s.run)
+```
+
+---
+
+## proxy 代理
+
+**基本写法：创建代理**
+`weakref.proxy(<对象>)`
+```python
+# 代理对象自动解引用
+obj = Obj()
+p = weakref.proxy(obj)
+print(p is obj)  # False，但行为像 obj
+del obj
+# 访问 p 现在会抛出 ReferenceError
+```
+
+**基本写法：代理回调**
+`weakref.proxy(<对象>, <回调>)`
+```python
+# 代理对象回收时回调
+def on_unref(ref):
+    print("代理对象被回收")
+
+p = weakref.proxy(obj, on_unref)
+```
+
+---
+
+## 支持弱引用的对象
+
+**基本写法：检查是否支持弱引用**
+`weakref.ref(<对象>)`
+```python
+# 内置类型如 list/dict 不支持弱引用
+try:
+    weakref.ref([1, 2, 3])
+except TypeError as e:
+    print(e)
+```
+
+**基本写法：子类化获得支持**
+`class <类>(dict): __slots__ = ("__weakref__",)`
+```python
+# 通过 __slots__ 让对象支持弱引用
+class MyDict(dict):
+    __slots__ = ("__weakref__",)
+```
+
+---
+
+## 应用场景
+
+**基本写法：缓存弱引用**
+`WeakValueDictionary`
+```python
+# 缓存大对象，不阻止回收
+class Cache:
+    def __init__(self):
+        self._cache = weakref.WeakValueDictionary()
+    def get(self, key, factory):
+        obj = self._cache.get(key)
+        if obj is None:
+            obj = factory()
+            self._cache[key] = obj
+        return obj
+```
+
+**基本写法：观察者模式弱引用**
+`WeakSet`
+```python
+# 观察者列表使用弱引用，避免内存泄漏
+class Subject:
+    def __init__(self):
+        self._observers = weakref.WeakSet()
+    def subscribe(self, obs):
+        self._observers.add(obs)
+    def notify(self, msg):
+        for obs in self._observers:
+            obs.update(msg)
+```
+
+---
+
+## getweakrefcount
+
+**基本写法：统计弱引用数**
+`weakref.getweakrefcount(<对象>)`
+```python
+# 返回指向对象的弱引用数
+print(weakref.getweakrefcount(obj))
+```
+
+**基本写法：获取所有弱引用**
+`weakref.getweakrefs(<对象>)`
+```python
+# 返回所有弱引用列表
+print(weakref.getweakrefs(obj))
+```

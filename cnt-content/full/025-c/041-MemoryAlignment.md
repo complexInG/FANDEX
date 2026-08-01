@@ -1218,9 +1218,9 @@ struct rte_mbuf {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题 1**：以下 struct 在 LP64 Linux x86_64 上的 `sizeof` 是多少？
 
@@ -1238,12 +1238,10 @@ B. 16
 C. 24  
 D. 32
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：
+**解析讲解**：
 
 - `a`：offset 0，size 1
 - 填充 3 字节
@@ -1254,7 +1252,6 @@ D. 32
 - 末尾填充 6 字节到 8 的倍数
 - `sizeof = 24`
 
-</details>
 
 **题 2**：以下哪种对齐方式可以消除伪共享？
 
@@ -1270,12 +1267,10 @@ B. `alignas(64) atomic_int a, b;`
 C. `alignas(64)` 整个 struct  
 D. 仅 `alignas(64) atomic_int a;`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B、C
+**解析讲解**：B、C
 
-**解析**：
+**解析讲解**：
 
 - A 选项 `#pragma pack(1)` 移除填充，使两变量更靠近，**加重**伪共享。
 - B 选项使每个变量独占一个 64 字节缓存行，正确消除伪共享。
@@ -1284,7 +1279,6 @@ D. 仅 `alignas(64) atomic_int a;`
 
 正确做法是 B（每个并发变量独立缓存行对齐），或在 struct 末尾填充至 128 字节并整体 `alignas(64)`。
 
-</details>
 
 **题 3**：以下代码在 ARMv7（不允许未对齐访问）上的行为是？
 
@@ -1298,12 +1292,10 @@ B. 触发 `SIGBUS`
 C. 触发 `SIGSEGV`  
 D. UB，可能触发 `SIGBUS` 也可能正常返回
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：
+**解析讲解**：
 
 C 标准规定未对齐访问是 UB（undefined behavior）。具体行为：
 
@@ -1314,9 +1306,8 @@ C 标准规定未对齐访问是 UB（undefined behavior）。具体行为：
 
 UB 意味着标准未规定行为，任何结果都可能。D 是最准确描述。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题 4**：以下代码输出为：
 
@@ -1327,12 +1318,10 @@ printf("%zu\n", sizeof(struct S));
 
 在 LP64 Linux x86_64 上，输出是 _____。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：12
+**解析讲解**：12
 
-**解析**：
+**解析讲解**：
 - a: offset 0, size 1
 - padding 3
 - b: offset 4, size 4
@@ -1340,20 +1329,16 @@ printf("%zu\n", sizeof(struct S));
 - 末尾 padding 2 到 4 的倍数
 - sizeof = 12
 
-</details>
 
 **题 5**：`alignof(max_align_t)` 在 x86_64 Linux glibc 上的值是 _____。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：16
+**解析讲解**：16
 
-**解析**：glibc 定义 `max_align_t` 为 `long double`（80 位扩展精度，对齐 16）或 `__attribute__((aligned(16)))` 修饰的 struct，对齐值为 16。这超过 C 标准最低要求 8，以匹配 SSE/AVX 的 16 字节对齐需求。
+**解析讲解**：glibc 定义 `max_align_t` 为 `long double`（80 位扩展精度，对齐 16）或 `__attribute__((aligned(16)))` 修饰的 struct，对齐值为 16。这超过 C 标准最低要求 8，以匹配 SSE/AVX 的 16 字节对齐需求。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题 6**：实现一个函数 `align_up(ptr, alignment)`，将指针向上对齐到指定边界。要求：
 
@@ -1361,8 +1346,6 @@ printf("%zu\n", sizeof(struct S));
 - 处理 `alignment` 非 2 的幂的情况。
 - 处理 `alignment == 0` 的情况。
 
-<details>
-<summary>参考答案</summary>
 
 ```c
 #include <stdint.h>
@@ -1403,7 +1386,6 @@ int main(void) {
 }
 ```
 
-</details>
 
 **题 7**：给定以下结构体：
 
@@ -1419,8 +1401,6 @@ struct S {
 
 手工计算在 LP64 Linux x86_64 上的 `sizeof`、`alignof`、各成员 `offsetof`。然后用 C 程序验证。
 
-<details>
-<summary>参考答案</summary>
 
 **手工计算**（LP64，`alignof(double) = 8`）：
 
@@ -1458,14 +1438,11 @@ int main(void) {
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **题 8**：为什么 `aligned_alloc(16, 20)` 在 C 标准下是 UB？请从内存分配器实现角度解释。
 
-<details>
-<summary>参考答案</summary>
 
 C11 §7.22.3.1 规定 `aligned_alloc(alignment, size)` 要求 `size` 是 `alignment` 的整数倍，否则 UB。
 
@@ -1494,12 +1471,9 @@ size_t safe_size = (size + alignment - 1) & ~(alignment - 1);
 void *p = aligned_alloc(alignment, safe_size);
 ```
 
-</details>
 
 **题 9**：在多核 CPU 上，为何 `alignas(64)` 一个 `atomic_int` 比单纯使用 `atomic_int` 性能更好？请从缓存一致性协议角度分析。
 
-<details>
-<summary>参考答案</summary>
 
 **缓存一致性协议（MESI/MOESI）**：
 
@@ -1527,12 +1501,9 @@ void *p = aligned_alloc(alignment, safe_size);
 
 性能差距 20 倍。
 
-</details>
 
 **题 10**：C++ 的 `std::vector<struct S>` 与 C 中 `struct S *arr = malloc(N * sizeof(struct S))` 在对齐处理上有何异同？
 
-<details>
-<summary>参考答案</summary>
 
 **相同点**：
 
@@ -1561,7 +1532,6 @@ void *p = aligned_alloc(alignment, safe_size);
 
 **结论**：C++ 在对齐分配上更自动化，但 C 通过显式 `aligned_alloc` + 自定义分配器也能达到同等效果，只是需要更多手工工作。
 
-</details>
 
 ---
 
@@ -1781,36 +1751,16 @@ void *p = aligned_alloc(alignment, safe_size);
 
 ## 附录 C：标准演化时间线
 
-```
-1972  C 诞生（Dennis Ritchie, Bell Labs）
-  │
-1978  K&R C
-  │   - 对齐为隐式约定
-  │
-1989  C89 / ANSI C / ISO C90
-  │   - 引入 struct 布局规则
-  │   - malloc 保证"任何对象类型"对齐
-  │
-1999  C99
-  │   - stdint.h 定宽整数类型
-  │   - _Bool 类型
-  │
-2011  C11
-  │   - _Alignof / _Alignas 关键字
-  │   - <stdalign.h>
-  │   - max_align_t
-  │   - aligned_alloc()
-  │   - <stdatomic.h> 原子操作要求对齐
-  │
-2018  C17
-  │   - 技术勘误，无新对齐特性
-  │
-2024  C23
-  │   - alignof / alignas 成为关键字
-  │   - max_align_t 对齐至少 16
-  │
-202y  C2y（草案）
-      - 进一步对齐语义澄清
+```mermaid
+timeline
+    title 发展时间线
+    1972: C 诞生（Dennis Ritchie, Bell Labs）
+    1978: K&R C - 对齐为隐式约定
+    1989: C89 / ANSI C / ISO C90 - 引入 struct 布局规则 - malloc 保证'任何对象类型'对齐
+    1999: C99 - stdint.h 定宽整数类型 - _Bool 类型
+    2011: C11 - _Alignof / _Alignas 关键字 - <stdalign.h> - max_align_t - aligned_alloc() - <stdatomic.h> 原子操作要求对齐
+    2018: C17 - 技术勘误，无新对齐特性
+    2024: C23 - alignof / alignas 成为关键字 - max_align_t 对齐至少 16 202y  C2y（草案） - 进一步对齐语义澄清
 ```
 
 ## 附录 D：速查卡片

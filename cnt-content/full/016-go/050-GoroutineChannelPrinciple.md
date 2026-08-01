@@ -15,6 +15,11 @@ related:
 prerequisites:
   - go/概述与环境配置
 ---
+# Go goroutine 与 channel
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 0. 学习目标
 
@@ -452,14 +457,21 @@ $$
 
 ### 4.1 项目结构
 
-```text
-concurrency_demo/
-├── go.mod
-├── goroutine.go
-├── channel.go
-├── select.go
-├── runtime_inspect.go
-├── *_test.go
+```mermaid
+flowchart TD
+    T0["concurrency_demo/"]
+    T1["go.mod"]
+    T2["goroutine.go"]
+    T3["channel.go"]
+    T4["select.go"]
+    T5["runtime_inspect.go"]
+    T6["*_test.go"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
 ```
 
 `go.mod`:
@@ -1737,9 +1749,9 @@ Prometheus 的 scrape、ingest、query 都基于 goroutine:
 
 ---
 
-## 9. 习题
+## 知识讲解与要点分析（原习题）
 
-### 9.1 选择题
+### 选择题知识点讲解
 
 **题目 1**:关于 goroutine,以下说法正确的是?
 
@@ -1748,17 +1760,14 @@ B. goroutine 的栈大小固定为 2KB
 C. goroutine 由 Go runtime 调度,不需要 OS 介入
 D. goroutine 之间可以通过共享内存或 channel 通信
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:D
+**解析讲解**：D
 
-**解析**:
+**解析讲解**：
 - A 错误:goroutine 是用户态线程。
 - B 错误:初始 2KB,可动态增长。
 - C 错误:goroutine 由 runtime 调度,但运行在 OS 线程(M)上。
 - D 正确:Go 支持两种通信方式,但推荐 channel。
-</details>
 
 **题目 2**:以下关于 channel 关闭的描述,正确的是?
 
@@ -1767,17 +1776,14 @@ B. 关闭已关闭的 channel 会 panic
 C. 向已关闭 channel 发送数据会返回零值
 D. 从已关闭 channel 接收会 panic
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:
+**解析讲解**：
 - A 错误:应只由发送方关闭。
 - B 正确:重复关闭会 panic。
 - C 错误:向已关闭 channel 发送会 panic。
 - D 错误:从已关闭 channel 接收返回零值,ok=false。
-</details>
 
 **题目 3**:Go 1.14 引入的异步抢占基于什么信号?
 
@@ -1786,13 +1792,10 @@ B. SIGTERM
 C. SIGURG
 D. SIGUSR1
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:C
+**解析讲解**：C
 
-**解析**:Go 1.14 使用 SIGURG 信号实现异步抢占,因为 SIGURG 默认不会终止进程,且不在常用信号范围内。
-</details>
+**解析讲解**：Go 1.14 使用 SIGURG 信号实现异步抢占,因为 SIGURG 默认不会终止进程,且不在常用信号范围内。
 
 **题目 4**:GMP 模型中,P 的数量由什么决定?
 
@@ -1801,13 +1804,10 @@ B. `GOMAXPROCS`
 C. `runtime.NumGoroutine()`
 D. OS 线程数
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:P 数量等于 `GOMAXPROCS`,默认为 CPU 核数,但可通过 `runtime.GOMAXPROCS(n)` 或环境变量调整。
-</details>
+**解析讲解**：P 数量等于 `GOMAXPROCS`,默认为 CPU 核数,但可通过 `runtime.GOMAXPROCS(n)` 或环境变量调整。
 
 **题目 5**:关于无缓冲 channel,以下说法错误的是?
 
@@ -1816,62 +1816,42 @@ B. 接收方阻塞直到发送方就绪
 C. `make(chan int)` 创建无缓冲 channel
 D. 无缓冲 channel 的容量为 1
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:D
+**解析讲解**：D
 
-**解析**:无缓冲 channel 容量为 0,不是 1。
-</details>
+**解析讲解**：无缓冲 channel 容量为 0,不是 1。
 
-### 9.2 填空题
+### 填空题知识点讲解
 
 **题目 1**:Go 的 GMP 模型中,G 代表 _________,M 代表 _________,P 代表 _________。
 
-<details>
-<summary>答案</summary>
 
 goroutine、Machine(OS 线程)、Processor(逻辑处理器)
-</details>
 
 **题目 2**:channel 底层的 `hchan` 结构体中,`recvq` 存储 _________,`sendq` 存储 _________。
 
-<details>
-<summary>答案</summary>
 
 等待接收的 goroutine 队列、等待发送的 goroutine 队列
-</details>
 
 **题目 3**:goroutine 的初始栈大小为 _________ KB,最大可增长到 _________。
 
-<details>
-<summary>答案</summary>
 
 2、1GB
-</details>
 
 **题目 4**:Go 1.14 引入的 _________ 抢占机制,通过 _________ 信号实现。
 
-<details>
-<summary>答案</summary>
 
 异步、SIGURG
-</details>
 
 **题目 5**:work-stealing 算法中,当 P 的本地队列为空时,会先检查 _________,再从其他 P 偷取 _________ 个 G。
 
-<details>
-<summary>答案</summary>
 
 全局运行队列、一半
-</details>
 
-### 9.3 编程题
+### 编程题知识点讲解
 
 **题目 1**:实现一个 worker pool,接收 jobs channel,处理后将结果发送到 results channel:
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -1920,12 +1900,9 @@ func main() {
     }
 }
 ```
-</details>
 
 **题目 2**:实现一个 rate limiter,每秒最多处理 N 个请求:
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -1964,14 +1941,11 @@ func main() {
     }
 }
 ```
-</details>
 
 ### 9.4 思考题
 
 **题目 1**:为什么 Go 选择 CSP 模型而非 Actor 模型?两者在工程实践中有何差异?
 
-<details>
-<summary>参考思路</summary>
 
 1. **CSP 优势**:
    - channel 解耦,发送方不需知道接收方身份。
@@ -1985,12 +1959,9 @@ func main() {
    - CSP 适合数据流密集型(爬虫、ETL)。
    - Actor 适合长生命周期实体(用户会话、游戏角色)。
 4. **案例**:WhatsApp 用 Erlang(actor)支撑百万连接;Kubernetes 用 Go(CSP)编排容器。
-</details>
 
 **题目 2**:异步抢占(Go 1.14)解决了什么问题?有哪些场景不适用?
 
-<details>
-<summary>参考思路</summary>
 
 1. **解决的问题**:
    - Go 1.13 及之前,长循环 goroutine 不会被抢占,导致调度饥饿。
@@ -2006,12 +1977,9 @@ func main() {
 4. **副作用**:
    - 信号处理增加开销(约 1-10μs)。
    - 不当使用可能导致优先级反转。
-</details>
 
 **题目 3**:在微服务架构中,如何利用 context + channel 实现请求级别的取消与超时?
 
-<details>
-<summary>参考思路</summary>
 
 1. **context 设计**:
    - 入口创建 `context.WithTimeout` 或 `WithDeadline`。
@@ -2028,12 +1996,9 @@ func main() {
    - 不要传递 nil context,用 `context.TODO()`。
    - 避免在 context 中存大量数据,用专门的 trace 包。
 5. **案例**:Kubernetes API server 的每个请求都携带 context,可被 cancel 传播到 etcd 调用。
-</details>
 
 **题目 4**:如何诊断并修复一个 goroutine 泄漏问题?请描述完整流程。
 
-<details>
-<summary>参考思路</summary>
 
 1. **症状识别**:
    - 进程内存持续增长。
@@ -2057,12 +2022,9 @@ func main() {
    - code review 关注 goroutine 启动点。
    - CI 集成 goleak 检测。
    - 监控 goroutine 数量,设置告警阈值。
-</details>
 
 **题目 5**:对比 Go channel 与 Rust mpsc 的设计,分析性能与语义差异。
 
-<details>
-<summary>参考思路</summary>
 
 1. **设计差异**:
    - Go channel:多生产者多消费者(MPMC),内置锁。
@@ -2083,7 +2045,6 @@ func main() {
 5. **使用场景**:
    - Go:简单、易用,适合大多数并发场景。
    - Rust:高性能、零成本抽象,适合性能敏感场景。
-</details>
 
 ---
 
@@ -2186,3 +2147,405 @@ func main() {
 理解 GMP 调度器与 channel 的状态机,是编写高性能、可维护并发程序的基础。Go 的 CSP 哲学虽然简洁,但背后有深厚的形式化理论与工程积累。掌握这些原理,才能在 goroutine 泄漏、调度饥饿、data race 等问题面前游刃有余。
 
 未来,随着 Go 语言的演进(如可能的泛型 channel 优化、更精细的调度器 NUMA 感知),并发编程的体验将持续提升。建议读者持续关注 Go runtime 的 release notes,并通过阅读源码加深理解。
+## goroutine 创建
+
+**基本写法：启动 goroutine**
+`go <函数调用>`
+```go
+// 使用 go 关键字启动并发协程
+go doWork()
+```
+
+**基本写法：匿名函数 goroutine**
+`go func() { ... }()`
+```go
+// 立即执行的匿名 goroutine
+go func(msg string) {
+    fmt.Println(msg)
+}("hello")
+```
+
+**基本写法：WaitGroup 等待协程**
+`var wg sync.WaitGroup`
+```go
+// 使用 WaitGroup 等待一组协程完成
+var wg sync.WaitGroup
+for i := 0; i < 3; i++ {
+    wg.Add(1)
+    go func(n int) {
+        defer wg.Done()
+        fmt.Println(n)
+    }(i)
+}
+wg.Wait()
+```
+
+**基本写法：Go 1.22+ 循环变量安全**
+`for i := range <n> { go func() { ... }() }`
+```go
+// Go 1.22+ 每次迭代变量地址独立，无需手动拷贝
+var wg sync.WaitGroup
+for i := range 3 {
+    wg.Add(1)
+    go func() {
+        defer wg.Done()
+        fmt.Println(i)
+    }()
+}
+wg.Wait()
+```
+
+---
+
+## channel 创建
+
+**基本写法：无缓冲通道**
+`make(chan <类型>)`
+```go
+// 无缓冲通道：发送和接收同步
+ch := make(chan int)
+```
+
+**基本写法：带缓冲通道**
+`make(chan <类型>, <容量>)`
+```go
+// 带缓冲通道：缓冲区满前发送不阻塞
+ch := make(chan string, 3)
+```
+
+**基本写法：单向发送通道**
+`chan<- <类型>`
+```go
+// 只能发送的通道类型
+var sendOnly chan<- int = make(chan int)
+```
+
+**基本写法：单向接收通道**
+`<-chan <类型>`
+```go
+// 只能接收的通道类型
+var recvOnly <-chan int = make(chan int)
+```
+
+**基本写法：关闭通道**
+`close(<通道>)`
+```go
+// 关闭通道，通知接收方不再有数据
+ch := make(chan int, 2)
+ch <- 1
+ch <- 2
+close(ch)
+```
+
+---
+
+## channel 收发
+
+**基本写法：发送数据**
+`<通道> <- <值>`
+```go
+// 向通道发送数据
+ch := make(chan int, 1)
+ch <- 42
+```
+
+**基本写法：接收数据**
+`<-<通道>`
+```go
+// 从通道接收数据
+v := <-ch
+```
+
+**基本写法：接收数据并判断是否关闭**
+`v, ok := <-<通道>`
+```go
+// ok 为 false 表示通道已关闭且无数据
+v, ok := <-ch
+if !ok {
+    fmt.Println("通道已关闭")
+}
+```
+
+**基本写法：range 遍历通道**
+`for v := range <通道> { ... }`
+```go
+// 持续接收直到通道关闭
+for v := range ch {
+    fmt.Println(v)
+}
+```
+
+**基本写法：select 多路复用**
+`select { case ... : }`
+```go
+// select 随机选择一个就绪的 case 执行
+select {
+case v := <-ch1:
+    fmt.Println("ch1:", v)
+case v := <-ch2:
+    fmt.Println("ch2:", v)
+}
+```
+
+**基本写法：select 超时控制**
+`select { case ... : case <-time.After(<时长>): }`
+```go
+// 使用 time.After 实现超时
+select {
+case v := <-ch:
+    fmt.Println(v)
+case <-time.After(2 * time.Second):
+    fmt.Println("超时")
+}
+```
+
+**基本写法：select 非阻塞**
+`select { case ...: default: }`
+```go
+// default 使 select 非阻塞
+select {
+case v := <-ch:
+    fmt.Println(v)
+default:
+    fmt.Println("无数据")
+}
+```
+
+---
+
+## 通道容量与长度
+
+**基本写法：获取通道缓冲区容量**
+`cap(<通道>)`
+```go
+// 返回通道缓冲区大小
+ch := make(chan int, 5)
+fmt.Println(cap(ch)) // 5
+```
+
+**基本写法：获取通道中元素个数**
+`len(<通道>)`
+```go
+// 返回通道中当前排队元素数
+ch := make(chan int, 3)
+ch <- 1
+ch <- 2
+fmt.Println(len(ch)) // 2
+```
+
+---
+
+## 常用并发模式
+
+**换行写法：Worker Pool 工作池**
+`func worker(id int, jobs <-chan int, results chan<- int)`
+```go
+// 固定数量 worker 消费任务队列
+func worker(id int, jobs <-chan int, results chan<- int) {
+    for j := range jobs {
+        results <- j * 2
+    }
+}
+jobs := make(chan int, 10)
+results := make(chan int, 10)
+for w := 1; w <= 3; w++ {
+    go worker(w, jobs, results)
+}
+for j := 1; j <= 5; j++ {
+    jobs <- j
+}
+close(jobs)
+```
+
+**换行写法：扇入合并多通道**
+`func fanIn(<通道1>, <通道2> <-chan <类型>) <-chan <类型>`
+```go
+// 将多个通道合并为一个
+func fanIn(ch1, ch2 <-chan int) <-chan int {
+    out := make(chan int)
+    go func() { for v := range ch1 { out <- v } }()
+    go func() { for v := range ch2 { out <- v } }()
+    return out
+}
+```
+
+**换行写法：信号量限制并发数**
+`sem := make(chan struct{}, <最大并发>)`
+```go
+// 使用带缓冲通道作为信号量控制并发
+sem := make(chan struct{}, 3)
+var wg sync.WaitGroup
+for i := 0; i < 10; i++ {
+    wg.Add(1)
+    sem <- struct{}{}
+    go func(n int) {
+        defer wg.Done()
+        defer func() { <-sem }()
+        doWork(n)
+    }(i)
+}
+wg.Wait()
+```
+
+**换行写法：通知退出信号**
+`quit := make(chan struct{})`
+```go
+// 使用空结构体通道作为退出信号
+quit := make(chan struct{})
+go func() {
+    for {
+        select {
+        case <-quit:
+            return
+        default:
+            doWork()
+        }
+    }
+}()
+close(quit)
+```
+
+---
+
+## Mutex 互斥锁
+
+**基本写法：互斥锁**
+`var mu sync.Mutex`
+```go
+// 互斥锁保护共享资源
+var mu sync.Mutex
+count := 0
+mu.Lock()
+count++
+mu.Unlock()
+```
+
+**基本写法：读写锁**
+`var rw sync.RWMutex`
+```go
+// 读写锁：允许多读单写
+var rw sync.RWMutex
+rw.RLock()
+v := readData()
+rw.RUnlock()
+```
+
+**换行写法：使用 defer 解锁**
+`mu.Lock(); defer mu.Unlock()`
+```go
+// defer 确保锁一定被释放
+func update() {
+    mu.Lock()
+    defer mu.Unlock()
+    doUpdate()
+}
+```
+
+**基本写法：tryLock 非阻塞加锁**
+`mu.TryLock()`
+```go
+// 尝试加锁，失败返回 false
+if mu.TryLock() {
+    defer mu.Unlock()
+    doWork()
+} else {
+    fmt.Println("加锁失败")
+}
+```
+
+---
+
+## Once 单次执行
+
+**基本写法：sync.Once 确保只执行一次**
+`var once sync.Once`
+```go
+// 单例模式初始化
+var (
+    instance *Config
+    once     sync.Once
+)
+func GetConfig() *Config {
+    once.Do(func() {
+        instance = loadConfig()
+    })
+    return instance
+}
+```
+
+---
+
+## atomic 原子操作
+
+**基本写法：原子加法**
+`atomic.AddInt64(&<变量>, <值>)`
+```go
+// 原子整数加法
+var count int64
+atomic.AddInt64(&count, 1)
+```
+
+**基本写法：原子读取**
+`atomic.LoadInt64(&<变量>)`
+```go
+// 原子读取值
+v := atomic.LoadInt64(&count)
+```
+
+**基本写法：原子存储**
+`atomic.StoreInt64(&<变量>, <值>)`
+```go
+// 原子存储值
+atomic.StoreInt64(&count, 100)
+```
+
+**基本写法：原子比较交换**
+`atomic.CompareAndSwapInt64(&<变量>, <旧值>, <新值>)`
+```go
+// CAS 操作：值匹配旧值才更新
+ok := atomic.CompareAndSwapInt64(&count, 10, 20)
+```
+
+**基本写法：Go 1.19+ 原子类型**
+`var <变量> atomic.Int64`
+```go
+// 使用类型安全的原子类型
+var n atomic.Int64
+n.Add(1)
+n.Store(100)
+fmt.Println(n.Load())
+```
+
+**基本写法：原子指针**
+`atomic.Pointer[<类型>]`
+```go
+// Go 1.19+ 泛型原子指针
+var p atomic.Pointer[Config]
+p.Store(&Config{Name: "default"})
+cfg := p.Load()
+```
+
+---
+
+## Go 1.23+ Timer 通道变更
+
+**基本写法：Go 1.23+ Timer 可被 GC 回收**
+`t := time.NewTimer(<时长>)`
+```go
+// Go 1.23+ 未 Stop 的 Timer 可被垃圾回收
+t := time.NewTimer(time.Second)
+// 即使不调用 t.Stop()，失去引用后也会被 GC 回收
+```
+
+**基本写法：Go 1.23+ Timer 通道无缓冲**
+`cap(t.C) == 0`
+```go
+// Go 1.23+ Timer 通道容量为 0，使用非阻塞 select 轮询
+t := time.NewTimer(time.Second)
+select {
+case <-t.C:
+    fmt.Println("超时")
+default:
+    fmt.Println("未超时")
+}
+```

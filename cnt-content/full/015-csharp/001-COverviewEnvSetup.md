@@ -102,7 +102,7 @@ Bloom 分类法将认知能力由低到高划分为六个层次：记忆（Remem
 - 统一所有微软语言运行于同一虚拟机（CLR, Common Language Runtime）。
 - 提供统一的类型系统（CTS）与统一类库（BCL）。
 - 引入垃圾回收（GC）解决 COM 的内存泄漏问题。
-- 推出新一代语言 **C#**（发音 C-Sharp，源自音乐符号 "♯" 表示升半音），由 **Anders Hejlsberg** 主导设计。
+- 推出新一代语言 **C#**（发音 C-Sharp，源自音乐符号 "升号" 表示升半音），由 **Anders Hejlsberg** 主导设计。
 
 **Anders Hejlsberg** 在加入微软前，是 Borland Turbo Pascal 与 Delphi 的首席架构师。他在 C# 设计中融合了：
 
@@ -553,12 +553,17 @@ dotnet run
 
 `dotnet new console` 生成如下结构：
 
-```
-HelloFandex/
-├── HelloFandex.csproj
-├── Program.cs
-└── obj/
-    └── HelloFandex.csproj.nuget.g.props
+```mermaid
+flowchart TD
+    T0["HelloFandex/"]
+    T1["HelloFandex.csproj"]
+    T2["Program.cs"]
+    T3["obj/"]
+    T4["HelloFandex.csproj.nuget.g.props"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
 ```
 
 #### 5.2.2 默认 Program.cs
@@ -1195,26 +1200,38 @@ string s = sb.ToString();
 
 推荐的解决方案目录结构：
 
-```
-MyApp/
-├── src/
-│   ├── MyApp.Api/              # API 入口
-│   ├── MyApp.Application/      # 应用服务层
-│   ├── MyApp.Domain/           # 领域模型
-│   ├── MyApp.Infrastructure/   # 基础设施
-│   └── MyApp.Tests/            # 测试
-├── tests/
-│   ├── MyApp.UnitTests/
-│   └── MyApp.IntegrationTests/
-├── docs/
-├── scripts/
-├── .editorconfig
-├── .gitignore
-├── Directory.Build.props
-├── Directory.Packages.props
-├── global.json
-├── nuget.config
-└── MySolution.sln
+```mermaid
+flowchart TD
+    T0["MyApp/"]
+    T1["src/"]
+    T2["MyApp.Api/              # API 入口"]
+    T3["MyApp.Application/      # 应用服务层"]
+    T4["MyApp.Domain/           # 领域模型"]
+    T5["MyApp.Infrastructure/   # 基础设施"]
+    T6["MyApp.Tests/            # 测试"]
+    T7["tests/"]
+    T8["MyApp.UnitTests/"]
+    T9["MyApp.IntegrationTests/"]
+    T10["docs/"]
+    T11["scripts/"]
+    T12[".editorconfig"]
+    T13[".gitignore"]
+    T14["Directory.Build.props"]
+    T15["Directory.Packages.props"]
+    T16["global.json"]
+    T17["nuget.config"]
+    T18["MySolution.sln"]
+    T0 --> T1
+    T6 --> T7
+    T9 --> T10
+    T9 --> T11
+    T9 --> T12
+    T9 --> T13
+    T9 --> T14
+    T9 --> T15
+    T9 --> T16
+    T9 --> T17
+    T9 --> T18
 ```
 
 ### 8.2 `Directory.Build.props`
@@ -1643,18 +1660,29 @@ await builder.Build().RunAsync();
 
 FANDEX-Web 项目本身使用 Astro 框架，但本系列文档（C# 教程）涉及的所有示例项目结构如下：
 
-```
-FANDEX-csharp-samples/
-├── 01-hello/
-├── 02-async/
-├── 03-linq/
-├── 04-aspnetcore/
-├── 05-efcore/
-├── 06-maui/
-├── 07-blazor/
-├── 08-unity/
-├── 09-source-generators/
-└── README.md
+```mermaid
+flowchart TD
+    T0["FANDEX-csharp-samples/"]
+    T1["01-hello/"]
+    T2["02-async/"]
+    T3["03-linq/"]
+    T4["04-aspnetcore/"]
+    T5["05-efcore/"]
+    T6["06-maui/"]
+    T7["07-blazor/"]
+    T8["08-unity/"]
+    T9["09-source-generators/"]
+    T10["README.md"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T0 --> T8
+    T0 --> T9
+    T0 --> T10
 ```
 
 读者可在每篇文档末尾的"延伸阅读"找到对应的示例仓库链接。
@@ -1685,81 +1713,81 @@ FANDEX-csharp-samples/
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题（基础）
+### 选择题知识点讲解
 
-**Q1**：以下哪个不是 .NET 的核心组成？
+**常见疑问 1**：以下哪个不是 .NET 的核心组成？
 - A. CLR
 - B. BCL
 - C. JVM
 - D. AppModel
 
-**答案**：C。JVM 是 Java 的虚拟机。
+**解析讲解**：C。JVM 是 Java 的虚拟机。
 
-**Q2**：C# 由谁设计？
+**常见疑问 2**：C# 由谁设计？
 - A. James Gosling
 - B. Anders Hejlsberg
 - C. Bjarne Stroustrup
 - D. Guido van Rossum
 
-**答案**：B。Anders Hejlsberg 也是 Turbo Pascal 与 TypeScript 的设计者。
+**解析讲解**：B。Anders Hejlsberg 也是 Turbo Pascal 与 TypeScript 的设计者。
 
-**Q3**：以下哪个版本引入了 async/await？
+**常见疑问 3**：以下哪个版本引入了 async/await？
 - A. C# 1.0
 - B. C# 3.0
 - C. C# 5.0
 - D. C# 7.0
 
-**答案**：C。C# 5.0（2012）引入 async/await。
+**解析讲解**：C。C# 5.0（2012）引入 async/await。
 
-**Q4**：以下哪个 C# 版本引入了顶级语句？
+**常见疑问 4**：以下哪个 C# 版本引入了顶级语句？
 - A. C# 8.0
 - B. C# 9.0
 - C. C# 10.0
 - D. C# 11.0
 
-**答案**：B。C# 9.0（2020）。
+**解析讲解**：B。C# 9.0（2020）。
 
-**Q5**：Native AOT 在哪个 .NET 版本正式可用？
+**常见疑问 5**：Native AOT 在哪个 .NET 版本正式可用？
 - A. .NET 5
 - B. .NET 6
 - C. .NET 7
 - D. .NET 8
 
-**答案**：D。.NET 8 正式支持 Native AOT 发布。
+**解析讲解**：D。.NET 8 正式支持 Native AOT 发布。
 
-### 10.2 选择题（进阶）
+### 选择题知识点讲解
 
-**Q6**：以下关于 .NET GC 说法正确的是？
+**常见疑问 6**：以下关于 .NET GC 说法正确的是？
 - A. 第 0 代回收时间最长
 - B. LOH 用于存储大于 85,000 字节的对象
 - C. Server GC 适合客户端应用
 - D. GC 始终是停止世界的
 
-**答案**：B。LOH 阈值约 85KB；第 0 代回收最快；Server GC 适合服务端；.NET GC 支持后台并发回收。
+**解析讲解**：B。LOH 阈值约 85KB；第 0 代回收最快；Server GC 适合服务端；.NET GC 支持后台并发回收。
 
-**Q7**：以下关于 NuGet 的说法错误的是？
+**常见疑问 7**：以下关于 NuGet 的说法错误的是？
 - A. NuGet 是 .NET 的包管理器
 - B. `dotnet add package` 会自动还原
 - C. NuGet 包始终包含源代码
 - D. NuGet 支持 private feed
 
-**答案**：C。NuGet 包通常只包含编译后的 DLL，不含源代码。
+**解析讲解**：C。NuGet 包通常只包含编译后的 DLL，不含源代码。
 
-**Q8**：以下关于 JIT 与 AOT 说法正确的是？
+**常见疑问 8**：以下关于 JIT 与 AOT 说法正确的是？
 - A. JIT 启动速度比 AOT 快
 - B. AOT 不能进行任何运行时优化
 - C. JIT 可基于运行时 profile 进行优化
 - D. AOT 体积一定大于 JIT
 
-**答案**：C。JIT 拥有运行时信息，可进行 profile-guided optimization。
+**解析讲解**：C。JIT 拥有运行时信息，可进行 profile-guided optimization。
 
-### 10.3 简答题
+### 简答题知识点讲解
 
-**Q9**：简述 C# 与 Java 在泛型实现上的差异。
+**常见疑问 9**：简述 C# 与 Java 在泛型实现上的差异。
 
-**参考答案**：
+**解析讲解**：
 
 C# 在 CLR 层实现真泛型，每个值类型泛型实例化（如 `List<int>`）在运行时是独立的类型，底层为 `int[]`，无装箱开销。引用类型泛型共享代码（如 `List<string>` 与 `List<object>` 共享同一份 JIT 代码），但类型安全由 CLR 保证。
 
@@ -1772,9 +1800,9 @@ Java 通过类型擦除（Type Erasure）实现泛型，编译后 `List<Integer>
 
 C# 在这些场景下表现更好。
 
-**Q10**：为什么 .NET Core 跨平台而 .NET Framework 不能？
+**常见疑问 10**：为什么 .NET Core 跨平台而 .NET Framework 不能？
 
-**参考答案**：
+**解析讲解**：
 
 .NET Framework 设计于 2000 年代，深度耦合 Windows：
 
@@ -1791,11 +1819,11 @@ C# 在这些场景下表现更好。
 3. **Kestrel**：自研跨平台 Web 服务器。
 4. **Native P/Invoke**：每个平台 P/Invoke 不同的系统库。
 
-### 10.4 编程题
+### 编程题知识点讲解
 
-**Q11**：编写一个 C# 控制台程序，接收命令行参数 `<n>`，输出斐波那契数列前 n 项。
+**常见疑问 11**：编写一个 C# 控制台程序，接收命令行参数 `<n>`，输出斐波那契数列前 n 项。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 if (args.Length == 0 || !int.TryParse(args[0], out int n) || n <= 0)
@@ -1814,9 +1842,9 @@ Console.WriteLine();
 return 0;
 ```
 
-**Q12**：编写一个程序，将给定目录下所有 `.cs` 文件按行数从多到少排序输出。
+**常见疑问 12**：编写一个程序，将给定目录下所有 `.cs` 文件按行数从多到少排序输出。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 using System.IO;
@@ -1839,9 +1867,9 @@ foreach (var f in files)
 return 0;
 ```
 
-**Q13**：编写一个程序，使用 HttpClient 异步下载指定 URL 的内容，统计下载耗时与字节数。
+**常见疑问 13**：编写一个程序，使用 HttpClient 异步下载指定 URL 的内容，统计下载耗时与字节数。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 using System.Diagnostics;
@@ -1861,7 +1889,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 
 ### 10.5 思考题
 
-**Q14**：为什么微软要放弃 .NET Framework，重写 .NET Core？请从技术、商业、生态三个维度分析。
+**常见疑问 14**：为什么微软要放弃 .NET Framework，重写 .NET Core？请从技术、商业、生态三个维度分析。
 
 **参考答案要点**：
 
@@ -1869,7 +1897,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 - **商业**：与 Java 在企业市场（尤其 Linux 服务器）竞争；Azure 云服务需要轻量运行时。
 - **生态**：开源社区贡献需要更友好的开发模型；F#、VB.NET、IronPython 等共享运行时。
 
-**Q15**：如果让你设计 C# 的下一项新特性，你会提议什么？请说明动机与潜在风险。
+**常见疑问 15**：如果让你设计 C# 的下一项新特性，你会提议什么？请说明动机与潜在风险。
 
 **参考答案示例**：
 
@@ -1881,7 +1909,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 
 ### 10.6 综合应用题
 
-**Q16**：你要为公司搭建一个内部微服务，技术选型在 .NET 8 与 Spring Boot 3 之间犹豫。请列出选型要点，并给出推荐。
+**常见疑问 16**：你要为公司搭建一个内部微服务，技术选型在 .NET 8 与 Spring Boot 3 之间犹豫。请列出选型要点，并给出推荐。
 
 **参考答案要点**：
 

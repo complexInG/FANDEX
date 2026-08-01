@@ -8,19 +8,26 @@
 
 **基本写法：典型项目布局**
 `<目录>/ <文件>`
-```text
-project/
-├── CMakeLists.txt
-├── include/          # 公共头文件
-│   └── mylib/
-│       └── widget.h
-├── src/              # 源文件
-│   ├── widget.cpp
-│   └── main.cpp
-├── tests/            # 测试
-│   └── test_widget.cpp
-├── third_party/      # 第三方依赖
-└── docs/             # 文档
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["CMakeLists.txt"]
+    T2["include/          # 公共头文件"]
+    T3["mylib/"]
+    T4["widget.h"]
+    T5["src/              # 源文件"]
+    T6["widget.cpp"]
+    T7["main.cpp"]
+    T8["tests/            # 测试"]
+    T9["test_widget.cpp"]
+    T10["third_party/      # 第三方依赖"]
+    T11["docs/             # 文档"]
+    T0 --> T1
+    T0 --> T2
+    T4 --> T5
+    T7 --> T8
+    T9 --> T10
+    T9 --> T11
 ```
 
 ---

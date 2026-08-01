@@ -2006,30 +2006,36 @@ test('renders theme', () => {
 
 ### 8.1 项目结构组织
 
-```
-src/
-├── keys/                    # InjectionKey 集中管理
-│   ├── index.ts
-│   ├── theme.ts
-│   ├── i18n.ts
-│   ├── auth.ts
-│   └── form.ts
-├── composables/             # Composable 封装
-│   ├── useTheme.ts
-│   ├── useI18n.ts
-│   ├── useAuth.ts
-│   └── useForm.ts
-├── plugins/                 # 插件实现
-│   ├── httpClient.ts
-│   ├── i18n.ts
-│   └── auth.ts
-├── components/
-│   ├── form/                # 组件库内部使用 provide/inject
-│   │   ├── Form.vue
-│   │   ├── FormItem.vue
-│   │   └── Input.vue
-│   └── ...
-└── main.ts                  # 应用入口，注册插件
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["keys/                    # InjectionKey 集中管理"]
+    T2["index.ts"]
+    T3["theme.ts"]
+    T4["i18n.ts"]
+    T5["auth.ts"]
+    T6["form.ts"]
+    T7["composables/             # Composable 封装"]
+    T8["useTheme.ts"]
+    T9["useI18n.ts"]
+    T10["useAuth.ts"]
+    T11["useForm.ts"]
+    T12["plugins/                 # 插件实现"]
+    T13["httpClient.ts"]
+    T14["i18n.ts"]
+    T15["auth.ts"]
+    T16["components/"]
+    T17["form/                # 组件库内部使用 provide/inject"]
+    T18["Form.vue"]
+    T19["FormItem.vue"]
+    T20["Input.vue"]
+    T21["..."]
+    T22["main.ts                  # 应用入口，注册插件"]
+    T0 --> T1
+    T6 --> T7
+    T11 --> T12
+    T15 --> T16
+    T21 --> T22
 ```
 
 ### 8.2 Vite 配置
@@ -2409,7 +2415,7 @@ export function setupProvideInspector(app: App) {
     window.__VUE_DEVTOOLS_GLOBAL_HOOK__.emit('custom-inspector', {
       id: 'provide-inject',
       label: 'Provide/Inject',
-      icon: '⭕',
+      icon: '○',
       tree: () => collectProvideTree(app._instance),
     });
   }
@@ -2696,9 +2702,9 @@ const { count, increment } = useCounter();
 
 ---
 
-## 10. 习题 | Exercises
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：下列关于 Vue 3 `provide`/`inject` 的描述，哪一项是**错误**的？
 
@@ -2707,9 +2713,9 @@ B. `inject` 沿组件树向上查找，返回最近的 `provide`。
 C. `provide` 的值若为 `ref`，则自动响应式。
 D. `provide`/`inject` 可在任意异步函数中调用。
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：`provide`/`inject` 依赖 `getCurrentInstance()` 获取当前组件实例，必须在 `setup()` 同步执行期间调用。在异步回调（如 `setTimeout`、`await` 之后）中调用，`getCurrentInstance()` 返回 `null`，导致 `provide`/`inject` 失效。
+**解析讲解**：`provide`/`inject` 依赖 `getCurrentInstance()` 获取当前组件实例，必须在 `setup()` 同步执行期间调用。在异步回调（如 `setTimeout`、`await` 之后）中调用，`getCurrentInstance()` 返回 `null`，导致 `provide`/`inject` 失效。
 
 ---
 
@@ -2720,9 +2726,9 @@ B. 实现类型安全的依赖注入。
 C. 替代 `Symbol` 作为注入键。
 D. 支持 SSR 隔离。
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`InjectionKey<T>` 是 `Symbol` 的子类型，泛型参数 `T` 用于编译时类型检查。`provide(key, value)` 时编译器检查 `value` 是否符合 `T`，`inject(key)` 时返回值自动推断为 `T | undefined`。运行时 `InjectionKey` 与普通 `Symbol` 无差异。
+**解析讲解**：`InjectionKey<T>` 是 `Symbol` 的子类型，泛型参数 `T` 用于编译时类型检查。`provide(key, value)` 时编译器检查 `value` 是否符合 `T`，`inject(key)` 时返回值自动推断为 `T | undefined`。运行时 `InjectionKey` 与普通 `Symbol` 无差异。
 
 ---
 
@@ -2733,9 +2739,9 @@ B. `provide('state', ref(0))`
 C. `provide('state', readonly(reactive({ count: 0 })))`
 D. `provide('state', computed(() => state.count))`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`readonly()` 返回一个 Proxy，拦截 `set` 操作并发出警告，实现只读访问。A、B 选项子组件可直接修改状态，D 选项的 `computed` 默认只读但只能返回单个值，无法传递整个状态对象。
+**解析讲解**：`readonly()` 返回一个 Proxy，拦截 `set` 操作并发出警告，实现只读访问。A、B 选项子组件可直接修改状态，D 选项的 `computed` 默认只读但只能返回单个值，无法传递整个状态对象。
 
 ---
 
@@ -2746,9 +2752,9 @@ B. 单例污染，不同请求共享状态。
 C. 类型推断失败。
 D. 性能下降。
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`app.provide()` 在应用实例上注入，若同一应用实例服务多个请求（如未正确创建请求级应用），不同请求会共享注入的值，导致用户 A 的数据被用户 B 看到。解决方法是每个请求创建独立的 `app` 实例。
+**解析讲解**：`app.provide()` 在应用实例上注入，若同一应用实例服务多个请求（如未正确创建请求级应用），不同请求会共享注入的值，导致用户 A 的数据被用户 B 看到。解决方法是每个请求创建独立的 `app` 实例。
 
 ---
 
@@ -2759,55 +2765,55 @@ B. Vue 的重渲染粒度更细（属性级）。
 C. Vue 支持更多消费者。
 D. Vue 的内存占用更低。
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Vue 3 的响应式系统基于属性级依赖追踪，`inject` 的组件仅在其依赖的属性变化时重渲染。React Context 的所有消费者在 `value` 引用变化时全部重渲染，需要通过 `useMemo` 或拆分 Context 优化。
+**解析讲解**：Vue 3 的响应式系统基于属性级依赖追踪，`inject` 的组件仅在其依赖的属性变化时重渲染。React Context 的所有消费者在 `value` 引用变化时全部重渲染，需要通过 `useMemo` 或拆分 Context 优化。
 
 ---
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：`provide` 在组件实例上的内部存储属性名为 `______`，子组件通过 `______` 链向上查找。
 
-**答案**：`provides`，原型链（prototype chain）
+**解析讲解**：`provides`，原型链（prototype chain）
 
-**解析**：Vue 3 内部每个组件实例有 `provides` 对象，子组件的 `provides` 通过 `Object.create(parent.provides)` 创建，原型指向父组件的 `provides`，形成原型链。
+**解析讲解**：Vue 3 内部每个组件实例有 `provides` 对象，子组件的 `provides` 通过 `Object.create(parent.provides)` 创建，原型指向父组件的 `provides`，形成原型链。
 
 ---
 
 **题目 2**：`InjectionKey<T>` 是 `______` 的子类型，用于实现类型安全的依赖注入。
 
-**答案**：`Symbol`
+**解析讲解**：`Symbol`
 
-**解析**：`InjectionKey<T>` 在 TypeScript 中声明为 `interface InjectionKey<T> extends Symbol {}`，运行时是一个 `Symbol`，编译时携带泛型类型信息 `T`。
+**解析讲解**：`InjectionKey<T>` 在 TypeScript 中声明为 `interface InjectionKey<T> extends Symbol {}`，运行时是一个 `Symbol`，编译时携带泛型类型信息 `T`。
 
 ---
 
 **题目 3**：`inject` 的查找复杂度为 `______`，其中 `d` 是组件树深度。
 
-**答案**：$O(d)$
+**解析讲解**：$O(d)$
 
-**解析**：`inject` 沿祖先链向上查找，最坏情况需遍历从当前组件到根的所有祖先，复杂度为 $O(d)$，其中 $d$ 是组件树深度。
+**解析讲解**：`inject` 沿祖先链向上查找，最坏情况需遍历从当前组件到根的所有祖先，复杂度为 $O(d)$，其中 $d$ 是组件树深度。
 
 ---
 
 **题目 4**：Vue 3 中 `provide` 的值若为 `______` 或 `______`，则 `inject` 返回的也是响应式引用。
 
-**答案**：`ref`，`reactive`
+**解析讲解**：`ref`，`reactive`
 
-**解析**：Vue 3 的响应式系统基于 Proxy，`ref` 和 `reactive` 创建的对象自动响应式。`provide` 传递这些对象的引用，`inject` 返回同一引用，保持响应性。
+**解析讲解**：Vue 3 的响应式系统基于 Proxy，`ref` 和 `reactive` 创建的对象自动响应式。`provide` 传递这些对象的引用，`inject` 返回同一引用，保持响应性。
 
 ---
 
 **题目 5**：在 SSR 中避免 `provide` 单例污染的方法是创建 `______` 应用实例。
 
-**答案**：请求级
+**解析讲解**：请求级
 
-**解析**：每个 HTTP 请求创建独立的 Vue 应用实例，通过 `app.provide()` 注入请求相关的数据（如用户信息），避免不同请求间共享状态。
+**解析讲解**：每个 HTTP 请求创建独立的 Vue 应用实例，通过 `app.provide()` 注入请求相关的数据（如用户信息），避免不同请求间共享状态。
 
 ---
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个类型安全的 `useCounter` Composable，使用 `provide`/`inject` 在组件树中共享计数器状态，支持 `increment`、`decrement`、`reset` 操作，并保证子组件只读访问 count。
 
@@ -3091,7 +3097,7 @@ export const RequirePermission = defineComponent({
 
 **题目 1**：在什么场景下，应当优先选择 `provide`/`inject` 而非 Pinia？请列举至少三个场景并说明理由。
 
-**参考答案**：
+**解析讲解**：
 
 1. **组件库内部协作**：如 `Form`、`FormItem`、`Input` 三层组件的校验状态传递。组件库不应强制用户安装 Pinia，`provide`/`inject` 是 Vue 原生 API，零依赖。
 
@@ -3107,7 +3113,7 @@ export const RequirePermission = defineComponent({
 
 **题目 2**：分析 Vue 3 `provide`/`inject` 的原型链查找机制，为何不采用 Map 结构？两者的性能差异如何？
 
-**参考答案**：
+**解析讲解**：
 
 **原型链查找的优势**：
 
@@ -3132,7 +3138,7 @@ export const RequirePermission = defineComponent({
 
 **题目 3**：在大型企业应用中，如何设计一套基于 `provide`/`inject` 的依赖注入框架，支持服务生命周期管理（单例、请求、组件级）？
 
-**参考答案**：
+**解析讲解**：
 
 **设计思路**：
 
@@ -3474,3 +3480,308 @@ interface InjectionKey<T> extends Symbol {}
 7. **适用场景**：组件库内部协作、主题/国际化、插件服务注入、SSR 请求级状态。
 
 掌握 `provide`/`inject` 的原理与最佳实践，是构建大型 Vue 应用的关键能力。在实际项目中，应根据场景灵活选择 `provide`/`inject`、`props`/`emits`、Pinia 等通信方式，避免过度使用或误用。
+## 基础用法
+
+**provide 提供依赖**
+`provide(<key>, <value>);`
+```typescript
+import { provide, ref } from 'vue';
+
+// 字符串 key
+provide('theme', 'dark');
+
+// Symbol key(推荐)
+provide(Symbol('user'), { name: 'Tom' });
+
+// 注入响应式值
+const count = ref(0);
+provide('count', count);
+
+// 提供方法
+provide('increment', () => count.value++);
+```
+
+**inject 注入依赖**
+`const <value> = inject(<key>, [defaultValue], [treatDefaultAsFactory]);`
+```typescript
+import { inject } from 'vue';
+
+// 注入(可能为 undefined)
+const theme = inject('theme');
+
+// 注入带默认值
+const theme = inject('theme', 'light');
+
+// 注入工厂函数作为默认值
+const config = inject('config', () => createDefaultConfig(), true);
+```
+
+---
+
+## 响应式 provide/inject
+
+**提供响应式状态**
+```typescript
+import { provide, ref, readonly } from 'vue';
+
+const theme = ref('dark');
+const toggleTheme = () => {
+  theme.value = theme.value === 'dark' ? 'light' : 'dark';
+};
+
+// 提供只读状态 + 修改方法(单向数据流)
+provide('theme', readonly(theme));
+provide('toggleTheme', toggleTheme);
+```
+
+**子组件使用**
+```typescript
+import { inject } from 'vue';
+
+const theme = inject<Readonly<Ref<string>>>('theme');
+const toggleTheme = inject<() => void>('toggleTheme');
+
+// theme.value 是只读,只能通过 toggleTheme 修改
+```
+
+**完整 store 模式**
+```typescript
+import { provide, ref, readonly, computed } from 'vue';
+
+function provideUserStore() {
+  const user = ref<{ id: number; name: string } | null>(null);
+  const isLoading = ref(false);
+  const isLoggedIn = computed(() => !!user.value);
+
+  async function login(name: string) {
+    isLoading.value = true;
+    user.value = await fetchUser(name);
+    isLoading.value = false;
+  }
+
+  function logout() {
+    user.value = null;
+  }
+
+  provide('userStore', {
+    user: readonly(user),
+    isLoading: readonly(isLoading),
+    isLoggedIn,
+    login,
+    logout
+  });
+}
+```
+
+---
+
+## 类型安全
+
+**InjectionKey 类型化注入**
+`const <key> = Symbol() as InjectionKey<Type>;`
+```typescript
+import type { InjectionKey, Ref } from 'vue';
+import { provide, inject } from 'vue';
+
+interface UserContext {
+  user: Ref<{ id: number; name: string } | null>;
+  login: (name: string) => Promise<void>;
+  logout: () => void;
+}
+
+export const UserKey: InjectionKey<UserContext> = Symbol('UserContext');
+
+// 父组件
+provide(UserKey, {
+  user: ref(null),
+  login: async (name) => { /* ... */ },
+  logout: () => { /* ... */ }
+});
+
+// 子组件(自动推断类型)
+const userStore = inject(UserKey);
+if (userStore) {
+  userStore.login('Tom');  // 类型安全
+}
+```
+
+**Symbol 共享 key**
+```typescript
+// keys.ts
+import type { InjectionKey } from 'vue';
+export const ThemeKey: InjectionKey<string> = Symbol('theme');
+export const ApiKey: InjectionKey<{ base: string }> = Symbol('api');
+
+// provider.vue
+import { provide } from 'vue';
+import { ThemeKey, ApiKey } from './keys';
+provide(ThemeKey, 'dark');
+provide(ApiKey, { base: '/api/v1' });
+
+// consumer.vue
+import { inject } from 'vue';
+import { ThemeKey, ApiKey } from './keys';
+const theme = inject(ThemeKey);  // string | undefined
+const api = inject(ApiKey);      // { base: string } | undefined
+```
+
+---
+
+## provide 应用级
+
+**app.provide 全局提供**
+`app.provide(<key>, <value>);`
+```typescript
+import { createApp } from 'vue';
+import App from './App.vue';
+
+const app = createApp(App);
+app.provide('apiBase', import.meta.env.VITE_API_BASE);
+app.provide('appName', 'FANDEX');
+app.mount('#app');
+```
+
+**全局 config 注入**
+```typescript
+app.provide('config', {
+  apiBase: '/api',
+  cdnBase: 'https://cdn.example.com',
+  timeout: 30000
+});
+
+// 任意组件
+const config = inject('config');
+```
+
+---
+
+## 默认值与工厂
+
+**静态默认值**
+```typescript
+const theme = inject('theme', 'light');
+const timeout = inject('timeout', 3000);
+```
+
+**工厂函数默认值**
+`inject(<key>, <factory>, true);`
+```typescript
+// 第三个参数 true 表示第二个参数是工厂函数
+const store = inject('store', () => createStore(), true);
+const config = inject('config', () => ({}), true);
+```
+
+---
+
+## 注入的响应性
+
+**保持响应性(提供 ref)**
+```typescript
+import { provide, ref, inject } from 'vue';
+
+// 父
+const count = ref(0);
+provide('count', count);
+
+// 子(任意层级)
+const count = inject<Ref<number>>('count');
+count.value++;  // 修改会反映到所有注入处
+```
+
+**保持响应性(提供 reactive)**
+```typescript
+import { provide, reactive, inject } from 'vue';
+
+// 父
+const state = reactive({ count: 0 });
+provide('state', state);
+
+// 子
+const state = inject<typeof state>('state');
+state.count++;
+```
+
+---
+
+## provide/inject 调试
+
+**getCurrentInstance 查看注入链**
+```typescript
+import { getCurrentInstance } from 'vue';
+
+const instance = getCurrentInstance();
+const provides = instance?.provides;
+console.log(provides);
+```
+
+**useContext 模式**
+```typescript
+import { inject, provide, type InjectionKey } from 'vue';
+
+export function createContext<T>(name: string) {
+  const key: InjectionKey<T> = Symbol(name);
+
+  const provideContext = (value: T) => provide(key, value);
+  const useContext = (defaultValue?: T) => inject(key, defaultValue);
+
+  return { provideContext, useContext, key };
+}
+
+// 使用
+const { provideContext, useContext } = createContext<{ user: string }>('User');
+provideContext({ user: 'Tom' });
+const ctx = useContext();
+```
+
+---
+
+## 完整示例
+
+**主题切换 Provider**
+```typescript
+import { provide, inject, ref, readonly, computed, type InjectionKey, type Ref } from 'vue';
+
+interface ThemeContext {
+  theme: Readonly<Ref<'dark' | 'light'>>;
+  isDark: Ref<boolean>;
+  toggleTheme: () => void;
+}
+
+export const ThemeKey: InjectionKey<ThemeContext> = Symbol('theme');
+
+export function useThemeProvider() {
+  const theme = ref<'dark' | 'light'>('dark');
+  const isDark = computed(() => theme.value === 'dark');
+
+  function toggleTheme() {
+    theme.value = theme.value === 'dark' ? 'light' : 'dark';
+  }
+
+  const context: ThemeContext = {
+    theme: readonly(theme),
+    isDark,
+    toggleTheme
+  };
+
+  provide(ThemeKey, context);
+  return context;
+}
+
+export function useTheme() {
+  const ctx = inject(ThemeKey);
+  if (!ctx) {
+    throw new Error('useTheme 必须在 ThemeProvider 内使用');
+  }
+  return ctx;
+}
+```
+
+**子组件消费**
+```typescript
+import { useTheme } from './theme';
+
+const { theme, isDark, toggleTheme } = useTheme();
+console.log(theme.value);    // 'dark' 或 'light'
+console.log(isDark.value);   // true / false
+toggleTheme();
+```

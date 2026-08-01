@@ -14,8 +14,11 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
+# 元服务开发与发布 语法速查手册
 
-# 元服务开发与发布详解
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 概述与背景
 
@@ -39,20 +42,13 @@ HarmonyOS 元服务的演进可以划分为三个阶段:
 
 元服务在 HarmonyOS 生态中的定位可以用一张分层图理解:
 
-```
-+-------------------------------------------------+
-|  传统应用 (Traditional Application)              |
-|  - 完整功能、独立图标、需安装                       |
-|  - 体积无限制、更新需用户确认                       |
-+-------------------------------------------------+
-|  元服务 (Atomic Service)                         |
-|  - 免安装、卡片优先、入口丰富                       |
-|  - 体积 < 10MB、即时更新                          |
-|  - 适合轻量高频场景                                |
-+-------------------------------------------------+
-|  系统服务 (System Service)                       |
-|  - 系统内置、开发者不可发布                         |
-+-------------------------------------------------+
+```mermaid
+flowchart TD
+    B0["传统应用 (Traditional Application) / 完整功能、独立图标、需安装 / 体积无限制、更新需用户确认"]
+    B1["元服务 (Atomic Service) / 免安装、卡片优先、入口丰富 / 体积 < 10MB、即时更新 / 适合轻量高频场景"]
+    B0 --> B1
+    B2["系统服务 (System Service) / 系统内置、开发者不可发布"]
+    B1 --> B2
 ```
 
 可以看到,元服务填补了"完整应用"与"系统内置服务"之间的生态空白,为开发者提供了一个面向轻量、即时、服务化场景的交付通道。
@@ -138,28 +134,34 @@ HarmonyOS 元服务的演进可以划分为三个阶段:
 
 元服务工程在 DevEco Studio 中使用专用模板创建,其目录结构与传统应用略有差异。一个典型的元服务工程结构如下:
 
-```
-MyAtomicService/
-├── entry/                          # 主模块(必需)
-│   └── src/main/
-│       ├── ets/
-│       │   ├── entryability/
-│       │   │   └── EntryAbility.ets      # 主 UIAbility
-│       │   ├── pages/
-│       │   │   └── Index.ets              # 主页面
-│       │   └── widget/
-│       │       └── pages/
-│       │           └── WeatherCard.ets     # 卡片 UI 文件
-│       ├── resources/
-│       │   ├── base/media/                # 图片资源
-│       │   └── base/profile/              # 配置文件
-│       │       ├── form_config.json        # 卡片配置
-│       │       └── main_pages.json        # 路由配置
-│       └── module.json5                   # 模块配置(关键)
-├── libs/                           # 三方库
-├── build-profile.json5             # 构建配置
-├── oh-package.json5                # 依赖配置
-└── signingConfig/                  # 签名配置
+```mermaid
+flowchart TD
+    T0["MyAtomicService/"]
+    T1["entry/                          # 主模块(必需)"]
+    T2["src/main/"]
+    T3["ets/"]
+    T4["entryability/"]
+    T5["EntryAbility.ets      # 主 UIAbility"]
+    T6["pages/"]
+    T7["Index.ets              # 主页面"]
+    T8["widget/"]
+    T9["pages/"]
+    T10["WeatherCard.ets     # 卡片 UI 文件"]
+    T11["resources/"]
+    T12["base/media/                # 图片资源"]
+    T13["base/profile/              # 配置文件"]
+    T14["form_config.json        # 卡片配置"]
+    T15["main_pages.json        # 路由配置"]
+    T16["module.json5                   # 模块配置(关键)"]
+    T17["libs/                           # 三方库"]
+    T18["build-profile.json5             # 构建配置"]
+    T19["oh-package.json5                # 依赖配置"]
+    T20["signingConfig/                  # 签名配置"]
+    T0 --> T1
+    T16 --> T17
+    T16 --> T18
+    T16 --> T19
+    T16 --> T20
 ```
 
 与传统应用相比,关键差异在于:
@@ -930,7 +932,7 @@ struct TodoCardLarge {
         ForEach(this.parsedTodos.slice(0, 5), (item: TodoItem) => {
           ListItem() {
             Row() {
-              Text(item.done ? '✓' : '○')
+              Text(item.done ? '√' : '○')
                 .fontSize(14)
                 .fontColor(item.done ? '#4CAF50' : '#999999')
                 .width(24)
@@ -1030,44 +1032,49 @@ export default class EntryAbility extends UIAbility {
 
 #### 6.1.1 工程结构
 
-```
-WeatherAtomicService/
-├── entry/
-│   └── src/main/
-│       ├── ets/
-│       │   ├── entryability/
-│       │   │   └── EntryAbility.ets
-│       │   ├── pages/
-│       │   │   ├── Index.ets              # 首页(城市天气列表)
-│       │   │   ├── CityDetail.ets          # 城市详情
-│       │   │   └── Settings.ets            # 设置
-│       │   ├── formability/
-│       │   │   └── WeatherFormAbility.ets  # 卡片 FormAbility
-│       │   ├── widget/
-│       │   │   └── pages/
-│       │   │       ├── WeatherCardSmall.ets   # 2x2 卡片
-│       │   │       └── WeatherCardLarge.ets   # 4x4 卡片
-│       │   ├── model/
-│       │   │   ├── WeatherData.ets         # 数据模型
-│       │   │   └── City.ets                # 城市模型
-│       │   ├── service/
-│       │   │   ├── WeatherService.ets      # 天气服务
-│       │   │   ├── CityService.ets          # 城市服务
-│       │   │   └── PreferencesService.ets  # 本地存储
-│       │   └── common/
-│       │       ├── Constants.ets           # 常量
-│       │       └── Logger.ets              # 日志
-│       └── resources/
-│           ├── base/
-│           │   ├── media/                  # 图片资源
-│           │   ├── element/string.json     # 字符串
-│           │   └── profile/
-│           │       ├── form_config.json    # 卡片配置
-│           │       └── main_pages.json    # 路由配置
-│           └── zh_CN/element/string.json   # 中文字符串
-├── build-profile.json5
-├── oh-package.json5
-└── signingConfig/
+```mermaid
+flowchart TD
+    T0["WeatherAtomicService/"]
+    T1["entry/"]
+    T2["src/main/"]
+    T3["ets/"]
+    T4["entryability/"]
+    T5["EntryAbility.ets"]
+    T6["pages/"]
+    T7["Index.ets              # 首页(城市天气列表)"]
+    T8["CityDetail.ets          # 城市详情"]
+    T9["Settings.ets            # 设置"]
+    T10["formability/"]
+    T11["WeatherFormAbility.ets  # 卡片 FormAbility"]
+    T12["widget/"]
+    T13["pages/"]
+    T14["WeatherCardSmall.ets   # 2x2 卡片"]
+    T15["WeatherCardLarge.ets   # 4x4 卡片"]
+    T16["model/"]
+    T17["WeatherData.ets         # 数据模型"]
+    T18["City.ets                # 城市模型"]
+    T19["service/"]
+    T20["WeatherService.ets      # 天气服务"]
+    T21["CityService.ets          # 城市服务"]
+    T22["PreferencesService.ets  # 本地存储"]
+    T23["common/"]
+    T24["Constants.ets           # 常量"]
+    T25["Logger.ets              # 日志"]
+    T26["resources/"]
+    T27["base/"]
+    T28["media/                  # 图片资源"]
+    T29["element/string.json     # 字符串"]
+    T30["profile/"]
+    T31["form_config.json    # 卡片配置"]
+    T32["main_pages.json    # 路由配置"]
+    T33["zh_CN/element/string.json   # 中文字符串"]
+    T34["build-profile.json5"]
+    T35["oh-package.json5"]
+    T36["signingConfig/"]
+    T0 --> T1
+    T33 --> T34
+    T33 --> T35
+    T33 --> T36
 ```
 
 #### 6.1.2 数据模型定义
@@ -1383,7 +1390,7 @@ struct WeatherCardLarge {
         .layoutWeight(1)
 
         // 天气图标占位(实际应使用 Image)
-        Text('☀')
+        Text('\u{2600}')
           .fontSize(48)
       }
       .width('100%')
@@ -2253,43 +2260,55 @@ AppGallery Connect 对元服务的审核要点:
 
 ### 11.1 核心知识图谱
 
-```
-元服务 (Atomic Service)
-├── 工程结构
-│   ├── module.json5 (installationFree: true)
-│   ├── form_config.json (卡片元数据)
-│   └── FormAbility (ExtensionAbility)
-├── 卡片系统
-│   ├── 卡片尺寸 (1x1, 2x2, 2x4, 4x4, 4x8)
-│   ├── ArkTS 卡片 UI (@LocalStorageProp)
-│   ├── postCardAction (message/router)
-│   └── 多尺寸适配
-├── 数据通信
-│   ├── FormBindingData (onAddForm/onUpdateForm)
-│   ├── formProvider.updateForm (主动刷新)
-│   ├── formProvider.getFormsInfo (查询卡片)
-│   └── preferences (跨进程共享)
-├── 生命周期
-│   ├── onAddForm (添加卡片)
-│   ├── onUpdateForm (定时刷新)
-│   ├── onFormEvent (事件回调)
-│   ├── onRouteTo (跳转)
-│   └── onVisibilityChange (可见性)
-├── 进阶能力
-│   ├── 定时刷新 (updateDuration)
-│   ├── 跨设备同步 (distributedKVStore)
-│   ├── 深度链接 (URL scheme)
-│   └── 卡片分享
-├── 性能优化
-│   ├── 体积控制 (<10MB)
-│   ├── 首屏加载 (<1s)
-│   ├── 内存优化 (<50MB)
-│   └── 卡片刷新优化
-└── 发布流程
-    ├── 签名配置
-    ├── AGC 上架
-    ├── 审核要点
-    └── 版本迭代
+```mermaid
+flowchart TD
+    T0["元服务 (Atomic Service)"]
+    T1["工程结构"]
+    T2["module.json5 (installationFree: true)"]
+    T3["form_config.json (卡片元数据)"]
+    T4["FormAbility (ExtensionAbility)"]
+    T5["卡片系统"]
+    T6["卡片尺寸 (1x1, 2x2, 2x4, 4x4, 4x8)"]
+    T7["ArkTS 卡片 UI (@LocalStorageProp)"]
+    T8["postCardAction (message/router)"]
+    T9["多尺寸适配"]
+    T10["数据通信"]
+    T11["FormBindingData (onAddForm/onUpdateForm)"]
+    T12["formProvider.updateForm (主动刷新)"]
+    T13["formProvider.getFormsInfo (查询卡片)"]
+    T14["preferences (跨进程共享)"]
+    T15["生命周期"]
+    T16["onAddForm (添加卡片)"]
+    T17["onUpdateForm (定时刷新)"]
+    T18["onFormEvent (事件回调)"]
+    T19["onRouteTo (跳转)"]
+    T20["onVisibilityChange (可见性)"]
+    T21["进阶能力"]
+    T22["定时刷新 (updateDuration)"]
+    T23["跨设备同步 (distributedKVStore)"]
+    T24["深度链接 (URL scheme)"]
+    T25["卡片分享"]
+    T26["性能优化"]
+    T27["体积控制 (<10MB)"]
+    T28["首屏加载 (<1s)"]
+    T29["内存优化 (<50MB)"]
+    T30["卡片刷新优化"]
+    T31["发布流程"]
+    T32["签名配置"]
+    T33["AGC 上架"]
+    T34["审核要点"]
+    T35["版本迭代"]
+    T0 --> T1
+    T4 --> T5
+    T9 --> T10
+    T14 --> T15
+    T20 --> T21
+    T25 --> T26
+    T30 --> T31
+    T31 --> T32
+    T31 --> T33
+    T31 --> T34
+    T31 --> T35
 ```
 
 ### 11.2 关键 API 速查表
@@ -2426,38 +2445,19 @@ AppGallery Connect 对元服务的审核要点:
 
 **附:HarmonyOS 元服务开发速查卡**
 
-```
-+------------------------------------------------------------------+
-|  元服务核心配置                                                    |
-|  module.json5: installationFree: true                             |
-|  extensionAbilities: type: "form", metadata: $profile:form_config|
-|  form_config.json: forms[].src, supportDimensions, updateDuration |
-+------------------------------------------------------------------+
-|  FormAbility 关键回调                                              |
-|  onAddForm(want) -> FormBindingData (返回初始数据)                  |
-|  onUpdateForm(formId) -> formProvider.updateForm (定时刷新)        |
-|  onFormEvent(formId, msg) (卡片按钮触发)                          |
-|  onRouteTo(formId, info) (卡片点击跳转)                            |
-|  onVisibilityChange(formStatus) (可见性变化)                     |
-+------------------------------------------------------------------+
-|  卡片 UI 关键模式                                                  |
-|  let storage = new LocalStorage();                               |
-|  @Entry(storage) @Component struct XxxCard {                       |
-|    @LocalStorageProp('field') field: string = '';                 |
-|    build() { ... postCardAction(this, {action:'router'}) }       |
-|  }                                                                |
-+------------------------------------------------------------------+
-|  主体主动刷新卡片                                                  |
-|  formProvider.getFormsInfo({bundleName}) -> forms[]               |
-|  formProvider.updateForm(formId, formBindingData.createFormBindingData(data))
-+------------------------------------------------------------------+
-|  跨进程共享数据                                                    |
-|  preferences.getPreferences(ctx, 'storeName')                     |
-|  pref.put(key, value); pref.flush();                             |
-+------------------------------------------------------------------+
-|  体积与性能红线                                                    |
-|  体积 < 10MB | 首屏 < 1s | 内存 < 50MB | 刷新间隔 >= 30min       |
-+------------------------------------------------------------------+
+```mermaid
+flowchart TD
+    B0["元服务核心配置 / module.json5: installationFree: true / extensionAbilities: type: 'form', metadata: $profile:form_config / form_config.json: forms[].src, supportDimensions, updateDuration"]
+    B1["FormAbility 关键回调 / onAddForm(want) -> FormBindingData (返回初始数据) / onUpdateForm(formId) -> formProvider.updateForm (定时刷新) / onFormEvent(formId, msg) (卡片按钮触发) / onRouteTo(formId, info) (卡片点击跳转) / onVisibilityChange(formStatus) (可见性变化)"]
+    B0 --> B1
+    B2["卡片 UI 关键模式 / let storage = new LocalStorage(); / @Entry(storage) @Component struct XxxCard { / @LocalStorageProp('field') field: string = ''; / build() { ... postCardAction(this, {action:'router'}) } / }"]
+    B1 --> B2
+    B3["主体主动刷新卡片 / formProvider.getFormsInfo({bundleName}) -> forms[] / formProvider.updateForm(formId, formBindingData.createFormBindingData(data))"]
+    B2 --> B3
+    B4["跨进程共享数据 / preferences.getPreferences(ctx, 'storeName') / pref.put(key, value); pref.flush();"]
+    B3 --> B4
+    B5["体积与性能红线 / 体积 < 10MB | 首屏 < 1s | 内存 < 50MB | 刷新间隔 >= 30min"]
+    B4 --> B5
 ```
 
 掌握以上核心模式,即可覆盖 90% 的元服务开发场景。在实际项目中遇到具体问题时,再回到对应章节查阅详细说明。
@@ -2465,3 +2465,262 @@ AppGallery Connect 对元服务的审核要点:
 ---
 
 本章到此结束。希望读者通过本章学习,能够独立完成元服务的开发与发布,将这一鸿蒙生态的特色能力应用到实际产品中,为用户带来"即点即用、跨设备流转"的现代服务体验。
+## 元服务概述
+
+**基本写法：元服务与普通应用差异**
+`// module.json5 中 type 配置为 "atomicService"`
+```json5
+// 元服务配置（无需安装即用）
+{
+  "module": {
+    "name": "entry",
+    "type": "atomicService",
+    "deviceTypes": ["phone", "tablet"]
+  }
+}
+```
+
+---
+
+**基本写法：创建元服务模板**
+`// DevEco Studio → File → New → Module → Atomic Service`
+```text
+// 在 DevEco Studio 中创建元服务模块
+// 模块类型选 Atomic Service
+// 会自动配置 type 为 atomicService
+```
+
+---
+
+## 工程配置
+
+**基本写法：module.json5 完整配置**
+`{ "module": { "type": "atomicService", "abilities": [{ "name": "<Ability>", "srcEntry": "<路径>" }] } }`
+```json5
+// 元服务 module.json5 配置
+{
+  "module": {
+    "name": "entry",
+    "type": "atomicService",
+    "description": "$string:module_desc",
+    "mainElement": "EntryAbility",
+    "deviceTypes": ["phone", "tablet"],
+    "deliveryWithInstall": true,
+    "installationFree": true,
+    "pages": "$profile:main_pages",
+    "abilities": [
+      {
+        "name": "EntryAbility",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
+        "description": "$string:EntryAbility_desc",
+        "icon": "$media:icon",
+        "label": "$string:EntryAbility_label",
+        "startWindowIcon": "$media:icon",
+        "startWindowBackground": "$color:start_window_background"
+      }
+    ]
+  }
+}
+```
+
+---
+
+**基本写法：安装即用属性**
+`"installationFree": true`
+```json5
+// 配置免安装运行
+{
+  "module": {
+    "type": "atomicService",
+    "installationFree": true
+  }
+}
+```
+
+---
+
+## 卡片集成
+
+**基本写法：元服务携带卡片**
+`"extensionAbilities": [{ "name": "<名>", "type": "form" }]`
+```json5
+// 元服务中声明卡片扩展能力
+{
+  "module": {
+    "extensionAbilities": [
+      {
+        "name": "ServiceCardAbility",
+        "type": "form",
+        "srcEntry": "./ets/servicecardability/ServiceCardAbility.ets",
+        "metadata": [
+          { "name": "ohos.extension.form", "resource": "$profile:form_config" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+---
+
+**基本写法：卡片配置**
+`{ "forms": [{ "name": "<名>", "src": "<页面>", "defaultDimension": "2*2" }] }`
+```json5
+// form_config.json 元服务卡片配置
+{
+  "forms": [
+    {
+      "name": "service_widget",
+      "displayName": "元服务卡片",
+      "src": "./ets/servicecardability/pages/WidgetPage.ets",
+      "window": { "designWidth": 720 },
+      "isDefault": true,
+      "colorMode": "auto",
+      "supportDimensions": ["2*2", "2*4"],
+      "defaultDimension": "2*2"
+    }
+  ]
+}
+```
+
+---
+
+## 服务直达
+
+**基本写法：通过 URI 拉起元服务**
+`this.context.startAbility({ uri: '<URI>', type: '<类型>' })`
+```typescript
+// 通过 deeplink 拉起元服务
+import { Want } from '@kit.AbilityKit'
+
+let want: Want = {
+  uri: 'store://appgallery.com/atomic/detail?id=123456',
+  action: 'ohos.want.action.viewData'
+}
+this.context.startAbility(want)
+```
+
+---
+
+**基本写法：通过 bundleName 拉起**
+`this.context.startAbility({ bundleName: '<包名>', abilityName: '<Ability>' })`
+```typescript
+// 直接拉起指定元服务
+let want: Want = {
+  bundleName: 'com.example.myservice',
+  abilityName: 'EntryAbility'
+}
+this.context.startAbility(want)
+```
+
+---
+
+## 构建与发布
+
+**基本写法：构建元服务 HAP**
+`hvigorw --mode module -p module=entry@default assembleHap`
+```bash
+# 构建元服务 HAP 包
+hvigorw --mode module -p module=entry@default -p product=default assembleHap --parallel --daemon
+```
+
+---
+
+**基本写法：构建 APP**
+`hvigorw --mode project -p product=default assembleApp`
+```bash
+# 构建元服务 APP 包
+hvigorw --mode project -p product=default assembleApp
+```
+
+---
+
+**基本写法：元服务签名配置**
+`"signingConfigs": [{ "name": "release", "type": "HarmonyOS" }]`
+```json5
+// build-profile.json5 元服务签名
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "release",
+        "type": "HarmonyOS",
+        "material": {
+          "cert": { "file": "service.cer" },
+          "store": { "file": "service.p12", "password": "123456" },
+          "key": { "alias": "service", "password": "123456" },
+          "profile": { "file": "service.p7b" }
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
+**基本写法：上传至 AppGallery**
+`// AppGallery Connect → 我的应用 → 元服务 → 上传`
+```text
+// 上传元服务流程
+// 1. 登录 AppGallery Connect
+// 2. 选择「元服务」分类
+// 3. 创建元服务 → 填写信息
+// 4. 上传已签名的 APP 包
+// 5. 提交审核
+```
+
+---
+
+## 元服务 API 限制
+
+**基本写法：可用 API 范围**
+`// 使用 @kit 引入支持的 Kit`
+```typescript
+// 元服务支持的 Kit（部分受限）
+import { UIAbility } from '@kit.AbilityKit'
+import { relationalStore } from '@kit.ArkData'
+import { http } from '@kit.NetworkKit'
+
+// 不支持：部分后台能力、系统级权限
+```
+
+---
+
+**基本写法：获取元服务信息**
+`this.context.applicationInfo.name`
+```typescript
+// 获取当前元服务信息
+onCreate() {
+  let info = this.context.applicationInfo
+  console.info(`名称: ${info.name}`)
+  console.info(`包名: ${info.bundleName}`)
+}
+```
+
+---
+
+## 数据共享
+
+**基本写法：元服务间数据传递**
+`AppStorage.setOrCreate('<键>', <值>)`
+```typescript
+// 通过 AppStorage 在元服务内共享数据
+AppStorage.setOrCreate('service_data', { id: 1, name: 'test' })
+
+// 另一处获取
+let data = AppStorage.get('service_data')
+```
+
+---
+
+**基本写法：通过 Want 参数传递**
+`want.parameters['<键>'] = <值>`
+```typescript
+// 启动元服务时传递参数
+let want: Want = {
+  bundleName: 'com.example.myservice',
+  abilityName: 'EntryAbility',
+  parameters: { userId: 1001, action: 'start' }
+}
+```

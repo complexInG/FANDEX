@@ -168,30 +168,25 @@ ECMAScript 规范文档（ECMA-262）由以下部分组成：
 
 现代 JavaScript 引擎（以 V8 为例）的核心组件：
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      JavaScript 引擎                          │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    │
-│  │   Parser     │ →  │ Interpreter  │ →  │  Baseline    │    │
-│  │  (解析器)     │    │ (Ignition)   │    │  Compiler   │    │
-│  │              │    │              │    │  (Sparkplug) │    │
-│  └──────────────┘    └──────────────┘    └──────┬───────┘    │
-│         ↓                                      ↓            │
-│  ┌──────────────┐                    ┌──────────────┐      │
-│  │     AST      │                    │   TurboFan   │      │
-│  │  (抽象语法树) │                    │ (优化 JIT)   │      │
-│  └──────────────┘                    └──────┬───────┘      │
-│         ↓                                   ↓             │
-│  ┌──────────────┐                    ┌──────────────┐      │
-│  │   Bytecode   │                    │ Maglev /      │      │
-│  │   (字节码)    │ ←───────────────── │ Turboshaft    │      │
-│  └──────────────┘                    └──────────────┘      │
-│         ↓                                          ↑       │
-│  ┌────────────────────────────────────────────┐   │       │
-│  │           Garbage Collector (Orinoco)        │   │       │
-│  │      分代回收：Young / Old / Large Object    │   │       │
-│  └────────────────────────────────────────────┘   │       │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph Engine[V8 JavaScript 引擎]
+        Parser -->|AST| Ignition
+        Ignition -->|Bytecode| Sparkplug
+        Sparkplug -->|热代码| TurboFan
+        Maglev --> TurboFan
+        Ignition -->|字节码| Bytecode
+        Bytecode --> GC
+        Sparkplug --> GC
+        TurboFan --> GC
+    end
+    Parser[Parser 解析器]
+    Ignition[Interpreter Ignition]
+    Sparkplug[Baseline Compiler Sparkplug]
+    TurboFan[Optimizing JIT TurboFan]
+    Maglev[Maglev 编译器]
+    Bytecode[Bytecode 字节码]
+    GC[Garbage Collector Orinoco<br/>分代回收：Young / Old / Large Object]
 ```
 
 形式化为五元组：
@@ -1553,20 +1548,23 @@ const user = await fetchJson<User>('/api/users/1');
 
 **项目结构**：
 
-```
-isomorphic-app/
-├── package.json
-├── src/
-│   ├── shared/        # 共享代码
-│   │   ├── components/
-│   │   ├── utils/
-│   │   └── api/
-│   ├── server/        # 服务器端代码
-│   │   ├── index.js
-│   │   └── renderer.js
-│   └── client/        # 客户端代码
-│       ├── index.js
-│       └── hydrate.js
+```mermaid
+flowchart TD
+    T0["isomorphic-app/"]
+    T1["package.json"]
+    T2["src/"]
+    T3["shared/        # 共享代码"]
+    T4["components/"]
+    T5["utils/"]
+    T6["api/"]
+    T7["server/        # 服务器端代码"]
+    T8["index.js"]
+    T9["renderer.js"]
+    T10["client/        # 客户端代码"]
+    T11["index.js"]
+    T12["hydrate.js"]
+    T0 --> T1
+    T0 --> T2
 ```
 
 **共享组件**：
@@ -1930,7 +1928,7 @@ ws.onclose = () => {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1940,7 +1938,7 @@ ws.onclose = () => {
 
 **习题 3**：解释 ES5（2009）与 ES6（2015）在 JavaScript 历史中的地位差异，为什么 ES6 被称为"重生"？
 
-### 10.2 应用题
+### 应用题知识点讲解
 
 **习题 4**：写一个函数 `detectRuntime()`，返回当前 JavaScript 运行环境的字符串标识（`'browser'` / `'node'` / `'deno'` / `'bun'` / `'worker'` / `'unknown'`）。
 
@@ -2246,12 +2244,6 @@ import './utils'      → 报错（ESM 要求扩展名）
 注意：性能基准依赖具体场景，不要过度依赖单一指标。生产环境选型应综合考虑生态成熟度、稳定性、维护成本。
 
 ---
-
-## 更新日志 (Changelog)
-
-- 2026-04-05: 整合 JS 概述与运行环境知识
-- 2026-04-05: 扩写内容，增加详细的发展历程、核心特点、运行环境、ECMAScript 标准、开发工具和最佳实践
-- 2026-07-21: 完整重写至金标准教学水准，按 12 项结构组织：Bloom 学习目标、历史动机（含 ES4 废弃、ES6 重生、Deno/Bun 崛起）、形式化定义（含引擎五元组、事件循环模型、执行上下文栈）、理论推导（含 JIT 编译原理、Amdahl 定律、分代 GC、Promise 与事件循环关系）、代码示例（覆盖浏览器/Node.js/Deno/Bun/Web Worker/环境检测）、对比分析（四大运行时、引擎、模块系统、包管理器）、12 项常见陷阱、工程实践（项目初始化/ESLint/Prettier/调试/性能/安全/错误处理/TypeScript）、6 个案例研究（同构应用/CLI/Electron/RN/Workers/WebSocket）、10 道习题、14 条 ACM 参考文献、6 类延伸阅读、6 个附录
 
 ## 延伸阅读
 

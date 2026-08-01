@@ -1246,9 +1246,9 @@ console.log(m.groups.title);  // 'GitHub Homepage'
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 填空题
+### 填空题知识点讲解
 
 **习题 1**（Remember，难度 1）：具名捕获组使用 `(?<name>...)` 语法声明，通过 `match.groups.name` 形式访问捕获结果。
 
@@ -1256,7 +1256,7 @@ console.log(m.groups.title);  // 'GitHub Homepage'
 
 **习题 3**（Understand，难度 3）：具名捕获组提案于 2017 年进入 TC39 Stage 4，正式纳入 ES2018 标准，提案作者为 Daniel Ehrenberg 与 Brian Terlson。
 
-### 10.2 选择题
+### 选择题知识点讲解
 
 **习题 4**（Understand，难度 3）：下列哪项不是具名捕获组相对于数字索引捕获组的优势？
 - A. 提升正则可读性，通过语义化名称标识捕获内容

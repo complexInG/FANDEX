@@ -14,6 +14,11 @@ related:
 prerequisites:
   - svg/基础语法与文档结构
 ---
+# SVG 坐标系与 viewBox 语法速查手册
+
+> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -302,12 +307,10 @@ viewBox = "<min-x> <min-y> <width> <height>"
 
 SVG 坐标系原点在**左上角**,X 轴向右、Y 轴**向下**(与数学坐标系 Y 轴相反)。
 
-```
-(0,0) ──────→ X+
-  │
-  │
-  ↓
-  Y+
+```mermaid
+flowchart LR
+    Origin[(0,0)] --> X[X+]
+    Origin --> Y[Y+]
 ```
 
 ```html
@@ -1099,9 +1102,9 @@ const g = svg.append('g')
 }
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**:SVG 坐标系的 Y 轴方向是?
 
@@ -1110,13 +1113,10 @@ const g = svg.append('g')
 - C. 向左
 - D. 向右
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:SVG 坐标系原点在左上角,Y 轴向下,这与 CRT 显示器电子束扫描方向的历史惯性一致。这一方向选择影响了所有旋转操作:SVG 中的正旋转角度是顺时针方向。
-</details>
+**解析讲解**：SVG 坐标系原点在左上角,Y 轴向下,这与 CRT 显示器电子束扫描方向的历史惯性一致。这一方向选择影响了所有旋转操作:SVG 中的正旋转角度是顺时针方向。
 
 **题目 2**:`preserveAspectRatio="xMidYMid meet"` 的含义是?
 
@@ -1125,13 +1125,10 @@ const g = svg.append('g')
 - C. 视图框等比放大填满视口,可能裁剪
 - D. 视图框不缩放,左上角对齐
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:`meet` 模式采用 $s = \min(W/w, H/h)$ 等比缩放,完整显示 viewBox 内容,空余区域留白;`xMidYMid` 表示水平垂直均居中对齐。
-</details>
+**解析讲解**：`meet` 模式采用 $s = \min(W/w, H/h)$ 等比缩放,完整显示 viewBox 内容,空余区域留白;`xMidYMid` 表示水平垂直均居中对齐。
 
 **题目 3**:下列哪个 viewBox 会让图形看起来更大(放大效果)?
 
@@ -1140,13 +1137,10 @@ const g = svg.append('g')
 - C. `viewBox="0 0 400 400"`
 - D. `viewBox="-100 -100 400 400"`
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:视口尺寸固定时,viewBox 范围越小,图形被放大越多。`viewBox="0 0 100 100"` 比 `viewBox="0 0 200 200"` 小,因此图形显示更大。这就是局部放大的原理。
-</details>
+**解析讲解**：视口尺寸固定时,viewBox 范围越小,图形被放大越多。`viewBox="0 0 100 100"` 比 `viewBox="0 0 200 200"` 小,因此图形显示更大。这就是局部放大的原理。
 
 **题目 4**:关于嵌套 `<svg>`,下列说法正确的是?
 
@@ -1155,13 +1149,10 @@ const g = svg.append('g')
 - C. 嵌套 `<svg>` 可以建立独立坐标系,通过 x/y/width/height 定位
 - D. 嵌套 `<svg>` 不能再嵌套
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:C
+**解析讲解**：C
 
-**解析**:嵌套 `<svg>` 通过 x/y/width/height 在外层视口中定位,内部 viewBox 建立独立坐标系,可任意嵌套。xmlns 在子 `<svg>` 中可省略(继承自根元素)。
-</details>
+**解析讲解**：嵌套 `<svg>` 通过 x/y/width/height 在外层视口中定位,内部 viewBox 建立独立坐标系,可任意嵌套。xmlns 在子 `<svg>` 中可省略(继承自根元素)。
 
 **题目 5**:`vector-effect="non-scaling-stroke"` 的作用是?
 
@@ -1170,67 +1161,49 @@ const g = svg.append('g')
 - C. 使描边颜色固定
 - D. 使描边变虚线
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:默认情况下,viewBox 缩放会同步缩放描边宽度。设置 `vector-effect="non-scaling-stroke"` 后,描边宽度保持原始像素值,不随缩放变化。这在响应式图标中保持一致的描边粗细很有用。
-</details>
+**解析讲解**：默认情况下,viewBox 缩放会同步缩放描边宽度。设置 `vector-effect="non-scaling-stroke"` 后,描边宽度保持原始像素值,不随缩放变化。这在响应式图标中保持一致的描边粗细很有用。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 6**:SVG 中 1px 描边落在整数坐标(如 $y = 10$)时显示模糊,解决方法是将坐标偏移 ________。
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:`0.5`(或 `0.5px`)
+**解析讲解**：`0.5`(或 `0.5px`)
 
-**解析**:1px 描边的中心在像素边界时,会被分配到两个像素各 50%,显示为 2px 灰色描边。将坐标偏移 0.5(如 $y = 10.5$)使描边中心对齐像素中心,显示为清晰的 1px。
-</details>
+**解析讲解**：1px 描边的中心在像素边界时,会被分配到两个像素各 50%,显示为 2px 灰色描边。将坐标偏移 0.5(如 $y = 10.5$)使描边中心对齐像素中心,显示为清晰的 1px。
 
 **题目 7**:`preserveAspectRatio` 的两个参数分别是 ________ 和 ________。
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:`align`(对齐方式);`meetOrSlice`(适配模式)
+**解析讲解**：`align`(对齐方式);`meetOrSlice`(适配模式)
 
-**解析**:`preserveAspectRatio="<align> <meetOrSlice>"`,如 `xMidYMid meet`、`xMinYMin slice`、`none`(单独使用,忽略对齐参数)。
-</details>
+**解析讲解**：`preserveAspectRatio="<align> <meetOrSlice>"`,如 `xMidYMid meet`、`xMinYMin slice`、`none`(单独使用,忽略对齐参数)。
 
 **题目 8**:设视口为 400×300,viewBox 为 `0 0 200 150`,meet 模式下的缩放因子 $s$ = ________。
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:`2`
+**解析讲解**：`2`
 
-**解析**:$s_x = W/w = 400/200 = 2$,$s_y = H/h = 300/150 = 2$。由于 $s_x = s_y = 2$,meet 与 slice 行为一致,均为缩放 2 倍。
-</details>
+**解析讲解**：$s_x = W/w = 400/200 = 2$,$s_y = H/h = 300/150 = 2$。由于 $s_x = s_y = 2$,meet 与 slice 行为一致,均为缩放 2 倍。
 
 **题目 9**:viewBox 的四个参数依次是 ________、________、________、________。
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:`min-x`(X 起点);`min-y`(Y 起点);`width`(宽度);`height`(高度)
+**解析讲解**：`min-x`(X 起点);`min-y`(Y 起点);`width`(宽度);`height`(高度)
 
-**解析**:`viewBox="<min-x> <min-y> <width> <height>"`,前两个参数定义视图框左上角坐标,后两个定义宽高。min-x/min-y 可为负数。
-</details>
+**解析讲解**：`viewBox="<min-x> <min-y> <width> <height>"`,前两个参数定义视图框左上角坐标,后两个定义宽高。min-x/min-y 可为负数。
 
 **题目 10**:嵌套 `<svg>` 的坐标系复合满足 ________ 律(矩阵乘法的代数性质),但不满足 ________ 律。
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:`结合`;`交换`
+**解析讲解**：`结合`;`交换`
 
-**解析**:仿射变换集合在矩阵乘法下构成幺半群,满足结合律 $(M_1 M_2) M_3 = M_1 (M_2 M_3)$,但一般不满足交换律 $M_1 M_2 \neq M_2 M_1$。
-</details>
+**解析讲解**：仿射变换集合在矩阵乘法下构成幺半群,满足结合律 $(M_1 M_2) M_3 = M_1 (M_2 M_3)$,但一般不满足交换律 $M_1 M_2 \neq M_2 M_1$。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 11**:实现一个 SVG 时钟,viewBox 为 `0 0 100 100`,要求:
 
@@ -1371,8 +1344,6 @@ const g = svg.append('g')
 
 **题目 13**:为什么 SVG 选择 Y 轴向下而不是数学约定的向上?这一设计在现代显示器上还有意义吗?
 
-<details>
-<summary>参考答案</summary>
 
 **历史原因**:
 
@@ -1388,12 +1359,9 @@ const g = svg.append('g')
 4. **劣势**:数学函数(正弦、抛物线)需翻转 Y 轴,旋转变为顺时针,与数学约定相反
 
 **未来趋势**:WebGL、Three.js 等基于 OpenGL 的库采用 Y 轴向上,SVG 与之协作时需坐标翻转,这是 SVG/WebGL 集成的常见 bug 来源。
-</details>
 
 **题目 14**:viewBox 的负坐标(min-x/min-y 为负数)在什么场景下有用?请举例说明。
 
-<details>
-<summary>参考答案</summary>
 
 **场景一:中心化坐标系**
 
@@ -1429,12 +1397,9 @@ const g = svg.append('g')
 1. 数学计算简化(无需偏移转换)
 2. 直觉符合"以原点为中心"的几何思维
 3. 便于扩展(任意方向都可在原坐标系内描述)
-</details>
 
 **题目 15**:如果一个 SVG 图标需要同时支持 16px、24px、48px、96px 多种显示尺寸,你会如何设计?请给出完整代码示例并说明设计权衡。
 
-<details>
-<summary>参考答案</summary>
 
 **设计方案**:
 
@@ -1486,7 +1451,6 @@ const g = svg.append('g')
 
 - 大量小图标(16px)渲染时,SVG 描边可能模糊,可考虑 PNG fallback
 - 96px 大尺寸下,SVG 矢量优势明显,无失真
-</details>
 
 ## 11. 参考文献
 
@@ -1568,3 +1532,243 @@ const g = svg.append('g')
 - **SVG Filters**:feGaussianBlur、feColorMatrix 等基于坐标系的滤镜
 
 下一篇介绍 rect、circle、ellipse、line、polyline、polygon 六大基本图形,在已建立的坐标系基础上深入图形元素的属性与绘制原理。
+## 视口 viewport
+
+**视口定义**
+`<svg width="<宽>" height="<高>"> ... </svg>`
+```html
+<svg width="400" height="300">
+  <!-- 视口为 400×300 像素 -->
+</svg>
+```
+
+---
+
+## viewBox 视图框
+
+**viewBox 内部坐标系**
+`viewBox="<min-x> <min-y> <width> <height>"`
+```html
+<svg width="400" height="300" viewBox="0 0 200 150">
+  <!-- 内部坐标 200×150,缩放到视口 400×300,等比放大 2 倍 -->
+  <rect x="0" y="0" width="100" height="75" fill="#4f5bd5" />
+</svg>
+```
+
+### viewBox 核心价值
+
+| 价值           | 说明                                    |
+| -------------- | --------------------------------------- |
+| **响应式适配** | 视口变化时图形按比例缩放,无需重写坐标  |
+| **坐标归一化** | 可用 0-100 或 0-1 等任意范围描述图形    |
+| **局部裁剪**   | 通过调整 min-x/min-y 可显示图形局部     |
+| **独立于尺寸** | 同一 SVG 可用作 16px 图标或 1920px 横幅 |
+
+---
+
+## 坐标系方向
+
+**SVG 坐标系原点左上角,X 向右 Y 向下**
+```mermaid
+flowchart LR
+    O[(0,0)] --> X[X+]
+    O --> Y[Y+]
+```
+```html
+<svg viewBox="0 0 100 100">
+  <!-- 圆心 (50,50):在画布正中央 -->
+  <circle cx="50" cy="50" r="40" fill="#4f5bd5" />
+  <!-- (0,0) 在左上角 -->
+  <rect x="0" y="0" width="20" height="20" fill="#d63031" />
+</svg>
+```
+
+---
+
+## preserveAspectRatio 宽高比策略
+
+**preserveAspectRatio 语法**
+`preserveAspectRatio="<align> <meetOrSlice>"`
+
+### 对齐方式 align
+
+| 值         | 含义             |
+| ---------- | ---------------- |
+| `xMinYMin` | 左上对齐         |
+| `xMidYMid` | 居中对齐(默认) |
+| `xMaxYMax` | 右下对齐         |
+| `xMinYMid` | 左中对齐         |
+| `xMidYMin` | 上中对齐         |
+
+### 适配模式 meetOrSlice
+
+| 值      | 行为                           |
+| ------- | ------------------------------ |
+| `meet`  | 完整显示 viewBox,留白(默认) |
+| `slice` | 填满视口,可能裁剪           |
+| `none`  | 拉伸变形,不保持比例         |
+
+### 示例对比
+
+**meet 完整显示**
+`preserveAspectRatio="xMidYMid meet"`
+```html
+<!-- viewBox 4:3,视口 1:1 -->
+<svg width="100" height="100" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
+  <rect width="400" height="300" fill="#4f5bd5" />
+</svg>
+<!-- meet:矩形等比缩小居中,上下留白 -->
+```
+
+**slice 填满裁剪**
+`preserveAspectRatio="xMidYMid slice"`
+```html
+<svg width="100" height="100" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+  <rect width="400" height="300" fill="#00b894" />
+</svg>
+<!-- slice:矩形等比放大填满,左右被裁 -->
+```
+
+**none 拉伸变形**
+`preserveAspectRatio="none"`
+```html
+<svg width="100" height="100" viewBox="0 0 400 300" preserveAspectRatio="none">
+  <rect width="400" height="300" fill="#d63031" />
+</svg>
+<!-- none:拉伸为正方形,变形 -->
+```
+
+---
+
+## 响应式图标
+
+**响应式图标 SVG**
+`<svg viewBox="0 0 24 24" class="<类名>"> ... </svg>`
+```html
+<svg viewBox="0 0 24 24" class="icon">
+  <path d="M12 2 L22 22 L2 22 Z" fill="currentColor" />
+</svg>
+```
+```css
+.icon {
+  width: 24px;
+  height: 24px;
+}
+.icon-lg {
+  width: 48px;
+  height: 48px;
+}
+```
+
+---
+
+## 负坐标与偏移
+
+**负坐标 viewBox**
+`viewBox="<-min-x> <-min-y> <width> <height>"`
+```html
+<svg viewBox="-50 -50 100 100" width="100" height="100">
+  <!-- 坐标系 -50 到 50,原点 (0,0) 居中 -->
+  <circle cx="0" cy="0" r="40" fill="#4f5bd5" />
+  <line x1="-50" y1="0" x2="50" y2="0" stroke="#333" />
+  <line x1="0" y1="-50" x2="0" y2="50" stroke="#333" />
+</svg>
+```
+
+---
+
+## 局部放大
+
+**缩小 viewBox 实现局部放大**
+```html
+<svg viewBox="0 0 400 300" width="400" height="300">
+  <!-- 完整图 -->
+</svg>
+
+<svg viewBox="100 75 100 75" width="400" height="300">
+  <!-- 放大显示原图中央 100×75 区域 -->
+</svg>
+```
+
+---
+
+## 嵌套 svg 子坐标系
+
+**嵌套 svg 建立子坐标系**
+`<svg x="<x>" y="<y>" width="<宽>" height="<高>" viewBox="<min-x> <min-y> <w> <h>"> ... </svg>`
+```html
+<svg viewBox="0 0 400 200" width="400" height="200">
+  <svg x="0" y="0" width="200" height="200" viewBox="0 0 100 100">
+    <!-- 左侧子坐标系 100×100 映射到 200×200 -->
+    <circle cx="50" cy="50" r="40" fill="#4f5bd5" />
+  </svg>
+  <svg x="200" y="0" width="200" height="200" viewBox="0 0 50 50">
+    <!-- 右侧子坐标系 50×50 映射到 200×200,放大 4 倍 -->
+    <circle cx="25" cy="25" r="20" fill="#00b894" />
+  </svg>
+</svg>
+```
+
+---
+
+## 坐标系与 transform
+
+**transform 在坐标系层面应用变换**
+`<g transform="<变换函数>"> ... </g>`
+```html
+<svg viewBox="0 0 200 200">
+  <g transform="translate(100, 100) rotate(45)">
+    <!-- 此组以 (100,100) 为原点,旋转 45° -->
+    <rect x="-25" y="-25" width="50" height="50" fill="#d63031" />
+  </g>
+</svg>
+```
+
+变换的顺序**不可交换**:`translate(100,0) rotate(45)` 与 `rotate(45) translate(100,0)` 结果不同。
+
+---
+
+## 常见陷阱语法
+
+**viewBox 与视口比例不一致留白**
+```html
+<!-- viewBox 4:3 视口 16:9,默认 meet 会留白 -->
+<svg width="640" height="360" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#4f5bd5" />
+</svg>
+```
+
+**小数坐标导致抗锯齿模糊**
+```html
+<!-- 模糊:1px 描边落在 .5 坐标 -->
+<line x1="0" y1="10.5" x2="100" y2="10.5" stroke="#000" />
+
+<!-- 清晰:整数坐标 + 0.5 偏移技巧 -->
+<line x1="0" y1="10" x2="100" y2="10" stroke="#000" />
+```
+
+**忘记设置 viewBox 导致图标无法缩放**
+```html
+<!-- 错误:仅有 width/height,CSS 缩放后变形 -->
+<svg width="24" height="24">
+  <circle cx="12" cy="12" r="10" />
+</svg>
+
+<!-- 正确:声明 viewBox,由 CSS 控制尺寸 -->
+<svg viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10" />
+</svg>
+```
+
+---
+
+## viewBox 调试
+
+**调试用边框观察 viewBox**
+`<svg viewBox="<min-x> <min-y> <w> <h>" width="<宽>" height="<高>" style="border:1px solid #ccc"> ... </svg>`
+```html
+<svg viewBox="0 0 100 100" width="200" height="200" style="border:1px solid #ccc">
+  <rect x="10" y="10" width="80" height="80" fill="#4f5bd5" />
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#d63031" stroke-width="2" />
+</svg>
+```

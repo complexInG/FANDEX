@@ -15,10 +15,11 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
+# Java JVM 调优命令
 
-# JVM 调优：从理论到生产级性能工程
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.172（Performance Engineering of Software Systems）、Stanford CS 243（Programming Languages）与 CMU 15-440（Distributed Systems）教学水准，系统阐述 Java 虚拟机调优的形式化基础、工程方法论与生产级案例。所有结论均可通过 JLS、JVM Specification 与 OpenJDK 源码验证，所有命令均在 OpenJDK 17/21 LTS 上实测。
+---
 
 ## 目录
 
@@ -84,54 +85,26 @@ prerequisites:
 
 JVM 垃圾回收的演进反映了硬件、工作负载与 SLA 需求的历史变迁。
 
-```
-1995 ──── Java 1.0：仅 Serial GC，分代收集雏形
-  │
-1998 ──── Java 1.2：引入 Weak/Soft/Phantom Reference
-  │
-2002 ──── J2SE 1.4：Parallel GC（Parallel Scavenge + Parallel Old）
-  │         服务器模式默认，吞吐量优先
-  │
-2004 ──── Java 5：CMS（Concurrent Mark-Sweep）GA
-  │         首次实现并发收集，目标低延迟
-  │
-2006 ──── Java 6：CMS 改进，成为低延迟首选
-  │         G1 GC 作为实验特性引入（-XX:+UnlockExperimentalVMOptions）
-  │
-2011 ──── Java 7：G1 GA（-XX:+UseG1GC）
-  │         NIO.2、invokedynamic
-  │
-2014 ──── Java 8：Lambda、Stream；永久代废除，元空间（Metaspace）登场
-  │         CMS 仍可用但标记为 deprecated
-  │
-2017 ──── Java 9：CMS 正式废弃；G1 成为默认 GC
-  │         模块系统（Jigsaw）
-  │
-2018 ──── Java 11 LTS：ZGC 实验特性（-XX:+UnlockExperimentalVMOptions -XX:+UseZGC）
-  │         Epsilon GC（no-op）、JFR 开源
-  │
-2019 ──── Java 13：ZGC 归还未使用内存给操作系统
-  │
-2020 ──── Java 15：ZGC GA（JEP 377）；Shenandoah GA（JEP 379）
-  │         CMS 被移除
-  │
-2021 ──── Java 16：ZGC 并发栈扫描（JEP 376）
-  │         并发线程根数处理
-  │
-2021 ──── Java 17 LTS：G1 改进、ZGC 生产可用
-  │        密封类、模式匹配
-  │
-2022 ──── Java 19：虚拟线程预览（JEP 425）
-  │         Generational ZGC 预览
-  │
-2023 ──── Java 21 LTS：虚拟线程 GA（JEP 444）
-  │         Generational ZGC GA（JEP 439）
-  │         分代 ZGC：年轻代/老年代分离
-  │
-2024 ──── Java 22-23：ZGC 进一步优化
-  │         Generational Shenandoah
-  │
-2025 ──── Java 24-25：继续向 sub-millisecond GC 停顿推进
+```mermaid
+timeline
+    title 发展时间线
+    1995: Java 1.0：仅 Serial GC，分代收集雏形
+    1998: Java 1.2：引入 Weak/Soft/Phantom Reference
+    2002: J2SE 1.4：Parallel GC（Parallel Scavenge + Parallel Old） 服务器模式默认，吞吐量优先
+    2004: Java 5：CMS（Concurrent Mark-Sweep）GA 首次实现并发收集，目标低延迟
+    2006: Java 6：CMS 改进，成为低延迟首选 G1 GC 作为实验特性引入（-XX:+UnlockExperimentalVMOptions）
+    2011: Java 7：G1 GA（-XX:+UseG1GC） NIO.2、invokedynamic
+    2014: Java 8：Lambda、Stream；永久代废除，元空间（Metaspace）登场 CMS 仍可用但标记为 deprecated
+    2017: Java 9：CMS 正式废弃；G1 成为默认 GC 模块系统（Jigsaw）
+    2018: Java 11 LTS：ZGC 实验特性（-XX:+UnlockExperimentalVMOptions -XX:+UseZGC） Epsilon GC（no-op）、JFR 开源
+    2019: Java 13：ZGC 归还未使用内存给操作系统
+    2020: Java 15：ZGC GA（JEP 377）；Shenandoah GA（JEP 379） CMS 被移除
+    2021: Java 16：ZGC 并发栈扫描（JEP 376） 并发线程根数处理
+    2021: Java 17 LTS：G1 改进、ZGC 生产可用 密封类、模式匹配
+    2022: Java 19：虚拟线程预览（JEP 425） Generational ZGC 预览
+    2023: Java 21 LTS：虚拟线程 GA（JEP 444） Generational ZGC GA（JEP 439） 分代 ZGC：年轻代/老年代分离
+    2024: Java 22-23：ZGC 进一步优化 Generational Shenandoah
+    2025: Java 24-25：继续向 sub-millisecond GC 停顿推进
 ```
 
 ### 2.2 三大驱动力
@@ -321,17 +294,19 @@ $$
 
 ZGC 利用 64 位指针的高 4 位作为颜色位：
 
-```
- 6        5  4        3         2         1         0
-3210987654321098765432109876543210987654321098765432109876543210
-┌─────────────────────────────────────────────────────────────┐
-│              unused            │F│R│M│Remapped│Address     │
-└─────────────────────────────────────────────────────────────┘
-                                  ↑ ↑ ↑
-                                  │ │ │
-                                  │ │ └─ Marked0 / Marked1（交替使用）
-                                  │ └─── Remapped（已重定位）
-                                  └───── Finalizable
+```mermaid
+flowchart LR
+    subgraph Header[指针布局]
+        U[unused]
+        F[F<br/>Finalizable]
+        R[R<br/>Remapped 已重定位]
+        M[M<br/>Marked0 / Marked1 交替使用]
+        A[Address]
+    end
+    U --- F
+    F --- R
+    R --- M
+    M --- A
 ```
 
 **Load Barrier** 在每次读对象时执行：
@@ -562,28 +537,23 @@ jcmd <pid> VM.native_memory        # 本地内存（需 -XX:NativeMemoryTracking
 
 ### 7.1 GC 选型决策树
 
+```mermaid
+flowchart TD
+    Q{堆大小?}
+    Q -- < 4GB --> Small[默认 GC 即可]
+    Q -- 4-32GB --> D1{延迟要求?}
+    D1 -- < 100ms --> CmsOrG1[CMS 或 G1]
+    D1 -- > 100ms --> G1[G1]
+    Q -- > 32GB --> D2{延迟要求?}
+    D2 -- < 10ms --> ZGC[ZGC]
+    D2 -- > 10ms --> G1Z[G1 或 ZGC（非分代）]
 ```
-                  堆大小?
-                 /
-        < 4GB ───┤
-                 \
-                  4-32GB ─── 延迟要求?
-                            /
-                   < 100ms ┤
-                            \
-                             > 100ms ─── G1
 
-        > 32GB ─── 延迟要求?
-                  /
-          < 10ms ┤
-                  \
-                   > 10ms ─── G1 或 ZGC（非分代）
+特殊场景：
 
-特殊场景:
-- 批处理/HPC: Parallel GC
-- 极致吞吐 + 大堆: Parallel GC
-- 实时系统: 不推荐 Java（用 C/Rust）或 ZGC + Shenandoah
-```
+- 批处理 / HPC：Parallel GC
+- 极致吞吐 + 大堆：Parallel GC
+- 实时系统：不推荐 Java（用 C/Rust），或 ZGC + Shenandoah
 
 ### 7.2 Serial GC
 
@@ -672,29 +642,16 @@ ZGC 设计目标：停顿 < 1ms（与堆大小无关）。实测：
 
 ### 8.1 G1 工作流程
 
-```
-┌─────────────────────────────────────────────────────┐
-│  Young GC (STW)                                     │
-│    - Eden + Survivor → Survivor / Old               │
-│    - 停顿 ≈ Region 数 × 复制成本                     │
-└─────────────────────────────────────────────────────┘
-                         │
-                         ▼ 堆占用 > IHOP
-┌─────────────────────────────────────────────────────┐
-│  Concurrent Mark (并发)                              │
-│    1. Initial Mark (STW, piggyback on Young GC)     │
-│    2. Root Region Scan (并发)                        │
-│    3. Concurrent Mark (并发, SATB)                   │
-│    4. Remark (STW)                                   │
-│    5. Cleanup (部分 STW)                             │
-└─────────────────────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────┐
-│  Mixed GC (STW)                                     │
-│    - 回收 Young + 部分 Old（分多次完成）              │
-│    - 选择 garbage 多的 Old Region 优先回收            │
-└─────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    Y[Young GC（STW）<br/>Eden + Survivor → Survivor / Old<br/>停顿 ≈ Region 数 × 复制成本]
+    Y -->|堆占用 > IHOP| M[Concurrent Mark（并发）]
+    M --> M1[1. Initial Mark（STW，piggyback on Young GC）]
+    M --> M2[2. Root Region Scan（并发）]
+    M --> M3[3. Concurrent Mark（并发，SATB）]
+    M --> M4[4. Remark（STW）]
+    M --> M5[5. Cleanup（部分 STW）]
+    M5 --> X[Mixed GC（STW）<br/>回收 Young + 部分 Old（分多次完成）<br/>选择 garbage 多的 Old Region 优先回收]
 ```
 
 ### 8.2 G1 参数调优实战
@@ -797,20 +754,13 @@ G1 中超过 Region 一半的对象被视为 Humongous，直接分配在 Old Reg
 
 ### 9.1 ZGC 分代架构（JDK 21+）
 
-```
-┌──────────────────────────────────────────────┐
-│  ZGC Generational Heap                       │
-│  ┌────────────┐  ┌────────────────────────┐ │
-│  │ Young Gen  │  │ Old Gen                │ │
-│  │  (small)   │  │  (large)               │ │
-│  │            │  │                        │ │
-│  │ Minor GC   │  │ Major GC (concurrent)  │ │
-│  │ frequent   │  │ infrequent             │ │
-│  └────────────┘  └────────────────────────┘ │
-│       ↑                     ↑                │
-│       └───── remembered set ┘                │
-│           (card table + barriers)            │
-└──────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph Heap[ZGC Generational Heap]
+        Young[Young Gen（small）<br/>Minor GC frequent]
+        Old[Old Gen（large）<br/>Major GC（concurrent）infrequent]
+    end
+    Young <-->|remembered set<br/>card table + barriers| Old
 ```
 
 ### 9.2 ZGC 参数详解
@@ -926,13 +876,15 @@ com.example.Order                   |  89,432 |      3 MB   |    145 MB
 
 展示对象的"支配关系"：若删除对象 A，所有被 A 唯一路径支配的对象都会被回收。
 
-```
-Root
-├── ClassLoader @ 0x7f00
-│   ├── HashMap @ 0x7f01           [retained: 512 MB]
-│   │   ├── Order @ 0x7f02         [retained: 8 MB]
-│   │   └── Order @ 0x7f03         [retained: 8 MB]
-│   └── ...
+```mermaid
+flowchart TD
+    T0["Root"]
+    T1["ClassLoader @ 0x7f00"]
+    T2["HashMap @ 0x7f01           [retained: 512 MB]"]
+    T3["Order @ 0x7f02         [retained: 8 MB]"]
+    T4["Order @ 0x7f03         [retained: 8 MB]"]
+    T5["..."]
+    T0 --> T1
 ```
 
 **经验法则**：Dominator Tree 顶部几行占 Retained Heap 70%+ 的对象即为泄漏候选。
@@ -1597,9 +1549,9 @@ private static class CallbackImpl implements Callback {
 
 ---
 
-## 15. 习题
+## 知识讲解与要点分析（原习题）
 
-### 15.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪个 GC 算法不会产生内存碎片？
 
@@ -1608,14 +1560,11 @@ private static class CallbackImpl implements Callback {
 - C. CMS
 - D. Mark-Sweep with free list
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 Mark-Compact 在标记后将存活对象向一端移动，紧凑排列，无碎片。Mark-Sweep 和 CMS 不移动对象，会产生碎片。Mark-Sweep with free list 通过空闲列表管理，仍有碎片。
 
-</details>
 
 **题目 2**：G1 GC 中 `InitiatingHeapOccupancyPercent=45` 表示什么？
 
@@ -1624,14 +1573,11 @@ Mark-Compact 在标记后将存活对象向一端移动，紧凑排列，无碎�
 - C. 堆占用 45% 时触发 Full GC
 - D. 堆占用 45% 时触发 Mixed GC
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `IHOP` 控制并发标记的触发时机。当堆占用超过 45% 时，G1 启动并发标记周期，为后续 Mixed GC 做准备。Young GC 由 Eden 区满触发，Full GC 是兜底，Mixed GC 在并发标记后触发。
 
-</details>
 
 **题目 3**：ZGC 实现超低停顿的核心技术是？
 
@@ -1640,14 +1586,11 @@ Mark-Compact 在标记后将存活对象向一端移动，紧凑排列，无碎�
 - C. 着色指针 + Load Barrier
 - D. 增大 Region
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
 ZGC 通过 64 位指针的高位染色（Marked0/Marked1/Remapped/Finalizable），结合 Load Barrier 在每次读引用时检查并修正，实现并发移动对象。停顿与堆大小无关。
 
-</details>
 
 **题目 4**：以下哪种情况会触发 `OutOfMemoryError: Metaspace`？
 
@@ -1656,14 +1599,11 @@ ZGC 通过 64 位指针的高位染色（Marked0/Marked1/Remapped/Finalizable）
 - C. 线程数过多
 - D. Direct ByteBuffer 过大
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 Metaspace 存储类元数据。动态代理（CGLib、ASM）、Groovy 脚本、JSP 重编译会生成大量 Class，导致 Metaspace 溢出。可通过 `-XX:MaxMetaspaceSize` 限制。
 
-</details>
 
 **题目 5**：生产环境推荐 `-Xms = -Xmx` 的主要原因是什么？
 
@@ -1672,51 +1612,39 @@ Metaspace 存储类元数据。动态代理（CGLib、ASM）、Groovy 脚本、J
 - C. 提高吞吐量
 - D. 减少 GC 线程数
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 当堆需要扩容时，JVM 触发 Full GC 以整理内存，停顿可达数百毫秒。`Xms = Xmx` 保证堆大小固定，配合 `-XX:+AlwaysPreTouch` 在启动时预触页，避免运行时停顿。
 
-</details>
 
-### 15.2 填空题
+### 填空题知识点讲解
 
 **题目 6**：G1 GC 的 Region 大小由 `-XX:G1HeapRegionSize` 指定，取值范围是 _____，且必须是 2 的幂。
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：1MB—32MB**
 
 G1 Region 大小在 1MB 到 32MB 之间，默认根据堆大小自动计算（目标 Region 数 2048 个）。例如 4GB 堆 → 2MB Region，8GB 堆 → 4MB Region。
 
-</details>
 
 **题目 7**：JDK 9 引入的统一日志框架使用参数 _____ 替代了 JDK 8 的 `-XX:+PrintGCDetails`。
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：`-Xlog:gc*`**
 
 JEP 158 统一日志框架用 `-Xlog` 参数，语法为 `-Xlog:<tags>[:<output>][:<decorators>][:<level>]`。`-Xlog:gc*` 等价于旧 `-XX:+PrintGCDetails`。
 
-</details>
 
 **题目 8**：ZGC 在 JDK 21 引入的分代特性通过参数 _____ 启用。
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：`-XX:+ZGenerational`**
 
 JDK 21（JEP 439）将分代 ZGC 转正，通过 `-XX:+ZGenerational` 启用。分代 ZGC 显著降低内存开销（10—15% → 8—12%）并提升吞吐。
 
-</details>
 
-### 15.3 编程题
+### 编程题知识点讲解
 
 **题目 9**：编写一个 Spring Boot 应用的启动脚本，要求：
 
@@ -1726,8 +1654,6 @@ JDK 21（JEP 439）将分代 ZGC 转正，通过 `-XX:+ZGenerational` 启用。�
 - GC 日志输出到 `/var/log/gc/gc.log`，10 个文件轮转，每个 100MB
 - 开启 JFR 持续录制，24 小时一个周期，最大 500MB
 
-<details>
-<summary>答案与解析</summary>
 
 ```bash
 #!/bin/bash
@@ -1755,12 +1681,9 @@ mkdir -p /var/log/gc /var/log/heapdump /var/log/jfr
 exec java $JAVA_OPTS -jar app.jar
 ```
 
-</details>
 
 **题目 10**：编写代码模拟一个内存泄漏场景，并使用 WeakReference 修复。
 
-<details>
-<summary>答案与解析</summary>
 
 ```java
 import java.lang.ref.WeakReference;
@@ -1814,7 +1737,6 @@ public class MemoryLeakDemo {
 }
 ```
 
-</details>
 
 **题目 11**：使用 `jcmd` 完成以下诊断任务：
 
@@ -1823,8 +1745,6 @@ public class MemoryLeakDemo {
 3. 启动 5 分钟 JFR 录制
 4. 查看类直方图
 
-<details>
-<summary>答案与解析</summary>
 
 ```bash
 # 1. 查看 JVM 参数
@@ -1840,14 +1760,11 @@ jcmd 1234 JFR.start name=diag duration=5m filename=/tmp/diag.jfr settings=profil
 jcmd 1234 GC.class_histogram
 ```
 
-</details>
 
 ### 15.4 思考题
 
 **题目 12**：为什么 ZGC 的停顿时间与堆大小无关？请从着色指针和 Load Barrier 的角度解释。
 
-<details>
-<summary>答案与解析</summary>
 
 ZGC 的停顿与堆大小无关，核心原因：
 
@@ -1877,12 +1794,9 @@ $$
 
 因此 ZGC 停顿与堆大小无关。
 
-</details>
 
 **题目 13**：在容器化环境（Docker/Kubernetes）中，JVM 调优有哪些特殊考虑？
 
-<details>
-<summary>答案与解析</summary>
 
 容器化环境 JVM 调优的关键考虑：
 
@@ -1924,12 +1838,9 @@ $$
    - `requests` 与 `limits` 设为相同值，避免 CPU throttling
    - 内存 `limit` 略高于 JVM `MaxRAMPercentage` 对应值
 
-</details>
 
 **题目 14**：假设你需要为一个 64GB 堆、P99 < 50ms 的实时推荐系统选择 GC，你会如何决策？请给出参数方案。
 
-<details>
-<summary>答案与解析</summary>
 
 **决策分析**：
 
@@ -1970,7 +1881,6 @@ $$
 
 **回退方案**：若 ZGC 不稳定，回退到 G1，但需牺牲 P99 到 200ms 级别。
 
-</details>
 
 ---
 
@@ -2179,7 +2089,322 @@ $$
 
 ---
 
-## 更新日志
+## jps 进程查询
 
-- **2026-07-21**：第二批金标准升级，对标 MIT/Stanford/CMU 教学水准。新增形式化定义、ZGC 着色指针原理、分代 ZGC、案例研究、习题、参考文献、延伸阅读。从 57 行扩展至 1500+ 行。
-- **2026-06-14**：初始版本，涵盖基础堆参数、GC 日志、G1 调优、MAT 分析。
+**基本写法：列出 Java 进程**
+`jps [-l]`
+```bash
+# 列出所有 Java 进程及主类全名
+jps -l
+```
+
+---
+
+**基本写法：查看 JVM 启动参数**
+`jps -v`
+```bash
+# 显示各 Java 进程的 JVM 参数
+jps -v
+```
+
+---
+
+**基本写法：仅显示 PID**
+`jps -q`
+```bash
+# 只输出进程 ID
+jps -q
+```
+
+---
+
+## jstat 统计监控
+
+**基本写法：监控 GC 状态**
+`jstat -gc <pid> [间隔ms] [次数]`
+```bash
+# 每 250ms 输出一次 GC 情况，共 4 次
+jstat -gc 12345 250 4
+```
+
+---
+
+**基本写法：监控类加载**
+`jstat -class <pid>`
+```bash
+# 查看类加载统计
+jstat -class 12345
+```
+
+---
+
+**基本写法：带时间戳输出**
+`jstat -gc -t <pid>`
+```bash
+# 显示程序运行时间戳的 GC 信息
+jstat -gc -t 12345
+```
+
+---
+
+**基本写法：周期性输出表头**
+`jstat -gc -h<行数> <pid> <间隔>`
+```bash
+# 每 5 行重新输出表头
+jstat -gc -h5 12345 1000
+```
+
+---
+
+## jmap 内存映像
+
+**基本写法：堆转储**
+`jmap -dump:format=b,file=<文件名> <pid>`
+```bash
+# 生成堆转储 hprof 文件
+jmap -dump:format=b,file=heap.hprof 12345
+```
+
+---
+
+**基本写法：对象直方图**
+`jmap -histo <pid>`
+```bash
+# 输出堆中对象统计直方图
+jmap -histo 12345
+```
+
+---
+
+**基本写法：仅存活对象**
+`jmap -histo:live <pid>`
+```bash
+# 触发 GC 后统计存活对象
+jmap -histo:live 12345
+```
+
+---
+
+**基本写法：堆配置信息**
+`jmap -heap <pid>`
+```bash
+# 查看堆内存配置和使用情况
+jmap -heap 12345
+```
+
+---
+
+## jstack 线程栈
+
+**基本写法：导出线程栈**
+`jstack <pid>`
+```bash
+# 输出所有线程堆栈
+jstack 12345
+```
+
+---
+
+**基本写法：检测死锁**
+`jstack -l <pid>`
+```bash
+# 输出线程栈及锁信息
+jstack -l 12345
+```
+
+---
+
+**基本写法：强制输出**
+`jstack -F <pid>`
+```bash
+# 进程无响应时强制输出栈
+jstack -F 12345
+```
+
+---
+
+## jcmd 诊断命令
+
+**基本写法：列出进程**
+`jcmd -l`
+```bash
+# 列出所有 Java 进程
+jcmd -l
+```
+
+---
+
+**基本写法：查看可用命令**
+`jcmd <pid> help`
+```bash
+# 列出该进程支持的诊断命令
+jcmd 12345 help
+```
+
+---
+
+**基本写法：生成堆转储**
+`jcmd <pid> GC.heap_dump <文件名>`
+```bash
+# 通过 jcmd 生成堆转储
+jcmd 12345 GC.heap_dump heap.hprof
+```
+
+---
+
+**基本写法：查看 JVM 参数**
+`jcmd <pid> VM.flags`
+```bash
+# 查看进程实际生效的 JVM 参数
+jcmd 12345 VM.flags
+```
+
+---
+
+**基本写法：查看系统属性**
+`jcmd <pid> VM.system_properties`
+```bash
+# 输出 JVM 系统属性
+jcmd 12345 VM.system_properties
+```
+
+---
+
+**基本写法：触发 GC**
+`jcmd <pid> GC.run`
+```bash
+# 显式触发一次垃圾回收
+jcmd 12345 GC.run
+```
+
+---
+
+**基本写法：查看类直方图**
+`jcmd <pid> GC.class_histogram`
+```bash
+# 输出类实例直方图
+jcmd 12345 GC.class_histogram
+```
+
+---
+
+## jinfo 配置信息
+
+**基本写法：查看 JVM 参数**
+`jinfo -flags <pid>`
+```bash
+# 查看进程所有 JVM 标志
+jinfo -flags 12345
+```
+
+---
+
+**基本写法：查看系统属性**
+`jinfo -sysprops <pid>`
+```bash
+# 查看进程系统属性
+jinfo -sysprops 12345
+```
+
+---
+
+**基本写法：动态设置参数**
+`jinfo -flag <名称>=<值> <pid>`
+```bash
+# 运行时设置布尔型 JVM 标志
+jinfo -flag +PrintGCDetails 12345
+```
+
+---
+
+## 常用 JVM 启动参数
+
+**基本写法：设置堆大小**
+`-Xms<大小> -Xmx<大小>`
+```bash
+# 设置初始堆和最大堆均为 2g
+java -Xms2g -Xmx2g -jar app.jar
+```
+
+---
+
+**基本写法：设置年轻代大小**
+`-Xmn<大小>`
+```bash
+# 设置年轻代大小为 512m
+java -Xmn512m -jar app.jar
+```
+
+---
+
+**基本写法：设置元空间大小**
+`-XX:MetaspaceSize=<大小> -XX:MaxMetaspaceSize=<大小>`
+```bash
+# 设置元空间初始和最大值
+java -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=512m -jar app.jar
+```
+
+---
+
+**基本写法：选择 GC 收集器**
+`-XX:+UseG1GC`
+```bash
+# 启用 G1 垃圾收集器
+java -XX:+UseG1GC -jar app.jar
+```
+
+---
+
+**基本写法：启用 ZGC**
+`-XX:+UseZGC`
+```bash
+# 启用低延迟 ZGC 收集器
+java -XX:+UseZGC -jar app.jar
+```
+
+---
+
+**基本写法：GC 日志**
+`-Xlog:gc*:<文件>:time`
+```bash
+# JDK 9+ 统一日志输出 GC 日志
+java -Xlog:gc*:gc.log:time -jar app.jar
+```
+
+---
+
+**基本写法：堆溢出转储**
+`-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=<路径>`
+```bash
+# OOM 时自动生成堆转储
+java -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/dump -jar app.jar
+```
+
+---
+
+## JFR 飞行记录器
+
+**基本写法：启动并录制**
+`jcmd <pid> JFR.start duration=<时长>s filename=<文件>`
+```bash
+# 启动 60 秒的 JFR 录制
+jcmd 12345 JFR.start duration=60s filename=rec.jfr
+```
+
+---
+
+**基本写法：查看录制状态**
+`jcmd <pid> JFR.check`
+```bash
+# 检查 JFR 录制状态
+jcmd 12345 JFR.check
+```
+
+---
+
+**基本写法：停止录制**
+`jcmd <pid> JFR.stop filename=<文件>`
+```bash
+# 停止并保存录制
+jcmd 12345 JFR.stop filename=rec.jfr
+```

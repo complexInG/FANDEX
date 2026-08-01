@@ -741,16 +741,25 @@ public class SqlUserRepository : IUserRepository
 
 解析 `IUserService` 时，依赖图如下：
 
-```
-IUserService
-└── UserService
-    ├── IUserRepository
-    │   └── SqlUserRepository
-    │       ├── DbContext (Scoped)
-    │       └── ILogger<SqlUserRepository>
-    │           └── LoggerFactory (Singleton)
-    └── ILogger<UserService>
-        └── LoggerFactory (Singleton)
+```mermaid
+flowchart TD
+    T0["IUserService"]
+    T1["UserService"]
+    T2["IUserRepository"]
+    T3["SqlUserRepository"]
+    T4["DbContext (Scoped)"]
+    T5["ILogger<SqlUserRepository>"]
+    T6["LoggerFactory (Singleton)"]
+    T7["ILogger<UserService>"]
+    T8["LoggerFactory (Singleton)"]
+    T0 --> T1
+    T1 --> T2
+    T1 --> T3
+    T1 --> T4
+    T1 --> T5
+    T1 --> T6
+    T6 --> T7
+    T7 --> T8
 ```
 
 容器递归遍历这个图，从叶子节点开始创建实例，最终创建出 `UserService`。

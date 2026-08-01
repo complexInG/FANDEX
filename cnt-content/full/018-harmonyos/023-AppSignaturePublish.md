@@ -154,12 +154,14 @@ HarmonyOS NEXT 进一步强化签名：
 
 ### 2.8 时间线总览
 
-```
-2019 ──── HarmonyOS 1.0 ──── RSA 2048 基础签名（仅智慧屏）
-2020 ──── HarmonyOS 2.0 ──── Profile 签名 + Debug/Release
-2022 ──── HarmonyOS 3.0 ──── 多模块打包 + 应用加固
-2023 ──── HarmonyOS 4.0 ──── ECDSA 默认 + 密钥轮换
-2024 ──── HarmonyOS NEXT ─── 强制 ECDSA + 运行时校验
+```mermaid
+timeline
+    title 应用签名时间线
+    2019: HarmonyOS 1.0 RSA 2048 基础签名（仅智慧屏）
+    2020: HarmonyOS 2.0 Profile 签名 + Debug/Release
+    2022: HarmonyOS 3.0 多模块打包 + 应用加固
+    2023: HarmonyOS 4.0 ECDSA 默认 + 密钥轮换
+    2024: HarmonyOS NEXT 强制 ECDSA + 运行时校验
 ```
 
 ---
@@ -640,31 +642,40 @@ echo "=== 构建完成 ==="
 
 ### 5.7 多模块项目结构
 
-```
-MyApplication/
-├── AppScope/
-│   ├── app.json5                # 应用全局配置
-│   └── resources/               # 全局资源
-├── entry/                       # 主模块（必须）
-│   ├── src/main/
-│   │   ├── ets/                 # ArkTS 源码
-│   │   │   ├── entryability/
-│   │   │   └── pages/
-│   │   ├── resources/           # 模块资源
-│   │   └── module.json5         # 模块配置
-│   ├── build-profile.json5      # 模块构建配置
-│   └── oh-package.json5         # 模块依赖
-├── feature_user/                # 用户功能模块
-│   ├── src/main/
-│   │   └── module.json5
-│   └── oh-package.json5
-├── feature_order/               # 订单功能模块
-│   └── ...
-├── shared_common/              # 共享库模块
-│   └── ...
-├── build-profile.json5          # 项目构建配置（含签名）
-├── oh-package.json5            # 项目依赖
-└── hvigorfile.ts               # 构建脚本
+```mermaid
+flowchart TD
+    T0["MyApplication/"]
+    T1["AppScope/"]
+    T2["app.json5                # 应用全局配置"]
+    T3["resources/               # 全局资源"]
+    T4["entry/                       # 主模块（必须）"]
+    T5["src/main/"]
+    T6["ets/                 # ArkTS 源码"]
+    T7["entryability/"]
+    T8["pages/"]
+    T9["resources/           # 模块资源"]
+    T10["module.json5         # 模块配置"]
+    T11["build-profile.json5      # 模块构建配置"]
+    T12["oh-package.json5         # 模块依赖"]
+    T13["feature_user/                # 用户功能模块"]
+    T14["src/main/"]
+    T15["module.json5"]
+    T16["oh-package.json5"]
+    T17["feature_order/               # 订单功能模块"]
+    T18["..."]
+    T19["shared_common/              # 共享库模块"]
+    T20["..."]
+    T21["build-profile.json5          # 项目构建配置（含签名）"]
+    T22["oh-package.json5            # 项目依赖"]
+    T23["hvigorfile.ts               # 构建脚本"]
+    T0 --> T1
+    T3 --> T4
+    T12 --> T13
+    T16 --> T17
+    T18 --> T19
+    T20 --> T21
+    T20 --> T22
+    T20 --> T23
 ```
 
 ### 5.8 版本管理示例
@@ -1197,11 +1208,11 @@ fi
 hapkgsigntool verify "$HAP_FILE"
 
 if [ $? -eq 0 ]; then
-  echo "✓ 签名验证通过"
+  echo "√ 签名验证通过"
   echo "  签名算法: $(hapkgsigntool info "$HAP_FILE" | grep Algorithm)"
   echo "  证书有效期: $(hapkgsigntool info "$HAP_FILE" | grep Validity)"
 else
-  echo "✗ 签名验证失败"
+  echo "× 签名验证失败"
   exit 1
 fi
 
@@ -1375,49 +1386,49 @@ jobs:
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
-**Q1**：HarmonyOS 签名体系的三个核心组件是什么？分别说明作用。
+**常见疑问 1**：HarmonyOS 签名体系的三个核心组件是什么？分别说明作用。
 
-**Q2**：SHA256withECDSA 相比 SHA256withRSA 有哪些优势？为何 HarmonyOS NEXT 强制使用 ECDSA？
+**常见疑问 2**：SHA256withECDSA 相比 SHA256withRSA 有哪些优势？为何 HarmonyOS NEXT 强制使用 ECDSA？
 
-**Q3**：HAP 与 APP 的区别是什么？何时使用 HAP，何时使用 APP？
+**常见疑问 3**：HAP 与 APP 的区别是什么？何时使用 HAP，何时使用 APP？
 
-**Q4**：`versionCode` 与 `versionName` 的区别是什么？为何 `versionCode` 必须严格递增？
+**常见疑问 4**：`versionCode` 与 `versionName` 的区别是什么？为何 `versionCode` 必须严格递增？
 
-**Q5**：Debug 签名与 Release 签名的区别是什么？能否用 Debug 签名发布应用？
+**常见疑问 5**：Debug 签名与 Release 签名的区别是什么？能否用 Debug 签名发布应用？
 
 ### 10.2 进阶题
 
-**Q6**：描述 PKI 信任链的五个层级，并解释每一层的作用。
+**常见疑问 6**：描述 PKI 信任链的五个层级，并解释每一层的作用。
 
-**Q7**：使用 OpenSSL 生成 ECC P-256 证书的完整流程，并说明每一步的作用。
+**常见疑问 7**：使用 OpenSSL 生成 ECC P-256 证书的完整流程，并说明每一步的作用。
 
-**Q8**：在 `build-profile.json5` 中配置 Debug 与 Release 两套签名，并说明如何在构建时切换。
+**常见疑问 8**：在 `build-profile.json5` 中配置 Debug 与 Release 两套签名，并说明如何在构建时切换。
 
-**Q9**：解释多模块打包中 `entry`/`feature`/`shared` 三种模块类型的区别与依赖关系。
+**常见疑问 9**：解释多模块打包中 `entry`/`feature`/`shared` 三种模块类型的区别与依赖关系。
 
-**Q10**：设计一个企业级证书管理流程，包含申请、审批、分发、轮换、吊销五个环节。
+**常见疑问 10**：设计一个企业级证书管理流程，包含申请、审批、分发、轮换、吊销五个环节。
 
 ### 10.3 挑战题
 
-**Q11**：某应用的 Release 证书泄露，设计一个完整的应急响应方案，包含：
+**常见疑问 11**：某应用的 Release 证书泄露，设计一个完整的应急响应方案，包含：
 1. 确认泄露范围。
 2. 吊销证书。
 3. 通知用户。
 4. 重新签发与发布。
 5. 流程整改。
 
-**Q12**：设计一个 CI/CD 流水线，从代码提交到应用市场发布全自动化，要求：
+**常见疑问 12**：设计一个 CI/CD 流水线，从代码提交到应用市场发布全自动化，要求：
 1. 签名证书安全管理（不泄露）。
 2. 自动化版本号管理。
 3. 构建后自动加固。
 4. 灰度发布（10% → 50% → 100%）。
 5. 失败自动回滚。
 
-**Q13**：分析应用加固的性能代价，给出"何时加固、何时不加固"的决策框架，考虑：
+**常见疑问 13**：分析应用加固的性能代价，给出"何时加固、何时不加固"的决策框架，考虑：
 1. 应用类型（金融、游戏、工具）。
 2. 启动时间敏感性。
 3. 包体积敏感性。
@@ -1514,3 +1525,180 @@ jobs:
 | SHA256withRSA | 3072 bit | 384 B | 128 bit | 是 | 否 |
 | SHA256withECDSA | 256 bit | 64 B | 128 bit | 是 | 是（默认） |
 | SHA384withECDSA | 384 bit | 96 B | 192 bit | 是 | 是（高安全） |
+## 密钥与证书
+
+**基本写法：生成密钥库**
+`keytool -genkeypair -alias <别名> -keyalg EC -keysize 256 -sigalg SHA256withECDSA -keystore <文件.p12> -storetype PKCS12 -validity <天数>`
+```bash
+# 生成 EC 密钥对（有效期 25 年）
+keytool -genkeypair -alias myapp -keyalg EC -keysize 256 -sigalg SHA256withECDSA -keystore myapp.p12 -storetype PKCS12 -validity 36500 -dname "CN=MyCompany, O=MyCompany, C=CN"
+```
+
+---
+
+**基本写法：生成证书请求文件**
+`keytool -certreq -alias <别名> -keystore <文件.p12> -file <文件.csr>`
+```bash
+# 生成 CSR 提交至 AppGallery Connect
+keytool -certreq -alias myapp -keystore myapp.p12 -file myapp.csr
+```
+
+---
+
+**基本写法：查看密钥库信息**
+`keytool -list -v -keystore <文件.p12> -storepass <密码>`
+```bash
+# 查看密钥库中的证书详情
+keytool -list -v -keystore myapp.p12 -storepass 123456
+```
+
+---
+
+## 命令行签名
+
+**基本写法：hap-sign-tool 签名**
+`java -jar hap-sign-tool.jar sign-app -keyAlias <别名> -signAlg SHA256withECDSA -mode localSign -appCertFile <证书.cer> -profileFile <配置.p7b> -inFile <输入.hap> -keystoreFile <密钥库.p12> -outFile <输出.hap> -keyPwd <密码> -keystorePwd <密码> -signCode 1`
+```bash
+# 命令行对 HAP 包进行签名
+java -jar hap-sign-tool.jar sign-app -keyAlias myapp -signAlg SHA256withECDSA -mode localSign -appCertFile myapp.cer -profileFile myapp.p7b -inFile entry-unsigned.hap -keystoreFile myapp.p12 -outFile entry-signed.hap -keyPwd 123456 -keystorePwd 123456 -signCode 1
+```
+
+---
+
+**基本写法：验证签名**
+`java -jar hap-sign-tool.jar verify-app -inFile <已签名.hap>`
+```bash
+# 验证 HAP 包签名信息
+java -jar hap-sign-tool.jar verify-app -inFile entry-signed.hap
+```
+
+---
+
+## 拆包与调试签名
+
+**基本写法：APP 拆包为 HAP**
+`java -jar app_unpacking_tool.jar --mode app --app-path <输入.app> --out-path <输出目录> --force true`
+```bash
+# 将 APP 包拆分为多个 HAP
+java -jar app_unpacking_tool.jar --mode app --app-path my-app.app --out-path ./out --force true
+```
+
+---
+
+**基本写法：调试签名 HAP**
+`java -jar hap-sign-tool.jar sign-app -keyAlias <别名> -signAlg SHA256withECDSA -mode localSign -appCertFile <调试证书.cer> -profileFile <调试Profile.p7b> -inFile <hap> -keystoreFile <p12> -outFile <输出> -keyPwd <密码> -keystorePwd <密码> -signCode 1`
+```bash
+# 使用调试证书签名 HAP 用于真机调试
+java -jar hap-sign-tool.jar sign-app -keyAlias myapp -signAlg SHA256withECDSA -mode localSign -appCertFile debug.cer -profileFile debug.p7b -inFile entry-default.hap -keystoreFile myapp.p12 -outFile entry-debug.hap -keyPwd 123456 -keystorePwd 123456 -signCode 1
+```
+
+---
+
+## hvigor 构建命令
+
+**基本写法：构建 HAP**
+`hvigorw --mode module -p module=<模块>@default -p product=default assembleHap`
+```bash
+# 构建 entry 模块的 HAP 包
+hvigorw --mode module -p module=entry@default -p product=default assembleHap --parallel --incremental --daemon
+```
+
+---
+
+**基本写法：构建 APP（多模块）**
+`hvigorw --mode project -p product=<产品> assembleApp`
+```bash
+# 构建整个项目的 APP 包
+hvigorw --mode project -p product=default assembleApp
+```
+
+---
+
+**基本写法：清理构建**
+`hvigorw clean`
+```bash
+# 清理构建产物
+hvigorw clean
+```
+
+---
+
+## build-profile.json5 签名配置
+
+**基本写法：配置签名信息**
+`"signingConfigs": [{ "name": "<名称>", "type": "HarmonyOS", "material": { "cert": { "file": "<证书.cer>" }, "store": { "file": "<密钥库.p12>", "password": "<密码>" }, "key": { "alias": "<别名>", "password": "<密码>" }, "profile": { "file": "<配置.p7b>" } } }]`
+```json5
+// build-profile.json5 配置 release 签名
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "release",
+        "type": "HarmonyOS",
+        "material": {
+          "cert": { "file": "myapp.cer" },
+          "store": { "file": "myapp.p12", "password": "123456" },
+          "key": { "alias": "myapp", "password": "123456" },
+          "profile": { "file": "myapp.p7b" }
+        }
+      }
+    ],
+    "products": [
+      { "name": "default", "signingConfig": "release" }
+    ]
+  }
+}
+```
+
+---
+
+**基本写法：自动签名**
+`"signingConfigs": [{ "name": "default", "type": "HarmonyOS", "material": { "cert": { "file": "debug.cer" } } }]`
+```json5
+// 开启自动签名（DevEco Studio 管理证书）
+{
+  "app": {
+    "signingConfigs": [
+      { "name": "default", "type": "HarmonyOS", "material": {} }
+    ]
+  }
+}
+```
+
+---
+
+## hdc 设备管理
+
+**基本写法：安装应用**
+`hdc install <文件.hap>`
+```bash
+# 安装 HAP 到连接设备
+hdc install entry-signed.hap
+```
+
+---
+
+**基本写法：卸载应用**
+`hdc uninstall <包名>`
+```bash
+# 按包名卸载应用
+hdc uninstall com.example.myapp
+```
+
+---
+
+**基本写法：查看已安装应用**
+`hdc shell bm dump -n <包名>`
+```bash
+# 查看应用签名信息
+hdc shell bm dump -n com.example.myapp
+```
+
+---
+
+**基本写法：查看设备列表**
+`hdc list targets`
+```bash
+# 列出所有连接的设备
+hdc list targets
+```

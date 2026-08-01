@@ -1499,31 +1499,36 @@ def test_user_age():
 
 ### 8.1 测试目录结构
 
-```
-project/
-├── src/
-│   └── myapp/
-│       ├── __init__.py
-│       ├── models/
-│       ├── services/
-│       └── api/
-├── tests/
-│   ├── conftest.py           # 项目级 fixture
-│   ├── unit/                  # 单元测试
-│   │   ├── conftest.py
-│   │   ├── test_models.py
-│   │   └── test_services.py
-│   ├── integration/           # 集成测试
-│   │   ├── conftest.py
-│   │   ├── test_database.py
-│   │   └── test_api.py
-│   ├── e2e/                   # 端到端测试
-│   │   └── test_user_flow.py
-│   └── fixtures/              # 测试数据
-│       ├── users.json
-│       └── orders.json
-├── pyproject.toml
-└── pytest.ini
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["src/"]
+    T2["myapp/"]
+    T3["__init__.py"]
+    T4["models/"]
+    T5["services/"]
+    T6["api/"]
+    T7["tests/"]
+    T8["conftest.py           # 项目级 fixture"]
+    T9["unit/                  # 单元测试"]
+    T10["conftest.py"]
+    T11["test_models.py"]
+    T12["test_services.py"]
+    T13["integration/           # 集成测试"]
+    T14["conftest.py"]
+    T15["test_database.py"]
+    T16["test_api.py"]
+    T17["e2e/                   # 端到端测试"]
+    T18["test_user_flow.py"]
+    T19["fixtures/              # 测试数据"]
+    T20["users.json"]
+    T21["orders.json"]
+    T22["pyproject.toml"]
+    T23["pytest.ini"]
+    T0 --> T1
+    T6 --> T7
+    T21 --> T22
+    T21 --> T23
 ```
 
 ### 8.2 测试命名规范
@@ -1793,7 +1798,7 @@ pytest_plugins = ["myplugin"]
 
 通过这一机制，pytest 生态催生了 500+ 插件，覆盖覆盖率、并行、异步、Django、Flask、Mock 等场景。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 

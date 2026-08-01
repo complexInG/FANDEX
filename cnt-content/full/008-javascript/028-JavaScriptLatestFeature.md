@@ -1129,7 +1129,7 @@ function gameLoop() {
 - 单帧物理计算耗时从 12ms 降至 2.5ms。
 - JS-Wasm 边界调用开销约 0.5ms（每帧一次）。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1140,7 +1140,7 @@ B. `Object.groupBy([1,2,3], x => x % 2)['1'].length === 2`
 C. `Promise.try(() => { throw new Error('x') }).catch(e => e.message === 'x')`
 D. 以上全部
 
-**参考答案**：D。三项均为 ES2024/2025 合规语法。
+**解析讲解**：D。三项均为 ES2024/2025 合规语法。
 
 **题目 2**：`Temporal.PlainDate.from('2026-02-29')` 的结果是？
 
@@ -1149,7 +1149,7 @@ B. 抛出 RangeError
 C. 返回 2026-03-01
 D. 返回 Invalid Date
 
-**参考答案**：B。Temporal 严格校验日期合法性，2026 年非闰年。
+**解析讲解**：B。Temporal 严格校验日期合法性，2026 年非闰年。
 
 ### 10.2 进阶题
 
@@ -1173,7 +1173,7 @@ const mixed = [1, 'a', 2, 'b', 3, 'c'];
 process(mixed);
 ```
 
-**参考答案**：数组 `mixed` 包含数字与字符串两种类型，V8 的数组模式从 `PACKED_DOUBLE` 退化为 `PACKED_ELEMENTS`，访问性能下降 2-5 倍。修复方案：
+**解析讲解**：数组 `mixed` 包含数字与字符串两种类型，V8 的数组模式从 `PACKED_DOUBLE` 退化为 `PACKED_ELEMENTS`，访问性能下降 2-5 倍。修复方案：
 - 将数字与字符串分到两个数组。
 - 使用类型化数组 `Int32Array` 存储数字。
 - 改为两个独立函数 `processNumbers` 与 `processStrings`。
@@ -1186,7 +1186,7 @@ const p2 = new Promise((_, reject) => reject(new Error('B')));
 Promise.all([p1, p2]).catch(e => console.log(e.message));
 ```
 
-**参考答案**：输出 `A`。`Promise.all` 在第一个 Promise 拒绝时立即拒绝，`p1` 的微任务先于 `p2` 排队（虽然 `p2` 同步拒绝，但 `Promise.all` 的拒绝处理仍是异步）。
+**解析讲解**：输出 `A`。`Promise.all` 在第一个 Promise 拒绝时立即拒绝，`p1` 的微任务先于 `p2` 排队（虽然 `p2` 同步拒绝，但 `Promise.all` 的拒绝处理仍是异步）。
 
 ### 10.3 挑战题
 
@@ -1631,14 +1631,21 @@ runComponent().catch(console.error);
 
 ### 15.2 迁移决策树
 
-```
-是否依赖原生 C++ 模块（sharp、canvas、bcrypt）？
-├── 是 → 继续 Node.js，避免 Deno/Bun 兼容性问题
-└── 否 → 是否需要安全沙箱（多租户、用户代码执行）？
-        ├── 是 → 优先 Deno，权限模型成熟
-        └── 否 → 是否为全新项目（无历史包袱）？
-                ├── 是 → 优先 Bun（全栈工具链 + 性能）
-                └── 否 → 继续 Node.js（迁移成本最低）
+```mermaid
+flowchart TD
+    T0["是否依赖原生 C++ 模块（sharp、canvas、bcrypt）？"]
+    T1["是 → 继续 Node.js，避免 Deno/Bun 兼容性问题"]
+    T2["否 → 是否需要安全沙箱（多租户、用户代码执行）？"]
+    T3["是 → 优先 Deno，权限模型成熟"]
+    T4["否 → 是否为全新项目（无历史包袱）？"]
+    T5["是 → 优先 Bun（全栈工具链 + 性能）"]
+    T6["否 → 继续 Node.js（迁移成本最低）"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T4 --> T5
+    T4 --> T6
 ```
 
 ### 15.3 渐进式迁移策略

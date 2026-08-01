@@ -1016,7 +1016,7 @@ console.log(JSON.stringify(btn.render(), null, 2));
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1031,7 +1031,7 @@ const b = new A();
 console.log(a.x, b.x);
 ```
 
-参考答案：`1 2`。`a` 的 `[[Prototype]]` 仍指向旧的 `A.prototype`，未被新替换影响。
+解析讲解：`1 2`。`a` 的 `[[Prototype]]` 仍指向旧的 `A.prototype`，未被新替换影响。
 
 2. 实现一个 `instanceof` 函数：
 
@@ -1068,7 +1068,7 @@ const b = new B();
 console.log(b.print()); // 1 还是 2？
 ```
 
-参考答案：输出 `2`。`print` 调用时 `this` 是 `b`，`this.getX()` 动态分派到 `B.prototype.getX`。这是多态的本质。
+解析讲解：输出 `2`。`print` 调用时 `this` 是 `b`，`this.getX()` 动态分派到 `B.prototype.getX`。这是多态的本质。
 
 4. 实现一个不污染原型链的继承函数：
 
@@ -1082,7 +1082,7 @@ function create(proto) {
 // 这是 Crockford 的 object() 函数，Object.create 的前身
 ```
 
-### 10.3 应用题
+### 应用题知识点讲解
 
 5. 设计一个 `Vehicle -> Car -> ElectricCar` 三层继承，要求：
 
@@ -1429,43 +1429,55 @@ console.log(isOnPrototype(a, 'toString')); // true （Object.prototype）
 
 ## 附录 H：思维导图
 
-```
-原型链与 class 本质
-├── 历史背景
-│   ├── 1995 Brendan Eich 10 天设计
-│   ├── 折中：Java 语法 + Self 原型
-│   └── ES6 (2015) class 语法糖
-├── 核心概念
-│   ├── [[Prototype]] 内部槽
-│   ├── prototype 属性
-│   ├── constructor 属性
-│   └── __proto__ 访问器（已废弃）
-├── 三个核心操作
-│   ├── new F() -> 创建实例
-│   ├── Object.create(p) -> 指定原型
-│   └── instanceof -> 检查原型链
-├── 继承方案演进
-│   ├── 原型链继承（缺陷：共享）
-│   ├── 借用构造函数（缺陷：丢方法）
-│   ├── 组合继承（缺陷：2 次调用）
-│   ├── 寄生组合式（ES5 最佳）
-│   └── ES6 class extends（现代标准）
-├── class 内部机制
-│   ├── super 关键字
-│   ├── HomeObject 与 [[MethodHome]]
-│   ├── 实例字段 vs 原型方法
-│   ├── 私有字段 #x
-│   └── 静态方法与静态块
-├── 性能考量
-│   ├── 原型链深度
-│   ├── 内联缓存 IC
-│   ├── 形状 polymorphism
-│   └── Object.create vs Object.setPrototypeOf
-└── 工程实践
-    ├── Mixin 多继承
-    ├── 组合优于继承
-    ├── 私有字段封装
-    └── 错误类型层级
+```mermaid
+flowchart TD
+    T0["原型链与 class 本质"]
+    T1["历史背景"]
+    T2["1995 Brendan Eich 10 天设计"]
+    T3["折中：Java 语法 + Self 原型"]
+    T4["ES6 (2015) class 语法糖"]
+    T5["核心概念"]
+    T6["[[Prototype]] 内部槽"]
+    T7["prototype 属性"]
+    T8["constructor 属性"]
+    T9["__proto__ 访问器（已废弃）"]
+    T10["三个核心操作"]
+    T11["new F() -> 创建实例"]
+    T12["Object.create(p) -> 指定原型"]
+    T13["instanceof -> 检查原型链"]
+    T14["继承方案演进"]
+    T15["原型链继承（缺陷：共享）"]
+    T16["借用构造函数（缺陷：丢方法）"]
+    T17["组合继承（缺陷：2 次调用）"]
+    T18["寄生组合式（ES5 最佳）"]
+    T19["ES6 class extends（现代标准）"]
+    T20["class 内部机制"]
+    T21["super 关键字"]
+    T22["HomeObject 与 [[MethodHome]]"]
+    T23["实例字段 vs 原型方法"]
+    T24["私有字段 #x"]
+    T25["静态方法与静态块"]
+    T26["性能考量"]
+    T27["原型链深度"]
+    T28["内联缓存 IC"]
+    T29["形状 polymorphism"]
+    T30["Object.create vs Object.setPrototypeOf"]
+    T31["工程实践"]
+    T32["Mixin 多继承"]
+    T33["组合优于继承"]
+    T34["私有字段封装"]
+    T35["错误类型层级"]
+    T0 --> T1
+    T4 --> T5
+    T9 --> T10
+    T13 --> T14
+    T19 --> T20
+    T25 --> T26
+    T30 --> T31
+    T31 --> T32
+    T31 --> T33
+    T31 --> T34
+    T31 --> T35
 ```
 
 ## 附录 I：常见面试题精选

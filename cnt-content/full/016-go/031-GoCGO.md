@@ -498,23 +498,37 @@ GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go build
 
 ### 4.1 项目结构
 
-```text
-cgo_demo/
-├── go.mod
-├── main.go
-├── basics.go
-├── strings.go
-├── structs.go
-├── callback.go
-├── export.go
-├── sqlite_demo.go
-├── zerocopy.go
-├── pinner.go
-├── conditional.go
-├── csource/
-│   ├── helper.c
-│   └── helper.h
-└── *_test.go
+```mermaid
+flowchart TD
+    T0["cgo_demo/"]
+    T1["go.mod"]
+    T2["main.go"]
+    T3["basics.go"]
+    T4["strings.go"]
+    T5["structs.go"]
+    T6["callback.go"]
+    T7["export.go"]
+    T8["sqlite_demo.go"]
+    T9["zerocopy.go"]
+    T10["pinner.go"]
+    T11["conditional.go"]
+    T12["csource/"]
+    T13["helper.c"]
+    T14["helper.h"]
+    T15["*_test.go"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T0 --> T8
+    T0 --> T9
+    T0 --> T10
+    T0 --> T11
+    T0 --> T12
+    T14 --> T15
 ```
 
 `go.mod`:
@@ -1722,19 +1736,22 @@ func GoodExport(s *C.char) *C.char {
 
 使用以下决策树判断是否使用 CGO:
 
-```
-是否需要调用 C 库?
-├── 是
-│   ├── 是否有纯 Go 替代?
-│   │   ├── 是 → 使用纯 Go(优先)
-│   │   └── 否
-│   │       ├── 是否在 hot path(高频调用)?
-│   │       │   ├── 是 → 评估性能,考虑纯 Go 重写或批量化
-│   │       │   └── 否 → 使用 CGO
-│   │       └── 是否需要交叉编译?
-│   │           ├── 是 → 评估禁用 cgo 或使用 Docker
-│   │           └── 否 → 使用 CGO
-└── 否 → 不使用 CGO
+```mermaid
+flowchart TD
+    T0["是否需要调用 C 库?"]
+    T1["是"]
+    T2["是否有纯 Go 替代?"]
+    T3["是 → 使用纯 Go(优先)"]
+    T4["否"]
+    T5["是否在 hot path(高频调用)?"]
+    T6["是 → 评估性能,考虑纯 Go 重写或批量化"]
+    T7["否 → 使用 CGO"]
+    T8["是否需要交叉编译?"]
+    T9["是 → 评估禁用 cgo 或使用 Docker"]
+    T10["否 → 使用 CGO"]
+    T11["否 → 不使用 CGO"]
+    T0 --> T1
+    T10 --> T11
 ```
 
 **原则**:
@@ -2496,9 +2513,9 @@ func cudaError(rc C.cudaError_t) error {
 
 ---
 
-## 9. 习题
+## 知识讲解与要点分析（原习题）
 
-### 9.1 选择题
+### 选择题知识点讲解
 
 **题 1**:以下哪项是 CGO 调用的典型开销?
 
@@ -2507,13 +2524,10 @@ func cudaError(rc C.cudaError_t) error {
 - C. 500-1000ns
 - D. 1-5ms
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:CGO 调用涉及栈切换(Go 栈 → M 系统栈 → C 栈)、TLS 切换、调度器协作等,典型开销为 50-200ns。纯 Go 函数调用约 2-5ns,CGO 比纯 Go 慢 10-50 倍。
-</details>
+**解析讲解**：CGO 调用涉及栈切换(Go 栈 → M 系统栈 → C 栈)、TLS 切换、调度器协作等,典型开销为 50-200ns。纯 Go 函数调用约 2-5ns,CGO 比纯 Go 慢 10-50 倍。
 
 **题 2**:`C.CString` 分配的内存位于哪里?
 
@@ -2522,13 +2536,10 @@ func cudaError(rc C.cudaError_t) error {
 - C. 栈上,函数返回时自动释放
 - D. 全局静态区,程序结束时释放
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:`C.CString` 内部调用 `C.malloc`,在 C 堆分配内存,Go GC 不追踪。调用方必须通过 `C.free(unsafe.Pointer(cs))` 释放,否则内存泄漏。
-</details>
+**解析讲解**：`C.CString` 内部调用 `C.malloc`,在 C 堆分配内存,Go GC 不追踪。调用方必须通过 `C.free(unsafe.Pointer(cs))` 释放,否则内存泄漏。
 
 **题 3**:Go 1.21 引入的 `runtime.Pinner` 解决了什么问题?
 
@@ -2537,13 +2548,10 @@ func cudaError(rc C.cudaError_t) error {
 - C. cgo 交叉编译限制
 - D. `//export` 函数的类型安全
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:Go 1.6 指针规则禁止 C 代码长期持有 Go 指针(因 GC 可能回收)。`runtime.Pinner` 提供显式固定机制,固定后 C 代码可安全持有 Go 指针,直到 `Unpin` 调用。
-</details>
+**解析讲解**：Go 1.6 指针规则禁止 C 代码长期持有 Go 指针(因 GC 可能回收)。`runtime.Pinner` 提供显式固定机制,固定后 C 代码可安全持有 Go 指针,直到 `Unpin` 调用。
 
 **题 4**:以下哪种情况会导致 `runtime: pointer saved to C memory` panic?
 
@@ -2552,13 +2560,10 @@ func cudaError(rc C.cudaError_t) error {
 - C. Go 代码使用 `unsafe.Pointer`
 - D. C 代码返回 C 字符串
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:Go 1.6 指针规则禁止 C 代码长期持有 Go 指针。若 C 代码将 Go 指针存入全局变量或长期持有的数据结构,runtime 检测到后会触发 panic。
-</details>
+**解析讲解**：Go 1.6 指针规则禁止 C 代码长期持有 Go 指针。若 C 代码将 Go 指针存入全局变量或长期持有的数据结构,runtime 检测到后会触发 panic。
 
 **题 5**:关于 `//export` 指令,以下哪项是正确的?
 
@@ -2567,72 +2572,52 @@ func cudaError(rc C.cudaError_t) error {
 - C. 含 `//export` 的文件中,`import "C"` 必须是第一个 import
 - D. 导出函数不能有返回值
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:C
+**解析讲解**：C
 
-**解析**:`//export` 指令要求:1) 必须在 `import "C"` 之后的 Go 文件中;2) 导出函数的参数与返回值必须是 C 兼容类型(不能是 `string`、`slice` 等 Go 特有类型);3) 含 `//export` 的文件中,`import "C"` 必须是第一个 import。
-</details>
+**解析讲解**：`//export` 指令要求:1) 必须在 `import "C"` 之后的 Go 文件中;2) 导出函数的参数与返回值必须是 C 兼容类型(不能是 `string`、`slice` 等 Go 特有类型);3) 含 `//export` 的文件中,`import "C"` 必须是第一个 import。
 
-### 9.2 填空题
+### 填空题知识点讲解
 
 **题 1**:CGO 调用涉及三个栈:Go goroutine 栈、______、C 函数栈。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:M 线程系统栈(g0 栈)
+**解析讲解**：M 线程系统栈(g0 栈)
 
-**解析**:CGO 调用链为:Go code → `runtime.cgocall` → 切换到 M 系统栈 → `runtime.asmcgocall` → C 函数栈 → 返回。M 系统栈用于 runtime 调度与系统调用。
-</details>
+**解析讲解**：CGO 调用链为:Go code → `runtime.cgocall` → 切换到 M 系统栈 → `runtime.asmcgocall` → C 函数栈 → 返回。M 系统栈用于 runtime 调度与系统调用。
 
 **题 2**:Go 1.20 引入的 ______ 函数可在 C 堆分配内存,不被 GC 追踪。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:`C.Alloc`
+**解析讲解**：`C.Alloc`
 
-**解析**:Go 1.20 引入 `C.Alloc(n C.size_t) unsafe.Pointer` 和 `C.Free(ptr unsafe.Pointer)`,在 Go runtime 中直接调用 `runtime.mallocgc` 分配 C 堆内存,避免了 cgo 调用 `malloc` 的开销。
-</details>
+**解析讲解**：Go 1.20 引入 `C.Alloc(n C.size_t) unsafe.Pointer` 和 `C.Free(ptr unsafe.Pointer)`,在 Go runtime 中直接调用 `runtime.mallocgc` 分配 C 堆内存,避免了 cgo 调用 `malloc` 的开销。
 
 **题 3**:`C.long` 在 Linux 64 位平台是 ______ 字节,在 Windows 64 位平台是 ______ 字节。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:8;4
+**解析讲解**：8;4
 
-**解析**:Linux 64 位采用 LP64 模型,`long` 为 8 字节;Windows 64 位采用 LLP64 模型,`long` 为 4 字节。跨平台代码应使用 `C.longlong` 或 `int64_t`。
-</details>
+**解析讲解**：Linux 64 位采用 LP64 模型,`long` 为 8 字节;Windows 64 位采用 LLP64 模型,`long` 为 4 字节。跨平台代码应使用 `C.longlong` 或 `int64_t`。
 
 **题 4**:禁用 CGO 的环境变量设置为 ______。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:`CGO_ENABLED=0`
+**解析讲解**：`CGO_ENABLED=0`
 
-**解析**:设置 `CGO_ENABLED=0` 后,Go 编译器会忽略所有 `import "C"`,实现纯 Go 编译,获得交叉编译能力。
-</details>
+**解析讲解**：设置 `CGO_ENABLED=0` 后,Go 编译器会忽略所有 `import "C"`,实现纯 Go 编译,获得交叉编译能力。
 
 **题 5**:CGO 调用期间,goroutine 状态转为 ______,不参与调度。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:`Gsyscall`
+**解析讲解**：`Gsyscall`
 
-**解析**:cgo 调用时,goroutine 进入 `Gsyscall` 状态,释放 P,允许其他 goroutine 调度。C 函数返回后,goroutine 恢复为 `Grunnable`。
-</details>
+**解析讲解**：cgo 调用时,goroutine 进入 `Gsyscall` 状态,释放 P,允许其他 goroutine 调度。C 函数返回后,goroutine 恢复为 `Grunnable`。
 
-### 9.3 编程题
+### 编程题知识点讲解
 
 **题 1**:实现一个 CGO 程序,调用 C 的 `qsort` 对 Go slice 排序。
 
-<details>
-<summary>答案与解析</summary>
 
 ```go
 package main
@@ -2683,19 +2668,16 @@ func main() {
 }
 ```
 
-**解析**:
+**解析讲解**：
 
 1. 通过 `//export` 导出 Go 比较函数 `goCompare`。
 2. C 包装函数 `c_qsort` 调用标准库 `qsort`,传入 Go 回调。
 3. Go 的 `QSort` 函数将 slice 底层数组指针传给 C。
 4. C 的 `qsort` 直接在 Go slice 底层数组上排序,零拷贝。
 5. 注意:Go 1.6 指针规则允许此操作,因 C 只在调用期间持有指针。
-</details>
 
 **题 2**:实现一个 CGO 程序,使用 `runtime.Pinner` 固定 Go 对象供 C 异步处理。
 
-<details>
-<summary>答案与解析</summary>
 
 ```go
 package main
@@ -2757,21 +2739,18 @@ func main() {
 }
 ```
 
-**解析**:
+**解析讲解**：
 
 1. `runtime.NewPinner()` 创建 Pinner。
 2. `pinner.Pin(ptr)` 固定 Go 对象,GC 不会移动或回收。
 3. C 代码可安全持有被固定的指针。
 4. `defer pinner.Unpin()` 在函数返回时解除固定,GC 恢复正常管理。
 5. 适用于 C 代码需要长期持有 Go 指针的场景(如异步回调、注册回调)。
-</details>
 
 ### 9.4 思考题
 
 **题 1**:为什么 Go 团队对 CGO 采取"可用但不鼓励"的立场?从工程角度分析其利弊。
 
-<details>
-<summary>答案与解析</summary>
 
 **Go 团队立场的原因**:
 
@@ -2796,12 +2775,9 @@ func main() {
 - 将 cgo 代码隔离在独立包,便于维护与替换。
 - 提供纯 Go 后备(通过 build tags)。
 - 监控 cgo 调用开销与 GC 影响。
-</details>
 
 **题 2**:假设你需要在 Go 服务中集成一个高性能压缩库,有 C 实现和纯 Go 实现可选,如何决策?
 
-<details>
-<summary>答案与解析</summary>
 
 **决策框架**:
 
@@ -2833,12 +2809,9 @@ func main() {
 - Brotli:纯 Go 实现性能差距较大,若在 hot path 可考虑 cgo。
 
 **建议**:优先纯 Go,基准测试验证后若性能不足再考虑 cgo。
-</details>
 
 **题 3**:分析 Go 1.6 cgo 指针传递规则的设计动机,为何禁止 C 代码长期持有 Go 指针?
 
-<details>
-<summary>答案与解析</summary>
 
 **设计动机**:
 
@@ -2863,12 +2836,9 @@ func main() {
 
 - 将 Go 对象复制到 C 堆(`C.CString`、`C.Alloc` + `memcpy`)。
 - 使用 C 端的数据结构,避免共享 Go 内存。
-</details>
 
 **题 4**:为何 CGO 程序失去交叉编译能力?有哪些解决方案?
 
-<details>
-<summary>答案与解析</summary>
 
 **原因**:
 
@@ -2917,12 +2887,9 @@ func main() {
 - 若无必须使用 cgo 的场景,优先 `CGO_ENABLED=0`。
 - 若必须使用 cgo,优先 Docker 方案,简单可靠。
 - 大规模 CI/CD 可考虑 zig cc,统一管理交叉编译。
-</details>
 
 **题 5**:比较 CGO 与 purego 的适用场景,论述两种方案在云原生生态中的优劣。
 
-<details>
-<summary>答案与解析</summary>
 
 **CGO**:
 
@@ -2965,7 +2932,6 @@ func main() {
 - **静态二进制用 CGO**:若需静态链接(如 distroless),CGO + 静态库是唯一选择。
 - **遗留 C 库用 CGO**:若仅有 `.a` 静态库或 C++ 代码,必须用 CGO。
 - **未来趋势**:purego 生态在快速发展,逐渐替代 CGO 在动态库场景的使用。
-</details>
 
 ---
 

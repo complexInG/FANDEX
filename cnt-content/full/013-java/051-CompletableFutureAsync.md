@@ -342,6 +342,11 @@ etymology:
     english: "Structured Concurrency"
     origin: "由 Martin Sústrik 在 2016 年博客提出，Nathaniel J. Smith 在 Python trio 库中系统化（2017）；Java 在 JEP 453（JDK 21 Preview）借鉴该思想。'Structured' 借自 Dijkstra 1968 年《Go To Statement Considered Harmful》倡导的结构化编程——并发任务应有明确的进入/退出边界，子任务生命周期不能逃逸父作用域。"
 ---
+# Java CompletableFuture 异步编程
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 引言：从"阻塞等待"到"组合式异步"
 
@@ -1727,25 +1732,11 @@ CompletableFuture<String> fetchWrongOrder() {
 
 ### 7.1 异步任务分层架构
 
-```
-┌──────────────────────────────────────────────────┐
-│  API 层（Controller）                            │
-│  - 接收请求，返回 CompletableFuture<Response>    │
-├──────────────────────────────────────────────────┤
-│  Service 层                                       │
-│  - 业务编排：thenCompose / thenCombine / allOf   │
-│  - 异常恢复：exceptionally / handle              │
-│  - 超时控制：orTimeout / completeOnTimeout        │
-├──────────────────────────────────────────────────┤
-│  Client 层（HTTP / DB / Redis）                  │
-│  - 异步调用：supplyAsync(阻塞调用, ioPool)        │
-│  - 重试机制：exceptionallyCompose                 │
-├──────────────────────────────────────────────────┤
-│  Executor 层                                      │
-│  - ioPool：IO 密集（200 线程）                    │
-│  - cpuPool：CPU 密集（N-1 线程）                  │
-│  - virtualThreadPool：JDK 21+ 虚拟线程           │
-└──────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    API[API 层（Controller）<br/>接收请求，返回 CompletableFuture&lt;Response&gt;] --> SVC[Service 层<br/>业务编排：thenCompose / thenCombine / allOf<br/>异常恢复：exceptionally / handle<br/>超时控制：orTimeout / completeOnTimeout]
+    SVC --> CL[Client 层（HTTP / DB / Redis）<br/>异步调用：supplyAsync(阻塞调用, ioPool)<br/>重试机制：exceptionallyCompose]
+    CL --> EX[Executor 层<br/>ioPool：IO 密集（200 线程）<br/>cpuPool：CPU 密集（N-1 线程）<br/>virtualThreadPool：JDK 21+ 虚拟线程]
 ```
 
 ### 7.2 命名约定与可读性
@@ -2221,25 +2212,25 @@ Reactor / RxJava 在 Loom 时代面临重新定位：
 
 Spring 6+ 已支持"虚拟线程 + 同步代码"模式，未来 Spring WebFlux 与 Spring MVC 的边界将模糊。
 
-## 10. 习题参考答案
+## 知识讲解与要点分析（原习题）
 
 ### ex-cf-01
 
-**答案**：`CompletionStage`
+**解析讲解**：`CompletionStage`
 
-**解析**：CompletableFuture 同时实现 `Future<T>` 与 `CompletionStage<T>` 两个接口。Future 提供阻塞式语义（get / isDone / cancel），CompletionStage 提供回调式组合原语（thenApply / thenCompose / exceptionally）。这种"双接口融合"是 Java API 设计的常见模式，分离了"被动等待"与"主动组合"两种语义。
+**解析讲解**：CompletableFuture 同时实现 `Future<T>` 与 `CompletionStage<T>` 两个接口。Future 提供阻塞式语义（get / isDone / cancel），CompletionStage 提供回调式组合原语（thenApply / thenCompose / exceptionally）。这种"双接口融合"是 Java API 设计的常见模式，分离了"被动等待"与"主动组合"两种语义。
 
 ### ex-cf-02
 
-**答案**：`flatMap`
+**解析讲解**：`flatMap`
 
-**解析**：thenApply 接收 `Function<T, R>`，若 R 本身是 CompletableFuture 会得到 `CompletableFuture<CompletableFuture<R>>`（嵌套）。thenCompose 接收 `Function<T, CompletionStage<R>>`，自动扁平化为 `CompletableFuture<R>`，等价于 Monad 的 bind（>>=）操作，对应 Stream.flatMap、Optional.flatMap、Optional.map 的关系。
+**解析讲解**：thenApply 接收 `Function<T, R>`，若 R 本身是 CompletableFuture 会得到 `CompletableFuture<CompletableFuture<R>>`（嵌套）。thenCompose 接收 `Function<T, CompletionStage<R>>`，自动扁平化为 `CompletableFuture<R>`，等价于 Monad 的 bind（>>=）操作，对应 Stream.flatMap、Optional.flatMap、Optional.map 的关系。
 
 ### ex-cf-03
 
-**答案**：选项 2 - `CompletableFuture.allOf(...).thenApply(v -> List.of(future1.join(), future2.join(), future3.join()))`
+**解析讲解**：选项 2 - `CompletableFuture.allOf(...).thenApply(v -> List.of(future1.join(), future2.join(), future3.join()))`
 
-**解析**：
+**解析讲解**：
 - 选项 1：thenCombine 仅支持两个任务，三个任务需链式两次；
 - 选项 2：正确，allOf 等待全部完成后调用 join() 不会阻塞（已确保完成），可安全收集结果；
 - 选项 3：anyOf 是任一完成，不是全部；
@@ -2247,9 +2238,9 @@ Spring 6+ 已支持"虚拟线程 + 同步代码"模式，未来 Spring WebFlux �
 
 ### ex-cf-04
 
-**答案**：选项 2 - "thenApply 在前一个阶段已完成时于调用线程同步执行，否则由完成该阶段的线程异步执行；thenApplyAsync 始终提交到 Executor 执行"
+**解析讲解**：选项 2 - "thenApply 在前一个阶段已完成时于调用线程同步执行，否则由完成该阶段的线程异步执行；thenApplyAsync 始终提交到 Executor 执行"
 
-**解析**：
+**解析讲解**：
 - 选项 1 错误：thenApply 不一定在调用线程执行；
 - 选项 2 正确：完整描述了执行线程的不确定性；
 - 选项 3 错误：Async 变体是语义差异，不是纯优化；
@@ -2444,3 +2435,243 @@ class ApiGateway {
 5. 持续关注 Project Loom 邮件列表与 JEP 进展，跟踪 JDK 25 / 26 的 Structured Concurrency GA 进度。
 
 FANDEX Content Engineering Team 持续维护本模块，每季度根据 JDK 新版本与社区最佳实践进行审阅更新。如发现内容疏漏或过时，请通过 GitHub Issues 反馈。
+## 创建 CompletableFuture
+
+**基本写法：supplyAsync 异步执行**
+`CompletableFuture.supplyAsync(<Supplier>);`
+```java
+// 异步执行并返回结果
+CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+    return "Result";
+});
+```
+
+---
+
+**基本写法：runAsync 无返回值**
+`CompletableFuture.runAsync(<Runnable>);`
+```java
+// 异步执行无返回值任务
+CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+    System.out.println("Running");
+});
+```
+
+---
+
+**基本写法：completedFuture 已完成**
+`CompletableFuture.completedFuture(<值>);`
+```java
+// 创建已完成的 Future
+CompletableFuture<String> future = CompletableFuture.completedFuture("Done");
+```
+
+---
+
+## 获取结果
+
+**基本写法：get 阻塞获取**
+`<future>.get();`
+```java
+// 阻塞等待结果
+String result = future.get();
+```
+
+---
+
+**基本写法：get 超时获取**
+`<future>.get(<超时>, <时间单位>);`
+```java
+// 最多等待 1 秒
+String result = future.get(1, TimeUnit.SECONDS);
+```
+
+---
+
+**基本写法：join 阻塞获取（不抛受检异常）**
+`<future>.join();`
+```java
+// 阻塞获取结果
+String result = future.join();
+```
+
+---
+
+**基本写法：getNow 立即获取**
+`<future>.getNow(<默认值>);`
+```java
+// 未完成则返回默认值
+String result = future.getNow("Default");
+```
+
+---
+
+## 结果处理
+
+**基本写法：thenApply 转换结果**
+`<future>.thenApply(<Function>);`
+```java
+// 转换结果类型
+CompletableFuture<Integer> next = future.thenApply(String::length);
+```
+
+---
+
+**基本写法：thenAccept 消费结果**
+`<future>.thenAccept(<Consumer>);`
+```java
+// 消费结果（无返回值）
+CompletableFuture<Void> next = future.thenAccept(System.out::println);
+```
+
+---
+
+**基本写法：thenRun 不使用结果**
+`<future>.thenRun(<Runnable>);`
+```java
+// 结果完成后执行其他操作
+CompletableFuture<Void> next = future.thenRun(() -> {
+    System.out.println("Done");
+});
+```
+
+---
+
+## 异步组合
+
+**基本写法：thenCompose 串联**
+`<future>.thenCompose(<Function>);`
+```java
+// 串联两个异步任务
+CompletableFuture<String> next = future.thenCompose(s -> CompletableFuture.supplyAsync(() -> s + "!"));
+```
+
+---
+
+**基本写法：thenCombine 合并两个**
+`<future>.thenCombine(<other>, <BiFunction>);`
+```java
+// 合并两个独立 Future 的结果
+CompletableFuture<String> combined = future1.thenCombine(future2, (s1, s2) -> s1 + s2);
+```
+
+---
+
+**基本写法：allOf 等待全部完成**
+`CompletableFuture.allOf(<future1>, <future2>, ...);`
+```java
+// 等待所有任务完成
+CompletableFuture<Void> all = CompletableFuture.allOf(f1, f2, f3);
+all.join();
+```
+
+---
+
+**基本写法：anyOf 任一完成**
+`CompletableFuture.anyOf(<future1>, <future2>, ...);`
+```java
+// 任一任务完成即返回
+CompletableFuture<Object> any = CompletableFuture.anyOf(f1, f2);
+Object result = any.get();
+```
+
+---
+
+## 异常处理
+
+**基本写法：exceptionally 异常恢复**
+`<future>.exceptionally(<Function>);`
+```java
+// 发生异常时返回默认值
+CompletableFuture<String> safe = future.exceptionally(ex -> "Fallback");
+```
+
+---
+
+**基本写法：handle 处理结果与异常**
+`<future>.handle(<BiFunction>);`
+```java
+// 同时处理正常结果与异常
+CompletableFuture<String> handled = future.handle((result, ex) -> {
+    if (ex != null) return "Error";
+    return result;
+});
+```
+
+---
+
+**基本写法：whenComplete 完成时执行**
+`<future>.whenComplete(<BiConsumer>);`
+```java
+// 完成时执行副作用（不改变结果）
+CompletableFuture<String> next = future.whenComplete((result, ex) -> {
+    if (ex != null) {
+        log.error("Failed", ex);
+    }
+});
+```
+
+---
+
+## 线程池控制
+
+**基本写法：指定线程池**
+`CompletableFuture.supplyAsync(<Supplier>, <Executor>);`
+```java
+// 使用自定义线程池
+ExecutorService executor = Executors.newFixedThreadPool(10);
+CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> "Result", executor);
+```
+
+---
+
+**基本写法：thenApplyAsync 异步转换**
+`<future>.thenApplyAsync(<Function>, [<Executor>]);`
+```java
+// 在默认或指定线程池中异步执行
+CompletableFuture<Integer> next = future.thenApplyAsync(String::length, executor);
+```
+
+---
+
+## 多任务编排
+
+**基本写法：thenAcceptBoth 消费两个结果**
+`<future>.thenAcceptBoth(<other>, <BiConsumer>);`
+```java
+// 消费两个 Future 的结果
+future1.thenAcceptBoth(future2, (s1, s2) -> {
+    System.out.println(s1 + s2);
+});
+```
+
+---
+
+**基本写法：runAfterBoth 都完成后执行**
+`<future>.runAfterBoth(<other>, <Runnable>);`
+```java
+// 两个 Future 都完成后执行
+future1.runAfterBoth(future2, () -> {
+    System.out.println("Both done");
+});
+```
+
+---
+
+**基本写法：runAfterEither 任一完成后执行**
+`<future>.runAfterEither(<other>, <Runnable>);`
+```java
+// 任一 Future 完成后执行
+future1.runAfterEither(future2, () -> {
+    System.out.println("One done");
+});
+```
+
+---
+
+**基本写法：applyToEither 取先完成的结果**
+`<future>.applyToEither(<other>, <Function>);`
+```java
+// 取先完成的 Future 结果转换
+CompletableFuture<String> next = future1.applyToEither(future2, s -> s + "!");
+```

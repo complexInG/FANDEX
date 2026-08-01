@@ -252,34 +252,15 @@ $$
 
 javac 的完整编译流水线（com.sun.tools.javac.main.JavaCompiler）：
 
-```
-源码读入
-   │
-   ▼
-parse ──► AST (JCCompilationUnit)
-   │
-   ▼
-enter ──► 符号表填充 (Symbol)
-   │
-   ▼
-┌───────────────────────────────────────┐
-│  Annotation Processing (JSR 269)      │
-│  ─ 调用 Processor.process              │
-│  ─ 生成的新源码加入下一轮             │
-│  ─ 重复直到无新源码                   │
-└───────────────────────────────────────┘
-   │
-   ▼
-attribute ──► 类型检查 / 语义分析
-   │
-   ▼
-flow ──► 数据流分析 (definite assignment, unreachable)
-   │
-   ▼
-desugar ──► Lambda → invokedynamic, 泛型擦除
-   │
-   ▼
-gen ──► 字节码生成 (.class)
+```mermaid
+flowchart TD
+    A[源码读入] --> B[parse → AST（JCCompilationUnit）]
+    B --> C[enter → 符号表填充（Symbol）]
+    C --> D[Annotation Processing（JSR 269）<br/>调用 Processor.process<br/>生成的新源码加入下一轮<br/>重复直到无新源码]
+    D --> E[attribute → 类型检查 / 语义分析]
+    E --> F[flow → 数据流分析<br/>definite assignment, unreachable]
+    F --> G[desugar → Lambda → invokedynamic, 泛型擦除]
+    G --> H[gen → 字节码生成（.class）]
 ```
 
 ### 4.2 Processor 注册与发现机制
@@ -291,12 +272,17 @@ Processor 的发现基于 Java SPI（Service Provider Interface）：
 3. 文件每行一个 Processor 全限定类名；
 4. 反射实例化 Processor，调用 `init(ProcessingEnvironment)`。
 
-```
-myprocessor.jar
-└── META-INF
-    └── services
-        └── javax.annotation.processing.Processor
-            内容：com.example.MyProcessor
+```mermaid
+flowchart TD
+    T0["myprocessor.jar"]
+    T1["META-INF"]
+    T2["services"]
+    T3["javax.annotation.processing.Processor"]
+    T4["内容：com.example.MyProcessor"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
 ```
 
 ### 4.3 Round 机制详解
@@ -1333,9 +1319,9 @@ AutoValue 生成 `AutoValue_User` 子类，实现 `equals`、`hashCode`、`toStr
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **Q1.** 注解处理器在哪一阶段运行？
 
@@ -1344,11 +1330,8 @@ B. JVM 启动时
 C. javac 编译时  
 D. 运行时反射
 
-<details>
-<summary>答案与解析</summary>
 
 **C**。JSR 269 规定注解处理器在 `javac` 编译时执行，位于 parse / enter 之后、attribute / flow 之前。Java 6 起 `apt` 工具被废弃，注解处理完全集成进 javac。
-</details>
 
 **Q2.** 以下哪个方法用于向 javac 报告编译错误？
 
@@ -1357,11 +1340,8 @@ B. `Logger.error`
 C. `Messager.printMessage(ERROR, ...)`  
 D. `throw new RuntimeException`
 
-<details>
-<summary>答案与解析</summary>
 
 **C**。`Messager.printMessage` 是 JSR 269 规范的方式，关联到具体 Element，IDE 可定位到源码位置。其他方式不会影响 javac 退出码。
-</details>
 
 **Q3.** 一个 Processor 处理 `@Foo` 注解，`process` 方法返回 `true` 意味着？
 
@@ -1370,11 +1350,8 @@ B. 该注解已被认领，其他 Processor 不应处理
 C. 已经生成所有源码  
 D. 编译失败
 
-<details>
-<summary>答案与解析</summary>
 
 **B**。`process` 返回 `true` 表示"已认领这些注解"，其他 Processor 不会再次处理同一批注解。返回 `false` 表示未认领，后续 Processor 仍可处理。
-</details>
 
 **Q4.** Lombok 与 MapStruct 的根本差异是？
 
@@ -1383,11 +1360,8 @@ B. Lombok 修改 AST，MapStruct 只生成新源码
 C. Lombok 不需要 Maven 插件  
 D. MapStruct 性能更差
 
-<details>
-<summary>答案与解析</summary>
 
 **B**。Lombok 通过反射访问 `JavacProcessingEnvironment` 直接修改 AST，违反 JSR 269 "只生成不修改"约束。MapStruct 严格遵循 JSR 269，仅生成新源码。
-</details>
 
 **Q5.** Gradle 的增量注解处理声明文件位于？
 
@@ -1396,60 +1370,40 @@ B. `META-INF/gradle/incremental.annotation.processors`
 C. `META-INF/services/javax.annotation.processing.Processor`  
 D. `gradle.properties`
 
-<details>
-<summary>答案与解析</summary>
 
 **B**。Gradle 通过 `META-INF/gradle/incremental.annotation.processors` 文件声明每个 Processor 的增量类型（`isolating` / `aggregating` / `dynamic`）。
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **Q1.** JSR 269 提供的两个核心 API 包是 `javax.annotation.processing` 与 ________。
 
-<details>
-<summary>答案</summary>
 
 `javax.lang.model`（含 `javax.lang.model.element`、`javax.lang.model.type`、`javax.lang.model.util`）。
-</details>
 
 **Q2.** Element 接口代表**声明**视角，而 ________ 接口代表**类型**视角。
 
-<details>
-<summary>答案</summary>
 
 `TypeMirror`。
-</details>
 
 **Q3.** Processor 通过 ________ 方法告知 javac 支持哪些注解类型。
 
-<details>
-<summary>答案</summary>
 
 `getSupportedAnnotationTypes()`（或 `@SupportedAnnotationTypes` 注解）。
-</details>
 
 **Q4.** 注解处理的不动点迭代终止条件是 ________。
 
-<details>
-<summary>答案</summary>
 
 某一轮 `process` 不再生成新源码（`roundEnv.processingOver() == true`）。
-</details>
 
 **Q5.** JavaPoet 中代表一个完整 Java 源文件的类是 ________。
 
-<details>
-<summary>答案</summary>
 
 `com.squareup.javapoet.JavaFile`。
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **Q1.** 实现一个 `@DeepCopy` 注解处理器，为 record 类型生成 `deepCopy()` 方法。
 
-<details>
-<summary>参考答案</summary>
 
 ```java
 @Retention(RetentionPolicy.SOURCE)
@@ -1506,12 +1460,9 @@ public class DeepCopyProcessor extends AbstractProcessor {
     }
 }
 ```
-</details>
 
 **Q2.** 实现一个 `@VerifyNotNull` 注解处理器，检查类中所有字段是否带 `@NonNull`，未标注的报编译错误。
 
-<details>
-<summary>参考答案</summary>
 
 ```java
 @Retention(RetentionPolicy.SOURCE)
@@ -1544,26 +1495,20 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
     }
 }
 ```
-</details>
 
 **Q3.** 编写一个 `@GenerateMapper` 处理器，为两个 record 类型生成 MapStruct 风格的转换器（字段同名则自动映射）。
 
-<details>
-<summary>参考答案要点</summary>
 
 - 解析两个 `TypeElement`，获取 record components；
 - 按字段名匹配，生成 `toDto` 方法；
 - 使用 JavaPoet 生成 `*Mapper` 类；
 - 编译期类型检查，不匹配的字段给出警告；
 - 参考完整实现：MapStruct 源码 `org.mapstruct.ap.MappingProcessor`。
-</details>
 
 ### 10.4 思考题
 
 **Q1.** 为什么 Lombok 选择突破 JSR 269 修改 AST？这种做法的长期风险是什么？
 
-<details>
-<summary>参考答案要点</summary>
 
 - **动机**：仅生成新源码无法实现"修改已有类"（如 `@Getter` 必须在原类中添加方法）；
 - **替代方案**：如 AutoValue 生成子类，但需用户改为抽象类，使用上有差异；
@@ -1573,12 +1518,9 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
   - 调试栈不完整，无法断点进入生成方法；
   - Java Records 提供了部分替代，未来可能逐步降低 Lombok 使用；
   - Java 25 模块导入与 AOT 编译对 AST 修改的兼容性仍有不确定性。
-</details>
 
 **Q2.** 如何设计一个支持 Gradle 与 Bazel 增量编译的注解处理器？
 
-<details>
-<summary>参考答案要点</summary>
 
 - **Gradle**：声明 `META-INF/gradle/incremental.annotation.processors`，标记 `isolating`（推荐）或 `aggregating`；
 - **Bazel**：使用 `java_plugin` 与 `java_annotation_processing` 规则，无显式增量支持；
@@ -1587,12 +1529,9 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
   - 避免全局状态（如静态 Map 缓存跨轮次数据）；
   - 输出文件命名应稳定（不依赖轮次、随机数）；
   - 使用 `Filer` 创建文件（不要直接写文件系统）。
-</details>
 
 **Q3.** 注解处理器与 Java Records 的设计哲学差异？为什么 Records 不能完全替代 Lombok？
 
-<details>
-<summary>参考答案要点</summary>
 
 - **Records 设计哲学**：语言级、不可变、约束式（强制 final 字段、无继承、自动方法）；
 - **Lombok 设计哲学**：库级别、灵活、可定制（@Data 允许可变、@Builder 允许任意类）；
@@ -1602,7 +1541,6 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
   - Records 字段无自定义逻辑，Lombok 可加 @Setter、@ToString(exclude=...)；
   - Records 不支持 @Builder（需手工实现 Builder）；
   - 现有项目迁移成本高。
-</details>
 
 ---
 
@@ -1674,7 +1612,265 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 
 ---
 
-## 更新日志
+## 定义注解
 
-- **2026-06-14**: 初始创建，包含基本注解处理器示例（55 行）。
-- **2026-07-20**: 第二批金标准升级。引入 Bloom 学习目标、JLS §9.6/9.7 注解规范、javax.lang.model 形式化定义、JavaPoet/Google AutoService/compile-testing 完整工程模板、Gradle 增量注解处理配置、Lombok/Dagger/MapStruct/AutoValue/Hibernate Metamodel 案例、5 类习题与详细答案、ACM Reference Format 参考文献。新增 1500+ 行内容（最终约 1500 行）。
+**基本写法：定义运行时注解**
+`@Retention(RetentionPolicy.RUNTIME) @Target(<目标>) @interface <名称> {}`
+```java
+// 定义运行时保留的字段注解
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface MyField {
+    String value();
+}
+```
+
+---
+
+**基本写法：定义源码级注解**
+`@Retention(RetentionPolicy.SOURCE) @interface <名称> {}`
+```java
+// 仅源码保留的注解（用于 APT 处理）
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.TYPE)
+public @interface Builder {
+}
+```
+
+---
+
+**基本写法：定义元注解的成员**
+`@interface <名称> { <类型> <成员>() [default <默认值>]; }`
+```java
+// 注解带默认值
+public @interface Cache {
+    int ttl() default 60;
+    String name() default "";
+}
+```
+
+---
+
+## 编写注解处理器
+
+**基本写法：声明处理器**
+`@SupportedAnnotationTypes("<注解全名>") @SupportedSourceVersion(<版本>) public class <类> extends AbstractProcessor {}`
+```java
+// 自定义注解处理器
+@SupportedAnnotationTypes("com.example.Builder")
+@SupportedSourceVersion(SourceVersion.RELEASE_21)
+public class BuilderProcessor extends AbstractProcessor {
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment env) {
+        return true;
+    }
+}
+```
+
+---
+
+**基本写法：获取被注解元素**
+`env.getElementsAnnotatedWith(<注解类>);`
+```java
+// 收集所有被注解的元素
+Set<? extends Element> set = env.getElementsAnnotatedWith(Builder.class);
+```
+
+---
+
+**基本写法：获取 Filer 生成文件**
+`processingEnv.getFiler().createSourceFile("<类名>");`
+```java
+// 生成 Java 源文件
+JavaFileObject f = processingEnv.getFiler().createSourceFile("com.example.Generated");
+```
+
+---
+
+**基本写法：获取 Messager 输出**
+`processingEnv.getMessager().printMessage(<类型>, <消息>, <元素>);`
+```java
+// 编译期输出错误信息
+processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "missing field", element);
+```
+
+---
+
+## 注册处理器
+
+**基本写法：SPI 注册文件**
+`META-INF/services/javax.annotation.processing.Processor`
+```
+# 文件内容为处理器全限定名
+com.example.BuilderProcessor
+```
+
+---
+
+## Maven 编译配置
+
+**基本写法：Maven 编译插件配置**
+`<plugin> <artifactId>maven-compiler-plugin</artifactId> <configuration>`
+```xml
+<!-- 配置编译器使用的注解处理器 -->
+<plugin>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <configuration>
+    <annotationProcessors>
+      <processor>com.example.BuilderProcessor</processor>
+    </annotationProcessors>
+  </configuration>
+</plugin>
+```
+
+---
+
+**基本写法：禁用注解处理**
+`<proc>none</proc>`
+```xml
+<!-- 编译时关闭注解处理 -->
+<configuration>
+  <proc>none</proc>
+</configuration>
+```
+
+---
+
+## Gradle 编译配置
+
+**基本写法：Gradle 配置注解处理器**
+`annotationProcessor '<依赖坐标>'`
+```groovy
+// Gradle 注册注解处理器依赖
+dependencies {
+  annotationProcessor 'com.example:builder-processor:1.0'
+}
+```
+
+---
+
+**基本写法：Kotlin 使用 KSP**
+`ksp('<依赖坐标>')`
+```groovy
+// Kotlin 符号处理 KSP
+plugins { id("com.google.devtools.ksp") }
+dependencies {
+  ksp 'com.example:builder-processor:1.0'
+}
+```
+
+---
+
+## javac 命令
+
+**基本写法：编译时指定处理器**
+`javac -processor <处理器类> <源文件>`
+```bash
+# 编译时显式指定注解处理器
+javac -processor com.example.BuilderProcessor src/Main.java
+```
+
+---
+
+**基本写法：指定处理器路径**
+`javac -processorpath <路径> -processor <类> <源文件>`
+```bash
+# 指定处理器所在 jar 路径
+javac -processorpath processor.jar -processor com.example.BuilderProcessor src/Main.java
+```
+
+---
+
+**基本写法：输出生成源码目录**
+`javac -s <输出目录> <源文件>`
+```bash
+# 指定生成源文件输出目录
+javac -s build/generated -processor com.example.BuilderProcessor src/Main.java
+```
+
+---
+
+**基本写法：禁用注解处理**
+`javac -proc:none <源文件>`
+```bash
+# 仅编译不执行注解处理
+javac -proc:none src/Main.java
+```
+
+---
+
+## 元素模型 Element
+
+**基本写法：获取元素类型**
+`<element>.getKind()`
+```java
+// 判断元素是类还是方法
+if (element.getKind() == ElementKind.CLASS) { }
+```
+
+---
+
+**基本写法：获取元素注解**
+`<element>.getAnnotation(<注解类>);`
+```java
+// 读取元素上的注解
+Builder b = element.getAnnotation(Builder.class);
+```
+
+---
+
+**基本写法：获取类元素字段**
+`<typeElement>.getEnclosedElements();`
+```java
+// 获取类中所有成员
+List<? extends Element> members = typeElement.getEnclosedElements();
+```
+
+---
+
+## 类型模型 Types / Elements
+
+**基本写法：获取 Types 工具**
+`processingEnv.getTypeUtils();`
+```java
+// 获取类型工具类
+Types types = processingEnv.getTypeUtils();
+```
+
+---
+
+**基本写法：获取 Elements 工具**
+`processingEnv.getElementUtils();`
+```java
+// 获取元素工具类
+Elements elements = processingEnv.getElementUtils();
+```
+
+---
+
+**基本写法：按名获取 TypeElement**
+`elements.getTypeElement("<全限定名>");`
+```java
+// 通过全限定名获取类型元素
+TypeElement e = elements.getTypeElement("java.lang.String");
+```
+
+---
+
+## 编译参数传递
+
+**基本写法：读取编译选项**
+`processingEnv.getOptions().get("<键>");`
+```java
+// 获取 -A 传递的参数
+String v = processingEnv.getOptions().get("myOption");
+```
+
+---
+
+**基本写法：javac 传递参数**
+`javac -A<键>=<值> <源文件>`
+```bash
+# 通过 -A 选项向处理器传参
+javac -AmyOption=value -processor com.example.BuilderProcessor src/Main.java
+```

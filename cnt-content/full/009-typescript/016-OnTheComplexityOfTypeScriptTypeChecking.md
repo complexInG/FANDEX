@@ -1111,15 +1111,17 @@ type Good<T> = T extends string ? Good<unknown> : never;
 
 在项目中，建议把类型工具按以下结构组织：
 
-```
-src/
-├── types/
-│   ├── utils/        // 基础工具：IsEqual, IsNever 等
-│   ├── tuple/        // 元组工具：Head, Tail, Reverse 等
-│   ├── object/       // 对象工具：PickByType, DeepReadonly 等
-│   ├── string/       // 字符串工具：CamelCase, Split 等
-│   ├── math/         // 数学工具：Add, Sub, Range 等
-│   └── index.ts      // 统一导出
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["types/"]
+    T2["utils/        // 基础工具：IsEqual, IsNever 等"]
+    T3["tuple/        // 元组工具：Head, Tail, Reverse 等"]
+    T4["object/       // 对象工具：PickByType, DeepReadonly 等"]
+    T5["string/       // 字符串工具：CamelCase, Split 等"]
+    T6["math/         // 数学工具：Add, Sub, Range 等"]
+    T7["index.ts      // 统一导出"]
+    T0 --> T1
 ```
 
 每个工具应包含：
@@ -1415,9 +1417,9 @@ tsc --extendedDiagnostics 2>&1 | grep Instantiations | awk '{print $2}'
 
 如果 `Instantiations` 超过 10,000,000，应触发告警。社区工具如 `typescript-performance` 可以做更细粒度的分析。
 
-## 18. 习题
+## 知识讲解与要点分析（原习题）
 
-### 18.1 填空题（fill-blank）
+### 填空题知识点讲解
 
 1. 条件类型 `T extends U ? X : Y` 中，当 `T` 是裸类型参数且为联合类型 `A | B` 时，结果为____。
 2. TypeScript 自身对类型递归实例化深度的硬性上限是____层。
@@ -1428,7 +1430,7 @@ tsc --extendedDiagnostics 2>&1 | grep Instantiations | awk '{print $2}'
 7. `type Last<T extends readonly any[]> = T extends [...any[], infer L] ? L : never` 中，`...any[]` 的作用是匹配____元素。
 8. 在模板字面量类型 `${infer H}_${infer T}` 中，`H` 与 `T` 的关系是____。
 
-### 18.2 选择题（choice）
+### 选择题知识点讲解
 
 1. 关于 TypeScript 类型系统的图灵完备性，下列哪一项是正确的？
    - A. TypeScript 类型系统在 4.0 之后已完全图灵完备，可以表达任意计算

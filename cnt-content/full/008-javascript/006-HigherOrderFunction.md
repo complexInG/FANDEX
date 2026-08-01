@@ -415,17 +415,22 @@ const obj2 = {
 
 ### 5.1 项目结构
 
-```
-hof-demo/
-├── package.json
-├── src/
-│   ├── compose.js         # 函数组合工具
-│   ├── memoize.js         # 记忆化装饰器
-│   ├── middleware.js      # 中间件模式
-│   ├── react-hoc.jsx      # React高阶组件
-│   └── index.js
-└── test/
-    └── compose.test.js
+```mermaid
+flowchart TD
+    T0["hof-demo/"]
+    T1["package.json"]
+    T2["src/"]
+    T3["compose.js         # 函数组合工具"]
+    T4["memoize.js         # 记忆化装饰器"]
+    T5["middleware.js      # 中间件模式"]
+    T6["react-hoc.jsx      # React高阶组件"]
+    T7["index.js"]
+    T8["test/"]
+    T9["compose.test.js"]
+    T0 --> T1
+    T0 --> T2
+    T7 --> T8
+    T8 --> T9
 ```
 
 ### 5.2 package.json
@@ -1268,9 +1273,9 @@ Ramda 的设计使函数组合更自然：`R.filter(predicate)` 返回新函数�
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪个不是高阶函数？
 
@@ -1279,14 +1284,11 @@ B. `Array.prototype.reduce`
 C. `Array.prototype.push`
 D. `Array.prototype.sort`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
 `push` 不接受函数作为参数，也不返回函数，是普通方法。`map`、`reduce` 接受函数参数；`sort` 接受比较函数参数，都是高阶函数。
 
-</details>
 
 **题目 2**：`compose(f, g, h)(x)` 等价于？
 
@@ -1295,14 +1297,11 @@ B. `h(g(f(x)))`
 C. `f(h(g(x)))`
 D. `g(f(h(x)))`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：A**
 
 `compose` 从右向左组合，最右边的函数最先执行。`compose(f, g, h)(x) = f(g(h(x)))`。
 
-</details>
 
 **题目 3**：以下代码输出是什么？
 
@@ -1317,50 +1316,36 @@ B. `[4, 6]`
 C. `[2, 4]`
 D. `[]`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `map` 后：`[2, 4, 6]`；`filter(x > 3)` 后：`[4, 6]`。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 4**：函数在 JavaScript 中是一等公民，意味着它可以被 ______、______、______、______。
 
-<details>
-<summary>答案</summary>
 
 赋值给变量、作为参数传递、作为返回值、作为对象属性
 
-</details>
 
 **题目 5**：`compose` 满足 ______ 律，但不满足 ______ 律。
 
-<details>
-<summary>答案</summary>
 
 结合律、交换律
 
-</details>
 
 **题目 6**：`reduce` 在数组为空且未提供初始值时会抛出 ______ 错误。
 
-<details>
-<summary>答案</summary>
 
 `TypeError: Reduce of empty array with no initial value`
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 7**：实现 `pipe` 函数，从左向右组合多个函数。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 const pipe = (...fns) => (x) => fns.reduce((acc, fn) => fn(acc), x);
@@ -1374,12 +1359,9 @@ const compute = pipe(add1, multiply2, square);
 console.log(compute(3));  // ((3+1)*2)^2 = 64
 ```
 
-</details>
 
 **题目 8**：实现 `memoize` 函数，支持自定义键生成器与缓存清理。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 function memoize(fn, keyFn = (...args) => JSON.stringify(args)) {
@@ -1415,12 +1397,9 @@ slowFn.clear();
 console.log(slowFn(5));  // 10, callCount=2
 ```
 
-</details>
 
 **题目 9**：实现 `debounce` 与 `throttle`，并说明两者的区别。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 // debounce：在连续触发停止后delay毫秒才执行
@@ -1466,14 +1445,11 @@ const onScroll = throttle(() => updateUI(), 100);
 window.addEventListener('scroll', onScroll);
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **题目 10**：为什么 `Array.prototype.forEach` 无法用 `break` 中断？如何模拟中断？
 
-<details>
-<summary>参考思路</summary>
 
 1. **原因**：`forEach` 的规范不支持中断，回调返回任何值都被忽略。
 2. **模拟中断**：
@@ -1491,12 +1467,9 @@ window.addEventListener('scroll', onScroll);
    // 输出 1, 2
    ```
 
-</details>
 
 **题目 11**：高阶函数在性能敏感场景（如游戏循环、音视频处理）中是否适用？为什么？
 
-<details>
-<summary>参考思路</summary>
 
 1. **慎用**：性能敏感场景下，高阶函数的回调开销（每次函数调用 + 闭包创建）可能不可接受。
 2. **原因**：
@@ -1509,7 +1482,6 @@ window.addEventListener('scroll', onScroll);
    - WebAssembly 处理热路径
 4. **平衡**：90% 代码用高阶函数保证可读性，10% 热路径手动优化。
 
-</details>
 
 ---
 

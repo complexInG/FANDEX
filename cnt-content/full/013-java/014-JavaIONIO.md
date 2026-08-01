@@ -56,30 +56,39 @@ tags:
 
 ### 1.3 前置知识地图
 
-```
-操作系统基础
-    │
-    ├── 文件描述符 (fd)
-    ├── 内核态与用户态
-    ├── 系统调用 (read/write/epoll)
-    └── 虚拟内存与页缓存
-            │
-            ▼
-Java 基础
-    │
-    ├── 异常处理 (IOException)
-    ├── 集合框架
-    ├── 多线程基础
-    └── 字符编码 (UTF-8/UTF-16)
-            │
-            ▼
-Java I/O 与 NIO（本章）
-    │
-    ├── java.io.* (BIO)
-    ├── java.nio.* (NIO)
-    ├── java.nio.channels (Channel/Selector)
-    ├── java.nio.charset (Charset)
-    └── 零拷贝 (transferTo/mmap/directbuffer)
+```mermaid
+flowchart TD
+    T0["操作系统基础"]
+    T1["文件描述符 (fd)"]
+    T2["内核态与用户态"]
+    T3["系统调用 (read/write/epoll)"]
+    T4["虚拟内存与页缓存"]
+    T5["Java 基础"]
+    T6["异常处理 (IOException)"]
+    T7["集合框架"]
+    T8["多线程基础"]
+    T9["字符编码 (UTF-8/UTF-16)"]
+    T10["Java I/O 与 NIO（本章）"]
+    T11["java.io.* (BIO)"]
+    T12["java.nio.* (NIO)"]
+    T13["java.nio.channels (Channel/Selector)"]
+    T14["java.nio.charset (Charset)"]
+    T15["零拷贝 (transferTo/mmap/directbuffer)"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T4 --> T5
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T5 --> T9
+    T9 --> T10
+    T10 --> T11
+    T10 --> T12
+    T10 --> T13
+    T10 --> T14
+    T10 --> T15
 ```
 
 ### 1.4 章节阅读建议
@@ -161,24 +170,25 @@ JDK 21 的虚拟线程让 BIO 模式在高并发场景重新可用——一个�
 
 Java I/O 是操作系统 I/O 系统调用的"包装层"：
 
-```
-Java Application
-    │
-    │  java.io.FileInputStream.read()
-    ▼
-JNI 调用 JVM 内部 native 方法
-    │
-    │  IO_Read (HotSpot 内部)
-    ▼
-Linux glibc
-    │
-    │  read(int fd, void *buf, size_t count)
-    ▼
-Linux Kernel
-    │
-    │  sys_read → vfs_read → ext4_file_read_iter
-    ▼
-Device Driver (NVMe / SATA / Network)
+```mermaid
+flowchart TD
+    T0["Java Application"]
+    T1["java.io.FileInputStream.read()"]
+    T2["JNI 调用 JVM 内部 native 方法"]
+    T3["IO_Read (HotSpot 内部)"]
+    T4["Linux glibc"]
+    T5["read(int fd, void *buf, size_t count)"]
+    T6["Linux Kernel"]
+    T7["sys_read → vfs_read → ext4_file_read_iter"]
+    T8["Device Driver (NVMe / SATA / Network)"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
+    T5 --> T6
+    T6 --> T7
+    T7 --> T8
 ```
 
 不同 JDK 版本的实现策略：
@@ -350,28 +360,29 @@ struct file {
 
 对于阻塞 socket，当接收缓冲区无数据时，`tcp_recvmsg` 会调用 `wait_for_packet`，将当前进程加入 socket 的等待队列，并调用 `schedule()` 让出 CPU。当数据到达（网卡中断 → 协议栈 → 唤醒等待队列），进程被唤醒，继续执行 `tcp_recvmsg` 完成读取。
 
-```
-[用户态] read(fd, buf, n)
-         │
-         │ syscall
-         ▼
-[内核态] sys_read → vfs_read → sock_read_iter → tcp_recvmsg
-         │
-         │ 数据未就绪
-         ▼
-         wait_for_packet (进程加入等待队列)
-         │
-         │ schedule() (让出 CPU)
-         ▼
-         (进程休眠)
-         │
-         │ 网卡中断 → 数据到达 → 唤醒等待队列
-         ▼
-         tcp_recvmsg 继续，拷贝数据到用户 buf
-         │
-         │ 返回
-         ▼
-[用户态] read 返回
+```mermaid
+flowchart TD
+    T0["[用户态] read(fd, buf, n)"]
+    T1["syscall"]
+    T2["[内核态] sys_read → vfs_read → sock_read_iter → tcp_recvmsg"]
+    T3["数据未就绪"]
+    T4["wait_for_packet (进程加入等待队列)"]
+    T5["schedule() (让出 CPU)"]
+    T6["(进程休眠)"]
+    T7["网卡中断 → 数据到达 → 唤醒等待队列"]
+    T8["tcp_recvmsg 继续，拷贝数据到用户 buf"]
+    T9["返回"]
+    T10["[用户态] read 返回"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
+    T5 --> T6
+    T6 --> T7
+    T7 --> T8
+    T8 --> T9
+    T9 --> T10
 ```
 
 这种模型的问题是：**一个连接一个线程**。1 万个连接需要 1 万个线程，每个线程默认占用 1MB 栈空间，内存消耗 10GB+，且线程切换开销巨大。
@@ -424,37 +435,34 @@ Java NIO 的 `Selector` 在 Linux 下使用 ET 模式的 `epoll`（JDK 实现细
 
 `Selector.open()` 内部调用链：
 
-```
-Selector.open()
-    │
-    ▼
-SelectorProvider.provider().openSelector()
-    │
-    ▼
-EPollSelectorImpl (Linux) / KQueueSelectorImpl (Mac) / WindowsSelectorImpl (Windows)
-    │
-    ▼
-EPollArrayWrapper.epollCreate() (Linux)
-    │
-    │  epoll_create(256) syscall
-    ▼
-返回 epoll fd
+```mermaid
+flowchart TD
+    T0["Selector.open()"]
+    T1["SelectorProvider.provider().openSelector()"]
+    T2["EPollSelectorImpl (Linux) / KQueueSelectorImpl (Mac) / WindowsSelectorImpl (Windows)"]
+    T3["EPollArrayWrapper.epollCreate() (Linux)"]
+    T4["epoll_create(256) syscall"]
+    T5["返回 epoll fd"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
 ```
 
 `Selector.select()` 调用链：
 
-```
-Selector.select(timeout)
-    │
-    ▼
-EPollSelectorImpl.doSelect(timeout)
-    │
-    ▼
-EPollArrayWrapper.epollWait(timeout)
-    │
-    │  epoll_wait(epfd, events, maxevents, timeout) syscall
-    ▼
-处理就绪事件，更新 selectedKeys
+```mermaid
+flowchart TD
+    T0["Selector.select(timeout)"]
+    T1["EPollSelectorImpl.doSelect(timeout)"]
+    T2["EPollArrayWrapper.epollWait(timeout)"]
+    T3["epoll_wait(epfd, events, maxevents, timeout) syscall"]
+    T4["处理就绪事件，更新 selectedKeys"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
 ```
 
 ### 4.5 异步 I/O (AIO) 与 `io_uring`
@@ -463,14 +471,18 @@ JDK 7 引入的 AIO 在 Linux 下并非真异步——其底层用 `epoll` 模�
 
 Linux 5.1（2019）引入的 `io_uring` 是真异步 I/O，通过共享内存环形队列避免系统调用开销：
 
-```
-[用户态]                           [内核态]
-┌──────────────────┐              ┌──────────────────┐
-│ SQ (提交队列)     │ ──────────→  │ 内核消费 SQ       │
-└──────────────────┘              └──────────────────┘
-┌──────────────────┐              ┌──────────────────┐
-│ CQ (完成队列)     │ ←──────────  │ 内核填充 CQ       │
-└──────────────────┘              └──────────────────┘
+```mermaid
+flowchart LR
+    subgraph User[用户态]
+        SQ[SQ 提交队列]
+        CQ[CQ 完成队列]
+    end
+    subgraph Kernel[内核态]
+        KSQ[内核消费 SQ]
+        KCQ[内核填充 CQ]
+    end
+    SQ -->|提交请求| KSQ
+    KCQ -->|完成事件| CQ
 ```
 
 JDK 21+ 计划通过 Project Loom + FFM API 集成 `io_uring`，但目前（2024 年）尚未在主线 JDK 中启用。
@@ -1407,17 +1419,14 @@ jstack <pid> | grep -A 20 "epollWait"
 
 Netty 是 Java NIO 的工业级封装。其核心架构：
 
-```
-EventLoopGroup (boss) ──→ accept
-    │
-    ▼
-EventLoopGroup (worker)
-    │
-    ├── EventLoop-1 (Selector + Thread)
-    │     └── Channel A, B, C
-    ├── EventLoop-2 (Selector + Thread)
-    │     └── Channel D, E, F
-    └── ...
+```mermaid
+flowchart TD
+    Boss[EventLoopGroup（boss）] -->|accept| Worker[EventLoopGroup（worker）]
+    Worker --> EL1[EventLoop-1<br/>Selector + Thread]
+    EL1 --> CH1[Channel A, B, C]
+    Worker --> EL2[EventLoop-2<br/>Selector + Thread]
+    EL2 --> CH2[Channel D, E, F]
+    Worker --> ELN[...]
 ```
 
 `NioEventLoop` 的核心 select 循环：
@@ -1604,25 +1613,25 @@ public NettyReactiveWebServerFactory serverFactory() {
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
 **习题 1**：解释 `Buffer.flip()` 与 `Buffer.rewind()` 的区别。
 
-**参考答案**：
+**解析讲解**：
 - `flip()`：limit 设为当前 position，position 设为 0。用于读模式切换。
 - `rewind()`：position 设为 0，limit 不变。用于重新读已读过的数据。
 
 **习题 2**：为什么 `Selector.select()` 必须搭配非阻塞 Channel？
 
-**参考答案**：`select()` 监控多个 fd 的就绪状态。若 Channel 是阻塞的，`read` 会阻塞当前线程，违反"单线程处理多连接"的设计。
+**解析讲解**：`select()` 监控多个 fd 的就绪状态。若 Channel 是阻塞的，`read` 会阻塞当前线程，违反"单线程处理多连接"的设计。
 
-### 10.2 应用题
+### 应用题知识点讲解
 
 **习题 3**：实现一个 NIO 文件复制方法，要求支持 1GB 以上大文件。
 
-**参考答案**：
+**解析讲解**：
 
 ```java
 public static void copyLarge(Path src, Path dst) throws IOException {
@@ -1640,7 +1649,7 @@ public static void copyLarge(Path src, Path dst) throws IOException {
 
 **习题 4**：实现一个基于 Selector 的端口扫描器，扫描 1–1024 端口。
 
-**参考答案**：
+**解析讲解**：
 
 ```java
 public static List<Integer> scan(String host) throws IOException {
@@ -1688,7 +1697,7 @@ socketChannel.read(buf);
 socketChannel.write(buf); // 可能写入空数据
 ```
 
-**参考答案**：缺少 `flip()`。`read` 后 position 在末尾，`write` 会从 position 写到 limit，但 limit 仍为 1024，写入空数据。修复：
+**解析讲解**：缺少 `flip()`。`read` 后 position 在末尾，`write` 会从 position 写到 limit，但 limit 仍为 1024，写入空数据。修复：
 
 ```java
 ByteBuffer buf = ByteBuffer.allocate(1024);
@@ -1699,7 +1708,7 @@ socketChannel.write(buf);
 
 **习题 6**：为什么 Netty 在 Linux 下选择 NIO 而非 AIO？
 
-**参考答案**：
+**解析讲解**：
 1. Linux AIO 是 epoll 模拟，性能与 NIO 相当。
 2. AIO API 回调嵌套复杂，编程体验差。
 3. NIO 生态成熟，框架支持完善。
@@ -1709,7 +1718,7 @@ socketChannel.write(buf);
 
 **习题 7**：评价"JDK 21 虚拟线程发布后，NIO Selector 模式将被淘汰"这一观点。
 
-**参考答案**：
+**解析讲解**：
 部分正确但不完全：
 - 虚拟线程让 BIO 模式可处理高并发，简化编程模型。
 - 但 NIO Selector 在以下场景仍有优势：
@@ -1722,11 +1731,11 @@ socketChannel.write(buf);
 
 **习题 8**：设计一个基于 NIO 的简易 HTTP 服务器，支持 GET 请求返回静态文件。
 
-**参考答案**：参考示例 5.6 的 NioEchoServer，扩展协议解析与文件响应逻辑。
+**解析讲解**：参考示例 5.6 的 NioEchoServer，扩展协议解析与文件响应逻辑。
 
 **习题 9**：设计一个零拷贝日志收集系统，从多个节点收集日志并发送到中央节点。
 
-**参考答案**：客户端使用 `FileChannel.transferTo` 直接将日志文件通过 socket 发送；服务端使用 `FileChannel.transferFrom` 接收并写入磁盘。
+**解析讲解**：客户端使用 `FileChannel.transferTo` 直接将日志文件通过 socket 发送；服务端使用 `FileChannel.transferFrom` 接收并写入磁盘。
 
 ---
 

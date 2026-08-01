@@ -331,37 +331,22 @@ B+ 树由三种节点组成：根节点（Root）、内部节点（Internal Node
 
 非叶节点（根节点与内部节点统称）只存储键值（Key）与子节点指针（Pointer），不存储实际数据。其结构如下：
 
-```
-+----------------------------------------------------------+
-| 节点头 | 键值个数 | 父节点指针 | 兄弟节点指针 | ...       |
-+----------------------------------------------------------+
-| Key[0]  | Ptr[0] | Key[1] | Ptr[1] | ... | Key[n-1] | Ptr[n] |
-+----------------------------------------------------------+
-
-说明：
-- Key[i]：第 i 个键值，按升序排列，Key[0] < Key[1] < ... < Key[n-1]
-- Ptr[i]：指向第 i 个子节点的指针
-- Ptr[0] 指向键值 < Key[0] 的子树
-- Ptr[i] 指向键值在 [Key[i-1], Key[i]) 区间的子树
-- Ptr[n] 指向键值 >= Key[n-1] 的子树
+```mermaid
+flowchart TD
+    B0["节点头 | 键值个数 | 父节点指针 | 兄弟节点指针 | ..."]
+    B1["Key[0] | Ptr[0] | Key[1] | Ptr[1] | ... | Key[n-1] | Ptr[n]"]
+    B0 --> B1
 ```
 
 #### 3.1.2 叶子节点结构
 
 叶子节点存储全部键值与对应的数据或数据指针，并通过双向链表连接：
 
-```
-+------------------------------------------------------------------+
-| 节点头 | 键值个数 | 前驱指针 | 后继指针 | ...                     |
-+------------------------------------------------------------------+
-| Key[0] | Data[0] | Key[1] | Data[1] | ... | Key[n-1] | Data[n-1] |
-+------------------------------------------------------------------+
-
-说明：
-- Key[i]：第 i 个键值，按升序排列
-- Data[i]：第 i 个键值对应的数据（聚簇索引为完整行，非聚簇索引为主键或行指针）
-- 前驱指针：指向前一个叶子节点（支持逆序扫描）
-- 后继指针：指向后一个叶子节点（支持顺序扫描）
+```mermaid
+flowchart TD
+    B0["节点头 | 键值个数 | 前驱指针 | 后继指针 | ..."]
+    B1["Key[0] | Data[0] | Key[1] | Data[1] | ... | Key[n-1] | Data[n-1]"]
+    B0 --> B1
 ```
 
 ### 3.2 B+ 树的查找算法
@@ -1348,24 +1333,11 @@ CREATE INDEX idx_fts_gist ON articles USING GIST (to_tsvector('english', content
 
 空间索引的核心数据结构是 R 树及其变体。R 树通过最小外接矩形（Minimum Bounding Rectangle, MBR）或最小外接框（Minimum Bounding Box, MBB）组织空间对象。
 
-```
--- R 树结构示意（二维空间）：
-
-根节点 MBR 覆盖整个空间：
-+-------------------------------------------+
-|  [MBR_A]              [MBR_B]            |
-|  +--------+           +--------+         |
-|  | * *    |           |   *    |         |
-|  |   * *  |           |  * *   |         |
-|  |     *  |           | *      |         |
-|  +--------+           +--------+         |
-+-------------------------------------------+
-
-R 树层级：
-[根 MBR] → [MBR_A, MBR_B]
-MBR_A → [子 MBR_A1, 子 MBR_A2]
-MBR_B → [子 MBR_B1, 子 MBR_B2]
-子 MBR → 实际空间对象（点、线、面）
+```mermaid
+flowchart TD
+    B0["[MBR_A]              [MBR_B]"]
+    B1["* * | * / * * | * * / * | *"]
+    B0 --> B1
 ```
 
 ### 6.2 R 树的查找
@@ -3668,3 +3640,242 @@ Bitmap Index Scan 的 I/O 模式：先扫描索引构建位图（标记需访问
 > 本文系统论述了 SQL 索引的底层原理、数据结构、查询优化、维护策略与工程实践。从 B+ 树的节点结构与算法细节，到哈希、全文、空间等专用索引；从执行计划分析与索引失效诊断，到跨数据库实现对比与故障排查实战，覆盖了索引领域的理论深度与工程广度。掌握索引技术，是数据库性能优化的核心能力，也是后端工程师与 DBA 的必备素养。
 >
 > 索引设计没有银弹，唯有深入理解数据结构原理、结合业务查询模式、辅以执行计划验证，方能在查询性能与写入开销之间找到最佳平衡点。愿本文能为读者在数据库性能优化之路上提供系统性的理论支撑与实践指引。
+## CREATE INDEX
+
+**单行写法：创建单列索引**
+`CREATE INDEX <索引名> ON <表名>(<列>);`
+```sql
+-- 在用户表的 email 列上创建索引
+CREATE INDEX idx_email ON users(email);
+```
+
+**单行写法：创建复合索引**
+`CREATE INDEX <索引名> ON <表名>(<列 1>, <列 2>);`
+```sql
+-- 在用户表的姓和名列上创建复合索引
+CREATE INDEX idx_name ON users(last_name, first_name);
+```
+
+**单行写法：创建唯一索引**
+`CREATE UNIQUE INDEX <索引名> ON <表名>(<列>);`
+```sql
+-- 在用户表的 email 列上创建唯一索引
+CREATE UNIQUE INDEX idx_unique_email ON users(email);
+```
+
+**单行写法：创建表时定义索引**
+`INDEX <索引名> (<列>)`
+```sql
+-- 创建表时同时创建索引
+CREATE TABLE users (
+  id INT PRIMARY KEY,
+  email VARCHAR(255),
+  INDEX idx_email (email)
+);
+```
+
+---
+
+## DROP INDEX
+
+**单行写法：删除索引**
+`DROP INDEX <索引名> ON <表名>;`
+```sql
+-- 删除用户表上的索引
+DROP INDEX idx_email ON users;
+```
+
+**单行写法：PostgreSQL 删除索引**
+`DROP INDEX <索引名>;`
+```sql
+-- PostgreSQL 删除索引
+DROP INDEX idx_email;
+```
+
+**单行写法：删除索引时判断是否存在**
+`DROP INDEX IF EXISTS <索引名>;`
+```sql
+-- 仅在索引存在时删除
+DROP INDEX IF EXISTS idx_email;
+```
+
+---
+
+## 复合索引
+
+**单行写法：创建复合索引**
+`CREATE INDEX <索引名> ON <表名>(<列 1>, <列 2>, <列 3>);`
+```sql
+-- 创建三列复合索引
+CREATE INDEX idx_dept_status_salary ON employees(dept_id, status, salary);
+```
+
+**单行写法：最左前缀匹配查询**
+`WHERE <列 1> = <值> AND <列 2> = <值>`
+```sql
+-- 使用复合索引的前两列（可利用索引）
+SELECT * FROM employees WHERE dept_id = 5 AND status = 'active';
+```
+
+**单行写法：跳过中间列无法利用索引**
+`WHERE <列 1> = <值> AND <列 3> = <值>`
+```sql
+-- 跳过 status 列，仅 dept_id 可利用索引
+SELECT * FROM employees WHERE dept_id = 5 AND salary > 50000;
+```
+
+---
+
+## 覆盖索引
+
+**换行写法：索引包含查询所需所有列**
+`CREATE INDEX <索引名> ON <表名>(<列 1>, <列 2>, <列 3>)`
+```sql
+-- 创建覆盖索引，避免回表查询
+CREATE INDEX idx_covering ON orders(user_id, status, amount);
+```
+
+**换行写法：覆盖索引查询**
+`SELECT <索引列> FROM <表名> WHERE <索引列条件>`
+```sql
+-- 查询列都在索引中，无需回表
+SELECT user_id, status, amount FROM orders WHERE user_id = 100;
+```
+
+---
+
+## 函数索引
+
+**单行写法：PostgreSQL 函数索引**
+`CREATE INDEX <索引名> ON <表名>(<函数>(<列>));`
+```sql
+-- 在 email 列的小写形式上创建索引
+CREATE INDEX idx_lower_email ON users(LOWER(email));
+```
+
+**单行写法：MySQL 函数索引**
+`CREATE INDEX <索引名> ON <表名>((<表达式>));`
+```sql
+-- MySQL 8.0+ 函数索引
+CREATE INDEX idx_lower_email ON users((LOWER(email)));
+```
+
+---
+
+## 前缀索引
+
+**单行写法：MySQL 前缀索引**
+`CREATE INDEX <索引名> ON <表名>(<列>(<前缀长度>));`
+```sql
+-- 在 email 列前 10 个字符上创建索引
+CREATE INDEX idx_email_prefix ON users(email(10));
+```
+
+---
+
+## 全文索引
+
+**单行写法：MySQL 全文索引**
+`CREATE FULLTEXT INDEX <索引名> ON <表名>(<列>);`
+```sql
+-- 在文章内容列上创建全文索引
+CREATE FULLTEXT INDEX idx_content ON articles(content);
+```
+
+**换行写法：创建表时定义全文索引**
+`FULLTEXT INDEX <索引名> (<列>)`
+```sql
+-- 创建表时同时创建全文索引
+CREATE TABLE articles (
+  id INT PRIMARY KEY,
+  title VARCHAR(200),
+  content TEXT,
+  FULLTEXT INDEX idx_content (content)
+);
+```
+
+**单行写法：PostgreSQL GIN 索引**
+`CREATE INDEX <索引名> ON <表名> USING GIN(to_tsvector(<配置>, <列>));`
+```sql
+-- 在文章内容列上创建 GIN 全文索引
+CREATE INDEX idx_content ON articles USING GIN(to_tsvector('english', content));
+```
+
+---
+
+## 空间索引
+
+**单行写法：MySQL 空间索引**
+`CREATE SPATIAL INDEX <索引名> ON <表名>(<列>);`
+```sql
+-- 在地理位置列上创建空间索引
+CREATE SPATIAL INDEX idx_location ON stores(location);
+```
+
+---
+
+## 索引查看
+
+**单行写法：MySQL 查看索引**
+`SHOW INDEX FROM <表名>;`
+```sql
+-- 查看用户表上的所有索引
+SHOW INDEX FROM users;
+```
+
+**换行写法：PostgreSQL 查看索引**
+`SELECT * FROM pg_indexes WHERE tablename = '<表名>';`
+```sql
+-- 查看用户表上的所有索引
+SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'users';
+```
+
+**单行写法：SQL Server 查看索引**
+`EXEC sp_helpindex '<表名>';`
+```sql
+-- 查看用户表上的所有索引
+EXEC sp_helpindex 'users';
+```
+
+---
+
+## 索引重建
+
+**单行写法：MySQL 重建索引**
+`ALTER TABLE <表名> REBUILD INDEX <索引名>;`
+```sql
+-- 重建用户表上的索引
+ALTER TABLE users REBUILD INDEX idx_email;
+```
+
+**单行写法：PostgreSQL 重建索引**
+`REINDEX INDEX <索引名>;`
+```sql
+-- 重建指定索引
+REINDEX INDEX idx_email;
+```
+
+**单行写法：PostgreSQL 并发重建索引**
+`REINDEX INDEX CONCURRENTLY <索引名>;`
+```sql
+-- 并发重建索引（不阻塞写入）
+REINDEX INDEX CONCURRENTLY idx_email;
+```
+
+---
+
+## 索引分析
+
+**单行写法：MySQL 分析执行计划**
+`EXPLAIN <SQL 语句>;`
+```sql
+-- 分析查询是否使用索引
+EXPLAIN SELECT * FROM users WHERE email = 'test@example.com';
+```
+
+**换行写法：PostgreSQL 分析执行计划**
+`EXPLAIN ANALYZE <SQL 语句>;`
+```sql
+-- 分析查询执行计划并实际执行
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
+```

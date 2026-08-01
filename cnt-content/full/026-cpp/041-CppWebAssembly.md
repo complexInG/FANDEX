@@ -1634,7 +1634,7 @@ void auto_bind() {
 GameEngine(int width, int height);
 ```
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 

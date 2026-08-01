@@ -362,28 +362,49 @@ $$
 
 层叠算法可视为一棵决策树，每个节点对应一个比较维度。浏览器从根节点开始，依次比较：
 
-```
-1. Origin & Importance
-   ├── 不同 → 较高者胜
-   └── 相同 → 进入 2
-2. Context (Shadow DOM)
-   ├── 不同 → 较外层胜
-   └── 相同 → 进入 3
-3. Element-attached (style 属性)
-   ├── 不同 → 有 style 者胜
-   └── 相同 → 进入 4
-4. Layer
-   ├── 不同 → 未分层胜；分层中后声明胜
-   └── 相同 → 进入 5
-5. Specificity
-   ├── 不同 → 较高者胜
-   └── 相同 → 进入 6
-6. Order of Appearance
-   ├── 不同 → 后出现者胜
-   └── 相同 → 进入 7
-7. Animation
-   └── ... (略)
-8. Transition (最高)
+```mermaid
+flowchart TD
+    T0["1. Origin & Importance"]
+    T1["不同 → 较高者胜"]
+    T2["相同 → 进入 2"]
+    T3["2. Context (Shadow DOM)"]
+    T4["不同 → 较外层胜"]
+    T5["相同 → 进入 3"]
+    T6["3. Element-attached (style 属性)"]
+    T7["不同 → 有 style 者胜"]
+    T8["相同 → 进入 4"]
+    T9["4. Layer"]
+    T10["不同 → 未分层胜；分层中后声明胜"]
+    T11["相同 → 进入 5"]
+    T12["5. Specificity"]
+    T13["不同 → 较高者胜"]
+    T14["相同 → 进入 6"]
+    T15["6. Order of Appearance"]
+    T16["不同 → 后出现者胜"]
+    T17["相同 → 进入 7"]
+    T18["7. Animation"]
+    T19["... (略)"]
+    T20["8. Transition (最高)"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
+    T11 --> T12
+    T12 --> T13
+    T12 --> T14
+    T14 --> T15
+    T15 --> T16
+    T15 --> T17
+    T17 --> T18
+    T18 --> T19
+    T19 --> T20
 ```
 
 ### 4.3 `!important` 的反转机制
@@ -1405,19 +1426,15 @@ element.classList.add('active');
 
 ### 8.1 优先级管理架构
 
-```
-┌─────────────────────────────────────────┐
-│         优先级管理架构（自下而上）          │
-├─────────────────────────────────────────┤
-│  Layer 1: Design Tokens（设计令牌）       │  最低
-│  Layer 2: Reset（重置）                  │
-│  Layer 3: Vendor（第三方库）              │
-│  Layer 4: Base（基础样式）                │
-│  Layer 5: Components（组件）              │
-│  Layer 6: Utilities（工具类）             │
-│  Layer 7: Overrides（业务覆盖）           │
-│  Unlayered: 业务代码（最高）              │  最高
-└─────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    L1[Layer 1: Design Tokens 设计令牌] --> L2[Layer 2: Reset 重置]
+    L2 --> L3[Layer 3: Vendor 第三方库]
+    L3 --> L4[Layer 4: Base 基础样式]
+    L4 --> L5[Layer 5: Components 组件]
+    L5 --> L6[Layer 6: Utilities 工具类]
+    L6 --> L7[Layer 7: Overrides 业务覆盖]
+    L7 --> UL[Unlayered: 业务代码<br/>最高优先级]
 ```
 
 ### 8.2 Stylelint 配置实践
@@ -1863,9 +1880,9 @@ import { Button } from 'antd';
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下选择器优先级最高的是？
 
@@ -1874,12 +1891,10 @@ B. `.nav .list .item`
 C. `div.container > p`
 D. `:where(#main) .text`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：
+**解析讲解**：
 
 - A: `#header .title` → (0, 1, 1, 0)
 - B: `.nav .list .item` → (0, 0, 3, 0)
@@ -1888,7 +1903,6 @@ D. `:where(#main) .text`
 
 A 的 (0, 1, 1, 0) 中 B=1，绝对高于其他选项的 B=0。
 
-</details>
 
 **题目 2**：关于 `@layer` 的描述，正确的是？
 
@@ -1897,19 +1911,16 @@ B. 层的声明顺序决定优先级，后声明的层优先级低
 C. 未分层样式总是优先于分层样式
 D. `@layer` 内不能使用 `!important`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：
+**解析讲解**：
 
 - A 错误：层间不可越级，层内优先级不影响层间关系。
 - B 错误：后声明的层优先级**高**。
 - C 正确：未分层样式优先于所有分层样式。
 - D 错误：`@layer` 内可以使用 `!important`，且 `!important` 在层间反转（分层 `!important` 高于未分层 `!important`）。
 
-</details>
 
 **题目 3**：`:is(.a, #b)` 的优先级是？
 
@@ -1918,14 +1929,11 @@ B. (0, 1, 0, 0)
 C. (0, 0, 0, 0)
 D. (0, 1, 1, 0)
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`:is()` 取参数中最具体的选择器优先级。`.a` 为 (0,0,1,0)，`#b` 为 (0,1,0,0)，取较高者 (0,1,0,0)。
+**解析讲解**：`:is()` 取参数中最具体的选择器优先级。`.a` 为 (0,0,1,0)，`#b` 为 (0,1,0,0)，取较高者 (0,1,0,0)。
 
-</details>
 
 **题目 4**：以下哪种方式可以有效覆盖内联样式 `style="color: red;"`？
 
@@ -1934,14 +1942,11 @@ B. `#element { color: blue; }`
 C. `.element { color: blue !important; }`
 D. `div.element { color: blue; }`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：内联样式优先级为 (1,0,0,0)，普通规则无法覆盖。`!important` 声明优先级高于内联 normal 声明，可以覆盖。若内联也是 `!important`，则需更高来源的 `!important`（如用户 `!important`）。
+**解析讲解**：内联样式优先级为 (1,0,0,0)，普通规则无法覆盖。`!important` 声明优先级高于内联 normal 声明，可以覆盖。若内联也是 `!important`，则需更高来源的 `!important`（如用户 `!important`）。
 
-</details>
 
 **题目 5**：Tailwind CSS 中 `!bg-red-500` 的作用是？
 
@@ -1950,80 +1955,60 @@ B. 强制设置背景色为红色 500（生成 `!important`）
 C. 排除背景色设置
 D. 设置背景色为红色 500 的 50% 透明度
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Tailwind 的 `!` 前缀（important modifier）生成带 `!important` 的声明，用于确保覆盖其他样式。例如 `!bg-red-500` 编译为 `background-color: #ef4444 !important;`。
+**解析讲解**：Tailwind 的 `!` 前缀（important modifier）生成带 `!important` 的声明，用于确保覆盖其他样式。例如 `!bg-red-500` 编译为 `background-color: #ef4444 !important;`。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：CSS 优先级四元组 (A, B, C, D) 中，A 表示 ________ 的数量，B 表示 ________ 的数量。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：内联样式（`style` 属性）；ID 选择器
+**解析讲解**：内联样式（`style` 属性）；ID 选择器
 
-**解析**：四元组 (A, B, C, D) 分别对应：内联样式（0 或 1）、ID 选择器数量、类/属性/伪类数量、元素/伪元素数量。
+**解析讲解**：四元组 (A, B, C, D) 分别对应：内联样式（0 或 1）、ID 选择器数量、类/属性/伪类数量、元素/伪元素数量。
 
-</details>
 
 **题目 2**：`:where()` 的优先级恒为 ________。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：(0, 0, 0, 0)
+**解析讲解**：(0, 0, 0, 0)
 
-**解析**：`:where()` 设计为零优先级伪类，无论其参数如何，优先级总是 (0,0,0,0)。
+**解析讲解**：`:where()` 设计为零优先级伪类，无论其参数如何，优先级总是 (0,0,0,0)。
 
-</details>
 
 **题目 3**：CSS 层叠算法的 8 个阶段中，优先级（Specificity）位于第 ________ 阶段。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：5
+**解析讲解**：5
 
-**解析**：8 个阶段依次为：Origin & Importance → Context → Element-attached → Layer → Specificity → Order of Appearance → Animation → Transition。Specificity 是第 5 阶段。
+**解析讲解**：8 个阶段依次为：Origin & Importance → Context → Element-attached → Layer → Specificity → Order of Appearance → Animation → Transition。Specificity 是第 5 阶段。
 
-</details>
 
 **题目 4**：`@layer A, B, C;` 声明三个层，优先级从低到高为 ________。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：A < B < C
+**解析讲解**：A < B < C
 
-**解析**：`@layer` 的声明顺序决定优先级，先声明的层优先级低，后声明的层优先级高。
+**解析讲解**：`@layer` 的声明顺序决定优先级，先声明的层优先级低，后声明的层优先级高。
 
-</details>
 
 **题目 5**：`:has(.a #b)` 的优先级为 ________。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：(0, 1, 1, 0)
+**解析讲解**：(0, 1, 1, 0)
 
-**解析**：`:has()` 的优先级由参数中最具体的选择器决定。`.a #b` 的优先级为 (0,1,1,0)（1 个 ID + 1 个类），因此 `:has(.a #b)` 的优先级也是 (0,1,1,0)。
+**解析讲解**：`:has()` 的优先级由参数中最具体的选择器决定。`.a #b` 的优先级为 (0,1,1,0)（1 个 ID + 1 个类），因此 `:has(.a #b)` 的优先级也是 (0,1,1,0)。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：编写一个 CSS 选择器，使其优先级为 (0, 2, 3, 1)。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 ```css
 #header #nav .menu .item .link:hover div {
@@ -2055,7 +2040,6 @@ D. 设置背景色为红色 500 的 50% 透明度
 }
 ```
 
-</details>
 
 **题目 2**：使用 `@layer` 重构以下样式，使其符合企业级分层架构。
 
@@ -2068,10 +2052,8 @@ D. 设置背景色为红色 500 的 50% 透明度
 .card { border: 1px solid #ccc; }
 ```
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 ```css
 @layer reset, components, utilities;
@@ -2099,21 +2081,18 @@ D. 设置背景色为红色 500 的 50% 透明度
 }
 ```
 
-**解析**：
+**解析讲解**：
 
 1. `reset` 层最低，用于全局重置。
 2. `components` 层包含组件样式。
 3. `utilities` 层包含工具类，优先级高于组件类。
 4. 未分层样式（如有）优先级最高。
 
-</details>
 
 **题目 3**：编写 JavaScript 函数，计算任意 CSS 选择器的优先级。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 /**
@@ -2183,18 +2162,15 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 // { a: 0, b: 1, c: 0, d: 0 }
 ```
 
-**解析**：生产环境推荐使用 [`specificity`](https://www.npmjs.com/package/specificity) 库，其解析更精确。
+**解析讲解**：生产环境推荐使用 [`specificity`](https://www.npmjs.com/package/specificity) 库，其解析更精确。
 
-</details>
 
 ### 10.4 思考题
 
 **题目 1**：为什么 CSS 优先级使用四元组而非单一数字？这种设计有哪些优劣？
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 **优势**：
 
@@ -2208,14 +2184,11 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 2. **计算复杂**：复杂选择器的优先级需逐项统计，易出错。
 3. **缺乏工具支持**：早期开发者需手工计算，现代工具（如 DevTools）已改善。
 
-</details>
 
 **题目 2**：`@layer` 的引入对现有 CSS 架构（如 BEM、ITCSS）有何影响？是否应全面迁移到 `@layer`？
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 **影响**：
 
@@ -2232,14 +2205,11 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 
 **结论**：不应一刀切全面迁移，应结合项目实际情况，渐进引入 `@layer`，与现有架构协同。
 
-</details>
 
 **题目 3**：在微前端架构中，多个子应用的样式如何隔离？`@layer` 能否解决微前端的样式冲突？
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 **微前端样式隔离方案**：
 
@@ -2269,7 +2239,6 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 
 **结论**：`@layer` 是微前端样式隔离的有效补充，但应与 Shadow DOM 或 CSS Modules 结合使用，形成多层防护。
 
-</details>
 
 ---
 

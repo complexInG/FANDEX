@@ -95,14 +95,19 @@ C++11 标准引入了**右值引用（rvalue reference）**`T&&` 与**移动语�
 
 依据 C++23 [basic.lval]（ISO/IEC 14882:2023 第 6.7.1 节）的定义，表达式按值类别划分为如下结构：
 
-```
-expression
-├── glvalue（generalized lvalue）
-│   ├── lvalue
-│   └── xvalue（expiring value）
-└── rvalue
-    ├── prvalue（pure rvalue）
-    └── xvalue
+```mermaid
+flowchart TD
+    T0["expression"]
+    T1["glvalue（generalized lvalue）"]
+    T2["lvalue"]
+    T3["xvalue（expiring value）"]
+    T4["rvalue"]
+    T5["prvalue（pure rvalue）"]
+    T6["xvalue"]
+    T0 --> T1
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
 ```
 
 形式化判定：
@@ -741,11 +746,11 @@ int main() {
 
 | 优化技术 | GCC | Clang | MSVC | ICC |
 | :--- | :--- | :--- | :--- | :--- |
-| RVO（prvalue） | ✅ 强制 | ✅ 强制 | ✅ 强制 | ✅ 强制 |
-| NRVO（named） | ✅ 优化 | ✅ 优化 | ✅ 优化 | ✅ 优化 |
+| RVO（prvalue） | 已达标 强制 | 已达标 强制 | 已达标 强制 | 已达标 强制 |
+| NRVO（named） | 已达标 优化 | 已达标 优化 | 已达标 优化 | 已达标 优化 |
 | `-fno-elide-constructors` | 可关闭 | 可关闭 | 不可关闭 | 不可关闭 |
-| Move on return | ✅ | ✅ | ✅ | ✅ |
-| 隐式 `std::move` 返回 | ✅ C++11 起 | ✅ | ✅ | ✅ |
+| Move on return | 已达标 | 已达标 | 已达标 | 已达标 |
+| 隐式 `std::move` 返回 | 已达标 C++11 起 | 已达标 | 已达标 | 已达标 |
 
 ## 7. 常见陷阱与最佳实践
 
@@ -899,18 +904,25 @@ auto w = std::move(v); // 移动构造
 
 **典型 CMake 项目结构**：
 
-```
-project/
-├── CMakeLists.txt
-├── include/
-│   └── mylib/
-│       └── buffer.hpp
-├── src/
-│   └── buffer.cpp
-├── tests/
-│   └── test_buffer.cpp
-└── benchmarks/
-    └── bench_buffer.cpp
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["CMakeLists.txt"]
+    T2["include/"]
+    T3["mylib/"]
+    T4["buffer.hpp"]
+    T5["src/"]
+    T6["buffer.cpp"]
+    T7["tests/"]
+    T8["test_buffer.cpp"]
+    T9["benchmarks/"]
+    T10["bench_buffer.cpp"]
+    T0 --> T1
+    T0 --> T2
+    T4 --> T5
+    T6 --> T7
+    T8 --> T9
+    T9 --> T10
 ```
 
 **`CMakeLists.txt` 模板**：
@@ -1215,30 +1227,27 @@ public:
 - 拷贝构造/赋值被 `delete` 禁用；
 - 移动构造/赋值使用 `noexcept`，确保容器可用。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**. 以下哪个表达式是 xvalue？
+**常见疑问 1**：. 以下哪个表达式是 xvalue？
 
 - A. `42`
 - B. `int x = 42; x`
 - C. `std::move(x)`
 - D. `"hello"`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
 - A 是 prvalue；
 - B 是 lvalue；
 - C 是 xvalue（`std::move` 将 lvalue 转为 xvalue）；
 - D 是 lvalue（字符串字面量是 const char 数组，可取地址）。
 
-</details>
 
-**Q2**. 以下代码输出什么？
+**常见疑问 2**：. 以下代码输出什么？
 
 ```cpp
 std::string a = "hello";
@@ -1251,16 +1260,13 @@ std::cout << a.size();
 - C. 5
 - D. 未定义行为
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B（在主流实现中）
+**解析讲解**：B（在主流实现中）
 
 `std::move(a)` 后，`a` 处于 "valid but unspecified" 状态。标准保证 `a.size()` 是合法操作，但不保证具体值。在 libstdc++ 和 libc++ 的实现中，移动后的 `std::string` 会将 size 设为 0。严格来说答案 C 也可能正确，但 0 是主流实现的行为。
 
-</details>
 
-**Q3**. 以下代码会发生什么？
+**常见疑问 3**：. 以下代码会发生什么？
 
 ```cpp
 const std::vector<int> v = {1, 2, 3};
@@ -1272,71 +1278,51 @@ auto v2 = std::move(v);
 - C. 编译错误
 - D. UB
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
 `v` 是 `const`，`std::move(v)` 将其转为 `const vector<int>&&`。但 `vector` 的移动构造签名为 `vector(vector&&)`，不能接受 `const vector&&`。重载决议退回到 `vector(const vector&)` 拷贝构造。
 
-</details>
 
-**Q4**. 为什么移动构造必须标记 `noexcept`？
+**常见疑问 4**：. 为什么移动构造必须标记 `noexcept`？
 
 - A. 为了性能（编译器优化）
 - B. 因为移动不允许抛异常
 - C. 影响 `std::vector::reserve` 的策略
 - D. 强制要求
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
 `std::vector` 在扩容时若 `is_nothrow_move_constructible_v<T>` 为真，则使用移动；否则退化为拷贝以保证强异常安全。非 `noexcept` 的移动构造会导致 vector 退化为拷贝，失去性能优势。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**. C++17 起，对 prvalue 的拷贝消除变为 ______（强制/可选）。
+**常见疑问 5**：. C++17 起，对 prvalue 的拷贝消除变为 ______（强制/可选）。
 
-<details>
-<summary>答案</summary>
 
 强制（mandatory copy elision）。
-</details>
 
-**Q2**. `std::move(x)` 的本质是 `static_cast<______>(x)`。
+**常见疑问 6**：. `std::move(x)` 的本质是 `static_cast<______>(x)`。
 
-<details>
-<summary>答案</summary>
 
 `std::remove_reference_t<T>&&`，即无条件转为右值引用。
-</details>
 
-**Q3**. C++11 中 `T&&` 在模板参数推导上下文中称为 ______，非推导上下文中称为 ______。
+**常见疑问 7**：. C++11 中 `T&&` 在模板参数推导上下文中称为 ______，非推导上下文中称为 ______。
 
-<details>
-<summary>答案</summary>
 
 转发引用（forwarding reference），右值引用（rvalue reference）。
-</details>
 
-**Q4**. Rule of Five 包括：析构函数、拷贝构造、拷贝赋值、______、______。
+**常见疑问 8**：. Rule of Five 包括：析构函数、拷贝构造、拷贝赋值、______、______。
 
-<details>
-<summary>答案</summary>
 
 移动构造、移动赋值。
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q1**. 实现一个 `SimpleVector<T>` 类，包含完整的 Rule of Five，并保证移动操作 `noexcept`。
+**常见疑问 9**：. 实现一个 `SimpleVector<T>` 类，包含完整的 Rule of Five，并保证移动操作 `noexcept`。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <cstddef>
@@ -1411,12 +1397,9 @@ public:
 };
 ```
 
-</details>
 
-**Q2**. 实现一个 `LockedQueue<T>`，支持 `push(T)` 和 `pop()` 方法，要求使用 `std::move` 转移所有权，并保证线程安全。
+**常见疑问 10**：. 实现一个 `LockedQueue<T>`，支持 `push(T)` 和 `pop()` 方法，要求使用 `std::move` 转移所有权，并保证线程安全。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <mutex>
@@ -1450,12 +1433,9 @@ public:
 };
 ```
 
-</details>
 
-**Q3**. 实现一个工厂函数 `make_string`，接受任意参数并完美转发到 `std::string` 构造函数。
+**常见疑问 11**：. 实现一个工厂函数 `make_string`，接受任意参数并完美转发到 `std::string` 构造函数。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <string>
@@ -1477,14 +1457,11 @@ int main() {
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
-**Q1**. 为什么 C++ 不像 Rust 那样在编译期禁止使用移动后的对象？
+**常见疑问 12**：. 为什么 C++ 不像 Rust 那样在编译期禁止使用移动后的对象？
 
-<details>
-<summary>参考解析</summary>
 
 C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 - 大量已有代码依赖"移动后对象仍可析构"的语义；
@@ -1493,12 +1470,9 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 - Rust 通过编译期分析实现了更严格的所有权模型，但代价是更陡的学习曲线和更难表达的某些模式（如自引用结构）。
 
 两者是设计哲学的不同选择，各有取舍。
-</details>
 
-**Q2**. 在什么场景下应该使用 `std::move`，什么场景下应该让编译器隐式移动？
+**常见疑问 13**：. 在什么场景下应该使用 `std::move`，什么场景下应该让编译器隐式移动？
 
-<details>
-<summary>参考解析</summary>
 
 显式 `std::move` 的场景：
 - 容器 `push_back(emplace_back)` 时传入局部变量；
@@ -1511,12 +1485,9 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 - 对 `const` 对象（无意义，退化为拷贝）。
 
 简言之：**只有确需将 lvalue 强制转为 rvalue 时才 `std::move`**。
-</details>
 
-**Q3**. 移动语义能完全替代 `std::shared_ptr` 吗？为什么？
+**常见疑问 14**：. 移动语义能完全替代 `std::shared_ptr` 吗？为什么？
 
-<details>
-<summary>参考解析</summary>
 
 不能。`std::shared_ptr` 解决的是**共享所有权**问题，多个所有者共同管理同一对象的生命周期；移动语义解决的是**独占所有权**的转移问题。
 
@@ -1526,7 +1497,6 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 - 异步任务间共享结果。
 
 但对于独占所有权，应优先使用 `unique_ptr` 配合移动语义，性能更优、语义更清晰。
-</details>
 
 ## 11. 参考文献
 
@@ -1663,7 +1633,3 @@ template <typename T> constexpr bool is_rvalue_v = std::is_rvalue_reference_v<T>
 
 ---
 
-## 更新日志
-
-- 2026-07-20: 金标准升级至对标 MIT/Stanford/CMU 教学水准，新增历史脉络、形式化定义、KaTeX 推导、企业级示例、案例研究、习题与参考文献。
-- 2026-06-14: 初版，覆盖移动构造、移动赋值、`std::move` 基础。

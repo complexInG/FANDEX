@@ -206,32 +206,25 @@ reviewer: FANDEX Content Engineering Team
 
 ### 1.3 学习路径
 
-```
-翻译单元 & 翻译阶段
-        │
-        ▼
-链接性 (external/internal/no linkage)
-        │
-        ▼
-ODR (One Definition Rule)
-        │
-        ▼
-头文件 & 预处理器
-        │
-        ▼
-Makefile & 增量构建
-        │
-        ▼
-CMake / Ninja / Meson
-        │
-        ▼
-静态库 & 动态库
-        │
-        ▼
-ABI & 二进制兼容性
-        │
-        ▼
-工业级工程实践
+```mermaid
+flowchart TD
+    T0["翻译单元 & 翻译阶段"]
+    T1["链接性 (external/internal/no linkage)"]
+    T2["ODR (One Definition Rule)"]
+    T3["头文件 & 预处理器"]
+    T4["Makefile & 增量构建"]
+    T5["CMake / Ninja / Meson"]
+    T6["静态库 & 动态库"]
+    T7["ABI & 二进制兼容性"]
+    T8["工业级工程实践"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
+    T5 --> T6
+    T6 --> T7
+    T7 --> T8
 ```
 
 ### 1.4 学习成果评估
@@ -1749,36 +1742,50 @@ executable('myproject', srcs,
 
 推荐的中型 C 项目结构：
 
-```
-myproject/
-├── CMakeLists.txt
-├── README.md
-├── LICENSE
-├── include/                  # 公共头文件（外部可见）
-│   └── myproject/
-│       ├── hashmap.h
-│       ├── logger.h
-│       └── version.h
-├── src/                      # 源文件（内部）
-│   ├── internal/             # 内部头文件
-│   │   └── hashmap_internal.h
-│   ├── hashmap.c
-│   └── logger.c
-├── examples/                 # 示例
-│   └── demo.c
-├── tests/                    # 测试
-│   ├── test_hashmap.c
-│   └── test_logger.c
-├── benchmarks/               # 性能基准
-│   └── bench_hashmap.c
-├── docs/                     # 文档
-├── scripts/                  # 辅助脚本
-│   ├── build.sh
-│   └── release.sh
-├── cmake/                    # CMake 模块
-│   └── FindMyProject.cmake
-└── third_party/              # 第三方依赖
-    └── ...
+```mermaid
+flowchart TD
+    T0["myproject/"]
+    T1["CMakeLists.txt"]
+    T2["README.md"]
+    T3["LICENSE"]
+    T4["include/                  # 公共头文件（外部可见）"]
+    T5["myproject/"]
+    T6["hashmap.h"]
+    T7["logger.h"]
+    T8["version.h"]
+    T9["src/                      # 源文件（内部）"]
+    T10["internal/             # 内部头文件"]
+    T11["hashmap_internal.h"]
+    T12["hashmap.c"]
+    T13["logger.c"]
+    T14["examples/                 # 示例"]
+    T15["demo.c"]
+    T16["tests/                    # 测试"]
+    T17["test_hashmap.c"]
+    T18["test_logger.c"]
+    T19["benchmarks/               # 性能基准"]
+    T20["bench_hashmap.c"]
+    T21["docs/                     # 文档"]
+    T22["scripts/                  # 辅助脚本"]
+    T23["build.sh"]
+    T24["release.sh"]
+    T25["cmake/                    # CMake 模块"]
+    T26["FindMyProject.cmake"]
+    T27["third_party/              # 第三方依赖"]
+    T28["..."]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T8 --> T9
+    T13 --> T14
+    T15 --> T16
+    T18 --> T19
+    T20 --> T21
+    T20 --> T22
+    T24 --> T25
+    T26 --> T27
+    T27 --> T28
 ```
 
 ### 13.2 版本号管理
@@ -1994,22 +2001,31 @@ Linux 内核约 3000 万行 C 代码，是多文件编译的极致案例。
 
 #### 14.1.1 目录结构
 
-```
-linux/
-├── arch/         # 架构相关代码（每个架构一个子目录）
-│   ├── x86/
-│   ├── arm64/
-│   └── ...
-├── kernel/       # 内核核心
-├── mm/           # 内存管理
-├── fs/           # 文件系统
-├── net/          # 网络栈
-├── drivers/      # 设备驱动
-├── include/      # 头文件
-│   ├── linux/    # 内核公共头
-│   ├── uapi/     # 用户态接口头
-│   └── asm-$(ARCH)/  # 架构相关头
-└── Makefile      # 顶层 Makefile
+```mermaid
+flowchart TD
+    T0["linux/"]
+    T1["arch/         # 架构相关代码（每个架构一个子目录）"]
+    T2["x86/"]
+    T3["arm64/"]
+    T4["..."]
+    T5["kernel/       # 内核核心"]
+    T6["mm/           # 内存管理"]
+    T7["fs/           # 文件系统"]
+    T8["net/          # 网络栈"]
+    T9["drivers/      # 设备驱动"]
+    T10["include/      # 头文件"]
+    T11["linux/    # 内核公共头"]
+    T12["uapi/     # 用户态接口头"]
+    T13["asm-$(ARCH)/  # 架构相关头"]
+    T14["Makefile      # 顶层 Makefile"]
+    T0 --> T1
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T4 --> T8
+    T4 --> T9
+    T4 --> T10
+    T13 --> T14
 ```
 
 #### 14.1.2 Kbuild 系统
@@ -2073,25 +2089,30 @@ Redis 是中等规模 C 项目（约 15 万行）的代表。
 
 #### 14.3.1 目录结构
 
-```
-redis/
-├── src/
-│   ├── server.c           # 主程序
-│   ├── networking.c       # 网络层
-│   ├── db.c               # 数据库层
-│   ├── object.c           # 对象系统
-│   ├── t_string.c         # 字符串类型实现
-│   ├── t_list.c           # 列表类型实现
-│   ├── t_hash.c           # 哈希类型实现
-│   ├── t_set.c            # 集合类型实现
-│   ├── t_zset.c           # 有序集合类型实现
-│   └── modules/           # 模块系统
-├── deps/                  # 第三方依赖
-│   ├── hiredis/
-│   ├── jemalloc/
-│   └── linenoise/
-├── tests/                 # 测试
-└── Makefile               # 构建文件
+```mermaid
+flowchart TD
+    T0["redis/"]
+    T1["src/"]
+    T2["server.c           # 主程序"]
+    T3["networking.c       # 网络层"]
+    T4["db.c               # 数据库层"]
+    T5["object.c           # 对象系统"]
+    T6["t_string.c         # 字符串类型实现"]
+    T7["t_list.c           # 列表类型实现"]
+    T8["t_hash.c           # 哈希类型实现"]
+    T9["t_set.c            # 集合类型实现"]
+    T10["t_zset.c           # 有序集合类型实现"]
+    T11["modules/           # 模块系统"]
+    T12["deps/                  # 第三方依赖"]
+    T13["hiredis/"]
+    T14["jemalloc/"]
+    T15["linenoise/"]
+    T16["tests/                 # 测试"]
+    T17["Makefile               # 构建文件"]
+    T0 --> T1
+    T11 --> T12
+    T15 --> T16
+    T15 --> T17
 ```
 
 #### 14.3.2 Makefile 简化版
@@ -2398,24 +2419,31 @@ int get_state(const Context *ctx) { return ctx->state; }
 
 #### 17.1.1 项目结构
 
-```
-calculator/
-├── CMakeLists.txt
-├── include/
-│   └── calc/
-│       ├── calc.h
-│       ├── operations.h
-│       └── parser.h
-├── src/
-│   ├── operations.c
-│   ├── parser.c
-│   └── internal/
-│       └── tokenizer.h
-├── tests/
-│   ├── test_operations.c
-│   └── test_parser.c
-└── examples/
-    └── demo.c
+```mermaid
+flowchart TD
+    T0["calculator/"]
+    T1["CMakeLists.txt"]
+    T2["include/"]
+    T3["calc/"]
+    T4["calc.h"]
+    T5["operations.h"]
+    T6["parser.h"]
+    T7["src/"]
+    T8["operations.c"]
+    T9["parser.c"]
+    T10["internal/"]
+    T11["tokenizer.h"]
+    T12["tests/"]
+    T13["test_operations.c"]
+    T14["test_parser.c"]
+    T15["examples/"]
+    T16["demo.c"]
+    T0 --> T1
+    T0 --> T2
+    T6 --> T7
+    T11 --> T12
+    T14 --> T15
+    T15 --> T16
 ```
 
 #### 17.1.2 头文件
@@ -2736,17 +2764,17 @@ Test project build
 100% tests passed, 2 tests passed
 ```
 
-## 18. 习题
+## 知识讲解与要点分析（原习题）
 
-### 习题 1（填空题）
+## 知识讲解与要点分析（原习题 1（填空题））
 
 C 标准（ISO/IEC 9899:2024）定义了 ____ 个翻译阶段，其中头文件展开发生在第 ____ 阶段，符号解析与重定位发生在第 ____ 阶段。
 
-**答案**：8；4；8
+**解析讲解**：8；4；8
 
-**解析**：阶段 4 是预处理阶段，`#include` 在此展开。阶段 8 是链接阶段，符号解析在此完成。
+**解析讲解**：阶段 4 是预处理阶段，`#include` 在此展开。阶段 8 是链接阶段，符号解析在此完成。
 
-### 习题 2（选择题）
+## 知识讲解与要点分析（原习题 2（选择题））
 
 下列哪种链接性允许标识符在多个翻译单元中被访问？
 
@@ -2755,11 +2783,11 @@ B. 内部链接（internal linkage）
 C. 外部链接（external linkage）
 D. 自动链接（automatic linkage）
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：外部链接使标识符可被整个程序的所有翻译单元访问。C 标准只定义三类链接性，无"自动链接"概念。
+**解析讲解**：外部链接使标识符可被整个程序的所有翻译单元访问。C 标准只定义三类链接性，无"自动链接"概念。
 
-### 习题 3（选择题）
+## 知识讲解与要点分析（原习题 3（选择题））
 
 关于 `static` 关键字，下列说法错误的是：
 
@@ -2768,11 +2796,11 @@ B. 块作用域的 `static` 变量具有静态存储期
 C. 文件作用域的 `static` 函数仅在本翻译单元可见
 D. `static` 变量在每次函数调用时重新初始化
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：`static` 变量（无论文件还是块作用域）仅在程序启动时初始化一次，之后保持值。块作用域 `static` 变量虽然只在块内可见，但其值在多次调用间保持。
+**解析讲解**：`static` 变量（无论文件还是块作用域）仅在程序启动时初始化一次，之后保持值。块作用域 `static` 变量虽然只在块内可见，但其值在多次调用间保持。
 
-### 习题 4（代码修正题）
+## 知识讲解与要点分析（原习题 4（代码修正题））
 
 ```c
 // header.h
@@ -2817,7 +2845,7 @@ void inc(void) { counter++; }
 void dec(void) { counter--; }
 ```
 
-### 习题 5（代码修正题）
+## 知识讲解与要点分析（原习题 5（代码修正题））
 
 ```makefile
 # Makefile
@@ -2837,11 +2865,11 @@ utils.o: utils.c utils.h
 
 **修正**：将所有命令行的空格改为 Tab。
 
-### 习题 6（开放性问题）
+## 知识讲解与要点分析（原习题 6（开放性问题））
 
 讨论静态库与动态库在以下维度的差异，并给出选择建议：(1) 启动速度；(2) 内存占用；(3) 升级维护；(4) 安全性；(5) ABI 兼容性。
 
-**参考答案**：
+**解析讲解**：
 
 | 维度 | 静态库 | 动态库 |
 |------|--------|--------|
@@ -2860,7 +2888,7 @@ utils.o: utils.c utils.h
 - 资源受限（如嵌入式）：静态库
 - 第三方分发（如插件系统）：动态库
 
-### 习题 7（开放性问题）
+## 知识讲解与要点分析（原习题 7（开放性问题））
 
 设计一个跨平台的线程池库项目结构，要求：
 
@@ -2872,30 +2900,38 @@ utils.o: utils.c utils.h
 
 请给出目录结构、关键头文件骨架、CMakeLists.txt 主要内容，并说明设计决策。
 
-**参考答案**：
+**解析讲解**：
 
 目录结构：
 
-```
-threadpool/
-├── CMakeLists.txt
-├── include/
-│   └── threadpool/
-│       ├── threadpool.h       # C 接口
-│       ├── threadpool.hpp     # C++ 包装
-│       └── version.h
-├── src/
-│   ├── threadpool.c
-│   ├── worker.c
-│   └── internal/
-│       └── queue.h
-├── tests/
-│   ├── test_basic.c
-│   └── test_stress.cpp
-├── benchmarks/
-│   └── bench_throughput.cpp
-└── cmake/
-    └── ThreadPoolConfig.cmake
+```mermaid
+flowchart TD
+    T0["threadpool/"]
+    T1["CMakeLists.txt"]
+    T2["include/"]
+    T3["threadpool/"]
+    T4["threadpool.h       # C 接口"]
+    T5["threadpool.hpp     # C++ 包装"]
+    T6["version.h"]
+    T7["src/"]
+    T8["threadpool.c"]
+    T9["worker.c"]
+    T10["internal/"]
+    T11["queue.h"]
+    T12["tests/"]
+    T13["test_basic.c"]
+    T14["test_stress.cpp"]
+    T15["benchmarks/"]
+    T16["bench_throughput.cpp"]
+    T17["cmake/"]
+    T18["ThreadPoolConfig.cmake"]
+    T0 --> T1
+    T0 --> T2
+    T6 --> T7
+    T11 --> T12
+    T14 --> T15
+    T16 --> T17
+    T17 --> T18
 ```
 
 头文件骨架（C 接口）：
@@ -2998,7 +3034,7 @@ endif()
 4. **平台适配**：通过 CMake `if(UNIX)/elseif(WIN32)` 处理平台差异
 5. **C/C++ 双接口**：C++ 包装调用 C API，保证 ABI 稳定
 
-### 习题 8（综合题）
+## 知识讲解与要点分析（原习题 8（综合题））
 
 阅读以下代码，回答问题：
 
@@ -3047,7 +3083,7 @@ int main(void) {
 (2) `b.c` 与 `main.c` 各自的翻译单元包含哪些内容？
 (3) 若将 `a.h` 中 `typedef struct { ... } A;` 改为 `typedef struct A { ... } A;`，有什么影响？
 
-**答案**：
+**解析讲解**：
 
 (1) 无 ODR 违规。所有头文件中只有声明（类型定义、函数原型），无变量或函数定义。`b_init` 和 `b_free` 仅在 `b.c` 中定义一次。
 
@@ -3055,18 +3091,22 @@ int main(void) {
 
 (3) 改为 `typedef struct A { ... } A;` 后，结构体获得了标签名 `A`（除了 typedef 名 `A`）。在 C 中这两种写法基本等价，但带标签名后可使用 `struct A` 与 `A` 两种写法。在 C++ 中，带标签名的结构体可被前向声明（`struct A;`），而不带标签名的 typedef 不能前向声明。
 
-### 习题 9（综合题）
+## 知识讲解与要点分析（原习题 9（综合题））
 
 使用 GCC 编译以下项目，给出完整命令序列：
 
-```
-project/
-├── include/
-│   └── math.h
-├── src/
-│   ├── add.c
-│   └── sub.c
-└── main.c
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["include/"]
+    T2["math.h"]
+    T3["src/"]
+    T4["add.c"]
+    T5["sub.c"]
+    T6["main.c"]
+    T0 --> T1
+    T2 --> T3
+    T5 --> T6
 ```
 
 要求：
@@ -3076,7 +3116,7 @@ project/
 (3) 最终链接为可执行文件 `app`；
 (4) 启用 ASan。
 
-**答案**：
+**解析讲解**：
 
 ```bash
 # 1. 编译目标文件
@@ -3099,7 +3139,7 @@ gcc -fsanitize=address build/main.o -Lbuild -lmath -o app
 
 注意：ASan 需要在编译和链接时都加 `-fsanitize=address`。
 
-### 习题 10（开放性问题）
+## 知识讲解与要点分析（原习题 10（开放性问题））
 
 讨论大型 C 项目（如 Linux 内核）的增量构建优化策略，包括：
 
@@ -3109,7 +3149,7 @@ gcc -fsanitize=address build/main.o -Lbuild -lmath -o app
 (4) Unity build；
 (5) 模块化（C++20 modules 类比）。
 
-**参考答案**：
+**解析讲解**：
 
 (1) **依赖追踪**：使用 `-MMD -MP` 自动生成头文件依赖；Make/Ninja 基于依赖图做增量构建；Linux 内核的 Kbuild 在每个目录维护 `Makefile`，递归构建。
 
@@ -3284,22 +3324,30 @@ pkg_check_modules(OPENSSL REQUIRED openssl)
 
 ## 附录 F：构建系统选择决策树
 
-```
-项目规模？
-├─ 小型（< 1 万行）
-│   └─ Make（简单、直接）
-├─ 中型（1-50 万行）
-│   ├─ 跨平台需求？
-│   │   ├─ 是 → CMake
-│   │   └─ 否 → Make
-│   └─ 需要 IDE 支持？
-│       └─ CMake（VSCode/CLion/VS 原生支持）
-├─ 大型（50-500 万行）
-│   └─ CMake + Ninja（速度优势）
-└─ 超大型（> 500 万行，多团队）
-    ├─ Bazel（Google 内部实践）
-    ├─ Buck（Facebook）
-    └─ CMake + distcc/ccache
+```mermaid
+flowchart TD
+    T0["项目规模？"]
+    T1["小型（< 1 万行）"]
+    T2["Make（简单、直接）"]
+    T3["中型（1-50 万行）"]
+    T4["跨平台需求？"]
+    T5["是 → CMake"]
+    T6["否 → Make"]
+    T7["需要 IDE 支持？"]
+    T8["CMake（VSCode/CLion/VS 原生支持）"]
+    T9["大型（50-500 万行）"]
+    T10["CMake + Ninja（速度优势）"]
+    T11["超大型（> 500 万行，多团队）"]
+    T12["Bazel（Google 内部实践）"]
+    T13["Buck（Facebook）"]
+    T14["CMake + distcc/ccache"]
+    T0 --> T1
+    T2 --> T3
+    T8 --> T9
+    T10 --> T11
+    T11 --> T12
+    T11 --> T13
+    T11 --> T14
 ```
 
 ## 附录 G：术语对照表

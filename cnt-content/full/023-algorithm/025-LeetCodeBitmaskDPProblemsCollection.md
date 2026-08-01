@@ -221,18 +221,13 @@ etymology:
 
 **为什么需要状态压缩**？考虑旅行商问题（TSP）的暴力枚举：从城市 0 出发访问剩余 $n-1$ 个城市的全排列共有 $(n-1)!$ 种，对 $n=20$ 约 $1.2 \times 10^{17}$ 种，即使每秒处理 $10^9$ 个排列也需 3800 年。而 Held-Karp 1962 提出的 bitmask DP 将状态定义为"已访问城市集合 $S$ + 当前所在城市 $i$"，状态总数仅 $2^n \cdot n = 2^{20} \cdot 20 \approx 2 \times 10^7$，单机毫秒级可解。这是**指数级算法的飞跃**——同样是指数复杂度，但底数从 $n$ 降为 2，可处理规模从 $n \approx 12$ 提升至 $n \approx 22$。
 
-```
-状态压缩 DP 层次模型：
-
-                          状态压缩 DP
-                              |
-        ┌──────────┬──────────┴──────────┬──────────┐
-      集合编码    状态转移      优化技巧       经典问题
-        │            │             │             │
-   ┌────┴────┐  ┌────┴────┐  ┌─────┴─────┐  ┌────┴────┐
-  二进制位串  枚举子集  滚动数组  低比特技巧   TSP / N皇后
-  集合运算    超集枚举  预处理    __builtin   子集和 / 数独
-  popcount   增量转移  位运算    哈希映射     棋盘覆盖 / 排列
+```mermaid
+flowchart TD
+    S[状态压缩 DP]
+    S --> E[集合编码<br/>二进制位串/集合运算/popcount]
+    S --> T[状态转移<br/>枚举子集/超集枚举/增量转移]
+    S --> O[优化技巧<br/>滚动数组/预处理/位运算/低比特技巧/__builtin/哈希映射]
+    S --> C[经典问题<br/>TSP/N皇后/子集和/数独/棋盘覆盖/排列]
 ```
 
 **状态压缩 DP 的五类核心位运算**（Bit Manipulation Primitives）：
@@ -1215,17 +1210,24 @@ def tsp_limited(dist):
 
 ### 8.1 选型决策树
 
-```
-给定 NP-Hard 问题，规模 n：
-├── n ≤ 20：bitmask DP（O(2^n * n^k)）
-│   ├── 状态含集合：bitmask DP
-│   ├── 状态沿网格滚动：轮廓线 DP
-│   └── 状态需超集聚合：SOS DP
-├── 20 < n ≤ 40：Meet-in-the-Middle（O(2^(n/2))）
-├── 40 < n ≤ 100：分支限界 + 强剪枝
-├── 100 < n ≤ 1000：CP-SAT 求解器（Google OR-Tools）
-├── n > 1000：近似算法（PTAS / FPTAS）
-└── 实时性要求高：贪心 + 局部搜索
+```mermaid
+flowchart TD
+    T0["给定 NP-Hard 问题，规模 n："]
+    T1["n ≤ 20：bitmask DP（O(2^n * n^k)）"]
+    T2["状态含集合：bitmask DP"]
+    T3["状态沿网格滚动：轮廓线 DP"]
+    T4["状态需超集聚合：SOS DP"]
+    T5["20 < n ≤ 40：Meet-in-the-Middle（O(2^(n/2))）"]
+    T6["40 < n ≤ 100：分支限界 + 强剪枝"]
+    T7["100 < n ≤ 1000：CP-SAT 求解器（Google OR-Tools）"]
+    T8["n > 1000：近似算法（PTAS / FPTAS）"]
+    T9["实时性要求高：贪心 + 局部搜索"]
+    T0 --> T1
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T4 --> T8
+    T4 --> T9
 ```
 
 ### 8.2 性能优化技巧
@@ -1537,9 +1539,9 @@ print(colorTheGrid(5, 5))  # 输出: 58098624
 
 ---
 
-## 10. 习题与参考答案
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题 1**（easy）：Held-Karp 算法的时间复杂度是？
 
@@ -1548,12 +1550,9 @@ B. $O(n^2 \cdot 2^n)$
 C. $O(n \cdot 2^n)$
 D. $O(2^n)$
 
-<details>
-<summary>答案</summary>
 
 B。状态数 $O(n \cdot 2^n)$，每状态转移 $O(n)$，总 $O(n^2 \cdot 2^n)$。
 
-</details>
 
 **题 2**（medium）：枚举 $n$ 元集合 $U$ 的所有子集的所有子集，总迭代次数为？
 
@@ -1562,12 +1561,9 @@ B. $n \cdot 2^n$
 C. $3^n$
 D. $n!$
 
-<details>
-<summary>答案</summary>
 
 C。$\sum_{S \subseteq U} 2^{|S|} = \sum_{k=0}^{n} \binom{n}{k} 2^k = 3^n$。
 
-</details>
 
 **题 3**（medium）：`x & (-x)` 的作用是？
 
@@ -1576,12 +1572,9 @@ B. 取最低位的 1
 C. 取最高位的 1
 D. 统计 1 的个数
 
-<details>
-<summary>答案</summary>
 
 B。`-x` 在补码表示下为 `~x + 1`，与 `x` 按位与后仅保留最低位的 1。例如 `x = 12 = 1100`，`-x = ...10100`，`x & -x = 0100 = 4`。
 
-</details>
 
 **题 4**（hard）：以下哪种情况下 bitmask DP 比 Meet-in-the-Middle 更优？
 
@@ -1590,12 +1583,9 @@ B. $n = 20$ 的 TSP 问题
 C. $n = 100$ 的图着色问题
 D. $n = 1000$ 的 0-1 背包问题
 
-<details>
-<summary>答案</summary>
 
 B。$n = 20$ 时 bitmask DP 需 $2^{20} \cdot 20^2 \approx 4 \times 10^8$ 操作，可解；Meet-in-the-Middle 不直接适用 TSP。$n = 40$ 的子集和应用 Meet-in-the-Middle 需 $2^{20} \approx 10^6$，更优。$n = 100$ 和 $n = 1000$ 超出 bitmask DP 范围。
 
-</details>
 
 **题 5**（hard）：Held-Karp 算法在 $n = 22$ 时的状态数约为？
 
@@ -1604,50 +1594,35 @@ B. $9 \times 10^7$
 C. $4 \times 10^8$
 D. $1 \times 10^{10}$
 
-<details>
-<summary>答案</summary>
 
 B。$n \cdot 2^{n-1} = 22 \cdot 2^{21} = 22 \cdot 2097152 \approx 4.6 \times 10^7$。状态数 $n \cdot 2^n = 22 \cdot 4194304 \approx 9.2 \times 10^7$，选 B。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题 1**（easy）：Bellman ______ 年在专著《Dynamic Programming》中系统化了动态规划理论，Held-Karp ______ 年在 J. SIAM 上发表 TSP 的 $O(n^2 2^n)$ 算法。
 
-<details>
-<summary>答案</summary>
 
 1957, 1962
 
-</details>
 
 **题 2**（medium）：枚举集合 $S$ 的所有子集的标准循环为 `sub = S; while sub >= 0: process(sub); if sub == 0: break; sub = ______`。
 
-<details>
-<summary>答案</summary>
 
 `(sub - 1) & S`
 
-</details>
 
 **题 3**（medium）：bitmask DP 通常适用的最大 $n$ 约为 ______，对应状态数 $2^n \cdot n$ 约为 ______。
 
-<details>
-<summary>答案</summary>
 
 22, $9 \times 10^7$（或 $10^8$ 量级）
 
-</details>
 
 **题 4**（hard）：若 DP 转移仅依赖 $|S'| = |S| - 1$ 的状态，可使用 ______ 将空间从 $O(n \cdot 2^n)$ 优化至 ______。
 
-<details>
-<summary>答案</summary>
 
 滚动数组, $O(2^n)$
 
-</details>
 
 ### 10.3 代码修正题
 
@@ -1669,8 +1644,6 @@ def tsp_buggy(dist):
     return dp[(1 << n) - 1][0]
 ```
 
-<details>
-<summary>答案</summary>
 
 错误：(1) 起点状态应为 `dp[1][0] = 0`（已访问城市 0）；(2) 遍历顺序需保证 `mask` 的子集先于 `mask` 计算，即按 `mask` 数值递增（这恰好满足 `mask | (1 << j) > mask`）；(3) 未检查 `i` 是否在 `mask` 中。
 
@@ -1700,7 +1673,6 @@ def tsp_fixed(dist):
     return ans
 ```
 
-</details>
 
 **题 2**（hard）：以下代码使用 bitmask DP 求解子集和问题，但当 `nums` 含负数时失效。请修正。
 
@@ -1712,8 +1684,6 @@ def subset_sum_buggy(nums, target):
     return (reachable >> target) & 1 == 1
 ```
 
-<details>
-<summary>答案</summary>
 
 错误：Python 左移负数位未定义；负数应通过右移处理，或改用字典 DP。
 
@@ -1742,14 +1712,11 @@ def subset_sum_dict(nums, target):
     return target in reachable
 ```
 
-</details>
 
 ### 10.4 开放性论述题
 
 **题 1**（medium）：论述 bitmask DP 与分支限界在求解 TSP 时的优劣，并说明各自适用的规模。
 
-<details>
-<summary>参考答案</summary>
 
 **bitmask DP（Held-Karp）**：
 
@@ -1788,12 +1755,9 @@ def subset_sum_dict(nums, target):
 
 **结论**：bitmask DP 是小规模 TSP 的首选，分支限界适合中等规模，工业级大规模求解需 Concorde 或 LKH3。
 
-</details>
 
 **题 2**（hard）：讨论 SETH（强指数时间假设）对 bitmask DP 算法设计的影响。
 
-<details>
-<summary>参考答案</summary>
 
 **SETH（Strong Exponential Time Hypothesis）**：由 Impagliazzo-Paturi 2001 提出，断言 SAT 不存在 $O(2^{(1-\epsilon)n})$ 算法（对任意 $\epsilon > 0$）。
 
@@ -1815,12 +1779,9 @@ def subset_sum_dict(nums, target):
 
 **结论**：SETH 为 bitmask DP 的 $O(n^2 \cdot 2^n)$ 复杂度提供了理论下界支撑，说明 Held-Karp 算法"可能已接近最优"。工程实践应聚焦常数优化与启发式扩展，而非追求渐近改进。
 
-</details>
 
 **题 3**（hard）：对比轮廓线 DP（Broken Profile DP）与传统 bitmask DP 的差异，各举一个应用实例。
 
-<details>
-<summary>参考答案</summary>
 
 **传统 bitmask DP**：
 
@@ -1855,7 +1816,6 @@ def subset_sum_dict(nums, target):
 
 **结论**：传统 bitmask DP 适用于"全集固定、枚举子集"的问题；轮廓线 DP 适用于"网格扫描、状态滚动"的问题。两者均为状态压缩思想的不同实现形态。
 
-</details>
 
 ---
 
@@ -1986,35 +1946,41 @@ graph TD
 
 ### 13.3 工业级选型决策树
 
-```
-给定 NP-Hard 问题，规模 n：
-├── n ≤ 22 + 状态含集合：bitmask DP
-│   ├── 排列型（如 TSP）：Held-Karp O(n^2 * 2^n)
-│   ├── 划分型（如分配）：子集枚举 O(3^n)
-│   ├── 网格型（如覆盖）：轮廓线 DP O(2^min(m,n))
-│   └── 聚合型（如 SOS）：SOS DP O(n * 2^n)
-├── 22 < n ≤ 40 + 可二分：Meet-in-the-Middle O(2^(n/2))
-├── 40 < n ≤ 100：CP-SAT 求解器（Google OR-Tools）
-├── 100 < n ≤ 10^5：分支割平面法（Concorde TSP）
-└── n > 10^5：近似算法（LKH3、Christofides 等）
+```mermaid
+flowchart TD
+    T0["给定 NP-Hard 问题，规模 n："]
+    T1["n ≤ 22 + 状态含集合：bitmask DP"]
+    T2["排列型（如 TSP）：Held-Karp O(n^2 * 2^n)"]
+    T3["划分型（如分配）：子集枚举 O(3^n)"]
+    T4["网格型（如覆盖）：轮廓线 DP O(2^min(m,n))"]
+    T5["聚合型（如 SOS）：SOS DP O(n * 2^n)"]
+    T6["22 < n ≤ 40 + 可二分：Meet-in-the-Middle O(2^(n/2))"]
+    T7["40 < n ≤ 100：CP-SAT 求解器（Google OR-Tools）"]
+    T8["100 < n ≤ 10^5：分支割平面法（Concorde TSP）"]
+    T9["n > 10^5：近似算法（LKH3、Christofides 等）"]
+    T0 --> T1
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T5 --> T9
 ```
 
 ### 13.4 12 项基准自检清单
 
 | # | 基准项 | 本章达成情况 |
 |---|--------|-------------|
-| 1 | 学习目标 | ✅ 7 条 Bloom 分类法目标，覆盖记忆/理解/应用/分析/评估/对比/创造 |
-| 2 | 历史动机 | ✅ Bellman 1952/1957→Held-Karp 1962→Bellman 1962→IOI/ICPC 1990s→LeetCode/OR-Tools 2020s |
-| 3 | 形式化定义 | ✅ 二进制编码 + 位运算语义 + 子集枚举定理 + DP 一般形式 |
-| 4 | 理论推导 | ✅ Held-Karp $O(n^2 2^n)$ 证明 + 子集枚举 $O(3^n)$ 证明 + 滚动数组空间优化证明 |
-| 5 | 代码示例 | ✅ Python/C++/Java 多语言实现（TSP、N 皇后、子集和、轮廓线、LeetCode 题） |
-| 6 | 对比分析 | ✅ bitmask DP vs 分支限界 vs Meet-in-the-Middle vs CP-SAT + 五种实现策略对比 |
-| 7 | 常见陷阱 | ✅ 7 项典型陷阱（状态溢出、遍历顺序、位运算优先级、子集遗漏、滚动数组、负数移位、Python 性能） |
-| 8 | 工程实践 | ✅ 选型决策树 + 8 项优化技巧 + Google OR-Tools + Concorde 工业案例 |
-| 9 | 案例研究 | ✅ 5 个案例（LeetCode 1879/1655/1494/1125/1931 + Concorde 世界记录） |
-| 10 | 习题 | ✅ 5 选择 + 4 填空 + 2 代码修正 + 3 开放论述，含详细答案 |
-| 11 | 参考文献 | ✅ 20 条 ACM 格式引用（6 历史论文 + 7 教材 + 3 复杂性理论 + 4 在线资源）含 DOI |
-| 12 | 延伸阅读 | ✅ 5 子节（理论深入 / 应用拓展 / 工程练习 / 教学视频 / 进阶主题） |
+| 1 | 学习目标 | 已达标 7 条 Bloom 分类法目标，覆盖记忆/理解/应用/分析/评估/对比/创造 |
+| 2 | 历史动机 | 已达标 Bellman 1952/1957→Held-Karp 1962→Bellman 1962→IOI/ICPC 1990s→LeetCode/OR-Tools 2020s |
+| 3 | 形式化定义 | 已达标 二进制编码 + 位运算语义 + 子集枚举定理 + DP 一般形式 |
+| 4 | 理论推导 | 已达标 Held-Karp $O(n^2 2^n)$ 证明 + 子集枚举 $O(3^n)$ 证明 + 滚动数组空间优化证明 |
+| 5 | 代码示例 | 已达标 Python/C++/Java 多语言实现（TSP、N 皇后、子集和、轮廓线、LeetCode 题） |
+| 6 | 对比分析 | 已达标 bitmask DP vs 分支限界 vs Meet-in-the-Middle vs CP-SAT + 五种实现策略对比 |
+| 7 | 常见陷阱 | 已达标 7 项典型陷阱（状态溢出、遍历顺序、位运算优先级、子集遗漏、滚动数组、负数移位、Python 性能） |
+| 8 | 工程实践 | 已达标 选型决策树 + 8 项优化技巧 + Google OR-Tools + Concorde 工业案例 |
+| 9 | 案例研究 | 已达标 5 个案例（LeetCode 1879/1655/1494/1125/1931 + Concorde 世界记录） |
+| 10 | 习题 | 已达标 5 选择 + 4 填空 + 2 代码修正 + 3 开放论述，含详细答案 |
+| 11 | 参考文献 | 已达标 20 条 ACM 格式引用（6 历史论文 + 7 教材 + 3 复杂性理论 + 4 在线资源）含 DOI |
+| 12 | 延伸阅读 | 已达标 5 子节（理论深入 / 应用拓展 / 工程练习 / 教学视频 / 进阶主题） |
 
 ### 13.5 学习路径四阶段
 

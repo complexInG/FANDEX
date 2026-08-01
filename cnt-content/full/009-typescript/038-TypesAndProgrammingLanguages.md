@@ -1865,9 +1865,9 @@ import type { User } from './types';
 import { type User } from './types';
 ```
 
-## 18. 习题
+## 知识讲解与要点分析（原习题）
 
-### 18.1 填空题（fill-blank）
+### 填空题知识点讲解
 
 1. TypeScript 5.0 引入的 const 类型参数语法为____，它会让类型参数推断为最窄的字面量类型。
 2. satisfies 操作符的语义是____。
@@ -1880,7 +1880,7 @@ import { type User } from './types';
 9. 5.4 引入的 NoInfer<T> 工具类型的作用是____。
 10. 5.5 的 inferred type predicates 解决了____问题。
 
-### 18.2 选择题（choice）
+### 选择题知识点讲解
 
 1. 关于 const 类型参数，下列说法正确的是？
    - A. const 类型参数会改变函数的运行时行为，使其参数被视为 const

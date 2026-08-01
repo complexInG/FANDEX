@@ -137,22 +137,17 @@ Go 1.22 引入 `range over function` 实验特性，channel 作为可迭代对�
 
 ### 2.7 演进时间轴
 
-```
-CSP (1978) ─── Hoare 提出理论模型
-   │
-Go 1.0  (2012) ── hchan + sendq/recvq + ring buffer
-   │
-Go 1.3  (2014) ── P/M/G 调度器，gopark/goready 集成
-   │
-Go 1.5  (2015) ── runtime 自举（C → Go）
-   │
-Go 1.11 (2018) ── channel 性能优化（reduce lock hold time）
-   │
-Go 1.14 (2020) ── 异步抢占，preemptoff 保护
-   │
-Go 1.18 (2022) ── 泛型 channel
-   │
-Go 1.22 (2024) ── range over function 实验
+```mermaid
+timeline
+    title Go channel 演进时间线
+    1978: CSP（Hoare 提出理论模型）
+    2012: Go 1.0 hchan + sendq/recvq + ring buffer
+    2014: Go 1.3 P/M/G 调度器，gopark/goready 集成
+    2015: Go 1.5 runtime 自举（C → Go）
+    2018: Go 1.11 channel 性能优化（reduce lock hold time）
+    2020: Go 1.14 异步抢占，preemptoff 保护
+    2022: Go 1.18 泛型 channel
+    2024: Go 1.22 range over function 实验
 ```
 
 ---
@@ -278,57 +273,26 @@ Go 的 channel 类型是 **linear type**（线性类型）的弱化版本：发�
 
 `chansend` 函数（简化版）的状态转移：
 
-```
-                     ┌─────────────────────┐
-                     │  chansend1(ch, v)   │
-                     └──────────┬──────────┘
-                                │
-                                ▼
-                     ┌─────────────────────┐
-                     │  ch.lock.acquire()  │
-                     └──────────┬──────────┘
-                                │
-                                ▼
-                       ┌────────────────┐
-                       │ ch.closed == 1 │──Yes──▶ panic("send on closed channel")
-                       └───────┬────────┘
-                               │ No
-                               ▼
-                  ┌────────────────────────┐
-                  │ sg := ch.recvq.dequeue │
-                  └────────────┬───────────┘
-                               │
-                  ┌────────────┴───────────┐
-                  │ sg != nil (有等待recv)  │
-                  │     Yes                 │
-                  ▼                         │ No
-        ┌───────────────────┐              │
-        │ sendDirect(sg, v) │              │
-        │ goready(sg.g)     │              │
-        │ ch.lock.release() │              │
-        │ return            │              │
-        └───────────────────┘              │
-                                          ▼
-                          ┌─────────────────────────────┐
-                          │ ch.qcount < ch.dataqsiz ?   │
-                          └────────────┬────────────────┘
-                                       │ Yes (有缓冲空间)
-                                       ▼
-                            ┌─────────────────────┐
-                            │ buf[sendx] = v      │
-                            │ sendx = (sendx+1)   │
-                            │   mod dataqsiz      │
-                            │ qcount++            │
-                            │ ch.lock.release()   │
-                            │ return              │
-                            └─────────────────────┘
-                                       │ No (buf 已满)
-                                       ▼
-                            ┌─────────────────────┐
-                            │ gopark(chanpark)    │  // 当前 goroutine 阻塞
-                            │ (将 sudog 入 sendq) │
-                            │ ch.lock.release()   │
-                            └─────────────────────┘
+```mermaid
+flowchart TD
+    A[chansend1(ch, v)] --> B[ch.lock.acquire()]
+    B --> C{ch.closed == 1?}
+    C -- Yes --> P1[panic: send on closed channel]
+    C -- No --> D[sg := ch.recvq.dequeue]
+    D --> E{sg != nil（有等待 recv）?}
+    E -- Yes --> F[sendDirect(sg, v)]
+    F --> G[goready(sg.g)]
+    G --> H[ch.lock.release()]
+    H --> I[return]
+    E -- No --> J{ch.qcount < ch.dataqsiz?}
+    J -- Yes（有缓冲空间） --> K[buf[sendx] = v]
+    K --> L[sendx = (sendx+1) mod dataqsiz]
+    L --> M[qcount++]
+    M --> N[ch.lock.release()]
+    N --> O[return]
+    J -- No（buf 已满） --> Q[gopark(chanpark)]
+    Q --> R[将 sudog 入 sendq]
+    R --> S[ch.lock.release()]
 ```
 
 #### 4.1.1 直接传递优化（sendDirect）
@@ -354,54 +318,26 @@ func sendDirect(t *_type, sg *sudog) {
 
 `chanrecv` 函数的状态转移类似 send，但方向相反：
 
-```
-                     ┌─────────────────────┐
-                     │  chanrecv1(ch, &v)  │
-                     └──────────┬──────────┘
-                                │
-                                ▼
-                     ┌─────────────────────┐
-                     │  ch.lock.acquire()  │
-                     └──────────┬──────────┘
-                                │
-                                ▼
-                  ┌────────────────────────┐
-                  │ sg := ch.sendq.dequeue │
-                  └────────────┬───────────┘
-                               │
-                  ┌────────────┴───────────┐
-                  │ sg != nil (有等待send)  │
-                  │     Yes                 │
-                  ▼                         │ No
-        ┌───────────────────┐              │
-        │ recvDirect(sg, v) │              │
-        │ goready(sg.g)     │              │
-        │ ch.lock.release() │              │
-        │ return true       │              │
-        └───────────────────┘              │
-                                          ▼
-                          ┌─────────────────────────────┐
-                          │ ch.qcount > 0 ?             │
-                          └────────────┬────────────────┘
-                                       │ Yes (buf 有数据)
-                                       ▼
-                            ┌─────────────────────┐
-                            │ v = buf[recvx]      │
-                            │ recvx = (recvx+1)   │
-                            │   mod dataqsiz      │
-                            │ qcount--            │
-                            │ ch.lock.release()   │
-                            │ return true         │
-                            └─────────────────────┘
-                                       │ No (buf 空)
-                                       ▼
-                            ┌─────────────────────┐
-                            │ if ch.closed:       │
-                            │   return zero, false│
-                            │ else:               │
-                            │   gopark(chanpark)  │
-                            │   (sudog 入 recvq)  │
-                            └─────────────────────┘
+```mermaid
+flowchart TD
+    A[chanrecv1(ch, &v)] --> B[ch.lock.acquire()]
+    B --> D[sg := ch.sendq.dequeue]
+    D --> E{sg != nil（有等待 send）?}
+    E -- Yes --> F[recvDirect(sg, v)]
+    F --> G[goready(sg.g)]
+    G --> H[ch.lock.release()]
+    H --> I[return true]
+    E -- No --> J{ch.qcount > 0?}
+    J -- Yes（buf 有数据） --> K[v = buf[recvx]]
+    K --> L[recvx = (recvx+1) mod dataqsiz]
+    L --> M[qcount--]
+    M --> N[ch.lock.release()]
+    N --> O[return true]
+    J -- No（buf 空） --> Q{ch.closed?}
+    Q -- Yes --> R[return zero, false]
+    Q -- No --> S[gopark(chanpark)]
+    S --> T[sudog 入 recvq]
+    T --> U[ch.lock.release()]
 ```
 
 #### 4.2.1 closed channel 的 recv 语义
@@ -1508,9 +1444,9 @@ func (p *WatchPlan) Start() <-chan *WatchResult {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **Q1.** 下列关于 channel 的描述，哪个是正确的？
 
@@ -1519,9 +1455,9 @@ B. closed channel 的 recv 永远返回零值
 C. nil channel 的 send 会立即返回
 D. 向 closed channel 发送会阻塞
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：
+**解析讲解**：
 
 - A 正确：unbuffered channel 的 send 与 recv 是同步会合（rendezvous），但 send 与 recv 都可能先发起，另一方就绪后完成
 - B 错误：closed channel 的 recv 先返回 buf 中剩余数据，buf 空后才返回零值
@@ -1537,9 +1473,9 @@ B. 当所有 case 都已就绪时执行 default
 C. default case 永远不执行
 D. default case 必须放在最后
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：default case 在所有其他 case 都未就绪时立即执行，使 select 非阻塞。
+**解析讲解**：default case 在所有其他 case 都未就绪时立即执行，使 select 非阻塞。
 
 ---
 
@@ -1550,9 +1486,9 @@ B. 按 channel 地址升序加锁
 C. 按代码中 case 顺序加锁
 D. 使用全局锁
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`selectgo` 按 `*hchan` 地址升序加锁，所有 select 都遵守同一顺序，避免循环等待。
+**解析讲解**：`selectgo` 按 `*hchan` 地址升序加锁，所有 select 都遵守同一顺序，避免循环等待。
 
 ---
 
@@ -1563,9 +1499,9 @@ B. 向 nil channel send
 C. 从 closed channel recv
 D. 向 closed channel send
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：
+**解析讲解**：
 
 - A、B：永久阻塞，不 panic
 - C：返回零值，不 panic
@@ -1580,45 +1516,45 @@ B. 唤醒所有 `sendq` 中的 goroutine
 C. 阻止后续 send 操作
 D. 阻止后续 recv 操作
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：close 后仍可 recv（先返回 buf 中数据，再返回零值），只是不能 send。
+**解析讲解**：close 后仍可 recv（先返回 buf 中数据，再返回零值），只是不能 send。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **Q1.** `hchan` 结构中，`buf` 字段是 ____ 类型的指针，仅当 channel 是 ____ 时才使用。
 
-**答案**：`unsafe.Pointer`；buffered
+**解析讲解**：`unsafe.Pointer`；buffered
 
 ---
 
 **Q2.** unbuffered channel 在 recv goroutine 等待时，send 操作会通过 ____ 函数直接将数据拷贝到 recv 的栈上，绕过 buf。
 
-**答案**：`sendDirect`
+**解析讲解**：`sendDirect`
 
 ---
 
 **Q3.** select 用 ____ 算法打乱 case 顺序，保证公平性。
 
-**答案**：Fisher-Yates shuffle（基于 `fastrandn`）
+**解析讲解**：Fisher-Yates shuffle（基于 `fastrandn`）
 
 ---
 
 **Q4.** Go runtime 在所有 goroutine 都进入 `gopark` 且无可唤醒条件时，抛出 ____ 错误。
 
-**答案**：`fatal error: all goroutines are asleep - deadlock!`
+**解析讲解**：`fatal error: all goroutines are asleep - deadlock!`
 
 ---
 
 **Q5.** sudog 是 goroutine 在 channel 等待队列中的"代表"，包含 goroutine 指针、____ 和链表节点。
 
-**答案**：数据指针（elem）
+**解析讲解**：数据指针（elem）
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **Q1.** 实现一个 `Merge[T any](chans ...<-chan T) <-chan T` 函数，合并多个 channel。要求：所有输入 channel 关闭后，输出 channel 自动关闭。
 
-**参考答案**：
+**解析讲解**：
 
 ```go
 package main
@@ -1664,7 +1600,7 @@ func main() {
 
 **Q2.** 实现一个 `Semaphore`，基于 buffered channel 控制并发数。提供 `Acquire()` 与 `Release()` 方法。
 
-**参考答案**：
+**解析讲解**：
 
 ```go
 package main
@@ -1709,7 +1645,7 @@ func main() {
 
 **Q3.** 实现一个可取消的定时任务调度器，支持 `Schedule(task func(), interval time.Duration) CancelFunc`。
 
-**参考答案**：
+**解析讲解**：
 
 ```go
 package main

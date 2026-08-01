@@ -1841,39 +1841,48 @@ response = requests.get(url)  # 无超时
 
 ### 9.1 项目结构建议
 
-```
-my_automation/
-├── pyproject.toml
-├── README.md
-├── .env.example
-├── src/
-│   └── my_automation/
-│       ├── __init__.py
-│       ├── cli.py              # CLI 入口
-│       ├── config.py           # 配置管理
-│       ├── tasks/
-│       │   ├── __init__.py
-│       │   ├── file_ops.py     # 文件操作
-│       │   ├── etl.py          # ETL 任务
-│       │   └── monitoring.py   # 监控任务
-│       ├── pipelines/
-│       │   ├── __init__.py
-│       │   └── daily_etl.py    # Airflow/Prefect DAG
-│       ├── notifications/
-│       │   ├── __init__.py
-│       │   ├── slack.py
-│       │   └── email.py
-│       └── utils/
-│           ├── __init__.py
-│           ├── logging.py
-│           └── retry.py
-├── tests/
-│   ├── test_file_ops.py
-│   └── test_etl.py
-├── docker/
-│   └── Dockerfile
-└── k8s/
-    └── deployment.yaml
+```mermaid
+flowchart TD
+    T0["my_automation/"]
+    T1["pyproject.toml"]
+    T2["README.md"]
+    T3[".env.example"]
+    T4["src/"]
+    T5["my_automation/"]
+    T6["__init__.py"]
+    T7["cli.py              # CLI 入口"]
+    T8["config.py           # 配置管理"]
+    T9["tasks/"]
+    T10["__init__.py"]
+    T11["file_ops.py     # 文件操作"]
+    T12["etl.py          # ETL 任务"]
+    T13["monitoring.py   # 监控任务"]
+    T14["pipelines/"]
+    T15["__init__.py"]
+    T16["daily_etl.py    # Airflow/Prefect DAG"]
+    T17["notifications/"]
+    T18["__init__.py"]
+    T19["slack.py"]
+    T20["email.py"]
+    T21["utils/"]
+    T22["__init__.py"]
+    T23["logging.py"]
+    T24["retry.py"]
+    T25["tests/"]
+    T26["test_file_ops.py"]
+    T27["test_etl.py"]
+    T28["docker/"]
+    T29["Dockerfile"]
+    T30["k8s/"]
+    T31["deployment.yaml"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T24 --> T25
+    T27 --> T28
+    T29 --> T30
+    T30 --> T31
 ```
 
 ### 9.2 日志最佳实践
@@ -2597,7 +2606,7 @@ def enable_asyncio_debug():
     asyncio.set_event_loop(loop)
 ```
 
-## 15. 习题与练习
+## 知识讲解与要点分析（原习题）
 
 ### 15.1 综合练习：设计文件同步工具
 

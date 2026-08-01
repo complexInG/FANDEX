@@ -1635,25 +1635,31 @@ public class UserServiceTests
 
 ### 8.2 测试组织结构
 
-```
-tests/
-├── MyApp.UnitTests/
-│   ├── Services/
-│   │   ├── UserServiceTests.cs
-│   │   └── OrderServiceTests.cs
-│   ├── Controllers/
-│   │   └── UserControllerTests.cs
-│   └── Models/
-│       └── UserTests.cs
-├── MyApp.IntegrationTests/
-│   ├── Api/
-│   │   ├── UserApiTests.cs
-│   │   └── OrderApiTests.cs
-│   └── Database/
-│       └── RepositoryTests.cs
-└── MyApp.E2ETests/
-    ├── UserJourneyTests.cs
-    └── CheckoutTests.cs
+```mermaid
+flowchart TD
+    T0["tests/"]
+    T1["MyApp.UnitTests/"]
+    T2["Services/"]
+    T3["UserServiceTests.cs"]
+    T4["OrderServiceTests.cs"]
+    T5["Controllers/"]
+    T6["UserControllerTests.cs"]
+    T7["Models/"]
+    T8["UserTests.cs"]
+    T9["MyApp.IntegrationTests/"]
+    T10["Api/"]
+    T11["UserApiTests.cs"]
+    T12["OrderApiTests.cs"]
+    T13["Database/"]
+    T14["RepositoryTests.cs"]
+    T15["MyApp.E2ETests/"]
+    T16["UserJourneyTests.cs"]
+    T17["CheckoutTests.cs"]
+    T0 --> T1
+    T8 --> T9
+    T14 --> T15
+    T15 --> T16
+    T15 --> T17
 ```
 
 ### 8.3 测试覆盖目标
@@ -1883,26 +1889,26 @@ public class UserServiceBenchmarks
 }
 ```
 
-## 10. 习题与参考答案
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（L1-L2）
 
 **习题 10.1.1**：简述 xUnit 与 NUnit 在测试隔离性上的区别。
 
-**参考答案**：
+**解析讲解**：
 - xUnit：每个测试方法运行在独立的测试类实例上，构造函数等价于 `[SetUp]`，`IDisposable.Dispose()` 等价于 `[TearDown]`
 - NUnit：默认每个测试类共享一个实例，需通过 `[FixtureLifeCycle]` 配置隔离策略
 
 **习题 10.1.2**：解释 Mock、Stub、Fake、Spy 的区别。
 
-**参考答案**：
+**解析讲解**：
 - Stub（桩）：返回预设值，不验证调用
 - Mock（模拟）：验证调用行为，可返回预设值
 - Fake（假对象）：提供简化的可工作实现（如内存数据库）
 - Spy（间谍）：记录调用供事后验证，可选择性返回预设值
 - Dummy（哑对象）：仅用于填充参数列表，从不被调用
 
-### 10.2 应用题（L3）
+### 应用题知识点讲解
 
 **习题 10.2.1**：为以下方法编写完整的单元测试。
 
@@ -1918,7 +1924,7 @@ public class StringAnalyzer
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public class StringAnalyzerTests
@@ -1962,7 +1968,7 @@ public void Test_UserCreation()
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 **问题分析**：
 1. 命名不符合约定（应描述状态与预期）
@@ -1995,7 +2001,7 @@ public void CreateUser_ValidName_ReturnsUserAndSavesToRepository()
 
 场景：微服务架构，10 个服务，每个服务平均 5000 行代码。当前测试策略为：单元测试覆盖率 95%，无集成测试，无 E2E 测试。
 
-**参考答案**：
+**解析讲解**：
 
 **评估**：策略不合理。
 
@@ -2014,7 +2020,7 @@ public void CreateUser_ValidName_ReturnsUserAndSavesToRepository()
 
 **习题 10.5.1**：设计一个支持并行执行的测试框架扩展，要求避免测试间资源竞争。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 // 基于 ResourceLockAttribute 的并行测试控制器

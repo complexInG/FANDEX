@@ -15,10 +15,11 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
+# C# 委托与事件
 
-# 委托与事件底层原理
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> "委托是 .NET 类型系统中的一等公民——它把方法调用从编译期绑定解放为运行时可传递的数据。" —— Don Syme，《Expert .NET 2.0 IL Assembler》
+---
 
 ## 1. 学习目标
 
@@ -2386,11 +2387,11 @@ DynamicProxy 内部使用 `System.Reflection.Emit` 生成代理类，将每个�
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下代码的输出是什么？
+**常见疑问 1**：以下代码的输出是什么？
 
 ```csharp
 Func<int, int> f = x => x * 2;
@@ -2405,13 +2406,13 @@ B. 4
 C. 30  
 D. 31
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：多播委托返回值是链表中最后一个委托的结果。前两个委托被调用（结果 6 和 4 被丢弃），最后 `x * 10 = 30` 返回。
+**解析讲解**：多播委托返回值是链表中最后一个委托的结果。前两个委托被调用（结果 6 和 4 被丢弃），最后 `x * 10 = 30` 返回。
 
 ---
 
-**Q2**：以下代码会输出什么？
+**常见疑问 2**：以下代码会输出什么？
 
 ```csharp
 Action a = () => Console.Write("1");
@@ -2427,13 +2428,13 @@ B. `13caught`
 C. `1caught3`  
 D. `caught`
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：多播委托链表中第 2 个委托抛出异常，第 3 个委托不被执行。输出 `1` 后异常被捕获，输出 `caught`。
+**解析讲解**：多播委托链表中第 2 个委托抛出异常，第 3 个委托不被执行。输出 `1` 后异常被捕获，输出 `caught`。
 
 ---
 
-**Q3**：以下代码中，闭包捕获的变量是什么？
+**常见疑问 3**：以下代码中，闭包捕获的变量是什么？
 
 ```csharp
 int x = 10;
@@ -2446,26 +2447,26 @@ B. 仅 `y`
 C. `x` 和 `y`  
 D. `x`, `y`, `z`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`z` 是 lambda 参数，非捕获变量。`x` 与 `y` 是外部变量，被闭包捕获。编译器生成显示类持有 `x`、`y` 字段。
+**解析讲解**：`z` 是 lambda 参数，非捕获变量。`x` 与 `y` 是外部变量，被闭包捕获。编译器生成显示类持有 `x`、`y` 字段。
 
 ---
 
-**Q4**：以下哪种情况会导致 `event` 与普通 `Delegate` 字段行为不同？
+**常见疑问 4**：以下哪种情况会导致 `event` 与普通 `Delegate` 字段行为不同？
 
 A. 在定义类内部 `+=` 订阅  
 B. 在定义类内部 `.Invoke()` 触发  
 C. 在外部类 `=` 赋值  
 D. 在外部类 `-=` 取消订阅
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`event` 在外部类中只允许 `+=` 和 `-=`，不允许 `=` 赋值。在定义类内部，`event` 与普通字段行为相同（可赋值、可 invoke）。
+**解析讲解**：`event` 在外部类中只允许 `+=` 和 `-=`，不允许 `=` 赋值。在定义类内部，`event` 与普通字段行为相同（可赋值、可 invoke）。
 
 ---
 
-**Q5**：以下代码性能最优的是？
+**常见疑问 5**：以下代码性能最优的是？
 
 ```csharp
 MethodInfo method = typeof(Math).GetMethod("Abs");
@@ -2486,23 +2487,23 @@ B. 方式2
 C. 方式3  
 D. 方式2 与方式3 几乎相同
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：方式3 是直接调用，约 1 ns；方式2 通过 `CreateDelegate` 创建委托，调用约 3-5 ns，接近直接调用。方式1 使用 `MethodInfo.Invoke`，约 200+ ns。方式2 与方式3 性能接近，方式2 略慢。
-
----
-
-### 10.2 简答题
-
-**Q1**：解释 `event` 关键字为何比普通 `Delegate` 字段更安全。
-
-**参考答案**：`event` 关键字在编译期生成了 `add_*`/`remove_*` 两个访问器方法，将内部委托字段封装。外部类只能通过 `+=`/`-=` 订阅或取消订阅，无法直接赋值覆盖（`=`）、调用（`.Invoke()`）或读取订阅列表。这保证了发布者对事件触发的完全控制，避免了订阅者被意外覆盖或外部任意触发事件。此外，编译器生成的访问器默认使用 `[MethodImpl(MethodImplOptions.Synchronized)]` 实现线程安全的订阅操作，而普通字段无此保证。
+**解析讲解**：方式3 是直接调用，约 1 ns；方式2 通过 `CreateDelegate` 创建委托，调用约 3-5 ns，接近直接调用。方式1 使用 `MethodInfo.Invoke`，约 200+ ns。方式2 与方式3 性能接近，方式2 略慢。
 
 ---
 
-**Q2**：闭包捕获变量时，C# 是按值还是按引用捕获？这对程序行为有何影响？
+### 简答题知识点讲解
 
-**参考答案**：C# 闭包按引用捕获变量。编译器生成一个显示类（display class），将捕获的变量作为该类的字段，闭包方法作为该类的实例方法。这意味着闭包内对捕获变量的修改对外可见，且闭包延长了被捕获变量的生命周期（从栈提升到堆）。例如：
+**常见疑问 6**：解释 `event` 关键字为何比普通 `Delegate` 字段更安全。
+
+**解析讲解**：`event` 关键字在编译期生成了 `add_*`/`remove_*` 两个访问器方法，将内部委托字段封装。外部类只能通过 `+=`/`-=` 订阅或取消订阅，无法直接赋值覆盖（`=`）、调用（`.Invoke()`）或读取订阅列表。这保证了发布者对事件触发的完全控制，避免了订阅者被意外覆盖或外部任意触发事件。此外，编译器生成的访问器默认使用 `[MethodImpl(MethodImplOptions.Synchronized)]` 实现线程安全的订阅操作，而普通字段无此保证。
+
+---
+
+**常见疑问 7**：闭包捕获变量时，C# 是按值还是按引用捕获？这对程序行为有何影响？
+
+**解析讲解**：C# 闭包按引用捕获变量。编译器生成一个显示类（display class），将捕获的变量作为该类的字段，闭包方法作为该类的实例方法。这意味着闭包内对捕获变量的修改对外可见，且闭包延长了被捕获变量的生命周期（从栈提升到堆）。例如：
 
 ```csharp
 int x = 0;
@@ -2515,9 +2516,9 @@ Console.WriteLine(x);  // 2，闭包的修改对外可见
 
 ---
 
-**Q3**：多播委托的异常处理语义是什么？如何安全地调用多播委托？
+**常见疑问 8**：多播委托的异常处理语义是什么？如何安全地调用多播委托？
 
-**参考答案**：多播委托在调用时，若链表中某个委托抛出异常，则后续委托不被执行，异常直接传播给调用者。为安全调用多播委托，应使用 `GetInvocationList()` 获取委托数组，手动遍历并在 try-catch 中隔离每个委托的异常：
+**解析讲解**：多播委托在调用时，若链表中某个委托抛出异常，则后续委托不被执行，异常直接传播给调用者。为安全调用多播委托，应使用 `GetInvocationList()` 获取委托数组，手动遍历并在 try-catch 中隔离每个委托的异常：
 
 ```csharp
 foreach (Action handler in multicast.GetInvocationList())
@@ -2531,11 +2532,11 @@ foreach (Action handler in multicast.GetInvocationList())
 
 ---
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q1**：实现一个线程安全的事件类 `ThreadSafeEvent<TEventArgs>`，支持 `+=`/`-=` 操作和线程安全的触发。
+**常见疑问 9**：实现一个线程安全的事件类 `ThreadSafeEvent<TEventArgs>`，支持 `+=`/`-=` 操作和线程安全的触发。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public class ThreadSafeEvent<TEventArgs> where TEventArgs : EventArgs
@@ -2595,9 +2596,9 @@ public class ThreadSafeEvent<TEventArgs> where TEventArgs : EventArgs
 
 ---
 
-**Q2**：实现一个简单的 `EventAggregator`，支持弱引用订阅，避免订阅者未取消订阅导致的内存泄漏。
+**常见疑问 10**：实现一个简单的 `EventAggregator`，支持弱引用订阅，避免订阅者未取消订阅导致的内存泄漏。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public interface IWeakEventAggregator
@@ -2996,18 +2997,299 @@ warning CA1003: Use generic event handler instances
 
 | 特性 | C# 1.0 | C# 2.0 | C# 3.0 | C# 4.0 | C# 5.0 | C# 6.0 | C# 7.0 | C# 8.0 | C# 9.0 | C# 10.0 | C# 11.0 | C# 12.0 |
 |------|--------|--------|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|
-| `delegate` 关键字 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 协变/逆变 | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 方法组转换 | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 匿名方法 | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Lambda 表达式 | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 表达式树 | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 泛型委托协变/逆变 | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| async/await | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `?.Invoke()` | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 本地函数 | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `static` 本地函数 | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `static` lambda | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ | ✓ |
-| Lambda 自然类型 | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ |
-| `delegate*` 函数指针 | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ |
-| Lambda 参数修饰符 | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ |
+| `delegate` 关键字 | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ |
+| 协变/逆变 | × | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ |
+| 方法组转换 | × | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ |
+| 匿名方法 | × | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ |
+| Lambda 表达式 | × | × | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ |
+| 表达式树 | × | × | √ | √ | √ | √ | √ | √ | √ | √ | √ | √ |
+| 泛型委托协变/逆变 | × | × | × | √ | √ | √ | √ | √ | √ | √ | √ | √ |
+| async/await | × | × | × | × | √ | √ | √ | √ | √ | √ | √ | √ |
+| `?.Invoke()` | × | × | × | × | × | √ | √ | √ | √ | √ | √ | √ |
+| 本地函数 | × | × | × | × | × | × | √ | √ | √ | √ | √ | √ |
+| `static` 本地函数 | × | × | × | × | × | × | × | √ | √ | √ | √ | √ |
+| `static` lambda | × | × | × | × | × | × | × | × | √ | √ | √ | √ |
+| Lambda 自然类型 | × | × | × | × | × | × | × | × | × | √ | √ | √ |
+| `delegate*` 函数指针 | × | × | × | × | × | × | × | × | × | × | √ | √ |
+| Lambda 参数修饰符 | × | × | × | × | × | × | × | × | × | × | × | √ |
+## 委托声明
+
+**基本写法：自定义委托**
+`public delegate <返回类型> <委托名>(<参数>);`
+```csharp
+// 声明一个委托类型
+public delegate int MathOp(int a, int b);
+```
+
+---
+
+**基本写法：实例化委托**
+`<委托类型> <变量> = <方法>;`
+```csharp
+// 用方法初始化委托
+MathOp op = Add;
+int result = op(3, 4);
+```
+
+---
+
+**基本写法：泛型委托 Func**
+`Func<<T1>, <T2>, <TResult>> <变量> = <方法>;`
+```csharp
+// Func 最后一个参数为返回类型
+Func<int, int, int> add = (a, b) => a + b;
+```
+
+---
+
+**基本写法：泛型委托 Action**
+`Action<<T1>, <T2>> <变量> = <方法>;`
+```csharp
+// Action 无返回值
+Action<string> log = msg => Console.WriteLine(msg);
+```
+
+---
+
+**基本写法：Predicate 谓词委托**
+`Predicate<<T>> <变量> = <方法>;`
+```csharp
+// 返回 bool 的委托
+Predicate<int> isEven = n => n % 2 == 0;
+```
+
+---
+
+## 多播委托
+
+**基本写法：委托合并**
+`<委托1> + <委托2>;`
+```csharp
+// 使用 + 合并多个委托
+Action<string> handler = Log;
+handler += Notify;
+```
+
+---
+
+**基本写法：委托移除**
+`<委托> - <方法>;`
+```csharp
+// 使用 - 移除一个委托
+handler -= Log;
+```
+
+---
+
+**基本写法：获取调用列表**
+`<委托>.GetInvocationList();`
+```csharp
+// 获取委托链中所有委托
+var delegates = handler.GetInvocationList();
+```
+
+---
+
+**基本写法：遍历逐个调用**
+`foreach (var <项> in <委托>.GetInvocationList()) { }`
+```csharp
+// 逐个调用并捕获异常
+foreach (Action<string> h in handler.GetInvocationList())
+{
+    try { h("msg"); } catch { }
+}
+```
+
+---
+
+## 事件声明
+
+**基本写法：声明事件**
+`public event <委托类型> <事件名>;`
+```csharp
+// 基于委托声明事件
+public event EventHandler<EventArgs> Clicked;
+```
+
+---
+
+**基本写法：触发事件**
+`<事件名>?.Invoke(<发送者>, <参数>);`
+```csharp
+// 安全触发事件（无订阅者时不抛异常）
+Clicked?.Invoke(this, EventArgs.Empty);
+```
+
+---
+
+**基本写法：订阅事件**
+`<对象>.<事件> += <处理函数>;`
+```csharp
+// 注册事件处理方法
+button.Clicked += OnClicked;
+```
+
+---
+
+**基本写法：取消订阅**
+`<对象>.<事件> -= <处理函数>;`
+```csharp
+// 注销事件处理方法，避免内存泄漏
+button.Clicked -= OnClicked;
+```
+
+---
+
+## 自定义事件参数
+
+**基本写法：派生 EventArgs**
+`public class <类名> : EventArgs { }`
+```csharp
+// 自定义事件参数类
+public class ValueChangedEventArgs : EventArgs
+{
+    public int OldValue { get; init; }
+    public int NewValue { get; init; }
+}
+```
+
+---
+
+**基本写法：泛型事件委托**
+`public event EventHandler<<EventArgs类型>> <事件名>;`
+```csharp
+// 使用泛型 EventHandler
+public event EventHandler<ValueChangedEventArgs> ValueChanged;
+```
+
+---
+
+## 事件访问器
+
+**基本写法：自定义 add/remove**
+`public event <委托类型> <事件名> { add { } remove { } }`
+```csharp
+// 显式实现事件访问器
+private EventHandler _field;
+public event EventHandler Clicked
+{
+    add => _field += value;
+    remove => _field -= value;
+}
+```
+
+---
+
+**基本写法：线程安全加锁**
+`lock (<锁对象>) { <委托> += value; }`
+```csharp
+// 加锁保证订阅线程安全
+lock (_lock) { _field = (EventHandler)Delegate.Combine(_field, value); }
+```
+
+---
+
+## 匿名方法与 Lambda
+
+**基本写法：匿名方法**
+`delegate(<参数>) { <语句> };`
+```csharp
+// 使用 delegate 关键字
+Func<int, int> square = delegate(int x) { return x * x; };
+```
+
+---
+
+**基本写法：Lambda 表达式**
+`(<参数>) => <表达式>`
+```csharp
+// 简洁的内联函数
+Func<int, int> square = x => x * x;
+```
+
+---
+
+**基本写法：语句 Lambda**
+`(<参数>) => { <语句> };`
+```csharp
+// 多语句 Lambda
+Action<string> log = msg =>
+{
+    var time = DateTime.Now;
+    Console.WriteLine($"{time}: {msg}");
+};
+```
+
+---
+
+**基本写法：无参数 Lambda**
+`() => <表达式>`
+```csharp
+// 无参 Lambda
+Func<int> getCount = () => items.Count;
+```
+
+---
+
+## 闭包与捕获
+
+**基本写法：捕获局部变量**
+`Func<int> <变量> = () => <外部变量>;`
+```csharp
+// Lambda 捕获外部变量
+int counter = 0;
+Func<int> increment = () => ++counter;
+```
+
+---
+
+**基本写法：foreach 捕获**
+`foreach (var <项> in <集合>) { <委托> = () => <项>; }`
+```csharp
+// C# 5+ 每次循环捕获独立变量
+var actions = new List<Func<int>>();
+foreach (var i in new[] { 1, 2, 3 })
+    actions.Add(() => i);
+```
+
+---
+
+## 内置委托类型
+
+**基本写法：Comparison 比较委托**
+`Comparison<<T>> <变量> = (<a>, <b>) => <int>;`
+```csharp
+// 用于 Sort 方法的比较委托
+Comparison<int> desc = (a, b) => b.CompareTo(a);
+list.Sort(desc);
+```
+
+---
+
+**基本写法：Converter 转换委托**
+`Converter<<TInput>, <TOutput>> <变量> = <方法>;`
+```csharp
+// 用于 ConvertAll 的转换委托
+Converter<string, int> parser = int.Parse;
+var nums = list.ConvertAll(parser);
+```
+
+---
+
+## 委托与异步
+
+**基本写法：BeginInvoke 旧式异步**
+`<委托>.BeginInvoke(<参数>, <回调>, <状态>);`
+```csharp
+// .NET Core 不支持，仅 .NET Framework
+// 推荐改用 Task.Run
+```
+
+---
+
+**基本写法：异步 Lambda**
+`async (<参数>) => await <异步操作>`
+```csharp
+// 异步 Lambda 表达式
+Func<string, Task<string>> fetch = async url => await httpClient.GetStringAsync(url);
+```

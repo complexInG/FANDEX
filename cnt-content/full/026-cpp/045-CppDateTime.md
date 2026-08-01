@@ -25,10 +25,11 @@ prerequisites:
   - cpp/概述与现代标准
   - cpp/类型系统
 ---
+# C++ 日期时间库
 
-# C++ 日期时间
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档系统讲解 C++ 标准库的日期时间处理，覆盖 `<chrono>` 库的 duration、time_point、clock 三大核心抽象，C++20 引入的日历（calendar）与时区（time zone）支持，C++23 持续增强（`is_clock`、`utc_clock` leap second），以及 C++26 草案的新进展。所有代码示例可在支持 C++20/23 的主流编译器（GCC 14+、Clang 17+、MSVC 19.36+）上编译通过，并标注跨平台兼容性。对标 MIT 6.172、Stanford CS106L、CMU 15-410 课程教学水准，0 基础自学友好。
+---
 
 ## 1. 学习目标
 
@@ -1299,15 +1300,21 @@ auto last = year_month_day_last{2026y, month_day_last{February}}.day();
 
 ### 8.1 时钟选择决策
 
-```
-是否需要跨进程/机器同步？
-├── 是 → system_clock
-│   ├── 需要闰秒？ → utc_clock (C++20)
-│   └── 否则 → system_clock
-└── 否
-    ├── 性能测量？ → steady_clock
-    ├── 定时任务？ → steady_clock
-    └── 文件时间戳？ → file_clock (C++20)
+```mermaid
+flowchart TD
+    T0["是否需要跨进程/机器同步？"]
+    T1["是 → system_clock"]
+    T2["需要闰秒？ → utc_clock (C++20)"]
+    T3["否则 → system_clock"]
+    T4["否"]
+    T5["性能测量？ → steady_clock"]
+    T6["定时任务？ → steady_clock"]
+    T7["文件时间戳？ → file_clock (C++20)"]
+    T0 --> T1
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
 ```
 
 ### 8.2 日志时间戳格式
@@ -1604,7 +1611,7 @@ private:
 };
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（Remember/Understand）
 
@@ -1625,7 +1632,7 @@ std::cout << t3.count() << "\n";  // 输出？
 
 **题目 4**：实现函数 `format_duration`，将时长格式化为 "1h 23m 45s" 形式。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <chrono>
@@ -1671,7 +1678,7 @@ std::cout << "Elapsed: " << elapsed.count() << " ms\n";
 
 **题目 6**：使用 C++20 日历类型实现：计算某人生日距今还有多少天。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 days days_to_birthday(year_month_day birthday) {
@@ -1697,7 +1704,7 @@ days days_to_birthday(year_month_day birthday) {
 
 **题目 8**：实现一个类型安全的"速度"类型，结合 `meters` 与 `seconds`。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <chrono>
@@ -1721,7 +1728,7 @@ void test() {
 
 **题目 9**：设计一个跨时区的会议调度器，找出所有参与者都能接受的时间窗口。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <chrono>
@@ -1764,7 +1771,7 @@ find_meeting_times(const std::vector<Participant>& participants,
 
 **题目 10**：实现一个高精度定时器，支持亚毫秒级精度。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <chrono>
@@ -1891,3 +1898,228 @@ private:
 ---
 
 > 本文档基于 ISO/IEC 14882:2023（C++23）标准编写，覆盖 C++11 至 C++26 草案的 chrono 库演进。如需了解最新提案进展，请访问 [ISO C++ 委员会官网](https://isocpp.org/) 与 [cppreference.com](https://en.cppreference.com/w/cpp/chrono)。
+## duration 时长
+
+**基本写法：定义时长**
+`std::chrono::duration<<类型>, <比率>> <变量>(<值>);`
+```cpp
+// 表示 5 秒
+std::chrono::duration<int> sec(5);
+```
+
+---
+
+**基本写法：预定义时长类型**
+`std::chrono::seconds` / `std::chrono::milliseconds`
+```cpp
+// 使用标准时长别名
+std::chrono::seconds s(10);
+std::chrono::milliseconds ms(100);
+```
+
+---
+
+**基本写法：时长运算**
+`<时长1> + <时长2>`
+```cpp
+// 时长相加
+auto total = std::chrono::seconds(5) + std::chrono::milliseconds(500);
+```
+
+---
+
+**基本写法：时长转换**
+`std::chrono::duration_cast<<目标类型>>(<时长>);`
+```cpp
+// 秒转毫秒
+auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(sec);
+```
+
+---
+
+**基本写法：获取计数值**
+`<时长>.count()`
+```cpp
+// 取出底层计数
+long n = ms.count();
+```
+
+---
+
+## time_point 时间点
+
+**基本写法：获取当前时间**
+`std::chrono::system_clock::now();`
+```cpp
+// 系统时钟当前时间点
+auto now = std::chrono::system_clock::now();
+```
+
+---
+
+**基本写法：稳态时钟**
+`std::chrono::steady_clock::now();`
+```cpp
+// 单调递增时钟用于计时
+auto start = std::chrono::steady_clock::now();
+```
+
+---
+
+**基本写法：高精度时钟**
+`std::chrono::high_resolution_clock::now();`
+```cpp
+// 最高精度时钟
+auto t = std::chrono::high_resolution_clock::now();
+```
+
+---
+
+**基本写法：计算时间差**
+`<结束> - <开始>`
+```cpp
+// 两个时间点相减得到时长
+auto diff = end - start;
+```
+
+---
+
+**基本写法：时间点加时长**
+`<时间点> + <时长>`
+```cpp
+// 时间点偏移
+auto later = now + std::chrono::hours(1);
+```
+
+---
+
+## time_t 转换
+
+**基本写法：转 time_t**
+`std::chrono::system_clock::to_time_t(<时间点>);`
+```cpp
+// 转为 C 风格 time_t
+std::time_t t = std::chrono::system_clock::to_time_t(now);
+```
+
+---
+
+**基本写法：从 time_t 转**
+`std::chrono::system_clock::from_time_t(<t>);`
+```cpp
+// time_t 转回时间点
+auto tp = std::chrono::system_clock::from_time_t(t);
+```
+
+---
+
+**基本写法：格式化时间**
+`std::ctime(&<t>);`
+```cpp
+// 转为可读字符串
+std::string s = std::ctime(&t);
+```
+
+---
+
+## year_month_day C++20
+
+**基本写法：构造日期**
+`std::chrono::year(<年>)/<月>/<日>`
+```cpp
+// C++20 日历日期
+auto date = std::chrono::year(2026)/7/31;
+```
+
+---
+
+**基本写法：获取年月日**
+`<date>.year()` / `.month()` / `.day()`
+```cpp
+// 取出日期各部分
+auto y = date.year();
+auto m = date.month();
+```
+
+---
+
+**基本写法：从时间点转日期**
+`std::chrono::year_month_day{std::chrono::floor<std::chrono::days>(<tp>)};`
+```cpp
+// 时间点转日历日期
+auto days = std::chrono::floor<std::chrono::days>(now);
+auto ymd = std::chrono::year_month_day{days};
+```
+
+---
+
+## 时钟相关
+
+**基本写法：clock 字符串格式 C++23**
+`std::format("{:%Y-%m-%d}", <时间点>);`
+```cpp
+// 格式化日历
+auto s = std::format("{:%Y-%m-%d %H:%M:%S}", now);
+```
+
+---
+
+**基本写法：休眠**
+`std::this_thread::sleep_for(<时长>);`
+```cpp
+// 线程休眠指定时长
+std::this_thread::sleep_for(std::chrono::seconds(2));
+```
+
+---
+
+**基本写法：休眠到时间点**
+`std::this_thread::sleep_until(<时间点>);`
+```cpp
+// 休眠到指定时间点
+std::this_thread::sleep_until(now + std::chrono::hours(1));
+```
+
+---
+
+## 计时器示例
+
+**基本写法：测量耗时**
+`auto <开始> = steady_clock::now(); <任务>; auto <耗时> = steady_clock::now() - <开始>;`
+```cpp
+// 测量代码执行耗时
+auto start = std::chrono::steady_clock::now();
+do_work();
+auto elapsed = std::chrono::steady_clock::now() - start;
+auto us = std::chrono::duration_cast<std::chrono::microseconds>(elapsed);
+```
+
+---
+
+## C 风格 time
+
+**基本写法：获取时间戳**
+`std::time(nullptr);`
+```cpp
+// 当前时间戳秒数
+std::time_t t = std::time(nullptr);
+```
+
+---
+
+**基本写法：分解时间**
+`std::localtime(&<t>);`
+```cpp
+// 转为本地时间结构
+std::tm* tm = std::localtime(&t);
+```
+
+---
+
+**基本写法：格式化分解时间**
+`std::strftime(<缓冲>, <大小>, <格式>, <tm>);`
+```cpp
+// 自定义格式输出
+char buf[64];
+std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", tm);
+```

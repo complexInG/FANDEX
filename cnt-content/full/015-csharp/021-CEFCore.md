@@ -2249,7 +2249,7 @@ public class AccountProjectionHandler
 
 **收益**：完整审计追溯，任意时刻可重建状态；写入性能稳定（仅 INSERT）；读模型可针对查询优化。
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 

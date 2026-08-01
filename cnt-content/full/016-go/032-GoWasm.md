@@ -134,22 +134,17 @@ TinyGo 适合资源受限场景（嵌入式、Edge Function），但对完整 Go
 
 ### 2.8 演进时间轴
 
-```
-2015-06 ── WebAssembly 项目启动（Google/Mozilla/Microsoft/Apple）
-       │
-2017-03 ── Wasm 1.0 MVP 规范发布
-       │
-2018-08 ── Go 1.11：js/wasm 目标，syscall/js，wasm_exec.js
-       │
-2019-09 ── Go 1.13：js.FuncOf 内存管理修复
-       │
-2021-08 ── Go 1.17：SSA 后端，wasm 体积减少
-       │
-2023-08 ── Go 1.21：WASI Preview 1（wasip1）
-       │
-2024-02 ── Wasm GC proposal 落地（Rust/Java/Kotlin 跟进）
-       │
-2025-02 ── Go 1.24：wasm pprof，PIE 默认启用
+```mermaid
+timeline
+    title Go + WebAssembly 时间线
+    2015-06: WebAssembly 项目启动（Google/Mozilla/Microsoft/Apple）
+    2017-03: Wasm 1.0 MVP 规范发布
+    2018-08: Go 1.11 js/wasm 目标，syscall/js，wasm_exec.js
+    2019-09: Go 1.13 js.FuncOf 内存管理修复
+    2021-08: Go 1.17 SSA 后端，wasm 体积减少
+    2023-08: Go 1.21 WASI Preview 1（wasip1）
+    2024-02: Wasm GC proposal 落地（Rust/Java/Kotlin 跟进）
+    2025-02: Go 1.24 wasm pprof，PIE 默认启用
 ```
 
 ---
@@ -1129,19 +1124,24 @@ wasmer run plugin.wasm --dir=. --env=API_KEY=xxx
 
 1. **目录结构约定**：
 
-```
-project/
-├── cmd/
-│   ├── server/         # 后端 main
-│   └── wasm/           # wasm main（GOOS=js GOARCH=wasm）
-├── internal/
-│   ├── core/           # 共享业务逻辑（同时被 server 和 wasm 引用）
-│   └── wasm/           # wasm 专用代码（syscall/js 调用）
-├── web/
-│   ├── wasm_exec.js
-│   ├── main.wasm
-│   └── index.html
-└── Makefile
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["cmd/"]
+    T2["server/         # 后端 main"]
+    T3["wasm/           # wasm main（GOOS=js GOARCH=wasm）"]
+    T4["internal/"]
+    T5["core/           # 共享业务逻辑（同时被 server 和 wasm 引用）"]
+    T6["wasm/           # wasm 专用代码（syscall/js 调用）"]
+    T7["web/"]
+    T8["wasm_exec.js"]
+    T9["main.wasm"]
+    T10["index.html"]
+    T11["Makefile"]
+    T0 --> T1
+    T3 --> T4
+    T6 --> T7
+    T10 --> T11
 ```
 
 2. **构建分离**：在 Makefile 中显式区分后端与前端构建：
@@ -1261,14 +1261,12 @@ func main() {
 
 ---
 
-## 10. 练习与思考题
+## 知识讲解与要点分析（原练习）
 
 ### 10.1 基础题
 
 **题 1**：使用 `syscall/js` 实现一个函数 `isPrime(n int) bool`，在浏览器中调用并显示 1-100 的所有素数。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -1318,12 +1316,9 @@ func isPrime(n int) bool {
 }
 ```
 
-</details>
 
 **题 2**：解释为何 Go wasm 的二进制体积远大于 Rust wasm，并给出三种优化方案。
 
-<details>
-<summary>参考答案</summary>
 
 Go wasm 体积大的根本原因：
 
@@ -1337,14 +1332,11 @@ Go wasm 体积大的根本原因：
 - 使用 TinyGo 替代官方编译器（牺牲部分标准库兼容性）。
 - 使用 brotli 压缩并启用 HTTP 缓存（传输体积可减 75%+）。
 
-</details>
 
 ### 10.2 进阶题
 
 **题 3**：实现一个 Go wasm 模块，在浏览器中加载一张图片，应用 Sobel 边缘检测算法，并将结果显示在 Canvas 上。要求：使用 `js.CopyBytesToGo` 批量传输数据，避免每像素边界调用。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -1419,7 +1411,6 @@ func abs(x int) int {
 }
 ```
 
-</details>
 
 **题 4**：分析以下代码的性能问题并优化：
 
@@ -1433,8 +1424,6 @@ func process(data js.Value) {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
 **问题**：每次调用 `data.Index(i)` 都涉及一次 wasm↔JS 边界切换，对于 length=10000 的数组，会有 10000 次边界调用，总开销约 2 ms。
 
@@ -1459,14 +1448,11 @@ func process(data js.Value) {
 }
 ```
 
-</details>
 
 ### 10.3 思考题
 
 **题 5**：在浏览器中，Go wasm 与 JavaScript 共享同一个事件循环。若 Go wasm 中启动了 1000 个 goroutine，调度器如何避免某个 goroutine 长时间占用 CPU 导致 UI 卡顿？请从协作式调度与抢占式调度的角度分析。
 
-<details>
-<summary>参考答案</summary>
 
 Go wasm 的调度器是协作式（cooperative）的：
 
@@ -1480,12 +1466,9 @@ Go wasm 的调度器是协作式（cooperative）的：
 - 将长任务切分为多个 macrotask，通过 `time.Sleep(0)` 或 `Promise.resolve().then()` 串联。
 - 使用 Web Worker 将 wasm 放到独立线程，避免阻塞主线程。
 
-</details>
 
 **题 6**：WASI Preview 1 不支持 socket，但 WASI Preview 2 引入了 `wasi-sockets` 提案。请分析在 Go 中如何编写一个跨平台的 HTTP 客户端，同时支持 `js/wasm`（浏览器）与 `wasip1`（WASI）。
 
-<details>
-<summary>参考答案</summary>
 
 通过接口抽象 + 编译标签：
 
@@ -1549,7 +1532,6 @@ func New() Client { return &nativeClient{c: &http.Client{}} }
 
 业务代码统一通过 `httpclient.New()` 获取客户端实例，编译器根据目标平台选择具体实现。
 
-</details>
 
 ---
 

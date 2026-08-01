@@ -1062,9 +1062,9 @@ public class CliApp {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **Q1.** 以下哪个 Java 版本不是 LTS？
 
@@ -1073,11 +1073,8 @@ B. Java 11
 C. Java 17  
 D. Java 18
 
-<details>
-<summary>答案与解析</summary>
 
 **D**。Java 18 不是 LTS。Java LTS 序列为 8、11、17、21、25。Java 18 是非 LTS 版本，仅支持 6 个月。
-</details>
 
 **Q2.** 关于 `public static void main(String[] args)`，下列说法正确的是？
 
@@ -1086,11 +1083,8 @@ B. 当无命令行参数时，`args.length == 0`
 C. 返回值 `int` 也可作为入口签名  
 D. `public` 可省略
 
-<details>
-<summary>答案与解析</summary>
 
 **B**。JVM 会在调用 `main` 时传入长度为 0 的数组而非 `null`。`main` 必须是 `public static void`，返回 `int` 不会被识别为入口（C 错）。`public` 是 JVM 跨类加载器访问要求，不可省略（D 错）。
-</details>
 
 **Q3.** 以下 class 文件头四个字节（magic number）是？
 
@@ -1099,11 +1093,8 @@ B. `0xCAFEBABE`
 C. `0x7F45 4C46` (`ELF`)  
 D. `0x4D5A` (`MZ`)
 
-<details>
-<summary>答案与解析</summary>
 
 **B**。`0xCAFEBABE` 是 class 文件的 magic number，由 Patrick Naughton 选定。其他选项：ELF 是 Linux 可执行格式，MZ 是 Windows PE。
-</details>
 
 **Q4.** `var` 关键字的使用范围是？
 
@@ -1112,11 +1103,8 @@ B. 方法参数
 C. 局部变量  
 D. 方法返回类型
 
-<details>
-<summary>答案与解析</summary>
 
 **C**。`var`（Java 10+）仅用于**局部变量**声明，不能用于字段、方法参数、方法返回类型。`var` 是编译时语法糖，不影响字节码。
-</details>
 
 **Q5.** Java 21 引入的虚拟线程（Virtual Thread）属于？
 
@@ -1125,60 +1113,40 @@ B. Project Panama
 C. Project Valhalla  
 D. Project Skynet
 
-<details>
-<summary>答案与解析</summary>
 
 **A**。虚拟线程属于 Project Loom（JEP 444）。Panama 是外部函数与内存 API，Valhalla 是 Value Types，Skynet 不存在。
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **Q1.** JDK 21 的 class 文件 major version 是 ________。
 
-<details>
-<summary>答案</summary>
 
 65（即 `0x41`）。Java 17 是 61，Java 21 是 65（每升一版加 1，21 - 17 = 4，61 + 4 = 65）。
-</details>
 
 **Q2.** `javac` 的语义阶段中，将 Lambda 表达式转为 `invokedynamic` 调用的阶段称为 ________。
 
-<details>
-<summary>答案</summary>
 
 Desugaring（脱糖）。
-</details>
 
 **Q3.** Maven 的生命周期顺序为：`validate` → `compile` → `test` → ________ → `verify` → `install` → `deploy`。
 
-<details>
-<summary>答案</summary>
 
 `package`。
-</details>
 
 **Q4.** HotSpot JIT 的两个编译器分别是 C1（Client Compiler）与 ________（Server Compiler）。
 
-<details>
-<summary>答案</summary>
 
 C2。
-</details>
 
 **Q5.** Java 18 起（JEP 400），`Charset.defaultCharset()` 默认返回 ________。
 
-<details>
-<summary>答案</summary>
 
 UTF-8。
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **Q1.** 编写一个 Java 21 程序，使用 record 与 sealed interface 表示几何图形（圆形、矩形、三角形），并提供 `area()` 方法。使用 Pattern Matching for switch。
 
-<details>
-<summary>参考答案</summary>
 
 ```java
 public sealed interface Shape permits Circle, Rectangle, Triangle {
@@ -1227,12 +1195,9 @@ public class ShapeDemo {
     }
 }
 ```
-</details>
 
 **Q2.** 使用 `CompletableFuture` 并行查询三个数据源（模拟 `fetchA`、`fetchB`、`fetchC`），合并结果并设置 500ms 超时。
 
-<details>
-<summary>参考答案</summary>
 
 ```java
 import java.util.concurrent.CompletableFuture;
@@ -1264,12 +1229,9 @@ public class ParallelDemo {
     }
 }
 ```
-</details>
 
 **Q3.** 使用虚拟线程（Java 21）并发请求 100 个 URL 并打印响应长度。
 
-<details>
-<summary>参考答案</summary>
 
 ```java
 import java.net.URI;
@@ -1309,26 +1271,20 @@ public class VirtualThreadDemo {
     }
 }
 ```
-</details>
 
 ### 10.4 思考题
 
 **Q1.** 为什么 Java 选择类型擦除（Type Erasure）而非具化泛型（Reified Generics）？这对库设计有什么影响？
 
-<details>
-<summary>参考答案要点</summary>
 
 - **兼容性**：Java 5 引入泛型时必须保证与 JDK 1.4 的二进制兼容性，类型擦除使泛型类在字节码层面与非泛型类完全一致；
 - **简单性**：JVM 不需要支持泛型类型，对字节码与 verifier 改动最小；
 - **代价**：无法在运行时获取泛型类型（`new T()` 不可行、`instanceof List<String>` 不可行）；
 - **库设计影响**：必须用 `Class<T>` token 或 `TypeReference<T>` 模式传递类型信息（如 Jackson、Gson、Hibernate）；
 - **未来**：Project Valhalla 可能引入 Specialized Generics，部分解决此问题。
-</details>
 
 **Q2.** Java 21 虚拟线程与 Reactor 模式（如 Reactor Core、RxJava）有何本质区别？何时该选哪一个？
 
-<details>
-<summary>参考答案要点</summary>
 
 - **本质区别**：
   - 虚拟线程：JVM 级别的轻量级线程，调度由 JVM 在用户态完成，编写风格与平台线程一致（同步阻塞写法）；
@@ -1340,18 +1296,14 @@ public class VirtualThreadDemo {
   - 新项目优先虚拟线程；
   - 已有响应式生态（Spring WebFlux）继续用 Reactor；
   - 需要背压与流式语义的场景用 Reactor。
-</details>
 
 **Q3.** Java 选择 AOT（GraalVM Native Image）作为 Java 25 LTS 标准特性的工程动因是什么？
 
-<details>
-<summary>参考答案要点</summary>
 
 - **云端原生趋势**：容器化、Serverless 场景对启动时间敏感（< 100ms）；
 - **资源成本**：传统 JVM 启动需 200-500MB 内存，Native Image 可压至 50MB 以下；
 - **GraalVM 成熟**：经过 5 年孵化，已支持 Spring Native、Quarkus、Micronaut；
 - **代价**：放弃反射的动态性（需配置 `reflect-config.json`）、不能动态加载类、构建时间长。
-</details>
 
 ---
 
@@ -1423,7 +1375,3 @@ public class VirtualThreadDemo {
 
 ---
 
-## 更新日志
-
-- **2026-04-05**: 初始创建，涵盖环境搭建与 Hello World 示例（51 行）。
-- **2026-07-20**: 第二批金标准升级。引入 Bloom 学习目标、JLS/JVMS 规范、KaTeX 形式化定义、Maven/Gradle 双构建配置、JMH/JFR/jlink/GraalVM Native Image、Spring/Netty/Hibernate 案例、5 类习题与详细答案、ACM Reference Format 参考文献。新增 1500+ 行内容（最终约 1500 行）。

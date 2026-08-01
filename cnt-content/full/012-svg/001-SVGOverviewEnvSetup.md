@@ -14,6 +14,11 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+# SVG 嵌入方式 语法速查手册
+
+> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -448,30 +453,39 @@ $$
 
 ### 5.4 生产级 SVG 工程目录结构
 
-```text
-fandex-svg-system/
-├── src/
-│   ├── icons/                    原始图标 SVG
-│   │   ├── arrow-left.svg
-│   │   └── arrow-right.svg
-│   ├── illustrations/            插画 SVG
-│   ├── logos/                    品牌 Logo SVG
-│   └── patterns/                 纹理图案
-├── optimized/                    SVGO 优化后输出
-│   ├── icons/
-│   └── ...
-├── sprites/                      雪碧图(symbol 模式)
-│   └── icon-sprite.svg
-├── dist/                         构建产物
-│   ├── icon-font/                 图标字体
-│   └── react-components/         React 组件
-├── scripts/
-│   ├── optimize.mjs              SVGO 优化脚本
-│   ├── sprite.mjs                雪碧图生成脚本
-│   └── validate.mjs              SVG 校验脚本
-├── .svgo.config.mjs              SVGO 配置
-├── package.json
-└── README.md
+```mermaid
+flowchart TD
+    T0["fandex-svg-system/"]
+    T1["src/"]
+    T2["icons/                    原始图标 SVG"]
+    T3["arrow-left.svg"]
+    T4["arrow-right.svg"]
+    T5["illustrations/            插画 SVG"]
+    T6["logos/                    品牌 Logo SVG"]
+    T7["patterns/                 纹理图案"]
+    T8["optimized/                    SVGO 优化后输出"]
+    T9["icons/"]
+    T10["..."]
+    T11["sprites/                      雪碧图(symbol 模式)"]
+    T12["icon-sprite.svg"]
+    T13["dist/                         构建产物"]
+    T14["icon-font/                 图标字体"]
+    T15["react-components/         React 组件"]
+    T16["scripts/"]
+    T17["optimize.mjs              SVGO 优化脚本"]
+    T18["sprite.mjs                雪碧图生成脚本"]
+    T19["validate.mjs              SVG 校验脚本"]
+    T20[".svgo.config.mjs              SVGO 配置"]
+    T21["package.json"]
+    T22["README.md"]
+    T0 --> T1
+    T7 --> T8
+    T10 --> T11
+    T12 --> T13
+    T15 --> T16
+    T19 --> T20
+    T19 --> T21
+    T19 --> T22
 ```
 
 ### 5.5 SVGO 优化脚本示例
@@ -566,7 +580,7 @@ if (failed.length > 0) {
   });
   process.exit(1);
 } else {
-  console.log(`✓ 所有 ${files.length} 个 SVG 校验通过`);
+  console.log(`√ 所有 ${files.length} 个 SVG 校验通过`);
 }
 ```
 
@@ -906,7 +920,7 @@ ${symbols.join('\n')}
 
   await mkdir('sprites', { recursive: true });
   await writeFile('sprites/icon-sprite.svg', sprite, 'utf8');
-  console.log(`✓ 生成 ${symbols.length} 个图标的雪碧图`);
+  console.log(`√ 生成 ${symbols.length} 个图标的雪碧图`);
 }
 
 generateSprite();
@@ -1017,7 +1031,7 @@ jobs:
         run: |
           SIZE=$(du -sb sprites/ | cut -f1)
           if [ $SIZE -gt 100000 ]; then
-            echo "✗ 雪碧图体积超过 100KB"
+            echo "× 雪碧图体积超过 100KB"
             exit 1
           fi
       - name: Commit optimized
@@ -1098,17 +1112,22 @@ Material Icons 工程化方案:
 
 GitHub Octicon 是开源 SVG 图标系统的典范,采用 monorepo 管理:
 
-```text
-octicons/
-├── packages/
-│   ├── octicons/             核心 SVG 文件
-│   ├── react/               React 组件
-│   ├── vue/                 Vue 组件
-│   ├── ruby/                Ruby gem
-│   └── jekyll/              Jekyll 插件
-└── tools/
-    ├── build.mjs             构建脚本
-    └── optimize.mjs          优化脚本
+```mermaid
+flowchart TD
+    T0["octicons/"]
+    T1["packages/"]
+    T2["octicons/             核心 SVG 文件"]
+    T3["react/               React 组件"]
+    T4["vue/                 Vue 组件"]
+    T5["ruby/                Ruby gem"]
+    T6["jekyll/              Jekyll 插件"]
+    T7["tools/"]
+    T8["build.mjs             构建脚本"]
+    T9["optimize.mjs          优化脚本"]
+    T0 --> T1
+    T6 --> T7
+    T7 --> T8
+    T7 --> T9
 ```
 
 设计原则:
@@ -1163,15 +1182,20 @@ function App() {
 
 FANDEX-Web 项目采用分层 SVG 架构:
 
-```text
-src/
-├── content/docs/svg/            本教程文档(18 篇)
-├── components/ui/svg/            SVG React 组件
-│   ├── icons/                    图标组件
-│   ├── illustrations/           插画组件
-│   └── patterns/                 装饰图案
-├── assets/svg/                   原始 SVG 资源
-└── styles/svg-theme.ts           SVG 主题配置
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["content/docs/svg/            本教程文档(18 篇)"]
+    T2["components/ui/svg/            SVG React 组件"]
+    T3["icons/                    图标组件"]
+    T4["illustrations/           插画组件"]
+    T5["patterns/                 装饰图案"]
+    T6["assets/svg/                   原始 SVG 资源"]
+    T7["styles/svg-theme.ts           SVG 主题配置"]
+    T0 --> T1
+    T0 --> T2
+    T5 --> T6
+    T5 --> T7
 ```
 
 主题系统采用 CSS 变量 + currentColor 双层设计:
@@ -1200,9 +1224,9 @@ export const svgTheme = {
 } as const;
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1.1** SVG 的全称是什么?
 
@@ -1211,13 +1235,10 @@ B. Scalable Vector Graphics
 C. Simple Vector Graphics
 D. Scalable Visual Graphics
 
-<details>
-<summary>答案与解析</summary>
 
-答案:B
+解析讲解：B
 
 SVG 全称为 Scalable Vector Graphics(可缩放矢量图形),由 W3C 制定并维护。"Scalable" 强调其可无损缩放的特性,"Vector" 强调基于矢量描述而非位图。
-</details>
 
 **题目 1.2** 下列哪种嵌入方式允许外部 CSS 控制 SVG 内部元素?
 
@@ -1226,13 +1247,10 @@ B. CSS `background-image: url('logo.svg')`
 C. 内联 `<svg>` 直接写在 HTML 中
 D. `<object data="logo.svg">`
 
-<details>
-<summary>答案与解析</summary>
 
-答案:C
+解析讲解：C
 
 只有内联 SVG 是 HTML 文档的一部分,外部 CSS 选择器可直接作用于其内部元素。其他三种方式 SVG 与主文档处于不同文档上下文,外部 CSS 无法穿透。`<object>` 嵌入的 SVG 内部 CSS 独立运行,需通过 postMessage 通信。
-</details>
 
 **题目 1.3** SVG 1.0 规范正式发布的年份是?
 
@@ -1241,13 +1259,10 @@ B. 2001
 C. 2003
 D. 2011
 
-<details>
-<summary>答案与解析</summary>
 
-答案:B
+解析讲解：B
 
 SVG 1.0 于 2001 年 9 月 4 日正式成为 W3C 推荐标准(Recommendation)。1998 年是 VML 与 PGML 提交 W3C 的年份,2003 年是 SVG 1.1 发布,2011 年是 SVG Tiny 1.2 成为推荐标准。
-</details>
 
 **题目 1.4** 在 SVG 仿射变换矩阵 $\begin{bmatrix} a & c & e \\ b & d & f \\ 0 & 0 & 1 \end{bmatrix}$ 中,e 和 f 表示什么变换?
 
@@ -1256,13 +1271,10 @@ B. 旋转
 C. 平移
 D. 倾斜
 
-<details>
-<summary>答案与解析</summary>
 
-答案:C
+解析讲解：C
 
 在 SVG 仿射变换矩阵中,a 和 d 控制缩放与旋转,b 和 c 控制旋转与倾斜,e 和 f 表示平移分量(translate)。完整的变换为 $x' = ax + cy + e$,$y' = bx + dy + f$,因此 e 与 f 是平移量。
-</details>
 
 **题目 1.5** 下列哪种场景最适合使用 Canvas 而非 SVG?
 
@@ -1271,67 +1283,49 @@ B. 数据可视化折线图(50 个数据点)
 C. 实时粒子系统(10000 粒子)
 D. 图标系统(20 个图标)
 
-<details>
-<summary>答案与解析</summary>
 
-答案:C
+解析讲解：C
 
 10000 粒子的实时系统远超 SVG 的合理承载范围(SVG 元素数建议 5000 以内),Canvas 的立即模式更适合大规模重绘。其他场景 SVG 更合适:Logo 需要无损缩放,折线图 50 个点 SVG 完全胜任且支持交互,图标系统 SVG 标准方案。
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1.6** SVG 是基于 ______ 的矢量图像格式,由 ______ 组织制定并维护。
 
-<details>
-<summary>答案与解析</summary>
 
-答案:XML;W3C(World Wide Web Consortium)
+解析讲解：XML;W3C(World Wide Web Consortium)
 
 SVG 全称 Scalable Vector Graphics,是基于 XML 的矢量图像格式,由 W3C 组织制定并维护。W3C 是 Web 标准的制定机构,负责 HTML、CSS、DOM 等核心规范。
-</details>
 
 **题目 1.7** SVG 坐标系的原点位于 ______,Y 轴方向 ______。
 
-<details>
-<summary>答案与解析</summary>
 
-答案:左上角;向下递增
+解析讲解：左上角;向下递增
 
 SVG 坐标系原点(0,0)在左上角,X 轴向右递增,Y 轴向下递增。这与数学中笛卡尔坐标系 Y 轴向上相反,源于屏幕扫描线从上到下的历史约定。这种约定影响所有图形 API(Canvas、WebGL 也都是 Y 轴向下)。
-</details>
 
 **题目 1.8** SVG 与 Canvas 的核心描述模式差异在于:SVG 采用 ______ 模式,Canvas 采用 ______ 模式。
 
-<details>
-<summary>答案与解析</summary>
 
-答案:保留模式(retained mode);立即模式(immediate mode)
+解析讲解：保留模式(retained mode);立即模式(immediate mode)
 
 SVG 采用保留模式:浏览器维护一棵图形场景树,应用层只声明图形对象。Canvas 采用立即模式:应用层主动调用绘图命令,浏览器不保留场景状态。保留模式适合静态或半静态场景,立即模式适合高频重绘的动态场景。
-</details>
 
 **题目 1.9** SVGO 工具主要用于 ______,通常可减小 SVG 文件体积 ______%。
 
-<details>
-<summary>答案与解析</summary>
 
-答案:SVG 优化压缩;30-70%
+解析讲解：SVG 优化压缩;30-70%
 
 SVGO(SVG Optimizer)是基于 Node.js 的 SVG 优化工具,通过移除冗余属性、合并路径、简化坐标精度等方式减小体积。根据 SVG 复杂度,通常可减小 30-70% 体积,部分情况可达 80% 以上。
-</details>
 
 **题目 1.10** SVG 渲染管线的五个阶段是:XML 解析 → ______ → 样式计算 → ______ → 光栅化与合成。
 
-<details>
-<summary>答案与解析</summary>
 
-答案:DOM 树构建;布局与变换
+解析讲解：DOM 树构建;布局与变换
 
 SVG 渲染管线五阶段:1) XML 解析(字符串扫描与 token 化)2) DOM 树构建(节点分配与父子链接)3) 样式计算(属性继承与 CSS 计算)4) 布局与变换(仿射矩阵复合与坐标映射)5) 光栅化与合成(几何采样与抗锯齿)。
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1.11** 编写一个生产级的 SVG 工程目录,包含至少 3 个图标 SVG 文件,并通过 SVGO 优化脚本批量处理。
 
@@ -1342,20 +1336,23 @@ SVG 渲染管线五阶段:1) XML 解析(字符串扫描与 token 化)2) DOM 树�
 3. SVGO 配置文件必须移除注释、合并路径
 4. 输出优化后的体积对比
 
-<details>
-<summary>参考答案</summary>
 
 目录结构:
 
-```text
-my-svg-project/
-├── src/
-│   ├── home.svg
-│   ├── search.svg
-│   └── user.svg
-├── optimized/
-├── .svgo.config.mjs
-└── package.json
+```mermaid
+flowchart TD
+    T0["my-svg-project/"]
+    T1["src/"]
+    T2["home.svg"]
+    T3["search.svg"]
+    T4["user.svg"]
+    T5["optimized/"]
+    T6[".svgo.config.mjs"]
+    T7["package.json"]
+    T0 --> T1
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
 ```
 
 src/home.svg:
@@ -1455,7 +1452,6 @@ await Promise.all(
 ```
 
 运行 `npm run optimize` 后,优化后体积通常减少 30-50%。
-</details>
 
 **题目 1.12** 编写一个独立的 SVG 文件,展示 FANDEX 品牌 Logo,要求:
 
@@ -1465,8 +1461,6 @@ await Promise.all(
 4. 包含 `<title>` 与 `<desc>` 可访问性元素
 5. 文字使用 `text-anchor="middle"` 居中
 
-<details>
-<summary>参考答案</summary>
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1507,14 +1501,11 @@ await Promise.all(
 5. text-anchor="middle" 让文字水平居中
 6. dominant-baseline="middle" 让文字垂直居中
 7. role 与 aria-labelledby 提供可访问性
-</details>
 
 ### 10.4 思考题
 
 **题目 1.13** 为什么 SVG 选择 XML 作为语法基础而非自定义二进制格式?分析这一决策的优缺点。
 
-<details>
-<summary>参考思路</summary>
 
 优点:
 1. 可读性:文本格式让开发者能直接阅读与调试,降低门槛
@@ -1530,12 +1521,9 @@ await Promise.all(
 4. 命名空间复杂:跨命名空间引用需 xmlns 声明,增加心智负担
 
 总体而言,XML 的选择是 2001 年时代的合理决策,其优势(可读性、互操作性、生态成熟)远超劣势。SVG 2 虽保留 XML 语法,但允许 HTML 解析器宽松解析内联 SVG,降低了对严格 XML 的依赖。
-</details>
 
 **题目 1.14** 在 10000 个数据点的散点图场景中,应该选择 SVG 还是 Canvas?请给出技术决策依据。
 
-<details>
-<summary>参考思路</summary>
 
 建议选择 Canvas,理由:
 
@@ -1555,12 +1543,9 @@ await Promise.all(
 - 数据量 < 5000 且需要丰富交互 → SVG
 - 数据量 5000-50000 且交互简单 → Canvas
 - 数据量 > 50000 或需 3D 渲染 → WebGL
-</details>
 
 **题目 1.15** 假设你的团队需要为一个大型企业级应用构建图标系统,需要支持 500+ 图标、React/Vue 双框架、按需加载、主题化。请设计完整的工程方案。
 
-<details>
-<summary>参考思路</summary>
 
 工程方案设计:
 
@@ -1618,7 +1603,6 @@ await Promise.all(
     - 语义化版本(SemVer)
     - 变更日志(Changesets)
     - 图标变更历史可追溯
-</details>
 
 ## 11. 参考文献
 
@@ -1738,3 +1722,110 @@ await Promise.all(
 8. **SVG 与设计系统**:Figma → SVG → 组件库的工作流
 
 下一篇将从 `<svg>` 根元素与文档结构开始,逐步展开 SVG 的核心语法。
+## 内联 SVG
+
+**内联嵌入**
+`<svg width="<宽>" height="<高>" viewBox="<min-x> <min-y> <w> <h>" xmlns="http://www.w3.org/2000/svg"> ... </svg>`
+```html
+<!-- 内联在 HTML 中,享有完整的 CSS 与 JavaScript 能力 -->
+<svg width="100" height="100" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="40" fill="#4f5bd5" />
+</svg>
+```
+
+---
+
+## img 标签引用
+
+**img 引用 SVG 文件**
+`<img src="<文件路径>" alt="<替代文本>" width="<宽>" height="<高>" />`
+```html
+<!-- 无法用外部 CSS 样式化内部元素,无法执行内部 JavaScript -->
+<img src="logo.svg" alt="Logo" width="200" height="100" />
+```
+
+---
+
+## CSS 背景图引用
+
+**CSS 背景图引用 SVG**
+`background-image: url('<文件路径>');`
+```css
+/* 同 img 限制,且无法交互 */
+.hero {
+  background-image: url('pattern.svg');
+  background-size: cover;
+}
+```
+
+---
+
+## object 标签嵌入
+
+**object 嵌入 SVG**
+`<object data="<文件路径>" type="image/svg+xml" width="<宽>" height="<高>"></object>`
+```html
+<!-- 独立文档上下文,内部脚本与样式独立运行,与主页面通信需 postMessage -->
+<object data="diagram.svg" type="image/svg+xml" width="800" height="600"></object>
+```
+
+---
+
+## iframe 嵌入
+
+**iframe 嵌入 SVG**
+`<iframe src="<文件路径>" width="<宽>" height="<高>"></iframe>`
+```html
+<iframe src="diagram.svg" width="800" height="600"></iframe>
+```
+
+---
+
+## 嵌入方式能力对比
+
+| 能力            | inline | img | CSS 背景 | object |
+| --------------- | ------ | --- | -------- | ------ |
+| 外部 CSS 样式化 | 是     | 否  | 否       | 否     |
+| JavaScript 交互 | 是     | 否  | 否       | 仅内部 |
+| 事件绑定        | 是     | 否  | 否       | 仅内部 |
+| 可访问性        | 强     | 中  | 弱       | 中     |
+| 缓存友好        | 否     | 是  | 是       | 是     |
+
+---
+
+## SVG 与 Canvas 对比
+
+| 维度             | SVG                             | Canvas                     |
+| ---------------- | ------------------------------- | -------------------------- |
+| **描述方式**     | 矢量(保留模式)                | 位图(立即模式)           |
+| **DOM 节点**     | 每个图形都是 DOM 元素           | 单一 canvas 元素           |
+| **事件绑定**     | 可直接绑定到子元素              | 需自行做命中检测           |
+| **缩放表现**     | 无损缩放                        | 放大后锯齿明显             |
+| **性能特征**     | 元素多时性能下降                | 元素数量影响小             |
+| **动画**         | SMIL / CSS / DOM 操作           | requestAnimationFrame 重绘 |
+| **文本可访问性** | 原生支持                        | 需额外处理                 |
+| **适用场景**     | 图标、图表、UI 装饰、数据可视化 | 游戏、图像处理、复杂粒子   |
+
+---
+
+## 第一个 SVG 示例
+
+**完整 SVG 结构**
+`<svg width="<宽>" height="<高>" viewBox="<min-x> <min-y> <w> <h>" xmlns="http://www.w3.org/2000/svg"> ... </svg>`
+```html
+<svg width="240" height="120" viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- 渐变定义 -->
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4f5bd5" />
+      <stop offset="100%" stop-color="#00b894" />
+    </linearGradient>
+  </defs>
+  <!-- 矩形 -->
+  <rect x="20" y="20" width="200" height="80" rx="12" fill="url(#grad)" />
+  <!-- 文本 -->
+  <text x="120" y="65" text-anchor="middle" fill="#fff" font-size="20" font-family="sans-serif">
+    Hello SVG
+  </text>
+</svg>
+```

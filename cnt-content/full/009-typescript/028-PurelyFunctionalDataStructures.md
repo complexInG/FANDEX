@@ -1285,20 +1285,22 @@ type SerializableEventMap = {
 
 ### 12.1 项目结构与组织
 
-```
-src/
-├── events/
-│   ├── index.ts              # 统一导出
-│   ├── EventBus.ts           # 核心实现
-│   ├── types.ts              # EventMap 类型集中声明
-│   ├── domains/
-│   │   ├── user.ts           # 用户域事件
-│   │   ├── order.ts          # 订单域事件
-│   │   └── payment.ts        # 支付域事件
-│   └── middleware/
-│       ├── logger.ts         # 日志中间件
-│       ├── validator.ts      # Schema 校验
-│       └── metrics.ts        # 指标收集
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["events/"]
+    T2["index.ts              # 统一导出"]
+    T3["EventBus.ts           # 核心实现"]
+    T4["types.ts              # EventMap 类型集中声明"]
+    T5["domains/"]
+    T6["user.ts           # 用户域事件"]
+    T7["order.ts          # 订单域事件"]
+    T8["payment.ts        # 支付域事件"]
+    T9["middleware/"]
+    T10["logger.ts         # 日志中间件"]
+    T11["validator.ts      # Schema 校验"]
+    T12["metrics.ts        # 指标收集"]
+    T0 --> T1
 ```
 
 集中声明 EventMap：
@@ -1445,9 +1447,9 @@ jobs:
       - run: npm run build
 ```
 
-## 13. 习题
+## 知识讲解与要点分析（原习题）
 
-### 13.1 填空题
+### 填空题知识点讲解
 
 1. 类型安全 EventEmitter 的泛型约束应为 `Events extends ______`，确保事件名是字符串且负载有显式类型。
 2. 同步 emit 中若 listener 抛错，会 ______ 后续 listener 执行；可用 ______ 包裹每个 listener 实现「错误隔离」。
@@ -1456,7 +1458,7 @@ jobs:
 5. TS 5.0 引入的 ______ 操作符可校验事件负载是否满足目标 Schema，同时保留字面量类型。
 6. 监听器函数 `this` 绑定丢失的修复方法有两种：______ 或 ______。
 
-### 13.2 选择题
+### 选择题知识点讲解
 
 1. 关于 EventEmitter 的 maxListeners，下列说法错误的是？
    - A. Node.js 默认值为 10

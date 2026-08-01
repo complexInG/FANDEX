@@ -151,24 +151,18 @@ mux.HandleFunc("GET /api/users/{id}", getUser)
 
 ### 2.6 演进时间轴
 
-```
-2003-01 ── Python WSGI（PEP 333）规范化中间件概念
-       │
-2007-01 ── Ruby Rack 沿用中间件模式
-       │
-2010-05 ── Node.js Connect/Express 中间件生态兴起
-       │
-2012-03 ── Go 1.0：net/http，Handler/HandlerFunc 接口
-       │
-2014-06 ── gin 框架发布，自定义 HandlerFunc
-       │
-2015-07 ── chi、echo 框架发布，兼容标准库中间件
-       │
-2016-08 ── Go 1.7：context.Context 引入 http.Request
-       │
-2024-02 ── Go 1.22：ServeMux 增强方法匹配、路径参数、Use 方法
-       │
-2025-02 ── Go 1.24：进一步优化 ServeMux 性能（radix tree）
+```mermaid
+timeline
+    title Go 中间件演进时间线
+    2003-01: Python WSGI（PEP 333）规范化中间件概念
+    2007-01: Ruby Rack 沿用中间件模式
+    2010-05: Node.js Connect/Express 中间件生态兴起
+    2012-03: Go 1.0 net/http，Handler/HandlerFunc 接口
+    2014-06: gin 框架发布，自定义 HandlerFunc
+    2015-07: chi、echo 框架发布，兼容标准库中间件
+    2016-08: Go 1.7 context.Context 引入 http.Request
+    2024-02: Go 1.22 ServeMux 方法匹配、路径参数、Use 方法
+    2025-02: Go 1.24 进一步优化 ServeMux 性能（radix tree）
 ```
 
 ---
@@ -269,10 +263,10 @@ $$
 
 洋葱模型（onion model）描述请求与响应在中间件链中的流向：
 
-```
-请求 ─→ [中间件A前置] ─→ [中间件B前置] ─→ [中间件C前置] ─→ 核心 Handler
-                                                                │
-响应 ←─ [中间件A后置] ←─ [中间件B后置] ←─ [中间件C后置] ←────────┘
+```mermaid
+flowchart LR
+    Req[请求] --> A[中间件A前置] --> B[中间件B前置] --> C[中间件C前置] --> H[核心 Handler]
+    H --> C2[中间件C后置] --> B2[中间件B后置] --> A2[中间件A后置] --> Res[响应]
 ```
 
 形式化：
@@ -1324,25 +1318,30 @@ func GoodTimeout(duration time.Duration) func(http.Handler) http.Handler {
 
 ### 8.1 中间件目录组织
 
-```
-project/
-├── internal/
-│   ├── middleware/
-│   │   ├── recovery.go
-│   │   ├── logging.go
-│   │   ├── auth.go
-│   │   ├── cors.go
-│   │   ├── ratelimit.go
-│   │   ├── requestid.go
-│   │   └── chain.go       # Chain 辅助函数
-│   ├── handler/
-│   │   ├── user.go
-│   │   └── order.go
-│   └── server/
-│       └── router.go      # 路由与中间件组装
-└── cmd/
-    └── server/
-        └── main.go
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["internal/"]
+    T2["middleware/"]
+    T3["recovery.go"]
+    T4["logging.go"]
+    T5["auth.go"]
+    T6["cors.go"]
+    T7["ratelimit.go"]
+    T8["requestid.go"]
+    T9["chain.go       # Chain 辅助函数"]
+    T10["handler/"]
+    T11["user.go"]
+    T12["order.go"]
+    T13["server/"]
+    T14["router.go      # 路由与中间件组装"]
+    T15["cmd/"]
+    T16["server/"]
+    T17["main.go"]
+    T0 --> T1
+    T14 --> T15
+    T15 --> T16
+    T16 --> T17
 ```
 
 ### 8.2 中间件单元测试
@@ -1750,14 +1749,12 @@ Istio 的 Envoy sidecar 本质是一个网络层中间件：
 
 ---
 
-## 10. 练习与思考题
+## 知识讲解与要点分析（原练习）
 
 ### 10.1 基础题
 
 **题 1**：实现一个中间件 `RequestSizeLimit(max int64)`，限制请求体大小，超过则返回 413。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 func RequestSizeLimit(max int64) func(http.Handler) http.Handler {
@@ -1775,12 +1772,9 @@ func RequestSizeLimit(max int64) func(http.Handler) http.Handler {
 }
 ```
 
-</details>
 
 **题 2**：解释为何 `Recovery` 中间件应该放在 Chain 的最外层。
 
-<details>
-<summary>参考答案</summary>
 
 `Recovery` 中间件通过 `defer recover()` 捕获 panic。如果 `Recovery` 不在最外层，外层中间件（如 Logging）若发生 panic，将无法被捕获，导致进程崩溃。
 
@@ -1792,7 +1786,6 @@ handler := Chain(mux, Recovery, Logging, Auth)
 
 这样 `Recovery` 的 defer 在最外层，能捕获任何内层中间件或 Handler 的 panic。
 
-</details>
 
 ### 10.2 进阶题
 
@@ -1804,8 +1797,6 @@ api := Group(mux, "/api", AuthMiddleware, RateLimitMiddleware)
 api.HandleFunc("/users", getUsers) // 自动注册为 /api/users，并应用组中间件
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 type Group struct {
@@ -1840,7 +1831,6 @@ api.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 
-</details>
 
 **题 4**：分析以下中间件代码的并发安全问题并修复：
 
@@ -1857,8 +1847,6 @@ func (c *counter) Middleware(next http.Handler) http.Handler {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
 **问题**：`c.count++` 不是原子操作，在并发请求下会发生数据竞争。
 
@@ -1882,14 +1870,11 @@ func (c *counter) Get() int64 {
 }
 ```
 
-</details>
 
 ### 10.3 思考题
 
 **题 5**：在微服务架构中，认证中间件应该在 API 网关层还是业务服务层实现？请从性能、安全、可维护性三个维度分析。
 
-<details>
-<summary>参考答案</summary>
 
 **API 网关层实现**：
 
@@ -1910,12 +1895,9 @@ func (c *counter) Get() int64 {
 
 这样既保证性能（网关拦截无效请求），又保证安全（业务服务不信任网关，自行校验权限）。
 
-</details>
 
 **题 6**：假设你需要实现一个支持灰度发布的中间件，根据请求头 `X-Canary: true` 将流量路由到灰度版本。请设计中间件实现，并说明如何与反向代理集成。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 type CanaryConfig struct {
@@ -1963,7 +1945,6 @@ func mustParseURL(raw string) *url.URL {
 2. 通过配置中心（如 Apollo、Nacos）动态调整 `CanaryPercent`。
 3. 监控灰度版本与稳定版本的错误率、延迟，自动调整比例。
 
-</details>
 
 ---
 

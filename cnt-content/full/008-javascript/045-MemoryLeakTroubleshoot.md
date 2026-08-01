@@ -1408,110 +1408,110 @@ self.addEventListener('activate', (event) => {
 
 ---
 
-## 10. 习题（Exercises）
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪种情况**不会**导致内存泄漏？
+**常见疑问 1**：以下哪种情况**不会**导致内存泄漏？
 
 A. 在严格模式下未声明的变量赋值  
 B. 使用 `WeakMap` 存储缓存  
 C. `setInterval` 未保存 timer ID  
 D. Promise 永远 pending
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`WeakMap` 的键是弱引用，键对象被 GC 时自动清除对应条目，不会泄漏。A 在严格模式下抛 `ReferenceError`（不会泄漏，但程序中断）；C 无法清理定时器，泄漏；D 永远 pending 的 Promise 占内存。
+**解析讲解**：`WeakMap` 的键是弱引用，键对象被 GC 时自动清除对应条目，不会泄漏。A 在严格模式下抛 `ReferenceError`（不会泄漏，但程序中断）；C 无法清理定时器，泄漏；D 永远 pending 的 Promise 占内存。
 
 ---
 
-**Q2**：Chrome DevTools Memory 面板中，"Retained Size" 的含义是？
+**常见疑问 2**：Chrome DevTools Memory 面板中，"Retained Size" 的含义是？
 
 A. 对象自身占用的内存  
 B. 对象及其引用的所有对象总内存  
 C. 对象被回收后能释放的总内存  
 D. 两次快照间的内存变化量
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：Retained Size 基于支配树，是对象被回收后**实际释放**的总内存。B 是"可达内存"的概念，但不一定是回收后释放的量。
+**解析讲解**：Retained Size 基于支配树，是对象被回收后**实际释放**的总内存。B 是"可达内存"的概念，但不一定是回收后释放的量。
 
 ---
 
-**Q3**：以下哪个 API **不**适合用于资源正确性保证？
+**常见疑问 3**：以下哪个 API **不**适合用于资源正确性保证？
 
 A. `try/finally`  
 B. `AbortController`  
 C. `FinalizationRegistry`  
 D. 显式 `close()` 调用
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`FinalizationRegistry` 的回调可能不触发、可能延迟、可能乱序，不能用于资源正确性（如关闭文件描述符）。A、B、D 都是确定性释放机制。
+**解析讲解**：`FinalizationRegistry` 的回调可能不触发、可能延迟、可能乱序，不能用于资源正确性（如关闭文件描述符）。A、B、D 都是确定性释放机制。
 
 ---
 
-**Q4**：V8 引擎的"新生代"使用哪种 GC 算法？
+**常见疑问 4**：V8 引擎的"新生代"使用哪种 GC 算法？
 
 A. Mark-Sweep  
 B. Mark-Compact  
 C. Scavenge（Cheney 复制算法）  
 D. 引用计数
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：V8 新生代使用 Scavenge 算法（Cheney 1970），将堆分为 From / To 半区，GC 时复制存活对象到 To 区。A、B 用于老生代；D 在 JavaScript 中不使用。
+**解析讲解**：V8 新生代使用 Scavenge 算法（Cheney 1970），将堆分为 From / To 半区，GC 时复制存活对象到 To 区。A、B 用于老生代；D 在 JavaScript 中不使用。
 
 ---
 
-**Q5**：以下哪种做法**最能**避免 Detached DOM 泄漏？
+**常见疑问 5**：以下哪种做法**最能**避免 Detached DOM 泄漏？
 
 A. 使用 `document.createElement` 创建元素  
 B. 使用 `WeakMap` 缓存 DOM 引用  
 C. 移除 DOM 时同步清理 JS 引用  
 D. 使用 `innerHTML = ''` 清空容器
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：Detached DOM 泄漏的本质是 DOM 节点虽脱离 DOM 树但被 JS 引用持有。同步清理 JS 引用（如 `cache.delete(id)`）是根本解法。B 也可，但语义上是"允许 GC"，不是"主动清理"。
-
----
-
-### 10.2 填空题
-
-**Q1**：V8 堆分为新生代与老生代，新生代使用 ______ 算法，老生代使用 ______ 算法。
-
-**答案**：Scavenge（或 Cheney 复制算法）；Mark-Sweep / Mark-Compact
+**解析讲解**：Detached DOM 泄漏的本质是 DOM 节点虽脱离 DOM 树但被 JS 引用持有。同步清理 JS 引用（如 `cache.delete(id)`）是根本解法。B 也可，但语义上是"允许 GC"，不是"主动清理"。
 
 ---
 
-**Q2**：`WeakRef.deref()` 在对象被 GC 后返回 ______。
+### 填空题知识点讲解
 
-**答案**：`undefined`
+**常见疑问 6**：V8 堆分为新生代与老生代，新生代使用 ______ 算法，老生代使用 ______ 算法。
 
----
-
-**Q3**：Chrome DevTools 三快照工作流中，第三个快照应在 ______ 后拍摄。
-
-**答案**：手动触发 GC（`gc()`）
+**解析讲解**：Scavenge（或 Cheney 复制算法）；Mark-Sweep / Mark-Compact
 
 ---
 
-**Q4**：`FinalizationRegistry` 的回调是 ______ 执行的（同步/异步）。
+**常见疑问 7**：`WeakRef.deref()` 在对象被 GC 后返回 ______。
 
-**答案**：异步
-
----
-
-**Q5**：V8 的 Orinoco GC 项目引入了 ______ 标记与 ______ 清扫，以降低 GC 停顿。
-
-**答案**：增量 / 并发；并发
+**解析讲解**：`undefined`
 
 ---
 
-### 10.3 编程题
+**常见疑问 8**：Chrome DevTools 三快照工作流中，第三个快照应在 ______ 后拍摄。
 
-**Q1**：实现一个带 TTL 与最大容量的 LRU 缓存。
+**解析讲解**：手动触发 GC（`gc()`）
+
+---
+
+**常见疑问 9**：`FinalizationRegistry` 的回调是 ______ 执行的（同步/异步）。
+
+**解析讲解**：异步
+
+---
+
+**常见疑问 10**：V8 的 Orinoco GC 项目引入了 ______ 标记与 ______ 清扫，以降低 GC 停顿。
+
+**解析讲解**：增量 / 并发；并发
+
+---
+
+### 编程题知识点讲解
+
+**常见疑问 11**：实现一个带 TTL 与最大容量的 LRU 缓存。
 
 ```javascript
 // ES2015 — TTL + LRU 缓存
@@ -1563,7 +1563,7 @@ class TTLRU {
 
 ---
 
-**Q2**：实现一个基于 `AbortController` 的可取消异步操作工具。
+**常见疑问 12**：实现一个基于 `AbortController` 的可取消异步操作工具。
 
 ```javascript
 // ES2017 — 可取消异步工具
@@ -1602,7 +1602,7 @@ setTimeout(() => task.cancel(), 5000);
 
 ---
 
-**Q3**：实现一个内存监控类，定时上报堆使用情况。
+**常见疑问 13**：实现一个内存监控类，定时上报堆使用情况。
 
 ```javascript
 // ES2015 — 内存监控
@@ -1664,7 +1664,7 @@ class MemoryReporter {
 
 ---
 
-**Q4**：实现一个 `withResource` 工具，模拟 RAII 模式。
+**常见疑问 14**：实现一个 `withResource` 工具，模拟 RAII 模式。
 
 ```javascript
 // ES2015 — RAII 风格资源管理
@@ -1706,23 +1706,23 @@ const data = await withResourceAsync(
 
 ### 10.4 思考题
 
-**Q1**：为什么 `WeakRef` 与 `FinalizationRegistry` 不能用于资源正确性保证，但 `try/finally` 可以？从语义角度分析。
+**常见疑问 15**：为什么 `WeakRef` 与 `FinalizationRegistry` 不能用于资源正确性保证，但 `try/finally` 可以？从语义角度分析。
 
 **提示**：考虑"确定性"（determinism）与"时机保证"（timing guarantee）。
 
-**参考答案**：`try/finally` 的 `finally` 块在控制流离开 `try` 块时**同步**执行，时机确定。`FinalizationRegistry` 的回调依赖 GC 时机，GC 可能不运行（程序结束前未触发），可能延迟（系统内存充裕时不触发），可能乱序（多个对象并发回收）。资源正确性要求"必然执行"且"及时执行"，`try/finally` 满足，`FinalizationRegistry` 不满足。
+**解析讲解**：`try/finally` 的 `finally` 块在控制流离开 `try` 块时**同步**执行，时机确定。`FinalizationRegistry` 的回调依赖 GC 时机，GC 可能不运行（程序结束前未触发），可能延迟（系统内存充裕时不触发），可能乱序（多个对象并发回收）。资源正确性要求"必然执行"且"及时执行"，`try/finally` 满足，`FinalizationRegistry` 不满足。
 
 ---
 
-**Q2**：在 React 中，`useEffect` 的清理函数（cleanup）与 `FinalizationRegistry` 都可用于"组件卸载时清理"，二者有何本质区别？
+**常见疑问 16**：在 React 中，`useEffect` 的清理函数（cleanup）与 `FinalizationRegistry` 都可用于"组件卸载时清理"，二者有何本质区别？
 
-**参考答案**：`useEffect` 的 cleanup 在组件卸载时**确定性**触发（React 调度），保证执行。`FinalizationRegistry` 依赖 GC，组件卸载后如果内存充裕 GC 可能不运行，回调不触发。因此 React 中应使用 `useEffect` cleanup，不能依赖 `FinalizationRegistry`。
+**解析讲解**：`useEffect` 的 cleanup 在组件卸载时**确定性**触发（React 调度），保证执行。`FinalizationRegistry` 依赖 GC，组件卸载后如果内存充裕 GC 可能不运行，回调不触发。因此 React 中应使用 `useEffect` cleanup，不能依赖 `FinalizationRegistry`。
 
 ---
 
-**Q3**：为什么 V8 不采用引用计数而采用 Mark-Sweep？分析两者在 JavaScript 工作负载下的优劣。
+**常见疑问 17**：为什么 V8 不采用引用计数而采用 Mark-Sweep？分析两者在 JavaScript 工作负载下的优劣。
 
-**参考答案**：
+**解析讲解**：
 
 - 引用计数优势：实时释放（无 GC 停顿）、内存碎片少。
 - 引用计数劣势：无法处理循环引用（DOM 节点 ↔ JS 闭包），开销大（每次赋值需更新计数）。
@@ -1733,9 +1733,9 @@ JavaScript 工作负载中 DOM 与闭包的循环引用非常普遍（IE 6 时�
 
 ---
 
-**Q4**：在 Node.js 长期运行的服务中，如何平衡"内存占用"与"GC 停顿"？是否应手动调用 `gc()`？
+**常见疑问 18**：在 Node.js 长期运行的服务中，如何平衡"内存占用"与"GC 停顿"？是否应手动调用 `gc()`？
 
-**参考答案**：V8 团队明确反对在生产环境手动调用 `gc()`，因为：
+**解析讲解**：V8 团队明确反对在生产环境手动调用 `gc()`，因为：
 
 1. 全量 GC 停顿长（数十至数百毫秒），影响吞吐。
 2. V8 已自适应调度 GC，手动干预破坏调度策略。

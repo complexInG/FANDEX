@@ -1955,20 +1955,20 @@ public sealed class AsyncLazy<T>
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个 `async` 方法的实现最优化？
+**常见疑问 1**：以下哪个 `async` 方法的实现最优化？
 
 A. `public async Task<int> GetAsync() => await Task.FromResult(42);`
 B. `public Task<int> GetAsync() => Task.FromResult(42);`
 C. `public async Task<int> GetAsync() { return 42; }`
 D. `public async Task<int> GetAsync() { return await Task.Run(() => 42); }`
 
-**答案**：B。直接返回 `Task.FromResult(42)`，避免生成多余的状态机。
+**解析讲解**：B。直接返回 `Task.FromResult(42)`，避免生成多余的状态机。
 
-**Q2**：在 WinForms 应用中，以下代码会发生什么？
+**常见疑问 2**：在 WinForms 应用中，以下代码会发生什么？
 
 ```csharp
 private void button_Click(object sender, EventArgs e)
@@ -1983,35 +1983,35 @@ B. 死锁
 C. 编译错误
 D. 抛 `InvalidOperationException`
 
-**答案**：B。`FetchAsync` 捕获 UI 同步上下文，`.Result` 阻塞 UI 线程，导致死锁。
+**解析讲解**：B。`FetchAsync` 捕获 UI 同步上下文，`.Result` 阻塞 UI 线程，导致死锁。
 
-**Q3**：关于 `ValueTask<T>`，以下哪个说法正确？
+**常见疑问 3**：关于 `ValueTask<T>`，以下哪个说法正确？
 
 A. 可以多次 `await` 同一个实例
 B. 总是零分配
 C. 适合热路径，可能同步返回时避免堆分配
 D. 不能用于 `async` 方法返回类型
 
-**答案**：C。`ValueTask<T>` 是 `Task<T>` 与 `T` 的并集，同步可用时零分配，但不可多次 `await`。
+**解析讲解**：C。`ValueTask<T>` 是 `Task<T>` 与 `T` 的并集，同步可用时零分配，但不可多次 `await`。
 
-### 10.2 简答题
+### 简答题知识点讲解
 
-**Q4**：解释 `ConfigureAwait(false)` 的作用，为何库代码推荐使用？
+**常见疑问 4**：解释 `ConfigureAwait(false)` 的作用，为何库代码推荐使用？
 
-**参考答案**：`ConfigureAwait(false)` 告诉 `await` 后续不捕获原同步上下文，continuation 在线程池执行。库代码不知道调用方上下文，若捕获上下文，在 WinForms/WPF/旧 ASP.NET 中可能死锁；且捕获上下文会增加调度开销。库代码使用 `ConfigureAwait(false)` 既避免死锁又提升性能。
+**解析讲解**：`ConfigureAwait(false)` 告诉 `await` 后续不捕获原同步上下文，continuation 在线程池执行。库代码不知道调用方上下文，若捕获上下文，在 WinForms/WPF/旧 ASP.NET 中可能死锁；且捕获上下文会增加调度开销。库代码使用 `ConfigureAwait(false)` 既避免死锁又提升性能。
 
-**Q5**：`async void` 与 `async Task` 的核心差异是什么？
+**常见疑问 5**：`async void` 与 `async Task` 的核心差异是什么？
 
-**参考答案**：
+**解析讲解**：
 - 返回类型：`void` 无法被 `await`，`Task` 可被 `await`。
 - 异常传播：`async void` 异常直接抛到 `SynchronizationContext`，导致进程崩溃；`async Task` 异常封装在 `Task` 中，可被 `await` 捕获。
 - 使用场景：`async void` 仅用于事件处理器（委托签名要求 `void`），`async Task` 用于一般异步方法。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q6**：实现一个异步限流下载器，支持最大并发数与取消。
+**常见疑问 6**：实现一个异步限流下载器，支持最大并发数与取消。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public class ThrottledDownloader
@@ -2048,9 +2048,9 @@ public class ThrottledDownloader
 }
 ```
 
-**Q7**：使用 `Channel<T>` 实现一个简单的消息队列，多生产者多消费者。
+**常见疑问 7**：使用 `Channel<T>` 实现一个简单的消息队列，多生产者多消费者。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 var channel = Channel.CreateBounded<string>(new BoundedChannelOptions(100)
@@ -2086,19 +2086,19 @@ await Task.WhenAll(consumers);
 
 ### 10.4 思考题
 
-**Q8**：在 ASP.NET Core 中，为何 `ConfigureAwait(false)` 不再是必需？
+**常见疑问 8**：在 ASP.NET Core 中，为何 `ConfigureAwait(false)` 不再是必需？
 
-**参考答案**：ASP.NET Core 默认不设置 `SynchronizationContext`，`await` 后续在线程池执行，无需捕获上下文。因此不会死锁，`ConfigureAwait(false)` 仅是性能微优化。但库代码仍推荐使用，因为库可能被其他上下文（WinForms/WPF）调用。
+**解析讲解**：ASP.NET Core 默认不设置 `SynchronizationContext`，`await` 后续在线程池执行，无需捕获上下文。因此不会死锁，`ConfigureAwait(false)` 仅是性能微优化。但库代码仍推荐使用，因为库可能被其他上下文（WinForms/WPF）调用。
 
-**Q9**：`ValueTask<T>` 何时优于 `Task<T>`？何时相反？
+**常见疑问 9**：`ValueTask<T>` 何时优于 `Task<T>`？何时相反？
 
-**参考答案**：
+**解析讲解**：
 - 优于：异步方法可能同步返回结果（缓存命中、参数校验失败），热路径上避免堆分配。
 - 不优于：异步方法总是异步完成（IO 操作），`ValueTask` 反而比 `Task` 占用更多内存（结构体更大）。此外，`ValueTask` 不可多次 `await`，不可直接暴露给不可信调用方。
 
-**Q10**：分析 `Task.WhenAll` 与 `Parallel.ForEachAsync` 的差异。
+**常见疑问 10**：分析 `Task.WhenAll` 与 `Parallel.ForEachAsync` 的差异。
 
-**参考答案**：
+**解析讲解**：
 - `Task.WhenAll`：并行启动所有任务，无并发限制，可能瞬时创建大量任务耗尽资源。
 - `Parallel.ForEachAsync`：限流并发，按 `MaxDegreeOfParallelism` 控制同时执行数，资源友好。
 - 适用场景：少量任务用 `WhenAll`，大量任务（如 1000+ URL）用 `ForEachAsync`。

@@ -200,20 +200,17 @@ $$
 
 Jupyter Kernel 与前端通过 ZeroMQ 的四个套接字通信：
 
-```
-+-----------+        +-----------+
-|  Frontend |        |   Kernel  |
-| (Browser)|        | (Process) |
-+-----------+        +-----------+
-      |                   |
-      | Shell (ROUTER/DEALER) - 请求-响应：execute_request, execute_reply
-      |                   |
-      | IOPub (PUB/SUB)   - 广播：execute_result, stream, display_data
-      |                   |
-      | Stdin (ROUTER/DEALER) - 输入请求：input_request, input_reply
-      |                   |
-      | Control (ROUTER/DEALER) - 控制：interrupt_request, shutdown_request
-      v                   v
+```mermaid
+flowchart TD
+    B0["Frontend | Kernel / (Browser) | (Process)"]
+    B1["Shell (ROUTER/DEALER) - 请求-响应：execute_request, execute_reply"]
+    B0 --> B1
+    B2["IOPub (PUB/SUB)   - 广播：execute_result, stream, display_data"]
+    B1 --> B2
+    B3["Stdin (ROUTER/DEALER) - 输入请求：input_request, input_reply"]
+    B2 --> B3
+    B4["Control (ROUTER/DEALER) - 控制：interrupt_request, shutdown_request"]
+    B3 --> B4
 ```
 
 - **Shell 套接字**：处理代码执行请求，单线程顺序处理。
@@ -1577,7 +1574,7 @@ result = %sql SELECT * FROM products WHERE price > 100
 df = result.DataFrame()  # 转为 Pandas DataFrame
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 

@@ -250,32 +250,25 @@ ISO/IEC 9899:2024 §6.7.3 与 §5.1.2.3 定义了 volatile 的三项核心语义
 
 ### 1.4 学习路径
 
-```
-C 标准 volatile 定义 & as-if 规则
-        │
-        ▼
-编译器优化机制（常量折叠、循环外提、指令重排）
-        │
-        ▼
-volatile 的 6 大使用场景
-        │
-        ▼
-volatile 与 atomic 的本质区别
-        │
-        ▼
-内存屏障与 CPU 重排
-        │
-        ▼
-C11 stdatomic.h
-        │
-        ▼
-C++20 volatile 弃用与语义变化
-        │
-        ▼
-Linux 内核 ACCESS_ONCE/READ_ONCE/WRITE_ONCE
-        │
-        ▼
-嵌入式 MMIO 工程实践
+```mermaid
+flowchart TD
+    T0["C 标准 volatile 定义 & as-if 规则"]
+    T1["编译器优化机制（常量折叠、循环外提、指令重排）"]
+    T2["volatile 的 6 大使用场景"]
+    T3["volatile 与 atomic 的本质区别"]
+    T4["内存屏障与 CPU 重排"]
+    T5["C11 stdatomic.h"]
+    T6["C++20 volatile 弃用与语义变化"]
+    T7["Linux 内核 ACCESS_ONCE/READ_ONCE/WRITE_ONCE"]
+    T8["嵌入式 MMIO 工程实践"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
+    T5 --> T6
+    T6 --> T7
+    T7 --> T8
 ```
 
 ## 2. 历史动机与演进
@@ -898,21 +891,15 @@ SomeType *get_instance(void) {
 
 ### 7.1 CPU 缓存层次
 
-```
-       CPU 0           CPU 1
-      ┌─────┐         ┌─────┐
-      │ L1  │         │ L1  │    L1: ~1ns
-      ├─────┤         ├─────┤
-      │ L2  │         │ L2  │    L2: ~3ns
-      └──┬──┘         └──┬──┘
-         │               │
-      ┌──┴───────────────┴──┐
-      │         L3          │         L3: ~10ns
-      └──────────┬──────────┘
-                 │
-      ┌──────────┴──────────┐
-      │       Memory         │        Memory: ~100ns
-      └─────────────────────┘
+```mermaid
+flowchart TD
+    C0[CPU 0<br/>L1 ~1ns<br/>L2 ~3ns]
+    C1[CPU 1<br/>L1 ~1ns<br/>L2 ~3ns]
+    L3[L3 ~10ns]
+    MEM[Memory ~100ns]
+    C0 --> L3
+    C1 --> L3
+    L3 --> MEM
 ```
 
 CPU 写入先到 L1，稍后通过缓存一致性协议（如 MESI）传播到 L2/L3/其他核。
@@ -1845,7 +1832,7 @@ int x = shared_data;   // 可能读到旧值
 
 ## 16. 综合习题
 
-### 习题 1（填空题）
+## 知识讲解与要点分析（原习题 1（填空题））
 
 C 标准 §5.1.2.3 将对 volatile 对象的访问定义为____，属于程序的____，编译器必须严格按照抽象机语义执行，不得优化。
 
@@ -1853,7 +1840,7 @@ C 标准 §5.1.2.3 将对 volatile 对象的访问定义为____，属于程序�
 
 **解析**：volatile 访问是 C 标准定义的副作用之一（§5.1.2.3），属于可观察行为，as-if 规则要求编译器保留可观察行为。
 
-### 习题 2（选择题）
+## 知识讲解与要点分析（原习题 2（选择题））
 
 下列哪种场景**必须**使用 volatile？
 
@@ -1866,7 +1853,7 @@ D. C++ 标准库的智能指针
 
 **解析**：信号处理函数异步中断主程序，被修改的变量必须 `volatile sig_atomic_t`。A 应用 atomic，C 无需 volatile，D 与 volatile 无关。
 
-### 习题 3（选择题）
+## 知识讲解与要点分析（原习题 3（选择题））
 
 关于 volatile 与 atomic 的区别，下列说法**错误**的是：
 
@@ -1879,7 +1866,7 @@ D. C11 stdatomic 与 volatile 语义等价
 
 **解析**：C11 stdatomic 与 volatile 语义完全不同。atomic 提供原子性、可见性、有序性；volatile 仅抑制编译器优化。
 
-### 习题 4（代码修正题）
+## 知识讲解与要点分析（原习题 4（代码修正题））
 
 ```c
 #include <signal.h>
@@ -1909,7 +1896,7 @@ int main(void) {
 static volatile sig_atomic_t flag = 0;
 ```
 
-### 习题 5（代码修正题）
+## 知识讲解与要点分析（原习题 5（代码修正题））
 
 ```c
 // 多线程代码（错误）
@@ -1950,7 +1937,7 @@ void consumer(void) {
 }
 ```
 
-### 习题 6（开放性问题）
+## 知识讲解与要点分析（原习题 6（开放性问题））
 
 讨论在以下场景中，应使用 volatile、atomic 还是其他机制：
 
@@ -1974,7 +1961,7 @@ void consumer(void) {
 | (6) 配置只读变量 | const（无需 volatile） | 初始化后不变 |
 | (7) 多线程计数器 | atomic_fetch_add | 原子算术操作 |
 
-### 习题 7（开放性问题）
+## 知识讲解与要点分析（原习题 7（开放性问题））
 
 阅读以下 Linux 内核代码片段，分析为什么使用 READ_ONCE/WRITE_ONCE 而非直接 volatile：
 
@@ -2005,7 +1992,7 @@ void stop_worker(struct worker *w) {
 5. **配合屏障**：内核可结合 smp_mb() 等屏障，构建正确的同步语义。
 6. **遵循内核规范**：Linus 反对滥用 volatile，提倡显式同步。
 
-### 习题 8（综合题）
+## 知识讲解与要点分析（原习题 8（综合题））
 
 设计一个简单的环形缓冲区，要求：
 
@@ -2074,7 +2061,7 @@ bool rb_pop(RingBuffer *rb, int *value) {
 - `head` 与 `tail` 的检查用 acquire，保证看到对方的更新后，必然看到对方的 data 操作。
 - 这构成了经典的 release-acquire 同步模式，无需 seq_cst 的全序开销。
 
-### 习题 9（综合题）
+## 知识讲解与要点分析（原习题 9（综合题））
 
 分析以下代码在 x86 与 ARM 平台上的行为差异：
 
@@ -2101,7 +2088,7 @@ atomic_store_explicit(&x, 1, memory_order_seq_cst);
 r1 = atomic_load_explicit(&y, memory_order_seq_cst);
 ```
 
-### 习题 10（开放性问题）
+## 知识讲解与要点分析（原习题 10（开放性问题））
 
 讨论现代 C 程序中 volatile 的合理使用边界，包括：
 
@@ -2187,22 +2174,31 @@ r1 = atomic_load_explicit(&y, memory_order_seq_cst);
 
 ## 附录 A：volatile 使用决策表
 
-```
-变量是否被以下"外部"力量修改？
-├─ 硬件寄存器（MMIO）
-│   └─ 使用 volatile（必需）
-├─ 信号处理函数
-│   └─ 使用 volatile sig_atomic_t（必需）
-├─ setjmp/longjmp
-│   └─ 使用 volatile（必需）
-├─ DMA
-│   └─ 使用 volatile 或缓存维护（必需）
-├─ 其他线程
-│   └─ 使用 C11 atomic 或锁（不要用 volatile）
-├─ 其他进程（共享内存）
-│   └─ 使用 atomic 或显式屏障（视场景）
-└─ 无外部修改
-    └─ 无需 volatile
+```mermaid
+flowchart TD
+    T0["变量是否被以下'外部'力量修改？"]
+    T1["硬件寄存器（MMIO）"]
+    T2["使用 volatile（必需）"]
+    T3["信号处理函数"]
+    T4["使用 volatile sig_atomic_t（必需）"]
+    T5["setjmp/longjmp"]
+    T6["使用 volatile（必需）"]
+    T7["DMA"]
+    T8["使用 volatile 或缓存维护（必需）"]
+    T9["其他线程"]
+    T10["使用 C11 atomic 或锁（不要用 volatile）"]
+    T11["其他进程（共享内存）"]
+    T12["使用 atomic 或显式屏障（视场景）"]
+    T13["无外部修改"]
+    T14["无需 volatile"]
+    T0 --> T1
+    T2 --> T3
+    T4 --> T5
+    T6 --> T7
+    T8 --> T9
+    T10 --> T11
+    T12 --> T13
+    T13 --> T14
 ```
 
 ## 附录 B：内存序速查表

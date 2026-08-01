@@ -2158,7 +2158,7 @@ config.db_url = "postgresql://localhost/mydb"
 print(f"数据库（覆盖后）: {config.db_url}")  # postgresql://localhost/mydb
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 

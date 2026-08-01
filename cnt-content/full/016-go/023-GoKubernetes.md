@@ -1047,26 +1047,34 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 
 ### 8.1 Operator 项目结构标准
 
-```
-mysql-operator/
-├── api/v1/                    # CRD 类型定义
-│   ├── mysqlcluster_types.go
-│   ├── groupversion_info.go
-│   └── zz_generated.deepcopy.go
-├── internal/controller/       # Controller 实现
-│   ├── mysqlcluster_controller.go
-│   ├── statefulset.go
-│   ├── service.go
-│   └── backup.go
-├── config/                    # K8s 部署清单
-│   ├── crd/
-│   ├── default/
-│   ├── manager/
-│   └── rbac/
-├── cmd/main.go                # 入口
-├── Dockerfile
-├── Makefile
-└── go.mod
+```mermaid
+flowchart TD
+    T0["mysql-operator/"]
+    T1["api/v1/                    # CRD 类型定义"]
+    T2["mysqlcluster_types.go"]
+    T3["groupversion_info.go"]
+    T4["zz_generated.deepcopy.go"]
+    T5["internal/controller/       # Controller 实现"]
+    T6["mysqlcluster_controller.go"]
+    T7["statefulset.go"]
+    T8["service.go"]
+    T9["backup.go"]
+    T10["config/                    # K8s 部署清单"]
+    T11["crd/"]
+    T12["default/"]
+    T13["manager/"]
+    T14["rbac/"]
+    T15["cmd/main.go                # 入口"]
+    T16["Dockerfile"]
+    T17["Makefile"]
+    T18["go.mod"]
+    T0 --> T1
+    T4 --> T5
+    T9 --> T10
+    T14 --> T15
+    T14 --> T16
+    T14 --> T17
+    T14 --> T18
 ```
 
 ### 8.2 多 Worker 并发协调
@@ -1268,17 +1276,17 @@ func init() {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
 **题目 1**：为什么 Kubernetes 选择 List + Watch 而非纯 Watch？
 
-**答案**：纯 Watch 无法获取订阅前的状态，且 Watch 连接中断后会丢失事件。List + Watch 组合：先 List 获取初始状态与 `resourceVersion`，再从该版本开始 Watch，确保不丢事件；Watch 中断后用最近 `resourceVersion` 续传，若过期则重新 List。
+**解析讲解**：纯 Watch 无法获取订阅前的状态，且 Watch 连接中断后会丢失事件。List + Watch 组合：先 List 获取初始状态与 `resourceVersion`，再从该版本开始 Watch，确保不丢事件；Watch 中断后用最近 `resourceVersion` 续传，若过期则重新 List。
 
 **题目 2**：Informer 的 resync 机制有何作用？默认周期是多少？
 
-**答案**：resync 周期性地将 Indexer 中所有对象作为 Sync 事件重新入队，触发 Handler，确保即使错过 Watch 事件也能恢复一致性。默认 10 小时，通过 `NewSharedInformerFactory(clientset, resyncPeriod)` 设置。
+**解析讲解**：resync 周期性地将 Indexer 中所有对象作为 Sync 事件重新入队，触发 Handler，确保即使错过 Watch 事件也能恢复一致性。默认 10 小时，通过 `NewSharedInformerFactory(clientset, resyncPeriod)` 设置。
 
 ### 10.2 进阶题
 
@@ -1315,7 +1323,7 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 **题目 5**：Leader Election 的 `LeaseDuration`、`RenewDeadline`、`RetryPeriod` 如何权衡？
 
-**答案**：
+**解析讲解**：
 - `LeaseDuration` 长 → 故障切换慢，但抗网络抖动。
 - `LeaseDuration` 短 → 故障切换快，但易误判。
 - `RenewDeadline` 必须 < `LeaseDuration`，留出续约失败重试时间。

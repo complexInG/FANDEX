@@ -14,6 +14,11 @@ related:
 prerequisites:
   - svg/概述与环境配置
 ---
+# SVG 文档结构 语法速查手册
+
+> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -1094,7 +1099,7 @@ if (failed.length > 0) {
   });
   process.exit(1);
 } else {
-  console.log(`✓ 所有 ${files.length} 个 SVG 校验通过`);
+  console.log(`√ 所有 ${files.length} 个 SVG 校验通过`);
 }
 ```
 
@@ -1153,19 +1158,23 @@ export const HomeIcon = (props: React.SVGProps<SVGSVGElement>) => {
 
 ### 11.3 案例三:FANDEX 项目的 SVG 架构
 
-```text
-src/
-├── components/ui/svg/
-│   ├── icons/
-│   │   ├── Icon.tsx                通用 Icon 组件
-│   │   ├── icon-sprite.svg         雪碧图
-│   │   └── icon-types.ts           图标类型
-│   ├── illustrations/
-│   │   └── illustration-*.tsx      插画组件
-│   └── patterns/
-│       └── pattern-*.svg           装饰图案
-├── assets/svg/                     原始 SVG 资源
-└── styles/svg-theme.ts             SVG 主题配置
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["components/ui/svg/"]
+    T2["icons/"]
+    T3["Icon.tsx                通用 Icon 组件"]
+    T4["icon-sprite.svg         雪碧图"]
+    T5["icon-types.ts           图标类型"]
+    T6["illustrations/"]
+    T7["illustration-*.tsx      插画组件"]
+    T8["patterns/"]
+    T9["pattern-*.svg           装饰图案"]
+    T10["assets/svg/                     原始 SVG 资源"]
+    T11["styles/svg-theme.ts             SVG 主题配置"]
+    T0 --> T1
+    T9 --> T10
+    T9 --> T11
 ```
 
 ### 11.4 案例四:Google Material Symbols 的结构
@@ -1218,9 +1227,9 @@ Lucide Icons(原 Feather Icons)采用严格的文档规范:
 4. fill="none",stroke="currentColor"
 5. 坐标尽量整数
 
-## 12. 习题
+## 知识讲解与要点分析（原习题）
 
-### 12.1 选择题
+### 选择题知识点讲解
 
 **题目 2.1** 下列哪个元素**不会**直接渲染到屏幕?
 
@@ -1229,13 +1238,10 @@ B. `<symbol>`
 C. `<rect>`
 D. `<circle>`
 
-<details>
-<summary>答案与解析</summary>
 
-答案:B
+解析讲解：B
 
 `<symbol>` 用于定义可复用符号,需通过 `<use>` 引用才会渲染。`<g>` 是分组元素会直接渲染其子元素,`<rect>` 与 `<circle>` 是图形元素会直接渲染。
-</details>
 
 **题目 2.2** 在 SVG 文档中,`<title>` 元素必须位于哪个位置?
 
@@ -1244,13 +1250,10 @@ B. SVG 根元素的第一个子元素
 C. SVG 根元素的最后一个子元素
 D. 紧跟 `<defs>` 之后
 
-<details>
-<summary>答案与解析</summary>
 
-答案:B
+解析讲解：B
 
 根据 SVG 规范,`<title>` 必须是其父元素的第一个子元素。屏幕阅读器按文档顺序读取,因此 `<title>` 必须在最前。`<desc>` 通常紧跟 `<title>` 之后。
-</details>
 
 **题目 2.3** 下列哪个属性**不可继承**?
 
@@ -1259,13 +1262,10 @@ B. `stroke`
 C. `transform`
 D. `font-size`
 
-<details>
-<summary>答案与解析</summary>
 
-答案:C
+解析讲解：C
 
 `transform` 是不可继承属性,每个元素需独立声明变换。`fill`、`stroke`、`font-size` 都是可继承属性,子元素会自动获得父元素的值。
-</details>
 
 **题目 2.4** SVG 2 推荐使用哪个属性替代 `xlink:href`?
 
@@ -1274,13 +1274,10 @@ B. `href`
 C. `url`
 D. `ref`
 
-<details>
-<summary>答案与解析</summary>
 
-答案:B
+解析讲解：B
 
 SVG 2 将 `xlink:href` 简化为 `href`,无需声明 XLink 命名空间。现代浏览器全部支持 `href`,旧版浏览器(IE 11)才需 `xlink:href`。
-</details>
 
 **题目 2.5** 关于 `<symbol>` 与 `<g>` 的区别,下列哪项**正确**?
 
@@ -1289,67 +1286,49 @@ B. `<symbol>` 自带 viewBox,`<g>` 不自带
 C. `<symbol>` 用于分组,`<g>` 用于图标定义
 D. 两者完全等价
 
-<details>
-<summary>答案与解析</summary>
 
-答案:B
+解析讲解：B
 
 `<symbol>` 自带 viewBox 属性,适合定义可复用图标。`<g>` 不自带 viewBox,但会直接渲染。`<symbol>` 不直接渲染,需 `<use>` 引用;`<g>` 直接渲染其子元素。
-</details>
 
-### 12.2 填空题
+### 填空题知识点讲解
 
 **题目 2.6** SVG 文档形式化为有根有向树 $T = (V, E)$,其中 $V$ 是 ______ 集合,$E$ 是 ______ 关系。
 
-<details>
-<summary>答案与解析</summary>
 
-答案:节点(vertex);父子
+解析讲解：节点(vertex);父子
 
 SVG 文档是一棵有根有向树,每个节点是一个元素,边表示父子包含关系。根节点是 `<svg>`,无入边;除根外每个节点恰有一个父节点。
-</details>
 
 **题目 2.7** SVG 默认命名空间的 URI 是 ______。
 
-<details>
-<summary>答案与解析</summary>
 
-答案:http://www.w3.org/2000/svg
+解析讲解：http://www.w3.org/2000/svg
 
 SVG 命名空间 URI 为 `http://www.w3.org/2000/svg`,通过 `xmlns="..."` 声明。独立 .svg 文件必须声明,内联在 HTML 中的 SVG 可省略(由 HTML 解析器自动处理)。
-</details>
 
 **题目 2.8** 在 SVG 中,`<use>` 引用 `<symbol>` 时,通过 ______ 属性指定引用目标,通过 ______ 和 ______ 属性指定实例位置。
 
-<details>
-<summary>答案与解析</summary>
 
-答案:href(或 xlink:href);x;y
+解析讲解：href(或 xlink:href);x;y
 
 `<use href="#id" x="100" y="50" />` 通过 href 引用目标,通过 x、y 指定实例在父坐标系中的位置,通过 width、height 指定实例尺寸。
-</details>
 
 **题目 2.9** SVG 属性继承遵循 ______ 原则,即从当前节点向上查找,遇到第一个显式声明即停止。
 
-<details>
-<summary>答案与解析</summary>
 
-答案:就近
+解析讲解：就近
 
 SVG 属性继承是就近原则:从当前节点开始,沿父链向上查找,遇到第一个显式声明的属性值即采用,若到达根节点仍未找到则使用默认值。这是树形 DP 的典型应用。
-</details>
 
 **题目 2.10** `currentColor` 关键字引用当前元素的 ______ 属性,实现与 CSS 联动的主题色。
 
-<details>
-<summary>答案与解析</summary>
 
-答案:color
+解析讲解：color
 
 `currentColor` 是一个特殊关键字,它引用当前元素的 `color` CSS 属性值。通过修改 `color` 即可统一调整 fill 与 stroke 颜色,是图标系统主题化的核心技巧。
-</details>
 
-### 12.3 编程题
+### 编程题知识点讲解
 
 **题目 2.11** 编写一个完整的独立 SVG 文件,要求:
 
@@ -1359,8 +1338,6 @@ SVG 属性继承是就近原则:从当前节点开始,沿父链向上查找,遇�
 4. 使用 `<use>` 实例化该图标三次,位置分别为 (10,10)、(40,40)、(70,70)
 5. 包含 `<title>` 与 `<desc>` 用于可访问性
 
-<details>
-<summary>参考答案</summary>
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1392,12 +1369,9 @@ SVG 属性继承是就近原则:从当前节点开始,沿父链向上查找,遇�
 4. `<use>` 通过 href 引用 symbol
 5. 每次实例化可指定不同 x/y 位置
 6. `<title>` 必须是 `<svg>` 的第一个子元素
-</details>
 
 **题目 2.12** 设计一个 SVG 雪碧图文件,包含至少 3 个图标(home、search、user),并提供在 HTML 中使用的方式。
 
-<details>
-<summary>参考答案</summary>
 
 sprites/icons.svg:
 
@@ -1455,14 +1429,11 @@ sprites/icons.svg:
   <use href="sprites/icons.svg#icon-home" />
 </svg>
 ```
-</details>
 
 ### 12.4 思考题
 
 **题目 2.13** 为什么 SVG 选择 XML 而非自定义二进制格式作为语法基础?结合文档结构的需求分析。
 
-<details>
-<summary>参考思路</summary>
 
 从文档结构需求角度分析:
 
@@ -1475,12 +1446,9 @@ sprites/icons.svg:
 7. **可扩展性**:通过命名空间可嵌入其他 XML 词汇(RDF 元数据、XSLT 变换)
 
 权衡:文件体积较大,但通过 SVGO 等工具可压缩 30-70%,可接受。
-</details>
 
 **题目 2.14** 在什么场景下应该使用 `<symbol>`,什么场景下应该使用 `<g>`?给出工程化决策依据。
 
-<details>
-<summary>参考思路</summary>
 
 `<symbol>` 适用场景:
 
@@ -1502,23 +1470,25 @@ sprites/icons.svg:
 - 资源仓库 → `<defs>`
 
 工程化最佳实践:图标全部用 `<symbol>` 定义在 `<defs>` 内,通过 `<use>` 引用。
-</details>
 
 **题目 2.15** 设计一个企业级 SVG 文档结构的规范,要求支持:多主题、多语言、可访问性、版本管理。请给出完整的规范文档。
 
-<details>
-<summary>参考思路</summary>
 
 规范文档大纲:
 
 1. **目录结构**
-   ```text
-   svgs/
-   ├── icons/                图标 SVG
-   ├── illustrations/        插画 SVG
-   ├── logos/                品牌 Logo
-   └── patterns/              装饰图案
-   ```
+```mermaid
+flowchart TD
+    T0["svgs/"]
+    T1["icons/                图标 SVG"]
+    T2["illustrations/        插画 SVG"]
+    T3["logos/                品牌 Logo"]
+    T4["patterns/              装饰图案"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+```
 
 2. **文件命名规范**
    - kebab-case:`icon-arrow-left.svg`
@@ -1569,7 +1539,6 @@ sprites/icons.svg:
    - CI 自动运行 SVGO
    - 自动校验文档结构
    - 视觉回归测试
-</details>
 
 ## 13. 参考文献
 
@@ -1661,3 +1630,251 @@ sprites/icons.svg:
 8. **SVG 与设计系统**:Figma → SVG → 组件库的工作流
 
 下一篇将深入 `viewBox` 与坐标系,这是 SVG 缩放适配的核心机制。
+## svg 根元素
+
+**svg 根元素签名**
+`<svg width="<宽>" height="<高>" viewBox="<min-x> <min-y> <w> <h>" xmlns="http://www.w3.org/2000/svg" [xmlns:xlink="http://www.w3.org/1999/xlink"] [preserveAspectRatio="<align> <meetOrSlice>"]> ... </svg>`
+```html
+<svg
+  width="400"
+  height="300"
+  viewBox="0 0 400 300"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+>
+  <!-- 内容 -->
+</svg>
+```
+
+### svg 关键属性
+
+| 属性                  | 作用       | 说明                                                 |
+| --------------------- | ---------- | ---------------------------------------------------- |
+| `width` / `height`    | 视口尺寸   | 可用像素或百分比;内联 SVG 省略时默认 100% × 100%   |
+| `viewBox`             | 内部坐标系 | `min-x min-y width height`,决定图形映射到视口的方式 |
+| `xmlns`               | 命名空间   | 独立 .svg 文件必需;内联在 HTML 中可省略           |
+| `preserveAspectRatio` | 宽高比策略 | 控制 viewBox 如何适配视口                            |
+| `role` / `aria-label` | 可访问性   | 为屏幕阅读器提供语义                                 |
+
+---
+
+## 内联与独立文件
+
+**内联 SVG(HTML)**
+`<svg viewBox="<min-x> <min-y> <w> <h>"> ... </svg>`
+```html
+<!-- 内联:HTML 解析器宽容,可省略 xmlns -->
+<svg viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="40" />
+</svg>
+```
+
+**独立 .svg 文件**
+`<?xml version="1.0" encoding="UTF-8"?>` + `<svg xmlns="http://www.w3.org/2000/svg" viewBox="<min-x> <min-y> <w> <h>"> ... </svg>`
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="40" />
+</svg>
+```
+
+---
+
+## g 分组元素
+
+**g 分组**
+`<g [fill="<填充色>"] [stroke="<描边色>"] [stroke-width="<描边宽度>"] [transform="<变换>"]> ... </g>`
+```html
+<svg viewBox="0 0 200 100">
+  <g fill="#4f5bd5" stroke="#fff" stroke-width="2">
+    <circle cx="50" cy="50" r="30" />
+    <rect x="90" y="20" width="60" height="60" rx="8" />
+  </g>
+</svg>
+```
+
+---
+
+## defs 定义元素
+
+**defs 可复用资源定义**
+`<defs> ... </defs>`
+```html
+<svg viewBox="0 0 200 100">
+  <defs>
+    <linearGradient id="brand" x1="0%" x2="100%">
+      <stop offset="0%" stop-color="#4f5bd5" />
+      <stop offset="100%" stop-color="#00b894" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="100" fill="url(#brand)" />
+</svg>
+```
+
+---
+
+## symbol 符号元素
+
+**symbol 自带 viewBox 的可复用符号**
+`<symbol id="<标识>" viewBox="<min-x> <min-y> <w> <h>"> ... </symbol>`
+```html
+<svg>
+  <symbol id="icon-close" viewBox="0 0 24 24">
+    <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" />
+  </symbol>
+  <use href="#icon-close" x="0" y="0" width="24" height="24" />
+</svg>
+```
+
+---
+
+## use 引用元素
+
+**use 实例化引用**
+`<use href="<#id 或 文件路径#id>" [x="<x>"] [y="<y>"] [width="<宽>"] [height="<高>"] [fill="<填充色>"] />`
+```html
+<use href="#icon-close" x="100" y="50" width="32" height="32" fill="#d63031" />
+```
+
+**跨文件引用**
+`<use href="<文件路径#id>" width="<宽>" height="<高>" />`
+```html
+<use href="icons.svg#icon-close" width="24" height="24" />
+```
+
+---
+
+## title 与 desc
+
+**可访问性标题与描述**
+`<title id="<标识>"><标题></title>` + `<desc id="<标识>"><描述></desc>`
+```html
+<svg viewBox="0 0 200 100" role="img" aria-labelledby="t d">
+  <title id="t">2024 年度销售额</title>
+  <desc id="d">柱状图展示四个季度的销售额对比</desc>
+  <!-- 图形 -->
+</svg>
+```
+
+---
+
+## metadata 元数据
+
+**metadata 元信息**
+`<metadata> ... </metadata>`
+```html
+<metadata>
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">
+      <dc:creator>fanquanpp</dc:creator>
+      <dc:date>2026-07-18</dc:date>
+    </rdf:Description>
+  </rdf:RDF>
+</metadata>
+```
+
+---
+
+## 元素嵌套规则
+
+### 容器元素
+可包含其他图形元素的容器:`<svg>`、`<g>`、`<defs>`、`<symbol>`、`<a>`、`<mask>`、`<pattern>`、`<marker>`。
+
+### 图形元素
+只能作为叶子节点或包含动画元素:`<rect>`、`<circle>`、`<ellipse>`、`<line>`、`<polyline>`、`<polygon>`、`<path>`、`<text>`、`<image>`、`<use>`。
+
+---
+
+## 嵌套 svg
+
+**嵌套 svg 建立子坐标系**
+`<svg x="<x>" y="<y>" width="<宽>" height="<高>" viewBox="<min-x> <min-y> <w> <h>"> ... </svg>`
+```html
+<svg viewBox="0 0 400 200">
+  <svg x="0" y="0" width="200" height="200" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="40" fill="#4f5bd5" />
+  </svg>
+  <svg x="200" y="0" width="200" height="200" viewBox="0 0 100 100">
+    <rect x="10" y="10" width="80" height="80" fill="#00b894" />
+  </svg>
+</svg>
+```
+
+---
+
+## switch 特性检测
+
+**switch 兼容降级**
+`<switch> ... </switch>`
+```html
+<switch>
+  <text requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"> 高级特性可用 </text>
+  <text>降级文本</text>
+</switch>
+```
+
+---
+
+## 属性继承规则
+
+### 可继承属性
+
+| 类别 | 属性                                                                    |
+| ---- | ----------------------------------------------------------------------- |
+| 颜色 | `color`、`fill`、`stroke`、`stop-color`                                 |
+| 描边 | `stroke-width`、`stroke-linecap`、`stroke-linejoin`、`stroke-dasharray` |
+| 文本 | `font-family`、`font-size`、`font-weight`、`text-anchor`、`direction`   |
+| 其他 | `opacity`、`visibility`、`cursor`、`letter-spacing`                     |
+
+### 不可继承属性
+`x`、`y`、`cx`、`cy`、`r`、`width`、`height`、`transform`、`filter`、`clip-path`、`mask` 等几何与变换属性不可继承。
+
+---
+
+## currentColor 关键字
+
+**currentColor 引用当前 color 属性**
+`fill="currentColor"` / `stroke="currentColor"`
+```html
+<g color="#d63031">
+  <rect width="100" height="100" fill="currentColor" />
+  <circle cx="150" cy="50" r="40" stroke="currentColor" fill="none" />
+</g>
+```
+
+---
+
+## 完整文档示例
+
+**完整 SVG 文档结构**
+```html
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 300 150"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">品牌 Logo</title>
+  <desc id="desc">由矩形与圆形组合而成的简化 Logo</desc>
+
+  <defs>
+    <linearGradient id="brand-grad" x1="0%" x2="100%">
+      <stop offset="0%" stop-color="#4f5bd5" />
+      <stop offset="100%" stop-color="#00b894" />
+    </linearGradient>
+    <symbol id="dot" viewBox="0 0 20 20">
+      <circle cx="10" cy="10" r="8" fill="#fff" />
+    </symbol>
+  </defs>
+
+  <g fill="url(#brand-grad)">
+    <rect x="10" y="30" width="200" height="90" rx="12" />
+  </g>
+
+  <use href="#dot" x="180" y="55" width="30" height="30" />
+  <text x="110" y="80" text-anchor="middle" fill="#fff" font-size="28" font-family="sans-serif">
+    FANDEX
+  </text>
+</svg>
+```

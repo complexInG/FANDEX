@@ -758,16 +758,25 @@ class 语法糖的关键改进：
 
 JavaScript 的全局原型链结构如下：
 
-```
-null
- └ Object.prototype
-    ├ hasOwnProperty, toString, valueOf, ...
-    ├ Function.prototype (函数对象的 [[Prototype]])
-    │  ├ call, apply, bind
-    │  └ Function.prototype 的 [[Prototype]] = Object.prototype
-    └ Array.prototype
-       ├ push, pop, map, ...
-       └ Array.prototype 的 [[Prototype]] = Object.prototype
+```mermaid
+flowchart TD
+    T0["null"]
+    T1["Object.prototype"]
+    T2["hasOwnProperty, toString, valueOf, ..."]
+    T3["Function.prototype (函数对象的 [[Prototype]])"]
+    T4["call, apply, bind"]
+    T5["Function.prototype 的 [[Prototype]] = Object.prototype"]
+    T6["Array.prototype"]
+    T7["push, pop, map, ..."]
+    T8["Array.prototype 的 [[Prototype]] = Object.prototype"]
+    T0 --> T1
+    T1 --> T2
+    T1 --> T3
+    T1 --> T4
+    T1 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
 ```
 
 函数对象的原型链：
@@ -1728,28 +1737,21 @@ $$
 
 V8 将堆内存划分为多个区域，不同区域使用不同 GC 算法：
 
-```
-+----------------------------------+
-|       New Space (Young Gen)      |
-|  +-----------+  +-----------+    |  <- Scavenge 半空间复制
-|  | From Semi |  | To Semi   |    |
-|  +-----------+  +-----------+    |
-+----------------------------------+
-|       Old Space (Old Gen)        |
-|  +--------------------------+    |
-|  | Old Object Space         |    |  <- Mark-Sweep-Compact
-|  +--------------------------+    |
-|  +--------------------------+    |
-|  | Large Object Space       |    |  <- 大对象专用
-|  +--------------------------+    |
-|  +--------------------------+    |
-|  | Code Space               |    |  <- JIT 代码
-|  +--------------------------+    |
-+----------------------------------+
-|       Shared Space               |  <- SharedStruct
-+----------------------------------+
-|       Trusted Space              |  <- 受信任对象
-+----------------------------------+
+```mermaid
+flowchart TD
+    B0["New Space (Young Gen) / <- Scavenge 半空间复制 / From Semi | To Semi"]
+    B1["Old Space (Old Gen)"]
+    B0 --> B1
+    B2["Old Object Space | <- Mark-Sweep-Compact"]
+    B1 --> B2
+    B3["Large Object Space | <- 大对象专用"]
+    B2 --> B3
+    B4["Code Space | <- JIT 代码"]
+    B3 --> B4
+    B5["Shared Space | <- SharedStruct"]
+    B4 --> B5
+    B6["Trusted Space | <- 受信任对象"]
+    B5 --> B6
 ```
 
 ### 14.2 新生代 GC：Scavenge
@@ -2528,9 +2530,9 @@ readable.on('end', () => writable.end());
 - **背压**：writable.write 返回 false 时暂停 readable
 - **闭包**：事件处理器闭包捕获 writable 引用
 
-## 20. 习题
+## 知识讲解与要点分析（原习题）
 
-### 20.1 填空题（fill-blank）
+### 填空题知识点讲解
 
 1. **[remember]** JavaScript 的词法环境由 ____ 与 ____ 两部分组成，前者存储变量绑定，后者指向外层环境。
 
@@ -2548,7 +2550,7 @@ readable.on('end', () => writable.end());
 
 8. **[understand]** Proxy 必须满足若干不变量，例如若 target 不可扩展，则 getPrototypeOf 必须返回 ____。
 
-### 20.2 选择题（choice）
+### 选择题知识点讲解
 
 1. **[analyze]** 下列关于原型链的描述，哪一项是正确的？
    - A. [[Prototype]] 是可枚举属性，可通过 for-in 遍历到

@@ -15,10 +15,11 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+# C++ 内存模型
 
-# 内存序与无锁编程
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档系统讲解 C++11 引入的内存模型与原子操作、6 种内存序（relaxed / consume / acquire / release / acq_rel / seq_cst）、内存屏障、ABA 问题、无锁队列、缓存行与 false sharing 等核心主题。所有代码示例可在支持 C++17/20/23 的主流编译器上编译通过，标注 x86/ARM/POWER 架构差异。对标 MIT 6.172、Stanford CS149、CMU 15-440 课程教学水准。
+---
 
 ## 1. 学习目标
 
@@ -1178,26 +1179,23 @@ int rte_ring_enqueue(struct rte_ring* r, void* obj) {
 }
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**. 以下哪种内存序提供最强的同步保证？
+**常见疑问 1**：. 以下哪种内存序提供最强的同步保证？
 
 - A. `relaxed`
 - B. `acquire`
 - C. `release`
 - D. `seq_cst`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：D
+**解析讲解**：D
 
 `seq_cst` 提供全局总序，所有线程观察一致。是最强的内存序。
-</details>
 
-**Q2**. 以下代码是否安全？
+**常见疑问 2**：. 以下代码是否安全？
 
 ```cpp
 int data = 0;
@@ -1217,84 +1215,61 @@ print(data);
 - C. 安全但性能差
 - D. 编译错误
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
 A 线程使用了 `relaxed` store，不建立 synchronizes-with 关系。即使 B 线程使用 `acquire` load，A 线程的 `data = 42` 也不保证对 B 可见。需要 A 使用 `release` store。
-</details>
 
-**Q3**. ABA 问题主要发生在什么场景？
+**常见疑问 3**：. ABA 问题主要发生在什么场景？
 
 - A. 多生产者多消费者的无锁栈
 - B. 单生产者单消费者队列
 - C. 互斥锁实现
 - D. 全部以上
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：A
+**解析讲解**：A
 
 ABA 问题主要发生在使用 CAS 的无锁数据结构中，特别是无锁栈/队列。SPSC 队列通常不涉及 ABA（无并发 pop）。
-</details>
 
-**Q4**. `compare_exchange_weak` 与 `strong` 的区别是什么？
+**常见疑问 4**：. `compare_exchange_weak` 与 `strong` 的区别是什么？
 
 - A. weak 性能更好
 - B. strong 保证不会伪失败
 - C. weak 在循环中使用更优
 - D. 全部以上
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：D
+**解析讲解**：D
 
 weak 可能伪失败（即使值匹配也返回 false），但在循环场景中性能更优（避免不必要的内存屏障）。strong 保证不会伪失败，适合单次判断。
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**. C++11 定义了 ______ 种 `std::memory_order`。
+**常见疑问 5**：. C++11 定义了 ______ 种 `std::memory_order`。
 
-<details>
-<summary>答案</summary>
 
 6 种：relaxed, consume, acquire, release, acq_rel, seq_cst。
-</details>
 
-**Q2**. `std::atomic<T>` 默认内存序是 ______。
+**常见疑问 6**：. `std::atomic<T>` 默认内存序是 ______。
 
-<details>
-<summary>答案</summary>
 
 `seq_cst`。
-</details>
 
-**Q3**. x86 上 `mfence` 指令对应 C++ 的 ______ 内存序。
+**常见疑问 7**：. x86 上 `mfence` 指令对应 C++ 的 ______ 内存序。
 
-<details>
-<summary>答案</summary>
 
 `seq_cst`。
-</details>
 
-**Q4**. 缓存行通常大小为 ______ 字节，可通过 ______ 关键字对齐。
+**常见疑问 8**：. 缓存行通常大小为 ______ 字节，可通过 ______ 关键字对齐。
 
-<details>
-<summary>答案</summary>
 
 64；`alignas(64)`。
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q1**. 实现一个无锁自旋锁 `SpinLock`，使用 `acquire`/`release` 内存序。
+**常见疑问 9**：. 实现一个无锁自旋锁 `SpinLock`，使用 `acquire`/`release` 内存序。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <atomic>
@@ -1312,12 +1287,9 @@ public:
     }
 };
 ```
-</details>
 
-**Q2**. 实现一个简单的 `MPMCCounter`，允许多线程递增，最终读取总数。
+**常见疑问 10**：. 实现一个简单的 `MPMCCounter`，允许多线程递增，最终读取总数。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <atomic>
@@ -1333,12 +1305,9 @@ public:
     }
 };
 ```
-</details>
 
-**Q3**. 实现一个简化版的 `LockFreeQueue<T>`（单生产者单消费者）。
+**常见疑问 11**：. 实现一个简化版的 `LockFreeQueue<T>`（单生产者单消费者）。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <atomic>
@@ -1368,22 +1337,16 @@ public:
     }
 };
 ```
-</details>
 
 ### 10.4 思考题
 
-**Q1**. 为什么 `seq_cst` 在 x86 上比 `relaxed` 贵得多？
+**常见疑问 12**：. 为什么 `seq_cst` 在 x86 上比 `relaxed` 贵得多？
 
-<details>
-<summary>参考解析</summary>
 
 x86 的 TSO 模型允许 store-load 重排。`seq_cst` 需要禁止这种重排，必须插入 `mfence` 指令或使用 `xchg`（隐含 lock 前缀）。这些操作会强制刷新写缓冲，导致显著的性能开销（5-10 倍）。而 `relaxed` 仅是普通的 `mov` 指令，几乎免费。
-</details>
 
-**Q2**. 无锁数据结构一定比互斥锁快吗？
+**常见疑问 13**：. 无锁数据结构一定比互斥锁快吗？
 
-<details>
-<summary>参考解析</summary>
 
 不一定。无锁数据结构在高争用场景下可能反而更慢：
 - CAS 失败重试导致 CPU 浪费；
@@ -1393,12 +1356,9 @@ x86 的 TSO 模型允许 store-load 重排。`seq_cst` 需要禁止这种重排�
 低争用场景下，互斥锁（如 `std::mutex`）通常足够快（内核态 futex），且实现简单、易维护。无锁结构适合特定场景：高频访问、低延迟需求、无法进入内核态的实时系统。
 
 工程实践中应先测量再优化，避免过早使用无锁。
-</details>
 
-**Q3**. 为什么 C++ 不像 Java 那样使用 `volatile` 实现跨线程可见性？
+**常见疑问 14**：. 为什么 C++ 不像 Java 那样使用 `volatile` 实现跨线程可见性？
 
-<details>
-<summary>参考解析</summary>
 
 C++ 的 `volatile` 语义与 Java 不同：
 - C++ `volatile` 仅禁止编译器优化（如寄存器缓存），不保证 CPU 层面的可见性；
@@ -1407,7 +1367,6 @@ C++ 的 `volatile` 语义与 Java 不同：
 C++ 选择将 `volatile` 与并发分离，引入 `std::atomic` 专门处理跨线程同步。这种分离使语义更清晰，避免误用 `volatile` 导致的微妙并发 bug。
 
 C++20 起 `volatile` 进一步被弱化（deprecate 了许多用途）。
-</details>
 
 ## 11. 参考文献
 
@@ -1585,7 +1544,163 @@ int data = 0;
 
 ---
 
-## 更新日志
+## 原子类型
 
-- 2026-07-20: 金标准升级至对标 MIT/Stanford/CMU 教学水准，新增历史脉络、形式化定义、KaTeX 推导、企业级示例、案例研究、习题与参考文献。
-- 2026-06-14: 初版，覆盖内存序基本概念与简单无锁栈。
+**基本写法：声明原子变量**
+`std::atomic<<类型>> <变量>;`
+```cpp
+// 原子整型变量
+std::atomic<int> counter{0};
+```
+
+---
+
+**基本写法：原子加载**
+`<变量>.load([<内存序>]);`
+```cpp
+// 原子读取值
+int v = counter.load(std::memory_order_acquire);
+```
+
+---
+
+**基本写法：原子存储**
+`<变量>.store(<值>, [<内存序>]);`
+```cpp
+// 原子写入值
+counter.store(10, std::memory_order_release);
+```
+
+---
+
+**基本写法：原子交换**
+`<变量>.exchange(<值>, [<内存序>]);`
+```cpp
+// 原子替换并返回旧值
+int old = counter.exchange(5);
+```
+
+---
+
+## CAS 操作
+
+**基本写法：比较并交换**
+`<变量>.compare_exchange_strong(<期望>, <新值>, [<内存序>]);`
+```cpp
+// 强版本 CAS，失败时更新期望值
+int expected = 0;
+bool ok = counter.compare_exchange_strong(expected, 1);
+```
+
+---
+
+**基本写法：弱版本 CAS**
+`<变量>.compare_exchange_weak(<期望>, <新值>);`
+```cpp
+// 可能伪失败，适合循环中
+while (!counter.compare_exchange_weak(expected, expected + 1));
+```
+
+---
+
+**基本写法：fetch_add 原子加法**
+`<变量>.fetch_add(<值>, [<内存序>]);`
+```cpp
+// 原子加并返回旧值
+int prev = counter.fetch_add(1);
+```
+
+---
+
+**基本写法：fetch_sub 原子减法**
+`<变量>.fetch_sub(<值>, [<内存序>]);`
+```cpp
+// 原子减并返回旧值
+int prev = counter.fetch_sub(1);
+```
+
+---
+
+## 内存序
+
+**基本写法：顺序一致性**
+`std::memory_order_seq_cst`
+```cpp
+// 最强保证，全局总序
+counter.store(1, std::memory_order_seq_cst);
+```
+
+---
+
+**基本写法：获取语义**
+`std::memory_order_acquire`
+```cpp
+// 加载时保证后续读不重排到此之前
+v = counter.load(std::memory_order_acquire);
+```
+
+---
+
+**基本写法：释放语义**
+`std::memory_order_release`
+```cpp
+// 存储时保证之前写不重排到此之后
+counter.store(1, std::memory_order_release);
+```
+
+---
+
+**基本写法：宽松语义**
+`std::memory_order_relaxed`
+```cpp
+// 仅保证原子性无顺序约束
+counter.fetch_add(1, std::memory_order_relaxed);
+```
+
+---
+
+## fence 屏障
+
+**基本写法：释放屏障**
+`std::atomic_thread_fence(std::memory_order_release);`
+```cpp
+// 显式内存屏障防止写重排
+std::atomic_thread_fence(std::memory_order_release);
+data = 42;
+ready.store(true);
+```
+
+---
+
+**基本写法：获取屏障**
+`std::atomic_thread_fence(std::memory_order_acquire);`
+```cpp
+// 显式内存屏障防止读重排
+std::atomic_thread_fence(std::memory_order_acquire);
+int v = data;
+```
+
+---
+
+## 自旋锁示例
+
+**基本写法：使用原子实现自旋锁**
+`while (<锁>.test_and_set(std::memory_order_acquire)) {}`
+```cpp
+// 原子标志位自旋等待
+std::atomic_flag lock = ATOMIC_FLAG_INIT;
+while (lock.test_and_set(std::memory_order_acquire)) {}
+// 临界区
+lock.clear(std::memory_order_release);
+```
+
+---
+
+**基本写法：等待与通知**
+`<变量>.wait(<旧值>);` `<变量>.notify_one();`
+```cpp
+// C++20 原子等待通知
+counter.wait(0);          // 阻塞直到值变化
+counter.store(1);
+counter.notify_one();     // 唤醒一个等待者
+```

@@ -1347,7 +1347,7 @@ public class ReadWriteCache<K, V> {
 }
 ```
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 
@@ -1376,8 +1376,8 @@ public class Counter {
 
 **参考答案要点**:
 1. 继承 `Thread` 类,重写 `run()`:简单但单继承限制。
-2. 实现 `Runnable` 接口:推荐,无继承限制,资源复用。
-3. 实现 `Callable` 接口:有返回值,可抛出受检异常,需配合 `FutureTask`。
+2. 要点： `Runnable` 接口:推荐,无继承限制,资源复用。
+3. 要点： `Callable` 接口:有返回值,可抛出受检异常,需配合 `FutureTask`。
 4. 使用 `ExecutorService.submit()`:线程池管理,推荐生产使用。
 5. 使用 `CompletableFuture.supplyAsync()`:函数式异步编程。
 

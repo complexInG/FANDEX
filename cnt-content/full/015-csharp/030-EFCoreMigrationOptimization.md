@@ -336,25 +336,17 @@ $$\text{State} \in \{\text{Detached}, \text{Unchanged}, \text{Added}, \text{Modi
 
 状态转移：
 
-```
-                Add()
-Detached ──────────────────► Added
-   ▲                              │
-   │ Detach()                     │ SaveChanges()
-   │                              ▼
-   │                          Unchanged ◄──────────┐
-   │                              │                │
-   │                              │ Update()       │ SaveChanges()
-   │                              ▼                │ (Added)
-   │                          Modified ────────────┘
-   │                              │
-   │                              │ Delete()
-   │                              ▼
-   └──────────────────────── Deleted
-                                  │
-                                  │ SaveChanges()
-                                  ▼
-                              Detached
+```mermaid
+stateDiagram-v2
+    [*] --> Detached
+    Detached --> Added: Add()
+    Added --> Unchanged: SaveChanges()
+    Unchanged --> Modified: Update()
+    Modified --> Unchanged: SaveChanges()
+    Unchanged --> Deleted: Delete()
+    Modified --> Deleted: Delete()
+    Deleted --> Detached: SaveChanges()
+    Detached --> Detached: Detach()
 ```
 
 形式化的状态转移函数 $\delta : \text{State} \times \text{Action} \to \text{State}$：
@@ -1317,14 +1309,14 @@ if (batch.Count > 0) ProcessBatch(batch);
 |------|---------|--------|------------|
 | 学习曲线 | 中等 | 低 | 高 |
 | 性能 | 中 | 高 | 低 |
-| 跨数据库 | ✓ | ✓ | ✓ |
-| 迁移工具 | ✓（内置） | ✗ | 第三方 |
-| 变更跟踪 | ✓ | ✗ | ✓ |
+| 跨数据库 | √ | √ | √ |
+| 迁移工具 | √（内置） | × | 第三方 |
+| 变更跟踪 | √ | × | √ |
 | 复杂查询 | 中 | 高 | 低 |
-| Lazy Loading | ✓ | ✗ | ✓ |
-| 多对多 | ✓ | ✗ | ✓ |
-| LINQ 翻译 | 强 | ✗ | 中 |
-| AOT 支持 | 部分 | ✓ | ✗ |
+| Lazy Loading | √ | × | √ |
+| 多对多 | √ | × | √ |
+| LINQ 翻译 | 强 | × | 中 |
+| AOT 支持 | 部分 | √ | × |
 | 社区活跃度 | 高 | 高 | 中 |
 | 推荐场景 | 业务复杂、领域模型 | 简单 CRUD、性能敏感 | 老项目维护 |
 
@@ -1374,7 +1366,7 @@ modelBuilder.Entity<Animal>().UseTpcMappingStrategy();
 | 性能 | 最快 | 略慢 | 慢 |
 | 内存 | 低 | 中 | 高 |
 | 重复实体 | 多份 | 一份 | 一份 |
-| 修改保存 | ✗ | ✗ | ✓ |
+| 修改保存 | × | × | √ |
 | 适用场景 | 只读查询 | 只读查询 + 关联 | 写操作 |
 
 ---
@@ -2348,80 +2340,80 @@ public async Task<PagedResult<BlogDto>> GetBlogsAsync(int page, int pageSize)
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪种方式能解决 N+1 查询问题？
+**常见疑问 1**：以下哪种方式能解决 N+1 查询问题？
 
 A. 使用 `AsNoTracking()`  
 B. 使用 `Include()`  
 C. 使用 `FindAsync()`  
 D. 使用 `AsSplitQuery()`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`Include()` 通过 LEFT JOIN 一次性查询关联数据，解决 N+1 查询。`AsNoTracking()` 只是禁用变更跟踪，不影响查询次数。`FindAsync()` 默认不加载关联。`AsSplitQuery()` 是另一种解决方案，将关联拆分为多个查询。
+**解析讲解**：`Include()` 通过 LEFT JOIN 一次性查询关联数据，解决 N+1 查询。`AsNoTracking()` 只是禁用变更跟踪，不影响查询次数。`FindAsync()` 默认不加载关联。`AsSplitQuery()` 是另一种解决方案，将关联拆分为多个查询。
 
 ---
 
-**Q2**：EF Core 7+ 引入的 `ExecuteUpdateAsync` 相比 `SaveChangesAsync` 有什么优势？
+**常见疑问 2**：EF Core 7+ 引入的 `ExecuteUpdateAsync` 相比 `SaveChangesAsync` 有什么优势？
 
 A. 支持变更跟踪  
 B. 直接翻译为 SQL UPDATE，不加载实体  
 C. 自动开启事务  
 D. 性能更慢
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`ExecuteUpdateAsync` 直接翻译为 SQL UPDATE 语句，不加载实体到内存，适合批量更新。但不会触发 `SaveChangesInterceptor`，也不更新 ChangeTracker 状态。
+**解析讲解**：`ExecuteUpdateAsync` 直接翻译为 SQL UPDATE 语句，不加载实体到内存，适合批量更新。但不会触发 `SaveChangesInterceptor`，也不更新 ChangeTracker 状态。
 
 ---
 
-**Q3**：以下哪种情况应该使用 `AsNoTrackingWithIdentityResolution` 而非 `AsNoTracking`？
+**常见疑问 3**：以下哪种情况应该使用 `AsNoTrackingWithIdentityResolution` 而非 `AsNoTracking`？
 
 A. 查询无关联实体  
 B. 查询包含关联实体，且关联中可能有重复实体  
 C. 查询只读数据  
 D. 性能敏感场景
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`AsNoTracking` 在关联查询时可能为同一实体创建多份实例（重复），`AsNoTrackingWithIdentityResolution` 通过身份映射确保同一实体只有一份实例，开销略大但数据一致性更好。
+**解析讲解**：`AsNoTracking` 在关联查询时可能为同一实体创建多份实例（重复），`AsNoTrackingWithIdentityResolution` 通过身份映射确保同一实体只有一份实例，开销略大但数据一致性更好。
 
 ---
 
-**Q4**：EF Core 6 引入的"编译模型"（Compiled Model）主要解决什么问题？
+**常见疑问 4**：EF Core 6 引入的"编译模型"（Compiled Model）主要解决什么问题？
 
 A. SQL 翻译性能  
 B. DbContext 启动时间  
 C. 实体物化性能  
 D. ChangeTracker 性能
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：编译模型在编译期生成 `IModel` 实例，避免运行时通过反射构建模型，将 DbContext 首次查询时间从约 850ms 降低到 320ms。
+**解析讲解**：编译模型在编译期生成 `IModel` 实例，避免运行时通过反射构建模型，将 DbContext 首次查询时间从约 850ms 降低到 320ms。
 
 ---
 
-**Q5**：以下哪种继承映射策略适合深继承树？
+**常见疑问 5**：以下哪种继承映射策略适合深继承树？
 
 A. TPH（Table per Hierarchy）  
 B. TPT（Table per Type）  
 C. TPC（Table per Concrete type）  
 D. 都一样
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：TPC 为每个具体类创建独立表，无 JOIN，查询性能好，适合深继承树。TPH 所有子类共享一张表，子类型多时 NULL 列过多。TPT 需要 JOIN，深继承树性能差。
+**解析讲解**：TPC 为每个具体类创建独立表，无 JOIN，查询性能好，适合深继承树。TPH 所有子类共享一张表，子类型多时 NULL 列过多。TPT 需要 JOIN，深继承树性能差。
 
 ---
 
-### 10.2 简答题
+### 简答题知识点讲解
 
-**Q1**：解释 `AsNoTracking` 与 `AsNoTrackingWithIdentityResolution` 的区别，并说明何时使用哪个。
+**常见疑问 6**：解释 `AsNoTracking` 与 `AsNoTrackingWithIdentityResolution` 的区别，并说明何时使用哪个。
 
-**参考答案**：
+**解析讲解**：
 
 - `AsNoTracking`：查询的实体不进入 ChangeTracker，性能最优。但在关联查询时，若多个父实体引用同一子实体，会创建多份子实体实例。
 - `AsNoTrackingWithIdentityResolution`：不跟踪，但维护身份映射，确保同一实体只有一份实例。性能略低于 `AsNoTracking`，但保证引用一致性。
@@ -2434,9 +2426,9 @@ D. 都一样
 
 ---
 
-**Q2**：EF Core 的全局查询过滤器（`HasQueryFilter`）有什么用途？在多租户架构中如何使用？
+**常见疑问 7**：EF Core 的全局查询过滤器（`HasQueryFilter`）有什么用途？在多租户架构中如何使用？
 
-**参考答案**：
+**解析讲解**：
 
 全局查询过滤器为所有查询自动添加 WHERE 条件，常用于：
 
@@ -2457,9 +2449,9 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 
 ---
 
-**Q3**：解释 EF Core 的乐观并发控制机制。
+**常见疑问 8**：解释 EF Core 的乐观并发控制机制。
 
-**参考答案**：
+**解析讲解**：
 
 EF Core 通过 `[Timestamp]`（`byte[]` RowVersion）实现乐观并发：
 
@@ -2487,11 +2479,11 @@ WHERE BlogId = @p0 AND RowVersion = @p2;
 
 ---
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q1**：实现一个支持软删除的 EF Core 扩展，包括全局查询过滤器与软删除方法。
+**常见疑问 9**：实现一个支持软删除的 EF Core 扩展，包括全局查询过滤器与软删除方法。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public interface ISoftDeletable
@@ -2548,9 +2540,9 @@ var deletedBlogs = await context.Blogs
 
 ---
 
-**Q2**：实现一个自定义 `IInterceptor`，记录所有慢查询（> 100ms）并写入日志。
+**常见疑问 10**：实现一个自定义 `IInterceptor`，记录所有慢查询（> 100ms）并写入日志。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public class SlowQueryInterceptor : DbCommandInterceptor

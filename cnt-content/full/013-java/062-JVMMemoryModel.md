@@ -19,10 +19,11 @@ prerequisites:
   - java/概述与开发环境
   - java/并发编程详解
 ---
+# Java JVM 内存模型速查
 
-# JVM 内存模型深度解析：从运行时数据区到现代 GC 与调优
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.035（Computer Language Engineering）、Stanford CS 143（Compilers）与 CMU 15-410（Distributed Systems）教学水准，系统阐述 JVM 内存模型的形式化基础、运行时数据区、Java Memory Model（JMM）、分代垃圾回收、对象内存布局、现代收集器（G1/ZGC/Shenandoah）与生产级调优实践。所有代码示例均在 OpenJDK 17/21 LTS 上编译验证。
+---
 
 ## 目录
 
@@ -86,63 +87,24 @@ prerequisites:
 
 ### 2.1 JVM 内存模型演进时间线
 
-```
-1991 ──── Green Project（Oak 语言）启动
-  │         James Gosling 团队设计家电嵌入式语言
-  │         起初采用"标记-压缩"GC，无分代
-  │
-1995 ──── Java 1.0 GA
-  │         分代收集（Serial + Serial Old）
-  │         永久代（PermGen）实现方法区
-  │         Object Header 64 位布局确立
-  │
-1997 ──── Java 1.1：JIT 编译器引入
-  │
-1999 ──── J2SE 1.2：HotSpot JVM 加入
-  │         HotSpot 准确式 GC，告别保守式 GC
-  │         分代收集正式确立
-  │
-2002 ──── J2SE 1.4：Parallel GC（Parallel Scavenge + Parallel Old）
-  │         吞吐量优先，适合批处理
-  │
-2004 ──── Java 5：CMS（Concurrent Mark Sweep）收集器
-  │         低延迟老年代收集
-  │         JMM 形式化（JSR 133，Manson/Pugh/Adve）
-  │
-2006 ──── Java 6：压缩指针（Compressed Oops）
-  │         32 位指针寻址 64 位堆（< 32GB）
-  │         偏向锁（Biased Locking）
-  │
-2011 ──── Java 7：G1（Garbage-First）收集器预览
-  │         Region 化堆布局
-  │         String 对象从 PermGen 移到 Heap
-  │
-2014 ──── Java 8：移除 PermGen，引入 Metaspace
-  │         方法区使用本地内存
-  │         -XX:MaxMetaspaceSize 控制
-  │
-2017 ──── Java 9：G1 成为默认收集器
-  │         CMS 标记为 deprecated
-  │
-2018 ──── Java 11 LTS：ZGC 实验性（JEP 333）
-  │         着色指针，< 10ms 停顿
-  │         Epsilon GC（无操作收集器，用于性能测试）
-  │
-2019 ──── Java 12：G1 可中断混合收集（JEP 344）
-  │         Shenandoah 加入 OpenJDK（Red Hat 主导）
-  │
-2021 ──── Java 17 LTS：ZGC 正式 GA（JEP 377）
-  │         Shenandoah GA
-  │         偏向锁默认禁用（JEP 374）
-  │
-2023 ──── Java 21 LTS：ZGC 分代模式（JEP 439）
-  │         分代 ZGC：年轻代/老年代分离
-  │         Generational Shenandoah（2.0）
-  │
-2024 ──── Java 22-25
-  │         ZGC 进一步优化：非 NMT 内存管理
-  │         GraalVM Native Image AOT 主流化
-  │         CRaC（Coordinated Restore at Checkpoint）
+```mermaid
+timeline
+    title 发展时间线
+    1991: Green Project（Oak 语言）启动 James Gosling 团队设计家电嵌入式语言 起初采用'标记-压缩'GC，无分代
+    1995: Java 1.0 GA 分代收集（Serial + Serial Old） 永久代（PermGen）实现方法区 Object Header 64 位布局确立
+    1997: Java 1.1：JIT 编译器引入
+    1999: J2SE 1.2：HotSpot JVM 加入 HotSpot 准确式 GC，告别保守式 GC 分代收集正式确立
+    2002: J2SE 1.4：Parallel GC（Parallel Scavenge + Parallel Old） 吞吐量优先，适合批处理
+    2004: Java 5：CMS（Concurrent Mark Sweep）收集器 低延迟老年代收集 JMM 形式化（JSR 133，Manson/Pugh/Adve）
+    2006: Java 6：压缩指针（Compressed Oops） 32 位指针寻址 64 位堆（< 32GB） 偏向锁（Biased Locking）
+    2011: Java 7：G1（Garbage-First）收集器预览 Region 化堆布局 String 对象从 PermGen 移到 Heap
+    2014: Java 8：移除 PermGen，引入 Metaspace 方法区使用本地内存 -XX:MaxMetaspaceSize 控制
+    2017: Java 9：G1 成为默认收集器 CMS 标记为 deprecated
+    2018: Java 11 LTS：ZGC 实验性（JEP 333） 着色指针，< 10ms 停顿 Epsilon GC（无操作收集器，用于性能测试）
+    2019: Java 12：G1 可中断混合收集（JEP 344） Shenandoah 加入 OpenJDK（Red Hat 主导）
+    2021: Java 17 LTS：ZGC 正式 GA（JEP 377） Shenandoah GA 偏向锁默认禁用（JEP 374）
+    2023: Java 21 LTS：ZGC 分代模式（JEP 439） 分代 ZGC：年轻代/老年代分离 Generational Shenandoah（2.0）
+    2024: Java 22-25 ZGC 进一步优化：非 NMT 内存管理 GraalVM Native Image AOT 主流化 CRaC（Coordinated Restore at Checkpoint）
 ```
 
 ### 2.2 三大设计哲学
@@ -251,26 +213,26 @@ $$
 
 堆是 JVM 中最大的一块内存区域，所有对象实例和数组都在堆上分配（除逃逸分析优化的栈上分配外）。堆是 GC 管理的主要区域。
 
-```
-┌─────────────────────────────────── Heap ──────────────────────────────────┐
-│                                  Young Generation                          │
-│  ┌────────────────┬────────────────┬────────────────┐  ┌────────────────┐│
-│  │      Eden      │  Survivor 0    │  Survivor 1    │  │     Old Gen    ││
-│  │  (80% young)   │   (10% young)  │   (10% young)  │  │   (2/3 heap)   ││
-│  └────────────────┴────────────────┴────────────────┘  └────────────────┘│
-│              1/3 heap                                          2/3 heap     │
-└───────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Heap[Heap]
+        subgraph Young[Young Generation 1/3 heap]
+            Eden[Eden 80% young]
+            S0[Survivor 0 10% young]
+            S1[Survivor 1 10% young]
+        end
+        Old[Old Gen 2/3 heap]
+    end
+    Eden --> S0
+    S0 --> S1
+    S1 --> Old
 ```
 
 关键参数：
 
-```bash
--Xms4g                  # 初始堆大小
--Xmx4g                  # 最大堆大小（建议与 Xms 相同，避免动态扩展开销）
--Xmn1g                  # 新生代大小
--XX:NewRatio=2          # 老年代:新生代 = 2:1
--XX:SurvivorRatio=8     # Eden:Survivor = 8:1:1
--XX:+UseAdaptiveSizePolicy  # 自适应调整各代大小
+```mermaid
+flowchart LR
+    Eden[Eden<br/>80% of young] --- S0[Survivor 0<br/>10% young] --- S1[Survivor 1<br/>10% young]
 ```
 
 ### 4.3 方法区与元空间
@@ -315,27 +277,13 @@ public class MetaspaceOOM {
 
 栈帧结构：
 
-```
-┌────────────────────────────────────┐
-│        栈帧 (Stack Frame)           │
-├────────────────────────────────────┤
-│  局部变量表 (Local Variable Table)  │
-│    - this (非静态方法)              │
-│    - 方法参数                       │
-│    - 方法内局部变量                 │
-│    - 槽位：long/double 占 2 槽       │
-├────────────────────────────────────┤
-│  操作数栈 (Operand Stack)           │
-│    - 字节码指令的工作区              │
-│    - iadd/imul/invoke 用的栈        │
-├────────────────────────────────────┤
-│  动态链接 (Dynamic Linking)         │
-│    - 指向运行时常量池的方法引用      │
-├────────────────────────────────────┤
-│  方法返回地址 (Return Address)      │
-│    - 正常返回：调用者的 PC          │
-│    - 异常返回：异常表查找            │
-└────────────────────────────────────┘
+```mermaid
+flowchart TD
+    Frame[栈帧 Stack Frame]
+    Frame --> LV[局部变量表<br/>this（非静态方法）<br/>方法参数<br/>方法内局部变量<br/>long/double 占 2 槽]
+    Frame --> OS[操作数栈<br/>字节码指令的工作区<br/>iadd/imul/invoke 用的栈]
+    Frame --> DL[动态链接<br/>指向运行时常量池的方法引用]
+    Frame --> RA[方法返回地址<br/>正常返回：调用者的 PC<br/>异常返回：异常表查找]
 ```
 
 ```java
@@ -417,39 +365,29 @@ public class DirectMemoryDemo {
 
 HotSpot 对象在内存中由三部分组成：
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     对象 (Object)                             │
-├─────────────────────────────────────────────────────────────┤
-│  对象头 (Object Header)                                       │
-│    ├─ Mark Word (64 bits)                                    │
-│    │    - hash、age、锁状态、GC 标记                          │
-│    └─ Class Pointer (32/64 bits，开启压缩为 32 位)            │
-├─────────────────────────────────────────────────────────────┤
-│  实例数据 (Instance Data)                                     │
-│    - 父类字段在前，子类字段在后                                │
-│    - 相同宽度的字段分配在一起                                  │
-│    - 字段对齐（8 字节边界）                                    │
-├─────────────────────────────────────────────────────────────┤
-│  对齐填充 (Padding)                                          │
-│    - 对象起始地址 8 字节对齐                                   │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    Obj[对象 Object]
+    Obj --> OH[对象头 Object Header]
+    OH --> MW[Mark Word 64 bits<br/>hash、age、锁状态、GC 标记]
+    OH --> CP[Class Pointer 32/64 bits<br/>开启压缩为 32 位]
+    Obj --> ID[实例数据<br/>父类字段在前，子类字段在后<br/>相同宽度字段分配在一起<br/>字段对齐（8 字节边界）]
+    Obj --> PD[对齐填充<br/>对象起始地址 8 字节对齐]
 ```
 
 ### 5.2 Mark Word 64 位布局
 
 Mark Word 在不同锁状态下的位布局（64 位 JVM）：
 
+```mermaid
+flowchart TD
+    MW[Mark Word（64 bits）]
+    MW --> U[无锁：hash(25) / age(4) / 0 / 01]
+    MW --> B[偏向锁：thread(54) / epoch(2) / 1 / 01]
+    MW --> L[轻量锁：ptr_to_lock_record(62) / 00]
+    MW --> H[重量锁：ptr_to_heavy_monitor(62) / 10]
+    MW --> G[GC 标记：- / 11]
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         Mark Word (64 bits)                              │
-├─────────────────────────────────────────────────────────────────────────┤
-│ 无锁       │ hash (25) │ age (4) │ 0 │ 01 │                              │
-│ 偏向锁     │ thread (54) │ epoch (2) │ 1 │ 01 │                          │
-│ 轻量锁     │ ptr_to_lock_record (62) │ 00 │                              │
-│ 重量锁     │ ptr_to_heavy_monitor (62) │ 10 │                            │
-│ GC 标记    │ -                                              │ 11 │        │
-└─────────────────────────────────────────────────────────────────────────┘
 
 字段说明：
 - hash：对象 hashCode（延迟计算，调用 System.identityHashCode 后填充）
@@ -458,7 +396,6 @@ Mark Word 在不同锁状态下的位布局（64 位 JVM）：
 - epoch：偏向时间戳（用于批量撤销）
 - ptr_to_lock_record：指向线程栈中 Lock Record 的指针
 - ptr_to_heavy_monitor：指向 ObjectMonitor 的指针
-```
 
 ### 5.3 压缩指针（Compressed Oops）
 
@@ -735,12 +672,9 @@ public class Singleton {
 
 新生代占堆的 1/3（`-XX:NewRatio=2`），分为三个区：
 
-```
-新生代
-┌──────────────────┬───────────────┬───────────────┐
-│      Eden        │  Survivor 0   │  Survivor 1   │
-│   80% of young   │   10% young   │   10% young   │
-└──────────────────┴───────────────┴───────────────┘
+```mermaid
+flowchart LR
+    Eden[Eden<br/>80% of young] --- S0[Survivor 0<br/>10% young] --- S1[Survivor 1<br/>10% young]
 ```
 
 **对象分配流程**：
@@ -859,13 +793,9 @@ GC Roots 包括：
 缺点：内存碎片多，分配大对象时可能触发 Full GC
 ```
 
-```
-┌──────────────────────────────────┐
-│  ██████   ███   ████████████  ░░ │  标记前
-└──────────────────────────────────┘
-┌──────────────────────────────────┐
-│  ██████   ░░░   ████████████  ░░ │  清除后（碎片）
-└──────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[标记前：占用块 + 空闲碎片] --> B[清除后：碎片残留]
 ```
 
 #### 8.3.2 标记-复制（Mark-Copy）
@@ -879,13 +809,9 @@ GC 时将存活对象复制到另一半
 缺点：可用内存减半
 ```
 
-```
-┌────────────┬────────────┐
-│  ████████  │            │  使用区  空闲区
-└────────────┴────────────┘
-┌────────────┬────────────┐
-│            │  ████      │  复制后 紧凑
-└────────────┴────────────┘
+```mermaid
+flowchart TD
+    A[使用区 + 空闲区] --> B[复制后：紧凑排列]
 ```
 
 #### 8.3.3 标记-整理（Mark-Compact）
@@ -898,13 +824,9 @@ GC 时将存活对象复制到另一半
 缺点：移动对象开销大，需更新所有引用
 ```
 
-```
-┌──────────────────────────────────┐
-│  ██████   ███   ████████████  ░░ │  标记前
-└──────────────────────────────────┘
-┌──────────────────────────────────┐
-│  ████████████████████          ░░ │  整理后（无碎片）
-└──────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[标记前：占用块 + 空闲区] --> B[整理后：无碎片]
 ```
 
 ### 8.4 分代收集策略
@@ -981,18 +903,13 @@ public void longLoop() {
 
 G1 是 Java 9+ 的默认收集器，将堆划分为多个 Region（1—32MB），每个 Region 可动态切换为 Eden/Survivor/Old/Humongous。
 
-```
-┌──────────────────────────────────────────────┐
-│                  G1 Heap Layout               │
-├─────┬─────┬─────┬─────┬─────┬─────┬─────┬───┤
-│ E   │ S   │ O   │ E   │ H   │ H   │ O   │ O │  Region (1-32MB)
-├─────┼─────┼─────┼─────┼─────┼─────┼─────┼───┤
-│ O   │ E   │ O   │ S   │ O   │ E   │ O   │ - │
-├─────┼─────┼─────┼─────┼─────┼─────┼─────┼───┤
-│ -   │ O   │ E   │ O   │ O   │ -   │ S   │ E │
-└─────┴─────┴─────┴─────┴─────┴─────┴─────┴───┘
-
-E: Eden  S: Survivor  O: Old  H: Humongous  -: Free
+```mermaid
+flowchart TD
+    G1[G1 Heap Layout<br/>Region（1-32MB）]
+    G1 --> R1[E / S / O / E / H / H / O / O]
+    G1 --> R2[O / E / O / S / O / E / O / -]
+    G1 --> R3[- / O / E / O / O / - / S / E]
+    Legend[E: Eden　S: Survivor　O: Old　H: Humongous　-: Free]
 ```
 
 **G1 工作流程**：
@@ -1039,20 +956,16 @@ ZGC 是 Java 11 引入的低延迟收集器，目标：< 10ms 停顿（Java 21 �
 2. **读屏障（Load Barrier）**：每次读对象引用时检查指针颜色，按需转移对象
 3. **并发转移（Concurrent Relocation）**：对象转移与应用线程并发执行
 
+```mermaid
+flowchart LR
+    Color[4 bits Color] --- Addr[42 bits Address] --- Unused[18 bits Unused]
 ```
-┌─────────────────────────────────────────────────────────────┐
-│              ZGC Colored Pointer (64 bits)                   │
-├─────────────────────────────────────────────────────────────┤
-│  4 bits  │              42 bits              │  18 bits     │
-│  Color   │              Address             │   Unused     │
-└─────────────────────────────────────────────────────────────┘
 
 颜色位（4 bits）：
 - Marked0 (M0)：标记阶段 0
 - Marked1 (M1)：标记阶段 1
 - Remapped：转移完成
 - Finalizable：finalizer 可达
-```
 
 ```bash
 # ZGC 参数（Java 21+）
@@ -1067,16 +980,15 @@ ZGC 是 Java 11 引入的低延迟收集器，目标：< 10ms 停顿（Java 21 �
 
 **ZGC 分代模式（Java 21+）**：
 
-```
-┌─────────────────────────────────────────────────┐
-│             ZGC Generational Heap               │
-├─────────────────────┬───────────────────────────┤
-│   Young Generation  │     Old Generation        │
-│  (Small, frequent)  │  (Large, infrequent GC)   │
-│  ┌──────┬──────┐    │  ┌──────────────────┐    │
-│  │Eden  │Surv. │    │  │   Old Region     │    │
-│  └──────┴──────┘    │  └──────────────────┘    │
-└─────────────────────┴───────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph Heap[ZGC Generational Heap]
+        Young[Young Generation<br/>Small, frequent]
+        Old[Old Generation<br/>Large, infrequent GC]
+    end
+    Young --> YE[Eden]
+    Young --> YS[Survivor]
+    Old --> OR[Old Region]
 ```
 
 ### 9.4 Shenandoah
@@ -1116,20 +1028,29 @@ CMS（Concurrent Mark Sweep）是 Java 5 引入的低延迟收集器，Java 9 �
 
 ### 9.6 收集器选择决策树
 
-```
-堆大小？
-├─ < 100MB → Serial
-├─ 100MB - 4GB → Parallel（吞吐）或 G1（平衡）
-├─ 4GB - 32GB → G1（默认）或 ZGC（低延迟）
-└─ > 32GB → ZGC 或 Shenandoah
-
-延迟要求？
-├─ 不在意（批处理） → Parallel
-├─ P99 < 200ms → G1
-├─ P99 < 10ms → ZGC / Shenandoah
-└─ P99 < 1ms → ZGC 分代模式
-
-堆大小 > 16TB → ZGC（唯一支持）
+```mermaid
+flowchart TD
+    T0["堆大小？"]
+    T1["< 100MB → Serial"]
+    T2["100MB - 4GB → Parallel（吞吐）或 G1（平衡）"]
+    T3["4GB - 32GB → G1（默认）或 ZGC（低延迟）"]
+    T4["> 32GB → ZGC 或 Shenandoah"]
+    T5["延迟要求？"]
+    T6["不在意（批处理） → Parallel"]
+    T7["P99 < 200ms → G1"]
+    T8["P99 < 10ms → ZGC / Shenandoah"]
+    T9["P99 < 1ms → ZGC 分代模式"]
+    T10["堆大小 > 16TB → ZGC（唯一支持）"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T4 --> T5
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T5 --> T9
+    T9 --> T10
 ```
 
 ### 9.7 收集器对比基准测试
@@ -1961,78 +1882,78 @@ jcmd <pid> VM.native_memory detail
 
 ---
 
-## 14. 习题
+## 知识讲解与要点分析（原习题）
 
-### 14.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个区域不会发生 OOM？
+**常见疑问 1**：以下哪个区域不会发生 OOM？
 
 A. 堆
 B. 方法区
 C. 虚拟机栈
 D. 程序计数器
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：程序计数器是唯一不会发生 OOM 的区域，因为它只存储当前线程执行的字节码行号，空间固定且极小。
+**解析讲解**：程序计数器是唯一不会发生 OOM 的区域，因为它只存储当前线程执行的字节码行号，空间固定且极小。
 
 ---
 
-**Q2**：volatile 关键字能保证以下哪个特性？
+**常见疑问 2**：volatile 关键字能保证以下哪个特性？
 
 A. 原子性
 B. 可见性
 C. 有序性
 D. B 和 C
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：volatile 保证可见性（强制刷新主内存）与有序性（内存屏障禁止重排序），但不保证原子性（如 `i++` 仍需 synchronized 或 atomic）。
+**解析讲解**：volatile 保证可见性（强制刷新主内存）与有序性（内存屏障禁止重排序），但不保证原子性（如 `i++` 仍需 synchronized 或 atomic）。
 
 ---
 
-**Q3**：Java 21 中，以下哪个收集器的 STW 时间最短？
+**常见疑问 3**：Java 21 中，以下哪个收集器的 STW 时间最短？
 
 A. G1
 B. Parallel
 C. ZGC（分代）
 D. Shenandoah
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：ZGC 分代模式（Java 21+）STW 通常 < 1ms，是当前最低延迟的收集器。
+**解析讲解**：ZGC 分代模式（Java 21+）STW 通常 < 1ms，是当前最低延迟的收集器。
 
 ---
 
-**Q4**：以下哪个对象不是 GC Roots？
+**常见疑问 4**：以下哪个对象不是 GC Roots？
 
 A. 虚拟机栈中的本地变量
 B. 方法区中的 static 字段
 C. 堆中的对象
 D. 本地方法栈中的 JNI 引用
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：堆中的对象不是 GC Roots，它们是被 GC Roots 引用的目标。GC Roots 是可达性分析的起点。
+**解析讲解**：堆中的对象不是 GC Roots，它们是被 GC Roots 引用的目标。GC Roots 是可达性分析的起点。
 
 ---
 
-**Q5**：Metaspace 与 PermGen 的主要区别是？
+**常见疑问 5**：Metaspace 与 PermGen 的主要区别是？
 
 A. Metaspace 在 JVM 堆内
 B. PermGen 在本地内存
 C. Metaspace 在本地内存
 D. 二者无区别
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：JDK 8+ 的 Metaspace 使用本地内存（native memory），而 PermGen（JDK 7 及之前）在 JVM 堆内。
+**解析讲解**：JDK 8+ 的 Metaspace 使用本地内存（native memory），而 PermGen（JDK 7 及之前）在 JVM 堆内。
 
 ---
 
-### 14.2 简答题
+### 简答题知识点讲解
 
-**Q1**：解释 Java 内存模型的 happens-before 八条规则。
+**常见疑问 6**：解释 Java 内存模型的 happens-before 八条规则。
 
 **答案要点**：
 
@@ -2047,7 +1968,7 @@ D. 二者无区别
 
 ---
 
-**Q2**：描述 G1 收集器的工作流程。
+**常见疑问 7**：描述 G1 收集器的工作流程。
 
 **答案要点**：
 
@@ -2060,7 +1981,7 @@ G1 将堆划分为 Region（1-32MB），每个 Region 动态切换为 Eden/Survi
 
 ---
 
-**Q3**：为什么 JDK 8 移除了 PermGen，改用 Metaspace？
+**常见疑问 8**：为什么 JDK 8 移除了 PermGen，改用 Metaspace？
 
 **答案要点**：
 
@@ -2072,11 +1993,11 @@ G1 将堆划分为 Region（1-32MB），每个 Region 动态切换为 Eden/Survi
 
 ---
 
-### 14.3 编程题
+### 编程题知识点讲解
 
-**Q1**：编写一个会产生内存泄漏的 ThreadLocal 示例，并修复它。
+**常见疑问 9**：编写一个会产生内存泄漏的 ThreadLocal 示例，并修复它。
 
-**答案**：
+**解析讲解**：
 
 ```java
 import java.util.concurrent.ExecutorService;
@@ -2132,9 +2053,9 @@ public class ThreadLocalLeak {
 
 ---
 
-**Q2**：编写代码演示 volatile 的可见性，并解释为何不加 volatile 会导致死循环。
+**常见疑问 10**：编写代码演示 volatile 的可见性，并解释为何不加 volatile 会导致死循环。
 
-**答案**：
+**解析讲解**：
 
 ```java
 public class VolatileDemo {
@@ -2171,7 +2092,7 @@ public class VolatileDemo {
 
 ### 14.4 分析题
 
-**Q1**：分析以下代码的内存问题，并给出修复方案。
+**常见疑问 11**：分析以下代码的内存问题，并给出修复方案。
 
 ```java
 public class Cache {
@@ -2193,7 +2114,7 @@ public class Cache {
 }
 ```
 
-**答案**：
+**解析讲解**：
 
 **问题**：
 
@@ -2255,7 +2176,7 @@ public class FixedCache {
 
 ---
 
-**Q2**：给定以下 GC 日志，分析问题并提出优化方案。
+**常见疑问 12**：给定以下 GC 日志，分析问题并提出优化方案。
 
 ```
 [2026-07-21 10:00:01] GC(100) Pause Young (G1 Evacuation Pause) (young) 2500M->2000M(4000M) 80.123ms
@@ -2265,7 +2186,7 @@ public class FixedCache {
 [2026-07-21 10:00:05] GC(104) Pause Full (G1 Compaction Pause) 3900M->2900M(4000M) 920.456ms
 ```
 
-**答案**：
+**解析讲解**：
 
 **问题**：
 
@@ -2294,7 +2215,7 @@ public class FixedCache {
 
 ---
 
-### 14.5 综合题
+### 综合题知识点讲解
 
 **Q**：设计一个生产级 JVM 配置方案，满足以下需求：
 
@@ -2303,7 +2224,7 @@ public class FixedCache {
 - SLA：P99 < 200ms
 - 特性：长连接、缓存、异步任务
 
-**答案**：
+**解析讲解**：
 
 ```yaml
 apiVersion: apps/v1
@@ -2476,3 +2397,376 @@ spec:
 ---
 
 > 本文档对标 MIT 6.035、Stanford CS 143 与 CMU 15-410 教学水准，系统阐述 JVM 内存模型的形式化基础、运行时数据区、JMM、GC 算法与现代收集器。所有代码示例均在 OpenJDK 17/21 LTS 上验证。如需进一步学习，请参阅参考文献与延伸阅读部分。
+## 运行时数据区
+
+**基本写法：堆内存 Heap**
+`-Xmx<size>`
+```java
+// 所有对象实例与数组存放区域，GC 主战场
+// -Xmx2g 设置最大堆为 2GB
+ArrayList<String> list = new ArrayList<>();
+```
+
+---
+
+**基本写法：方法区 Method Area**
+`-XX:MaxMetaspaceSize=<size>`
+```java
+// 存储类元信息、常量池、静态变量（JDK 8+ 为 Metaspace）
+// -XX:MaxMetaspaceSize=256m
+```
+
+---
+
+**基本写法：虚拟机栈 VM Stack**
+`-Xss<size>`
+```java
+// 每个线程私有，存储栈帧（局部变量、操作数栈）
+// -Xss512k 设置每个线程栈大小
+```
+
+---
+
+**基本写法：本地方法栈 Native Method Stack**
+`-Xss<size>`
+```java
+// Native 方法调用使用，与 VM Stack 类似
+```
+
+---
+
+**基本写法：程序计数器 PC Register**
+`<线程私有>`
+```java
+// 当前线程执行字节码的行号指示器，线程私有无 OOM
+```
+
+---
+
+## 堆内存分代
+
+**基本写法：新生代 Young Generation**
+`-Xmn<size>`
+```java
+// Eden + Survivor0 + Survivor1，对象出生地
+// -Xmn512m 设置新生代大小
+```
+
+---
+
+**基本写法：老年代 Old Generation**
+`-XX:NewRatio=<ratio>`
+```java
+// 新生代:老年代 = 1:2（NewRatio=2 时）
+// -XX:NewRatio=2
+```
+
+---
+
+**基本写法：Eden 与 Survivor 比例**
+`-XX:SurvivorRatio=<ratio>`
+```java
+// Eden:Survivor = 8:1:1（SurvivorRatio=8 时）
+// -XX:SurvivorRatio=8
+```
+
+---
+
+## GC 垃圾回收器
+
+**基本写法：G1 回收器（JDK 9+ 默认）**
+`-XX:+UseG1GC`
+```java
+// 面向大堆的 Region 化回收器
+// java -XX:+UseG1GC -Xmx4g -jar app.jar
+```
+
+---
+
+**基本写法：ZGC 低延迟回收器**
+`-XX:+UseZGC`
+```java
+// 亚毫秒级停顿（JDK 15+ 生产可用）
+// java -XX:+UseZGC -Xmx16g -jar app.jar
+```
+
+---
+
+**基本写法：设置 GC 日志**
+`-Xlog:gc*:<file>`
+```java
+// JDK 9+ 统一日志格式
+// -Xlog:gc*:file=gc.log:time,uptime,level,tags
+```
+
+---
+
+**基本写法：设置期望停顿时间**
+`-XX:MaxGCPauseMillis=<ms>`
+```java
+// G1/ZGC 设置目标停顿时间
+// -XX:MaxGCPauseMillis=200
+```
+
+---
+
+## 对象生命周期
+
+**基本写法：对象分配在 Eden**
+`new <类型>()`
+```java
+// 新对象优先在 Eden 区分配
+Object obj = new Object();
+```
+
+---
+
+**基本写法：进入 Survivor**
+`<对象> 经历 Minor GC`
+```java
+// Eden 满时触发 Minor GC，存活对象进入 Survivor
+// 每经历一次 GC 年龄 +1
+```
+
+---
+
+**基本写法：晋升老年代**
+`-XX:MaxTenuringThreshold=<年龄>`
+```java
+// 对象年龄达到阈值进入老年代
+// -XX:MaxTenuringThreshold=15
+```
+
+---
+
+**基本写法：大对象直接进老年代**
+`-XX:PretenureSizeThreshold=<size>`
+```java
+// 超过阈值的对象直接分配到老年代
+// -XX:PretenureSizeThreshold=1048576（1MB）
+```
+
+---
+
+## 内存溢出排查
+
+**基本写法：堆 OOM 转储**
+`-XX:+HeapDumpOnOutOfMemoryError`
+```java
+// OOM 时自动生成堆转储文件
+// -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/dump.hprof
+```
+
+---
+
+**基本写法：手动触发堆转储**
+`jcmd <pid> GC.heap_dump <file>`
+```java
+// 运行时手动生成堆 dump
+// jcmd 12345 GC.heap_dump /tmp/heap.hprof
+```
+
+---
+
+**基本写法：jmap 查看堆概况**
+`jmap -heap <pid>`
+```java
+// 查看堆配置与使用情况
+// jmap -heap 12345
+```
+
+---
+
+**基本写法：查看对象统计**
+`jmap -histo <pid>`
+```java
+// 按对象大小排序统计
+// jmap -histo 12345 | head -20
+```
+
+---
+
+## 内存监控工具
+
+**基本写法：jstat 查看 GC 统计**
+`jstat -gcutil <pid> <间隔>`
+```java
+// 每 1 秒打印一次各区使用率
+// jstat -gcutil 12345 1000
+```
+
+---
+
+**基本写法：jcmd 列出进程命令**
+`jcmd <pid> <command>`
+```java
+// 查看支持的命令
+// jcmd 12345 help
+```
+
+---
+
+**基本写法：JFR 录制**
+`jcmd <pid> JFR.start duration=60s filename=<file>`
+```java
+// 录制 60 秒 Java Flight Recorder 数据
+// jcmd 12345 JFR.start duration=60s filename=/tmp/rec.jfr
+```
+
+---
+
+## 内存可见性
+
+**基本写法：volatile 保证可见性**
+`volatile <类型> <字段>`
+```java
+// 写入立即对其他线程可见，禁止指令重排
+private volatile boolean running = true;
+```
+
+---
+
+**基本写法：happens-before 规则**
+`<线程A> happens-before <线程B>`
+```java
+// 锁释放 happens-before 后续锁获取
+// volatile 写 happens-before 后续 volatile 读
+// 线程启动 happens-before 其 run 方法
+```
+
+---
+
+## 常用 JVM 参数
+
+**基本写法：设置堆初始与最大值**
+`-Xms<size> -Xmx<size>`
+```java
+// 推荐初始与最大值相同避免动态扩容
+// -Xms2g -Xmx2g
+```
+
+---
+
+**基本写法：设置元空间**
+`-XX:MetaspaceSize=<size> -XX:MaxMetaspaceSize=<size>`
+```java
+// 元空间初始与最大值
+// -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m
+```
+
+---
+
+**基本写法：开启压缩指针**
+`-XX:+UseCompressedOops`
+```java
+// 堆小于 32G 时开启可节省内存（默认开启）
+// -XX:+UseCompressedOops
+```
+
+---
+
+**基本写法：禁用偏向锁**
+`-XX:-UseBiasedLocking`
+```java
+// JDK 15+ 弃用偏向锁，高并发场景可禁用
+// -XX:-UseBiasedLocking
+```
+
+---
+
+## 字符串常量池
+
+**基本写法：字符串驻留**
+`<string>.intern()`
+```java
+// 将字符串放入常量池并返回引用
+String s = new String("hello").intern();
+```
+
+---
+
+**基本写法：调整字符串表大小**
+`-XX:StringTableSize=<buckets>`
+```java
+// 调整常量池哈希桶数量
+// -XX:StringTableSize=65536
+```
+
+---
+
+## 直接内存
+
+**基本写法：分配直接内存**
+`ByteBuffer.allocateDirect(<size>)`
+```java
+// 堆外内存，不受 GC 控制，NIO 使用
+ByteBuffer buf = ByteBuffer.allocateDirect(1024 * 1024);
+```
+
+---
+
+**基本写法：设置直接内存上限**
+`-XX:MaxDirectMemorySize=<size>`
+```java
+// 限制堆外内存使用
+// -XX:MaxDirectMemorySize=512m
+```
+
+---
+
+## 类加载机制
+
+**基本写法：双亲委派模型**
+`<ClassLoader>.loadClass(<name>)`
+```java
+// 先委托父加载器加载，失败才自己加载
+ClassLoader cl = ClassLoader.getSystemClassLoader();
+Class<?> clazz = cl.loadClass("com.example.App");
+```
+
+---
+
+**基本写法：自定义类加载器**
+`extends ClassLoader`
+```java
+// 重写 findClass 实现自定义加载
+class MyLoader extends ClassLoader {
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        byte[] bytes = loadClassData(name);
+        return defineClass(name, bytes, 0, bytes.length);
+    }
+}
+```
+
+---
+
+## 内存模型三大特性
+
+**基本写法：原子性**
+`synchronized` / `AtomicInteger`
+```java
+// 通过锁或原子类保证操作原子性
+AtomicInteger counter = new AtomicInteger(0);
+counter.incrementAndGet();
+```
+
+---
+
+**基本写法：可见性**
+`volatile` / `synchronized`
+```java
+// 通过 volatile 保证变量修改对所有线程可见
+private volatile boolean flag = false;
+```
+
+---
+
+**基本写法：有序性**
+`volatile` / `happens-before`
+```java
+// volatile 写之前的操作不会被重排到写之后
+private int x = 0;
+private volatile boolean ready = false;
+public void writer() { x = 42; ready = true; }
+```

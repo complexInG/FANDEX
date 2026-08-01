@@ -328,16 +328,15 @@ char8_t *s8 = u8"你好,FANDEX";  /* C23 中类型为 char8_t[] */
 - 提案 N3260:统一 `char8_t`/`char16_t`/`char32_t` 字符串字面量初始化语义
 - 提案 N3357:探索运行时字符集协商机制,长期目标是消除对"执行字符集"的编译期假设
 
-```
-C 标准演进时间线(国际化视角)
-┌─────────┬─────────┬─────────┬─────────┬─────────┬─────────┐
-│  C89    │  C95    │  C99    │  C11    │  C17    │  C23    │
-│ (1989)  │ (1995)  │ (1999)  │ (2011)  │ (2018)  │ (2024)  │
-├─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
-│ locale.h│ wchar.h │ wctype  │ uchar.h │ 勘误    │ char8_t │
-│ setlocale│ wchar_t │ mbrlen  │char16_t │         │ u8=ch8  │
-│ LC_*    │ wprintf │ wcrtomb │char32_t │         │ #embed  │
-└─────────┴─────────┴─────────┴─────────┴─────────┴─────────┘
+```mermaid
+timeline
+    title C 标准演进（国际化视角）
+    1989: C89 locale.h setlocale LC_*
+    1995: C95 wchar.h wchar_t wprintf
+    1999: C99 wctype mbrlen wcrtomb
+    2011: C11 uchar.h char16_t char32_t
+    2018: C17 勘误
+    2024: C23 char8_t u8=ch8 #embed
 ```
 
 ## 3. 形式化定义:locale 抽象机模型
@@ -614,7 +613,7 @@ wchar_t *ws = L"你好"; /* 宽字符串字面量 */
 | macOS (Intel) | 32 位 | `int32_t` | UCS-4/UTF-32 |
 | AIX | 16 位 | `unsigned short` | UTF-16 |
 
-**跨平台陷阱**:由于 `wchar_t` 宽度不一致,跨平台代码不应假设 `sizeof(wchar_t)`。Windows 上 `L"😀"`(U+1F600)需要代理对,而 Linux 上可单 `wchar_t` 表示。
+**跨平台陷阱**:由于 `wchar_t` 宽度不一致,跨平台代码不应假设 `sizeof(wchar_t)`。Windows 上 `L"笑脸"`(U+1F600)需要代理对,而 Linux 上可单 `wchar_t` 表示。
 
 ### 5.3 宽字符 I/O 函数
 
@@ -1007,16 +1006,22 @@ C2y 草案(N3357 等)正在讨论引入 `mbrtoc8_s`/`c8rtomb_s` 等边界检查�
 
 ### 8.1 模块设计
 
-```
-i18n/
-├── i18n.h          公共接口
-├── i18n.c          实现
-├── messages/       消息目录
-│   ├── en_US.msg
-│   ├── zh_CN.msg
-│   └── ja_JP.msg
-└── tests/
-    └── test_i18n.c
+```mermaid
+flowchart TD
+    T0["i18n/"]
+    T1["i18n.h          公共接口"]
+    T2["i18n.c          实现"]
+    T3["messages/       消息目录"]
+    T4["en_US.msg"]
+    T5["zh_CN.msg"]
+    T6["ja_JP.msg"]
+    T7["tests/"]
+    T8["test_i18n.c"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T6 --> T7
+    T7 --> T8
 ```
 
 ### 8.2 公共接口
@@ -1441,7 +1446,7 @@ int worker(void *arg) {
 /* 错误:假设 wchar_t 是 32 位 */
 #include <wchar.h>
 void buggy(void) {
-    wchar_t s[] = L"😀";  /* U+1F600,辅助平面 */
+    wchar_t s[] = L"\u{1F600}";  /* U+1F600,辅助平面 */
     /* Windows:需要代理对,占 2 个 wchar_t */
     /* Linux:单 wchar_t,占 1 个 */
     /* 假设 sizeof(wchar_t)==4 在 Windows 上是 UB */
@@ -1455,7 +1460,7 @@ void buggy(void) {
 ```c
 #include <uchar.h>
 void correct(void) {
-    char32_t s[] = U"😀";  /* 保证 32 位,跨平台一致 */
+    char32_t s[] = U"\u{1F600}";  /* 保证 32 位,跨平台一致 */
 }
 ```
 
@@ -1743,20 +1748,26 @@ glibc(GNU C Library)是 Linux 事实标准 libc,其 locale 实现是业界最完
 
 **架构层次**:
 
-```
-glibc locale 子系统
-├── locale 数据文件(/usr/share/i18n/locales/)
-│   ├── zh_CN    中文(简体)locale 定义
-│   ├── en_US    英文(美国)locale 定义
-│   └── ja_JP    日文 locale 定义
-├── localedef 工具
-│   └── 编译 .locale 文件为二进制 . LC_LOCALE 格式
-├── 运行时库
-│   ├── setlocale/newlocale/uselocale
-│   ├── localeconv/nl_langinfo
-│   └── 多字节转换(mbrtowc 等)
-└── 线程局部 locale
-    └── 通过 __uselocale 实现 per-thread locale
+```mermaid
+flowchart TD
+    T0["glibc locale 子系统"]
+    T1["locale 数据文件(/usr/share/i18n/locales/)"]
+    T2["zh_CN    中文(简体)locale 定义"]
+    T3["en_US    英文(美国)locale 定义"]
+    T4["ja_JP    日文 locale 定义"]
+    T5["localedef 工具"]
+    T6["编译 .locale 文件为二进制 . LC_LOCALE 格式"]
+    T7["运行时库"]
+    T8["setlocale/newlocale/uselocale"]
+    T9["localeconv/nl_langinfo"]
+    T10["多字节转换(mbrtowc 等)"]
+    T11["线程局部 locale"]
+    T12["通过 __uselocale 实现 per-thread locale"]
+    T0 --> T1
+    T4 --> T5
+    T6 --> T7
+    T10 --> T11
+    T11 --> T12
 ```
 
 **关键设计**:
@@ -1870,39 +1881,39 @@ Linux 内核是极端案例:内核空间完全无 locale 支持。
 
 **结论**:i18n 策略应与项目定位匹配。面向终端用户的应用需要完整 i18n(glibc 模式);库应提供双模式接口(SQLite 模式);系统软件可简化(Redis 模式);内核应彻底回避(kernel 模式)。
 
-## 13. 习题与参考答案
+## 知识讲解与要点分析（原习题）
 
 本节提供 12 道覆盖各 Bloom 层次的习题,含详细参考答案。
 
-### 13.1 填空题
+### 填空题知识点讲解
 
-#### 习题 13.1.1(remember,难度 1)
+## 知识讲解与要点分析（原习题 13.1.1(remember,难度 1)）
 
 C 标准中用于一次性设置所有 locale 分类的宏是 ______。
 
-**答案**:`LC_ALL`
+**解析讲解**：`LC_ALL`
 
-**解析**:ISO/IEC 9899:2024 §7.11 定义 `LC_ALL` 为位掩码常量,作为 `setlocale` 第一个参数时表示修改全部五个分类。
+**解析讲解**：ISO/IEC 9899:2024 §7.11 定义 `LC_ALL` 为位掩码常量,作为 `setlocale` 第一个参数时表示修改全部五个分类。
 
-#### 习题 13.1.2(remember,难度 1)
+## 知识讲解与要点分析（原习题 13.1.2(remember,难度 1)）
 
 C23 标准引入的、用于显式表示 UTF-8 码单元的新类型是 ______。
 
-**答案**:`char8_t`
+**解析讲解**：`char8_t`
 
-**解析**:ISO/IEC 9899:2024 引入 `char8_t` 为 `unsigned char` 的别名,但类型系统视为不同类型,使 `u8""` 字面量类型从 `char[]` 改为 `char8_t[]`。
+**解析讲解**：ISO/IEC 9899:2024 引入 `char8_t` 为 `unsigned char` 的别名,但类型系统视为不同类型,使 `u8""` 字面量类型从 `char[]` 改为 `char8_t[]`。
 
-#### 习题 13.1.3(understand,难度 2)
+## 知识讲解与要点分析（原习题 13.1.3(understand,难度 2)）
 
 `mbrtowc` 在遇到不完整的多字节序列时返回值为 ______(用宏或数值表示)。
 
-**答案**:`(size_t)-2`
+**解析讲解**：`(size_t)-2`
 
-**解析**:ISO/IEC 9899:2024 §7.29.6.3.2 规定 `mbrtowc` 返回 `(size_t)-2` 表示输入不完整,需要更多字节;`(size_t)-1` 表示非法序列;`(size_t)-3` 表示从同一字符的后续码元(仅 `char8_t`/`char16_t` 版本)。
+**解析讲解**：ISO/IEC 9899:2024 §7.29.6.3.2 规定 `mbrtowc` 返回 `(size_t)-2` 表示输入不完整,需要更多字节;`(size_t)-1` 表示非法序列;`(size_t)-3` 表示从同一字符的后续码元(仅 `char8_t`/`char16_t` 版本)。
 
-### 13.2 选择题
+### 选择题知识点讲解
 
-#### 习题 13.2.1(understand,难度 2)
+## 知识讲解与要点分析（原习题 13.2.1(understand,难度 2)）
 
 关于 `wchar_t` 的下列陈述,哪一项是正确的?
 
@@ -1911,11 +1922,11 @@ B. `wchar_t` 的宽度由实现定义,在 Linux 通常为 32 位,在 Windows 为
 C. C23 强制要求 `wchar_t` 至少 32 位以支持完整 Unicode。
 D. `wchar_t` 是关键字而非类型别名,其大小由 ABI 固定。
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:ISO/IEC 9899:2024 §7.19 仅规定 `wchar_t` 为整数类型且能表示任一支持的 locale 中的最大扩展字符集;Linux glibc 用 32 位(等价于 `uint32_t`),Windows MSVC 用 16 位(等价于 `uint16_t`)。
+**解析讲解**：ISO/IEC 9899:2024 §7.19 仅规定 `wchar_t` 为整数类型且能表示任一支持的 locale 中的最大扩展字符集;Linux glibc 用 32 位(等价于 `uint32_t`),Windows MSVC 用 16 位(等价于 `uint16_t`)。
 
-#### 习题 13.2.2(analyze,难度 3)
+## 知识讲解与要点分析（原习题 13.2.2(analyze,难度 3)）
 
 下列代码在 Linux/gcc(C23)下的输出是?
 
@@ -1934,11 +1945,11 @@ B. 3
 C. 6
 D. 7
 
-**答案**:D
+**解析讲解**：D
 
-**解析**:"你好"的 UTF-8 编码是 6 字节(每个汉字 3 字节),`u8""` 字面量在 C23 中类型为 `char8_t[]`,且含终止空字符,故 `sizeof(s) == 7`。
+**解析讲解**："你好"的 UTF-8 编码是 6 字节(每个汉字 3 字节),`u8""` 字面量在 C23 中类型为 `char8_t[]`,且含终止空字符,故 `sizeof(s) == 7`。
 
-#### 习题 13.2.3(evaluate,难度 4)
+## 知识讲解与要点分析（原习题 13.2.3(evaluate,难度 4)）
 
 关于线程安全 locale,下列哪种方案在 C11 标准下是可移植且无数据竞争的?
 
@@ -1947,13 +1958,13 @@ B. 使用 `uselocale` + `newlocale` 创建线程局部 locale。
 C. 使用 `thread_local` 修饰 `setlocale` 的返回值。
 D. 用 `atomic_store` 包装 locale 字符串。
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:ISO/IEC 9899:2024 §7.11.2.1 规定 `uselocale` 切换当前线程的 locale,与其他线程隔离,是无数据竞争的可移植方案。A 方案可行但牺牲并发度;C 方案无意义(`setlocale` 返回值是字符串指针,非状态);D 方案无法保护 locale 全局状态。
+**解析讲解**：ISO/IEC 9899:2024 §7.11.2.1 规定 `uselocale` 切换当前线程的 locale,与其他线程隔离,是无数据竞争的可移植方案。A 方案可行但牺牲并发度;C 方案无意义(`setlocale` 返回值是字符串指针,非状态);D 方案无法保护 locale 全局状态。
 
 ### 13.3 代码修正题
 
-#### 习题 13.3.1(apply,难度 3)
+## 知识讲解与要点分析（原习题 13.3.1(apply,难度 3)）
 
 下列代码意图在 zh_CN.UTF-8 下打印宽字符串,但运行时无任何输出。请定位并修复缺陷。
 
@@ -1987,9 +1998,9 @@ int main(void) {
 }
 ```
 
-**解析**:原代码存在两处问题:(1) 未调用 `setlocale(LC_ALL, "")`,宽字符流仍处于默认 "C" locale,UTF-8 多字节终端无法正确解码宽字符输出;(2) 使用 `printf` 配合 `%ls` 不如 `wprintf` 可靠,`wprintf` 显式声明宽字符流定向。
+**解析讲解**：原代码存在两处问题:(1) 未调用 `setlocale(LC_ALL, "")`,宽字符流仍处于默认 "C" locale,UTF-8 多字节终端无法正确解码宽字符输出;(2) 使用 `printf` 配合 `%ls` 不如 `wprintf` 可靠,`wprintf` 显式声明宽字符流定向。
 
-#### 习题 13.3.2(apply,难度 4)
+## 知识讲解与要点分析（原习题 13.3.2(apply,难度 4)）
 
 下列代码在多线程环境下偶发崩溃,请定位并修复。
 
@@ -2045,9 +2056,9 @@ int worker(void *arg) {
 }
 ```
 
-**解析**:原代码在多线程下并发调用 `setlocale` 与 `strftime`,触发 ISO/IEC 9899:2024 §7.11.1.1 规定的数据竞争 UB。修复方案使用 `newlocale`/`uselocale` 创建线程局部 locale,并用 `strftime_l`(POSIX)显式传入 locale 对象。
+**解析讲解**：原代码在多线程下并发调用 `setlocale` 与 `strftime`,触发 ISO/IEC 9899:2024 §7.11.1.1 规定的数据竞争 UB。修复方案使用 `newlocale`/`uselocale` 创建线程局部 locale,并用 `strftime_l`(POSIX)显式传入 locale 对象。
 
-#### 习题 13.3.3(analyze,难度 4)
+## 知识讲解与要点分析（原习题 13.3.3(analyze,难度 4)）
 
 下列 UTF-8 解码函数存在安全漏洞,请定位并修复。
 
@@ -2106,15 +2117,15 @@ size_t utf8_decode_fixed(const uint8_t *s, size_t n, uint32_t *cp) {
 }
 ```
 
-**解析**:原函数接受 overlong 编码(如 `0xC0 0xAF` 解码为 `/`),可绕过路径过滤;接受代理对码点(`0xD800`-`0xDFFF`),违反 Unicode 规范。修复方案添加三项检查。
+**解析讲解**：原函数接受 overlong 编码(如 `0xC0 0xAF` 解码为 `/`),可绕过路径过滤;接受代理对码点(`0xD800`-`0xDFFF`),违反 Unicode 规范。修复方案添加三项检查。
 
 ### 13.4 开放性问题
 
-#### 习题 13.4.1(evaluate,难度 4)
+## 知识讲解与要点分析（原习题 13.4.1(evaluate,难度 4)）
 
 某团队在多线程服务器中调用 `setlocale(LC_ALL, "zh_CN.UTF-8")` 后,`strftime` 在另一线程偶发返回英文月份名。请从 C 标准内存模型与 locale 状态模型两个层面分析根因,并给出不少于三种工程修复方案,说明各自的优劣。
 
-**参考答案**:
+**解析讲解**：
 
 **根因分析**(C 标准内存模型层面):
 
@@ -2135,11 +2146,11 @@ C 的 locale 状态 $\mathcal{L}$ 是进程级全局可变状态,所有线程共
 
 **推荐方案**:对需要多语言切换的服务,采用方案 1(`uselocale`);对单语言但需 locale 敏感格式化的服务,采用方案 4(启动时设置);对功能复杂的应用,采用方案 3(ICU)。
 
-#### 习题 13.4.2(create,难度 5)
+## 知识讲解与要点分析（原习题 13.4.2(create,难度 5)）
 
 设计一个生产级 i18n 模块,要求支持:(1) 运行时切换语言;(2) 线程安全的消息翻译;(3) locale 敏感的数字/日期格式化;(4) UTF-8 字符串操作;(5) 兼容 C17 与 C23。给出模块接口设计、关键数据结构、线程安全策略与测试方案。
 
-**参考答案**(设计要点):
+**解析讲解**：(设计要点):
 
 **接口设计**:
 
@@ -2194,24 +2205,19 @@ typedef unsigned char u8char_t;
 4. 编码测试:UTF-8/UTF-16/UTF-32 round-trip 一致性。
 5. 性能测试:翻译/格式化的吞吐与延迟。
 
-#### 习题 13.4.3(evaluate,难度 5)
+## 知识讲解与要点分析（原习题 13.4.3(evaluate,难度 5)）
 
 某嵌入式项目需要在 ARM Cortex-M(无 OS,无 locale 支持)上显示中文菜单。C 标准 locale 库不可用,请设计一个轻量级 i18n 方案,满足:(1) 代码体积 < 10KB;(2) 支持至少 3 种语言切换;(3) 字符串存储在 Flash 中;(4) 支持 UTF-8 字符串长度计算。
 
-**参考答案**(设计要点):
+**解析讲解**：(设计要点):
 
 **架构**:
 
-```
-┌──────────────┐
-│  menu.c      │  应用代码
-├──────────────┤
-│  i18n_lite.c │  轻量级 i18n 库(<10KB)
-├──────────────┤
-│  messages.h  │  消息表(const,存储在 Flash)
-├──────────────┤
-│  utf8.c      │  UTF-8 字符串操作
-└──────────────┘
+```mermaid
+flowchart TD
+    M[menu.c 应用代码] --> I[i18n_lite.c 轻量级 i18n 库 <10KB]
+    I --> H[messages.h 消息表 const 存储在 Flash]
+    H --> U[utf8.c UTF-8 字符串操作]
 ```
 
 **消息表设计**:
@@ -2279,11 +2285,11 @@ size_t utf8_strlen(const char *s) {
 - `const` 数据存 Flash 是嵌入式常见技巧。
 - 简单查找表足以支持小规模多语言。
 
-#### 习题 13.4.4(understand,难度 3)
+## 知识讲解与要点分析（原习题 13.4.4(understand,难度 3)）
 
 解释 `mbrtowc`、`mbsrtowcs`、`mbrtoc8` 三个函数的差异,并说明各自适用场景。
 
-**参考答案**:
+**解析讲解**：
 
 | 函数 | 引入标准 | 输入 | 输出 | 状态 | 适用场景 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -2508,21 +2514,21 @@ gcc -std=c23 -Wall -Wextra
 
 1. 阅读 K&R C 第 1 章,理解 `char` 与字节的关系。
 2. 完成本章第 2、4、5 节,理解 locale 与宽字符基础。
-3. 编写一个简单程序,在 zh_CN.UTF-8 locale 下打印中文。
+3. 要点：一个简单程序,在 zh_CN.UTF-8 locale 下打印中文。
 4. 完成习题 13.1.1、13.1.2、13.2.1。
 
 ### D.2 中级(2-4 周)
 
 1. 阅读本章第 6、7 节,深入理解 Unicode 与 UTF 编码。
 2. 阅读 glibc locale 源码(`glibc/locale/`)。
-3. 实现一个 UTF-8 编码/解码器(参考 6.4 节)。
+3. 要点：一个 UTF-8 编码/解码器(参考 6.4 节)。
 4. 完成习题 13.3.1、13.3.2、13.4.4。
 
 ### D.3 高级(4-8 周)
 
 1. 阅读本章第 8、11、12 节,掌握生产级 i18n 工程实践。
 2. 阅读 ICU 文档,理解专业 i18n 库的设计。
-3. 实现一个完整的 i18n 模块(参考第 8 节),支持多语言切换、线程安全、编码转换。
+3. 要点：一个完整的 i18n 模块(参考第 8 节),支持多语言切换、线程安全、编码转换。
 4. 完成习题 13.4.1、13.4.2、13.4.3。
 
 ### D.4 专家级(持续)

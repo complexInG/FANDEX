@@ -15,10 +15,11 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
+# Java 并发工具速查
 
-# Java 并发编程详解：从 JMM 到虚拟线程
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.005（Software Construction）、Stanford CS 140（Operating Systems）与 CMU 15-440（Distributed Systems）教学水准，系统阐述 Java 并发编程的形式化基础、原语实现与生产级工程实践。所有代码示例均在 OpenJDK 17/21 LTS 上编译验证。
+---
 
 ## 目录
 
@@ -82,47 +83,21 @@ prerequisites:
 
 ### 2.1 Java 并发演进时间线
 
-```
-1995 ──── Java 1.0：Thread、Runnable、synchronized
-  │         仅 green threads，无真正的内核线程映射
-  │
-1997 ──── Java 1.1：wait/notify/notifyAll（Object 方法）
-  │
-2002 ──── J2SE 1.4：NIO（非阻塞 IO 基础）
-  │
-2004 ──── Java 5：JSR 166（java.util.concurrent）
-  │         Doug Lea 的并发库进入 JDK
-  │         Executor、Future、Atomic、Lock、Condition
-  │         ConcurrentHashMap、CopyOnWriteArrayList
-  │
-2006 ──── Java 6：并发性能优化
-  │         synchronized 偏向锁（Biased Locking）
-  │         AbstractQueuedSynchronizer（AQS）框架成熟
-  │
-2011 ──── Java 7：ForkJoinPool（JSR 166y）
-  │         Phaser、TransferQueue
-  │
-2014 ──── Java 8：CompletableFuture、StampedLock
-  │         Lambda 与函数式接口简化并发代码
-  │         并行流（parallelStream）基于 ForkJoinPool
-  │
-2017 ──── Java 9：Publisher/Subscriber（ reactive streams）
-  │         Flow 类（JEP 266）
-  │
-2018 ──── Java 11：VarHandle（JEP 193）
-  │         替代 sun.misc.Unsafe 的细粒度内存访问
-  │         Flight Recorder 开源
-  │
-2021 ──── Java 17：强封装限制 sun.misc.Unsafe
-  │         sealed class 配合并发模式
-  │
-2023 ──── Java 21 LTS：虚拟线程 GA（JEP 444）
-  │         作用域值（Scoped Values，预览）
-  │         结构化并发（Structured Concurrency，预览）
-  │         桌面/服务器 JDK 21 默认禁用偏向锁
-  │
-2024-2025 ─ Java 22-25：结构化并发 GA
-  │         虚拟线程性能优化
+```mermaid
+timeline
+    title Java 并发发展时间线
+    1995: Java 1.0：Thread、Runnable、synchronized，仅 green threads，无真正内核线程映射
+    1997: Java 1.1：wait/notify/notifyAll（Object 方法）
+    2002: J2SE 1.4：NIO（非阻塞 IO 基础）
+    2004: Java 5：JSR 166（java.util.concurrent），Doug Lea 并发库进入 JDK，Executor/Future/Atomic/Lock/Condition，ConcurrentHashMap、CopyOnWriteArrayList
+    2006: Java 6：并发性能优化，synchronized 偏向锁，AQS 框架成熟
+    2011: Java 7：ForkJoinPool（JSR 166y），Phaser、TransferQueue
+    2014: Java 8：CompletableFuture、StampedLock，Lambda 简化并发代码，并行流基于 ForkJoinPool
+    2017: Java 9：Publisher/Subscriber（reactive streams），Flow 类（JEP 266）
+    2018: Java 11：VarHandle（JEP 193）替代 sun.misc.Unsafe，Flight Recorder 开源
+    2021: Java 17：强封装限制 sun.misc.Unsafe，sealed class 配合并发模式
+    2023: Java 21 LTS：虚拟线程 GA（JEP 444），Scoped Values 预览，结构化并发预览，默认禁用偏向锁
+    2024-2025: Java 22-25：结构化并发 GA，虚拟线程性能优化
 ```
 
 ### 2.2 三大设计哲学
@@ -228,35 +203,35 @@ submit(task):
 
 HotSpot 对象头（Object Header）由三部分构成：
 
-```
-┌────────────────────────────────────────────────────────────┐
-│  Mark Word (64 bits)         │  Class Pointer │  Array Length  │
-│                              │  (32/64 bits)  │  (32 bits, 仅数组)│
-└────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    MW[Mark Word（64 bits）] --- CP[Class Pointer（32/64 bits）]
+    CP --- AL[Array Length（32 bits，仅数组）]
 ```
 
 Mark Word 在不同锁状态下的位布局（64 位 JVM）：
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         Mark Word (64 bits)                              │
-├─────────────────────────────────────────────────────────────────────────┤
-│ 无锁       │ hash (25) │ age (4) │ 0 │ 01 │                              │
-│ 偏向锁     │ thread (54) │ epoch (2) │ 1 │ 01 │                          │
-│ 轻量锁     │ ptr_to_lock_record (62) │ 00 │                              │
-│ 重量锁     │ ptr_to_heavy_monitor (62) │ 10 │                            │
-│ GC 标记    │ -                                              │ 11 │        │
-└─────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    MW[Mark Word（64 bits）]
+    MW --> U[无锁：hash(25) / age(4) / 0 / 01]
+    MW --> B[偏向锁：thread(54) / epoch(2) / 1 / 01]
+    MW --> L[轻量锁：ptr_to_lock_record(62) / 00]
+    MW --> H[重量锁：ptr_to_heavy_monitor(62) / 10]
+    MW --> G[GC 标记：- / 11]
 ```
 
 ### 4.2 锁升级过程
 
 synchronized 锁状态按竞争程度单调升级（不可降级，但偏向锁可被批量撤销）：
 
-```
-无锁 ──→ 偏向锁 ──→ 轻量级锁 ──→ 重量级锁
-                                    │
-                                    └─→ 无法回退
+```mermaid
+stateDiagram-v2
+    [*] --> 无锁
+    无锁 --> 偏向锁
+    偏向锁 --> 轻量级锁
+    轻量级锁 --> 重量级锁
+    重量级锁 --> [*]
 ```
 
 #### 4.2.1 偏向锁（Biased Locking）
@@ -315,15 +290,15 @@ public abstract class AbstractQueuedSynchronizer
 
 AQS 使用 CLH（Craig, Landin, Hagersten）队列变种：
 
-```
-        head                                          tail
-         ↓                                             ↓
-       ┌──────┐    next    ┌──────┐    next    ┌──────┐
-       │ Node │ ─────────→ │ Node │ ─────────→ │ Node │
-       │      │ ←───────── │      │ ←───────── │      │
-       └──────┘   prev     └──────┘   prev     └──────┘
-                                           ↑
-                                     后继节点自旋检查前驱
+```mermaid
+flowchart LR
+    H[head] --> N1[Node]
+    N1 -->|next| N2[Node]
+    N2 -->|next| N3[Node]
+    N3 --> T[tail]
+    N3 -->|prev| N2
+    N2 -->|prev| N1
+    N2 --> S[后继节点自旋检查前驱]
 ```
 
 每个 Node 维护一个 waitStatus：
@@ -1417,13 +1392,18 @@ public class StructuredConcurrency {
 
 ### 11.2 锁选择决策树
 
-```
-是否读多写少？
-├─ 是 → StampedLock（乐观读）
-│      └─ 不可重入是否可接受？否 → ReentrantReadWriteLock
-└─ 否 → 是否需要可中断/超时/多 Condition？
-       ├─ 是 → ReentrantLock
-       └─ 否 → synchronized（JDK 6+ 性能足够）
+```mermaid
+flowchart TD
+    T0["是否读多写少？"]
+    T1["是 → StampedLock（乐观读）"]
+    T2["不可重入是否可接受？否 → ReentrantReadWriteLock"]
+    T3["否 → 是否需要可中断/超时/多 Condition？"]
+    T4["是 → ReentrantLock"]
+    T5["否 → synchronized（JDK 6+ 性能足够）"]
+    T0 --> T1
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
 ```
 
 ### 11.3 异步模型对比
@@ -1974,13 +1954,13 @@ public <T> CompletableFuture<T> withDbLimit(Supplier<T> supplier) {
 
 ---
 
-## 15. 习题
+## 知识讲解与要点分析（原习题）
 
-### 习题 1（记忆）
+## 知识讲解与要点分析（原习题 1（记忆））
 
 列出 JLS §17.4.5 定义的 happens-before 八条规则。
 
-**答案**：
+**解析讲解**：
 
 1. 程序次序规则（Program Order Rule）
 2. 监视器锁规则（Monitor Lock Rule）
@@ -1991,19 +1971,19 @@ public <T> CompletableFuture<T> withDbLimit(Supplier<T> supplier) {
 7. 对象终结规则（Finalizer Rule）
 8. 传递性（Transitivity）
 
-### 习题 2（理解）
+## 知识讲解与要点分析（原习题 2（理解））
 
 为什么 DCL 单例必须使用 `volatile`？若不使用会出什么问题？
 
-**答案**：
+**解析讲解**：
 
 `instance = new Singleton()` 在字节码层面分三步：分配内存、初始化、引用赋值。若编译器重排为"分配内存 → 引用赋值 → 初始化"，其他线程在第二个线程进入同步块前判断 `instance == null` 时可能看到非 null 但未初始化的对象，得到部分构造的对象引用。`volatile` 通过 StoreStore 屏障禁止重排，保证对象完全构造后才对其他线程可见。
 
-### 习题 3（应用）
+## 知识讲解与要点分析（原习题 3（应用））
 
 实现一个支持超时的限流同步器：每秒最多 100 次访问，超出则等待至多 500ms，超时返回 false。
 
-**答案**：
+**解析讲解**：
 
 ```java
 import java.util.concurrent.*;
@@ -2047,7 +2027,7 @@ public class RateLimiter {
 }
 ```
 
-### 习题 4（分析）
+## 知识讲解与要点分析（原习题 4（分析））
 
 分析下面代码的问题：
 
@@ -2072,7 +2052,7 @@ public class Cache {
 }
 ```
 
-**答案**：
+**解析讲解**：
 
 主要问题：
 1. **锁粒度过大**：`loadFromDb` 是阻塞 IO，但持有锁期间其他读请求全部阻塞，吞吐急剧下降。
@@ -2086,24 +2066,24 @@ public class Cache {
 - DB 调用加超时
 - 使用 Caffeine / Guava Cache 等成熟方案
 
-### 习题 5（评价）
+## 知识讲解与要点分析（原习题 5（评价））
 
 比较 `synchronized` 与 `ReentrantLock` 在以下场景的优劣：
 - (a) 简单计数器
 - (b) 需要可中断的长时间任务
 - (c) 读多写少的缓存
 
-**答案**：
+**解析讲解**：
 
 - (a) **synchronized 优**：语法简洁，自动释放，性能与 ReentrantLock 接近。或直接用 `AtomicInteger`。
 - (b) **ReentrantLock 优**：`lockInterruptibly()` 支持中断，`synchronized` 不可中断。
 - (c) **都不优**：应选 `ReentrantReadWriteLock` 或 `StampedLock`（读多写少）。
 
-### 习题 6（创造）
+## 知识讲解与要点分析（原习题 6（创造））
 
 设计并实现一个支持"读优先"的读写锁：当有写线程等待时，新读线程仍可获取读锁（不阻塞），但写线程不会无限等待。
 
-**答案**：
+**解析讲解**：
 
 ```java
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
@@ -2178,7 +2158,7 @@ public class ReadPreferRWLock {
 
 > **注意**：纯读优先会导致写饥饿。生产实现通常采用"公平"或"写优先在 N 次后切换"策略。
 
-### 习题 7
+## 知识讲解与要点分析（原习题 7）
 
 下面代码在 Java 21 中运行，会输出什么？
 
@@ -2192,15 +2172,15 @@ try (var exec = Executors.newVirtualThreadPerTaskExecutor()) {
 System.out.println("\nDone");
 ```
 
-**答案**：
+**解析讲解**：
 
 100 个虚拟线程并行执行，约 1 秒后几乎同时输出 0—99（顺序不定，因调度顺序），最后输出 `Done`。try-with-resources 会在所有任务完成后自动关闭 executor。
 
-### 习题 8
+## 知识讲解与要点分析（原习题 8）
 
 为什么 `parallelStream()` 不适合 IO 密集任务？
 
-**答案**：
+**解析讲解**：
 
 `parallelStream()` 默认使用 `ForkJoinPool.commonPool()`，其大小为 `CPU核数 - 1`（最小 1）。若在流中执行阻塞 IO：
 1. 仅几个线程，IO 等待期间 CPU 空闲
@@ -2209,11 +2189,11 @@ System.out.println("\nDone");
 
 应改为：自定义 `ForkJoinPool` 提交任务，或使用 `CompletableFuture` + 独立 IO 线程池。
 
-### 习题 9
+## 知识讲解与要点分析（原习题 9）
 
 解释 `StampedLock.tryOptimisticRead()` + `validate()` 的工作原理，以及为什么不能在两者之间放置任何操作。
 
-**答案**：
+**解析讲解**：
 
 `tryOptimisticRead()` 返回一个 stamp（戳记），记录当前写锁状态。`validate(stamp)` 检查自上次乐观读后是否发生过写锁。两者之间不能插入可能被重排序的操作（如普通字段读取），否则编译器可能将字段读重排到 `tryOptimisticRead` 之前，导致读到旧值。正确做法：
 
@@ -2232,11 +2212,11 @@ if (!lock.validate(stamp)) {
 }
 ```
 
-### 习题 10
+## 知识讲解与要点分析（原习题 10）
 
 实现一个"令牌桶"限流器：桶容量 100，每秒填充 10 个令牌。
 
-**答案**：
+**解析讲解**：
 
 ```java
 import java.util.concurrent.*;
@@ -2273,7 +2253,7 @@ public class TokenBucket {
 }
 ```
 
-### 习题 11
+## 知识讲解与要点分析（原习题 11）
 
 分析下面代码是否存在问题：
 
@@ -2290,7 +2270,7 @@ public class Service {
 }
 ```
 
-**答案**：
+**解析讲解**：
 
 问题：
 1. **newCachedThreadPool 无界**：高并发下可能创建数万线程，导致 OOM 或系统调度崩溃。
@@ -2300,11 +2280,11 @@ public class Service {
 
 改进：使用有界 ThreadPoolExecutor，独立线程池分层（业务/日志），异常通过 `whenComplete` 处理。
 
-### 习题 12
+## 知识讲解与要点分析（原习题 12）
 
 用 `CompletableFuture` 实现一个带缓存的查询：先查本地缓存，未命中则异步查 DB，结果回填缓存。
 
-**答案**：
+**解析讲解**：
 
 ```java
 import java.util.concurrent.*;
@@ -2333,19 +2313,19 @@ public class CachedQuery {
 }
 ```
 
-### 习题 13
+## 知识讲解与要点分析（原习题 13）
 
 解释为什么 `ConcurrentHashMap` 不允许 null key 或 null value。
 
-**答案**：
+**解析讲解**：
 
 `ConcurrentHashMap` 的 `get(key)` 在 key 不存在时返回 null，若允许 value=null，则无法区分"key 不存在"与"value 就是 null"。`Hashtable` 也禁止 null。`HashMap` 是单线程使用，可以用 `containsKey` 辅助判断，但并发场景下 `containsKey` 与 `get` 之间状态可能变化，因此禁止 null 以避免歧义。
 
-### 习题 14
+## 知识讲解与要点分析（原习题 14）
 
 设计一个"读写锁 + 缓存"模式：多个线程可并发读，仅一个线程能写，写时阻塞所有读。
 
-**答案**：
+**解析讲解**：
 
 ```java
 import java.util.concurrent.locks.*;
@@ -2464,3 +2444,435 @@ public class CachedValue<V> {
 - Stanford CS 140 *Operating Systems*：https://cs140.stanford.edu/
 - CMU 15-440 *Distributed Systems*：https://www.cs.cmu.edu/~dga/15-440/F12/
 - Heinz Kabutz *Java Specialists Superpack*：https://www.javaspecialists.eu/
+## Lock 锁机制
+
+**基本写法：使用 ReentrantLock**
+`ReentrantLock <lock> = new ReentrantLock()`
+```java
+// 显式加锁与释放锁（必须在 finally 中释放）
+ReentrantLock lock = new ReentrantLock();
+lock.lock();
+try {
+    // 临界区代码
+} finally {
+    lock.unlock();
+}
+```
+
+---
+
+**基本写法：可中断锁获取**
+`<lock>.lockInterruptibly()`
+```java
+// 等待锁过程中可被中断
+lock.lockInterruptibly();
+try {
+    // 临界区代码
+} catch (InterruptedException e) {
+    Thread.currentThread().interrupt();
+} finally {
+    lock.unlock();
+}
+```
+
+---
+
+**基本写法：尝试获取锁**
+`<lock>.tryLock(<超时>, <单位>)`
+```java
+// 尝试在 3 秒内获取锁，失败则跳过
+if (lock.tryLock(3, TimeUnit.SECONDS)) {
+    try {
+        // 获取锁成功
+    } finally {
+        lock.unlock();
+    }
+}
+```
+
+---
+
+**基本写法：读写锁**
+`ReentrantReadWriteLock`
+```java
+// 读多写少场景提升并发度
+ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
+rwLock.readLock().lock();
+try { /* 读操作 */ } finally { rwLock.readLock().unlock(); }
+rwLock.writeLock().lock();
+try { /* 写操作 */ } finally { rwLock.writeLock().unlock(); }
+```
+
+---
+
+**基本写法：Condition 条件变量**
+`<lock>.newCondition()`
+```java
+// 配合 Lock 实现等待/通知
+Condition notEmpty = lock.newCondition();
+lock.lock();
+try {
+    while (queue.isEmpty()) {
+        notEmpty.await();
+    }
+    // 消费元素
+} finally {
+    lock.unlock();
+}
+```
+
+---
+
+## CountDownLatch 倒计时门闩
+
+**基本写法：等待 N 个线程完成**
+`CountDownLatch <latch> = new CountDownLatch(<count>)`
+```java
+// 主线程等待所有工作线程完成
+CountDownLatch latch = new CountDownLatch(3);
+for (int i = 0; i < 3; i++) {
+    new Thread(() -> {
+        try { doWork(); } finally { latch.countDown(); }
+    }).start();
+}
+latch.await();
+```
+
+---
+
+**基本写法：带超时等待**
+`<latch>.await(<超时>, <单位>)`
+```java
+// 最多等待 5 秒
+boolean done = latch.await(5, TimeUnit.SECONDS);
+if (!done) { /* 超时处理 */ }
+```
+
+---
+
+**基本写法：递减计数**
+`<latch>.countDown()`
+```java
+// 计数减 1，归零时唤醒 await 的线程
+latch.countDown();
+```
+
+---
+
+## CyclicBarrier 循环屏障
+
+**基本写法：N 个线程到达屏障后统一放行**
+`CyclicBarrier <barrier> = new CyclicBarrier(<count>)`
+```java
+// 3 个线程都到达后才继续执行
+CyclicBarrier barrier = new CyclicBarrier(3);
+new Thread(() -> {
+    barrier.await(); // 等待其他线程
+}).start();
+```
+
+---
+
+**基本写法：屏障动作**
+`new CyclicBarrier(<count>, <Runnable>)`
+```java
+// 所有线程到达后执行一次动作
+CyclicBarrier barrier = new CyclicBarrier(3, () -> {
+    System.out.println("所有线程到达屏障");
+});
+barrier.await();
+```
+
+---
+
+## Semaphore 信号量
+
+**基本写法：限流并发访问**
+`Semaphore <sem> = new Semaphore(<许可数>)`
+```java
+// 同时只允许 5 个线程访问资源
+Semaphore sem = new Semaphore(5);
+sem.acquire();
+try {
+    // 访问受限资源
+} finally {
+    sem.release();
+}
+```
+
+---
+
+**基本写法：批量获取许可**
+`<sem>.acquire(<数量>)`
+```java
+// 一次获取 3 个许可
+sem.acquire(3);
+try { /* 资源使用 */ } finally { sem.release(3); }
+```
+
+---
+
+## ConcurrentHashMap
+
+**基本写法：创建并发 Map**
+`new ConcurrentHashMap<K, V>()`
+```java
+// 线程安全的 HashMap
+ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();
+map.put("a", 1);
+```
+
+---
+
+**基本写法：原子更新**
+`<map>.compute(<key>, <BiFunction>)`
+```java
+// 原子地更新指定 key 的值
+map.compute("a", (k, v) -> v == null ? 1 : v + 1);
+```
+
+---
+
+**基本写法：不存在时放入**
+`<map>.putIfAbsent(<key>, <value>)`
+```java
+// 仅当 key 不存在时才放入
+map.putIfAbsent("b", 100);
+```
+
+---
+
+**基本写法：合并值**
+`<map>.merge(<key>, <默认值>, <BiFunction>)`
+```java
+// 统计词频的惯用写法
+map.merge(word, 1, Integer::sum);
+```
+
+---
+
+**基本写法：原子替换**
+`<map>.replace(<key>, <旧值>, <新值>)`
+```java
+// CAS 替换，旧值匹配才更新
+boolean ok = map.replace("a", 1, 2);
+```
+
+---
+
+## 原子类
+
+**基本写法：原子整数**
+`AtomicInteger <ai> = new AtomicInteger(<初始值>)`
+```java
+// 无锁线程安全的整数
+AtomicInteger counter = new AtomicInteger(0);
+counter.incrementAndGet();
+int now = counter.get();
+```
+
+---
+
+**基本写法：CAS 更新**
+`<ai>.compareAndSet(<期望值>, <新值>)`
+```java
+// 期望值匹配才更新
+boolean updated = counter.compareAndSet(0, 1);
+```
+
+---
+
+**基本写法：累加器（高并发更优）**
+`LongAdder <adder> = new LongAdder()`
+```java
+// 高并发计数性能优于 AtomicLong
+LongAdder adder = new LongAdder();
+adder.increment();
+long sum = adder.sum();
+```
+
+---
+
+**基本写法：原子引用**
+`AtomicReference<T> <ref> = new AtomicReference<>(<初始值>)`
+```java
+// 引用类型的原子更新
+AtomicReference<String> ref = new AtomicReference<>("init");
+ref.compareAndSet("init", "updated");
+```
+
+---
+
+**基本写法：字段原子更新器**
+`AtomicIntegerFieldUpdater.newUpdater(<类>.class, "<字段名>")`
+```java
+// 对 volatile 字段进行原子更新
+class Account {
+    volatile int balance;
+}
+AtomicIntegerFieldUpdater<Account> u =
+    AtomicIntegerFieldUpdater.newUpdater(Account.class, "balance");
+u.incrementAndGet(account);
+```
+
+---
+
+## 并发集合
+
+**基本写法：阻塞队列**
+`ArrayBlockingQueue<E> <q> = new ArrayBlockingQueue<>(<容量>)`
+```java
+// 生产者-消费者模式
+ArrayBlockingQueue<String> q = new ArrayBlockingQueue<>(100);
+q.put("task");          // 队列满则阻塞
+String task = q.take(); // 队列空则阻塞
+```
+
+---
+
+**基本写法：并发链表队列**
+`ConcurrentLinkedQueue<E>`
+```java
+// 无界非阻塞队列（基于 CAS）
+ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<>();
+q.offer(1);
+Integer head = q.poll();
+```
+
+---
+
+**基本写法：并发跳表 Map**
+`ConcurrentSkipListMap<K, V>`
+```java
+// 线程安全的有序 Map
+ConcurrentSkipListMap<String, Integer> map = new ConcurrentSkipListMap<>();
+map.put("b", 2);
+map.put("a", 1);
+```
+
+---
+
+## 线程池
+
+**基本写法：固定大小线程池**
+`Executors.newFixedThreadPool(<大小>)`
+```java
+// 固定线程数的线程池
+ExecutorService pool = Executors.newFixedThreadPool(4);
+pool.submit(() -> System.out.println("task"));
+pool.shutdown();
+```
+
+---
+
+**基本写法：自定义线程池**
+`new ThreadPoolExecutor(...)`
+```java
+// 推荐方式，参数可控
+ThreadPoolExecutor executor = new ThreadPoolExecutor(
+    2, 4, 60L, TimeUnit.SECONDS,
+    new LinkedBlockingQueue<>(1000),
+    Executors.defaultThreadFactory(),
+    new ThreadPoolExecutor.CallerRunsPolicy()
+);
+```
+
+---
+
+**基本写法：定时任务线程池**
+`Executors.newScheduledThreadPool(<大小>)`
+```java
+// 延迟或周期执行任务
+ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+scheduler.scheduleAtFixedRate(() -> doWork(), 0, 1, TimeUnit.SECONDS);
+```
+
+---
+
+**基本写法：优雅关闭**
+`<pool>.shutdown()` + `<pool>.awaitTermination(...)`
+```java
+// 优雅关闭线程池
+pool.shutdown();
+if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+    pool.shutdownNow();
+}
+```
+
+---
+
+## 同步工具
+
+**基本写法：交换器**
+`Exchanger<T>`
+```java
+// 两个线程交换数据
+Exchanger<String> exchanger = new Exchanger<>();
+String received = exchanger.exchange("data");
+```
+
+---
+
+**基本写法：同步队列**
+`SynchronousQueue<E>`
+```java
+// 无容量，put 必须等待 take
+SynchronousQueue<String> q = new SynchronousQueue<>();
+new Thread(() -> q.put("hello")).start();
+String data = q.take();
+```
+
+---
+
+## CompletableFuture 并发
+
+**基本写法：异步执行任务**
+`CompletableFuture.supplyAsync(<Supplier>)`
+```java
+// 异步执行有返回值的任务
+CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+    return fetchData();
+});
+String result = future.get();
+```
+
+---
+
+**基本写法：链式转换**
+`<future>.thenApply(<Function>)`
+```java
+// 任务完成后转换结果
+CompletableFuture<Integer> f = future.thenApply(String::length);
+```
+
+---
+
+**基本写法：组合两个任务**
+`<future1>.thenCombine(<future2>, <BiFunction>)`
+```java
+// 等两个任务都完成后合并结果
+CompletableFuture<Integer> combined = f1.thenCombine(f2, (a, b) -> a + b);
+```
+
+---
+
+**基本写法：等待全部完成**
+`CompletableFuture.allOf(<future>...)`
+```java
+// 等待所有任务完成
+CompletableFuture.allOf(f1, f2, f3).join();
+```
+
+---
+
+## ThreadLocal
+
+**基本写法：线程本地变量**
+`ThreadLocal<T> <tl> = new ThreadLocal<>()`
+```java
+// 每个线程独立副本
+ThreadLocal<SimpleDateFormat> tl =
+    ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
+String date = tl.get().format(new Date());
+tl.remove(); // 用完清理避免内存泄漏
+```

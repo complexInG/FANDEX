@@ -160,16 +160,11 @@ PID=1 是容器内特殊进程：JVM 作为 PID=1 时需处理 SIGTERM 信号，
 
 Docker 镜像通过 OverlayFS 叠加多层只读层与一层可写层：
 
-```
-┌─────────────────────────────┐
-│  Upper (可写层，容器运行时)  │  ← 容器内修改写入此处（CoW）
-├─────────────────────────────┤
-│  Lower n (镜像最顶层)        │
-├─────────────────────────────┤
-│  ...                         │
-├─────────────────────────────┤
-│  Lower 1 (镜像最底层)        │
-└─────────────────────────────┘
+```mermaid
+flowchart TD
+    Upper[Upper 可写层，容器运行时<br/>容器内修改写入此处（CoW）] --> Ln[Lower n 镜像最顶层]
+    Ln --> Dots[...]
+    Dots --> L1[Lower 1 镜像最底层]
 ```
 
 CoW（Copy-on-Write）：容器内修改 lower 层文件时，文件先复制到 upper 层再修改。这是为何在容器内写日志到大文件会触发整文件复制的根因，生产环境应挂载 volume 而非写入容器层。
@@ -1475,7 +1470,7 @@ docker buildx build \
 
 **结果**：迁移到 ARM64 后，单实例性价比提升 30%，年节省 30 万美元。
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 选择题
 
@@ -1489,7 +1484,7 @@ D. JDK 17
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 JDK 10 通过 JEP 318 引入 `UseContainerSupport` 并默认启用。JDK 8u191 是反向移植版本，但 8u 默认不开启容器感知（需手动添加 `-XX:+UseContainerSupport`）。JDK 11 LTS 起所有版本默认启用。
 
@@ -1505,7 +1500,7 @@ D. 90
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 JVM 总内存 = 堆 + Metaspace + Code Cache + Direct Buffer + Thread Stack + GC 内部。非堆部分通常占 20%-40%。容器 1GB 时，60% 堆 = 600MB，留 400MB 给非堆与 OS，是平衡选择。75% 在 1GB 以下容器极易 OOM Killed。
 
@@ -1521,7 +1516,7 @@ D. `openjdk:21-slim`
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 Native Image 编译产物是静态二进制，不需要 JVM，使用 `distroless/static-debian12`（仅 2MB）即可。`distroless/java21-debian12`（200MB）包含 JVM，适用于 JVM 模式。Alpine（90MB）虽然小但使用 musl libc，部分 Native Image 场景兼容性差。
 
@@ -1537,7 +1532,7 @@ D. 支持热部署
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 Layered JAR 将依赖、Spring Boot Loader、应用代码分离到不同层，依赖层变更频率低、缓存命中率高，应用层变更只让最后一层失效。这使 CI 构建时间从分钟级降到秒级。JAR 体积略增（多了 layertools 工具），启动速度不变。
 
@@ -1677,7 +1672,7 @@ spec:
 
 </details>
 
-### 思考题
+## 知识讲解与要点分析（原思考题）
 
 **1. 为什么在容器内存 < 512MB 时，`MaxRAMPercentage=75` 极易导致 OOM Killed？请从 JVM 内存模型角度分析。**
 

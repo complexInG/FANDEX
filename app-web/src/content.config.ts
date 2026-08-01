@@ -224,6 +224,9 @@ const docs = defineCollection({
   loader: glob({
     pattern: '**/*.{md,mdx}',
     base: '../cnt-content/full',
+    // 内容量较大（2000+ 篇）：延迟渲染避免 data store 序列化超限
+    // render(entry) 仍会在页面构建时按需渲染，行为不受影响
+    deferRender: true,
     generateId: ({ entry }) => entry.replace(/[#\\]/g, '-'),
   }),
   schema: z.object({

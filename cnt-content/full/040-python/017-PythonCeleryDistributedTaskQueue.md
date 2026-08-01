@@ -2098,7 +2098,7 @@ def crawl_with_depth(url: str, depth: int = 1, max_depth: int = 2):
             crawl_with_depth.delay(link, depth + 1, max_depth)
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 

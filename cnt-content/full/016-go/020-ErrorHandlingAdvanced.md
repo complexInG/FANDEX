@@ -184,20 +184,16 @@ Go 1.22 对 `errors.Is` 与 `errors.As` 进一步优化：
 
 ### 2.7 演进时间轴
 
-```
-Go 1.0  (2012) ── error 接口，errors.New
-   │
-Go 1.4  (2014) ── 内置 error 类型文档化
-   │
-Go 1.13 (2019) ── Unwrap / Is / As / %w
-   │
-Go 1.18 (2022) ── errors.Is 性能优化
-   │
-Go 1.20 (2023) ── errors.Join / Unwrap() []error
-   │
-Go 1.21 (2023) ── log/slog 集成
-   │
-Go 1.22 (2024) ── 进一步性能优化
+```mermaid
+timeline
+    title Go 错误处理演进时间线
+    2012: Go 1.0 error 接口，errors.New
+    2014: Go 1.4 内置 error 类型文档化
+    2019: Go 1.13 Unwrap / Is / As / %w
+    2022: Go 1.18 errors.Is 性能优化
+    2023: Go 1.20 errors.Join / Unwrap() []error
+    2023: Go 1.21 log/slog 集成
+    2024: Go 1.22 进一步性能优化
 ```
 
 ---
@@ -1414,23 +1410,31 @@ func (e *GoodError) Is(target error) bool {
 
 ### 8.1 go module 与错误库组织
 
-```
-go-error-demo/
-├── go.mod
-├── go.sum
-├── errors/
-│   ├── errors.go       # 哨兵错误定义
-│   ├── app_error.go    # AppError 类型
-│   ├── codes.go        # 错误码常量
-│   └── errors_test.go  # 单元测试
-├── internal/
-│   ├── db/
-│   │   └── db.go       # 数据库错误包装
-│   └── service/
-│       └── user.go     # 业务错误
-└── cmd/
-    └── server/
-        └── main.go     # 入口
+```mermaid
+flowchart TD
+    T0["go-error-demo/"]
+    T1["go.mod"]
+    T2["go.sum"]
+    T3["errors/"]
+    T4["errors.go       # 哨兵错误定义"]
+    T5["app_error.go    # AppError 类型"]
+    T6["codes.go        # 错误码常量"]
+    T7["errors_test.go  # 单元测试"]
+    T8["internal/"]
+    T9["db/"]
+    T10["db.go       # 数据库错误包装"]
+    T11["service/"]
+    T12["user.go     # 业务错误"]
+    T13["cmd/"]
+    T14["server/"]
+    T15["main.go     # 入口"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T7 --> T8
+    T12 --> T13
+    T13 --> T14
+    T14 --> T15
 ```
 
 **errors/codes.go**：
@@ -1941,9 +1945,9 @@ func IsErrNotLeader(err error) bool {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下代码的输出是什么？
 
@@ -1957,15 +1961,12 @@ fmt.Println(errors.Is(err, os.ErrNotExist))
 - C. 编译错误
 - D. panic
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `%w` 动词包装错误，保留错误链。`errors.Is` 会递归调用 `Unwrap`，最终找到 `os.ErrNotExist`，返回 true。
 
 若使用 `%v`，则不会保留错误链，`errors.Is` 返回 false。
-</details>
 
 **题目 2**：以下代码的输出是什么？
 
@@ -1982,15 +1983,12 @@ fmt.Println(errors.As(err, &pathErr))
 - C. panic
 - D. 编译错误
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `errors.As` 递归遍历错误链，找到第一个可赋值给 `*os.PathError` 的错误。`*os.PathError` 实现了 `Error() string`，是 `error` 接口的实例，可赋值给 `*os.PathError` 类型的目标。
 
 注意：目标参数必须是 `**os.PathError`（指针的指针），即 `&pathErr`。
-</details>
 
 **题目 3**：`errors.Join`（Go 1.20）返回的错误实现以下哪个方法？
 
@@ -1999,13 +1997,10 @@ fmt.Println(errors.As(err, &pathErr))
 - C. `Is(error) bool`
 - D. `As(interface{}) bool`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `errors.Join` 返回 `*joinError`，实现 `Unwrap() []error` 方法。这与单错误包装的 `Unwrap() error` 区分。`errors.Is` 与 `errors.As` 同时支持两种 Unwrap 签名。
-</details>
 
 **题目 4**：以下代码会发生什么？
 
@@ -2022,15 +2017,12 @@ func main() {
 - C. 直接打印 panic 信息并退出
 - D. 编译错误
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `panic` 会触发 defer 函数的执行，按 LIFO 顺序（后进先出）执行所有 defer。所以输出 `B` 后 `A`，最后打印 panic 信息并退出。
 
 defer 执行顺序：注册顺序为 A, B；执行顺序为 B, A（LIFO）。
-</details>
 
 **题目 5**：以下代码输出什么？
 
@@ -2055,62 +2047,42 @@ func main() {
 - C. 直接 panic 退出
 - D. 编译错误
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `recover` 在 defer 函数中调用会停止 panic 传播，函数正常返回。所以 `recoverInDefer` 正常返回，`main` 继续执行打印 `after recover`。
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：Go 语言的 `error` 接口定义了单一方法 `______()`，返回 `string`。
 
-<details>
-<summary>答案</summary>
 
 `Error`
-</details>
 
 **题目 2**：Go 1.13 引入的 `fmt.Errorf` 的 `______` 动词用于包装错误，保留错误链。
 
-<details>
-<summary>答案</summary>
 
 `%w`
-</details>
 
 **题目 3**：`errors.Is` 与 `errors.As` 的区别：前者按 ______ 匹配，后者按 ______ 匹配。
 
-<details>
-<summary>答案</summary>
 
 值；类型
-</details>
 
 **题目 4**：Go 1.20 引入的 `errors.Join` 返回的错误实现 `Unwrap() ______` 方法。
 
-<details>
-<summary>答案</summary>
 
 `[]error`
-</details>
 
 **题目 5**：`recover` 函数仅在 ______ 函数中直接调用时生效。
 
-<details>
-<summary>答案</summary>
 
 `defer`
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个 `MultiError` 类型，支持添加多个错误，并实现 `Error() string`、`Unwrap() []error` 方法。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -2176,12 +2148,9 @@ func main() {
     fmt.Println("contains error 2:", errors.Is(&m, sentinel))
 }
 ```
-</details>
 
 **题目 2**：实现一个 `Retry` 函数，支持上下文取消、指数退避、最大重试次数。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -2266,12 +2235,9 @@ func main() {
     }
 }
 ```
-</details>
 
 **题目 3**：实现一个 HTTP 中间件，捕获 panic 并返回 500 错误，同时记录日志。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -2334,14 +2300,11 @@ func main() {
     http.ListenAndServe(":8080", handler)
 }
 ```
-</details>
 
 ### 10.4 思考题
 
 **题目 1**：为什么 Go 选择 `error` 接口而非异常机制？这种设计的优缺点是什么？
 
-<details>
-<summary>参考答案</summary>
 
 **优点**：
 
@@ -2362,12 +2325,9 @@ func main() {
 **设计哲学**：
 
 Rob Pike 的 *"Errors are values"* 强调：错误是普通值，开发者应主动处理而非被强制。这体现了 Go 的"信任开发者"哲学，与 Rust 的"编译器强制"形成对比。
-</details>
 
 **题目 2**：何时应该使用 `panic` 而非 `error`？
 
-<details>
-<summary>参考答案</summary>
 
 **使用 panic 的场景**：
 
@@ -2390,12 +2350,9 @@ Rob Pike 的 *"Errors are values"* 强调：错误是普通值，开发者应主
 - 若不确定，优先用 error
 
 **例外**：库的 API 应避免 panic，转而返回 error，除非错误明显是编程错误（如 `MustCompile`）。
-</details>
 
 **题目 3**：`errors.Is` 与 `errors.As` 的性能差异为何较大？如何优化？
 
-<details>
-<summary>参考答案</summary>
 
 **性能差异原因**：
 
@@ -2419,12 +2376,9 @@ BenchmarkAs-8   20000000    72 ns/op
 ```
 
 `As` 约慢 7 倍。
-</details>
 
 **题目 4**：设计一个生产级错误库需要考虑哪些方面？
 
-<details>
-<summary>参考答案</summary>
 
 **核心设计要素**：
 
@@ -2476,12 +2430,9 @@ BenchmarkAs-8   20000000    72 ns/op
     - 错误链断言
     - 基准测试
     - 模糊测试
-</details>
 
 **题目 5**：Go 1.20 的 `errors.Join` 解决了什么问题？与第三方 `multierror` 库相比有何优势？
 
-<details>
-<summary>参考答案</summary>
 
 **解决的问题**：
 
@@ -2510,7 +2461,6 @@ BenchmarkAs-8   20000000    72 ns/op
 1. **格式化简单**：仅换行分隔，无自定义格式
 2. **无懒求值**：所有错误立即求值
 3. **无错误计数**：不直接提供错误数量 API
-</details>
 
 ---
 
@@ -2649,16 +2599,19 @@ func (e *AppError) Is(t error) bool {
 
 ### A.3 错误处理决策树
 
-```
-是否错误？
-├─ 是
-│   ├─ 可恢复？
-│   │   ├─ 是 → 返回 error
-│   │   └─ 否 → panic
-│   └─ 是否编程错误？
-│       ├─ 是 → panic 或 MustXxx
-│       └─ 否 → error
-└─ 否 → 正常返回
+```mermaid
+flowchart TD
+    T0["是否错误？"]
+    T1["是"]
+    T2["可恢复？"]
+    T3["是 → 返回 error"]
+    T4["否 → panic"]
+    T5["是否编程错误？"]
+    T6["是 → panic 或 MustXxx"]
+    T7["否 → error"]
+    T8["否 → 正常返回"]
+    T0 --> T1
+    T7 --> T8
 ```
 
 ### A.4 性能优化清单

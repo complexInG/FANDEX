@@ -1682,7 +1682,7 @@ Abseil 的设计：API 使用 `StatusOr`（类似 `std::expected`），与异常
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1696,7 +1696,7 @@ void f() {
 }
 ```
 
-**参考答案**：违反基本保证。若 `g()` 抛出，`p` 泄漏。修正：使用 `std::unique_ptr`。
+**解析讲解**：违反基本保证。若 `g()` 抛出，`p` 泄漏。修正：使用 `std::unique_ptr`。
 
 ---
 
@@ -1712,7 +1712,7 @@ T& T::operator=(const T& other) {
 }
 ```
 
-**参考答案**：不满足。若 `new` 抛出，`data_` 已被 `delete`，对象处于无效状态。修正：先分配，成功后再释放。
+**解析讲解**：不满足。若 `new` 抛出，`data_` 已被 `delete`，对象处于无效状态。修正：先分配，成功后再释放。
 
 ```cpp
 T& T::operator=(const T& other) {
@@ -1746,7 +1746,7 @@ public:
 };
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 Widget() noexcept : data_(nullptr), size_(0) {}
@@ -1772,7 +1772,7 @@ void strong_insert(std::vector<T>& v, std::size_t pos, const T& value) {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 template<typename T>
@@ -1799,7 +1799,7 @@ void strong_insert(std::vector<T>& v, std::size_t pos, const T& value) {
 
 **习题 5**：解释 `std::move_if_noexcept` 的作用与实现。
 
-**参考答案**：
+**解析讲解**：
 
 `std::move_if_noexcept` 在移动构造是 `noexcept` 时返回右值引用（触发移动），否则返回 `const` 左值引用（触发拷贝）。
 
@@ -1842,7 +1842,7 @@ public:
 };
 ```
 
-**参考答案**：
+**解析讲解**：
 1. 若 `new` 抛出，`data_` 与 `size_` 未改变（强保证这部分 OK）。
 2. 但若 `new_data[i] = data_[i]` 抛出（int 不会，但泛型化后可能），`new_data` 泄漏。
 3. `delete[] data_` 在赋值前调用，若后续操作失败，对象状态破坏。
@@ -1870,7 +1870,7 @@ void push(int value) {
 
 **思考题 1**：为什么 Google C++ Style Guide 禁用异常，而 LLVM 与 Boost 大量使用？
 
-**参考答案**：
+**解析讲解**：
 - **Google 禁用异常**的原因：
   - 历史包袱：早期 GCC 异常实现性能差。
   - 代码库规模：Google 代码库庞大，迁移成本高。
@@ -1888,7 +1888,7 @@ void push(int value) {
 
 **思考题 2**：C++23 的 `std::expected` 会取代异常吗？
 
-**参考答案**：不会完全取代，而是互补：
+**解析讲解**：不会完全取代，而是互补：
 - **异常**：用于"不可预期"的错误（如内存耗尽、内部不变量破坏）。
 - **`std::expected`**：用于"可预期"的错误（如解析失败、文件不存在、网络超时）。
 
@@ -1902,7 +1902,7 @@ void push(int value) {
 
 **思考题 3**：如何在禁用异常的环境中实现 RAII？
 
-**参考答案**：
+**解析讲解**：
 - RAII 本身不依赖异常，是资源管理范式。
 - 析构函数仍需 `noexcept`（禁用异常时默认如此）。
 - 错误处理改用返回值或 `std::expected`。
@@ -1930,7 +1930,7 @@ public:
 
 **思考题 4**：异常安全的代码是否一定比非异常安全慢？
 
-**参考答案**：不一定。
+**解析讲解**：不一定。
 - **零开销原则**：现代 C++ 异常实现遵循"零开销"原则——无异常抛出时，无运行时开销。
 - **强保证开销**：强保证通常需要额外的拷贝或备份，有性能开销。
 - **基本保证开销**：基本保证（RAII）几乎没有额外开销。
@@ -2061,25 +2061,43 @@ public:
 
 ## 附录 C：`noexcept` 决策树
 
-```
-是否析构函数？
-├─ 是 -> 必须 noexcept（C++11 默认）
-└─ 否
-    是否 swap？
-    ├─ 是 -> 必须 noexcept
-    └─ 否
-        是否移动构造/赋值？
-        ├─ 是 -> 应该 noexcept（性能关键）
-        └─ 否
-            是否简单 getter（size, empty）？
-            ├─ 是 -> 应该 noexcept
-            └─ 否
-                是否可能抛出 bad_alloc？
-                ├─ 是 -> 不标注 noexcept
-                └─ 否
-                    是否模板函数？
-                    ├─ 是 -> 使用 noexcept(noexcept(expr))
-                    └─ 否 -> 不标注（保守策略）
+```mermaid
+flowchart TD
+    T0["是否析构函数？"]
+    T1["是 -> 必须 noexcept（C++11 默认）"]
+    T2["否"]
+    T3["是否 swap？"]
+    T4["是 -> 必须 noexcept"]
+    T5["否"]
+    T6["是否移动构造/赋值？"]
+    T7["是 -> 应该 noexcept（性能关键）"]
+    T8["否"]
+    T9["是否简单 getter（size, empty）？"]
+    T10["是 -> 应该 noexcept"]
+    T11["否"]
+    T12["是否可能抛出 bad_alloc？"]
+    T13["是 -> 不标注 noexcept"]
+    T14["否"]
+    T15["是否模板函数？"]
+    T16["是 -> 使用 noexcept(noexcept(expr))"]
+    T17["否 -> 不标注（保守策略）"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
+    T11 --> T12
+    T12 --> T13
+    T12 --> T14
+    T14 --> T15
+    T15 --> T16
+    T15 --> T17
 ```
 
 ---
@@ -2099,3 +2117,329 @@ public:
 ---
 
 *文档版本：v2.0 | 最后更新：2026-07-21 | 维护者：fanquanpp*
+## 异常抛出
+
+**基本写法：抛出异常**
+`throw <expression>;`
+```cpp
+// 抛出异常
+throw std::runtime_error("Something went wrong");
+```
+
+---
+
+**基本写法：抛出内置类型异常**
+`throw <value>;`
+```cpp
+// 抛出整数异常
+throw 404;
+```
+
+---
+
+**自定义异常写法：抛出自定义异常**
+`throw <CustomException>(<args>);`
+```cpp
+// 抛出自定义异常
+class MyException : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "Custom exception";
+    }
+};
+throw MyException();
+```
+
+---
+
+## 异常捕获
+
+**基本写法：try-catch**
+`try { ... } catch (<type> <e>) { ... }`
+```cpp
+// 异常处理
+try {
+    throw std::runtime_error("Error");
+} catch (const std::exception& e) {
+    std::cerr << e.what() << std::endl;
+}
+```
+
+---
+
+**多 catch 写法：捕获多种异常**
+`try { ... } catch (<type1> <e>) { ... } catch (<type2> <e>) { ... }`
+```cpp
+// 捕获多种异常
+try {
+    // 可能抛出不同异常的代码
+} catch (const std::runtime_error& e) {
+    std::cerr << e.what() << std::endl;
+} catch (const std::logic_error& e) {
+    std::cerr << e.what() << std::endl;
+}
+```
+
+---
+
+**捕获所有写法：捕获所有异常**
+`catch (...) { ... }`
+```cpp
+// 捕获所有类型的异常
+try {
+    // 可能抛出异常的代码
+} catch (...) {
+    std::cerr << "Unknown exception" << std::endl;
+}
+```
+
+---
+
+**重新抛出写法：重新抛出异常**
+`throw;`
+```cpp
+// 重新抛出当前异常
+try {
+    // 可能抛出异常的代码
+} catch (const std::exception& e) {
+    std::cerr << "Logging: " << e.what() << std::endl;
+    throw;
+}
+```
+
+---
+
+## 标准异常类
+
+**基本写法：使用 std::exception**
+`throw std::runtime_error("<message>");`
+```cpp
+#include <stdexcept>
+// 抛出运行时错误
+throw std::runtime_error("Runtime error");
+```
+
+---
+
+**逻辑异常写法：使用逻辑异常**
+`throw std::invalid_argument("<message>");`
+```cpp
+#include <stdexcept>
+// 抛出无效参数异常
+throw std::invalid_argument("Invalid argument");
+```
+
+---
+
+**越界异常写法：使用 out_of_range**
+`throw std::out_of_range("<message>");`
+```cpp
+#include <stdexcept>
+// 抛出越界异常
+throw std::out_of_range("Index out of range");
+```
+
+---
+
+## 自定义异常类
+
+**基本写法：继承 std::exception**
+`class <CustomException> : public std::exception { ... };`
+```cpp
+#include <exception>
+// 自定义异常类
+class FileError : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "File error occurred";
+    }
+};
+```
+
+---
+
+**带消息写法：自定义异常携带消息**
+`class <CustomException> : public std::exception { ... };`
+```cpp
+#include <exception>
+#include <string>
+// 带消息的自定义异常
+class MyException : public std::exception {
+    std::string msg;
+public:
+    MyException(const std::string& m) : msg(m) {}
+    const char* what() const noexcept override {
+        return msg.c_str();
+    }
+};
+```
+
+---
+
+## noexcept 说明符
+
+**基本写法：声明不抛出异常**
+`<return_type> <func>() noexcept { ... }`
+```cpp
+// 声明函数不会抛出异常
+void safe_function() noexcept {
+    // 不抛出异常的代码
+}
+```
+
+---
+
+**条件写法：条件 noexcept**
+`<return_type> <func>() noexcept(<condition>) { ... }`
+```cpp
+// 条件 noexcept
+template<typename T>
+void process(T value) noexcept(noexcept(T())) {
+    // 根据 T() 是否抛出异常决定
+}
+```
+
+---
+
+**检查写法：检查是否 noexcept**
+`noexcept(<func>)`
+```cpp
+// 检查函数是否 noexcept
+bool is_safe = noexcept(safe_function());
+```
+
+---
+
+## RAII 资源管理
+
+**基本写法：RAII 类**
+`class <RAII> { <resource>* <ptr>; public: ... };`
+```cpp
+// RAII 管理资源
+class FileGuard {
+    FILE* fp;
+public:
+    FileGuard(const char* filename) : fp(fopen(filename, "r")) {}
+    ~FileGuard() { if (fp) fclose(fp); }
+};
+```
+
+---
+
+**智能指针写法：使用智能指针管理资源**
+`std::unique_ptr<<Type>> <ptr>(new <Type>);`
+```cpp
+#include <memory>
+// 使用智能指针自动管理内存
+std::unique_ptr<int> p(new int(10));
+```
+
+---
+
+## 异常安全等级
+
+**基本保证写法：基本异常安全**
+`try { ... } catch (...) { /* 恢复到有效状态 */ }`
+```cpp
+// 基本保证：异常发生后对象处于有效状态
+class Container {
+    std::vector<int> data;
+public:
+    void add(int value) {
+        try {
+            data.push_back(value);
+        } catch (...) {
+            // data 仍处于有效状态
+        }
+    }
+};
+```
+
+---
+
+**强保证写法：强异常安全（事务语义）**
+`void <func>() { <Type> <temp> = ...; <swap>(<temp>, <original>); }`
+```cpp
+// 强保证：操作成功或完全不影响对象
+class Container {
+    std::vector<int> data;
+public:
+    void add_all(const std::vector<int>& values) {
+        std::vector<int> temp = data;
+        for (int v : values) {
+            temp.push_back(v);
+        }
+        std::swap(data, temp);
+    }
+};
+```
+
+---
+
+## 异常与构造函数
+
+**基本写法：构造函数中抛出异常**
+`<ClassName>(<params>) { ... throw ...; }`
+```cpp
+// 构造函数中抛出异常
+class FileHandler {
+    FILE* fp;
+public:
+    FileHandler(const char* filename) {
+        fp = fopen(filename, "r");
+        if (!fp) {
+            throw std::runtime_error("Cannot open file");
+        }
+    }
+};
+```
+
+---
+
+## 异常与析构函数
+
+**基本写法：析构函数中不抛出异常**
+`~<ClassName>() noexcept { ... }`
+```cpp
+// 析构函数应标记为 noexcept
+class MyClass {
+public:
+    ~MyClass() noexcept {
+        // 清理资源，不抛出异常
+    }
+};
+```
+
+---
+
+## 异常传播
+
+**嵌套写法：异常在调用栈中传播**
+`void <inner>() { throw ...; } void <outer>() { <inner>(); }`
+```cpp
+// 异常会沿调用栈向上传播
+void inner() {
+    throw std::runtime_error("Error");
+}
+
+void outer() {
+    inner();
+}
+```
+
+---
+
+## function-try-block
+
+**基本写法：函数 try 块**
+`<return_type> <func>(<params>) try { ... } catch (<type> <e>) { ... }`
+```cpp
+// 函数级 try 块
+int divide(int a, int b) try {
+    if (b == 0) throw std::runtime_error("Divide by zero");
+    return a / b;
+} catch (const std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return 0;
+}
+```

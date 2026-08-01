@@ -15,8 +15,11 @@ related:
 prerequisites:
   - c/概述
 ---
+# 动态内存管理
 
-# 动态内存管理 (Dynamic Memory Management)
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 第 1 章 引言与学习路径
 
@@ -82,16 +85,15 @@ C 语言的内存管理是"手动"的:程序员负责分配,也负责释放。�
 
 在 Unix 早期版本 (如 V6、V7),进程内存管理通过 `brk` / `sbrk` 系统调用实现。这两个系统调用调整进程的"program break",即数据段的末尾地址:
 
-```
-+------------------+  高地址 (program break 调整后)
-|   堆 (Heap)      |  ← sbrk 增长方向
-+------------------+
-|   .bss           |
-+------------------+
-|   .data          |
-+------------------+
-|   .text          |
-+------------------+  低地址
+```mermaid
+flowchart TD
+    B0["堆 (Heap) | sbrk 增长方向"]
+    B1[".bss"]
+    B0 --> B1
+    B2[".data"]
+    B1 --> B2
+    B3[".text"]
+    B2 --> B3
 ```
 
 `sbrk(n)` 将 program break 增加 `n` 字节,返回旧 break 地址,相当于分配了 `n` 字节堆内存。这种简单的内存管理方式无法支持"中间释放",即一旦分配的内存无法归还给操作系统 (除非是堆顶)。
@@ -232,15 +234,13 @@ C 动态内存管理的设计哲学:
 
 malloc 内部以"chunk"为单位管理内存。一个 chunk 通常包含:
 
-```
-+------------------+
-| chunk header     |  元数据:size, flags, prev_size
-+------------------+
-| user data        |  用户可用部分 (malloc 返回的地址)
-|                  |
-+------------------+
-| (padding)        |  对齐填充
-+------------------+
+```mermaid
+flowchart TD
+    B0["chunk header | 元数据:size, flags, prev_size"]
+    B1["user data | 用户可用部分 (malloc 返回的地址)"]
+    B0 --> B1
+    B2["(padding) | 对齐填充"]
+    B1 --> B2
 ```
 
 chunk header 的大小因实现而异:
@@ -1773,43 +1773,55 @@ free(p);
 
 ### 12.1 核心知识图谱
 
-```
-动态内存管理
-├── API
-│   ├── malloc/calloc/realloc/free
-│   ├── aligned_alloc (C11)
-│   ├── free_sized (C23)
-│   └── strdup/strndup
-├── 分配器实现
-│   ├── ptmalloc (glibc)
-│   ├── tcmalloc (Google)
-│   ├── jemalloc (Facebook)
-│   ├── mimalloc (Microsoft)
-│   └── scudo (LLVM)
-├── 错误类型
-│   ├── 内存泄漏
-│   ├── 悬空指针
-│   ├── 双重释放
-│   ├── 缓冲区溢出
-│   ├── 未初始化读取
-│   └── 类型混淆
-├── 检测工具
-│   ├── Valgrind
-│   ├── AddressSanitizer
-│   ├── MemorySanitizer
-│   └── 静态分析
-├── 工程模式
-│   ├── 动态数组
-│   ├── 字符串构建器
-│   ├── 对象池
-│   ├── 内存池 (Arena)
-│   └── 智能指针
-└── 性能优化
-    ├── 减少 malloc 调用
-    ├── 对齐优化
-    ├── 大对象 mmap
-    ├── 替换分配器
-    └── NUMA 感知
+```mermaid
+flowchart TD
+    T0["动态内存管理"]
+    T1["API"]
+    T2["malloc/calloc/realloc/free"]
+    T3["aligned_alloc (C11)"]
+    T4["free_sized (C23)"]
+    T5["strdup/strndup"]
+    T6["分配器实现"]
+    T7["ptmalloc (glibc)"]
+    T8["tcmalloc (Google)"]
+    T9["jemalloc (Facebook)"]
+    T10["mimalloc (Microsoft)"]
+    T11["scudo (LLVM)"]
+    T12["错误类型"]
+    T13["内存泄漏"]
+    T14["悬空指针"]
+    T15["双重释放"]
+    T16["缓冲区溢出"]
+    T17["未初始化读取"]
+    T18["类型混淆"]
+    T19["检测工具"]
+    T20["Valgrind"]
+    T21["AddressSanitizer"]
+    T22["MemorySanitizer"]
+    T23["静态分析"]
+    T24["工程模式"]
+    T25["动态数组"]
+    T26["字符串构建器"]
+    T27["对象池"]
+    T28["内存池 (Arena)"]
+    T29["智能指针"]
+    T30["性能优化"]
+    T31["减少 malloc 调用"]
+    T32["对齐优化"]
+    T33["大对象 mmap"]
+    T34["替换分配器"]
+    T35["NUMA 感知"]
+    T0 --> T1
+    T5 --> T6
+    T11 --> T12
+    T18 --> T19
+    T23 --> T24
+    T29 --> T30
+    T30 --> T31
+    T30 --> T32
+    T30 --> T33
+    T30 --> T34
+    T30 --> T35
 ```
 
 ### 12.2 最佳实践清单
@@ -2033,44 +2045,30 @@ clang-tidy prog.c -- -std=c11
 
 #### 12.8.5 内存布局示意
 
-```
-高地址
-┌─────────────────┐
-│  Kernel         │
-├─────────────────┤
-│  Stack          │  ← 函数局部变量,alloca
-├─────────────────┤
-│  mmap region    │  ← 大对象,mmap 分配
-├─────────────────┤
-│  Heap           │  ← malloc/calloc/realloc
-│  (向上增长)      │
-├─────────────────┤
-│  .bss           │  未初始化全局变量
-├─────────────────┤
-│  .data          │  已初始化全局变量
-├─────────────────┤
-│  .rodata        │  字符串字面量,const
-├─────────────────┤
-│  .text          │  代码段
-└─────────────────┘
-低地址
+```mermaid
+flowchart TD
+    K[Kernel 高地址] --> S[Stack 函数局部变量 alloca]
+    S --> M[mmap region 大对象 mmap 分配]
+    M --> H[Heap malloc/calloc/realloc 向上增长]
+    H --> B[bss 未初始化全局变量]
+    B --> D[data 已初始化全局变量]
+    D --> R[rodata 字符串字面量 const]
+    R --> T[text 代码段 低地址]
 ```
 
 #### 12.8.6 chunk 结构 (glibc 64 位)
 
-```
-+------------------+
-| prev_size (8B)   |  前一 chunk 大小 (前一空闲时有效)
-+------------------+
-| size (8B)        |  本 chunk 大小,低 3 位 flags
-+------------------+
-| user data        |  malloc 返回的地址 (16 字节对齐)
-|                  |
-+------------------+
-| (padding)        |  对齐填充
-+------------------+
-| next prev_size   |  下一 chunk 的 prev_size
-+------------------+
+```mermaid
+flowchart TD
+    B0["prev_size (8B) | 前一 chunk 大小 (前一空闲时有效)"]
+    B1["size (8B) | 本 chunk 大小,低 3 位 flags"]
+    B0 --> B1
+    B2["user data | malloc 返回的地址 (16 字节对齐)"]
+    B1 --> B2
+    B3["(padding) | 对齐填充"]
+    B2 --> B3
+    B4["next prev_size | 下一 chunk 的 prev_size"]
+    B3 --> B4
 ```
 
 #### 12.8.7 常见问题排查
@@ -2207,3 +2205,270 @@ int main(void) {
 ---
 
 至此,动态内存管理章节结束。建议结合实战项目 (如实现一个简单的内存池或字符串构建器) 巩固所学,并在实际项目中持续积累经验。
+## malloc 分配内存
+
+**基本写法：分配单个变量内存**
+`<type> *<ptr> = (<type> *)malloc(sizeof(<type>));`
+```c
+#include <stdlib.h>
+// 分配单个整型变量的内存
+int *p = (int *)malloc(sizeof(int));
+```
+
+---
+
+**数组写法：分配数组内存**
+`<type> *<ptr> = (<type> *)malloc(<count> * sizeof(<type>));`
+```c
+#include <stdlib.h>
+// 分配 10 个整型元素的数组内存
+int *arr = (int *)malloc(10 * sizeof(int));
+```
+
+---
+
+**检查写法：检查分配是否成功**
+`if (<ptr> == NULL) { ... }`
+```c
+// 检查内存分配是否成功
+int *p = (int *)malloc(sizeof(int));
+if (p == NULL) {
+    printf("Memory allocation failed\n");
+    exit(1);
+}
+```
+
+---
+
+## calloc 分配并清零
+
+**基本写法：分配并初始化为 0**
+`<type> *<ptr> = (<type> *)calloc(<count>, sizeof(<type>));`
+```c
+#include <stdlib.h>
+// 分配 10 个整型元素并初始化为 0
+int *arr = (int *)calloc(10, sizeof(int));
+```
+
+---
+
+## realloc 调整内存大小
+
+**基本写法：重新调整内存大小**
+`<type> *<new_ptr> = (<type> *)realloc(<ptr>, <new_size> * sizeof(<type>));`
+```c
+#include <stdlib.h>
+// 将数组大小调整为 20
+int *new_arr = (int *)realloc(arr, 20 * sizeof(int));
+```
+
+---
+
+**安全写法：使用临时变量接收 realloc 结果**
+`<type> *<tmp> = (<type> *)realloc(<ptr>, <new_size>); if (<tmp>) { <ptr> = <tmp>; }`
+```c
+// 使用临时变量避免分配失败时丢失原指针
+int *tmp = (int *)realloc(arr, 20 * sizeof(int));
+if (tmp != NULL) {
+    arr = tmp;
+}
+```
+
+---
+
+## free 释放内存
+
+**基本写法：释放内存**
+`free(<ptr>);`
+```c
+#include <stdlib.h>
+// 释放动态分配的内存
+free(p);
+```
+
+---
+
+**安全写法：释放后置空**
+`free(<ptr>); <ptr> = NULL;`
+```c
+// 释放内存后将指针置空
+free(p);
+p = NULL;
+```
+
+---
+
+## 动态数组
+
+**创建写法：创建动态数组**
+`<type> *<arr> = (<type> *)malloc(<size> * sizeof(<type>));`
+```c
+#include <stdlib.h>
+// 创建动态整型数组
+int size = 10;
+int *arr = (int *)malloc(size * sizeof(int));
+```
+
+---
+
+**访问写法：访问动态数组元素**
+`<arr>[<index>]`
+```c
+// 访问动态数组元素
+arr[0] = 10;
+arr[1] = 20;
+```
+
+---
+
+**扩容写法：动态数组扩容**
+`<type> *<new_arr> = (<type> *)realloc(<arr>, <new_size> * sizeof(<type>));`
+```c
+// 将动态数组从 10 扩容到 20
+int *new_arr = (int *)realloc(arr, 20 * sizeof(int));
+if (new_arr != NULL) {
+    arr = new_arr;
+    size = 20;
+}
+```
+
+---
+
+## 动态结构体
+
+**分配写法：分配结构体内存**
+`<StructType> *<ptr> = (<StructType> *)malloc(sizeof(<StructType>));`
+```c
+#include <stdlib.h>
+// 分配结构体内存
+typedef struct { int x; int y; } Point;
+Point *p = (Point *)malloc(sizeof(Point));
+```
+
+---
+
+**成员访问写法：通过指针访问结构体成员**
+`<ptr>-><member>`
+```c
+// 通过指针访问结构体成员
+p->x = 10;
+p->y = 20;
+```
+
+---
+
+**数组写法：分配结构体数组**
+`<StructType> *<arr> = (<StructType> *)malloc(<count> * sizeof(<StructType>));`
+```c
+// 分配结构体数组
+Point *points = (Point *)malloc(5 * sizeof(Point));
+```
+
+---
+
+## 动态字符串
+
+**分配写法：分配字符串内存**
+`char *<str> = (char *)malloc(<size> * sizeof(char));`
+```c
+#include <stdlib.h>
+// 分配字符串内存
+char *str = (char *)malloc(100 * sizeof(char));
+```
+
+---
+
+**复制写法：复制字符串到动态内存**
+`strcpy(<dest>, <src>);`
+```c
+#include <string.h>
+// 复制字符串到动态内存
+char *str = (char *)malloc(100 * sizeof(char));
+strcpy(str, "Hello");
+```
+
+---
+
+## 二维动态数组
+
+**分配写法：分配二维数组**
+`<type> **<arr> = (<type> **)malloc(<rows> * sizeof(<type> *));`
+```c
+#include <stdlib.h>
+// 分配行指针数组
+int rows = 3;
+int **arr = (int **)malloc(rows * sizeof(int *));
+```
+
+---
+
+**行分配写法：为每行分配内存**
+`<arr>[<i>] = (<type> *)malloc(<cols> * sizeof(<type>));`
+```c
+// 为每行分配列内存
+int cols = 4;
+for (int i = 0; i < rows; i++) {
+    arr[i] = (int *)malloc(cols * sizeof(int));
+}
+```
+
+---
+
+**访问写法：访问二维动态数组元素**
+`<arr>[<row>][<col>]`
+```c
+// 访问二维动态数组元素
+arr[0][0] = 1;
+arr[1][2] = 5;
+```
+
+---
+
+**释放写法：释放二维动态数组**
+`for (...) { free(<arr>[<i>]); } free(<arr>);`
+```c
+// 先释放每行，再释放行指针数组
+for (int i = 0; i < rows; i++) {
+    free(arr[i]);
+}
+free(arr);
+```
+
+---
+
+## 内存泄漏检测
+
+**基本写法：使用 valgrind 检测内存泄漏**
+`valgrind --leak-check=full ./<program>`
+```bash
+# 使用 valgrind 检测内存泄漏
+valgrind --leak-check=full ./myprogram
+```
+
+---
+
+## 内存管理最佳实践
+
+**配对写法：每个 malloc 对应一个 free**
+`<type> *<ptr> = malloc(...); ... free(<ptr>);`
+```c
+// 确保每个 malloc 都有对应的 free
+int *p = (int *)malloc(sizeof(int));
+// 使用 p
+free(p);
+p = NULL;
+```
+
+---
+
+**错误处理写法：分配失败时清理**
+`if (<ptr> == NULL) { free(<other_ptr>); return; }`
+```c
+// 分配失败时清理已分配的内存
+int *a = (int *)malloc(10 * sizeof(int));
+int *b = (int *)malloc(20 * sizeof(int));
+if (b == NULL) {
+    free(a);
+    return;
+}
+```

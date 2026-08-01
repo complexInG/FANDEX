@@ -96,16 +96,25 @@ C++ 的优势：OOP 抽象、模板泛型、STL 容器、RAII 资源管理。但
 
 2000 年代，游戏引擎普遍采用深继承体系：
 
-```text
-GameObject
-  ├── Actor
-  │     ├── Pawn
-  │     │     ├── Character
-  │     │     │     ├── PlayerCharacter
-  │     │     │     └── NPC
-  │     │     └── Vehicle
-  │     └── Weapon
-  └── StaticMesh
+```mermaid
+flowchart TD
+    T0["GameObject"]
+    T1["Actor"]
+    T2["Pawn"]
+    T3["Character"]
+    T4["PlayerCharacter"]
+    T5["NPC"]
+    T6["Vehicle"]
+    T7["Weapon"]
+    T8["StaticMesh"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T7 --> T8
 ```
 
 这种体系的问题：
@@ -1682,48 +1691,55 @@ void load_level() {
 
 ### 8.1 项目结构
 
-```text
-my_game/
-├── CMakeLists.txt
-├── src/
-│   ├── core/
-│   │   ├── game_loop.cpp
-│   │   ├── world.cpp
-│   │   └── engine.cpp
-│   ├── ecs/
-│   │   ├── entity.cpp
-│   │   ├── component.cpp
-│   │   └── system.cpp
-│   ├── renderer/
-│   │   ├── renderer.cpp
-│   │   ├── shader.cpp
-│   │   └── texture.cpp
-│   ├── physics/
-│   │   ├── world.cpp
-│   │   ├── body.cpp
-│   │   └── collision.cpp
-│   ├── audio/
-│   │   └── audio.cpp
-│   ├── input/
-│   │   └── input.cpp
-│   ├── resources/
-│   │   ├── manager.cpp
-│   │   └── loader.cpp
-│   ├── memory/
-│   │   ├── allocator.cpp
-│   │   └── pool.cpp
-│   └── main.cpp
-├── assets/
-│   ├── textures/
-│   ├── models/
-│   ├── shaders/
-│   └── audio/
-├── third_party/
-│   ├── SDL2/
-│   ├── glad/
-│   └── glm/
-└── tests/
-    └── ...
+```mermaid
+flowchart TD
+    T0["my_game/"]
+    T1["CMakeLists.txt"]
+    T2["src/"]
+    T3["core/"]
+    T4["game_loop.cpp"]
+    T5["world.cpp"]
+    T6["engine.cpp"]
+    T7["ecs/"]
+    T8["entity.cpp"]
+    T9["component.cpp"]
+    T10["system.cpp"]
+    T11["renderer/"]
+    T12["renderer.cpp"]
+    T13["shader.cpp"]
+    T14["texture.cpp"]
+    T15["physics/"]
+    T16["world.cpp"]
+    T17["body.cpp"]
+    T18["collision.cpp"]
+    T19["audio/"]
+    T20["audio.cpp"]
+    T21["input/"]
+    T22["input.cpp"]
+    T23["resources/"]
+    T24["manager.cpp"]
+    T25["loader.cpp"]
+    T26["memory/"]
+    T27["allocator.cpp"]
+    T28["pool.cpp"]
+    T29["main.cpp"]
+    T30["assets/"]
+    T31["textures/"]
+    T32["models/"]
+    T33["shaders/"]
+    T34["audio/"]
+    T35["third_party/"]
+    T36["SDL2/"]
+    T37["glad/"]
+    T38["glm/"]
+    T39["tests/"]
+    T40["..."]
+    T0 --> T1
+    T0 --> T2
+    T29 --> T30
+    T34 --> T35
+    T38 --> T39
+    T39 --> T40
 ```
 
 ### 8.2 CMake 配置
@@ -1958,9 +1974,9 @@ Hollow Knight 使用 Unity (C#)，但其设计哲学值得 C++ 开发者借鉴�
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：ECS 中的"实体 (Entity)"本质上是？
 
@@ -1969,7 +1985,7 @@ B. 仅是一个 ID
 C. 组件的集合类
 D. 系统的实例
 
-**答案**：B。实体仅是 ID，无数据无行为。
+**解析讲解**：B。实体仅是 ID，无数据无行为。
 
 ---
 
@@ -1980,7 +1996,7 @@ B. 减少内存占用
 C. 保证物理稳定性
 D. 简化代码
 
-**答案**：C。固定步长保证物理数值积分稳定。
+**解析讲解**：C。固定步长保证物理数值积分稳定。
 
 ---
 
@@ -1991,7 +2007,7 @@ B. 10-14 周期
 C. 100-300 周期
 D. 1000+ 周期
 
-**答案**：C。L3 未命中访问 RAM 约 100-300 周期。
+**解析讲解**：C。L3 未命中访问 RAM 约 100-300 周期。
 
 ---
 
@@ -2002,7 +2018,7 @@ B. 缓存友好与并行友好
 C. 学习曲线更平缓
 D. 编译速度更快
 
-**答案**：B。ECS 的连续数据布局提升缓存命中，系统间无共享状态便于并行。
+**解析讲解**：B。ECS 的连续数据布局提升缓存命中，系统间无共享状态便于并行。
 
 ---
 
@@ -2013,7 +2029,7 @@ B. 不支持单次释放
 C. 内存碎片严重
 D. 多线程不安全
 
-**答案**：B。线性分配器仅支持 `reset()` 整批释放，不支持单次释放。
+**解析讲解**：B。线性分配器仅支持 `reset()` 整批释放，不支持单次释放。
 
 ---
 
@@ -2024,7 +2040,7 @@ B. 4
 C. 8
 D. 16
 
-**答案**：B。SSE 寄存器 128 位，可处理 4 个 32 位 float。
+**解析讲解**：B。SSE 寄存器 128 位，可处理 4 个 32 位 float。
 
 ---
 
@@ -2035,7 +2051,7 @@ B. 半隐式欧拉
 C. 显式 RK4
 D. 显式 Verlet
 
-**答案**：B。半隐式欧拉对简谐运动稳定且计算量小，游戏常用。
+**解析讲解**：B。半隐式欧拉对简谐运动稳定且计算量小，游戏常用。
 
 ---
 
@@ -2046,59 +2062,59 @@ B. 负载均衡
 C. 避免锁竞争
 D. 简化代码
 
-**答案**：B。空闲线程从其他线程队列窃取任务，实现负载均衡。
+**解析讲解**：B。空闲线程从其他线程队列窃取任务，实现负载均衡。
 
 ---
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：ECS 的三要素是______、______、______。
 
-**答案**：实体 (Entity)、组件 (Component)、系统 (System)。
+**解析讲解**：实体 (Entity)、组件 (Component)、系统 (System)。
 
 ---
 
 **题目 2**：游戏循环的三个核心阶段是______、______、______。
 
-**答案**：输入处理 (Input)、状态更新 (Update)、渲染 (Render)。
+**解析讲解**：输入处理 (Input)、状态更新 (Update)、渲染 (Render)。
 
 ---
 
 **题目 3**：CPU 缓存层级包括______、______、______、______。
 
-**答案**：L1、L2、L3、RAM。
+**解析讲解**：L1、L2、L3、RAM。
 
 ---
 
 **题目 4**：ECS 的主流存储模型有______、______、______。
 
-**答案**：稀疏集合 (Sparse Set)、原型 (Archetype)、位集 (Bitset)。
+**解析讲解**：稀疏集合 (Sparse Set)、原型 (Archetype)、位集 (Bitset)。
 
 ---
 
 **题目 5**：游戏开发中常用的内存分配器包括______、______、______、______。
 
-**答案**：线性 (Linear)、栈 (Stack)、池 (Pool)、空闲列表 (Free List)。
+**解析讲解**：线性 (Linear)、栈 (Stack)、池 (Pool)、空闲列表 (Free List)。
 
 ---
 
 **题目 6**：C++ 游戏开发常禁用的两个特性是______和______。
 
-**答案**：异常 (Exceptions)、RTTI。
+**解析讲解**：异常 (Exceptions)、RTTI。
 
 ---
 
 **题目 7**：Unity DOTS 的核心组件包括______、______、______、______。
 
-**答案**：Entities (ECS)、Burst Compiler、C# Job System、Unity Mathematics。
+**解析讲解**：Entities (ECS)、Burst Compiler、C# Job System、Unity Mathematics。
 
 ---
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个简单的栈分配器，支持 LIFO 释放。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #pragma once
@@ -2157,7 +2173,7 @@ void example() {
 
 **题目 2**：实现一个基于 ECS 的简单粒子系统。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include "ecs.h"
@@ -2218,7 +2234,7 @@ public:
 
 **题目 3**：实现一个简单的状态机 (FSM) 用于角色 AI。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #pragma once
@@ -2293,7 +2309,7 @@ void example() {
 
 **题目 1**：为什么游戏开发中常禁用 C++ 异常？
 
-**参考答案**：
+**解析讲解**：
 
 1. **性能不可预测**：异常展开时间不确定，影响帧率稳定性。
 2. **二进制体积**：异常表增加可执行文件大小。
@@ -2306,7 +2322,7 @@ void example() {
 
 **题目 2**：ECS 是否完全取代 OOP？什么场景下 OOP 更合适？
 
-**参考答案**：ECS 适合大量同类实体（如敌人、粒子、子弹），但 OOP 在以下场景更合适：
+**解析讲解**：ECS 适合大量同类实体（如敌人、粒子、子弹），但 OOP 在以下场景更合适：
 
 1. **UI 系统**：窗口、按钮等数量少，继承体系清晰。
 2. **资源管理**：资源加载器、缓存等单例对象。
@@ -2319,7 +2335,7 @@ void example() {
 
 **题目 3**：数据导向设计 (DOD) 与面向对象设计 (OOP) 的根本分歧是什么？
 
-**参考答案**：
+**解析讲解**：
 
 - **OOP**：以"对象"为中心，将数据与行为封装，强调抽象与复用。
 - **DOD**：以"数据布局"为中心，先设计数据结构再设计算法，强调性能。
@@ -2330,7 +2346,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 
 **题目 4**：为什么游戏引擎常自实现容器（如 Unreal 的 `TArray`）而非用 STL？
 
-**参考答案**：
+**解析讲解**：
 
 1. **内存控制**：STL 默认使用 `new`/`delete`，游戏需自定义分配器。
 2. **性能**：STL 容器在某些场景性能不达预期（如 `std::vector` 扩容策略）。
@@ -2342,7 +2358,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 
 **题目 5**：游戏开发中如何平衡"性能优化"与"代码可读性"？
 
-**参考答案**：
+**解析讲解**：
 
 1. **Profile 驱动**：先测量，再优化热点，避免过早优化。
 2. **分层**：核心循环极致优化，周边代码可读性优先。
@@ -2355,7 +2371,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 
 **题目 6**：C++20 协程在游戏开发中有哪些应用场景？
 
-**参考答案**：
+**解析讲解**：
 
 1. **异步资源加载**：`co_await load_texture_async("player.png")`。
 2. **网络请求**：`co_await send_request()`。
@@ -2367,7 +2383,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 
 ---
 
-### 10.5 综合题
+### 综合题知识点讲解
 
 **题目**：设计一个完整的 2D 游戏引擎架构，包括：
 
@@ -2378,7 +2394,7 @@ OOP 的目标是代码可维护性，DOD 的目标是性能。游戏开发中，
 5. 多线程方案
 6. 资源管理方案
 
-**参考答案**：
+**解析讲解**：
 
 **1. 核心子系统**
 

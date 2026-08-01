@@ -2554,13 +2554,13 @@ $$C = e^{-rT} \int_{\mathbb{R}^n_+} \max\left(\sum_i w_i S_i - K, 0\right) p(\ma
 
 | 教材                                  | 重点                 | 难度  |
 | ------------------------------------- | -------------------- | ----- |
-| Spivak《Calculus on Manifolds》       | 微分形式统一 Stokes  | ★★★★☆ |
-| Apostol《Mathematical Analysis》      | 严格分析基础         | ★★★☆☆ |
-| Rudin《Real and Complex Analysis》    | 测度论与 Banach 空间 | ★★★★★ |
-| Folland《Real Analysis》              | 现代实分析           | ★★★★☆ |
-| Munkres《Analysis on Manifolds》      | 流形上分析           | ★★★☆☆ |
-| Stein-Shakarchi《Real Analysis》      | 测度论入门           | ★★★☆☆ |
-| Spivak《Differential Geometry Vol 1》 | 微分几何与流形       | ★★★★★ |
+| Spivak《Calculus on Manifolds》       | 微分形式统一 Stokes  | 很高 |
+| Apostol《Mathematical Analysis》      | 严格分析基础         | 中 |
+| Rudin《Real and Complex Analysis》    | 测度论与 Banach 空间 | 极高 |
+| Folland《Real Analysis》              | 现代实分析           | 很高 |
+| Munkres《Analysis on Manifolds》      | 流形上分析           | 中 |
+| Stein-Shakarchi《Real Analysis》      | 测度论入门           | 中 |
+| Spivak《Differential Geometry Vol 1》 | 微分几何与流形       | 极高 |
 
 ### 12.4 历史与传记
 

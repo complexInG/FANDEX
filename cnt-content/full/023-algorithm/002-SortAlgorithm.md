@@ -223,28 +223,13 @@ etymology:
 2. **外部排序**（§5.3 External Sorting）：数据量超过内存，需借助外存，核心是多路归并；
 3. **多路归并**（§5.4 Sorting on Large Secondary Storage Devices）：磁盘排序的工程化方案，含替换选择、多步归并。
 
-```
-排序算法分类树：
-                              排序
-                                |
-        ┌───────────┬───────────┴───────────┬────────────┐
-    内部排序     外部排序                分布排序          混合排序
-        │           │                       │                │
-   ┌────┴────┐  多路归并              ┌─────┴─────┐    ┌─────┴─────┐
-  比较排序  非比较                       │           │  内省排序  Timsort
-   Ω(n log n)                          │           │  (Musser 1997) (Peters 2002)
-     │                                 │           │
-  ┌──┴──┐                          计数排序    基数排序
-  插入类 交换类                        O(n+k)     O(d(n+k))
-  │     │                                │
-  插入   冒泡                              └── 桶排序
-  希尔   快排                                  O(n+k) 平均
-        │
-       堆排
-       (选择类)
-        │
-       归并
-       (归并类)
+```mermaid
+flowchart TD
+    S[排序]
+    S --> I[内部排序<br/>比较排序 Ω(n log n)<br/>插入类：插入/希尔<br/>交换类：冒泡/快排<br/>堆排选择类/归并归并类]
+    S --> E[外部排序<br/>多路归并]
+    S --> D[分布排序<br/>计数排序 O(n+k)/基数排序 O(d(n+k))/桶排序 O(n+k) 平均]
+    S --> M[混合排序<br/>内省排序 Musser 1997/Timsort Peters 2002]
 ```
 
 **比较排序下界**（Lower Bound of Comparison Sort）：任何基于比较的排序算法在最坏情况下至少需要 $\Omega(n \log n)$ 次比较。这一理论下界由决策树模型证明（详见 §3.2），意味着归并排序与堆排序已经达到了比较排序的最优。
@@ -2134,13 +2119,13 @@ void sort(void *base, size_t num, size_t size,
 
 **修复**：
 ```python
-# ❌ 错误：取首元素
+# 不支持 错误：取首元素
 pivot = arr[low]
 
-# ✅ 正确：随机化
+# 已达标 正确：随机化
 pivot = arr[random.randint(low, high)]
 
-# ✅ 更优：三数取中
+# 已达标 更优：三数取中
 mid = (low + high) // 2
 if arr[mid] < arr[low]: arr[low], arr[mid] = arr[mid], arr[low]
 if arr[high] < arr[low]: arr[low], arr[high] = arr[high], arr[low]
@@ -2154,12 +2139,12 @@ pivot = arr[high]
 
 **修复**：全局复用一个临时数组：
 ```python
-# ❌ 错误：每次 merge 分配
+# 不支持 错误：每次 merge 分配
 def merge_wrong(arr, low, mid, high):
     temp = [0] * (high - low + 1)  # 累积 O(n log n)
     # ...
 
-# ✅ 正确：全局复用
+# 已达标 正确：全局复用
 def merge_sort(arr):
     temp = [0] * len(arr)  # 全局一次分配
     _merge_sort(arr, 0, len(arr) - 1, temp)
@@ -2250,10 +2235,10 @@ def radix_msd(arr, digit):
 
 **修复**：
 ```c
-// ❌ 错误
+// 不支持 错误
 int mid = (low + high) / 2;
 
-// ✅ 正确
+// 已达标 正确
 int mid = low + (high - low) / 2;
 // 或
 int mid = (low & high) + ((low ^ high) >> 1);
@@ -2264,10 +2249,10 @@ int mid = (low & high) + ((low ^ high) >> 1);
 **陷阱**：`sorted` 返回新列表不修改原对象，`list.sort` 原地修改返回 `None`。
 
 ```python
-# ❌ 错误：忘了 list.sort 返回 None
+# 不支持 错误：忘了 list.sort 返回 None
 result = arr.sort()
 
-# ✅ 正确
+# 已达标 正确
 arr.sort()
 result = arr
 # 或
@@ -2276,69 +2261,69 @@ result = sorted(arr)  # arr 不变
 
 ---
 
-## 15. 习题与解答
+## 知识讲解与要点分析（原习题）
 
-### 15.1 选择题
+### 选择题知识点讲解
 
-**Q1**. 下列排序算法中，**最坏时间复杂度**为 $O(n \log n)$ 的是（ ）。
+**常见疑问 1**：. 下列排序算法中，**最坏时间复杂度**为 $O(n \log n)$ 的是（ ）。
 A. 快速排序  B. 希尔排序  C. 堆排序  D. 冒泡排序
 
-**答案**：C。堆排序最坏 $O(n \log n)$；快排最坏 $O(n^2)$；希尔排序最坏取决于增量序列，Shell 原始序列 $O(n^{3/2})$ 或最坏 $O(n^2)$；冒泡最坏 $O(n^2)$。
+**解析讲解**：C。堆排序最坏 $O(n \log n)$；快排最坏 $O(n^2)$；希尔排序最坏取决于增量序列，Shell 原始序列 $O(n^{3/2})$ 或最坏 $O(n^2)$；冒泡最坏 $O(n^2)$。
 
-**Q2**. 在下列场景中，应优先选择哪种排序算法？
+**常见疑问 2**：. 在下列场景中，应优先选择哪种排序算法？
 - 场景：10 万条记录，关键字为 32 位整数，需稳定排序。
 - 选项：A. 快排  B. 堆排  C. 归并  D. 基数
 
-**答案**：D。基数排序稳定且 $O(d \cdot n)$（$d=4$ 字节）$= O(n)$，远快于 $O(n \log n)$ 的比较排序。如需比较排序则选归并（稳定）。
+**解析讲解**：D。基数排序稳定且 $O(d \cdot n)$（$d=4$ 字节）$= O(n)$，远快于 $O(n \log n)$ 的比较排序。如需比较排序则选归并（稳定）。
 
-**Q3**. Python `list.sort` 自 2.3 起采用的算法是（ ）。
+**常见疑问 3**：. Python `list.sort` 自 2.3 起采用的算法是（ ）。
 A. 快排  B. 归并  C. Timsort  D. introsort
 
-**答案**：C。Tim Peters 2002 设计的 Timsort，结合自然 run 检测 + 二分插入 + 归并栈。
+**解析讲解**：C。Tim Peters 2002 设计的 Timsort，结合自然 run 检测 + 二分插入 + 归并栈。
 
-**Q4**. 下列关于排序稳定性的描述正确的是（ ）。
+**常见疑问 4**：. 下列关于排序稳定性的描述正确的是（ ）。
 A. 快排可以通过修改分区函数变为稳定排序
 B. 堆排本质上不稳定，无法改造为稳定
 C. 归并排序稳定与否取决于合并时左/右半的优先级
 D. 基数排序的稳定性不影响最终结果
 
-**答案**：C。归并时若 $L[i] = R[j]$，先取 $L[i]$ 则稳定，先取 $R[j]$ 则不稳定。A 错误：快排的分区无法保证相等元素相对顺序；B 错误：堆排可以通过在 key 上附加原索引改造为稳定；D 错误：LSD 基数排序必须每轮稳定，否则结果错误。
+**解析讲解**：C。归并时若 $L[i] = R[j]$，先取 $L[i]$ 则稳定，先取 $R[j]$ 则不稳定。A 错误：快排的分区无法保证相等元素相对顺序；B 错误：堆排可以通过在 key 上附加原索引改造为稳定；D 错误：LSD 基数排序必须每轮稳定，否则结果错误。
 
-**Q5**. Timsort 的 minrun 取值范围为 [32, 64]，其选择依据是（ ）。
+**常见疑问 5**：. Timsort 的 minrun 取值范围为 [32, 64]，其选择依据是（ ）。
 A. 经验值，无理论依据
 B. 使 $n/\text{minrun}$ 接近 2 的幂，归并栈平衡
 C. 与 CPU L1 cache 大小匹配
 D. 与 Python 对象指针大小相关
 
-**答案**：B。Peters 在 listsort.txt 中说明：取 `n` 的 6 位高位，若低位非零则 +1，使 $n/\text{minrun} \approx 2^k$ 或 $2^k+1$，归并栈平衡。
+**解析讲解**：B。Peters 在 listsort.txt 中说明：取 `n` 的 6 位高位，若低位非零则 +1，使 $n/\text{minrun} \approx 2^k$ 或 $2^k+1$，归并栈平衡。
 
-### 15.2 填空题
+### 填空题知识点讲解
 
-**Q6**. 比较排序在最坏情况下的时间复杂度下界是 $\Omega(\_\_\_)$，由 **决策树** 模型证明，关键不等式为 $2^h \geq n!$。
+**常见疑问 6**：. 比较排序在最坏情况下的时间复杂度下界是 $\Omega(\_\_\_)$，由 **决策树** 模型证明，关键不等式为 $2^h \geq n!$。
 
-**答案**：$n \log n$。由 $\log_2(n!) = \Theta(n \log n)$（Stirling 公式 $n! \approx (n/e)^n \sqrt{2\pi n}$）。
+**解析讲解**：$n \log n$。由 $\log_2(n!) = \Theta(n \log n)$（Stirling 公式 $n! \approx (n/e)^n \sqrt{2\pi n}$）。
 
-**Q7**. 快速排序的平均时间复杂度为 $O(n \log n)$，其期望分析给出平均比较次数 $E[C_n] = $ $\_\_\_$，其中 $H_n = \sum_{k=1}^n 1/k$ 为第 $n$ 个调和数。
+**常见疑问 7**：. 快速排序的平均时间复杂度为 $O(n \log n)$，其期望分析给出平均比较次数 $E[C_n] = $ $\_\_\_$，其中 $H_n = \sum_{k=1}^n 1/k$ 为第 $n$ 个调和数。
 
-**答案**：$2(n+1)H_n - 4n \approx 1.386 n \log_2 n$。
+**解析讲解**：$2(n+1)H_n - 4n \approx 1.386 n \log_2 n$。
 
-**Q8**. Floyd 1964 提出的自底向上建堆算法时间复杂度为 $\_\_\_$，证明核心是 $\sum_{h=0}^{\lfloor \log n \rfloor} \lceil n/2^{h+1} \rceil \cdot h \leq \_\_\_$。
+**常见疑问 8**：. Floyd 1964 提出的自底向上建堆算法时间复杂度为 $\_\_\_$，证明核心是 $\sum_{h=0}^{\lfloor \log n \rfloor} \lceil n/2^{h+1} \rceil \cdot h \leq \_\_\_$。
 
-**答案**：$O(n)$；$2n$。
+**解析讲解**：$O(n)$；$2n$。
 
-**Q9**. Dual-Pivot Quicksort（Yaroslavskiy 2009）平均比较次数 $\frac{2}{5}n \ln n$，由 Wild 与 Nebel 在 **2012** 年严格证明，比单轴快排少约 **20%** 的比较。
+**常见疑问 9**：. Dual-Pivot Quicksort（Yaroslavskiy 2009）平均比较次数 $\frac{2}{5}n \ln n$，由 Wild 与 Nebel 在 **2012** 年严格证明，比单轴快排少约 **20%** 的比较。
 
-**Q10**. Timsort 的归并栈维护不变式 $A > B + C$ 且 $B > C$，其中 $A, B, C$ 是栈顶三个 **run 的长度**。Auger-Nicaud-Pivoteau 2015 发现此不变式不充分，**Java 9** 改用更强的 $A > 2B + C$。
+**常见疑问 10**：. Timsort 的归并栈维护不变式 $A > B + C$ 且 $B > C$，其中 $A, B, C$ 是栈顶三个 **run 的长度**。Auger-Nicaud-Pivoteau 2015 发现此不变式不充分，**Java 9** 改用更强的 $A > 2B + C$。
 
 ### 15.3 代码修正题
 
-**Q11**. 下列快排代码在 LeetCode 912 上对已序输入会 TLE，请找出 bug 并修复：
+**常见疑问 11**：. 下列快排代码在 LeetCode 912 上对已序输入会 TLE，请找出 bug 并修复：
 
 ```python
 def quicksort_wrong(arr, low, high):
     if low >= high:
         return
-    pivot = arr[low]  # ❌ Bug 1
+    pivot = arr[low]  # 不支持 Bug 1
     i, j = low, high
     while i < j:
         while i < j and arr[j] >= pivot: j -= 1
@@ -2347,7 +2332,7 @@ def quicksort_wrong(arr, low, high):
         arr[j] = arr[i]
     arr[i] = pivot
     quicksort_wrong(arr, low, i - 1)
-    quicksort_wrong(arr, i + 1, high)  # ❌ Bug 2: 无尾递归优化
+    quicksort_wrong(arr, i + 1, high)  # 不支持 Bug 2: 无尾递归优化
 
 quicksort_wrong(arr, 0, len(arr) - 1)
 ```
@@ -2381,11 +2366,11 @@ def quicksort_fixed(arr, low, high):
             high = i - 1
 ```
 
-**Q12**. 下列归并排序代码在 100 万元素时内存占用 1.5GB，请找出 bug：
+**常见疑问 12**：. 下列归并排序代码在 100 万元素时内存占用 1.5GB，请找出 bug：
 
 ```python
 def merge_wrong(arr, low, mid, high):
-    left = arr[low:mid+1].copy()    # ❌ 每次 merge 都分配
+    left = arr[low:mid+1].copy()    # 不支持 每次 merge 都分配
     right = arr[mid+1:high+1].copy()
     i = j = 0
     k = low
@@ -2428,9 +2413,9 @@ def _merge(arr, low, mid, high, temp):
 
 ### 15.4 开放论述题
 
-**Q13**. 请论述为什么 Python、Java、V8 都在 2000 年代后陆续将默认排序算法从快排/归并切换为 Timsort？涉及哪些工程考量？
+**常见疑问 13**：. 请论述为什么 Python、Java、V8 都在 2000 年代后陆续将默认排序算法从快排/归并切换为 Timsort？涉及哪些工程考量？
 
-**参考答案**：
+**解析讲解**：
 
 1. **真实数据并非完全随机**：Timsort 检测自然 run，对部分有序数据（如日志时间戳、用户输入的递增序列）达到 $O(n)$ 至 $O(n \log n)$ 之间，而传统快排/归并无论数据是否有序都是 $O(n \log n)$；
 2. **稳定性需求**：Python 对象、Java 对象、JS 对象排序通常依赖 `equals` 语义，需稳定排序保证业务逻辑正确性。原快排不稳定，对象排序必须改归并（占 $O(n)$ 空间）或 Timsort；
@@ -2439,9 +2424,9 @@ def _merge(arr, low, mid, high, temp):
 5. **缓存友好**：归并阶段顺序访问，比快排的跳跃式分区更友好；
 6. **教训**：Auger 2015 发现 Java 7/8 Timsort 不变式 bug，说明复杂算法需形式化验证。Java 9 在 de Gouw 等人帮助下用 KeY 验证后修复。
 
-**Q14**. 论述为什么 C++ `std::sort` 选择 introsort 而非 Timsort？
+**常见疑问 14**：. 论述为什么 C++ `std::sort` 选择 introsort 而非 Timsort？
 
-**参考答案**：
+**解析讲解**：
 
 1. **历史原因**：Musser 1997 提出 introsort 时正值 STL 标准化（1994），SGI STL 早期采纳，后成为事实标准。Timsort 2002 才出现，时已晚；
 2. **C++ 优先性能**：`std::sort` 不保证稳定（`std::stable_sort` 才稳定），introsort 原地 $O(1)$ 额外空间、$O(n \log n)$ 最坏，适合性能敏感场景；
@@ -2449,9 +2434,9 @@ def _merge(arr, low, mid, high, temp):
 4. **C++20 演进**：libstdc++ 12+ 已吸收 pdqsort 思想（重复键检测、三路分区），但不改默认接口；
 5. **稳定性需求场景**：C++ 提供 `std::stable_sort`（归并）+ `std::sort`（introsort）双 API，比 Python/Java 的"单一 API"更灵活。
 
-**Q15**. 给定 10 亿个 32 位整数，内存仅 100MB，设计排序方案。
+**常见疑问 15**：. 给定 10 亿个 32 位整数，内存仅 100MB，设计排序方案。
 
-**参考答案**：
+**解析讲解**：
 
 外部归并排序 + 计数排序混合方案：
 1. **第一遍扫描**：值域 $2^{32}$，单值频次 32 位，需 $2^{32} \times 4\text{B} = 16\text{GB}$，远超 100MB。改用分批排序；
@@ -2568,22 +2553,13 @@ def _merge(arr, low, mid, high, temp):
 
 ### 18.1 核心知识图谱
 
-```
-排序算法知识体系：
-                            排序
-                              |
-       ┌──────────┬───────────┴───────────┬────────────┐
-   比较排序   非比较排序            外部排序          混合排序
-   Ω(n log n)  O(n)                  O(n log n / M)    工业级
-       │          │                       │                │
-   ┌───┴───┐  ┌──┴──┐               多路归并        ┌─────┴─────┐
-   插入类  交换类  计数 基数 桶       替换选择        introsort  Timsort
-   │     │   │   │                  Fibonacci       Musser     Peters
-  插入    冒泡   LSD MSD              多步归并         1997      2002
-  希尔    快排                                         │          │
-        堆排                                          堆排+       自然 run+
-       归并                                           快排+       二分插入+
-                                                      插入排序     归并栈
+```mermaid
+flowchart TD
+    S[排序]
+    S --> C[比较排序 Ω(n log n)<br/>插入类：插入/希尔<br/>交换类：冒泡/快排/堆排/归并]
+    S --> N[非比较排序 O(n)<br/>计数/基数 LSD MSD/桶]
+    S --> E[外部排序 O(n log n / M)<br/>多路归并/替换选择/Fibonacci/多步归并]
+    S --> M[混合排序 工业级<br/>introsort Musser 1997 堆排+快排+插入排序<br/>Timsort Peters 2002 自然 run+二分插入+归并栈]
 ```
 
 ### 18.2 三大核心论证方法

@@ -1530,9 +1530,9 @@ const errors = await validate(user);
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：Stage 3 装饰器与 Legacy 装饰器的核心区别是？
 
@@ -1541,8 +1541,6 @@ B. Stage 3 装饰器使用上下文对象（context object）作为第二参数
 C. Stage 3 装饰器不支持类装饰器
 D. Stage 3 装饰器仅支持方法装饰器
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -1550,7 +1548,6 @@ Stage 3 装饰器的核心变化是引入上下文对象（context object），�
 
 Legacy 装饰器使用描述符（descriptor）作为参数，类型签名宽松。
 
-</details>
 
 **题目 2**：以下代码的执行顺序是？
 
@@ -1566,8 +1563,6 @@ B. `C → B → A`（从下到上）
 C. `A → C → B`
 D. 不确定
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -1575,7 +1570,6 @@ D. 不确定
 
 等价于 `A(B(C(X)))`。
 
-</details>
 
 **题目 3**：Stage 3 属性装饰器应返回什么？
 
@@ -1584,8 +1578,6 @@ B. 初始化函数 `(initialValue) => initialValue`
 C. `void`
 D. `PropertyDescriptor`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -1593,7 +1585,6 @@ Stage 3 属性装饰器返回一个初始化函数，该函数在实例化时被
 
 如果返回静态值，会被当作初始值；返回 `void` 表示不修改。
 
-</details>
 
 **题目 4**：Stage 3 装饰器的元数据存储在哪里？
 
@@ -1602,8 +1593,6 @@ B. `Symbol.metadata`
 C. 全局变量
 D. `context.metadata`（独立于类）
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -1611,7 +1600,6 @@ Stage 3 装饰器通过 `Symbol.metadata` 在类上挂载元数据对象。所�
 
 `Reflect.metadata` 是 Legacy 装饰器使用的 polyfill，Stage 3 不再需要。
 
-</details>
 
 **题目 5**：以下装饰器实现的错误是？
 
@@ -1629,8 +1617,6 @@ B. `value.call` 不存在
 C. `context` 未使用
 D. 返回类型错误
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：A**
 
@@ -1645,18 +1631,14 @@ return function (this: any, ...args: any[]) {
 };
 ```
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：Stage 3 装饰器在 TypeScript ____ 版本正式支持。
 
-<details>
-<summary>答案</summary>
 
 5.0
 
-</details>
 
 **题目 2**：完成以下类装饰器实现，使其打印类名：
 
@@ -1671,14 +1653,11 @@ function logged<T extends { new(...args: any[]): {} }>(value: T, context: ClassD
 }
 ```
 
-<details>
-<summary>答案</summary>
 
 ```typescript
 ${String(context.name)}
 ```
 
-</details>
 
 **题目 3**：完成以下属性装饰器实现，提供默认值：
 
@@ -1692,33 +1671,25 @@ function defaultValue(defaultVal: any) {
 }
 ```
 
-<details>
-<summary>答案</summary>
 
 ```typescript
 defaultVal
 initialValue
 ```
 
-</details>
 
 **题目 4**：装饰器组合 `@A @B @C class X` 等价于函数调用 ____。
 
-<details>
-<summary>答案</summary>
 
 ```typescript
 A(B(C(X)))
 ```
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现 `@deprecated` 装饰器，在方法调用时打印弃用警告。
 
-<details>
-<summary>参考答案</summary>
 
 ```typescript
 function deprecated(message?: string) {
@@ -1749,12 +1720,9 @@ service.getUser('1');
 // DeprecationWarning: getUser is deprecated. Use getUserById instead
 ```
 
-</details>
 
 **题目 2**：实现 `@retry` 装饰器，在方法抛出异常时自动重试指定次数。
 
-<details>
-<summary>参考答案</summary>
 
 ```typescript
 function retry(times: number) {
@@ -1784,12 +1752,9 @@ class ApiService {
 }
 ```
 
-</details>
 
 **题目 3**：实现 `@measure` 装饰器，测量方法执行时间并记录到元数据。
 
-<details>
-<summary>参考答案</summary>
 
 ```typescript
 function measure(value: Function, context: ClassMethodDecoratorContext) {
@@ -1822,14 +1787,11 @@ console.log((DataService as any)[Symbol.metadata].measurements);
 // { process: 5 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **题目 1**：为什么 TC39 装饰器提案耗时 8 年才进入 Stage 3？请分析主要争议点。
 
-<details>
-<summary>参考答案</summary>
 
 TC39 装饰器提案耗时 8 年的主要争议点：
 
@@ -1847,12 +1809,9 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 7. **与现有框架的兼容性**：Angular、NestJS 等框架已基于 Legacy 装饰器构建庞大生态，Stage 3 需提供平滑迁移路径。
 
-</details>
 
 **题目 2**：装饰器与高阶函数在概念上有何异同？何时选择装饰器，何时选择高阶函数？
 
-<details>
-<summary>参考答案</summary>
 
 **相同点**：
 
@@ -1876,12 +1835,9 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 - 选择装饰器：类方法、需要元数据、声明式配置（如 NestJS 控制器、TypeORM 实体）
 - 选择高阶函数：顶层函数、无类上下文、需要运行时动态组合
 
-</details>
 
 **题目 3**：Stage 3 装饰器为什么不支持参数装饰器？这对实际开发有何影响？
 
-<details>
-<summary>参考答案</summary>
 
 **不支持的原因**：
 
@@ -1901,12 +1857,9 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 3. **替代方案**：使用方法装饰器读取元数据，在运行时通过 `arguments` 访问参数。
 
-</details>
 
 **题目 4**：装饰器在微前端架构中可能引发哪些问题？如何解决？
 
-<details>
-<summary>参考答案</summary>
 
 **问题**：
 
@@ -1928,7 +1881,6 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 4. **版本统一**：在微前端基座中强制使用统一的装饰器版本，通过适配层兼容旧代码。
 
-</details>
 
 ---
 
@@ -2144,3 +2096,450 @@ interface ClassAccessorDecoratorResult<V, R> {
 ---
 
 *本文档最后更新于 2026-06-14，基于 TypeScript 5.4 与 TC39 Decorators Proposal Stage 3。如需了解最新版本特性，请参考 [TypeScript 官方文档](https://www.typescriptlang.org/docs/)与 [TC39 提案仓库](https://github.com/tc39/proposal-decorators)。*
+## 装饰器基础
+
+**基本写法：类装饰器**
+`function <装饰器>(<target>: <构造器>) { }`
+```typescript
+// 类装饰器接收构造器返回新构造器
+function Log<T extends new (...args: any[]) => any>(target: T): T {
+    return class extends target { }
+}
+@Log class Foo {}
+```
+
+---
+
+**基本写法：方法装饰器**
+`function <装饰器>(<target>, <key>, <descriptor>) { }`
+```typescript
+// 方法装饰器接收原型 方法名 描述符
+function Log(target: any, key: string, desc: PropertyDescriptor) {
+    const orig = desc.value
+    desc.value = function (...args: any[]) {
+        console.log(`call ${key}`)
+        return orig.apply(this, args)
+    }
+}
+```
+
+---
+
+**基本写法：属性装饰器**
+`function <装饰器>(<target>, <key>) { }`
+```typescript
+// 属性装饰器接收原型 与 属性名
+function Meta(target: any, key: string) {
+    Object.defineProperty(target, key, { value: null })
+}
+```
+
+---
+
+**基本写法：参数装饰器**
+`function <装饰器>(<target>, <key>, <index>) { }`
+```typescript
+// 参数装饰器接收原型 方法名 参数索引
+function Required(target: any, key: string, index: number) {
+    console.log(`param ${index} of ${key}`)
+}
+```
+
+---
+
+## 方法装饰器实战
+
+**基本写法：日志装饰器**
+`function <Log>(<target>, <key>, <descriptor>)`
+```typescript
+// 记录方法调用
+function Log(target: any, key: string, desc: PropertyDescriptor) {
+    const orig = desc.value
+    desc.value = function (...args: any[]) {
+        console.log(`${key} called with`, args)
+        return orig.apply(this, args)
+    }
+}
+class Service { @Log greet(name: string) { return `hi ${name}` } }
+```
+
+---
+
+**基本写法：性能测量装饰器**
+`function <Measure>(<target>, <key>, <descriptor>)`
+```typescript
+// 测量方法执行时间
+function Measure(target: any, key: string, desc: PropertyDescriptor) {
+    const orig = desc.value
+    desc.value = function (...args: any[]) {
+        const start = performance.now()
+        const result = orig.apply(this, args)
+        console.log(`${key} took ${performance.now() - start}ms`)
+        return result
+    }
+}
+```
+
+---
+
+**基本写法：错误捕获装饰器**
+`function <Catch>(<target>, <key>, <descriptor>)`
+```typescript
+// 统一捕获方法异常
+function Catch(target: any, key: string, desc: PropertyDescriptor) {
+    const orig = desc.value
+    desc.value = async function (...args: any[]) {
+        try { return await orig.apply(this, args) }
+        catch (e) { console.error(`${key} error`, e) }
+    }
+}
+```
+
+---
+
+## 类装饰器实战
+
+**基本写法：单例装饰器**
+`function <Singleton><<T>>(<target>: <T>)`
+```typescript
+// 强制类为单例
+function Singleton<T extends new (...args: any[]) => any>(target: T): T {
+    let instance: InstanceType<T>
+    return class extends target {
+        constructor(...args: any[]) {
+            if (instance) return instance
+            super(...args)
+            instance = this as any
+        }
+    }
+}
+@Singleton class Config {}
+```
+
+---
+
+**基本写法：混入装饰器**
+`function <Mixin>(...<bases>): <类装饰器>`
+```typescript
+// 混入多个类的方法
+function Mixin(...bases: any[]) {
+    return function (target: any) {
+        bases.forEach(base => {
+            Object.getOwnPropertyNames(base.prototype).forEach(name => {
+                target.prototype[name] = base.prototype[name]
+            })
+        })
+    }
+}
+```
+
+---
+
+**基本写法：标签元数据**
+`function <Tag>(<名称>: string): <类装饰器>`
+```typescript
+// 给类附加元数据
+function Tag(name: string) {
+    return function <T extends new (...args: any[]) => any>(target: T): T {
+        (target as any).tag = name
+        return target
+    }
+}
+@Tag("service") class Service {}
+```
+
+---
+
+## 属性装饰器实战
+
+**基本写法：默认值装饰器**
+`function <Default>(<值>): <属性装饰器>`
+```typescript
+// 为属性设置默认值
+function Default(value: any) {
+    return function (target: any, key: string) {
+        target[key] = value
+    }
+}
+class Config { @Default(8080) port: number }
+```
+
+---
+
+**基本写法：只读属性装饰器**
+`function <ReadOnly>(<target>, <key>)`
+```typescript
+// 让属性只读
+function ReadOnly(target: any, key: string) {
+    Object.defineProperty(target, key, { writable: false })
+}
+```
+
+---
+
+## 装饰器工厂
+
+**基本写法：装饰器工厂**
+`function <装饰器>(<配置>): <装饰器>`
+```typescript
+// 工厂返回实际装饰器
+function Log(prefix: string) {
+    return function (target: any, key: string, desc: PropertyDescriptor) {
+        const orig = desc.value
+        desc.value = function (...args: any[]) {
+            console.log(`${prefix}: ${key}`)
+            return orig.apply(this, args)
+        }
+    }
+}
+class S { @Log("APP") run() {} }
+```
+
+---
+
+**基本写法：多装饰器组合**
+`@<A> @<B> @<C> <声明>`
+```typescript
+// 多装饰器从下往上执行
+function A(target: any, key: string) { console.log("A") }
+function B(target: any, key: string) { console.log("B") }
+class S { @A @B method() {} }  // B A
+```
+
+---
+
+## 元数据反射
+
+**基本写法：emitDecoratorMetadata**
+`import "reflect-metadata"`
+```typescript
+// 需要 tsconfig 开启 emitDecoratorMetadata
+import "reflect-metadata"
+function Meta(target: any, key: string) {
+    const type = Reflect.getMetadata("design:type", target, key)
+    console.log(type)  // String
+}
+class S { @Meta name: string = "" }
+```
+
+---
+
+**基本写法：自定义元数据**
+`Reflect.defineMetadata(<键>, <值>, <目标>)`
+```typescript
+// 存储自定义元数据
+function Role(role: string) {
+    return function (target: any, key: string) {
+        Reflect.defineMetadata("role", role, target, key)
+    }
+}
+```
+
+---
+
+**基本写法：读取元数据**
+`Reflect.getMetadata(<键>, <目标>)`
+```typescript
+// 读取存储的元数据
+function getRole(target: any, key: string) {
+    return Reflect.getMetadata("role", target, key)
+}
+```
+
+---
+
+## 参数装饰器实战
+
+**基本写法：必填参数装饰器**
+`function <Required>(<target>, <key>, <index>)`
+```typescript
+// 标记参数必填
+const required: Set<number> = new Set()
+function Required(target: any, key: string, index: number) {
+    required.add(index)
+}
+class S { greet(@Required name: string) {} }
+```
+
+---
+
+**基本写法：参数注入**
+`function <Inject>(<token>): <参数装饰器>`
+```typescript
+// 依赖注入标记
+function Inject(token: string) {
+    return function (target: any, key: string, index: number) {
+        Reflect.defineMetadata("inject", token, target, key)
+    }
+}
+class S { constructor(@Inject("DB") db: any) {} }
+```
+
+---
+
+## 访问器装饰器
+
+**基本写法：getter setter 装饰器**
+`function <装饰器>(<target>, <key>, <descriptor>)`
+```typescript
+// 装饰访问器属性
+function Log(target: any, key: string, desc: PropertyDescriptor) {
+    const orig = desc.get
+    desc.get = function () {
+        const v = orig?.call(this)
+        console.log(`get ${key}`)
+        return v
+    }
+}
+class S { private _v = 1; @Log get v() { return this._v } }
+```
+
+---
+
+## 5.0 新版装饰器
+
+**基本写法：Stage 3 装饰器**
+`function <装饰器>(<target>, <context>) { }`
+```typescript
+// TS 5.0 标准 TC39 装饰器
+function log(target: any, context: ClassMethodDecoratorContext) {
+    return function (this: any, ...args: any[]) {
+        console.log(`call ${String(context.name)}`)
+        return target.apply(this, args)
+    }
+}
+class S { @log run() {} }
+```
+
+---
+
+**基本写法：新版类装饰器**
+`function <装饰器>(<target>, <context>): <新类>`
+```typescript
+// TC39 类装饰器
+function tag(target: any, context: ClassDecoratorContext) {
+    return class extends target {
+        tag = context.name
+    }
+}
+@tag class S {}
+```
+
+---
+
+**基本写法：新版自动访问器**
+`accessor <字段>`
+```typescript
+// TS 5.0 自动访问器
+class S {
+    accessor count = 0  // 自动生成 getter setter
+}
+```
+
+---
+
+## 实用模式
+
+**基本写法：缓存装饰器**
+`function <Memoize>(<target>, <key>, <descriptor>)`
+```typescript
+// 缓存方法结果
+function Memoize(target: any, key: string, desc: PropertyDescriptor) {
+    const orig = desc.value
+    const cache = new Map()
+    desc.value = function (...args: any[]) {
+        const k = JSON.stringify(args)
+        if (!cache.has(k)) cache.set(k, orig.apply(this, args))
+        return cache.get(k)
+    }
+}
+```
+
+---
+
+**基本写法：防抖装饰器**
+`function <Debounce>(<等待>): <方法装饰器>`
+```typescript
+// 方法防抖
+function Debounce(wait: number) {
+    return function (target: any, key: string, desc: PropertyDescriptor) {
+        const orig = desc.value
+        let timer: any
+        desc.value = function (...args: any[]) {
+            clearTimeout(timer)
+            timer = setTimeout(() => orig.apply(this, args), wait)
+        }
+    }
+}
+```
+
+---
+
+**基本写法：节流装饰器**
+`function <Throttle>(<等待>): <方法装饰器>`
+```typescript
+// 方法节流
+function Throttle(wait: number) {
+    return function (target: any, key: string, desc: PropertyDescriptor) {
+        const orig = desc.value
+        let last = 0
+        desc.value = function (...args: any[]) {
+            const now = Date.now()
+            if (now - last >= wait) { last = now; return orig.apply(this, args) }
+        }
+    }
+}
+```
+
+---
+
+**基本写法：权限校验装饰器**
+`function <Auth>(<角色>): <方法装饰器>`
+```typescript
+// 校验调用权限
+function Auth(role: string) {
+    return function (target: any, key: string, desc: PropertyDescriptor) {
+        const orig = desc.value
+        desc.value = function (...args: any[]) {
+            if (currentUser.role !== role) throw new Error("forbidden")
+            return orig.apply(this, args)
+        }
+    }
+}
+class Admin { @Auth("admin") delete() {} }
+```
+
+---
+
+**基本写法：重试装饰器**
+`function <Retry>(<次数>): <方法装饰器>`
+```typescript
+// 异步方法重试
+function Retry(times: number) {
+    return function (target: any, key: string, desc: PropertyDescriptor) {
+        const orig = desc.value
+        desc.value = async function (...args: any[]) {
+            for (let i = 0; i < times; i++) {
+                try { return await orig.apply(this, args) }
+                catch (e) { if (i === times - 1) throw e }
+            }
+        }
+    }
+}
+```
+
+---
+
+## tsconfig 配置
+
+**基本写法：开启装饰器**
+`"experimentalDecorators": true`
+```json
+// tsconfig.json 开启装饰器支持
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    }
+}
+```

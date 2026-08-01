@@ -14,6 +14,11 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
+# C# 值类型与引用类型
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 一、学习目标
 
@@ -267,19 +272,26 @@ $$
 
 ### 5.1 项目结构
 
-```
-FandexValueTypeDemo/
-├── FandexValueTypeDemo.csproj
-├── Program.cs
-├── Primitives/
-│   ├── Point.cs
-│   ├── Money.cs
-│   └── Color.cs
-├── Buffers/
-│   ├── StackBuffer.cs
-│   └── ByteParser.cs
-└── Interop/
-    └── NativeHeader.cs
+```mermaid
+flowchart TD
+    T0["FandexValueTypeDemo/"]
+    T1["FandexValueTypeDemo.csproj"]
+    T2["Program.cs"]
+    T3["Primitives/"]
+    T4["Point.cs"]
+    T5["Money.cs"]
+    T6["Color.cs"]
+    T7["Buffers/"]
+    T8["StackBuffer.cs"]
+    T9["ByteParser.cs"]
+    T10["Interop/"]
+    T11["NativeHeader.cs"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T6 --> T7
+    T9 --> T10
+    T10 --> T11
 ```
 
 ### 5.2 csproj 配置（.NET 8 / C# 12）
@@ -1193,7 +1205,7 @@ public class ValueComparer<T> {
 
 ## 十、习题
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题 1**：下列代码输出是什么？
 
@@ -1210,14 +1222,11 @@ Console.WriteLine($"{p1.X}, {p2.X}");
 - C. `1, 1`
 - D. `10, 1`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `p1` 和 `p2` 是独立的值类型实例。`p2 = p1` 复制所有字段。修改 `p2.X` 不影响 `p1`。输出 `1, 10`。
 
-</details>
 
 **题 2**：下列哪种情况下值类型会分配在堆上？
 
@@ -1226,8 +1235,6 @@ Console.WriteLine($"{p1.X}, {p2.X}");
 - C. `struct Point { public int X, Y; } Point p = new();`
 - D. `int[] arr = new int[10];` 中 `arr` 变量本身
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -1237,7 +1244,6 @@ A 中 `x` 是局部值类型，在栈上；C 中 `p` 同理；D 中 `arr` 变量
 
 注意：`List<int>` 中的 `int` 不装箱，因为 `List<T>` 对值类型有编译期特化（CLR 泛型不为每个 T 生成新代码，但为值类型 T 生成专用布局）。
 
-</details>
 
 **题 3**：下列哪个修饰符能让 struct 字段不可被外部修改？
 
@@ -1246,8 +1252,6 @@ A 中 `x` 是局部值类型，在栈上；C 中 `p` 同理；D 中 `arr` 变量
 - C. `const`
 - D. `static`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -1255,33 +1259,26 @@ A 中 `x` 是局部值类型，在栈上；C 中 `p` 同理；D 中 `arr` 变量
 
 最佳实践是用 `readonly struct` 修饰整个 struct，使所有字段隐式 readonly。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题 4**：`int` 装箱为 `object` 时，会在堆上创建一个大小为 ________ 字节的对象（64 位系统）。
 
-<details>
-<summary>答案</summary>
 
 **24` 字节（64 位系统）`
 
 布局：4 字节同步块 + 8 字节方法表指针 + 4 字节 int 数据 + 8 字节对齐填充 = 24 字节。
 
-</details>
 
 **题 5**：`ref struct` 不能被 ________ 操作，否则会违反栈约束。
 
-<details>
-<summary>答案</summary>
 
 **装箱**（box）
 
 `ref struct` 不能装箱为 `object`/`ValueType`/接口（C# 11 前完全不允许，C# 11+ 允许装箱为接口但有运行时限制）。装箱会让 ref struct 逃逸到堆，破坏其设计契约。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题 6**：实现一个 `Vector3` 值类型，要求：
 
@@ -1291,8 +1288,6 @@ A 中 `x` 是局部值类型，在栈上；C 中 `p` 同理；D 中 `arr` 变量
 4. 提供 `Length` 属性与 `Normalize` 方法
 5. 支持 `+`/`-` 运算符
 
-<details>
-<summary>参考答案</summary>
 
 ```csharp
 public readonly struct Vector3 : IEquatable<Vector3> {
@@ -1346,12 +1341,9 @@ public readonly struct Vector3 : IEquatable<Vector3> {
 }
 ```
 
-</details>
 
 **题 7**：实现一个 `ref struct SpanReader`，从 `ReadOnlySpan<byte>` 读取基本类型，要求零拷贝。
 
-<details>
-<summary>参考答案</summary>
 
 ```csharp
 using System.Runtime.InteropServices;
@@ -1419,7 +1411,6 @@ public ref struct SpanReader {
 }
 ```
 
-</details>
 
 **题 8**：分析以下代码，找出 3 个性能问题并修正：
 
@@ -1449,8 +1440,6 @@ public class Processor {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
 问题与修正：
 
@@ -1485,14 +1474,11 @@ public class Processor {
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **题 9**：为何 .NET 设计 `System.ValueType` 本身是引用类型？这一设计有何优劣？
 
-<details>
-<summary>参考答案</summary>
 
 **优势**：
 1. **统一类型系统**：所有类型最终都可视为 `object`，便于反射、API 设计（如 `object.Equals(object)`）。
@@ -1506,12 +1492,9 @@ public class Processor {
 
 替代设计如 Swift 直接区分 value/reference，无统一基类，避免装箱但失去一些统一性。
 
-</details>
 
 **题 10**：在微服务架构中，跨服务传递值类型（如 `Money`、`Point`）应如何处理？请列出 3 种策略并权衡。
 
-<details>
-<summary>参考答案</summary>
 
 1. **DTO 折叠为引用类型**：跨服务边界用 `record class` 表示相同数据，避免序列化器处理 struct 的复杂性。
    - 优点：序列化器（System.Text.Json、Protobuf）对 class 支持更好。
@@ -1527,7 +1510,6 @@ public class Processor {
 
 **推荐**：默认用策略 1（DTO 折叠），热点路径用策略 3（如游戏服务器、金融行情）。
 
-</details>
 
 ## 十一、参考文献
 
@@ -1598,3 +1580,299 @@ public class Processor {
 - **`FrozenDictionary<T>`**：基于值类型布局优化的只读字典。
 - **Native AOT 与值类型**：AOT 编译时值类型的特殊化优化。
 - **`DefaultInterpolatedStringHandler`**：.NET 6+ 的零分配字符串插值。
+## 赋值行为差异
+
+**基本写法：值类型赋值**
+`<值类型> <变量B> = <变量A>;`
+```csharp
+// struct 赋值复制值，两个变量相互独立
+var p1 = new Point(1, 2);
+var p2 = p1;
+p2.X = 10;
+```
+
+---
+
+**基本写法：引用类型赋值**
+`<引用类型> <变量B> = <变量A>;`
+```csharp
+// class 赋值复制引用，两个变量指向同一对象
+var u1 = new User("张三");
+var u2 = u1;
+u2.Name = "李四";
+```
+
+---
+
+## 装箱与拆箱
+
+**基本写法：装箱操作**
+`object <变量> = <值类型变量>;`
+```csharp
+// 值类型转换为堆上的引用类型
+int x = 42;
+object obj = x;
+```
+
+---
+
+**基本写法：拆箱操作**
+`<值类型> <变量> = (<值类型>)<object变量>;`
+```csharp
+// 引用类型转换回值类型
+object obj = 42;
+int y = (int)obj;
+```
+
+---
+
+**基本写法：泛型列表避免装箱**
+`List<<值类型>> <变量> = new();`
+```csharp
+// 使用泛型列表存储值类型，避免装箱开销
+var list = new List<int>();
+list.Add(42);
+```
+
+---
+
+## struct 定义
+
+**单行写法：readonly struct 单字段定义**
+`public readonly struct <名称> { public <类型> <属性> { get; } }`
+```csharp
+// 单行定义不可变值类型
+public readonly struct Point { public double X { get; } public double Y { get; } public Point(double x, double y) => (X, Y) = (x, y); }
+```
+
+---
+
+**换行写法：readonly struct 多字段定义**
+`public readonly struct <名称> { public <类型> <属性> { get; } public <类型> <属性> { get; } }`
+```csharp
+// 换行定义包含多个属性的不可变值类型
+public readonly struct Point
+{
+    public double X { get; }
+    public double Y { get; }
+    public Point(double x, double y) => (X, Y) = (x, y);
+}
+```
+
+---
+
+**基本写法：readonly struct 含方法**
+`public double <方法>(<参数>) => <表达式>;`
+```csharp
+// 在 readonly struct 中定义计算方法
+public double DistanceTo(Point other) =>
+    Math.Sqrt(Math.Pow(X - other.X, 2) + Math.Pow(Y - other.Y, 2));
+```
+
+---
+
+**基本写法：ref struct 定义**
+`public ref struct <名称> { ... }`
+```csharp
+// 定义只能存在于栈上的结构体
+public ref struct StackBuffer
+{
+    private readonly Span<byte> _buffer;
+    public StackBuffer(int size) => _buffer = stackalloc byte[size];
+}
+```
+
+---
+
+**基本写法：ref struct 写方法**
+`public void <方法>(<参数>) => <表达式>;`
+```csharp
+// 在 ref struct 中定义写入方法
+public void Write(int offset, byte value) => _buffer[offset] = value;
+```
+
+---
+
+## record struct
+
+**基本写法：record struct 定义**
+`public record struct <名称>(<参数列表>);`
+```csharp
+// 定义值类型记录，自动生成相等性比较
+public record struct Point(double X, double Y);
+```
+
+---
+
+**基本写法：record struct 值相等**
+`bool <结果> = <记录1> == <记录2>;`
+```csharp
+// 值类型记录基于值比较相等性
+var p1 = new Point(1, 2);
+var p2 = new Point(1, 2);
+Console.WriteLine(p1 == p2);
+```
+
+---
+
+**基本写法：record class 定义**
+`public record <名称>(<参数列表>);`
+```csharp
+// 定义引用类型记录
+public record User(string Name, int Age);
+```
+
+---
+
+**基本写法：record class with 表达式**
+`var <变量> = <记录> with { <属性> = <值> };`
+```csharp
+// 使用 with 创建引用类型记录的修改副本
+var u1 = new User("张三", 25);
+var u2 = u1 with { Age = 26 };
+```
+
+---
+
+## 接口与装箱
+
+**基本写法：值类型实现接口**
+`struct <名称> : <接口> { public void <方法>() { ... } }`
+```csharp
+// 值类型实现接口
+struct MyProcessor : IProcessor
+{
+    public void Process() { }
+}
+```
+
+---
+
+**基本写法：直接调用无装箱**
+`<值类型变量>.<方法>();`
+```csharp
+// 直接调用值类型方法，无装箱开销
+MyProcessor processor = new();
+processor.Process();
+```
+
+---
+
+**基本写法：接口调用导致装箱**
+`<接口> <变量> = <值类型实例>;`
+```csharp
+// 通过接口调用值类型会装箱
+MyProcessor processor = new();
+IProcessor boxed = processor;
+```
+
+---
+
+**基本写法：泛型约束避免装箱**
+`void <方法><T>(T <参数>) where T : <接口>`
+```csharp
+// 使用泛型约束避免接口调用装箱
+void Process<T>(T processor) where T : IProcessor
+{
+    processor.Process();
+}
+```
+
+---
+
+## 参数传递优化
+
+**基本写法：ref 引用传递**
+`void <方法>(ref <类型> <参数>)`
+```csharp
+// 通过引用传递参数，避免大 struct 复制
+void ProcessLargeStruct(ref LargeData data)
+{
+    data.Value = 42;
+}
+```
+
+---
+
+**基本写法：in 只读引用传递**
+`void <方法>(in <类型> <参数>)`
+```csharp
+// 通过只读引用传递参数
+void ReadLargeStruct(in LargeData data)
+{
+    Console.WriteLine(data.Value);
+}
+```
+
+---
+
+**基本写法：ref 返回**
+`ref <类型> <方法>(<参数>)`
+```csharp
+// 返回引用，调用者可直接修改原数据
+ref int FindMax(int[] array)
+{
+    int maxIndex = 0;
+    for (int i = 1; i < array.Length; i++)
+    {
+        if (array[i] > array[maxIndex]) maxIndex = i;
+    }
+    return ref array[maxIndex];
+}
+```
+
+---
+
+## 结构体内存布局
+
+**基本写法：StructLayout 顺序布局**
+`[StructLayout(LayoutKind.Sequential)] public struct <名称> { ... }`
+```csharp
+// 控制结构体内存布局用于互操作
+[StructLayout(LayoutKind.Sequential)]
+public struct NativeHeader
+{
+    public int Magic;
+    public short Version;
+    public short Flags;
+    public int DataLength;
+}
+```
+
+---
+
+**基本写法：StructLayout 显式布局**
+`[StructLayout(LayoutKind.Explicit)] public struct <名称> { [FieldOffset(<偏移>)] public <类型> <字段>; }`
+```csharp
+// 精确控制字段偏移实现联合体效果
+[StructLayout(LayoutKind.Explicit)]
+public struct UnionValue
+{
+    [FieldOffset(0)] public int IntValue;
+    [FieldOffset(0)] public float FloatValue;
+}
+```
+
+---
+
+## MemoryMarshal 高级操作
+
+**基本写法：类型重解释**
+`MemoryMarshal.Cast<<源类型>, <目标类型>>(<Span>)`
+```csharp
+// 零拷贝将字节数组重新解释为 int 数组
+byte[] bytes = new byte[16];
+Span<int> ints = MemoryMarshal.Cast<byte, int>(bytes.AsSpan());
+ints[0] = 42;
+```
+
+---
+
+**基本写法：结构体转字节**
+`MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref <结构体>, 1))`
+```csharp
+// 将结构体转换为只读字节跨度
+var header = new NativeHeader { Magic = 0x4D42, Version = 1 };
+ReadOnlySpan<byte> headerBytes = MemoryMarshal.AsBytes(
+    MemoryMarshal.CreateReadOnlySpan(ref header, 1));
+```

@@ -1858,13 +1858,13 @@ def trace_after_execute(conn, cursor, statement, parameters, context, executeman
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（记忆与理解）
 
 **题 1**：SQLAlchemy 的 Core 层与 ORM 层有何区别？为什么 SQLAlchemy 采用双层架构？
 
-**参考答案**：
+**解析讲解**：
 
 Core 层提供 SQL 表达式语言，允许开发者用 Python 对象构建 SQL 语句（`select`、`insert`、`update`、`delete`），但不涉及对象映射。ORM 层构建于 Core 之上，提供对象关系映射，自动管理对象状态与数据库同步。
 
@@ -1872,7 +1872,7 @@ Core 层提供 SQL 表达式语言，允许开发者用 Python 对象构建 SQL 
 
 **题 2**：解释 Identity Map 的作用，并说明它如何避免"脏读"。
 
-**参考答案**：
+**解析讲解**：
 
 Identity Map 是 Session 内部的字典，键为 `(类, 主键)`，值为对象实例。作用：
 
@@ -1881,7 +1881,7 @@ Identity Map 是 Session 内部的字典，键为 `(类, 主键)`，值为对象
 
 **题 3**：ORM 对象有哪几种状态？画出状态转换图。
 
-**参考答案**：
+**解析讲解**：
 
 五种状态：
 
@@ -1900,7 +1900,7 @@ Persistent --expunge()--> Detached
 Detached --merge()--> Persistent (创建新实例)
 ```
 
-### 10.2 应用题
+### 应用题知识点讲解
 
 **题 4**：使用 SQLAlchemy 2.0 实现一个博客系统，包含 User、Post、Comment 三个模型，支持：
 
@@ -1908,7 +1908,7 @@ Detached --merge()--> Persistent (创建新实例)
 - 文章下评论
 - 查询某用户的所有文章及其评论数
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from sqlalchemy import select, func
@@ -1969,7 +1969,7 @@ for user in users:
     print(user.name, [p.title for p in user.posts])
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 # 方式一：selectinload（推荐，使用 IN 查询）
@@ -2002,7 +2002,7 @@ async def get_user_articles(user_id: int):
 
 后续访问 `user.articles` 时报错 `MissingGreenlet`，原因是什么？如何修复？
 
-**参考答案**：
+**解析讲解**：
 
 **原因**：异步 Session 中，懒加载描述符访问会触发同步 I/O，与事件循环冲突，抛出 `MissingGreenlet`。
 
@@ -2034,7 +2034,7 @@ with Session(engine) as session:
     # session 状态？
 ```
 
-**参考答案**：
+**解析讲解**：
 
 第二次 `commit()` 抛出 `IntegrityError`，事务回滚，`user2` 未持久化。但 `user1` 已在第一次 `commit()` 时持久化，不受影响。
 
@@ -2044,7 +2044,7 @@ Session 状态：进入"失败"状态，后续操作需先调用 `session.rollba
 
 **题 8**：评价"在微服务架构中，每个服务应使用独立数据库，通过 API 通信而非跨服务 JOIN"这一原则。SQLAlchemy 在此场景下有何局限？
 
-**参考答案**：
+**解析讲解**：
 
 **原则合理性**：微服务的核心是"自治"，独立数据库避免服务间耦合，允许独立部署、扩缩、技术栈选择。跨服务 JOIN 会引入分布式事务问题（两阶段提交复杂且性能差）。
 
@@ -2066,7 +2066,7 @@ Session 状态：进入"失败"状态，后续操作需先调用 `session.rollba
 
 **题 9**：设计一个支持"乐观并发控制"的混入，通过版本号字段防止并发修改。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from sqlalchemy import Integer, version_id
@@ -2105,7 +2105,7 @@ with Session(engine) as session1, Session(engine) as session2:
 
 **题 10**：实现一个"分布式锁"扩展，通过数据库行锁实现跨进程互斥。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from sqlalchemy import select, text

@@ -232,20 +232,13 @@ etymology:
 3. **有信息搜索**（Informed/Heuristic Search, Russell-Norvig §3.5）：利用启发式函数 $h(n)$ 引导，包括贪婪最佳优先、A*、IDA*；
 4. **对抗搜索**（Adversarial Search, Russell-Norvig §5）：多智能体博弈，包括 Minimax、Alpha-Beta 剪枝、Monte Carlo Tree Search（MCTS）。
 
-```
-搜索算法分类树：
-                              搜索
-                                |
-        ┌───────────┬───────────┴───────────┬────────────┐
-    静态查找     无信息搜索           有信息搜索         对抗搜索
-    数组/链表    状态空间图          状态空间图+启发式   博弈树
-        │           │                       │                │
-    ┌───┴───┐   ┌───┴───┐               ┌───┴───┐        ┌───┴───┐
-    线性   二分  BFS   DFS              A*   IDA*       Minimax  MCTS
-    O(n)  O(logn) O(V+E) O(V+E)        O(b^d)  O(b^d)    O(b^d)  O(b^d)
-        │       │     │                 │      │           │
-       哈希    UCS  IDDFS              贪婪    WIDA*     Alpha-Beta
-       O(1)   O(ElogV) O(b^d)          GBFS              O(b^(d/2))
+```mermaid
+flowchart TD
+    S[搜索]
+    S --> ST[静态查找 数组/链表<br/>线性 O(n)/二分 O(log n)/哈希 O(1)]
+    S --> U[无信息搜索 状态空间图<br/>BFS O(V+E)/DFS O(V+E)/UCS O(E log V)/IDDFS O(b^d)]
+    S --> I[有信息搜索 状态空间图+启发式<br/>A* O(b^d)/IDA* O(b^d)/贪婪 GBFS/WIDA*]
+    S --> G[对抗搜索 博弈树<br/>Minimax O(b^d)/MCTS/Alpha-Beta O(b^(d/2))]
 ```
 
 **搜索算法的四大评估指标**：
@@ -1920,9 +1913,9 @@ IDDFS 在深度 $d$ 找到解时，前 $d$ 轮的扩展看似浪费。但 Korf 1
 
 $h \equiv 0$ 时 A* = Dijkstra。需选择合适的启发式（如网格用曼哈顿距离，而非 0）。
 
-## 17. 习题与解答
+## 知识讲解与要点分析（原习题）
 
-### 17.1 选择题
+### 选择题知识点讲解
 
 **1. 在分支因子 $b=10$、解深度 $d=6$ 的状态空间中，双向 BFS 相比单向 BFS 的扩展次数大致减少为：**
 
@@ -1931,7 +1924,7 @@ B. 100 倍
 C. 1000 倍  
 D. 10000 倍
 
-**答案**：C。单向 $10^6$，双向 $2 \times 10^3 \approx 2000$，减少约 500 倍，最接近 1000 倍。
+**解析讲解**：C。单向 $10^6$，双向 $2 \times 10^3 \approx 2000$，减少约 500 倍，最接近 1000 倍。
 
 **2. 下列关于 A* 算法的描述，正确的是：**
 
@@ -1940,7 +1933,7 @@ B. 可采纳性 $h(n) \leq h^*(n)$ 保证 A* 最优
 C. 一致性比可采纳性更弱  
 D. $h \equiv 0$ 时 A* 退化为 BFS
 
-**答案**：B。可采纳性是 A* 最优性的充分条件。C 错：一致性蕴含可采纳性，故一致性更强。D 错：$h \equiv 0$ 时 A* 退化为 Dijkstra，不是 BFS。
+**解析讲解**：B。可采纳性是 A* 最优性的充分条件。C 错：一致性蕴含可采纳性，故一致性更强。D 错：$h \equiv 0$ 时 A* 退化为 Dijkstra，不是 BFS。
 
 **3. IDA* 相比 A* 的核心优势是：**
 
@@ -1949,7 +1942,7 @@ B. 空间复杂度更低
 C. 不需要启发式  
 D. 完备性更强
 
-**答案**：B。IDA* 空间 $O(d)$，A* 空间 $O(b^d)$。
+**解析讲解**：B。IDA* 空间 $O(d)$，A* 空间 $O(b^d)$。
 
 **4. Knuth-Moore 1975 证明 Alpha-Beta 剪枝的最优复杂度为：**
 
@@ -1958,7 +1951,7 @@ B. $O(b^{d/2})$
 C. $O(b^{3d/4})$  
 D. $O(b^{\log_2 d})$
 
-**答案**：B。最优节点排序下 Alpha-Beta 复杂度 $O(b^{d/2})$。
+**解析讲解**：B。最优节点排序下 Alpha-Beta 复杂度 $O(b^{d/2})$。
 
 **5. 下列算法中，哪个在加权图上不保证最短路径？**
 
@@ -1967,29 +1960,29 @@ B. A*（可采纳启发式）
 C. Bellman-Ford  
 D. BFS
 
-**答案**：D。BFS 仅在无权图（或所有边权相等）上保证最短路径。
+**解析讲解**：D。BFS 仅在无权图（或所有边权相等）上保证最短路径。
 
-### 17.2 填空题
+### 填空题知识点讲解
 
 **1.** Hart-Nilsson-Raphael 于 ____ 年在 IEEE Trans. SSC-4(2):100-107 发表 A* 算法，最初为 ____ 机器人路径规划而设计。
 
-**答案**：1968；Shakey（SRI International）
+**解析讲解**：1968；Shakey（SRI International）
 
 **2.** IDDFS 的空间复杂度为 ____，时间复杂度与 BFS 同阶为 ____。
 
-**答案**：$O(d)$；$O(b^d)$
+**解析讲解**：$O(d)$；$O(b^d)$
 
 **3.** 启发式一致性的形式化定义为 ____，它蕴含 ____。
 
-**答案**：$h(n) \leq c(n, n') + h(n')$；可采纳性
+**解析讲解**：$h(n) \leq c(n, n') + h(n')$；可采纳性
 
 **4.** Tarjan 桥算法中，边 $(u, v)$ 是桥的充要条件是 ____。
 
-**答案**：$\text{low}[v] > \text{disc}[u]$
+**解析讲解**：$\text{low}[v] > \text{disc}[u]$
 
 **5.** Bloch 2006 在 Google Research Blog 公开的二分查找整数溢出 bug 是 ____，正确写法应为 ____。
 
-**答案**：`mid = (low + high) / 2`；`mid = low + (high - low) / 2` 或 `mid = (low + high) >>> 1`
+**解析讲解**：`mid = (low + high) / 2`；`mid = low + (high - low) / 2` 或 `mid = (low + high) >>> 1`
 
 ### 17.3 代码修正题
 
@@ -2041,15 +2034,15 @@ def bidirectional_buggy(graph, start, end):
 
 **1.** 阐述 A* 算法最优性证明的核心思路，并说明为何可采纳性 $h(n) \leq h^*(n)$ 是关键约束。
 
-**参考答案**：证明采用反证法。设 A* 返回次优解 $C' > C^*$。在 A* 终止前，最优路径上必存在某节点 $n$ 在开表中，由可采纳性 $f(n) = g(n) + h(n) \leq g^*(n) + h^*(n) = C^*$。但 A* 选 $f$ 最小的节点扩展，必先扩展 $n$ 而非返回 $C'$，矛盾。可采纳性保证 $f(n)$ 不高估真实代价，是 A* "贪心选最优"得以成立的关键。
+**解析讲解**：证明采用反证法。设 A* 返回次优解 $C' > C^*$。在 A* 终止前，最优路径上必存在某节点 $n$ 在开表中，由可采纳性 $f(n) = g(n) + h(n) \leq g^*(n) + h^*(n) = C^*$。但 A* 选 $f$ 最小的节点扩展，必先扩展 $n$ 而非返回 $C'$，矛盾。可采纳性保证 $f(n)$ 不高估真实代价，是 A* "贪心选最优"得以成立的关键。
 
 **2.** 比较 A*、IDA*、双向 BFS 在 15 数码问题上的适用性。
 
-**参考答案**：15 数码状态空间约 $10^{13}$，分支因子约 2.13，平均解深度约 52.6。A* 因 $O(b^d)$ 内存爆炸不可用；IDA* 空间 $O(d) \approx 53$ 极优，Korf 1985 用 IDA* + Manhattan + Linear Conflict 在 SUN-3 求解平均 50 秒，现代 PDB 优化后毫秒级；双向 BFS 不适用，因为目标状态难以反向生成前驱（15 数码反向搜索同样巨大）。
+**解析讲解**：15 数码状态空间约 $10^{13}$，分支因子约 2.13，平均解深度约 52.6。A* 因 $O(b^d)$ 内存爆炸不可用；IDA* 空间 $O(d) \approx 53$ 极优，Korf 1985 用 IDA* + Manhattan + Linear Conflict 在 SUN-3 求解平均 50 秒，现代 PDB 优化后毫秒级；双向 BFS 不适用，因为目标状态难以反向生成前驱（15 数码反向搜索同样巨大）。
 
 **3.** 论述 Alpha-Beta 剪枝在工程实践中的关键优化策略。
 
-**参考答案**：(1) 节点排序：TT move > killer move > history heuristic，逼近 Knuth-Moore 最优排序 $O(b^{d/2})$；(2) Iterative Deepening：上一深度最佳着法作为下一深度 TT move；(3) Quiescence Search：避免水平线效应；(4) Null Move Pruning：跳过一步判断优势；(5) Transposition Table：Zobrist hashing 缓存；(6) Late Move Reduction：靠后着法降深度；(7) 并行搜索：Stockfish 11+ 多线程。
+**解析讲解**：(1) 节点排序：TT move > killer move > history heuristic，逼近 Knuth-Moore 最优排序 $O(b^{d/2})$；(2) Iterative Deepening：上一深度最佳着法作为下一深度 TT move；(3) Quiescence Search：避免水平线效应；(4) Null Move Pruning：跳过一步判断优势；(5) Transposition Table：Zobrist hashing 缓存；(6) Late Move Reduction：靠后着法降深度；(7) 并行搜索：Stockfish 11+ 多线程。
 
 ## 18. 参考文献
 
@@ -2147,21 +2140,13 @@ def bidirectional_buggy(graph, start, end):
 
 ### 20.1 知识图谱
 
-```
-搜索算法全景图：
-                          搜索算法
-                              |
-        ┌─────────────┬───────┴───────┬──────────────┐
-    静态查找       无信息搜索        有信息搜索         对抗搜索
-    数组/链表      状态空间图       状态空间图+启发式   博弈树
-        │              │                  │                │
-    ┌───┴───┐      ┌───┴───┐          ┌───┴───┐       ┌───┴───┐
-    线性   二分     BFS   DFS          A*   IDA*      Minimax  MCTS
-    O(n)  O(logn)  O(V+E) O(V+E)      O(b^d) O(b^d)   O(b^d)   ─
-        │           │     │             │      │           │
-       哈希         双向   IDDFS        贪婪    WIDA*    Alpha-Beta
-       O(1)        BFS    O(b^d)/O(d)  GBFS             O(b^(d/2))
-                  O(b^(d/2))
+```mermaid
+flowchart TD
+    S[搜索算法]
+    S --> ST[静态查找 数组/链表<br/>线性 O(n)/二分 O(log n)/哈希 O(1)]
+    S --> U[无信息搜索 状态空间图<br/>BFS O(V+E)/DFS O(V+E)/双向BFS O(b^(d/2))/IDDFS O(b^d) O(d)]
+    S --> I[有信息搜索 状态空间图+启发式<br/>A* O(b^d)/IDA* O(b^d)/贪婪 GBFS/WIDA*]
+    S --> G[对抗搜索 博弈树<br/>Minimax O(b^d)/MCTS/Alpha-Beta O(b^(d/2))]
 ```
 
 ### 20.2 三大核心论证方法
@@ -2172,27 +2157,35 @@ def bidirectional_buggy(graph, start, end):
 
 ### 20.3 工业级选型决策树
 
-```
-问题类型判定：
-├─ 静态查找（数据不变）
-│   ├─ 精确匹配 → 哈希表 O(1) 平均
-│   ├─ 范围查询 → B+ 树 / 红黑树 O(log n)
-│   └─ 无序扫描 → 线性查找 O(n)
-├─ 无权图最短路
-│   ├─ 单源 → BFS O(V+E)
-│   ├─ 双向已知目标 → 双向 BFS O(b^(d/2))
-│   └─ 内存受限 → IDDFS O(b^d) 时间 / O(d) 空间
-├─ 加权图最短路
-│   ├─ 非负权重 → Dijkstra O(E log V)
-│   ├─ 有启发式 → A* O(b^(εd))
-│   └─ 内存受限 → IDA* O(b^d) 时间 / O(d) 空间
-├─ 博弈搜索
-│   ├─ 两人零和 → Minimax O(b^d)
-│   ├─ 需剪枝 → Alpha-Beta O(b^(d/2))（最优排序）
-│   └─ 大分支因子 → MCTS
-└─ DAG 拓扑
-    ├─ 拓扑序 → DFS 后序逆序 / Kahn BFS
-    └─ 环检测 → 三色标记
+```mermaid
+flowchart TD
+    T0["问题类型判定："]
+    T1["静态查找（数据不变）"]
+    T2["精确匹配 → 哈希表 O(1) 平均"]
+    T3["范围查询 → B+ 树 / 红黑树 O(log n)"]
+    T4["无序扫描 → 线性查找 O(n)"]
+    T5["无权图最短路"]
+    T6["单源 → BFS O(V+E)"]
+    T7["双向已知目标 → 双向 BFS O(b^(d/2))"]
+    T8["内存受限 → IDDFS O(b^d) 时间 / O(d) 空间"]
+    T9["加权图最短路"]
+    T10["非负权重 → Dijkstra O(E log V)"]
+    T11["有启发式 → A* O(b^(εd))"]
+    T12["内存受限 → IDA* O(b^d) 时间 / O(d) 空间"]
+    T13["博弈搜索"]
+    T14["两人零和 → Minimax O(b^d)"]
+    T15["需剪枝 → Alpha-Beta O(b^(d/2))（最优排序）"]
+    T16["大分支因子 → MCTS"]
+    T17["DAG 拓扑"]
+    T18["拓扑序 → DFS 后序逆序 / Kahn BFS"]
+    T19["环检测 → 三色标记"]
+    T0 --> T1
+    T4 --> T5
+    T8 --> T9
+    T12 --> T13
+    T16 --> T17
+    T17 --> T18
+    T17 --> T19
 ```
 
 ### 20.4 教学反思

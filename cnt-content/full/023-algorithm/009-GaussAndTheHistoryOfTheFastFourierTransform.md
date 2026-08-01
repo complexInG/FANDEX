@@ -259,17 +259,13 @@ $$T(n) = aT(n/b) + f(n)$$
 
 其中 $a \geq 1$ 为子问题数，$b > 1$ 为规模缩减比，$f(n)$ 为分解与合并的总代价。**主定理**（Master Theorem, Bentley-Haken-Saxe 1980）给出此递推的通用解法，分三种情况对应不同的渐近量级。
 
-```
-分治算法分类树：
-                          分治算法
-                              |
-        ┌─────────┬───────────┴──────────┬────────────┐
-     排序分治    代数分治              几何分治        信号分治
-        │          │                     │                │
-   ┌────┴───┐  ┌───┴────┐          ┌────┴────┐      ┌────┴────┐
-  归并排序 快排 Karatsuba Strassen  最近点对  最大子数组  FFT  数论变换
-  von Neu. Hoare 1963     1969      1976     1976    1965     NTT
-  1945    1961  O(n^1.585) O(n^2.807) O(nlogn) O(nlogn) O(nlogn)
+```mermaid
+flowchart TD
+    D[分治算法]
+    D --> S[排序分治<br/>归并排序 von Neumann 1945/快排 Hoare 1961]
+    D --> A[代数分治<br/>Karatsuba 1963 O(n^1.585)/Strassen 1969 O(n^2.807)]
+    D --> G[几何分治<br/>最近点对 1976/最大子数组 1976 O(n log n)]
+    D --> F[信号分治<br/>FFT 1965 O(n log n)/数论变换 NTT]
 ```
 
 **分治与其他算法策略的本质区别**：
@@ -1543,9 +1539,9 @@ def reducer(word, counts):
 
 10. **并行分治任务窃取不均**：子问题规模差异大导致某些 worker 空闲。**解决**：用 work-stealing 调度器（如 Java ForkJoinPool、Intel TBB）。
 
-## 13. 习题与解答
+## 知识讲解与要点分析（原习题）
 
-### 13.1 选择题（5 题）
+### 选择题知识点讲解
 
 1. 主定理 $T(n) = 4T(n/2) + O(n)$ 的解为：
    - A. $\Theta(n)$
@@ -1587,7 +1583,7 @@ def reducer(word, counts):
 
    **答案**：B。strip 宽度 $2d$，按 $y$ 排序后，每点只需检查 $y$ 差小于 $d$ 的点。$d \times d$ 方格至多 4 个点（鸽笼），故 7 邻居足够。
 
-### 13.2 填空题（5 题）
+### 填空题知识点讲解
 
 1. 主定理情况 2 的形式化条件是 $f(n) = \Theta(n^{\log_b a} \log^k n)$，对应 $T(n) = \Theta($______$)$。
 
@@ -1627,7 +1623,7 @@ def karatsuba_bad(x, y):
     return ac * 10**(2*m) + ad_plus_bc * 10**m + bd
 ```
 
-**答案**：`ad_plus_bc` 计算未减去 $ac$ 和 $bd$。正确：
+**解析讲解**：`ad_plus_bc` 计算未减去 $ac$ 和 $bd$。正确：
 
 ```python
 ad_plus_bc = karatsuba_bad(a + b, c + d) - ac - bd
@@ -1651,7 +1647,7 @@ def merge_bad(left, right):
     return result
 ```
 
-**答案**：相等时应优先取左半，改为 `<=`：
+**解析讲解**：相等时应优先取左半，改为 `<=`：
 
 ```python
 if left[i] <= right[j]:
@@ -1756,19 +1752,13 @@ else:
 
 ### 16.1 知识图谱
 
-```
-分治算法知识图谱：
-                        分治三步范式 (Divide-Conquer-Combine)
-                                    |
-        ┌─────────────┬─────────────┴─────────────┬──────────────┐
-    主定理分析       代数恒等式优化            几何分治              信号分治
-    Bentley-1980    Karatsuba/Strassen       Bentley-Shamos       Cooley-Tukey
-        |                |                       |                     |
-  ┌─────┴──────┐   ┌─────┴─────┐          ┌─────┴─────┐         ┌─────┴─────┐
-  情况1 情况2 情况3  Karatsuba  Strassen      最近点对   最大子数组   FFT       IFFT
-  T=Θ(n^logba)   O(n^1.585)  O(n^2.807)   O(nlogn)   O(nlogn)   O(nlogn)  O(nlogn)
-        |                |                       |                     |
-  递归树归约         代数恒等式               势能摊还              蝶形运算
+```mermaid
+flowchart TD
+    P[分治三步范式 Divide-Conquer-Combine]
+    P --> M[主定理分析 Bentley 1980<br/>情况1/2/3 T=Θ(n^logba)<br/>递归树归约]
+    P --> A[代数恒等式优化<br/>Karatsuba O(n^1.585)/Strassen O(n^2.807)]
+    P --> G[几何分治 Bentley-Shamos<br/>最近点对/最大子数组 O(n log n) 势能摊还]
+    P --> F[信号分治 Cooley-Tukey<br/>FFT/IFFT O(n log n) 蝶形运算]
 ```
 
 ### 16.2 三大核心论证方法回顾
@@ -1779,31 +1769,40 @@ else:
 
 ### 16.3 工业级选型决策树
 
-```
-需求分析：
-├── 排序？
-│   ├── 小数据 (n<50)：插入排序
-│   ├── 中数据 (50<n<10^6)：introsort (C++ std::sort)
-│   ├── 大数据内存可容纳：Timsort (Python/Java)
-│   ├── 大数据超内存：外部归并排序 (PostgreSQL)
-│   └── 分布式：MapReduce
-├── 大整数乘法？
-│   ├── n<1024 位：朴素
-│   ├── 1024<n<2^20：Karatsuba
-│   ├── 2^20<n<2^40：Toom-Cook 3-way
-│   └── n>2^40：Schönhage-Strassen (FFT-based)
-├── 矩阵乘法？
-│   ├── n<100：朴素 + SIMD
-│   ├── 100<n<2000：BLAS (blocked)
-│   └── n>2000：Strassen + BLAS 混合
-├── 信号处理？
-│   ├── 标准 FFT：FFTW / cuFFT
-│   ├── 实数 FFT：RFFT (利用共轭对称)
-│   └── 任意长度：Bluestein / Rader
-└── 几何问题？
-    ├── 最近点对：分治 O(n log n)
-    ├── 凸包：Andrew monotone chain O(n log n)
-    └── 范围查询：Kd 树 / R 树
+```mermaid
+flowchart TD
+    T0["需求分析："]
+    T1["排序？"]
+    T2["小数据 (n<50)：插入排序"]
+    T3["中数据 (50<n<10^6)：introsort (C++ std::sort)"]
+    T4["大数据内存可容纳：Timsort (Python/Java)"]
+    T5["大数据超内存：外部归并排序 (PostgreSQL)"]
+    T6["分布式：MapReduce"]
+    T7["大整数乘法？"]
+    T8["n<1024 位：朴素"]
+    T9["1024<n<2^20：Karatsuba"]
+    T10["2^20<n<2^40：Toom-Cook 3-way"]
+    T11["n>2^40：Schönhage-Strassen (FFT-based)"]
+    T12["矩阵乘法？"]
+    T13["n<100：朴素 + SIMD"]
+    T14["100<n<2000：BLAS (blocked)"]
+    T15["n>2000：Strassen + BLAS 混合"]
+    T16["信号处理？"]
+    T17["标准 FFT：FFTW / cuFFT"]
+    T18["实数 FFT：RFFT (利用共轭对称)"]
+    T19["任意长度：Bluestein / Rader"]
+    T20["几何问题？"]
+    T21["最近点对：分治 O(n log n)"]
+    T22["凸包：Andrew monotone chain O(n log n)"]
+    T23["范围查询：Kd 树 / R 树"]
+    T0 --> T1
+    T6 --> T7
+    T11 --> T12
+    T15 --> T16
+    T19 --> T20
+    T20 --> T21
+    T20 --> T22
+    T20 --> T23
 ```
 
 ### 16.4 教学反思

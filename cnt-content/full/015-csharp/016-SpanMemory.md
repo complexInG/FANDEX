@@ -15,10 +15,11 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
+# C# Span 与 Memory
 
-# .NET Span 与 Memory：从零分配内存到 ref struct 的全景解析
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本章对标 MIT 6.1020（Software Construction）与 Stanford CS107（Programming Paradigms）的内存安全与缓冲区处理教学深度，结合 ECMA-334（C# 规范）、ECMA-335（CLI 规范）、CoreCLR 源码（`SpanHelpers.cs`、`MemoryMarshal.cs`、`ArrayPool.cs`）与 Krzysztof Cwalina、Stephen Toub 等人的设计文档，深入剖析 .NET 中 `Span<T>`/`ReadOnlySpan<T>`/`Memory<T>`/`ReadOnlyMemory<T>` 的内部结构、`ref struct` 的栈约束机制、`stackalloc` 的栈上分配、切片运算的 $O(1)$ 复杂度、`MemoryMarshal` 的高级 reinterpret 操作、`ArrayPool<T>` 的对象池化模式、`MemoryManager<T>` 的自定义扩展点，以及在 ASP.NET Core、Kestrel、Utf8JsonReader、P/Invoke 等热路径中的零拷贝工程实践。
+---
 
 ## 目录
 
@@ -355,26 +356,22 @@ public readonly ref struct Span<T>
 
 `ByReference<T>` 在 .NET 5+ 替换为原生 `ref T` 字段：
 
-```csharp
-// .NET 5+ 优化
-public readonly ref struct Span<T>
-{
-    internal readonly ref T _reference;  // 原生 ref 字段
-    private readonly int _length;
-}
+```mermaid
+flowchart TD
+    S[Span&lt;T&gt; 内存布局，Total 16 bytes]
+    S --> R[ref T _reference 8 bytes<br/>指向内存起始]
+    S --> L[int _length 4 bytes<br/>视图长度]
+    S --> P[padding 4 bytes<br/>对齐填充]
 ```
 
 布局（64 位）：
 
-```
-┌────────────────────────────────────┐
-│  ref T _reference (8 bytes)        │  ← 指向内存起始
-├────────────────────────────────────┤
-│  int _length (4 bytes)             │  ← 视图长度
-├────────────────────────────────────┤
-│  padding (4 bytes)                 │  ← 对齐填充
-└────────────────────────────────────┘
-   Total: 16 bytes
+```mermaid
+flowchart TD
+    S[Span&lt;T&gt; 内存布局，Total 16 bytes]
+    S --> R[ref T _reference 8 bytes<br/>指向内存起始]
+    S --> L[int _length 4 bytes<br/>视图长度]
+    S --> P[padding 4 bytes<br/>对齐填充]
 ```
 
 ### 4.2 ref struct 的栈约束保证
@@ -446,10 +443,11 @@ public readonly struct Memory<T>
 
 `ArrayPool<T>.Shared` 采用分层缓存策略（共享池实现 `ConfigurableArrayPool<T>`）：
 
-```
-Thread 1: TLS cache (size buckets)  ──┐
-Thread 2: TLS cache (size buckets)  ──┼──► Shared central pool (per-bucket stacks)
-Thread 3: TLS cache (size buckets)  ──┘
+```mermaid
+flowchart LR
+    T1[Thread 1 TLS cache size buckets] --> C[Shared central pool per-bucket stacks]
+    T2[Thread 2 TLS cache size buckets] --> C
+    T3[Thread 3 TLS cache size buckets] --> C
 ```
 
 每个线程有独立的线程局部存储（TLS）缓存，每个 bucket 对应一种数组大小（如 32, 64, 128, ..., 2^30）。
@@ -1744,7 +1742,7 @@ public static class BinaryPrimitivesDemo
 ### 7.1 陷阱：Span<T> 跨 async/await
 
 ```csharp
-// ❌ 错误：Span<T> 不能跨 await
+// 不支持 错误：Span<T> 不能跨 await
 public async Task BadAsync()
 {
     Span<byte> buf = stackalloc byte[1024];
@@ -1752,7 +1750,7 @@ public async Task BadAsync()
     Process(buf);  // 编译错误！
 }
 
-// ✅ 正解：使用 Memory<T>
+// 已达标 正解：使用 Memory<T>
 public async Task GoodAsync()
 {
     byte[] rented = ArrayPool<byte>.Shared.Rent(1024);
@@ -1774,13 +1772,13 @@ public async Task GoodAsync()
 ### 7.2 陷阱：Span<T> 作为类字段
 
 ```csharp
-// ❌ 错误：ref struct 不能作为类字段
+// 不支持 错误：ref struct 不能作为类字段
 public class BadHolder
 {
     private Span<int> _data;  // 编译错误！
 }
 
-// ✅ 正解：使用 Memory<T>
+// 已达标 正解：使用 Memory<T>
 public class GoodHolder
 {
     private Memory<int> _data;
@@ -1801,13 +1799,13 @@ public ref struct SpanWriter
 ### 7.3 陷阱：Span<T> 在 Lambda 捕获
 
 ```csharp
-// ❌ 错误：Lambda 不能捕获 Span<T>
+// 不支持 错误：Lambda 不能捕获 Span<T>
 public void BadLambda(Span<int> data)
 {
     Action a = () => Console.WriteLine(data[0]);  // 编译错误！
 }
 
-// ✅ 正解：传递参数
+// 已达标 正解：传递参数
 public void GoodLambda(Span<int> data)
 {
     Process(data, x => Console.WriteLine(x));
@@ -1823,20 +1821,20 @@ private void Process<T>(Span<T> data, Action<T> action)
 ### 7.4 陷阱：stackalloc 返回
 
 ```csharp
-// ❌ 错误：返回 stackalloc 内存
+// 不支持 错误：返回 stackalloc 内存
 public unsafe Span<byte> BadReturn()
 {
     Span<byte> buf = stackalloc byte[1024];
     return buf;  // 栈帧弹出后悬垂！
 }
 
-// ✅ 正解：使用堆分配
+// 已达标 正解：使用堆分配
 public Span<byte> GoodReturn()
 {
     return new byte[1024];
 }
 
-// ✅ 正解：使用 ArrayPool
+// 已达标 正解：使用 ArrayPool
 public Memory<byte> GoodReturnPooled()
 {
     return ArrayPool<byte>.Shared.Rent(1024);
@@ -1846,7 +1844,7 @@ public Memory<byte> GoodReturnPooled()
 ### 7.5 陷阱：Memory<T>.Span 频繁访问
 
 ```csharp
-// ❌ 低效：每次访问 .Span 都有开销
+// 不支持 低效：每次访问 .Span 都有开销
 public void BadProcess(Memory<int> mem)
 {
     for (int i = 0; i < mem.Length; i++)
@@ -1855,7 +1853,7 @@ public void BadProcess(Memory<int> mem)
     }
 }
 
-// ✅ 高效：缓存 Span
+// 已达标 高效：缓存 Span
 public void GoodProcess(Memory<int> mem)
 {
     Span<int> span = mem.Span;
@@ -1871,7 +1869,7 @@ public void GoodProcess(Memory<int> mem)
 ### 7.6 陷阱：ArrayPool 未归还
 
 ```csharp
-// ❌ 错误：忘记 Return
+// 不支持 错误：忘记 Return
 public byte[] BadProcess(byte[] input)
 {
     byte[] temp = ArrayPool<byte>.Shared.Rent(input.Length);
@@ -1879,7 +1877,7 @@ public byte[] BadProcess(byte[] input)
     return temp;  // 没有归还！内存泄漏
 }
 
-// ✅ 正解：try-finally 归还
+// 已达标 正解：try-finally 归还
 public byte[] GoodProcess(byte[] input)
 {
     byte[] temp = ArrayPool<byte>.Shared.Rent(input.Length);
@@ -1911,14 +1909,14 @@ public IMemoryOwner<byte> ProcessWithOwner(byte[] input)
 ### 7.7 陷阱：ReadOnlySpan 误用为可写
 
 ```csharp
-// ❌ 错误：字符串是只读的，不能修改
+// 不支持 错误：字符串是只读的，不能修改
 public void BadModify(string s)
 {
     Span<char> span = s.AsSpan();  // 编译错误：ROSpan 不能赋给 Span
     span[0] = 'X';
 }
 
-// ✅ 正解：转换为 char[] 再修改
+// 已达标 正解：转换为 char[] 再修改
 public string GoodModify(string s)
 {
     char[] chars = s.ToCharArray();
@@ -1930,20 +1928,20 @@ public string GoodModify(string s)
 ### 7.8 陷阱：Span 切片越界
 
 ```csharp
-// ❌ 错误：越界抛 IndexOutOfRangeException
+// 不支持 错误：越界抛 IndexOutOfRangeException
 public void BadSlice(Span<int> data)
 {
     var slice = data[..100];  // 若 data.Length < 100 抛异常
 }
 
-// ✅ 正解：先检查
+// 已达标 正解：先检查
 public void GoodSlice(Span<int> data)
 {
     if (data.Length < 100) throw new ArgumentException("Too short");
     var slice = data[..100];
 }
 
-// ✅ 正解：使用 Math.Min
+// 已达标 正解：使用 Math.Min
 public void SafeSlice(Span<int> data)
 {
     var slice = data[..Math.Min(100, data.Length)];
@@ -1953,7 +1951,7 @@ public void SafeSlice(Span<int> data)
 ### 7.9 陷阱：固定对象与 GC
 
 ```csharp
-// ❌ 错误：长时间固定 byte[]
+// 不支持 错误：长时间固定 byte[]
 public void BadPin(byte[] data)
 {
     GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
@@ -1962,7 +1960,7 @@ public void BadPin(byte[] data)
     handle.Free();
 }
 
-// ✅ 正解：使用 POH（.NET 5+）
+// 已达标 正解：使用 POH（.NET 5+）
 public void GoodPoh()
 {
     byte[] data = GC.AllocateArray<byte>(1024, pinned: true);
@@ -1970,7 +1968,7 @@ public void GoodPoh()
     DoSomething();
 }
 
-// ✅ 正解：使用 fixed（短期）
+// 已达标 正解：使用 fixed（短期）
 public void FixedShort(byte[] data)
 {
     fixed (byte* p = data)
@@ -1984,13 +1982,13 @@ public void FixedShort(byte[] data)
 ### 7.10 陷阱：多线程共享 Span<T>
 
 ```csharp
-// ❌ 错误：Span<T> 跨线程不安全
+// 不支持 错误：Span<T> 跨线程不安全
 public void BadThread(Span<int> data)
 {
     Task.Run(() => Process(data));  // 编译错误！Span 不能跨任务
 }
 
-// ✅ 正解：使用 Memory<T>
+// 已达标 正解：使用 Memory<T>
 public void GoodThread(Memory<int> data)
 {
     Task.Run(() => Process(data.Span));
@@ -2022,13 +2020,13 @@ public ref struct MySpan : IDisposable
 ### 7.12 陷阱：忽略字节序
 
 ```csharp
-// ❌ 错误：跨平台字节序问题
+// 不支持 错误：跨平台字节序问题
 public int BadRead(ReadOnlySpan<byte> data)
 {
     return MemoryMarshal.Read<int>(data);  // 机器字节序，跨平台不一致
 }
 
-// ✅ 正解：显式字节序
+// 已达标 正解：显式字节序
 public int GoodRead(ReadOnlySpan<byte> data)
 {
     return BinaryPrimitives.ReadInt32BigEndian(data);  // 网络字节序
@@ -2358,35 +2356,38 @@ kubectl exec <pod> -- dotnet-counters monitor \
 
 ### 8.5 性能调优决策树
 
-```
-需要处理大量内存？
-│
-├─ 是否跨 async？
-│   ├─ 是 → Memory<T> + ArrayPool<T>.Shared.Rent
-│   └─ 否 → Span<T> + stackalloc（小内存）
-│            或 ArrayPool<T>.Shared.Rent（大内存）
-│
-├─ 是否需要原生互操作？
-│   ├─ 是 → Span<T> + MemoryMarshal
-│   └─ 否 → 标准 Span<T> API
-│
-├─ 是否高频分配同样大小数组？
-│   ├─ 是 → ArrayPool<T>.Shared + using
-│   └─ 否 → new T[]（一次性使用）
-│
-├─ 是否处理 JSON？
-│   ├─ 高性能 → Utf8JsonReader + Span<byte>
-│   ├─ 通用 → JsonSerializer
-│   └─ 简单 → System.Text.Json + JsonSerializer
-│
-├─ 是否处理字符串？
-│   ├─ Substring → 改用 AsSpan() + Slice
-│   ├─ Split → 改用 Span + 手动解析
-│   └─ Format → string.Create + Span<char>
-│
-└─ 是否需要零拷贝？
-    ├─ 是 → MemoryMarshal + unsafe
-    └─ 否 → 标准 API
+```mermaid
+flowchart TD
+    T0["需要处理大量内存？"]
+    T1["是否跨 async？"]
+    T2["是 → Memory<T> + ArrayPool<T>.Shared.Rent"]
+    T3["否 → Span<T> + stackalloc（小内存）"]
+    T4["或 ArrayPool<T>.Shared.Rent（大内存）"]
+    T5["是否需要原生互操作？"]
+    T6["是 → Span<T> + MemoryMarshal"]
+    T7["否 → 标准 Span<T> API"]
+    T8["是否高频分配同样大小数组？"]
+    T9["是 → ArrayPool<T>.Shared + using"]
+    T10["否 → new T[]（一次性使用）"]
+    T11["是否处理 JSON？"]
+    T12["高性能 → Utf8JsonReader + Span<byte>"]
+    T13["通用 → JsonSerializer"]
+    T14["简单 → System.Text.Json + JsonSerializer"]
+    T15["是否处理字符串？"]
+    T16["Substring → 改用 AsSpan() + Slice"]
+    T17["Split → 改用 Span + 手动解析"]
+    T18["Format → string.Create + Span<char>"]
+    T19["是否需要零拷贝？"]
+    T20["是 → MemoryMarshal + unsafe"]
+    T21["否 → 标准 API"]
+    T0 --> T1
+    T4 --> T5
+    T7 --> T8
+    T10 --> T11
+    T14 --> T15
+    T18 --> T19
+    T19 --> T20
+    T19 --> T21
 ```
 
 ### 8.6 NativeAOT 与 Span
@@ -2845,24 +2846,24 @@ public readonly record struct Message(uint Magic, ushort Length, ushort Type, Re
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下关于 `Span<T>` 的描述，哪个是错误的？
+**常见疑问 1**：以下关于 `Span<T>` 的描述，哪个是错误的？
 
 A. `Span<T>` 是 `ref struct`，只能在栈上存活
 B. `Span<T>` 切片是 $O(1)$ 复杂度
 C. `Span<T>` 可以作为类的字段
 D. `Span<T>` 不能跨 `async`/`await` 使用
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`Span<T>` 是 `ref struct`，根据 C# 7.2 的 `ref struct` 约束，不能作为非 `ref struct` 的字段。若需堆存储，应使用 `Memory<T>`。
+**解析讲解**：`Span<T>` 是 `ref struct`，根据 C# 7.2 的 `ref struct` 约束，不能作为非 `ref struct` 的字段。若需堆存储，应使用 `Memory<T>`。
 
 ---
 
-**Q2**：以下代码的输出是？
+**常见疑问 2**：以下代码的输出是？
 
 ```csharp
 int[] arr = { 1, 2, 3, 4, 5 };
@@ -2877,82 +2878,82 @@ B. 2
 C. 100
 D. 编译错误
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`Span<T>` 是数组的视图，切片不复制数据。修改 `slice[0]` 实际修改的是 `arr[1]`（因为 `slice` 从 `span[1]` 开始）。
+**解析讲解**：`Span<T>` 是数组的视图，切片不复制数据。修改 `slice[0]` 实际修改的是 `arr[1]`（因为 `slice` 从 `span[1]` 开始）。
 
 ---
 
-**Q3**：以下代码会编译错误的是？
+**常见疑问 3**：以下代码会编译错误的是？
 
 A. `Span<int> s = stackalloc int[10];`
 B. `Memory<int> m = new int[10];`
 C. `async Task F() { Span<int> s = stackalloc int[10]; await Task.Delay(1); }`
 D. `void F(Span<int> s) { }`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`async` 方法被编译为状态机，`Span<T>` 作为 `ref struct` 不能作为状态机字段。在 `async` 方法中使用 `Span<T>` 会编译错误。
+**解析讲解**：`async` 方法被编译为状态机，`Span<T>` 作为 `ref struct` 不能作为状态机字段。在 `async` 方法中使用 `Span<T>` 会编译错误。
 
 ---
 
-**Q4**：`MemoryMarshal.Cast<int, byte>(span)` 的行为是？
+**常见疑问 4**：`MemoryMarshal.Cast<int, byte>(span)` 的行为是？
 
 A. 复制 `span` 到新的 `byte` 数组
 B. 将 `Span<int>` 重解释为 `Span<byte>`，长度变为原来的 4 倍
 C. 将 `Span<int>` 重解释为 `Span<byte>`，长度不变
 D. 抛出 `InvalidOperationException`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`MemoryMarshal.Cast<TFrom, TTo>` 是零拷贝 reinterpret 操作。`int` 是 4 字节，`byte` 是 1 字节，所以长度变为原来的 4 倍。
+**解析讲解**：`MemoryMarshal.Cast<TFrom, TTo>` 是零拷贝 reinterpret 操作。`int` 是 4 字节，`byte` 是 1 字节，所以长度变为原来的 4 倍。
 
 ---
 
-**Q5**：关于 `ArrayPool<T>.Shared`，以下描述错误的是？
+**常见疑问 5**：关于 `ArrayPool<T>.Shared`，以下描述错误的是？
 
 A. `Rent(minSize)` 返回的数组长度可能大于 `minSize`
 B. `Return(array)` 默认清空数组
 C. `ArrayPool<T>.Shared` 是全局共享的，线程安全
 D. `Rent(0)` 会抛出 `ArgumentException`
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：`Rent(0)` 不会抛异常，返回一个空数组（`Array.Empty<T>()` 或长度为 0 的数组）。
+**解析讲解**：`Rent(0)` 不会抛异常，返回一个空数组（`Array.Empty<T>()` 或长度为 0 的数组）。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**：`Span<T>` 的内部布局包含两个字段：`__________` 和 `__________`。
+**常见疑问 6**：`Span<T>` 的内部布局包含两个字段：`__________` 和 `__________`。
 
-**答案**：`ref T _reference`（或 `ByReference<T> _pointer`）、`int _length`
-
----
-
-**Q2**：`ref struct` 在 C# __________ 版本引入，`Span<T>` 在 .NET __________ 版本标准化。
-
-**答案**：7.2、.NET Core 2.1
+**解析讲解**：`ref T _reference`（或 `ByReference<T> _pointer`）、`int _length`
 
 ---
 
-**Q3**：`stackalloc` 分配的内存在 __________ 时自动回收。
+**常见疑问 7**：`ref struct` 在 C# __________ 版本引入，`Span<T>` 在 .NET __________ 版本标准化。
 
-**答案**：方法返回（栈帧弹出）
-
----
-
-**Q4**：`Memory<T>` 的三种后端存储是 `__________`、`__________`、`__________`。
-
-**答案**：`T[]`、`MemoryManager<T>`、`String`（仅 `Memory<char>`）
+**解析讲解**：7.2、.NET Core 2.1
 
 ---
 
-**Q5**：`SearchValues<T>` 在 .NET __________ 引入，用于 __________。
+**常见疑问 8**：`stackalloc` 分配的内存在 __________ 时自动回收。
 
-**答案**：6、高性能字符查找（SIMD 优化）
+**解析讲解**：方法返回（栈帧弹出）
 
-### 10.3 编程题
+---
 
-**Q1**：实现一个零分配的 CSV 解析器，要求：
+**常见疑问 9**：`Memory<T>` 的三种后端存储是 `__________`、`__________`、`__________`。
+
+**解析讲解**：`T[]`、`MemoryManager<T>`、`String`（仅 `Memory<char>`）
+
+---
+
+**常见疑问 10**：`SearchValues<T>` 在 .NET __________ 引入，用于 __________。
+
+**解析讲解**：6、高性能字符查找（SIMD 优化）
+
+### 编程题知识点讲解
+
+**常见疑问 11**：实现一个零分配的 CSV 解析器，要求：
 
 - 输入 `ReadOnlySpan<char>`，输出每行的字段列表
 - 不分配新字符串
@@ -3014,7 +3015,7 @@ public ref struct CsvParser
 
 ---
 
-**Q2**：实现一个高性能 Base64 编码器，使用 `Span<byte>` 和 `stackalloc`。
+**常见疑问 12**：实现一个高性能 Base64 编码器，使用 `Span<byte>` 和 `stackalloc`。
 
 ```csharp
 public static class Base64Encoder
@@ -3068,9 +3069,9 @@ public static class Base64Encoder
 
 ---
 
-**Q3**：实现一个自定义 `MemoryManager<T>` 包装 `NativeMemory.Alloc` 的原生内存。
+**常见疑问 13**：实现一个自定义 `MemoryManager<T>` 包装 `NativeMemory.Alloc` 的原生内存。
 
-**答案**：
+**解析讲解**：
 
 ```csharp
 // .NET 9 / C# 12
@@ -3120,9 +3121,9 @@ buf[0] = 42;
 
 ### 10.4 思考题
 
-**Q1**：为什么 `Span<T>` 不能跨 `async`/`await`，而 `Memory<T>` 可以？
+**常见疑问 14**：为什么 `Span<T>` 不能跨 `async`/`await`，而 `Memory<T>` 可以？
 
-**答案**：
+**解析讲解**：
 
 - `async` 方法被编译器重写为状态机（`IAsyncStateMachine`），状态机是一个类（`AsyncTaskMethodBuilder`），其字段用于保存方法的局部变量。
 - `Span<T>` 是 `ref struct`，根据 C# 7.2 约束，不能作为类的字段（防止逃逸到堆）。
@@ -3133,9 +3134,9 @@ buf[0] = 42;
 
 ---
 
-**Q2**：`ArrayPool<T>.Shared` 在容器化部署中可能有哪些问题？如何解决？
+**常见疑问 15**：`ArrayPool<T>.Shared` 在容器化部署中可能有哪些问题？如何解决？
 
-**答案**：
+**解析讲解**：
 
 **问题**：
 
@@ -3152,9 +3153,9 @@ buf[0] = 42;
 
 ---
 
-**Q3**：`Span<T>` 与 Rust `&[T]` 的内存安全模型有何异同？
+**常见疑问 16**：`Span<T>` 与 Rust `&[T]` 的内存安全模型有何异同？
 
-**答案**：
+**解析讲解**：
 
 **相同点**：
 
@@ -3172,9 +3173,9 @@ buf[0] = 42;
 
 ---
 
-**Q4**：为什么 .NET 5 引入 POH（Pinned Object Heap）？它解决了什么问题？
+**常见疑问 17**：为什么 .NET 5 引入 POH（Pinned Object Heap）？它解决了什么问题？
 
-**答案**：
+**解析讲解**：
 
 **背景**：.NET 5 之前，固定对象（`GCHandle.Alloc(obj, Pinned)`）在 SOH 中固定，造成 SOH 碎片化。每次 GC 压缩都要避开固定对象，导致堆碎片率高、压缩效率低。
 
@@ -3198,9 +3199,9 @@ buf[0] = 42;
 
 ---
 
-**Q5**：在什么场景下应该使用 `Memory<T>` 而不是 `Span<T>`？反之呢？
+**常见疑问 18**：在什么场景下应该使用 `Memory<T>` 而不是 `Span<T>`？反之呢？
 
-**答案**：
+**解析讲解**：
 
 **使用 `Memory<T>` 的场景**：
 
@@ -3222,9 +3223,9 @@ buf[0] = 42;
 
 ---
 
-**Q6**：`MemoryMarshal.Cast<TFrom, TTo>` 与 `BitConverter.ToInt32` 的区别是什么？
+**常见疑问 19**：`MemoryMarshal.Cast<TFrom, TTo>` 与 `BitConverter.ToInt32` 的区别是什么？
 
-**答案**：
+**解析讲解**：
 
 | 维度 | `MemoryMarshal.Cast` | `BitConverter.ToInt32` |
 |------|----------------------|------------------------|
@@ -3243,9 +3244,9 @@ buf[0] = 42;
 
 ---
 
-**Q7**：为什么 `Span<T>` 的 `SequenceEqual` 比 `for` 循环逐字节比较快？
+**常见疑问 20**：为什么 `Span<T>` 的 `SequenceEqual` 比 `for` 循环逐字节比较快？
 
-**答案**：
+**解析讲解**：
 
 `Span<T>.SequenceEqual` 在 CoreCLR 中使用 SIMD 向量化：
 
@@ -3262,9 +3263,9 @@ buf[0] = 42;
 
 ---
 
-**Q8**：`stackalloc` 与 `ArrayPool<T>.Shared.Rent` 的区别是什么？
+**常见疑问 21**：`stackalloc` 与 `ArrayPool<T>.Shared.Rent` 的区别是什么？
 
-**答案**：
+**解析讲解**：
 
 | 维度 | `stackalloc` | `ArrayPool.Rent` |
 |------|-------------|------------------|
@@ -3285,9 +3286,9 @@ buf[0] = 42;
 
 ---
 
-**Q9**：`Memory<T>.Pin()` 方法的作用是什么？何时使用？
+**常见疑问 22**：`Memory<T>.Pin()` 方法的作用是什么？何时使用？
 
-**答案**：
+**解析讲解**：
 
 `Memory<T>.Pin()` 返回 `MemoryHandle`，固定底层内存，使其在 GC 压缩时不移动。
 
@@ -3317,9 +3318,9 @@ unsafe
 
 ---
 
-**Q10**：如何检测代码中的 `Span<T>` 误用（跨 async、字段捕获等）？
+**常见疑问 23**：如何检测代码中的 `Span<T>` 误用（跨 async、字段捕获等）？
 
-**答案**：
+**解析讲解**：
 
 1. **编译器静态检查**：C# 编译器自动检测 `ref struct` 违规，编译错误。
 2. **Roslyn 分析器**：自定义分析器检测潜在问题。
@@ -3355,9 +3356,9 @@ public class SpanAnalyzer : DiagnosticAnalyzer
 
 ---
 
-**Q11**：在微服务架构中，如何配置 GC 与 Span 共同优化内存性能？
+**常见疑问 24**：在微服务架构中，如何配置 GC 与 Span 共同优化内存性能？
 
-**答案**：
+**解析讲解**：
 
 **配置策略**：
 
@@ -4293,3 +4294,296 @@ finally
 *最后更新：2026-07-20*
 *对标标准：MIT 6.1020 / Stanford CS107 / CMU 15-410*
 *参考规范：ECMA-334 (C# 6th ed.) / ECMA-335 (CLI 6th ed.)*
+## Span 基础
+
+**基本写法：从数组创建 Span**
+`Span<<类型>> <变量> = <数组>;`
+```csharp
+// 数组隐式转换为 Span，零拷贝
+int[] arr = { 1, 2, 3 };
+Span<int> span = arr;
+```
+
+---
+
+**基本写法：切片 Slice**
+`<span>.Slice(<起始> [, <长度>]);`
+```csharp
+// 取子段，不分配内存
+Span<int> sub = span.Slice(1, 2);
+```
+
+---
+
+**基本写法：索引访问与修改**
+`<span>[<索引>] = <值>;`
+```csharp
+// 直接修改底层内存
+span[0] = 10;
+```
+
+---
+
+**基本写法：从字符串创建**
+`ReadOnlySpan<<类型>> <变量> = <字符串>.AsSpan();`
+```csharp
+// 字符串切片零分配
+ReadOnlySpan<char> s = "hello".AsSpan();
+ReadOnlySpan<char> sub = s.Slice(1, 3); // "ell"
+```
+
+---
+
+**基本写法：栈分配数组**
+`Span<<类型>> <变量> = stackalloc <类型>[<大小>];`
+```csharp
+// 栈上分配，方法结束自动释放
+Span<int> buf = stackalloc int[16];
+```
+
+---
+
+## Span 遍历与操作
+
+**基本写法：遍历 Span**
+`foreach (var <项> in <span>) { }`
+```csharp
+// 高效遍历
+foreach (int v in span) { }
+```
+
+---
+
+**基本写法：填充 Fill**
+`<span>.Fill(<值>);`
+```csharp
+// 全部填充为指定值
+span.Fill(0);
+```
+
+---
+
+**基本写法：复制 CopyTo**
+`<span>.CopyTo(<目标>);`
+```csharp
+// 复制到另一 Span
+span.CopyTo(dest);
+```
+
+---
+
+**基本写法：清空 Clear**
+`<span>.Clear();`
+```csharp
+// 清空所有元素为默认值
+span.Clear();
+```
+
+---
+
+**基本写法：反转 Reverse**
+`<span>.Reverse();`
+```csharp
+// 原地反转
+span.Reverse();
+```
+
+---
+
+**基本写法：转换为数组**
+`<span>.ToArray();`
+```csharp
+// 拷贝为新数组
+int[] copy = span.ToArray();
+```
+
+---
+
+## ReadOnlySpan 只读
+
+**基本写法：声明只读 Span**
+`ReadOnlySpan<<类型>> <变量> = <源>;`
+```csharp
+// 不可修改的视图
+ReadOnlySpan<int> r = arr;
+```
+
+---
+
+**基本写法：字面量直接赋值**
+`ReadOnlySpan<<类型>> <变量> = [<元素>];`
+```csharp
+// C# 12 集合表达式直接生成
+ReadOnlySpan<int> s = [1, 2, 3];
+```
+
+---
+
+## Memory 与堆存储
+
+**基本写法：创建 Memory**
+`Memory<<类型>> <变量> = <数组>;`
+```csharp
+// Memory 可存储在堆上，可跨 await
+Memory<int> mem = arr;
+```
+
+---
+
+**基本写法：Memory 转 Span**
+`<memory>.Span`
+```csharp
+// 通过属性获取 Span
+Span<int> span = mem.Span;
+```
+
+---
+
+**基本写法：Memory 切片**
+`<memory>.Slice(<起始> [, <长度>]);`
+```csharp
+// 取子段
+Memory<int> sub = mem.Slice(0, 2);
+```
+
+---
+
+**基本写法：跨异步传递**
+`async Task <方法>(Memory<<类型>> <参数>)`
+```csharp
+// Memory 可安全跨 await 使用
+async Task ProcessAsync(Memory<byte> buf)
+{
+    await Task.Delay(10);
+    Span<byte> s = buf.Span;
+}
+```
+
+---
+
+## 与字符串操作
+
+**基本写法：字符串切片避免分配**
+`<字符串>.AsSpan().Slice(<起始>, <长度>)`
+```csharp
+// 替代 Substring 避免分配
+ReadOnlySpan<char> sub = "abcdef".AsSpan(1, 3); // "bcd"
+```
+
+---
+
+**基本写法：解析数字**
+`int.TryParse(<span>, out <值>);`
+```csharp
+// 直接从 Span 解析，无中间字符串
+if (int.TryParse("42".AsSpan(), out int n)) { }
+```
+
+---
+
+**基本写法：比较字符串**
+`<span1>.SequenceEqual(<span2>);`
+```csharp
+// 逐字符比较
+bool same = "abc".AsSpan().SequenceEqual("abc".AsSpan());
+```
+
+---
+
+## 二进制与流
+
+**基本写法：从 byte 数组读取结构**
+`BinaryPrimitives.ReadInt32LittleEndian(<span>);`
+```csharp
+// 按小端序读取 4 字节整数
+int value = BinaryPrimitives.ReadInt32LittleEndian(bytes);
+```
+
+---
+
+**基本写法：写入结构**
+`BinaryPrimitives.WriteInt32BigEndian(<span>, <值>);`
+```csharp
+// 按大端序写入
+BinaryPrimitives.WriteInt32BigEndian(bytes, 42);
+```
+
+---
+
+**基本写法：流读取到 Span**
+`<流>.Read(<span>);`
+```csharp
+// 直接读入 Span 缓冲区
+int read = stream.Read(buf);
+```
+
+---
+
+**基本写法：流写入 Span**
+`<流>.Write(<只读span>);`
+```csharp
+// 从只读 Span 写入流
+stream.Write(data);
+```
+
+---
+
+## Span 与 ref 结构
+
+**基本写法：ref struct 声明**
+`public ref struct <结构名> { }`
+```csharp
+// ref struct 只能存在于栈上
+public ref struct Scanner
+{
+    public ReadOnlySpan<char> Buffer;
+}
+```
+
+---
+
+**基本写法：ref struct 限制**
+`// 不能装箱、不能作为字段、不能跨 await`
+```csharp
+// ref struct 不能被装箱为 object
+// 不能作为 class 的字段
+// 不能在 async 方法中跨 await 使用
+```
+
+---
+
+## 高性能模式
+
+**基本写法：Unsafe 操作**
+`Unsafe.As<<源类型>, <目标类型>>(ref <变量>);`
+```csharp
+// 类型重解释，零拷贝
+ref int asInt = ref Unsafe.As<byte, int>(ref bytes[0]);
+```
+
+---
+
+**基本写法：ref 返回**
+`public ref <类型> <方法>()`
+```csharp
+// 返回引用避免拷贝
+public ref int Get(int[] arr) => ref arr[0];
+```
+
+---
+
+**基本写法：CollectionsMarshal 访问 List 内部**
+`CollectionsMarshal.AsSpan(<list>);`
+```csharp
+// .NET 6+ 直接获取 List 内部 Span
+Span<int> s = CollectionsMarshal.AsSpan(list);
+```
+
+---
+
+**基本写法：MemoryMarshal 转换**
+`MemoryMarshal.Cast<<源>, <目标>>(<span>);`
+```csharp
+// 字节与结构体互转
+Span<int> ints = MemoryMarshal.Cast<byte, int>(bytes);
+```

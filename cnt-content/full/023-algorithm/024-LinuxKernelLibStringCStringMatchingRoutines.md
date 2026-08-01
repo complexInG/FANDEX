@@ -1702,9 +1702,9 @@ def seed_and_extend(read: str, reference: str) -> list[tuple[int, int, int]]:
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **习题 1**（easy）：KMP 算法的最坏时间复杂度是？
 
@@ -1741,7 +1741,7 @@ B. nextval 在不改变渐近复杂度的前提下减少常数因子
 C. nextval[next[j]] 可能等于 nextval[j]
 D. nextval 总是小于等于 next
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **习题 6**（easy）：KMP 算法的核心创新是利用模式串自身结构构建 ________ 数组，避免文本指针回退，实现 $O(n+m)$ 最坏时间复杂度。
 
@@ -1801,7 +1801,7 @@ def build_next_buggy(pattern):
 
 ## 11. 参考答案
 
-### 11.1 选择题答案
+### 选择题知识点讲解
 
 **习题 1**：**B**。KMP 预处理 $O(m)$ + 匹配 $O(n)$ = 总 $O(n+m)$，最坏严格线性。
 
@@ -1830,7 +1830,7 @@ def build_next_buggy(pattern):
 
 **习题 5**：**D**。nextval 不总是小于等于 next；当 $P[j] \neq P[\text{next}[j]]$ 时，nextval[j] = next[j]，相等。故 D 错误。
 
-### 11.2 填空题答案
+### 填空题知识点讲解
 
 **习题 6**：next（或 PMT，部分匹配表）
 
@@ -2072,42 +2072,49 @@ graph TD
 
 ### 14.3 工业级选型决策树
 
-```text
-给定字符串匹配需求：
-├── 单模式 + 一次性匹配
-│   ├── 模式短 (m ≤ 16)：Bitap 位并行 / SIMD 加速朴素
-│   ├── 模式长 + 自然语言：Boyer-Moore / BMH / Sunday
-│   ├── 模式长 + 最坏线性要求：KMP / KMP 自动机
-│   └── 流式数据 + 实时性：KMP 自动机（显式转移表）
-├── 单模式 + 多次查询（同一文本）
-│   └── Suffix Array / FM-Index（文本预处理）
-├── 多模式 + 一次性匹配
-│   ├── 模式少 (k ≤ 10)：多次 BM
-│   ├── 模式多：Aho-Corasick / Commentz-Walter
-│   └── 模式短 + 字母表小：Wu-Manber 位并行
-├── 正则表达式匹配
-│   ├── 严格无回溯：RE2 (Thompson NFA)
-│   └── 功能丰富：PCRE
-└── 近似匹配（允许错配/indel）
-    └── Smith-Waterman / BWA / BLAST
+```mermaid
+flowchart TD
+    T0["给定字符串匹配需求："]
+    T1["单模式 + 一次性匹配"]
+    T2["模式短 (m ≤ 16)：Bitap 位并行 / SIMD 加速朴素"]
+    T3["模式长 + 自然语言：Boyer-Moore / BMH / Sunday"]
+    T4["模式长 + 最坏线性要求：KMP / KMP 自动机"]
+    T5["流式数据 + 实时性：KMP 自动机（显式转移表）"]
+    T6["单模式 + 多次查询（同一文本）"]
+    T7["Suffix Array / FM-Index（文本预处理）"]
+    T8["多模式 + 一次性匹配"]
+    T9["模式少 (k ≤ 10)：多次 BM"]
+    T10["模式多：Aho-Corasick / Commentz-Walter"]
+    T11["模式短 + 字母表小：Wu-Manber 位并行"]
+    T12["正则表达式匹配"]
+    T13["严格无回溯：RE2 (Thompson NFA)"]
+    T14["功能丰富：PCRE"]
+    T15["近似匹配（允许错配/indel）"]
+    T16["Smith-Waterman / BWA / BLAST"]
+    T0 --> T1
+    T5 --> T6
+    T7 --> T8
+    T11 --> T12
+    T14 --> T15
+    T15 --> T16
 ```
 
 ### 14.4 12 项基准自检清单
 
 | # | 基准项 | 本章达成情况 |
 |---|--------|-------------|
-| 1 | 学习目标 | ✅ 7 条 Bloom 分类法目标，覆盖记忆/理解/应用/分析/评估/设计/创造 |
-| 2 | 历史动机 | ✅ Thompson 1968 → Cook 1971 → Morris 1970 → Pratt 1970 → Knuth 1970 → KMP 1977 → Aho-Corasick 1975 → Boyer-Moore 1977 → Galil 1979 → Horspool 1980 → Karp-Rabin 1987 → Sunday 1990 → Cole 1994 |
-| 3 | 形式化定义 | ✅ 字符串匹配问题 + PMT + next 数组（两种约定） + KMP 自动机 DFA |
-| 4 | 理论推导 | ✅ next 递推关系 + 时间复杂度势能法证明 + 正确性不变式证明 + 比较下界 2n-m + nextval 优化 |
-| 5 | 代码示例 | ✅ Python（标准 KMP + nextval + KMP 自动机 + 最小循环节 + 周期性判定）+ C++ 生产级 + Java Sedgewick 风格 |
-| 6 | 对比分析 | ✅ 14 种字符串匹配算法全景对比 + KMP vs BM / RK / AC / SA 四组深度对比 |
-| 7 | 常见陷阱 | ✅ 6 项典型陷阱（next 约定混淆 / 哨兵缺失 / 边界处理 / 漏匹配 / Unicode / 循环节误判）|
-| 8 | 工程实践 | ✅ 6 项优化技巧 + Linux 内核 / GNU grep / ESLint / BWA / Snort 五个工业案例 |
-| 9 | 案例研究 | ✅ 5 个完整案例（GNU grep 多模式 / Snort IDS / BWA 基因组 / VS Code 查找 / rsync 同步）|
-| 10 | 习题 | ✅ 5 选择 + 5 填空 + 2 代码修正 + 3 开放论述，含详细参考答案 |
-| 11 | 参考文献 | ✅ 25 条 ACM 格式引用（10 历史论文 + 5 教材 + 5 进阶论文 + 5 在线资源）含 DOI |
-| 12 | 延伸阅读 | ✅ 5 子节（理论深入 / 应用拓展 / 工程练习 / 教学视频 / 进阶主题）|
+| 1 | 学习目标 | 已达标 7 条 Bloom 分类法目标，覆盖记忆/理解/应用/分析/评估/设计/创造 |
+| 2 | 历史动机 | 已达标 Thompson 1968 → Cook 1971 → Morris 1970 → Pratt 1970 → Knuth 1970 → KMP 1977 → Aho-Corasick 1975 → Boyer-Moore 1977 → Galil 1979 → Horspool 1980 → Karp-Rabin 1987 → Sunday 1990 → Cole 1994 |
+| 3 | 形式化定义 | 已达标 字符串匹配问题 + PMT + next 数组（两种约定） + KMP 自动机 DFA |
+| 4 | 理论推导 | 已达标 next 递推关系 + 时间复杂度势能法证明 + 正确性不变式证明 + 比较下界 2n-m + nextval 优化 |
+| 5 | 代码示例 | 已达标 Python（标准 KMP + nextval + KMP 自动机 + 最小循环节 + 周期性判定）+ C++ 生产级 + Java Sedgewick 风格 |
+| 6 | 对比分析 | 已达标 14 种字符串匹配算法全景对比 + KMP vs BM / RK / AC / SA 四组深度对比 |
+| 7 | 常见陷阱 | 已达标 6 项典型陷阱（next 约定混淆 / 哨兵缺失 / 边界处理 / 漏匹配 / Unicode / 循环节误判）|
+| 8 | 工程实践 | 已达标 6 项优化技巧 + Linux 内核 / GNU grep / ESLint / BWA / Snort 五个工业案例 |
+| 9 | 案例研究 | 已达标 5 个完整案例（GNU grep 多模式 / Snort IDS / BWA 基因组 / VS Code 查找 / rsync 同步）|
+| 10 | 习题 | 已达标 5 选择 + 5 填空 + 2 代码修正 + 3 开放论述，含详细参考答案 |
+| 11 | 参考文献 | 已达标 25 条 ACM 格式引用（10 历史论文 + 5 教材 + 5 进阶论文 + 5 在线资源）含 DOI |
+| 12 | 延伸阅读 | 已达标 5 子节（理论深入 / 应用拓展 / 工程练习 / 教学视频 / 进阶主题）|
 
 ### 14.5 学习路径建议
 

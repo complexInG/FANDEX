@@ -15,10 +15,11 @@ related:
 prerequisites:
   - c/概述
 ---
+# C 动态静态库
 
-# 动态库与静态库
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本章节面向已掌握 C 语言基本语法、编译流程的读者，系统讲解静态库与动态库的内部机制、链接模型、符号解析、版本管理与跨平台实践，对标 MIT 6.828 / Stanford CS107 / CMU 15-213 的系统编程教学水准。
+---
 
 ## 1. 学习目标
 
@@ -440,30 +441,15 @@ ar rcs libmymath.a mymath.o
 
 **ELF 文件结构**：
 
-```
-+-----------------------+
-| ELF Header            |  <- 64 字节（64 位系统）
-+-----------------------+
-| Program Header Table  |  <- 描述运行时加载的段
-+-----------------------+
-| .text                 |  <- 代码段
-| .rodata               |  <- 只读数据
-| .data                 |  <- 已初始化数据
-| .bss                  |  <- 未初始化数据（运行时清零）
-| .got                  |  <- 全局偏移表
-| .got.plt              |  <- PLT 全局偏移表
-| .plt                  |  <- 过程链接表
-| .rela.plt             |  <- PLT 重定位项
-| .rela.dyn             |  <- 数据重定位项
-| .dynsym               |  <- 动态符号表
-| .dynstr               |  <- 动态字符串表
-| .gnu.version          |  <- 符号版本索引
-| .gnu.version_d        |  <- 版本定义
-| .gnu.version_r        |  <- 版本需求
-| .dynamic              |  <- 动态段（链接器使用）
-+-----------------------+
-| Section Header Table  |  <- 描述链接时的节
-+-----------------------+
+```mermaid
+flowchart TD
+    B0["ELF Header | <- 64 字节（64 位系统）"]
+    B1["Program Header Table | <- 描述运行时加载的段"]
+    B0 --> B1
+    B2[".text | <- 代码段 / .rodata | <- 只读数据 / .data | <- 已初始化数据 / .bss | <- 未初始化数据（运行时清零） / .got | <- 全局偏移表 / .got.plt | <- PLT 全局偏移表 / .plt | <- 过程链接表 / .rela.plt | <- PLT 重定位项 / .rela.dyn | <- 数据重定位项 / .dynsym | <- 动态符号表 / .dynstr | <- 动态字符串表 / .gnu.version | <- 符号版本索引 / .gnu.version_d | <- 版本定义 / .gnu.version_r | <- 版本需求 / .dynamic | <- 动态段（链接器使用）"]
+    B1 --> B2
+    B3["Section Header Table | <- 描述链接时的节"]
+    B2 --> B3
 ```
 
 **GOT/PLT 工作机制（x86-64 示例）**：
@@ -684,15 +670,22 @@ Java 通过 JAR 文件打包字节码，由 JVM 在加载时解析。JAR 本质�
 
 ### 6.3 选型决策树
 
-```
-是否需要在不重新编译主程序的前提下升级库？
-├── 是 → 是否需要 ABI 稳定？ → 是 → 动态库 + 严格版本管理
-│                              否 → 动态库 + dlopen 插件化
-└── 否 → 目标平台是否禁止动态库（如某些嵌入式环境）？
-         ├── 是 → 静态库
-         └── 否 → 是否需要最小化可执行文件体积？
-                  ├── 是（如多进程共享）→ 动态库
-                  └── 否（如 CLI 工具）→ 静态库
+```mermaid
+flowchart TD
+    T0["是否需要在不重新编译主程序的前提下升级库？"]
+    T1["是 → 是否需要 ABI 稳定？ → 是 → 动态库 + 严格版本管理"]
+    T2["否 → 动态库 + dlopen 插件化"]
+    T3["否 → 目标平台是否禁止动态库（如某些嵌入式环境）？"]
+    T4["是 → 静态库"]
+    T5["否 → 是否需要最小化可执行文件体积？"]
+    T6["是（如多进程共享）→ 动态库"]
+    T7["否（如 CLI 工具）→ 静态库"]
+    T0 --> T1
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
+    T5 --> T6
+    T5 --> T7
 ```
 
 ## 7. 常见陷阱与反模式
@@ -1189,20 +1182,20 @@ LD_DEBUG=symbols,bindings ./main 2>&1 | grep my_add
 #          binding file ./main to ./libmymath.so.1: normal symbol my_add
 ```
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
-### 习题 1（基础）
+## 知识讲解与要点分析（原习题 1（基础））
 
 给定静态库 `libfoo.a`、`libbar.a`、`libbaz.a`，三者依赖关系为 `foo → bar → baz`（→ 表示依赖）。请写出正确的链接命令。
 
-**参考答案**：
+**解析讲解**：
 
 ```bash
 gcc main.c -lfoo -lbar -lbaz -o main
 # 依赖顺序：被依赖者后置，因此 baz 在最后
 ```
 
-### 习题 2（分析）
+## 知识讲解与要点分析（原习题 2（分析））
 
 执行以下命令后，`main` 的动态依赖中是否包含 `libmymath.so`？为什么？
 
@@ -1212,9 +1205,9 @@ gcc -Wall main.c -L. -lmymath -Wl,--as-needed -o main
 
 （假设 `main.c` 中 `#include "mymath.h"` 但未调用任何 `my_*` 函数。）
 
-**参考答案**：不包含。`--as-needed` 标志使得链接器在符号未被实际引用时不记录对该库的 NEEDED 项。由于 `main.c` 未调用 `my_add` 或 `my_mul`，`libmymath.so` 不会被嵌入 DT_NEEDED。
+**解析讲解**：不包含。`--as-needed` 标志使得链接器在符号未被实际引用时不记录对该库的 NEEDED 项。由于 `main.c` 未调用 `my_add` 或 `my_mul`，`libmymath.so` 不会被嵌入 DT_NEEDED。
 
-### 习题 3（综合）
+## 知识讲解与要点分析（原习题 3（综合））
 
 设计一个支持插件化的图像处理程序架构：
 
@@ -1228,7 +1221,7 @@ gcc -Wall main.c -L. -lmymath -Wl,--as-needed -o main
 2. 主程序加载插件的代码框架。
 3. 插件作者编写新插件的代码框架。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 /* plugin.h */
@@ -1340,32 +1333,32 @@ gcc -Wall main.c -ldl -o imgproc
 gcc -Wall -fPIC -shared grayscale_plugin.c -o grayscale_plugin.so
 ```
 
-### 思考题 1
+## 知识讲解与要点分析（原思考题 1）
 
 为什么 Linux 上的可执行文件通常不使用 `-fPIC` 编译，而动态库必须使用 `-fPIC`？
 
 **提示**：考虑 ASLR（地址空间布局随机化）与 GOT/PLT 的开销。
 
-### 思考题 2
+## 知识讲解与要点分析（原思考题 2）
 
 若一个动态库 `libfoo.so.1` 中导出函数 `foo(int)`，后续版本改为 `foo(int, int)`。从 ABI 角度看，这是否属于"破坏性变更"？为什么？
 
 **提示**：考虑调用约定与栈布局。
 
-### 思考题 3
+## 知识讲解与要点分析（原思考题 3）
 
 为什么 `dlopen` 默认使用 `RTLD_LAZY` 而非 `RTLD_NOW`？两者在安全性与启动性能上的权衡是什么？
 
-### 思考题 4
+## 知识讲解与要点分析（原思考题 4）
 
 容器化部署（Docker）场景下，静态链接与动态链接的优劣如何重新评估？为什么 Alpine Linux 选用 musl libc？
 
-### 习题 4（实战）
+## 知识讲解与要点分析（原习题 4（实战））
 
 实现一个支持热插拔的"加密算法插件库"，要求：
 
 1. 定义统一的加密接口：`int encrypt(const uint8_t *in, size_t len, uint8_t *out, size_t *out_len)` 与对应的 `decrypt` 函数。
-2. 实现两个插件：XOR（教学版）与 AES-128（调用 OpenSSL）。
+2. 要点：两个插件：XOR（教学版）与 AES-128（调用 OpenSSL）。
 3. 主程序从命令行参数接收 `--algo=xor` 或 `--algo=aes`，从 `./plugins/` 目录加载对应 `.so`。
 4. 主程序支持运行时切换算法（通过 `dlclose` + `dlopen`），不退出进程。
 5. 所有错误（找不到插件、插件 init 失败、加解密失败）需通过日志输出，且不崩溃。
@@ -1492,7 +1485,7 @@ gcc -Wall -fPIC -shared aes_plugin.c -lcrypto -o plugins/libaes.so
 echo "hello" | ./crypto_tool xor deadbeef encrypt | ./crypto_tool xor deadbeef decrypt
 ```
 
-### 习题 5（深度）
+## 知识讲解与要点分析（原习题 5（深度））
 
 调研以下问题并撰写 200-400 字报告：
 
@@ -1500,7 +1493,7 @@ echo "hello" | ./crypto_tool xor deadbeef encrypt | ./crypto_tool xor deadbeef d
 2. Windows 上的 Universal CRT（UCRT）解决了什么问题？为什么 MSVC 2015 之前的 DLL 各自带一份 CRT 会导致问题？
 3. Rust 的 `cargo` 默认静态链接依赖，但为什么 `cdylib` 类型生成的 `.so` 必须动态链接 Rust 标准库？
 
-### 习题 6（分析）
+## 知识讲解与要点分析（原习题 6（分析））
 
 给定以下链接命令：
 
@@ -1514,19 +1507,19 @@ gcc -Wall main.c -L./libs -lfoo -Wl,-Bstatic -lbar -Wl,-Bdynamic -lbaz -o main
 2. 若 `./libs` 下同时存在 `libfoo.a` 与 `libfoo.so`，链接器会选择哪一个？为什么？
 3. 如何强制链接器选择静态版本？
 
-**参考答案**：
+**解析讲解**：
 
 1. `libfoo`：动态链接（默认）；`libbar`：静态链接（`-Bstatic`）；`libbaz`：动态链接（`-Bdynamic` 恢复默认）。
 2. 默认选择 `libfoo.so`，因为 GNU `ld` 的搜索优先级是 `.so` > `.a`。
 3. 使用 `-Wl,-Bstatic -lfoo -Wl,-Bdynamic`，或直接指定 `libfoo.a` 文件名。
 
-### 思考题 5
+## 知识讲解与要点分析（原思考题 5）
 
 为什么 macOS 引入 `@rpath` 机制？相比 Linux 的 `RPATH` 解决了什么问题？
 
 **提示**：考虑 framework 嵌套、可重定位应用包（`.app`）。
 
-### 思考题 6
+## 知识讲解与要点分析（原思考题 6）
 
 Linux 内核为何不允许直接使用用户态的 `dlopen` 加载模块到内核？内核模块 `.ko` 与 `.so` 在设计哲学上的核心差异是什么？
 
@@ -1656,3 +1649,251 @@ codesign -s "Developer ID: Your Name" libfoo.dylib
 ---
 
 > 本章节遵循 C23 标准，所有示例代码已在 `gcc 13.2` 与 `clang 17.0` 上通过 `-Wall -Wextra -std=c11` 编译验证。Windows 示例在 MSVC 2022 与 MinGW-w64 13.2 上验证。如发现错误，欢迎指正。
+## 静态库创建
+
+**基本写法：编译目标文件**
+`gcc -c <源文件> -o <目标.o>`
+```c
+// 编译生成目标文件
+gcc -c libfoo.c -o libfoo.o
+```
+
+---
+
+**基本写法：创建静态库**
+`ar rcs <库文件.a> <目标文件>...`
+```c
+// 打包目标文件为静态库
+ar rcs libfoo.a libfoo.o
+```
+
+---
+
+**基本写法：查看静态库内容**
+`ar -t <库文件.a>`
+```c
+// 列出库中的目标文件
+ar -t libfoo.a
+```
+
+---
+
+**基本写法：链接静态库**
+`gcc <主文件> -L<路径> -l<库名> -o <输出>`
+```c
+// 链接当前目录的 libfoo.a
+gcc main.c -L. -lfoo -o main
+```
+
+---
+
+## 动态库创建
+
+**基本写法：编译位置无关代码**
+`gcc -fPIC -c <源文件> -o <目标.o>`
+```c
+// 生成位置无关目标文件
+gcc -fPIC -c libfoo.c -o libfoo.o
+```
+
+---
+
+**基本写法：创建动态库**
+`gcc -shared -o <库文件.so> <目标文件>...`
+```c
+// 链接为动态共享库
+gcc -shared -o libfoo.so libfoo.o
+```
+
+---
+
+**基本写法：指定版本**
+`gcc -shared -Wl,-soname,<库名.so.1> -o <库.so.1.0> <目标>`
+```c
+// 设置共享库版本
+gcc -shared -Wl,-soname,libfoo.so.1 -o libfoo.so.1.0 libfoo.o
+```
+
+---
+
+**基本写法：链接动态库**
+`gcc <主文件> -L<路径> -l<库名> -o <输出>`
+```c
+// 链接动态库 libfoo.so
+gcc main.c -L. -lfoo -o main
+```
+
+---
+
+**基本写法：运行时指定库路径**
+`LD_LIBRARY_PATH=<路径> ./<程序>`
+```c
+// 运行时设置库搜索路径
+LD_LIBRARY_PATH=. ./main
+```
+
+---
+
+**基本写法：链接时指定运行时路径**
+`gcc -Wl,-rpath,<路径> <其他参数>`
+```c
+// 内嵌运行时搜索路径
+gcc main.c -L. -lfoo -Wl,-rpath,. -o main
+```
+
+---
+
+## 运行时加载 dlopen
+
+**基本写法：打开动态库**
+`dlopen(<库路径>, RTLD_LAZY);`
+```c
+// 运行时加载共享库
+void* handle = dlopen("./libfoo.so", RTLD_LAZY);
+```
+
+---
+
+**基本写法：获取符号**
+`dlsym(<handle>, <符号名>);`
+```c
+// 取得函数指针
+typedef int (*func_t)(int);
+func_t f = (func_t)dlsym(handle, "add");
+```
+
+---
+
+**基本写法：调用动态函数**
+`<函数指针>(<参数>);`
+```c
+// 调用从动态库取得的函数
+int r = f(42);
+```
+
+---
+
+**基本写法：关闭动态库**
+`dlclose(<handle>);`
+```c
+// 卸载动态库
+dlclose(handle);
+```
+
+---
+
+**基本写法：获取错误信息**
+`dlerror();`
+```c
+// 查询最近一次错误
+const char* err = dlerror();
+```
+
+---
+
+**基本写法：编译需链接 dl**
+`gcc <文件> -ldl -o <输出>`
+```c
+// 链接 dl 库使用 dlopen
+gcc main.c -ldl -o main
+```
+
+---
+
+## 库的导出符号
+
+**基本写法：默认导出**
+`int <函数>(...) { }`
+```c
+// 默认所有全局符号导出
+int add(int a, int b) { return a + b; }
+```
+
+---
+
+**基本写法：可见性控制**
+`__attribute__((visibility("default"))) int <函数>();`
+```c
+// 显式声明导出
+__attribute__((visibility("default"))) int add(int a, int b);
+```
+
+---
+
+**基本写法：隐藏符号**
+`__attribute__((visibility("hidden"))) int <函数>();`
+```c
+// 隐藏不导出
+__attribute__((visibility("hidden"))) static int helper();
+```
+
+---
+
+**基本写法：默认隐藏编译**
+`gcc -fvisibility=hidden -shared ...`
+```c
+// 默认隐藏所有符号
+gcc -fvisibility=hidden -shared -o libfoo.so libfoo.o
+```
+
+---
+
+## 库查询工具
+
+**基本写法：查看依赖**
+`ldd <程序>`
+```c
+// 查看程序依赖的动态库
+ldd ./main
+```
+
+---
+
+**基本写法：列出符号**
+`nm <库文件>`
+```c
+// 查看库中的符号表
+nm libfoo.a
+```
+
+---
+
+**基本写法：查看动态符号**
+`nm -D <库.so>`
+```c
+// 查看动态库导出符号
+nm -D libfoo.so
+```
+
+---
+
+**基本写法：查看符号所属库**
+`readelf -d <库.so>`
+```c
+// 查看动态库信息
+readelf -d libfoo.so
+```
+
+---
+
+## 头文件与库组织
+
+**基本写法：声明导出函数**
+`<头文件.h>` 中声明
+```c
+// 头文件中声明供外部使用
+#ifndef FOO_H
+#define FOO_H
+int add(int a, int b);
+#endif
+```
+
+---
+
+**基本写法：使用库**
+`#include <<头文件>>` 编译链接
+```c
+// 主程序使用库
+#include "foo.h"
+int r = add(1, 2);
+```

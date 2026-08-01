@@ -249,28 +249,36 @@ $$
 
 ### 5.1 项目结构
 
-```
-FandexDILifetimeDemo/
-├── FandexDILifetimeDemo.csproj
-├── Program.cs
-├── Services/
-│   ├── ICacheService.cs
-│   ├── RedisCacheService.cs
-│   ├── MemoryCacheService.cs
-│   ├── IUserService.cs
-│   ├── UserService.cs
-│   ├── IEmailSender.cs
-│   ├── SmtpEmailSender.cs
-│   ├── IOrderRepository.cs
-│   └── OrderRepository.cs
-├── Middleware/
-│   ├── RequestContextMiddleware.cs
-│   └── ExceptionHandlingMiddleware.cs
-├── Decorators/
-│   ├── LoggingDecorator.cs
-│   └── CachingDecorator.cs
-└── Extensions/
-    └── ServiceCollectionExtensions.cs
+```mermaid
+flowchart TD
+    T0["FandexDILifetimeDemo/"]
+    T1["FandexDILifetimeDemo.csproj"]
+    T2["Program.cs"]
+    T3["Services/"]
+    T4["ICacheService.cs"]
+    T5["RedisCacheService.cs"]
+    T6["MemoryCacheService.cs"]
+    T7["IUserService.cs"]
+    T8["UserService.cs"]
+    T9["IEmailSender.cs"]
+    T10["SmtpEmailSender.cs"]
+    T11["IOrderRepository.cs"]
+    T12["OrderRepository.cs"]
+    T13["Middleware/"]
+    T14["RequestContextMiddleware.cs"]
+    T15["ExceptionHandlingMiddleware.cs"]
+    T16["Decorators/"]
+    T17["LoggingDecorator.cs"]
+    T18["CachingDecorator.cs"]
+    T19["Extensions/"]
+    T20["ServiceCollectionExtensions.cs"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T12 --> T13
+    T15 --> T16
+    T18 --> T19
+    T19 --> T20
 ```
 
 ### 5.2 csproj 配置（.NET 8 / C# 12）
@@ -1375,7 +1383,7 @@ public class TenantMiddleware(RequestDelegate next) {
 
 **题目 1**：说出三种生命周期的创建时机与共享范围。
 
-**参考答案**：
+**解析讲解**：
 
 | 生命周期 | 创建时机 | 同请求内 | 不同请求间 |
 | -------- | -------- | -------- | ---------- |
@@ -1396,7 +1404,7 @@ public class ReportGenerator(IDataSource dataSource) : IReportGenerator {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 **问题**：Captive Dependency。Singleton 的 `ReportGenerator` 在构造时解析 `IDataSource`，将其"囚禁"为 Singleton。所有请求共用同一个 `SqlDataSource` 实例，可能导致：
 1. 数据库连接泄漏；
@@ -1415,11 +1423,11 @@ public class ReportGenerator(IServiceScopeFactory scopeFactory) : IReportGenerat
 }
 ```
 
-### 10.3 应用题
+### 应用题知识点讲解
 
 **题目 3**：为一个电商系统设计 DI 注册方案，包含：缓存（Redis）、数据库（EF Core）、邮件（SMTP）、HTTP 客户端、日志、配置。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
@@ -1457,7 +1465,7 @@ builder.Services.AddHostedService<OrderCleanupService>();
 
 **题目 4**：实现一个用 Keyed Services 区分多种支付方式的支付处理器。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 // 注册
@@ -1499,7 +1507,7 @@ public record PaymentResult(bool Success, string TransactionId);
 
 **题目 5**：为什么 MS.DI 不支持属性注入？这种设计的优缺点是什么？
 
-**参考答案**：
+**解析讲解**：
 
 **优点**：
 1. **显式依赖**：构造器参数清晰列出所有依赖，便于阅读；
@@ -1516,7 +1524,7 @@ public record PaymentResult(bool Success, string TransactionId);
 
 **题目 6**：设计一个用装饰器链实现缓存 + 日志 + 重试的服务。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 // 用 Scrutor 注册多个装饰器
@@ -1580,11 +1588,11 @@ public sealed class RetryingUserServiceDecorator(
 }
 ```
 
-### 10.7 综合题
+### 综合题知识点讲解
 
 **题目 7**：实现一个用 `IServiceScopeFactory` 处理并发后台任务的调度器，确保每个任务独立 scope、独立 DbContext。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public sealed class BackgroundJobScheduler(
@@ -1653,7 +1661,7 @@ public sealed class BackgroundJobScheduler(
 
 **题目 8**：用户报告系统在运行一段时间后内存持续增长，重启后恢复。如何排查？
 
-**参考答案**：
+**解析讲解**：
 
 **排查步骤**：
 
@@ -1693,7 +1701,7 @@ public sealed class BackgroundJobScheduler(
 
 **题目 9**：一个服务每秒被解析 10000 次，目前是 Transient。是否应该改为 Singleton？性能差异多大？
 
-**参考答案**：
+**解析讲解**：
 
 **分析**：
 - Transient 每次解析约 35 ns，10000 次/秒 = 350 μs/秒，开销可忽略；
@@ -1710,7 +1718,7 @@ public sealed class BackgroundJobScheduler(
 
 **题目 10**：为一个 SaaS 平台设计多租户 DI 架构，要求：每租户独立数据库连接、独立缓存策略、独立配置。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 // 租户上下文（Scoped）

@@ -151,12 +151,14 @@ OpenHarmony 中权限管理模块位于 `security/access_token`：
 
 ### 2.8 时间线总览
 
-```
-2019 ──── HarmonyOS 1.0 ──── 分级权限雏形（仅 system_grant）
-2020 ──── HarmonyOS 2.0 ──── 运行时权限引入（user_grant）
-2022 ──── HarmonyOS 3.0 ──── 权限组、审计日志
-2023 ──── HarmonyOS 4.0  ──── 分布式权限同步
-2024 ──── HarmonyOS NEXT ─── 隐私即设计、权限沙箱
+```mermaid
+timeline
+    title 权限机制时间线
+    2019: HarmonyOS 1.0 分级权限雏形（仅 system_grant）
+    2020: HarmonyOS 2.0 运行时权限引入（user_grant）
+    2022: HarmonyOS 3.0 权限组、审计日志
+    2023: HarmonyOS 4.0 分布式权限同步
+    2024: HarmonyOS NEXT 隐私即设计、权限沙箱
 ```
 
 ---
@@ -287,19 +289,27 @@ HarmonyOS 选择 **ACL + 属性约束**的混合模型：
 
 应用调用受保护 API（如 `camera.getCameras()`）时，系统权限校验流程：
 
-```
-Application Process              System Service (camera_service)
-    │                                       │
-    │ 1. call camera.getCameras()           │
-    │──────────────────────────────────────>│
-    │                                       │ 2. get caller UID
-    │                                       │ 3. lookup ACL: UID -> permissions
-    │                                       │ 4. check ohos.permission.CAMERA in ACL?
-    │                                       │ 5. check ContextValid (foreground?)
-    │                                       │ 6. log audit event
-    │                                       │
-    │ 7. return result or throw PermissionError
-    │<──────────────────────────────────────│
+```mermaid
+flowchart TD
+    T0["Application Process              System Service (camera_service)"]
+    T1["1. call camera.getCameras()"]
+    T2[">"]
+    T3["2. get caller UID"]
+    T4["3. lookup ACL: UID -> permissions"]
+    T5["4. check ohos.permission.CAMERA in ACL?"]
+    T6["5. check ContextValid (foreground?)"]
+    T7["6. log audit event"]
+    T8["7. return result or throw PermissionError"]
+    T9["<"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T0 --> T8
+    T0 --> T9
 ```
 
 关键点：
@@ -312,18 +322,25 @@ Application Process              System Service (camera_service)
 
 `requestPermissionsFromUser` 弹窗由**系统进程**渲染，非应用进程：
 
-```
-Application Process              Ability Manager Service
-    │                                       │
-    │ 1. requestPermissionsFromUser([CAMERA])│
-    │──────────────────────────────────────>│
-    │                                       │ 2. launch PermissionDialog Ability
-    │                                       │    (system app, separate process)
-    │                                       │ 3. user clicks Allow/Deny
-    │                                       │ 4. update ACL: UID -> CAMERA = granted
-    │                                       │
-    │ 5. callback with authResults          │
-    │<──────────────────────────────────────│
+```mermaid
+flowchart TD
+    T0["Application Process              Ability Manager Service"]
+    T1["1. requestPermissionsFromUser([CAMERA])"]
+    T2[">"]
+    T3["2. launch PermissionDialog Ability"]
+    T4["(system app, separate process)"]
+    T5["3. user clicks Allow/Deny"]
+    T6["4. update ACL: UID -> CAMERA = granted"]
+    T7["5. callback with authResults"]
+    T8["<"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T0 --> T8
 ```
 
 设计意图：
@@ -381,15 +398,21 @@ HarmonyOS 设计：
 
 权限申请的最佳时机是"用户首次触发需权限的功能时"，而非应用启动时：
 
-```
-用户点击"拍照"按钮
-    │
-    ├─ checkAccessToken(CAMERA) == granted?
-    │       ├─ yes: 直接调用相机
-    │       └─ no: requestPermissionsFromUser([CAMERA])
-    │              ├─ granted: 调用相机
-    │              └─ denied: 显示"需要相机权限"提示
-    │                       └─ 提供"去设置"按钮
+```mermaid
+flowchart TD
+    T0["用户点击'拍照'按钮"]
+    T1["checkAccessToken(CAMERA) == granted?"]
+    T2["yes: 直接调用相机"]
+    T3["no: requestPermissionsFromUser([CAMERA])"]
+    T4["granted: 调用相机"]
+    T5["denied: 显示'需要相机权限'提示"]
+    T6["提供'去设置'按钮"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
 ```
 
 提前申请（启动即申请）的弊端：
@@ -1589,7 +1612,7 @@ HarmonyOS 原生 ArkTS 权限 API 是最完整的，跨平台框架目前对 Har
 **错误代码**：
 
 ```typescript
-// ❌ 错误：应用启动即申请所有权限
+// 不支持 错误：应用启动即申请所有权限
 export default class EntryAbility extends UIAbility {
   async onCreate(want, launchParam) {
     const atManager = abilityAccessCtrl.createAtManager();
@@ -1616,7 +1639,7 @@ export default class EntryAbility extends UIAbility {
 **错误代码**：
 
 ```json5
-// ❌ 错误：缺少 reason
+// 不支持 错误：缺少 reason
 {
   "name": "ohos.permission.CAMERA"
 }
@@ -1642,7 +1665,7 @@ export default class EntryAbility extends UIAbility {
 **错误代码**：
 
 ```typescript
-// ❌ 错误：未区分"拒绝"与"永久拒绝"
+// 不支持 错误：未区分"拒绝"与"永久拒绝"
 async function requestCamera() {
   const result = await atManager.requestPermissionsFromUser(context, ['ohos.permission.CAMERA']);
   if (result.authResults[0] !== 0) {
@@ -1661,7 +1684,7 @@ async function requestCamera() {
 **错误代码**：
 
 ```typescript
-// ❌ 错误：权限撤销后仍持有相机句柄
+// 不支持 错误：权限撤销后仍持有相机句柄
 let cameraHandle: camera.Camera | null = null;
 
 async function openCamera() {
@@ -1675,7 +1698,7 @@ async function openCamera() {
 **正确做法**：监听权限变更，主动释放资源。
 
 ```typescript
-// ✅ 正确：监听权限变更
+// 已达标 正确：监听权限变更
 const atManager = abilityAccessCtrl.createAtManager();
 atManager.on('permissionChange', (info) => {
   if (info.permission === 'ohos.permission.CAMERA' && info.change === 'revoke') {
@@ -1690,7 +1713,7 @@ atManager.on('permissionChange', (info) => {
 **错误代码**：
 
 ```typescript
-// ❌ 错误：跨设备调用前未校验目标设备权限
+// 不支持 错误：跨设备调用前未校验目标设备权限
 async function startRemoteCamera(targetDeviceId: string) {
   await distributedScheduler.startRemoteAbility({
     deviceId: targetDeviceId,
@@ -2096,9 +2119,9 @@ atManager.on('permissionChange', (info) => {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：HarmonyOS 权限等级分为哪三级？
 
@@ -2107,14 +2130,11 @@ B. normal、system_basic、system_core
 C. install、runtime、signature
 D. privacy、security、system
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：HarmonyOS 权限等级分为 `normal`（普通权限）、`system_basic`（系统基础权限）、`system_core`（系统核心权限）。选项 A 是 Android 的权限等级分类，选项 C 混淆了授权方式与等级，选项 D 是无意义的分类。
+**解析讲解**：HarmonyOS 权限等级分为 `normal`（普通权限）、`system_basic`（系统基础权限）、`system_core`（系统核心权限）。选项 A 是 Android 的权限等级分类，选项 C 混淆了授权方式与等级，选项 D 是无意义的分类。
 
-</details>
 
 **题目 2**：以下哪个权限必须通过 `user_grant` 方式授权？
 
@@ -2123,14 +2143,11 @@ B. `ohos.permission.GET_NETWORK_INFO`
 C. `ohos.permission.CAMERA`
 D. `ohos.permission.SET_TIME`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`CAMERA` 涉及用户隐私，必须通过 `user_grant` 方式授权（运行时弹窗）。`INTERNET` 与 `GET_NETWORK_INFO` 是 `normal` 权限，采用 `system_grant`（安装时自动授予）。`SET_TIME` 是 `system_core` 权限，仅系统应用可申请。
+**解析讲解**：`CAMERA` 涉及用户隐私，必须通过 `user_grant` 方式授权（运行时弹窗）。`INTERNET` 与 `GET_NETWORK_INFO` 是 `normal` 权限，采用 `system_grant`（安装时自动授予）。`SET_TIME` 是 `system_core` 权限，仅系统应用可申请。
 
-</details>
 
 **题目 3**：`requestPermissionsFromUser` 的弹窗由谁渲染？
 
@@ -2139,14 +2156,11 @@ B. 系统进程（Ability Manager Service）
 C. 第三方 UI 库
 D. 应用自定义
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：为防范 Clickjacking 攻击与权限诱导，`requestPermissionsFromUser` 的弹窗由**系统进程**（Ability Manager Service 启动的 `PermissionDialog Ability`）渲染，应用进程无法修改弹窗 UI（仅可通过 `reason` 字段定制文案）。
+**解析讲解**：为防范 Clickjacking 攻击与权限诱导，`requestPermissionsFromUser` 的弹窗由**系统进程**（Ability Manager Service 启动的 `PermissionDialog Ability`）渲染，应用进程无法修改弹窗 UI（仅可通过 `reason` 字段定制文案）。
 
-</details>
 
 **题目 4**：用户在设置中撤销已授予的权限后，应用应如何响应？
 
@@ -2155,14 +2169,11 @@ B. 应用无影响，继续使用已打开的资源
 C. 系统服务主动断开受保护资源，应用收到 `onError` 回调
 D. 应用自动重新申请权限
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：HarmonyOS 设计中，系统服务（如 camera_service）会主动断开受保护资源的连接，应用通过 `onError` 回调感知。应用需自行清理已读取的数据与缓存，系统不强制删除已持久化的数据。应用应监听 `permissionChange` 事件，主动释放资源。
+**解析讲解**：HarmonyOS 设计中，系统服务（如 camera_service）会主动断开受保护资源的连接，应用通过 `onError` 回调感知。应用需自行清理已读取的数据与缓存，系统不强制删除已持久化的数据。应用应监听 `permissionChange` 事件，主动释放资源。
 
-</details>
 
 **题目 5**：关于权限组（Permission Group），以下说法正确的是？
 
@@ -2171,73 +2182,55 @@ B. 组内权限仍需独立弹窗申请
 C. 权限组仅用于展示，不影响授权逻辑
 D. 权限组是 Android 独有概念
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：HarmonyOS 的权限组**不**支持"组内自动授予"，组内每个权限仍需独立弹窗申请。但弹窗文案会提示"该应用已获得组内其他权限"。权限组的主要作用是减少用户的认知分类负担，而非简化授权流程。
+**解析讲解**：HarmonyOS 的权限组**不**支持"组内自动授予"，组内每个权限仍需独立弹窗申请。但弹窗文案会提示"该应用已获得组内其他权限"。权限组的主要作用是减少用户的认知分类负担，而非简化授权流程。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：HarmonyOS 权限授权方式分为 `______` 与 `______` 两种。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`system_grant`、`user_grant`
+**解析讲解**：`system_grant`、`user_grant`
 
-**解析**：`system_grant` 为系统授权（安装时自动授予），适用于低风险权限；`user_grant` 为用户授权（运行时弹窗），适用于涉及隐私的敏感权限。
+**解析讲解**：`system_grant` 为系统授权（安装时自动授予），适用于低风险权限；`user_grant` 为用户授权（运行时弹窗），适用于涉及隐私的敏感权限。
 
-</details>
 
 **题目 2**：`module.json5` 中声明权限的字段是 `______`，其中 `usedScene.when` 的三个取值是 `______`、`______`、`______`。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`requestPermissions`；`inuse`、`always`、`unrestricted`
+**解析讲解**：`requestPermissions`；`inuse`、`always`、`unrestricted`
 
-**解析**：`inuse` 表示使用时（应用在前台），`always` 表示始终（包括后台），`unrestricted` 表示无限制。大多数敏感权限默认使用 `inuse`，后台权限需 `always` 但必须引导用户到设置页开启。
+**解析讲解**：`inuse` 表示使用时（应用在前台），`always` 表示始终（包括后台），`unrestricted` 表示无限制。大多数敏感权限默认使用 `inuse`，后台权限需 `always` 但必须引导用户到设置页开启。
 
-</details>
 
 **题目 3**：`abilityAccessCtrl` 模块的核心 API 包括创建权限管理器的 `______`、申请权限的 `______`、检查权限状态的 `______`。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`createAtManager`、`requestPermissionsFromUser`、`checkAccessToken`
+**解析讲解**：`createAtManager`、`requestPermissionsFromUser`、`checkAccessToken`
 
-**解析**：`createAtManager()` 返回 `ATManager` 实例，`requestPermissionsFromUser(context, permissions)` 弹窗申请权限，`checkAccessToken(tokenId, permission)` 查询权限状态（返回 0=已授予，-1=已拒绝，2=未确认）。
+**解析讲解**：`createAtManager()` 返回 `ATManager` 实例，`requestPermissionsFromUser(context, permissions)` 弹窗申请权限，`checkAccessToken(tokenId, permission)` 查询权限状态（返回 0=已授予，-1=已拒绝，2=未确认）。
 
-</details>
 
 **题目 4**：HarmonyOS 4.0+ 的分布式权限同步策略：仅同步 `______` 权限，`______` 权限各设备独立；同步延迟小于 `______` 秒。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`user_grant`、`system_grant`、5
+**解析讲解**：`user_grant`、`system_grant`、5
 
-**解析**：分布式权限同步仅同步 `user_grant` 权限（避免系统权限跨设备扩散），`system_grant` 权限由各设备独立授予。同步通过 DSoftBus 通道，延迟 < 5 秒。
+**解析讲解**：分布式权限同步仅同步 `user_grant` 权限（避免系统权限跨设备扩散），`system_grant` 权限由各设备独立授予。同步通过 DSoftBus 通道，延迟 < 5 秒。
 
-</details>
 
 **题目 5**：权限申请返回的 `authResults` 数组中，`0` 表示 `______`，`-1` 表示 `______`，`2` 表示 `______`。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：已授予、已拒绝、未确认
+**解析讲解**：已授予、已拒绝、未确认
 
-**解析**：`0`（GRANTED）表示用户已授予权限；`-1`（DENIED）表示用户拒绝；`2`（UNSET）表示权限未确认（通常出现在 `system_grant` 权限尚未授予时）。
+**解析讲解**：`0`（GRANTED）表示用户已授予权限；`-1`（DENIED）表示用户拒绝；`2`（UNSET）表示权限未确认（通常出现在 `system_grant` 权限尚未授予时）。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个 `PermissionGuard` 装饰器，用于在调用方法前自动检查权限，若未授予则自动申请。
 
@@ -2248,7 +2241,7 @@ D. 权限组是 Android 独有概念
 3. 未授予则调用 `requestPermissionsFromUser`，授予后执行，拒绝则抛出错误。
 4. 支持 ArkTS 的方法装饰器语法。
 
-**参考答案**：
+**解析讲解**：
 
 ```typescript
 // entry/src/main/ets/utils/PermissionGuard.ets
@@ -2311,7 +2304,7 @@ export function PermissionGuard(permissions: string[]): MethodDecorator {
 
 **题目 2**：实现一个权限状态持久化工具，记录用户对每个权限的申请历史（申请次数、拒绝次数、最后申请时间），用于风控分析。
 
-**参考答案**：
+**解析讲解**：
 
 ```typescript
 // entry/src/main/ets/utils/PermissionHistoryStore.ets
@@ -2419,8 +2412,6 @@ export class PermissionHistoryStore {
 
 **题目 1**：为什么 HarmonyOS 选择"权限组内仍独立弹窗"而非 Android 的"组内自动授予"？请从安全性与用户体验两个维度分析。
 
-<details>
-<summary>参考答案</summary>
 
 **安全性维度**：
 
@@ -2436,12 +2427,9 @@ export class PermissionHistoryStore {
 
 **权衡结论**：HarmonyOS 选择安全性优先，是"隐私即设计"原则的体现。虽然短期用户体验略受影响，但长期提升了用户对系统的信任度。
 
-</details>
 
 **题目 2**：在分布式场景下，若设备 A 被攻陷，攻击者是否可通过权限同步机制在设备 B 上获得权限？HarmonyOS 如何防御？
 
-<details>
-<summary>参考答案</summary>
 
 **攻击路径分析**：
 
@@ -2460,12 +2448,9 @@ export class PermissionHistoryStore {
 
 **结论**：HarmonyOS 通过多层防御（可信圈校验、范围限制、用户可控、审计日志、设备绑定、二次确认）将攻陷单设备的风险隔离，无法通过同步机制横向扩散到其他设备。
 
-</details>
 
 **题目 3**：如果让你设计一个"AI 驱动的权限风险识别系统"，你会如何实现？需要解决哪些关键问题？
 
-<details>
-<summary>参考答案</summary>
 
 **系统设计**：
 
@@ -2505,7 +2490,6 @@ export class PermissionHistoryStore {
 
 **HarmonyOS NEXT 实践**：HarmonyOS NEXT 已引入初步的 AI 风险识别，基于应用行为识别"过度索权"，向用户告警。未来可扩展为完整的 AI 权限治理系统。
 
-</details>
 
 ---
 
@@ -2885,3 +2869,441 @@ hdc shell acm sync-status --bundle-name <bundleName>
 | MDM | Mobile Device Management | 移动设备管理 |
 | HDC | HarmonyOS Device Connector | HarmonyOS 设备调试命令行工具 |
 | ATManager | Access Token Manager | 权限管理器实例 |
+## 权限声明配置
+
+**module.json5 声明权限**
+`"requestPermissions": [{ "name": ..., "reason": ..., "usedScene": ... }]`
+```json
+{
+  "module": {
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET",
+        "reason": "$string:internet_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "inuse"
+        }
+      },
+      {
+        "name": "ohos.permission.CAMERA",
+        "reason": "$string:camera_reason",
+        "usedScene": {
+          "abilities": ["EntryAbility"],
+          "when": "inuse"
+        }
+      }
+    ]
+  }
+}
+```
+
+**requestPermissions 字段说明**
+| 字段 | 类型 | 必填 | 说明 |
+| ---- | ---- | ---- | ---- |
+| `name` | string | 是 | 权限名称,如 `ohos.permission.CAMERA` |
+| `reason` | string | 否 | 申请原因的资源引用,如 `$string:camera_reason` |
+| `usedScene` | object | 否 | 权限使用场景配置 |
+| `usedScene.abilities` | Array<string> | 否 | 使用该权限的 Ability 名称列表 |
+| `usedScene.when` | string | 否 | 使用时机:`inuse`(前台)/`always`(前后台) |
+
+**usedScene.when 权限使用时机**
+`"when": "<inuse | always>"`
+```json
+{
+  "usedScene": {
+    "abilities": ["EntryAbility"],
+    "when": "inuse"
+  }
+}
+```
+
+**when 枚举值**
+| 值 | 说明 |
+| ---- | ---- |
+| `inuse` | 前台使用:仅在 Ability 处于前台时需要该权限 |
+| `always` | 前后台使用:Ability 在后台运行时也需要该权限 |
+
+---
+
+## 权限等级分类
+
+**权限等级表**
+| 等级 | 示例权限 | 授权方式 |
+| ---- | ---- | ---- |
+| `normal` | `ohos.permission.INTERNET`、`ohos.permission.GET_NETWORK_INFO`、`ohos.permission.GET_WIFI_INFO` | 安装时自动授予 |
+| `system_basic` | `ohos.permission.CAMERA`、`ohos.permission.MICROPHONE`、`ohos.permission.LOCATION`、`ohos.permission.READ_MEDIA`、`ohos.permission.WRITE_MEDIA` | 运行时弹窗申请 |
+| `system_core` | `ohos.permission.MANAGE_USERS`、`ohos.permission.REBOOT`、`ohos.permission.INSTALL_BUNDLE` | 仅系统应用可用 |
+
+**常见权限列表**
+```
+// normal 级别(安装即授予)
+ohos.permission.INTERNET                     // 网络访问
+ohos.permission.GET_NETWORK_INFO             // 获取网络信息
+ohos.permission.GET_WIFI_INFO                // 获取 WLAN 信息
+ohos.permission.SET_WIFI_INFO                // 设置 WLAN 信息
+ohos.permission.VIBRATE                      // 振动
+
+// system_basic 级别(运行时申请)
+ohos.permission.CAMERA                       // 相机
+ohos.permission.MICROPHONE                   // 麦克风
+ohos.permission.LOCATION                     // 精确位置
+ohos.permission.APPROXIMATELY_LOCATION       // 模糊位置
+ohos.permission.READ_MEDIA                   // 读取媒体文件
+ohos.permission.WRITE_MEDIA                  // 写入媒体文件
+ohos.permission.READ_CALENDAR                // 读取日历
+ohos.permission.WRITE_CALENDAR               // 写入日历
+ohos.permission.READ_CONTACTS                // 读取联系人
+ohos.permission.WRITE_CONTACTS               // 写入联系人
+
+// system_core 级别(仅系统应用)
+ohos.permission.MANAGE_USERS                 // 管理用户
+ohos.permission.REBOOT                       // 重启设备
+ohos.permission.INSTALL_BUNDLE               // 安装应用
+```
+
+---
+
+## 权限管理 API
+
+**导入权限管理模块**
+`import abilityAccessCtrl from '@ohos.abilityAccessCtrl';`
+```typescript
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
+```
+
+**创建权限管理器**
+`abilityAccessCtrl.createAtManager(): AtManager`
+```typescript
+const atManager = abilityAccessCtrl.createAtManager();
+```
+
+---
+
+## 权限检查 API
+
+**检查权限授权状态**
+`atManager.checkAccessToken(<tokenID: number>, <permissionName: string>): Promise<GrantStatus>`
+```typescript
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
+
+const atManager = abilityAccessCtrl.createAtManager();
+const tokenId = getContext(this).applicationInfo.accessTokenId;
+
+const grantStatus = await atManager.checkAccessToken(
+  tokenId,
+  'ohos.permission.CAMERA'
+);
+
+if (grantStatus === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED) {
+  console.info('相机权限已授予');
+} else {
+  console.info('相机权限未授予');
+}
+```
+
+**批量检查权限**
+`atManager.checkAccessToken(<tokenID: number>, <permissionName: string>): Promise<GrantStatus>`
+```typescript
+async function checkMultiplePermissions(): Promise<Record<string, boolean>> {
+  const atManager = abilityAccessCtrl.createAtManager();
+  const tokenId = getContext(this).applicationInfo.accessTokenId;
+
+  const permissions = [
+    'ohos.permission.CAMERA',
+    'ohos.permission.MICROPHONE',
+    'ohos.permission.LOCATION',
+    'ohos.permission.READ_MEDIA',
+  ];
+
+  const result: Record<string, boolean> = {};
+
+  for (const permission of permissions) {
+    const status = await atManager.checkAccessToken(tokenId, permission);
+    result[permission] = status === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
+  }
+
+  return result;
+}
+```
+
+---
+
+## GrantStatus 枚举
+
+**GrantStatus 权限授权状态**
+`abilityAccessCtrl.GrantStatus.<STATUS>`
+```typescript
+abilityAccessCtrl.GrantStatus.PERMISSION_DENIED     // 权限被拒绝 (-1)
+abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED    // 权限已授予 (0)
+```
+
+---
+
+## 权限请求 API
+
+**请求单个权限**
+`atManager.requestPermissionsFromUser(<context: Context>, <permList: Array<string>>): Promise<PermissionRequestResult>`
+```typescript
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
+
+async function requestCameraPermission(context: Context): Promise<boolean> {
+  const atManager = abilityAccessCtrl.createAtManager();
+
+  try {
+    const result = await atManager.requestPermissionsFromUser(context, [
+      'ohos.permission.CAMERA',
+    ]);
+
+    if (result.authResults[0] === 0) {
+      console.log('权限已授予');
+      return true;
+    } else {
+      console.log('权限被拒绝');
+      return false;
+    }
+  } catch (err) {
+    console.error('申请权限失败:', err);
+    return false;
+  }
+}
+```
+
+**批量请求权限**
+`atManager.requestPermissionsFromUser(<context: Context>, <permList: Array<string>>): Promise<PermissionRequestResult>`
+```typescript
+async function requestMultiplePermissions(context: Context) {
+  const atManager = abilityAccessCtrl.createAtManager();
+
+  const permissions: string[] = [
+    'ohos.permission.CAMERA',
+    'ohos.permission.MICROPHONE',
+    'ohos.permission.LOCATION',
+    'ohos.permission.APPROXIMATELY_LOCATION',
+  ];
+
+  try {
+    const result = await atManager.requestPermissionsFromUser(context, permissions);
+
+    const granted: string[] = [];
+    const denied: string[] = [];
+
+    permissions.forEach((permission, index) => {
+      if (result.authResults[index] === 0) {
+        granted.push(permission);
+      } else {
+        denied.push(permission);
+      }
+    });
+
+    console.info(`已授权: ${granted.join(', ')}`);
+    console.info(`被拒绝: ${denied.join(', ')}`);
+
+    return { granted, denied };
+  } catch (error) {
+    console.error(`权限请求失败: ${error}`);
+    return { granted: [], denied: permissions };
+  }
+}
+```
+
+**PermissionRequestResult 返回结果**
+`interface PermissionRequestResult { authResults: Array<number>, permissions: Array<string> }`
+```typescript
+interface PermissionRequestResult {
+  authResults: Array<number>;     // 授权结果数组: 0=已授予, -1=被拒绝
+  permissions: Array<string>;     // 请求的权限名称数组
+}
+```
+
+**authResults 授权结果值**
+| 值 | 说明 |
+| ---- | ---- |
+| `0` | 权限已授予(PERMISSION_GRANTED) |
+| `-1` | 权限被拒绝(PERMISSION_DENIED) |
+| `-2` | 权限被永久拒绝(用户勾选不再询问) |
+
+---
+
+## 权限请求 UI 控制
+
+**请求权限时显示理由**
+`atManager.requestPermissionsFromUser(<context>, <permList>, [<permissionsReasons>])`
+```typescript
+const result = await atManager.requestPermissionsFromUser(
+  getContext(this),
+  ['ohos.permission.CAMERA', 'ohos.permission.MICROPHONE'],
+  [
+    {
+      code: 0,
+      msg: '需要相机权限用于扫描二维码',
+      permissions: ['ohos.permission.CAMERA'],
+    },
+    {
+      code: 1,
+      msg: '需要麦克风权限用于语音输入',
+      permissions: ['ohos.permission.MICROPHONE'],
+    },
+  ]
+);
+```
+
+---
+
+## 完整权限申请示例
+
+**先检查后申请的完整流程**
+```typescript
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
+
+class PermissionHelper {
+  private atManager: abilityAccessCtrl.AtManager;
+
+  constructor() {
+    this.atManager = abilityAccessCtrl.createAtManager();
+  }
+
+  // 检查单个权限
+  async checkPermission(permission: string): Promise<boolean> {
+    const tokenId = getContext(this).applicationInfo.accessTokenId;
+    const status = await this.atManager.checkAccessToken(tokenId, permission);
+    return status === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
+  }
+
+  // 请求单个权限(先检查,已授权则跳过)
+  async ensurePermission(context: Context, permission: string): Promise<boolean> {
+    const granted = await this.checkPermission(permission);
+    if (granted) {
+      return true;
+    }
+
+    const result = await this.atManager.requestPermissionsFromUser(
+      context,
+      [permission]
+    );
+    return result.authResults[0] === 0;
+  }
+
+  // 批量请求权限
+  async ensurePermissions(
+    context: Context,
+    permissions: string[]
+  ): Promise<Record<string, boolean>> {
+    const needRequest: string[] = [];
+
+    // 过滤已授权权限
+    for (const permission of permissions) {
+      const granted = await this.checkPermission(permission);
+      if (!granted) {
+        needRequest.push(permission);
+      }
+    }
+
+    if (needRequest.length === 0) {
+      const result: Record<string, boolean> = {};
+      permissions.forEach((p) => (result[p] = true));
+      return result;
+    }
+
+    // 请求未授权权限
+    const result = await this.atManager.requestPermissionsFromUser(
+      context,
+      needRequest
+    );
+
+    const finalResult: Record<string, boolean> = {};
+    permissions.forEach((permission) => {
+      const index = needRequest.indexOf(permission);
+      if (index === -1) {
+        finalResult[permission] = true;
+      } else {
+        finalResult[permission] = result.authResults[index] === 0;
+      }
+    });
+
+    return finalResult;
+  }
+}
+```
+
+**在 UIAbility 中使用**
+```typescript
+import UIAbility from '@ohos.app.ability.UIAbility';
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
+import window from '@ohos.window';
+
+export default class EntryAbility extends UIAbility {
+  async onWindowStageCreate(windowStage: window.WindowStage) {
+    const atManager = abilityAccessCtrl.createAtManager();
+
+    // 应用启动时申请必要权限
+    const result = await atManager.requestPermissionsFromUser(this.context, [
+      'ohos.permission.CAMERA',
+      'ohos.permission.MICROPHONE',
+      'ohos.permission.LOCATION',
+    ]);
+
+    const allGranted = result.authResults.every((r) => r === 0);
+    if (allGranted) {
+      console.info('所有权限已授予');
+    } else {
+      console.warn('部分权限被拒绝');
+    }
+
+    windowStage.loadContent('pages/Index');
+  }
+}
+```
+
+**在组件中使用**
+```typescript
+@Entry
+@Component
+struct CameraPage {
+  @State hasPermission: boolean = false;
+
+  async aboutToAppear() {
+    await this.checkCameraPermission();
+  }
+
+  async checkCameraPermission() {
+    const atManager = abilityAccessCtrl.createAtManager();
+    const tokenId = getContext(this).applicationInfo.accessTokenId;
+
+    const status = await atManager.checkAccessToken(
+      tokenId,
+      'ohos.permission.CAMERA'
+    );
+    this.hasPermission = status === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
+  }
+
+  async requestPermission() {
+    const atManager = abilityAccessCtrl.createAtManager();
+    const result = await atManager.requestPermissionsFromUser(getContext(this), [
+      'ohos.permission.CAMERA',
+    ]);
+    this.hasPermission = result.authResults[0] === 0;
+  }
+
+  build() {
+    Column({ space: 16 }) {
+      if (this.hasPermission) {
+        Text('相机权限已授予,可以开始拍照')
+          .fontSize(16)
+          .fontColor('#4CAF50')
+        Button('开始拍照')
+          .onClick(() => {
+            // 启动相机
+          })
+      } else {
+        Text('需要相机权限才能拍照')
+          .fontSize(16)
+          .fontColor('#F44336')
+        Button('申请权限')
+          .onClick(() => this.requestPermission())
+      }
+    }
+    .padding(20)
+  }
+}
+```

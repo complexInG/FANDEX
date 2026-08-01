@@ -2733,108 +2733,108 @@ export default {
 
 ---
 
-## 10. 习题 | Exercises
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个 API 是 Vue 3 中用于创建 SSR 应用的？
+**常见疑问 1**：以下哪个 API 是 Vue 3 中用于创建 SSR 应用的？
 
 A. `createApp`
 B. `createSSRApp`
 C. `createServerApp`
 D. `createUniversalApp`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Vue 3 引入 `createSSRApp` 用于创建 SSR 应用，它与 `createApp` 的区别在于禁用响应式追踪，避免 SSR 期间不必要的依赖收集开销。客户端 hydration 时使用同一 API。
+**解析讲解**：Vue 3 引入 `createSSRApp` 用于创建 SSR 应用，它与 `createApp` 的区别在于禁用响应式追踪，避免 SSR 期间不必要的依赖收集开销。客户端 hydration 时使用同一 API。
 
 ---
 
-**Q2**：SSR 中以下哪个生命周期钩子会执行？
+**常见疑问 2**：SSR 中以下哪个生命周期钩子会执行？
 
 A. `beforeCreate`、`created`
 B. `beforeMount`、`mounted`
 C. `beforeUpdate`、`updated`
 D. `beforeUnmount`、`unmounted`
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：SSR 中仅执行 `beforeCreate` 与 `created`（对应 Composition API 中 `setup()` 的同步部分），因为 SSR 不涉及 DOM 挂载、更新、卸载。`onMounted` 等钩子在 SSR 中不执行。
+**解析讲解**：SSR 中仅执行 `beforeCreate` 与 `created`（对应 Composition API 中 `setup()` 的同步部分），因为 SSR 不涉及 DOM 挂载、更新、卸载。`onMounted` 等钩子在 SSR 中不执行。
 
 ---
 
-**Q3**：以下哪种情况会导致 Hydration Mismatch？
+**常见疑问 3**：以下哪种情况会导致 Hydration Mismatch？
 
 A. 使用 `v-if` 条件渲染
 B. 在 `setup()` 中使用 `ref`
 C. 在模板中使用 `Date.now()`
 D. 使用 `computed` 计算属性
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`Date.now()` 在服务端与客户端执行时返回不同值，导致渲染输出不一致，触发 Hydration Mismatch。解决方法是使用 `data-allow-mismatch` 或在 `onMounted` 中初始化。
+**解析讲解**：`Date.now()` 在服务端与客户端执行时返回不同值，导致渲染输出不一致，触发 Hydration Mismatch。解决方法是使用 `data-allow-mismatch` 或在 `onMounted` 中初始化。
 
 ---
 
-**Q4**：Vue 3 SSR 中，如何避免单例污染？
+**常见疑问 4**：Vue 3 SSR 中，如何避免单例污染？
 
 A. 使用 `app.provide`
 B. 使用工厂函数创建应用
 C. 使用 `createSSRApp`
 D. 使用 `renderToString`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：单例污染是因为在模块作用域创建应用实例导致所有请求共享。解决方法是使用工厂函数 `createApp()`，每个请求创建独立的应用实例。
+**解析讲解**：单例污染是因为在模块作用域创建应用实例导致所有请求共享。解决方法是使用工厂函数 `createApp()`，每个请求创建独立的应用实例。
 
 ---
 
-**Q5**：以下哪个不是流式渲染的优势？
+**常见疑问 5**：以下哪个不是流式渲染的优势？
 
 A. TTFB 更短
 B. 用户更早看到内容
 C. 总渲染时间减少
 D. 支持渐进式加载
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：流式渲染不影响总渲染时间，只是将渲染结果分块发送，使得首块到达客户端的时间（TTFB）显著缩短。总渲染时间仍取决于组件树复杂度与数据预取时间。
+**解析讲解**：流式渲染不影响总渲染时间，只是将渲染结果分块发送，使得首块到达客户端的时间（TTFB）显著缩短。总渲染时间仍取决于组件树复杂度与数据预取时间。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**：Vue 3 中，服务端渲染的核心 API 是 `______`，它返回一个 Promise，resolve 时得到 HTML 字符串。
+**常见疑问 6**：Vue 3 中，服务端渲染的核心 API 是 `______`，它返回一个 Promise，resolve 时得到 HTML 字符串。
 
-**答案**：`renderToString`
-
----
-
-**Q2**：SSR 中，`window`、`document` 等浏览器 API 应在 `______` 生命周期钩子中使用，避免服务端报错。
-
-**答案**：`onMounted`
+**解析讲解**：`renderToString`
 
 ---
 
-**Q3**：Vue 3.4 引入 `______` 属性，允许开发者显式标记可容忍 Hydration 不一致的元素。
+**常见疑问 7**：SSR 中，`window`、`document` 等浏览器 API 应在 `______` 生命周期钩子中使用，避免服务端报错。
 
-**答案**：`data-allow-mismatch`
-
----
-
-**Q4**：Nuxt 3 基于 `______` 引擎，支持多平台部署（Node.js、Cloudflare Workers、Vercel Edge 等）。
-
-**答案**：Nitro
+**解析讲解**：`onMounted`
 
 ---
 
-**Q5**：SSR 状态序列化时，应过滤 `______`、`______`、`______` 等敏感字段，避免 XSS 泄露。
+**常见疑问 8**：Vue 3.4 引入 `______` 属性，允许开发者显式标记可容忍 Hydration 不一致的元素。
 
-**答案**：`password`、`token`、`secret`
+**解析讲解**：`data-allow-mismatch`
 
-### 10.3 编程题
+---
 
-**Q1**：实现一个最小的 SSR 服务器，使用 Express 与 Vue 3。
+**常见疑问 9**：Nuxt 3 基于 `______` 引擎，支持多平台部署（Node.js、Cloudflare Workers、Vercel Edge 等）。
 
-**参考答案**：
+**解析讲解**：Nitro
+
+---
+
+**常见疑问 10**：SSR 状态序列化时，应过滤 `______`、`______`、`______` 等敏感字段，避免 XSS 泄露。
+
+**解析讲解**：`password`、`token`、`secret`
+
+### 编程题知识点讲解
+
+**常见疑问 11**：实现一个最小的 SSR 服务器，使用 Express 与 Vue 3。
+
+**解析讲解**：
 
 ```javascript
 import express from 'express';
@@ -2866,9 +2866,9 @@ app.listen(3000);
 
 ---
 
-**Q2**：实现一个同构应用的入口文件，支持 SSR 与 CSR 切换。
+**常见疑问 12**：实现一个同构应用的入口文件，支持 SSR 与 CSR 切换。
 
-**参考答案**：
+**解析讲解**：
 
 ```javascript
 // src/main.js
@@ -2918,9 +2918,9 @@ export async function render(url) {
 
 ---
 
-**Q3**：实现一个组件级缓存，支持 LRU 淘汰策略。
+**常见疑问 13**：实现一个组件级缓存，支持 LRU 淘汰策略。
 
-**参考答案**：
+**解析讲解**：
 
 ```javascript
 import LRU from 'lru-cache';
@@ -2979,9 +2979,9 @@ function renderWithCache(component, props) {
 
 ### 10.4 思考题
 
-**Q1**：何时应当选择 SSR 而非 SSG？请列举三个典型场景。
+**常见疑问 14**：何时应当选择 SSR 而非 SSG？请列举三个典型场景。
 
-**参考答案**：
+**解析讲解**：
 
 1. 个性化内容：电商商品推荐、用户主页，内容因用户而异，无法静态生成。
 2. 实时数据：股票行情、新闻动态，内容频繁更新，预生成成本高。
@@ -2989,9 +2989,9 @@ function renderWithCache(component, props) {
 
 ---
 
-**Q2**：解释为什么 Vue 3 SSR 中使用 `createSSRApp` 而非 `createApp`。
+**常见疑问 15**：解释为什么 Vue 3 SSR 中使用 `createSSRApp` 而非 `createApp`。
 
-**参考答案**：
+**解析讲解**：
 
 `createSSRApp` 与 `createApp` 的差异：
 
@@ -3003,9 +3003,9 @@ function renderWithCache(component, props) {
 
 ---
 
-**Q3**：分析 Vue Server Components 与 React Server Components 的设计差异。
+**常见疑问 16**：分析 Vue Server Components 与 React Server Components 的设计差异。
 
-**参考答案**：
+**解析讲解**：
 
 - **Vue Server Components**：实验性，基于 Vue 3 的 SSR 机制，组件仅在服务端渲染，不打包到客户端 bundle。当前限制较多，生态不成熟。
 - **React Server Components**：已稳定（Next.js 13+），引入新的组件模型，服务端组件与客户端组件明确分离，支持流式传输与零客户端体积。
@@ -3014,9 +3014,9 @@ Vue Server Components 仍处于早期阶段，未来可能借鉴 React 的设计
 
 ---
 
-**Q4**：SSR 中如何处理用户认证？请描述完整流程。
+**常见疑问 17**：SSR 中如何处理用户认证？请描述完整流程。
 
-**参考答案**：
+**解析讲解**：
 
 SSR 用户认证流程：
 
@@ -3035,9 +3035,9 @@ SSR 用户认证流程：
 
 ---
 
-**Q5**：评估 Vue 3 SSR 在边缘计算（Edge Computing）场景的适用性。
+**常见疑问 18**：评估 Vue 3 SSR 在边缘计算（Edge Computing）场景的适用性。
 
-**参考答案**：
+**解析讲解**：
 
 **优势**：
 
@@ -3066,9 +3066,9 @@ SSR 用户认证流程：
 
 ---
 
-**Q6**：设计一个支持 A/B 测试的 SSR 架构。
+**常见疑问 19**：设计一个支持 A/B 测试的 SSR 架构。
 
-**参考答案**：
+**解析讲解**：
 
 ```javascript
 // A/B 测试中间件
@@ -3312,3 +3312,399 @@ SSR 是现代 Web 应用的高阶技术，需要在性能、复杂度、成本�
 - [Provide 与 Inject](vue3/Provide与Inject)
 - [Pinia 持久化插件](vue3/Pinia持久化插件)
 - [响应式系统](vue3/响应式系统)
+## SSR 基本流程
+
+**基本写法：renderToString 渲染为字符串**
+`const <html> = await renderToString(<App>)`
+```ts
+// 服务器渲染组件为 HTML
+import { renderToString } from 'vue/server-renderer';
+import { createSSRApp } from 'vue';
+const app = createSSRApp(App);
+const html = await renderToString(app);
+```
+
+---
+
+**基本写法：createSSRApp 创建应用**
+`const <app> = createSSRApp(<根组件>)`
+```ts
+// SSR 模式应用实例
+const app = createSSRApp(App);
+```
+
+---
+
+## renderToNodeStream 流式渲染
+
+**基本写法：Node 流式输出**
+`renderToNodeStream(<app>)`
+```ts
+// 边渲染边发送提升首屏
+import { renderToNodeStream } from 'vue/server-renderer';
+const stream = renderToNodeStream(app);
+stream.pipe(res);
+```
+
+---
+
+**基本写法：Web Stream 边缘环境**
+`renderToWebStream(<app>)`
+```ts
+// Cloudflare Workers 等环境
+import { renderToWebStream } from 'vue/server-renderer';
+const stream = renderToWebStream(app);
+```
+
+---
+
+## 客户端注水 hydrate
+
+**基本写法：客户端 mount 注水**
+`<app>.mount(<容器>)`
+```ts
+// 客户端复用服务端 HTML
+import { createSSRApp } from 'vue';
+const app = createSSRApp(App);
+app.mount('#app');
+```
+
+---
+
+## 入口文件分离
+
+**基本写法：entry-server.js 导出 render**
+`export async function render() { return await renderToString(<app>); }`
+```ts
+// 服务端入口
+import { createSSRApp } from 'vue';
+import App from './App.vue';
+export async function render(url) {
+  const app = createSSRApp(App);
+  return await renderToString(app);
+}
+```
+
+---
+
+**基本写法：entry-client.js 注水**
+`<app>.mount('#app')`
+```ts
+// 客户端入口
+import { createSSRApp } from 'vue';
+import App from './App.vue';
+createSSRApp(App).mount('#app');
+```
+
+---
+
+## 同构路由
+
+**基本写法：createRouter 共享配置**
+`const <router> = createRouter({ history, routes })`
+```ts
+// 客户端使用 createWebHistory 服务端使用 createMemoryHistory
+import { createRouter } from 'vue-router';
+const router = createRouter({
+  history: isServer ? createMemoryHistory() : createWebHistory(),
+  routes
+});
+```
+
+---
+
+**基本写法：服务端 router.push**
+`<router>.push(<url>)`
+```ts
+// 服务端根据请求 URL 设置
+router.push(ctx.url);
+await router.isReady();
+```
+
+---
+
+## 数据预取
+
+**基本写法：组件内 serverPrefetch 钩子**
+`async serverPrefetch() { await <fetch>; }`
+```vue
+<!-- 组件级数据预取 -->
+<script>
+export default {
+  async serverPrefetch() {
+    this.posts = await fetchPosts();
+  }
+}
+</script>
+```
+
+---
+
+**基本写法：路由级数据预取**
+`<route>.meta.<preload>`
+```ts
+// 路由 meta 配置预取函数
+{ path: '/user/:id', component: User, meta: { preload: fetchUser } }
+```
+
+---
+
+## 注水数据传递
+
+**基本写法：服务端数据序列化注入**
+`<script>window.__INITIAL_STATE__ = ${JSON.stringify(<state>)}</script>`
+```ts
+// 通过全局变量传递初始状态
+const state = serialize(state);
+const html = `<script>window.__INITIAL_STATE__=${state}</script>`;
+```
+
+---
+
+**基本写法：客户端读取注水状态**
+`window.__INITIAL_STATE__`
+```ts
+// 客户端恢复状态
+if (window.__INITIAL_STATE__) {
+  store.replaceState(window.__INITIAL_STATE__);
+}
+```
+
+---
+
+## Pinia SSR 集成
+
+**基本写法：服务端创建 Pinia**
+`const <pinia> = createPinia()`
+```ts
+// 每请求独立实例
+import { createPinia } from 'pinia';
+const pinia = createPinia();
+app.use(pinia);
+```
+
+---
+
+**基本写法：序列化 Pinia 状态**
+`pinia.state.value`
+```ts
+// 注水时传递
+const state = JSON.stringify(pinia.state.value);
+```
+
+---
+
+**基本写法：客户端恢复 Pinia**
+`<pinia>.state.value = window.__INITIAL_STATE__`
+```ts
+// 客户端注水
+pinia.state.value = window.__INITIAL_STATE__;
+```
+
+---
+
+## 注水不匹配
+
+**基本写法：避免服务端客户端渲染差异**
+`const <date> = new Date() // 时间不一致`
+```ts
+// 使用 onMounted 在客户端修正
+const date = ref('');
+onMounted(() => date.value = new Date().toLocaleString());
+```
+
+---
+
+## Nuxt 3 全栈框架
+
+**基本写法：创建 Nuxt 项目**
+`npx nuxi init <项目名>`
+```bash
+# 创建 Nuxt 3 项目
+npx nuxi init my-app
+```
+
+---
+
+**基本写法：开发命令**
+`npm run dev`
+```bash
+# 启动 Nuxt 开发服务器
+npm run dev
+```
+
+---
+
+**基本写法：构建命令**
+`npm run build`
+```bash
+# 构建生产版本
+npm run build
+```
+
+---
+
+**基本写法：启动生产服务**
+`node .output/server/index.mjs`
+```bash
+# 运行 Nuxt 生产服务
+node .output/server/index.mjs
+```
+
+---
+
+## Nuxt 页面路由
+
+**基本写法：pages 目录约定**
+`pages/index.vue`
+```vue
+<!-- 自动生成 / 路由 -->
+<template>
+  <h1>首页</h1>
+</template>
+```
+
+---
+
+**基本写法：动态路由**
+`pages/user/[id].vue`
+```vue
+<!-- 自动生成 /user/:id -->
+<script setup>
+const route = useRoute();
+const id = route.params.id;
+</script>
+```
+
+---
+
+## Nuxt 数据获取
+
+**基本写法：useFetch 获取数据**
+`const { <data> } = await useFetch('<url>')`
+```ts
+// 自动 SSR 同构
+const { data } = await useFetch('/api/user');
+```
+
+---
+
+**基本写法：useAsyncData 自定义获取**
+`const { <data> } = await useAsyncData('<key>', () => <fn>)`
+```ts
+// 自定义异步逻辑
+const { data } = await useAsyncData('user', () => fetchUser());
+```
+
+---
+
+## Nuxt 中间件
+
+**基本写法：路由中间件**
+`middleware/auth.ts`
+```ts
+// 全局路由中间件
+export default defineNuxtRouteMiddleware((to, from) => {
+  if (!isAuth()) return navigateTo('/login');
+});
+```
+
+---
+
+## Nuxt 插件
+
+**基本写法：自定义插件**
+`plugins/<名称>.ts`
+```ts
+// 注册全局功能
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.provide('util', () => console.log('util'));
+});
+```
+
+---
+
+## Nuxt 服务端 API
+
+**基本写法：server/api 目录约定**
+`server/api/user.get.ts`
+```ts
+// 自动映射 /api/user
+export default defineEventHandler(async (event) => {
+  return { name: 'Alice' };
+});
+```
+
+---
+
+## Nuxt 渲染模式
+
+**基本写法：配置渲染模式**
+`ssr: true | false`
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  ssr: true // 启用 SSR 默认 true
+});
+```
+
+---
+
+**基本写法：混合渲染路由规则**
+`routeRules: { '<路径>': { ssr: false } }`
+```ts
+// 部分路由 SPA 模式
+routeRules: {
+  '/admin/**': { ssr: false }
+}
+```
+
+---
+
+## Nuxt 静态生成
+
+**基本写法：预渲染静态站点**
+`nuxt generate`
+```bash
+# 生成纯静态 HTML
+npm run generate
+```
+
+---
+
+## 元信息管理
+
+**基本写法：useHead 设置文档头**
+`useHead({ title, meta })`
+```ts
+// 同构管理 head
+useHead({
+  title: '我的页面',
+  meta: [{ name: 'description', content: '描述' }]
+});
+```
+
+---
+
+## 错误处理
+
+**基本写法：createError 抛错**
+`throw createError({ statusCode: 404 })`
+```ts
+// 服务端与客户端统一错误
+throw createError({ statusCode: 404, statusMessage: 'Not Found' });
+```
+
+---
+
+**基本写法：error.vue 错误页**
+`error.vue`
+```vue
+<!-- 全局错误页 -->
+<script setup>
+const props = defineProps(['error']);
+</script>
+<template>
+  <h1>{{ error.statusCode }}</h1>
+</template>
+```

@@ -18,10 +18,11 @@ prerequisites:
   - cpp/概述与现代标准
   - cpp/引用
 ---
+# C++ 完美转发与引用折叠
 
-# 完美转发与引用折叠
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档系统讲解 C++11 引入的完美转发（perfect forwarding）机制与引用折叠（reference collapsing）规则，覆盖转发引用、`std::forward`、`std::make_index_sequence`、可变参数模板、tuple 展开等核心主题。所有代码示例可在支持 C++17/20/23 的主流编译器上编译通过，标注 GCC/Clang/MSVC 兼容性。对标 MIT 6.S192、Stanford CS106L、CMU 15-411 课程教学水准。
+---
 
 ## 1. 学习目标
 
@@ -1784,7 +1785,7 @@ auto curried = curry(add3);
 std::cout << curried(1)(2)(3) << "\n";  // 6
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（Remember / Understand）
 
@@ -1800,11 +1801,11 @@ void k(int&& x);
 template<typename T> void p(T& x);
 ```
 
-**参考答案**：`f`（是）、`D::m`（是，U 是函数模板参数）。`g`（否，const）、`h`（否，非 T 直接）、`C::m`（否，T 来自类）、`k`（否，非模板）、`p`（否，不是 &&）。
+**解析讲解**：`f`（是）、`D::m`（是，U 是函数模板参数）。`g`（否，const）、`h`（否，非 T 直接）、`C::m`（否，T 来自类）、`k`（否，非模板）、`p`（否，不是 &&）。
 
 **习题 2**：引用折叠的四种组合结果？
 
-**参考答案**：
+**解析讲解**：
 
 - `T& &` → `T&`
 - `T& &&` → `T&`
@@ -1813,12 +1814,12 @@ template<typename T> void p(T& x);
 
 **习题 3**：`std::move` 与 `std::forward` 的本质区别？
 
-**参考答案**：
+**解析讲解**：
 
 - `std::move`：无条件转为右值，用于明确表达"可被移动"。
 - `std::forward`：根据模板参数 `T` 的推导结果条件性转换，保持原值类别，用于完美转发。
 
-### 10.2 应用题（Apply / Analyze）
+### 应用题知识点讲解
 
 **习题 4**：以下代码输出什么？
 
@@ -1839,7 +1840,7 @@ int main() {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 - `wrapper(x)`：`T=int&`，`std::forward<int&>(x)` 是 lvalue，输出 `lvalue`；
 - `wrapper(std::move(x))`：`T=int`，`std::forward<int>(x)` 是 rvalue，输出 `rvalue`；
@@ -1855,7 +1856,7 @@ void wrapper(T&& x) {
 }
 ```
 
-**参考答案**：第二次 `std::forward<T>(x)` 时，若 `T` 推导为非引用（即 `x` 原为 rvalue），则 `x` 可能已被 move，第二次访问是 UB。修复：每个参数只 `std::forward` 一次。
+**解析讲解**：第二次 `std::forward<T>(x)` 时，若 `T` 推导为非引用（即 `x` 原为 rvalue），则 `x` 可能已被 move，第二次访问是 UB。修复：每个参数只 `std::forward` 一次。
 
 ### 10.3 评价题（Evaluate）
 
@@ -1896,7 +1897,7 @@ int main() {
 }
 ```
 
-**参考答案**：不安全。`identity(42)` 中 `x` 是局部参数，函数返回后 `x` 销毁，返回的 `int&&` 悬空。修复：返回值 `auto`（按值）。
+**解析讲解**：不安全。`identity(42)` 中 `x` 是局部参数，函数返回后 `x` 销毁，返回的 `int&&` 悬空。修复：返回值 `auto`（按值）。
 
 ### 10.4 创造题（Create）
 
@@ -2211,7 +2212,184 @@ T&& bad(T&& x) { return std::forward<T>(x); }  // 可能悬空
 
 ---
 
-### 更新日志 (Changelog)
+## 转发引用
 
-- 2026-06-14: 初始版本，介绍完美转发与引用折叠基础概念。
-- 2026-07-20: 金标准升级，扩展至 1500+ 行，覆盖转发引用、`std::forward`、可变参数模板、`std::make_index_sequence`、tuple 展开、折叠表达式、`std::apply`、`std::bind_front`、CRTP、函数组合、记忆化、currying 等主题，新增 12 项质量基准章节与 4 个附录。
+**基本写法：模板中的万能引用**
+`template <typename <T>> void <函数名>(<T>&& <参数>);`
+```cpp
+// 既可接受左值也可接受右值
+template <typename T>
+void wrapper(T&& arg);
+```
+
+---
+
+**基本写法：auto&& 也是万能引用**
+`auto&& <变量> = <表达式>;`
+```cpp
+// auto 推导配合 && 形成转发引用
+auto&& ref = some_expr();
+```
+
+---
+
+## std::forward
+
+**基本写法：完美转发参数**
+`std::forward<<T>>(<参数>)`
+```cpp
+// 保持参数的左右值属性转发
+template <typename T>
+void wrapper(T&& arg) {
+    target(std::forward<T>(arg));
+}
+```
+
+---
+
+**基本写法：转发给构造函数**
+`: <成员>(std::forward<<T>>(<参数>)) { }`
+```cpp
+// 转发初始化成员
+template <typename T>
+struct Holder {
+    T data;
+    template <typename U>
+    Holder(U&& u) : data(std::forward<U>(u)) {}
+};
+```
+
+---
+
+**基本写法：转发多个参数**
+`target(std::forward<<Args>>(<args>)...);`
+```cpp
+// 转发可变参数包
+template <typename... Args>
+void emplace(Args&&... args) {
+    construct(std::forward<Args>(args)...);
+}
+```
+
+---
+
+## std::move
+
+**基本写法：强制转为右值**
+`std::move(<对象>)`
+```cpp
+// 触发移动语义
+std::string s = "hi";
+vec.push_back(std::move(s));
+```
+
+---
+
+**基本写法：移动成员**
+`<成员> = std::move(<其他>.<成员>);`
+```cpp
+// 转移资源所有权
+String(String&& o) noexcept : data_(std::move(o.data_)) {}
+```
+
+---
+
+## std::move_if_noexcept
+
+**基本写法：条件移动**
+`std::move_if_noexcept(<对象>)`
+```cpp
+// 移动构造非异常安全时退化为拷贝
+auto x = std::move_if_noexcept(obj);
+```
+
+---
+
+## 引用折叠规则
+
+**基本写法：折叠为左值引用**
+`<类型>& &` → `<类型>&`
+```cpp
+// 左值引用遇到左值引用折叠为左值引用
+using R = int& &;   // 折叠为 int&
+```
+
+---
+
+**基本写法：右值与右值折叠**
+`<类型>&& &&` → `<类型>&&`
+```cpp
+// 两个右值引用折叠为右值引用
+using R = int&& &&;  // 折叠为 int&&
+```
+
+---
+
+**基本写法：任意左值参与折叠为左值**
+`<类型>& &&` 或 `<类型>&& &` → `<类型>&`
+```cpp
+// 只要有一个左值引用就折叠为左值引用
+using R = int& &&;   // 折叠为 int&
+```
+
+---
+
+## 转发工厂函数
+
+**基本写法：make_unique 转发**
+`std::make_unique<<类型>>(<参数>...)`
+```cpp
+// 标准库通过完美转发构造对象
+auto p = std::make_unique<Widget>(arg1, arg2);
+```
+
+---
+
+**基本写法：emplace 系列转发**
+`<容器>.emplace_back(<参数>...);`
+```cpp
+// 容器原地构造避免临时对象
+vec.emplace_back(42, "name");
+```
+
+---
+
+## 完美转发包装器
+
+**基本写法：通用函数包装**
+`template <typename F, typename... Args> auto <函数名>(F&& <f>, Args&&... <args>) { return std::forward<F>(<f>)(std::forward<Args>(<args>)...); }`
+```cpp
+// 包装可调用对象与参数
+template <typename F, typename... Args>
+auto invoke_wrap(F&& f, Args&&... args) {
+    return std::forward<F>(f)(std::forward<Args>(args)...);
+}
+```
+
+---
+
+## as_const 转发
+
+**基本写法：添加 const 左值引用**
+`std::as_const(<对象>)`
+```cpp
+// 将对象转为 const 引用避免被修改
+for (auto& item : std::as_const(container)) {
+    // 只读访问
+}
+```
+
+---
+
+## 注意事项
+
+**基本写法：不要转发多次**
+`auto& <别名> = std::forward<<T>>(<参数>);  // 后续使用别名而非再次 forward`
+```cpp
+// 转发后的对象状态可能已被移动
+template <typename T>
+void wrapper(T&& arg) {
+    target(std::forward<T>(arg));
+    // 不要再次使用 arg，可能已被移动
+}
+```

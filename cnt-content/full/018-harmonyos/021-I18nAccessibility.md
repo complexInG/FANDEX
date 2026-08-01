@@ -15,6 +15,11 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
+# 国际化与无障碍 语法速查手册
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 概述
 
@@ -106,35 +111,45 @@ HarmonyOS 的 i18n 与 a11y 体系遵循三项设计哲学：
 
 HarmonyOS 资源系统使用限定符目录（Qualifier Directory）组织资源。限定符是对资源使用场景的描述，可以叠加使用。目录命名规则为 `限定符-限定符-...`，按优先级从高到低排列。
 
-```
-resources/
-├── base/                          // 默认资源（fallback）
-│   ├── element/
-│   │   ├── string.json
-│   │   ├── color.json
-│   │   └── float.json
-│   ├── media/
-│   │   └── icon.png
-│   └── profile/
-│       └── ic_profile.svg
-├── zh_CN/                         // 中文（中国）
-│   └── element/
-│       └── string.json
-├── en_US/                         // 英文（美国）
-│   └── element/
-│       └── string.json
-├── en_GB/                         // 英文（英国）
-│   └── element/
-│       └── string.json
-├── ar_SA/                         // 阿拉伯语（沙特）
-│   └── element/
-│       └── string.json
-├── dark/                          // 暗色模式
-│   └── element/
-│       └── color.json
-└── ar_SA-dark/                   // 阿拉伯语暗色模式
-    └── element/
-        └── color.json
+```mermaid
+flowchart TD
+    T0["resources/"]
+    T1["base/                          // 默认资源（fallback）"]
+    T2["element/"]
+    T3["string.json"]
+    T4["color.json"]
+    T5["float.json"]
+    T6["media/"]
+    T7["icon.png"]
+    T8["profile/"]
+    T9["ic_profile.svg"]
+    T10["zh_CN/                         // 中文（中国）"]
+    T11["element/"]
+    T12["string.json"]
+    T13["en_US/                         // 英文（美国）"]
+    T14["element/"]
+    T15["string.json"]
+    T16["en_GB/                         // 英文（英国）"]
+    T17["element/"]
+    T18["string.json"]
+    T19["ar_SA/                         // 阿拉伯语（沙特）"]
+    T20["element/"]
+    T21["string.json"]
+    T22["dark/                          // 暗色模式"]
+    T23["element/"]
+    T24["color.json"]
+    T25["ar_SA-dark/                   // 阿拉伯语暗色模式"]
+    T26["element/"]
+    T27["color.json"]
+    T0 --> T1
+    T9 --> T10
+    T12 --> T13
+    T15 --> T16
+    T18 --> T19
+    T21 --> T22
+    T24 --> T25
+    T25 --> T26
+    T26 --> T27
 ```
 
 ### 限定符优先级
@@ -338,53 +353,19 @@ $$
 
 ### 资源系统架构
 
-```
-┌─────────────────────────────────────────────────┐
-│              应用层（ArkTS / ArkUI）              │
-│         $r('app.string.hello') 调用              │
-└────────────────┬────────────────────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────────────────────┐
-│           资源管理器（ResourceManager）           │
-│   - 读取设备的 locale、colorMode、deviceType    │
-│   - 按限定符优先级匹配目录                       │
-│   - 缓存已匹配资源                               │
-└────────────────┬────────────────────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────────────────────┐
-│              资源目录（resources/）              │
-│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐  │
-│  │ base │ │zh_CN │ │en_US │ │ar_SA │ │ dark │  │
-│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘  │
-└─────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    App[应用层 ArkTS / ArkUI<br/>$r('app.string.hello') 调用] --> RM[资源管理器 ResourceManager<br/>读取 locale、colorMode、deviceType<br/>按限定符优先级匹配目录<br/>缓存已匹配资源]
+    RM --> RD[资源目录 resources/<br/>base / zh_CN / en_US / ar_SA / dark]
 ```
 
 ### 无障碍服务架构
 
-```
-┌─────────────────────────────────────────────────┐
-│           无障碍服务（Accessibility Service）    │
-│   - 屏幕阅读器（TalkBack 类）                   │
-│   - 开关控制（Switch Access）                   │
-│   - 语音控制（Voice Access）                    │
-└────────────────┬────────────────────────────────┘
-                 │ 无障碍事件流
-                 ▼
-┌─────────────────────────────────────────────────┐
-│            无障碍框架（a11y Framework）           │
-│   - 维护无障碍树                                │
-│   - 派发事件                                    │
-│   - 执行动作                                    │
-└────────────────┬────────────────────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────────────────────┐
-│              应用层（ArkUI 组件）                │
-│   - 默认无障碍行为                              │
-│   - 自定义无障碍属性                            │
-└─────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    AS[无障碍服务<br/>屏幕阅读器 TalkBack 类<br/>开关控制 Switch Access<br/>语音控制 Voice Access]
+    AS -->|无障碍事件流| AF[无障碍框架 a11y Framework<br/>维护无障碍树<br/>派发事件<br/>执行动作]
+    AF --> AP[应用层 ArkUI 组件<br/>默认无障碍行为<br/>自定义无障碍属性]
 ```
 
 ## 代码示例
@@ -1358,7 +1339,7 @@ struct ProductPage {
 4. **翻译协作平台**：避免直接编辑 JSON 文件，使用专业翻译管理工具
 5. **无障碍 ≠ 屏幕阅读器**：还需考虑色觉障碍、运动障碍、听障等
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 
@@ -1635,3 +1616,256 @@ struct ProductPage {
 |------|------|-------|---------|
 | 1.0 | 2026-06-14 | fanquanpp | 初始版本 |
 | 2.0 | 2026-07-21 | fanquanpp | 金标准升级：补充 Bloom 学习目标、形式化定义、理论推导、对比分析、案例研究、习题、附录等内容；达到 MIT/Stanford/CMU 教学水准 |
+## 资源文件结构
+
+**基本写法：多语言资源目录**
+`resources/<语言>/element/string.json`
+```text
+// 多语言资源目录结构
+resources/
+  base/element/string.json          // 默认语言
+  en_US/element/string.json         // 英语（美国）
+  zh_CN/element/string.json         // 简体中文
+  ja_JP/element/string.json        // 日语
+```
+
+---
+
+**基本写法：字符串资源**
+`{ "string": [{ "name": "<键>", "value": "<值>" }] }`
+```json5
+// resources/base/element/string.json
+{
+  "string": [
+    { "name": "app_name", "value": "我的应用" },
+    { "name": "welcome", "value": "欢迎" },
+    { "name": "confirm", "value": "确定" }
+  ]
+}
+```
+
+---
+
+**基本写法：英文资源**
+`{ "string": [{ "name": "app_name", "value": "My App" }] }`
+```json5
+// resources/en_US/element/string.json
+{
+  "string": [
+    { "name": "app_name", "value": "My App" },
+    { "name": "welcome", "value": "Welcome" },
+    { "name": "confirm", "value": "Confirm" }
+  ]
+}
+```
+
+---
+
+## 引用资源
+
+**基本写法：代码中引用字符串**
+`$r('app.string.<键>')`
+```typescript
+// 引用字符串资源
+Text($r('app.string.welcome'))
+Button($r('app.string.confirm'))
+```
+
+---
+
+**基本写法：引用颜色资源**
+`$r('app.color.<键>')`
+```typescript
+// 引用颜色资源
+Text('文本').fontColor($r('app.color.text_color'))
+```
+
+---
+
+**基本写法：引用尺寸资源**
+`$r('app.float.<键>')`
+```typescript
+// 引用尺寸资源
+Text('文本').fontSize($r('app.float.title_size'))
+```
+
+---
+
+**基本写法：引用图片资源**
+`$r('app.media.<键>')`
+```typescript
+// 引用图片资源
+Image($r('app.media.icon')).width(48).height(48)
+```
+
+---
+
+## i18n 国际化
+
+**基本写法：获取系统语言**
+`i18n.getSystemLanguage()`
+```typescript
+// 获取当前系统语言
+import { i18n } from '@kit.LocalizationKit'
+
+let lang = i18n.getSystemLanguage()
+console.info(`系统语言: ${lang}`)
+// 如 zh-Hans-CN、en-US
+```
+
+---
+
+**基本写法：获取系统区域**
+`i18n.getSystemRegion()`
+```typescript
+// 获取系统区域设置
+let region = i18n.getSystemRegion()
+console.info(`区域: ${region}`)
+// 如 CN、US
+```
+
+---
+
+**基本写法：获取系统时区**
+`i18n.getSystemTimeZone()`
+```typescript
+// 获取系统时区
+let timezone = i18n.getSystemTimeZone()
+console.info(`时区: ${timezone}`)
+// 如 Asia/Shanghai
+```
+
+---
+
+**基本写法：格式化日期**
+`new Intl.DateTimeFormat(<locale>, <options>).format(<date>)`
+```typescript
+// 按地区格式化日期
+let formatter = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit'
+})
+let dateStr = formatter.format(new Date())
+console.info(dateStr)  // 2026/07/31
+```
+
+---
+
+**基本写法：格式化数字**
+`new Intl.NumberFormat(<locale>, <options>).format(<number>)`
+```typescript
+// 按地区格式化数字
+let formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD'
+})
+let price = formatter.format(99.99)
+console.info(price)  // $99.99
+```
+
+---
+
+**基本写法：格式化相对时间**
+`new Intl.RelativeTimeFormat(<locale>, <options>).format(<值>, <单位>)`
+```typescript
+// 相对时间格式化
+let rtf = new Intl.RelativeTimeFormat('zh-CN', { numeric: 'auto' })
+rtf.format(-1, 'day')   // 昨天
+rtf.format(2, 'hour')   // 2小时后
+```
+
+---
+
+## 单复数处理
+
+**基本写法：复数资源**
+`{ "plural": [{ "name": "<键>", "value": [{ "quantity": "one", "value": "<单数>" }, { "quantity": "other", "value": "<复数>" }] }] }`
+```json5
+// resources/en_US/element/plural.json
+{
+  "plural": [
+    {
+      "name": "items_count",
+      "value": [
+        { "quantity": "one", "value": "%d item" },
+        { "quantity": "other", "value": "%d items" }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+**基本写法：引用复数资源**
+`$r('app.plural.<键>', <数量>)`
+```typescript
+// 根据数量自动选择单复数
+Text($r('app.plural.items_count', count))
+```
+
+---
+
+## 无障碍属性
+
+**基本写法：设置无障碍文本**
+`.accessibilityText('<描述>')`
+```typescript
+// 为无障碍模式提供文本描述
+Image($r('app.media.icon'))
+  .width(48).height(48)
+  .accessibilityText('应用图标')
+```
+
+---
+
+**基本写法：设置无障碍描述**
+`.accessibilityDescription('<详细描述>')`
+```typescript
+// 提供更详细的无障碍描述
+Button('提交')
+  .accessibilityText('提交按钮')
+  .accessibilityDescription('点击此按钮提交表单数据')
+```
+
+---
+
+**基本写法：设置重要性级别**
+`.accessibilityLevel(AccessibilityLevel.YES)`
+```typescript
+// 控制组件是否对无障碍服务可见
+import { AccessibilityLevel } from '@kit.ArkUI'
+
+Text('重要内容')
+  .accessibilityLevel(AccessibilityLevel.YES)
+
+Text('装饰内容')
+  .accessibilityLevel(AccessibilityLevel.NO)
+```
+
+---
+
+**基本写法：无障碍分组**
+`.accessibilityGroup(true)`
+```typescript
+// 将子组件合并为无障碍单元
+Row() {
+  Text('姓名')
+  Text('Alice')
+}
+.accessibilityGroup(true)
+.accessibilityText('姓名：Alice')
+```
+
+---
+
+**基本写法：无障碍操作**
+`.accessibilityAction('<动作>', <回调>)`
+```typescript
+// 自定义无障碍操作
+Text('自定义操作')
+  .accessibilityAction('custom_action', () => {
+    console.info('自定义操作触发')
+  })
+```

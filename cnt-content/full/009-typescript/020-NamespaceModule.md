@@ -1158,33 +1158,42 @@ import * as _ from 'lodash';
 
 ### 实践一：项目模块组织规范
 
-```
-src/
-├── components/           # 通用组件
-│   ├── Button/
-│   │   ├── Button.tsx
-│   │   ├── Button.test.tsx
-│   │   ├── Button.types.ts
-│   │   └── index.ts     # Barrel file
-│   └── index.ts         # 组件统一导出
-├── hooks/               # 自定义 Hooks
-│   ├── useAuth.ts
-│   └── index.ts
-├── pages/               # 页面组件
-│   ├── Home/
-│   └── About/
-├── services/            # API 服务
-│   ├── api.ts
-│   └── auth.ts
-├── utils/               # 工具函数
-│   ├── date.ts
-│   ├── format.ts
-│   └── index.ts
-├── types/               # 类型定义
-│   ├── global.d.ts
-│   └── api.d.ts
-├── App.tsx
-└── index.tsx
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["components/           # 通用组件"]
+    T2["Button/"]
+    T3["Button.tsx"]
+    T4["Button.test.tsx"]
+    T5["Button.types.ts"]
+    T6["index.ts     # Barrel file"]
+    T7["index.ts         # 组件统一导出"]
+    T8["hooks/               # 自定义 Hooks"]
+    T9["useAuth.ts"]
+    T10["index.ts"]
+    T11["pages/               # 页面组件"]
+    T12["Home/"]
+    T13["About/"]
+    T14["services/            # API 服务"]
+    T15["api.ts"]
+    T16["auth.ts"]
+    T17["utils/               # 工具函数"]
+    T18["date.ts"]
+    T19["format.ts"]
+    T20["index.ts"]
+    T21["types/               # 类型定义"]
+    T22["global.d.ts"]
+    T23["api.d.ts"]
+    T24["App.tsx"]
+    T25["index.tsx"]
+    T0 --> T1
+    T7 --> T8
+    T10 --> T11
+    T13 --> T14
+    T16 --> T17
+    T20 --> T21
+    T23 --> T24
+    T23 --> T25
 ```
 
 **规范**：
@@ -1515,7 +1524,7 @@ export default myLib;
 }
 ```
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 

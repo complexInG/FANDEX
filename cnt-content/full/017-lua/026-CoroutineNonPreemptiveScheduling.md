@@ -185,18 +185,14 @@ $$
 
 coroutine 的状态转换图：
 
-```
-                        resume()
-       ┌────────────┐ ────────────> ┌────────────┐
-       │  suspended │                │   running   │
-       └────────────┘ <──────────── └────────────┘
-              ^   ▲       yield()         │
-              │   │                        │
-              │   └─────── return          │
-              │                            v
-              │                        ┌────────────┐
-              └────────────────────────│    dead    │
-                     close()          └────────────┘
+```mermaid
+stateDiagram-v2
+    [*] --> suspended
+    suspended --> running: resume()
+    running --> suspended: yield()
+    running --> dead: return
+    suspended --> dead: close()
+    dead --> [*]
 ```
 
 形式化：
@@ -230,17 +226,18 @@ $$
 
 **双向数据流**：
 
-```
-主协程             被调协程
-   │                   │
-   │── resume(a, b) ──>│
-   │                   │ (执行)
-   │<── yield(c, d) ───│
-   │                   │ (暂停)
-   │── resume(e, f) ──>│
-   │                   │ (恢复，yield 返回 e, f)
-   │<── return(g) ─────│
-   │                   │ (dead)
+```mermaid
+sequenceDiagram
+    participant Main as 主协程
+    participant Sub as 被调协程
+    Main->>Sub: resume(a, b)
+    Note over Sub: 执行
+    Sub-->>Main: yield(c, d)
+    Note over Sub: 暂停
+    Main->>Sub: resume(e, f)
+    Note over Sub: 恢复，yield 返回 e, f
+    Sub-->>Main: return(g)
+    Note over Sub: dead
 ```
 
 ### 2.4 非对称 vs 对称协程
@@ -439,19 +436,17 @@ void luaV_yield(lua_State *L, int nresults) {
 
 每个 coroutine 拥有独立的 Lua 栈：
 
-```
-+----------------------+
-| lua_State (header)   |  <- coroutine 元数据
-+----------------------+
-| stack[0]             |  <- 栈底
-| stack[1]             |
-| ...                  |
-| CallInfo chain       |  <- 调用栈帧
-| ...                  |
-| stack[top-1]         |  <- 栈顶
-| ...                  |
-| stack[stack_last-1]  |  <- 栈容量上限
-+----------------------+
+```mermaid
+flowchart TD
+    B0["lua_State (header) | <- coroutine 元数据"]
+    B1["stack[0] | <- 栈底 / stack[1]"]
+    B0 --> B1
+    B2["CallInfo chain | <- 调用栈帧"]
+    B1 --> B2
+    B3["stack[top-1] | <- 栈顶"]
+    B2 --> B3
+    B4["stack[stack_last-1] | <- 栈容量上限"]
+    B3 --> B4
 ```
 
 默认栈大小：`LUA_MINSTACK` = 20，可动态扩容至 `LUAI_MAXSTACK`（默认 1,000,000）。
@@ -1940,11 +1935,11 @@ Neovim 内部通过 coroutine + libuv 实现协作式调度。
 
 ---
 
-## 9. 练习题
+## 知识讲解与要点分析（原练习题）
 
-### 9.1 选择题
+### 选择题知识点讲解
 
-**Q1**. 下列代码的输出是什么？
+**常见疑问 1**：. 下列代码的输出是什么？
 
 ```lua
 local co = coroutine.create(function(a, b)
@@ -1966,9 +1961,8 @@ D. `true, 7, true`
 
 **C**. 第一次 `resume(co, 3, 4)` 返回 `true, 7`（yield 的值）。第二次 `resume(co, 5)` 返回 `true, 10`（5 * 2 = 10，coroutine 返回）。
 
-</details>
 
-**Q2**. 下列代码的输出是什么？
+**常见疑问 2**：. 下列代码的输出是什么？
 
 ```lua
 local co = coroutine.create(function()
@@ -1990,9 +1984,8 @@ D. 抛出错误
 
 **B**. 第一次 resume 打印 "start"，yield。第二次 resume 打印 "end"，coroutine 返回（dead）。第三次 resume 返回 false，错误 "cannot resume dead coroutine"。
 
-</details>
 
-**Q3**. 下列哪个状态不能转换为 `running`？
+**常见疑问 3**：. 下列哪个状态不能转换为 `running`？
 
 A. `suspended`
 B. `normal`
@@ -2003,9 +1996,8 @@ D. 以上都不是
 
 **C**. `dead` 状态的 coroutine 不能被 resume。`suspended` 通过 resume 转 `running`；`normal` 是中间状态（resume 了其他 coroutine）。
 
-</details>
 
-**Q4**. 关于 `coroutine.wrap` 与 `coroutine.resume` 的差异，正确的是？
+**常见疑问 4**：. 关于 `coroutine.wrap` 与 `coroutine.resume` 的差异，正确的是？
 
 A. `wrap` 创建并返回函数，调用时自动 resume
 B. `wrap` 不返回状态，直接返回值
@@ -2016,9 +2008,8 @@ D. 以上都正确
 
 **D**. `wrap` 将 `create` + `resume` 封装为单一函数，调用时自动 resume，省略状态返回值，出错时直接抛出（需要 pcall 包裹）。
 
-</details>
 
-**Q5**. 下列代码的输出是什么？
+**常见疑问 5**：. 下列代码的输出是什么？
 
 ```lua
 local f = coroutine.wrap(function()
@@ -2039,11 +2030,10 @@ D. `error`
 
 **A**. 每次 `f()` 调用相当于一次 resume，依次返回 1, 2, 3。
 
-</details>
 
-### 9.2 填空题
+### 填空题知识点讲解
 
-**Q1**. `coroutine.create(f)` 返回一个 `_____` 类型的值。
+**常见疑问 6**：. `coroutine.create(f)` 返回一个 `_____` 类型的值。
 
 <details><summary>答案</summary>
 
@@ -2051,9 +2041,8 @@ D. `error`
 thread
 ```
 
-</details>
 
-**Q2**. coroutine 的四种状态是 `_____`、`running`、`normal`、`dead`。
+**常见疑问 7**：. coroutine 的四种状态是 `_____`、`running`、`normal`、`dead`。
 
 <details><summary>答案</summary>
 
@@ -2061,9 +2050,8 @@ thread
 suspended
 ```
 
-</details>
 
-**Q3**. Lua 5.4 引入的显式关闭 coroutine 的函数是 `coroutine._____`。
+**常见疑问 8**：. Lua 5.4 引入的显式关闭 coroutine 的函数是 `coroutine._____`。
 
 <details><summary>答案</summary>
 
@@ -2071,9 +2059,8 @@ suspended
 close
 ```
 
-</details>
 
-**Q4**. 下列代码输出 `_____`：
+**常见疑问 9**：. 下列代码输出 `_____`：
 
 ```lua
 local co = coroutine.create(function()
@@ -2089,9 +2076,8 @@ print(ok, result, coroutine.status(co))
 true   42   dead
 ```
 
-</details>
 
-**Q5**. coroutine 在 `yield` 时，控制权返回给 `_____`。
+**常见疑问 10**：. coroutine 在 `yield` 时，控制权返回给 `_____`。
 
 <details><summary>答案</summary>
 
@@ -2099,11 +2085,10 @@ true   42   dead
 调用者（resume 的发起者）
 ```
 
-</details>
 
-### 9.3 编程题
+### 编程题知识点讲解
 
-**Q1**. 实现一个生成器，按需生成 2 的幂次方：1, 2, 4, 8, 16, ...
+**常见疑问 11**：. 实现一个生成器，按需生成 2 的幂次方：1, 2, 4, 8, 16, ...
 
 <details><summary>答案</summary>
 
@@ -2125,9 +2110,8 @@ for i = 1, 5 do
 end
 ```
 
-</details>
 
-**Q2**. 实现一个协作式任务调度器，支持：
+**常见疑问 12**：. 实现一个协作式任务调度器，支持：
 - `add(fn)`：添加任务
 - `run()`：执行所有任务，每个任务执行 N 步后 yield
 
@@ -2179,9 +2163,8 @@ sched:run()
 -- A: 1, B: 1, A: 2, B: 2, A: 3, B: 3
 ```
 
-</details>
 
-**Q3**. 用 coroutine 实现一个简单的状态机：电梯控制器
+**常见疑问 13**：. 用 coroutine 实现一个简单的状态机：电梯控制器
 - 状态：`closed`（关门）、`moving`（运行）、`opened`（开门）
 - 输入：`open`、`close`、`move`
 - 非法转换应报错
@@ -2232,11 +2215,10 @@ local ok, err = coroutine.resume(co, "move")
 print(ok, err)  -- false   cannot move from opened
 ```
 
-</details>
 
 ### 9.4 思考题
 
-**Q1**. 为什么 Lua 选择非对称协程而非对称协程？
+**常见疑问 14**：. 为什么 Lua 选择非对称协程而非对称协程？
 
 <details><summary>答案</summary>
 
@@ -2247,9 +2229,8 @@ print(ok, err)  -- false   cannot move from opened
 
 对称协程（如 Symmetric Coroutines in Lua）虽更灵活，但增加了实现复杂度与调试难度。
 
-</details>
 
-**Q2**. coroutine 与 OS 线程的根本差异是什么？
+**常见疑问 15**：. coroutine 与 OS 线程的根本差异是什么？
 
 <details><summary>答案</summary>
 
@@ -2268,9 +2249,8 @@ print(ok, err)  -- false   cannot move from opened
 - I/O 密集型 + 高并发：coroutine（如 OpenResty、Nginx）。
 - CPU 密集型 + 多核利用：OS 线程。
 
-</details>
 
-**Q3**. Lua 5.4 的 `coroutine.close` 解决了什么问题？
+**常见疑问 16**：. Lua 5.4 的 `coroutine.close` 解决了什么问题？
 
 <details><summary>答案</summary>
 
@@ -2299,7 +2279,6 @@ local function with_co()
 end
 ```
 
-</details>
 
 ---
 
@@ -2391,35 +2370,30 @@ end
 
 ### A.2 状态转换图
 
-```
-   ┌────────────┐  resume()  ┌────────────┐
-   │  suspended  │ ─────────> │  running   │
-   └────────────┘            └────────────┘
-        ▲   │                     │   │
-        │   │ yield()             │   │ return
-        │   └─────────────────────┘   │
-        │                              v
-        │                          ┌────────────┐
-        └──────────────────────────│   dead     │
-                  close()          └────────────┘
+```mermaid
+stateDiagram-v2
+    [*] --> suspended
+    suspended --> running: resume()
+    running --> suspended: yield()
+    running --> dead: return
+    suspended --> dead: close()
+    dead --> [*]
 ```
 
 ### A.3 resume 与 yield 的数据流
 
-```
-main coroutine          sub coroutine
-     │                       │
-     │── resume(co, a, b) ──>│   (首次: 作为函数参数)
-     │                       │   (后续: 作为 yield 返回值)
-     │                       │   执行...
-     │<── yield(c, d) ───────│
-     │   (resume 返回 true, c, d)
-     │                       │   暂停
-     │── resume(co, e, f) ──>│   (e, f 作为 yield 返回值)
-     │                       │   恢复执行
-     │<── return(g) ─────────│
-     │   (resume 返回 true, g)
-     │                       │   dead
+```mermaid
+sequenceDiagram
+    participant Main as main coroutine
+    participant Sub as sub coroutine
+    Main->>Sub: resume(co, a, b)（首次作为函数参数，后续作为 yield 返回值）
+    Note over Sub: 执行...
+    Sub-->>Main: yield(c, d)（resume 返回 true, c, d）
+    Note over Sub: 暂停
+    Main->>Sub: resume(co, e, f)（e, f 作为 yield 返回值）
+    Note over Sub: 恢复执行
+    Sub-->>Main: return(g)（resume 返回 true, g）
+    Note over Sub: dead
 ```
 
 ---

@@ -134,20 +134,16 @@ Go 1.24 由 Michael Knyszek 等人完成 map 实现的 **重大重构**，采用
 
 ### 2.7 演进时间轴
 
-```
-Go 1.0  (2012) ── bucket chaining (8 slots/bucket)
-       │
-Go 1.5  (2015) ── runtime 重写为 Go，类型特化 (fast64/faststr)
-       │
-Go 1.9  (2017) ── sync.Map (read/write 分离)
-       │
-Go 1.18 (2022) ── 泛型支持（语法层）
-       │
-Go 1.21 (2023) ── maps 标准包
-       │
-Go 1.22 (2024) ── 小 map 分配优化
-       │
-Go 1.24 (2025) ── Swiss Table（开放寻址 + SIMD metadata）
+```mermaid
+timeline
+    title Go map 演进时间线
+    2012: Go 1.0 bucket chaining（8 slots/bucket）
+    2015: Go 1.5 runtime 重写为 Go，类型特化（fast64/faststr）
+    2017: Go 1.9 sync.Map（read/write 分离）
+    2022: Go 1.18 泛型支持（语法层）
+    2023: Go 1.21 maps 标准包
+    2024: Go 1.22 小 map 分配优化
+    2025: Go 1.24 Swiss Table（开放寻址 + SIMD metadata）
 ```
 
 ---
@@ -216,18 +212,14 @@ type bmap struct {
 
 **bucket 内存布局（`bucketCnt = 8`）**：
 
-```
-┌─────────────────────────────────────────────────────┐
-│ tophash[8]  │ 8 字节                                    │
-├─────────────────────────────────────────────────────┤
-│ key[0]      │ key[1]    │ ... │ key[7]                │
-├─────────────────────────────────────────────────────┤
-│ value[0]    │ value[1]  │ ... │ value[7]              │
-├─────────────────────────────────────────────────────┤
-│ padding (可选，确保 overflow 指针 8 字节对齐)            │
-├─────────────────────────────────────────────────────┤
-│ overflow *bmap │ 8 字节                                 │
-└─────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    B[bmap 内存布局]
+    B --> T[tophash[8] 8 字节]
+    B --> K[key[0] - key[7]]
+    B --> V[value[0] - value[7]]
+    B --> PD[padding 可选，确保 overflow 指针 8 字节对齐]
+    B --> O[overflow *bmap 8 字节]
 ```
 
 **为何 key/value 分开排列（而非交替排列）**？
@@ -292,18 +284,15 @@ type slot struct {
 
 #### 3.3.2 内存布局
 
-```
-┌──────────────────────────────────────┐
-│ group[0]  ────────────────────────┐ │
-│   ctrl (8 字节)                    │ │
-│   slot[0].key, slot[0].value       │ │
-│   slot[1].key, slot[1].value       │ │
-│   ...                              │ │
-│   slot[7].key, slot[7].value       │ │
-├──────────────────────────────────────┤
-│ group[1]                            │ │
-│ ...                                 │ │
-└──────────────────────────────────────┘
+```mermaid
+flowchart TD
+    G0[group[0]]
+    G0 --> C0[ctrl 8 字节]
+    G0 --> S0[slot[0].key / slot[0].value]
+    G0 --> S1[slot[1].key / slot[1].value]
+    G0 --> S7[slot[7].key / slot[7].value]
+    G1[group[1]]
+    G0 --> G1
 ```
 
 ### 3.4 类型系统理论
@@ -1259,9 +1248,9 @@ Consul 的服务注册中心用 `map[string]map[string]*Service` 维护 service 
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **Q1.** 下列哪种类型可以作为 Go map 的 key？
 
@@ -1270,9 +1259,9 @@ B. `map[string]int`
 C. `[8]byte`
 D. `func()`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：A、B、D 都不是 comparable 类型（slice、map、function 不能用 `==` 比较）。数组 `[8]byte` 是 comparable，可作为 key。
+**解析讲解**：A、B、D 都不是 comparable 类型（slice、map、function 不能用 `==` 比较）。数组 `[8]byte` 是 comparable，可作为 key。
 
 ---
 
@@ -1283,9 +1272,9 @@ B. 8
 C. 16
 D. 32
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`bucketCnt = 8`，定义在 `runtime/map.go`。这是 8 个 slot 的 bucket chaining 设计。
+**解析讲解**：`bucketCnt = 8`，定义在 `runtime/map.go`。这是 8 个 slot 的 bucket chaining 设计。
 
 ---
 
@@ -1296,9 +1285,9 @@ B. 6.5
 C. 0.875
 D. 1.0
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Go runtime 的 `loadFactorNum/loadFactorDen = 13/2 = 6.5`。
+**解析讲解**：Go runtime 的 `loadFactorNum/loadFactorDen = 13/2 = 6.5`。
 
 ---
 
@@ -1309,9 +1298,9 @@ B. overflow bucket 数量过多但元素数未达扩容阈值
 C. 用户调用 `make(map, n)` 指定更大容量
 D. map value 大小超过 128 字节
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：等量扩容用于整理碎片化的 overflow bucket，bucket 数量不变，只是重新分配元素。
+**解析讲解**：等量扩容用于整理碎片化的 overflow bucket，bucket 数量不变，只是重新分配元素。
 
 ---
 
@@ -1322,45 +1311,45 @@ B. 用开放寻址 + SIMD 替代 bucket chaining
 C. 支持自定义 hash 函数
 D. 支持并发安全写入
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Swiss Table 用开放寻址 + group + SIMD metadata 比较，替代了 bucket chaining + overflow 链表。
+**解析讲解**：Swiss Table 用开放寻址 + group + SIMD metadata 比较，替代了 bucket chaining + overflow 链表。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **Q1.** `hmap` 结构中，`B` 字段表示 bucket 数量为 $2^B$。若 `B=5`，则 bucket 数量是 ____ 个。
 
-**答案**：32
+**解析讲解**：32
 
 ---
 
 **Q2.** map 的 hash 高 8 位存储在 `tophash` 中，目的是 ____。
 
-**答案**：在 bucket 内快速定位 key，避免对每个 key 调用 `==` 比较
+**解析讲解**：在 bucket 内快速定位 key，避免对每个 key 调用 `==` 比较
 
 ---
 
 **Q3.** `sync.Map` 的 `Load` 方法在 ____ 字段中查找，未命中时降级到 `dirty`。
 
-**答案**：`read`
+**解析讲解**：`read`
 
 ---
 
 **Q4.** Go 1.24 的 Swiss Table 用 ____ probing 替代 linear probing，以减少 cluster 形成。
 
-**答案**：triangular（三角探测）
+**解析讲解**：triangular（三角探测）
 
 ---
 
 **Q5.** 删除 map 元素后，bucket 内存不会立即收缩，可能导致 ____ 问题。
 
-**答案**：内存泄漏（memory leak）
+**解析讲解**：内存泄漏（memory leak）
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **Q1.** 实现一个泛型函数 `Invert[K comparable, V comparable](m map[K]V) map[V]K`，将 map 的 key 与 value 互换。要求处理 value 重复的情况（返回第一个遇到的 key）。
 
-**参考答案**：
+**解析讲解**：
 
 ```go
 package main
@@ -1388,7 +1377,7 @@ func main() {
 
 **Q2.** 实现 `Keys` 与 `Values` 泛型函数，要求返回稳定的顺序（按 key 排序）。
 
-**参考答案**：
+**解析讲解**：
 
 ```go
 package main
@@ -1428,7 +1417,7 @@ func main() {
 
 **Q3.** 实现一个并发安全的 `Counter` 类型，使用分片 map，并提供 `Inc(key)` 与 `Get(key)` 方法。
 
-**参考答案**：
+**解析讲解**：
 
 ```go
 package main

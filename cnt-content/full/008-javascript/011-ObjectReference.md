@@ -187,44 +187,53 @@ reviewer: FANDEX Content Engineering Team
 
 ### 1.1 知识体系
 
-```
-Object 扩展
-├── 静态方法分类
-│   ├── 创建与原型
-│   │   ├── Object.create
-│   │   ├── Object.getPrototypeOf
-│   │   └── Object.setPrototypeOf
-│   ├── 属性定义与查询
-│   │   ├── Object.defineProperty / defineProperties
-│   │   ├── Object.getOwnPropertyDescriptor / getOwnPropertyDescriptors
-│   │   └── Object.getOwnPropertyNames / getOwnPropertySymbols
-│   ├── 合并与转换
-│   │   ├── Object.assign（ES6）
-│   │   ├── Object.fromEntries（ES2019）
-│   │   └── Object.groupBy（ES2024）
-│   ├── 遍历
-│   │   ├── Object.keys / values / entries（ES5/ES2017）
-│   │   └── 与 for...in / Reflect.ownKeys 的关系
-│   ├── 判等与判属性
-│   │   ├── Object.is（ES6）
-│   │   └── Object.hasOwn（ES2022）
-│   └── 不可变性
-│       ├── Object.preventExtensions
-│       ├── Object.seal
-│       └── Object.freeze
-├── 属性描述符
-│   ├── 数据属性（value/writable/enumerable/configurable）
-│   ├── 访问器属性（get/set/enumerable/configurable）
-│   └── 默认值规则
-├── 深度操作
-│   ├── 深冻结（deepFreeze）
-│   ├── 深比较（deepEqual）
-│   └── 深克隆（structuredClone）
-└── 工程实践
-    ├── 不可变更新范式（Redux/React）
-    ├── 配置对象冻结
-    ├── 原型污染防护
-    └── 性能基准
+```mermaid
+flowchart TD
+    T0["Object 扩展"]
+    T1["静态方法分类"]
+    T2["创建与原型"]
+    T3["Object.create"]
+    T4["Object.getPrototypeOf"]
+    T5["Object.setPrototypeOf"]
+    T6["属性定义与查询"]
+    T7["Object.defineProperty / defineProperties"]
+    T8["Object.getOwnPropertyDescriptor / getOwnPropertyDescriptors"]
+    T9["Object.getOwnPropertyNames / getOwnPropertySymbols"]
+    T10["合并与转换"]
+    T11["Object.assign（ES6）"]
+    T12["Object.fromEntries（ES2019）"]
+    T13["Object.groupBy（ES2024）"]
+    T14["遍历"]
+    T15["Object.keys / values / entries（ES5/ES2017）"]
+    T16["与 for...in / Reflect.ownKeys 的关系"]
+    T17["判等与判属性"]
+    T18["Object.is（ES6）"]
+    T19["Object.hasOwn（ES2022）"]
+    T20["不可变性"]
+    T21["Object.preventExtensions"]
+    T22["Object.seal"]
+    T23["Object.freeze"]
+    T24["属性描述符"]
+    T25["数据属性（value/writable/enumerable/configurable）"]
+    T26["访问器属性（get/set/enumerable/configurable）"]
+    T27["默认值规则"]
+    T28["深度操作"]
+    T29["深冻结（deepFreeze）"]
+    T30["深比较（deepEqual）"]
+    T31["深克隆（structuredClone）"]
+    T32["工程实践"]
+    T33["不可变更新范式（Redux/React）"]
+    T34["配置对象冻结"]
+    T35["原型污染防护"]
+    T36["性能基准"]
+    T0 --> T1
+    T23 --> T24
+    T27 --> T28
+    T31 --> T32
+    T32 --> T33
+    T32 --> T34
+    T32 --> T35
+    T32 --> T36
 ```
 
 ---
@@ -2198,9 +2207,9 @@ console.log(validator.validate({ age: 25 }));
 
 ---
 
-## 13. 习题
+## 知识讲解与要点分析（原习题）
 
-### 13.1 填空题（fill-blank）
+### 填空题知识点讲解
 
 1. **（remember）** `Object.keys` 仅返回对象的 ______ 属性，而 `Object.getOwnPropertyNames` 返回所有 ______ 属性。
 
@@ -2214,7 +2223,7 @@ console.log(validator.validate({ age: 25 }));
 
    答案：`[[Set]]`；setter
 
-### 13.2 选择题（choice）
+### 选择题知识点讲解
 
 1. **（analyze）** 下列代码的输出是？
 

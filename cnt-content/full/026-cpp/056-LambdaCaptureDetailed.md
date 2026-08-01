@@ -15,6 +15,11 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+# C++ Lambda 捕获详解
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -1487,14 +1492,21 @@ auto fib = [](this auto self, int n) -> int {
 
 ### 8.3 异步捕获模式决策树
 
-```
-异步任务需要捕获对象？
-├── 否 → 值捕获简单类型
-└── 是 → 需要修改原对象？
-    ├── 是 → shared_ptr 捕获（共享所有权）
-    └── 否 → 只读访问？
-        ├── 是 → 拷贝对象（[*this] 或 [shared_ptr]）
-        └── 否 → weak_ptr 捕获（避免延长生命周期）
+```mermaid
+flowchart TD
+    T0["异步任务需要捕获对象？"]
+    T1["否 → 值捕获简单类型"]
+    T2["是 → 需要修改原对象？"]
+    T3["是 → shared_ptr 捕获（共享所有权）"]
+    T4["否 → 只读访问？"]
+    T5["是 → 拷贝对象（[*this] 或 [shared_ptr]）"]
+    T6["否 → weak_ptr 捕获（避免延长生命周期）"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T4 --> T5
+    T4 --> T6
 ```
 
 ### 8.4 编译期检查技巧
@@ -1915,7 +1927,7 @@ int main() {
 
 ---
 
-## 10. 练习与参考答案
+## 知识讲解与要点分析（原练习）
 
 ### 10.1 基础题
 
@@ -1927,7 +1939,7 @@ int y = 20;
 // 在此处写 Lambda
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 auto f = [x, &y]() { return x + y; };
@@ -1937,7 +1949,7 @@ auto f = [x, &y]() { return x + y; };
 
 **练习 2**：使用初始化捕获（C++14）实现一个移动捕获 `std::unique_ptr<int>` 的 Lambda。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 auto ptr = std::make_unique<int>(42);
@@ -1967,7 +1979,7 @@ void useAsync() {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 问题：`[this]` 捕获对象指针，`w` 离开作用域后 `this` 悬空。
 
@@ -1991,11 +2003,11 @@ struct Worker : std::enable_shared_from_this<Worker> {
 // 使用：auto w = std::make_shared<Worker>();
 ```
 
-### 10.4 综合题
+### 综合题知识点讲解
 
 **练习 4**：实现一个累加器 Lambda，每次调用累加一个数并返回当前累加值。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 auto accumulator = [sum = 0](int x) mutable {
@@ -2012,7 +2024,7 @@ std::cout << accumulator(30) << std::endl;  // 60
 
 **练习 5**：设计一个线程安全的计数器类，使用 Lambda 作为回调通知机制。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <atomic>
@@ -2062,7 +2074,7 @@ counter.increment();  // 输出：Counter: 2
 
 **练习 6**：使用 C++23 显式对象参数实现一个递归 Lambda，计算阶乘。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 auto factorial = [](this auto self, int n) -> int {
@@ -2088,7 +2100,7 @@ for (const auto& cb : callbacks) {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 问题：`[&i]` 引用捕获循环变量 `i`，所有 Lambda 共享同一个 `i`，且 `i` 在循环结束后超出作用域（UB）。
 
@@ -2114,7 +2126,7 @@ auto f = [names]() {
 };
 ```
 
-**参考答案**：
+**解析讲解**：
 
 问题：值捕获会拷贝整个 `vector`，开销大。
 
@@ -2154,7 +2166,7 @@ auto f = [names_ptr]() {
 
 **练习 9**：实现一个通用的"延迟执行"工具，接受任意可调用对象和参数，在 `operator()` 时执行。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <functional>
@@ -2208,7 +2220,7 @@ void processData() {
 }  // data 离开作用域后销毁，但线程仍在运行
 ```
 
-**参考答案**：
+**解析讲解**：
 
 风险：`[&data]` 引用捕获，`data` 在函数返回后销毁，线程访问悬空引用。
 
@@ -2237,7 +2249,7 @@ std::thread([data_ptr]() {
 
 **练习 11**：使用 Lambda 实现策略模式，根据配置选择不同的排序算法。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <vector>
@@ -2293,7 +2305,7 @@ void processItems(const std::vector<Item>& items) {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 问题：`[&]` 隐式引用捕获所有变量，难以追踪依赖。
 
@@ -2311,7 +2323,7 @@ void processItems(const std::vector<Item>& items) {
 
 **练习 13**：实现一个简单的函数组合器（compose），将两个函数 `f` 和 `g` 组合成 `f(g(x))`。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <functional>
@@ -2583,3 +2595,222 @@ C++26 与后续标准在 Lambda 捕获方向的演进：
 ---
 
 *本文档最后更新于 2026-07-21，基于 ISO/IEC 14882:2024 (C++23) 标准，并参考 C++26 提案。*
+## 捕获方式
+
+**基本写法：值捕获**
+`[<变量>] { ... }`
+```cpp
+// 值捕获：拷贝一份
+int x = 10;
+auto f = [x] { return x; }; // 捕获 x 的副本
+// f 中 x 为 10，与外部 x 解耦
+```
+
+---
+
+**基本写法：引用捕获**
+`[&<变量>] { ... }`
+```cpp
+// 引用捕获：共享同一变量
+int x = 10;
+auto f = [&x] { x = 20; };
+f();
+std::cout << x; // 20，外部被修改
+```
+
+---
+
+**基本写法：全部值捕获**
+`[=] { ... }`
+```cpp
+// 捕获所有用到的变量（值）
+int a = 1, b = 2;
+auto f = [=] { return a + b; }; // 3
+// 所有变量拷贝
+```
+
+---
+
+**基本写法：全部引用捕获**
+`[&] { ... }`
+```cpp
+// 捕获所有用到的变量（引用）
+int a = 1, b = 2;
+auto f = [&] { a = 10; b = 20; };
+f();
+// a=10, b=20
+```
+
+---
+
+## 混合捕获
+
+**基本写法：混合捕获**
+`[=, &<变量>]` 或 `[&, <变量>]`
+```cpp
+// 默认值捕获，特定变量引用
+int a = 1, b = 2, c = 3;
+auto f = [=, &c] {
+    // a, b 值捕获
+    c = a + b; // c 引用捕获
+};
+```
+
+---
+
+**基本写法：this 捕获**
+`[this] { ... }`
+```cpp
+// 捕获 this 指针
+struct Widget {
+    int x = 42;
+    auto getCallback() {
+        return [this] { return x; }; // 访问成员
+    }
+};
+```
+
+---
+
+**基本写法：捕获初始化（C++14）**
+`[<名> = <表达式>]`
+```cpp
+// 在捕获中初始化新变量
+auto f = [p = std::make_unique<int>(42)] {
+    return *p;
+};
+// p 是 lambda 内的 unique_ptr
+```
+
+---
+
+**基本写法：捕获移动（C++14）**
+`[<名> = std::move(<变量>)]`
+```cpp
+// 移动捕获
+auto ptr = std::make_unique<int>(42);
+auto f = [p = std::move(ptr)] {
+    return *p;
+};
+// ptr 已被移动，p 持有资源
+```
+
+---
+
+## 泛型 Lambda
+
+**基本写法：auto 参数（C++14）**
+`[](auto <参数>) { ... }`
+```cpp
+// 泛型 lambda
+auto add = [](auto a, auto b) { return a + b; };
+add(1, 2);       // int
+add(1.0, 2.0);   // double
+add(std::string("a"), std::string("b")); // string
+```
+
+---
+
+**基本写法：模板参数（C++20）**
+`[]<typename T>(T <参数>) { ... }`
+```cpp
+// C++20 显式模板参数
+auto f = []<typename T>(std::vector<T> const& v) {
+    return v.size();
+};
+std::vector<int> vi{1,2,3};
+f(vi); // 3
+```
+
+---
+
+## 可变 Lambda
+
+**基本写法：mutable**
+`[<捕获>] (<参数>) mutable { ... }`
+```cpp
+// 允许修改值捕获的副本
+int x = 10;
+auto f = [x]() mutable {
+    return ++x; // 修改副本
+};
+f(); // 11
+f(); // 12
+std::cout << x; // 10（外部不变）
+```
+
+---
+
+## 递归 Lambda
+
+**基本写法：std::function 递归**
+`std::function<<签名>> <名> = ...;`
+```cpp
+// 用 std::function 实现递归
+std::function<int(int)> fact = [&](int n) {
+    return n <= 1 ? 1 : n * fact(n - 1);
+};
+fact(5); // 120
+```
+
+---
+
+**基本写法：泛型 lambda 递归（C++14）**
+`auto <名> = [](auto& self, ...) { ... };`
+```cpp
+// 传递自身实现递归
+auto fact = [](auto& self, int n) -> int {
+    return n <= 1 ? 1 : n * self(self, n - 1);
+};
+fact(fact, 5); // 120
+```
+
+---
+
+## Lambda 与返回类型
+
+**基本写法：尾随返回类型**
+`[](...) -> <类型> { ... }`
+```cpp
+// 显式指定返回类型
+auto f = [](int x) -> double {
+    if (x < 0) return 0.0;
+    return std::sqrt(x);
+};
+```
+
+---
+
+**基本写法：无返回值**
+`[](...) -> void { ... }`
+```cpp
+// 显式 void 返回
+auto log = [](const std::string& msg) -> void {
+    std::cout << msg << "\n";
+};
+```
+
+---
+
+## 存储与传递
+
+**基本写法：存入 std::function**
+`std::function<<签名>> <变量> = <lambda>;`
+```cpp
+// 持有 lambda
+std::function<int(int, int)> op = [](int a, int b){ return a + b; };
+op(2, 3); // 5
+```
+
+---
+
+**基本写法：模板参数传递（零开销）**
+`template <typename F> void <函数>(F <回调>)`
+```cpp
+// 模板参数避免 std::function 开销
+template <typename F>
+void forEach(std::vector<int>& v, F callback) {
+    for (auto& x : v) callback(x);
+}
+forEach(v, [](int& x){ x *= 2; });
+```

@@ -2051,9 +2051,9 @@ body::before {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪个渐变方向与 `linear-gradient(to top right, red, blue)` 等价？
 
@@ -2062,16 +2062,13 @@ B. `linear-gradient(135deg, red, blue)`
 C. `linear-gradient(-45deg, red, blue)`
 D. `linear-gradient(225deg, red, blue)`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`to top right` 表示梯度线指向右上角，方向角为 315°（从上至下为 0°，顺时针）。但 CSS 规范中，`to top right` 的角度计算为 `atan2(width, height)`，对于正方形容器约为 315°。而 `135deg` 是从下到上偏右的方向。
+**解析讲解**：`to top right` 表示梯度线指向右上角，方向角为 315°（从上至下为 0°，顺时针）。但 CSS 规范中，`to top right` 的角度计算为 `atan2(width, height)`，对于正方形容器约为 315°。而 `135deg` 是从下到上偏右的方向。
 
 注意：`to <corner>` 的角度取决于容器长宽比，并非固定 45°。对于正方形容器，`to top right` 约等于 `315deg`（或 `-45deg`）。但题目选项中 `135deg` 是从左下到右上的方向，与 `to top right` 一致（梯度线方向相反，但视觉效果相同）。
 
-</details>
 
 **题目 2**：`radial-gradient(circle closest-side at 30% 40%, red, blue)` 中，渐变半径取决于？
 
@@ -2080,14 +2077,11 @@ B. 容器高度
 C. 中心到最近边的距离
 D. 中心到最近角的距离
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`closest-side` 关键字表示渐变半径为中心到最近边的距离。具体计算：`min(x_0, w - x_0, y_0, h - y_0)`。
+**解析讲解**：`closest-side` 关键字表示渐变半径为中心到最近边的距离。具体计算：`min(x_0, w - x_0, y_0, h - y_0)`。
 
-</details>
 
 **题目 3**：以下哪种插值方式能产生最平滑的暗部渐变？
 
@@ -2096,14 +2090,11 @@ B. `in hsl`
 C. `in oklab`
 D. `in hwb`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`oklab` 是感知均匀的色彩空间，相同数值差对应相同感知色差，因此在暗部能产生更平滑的渐变，减少色带效应。`srgb` 在暗部易出现色带，`hsl` / `hwb` 主要用于色相过渡。
+**解析讲解**：`oklab` 是感知均匀的色彩空间，相同数值差对应相同感知色差，因此在暗部能产生更平滑的渐变，减少色带效应。`srgb` 在暗部易出现色带，`hsl` / `hwb` 主要用于色相过渡。
 
-</details>
 
 **题目 4**：`conic-gradient(red 0% 30%, yellow 30% 60%, green 60% 100%)` 实现的是？
 
@@ -2112,14 +2103,11 @@ B. 三色硬边界饼图
 C. 三色径向渐变
 D. 三色线性渐变
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：色标位置相同（如 `30%` 出现在前一个色标的结束和后一个色标的开始）形成硬边界。`conic-gradient` 的硬边界用于饼图、分块进度环等。
+**解析讲解**：色标位置相同（如 `30%` 出现在前一个色标的结束和后一个色标的开始）形成硬边界。`conic-gradient` 的硬边界用于饼图、分块进度环等。
 
-</details>
 
 **题目 5**：以下哪种方式可以实现「渐变文字」效果？
 
@@ -2128,80 +2116,60 @@ B. `text-fill-color: linear-gradient(red, blue)`
 C. `background-clip: text` + `background: linear-gradient(red, blue)`
 D. `text-gradient: linear-gradient(red, blue)`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：CSS 没有直接的「渐变文字」属性，需通过 `background` 设置渐变 + `background-clip: text` 裁剪到文字区域 + `-webkit-text-fill-color: transparent` 透明填充实现。
+**解析讲解**：CSS 没有直接的「渐变文字」属性，需通过 `background` 设置渐变 + `background-clip: text` 裁剪到文字区域 + `-webkit-text-fill-color: transparent` 透明填充实现。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：`linear-gradient` 的默认方向是 ________。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`to bottom`（从上到下）
+**解析讲解**：`to bottom`（从上到下）
 
-**解析**：未指定方向时，`linear-gradient` 默认从上到下，即 `to bottom`，对应角度 `180deg`。
+**解析讲解**：未指定方向时，`linear-gradient` 默认从上到下，即 `to bottom`，对应角度 `180deg`。
 
-</details>
 
 **题目 2**：`repeating-linear-gradient` 的周期由 ________ 决定。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：最后一个色标的位置
+**解析讲解**：最后一个色标的位置
 
-**解析**：`repeating-linear-gradient` 将色标位置模「最后一个色标位置」，形成周期性渐变。例如 `repeating-linear-gradient(45deg, red 0px, blue 20px)` 的周期为 20px。
+**解析讲解**：`repeating-linear-gradient` 将色标位置模「最后一个色标位置」，形成周期性渐变。例如 `repeating-linear-gradient(45deg, red 0px, blue 20px)` 的周期为 20px。
 
-</details>
 
 **题目 3**：CSS Images Level 4 中，`in oklch longer hue` 表示 ________。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：在 OkLCH 色彩空间中，色相取较长弧插值
+**解析讲解**：在 OkLCH 色彩空间中，色相取较长弧插值
 
-**解析**：`longer hue` 关键字指定色相插值取较长弧（>180°），适用于需要经过完整色相轮的渐变。
+**解析讲解**：`longer hue` 关键字指定色相插值取较长弧（>180°），适用于需要经过完整色相轮的渐变。
 
-</details>
 
 **题目 4**：`background-clip: text` 需要配合 ________ 属性使文字颜色透明，以显示背景渐变。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`-webkit-text-fill-color: transparent`（或 `color: transparent`）
+**解析讲解**：`-webkit-text-fill-color: transparent`（或 `color: transparent`）
 
-**解析**：`background-clip: text` 将背景裁剪到文字区域，但文字本身的颜色仍会覆盖背景。需通过 `-webkit-text-fill-color: transparent`（WebKit 前缀）或 `color: transparent` 使文字颜色透明。
+**解析讲解**：`background-clip: text` 将背景裁剪到文字区域，但文字本身的颜色仍会覆盖背景。需通过 `-webkit-text-fill-color: transparent`（WebKit 前缀）或 `color: transparent` 使文字颜色透明。
 
-</details>
 
 **题目 5**：`conic-gradient` 的起始角度（12 点方向）可通过 ________ 关键字调整。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`from <angle>`
+**解析讲解**：`from <angle>`
 
-**解析**：`conic-gradient(from 45deg, ...)` 表示从 45° 开始（顺时针），用于调整起始位置，常用于隐藏接缝。
+**解析讲解**：`conic-gradient(from 45deg, ...)` 表示从 45° 开始（顺时针），用于调整起始位置，常用于隐藏接缝。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：使用 `conic-gradient` 实现一个 75% 完成的进度环，带中心镂空与百分比文字。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 ```html
 <!DOCTYPE html>
@@ -2255,20 +2223,17 @@ D. `text-gradient: linear-gradient(red, blue)`
 </html>
 ```
 
-**解析**：
+**解析讲解**：
 
 1. `conic-gradient` 实现 75% 绿色 + 25% 灰色。
 2. `::before` 伪元素实现中心镂空。
 3. 绝对定位的 `<span>` 显示百分比。
 
-</details>
 
 **题目 2**：使用 `repeating-linear-gradient` 实现棋盘格纹理。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 ```css
 .checkerboard {
@@ -2282,21 +2247,18 @@ D. `text-gradient: linear-gradient(red, blue)`
 }
 ```
 
-**解析**：
+**解析讲解**：
 
 1. 第一层：水平条纹（0deg），每 40px 交替。
 2. 第二层：垂直条纹（90deg），每 40px 交替。
 3. 两层叠加形成棋盘格。
 4. `background-color: #fff` 提供底色。
 
-</details>
 
 **题目 3**：编写 JavaScript 函数，生成随机彩虹渐变字符串。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 /**
@@ -2324,23 +2286,20 @@ function generateRainbowGradient(stops = 5) {
 document.body.style.background = generateRainbowGradient(6);
 ```
 
-**解析**：
+**解析讲解**：
 
 1. 在 HSL 色相轮上均匀分布色标。
 2. 随机化饱和度与亮度，增加多样性。
 3. 使用 `oklch longer hue` 插值，确保色相完整过渡。
 4. 首尾颜色相同，适用于 `conic-gradient`。
 
-</details>
 
 ### 10.4 思考题
 
 **题目 1**：为什么 CSS 渐变在 sRGB 空间容易出现色带？OkLab 如何解决？
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 **sRGB 色带的成因**：
 
@@ -2356,14 +2315,11 @@ document.body.style.background = generateRainbowGradient(6);
 
 **结论**：使用 `in oklab` 插值能显著减少色带，提升渐变质量。
 
-</details>
 
 **题目 2**：在性能敏感场景下，CSS 渐变与 SVG 渐变如何选择？
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 **CSS 渐变优势**：
 
@@ -2384,14 +2340,11 @@ document.body.style.background = generateRainbowGradient(6);
 - **需色标动画**：使用 SVG 渐变或 CSS Houdini `@property`。
 - **移动端**：优先 CSS 渐变，避免 SVG 解析开销。
 
-</details>
 
 **题目 3**：如何设计一套支持主题切换的渐变设计令牌系统？
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：
+**解析讲解**：
 
 **设计原则**：
 
@@ -2429,7 +2382,6 @@ document.body.style.background = generateRainbowGradient(6);
 2. **可维护**：修改令牌即可切换主题。
 3. **可扩展**：新增主题只需添加 `[data-theme]` 规则。
 
-</details>
 
 ---
 
@@ -2563,3 +2515,614 @@ document.body.style.background = generateRainbowGradient(6);
 - [ ] 检查 `prefers-contrast: more` 下渐变是否简化
 - [ ] 使用 Lighthouse 检查 CLS（Cumulative Layout Shift）
 - [ ] 编写 Playwright 视觉回归测试
+## linear-gradient 线性渐变
+
+**基本写法：两色线性渐变**
+`background: linear-gradient(<方向>, <颜色1>, <颜色2>);`
+```css
+/* 两色线性渐变 */
+.header {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：三色线性渐变**
+`background: linear-gradient(<方向>, <颜色1>, <颜色2>, <颜色3>);`
+```css
+/* 三色线性渐变 */
+.rainbow {
+  background: linear-gradient(90deg, red, yellow, green);
+}
+```
+
+---
+
+**基本写法：to 方向渐变**
+`background: linear-gradient(to <方向>, <颜色1>, <颜色2>);`
+```css
+/* 使用 to 关键字指定方向 */
+.header {
+  background: linear-gradient(to right, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：to 双方向渐变**
+`background: linear-gradient(to <方向1> <方向2>, <颜色1>, <颜色2>);`
+```css
+/* 指定对角方向 */
+.header {
+  background: linear-gradient(to bottom right, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：角度渐变**
+`background: linear-gradient(<角度>, <颜色1>, <颜色2>);`
+```css
+/* 使用角度指定方向 */
+.header {
+  background: linear-gradient(45deg, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：带位置渐变**
+`background: linear-gradient(<方向>, <颜色1> <位置1>, <颜色2> <位置2>);`
+```css
+/* 指定颜色位置 */
+.header {
+  background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+}
+```
+
+---
+
+**单行写法：多色多位置渐变**
+`background: linear-gradient(<方向>, <颜色1> <位置1>, <颜色2> <位置2>, <颜色3> <位置3>);`
+```css
+/* 单行多色多位置渐变 */
+.header {
+  background: linear-gradient(90deg, #007bff 0%, #0056b3 50%, #003d7a 100%);
+}
+```
+
+---
+
+**换行写法：多色多位置渐变**
+`background: linear-gradient(<方向>, <颜色1> <位置1>, <颜色2> <位置2>, <颜色3> <位置3>);`
+```css
+/* 换行多色多位置渐变 */
+.header {
+  background: linear-gradient(
+    90deg,
+    #007bff 0%,
+    #0056b3 50%,
+    #003d7a 100%
+  );
+}
+```
+
+---
+
+**基本写法：硬边渐变**
+`background: linear-gradient(<方向>, <颜色1> <位置>, <颜色2> <位置>);`
+```css
+/* 创建硬边过渡 */
+.stripe {
+  background: linear-gradient(90deg, #007bff 50%, #0056b3 50%);
+}
+```
+
+---
+
+## radial-gradient 径向渐变
+
+**基本写法：圆形径向渐变**
+`background: radial-gradient(circle, <颜色1>, <颜色2>);`
+```css
+/* 圆形径向渐变 */
+.radial {
+  background: radial-gradient(circle, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：椭圆径向渐变**
+`background: radial-gradient(ellipse, <颜色1>, <颜色2>);`
+```css
+/* 椭圆径向渐变 */
+.radial {
+  background: radial-gradient(ellipse, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：带位置径向渐变**
+`background: radial-gradient(circle at <位置>, <颜色1>, <颜色2>);`
+```css
+/* 指定圆心位置 */
+.radial {
+  background: radial-gradient(circle at top left, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：带尺寸径向渐变**
+`background: radial-gradient(<尺寸> circle, <颜色1>, <颜色2>);`
+```css
+/* 指定圆尺寸 */
+.radial {
+  background: radial-gradient(100px circle, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：closest-side**
+`background: radial-gradient(closest-side, <颜色1>, <颜色2>);`
+```css
+/* 渐变到最近的边 */
+.radial {
+  background: radial-gradient(closest-side, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：farthest-corner**
+`background: radial-gradient(farthest-corner, <颜色1>, <颜色2>);`
+```css
+/* 渐变到最远的角 */
+.radial {
+  background: radial-gradient(farthest-corner, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：带颜色位置径向渐变**
+`background: radial-gradient(circle, <颜色1> <位置1>, <颜色2> <位置2>);`
+```css
+/* 指定颜色位置 */
+.radial {
+  background: radial-gradient(circle, #007bff 0%, #0056b3 100%);
+}
+```
+
+---
+
+## conic-gradient 圆锥渐变
+
+**基本写法：圆锥渐变**
+`background: conic-gradient(<颜色1>, <颜色2>, <颜色1>);`
+```css
+/* 圆锥渐变 */
+.conic {
+  background: conic-gradient(red, yellow, green, red);
+}
+```
+
+---
+
+**基本写法：带角度圆锥渐变**
+`background: conic-gradient(from <角度>, <颜色1>, <颜色2>);`
+```css
+/* 指定起始角度 */
+.conic {
+  background: conic-gradient(from 0deg, red, yellow, green, red);
+}
+```
+
+---
+
+**基本写法：带位置圆锥渐变**
+`background: conic-gradient(from <角度> at <位置>, <颜色1>, <颜色2>);`
+```css
+/* 指定起始角度和位置 */
+.conic {
+  background: conic-gradient(from 0deg at center, red, yellow, green, red);
+}
+```
+
+---
+
+**基本写法：硬边圆锥渐变**
+`background: conic-gradient(<颜色1> <角度1>, <颜色2> <角度2>);`
+```css
+/* 创建饼图效果 */
+.pie {
+  background: conic-gradient(red 0deg 90deg, blue 90deg 360deg);
+}
+```
+
+---
+
+## repeating-linear-gradient 重复线性渐变
+
+**基本写法：重复线性渐变**
+`background: repeating-linear-gradient(<方向>, <颜色1>, <颜色2> <宽度>);`
+```css
+/* 重复线性渐变 */
+.stripes {
+  background: repeating-linear-gradient(45deg, #007bff, #007bff 10px, #0056b3 10px, #0056b3 20px);
+}
+```
+
+---
+
+**基本写法：水平条纹**
+`background: repeating-linear-gradient(<方向>, <颜色1> <宽度>, <颜色2> <宽度>);`
+```css
+/* 水平条纹背景 */
+.stripes {
+  background: repeating-linear-gradient(0deg, #007bff 0, #007bff 10px, #0056b3 10px, #0056b3 20px);
+}
+```
+
+---
+
+**基本写法：垂直条纹**
+`background: repeating-linear-gradient(<方向>, <颜色1> <宽度>, <颜色2> <宽度>);`
+```css
+/* 垂直条纹背景 */
+.stripes {
+  background: repeating-linear-gradient(90deg, #007bff 0, #007bff 10px, #0056b3 10px, #0056b3 20px);
+}
+```
+
+---
+
+## repeating-radial-gradient 重复径向渐变
+
+**基本写法：重复径向渐变**
+`background: repeating-radial-gradient(circle, <颜色1>, <颜色2> <宽度>);`
+```css
+/* 重复径向渐变 */
+.rings {
+  background: repeating-radial-gradient(circle, #007bff 0, #007bff 10px, #0056b3 10px, #0056b3 20px);
+}
+```
+
+---
+
+**基本写法：同心圆**
+`background: repeating-radial-gradient(<颜色1> <宽度>, <颜色2> <宽度>);`
+```css
+/* 同心圆效果 */
+.rings {
+  background: repeating-radial-gradient(circle at center, #007bff 0, #007bff 5px, transparent 5px, transparent 10px);
+}
+```
+
+---
+
+## 多重渐变
+
+**单行写法：多重渐变**
+`background: <渐变1>, <渐变2>;`
+```css
+/* 单行设置多重渐变 */
+.box {
+  background: linear-gradient(135deg, transparent, rgba(0,0,0,0.5)), radial-gradient(circle, #007bff, #0056b3);
+}
+```
+
+---
+
+**换行写法：多重渐变**
+`background: <渐变1>, <渐变2>, <渐变3>;`
+```css
+/* 换行设置多重渐变 */
+.box {
+  background:
+    linear-gradient(135deg, transparent, rgba(0,0,0,0.5)),
+    radial-gradient(circle, #007bff, #0056b3),
+    url("texture.png");
+}
+```
+
+---
+
+## 渐变与变量
+
+**基本写法：使用变量定义渐变**
+`:root { --gradient-<名>: <渐变值>; }`
+```css
+/* 定义渐变变量 */
+:root {
+  --gradient-primary: linear-gradient(135deg, #007bff, #0056b3);
+  --gradient-secondary: linear-gradient(135deg, #6c757d, #495057);
+}
+```
+
+---
+
+**基本写法：使用渐变变量**
+`background: var(--gradient-<名>);`
+```css
+/* 使用渐变变量 */
+.header {
+  background: var(--gradient-primary);
+}
+```
+
+---
+
+**基本写法：变量在渐变中使用**
+`background: linear-gradient(<方向>, var(--<颜色1>), var(--<颜色2>));`
+```css
+/* 在渐变中使用颜色变量 */
+.header {
+  background: linear-gradient(135deg, var(--color-start), var(--color-end));
+}
+```
+
+---
+
+## 渐变方向
+
+**基本写法：to top 向上**
+`background: linear-gradient(to top, <颜色1>, <颜色2>);`
+```css
+/* 向上的渐变 */
+.box {
+  background: linear-gradient(to top, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：to bottom 向下**
+`background: linear-gradient(to bottom, <颜色1>, <颜色2>);`
+```css
+/* 向下的渐变 */
+.box {
+  background: linear-gradient(to bottom, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：to left 向左**
+`background: linear-gradient(to left, <颜色1>, <颜色2>);`
+```css
+/* 向左的渐变 */
+.box {
+  background: linear-gradient(to left, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：to right 向右**
+`background: linear-gradient(to right, <颜色1>, <颜色2>);`
+```css
+/* 向右的渐变 */
+.box {
+  background: linear-gradient(to right, #007bff, #0056b3);
+}
+```
+
+---
+
+## 透明度渐变
+
+**基本写法：透明渐变**
+`background: linear-gradient(<方向>, transparent, <颜色>);`
+```css
+/* 从透明到不透明 */
+.fade {
+  background: linear-gradient(to bottom, transparent, #000000);
+}
+```
+
+---
+
+**基本写法：半透明渐变**
+`background: linear-gradient(<方向>, rgba(<颜色>, <透明度1>), rgba(<颜色>, <透明度2>));`
+```css
+/* 半透明渐变 */
+.overlay {
+  background: linear-gradient(135deg, rgba(0,123,255,0.8), rgba(0,86,179,0.6));
+}
+```
+
+---
+
+**基本写法：淡出效果**
+`background: linear-gradient(<方向>, <颜色>, transparent);`
+```css
+/* 从不透明到透明 */
+.fade-out {
+  background: linear-gradient(to bottom, #007bff, transparent);
+}
+```
+
+---
+
+## 渐变动画
+
+**基本写法：渐变过渡**
+`background-size: <尺寸>; transition: background-position <时长>;`
+```css
+/* 渐变背景过渡动画 */
+.animated {
+  background: linear-gradient(90deg, #007bff, #0056b3, #007bff);
+  background-size: 200% 100%;
+  transition: background-position 0.5s;
+}
+.animated:hover {
+  background-position: 100% 0;
+}
+```
+
+---
+
+**基本写法：渐变流动动画**
+`@keyframes <名称> { from { background-position: 0% 0%; } to { background-position: 100% 0%; } }`
+```css
+/* 渐变流动动画 */
+@keyframes gradientFlow {
+  from { background-position: 0% 0%; }
+  to { background-position: 100% 0%; }
+}
+.flowing {
+  background: linear-gradient(90deg, #007bff, #0056b3, #007bff);
+  background-size: 200% 100%;
+  animation: gradientFlow 3s linear infinite;
+}
+```
+
+---
+
+## 常见渐变效果
+
+**基本写法：按钮渐变**
+`background: linear-gradient(<方向>, <颜色1>, <颜色2>);`
+```css
+/* 按钮渐变背景 */
+.btn {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：卡片渐变**
+`background: linear-gradient(<方向>, <颜色1>, <颜色2>);`
+```css
+/* 卡片渐变背景 */
+.card {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+```
+
+---
+
+**基本写法：遮罩渐变**
+`background: linear-gradient(<方向>, transparent, <颜色>);`
+```css
+/* 底部遮罩渐变 */
+.overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+```
+
+---
+
+**基本写法：网格背景**
+`background: linear-gradient(<方向1>, <颜色> <宽度>, transparent <宽度>), linear-gradient(<方向2>, <颜色> <宽度>, transparent <宽度>);`
+```css
+/* 网格背景 */
+.grid-bg {
+  background:
+    linear-gradient(90deg, #ccc 1px, transparent 1px),
+    linear-gradient(0deg, #ccc 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+```
+
+---
+
+**基本写法：对角条纹**
+`background: repeating-linear-gradient(45deg, <颜色1> <宽度>, <颜色2> <宽度>);`
+```css
+/* 对角条纹背景 */
+.diagonal-stripes {
+  background: repeating-linear-gradient(45deg, #007bff 0, #007bff 10px, #0056b3 10px, #0056b3 20px);
+}
+```
+
+---
+
+**基本写法：棋盘格背景**
+`background: conic-gradient(<颜色1> <角度>, <颜色2> <角度>, <颜色1> <角度>, <颜色2> <角度>);`
+```css
+/* 棋盘格背景 */
+.checkerboard {
+  background: conic-gradient(#000 0deg 90deg, #fff 90deg 180deg, #000 180deg 270deg, #fff 270deg 360deg);
+  background-size: 50px 50px;
+}
+```
+
+---
+
+## 渐变文本
+
+**基本写法：渐变文字**
+`background: linear-gradient(<方向>, <颜色1>, <颜色2>); -webkit-background-clip: text; color: transparent;`
+```css
+/* 渐变文字效果 */
+.gradient-text {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+```
+
+---
+
+**基本写法：多色渐变文字**
+`background: linear-gradient(<方向>, <颜色1>, <颜色2>, <颜色3>); -webkit-background-clip: text; color: transparent;`
+```css
+/* 多色渐变文字 */
+.rainbow-text {
+  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+```
+
+---
+
+## 响应式渐变
+
+**基本写法：clamp 响应式渐变**
+`background: linear-gradient(<角度>, <颜色1>, <颜色2>)`
+```css
+/* 响应式渐变角度 */
+.box {
+  background: linear-gradient(clamp(45deg, 10vw, 135deg), #007bff, #0056b3);
+}
+```
+
+---
+
+**基本写法：媒体查询调整渐变**
+`@media (max-width: <值>) { background: <渐变>; }`
+```css
+/* 小屏幕调整渐变 */
+.box {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+}
+@media (max-width: 768px) {
+  .box {
+    background: linear-gradient(180deg, #007bff, #0056b3);
+  }
+}
+```
+
+---
+
+**基本写法：嵌套媒体查询渐变**
+`.box { background: <渐变>; @media (max-width: <值>) { background: <渐变>; } }`
+```css
+/* CSS 原生嵌套媒体查询渐变 */
+.box {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  @media (max-width: 768px) {
+    background: linear-gradient(180deg, #007bff, #0056b3);
+  }
+}
+```

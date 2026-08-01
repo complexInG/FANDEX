@@ -1000,12 +1000,9 @@ function onFallback() {
       </template>
     </Suspense>
     
-    <details>
-      <summary>Events Log</summary>
       <ul>
         <li v-for="event in events" :key="event">{{ event }}</li>
       </ul>
-    </details>
   </div>
 </template>
 ```
@@ -1837,27 +1834,33 @@ async function render(url) {
 
 ### 8.1 项目结构组织
 
-```
-src/
-├── components/
-│   ├── async/                # 异步组件目录
-│   │   ├── HeavyChart.vue
-│   │   ├── MarkdownEditor.vue
-│   │   └── DataGrid.vue
-│   ├── common/               # 通用组件
-│   │   ├── LoadingSpinner.vue
-│   │   ├── ErrorDisplay.vue
-│   │   └── Skeleton.vue
-│   └── ...
-├── composables/
-│   ├── useAsyncComponent.ts  # 异步组件 Composable
-│   └── usePreload.ts         # 预加载 Composable
-├── utils/
-│   ├── asyncComponents.ts    # 异步组件注册器
-│   └── chunkAnalyzer.ts      # chunk 分析工具
-├── router/
-│   └── index.ts              # 路由配置（含懒加载）
-└── main.ts                   # 应用入口
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["components/"]
+    T2["async/                # 异步组件目录"]
+    T3["HeavyChart.vue"]
+    T4["MarkdownEditor.vue"]
+    T5["DataGrid.vue"]
+    T6["common/               # 通用组件"]
+    T7["LoadingSpinner.vue"]
+    T8["ErrorDisplay.vue"]
+    T9["Skeleton.vue"]
+    T10["..."]
+    T11["composables/"]
+    T12["useAsyncComponent.ts  # 异步组件 Composable"]
+    T13["usePreload.ts         # 预加载 Composable"]
+    T14["utils/"]
+    T15["asyncComponents.ts    # 异步组件注册器"]
+    T16["chunkAnalyzer.ts      # chunk 分析工具"]
+    T17["router/"]
+    T18["index.ts              # 路由配置（含懒加载）"]
+    T19["main.ts                   # 应用入口"]
+    T0 --> T1
+    T10 --> T11
+    T13 --> T14
+    T16 --> T17
+    T18 --> T19
 ```
 
 ### 8.2 Vite 配置优化
@@ -2198,7 +2201,7 @@ export function setupAsyncInspector(app: App) {
     window.__VUE_DEVTOOLS_GLOBAL_HOOK__.emit('custom-inspector', {
       id: 'async-components',
       label: 'Async Components',
-      icon: '⚡',
+      icon: '\u{26A1}',
       tree: () => getAsyncComponentTree(app._instance),
     });
   }
@@ -2473,9 +2476,9 @@ watchEffect(() => {
 
 ---
 
-## 10. 习题 | Exercises
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：`defineAsyncComponent` 的 `delay` 参数的作用是什么？
 
@@ -2484,9 +2487,9 @@ B. 延迟显示 loading 组件，避免闪烁。
 C. 加载失败后的重试间隔。
 D. 组件挂载后的延迟执行时间。
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`delay` 是延迟显示 loading 组件的时间（毫秒）。若组件在 `delay` 时间内加载完成，则不显示 loading，避免快速加载时的闪烁。默认值 200ms。
+**解析讲解**：`delay` 是延迟显示 loading 组件的时间（毫秒）。若组件在 `delay` 时间内加载完成，则不显示 loading，避免快速加载时的闪烁。默认值 200ms。
 
 ---
 
@@ -2497,9 +2500,9 @@ B. `Suspense` 支持嵌套，内层 Suspense 独立管理加载态。
 C. `Suspense` 的 `#fallback` 插槽在异步依赖 pending 时渲染。
 D. `Suspense` 可在任意组件中使用，无需包裹 async setup。
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：`async setup()` 必须在 `Suspense` 内使用，否则 Vue 会抛出警告。`Suspense` 通过依赖追踪机制协调异步组件与 `async setup()`。
+**解析讲解**：`async setup()` 必须在 `Suspense` 内使用，否则 Vue 会抛出警告。`Suspense` 通过依赖追踪机制协调异步组件与 `async setup()`。
 
 ---
 
@@ -2510,9 +2513,9 @@ B. 重置组件状态。
 C. 切换到 error 组件。
 D. 取消当前加载。
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：`onError(error, retry, fail, attempts)` 中的 `retry` 函数重新执行 loader，用于实现重试机制。`fail` 表示放弃重试，`attempts` 是当前重试次数。
+**解析讲解**：`onError(error, retry, fail, attempts)` 中的 `retry` 函数重新执行 loader，用于实现重试机制。`fail` 表示放弃重试，`attempts` 是当前重试次数。
 
 ---
 
@@ -2523,9 +2526,9 @@ B. 服务端同步等待 Promise resolve。
 C. 服务端立即返回 fallback。
 D. 服务端抛出错误。
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：SSR 中 `async setup()` 的 Promise 会被服务端同步等待，确保渲染的 HTML 包含完整数据。Vue 3.3+ 支持流式渲染，服务端在异步依赖完成时流式输出对应 HTML。
+**解析讲解**：SSR 中 `async setup()` 的 Promise 会被服务端同步等待，确保渲染的 HTML 包含完整数据。Vue 3.3+ 支持流式渲染，服务端在异步依赖完成时流式输出对应 HTML。
 
 ---
 
@@ -2536,55 +2539,55 @@ B. 独立 chunk 文件，运行时动态加载。
 C. 内联到主 bundle。
 D. 编译时静态分析。
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Vite/Webpack 将 `import()` 动态导入转换为独立 chunk 文件，运行时通过 `<script>` 标签或 fetch 加载。这是代码分割的核心机制。
+**解析讲解**：Vite/Webpack 将 `import()` 动态导入转换为独立 chunk 文件，运行时通过 `<script>` 标签或 fetch 加载。这是代码分割的核心机制。
 
 ---
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：`defineAsyncComponent` 的内部状态机包含 `______`、`______`、`______`、`______` 四种状态。
 
-**答案**：`idle`，`loading`，`loaded`，`error`
+**解析讲解**：`idle`，`loading`，`loaded`，`error`
 
-**解析**：异步组件包装器维护四态状态机：idle（初始）→ loading（加载中）→ loaded（加载成功）或 error（加载失败）。loaded 是吸收态，error 可通过 retry 回到 loading。
+**解析讲解**：异步组件包装器维护四态状态机：idle（初始）→ loading（加载中）→ loaded（加载成功）或 error（加载失败）。loaded 是吸收态，error 可通过 retry 回到 loading。
 
 ---
 
 **题目 2**：`Suspense` 通过维护 `______` 计数器追踪异步依赖，归零时触发 `______`。
 
-**答案**：`deps`，`resolve`
+**解析讲解**：`deps`，`resolve`
 
-**解析**：Suspense 内部维护 `deps` 计数器，每个异步依赖注册时递增，完成时递减。归零时 Suspense 切换到 resolved 状态，渲染默认插槽。
+**解析讲解**：Suspense 内部维护 `deps` 计数器，每个异步依赖注册时递增，完成时递减。归零时 Suspense 切换到 resolved 状态，渲染默认插槽。
 
 ---
 
 **题目 3**：Vite 使用 `______` 函数实现批量动态导入，支持 glob 模式。
 
-**答案**：`import.meta.glob`
+**解析讲解**：`import.meta.glob`
 
-**解析**：Vite 提供 `import.meta.glob('./dir/*.vue')` 实现 glob 模式的批量动态导入，返回路径到 loader 的映射表。
+**解析讲解**：Vite 提供 `import.meta.glob('./dir/*.vue')` 实现 glob 模式的批量动态导入，返回路径到 loader 的映射表。
 
 ---
 
 **题目 4**：`async setup()` 中使用 `onMounted` 等生命周期钩子时，必须在 `______` 之前注册。
 
-**答案**：`await`
+**解析讲解**：`await`
 
-**解析**：Vue 的生命周期钩子需在 setup 同步执行期间注册，`await` 之后的代码异步执行，钩子注册失败。
+**解析讲解**：Vue 的生命周期钩子需在 setup 同步执行期间注册，`await` 之后的代码异步执行，钩子注册失败。
 
 ---
 
 **题目 5**：React 的 Suspense 基于 `______` Promise 模式，Vue 的 Suspense 基于 `______` 注册。
 
-**答案**：`throw`，显式依赖
+**解析讲解**：`throw`，显式依赖
 
-**解析**：React 18 的 Suspense 通过 throw Promise 实现，数据获取库需配合 throw。Vue 的 Suspense 通过 `async setup()` 自动注册依赖，无需 throw。
+**解析讲解**：React 18 的 Suspense 通过 throw Promise 实现，数据获取库需配合 throw。Vue 的 Suspense 通过 `async setup()` 自动注册依赖，无需 throw。
 
 ---
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个带指数退避重试的异步组件加载器。
 
@@ -2794,7 +2797,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 **题目 1**：在大型应用中，如何设计一套完整的代码分割与预加载策略，平衡首屏性能、用户体验与带宽成本？
 
-**参考答案**：
+**解析讲解**：
 
 **策略设计**：
 
@@ -2824,7 +2827,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 **题目 2**：分析 `Suspense` 在大型应用中可能引入的复杂性，并提出缓解策略。
 
-**参考答案**：
+**解析讲解**：
 
 **复杂性来源**：
 
@@ -2851,7 +2854,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 **题目 3**：对比 Vue 的 `async setup()` 与 React 的数据获取模式（React Query、SWR），分析各自优劣。
 
-**参考答案**：
+**解析讲解**：
 
 **Vue `async setup()` 的优势**：
 
@@ -3146,3 +3149,404 @@ function defineAsyncComponent(options: {
 7. **最佳实践**：合理使用 delay 避免闪烁、错误边界捕获异常、预加载关键路由、chunk 分析优化。
 
 掌握异步组件与 Suspense 的原理与最佳实践，是构建大型 Vue 应用的关键能力。在实际项目中，应根据场景灵活选择路由懒加载、组件懒加载、Suspense 协调等策略，平衡性能、用户体验与开发成本。
+## defineAsyncComponent 基础
+
+**简单异步组件**
+`const <comp> = defineAsyncComponent(<loader>);`
+```typescript
+import { defineAsyncComponent } from 'vue';
+
+const AsyncComp = defineAsyncComponent(() =>
+  import('./AsyncComp.vue')
+);
+```
+
+**完整选项异步组件**
+`const <comp> = defineAsyncComponent(<options>);`
+```typescript
+import { defineAsyncComponent } from 'vue';
+
+const AsyncComp = defineAsyncComponent({
+  loader: () => import('./AsyncComp.vue'),
+  loadingComponent: LoadingSpinner,
+  errorComponent: ErrorDisplay,
+  delay: 200,           // 显示 loading 前延迟 ms
+  timeout: 3000,        // 超时 ms 后显示 error
+  suspensible: true,    // 配合 Suspense
+  onError(err, retry, fail, attempts) {
+    if (attempts <= 3) {
+      retry();
+    } else {
+      fail();
+    }
+  }
+});
+```
+
+**loader 返回 Promise**
+```typescript
+const AsyncComp = defineAsyncComponent(() =>
+  fetch('/api/component')
+    .then(res => res.json())
+    .then(comp => {
+      // 返回组件定义对象
+      return { template: comp.template };
+    })
+);
+```
+
+---
+
+## 异步组件使用
+
+**模板中使用**
+```vue
+<template>
+  <AsyncComp />
+</template>
+
+<script setup>
+import { defineAsyncComponent } from 'vue';
+const AsyncComp = defineAsyncComponent(() => import('./AsyncComp.vue'));
+</script>
+```
+
+**动态组件 is**
+```vue
+<template>
+  <component :is="currentComp" />
+</template>
+
+<script setup>
+import { shallowRef, defineAsyncComponent } from 'vue';
+
+const currentComp = shallowRef(
+  defineAsyncComponent(() => import('./DynamicComp.vue'))
+);
+</script>
+```
+
+**路由懒加载**
+```typescript
+import { createRouter, createWebHistory } from 'vue-router';
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      component: () => import('@/views/Home.vue')
+    },
+    {
+      path: '/about',
+      component: () => import('@/views/About.vue')
+    }
+  ]
+});
+```
+
+---
+
+## 配合 Suspense
+
+**Suspense 包裹异步组件**
+```vue
+<template>
+  <Suspense>
+    <template #default>
+      <AsyncComp />
+    </template>
+    <template #fallback>
+      <div class="loading">Loading...</div>
+    </template>
+  </Suspense>
+</template>
+
+<script setup>
+import { defineAsyncComponent } from 'vue';
+
+const AsyncComp = defineAsyncComponent(() => import('./AsyncComp.vue'));
+</script>
+```
+
+**async setup 组件**
+```vue
+<!-- AsyncData.vue -->
+<script setup>
+const data = await fetch('/api/data').then(r => r.json());
+</script>
+
+<template>
+  <div>{{ data }}</div>
+</template>
+
+<!-- 父组件 -->
+<template>
+  <Suspense>
+    <AsyncData />
+    <template #fallback>
+      <Spinner />
+    </template>
+  </Suspense>
+</template>
+```
+
+**Suspense 事件**
+```vue
+<Suspense
+  @resolve="onResolve"
+  @pending="onPending"
+  @fallback="onFallback"
+>
+  <AsyncComp />
+  <template #fallback>
+    <Loading />
+  </template>
+</Suspense>
+```
+
+---
+
+## 异步组件配置选项
+
+**loader 加载器**
+```typescript
+const AsyncComp = defineAsyncComponent({
+  loader: () => import('./AsyncComp.vue')
+});
+```
+
+**loadingComponent 加载占位**
+```typescript
+import LoadingSpinner from './LoadingSpinner.vue';
+
+const AsyncComp = defineAsyncComponent({
+  loader: () => import('./AsyncComp.vue'),
+  loadingComponent: LoadingSpinner
+});
+```
+
+**errorComponent 错误占位**
+```typescript
+import ErrorDisplay from './ErrorDisplay.vue';
+
+const AsyncComp = defineAsyncComponent({
+  loader: () => import('./AsyncComp.vue'),
+  errorComponent: ErrorDisplay
+});
+```
+
+**delay 延迟显示 loading**
+```typescript
+const AsyncComp = defineAsyncComponent({
+  loader: () => import('./AsyncComp.vue'),
+  loadingComponent: LoadingSpinner,
+  delay: 200  // 200ms 内加载完不显示 loading
+});
+```
+
+**timeout 超时**
+```typescript
+const AsyncComp = defineAsyncComponent({
+  loader: () => import('./AsyncComp.vue'),
+  errorComponent: ErrorDisplay,
+  timeout: 3000  // 3 秒未加载完成显示 error
+});
+```
+
+---
+
+## 错误处理
+
+**onError 重试机制**
+```typescript
+const AsyncComp = defineAsyncComponent({
+  loader: () => import('./AsyncComp.vue'),
+  errorComponent: ErrorDisplay,
+  onError(err, retry, fail, attempts) {
+    // err: 错误对象
+    // retry: 重试函数
+    // fail: 标记失败
+    // attempts: 已尝试次数
+    if (attempts <= 3) {
+      setTimeout(retry, 1000 * attempts);
+    } else {
+      fail();
+    }
+  }
+});
+```
+
+**onErrorCaptured 捕获错误**
+```vue
+<template>
+  <Suspense>
+    <template #default>
+      <AsyncComp v-if="!error" />
+      <ErrorComp v-else :error="error" />
+    </template>
+    <template #fallback>
+      <Loading />
+    </template>
+  </Suspense>
+</template>
+
+<script setup>
+import { ref, onErrorCaptured, defineAsyncComponent } from 'vue';
+
+const error = ref(null);
+const AsyncComp = defineAsyncComponent(() => import('./AsyncComp.vue'));
+
+onErrorCaptured((err) => {
+  error.value = err;
+  return false;  // 阻止向上传递
+});
+</script>
+```
+
+---
+
+## 高级用法
+
+**工厂函数返回组件**
+```typescript
+function createAsyncComponent(name: string) {
+  return defineAsyncComponent(() => import(`./components/${name}.vue`));
+}
+
+const Header = createAsyncComponent('Header');
+const Footer = createAsyncComponent('Footer');
+const Sidebar = createAsyncComponent('Sidebar');
+```
+
+**条件加载**
+```typescript
+const AsyncComp = defineAsyncComponent(() => {
+  return condition.value
+    ? import('./CompA.vue')
+    : import('./CompB.vue');
+});
+```
+
+**预加载**
+```typescript
+// 预先加载组件
+const loader = () => import('./HeavyComp.vue');
+
+// 在空闲时预加载
+const preload = () => {
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => loader());
+  }
+};
+
+const AsyncComp = defineAsyncComponent(loader);
+</script>
+```
+
+---
+
+## 异步组件 + 路由
+
+**路由懒加载完整示例**
+```typescript
+import { createRouter, createWebHistory } from 'vue-router';
+import { defineAsyncComponent } from 'vue';
+import Layout from '@/views/Layout.vue';
+
+const routes = [
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'home',
+        component: defineAsyncComponent({
+          loader: () => import('@/views/Home.vue'),
+          loadingComponent: () => import('@/components/Loading.vue'),
+          delay: 200
+        })
+      },
+      {
+        path: 'about',
+        name: 'about',
+        component: () => import('@/views/About.vue')
+      },
+      {
+        path: 'admin',
+        name: 'admin',
+        component: defineAsyncComponent({
+          loader: () => import('@/views/Admin.vue'),
+          loadingComponent: () => import('@/components/Loading.vue'),
+          errorComponent: () => import('@/components/Error.vue'),
+          timeout: 5000,
+          onError(err, retry, fail, attempts) {
+            if (attempts < 2) retry();
+            else fail();
+          }
+        }),
+        meta: { requiresAuth: true }
+      }
+    ]
+  }
+];
+
+export default createRouter({
+  history: createWebHistory(),
+  routes
+});
+```
+
+---
+
+## 综合应用
+
+**分组加载**
+```vue
+<template>
+  <Suspense>
+    <template #default>
+      <Header />
+      <main>
+        <Sidebar />
+        <Content />
+      </main>
+      <Footer />
+    </template>
+    <template #fallback>
+      <PageSkeleton />
+    </template>
+  </Suspense>
+</template>
+
+<script setup>
+import { defineAsyncComponent } from 'vue';
+import PageSkeleton from '@/components/PageSkeleton.vue';
+
+const Header = defineAsyncComponent(() => import('@/components/Header.vue'));
+const Sidebar = defineAsyncComponent(() => import('@/components/Sidebar.vue'));
+const Content = defineAsyncComponent(() => import('@/components/Content.vue'));
+const Footer = defineAsyncComponent(() => import('@/components/Footer.vue'));
+</script>
+```
+
+**按需加载组件库**
+```typescript
+// utils/async-component.ts
+import { defineAsyncComponent, type Component } from 'vue';
+
+export function loadAsync(path: string): Component {
+  return defineAsyncComponent({
+    loader: () => import(/* @vite-ignore */ path),
+    loadingComponent: { template: '<div>加载中...</div>' },
+    errorComponent: { template: '<div>加载失败</div>' },
+    delay: 100,
+    timeout: 10000
+  });
+}
+
+// 使用
+const Chart = loadAsync('@/components/Chart.vue');
+const Editor = loadAsync('@/components/Editor.vue');
+```

@@ -1411,9 +1411,9 @@ Google Docs 使用 Operational Transformation（OT）算法，通过 `postMessag
 
 ---
 
-## 14. 习题
+## 知识讲解与要点分析（原习题）
 
-### 14.1 填空题
+### 填空题知识点讲解
 
 1. （remember）BOM 的核心对象是 ______，它既是 ECMAScript 全局对象，也代表浏览器窗口。
 2. （understand）`history.pushState` 的第三个参数是 ______，必须与当前页面同源。
@@ -1421,7 +1421,7 @@ Google Docs 使用 Operational Transformation（OT）算法，通过 `postMessag
 4. （understand）结构化克隆算法无法克隆 ______ 类型的值（列举两种：函数、DOM 节点）。
 5. （remember）`window.devicePixelRatio` 表示 ______ 与物理像素之比。
 
-### 14.2 选择题
+### 选择题知识点讲解
 
 1. （understand）下列哪个方法不会触发 `popstate` 事件？
    - A. `history.back()`
@@ -1474,7 +1474,7 @@ async function readClipboard() {
 }
 ```
 
-参考答案：
+解析讲解：
 
 ```javascript
 async function readClipboard() {
@@ -1496,7 +1496,7 @@ function navigate(path) {
 }
 ```
 
-参考答案：
+解析讲解：
 
 ```javascript
 function navigate(path) {
@@ -1517,7 +1517,7 @@ window.addEventListener('popstate', (event) => {
 // const response = await channel.request({ type: 'PING' }, 5000);
 ```
 
-参考答案：
+解析讲解：
 
 ```javascript
 class SafeMessageChannel {
@@ -1648,45 +1648,70 @@ class SafeMessageChannel {
 
 ### 16.1 BOM API 全景图
 
-```
-window
-├── document (DOM)
-├── location
-├── navigator
-│   ├── clipboard
-│   ├── geolocation
-│   ├── credentials
-│   ├── mediaDevices
-│   ├── permissions
-│   ├── serviceWorker
-│   ├── usb
-│   ├── bluetooth
-│   └── wakeLock
-├── history
-├── screen
-├── localStorage / sessionStorage
-├── indexedDB
-├── crypto
-├── fetch
-├── WebSocket
-├── XMLHttpRequest
-├── performance
-│   ├── timing
-│   ├── memory
-│   ├── observer
-│   └── navigation
-├── crypto
-├── console
-├── alert / confirm / prompt
-├── open / close
-├── setTimeout / setInterval
-├── requestAnimationFrame / requestIdleCallback
-├── queueMicrotask
-├── postMessage
-├── addEventListener / removeEventListener
-├── getComputedStyle
-├── matchMedia
-└── IntersectionObserver / MutationObserver / ResizeObserver
+```mermaid
+flowchart TD
+    T0["window"]
+    T1["document (DOM)"]
+    T2["location"]
+    T3["navigator"]
+    T4["clipboard"]
+    T5["geolocation"]
+    T6["credentials"]
+    T7["mediaDevices"]
+    T8["permissions"]
+    T9["serviceWorker"]
+    T10["usb"]
+    T11["bluetooth"]
+    T12["wakeLock"]
+    T13["history"]
+    T14["screen"]
+    T15["localStorage / sessionStorage"]
+    T16["indexedDB"]
+    T17["crypto"]
+    T18["fetch"]
+    T19["WebSocket"]
+    T20["XMLHttpRequest"]
+    T21["performance"]
+    T22["timing"]
+    T23["memory"]
+    T24["observer"]
+    T25["navigation"]
+    T26["crypto"]
+    T27["console"]
+    T28["alert / confirm / prompt"]
+    T29["open / close"]
+    T30["setTimeout / setInterval"]
+    T31["requestAnimationFrame / requestIdleCallback"]
+    T32["queueMicrotask"]
+    T33["postMessage"]
+    T34["addEventListener / removeEventListener"]
+    T35["getComputedStyle"]
+    T36["matchMedia"]
+    T37["IntersectionObserver / MutationObserver / ResizeObserver"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T12 --> T13
+    T12 --> T14
+    T12 --> T15
+    T12 --> T16
+    T12 --> T17
+    T12 --> T18
+    T12 --> T19
+    T12 --> T20
+    T12 --> T21
+    T25 --> T26
+    T25 --> T27
+    T25 --> T28
+    T25 --> T29
+    T25 --> T30
+    T25 --> T31
+    T25 --> T32
+    T25 --> T33
+    T25 --> T34
+    T25 --> T35
+    T25 --> T36
+    T25 --> T37
 ```
 
 ### 16.2 浏览器兼容性速查

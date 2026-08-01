@@ -87,47 +87,20 @@ prerequisites:
 
 ### 2.1 Spring Boot 演进时间线
 
-```
-2002-2012 ── Spring Framework 兴起
-  │           配置冗长（XML 数千行），集成复杂
-  │           Rod Johnson《Expert One-on-One J2EE Development without EJB》
-  │
-2013 ──── Spring Boot 项目启动
-  │         Mike Youngstrom 提出"约定优于配置"的 Spring 子项目
-  │         Phil Webb、Dave Syer 主导开发
-  │
-2014 ──── Spring Boot 1.0 GA（4 月）
-  │         内嵌 Tomcat、Jetty；起步依赖；自动配置
-  │         解决 Spring 长达十年的"配置地狱"
-  │
-2016 ──── Spring Boot 1.4：Actuator 完善、@SpringBootTest
-  │
-2018 ──── Spring Boot 2.0 GA（3 月）
-  │         基于 Spring Framework 5
-  │         响应式编程（WebFlux、Reactive Spring Data）
-  │         Java 8+ 最低要求
-  │
-2019 ──── Spring Boot 2.1：Micrometer 集成、Java 11 支持
-  │
-2020 ──── Spring Boot 2.3：优雅停机、Docker 分层 JAR
-  │         2.4：配置文件重写（spring.config.import）
-  │
-2022 ──── Spring Boot 3.0 GA（11 月）
-  │         基于 Spring Framework 6
-  │         Jakarta EE 9+（javax.* → jakarta.*）
-  │         GraalVM Native Image 支持（AOT）
-  │         Java 17 最低要求
-  │         Micrometer Tracing（替代 Spring Cloud Sleuth）
-  │
-2023 ──── Spring Boot 3.1：Docker Compose 支持、ConnectionDetails 抽象
-  │         3.2：虚拟线程支持、JVM Checkpoint Restore（CRaC）
-  │
-2024 ──── Spring Boot 3.3：Native Image 进一步优化
-  │         structured logging、Packet Capture
-  │
-2025 ──── Spring Boot 3.4 / 4.0 路线图
-  │         HTTP Interface Client 增强
-  │         更深入的 AOT 优化
+```mermaid
+timeline
+    title Spring Boot 发展时间线
+    2002-2012: Spring Framework 兴起，配置冗长（XML 数千行），Rod Johnson《Expert One-on-One J2EE Development without EJB》
+    2013: Spring Boot 项目启动，Mike Youngstrom 提出约定优于配置，Phil Webb、Dave Syer 主导开发
+    2014: Spring Boot 1.0 GA（4 月），内嵌 Tomcat/Jetty，起步依赖，自动配置
+    2016: Spring Boot 1.4：Actuator 完善、@SpringBootTest
+    2018: Spring Boot 2.0 GA（3 月），基于 Spring Framework 5，响应式编程（WebFlux），Java 8+ 最低要求
+    2019: Spring Boot 2.1：Micrometer 集成、Java 11 支持
+    2020: Spring Boot 2.3：优雅停机、Docker 分层 JAR；2.4：配置文件重写（spring.config.import）
+    2022: Spring Boot 3.0 GA（11 月），基于 Spring Framework 6，Jakarta EE 9+，GraalVM Native Image（AOT），Java 17 最低要求，Micrometer Tracing
+    2023: Spring Boot 3.1：Docker Compose 支持、ConnectionDetails 抽象；3.2：虚拟线程、JVM Checkpoint Restore（CRaC）
+    2024: Spring Boot 3.3：Native Image 优化、structured logging、Packet Capture
+    2025: Spring Boot 3.4 / 4.0 路线图，HTTP Interface Client 增强，更深入 AOT 优化
 ```
 
 ### 2.2 三大设计哲学
@@ -1642,34 +1615,37 @@ Spring Boot 3.x Native Image 要求：
 
 ### 14.1 项目结构
 
-```
-order-service/
-├── pom.xml
-├── src/
-│   ├── main/
-│   │   ├── java/com/atian/order/
-│   │   │   ├── OrderServiceApplication.java
-│   │   │   ├── config/        # 配置类
-│   │   │   ├── controller/    # REST 控制器
-│   │   │   ├── service/       # 业务逻辑
-│   │   │   ├── repository/    # 数据访问
-│   │   │   ├── entity/        # JPA 实体
-│   │   │   ├── dto/           # 传输对象
-│   │   │   ├── exception/     # 异常处理
-│   │   │   ├── client/        # 外部调用
-│   │   │   └── event/         # 领域事件
-│   │   └── resources/
-│   │       ├── application.yml
-│   │       ├── application-dev.yml
-│   │       ├── application-prod.yml
-│   │       ├── db/migration/  # Flyway 迁移
-│   │       └── static/        # 静态资源
-│   └── test/
-│       ├── java/com/atian/order/
-│       │   ├── unit/          # 单元测试
-│       │   ├── integration/   # 集成测试
-│       │   └── e2e/           # 端到端测试
-│       └── resources/
+```mermaid
+flowchart TD
+    T0["order-service/"]
+    T1["pom.xml"]
+    T2["src/"]
+    T3["main/"]
+    T4["java/com/atian/order/"]
+    T5["OrderServiceApplication.java"]
+    T6["config/        # 配置类"]
+    T7["controller/    # REST 控制器"]
+    T8["service/       # 业务逻辑"]
+    T9["repository/    # 数据访问"]
+    T10["entity/        # JPA 实体"]
+    T11["dto/           # 传输对象"]
+    T12["exception/     # 异常处理"]
+    T13["client/        # 外部调用"]
+    T14["event/         # 领域事件"]
+    T15["resources/"]
+    T16["application.yml"]
+    T17["application-dev.yml"]
+    T18["application-prod.yml"]
+    T19["db/migration/  # Flyway 迁移"]
+    T20["static/        # 静态资源"]
+    T21["test/"]
+    T22["java/com/atian/order/"]
+    T23["unit/          # 单元测试"]
+    T24["integration/   # 集成测试"]
+    T25["e2e/           # 端到端测试"]
+    T26["resources/"]
+    T0 --> T1
+    T0 --> T2
 ```
 
 ### 14.2 pom.xml 关键配置
@@ -2050,31 +2026,31 @@ private Customer customer;
 
 ---
 
-## 16. 习题
+## 知识讲解与要点分析（原习题）
 
-### 习题 1（记忆）
+## 知识讲解与要点分析（原习题 1（记忆））
 
 列出 Spring Boot 三大核心特性与各自解决的问题。
 
-**答案**：
+**解析讲解**：
 
 1. **起步依赖（Starter）**：解决依赖版本冲突问题，通过 BOM 统一管理。
 2. **自动配置（Auto-configuration）**：解决配置冗长问题，基于条件注解智能装配。
 3. **内嵌容器 + 生产就绪**：解决部署复杂与监控缺失问题，可执行 JAR + Actuator。
 
-### 习题 2（理解）
+## 知识讲解与要点分析（原习题 2（理解））
 
 解释 `@ConditionalOnMissingBean` 的作用及其在自定义扩展中的应用。
 
-**答案**：
+**解析讲解**：
 
 `@ConditionalOnMissingBean` 表示"容器中不存在指定类型 Bean 时才生效"。它让用户能轻松覆盖默认配置：若用户已自定义 Bean，则自动配置退让。例如 Spring Boot 默认提供 `DataSource`，但若用户在 `@Configuration` 中定义了自己的 `DataSource`，则默认配置失效。这种"用户优先"机制是 Spring Boot 灵活性的基石。
 
-### 习题 3（应用）
+## 知识讲解与要点分析（原习题 3（应用））
 
 实现一个自定义 HealthIndicator，检查 Redis 连接是否正常。
 
-**答案**：
+**解析讲解**：
 
 ```java
 import org.springframework.boot.actuate.health.Health;
@@ -2108,11 +2084,11 @@ public class RedisHealthIndicator implements HealthIndicator {
 }
 ```
 
-### 习题 4（分析）
+## 知识讲解与要点分析（原习题 4（分析））
 
 某项目启动后访问 `/api/orders` 返回 401，但 `/api/public/health` 可访问。请分析可能原因。
 
-**答案**：
+**解析讲解**：
 
 可能原因：
 
@@ -2128,11 +2104,11 @@ public class RedisHealthIndicator implements HealthIndicator {
 - 检查请求头 Authorization
 - 用 `/actuator/loggers` 动态调整日志级别
 
-### 习题 5（评价）
+## 知识讲解与要点分析（原习题 5（评价））
 
 对比 Spring Boot 与 Quarkus 在 Serverless 场景下的优劣。
 
-**答案**：
+**解析讲解**：
 
 | 维度 | Spring Boot | Quarkus |
 | ---- | ----------- | ------- |
@@ -2145,11 +2121,11 @@ public class RedisHealthIndicator implements HealthIndicator {
 
 Serverless 场景对冷启动、内存敏感，**Quarkus 优势明显**；若团队已熟悉 Spring 且 JVM 长驻（如 ECS Fargate），Spring Boot 仍可行。
 
-### 习题 6（创造）
+## 知识讲解与要点分析（原习题 6（创造））
 
 设计并实现一个公司内部通用的"接口限流 Starter"，支持注解 `@RateLimit(qps=100)`。
 
-**答案**：
+**解析讲解**：
 
 ```java
 // 1. 注解
@@ -2203,11 +2179,11 @@ public class RateLimitAspect {
 // com.atian.starter.ratelimit.RateLimitAutoConfiguration
 ```
 
-### 习题 7
+## 知识讲解与要点分析（原习题 7）
 
 为什么 Spring Boot 2.6+ 默认禁用循环依赖？列举至少两种解决方案。
 
-**答案**：
+**解析讲解**：
 
 **原因**：循环依赖通常意味着设计缺陷（紧耦合），长期维护困难。三级缓存的解决方案仅对 setter/field 注入有效，且会增加启动时间、引入潜在 NPE 风险。
 
@@ -2218,11 +2194,11 @@ public class RateLimitAspect {
 4. 应用层引入事件总线，避免双向依赖
 5. 临时回退：`spring.main.allow-circular-references=true`（不推荐）
 
-### 习题 8
+## 知识讲解与要点分析（原习题 8）
 
 解释 `@Transactional` 失效的常见原因。
 
-**答案**：
+**解析讲解**：
 
 1. 方法非 public（Spring AOP 默认仅代理 public 方法）
 2. 同类内部调用（`this.method()` 不经过代理）
@@ -2233,11 +2209,11 @@ public class RateLimitAspect {
 7. `@Transactional` 注解在接口上而非实现类（Spring AOP 不代理接口注解）
 8. 类未被 Spring 容器管理（未加 `@Service` 等注解）
 
-### 习题 9
+## 知识讲解与要点分析（原习题 9）
 
 实现一个全局异常处理器，统一返回 `{code, message, timestamp}` 格式。
 
-**答案**：
+**解析讲解**：
 
 ```java
 @RestControllerAdvice
@@ -2271,11 +2247,11 @@ public class GlobalExceptionHandler {
 }
 ```
 
-### 习题 10
+## 知识讲解与要点分析（原习题 10）
 
 Spring Boot 3.x 的 GraalVM Native Image 有哪些限制？
 
-**答案**：
+**解析讲解**：
 
 1. **反射限制**：动态反射读取未注册的类会失败，需 `@RegisterReflectionForBinding`
 2. **资源文件**：需在 `resource-config.json` 显式声明
@@ -2286,11 +2262,11 @@ Spring Boot 3.x 的 GraalVM Native Image 有哪些限制？
 7. **JNI/Unsafe**：受限，需替换为 modern API
 8. **第三方库兼容性**：反射密集的库（如某些 ORM、序列化）需 AOT 元数据支持
 
-### 习题 11
+## 知识讲解与要点分析（原习题 11）
 
 `@SpringBootApplication` 注解等价于哪三个注解的组合？为什么不全用组合？
 
-**答案**：
+**解析讲解**：
 
 等价于：
 - `@SpringBootConfiguration`（= `@Configuration`）
@@ -2306,11 +2282,11 @@ Spring Boot 3.x 的 GraalVM Native Image 有哪些限制？
 public class App { ... }
 ```
 
-### 习题 12
+## 知识讲解与要点分析（原习题 12）
 
 为什么生产环境要排除 `spring-boot-devtools`？
 
-**答案**：
+**解析讲解**：
 
 1. **性能开销**：devtools 启动两个 ClassLoader，监控 classpath 变化，会增加启动时间和内存
 2. **安全风险**：devtools 暴露 LiveReload 端点，可能被恶意利用

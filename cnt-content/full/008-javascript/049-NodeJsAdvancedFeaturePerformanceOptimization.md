@@ -1458,7 +1458,7 @@ sink.on('error', (err) => {
 - 流量高峰时返回 429，下游重试，保护系统稳定。
 - P99 延迟从 1200ms 降至 80ms（背压下减少队列堆积）。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1471,11 +1471,11 @@ Promise.resolve().then(() => console.log('C'));
 process.nextTick(() => console.log('D'));
 ```
 
-**参考答案**：D、C、A 或 B（A 与 B 顺序不定，取决于事件循环进入 timers 还是 check 阶段先）。
+**解析讲解**：D、C、A 或 B（A 与 B 顺序不定，取决于事件循环进入 timers 还是 check 阶段先）。
 
 **题目 2**：`worker_threads` 与 `cluster` 的核心区别是什么？
 
-**参考答案**：
+**解析讲解**：
 - `cluster` 创建独立进程，内存不共享，适合 HTTP 服务水平扩展。
 - `worker_threads` 创建线程，可通过 `SharedArrayBuffer` 共享内存，适合 CPU 密集并行计算。
 
@@ -1493,7 +1493,7 @@ http.createServer((req, res) => {
 }).listen(3000);
 ```
 
-**参考答案**：
+**解析讲解**：
 - **问题**：未处理 `error` 事件，文件读取失败会导致进程崩溃；未处理客户端提前断连，可能造成资源泄漏。
 - **修复**：
 
@@ -1528,7 +1528,7 @@ function getCached(key, loader) {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 - **问题**：`cache` 无大小限制与过期策略，长期运行下内存无限增长。
 - **修复**：
   - 使用 `lru-cache` 包实现 LRU 缓存。

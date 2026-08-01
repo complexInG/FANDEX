@@ -1096,21 +1096,30 @@ main();
 
 生产级项目应将环境变量管理分为三层：
 
-```
-src/
-├── config/
-│   ├── env.schema.ts      # Zod Schema 定义（单一数据源）
-│   ├── env.ts             # 校验与加载逻辑
-│   ├── config.ts          # 应用配置对象
-│   └── environments.ts    # 多环境配置
-├── types/
-│   └── env.d.ts           # 类型声明（如不用 Zod）
-└── env/                   # .env 文件目录（不入版本控制）
-    ├── .env               # 通用配置
-    ├── .env.development   # 开发环境
-    ├── .env.staging       # 预发环境
-    ├── .env.production    # 生产环境
-    └── .env.example       # 模板（入版本控制）
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["config/"]
+    T2["env.schema.ts      # Zod Schema 定义（单一数据源）"]
+    T3["env.ts             # 校验与加载逻辑"]
+    T4["config.ts          # 应用配置对象"]
+    T5["environments.ts    # 多环境配置"]
+    T6["types/"]
+    T7["env.d.ts           # 类型声明（如不用 Zod）"]
+    T8["env/                   # .env 文件目录（不入版本控制）"]
+    T9[".env               # 通用配置"]
+    T10[".env.development   # 开发环境"]
+    T11[".env.staging       # 预发环境"]
+    T12[".env.production    # 生产环境"]
+    T13[".env.example       # 模板（入版本控制）"]
+    T0 --> T1
+    T5 --> T6
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T8 --> T12
+    T8 --> T13
 ```
 
 ### 实践 2：CI/CD 中校验环境变量
@@ -1221,16 +1230,21 @@ export function getConfig() {
 
 在 pnpm Monorepo 中，通过共享 package 统一环境变量管理：
 
-```
-packages/
-├── shared-config/          # 共享配置包
-│   ├── src/
-│   │   ├── env.schema.ts   # 统一 Schema
-│   │   └── index.ts
-│   └── package.json
-├── web-app/                # 前端应用
-├── api-server/             # 后端服务
-└── worker/                 # 后台任务
+```mermaid
+flowchart TD
+    T0["packages/"]
+    T1["shared-config/          # 共享配置包"]
+    T2["src/"]
+    T3["env.schema.ts   # 统一 Schema"]
+    T4["index.ts"]
+    T5["package.json"]
+    T6["web-app/                # 前端应用"]
+    T7["api-server/             # 后端服务"]
+    T8["worker/                 # 后台任务"]
+    T0 --> T1
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
 ```
 
 ```typescript
@@ -1682,7 +1696,7 @@ spec:
 - 应用启动时统一加载，类型校验通过后才提供服务。
 - Namespace 隔离：每个 Namespace 有独立的 ConfigMap 与 Secret。
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 
@@ -2223,25 +2237,19 @@ class EnvManager {
 
 ## 附录 B：环境变量校验失败的标准处理流程
 
-```
-应用启动
-   │
-   ├─ 读取环境变量
-   │
-   ├─ Zod 校验
-   │   ├─ 通过 ─→ 继续启动
-   │   └─ 失败 ─→ 输出详细错误
-   │                │
-   │                ├─ 路径（变量名）
-   │                ├─ 期望类型
-   │                ├─ 实际值（脱敏）
-   │                └─ 修复建议
-   │                │
-   │                └─ process.exit(1)
-   │
-   ├─ 加载配置对象
-   │
-   └─ 注册全局单例
+```mermaid
+flowchart TD
+    A[应用启动] --> B[读取环境变量]
+    B --> C{Zod 校验}
+    C -- 通过 --> D[继续启动]
+    C -- 失败 --> E[输出详细错误]
+    E --> E1[路径（变量名）]
+    E --> E2[期望类型]
+    E --> E3[实际值（脱敏）]
+    E --> E4[修复建议]
+    E --> E5[process.exit(1)]
+    D --> F[加载配置对象]
+    F --> G[注册全局单例]
 ```
 
 ## 附录 C：不同框架的 `.env` 文件加载顺序

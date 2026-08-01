@@ -1162,11 +1162,11 @@ self.addEventListener('activate', (event) => {
 
 ---
 
-## 10. 习题（Exercises）
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下代码的输出顺序是？
+**常见疑问 1**：以下代码的输出顺序是？
 
 ```javascript
 console.log('A');
@@ -1180,99 +1180,99 @@ B. A, D, C, B
 C. A, D, B, C  
 D. A, C, D, B
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：同步代码 A、D 先执行，然后微任务 C，最后宏任务 B。
+**解析讲解**：同步代码 A、D 先执行，然后微任务 C，最后宏任务 B。
 
 ---
 
-**Q2**：Node.js 中 `process.nextTick` 与 `Promise.then` 的优先级？
+**常见疑问 2**：Node.js 中 `process.nextTick` 与 `Promise.then` 的优先级？
 
 A. `Promise.then` 高  
 B. `process.nextTick` 高  
 C. 相同  
 D. 不确定
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Node.js 中 `nextTick` 队列优先于微任务队列清空。
+**解析讲解**：Node.js 中 `nextTick` 队列优先于微任务队列清空。
 
 ---
 
-**Q3**：以下哪种方式**不能**让出主线程？
+**常见疑问 3**：以下哪种方式**不能**让出主线程？
 
 A. `setTimeout(fn, 0)`  
 B. `await new Promise(r => setTimeout(r, 0))`  
 C. `queueMicrotask(fn)`  
 D. `await scheduler.yield()`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`queueMicrotask` 将回调加入微任务队列，仍在当前宏任务中执行，不让出主线程。其他三者都在下一宏任务执行。
+**解析讲解**：`queueMicrotask` 将回调加入微任务队列，仍在当前宏任务中执行，不让出主线程。其他三者都在下一宏任务执行。
 
 ---
 
-**Q4**：`requestAnimationFrame` 的回调在何时执行？
+**常见疑问 4**：`requestAnimationFrame` 的回调在何时执行？
 
 A. 当前宏任务后  
 B. 微任务清空后、渲染前  
 C. 渲染后  
 D. 下一帧开始
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：rAF 回调在微任务清空后、Style/Layout/Paint 前执行，确保本帧渲染包含 rAF 中的 DOM 修改。
+**解析讲解**：rAF 回调在微任务清空后、Style/Layout/Paint 前执行，确保本帧渲染包含 rAF 中的 DOM 修改。
 
 ---
 
-**Q5**：Node.js 中 `setImmediate` 与 `setTimeout(fn, 0)` 在 I/O 回调中的顺序？
+**常见疑问 5**：Node.js 中 `setImmediate` 与 `setTimeout(fn, 0)` 在 I/O 回调中的顺序？
 
 A. `setTimeout` 先  
 B. `setImmediate` 先  
 C. 不确定  
 D. 同时
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：I/O 回调在 poll 阶段，下一阶段是 check（`setImmediate`），再下一轮才是 timers。
-
----
-
-### 10.2 填空题
-
-**Q1**：JavaScript 事件循环的六个浏览器阶段是 Task、______、______、Style、Layout、Paint。
-
-**答案**：Microtask；RequestAnimationFrame
+**解析讲解**：I/O 回调在 poll 阶段，下一阶段是 check（`setImmediate`），再下一轮才是 timers。
 
 ---
 
-**Q2**：Node.js 事件循环的六个阶段是 timers、______、idle/prepare、______、check、close。
+### 填空题知识点讲解
 
-**答案**：pending callbacks；poll
+**常见疑问 6**：JavaScript 事件循环的六个浏览器阶段是 Task、______、______、Style、Layout、Paint。
 
----
-
-**Q3**：微任务队列在每个 ______ 后完全清空。
-
-**答案**：宏任务
+**解析讲解**：Microtask；RequestAnimationFrame
 
 ---
 
-**Q4**：`async/await` 中 `await` 后的代码作为 ______ 执行。
+**常见疑问 7**：Node.js 事件循环的六个阶段是 timers、______、idle/prepare、______、check、close。
 
-**答案**：微任务
-
----
-
-**Q5**：`scheduler.postTask` 的三个优先级是 user-blocking、______、______。
-
-**答案**：user-visible；background
+**解析讲解**：pending callbacks；poll
 
 ---
 
-### 10.3 编程题
+**常见疑问 8**：微任务队列在每个 ______ 后完全清空。
 
-**Q1**：实现一个 `yieldToMain` 工具，优先使用 `scheduler.yield`，回退到 `MessageChannel`。
+**解析讲解**：宏任务
+
+---
+
+**常见疑问 9**：`async/await` 中 `await` 后的代码作为 ______ 执行。
+
+**解析讲解**：微任务
+
+---
+
+**常见疑问 10**：`scheduler.postTask` 的三个优先级是 user-blocking、______、______。
+
+**解析讲解**：user-visible；background
+
+---
+
+### 编程题知识点讲解
+
+**常见疑问 11**：实现一个 `yieldToMain` 工具，优先使用 `scheduler.yield`，回退到 `MessageChannel`。
 
 ```javascript
 // ES2017 — yieldToMain
@@ -1293,7 +1293,7 @@ export async function yieldToMain() {
 
 ---
 
-**Q2**：实现一个并发限制的 `map` 函数。
+**常见疑问 12**：实现一个并发限制的 `map` 函数。
 
 ```javascript
 // ES2017 — 并发限制 map
@@ -1324,7 +1324,7 @@ const results = await asyncMap(
 
 ---
 
-**Q3**：实现一个可取消的 `setTimeout`。
+**常见疑问 13**：实现一个可取消的 `setTimeout`。
 
 ```javascript
 // ES2015 — 可取消 setTimeout
@@ -1353,7 +1353,7 @@ timer.cancel(); // 取消
 
 ---
 
-**Q4**：实现一个基于 `requestIdleCallback` 的后台任务队列。
+**常见疑问 14**：实现一个基于 `requestIdleCallback` 的后台任务队列。
 
 ```javascript
 // ES5 — 后台任务队列
@@ -1404,18 +1404,18 @@ queue.enqueue(() => console.log('后台任务 2'));
 
 ### 10.4 思考题
 
-**Q1**：为什么 JavaScript 选择单线程而非多线程？分析 1995 年的设计决策与今天的权衡。
+**常见疑问 15**：为什么 JavaScript 选择单线程而非多线程？分析 1995 年的设计决策与今天的权衡。
 
-**参考答案**：
+**解析讲解**：
 
 - **1995 年决策**：浏览器 DOM 操作需要单一所有者，避免竞态；多核 CPU 未普及；开发者模型简单。
 - **今天权衡**：单线程限制了 CPU 密集任务的性能，但 Web Workers / worker_threads 提供了并行能力。单线程事件循环模型仍适合 I/O 密集场景（如 Web 应用），CPU 密集场景应卸载到 Worker。
 
 ---
 
-**Q2**：在浏览器中，`setTimeout(fn, 0)` 实际延迟是多少？为什么不是 0 ms？
+**常见疑问 16**：在浏览器中，`setTimeout(fn, 0)` 实际延迟是多少？为什么不是 0 ms？
 
-**参考答案**：HTML5 规范规定 `setTimeout` 最小延迟为 4 ms（嵌套 ≥ 5 层后），Chrome 实现为 4 ms。原因：
+**解析讲解**：HTML5 规范规定 `setTimeout` 最小延迟为 4 ms（嵌套 ≥ 5 层后），Chrome 实现为 4 ms。原因：
 
 1. 防止微任务饥饿——若 `setTimeout(0)` 立即执行，会无限产生宏任务。
 2. 节流——浏览器对嵌套 `setTimeout(0)` 强制延迟。
@@ -1425,9 +1425,9 @@ queue.enqueue(() => console.log('后台任务 2'));
 
 ---
 
-**Q3**：为什么 `for..of` + `await` 是串行的，而 `Promise.all` 是并行的？从事件循环角度分析。
+**常见疑问 17**：为什么 `for..of` + `await` 是串行的，而 `Promise.all` 是并行的？从事件循环角度分析。
 
-**参考答案**：
+**解析讲解**：
 
 - `for..of` + `await`：每次 `await` 暂停当前 `async` 函数，等待 Promise resolve 后继续。下一次迭代在上一完成后才开始，故串行。
 - `Promise.all`：所有 Promise 同时启动（无 `await`），`Promise.all` 等待所有完成。事件循环并发处理多个 I/O。
@@ -1440,9 +1440,9 @@ $$\text{Parallel}: \quad t_{\text{total}} = \max_i t_i$$
 
 ---
 
-**Q4**：在 Node.js 中，为什么 `setImmediate` 存在而浏览器中没有？
+**常见疑问 18**：在 Node.js 中，为什么 `setImmediate` 存在而浏览器中没有？
 
-**参考答案**：Node.js 的 `setImmediate` 用于在 I/O 事件后立即执行回调，对应 libuv 的 check 阶段。浏览器没有 libuv 的阶段模型，所有"立即执行"通过微任务（`queueMicrotask`）或 `setTimeout(0)` 实现。Node.js 的 `setImmediate` 在 I/O 密集场景中确保回调在 I/O 完成后立即执行，避免被 timers 抢占。
+**解析讲解**：Node.js 的 `setImmediate` 用于在 I/O 事件后立即执行回调，对应 libuv 的 check 阶段。浏览器没有 libuv 的阶段模型，所有"立即执行"通过微任务（`queueMicrotask`）或 `setTimeout(0)` 实现。Node.js 的 `setImmediate` 在 I/O 密集场景中确保回调在 I/O 完成后立即执行，避免被 timers 抢占。
 
 ---
 
@@ -1546,43 +1546,17 @@ $$\text{Parallel}: \quad t_{\text{total}} = \max_i t_i$$
 
 ## 附录 B：浏览器事件循环速查
 
-```
-┌─────────────────────────────────┐
-│         Call Stack              │  ← 同步代码执行
-│  ┌───────────────────────────┐  │
-│  │   执行上下文 (LIFO)        │  │
-│  └───────────────────────────┘  │
-└──────────┬──────────────────────┘
-           │
-     ┌─────┴──────┐
-     │  Event Loop │ ← 持续检查
-     └─────┬──────┘
-           │
-   ┌───────┴────────┐
-   │                │
-   ▼                ▼
-┌──────┐       ┌────────┐
-│ Macro │       │ Micro  │
-│ task  │       │ task   │
-│ Queue │       │ Queue  │
-└───┬──┘       └────┬───┘
-    │                │
-    ▼                ▼
-┌──────────────────────────┐
-│  渲染阶段（每帧）         │
-│  ┌────────────────────┐  │
-│  │ RequestAnimationFrame│  │
-│  └─────────┬──────────┘  │
-│  ┌─────────┴──────────┐  │
-│  │ Style               │  │
-│  └─────────┬──────────┘  │
-│  ┌─────────┴──────────┐  │
-│  │ Layout              │  │
-│  └─────────┬──────────┘  │
-│  ┌─────────┴──────────┐  │
-│  │ Paint               │  │
-│  └────────────────────┘  │
-└──────────────────────────┘
+```mermaid
+flowchart TD
+    Stack[Call Stack<br/>执行上下文（LIFO）<br/>← 同步代码执行] --> Loop[Event Loop<br/>← 持续检查]
+    Loop --> Macro[Macro task Queue]
+    Loop --> Micro[Micro task Queue]
+    Macro --> Render[渲染阶段（每帧）]
+    Micro --> Render
+    Render --> RAF[RequestAnimationFrame]
+    RAF --> Style[Style]
+    Style --> Layout[Layout]
+    Layout --> Paint[Paint]
 ```
 
 ### 执行顺序
@@ -1597,27 +1571,14 @@ $$\text{Parallel}: \quad t_{\text{total}} = \max_i t_i$$
 
 ## 附录 C：Node.js 事件循环速查
 
-```
-   ┌──────────────────────────┐
-┌─>│        timers             │ ← setTimeout / setInterval
-│  └─────────────┬────────────┘
-│  ┌─────────────┴────────────┐
-│  │   pending callbacks       │ ← 系统级回调（TCP 错误等）
-│  └─────────────┬────────────┘
-│  ┌─────────────┴────────────┐
-│  │    idle, prepare          │ ← libuv 内部使用
-│  └─────────────┬────────────┘
-│  ┌─────────────┴────────────┐
-│  │         poll              │ ← I/O 回调（fs / net）
-│  └─────────────┬────────────┘
-│  ┌─────────────┴────────────┐
-│  │         check             │ ← setImmediate
-│  └─────────────┬────────────┘
-│  ┌─────────────┴────────────┐
-│  │     close callbacks       │ ← socket.on('close')
-│  └─────────────┬────────────┘
-│                │
-└────────────────┘
+```mermaid
+flowchart TD
+    Timers[timers<br/>← setTimeout / setInterval] --> Pending[pending callbacks<br/>← 系统级回调（TCP 错误等）]
+    Pending --> Idle[idle, prepare<br/>← libuv 内部使用]
+    Idle --> Poll[poll<br/>← I/O 回调（fs / net）]
+    Poll --> Check[check<br/>← setImmediate]
+    Check --> Close[close callbacks<br/>← socket.on('close')]
+    Close --> Timers
 ```
 
 ### 微任务时机（Node.js v11+）
@@ -1658,3 +1619,249 @@ $$\text{Parallel}: \quad t_{\text{total}} = \max_i t_i$$
 5. **现代 API**：`scheduler.postTask` 与 `scheduler.yield` 是未来方向。
 
 掌握本篇内容后，应能在浏览器与 Node.js 项目中正确使用事件循环 API，设计高性能异步架构。
+## 调用栈与堆
+
+**基本写法：调用栈执行同步代码**
+`<函数调用>`
+```javascript
+// 同步代码按调用栈后进先出执行
+function a() { b(); }
+function b() { console.log("done"); }
+a();
+```
+
+---
+
+## 宏任务与微任务
+
+**基本写法：微任务队列**
+`queueMicrotask(<回调>)`
+```javascript
+// 微任务在当前宏任务结束后立即执行
+queueMicrotask(() => console.log("micro"));
+```
+
+---
+
+**基本写法：宏任务队列**
+`setTimeout(<回调>, <延迟>)`
+```javascript
+// 宏任务在下一次事件循环执行
+setTimeout(() => console.log("macro"), 0);
+```
+
+---
+
+**基本写法：微任务优先于宏任务**
+`Promise.resolve().then(<回调>)`
+```javascript
+// then 回调作为微任务先于 setTimeout 执行
+Promise.resolve().then(() => console.log("micro"));
+setTimeout(() => console.log("macro"), 0);
+```
+
+---
+
+## 事件循环阶段
+
+**基本写法：Node.js 事件循环阶段**
+`timers -> pending -> poll -> check -> close callbacks`
+```javascript
+// timers 执行 setTimeout setInterval
+// check 执行 setImmediate
+// poll 执行 I/O 回调
+setTimeout(() => {}, 0);     // timers 阶段
+setImmediate(() => {});      // check 阶段
+```
+
+---
+
+**基本写法：浏览器事件循环**
+`执行脚本 -> 微任务 -> requestAnimationFrame -> 渲染 -> 宏任务`
+```javascript
+// 浏览器每个宏任务后清空微任务队列
+console.log("script");
+setTimeout(() => console.log("timeout"), 0);
+Promise.resolve().then(() => console.log("promise"));
+```
+
+---
+
+## process.nextTick
+
+**基本写法：nextTick 优先级最高**
+`process.nextTick(<回调>)`
+```javascript
+// Node.js 中 nextTick 早于微任务执行
+process.nextTick(() => console.log("nextTick"));
+Promise.resolve().then(() => console.log("promise"));
+```
+
+---
+
+## async await 转换
+
+**基本写法：await 转为 then 链**
+`await <promise>`
+```javascript
+// await 之后的代码相当于 then 回调作为微任务
+async function fn() {
+    console.log(1);
+    await Promise.resolve();
+    console.log(3);
+}
+fn();
+console.log(2);  // 输出顺序 1 2 3
+```
+
+---
+
+## 任务队列实战
+
+**基本写法：输出顺序判断**
+`<同步> -> <微任务> -> <宏任务>`
+```javascript
+// 经典执行顺序示例
+console.log("start");
+setTimeout(() => console.log("timeout"));
+Promise.resolve().then(() => console.log("promise"));
+console.log("end");
+// 输出顺序 start end promise timeout
+```
+
+---
+
+**基本写法：嵌套微任务**
+`<微任务>.then(<回调>)`
+```javascript
+// 微任务中产生的微任务在同一阶段清空
+Promise.resolve()
+    .then(() => Promise.resolve())
+    .then(() => console.log("nested"));
+```
+
+---
+
+**基本写法：宏任务嵌套**
+`setTimeout(() => setTimeout(<回调>))`
+```javascript
+// 宏任务中产生的宏任务进入下一轮循环
+setTimeout(() => {
+    setTimeout(() => console.log("inner"));
+}, 0);
+```
+
+---
+
+## requestAnimationFrame
+
+**基本写法：rAF 在渲染前执行**
+`requestAnimationFrame(<回调>)`
+```javascript
+// rAF 在浏览器重绘前调用适合动画
+requestAnimationFrame(() => console.log("rAF"));
+```
+
+---
+
+**基本写法：rAF 与 setTimeout 区别**
+`requestAnimationFrame(<回调>)`
+```javascript
+// rAF 同步浏览器刷新率通常 60fps
+let start = performance.now();
+requestAnimationFrame(t => console.log(t - start));
+```
+
+---
+
+## 任务拆分
+
+**基本写法：长任务拆分**
+`setTimeout(<回调>, 0)`
+```javascript
+// 拆分长任务避免阻塞主线程
+function chunk(tasks) {
+    if (tasks.length === 0) return;
+    const task = tasks.shift();
+    task();
+    setTimeout(() => chunk(tasks), 0);
+}
+```
+
+---
+
+**基本写法：使用 scheduler.yield**
+`await scheduler.yield()`
+```javascript
+// ES2024+ 让出主线程继续执行后续代码
+async function work() {
+    for (const item of items) {
+        process(item);
+        await scheduler.yield();
+    }
+}
+```
+
+---
+
+## MessageChannel
+
+**基本写法：MessageChannel 创建宏任务**
+`new MessageChannel()`
+```javascript
+// MessageChannel 端口通信是宏任务
+const { port1, port2 } = new MessageChannel();
+port1.onmessage = () => console.log("received");
+port2.postMessage(null);
+```
+
+---
+
+## 异步执行顺序
+
+**基本写法：综合执行顺序**
+`<script> -> <micro> -> <macro>`
+```javascript
+// 同步代码 -> 微任务 -> 宏任务 -> 渲染
+console.log(1);
+setTimeout(() => console.log(2));
+Promise.resolve().then(() => console.log(3));
+queueMicrotask(() => console.log(4));
+console.log(5);
+// 输出 1 5 3 4 2
+```
+
+---
+
+## 浏览器渲染时机
+
+**基本写法：渲染与任务交错**
+`<宏任务> -> <微任务> -> <rAF> -> <渲染>`
+```javascript
+// 一帧内执行顺序宏任务清空微任务 rAF 渲染
+setTimeout(() => console.log("task"));
+requestAnimationFrame(() => console.log("rAF"));
+Promise.resolve().then(() => console.log("micro"));
+```
+
+---
+
+## 实用模式
+
+**基本写法：nextTick 工具函数**
+`Promise.resolve().then(<回调>)`
+```javascript
+// 浏览器实现 nextTick 等同微任务
+const nextTick = fn => Promise.resolve().then(fn);
+nextTick(() => console.log("next tick"));
+```
+
+---
+
+**基本写法：立即 resolved Promise**
+`Promise.resolve().then(<回调>)`
+```javascript
+// 已 resolved 的 then 仍是异步微任务
+Promise.resolve().then(() => console.log("async"));
+console.log("sync");
+```

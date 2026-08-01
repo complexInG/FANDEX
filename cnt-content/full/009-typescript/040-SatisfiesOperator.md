@@ -2055,9 +2055,9 @@ const buildOrder = getBuildOrder();
 
 ---
 
-## 10. 练习与答案
+## 知识讲解与要点分析（原练习）
 
-### 练习 1：基础 satisfies 使用
+## 知识讲解与要点分析（原练习 1：基础 satisfies 使用）
 
 **题目**：使用 `satisfies` 验证以下配置对象，并保留字面量类型：
 
@@ -2076,7 +2076,7 @@ const config = {
 };
 ```
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 const config = {
@@ -2088,7 +2088,7 @@ const config = {
 // config.protocol 类型：'http'（字面量类型）
 ```
 
-### 练习 2：as const + satisfies
+## 知识讲解与要点分析（原练习 2：as const + satisfies）
 
 **题目**：使用 `as const satisfies` 定义一个只读的路由表，并保留所有路由路径的字面量类型：
 
@@ -2101,7 +2101,7 @@ const ROUTES = {
 };
 ```
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 const ROUTES = {
@@ -2118,7 +2118,7 @@ const ROUTES = {
 // ROUTES.home = '/new'; // 错误：只读属性
 ```
 
-### 练习 3：联合类型属性
+## 知识讲解与要点分析（原练习 3：联合类型属性）
 
 **题目**：使用 `satisfies` 验证以下主题配置，并保留每个属性的具体类型：
 
@@ -2137,7 +2137,7 @@ const theme = {
 };
 ```
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 const theme = {
@@ -2151,7 +2151,7 @@ const theme = {
 // theme.borderRadius 类型：string
 ```
 
-### 练习 4：诊断陷阱
+## 知识讲解与要点分析（原练习 4：诊断陷阱）
 
 **题目**：以下代码有什么问题？如何修复？
 
@@ -2161,7 +2161,7 @@ function getUser(): User satisfies User {
 }
 ```
 
-**答案**：
+**解析讲解**：
 
 **问题**：`satisfies` 不能用于函数返回值类型注解位置，这是语法错误。
 
@@ -2178,7 +2178,7 @@ function getUser(): User {
 }
 ```
 
-### 练习 5：与 Zod 集成
+## 知识讲解与要点分析（原练习 5：与 Zod 集成）
 
 **题目**：使用 Zod 定义一个用户 Schema，并使用 `satisfies` 验证默认用户数据：
 
@@ -2191,7 +2191,7 @@ import { z } from 'zod';
 // 3. 使用 satisfies 验证 DEFAULT_USER
 ```
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 import { z } from 'zod';
@@ -2218,7 +2218,7 @@ const DEFAULT_USER = {
 // DEFAULT_USER.role 类型：'guest'（字面量类型）
 ```
 
-### 练习 6：枚举替代
+## 知识讲解与要点分析（原练习 6：枚举替代）
 
 **题目**：使用 `as const satisfies` 实现一个类型安全的颜色枚举，并提供 `Color` 类型：
 
@@ -2229,7 +2229,7 @@ const DEFAULT_USER = {
 // 3. 提取 Color 类型
 ```
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 const Colors = {
@@ -2251,7 +2251,7 @@ setColor('#FF0000');  // OK
 setColor('red');      // 编译错误
 ```
 
-### 练习 7：状态机定义
+## 知识讲解与要点分析（原练习 7：状态机定义）
 
 **题目**：使用 `satisfies` 定义一个订单状态机，包含以下状态：
 - `pending`（初始状态，可转移到 `paid` 或 `cancelled`）
@@ -2261,7 +2261,7 @@ setColor('red');      // 编译错误
 - `cancelled`（终态）
 - `refunded`（终态）
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 interface StateConfig {
@@ -2329,7 +2329,7 @@ class OrderStateMachine {
 }
 ```
 
-### 练习 8：事件处理器映射
+## 知识讲解与要点分析（原练习 8：事件处理器映射）
 
 **题目**：使用 `satisfies` 定义一个类型安全的事件处理器映射，要求每个事件类型有对应的处理器：
 
@@ -2340,7 +2340,7 @@ class OrderStateMachine {
 // 3. 实现 registerHandler 函数
 ```
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 // 1. 接口定义
@@ -2372,7 +2372,7 @@ registerHandler('click', handlers.click);   // OK
 registerHandler('click', handlers.keydown); // 编译错误：处理器类型不匹配
 ```
 
-### 练习 9：诊断复杂陷阱
+## 知识讲解与要点分析（原练习 9：诊断复杂陷阱）
 
 **题目**：以下代码的 `port` 类型是什么？为什么？如何修复以保留字面量类型？
 
@@ -2386,7 +2386,7 @@ const config = {
 } satisfies Config;
 ```
 
-**答案**：
+**解析讲解**：
 
 **`port` 类型**：`number`（字面量 `3000` 被拓宽）。
 
@@ -2402,14 +2402,14 @@ const config = {
 // config.port 类型：3000（字面量类型）
 ```
 
-### 练习 10：设计类型安全的插件系统
+## 知识讲解与要点分析（原练习 10：设计类型安全的插件系统）
 
 **题目**：设计一个类型安全的插件系统，要求：
 1. 插件必须实现 `Plugin` 接口
 2. 插件注册时使用 `satisfies` 验证
 3. 保留每个插件的具体类型
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 interface Plugin {
@@ -2556,16 +2556,25 @@ const arr = [1, 2, 3] as const satisfies readonly number[];
 
 ### A.2 决策树
 
-```
-需要类型验证？
-├── 否 → 不使用任何类型操作
-└── 是 → 需要保留字面量类型？
-    ├── 是 → 需要 readonly？
-    │   ├── 是 → as const satisfies T
-    │   └── 否 → satisfies T（注意字面量可能被拓宽）
-    └── 否 → 需要拓宽类型？
-        ├── 是 → 类型注解 : T
-        └── 否 → 仅验证，不拓宽 → satisfies T
+```mermaid
+flowchart TD
+    T0["需要类型验证？"]
+    T1["否 → 不使用任何类型操作"]
+    T2["是 → 需要保留字面量类型？"]
+    T3["是 → 需要 readonly？"]
+    T4["是 → as const satisfies T"]
+    T5["否 → satisfies T（注意字面量可能被拓宽）"]
+    T6["否 → 需要拓宽类型？"]
+    T7["是 → 类型注解 : T"]
+    T8["否 → 仅验证，不拓宽 → satisfies T"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T2 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
 ```
 
 ### A.3 常见模式

@@ -2019,13 +2019,13 @@ async def list_items(
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
 **题目 10.1.1**：使用模块级方式实现一个 `Logger` 单例，支持 `info`、`warning`、`error` 三个方法，输出格式为 `[时间] [级别] 消息`。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 # logger.py
@@ -2057,7 +2057,7 @@ logger = _Logger()
 
 **题目 10.1.2**：使用元类实现一个线程安全的单例 `Cache`，支持 `get(key)`、`set(key, value)`、`delete(key)` 方法。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 import threading
@@ -2093,15 +2093,15 @@ class Cache(metaclass=SingletonMeta):
             self._data.pop(key, None)
 ```
 
-### 10.2 应用题
+### 应用题知识点讲解
 
 **题目 10.2.1**：设计一个支持"环境隔离"的配置单例，使同一进程内 dev、staging、prod 环境拥有独立的配置实例。
 
-**参考答案**：见 5.12 节代码示例。
+**解析讲解**：见 5.12 节代码示例。
 
 **题目 10.2.2**：为元类单例实现 `__copy__` 与 `__deepcopy__`，确保 `copy.copy` 与 `copy.deepcopy` 返回单例本身。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 import copy
@@ -2160,7 +2160,7 @@ class B(Base):
     pass
 ```
 
-**参考答案**：
+**解析讲解**：
 
 **问题**：`_instance` 是类属性，所有子类共享。`A()` 与 `B()` 会返回同一实例，违反"每子类独立单例"的期望。
 
@@ -2178,7 +2178,7 @@ class SingletonMeta(type):
 
 **题目 10.3.2**：为什么在 CPython 中，即使不加锁的简单单例"通常"能工作，但仍然是错的？
 
-**参考答案**：
+**解析讲解**：
 
 CPython 的 GIL（Global Interpreter Lock）保证字节码级别的原子性，`dict` 操作（`__contains__`、`__setitem__`）各自是原子的。在单字节码级别，简单单例可能"碰巧"工作。
 
@@ -2194,7 +2194,7 @@ CPython 的 GIL（Global Interpreter Lock）保证字节码级别的原子性，
 
 **题目 10.4.1**：评价以下观点："Python 中应该避免使用单例模式，模块级变量是唯一正确的单例实现方式。"
 
-**参考答案**：
+**解析讲解**：
 
 该观点部分正确，但过于绝对。
 
@@ -2222,7 +2222,7 @@ CPython 的 GIL（Global Interpreter Lock）保证字节码级别的原子性，
 3. 健康检查：定期检查单例状态。
 4. 优雅降级：单例初始化失败时返回降级实例。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 import threading
@@ -2970,7 +2970,3 @@ Python 之禅（PEP 20）："Explicit is better than implicit." 单例模式隐�
 
 ---
 
-### 更新日志（Changelog）
-
-- 2026-07-21：完整重写至金标准教学水准，新增 12 项结构化内容，覆盖元类单例、线程安全、Monostate、环境隔离、可观测单例与企业级案例研究，新增约 2400 行。
-- 2026-06-14：初版，基础元类与单例模式介绍。

@@ -1813,15 +1813,19 @@ printf("%ld\n", (long)t);     /* 32 位平台：2038 溢出 */
 
 ### 实践 1：分层架构设计
 
-```
-应用层（业务逻辑，完全可移植）
-    ↓
-抽象层（PAL，接口定义）
-    ↓
-平台层（具体实现）
-    ├── Linux 实现（epoll, pthread, mmap）
-    ├── Windows 实现（IOCP, CreateThread, CreateFileMapping）
-    └── macOS 实现（kqueue, pthread, mmap）
+```mermaid
+flowchart TD
+    T0["应用层（业务逻辑，完全可移植）"]
+    T1["抽象层（PAL，接口定义）"]
+    T2["平台层（具体实现）"]
+    T3["Linux 实现（epoll, pthread, mmap）"]
+    T4["Windows 实现（IOCP, CreateThread, CreateFileMapping）"]
+    T5["macOS 实现（kqueue, pthread, mmap）"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T2 --> T4
+    T2 --> T5
 ```
 
 **原则**：
@@ -2113,7 +2117,7 @@ libcurl 是广泛使用的网络库，支持 40+ 平台。
 3. **统一 API**：上层 API 完全一致，下层后端可选（OpenSSL/GnuTLS/mbedTLS）
 4. **CI 矩阵**：在 Linux、macOS、Windows、Android、iOS 等 10+ 平台测试
 
-## 练习
+## 知识讲解与要点分析（原练习）
 
 ### 基础练习
 

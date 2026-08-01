@@ -1017,7 +1017,7 @@ def demo_string_memory() -> None:
     print(f"中文字符串 1000 字符: {sys.getsizeof(chinese_str)} 字节")
 
     # 含 emoji 的字符串（UCS-4 编码）
-    emoji_str = "🎉" * 1000
+    emoji_str = "\u{1F389}" * 1000
     print(f"emoji 字符串 1000 字符: {sys.getsizeof(emoji_str)} 字节")
 
     # 字符串驻留测试

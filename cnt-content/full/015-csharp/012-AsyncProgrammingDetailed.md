@@ -15,10 +15,11 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
+# C# 异步编程
 
-# C# 异步编程详解：从 APM 到 async/await 的全景解析
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本章对标 MIT 6.1020（Software Construction）与 Stanford CS110L（Safety in Systems Programming）的并发与异步教学深度，结合 ECMA-334 规范、CoreCLR 源码与 Stephen Toub 的经典博客，深入剖析 C# 异步编程三代模型（APM/EAP/TAP）、Task/ValueTask 的内部结构、CancellationToken 的取消传播、IAsyncEnumerable 异步流、await foreach 消费模式、Channel 生产者-消费者模型，以及在 ASP.NET Core、EF Core、WPF/WinForms 中的工程实践。
+---
 
 ## 目录
 
@@ -224,93 +225,15 @@ await foreach (var item in GenerateAsync().WithCancellation(ct))
 {
     Console.WriteLine(item);
 }
-```
-
-### 2.8 .NET 6+：异步改进（2021-2024）
-
-| 版本 | 年份 | 异步特性 |
-|------|------|----------|
-| .NET 6 | 2021 | `Task.WaitAsync(CancellationToken)`、`Task.WaitAsync(TimeSpan)` |
-| .NET 7 | 2022 | `AsyncStream` 优化、`ConfigureAwait(ConfigureAwaitOptions)` |
-| .NET 8 | 2023 | `AsyncMethodBuilder` 支持自定义、`Task.ToBlockingEnumerable` |
-| .NET 9 | 2024 | `Task.WhenEach`（实验性）、`AsyncLocal<T>` 改进 |
-
-### 2.9 学术背景与理论渊源
-
-异步编程的理论渊源：
-
-- **Actor 模型**（Hewitt 1973）：消息传递的并发模型。
-- **CSP**（Hoare 1978）：Communicating Sequential Processes，Go 语言灵感。
-- **Monad**（Wadler 1992）：Haskell 的 IO monad，`async` 是 monad 的语法糖。
-- **Futures/Promises**：LISP、JavaScript Promise、Scala Future。
-- **Continuation-Passing Style**（CPS）：函数式语言的延续传递风格。
-
----
-
-## 3. 形式化定义
-
-### 3.1 异步操作的形式化
-
-设 $A$ 为异步操作，$V$ 为结果值，$E$ 为异常集合。
-
-**同步操作**：
-
-$$
-\text{Sync}: () \to V \cup E
-$$
-
-**异步操作**：
-
-$$
-\text{Async}: () \to \text{Future}(V, E)
-$$
-
-其中 $\text{Future}(V, E)$ 是一个"未来值"的句柄，可能尚未完成。
-
-### 3.2 Task 的形式化
-
-`Task<T>` 形式化为状态机：
-
-$$
-\text{Task}(T) = (S, V, E, C)
-$$
-
-其中：
-- $S \in \{\text{WaitingForActivation}, \text{WaitingToRun}, \text{Running}, \text{RanToCompletion}, \text{Faulted}, \text{Canceled}\}$
-- $V: T$（结果值，仅当 $S = \text{RanToCompletion}$）
-- $E: \text{Exception}$（异常，仅当 $S = \text{Faulted}$）
-- $C: \text{Action}$（continuation 链）
-
-### 3.3 async 方法的类型签名
-
-`async` 方法的返回类型必须满足：
-
-$$
-\text{AsyncMethodReturnType} = \text{Task} \mid \text{Task}<T> \mid \text{ValueTask} \mid \text{ValueTask}<T> \mid \text{IAsyncEnumerable}<T> \mid \text{void}(\text{仅事件处理器})
-$$
-
-形式化：
-
-$$
-\text{async}\ \text{RetType}\ \text{MethodName}(\text{Params})\ \{\ \text{Body}\ \} \implies \text{StateMachine}(\text{RetType}, \text{Body})
-$$
-
-### 3.4 CancellationToken 的形式化
-
-`CancellationToken` 是一个不可变的取消信号载体：
-
-$$
-\text{CancellationToken} = (\text{IsCancellationRequested}: \text{bool}, \text{Register}: (\text{Action}) \to \text{Registration})
-$$
-
-`CancellationTokenSource` 是可变的取消源：
-
-$$
-\text{CancellationTokenSource} = (\text{Cancel}: () \to \text{void}, \text{Token}: \text{CancellationToken}, \text{CancelAfter}: (\text{TimeSpan}) \to \text{void})
-$$
-
-### 3.5 IAsyncEnumerable 的形式化
-
+```mermaid
+stateDiagram-v2
+    [*] --> Created
+    Created --> WaitingForActivation
+    WaitingForActivation --> WaitingToRun
+    WaitingToRun --> Running
+    Running --> RanToCompletion
+    Running --> Faulted
+    Running --> Canceled
 ```csharp
 public interface IAsyncEnumerable<out T>
 {
@@ -394,15 +317,15 @@ public class Task<TResult> : Task
 
 状态转换图：
 
-```
-       Created
-         │
-         ▼
-WaitingForActivation ──► WaitingToRun ──► Running
-                                           │
-                          ┌────────────────┼──────────────┐
-                          ▼                ▼              ▼
-                  RanToCompletion      Faulted       Canceled
+```mermaid
+stateDiagram-v2
+    [*] --> Created
+    Created --> WaitingForActivation
+    WaitingForActivation --> WaitingToRun
+    WaitingToRun --> Running
+    Running --> RanToCompletion
+    Running --> Faulted
+    Running --> Canceled
 ```
 
 ### 4.2 Continuation 链表
@@ -2006,9 +1929,9 @@ public async Task<string> GetStringAsync(Uri uri, CancellationToken ct)
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪种异步方法返回类型不推荐在公共 API 中使用？
 
@@ -2017,9 +1940,9 @@ B. `Task<T>`
 C. `ValueTask<T>`
 D. `void`
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：`async void` 异常无法被调用者捕获，仅适用于事件处理器。`ValueTask<T>` 虽有限制，但可在公共 API 中使用（需文档说明只能 await 一次）。
+**解析讲解**：`async void` 异常无法被调用者捕获，仅适用于事件处理器。`ValueTask<T>` 虽有限制，但可在公共 API 中使用（需文档说明只能 await 一次）。
 
 ---
 
@@ -2030,9 +1953,9 @@ B. 不需要使用，无 SynchronizationContext
 C. 会导致性能下降
 D. 必须使用，否则阻塞请求线程
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：ASP.NET Core 无 `SynchronizationContext`，`await` 默认在线程池执行，`ConfigureAwait(false)` 无效果。
+**解析讲解**：ASP.NET Core 无 `SynchronizationContext`，`await` 默认在线程池执行，`ConfigureAwait(false)` 无效果。
 
 ---
 
@@ -2043,39 +1966,39 @@ B. 仅可 await 一次，多次 await 行为未定义
 C. 可以多次 await，但第二次 await 必然抛异常
 D. 仅可 await 两次
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`ValueTask<T>` 是结构体，可能基于池化的 `IValueTaskSource<T>`，多次 await 行为未定义。
+**解析讲解**：`ValueTask<T>` 是结构体，可能基于池化的 `IValueTaskSource<T>`，多次 await 行为未定义。
 
 ---
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 4**：.NET 异步编程的三代模型分别是 ____ 、 ____ 、 ____ 。
 
-**答案**：APM（Begin/End）、EAP（事件）、TAP（Task）
+**解析讲解**：APM（Begin/End）、EAP（事件）、TAP（Task）
 
-**解析**：APM（.NET 1.0）、EAP（.NET 2.0）、TAP（.NET 4.0）。
+**解析讲解**：APM（.NET 1.0）、EAP（.NET 2.0）、TAP（.NET 4.0）。
 
 ---
 
 **题目 5**：`async` 方法在 `await` 时默认捕获 ____ ，用于 continuation 调度。
 
-**答案**：SynchronizationContext
+**解析讲解**：SynchronizationContext
 
-**解析**：`SynchronizationContext.Current` 决定 continuation 在哪个线程执行。`ConfigureAwait(false)` 不捕获。
+**解析讲解**：`SynchronizationContext.Current` 决定 continuation 在哪个线程执行。`ConfigureAwait(false)` 不捕获。
 
 ---
 
 **题目 6**：`Channel<T>` 支持两种模式：____ 和 ____ 。
 
-**答案**：Bounded（有界）、Unbounded（无界）
+**解析讲解**：Bounded（有界）、Unbounded（无界）
 
-**解析**：Bounded 有容量限制，生产者满时阻塞；Unbounded 无限制。
+**解析讲解**：Bounded 有容量限制，生产者满时阻塞；Unbounded 无限制。
 
 ---
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 7**：实现一个支持取消、超时、重试的异步 HTTP 客户端包装器。
 
@@ -2452,3 +2375,581 @@ C# 异步编程从 APM 的回调地狱，到 EAP 的事件模型，再到 TAP + 
 ---
 
 *最后更新：2026-07-20*
+## async 与 await 基础
+
+**基本写法：async 方法声明**
+`public async Task <方法名>() { ... }`
+```csharp
+// 声明异步方法返回 Task
+public async Task DoWorkAsync()
+{
+    await Task.Delay(1000);
+    Console.WriteLine("工作完成");
+}
+```
+
+---
+
+**基本写法：async Task\<T\> 方法**
+`public async Task<<返回类型>> <方法名>() { ... }`
+```csharp
+// 声明异步方法返回带值 Task
+public async Task<int> GetCountAsync()
+{
+    await Task.Delay(500);
+    return 42;
+}
+```
+
+---
+
+**基本写法：async ValueTask 方法**
+`public async ValueTask<<返回类型>> <方法名>() { ... }`
+```csharp
+// 声明返回 ValueTask 的异步方法
+public async ValueTask<int> GetCachedCountAsync()
+{
+    await Task.Delay(100);
+    return 100;
+}
+```
+
+---
+
+**基本写法：await Task.Delay**
+`await Task.Delay(<毫秒>);`
+```csharp
+// 异步等待指定毫秒
+await Task.Delay(1000);
+```
+
+---
+
+**基本写法：await 调用异步方法**
+`await <异步方法>();`
+```csharp
+// 等待异步方法完成
+await DoWorkAsync();
+```
+
+---
+
+**基本写法：await 获取结果**
+`<类型> <变量> = await <异步方法>();`
+```csharp
+// 等待异步方法并获取返回值
+int count = await GetCountAsync();
+```
+
+---
+
+## Task 创建与组合
+
+**基本写法：Task.Run 委托**
+`Task <变量> = Task.Run(() => <表达式>);`
+```csharp
+// 在线程池上运行委托
+Task task = Task.Run(() =>
+{
+    Console.WriteLine("在线程池执行");
+});
+```
+
+---
+
+**基本写法：Task.Run 带返回值**
+`Task<<类型>> <变量> = Task.Run(() => <表达式>);`
+```csharp
+// 在线程池上运行带返回值的委托
+Task<int> task = Task.Run(() => 42 + 100);
+```
+
+---
+
+**基本写法：Task.FromResult 同步结果**
+`Task<<类型>> <变量> = Task.FromResult(<值>);`
+```csharp
+// 创建已完成的 Task
+Task<int> completed = Task.FromResult(42);
+```
+
+---
+
+**基本写法：Task.CompletedTask**
+`Task <变量> = Task.CompletedTask;`
+```csharp
+// 获取已完成的 Task
+return Task.CompletedTask;
+```
+
+---
+
+**基本写法：Task.WhenAll 等待全部**
+`await Task.WhenAll(<任务1>, <任务2>);`
+```csharp
+// 等待多个任务全部完成
+var task1 = Task.Delay(1000);
+var task2 = Task.Delay(2000);
+await Task.WhenAll(task1, task2);
+```
+
+---
+
+**基本写法：Task.WhenAll 带返回值**
+`<类型>[] <变量> = await Task.WhenAll(<任务1>, <任务2>);`
+```csharp
+// 等待多个带返回值的任务并获取结果
+var t1 = Task.FromResult(1);
+var t2 = Task.FromResult(2);
+int[] results = await Task.WhenAll(t1, t2);
+```
+
+---
+
+**基本写法：Task.WhenAny 等待任一**
+`Task <变量> = await Task.WhenAny(<任务1>, <任务2>);`
+```csharp
+// 等待任一任务完成
+var t1 = Task.Delay(1000);
+var t2 = Task.Delay(2000);
+Task first = await Task.WhenAny(t1, t2);
+```
+
+---
+
+**基本写法：Task.WhenAny 带超时**
+`Task <变量> = await Task.WhenAny(<任务>, Task.Delay(<超时>));`
+```csharp
+// 等待任务完成或超时
+var task = DoWorkAsync();
+var timeout = Task.Delay(5000);
+if (await Task.WhenAny(task, timeout) == timeout)
+{
+    Console.WriteLine("超时");
+}
+```
+
+---
+
+## CancellationToken
+
+**基本写法：CancellationTokenSource 创建**
+`using var <变量> = new CancellationTokenSource();`
+```csharp
+// 创建取消令牌源
+using var cts = new CancellationTokenSource();
+```
+
+---
+
+**基本写法：传递 CancellationToken**
+`public async Task <方法>(CancellationToken <参数>) { ... }`
+```csharp
+// 异步方法接受取消令牌
+public async Task DoWorkAsync(CancellationToken cancellationToken)
+{
+    await Task.Delay(1000, cancellationToken);
+}
+```
+
+---
+
+**基本写法：Task.Delay 带取消**
+`await Task.Delay(<毫秒>, <取消令牌>);`
+```csharp
+// 可取消的延迟
+using var cts = new CancellationTokenSource();
+await Task.Delay(1000, cts.Token);
+```
+
+---
+
+**基本写法：触发取消**
+`<取消源>.Cancel();`
+```csharp
+// 触发取消请求
+using var cts = new CancellationTokenSource();
+cts.Cancel();
+```
+
+---
+
+**基本写法：超时自动取消**
+`<取消源>.CancelAfter(<毫秒>);`
+```csharp
+// 指定时间后自动取消
+using var cts = new CancellationTokenSource();
+cts.CancelAfter(5000);
+```
+
+---
+
+**基本写法：检查取消请求**
+`<取消令牌>.ThrowIfCancellationRequested();`
+```csharp
+// 主动检查并抛出取消异常
+cancellationToken.ThrowIfCancellationRequested();
+```
+
+---
+
+**基本写法：循环中检查取消**
+`for (...) { <取消令牌>.ThrowIfCancellationRequested(); ... }`
+```csharp
+// 在循环中检查取消请求
+for (int i = 0; i < 1000; i++)
+{
+    cancellationToken.ThrowIfCancellationRequested();
+    await Task.Delay(10, cancellationToken);
+}
+```
+
+---
+
+## IAsyncEnumerable
+
+**基本写法：异步迭代器声明**
+`public async IAsyncEnumerable<<类型>> <方法>() { ... }`
+```csharp
+// 声明异步流方法
+public async IAsyncEnumerable<int> GenerateAsync()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        await Task.Delay(100);
+        yield return i;
+    }
+}
+```
+
+---
+
+**基本写法：异步迭代器带取消**
+`public async IAsyncEnumerable<<类型>> <方法>(CancellationToken <参数>) { ... }`
+```csharp
+// 带取消令牌的异步流
+public async IAsyncEnumerable<int> GenerateAsync(
+    [EnumeratorCancellation] CancellationToken cancellationToken)
+{
+    for (int i = 0; i < 5; i++)
+    {
+        await Task.Delay(100, cancellationToken);
+        yield return i;
+    }
+}
+```
+
+---
+
+**基本写法：await foreach 消费**
+`await foreach (var <变量> in <异步流>)`
+```csharp
+// 异步遍历异步流
+await foreach (var item in GenerateAsync())
+{
+    Console.WriteLine(item);
+}
+```
+
+---
+
+**基本写法：await foreach 带取消**
+`await foreach (var <变量> in <异步流>.WithCancellation(<令牌>))`
+```csharp
+// 带取消令牌的异步遍历
+using var cts = new CancellationTokenSource();
+await foreach (var item in GenerateAsync().WithCancellation(cts.Token))
+{
+    Console.WriteLine(item);
+}
+```
+
+---
+
+## ConfigureAwait
+
+**基本写法：ConfigureAwait(false)**
+`await <任务>.ConfigureAwait(false);`
+```csharp
+// 库代码中避免捕获同步上下文
+await Task.Delay(1000).ConfigureAwait(false);
+```
+
+---
+
+**基本写法：ConfigureAwait(true)**
+`await <任务>.ConfigureAwait(true);`
+```csharp
+// 捕获同步上下文（UI 应用默认行为）
+await Task.Delay(1000).ConfigureAwait(true);
+```
+
+---
+
+## 异步流操作
+
+**基本写法：异步流 LINQ**
+`await foreach (var <变量> in <异步流>.Where(<谓词>))`
+```csharp
+// 对异步流应用 LINQ 操作
+await foreach (var item in GenerateAsync().Where(x => x > 2))
+{
+    Console.WriteLine(item);
+}
+```
+
+---
+
+**基本写法：ToListAsync 异步收集**
+`List<<类型>> <变量> = await <异步流>.ToListAsync();`
+```csharp
+// 将异步流收集为列表
+List<int> list = await GenerateAsync().ToListAsync();
+```
+
+---
+
+## Channel 异步通信
+
+**基本写法：Channel 创建**
+`var <变量> = Channel.CreateUnbounded<<类型>>();`
+```csharp
+// 创建无界通道
+var channel = Channel.CreateUnbounded<int>();
+```
+
+---
+
+**基本写法：Channel 有界创建**
+`var <变量> = Channel.CreateBounded<<类型>>(<容量>);`
+```csharp
+// 创建有界通道
+var channel = Channel.CreateBounded<int>(100);
+```
+
+---
+
+**基本写法：写入 Channel**
+`await <通道>.Writer.WriteAsync(<值>);`
+```csharp
+// 异步写入通道
+await channel.Writer.WriteAsync(42);
+```
+
+---
+
+**基本写法：读取 Channel**
+`<类型> <变量> = await <通道>.Reader.ReadAsync();`
+```csharp
+// 异步读取通道
+int value = await channel.Reader.ReadAsync();
+```
+
+---
+
+**基本写法：完成写入**
+`<通道>.Writer.Complete();`
+```csharp
+// 标记通道写入完成
+channel.Writer.Complete();
+```
+
+---
+
+**基本写法：await foreach 消费 Channel**
+`await foreach (var <变量> in <通道>.Reader.ReadAllAsync())`
+```csharp
+// 异步遍历通道所有数据
+await foreach (var item in channel.Reader.ReadAllAsync())
+{
+    Console.WriteLine(item);
+}
+```
+
+---
+
+## Parallel 并行
+
+**基本写法：Parallel.ForEach**
+`Parallel.ForEach(<集合>, <动作>);`
+```csharp
+// 并行遍历集合
+var items = Enumerable.Range(0, 100);
+Parallel.ForEach(items, item =>
+{
+    Console.WriteLine($"处理: {item}");
+});
+```
+
+---
+
+**基本写法：Parallel.For**
+`Parallel.For(<起始>, <结束>, <动作>);`
+```csharp
+// 并行执行循环
+Parallel.For(0, 100, i =>
+{
+    Console.WriteLine($"索引: {i}");
+});
+```
+
+---
+
+**基本写法：ParallelOptions 带取消**
+`Parallel.ForEach(<集合>, new ParallelOptions { CancellationToken = <令牌> }, <动作>);`
+```csharp
+// 并行遍历带取消支持
+using var cts = new CancellationTokenSource();
+Parallel.ForEach(items, new ParallelOptions
+{
+    CancellationToken = cts.Token,
+    MaxDegreeOfParallelism = 4
+}, item => Process(item));
+```
+
+---
+
+## TaskCompletionSource
+
+**基本写法：TaskCompletionSource 创建**
+`var <变量> = new TaskCompletionSource<<类型>>();`
+```csharp
+// 创建可手动控制的 Task 源
+var tcs = new TaskCompletionSource<int>();
+```
+
+---
+
+**基本写法：SetResult 完成任务**
+`<源>.SetResult(<值>);`
+```csharp
+// 手动完成 Task
+var tcs = new TaskCompletionSource<int>();
+tcs.SetResult(42);
+```
+
+---
+
+**基本写法：SetException 异常完成**
+`<源>.SetException(<异常>);`
+```csharp
+// 手动让 Task 失败
+var tcs = new TaskCompletionSource<int>();
+tcs.SetException(new InvalidOperationException("失败"));
+```
+
+---
+
+**基本写法：await TaskCompletionSource**
+`<类型> <变量> = await <源>.Task;`
+```csharp
+// 等待手动控制的 Task
+var tcs = new TaskCompletionSource<int>();
+int result = await tcs.Task;
+```
+
+---
+
+## 异步锁与并发
+
+**基本写法：SemaphoreSlim 异步锁**
+`await <信号量>.WaitAsync();`
+```csharp
+// 异步等待信号量
+var semaphore = new SemaphoreSlim(1, 1);
+await semaphore.WaitAsync();
+try
+{
+    // 临界区
+}
+finally
+{
+    semaphore.Release();
+}
+```
+
+---
+
+**基本写法：SemaphoreSlim 释放**
+`<信号量>.Release();`
+```csharp
+// 释放信号量
+semaphore.Release();
+```
+
+---
+
+**基本写法：AsyncLock 模式**
+`public class <类名> { public async Task<<锁句柄>> LockAsync() { ... } }`
+```csharp
+// 自定义异步锁模式
+public class AsyncLock
+{
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+    public async Task<IDisposable> LockAsync()
+    {
+        await _semaphore.WaitAsync();
+        return new Releaser(_semaphore);
+    }
+    private class Releaser : IDisposable
+    {
+        private readonly SemaphoreSlim _sem;
+        public Releaser(SemaphoreSlim sem) => _sem = sem;
+        public void Dispose() => _sem.Release();
+    }
+}
+```
+
+---
+
+## 异步异常处理
+
+**基本写法：try-catch 异步异常**
+`try { await <任务>; } catch (<异常类型> <变量>) { ... }`
+```csharp
+// 捕获异步方法抛出的异常
+try
+{
+    await DoWorkAsync();
+}
+catch (OperationCanceledException ex)
+{
+    Console.WriteLine($"已取消: {ex.Message}");
+}
+```
+
+---
+
+**基本写法：AggregateException 多任务异常**
+`catch (AggregateException <变量>)`
+```csharp
+// 捕获多个任务的聚合异常
+try
+{
+    var tasks = new[] { Task.Run(() => throw new Exception("错误1")) };
+    Task.WaitAll(tasks);
+}
+catch (AggregateException ex)
+{
+    foreach (var inner in ex.InnerExceptions)
+    {
+        Console.WriteLine(inner.Message);
+    }
+}
+```
+
+---
+
+**基本写法：WhenAll 异常处理**
+`try { await Task.WhenAll(<任务1>, <任务2>); } catch (<异常>) { ... }`
+```csharp
+// WhenAll 抛出第一个异常
+try
+{
+    await Task.WhenAll(FailAsync(), FailAsync());
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"捕获: {ex.Message}");
+}
+```

@@ -91,7 +91,7 @@ exercises:
       function stripEmoji(text) {
         return text.replace(/\p{Emoji}/gu, '');
       }
-      stripEmoji('Hello 😀🇨🇳 world');
+      stripEmoji('Hello \u{1F600}\u{1F1E8}\u{1F1F3} world');
     fixedCode: |
       function stripEmoji(text) {
         // Emoji 序列由多个码点组成（ZWJ 序列、旗帜组合），必须使用 u 标志并匹配 Emoji 字符类
@@ -373,50 +373,81 @@ Unicode 字符属性分为三大类：
 
 通用类别是 Unicode 字符的基本功能分类，每个字符属于且仅属于一个通用类别。其层次结构为：
 
-```
-C（Other）
-├── Cc（Control，控制字符）
-├── Cf（Format，格式字符）
-├── Cn（Unassigned，未分配）
-├── Co（Private_Use，私用区）
-└── Cs（Surrogate，代理区）
-
-L（Letter，字母）
-├── Lu（Uppercase_Letter，大写字母）
-├── Ll（Lowercase_Letter，小写字母）
-├── Lt（Titlecase_Letter，首字母大写）
-├── Lm（Modifier_Letter，修饰字母）
-└── Lo（Other_Letter，其他字母，如中文、日文、韩文）
-
-M（Mark，标记）
-├── Mn（Nonspacing_Mark，非间距标记，如变音符）
-├── Mc（Spacing_Mark，间距标记）
-└── Me（Enclosing_Mark，环绕标记）
-
-N（Number，数字）
-├── Nd（Decimal_Number，十进制数）
-├── Nl（Letter_Number，字母数字，如罗马数字）
-└── No（Other_Number，其他数字，如分数）
-
-P（Punctuation，标点）
-├── Pc（Connector_Punctuation，连接标点，如下划线）
-├── Pd（Dash_Punctuation，连字符）
-├── Ps（Open_Punctuation，开始标点）
-├── Pe（Close_Punctuation，结束标点）
-├── Pi（Initial_Punctuation，起始引号）
-├── Pf（Final_Punctuation，结束引号）
-└── Po（Other_Punctuation，其他标点）
-
-S（Symbol，符号）
-├── Sm（Math_Symbol，数学符号）
-├── Sc（Currency_Symbol，货币符号）
-├── Sk（Modifier_Symbol，修饰符号）
-└── So（Other_Symbol，其他符号）
-
-Z（Separator，分隔符）
-├── Zs（Space_Separator，空格分隔符）
-├── Zl（Line_Separator，行分隔符）
-└── Zp（Paragraph_Separator，段落分隔符）
+```mermaid
+flowchart TD
+    T0["C（Other）"]
+    T1["Cc（Control，控制字符）"]
+    T2["Cf（Format，格式字符）"]
+    T3["Cn（Unassigned，未分配）"]
+    T4["Co（Private_Use，私用区）"]
+    T5["Cs（Surrogate，代理区）"]
+    T6["L（Letter，字母）"]
+    T7["Lu（Uppercase_Letter，大写字母）"]
+    T8["Ll（Lowercase_Letter，小写字母）"]
+    T9["Lt（Titlecase_Letter，首字母大写）"]
+    T10["Lm（Modifier_Letter，修饰字母）"]
+    T11["Lo（Other_Letter，其他字母，如中文、日文、韩文）"]
+    T12["M（Mark，标记）"]
+    T13["Mn（Nonspacing_Mark，非间距标记，如变音符）"]
+    T14["Mc（Spacing_Mark，间距标记）"]
+    T15["Me（Enclosing_Mark，环绕标记）"]
+    T16["N（Number，数字）"]
+    T17["Nd（Decimal_Number，十进制数）"]
+    T18["Nl（Letter_Number，字母数字，如罗马数字）"]
+    T19["No（Other_Number，其他数字，如分数）"]
+    T20["P（Punctuation，标点）"]
+    T21["Pc（Connector_Punctuation，连接标点，如下划线）"]
+    T22["Pd（Dash_Punctuation，连字符）"]
+    T23["Ps（Open_Punctuation，开始标点）"]
+    T24["Pe（Close_Punctuation，结束标点）"]
+    T25["Pi（Initial_Punctuation，起始引号）"]
+    T26["Pf（Final_Punctuation，结束引号）"]
+    T27["Po（Other_Punctuation，其他标点）"]
+    T28["S（Symbol，符号）"]
+    T29["Sm（Math_Symbol，数学符号）"]
+    T30["Sc（Currency_Symbol，货币符号）"]
+    T31["Sk（Modifier_Symbol，修饰符号）"]
+    T32["So（Other_Symbol，其他符号）"]
+    T33["Z（Separator，分隔符）"]
+    T34["Zs（Space_Separator，空格分隔符）"]
+    T35["Zl（Line_Separator，行分隔符）"]
+    T36["Zp（Paragraph_Separator，段落分隔符）"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
+    T6 --> T9
+    T6 --> T10
+    T6 --> T11
+    T11 --> T12
+    T12 --> T13
+    T12 --> T14
+    T12 --> T15
+    T15 --> T16
+    T16 --> T17
+    T16 --> T18
+    T16 --> T19
+    T19 --> T20
+    T20 --> T21
+    T20 --> T22
+    T20 --> T23
+    T20 --> T24
+    T20 --> T25
+    T20 --> T26
+    T20 --> T27
+    T27 --> T28
+    T28 --> T29
+    T28 --> T30
+    T28 --> T31
+    T28 --> T32
+    T32 --> T33
+    T33 --> T34
+    T33 --> T35
+    T33 --> T36
 ```
 
 #### 3.3.2 脚本属性（Script）
@@ -444,9 +475,9 @@ Z（Separator，分隔符）
 
 | 属性 | 含义 | 覆盖示例 |
 | ---- | ---- | -------- |
-| `Emoji` | Emoji 相关字符 | 😀, 🎉, 0-9（基础数字） |
-| `Emoji_Presentation` | 默认以 Emoji 形式显示 | 😀, 🎉 |
-| `Extended_Pictographic` | 扩展图形字符（含所有 Emoji） | 😀, 🎉, ⌚ |
+| `Emoji` | Emoji 相关字符 | 笑脸, 庆祝, 0-9（基础数字） |
+| `Emoji_Presentation` | 默认以 Emoji 形式显示 | 笑脸, 庆祝 |
+| `Extended_Pictographic` | 扩展图形字符（含所有 Emoji） | 笑脸, 庆祝, ⌚ |
 | `White_Space` | 空白字符 | 空格, 制表符, 换行 |
 | `Hex_Digit` | 十六进制数字 | 0-9, A-F, a-f |
 | `ASCII` | ASCII 字符 | U+0000 至 U+007F |
@@ -550,8 +581,8 @@ console.log(hanRegex.test('カ'));      // false（片假名属 Katakana 脚本�
 
 // 匹配 Emoji
 const emojiRegex = /\p{Emoji}/u;
-console.log(emojiRegex.test('😀'));    // true
-console.log(emojiRegex.test('🎉'));    // true
+console.log(emojiRegex.test('\u{1F600}'));    // true
+console.log(emojiRegex.test('\u{1F389}'));    // true
 console.log(emojiRegex.test('A'));     // false
 ```
 
@@ -612,10 +643,10 @@ console.log(result);
  * @returns {string} 移除 Emoji 后的文本
  */
 function stripEmojiProduction(text) {
-  // 1. 匹配 ZWJ 序列：Emoji + ZWJ + Emoji + ...（如 👨‍👩‍👧‍👦）
-  // 2. 匹配旗帜组合：两个 Regional Indicator 字符（如 🇨🇳）
-  // 3. 匹配带修饰符的 Emoji：Emoji + Emoji_Modifier（如 👦🏿）
-  // 4. 匹配带变体选择符的 Emoji：Emoji + U+FE0F（如 ☕️）
+  // 1. 匹配 ZWJ 序列：Emoji + ZWJ + Emoji + ...（如 男性‍女性‍女孩‍男孩）
+  // 2. 匹配旗帜组合：两个 Regional Indicator 字符（如中国国旗）
+  // 3. 匹配带修饰符的 Emoji：Emoji + Emoji_Modifier（如 男孩深肤色）
+  // 4. 匹配带变体选择符的 Emoji：Emoji + U+FE0F（如 咖啡）
   // 5. 匹配单码点 Emoji
   const emojiSequenceRegex =
     /\p{Extended_Pictographic}(?:\u200d\p{Extended_Pictographic})*[\u{FE00}-\u{FE0F}\u{E0100}-\u{E01EF}]?|[\u{1F1E6}-\u{1F1FF}]{2}|\p{Extended_Pictographic}[\u{1F3FB}-\u{1F3FF}]?[\u{FE00}-\u{FE0F}]?/gu;
@@ -624,10 +655,10 @@ function stripEmojiProduction(text) {
 }
 
 // 测试用例
-console.log(stripEmojiProduction('Hello 😀 world'));        // 'Hello  world'
-console.log(stripEmojiProduction('Family 👨‍👩‍👧‍👦 emoji')); // 'Family  emoji'
-console.log(stripEmojiProduction('China 🇨🇳 flag'));        // 'China  flag'
-console.log(stripEmojiProduction('Coffee ☕️ break'));       // 'Coffee  break'
+console.log(stripEmojiProduction('Hello \u{1F600} world'));        // 'Hello  world'
+console.log(stripEmojiProduction('Family \u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466} emoji')); // 'Family  emoji'
+console.log(stripEmojiProduction('China \u{1F1E8}\u{1F1F3} flag'));        // 'China  flag'
+console.log(stripEmojiProduction('Coffee \u2615\u{FE0F} break'));       // 'Coffee  break'
 ```
 
 ### 5.4 国际化密码校验器
@@ -723,7 +754,7 @@ console.log(validateUsername('John_Doe'));         // true
 console.log(validateUsername('やまだたろう'));     // true
 console.log(validateUsername('محمد'));              // true
 console.log(validateUsername('Иван'));              // true
-console.log(validateUsername('😀username'));        // false（Emoji 不在白名单）
+console.log(validateUsername('\u{1F600}username'));        // false（Emoji 不在白名单）
 ```
 
 ### 5.6 文本规范化与字符分类
@@ -779,7 +810,7 @@ function analyzeText(text) {
   return stats;
 }
 
-const sampleText = 'Hello 世界！123 😀 café';
+const sampleText = 'Hello 世界！123 \u{1F600} café';
 console.log(analyzeText(sampleText));
 // 输出示例：
 // {
@@ -791,7 +822,7 @@ console.log(analyzeText(sampleText));
 //   whitespace: 3,
 //   marks: 0,
 //   other: 0,
-//   emoji: 1,          // 😀
+//   emoji: 1,          // 笑脸
 //   cjk: 2             // 世,界
 // }
 ```
@@ -883,8 +914,8 @@ console.log('I have 5 apples'.match(wrongEmojiRegex));
 
 // 正确：使用 Extended_Pictographic 匹配真正的 Emoji
 const correctEmojiRegex = /\p{Extended_Pictographic}/gu;
-console.log('I have 5 apples 😀'.match(correctEmojiRegex));
-// ['😀']
+console.log('I have 5 apples \u{1F600}'.match(correctEmojiRegex));
+// ['笑脸']
 ```
 
 **原因**：Unicode 标准中，`Emoji` 属性包含所有可能作为 Emoji 基础的字符，包括 0-9（这些字符在 Emoji 表情选择符下可显示为 Emoji 数字键盘）。`Extended_Pictographic` 才是严格意义的图形 Emoji 属性。
@@ -1119,7 +1150,7 @@ for (const match of streamMatch(text, regex)) {
 const Benchmark = require('benchmark');
 const suite = new Benchmark.Suite();
 
-const text = 'Hello 世界 123 café 😀'.repeat(1000);
+const text = 'Hello 世界 123 café \u{1F600}'.repeat(1000);
 
 suite
   .add('ASCII \\w+', () => {
@@ -1184,9 +1215,9 @@ VS Code 的 TextMate 语法引擎使用 Unicode 属性转义：
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 填空题
+### 填空题知识点讲解
 
 **习题 1**（Remember，难度 1）：Unicode 属性转义语法使用小写 `p` 与大写 `P` 分别表示正向与否定匹配，二者必须配合 ______ 标志才能生效。
 
@@ -1194,7 +1225,7 @@ VS Code 的 TextMate 语法引擎使用 Unicode 属性转义：
 
 **习题 3**（Understand，难度 3）：ES2018 之前的 JavaScript 正则中，`\w` 等价于字符类 ______，因此无法匹配中文、阿拉伯文等非 ASCII 字母。
 
-### 10.2 选择题
+### 选择题知识点讲解
 
 **习题 4**（Understand，难度 3）：下列哪个正则能够匹配中文汉字「你好」，且不会误匹配日文片假名「カ」？
 - A. `/\p{L}/u`
@@ -1222,7 +1253,7 @@ VS Code 的 TextMate 语法引擎使用 Unicode 属性转义：
 function stripEmoji(text) {
   return text.replace(/\p{Emoji}/gu, '');
 }
-stripEmoji('Hello 😀🇨🇳 world');
+stripEmoji('Hello \u{1F600}\u{1F1E8}\u{1F1F3} world');
 ```
 
 **习题 8**（Evaluate，难度 4）：以下密码校验要求「至少包含一个字母和一个数字」，但在某些欧洲用户输入时被错误拒绝，请修复。
@@ -1483,7 +1514,7 @@ console.log(validator.validate('张三'));              // { valid: true, reason
 console.log(validator.validate('John_Doe'));         // { valid: true, reason: 'OK' }
 console.log(validator.validate('やまだたろう'));     // { valid: true, reason: 'OK' }
 console.log(validator.validate('محمد'));              // { valid: true, reason: 'OK' }
-console.log(validator.validate('username😀'));        // { valid: false, reason: 'FORBIDDEN_CHARACTER' }
+console.log(validator.validate('username\u{1F600}'));        // { valid: false, reason: 'FORBIDDEN_CHARACTER' }
 console.log(validator.validate('user\u200ename'));    // { valid: false, reason: 'FORBIDDEN_CHARACTER' }（零宽字符）
 ```
 
@@ -1517,7 +1548,7 @@ function runUnicodePropertyEscapesTests() {
   assert.strictEqual(/\P{L}/u.test('a'), false);
 
   // Emoji 测试
-  assert.strictEqual(/\p{Extended_Pictographic}/u.test('😀'), true);
+  assert.strictEqual(/\p{Extended_Pictographic}/u.test('\u{1F600}'), true);
   assert.strictEqual(/\p{Extended_Pictographic}/u.test('a'), false);
 
   // 多语言匹配
@@ -1613,7 +1644,7 @@ runUnicodePropertyEscapesTests();
 
 ### Q2：`\p{Emoji}` 为什么会匹配数字？
 
-**A**：Unicode 标准中，`Emoji` 属性包含所有「可能作为 Emoji 基础字符」的码点。数字 0-9 在变体选择符 U+FE0F 下可显示为 Emoji 数字键盘样式（如 `1️⃣`），因此被赋予 `Emoji` 属性。要严格匹配图形 Emoji，应使用 `Extended_Pictographic` 属性。
+**A**：Unicode 标准中，`Emoji` 属性包含所有「可能作为 Emoji 基础字符」的码点。数字 0-9 在变体选择符 U+FE0F 下可显示为 Emoji 数字键盘样式（如 `数字键1`），因此被赋予 `Emoji` 属性。要严格匹配图形 Emoji，应使用 `Extended_Pictographic` 属性。
 
 ### Q3：如何处理 Unicode 版本升级？
 

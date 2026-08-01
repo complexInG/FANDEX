@@ -1030,18 +1030,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 ### 1. 项目日志架构
 
-```text
-Application Code
-       │
-       ▼
-   slog.Logger  ──→  slog.Handler (JSON)
-       │                    │
-       │                    ├──→ stdout (容器收集)
-       │                    ├──→ file (本地调试)
-       │                    └──→ Kafka (日志聚合)
-       │
-       ▼
-  OpenTelemetry  ──→  Jaeger / Tempo
+```mermaid
+flowchart TD
+    App[Application Code] --> Logger[slog.Logger]
+    Logger --> Handler[slog.Handler JSON]
+    Handler --> Stdout[stdout 容器收集]
+    Handler --> File[file 本地调试]
+    Handler --> Kafka[Kafka 日志聚合]
+    App --> OT[OpenTelemetry]
+    OT --> JT[Jaeger / Tempo]
 ```
 
 ### 2. 配置管理
@@ -1369,9 +1366,9 @@ Uber 工程团队分享的 zap 使用经验：
 
 ---
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
-### 习题 1：基础概念（难度：易）
+## 知识讲解与要点分析（原习题 1：基础概念（难度：易））
 
 **题目**：描述 `slog.Logger` 与 `slog.Handler` 的职责划分，并说明为何采用这种分层设计。
 
@@ -1392,7 +1389,7 @@ Uber 工程团队分享的 zap 使用经验：
 2. **可组合**：不同 Handler 可与同一 Logger 配合（如 JSON/Text/自定义）
 3. **可互操作**：第三方库（zap/zerolog）可实现 Handler 接口，与 slog 生态互通
 
-### 习题 2：性能分析（难度：中）
+## 知识讲解与要点分析（原习题 2：性能分析（难度：中））
 
 **题目**：以下两段代码，哪段性能更高？为什么？
 
@@ -1423,7 +1420,7 @@ if slog.Default().Enabled(ctx, slog.LevelDebug) {
 }
 ```
 
-### 习题 3：自定义 Handler（难度：中）
+## 知识讲解与要点分析（原习题 3：自定义 Handler（难度：中））
 
 **题目**：实现一个 `slog.Handler`，将所有 ERROR 级别日志同时输出到 stdout 与一个错误告警通道（channel）。
 
@@ -1482,7 +1479,7 @@ func (h *AlertHandler) WithGroup(name string) slog.Handler {
 }
 ```
 
-### 习题 4：日志采样设计（难度：难）
+## 知识讲解与要点分析（原习题 4：日志采样设计（难度：难））
 
 **题目**：设计一个令牌桶采样 Handler，要求：
 - 每秒最多输出 100 条 INFO 级别日志
@@ -1572,7 +1569,7 @@ func (h *TokenBucketHandler) WithGroup(name string) slog.Handler {
 }
 ```
 
-### 习题 5：Context 集成（难度：中）
+## 知识讲解与要点分析（原习题 5：Context 集成（难度：中））
 
 **题目**：实现一个 `WithLogger(ctx, logger)` 与 `FromContext(ctx)` 函数，使 logger 在 HTTP 请求处理链中自动传播。
 
@@ -1620,7 +1617,7 @@ func GetUser(ctx context.Context, id string) (*User, error) {
 }
 ```
 
-### 习题 6：综合设计（难度：难）
+## 知识讲解与要点分析（原习题 6：综合设计（难度：难））
 
 **题目**：为微服务架构设计统一日志规范，要求：
 1. 字段命名规范

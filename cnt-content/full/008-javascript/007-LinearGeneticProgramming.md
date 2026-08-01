@@ -751,17 +751,17 @@ ECMAScript 规范第 14.6.1 节定义了尾位置(Tail Position):
 
 ```javascript
 // 严格的尾位置
-function f1(x) { return g(x); }            // ✓ 尾调用
-function f2(x) { return g(x) ?? h(x); }    // ✗ 非尾调用
-function f3(x) { return g(x) || h(x); }    // ✗ 非尾调用
-function f4(x) { return cond ? g(x) : h(x); } // ✓ 尾调用
+function f1(x) { return g(x); }            // √ 尾调用
+function f2(x) { return g(x) ?? h(x); }    // × 非尾调用
+function f3(x) { return g(x) || h(x); }    // × 非尾调用
+function f4(x) { return cond ? g(x) : h(x); } // √ 尾调用
 function f5(x) {
   try { return g(x); }
-  finally { cleanup(); }                   // ✗ 非尾调用(finally 需执行)
+  finally { cleanup(); }                   // × 非尾调用(finally 需执行)
 }
 function f6(x) {
-  if (cond) return g(x);                   // ✓ 尾调用
-  return h(x);                             // ✓ 尾调用
+  if (cond) return g(x);                   // √ 尾调用
+  return h(x);                             // √ 尾调用
 }
 ```
 
@@ -865,17 +865,17 @@ factorial(100000); // Safari 不溢出,V8 仍溢出
 'use strict';
 
 function f1() {
-  return g(); // ✓ PTC
+  return g(); // √ PTC
 }
 
 function f2() {
   arguments; // 访问 arguments
-  return g(); // ✗ 非 PTC
+  return g(); // × 非 PTC
 }
 
 function f3() {
   try {
-    return g(); // ✗ 非 PTC(try 块)
+    return g(); // × 非 PTC(try 块)
   } catch (e) {
     return h();
   }
@@ -883,7 +883,7 @@ function f3() {
 
 function f4() {
   this; // 访问 this
-  return g(); // ✗ 非 PTC
+  return g(); // × 非 PTC
 }
 ```
 
@@ -2290,7 +2290,7 @@ async/await 是 CPS 的语法糖,可读性远高于裸 CPS。
 
 ---
 
-## 17. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 17.1 基础题
 
@@ -2708,39 +2708,19 @@ function f(state) {
 
 ## 附录 B:TCO 判定流程
 
-```
-function f(args) {
-  ... 代码 ...
-  return g(otherArgs);
-  ▲
-  │
-  是 return 语句吗? ──── No ──► 非尾调用
-  │
-  Yes
-  │
-  ▼
-  return 后只有 g(otherArgs) 吗? ──── No ──► 非尾调用
-  (无 + 1, * n, ||, &&, ??, await, yield)
-  │
-  Yes
-  │
-  ▼
-  是否在 try/catch/finally 中? ──── Yes ──► 非尾调用
-  │
-  No
-  │
-  ▼
-  是否访问了 arguments 或 this? ──── Yes ──► 非尾调用
-  │
-  No
-  │
-  ▼
-  是否在 strict mode? ──── No ──► 非尾调用
-  │
-  Yes
-  │
-  ▼
-  是尾调用,引擎应优化(TCO)
+```mermaid
+flowchart TD
+    A[return g(otherArgs)] --> B{是 return 语句吗?}
+    B -- No --> N1[非尾调用]
+    B -- Yes --> C{return 后只有函数调用吗?<br/>（无 +1、*n、||、&&、??、await、yield）}
+    C -- No --> N2[非尾调用]
+    C -- Yes --> D{是否在 try/catch/finally 中?}
+    D -- Yes --> N3[非尾调用]
+    D -- No --> E{是否访问 arguments 或 this?}
+    E -- Yes --> N4[非尾调用]
+    E -- No --> F{是否处于 strict mode?}
+    F -- No --> N5[非尾调用]
+    F -- Yes --> G[是尾调用，引擎应优化（TCO）]
 ```
 
 ---

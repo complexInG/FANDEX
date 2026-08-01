@@ -14,11 +14,111 @@ related:
   - 'data-analysis/Matplotlib-折线图-柱状图-散点图与子图'
   - 'data-analysis/Seaborn-统计可视化-热力图与分布图'
 prerequisites: []
+updated: '2026-08-01'
 ---
 
-## 1. Pandas 简介
+## 1. 学习目标（Bloom 分类）
 
-### 1.1 为什么需要 Pandas
+本节按照布鲁姆教育目标分类学组织学习路径。本文主题为《Pandas -- DataFrame/Series、数据清洗、合并重塑》，属于 数据分析 模块，读者可以根据自身阶段选择阅读深度。
+
+记忆层面：能够准确复述本文的核心概念、术语与基本语法或操作步骤，并能够在提问或检索时快速定位对应知识点。能够说出 数据分析 的核心概念、常用命令与流程。
+
+理解层面：能够用自己的语言解释核心原理与工作机制，说明概念之间的因果关系，而不是机械记忆结论。能够解释 数据分析 的工作原理与设计动机。
+
+应用层面：能够在真实项目或练习场景中运用本文知识解决具体问题，写出正确且可维护的实现。能够独立完成 数据分析 的标准操作。
+
+分析层面：能够拆解复杂问题，比较本文主题与相邻概念的异同，识别边界条件与例外情况。能够分析 数据分析 使用中的异常与边界。
+
+评价层面：能够根据约束条件（性能、可读性、安全、成本）评价不同方案的优劣，做出有依据的技术决策。能够评价 数据分析 相关工具与方案。
+
+创造层面：能够把本文知识与其他模块知识组合，设计出新的解决方案或可复用的工程模式。能够把 数据分析 融入团队工作流。
+
+通过本节学习，读者应当能够把《Pandas -- DataFrame/Series、数据清洗、合并重塑》纳入自己的知识网络，并与 数据分析 模块的其他主题（数据清洗、可视化、统计、报告）建立关联。
+
+## 2. 历史动机与发展脉络
+
+《Pandas -- DataFrame/Series、数据清洗、合并重塑》是 数据分析 领域的重要主题。要真正理解它，需要先了解它解决的问题与演进过程。
+
+数据分析是从数据中提取决策信息的工程过程：定义问题 -> 采集 -> 清洗 -> 探索 -> 建模 -> 可视化 -> 报告。
+工具链：Python（Pandas/NumPy）、SQL、Jupyter、BI（Tableau/PowerBI）；Excel 仍是轻量入口。
+方法：描述性分析（发生了什么）、诊断（为什么）、预测（会怎样）、规范（该怎么办）。
+
+回到本文主题：Pandas -- DataFrame/Series、数据清洗、合并重塑 的提出与成熟，正是上述技术背景下的必然产物。早期实现往往以简单可用为目标，随着工程规模扩大，社区逐渐沉淀出标准做法与最佳实践；理解这一脉络，可以帮助读者判断“为什么文档中的推荐写法是现在这个样子”，也能在遇到历史遗留代码时准确识别其设计年代与取舍。
+
+
+## 3. 形式化定义与核心概念精讲
+
+本节把《Pandas -- DataFrame/Series、数据清洗、合并重塑》涉及的核心概念以“定义 + 讲解”的形式展开。读者应把定义当作工具，把讲解当作理解路径；两者结合才能形成可迁移的知识。
+
+数据形态：表格（结构化）、序列（时间）、文本、图像；分析前确定数据类型（数值/类别/顺序）。
+清洗：缺失值（删除/填充）、异常值（IQR/z-score）、重复、类型转换；清洗决定结果可信度。
+探索性分析（EDA）：分布（直方图）、集中趋势（均值/中位数）、离散（方差/IQR）、相关性。
+
+### 3.1 原文章节逐一精讲
+
+原文档把主题拆分为 41 个小节，下面按顺序给出每一节的导读讲解，随后保留原文细节供精读。
+
+#### 原文精读（完整保留）
+
+# Pandas DataFrame
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
+
+#### 基本属性
+
+**基本写法：访问 DataFrame 属性**
+`<df>.shape` | `<df>.columns` | `<df>.index` | `<df>.dtypes`
+
+```python
+# DataFrame 基本属性
+df = pd.DataFrame({"a": [1, 2], "b": ["x", "y"]})
+print(df.shape)    # (2, 2)
+print(df.columns)  # Index(['a', 'b'])
+print(df.index)    # RangeIndex(0, 2)
+print(df.dtypes)   # a:int64, b:object
+print(df.size)     # 4
+```
+
+---
+
+#### apply 应用函数
+
+**基本写法：沿轴应用函数**
+`<df>.apply(<函数>[, axis=<轴>])`
+
+```python
+# DataFrame 应用函数
+df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+print(df.apply(sum))                    # 按列求和
+print(df.apply(sum, axis=1))            # 按行求和
+print(df["a"].apply(lambda x: x ** 2))  # 单列应用
+print(df.applymap(lambda x: x * 2))     # 每个元素应用
+```
+
+---
+
+#### 排序
+
+**基本写法：DataFrame 排序**
+`<df>.sort_values(<列>[, ascending=<布尔>])`
+`<df>.sort_index()`
+
+```python
+# DataFrame 排序
+df = pd.DataFrame({"a": [3, 1, 2], "b": [6, 4, 5]})
+print(df.sort_values("a"))                  # 按 a 升序
+print(df.sort_values("a", ascending=False)) # 降序
+print(df.sort_values(["a", "b"]))           # 多列排序
+print(df.sort_index(ascending=False))       # 按索引排序
+```
+
+---
+
+#### 1. Pandas 简介
+
+##### 1.1 为什么需要 Pandas
 
 如果说 NumPy 解决的是"数值计算"问题，那么 Pandas 解决的是"表格数据处理"问题。真实世界的数据分析面对的是：
 
@@ -29,7 +129,7 @@ prerequisites: []
   NumPy 的 `ndarray` 要求所有元素同类型，无法直接处理这些问题。Pandas 在 NumPy 之上构建了 `Series` 和 `DataFrame` 两个数据结构，专门为表格数据分析设计。
   > **Pandas 与 SQL 的关系**：Pandas 的很多操作可以直接映射到 SQL 语句。理解这种映射有助于从 SQL 思维过渡到 Pandas 思维。详见 [MySQL](mysql/overview) 中的 SQL 基础。
 
-### 1.2 核心设计理念
+##### 1.2 核心设计理念
 
 Pandas 的设计灵感来自 R 语言的 data.frame，核心设计理念：
 
@@ -45,9 +145,9 @@ Pandas 的设计灵感来自 R 语言的 data.frame，核心设计理念：
 
 ---
 
-## 2. Series 基础
+#### 2. Series 基础
 
-### 2.1 创建 Series
+##### 2.1 创建 Series
 
 Series 是一维带标签的数组，由数据和索引两部分组成：
 
@@ -71,7 +171,7 @@ Series 是一维带标签的数组，由数据和索引两部分组成：
 - 从字典创建时，键成为索引，值成为数据
 - 标量创建时，所有元素值相同
 
-### 2.2 Series 属性与方法
+##### 2.2 Series 属性与方法
 
 ```python
  import pandas as pd
@@ -92,7 +192,7 @@ Series 是一维带标签的数组，由数据和索引两部分组成：
 - `dtype` 返回数据类型
 - `name` 是 Series 的名称标识，在 DataFrame 中自动成为列名
 
-### 2.3 Series 向量化运算
+##### 2.3 Series 向量化运算
 
 ```python
  import pandas as pd
@@ -112,9 +212,9 @@ Series 是一维带标签的数组，由数据和索引两部分组成：
 
 ---
 
-## 3. DataFrame 基础
+#### 3. DataFrame 基础
 
-### 3.1 创建 DataFrame
+##### 3.1 创建 DataFrame
 
 ```python
  import pandas as pd
@@ -146,7 +246,7 @@ Series 是一维带标签的数组，由数据和索引两部分组成：
 - 从字典列表创建时，每个字典代表一行，缺失键自动填 NaN
 - 从 NumPy 数组创建时，需要指定 columns 和 index
 
-### 3.2 核心属性与信息查看
+##### 3.2 核心属性与信息查看
 
 ```python
  import pandas as pd
@@ -174,7 +274,7 @@ Series 是一维带标签的数组，由数据和索引两部分组成：
 - `info()` 显示非空值数量和内存使用
 - `describe()` 默认只统计数值列，`include='all'` 包含所有列
 
-### 3.3 行列操作
+##### 3.3 行列操作
 
 ```python
  import pandas as pd
@@ -202,9 +302,9 @@ Series 是一维带标签的数组，由数据和索引两部分组成：
 
 ---
 
-## 4. 索引与数据选择
+#### 4. 索引与数据选择
 
-### 4.1 选择方法对比
+##### 4.1 选择方法对比
 
 Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分：
 
@@ -219,7 +319,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 > **为什么推荐用 `.loc` 和 `.iloc`？** `df['col']` 和 `df[condition]` 的行为不一致——前者选择列，后者选择行。这种不一致是 Pandas 设计的历史遗留问题。使用 `.loc` 和 `.iloc` 可以明确表达意图，减少歧义。
 
-### 4.2 loc 标签选择
+##### 4.2 loc 标签选择
 
 ```python
  import pandas as pd
@@ -243,7 +343,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 - `loc` 支持布尔数组作为行选择器
 - `loc[row, col]` 可以同时选择行和列
 
-### 4.3 iloc 位置选择
+##### 4.3 iloc 位置选择
 
 ```python
  import pandas as pd
@@ -265,7 +365,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 - 支持负数索引
 - 适合在不知道列名但知道位置的场景下使用
 
-### 4.4 高级筛选
+##### 4.4 高级筛选
 
 ```python
  import pandas as pd
@@ -291,9 +391,9 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 ---
 
-## 5. 数据类型与转换
+#### 5. 数据类型与转换
 
-### 5.1 Pandas dtype 体系
+##### 5.1 Pandas dtype 体系
 
 | dtype         | 说明        | 内存占用      | 示例             |
 | ------------- | ----------- | ------------- | ---------------- |
@@ -307,7 +407,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 > **为什么 `object` 类型是性能杀手？** `object` 类型存储的是 Python 对象的引用，无法利用 NumPy 的向量化运算。将 `object` 列转换为合适的类型（如 `category` 或数值类型）可以大幅提升性能和降低内存占用。
 
-### 5.2 类型转换
+##### 5.2 类型转换
 
 ```python
  import pandas as pd
@@ -334,7 +434,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 - `pd.to_datetime` 将字符串转日期，`format` 参数指定格式
 - `astype('category')` 将低基数字符串列转为分类类型，大幅减少内存占用
 
-### 5.3 类型优化实践
+##### 5.3 类型优化实践
 
 ```python
  import pandas as pd
@@ -355,13 +455,13 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
  print(f"总计: {df.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB")
 ```
 
-## **输出说明**：将 `int64` 降级为 `int8`（范围 0-100 足够），将 `object` 转为 `category`，内存占用可减少 80% 以上。在处理大数据集时，这种优化至关重要。
+#### **输出说明**：将 `int64` 降级为 `int8`（范围 0-100 足够），将 `object` 转为 `category`，内存占用可减少 80% 以上。在处理大数据集时，这种优化至关重要。
 
-## 6. 数据清洗概览
+#### 6. 数据清洗概览
 
 > 详细内容见 [data-cleaning.md](data-cleaning.md)，此处仅列出核心操作速查。
 
-### 6.1 缺失值检测与处理
+##### 6.1 缺失值检测与处理
 
 ```python
  import pandas as pd
@@ -388,7 +488,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 - `dropna(subset=...)` 只根据指定列判断是否删除
 - `method='ffill'` 用前一个有效值填充
 
-### 6.2 重复值处理
+##### 6.2 重复值处理
 
 ```python
  import pandas as pd
@@ -401,11 +501,11 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
  print(f"\n删除重复(保留最后):\n{df.drop_duplicates(subset=['email'], keep='last')}")
 ```
 
-## **输出说明**：`duplicated` 标记重复行，`drop_duplicates` 删除重复行。`subset` 指定判断重复的列，`keep` 决定保留哪一条。
+#### **输出说明**：`duplicated` 标记重复行，`drop_duplicates` 删除重复行。`subset` 指定判断重复的列，`keep` 决定保留哪一条。
 
-## 7. 分组与聚合
+#### 7. 分组与聚合
 
-### 7.1 groupby 机制
+##### 7.1 groupby 机制
 
 `groupby` 遵循 split-apply-combine 三步模式：
 
@@ -436,7 +536,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 - 选择单列后聚合返回 Series
 - `agg()` 支持对每列应用不同的聚合函数
 
-### 7.2 命名聚合与 as_index
+##### 7.2 命名聚合与 as_index
 
 ```python
  import pandas as pd
@@ -462,7 +562,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 - 命名聚合语法 `agg(name=(column, func))` 避免了多级列名
 - `as_index=False` 将分组键保留为普通列而非索引，便于后续处理
 
-### 7.3 transform 与 apply
+##### 7.3 transform 与 apply
 
 ```python
  import pandas as pd
@@ -490,9 +590,9 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 ---
 
-## 8. 合并与拼接
+#### 8. 合并与拼接
 
-### 8.1 merge 数据库风格连接
+##### 8.1 merge 数据库风格连接
 
 ```python
  import pandas as pd
@@ -524,7 +624,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 - `outer`：保留所有行，无匹配处填 NaN
   > **与 SQL 的对应关系**：`how='inner'` 对应 `INNER JOIN`，`how='left'` 对应 `LEFT JOIN`，以此类推。详见 [MySQL](mysql/overview) 中的 JOIN 语法。
 
-### 8.2 多键合并与后缀处理
+##### 8.2 多键合并与后缀处理
 
 ```python
  import pandas as pd
@@ -544,7 +644,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 **输出说明**：当两表有同名列（非合并键）时，`suffixes` 参数指定后缀以区分。
 
-### 8.3 concat 轴向拼接
+##### 8.3 concat 轴向拼接
 
 ```python
  import pandas as pd
@@ -567,9 +667,9 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 ---
 
-## 9. 重塑与透视
+#### 9. 重塑与透视
 
-### 9.1 melt 宽表转长表
+##### 9.1 melt 宽表转长表
 
 ```python
  import pandas as pd
@@ -587,7 +687,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 > **为什么 tidy data 格式重要？** Hadley Wickham 提出的 tidy data 原则：每列一个变量，每行一个观测。Seaborn 和大多数统计工具都假设数据是 tidy 格式。如果你的数据是"宽表"（每个城市一列），需要先 melt 为"长表"才能用 Seaborn 绘图。
 
-### 9.2 pivot_table 长表转宽表
+##### 9.2 pivot_table 长表转宽表
 
 ```python
  import pandas as pd
@@ -608,7 +708,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 - `aggfunc` 默认为 `mean`，可指定 `sum`、`count` 或自定义函数
 - 支持多聚合函数，结果为多级列名
 
-### 9.3 stack/unstack
+##### 9.3 stack/unstack
 
 ```python
  import pandas as pd
@@ -624,11 +724,11 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
  print(f"\nunstack(行转列):\n{unstacked}")
 ```
 
-## **输出说明**：`stack` 将列索引转为行索引（宽变长），`unstack` 将行索引转为列索引（长变宽）。它们是 `melt`/`pivot` 的索引操作版本。
+#### **输出说明**：`stack` 将列索引转为行索引（宽变长），`unstack` 将行索引转为列索引（长变宽）。它们是 `melt`/`pivot` 的索引操作版本。
 
-## 10. 时间序列处理
+#### 10. 时间序列处理
 
-### 10.1 日期解析与 DatetimeIndex
+##### 10.1 日期解析与 DatetimeIndex
 
 ```python
  import pandas as pd
@@ -649,7 +749,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 **输出说明**：`pd.to_datetime` 将字符串转为 datetime64 类型。设置为索引后，可以利用 `.year`、`.month`、`.dayofweek` 等属性快速提取时间特征。
 
-### 10.2 重采样（Resample）
+##### 10.2 重采样（Resample）
 
 ```python
  import pandas as pd
@@ -671,7 +771,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 - 类似 groupby，但按时间区间分组
   > **resample 频率速查**：`D`=日，`W`=周，`M`=月末，`MS`=月初，`Q`=季末，`Y`=年末，`H`=小时，`T`=分钟
 
-### 10.3 滚动窗口与偏移
+##### 10.3 滚动窗口与偏移
 
 ```python
  import pandas as pd
@@ -696,9 +796,9 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 ---
 
-## 11. IO 操作
+#### 11. IO 操作
 
-### 11.1 常用读写接口
+##### 11.1 常用读写接口
 
 | 格式    | 读取                | 写入              | 说明                 |
 | ------- | ------------------- | ----------------- | -------------------- |
@@ -709,7 +809,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 | Parquet | `pd.read_parquet()` | `df.to_parquet()` | 列式存储，大数据推荐 |
 | Feather | `pd.read_feather()` | `df.to_feather()` | 极速读写             |
 
-### 11.2 常用参数
+##### 11.2 常用参数
 
 ```python
  import pandas as pd
@@ -739,7 +839,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 - `usecols`：只读取需要的列，节省内存
 - `nrows`：只读取前 N 行，用于快速预览
 
-### 11.3 大文件处理
+##### 11.3 大文件处理
 
 ```python
  import pandas as pd
@@ -758,9 +858,9 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 ---
 
-## 12. 速查表
+#### 12. 速查表
 
-### 12.1 数据选择
+##### 12.1 数据选择
 
 | 操作       | 语法                                             |
 | ---------- | ------------------------------------------------ |
@@ -772,7 +872,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 | 字符串包含 | `df[df['col'].str.contains('pattern')]`          |
 | Query      | `df.query('expr')`                               |
 
-### 12.2 分组聚合
+##### 12.2 分组聚合
 
 | 操作       | 语法                                           |
 | ---------- | ---------------------------------------------- |
@@ -782,7 +882,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 | transform  | `df.groupby('key')['col'].transform('mean')`   |
 | apply      | `df.groupby('key').apply(func)`                |
 
-### 12.3 合并
+##### 12.3 合并
 
 | 操作     | 语法                                     | SQL 对应   |
 | -------- | ---------------------------------------- | ---------- |
@@ -791,7 +891,7 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 | 垂直拼接 | `pd.concat([df1,df2],axis=0)`            | UNION ALL  |
 | 水平拼接 | `pd.concat([df1,df2],axis=1)`            | -          |
 
-### 12.4 重塑
+##### 12.4 重塑
 
 | 操作    | 语法                                     | 方向           |
 | ------- | ---------------------------------------- | -------------- |
@@ -802,13 +902,2141 @@ Pandas 提供了多种数据选择方式，初学者容易混淆。核心区分�
 
 ---
 
-## 13. 延伸阅读
+#### 13. 延伸阅读
 
 - Pandas 官方文档：https://pandas.pydata.org/docs/
 - Python for Data Analysis 第 3 版 (Wes McKinney)
 - Effective Pandas (Matt Harrison)
 - Pandas Cookbook：https://pandas.pydata.org/pandas-docs/stable/user_guide/cookbook.html
 
-### 跨模块关联
+##### 跨模块关联
 
 - [Python 数据结构](python/built-in-data-structures)
+#### 创建 DataFrame
+
+**基本写法：创建 DataFrame**
+`pd.DataFrame(<数据>[, index=<索引>][, columns=<列>])`
+
+```python
+# 从字典、列表、数组创建 DataFrame
+import pandas as pd
+
+df = pd.DataFrame({"name": ["Alice", "Bob"], "age": [30, 25]})
+df = pd.DataFrame([[1, 2], [3, 4]], columns=["a", "b"])
+df = pd.DataFrame([{"a": 1, "b": 2}, {"a": 3, "b": 4}])
+```
+
+---
+
+#### 访问列
+
+**基本写法：访问 DataFrame 列**
+`<df>[<列名>]` | `<df>.<列名>` | `<df>[[<列1>, <列2>]]`
+
+```python
+# 访问 DataFrame 列
+df = pd.DataFrame({"name": ["Alice", "Bob"], "age": [30, 25]})
+print(df["name"])
+print(df.name)
+print(df[["name", "age"]])
+```
+
+---
+
+#### loc 标签访问
+
+**基本写法：按标签访问行与列**
+`<df>.loc[<行标签>, <列标签>]`
+
+```python
+# loc 按标签访问
+df = pd.DataFrame({"a": [1, 2], "b": [3, 4]}, index=["x", "y"])
+print(df.loc["x"])            # 访问行
+print(df.loc["x", "a"])       # 访问元素
+print(df.loc[:, "a"])         # 所有行单列
+print(df.loc[df["a"] > 1])    # 布尔条件
+```
+
+---
+
+#### iloc 位置访问
+
+**基本写法：按位置访问行与列**
+`<df>.iloc[<行位置>, <列位置>]`
+
+```python
+# iloc 按整数位置访问
+df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+print(df.iloc[0])        # 第一行
+print(df.iloc[0, 1])     # 第一行第二列
+print(df.iloc[0:2])      # 前两行
+print(df.iloc[:, 0])     # 所有行第一列
+```
+
+---
+
+#### 添加列
+
+**基本写法：添加新列**
+`<df>[<新列名>] = <值或Series>`
+
+```python
+# 添加新列
+df = pd.DataFrame({"a": [1, 2, 3]})
+df["b"] = [4, 5, 6]
+df["c"] = 10               # 广播标量
+df["sum"] = df["a"] + df["b"]
+df["label"] = df["a"].apply(lambda x: "大" if x > 1 else "小")
+```
+
+---
+
+#### 删除列与行
+
+**基本写法：删除行或列**
+`<df>.drop(<标签>[, axis=<轴>][, inplace=<布尔>])`
+
+```python
+# 删除行或列
+df = pd.DataFrame({"a": [1, 2], "b": [3, 4], "c": [5, 6]})
+df_new = df.drop("c", axis=1)     # 删除列
+df_new = df.drop(columns=["c"])   # 删除列
+df_new = df.drop(0)               # 删除行
+df.drop("c", axis=1, inplace=True)  # 原地删除
+```
+
+---
+
+#### 筛选行
+
+**基本写法：按条件筛选行**
+`<df>[<布尔条件>]`
+`<df>.query("<表达式>")`
+
+```python
+# 按条件筛选行
+df = pd.DataFrame({"name": ["A", "B", "C"], "age": [30, 25, 35]})
+print(df[df["age"] > 25])
+print(df[(df["age"] > 20) & (df["age"] < 35)])
+print(df.query("age > 25"))
+print(df.query("age > 20 and age < 35"))
+```
+
+---
+
+#### info 与 describe
+
+**基本写法：查看 DataFrame 概况**
+`<df>.info()`
+`<df>.describe()`
+
+```python
+# DataFrame 概况信息
+df.info()           # 结构信息
+df.describe()       # 数值列统计
+df.describe(include="all")  # 包含所有列
+df.head()           # 前 5 行
+df.tail(3)          # 后 3 行
+df.sample(n=2)      # 随机 2 行
+```
+
+---
+
+#### 重命名列
+
+**基本写法：重命名列名**
+`<df>.rename(columns=<字典>)`
+`<df>.columns = <列表>`
+
+```python
+# 重命名列
+df = pd.DataFrame({"old_name": [1, 2]})
+df = df.rename(columns={"old_name": "new_name"})
+df.columns = ["a", "b"]
+df = df.rename(str.upper, axis=1)  # 列名转大写
+```
+
+---
+
+#### 去重
+
+**基本写法：去除重复行**
+`<df>.drop_duplicates([subset=<列>])`
+`<df>.duplicated()`
+
+```python
+# 去除重复行
+df = pd.DataFrame({"a": [1, 1, 2], "b": [3, 3, 4]})
+df_unique = df.drop_duplicates()
+df_unique = df.drop_duplicates(subset=["a"])
+print(df.duplicated())  # 布尔标记重复行
+```
+
+---
+
+#### 重设索引
+
+**基本写法：重设索引**
+`<df>.reset_index([drop=<布尔>])`
+`<df>.set_index(<列>)`
+
+```python
+# 重设索引
+df = pd.DataFrame({"a": [1, 2]}, index=["x", "y"])
+df = df.reset_index()           # 索引变列
+df = df.reset_index(drop=True)  # 丢弃原索引
+df = df.set_index("a")          # 设置某列为索引
+```
+#### 创建 Series
+
+**基本写法：创建 Series 对象**
+`pd.Series(<数据>[, index=<索引>][, name=<名称>])`
+
+```python
+# 从列表、字典、数组创建 Series
+import pandas as pd
+
+s = pd.Series([1, 2, 3, 4])
+s = pd.Series([1, 2, 3], index=["a", "b", "c"])
+s = pd.Series({"a": 1, "b": 2, "c": 3})
+s = pd.Series([1, 2, 3], name="values")
+```
+
+---
+
+#### 访问元素
+
+**基本写法：通过标签或位置访问**
+`<series>[<标签>]` | `<series>.loc[<标签>]` | `<series>.iloc[<位置>]`
+
+```python
+# Series 元素访问
+s = pd.Series([10, 20, 30], index=["a", "b", "c"])
+print(s["a"])        # 10
+print(s.loc["b"])    # 20
+print(s.iloc[0])     # 10
+print(s[["a", "c"]]) # 多个标签
+```
+
+---
+
+#### 切片
+
+**基本写法：Series 切片**
+`<series>[<start>:<stop>]`
+`<series>.loc[<start>:<stop>]`
+
+```python
+# Series 切片
+s = pd.Series([1, 2, 3, 4, 5], index=["a", "b", "c", "d", "e"])
+print(s[1:3])        # 位置切片，不含 3
+print(s.loc["a":"c"])  # 标签切片，包含 c
+```
+
+---
+
+#### 布尔索引
+
+**基本写法：条件筛选**
+`<series>[<布尔条件>]`
+
+```python
+# 布尔条件筛选
+s = pd.Series([1, 2, 3, 4, 5])
+print(s[s > 2])              # 3, 4, 5
+print(s[(s > 1) & (s < 5)]) # 2, 3, 4
+print(s[s.isin([2, 4])])    # 2, 4
+```
+
+---
+
+#### 统计方法
+
+**基本写法：Series 统计**
+`<series>.<方法>()`
+
+```python
+# Series 常用统计方法
+s = pd.Series([1, 2, 3, 4, 5])
+print(s.sum())     # 15
+print(s.mean())    # 3.0
+print(s.median())  # 3.0
+print(s.std())     # 标准差
+print(s.min())     # 1
+print(s.max())     # 5
+print(s.count())   # 5
+print(s.describe())  # 汇总统计
+```
+
+---
+
+#### 唯一值与计数
+
+**基本写法：唯一值与值计数**
+`<series>.unique()`
+`<series>.value_counts()`
+
+```python
+# 唯一值与值计数
+s = pd.Series(["a", "b", "a", "c", "b", "a"])
+print(s.unique())           # ['a', 'b', 'c']
+print(s.value_counts())     # a:3, b:2, c:1
+print(s.nunique())          # 3
+```
+
+---
+
+#### 缺失值处理
+
+**基本写法：处理缺失值**
+`<series>.isna()` | `<series>.fillna(<值>)` | `<series>.dropna()`
+
+```python
+# Series 缺失值处理
+s = pd.Series([1, None, 3, np.nan, 5])
+print(s.isna())            # [False, True, False, True, False]
+print(s.fillna(0))         # 用 0 填充
+print(s.dropna())          # 删除缺失值
+print(s.fillna(s.mean()))  # 用均值填充
+```
+
+---
+
+#### 字符串方法
+
+**基本写法：Series 字符串操作**
+`<series>.str.<方法>()`
+
+```python
+# Series 字符串向量化操作
+s = pd.Series(["Hello", "World", "Python"])
+print(s.str.lower())          # 小写
+print(s.str.upper())          # 大写
+print(s.str.len())            # 长度
+print(s.str.contains("o"))    # 是否包含
+print(s.str.replace("o", "0"))  # 替换
+```
+
+---
+
+#### 类型转换
+
+**基本写法：转换 Series 类型**
+`<series>.astype(<类型>)`
+
+```python
+# Series 类型转换
+s = pd.Series(["1", "2", "3"])
+print(s.astype(int))
+print(s.astype(float))
+s_date = pd.Series(["2024-01-01"]).astype("datetime64[ns]")
+```
+
+---
+
+#### 运算
+
+**基本写法：Series 算术运算**
+`<series> <op> <series或标量>`
+
+```python
+# Series 算术运算与对齐
+s1 = pd.Series([1, 2, 3], index=["a", "b", "c"])
+s2 = pd.Series([10, 20, 30], index=["a", "b", "c"])
+print(s1 + s2)   # 按索引对齐相加
+print(s1 * 2)
+print(s1.add(s2, fill_value=0))  # 填充后相加
+```
+
+---
+
+#### 重索引
+
+**基本写法：重新索引 Series**
+`<series>.reindex(<新索引>)`
+
+```python
+# Series 重新索引
+s = pd.Series([1, 2, 3], index=["a", "b", "c"])
+new_s = s.reindex(["a", "b", "c", "d"], fill_value=0)
+print(new_s)
+```
+
+
+### 3.2 概念关系图
+
+下面用 Mermaid 图表达本文核心概念之间的关系，帮助读者建立整体图景：
+
+```mermaid
+flowchart LR
+    A["Pandas -- DataFrame/Series、数据清洗、合并重塑"] --> B["核心概念"]
+    B --> C["原理机制"]
+    B --> D["代码实践"]
+    C --> E["工程应用"]
+    D --> E
+```
+
+图中展示的是本文知识的结构化关系：核心概念是入口，原理机制解释“为什么”，代码实践演示“怎么做”，工程应用回答“何时用”。读者学习时可以把每个小节的内容挂接到对应节点上。
+
+## 4. 理论推导与原理解析
+
+本节深入《Pandas -- DataFrame/Series、数据清洗、合并重塑》背后的原理。理论部分不求面面俱到，而是聚焦“能解释现象、能指导实践”的关键推导。
+
+数据形态：表格（结构化）、序列（时间）、文本、图像；分析前确定数据类型（数值/类别/顺序）。
+清洗：缺失值（删除/填充）、异常值（IQR/z-score）、重复、类型转换；清洗决定结果可信度。
+探索性分析（EDA）：分布（直方图）、集中趋势（均值/中位数）、离散（方差/IQR）、相关性。
+可视化原则：图型匹配数据（趋势折线、比较柱状、构成饼/堆叠、关系散点），标注与叙事。
+
+需要强调的是，理论推导与工程实践之间存在翻译层：理论给出的是理想化模型与边界条件，工程代码则必须处理真实环境中的例外。读者在学习时应先掌握理论的“标准情形”，再通过陷阱章节了解“非标准情形”。
+
+## 5. 代码示例与逐行讲解
+
+本节把原文中的代码示例系统整理，并为每个示例补充用途说明与讲解。读者不应只浏览代码，而应逐段对照讲解理解设计意图。
+
+### 5.1 示例：基本属性
+
+该示例来自原文《基本属性》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# DataFrame 基本属性
+df = pd.DataFrame({"a": [1, 2], "b": ["x", "y"]})
+print(df.shape)    # (2, 2)
+print(df.columns)  # Index(['a', 'b'])
+print(df.index)    # RangeIndex(0, 2)
+print(df.dtypes)   # a:int64, b:object
+print(df.size)     # 4
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 7 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.2 示例：apply 应用函数
+
+该示例来自原文《apply 应用函数》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# DataFrame 应用函数
+df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+print(df.apply(sum))                    # 按列求和
+print(df.apply(sum, axis=1))            # 按行求和
+print(df["a"].apply(lambda x: x ** 2))  # 单列应用
+print(df.applymap(lambda x: x * 2))     # 每个元素应用
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.3 示例：排序
+
+该示例来自原文《排序》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# DataFrame 排序
+df = pd.DataFrame({"a": [3, 1, 2], "b": [6, 4, 5]})
+print(df.sort_values("a"))                  # 按 a 升序
+print(df.sort_values("a", ascending=False)) # 降序
+print(df.sort_values(["a", "b"]))           # 多列排序
+print(df.sort_index(ascending=False))       # 按索引排序
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.4 示例：1.2 核心设计理念
+
+该示例来自原文《1.2 核心设计理念》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ print(f"Pandas version: {pd.__version__}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 3 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.5 示例：2.1 创建 Series
+
+该示例来自原文《2.1 创建 Series》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ s1 = pd.Series([10, 20, 30, 40, 50])
+ print(f"默认索引:\n{s1}")
+ s2 = pd.Series([10, 20, 30], index=['a', 'b', 'c'])
+ print(f"自定义索引:\n{s2}")
+ s3 = pd.Series({'apple': 3, 'banana': 5, 'cherry': 2})
+ print(f"从字典创建:\n{s3}")
+ s4 = pd.Series(5, index=['a', 'b', 'c'])
+ print(f"标量创建:\n{s4}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 10 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.6 示例：2.2 Series 属性与方法
+
+该示例来自原文《2.2 Series 属性与方法》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ s = pd.Series([10, 20, 30, 40, 50], index=['a', 'b', 'c', 'd', 'e'], name='scores')
+ print(f"values: {s.values}")
+ print(f"index: {s.index}")
+ print(f"dtype: {s.dtype}")
+ print(f"name: {s.name}")
+ print(f"shape: {s.shape}")
+ print(f"size: {s.size}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 9 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.7 示例：2.3 Series 向量化运算
+
+该示例来自原文《2.3 Series 向量化运算》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ s = pd.Series([10, 20, 30, 40, 50], index=['a', 'b', 'c', 'd', 'e'])
+ print(f"乘以2:\n{s * 2}")
+ print(f"加100:\n{s + 100}")
+ print(f"布尔筛选:\n{s[s > 25]}")
+ print(f"数学函数:\n{np.sqrt(s)}")
+ s2 = pd.Series([1, 2, 3], index=['a', 'c', 'e'])
+ print(f"索引对齐运算:\n{s + s2}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 9 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.8 示例：3.1 创建 DataFrame
+
+该示例来自原文《3.1 创建 DataFrame》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df1 = pd.DataFrame({
+  'name': ['Alice', 'Bob', 'Charlie', 'Diana'],
+  'age': [25, 30, 35, 28],
+  'score': [85.5, 92.0, 78.5, 95.0],
+  'passed': [True, True, False, True]
+ }
+ print(f"从字典创建:\n{df1}")
+ df2 = pd.DataFrame([
+  {'name': 'Alice', 'age': 25},
+  {'name': 'Bob', 'age': 30},
+  {'name': 'Charlie', 'age': 35}
+ ]
+ print(f"从字典列表创建:\n{df2}")
+ df3 = pd.DataFrame(
+  np.random.default_rng(42).integers(0, 100, size=(3, 4)),
+  columns=['A', 'B', 'C', 'D'],
+  index=['row1', 'row2', 'row3']
+ )
+ print(f"从NumPy数组创建:\n{df3}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 21 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.9 示例：3.2 核心属性与信息查看
+
+该示例来自原文《3.2 核心属性与信息查看》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],
+  'age': [25, 30, 35, 28, None],
+  'score': [85.5, 92.0, 78.5, 95.0, 88.0],
+  'city': ['Beijing', 'Shanghai', 'Guangzhou', 'Shenzhen', 'Beijing']
+ }
+ print(f"shape: {df.shape}")
+ print(f"columns: {df.columns.tolist()}")
+ print(f"index: {df.index.tolist()}")
+ print(f"dtypes:\n{df.dtypes}")
+ print(f"\ninfo():")
+ df.info()
+ print(f"\ndescribe():\n{df.describe()}")
+ print(f"\ndescribe(include='all'):\n{df.describe(include='all')}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 16 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.10 示例：3.3 行列操作
+
+该示例来自原文《3.3 行列操作》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'name': ['Alice', 'Bob', 'Charlie'],
+  'age': [25, 30, 35],
+  'score': [85, 92, 78]
+ }
+ df['grade'] = ['B', 'A', 'C']
+ print(f"添加列:\n{df}")
+ df.insert(1, 'gender', ['F', 'M', 'M'])
+ print(f"插入列到指定位置:\n{df}")
+ df_dropped = df.drop(columns=['grade'])
+ print(f"删除列:\n{df_dropped}")
+ df_row = df.drop(index=[0])
+ print(f"删除行:\n{df_row}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 15 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.11 示例：4.2 loc 标签选择
+
+该示例来自原文《4.2 loc 标签选择》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'name': ['Alice', 'Bob', 'Charlie', 'Diana'],
+  'age': [25, 30, 35, 28],
+  'score': [85, 92, 78, 95],
+  'city': ['Beijing', 'Shanghai', 'Guangzhou', 'Shenzhen']
+ }
+ print(f"选择行:\n{df.loc['a']}")
+ print(f"\n选择多行:\n{df.loc['a', 'c']('a', 'c')}")
+ print(f"\n行切片:\n{df.loc['a':'c']}")
+ print(f"\n行列同时选择:\n{df.loc[['a', 'c'], ['name', 'score']]}")
+ print(f"\n布尔选择:\n{df.loc[df['age'] > 28, ['name', 'score']]}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 13 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.12 示例：4.3 iloc 位置选择
+
+该示例来自原文《4.3 iloc 位置选择》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'name': ['Alice', 'Bob', 'Charlie', 'Diana'],
+  'age': [25, 30, 35, 28],
+  'score': [85, 92, 78, 95]
+ }
+ print(f"第一行:\n{df.iloc[0]}")
+ print(f"\n前两行，前两列:\n{df.iloc[:2, :2]}")
+ print(f"\n间隔选取:\n{df.iloc[[0, 2], [0, 2]]}")
+ print(f"\n最后一行:\n{df.iloc[-1]}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 11 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.13 示例：4.4 高级筛选
+
+该示例来自原文《4.4 高级筛选》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],
+  'age': [25, 30, 35, 28, 22],
+  'score': [85, 92, 78, 95, 88],
+  'city': ['Beijing', 'Shanghai', 'Beijing', 'Shenzhen', 'Shanghai']
+ }
+ print(f"isin筛选:\n{df[df['city'].isin(['Beijing', 'Shanghai'])]}")
+ print(f"\nquery方法:\n{df.query('age > 25 and score > 80')}")
+ print(f"\n多条件筛选:\n{df[(df['age'] > 25) & (df['score'] > 80)]}")
+ print(f"\n字符串包含:\n{df[df['name'].str.contains('a', case=False)]}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 12 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.14 示例：5.2 类型转换
+
+该示例来自原文《5.2 类型转换》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'price': ['10.5', '20.0', 'invalid', '30.5'],
+  'date': ['2024-01-01', '2024-02-15', '2024-03-30', '2024-04-10'],
+  'status': ['active', 'inactive', 'active', 'active']
+ }
+ df['price_num'] = pd.to_numeric(df['price'], errors='coerce')
+ print(f"to_numeric (errors='coerce'):\n{df['price', 'price_num']('price', 'price_num')}")
+ df['date_dt'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
+ print(f"\nto_datetime:\n{df['date', 'date_dt']('date', 'date_dt')}")
+ print(f"date_dt dtype: {df['date_dt'].dtype}")
+ df['status_cat'] = df['status'].astype('category')
+ print(f"\nastype('category'):\n{df['status_cat']}")
+ print(f"类别: {df['status_cat'].cat.categories.tolist()}")
+ print(f"内存对比: object={df['status'].memory_usage(deep=True)}B, category={df['status_cat'].memory_usage(deep=True)}B")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 16 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.15 示例：5.3 类型优化实践
+
+该示例来自原文《5.3 类型优化实践》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'id': range(100000),
+  'small_int': np.random.randint(0, 100, 100000),
+  'flag': np.random.choice([True, False], 100000),
+  'category_col': np.random.choice(['A', 'B', 'C'], 100000)
+ }
+ print(f"优化前内存使用:")
+ print(df.memory_usage(deep=True))
+ print(f"总计: {df.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB")
+ df['small_int'] = df['small_int'].astype('int8')
+ df['category_col'] = df['category_col'].astype('category')
+ print(f"\n优化后内存使用:")
+ print(df.memory_usage(deep=True))
+ print(f"总计: {df.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 16 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.16 示例：6.1 缺失值检测与处理
+
+该示例来自原文《6.1 缺失值检测与处理》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'A': [1, np.nan, 3, np.nan, 5],
+  'B': [10, 20, np.nan, 40, 50],
+  'C': ['x', 'y', np.nan, 'z', 'w']
+ }
+ print(f"缺失值统计:\n{df.isna().sum()}")
+ print(f"\n缺失率:\n{df.isna().mean()}")
+ df_fill = df.fillna({'A': df['A'].median(), 'B': 0, 'C': 'unknown'})
+ print(f"\n按列填充:\n{df_fill}")
+ df_drop = df.dropna(subset=['A'])
+ print(f"\n删除A列缺失行:\n{df_drop}")
+ df_ffill = df.fillna(method='ffill')
+ print(f"\n前向填充:\n{df_ffill}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 15 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.17 示例：6.2 重复值处理
+
+该示例来自原文《6.2 重复值处理》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ df = pd.DataFrame({
+  'email': ['a@test.com', 'b@test.com', 'a@test.com', 'c@test.com'],
+  'name': ['Alice', 'Bob', 'Alice2', 'Charlie'],
+  'score': [85, 92, 90, 78]
+ }
+ print(f"重复标记:\n{df.duplicated(subset=['email'])}")
+ print(f"\n删除重复(保留最后):\n{df.drop_duplicates(subset=['email'], keep='last')}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 8 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.18 示例：7.1 groupby 机制
+
+该示例来自原文《7.1 groupby 机制》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'department': ['Sales', 'Sales', 'Engineering', 'Engineering', 'Marketing', 'Marketing'],
+  'level': ['Junior', 'Senior', 'Junior', 'Senior', 'Junior', 'Senior'],
+  'salary': [5000, 8000, 6000, 10000, 4500, 7500],
+  'experience': [1, 5, 2, 8, 1, 6]
+ }
+ grouped = df.groupby('department')
+ print(f"分组对象: {type(grouped)}")
+ print(f"分组键: {grouped.groups.keys()}")
+ print(f"\n单列聚合:\n{grouped['salary'].mean()}")
+ print(f"\n多列多函数聚合:\n{grouped.agg({'salary': ['mean', 'std', 'count'], 'experience': ['mean', 'max']})}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 13 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.19 示例：7.2 命名聚合与 as_index
+
+该示例来自原文《7.2 命名聚合与 as_index》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'department': ['Sales', 'Sales', 'Engineering', 'Engineering', 'Marketing'],
+  'salary': [5000, 8000, 6000, 10000, 4500]
+ }
+ result = df.groupby('department').agg(
+  avg_salary=('salary', 'mean'),
+  max_salary=('salary', 'max'),
+  count=('salary', 'count')
+ )
+ print(f"命名聚合:\n{result}")
+ result2 = df.groupby('department', as_index=False).agg(
+  avg_salary=('salary', 'mean')
+ )
+ print(f"\nas_index=False:\n{result2}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 16 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.20 示例：7.3 transform 与 apply
+
+该示例来自原文《7.3 transform 与 apply》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ df = pd.DataFrame({
+  'department': ['Sales', 'Sales', 'Engineering', 'Engineering', 'Marketing'],
+  'name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],
+  'salary': [5000, 8000, 6000, 10000, 4500]
+ }
+ df['dept_avg'] = df.groupby('department')['salary'].transform('mean')
+ df['salary_diff'] = df['salary'] - df['dept_avg']
+ print(f"transform(保持原形状):\n{df}")
+ def top_earner(group):
+  return group.loc[group['salary'].idxmax()]
+ result = df.groupby('department').apply(top_earner, include_groups=False)
+ print(f"\napply(灵活操作):\n{result['name', 'salary']('name', 'salary')}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 14 行有效代码，包含 3 类关键结构（def、import、return）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.21 示例：8.1 merge 数据库风格连接
+
+该示例来自原文《8.1 merge 数据库风格连接》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ df_orders = pd.DataFrame({
+  'order_id': [1, 2, 3, 4],
+  'user_id': [101, 102, 101, 103],
+  'amount': [250, 180, 320, 150]
+ }
+ df_users = pd.DataFrame({
+  'user_id': [101, 102, 104],
+  'name': ['Alice', 'Bob', 'Diana'],
+  'city': ['Beijing', 'Shanghai', 'Shenzhen']
+ }
+ inner = pd.merge(df_orders, df_users, on='user_id', how='inner')
+ print(f"inner join:\n{inner}")
+ left = pd.merge(df_orders, df_users, on='user_id', how='left')
+ print(f"\nleft join:\n{left}")
+ right = pd.merge(df_orders, df_users, on='user_id', how='right')
+ print(f"\nright join:\n{right}")
+ outer = pd.merge(df_orders, df_users, on='user_id', how='outer')
+ print(f"\nouter join:\n{outer}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 19 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.22 示例：8.2 多键合并与后缀处理
+
+该示例来自原文《8.2 多键合并与后缀处理》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ df1 = pd.DataFrame({
+  'key1': ['A', 'A', 'B'],
+  'key2': ['X', 'Y', 'X'],
+  'value': [1, 2, 3]
+ }
+ df2 = pd.DataFrame({
+  'key1': ['A', 'B', 'B'],
+  'key2': ['X', 'X', 'Y'],
+  'value': [10, 20, 30]
+ }
+ result = pd.merge(df1, df2, on=['key1', 'key2'], how='outer', suffixes=('_left', '_right'))
+ print(f"多键合并:\n{result}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 13 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.23 示例：8.3 concat 轴向拼接
+
+该示例来自原文《8.3 concat 轴向拼接》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ df1 = pd.DataFrame({'A': [1, 2], 'B': [3, 4]})
+ df2 = pd.DataFrame({'A': [5, 6], 'B': [7, 8]})
+ df3 = pd.DataFrame({'C': [9, 10], 'D': [11, 12]})
+ vertical = pd.concat([df1, df2], axis=0, ignore_index=True)
+ print(f"垂直拼接:\n{vertical}")
+ horizontal = pd.concat([df1, df3], axis=1)
+ print(f"\n水平拼接:\n{horizontal}")
+ result = pd.concat([df1, df3], axis=0)
+ print(f"\n列不一致时:\n{result}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 10 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.24 示例：9.1 melt 宽表转长表
+
+该示例来自原文《9.1 melt 宽表转长表》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ df_wide = pd.DataFrame({
+  'date': ['2024-01', '2024-02', '2024-03'],
+  'Beijing': [100, 120, 110],
+  'Shanghai': [90, 95, 105],
+  'Guangzhou': [80, 85, 90]
+ }
+ df_long = df_wide.melt(id_vars=['date'], var_name='city', value_name='sales')
+ print(f"长表:\n{df_long}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 9 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.25 示例：9.2 pivot_table 长表转宽表
+
+该示例来自原文《9.2 pivot_table 长表转宽表》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ df_long = pd.DataFrame({
+  'date': ['2024-01']*3 + ['2024-02']*3 + ['2024-03']*3,
+  'city': ['Beijing', 'Shanghai', 'Guangzhou'] * 3,
+  'sales': [100, 90, 80, 120, 95, 85, 110, 105, 90]
+ }
+ pivot = df_long.pivot_table(index='date', columns='city', values='sales', aggfunc='sum')
+ print(f"透视表:\n{pivot}")
+ pivot_mean = df_long.pivot_table(index='city', values='sales', aggfunc=['mean', 'sum', 'count'])
+ print(f"\n多聚合函数:\n{pivot_mean}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 10 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.26 示例：9.3 stack/unstack
+
+该示例来自原文《9.3 stack/unstack》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ df = pd.DataFrame({
+  'Q1': [100, 200, 150],
+  'Q2': [120, 210, 160],
+  'Q3': [110, 190, 170]
+ }
+ df.index.name = 'city'
+ stacked = df.stack()
+ print(f"stack(列转行):\n{stacked}")
+ unstacked = stacked.unstack()
+ print(f"\nunstack(行转列):\n{unstacked}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 11 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.27 示例：10.1 日期解析与 DatetimeIndex
+
+该示例来自原文《10.1 日期解析与 DatetimeIndex》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ dates = pd.date_range('2024-01-01', periods=10, freq='D')
+ df = pd.DataFrame({
+  'date': dates,
+  'value': np.random.default_rng(42).normal(100, 10, 10)
+ }
+ df['date'] = pd.to_datetime(df['date'])
+ df = df.set_index('date')
+ print(f"DatetimeIndex:\n{df}")
+ print(f"\n索引属性:")
+ print(f" year: {df.index.year.tolist()}")
+ print(f" month: {df.index.month.tolist()}")
+ print(f" dayofweek: {df.index.dayofweek.tolist()}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 14 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.28 示例：10.2 重采样（Resample）
+
+该示例来自原文《10.2 重采样（Resample）》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ dates = pd.date_range('2024-01-01', periods=90, freq='D')
+ df = pd.DataFrame({
+  'value': np.random.default_rng(42).normal(100, 15, 90)
+ }
+ monthly = df.resample('M').agg({'value': ['mean', 'std', 'count']})
+ print(f"月度重采样:\n{monthly}")
+ weekly = df.resample('W').mean()
+ print(f"\n周度重采样:\n{weekly.head()}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 10 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.29 示例：10.3 滚动窗口与偏移
+
+该示例来自原文《10.3 滚动窗口与偏移》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ import numpy as np
+ dates = pd.date_range('2024-01-01', periods=30, freq='D')
+ df = pd.DataFrame({
+  'value': np.random.default_rng(42).normal(100, 10, 30)
+ }
+ df['rolling_7d'] = df['value'].rolling(window=7).mean()
+ df['shift_1'] = df['value'].shift(1)
+ df['diff_1'] = df['value'].diff(1)
+ df['pct_change'] = df['value'].pct_change()
+ print(f"滚动与偏移:\n{df.head(10)}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 11 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.30 示例：11.2 常用参数
+
+该示例来自原文《11.2 常用参数》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ df = pd.read_csv(
+  'data.csv',
+  encoding='utf-8',
+  parse_dates=['order_date', 'ship_date'],
+  dtype={'user_id': 'int64', 'status': 'category'},
+  na_values=['NA', 'N/A', 'null', ''],
+  usecols=['order_id', 'user_id', 'order_date', 'amount', 'status'],
+  nrows=10000
+ )
+ df.to_csv(
+  'output.csv',
+  index=False,
+  encoding='utf-8-sig',
+  float_format='%.2f'
+ )
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 16 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.31 示例：11.3 大文件处理
+
+该示例来自原文《11.3 大文件处理》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+ import pandas as pd
+ chunk_iter = pd.read_csv('large_data.csv', chunksize=50000)
+ results = []
+ for chunk in chunk_iter:
+  filtered = chunk[chunk['amount'] > 100]
+  results.append(filtered)
+ df_result = pd.concat(results, ignore_index=True)
+ print(f"分块处理后结果: {df_result.shape}")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 8 行有效代码，包含 2 类关键结构（import、for）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.32 示例：创建 DataFrame
+
+该示例来自原文《创建 DataFrame》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 从字典、列表、数组创建 DataFrame
+import pandas as pd
+
+df = pd.DataFrame({"name": ["Alice", "Bob"], "age": [30, 25]})
+df = pd.DataFrame([[1, 2], [3, 4]], columns=["a", "b"])
+df = pd.DataFrame([{"a": 1, "b": 2}, {"a": 3, "b": 4}])
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 5 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.33 示例：访问列
+
+该示例来自原文《访问列》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 访问 DataFrame 列
+df = pd.DataFrame({"name": ["Alice", "Bob"], "age": [30, 25]})
+print(df["name"])
+print(df.name)
+print(df[["name", "age"]])
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 5 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.34 示例：loc 标签访问
+
+该示例来自原文《loc 标签访问》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# loc 按标签访问
+df = pd.DataFrame({"a": [1, 2], "b": [3, 4]}, index=["x", "y"])
+print(df.loc["x"])            # 访问行
+print(df.loc["x", "a"])       # 访问元素
+print(df.loc[:, "a"])         # 所有行单列
+print(df.loc[df["a"] > 1])    # 布尔条件
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.35 示例：iloc 位置访问
+
+该示例来自原文《iloc 位置访问》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# iloc 按整数位置访问
+df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+print(df.iloc[0])        # 第一行
+print(df.iloc[0, 1])     # 第一行第二列
+print(df.iloc[0:2])      # 前两行
+print(df.iloc[:, 0])     # 所有行第一列
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.36 示例：添加列
+
+该示例来自原文《添加列》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 添加新列
+df = pd.DataFrame({"a": [1, 2, 3]})
+df["b"] = [4, 5, 6]
+df["c"] = 10               # 广播标量
+df["sum"] = df["a"] + df["b"]
+df["label"] = df["a"].apply(lambda x: "大" if x > 1 else "小")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，包含 1 类关键结构（if）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.37 示例：删除列与行
+
+该示例来自原文《删除列与行》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 删除行或列
+df = pd.DataFrame({"a": [1, 2], "b": [3, 4], "c": [5, 6]})
+df_new = df.drop("c", axis=1)     # 删除列
+df_new = df.drop(columns=["c"])   # 删除列
+df_new = df.drop(0)               # 删除行
+df.drop("c", axis=1, inplace=True)  # 原地删除
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.38 示例：筛选行
+
+该示例来自原文《筛选行》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 按条件筛选行
+df = pd.DataFrame({"name": ["A", "B", "C"], "age": [30, 25, 35]})
+print(df[df["age"] > 25])
+print(df[(df["age"] > 20) & (df["age"] < 35)])
+print(df.query("age > 25"))
+print(df.query("age > 20 and age < 35"))
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.39 示例：info 与 describe
+
+该示例来自原文《info 与 describe》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# DataFrame 概况信息
+df.info()           # 结构信息
+df.describe()       # 数值列统计
+df.describe(include="all")  # 包含所有列
+df.head()           # 前 5 行
+df.tail(3)          # 后 3 行
+df.sample(n=2)      # 随机 2 行
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 7 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.40 示例：重命名列
+
+该示例来自原文《重命名列》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 重命名列
+df = pd.DataFrame({"old_name": [1, 2]})
+df = df.rename(columns={"old_name": "new_name"})
+df.columns = ["a", "b"]
+df = df.rename(str.upper, axis=1)  # 列名转大写
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 5 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.41 示例：去重
+
+该示例来自原文《去重》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 去除重复行
+df = pd.DataFrame({"a": [1, 1, 2], "b": [3, 3, 4]})
+df_unique = df.drop_duplicates()
+df_unique = df.drop_duplicates(subset=["a"])
+print(df.duplicated())  # 布尔标记重复行
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 5 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.42 示例：重设索引
+
+该示例来自原文《重设索引》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 重设索引
+df = pd.DataFrame({"a": [1, 2]}, index=["x", "y"])
+df = df.reset_index()           # 索引变列
+df = df.reset_index(drop=True)  # 丢弃原索引
+df = df.set_index("a")          # 设置某列为索引
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 5 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.43 示例：创建 Series
+
+该示例来自原文《创建 Series》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 从列表、字典、数组创建 Series
+import pandas as pd
+
+s = pd.Series([1, 2, 3, 4])
+s = pd.Series([1, 2, 3], index=["a", "b", "c"])
+s = pd.Series({"a": 1, "b": 2, "c": 3})
+s = pd.Series([1, 2, 3], name="values")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，包含 1 类关键结构（import）。其中：
+
+- 入口与初始化部分负责建立上下文，对应实际项目中的启动或装配逻辑；
+- 核心逻辑部分体现本文主题的主要操作，是阅读时最需要对照讲解理解的部分；
+- 输出或返回部分把结果交给调用方，注意其类型与边界条件。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.44 示例：访问元素
+
+该示例来自原文《访问元素》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# Series 元素访问
+s = pd.Series([10, 20, 30], index=["a", "b", "c"])
+print(s["a"])        # 10
+print(s.loc["b"])    # 20
+print(s.iloc[0])     # 10
+print(s[["a", "c"]]) # 多个标签
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.45 示例：切片
+
+该示例来自原文《切片》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# Series 切片
+s = pd.Series([1, 2, 3, 4, 5], index=["a", "b", "c", "d", "e"])
+print(s[1:3])        # 位置切片，不含 3
+print(s.loc["a":"c"])  # 标签切片，包含 c
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 4 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.46 示例：布尔索引
+
+该示例来自原文《布尔索引》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 布尔条件筛选
+s = pd.Series([1, 2, 3, 4, 5])
+print(s[s > 2])              # 3, 4, 5
+print(s[(s > 1) & (s < 5)]) # 2, 3, 4
+print(s[s.isin([2, 4])])    # 2, 4
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 5 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.47 示例：统计方法
+
+该示例来自原文《统计方法》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# Series 常用统计方法
+s = pd.Series([1, 2, 3, 4, 5])
+print(s.sum())     # 15
+print(s.mean())    # 3.0
+print(s.median())  # 3.0
+print(s.std())     # 标准差
+print(s.min())     # 1
+print(s.max())     # 5
+print(s.count())   # 5
+print(s.describe())  # 汇总统计
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 10 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.48 示例：唯一值与计数
+
+该示例来自原文《唯一值与计数》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# 唯一值与值计数
+s = pd.Series(["a", "b", "a", "c", "b", "a"])
+print(s.unique())           # ['a', 'b', 'c']
+print(s.value_counts())     # a:3, b:2, c:1
+print(s.nunique())          # 3
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 5 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.49 示例：缺失值处理
+
+该示例来自原文《缺失值处理》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# Series 缺失值处理
+s = pd.Series([1, None, 3, np.nan, 5])
+print(s.isna())            # [False, True, False, True, False]
+print(s.fillna(0))         # 用 0 填充
+print(s.dropna())          # 删除缺失值
+print(s.fillna(s.mean()))  # 用均值填充
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.50 示例：字符串方法
+
+该示例来自原文《字符串方法》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# Series 字符串向量化操作
+s = pd.Series(["Hello", "World", "Python"])
+print(s.str.lower())          # 小写
+print(s.str.upper())          # 大写
+print(s.str.len())            # 长度
+print(s.str.contains("o"))    # 是否包含
+print(s.str.replace("o", "0"))  # 替换
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 7 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.51 示例：类型转换
+
+该示例来自原文《类型转换》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# Series 类型转换
+s = pd.Series(["1", "2", "3"])
+print(s.astype(int))
+print(s.astype(float))
+s_date = pd.Series(["2024-01-01"]).astype("datetime64[ns]")
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 5 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.52 示例：运算
+
+该示例来自原文《运算》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# Series 算术运算与对齐
+s1 = pd.Series([1, 2, 3], index=["a", "b", "c"])
+s2 = pd.Series([10, 20, 30], index=["a", "b", "c"])
+print(s1 + s2)   # 按索引对齐相加
+print(s1 * 2)
+print(s1.add(s2, fill_value=0))  # 填充后相加
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 6 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+### 5.53 示例：重索引
+
+该示例来自原文《重索引》小节，用于演示Pandas -- DataFrame/Series、数据清洗、合并重塑相关操作。阅读时请先看代码结构，再看其后的讲解。
+
+```python
+# Series 重新索引
+s = pd.Series([1, 2, 3], index=["a", "b", "c"])
+new_s = s.reindex(["a", "b", "c", "d"], fill_value=0)
+print(new_s)
+```
+
+讲解：这段代码演示了本节核心知识点。代码中的关键操作可以归纳为三步：准备（定义或初始化）、执行（核心逻辑）、收尾（释放资源或返回结果）。实际项目中，这三步往往被封装为函数或类，以提升复用性与可测试性。
+
+关键点分析：
+
+该示例共 4 行有效代码，结构以数据或配置为主。阅读时应关注：数据字段的含义、配置项的作用，以及它们与运行行为的对应关系。
+
+进阶思考路径：先尝试修改参数观察行为变化，再把示例中的模式迁移到自己的项目中；每次修改都记录预期与实测差异，这是把示例转化为能力的最快方式。
+
+
+综合以上示例，可以总结出本主题的代码实践要点：第一，先定义清晰的输入输出契约；第二，核心逻辑保持单一职责；第三，错误处理与边界条件不可省略；第四，命名与注释表达意图而非复述代码。
+
+## 6. 对比分析
+
+对比是理解《Pandas -- DataFrame/Series、数据清洗、合并重塑》定位的最快路径。下面从多个维度与相邻方案进行对比。
+
+Pandas 与 SQL：SQL 取数聚合，Pandas 灵活变换；按场景组合。
+描述与推断统计：描述总结样本，推断推广总体。
+静态报告与交互看板：报告沉淀结论，看板持续监控。
+
+对比的目的不是分出绝对优劣，而是建立选择依据：不同约束条件下，最优解不同。读者应把每个对比维度转化为决策检查清单。
+
+## 7. 常见陷阱与最佳实践
+
+本节整理该主题的高频错误与推荐做法。每个陷阱先描述现象，再解释原因，最后给出最佳实践。
+
+### 7.1 脏数据直接分析
+
+结论失真。先清洗并记录清洗规则。
+
+深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
+
+从成因上看，脏数据直接分析 一般源于对 数据分析 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
+
+从影响上看，脏数据直接分析 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
+
+从修复策略上看，处理脏数据直接分析的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
+
+### 7.2 幸存者偏差
+
+样本无代表性。明确采样方式。
+
+深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
+
+从成因上看，幸存者偏差 一般源于对 数据分析 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
+
+从影响上看，幸存者偏差 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
+
+从修复策略上看，处理幸存者偏差的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
+
+### 7.3 相关当因果
+
+误导决策。用实验或领域知识验证。
+
+深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
+
+从成因上看，相关当因果 一般源于对 数据分析 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
+
+从影响上看，相关当因果 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
+
+从修复策略上看，处理相关当因果的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
+
+### 7.4 平均值误导
+
+异常值拉高均值。结合中位数与分布。
+
+深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
+
+从成因上看，平均值误导 一般源于对 数据分析 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
+
+从影响上看，平均值误导 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
+
+从修复策略上看，处理平均值误导的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
+
+### 7.5 可视化误导
+
+截断坐标、3D 饼图。诚实呈现。
+
+深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
+
+从成因上看，可视化误导 一般源于对 数据分析 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
+
+从影响上看，可视化误导 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
+
+从修复策略上看，处理可视化误导的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
+
+### 7.6 过拟合解释
+
+模型只在样本好。留出验证集。
+
+深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
+
+从成因上看，过拟合解释 一般源于对 数据分析 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
+
+从影响上看，过拟合解释 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
+
+从修复策略上看，处理过拟合解释的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
+
+### 7.7 忽略数据来源
+
+口径不明。记录来源与定义。
+
+深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
+
+从成因上看，忽略数据来源 一般源于对 数据分析 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
+
+从影响上看，忽略数据来源 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
+
+从修复策略上看，处理忽略数据来源的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
+
+### 7.8 一次性脚本
+
+不可复现。代码 + 参数 + 数据版本化。
+
+深入讲解：该问题之所以被归类为“常见陷阱”，是因为它在初学者的代码中反复出现，而且往往不在第一时间暴露——错误通常隐藏在特定数据或特定时序下。
+
+从成因上看，一次性脚本 一般源于对 数据分析 某个机制的理解偏差：要么误用了默认行为，要么忽略了边界条件，要么把其他语言的思维惯性带了过来。
+
+从影响上看，一次性脚本 轻则产生错误结果，重则导致资源泄漏、数据损坏或安全事故；这也是为什么工程评审中会把它列为检查项。
+
+从修复策略上看，处理一次性脚本的正确顺序是：先复现（构造最小用例），再定位（确认机制层面的根因），最后修复并补充回归测试。跳过复现直接改代码，往往治标不治本。
+
+### 7.0 最佳实践总览
+
+1. 分析前写清问题与假设。
+2. 数据字典记录字段口径。
+3. 结果包含置信区间与局限性。
+4. 报告面向决策：结论先行，证据随后。
+
+把这些最佳实践固化为团队规范与代码评审检查项，是避免同类问题反复出现的关键。
+
+## 8. 工程实践
+
+本节把《Pandas -- DataFrame/Series、数据清洗、合并重塑》放入真实工程场景，给出可复用的模式与组织方法。
+
+项目结构：data/（原始/处理）、notebooks/（探索）、src/（复用函数）、reports/。
+自动化：定时抽取 -> 清洗 -> 入库 -> 看板刷新。
+质量：数据校验（schema/范围）、血缘追踪、变更日志。
+
+### 8.1 工程实践的原则拆解
+
+以上工程实践可以归纳为四条原则。第一，配置与代码分离：数据分析 项目中环境差异应通过配置注入，而不是散落在代码分支中；这保证同一份代码可以在开发、测试、生产环境一致运行。
+
+第二，接口稳定优先：对外接口（函数签名、协议、数据格式）一旦被消费方依赖，变更成本极高；设计时应预留扩展点并保持向后兼容。
+
+第三，可观测性内置：日志、指标与追踪应该在功能开发时同步设计，而不是故障发生后补救；没有观测手段的模块等于黑盒。
+
+第四，变更可回滚：任何发布都应有对应的回滚方案；数据库迁移、配置变更与代码发布一样需要版本管理与逆向路径。
+
+### 8.2 实践落地的检查清单
+
+- [ ] 项目结构：对照本节描述，检查当前项目是否已经落实；未落实的项列入技术债并排期处理。
+- [ ] 自动化：对照本节描述，检查当前项目是否已经落实；未落实的项列入技术债并排期处理。
+- [ ] 质量：对照本节描述，检查当前项目是否已经落实；未落实的项列入技术债并排期处理。
+
+工程实践的共性原则：配置与代码分离、接口稳定优先、可观测性内置、变更可回滚。这些原则适用于本主题的所有实现。
+
+## 9. 案例研究
+
+本节通过一个完整案例把《Pandas -- DataFrame/Series、数据清洗、合并重塑》的知识串起来。案例按“需求分析、方案设计、实现、验证”四步展开。
+
+需求：分析用户留存并输出改进建议。
+方案：SQL 取数 + Pandas 清洗 + 留存表（日/周）+ 可视化。
+要点：同期群（cohort）口径一致、流失阈值定义。
+验证：结论可复现、敏感数据脱敏、报告评审。
+
+### 9.1 案例的扩展讨论
+
+把案例中的方案放大到真实规模，需要额外考虑三个问题：
+
+第一，规模：当数据量或并发量上升一个数量级时，原方案中的数据结构、缓存策略与任务调度是否仍然成立？通常需要引入分层与异步。
+
+第二，团队：多人协作时，模块边界、接口契约与代码所有权必须明确；案例中的实现应拆分为可独立测试的单元，并配合文档说明设计意图。
+
+第三，演进：上线后的需求变化不可避免；方案设计时应预留扩展点（配置化、插件化、事件化），并定期用真实指标验证假设。
+
+
+案例研究的学习方法：先独立阅读需求，尝试在脑中形成方案，再对照实现与讲解，最后思考“如果约束变化（数据量、并发、团队规模），方案应如何调整”。
+
+## 10. 知识要点总结与深入讲解
+
+本节以讲解形式汇总全文要点，替代传统的习题与自测，读者不需要答题，只需跟随解释建立完整的认知框架。
+
+关于《Pandas -- DataFrame/Series、数据清洗、合并重塑》的核心结论：
+
+数据分析的起点是问题，终点是决策。
+清洗与口径是可信度的根基。
+可视化是沟通，诚实是底线。
+
+原文档各小节的要点回顾：
+
+- 基本属性：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- apply 应用函数：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 排序：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 1. Pandas 简介：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 2. Series 基础：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 3. DataFrame 基础：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 4. 索引与数据选择：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 5. 数据类型与转换：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- **输出说明**：将 `int64` 降级为 `int8`（范围 0-100 足够），将 `object` 转为 `category`，内存占用可减少 80% 以上。在处理大数据集时，这种优化至关重要。：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 6. 数据清洗概览：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- **输出说明**：`duplicated` 标记重复行，`drop_duplicates` 删除重复行。`subset` 指定判断重复的列，`keep` 决定保留哪一条。：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 7. 分组与聚合：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 8. 合并与拼接：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 9. 重塑与透视：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- **输出说明**：`stack` 将列索引转为行索引（宽变长），`unstack` 将行索引转为列索引（长变宽）。它们是 `melt`/`pivot` 的索引操作版本。：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 10. 时间序列处理：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 11. IO 操作：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 12. 速查表：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 13. 延伸阅读：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 创建 DataFrame：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 访问列：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- loc 标签访问：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- iloc 位置访问：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 添加列：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 删除列与行：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 筛选行：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- info 与 describe：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 重命名列：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 去重：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 重设索引：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 创建 Series：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 访问元素：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 切片：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 布尔索引：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 统计方法：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 唯一值与计数：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 缺失值处理：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 字符串方法：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 类型转换：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 运算：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+- 重索引：该小节围绕Pandas -- DataFrame/Series、数据清洗、合并重塑展开具体细节，阅读时应关注其与核心结论的对应关系；每个小节都是核心结论在某一个侧面的展开。
+
+把以上要点与第 3-9 节的内容对照复习，即可完成对本文主题的闭环学习。
+
+## 11. 参考文献
+
+
+Pandas 文档：https://pandas.pydata.org/docs/
+NumPy 文档：https://numpy.org/doc/stable/
+Matplotlib：https://matplotlib.org/
+Kaggle Learn：https://www.kaggle.com/learn
+
+## 12. 延伸阅读
+
+
+数据分析工具，见 051-data-analysis 模块文档。
+概率统计基础，见 030-probability-statistics 模块。
+SQL 取数，见 019-sql 模块。
+尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供数据分析课程。
+
+## 14. 模块知识图谱与学习路径
+
+本文属于 数据分析 模块。为了把《Pandas -- DataFrame/Series、数据清洗、合并重塑》放入完整的知识网络，下面列出本模块的全部主题并给出相互关联的导读。学习时建议按模块内顺序推进，并在每个文档中留意交叉引用。
+
+```mermaid
+flowchart LR
+    A["Pandas -- DataFrame/Series、数据清洗、合并重塑"]
+    N0["数据分析概述"]
+    N1["NumPy 数组操作、线性代数与随机数"]
+    N0 --> N1
+    N2["Pandas -- DataFrame/Series、数据清洗、合并重塑"]
+    N1 --> N2
+    N3["Matplotlib -- 折线图、柱状图、散点图与子图"]
+    N2 --> N3
+    N4["Seaborn -- 统计可视化、热力图与分布图"]
+    N3 --> N4
+    N5["统计学 -- 描述统计、推断统计与假设检验"]
+    N4 --> N5
+    N6["数据清洗 -- 缺失值、异常值与数据类型转换"]
+    N5 --> N6
+    N7["实战案例 -- 电商用户行为分析"]
+    N6 --> N7
+    N8["数据分析进阶与实战"]
+    N7 --> N8
+    N9["数据分析全流程"]
+    N8 --> N9
+    N10["数据清洗详解"]
+    N9 --> N10
+    N11["特征工程"]
+    N10 --> N11
+    N12["Pandas分组聚合"]
+    N11 --> N12
+    N13["Pandas时间序列"]
+    N12 --> N13
+```
+
+上图为模块主题的推荐学习顺序示意图（仅展示前若干主题）。各主题之间存在三类关联：
+
+第一，前置依赖关系：早期主题是后期主题的基础，例如环境与语法先行、进阶主题随后；
+
+第二，横向并列关系：同一层级主题从不同角度覆盖模块能力，学习顺序可以按兴趣调整；
+
+第三，工程组合关系：多个主题在真实项目中组合使用，例如配置、性能与安全主题往往出现在同一系统的不同层面。
+
+### 14.1 模块主题速查表
+
+| 文档 | 主题 | 与本文的关联 |
+| --- | --- | --- |
+| 数据分析概述 | 001-DataAnalysisOverview | 本文的前置基础 |
+| NumPy 数组操作、线性代数与随机数 | 002-NumPy | 本文的并列主题 |
+| Pandas -- DataFrame/Series、数据清洗、合并重塑 | 003-PandasDataFrameSeriesDataCleaningMerge | 本文自身 |
+| Matplotlib -- 折线图、柱状图、散点图与子图 | 004-Matplotlib | 本文的并列主题 |
+| Seaborn -- 统计可视化、热力图与分布图 | 005-Seaborn | 本文的并列主题 |
+| 统计学 -- 描述统计、推断统计与假设检验 | 006-StatisticsDescriptiveInferentialHypothesisTesting | 本文的并列主题 |
+| 数据清洗 -- 缺失值、异常值与数据类型转换 | 007-DataCleaningMissingOutlierTypeConversion | 本文的并列主题 |
+| 实战案例 -- 电商用户行为分析 | 008-EcommerceUserBehaviorAnalysis | 本文的综合应用 |
+| 数据分析进阶与实战 | 009-DataAnalysisAdvancedPractice | 本文的综合应用 |
+| 数据分析全流程 | 010-DataAnalysisWorkflow | 本文的并列主题 |
+| 数据清洗详解 | 011-DataCleaningDetailed | 本文的并列主题 |
+| 特征工程 | 012-FeatureEngineering | 本文的并列主题 |
+| Pandas分组聚合 | 013-PandasGroupAggregate | 本文的并列主题 |
+| Pandas时间序列 | 014-PandasTimeSequence | 本文的并列主题 |
+| NumPy广播机制 | 015-NumPyMechanism | 本文的原理深化 |
+| Matplotlib子图布局 | 016-MatplotlibSubGraph | 本文的并列主题 |
+| Seaborn统计图表 | 017-SeabornStatsGraphTable | 本文的并列主题 |
+| 假设检验详解 | 018-HypothesisTestingDetailed | 本文的并列主题 |
+| 相关性分析 | 019-CorrelationAnalysis | 本文的并列主题 |
+| 回归分析 | 020-RegressionAnalysis | 本文的并列主题 |
+| 商业智能 | 021-BusinessIntelligence | 本文的并列主题 |
+| 自动化报表 | 022-AutomationTable | 本文的并列主题 |
+
+速查表的作用是让读者快速判断：哪些文档应在阅读本文前掌握（前置基础），哪些文档应在阅读本文后继续（延伸主题）。本模块的交叉引用体系即以此表为基础。
+
+## 15. 术语表
+
+下表整理《Pandas -- DataFrame/Series、数据清洗、合并重塑》及 数据分析 模块中出现的高频术语，给出简明释义。术语按字母序或逻辑序排列，供查阅。
+
+| 术语 | 释义 |
+| --- | --- |
+| 数据形态 | 表格（结构化）、序列（时间）、文本、图像；分析前确定数据类型（数值/类别/顺序）。 |
+| 清洗 | 缺失值（删除/填充）、异常值（IQR/z-score）、重复、类型转换；清洗决定结果可信度。 |
+| 探索性分析（EDA） | 分布（直方图）、集中趋势（均值/中位数）、离散（方差/IQR）、相关性。 |
+| 可视化原则 | 图型匹配数据（趋势折线、比较柱状、构成饼/堆叠、关系散点），标注与叙事。 |
+| 脏数据直接分析（易错点） | 参见常见陷阱章节的详细讲解 |
+| 幸存者偏差（易错点） | 参见常见陷阱章节的详细讲解 |
+| 相关当因果（易错点） | 参见常见陷阱章节的详细讲解 |
+| 平均值误导（易错点） | 参见常见陷阱章节的详细讲解 |
+| 可视化误导（易错点） | 参见常见陷阱章节的详细讲解 |
+| 过拟合解释（易错点） | 参见常见陷阱章节的详细讲解 |
+
+术语表与正文配合使用：先通读正文，遇到模糊术语回查本表；长期使用后术语会自然进入工作记忆。

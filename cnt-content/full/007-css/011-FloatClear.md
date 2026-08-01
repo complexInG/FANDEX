@@ -4,9 +4,9 @@ title: 浮动与清除
 module: css
 category: CSS
 difficulty: beginner
-description: float、clear
+description: 'CSS 浮动与清除的完整原理：float/clear 属性、BFC 与 flow-root、clearfix 演进与现代布局替代方案。'
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-01'
 related:
   - css/margin合并与塌陷
   - css/定位详解
@@ -14,64 +14,489 @@ related:
   - css/渐变
 prerequisites:
   - css/概述与基本语法
+learningObjectives:
+  - level: remember
+    objective: 能陈述 float 的取值集合（left/right/none/inline-start/inline-end）及其各自语义。
+    verifiable: 默写属性取值并解释每个值的布局效果
+  - level: understand
+    objective: 能解释"脱离文档流但不脱离文本流"的含义，以及浮动如何触发父容器高度塌陷。
+    verifiable: 用图示或文字说明浮动元素与文本流的相互作用
+  - level: apply
+    objective: '能使用 clearfix、BFC 与 display: flow-root 三种方式修复父容器高度塌陷。'
+    verifiable: 编写三种修复方案的完整 CSS 代码并说明适用场景
+  - level: analyze
+    objective: 能分析 float 布局与 Flexbox/Grid 布局在文档流、对齐与响应式方面的差异。
+    verifiable: 给出同一布局用三种方案实现的对比表
+  - level: evaluate
+    objective: 能根据具体布局需求判断是否应当使用浮动，并论证替代方案。
+    verifiable: 对文字环绕、多栏布局等场景给出带依据的选择
+  - level: create
+    objective: 能基于浮动实现完整的图文混排与旧式两栏布局，并给出可维护的工程化写法。
+    verifiable: 完成案例研究中的完整页面代码
+exercises:
+  - id: float-01
+    type: fill-blank
+    cognitiveLevel: remember
+    question: 浮动元素的取值中，_____ 表示元素向左浮动，_____ 表示不浮动（默认值）。
+    answer: left；none
+    explanation: float 的默认值是 none；left 使元素靠左排列。
+    difficulty: easy
+  - id: float-02
+    type: choice
+    cognitiveLevel: understand
+    question: 关于浮动元素"脱离文档流但不脱离文本流"，下列说法正确的是？
+    options:
+      - A. 浮动元素完全不可见
+      - B. 浮动元素不参与普通流高度计算，但后续行内内容会环绕它排列
+      - C. 浮动元素仍占据普通流中的全部空间
+      - D. 浮动元素自动建立新的 BFC 且不产生任何影响
+    answer: B
+    explanation: 浮动元素从普通流中取出，父容器因此塌陷；但文本与行内内容会沿着浮动元素边缘环绕。
+    difficulty: medium
+  - id: float-03
+    type: code-fix
+    cognitiveLevel: apply
+    question: '以下代码中 .wrapper 的高度塌陷了，请用 display: flow-root 修复。'
+    buggyCode: ".wrapper { border: 1px solid #333; }\n.child { float: left; width: 200px; height: 100px; }"
+    language: css
+    fixedCode: ".wrapper { border: 1px solid #333; display: flow-root; }\n.child { float: left; width: 200px; height: 100px; }"
+    errorDescription: 浮动子元素脱离文档流，父容器无法包含其高度。
+    difficulty: easy
+  - id: float-04
+    type: open-ended
+    cognitiveLevel: analyze
+    question: 分别用 float、Flexbox 与 Grid 实现"左侧固定 240px、右侧自适应"的两栏布局，比较其代码量与维护成本。
+    answer: 参考案例研究章节的三种实现。
+    explanation: 浮动方案需要清除浮动与手动宽度计算；Flexbox 无需清浮动；Grid 可同时控制行列轨道。
+    difficulty: hard
+references:
+  - type: documentation
+    authors:
+      - MDN Web Docs
+    year: 2026
+    title: 'float - CSS: Cascading Style Sheets'
+    venue: MDN Web Docs
+    url: https://developer.mozilla.org/en-US/docs/Web/CSS/float
+    accessedDate: '2026-08-01'
+  - type: documentation
+    authors:
+      - MDN Web Docs
+    year: 2026
+    title: 'clear - CSS: Cascading Style Sheets'
+    venue: MDN Web Docs
+    url: https://developer.mozilla.org/en-US/docs/Web/CSS/clear
+    accessedDate: '2026-08-01'
+  - type: documentation
+    authors:
+      - MDN Web Docs
+    year: 2026
+    title: Floats - Learn web development
+    venue: MDN Web Docs
+    url: https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Floats
+    accessedDate: '2026-08-01'
+  - type: standard
+    authors:
+      - W3C
+    year: 2023
+    title: 'CSS Display Module Level 3（display: flow-root）'
+    venue: W3C Candidate Recommendation
+    url: https://www.w3.org/TR/css-display-3/
+    accessedDate: '2026-08-01'
+  - type: documentation
+    authors:
+      - CSS-Tricks
+    year: 2021
+    title: All About Floats
+    venue: CSS-Tricks
+    url: https://css-tricks.com/all-about-floats/
+    accessedDate: '2026-08-01'
+etymology:
+  - term: 浮动
+    english: float
+    origin: 源于报纸排版的图文混排思想，将图片"浮"到段落的左侧或右侧，文本沿其轮廓环绕。
+  - term: 块格式化上下文
+    english: Block Formatting Context (BFC)
+    origin: CSS 视觉格式化模型术语，指一块独立渲染区域，其内部布局不对外部元素产生影响。
+estimatedReadingTime: 25
+lastReviewed: '2026-08-01'
+reviewer: fanquanpp
 ---
 
-## 1. float 属性
+# CSS 浮动与清除：原理、实践与现代替代
+
+> 本文档对标 CSS 权威规范（CSS2.1 §9.5 Floats、CSS Display Module Level 3）与 MDN 教学文档，
+> 从视觉格式化模型出发，完整讲解浮动（float）与清除（clear）的底层原理、历史演进与工程实践。
+
+---
+
+## 1. 学习目标（Bloom 分类）
+
+完成本文学习后，学习者应当具备以下能力：
+
+- **R1（记忆）**：陈述 `float` 的全部取值（`left`、`right`、`none`、`inline-start`、`inline-end`）及默认值。
+- **R2（记忆）**：说出 `clear` 的取值（`none`、`left`、`right`、`both`、`inline-start`、`inline-end`）及默认值。
+- **U1（理解）**：用"脱离文档流但不脱离文本流"解释浮动元素的布局行为。
+- **U2（理解）**：解释父容器高度塌陷的成因与 BFC（块格式化上下文）的作用。
+- **A1（应用）**：使用 clearfix、`overflow: hidden` 与 `display: flow-root` 修复塌陷。
+- **An1（分析）**：对比 float、Flexbox、Grid 三种布局方案在代码量、响应式与维护性上的差异。
+- **E1（评价）**：针对"文字环绕""旧版兼容""两栏布局"给出是否使用浮动的依据。
+- **C1（创造）**：独立实现图文混排与双栏布局，并能解释每一步的原理。
+
+---
+
+## 2. 历史动机与发展脉络
+
+浮动诞生于 CSS1（1996 年），最初的设计动机是模拟报纸排版中的**图文混排**：
+让图片向左或向右"漂浮"，让文字沿着图片边缘自然环绕。
+
+| 时期 | 事件 | 意义 |
+| --- | --- | --- |
+| 1996 | CSS1 引入 `float` | 首次在 Web 上实现图文混排 |
+| 1998 | CSS2 引入 `clear` 与定位体系 | 补全浮动清除机制 |
+| 2000 年代 | "浮动布局"时代 | 开发者用 float 拼装整页布局（两栏、三栏） |
+| 2009-2012 | Flexbox 与 Grid 规范启动 | 提供以文档流为中心的一维/二维布局方案 |
+| 2017 | Grid 主流浏览器支持 | 浮动退出整页布局主流场景 |
+| 2020s | `display: flow-root` 广泛支持 | 提供语义化的 BFC 创建方式，替代 hack |
+
+历史上的关键教训：**浮动是被"借"来搭建整页布局的**，它本身并不具备网格系统的
+对齐与轨道能力，因此 2010 年代后逐渐被 Flexbox 与 Grid 取代；但文字环绕这一
+原生能力至今仍没有更好的替代品。
+
+---
+
+## 3. 形式化定义
+
+### 3.1 float 属性
+
+按 CSS2.1 §9.5 定义，浮动框（floating box）是一个向左或向右移动的框，
+其外边界（outer edge）被移动到当前行的起点或终点，或移动到另一个浮动框的
+外边界旁。浮动元素：
+
+- 从普通流（normal flow）中**取出**，不参与父容器的高度计算；
+- 仍参与文本流（text flow），后续行内内容沿其边界环绕；
+- 其顶端（top）不得超过浮动元素之前生成的任何块框的顶端；
+- 同一方向连续浮动的框依次水平排列，空间不足时换行。
+
+### 3.2 取值语法
+
+```text
+float: left | right | none | inline-start | inline-end
+clear: none | left | right | both | inline-start | inline-end
+```
+
+| 属性 | 取值 | 效果 |
+| --- | --- | --- |
+| `float: left` | 靠左浮动 | 元素靠父容器左边缘排列 |
+| `float: right` | 靠右浮动 | 元素靠父容器右边缘排列 |
+| `float: none` | 默认 | 元素按普通流排列 |
+| `float: inline-start` | 逻辑属性 | 在 LTR 中等于 left，在 RTL 中等于 right |
+| `float: inline-end` | 逻辑属性 | 在 LTR 中等于 right，在 RTL 中等于 left |
+| `clear: left` | 清除左浮动 | 元素移到其上方所有左浮动框之下 |
+| `clear: right` | 清除右浮动 | 元素移到其上方所有右浮动框之下 |
+| `clear: both` | 清除两侧 | 元素移到其上方所有浮动框之下 |
+
+### 3.3 逻辑属性与物理属性
+
+CSS Logical Properties 模块为 `float`/`clear` 增加了 `inline-start`/`inline-end`
+两个逻辑值，它们随书写模式（writing-mode）与方向（direction）自动翻转，
+适合国际化（i18n）场景。
+
+---
+
+## 4. 理论推导与原理解析
+
+### 4.1 视觉格式化模型中的位置
+
+普通流中的块级元素按"包含块、块级盒、行内盒"层层嵌套。浮动把元素从
+**块级格式化上下文**中取出，放入一个"浮动带"（float band）：
+
+1. 浮动元素生成浮动框，沿包含块的左/右边距放置；
+2. 后续块级盒忽略浮动占用的横向空间（所以会"顶上来"）；
+3. 后续行内内容（文本、行内元素）在剩余空间中排布，形成环绕效果；
+4. 若浮动高度超过其父容器内容区，父容器不感知其高度，于是高度塌陷。
+
+### 4.2 高度塌陷的成因
+
+```html
+<div class="wrapper">
+  <div class="child"></div>
+</div>
+```
 
 ```css
-img {
-  float: left;
-  margin-right: 1rem;
+.wrapper { border: 1px solid #333; }
+.child { float: left; width: 200px; height: 100px; }
+```
+
+`.wrapper` 的高度由普通流内容决定，而 `.child` 已脱离普通流，因此 wrapper
+的高度为 0（仅边框可见），这就是"高度塌陷"。
+
+### 4.3 BFC 如何解决塌陷
+
+BFC（块格式化上下文）是一块独立渲染区域，其特性之一：**BFC 会包含其内部所有
+浮动元素**。因此，只要让父容器形成 BFC，它就会把浮动的子元素"算进"自己的高度。
+创建 BFC 的常见方式：
+
+| 方式 | 写法 | 副作用 |
+| --- | --- | --- |
+| overflow 非 visible | `overflow: hidden` | 可能裁剪溢出内容 |
+| display: flow-root | `display: flow-root` | 无副作用，语义清晰 |
+| display: inline-block | `display: inline-block` | 引入行内盒特性 |
+| float 自身 | `float: left` | 父容器自己也浮动了 |
+| position: absolute/fixed | `position: absolute` | 脱离文档流 |
+
+### 4.4 clearfix 的历史 hack
+
+在 `flow-root` 出现前，社区使用 `clearfix` 伪元素方案：
+
+```css
+.clearfix::after {
+  content: '';
+  display: block;
+  clear: both;
 }
 ```
 
-| 值      | 说明           |
-| ------- | -------------- |
-| `left`  | 左浮动         |
-| `right` | 右浮动         |
-| `none`  | 不浮动（默认） |
+原理：在父容器末尾插入一个空的块级伪元素，并对其设置 `clear: both`，
+迫使父容器把该伪元素放在所有浮动元素之下，从而撑开高度。
 
-浮动特性：脱离文档流但不脱离文本流；尽量靠左/右排列。
+---
 
-## 2. 清除浮动
+## 5. 代码示例
 
-### 父元素高度塌陷问题
+### 5.1 基础浮动与文字环绕
+
+```html
+<article>
+  <img src="cover.jpg" alt="封面" class="cover">
+  <p>这段文字会沿着图片的右侧轮廓环绕排列，形成杂志式排版效果。</p>
+  <p>第二段继续环绕，直到图片底部结束，后续内容恢复整行排列。</p>
+</article>
+```
 
 ```css
-/* 方式1：clearfix */
+.cover {
+  float: left;
+  width: 240px;
+  margin-right: 1.5rem;
+  border-radius: 8px;
+}
+```
+
+### 5.2 右浮动与 clear
+
+```html
+<div class="quote">引用块</div>
+<p>普通段落</p>
+```
+
+```css
+.quote {
+  float: right;
+  width: 40%;
+  margin-left: 1rem;
+}
+p {
+  clear: both; /* 强制段落移动到浮动块之下 */
+}
+```
+
+### 5.3 三种塌陷修复方案
+
+```css
+/* 方式一：clearfix（历史方案） */
 .clearfix::after {
   content: '';
   display: block;
   clear: both;
 }
 
-/* 方式2：BFC */
-.container {
+/* 方式二：overflow（有裁剪风险） */
+.overflow-fix {
   overflow: hidden;
 }
 
-/* 方式3：flow-root（推荐） */
-.container {
+/* 方式三：flow-root（现代推荐） */
+.flow-root-fix {
   display: flow-root;
 }
 ```
 
-## 3. 现代替代方案
+### 5.4 现代两栏布局对照
 
 ```css
-/*  旧方式 */
-.sidebar {
+/* float 方案（旧） */
+.float-layout::after {
+  content: '';
+  display: block;
+  clear: both;
+}
+.float-layout .sidebar {
   float: left;
   width: 25%;
 }
-
-/*  新方式 */
-.layout {
-  display: flex;
+.float-layout .main {
+  float: right;
+  width: 73%;
 }
-.sidebar {
-  width: 25%;
+
+/* flex 方案（推荐） */
+.flex-layout {
+  display: flex;
+  gap: 2%;
+}
+.flex-layout .sidebar {
+  flex: 0 0 25%;
+}
+.flex-layout .main {
+  flex: 1;
 }
 ```
 
-浮动仍适用于：文字环绕图片。
+---
+
+## 6. 对比分析
+
+| 维度 | float | Flexbox | Grid |
+| --- | --- | --- | --- |
+| 文档流参与度 | 脱离普通流 | 保持一维流 | 保持二维流 |
+| 高度塌陷 | 常见 | 不会 | 不会 |
+| 对齐能力 | 弱 | 主轴/交叉轴强 | 行列轨道强 |
+| 响应式 | 需媒体查询手改 | 自动换行（wrap） | 自动填充（auto-fill） |
+| 文字环绕 | 原生支持 | 不支持 | 不支持 |
+| 代码可维护性 | 低（需 hack） | 高 | 高 |
+| 浏览器兼容 | 全兼容 | 现代浏览器 | 现代浏览器 |
+| 适用场景 | 图文混排、旧项目维护 | 导航、组件内一维布局 | 整页复杂二维布局 |
+
+---
+
+## 7. 常见陷阱与最佳实践
+
+1. **忘记清除浮动导致塌陷**：只要父容器内含浮动子元素，就必须修复；
+   优先使用 `display: flow-root`，其次 clearfix。
+2. **overflow: hidden 裁剪内容**：`overflow: hidden` 形成的 BFC 会隐藏溢出
+   的提示框或阴影，使用前确认无裁剪需求。
+3. **百分比宽度与 padding 冲突**：浮动元素默认 `box-sizing: content-box`，
+   设置 `width: 25%` 后再加 padding 会撑破容器，建议全局 `box-sizing: border-box`。
+4. **浮动顺序影响换行**：浮动元素按 DOM 顺序排列，顺序调整可能改变换行位置，
+   移动端请优先使用 Flexbox/Grid 的自然换行。
+5. **clear 作用对象错误**：`clear` 只清除"其上方"的浮动，放在浮动元素前面无效。
+6. **RTL 场景**：使用 `inline-start`/`inline-end` 逻辑值，避免硬编码 left/right。
+
+---
+
+## 8. 工程实践
+
+### 8.1 在构建工具中启用现代属性
+
+使用 PostCSS 的 `autoprefixer` 时，`display: flow-root` 等现代属性会被自动
+按浏览器目标（browserslist）处理：
+
+```json
+{
+  "browserslist": ["last 2 versions", "not dead"]
+}
+```
+
+### 8.2 组件化封装
+
+```css
+/* components/MediaObject.css */
+.media {
+  display: flow-root;
+}
+.media__figure {
+  float: left;
+  margin-right: 1rem;
+}
+.media__body {
+  overflow: hidden; /* 或 min-width: 0，防止文本溢出 */
+}
+```
+
+### 8.3 代码检查
+
+使用 Stylelint 的 `declaration-property-value-no-unknown` 或
+`selector-max-id` 等规则，配合 `stylelint-config-standard` 保证浮动相关
+代码风格统一。
+
+---
+
+## 9. 案例研究：杂志式图文混排页面
+
+需求：实现一个博客文章头图、正文环绕、侧栏引语的完整页面。
+
+```html
+<main class="article">
+  <h1>浮动布局实战</h1>
+  <img class="hero" src="hero.jpg" alt="文章头图">
+  <p>第一段……文字环绕头图右侧。</p>
+  <blockquote class="pull-quote">金句引用</blockquote>
+  <p>引语之后的文字继续环绕。</p>
+</main>
+```
+
+```css
+.article {
+  display: flow-root; /* 修复 hero 与 pull-quote 造成的塌陷 */
+  max-width: 900px;
+  margin: 0 auto;
+}
+.hero {
+  float: left;
+  width: 45%;
+  margin: 0 1.5rem 1rem 0;
+}
+.pull-quote {
+  float: right;
+  width: 35%;
+  margin: 0 0 1rem 1.5rem;
+  border-left: 4px solid #d63031;
+  padding-left: 1rem;
+}
+```
+
+要点：
+
+1. 文章容器用 `display: flow-root` 一次性解决所有浮动子元素的高度塌陷；
+2. 左浮动头图与右浮动引语互不冲突（不同方向）；
+3. 正文段落无需 `clear`，自然环绕；
+4. 移动端可叠加媒体查询，将浮动降级为普通块级排列。
+
+---
+
+## 知识讲解与要点分析（原习题）
+
+1. （填空）`float` 的默认值是 _____；`clear: both` 的作用是 _____。
+2. （选择）以下哪种方式创建 BFC 且没有溢出裁剪副作用？
+   A. `overflow: hidden`  B. `display: flow-root`  C. `position: static`  D. `display: contents`
+3. （代码修正）给定塌陷代码，改用 `display: flow-root` 修复。
+4. （开放题）用 float 实现两栏布局后，为什么移动端通常改用 Flexbox？请给出三点理由。
+5. （分析）`float: inline-start` 在 `direction: rtl` 下表现为什么？
+6. （创造）实现"左图右文 + 右下金句"的完整组件，要求三种修复方式至少使用一种。
+
+参考答案见各题 `explanation` 字段与案例研究章节。
+
+---
+
+## 11. 参考文献
+
+1. W3C. CSS 2.1 §9.5 Floats. [https://www.w3.org/TR/CSS2/visuren.html#floats](https://www.w3.org/TR/CSS2/visuren.html#floats)
+2. MDN Web Docs. float - CSS. [https://developer.mozilla.org/en-US/docs/Web/CSS/float](https://developer.mozilla.org/en-US/docs/Web/CSS/float)
+3. MDN Web Docs. clear - CSS. [https://developer.mozilla.org/en-US/docs/Web/CSS/clear](https://developer.mozilla.org/en-US/docs/Web/CSS/clear)
+4. MDN Web Docs. Floats - Learn web development. [https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Floats](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Floats)
+5. W3C. CSS Display Module Level 3. [https://www.w3.org/TR/css-display-3/](https://www.w3.org/TR/css-display-3/)
+6. CSS-Tricks. All About Floats. [https://css-tricks.com/all-about-floats/](https://css-tricks.com/all-about-floats/)
+
+---
+
+## 12. 延伸阅读
+
+- MDN：CSS 布局学习路径（Flexbox、Grid）：
+  [https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout)
+- CSS-Tricks：A Complete Guide to Flexbox：
+  [https://css-tricks.com/snippets/css/a-guide-to-flexbox/](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
+- CSS-Tricks：A Complete Guide to Grid：
+  [https://css-tricks.com/snippets/css/complete-guide-grid/](https://css-tricks.com/snippets/css/complete-guide-grid/)
+- W3C：CSS Logical Properties and Values Level 1：
+  [https://www.w3.org/TR/css-logical-1/](https://www.w3.org/TR/css-logical-1/)

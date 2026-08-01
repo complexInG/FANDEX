@@ -1278,27 +1278,33 @@ class GoodAsyncIter:
 
 ### 8.1 项目结构
 
-```
-my_async_project/
-├── pyproject.toml
-├── README.md
-├── src/
-│   └── myapp/
-│       ├── __init__.py
-│       ├── main.py           # 入口
-│       ├── config.py         # 配置
-│       ├── db.py             # 数据库
-│       ├── http_client.py    # HTTP 客户端
-│       ├── services/         # 业务逻辑
-│       │   ├── __init__.py
-│       │   └── user_service.py
-│       └── routes/           # API 路由
-│           ├── __init__.py
-│           └── users.py
-├── tests/
-│   ├── conftest.py
-│   └── test_user_service.py
-└── Dockerfile
+```mermaid
+flowchart TD
+    T0["my_async_project/"]
+    T1["pyproject.toml"]
+    T2["README.md"]
+    T3["src/"]
+    T4["myapp/"]
+    T5["__init__.py"]
+    T6["main.py           # 入口"]
+    T7["config.py         # 配置"]
+    T8["db.py             # 数据库"]
+    T9["http_client.py    # HTTP 客户端"]
+    T10["services/         # 业务逻辑"]
+    T11["__init__.py"]
+    T12["user_service.py"]
+    T13["routes/           # API 路由"]
+    T14["__init__.py"]
+    T15["users.py"]
+    T16["tests/"]
+    T17["conftest.py"]
+    T18["test_user_service.py"]
+    T19["Dockerfile"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T15 --> T16
+    T18 --> T19
 ```
 
 ### 8.2 pyproject.toml 配置
@@ -1840,9 +1846,9 @@ async def count_users_in_db():
 # 启动：uvicorn main:app --reload
 ```
 
-## 10. 练习
+## 知识讲解与要点分析（原练习）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **1. 以下代码的输出是什么？**
 
@@ -1870,8 +1876,6 @@ B. A C D B
 C. C A D B
 D. A C B D
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -1883,7 +1887,6 @@ D. A C B D
 5. 1s 后 `task1` 恢复，打印 "B"。
 
 最终输出：A C D B
-</details>
 
 ---
 
@@ -1894,15 +1897,12 @@ B. `await some_async_function()`
 C. `time.sleep(1)`
 D. `await asyncio.gather(...)`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
 `time.sleep` 是同步阻塞调用，会阻塞整个事件循环。其他选项都是异步操作，会让出控制权。
 
 正确做法：`await asyncio.sleep(1)` 或 `await asyncio.to_thread(time.sleep, 1)`。
-</details>
 
 ---
 
@@ -1913,8 +1913,6 @@ B. 提供结构化并发，更好的错误处理
 C. 支持取消单个任务
 D. 可以嵌套使用
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -1924,7 +1922,6 @@ D. 可以嵌套使用
 - 使用 `ExceptionGroup` 包装多个异常，便于调试。
 
 性能与 `gather` 相当，主要优势在错误处理和资源管理。
-</details>
 
 ---
 
@@ -1935,8 +1932,6 @@ B. asyncio 在单线程内运行，GIL 不影响其并发能力
 C. asyncio 通过多线程绕过 GIL
 D. GIL 仅影响 CPU 密集型异步代码
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B、D**
 
@@ -1944,7 +1939,6 @@ D. GIL 仅影响 CPU 密集型异步代码
 - D：若异步代码中调用 CPU 密集型函数（无 await），GIL 会阻塞事件循环。
 
 asyncio 不能利用多核（需 multiprocessing），但 GIL 不是其并发瓶颈。
-</details>
 
 ---
 
@@ -1961,8 +1955,6 @@ B. 返回的是协程对象列表，不是结果
 C. 没有创建 Task
 D. 没有错误
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -1976,9 +1968,8 @@ async def fetch_all(urls):
     tasks = [fetch(url) for url in urls]
     return await asyncio.gather(*tasks)
 ```
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **1.** `asyncio.run()` 是 Python 3.7+ 的简化 API，等价于以下代码：
 
@@ -1990,8 +1981,6 @@ finally:
     loop.__________()
 ```
 
-<details>
-<summary>答案</summary>
 
 ```python
 loop = asyncio.new_event_loop()
@@ -2000,51 +1989,38 @@ try:
 finally:
     loop.close()
 ```
-</details>
 
 ---
 
 **2.** 异步生成器使用 `________` 关键字返回值，异步迭代器需要实现 `________` 和 `________` 方法。
 
-<details>
-<summary>答案</summary>
 
 - `yield`
 - `__aiter__`
 - `__anext__`
-</details>
 
 ---
 
 **3.** Python 3.11 引入的 `________` 上下文管理器替代了 `asyncio.wait_for`，更符合 Python 风格。
 
-<details>
-<summary>答案</summary>
 
 `asyncio.timeout`
-</details>
 
 ---
 
 **4.** 在异步代码中调用同步阻塞函数应使用 `________` 函数（Python 3.9+）。
 
-<details>
-<summary>答案</summary>
 
 `asyncio.to_thread`
-</details>
 
 ---
 
 **5.** `asyncio.gather(*tasks, return_exceptions=________)` 可以让异常作为结果返回，不中断其他任务。
 
-<details>
-<summary>答案</summary>
 
 `True`
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **1. 实现异步限流器**
 
@@ -2062,8 +2038,6 @@ class RateLimiter:
         # ...
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```python
 import asyncio
@@ -2100,7 +2074,6 @@ async def main():
 
 asyncio.run(main())
 ```
-</details>
 
 ---
 
@@ -2114,8 +2087,6 @@ def async_cache(ttl: float = 60.0):
     # ...
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```python
 import asyncio
@@ -2176,7 +2147,6 @@ async def main():
 
 asyncio.run(main())
 ```
-</details>
 
 ---
 
@@ -2195,8 +2165,6 @@ class TaskOrchestrator:
         # ...
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```python
 import asyncio
@@ -2277,14 +2245,11 @@ async def main():
 
 asyncio.run(main())
 ```
-</details>
 
 ### 10.4 思考题
 
 **1. 为什么 asyncio 不能很好地处理 CPU 密集型任务？如何解决？**
 
-<details>
-<summary>参考答案</summary>
 
 asyncio 基于单线程协作式调度，同一时刻只有一个协程在执行。当协程执行 CPU 密集型计算（无 await）时，会占用整个事件循环，导致其他协程无法被调度，造成整体阻塞。
 
@@ -2304,14 +2269,11 @@ asyncio 基于单线程协作式调度，同一时刻只有一个协程在执行
 4. **使用 Cython/Rust 扩展**：将热点代码用编译语言实现，释放 GIL。
 
 5. **Python 3.13+ 的 PEP 703**：实验性无 GIL 构建，未来可能改善。
-</details>
 
 ---
 
 **2. 描述 `asyncio.gather` 与 `asyncio.wait` 的区别，并说明各自的适用场景。**
 
-<details>
-<summary>参考答案</summary>
 
 **`asyncio.gather(*coros, return_exceptions=False)`**：
 
@@ -2343,14 +2305,11 @@ done, pending = await asyncio.wait(
 for task in pending:
     task.cancel()  # 取消未完成的任务
 ```
-</details>
 
 ---
 
 **3. 在生产环境中，如何监控和排查 asyncio 应用的性能问题？**
 
-<details>
-<summary>参考答案</summary>
 
 **1. 启用调试模式**：
 ```python
@@ -2396,7 +2355,6 @@ AsyncioInstrumentor().instrument()
 ```
 
 **7. 火焰图分析**：使用 `py-spy` 抓取 CPU 火焰图，识别热点函数。
-</details>
 
 ## 11. 参考文献
 
@@ -2559,13 +2517,13 @@ except KeyboardInterrupt:
 
 | API | 3.6 | 3.7 | 3.8 | 3.9 | 3.10 | 3.11 | 3.12 |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `asyncio.run()` | - | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `asyncio.create_task()` | - | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `asyncio.TaskGroup` | - | - | - | - | - | ✓ | ✓ |
-| `asyncio.timeout()` | - | - | - | - | - | ✓ | ✓ |
-| `asyncio.to_thread()` | - | - | - | ✓ | ✓ | ✓ | ✓ |
-| `asyncio.Runner` | - | - | - | - | - | ✓ | ✓ |
-| `loop.run_in_executor()` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `asyncio.run()` | - | √ | √ | √ | √ | √ | √ |
+| `asyncio.create_task()` | - | √ | √ | √ | √ | √ | √ |
+| `asyncio.TaskGroup` | - | - | - | - | - | √ | √ |
+| `asyncio.timeout()` | - | - | - | - | - | √ | √ |
+| `asyncio.to_thread()` | - | - | - | √ | √ | √ | √ |
+| `asyncio.Runner` | - | - | - | - | - | √ | √ |
+| `loop.run_in_executor()` | √ | √ | √ | √ | √ | √ | √ |
 
 ## 附录 D：性能基准
 

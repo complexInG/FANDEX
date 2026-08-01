@@ -15,6 +15,11 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
+# Java 安全与加密 MessageDigest/Cipher/KeyStore/SecureRandom 语法速查手册
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 学习目标
 
@@ -1669,7 +1674,7 @@ spec:
 
 **结果**：log4shell 事件中 2 小时内完成全量检测与修复。
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 选择题
 
@@ -1683,7 +1688,7 @@ D. 无影响
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 GCM 中 nonce 重复导致 GHASH 的认证密钥 $H$ 泄露，攻击者可构造任意密文-标签对，破坏完整性保证。机密性也会部分泄露（相同 nonce 下明文 XOR 关系暴露）。这是 GCM 最严重的安全陷阱，必须保证 nonce 不重复（计数器或加密 RNG）。
 
@@ -1699,7 +1704,7 @@ D. Argon2id
 <details>
 <summary>答案与解析</summary>
 
-**答案：D**
+**讲解要点：D**
 
 Argon2id 是 Password Hashing Competition（PHC）获胜算法，同时具备内存硬度与计算硬度，抗 ASIC/GPU 攻击。MD5/SHA-256 不是密码哈希算法（无慢哈希特性）。PBKDF2 抗 ASIC 能力弱。bcrypt 与 scrypt 是 Argon2id 的备选，但 Argon2id 是 PHC 官方推荐。
 
@@ -1715,7 +1720,7 @@ D. `WebSecurityConfigurerAdapter`
 <details>
 <summary>答案与解析</summary>
 
-**答案：B**
+**讲解要点：B**
 
 Spring Security 6 移除了 `WebSecurityConfigurerAdapter`，使用 `@EnableMethodSecurity`（替代 `@EnableGlobalMethodSecurity`）。`@PreAuthorize`、`@PostAuthorize`、`@Secured` 注解仍可用，但需先启用 `@EnableMethodSecurity`。
 
@@ -1731,7 +1736,7 @@ D. IndexedDB
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 HttpOnly Cookie 防 XSS 读取，配合 `Secure`（仅 HTTPS）与 `SameSite=Strict`（防 CSRF）是最佳实践。localStorage/sessionStorage 可被 JS 读取，XSS 攻击即可窃取。IndexedDB 同样有 XSS 风险。
 
@@ -1919,7 +1924,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
 </details>
 
-### 思考题
+## 知识讲解与要点分析（原思考题）
 
 **1. 解释为什么 JWT 不能简单"撤销"，以及如何实现 JWT 吊销机制？**
 
@@ -2012,3 +2017,163 @@ JWT 是无状态的，签名后服务端不存储，过期前始终有效。这�
 - **Cloud Native Security Foundation (CNSF) Whitepaper**：云原生安全最佳实践。
 - **CycloneDX / SPDX Specification**：SBOM 标准，理解软件物料清单在供应链安全中的作用。
 - **NIST Post-Quantum Cryptography Standardization**：后量子密码学标准化进程，为未来量子计算威胁做准备。
+## MessageDigest 摘要
+
+**基本写法：获取摘要实例**
+`MessageDigest.getInstance(<算法名>);`
+```java
+// 创建 SHA-256 摘要计算器
+MessageDigest md = MessageDigest.getInstance("SHA-256");
+```
+
+---
+
+**基本写法：计算字节数组摘要**
+`<md>.digest(<字节数组>);`
+```java
+// 一次性计算哈希
+byte[] hash = md.digest("hello".getBytes(StandardCharsets.UTF_8));
+```
+
+---
+
+**基本写法：分块更新**
+`<md>.update(<字节数组>);`
+```java
+// 分块输入数据
+md.update("part1".getBytes());
+md.update("part2".getBytes());
+byte[] h = md.digest();
+```
+
+---
+
+## SecureRandom 随机数
+
+**基本写法：创建安全随机数**
+`new SecureRandom();`
+```java
+// 密码学安全的随机数生成器
+SecureRandom sr = new SecureRandom();
+```
+
+---
+
+**基本写法：生成随机字节**
+`<sr>.nextBytes(<字节数组>);`
+```java
+// 填充随机字节
+byte[] salt = new byte[16];
+sr.nextBytes(salt);
+```
+
+---
+
+**基本写法：生成随机整数**
+`<sr>.nextInt(<上界>);`
+```java
+// 生成 0(含) 到 bound(不含) 的随机数
+int code = sr.nextInt(1000000);
+```
+
+---
+
+## KeyGenerator 密钥生成
+
+**基本写法：生成对称密钥**
+`KeyGenerator.getInstance(<算法>);`
+```java
+// 创建 AES 密钥生成器
+KeyGenerator kg = KeyGenerator.getInstance("AES");
+kg.init(256);
+SecretKey key = kg.generateKey();
+```
+
+---
+
+## Cipher 加解密
+
+**基本写法：获取 Cipher 实例**
+`Cipher.getInstance(<算法/模式/填充>);`
+```java
+// 创建 AES/GCM 加密器
+Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+```
+
+---
+
+**基本写法：初始化加密**
+`<cipher>.init(Cipher.ENCRYPT_MODE, <密钥>);`
+```java
+// 用密钥初始化为加密模式
+cipher.init(Cipher.ENCRYPT_MODE, key);
+```
+
+---
+
+**基本写法：执行加密**
+`<cipher>.doFinal(<明文>);`
+```java
+// 加密并返回密文
+byte[] ct = cipher.doFinal("secret".getBytes());
+```
+
+---
+
+**基本写法：解密**
+`<cipher>.init(Cipher.DECRYPT_MODE, <密钥>);`
+```java
+// 用密钥初始化为解密模式
+cipher.init(Cipher.DECRYPT_MODE, key, params);
+byte[] pt = cipher.doFinal(ct);
+```
+
+---
+
+## KeyStore 密钥库
+
+**基本写法：加载默认密钥库**
+`KeyStore.getInstance(<类型>);`
+```java
+// 创建 JKS 类型密钥库
+KeyStore ks = KeyStore.getInstance("PKCS12");
+ks.load(null, null); // 新建空密钥库
+```
+
+---
+
+**基本写法：存储密钥**
+`<ks>.setKeyEntry(<别名>, <密钥>, <密码>, <证书链>);`
+```java
+// 把密钥存入密钥库
+ks.setKeyEntry("myKey", key, "pass".toCharArray(), null);
+```
+
+---
+
+## Mac 消息认证码
+
+**基本写法：计算 HMAC**
+`Mac.getInstance(<算法>);`
+```java
+// 创建 HMAC-SHA256
+Mac mac = Mac.getInstance("HmacSHA256");
+mac.init(key);
+byte[] tag = mac.doFinal("data".getBytes());
+```
+
+---
+
+## Signature 签名
+
+**基本写法：数字签名**
+`Signature.getInstance(<算法>);`
+```java
+// 创建 SHA256withRSA 签名对象
+Signature sig = Signature.getInstance("SHA256withRSA");
+sig.initSign(privateKey);
+sig.update("data".getBytes());
+byte[] sign = sig.sign();
+```
+
+---

@@ -68,18 +68,29 @@ prerequisites:
 
 Go 1.0 之前，所有 Go 项目必须放在 `$GOPATH/src` 目录下。这种设计假设所有依赖全局共享：
 
-```text
-$GOPATH/
-├── bin/         # go install 生成的可执行文件
-├── pkg/         # go build 缓存的 .a 文件
-└── src/
-    ├── github.com/
-    │   ├── user1/
-    │   │   └── projectA/
-    │   └── user2/
-    │       └── projectB/
-    └── golang.org/x/
-        └── net/
+```mermaid
+flowchart TD
+    T0["$GOPATH/"]
+    T1["bin/         # go install 生成的可执行文件"]
+    T2["pkg/         # go build 缓存的 .a 文件"]
+    T3["src/"]
+    T4["github.com/"]
+    T5["user1/"]
+    T6["projectA/"]
+    T7["user2/"]
+    T8["projectB/"]
+    T9["golang.org/x/"]
+    T10["net/"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T3 --> T5
+    T3 --> T6
+    T3 --> T7
+    T3 --> T8
+    T8 --> T9
+    T9 --> T10
 ```
 
 GOPATH 的三大痛点：
@@ -458,38 +469,48 @@ require (
 
 ### 示例 2：企业级项目结构
 
-```text
-github.com/fandex/platform/
-├── go.mod                      # 主模块
-├── go.work                     # workspace（多模块开发）
-├── cmd/
-│   ├── api-server/
-│   │   └── main.go
-│   ├── worker/
-│   │   └── main.go
-│   └── admin-tool/
-│       └── main.go
-├── internal/
-│   ├── auth/
-│   │   └── auth.go
-│   ├── db/
-│   │   └── db.go
-│   └── config/
-│       └── config.go
-├── pkg/
-│   ├── api/
-│   │   └── api.go
-│   └── logger/
-│       └── logger.go
-├── api/
-│   └── proto/                  # protobuf 定义
-├── deployments/
-│   ├── docker/
-│   └── k8s/
-├── scripts/
-│   ├── build.sh
-│   └── release.sh
-└── docs/
+```mermaid
+flowchart TD
+    T0["github.com/fandex/platform/"]
+    T1["go.mod                      # 主模块"]
+    T2["go.work                     # workspace（多模块开发）"]
+    T3["cmd/"]
+    T4["api-server/"]
+    T5["main.go"]
+    T6["worker/"]
+    T7["main.go"]
+    T8["admin-tool/"]
+    T9["main.go"]
+    T10["internal/"]
+    T11["auth/"]
+    T12["auth.go"]
+    T13["db/"]
+    T14["db.go"]
+    T15["config/"]
+    T16["config.go"]
+    T17["pkg/"]
+    T18["api/"]
+    T19["api.go"]
+    T20["logger/"]
+    T21["logger.go"]
+    T22["api/"]
+    T23["proto/                  # protobuf 定义"]
+    T24["deployments/"]
+    T25["docker/"]
+    T26["k8s/"]
+    T27["scripts/"]
+    T28["build.sh"]
+    T29["release.sh"]
+    T30["docs/"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T9 --> T10
+    T16 --> T17
+    T21 --> T22
+    T23 --> T24
+    T26 --> T27
+    T29 --> T30
 ```
 
 ### 示例 3：使用 replace 进行本地多模块开发
@@ -1299,19 +1320,25 @@ Kubernetes（k/k 仓库）是 Go 模块管理的标杆项目：
 - **vendor 模式**：CI 与 release 全部使用 vendor
 - **依赖更新**：使用 `k8s.io/utils` 等工具定期更新
 
-```text
-kubernetes/
-├── go.mod              # 主模块
-├── go.sum
-├── vendor/             # 完整 vendor（~500MB）
-├── staging/
-│   ├── src/
-│   │   └── k8s.io/
-│   │       ├── api/        # 独立 module
-│   │       ├── client-go/  # 独立 module
-│   │       └── ...
-│   └── pseudogo.mod
-└── ...
+```mermaid
+flowchart TD
+    T0["kubernetes/"]
+    T1["go.mod              # 主模块"]
+    T2["go.sum"]
+    T3["vendor/             # 完整 vendor（~500MB）"]
+    T4["staging/"]
+    T5["src/"]
+    T6["k8s.io/"]
+    T7["api/        # 独立 module"]
+    T8["client-go/  # 独立 module"]
+    T9["..."]
+    T10["pseudogo.mod"]
+    T11["..."]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T10 --> T11
 ```
 
 kubernetes/go.mod 片段：
@@ -1343,17 +1370,24 @@ replace (
 
 etcd 从单 module 拆分为多 module：
 
-```text
-etcd/
-├── go.mod              # 主模块 etcd-io/etcd/v3
-├── api/                # module etcd-io/etcd/api/v3
-│   └── go.mod
-├── client/             # module etcd-io/etcd/client/v3
-│   └── go.mod
-├── pkg/
-│   └── go.mod          # module etcd-io/etcd/pkg/v3
-└── server/
-    └── go.mod          # module etcd-io/etcd/server/v3
+```mermaid
+flowchart TD
+    T0["etcd/"]
+    T1["go.mod              # 主模块 etcd-io/etcd/v3"]
+    T2["api/                # module etcd-io/etcd/api/v3"]
+    T3["go.mod"]
+    T4["client/             # module etcd-io/etcd/client/v3"]
+    T5["go.mod"]
+    T6["pkg/"]
+    T7["go.mod          # module etcd-io/etcd/pkg/v3"]
+    T8["server/"]
+    T9["go.mod          # module etcd-io/etcd/server/v3"]
+    T0 --> T1
+    T0 --> T2
+    T3 --> T4
+    T5 --> T6
+    T7 --> T8
+    T8 --> T9
 ```
 
 这种拆分让用户可以只依赖 client，不引入 server 代码，减小二进制体积。
@@ -1371,14 +1405,18 @@ TiDB（pingcap/tidb）采用 monorepo + go.work：
 
 Docker 早期严格使用 vendor：
 
-```text
-moby/
-├── go.mod
-├── vendor/
-│   ├── github.com/
-│   ├── golang.org/x/
-│   └── modules.txt
-└── ...
+```mermaid
+flowchart TD
+    T0["moby/"]
+    T1["go.mod"]
+    T2["vendor/"]
+    T3["github.com/"]
+    T4["golang.org/x/"]
+    T5["modules.txt"]
+    T6["..."]
+    T0 --> T1
+    T0 --> T2
+    T5 --> T6
 ```
 
 vendor 目录大小约 1GB，但保证了完全离线构建与可重现版本。
@@ -1396,7 +1434,7 @@ Google 内部 Go 项目使用 Blaze（Bazel）构建，不使用 go 命令：
 
 ---
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 选择题
 
@@ -1410,7 +1448,7 @@ D. MVS 自动升级依赖到最新兼容版本
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 MVS（Minimal Version Selection）选择满足所有约束的最低版本，复杂度 $O(V+E)$ 线性，完全确定性。这与 npm/cargo 的 SAT 求解器不同，MVS 不会主动升级版本，只在必要时更新到约束要求的最低版本。
 
@@ -1426,7 +1464,7 @@ D. 发布 v2 时不需要修改源码中的 import
 <details>
 <summary>答案与解析</summary>
 
-**答案：D**
+**讲解要点：D**
 
 发布 v2+ 时必须修改所有源码中的 import 语句，将 `github.com/user/lib` 改为 `github.com/user/lib/v2`。这是 Go Modules 最严格的设计：major 版本必须体现在 import path 中，确保版本兼容性在编译期可检查。
 
@@ -1442,7 +1480,7 @@ D. 库模块的 `replace` 会影响下游构建
 <details>
 <summary>答案与解析</summary>
 
-**答案：B**
+**讲解要点：B**
 
 `replace` 只在主模块（main module）生效，不会传递到下游。这是设计哲学：主模块（应用）可以自由替换依赖，但库模块不能影响下游的版本选择（避免供应链攻击）。库模块应使用 `go.work` 进行本地开发。
 
@@ -1458,7 +1496,7 @@ D. 可以手动编辑以修复错误
 <details>
 <summary>答案与解析</summary>
 
-**答案：D**
+**讲解要点：D**
 
 `go.sum` 应通过 `go mod tidy`/`go get` 自动管理，不应手动编辑。手动编辑可能导致校验失败或安全问题。如果 `go.sum` 出现问题，应删除后重新生成：
 
@@ -1479,7 +1517,7 @@ D. workspace 模式需要 `GO111MODULE=on`
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 `go.work` 应加入 `.gitignore`，仅本地开发使用。workspace 不影响发布构建（`go build` 在没有 `go.work` 时仍正常工作）。优先级：`go.work use` > `replace` > `require` > MVS。
 
@@ -1673,7 +1711,7 @@ echo "- Apply minor/patch updates for security fixes" >> $REPORT_FILE
 cat $REPORT_FILE
 ```
 
-### 思考题
+## 知识讲解与要点分析（原思考题）
 
 **1.** 为什么 Go 选择 MVS 而不是 SAT 求解器？请从性能、可重现性、可预测性三个角度分析。
 

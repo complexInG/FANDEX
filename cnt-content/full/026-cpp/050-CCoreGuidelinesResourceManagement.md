@@ -415,6 +415,11 @@ quiz:
     code: 'int* p = new int(42); std::cout << *p;'
     answer: 'auto p = std::make_unique<int>(42); std::cout << *p;'
 ---
+# C++ 核心指南资源管理
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 第 1 章 学习目标与导论
 
@@ -3068,39 +3073,30 @@ folly 的设计哲学是 RAII 不仅用于资源释放，也用于"主动管理�
 
 ## 第 18 章 习题与解答
 
-### 18.1 填空题
+### 填空题知识点讲解
 
 **习题 1**（remember，难度 1）：RAII 缩写展开为 ____（英文全称）。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：Resource Acquisition Is Initialization
+**解析讲解**：Resource Acquisition Is Initialization
 
-**解析**：RAII 是 Resource Acquisition Is Initialization 的首字母缩写，由 Bjarne Stroustrup 于 1980s 提出，强调资源获取与对象初始化的同构性。这一范式将资源生命周期绑定到对象生命周期，利用 C++ 的确定性析构保证资源释放。
-</details>
+**解析讲解**：RAII 是 Resource Acquisition Is Initialization 的首字母缩写，由 Bjarne Stroustrup 于 1980s 提出，强调资源获取与对象初始化的同构性。这一范式将资源生命周期绑定到对象生命周期，利用 C++ 的确定性析构保证资源释放。
 
 **习题 2**（understand，难度 2）：C++ 异常抛出后，从抛出点到 catch 点之间逐帧调用自动对象析构函数的过程称为 ____。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：栈展开（Stack Unwinding）
+**解析讲解**：栈展开（Stack Unwinding）
 
-**解析**：栈展开是 C++ 异常机制的核心，运行时从抛出点开始，逐帧回溯调用栈，对每个栈帧中已构造的自动对象调用析构函数，直至找到匹配的 catch 块。这是 RAII 异常安全的基石：无论异常从哪抛出，所有 RAII 对象的析构函数都会被调用。
-</details>
+**解析讲解**：栈展开是 C++ 异常机制的核心，运行时从抛出点开始，逐帧回溯调用栈，对每个栈帧中已构造的自动对象调用析构函数，直至找到匹配的 catch 块。这是 RAII 异常安全的基石：无论异常从哪抛出，所有 RAII 对象的析构函数都会被调用。
 
 **习题 3**（understand，难度 3）：shared_ptr 通过 ____ 引用计数实现共享所有权（填"原子"或"非原子"）。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：原子
+**解析讲解**：原子
 
-**解析**：shared_ptr 的引用计数采用原子操作（如 `__atomic_fetch_add`），保证多线程下计数正确性。原子操作带来性能开销（约 10-50ns/次），因此 shared_ptr 的拷贝与析构不是零开销。weak_ptr 也参与计数，但使用独立的弱计数。
-</details>
+**解析讲解**：shared_ptr 的引用计数采用原子操作（如 `__atomic_fetch_add`），保证多线程下计数正确性。原子操作带来性能开销（约 10-50ns/次），因此 shared_ptr 的拷贝与析构不是零开销。weak_ptr 也参与计数，但使用独立的弱计数。
 
-### 18.2 选择题
+### 选择题知识点讲解
 
 **习题 4**（understand，难度 3）：关于 RAII 类的拷贝与移动语义，下列哪项描述正确？
 
@@ -3109,13 +3105,10 @@ folly 的设计哲学是 RAII 不仅用于资源释放，也用于"主动管理�
 - C. RAII 类的移动构造函数必须为 noexcept，否则违反标准
 - D. RAII 类的析构函数可以抛出异常，由调用者捕获
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：RAII 类的所有权语义决定拷贝/移动策略：独占资源（如 unique_ptr、lock_guard）应删除拷贝、支持移动；共享资源（如 shared_ptr）可拷贝。移动构造建议 noexcept 但非强制（STL 容器在 noexcept 时才使用移动否则回退拷贝）；析构函数抛异常在 C++11 后默认调用 std::terminate，属未定义行为。
-</details>
+**解析讲解**：RAII 类的所有权语义决定拷贝/移动策略：独占资源（如 unique_ptr、lock_guard）应删除拷贝、支持移动；共享资源（如 shared_ptr）可拷贝。移动构造建议 noexcept 但非强制（STL 容器在 noexcept 时才使用移动否则回退拷贝）；析构函数抛异常在 C++11 后默认调用 std::terminate，属未定义行为。
 
 **习题 5**（analyze，难度 3）：以下代码的输出是？
 
@@ -3135,13 +3128,10 @@ int main() {
 - C. AD
 - D. 0AD
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：make_unique 构造 W 输出 A；std::move 后 p 为空、q 持有对象，输出 0；main 返回时 q 析构 W 输出 D。顺序为 A0D。
-</details>
+**解析讲解**：make_unique 构造 W 输出 A；std::move 后 p 为空、q 持有对象，输出 0；main 返回时 q 析构 W 输出 D。顺序为 A0D。
 
 **习题 6**（analyze，难度 4）：关于异常安全保证，下列描述正确的是？
 
@@ -3150,13 +3140,10 @@ int main() {
 - C. nothrow guarantee 由 noexcept 标注保证，编译器自动生成
 - D. 析构函数默认提供 strong guarantee
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：basic guarantee 要求不泄漏资源且对象处于**有效**（但可能改变）状态，而非"任意状态"；strong guarantee 要求强提交-强回滚（transactional）；nothrow guarantee 由 noexcept 标注但需程序员保证实现不抛；析构函数默认 noexcept 提供基本保证，但不应抛异常。
-</details>
+**解析讲解**：basic guarantee 要求不泄漏资源且对象处于**有效**（但可能改变）状态，而非"任意状态"；strong guarantee 要求强提交-强回滚（transactional）；nothrow guarantee 由 noexcept 标注但需程序员保证实现不抛；析构函数默认 noexcept 提供基本保证，但不应抛异常。
 
 ### 18.3 代码修正题
 
@@ -3172,8 +3159,6 @@ public:
 };
 ```
 
-<details>
-<summary>参考答案</summary>
 
 **修正方案**：
 
@@ -3198,8 +3183,7 @@ public:
 };
 ```
 
-**解析**：修正点：(1) 构造函数检查 fopen 返回值，失败抛异常避免持有无效指针；(2) 析构函数检查 f_ 非空避免 double close；(3) 删除拷贝构造/赋值避免双重释放；(4) 实现移动构造/赋值转移所有权并将源置空。这体现了 RAII 类的五法则。
-</details>
+**解析讲解**：修正点：(1) 构造函数检查 fopen 返回值，失败抛异常避免持有无效指针；(2) 析构函数检查 f_ 非空避免 double close；(3) 删除拷贝构造/赋值避免双重释放；(4) 实现移动构造/赋值转移所有权并将源置空。这体现了 RAII 类的五法则。
 
 **习题 8**（evaluate，难度 4）：以下代码在析构时抛出异常导致未定义行为，请修正：
 
@@ -3212,8 +3196,6 @@ struct Conn {
 };
 ```
 
-<details>
-<summary>参考答案</summary>
 
 **修正方案**：
 
@@ -3232,8 +3214,7 @@ struct Conn {
 };
 ```
 
-**解析**：C++11 起析构函数默认 noexcept，抛出异常会触发 std::terminate；若栈展开期间析构抛异常同样 terminate。这是 RAII 的核心约束：析构必须永不失败。最佳实践是：(1) 析构标记 noexcept；(2) 内部 try-catch 兜底；(3) 提供独立的 close() 方法让调用者显式处理错误。
-</details>
+**解析讲解**：C++11 起析构函数默认 noexcept，抛出异常会触发 std::terminate；若栈展开期间析构抛异常同样 terminate。这是 RAII 的核心约束：析构必须永不失败。最佳实践是：(1) 析构标记 noexcept；(2) 内部 try-catch 兜底；(3) 提供独立的 close() 方法让调用者显式处理错误。
 
 ### 18.4 开放性问题
 
@@ -3247,8 +3228,6 @@ struct Conn {
 
 给出完整代码并说明设计权衡。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <utility>
@@ -3287,7 +3266,6 @@ ScopeGuard<std::decay_t<F>> make_guard(F&& f) {
 6. **make_guard 推导 F**：避免显式指定模板参数。
 
 ScopeGuard 是 RAII 的泛化形式，由 Alexandrescu 在 2000 年发表于 Generic Programming 系列文章，被 C++ Core Guidelines 推荐为通用资源守卫。C++26 计划引入 `std::scope_guard` 标准化此模式。
-</details>
 
 **习题 10**（evaluate，难度 5）：分析 RAII 与垃圾回收（GC）在内存管理上的本质差异，从以下维度论证：
 
@@ -3299,8 +3277,6 @@ ScopeGuard 是 RAII 的泛化形式，由 Alexandrescu 在 2000 年发表于 Gen
 
 给出具体场景说明哪种模型更优。
 
-<details>
-<summary>参考答案</summary>
 
 **RAII 与 GC 的本质差异**：
 
@@ -3330,7 +3306,6 @@ ScopeGuard 是 RAII 的泛化形式，由 Alexandrescu 在 2000 年发表于 Gen
 - **复杂对象图（图数据库、AST）**：GC 优（避免手动循环检测）。
 
 **结论**：RAII 与 GC 不是对立而是互补：RAII 提供确定性资源管理（适合系统级、资源敏感场景），GC 提供开发效率（适合业务级、对象密集场景）。现代语言趋势是混合策略：Rust 借用检查器 + RAII、Swift ARC + 弱引用、C# using + GC、Go defer + GC。C++ 选择纯 RAII 路线，通过 shared_ptr/weak_ptr 提供"可控的引用计数"，是 GC 的轻量替代。
-</details>
 
 ## 第 19 章 参考文献
 
@@ -3508,15 +3483,188 @@ RAII 类通常需要重载 `operator*`、`operator->`、`operator[]`、`operator
 
 ---
 
-## 更新日志
+## RAII 原则
 
-| 版本 | 日期       | 修订者                     | 变更说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| ---- | ---------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| v1.0 | 2026-06-14 | fanquanpp                  | 初始版本，367 行，覆盖 RAII 基础概念、`FileHandle`/`Transaction`/`ScopeGuard`/GDI 资源管理示例与基本注意事项                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| v2.0 | 2026-07-18 | FANDEX Content Engineering | 工程级重写至 3300+ 行：新增 12 项质量基准全覆盖；补充形式化定义（RAII 对象数学定义、不变量数学表述、确定性析构定理）；新增理论推导章节（Stack Unwinding 正确性证明、basic/strong/nothrow 异常安全形式化、与 GC 复杂度对比）；扩展代码示例至 60+ 个，覆盖文件句柄、内存、锁、网络套接字、数据库事务、OpenGL、CUDA、自定义 RAII 模板；新增对比分析章节（vs C/Java/Python/Go/Rust）；新增常见陷阱 11 项、工程实践 5 小节、案例研究 5 例（LLVM/Chromium/Qt/Boost/folly）；新增习题 10 题（4 类题型）与参考文献 10 条（ACM 格式）；新增词源条目 7 条与延伸阅读章节；按 Bloom 分类法补充 7 条学习目标；新增 `learningObjectives`、`exercises`、`references`、`etymology`、`estimatedReadingTime`、`lastReviewed`、`reviewer` frontmatter 字段 |
+**基本写法：RAII 资源获取即初始化**
+`struct <类> { <资源> res; ~<类>() { <释放>; } };`
+```cpp
+// 构造获取，析构释放
+struct FileRAII {
+    FILE* fp;
+    explicit FileRAII(const char* path) : fp(std::fopen(path, "r")) {
+        if (!fp) throw std::runtime_error("open failed");
+    }
+    ~FileRAII() { if (fp) std::fclose(fp); }
+    FileRAII(const FileRAII&) = delete;
+    FileRAII& operator=(const FileRAII&) = delete;
+};
+```
 
 ---
 
-_本文档遵循 FANDEX 内容工程规范 v2.0 编写，已通过 12 项质量基准全覆盖校验。如发现内容错误或建议改进，请在 FANDEX 仓库提交 Issue 或 Pull Request。_
+**基本写法：make_unique 工厂**
+`std::make_unique<<类型>>(<参数>...)`
+```cpp
+// 推荐用工厂函数创建智能指针
+auto p = std::make_unique<Widget>(42);
+// 异常安全：避免裸 new
+// std::unique_ptr<Widget> p(new Widget(42)); // 不推荐
+```
 
-_最后审阅日期：2026-07-18，审阅人：FANDEX Content Engineering。下次计划审阅：2027-07-18（年度审阅周期）。_
+---
+
+## 智能指针选择
+
+**基本写法：unique_ptr 独占**
+`std::unique_ptr<<类型>>`
+```cpp
+// 默认首选 unique_ptr
+std::unique_ptr<Widget> p = std::make_unique<Widget>();
+// 转移所有权
+std::unique_ptr<Widget> q = std::move(p);
+// 自定义删除器
+auto deleter = [](FILE* f){ if (f) fclose(f); };
+std::unique_ptr<FILE, decltype(deleter)> fp(fopen("a", "r"), deleter);
+```
+
+---
+
+**基本写法：shared_ptr 共享**
+`std::shared_ptr<<类型>>`
+```cpp
+// 多个所有者共享
+auto p = std::make_shared<Widget>();
+std::shared_ptr<Widget> q = p; // 引用计数 +1
+// 注意：有原子操作开销
+```
+
+---
+
+**基本写法：weak_ptr 打破循环**
+`std::weak_ptr<<类型>>`
+```cpp
+// 观察但不拥有
+auto sp = std::make_shared<Widget>();
+std::weak_ptr<Widget> wp = sp;
+// 使用前提升
+if (auto locked = wp.lock()) {
+    locked->doWork();
+}
+```
+
+---
+
+## 资源管理规则
+
+**基本写法：R.1 自动管理**
+`用 RAII 自动管理资源`
+```cpp
+// R.1: 不要手动管理资源
+// 错误：裸 new/delete
+// Widget* w = new Widget; ... delete w;
+// 正确：智能指针
+auto w = std::make_unique<Widget>();
+```
+
+---
+
+**基本写法：R.11 避免显式 new/delete**
+`std::make_unique` / `std::make_shared`
+```cpp
+// R.11: 避免显式调用 new 和 delete
+auto p = std::make_unique<int[]>(100); // 数组
+auto s = std::make_shared<Widget>();
+// 容器自动管理
+std::vector<Widget> v(100);
+```
+
+---
+
+**基本写法：R.23 sort 自定义**
+`sort 用 lambda 比自定义类型更简单`
+```cpp
+// R.23: 用 lambda 而非函数对象
+std::sort(v.begin(), v.end(),
+    [](const auto& a, const auto& b){ return a.x < b.x; });
+```
+
+---
+
+## 容器与所有权
+
+**基本写法：容器持有对象**
+`std::vector<<类型>>`
+```cpp
+// 容器自动管理元素生命周期
+std::vector<Widget> widgets;
+widgets.emplace_back(42); // 自动构造存储
+// 容器销毁时元素自动销毁
+```
+
+---
+
+**基本写法：容器持有指针**
+`std::vector<std::unique_ptr<Widget>>`
+```cpp
+// 多态容器用智能指针
+std::vector<std::unique_ptr<Animal>> zoo;
+zoo.push_back(std::make_unique<Dog>());
+zoo.push_back(std::make_unique<Cat>());
+```
+
+---
+
+## 传递参数规则
+
+**基本写法：F.15 排序规则**
+`<类型> | const& | && | const*`
+```cpp
+// 参数传递指导
+void inParam(const Widget& w);      // 输入：const 引用
+void inParam(Widget w);             // 小类型或要拷贝：值传递
+void outParam(Widget& w);           // 输出：引用
+void ownParam(std::unique_ptr<Widget> w); // 转移所有权
+void shareParam(std::shared_ptr<Widget> w); // 共享所有权
+```
+
+---
+
+**基本写法：返回值规则**
+`值返回 | unique_ptr | &`
+```cpp
+// 返回值指导
+Widget makeWidget();                 // 返回值（RVO）
+std::unique_ptr<Widget> makePtr();   // 返回多态对象
+const std::vector<int>& getVec();    // 返回成员引用
+std::string_view getName();          // 返回视图
+```
+
+---
+
+## 异常安全
+
+**基本写法：RAII 保证异常安全**
+`auto <指针> = std::make_unique<...>();`
+```cpp
+// 即使抛异常，RAII 也会正确释放
+void work() {
+    auto file = std::make_unique<FileRAII>("a.txt");
+    auto buf  = std::make_unique<char[]>(1024);
+    riskyOp(); // 抛异常时 file、buf 自动释放
+}
+```
+
+---
+
+## GSL 指导库
+
+**基本写法：gsl::owner 标注**
+`gsl::owner<T*>`
+```cpp
+// 标注所有权
+#include <gsl/gsl>
+gsl::owner<int*> p = new int(42); // 标注拥有
+delete p;
+// gsl::not_null 确保非空
+void f(gsl::not_null<Widget*> w);
+```

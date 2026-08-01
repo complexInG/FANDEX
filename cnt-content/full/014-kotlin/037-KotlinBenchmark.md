@@ -1226,25 +1226,36 @@ fun variant2() { /* threads */ }
 
 推荐将基准测试与主代码分离：
 
-```
-project/
-├── build.gradle.kts
-├── src/
-│   ├── main/kotlin/        # 主代码
-│   └── test/kotlin/        # 单元测试
-└── benchmarks/
-    └── src/
-        └── main/kotlin/    # 基准测试
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["build.gradle.kts"]
+    T2["src/"]
+    T3["main/kotlin/        # 主代码"]
+    T4["test/kotlin/        # 单元测试"]
+    T5["benchmarks/"]
+    T6["src/"]
+    T7["main/kotlin/    # 基准测试"]
+    T0 --> T1
+    T0 --> T2
+    T4 --> T5
+    T5 --> T6
+    T6 --> T7
 ```
 
 或在多模块项目中独立 `benchmarks` 模块：
 
-```
-project/
-├── core/                   # 核心库
-├── app/                    # 应用模块
-└── benchmarks/             # 基准测试模块
-    └── build.gradle.kts
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["core/                   # 核心库"]
+    T2["app/                    # 应用模块"]
+    T3["benchmarks/             # 基准测试模块"]
+    T4["build.gradle.kts"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
 ```
 
 ### 2. CI 集成策略
@@ -1383,17 +1394,27 @@ MyBenchmark.test:·gc.count            avgt    5    12.00   counts
 
 ### 7. 性能优化的决策树
 
-```
-基准测试结果不理想
-    ├── 是否有内存分配热点？
-    │   ├── 是 → 复用对象、避免装箱、使用内联函数
-    │   └── 否 → 是否 CPU 密集？
-    │       ├── 是 → 算法优化、SIMD、向量化
-    │       └── 否 → 是否 I/O 阻塞？
-    │           ├── 是 → 异步化、批量化、缓存
-    │           └── 否 → 是否锁竞争？
-    │               ├── 是 → 减小临界区、分段锁、无锁结构
-    │               └── 否 → 重新审视基准测试设计
+```mermaid
+flowchart TD
+    T0["基准测试结果不理想"]
+    T1["是否有内存分配热点？"]
+    T2["是 → 复用对象、避免装箱、使用内联函数"]
+    T3["否 → 是否 CPU 密集？"]
+    T4["是 → 算法优化、SIMD、向量化"]
+    T5["否 → 是否 I/O 阻塞？"]
+    T6["是 → 异步化、批量化、缓存"]
+    T7["否 → 是否锁竞争？"]
+    T8["是 → 减小临界区、分段锁、无锁结构"]
+    T9["否 → 重新审视基准测试设计"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T0 --> T8
+    T0 --> T9
 ```
 
 ---
@@ -1543,7 +1564,7 @@ matchOrder:·gc.alloc.rate.norm  avgt  5  2048.00  B/op
 
 ---
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 

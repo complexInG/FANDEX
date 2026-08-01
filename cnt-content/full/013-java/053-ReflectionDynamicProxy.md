@@ -15,10 +15,11 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
+# Java 反射与动态代理
 
-# 反射与动态代理：从 Class 文件到 AOP 框架的实现原理
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.031（Software Construction）、Stanford CS 143（Compilers）与 CMU 15-721（Advanced Database Systems）教学水准，系统阐述 Java 反射机制的形式化基础、字节码原理与动态代理的工程实现。所有代码示例均在 OpenJDK 17/21 LTS 上编译验证。
+---
 
 ## 目录
 
@@ -80,47 +81,21 @@ prerequisites:
 
 ### 2.1 反射机制的演进时间线
 
-```
-1995 ──── Java 1.0：无反射，仅通过 new 创建对象
-  │
-1997 ──── Java 1.1：引入反射 API（java.lang.reflect）
-  │         Class.forName, getMethod, invoke
-  │         目的：支持 JavaBeans、IDE 可视化设计
-  │
-2002 ──── J2SE 1.4：动态代理（java.lang.reflect.Proxy）
-  │         目的：支持 EJB、RMI stub 生成
-  │
-2004 ──── Java 5：泛型 + 注解
-  │         反射 API 支持泛型类型擦除信息（Type、ParameterizedType）
-  │         Annotation 反射读取
-  │
-2006 ──── Java 6：JAX-WS、JAXB 大量使用动态代理
-  │         ScriptEngine（JSR 223）通过反射调用脚本
-  │
-2011 ──── Java 7：invokedynamic + MethodHandle（JSR 292）
-  │         为动态语言（Groovy、JRuby）提供高性能调用
-  │         Lambda 表达式底层基于 invokedynamic
-  │
-2014 ──── Java 8：Lambda + MethodHandle
-  │         LambdaMetafactory 基于 invokedynamic
-  │         反射性能优化（方法内联）
-  │
-2017 ──── Java 9：模块系统
-  │         反射受模块封装限制（--add-opens）
-  │         反射访问非导出包需显式声明
-  │
-2018 ──── Java 11：VarHandle（JEP 193）
-  │         替代 sun.misc.Unsafe 的字段访问
-  │
-2021 ──── Java 17：密封类、模式匹配
-  │         反射 API 支持 sealed 修饰符
-  │
-2023 ──── Java 21：虚拟线程
-  │         反射调用与虚拟线程兼容
-  │         Foreign Function & Memory API（FFM）
-  │
-2024—2025 ─ Java 22-25：进一步限制反射的非法访问
-  │         强封装（Strong Encapsulation by Default）
+```mermaid
+timeline
+    title Java 反射发展时间线
+    1995: Java 1.0：无反射，仅通过 new 创建对象
+    1997: Java 1.1：引入反射 API（java.lang.reflect），Class.forName/getMethod/invoke，支持 JavaBeans、IDE 可视化设计
+    2002: J2SE 1.4：动态代理（java.lang.reflect.Proxy），支持 EJB、RMI stub 生成
+    2004: Java 5：泛型 + 注解，反射 API 支持泛型类型擦除信息，Annotation 反射读取
+    2006: Java 6：JAX-WS、JAXB 大量使用动态代理，ScriptEngine（JSR 223）通过反射调用脚本
+    2011: Java 7：invokedynamic + MethodHandle（JSR 292），Lambda 底层基于 invokedynamic
+    2014: Java 8：Lambda + MethodHandle，LambdaMetafactory 基于 invokedynamic，反射性能优化
+    2017: Java 9：模块系统，反射受模块封装限制（--add-opens）
+    2018: Java 11：VarHandle（JEP 193）替代 sun.misc.Unsafe 的字段访问
+    2021: Java 17：密封类、模式匹配，反射 API 支持 sealed 修饰符
+    2023: Java 21：虚拟线程，反射调用与虚拟线程兼容，Foreign Function & Memory API（FFM）
+    2024-2025: Java 22-25：进一步限制反射的非法访问，强封装（Strong Encapsulation by Default）
 ```
 
 ### 2.2 动态代理的三种范式
@@ -1668,9 +1643,9 @@ public <T> T create(final Class<T> service) {
 
 ---
 
-## 13. 习题
+## 知识讲解与要点分析（原习题）
 
-### 13.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪种方式获取 Class 对象**不会**触发类初始化？
 
@@ -1679,14 +1654,11 @@ public <T> T create(final Class<T> service) {
 - C. `new User().getClass()`
 - D. `User.staticMethod()`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `User.class` 是类字面量，仅获取 Class 对象，不触发初始化（JLS §12.4.1）。`Class.forName` 默认 `initialize=true`，会触发初始化。`new User()` 和 `staticMethod()` 都会触发初始化。
 
-</details>
 
 **题目 2**：JDK 动态代理的限制是什么？
 
@@ -1695,14 +1667,11 @@ public <T> T create(final Class<T> service) {
 - C. 只能代理 final 类
 - D. 性能比 CGLib 差
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 JDK Proxy 生成的代理类继承 `java.lang.reflect.Proxy`，由于 Java 单继承，代理类只能实现接口，不能继承类。CGLib 通过生成子类解决了这一限制。
 
-</details>
 
 **题目 3**：`invokedynamic` 指令首次执行时调用什么？
 
@@ -1711,14 +1680,11 @@ JDK Proxy 生成的代理类继承 `java.lang.reflect.Proxy`，由于 Java 单�
 - C. 构造器
 - D. `InvocationHandler.invoke`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `invokedynamic` 首次执行时调用 `bootstrap method`，返回 `CallSite`。`CallSite` 持有 `MethodHandle` 作为目标，后续调用直接通过 `MethodHandle`。
 
-</details>
 
 **题目 4**：CGLib 不能代理以下哪种？
 
@@ -1727,14 +1693,11 @@ JDK Proxy 生成的代理类继承 `java.lang.reflect.Proxy`，由于 Java 单�
 - C. final 类
 - D. 接口
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
 CGLib 通过生成子类实现代理，final 类不能被继承，因此无法代理。final 方法也不能被代理（无法 override）。接口可用 JDK Proxy 或 CGLib（CGLib 也能代理接口）。
 
-</details>
 
 **题目 5**：MethodHandle 相比反射的优势是？
 
@@ -1743,56 +1706,42 @@ CGLib 通过生成子类实现代理，final 类不能被继承，因此无法�
 - C. 无需类加载
 - D. 可以代理 final 方法
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 MethodHandle 在编译期检查签名类型，JIT 可以将 `invokeExact` 内联优化为直接调用，性能接近原生调用。反射 `Method.invoke` 需要运行时类型检查和装箱，性能较差。
 
-</details>
 
-### 13.2 填空题
+### 填空题知识点讲解
 
 **题目 6**：反射中，`Method.invoke` 调用静态方法时，第一个参数应传入 _____。
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：`null`**
 
 静态方法不依赖实例，`invoke` 的第一个参数（obj）被忽略，通常传 `null`。
 
-</details>
 
 **题目 7**：JDK Proxy 生成的代理类名前缀是 _____。
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：`com.sun.proxy.$Proxy`**
 
 JDK Proxy 生成的类名为 `com.sun.proxy.$Proxy0`、`$Proxy1` 等，序号递增。可通过 `ProxyGenerator.saveGeneratedFiles` 保存到磁盘查看。
 
-</details>
 
 **题目 8**：Java 9 模块系统中，反射访问非导出包需使用 _____ 命令行参数。
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：`--add-opens`**
 
 `--add-opens module/package=accessing-module` 声明模块的包对指定模块开放深度反射。如 `--add-opens java.base/java.lang=ALL-UNNAMED`。
 
-</details>
 
-### 13.3 编程题
+### 编程题知识点讲解
 
 **题目 9**：使用反射实现一个通用的 `toString` 方法，输出对象的所有字段及其值。
 
-<details>
-<summary>答案与解析</summary>
 
 ```java
 import java.lang.reflect.Field;
@@ -1846,12 +1795,9 @@ public class ReflectionToString {
 }
 ```
 
-</details>
 
 **题目 10**：使用 JDK 动态代理实现一个缓存代理：对相同参数的方法调用，返回缓存结果。
 
-<details>
-<summary>答案与解析</summary>
 
 ```java
 import java.lang.reflect.*;
@@ -1928,12 +1874,9 @@ public class CacheProxy {
 }
 ```
 
-</details>
 
 **题目 11**：使用 MethodHandle 实现一个简单的策略模式，根据输入动态切换方法。
 
-<details>
-<summary>答案与解析</summary>
 
 ```java
 import java.lang.invoke.*;
@@ -1969,14 +1912,11 @@ public class StrategyPattern {
 }
 ```
 
-</details>
 
 ### 13.4 思考题
 
 **题目 12**：为什么 Spring AOP 在 Bean 实现接口时默认使用 JDK Proxy，而不是统一用 CGLib？
 
-<details>
-<summary>答案与解析</summary>
 
 Spring AOP 的代理选择策略（Spring 5.x 之前）：
 
@@ -2001,12 +1941,9 @@ Spring AOP 的代理选择策略（Spring 5.x 之前）：
 
 Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，类型一致性比依赖大小更重要。
 
-</details>
 
 **题目 13**：反射调用的性能开销主要来自哪里？如何优化？
 
-<details>
-<summary>答案与解析</summary>
 
 **反射调用的性能开销来源**：
 
@@ -2063,12 +2000,9 @@ Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，�
    - 运行时生成直接调用字节码
    - 性能等同于原生调用
 
-</details>
 
 **题目 14**：Java 9 模块系统对反射有什么影响？如何在迁移时处理？
 
-<details>
-<summary>答案与解析</summary>
 
 **Java 9 模块系统对反射的影响**：
 
@@ -2122,7 +2056,6 @@ Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，�
 - Hibernate 5.2+ 支持
 - Lombok 需要额外配置（`--add-opens`）
 
-</details>
 
 ---
 
@@ -2328,7 +2261,241 @@ Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，�
 
 ---
 
-## 更新日志
+## 获取 Class 对象
 
-- **2026-07-21**：第二批金标准升级，对标 MIT/Stanford/CMU 教学水准。新增 Class 文件结构、invokedynamic、MethodHandle、AOP 框架实现、案例研究、习题、参考文献、延伸阅读。从 61 行扩展至 1500+ 行。
-- **2026-06-14**：初始版本，涵盖基础反射、JDK Proxy、CGLib 对比。
+**基本写法：三种获取 Class 的方式**
+`<类名>.class | <对象>.getClass() | Class.forName("<全限定名>")`
+```java
+// 三种方式获取 Class 对象
+Class<String> c1 = String.class;
+Class<?> c2 = "hello".getClass();
+Class<?> c3 = Class.forName("java.lang.String");
+```
+
+---
+
+## 反射创建实例
+
+**基本写法：通过 Class 创建对象**
+`<class>.getDeclaredConstructor().newInstance();`
+```java
+// 反射方式创建实例
+Object obj = String.class.getDeclaredConstructor().newInstance();
+```
+
+---
+
+**基本写法：带参构造**
+`<class>.getDeclaredConstructor(<参数类型>...).newInstance(<参数>...);`
+```java
+// 通过带参构造创建实例
+Object obj = String.class.getDeclaredConstructor(byte[].class).newInstance(new byte[]{65});
+```
+
+---
+
+## 反射获取字段
+
+**基本写法：获取声明字段**
+`<class>.getDeclaredField("<字段名>");`
+```java
+// 获取私有字段
+Field f = Person.class.getDeclaredField("name");
+f.setAccessible(true);
+```
+
+---
+
+**基本写法：读取字段值**
+`<field>.get(<对象>);`
+```java
+// 读取对象字段值
+Object value = f.get(person);
+```
+
+---
+
+**基本写法：设置字段值**
+`<field>.set(<对象>, <值>);`
+```java
+// 设置对象字段值
+f.set(person, "Alice");
+```
+
+---
+
+## 反射获取方法
+
+**基本写法：获取声明方法**
+`<class>.getDeclaredMethod("<方法名>", <参数类型>...);`
+```java
+// 获取私有方法
+Method m = Person.class.getDeclaredMethod("greet", String.class);
+m.setAccessible(true);
+```
+
+---
+
+**基本写法：反射调用方法**
+`<method>.invoke(<对象>, <参数>...);`
+```java
+// 反射调用方法
+Object result = m.invoke(person, "World");
+```
+
+---
+
+## 反射操作泛型
+
+**基本写法：获取泛型返回类型**
+`<method>.getGenericReturnType();`
+```java
+// 获取方法的泛型返回类型
+Type type = method.getGenericReturnType();
+```
+
+---
+
+**基本写法：获取参数泛型**
+`<method>.getGenericParameterTypes();`
+```java
+// 获取方法参数的泛型类型数组
+Type[] types = method.getGenericParameterTypes();
+```
+
+---
+
+## JDK 动态代理
+
+**基本写法：创建 JDK 动态代理**
+`Proxy.newProxyInstance(<类加载器>, <接口数组>, <调用处理器>);`
+```java
+// 为 List 接口创建代理
+List<String> proxy = (List<String>) Proxy.newProxyInstance(
+    List.class.getClassLoader(),
+    new Class[]{List.class},
+    (proxyObj, method, args) -> {
+        System.out.println("调用: " + method.getName());
+        return null;
+    }
+);
+```
+
+---
+
+**基本写法：实现 InvocationHandler**
+`class <类名> implements InvocationHandler { public Object invoke(Object p, Method m, Object[] a) {} }`
+```java
+// 自定义调用处理器
+class LogHandler implements InvocationHandler {
+    private final Object target;
+    public LogHandler(Object target) { this.target = target; }
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("before: " + method.getName());
+        Object r = method.invoke(target, args);
+        System.out.println("after: " + method.getName());
+        return r;
+    }
+}
+```
+
+---
+
+## CGLIB 风格代理（子类代理）
+
+**基本写法：创建子类代理（需第三方库 cglib）**
+`Enhancer.create(<类>, <回调>);`
+```java
+// cglib 创建子类代理
+Enhancer enhancer = new Enhancer();
+enhancer.setSuperclass(Person.class);
+enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
+    System.out.println("before");
+    Object r = proxy.invokeSuper(obj, args);
+    System.out.println("after");
+    return r;
+});
+Person proxy = (Person) enhancer.create();
+```
+
+---
+
+## 反射获取注解
+
+**基本写法：获取类上注解**
+`<class>.getAnnotation(<注解类型>);`
+```java
+// 获取类上的注解
+Deprecated d = MyClass.class.getAnnotation(Deprecated.class);
+```
+
+---
+
+**基本写法：判断注解存在**
+`<class>.isAnnotationPresent(<注解类型>);`
+```java
+// 判断注解是否存在
+boolean has = MyClass.class.isAnnotationPresent(Deprecated.class);
+```
+
+---
+
+## 反射获取数组信息
+
+**基本写法：创建数组实例**
+`Array.newInstance(<元素类型>, <长度>);`
+```java
+// 反射创建数组
+Object arr = Array.newInstance(int.class, 5);
+```
+
+---
+
+**基本写法：反射读写数组**
+`Array.get(<数组>, <索引>); | Array.set(<数组>, <索引>, <值>);`
+```java
+// 反射方式读写数组元素
+Array.set(arr, 0, 42);
+int v = (int) Array.get(arr, 0);
+```
+
+---
+
+## Module 反射（Java 9+）
+
+**基本写法：获取模块**
+`<class>.getModule();`
+```java
+// 获取类所属模块
+Module module = String.class.getModule();
+System.out.println(module.getName());
+```
+
+---
+
+**基本写法：导出包到指定模块**
+`<module>.addExports("<包名>", <目标模块>);`
+```java
+// 反射方式导出包
+module.addExports("com.example.internal", OtherModule);
+```
+
+---
+
+## Record 反射（Java 16+）
+
+**基本写法：判断是否为 Record**
+`<class>.isRecord();`
+```java
+// 判断 Class 是否为 Record
+boolean isRec = Point.class.isRecord();
+```
+
+---
+
+**基本写法：获取 Record 组件**
+`<class>.getRecordComponents();`
+```java
+// 获取 Record 的组件
+RecordComponent[] comps = Point.class.getRecordComponents();
+```

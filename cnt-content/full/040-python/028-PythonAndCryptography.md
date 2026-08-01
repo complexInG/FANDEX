@@ -1423,25 +1423,32 @@ logging.info(f'Encrypting with key: {key}')
 
 ### 9.1 项目结构建议
 
-```
-my_crypto_service/
-├── pyproject.toml
-├── README.md
-├── src/
-│   └── my_crypto/
-│       ├── __init__.py
-│       ├── symmetric.py     # 对称加密
-│       ├── asymmetric.py    # 非对称加密
-│       ├── hashing.py       # 哈希
-│       ├── kdf.py            # 密钥派生
-│       ├── keystore.py       # 密钥管理（KMS 集成）
-│       └── tls.py            # TLS 配置
-├── tests/
-│   ├── test_symmetric.py
-│   ├── test_asymmetric.py
-│   └── test_kdf.py
-└── scripts/
-    └── rotate_keys.py        # 密钥轮转脚本
+```mermaid
+flowchart TD
+    T0["my_crypto_service/"]
+    T1["pyproject.toml"]
+    T2["README.md"]
+    T3["src/"]
+    T4["my_crypto/"]
+    T5["__init__.py"]
+    T6["symmetric.py     # 对称加密"]
+    T7["asymmetric.py    # 非对称加密"]
+    T8["hashing.py       # 哈希"]
+    T9["kdf.py            # 密钥派生"]
+    T10["keystore.py       # 密钥管理（KMS 集成）"]
+    T11["tls.py            # TLS 配置"]
+    T12["tests/"]
+    T13["test_symmetric.py"]
+    T14["test_asymmetric.py"]
+    T15["test_kdf.py"]
+    T16["scripts/"]
+    T17["rotate_keys.py        # 密钥轮转脚本"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T11 --> T12
+    T15 --> T16
+    T16 --> T17
 ```
 
 ### 9.2 密钥管理：KMS 集成
@@ -2213,7 +2220,7 @@ logging.basicConfig(level=logging.DEBUG)
 # 生产环境务必关闭，避免泄露密钥信息
 ```
 
-## 15. 习题与练习
+## 知识讲解与要点分析（原习题）
 
 ### 15.1 综合练习：设计一个安全的密钥管理服务
 

@@ -22,10 +22,11 @@ prerequisites:
   - lua/程序结构与基本语法
   - lua/数据类型与Table详解
 ---
+# Lua 函数与闭包速查
 
-# 函数与闭包
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.001 SICP、Stanford CS107、CMU 15-150 等海外名校函数式编程与程序语言理论教学水准，面向 0 基础自学者与企业级 Lua 工程师，系统讲解 Lua 函数定义、词法作用域、闭包语义、高阶函数及性能模型。
+---
 
 ## 1. 学习目标
 
@@ -213,11 +214,10 @@ $$
 
 设 $u$ 在内存中的位置为 $\ell$。$f$ 与 $g$ 的 upvalue 表均指向 $\ell$。任何对 $u$ 的赋值 $\sigma'(\ell) = v$ 修改同一内存位置，故读取时返回值相同。
 
-```
-upvalue u ──────┐
-                │
-   closure f ───┤
-   closure g ───┘
+```mermaid
+flowchart LR
+    U[upvalue u] --> F[closure f]
+    U --> G[closure g]
 ```
 
 证毕。
@@ -1274,13 +1274,13 @@ local app = compose_middleware(logging_middleware, auth_middleware)(final_handle
 print(app({method = "GET", path = "/users", token = "abc"}).status)
 ```
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
 **习题 1**：实现一个闭包 `make_stack()`，返回一个栈对象，包含 `push`、`pop`、`peek`、`size` 方法。
 
-**参考答案**：
+**解析讲解**：
 
 ```lua
 -- lua: 闭包实现栈
@@ -1309,7 +1309,7 @@ print(s.size())  -- 1
 
 **习题 2**：使用 Y 组合子实现递归斐波那契。
 
-**参考答案**：
+**解析讲解**：
 
 ```lua
 -- lua: Y 组合子递归斐波那契
@@ -1335,7 +1335,7 @@ print(fib(10))  -- 55
 
 **习题 3**：实现 `debounce` 与 `throttle` 高阶函数。
 
-**参考答案**：
+**解析讲解**：
 
 ```lua
 -- lua: debounce 与 throttle（基于协程模拟）
@@ -1367,7 +1367,7 @@ end
 
 **习题 4**：实现一个惰性求值列表（lazy list）。
 
-**参考答案**：
+**解析讲解**：
 
 ```lua
 -- lua: 惰性求值列表
@@ -1416,11 +1416,11 @@ print(table.concat(result, ", "))  -- 4, 16, 36, 64, 100
 
 **思考题 1**：为什么 Lua 的尾调用优化对游戏脚本重要？
 
-**参考答案**：游戏脚本常需深度递归（如 AI 决策树、场景图遍历）。Lua 5.x 的尾调用优化保证 `return f(args)` 不增长栈，使得深度递归可处理任意深度输入而不会栈溢出。这对游戏循环中的状态机、事件分发至关重要。
+**解析讲解**：游戏脚本常需深度递归（如 AI 决策树、场景图遍历）。Lua 5.x 的尾调用优化保证 `return f(args)` 不增长栈，使得深度递归可处理任意深度输入而不会栈溢出。这对游戏循环中的状态机、事件分发至关重要。
 
 **思考题 2**：闭包与元表实现对象，分别适合什么场景？
 
-**参考答案**：
+**解析讲解**：
 
 - **闭包**适合：简单状态封装、私有变量强隔离、函数式风格场景。
 - **元表**适合：需要继承、多态、操作符重载、复杂对象图的场景。
@@ -1429,7 +1429,7 @@ print(table.concat(result, ", "))  -- 4, 16, 36, 64, 100
 
 **思考题 3**：在 Redis 脚本中使用闭包有何限制？
 
-**参考答案**：
+**解析讲解**：
 
 1. Redis 脚本执行期间是单线程的，闭包不可用于并发编程。
 2. 脚本执行完毕，所有闭包状态销毁，不跨调用持久化。
@@ -1438,7 +1438,7 @@ print(table.concat(result, ", "))  -- 4, 16, 36, 64, 100
 
 **思考题 4**：为什么 Lua 不实现 Python 风格的默认参数？
 
-**参考答案**：
+**解析讲解**：
 
 Lua 设计哲学是保持语言核心最小化。默认参数可以通过 `param = param or default` 模式实现，且更灵活（可基于 nil 检查）。引入默认参数语法会增加语言复杂度，与 Lua 极简设计相悖。同时，Lua 的 nil 检查模式支持"使用默认值"，与 Python 显式默认参数在语义上等价。
 
@@ -1656,26 +1656,39 @@ end)
 
 ### 12.7 学习路径建议
 
-```
-基础阶段（1-2 周）
-  ├── 理解 Lua 函数定义的全部语法
-  ├── 编写 10+ 个简单闭包示例
-  └── 阅读 *Programming in Lua* 第 5-8 章
-
-进阶阶段（2-3 周）
-  ├── 实现函数式工具库（map/filter/reduce）
-  ├── 理解 upvalue 与 GC 协同
-  └── 完成习题 1-4
-
-高级阶段（2-4 周）
-  ├── 阅读论文 *The Implementation of Lua 5.0*
-  ├── 实现 Promise 库或状态机框架
-  └── 参与开源项目（Kong、Lapis 等）
-
-精通阶段（持续）
-  ├── 研读 LuaJIT 字节码与 IR
-  ├── 探索 Luau 类型系统
-  └── 贡献 Lua VM 或工具链
+```mermaid
+flowchart TD
+    T0["基础阶段（1-2 周）"]
+    T1["理解 Lua 函数定义的全部语法"]
+    T2["编写 10+ 个简单闭包示例"]
+    T3["阅读 *Programming in Lua* 第 5-8 章"]
+    T4["进阶阶段（2-3 周）"]
+    T5["实现函数式工具库（map/filter/reduce）"]
+    T6["理解 upvalue 与 GC 协同"]
+    T7["完成习题 1-4"]
+    T8["高级阶段（2-4 周）"]
+    T9["阅读论文 *The Implementation of Lua 5.0*"]
+    T10["实现 Promise 库或状态机框架"]
+    T11["参与开源项目（Kong、Lapis 等）"]
+    T12["精通阶段（持续）"]
+    T13["研读 LuaJIT 字节码与 IR"]
+    T14["探索 Luau 类型系统"]
+    T15["贡献 Lua VM 或工具链"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T11 --> T12
+    T12 --> T13
+    T12 --> T14
+    T12 --> T15
 ```
 
 ---
@@ -1755,15 +1768,15 @@ end)
 
 ## 附录 E：自测题答案
 
-### 习题 1 答案
+## 知识讲解与要点分析（原习题 1 答案）
 
 栈实现正确。注意 `pop` 在空栈时返回 `nil`，符合 Lua 习惯。
 
-### 习题 2 答案
+## 知识讲解与要点分析（原习题 2 答案）
 
 Y 组合子实现正确。注意 Lua 5.x 支持 vararg 传递 `...`，使得 Y 组合子可处理多参数函数。
 
-### 习题 3 答案
+## 知识讲解与要点分析（原习题 3 答案）
 
 debounce 与 throttle 实现依赖具体运行时（Love2D、Nginx 等提供不同的定时器 API）。在纯 Lua 中，可基于协程模拟：
 
@@ -1781,7 +1794,7 @@ local function throttle_coroutine(fn, interval)
 end
 ```
 
-### 习题 4 答案
+## 知识讲解与要点分析（原习题 4 答案）
 
 惰性列表通过闭包链实现。每个 `lazy_map`、`lazy_filter` 返回新的生成器函数，按需计算下一个值。
 
@@ -1801,3 +1814,519 @@ end
 - 协程非抢占式调度（学习协程与闭包的结合）
 - 环境与全局变量管理（学习 `_ENV` 与模块系统）
 - C-API 栈操作（学习 Lua 与 C 的函数互操作）
+## 函数定义
+
+**基本写法：基本函数**
+`function <name>(<params>) <body> end`
+```lua
+-- 基本函数定义
+function add(a, b)
+    return a + b
+end
+```
+
+**基本写法：local 函数**
+`local function <name>(<params>) <body> end`
+```lua
+-- local 函数
+local function greet(name)
+    return "Hello, " .. name
+end
+```
+
+**基本写法：匿名函数赋值**
+`local <name> = function(<params>) <body> end`
+```lua
+-- 匿名函数赋值给变量
+local multiply = function(a, b)
+    return a * b
+end
+```
+
+**基本写法：表达式函数**
+`local <name> = function(<params>) <expr> end`
+```lua
+-- 简单表达式函数
+local square = function(x) return x * x end
+```
+
+**基本写法：表字段函数**
+`<table>.<name> = function(<params>) <body> end`
+```lua
+-- 表字段函数
+local utils = {}
+utils.add = function(a, b)
+    return a + b
+end
+```
+
+**基本写法：表方法简写**
+`function <table>.<name>(<params>) <body> end`
+```lua
+-- 表方法简写
+function utils.subtract(a, b)
+    return a - b
+end
+```
+
+---
+
+## 函数参数
+
+**基本写法：固定参数**
+`function <name>(<param1>, <param2>) <body> end`
+```lua
+-- 固定参数函数
+function divide(a, b)
+    return a / b
+end
+```
+
+**基本写法：默认参数**
+`<param> = <param> or <default>`
+```lua
+-- 默认参数
+function greet(name, greeting)
+    greeting = greeting or "Hello"
+    return greeting .. ", " .. name
+end
+```
+
+**基本写法：可变参数**
+`function <name>(...) <body> end`
+```lua
+-- 可变参数函数
+function sum(...)
+    local total = 0
+    for _, v in ipairs({...}) do
+        total = total + v
+    end
+    return total
+end
+```
+
+**基本写法：固定与可变参数混合**
+`function <name>(<param>, ...) <body> end`
+```lua
+-- 固定参数与可变参数混合
+function printf(format, ...)
+    return string.format(format, ...)
+end
+```
+
+**基本写法：select 获取可变参数**
+`select(<n>, ...)`
+```lua
+-- select 获取指定位置参数
+function firstAndRest(...)
+    local first = select(1, ...)
+    local rest = {select(2, ...)}
+    return first, rest
+end
+```
+
+**基本写法：select 获取参数数量**
+`select("#", ...)`
+```lua
+-- 获取参数数量
+function count(...)
+    return select("#", ...)
+end
+```
+
+---
+
+## 函数返回值
+
+**基本写法：单返回值**
+`function <name>(<params>) return <value> end`
+```lua
+-- 单返回值
+function double(x)
+    return x * 2
+end
+```
+
+**基本写法：多返回值**
+`function <name>(<params>) return <val1>, <val2> end`
+```lua
+-- 多返回值
+function getCoords()
+    return 10, 20
+end
+```
+
+**基本写法：无返回值**
+`function <name>(<params>) <body> end`
+```lua
+-- 无返回值
+function printMsg(msg)
+    print(msg)
+end
+```
+
+**基本写法：条件返回**
+`if <cond> then return <val1> else return <val2> end`
+```lua
+-- 条件返回
+function max(a, b)
+    if a > b then
+        return a
+    else
+        return b
+    end
+end
+```
+
+**基本写法：提前返回**
+`if <cond> then return end`
+```lua
+-- 提前返回
+function process(data)
+    if not data then return end
+    print(data)
+end
+```
+
+---
+
+## 闭包
+
+**基本写法：基本闭包**
+`local function <name>() local <var> = <init> return function() <body> end end`
+```lua
+-- 基本闭包
+local function counter()
+    local count = 0
+    return function()
+        count = count + 1
+        return count
+    end
+end
+```
+
+**基本写法：闭包捕获变量**
+`local <var> = <init>; local <func> = function() <body using var> end`
+```lua
+-- 闭包捕获外部变量
+local x = 10
+local function getX()
+    return x
+end
+```
+
+**基本写法：闭包工厂**
+`local function <factory>(<param>) return function() <body> end end`
+```lua
+-- 闭包工厂
+local function makeAdder(n)
+    return function(x)
+        return x + n
+    end
+end
+```
+
+**基本写法：闭包状态保持**
+`local function <name>() local <state> = <init> return function(<param>) <body> end end`
+```lua
+-- 闭包保持状态
+local function makeBank()
+    local balance = 0
+    return function(amount)
+        balance = balance + amount
+        return balance
+    end
+end
+```
+
+**基本写法：闭包共享状态**
+`local <func1>, <func2> = <factory>()`
+```lua
+-- 闭包共享状态
+local function makePair()
+    local shared = 0
+    local function set(v) shared = v end
+    local function get() return shared end
+    return set, get
+end
+```
+
+---
+
+## 高阶函数
+
+**基本写法：函数作为参数**
+`function <name>(<func>, <params>) <body> end`
+```lua
+-- 函数作为参数
+function apply(func, value)
+    return func(value)
+end
+```
+
+**基本写法：函数作为返回值**
+`function <name>(<params>) return function() <body> end end`
+```lua
+-- 函数作为返回值
+function makeGreeter(greeting)
+    return function(name)
+        return greeting .. ", " .. name
+    end
+end
+```
+
+**基本写法：map 映射函数**
+`function <name>(<arr>, <func>) <body> end`
+```lua
+-- map 映射函数
+function map(arr, func)
+    local result = {}
+    for i, v in ipairs(arr) do
+        result[i] = func(v)
+    end
+    return result
+end
+```
+
+**基本写法：filter 过滤函数**
+`function <name>(<arr>, <func>) <body> end`
+```lua
+-- filter 过滤函数
+function filter(arr, func)
+    local result = {}
+    for _, v in ipairs(arr) do
+        if func(v) then
+            result[#result + 1] = v
+        end
+    end
+    return result
+end
+```
+
+**基本写法：reduce 累积函数**
+`function <name>(<arr>, <func>, <init>) <body> end`
+```lua
+-- reduce 累积函数
+function reduce(arr, func, init)
+    local acc = init
+    for _, v in ipairs(arr) do
+        acc = func(acc, v)
+    end
+    return acc
+end
+```
+
+**基本写法：forEach 遍历函数**
+`function <name>(<arr>, <func>) <body> end`
+```lua
+-- forEach 遍历函数
+function forEach(arr, func)
+    for i, v in ipairs(arr) do
+        func(v, i)
+    end
+end
+```
+
+---
+
+## 函数调用
+
+**基本写法：基本调用**
+`<name>(<args>)`
+```lua
+-- 基本函数调用
+local result = add(1, 2)
+```
+
+**基本写法：方法调用**
+`<obj>:<method>(<args>)`
+```lua
+-- 方法调用（自动传递 self）
+local str = "Hello"
+local upper = str:upper()
+```
+
+**基本写法：表方法调用**
+`<table>.<method>(<table>, <args>)`
+```lua
+-- 表方法调用（显式传递 self）
+local result = string.upper(str)
+```
+
+**基本写法：函数作为表字段调用**
+`<table>.<func>(<args>)`
+```lua
+-- 表字段函数调用
+local result = utils.add(1, 2)
+```
+
+**基本写法：可变参数调用**
+`<name>(<unpack>)`
+```lua
+-- 解包表作为参数调用
+local args = {1, 2, 3}
+local result = sum(table.unpack(args))
+```
+
+---
+
+## 递归
+
+**基本写法：基本递归**
+`local function <name>(<param>) if <base> then return <val> else return <name>(<expr>) end end`
+```lua
+-- 递归计算阶乘
+local function factorial(n)
+    if n <= 1 then
+        return 1
+    else
+        return n * factorial(n - 1)
+    end
+end
+```
+
+**基本写法：尾递归**
+`local function <name>(<param>, <acc>) if <base> then return <acc> else return <name>(<expr>, <expr>) end end`
+```lua
+-- 尾递归计算阶乘
+local function factorialTail(n, acc)
+    if n <= 1 then
+        return acc
+    else
+        return factorialTail(n - 1, n * acc)
+    end
+end
+```
+
+**基本写法：递归遍历表**
+`local function <name>(<table>) for <k>, <v> in pairs(<table>) do if type(<v>) == "table" then <name>(<v>) end end end`
+```lua
+-- 递归遍历嵌套表
+local function deepPrint(t, indent)
+    indent = indent or ""
+    for k, v in pairs(t) do
+        if type(v) == "table" then
+            print(indent .. k .. ":")
+            deepPrint(v, indent .. "  ")
+        else
+            print(indent .. k .. ": " .. tostring(v))
+        end
+    end
+end
+```
+
+---
+
+## 函数作用域
+
+**基本写法：local 函数前向引用**
+`local <name>; <name> = function(<params>) <body> end`
+```lua
+-- local 函数前向声明
+local fibonacci
+fibonacci = function(n)
+    if n <= 1 then
+        return n
+    else
+        return fibonacci(n - 1) + fibonacci(n - 2)
+    end
+end
+```
+
+**基本写法：嵌套函数**
+`function <outer>() local function <inner>() <body> end <body> end`
+```lua
+-- 嵌套函数
+function process(data)
+    local function validate(d)
+        return d ~= nil
+    end
+    if validate(data) then
+        print("Valid")
+    end
+end
+```
+
+---
+
+## 函数与 Table
+
+**基本写法：函数存储在表中**
+`local <table> = { <name1> = function(...) end, <name2> = function(...) end }`
+```lua
+-- 函数存储在表中
+local operations = {
+    add = function(a, b) return a + b end,
+    subtract = function(a, b) return a - b end,
+    multiply = function(a, b) return a * b end
+}
+```
+
+**基本写法：表方法定义**
+`function <table>.<name>(<self>, <params>) <body> end`
+```lua
+-- 表方法定义
+local obj = {}
+function obj.greet(self, name)
+    return "Hello, " .. name
+end
+```
+
+**基本写法：冒号语法定义方法**
+`function <table>:<name>(<params>) <body> end`
+```lua
+-- 冒号语法定义方法（自动传递 self）
+function obj:greet(name)
+    return "Hello, " .. name
+end
+```
+
+---
+
+## 函数式编程
+
+**基本写法：函数组合**
+`local function <name>(<f>, <g>) return function(<x>) return <f>(<g>(<x>)) end end`
+```lua
+-- 函数组合
+local function compose(f, g)
+    return function(x)
+        return f(g(x))
+    end
+end
+```
+
+**基本写法：柯里化**
+`local function <name>(<a>) return function(<b>) return <expr> end end`
+```lua
+-- 柯里化
+local function curryAdd(a)
+    return function(b)
+        return a + b
+    end
+end
+```
+
+**基本写法：偏应用**
+`local function <name>(<func>, <a>) return function(<b>) return <func>(<a>, <b>) end end`
+```lua
+-- 偏应用
+local function partial(func, a)
+    return function(b)
+        return func(a, b)
+    end
+end
+```
+
+**基本写法：记忆化**
+`local <cache> = {}; local function <name>(<param>) if <cache>[<param>] then return <cache>[<param>] end <body> <cache>[<param>] = <result> return <result> end`
+```lua
+-- 记忆化函数
+local memo = {}
+local function fibonacci(n)
+    if memo[n] then return memo[n] end
+    if n <= 1 then return n end
+    memo[n] = fibonacci(n - 1) + fibonacci(n - 2)
+    return memo[n]
+end
+```

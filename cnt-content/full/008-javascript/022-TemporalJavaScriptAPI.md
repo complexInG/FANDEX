@@ -141,49 +141,62 @@ reviewer: FANDEX Content Engineering Team
 
 ### 1.1 知识体系
 
-```
-Temporal API
-├── 核心类型
-│   ├── Instant（绝对时刻，UTC 纳秒）
-│   ├── ZonedDateTime（带时区与历法的完整日期时间）
-│   ├── PlainDateTime（无时区的墙上时钟时间）
-│   ├── PlainDate（纯日期）
-│   ├── PlainTime（纯时间）
-│   ├── PlainYearMonth（年-月，无日）
-│   ├── PlainMonthDay（月-日，无年）
-│   └── Duration（时间段）
-├── 入口
-│   └── Temporal.Now（当前时刻工厂）
-├── 时区
-│   ├── IANA 时区数据库（tzdata）
-│   ├── 夏令时（DST）处理
-│   ├── 时区转换与歧义消除
-│   └── UTC 偏移量
-├── 历法
-│   ├── iso8601（默认）
-│   ├── chinese（农历）
-│   ├── hebrew（希伯来历）
-│   ├── islamic（伊斯兰历）
-│   ├── japanese（日本年号历）
-│   └── buddhist（佛历）
-├── 字符串格式
-│   ├── ISO 8601 基础语法
-│   ├── RFC 3339（互联网格式）
-│   └── Temporal 扩展（时区方括号、历法方括号）
-├── 运算
-│   ├── 加减 Duration
-│   ├── until / since 计算差值
-│   ├── compare 比较
-│   └── round 取整
-├── 格式化
-│   ├── toString（ISO 8601 标准输出）
-│   ├── toLocaleString（Intl 集成）
-│   └── toJSON（JSON 序列化）
-└── 工程实践
-    ├── Polyfill（@js-temporal/polyfill）
-    ├── 数据库存储策略
-    ├── 序列化与反序列化
-    └── 与 Date 互操作
+```mermaid
+flowchart TD
+    T0["Temporal API"]
+    T1["核心类型"]
+    T2["Instant（绝对时刻，UTC 纳秒）"]
+    T3["ZonedDateTime（带时区与历法的完整日期时间）"]
+    T4["PlainDateTime（无时区的墙上时钟时间）"]
+    T5["PlainDate（纯日期）"]
+    T6["PlainTime（纯时间）"]
+    T7["PlainYearMonth（年-月，无日）"]
+    T8["PlainMonthDay（月-日，无年）"]
+    T9["Duration（时间段）"]
+    T10["入口"]
+    T11["Temporal.Now（当前时刻工厂）"]
+    T12["时区"]
+    T13["IANA 时区数据库（tzdata）"]
+    T14["夏令时（DST）处理"]
+    T15["时区转换与歧义消除"]
+    T16["UTC 偏移量"]
+    T17["历法"]
+    T18["iso8601（默认）"]
+    T19["chinese（农历）"]
+    T20["hebrew（希伯来历）"]
+    T21["islamic（伊斯兰历）"]
+    T22["japanese（日本年号历）"]
+    T23["buddhist（佛历）"]
+    T24["字符串格式"]
+    T25["ISO 8601 基础语法"]
+    T26["RFC 3339（互联网格式）"]
+    T27["Temporal 扩展（时区方括号、历法方括号）"]
+    T28["运算"]
+    T29["加减 Duration"]
+    T30["until / since 计算差值"]
+    T31["compare 比较"]
+    T32["round 取整"]
+    T33["格式化"]
+    T34["toString（ISO 8601 标准输出）"]
+    T35["toLocaleString（Intl 集成）"]
+    T36["toJSON（JSON 序列化）"]
+    T37["工程实践"]
+    T38["Polyfill（@js-temporal/polyfill）"]
+    T39["数据库存储策略"]
+    T40["序列化与反序列化"]
+    T41["与 Date 互操作"]
+    T0 --> T1
+    T9 --> T10
+    T11 --> T12
+    T16 --> T17
+    T23 --> T24
+    T27 --> T28
+    T32 --> T33
+    T36 --> T37
+    T37 --> T38
+    T37 --> T39
+    T37 --> T40
+    T37 --> T41
 ```
 
 ---
@@ -1726,9 +1739,9 @@ console.log(exactSeconds);  // 2678400（31 天）
 
 ---
 
-## 14. 习题
+## 知识讲解与要点分析（原习题）
 
-### 14.1 填空题（fill-blank）
+### 填空题知识点讲解
 
 1. **（remember）** Temporal API 中表示"绝对时刻"的类型是 ______，表示"带时区的完整日期时间"的类型是 ______。
 
@@ -1742,7 +1755,7 @@ console.log(exactSeconds);  // 2678400（31 天）
 
    答案：月；年（月有 28-31 天，年有 365 或 366 天）
 
-### 14.2 选择题（choice）
+### 选择题知识点讲解
 
 1. **（analyze）** 下列代码输出是？
 
@@ -1916,26 +1929,37 @@ console.log(exactSeconds);  // 2678400（31 天）
 
 ### 16.3 IANA 时区命名规则
 
-```
-Area/Location
-├── Africa/Cairo
-├── America/
-│   ├── New_York
-│   ├── Los_Angeles
-│   └── Argentina/Buenos_Aires
-├── Antarctica/Casey
-├── Asia/
-│   ├── Shanghai
-│   ├── Tokyo
-│   └── Singapore
-├── Atlantic/Reykjavik
-├── Australia/Sydney
-├── Europe/
-│   ├── London
-│   └── Paris
-├── Indian/Maldives
-├── Pacific/Auckland
-└── UTC
+```mermaid
+flowchart TD
+    T0["Area/Location"]
+    T1["Africa/Cairo"]
+    T2["America/"]
+    T3["New_York"]
+    T4["Los_Angeles"]
+    T5["Argentina/Buenos_Aires"]
+    T6["Antarctica/Casey"]
+    T7["Asia/"]
+    T8["Shanghai"]
+    T9["Tokyo"]
+    T10["Singapore"]
+    T11["Atlantic/Reykjavik"]
+    T12["Australia/Sydney"]
+    T13["Europe/"]
+    T14["London"]
+    T15["Paris"]
+    T16["Indian/Maldives"]
+    T17["Pacific/Auckland"]
+    T18["UTC"]
+    T0 --> T1
+    T0 --> T2
+    T5 --> T6
+    T5 --> T7
+    T10 --> T11
+    T10 --> T12
+    T10 --> T13
+    T15 --> T16
+    T15 --> T17
+    T15 --> T18
 ```
 
 ### 16.4 常用时区偏移量

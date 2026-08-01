@@ -422,10 +422,13 @@ $$
 
 ### 2.4 Promise 状态机
 
-```
-pending ──resolve──> fulfilled
-   │
-   └──reject──> rejected
+```mermaid
+stateDiagram-v2
+    [*] --> Pending
+    Pending --> Fulfilled: resolve
+    Pending --> Rejected: reject
+    Fulfilled --> [*]
+    Rejected --> [*]
 ```
 
 fetch 返回的 Promise 在响应头部到达时 resolve,响应体仍可流式读取。
@@ -1420,10 +1423,11 @@ Service Worker 是浏览器在后台运行的脚本,充当网页与网络之间�
 
 ### 11.2 生命周期
 
-```
-installing → installed → activating → activated → redundant
-                                            │
-                                            └──→ (被新版本替换时)
+```mermaid
+flowchart TD
+    T0["installing → installed → activating → activated → redundant"]
+    T1["(被新版本替换时)"]
+    T0 --> T1
 ```
 
 ```javascript
@@ -3039,22 +3043,19 @@ class ChatMetrics {
 
 ---
 
-## 24. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 24.1 基础题
 
-#### 习题 1(填空)
+## 知识讲解与要点分析（原习题 1(填空)）
 
 fetch() 函数返回一个 ______ 对象,该对象在响应 ______ 到达时 resolve(注意:不是响应体完成)。
 
-<details>
-<summary>答案</summary>
 
 Promise;头部(状态行+响应头)
 
-</details>
 
-#### 习题 2(选择)
+## 知识讲解与要点分析（原习题 2(选择)）
 
 下列哪种情况会导致 fetch() 返回的 Promise reject?
 A. HTTP 404 Not Found
@@ -3062,18 +3063,15 @@ B. HTTP 500 Internal Server Error
 C. CORS 预检失败
 D. 响应体为空
 
-<details>
-<summary>答案</summary>
 
 C
 
 fetch 只在网络层错误(DNS、连接拒绝、CORS 失败)时 reject。HTTP 4xx/5xx 不会 reject,需要手动检查 response.ok。
 
-</details>
 
-### 24.2 应用题
+### 应用题知识点讲解
 
-#### 习题 3(代码修复)
+## 知识讲解与要点分析（原习题 3(代码修复)）
 
 以下代码意图实现"并发请求,最多 3 个同时进行",但有 bug。请修复。
 
@@ -3089,8 +3087,6 @@ async function parallelLimit(urls, limit) {
 }
 ```
 
-<details>
-<summary>答案</summary>
 
 ```javascript
 async function parallelLimit(urls, limit) {
@@ -3112,14 +3108,11 @@ async function parallelLimit(urls, limit) {
 
 原实现是"分批并发",每批内并发但批间串行,效率低。修复后采用 worker pool 模式,持续补充新请求,保持并发度。
 
-</details>
 
-#### 习题 4(代码编写)
+## 知识讲解与要点分析（原习题 4(代码编写)）
 
 实现一个"竞速取消"函数:同时发起多个请求,任一完成则取消其他。
 
-<details>
-<summary>答案</summary>
 
 ```javascript
 async function raceCancel(urls) {
@@ -3147,11 +3140,10 @@ const response = await raceCancel([
 ]);
 ```
 
-</details>
 
 ### 24.3 分析题
 
-#### 习题 5(分析)
+## 知识讲解与要点分析（原习题 5(分析)）
 
 某团队在 Service Worker 中使用以下缓存策略,但用户反馈"页面更新后,部分用户仍看到旧内容"。分析原因并给出修复方案。
 
@@ -3165,8 +3157,6 @@ self.addEventListener('fetch', (event) => {
 });
 ```
 
-<details>
-<summary>答案</summary>
 
 **原因**:
 - 使用 Cache First 策略,缓存命中后立即返回,不更新缓存
@@ -3209,11 +3199,10 @@ self.addEventListener('fetch', (event) => {
 });
 ```
 
-</details>
 
 ### 24.4 创造题
 
-#### 习题 6(开放)
+## 知识讲解与要点分析（原习题 6(开放)）
 
 设计一个"自适应 HTTP 客户端",要求:
 1. 根据网络状况(2G/3G/4G/WiFi)自动调整超时
@@ -3222,8 +3211,6 @@ self.addEventListener('fetch', (event) => {
 4. 离线时自动切换到缓存
 5. 提供可观测性指标(请求数、成功率、P95 延迟)
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 class AdaptiveHttpClient {
@@ -3315,7 +3302,6 @@ class AdaptiveHttpClient {
 5. 指标收集用于监控与调优
 6. 实际生产还需考虑:请求优先级、队列调度、AB 测试
 
-</details>
 
 ---
 
@@ -3529,38 +3515,28 @@ fetch(url, {
 
 ## 附录 D:Stream 类型关系图
 
-```
-┌─────────────────┐     pipeThrough     ┌─────────────────┐     pipeTo     ┌─────────────────┐
-│  ReadableStream │ ──────────────────> │ TransformStream │ ─────────────> │ WritableStream  │
-│  (生产者)       │                     │  (转换器)        │                │  (消费者)        │
-└─────────────────┘                     └─────────────────┘                └─────────────────┘
-        │                                        │
-        │ tee()                                  │
-        ▼                                        ▼
-┌─────────────────┐                     ┌─────────────────┐
-│  ReadableStream │                     │  ReadableStream │
-│  (分叉 1)       │                     │  (TransformStream│
-└─────────────────┘                     │   的可读端)      │
-                                        └─────────────────┘
+```mermaid
+flowchart LR
+    R[ReadableStream<br/>生产者] -->|pipeThrough| T[TransformStream<br/>转换器]
+    T -->|pipeTo| W[WritableStream<br/>消费者]
+    R -->|tee 分叉| R1[ReadableStream 分叉 1]
+    T --> R2[ReadableStream<br/>TransformStream 的可读端]
 ```
 
 ---
 
 ## 附录 E:Service Worker 事件生命周期
 
-```
-注册 ──> installing ──> installed ──> activating ──> activated ──> (运行中)
-                                                                    │
-                                                                    │ fetch
-                                                                    │ push
-                                                                    │ sync
-                                                                    │ message
-                                                                    │
-                                                                    ▼
-                                                              (被新版本替换)
-                                                                    │
-                                                                    ▼
-                                                                redundant
+```mermaid
+stateDiagram-v2
+    [*] --> 注册
+    注册 --> Installing: 注册
+    Installing --> Installed
+    Installed --> Activating
+    Activating --> Activated
+    Activated --> 运行中
+    运行中 --> 被新版本替换: fetch / push / sync / message
+    被新版本替换 --> Redundant
 ```
 
 主要事件:

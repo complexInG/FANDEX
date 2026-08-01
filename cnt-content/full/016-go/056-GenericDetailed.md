@@ -203,20 +203,16 @@ for v := range Map([]int{1,2,3}, func(x int) int { return x*2 }) {
 
 ### 2.10 演进时间轴
 
-```
-2010-2017 ── 早期泛型研究（type function）
-   │
-2018 ─── Contracts 提案（被否决）
-   │
-2020 ─── Type Parameters 提案（采纳）
-   │
-2022 (Go 1.18) ── 泛型正式发布
-   │
-2023 (Go 1.20) ── comparable 改进
-   │
-2023 (Go 1.21) ── slices/maps 标准库
-   │
-2024 (Go 1.22) ── range over function
+```mermaid
+timeline
+    title Go 泛型演进时间线
+    2010-2017: 早期泛型研究（type function）
+    2018: Contracts 提案（被否决）
+    2020: Type Parameters 提案（采纳）
+    2022: Go 1.18 泛型正式发布
+    2023: Go 1.20 comparable 改进
+    2023: Go 1.21 slices/maps 标准库
+    2024: Go 1.22 range over function
 ```
 
 ---
@@ -1717,29 +1713,39 @@ func Process[T any](ctx context.Context, items []T, f func(context.Context, T)) 
 
 ### 8.1 项目组织
 
-```
-go-generic-demo/
-├── go.mod
-├── go.sum
-├── constraints/
-│   └── constraints.go  # 自定义约束
-├── containers/
-│   ├── stack.go        # 泛型栈
-│   ├── queue.go        # 泛型队列
-│   ├── set.go          # 泛型集合
-│   └── *_test.go
-├── functional/
-│   ├── option.go       # Optional[T]
-│   ├── result.go       # Result[T, E]
-│   ├── map_filter.go   # Map/Filter/Reduce
-│   └── *_test.go
-├── repository/
-│   ├── repository.go   # 泛型 Repository 接口
-│   ├── memory.go       # 内存实现
-│   └── *_test.go
-└── cmd/
-    └── server/
-        └── main.go
+```mermaid
+flowchart TD
+    T0["go-generic-demo/"]
+    T1["go.mod"]
+    T2["go.sum"]
+    T3["constraints/"]
+    T4["constraints.go  # 自定义约束"]
+    T5["containers/"]
+    T6["stack.go        # 泛型栈"]
+    T7["queue.go        # 泛型队列"]
+    T8["set.go          # 泛型集合"]
+    T9["*_test.go"]
+    T10["functional/"]
+    T11["option.go       # Optional[T]"]
+    T12["result.go       # Result[T, E]"]
+    T13["map_filter.go   # Map/Filter/Reduce"]
+    T14["*_test.go"]
+    T15["repository/"]
+    T16["repository.go   # 泛型 Repository 接口"]
+    T17["memory.go       # 内存实现"]
+    T18["*_test.go"]
+    T19["cmd/"]
+    T20["server/"]
+    T21["main.go"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T4 --> T5
+    T9 --> T10
+    T14 --> T15
+    T18 --> T19
+    T19 --> T20
+    T20 --> T21
 ```
 
 ### 8.2 泛型 Repository 模式
@@ -2221,9 +2227,9 @@ func List[T any](items []T, filter func(T) bool) []T { ... }
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下代码是否能编译？
 
@@ -2248,13 +2254,10 @@ Sum([]int{1, 2, 3})
 - C. 编译错误：类型推断失败
 - D. 运行时 panic
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：A**
 
 `int` 在 `Number` 约束的类型集合中（`int | float64`），类型推断从 `[]int{1,2,3}` 推断出 `T = int`，编译成功。
-</details>
 
 **题目 2**：以下代码输出什么？
 
@@ -2278,13 +2281,10 @@ fmt.Println(Length(s))
 - C. 编译错误
 - D. panic
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：A**
 
 `MyString` 的底层类型是 `string`（`~string`），满足 `Stringer` 约束。`Length` 接收 `MyString` 类型，转换为 `string` 后 `len("hello") = 5`。
-</details>
 
 **题目 3**：以下代码是否能编译？
 
@@ -2301,8 +2301,6 @@ func F[T any](x T) {
 - C. 运行时 panic
 - D. 编译错误：T 不实现 Stringer
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -2313,7 +2311,6 @@ if s, ok := any(x).(string); ok {
     fmt.Println(s)
 }
 ```
-</details>
 
 **题目 4**：Go 泛型的实现策略是？
 
@@ -2322,15 +2319,12 @@ if s, ok := any(x).(string); ok {
 - C. GC shape stenciling
 - D. 运行时实例化（如 C# generics）
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
 Go 采用 GC shape stenciling：按 GC shape（内存布局）分组生成代码。所有 GC shape 相同的类型共享一份代码，通过字典传递类型信息。
 
 这与 C++（完全单态化）、Java（类型擦除）、C#（运行时实例化）都不同。
-</details>
 
 **题目 5**：以下代码是否能编译？
 
@@ -2349,8 +2343,6 @@ func (s Stack[T]) Push(item T) {
 - C. 编译错误
 - D. 运行时 panic
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
@@ -2361,56 +2353,38 @@ func (s *Stack[T]) Push(item T) {
     s.items = append(s.items, item)
 }
 ```
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：Go 泛型使用 ______ 方括号语法声明类型参数。
 
-<details>
-<summary>答案</summary>
 
 `[]`
-</details>
 
 **题目 2**：泛型约束本质是 ______，可包含类型集合。
 
-<details>
-<summary>答案</summary>
 
 `interface`
-</details>
 
 **题目 3**：Go 1.18 引入泛型，使用 ______ 关键字表示任意类型约束。
 
-<details>
-<summary>答案</summary>
 
 `any`
-</details>
 
 **题目 4**：`comparable` 约束要求类型支持 ______ 与 ______ 操作。
 
-<details>
-<summary>答案</summary>
 
 `==`；`!=`
-</details>
 
 **题目 5**：Go 泛型的实现策略是 ______，按 GC 形状分组生成代码。
 
-<details>
-<summary>答案</summary>
 
 `GC shape stenciling`
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个泛型 `Cache[K, V]`，支持 TTL（生存时间）与并发安全。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -2493,12 +2467,9 @@ func main() {
     }
 }
 ```
-</details>
 
 **题目 2**：实现泛型 `BinaryTree[T]`，支持插入、查找、中序遍历。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -2588,12 +2559,9 @@ func main() {
     // 输出：1 3 4 5 7
 }
 ```
-</details>
 
 **题目 3**：实现泛型 `Pipeline[T, U]`，支持多阶段数据处理。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -2738,14 +2706,11 @@ func main() {
     // 输出：4 16 36 64 100
 }
 ```
-</details>
 
 ### 10.4 思考题
 
 **题目 1**：为什么 Go 选择 GC shape stenciling 而非完全单态化？
 
-<details>
-<summary>参考答案</summary>
 
 **选择 GC shape stenciling 的原因**：
 
@@ -2773,12 +2738,9 @@ func main() {
 | 二进制体积 | 小 | 大 |
 | 性能 | 接近最优 | 最优 |
 | 类型安全 | 编译期 | 编译期 |
-</details>
 
 **题目 2**：泛型与接口的边界是什么？何时该用泛型，何时该用接口？
 
-<details>
-<summary>参考答案</summary>
 
 **泛型 vs 接口**：
 
@@ -2814,12 +2776,9 @@ func main() {
 - 若**灵活性优先**，优先接口
 
 **混合使用**：泛型可与接口结合，如 `Repository[T Entity]`，T 必须实现 `Entity` 接口。
-</details>
 
 **题目 3**：Go 泛型为什么不支持特化（specialization）？
 
-<details>
-<summary>参考答案</summary>
 
 **特化（Specialization）**：为特定类型提供定制实现，如 C++ 的 `template<>`。
 
@@ -2874,12 +2833,9 @@ func AbsInt(x int) int {
 
 - **不支持特化的优势**：语言简单、编译快
 - **劣势**：某些场景需手写类型特定代码
-</details>
 
 **题目 4**：泛型对 Go 生态的影响是什么？
 
-<details>
-<summary>参考答案</summary>
 
 **正面影响**：
 
@@ -2910,12 +2866,9 @@ func AbsInt(x int) int {
 - Go 从"简单语言"向"现代语言"演进
 - 类型安全成为 Go 的核心特性
 - 与 Rust、TypeScript 等语言竞争
-</details>
 
 **题目 5**：设计一个泛型 ORM 框架需要考虑哪些方面？
 
-<details>
-<summary>参考答案</summary>
 
 **核心设计要素**：
 
@@ -2981,7 +2934,6 @@ users, err := db.Where("age > ?", 18).Order("name").Find(ctx)
 db.Save(ctx, &User{Name: "Alice"})
 db.Delete(ctx, user.ID)
 ```
-</details>
 
 ---
 

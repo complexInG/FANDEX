@@ -3746,31 +3746,31 @@ cd /tmp && npm install my-lib && node -e "console.log(require('my-lib').version)
 
 ---
 
-## 19. 习题
+## 知识讲解与要点分析（原习题）
 
-### 19.1 填空题
+### 填空题知识点讲解
 
 **习题 19.1.1**：TypeScript 声明文件使用____扩展名，其中只能包含____声明，不能包含____。
 
-**答案**：.d.ts；类型与环境声明；实现代码
+**解析讲解**：.d.ts；类型与环境声明；实现代码
 
 **习题 19.1.2**：在 .d.ts 文件中声明一个全局变量需要在____块内书写，而声明一个模块需要在顶层使用____关键字。
 
-**答案**：declare global；declare module
+**解析讲解**：declare global；declare module
 
 **习题 19.1.3**：UMD 声明文件的语法为 `declare module 'lib' {}` 与 `export as namespace lib;` 同时存在，前者用于____导入，后者用于____访问。
 
-**答案**：模块；全局
+**解析讲解**：模块；全局
 
 **习题 19.1.4**：声明合并中，当多个 interface 同名时，其成员会____；当多个 namespace 同名时，其成员会____；但 function 与 interface 合并时，函数签名必须用____声明。
 
-**答案**：合并；合并；重载
+**解析讲解**：合并；合并；重载
 
 **习题 19.1.5**：三斜线指令 `/// <reference types="node" />` 用于引入____，而 `/// <reference path="./utils.d.ts" />` 用于引入____。
 
-**答案**：@types 包；相对路径声明文件
+**解析讲解**：@types 包；相对路径声明文件
 
-### 19.2 选择题
+### 选择题知识点讲解
 
 **习题 19.2.1**：下列哪种声明方式能正确扩展 Express 的 Request 接口？
 
@@ -3779,7 +3779,7 @@ B. `declare global { interface Request { userId: string; } }`
 C. `declare module 'express' { interface Request { userId: string; } }`
 D. `namespace Express { interface Request { userId: string; } }`
 
-**答案**：C
+**解析讲解**：C
 
 **习题 19.2.2**：关于 .d.ts 文件中的 `export {}` 语句，下列描述正确的是？
 
@@ -3788,7 +3788,7 @@ B. 将文件标记为模块而非全局脚本，使 declare global 生效
 C. 用于声明空模块
 D. 等价于 export default {}
 
-**答案**：B
+**解析讲解**：B
 
 **习题 19.2.3**：下列哪种情况会导致 "Duplicate identifier" 错误？
 
@@ -3797,7 +3797,7 @@ B. 两个同名 namespace 各自声明不冲突的成员
 C. 两个同名 interface 各自声明同名但类型不同的属性
 D. 一个 interface 与一个同名 namespace 同时存在
 
-**答案**：C
+**解析讲解**：C
 
 **习题 19.2.4**：关于 DefinitelyTyped 与 @types 生态，下列描述错误的是？
 
@@ -3806,7 +3806,7 @@ B. 安装 @types/lodash 会自动将 lodash 的类型声明加入编译
 C. @types 包必须发布到 npm 的 @types 命名空间下
 D. 库自身可以同时发布 .d.ts 与对应的 @types 包，TypeScript 会优先使用 @types 包
 
-**答案**：D
+**解析讲解**：D
 
 **习题 19.2.5**：关于 package.json 的 typesVersions 字段，下列描述最准确的是？
 
@@ -3815,7 +3815,7 @@ B. 用于为不同 TypeScript 版本提供不同的类型声明入口，键为 s
 C. 等价于 types 字段，仅用于向后兼容
 D. 仅用于 DefinitelyTyped 包，普通库不应使用
 
-**答案**：B
+**解析讲解**：B
 
 ### 19.3 代码修复题
 
@@ -3829,7 +3829,7 @@ const MY_APP = {
 };
 ```
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 // global.d.ts
@@ -3852,7 +3852,7 @@ declare namespace global {
 }
 ```
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 // window.d.ts
@@ -3879,7 +3879,7 @@ declare module 'config-loader' {
 }
 ```
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 // 方案 1：使用 export =
@@ -3907,7 +3907,7 @@ declare module 'config-loader' {
 (3) 如何为子路径提供独立类型入口；
 (4) 如何处理 UMD 全局访问场景。
 
-**参考答案**：见第 18.4 节案例 4。
+**解析讲解**：见第 18.4 节案例 4。
 
 **习题 19.4.2**：解释 TypeScript 声明合并的四种形式与冲突解决规则。具体说明：
 
@@ -3916,7 +3916,7 @@ declare module 'config-loader' {
 (3) 命名空间与类/函数/枚举合并的语法约束是什么？
 (4) 模块扩展与命名空间合并的差异是什么？
 
-**参考答案**：见第 9 节。
+**解析讲解**：见第 9 节。
 
 **习题 19.4.3**：设计一个完整的第三方库类型声明方案，要求：
 
@@ -3928,7 +3928,7 @@ declare module 'config-loader' {
 - 兼容 TypeScript 4.4+ 与 5.0+；
 - 使用三斜线指令引用 Vue 类型。
 
-**参考答案**：见第 18.4 节案例 4 与第 12.2 节。
+**解析讲解**：见第 18.4 节案例 4 与第 12.2 节。
 
 ---
 
@@ -4326,65 +4326,98 @@ DefinitelyTyped 采用自动化发布流程：
 
 ### D.1 声明文件类型决策流程
 
-```
-是否需要为 JavaScript 库提供类型？
-├── 否 → 无需 .d.ts 文件
-└── 是 → 该库是否已自带类型？
-    ├── 是 → 无需额外操作
-    └── 否 → 是否存在 @types/xxx 包？
-        ├── 是 → npm install @types/xxx
-        └── 否 → 是否需要项目内私有声明？
-            ├── 是 → 在 src/types/ 编写声明
-            │   ├── 全局符号 → 全局声明文件
-            │   ├── 模块符号 → declare module
-            │   ├── 扩展已有模块 → 模块扩展
-            │   └── 扩展全局接口 → declare global
-            └── 否 → 考虑贡献到 DefinitelyTyped
+```mermaid
+flowchart TD
+    T0["是否需要为 JavaScript 库提供类型？"]
+    T1["否 → 无需 .d.ts 文件"]
+    T2["是 → 该库是否已自带类型？"]
+    T3["是 → 无需额外操作"]
+    T4["否 → 是否存在 @types/xxx 包？"]
+    T5["是 → npm install @types/xxx"]
+    T6["否 → 是否需要项目内私有声明？"]
+    T7["是 → 在 src/types/ 编写声明"]
+    T8["全局符号 → 全局声明文件"]
+    T9["模块符号 → declare module"]
+    T10["扩展已有模块 → 模块扩展"]
+    T11["扩展全局接口 → declare global"]
+    T12["否 → 考虑贡献到 DefinitelyTyped"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T4 --> T5
+    T4 --> T6
+    T6 --> T7
+    T6 --> T8
+    T6 --> T9
+    T6 --> T10
+    T6 --> T11
+    T11 --> T12
 ```
 
 ### D.2 declare 形式选择决策流程
 
-```
-需要声明什么？
-├── 变量 → declare const / let / var
-├── 函数 → declare function
-├── 类 → declare class
-├── 命名空间 → declare namespace
-├── 外部模块 → declare module 'xxx'
-├── 全局类型增强 → declare global（必须在模块文件中）
-└── 静态资源 → declare module '*.ext'
+```mermaid
+flowchart TD
+    T0["需要声明什么？"]
+    T1["变量 → declare const / let / var"]
+    T2["函数 → declare function"]
+    T3["类 → declare class"]
+    T4["命名空间 → declare namespace"]
+    T5["外部模块 → declare module 'xxx'"]
+    T6["全局类型增强 → declare global（必须在模块文件中）"]
+    T7["静态资源 → declare module '*.ext'"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
 ```
 
 ### D.3 发布策略决策流程
 
-```
-库作者发布 npm 包
-├── 库是 TypeScript 编写？
-│   ├── 是 → 使用 tsc --declaration 自动生成 .d.ts
-│   │   └── 打包到主包（bundled types）
-│   └── 否 → 库是否愿意接受 TypeScript 类型？
-│       ├── 是 → 库作者自己编写 .d.ts 并打包
-│       └── 否 → 社区贡献到 DefinitelyTyped
-└── 配置 package.json
-    ├── 仅 CJS → main + types
-    ├── 仅 ESM → module + types（或 exports.import + types）
-    └── 双格式 → exports（含 types/import/require）
+```mermaid
+flowchart TD
+    T0["库作者发布 npm 包"]
+    T1["库是 TypeScript 编写？"]
+    T2["是 → 使用 tsc --declaration 自动生成 .d.ts"]
+    T3["打包到主包（bundled types）"]
+    T4["否 → 库是否愿意接受 TypeScript 类型？"]
+    T5["是 → 库作者自己编写 .d.ts 并打包"]
+    T6["否 → 社区贡献到 DefinitelyTyped"]
+    T7["配置 package.json"]
+    T8["仅 CJS → main + types"]
+    T9["仅 ESM → module + types（或 exports.import + types）"]
+    T10["双格式 → exports（含 types/import/require）"]
+    T0 --> T1
+    T6 --> T7
+    T7 --> T8
+    T7 --> T9
+    T7 --> T10
 ```
 
 ### D.4 模块解析策略决策流程
 
-```
-项目类型？
-├── Node.js 项目
-│   ├── 使用 ESM → moduleResolution: node16 / nodenext
-│   ├── 使用 CJS → moduleResolution: node
-│   └── 混合 → moduleResolution: node16 / nodenext
-├── 浏览器项目（Vite/Webpack/Rollup）
-│   └── moduleResolution: bundler
-├── Deno 项目
-│   └── 使用 Deno 原生类型声明
-└── 旧版 TypeScript（<5.0）
-    └── moduleResolution: node
+```mermaid
+flowchart TD
+    T0["项目类型？"]
+    T1["Node.js 项目"]
+    T2["使用 ESM → moduleResolution: node16 / nodenext"]
+    T3["使用 CJS → moduleResolution: node"]
+    T4["混合 → moduleResolution: node16 / nodenext"]
+    T5["浏览器项目（Vite/Webpack/Rollup）"]
+    T6["moduleResolution: bundler"]
+    T7["Deno 项目"]
+    T8["使用 Deno 原生类型声明"]
+    T9["旧版 TypeScript（<5.0）"]
+    T10["moduleResolution: node"]
+    T0 --> T1
+    T4 --> T5
+    T6 --> T7
+    T8 --> T9
+    T9 --> T10
 ```
 
 ---

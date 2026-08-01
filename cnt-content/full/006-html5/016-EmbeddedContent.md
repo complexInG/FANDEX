@@ -15,10 +15,11 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+# 嵌入式内容 语法速查手册
 
-# 嵌入式内容（Embedded Content）
+> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档依据 WHATWG HTML Living Standard §4.8.5 "Embedded content" 与 W3C HTML5.3 规范，系统阐述 HTML5 嵌入式内容体系：`<iframe>`、`<embed>`、`<object>`、`<portal>` 元素的设计哲学、形式化语义、沙箱安全模型、跨文档通信、性能优化与工程实践，对标 MIT 6.S192、Stanford CS142 与 CMU 15-410 教学深度。
+---
 
 ## 1. 学习目标
 
@@ -166,34 +167,23 @@ HTML 4.0 同时引入 `<object>` 元素，目标是统一替代 `<img>`、`<ifra
 
 ### 2.6 演进时间线
 
-```
-1995  Netscape 2.0 引入 <frameset> / <frame>
-  │
-1996  IE 3.0 引入 <iframe>；Netscape 引入 <embed>
-  │
-1997  HTML 4.0 规范化 <iframe> / <object>
-  │
-1999  HTML 4.01 <iframe> 与 <object> 稳定
-  │
-2000  Flash 崛起，<embed> 用于视频/音频
-  │
-2010  WHATWG 引入 sandbox 属性
-  │
-2014  HTML5 W3C 推荐标准，<iframe> / <embed> / <object> 定稿
-  │
-2015  srcdoc 属性普及
-  │
-2017  allow 属性（Feature Policy）
-  │
-2018  loading="lazy" for iframe
-  │
-2020  credentialless 属性实验
-  │
-2021  <portal> 元素实验
-  │
-2022  Permissions Policy 取代 Feature Policy
-  │
-2024  csp 属性、importance 属性进入 Living Standard
+```mermaid
+timeline
+    title 发展时间线
+    1995: Netscape 2.0 引入 <frameset> / <frame>
+    1996: IE 3.0 引入 <iframe>；Netscape 引入 <embed>
+    1997: HTML 4.0 规范化 <iframe> / <object>
+    1999: HTML 4.01 <iframe> 与 <object> 稳定
+    2000: Flash 崛起，<embed> 用于视频/音频
+    2010: WHATWG 引入 sandbox 属性
+    2014: HTML5 W3C 推荐标准，<iframe> / <embed> / <object> 定稿
+    2015: srcdoc 属性普及
+    2017: allow 属性（Feature Policy）
+    2018: loading="lazy" for iframe
+    2020: credentialless 属性实验
+    2021: <portal> 元素实验
+    2022: Permissions Policy 取代 Feature Policy
+    2024: csp 属性、importance 属性进入 Living Standard
 ```
 
 ### 2.7 规范族谱
@@ -1632,13 +1622,13 @@ card.mount('#card-element');
 
 ---
 
-## 10. 练习题与答案
+## 知识讲解与要点分析（原练习题）
 
-### 练习 1（基础）
+## 知识讲解与要点分析（原练习 1（基础））
 
 **题目**：列出 `<iframe sandbox>` 的 5 个最常用令牌，并说明各自的作用。
 
-**答案**：
+**解析讲解**：
 
 1. `allow-scripts`：允许 iframe 内执行 JavaScript。
 2. `allow-forms`：允许表单提交。
@@ -1646,7 +1636,7 @@ card.mount('#card-element');
 4. `allow-same-origin`：保留 iframe 原始源，允许同源访问（注意：与 `allow-scripts` 同时使用会破坏沙箱）。
 5. `allow-top-navigation`：允许 iframe 导航父文档（`window.top.location`）。
 
-### 练习 2（基础）
+## 知识讲解与要点分析（原练习 2（基础））
 
 **题目**：使用 `<iframe>` 嵌入一个第三方 widget，要求：
 
@@ -1657,7 +1647,7 @@ card.mount('#card-element');
 - 不发送 Referrer
 - 可访问性友好
 
-**答案**：
+**解析讲解**：
 
 ```html
 <iframe
@@ -1671,11 +1661,11 @@ card.mount('#card-element');
 ></iframe>
 ```
 
-### 练习 3（理解）
+## 知识讲解与要点分析（原练习 3（理解））
 
 **题目**：为什么 `sandbox="allow-scripts allow-same-origin"` 会破坏沙箱？给出攻击链路。
 
-**答案**：
+**解析讲解**：
 
 1. `allow-scripts` 允许 iframe 执行 JS。
 2. `allow-same-origin` 保留 iframe 原始源。
@@ -1691,11 +1681,11 @@ card.mount('#card-element');
 - 使用 `credentialless` 隔离 Cookie。
 - 若必须同源，使用 Service Worker 拦截 iframe 请求并施加额外校验。
 
-### 练习 4（理解）
+## 知识讲解与要点分析（原练习 4（理解））
 
 **题目**：解释 `srcdoc` 相比 `src` 的性能优势与适用场景。
 
-**答案**：
+**解析讲解**：
 
 **性能优势**：
 
@@ -1719,7 +1709,7 @@ card.mount('#card-element');
 - 需要被搜索引擎索引的内容。
 - 需要书签、深链接的内容。
 
-### 练习 5（应用）
+## 知识讲解与要点分析（原练习 5（应用））
 
 **题目**：实现一个父文档与 iframe 的 RPC 通信管道，支持：
 
@@ -1728,7 +1718,7 @@ card.mount('#card-element');
 - Promise 化的异步返回
 - 错误传递
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 // rpc.ts
@@ -1820,7 +1810,7 @@ window.addEventListener('message', (e) => {
 });
 ```
 
-### 练习 6（应用）
+## 知识讲解与要点分析（原练习 6（应用））
 
 **题目**：实现一个 PDF 预览组件，要求：
 
@@ -1830,7 +1820,7 @@ window.addEventListener('message', (e) => {
 - 显示加载进度
 - 支持全屏
 
-**答案**：
+**解析讲解**：
 
 ```html
 <!DOCTYPE html>
@@ -1903,11 +1893,11 @@ window.addEventListener('message', (e) => {
 </html>
 ```
 
-### 练习 7（分析）
+## 知识讲解与要点分析（原练习 7（分析））
 
 **题目**：分析 COEP 启用后 `<iframe>` 加载跨源页面失败的原因，并给出三种解决方案。
 
-**答案**：
+**解析讲解**：
 
 **原因**：
 
@@ -1946,11 +1936,11 @@ location /proxy/ {
 <iframe src="/proxy/widget.html"></iframe>
 ```
 
-### 练习 8（分析）
+## 知识讲解与要点分析（原练习 8（分析））
 
 **题目**：解构浏览器对 `<iframe>` 的进程分配策略（同进程 vs 站点隔离），并分析各自优劣。
 
-**答案**：
+**解析讲解**：
 
 **同进程模式**：
 
@@ -1980,11 +1970,11 @@ location /proxy/ {
 | 同进程 | 120 MB | 180ms | 弱 |
 | 站点隔离 | 380 MB | 45ms | 强 |
 
-### 练习 9（评价）
+## 知识讲解与要点分析（原练习 9（评价））
 
 **题目**：评估"使用 `<iframe>` 实现微前端"vs"使用 Web Components 实现微前端"的优劣，给出推荐方案。
 
-**答案**：
+**解析讲解**：
 
 | 维度 | `<iframe>` 微前端 | Web Components 微前端 |
 | ---- | ----------------- | --------------------- |
@@ -2006,7 +1996,7 @@ location /proxy/ {
 3. **统一通信层**：基于 `postMessage` + `MessageChannel` 的 RPC，抽象为统一接口。
 4. **统一设计系统**：所有子应用使用同一设计 token，UI 视觉一致。
 
-### 练习 10（创造）
+## 知识讲解与要点分析（原练习 10（创造））
 
 **题目**：设计一个 `<iframe>` 安全审计工具，能自动检测以下问题：
 
@@ -2016,7 +2006,7 @@ location /proxy/ {
 - 缺少 `event.origin` 校验
 - iframe 缺少 `title`
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 // iframe-audit.ts
@@ -2220,18 +2210,18 @@ console.log(auditor.report());
 
 1. 阅读 WHATWG HTML Living Standard §4.8.5—4.8.7。
 2. 完成 MDN "Iframe element" 教程。
-3. 实现基础 iframe 嵌入与 `postMessage` 通信。
+3. 要点：基础 iframe 嵌入与 `postMessage` 通信。
 
 **进阶（2 周）**：
 
 1. 学习 `sandbox` 全部令牌，实践最小权限配置。
-2. 实现 `MessageChannel` 双向 RPC。
+2. 要点： `MessageChannel` 双向 RPC。
 3. 阅读 Chrome Site Isolation 文档。
 4. 实践 COEP 与 `credentialless`。
 
 **高级（1 月）**：
 
-1. 实现微前端容器框架（基于 iframe + Web Components 混合）。
+1. 要点：微前端容器框架（基于 iframe + Web Components 混合）。
 2. 构建 iframe 安全审计工具。
 3. 研究 `portal` 元素的预渲染机制。
 4. 阅读 Chromium iframe 渲染管线源码。
@@ -2242,3 +2232,259 @@ console.log(auditor.report());
 2. 关注浏览器安全公告（Chrome、Firefox、Safari）。
 3. 研究 Spectre 等侧信道攻击对 iframe 隔离的影响。
 4. 探索 WebAssembly-based iframe 替代方案。
+## iframe 内联框架
+
+**iframe 元素**
+`<iframe src="<URL>" [width="<宽>"] [height="<高>"] [title="<标题>"] [sandbox="<策略>"] [allow="<功能>"] [loading="lazy|eager"]></iframe>`
+```html
+<!-- 基础 iframe -->
+<iframe src="https://example.com" width="800" height="600" title="嵌入页面"></iframe>
+
+<!-- 完整安全配置 -->
+<iframe
+  src="https://trusted-site.com/widget"
+  width="800"
+  height="600"
+  title="第三方小组件"
+  sandbox="allow-scripts allow-forms"
+  allow="geolocation"
+  referrerpolicy="no-referrer"
+  loading="lazy"
+></iframe>
+```
+
+**iframe 属性**
+
+| 属性             | 作用                          |
+| ---------------- | ----------------------------- |
+| `src`            | 嵌入页面 URL                  |
+| `srcdoc`         | 内联 HTML 内容                |
+| `name`           | 框架名称(target 用)          |
+| `sandbox`        | 沙箱安全策略                  |
+| `allow`          | 权限策略(摄像头、麦克风等)   |
+| `loading`        | 懒加载 lazy / eager           |
+| `referrerpolicy` | Referer 策略                  |
+| `title`          | 无障碍标题(必填)             |
+
+---
+
+## sandbox 沙箱策略
+
+**安全沙箱**
+`<iframe src="<URL>" sandbox="<策略列表>">`
+```html
+<!-- 完全沙箱(禁用所有功能) -->
+<iframe src="untrusted.html" sandbox></iframe>
+
+<!-- 部分启用 -->
+<iframe src="widget.html" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+```
+
+| sandbox 值                   | 允许的功能                |
+| ---------------------------- | ------------------------- |
+| (空)                         | 禁止所有                  |
+| `allow-scripts`              | 执行脚本                  |
+| `allow-same-origin`          | 同源请求                  |
+| `allow-forms`                | 提交表单                  |
+| `allow-popups`               | 弹窗(window.open)        |
+| `allow-modals`               | 模态对话框(alert/confirm)|
+| `allow-orientation-lock`     | 屏幕方向锁定              |
+| `allow-pointer-lock`         | 鼠标锁定                  |
+| `allow-presentation`         | 全屏演示                  |
+| `allow-top-navigation`       | 顶层窗口导航              |
+| `allow-downloads`            | 下载                      |
+
+> 安全警告:同时使用 `allow-scripts` 和 `allow-same-origin` 可能导致沙箱被绕过。
+
+---
+
+## allow 权限策略
+
+**Permissions Policy**
+`<iframe src="<URL>" allow="<功能列表>">`
+```html
+<!-- 允许摄像头和麦克风 -->
+<iframe src="video.html" allow="camera; microphone"></iframe>
+
+<!-- 允许全屏和地理位置 -->
+<iframe src="map.html" allow="fullscreen; geolocation"></iframe>
+
+<!-- 限定来源 -->
+<iframe
+  src="https://example.com"
+  allow="camera https://example.com; microphone https://example.com"
+></iframe>
+```
+
+| 权限           | 说明          |
+| -------------- | ------------- |
+| `camera`       | 摄像头        |
+| `microphone`   | 麦克风        |
+| `geolocation`  | 地理位置      |
+| `fullscreen`   | 全屏          |
+| `autoplay`     | 自动播放      |
+| `clipboard-read` | 剪贴板读取  |
+| `clipboard-write` | 剪贴板写入 |
+| `payment`      | 支付          |
+| `usb`          | USB 设备      |
+
+---
+
+## srcdoc 内联内容
+
+**内联 HTML**
+`<iframe srcdoc="<HTML字符串>" [sandbox]></iframe>`
+```html
+<!-- 直接嵌入 HTML -->
+<iframe srcdoc="<h1>内联内容</h1><p>Hello</p>" sandbox="allow-scripts"></iframe>
+
+<!-- 配合 JavaScript 动态内容 -->
+<iframe id="frame" sandbox="allow-scripts"></iframe>
+<script>
+  const html = `
+    <h1>动态内容</h1>
+    <p>当前时间:${new Date().toLocaleString()}</p>
+  `;
+  document.getElementById('frame').srcdoc = html;
+</script>
+```
+
+---
+
+## embed 与 object
+
+**embed 元素**
+`<embed src="<URL>" [type="<MIME>"] [width] [height] />`
+```html
+<!-- 嵌入 PDF -->
+<embed src="document.pdf" type="application/pdf" width="800" height="600" />
+
+<!-- 嵌入 Flash(已废弃) -->
+<embed src="animation.swf" type="application/x-shockwave-flash" />
+```
+
+**object 元素**
+`<object data="<URL>" [type="<MIME>"] [width] [height]>[回退内容]</object>`
+```html
+<!-- 嵌入 PDF(带回退) -->
+<object data="document.pdf" type="application/pdf" width="800" height="600">
+  <p>您的浏览器不支持 PDF 预览,请<a href="document.pdf">下载查看</a></p>
+</object>
+
+<!-- 嵌入图像 -->
+<object data="chart.svg" type="image/svg+xml" width="400" height="300">
+  <img src="chart.png" alt="图表" />
+</object>
+```
+
+**embed vs object**
+
+| 特性       | embed            | object                  |
+| ---------- | ---------------- | ----------------------- |
+| 自闭合     | 是               | 否                      |
+| 回退内容   | 不支持           | 支持                    |
+| 参数传递   | 通过属性         | 通过 `<param>` 子元素   |
+| 使用场景   | 简单嵌入         | 需要回退的复杂嵌入      |
+
+**param 参数**
+`<param name="<名称>" value="<值>" />`
+```html
+<object data="game.swf" type="application/x-shockwave-flash">
+  <param name="quality" value="high" />
+  <param name="wmode" value="transparent" />
+  <p>需要安装 Flash 插件</p>
+</object>
+```
+
+---
+
+## iframe 跨文档通信
+
+**postMessage API**
+```javascript
+// 父页面 → iframe
+const iframe = document.getElementById('myFrame');
+iframe.contentWindow.postMessage(
+  { type: 'DATA', payload: 'hello' },
+  'https://example.com' // 必须指定目标源
+);
+
+// iframe → 父页面
+window.parent.postMessage({ type: 'CHILD_READY' }, 'https://parent.com');
+
+// 接收消息
+window.addEventListener('message', (event) => {
+  // 校验来源(防 XSS)
+  if (event.origin !== 'https://example.com') return;
+  console.log('收到消息:', event.data);
+  console.log('来源:', event.origin);
+  console.log('来源窗口:', event.source);
+});
+```
+
+---
+
+## video 与 audio 嵌入
+
+**通过 iframe 嵌入视频**
+```html
+<!-- YouTube 嵌入 -->
+<iframe
+  src="https://www.youtube.com/embed/VIDEO_ID"
+  width="560" height="315"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
+
+<!-- Bilibili 嵌入 -->
+<iframe src="//player.bilibili.com/player.html?bvid=BVxxxx" width="100%" height="500" allowfullscreen></iframe>
+```
+
+---
+
+## picture 与 source
+
+**source 元素**
+`<source src="<URL>" [type="<MIME>"] [media="<媒体查询>"] [srcset="<URL>"] />`
+```html
+<!-- 多格式图像回退 -->
+<picture>
+  <source srcset="photo.avif" type="image/avif" />
+  <source srcset="photo.webp" type="image/webp" />
+  <img src="photo.jpg" alt="照片" />
+</picture>
+
+<!-- 视频多格式 -->
+<video controls>
+  <source src="movie.webm" type="video/webm" />
+  <source src="movie.mp4" type="video/mp4" />
+  您的浏览器不支持视频。
+</video>
+```
+
+---
+
+## 嵌入地图
+
+**iframe 嵌入地图**
+```html
+<!-- 高德地图 -->
+<iframe
+  src="https://uri.amap.com/marker?position=经度,纬度&name=位置名称"
+  width="600" height="450"
+  style="border:0;"
+  loading="lazy"
+  title="地图"
+></iframe>
+
+<!-- Google Maps -->
+<iframe
+  src="https://www.google.com/maps/embed?pb=..."
+  width="600" height="450"
+  style="border:0;"
+  allowfullscreen=""
+  loading="lazy"
+  referrerpolicy="no-referrer-when-downgrade"
+></iframe>
+```

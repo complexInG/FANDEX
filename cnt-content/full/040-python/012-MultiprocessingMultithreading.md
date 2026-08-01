@@ -15,10 +15,11 @@ related:
 prerequisites:
   - python/语法速查
 ---
+# Python threading 同步原语
 
-# 多进程与多线程
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.005 "Software Construction"、Stanford CS110 "Principles of Computer Systems"、CMU 15-440 "Distributed Systems" 中并发编程部分的教学水准，系统讲解 Python 中 `threading`、`multiprocessing`、`concurrent.futures` 三大并发体系的形式化定义、工程实现与生产实践。
+---
 
 ## 1. 学习目标
 
@@ -333,19 +334,31 @@ $$
 
 ### 5.1 项目结构
 
-```
-concurrent_demo/
-├── pyproject.toml
-├── requirements.txt
-├── README.md
-└── src/
-    └── concurrent_demo/
-        ├── __init__.py
-        ├── thread_pool.py       # 线程池示例
-        ├── process_pool.py      # 进程池示例
-        ├── producer_consumer.py # 生产者-消费者
-        ├── ipc_demo.py          # 进程间通信
-        └── utils.py
+```mermaid
+flowchart TD
+    T0["concurrent_demo/"]
+    T1["pyproject.toml"]
+    T2["requirements.txt"]
+    T3["README.md"]
+    T4["src/"]
+    T5["concurrent_demo/"]
+    T6["__init__.py"]
+    T7["thread_pool.py       # 线程池示例"]
+    T8["process_pool.py      # 进程池示例"]
+    T9["producer_consumer.py # 生产者-消费者"]
+    T10["ipc_demo.py          # 进程间通信"]
+    T11["utils.py"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T4 --> T5
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T5 --> T9
+    T5 --> T10
+    T5 --> T11
 ```
 
 ### 5.2 pyproject.toml
@@ -940,8 +953,8 @@ if __name__ == "__main__":
 | ---- | ------------------ | ------------------------ | ---------------------- | --------------- |
 | 并发模型 | OS 线程 + GIL | OS 进程 | OS 线程（V8 隔离） | OS 进程 |
 | 内存共享 | 全部共享 | 不共享（仅 IPC） | SharedArrayBuffer | 不共享（IPC via IPC channel） |
-| CPU 并行 | ❌ 受 GIL 限制 | ✅ | ✅ | ✅ |
-| IO 并行 | ✅（释放 GIL） | ✅ | ✅（事件循环） | ✅ |
+| CPU 并行 | 不支持 受 GIL 限制 | 已达标 | 已达标 | 已达标 |
+| IO 并行 | 已达标（释放 GIL） | 已达标 | 已达标（事件循环） | 已达标 |
 | 启动开销 | 低（~1ms） | 高（~50ms） | 中（~10ms） | 高（~50ms） |
 | 通信方式 | 共享变量+锁 | Queue/Pipe/Manager | postMessage / SAB | IPC channel |
 | 默认推荐 | IO 密集 | CPU 密集 | CPU 密集 | Web 服务负载均衡 |
@@ -969,18 +982,23 @@ Java 自 JDK 21（2023）正式 GA **Virtual Thread**（Project Loom），将 go
 
 ### 6.5 何时选择哪种模型
 
-```
-任务类型？
-├─ IO 密集（HTTP/DB/文件）
-│  ├─ 并发量 < 1000：threading + ThreadPoolExecutor
-│  ├─ 并发量 1000-100000：asyncio
-│  └─ 并发量 > 100000：asyncio + uvloop + 自定义协议
-├─ CPU 密集
-│  ├─ 纯 Python：multiprocessing
-│  ├─ NumPy/Pandas：单进程已并行（BLAS），谨慎再加多进程
-│  └─ C 扩展（释放 GIL）：threading + ctypes/Cython
-└─ 混合型
-   └─ ProcessPool + asyncio（每进程内跑事件循环）
+```mermaid
+flowchart TD
+    T0["任务类型？"]
+    T1["IO 密集（HTTP/DB/文件）"]
+    T2["并发量 < 1000：threading + ThreadPoolExecutor"]
+    T3["并发量 1000-100000：asyncio"]
+    T4["并发量 > 100000：asyncio + uvloop + 自定义协议"]
+    T5["CPU 密集"]
+    T6["纯 Python：multiprocessing"]
+    T7["NumPy/Pandas：单进程已并行（BLAS），谨慎再加多进程"]
+    T8["C 扩展（释放 GIL）：threading + ctypes/Cython"]
+    T9["混合型"]
+    T10["ProcessPool + asyncio（每进程内跑事件循环）"]
+    T0 --> T1
+    T4 --> T5
+    T8 --> T9
+    T9 --> T10
 ```
 
 ---
@@ -1335,11 +1353,11 @@ Django 服务的标准部署：`gunicorn --workers=4 --worker-class=sync myproje
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下代码在 4 核机器上运行，`counter` 最终值最可能是多少？
+**常见疑问 1**：以下代码在 4 核机器上运行，`counter` 最终值最可能是多少？
 
 ```python
 from threading import Thread
@@ -1359,63 +1377,63 @@ print(counter)
 - C. 100000
 - D. 0
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`counter += 1` 非原子，GIL 可能在 LOAD/STORE 之间切换线程，导致丢失更新。最终值取决于线程调度，介于 100000（每次都丢失）和 400000（无丢失）之间。
+**解析讲解**：`counter += 1` 非原子，GIL 可能在 LOAD/STORE 之间切换线程，导致丢失更新。最终值取决于线程调度，介于 100000（每次都丢失）和 400000（无丢失）之间。
 
 ---
 
-**Q2**：关于 `multiprocessing` 启动方式，以下说法正确的是？
+**常见疑问 2**：关于 `multiprocessing` 启动方式，以下说法正确的是？
 
 - A. Linux 默认 `spawn`
 - B. macOS 自 Python 3.8 起默认 `fork`
 - C. Windows 仅支持 `spawn`
 - D. `forkserver` 在所有平台都可用
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：Linux 默认 `fork`，macOS 自 3.8 起默认 `spawn`（因 macOS 的 fork 不安全，与 CoreFoundation 冲突），Windows 仅支持 `spawn`（无 `fork` 系统调用），`forkserver` 在 Windows 不可用。
+**解析讲解**：Linux 默认 `fork`，macOS 自 3.8 起默认 `spawn`（因 macOS 的 fork 不安全，与 CoreFoundation 冲突），Windows 仅支持 `spawn`（无 `fork` 系统调用），`forkserver` 在 Windows 不可用。
 
 ---
 
-**Q3**：以下哪种情况会触发 GIL 释放？
+**常见疑问 3**：以下哪种情况会触发 GIL 释放？
 
 - A. 执行 `a + b`
 - B. 调用 `time.sleep(1)`
 - C. 执行 `for i in range(1000): pass`
 - D. `print("hello")`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`time.sleep` 是阻塞系统调用，CPython 在调用前主动释放 GIL。`a + b`、`for` 循环、`print` 都是纯 Python 字节码，不会在单条指令内释放（仅在 `sys.setswitchinterval` 到期时切换）。
+**解析讲解**：`time.sleep` 是阻塞系统调用，CPython 在调用前主动释放 GIL。`a + b`、`for` 循环、`print` 都是纯 Python 字节码，不会在单条指令内释放（仅在 `sys.setswitchinterval` 到期时切换）。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q4**：Python GIL 的全称是 ________，它保证了同一时刻只有一个线程在执行 ________。
+**常见疑问 4**：Python GIL 的全称是 ________，它保证了同一时刻只有一个线程在执行 ________。
 
-**答案**：Global Interpreter Lock；Python 字节码
-
----
-
-**Q5**：`concurrent.futures.Executor` 的两个具体实现是 ________ 和 ________。
-
-**答案**：ThreadPoolExecutor；ProcessPoolExecutor
+**解析讲解**：Global Interpreter Lock；Python 字节码
 
 ---
 
-**Q6**：在 Linux 上，`multiprocessing.Process` 默认通过 ________ 系统调用创建子进程，子进程使用 ________ 机制共享父进程内存。
+**常见疑问 5**：`concurrent.futures.Executor` 的两个具体实现是 ________ 和 ________。
 
-**答案**：fork；Copy-on-Write（CoW）
+**解析讲解**：ThreadPoolExecutor；ProcessPoolExecutor
 
-### 10.3 编程题
+---
 
-**Q7**：实现一个线程安全的 LRU Cache，支持 `get(key)` 与 `put(key, value)` 操作。要求：
+**常见疑问 6**：在 Linux 上，`multiprocessing.Process` 默认通过 ________ 系统调用创建子进程，子进程使用 ________ 机制共享父进程内存。
+
+**解析讲解**：fork；Copy-on-Write（CoW）
+
+### 编程题知识点讲解
+
+**常见疑问 7**：实现一个线程安全的 LRU Cache，支持 `get(key)` 与 `put(key, value)` 操作。要求：
 
 - 最大容量为 `capacity`，超容量时淘汰最久未使用项。
 - 使用 `threading.Lock` 保证线程安全。
 - `get` 与 `put` 时间复杂度均为 O(1)。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from __future__ import annotations
@@ -1454,9 +1472,9 @@ class LRUCache:
 
 ---
 
-**Q8**：使用 `multiprocessing.Pool` 实现一个分布式单词计数器：给定文件路径列表，每个进程处理一个文件，统计单词频率，最终合并所有结果。要求支持进度显示与异常恢复。
+**常见疑问 8**：使用 `multiprocessing.Pool` 实现一个分布式单词计数器：给定文件路径列表，每个进程处理一个文件，统计单词频率，最终合并所有结果。要求支持进度显示与异常恢复。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from __future__ import annotations
@@ -1529,7 +1547,7 @@ if __name__ == "__main__":
 
 ### 10.4 思考题
 
-**Q9**：假设你设计一个实时日志聚合服务，每秒接收 10000 条日志（每条平均 500B），需要解析、过滤、写入 Elasticsearch。你会选择 `threading`、`multiprocessing`、`asyncio` 还是混合方案？请给出架构图与决策依据。
+**常见疑问 9**：假设你设计一个实时日志聚合服务，每秒接收 10000 条日志（每条平均 500B），需要解析、过滤、写入 Elasticsearch。你会选择 `threading`、`multiprocessing`、`asyncio` 还是混合方案？请给出架构图与决策依据。
 
 **提示**：考虑以下因素：
 
@@ -1540,37 +1558,28 @@ if __name__ == "__main__":
 
 **参考思路**：
 
-```
-┌──────────┐    ┌──────────────┐    ┌─────────────────┐
-│ Producers│ -> │ asyncio loop │ -> │ ProcessPool(4)  │
-│ (Kafka)  │    │ (10k conn)   │    │ (regex parse)   │
-└──────────┘    └──────────────┘    └─────────────────┘
-                       │                      │
-                       v                      v
-                ┌──────────────┐      ┌────────────┐
-                │ BatchQueue   │ <──  │ parsed log │
-                │ (maxsize=1k) │      └────────────┘
-                └──────────────┘
-                       │
-                       v
-                ┌──────────────┐
-                │ ES Bulk API  │
-                │ (asyncio)    │
-                └──────────────┘
+```mermaid
+flowchart LR
+    P[Producers<br/>Kafka] --> L[asyncio loop<br/>10k conn]
+    L --> PP[ProcessPool 4<br/>regex parse]
+    PP --> PQ[parsed log]
+    L --> BQ[BatchQueue<br/>maxsize=1k]
+    PQ --> BQ
+    BQ --> ES[ES Bulk API<br/>asyncio]
 ```
 
 决策依据：asyncio 处理高并发 IO（Kafka 消费 + ES 写入），ProcessPool 处理 CPU 密集的解析（绕过 GIL）。BatchQueue 实现背压。
 
 ---
 
-**Q10**：PEP 703 移除 GIL 后，以下场景的推荐方案会如何变化？
+**常见疑问 10**：PEP 703 移除 GIL 后，以下场景的推荐方案会如何变化？
 
 1. CPU 密集型多线程计算
 2. 现有 `multiprocessing` 代码迁移
 3. C 扩展兼容性
 4. 性能基准（单线程是否会变慢？）
 
-**参考答案**：
+**解析讲解**：
 
 1. **CPU 密集型多线程**：从 `multiprocessing` 切换到 `threading`，避免 IPC 开销，内存共享更自然。
 2. **现有 multiprocessing 代码**：仍可运行，但应逐步迁移到 threading；Manager/Queue 等 IPC 机制可保留用于隔离场景。
@@ -1688,18 +1697,19 @@ python -X gil=0 script.py
 
 ### 13.4 进阶路线图
 
-```
-基础 → 进阶 → 专家
- │      │      │
- │      │      └─ PEP 703 内部实现 / C 扩展线程安全 / 自定义调度器
- │      │
- │      ├─ asyncio 事件循环源码 / uvloop / 异步 DB driver
- │      ├─ multiprocessing 启动方式深入 / shared_memory / Manager 代理原理
- │      └─ 性能剖析（py-spy / pyinstrument / perf）
- │
- ├─ threading / concurrent.futures 熟练使用
- ├─ 锁、信号量、条件变量、事件
- └─ 生产者-消费者 / 读写锁 / 限流器
+```mermaid
+flowchart TD
+    T0["基础 → 进阶 → 专家"]
+    T1["PEP 703 内部实现 / C 扩展线程安全 / 自定义调度器"]
+    T2["asyncio 事件循环源码 / uvloop / 异步 DB driver"]
+    T3["multiprocessing 启动方式深入 / shared_memory / Manager 代理原理"]
+    T4["性能剖析（py-spy / pyinstrument / perf）"]
+    T5["threading / concurrent.futures 熟练使用"]
+    T6["锁、信号量、条件变量、事件"]
+    T7["生产者-消费者 / 读写锁 / 限流器"]
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
 ```
 
 ---
@@ -1723,12 +1733,12 @@ python -X gil=0 script.py
 
 | 特性 | 3.8 | 3.9 | 3.10 | 3.11 | 3.12 | 3.13 | 3.14 |
 | --- | --- | --- | ---- | ---- | ---- | ---- | ---- |
-| `concurrent.futures` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `shared_memory` | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `ProcessPoolExecutor.cancel_futures` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| `TaskGroup` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| No-GIL（experimental） | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
-| pickle protocol 5 | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `concurrent.futures` | 已达标 | 已达标 | 已达标 | 已达标 | 已达标 | 已达标 | 已达标 |
+| `shared_memory` | 不支持 | 已达标 | 已达标 | 已达标 | 已达标 | 已达标 | 已达标 |
+| `ProcessPoolExecutor.cancel_futures` | 不支持 | 不支持 | 不支持 | 已达标 | 已达标 | 已达标 | 已达标 |
+| `TaskGroup` | 不支持 | 不支持 | 不支持 | 已达标 | 已达标 | 已达标 | 已达标 |
+| No-GIL（experimental） | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 | 已达标 | 已达标 |
+| pickle protocol 5 | 不支持 | 已达标 | 已达标 | 已达标 | 已达标 | 已达标 | 已达标 |
 
 ### 14.3 命令速查
 
@@ -1792,3 +1802,712 @@ indent_size = 2
 > **维护者**：FANDEX Team
 > **对标标准**：MIT 6.005 / Stanford CS110 / CMU 15-440
 > **审阅状态**：待同行评审
+## Lock 互斥锁
+
+**基本写法：创建锁**
+`threading.Lock()`
+```python
+# 互斥锁
+import threading
+
+lock = threading.Lock()
+```
+
+**基本写法：acquire 与 release**
+`lock.acquire()` | `lock.release()`
+```python
+# 手动加锁解锁
+lock.acquire()
+try:
+    pass
+finally:
+    lock.release()
+```
+
+**基本写法：with 自动管理**
+`with lock:`
+```python
+# 推荐：with 自动加锁解锁
+with lock:
+    pass
+```
+
+**基本写法：非阻塞获取**
+`lock.acquire(blocking=False)`
+```python
+# 非阻塞尝试获取
+if lock.acquire(blocking=False):
+    try:
+        pass
+    finally:
+        lock.release()
+else:
+    print("锁被占用")
+```
+
+**基本写法：带超时获取**
+`lock.acquire(timeout=<秒>)`
+```python
+# 超时获取
+if lock.acquire(timeout=5):
+    try:
+        pass
+    finally:
+        lock.release()
+```
+
+---
+
+## RLock 可重入锁
+
+**基本写法：创建 RLock**
+`threading.RLock()`
+```python
+# 同一线程可多次获取
+rlock = threading.RLock()
+
+def recursive(n):
+    with rlock:
+        if n > 0:
+            recursive(n - 1)
+```
+
+---
+
+## Condition 条件变量
+
+**基本写法：创建 Condition**
+`threading.Condition(<锁>)`
+```python
+# 条件变量
+cond = threading.Condition()
+```
+
+**基本写法：wait 等待**
+`with cond:\n    cond.wait()`
+```python
+# 等待条件满足
+with cond:
+    cond.wait()
+```
+
+**基本写法：notify 通知**
+`cond.notify(<数量>)` | `cond.notify_all()`
+```python
+# 通知等待线程
+with cond:
+    cond.notify()
+    cond.notify_all()
+```
+
+**基本写法：生产者消费者**
+`Condition` 配合 wait/notify
+```python
+queue = []
+MAX = 5
+cond = threading.Condition()
+
+def producer():
+    with cond:
+        while len(queue) >= MAX:
+            cond.wait()
+        queue.append("item")
+        cond.notify_all()
+
+def consumer():
+    with cond:
+        while not queue:
+            cond.wait()
+        item = queue.pop(0)
+        cond.notify_all()
+```
+
+**基本写法：wait_for 条件谓词**
+`cond.wait_for(<谓词函数>, timeout=<秒>)`
+```python
+# 等待条件成立
+with cond:
+    cond.wait_for(lambda: len(queue) > 0)
+    item = queue.pop(0)
+```
+
+---
+
+## Event 事件
+
+**基本写法：创建 Event**
+`threading.Event()`
+```python
+# 事件标志
+event = threading.Event()
+```
+
+**基本写法：set 与 clear**
+`event.set()` | `event.clear()`
+```python
+# 设置与清除标志
+event.set()
+event.clear()
+```
+
+**基本写法：wait 等待**
+`event.wait(timeout=<秒>)`
+```python
+# 等待事件被 set
+event.wait()
+event.wait(timeout=5)
+```
+
+**基本写法：is_set 检查**
+`event.is_set()`
+```python
+# 检查标志状态
+print(event.is_set())
+```
+
+---
+
+## Semaphore 信号量
+
+**基本写法：创建信号量**
+`threading.Semaphore(<数量>)`
+```python
+# 限制并发数
+sem = threading.Semaphore(3)
+
+def worker():
+    with sem:
+        pass
+```
+
+**基本写法：BoundedSemaphore**
+`threading.BoundedSemaphore(<数量>)`
+```python
+# 有界信号量
+sem = threading.BoundedSemaphore(3)
+```
+
+---
+
+## Barrier 栅栏
+
+**基本写法：创建 Barrier**
+`threading.Barrier(<数量>)`
+```python
+# 等待指定数量线程到达后一起继续
+barrier = threading.Barrier(4)
+
+def worker():
+    barrier.wait()
+```
+
+**基本写法：带超时**
+`barrier.wait(timeout=<秒>)`
+```python
+# 超时则抛出 BrokenBarrierError
+barrier.wait(timeout=10)
+```
+
+**基本写法：abort 中断**
+`barrier.abort()`
+```python
+# 中断栅栏
+barrier.abort()
+```
+
+---
+
+## local 线程局部存储
+
+**基本写法：创建 local**
+`threading.local()`
+```python
+# 线程局部数据
+local_data = threading.local()
+local_data.value = 0
+```
+
+---
+
+## GIL 与自由线程
+
+**基本写法：Python GIL**
+`threading` 适用于 IO 密集型
+```python
+# GIL 限制：同一时刻只有一个线程执行 Python 字节码
+# CPU 密集型任务请用 multiprocessing
+```
+
+**基本写法：3.13 自由线程模式**
+`python -X gil=0`
+```python
+# Python 3.13 实验性无 GIL 模式（PEP 703）
+# python -X gil=0 main.py
+```
+
+---
+
+## 线程枚举
+
+**基本写法：活跃线程数**
+`threading.active_count()`
+```python
+# 当前活跃线程数
+print(threading.active_count())
+```
+
+**基本写法：枚举线程**
+`threading.enumerate()`
+```python
+# 获取所有活跃线程列表
+for t in threading.enumerate():
+    print(t.name)
+```
+
+**基本写法：主线程**
+`threading.main_thread()`
+```python
+# 获取主线程对象
+print(threading.main_thread().name)
+```
+
+---
+
+## Timer 定时线程
+
+**基本写法：创建 Timer**
+`threading.Timer(<秒>, <函数>)`
+```python
+# 定时执行函数
+def hello():
+    print("hello")
+
+t = threading.Timer(5.0, hello)
+t.start()
+```
+
+**基本写法：取消 Timer**
+`t.cancel()`
+```python
+# 取消未执行的定时器
+t.cancel()
+```
+
+---
+
+## 线程间通信 queue
+
+**基本写法：Queue**
+`queue.Queue(<最大长度>)`
+```python
+# 线程安全队列
+import queue
+
+q = queue.Queue(maxsize=10)
+q.put("item")
+print(q.get())
+```
+
+**基本写法：非阻塞操作**
+`q.put(<值>, block=False)` | `q.get(block=False)`
+```python
+# 非阻塞
+try:
+    q.put("x", block=False)
+except queue.Full:
+    pass
+
+try:
+    q.get(block=False)
+except queue.Empty:
+    pass
+```
+
+**基本写法：LifoQueue 与 PriorityQueue**
+`queue.LifoQueue()` | `queue.PriorityQueue()`
+```python
+# 后进先出与优先队列
+lifo = queue.LifoQueue()
+pq = queue.PriorityQueue()
+pq.put((1, "high"))
+pq.put((3, "low"))
+```
+
+**基本写法：task_done 与 join**
+`q.task_done()` | `q.join()`
+```python
+# 任务完成标记与等待全部处理
+q.put("task1")
+q.get()
+q.task_done()
+q.join()
+```
+
+**基本写法：SimpleQueue（3.7+）**
+`queue.SimpleQueue()`
+```python
+# 无界的简单队列，性能更好
+sq = queue.SimpleQueue()
+sq.put("x")
+print(sq.get())
+```
+## threading 线程创建
+
+**基本写法：创建线程**
+`threading.Thread(target=<函数>, args=<参数>)`
+```python
+# 创建并启动线程
+import threading
+def worker(name):
+    print(f"线程 {name} 运行中")
+t = threading.Thread(target=worker, args=("A",))
+t.start()
+t.join()
+```
+
+**换行写法：继承 Thread 类**
+`class <类名>(threading.Thread):`
+`    def run(self): <语句>`
+
+```python
+# 继承 Thread 自定义线程逻辑
+import threading
+class MyThread(threading.Thread):
+    def __init__(self, task):
+        super().__init__()
+        self.task = task
+    def run(self):
+        print(f"执行: {self.task}")
+t = MyThread("download")
+t.start()
+t.join()
+```
+
+**基本写法：获取当前线程**
+`threading.current_thread()`
+```python
+# 获取当前线程对象
+t = threading.current_thread()
+print(t.name)
+```
+
+**基本写法：获取活跃线程数**
+`threading.active_count()`
+```python
+# 返回当前活跃线程数
+print(threading.active_count())
+```
+
+---
+
+## threading 线程同步
+
+**基本写法：Lock 互斥锁**
+`threading.Lock()`
+```python
+# 互斥锁保护共享资源
+import threading
+lock = threading.Lock()
+count = 0
+def increment():
+    global count
+    with lock:
+        count += 1
+```
+
+**基本写法：RLock 可重入锁**
+`threading.RLock()`
+```python
+# 同一线程可多次获取的锁
+lock = threading.RLock()
+def recursive(n):
+    with lock:
+        if n > 0:
+            recursive(n - 1)
+```
+
+**基本写法：Semaphore 信号量**
+`threading.Semaphore(<数量>)`
+```python
+# 限制同时访问的线程数
+sem = threading.Semaphore(3)
+def limited_task():
+    with sem:
+        do_work()
+```
+
+**基本写法：Event 事件**
+`threading.Event()`
+```python
+# 线程间事件通知
+event = threading.Event()
+def waiter():
+    event.wait()
+    print("收到信号")
+event.set()
+```
+
+**基本写法：Condition 条件变量**
+`threading.Condition()`
+```python
+# 生产者消费者模式
+cond = threading.Condition()
+def producer():
+    with cond:
+        cond.notify_all()
+def consumer():
+    with cond:
+        cond.wait()
+```
+
+---
+
+## ThreadPoolExecutor 线程池
+
+**基本写法：使用线程池**
+`ThreadPoolExecutor(max_workers=<数量>)`
+```python
+# 线程池执行任务
+from concurrent.futures import ThreadPoolExecutor
+with ThreadPoolExecutor(max_workers=4) as executor:
+    results = executor.map(fetch_url, urls)
+```
+
+**基本写法：submit 提交单个任务**
+`executor.submit(<函数>, <参数>)`
+```python
+# 提交任务并获取 Future
+with ThreadPoolExecutor(max_workers=4) as executor:
+    future = executor.submit(fetch_url, "https://example.com")
+    result = future.result()
+```
+
+**基本写法：as_completed 按完成顺序获取**
+`concurrent.futures.as_completed(<future列表>)`
+```python
+# 哪个先完成先处理哪个
+from concurrent.futures import ThreadPoolExecutor, as_completed
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = [executor.submit(fetch_url, url) for url in urls]
+    for future in as_completed(futures):
+        print(future.result())
+```
+
+**基本写法：future 回调**
+`future.add_done_callback(<函数>)`
+```python
+# 任务完成后自动调用回调
+def on_complete(future):
+    print("结果:", future.result())
+future = executor.submit(fetch_url, url)
+future.add_done_callback(on_complete)
+```
+
+---
+
+## multiprocessing 进程创建
+
+**基本写法：创建进程**
+`multiprocessing.Process(target=<函数>, args=<参数>)`
+```python
+# 创建并启动进程
+import multiprocessing
+def worker(name):
+    print(f"进程 {name} 运行中")
+p = multiprocessing.Process(target=worker, args=("A",))
+p.start()
+p.join()
+```
+
+**换行写法：继承 Process 类**
+`class <类名>(multiprocessing.Process):`
+`    def run(self): <语句>`
+
+```python
+# 继承 Process 自定义进程逻辑
+import multiprocessing
+class MyProcess(multiprocessing.Process):
+    def run(self):
+        print("自定义进程运行中")
+p = MyProcess()
+p.start()
+p.join()
+```
+
+**基本写法：if __name__ == "__main__" 保护**
+`if __name__ == "__main__": <主逻辑>`
+```python
+# Windows 下必须使用入口保护
+import multiprocessing
+def worker():
+    print("工作进程")
+if __name__ == "__main__":
+    p = multiprocessing.Process(target=worker)
+    p.start()
+    p.join()
+```
+
+---
+
+## multiprocessing 进程通信
+
+**基本写法：Queue 进程队列**
+`multiprocessing.Queue()`
+```python
+# 进程间安全队列
+import multiprocessing
+q = multiprocessing.Queue()
+def producer():
+    q.put("data")
+def consumer():
+    print(q.get())
+```
+
+**基本写法：Pipe 管道**
+`multiprocessing.Pipe()`
+```python
+# 双向管道通信
+parent_conn, child_conn = multiprocessing.Pipe()
+def child():
+    child_conn.send("hello")
+    print(child_conn.recv())
+```
+
+**基本写法：Value 共享内存**
+`multiprocessing.Value(<类型>, <初始值>)`
+```python
+# 共享内存中的简单变量
+count = multiprocessing.Value("i", 0)
+count.value += 1
+```
+
+**基本写法：Array 共享数组**
+`multiprocessing.Array(<类型>, <大小>)`
+```python
+# 共享内存中的数组
+arr = multiprocessing.Array("i", [0, 1, 2, 3])
+print(arr[2])
+```
+
+---
+
+## multiprocessing 进程同步
+
+**基本写法：进程锁**
+`multiprocessing.Lock()`
+```python
+# 跨进程互斥锁
+lock = multiprocessing.Lock()
+def worker():
+    with lock:
+        print("安全操作")
+```
+
+**基本写法：进程信号量**
+`multiprocessing.Semaphore(<数量>)`
+```python
+# 跨进程信号量
+sem = multiprocessing.Semaphore(2)
+```
+
+---
+
+## ProcessPoolExecutor 进程池
+
+**基本写法：使用进程池**
+`ProcessPoolExecutor(max_workers=<数量>)`
+```python
+# 进程池执行 CPU 密集型任务
+from concurrent.futures import ProcessPoolExecutor
+with ProcessPoolExecutor(max_workers=4) as executor:
+    results = list(executor.map(heavy_compute, data_list))
+```
+
+**基本写法：submit 提交进程任务**
+`executor.submit(<函数>, <参数>)`
+```python
+# 提交任务到进程池
+with ProcessPoolExecutor() as executor:
+    future = executor.submit(compute, data)
+    result = future.result()
+```
+
+---
+
+## Pool 进程池（旧式）
+
+**基本写法：创建进程池**
+`multiprocessing.Pool(<进程数>)`
+```python
+# 使用 Pool 创建进程池
+from multiprocessing import Pool
+with Pool(4) as pool:
+    results = pool.map(worker, range(10))
+```
+
+**基本写法：异步映射**
+`pool.map_async(<函数>, <可迭代>)`
+```python
+# 非阻塞映射
+with Pool(4) as pool:
+    result = pool.map_async(worker, range(10))
+    result.wait()
+    print(result.get())
+```
+
+**基本写法：apply_async 异步执行单个任务**
+`pool.apply_async(<函数>, (<参数>,))`
+```python
+# 异步执行单个任务
+with Pool(4) as pool:
+    future = pool.apply_async(worker, (42,))
+    print(future.get(timeout=5))
+```
+
+---
+
+## 共享状态 Manager
+
+**基本写法：Manager 共享字典**
+`manager.dict()`
+```python
+# 通过 Manager 创建共享字典
+from multiprocessing import Manager
+with Manager() as manager:
+    shared_dict = manager.dict()
+    shared_dict["key"] = "value"
+```
+
+**基本写法：Manager 共享列表**
+`manager.list()`
+```python
+# 通过 Manager 创建共享列表
+with Manager() as manager:
+    shared_list = manager.list()
+    shared_list.append(1)
+```
+
+---
+
+## Python 3.13+ free-threading 自由线程
+
+**基本写法：Python 3.13+ 自由线程构建**
+`python3.13t`
+```python
+# Python 3.13+ 实验性无 GIL 构建
+# 使用自由线程构建时多线程可真正并行
+# 需安装 python3.13t 并设置 PYTHON_GIL=0
+import sys
+print(sys._is_gil_enabled())  # 检查 GIL 是否启用
+```
+
+**基本写法：禁用 GIL**
+`PYTHON_GIL=0`
+```python
+# Python 3.13+ 自由线程模式下禁用 GIL
+# 环境变量 PYTHON_GIL=0 启动解释器
+# 或在代码中设置
+import sys
+if hasattr(sys, "_enable_gil_disabled"):
+    sys._enable_gil_disabled()
+```

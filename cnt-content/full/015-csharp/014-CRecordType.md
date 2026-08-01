@@ -1156,17 +1156,27 @@ Point p = default;   // X = 0, Y = 0，但若语义是无效点呢？
 
 决策树：
 
-```
-是否表示数据（而非行为）？
-├─ 否 -> 使用 class
-└─ 是
-   ├─ 不可变？
-   │  ├─ 是
-   │  │  ├─ 小型（< 16 字节）-> readonly record struct
-   │  │  └─ 大型或需继承 -> record class
-   │  └─ 否
-   │     ├─ 小型（< 16 字节）-> record struct
-   │     └─ 大型 -> class with set
+```mermaid
+flowchart TD
+    T0["是否表示数据（而非行为）？"]
+    T1["否 -> 使用 class"]
+    T2["是"]
+    T3["不可变？"]
+    T4["是"]
+    T5["小型（< 16 字节）-> readonly record struct"]
+    T6["大型或需继承 -> record class"]
+    T7["否"]
+    T8["小型（< 16 字节）-> record struct"]
+    T9["大型 -> class with set"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T2 --> T5
+    T2 --> T6
+    T2 --> T7
+    T2 --> T8
+    T2 --> T9
 ```
 
 ### 8.2 优先使用位置参数
@@ -1785,22 +1795,22 @@ BenchmarkRunner.Run<RecordPerformanceBenchmarks>();
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪项不是 `record` 自动合成的成员？
+**常见疑问 1**：以下哪项不是 `record` 自动合成的成员？
 
 A. `Equals`  
 B. `GetHashCode`  
 C. `Dispose`  
 D. `Deconstruct`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`record` 合成 `Equals`、`GetHashCode`、`Deconstruct`、`ToString`、`op_Equality`、`op_Inequality`、`<Clone>$` 等，但不合成 `Dispose`。`IAsyncDisposable` 与 `IDisposable` 需显式实现。
+**解析讲解**：`record` 合成 `Equals`、`GetHashCode`、`Deconstruct`、`ToString`、`op_Equality`、`op_Inequality`、`<Clone>$` 等，但不合成 `Dispose`。`IAsyncDisposable` 与 `IDisposable` 需显式实现。
 
-**Q2**：以下 `with` 表达式的输出是什么？
+**常见疑问 2**：以下 `with` 表达式的输出是什么？
 
 ```csharp
 public record Person(string Name, int Age);
@@ -1814,11 +1824,11 @@ B. 31
 C. 编译错误  
 D. 运行时异常
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：`with` 表达式不修改原对象，`p1.Age` 仍为 30。
+**解析讲解**：`with` 表达式不修改原对象，`p1.Age` 仍为 30。
 
-**Q3**：以下代码的输出？
+**常见疑问 3**：以下代码的输出？
 
 ```csharp
 public record Person(string Name, int Age);
@@ -1833,49 +1843,49 @@ B. `true` / `false`
 C. `false` / `true`  
 D. `false` / `false`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`record` 默认值相等，故 `p1 == p2` 为 `true`；但 `p1` 与 `p2` 是不同实例，`ReferenceEquals` 为 `false`。
+**解析讲解**：`record` 默认值相等，故 `p1 == p2` 为 `true`；但 `p1` 与 `p2` 是不同实例，`ReferenceEquals` 为 `false`。
 
-**Q4**：以下哪种声明是合法的 C# 10 record struct？
+**常见疑问 4**：以下哪种声明是合法的 C# 10 record struct？
 
 A. `record struct Point(int X, int Y);`  
 B. `struct record Point(int X, int Y);`  
 C. `record Point struct(int X, int Y);`  
 D. `Point record struct(int X, int Y);`
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：`record struct` 是关键字组合，必须以 `record struct` 开头。
+**解析讲解**：`record struct` 是关键字组合，必须以 `record struct` 开头。
 
-### 10.2 简答题
+### 简答题知识点讲解
 
-**Q5**：解释 `record` 与 `class` 在相等性语义上的核心差异，并说明为何 `record` 适合 DDD Value Object。
+**常见疑问 5**：解释 `record` 与 `class` 在相等性语义上的核心差异，并说明为何 `record` 适合 DDD Value Object。
 
-**参考答案**：
+**解析讲解**：
 
 `record` 默认使用值相等性，两个实例所有字段相等即认为相等；`class` 默认使用引用相等性，仅当引用同一对象时相等。DDD Value Object 的定义是"由其属性值定义身份，无独立身份标识"，故值相等性契合 Value Object 语义。例如 `Money(100, "USD")` 与另一个 `Money(100, "USD")` 应视为相等。`record` 自动合成 `Equals` 与 `GetHashCode`，无需手写样板代码。
 
-**Q6**：说明 `with` 表达式的实现机制及其与不可变性的关系。
+**常见疑问 6**：说明 `with` 表达式的实现机制及其与不可变性的关系。
 
-**参考答案**：
+**解析讲解**：
 
 `with` 表达式编译为两步：1) 调用 `<Clone>$()` 复制原对象（引用类型用 `MemberwiseClone`，值类型按值拷贝）；2) 通过 init 访问器更新指定字段，返回新实例。原对象未被修改，故 `with` 实现了不可变更新：所有"修改"操作实际产生新实例。这与函数式编程的纯函数语义契合，支持引用透明性。
 
-**Q7**：对比 `record class` 与 `readonly record struct` 在以下场景的取舍：
+**常见疑问 7**：对比 `record class` 与 `readonly record struct` 在以下场景的取舍：
 1. 表示二维点 (X, Y) double
 2. 表示订单（含 Id、Customer、Lines 列表）
 3. 表示用户配置（含多个嵌套字段）
 
-**参考答案**：
+**解析讲解**：
 
 1. **二维点**：使用 `readonly record struct Point(double X, double Y)`。小型数据（16 字节）值类型避免堆分配，with 操作性能更好（栈复制，无 GC）。作为 `Dictionary` 键时哈希分布好。
 2. **订单**：使用 `record class Order`。大型对象（含集合），需继承与多态（OrderState 状态机），引用类型避免频繁拷贝大型列表。
 3. **用户配置**：使用 `record class`。配置含嵌套字段，引用类型便于共享与序列化。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q8**：实现一个不可变银行账户 record，支持存款、取款、转账，每次操作返回新账户实例。
+**常见疑问 8**：实现一个不可变银行账户 record，支持存款、取款、转账，每次操作返回新账户实例。
 
 ```csharp
 public record BankAccount(Guid Id, string Owner, decimal Balance, string Currency)
@@ -1916,7 +1926,7 @@ Console.WriteLine($"Bob: {a2.Balance}");     // 700
 Console.WriteLine($"Original Alice: {account1.Balance}");   // 1000，未变
 ```
 
-**Q9**：实现一个不可变树结构（二叉搜索树）使用 record 与模式匹配。
+**常见疑问 9**：实现一个不可变树结构（二叉搜索树）使用 record 与模式匹配。
 
 ```csharp
 public abstract record Tree<T> where T : IComparable<T>
@@ -1966,7 +1976,7 @@ Console.WriteLine(tree.Contains(4));   // true
 Console.WriteLine(tree.Contains(6));   // false
 ```
 
-**Q10**：使用 record 与 Source Generator 实现自动 DTO 映射（手写或示意）。
+**常见疑问 10**：使用 record 与 Source Generator 实现自动 DTO 映射（手写或示意）。
 
 ```csharp
 [AttributeUsage(AttributeTargets.Class)]
@@ -2024,9 +2034,9 @@ Console.WriteLine(dto);
 
 ### 10.4 思考题
 
-**Q11**：`record` 是否适合所有不可变数据建模场景？哪些情况下应避免使用？
+**常见疑问 11**：`record` 是否适合所有不可变数据建模场景？哪些情况下应避免使用？
 
-**参考答案**：
+**解析讲解**：
 
 不适用场景：
 
@@ -2036,9 +2046,9 @@ Console.WriteLine(dto);
 4. **反射密集场景**：record 的 init 访问器有 `modreq`，反射设置可能失败。
 5. **跨进程或跨语言互操作**：record 是 C# 特性，跨语言调用时合成成员不透明。
 
-**Q12**：`record struct` 与 `readonly record struct` 的核心区别是什么？何时选择前者？
+**常见疑问 12**：`record struct` 与 `readonly record struct` 的核心区别是什么？何时选择前者？
 
-**参考答案**：
+**解析讲解**：
 
 - **`record struct`**：默认可变（字段可写），适合需要值相等性但允许修改的小型数据，如累积器、缓冲区。
 - **`readonly record struct`**：强制不可变（字段 init-only），适合纯函数式数据流、Dictionary 键、并发共享数据。
@@ -2051,9 +2061,9 @@ Console.WriteLine(dto);
 
 但大多数情况下推荐 `readonly record struct`，避免可变陷阱。
 
-**Q13**：分析 `record` 在函数式编程范式下的优势与局限。
+**常见疑问 13**：分析 `record` 在函数式编程范式下的优势与局限。
 
-**参考答案**：
+**解析讲解**：
 
 **优势**：
 
@@ -2177,3 +2187,407 @@ Console.WriteLine(dto);
 7. **函数式集成**：与模式匹配、不可变集合、纯函数深度集成，支持函数式数据流。
 
 掌握 `record` 的语义、合成代码、性能特征与适用场景，是构建高质量 C# 数据驱动应用的基础。本系列后续文档将深入 LINQ、`Span<T>`、Source Generator 等高级特性，进一步提升读者的 C# 工程能力。
+## record 定义
+
+**基本写法：引用类型记录**
+`public record <名称>(<参数列表>);`
+```csharp
+// 定义引用类型记录
+public record Person(string Name, int Age);
+```
+
+---
+
+**基本写法：值类型记录**
+`public record struct <名称>(<参数列表>);`
+```csharp
+// 定义值类型记录
+public record struct Point(double X, double Y);
+```
+
+---
+
+**基本写法：不可变值类型记录**
+`public readonly record struct <名称>(<参数列表>);`
+```csharp
+// 定义不可变值类型记录
+public readonly record struct Money(decimal Amount, string Currency);
+```
+
+---
+
+**单行写法：多参数记录定义**
+`public record <名称>(<类型1> <参数1>, <类型2> <参数2>, <类型3> <参数3>);`
+```csharp
+// 单行定义包含多个参数的记录
+public record User(string Name, int Age, string Email, string Phone);
+```
+
+---
+
+**换行写法：多参数记录定义**
+`public record <名称>(<类型1> <参数1>, <类型2> <参数2>, <类型3> <参数3>);`
+```csharp
+// 换行定义包含多个参数的记录
+public record User(
+    string Name,
+    int Age,
+    string Email,
+    string Phone);
+```
+
+---
+
+**基本写法：带主体的记录**
+`public record <名称>(<参数列表>) { <成员> }`
+```csharp
+// 在记录中添加额外成员
+public record Person(string Name, int Age)
+{
+    public bool IsAdult => Age >= 18;
+}
+```
+
+---
+
+## 值相等性
+
+**基本写法：引用类型记录相等**
+`bool <结果> = <记录1> == <记录2>;`
+```csharp
+// 引用类型记录基于值比较
+var p1 = new Person("张三", 25);
+var p2 = new Person("张三", 25);
+Console.WriteLine(p1 == p2);
+```
+
+---
+
+**基本写法：值类型记录相等**
+`bool <结果> = <记录1> == <记录2>;`
+```csharp
+// 值类型记录基于值比较
+var p1 = new Point(1.0, 2.0);
+var p2 = new Point(1.0, 2.0);
+Console.WriteLine(p1 == p2);
+```
+
+---
+
+**基本写法：记录不等比较**
+`bool <结果> = <记录1> != <记录2>;`
+```csharp
+// 记录不等比较
+var p1 = new Person("张三", 25);
+var p2 = new Person("李四", 30);
+Console.WriteLine(p1 != p2);
+```
+
+---
+
+**基本写法：Equals 方法**
+`bool <结果> = <记录>.Equals(<其他记录>);`
+```csharp
+// 使用 Equals 方法比较
+var p1 = new Person("张三", 25);
+var p2 = new Person("张三", 25);
+Console.WriteLine(p1.Equals(p2));
+```
+
+---
+
+## with 表达式
+
+**基本写法：with 修改单属性**
+`var <变量> = <记录> with { <属性> = <值> };`
+```csharp
+// 非破坏性修改单个属性
+var p1 = new Person("张三", 25);
+var p2 = p1 with { Age = 26 };
+```
+
+---
+
+**基本写法：with 修改多属性**
+`var <变量> = <记录> with { <属性1> = <值1>, <属性2> = <值2> };`
+```csharp
+// 非破坏性修改多个属性
+var p1 = new Person("张三", 25);
+var p2 = p1 with { Name = "李四", Age = 26 };
+```
+
+---
+
+**基本写法：with 嵌套修改**
+`var <变量> = <记录> with { <属性> = <子记录> with { <子属性> = <值> } };`
+```csharp
+// 非破坏性修改嵌套记录
+var order = new Order(new Customer("张三"), 100m);
+var newOrder = order with { Customer = order.Customer with { Name = "李四" } };
+```
+
+---
+
+## 记录继承
+
+**基本写法：记录继承**
+`public record <派生>(<参数>) : <基类>(<参数>);`
+```csharp
+// 记录类型支持继承
+public record Student(string Name, int Age, string School) : Person(Name, Age);
+```
+
+---
+
+**基本写法：多级记录继承**
+`public record <派生>(<参数>) : <基类>(<参数>);`
+```csharp
+// 多级记录继承
+public record GraduateStudent(string Name, int Age, string School, string Degree)
+    : Student(Name, Age, School);
+```
+
+---
+
+**基本写法：继承记录 with 表达式**
+`var <变量> = <派生记录> with { <属性> = <值> };`
+```csharp
+// 派生记录使用 with 表达式
+var student = new Student("张三", 20, "清华大学");
+var olderStudent = student with { Age = 21 };
+```
+
+---
+
+## 解构
+
+**基本写法：记录解构**
+`var (<变量1>, <变量2>) = <记录>;`
+```csharp
+// 解构记录的所有位置参数
+var person = new Person("张三", 25);
+var (name, age) = person;
+```
+
+---
+
+**基本写法：部分解构**
+`var (<变量1>, _) = <记录>;`
+```csharp
+// 仅解构需要的部分参数
+var person = new Person("张三", 25);
+var (name, _) = person;
+```
+
+---
+
+**基本写法：解构带类型**
+`(<类型1> <变量1>, <类型2> <变量2>) = <记录>;`
+```csharp
+// 解构时指定变量类型
+var person = new Person("张三", 25);
+(string name, int age) = person;
+```
+
+---
+
+## 自定义成员
+
+**基本写法：添加计算属性**
+`public <类型> <属性名> => <表达式>;`
+```csharp
+// 在记录中添加计算属性
+public record Circle(double Radius)
+{
+    public double Area => Math.PI * Radius * Radius;
+}
+```
+
+---
+
+**基本写法：添加方法**
+`public <返回类型> <方法名>(<参数>) => <表达式>;`
+```csharp
+// 在记录中添加方法
+public record Money(decimal Amount, string Currency)
+{
+    public Money ConvertTo(string newCurrency, decimal rate) =>
+        new(Amount * rate, newCurrency);
+}
+```
+
+---
+
+**基本写法：添加验证**
+`public <类型> <属性名> { get; init; }`
+```csharp
+// 在 init 访问器中添加验证
+public record Person
+{
+    private string _name = string.Empty;
+    public string Name
+    {
+        get => _name;
+        init => _name = string.IsNullOrEmpty(value)
+            ? throw new ArgumentException("Name 不能为空")
+            : value;
+    }
+}
+```
+
+---
+
+## ToString 与 PrintMembers
+
+**基本写法：默认 ToString**
+`string <结果> = <记录>.ToString();`
+```csharp
+// 记录默认生成可读的 ToString
+var person = new Person("张三", 25);
+Console.WriteLine(person.ToString());
+```
+
+---
+
+**基本写法：重写 PrintMembers**
+`protected virtual bool PrintMembers(StringBuilder builder)`
+```csharp
+// 自定义 ToString 输出的成员
+public record Person(string Name, int Age)
+{
+    protected virtual bool PrintMembers(StringBuilder builder)
+    {
+        builder.Append($"姓名 = {Name}, 年龄 = {Age}");
+        return true;
+    }
+}
+```
+
+---
+
+## 记录与模式匹配
+
+**基本写法：位置模式匹配**
+`<变量> switch { <类型>(<模式1>, <模式2>) => <结果> }`
+```csharp
+// 记录位置模式匹配
+public record Point(int X, int Y);
+Point p = new(10, 20);
+string label = p switch
+{
+    Point(0, 0) => "原点",
+    Point(> 0, > 0) => "第一象限",
+    _ => "其他"
+};
+```
+
+---
+
+**基本写法：属性模式匹配**
+`<变量> switch { <类型> { <属性>: <值> } => <结果> }`
+```csharp
+// 记录属性模式匹配
+var person = new Person("张三", 25);
+string label = person switch
+{
+    { Age: > 18 } => "成年",
+    { Age: <= 18 } => "未成年",
+    _ => "未知"
+};
+```
+
+---
+
+## 记录与集合
+
+**基本写法：记录列表**
+`List<<记录类型>> <变量> = [ <记录>, ... ];`
+```csharp
+// 使用集合表达式初始化记录列表
+List<Person> people = [
+    new("张三", 25),
+    new("李四", 30)
+];
+```
+
+---
+
+**基本写法：LINQ 查询记录**
+`var <结果> = <记录集合>.Where(<谓词>);`
+```csharp
+// 使用 LINQ 查询记录集合
+var adults = people.Where(p => p.Age >= 18);
+```
+
+---
+
+**基本写法：记录分组**
+`var <结果> = <记录集合>.GroupBy(<键选择器>);`
+```csharp
+// 按属性分组记录
+var grouped = people.GroupBy(p => p.Age >= 18 ? "成年" : "未成年");
+```
+
+---
+
+## 记录与 JSON 序列化
+
+**基本写法：JsonSerializer 序列化**
+`string <结果> = JsonSerializer.Serialize(<记录>);`
+```csharp
+// 序列化记录为 JSON 字符串
+var person = new Person("张三", 25);
+string json = JsonSerializer.Serialize(person);
+```
+
+---
+
+**基本写法：JsonSerializer 反序列化**
+`<记录类型> <变量> = JsonSerializer.Deserialize<<记录类型>>(<字符串>);`
+```csharp
+// 从 JSON 字符串反序列化为记录
+string json = """{"Name":"张三","Age":25}""";
+var person = JsonSerializer.Deserialize<Person>(json);
+```
+
+---
+
+**基本写法：JsonSerializerOptions 配置**
+`var <变量> = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };`
+```csharp
+// 配置 JSON 序列化选项
+var options = new JsonSerializerOptions
+{
+    PropertyNameCaseInsensitive = true
+};
+var person = JsonSerializer.Deserialize<Person>(json, options);
+```
+
+---
+
+## Primary Constructor 与记录
+
+**基本写法：主构造函数捕获**
+`public record <名称>(<参数>) { public <类型> <属性> => <参数>; }`
+```csharp
+// 主构造函数参数在记录主体中使用
+public record Service(string ConnectionString)
+{
+    public bool IsValid => !string.IsNullOrEmpty(ConnectionString);
+}
+```
+
+---
+
+**基本写法：主构造函数与成员**
+`public record <名称>(<参数>) { public void <方法>() { ... } }`
+```csharp
+// 主构造函数参数在方法中使用
+public record DatabaseService(string ConnectionString)
+{
+    public void Connect()
+    {
+        Console.WriteLine($"连接到: {ConnectionString}");
+    }
+}
+```

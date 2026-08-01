@@ -140,11 +140,13 @@ HarmonyOS NEXT 引入 ArkUI 4.0：
 
 ### 2.7 时间线总览
 
-```
-2021 ──── ArkUI 1.0 ──── 基础装饰器矩阵（@Component/@State/@Prop/@Link）
-2022 ──── ArkUI 2.0 ──── 状态管理增强（@Watch/@ObjectLink/AppStorage）
-2023 ──── ArkUI 3.0 ──── 复用与性能（@Reusable/LazyForEach）
-2024 ──── ArkUI 4.0 ──── 跨端与原子化（@ComponentV2/@AtomicService）
+```mermaid
+timeline
+    title ArkUI 版本时间线
+    2021: ArkUI 1.0 基础装饰器矩阵（@Component/@State/@Prop/@Link）
+    2022: ArkUI 2.0 状态管理增强（@Watch/@ObjectLink/AppStorage）
+    2023: ArkUI 3.0 复用与性能（@Reusable/LazyForEach）
+    2024: ArkUI 4.0 跨端与原子化（@ComponentV2/@AtomicService）
 ```
 
 ---
@@ -1936,23 +1938,23 @@ struct DynamicForm {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
-**Q1**：ArkUI 自定义组件有哪六个生命周期回调？分别说明触发时机。
+**常见疑问 1**：ArkUI 自定义组件有哪六个生命周期回调？分别说明触发时机。
 
-**Q2**：`@Prop` 与 `@Link` 的本质区别是什么？为何 `@Prop` 会导致深拷贝？
+**常见疑问 2**：`@Prop` 与 `@Link` 的本质区别是什么？为何 `@Prop` 会导致深拷贝？
 
-**Q3**：`@BuilderParam` 与 React 的 `children` prop 有何异同？
+**常见疑问 3**：`@BuilderParam` 与 React 的 `children` prop 有何异同？
 
-**Q4**：`@Styles` 与 `@Extend` 的区别是什么？分别适用于什么场景？
+**常见疑问 4**：`@Styles` 与 `@Extend` 的区别是什么？分别适用于什么场景？
 
-**Q5**：`@Reusable` 复用池的命中条件是什么？未命中时如何退化？
+**常见疑问 5**：`@Reusable` 复用池的命中条件是什么？未命中时如何退化？
 
 ### 10.2 进阶题
 
-**Q6**：分析以下代码的性能问题并给出优化方案：
+**常见疑问 6**：分析以下代码的性能问题并给出优化方案：
 
 ```typescript
 @Component
@@ -1969,36 +1971,36 @@ struct ProductList {
 }
 ```
 
-**Q7**：设计一个支持主题切换的按钮组件，要求：
+**常见疑问 7**：设计一个支持主题切换的按钮组件，要求：
 1. 通过 `@Consume` 获取主题。
 2. 支持 `primary`、`secondary`、`danger` 三种样式。
 3. 支持点击事件。
 4. 支持禁用状态。
 
-**Q8**：解释为何在 `build()` 中执行副作用（如网络请求）是反模式，给出 ArkUI 推荐的替代方案。
+**常见疑问 8**：解释为何在 `build()` 中执行副作用（如网络请求）是反模式，给出 ArkUI 推荐的替代方案。
 
-**Q9**：分析 `@Provide`/`@Consume` 与 `AppStorage` 的区别，分别说明适用场景。
+**常见疑问 9**：分析 `@Provide`/`@Consume` 与 `AppStorage` 的区别，分别说明适用场景。
 
-**Q10**：实现一个 `@Reusable` 的列表项组件，要求：
+**常见疑问 10**：实现一个 `@Reusable` 的列表项组件，要求：
 1. 显示用户头像、姓名、签名。
 2. 支持"关注"按钮，关注状态在复用时正确重置。
 3. 点击头像触发回调。
 
 ### 10.3 挑战题
 
-**Q11**：设计一个企业级组件库的基础架构，包含：
+**常见疑问 11**：设计一个企业级组件库的基础架构，包含：
 1. 主题系统（设计令牌、主题切换）。
 2. 国际化（多语言、RTL 支持）。
 3. 无障碍（ARIA 属性、键盘导航）。
 4. 按需加载（tree-shaking）。
 5. 版本管理（向后兼容）。
 
-**Q12**：某长列表应用在低端设备上滑动卡顿，FPS 仅 15。请给出完整的性能优化方案，包含：
+**常见疑问 12**：某长列表应用在低端设备上滑动卡顿，FPS 仅 15。请给出完整的性能优化方案，包含：
 1. 诊断方法（如何定位瓶颈）。
 2. 优化策略（`@Reusable`、`LazyForEach`、图片懒加载、避免深拷贝）。
 3. 验证方法（如何测量优化效果）。
 
-**Q13**：分析 ArkUI 选择"struct + 装饰器"而非"class 继承"或"函数式组件"的工程动机，从以下维度论证：
+**常见疑问 13**：分析 ArkUI 选择"struct + 装饰器"而非"class 继承"或"函数式组件"的工程动机，从以下维度论证：
 1. 编译期优化（AOT、AST 变换）。
 2. 开发者体验（TypeScript 类型、IDE 支持）。
 3. 性能（避免 Virtual DOM Diff）。
@@ -2095,3 +2097,504 @@ struct ProductList {
 | 异步回调 | 未清理定时器 | aboutToDisappear 清理 | 避免内存泄漏 |
 | 图片加载 | 同步加载 | `syncLoad(false)` | 避免阻塞主线程 |
 | 组件嵌套 | 10+ 层嵌套 | 扁平化或提取子组件 | 减少构建成本 |
+## 装饰器
+
+**@Component 自定义组件**
+`@Component struct <ComponentName> { build() { ... } }`
+```typescript
+@Component
+struct MyCard {
+  build() {
+    Column() { Text('Card') }.padding(16)
+  }
+}
+```
+
+**@Entry 页面入口**
+`@Entry [@Component] struct <Name> { ... }`
+```typescript
+@Entry
+@Component
+struct Index {
+  build() {
+    Column() { MyCard() }
+  }
+}
+```
+
+**@Reusable 可复用组件**
+`@Reusable @Component struct <Name> { ... }`
+```typescript
+@Reusable
+@Component
+struct ListItem {
+  @State data: string = ''
+  aboutToReuse(params: Record<string, Object>) {
+    this.data = params.data as string
+  }
+  build() { Text(this.data) }
+}
+```
+
+---
+
+## 状态管理
+
+**@State 组件内状态**
+`@State <varName>: <Type> = <value>;`
+```typescript
+@State count: number = 0
+@State name: string = 'Tom'
+@State list: Array<string> = []
+```
+
+**@Prop 单向同步**
+`@Prop <varName>: <Type>;`
+```typescript
+@Component
+struct Child {
+  @Prop title: string
+  build() { Text(this.title) }
+}
+
+@Component
+struct Parent {
+  @State title: string = 'Hello'
+  build() { Child({ title: this.title }) }
+}
+```
+
+**@Link 双向同步**
+`@Link <varName>: <Type>;`
+```typescript
+@Component
+struct Child {
+  @Link count: number
+  build() {
+    Button('+').onClick(() => this.count++)
+  }
+}
+
+// 调用时使用 $ 前缀
+Child({ count: $count })
+```
+
+**@Provide/@Consume 跨层级**
+`@Provide [<key>] <var>: <Type> = <value>; / @Consume [<key>] <var>: <Type>;`
+```typescript
+@Component
+struct GrandParent {
+  @Provide('theme') theme: string = 'dark'
+}
+
+@Component
+struct DeepChild {
+  @Consume('theme') theme: string
+}
+```
+
+**@Watch 状态监听**
+`@Watch('<cb>') @State <var>: <Type> = <value>;`
+```typescript
+@Watch('onChange') @State count: number = 0
+
+onChange(newValue: number) {
+  console.info(`count: ${newValue}`)
+}
+```
+
+**@Observed/@ObjectLink 嵌套对象**
+`@Observed class <Name> { ... } / @ObjectLink <var>: <Class>;`
+```typescript
+@Observed
+class User {
+  name: string
+  age: number
+}
+
+@Component
+struct UserCard {
+  @ObjectLink user: User
+  build() { Text(this.user.name) }
+}
+```
+
+---
+
+## 构建函数
+
+**@Builder 构建函数**
+`@Builder function <fnName>([<param>]) { ... }`
+```typescript
+@Builder
+function ItemBuilder(text: string, size: number = 16) {
+  Text(text).fontSize(size).padding(8)
+}
+
+build() {
+  Column() {
+    ItemBuilder('Item 1')
+    ItemBuilder('Item 2', 20)
+  }
+}
+```
+
+**@Builder 组件内构建**
+```typescript
+@Component
+struct Demo {
+  @Builder itemBuilder(text: string) {
+    Text(text).fontSize(16)
+  }
+
+  build() {
+    Column() {
+      this.itemBuilder('Item 1')
+    }
+  }
+}
+```
+
+**@BuilderParam 构建器参数**
+`@BuilderParam <name>: <Signature>;`
+```typescript
+@Component
+struct Container {
+  @BuilderParam content: () => void
+  @BuilderParam header: (title: string) => void = (title: string) => {
+    Text(title).fontSize(20)
+  }
+
+  build() {
+    Column() {
+      this.header('Title')
+      this.content()
+    }
+  }
+}
+
+// 调用
+Container() {
+  Text('Body content')
+}
+```
+
+---
+
+## 样式复用
+
+**@Extend 扩展内置组件**
+`@Extend(<Component>) function <fnName>(<params>) { ... }`
+```typescript
+@Extend(Text)
+function primaryText(size: number, color: ResourceColor = '#333') {
+  .fontSize(size)
+  .fontColor(color)
+  .fontWeight(FontWeight.Bold)
+  .lineHeight(size * 1.5)
+}
+
+Text('Hello').primaryText(16)
+Text('World').primaryText(20, '#1a73e8')
+```
+
+**@Styles 复用样式**
+`@Styles function <fnName>() { ... }`
+```typescript
+@Styles
+function cardStyle() {
+  .padding(16)
+  .borderRadius(12)
+  .backgroundColor(Color.White)
+  .shadow({ radius: 8, color: 'rgba(0,0,0,0.1)', offsetX: 0, offsetY: 2 })
+}
+
+Column() { Text('Card') }.cardStyle()
+```
+
+**@Styles 组件内复用**
+```typescript
+@Component
+struct Demo {
+  @Styles cardStyle() {
+    .padding(16)
+    .backgroundColor(Color.White)
+  }
+
+  build() {
+    Column() { Text('Card') }.cardStyle()
+  }
+}
+```
+
+---
+
+## 生命周期
+
+**aboutToAppear 即将显示**
+`aboutToAppear(): void { ... }`
+```typescript
+aboutToAppear() {
+  console.info('即将显示')
+  this.loadData()
+}
+```
+
+**aboutToDisappear 即将销毁**
+`aboutToDisappear(): void { ... }`
+```typescript
+aboutToDisappear() {
+  this.releaseResources()
+  this.cancelTimer()
+}
+```
+
+**aboutToReuse 复用回调**
+`aboutToReuse(params: Record<string, Object>): void { ... }`
+```typescript
+@Reusable
+@Component
+struct Item {
+  @State id: string = ''
+  @State data: ItemData = {} as ItemData
+
+  aboutToReuse(params: Record<string, Object>) {
+    this.id = params.id as string
+    this.data = params.data as ItemData
+  }
+}
+```
+
+**aboutToRecycle 即将回收**
+`aboutToRecycle(): void { ... }`
+```typescript
+@Reusable
+@Component
+struct Item {
+  aboutToRecycle() {
+    this.reset()
+  }
+}
+```
+
+**onBackPress 返回键拦截**
+`onBackPress(): boolean { ... }`
+```typescript
+onBackPress(): boolean {
+  if (this.hasUnsavedData) {
+    this.showConfirm()
+    return true
+  }
+  return false
+}
+```
+
+---
+
+## 组件参数传递
+
+**基础参数**
+```typescript
+@Component
+struct MyButton {
+  @Prop label: string = ''
+  @Prop color: string = '#1a73e8'
+
+  build() {
+    Button(this.label)
+      .backgroundColor(this.color)
+      .fontColor(Color.White)
+  }
+}
+
+// 调用
+MyButton({ label: 'Submit', color: '#1a73e8' })
+```
+
+**事件回调**
+```typescript
+@Component
+struct MyButton {
+  @Prop label: string = ''
+  onClick?: () => void
+
+  build() {
+    Button(this.label).onClick(() => this.onClick?.())
+  }
+}
+
+MyButton({
+  label: 'Click',
+  onClick: () => console.info('clicked')
+})
+```
+
+**BuilderParam 内容**
+```typescript
+@Component
+struct Card {
+  @BuilderParam content: () => void
+  build() {
+    Column() { this.content() }.padding(16)
+  }
+}
+
+Card() {
+  Column() {
+    Text('Title')
+    Text('Body')
+  }
+}
+```
+
+---
+
+## 状态管理 V2
+
+**@Local 组件内状态**
+`@Local <var>: <Type> = <value>;`
+```typescript
+@Component
+struct Demo {
+  @Local count: number = 0
+  build() {
+    Button(`${this.count}`).onClick(() => this.count++)
+  }
+}
+```
+
+**@Param 外部参数**
+`@Param <var>: <Type> [= <default>];`
+```typescript
+@Component
+struct Child {
+  @Param title: string = ''
+  build() { Text(this.title) }
+}
+```
+
+**@Event 事件回调**
+`@Event <fn>: <Signature> = <default>;`
+```typescript
+@Component
+struct Btn {
+  @Param label: string = ''
+  @Event onClick: () => void = () => {}
+  build() {
+    Button(this.label).onClick(() => this.onClick())
+  }
+}
+```
+
+**@Computed 计算属性**
+`@Computed get <name>(): <Type> { ... }`
+```typescript
+@Local a: number = 1
+@Local b: number = 2
+@Computed get sum(): number { return this.a + this.b }
+@Computed get isPositive(): boolean { return this.sum > 0 }
+```
+
+**@Monitor 深度监听**
+`@Monitor('<path>') <fn>(monitor: IMonitor): void { ... }`
+```typescript
+@Monitor('count')
+onCountChange(monitor: IMonitor) {
+  console.info(`before: ${monitor.before()}, after: ${monitor.value()}`)
+}
+
+@Monitor('user.name', 'user.age')
+onUserChange(monitor: IMonitor) {
+  console.info(monitor.path())
+}
+```
+
+---
+
+## 调用示例
+
+**基础自定义组件**
+```typescript
+@Component
+struct MyHeader {
+  @Prop title: string = ''
+  @Prop subtitle: string = ''
+
+  build() {
+    Column({ space: 4 }) {
+      Text(this.title).fontSize(20).fontWeight(FontWeight.Bold)
+      Text(this.subtitle).fontSize(12).fontColor('#666')
+    }
+    .alignItems(HorizontalAlign.Start)
+    .padding(16)
+  }
+}
+
+// 使用
+MyHeader({ title: '我的应用', subtitle: 'v1.0.0' })
+```
+
+**带状态和事件的组件**
+```typescript
+@Component
+struct Counter {
+  @State count: number = 0
+  onChange?: (count: number) => void
+
+  build() {
+    Row({ space: 8 }) {
+      Button('-').onClick(() => {
+        this.count--
+        this.onChange?.(this.count)
+      })
+      Text(`${this.count}`).fontSize(20)
+      Button('+').onClick(() => {
+        this.count++
+        this.onChange?.(this.count)
+      })
+    }
+  }
+}
+
+// 使用
+Counter({ onChange: (count) => console.info(`count: ${count}`) })
+```
+
+**可复用列表项**
+```typescript
+@Reusable
+@Component
+struct ArticleItem {
+  @State title: string = ''
+  @State summary: string = ''
+  @State imageUrl: string = ''
+
+  aboutToReuse(params: Record<string, Object>) {
+    this.title = params.title as string
+    this.summary = params.summary as string
+    this.imageUrl = params.imageUrl as string
+  }
+
+  build() {
+    Row({ space: 12 }) {
+      Image(this.imageUrl).width(80).height(80).objectFit(ImageFit.Cover)
+      Column() {
+        Text(this.title).fontSize(16).fontWeight(FontWeight.Bold)
+        Text(this.summary).fontSize(12).fontColor('#666').maxLines(2)
+      }.layoutWeight(1)
+    }.padding(12)
+  }
+}
+
+List() {
+  LazyForEach(this.dataSource, (item: ArticleData) => {
+    ListItem() {
+      ArticleItem({
+        title: item.title,
+        summary: item.summary,
+        imageUrl: item.imageUrl
+      })
+    }
+  })
+}
+```

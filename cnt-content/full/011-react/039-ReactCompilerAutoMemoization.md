@@ -1141,30 +1141,43 @@ function Good({ date }) {
 
 ### 8.1 项目集成清单
 
-```
-1. 安装依赖
-   npm install babel-plugin-react-compiler eslint-plugin-react-compiler
-
-2. 配置构建工具
-   ├─ Vite: vite.config.ts 添加 babel.plugins
-   ├─ Next.js: next.config.ts 添加 experimental.reactCompiler
-   └─ Webpack: webpack.config.js 添加 babel-loader plugins
-
-3. 配置 ESLint
-   .eslintrc 添加 react-compiler 插件
-
-4. 配置 TypeScript
-   确保 tsconfig.json 的 target 与 jsx 设置正确
-
-5. CI 集成
-   ├─ lint 检查：npm run lint
-   ├─ build 验证：npm run build
-   └─ 性能基准：对比启用前后的 bundle 体积与渲染性能
-
-6. 生产监控
-   ├─ React DevTools Profiler 监控渲染次数
-   ├─ Sentry 上报性能指标
-   └─ Web Vitals 跟踪 LCP/INP/CLS
+```mermaid
+flowchart TD
+    T0["1. 安装依赖"]
+    T1["npm install babel-plugin-react-compiler eslint-plugin-react-compiler"]
+    T2["2. 配置构建工具"]
+    T3["Vite: vite.config.ts 添加 babel.plugins"]
+    T4["Next.js: next.config.ts 添加 experimental.reactCompiler"]
+    T5["Webpack: webpack.config.js 添加 babel-loader plugins"]
+    T6["3. 配置 ESLint"]
+    T7[".eslintrc 添加 react-compiler 插件"]
+    T8["4. 配置 TypeScript"]
+    T9["确保 tsconfig.json 的 target 与 jsx 设置正确"]
+    T10["5. CI 集成"]
+    T11["lint 检查：npm run lint"]
+    T12["build 验证：npm run build"]
+    T13["性能基准：对比启用前后的 bundle 体积与渲染性能"]
+    T14["6. 生产监控"]
+    T15["React DevTools Profiler 监控渲染次数"]
+    T16["Sentry 上报性能指标"]
+    T17["Web Vitals 跟踪 LCP/INP/CLS"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T2 --> T4
+    T2 --> T5
+    T5 --> T6
+    T6 --> T7
+    T7 --> T8
+    T8 --> T9
+    T9 --> T10
+    T10 --> T11
+    T10 --> T12
+    T10 --> T13
+    T13 --> T14
+    T14 --> T15
+    T14 --> T16
+    T14 --> T17
 ```
 
 ### 8.2 渐进式迁移策略
@@ -1375,7 +1388,7 @@ export function logCompilerInfo(component: Function): void {
   const compiled = isCompiled(component);
 
   console.log(
-    `[Compiler] ${name}: ${compiled ? '✓ Optimized' : '✗ Not optimized'}`
+    `[Compiler] ${name}: ${compiled ? '√ Optimized' : '× Not optimized'}`
   );
 }
 ```
@@ -1472,9 +1485,9 @@ Shopify Hydrogen 7 在 2025 年集成 Compiler：
 
 ---
 
-## 10. 练习
+## 知识讲解与要点分析（原练习）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：React Compiler 的核心假设是什么？
 
@@ -1483,13 +1496,10 @@ Shopify Hydrogen 7 在 2025 年集成 Compiler：
 - C. 组件必须使用 TypeScript
 - D. 组件必须用 React 19
 
-<details>
-<summary>答案</summary>
 
 **B. 组件必须是纯函数**
 
 Compiler 假设组件是纯函数：相同的输入（props/state/context）产生相同的输出（JSX）。违反纯函数假设会导致记忆化错误。
-</details>
 
 **题目 2**：Compiler 生成的代码使用哪个底层 Hook？
 
@@ -1498,13 +1508,10 @@ Compiler 假设组件是纯函数：相同的输入（props/state/context）产�
 - C. `useMemoCache`
 - D. `useRef`
 
-<details>
-<summary>答案</summary>
 
 **C. `useMemoCache`**
 
 `useMemoCache` 是 React 18.3 引入的底层 Hook，比 `useMemo` 更高效。它通过索引访问缓存槽，避免 Hook 调用开销。
-</details>
 
 **题目 3**：以下哪段代码会触发 Compiler 警告？
 
@@ -1513,13 +1520,10 @@ Compiler 假设组件是纯函数：相同的输入（props/state/context）产�
 - C. `state.push(item);`
 - D. `useEffect(() => {}, [dep]);`
 
-<details>
-<summary>答案</summary>
 
 **C. `state.push(item);`**
 
 直接修改 state 违反不可变更新规则。Compiler 会通过 ESLint 插件报告此错误。
-</details>
 
 **题目 4**：Compiler 与 React.memo 的关系是？
 
@@ -1528,13 +1532,10 @@ Compiler 假设组件是纯函数：相同的输入（props/state/context）产�
 - C. Compiler 取代 React.memo
 - D. React.memo 取代 Compiler
 
-<details>
-<summary>答案</summary>
 
 **B. 互补，可以组合使用**
 
 Compiler 在组件**内部**保持值引用稳定，`React.memo` 在组件**外部**（props 层面）进行浅比较。两者结合形成双层记忆化。
-</details>
 
 **题目 5**：在 Vite 中启用 Compiler，需要配置哪个文件？
 
@@ -1543,67 +1544,49 @@ Compiler 在组件**内部**保持值引用稳定，`React.memo` 在组件**外�
 - C. `vite.config.ts`
 - D. `.babelrc`
 
-<details>
-<summary>答案</summary>
 
 **C. `vite.config.ts`**
 
 在 `vite.config.ts` 的 `react()` 插件配置中添加 `babel.plugins`，包含 `babel-plugin-react-compiler`。
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：React Compiler 原名 ________。
 
-<details>
-<summary>答案</summary>
 
 **React Forget**
 
 React Compiler 在 2021 年启动时名为 React Forget，2024 年更名为 React Compiler。
-</details>
 
 **题目 2**：Compiler 通过 ________ 分析识别需要记忆化的值。
 
-<details>
-<summary>答案</summary>
 
 **AST（抽象语法树）**
 
 Compiler 解析源代码为 AST，遍历每个表达式，收集依赖并构建依赖图，决定哪些值需要记忆化。
-</details>
 
 **题目 3**：Compiler 遇到不确定的代码时，策略是 ________ 优化。
 
-<details>
-<summary>答案</summary>
 
 **不**
 
 Compiler 采用"保守优于激进"策略，遇到不确定的场景（如动态代码、第三方库）时选择不优化，而非错误优化。
-</details>
 
 **题目 4**：Compiler 通过 ________ 插件检测违反 Rules of React 的代码。
 
-<details>
-<summary>答案</summary>
 
 **ESLint**
 
 `eslint-plugin-react-compiler` 插件在开发与 CI 中检测违反 Rules of React 的代码，帮助开发者修复问题。
-</details>
 
 **题目 5**：Compiler 与 Server Components 的关系是 ________。
 
-<details>
-<summary>答案</summary>
 
 **互补**
 
 Server Components 优化首屏与数据获取，Compiler 优化 Client Components 的渲染效率，两者可以组合使用。
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：将以下手动记忆化代码改写为 Compiler 友好的版本（无需 useMemo）。
 
@@ -1625,8 +1608,6 @@ function ProductList({ products, category, onAddToCart }) {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```tsx
 function ProductList({ products, category, onAddToCart }) {
@@ -1648,12 +1629,9 @@ function ProductList({ products, category, onAddToCart }) {
 ```
 
 启用 Compiler 后，所有手动 `useMemo`/`useCallback` 都可以移除，代码更简洁，性能更优。
-</details>
 
 **题目 2**：实现一个 ESLint 自定义规则，检测在 render 中调用 `Date.now()`。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 // eslint-rules/no-date-now-in-render.js
@@ -1734,12 +1712,9 @@ module.exports = {
   },
 };
 ```
-</details>
 
 **题目 3**：编写一个性能基准测试脚本，对比启用 Compiler 前后的渲染次数。
 
-<details>
-<summary>参考答案</summary>
 
 ```typescript
 // scripts/benchmark-compiler.ts
@@ -1812,14 +1787,11 @@ console.log(`平均渲染时间: ${result1.avgRenderTime.toFixed(3)}ms → ${res
 console.log(`P95 渲染时间: ${result1.p95RenderTime.toFixed(3)}ms → ${result2.p95RenderTime.toFixed(3)}ms`);
 console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / result1.avgRenderTime * 100).toFixed(2)}%`);
 ```
-</details>
 
 ### 10.4 思考题
 
 **题目 1**：为什么 React Compiler 选择在编译期优化，而非运行时自动追踪依赖（如 Solid.js）？这种选择带来了哪些优势与劣势？
 
-<details>
-<summary>参考答案要点</summary>
 
 **优势**：
 1. **零运行时开销**：编译期完成分析，运行时无需依赖追踪
@@ -1834,12 +1806,9 @@ console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / 
 4. **构建时间增加**：编译期分析增加构建耗时
 
 **设计权衡**：React 团队选择编译期是为了保持向后兼容与心智模型一致性，代价是优化效果略逊于 Solid.js 的运行时细粒度响应式。
-</details>
 
 **题目 2**：在什么场景下应该启用 Compiler，什么场景下应该暂缓？请给出至少 3 个判断维度。
 
-<details>
-<summary>参考答案要点</summary>
 
 **适合启用的场景**：
 1. **新项目**：从一开始就遵守 Rules of React，无历史包袱
@@ -1858,12 +1827,9 @@ console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / 
 - React 版本与运行时支持
 - 团队对 Compiler 的理解程度
 - 第三方库的兼容性
-</details>
 
 **题目 3**：Compiler 自动记忆化后，`useMemo`/`useCallback` 是否完全无用？请说明保留它们的场景。
 
-<details>
-<summary>参考答案要点</summary>
 
 **Compiler 不完全取代 useMemo/useCallback**，以下场景仍需保留：
 
@@ -1886,7 +1852,6 @@ console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / 
 4. **向后兼容**：库开发者为未启用 Compiler 的用户提供优化
 
 **原则**：启用 Compiler 后，移除大部分 `useMemo`/`useCallback`，只在必要时保留，并通过性能基准测试验证决策。
-</details>
 
 ---
 
@@ -1969,31 +1934,47 @@ console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / 
 
 ## 附录 A：Compiler 启用清单
 
-```
-1. 检查 React 版本
-   ├─ React 18.3+: 支持 useMemoCache，可启用 Compiler
-   ├─ React 19+: 完全支持
-   └─ React < 18.3: 升级后再启用
-
-2. 检查代码合规性
-   ├─ 运行 ESLint 检查（eslint-plugin-react-compiler）
-   ├─ 修复所有 error 级别的问题
-   └─ 评估 warning 级别的问题
-
-3. 配置构建工具
-   ├─ 安装 babel-plugin-react-compiler
-   ├─ 配置 Vite/Next.js/Webpack
-   └─ 设置 target 与 sources
-
-4. 渐进式启用
-   ├─ 先在小模块启用
-   ├─ 验证功能与性能
-   └─ 逐步扩展到全项目
-
-5. 监控与回归
-   ├─ 性能基准测试
-   ├─ Bundle 体积监控
-   └─ 生产环境 RUM 上报
+```mermaid
+flowchart TD
+    T0["1. 检查 React 版本"]
+    T1["React 18.3+: 支持 useMemoCache，可启用 Compiler"]
+    T2["React 19+: 完全支持"]
+    T3["React < 18.3: 升级后再启用"]
+    T4["2. 检查代码合规性"]
+    T5["运行 ESLint 检查（eslint-plugin-react-compiler）"]
+    T6["修复所有 error 级别的问题"]
+    T7["评估 warning 级别的问题"]
+    T8["3. 配置构建工具"]
+    T9["安装 babel-plugin-react-compiler"]
+    T10["配置 Vite/Next.js/Webpack"]
+    T11["设置 target 与 sources"]
+    T12["4. 渐进式启用"]
+    T13["先在小模块启用"]
+    T14["验证功能与性能"]
+    T15["逐步扩展到全项目"]
+    T16["5. 监控与回归"]
+    T17["性能基准测试"]
+    T18["Bundle 体积监控"]
+    T19["生产环境 RUM 上报"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T11 --> T12
+    T12 --> T13
+    T12 --> T14
+    T12 --> T15
+    T15 --> T16
+    T16 --> T17
+    T16 --> T18
+    T16 --> T19
 ```
 
 ---
@@ -2032,3 +2013,287 @@ console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / 
 ---
 
 > **本章总结**：React Compiler 是 React 生态自 Hooks 以来最重要的工具革新。它通过编译期 AST 分析，自动插入细粒度的记忆化代码，消除了手动 `useMemo`/`useCallback` 的认知负担与维护成本。掌握 Compiler 的关键在于理解其纯函数假设、Rules of React 约束以及与 React.memo、Server Components 的协作关系。在实际工程中，应当采用"渐进式启用 + ESLint 检查 + 性能监控"的策略，最大化 Compiler 的收益同时控制迁移风险。随着 React 19 的普及，Compiler 将成为 React 开发的默认配置，理解其原理是现代 React 工程师的必备技能。
+## Compiler 概念
+
+**基本写法：编译期自动插入 memo 化逻辑**
+`react-compiler <源文件>`
+```bash
+# React Compiler 自动优化无需手动 memo
+npx react-compiler build src
+```
+
+---
+
+## 安装与启用
+
+**基本写法：安装 babel 插件**
+`npm i -D babel-plugin-react-compiler`
+```bash
+# 安装编译器插件
+npm install --save-dev babel-plugin-react-compiler
+```
+
+---
+
+**基本写法：babel 配置启用**
+`plugins: ['react-compiler']`
+```json
+// babel.config.json
+{
+  "plugins": ["babel-plugin-react-compiler"]
+}
+```
+
+---
+
+**基本写法：Vite 项目启用**
+`plugins: [react({ babel: { plugins: ['babel-plugin-react-compiler'] } })]`
+```js
+// vite.config.js
+import react from '@vitejs/plugin-react';
+export default {
+  plugins: [react({ babel: { plugins: ['babel-plugin-react-compiler'] } })]
+};
+```
+
+---
+
+## 替代 useMemo
+
+**基本写法：编译后自动缓存计算结果**
+`const <值> = <计算>;`
+```tsx
+// 不再需要手写 useMemo
+const sorted = list.sort();
+// 编译器自动缓存
+```
+
+---
+
+## 替代 useCallback
+
+**基本写法：函数引用自动稳定**
+`const <fn> = () => <逻辑>;`
+```tsx
+// 不再需要 useCallback 包装
+const handleClick = () => doAction(id);
+// 子组件不会因新引用而重渲染
+```
+
+---
+
+## 替代 React.memo
+
+**基本写法：组件 props 自动浅比较**
+`function <组件>(<props>) { }`
+```tsx
+// 无需手动包裹 React.memo
+function User({ name }) { return <div>{name}</div>; }
+```
+
+---
+
+## 编译范围控制
+
+**基本写法：通过 compilationMode 控制**
+`'use no memo'`
+```tsx
+// 顶部注释禁用编译
+'use no memo';
+function MyComponent() {}
+```
+
+---
+
+**基本写法：全局配置 sources**
+`{ sources: (filename) => <是否编译> }`
+```js
+// 配置文件过滤
+export default {
+  sources: (filename) => filename.includes('/components/')
+};
+```
+
+---
+
+## eslint 规则
+
+**基本写法：eslint-plugin-react-compiler 检测违规**
+`plugins: ['react-compiler']`
+```json
+// .eslintrc
+{
+  "plugins": ["react-compiler"],
+  "rules": { "react-compiler/react-compiler": "error" }
+}
+```
+
+---
+
+## 自动追踪依赖
+
+**基本写法：编译器分析变量依赖**
+`const <值> = <依赖1> + <依赖2>;`
+```tsx
+// 自动识别 list 与 key 为依赖
+const item = list.find(i => i.id === key);
+```
+
+---
+
+## ref 读取处理
+
+**基本写法：编译器识别 ref.current 读取**
+`const <值> = <ref>.current;`
+```tsx
+// ref 读取不会被记忆化
+const node = inputRef.current;
+```
+
+---
+
+## 副作用安全
+
+**基本写法：编译器保留 effect 语义**
+`useEffect(() => <副作用>, [<依赖>])`
+```tsx
+// 编译器不会破坏 effect 执行时机
+useEffect(() => subscribe(id), [id]);
+```
+
+---
+
+## 闭包正确性
+
+**基本写法：编译器保证闭包变量最新**
+`const <fn> = () => <使用state>;`
+```tsx
+// 自动避免 stale closure
+const [count] = useState(0);
+const log = () => console.log(count);
+```
+
+---
+
+## 与现有 memo 共存
+
+**基本写法：渐进迁移保留手写 memo**
+`const <组件> = React.memo(<基础>)`
+```tsx
+// 已有 memo 不会被破坏
+const User = React.memo(UserBase);
+```
+
+---
+
+## 性能基线对比
+
+**基本写法：通过 Profiler 验证收益**
+`<Profiler id={<id>} onRender={<cb>}>`
+```tsx
+// 对比启用前后渲染次数
+<Profiler id="App" onRender={(id, phase, time) => log(phase, time)}>
+  <App />
+</Profiler>
+```
+
+---
+
+## 不适用场景
+
+**基本写法：手动 memo 仍可保留**
+`useMemo(() => <计算>, [<依赖>])`
+```tsx
+// 极端场景手动控制更精确
+const heavy = useMemo(() => compute(big), [big]);
+```
+
+---
+
+## 类型支持
+
+**基本写法：TypeScript 项目直接启用**
+`babel: { plugins: ['babel-plugin-react-compiler'] }`
+```tsx
+// 类型推断不受影响
+const data: User = fetchUser();
+```
+
+---
+
+## CI 集成
+
+**基本写法：构建流程默认启用**
+`npm run build`
+```bash
+# 构建时自动编译
+npm run build
+```
+
+---
+
+## 调试编译输出
+
+**基本写法：查看编译后的代码**
+`react-compiler <文件> --print`
+```bash
+# 输出编译后源码便于排查
+npx react-compiler src/App.tsx --print
+```
+
+---
+
+## 与 React 19 配合
+
+**基本写法：React 19 默认推荐启用**
+`react@19 + babel-plugin-react-compiler`
+```bash
+# React 19 应用最佳搭配
+npm install react@19 babel-plugin-react-compiler
+```
+
+---
+
+## 抑制规则违反
+
+**基本写法：修复违规写法而非禁用**
+`const <稳定> = useRef(<值>);`
+```tsx
+// 避免在渲染中创建新对象
+const cache = useRef(new Map());
+```
+
+---
+
+## 命令行工具
+
+**基本写法：CLI 编译单文件**
+`npx react-compiler <入口>`
+```bash
+# 命令行编译检查
+npx react-compiler src/App.tsx
+```
+
+---
+
+## 与 Next.js 集成
+
+**基本写法：Next.js 15 自动启用**
+`module.exports = { reactCompiler: true }`
+```js
+// next.config.js
+module.exports = {
+  experimental: { reactCompiler: true }
+};
+```
+
+---
+
+## 测试影响
+
+**基本写法：测试代码可排除编译**
+`{ sources: (f) => !f.includes('.test.') }`
+```js
+// 排除测试文件
+export default { sources: (f) => !f.includes('__tests__') };
+```

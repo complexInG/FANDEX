@@ -114,10 +114,11 @@ etymology:
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---
+# TypeScript 模块声明
 
-# TypeScript 类型声明与模块解析
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文系统阐述 TypeScript 声明文件（.d.ts）的语法结构、模块解析策略的演进与对比、ESM/CJS 互操作的工程实践，以及现代 npm 包 exports 字段的类型解析机制。所有代码示例均通过 TypeScript 5.4+ 编译验证。
+---
 
 ## 目录
 
@@ -908,32 +909,42 @@ import { qux } from 'lodash';         // node_modules 解析
 
 ### 8.6 解析策略选择决策树
 
-```
-你的工程运行在哪？
-├── Node.js（直接运行编译产物）
-│   ├── 使用 ESM（type: module） → nodenext
-│   ├── 使用 CJS（require） → node16 或 node10
-│   └── 双格式发布 → nodenext + 双 tsconfig
-├── 浏览器/打包器（Vite/Webpack/Rollup）
-│   └── bundler
-├── Deno
-│   └── nodenext（Deno 2.0+ 兼容 npm）
-└── 旧项目兼容
-    └── node（不推荐新项目使用）
+```mermaid
+flowchart TD
+    T0["你的工程运行在哪？"]
+    T1["Node.js（直接运行编译产物）"]
+    T2["使用 ESM（type: module） → nodenext"]
+    T3["使用 CJS（require） → node16 或 node10"]
+    T4["双格式发布 → nodenext + 双 tsconfig"]
+    T5["浏览器/打包器（Vite/Webpack/Rollup）"]
+    T6["bundler"]
+    T7["Deno"]
+    T8["nodenext（Deno 2.0+ 兼容 npm）"]
+    T9["旧项目兼容"]
+    T10["node（不推荐新项目使用）"]
+    T0 --> T1
+    T4 --> T5
+    T6 --> T7
+    T8 --> T9
+    T9 --> T10
 ```
 
 ### 8.7 实战对比
 
 考虑以下项目结构：
 
-```
-project/
-├── src/
-│   ├── app.ts
-│   ├── utils.ts
-│   └── utils.d.ts
-├── package.json
-└── tsconfig.json
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["src/"]
+    T2["app.ts"]
+    T3["utils.ts"]
+    T4["utils.d.ts"]
+    T5["package.json"]
+    T6["tsconfig.json"]
+    T0 --> T1
+    T4 --> T5
+    T4 --> T6
 ```
 
 不同解析策略下 `import { x } from './utils'` 的行为：
@@ -1414,12 +1425,17 @@ npm info @types/your-package
 
 一个典型的 @types 包结构：
 
-```
-@types/lodash/
-├── package.json
-├── index.d.ts
-├── other-utils.d.ts
-└── tsconfig.json  (DefinitelyTyped 配置)
+```mermaid
+flowchart TD
+    T0["@types/lodash/"]
+    T1["package.json"]
+    T2["index.d.ts"]
+    T3["other-utils.d.ts"]
+    T4["tsconfig.json  (DefinitelyTyped 配置)"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
 ```
 
 ```jsonc
@@ -1762,15 +1778,21 @@ interface Array<T> {
 
 ### 15.2 双格式发布工程结构
 
-```
-my-lib/
-├── src/
-│   ├── index.ts
-│   └── utils.ts
-├── tsconfig.json
-├── tsup.config.ts          # 使用 tsup 构建双格式
-├── package.json
-└── README.md
+```mermaid
+flowchart TD
+    T0["my-lib/"]
+    T1["src/"]
+    T2["index.ts"]
+    T3["utils.ts"]
+    T4["tsconfig.json"]
+    T5["tsup.config.ts          # 使用 tsup 构建双格式"]
+    T6["package.json"]
+    T7["README.md"]
+    T0 --> T1
+    T3 --> T4
+    T3 --> T5
+    T3 --> T6
+    T3 --> T7
 ```
 
 ```typescript
@@ -1819,25 +1841,30 @@ export default defineConfig({
 
 ### 15.3 monorepo 模块解析
 
-```
-monorepo/
-├── packages/
-│   ├── shared/
-│   │   ├── src/
-│   │   │   └── index.ts
-│   │   ├── tsconfig.json
-│   │   └── package.json
-│   ├── web/
-│   │   ├── src/
-│   │   ├── tsconfig.json
-│   │   └── package.json
-│   └── api/
-│       ├── src/
-│       ├── tsconfig.json
-│       └── package.json
-├── tsconfig.base.json
-├── tsconfig.json
-└── package.json
+```mermaid
+flowchart TD
+    T0["monorepo/"]
+    T1["packages/"]
+    T2["shared/"]
+    T3["src/"]
+    T4["index.ts"]
+    T5["tsconfig.json"]
+    T6["package.json"]
+    T7["web/"]
+    T8["src/"]
+    T9["tsconfig.json"]
+    T10["package.json"]
+    T11["api/"]
+    T12["src/"]
+    T13["tsconfig.json"]
+    T14["package.json"]
+    T15["tsconfig.base.json"]
+    T16["tsconfig.json"]
+    T17["package.json"]
+    T0 --> T1
+    T14 --> T15
+    T14 --> T16
+    T14 --> T17
 ```
 
 ```jsonc
@@ -1911,16 +1938,21 @@ tsc --build --clean        # 清理构建产物
 
 ### 15.5 自定义类型声明组织
 
-```
-project/
-├── src/
-├── types/
-│   ├── global.d.ts        # 全局声明
-│   ├── assets.d.ts        # 静态资源声明（*.css, *.png）
-│   ├── modules.d.ts       # 第三方模块声明
-│   └── express.d.ts       # Express 扩展声明
-├── tsconfig.json
-└── package.json
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["src/"]
+    T2["types/"]
+    T3["global.d.ts        # 全局声明"]
+    T4["assets.d.ts        # 静态资源声明（*.css, *.png）"]
+    T5["modules.d.ts       # 第三方模块声明"]
+    T6["express.d.ts       # Express 扩展声明"]
+    T7["tsconfig.json"]
+    T8["package.json"]
+    T0 --> T1
+    T0 --> T2
+    T6 --> T7
+    T6 --> T8
 ```
 
 ```jsonc
@@ -2218,9 +2250,9 @@ type RouteLoader = () => Promise<typeof import('./pages/Home.js')>;
 
 ---
 
-## 17. 习题
+## 知识讲解与要点分析（原习题）
 
-### 17.1 填空题
+### 填空题知识点讲解
 
 1. **[remember]** TypeScript 5.0+ 推荐的现代模块解析策略中，____适合打包器工程，____适合 Node.js ESM 工程。
 
@@ -2232,7 +2264,7 @@ type RouteLoader = () => Promise<typeof import('./pages/Home.js')>;
 
 5. **[remember]** TypeScript 内置的声明文件位于 ____目录，可通过 ____ 选项配置包含哪些标准库。
 
-### 17.2 选择题
+### 选择题知识点讲解
 
 1. **[understand]** 下列哪种情况必须使用 declare module 而非 declare global？
 
@@ -2542,18 +2574,24 @@ type RouteLoader = () => Promise<typeof import('./pages/Home.js')>;
 
 ## 附录 D：决策流程图
 
-```
-项目类型？
-├── 库（被其他项目使用）
-│   ├── 单格式 → 选择 ESM 或 CJS，配置 declaration: true
-│   └── 双格式 → tsup + exports 字段
-├── 应用（直接运行）
-│   ├── Node.js → moduleResolution: NodeNext
-│   ├── 浏览器 → moduleResolution: Bundler
-│   └── 桌面（Electron） → 混合，需要多个 tsconfig
-└── Monorepo
-    ├── pnpm workspaces → 各包独立 tsconfig + project references
-    └── npm workspaces → 同上
+```mermaid
+flowchart TD
+    T0["项目类型？"]
+    T1["库（被其他项目使用）"]
+    T2["单格式 → 选择 ESM 或 CJS，配置 declaration: true"]
+    T3["双格式 → tsup + exports 字段"]
+    T4["应用（直接运行）"]
+    T5["Node.js → moduleResolution: NodeNext"]
+    T6["浏览器 → moduleResolution: Bundler"]
+    T7["桌面（Electron） → 混合，需要多个 tsconfig"]
+    T8["Monorepo"]
+    T9["pnpm workspaces → 各包独立 tsconfig + project references"]
+    T10["npm workspaces → 同上"]
+    T0 --> T1
+    T3 --> T4
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
 ```
 
 ## 附录 E：自测清单
@@ -2571,7 +2609,478 @@ type RouteLoader = () => Promise<typeof import('./pages/Home.js')>;
 
 ---
 
-## 更新日志
+## 模块基础
 
-- 2026-07-20：金标准升级，新增形式化定义、历史演进、模块解析策略对比、exports 字段、ESM/CJS 互操作、monorepo 实战与案例研究，扩展至金标准长度。
-- 2026-04-06：初版，覆盖 .d.ts、声明合并、模块解析策略与 ESM/CJS 互操作要点。
+**基本写法：导出**
+`export <声明>`
+```typescript
+// 导出变量函数类型等
+export const name = "Tom"
+export function greet() {}
+export type User = { name: string }
+```
+
+---
+
+**基本写法：默认导出**
+`export default <声明>`
+```typescript
+// 每个模块只能有一个默认导出
+export default class User {}
+```
+
+---
+
+**基本写法：命名导入**
+`import { <名称>, <名称> } from "<模块>"`
+```typescript
+// 按名导入多个
+import { name, greet } from "./user"
+```
+
+---
+
+**基本写法：默认导入**
+`import <名称> from "<模块>"`
+```typescript
+// 导入默认导出
+import User from "./User"
+```
+
+---
+
+**基本写法：别名导入**
+`import { <名称> as <别名> } from "<模块>"`
+```typescript
+// 重命名导入避免冲突
+import { name as userName } from "./user"
+```
+
+---
+
+**基本写法：命名空间导入**
+`import * as <名称> from "<模块>"`
+```typescript
+// 整体导入为一个对象
+import * as utils from "./utils"
+utils.format()
+```
+
+---
+
+## 模块声明
+
+**基本写法：声明模块**
+`declare module "<模块名>"`
+```typescript
+// 为 JS 模块补类型声明
+declare module "my-lib" {
+    export function greet(name: string): string
+    export const version: string
+}
+```
+
+---
+
+**基本写法：通配符模块声明**
+`declare module "*<后缀>"`
+```typescript
+// 处理非 JS 资源导入
+declare module "*.css" {
+    const content: string
+    export default content
+}
+declare module "*.png" {
+    const src: string
+    export default src
+}
+```
+
+---
+
+**基本写法：声明全局变量**
+`declare const <变量>: <类型>`
+```typescript
+// 声明全局变量类型
+declare const VERSION: string
+declare const __DEV__: boolean
+```
+
+---
+
+**基本写法：声明全局函数**
+`declare function <名称>(<参数>): <返回类型>`
+```typescript
+// 声明全局函数
+declare function $(selector: string): HTMLElement
+```
+
+---
+
+## namespace 命名空间
+
+**基本写法：定义命名空间**
+`namespace <名称> { }`
+```typescript
+// 命名空间组织相关类型
+namespace App {
+    export function init() {}
+    export const version = "1.0"
+}
+App.init()
+```
+
+---
+
+**基本写法：嵌套命名空间**
+`namespace <外层>.<内层> { }`
+```typescript
+// 命名空间嵌套
+namespace App.Config {
+    export const port = 3000
+}
+App.Config.port
+```
+
+---
+
+**基本写法：命名空间与模块结合**
+`export namespace <名称> { }`
+```typescript
+// 模块中导出命名空间
+export namespace Utils {
+    export function format(s: string) { return s.trim() }
+}
+```
+
+---
+
+## 声明合并
+
+**基本写法：同名接口合并**
+`interface <名称> { }`
+```typescript
+// 同名接口自动合并
+interface User { name: string }
+interface User { age: number }
+const u: User = { name: "T", age: 18 }
+```
+
+---
+
+**基本写法：同名命名空间合并**
+`namespace <名称> { }`
+```typescript
+// 命名空间自动合并
+namespace App { export const a = 1 }
+namespace App { export const b = 2 }
+App.a; App.b
+```
+
+---
+
+**基本写法：函数与接口合并**
+`function <函数>(); interface <函数> { }`
+```typescript
+// 函数声明可与接口合并添加属性
+function greet(name: string): string
+namespace greet {
+    export const version = "1.0"
+}
+greet.version
+```
+
+---
+
+## 全局声明
+
+**基本写法：global 声明**
+`declare global { }`
+```typescript
+// 在模块中扩展全局
+declare global {
+    interface Window { myApp: any }
+}
+window.myApp = {}
+```
+
+---
+
+**基本写法：扩展全局接口**
+`declare global { interface <名称> { } }`
+```typescript
+// 扩展内置全局接口
+declare global {
+    interface Array<T> { last(): T | undefined }
+}
+Array.prototype.last = function () { return this[this.length - 1] }
+```
+
+---
+
+## 模块扩展
+
+**基本写法：扩展模块声明**
+`declare module "<模块>" { interface <名称> { } }`
+```typescript
+// 扩展已存在模块的类型
+declare module "express" {
+    interface Request { user?: User }
+}
+```
+
+---
+
+**基本写法：扩展 Express 类型**
+`declare module "express" { interface Request { } }`
+```typescript
+// 给 Express Request 添加属性
+declare module "express-serve-static-core" {
+    interface Request { userId: string }
+}
+```
+
+---
+
+## ambient 声明
+
+**基本写法：声明文件**
+`<文件>.d.ts`
+```typescript
+// 声明文件仅类型不产生代码
+// types.d.ts
+declare module "lib" {
+    export function fn(): void
+}
+```
+
+---
+
+**基本写法：声明类型别名**
+`declare type <名称> = <类型>`
+```typescript
+// 全局类型别名声明
+declare type ID = string | number
+```
+
+---
+
+**基本写法：声明枚举**
+`declare enum <名称> { }`
+```typescript
+// 声明外部枚举
+declare enum Color { Red, Green, Blue }
+```
+
+---
+
+## 三斜线指令
+
+**基本写法：引用类型声明**
+`/// <reference types="<包>" />`
+```typescript
+// 引入 @types 包
+/// <reference types="node" />
+```
+
+---
+
+**基本写法：引用路径**
+`/// <reference path="<文件>" />`
+```typescript
+// 引入指定声明文件
+/// <reference path="./types.d.ts" />
+```
+
+---
+
+**基本写法：引用库**
+`/// <reference lib="<库>" />`
+```typescript
+// 引入内置 lib
+/// <reference lib="es2017" />
+```
+
+---
+
+## 类型与值导入
+
+**基本写法：import type**
+`import type { <类型> } from "<模块>"`
+```typescript
+// 仅导入类型编译时移除
+import type { User } from "./types"
+```
+
+---
+
+**基本写法：内联 type 限定**
+`import { type <类型>, <值> } from "<模块>"`
+```typescript
+// 混合导入时标记类型
+import { type User, getUser } from "./user"
+```
+
+---
+
+**基本写法：export type**
+`export type { <类型> }`
+```typescript
+// 仅导出类型
+export type { User } from "./types"
+```
+
+---
+
+## CommonJS 互操作
+
+**基本写法：导入 CommonJS 模块**
+`import <名称> = require("<模块>")`
+```typescript
+// CommonJS 模块导入
+import fs = require("fs")
+```
+
+---
+
+**基本写法：导出 CommonJS**
+`export = <对象>`
+```typescript
+// CommonJS 风格导出
+class User {}
+export = User
+```
+
+---
+
+**基本写法：esModuleInterop**
+`import <名称> from "<CommonJS模块>"`
+```typescript
+// 开启 esModuleInterop 后默认导入
+import fs from "fs"
+```
+
+---
+
+## 动态导入
+
+**基本写法：动态 import 类型**
+`const <模块> = await import("<模块>")`
+```typescript
+// 动态导入类型为 Promise<typeof import>
+const mod = await import("./user")
+mod.greet()
+```
+
+---
+
+**基本写法：动态导入类型**
+`type <类型> = typeof import("<模块>")`
+```typescript
+// 推导模块类型
+type UserModule = typeof import("./user")
+```
+
+---
+
+## 实用模式
+
+**基本写法：barrel 导出**
+`export * from "<模块>"`
+```typescript
+// index.ts 汇总导出
+export * from "./user"
+export * from "./post"
+export * from "./comment"
+```
+
+---
+
+**基本写法：选择性 barrel**
+`export { <名称>, <名称> } from "<模块>"`
+```typescript
+// 选择性重新导出
+export { User, getUser } from "./user"
+export type { UserProps } from "./user"
+```
+
+---
+
+**基本写法：声明 JSON 模块**
+`declare module "*.json"`
+```typescript
+// 允许 import JSON
+declare module "*.json" {
+    const value: any
+    export default value
+}
+```
+
+---
+
+**基本写法：环境变量类型**
+`interface ImportMetaEnv { }`
+```typescript
+// Vite 环境变量类型
+interface ImportMetaEnv {
+    readonly VITE_API: string
+}
+interface ImportMeta {
+    readonly env: ImportMetaEnv
+}
+```
+
+---
+
+## 模块解析
+
+**基本写法：node 解析策略**
+`"moduleResolution": "node"`
+```typescript
+// tsconfig 配置 node 经典解析
+// 查找 node_modules 文件扩展名
+```
+
+---
+
+**基本写法：bundler 解析策略**
+`"moduleResolution": "bundler"`
+```typescript
+// TS 5.0+ 适配打包工具的解析
+// 支持 package.json exports 字段
+```
+
+---
+
+**基本写法：paths 路径映射**
+`"paths": { "<别名>": ["<路径>"] }`
+```typescript
+// tsconfig 配置路径别名
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": { "@/*": ["src/*"] }
+    }
+}
+```
+
+---
+
+## 注意事项
+
+**基本写法：模块与脚本区分**
+`export <声明>` 或 `import <名称>`
+```typescript
+// 含 import export 的是模块
+// 否则是脚本全局可见
+```
+
+---
+
+**基本写法：isolatedModules**
+`"isolatedModules": true`
+```typescript
+// 单文件转译模式约束
+// 要求类型导入显式标注
+export type { User }
+```

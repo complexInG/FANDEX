@@ -14,10 +14,11 @@ related:
   - c/变量与常量
 prerequisites: []
 ---
-
 # 程序结构与基本语法
 
-> "The most important property of a program is whether it accomplishes the intention of its user." — C.A.R. Hoare
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 0. 前言与导读
 
@@ -149,20 +150,16 @@ int main(void)
 
 ### 2.6 演进时间线
 
-```text
-1978 K&R C     ──── 隐式 int、旧式函数定义、/* */ 注释
-  │
-1989 C89       ──── 函数原型、void、const/volatile
-  │
-1999 C99       ──── // 注释、long long、for 内声明
-  │
-2011 C11       ──── _Generic、_Atomic、_Static_assert
-  │
-2018 C17       ──── C11 bug-fix
-  │
-2024 C23       ──── nullptr、bool、auto 推断、constexpr、属性
-  │
-2025+ C2y      ──── 模块、协程（草案）
+```mermaid
+timeline
+    title C 语法演进时间线
+    1978: K&R C 隐式 int、旧式函数定义、/* */ 注释
+    1989: C89 函数原型、void、const/volatile
+    1999: C99 // 注释、long long、for 内声明
+    2011: C11 _Generic、_Atomic、_Static_assert
+    2018: C17 C11 bug-fix
+    2024: C23 nullptr、bool、auto 推断、constexpr、属性
+    2025+: C2y 模块、协程（草案）
 ```
 
 ---
@@ -346,7 +343,7 @@ $$
 int (*fp)(int);
 ```
 
-解析：`fp` 是指针，指向一个函数，函数接受 `int` 返回 `int`。
+解析讲解：`fp` 是指针，指向一个函数，函数接受 `int` 返回 `int`。
 
 ### 4.2 词法分析的歧义
 
@@ -1051,25 +1048,37 @@ VLA 在 C11 改为可选，C23 仍有争议。建议大数组使用 `malloc`。
 
 推荐目录结构：
 
-```text
-project/
-├── CMakeLists.txt
-├── Makefile
-├── README.md
-├── include/                # 公共头文件
-│   └── module.h
-├── src/                    # 源文件
-│   ├── module.c
-│   └── main.c
-├── tests/                  # 测试
-│   ├── test_module.c
-│   └── CMakeLists.txt
-├── docs/                   # 文档
-├── scripts/                # 脚本
-│   └── build.sh
-└── .github/
-    └── workflows/
-        └── ci.yml
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["CMakeLists.txt"]
+    T2["Makefile"]
+    T3["README.md"]
+    T4["include/                # 公共头文件"]
+    T5["module.h"]
+    T6["src/                    # 源文件"]
+    T7["module.c"]
+    T8["main.c"]
+    T9["tests/                  # 测试"]
+    T10["test_module.c"]
+    T11["CMakeLists.txt"]
+    T12["docs/                   # 文档"]
+    T13["scripts/                # 脚本"]
+    T14["build.sh"]
+    T15[".github/"]
+    T16["workflows/"]
+    T17["ci.yml"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T5 --> T6
+    T8 --> T9
+    T11 --> T12
+    T11 --> T13
+    T14 --> T15
+    T15 --> T16
+    T16 --> T17
 ```
 
 ### 8.2 头文件保护
@@ -1356,9 +1365,9 @@ curl 风格特点：
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题 1**：以下哪个是合法的 C 标识符？
 
@@ -1367,7 +1376,7 @@ B. `_my_var`
 C. `int`
 D. `my-var`
 
-**答案**：B。`_my_var` 以字母（下划线）开头，后跟字母、数字、下划线。
+**解析讲解**：B。`_my_var` 以字母（下划线）开头，后跟字母、数字、下划线。
 
 **题 2**：C23 引入的二进制字面量前缀是？
 
@@ -1376,7 +1385,7 @@ B. `0o`
 C. `0b`
 D. `2x`
 
-**答案**：C。`0b1010` 是 C23 引入的二进制字面量。
+**解析讲解**：C。`0b1010` 是 C23 引入的二进制字面量。
 
 **题 3**：以下代码输出？
 
@@ -1395,7 +1404,7 @@ B. 11
 C. 12
 D. 未定义行为
 
-**答案**：B。`a+++a` 按 maximal munch 解析为 `a++ + a`，即 `5 + 6 = 11`（但 `a` 的求值顺序未指定，可能是 UB；实际多数编译器为 11）。
+**解析讲解**：B。`a+++a` 按 maximal munch 解析为 `a++ + a`，即 `5 + 6 = 11`（但 `a` 的求值顺序未指定，可能是 UB；实际多数编译器为 11）。
 
 **题 4**：`#include <stdio.h>` 与 `#include "stdio.h"` 的区别？
 
@@ -1404,7 +1413,7 @@ B. `<>` 在系统目录搜索，`""` 先在当前目录搜索
 C. `""` 只搜索当前目录
 D. `<>` 只搜索系统目录
 
-**答案**：B。`""` 先在当前目录搜索，找不到再到系统目录。
+**解析讲解**：B。`""` 先在当前目录搜索，找不到再到系统目录。
 
 **题 5**：以下哪个不是 C23 的新增关键字？
 
@@ -1413,7 +1422,7 @@ B. `nullptr`
 C. `constexpr`
 D. `class`
 
-**答案**：D。`class` 是 C++ 关键字，C 中没有。
+**解析讲解**：D。`class` 是 C++ 关键字，C 中没有。
 
 **题 6**：`static` 修饰局部变量时改变的是？
 
@@ -1422,7 +1431,7 @@ B. 链接性
 C. 存储期
 D. 类型
 
-**答案**：C。`static` 局部变量改变存储期（从自动到静态），作用域仍是块作用域。
+**解析讲解**：C。`static` 局部变量改变存储期（从自动到静态），作用域仍是块作用域。
 
 **题 7**：以下代码哪个是定义？
 
@@ -1431,7 +1440,7 @@ B. `int x;`
 C. `int f(int);`
 D. `typedef int MyInt;`
 
-**答案**：B。`int x;` 是定义（分配存储）。A 是声明，C 是函数原型声明，D 是类型定义（不是变量定义）。
+**解析讲解**：B。`int x;` 是定义（分配存储）。A 是声明，C 是函数原型声明，D 是类型定义（不是变量定义）。
 
 **题 8**：C 程序从源代码到可执行文件的正确顺序是？
 
@@ -1440,43 +1449,43 @@ B. 编译 → 预处理 → 汇编 → 链接
 C. 预处理 → 编译 → 汇编 → 链接
 D. 链接 → 预处理 → 编译 → 汇编
 
-**答案**：C。预处理 → 编译 → 汇编 → 链接。
+**解析讲解**：C。预处理 → 编译 → 汇编 → 链接。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题 1**：C 程序的入口函数是 ________，其完整原型为 ________。
 
-**答案**：`main`；`int main(int argc, char *argv[])` 或 `int main(void)`。
+**解析讲解**：`main`；`int main(int argc, char *argv[])` 或 `int main(void)`。
 
 **题 2**：C 语言支持的两种注释风格是 ________ 与 ________。
 
-**答案**：`/* ... */`；`// ...`（C99 起）。
+**解析讲解**：`/* ... */`；`// ...`（C99 起）。
 
 **题 3**：C 标识符第一个字符必须是 ________ 或 ________。
 
-**答案**：字母；下划线。
+**解析讲解**：字母；下划线。
 
 **题 4**：`static` 修饰全局变量时改变其 ________；修饰局部变量时改变其 ________；修饰函数时改变其 ________。
 
-**答案**：链接性（external → internal）；存储期（automatic → static）；链接性。
+**解析讲解**：链接性（external → internal）；存储期（automatic → static）；链接性。
 
 **题 5**：C 翻译过程的四个主要阶段是 ________、________、________、________。
 
-**答案**：预处理；编译；汇编；链接。
+**解析讲解**：预处理；编译；汇编；链接。
 
 **题 6**：C23 中 `nullptr` 的类型是 ________。
 
-**答案**：`nullptr_t`。
+**解析讲解**：`nullptr_t`。
 
 **题 7**：`extern int x;` 是 ________（声明/定义），`int x = 42;` 是 ________（声明/定义）。
 
-**答案**：声明；定义。
+**解析讲解**：声明；定义。
 
 **题 8**：C 中字符串字面量 `"hello"` 的类型在 C23 中是 ________。
 
-**答案**：`const char[6]`（包含末尾 `\0`）。
+**解析讲解**：`const char[6]`（包含末尾 `\0`）。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题 1**：编写一个完整的 C23 程序，包含：
 
@@ -1488,7 +1497,7 @@ D. 链接 → 预处理 → 编译 → 汇编
 
 要求：计算并打印一个圆的面积。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 /* circle.c — 计算圆面积 */
@@ -1532,7 +1541,7 @@ gcc -std=c23 -Wall -Wextra -O2 circle.c -lm -o circle
 
 **题 2**：编写一个程序，演示变量存储期的差异（自动 vs 静态）。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 #include <stdio.h>
@@ -1574,7 +1583,7 @@ static: 3
 
 **题 3**：编写一个跨平台程序，使用宏检测操作系统并输出对应消息。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 #include <stdio.h>
@@ -1606,7 +1615,7 @@ int main(void)
 
 **题 4**：编写一个简单的命令行参数解析器，输出所有参数。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 #include <stdio.h>
@@ -1623,7 +1632,7 @@ int main(int argc, char *argv[])
 
 **题 5**：编写一个程序，使用 `_Static_assert` 在编译期验证假设。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 #include <stdio.h>
@@ -1699,7 +1708,7 @@ int main {
 int counter = 42;
 ```
 
-**参考答案**：
+**解析讲解**：
 
 错误：
 
@@ -1932,44 +1941,16 @@ register    _Alignas/_Alignof (推荐 alignas/alignof)
 
 ## 附录 C：C 程序结构总览
 
-```text
-┌─────────────────────────────────────┐
-│ 1. 预处理指令                         │
-│    #include <stdio.h>                │
-│    #define MACRO value               │
-│    #if / #ifdef / #endif             │
-├─────────────────────────────────────┤
-│ 2. 类型定义                          │
-│    typedef struct { ... } Type;       │
-│    typedef enum { ... } Enum;         │
-├─────────────────────────────────────┤
-│ 3. 全局变量声明                      │
-│    extern int g_var;                 │
-│    static int s_var;                 │
-├─────────────────────────────────────┤
-│ 4. 函数原型                          │
-│    int function(int, int);           │
-├─────────────────────────────────────┤
-│ 5. main 函数                         │
-│    int main(int argc, char *argv[]){ │
-│        /* ... */                     │
-│        return 0;                     │
-│    }                                 │
-├─────────────────────────────────────┤
-│ 6. 函数定义                          │
-│    int function(int a, int b) {      │
-│        /* ... */                     │
-│    }                                 │
-└─────────────────────────────────────┘
+```mermaid
+flowchart TD
+    S1[1. 预处理指令<br/>#include / #define / #if / #ifdef / #endif]
+    S2[2. 类型定义<br/>typedef struct / typedef enum]
+    S3[3. 全局变量声明<br/>extern int / static int]
+    S4[4. 函数原型<br/>int function(int, int)]
+    S5[5. main 函数<br/>int main(int argc, char *argv[])]
+    S6[6. 函数定义<br/>int function(int a, int b)]
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6
 ```
-
----
-
-## 更新日志 (Changelog)
-
-- 2026-04-05: 拆分并细化基础语法。
-- 2026-04-05: 详细扩写内容，增加了头文件结构、注释最佳实践、命名约定、关键字分类、编译过程详解和程序执行流程。
-- 2026-07-20: 第二批金标准升级（对标 MIT/Stanford/CMU 教学水准）。重构为 12 章结构，新增 Bloom 学习目标、翻译阶段、token 形式化、声明 vs 定义、跨平台宏、Linux Kernel 风格案例、详细习题与 ACM 参考文献等。行数从 259 扩展至约 1500 行。
 
 ---
 
@@ -1981,3 +1962,248 @@ register    _Alignas/_Alignof (推荐 alignas/alignof)
 - [运算符与表达式](c/运算符与表达式)
 - [控制流](c/控制流)
 - [函数详解](c/函数详解)
+## 源文件结构
+
+**基本写法：包含头文件**
+`#include <<header>>`
+```c
+// 包含标准输入输出头文件
+#include <stdio.h>
+```
+
+---
+
+**基本写法：宏定义**
+`#define <NAME> <value>`
+```c
+// 定义圆周率常量
+#define PI 3.14159
+```
+
+---
+
+**基本写法：类型定义**
+`typedef <type> <new_name>;`
+```c
+// 为 unsigned int 创建别名
+typedef unsigned int uint;
+```
+
+---
+
+**基本写法：全局变量声明**
+`<type> <var_name> = <value>;`
+```c
+// 声明全局变量并初始化
+int global_count = 0;
+```
+
+---
+
+**基本写法：函数原型声明**
+`<return_type> <func_name>(<parameter_list>);`
+```c
+// 声明函数原型
+void print_hello();
+```
+
+---
+
+**基本写法：主函数入口**
+`int main() { ... return 0; }`
+```c
+// 程序主入口
+int main() {
+    int local_val = 10;
+    printf("Value: %d\n", local_val);
+    return 0;
+}
+```
+
+---
+
+**基本写法：函数实现**
+`<return_type> <func_name>(<parameter_list>) { ... }`
+```c
+// 函数具体实现
+void print_hello() {
+    printf("Hello!\n");
+}
+```
+
+---
+
+## 头文件保护
+
+**基本写法：防止重复包含**
+`#ifndef <HEADER_H> / #define <HEADER_H> / ... / #endif`
+```c
+// 头文件保护宏
+#ifndef MY_HEADER_H
+#define MY_HEADER_H
+void my_function();
+#endif /* MY_HEADER_H */
+```
+
+---
+
+## 注释
+
+**单行写法：行内注释**
+`// <注释内容>`
+```c
+// 这是一个单行注释
+int x = 10;
+```
+
+---
+
+**单行写法：行尾注释**
+`<code> // <注释内容>`
+```c
+// 行尾注释说明变量用途
+int x = 10; // 计数器变量
+```
+
+---
+
+**多行写法：块注释**
+`/* <注释内容> */`
+```c
+/*
+ * 这是一个多行注释
+ * 可以跨越多行
+ */
+int y = 20;
+```
+
+---
+
+**文档写法：Doxygen 格式**
+`/** @brief <描述> @param <参数> <说明> @return <返回值> */`
+```c
+/**
+ * @brief 计算圆的面积
+ * @param radius 圆的半径
+ * @return 圆的面积
+ */
+double calculate_area(double radius) {
+    return PI * radius * radius;
+}
+```
+
+---
+
+## 主函数
+
+**无参写法：无参数主函数**
+`int main() { ... return 0; }`
+```c
+// 无参数形式的 main 函数
+int main() {
+    printf("Hello\n");
+    return 0;
+}
+```
+
+---
+
+**带参写法：命令行参数主函数**
+`int main(int argc, char *argv[]) { ... }`
+```c
+// argc 为参数个数，argv 为参数字符串数组
+int main(int argc, char *argv[]) {
+    for (int i = 0; i < argc; i++) {
+        printf("Argument %d: %s\n", i, argv[i]);
+    }
+    return 0;
+}
+```
+
+---
+
+## 程序终止
+
+**正常写法：正常终止程序**
+`return 0;`
+```c
+// 在 main 函数中正常返回
+int main() {
+    printf("Done\n");
+    return 0;
+}
+```
+
+---
+
+**强制写法：调用 exit 终止**
+`exit(0);`
+```c
+// 直接终止整个程序
+exit(0);
+```
+
+---
+
+**异常写法：异常终止程序**
+`exit(1);`
+```c
+// 非零状态码表示异常终止
+exit(1);
+```
+
+---
+
+## 编译命令
+
+**单文件写法：编译单个源文件**
+`gcc <source.c> -o <output>`
+```bash
+# 编译 hello.c 生成可执行文件 hello
+gcc hello.c -o hello
+```
+
+---
+
+**优化写法：启用优化编译**
+`gcc -O2 <source.c> -o <output>`
+```bash
+# 启用二级优化
+gcc -O2 hello.c -o hello
+```
+
+---
+
+**调试写法：生成调试信息**
+`gcc -g <source.c> -o <output>`
+```bash
+# 生成调试信息便于 GDB 调试
+gcc -g hello.c -o hello
+```
+
+---
+
+**多文件写法：编译多个源文件**
+`gcc <file1.c> <file2.c> -o <output>`
+```bash
+# 一次性编译多个源文件
+gcc file1.c file2.c -o program
+```
+
+---
+
+**分步写法：分别编译后链接**
+`gcc -c <source.c> -o <object.o>`
+```bash
+# 编译 file1.c 生成目标文件
+gcc -c file1.c -o file1.o
+```
+
+---
+
+**链接写法：链接目标文件**
+`gcc <file1.o> <file2.o> -o <output>`
+```bash
+# 链接多个目标文件生成可执行文件
+gcc file1.o file2.o -o program
+```

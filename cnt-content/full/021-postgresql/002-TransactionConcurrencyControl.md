@@ -64,30 +64,19 @@ PostgreSQL 采用多版本并发控制（MVCC）作为其并发控制的基石�
 
 ### 1.2 PostgreSQL 并发控制总体架构
 
-```
-+------------------------------------------------------------------+
-|                    PostgreSQL 并发控制架构                         |
-+------------------------------------------------------------------+
-|                                                                  |
-|  +-------------------+        +-------------------+              |
-|  |   MVCC 多版本层    |        |   锁管理器 LMGR    |              |
-|  |  (HeapTupleHeader |        |  (表锁/行锁/谓词锁) |              |
-|  |   xmin/xmax/快照)  |        |                   |              |
-|  +---------+---------+        +---------+---------+              |
-|            |                            |                        |
-|            v                            v                        |
-|  +-------------------+        +-------------------+              |
-|  |  可见性判断引擎     |        |   死锁检测器       |              |
-|  | HeapTupleSatisfies|        |  Wait-For Graph   |              |
-|  +---------+---------+        +---------+---------+              |
-|            |                            |                        |
-|            v                            v                        |
-|  +-------------------+        +-------------------+              |
-|  |  SSI 序列化层      |        |   WAL 预写日志     |              |
-|  | (SIREAD锁/依赖图)  |        | (pg_wal/pg_xact)  |              |
-|  +-------------------+        +-------------------+              |
-|                                                                  |
-+------------------------------------------------------------------+
+```mermaid
+flowchart TD
+    B0["PostgreSQL 并发控制架构"]
+    B1["MVCC 多版本层 | 锁管理器 LMGR / (HeapTupleHeader | (表锁/行锁/谓词锁) / xmin/xmax/快照)"]
+    B0 --> B1
+    B2["v                            v"]
+    B1 --> B2
+    B3["可见性判断引擎 | 死锁检测器 / HeapTupleSatisfies | Wait-For Graph"]
+    B2 --> B3
+    B4["v                            v"]
+    B3 --> B4
+    B5["SSI 序列化层 | WAL 预写日志 / (SIREAD锁/依赖图) | (pg_wal/pg_xact)"]
+    B4 --> B5
 ```
 
 ### 1.3 学习目标
@@ -128,34 +117,13 @@ ACID 是事务处理的四项基本保证，由 Andreas Reuter 与 Theo Härder 
 
 PostgreSQL 事务在生命周期内经历若干状态转换。理解状态机有助于把握可见性判断与锁释放时机。
 
-```
-                  BEGIN
-                    |
-                    v
-           +-----------------+
-           |     INPROGRESS   |  事务执行中, 已分配 XID
-           |  (事务活跃中)     |  写入的数据对其他事务不可见(未提交)
-           +--------+--------+
-                    |
-            +-------+-------+--------+
-            |               |        |
-            v               v        v
-     +------+-----+  +------+-----+  |
-     | COMMITTED  |  |  ABORTED   |  |
-     | (已提交)    |  | (已回滚)    |  |
-     +------+-----+  +------+-----+  |
-            |               |        |
-            v               v        v
-     +------+-----+  +------+-----+
-     | 已提交可见   |  |  已回滚     |
-     | 数据对其他   |  |  数据不可见  |
-     | 事务可见     |  |  死元组待清理|
-     +------------+  +------------+
-
-子事务(SAVEPOINT)状态:
-  子事务拥有独立的 subxid, 状态记录在 pg_subtrans
-  父事务提交时, 子事务状态一并提交
-  父事务回滚时, 子事务一并回滚
+```mermaid
+flowchart TD
+    B0["INPROGRESS | 事务执行中, 已分配 XID / (事务活跃中) | 写入的数据对其他事务不可见(未提交)"]
+    B1["COMMITTED | ABORTED / (已提交) | (已回滚)"]
+    B0 --> B1
+    B2["已提交可见 | 已回滚 / 数据对其他 | 数据不可见 / 事务可见 | 死元组待清理"]
+    B1 --> B2
 ```
 
 事务状态在内核中由事务 ID（XID）与提交状态日志共同决定。PostgreSQL 的事务 ID 是 32 位无符号整数，按递增顺序分配，理论最大值为 2^32 - 1（约 42.9 亿）。事务 ID 回卷问题与冻结机制将在第 3 章与第 8 章详述。
@@ -615,50 +583,21 @@ typedef struct PGPROC {
 
 #### 3.5.2 可见性判断流程图
 
-```
-                          +---------------------------+
-                          |  读取元组 (xmin, xmax)     |
-                          |  与快照 (sxmin,sxmax,sxip) |
-                          +-------------+-------------+
-                                        |
-                                        v
-                          +---------------------------+
-                          | xmin >= sxmax ?           |
-                          +-------------+-------------+
-                              是 |             | 否
-                                 v             v
-                       +-----------+   +---------------------+
-                       | 不可见     |   | xmin < sxmin ?      |
-                       +-----------+   +----------+----------+
-                                        是 |          | 否
-                                           v          v
-                                  +-----------+  +-------------------+
-                                  | 查提交状态 |  | xmin 在 xip 中 ?  |
-                                  +-----+-----+  +---------+---------+
-                                   提交|回滚             是|    |否
-                                       |  |               v    v
-                                       |  v       +--------+ +--------+
-                                       | +---+    | 不可见  | |查提交状态|
-                                       | |不可|    +--------+ +---+----+
-                                       | |见  |                  |提交|回滚
-                                       v +---+                   |    |
-                              +-----------+                      v    v
-                              | xmax==0 ? |              +------+ +---+
-                              +-----+-----+              |不可见| |可见|
-                              是|     |否                 +------+ +---+
-                               v     v
-                          +------+  +-----------------+
-                          | 可见 |  | xmax 判断逻辑    |
-                          +------+  | (同 xmin 类似)   |
-                                    +--------+--------+
-                                             |
-                                     +-------+-------+
-                                     |               |
-                                  删除已提交      删除未提交/活跃
-                                     |               |
-                                  +-----+         +-----+
-                                  |不可见|         | 可见|
-                                  +-----+         +-----+
+```mermaid
+flowchart TD
+    B0["读取元组 (xmin, xmax) / 与快照 (sxmin,sxmax,sxip)"]
+    B1["xmin >= sxmax ?"]
+    B0 --> B1
+    B2["不可见 | xmin < sxmin ?"]
+    B1 --> B2
+    B3["查提交状态 | xmin 在 xip 中 ?"]
+    B2 --> B3
+    B4["v    v / v / 不可见 | 查提交状态 / 不可 / 见 | 提交 | 回滚 / xmax==0 ?"]
+    B3 --> B4
+    B5["可见 | xmax 判断逻辑"]
+    B4 --> B5
+    B6["不可见 | 可见"]
+    B5 --> B6
 ```
 
 #### 3.5.3 可见性判断的代码示例
@@ -1279,22 +1218,13 @@ PostgreSQL 使用等待图（Wait-For Graph）检测死锁：
   形成环路 T1 -> T2 -> T1, 检测到死锁
 ```
 
-```
-              +-----+
-              | T1  | (持有 Alice 锁)
-              +--+--+
-                 |
-         等待 Bob | 锁
-                 v
-              +--+--+
-              | T2  | (持有 Bob 锁)
-              +--+--+
-                 |
-         等待 Alice| 锁
-                 v
-              +--+--+
-              | T1  | <- 形成环路, 死锁!
-              +-----+
+```mermaid
+flowchart TD
+    B0["T1 | (持有 Alice 锁)"]
+    B1["T2 | (持有 Bob 锁)"]
+    B0 --> B1
+    B2["T1 | <- 形成环路, 死锁!"]
+    B1 --> B2
 ```
 
 #### 5.5.3 死锁检测参数
@@ -1485,65 +1415,41 @@ typedef struct PGPROC {
 
 下图展示完整的可见性判断流程，包括 Hint Bits 优化路径：
 
-```
-+------------------------------------------------------------------+
-|                  HeapTupleSatisfiesMVCC 流程                      |
-+------------------------------------------------------------------+
-|                                                                  |
-|  输入: 元组 (t_xmin, t_xmax, t_infomask), 快照 (snap)            |
-|                                                                  |
-|  +------------------------+                                      |
-|  | 检查 Hint Bits         |                                      |
-|  | (t_infomask 标志位)    |                                      |
-|  +----------+-------------+                                      |
-|             |                                                    |
-|     +-------+-------+                                            |
-|     |               |                                            |
-|  已设置            未设置                                         |
-|     |               |                                            |
-|     |               v                                            |
-|     |    +---------------------+                                 |
-|     |    | 查询 pg_xact 提交日志|                                 |
-|     |    | 确认 xmin/xmax 状态  |                                 |
-|     |    +----------+----------+                                 |
-|     |               |                                            |
-|     |               v                                            |
-|     |    +---------------------+                                 |
-|     |    | 设置 Hint Bits       |                                 |
-|     |    | 标记页面为脏(dirty)  | (SELECT 也可能产生写入!)        |
-|     |    +----------+----------+                                 |
-|     |               |                                            |
-|     +-------+-------+                                            |
-|             |                                                    |
-|             v                                                    |
-|  +------------------------+                                      |
-|  | 判断 xmin 可见性       |                                      |
-|  | (见第 3.5.1 节规则)    |                                      |
-|  +----------+-------------+                                      |
-|             |                                                    |
-|     +-------+-------+                                            |
-|     |               |                                            |
-|  xmin 可见       xmin 不可见                                     |
-|     |               |                                            |
-|     v               v                                            |
-|  +----------+   +----------+                                     |
-|  | 判断 xmax|   | 返回     |                                     |
-|  | 可见性    |   | false    |                                     |
-|  +----+-----+   +----------+                                     |
-|       |                                                          |
-|       v                                                          |
-|  +----------+                                                    |
-|  | xmax==0  |--是--> 返回 true (可见)                            |
-|  | 或未提交 |                                                    |
-|  +----+-----+                                                    |
-|       | 否                                                       |
-|       v                                                          |
-|  +----------+                                                    |
-|  | xmax 已  |--是--> 返回 false (不可见, 已删除)                  |
-|  | 提交     |                                                    |
-|  +----------+                                                    |
-|                                                                  |
-+------------------------------------------------------------------+
+```mermaid
+flowchart TD
+    B0["HeapTupleSatisfiesMVCC 流程"]
+    B1["输入: 元组 (t_xmin, t_xmax, t_infomask), 快照 (snap)"]
+    B0 --> B1
+    B2["检查 Hint Bits / (t_infomask 标志位)"]
+    B1 --> B2
+    B3["已设置            未设置"]
+    B2 --> B3
+    B4["v"]
+    B3 --> B4
+    B5["查询 pg_xact 提交日志 / 确认 xmin/xmax 状态"]
+    B4 --> B5
+    B6["v"]
+    B5 --> B6
+    B7["设置 Hint Bits / 标记页面为脏(dirty) | (SELECT 也可能产生写入!)"]
+    B6 --> B7
+    B8["v"]
+    B7 --> B8
+    B9["判断 xmin 可见性 / (见第 3.5.1 节规则)"]
+    B8 --> B9
+    B10["xmin 可见       xmin 不可见"]
+    B9 --> B10
+    B11["v               v"]
+    B10 --> B11
+    B12["判断 xmax | 返回 / 可见性 | false"]
+    B11 --> B12
+    B13["v"]
+    B12 --> B13
+    B14["xmax==0 | 是--> 返回 true (可见) / 或未提交"]
+    B13 --> B14
+    B15["否 / v"]
+    B14 --> B15
+    B16["xmax 已 | 是--> 返回 false (不可见, 已删除) / 提交"]
+    B15 --> B16
 ```
 
 ### 6.6 Hint Bits 机制详解
@@ -3397,19 +3303,19 @@ Oracle SERIALIZABLE:
 
 ### 15.1 练习题
 
-#### 题目一（理论）
+## 知识讲解与要点分析（原题目一（理论））
 
 简述 PostgreSQL 的 MVCC 与 MySQL InnoDB 的 MVCC 在旧版本存储方式上的根本差异，并分析各自的主要优缺点。
 
-#### 题目二（理论）
+## 知识讲解与要点分析（原题目二（理论））
 
 解释 Hint Bits 的作用，并说明为什么一次纯 SELECT 操作也可能导致数据页被标记为脏页。
 
-#### 题目三（理论）
+## 知识讲解与要点分析（原题目三（理论））
 
 描述 PostgreSQL 可见性判断的核心算法（HeapTupleSatisfiesMVCC）的主要步骤，并解释 xmin、xmax、cmin、cmax 在其中的作用。
 
-#### 题目四（实操）
+## 知识讲解与要点分析（原题目四（实操））
 
 给定以下场景，编写 SQL 演示写偏斜（Write Skew）异常，并说明如何在 SERIALIZABLE 隔离级别下避免该异常。
 
@@ -3419,33 +3325,33 @@ Oracle SERIALIZABLE:
 两个管理员同时将各自负责的监控关闭。
 ```
 
-#### 题目五（实操）
+## 知识讲解与要点分析（原题目五（实操））
 
 编写 SQL 查询，找出当前数据库中年龄（XID age）最大的 5 张表，并判断是否存在事务 ID 回卷风险（阈值 15 亿）。
 
-#### 题目六（实操）
+## 知识讲解与要点分析（原题目六（实操））
 
 某转账业务频繁出现死锁，请给出三种解决方案（含 SQL），并比较其适用场景。
 
-#### 题目七（理论）
+## 知识讲解与要点分析（原题目七（理论））
 
 解释 SSI（可序列化快照隔离）中"危险结构"（dangerous structure）的含义，并说明为什么两个相邻的 rw-conflict 会构成可序列化冲突。
 
-#### 题目八（实操）
+## 知识讲解与要点分析（原题目八（实操））
 
 编写 SQL，使用 Advisory 锁实现一个分布式锁服务，要求支持获取（带超时）、释放与查看锁持有状态。
 
-#### 题目九（理论）
+## 知识讲解与要点分析（原题目九（理论））
 
 分析 `synchronous_commit` 参数的各个取值（on / remote_write / remote_apply / local / off）对事务持久性与性能的影响，并给出推荐场景。
 
-#### 题目十（实操）
+## 知识讲解与要点分析（原题目十（实操））
 
 某表因长事务导致严重膨胀（n_dead_tup 持续增长，autovacuum 无法回收空间）。请给出完整的排查与处理步骤（含监控 SQL 与修复 SQL）。
 
 ### 15.2 参考答案
 
-#### 题目一答案
+## 知识讲解与要点分析（原题目一答案）
 
 PostgreSQL 采用追加式 MVCC：UPDATE 不覆盖原数据，而是插入新版本元组，旧版本与新版本共存于堆数据页中。旧版本通过 xmin/xmax 标记生命周期，由 VACUUM 清理。
 
@@ -3456,7 +3362,7 @@ MySQL InnoDB 采用原地更新 + undo log：UPDATE 直接修改数据页中的�
 | 优点 | 读旧版本无需重建（直接读堆），回滚代价低，实现简单 | 数据页始终最新，索引稳定，无表膨胀，空间利用率高 |
 | 缺点 | 旧版本占表空间，需 VACUUM，存在表膨胀与 XID 回卷风险，索引需额外清理 | 读旧版本需回放 undo（CPU 开销），回滚代价高，undo 管理复杂 |
 
-#### 题目二答案
+## 知识讲解与要点分析（原题目二答案）
 
 Hint Bits 是 HeapTupleHeader 中 t_infomask 字段的标志位，用于缓存 xmin/xmax 事务的提交状态（已提交 / 已回滚）。
 
@@ -3466,7 +3372,7 @@ Hint Bits 是 HeapTupleHeader 中 t_infomask 字段的标志位，用于缓存 x
 
 可通过设置 `ALTER TABLE ... SET (autovacuum_enabled = false)` 临时观察，或使用 `pg_visibility` 扩展查看页面状态。
 
-#### 题目三答案
+## 知识讲解与要点分析（原题目三答案）
 
 HeapTupleSatisfiesMVCC 的核心步骤：
 
@@ -3495,7 +3401,7 @@ HeapTupleSatisfiesMVCC 的核心步骤：
 
 xmin 标识插入事务，xmax 标识删除/更新事务，cmin/cmax 用于事务内命令级可见性控制（游标可见性）。
 
-#### 题目四答案
+## 知识讲解与要点分析（原题目四答案）
 
 ```sql
 -- 建表与初始数据
@@ -3533,7 +3439,7 @@ COMMIT;
 -- 应用层捕获错误并重试
 ```
 
-#### 题目五答案
+## 知识讲解与要点分析（原题目五答案）
 
 ```sql
 -- 查询年龄最大的 5 张表
@@ -3559,7 +3465,7 @@ FROM pg_database
 ORDER BY db_xid_age DESC;
 ```
 
-#### 题目六答案
+## 知识讲解与要点分析（原题目六答案）
 
 ```sql
 -- 方案 1: 统一加锁顺序 (推荐, 适用所有场景)
@@ -3591,7 +3497,7 @@ COMMIT;
 
 适用场景：方案 1 通用且安全；方案 2 适合简单场景性能最优；方案 3 适合高并发短事务。
 
-#### 题目七答案
+## 知识讲解与要点分析（原题目七答案）
 
 危险结构（dangerous structure）是 SSI 算法检测可序列化冲突的核心概念。它指在 rw-conflict 依赖图中存在以下模式：
 
@@ -3607,7 +3513,7 @@ T1 --(rw)--> T2 --(rw)--> T3
 
 SSI 在检测到危险结构时，会中止 T3（最后开始的事务）以打破循环。
 
-#### 题目八答案
+## 知识讲解与要点分析（原题目八答案）
 
 ```sql
 -- 使用 Advisory 锁实现分布式锁服务
@@ -3657,7 +3563,7 @@ ORDER BY grantee;
 -- 会话 A: SELECT pg_advisory_unlock(12345);  -- true (释放)
 ```
 
-#### 题目九答案
+## 知识讲解与要点分析（原题目九答案）
 
 `synchronous_commit` 控制事务提交时是否等待 WAL 刷盘：
 
@@ -3671,7 +3577,7 @@ ORDER BY grantee;
 
 推荐：核心业务用 `on` 或 `remote_apply`；非核心业务用 `local` 或 `off` 提升吞吐。
 
-#### 题目十答案
+## 知识讲解与要点分析（原题目十答案）
 
 ```sql
 -- 完整排查与处理步骤
@@ -3849,3 +3755,307 @@ SELECT pg_reload_conf();
 ---
 
 > 本文到此结束。事务与并发控制是数据库内核中最精妙、也最易被误解的领域之一。希望本文能帮助读者建立从理论到工程实践的完整知识体系，在生产环境中更自信地设计与调优 PostgreSQL 并发场景。如有疑问或建议，欢迎在社区交流。
+## 事务控制
+
+**单行写法：开启事务**
+`BEGIN` / `BEGIN TRANSACTION`
+```sql
+-- 开启事务
+BEGIN;
+```
+
+**换行写法：提交事务**
+`COMMIT` / `END`
+```sql
+-- 提交事务并持久化变更
+BEGIN;
+INSERT INTO users (username, email) VALUES ('张三', 'zhangsan@example.com');
+UPDATE accounts SET balance = balance - 100 WHERE user_id = 1;
+COMMIT;
+```
+
+**单行写法：回滚事务**
+`ROLLBACK` / `ABORT`
+```sql
+-- 回滚事务撤销变更
+ROLLBACK;
+```
+
+**换行写法：使用保存点**
+`SAVEPOINT <保存点名>` / `ROLLBACK TO <保存点名>`
+```sql
+-- 使用保存点部分回滚
+BEGIN;
+INSERT INTO users (username) VALUES ('张三');
+SAVEPOINT sp1;
+INSERT INTO users (username) VALUES ('李四');
+ROLLBACK TO sp1;
+COMMIT;
+```
+
+**单行写法：释放保存点**
+`RELEASE SAVEPOINT <保存点名>`
+```sql
+-- 释放指定保存点
+RELEASE SAVEPOINT sp1;
+```
+
+---
+
+## 隔离级别
+
+**单行写法：查看当前隔离级别**
+`SHOW transaction_isolation`
+```sql
+-- 查看当前事务隔离级别
+SHOW transaction_isolation;
+```
+
+**换行写法：设置会话隔离级别**
+`SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL <级别>`
+```sql
+-- 设置会话隔离级别为读已提交
+SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED;
+```
+
+**换行写法：设置事务隔离级别**
+`SET TRANSACTION ISOLATION LEVEL <级别>`
+```sql
+-- 设置当前事务隔离级别为可序列化
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+SELECT * FROM users;
+COMMIT;
+```
+
+**单行写法：设置默认隔离级别**
+`ALTER DATABASE <库名> SET default_transaction_isolation TO '<级别>'`
+```sql
+-- 设置数据库默认隔离级别
+ALTER DATABASE mydb SET default_transaction_isolation TO 'read committed';
+```
+
+---
+
+## 锁机制
+
+**单行写法：加共享锁**
+`SELECT ... FOR SHARE`
+```sql
+-- 查询时加共享锁
+SELECT * FROM users WHERE id = 1 FOR SHARE;
+```
+
+**单行写法：加排他锁**
+`SELECT ... FOR UPDATE`
+```sql
+-- 查询时加排他锁
+SELECT * FROM users WHERE id = 1 FOR UPDATE;
+```
+
+**单行写法：加无等待排他锁**
+`SELECT ... FOR UPDATE NOWAIT`
+```sql
+-- 查询时加排他锁不等待
+SELECT * FROM users WHERE id = 1 FOR UPDATE NOWAIT;
+```
+
+**换行写法：加跳过锁定排他锁**
+`SELECT ... FOR UPDATE SKIP LOCKED`
+```sql
+-- 查询时加排他锁并跳过已锁定行
+SELECT * FROM job_queue WHERE status = 'pending'
+    FOR UPDATE SKIP LOCKED LIMIT 10;
+```
+
+**单行写法：INSERT 自动加排他锁**
+`INSERT INTO <表名> (<列名>) VALUES (<值>)`
+```sql
+-- 插入操作自动加排他锁
+INSERT INTO users (name) VALUES ('John');
+```
+
+**单行写法：UPDATE 自动加排他锁**
+`UPDATE <表名> SET <列名> = <值> WHERE <条件>`
+```sql
+-- 更新操作自动加排他锁
+UPDATE users SET name = 'John' WHERE id = 1;
+```
+
+**单行写法：DELETE 自动加排他锁**
+`DELETE FROM <表名> WHERE <条件>`
+```sql
+-- 删除操作自动加排他锁
+DELETE FROM users WHERE id = 1;
+```
+
+---
+
+## 锁等待与超时
+
+**单行写法：查看锁等待超时**
+`SHOW lock_timeout`
+```sql
+-- 查看锁等待超时时间
+SHOW lock_timeout;
+```
+
+**单行写法：设置锁等待超时**
+`SET lock_timeout = '<时间>'`
+```sql
+-- 设置锁等待超时为 5 秒
+SET lock_timeout = '5s';
+```
+
+**单行写法：查看死锁超时**
+`SHOW deadlock_timeout`
+```sql
+-- 查看死锁检测超时
+SHOW deadlock_timeout;
+```
+
+**单行写法：设置死锁超时**
+`SET deadlock_timeout = '<时间>'`
+```sql
+-- 设置死锁检测超时为 100 毫秒
+SET deadlock_timeout = '100ms';
+```
+
+---
+
+## 死锁检测
+
+**单行写法：查看锁信息**
+`SELECT <列名> FROM pg_locks WHERE <条件>`
+```sql
+-- 查看当前锁信息
+SELECT locktype, relation::regclass, mode, pid
+FROM pg_locks WHERE granted = false;
+```
+
+**单行写法：查看阻塞进程**
+`SELECT <列名> FROM pg_stat_activity WHERE <条件>`
+```sql
+-- 查看阻塞的进程
+SELECT pid, usename, query, state, wait_event
+FROM pg_stat_activity WHERE state = 'active';
+```
+
+**单行写法：终止进程**
+`SELECT pg_terminate_backend(<PID>)`
+```sql
+-- 终止指定进程
+SELECT pg_terminate_backend(12345);
+```
+
+**单行写法：取消进程查询**
+`SELECT pg_cancel_backend(<PID>)`
+```sql
+-- 取消指定进程的查询
+SELECT pg_cancel_backend(12345);
+```
+
+---
+
+## 事务实战
+
+**换行写法：转账事务**
+`BEGIN; <DML>; COMMIT;`
+```sql
+-- 转账事务保证原子性
+BEGIN;
+UPDATE accounts SET balance = balance - 1000 WHERE user_id = 1;
+UPDATE accounts SET balance = balance + 1000 WHERE user_id = 2;
+COMMIT;
+```
+
+**换行写法：条件提交**
+`IF <条件> THEN COMMIT; ELSE ROLLBACK; END IF`
+```sql
+-- 检查余额后决定提交或回滚
+BEGIN;
+UPDATE accounts SET balance = balance - 1000 WHERE user_id = 1;
+UPDATE accounts SET balance = balance + 1000 WHERE user_id = 2;
+DO $$
+BEGIN
+    IF (SELECT balance FROM accounts WHERE user_id = 1) < 0 THEN
+        RAISE EXCEPTION '余额不足';
+    END IF;
+END $$;
+COMMIT;
+```
+
+**换行写法：订单创建事务**
+`BEGIN; <DML>; COMMIT;`
+```sql
+-- 订单创建事务包含订单和订单项
+BEGIN;
+INSERT INTO orders (user_id, total_amount) VALUES (1, 500) RETURNING id;
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES
+    (1, 101, 2, 200),
+    (1, 102, 1, 100);
+UPDATE products SET stock = stock - 3 WHERE id IN (101, 102);
+COMMIT;
+```
+
+**换行写法：悲观锁查询**
+`SELECT ... FOR UPDATE`
+```sql
+-- 先锁定再更新
+BEGIN;
+SELECT * FROM users WHERE id = 1 FOR UPDATE;
+UPDATE users SET status = 0 WHERE last_login_time < '2023-01-01';
+COMMIT;
+```
+
+**换行写法：批量删除事务**
+`BEGIN; <DML>; COMMIT;`
+```sql
+-- 批量更新避免长事务
+BEGIN;
+UPDATE users SET status = 0 WHERE last_login_time < '2023-01-01';
+UPDATE stats SET inactive_users = inactive_users + 1;
+COMMIT;
+```
+
+**换行写法：分批删除**
+`DELETE FROM <表名> WHERE id IN (SELECT id FROM <表名> WHERE <条件> LIMIT <N>)`
+```sql
+-- 分批删除避免锁表
+DELETE FROM logs WHERE id IN (
+    SELECT id FROM logs WHERE created_at < '2023-01-01' LIMIT 1000
+);
+```
+
+---
+
+## 并发问题
+
+**换行写法：使用 SELECT FOR UPDATE 防止丢失更新**
+`SELECT ... FOR UPDATE`
+```sql
+-- 先锁定行再更新防止丢失更新
+BEGIN;
+SELECT balance FROM accounts WHERE user_id = 1 FOR UPDATE;
+UPDATE accounts SET balance = balance - 100 WHERE user_id = 1;
+COMMIT;
+```
+
+**换行写法：使用乐观锁防止丢失更新**
+`UPDATE <表名> SET <列名> = <值>, version = version + 1 WHERE id = <值> AND version = <版本>`
+```sql
+-- 使用版本号实现乐观锁
+UPDATE products SET stock = stock - 1, version = version + 1
+WHERE id = 1 AND version = 10;
+```
+
+**换行写法：使用 SERIALIZABLE 防止幻读**
+`SET TRANSACTION ISOLATION LEVEL SERIALIZABLE`
+```sql
+-- 使用可序列化隔离级别防止幻读
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+SELECT COUNT(*) FROM orders WHERE user_id = 1;
+INSERT INTO orders (user_id, amount) VALUES (1, 100);
+COMMIT;
+```

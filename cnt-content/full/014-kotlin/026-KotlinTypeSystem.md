@@ -2141,7 +2141,7 @@ val content = fileResource.use { it.readBytes() }
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -2152,7 +2152,7 @@ class Container<T>(var value: T)
 val c: Container<Any> = Container<String>("hello")
 ```
 
-**答案**：不能编译。`Container` 是不变的（默认），即使 `String` 是 `Any` 的子类型，`Container<String>` 也不是 `Container<Any>` 的子类型。
+**解析讲解**：不能编译。`Container` 是不变的（默认），即使 `String` 是 `Any` 的子类型，`Container<String>` 也不是 `Container<Any>` 的子类型。
 
 **题目 2**：以下代码输出什么？
 
@@ -2161,7 +2161,7 @@ val list: List<Any> = listOf("a", "b", "c")
 println(list.first()::class)
 ```
 
-**答案**：输出 `class kotlin.String`。`List<out E>` 协变，`listOf("a", "b", "c")` 返回 `List<String>`，可以赋给 `List<Any>`。但运行时元素类型仍是 `String`。
+**解析讲解**：输出 `class kotlin.String`。`List<out E>` 协变，`listOf("a", "b", "c")` 返回 `List<String>`，可以赋给 `List<Any>`。但运行时元素类型仍是 `String`。
 
 ### 10.2 型变题
 
@@ -2173,7 +2173,7 @@ interface Consumer<T> { fun consume(item: T) }
 interface Container<T> { fun get(): T; fun set(v: T) }
 ```
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 interface Producer<out T> { fun produce(): T }  // 协变：T 只在 out 位置
@@ -2187,7 +2187,7 @@ interface Container<T> { fun get(): T; fun set(v: T) }  // 不变：T 同时在 
 class Box<out T>(var value: T)  // 注意 var
 ```
 
-**答案**：不能编译。`var value: T` 让 T 在 in 位置（setter），与 `out T` 矛盾。应改为 `val` 或去掉 `out`。
+**解析讲解**：不能编译。`var value: T` 让 T 在 in 位置（setter），与 `out T` 矛盾。应改为 `val` 或去掉 `out`。
 
 ### 10.3 星投影题
 
@@ -2198,7 +2198,7 @@ val list: List<*> = listOf(1, "two", 3.0)
 list.forEach { println(it::class) }
 ```
 
-**答案**：输出 `class kotlin.Int`、`class kotlin.String`、`class kotlin.Double`。`List<*>` 只是类型未知，元素的实际类型不变。
+**解析讲解**：输出 `class kotlin.Int`、`class kotlin.String`、`class kotlin.Double`。`List<*>` 只是类型未知，元素的实际类型不变。
 
 **题目 6**：以下代码是否能编译？
 
@@ -2207,7 +2207,7 @@ val list: MutableList<*> = mutableListOf(1, 2, 3)
 list.add(4)
 ```
 
-**答案**：不能编译。`MutableList<*>` 是星投影，不能写入元素（除了 `null`，但 Kotlin 不允许 `add(null)` 在 `MutableList<*>` 上）。
+**解析讲解**：不能编译。`MutableList<*>` 是星投影，不能写入元素（除了 `null`，但 Kotlin 不允许 `add(null)` 在 `MutableList<*>` 上）。
 
 ### 10.4 reified 题
 
@@ -2217,11 +2217,11 @@ list.add(4)
 fun <reified T> foo() = T::class
 ```
 
-**答案**：`reified` 只能在 `inline` 函数中使用。应改为 `inline fun <reified T> foo() = T::class`。
+**解析讲解**：`reified` 只能在 `inline` 函数中使用。应改为 `inline fun <reified T> foo() = T::class`。
 
 **题目 8**：实现一个 `filterByType` 函数，从列表中筛选指定类型的元素。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 inline fun <reified T : Any> List<Any?>.filterByType(): List<T> = filterIsInstance<T>()
@@ -2232,7 +2232,7 @@ val ints: List<Int> = list.filterByType()  // [1, 3]
 val strings: List<String> = list.filterByType()  // ["two", "four"]
 ```
 
-### 10.5 综合题
+### 综合题知识点讲解
 
 **题目 9**：设计一个类型安全的 `Cache<K, V>` 类，要求：
 
@@ -2241,7 +2241,7 @@ val strings: List<String> = list.filterByType()  // ["two", "four"]
 - 提供 `get(key: K): V?` 方法。
 - 不提供 `put` 方法（因为协变不能写）。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 interface Cache<in K : Any, out V> {
@@ -2267,7 +2267,7 @@ val v: Any? = cache.get("a")  // hello
 
 **题目 10**：解释为什么 `Array<String>` 不能赋给 `Array<Any>`，而 `List<String>` 可以赋给 `List<Any>`。
 
-**答案**：
+**解析讲解**：
 
 - `Array` 在 Kotlin 中是可变的（`Array<T>` 有 `set(index, value: T)`），所以必须不变。如果允许协变，则可以通过 `Array<Any>` 写入非 String 元素，导致 `ArrayStoreException`（Java 的问题）。
 - `List` 在 Kotlin 中是只读的（`List<out E>` 协变），没有 `set` 方法，所以可以安全协变。

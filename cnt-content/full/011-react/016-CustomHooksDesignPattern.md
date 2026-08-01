@@ -163,14 +163,19 @@ updateHook() → 取下一个节点 → 读取 memoizedState
 
 ### 4.2 useEffect 与 useLayoutEffect 的时序
 
-```
-Render Phase（可中断）
-  ↓
-Commit Phase（同步）
-  ├── DOM 更新
-  ├── useLayoutEffect 同步执行
-  ├── 浏览器 paint
-  └── useEffect 异步执行（下一帧前）
+```mermaid
+flowchart TD
+    T0["Render Phase（可中断）"]
+    T1["Commit Phase（同步）"]
+    T2["DOM 更新"]
+    T3["useLayoutEffect 同步执行"]
+    T4["浏览器 paint"]
+    T5["useEffect 异步执行（下一帧前）"]
+    T0 --> T1
+    T1 --> T2
+    T1 --> T3
+    T1 --> T4
+    T1 --> T5
 ```
 
 设一次更新触发 $n$ 个 layout effect 与 $m$ 个 effect：
@@ -1356,13 +1361,19 @@ module.exports = {
 
 ### 8.5 Monorepo 组织
 
-```
-packages/
-├── hooks-core/         # 基础 Hook（useToggle, usePrevious）
-├── hooks-data/         # 数据相关（useFetch, useLocalStorage）
-├── hooks-dom/          # DOM 相关（useEventListener, useMediaQuery）
-├── hooks-form/         # 表单相关（useForm, useFieldArray）
-└── hooks-async/        # 异步相关（useAsync, useInterval）
+```mermaid
+flowchart TD
+    T0["packages/"]
+    T1["hooks-core/         # 基础 Hook（useToggle, usePrevious）"]
+    T2["hooks-data/         # 数据相关（useFetch, useLocalStorage）"]
+    T3["hooks-dom/          # DOM 相关（useEventListener, useMediaQuery）"]
+    T4["hooks-form/         # 表单相关（useForm, useFieldArray）"]
+    T5["hooks-async/        # 异步相关（useAsync, useInterval）"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
 ```
 
 ---
@@ -1466,9 +1477,9 @@ Notion 的富文本编辑器使用 30+ 自定义 Hook 组织逻辑：
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **Q1.** 以下哪个**违反**了 Hooks 规则？
 
@@ -1477,14 +1488,11 @@ B. 在自定义 Hook 中调用 `useEffect`
 C. 在 `if` 条件中调用 `useMemo`
 D. 在 `useEffect` 的回调中调用 `setState`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
 Hooks 必须在组件函数体顶层调用，不能放在条件、循环、嵌套函数中。这会导致 Hook 调用顺序在多次渲染间不一致，破坏 React 内部的 Hook 链表映射。
 
-</details>
 
 **Q2.** 关于 `useEffect` 的清理函数（cleanup），下列说法**正确**的是？
 
@@ -1493,14 +1501,11 @@ B. 清理函数在下次 effect 执行前调用
 C. 清理函数与 effect 并行执行
 D. 清理函数仅在依赖变化时执行
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `useEffect` 的清理时序：mount 时执行 effect → 依赖变化时，先执行上次 effect 的清理，再执行新 effect → unmount 时执行最后清理。所以"下次 effect 执行前"是正确的。
 
-</details>
 
 **Q3.** 自定义 Hook 命名必须以 `use` 开头的原因是？
 
@@ -1509,14 +1514,11 @@ B. React Linter 据此识别并应用 Hooks 规则
 C. TypeScript 类型推导需要
 D. 浏览器解析需要
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 ESLint 的 `eslint-plugin-react-hooks` 通过函数名前缀 `use` 判断是否为 Hook，从而应用 rules-of-hooks 与 exhaustive-deps 规则。React DevTools 也据此在 Profiler 中识别 Hook。
 
-</details>
 
 **Q4.** 下列哪种场景适合用 `useRef` 而非 `useState`？
 
@@ -1525,14 +1527,11 @@ B. 需要在事件处理器中读取最新值
 C. 需要在 JSX 中显示的文本
 D. 需要在 props 中传递的状态
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `useRef` 的 `.current` 变化不会触发重渲染，适合存储"不参与渲染但需要在事件中读取"的值（如定时器 ID、最新 props 快照）。`useState` 用于"参与渲染"的状态。
 
-</details>
 
 **Q5.** `useSyncExternalStore` 解决的核心问题是？
 
@@ -1541,71 +1540,51 @@ B. 并发渲染下的 tearing（撕裂）问题
 C. 闭包陷阱
 D. 依赖数组遗漏
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 在并发渲染中，多个组件可能从同一外部 store 读取到不同快照（tearing）。`useSyncExternalStore` 通过在每次 render 与 paint 前校验快照一致性，强制同步重渲染，消除 tearing。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **Q1.** React 内部将每个组件的 Hook 调用维护为一个 `______` 数据结构，以保证 Hook 调用顺序与状态映射正确。
 
-<details>
-<summary>答案</summary>
 
 链表（linked list）
 
-</details>
 
 **Q2.** `useLayoutEffect` 与 `useEffect` 的关键差异在于执行时机：前者在 `______` 阶段同步执行，后者在 `______` 后异步执行。
 
-<details>
-<summary>答案</summary>
 
 DOM 更新后、浏览器 paint 前；浏览器 paint 后
 
-</details>
 
 **Q3.** 自定义 Hook 返回多个值时，推荐返回 `______` 或 `______`，前者便于解构重命名，后者便于稳定引用。
 
-<details>
-<summary>答案</summary>
 
 元组（tuple，如 `[value, setValue]`）；对象（用 useMemo 稳定）
 
-</details>
 
 **Q4.** 解决闭包陷阱的三种方法是 `______`、`______`、`______`。
 
-<details>
-<summary>答案</summary>
 
 函数式更新（setState((prev) => next)）、useRef 持久化最新值、useEffect 完整依赖数组
 
-</details>
 
 **Q5.** 在 SSR 场景下，自定义 Hook 中访问 `window`、`document` 等 DOM API 时，应先检查 `______`。
 
-<details>
-<summary>答案</summary>
 
 `typeof window !== 'undefined'` 或 `typeof document !== 'undefined'`
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **Q1.** 实现一个 `useInterval` Hook，要求：
 1. 支持动态调整 delay（设为 null 时暂停）
 2. 在 unmount 时清理定时器
 3. 回调函数始终引用最新值（无闭包陷阱）
 
-<details>
-<summary>参考答案</summary>
 
 ```tsx
 import { useRef, useEffect } from 'react';
@@ -1650,7 +1629,6 @@ function Timer() {
 }
 ```
 
-</details>
 
 **Q2.** 实现一个 `useKeyPress` Hook，监听指定按键的按下状态：
 
@@ -1658,8 +1636,6 @@ function Timer() {
 const isEnterPressed = useKeyPress('Enter');
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```tsx
 import { useState, useEffect } from 'react';
@@ -1688,15 +1664,12 @@ export function useKeyPress(targetKey: string): boolean {
 }
 ```
 
-</details>
 
 **Q3.** 实现一个 `useDebounce` 的回调版本 `useDebouncedCallback`，要求：
 1. 返回稳定引用的 debounced 函数
 2. 支持 `.cancel()` 与 `.flush()` 方法
 3. TypeScript 类型完整
 
-<details>
-<summary>参考答案</summary>
 
 ```tsx
 import { useRef, useCallback, useEffect } from 'react';
@@ -1758,43 +1731,44 @@ export function useDebouncedCallback<Args extends any[]>(
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **Q1.** 为什么 React 选择"显式依赖数组"而非 Vue 的"自动依赖追踪"？请从可预测性、性能、并发兼容性三个角度论述。
 
-<details>
-<summary>参考思路</summary>
 
 1. **可预测性**：显式依赖让开发者明确知道副作用何时触发，便于调试；Vue 的 Proxy 追踪对开发者透明，但出问题时难以排查。
 2. **性能**：Vue 的自动追踪有运行时开销（Proxy 拦截）；React 的依赖数组是 O(n) 比较，n 通常很小（5-10 个依赖）。
 3. **并发兼容**：React 的并发模式下，渲染可能被中断与重启，自动追踪难以保证一致性；显式依赖让"何时触发"完全由开发者控制。
 4. **权衡**：React Compiler 在编译期自动分析依赖，达到"无显式依赖数组"的便利，同时保留运行时的可预测性。
 
-</details>
 
 **Q2.** 设计一个企业级 Hook 库的目录结构、版本策略与发布流程。
 
-<details>
-<summary>参考思路</summary>
 
 目录结构：
-```
-packages/hooks/
-├── src/
-│   ├── useToggle.ts
-│   ├── useFetch.ts
-│   ├── useLocalStorage.ts
-│   └── index.ts
-├── tests/
-│   ├── useToggle.test.ts
-│   └── useFetch.test.ts
-├── docs/
-│   └── stories/
-├── package.json
-├── tsconfig.json
-└── README.md
+```mermaid
+flowchart TD
+    T0["packages/hooks/"]
+    T1["src/"]
+    T2["useToggle.ts"]
+    T3["useFetch.ts"]
+    T4["useLocalStorage.ts"]
+    T5["index.ts"]
+    T6["tests/"]
+    T7["useToggle.test.ts"]
+    T8["useFetch.test.ts"]
+    T9["docs/"]
+    T10["stories/"]
+    T11["package.json"]
+    T12["tsconfig.json"]
+    T13["README.md"]
+    T0 --> T1
+    T5 --> T6
+    T8 --> T9
+    T10 --> T11
+    T10 --> T12
+    T10 --> T13
 ```
 
 版本策略：
@@ -1808,12 +1782,9 @@ packages/hooks/
 3. CI 跑测试 → 发布到 npm → 创建 GitHub Release
 4. 文档站自动构建部署
 
-</details>
 
 **Q3.** 在 Next.js App Router 中，自定义 Hook 如何与 Server Components 共存？哪些 Hook 不能在 Server Components 中使用？
 
-<details>
-<summary>参考思路</summary>
 
 Server Components 限制：
 - 不能用 `useState`、`useReducer`（无客户端状态）
@@ -1831,7 +1802,6 @@ Server Components 限制：
 - 客户端逻辑封装在 `'use client'` 组件中
 - 通过 props 将 server data 传给 client hooks
 
-</details>
 
 ---
 
@@ -1917,16 +1887,16 @@ Server Components 限制：
 
 | # | 检查项 | 通过 |
 |---|--------|------|
-| 1 | 以 `use` 开头命名 | ☐ |
-| 2 | 单一职责，一个 Hook 只做一件事 | ☐ |
-| 3 | 所有 useEffect 依赖完整 | ☐ |
-| 4 | 副作用返回清理函数 | ☐ |
-| 5 | 返回值稳定（元组或 useMemo 稳定对象） | ☐ |
-| 6 | TypeScript 类型完整 | ☐ |
-| 7 | SSR 兼容（typeof window 检查） | ☐ |
-| 8 | 单元测试覆盖 mount/update/unmount | ☐ |
-| 9 | 文档注明参数、返回值、副作用 | ☐ |
-| 10 | 不引入不必要的依赖 | ☐ |
+| 1 | 以 `use` 开头命名 | [ ] |
+| 2 | 单一职责，一个 Hook 只做一件事 | [ ] |
+| 3 | 所有 useEffect 依赖完整 | [ ] |
+| 4 | 副作用返回清理函数 | [ ] |
+| 5 | 返回值稳定（元组或 useMemo 稳定对象） | [ ] |
+| 6 | TypeScript 类型完整 | [ ] |
+| 7 | SSR 兼容（typeof window 检查） | [ ] |
+| 8 | 单元测试覆盖 mount/update/unmount | [ ] |
+| 9 | 文档注明参数、返回值、副作用 | [ ] |
+| 10 | 不引入不必要的依赖 | [ ] |
 
 ## 附录 B：常用 Hook 速查
 
@@ -1963,3 +1933,382 @@ Server Components 限制：
 > **本章小结**：自定义 Hook 是 React 函数式复用的核心抽象。掌握 Hook 的链表结构、闭包模型与并发适配，方能设计出高复用、高可测、高可维护的 Hook 库。从基础的 `useToggle` 到高级的 `useSyncExternalStore`，每个 Hook 都应遵循单一职责、显式依赖、稳定返回的三原则。
 
 **下一章建议**：深入阅读 `react/Hooks原理.md` 理解链表实现，`react/状态管理方案对比.md` 对比 Hook 与状态库的边界，`react/并发渲染与可中断更新.md` 掌握 useTransition 与 useSyncExternalStore。
+## 自定义 Hook 基本结构
+
+**基本写法：以 use 开头封装状态逻辑**
+`function use<名称>(<参数>) { return <结果>; }`
+```tsx
+// 复用计数逻辑
+function useCounter(initial = 0) {
+  const [count, setCount] = useState(initial);
+  const inc = () => setCount(c => c + 1);
+  return { count, inc };
+}
+```
+
+---
+
+## 返回值约定
+
+**基本写法：返回对象便于扩展**
+`return { <字段1>, <字段2> };`
+```tsx
+// 调用方按需取用
+return { value, setValue, reset };
+```
+
+---
+
+**基本写法：返回数组便于重命名**
+`return [<值1>, <值2>];`
+```tsx
+// 类似 useState 风格
+return [state, setState];
+```
+
+---
+
+## 依赖收集规则
+
+**基本写法：在 Hook 内调用其他 Hooks 并声明依赖**
+`useEffect(() => <副作用>, [<依赖>])`
+```tsx
+// 依赖必须完整声明
+function useLog(value) {
+  useEffect(() => console.log(value), [value]);
+}
+```
+
+---
+
+## useToggle 布尔切换
+
+**基本写法：封装布尔状态切换**
+`const [<值>, <切换>] = useToggle(<初值>)`
+```tsx
+// 弹窗开关复用
+function useToggle(initial = false) {
+  const [on, setOn] = useState(initial);
+  const toggle = useCallback(() => setOn(v => !v), []);
+  return [on, toggle];
+}
+```
+
+---
+
+## usePrevious 获取上一帧值
+
+**基本写法：通过 ref 保存上次渲染值**
+`const <上一值> = usePrevious(<值>)`
+```tsx
+// 对比前后值变化
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => { ref.current = value; });
+  return ref.current;
+}
+```
+
+---
+
+## useDebounce 防抖
+
+**基本写法：延迟处理高频输入**
+`const <防抖值> = useDebounce(<值>, <延迟毫秒>)`
+```tsx
+// 搜索框防抖
+function useDebounce(value, delay = 300) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
+```
+
+---
+
+## useThrottle 节流
+
+**基本写法：限制调用频率**
+`const <节流值> = useThrottle(<值>, <间隔毫秒>)`
+```tsx
+// 滚动位置节流
+function useThrottle(value, limit = 200) {
+  const [last, setLast] = useState(value);
+  const [t, setT] = useState(0);
+  useEffect(() => {
+    const now = Date.now();
+    if (now - t >= limit) {
+      setLast(value);
+      setT(now);
+    }
+  }, [value, limit, t]);
+  return last;
+}
+```
+
+---
+
+## useLocalStorage 持久化状态
+
+**基本写法：状态同步到 localStorage**
+`const [<值>, <设置>] = useLocalStorage(<键>, <初值>)`
+```tsx
+// 刷新后状态保留
+function useLocalStorage(key, initial) {
+  const [value, setValue] = useState(() => {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : initial;
+  });
+  useEffect(() => localStorage.setItem(key, JSON.stringify(value)), [key, value]);
+  return [value, setValue];
+}
+```
+
+---
+
+## useFetch 数据请求
+
+**基本写法：封装 fetch 与状态**
+`const { <数据>, <加载>, <错误> } = useFetch(<URL>)`
+```tsx
+// 通用请求复用
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    fetch(url).then(r => r.json()).then(setData).catch(setError).finally(() => setLoading(false));
+  }, [url]);
+  return { data, loading, error };
+}
+```
+
+---
+
+## useEventListener 事件监听
+
+**基本写法：安全绑定与解绑事件**
+`useEventListener(<目标>, <事件>, <处理>, [<依赖>])`
+```tsx
+// 自动清理监听
+function useEventListener(target, event, handler, deps = []) {
+  useEffect(() => {
+    target.addEventListener(event, handler);
+    return () => target.removeEventListener(event, handler);
+  }, [target, event, handler, ...deps]);
+}
+```
+
+---
+
+## useWindowSize 视口尺寸
+
+**基本写法：监听窗口变化返回尺寸**
+`const { <宽>, <高> } = useWindowSize()`
+```tsx
+// 响应式断点判断
+function useWindowSize() {
+  const [size, setSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+  useEffect(() => {
+    const onResize = () => setSize({ width: window.innerWidth, height: window.innerHeight });
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return size;
+}
+```
+
+---
+
+## useMediaQuery 媒体查询
+
+**基本写法：返回是否匹配媒体查询**
+`const <是否匹配> = useMediaQuery(<查询字符串>)`
+```tsx
+// 暗色模式检测
+function useMediaQuery(query) {
+  const [match, setMatch] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const onChange = () => setMatch(mql.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, [query]);
+  return match;
+}
+```
+
+---
+
+## useInterval 定时器
+
+**基本写法：声明式定时器**
+`useInterval(<回调>, <间隔毫秒>)`
+```tsx
+// 每秒更新避免内存泄漏
+function useInterval(callback, delay) {
+  const saved = useRef(callback);
+  useEffect(() => { saved.current = callback; });
+  useEffect(() => {
+    const id = setInterval(() => saved.current(), delay);
+    return () => clearInterval(id);
+  }, [delay]);
+}
+```
+
+---
+
+## useClickAway 点击外部
+
+**基本写法：点击元素外部触发回调**
+`useClickAway(<ref>, <回调>)`
+```tsx
+// 关闭下拉菜单
+function useClickAway(ref, handler) {
+  useEffect(() => {
+    const onClick = e => { if (ref.current && !ref.current.contains(e.target)) handler(); };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, [ref, handler]);
+}
+```
+
+---
+
+## useIntersectionObserver 曝光检测
+
+**基本写法：检测元素是否进入视口**
+`const [<ref>, <是否可见>] = useIntersectionObserver(<选项>)`
+```tsx
+// 无限滚动触发加载
+function useIntersectionObserver(options) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), options);
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [options]);
+  return [ref, visible];
+}
+```
+
+---
+
+## useTitle 修改标题
+
+**基本写法：动态设置文档标题**
+`useTitle(<标题>)`
+```tsx
+// 路由切换更新标题
+function useTitle(title) {
+  useEffect(() => { document.title = title; }, [title]);
+}
+```
+
+---
+
+## useMount useUnmount 一次性副作用
+
+**基本写法：仅挂载或卸载时执行**
+`useMount(<回调>)`
+```tsx
+// 简化语义
+function useMount(fn) {
+  useEffect(() => fn(), []);
+}
+```
+
+---
+
+**基本写法：卸载清理**
+`useUnmount(<清理回调>)`
+```tsx
+// 仅在卸载时执行
+function useUnmount(fn) {
+  const ref = useRef(fn);
+  ref.current = fn;
+  useEffect(() => () => ref.current(), []);
+}
+```
+
+---
+
+## 组合多个 Hooks
+
+**基本写法：Hook 内调用其他 Hook**
+`function use<名称>() { const <a> = use<A>(); const <b> = use<B>(); return { <a>, <b> }; }`
+```tsx
+// 组合防抖与请求
+function useSearch(keyword) {
+  const debounced = useDebounce(keyword, 300);
+  return useFetch(`/api?q=${debounced}`);
+}
+```
+
+---
+
+## 参数解构与默认值
+
+**基本写法：接收配置对象**
+`function use<名称>({ <选项1> = <默认1>, <选项2> = <默认2> } = {})`
+```tsx
+// 提供灵活配置
+function usePagination({ pageSize = 10, initial = 1 } = {}) {
+  const [page, setPage] = useState(initial);
+  return { page, pageSize, setPage };
+}
+```
+
+---
+
+## Hook 命名约束
+
+**基本写法：必须以 use 开头**
+`function use<名称>(<参数>) { }`
+```tsx
+// 否则 eslint-plugin-react-hooks 无法识别
+function useAuth() { /* ... */ }
+```
+
+---
+
+## 条件 Hook 禁止
+
+**基本写法：Hook 不可在条件或循环中调用**
+`if (<条件>) { useState(); } // 错误`
+```tsx
+// 正确做法：在条件内使用值
+const [data] = useState(null);
+if (cond) { process(data); }
+```
+
+---
+
+## useReducer 封装复杂状态
+
+**基本写法：用 reducer 抽象状态机**
+`const [<状态>, <dispatch>] = useReducer(<reducer>, <初值>)`
+```tsx
+// 多字段关联更新封装为 Hook
+function useForm(initial) {
+  const [state, dispatch] = useReducer((s, a) => ({ ...s, ...a }), initial);
+  return [state, dispatch];
+}
+```
+
+---
+
+## 自定义 Hook 测试
+
+**基本写法：用 renderHook 测试**
+`const { result } = renderHook(() => use<名称>())`
+```tsx
+// 测试 Hook 输出
+import { renderHook } from '@testing-library/react';
+const { result } = renderHook(() => useCounter(5));
+expect(result.current.count).toBe(5);
+```

@@ -15,10 +15,11 @@ related:
 prerequisites:
   - kotlin/概述与环境配置
 ---
+# Kotlin 协程调度器与上下文
 
-# 协程调度器与上下文（Coroutine Dispatchers and Contexts）
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.005、Stanford CS193P、CMU 15-410 教学水准，系统讲解 Kotlin 协程的调度器（Dispatcher）与上下文（CoroutineContext）从设计哲学到 JVM 字节码实现的完整链路。内容覆盖 Kotlin 1.3 至 2.0 的演进，配套企业级生产代码、跨语言对比、形式化推导与习题解析。
+---
 
 ## 目录
 
@@ -1832,9 +1833,9 @@ class UserService {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1.1**：以下关于 `Dispatchers.Default` 的描述，正确的是？
 
@@ -1843,9 +1844,9 @@ B. `Dispatchers.Default` 的线程数等于 `Runtime.getRuntime().availableProce
 C. `Dispatchers.Default` 与 `Dispatchers.IO` 使用完全独立的线程池。
 D. `Dispatchers.Default` 不能用于 CPU 密集型任务。
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`Dispatchers.Default` 专为 CPU 密集型任务设计，线程数等于 CPU 核数（最小为 2）。`Dispatchers.IO` 专为 IO 密集型任务设计，默认线程数上限为 64。两者共享底层线程池（`CoroutineScheduler`），但有不同的任务队列与并行度限制。
+**解析讲解**：`Dispatchers.Default` 专为 CPU 密集型任务设计，线程数等于 CPU 核数（最小为 2）。`Dispatchers.IO` 专为 IO 密集型任务设计，默认线程数上限为 64。两者共享底层线程池（`CoroutineScheduler`），但有不同的任务队列与并行度限制。
 
 **题目 1.2**：关于 `withContext`，以下描述错误的是？
 
@@ -1854,9 +1855,9 @@ B. `withContext` 是 suspend 函数，只能在协程中调用。
 C. `withContext(Dispatchers.IO)` 会阻塞调用者线程。
 D. `withContext` 支持嵌套调用，内层完成后恢复到外层上下文。
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`withContext(Dispatchers.IO)` 不会阻塞调用者线程，而是将代码块调度到 IO 线程池执行。调用者线程在 `withContext` 内部协程挂起期间可以执行其他任务。
+**解析讲解**：`withContext(Dispatchers.IO)` 不会阻塞调用者线程，而是将代码块调度到 IO 线程池执行。调用者线程在 `withContext` 内部协程挂起期间可以执行其他任务。
 
 **题目 1.3**：关于结构化并发，以下描述正确的是？
 
@@ -1865,9 +1866,9 @@ B. 子协程抛出未捕获异常时，父协程会被取消（除非使用 `Sup
 C. 父协程在子协程完成后才能完成。
 D. 结构化并发要求所有协程必须使用 `GlobalScope`。
 
-**答案**：B、C
+**解析讲解**：B、C
 
-**解析**：结构化并发的核心：父协程取消时所有子协程被取消（A 错误）；子协程异常传播给父协程导致取消（B 正确）；父协程等待所有子协程完成（C 正确）；结构化并发要求使用 `CoroutineScope`，禁止 `GlobalScope`（D 错误）。
+**解析讲解**：结构化并发的核心：父协程取消时所有子协程被取消（A 错误）；子协程异常传播给父协程导致取消（B 正确）；父协程等待所有子协程完成（C 正确）；结构化并发要求使用 `CoroutineScope`，禁止 `GlobalScope`（D 错误）。
 
 **题目 1.4**：关于 `Dispatchers.Unconfined`，以下描述错误的是？
 
@@ -1876,9 +1877,9 @@ B. `Dispatchers.Unconfined` 在当前线程直接执行协程，直到第一个�
 C. `Dispatchers.Unconfined` 是默认调度器。
 D. `Dispatchers.Unconfined` 恢复时在调用 `resume` 的线程执行。
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`Dispatchers.Unconfined` 不是默认调度器，默认调度器是 `Dispatchers.Default`。`Unconfined` 是特殊调度器，适用于测试或特殊场景，不应在生产代码中使用。
+**解析讲解**：`Dispatchers.Unconfined` 不是默认调度器，默认调度器是 `Dispatchers.Default`。`Unconfined` 是特殊调度器，适用于测试或特殊场景，不应在生产代码中使用。
 
 **题目 1.5**：关于 `CoroutineContext`，以下描述正确的是？
 
@@ -1887,43 +1888,43 @@ B. `CoroutineContext` 通过 `+` 运算符组合，右侧元素覆盖左侧同�
 C. `CoroutineContext` 的键是字符串。
 D. `CoroutineContext` 不能包含多个相同类型的元素。
 
-**答案**：B、D
+**解析讲解**：B、D
 
-**解析**：`CoroutineContext` 是无序键值对集合（A 错误）；通过 `+` 组合，右侧覆盖左侧同键（B 正确）；键是 `CoroutineContext.Key` 类型（C 错误）；每个键只能对应一个元素（D 正确）。
+**解析讲解**：`CoroutineContext` 是无序键值对集合（A 错误）；通过 `+` 组合，右侧覆盖左侧同键（B 正确）；键是 `CoroutineContext.Key` 类型（C 错误）；每个键只能对应一个元素（D 正确）。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 2.1**：Kotlin 协程的四大内置调度器分别是 ________、________、________、________。
 
-**答案**：`Dispatchers.Default`、`Dispatchers.IO`、`Dispatchers.Main`、`Dispatchers.Unconfined`
+**解析讲解**：`Dispatchers.Default`、`Dispatchers.IO`、`Dispatchers.Main`、`Dispatchers.Unconfined`
 
-**解析**：四大内置调度器分别用于 CPU 密集型、IO 密集型、UI 主线程、不限制（当前线程）场景。
+**解析讲解**：四大内置调度器分别用于 CPU 密集型、IO 密集型、UI 主线程、不限制（当前线程）场景。
 
 **题目 2.2**：`Dispatchers.IO` 的默认线程数上限是 ________，可通过系统属性 ________ 调整。
 
-**答案**：64，`kotlinx.coroutines.io.parallelism`
+**解析讲解**：64，`kotlinx.coroutines.io.parallelism`
 
-**解析**：`Dispatchers.IO` 默认最多 64 个线程，可通过 JVM 系统属性 `kotlinx.coroutines.io.parallelism` 调整。
+**解析讲解**：`Dispatchers.IO` 默认最多 64 个线程，可通过 JVM 系统属性 `kotlinx.coroutines.io.parallelism` 调整。
 
 **题目 2.3**：`CoroutineContext` 的核心元素包括 ________、________、________、________、________。
 
-**答案**：`Job`、`CoroutineDispatcher`、`CoroutineName`、`CoroutineExceptionHandler`、`CoroutineId`（调试用）
+**解析讲解**：`Job`、`CoroutineDispatcher`、`CoroutineName`、`CoroutineExceptionHandler`、`CoroutineId`（调试用）
 
-**解析**：`CoroutineContext` 包含 `Job`（协程句柄）、`CoroutineDispatcher`（调度器）、`CoroutineName`（名称）、`CoroutineExceptionHandler`（异常处理器）等元素。
+**解析讲解**：`CoroutineContext` 包含 `Job`（协程句柄）、`CoroutineDispatcher`（调度器）、`CoroutineName`（名称）、`CoroutineExceptionHandler`（异常处理器）等元素。
 
 **题目 2.4**：`suspend` 函数经过 CPS 转换后，编译为带 ________ 参数的方法，返回值类型为 ________。
 
-**答案**：`Continuation`、`Any?`
+**解析讲解**：`Continuation`、`Any?`
 
-**解析**：CPS 转换将 `suspend fun f(): T` 转换为 `fun f(continuation: Continuation<T>): Any?`，返回值可能是真实结果或 `COROUTINE_SUSPENDED` 标记。
+**解析讲解**：CPS 转换将 `suspend fun f(): T` 转换为 `fun f(continuation: Continuation<T>): Any?`，返回值可能是真实结果或 `COROUTINE_SUSPENDED` 标记。
 
 **题目 2.5**：`limitedParallelism(n)` 方法用于 ________，返回值类型是 ________。
 
-**答案**：限制调度器的并行度为 n，`LimitedDispatcher`
+**解析讲解**：限制调度器的并行度为 n，`LimitedDispatcher`
 
-**解析**：`Dispatchers.IO.limitedParallelism(4)` 返回一个新调度器，最多并发 4 个任务，用于资源隔离。
+**解析讲解**：`Dispatchers.IO.limitedParallelism(4)` 返回一个新调度器，最多并发 4 个任务，用于资源隔离。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 3.1**：实现一个并行的图片下载器，要求：
 
@@ -1932,7 +1933,7 @@ D. `CoroutineContext` 不能包含多个相同类型的元素。
 - 限制最大并发下载数为 5。
 - 返回所有图片的本地路径。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -1983,7 +1984,7 @@ class ImageDownloader(
 
 **题目 3.2**：实现一个带超时与重试的网络请求函数。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -2018,7 +2019,7 @@ suspend fun fetchData(): Data = retryRequest {
 
 **题目 3.3**：实现一个自定义调度器，支持任务优先级。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -2082,7 +2083,7 @@ fun CoroutinePriority(priority: Int) = PriorityContext(priority)
 
 **题目 4.1**：为什么 Kotlin 协程选择 CPS 转换而非绿色线程（Green Thread）？请从实现复杂度、跨平台、性能三个角度论证。
 
-**参考答案**：
+**解析讲解**：
 
 - **实现复杂度**：CPS 转换在编译期完成，运行时无需特殊 VM 支持。绿色线程需要 JVM 修改，影响整个 JVM 生态（Project Loom 历时 10+ 年才发布）。
 - **跨平台**：CPS 转换是语言级特性，可在 JVM、JS、Native、Wasm 上一致实现。绿色线程依赖运行时，不同平台实现差异大。
@@ -2092,7 +2093,7 @@ fun CoroutinePriority(priority: Int) = PriorityContext(priority)
 
 **题目 4.2**：`Dispatchers.IO` 与 `Dispatchers.Default` 共享线程池的设计有哪些优劣？
 
-**参考答案**：
+**解析讲解**：
 
 **优势**：
 
@@ -2110,7 +2111,7 @@ fun CoroutinePriority(priority: Int) = PriorityContext(priority)
 
 **题目 4.3**：结构化并发相对传统线程池管理有哪些优势？
 
-**参考答案**：
+**解析讲解**：
 
 1. **生命周期绑定**：子协程生命周期绑定到父，避免"泄漏协程"。
 2. **取消传播**：父取消时所有子取消，无需手动管理。
@@ -2120,7 +2121,7 @@ fun CoroutinePriority(priority: Int) = PriorityContext(priority)
 
 **题目 4.4**：`async` 与 `launch` 的核心差异是什么？何时应该使用 `async`？
 
-**参考答案**：
+**解析讲解**：
 
 **核心差异**：
 
@@ -2141,7 +2142,7 @@ fun CoroutinePriority(priority: Int) = PriorityContext(priority)
 
 **题目 4.5**：JVM 21 的 Virtual Threads 对 Kotlin 协程有何影响？两者如何共存？
 
-**参考答案**：
+**解析讲解**：
 
 **影响**：
 
@@ -2157,7 +2158,7 @@ fun CoroutinePriority(priority: Int) = PriorityContext(priority)
 
 **题目 4.6**：设计一个协程调度器监控工具，能够实时显示所有活跃协程的上下文与状态。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -2224,7 +2225,7 @@ suspend fun <T> monitoredLaunch(
 - 下载进度实时上报。
 - 失败自动重试（最多 3 次）。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -2316,7 +2317,7 @@ class BadRepository {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 **问题**：
 
@@ -2466,18 +2467,29 @@ class GoodRepository {
 
 ### A.2 调度器选择决策树
 
-```
-是否是 UI 操作？
-├─ 是 → Dispatchers.Main
-└─ 否 → 是否是阻塞操作（IO、网络、数据库）？
-       ├─ 是 → Dispatchers.IO
-       │       └─ 是否需要限制并发？→ limitedParallelism(n)
-       └─ 否 → 是否是 CPU 密集型计算？
-              ├─ 是 → Dispatchers.Default
-              │       └─ 是否需要限制并发？→ limitedParallelism(n)
-              └─ 否 → 是否明确理解 Unconfined？
-                     ├─ 是 → Dispatchers.Unconfined
-                     └─ 否 → Dispatchers.Default（默认）
+```mermaid
+flowchart TD
+    T0["是否是 UI 操作？"]
+    T1["是 → Dispatchers.Main"]
+    T2["否 → 是否是阻塞操作（IO、网络、数据库）？"]
+    T3["是 → Dispatchers.IO"]
+    T4["是否需要限制并发？→ limitedParallelism(n)"]
+    T5["否 → 是否是 CPU 密集型计算？"]
+    T6["是 → Dispatchers.Default"]
+    T7["是否需要限制并发？→ limitedParallelism(n)"]
+    T8["否 → 是否明确理解 Unconfined？"]
+    T9["是 → Dispatchers.Unconfined"]
+    T10["否 → Dispatchers.Default（默认）"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T4 --> T5
+    T5 --> T6
+    T5 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
 ```
 
 ### A.3 关键 API 速查
@@ -2616,3 +2628,269 @@ Kotlin 协程调度器与上下文是 Kotlin 并发模型的核心组件，通�
 5. **可观测性**：通过 `CoroutineContext` 元素支持调试与监控。
 
 未来，随着 K2 编译器的成熟、Virtual Threads 的普及、WasmGC 的支持，Kotlin 协程将成为跨平台并发编程的首选方案，与 Go Goroutine、Java Virtual Threads、Rust async/await 形成多元化的并发编程生态。
+## 内置调度器
+
+**基本写法：默认调度器**
+`Dispatchers.Default`
+```kotlin
+// CPU 密集任务调度器
+launch(Dispatchers.Default) { compute() }
+```
+
+---
+
+**基本写法：IO 调度器**
+`Dispatchers.IO`
+```kotlin
+// 阻塞 IO 任务调度器
+launch(Dispatchers.IO) { readFile() }
+```
+
+---
+
+**基本写法：主线程调度器**
+`Dispatchers.Main`
+```kotlin
+// UI 主线程调度器（需平台依赖）
+launch(Dispatchers.Main) { updateUI() }
+```
+
+---
+
+**基本写法：不受限调度器**
+`Dispatchers.Unconfined`
+```kotlin
+// 在调用线程执行直到挂起
+launch(Dispatchers.Unconfined) { }
+```
+
+---
+
+## 自定义调度器
+
+**基本写法：单线程调度器**
+`newSingleThreadContext("<名称>")`
+```kotlin
+// 创建单线程调度器
+val dispatcher = newSingleThreadContext("worker")
+```
+
+---
+
+**基本写法：固定线程池调度器**
+`newFixedThreadPoolContext(<线程数>, "<名称>")`
+```kotlin
+// 创建固定大小线程池调度器
+val dispatcher = newFixedThreadPoolContext(4, "pool")
+```
+
+---
+
+**基本写法：基于 Executor**
+`<executor>.asCoroutineDispatcher()`
+```kotlin
+// 复用现有 Executor 作为调度器
+val d = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+```
+
+---
+
+## 切换调度器
+
+**基本写法：withContext 切换**
+`withContext(<dispatcher>) { }`
+```kotlin
+// 临时切换调度器
+withContext(Dispatchers.IO) { fetchData() }
+```
+
+---
+
+**基本写法：launch 指定调度器**
+`launch(<dispatcher>) { }`
+```kotlin
+// 启动时指定调度器
+launch(Dispatchers.Default) { heavy() }
+```
+
+---
+
+**基本写法：async 指定调度器**
+`async(<dispatcher>) { }`
+```kotlin
+// async 启动并指定调度器
+async(Dispatchers.IO) { fetch() }
+```
+
+---
+
+## 限流调度器
+
+**基本写法：限制并发数**
+`<dispatcher>.limitedParallelism(<并发数>)`
+```kotlin
+// 限制调度器并发数
+val limited = Dispatchers.IO.limitedParallelism(8)
+```
+
+---
+
+## CoroutineContext 元素
+
+**基本写法：获取当前上下文**
+`currentCoroutineContext()`
+```kotlin
+// 获取当前协程上下文
+val ctx = currentCoroutineContext()
+```
+
+---
+
+**基本写法：从上下文取元素**
+`<context>[<Key>]`
+```kotlin
+// 获取当前调度器
+val d = currentCoroutineContext()[CoroutineDispatcher]
+```
+
+---
+
+**基本写法：获取 Job**
+`coroutineContext[Job]`
+```kotlin
+// 获取当前协程 Job
+val job = coroutineContext[Job]
+```
+
+---
+
+**基本写法：获取名称**
+`coroutineContext[CoroutineName]`
+```kotlin
+// 获取协程名称
+val name = coroutineContext[CoroutineName]?.name
+```
+
+---
+
+## 上下文组合与传递
+
+**基本写法：组合上下文元素**
+`<ctx1> + <ctx2>`
+```kotlin
+// Job 与 Dispatcher 组合
+val ctx = Job() + Dispatchers.IO + CoroutineName("worker")
+```
+
+---
+
+**基本写法：移除上下文元素**
+`<ctx>.minusKey(<Key>)`
+```kotlin
+// 移除 Job 元素
+val newCtx = ctx.minusKey(Job)
+```
+
+---
+
+**基本写法：fold 遍历**
+`<ctx>.fold(<初始>) { <累加>, <元素> -> }`
+```kotlin
+// 遍历上下文所有元素
+ctx.fold(emptyList()) { acc, e -> acc + e }
+```
+
+---
+
+## 自定义上下文元素
+
+**基本写法：实现 CoroutineContext.Element**
+`class <类>(val <值>) : CoroutineContext.Element { companion object Key }`
+```kotlin
+// 自定义请求 ID 上下文
+class RequestId(val id: String) : CoroutineContext.Element {
+    companion object Key : CoroutineContext.Key<RequestId>
+    override val key = Key
+}
+```
+
+---
+
+**基本写法：注入自定义元素**
+`launch(<dispatcher> + <元素>) { }`
+```kotlin
+// 启动时注入请求 ID
+launch(Dispatchers.Default + RequestId("r-1")) { }
+```
+
+---
+
+## 线程局部变量
+
+**基本写法：CoroutineContext 存 ThreadLocal**
+`<threadLocal>.asContextElement(<值>)`
+```kotlin
+// ThreadLocal 跨挂起传递
+val tl = ThreadLocal<String>()
+launch(tl.asContextElement("ctx") + Dispatchers.IO) {
+    println(tl.get())
+}
+```
+
+---
+
+## 调度器异常处理
+
+**基本写法：CoroutineExceptionHandler**
+`CoroutineExceptionHandler { <ctx>, <异常> -> }`
+```kotlin
+// 自定义协程异常处理器
+val handler = CoroutineExceptionHandler { _, e ->
+    println("caught: $e")
+}
+launch(Dispatchers.Default + handler) { }
+```
+
+---
+
+## 阻塞与挂起桥接
+
+**基本写法：阻塞调用转挂起**
+`<dispatcher>.runIsolated { }`
+```kotlin
+// 在调度器上运行可阻塞代码
+runBlocking(Dispatchers.IO) { blockingCall() }
+```
+
+---
+
+**基本写法：runInterruptible 阻塞转可取消**
+`runInterruptible { <阻塞调用> }`
+```kotlin
+// 将阻塞代码包装为可取消挂起
+suspend fun read(): String = runInterruptible { Files.readString(path) }
+```
+
+---
+
+## 调度器关闭
+
+**基本写法：关闭自定义调度器**
+`<dispatcher>.close()`
+```kotlin
+// 关闭单线程调度器释放线程
+val dispatcher = newSingleThreadContext("w")
+dispatcher.close()
+```
+
+---
+
+## 父子上下文继承
+
+**基本写法：复制父上下文**
+`<parentCtx> + <新元素>`
+```kotlin
+// 子协程继承父上下文并覆盖
+val childCtx = coroutineContext + Dispatchers.IO
+launch(childCtx) { }
+```

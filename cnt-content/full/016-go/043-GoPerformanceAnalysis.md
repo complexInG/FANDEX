@@ -155,30 +155,21 @@ Go 1.21 引入 **Profile-Guided Optimization (PGO)**：基于生产 pprof 数据
 
 ### 2.10 演进时间轴
 
-```
-1982-01 ── gprof 论文（Graham/Kessler/McKusick）调用图剖析奠基
-       │
-2005-01 ── Google gperftools（含 CPUProfile）发布
-       │
-2012-03 ── Go 1.0：runtime/pprof（CPU/heap/goroutine/block/threadcreate）
-       │
-2013-05 ── Go 1.1：net/http/pprof，/debug/pprof/ HTTP 端点
-       │
-2015-08 ── Go 1.5：runtime 自举，runtime/trace 引入
-       │
-2017-08 ── Go 1.9：mutex 剖析（SetMutexProfileFraction）
-       │
-2017-12 ── Go 1.10：pprof label（pprof.Do + pprof.Labels）
-       │
-2022-03 ── Go 1.18：cgo 下 CPU 剖析修复
-       │
-2023-08 ── Go 1.21：PGO（Profile-Guided Optimization）、trace 重写
-       │
-2024-02 ── Go 1.22：pprof 默认 Web 界面
-       │
-2024-08 ── Go 1.23：trace flight recorder
-       │
-2025-02 ── Go 1.24：pprof gzip 压缩、testing 联合分析
+```mermaid
+timeline
+    title Go 性能剖析时间线
+    1982-01: gprof 论文（Graham/Kessler/McKusick）调用图剖析奠基
+    2005-01: Google gperftools（含 CPUProfile）发布
+    2012-03: Go 1.0 runtime/pprof（CPU/heap/goroutine/block/threadcreate）
+    2013-05: Go 1.1 net/http/pprof，/debug/pprof/ HTTP 端点
+    2015-08: Go 1.5 runtime 自举，runtime/trace 引入
+    2017-08: Go 1.9 mutex 剖析（SetMutexProfileFraction）
+    2017-12: Go 1.10 pprof label（pprof.Do + pprof.Labels）
+    2022-03: Go 1.18 cgo 下 CPU 剖析修复
+    2023-08: Go 1.21 PGO、trace 重写
+    2024-02: Go 1.22 pprof 默认 Web 界面
+    2024-08: Go 1.23 trace flight recorder
+    2025-02: Go 1.24 pprof gzip 压缩、testing 联合分析
 ```
 
 ---
@@ -1086,23 +1077,19 @@ go func() {
 
 **推荐架构**：
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    连续剖析平台                          │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐             │
-│  │ Pyroscope│  │  Parca   │  │ Grafana  │             │
-│  └──────────┘  └──────────┘  └──────────┘             │
-└─────────────────────────────────────────────────────────┘
-                          ▲
-                          │ HTTP 抓取（每 60 秒）
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│              服务实例（多副本）                          │
-│  ┌────────┐  ┌────────┐  ┌────────┐                    │
-│  │ App #1 │  │ App #2 │  │ App #3 │                    │
-│  │ :6060  │  │ :6060  │  │ :6060  │                    │
-│  └────────┘  └────────┘  └────────┘                    │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Platform[连续剖析平台]
+        P1[Pyroscope]
+        P2[Parca]
+        P3[Grafana]
+    end
+    subgraph Instances[服务实例（多副本）]
+        A1[App #1 :6060]
+        A2[App #2 :6060]
+        A3[App #3 :6060]
+    end
+    Instances -->|HTTP 抓取（每 60 秒）| Platform
 ```
 
 **实现示例**：
@@ -1232,11 +1219,15 @@ go tool pprof -seconds=30 -format=protobuf -output=default.pgo http://service:60
 
 **步骤二：将 default.pgo 放入主包目录**
 
-```
-myapp/
-├── main.go
-├── go.mod
-└── default.pgo   # PGO profile
+```mermaid
+flowchart TD
+    T0["myapp/"]
+    T1["main.go"]
+    T2["go.mod"]
+    T3["default.pgo   # PGO profile"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
 ```
 
 **步骤三：构建**
@@ -1539,14 +1530,12 @@ ListVideos-8     540µs ± 4%     498µs ± 3%    -7.78%  (p=0.000 n=10+10)
 
 ---
 
-## 10. 练习与思考题
+## 知识讲解与要点分析（原练习）
 
-### 练习一：采样次数估算
+## 知识讲解与要点分析（原练习一：采样次数估算）
 
 **题目**：你希望检测 CPU profile 中占比 1% 的函数，要求 95% 置信度下相对误差不超过 20%。需要多少次采样？按默认 100 Hz 采样，需采集多长时间？
 
-<details>
-<summary>参考答案</summary>
 
 由定理 4.2：
 
@@ -1556,9 +1545,8 @@ $$
 
 按 100 Hz 采样，需 $T = 9508 / 100 \approx 95$ 秒，建议至少 120 秒。
 
-</details>
 
-### 练习二：堆剖析模式选择
+## 知识讲解与要点分析（原练习二：堆剖析模式选择）
 
 **题目**：以下场景应使用 `alloc_space`、`alloc_objects`、`inuse_space`、`inuse_objects` 中的哪个？
 
@@ -1567,22 +1555,17 @@ $$
 3. 想知道哪个函数分配了最多对象，优化减少分配。
 4. 想知道当前内存被哪些对象占用。
 
-<details>
-<summary>参考答案</summary>
 
 1. `inuse_space`：排查泄漏看当前在用内存。
 2. `alloc_space`：GC 压力来自分配速率，看分配总量。
 3. `alloc_objects`：关注对象数量而非大小。
 4. `inuse_space` + `inuse_objects`：结合大小与数量。
 
-</details>
 
-### 练习三：实现一个 goroutine 数量监控中间件
+## 知识讲解与要点分析（原练习三：实现一个 goroutine 数量监控中间件）
 
 **题目**：实现一个 HTTP 中间件，当 goroutine 数量超过阈值时自动抓取 goroutine profile 并保存到文件。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -1656,14 +1639,11 @@ func main() {
 }
 ```
 
-</details>
 
-### 练习四：火焰图宽度守恒证明
+## 知识讲解与要点分析（原练习四：火焰图宽度守恒证明）
 
 **题目**：证明火焰图的宽度守恒性质（性质 3.1）：对任意父节点 $(f, d)$，其宽度等于所有子节点宽度之和加上自身作为栈顶的采样数。
 
-<details>
-<summary>参考答案</summary>
 
 **证明**：
 
@@ -1697,14 +1677,11 @@ $$
 
 **实践意义**：宽度守恒保证火焰图不会"漏掉"采样，所有时间都能归因到某个函数。
 
-</details>
 
-### 练习五：PGO 构建失败排查
+## 知识讲解与要点分析（原练习五：PGO 构建失败排查）
 
 **题目**：你将 `default.pgo` 放入项目根目录，运行 `go build` 但发现 PGO 未启用（`go version -m` 无 `pgo` 标记）。可能的原因有哪些？
 
-<details>
-<summary>参考答案</summary>
 
 1. **`default.pgo` 未在 main 包目录**：PGO 文件必须与 `main.go` 同目录，不是项目根目录。
 2. **Go 版本 < 1.21**：PGO 需要 Go 1.21+，确认 `go version` 输出。
@@ -1722,14 +1699,11 @@ go build -pgo=default.pgo ./cmd/server  # 显式指定
 go version -m bin/server | grep pgo  # 验证
 ```
 
-</details>
 
-### 练习六：分布式系统调用链性能分析
+## 知识讲解与要点分析（原练习六：分布式系统调用链性能分析）
 
 **题目**：微服务 A 调用 B，B 调用 C。用户报告请求延迟 P99 高。如何用 pprof + 链路追踪定位瓶颈？
 
-<details>
-<summary>参考答案</summary>
 
 **步骤**：
 
@@ -1761,7 +1735,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 7. **trace 联合分析**：用 `runtime/trace` 在 B 服务记录事件流，结合 trace ID 找到具体阻塞点（如 channel、锁、GC）。
 
-</details>
 
 ---
 

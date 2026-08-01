@@ -31,6 +31,231 @@ tags:
 
 ---
 
+## 反射创建实例
+
+**基本写法：通过 Class 创建对象**
+`<class>.getDeclaredConstructor().newInstance();`
+```java
+// 反射方式创建实例
+Object obj = String.class.getDeclaredConstructor().newInstance();
+```
+
+---
+
+**基本写法：带参构造**
+`<class>.getDeclaredConstructor(<参数类型>...).newInstance(<参数>...);`
+```java
+// 通过带参构造创建实例
+Object obj = String.class.getDeclaredConstructor(byte[].class).newInstance(new byte[]{65});
+```
+
+---
+
+## 反射获取字段
+
+**基本写法：获取声明字段**
+`<class>.getDeclaredField("<字段名>");`
+```java
+// 获取私有字段
+Field f = Person.class.getDeclaredField("name");
+f.setAccessible(true);
+```
+
+---
+
+**基本写法：读取字段值**
+`<field>.get(<对象>);`
+```java
+// 读取对象字段值
+Object value = f.get(person);
+```
+
+---
+
+**基本写法：设置字段值**
+`<field>.set(<对象>, <值>);`
+```java
+// 设置对象字段值
+f.set(person, "Alice");
+```
+
+---
+
+## 反射获取方法
+
+**基本写法：获取声明方法**
+`<class>.getDeclaredMethod("<方法名>", <参数类型>...);`
+```java
+// 获取私有方法
+Method m = Person.class.getDeclaredMethod("greet", String.class);
+m.setAccessible(true);
+```
+
+---
+
+**基本写法：反射调用方法**
+`<method>.invoke(<对象>, <参数>...);`
+```java
+// 反射调用方法
+Object result = m.invoke(person, "World");
+```
+
+---
+
+## 反射操作泛型
+
+**基本写法：获取泛型返回类型**
+`<method>.getGenericReturnType();`
+```java
+// 获取方法的泛型返回类型
+Type type = method.getGenericReturnType();
+```
+
+---
+
+**基本写法：获取参数泛型**
+`<method>.getGenericParameterTypes();`
+```java
+// 获取方法参数的泛型类型数组
+Type[] types = method.getGenericParameterTypes();
+```
+
+---
+
+## JDK 动态代理
+
+**基本写法：创建 JDK 动态代理**
+`Proxy.newProxyInstance(<类加载器>, <接口数组>, <调用处理器>);`
+```java
+// 为 List 接口创建代理
+List<String> proxy = (List<String>) Proxy.newProxyInstance(
+    List.class.getClassLoader(),
+    new Class[]{List.class},
+    (proxyObj, method, args) -> {
+        System.out.println("调用: " + method.getName());
+        return null;
+    }
+);
+```
+
+---
+
+**基本写法：实现 InvocationHandler**
+`class <类名> implements InvocationHandler { public Object invoke(Object p, Method m, Object[] a) {} }`
+```java
+// 自定义调用处理器
+class LogHandler implements InvocationHandler {
+    private final Object target;
+    public LogHandler(Object target) { this.target = target; }
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("before: " + method.getName());
+        Object r = method.invoke(target, args);
+        System.out.println("after: " + method.getName());
+        return r;
+    }
+}
+```
+
+---
+
+## CGLIB 风格代理（子类代理）
+
+**基本写法：创建子类代理（需第三方库 cglib）**
+`Enhancer.create(<类>, <回调>);`
+```java
+// cglib 创建子类代理
+Enhancer enhancer = new Enhancer();
+enhancer.setSuperclass(Person.class);
+enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
+    System.out.println("before");
+    Object r = proxy.invokeSuper(obj, args);
+    System.out.println("after");
+    return r;
+});
+Person proxy = (Person) enhancer.create();
+```
+
+---
+
+## 反射获取注解
+
+**基本写法：获取类上注解**
+`<class>.getAnnotation(<注解类型>);`
+```java
+// 获取类上的注解
+Deprecated d = MyClass.class.getAnnotation(Deprecated.class);
+```
+
+---
+
+**基本写法：判断注解存在**
+`<class>.isAnnotationPresent(<注解类型>);`
+```java
+// 判断注解是否存在
+boolean has = MyClass.class.isAnnotationPresent(Deprecated.class);
+```
+
+---
+
+## 反射获取数组信息
+
+**基本写法：创建数组实例**
+`Array.newInstance(<元素类型>, <长度>);`
+```java
+// 反射创建数组
+Object arr = Array.newInstance(int.class, 5);
+```
+
+---
+
+**基本写法：反射读写数组**
+`Array.get(<数组>, <索引>); | Array.set(<数组>, <索引>, <值>);`
+```java
+// 反射方式读写数组元素
+Array.set(arr, 0, 42);
+int v = (int) Array.get(arr, 0);
+```
+
+---
+
+## Module 反射（Java 9+）
+
+**基本写法：获取模块**
+`<class>.getModule();`
+```java
+// 获取类所属模块
+Module module = String.class.getModule();
+System.out.println(module.getName());
+```
+
+---
+
+**基本写法：导出包到指定模块**
+`<module>.addExports("<包名>", <目标模块>);`
+```java
+// 反射方式导出包
+module.addExports("com.example.internal", OtherModule);
+```
+
+---
+
+## Record 反射（Java 16+）
+
+**基本写法：判断是否为 Record**
+`<class>.isRecord();`
+```java
+// 判断 Class 是否为 Record
+boolean isRec = Point.class.isRecord();
+```
+
+---
+
+**基本写法：获取 Record 组件**
+`<class>.getRecordComponents();`
+```java
+// 获取 Record 的组件
+RecordComponent[] comps = Point.class.getRecordComponents();
+```
 ## 1. 学习目标（基于 Bloom 分类法）
 
 本节以 Bloom 教育目标分类法（1956 版本，Anderson 2001 修订版）为框架，对学习目标进行显式分级，便于读者自检学习成果与认知深度。
@@ -58,27 +283,33 @@ tags:
 
 ### 1.3 前置知识地图
 
-```
-面向对象编程（OOP）
-    │
-    ├── 类与对象
-    ├── 封装、继承、多态
-    └── 接口与抽象类
-            │
-            ▼
-JVM 类加载机制
-    │
-    ├── 加载 → 链接（验证、准备、解析）→ 初始化
-    ├── 双亲委派模型
-    └── 方法区与元数据
-            │
-            ▼
-Java 反射（本章）
-    │
-    ├── java.lang.Class
-    ├── java.lang.reflect.*
-    ├── 动态代理（JDK Proxy / CGLIB）
-    └── MethodHandle / VarHandle
+```mermaid
+flowchart TD
+    T0["面向对象编程（OOP）"]
+    T1["类与对象"]
+    T2["封装、继承、多态"]
+    T3["接口与抽象类"]
+    T4["JVM 类加载机制"]
+    T5["加载 → 链接（验证、准备、解析）→ 初始化"]
+    T6["双亲委派模型"]
+    T7["方法区与元数据"]
+    T8["Java 反射（本章）"]
+    T9["java.lang.Class"]
+    T10["java.lang.reflect.*"]
+    T11["动态代理（JDK Proxy / CGLIB）"]
+    T12["MethodHandle / VarHandle"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T8 --> T12
 ```
 
 ### 1.4 章节阅读建议
@@ -273,16 +504,25 @@ JVM 规范（JVMS §2.5.1）规定，每个已加载的类在方法区（HotSpot
 
 `Class` 对象是一个 **指向类元数据的"门面"（facade）**。在 HotSpot 内部，`Class` 对象的 C++ 实现包含一个 `Klass*` 指针，指向方法区中的 `InstanceKlass`（普通类）或 `ArrayKlass`（数组类型）。
 
-```
-[Java Heap]                [Metaspace]
-+-----------------+        +--------------------------+
-| Class<Object>   | -----> | InstanceKlass            |
-+-----------------+        |   - _name: Symbol*       |
-                           |   - _fields: FieldInfo[] |
-                           |   - _methods: Method[]   |
-                           |   - _constants: ConstantPool
-                           |   - _vtable: ...          |
-                           +--------------------------+
+```mermaid
+flowchart TD
+    C0_0["[Java Heap]                [Metaspace]"]
+    C1_0["Class<Object>"]
+    C1_1["_name: Symbol*"]
+    C1_2["_fields: FieldInfo[]"]
+    C1_3["_methods: Method[]"]
+    C1_4["_constants: ConstantPool"]
+    C1_5["_vtable: ..."]
+    C2_0[">"]
+    C3_0["InstanceKlass"]
+    C1_0 --> C1_1
+    C1_1 --> C1_2
+    C1_2 --> C1_3
+    C1_3 --> C1_4
+    C1_4 --> C1_5
+    C0_0 --> C1_0
+    C1_0 --> C2_0
+    C2_0 --> C3_0
 ```
 
 ### 4.2 `Class.forName` 的字节码与调用链
@@ -293,22 +533,23 @@ JVM 规范（JVMS §2.5.1）规定，每个已加载的类在方法区（HotSpot
 2. **类加载**：根据调用者的类加载器，按双亲委派模型查找类。若类未加载，触发完整的加载-链接-初始化流程。
 3. **返回 `Class` 对象**：JVM 从 Metaspace 取出 `InstanceKlass`，返回对应的 `Class` 对象。
 
-```
-Class.forName("java.util.ArrayList")
-    │
-    ▼
-JVM_FindClassFromCaller(loader, "java.util.ArrayList", ...)
-    │
-    ├── 询问 BootClassLoader
-    ├── 询问 PlatformClassLoader (JDK 9+)
-    ├── 询问 AppClassLoader
-    └── 找到 ArrayList.class
-            │
-            ▼
-        加载 → 验证 → 准备 → 解析 → 初始化
-            │
-            ▼
-        返回 Class<ArrayList>
+```mermaid
+flowchart TD
+    T0["Class.forName('java.util.ArrayList')"]
+    T1["JVM_FindClassFromCaller(loader, 'java.util.ArrayList', ...)"]
+    T2["询问 BootClassLoader"]
+    T3["询问 PlatformClassLoader (JDK 9+)"]
+    T4["询问 AppClassLoader"]
+    T5["找到 ArrayList.class"]
+    T6["加载 → 验证 → 准备 → 解析 → 初始化"]
+    T7["返回 Class<ArrayList>"]
+    T0 --> T1
+    T1 --> T2
+    T1 --> T3
+    T1 --> T4
+    T1 --> T5
+    T5 --> T6
+    T6 --> T7
 ```
 
 ### 4.3 `Method.invoke` 的字节码与分派
@@ -1987,13 +2228,13 @@ public class GetterAnnotationProcessor extends AbstractProcessor {
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（记忆与理解）
 
 **习题 1**：写出获取 `java.util.HashMap` 的 `Class` 对象的三种方式。
 
-**参考答案**：
+**解析讲解**：
 
 ```java
 Class<?> c1 = HashMap.class;
@@ -2003,7 +2244,7 @@ Class<?> c3 = Class.forName("java.util.HashMap");
 
 **习题 2**：`getFields()` 与 `getDeclaredFields()` 的区别是什么？
 
-**参考答案**：
+**解析讲解**：
 - `getFields()`：返回所有 `public` 字段，包括继承自父类的。
 - `getDeclaredFields()`：返回本类声明的所有字段（含 `private`、`protected`、包可见），不包括继承的。
 
@@ -2018,13 +2259,13 @@ System.out.println(c1 == c2);
 System.out.println(c1 == c3);
 ```
 
-**参考答案**：输出 `true` 和 `true`。`Class` 对象在 JVM 中全局唯一，泛型擦除使 `List<Integer>` 与 `List<String>` 共享同一个 `Class`。
+**解析讲解**：输出 `true` 和 `true`。`Class` 对象在 JVM 中全局唯一，泛型擦除使 `List<Integer>` 与 `List<String>` 共享同一个 `Class`。
 
-### 10.2 应用题
+### 应用题知识点讲解
 
 **习题 4**：编写一个工具方法 `copyProperties(Object source, Object target)`，使用反射将 source 对象的同名字段值复制到 target 对象。
 
-**参考答案**：
+**解析讲解**：
 
 ```java
 public static void copyProperties(Object source, Object target) throws Exception {
@@ -2047,7 +2288,7 @@ public static void copyProperties(Object source, Object target) throws Exception
 
 **习题 5**：使用动态代理实现一个简单的缓存切面，对带 `@Cacheable` 注解的方法进行结果缓存。
 
-**参考答案**：
+**解析讲解**：
 
 ```java
 @Retention(RetentionPolicy.RUNTIME)
@@ -2089,7 +2330,7 @@ f.setAccessible(true);
 f.set("hello", "world".getBytes());
 ```
 
-**参考答案**：
+**解析讲解**：
 会抛出 `InaccessibleObjectException`，因为 `java.base` 模块未对未命名模块开放 `java.lang`。
 
 修复方案：
@@ -2110,7 +2351,7 @@ public Object invokeDynamic(String className, String methodName, Object[] args) 
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 问题：
 1. 每次调用都做 `Class.forName`、`newInstance`、`getMethod`，开销大。
 2. 通过 `Object.getClass()` 推断参数类型，对于基本类型参数会失败（如 `int.class` vs `Integer.class`）。
@@ -2124,7 +2365,7 @@ public Object invokeDynamic(String className, String methodName, Object[] args) 
 
 **习题 8**：评价"在所有需要动态调用方法的场景都应使用反射"这一观点。
 
-**参考答案**：
+**解析讲解**：
 该观点过于绝对。反射的使用应基于以下考量：
 
 支持反射的场景：
@@ -2147,7 +2388,7 @@ public Object invokeDynamic(String className, String methodName, Object[] args) 
 
 **习题 9**：设计一个轻量级 IoC 容器，支持 `@Component`、`@Autowired` 注解，能自动扫描指定包下的类并管理 Bean 生命周期。
 
-**参考答案**（设计思路）：
+**解析讲解**：（设计思路）：
 
 ```java
 @Retention(RetentionPolicy.RUNTIME)
@@ -2193,7 +2434,7 @@ public class MiniIoC {
 
 **习题 10**：实现一个简单的 ORM 框架，通过反射将 Java 对象映射到数据库表。
 
-**参考答案**：参考第 5.7 节的注解示例，扩展为完整的 CRUD 生成器。
+**解析讲解**：参考第 5.7 节的注解示例，扩展为完整的 CRUD 生成器。
 
 ---
 
@@ -2382,69 +2623,22 @@ Java 反射正经历以下演进：
 
 ## 附录 C：JDK 版本与反射 API 演进时间线图
 
-```
-1996 JDK 1.0
-   │  无反射 API
-   ▼
-1997 JDK 1.1
-   │  java.lang.reflect 包引入
-   │  Field, Method, Constructor, Modifier, Array
-   │  支持 JavaBeans 自省
-   ▼
-1998 JDK 1.2
-   │  AccessibleObject.setAccessible
-   │  Proxy.newProxyInstance (动态代理)
-   ▼
-2002 JDK 1.4
-   │  assert, 反射稳定化
-   ▼
-2004 JDK 5
-   │  注解 (Annotations)
-   │  泛型 (Type, ParameterizedType, TypeVariable)
-   │  Enum, 可变参数
-   ▼
-2006 JDK 6
-   │  反射性能优化
-   │  java.lang.instrument 增强
-   ▼
-2011 JDK 7
-   │  MethodHandle, MethodType, MethodHandles.Lookup
-   │  invokedynamic 字节码
-   │  Try-with-resources
-   ▼
-2014 JDK 8
-   │  LambdaMetafactory
-   │  类型注解 (JSR 308)
-   │  Parameter.getName (需 -parameters)
-   ▼
-2017 JDK 9
-   │  模块系统 (Jigsaw)
-   │  setAccessible 跨模块受限
-   │  Module API
-   │  JEP 260: 封装内部 API
-   ▼
-2018 JDK 10-11
-   │  var 局部变量类型推断
-   │  HttpClient
-   ▼
-2019-2020 JDK 13-15
-   │  Sealed Classes 预览
-   │  Record 预览
-   ▼
-2021 JDK 17 (LTS)
-   │  Sealed Classes 正式版
-   │  Pattern Matching for instanceof
-   │  JEP 396/403: 强封装默认开启
-   ▼
-2023 JDK 21 (LTS)
-   │  虚拟线程正式版
-   │  Record Patterns
-   │  Pattern Matching for switch
-   ▼
-未来 (Valhalla, Lynx)
-   │  Value Types
-   │  Security Manager 移除
-   │  反射 API 重构
+```mermaid
+timeline
+    title 发展时间线
+    1996: JDK 1.0 无反射 API ▼
+    1997: JDK 1.1 java.lang.reflect 包引入 Field, Method, Constructor, Modifier, Array 支持 JavaBeans 自省 ▼
+    1998: JDK 1.2 AccessibleObject.setAccessible Proxy.newProxyInstance (动态代理) ▼
+    2002: JDK 1.4 assert, 反射稳定化 ▼
+    2004: JDK 5 注解 (Annotations) 泛型 (Type, ParameterizedType, TypeVariable) Enum, 可变参数 ▼
+    2006: JDK 6 反射性能优化 java.lang.instrument 增强 ▼
+    2011: JDK 7 MethodHandle, MethodType, MethodHandles.Lookup invokedynamic 字节码 Try-with-resources ▼
+    2014: JDK 8 LambdaMetafactory 类型注解 (JSR 308) Parameter.getName (需 -parameters) ▼
+    2017: JDK 9 模块系统 (Jigsaw) setAccessible 跨模块受限 Module API JEP 260: 封装内部 API ▼
+    2018: JDK 10-11 var 局部变量类型推断 HttpClient ▼
+    2019: 2020 JDK 13-15 Sealed Classes 预览 Record 预览 ▼
+    2021: JDK 17 (LTS) Sealed Classes 正式版 Pattern Matching for instanceof JEP 396/403: 强封装默认开启 ▼
+    2023: JDK 21 (LTS) 虚拟线程正式版 Record Patterns Pattern Matching for switch ▼ 未来 (Valhalla, Lynx) Value Types Security Manager 移除 反射 API 重构
 ```
 
 ---
@@ -2495,4 +2689,268 @@ Java 反射正经历以下演进：
 ---
 
 > **结语**：反射是 Java 元编程能力的核心，是理解 Java 框架、JVM 行为、类型系统的钥匙。掌握反射不仅意味着熟悉 API，更意味着理解其背后的设计哲学、性能权衡、安全模型、模块系统兼容性。在工程实践中，反射应是"框架开发者的工具"，而非"应用开发者的常规手段"——明确这一边界，方能用好反射而不被反射反噬。
+
+## Pattern 编译
+
+**基本写法：编译正则**
+`Pattern.compile("<regex>"[, <flags>]): Pattern`
+```java
+// 编译正则表达式
+Pattern p = Pattern.compile("\\d+");
+Pattern pi = Pattern.compile("abc", Pattern.CASE_INSENSITIVE);
+Pattern pm = Pattern.compile("a.b", Pattern.DOTALL);
+```
+
+---
+
+**基本写法：标志位组合**
+`Pattern.compile("<regex>", Pattern.<flag1> | Pattern.<flag2>);`
+```java
+// 多个标志位用按位或组合
+Pattern p = Pattern.compile("hello", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+```
+
+---
+
+## Matcher 匹配
+
+**基本写法：创建匹配器**
+`<pattern>.matcher(<input>): Matcher`
+```java
+// 创建 Matcher 对象
+Matcher m = p.matcher("123 456");
+```
+
+---
+
+**基本写法：完整匹配**
+`<matcher>.matches(): boolean`
+```java
+// 整个字符串是否匹配
+boolean ok = p.matcher("123").matches();
+```
+
+---
+
+**基本写法：查找下一个**
+`<matcher>.find(): boolean`
+```java
+// 查找下一个匹配
+while (m.find()) {
+    System.out.println(m.group());
+}
+```
+
+---
+
+**基本写法：匹配位置**
+`<matcher>.start(): int` / `<matcher>.end(): int`
+```java
+// 获取匹配起止索引
+if (m.find()) {
+    int start = m.start();
+    int end = m.end();
+}
+```
+
+---
+
+## 分组捕获
+
+**基本写法：捕获组**
+`(<pattern>)`
+```java
+// 圆括号定义捕获组
+Pattern p = Pattern.compile("(\\d+)-(\\d+)");
+Matcher m = p.matcher("12-34");
+if (m.matches()) {
+    m.group(0); // "12-34" 整个匹配
+    m.group(1); // "12" 第一组
+    m.group(2); // "34" 第二组
+}
+```
+
+---
+
+**基本写法：命名捕获组**
+`(?<<name><pattern>)`
+```java
+// 命名捕获组（Java 7+）
+Pattern p = Pattern.compile("(?<year>\\d{4})-(?<month>\\d{2})");
+Matcher m = p.matcher("2024-03");
+if (m.matches()) {
+    m.group("year");   // "2024"
+    m.group("month");  // "03"
+}
+```
+
+---
+
+**基本写法：组总数**
+`<matcher>.groupCount(): int`
+```java
+// 获取捕获组数量（不含 group(0)）
+int count = m.groupCount();
+```
+
+---
+
+## 替换操作
+
+**基本写法：替换全部**
+`<matcher>.replaceAll("<replacement>"): String`
+```java
+// 替换所有匹配
+String r = p.matcher("a1b2").replaceAll("X");
+```
+
+---
+
+**基本写法：替换首个**
+`<matcher>.replaceFirst("<replacement>"): String`
+```java
+// 仅替换第一个匹配
+String r = p.matcher("a1b2").replaceFirst("X");
+```
+
+---
+
+**基本写法：引用捕获组替换**
+`<matcher>.replaceAll("$<groupName>");` 或 `$<n>`
+```java
+// 引用命名组
+Pattern p = Pattern.compile("(?<word>\\w+)");
+String r = p.matcher("hello").replaceAll("${word}!");
+// 引用编号组
+String r2 = Pattern.compile("(\\w)(\\w)").matcher("ab").replaceAll("$2$1");
+```
+
+---
+
+## 常用预定义字符
+
+**基本写法：字符类**
+```java
+// .   任意字符（默认不含换行）
+// \d  数字 [0-9]
+// \D  非数字
+// \w  单词字符 [a-zA-Z0-9_]
+// \W  非单词字符
+// \s  空白字符
+// \S  非空白字符
+```
+
+---
+
+**基本写法：量词**
+```java
+// ?     0 或 1 次
+// *     0 次或多次
+// +     1 次或多次
+// {n}   恰好 n 次
+// {n,}  至少 n 次
+// {n,m} n 到 m 次
+```
+
+---
+
+**基本写法：边界匹配**
+```java
+// ^   行开头
+// $   行结尾
+// \b  单词边界
+// \B  非单词边界
+// \A  输入开头
+// \z  输入结尾
+```
+
+---
+
+## 断言
+
+**基本写法：正向先行断言**
+`(?=<pattern>)`
+```java
+// 匹配后面跟着数字的字母
+Pattern p = Pattern.compile("[a-z]+(?=\\d)");
+```
+
+---
+
+**基本写法：负向先行断言**
+`(?!<pattern>)`
+```java
+// 匹配后面不跟数字的字母
+Pattern p = Pattern.compile("[a-z]+(?!\\d)");
+```
+
+---
+
+## String 正则方法
+
+**基本写法：分割**
+`<string>.split("<regex>"[, <limit>]): String[]`
+```java
+// 按正则分割字符串
+String[] parts = "a,b,,c".split(",");
+String[] parts2 = "a1b2c".split("\\d", 2);
+```
+
+---
+
+**基本写法：替换全部**
+`<string>.replaceAll("<regex>", "<replacement>): String`
+```java
+// 字符串直接替换
+String r = "2024-03".replaceAll("\\d", "*");
+```
+
+---
+
+**基本写法：匹配判断**
+`<string>.matches("<regex>"): boolean`
+```java
+// 整串是否匹配
+boolean ok = "123".matches("\\d+");
+```
+
+---
+
+## 标志位常量
+
+**基本写法：常用标志**
+```java
+// Pattern.CASE_INSENSITIVE  忽略大小写
+// Pattern.MULTILINE         ^ $ 匹配每行
+// Pattern.DOTALL            . 匹配换行
+// Pattern.UNICODE_CASE      Unicode 大小写
+// Pattern.COMMENTS          忽略空白与注释
+// Pattern.LITERAL           字面量模式
+```
+
+---## 获取 Class 对象
+
+**基本写法：三种获取 Class 的方式**
+`<类名>.class | <对象>.getClass() | Class.forName("<全限定名>")`
+```java
+// 三种方式获取 Class 对象
+Class<String> c1 = String.class;
+Class<?> c2 = "hello".getClass();
+Class<?> c3 = Class.forName("java.lang.String");
+```
+
+---
+
+## 获取 Class 对象
+
+**基本写法：三种获取 Class 的方式**
+`<类名>.class | <对象>.getClass() | Class.forName("<全限定名>")`
+```java
+// 三种方式获取 Class 对象
+Class<String> c1 = String.class;
+Class<?> c2 = "hello".getClass();
+Class<?> c3 = Class.forName("java.lang.String");
+```
+
+---
 

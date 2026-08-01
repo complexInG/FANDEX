@@ -1337,22 +1337,27 @@ clang++ -std=c++20 -fmodules main.cpp math.o -o main_clang
 
 推荐的模块化项目结构：
 
-```
-my_project/
-├── CMakeLists.txt
-├── src/
-│   ├── core/
-│   │   ├── core.cppm           # 主模块接口
-│   │   ├── core_algorithm.cppm # 分区：算法
-│   │   ├── core_container.cppm # 分区：容器
-│   │   └── core_io.cppm        # 分区：IO
-│   ├── utils/
-│   │   ├── utils.cppm
-│   │   └── utils_string.cppm
-│   └── app/
-│       └── main.cpp
-└── tests/
-    └── test_core.cpp
+```mermaid
+flowchart TD
+    T0["my_project/"]
+    T1["CMakeLists.txt"]
+    T2["src/"]
+    T3["core/"]
+    T4["core.cppm           # 主模块接口"]
+    T5["core_algorithm.cppm # 分区：算法"]
+    T6["core_container.cppm # 分区：容器"]
+    T7["core_io.cppm        # 分区：IO"]
+    T8["utils/"]
+    T9["utils.cppm"]
+    T10["utils_string.cppm"]
+    T11["app/"]
+    T12["main.cpp"]
+    T13["tests/"]
+    T14["test_core.cpp"]
+    T0 --> T1
+    T0 --> T2
+    T12 --> T13
+    T13 --> T14
 ```
 
 ### 8.2 CMake 模块配置
@@ -1650,15 +1655,21 @@ MSVC 自 Visual Studio 2019 16.7 起支持 C++20 模块，是商业 IDE 中最�
 
 **示例项目结构**：
 
-```
-MyModuleApp/
-├── MyModuleApp.sln
-├── MyModuleApp.vcxproj
-├── math/
-│   ├── math.ixx          # 模块接口
-│   └── math.cpp          # 模块实现
-└── src/
-    └── main.cpp
+```mermaid
+flowchart TD
+    T0["MyModuleApp/"]
+    T1["MyModuleApp.sln"]
+    T2["MyModuleApp.vcxproj"]
+    T3["math/"]
+    T4["math.ixx          # 模块接口"]
+    T5["math.cpp          # 模块实现"]
+    T6["src/"]
+    T7["main.cpp"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T5 --> T6
+    T6 --> T7
 ```
 
 ### 9.6 案例六：标准库模块（C++23）
@@ -1690,7 +1701,7 @@ int main() {
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 习题
 
@@ -1846,18 +1857,175 @@ int main() {
 
 #### 附录 C：模块迁移决策树
 
+```mermaid
+flowchart TD
+    T0["是否是新项目？"]
+    T1["是 → 直接使用 C++20 模块"]
+    T2["否 → 是否能接受破坏性变更？"]
+    T3["是 → 全面迁移到模块"]
+    T4["否 → 分阶段迁移"]
+    T5["阶段1：引入头文件单元"]
+    T6["阶段2：将独立头文件转为模块"]
+    T7["阶段3：处理依赖关系"]
+    T8["阶段4：消除循环依赖"]
+    T9["是否需要跨编译器？"]
+    T10["是 → 分发源码，客户端各自编译"]
+    T11["否 → 分发 BMI + 静态库"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T4 --> T8
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
 ```
-是否是新项目？
-├─ 是 → 直接使用 C++20 模块
-└─ 否 → 是否能接受破坏性变更？
-    ├─ 是 → 全面迁移到模块
-    └─ 否 → 分阶段迁移
-        ├─ 阶段1：引入头文件单元
-        ├─ 阶段2：将独立头文件转为模块
-        ├─ 阶段3：处理依赖关系
-        └─ 阶段4：消除循环依赖
+## 模块声明
 
-是否需要跨编译器？
-├─ 是 → 分发源码，客户端各自编译
-└─ 否 → 分发 BMI + 静态库
+**基本写法：声明一个模块接口单元**
+`export module <模块名>;`
+```cpp
+// 定义名为 math 的模块接口
+export module math;
+```
+
+---
+
+**基本写法：声明模块分区**
+`module <模块名>:<分区名>;`
+```cpp
+// 模块 math 的内部实现分区
+module math:impl;
+```
+
+---
+
+**基本写法：声明模块实现单元**
+`module <模块名>;`
+```cpp
+// 模块 math 的实现单元，不导出声明
+module math;
+```
+
+---
+
+## 导出声明
+
+**基本写法：导出函数**
+`export <返回类型> <函数名>(<参数>);`
+```cpp
+// 导出加法函数供外部使用
+export int add(int a, int b);
+```
+
+---
+
+**基本写法：导出类**
+`export class <类名> { };`
+```cpp
+// 导出整个类
+export class Calculator {
+public:
+    int sub(int a, int b);
+};
+```
+
+---
+
+**基本写法：导出命名空间**
+`export namespace <命名空间名> { }`
+```cpp
+// 导出整个命名空间
+export namespace geo {
+    double pi = 3.14159;
+    double area(double r);
+}
+```
+
+---
+
+**基本写法：分组导出**
+`export { <声明1>; <声明2>; }`
+```cpp
+// 一次性导出多个声明
+export {
+    int mul(int a, int b);
+    int div(int a, int b);
+}
+```
+
+---
+
+## 导入模块
+
+**基本写法：导入模块**
+`import <模块名>;`
+```cpp
+// 导入 math 模块以使用其导出内容
+import math;
+```
+
+---
+
+**基本写法：导入头文件单元**
+`import <头文件名>;`
+```cpp
+// 将头文件作为模块单元导入
+import <iostream>;
+```
+
+---
+
+**基本写法：全局模块片段声明头文件**
+`module; <头文件包含> export module <模块名>;`
+```cpp
+// 全局片段中包含传统头文件
+module;
+#include <cstdio>
+export module logger;
+```
+
+---
+
+## 模块分区组合
+
+**基本写法：导入本模块分区**
+`import :<分区名>;`
+```cpp
+// 在主接口中导入分区
+export module math;
+import :impl;
+```
+
+---
+
+**基本写法：导出分区**
+`export import :<分区名>;`
+```cpp
+// 将分区的导出内容重新导出
+export module math;
+export import :core;
+```
+
+---
+
+## 编译与使用
+
+**基本写法：编译模块接口**
+`g++ -std=c++20 -fmodules-ts -c <文件>.cpp`
+```cpp
+// 编译模块接口单元生成 gcm 文件
+g++ -std=c++20 -fmodules-ts -c math.cpp
+```
+
+---
+
+**基本写法：MSVC 编译模块**
+`cl /std:c++20 /c /interface <文件>.cpp`
+```cpp
+// MSVC 编译模块接口单元
+cl /std:c++20 /c /interface math.cpp
 ```

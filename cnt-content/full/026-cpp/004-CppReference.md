@@ -18,10 +18,11 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+# 引用
 
-# C++ 引用
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档系统讲解 C++ 引用（reference）机制，覆盖左值引用、右值引用、常量引用、转发引用、引用折叠规则、悬空引用、`std::launder`、引用与指针的本质差异等核心主题。所有代码示例可在支持 C++17/20/23 的主流编译器上编译通过，标注 GCC/Clang/MSVC 兼容性。对标 MIT 6.S192、Stanford CS106L、CMU 15-411 课程教学水准。
+---
 
 ## 1. 学习目标
 
@@ -810,13 +811,19 @@ add_test(NAME const_ref_test COMMAND const_ref_lifetime)
 
 ### 6.2 const T& vs T vs T&&（参数传递决策树）
 
-```
-参数传入决策：
-├── 仅读取，且通常为小对象（≤ 2 字） → 按值传递 T
-├── 仅读取，且为大对象（string、vector 等） → const T&
-├── 需要修改原对象 → T&
-├── 需要拥有/移动原对象 → T（内部 std::move）或 T&&（重载）
-└── 需要完美转发 → T&&（forwarding reference）+ std::forward
+```mermaid
+flowchart TD
+    T0["参数传入决策："]
+    T1["仅读取，且通常为小对象（≤ 2 字） → 按值传递 T"]
+    T2["仅读取，且为大对象（string、vector 等） → const T&"]
+    T3["需要修改原对象 → T&"]
+    T4["需要拥有/移动原对象 → T（内部 std::move）或 T&&（重载）"]
+    T5["需要完美转发 → T&&（forwarding reference）+ std::forward"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
 ```
 
 | 参数类型 | 拷贝次数 | 是否可修改实参 | 适用场景 |
@@ -1403,7 +1410,7 @@ process(a);                // 隐式转 span
 process({arr, 3});         // 显式构造子视图
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（Remember / Understand）
 
@@ -1422,7 +1429,7 @@ int&& r7 = std::move(x);
 int&& r8 = r7;
 ```
 
-**参考答案**：r1（OK）、r2（OK）、r3（错：const 不可绑定到非 const 引用）、r4（错：非 const 引用不可绑定到 rvalue）、r5（OK）、r6（错：x 是 lvalue，不能绑定到 rvalue 引用）、r7（OK）、r8（错：r7 是 lvalue）。
+**解析讲解**：r1（OK）、r2（OK）、r3（错：const 不可绑定到非 const 引用）、r4（错：非 const 引用不可绑定到 rvalue）、r5（OK）、r6（错：x 是 lvalue，不能绑定到 rvalue 引用）、r7（OK）、r8（错：r7 是 lvalue）。
 
 **习题 2**：以下代码输出什么？
 
@@ -1434,18 +1441,18 @@ r = 10;
 std::cout << x << " " << y;
 ```
 
-**参考答案**：`10 2`。引用不可重绑定，`r = y` 是赋值（修改 x 的值为 y 的值），`r = 10` 修改 x 为 10。
+**解析讲解**：`10 2`。引用不可重绑定，`r = y` 是赋值（修改 x 的值为 y 的值），`r = 10` 修改 x 为 10。
 
 **习题 3**：引用折叠的四种组合结果分别是什么？
 
-**参考答案**：
+**解析讲解**：
 
 - `T& &` → `T&`
 - `T& &&` → `T&`
 - `T&& &` → `T&`
 - `T&& &&` → `T&&`
 
-### 10.2 应用题（Apply / Analyze）
+### 应用题知识点讲解
 
 **习题 4**：实现一个 `chain` 函数，链式调用多个一元函数：
 
@@ -1497,7 +1504,7 @@ int main() {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 1. `f()` 返回 const 引用到临时 `std::string("hello")`，但函数返回值中的临时对象不延长生命周期，悬空。
 2. `g()` 中 `s + "!"` 是临时对象，返回引用到临时对象，悬空。
@@ -1535,7 +1542,7 @@ v.emplace_back("c");
 std::cout << ref;  // 安全吗？
 ```
 
-**参考答案**：不安全。`reserve(3)` 后第一次 `emplace_back` 不扩容，但后续若容量不足触发扩容，会移动所有元素到新内存，旧引用悬空。即使未扩容，标准也不保证 `emplace_back` 后引用有效（实现定义）。
+**解析讲解**：不安全。`reserve(3)` 后第一次 `emplace_back` 不扩容，但后续若容量不足触发扩容，会移动所有元素到新内存，旧引用悬空。即使未扩容，标准也不保证 `emplace_back` 后引用有效（实现定义）。
 
 **修复**：在使用 ref 期间不修改容器，或用索引代替引用。
 
@@ -1621,7 +1628,7 @@ auto my_bind17(F&& f, Args&&... args) {
 
 **习题 10**：分析 `std::vector<bool>` 的特殊性：为何 `operator[]` 返回的不是 `bool&`？
 
-**参考答案**：`std::vector<bool>` 使用位压缩存储，每个元素占 1 bit，无法返回 `bool&`（最小可寻址单位是 byte）。故返回 `reference` 代理类型，模拟引用语义但实际是 bit 引用。
+**解析讲解**：`std::vector<bool>` 使用位压缩存储，每个元素占 1 bit，无法返回 `bool&`（最小可寻址单位是 byte）。故返回 `reference` 代理类型，模拟引用语义但实际是 bit 引用。
 
 ```cpp
 std::vector<bool> v = {true, false, true};
@@ -1860,7 +1867,264 @@ my_ref<int&> r;  // 折叠为 int&
 
 ---
 
-### 更新日志 (Changelog)
+## 左值引用
 
-- 2026-05-27: 从 C13_103 拆分，专注于引用相关内容。
-- 2026-07-20: 金标准升级，扩展至 1500+ 行，覆盖左值引用、右值引用、const 引用、转发引用、引用折叠、悬空引用、`std::launder`、视图类型、CRTP 等主题，新增 12 项质量基准章节与 4 个附录。
+**基本写法：左值引用声明**
+`<type>& <ref_name> = <var>;`
+```cpp
+// 引用是变量的别名
+int x = 10;
+int& ref = x;
+```
+
+---
+
+**修改写法：通过引用修改值**
+`<ref_name> = <new_value>;`
+```cpp
+// 通过引用修改变量的值
+int x = 10;
+int& ref = x;
+ref = 20;
+```
+
+---
+
+**const 写法：常量引用**
+`const <type>& <ref_name> = <var>;`
+```cpp
+// 常量引用，不能通过引用修改值
+int x = 10;
+const int& ref = x;
+```
+
+---
+
+**字面量写法：const 引用绑定到字面量**
+`const <type>& <ref_name> = <literal>;`
+```cpp
+// const 引用可以绑定到字面量
+const int& ref = 100;
+```
+
+---
+
+## 右值引用
+
+**基本写法：右值引用声明**
+`<type>&& <ref_name> = <value>;`
+```cpp
+// 右值引用，绑定到临时值
+int&& rref = 10;
+```
+
+---
+
+**移动写法：右值引用用于移动语义**
+`<Type>(<Type>&& <other>) { ... }`
+```cpp
+// 移动构造函数
+class String {
+    char* data;
+public:
+    String(String&& other) noexcept : data(other.data) {
+        other.data = nullptr;
+    }
+};
+```
+
+---
+
+## 引用作为函数参数
+
+**基本写法：引用作为函数参数**
+`<return_type> <func>(<type>& <param>) { ... }`
+```cpp
+// 通过引用修改参数
+void increment(int& x) {
+    x++;
+}
+```
+
+---
+
+**const 写法：const 引用作为函数参数**
+`<return_type> <func>(const <type>& <param>) { ... }`
+```cpp
+// 避免拷贝，且不修改参数
+void print(const std::string& str) {
+    std::cout << str << std::endl;
+}
+```
+
+---
+
+**输出参数写法：使用引用返回多个值**
+`void <func>(<type>& <out1>, <type>& <out2>) { ... }`
+```cpp
+// 使用引用参数返回多个值
+void get_values(int& a, int& b) {
+    a = 10;
+    b = 20;
+}
+```
+
+---
+
+## 引用作为返回值
+
+**基本写法：返回引用**
+`<type>& <func>() { ... return <var>; }`
+```cpp
+// 返回引用，可用于链式调用
+class Array {
+    int data[10];
+public:
+    int& at(int i) {
+        return data[i];
+    }
+};
+```
+
+---
+
+**const 写法：返回 const 引用**
+`const <type>& <func>() const { ... }`
+```cpp
+// 返回 const 引用，不允许修改
+class Container {
+    std::vector<int> data;
+public:
+    const std::vector<int>& get_data() const {
+        return data;
+    }
+};
+```
+
+---
+
+**链式调用写法：返回 *this**
+`<Type>& <func>() { ... return *this; }`
+```cpp
+// 返回 *this 支持链式调用
+class Builder {
+    std::string str;
+public:
+    Builder& append(const std::string& s) {
+        str += s;
+        return *this;
+    }
+};
+```
+
+---
+
+## 引用与指针
+
+**对比写法：引用与指针的区别**
+`<type>& <ref> = <var>;` vs `<type>* <ptr> = &<var>;`
+```cpp
+// 引用必须初始化，指针可以不初始化
+int x = 10;
+int& ref = x;  // 引用
+int* ptr = &x; // 指针
+```
+
+---
+
+**成员访问写法：引用访问成员**
+`<ref>.<member>`
+```cpp
+// 通过引用访问成员
+struct Point { int x; int y; };
+Point p = {10, 20};
+Point& ref = p;
+std::cout << ref.x << std::endl;
+```
+
+---
+
+## 引用折叠
+
+**基本写法：引用折叠规则**
+`<type>& &` -> `<type>&`
+```cpp
+// 引用折叠：左值引用的引用仍为左值引用
+typedef int& IntRef;
+IntRef& ref = x;  // 等价于 int& ref = x;
+```
+
+---
+
+## 万能引用
+
+**基本写法：模板中的万能引用**
+`template<typename T> void <func>(T&& <param>) { ... }`
+```cpp
+// 万能引用，可以接受左值或右值
+template<typename T>
+void process(T&& arg) {
+    // 使用 std::forward 完美转发
+}
+```
+
+---
+
+**完美转发写法：使用 std::forward**
+`std::forward<T>(<arg>)`
+```cpp
+#include <utility>
+// 完美转发参数
+template<typename T>
+void wrapper(T&& arg) {
+    target(std::forward<T>(arg));
+}
+```
+
+---
+
+## std::move
+
+**基本写法：将左值转换为右值**
+`std::move(<var>)`
+```cpp
+#include <utility>
+// 将左值转换为右值引用
+std::string str = "Hello";
+std::string moved = std::move(str);
+```
+
+---
+
+**移动容器写法：移动容器内容**
+`std::move(<begin>, <end>, <dest>)`
+```cpp
+#include <algorithm>
+// 移动范围内的元素
+std::vector<int> src = {1, 2, 3};
+std::vector<int> dest(3);
+std::move(src.begin(), src.end(), dest.begin());
+```
+
+---
+
+## 引用与多态
+
+**基本写法：基类引用指向派生类**
+`<Base>& <ref> = <derived>;`
+```cpp
+// 基类引用指向派生类对象
+class Base { public: virtual void show() {} };
+class Derived : public Base { public: void show() override {} };
+Derived d;
+Base& ref = d;
+```
+
+---
+
+**虚函数写法：通过引用调用虚函数**
+`<ref>.<virtual_func>()`
+```cpp
+// 通过引用调用虚函数（多态）
+ref.show();
+```

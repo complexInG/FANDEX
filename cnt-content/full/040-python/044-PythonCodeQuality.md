@@ -332,22 +332,32 @@ $$
 
 ### 5.1 项目结构
 
-```
-quality_demo/
-├── pyproject.toml
-├── .pre-commit-config.yaml
-├── README.md
-├── src/
-│   └── quality_demo/
-│       ├── __init__.py
-│       ├── calculator.py
-│       ├── parser.py
-│       └── utils.py
-└── tests/
-    ├── __init__.py
-    ├── conftest.py
-    ├── test_calculator.py
-    └── test_parser.py
+```mermaid
+flowchart TD
+    T0["quality_demo/"]
+    T1["pyproject.toml"]
+    T2[".pre-commit-config.yaml"]
+    T3["README.md"]
+    T4["src/"]
+    T5["quality_demo/"]
+    T6["__init__.py"]
+    T7["calculator.py"]
+    T8["parser.py"]
+    T9["utils.py"]
+    T10["tests/"]
+    T11["__init__.py"]
+    T12["conftest.py"]
+    T13["test_calculator.py"]
+    T14["test_parser.py"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T9 --> T10
+    T10 --> T11
+    T10 --> T12
+    T10 --> T13
+    T10 --> T14
 ```
 
 ### 5.2 pyproject.toml（完整配置）
@@ -998,10 +1008,10 @@ jobs:
 
 | 工具 | 实现语言 | 速度（10万行） | 规则数 | 自动修复 | 配置复杂度 | 推荐场景 |
 | ---- | -------- | -------------- | ------ | -------- | ---------- | -------- |
-| Ruff | Rust | 0.1s | 700+ | ✅ | 低 | 所有新项目 |
+| Ruff | Rust | 0.1s | 700+ | 已达标 | 低 | 所有新项目 |
 | Flake8 | Python | 12s | 200+ | 部分（需插件） | 中 | 遗留项目兼容 |
 | Pylint | Python | 95s | 400+ | 部分 | 高 | 深度分析 |
-| Pyflakes | Python | 3s | 30 | ❌ | 极低 | CI 快速检查 |
+| Pyflakes | Python | 3s | 30 | 不支持 | 极低 | CI 快速检查 |
 
 ### 6.2 Formatter 工具对比
 
@@ -1174,17 +1184,21 @@ strict = true
 
 ### 8.2 monorepo 多包配置
 
-```
-monorepo/
-├── pyproject.toml          # 根配置（共享规则）
-├── packages/
-│   ├── auth/
-│   │   ├── pyproject.toml  # 包级覆盖
-│   │   └── src/
-│   └── api/
-│       ├── pyproject.toml
-│       └── src/
-└── .pre-commit-config.yaml
+```mermaid
+flowchart TD
+    T0["monorepo/"]
+    T1["pyproject.toml          # 根配置（共享规则）"]
+    T2["packages/"]
+    T3["auth/"]
+    T4["pyproject.toml  # 包级覆盖"]
+    T5["src/"]
+    T6["api/"]
+    T7["pyproject.toml"]
+    T8["src/"]
+    T9[".pre-commit-config.yaml"]
+    T0 --> T1
+    T0 --> T2
+    T8 --> T9
 ```
 
 根 `pyproject.toml` 定义基线，子包通过 `extends` 覆盖（PEP 621 + uv workspace）。
@@ -1411,24 +1425,24 @@ ignore_missing_imports = true  # Django stubs 不完整
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个工具主要职责是**自动格式化**代码而非检查？
+**常见疑问 1**：以下哪个工具主要职责是**自动格式化**代码而非检查？
 
 - A. Ruff
 - B. mypy
 - C. Black
 - D. bandit
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：Black 是不妥协的格式化器，自动重写代码风格。Ruff 现在也内置了 formatter，但历史上 Black 是专门的 formatter。mypy 是类型检查器，bandit 是安全扫描器。
+**解析讲解**：Black 是不妥协的格式化器，自动重写代码风格。Ruff 现在也内置了 formatter，但历史上 Black 是专门的 formatter。mypy 是类型检查器，bandit 是安全扫描器。
 
 ---
 
-**Q2**：以下代码的圈复杂度是多少？
+**常见疑问 2**：以下代码的圈复杂度是多少？
 
 ```python
 def f(x, y):
@@ -1450,44 +1464,44 @@ def f(x, y):
 - C. 6
 - D. 7
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：决策点为 `if x > 0`、`if y > 0`、`elif y < 0`、`elif x < 0` 共 4 个 `if/elif`，加上每个 `if` 隐含一个 else 分支。圈复杂度 = 决策点 + 1 = 5。但仔细看，`if x > 0` 的 else 分支中又有一个 `elif x < 0`，这是独立的决策点。总决策点：`x > 0`、`y > 0`、`y < 0`、`x < 0` 共 4 个，复杂度 = 4 + 1 = 5。注意 `else` 不计入决策点。但 `elif` 等价于 `else: if`，所以每个 `elif` 也算一个决策点。重新数：`x > 0`（1）、`y > 0`（2）、`y < 0`（3）、`x < 0`（4），共 4 个决策点，复杂度 = 5。答案应为 B。
+**解析讲解**：决策点为 `if x > 0`、`if y > 0`、`elif y < 0`、`elif x < 0` 共 4 个 `if/elif`，加上每个 `if` 隐含一个 else 分支。圈复杂度 = 决策点 + 1 = 5。但仔细看，`if x > 0` 的 else 分支中又有一个 `elif x < 0`，这是独立的决策点。总决策点：`x > 0`、`y > 0`、`y < 0`、`x < 0` 共 4 个，复杂度 = 4 + 1 = 5。注意 `else` 不计入决策点。但 `elif` 等价于 `else: if`，所以每个 `elif` 也算一个决策点。重新数：`x > 0`（1）、`y > 0`（2）、`y < 0`（3）、`x < 0`（4），共 4 个决策点，复杂度 = 5。答案应为 B。
 
 ---
 
-**Q3**：关于 mypy 的 `Any` 类型，以下说法错误的是？
+**常见疑问 3**：关于 mypy 的 `Any` 类型，以下说法错误的是？
 
 - A. `Any` 与所有类型兼容
 - B. `Any` 是渐进式类型系统的核心
 - C. `Any` 等价于 `object`
 - D. `disallow_any_explicit` 可禁止显式使用 `Any`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`Any` 与 `object` 不同。`object` 是所有类型的父类，但将 `str` 赋值给 `object` 后，再取用时需显式 cast。`Any` 则双向兼容，可任意赋值与取用。
+**解析讲解**：`Any` 与 `object` 不同。`object` 是所有类型的父类，但将 `str` 赋值给 `object` 后，再取用时需显式 cast。`Any` 则双向兼容，可任意赋值与取用。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q4**：Python 类型系统中，函数参数类型是 ________ 的，返回类型是 ________ 的。
+**常见疑问 4**：Python 类型系统中，函数参数类型是 ________ 的，返回类型是 ________ 的。
 
-**答案**：逆变；协变
-
----
-
-**Q5**：Ruff 用 ________ 语言实现，因此比 Flake8 快约 ________ 倍。
-
-**答案**：Rust；70（或 10-100）
+**解析讲解**：逆变；协变
 
 ---
 
-**Q6**：测试金字塔建议：底层是大量 ________ 测试，中层是适量 ________ 测试，顶层是少量 ________ 测试。
+**常见疑问 5**：Ruff 用 ________ 语言实现，因此比 Flake8 快约 ________ 倍。
 
-**答案**：单元；集成；端到端
+**解析讲解**：Rust；70（或 10-100）
 
-### 10.3 编程题
+---
 
-**Q7**：为一个现有函数添加完整的类型注解、文档字符串与单元测试。
+**常见疑问 6**：测试金字塔建议：底层是大量 ________ 测试，中层是适量 ________ 测试，顶层是少量 ________ 测试。
+
+**解析讲解**：单元；集成；端到端
+
+### 编程题知识点讲解
+
+**常见疑问 7**：为一个现有函数添加完整的类型注解、文档字符串与单元测试。
 
 ```python
 def process_users(users):
@@ -1500,7 +1514,7 @@ def process_users(users):
     return result
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from __future__ import annotations
@@ -1564,13 +1578,13 @@ def test_process_users_preserves_name() -> None:
 
 ---
 
-**Q8**：编写 `.pre-commit-config.yaml`，要求：
+**常见疑问 8**：编写 `.pre-commit-config.yaml`，要求：
 
 1. 阻止提交包含 `print(` 的 Python 文件。
 2. 阻止提交大于 1MB 的文件。
 3. 自动用 Ruff 修复 import 顺序。
 
-**参考答案**：
+**解析讲解**：
 
 ```yaml
 repos:
@@ -1597,7 +1611,7 @@ repos:
 
 ### 10.4 思考题
 
-**Q9**：你接手一个 5 万行的 Python 遗留项目，无类型注解、无测试、无 lint 配置。请设计一个 6 个月的代码质量提升路线图，包含里程碑与可量化指标。
+**常见疑问 9**：你接手一个 5 万行的 Python 遗留项目，无类型注解、无测试、无 lint 配置。请设计一个 6 个月的代码质量提升路线图，包含里程碑与可量化指标。
 
 **参考思路**：
 
@@ -1612,9 +1626,9 @@ repos:
 
 ---
 
-**Q10**：为什么"100% 测试覆盖率"不是高质量代码的充分条件？请举例说明。
+**常见疑问 10**：为什么"100% 测试覆盖率"不是高质量代码的充分条件？请举例说明。
 
-**参考答案**：
+**解析讲解**：
 
 覆盖率衡量"代码被执行过"，但不衡量"代码被正确测试过"。反例：
 
@@ -1640,24 +1654,41 @@ def test_add():
 
 ## 11. 工具链选型决策树
 
-```
-新项目？
-├─ 是 → Ruff（lint+format）+ mypy（strict）+ pytest + pre-commit
-└─ 否（遗留项目）
-   ├─ 已有 Flake8 + isort + Black？
-   │  ├─ 是 → 迁移到 Ruff（lint + format），保留配置
-   │  └─ 否 → 直接引入 Ruff
-   ├─ 已有 Pylint？
-   │  ├─ 严格依赖 Pylint 规则 → 保留 Pylint，加 Ruff
-   │  └─ 无强依赖 → 替换为 Ruff
-   ├─ 类型注解情况？
-   │  ├─ 全无 → 渐进式引入，先 core 模块
-   │  ├─ 部分 → 扩展到全项目
-   │  └─ 完整 → 启用 strict
-   └─ 测试情况？
-      ├─ 无测试 → pytest + 关键路径测试
-      ├─ unittest → 保留，新测试用 pytest
-      └─ pytest → 加 coverage + 分支覆盖
+```mermaid
+flowchart TD
+    T0["新项目？"]
+    T1["是 → Ruff（lint+format）+ mypy（strict）+ pytest + pre-commit"]
+    T2["否（遗留项目）"]
+    T3["已有 Flake8 + isort + Black？"]
+    T4["是 → 迁移到 Ruff（lint + format），保留配置"]
+    T5["否 → 直接引入 Ruff"]
+    T6["已有 Pylint？"]
+    T7["严格依赖 Pylint 规则 → 保留 Pylint，加 Ruff"]
+    T8["无强依赖 → 替换为 Ruff"]
+    T9["类型注解情况？"]
+    T10["全无 → 渐进式引入，先 core 模块"]
+    T11["部分 → 扩展到全项目"]
+    T12["完整 → 启用 strict"]
+    T13["测试情况？"]
+    T14["无测试 → pytest + 关键路径测试"]
+    T15["unittest → 保留，新测试用 pytest"]
+    T16["pytest → 加 coverage + 分支覆盖"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T2 --> T5
+    T5 --> T6
+    T2 --> T7
+    T2 --> T8
+    T8 --> T9
+    T2 --> T10
+    T2 --> T11
+    T2 --> T12
+    T12 --> T13
+    T13 --> T14
+    T13 --> T15
+    T13 --> T16
 ```
 
 ---
@@ -1736,18 +1767,19 @@ def test_add():
 
 ### 13.4 进阶路线图
 
-```
-基础 → 进阶 → 专家
- │      │      │
- │      │      └─ 自定义 Ruff 插件 / mypy plugin / 静态分析理论研究
- │      │
- │      ├─ TDD / property-based testing / 模糊测试
- │      ├─ 类型系统深入（PEP 695, 698, 696）
- │      └─ CI/CD 流水线设计 / monorepo 工具链
- │
- ├─ PEP 8 / 基础工具使用（Ruff, mypy, pytest）
- ├─ 类型注解基础（PEP 484, 526）
- └─ 单元测试编写
+```mermaid
+flowchart TD
+    T0["基础 → 进阶 → 专家"]
+    T1["自定义 Ruff 插件 / mypy plugin / 静态分析理论研究"]
+    T2["TDD / property-based testing / 模糊测试"]
+    T3["类型系统深入（PEP 695, 698, 696）"]
+    T4["CI/CD 流水线设计 / monorepo 工具链"]
+    T5["PEP 8 / 基础工具使用（Ruff, mypy, pytest）"]
+    T6["类型注解基础（PEP 484, 526）"]
+    T7["单元测试编写"]
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
 ```
 
 ---

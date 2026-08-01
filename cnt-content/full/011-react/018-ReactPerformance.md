@@ -1258,9 +1258,9 @@ Twitter Web 在迁移到 React 18 后，将全局状态从 Redux 迁移到 Zusta
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **Q1.** 以下哪种场景**不适合**使用 `React.memo`？
 
@@ -1269,14 +1269,11 @@ B. 列表项组件，父组件频繁 setState 但 props 引用稳定
 C. 父组件每次渲染都创建新对象作为 props
 D. 组件内部使用 useState 频繁更新
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
 `React.memo` 通过浅比较 props 判断是否跳过渲染。若父组件每次都创建新对象（如 `style={{ color: 'red' }}`），浅比较永远返回 false，memo 失效，反而增加比较开销。应配合 `useMemo`/`useCallback` 或提取常量。
 
-</details>
 
 **Q2.** React 18 自动批处理（Automatic Batching）相比 React 17 的改进是？
 
@@ -1285,14 +1282,11 @@ B. 在 Promise、setTimeout 中也能批处理多个 setState
 C. 自动 memo 化所有组件
 D. 自动启用并发模式
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 React 17 仅在 React 事件处理器内批处理；React 18 通过 `createRoot` 在所有上下文（Promise、setTimeout、原生事件）中批处理。这减少了不必要的 Render 次数。
 
-</details>
 
 **Q3.** 关于 `useTransition` 与 `useDeferredValue`，下列说法**错误**的是？
 
@@ -1301,14 +1295,11 @@ B. `useDeferredValue` 延迟某个值的传递
 C. 两者都能让用户输入保持响应
 D. `useTransition` 可用于监听外部 store 的变化
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：D**
 
 `useTransition` 用于将 `setState` 标记为低优先级；`useDeferredValue` 用于延迟某个值的消费。两者都用于让高优先级更新（如输入）插队。`useSyncExternalStore` 才是用于监听外部 store 的 Hook。
 
-</details>
 
 **Q4.** 下列哪种 key 策略**最不**可能导致性能问题？
 
@@ -1317,14 +1308,11 @@ B. 使用 Math.random() 生成 key
 C. 使用数据中稳定的唯一 id
 D. 不设置 key（让 React 自动用 index）
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
 稳定的唯一 id 让 React 能精确识别元素身份，最小化 DOM 操作。index 在列表顺序变化时会导致 React 错误地复用 DOM；Math.random() 每次渲染都不同，导致全量重建。
 
-</details>
 
 **Q5.** React Compiler 的核心假设是？
 
@@ -1333,63 +1321,45 @@ B. 所有状态都不可变
 C. 所有副作用都在 useEffect 中
 D. 所有依赖数组都正确
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：A**
 
 React Compiler 假设组件、Hook 是纯函数（相同输入产生相同输出，无副作用）。在此假设下，编译器可以安全地缓存中间结果。违反该假设（如 render 中修改全局变量）会导致编译产物行为不正确。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **Q1.** React Fiber 架构中，工作循环（Work Loop）默认的时间切片长度约为 `______` ms。
 
-<details>
-<summary>答案</summary>
 
 5ms（基于 `react/packages/scheduler/src/forks/Scheduler.js` 中的 `frameInterval = 5`）
 
-</details>
 
 **Q2.** `useMemo(factory, deps)` 中，当 `deps` 数组为空数组 `[]` 时，`factory` 会在 `______` 时执行一次。
 
-<details>
-<summary>答案</summary>
 
 组件首次渲染（mount）时执行一次，后续重渲染直接返回缓存值。
 
-</details>
 
 **Q3.** React 协调算法将朴素的 $O(n^3)$ 树编辑距离问题通过 `______` 与 `______` 两个假设降为 $O(n)$。
 
-<details>
-<summary>答案</summary>
 
 同层比较（不同层级的节点不会跨层移动复用）、同类型节点才合并（不同 type 直接销毁重建）。
 
-</details>
 
 **Q4.** 虚拟化列表（如 `react-window`）通过只渲染 `______` 区域内的元素，将 DOM 节点数从 $O(n)$ 降为 `______`。
 
-<details>
-<summary>答案</summary>
 
 可视（viewport）；$O(k)$（其中 $k$ 为可视区域内元素数，远小于 $n$）
 
-</details>
 
 **Q5.** React 18 中，`createRoot` 替代 `ReactDOM.render` 后启用的三大特性是 `______`、`______`、`______`。
 
-<details>
-<summary>答案</summary>
 
 并发渲染（Concurrent Rendering）、自动批处理（Automatic Batching）、Suspense for Data Fetching。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **Q1.** 优化以下组件，使其在 props.user 引用稳定时跳过重渲染：
 
@@ -1407,8 +1377,6 @@ function UserGreeting({ user, time }) {
 1. 使用 `React.memo` 包裹
 2. 自定义比较函数，仅当 `user.id` 与 `user.name` 变化时重渲染（忽略 time）
 
-<details>
-<summary>参考答案</summary>
 
 ```tsx
 import React from 'react';
@@ -1439,15 +1407,12 @@ export const UserGreeting = React.memo(function UserGreeting({
 }, areEqual);
 ```
 
-</details>
 
 **Q2.** 实现一个 `useDebouncedCallback` Hook，要求：
 1. 返回一个 debounced 函数
 2. 在组件卸载时清理定时器
 3. 使用 `useRef` 避免重建定时器
 
-<details>
-<summary>参考答案</summary>
 
 ```tsx
 import { useRef, useCallback, useEffect } from 'react';
@@ -1487,7 +1452,6 @@ function useDebouncedCallback<T extends (...args: any[]) => void>(
 }
 ```
 
-</details>
 
 **Q3.** 给定一个渲染 10000 项数据的表格组件，请：
 
@@ -1495,8 +1459,6 @@ function useDebouncedCallback<T extends (...args: any[]) => void>(
 2. 添加 `useDeferredValue` 让搜索输入保持响应
 3. 用 `Profiler` 包裹并打印渲染耗时
 
-<details>
-<summary>参考答案</summary>
 
 ```tsx
 import {
@@ -1565,26 +1527,20 @@ export default function VirtualTable() {
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **Q1.** 为什么 React 选择"组件级渲染 + memo 精细化"而非 Vue 的"字段级响应式"？请从设计哲学、可预测性、生态成熟度三个角度论述。
 
-<details>
-<summary>参考思路</summary>
 
 1. **设计哲学**：React 强调"UI 是状态的函数" $f(state) = UI$，组件级渲染保证语义清晰；Vue 字段级响应式更接近原生 JS 心智模型，但隐式追踪增加黑盒。
 2. **可预测性**：组件级渲染使开发者能通过 `React.memo`、`Profiler` 精确控制边界；字段级追踪在大型应用中难以调试（"为什么这个 watcher 触发了？"）。
 3. **生态成熟度**：组件级模型催生了 Redux、Zustand 等成熟状态库；字段级模型在 SSR、Time Travel 调试上挑战更大。
 4. **权衡**：React 19 的 React Compiler 实际上在编译期达到了字段级优化效果，同时保留了组件级的心智模型。
 
-</details>
 
 **Q2.** 在一个包含 5000 个表单项的复杂表单应用中，你会如何设计性能优化方案？请列出至少 5 项策略并说明理由。
 
-<details>
-<summary>参考思路</summary>
 
 1. **状态拆分**：每个表单项独立 `useState`，避免任一输入触发全表单重渲染。
 2. **非受控组件**：用 `useRef` 存储值，仅在提交时读取，避免每次按键触发 setState。
@@ -1595,12 +1551,9 @@ export default function VirtualTable() {
 7. **代码分割**：分步骤表单按步骤懒加载。
 8. **React Compiler**：自动 memo 化所有 props 与中间值。
 
-</details>
 
 **Q3.** 假设你的 React 应用在低端 Android 设备上 INP（Interaction to Next Paint）为 600ms，请设计一套诊断与优化流程。
 
-<details>
-<summary>参考思路</summary>
 
 诊断：
 1. 使用 Chrome DevTools Performance 录制交互，识别 Long Task。
@@ -1617,7 +1570,6 @@ export default function VirtualTable() {
 6. 静态内容用 Server Components 或 `dangerouslySetInnerHTML`。
 7. 监控：上报 INP 到 RUM 平台，建立 P95 < 200ms 的 SLA。
 
-</details>
 
 ---
 
@@ -1700,20 +1652,27 @@ export default function VirtualTable() {
 
 ## 附录 A：性能优化决策树
 
-```
-应用慢？
-├── 首屏慢（LCP/FCP）
-│   ├── 资源体积大？ → 代码分割、Tree-shaking、压缩
-│   ├── 服务端慢？ → SSR/SSG、CDN、Edge Runtime
-│   └── 图片慢？ → AVIF/WebP、lazy loading、CDN
-├── 交互卡（INP）
-│   ├── 长任务？ → useTransition、Web Worker
-│   ├── 重渲染多？ → React.memo、状态拆分、Compiler
-│   └── DOM 大？ → 虚拟化、CSS containment
-└── 滚动卡（FPS）
-    ├── 长列表？ → react-window
-    ├── 重布局？ → will-change、transform 替代 left/top
-    └── 图片多？ → lazy loading、占位符
+```mermaid
+flowchart TD
+    T0["应用慢？"]
+    T1["首屏慢（LCP/FCP）"]
+    T2["资源体积大？ → 代码分割、Tree-shaking、压缩"]
+    T3["服务端慢？ → SSR/SSG、CDN、Edge Runtime"]
+    T4["图片慢？ → AVIF/WebP、lazy loading、CDN"]
+    T5["交互卡（INP）"]
+    T6["长任务？ → useTransition、Web Worker"]
+    T7["重渲染多？ → React.memo、状态拆分、Compiler"]
+    T8["DOM 大？ → 虚拟化、CSS containment"]
+    T9["滚动卡（FPS）"]
+    T10["长列表？ → react-window"]
+    T11["重布局？ → will-change、transform 替代 left/top"]
+    T12["图片多？ → lazy loading、占位符"]
+    T0 --> T1
+    T4 --> T5
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
+    T9 --> T12
 ```
 
 ## 附录 B：性能指标速查
@@ -1763,3 +1722,643 @@ export default function VirtualTable() {
 > **本章小结**：React 性能优化是一门融合算法（协调、调度）、工程（构建、监控）与认知（设计哲学、可预测性）的系统学科。掌握 Fiber 架构、并发模式与 React Compiler 三大支柱，结合可度量的 Profiler 与 CI 性能预算，方能在企业级应用中实现可复现、可维护的性能卓越。
 
 **下一章建议**：深入阅读 `react/Fiber架构.md` 理解调度内核，`react/并发渲染与可中断更新.md` 掌握 Transitions 与 Suspense，`react/React-Compiler自动记忆化.md` 了解编译期优化前沿。
+## createPortal 渲染到任意节点
+
+**基本写法：将子节点渲染到指定容器**
+`createPortal(<子节点>, <容器>)`
+```tsx
+// 弹窗渲染到 body 避免层级污染
+import { createPortal } from 'react-dom';
+function Modal({ children }) {
+  return createPortal(<div className="modal">{children}</div>, document.body);
+}
+```
+
+---
+
+**基本写法：指定容器引用**
+`createPortal(<节点>, <ref>.current)`
+```tsx
+// 渲染到具名容器
+const containerRef = useRef(null);
+return createPortal(<Tooltip />, containerRef.current);
+```
+
+---
+
+## Portal 事件冒泡
+
+**基本写法：Portal 内事件仍向 React 父组件冒泡**
+`<父组件 onClick={<处理>}> <Portal /> </父组件>`
+```tsx
+// DOM 层级脱离但事件保持 React 树
+function App() {
+  return <div onClick={() => console.log('点击捕获')}>
+    <Modal>内容</Modal>
+  </div>;
+}
+```
+
+---
+
+## Portal 模态框实现
+
+**基本写法：模态框遮罩与内容**
+`{<可见> && <Modal><内容></Modal>}`
+```tsx
+// 条件渲染弹窗
+function Dialog({ open, onClose, children }) {
+  if (!open) return null;
+  return createPortal(
+    <div className="overlay" onClick={onClose}>
+      <div className="dialog" onClick={e => e.stopPropagation()}>{children}</div>
+    </div>, document.body);
+}
+```
+
+---
+
+## useRef 获取 DOM
+
+**基本写法：通过 ref 引用 DOM 元素**
+`const <ref> = useRef(<初值>); <元素 ref={<ref>} />`
+```tsx
+// 挂载后访问 input
+const inputRef = useRef(null);
+useEffect(() => inputRef.current.focus(), []);
+return <input ref={inputRef} />;
+```
+
+---
+
+## 回调 Ref
+
+**基本写法：使用函数接收 DOM 节点**
+`<元素 ref={<节点> => <赋值>} />`
+```tsx
+// 节点挂载与卸载时回调
+<input ref={node => { inputRef.current = node; }} />
+```
+
+---
+
+## forwardRef 转发 ref
+
+**基本写法：让子组件接收父级 ref**
+`const <组件> = forwardRef((<props>, <ref>) => <JSX>)`
+```tsx
+// 父组件直接聚焦子组件内部 input
+const FancyInput = forwardRef((props, ref) => (
+  <input ref={ref} className="fancy" />
+));
+```
+
+---
+
+## useImperativeHandle 暴露方法
+
+**基本写法：自定义暴露给父级的实例方法**
+`useImperativeHandle(<ref>, () => ({ <方法> }), [<依赖>])`
+```tsx
+// 仅暴露 focus 而非整个 DOM
+const FancyInput = forwardRef((props, ref) => {
+  const inputRef = useRef();
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current.focus()
+  }));
+  return <input ref={inputRef} />;
+});
+```
+
+---
+
+## useRef 存储可变值
+
+**基本写法：不触发渲染的容器**
+`const <ref> = useRef(<初值>); <ref>.current = <新值>;`
+```tsx
+// 存储定时器 id
+const timerRef = useRef(null);
+timerRef.current = setInterval(tick, 1000);
+```
+
+---
+
+## useRef 跨渲染保持引用
+
+**基本写法：避免每次渲染重建对象**
+`const <ref> = useRef(<对象>)`
+```tsx
+// 保持 Map 引用稳定
+const cacheRef = useRef(new Map());
+cacheRef.current.set(key, value);
+```
+
+---
+
+## 直接操作 DOM
+
+**基本写法：读取属性或调用方法**
+`<ref>.current.<方法>()`
+```tsx
+// 滚动到顶部
+listRef.current.scrollTo(0, 0);
+```
+
+---
+
+## 测量元素尺寸
+
+**基本写法：使用 getBoundingClientRect**
+`const <rect> = <ref>.current.getBoundingClientRect()`
+```tsx
+// 计算位置
+const rect = btnRef.current.getBoundingClientRect();
+setPos({ x: rect.left, y: rect.top });
+```
+
+---
+
+## ResizeObserver 监听尺寸
+
+**基本写法：监听元素尺寸变化**
+`new ResizeObserver(<回调>).observe(<节点>)`
+```tsx
+// 容器宽度变化时更新
+useEffect(() => {
+  const obs = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+  if (boxRef.current) obs.observe(boxRef.current);
+  return () => obs.disconnect();
+}, []);
+```
+
+---
+
+## focus 与 blur 控制
+
+**基本写法：编程式聚焦失焦**
+`<ref>.current.focus()`
+```tsx
+// 错误提示后自动聚焦
+inputRef.current.focus();
+inputRef.current.select();
+```
+
+---
+
+## 滚动控制
+
+**基本写法：滚动到指定位置**
+`<ref>.current.scrollTo({ top: <位置>, behavior: 'smooth' })`
+```tsx
+// 平滑滚动到底部
+listRef.current.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
+```
+
+---
+
+## scrollIntoView 进入视口
+
+**基本写法：元素滚动到可见区域**
+`<ref>.current.scrollIntoView({ behavior: 'smooth', block: 'start' })`
+```tsx
+// 锚点定位
+itemRef.current.scrollIntoView({ behavior: 'smooth' });
+```
+
+---
+
+## Portal 与 SSR 兼容
+
+**基本写法：服务端无 document 时安全降级**
+`const <容器> = typeof document !== 'undefined' ? document.body : null`
+```tsx
+// 防止服务端报错
+const target = typeof document !== 'undefined' ? document.body : null;
+return target ? createPortal(children, target) : null;
+```
+
+---
+
+## 选择器查询
+
+**基本写法：在 ref 容器内查询子元素**
+`<ref>.current.querySelector(<选择器>)`
+```tsx
+// 查找内部按钮
+const btn = rootRef.current.querySelector('.submit-btn');
+```
+
+---
+
+## className 操作
+
+**基本写法：通过 ref 修改类名**
+`<ref>.current.classList.add(<类名>)`
+```tsx
+// 动态添加高亮类
+boxRef.current.classList.add('active');
+boxRef.current.classList.remove('active');
+```
+
+---
+
+## style 行内样式修改
+
+**基本写法：直接修改 style 属性**
+`<ref>.current.style.<属性> = <值>`
+```tsx
+// 设置位移
+draggableRef.current.style.transform = `translateX(${x}px)`;
+```
+
+---
+
+## 阻止默认与冒泡
+
+**基本写法：在事件处理中调用原生方法**
+`<事件对象>.preventDefault(); <事件对象>.stopPropagation();`
+```tsx
+// 阻止表单默认提交并停止冒泡
+function handleSubmit(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+```
+
+---
+
+## DOM 引用清理
+
+**基本写法：组件卸载时清理资源**
+`return () => { <ref>.current = null; }`
+```tsx
+// 避免内存泄漏
+useEffect(() => {
+  return () => { timerRef.current = null; };
+}, []);
+```
+
+---
+
+## ReactDOM flushSync
+
+**基本写法：强制同步刷新 DOM**
+`flushSync(() => <更新>)`
+```tsx
+// 需要立即读取更新后的 DOM
+import { flushSync } from 'react-dom';
+flushSync(() => setHighlight(true));
+const rect = ref.current.getBoundingClientRect();
+```
+
+---
+
+## createRoot 挂载根
+
+**基本写法：React 18 挂载方式**
+`createRoot(<容器>).render(<JSX>)`
+```tsx
+// 替代 ReactDOM.render
+import { createRoot } from 'react-dom/client';
+createRoot(document.getElementById('root')).render(<App />);
+```
+
+---
+
+## unmountComponentAtNode 卸载
+
+**基本写法：卸载根组件**
+`<root>.unmount()`
+```tsx
+// 卸载并清理
+const root = createRoot(container);
+root.unmount();
+```
+## React.memo 组件记忆化
+
+**基本写法：对函数组件进行浅比较记忆化**
+`const <组件> = React.memo(<组件> [, <对比函数>])`
+```tsx
+// 仅当 props 变化时才重新渲染
+const UserCard = React.memo(function UserCard({ name, age }) {
+  return <div>{name} - {age}</div>;
+});
+```
+
+---
+
+**基本写法：自定义对比函数**
+`React.memo(<组件>, (<prevProps>, <nextProps>) => <是否相等>)`
+```tsx
+// 返回 true 表示跳过渲染
+const Item = React.memo(ItemBase, (prev, next) => prev.id === next.id);
+```
+
+---
+
+## useMemo 缓存计算结果
+
+**基本写法：缓存昂贵计算的结果**
+`const <值> = useMemo(() => <计算>, [<依赖>])`
+```tsx
+// 仅当 deps 变化时重新计算
+const sorted = useMemo(() => list.sort(), [list]);
+```
+
+---
+
+**基本写法：缓存对象引用**
+`const <对象> = useMemo(() => ({ <字段> }), [<依赖>])`
+```tsx
+// 避免每次渲染生成新对象引用
+const style = useMemo(() => ({ color: 'red' }), []);
+```
+
+---
+
+## useCallback 缓存函数引用
+
+**基本写法：缓存函数实例避免子组件重渲染**
+`const <函数> = useCallback((<参数>) => <逻辑>, [<依赖>])`
+```tsx
+// 配合 React.memo 子组件使用
+const handleClick = useCallback(() => doAction(id), [id]);
+```
+
+---
+
+## lazy 与 Suspense 延迟加载
+
+**基本写法：动态导入组件**
+`const <组件> = lazy(() => import(<路径>))`
+```tsx
+// 按需加载路由级组件
+const Detail = lazy(() => import('./Detail'));
+```
+
+---
+
+**基本写法：配合 Suspense 显示降级 UI**
+`<Suspense fallback={<占位>}> <组件 /> </Suspense>`
+```tsx
+// 加载期间显示 fallback
+<Suspense fallback={<Spinner />}>
+  <Detail />
+</Suspense>
+```
+
+---
+
+**基本写法：嵌套 Suspense 边界**
+`<Suspense fallback={<外层占位>}> <<父组件> /> </Suspense>`
+```tsx
+// 子组件独立Suspense避免整页阻塞
+<Suspense fallback={<PageSkeleton />}>
+  <Header />
+  <Suspense fallback={<ListSkeleton />}>
+    <List />
+  </Suspense>
+</Suspense>
+```
+
+---
+
+## 列表虚拟化
+
+**基本写法：长列表只渲染可见项**
+`<虚拟列表 <数据>={数据} />`
+```tsx
+// 使用 react-window 减少 DOM 节点数量
+import { FixedSizeList } from 'react-window';
+<FixedSizeList height={600} itemCount={10000} itemSize={40} width={400}>
+  {({ index, style }) => <div style={style}>行 {index}</div>}
+</FixedSizeList>
+```
+
+---
+
+## key 优化列表渲染
+
+**基本写法：为列表项提供稳定唯一 key**
+`<列表项 key={<唯一标识>} />`
+```tsx
+// 使用业务 id 而非数组索引
+{todos.map(t => <TodoItem key={t.id} todo={t} />)}
+```
+
+---
+
+## 状态拆分降低渲染范围
+
+**基本写法：将高频更新状态隔离到独立子组件**
+`function <子组件>() { const [<状态>, <设置>] = useState(<初值>); }`
+```tsx
+// 输入框高频更新不触发父组件渲染
+function SearchInput() {
+  const [text, setText] = useState('');
+  return <input value={text} onChange={e => setText(e.target.value)} />;
+}
+```
+
+---
+
+## useDeferredValue 延迟更新
+
+**基本写法：将非紧急更新标记为可延迟**
+`const <延迟值> = useDeferredValue(<值>)`
+```tsx
+// 搜索结果可延迟，输入框保持流畅
+const deferredQuery = useDeferredValue(query);
+const results = useMemo(() => filter(deferredQuery), [deferredQuery]);
+```
+
+---
+
+## 批量更新 Automatic Batching
+
+**基本写法：同一事件中多次 setState 自动合并**
+`<设置1>(<值1>); <设置2>(<值2>);`
+```tsx
+// React 18+ 自动批量合并为一次渲染
+function handleClick() {
+  setCount(c => c + 1);
+  setFlag(f => !f);
+}
+```
+
+---
+
+**基本写法：flushSync 强制同步刷新**
+`flushSync(() => { <更新> })`
+```tsx
+// 需要立即反映 DOM 时使用
+import { flushSync } from 'react-dom';
+flushSync(() => setScrollTop(0));
+```
+
+---
+
+## Profiler 性能分析
+
+**基本写法：测量组件渲染耗时**
+`<Profiler id={<标识>} onRender={<回调>}> <子组件 /> </Profiler>`
+```tsx
+// 收集渲染阶段与耗时
+<Profiler id="App" onRender={(id, phase, actualTime) => console.log(id, phase, actualTime)}>
+  <App />
+</Profiler>
+```
+
+---
+
+## 图片与资源懒加载
+
+**基本写法：图片原生懒加载**
+`<img src={<路径>} loading="lazy" />`
+```tsx
+// 视口进入时再加载图片
+<img src="/a.jpg" loading="lazy" alt="封面" />
+```
+
+---
+
+## 代码分割按路由
+
+**基本写法：路由配置级懒加载**
+`const <页面> = lazy(() => import(<页面路径>))`
+```tsx
+// 每个路由独立 chunk
+const Home = lazy(() => import('./pages/Home'));
+const User = lazy(() => import('./pages/User'));
+```
+
+---
+
+## Context 渲染优化
+
+**基本写法：拆分 Context 避免无关消费者更新**
+`const <静态Context> = createContext(<静态值>); const <动态Context> = createContext(<动态值>);`
+```tsx
+// 静态与高频更新状态分离
+const ThemeContext = createContext('light');
+const UserContext = createContext(null);
+```
+
+---
+
+## ref 读取而非订阅
+
+**基本写法：频繁变化的值不进 state**
+`const <ref> = useRef(<初值>); <ref>.current = <新值>;`
+```tsx
+// 不触发渲染的容器
+const timerRef = useRef(null);
+timerRef.current = setInterval(tick, 1000);
+```
+
+---
+
+## 使用 Production 构建
+
+**基本写法：生产环境去除开发警告**
+`npm run build`
+```bash
+# 生产构建自动启用优化
+npm run build
+```
+
+---
+
+## Strict Mode 排查副作用
+
+**基本写法：开发期双重渲染检测副作用**
+`<React.StrictMode> <根组件 /> </React.StrictMode>`
+```tsx
+// 开发环境帮助发现不纯渲染
+<React.StrictMode>
+  <App />
+</React.StrictMode>
+```
+
+---
+
+## Web Worker 卸载计算
+
+**基本写法：将繁重任务交给 Worker**
+`const <worker> = new Worker(new URL(<脚本>, import.meta.url))`
+```tsx
+// 主线程保持响应
+const worker = new Worker(new URL('./heavy.js', import.meta.url));
+worker.postMessage(data);
+```
+
+---
+
+## useSyncExternalStore 订阅外部源
+
+**基本写法：安全订阅外部 store**
+`const <值> = useSyncExternalStore(<订阅>, <快照>, [<服务端快照>])`
+```tsx
+// 避免 tearing 撕裂问题
+const width = useSyncExternalStore(subscribeResize, () => window.innerWidth);
+```
+
+---
+
+## 避免内联对象与函数
+
+**基本写法：将常量对象提到组件外**
+`const <常量对象> = { <字段> };`
+```tsx
+// 防止每次渲染新建对象破坏 memo
+const HEADER_STYLE = { padding: 8 };
+function Header() { return <div style={HEADER_STYLE} />; }
+```
+
+---
+
+## useTransition 降低更新优先级
+
+**基本写法：将昂贵更新标记为过渡**
+`const [<isPending>, <startTransition>] = useTransition()`
+```tsx
+// 切换标签页时保持交互响应
+const [isPending, startTransition] = useTransition();
+startTransition(() => setTab(target));
+```
+
+---
+
+## 虚拟化表格优化
+
+**基本写法：表格按行虚拟化**
+`<FixedSizeList <数据>={行} itemSize={<行高>} >`
+```tsx
+// 万行数据表格仍流畅
+<FixedSizeList height={500} itemCount={rows.length} itemSize={36} width="100%">
+  {({ index, style, data }) => <Row style={style} data={data[index]} />}
+</FixedSizeList>
+```
+
+---
+
+## tree shaking 减小体积
+
+**基本写法：按命名导入而非整体引入**
+`import { <命名> } from <库>`
+```tsx
+// 仅打包使用到的工具函数
+import { debounce } from 'lodash-es';
+```
+
+---
+
+## 预加载关键资源
+
+**基本写法：在入口注入资源预取**
+`<link rel="preload" href=<资源> as=<类型> />`
+```tsx
+// 关键字体提前加载
+<link rel="preload" href="/fonts.woff2" as="font" type="font/woff2" crossOrigin />
+```

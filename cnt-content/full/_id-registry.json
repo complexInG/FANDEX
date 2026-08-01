@@ -1,7 +1,7 @@
 {
   "registry_version": "1.0.0",
-  "updated_at": "2026-07-30T16:22:43.492Z",
-  "next_module_sequence": 53,
+  "updated_at": "2026-08-01T09:42:27.915Z",
+  "next_module_sequence": 59,
   "modules": [
     {
       "module_id": "M001",
@@ -469,6 +469,60 @@
       "folder_order": 52,
       "name": "大数据",
       "allocated_at": "2026-07-30T16:22:43.408Z",
+      "status": "active"
+    },
+    {
+      "module_id": "M053",
+      "english_short": "rust",
+      "sequence": 53,
+      "folder_order": 53,
+      "name": "Rust",
+      "allocated_at": "2026-08-01T09:42:09.781Z",
+      "status": "active"
+    },
+    {
+      "module_id": "M054",
+      "english_short": "shell",
+      "sequence": 54,
+      "folder_order": 54,
+      "name": "Shell",
+      "allocated_at": "2026-08-01T09:42:10.119Z",
+      "status": "active"
+    },
+    {
+      "module_id": "M055",
+      "english_short": "astro",
+      "sequence": 55,
+      "folder_order": 55,
+      "name": "Astro",
+      "allocated_at": "2026-08-01T09:42:10.473Z",
+      "status": "active"
+    },
+    {
+      "module_id": "M056",
+      "english_short": "vite",
+      "sequence": 56,
+      "folder_order": 56,
+      "name": "Vite",
+      "allocated_at": "2026-08-01T09:42:10.832Z",
+      "status": "active"
+    },
+    {
+      "module_id": "M057",
+      "english_short": "pnpm-monorepo",
+      "sequence": 57,
+      "folder_order": 57,
+      "name": "pnpm与Monorepo",
+      "allocated_at": "2026-08-01T09:42:11.218Z",
+      "status": "active"
+    },
+    {
+      "module_id": "M058",
+      "english_short": "tailwind",
+      "sequence": 58,
+      "folder_order": 58,
+      "name": "Tailwind CSS",
+      "allocated_at": "2026-08-01T09:42:16.405Z",
       "status": "active"
     }
   ],
@@ -23622,7 +23676,2727 @@
       "title": "Decorator",
       "allocated_at": "2026-07-30T16:22:43.491Z",
       "status": "active"
+    },
+    {
+      "doc_id": "D02316",
+      "module_id": "M001",
+      "sequence": 2316,
+      "doc_order": 23,
+      "english_name": "NodeJsInstall",
+      "title": "编程入门 Node.js 安装",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02317",
+      "module_id": "M001",
+      "sequence": 2317,
+      "doc_order": 24,
+      "english_name": "NpmManager",
+      "title": "编程入门 npm 包管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02318",
+      "module_id": "M001",
+      "sequence": 2318,
+      "doc_order": 25,
+      "english_name": "PnpmYarnManager",
+      "title": "编程入门 pnpm 与 yarn 包管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02319",
+      "module_id": "M001",
+      "sequence": 2319,
+      "doc_order": 26,
+      "english_name": "NvmVersionManage",
+      "title": "编程入门 nvm 版本管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02320",
+      "module_id": "M001",
+      "sequence": 2320,
+      "doc_order": 27,
+      "english_name": "PythonInstall",
+      "title": "编程入门 Python 安装",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02321",
+      "module_id": "M001",
+      "sequence": 2321,
+      "doc_order": 28,
+      "english_name": "PipVenvManager",
+      "title": "编程入门 pip 与 venv 包管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02322",
+      "module_id": "M001",
+      "sequence": 2322,
+      "doc_order": 29,
+      "english_name": "PyenvUvManage",
+      "title": "编程入门 pyenv 与 uv 版本管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02323",
+      "module_id": "M001",
+      "sequence": 2323,
+      "doc_order": 30,
+      "english_name": "JavaJdkConfig",
+      "title": "编程入门 Java JDK 配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02324",
+      "module_id": "M001",
+      "sequence": 2324,
+      "doc_order": 31,
+      "english_name": "VSCodeInstall",
+      "title": "编程入门 VS Code 安装配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02325",
+      "module_id": "M001",
+      "sequence": 2325,
+      "doc_order": 32,
+      "english_name": "GitInstallConfig",
+      "title": "编程入门 Git 安装配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02326",
+      "module_id": "M001",
+      "sequence": 2326,
+      "doc_order": 33,
+      "english_name": "DockerInstall",
+      "title": "编程入门 Docker 安装",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02327",
+      "module_id": "M001",
+      "sequence": 2327,
+      "doc_order": 34,
+      "english_name": "TextProcessing",
+      "title": "文本处理命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02328",
+      "module_id": "M001",
+      "sequence": 2328,
+      "doc_order": 35,
+      "english_name": "PipeRedirect",
+      "title": "管道与重定向速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02329",
+      "module_id": "M001",
+      "sequence": 2329,
+      "doc_order": 36,
+      "english_name": "ProcessManage",
+      "title": "进程管理命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02330",
+      "module_id": "M001",
+      "sequence": 2330,
+      "doc_order": 37,
+      "english_name": "CompressArchive",
+      "title": "压缩解压命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02331",
+      "module_id": "M002",
+      "sequence": 2331,
+      "doc_order": 27,
+      "english_name": "TaskList",
+      "title": "Markdown 任务列表",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02332",
+      "module_id": "M002",
+      "sequence": 2332,
+      "doc_order": 28,
+      "english_name": "DefinitionList",
+      "title": "Markdown 定义列表",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02333",
+      "module_id": "M002",
+      "sequence": 2333,
+      "doc_order": 29,
+      "english_name": "AdmonitionCallout",
+      "title": "Markdown 提示框（admonition/callout）",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02334",
+      "module_id": "M002",
+      "sequence": 2334,
+      "doc_order": 30,
+      "english_name": "HtmlEmbed",
+      "title": "Markdown HTML 内嵌",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02335",
+      "module_id": "M002",
+      "sequence": 2335,
+      "doc_order": 31,
+      "english_name": "BlockquoteNestedList",
+      "title": "Markdown 引用与嵌套列表语法速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02336",
+      "module_id": "M002",
+      "sequence": 2336,
+      "doc_order": 32,
+      "english_name": "FrontmatterYAML",
+      "title": "Markdown Frontmatter YAML 语法速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02337",
+      "module_id": "M004",
+      "sequence": 2337,
+      "doc_order": 37,
+      "english_name": "GitRepoInit",
+      "title": "GitHub 仓库初始化",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02338",
+      "module_id": "M004",
+      "sequence": 2338,
+      "doc_order": 38,
+      "english_name": "GitCommitPush",
+      "title": "GitHub 提交与推送",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02339",
+      "module_id": "M004",
+      "sequence": 2339,
+      "doc_order": 39,
+      "english_name": "GitPullFetch",
+      "title": "GitHub 拉取与获取",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02340",
+      "module_id": "M004",
+      "sequence": 2340,
+      "doc_order": 40,
+      "english_name": "GitMergeRebase",
+      "title": "GitHub 合并与变基",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02341",
+      "module_id": "M004",
+      "sequence": 2341,
+      "doc_order": 41,
+      "english_name": "GitConflictResolve",
+      "title": "GitHub 冲突解决",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02342",
+      "module_id": "M004",
+      "sequence": 2342,
+      "doc_order": 42,
+      "english_name": "GitTagManage",
+      "title": "GitHub 标签管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02343",
+      "module_id": "M004",
+      "sequence": 2343,
+      "doc_order": 43,
+      "english_name": "GitRemoteManage",
+      "title": "GitHub 远程仓库管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02344",
+      "module_id": "M004",
+      "sequence": 2344,
+      "doc_order": 44,
+      "english_name": "GitHistoryLog",
+      "title": "GitHub 历史与日志",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02345",
+      "module_id": "M004",
+      "sequence": 2345,
+      "doc_order": 45,
+      "english_name": "GitStashReset",
+      "title": "GitHub 暂存与回退",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02346",
+      "module_id": "M004",
+      "sequence": 2346,
+      "doc_order": 46,
+      "english_name": "GhCliAuth",
+      "title": "GitHub CLI 认证配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02347",
+      "module_id": "M004",
+      "sequence": 2347,
+      "doc_order": 47,
+      "english_name": "GhPrManage",
+      "title": "GitHub CLI PR 管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02348",
+      "module_id": "M004",
+      "sequence": 2348,
+      "doc_order": 48,
+      "english_name": "GhIssueManage",
+      "title": "GitHub CLI Issue 管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02349",
+      "module_id": "M004",
+      "sequence": 2349,
+      "doc_order": 49,
+      "english_name": "GhRepoManage",
+      "title": "GitHub CLI 仓库管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02350",
+      "module_id": "M004",
+      "sequence": 2350,
+      "doc_order": 50,
+      "english_name": "GhRelease",
+      "title": "gh release 发布命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02351",
+      "module_id": "M004",
+      "sequence": 2351,
+      "doc_order": 51,
+      "english_name": "GhWorkflow",
+      "title": "gh workflow 工作流命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02352",
+      "module_id": "M004",
+      "sequence": 2352,
+      "doc_order": 52,
+      "english_name": "GhGist",
+      "title": "gh gist 代码片段命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02353",
+      "module_id": "M004",
+      "sequence": 2353,
+      "doc_order": 53,
+      "english_name": "GhExtension",
+      "title": "gh extension 扩展命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02354",
+      "module_id": "M004",
+      "sequence": 2354,
+      "doc_order": 54,
+      "english_name": "GhApi",
+      "title": "gh api 调用命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02355",
+      "module_id": "M004",
+      "sequence": 2355,
+      "doc_order": 55,
+      "english_name": "GhSearch",
+      "title": "gh search 搜索命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02356",
+      "module_id": "M004",
+      "sequence": 2356,
+      "doc_order": 56,
+      "english_name": "GhLabel",
+      "title": "gh label 与 alias/config 命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02357",
+      "module_id": "M004",
+      "sequence": 2357,
+      "doc_order": 57,
+      "english_name": "GhAliasConfig",
+      "title": "gh alias 与 config 命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02358",
+      "module_id": "M007",
+      "sequence": 2358,
+      "doc_order": 46,
+      "english_name": "Grid",
+      "title": "CSS Grid 布局速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02359",
+      "module_id": "M007",
+      "sequence": 2359,
+      "doc_order": 47,
+      "english_name": "Transform3D",
+      "title": "CSS transform 与 3D 变换语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02360",
+      "module_id": "M007",
+      "sequence": 2360,
+      "doc_order": 48,
+      "english_name": "ScopeAtRule",
+      "title": "CSS @scope 规则语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02361",
+      "module_id": "M007",
+      "sequence": 2361,
+      "doc_order": 49,
+      "english_name": "CSSNesting",
+      "title": "CSS 原生嵌套语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02362",
+      "module_id": "M007",
+      "sequence": 2362,
+      "doc_order": 50,
+      "english_name": "ModernColorSpace",
+      "title": "CSS 现代色彩空间语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02363",
+      "module_id": "M008",
+      "sequence": 2363,
+      "doc_order": 52,
+      "english_name": "ES2024NewFeatures",
+      "title": "ES2023/2024/2025 新特性",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02364",
+      "module_id": "M008",
+      "sequence": 2364,
+      "doc_order": 53,
+      "english_name": "MapSetWeakMapWeakSet",
+      "title": "JavaScript Map/Set/WeakMap/WeakSet 语法速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02365",
+      "module_id": "M008",
+      "sequence": 2365,
+      "doc_order": 54,
+      "english_name": "ArrayBufferTypedArray",
+      "title": "JavaScript ArrayBuffer 与 TypedArray 语法速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02366",
+      "module_id": "M008",
+      "sequence": 2366,
+      "doc_order": 55,
+      "english_name": "PackageManagerCommands",
+      "title": "JavaScript 包管理命令速查（npm/pnpm/yarn）",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02367",
+      "module_id": "M008",
+      "sequence": 2367,
+      "doc_order": 56,
+      "english_name": "ConsoleAPI",
+      "title": "JavaScript console API 语法速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02368",
+      "module_id": "M009",
+      "sequence": 2368,
+      "doc_order": 52,
+      "english_name": "TscCompilerCommands",
+      "title": "TypeScript tsc 编译命令速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02369",
+      "module_id": "M010",
+      "sequence": 2369,
+      "doc_order": 36,
+      "english_name": "Vue3ViteBuildConfig",
+      "title": "Vue 3 Vite 构建配置与命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02370",
+      "module_id": "M010",
+      "sequence": 2370,
+      "doc_order": 37,
+      "english_name": "Vue3NewFeatures3435",
+      "title": "Vue 3.4 / 3.5 新特性",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02371",
+      "module_id": "M011",
+      "sequence": 2371,
+      "doc_order": 46,
+      "english_name": "ReactViteToolchainCommand",
+      "title": "React Vite 与工具链命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02372",
+      "module_id": "M013",
+      "sequence": 2372,
+      "doc_order": 71,
+      "english_name": "JavaNIOChannelBuffer",
+      "title": "Java NIO 通道与缓冲区",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02373",
+      "module_id": "M013",
+      "sequence": 2373,
+      "doc_order": 72,
+      "english_name": "JDBCDatabaseConnection",
+      "title": "Java JDBC 数据库连接",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02374",
+      "module_id": "M013",
+      "sequence": 2374,
+      "doc_order": 73,
+      "english_name": "JavaOptionalClass",
+      "title": "Java Optional 类",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02375",
+      "module_id": "M013",
+      "sequence": 2375,
+      "doc_order": 74,
+      "english_name": "ExecutorForkJoinPool",
+      "title": "Java Executor 与 ForkJoin",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02376",
+      "module_id": "M013",
+      "sequence": 2376,
+      "doc_order": 75,
+      "english_name": "JavaPathFiles",
+      "title": "Java Path 与 Files 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02377",
+      "module_id": "M013",
+      "sequence": 2377,
+      "doc_order": 76,
+      "english_name": "JavaJshellJpackage",
+      "title": "启动 REPL 交互环境",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02378",
+      "module_id": "M013",
+      "sequence": 2378,
+      "doc_order": 77,
+      "english_name": "JavaCountDownLatchCyclicBarrier",
+      "title": "Java 同步器 CountDownLatch/CyclicBarrier/Phaser 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02379",
+      "module_id": "M013",
+      "sequence": 2379,
+      "doc_order": 78,
+      "english_name": "JavaBlockingQueue",
+      "title": "Java 阻塞队列 BlockingQueue 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02380",
+      "module_id": "M013",
+      "sequence": 2380,
+      "doc_order": 79,
+      "english_name": "JavaTryWithResources",
+      "title": "Java try-with-resources 与异常链语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02381",
+      "module_id": "M013",
+      "sequence": 2381,
+      "doc_order": 80,
+      "english_name": "JavaHttpClientWebSocket",
+      "title": "Java HttpClient 与 WebSocket 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02382",
+      "module_id": "M013",
+      "sequence": 2382,
+      "doc_order": 81,
+      "english_name": "JavaTimeFormatting",
+      "title": "Java 时间格式化 DateTimeFormatter/ZoneId 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02383",
+      "module_id": "M013",
+      "sequence": 2383,
+      "doc_order": 82,
+      "english_name": "JavaTypeErasure",
+      "title": "Java 类型擦除与桥接方法语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02384",
+      "module_id": "M013",
+      "sequence": 2384,
+      "doc_order": 83,
+      "english_name": "JavaEnumAdvanced",
+      "title": "Java 枚举进阶 EnumSet/EnumMap/枚举单例语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02385",
+      "module_id": "M013",
+      "sequence": 2385,
+      "doc_order": 84,
+      "english_name": "JavaIteratorIterable",
+      "title": "Java Iterator/Iterable/Spliterator 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02386",
+      "module_id": "M013",
+      "sequence": 2386,
+      "doc_order": 85,
+      "english_name": "JavaComparatorComparable",
+      "title": "Java Comparator/Comparable 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02387",
+      "module_id": "M013",
+      "sequence": 2387,
+      "doc_order": 86,
+      "english_name": "JavaStringFormat",
+      "title": "Java String.format/printf/MessageFormat 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02388",
+      "module_id": "M013",
+      "sequence": 2388,
+      "doc_order": 87,
+      "english_name": "JavaArraysUtility",
+      "title": "Java Arrays 工具类语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02389",
+      "module_id": "M013",
+      "sequence": 2389,
+      "doc_order": 88,
+      "english_name": "JavaObjectsUtility",
+      "title": "Java Objects 工具类语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02390",
+      "module_id": "M013",
+      "sequence": 2390,
+      "doc_order": 89,
+      "english_name": "JavaCommandLineTools",
+      "title": "Java 命令行工具 javac/java/jar/jshell/jpackage 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02391",
+      "module_id": "M013",
+      "sequence": 2391,
+      "doc_order": 90,
+      "english_name": "MavenPomConfiguration",
+      "title": "Maven pom.xml 配置语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02392",
+      "module_id": "M013",
+      "sequence": 2392,
+      "doc_order": 91,
+      "english_name": "GradleBuildConfiguration",
+      "title": "Gradle build.gradle 配置语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02393",
+      "module_id": "M014",
+      "sequence": 2393,
+      "doc_order": 53,
+      "english_name": "FlowAdvanced",
+      "title": "Kotlin Flow 进阶",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02394",
+      "module_id": "M015",
+      "sequence": 2394,
+      "doc_order": 36,
+      "english_name": "OOP",
+      "title": "C# 面向对象编程",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02395",
+      "module_id": "M015",
+      "sequence": 2395,
+      "doc_order": 37,
+      "english_name": "LinqAsync",
+      "title": "C# LINQ 与异步速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02396",
+      "module_id": "M015",
+      "sequence": 2396,
+      "doc_order": 38,
+      "english_name": "LinqAdvanced",
+      "title": "C# LINQ 进阶操作",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02397",
+      "module_id": "M015",
+      "sequence": 2397,
+      "doc_order": 39,
+      "english_name": "FileAndStream",
+      "title": "C# 文件与流操作",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02398",
+      "module_id": "M015",
+      "sequence": 2398,
+      "doc_order": 40,
+      "english_name": "JsonSerialization",
+      "title": "C# JSON 序列化",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02399",
+      "module_id": "M015",
+      "sequence": 2399,
+      "doc_order": 41,
+      "english_name": "RegularExpression",
+      "title": "C# 正则表达式",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02400",
+      "module_id": "M015",
+      "sequence": 2400,
+      "doc_order": 42,
+      "english_name": "DotnetCli",
+      "title": "C# .NET CLI 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02401",
+      "module_id": "M015",
+      "sequence": 2401,
+      "doc_order": 43,
+      "english_name": "NetworkingHttp",
+      "title": "C# HttpClient 网络请求",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02402",
+      "module_id": "M017",
+      "sequence": 2402,
+      "doc_order": 32,
+      "english_name": "FileIO",
+      "title": "Lua 文件 IO 进阶",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02403",
+      "module_id": "M017",
+      "sequence": 2403,
+      "doc_order": 33,
+      "english_name": "Lua54Features",
+      "title": "Lua 5.4 新特性",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02404",
+      "module_id": "M017",
+      "sequence": 2404,
+      "doc_order": 34,
+      "english_name": "LuaRocks",
+      "title": "Lua LuaRocks 包管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02405",
+      "module_id": "M017",
+      "sequence": 2405,
+      "doc_order": 35,
+      "english_name": "IoLibrary",
+      "title": "Lua io 库语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02406",
+      "module_id": "M017",
+      "sequence": 2406,
+      "doc_order": 36,
+      "english_name": "MathLibrary",
+      "title": "Lua math 库语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02407",
+      "module_id": "M017",
+      "sequence": 2407,
+      "doc_order": 37,
+      "english_name": "OsLibrary",
+      "title": "Lua os 库语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02408",
+      "module_id": "M019",
+      "sequence": 2408,
+      "doc_order": 40,
+      "english_name": "MergeStatement",
+      "title": "SQL MERGE / UPSERT 语句语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02409",
+      "module_id": "M019",
+      "sequence": 2409,
+      "doc_order": 41,
+      "english_name": "ExceptIntersect",
+      "title": "SQL EXCEPT / INTERSECT 集合操作语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02410",
+      "module_id": "M019",
+      "sequence": 2410,
+      "doc_order": 42,
+      "english_name": "TypeConversion",
+      "title": "类型转换 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02411",
+      "module_id": "M020",
+      "sequence": 2411,
+      "doc_order": 78,
+      "english_name": "DDL",
+      "title": "MySQL DDL 数据定义",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02412",
+      "module_id": "M020",
+      "sequence": 2412,
+      "doc_order": 79,
+      "english_name": "DML",
+      "title": "MySQL DML 数据操作",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02413",
+      "module_id": "M020",
+      "sequence": 2413,
+      "doc_order": 80,
+      "english_name": "DQL",
+      "title": "MySQL DQL 查询速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02414",
+      "module_id": "M020",
+      "sequence": 2414,
+      "doc_order": 81,
+      "english_name": "IndexManagement",
+      "title": "MySQL 索引管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02415",
+      "module_id": "M020",
+      "sequence": 2415,
+      "doc_order": 82,
+      "english_name": "UserPermission",
+      "title": "MySQL 用户与权限管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02416",
+      "module_id": "M020",
+      "sequence": 2416,
+      "doc_order": 83,
+      "english_name": "CLI",
+      "title": "MySQL CLI 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02417",
+      "module_id": "M020",
+      "sequence": 2417,
+      "doc_order": 84,
+      "english_name": "Mysqladmin",
+      "title": "mysqladmin 管理命令 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02418",
+      "module_id": "M020",
+      "sequence": 2418,
+      "doc_order": 85,
+      "english_name": "View",
+      "title": "视图 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02419",
+      "module_id": "M020",
+      "sequence": 2419,
+      "doc_order": 86,
+      "english_name": "EventScheduler",
+      "title": "事件调度器 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02420",
+      "module_id": "M020",
+      "sequence": 2420,
+      "doc_order": 87,
+      "english_name": "CharsetCollation",
+      "title": "字符集与排序规则 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02421",
+      "module_id": "M021",
+      "sequence": 2421,
+      "doc_order": 44,
+      "english_name": "DDL",
+      "title": "PostgreSQL DDL 数据定义",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02422",
+      "module_id": "M021",
+      "sequence": 2422,
+      "doc_order": 45,
+      "english_name": "DML",
+      "title": "PostgreSQL DML 数据操作",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02423",
+      "module_id": "M021",
+      "sequence": 2423,
+      "doc_order": 46,
+      "english_name": "WindowFunction",
+      "title": "PostgreSQL 窗口函数",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02424",
+      "module_id": "M021",
+      "sequence": 2424,
+      "doc_order": 47,
+      "english_name": "CTE",
+      "title": "PostgreSQL CTE 递归查询",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02425",
+      "module_id": "M021",
+      "sequence": 2425,
+      "doc_order": 48,
+      "english_name": "PsqlCLI",
+      "title": "PostgreSQL psql CLI 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02426",
+      "module_id": "M021",
+      "sequence": 2426,
+      "doc_order": 49,
+      "english_name": "PgDumpRestore",
+      "title": "pg_dump 与 pg_restore 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02427",
+      "module_id": "M021",
+      "sequence": 2427,
+      "doc_order": 50,
+      "english_name": "ArrayType",
+      "title": "数组类型操作 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02428",
+      "module_id": "M021",
+      "sequence": 2428,
+      "doc_order": 51,
+      "english_name": "SchemaManagement",
+      "title": "模式（Schema）管理 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02429",
+      "module_id": "M021",
+      "sequence": 2429,
+      "doc_order": 52,
+      "english_name": "ViewMaterializedView",
+      "title": "视图与物化视图 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02430",
+      "module_id": "M021",
+      "sequence": 2430,
+      "doc_order": 53,
+      "english_name": "ListenNotify",
+      "title": "LISTEN/NOTIFY 监听通知 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02431",
+      "module_id": "M022",
+      "sequence": 2431,
+      "doc_order": 24,
+      "english_name": "HashCommand",
+      "title": "Redis Hash 命令速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02432",
+      "module_id": "M022",
+      "sequence": 2432,
+      "doc_order": 25,
+      "english_name": "ListSetZSetCommand",
+      "title": "Redis List/Set/ZSet 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02433",
+      "module_id": "M022",
+      "sequence": 2433,
+      "doc_order": 26,
+      "english_name": "PubSubCommand",
+      "title": "Redis 发布订阅命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02434",
+      "module_id": "M022",
+      "sequence": 2434,
+      "doc_order": 27,
+      "english_name": "KeyManagement",
+      "title": "Redis Key 管理与过期命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02435",
+      "module_id": "M022",
+      "sequence": 2435,
+      "doc_order": 28,
+      "english_name": "ACL",
+      "title": "Redis 安全与 ACL 命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02436",
+      "module_id": "M022",
+      "sequence": 2436,
+      "doc_order": 29,
+      "english_name": "NewFeatures7",
+      "title": "Redis 7.0+ 新特性命令速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02437",
+      "module_id": "M025",
+      "sequence": 2437,
+      "doc_order": 52,
+      "english_name": "CStandardLibrary",
+      "title": "C 标准库函数速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02438",
+      "module_id": "M025",
+      "sequence": 2438,
+      "doc_order": 53,
+      "english_name": "CPosixSystemCall",
+      "title": "C POSIX 与系统调用速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02439",
+      "module_id": "M025",
+      "sequence": 2439,
+      "doc_order": 54,
+      "english_name": "C23NewFeatures",
+      "title": "C23 新特性",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02440",
+      "module_id": "M025",
+      "sequence": 2440,
+      "doc_order": 55,
+      "english_name": "CCompilerOptions",
+      "title": "C 编译器命令 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02441",
+      "module_id": "M025",
+      "sequence": 2441,
+      "doc_order": 56,
+      "english_name": "CDebugGdb",
+      "title": "C gdb 调试 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02442",
+      "module_id": "M025",
+      "sequence": 2442,
+      "doc_order": 57,
+      "english_name": "CValgrind",
+      "title": "C Valgrind 内存检测 语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02443",
+      "module_id": "M026",
+      "sequence": 2443,
+      "doc_order": 67,
+      "english_name": "STLContainerUsage",
+      "title": "C++ STL 容器使用速查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02444",
+      "module_id": "M026",
+      "sequence": 2444,
+      "doc_order": 68,
+      "english_name": "StructuredBinding",
+      "title": "C++ 结构化绑定语法速查手册",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02445",
+      "module_id": "M026",
+      "sequence": 2445,
+      "doc_order": 69,
+      "english_name": "CppSTLIterator",
+      "title": "C++ STL 迭代器",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02446",
+      "module_id": "M026",
+      "sequence": 2446,
+      "doc_order": 70,
+      "english_name": "CppTuplePair",
+      "title": "C++ tuple 与 pair",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02447",
+      "module_id": "M026",
+      "sequence": 2447,
+      "doc_order": 71,
+      "english_name": "CppVariantOptionalAny",
+      "title": "C++ variant / optional / any",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02448",
+      "module_id": "M026",
+      "sequence": 2448,
+      "doc_order": 72,
+      "english_name": "CMakeBuild",
+      "title": "C++ CMake 构建命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02449",
+      "module_id": "M026",
+      "sequence": 2449,
+      "doc_order": 73,
+      "english_name": "DebugCommand",
+      "title": "C++ 调试命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02450",
+      "module_id": "M026",
+      "sequence": 2450,
+      "doc_order": 74,
+      "english_name": "LinkSymbol",
+      "title": "C++ 链接与符号",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02451",
+      "module_id": "M026",
+      "sequence": 2451,
+      "doc_order": 75,
+      "english_name": "Cpp26LatestStandard",
+      "title": "C++26 最新标准",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02452",
+      "module_id": "M026",
+      "sequence": 2452,
+      "doc_order": 76,
+      "english_name": "Cpp20Overview",
+      "title": "C++20 新特性汇总",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02453",
+      "module_id": "M031",
+      "sequence": 2453,
+      "doc_order": 33,
+      "english_name": "KubectlBasics",
+      "title": "DevOps kubectl 基础命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02454",
+      "module_id": "M031",
+      "sequence": 2454,
+      "doc_order": 34,
+      "english_name": "HelmCommands",
+      "title": "DevOps Helm 包管理命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02455",
+      "module_id": "M031",
+      "sequence": 2455,
+      "doc_order": 35,
+      "english_name": "JenkinsPipeline",
+      "title": "DevOps Jenkins Pipeline",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02456",
+      "module_id": "M031",
+      "sequence": 2456,
+      "doc_order": 36,
+      "english_name": "GitLabCI",
+      "title": "DevOps GitLab CI/CD",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02457",
+      "module_id": "M032",
+      "sequence": 2457,
+      "doc_order": 23,
+      "english_name": "IPCommands",
+      "title": "Networking ip 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02458",
+      "module_id": "M032",
+      "sequence": 2458,
+      "doc_order": 24,
+      "english_name": "PingTraceroute",
+      "title": "Networking 连通性检测",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02459",
+      "module_id": "M032",
+      "sequence": 2459,
+      "doc_order": 25,
+      "english_name": "SSNetstat",
+      "title": "Networking ss 与 netstat",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02460",
+      "module_id": "M032",
+      "sequence": 2460,
+      "doc_order": 26,
+      "english_name": "Tcpdump",
+      "title": "Networking tcpdump 抓包",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02461",
+      "module_id": "M032",
+      "sequence": 2461,
+      "doc_order": 27,
+      "english_name": "DigNslookup",
+      "title": "Networking DNS 查询",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02462",
+      "module_id": "M032",
+      "sequence": 2462,
+      "doc_order": 28,
+      "english_name": "CurlHTTPRequest",
+      "title": "Networking curl HTTP 请求",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02463",
+      "module_id": "M032",
+      "sequence": 2463,
+      "doc_order": 29,
+      "english_name": "IptablesFirewall",
+      "title": "Networking iptables 防火墙",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02464",
+      "module_id": "M032",
+      "sequence": 2464,
+      "doc_order": 30,
+      "english_name": "SSHRemote",
+      "title": "Networking SSH 远程连接",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02465",
+      "module_id": "M032",
+      "sequence": 2465,
+      "doc_order": 31,
+      "english_name": "NetcatNmap",
+      "title": "Networking nc 与 nmap",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02466",
+      "module_id": "M032",
+      "sequence": 2466,
+      "doc_order": 32,
+      "english_name": "ARPRouting",
+      "title": "Networking ARP 与路由",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02467",
+      "module_id": "M032",
+      "sequence": 2467,
+      "doc_order": 33,
+      "english_name": "HTTPProtocol",
+      "title": "Networking HTTP 协议",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02468",
+      "module_id": "M032",
+      "sequence": 2468,
+      "doc_order": 34,
+      "english_name": "WgetDownload",
+      "title": "Networking wget 文件下载",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02469",
+      "module_id": "M032",
+      "sequence": 2469,
+      "doc_order": 35,
+      "english_name": "VPNConfig",
+      "title": "Networking VPN 配置命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02470",
+      "module_id": "M032",
+      "sequence": 2470,
+      "doc_order": 36,
+      "english_name": "WiresharkCLI",
+      "title": "Networking Wireshark 命令行",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02471",
+      "module_id": "M032",
+      "sequence": 2471,
+      "doc_order": 37,
+      "english_name": "IPv6Commands",
+      "title": "Networking IPv6 网络命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02472",
+      "module_id": "M032",
+      "sequence": 2472,
+      "doc_order": 38,
+      "english_name": "ProxyConfig",
+      "title": "Networking 代理配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02473",
+      "module_id": "M033",
+      "sequence": 2473,
+      "doc_order": 36,
+      "english_name": "OpenSSLCert",
+      "title": "Cybersecurity OpenSSL 证书管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02474",
+      "module_id": "M033",
+      "sequence": 2474,
+      "doc_order": 37,
+      "english_name": "OpenSSLEncrypt",
+      "title": "Cybersecurity OpenSSL 加密解密",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02475",
+      "module_id": "M033",
+      "sequence": 2475,
+      "doc_order": 38,
+      "english_name": "NmapScan",
+      "title": "Cybersecurity nmap 端口扫描",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02476",
+      "module_id": "M033",
+      "sequence": 2476,
+      "doc_order": 39,
+      "english_name": "HashTools",
+      "title": "Cybersecurity 哈希工具",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02477",
+      "module_id": "M033",
+      "sequence": 2477,
+      "doc_order": 40,
+      "english_name": "Hashcat",
+      "title": "Cybersecurity hashcat 密码破解",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02478",
+      "module_id": "M033",
+      "sequence": 2478,
+      "doc_order": 41,
+      "english_name": "GPGEncrypt",
+      "title": "Cybersecurity GPG 加密与签名",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02479",
+      "module_id": "M033",
+      "sequence": 2479,
+      "doc_order": 42,
+      "english_name": "SSHKeys",
+      "title": "Cybersecurity SSH 密钥管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02480",
+      "module_id": "M033",
+      "sequence": 2480,
+      "doc_order": 43,
+      "english_name": "PasswordHash",
+      "title": "Cybersecurity 密码哈希",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02481",
+      "module_id": "M033",
+      "sequence": 2481,
+      "doc_order": 44,
+      "english_name": "SQLInjection",
+      "title": "Cybersecurity SQL 注入检测与防御",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02482",
+      "module_id": "M033",
+      "sequence": 2482,
+      "doc_order": 45,
+      "english_name": "XSSDefense",
+      "title": "Cybersecurity XSS 防御",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02483",
+      "module_id": "M033",
+      "sequence": 2483,
+      "doc_order": 46,
+      "english_name": "CSRFDefense",
+      "title": "Cybersecurity CSRF 防御命令与配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02484",
+      "module_id": "M033",
+      "sequence": 2484,
+      "doc_order": 47,
+      "english_name": "XXEDefense",
+      "title": "Cybersecurity XXE 防御与检测",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02485",
+      "module_id": "M033",
+      "sequence": 2485,
+      "doc_order": 48,
+      "english_name": "CommandInjection",
+      "title": "Cybersecurity 命令注入防御与检测",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02486",
+      "module_id": "M033",
+      "sequence": 2486,
+      "doc_order": 49,
+      "english_name": "OAuth2OIDC",
+      "title": "Cybersecurity OAuth2/OIDC 配置命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02487",
+      "module_id": "M033",
+      "sequence": 2487,
+      "doc_order": 50,
+      "english_name": "FirewallConfig",
+      "title": "Cybersecurity 防火墙配置(ufw/firewalld)",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02488",
+      "module_id": "M033",
+      "sequence": 2488,
+      "doc_order": 51,
+      "english_name": "IDSIPSCommands",
+      "title": "Cybersecurity IDS/IPS 命令(Suricata/Snort)",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02489",
+      "module_id": "M033",
+      "sequence": 2489,
+      "doc_order": 52,
+      "english_name": "MetasploitCommands",
+      "title": "Cybersecurity Metasploit 命令(渗透测试)",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02490",
+      "module_id": "M033",
+      "sequence": 2490,
+      "doc_order": 53,
+      "english_name": "BurpSuiteCLI",
+      "title": "Cybersecurity Burp Suite 命令行",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02491",
+      "module_id": "M033",
+      "sequence": 2491,
+      "doc_order": 54,
+      "english_name": "NiktoScan",
+      "title": "Cybersecurity Nikto Web 扫描",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02492",
+      "module_id": "M033",
+      "sequence": 2492,
+      "doc_order": 55,
+      "english_name": "OpenVASCommands",
+      "title": "Cybersecurity OpenVAS 漏洞扫描",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02493",
+      "module_id": "M033",
+      "sequence": 2493,
+      "doc_order": 56,
+      "english_name": "SELinuxAppArmor",
+      "title": "Cybersecurity SELinux/AppArmor 强制访问控制",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02494",
+      "module_id": "M033",
+      "sequence": 2494,
+      "doc_order": 57,
+      "english_name": "AIDEFileIntegrity",
+      "title": "Cybersecurity AIDE 文件完整性检查",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02495",
+      "module_id": "M033",
+      "sequence": 2495,
+      "doc_order": 58,
+      "english_name": "AuditdCommands",
+      "title": "Cybersecurity auditd 审计命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02496",
+      "module_id": "M033",
+      "sequence": 2496,
+      "doc_order": 59,
+      "english_name": "SteganographyTools",
+      "title": "Cybersecurity 隐写术工具命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02497",
+      "module_id": "M033",
+      "sequence": 2497,
+      "doc_order": 60,
+      "english_name": "ReverseEngineering",
+      "title": "Cybersecurity 逆向工程命令(radare2/ghidra CLI)",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02498",
+      "module_id": "M034",
+      "sequence": 2498,
+      "doc_order": 30,
+      "english_name": "AWSCliConfigure",
+      "title": "云计算 AWS CLI 配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02499",
+      "module_id": "M034",
+      "sequence": 2499,
+      "doc_order": 31,
+      "english_name": "AWSS3Command",
+      "title": "云计算 AWS S3 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02500",
+      "module_id": "M034",
+      "sequence": 2500,
+      "doc_order": 32,
+      "english_name": "AWSEC2Command",
+      "title": "云计算 AWS EC2 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02501",
+      "module_id": "M034",
+      "sequence": 2501,
+      "doc_order": 33,
+      "english_name": "AWSLambdaCommand",
+      "title": "云计算 AWS Lambda 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02502",
+      "module_id": "M034",
+      "sequence": 2502,
+      "doc_order": 34,
+      "english_name": "AWSIAMCommand",
+      "title": "云计算 AWS IAM 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02503",
+      "module_id": "M034",
+      "sequence": 2503,
+      "doc_order": 35,
+      "english_name": "AWSCloudFormation",
+      "title": "云计算 AWS CloudFormation",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02504",
+      "module_id": "M034",
+      "sequence": 2504,
+      "doc_order": 36,
+      "english_name": "AzureCliConfigure",
+      "title": "云计算 Azure CLI 配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02505",
+      "module_id": "M034",
+      "sequence": 2505,
+      "doc_order": 37,
+      "english_name": "AzureGroupVMCommand",
+      "title": "云计算 Azure 资源组与 VM",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02506",
+      "module_id": "M034",
+      "sequence": 2506,
+      "doc_order": 38,
+      "english_name": "AzureStorageCommand",
+      "title": "云计算 Azure 存储命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02507",
+      "module_id": "M034",
+      "sequence": 2507,
+      "doc_order": 39,
+      "english_name": "GCPCliConfigure",
+      "title": "云计算 GCP gcloud 配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02508",
+      "module_id": "M034",
+      "sequence": 2508,
+      "doc_order": 40,
+      "english_name": "GCPComputeStorage",
+      "title": "云计算 GCP Compute 与 Storage",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02509",
+      "module_id": "M034",
+      "sequence": 2509,
+      "doc_order": 41,
+      "english_name": "TerraformBasic",
+      "title": "云计算 Terraform 基础",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02510",
+      "module_id": "M034",
+      "sequence": 2510,
+      "doc_order": 42,
+      "english_name": "TerraformStateModule",
+      "title": "云计算 Terraform 状态与模块",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02511",
+      "module_id": "M034",
+      "sequence": 2511,
+      "doc_order": 43,
+      "english_name": "AWSCloudWatch",
+      "title": "AWS CloudWatch 监控日志命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02512",
+      "module_id": "M034",
+      "sequence": 2512,
+      "doc_order": 44,
+      "english_name": "AWSRDSCommands",
+      "title": "AWS RDS 数据库命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02513",
+      "module_id": "M034",
+      "sequence": 2513,
+      "doc_order": 45,
+      "english_name": "AWSVPCCommands",
+      "title": "AWS VPC 网络命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02514",
+      "module_id": "M034",
+      "sequence": 2514,
+      "doc_order": 46,
+      "english_name": "AWSSQSCommands",
+      "title": "AWS SQS/SNS 消息队列命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02515",
+      "module_id": "M034",
+      "sequence": 2515,
+      "doc_order": 47,
+      "english_name": "AWSDynamoDB",
+      "title": "AWS DynamoDB 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02516",
+      "module_id": "M034",
+      "sequence": 2516,
+      "doc_order": 48,
+      "english_name": "AzureFunctions",
+      "title": "Azure Functions 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02517",
+      "module_id": "M034",
+      "sequence": 2517,
+      "doc_order": 49,
+      "english_name": "AzureAKSCommands",
+      "title": "Azure AKS Kubernetes 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02518",
+      "module_id": "M034",
+      "sequence": 2518,
+      "doc_order": 50,
+      "english_name": "GCPGKECommands",
+      "title": "GCP GKE Kubernetes 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02519",
+      "module_id": "M034",
+      "sequence": 2519,
+      "doc_order": 51,
+      "english_name": "GCPBigQuery",
+      "title": "GCP BigQuery 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02520",
+      "module_id": "M034",
+      "sequence": 2520,
+      "doc_order": 52,
+      "english_name": "PulumiCommands",
+      "title": "Pulumi IaC 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02521",
+      "module_id": "M034",
+      "sequence": 2521,
+      "doc_order": 53,
+      "english_name": "HarborRegistry",
+      "title": "Harbor 私有镜像仓库命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02522",
+      "module_id": "M034",
+      "sequence": 2522,
+      "doc_order": 54,
+      "english_name": "CloudInitCommands",
+      "title": "cloud-init 云实例初始化",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02523",
+      "module_id": "M034",
+      "sequence": 2523,
+      "doc_order": 55,
+      "english_name": "AWSCloudFront",
+      "title": "AWS CloudFront CDN 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02524",
+      "module_id": "M035",
+      "sequence": 2524,
+      "doc_order": 20,
+      "english_name": "MosquittoBrokerManage",
+      "title": "物联网 Mosquitto Broker 管理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02525",
+      "module_id": "M035",
+      "sequence": 2525,
+      "doc_order": 21,
+      "english_name": "MosquittoPub",
+      "title": "物联网 mosquitto_pub 发布命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02526",
+      "module_id": "M035",
+      "sequence": 2526,
+      "doc_order": 22,
+      "english_name": "MosquittoSub",
+      "title": "物联网 mosquitto_sub 订阅命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02527",
+      "module_id": "M035",
+      "sequence": 2527,
+      "doc_order": 23,
+      "english_name": "ESP32Setup",
+      "title": "物联网 ESP32 开发环境",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02528",
+      "module_id": "M035",
+      "sequence": 2528,
+      "doc_order": 24,
+      "english_name": "ESP32GPIOPinout",
+      "title": "物联网 ESP32 GPIO 与引脚",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02529",
+      "module_id": "M035",
+      "sequence": 2529,
+      "doc_order": 25,
+      "english_name": "ESP32I2C",
+      "title": "物联网 ESP32 I2C 通信",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02530",
+      "module_id": "M035",
+      "sequence": 2530,
+      "doc_order": 26,
+      "english_name": "ESP32SPIUART",
+      "title": "物联网 ESP32 SPI 与 UART",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02531",
+      "module_id": "M035",
+      "sequence": 2531,
+      "doc_order": 27,
+      "english_name": "ESP32WiFiConfig",
+      "title": "物联网 ESP32 WiFi 配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02532",
+      "module_id": "M035",
+      "sequence": 2532,
+      "doc_order": 28,
+      "english_name": "ESP32OTA",
+      "title": "物联网 ESP32 OTA 更新",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02533",
+      "module_id": "M036",
+      "sequence": 2533,
+      "doc_order": 23,
+      "english_name": "JestBasics",
+      "title": "Jest 基础 API",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02534",
+      "module_id": "M036",
+      "sequence": 2534,
+      "doc_order": 24,
+      "english_name": "JestMock",
+      "title": "Jest Mock 模拟",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02535",
+      "module_id": "M036",
+      "sequence": 2535,
+      "doc_order": 25,
+      "english_name": "JestAsync",
+      "title": "Jest 异步测试",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02536",
+      "module_id": "M036",
+      "sequence": 2536,
+      "doc_order": 26,
+      "english_name": "JestConfig",
+      "title": "Jest 配置与快照",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02537",
+      "module_id": "M036",
+      "sequence": 2537,
+      "doc_order": 27,
+      "english_name": "Mockito",
+      "title": "Mockito 模拟",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02538",
+      "module_id": "M036",
+      "sequence": 2538,
+      "doc_order": 28,
+      "english_name": "E2ETest",
+      "title": "E2E 端到端测试",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02539",
+      "module_id": "M036",
+      "sequence": 2539,
+      "doc_order": 29,
+      "english_name": "AssertionLibrary",
+      "title": "断言库",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02540",
+      "module_id": "M040",
+      "sequence": 2540,
+      "doc_order": 67,
+      "english_name": "BasicDataType",
+      "title": "基础数据类型",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02541",
+      "module_id": "M040",
+      "sequence": 2541,
+      "doc_order": 68,
+      "english_name": "COOPBasics",
+      "title": "Python 面向对象基础",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02542",
+      "module_id": "M040",
+      "sequence": 2542,
+      "doc_order": 69,
+      "english_name": "COOPAdvanced",
+      "title": "Python 面向对象进阶",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02543",
+      "module_id": "M040",
+      "sequence": 2543,
+      "doc_order": 70,
+      "english_name": "Pathlib",
+      "title": "Python pathlib 路径操作",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02544",
+      "module_id": "M040",
+      "sequence": 2544,
+      "doc_order": 71,
+      "english_name": "Itertools",
+      "title": "Python itertools 迭代工具",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02545",
+      "module_id": "M040",
+      "sequence": 2545,
+      "doc_order": 72,
+      "english_name": "Functools",
+      "title": "Python functools 函数工具",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02546",
+      "module_id": "M040",
+      "sequence": 2546,
+      "doc_order": 73,
+      "english_name": "DatetimeTime",
+      "title": "Python datetime 与 time",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02547",
+      "module_id": "M040",
+      "sequence": 2547,
+      "doc_order": 74,
+      "english_name": "SerializationJsonCsvPickle",
+      "title": "Python 序列化 JSON/CSV/Pickle",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02548",
+      "module_id": "M040",
+      "sequence": 2548,
+      "doc_order": 75,
+      "english_name": "NetworkSocketHttp",
+      "title": "Python 网络编程 socket/http",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02549",
+      "module_id": "M040",
+      "sequence": 2549,
+      "doc_order": 76,
+      "english_name": "SysOsPlatform",
+      "title": "Python sys/os 平台接口",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02550",
+      "module_id": "M040",
+      "sequence": 2550,
+      "doc_order": 77,
+      "english_name": "MathRandomStatistics",
+      "title": "Python math/random/statistics",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02551",
+      "module_id": "M040",
+      "sequence": 2551,
+      "doc_order": 78,
+      "english_name": "Subprocess",
+      "title": "Python subprocess 子进程",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02552",
+      "module_id": "M040",
+      "sequence": 2552,
+      "doc_order": 79,
+      "english_name": "Logging",
+      "title": "Python logging 日志配置",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02553",
+      "module_id": "M040",
+      "sequence": 2553,
+      "doc_order": 80,
+      "english_name": "UnittestPytest",
+      "title": "Python 测试 unittest/pytest",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02554",
+      "module_id": "M040",
+      "sequence": 2554,
+      "doc_order": 81,
+      "english_name": "StringFormattingMethods",
+      "title": "Python 字符串格式化与方法",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02555",
+      "module_id": "M040",
+      "sequence": 2555,
+      "doc_order": 82,
+      "english_name": "ArgparseCli",
+      "title": "Python argparse 命令行参数解析",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02556",
+      "module_id": "M040",
+      "sequence": 2556,
+      "doc_order": 83,
+      "english_name": "TypingAdvanced",
+      "title": "Python typing 进阶",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02557",
+      "module_id": "M040",
+      "sequence": 2557,
+      "doc_order": 84,
+      "english_name": "Enum",
+      "title": "Python enum 枚举",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02558",
+      "module_id": "M040",
+      "sequence": 2558,
+      "doc_order": 85,
+      "english_name": "HashlibHmac",
+      "title": "Python hashlib 与 hmac",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02559",
+      "module_id": "M040",
+      "sequence": 2559,
+      "doc_order": 86,
+      "english_name": "SslCrypto",
+      "title": "Python ssl 安全套接字",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02560",
+      "module_id": "M040",
+      "sequence": 2560,
+      "doc_order": 87,
+      "english_name": "HttpClient",
+      "title": "Python http.client HTTP 客户端",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02561",
+      "module_id": "M040",
+      "sequence": 2561,
+      "doc_order": 88,
+      "english_name": "Sqlite3",
+      "title": "Python sqlite3 数据库",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02562",
+      "module_id": "M040",
+      "sequence": 2562,
+      "doc_order": 89,
+      "english_name": "ZipfileTarfile",
+      "title": "Python zipfile 与 tarfile",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02563",
+      "module_id": "M040",
+      "sequence": 2563,
+      "doc_order": 90,
+      "english_name": "ArrayBisect",
+      "title": "Python array 与 bisect",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02564",
+      "module_id": "M040",
+      "sequence": 2564,
+      "doc_order": 91,
+      "english_name": "StringText",
+      "title": "Python 字符串与文本处理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02565",
+      "module_id": "M040",
+      "sequence": 2565,
+      "doc_order": 92,
+      "english_name": "DecimalFractions",
+      "title": "Python decimal 与 fractions",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02566",
+      "module_id": "M040",
+      "sequence": 2566,
+      "doc_order": 93,
+      "english_name": "ShutilTempfile",
+      "title": "Python shutil 与 tempfile",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02567",
+      "module_id": "M040",
+      "sequence": 2567,
+      "doc_order": 94,
+      "english_name": "GcInspect",
+      "title": "Python gc inspect dis",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02568",
+      "module_id": "M040",
+      "sequence": 2568,
+      "doc_order": 95,
+      "english_name": "TracebackWarnings",
+      "title": "Python traceback 与 warnings",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02569",
+      "module_id": "M040",
+      "sequence": 2569,
+      "doc_order": 96,
+      "english_name": "HttpxRequests",
+      "title": "Python httpx 与 requests",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02570",
+      "module_id": "M040",
+      "sequence": 2570,
+      "doc_order": 97,
+      "english_name": "ProfilingOptimization",
+      "title": "Python 性能分析与优化",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02571",
+      "module_id": "M052",
+      "sequence": 2571,
+      "doc_order": 13,
+      "english_name": "HDFSCommands",
+      "title": "大数据 HDFS 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02572",
+      "module_id": "M052",
+      "sequence": 2572,
+      "doc_order": 14,
+      "english_name": "YARNCommands",
+      "title": "大数据 YARN 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02573",
+      "module_id": "M052",
+      "sequence": 2573,
+      "doc_order": 15,
+      "english_name": "SparkRDD",
+      "title": "大数据 Spark RDD",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02574",
+      "module_id": "M052",
+      "sequence": 2574,
+      "doc_order": 16,
+      "english_name": "SparkDataFrame",
+      "title": "大数据 Spark DataFrame",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02575",
+      "module_id": "M052",
+      "sequence": 2575,
+      "doc_order": 17,
+      "english_name": "HiveDDL",
+      "title": "大数据 Hive DDL",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02576",
+      "module_id": "M052",
+      "sequence": 2576,
+      "doc_order": 18,
+      "english_name": "HiveDML",
+      "title": "大数据 Hive DML",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02577",
+      "module_id": "M052",
+      "sequence": 2577,
+      "doc_order": 19,
+      "english_name": "HiveFunctions",
+      "title": "大数据 Hive 函数",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02578",
+      "module_id": "M052",
+      "sequence": 2578,
+      "doc_order": 20,
+      "english_name": "KafkaCommands",
+      "title": "大数据 Kafka 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02579",
+      "module_id": "M052",
+      "sequence": 2579,
+      "doc_order": 21,
+      "english_name": "HBaseCommands",
+      "title": "大数据 HBase 命令",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02580",
+      "module_id": "M052",
+      "sequence": 2580,
+      "doc_order": 22,
+      "english_name": "FlinkBasics",
+      "title": "大数据 Flink 流处理",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02581",
+      "module_id": "M052",
+      "sequence": 2581,
+      "doc_order": 23,
+      "english_name": "SparkOptimization",
+      "title": "大数据 Spark 优化",
+      "allocated_at": "2026-08-01T09:03:06.386284Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02582",
+      "module_id": "M053",
+      "sequence": 2582,
+      "doc_order": 1,
+      "english_name": "RustOverview",
+      "title": "Rust 语言概述与学习路线",
+      "allocated_at": "2026-08-01T09:42:20.725Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02583",
+      "module_id": "M054",
+      "sequence": 2583,
+      "doc_order": 1,
+      "english_name": "ShellBasics",
+      "title": "Shell 脚本编程基础",
+      "allocated_at": "2026-08-01T09:42:21.099Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02584",
+      "module_id": "M055",
+      "sequence": 2584,
+      "doc_order": 1,
+      "english_name": "AstroOverview",
+      "title": "Astro 框架概述与文档站实践",
+      "allocated_at": "2026-08-01T09:42:21.463Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02585",
+      "module_id": "M056",
+      "sequence": 2585,
+      "doc_order": 1,
+      "english_name": "ViteOverview",
+      "title": "Vite 构建工具概述",
+      "allocated_at": "2026-08-01T09:42:21.848Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02586",
+      "module_id": "M057",
+      "sequence": 2586,
+      "doc_order": 1,
+      "english_name": "PnpmMonorepoOverview",
+      "title": "pnpm 与 Monorepo 工程化",
+      "allocated_at": "2026-08-01T09:42:27.534Z",
+      "status": "active"
+    },
+    {
+      "doc_id": "D02587",
+      "module_id": "M058",
+      "sequence": 2587,
+      "doc_order": 1,
+      "english_name": "TailwindOverview",
+      "title": "Tailwind CSS 概述",
+      "allocated_at": "2026-08-01T09:42:27.911Z",
+      "status": "active"
     }
   ],
-  "next_doc_sequence": 2316
+  "next_doc_sequence": 2588
 }

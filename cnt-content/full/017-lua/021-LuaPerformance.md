@@ -2526,7 +2526,7 @@ end
 -- 4. CPU 占用
 ```
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -2536,7 +2536,7 @@ end
 4. 解释 Lua 字符串驻留机制,说明短字符串与长字符串的差异。
 5. 列举 LuaJIT 的核心优化技术(trace、specialization、inline caching)。
 
-### 10.2 应用题
+### 应用题知识点讲解
 
 6. 编写代码,使用 `os.clock` 与 `collectgarbage` 测量一段代码的执行时间与内存占用。
 7. 给定一个循环 `for i = 1, n do sum = sum + arr[i] end`,优化为 LuaJIT 友好的形式。

@@ -203,6 +203,11 @@ lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 90
 ---
+# Python 打包与发布
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 概述与定位
 
@@ -594,31 +599,45 @@ addopts = "-ra -q --cov=my_awesome_lib"
 
 ### 6.2 项目目录结构
 
-```
-my-awesome-lib/
-├── pyproject.toml          # 项目配置（核心）
-├── README.md               # 项目说明
-├── LICENSE                 # 许可证
-├── CHANGELOG.md            # 变更日志
-├── .gitignore
-├── .python-version         # pyenv 版本
-├── src/
-│   └── my_awesome_lib/
-│       ├── __init__.py
-│       ├── core.py
-│       ├── cli.py
-│       └── plugins.py
-├── tests/
-│   ├── conftest.py
-│   ├── test_core.py
-│   └── test_cli.py
-├── docs/
-│   ├── index.md
-│   └── mkdocs.yml
-└── .github/
-    └── workflows/
-        ├── ci.yml
-        └── release.yml
+```mermaid
+flowchart TD
+    T0["my-awesome-lib/"]
+    T1["pyproject.toml          # 项目配置（核心）"]
+    T2["README.md               # 项目说明"]
+    T3["LICENSE                 # 许可证"]
+    T4["CHANGELOG.md            # 变更日志"]
+    T5[".gitignore"]
+    T6[".python-version         # pyenv 版本"]
+    T7["src/"]
+    T8["my_awesome_lib/"]
+    T9["__init__.py"]
+    T10["core.py"]
+    T11["cli.py"]
+    T12["plugins.py"]
+    T13["tests/"]
+    T14["conftest.py"]
+    T15["test_core.py"]
+    T16["test_cli.py"]
+    T17["docs/"]
+    T18["index.md"]
+    T19["mkdocs.yml"]
+    T20[".github/"]
+    T21["workflows/"]
+    T22["ci.yml"]
+    T23["release.yml"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T12 --> T13
+    T16 --> T17
+    T19 --> T20
+    T20 --> T21
+    T21 --> T22
+    T21 --> T23
 ```
 
 ### 6.3 构建与发布命令
@@ -1238,8 +1257,6 @@ bump-my-version bump major
 使用 Keep a Changelog 格式：
 
 ```markdown
-# Changelog
-
 ## [1.2.3] - 2026-07-20
 
 ### Added
@@ -1376,35 +1393,26 @@ cryptography 库从 C 扩展迁移到 Rust：
 - maturin 是构建 Rust 扩展的标准工具
 - 安全敏感场景应考虑 Rust 重写
 
-## 11. 习题
+## 知识讲解与要点分析（原习题）
 
-### 11.1 填空题
+### 填空题知识点讲解
 
 **习题 11.1**（记忆层）：PEP 518 引入的配置文件名为 ____，其格式为 ____，主要用于声明构建系统依赖。
 
-<details>
-<summary>查看答案</summary>
 
 pyproject.toml；TOML（Tom's Obvious Minimal Language）
-</details>
 
 **习题 11.2**（理解层）：在 wheel 文件名 `numpy-1.26.0-cp311-cp311-manylinux_2_17_x86_64.whl` 中，`cp311` 表示 ____，`manylinux_2_17` 表示 ____。
 
-<details>
-<summary>查看答案</summary>
 
 Python 实现 = CPython 3.11；目标平台 = manylinux glibc 2.17+ x86_64
-</details>
 
 **习题 11.3**（应用层）：构建 Python 包的标准命令为 `python -m ____`，上传到 PyPI 的标准命令为 `python -m ____`。
 
-<details>
-<summary>查看答案</summary>
 
 build；twine
-</details>
 
-### 11.2 选择题
+### 选择题知识点讲解
 
 **习题 11.4**（理解层）：关于 PEP 440 版本号，下列哪个不是合法版本？
 
@@ -1413,11 +1421,8 @@ build；twine
 - C. `1.0.0.post1`
 - D. `1.0.0-rc1`
 
-<details>
-<summary>查看答案与解析</summary>
 
-答案：D。PEP 440 不支持连字符分隔，预发布应写为 `1.0.0rc1`（无分隔符）或 `1.0.0.rc1`。
-</details>
+解析讲解：D。PEP 440 不支持连字符分隔，预发布应写为 `1.0.0rc1`（无分隔符）或 `1.0.0.rc1`。
 
 **习题 11.5**（分析层）：关于 pyproject.toml 的 [project] 段，下列说法错误的是？
 
@@ -1426,11 +1431,8 @@ build；twine
 - C. dependencies 字段必须是字符串数组
 - D. classifiers 字段必须包含所有支持的 Python 版本
 
-<details>
-<summary>查看答案与解析</summary>
 
-答案：D。classifiers 是元数据分类标签，PyPI 用于检索分类，但不强制要求列出所有支持的 Python 版本（虽为最佳实践）。
-</details>
+解析讲解：D。classifiers 是元数据分类标签，PyPI 用于检索分类，但不强制要求列出所有支持的 Python 版本（虽为最佳实践）。
 
 ### 11.3 代码修正题
 
@@ -1449,8 +1451,6 @@ dependencies = "requests, numpy"
 python-requires = ">=3.8"
 ```
 
-<details>
-<summary>查看答案与解析</summary>
 
 问题1：`build-backend` 应为模块路径 `setuptools.build_meta`，而非 `setuptools`。
 问题2：`name` 不能含空格，应改为 `my-awesome-package`。
@@ -1472,7 +1472,6 @@ description = "A package"
 dependencies = ["requests", "numpy"]
 requires-python = ">=3.8"
 ```
-</details>
 
 **习题 11.7**（分析层）：以下 GitHub Actions workflow 试图发布包到 PyPI，但缺少关键步骤。请描述问题并补充。
 
@@ -1494,8 +1493,6 @@ jobs:
       - run: twine upload dist/*
 ```
 
-<details>
-<summary>查看答案与解析</summary>
 
 问题：
 
@@ -1528,7 +1525,6 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 ```
-</details>
 
 ### 11.4 开放性问题
 
@@ -1540,8 +1536,6 @@ jobs:
 
 请从可复现性、兼容性、维护成本三个维度对比，并给出推荐。
 
-<details>
-<summary>查看参考要点</summary>
 
 | 策略 | 可复现性 | 兼容性 | 维护成本 |
 |------|---------|--------|---------|
@@ -1553,7 +1547,6 @@ jobs:
 - 应用层（最终部署）：A + lock 文件（uv.lock / poetry.lock）
 - 库开发（被他人依赖）：B
 - 兼容 SemVer 的库：C（仅允许 PATCH 与 MINOR 升级）
-</details>
 
 **习题 11.9**（创造层）：你是一家初创公司的 Python 工具链负责人，公司有 5 个内部库互相依赖。设计完整的内部包管理方案，包括：
 
@@ -1562,25 +1555,19 @@ jobs:
 3. 依赖管理（开发依赖 vs 运行依赖、跨库版本同步）
 4. 安全（私有 token、供应链攻击防护）
 
-<details>
-<summary>查看参考要点</summary>
 
 1. 仓库：使用 Artifactory 或 Sonatype Nexus 自建 PyPI 镜像；或用 GitLab Package Registry（若已用 GitLab）。
 2. 版本：内部库用 `0.x.y`（开发期）→ `1.0.0`（稳定后）；每周发布 PATCH，每月 MINOR。
 3. 依赖：内部库依赖用 `>=x.y,<x+1.0` 范围；引入 Renovate / Dependabot 自动升级 PR。
 4. 安全：所有上传用 Trusted Publishing；CI 强制签名 sigstore；定期扫描 pip-audit。
-</details>
 
 **习题 11.10**（分析层）：解释为什么 `pip install .` 与 `python -m build && pip install dist/*.whl` 行为不同，以及为什么后者更推荐。
 
-<details>
-<summary>查看参考要点</summary>
 
 - `pip install .` 直接在源码目录调用构建后端，可能依赖当前环境，污染构建产物
 - `python -m build` 在隔离环境（默认 `build` 目录）中构建，确保构建依赖完整且不污染源码
 - 后者生成的 wheel 可缓存、可分发、可重放
 - 现代 PEP 517 工具链推荐用 `build` 隔离构建
-</details>
 
 ## 12. 参考文献
 
@@ -1699,14 +1686,19 @@ jobs:
 
 ### 15.3 工具选型决策树
 
-```text
-是否新项目？
-├── 是 → 是否含 C/Rust 扩展？
-│   ├── 是 → setuptools + cibuildwheel / maturin
-│   └── 否 → hatchling（推荐）
-└── 否 → 现有 setup.py 项目
-    ├── 渐进迁移 → setuptools + pyproject.toml [project]
-    └── 完全重写 → hatchling 或 Poetry
+```mermaid
+flowchart TD
+    T0["是否新项目？"]
+    T1["是 → 是否含 C/Rust 扩展？"]
+    T2["是 → setuptools + cibuildwheel / maturin"]
+    T3["否 → hatchling（推荐）"]
+    T4["否 → 现有 setup.py 项目"]
+    T5["渐进迁移 → setuptools + pyproject.toml [project]"]
+    T6["完全重写 → hatchling 或 Poetry"]
+    T0 --> T1
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
 ```
 
 ## 16. 总结
@@ -1725,3 +1717,309 @@ jobs:
 ---
 
 最后审阅：2026-07-20 | 审阅人：FANDEX Content Engineering Team
+## setuptools 项目配置
+
+**基本写法：pyproject.toml 元数据**
+`[project]`
+```toml
+# 项目基本元数据
+[project]
+name = "mypackage"
+version = "0.1.0"
+description = "示例包"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [{name = "Alice", email = "alice@example.com"}]
+```
+
+**基本写法：依赖声明**
+`dependencies = [...]`
+```toml
+# 运行时依赖
+dependencies = [
+    "requests>=2.31",
+    "pydantic>=2.0",
+]
+```
+
+**基本写法：可选依赖**
+`[project.optional-dependencies]`
+```toml
+# 可选依赖分组
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.4"]
+docs = ["sphinx>=7.0"]
+```
+
+**基本写法：构建系统**
+`[build-system]`
+```toml
+# 声明构建后端
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+```
+
+**基本写法：包发现配置**
+`[tool.setuptools.packages.find]`
+```toml
+# 自动发现包
+[tool.setuptools.packages.find]
+where = ["src"]
+```
+
+---
+
+## 版本号管理
+
+**基本写法：静态版本**
+`version = "<版本>"`
+```toml
+# 直接写版本号
+version = "1.2.3"
+```
+
+**基本写法：动态版本**
+`dynamic = ["version"]`
+```toml
+# 动态读取版本
+[project]
+dynamic = ["version"]
+[tool.setuptools.dynamic]
+version = {attr = "mypackage.__version__"}
+```
+
+---
+
+## 构建包
+
+**基本写法：安装 build**
+`pip install build`
+```python
+# 安装构建工具
+pip install build
+```
+
+**基本写法：构建 sdist 与 wheel**
+`python -m build`
+```python
+# 构建源码分发包与 wheel
+python -m build
+```
+
+**基本写法：仅构建 wheel**
+`python -m build --wheel`
+```python
+# 仅构建 wheel 包
+python -m build --wheel
+```
+
+**基本写法：仅构建 sdist**
+`python -m build --sdist`
+```python
+# 仅构建源码分发
+python -m build --sdist
+```
+
+---
+
+## wheel 包结构
+
+**基本写法：查看 wheel 内容**
+`python -m zipfile -l <wheel>`
+```python
+# 查看 wheel 内文件
+python -m zipfile -l mypackage-0.1.0-py3-none-any.whl
+```
+
+**基本写法：纯 Python wheel**
+`py3-none-any.whl`
+```python
+# 命名约定：{包名}-{版本}-{python}-{abi}-{平台}.whl
+# py3-none-any：纯 Python，所有平台
+```
+
+**基本写法：平台 wheel**
+`cp312-cp312-win_amd64.whl`
+```python
+# CPython 3.12，Windows x64 平台特定 wheel
+```
+
+---
+
+## 发布到 PyPI
+
+**基本写法：安装 twine**
+`pip install twine`
+```python
+# 安装发布工具
+pip install twine
+```
+
+**基本写法：检查包**
+`twine check dist/*`
+```python
+# 检查包元数据
+twine check dist/*
+```
+
+**基本写法：上传到 TestPyPI**
+`twine upload --repository testpypi dist/*`
+```python
+# 上传到测试仓库
+twine upload --repository testpypi dist/*
+```
+
+**基本写法：上传到 PyPI**
+`twine upload dist/*`
+```python
+# 上传到正式 PyPI
+twine upload dist/*
+```
+
+**基本写法：配置 API Token**
+`~/.pypirc`
+```ini
+# 配置 PyPI 凭据
+[pypi]
+username = __token__
+password = pypi-xxxxxxxxxxxx
+```
+
+---
+
+## entry_points 入口点
+
+**基本写法：命令行脚本**
+`[project.scripts]`
+```toml
+# 注册命令行入口
+[project.scripts]
+mycli = "mypackage.cli:main"
+```
+
+**基本写法：GUI 入口**
+`[project.gui-scripts]`
+```toml
+# GUI 应用入口
+[project.gui-scripts]
+mygui = "mypackage.gui:main"
+```
+
+---
+
+## 包内资源
+
+**基本写法：include-package-data**
+`[tool.setuptools]`
+```toml
+# 包含所有版本控制文件
+[tool.setuptools]
+include-package-data = true
+```
+
+**基本写法：MANIFEST.in**
+`include <文件模式>`
+```
+# 显式声明包含文件
+include README.md LICENSE
+recursive-include mypackage/data *.json *.txt
+```
+
+**基本写法：package-data**
+`[tool.setuptools.package-data]`
+```toml
+# 指定包数据
+[tool.setuptools.package-data]
+mypackage = ["data/*.json"]
+```
+
+---
+
+## 可编辑安装
+
+**基本写法：开发模式安装**
+`pip install -e <项目>`
+```python
+# 可编辑安装，源码修改即时生效
+pip install -e .
+```
+
+**基本写法：PEP 660 可编辑安装**
+`pip install -e . --config-settings editable_mode=compat`
+```python
+# 标准化可编辑安装
+pip install -e .
+```
+
+---
+
+## 依赖锁定
+
+**基本写法：pip-tools 锁定**
+`pip-compile <文件>`
+```python
+# 锁定依赖到 requirements.txt
+pip install pip-tools
+pip-compile pyproject.toml
+```
+
+**基本写法：pip-sync 同步**
+`pip-sync <文件>`
+```python
+# 精确同步环境依赖
+pip-sync requirements.txt
+```
+
+---
+
+## uv 打包
+
+**基本写法：uv build**
+`uv build`
+```python
+# uv 构建包
+uv build
+```
+
+**基本写法：uv publish**
+`uv publish`
+```python
+# uv 发布到 PyPI
+uv publish
+```
+
+---
+
+## Poetry 打包
+
+**基本写法：poetry build**
+`poetry build`
+```python
+# poetry 构建包
+poetry build
+```
+
+**基本写法：poetry publish**
+`poetry publish`
+```python
+# poetry 发布到 PyPI
+poetry publish
+```
+
+---
+
+## ruff 配置
+
+**基本写法：ruff 配置**
+`[tool.ruff]`
+```toml
+# ruff 代码检查配置
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+```

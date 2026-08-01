@@ -1357,9 +1357,9 @@ function UserProfile({ userId }: { userId: string }) {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪段代码会在 TypeScript 5.4 `strict` 模式下报错？
 
@@ -1368,9 +1368,9 @@ B. `enum E { A = 'A' }` 后 `const x: string = E.A;`
 C. `const enum E { A }` 后 `const x: E = E.A;`
 D. `enum E { A = 1, B = 1 }` 后 `console.log(E[1]);`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：字符串枚举成员的类型为字面量类型 `'A'`，虽然是 `string` 的子类型，但赋值给 `string` 在 `strict: true` 下不会报错（结构化类型系统允许 widening）。然而 B 选项看似正确，实际上字符串枚举对 `string` 是兼容的，不报错。正确答案是 **C**：在 `isolatedModules: true` 下，`const enum` 跨文件使用会报错（虽然单文件内合法）。重新审视：题目未指定 `isolatedModules`，若未启用则 C 也合法。重新确认：B 实际不会报错，所有选项在默认配置下均合法。**修正**：原题应明确"在 `isolatedModules: true` 下"，此时 C 为正确答案。
+**解析讲解**：字符串枚举成员的类型为字面量类型 `'A'`，虽然是 `string` 的子类型，但赋值给 `string` 在 `strict: true` 下不会报错（结构化类型系统允许 widening）。然而 B 选项看似正确，实际上字符串枚举对 `string` 是兼容的，不报错。正确答案是 **C**：在 `isolatedModules: true` 下，`const enum` 跨文件使用会报错（虽然单文件内合法）。重新审视：题目未指定 `isolatedModules`，若未启用则 C 也合法。重新确认：B 实际不会报错，所有选项在默认配置下均合法。**修正**：原题应明确"在 `isolatedModules: true` 下"，此时 C 为正确答案。
 
 ---
 
@@ -1381,9 +1381,9 @@ B. 字符串枚举 `enum E { A = 'A' }`
 C. `const enum E { A = 1 }`
 D. 异构枚举 `enum E { A = 0, B = 'B' }`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`const enum` 在编译期被完全内联，不产生运行时对象。所有引用点被替换为字面量值。这是 `const enum` 的核心特性，也是其性能优势所在。
+**解析讲解**：`const enum` 在编译期被完全内联，不产生运行时对象。所有引用点被替换为字面量值。这是 `const enum` 的核心特性，也是其性能优势所在。
 
 ---
 
@@ -1399,9 +1399,9 @@ B. `1 | 'hello' | true`
 C. `{ a: 1; b: 'hello'; c: true }`
 D. `any`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`as const` 将所有属性收窄为字面量类型，`typeof obj` 为 `{ readonly a: 1; readonly b: 'hello'; readonly c: true }`，`[keyof typeof obj]` 提取所有值的联合，得到 `1 | 'hello' | true`。这正是 `as const` 替代字符串枚举的核心机制。
+**解析讲解**：`as const` 将所有属性收窄为字面量类型，`typeof obj` 为 `{ readonly a: 1; readonly b: 'hello'; readonly c: true }`，`[keyof typeof obj]` 提取所有值的联合，得到 `1 | 'hello' | true`。这正是 `as const` 替代字符串枚举的核心机制。
 
 ---
 
@@ -1417,9 +1417,9 @@ B. `'A'`
 C. `undefined`
 D. 报错
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：数字枚举的反向映射特性：编译产物会生成 `E[E['A'] = 1] = 'A'`，因此 `E[1] === 'A'`。这是 TypeScript 数字枚举与字符串枚举的关键差异。
+**解析讲解**：数字枚举的反向映射特性：编译产物会生成 `E[E['A'] = 1] = 'A'`，因此 `E[1] === 'A'`。这是 TypeScript 数字枚举与字符串枚举的关键差异。
 
 ---
 
@@ -1430,52 +1430,52 @@ B. 字符串枚举提供反向映射
 C. `const enum` 在 Babel 下行为与 `tsc` 一致
 D. `as const` 对象对 tree-shaking 友好
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：
+**解析讲解**：
 
 - A 错误：TypeScript `enum` 不是和类型，只是命名常量集合
 - B 错误：字符串枚举不提供反向映射
 - C 错误：Babel 不支持 `const enum` 跨文件内联
 - D 正确：`as const` 对象是普通对象，打包器可 tree-shake 未使用的属性
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：TypeScript 引入 `as const` 断言的版本是 _______。
 
-**答案**：3.4
+**解析讲解**：3.4
 
-**解析**：TypeScript 3.4（2019 年 3 月发布）引入 `as const` 断言，是现代枚举替代方案的基石。
+**解析讲解**：TypeScript 3.4（2019 年 3 月发布）引入 `as const` 断言，是现代枚举替代方案的基石。
 
 ---
 
 **题目 2**：数字枚举的反向映射可形式化为函数 $f: \text{Names} \leftrightarrow \text{Numbers}$，其性质为 _______。
 
-**答案**：双射（bijection）/ 单射（injection）
+**解析讲解**：双射（bijection）/ 单射（injection）
 
-**解析**：当枚举值唯一时，$f$ 是双射；若存在重复值，$f$ 退化为单射（值到名称的映射会丢失信息）。
+**解析讲解**：当枚举值唯一时，$f$ 是双射；若存在重复值，$f$ 退化为单射（值到名称的映射会丢失信息）。
 
 ---
 
 **题目 3**：`const enum Color { Red = '#FF0000' }` 编译后的 JavaScript 产物大小为 _______ 个语句。
 
-**答案**：0
+**解析讲解**：0
 
-**解析**：`const enum` 在编译期被完全内联，不产生任何运行时对象或语句。所有引用点被替换为字面量值。
+**解析讲解**：`const enum` 在编译期被完全内联，不产生任何运行时对象或语句。所有引用点被替换为字面量值。
 
 ---
 
 **题目 4**：使用 `as const` 对象 + 联合类型替代字符串枚举时，类型表达式 `(typeof Obj)[keyof typeof Obj]` 的作用是 _______。
 
-**答案**：提取对象所有值的字面量联合类型
+**解析讲解**：提取对象所有值的字面量联合类型
 
-**解析**：`typeof Obj` 获取对象的精确类型（含字面量），`keyof typeof Obj` 获取所有键的联合，`[keyof typeof Obj]` 通过索引访问提取所有值的联合类型。
+**解析讲解**：`typeof Obj` 获取对象的精确类型（含字面量），`keyof typeof Obj` 获取所有键的联合，`[keyof typeof Obj]` 通过索引访问提取所有值的联合类型。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个类型安全的枚举工具函数 `enumFromObject`，输入一个 `as const` 对象，返回增强的枚举对象（含 `values()`、`keys()`、`isValue()` 方法）。
 
-**参考答案**：
+**解析讲解**：
 
 ```typescript
 // TS 5.4
@@ -1531,7 +1531,7 @@ console.log(Color.fromValue('#FF0000')); // 'Red'
 
 **题目 2**：实现一个状态机类型，使用条件类型保证非法转移在编译期被拒绝。
 
-**参考答案**：
+**解析讲解**：
 
 ```typescript
 // TS 5.4
@@ -1797,3 +1797,596 @@ Bierman, G. (2012). *TypeScript design notes*. Microsoft Research Cambridge.
 ---
 
 *本文档由 FANDEX 项目维护，对标 MIT/Stanford/CMU 教学水准，最后更新于 2026-06-14。*
+## 数字枚举
+
+**换行写法：定义数字枚举**
+`enum <枚举名> {`
+`    <成员1>,`
+`    <成员2>,`
+`}`
+
+```typescript
+// 定义数字枚举（自动从 0 开始递增）
+enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+```
+
+---
+
+**换行写法：指定起始值的数字枚举**
+`enum <枚举名> {`
+`    <成员1> = <值>,`
+`    <成员2>,`
+`}`
+
+```typescript
+// 指定起始值的数字枚举
+enum Direction {
+    Up = 1,
+    Down,
+    Left,
+    Right,
+}
+```
+
+---
+
+**换行写法：指定每个成员的值**
+`enum <枚举名> {`
+`    <成员1> = <值1>,`
+`    <成员2> = <值2>,`
+`}`
+
+```typescript
+// 指定每个成员的值
+enum StatusCode {
+    OK = 200,
+    NotFound = 404,
+    ServerError = 500,
+}
+```
+
+---
+
+**基本写法：访问数字枚举成员**
+`<枚举名>.<成员>`
+
+```typescript
+// 访问数字枚举成员
+let direction: Direction = Direction.Up
+```
+
+---
+
+**基本写法：反向映射（数字枚举）**
+`<枚举名>[<数字>]`
+
+```typescript
+// 数字枚举的反向映射
+let name: string = Direction[0]  // "Up"
+```
+
+---
+
+## 字符串枚举
+
+**换行写法：定义字符串枚举**
+`enum <枚举名> {`
+`    <成员1> = "<值1>",`
+`    <成员2> = "<值2>",`
+`}`
+
+```typescript
+// 定义字符串枚举
+enum Color {
+    Red = "RED",
+    Green = "GREEN",
+    Blue = "BLUE",
+}
+```
+
+---
+
+**基本写法：访问字符串枚举成员**
+`<枚举名>.<成员>`
+
+```typescript
+// 访问字符串枚举成员
+let color: Color = Color.Red
+```
+
+---
+
+**基本写法：获取字符串枚举的值**
+`<枚举名>.<成员>`
+
+```typescript
+// 获取字符串枚举的值
+let value: string = Color.Red  // "RED"
+```
+
+---
+
+## 异构枚举
+
+**换行写法：混合数字和字符串枚举**
+`enum <枚举名> {`
+`    <成员1> = <数字>,`
+`    <成员2> = "<字符串>",`
+`}`
+
+```typescript
+// 混合数字和字符串的异构枚举
+enum Boolean {
+    No = 0,
+    Yes = "YES",
+}
+```
+
+---
+
+## 常量枚举
+
+**换行写法：定义常量枚举**
+`const enum <枚举名> {`
+`    <成员1>,`
+`    <成员2>,`
+`}`
+
+```typescript
+// 定义常量枚举（编译时内联，不生成代码）
+const enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+```
+
+---
+
+**基本写法：使用常量枚举**
+`let <变量>: <枚举名> = <枚举名>.<成员>`
+
+```typescript
+// 使用常量枚举（编译时替换为具体值）
+let direction: Direction = Direction.Up
+```
+
+---
+
+## 枚举与联合类型
+
+**换行写法：从枚举提取联合类型**
+`type <类型> = \`${<枚举名>}\``
+
+```typescript
+// 从枚举提取字符串联合类型
+enum Color {
+    Red = "RED",
+    Green = "GREEN",
+    Blue = "BLUE",
+}
+
+type ColorValue = `${Color}`  // "RED" | "GREEN" | "BLUE"
+```
+
+---
+
+**基本写法：枚举成员作为类型**
+`type <类型> = <枚举名>.<成员>`
+
+```typescript
+// 枚举成员作为类型
+type RedColor = Color.Red
+```
+
+---
+
+## 枚举与映射类型
+
+**换行写法：枚举键映射**
+`type <类型> = {`
+`    [P in <枚举名>]: <类型>`
+`}`
+
+```typescript
+// 从枚举创建映射类型
+enum Status {
+    Active = "ACTIVE",
+    Inactive = "INACTIVE",
+}
+
+type StatusMessages = {
+    [P in Status]: string
+}
+```
+
+---
+
+**换行写法：枚举值映射**
+`type <类型> = {`
+`    [P in <枚举名>]: <类型>`
+`}`
+
+```typescript
+// 从枚举创建值映射类型
+type StatusConfig = {
+    [P in Status]: {
+        label: string
+        color: string
+    }
+}
+```
+
+---
+
+## 枚举与条件类型
+
+**换行写法：枚举条件类型**
+`type <类型> = <T> extends <枚举名> ? <真类型> : <假类型>`
+
+```typescript
+// 枚举条件类型
+type IsColor<T> = T extends Color ? true : false
+```
+
+---
+
+## 枚举方法
+
+**换行写法：枚举与命名空间合并**
+`enum <枚举名> { <成员> }`
+`namespace <枚举名> {`
+`    export function <方法>(<参数>): <返回类型> { <语句> }`
+`}`
+
+```typescript
+// 枚举与命名空间合并（为枚举添加方法）
+enum Color {
+    Red = "RED",
+    Green = "GREEN",
+    Blue = "BLUE",
+}
+
+namespace Color {
+    export function from_string(value: string): Color | undefined {
+        switch (value) {
+            case "RED": return Color.Red
+            case "GREEN": return Color.Green
+            case "BLUE": return Color.Blue
+            default: return undefined
+        }
+    }
+}
+```
+
+---
+
+**基本写法：调用枚举方法**
+`<枚举名>.<方法>(<参数>)`
+
+```typescript
+// 调用枚举方法
+let color = Color.from_string("RED")
+```
+
+---
+
+## 枚举与对象
+
+**换行写法：使用对象替代枚举**
+`const <对象> = {`
+`    <成员1>: "<值1>",`
+`    <成员2>: "<值2>",`
+`} as const`
+
+```typescript
+// 使用对象替代枚举（使用 as const）
+const Color = {
+    Red: "RED",
+    Green: "GREEN",
+    Blue: "BLUE",
+} as const
+```
+
+---
+
+**基本写法：从对象提取类型**
+`type <类型> = typeof <对象>[keyof typeof <对象>]`
+
+```typescript
+// 从对象提取联合类型
+type ColorValue = typeof Color[keyof typeof Color]  // "RED" | "GREEN" | "BLUE"
+```
+
+---
+
+## 枚举与 switch
+
+**换行写法：枚举与 switch 语句**
+`function <函数>(<参数>: <枚举名>): <返回类型> {`
+`    switch (<参数>) {`
+`        case <枚举名>.<成员1>: return <处理1>`
+`        case <枚举名>.<成员2>: return <处理2>`
+`    }`
+`}`
+
+```typescript
+// 枚举与 switch 语句
+function get_color_name(color: Color): string {
+    switch (color) {
+        case Color.Red:
+            return "红色"
+        case Color.Green:
+            return "绿色"
+        case Color.Blue:
+            return "蓝色"
+    }
+}
+```
+
+---
+
+## 枚举与穷尽检查
+
+**换行写法：使用 never 进行穷尽检查**
+`function <函数>(<参数>: <枚举名>): <返回类型> {`
+`    switch (<参数>) {`
+`        case <枚举名>.<成员1>: return <处理1>`
+`        case <枚举名>.<成员2>: return <处理2>`
+`        default: const _exhaustive: never = <参数> return _exhaustive`
+`    }`
+`}`
+
+```typescript
+// 使用 never 进行穷尽检查
+function get_color_name(color: Color): string {
+    switch (color) {
+        case Color.Red:
+            return "红色"
+        case Color.Green:
+            return "绿色"
+        case Color.Blue:
+            return "蓝色"
+        default:
+            const _exhaustive: never = color
+            return _exhaustive
+    }
+}
+```
+
+---
+
+## 枚举与 const 断言
+
+**换行写法：使用 const 断言替代枚举**
+`const <对象> = {`
+`    <成员1>: <值1>,`
+`    <成员2>: <值2>,`
+`} as const`
+`type <类型> = keyof typeof <对象>`
+
+```typescript
+// 使用 const 断言替代枚举
+const Direction = {
+    Up: "UP",
+    Down: "DOWN",
+    Left: "LEFT",
+    Right: "RIGHT",
+} as const
+
+type Direction = keyof typeof Direction  // "Up" | "Down" | "Left" | "Right"
+```
+
+---
+
+**基本写法：使用 const 断言对象**
+`let <变量>: <类型> = "<值>"`
+
+```typescript
+// 使用 const 断言对象
+let direction: Direction = "Up"
+```
+
+---
+
+## 枚举与映射
+
+**换行写法：枚举值映射**
+`const <映射>: Record<<枚举名>, <类型>> = {`
+`    [<枚举名>.<成员1>]: <值1>,`
+`    [<枚举名>.<成员2>]: <值2>,`
+`}`
+
+```typescript
+// 枚举值映射
+const ColorHex: Record<Color, string> = {
+    [Color.Red]: "#FF0000",
+    [Color.Green]: "#00FF00",
+    [Color.Blue]: "#0000FF",
+}
+```
+
+---
+
+**基本写法：访问枚举映射**
+`<映射>[<枚举名>.<成员>]`
+
+```typescript
+// 访问枚举映射
+let hex: string = ColorHex[Color.Red]
+```
+
+---
+
+## 枚举与类型守卫
+
+**换行写法：枚举类型守卫**
+`function <函数>(<参数>: any): <参数> is <枚举名> {`
+`    return Object.values(<枚举名>).includes(<参数>)`
+`}`
+
+```typescript
+// 枚举类型守卫
+function is_color(value: any): value is Color {
+    return Object.values(Color).includes(value)
+}
+```
+
+---
+
+**基本写法：使用枚举类型守卫**
+`if (<函数>(<值>)) { <语句> }`
+
+```typescript
+// 使用枚举类型守卫
+let value: any = "RED"
+if (is_color(value)) {
+    let color: Color = value
+}
+```
+
+---
+
+## 枚举与反向映射
+
+**换行写法：字符串枚举反向映射**
+`const <映射>: Record<string, <枚举名>> = {`
+`    ["<值1>"]: <枚举名>.<成员1>,`
+`    ["<值2>"]: <枚举名>.<成员2>,`
+`}`
+
+```typescript
+// 字符串枚举反向映射
+const ColorFromValue: Record<string, Color> = {
+    ["RED"]: Color.Red,
+    ["GREEN"]: Color.Green,
+    ["BLUE"]: Color.Blue,
+}
+```
+
+---
+
+**基本写法：使用反向映射**
+`let <变量>: <枚举名> = <映射>["<值>"]`
+
+```typescript
+// 使用反向映射
+let color: Color = ColorFromValue["RED"]
+```
+
+---
+
+## 枚举与迭代
+
+**换行写法：迭代枚举值**
+`for (const <值> of Object.values(<枚举名>)) { <语句> }`
+
+```typescript
+// 迭代枚举值
+for (const color of Object.values(Color)) {
+    console.log(color)
+}
+```
+
+---
+
+**换行写法：迭代枚举键值对**
+`for (const [<键>, <值>] of Object.entries(<枚举名>)) { <语句> }`
+
+```typescript
+// 迭代枚举键值对
+for (const [key, value] of Object.entries(Color)) {
+    console.log(`${key}: ${value}`)
+}
+```
+
+---
+
+## 枚举与工具类型
+
+**换行写法：获取枚举所有值**
+`type <类型> = \`${<枚举名>}\``
+
+```typescript
+// 获取枚举所有值的联合类型
+type ColorValues = `${Color}`  // "RED" | "GREEN" | "BLUE"
+```
+
+---
+
+**换行写法：获取枚举所有键**
+`type <类型> = keyof typeof <枚举名>`
+
+```typescript
+// 获取枚举所有键的联合类型
+type ColorKeys = keyof typeof Color  // "Red" | "Green" | "Blue"
+```
+
+---
+
+## 枚举与函数
+
+**换行写法：枚举作为函数参数**
+`function <函数>(<参数>: <枚举名>): <返回类型> { <语句> }`
+
+```typescript
+// 枚举作为函数参数
+function get_color_code(color: Color): string {
+    return color
+}
+```
+
+---
+
+**换行写法：枚举作为函数返回值**
+`function <函数>(<参数>: <类型>): <枚举名> { <语句> }`
+
+```typescript
+// 枚举作为函数返回值
+function parse_color(value: string): Color {
+    switch (value) {
+        case "RED": return Color.Red
+        case "GREEN": return Color.Green
+        case "BLUE": return Color.Blue
+        default: throw new Error("Invalid color")
+    }
+}
+```
+
+---
+
+## 枚举与接口
+
+**换行写法：枚举与接口组合**
+`interface <接口> {`
+`    <属性>: <枚举名>`
+`}`
+
+```typescript
+// 枚举与接口组合
+interface User {
+    name: string
+    status: Status
+}
+```
+
+---
+
+**换行写法：枚举与类型别名**
+`type <类型> = {`
+`    <属性>: <枚举名>`
+`}`
+
+```typescript
+// 枚举与类型别名组合
+type Config = {
+    color: Color
+    direction: Direction
+}
+```

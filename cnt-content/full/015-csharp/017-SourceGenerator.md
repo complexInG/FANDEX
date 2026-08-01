@@ -1012,21 +1012,27 @@ public void Execute(GeneratorExecutionContext context)
 
 推荐的源生成器项目结构：
 
-```
-MyGenerator/
-├── MyGenerator/                    # 生成器主项目（netstandard2.0）
-│   ├── MyGenerator.csproj
-│   ├── EnumDescriptionGenerator.cs
-│   ├── InjectableGenerator.cs
-│   └── EquatableArray.cs
-├── MyGenerator.Attributes/         # 公共特性项目（用户引用）
-│   ├── MyGenerator.Attributes.csproj
-│   └── EnumDescriptionAttribute.cs
-├── MyGenerator.Tests/              # 单元测试
-│   ├── MyGenerator.Tests.csproj
-│   └── EnumDescriptionGeneratorTests.cs
-└── MyGenerator.IntegrationTests/   # 集成测试（完整编译）
-    └── MyGenerator.IntegrationTests.csproj
+```mermaid
+flowchart TD
+    T0["MyGenerator/"]
+    T1["MyGenerator/                    # 生成器主项目（netstandard2.0）"]
+    T2["MyGenerator.csproj"]
+    T3["EnumDescriptionGenerator.cs"]
+    T4["InjectableGenerator.cs"]
+    T5["EquatableArray.cs"]
+    T6["MyGenerator.Attributes/         # 公共特性项目（用户引用）"]
+    T7["MyGenerator.Attributes.csproj"]
+    T8["EnumDescriptionAttribute.cs"]
+    T9["MyGenerator.Tests/              # 单元测试"]
+    T10["MyGenerator.Tests.csproj"]
+    T11["EnumDescriptionGeneratorTests.cs"]
+    T12["MyGenerator.IntegrationTests/   # 集成测试（完整编译）"]
+    T13["MyGenerator.IntegrationTests.csproj"]
+    T0 --> T1
+    T5 --> T6
+    T8 --> T9
+    T11 --> T12
+    T12 --> T13
 ```
 
 ### 8.2 csproj 配置
@@ -1286,7 +1292,7 @@ public partial class {{typeProps.ContainingType}}
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 

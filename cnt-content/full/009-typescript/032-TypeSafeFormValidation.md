@@ -1119,19 +1119,25 @@ const treeSchema: z.ZodSchema<TreeNode> = z.lazy(() =>
 
 在中大型项目中，Schema 应当作为类型的唯一来源（Single Source of Truth）。架构如下：
 
-```
-src/
-├── schemas/                # Schema 定义层
-│   ├── user.ts             # 用户相关 Schema
-│   ├── order.ts            # 订单相关 Schema
-│   └── common.ts           # 公共 Schema（如日期、ID）
-├── types/                  # 类型从 Schema 自动推导
-│   └── index.ts            # export type User = z.infer<typeof userSchema>
-├── api/                    # API 客户端在边界处验证
-│   └── client.ts           # 调用 schema.parse(response)
-├── components/             # UI 组件消费类型
-│   └── UserForm.tsx        # 使用 useForm(schema, initial)
-└── pages/                  # 页面组合组件
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["schemas/                # Schema 定义层"]
+    T2["user.ts             # 用户相关 Schema"]
+    T3["order.ts            # 订单相关 Schema"]
+    T4["common.ts           # 公共 Schema（如日期、ID）"]
+    T5["types/                  # 类型从 Schema 自动推导"]
+    T6["index.ts            # export type User = z.infer<typeof userSchema>"]
+    T7["api/                    # API 客户端在边界处验证"]
+    T8["client.ts           # 调用 schema.parse(response)"]
+    T9["components/             # UI 组件消费类型"]
+    T10["UserForm.tsx        # 使用 useForm(schema, initial)"]
+    T11["pages/                  # 页面组合组件"]
+    T0 --> T1
+    T4 --> T5
+    T6 --> T7
+    T8 --> T9
+    T10 --> T11
 ```
 
 **关键原则**：
@@ -1534,7 +1540,7 @@ function saveState(state: PersistedState) {
 - 使用 `.partial()` 表达"该步骤可能尚未填写"的语义。
 - 验证失败时优雅降级，清除损坏数据而非崩溃。
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 

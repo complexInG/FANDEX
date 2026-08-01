@@ -1189,36 +1189,50 @@ export default function Page() {
 
 ### 8.1 Next.js App Router 项目结构
 
-```
-app/
-├── layout.tsx              # 根 layout (Server)
-├── page.tsx                # 首页 (Server)
-├── loading.tsx             # 加载状态 (Server)
-├── error.tsx               # 错误边界 (Client, 'use client')
-├── global-error.tsx        # 全局错误 (Client)
-├── not-found.tsx           # 404 页面 (Server)
-├── template.tsx            # 模板（每次导航重新渲染）
-├── default.tsx             # Parallel Route 默认
-├── (dashboard)/            # 路由组（不影响 URL）
-│   ├── layout.tsx
-│   ├── dashboard/
-│   │   └── page.tsx
-│   └── settings/
-│       └── page.tsx
-├── posts/
-│   ├── page.tsx            # 列表页 (Server)
-│   ├── [id]/
-│   │   ├── page.tsx        # 详情页 (Server)
-│   │   ├── loading.tsx
-│   │   └── error.tsx
-│   ├── new/
-│   │   └── page.tsx        # 新建页 (Server + Client)
-│   └── actions.ts          # Server Actions
-├── api/                    # API 路由（无 RSC）
-│   └── webhooks/
-│       └── route.ts
-└── @modal/                 # Parallel Route
-    └── default.tsx
+```mermaid
+flowchart TD
+    T0["app/"]
+    T1["layout.tsx              # 根 layout (Server)"]
+    T2["page.tsx                # 首页 (Server)"]
+    T3["loading.tsx             # 加载状态 (Server)"]
+    T4["error.tsx               # 错误边界 (Client, 'use client')"]
+    T5["global-error.tsx        # 全局错误 (Client)"]
+    T6["not-found.tsx           # 404 页面 (Server)"]
+    T7["template.tsx            # 模板（每次导航重新渲染）"]
+    T8["default.tsx             # Parallel Route 默认"]
+    T9["(dashboard)/            # 路由组（不影响 URL）"]
+    T10["layout.tsx"]
+    T11["dashboard/"]
+    T12["page.tsx"]
+    T13["settings/"]
+    T14["page.tsx"]
+    T15["posts/"]
+    T16["page.tsx            # 列表页 (Server)"]
+    T17["[id]/"]
+    T18["page.tsx        # 详情页 (Server)"]
+    T19["loading.tsx"]
+    T20["error.tsx"]
+    T21["new/"]
+    T22["page.tsx        # 新建页 (Server + Client)"]
+    T23["actions.ts          # Server Actions"]
+    T24["api/                    # API 路由（无 RSC）"]
+    T25["webhooks/"]
+    T26["route.ts"]
+    T27["@modal/                 # Parallel Route"]
+    T28["default.tsx"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T0 --> T8
+    T0 --> T9
+    T14 --> T15
+    T23 --> T24
+    T26 --> T27
+    T27 --> T28
 ```
 
 ### 8.2 环境变量与配置
@@ -1569,9 +1583,9 @@ Shopify Hydrogen 7 基于 Remix + RSC：
 
 ---
 
-## 10. 练习
+## 知识讲解与要点分析（原练习）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪个指令用于声明 Client Component？
 
@@ -1580,13 +1594,10 @@ Shopify Hydrogen 7 基于 Remix + RSC：
 - C. `'client-side'`
 - D. `'isomorphic'`
 
-<details>
-<summary>答案</summary>
 
 **B. `'use client'`**
 
 `'use client'` 必须放在文件顶部（在 import 之前），标记该文件为 Client Component 模块。`'use server'` 用于标记 Server Actions。
-</details>
 
 **题目 2**：Client Component 可以通过哪种方式接收 Server Component 作为子节点？
 
@@ -1595,13 +1606,10 @@ Shopify Hydrogen 7 基于 Remix + RSC：
 - C. 通过 context
 - D. 通过 ref
 
-<details>
-<summary>答案</summary>
 
 **B. 通过 children prop**
 
 Client Component 不能直接 import Server Component，但可以接收 Server Component 作为 children。这是因为 children 在 Server 端渲染为 RSC Payload 后传递给 Client Component，而非作为模块引用。
-</details>
 
 **题目 3**：以下哪种数据类型**不能**作为 Server Component 传递给 Client Component 的 props？
 
@@ -1610,13 +1618,10 @@ Client Component 不能直接 import Server Component，但可以接收 Server C
 - C. `function`
 - D. `Map`
 
-<details>
-<summary>答案</summary>
 
 **C. `function`**
 
 函数不可序列化，不能作为 props 传递。Date、RegExp、Map 都是 RSC 协议支持的可序列化类型。
-</details>
 
 **题目 4**：Server Actions 底层通过什么协议与客户端通信？
 
@@ -1625,13 +1630,10 @@ Client Component 不能直接 import Server Component，但可以接收 Server C
 - C. GraphQL
 - D. gRPC
 
-<details>
-<summary>答案</summary>
 
 **B. HTTP POST**
 
 Server Actions 通过 HTTP POST 请求调用，请求体包含 action ID 与参数，响应是 RSC Payload。
-</details>
 
 **题目 5**：以下哪个 Hook **必须**在 Suspense 边界内使用？
 
@@ -1640,67 +1642,49 @@ Server Actions 通过 HTTP POST 请求调用，请求体包含 action ID 与参�
 - C. `useSearchParams`
 - D. `useParams`
 
-<details>
-<summary>答案</summary>
 
 **C. `useSearchParams`**
 
 `useSearchParams` 会导致静态渲染退化为动态渲染，必须包裹在 Suspense 中以避免整个页面失去静态优化。
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：RSC 协议的输出格式称为 ________，它是一种流式 JSON 格式。
 
-<details>
-<summary>答案</summary>
 
 **RSC Payload**
 
 RSC Payload 是 Server Components 渲染的可序列化输出，客户端 React 运行时将其转换为 DOM 操作。
-</details>
 
 **题目 2**：Next.js App Router 中，`error.tsx` 必须是 ________ Component。
 
-<details>
-<summary>答案</summary>
 
 **Client**
 
 `error.tsx` 必须声明 `'use client'`，因为它需要处理错误重试（调用 `reset` 函数），这涉及客户端交互。
-</details>
 
 **题目 3**：Server Component 传递给 Client Component 的 props 必须是 ________ 的。
 
-<details>
-<summary>答案</summary>
 
 **可序列化**
 
 Props 会通过 RSC Payload 传输，必须支持 JSON 序列化。函数、类实例、Symbol 等不可序列化。
-</details>
 
 **题目 4**：React 19 的 `useOptimistic` Hook 用于实现 ________ 更新。
 
-<details>
-<summary>答案</summary>
 
 **乐观**
 
 `useOptimistic` 让开发者在 Server Action 执行期间显示乐观状态，提升用户体验。
-</details>
 
 **题目 5**：Server Components 的数据获取使用 ________ 关键字，无需 useEffect。
 
-<details>
-<summary>答案</summary>
 
 **await**
 
 Server Components 是 `async` 函数，可以直接 `await` 数据获取，无需 useEffect。
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个 Server Component，展示当前登录用户的订单列表，支持分页。
 
@@ -1709,8 +1693,6 @@ Server Components 是 `async` 函数，可以直接 `await` 数据获取，无�
 - 支持 URL 参数控制分页
 - 包含加载状态与错误处理
 
-<details>
-<summary>参考答案</summary>
 
 ```tsx
 // app/orders/page.tsx
@@ -1773,7 +1755,6 @@ function OrderListSkeleton() {
   );
 }
 ```
-</details>
 
 **题目 2**：实现一个带乐观更新的点赞按钮（Client Component + Server Action）。
 
@@ -1782,8 +1763,6 @@ function OrderListSkeleton() {
 - 使用 `useTransition` 处理过渡状态
 - Server Action 返回结构化结果
 
-<details>
-<summary>参考答案</summary>
 
 ```tsx
 // app/posts/LikeButton.tsx
@@ -1877,12 +1856,9 @@ export async function toggleLike(postId: string): Promise<LikeResult> {
   }
 }
 ```
-</details>
 
 **题目 3**：实现一个 Server Component，使用 Suspense 分层加载商品详情页（商品信息优先、评论延迟加载）。
 
-<details>
-<summary>参考答案</summary>
 
 ```tsx
 // app/products/[id]/page.tsx
@@ -1985,14 +1961,11 @@ function RecommendationsSkeleton() {
   return <div className="h-32 animate-pulse bg-gray-200 rounded" />;
 }
 ```
-</details>
 
 ### 10.4 思考题
 
 **题目 1**：为什么 RSC 选择"组件级"渲染环境划分，而非"页面级"？这种设计带来了哪些优势与挑战？
 
-<details>
-<summary>参考答案要点</summary>
 
 **优势**：
 - 灵活性：同一页面可混合 Server 与 Client 组件，按需选择
@@ -2005,12 +1978,9 @@ function RecommendationsSkeleton() {
 - 调试困难：错误可能跨越服务端与客户端，堆栈追踪不连续
 
 **设计权衡**：React 团队选择组件级是为了最大化灵活性，但代价是增加了心智负担。这与 Astro 的 Islands（页面级）和 Remix 的 loader/action（路由级）形成对比。
-</details>
 
 **题目 2**：在什么场景下应该选择 RSC，什么场景下应该选择传统 CSR？请给出至少 3 个判断维度。
 
-<details>
-<summary>参考答案要点</summary>
 
 **选择 RSC 的场景**：
 1. **SEO 要求高**：内容型网站、电商、博客
@@ -2028,12 +1998,9 @@ function RecommendationsSkeleton() {
 - SEO 需求
 - 首屏性能 vs 交互性能
 - 数据流向（服务端为主 vs 客户端为主）
-</details>
 
 **题目 3**：Server Actions 相比传统 REST API 有哪些优势？又会引入哪些新问题？
 
-<details>
-<summary>参考答案要点</summary>
 
 **优势**：
 1. **类型安全**：端到端 TypeScript 类型推导，无需手动维护 API 类型
@@ -2049,7 +2016,6 @@ function RecommendationsSkeleton() {
 5. **可观测性**：传统 API 监控工具（APM）对 Server Actions 支持有限
 
 **权衡**：Server Actions 适合内部应用与中小型项目，大型公开 API 仍建议使用 REST/GraphQL。
-</details>
 
 ---
 
@@ -2134,30 +2100,43 @@ function RecommendationsSkeleton() {
 
 在划分组件边界时，按以下顺序决策：
 
-```
-1. 该组件是否需要事件监听（onClick、onChange）？
-   ├─ 是 → Client Component
-   └─ 否 → 进入下一步
-
-2. 该组件是否使用 useState、useEffect、useReducer？
-   ├─ 是 → Client Component
-   └─ 否 → 进入下一步
-
-3. 该组件是否使用浏览器 API（window、document、localStorage）？
-   ├─ 是 → Client Component
-   └─ 否 → 进入下一步
-
-4. 该组件是否需要访问后端资源（DB、文件系统、环境变量）？
-   ├─ 是 → Server Component
-   └─ 否 → 进入下一步
-
-5. 该组件是否依赖大型第三方库（D3、moment、lodash）？
-   ├─ 是 → 优先 Server Component（避免下发到客户端）
-   └─ 否 → 进入下一步
-
-6. 该组件是否是纯展示组件？
-   ├─ 是 → Server Component（默认）
-   └─ 否 → 综合考虑
+```mermaid
+flowchart TD
+    T0["1. 该组件是否需要事件监听（onClick、onChange）？"]
+    T1["是 → Client Component"]
+    T2["否 → 进入下一步"]
+    T3["2. 该组件是否使用 useState、useEffect、useReducer？"]
+    T4["是 → Client Component"]
+    T5["否 → 进入下一步"]
+    T6["3. 该组件是否使用浏览器 API（window、document、localStorage）？"]
+    T7["是 → Client Component"]
+    T8["否 → 进入下一步"]
+    T9["4. 该组件是否需要访问后端资源（DB、文件系统、环境变量）？"]
+    T10["是 → Server Component"]
+    T11["否 → 进入下一步"]
+    T12["5. 该组件是否依赖大型第三方库（D3、moment、lodash）？"]
+    T13["是 → 优先 Server Component（避免下发到客户端）"]
+    T14["否 → 进入下一步"]
+    T15["6. 该组件是否是纯展示组件？"]
+    T16["是 → Server Component（默认）"]
+    T17["否 → 综合考虑"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
+    T11 --> T12
+    T12 --> T13
+    T12 --> T14
+    T14 --> T15
+    T15 --> T16
+    T15 --> T17
 ```
 
 ---
@@ -2192,3 +2171,283 @@ function RecommendationsSkeleton() {
 ---
 
 > **本章总结**：React Server Components 是 React 自 2013 年以来最重要的架构变革。它将"组件级"渲染环境划分引入 React，让开发者可以在同一个应用中灵活组合服务端与客户端代码。掌握 RSC 的关键在于理解边界的划分规则、数据流的序列化约束与流式渲染的性能模型。在实际工程中，应当遵循"默认 Server，按需 Client"的原则，将交互逻辑下沉到叶子组件，最大化 RSC 的性能优势。
+## 'use client' 客户端组件指令
+
+**'use client'**
+`'use client';`
+```tsx
+'use client';
+
+import { useState } from 'react';
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+
+**client boundary 声明**
+```tsx
+'use client';
+
+// 该文件中所有 export 默认成为 Client Component
+export const ComponentA = () => <div />;
+export const ComponentB = () => <div />;
+```
+
+---
+
+## 'use server' 服务端指令
+
+**'use server' 文件级**
+`'use server';`
+```tsx
+// app/actions.ts
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import db from '@/lib/db';
+
+export async function createPost(formData: FormData) {
+  const title = formData.get('title') as string;
+  await db.post.create({ data: { title } });
+  revalidatePath('/posts');
+}
+
+export async function deletePost(id: string) {
+  await db.post.delete({ where: { id } });
+}
+```
+
+**inline 'use server'**
+```tsx
+function Page() {
+  async function submit(formData: FormData) {
+    'use server';
+    await saveRecord(formData);
+  }
+  return <form action={submit}>...</form>;
+}
+```
+
+---
+
+## Server Action 调用
+
+**form action 绑定**
+`<form action={<serverAction>}>`
+```tsx
+'use client';
+import { createPost } from '@/app/actions';
+
+export function Form() {
+  return (
+    <form action={createPost}>
+      <input name="title" />
+      <button>提交</button>
+    </form>
+  );
+}
+```
+
+**按钮调用**
+`<button formAction={<action>}>`
+```tsx
+<form>
+  <button formAction={login}>登录</button>
+  <button formAction={register}>注册</button>
+</form>
+```
+
+**useActionState 绑定**
+```tsx
+'use client';
+import { useActionState } from 'react';
+import { createPost } from '@/app/actions';
+
+export function Form() {
+  const [state, action] = useActionState(createPost, null);
+  return <form action={action}>...</form>;
+}
+```
+
+---
+
+## 'use cache' 缓存指令
+
+**'use cache' 文件级**
+```tsx
+// cached-data.ts
+'use cache';
+
+import { db } from '@/lib/db';
+
+export async function getCachedUser(id: string) {
+  return db.user.findUnique({ where: { id } });
+}
+```
+
+**'use cache' 函数级**
+```tsx
+export async function getProducts() {
+  'use cache';
+  return db.product.findMany();
+}
+```
+
+**带标签缓存**
+```tsx
+export async function getUser(id: string) {
+  'use cache';
+  const user = await db.user.findUnique({ where: { id } });
+  return user;
+}
+
+// 失效缓存
+import { revalidateTag } from 'next/cache';
+revalidateTag(`user-${id}`);
+```
+
+---
+
+## 'use no memo' 指令
+
+**禁用自动记忆化**
+```tsx
+'use no memo';
+
+function MyComponent() {
+  // 此组件不参与 React Compiler 自动记忆化
+  return <div>...</div>;
+}
+```
+
+---
+
+## 缓存 API
+
+**unstable_cache**
+`unstable_cache<<T>>(<fn>, <keys>, <options>)`
+```tsx
+import { unstable_cache } from 'next/cache';
+
+const getCachedUser = unstable_cache(
+  async (id: string) => db.user.findUnique({ where: { id } }),
+  ['user'],
+  { tags: ['user'], revalidate: 60 }
+);
+
+const user = await getCachedUser('1');
+```
+
+**revalidateTag / revalidatePath**
+```tsx
+import { revalidateTag, revalidatePath } from 'next/cache';
+
+revalidateTag('user');
+revalidatePath('/users');
+revalidatePath('/', 'layout');
+```
+
+**cache (React 19)**
+```tsx
+import { cache } from 'react';
+
+const getUser = cache(async (id: string) => {
+  return db.user.findUnique({ where: { id } });
+});
+
+// 同一请求内多次调用共享结果
+const u1 = await getUser('1');
+const u2 = await getUser('1'); // 命中缓存
+```
+
+---
+
+## Cookie / Headers 服务器 API
+
+**cookies**
+`import { cookies } from 'next/headers';`
+```tsx
+import { cookies } from 'next/headers';
+
+const cookieStore = await cookies();
+const token = cookieStore.get('token')?.value;
+cookieStore.set('key', 'value', { httpOnly: true, secure: true });
+cookieStore.delete('key');
+```
+
+**headers**
+`import { headers } from 'next/headers';`
+```tsx
+import { headers } from 'next/headers';
+
+const headerList = await headers();
+const auth = headerList.get('authorization');
+```
+
+---
+
+## dynamic / generateStaticParams
+
+**dynamic 选项**
+`export const dynamic = '<mode>';`
+```tsx
+export const dynamic = 'force-dynamic'; // 'auto' | 'force-static' | 'force-dynamic' | 'error'
+export const dynamicParams = true;
+export const revalidate = 60;            // 秒
+```
+
+**fetchCache 选项**
+```tsx
+export const fetchCache = 'force-no-store'; // 'auto' | 'default-no-store' | 'only-no-store' | 'default-cache' | 'force-cache' | 'no-store'
+```
+
+---
+
+## Server / Client 边界
+
+**导入规则**
+- Server Component 可导入 Server Component
+- Server Component 可导入 Client Component
+- Client Component 不能直接调用 Server Action(需通过 props)
+- Server Component 不能使用 useState / useEffect / ref
+
+**props 传递**
+```tsx
+// Server Component
+function Page() {
+  return <ClientComponent onClick={serverAction} />;
+}
+
+// Client Component
+'use client';
+function ClientComponent({ onClick }: { onClick: (id: string) => Promise<void> }) {
+  return <button onClick={() => onClick('1')}>删除</button>;
+}
+```
+
+---
+
+## useOptimistic 在 Server Action 中
+
+```tsx
+'use client';
+import { useOptimistic } from 'react';
+import { addLike } from '@/app/actions';
+
+function LikeButton({ likes }: { likes: number }) {
+  const [optimistic, addOptimistic] = useOptimistic(
+    likes,
+    (state, delta: number) => state + delta
+  );
+  return (
+    <form action={async () => {
+      addOptimistic(1);
+      await addLike();
+    }}>
+      <button>{optimistic} 赞</button>
+    </form>
+  );
+}
+```

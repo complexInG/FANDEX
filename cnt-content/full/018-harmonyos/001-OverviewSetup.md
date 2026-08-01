@@ -162,12 +162,14 @@ OpenHarmony 与 HarmonyOS NEXT 的关系：前者是开源底座，后者是华�
 
 ### 2.8 时间线总览
 
-```
-2019-08 ──── HarmonyOS 1.0 ──── 智慧屏首发、微内核
-2020-09 ──── HarmonyOS 2.0 ──── 手机适配、开源 OpenHarmony
-2022-07 ──── HarmonyOS 3.0 ──── 超级终端、原子化服务
-2023-08 ──── HarmonyOS 4.0 ──── AI 大模型集成
-2024-10 ──── HarmonyOS NEXT ─── 纯血鸿蒙、不兼容 Android
+```mermaid
+timeline
+    title HarmonyOS 版本时间线
+    2019-08: HarmonyOS 1.0 智慧屏首发、微内核
+    2020-09: HarmonyOS 2.0 手机适配、开源 OpenHarmony
+    2022-07: HarmonyOS 3.0 超级终端、原子化服务
+    2023-08: HarmonyOS 4.0 AI 大模型集成
+    2024-10: HarmonyOS NEXT 纯血鸿蒙、不兼容 Android
 ```
 
 ---
@@ -345,20 +347,25 @@ HarmonyOS 选择混合架构：内核层使用 Linux（手机）或 LiteOS（IoT
 
 设备发现基于 mDNS（Multicast DNS）与蓝牙 BLE 双轨：
 
-```
-设备 A 启动发现
-    │
-    ├─ mDNS: 广播 "_harmonyos._tcp.local"
-    │       └─ 局域网内设备响应
-    │
-    └─ BLE: 广播 UUID 0xFE82（华为自定义）
-            └─ 蓝牙范围内设备响应
-    
-设备 B 收到广播
-    │
-    └─ 校验账号是否一致（同华为账号）
-        ├─ yes: 加入候选设备列表
-        └─ no:  忽略
+```mermaid
+flowchart TD
+    T0["设备 A 启动发现"]
+    T1["mDNS: 广播 '_harmonyos._tcp.local'"]
+    T2["局域网内设备响应"]
+    T3["BLE: 广播 UUID 0xFE82（华为自定义）"]
+    T4["蓝牙范围内设备响应"]
+    T5["设备 B 收到广播"]
+    T6["校验账号是否一致（同华为账号）"]
+    T7["yes: 加入候选设备列表"]
+    T8["no:  忽略"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
 ```
 
 连接建立后，软总线在设备间维护一条加密通道：
@@ -465,19 +472,21 @@ $$
 
 hdc（HarmonyOS Device Connector）通过 USB 或 TCP 与设备通信：
 
-```
-开发机                    设备
-  │                        │
-  │ 1. adb-like protocol   │
-  │   over USB/TCP         │
-  │──────────────────────→│
-  │                        │ 2. hdcd daemon 接收
-  │                        │ 3. 执行命令（如 install）
-  │                        │ 4. 返回结果
-  │←──────────────────────│
-  │                        │
-  │ 5. HiLog stream        │
-  │←──────────────────────│
+```mermaid
+flowchart TD
+    T0["开发机                    设备"]
+    T1["1. adb-like protocol"]
+    T2["over USB/TCP"]
+    T3["2. hdcd daemon 接收"]
+    T4["3. 执行命令（如 install）"]
+    T5["4. 返回结果"]
+    T6["5. HiLog stream"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
 ```
 
 hdc 与 Android adb 的协议差异：
@@ -496,11 +505,11 @@ $$
 
 依赖图：
 
-```
-shared ──→ entry
-   ↑
-   └──→ feature_A
-   └──→ feature_B
+```mermaid
+flowchart LR
+    S[shared] --> E[entry]
+    S --> F1[feature_A]
+    S --> F2[feature_B]
 ```
 
 构建顺序：`shared` → `feature_A`/`feature_B`（并行）→ `entry`。
@@ -1088,48 +1097,59 @@ hdc shell snapshot_display -r /data/local/tmp/record.mp4 -t 60
 
 ### 5.9 多模块项目结构
 
-```
-MyApplication/
-├── AppScope/                          # 应用全局配置
-│   ├── app.json5                      # 应用配置
-│   └── resources/
-│       └── base/
-│           ├── element/
-│           │   └── string.json        # 全局字符串资源
-│           └── media/
-│               └── app_icon.png       # 应用图标
-├── entry/                             # 主模块（必须存在）
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── ets/
-│   │   │   │   ├── entryability/
-│   │   │   │   │   └── EntryAbility.ets
-│   │   │   │   └── pages/
-│   │   │   │       └── Index.ets
-│   │   │   ├── resources/             # 模块资源
-│   │   │   └── module.json5          # 模块配置
-│   │   ├── ohosTest/                  # 单元测试
-│   │   │   └── ets/
-│   │   │       └── test/
-│   │   │           └── List.test.ets
-│   │   └── test/                      # UI 测试
-│   ├── build-profile.json5            # 模块构建配置
-│   ├── hvigorfile.ts                  # 模块构建脚本
-│   └── oh-package.json5              # 模块依赖
-├── features/                          # 功能模块（可选）
-│   ├── feature_auth/                  # 登录模块
-│   │   └── ...
-│   └── feature_pay/                  # 支付模块
-│       └── ...
-├── shared/                           # 共享库（可选）
-│   └── shared_utils/
-│       └── ...
-├── build-profile.json5               # 项目构建配置
-├── hvigorfile.ts                     # 项目构建脚本
-├── hvigorw                           # 构建工具（Linux/Mac）
-├── hvigorw.bat                       # 构建工具（Windows）
-├── oh-package.json5                  # 项目依赖
-└── .gitignore
+```mermaid
+flowchart TD
+    T0["MyApplication/"]
+    T1["AppScope/                          # 应用全局配置"]
+    T2["app.json5                      # 应用配置"]
+    T3["resources/"]
+    T4["base/"]
+    T5["element/"]
+    T6["string.json        # 全局字符串资源"]
+    T7["media/"]
+    T8["app_icon.png       # 应用图标"]
+    T9["entry/                             # 主模块（必须存在）"]
+    T10["src/"]
+    T11["main/"]
+    T12["ets/"]
+    T13["entryability/"]
+    T14["EntryAbility.ets"]
+    T15["pages/"]
+    T16["Index.ets"]
+    T17["resources/             # 模块资源"]
+    T18["module.json5          # 模块配置"]
+    T19["ohosTest/                  # 单元测试"]
+    T20["ets/"]
+    T21["test/"]
+    T22["List.test.ets"]
+    T23["test/                      # UI 测试"]
+    T24["build-profile.json5            # 模块构建配置"]
+    T25["hvigorfile.ts                  # 模块构建脚本"]
+    T26["oh-package.json5              # 模块依赖"]
+    T27["features/                          # 功能模块（可选）"]
+    T28["feature_auth/                  # 登录模块"]
+    T29["..."]
+    T30["feature_pay/                  # 支付模块"]
+    T31["..."]
+    T32["shared/                           # 共享库（可选）"]
+    T33["shared_utils/"]
+    T34["..."]
+    T35["build-profile.json5               # 项目构建配置"]
+    T36["hvigorfile.ts                     # 项目构建脚本"]
+    T37["hvigorw                           # 构建工具（Linux/Mac）"]
+    T38["hvigorw.bat                       # 构建工具（Windows）"]
+    T39["oh-package.json5                  # 项目依赖"]
+    T40[".gitignore"]
+    T0 --> T1
+    T8 --> T9
+    T26 --> T27
+    T31 --> T32
+    T34 --> T35
+    T34 --> T36
+    T34 --> T37
+    T34 --> T38
+    T34 --> T39
+    T34 --> T40
 ```
 
 ### 5.10 .gitignore 配置
@@ -1493,13 +1513,19 @@ hilog 支持：
 
 **正确做法**：
 
-```
-entry/src/main/resources/
-├── base/element/string.json        # 默认（中文）
-├── en_US/element/string.json       # 英文
-├── zh_CN/element/string.json       # 简体中文
-├── zh_TW/element/string.json       # 繁体中文
-└── ja_JP/element/string.json       # 日文
+```mermaid
+flowchart TD
+    T0["entry/src/main/resources/"]
+    T1["base/element/string.json        # 默认（中文）"]
+    T2["en_US/element/string.json       # 英文"]
+    T3["zh_CN/element/string.json       # 简体中文"]
+    T4["zh_TW/element/string.json       # 繁体中文"]
+    T5["ja_JP/element/string.json       # 日文"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
 ```
 
 ### 7.8 陷阱：versionCode 未递增导致更新失败
@@ -1598,29 +1624,37 @@ build() {
 
 推荐的项目模板结构：
 
-```
-template/
-├── AppScope/
-│   ├── app.json5
-│   └── resources/
-├── entry/
-│   ├── src/main/
-│   │   ├── ets/
-│   │   │   ├── entryability/
-│   │   │   ├── pages/                # 页面
-│   │   │   ├── components/           # 自定义组件
-│   │   │   ├── model/                # 数据模型
-│   │   │   ├── service/              # 业务服务
-│   │   │   ├── utils/                # 工具函数
-│   │   │   └── constants/            # 常量定义
-│   │   ├── resources/
-│   │   └── module.json5
-│   └── oh-package.json5
-├── .editorconfig
-├── .gitignore
-├── .eslintrc.json5
-├── build-profile.json5
-└── README.md
+```mermaid
+flowchart TD
+    T0["template/"]
+    T1["AppScope/"]
+    T2["app.json5"]
+    T3["resources/"]
+    T4["entry/"]
+    T5["src/main/"]
+    T6["ets/"]
+    T7["entryability/"]
+    T8["pages/                # 页面"]
+    T9["components/           # 自定义组件"]
+    T10["model/                # 数据模型"]
+    T11["service/              # 业务服务"]
+    T12["utils/                # 工具函数"]
+    T13["constants/            # 常量定义"]
+    T14["resources/"]
+    T15["module.json5"]
+    T16["oh-package.json5"]
+    T17[".editorconfig"]
+    T18[".gitignore"]
+    T19[".eslintrc.json5"]
+    T20["build-profile.json5"]
+    T21["README.md"]
+    T0 --> T1
+    T3 --> T4
+    T16 --> T17
+    T16 --> T18
+    T16 --> T19
+    T16 --> T20
+    T16 --> T21
 ```
 
 ### 8.2 代码规范与 Lint
@@ -2018,7 +2052,7 @@ struct AdaptivePage {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（Basic）
 
@@ -2244,3 +2278,309 @@ D. 3000
 ---
 
 *本章为 FANDEX HarmonyOS 模块开篇章节，作为后续深入学习的基础。建议读者按顺序学习后续章节：ArkTS 语言特性、状态管理、自定义组件、应用签名与发布等。*
+## app.json5 应用级配置
+
+**AppScope/app.json5 基本结构**
+`{ app: { bundleName, vendor, versionCode, versionName, icon, label, ... } }`
+```json5
+{
+  app: {
+    bundleName: 'com.example.myapp',
+    vendor: 'MyCompany',
+    versionCode: 1000000,
+    versionName: '1.0.0',
+    icon: '$media:app_icon',
+    label: '$string:app_name',
+    minAPIVersion: 12,
+    targetAPIVersion: 12,
+    apiReleaseType: 'Release',
+    debug: false
+  }
+}
+```
+
+**版本号字段**
+`versionCode: <integer>; versionName: '<x.y.z>';`
+```json5
+{ versionCode: 1000000, versionName: '1.0.0' }
+{ versionCode: 1000100, versionName: '1.1.0' }
+{ versionCode: 2000000, versionName: '2.0.0' }
+```
+
+---
+
+## module.json5 模块级配置
+
+**entry/src/main/module.json5 基本结构**
+`{ module: { name, type, mainElement, deviceTypes, pages, abilities, ... } }`
+```json5
+{
+  module: {
+    name: 'entry',
+    type: 'entry',
+    description: '$string:module_desc',
+    mainElement: 'EntryAbility',
+    deviceTypes: ['phone', 'tablet', '2in1'],
+    deliveryWithInstall: true,
+    installationFree: false,
+    pages: '$profile:main_pages',
+    abilities: []
+  }
+}
+```
+
+**ModuleType 模块类型**
+`type: 'entry' | 'feature' | 'shared'`
+```typescript
+enum ModuleType {
+  ENTRY = 'entry',
+  FEATURE = 'feature',
+  SHARED = 'shared'
+}
+```
+
+**deviceTypes 设备类型**
+`deviceTypes: Array<'phone' | 'tablet' | 'tv' | 'wearable' | 'car' | '2in1'>`
+```json5
+{ deviceTypes: ['phone', 'tablet', '2in1'] }
+```
+
+**Ability 配置**
+`abilities: [{ name, srcEntry, description, icon, label, exported, skills }]`
+```json5
+{
+  abilities: [{
+    name: 'EntryAbility',
+    srcEntry: './ets/entryability/EntryAbility.ets',
+    description: '$string:EntryAbility_desc',
+    icon: '$media:layered_image',
+    label: '$string:EntryAbility_label',
+    startWindowIcon: '$media:startIcon',
+    startWindowBackground: '$color:start_window_background',
+    exported: true,
+    skills: [{
+      entities: ['entity.system.home'],
+      actions: ['action.system.home']
+    }]
+  }]
+}
+```
+
+**ExtensionAbility 扩展配置**
+`extensionAbilities: [{ name, srcEntry, type, metadata }]`
+```json5
+{
+  extensionAbilities: [{
+    name: 'FormExtensionAbility',
+    srcEntry: './ets/formability/FormExtensionAbility.ets',
+    type: 'form',
+    metadata: [{ name: 'ohos.extension.form', resource: '$profile:form_config' }]
+  }]
+}
+```
+
+**requestPermissions 权限声明**
+`requestPermissions: [{ name, reason, usedScene: { abilities, when } }]`
+```json5
+{
+  module: {
+    requestPermissions: [
+      {
+        name: 'ohos.permission.INTERNET',
+        reason: '$string:reason_internet',
+        usedScene: { abilities: ['EntryAbility'], when: 'inuse' }
+      },
+      {
+        name: 'ohos.permission.LOCATION',
+        reason: '$string:reason_location',
+        usedScene: { abilities: ['EntryAbility'], when: 'always' }
+      }
+    ]
+  }
+}
+```
+
+**usedScene.when 使用时机**
+`when: 'inuse' | 'always'`
+```json5
+{ usedScene: { abilities: ['EntryAbility'], when: 'inuse' } }
+```
+
+**metadata 元数据**
+`metadata: [{ name, resource }]`
+```json5
+{ metadata: [{ name: 'ohos.extension.form', resource: '$profile:form_config' }] }
+```
+
+---
+
+## build-profile.json5 项目构建配置
+
+**项目级 build-profile.json5**
+`{ app: { signingConfigs, products, buildModeName }, modules: [{ name, srcPath, targets }] }`
+```json5
+{
+  app: {
+    signingConfigs: [],
+    products: [{
+      name: 'default',
+      signingConfig: 'default',
+      compatibleSdkVersion: '5.0.0(12)',
+      compileSdkVersion: '5.0.0(12)',
+      targetSdkVersion: '5.0.0(12)',
+      runtimeOS: 'HarmonyOS'
+    }],
+    buildModeName: 'release'
+  },
+  modules: [{
+    name: 'entry',
+    srcPath: './entry',
+    targets: [{ name: 'default', applyToProducts: ['default'] }]
+  }]
+}
+```
+
+**模块级 build-profile.json5(entry/build-profile.json5)**
+`{ apiType, buildOption, buildOptionSet, targets }`
+```json5
+{
+  apiType: 'stageMode',
+  buildOption: {
+    arm64V8a: { enable: true },
+    x86_64: { enable: false }
+  },
+  buildOptionSet: [
+    { name: 'release', arkOptions: { obfuscation: { ruleFiles: ['./obfuscation-rules.txt'], enable: true } } },
+    { name: 'debug', arkOptions: { sourceMap: { enable: true } } }
+  ],
+  targets: [{ name: 'default', runtimeOS: 'HarmonyOS' }]
+}
+```
+
+**BuildMode 构建模式**
+`buildModeName: 'debug' | 'release'`
+```typescript
+enum BuildMode { DEBUG = 'debug', RELEASE = 'release' }
+```
+
+**RuntimeOS 运行系统**
+`runtimeOS: 'HarmonyOS' | 'OpenHarmony'`
+```typescript
+enum RuntimeOS { HARMONYOS = 'HarmonyOS', OPENHARMONY = 'OpenHarmony' }
+```
+
+---
+
+## oh-package.json5 包依赖配置
+
+**项目级 oh-package.json5**
+`{ name, version, dependencies, devDependencies }`
+```json5
+{
+  name: 'my-application',
+  version: '1.0.0',
+  dependencies: {},
+  devDependencies: {
+    '@ohos/hypium': '1.0.6',
+    '@ohos/hvigor-ohos-plugin': '5.0.0'
+  }
+}
+```
+
+**模块级 oh-package.json5**
+`{ name, version, dependencies: { '<kit>': '<version> | file:<path> | git+<url>' } }`
+```json5
+{
+  name: 'entry',
+  version: '1.0.0',
+  dependencies: {
+    '@kit.ArkUI': 'file:./libs/arkui',
+    '@ohos/hypium': '1.0.6',
+    'shared-library': 'file:../shared',
+    'my-library': 'git+https://github.com/user/repo.git#v1.0.0'
+  }
+}
+```
+
+---
+
+## 资源引用语法
+
+**资源引用前缀**
+`'$<type>:<name>'`
+```typescript
+'$media:app_icon'              // resources/base/media/
+'$string:app_name'             // resources/base/element/string.json
+'$color:start_window_background' // resources/base/element/color.json
+'$profile:main_pages'          // resources/base/profile/
+'$plural:app_count'            // 复数资源
+```
+
+**main_pages.json 页面路由配置**
+`{ src: ['pages/<Page1>', 'pages/<Page2>', ...] }`
+```json5
+{
+  src: [
+    'pages/Index',
+    'pages/HomePage',
+    'pages/DetailPage',
+    'pages/SettingsPage'
+  ]
+}
+```
+
+**string.json 字符串资源**
+`{ string: [{ name, value }] }`
+```json5
+{ string: [{ name: 'app_name', value: 'FANDEX' }] }
+```
+
+**color.json 颜色资源**
+`{ color: [{ name, value }] }`
+```json5
+{ color: [{ name: 'primary_color', value: '#007DFF' }] }
+```
+
+---
+
+## 多模块项目配置
+
+**项目级 build-profile.json5 多模块**
+`modules: [{ name, srcPath, targets: [{ name, applyToProducts }] }]`
+```json5
+{
+  modules: [
+    { name: 'entry', srcPath: './entry', targets: [{ name: 'default', applyToProducts: ['default'] }] },
+    { name: 'feature1', srcPath: './feature1', targets: [{ name: 'default', applyToProducts: ['default'] }] },
+    { name: 'shared', srcPath: './shared', targets: [{ name: 'default', applyToProducts: ['default'] }] }
+  ]
+}
+```
+
+**feature 模块 module.json5**
+`type: 'feature'`
+```json5
+{
+  module: {
+    name: 'feature1',
+    type: 'feature',
+    deviceTypes: ['phone', 'tablet'],
+    deliveryWithInstall: true,
+    installationFree: false,
+    pages: '$profile:main_pages'
+  }
+}
+```
+
+**shared 模块 module.json5**
+`type: 'shared'`
+```json5
+{
+  module: {
+    name: 'shared',
+    type: 'shared',
+    deviceTypes: ['phone', 'tablet'],
+    deliveryWithInstall: true
+  }
+}
+```

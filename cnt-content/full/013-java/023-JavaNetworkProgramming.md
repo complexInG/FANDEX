@@ -1595,7 +1595,7 @@ HttpClient client = HttpClient.newBuilder()
 - 头部压缩（HPACK）减少约 80% 头部字节。
 - 端到端延迟 P99 从 80ms 降到 25ms。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 

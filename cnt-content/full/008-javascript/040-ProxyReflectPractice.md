@@ -19,8 +19,11 @@ prerequisites:
   - javascript/原型与继承
   - javascript/闭包的内存泄露与优化
 ---
+# JavaScript Proxy 与 Reflect
 
-# Proxy 与 Reflect 实际应用
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -1971,21 +1974,35 @@ const proxy = new Proxy(new Map([['a', 1]]), {
 
 ### 8.1 Proxy 使用决策树
 
-```
-是否需要拦截对象操作？
-├── 否 → 直接使用原始对象
-└── 是
-    ├── 需要监听属性访问/修改？
-    │   ├── 仅已知属性 → Object.defineProperty
-    │   └── 任意属性（含新增）→ Proxy
-    ├── 需要监听函数调用？
-    │   └── Proxy 的 apply 陷阱
-    ├── 需要监听 new 操作？
-    │   └── Proxy 的 construct 陷阱
-    ├── 需要临时授权（可撤销）？
-    │   └── Proxy.revocable
-    └── 需要监听集合类型（Map/Set）？
-        └── Proxy + 方法绑定
+```mermaid
+flowchart TD
+    T0["是否需要拦截对象操作？"]
+    T1["否 → 直接使用原始对象"]
+    T2["是"]
+    T3["需要监听属性访问/修改？"]
+    T4["仅已知属性 → Object.defineProperty"]
+    T5["任意属性（含新增）→ Proxy"]
+    T6["需要监听函数调用？"]
+    T7["Proxy 的 apply 陷阱"]
+    T8["需要监听 new 操作？"]
+    T9["Proxy 的 construct 陷阱"]
+    T10["需要临时授权（可撤销）？"]
+    T11["Proxy.revocable"]
+    T12["需要监听集合类型（Map/Set）？"]
+    T13["Proxy + 方法绑定"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T2 --> T5
+    T5 --> T6
+    T2 --> T7
+    T7 --> T8
+    T2 --> T9
+    T9 --> T10
+    T2 --> T11
+    T11 --> T12
+    T12 --> T13
 ```
 
 ### 8.2 性能基准测试工具
@@ -2511,13 +2528,13 @@ const config = createConfigProxy();
 
 ---
 
-## 10. 练习题与答案
+## 知识讲解与要点分析（原练习题）
 
 ### 10.1 基础题
 
 **题 1**：实现一个 `readOnly` 函数，使对象所有属性只读，尝试写入时抛出 `TypeError`。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function readOnly(target) {
@@ -2545,7 +2562,7 @@ delete obj.a;  // TypeError
 
 **题 2**：使用 Proxy 实现 `Object.freeze` 的等价功能（深冻结）。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function deepFreeze(target) {
@@ -2574,7 +2591,7 @@ function deepFreeze(target) {
 
 **题 3**：实现一个 `debounceProxy`，对函数调用去抖。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function debounceProxy(fn, delay) {
@@ -2603,13 +2620,13 @@ target.x = 1;
 console.log(proxy.x, target.x);
 ```
 
-**答案**：输出 `42 1`。Proxy 拦截了 `get` 陷阱，无论 target 上 `x` 的真实值是什么，都返回 42。直接访问 `target.x` 不经过代理，返回真实值 1。
+**解析讲解**：输出 `42 1`。Proxy 拦截了 `get` 陷阱，无论 target 上 `x` 的真实值是什么，都返回 42。直接访问 `target.x` 不经过代理，返回真实值 1。
 
 ### 10.2 中级题
 
 **题 5**：实现一个 `computed` 函数，缓存 getter 的返回值，仅在依赖的响应式数据变化时重新计算。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function computed(getter) {
@@ -2633,7 +2650,7 @@ function computed(getter) {
 
 **题 6**：使用 Proxy 实现"方法链式调用日志"，自动记录每次方法调用的方法名与返回值。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function traceMethodCalls(obj) {
@@ -2655,7 +2672,7 @@ function traceMethodCalls(obj) {
 
 **题 7**：实现一个 `memoize` 函数，对纯函数的调用结果缓存。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function memoize(fn, keyBuilder = args => JSON.stringify(args)) {
@@ -2692,7 +2709,7 @@ const proxy = new Proxy(new User('Alice'), {
 proxy.getName();  // TypeError
 ```
 
-**答案**：`getName` 方法内的 `this` 是 proxy，但 `#name` 是私有字段，仅能在原始 `User` 实例上访问。修复方式：
+**解析讲解**：`getName` 方法内的 `this` 是 proxy，但 `#name` 是私有字段，仅能在原始 `User` 实例上访问。修复方式：
 
 ```javascript
 const proxy = new Proxy(new User('Alice'), {
@@ -2709,7 +2726,7 @@ proxy.getName();  // 'Alice'
 
 **题 9**：实现一个 `Observable` 类，支持订阅属性变化，使用 Proxy 拦截。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 class Observable {
@@ -2750,7 +2767,7 @@ obs.count = 1;  // count: 0 -> 1
 
 **题 10**：设计一个支持任意层级嵌套的 `observable`，且避免循环引用导致的无限递归。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function deepObservable(obj, onChange, path = '', seen = new WeakSet()) {
@@ -2786,7 +2803,7 @@ state.user.name = 'Bob';  // user.name: "Alice" -> "Bob"
 state.user.address.city = 'Shanghai';  // user.address.city: "Beijing" -> "Shanghai"
 ```
 
-### 10.4 综合题
+### 综合题知识点讲解
 
 **题 11**：实现一个简化版 Immer，要求：
 
@@ -2795,11 +2812,11 @@ state.user.address.city = 'Shanghai';  // user.address.city: "Beijing" -> "Shang
 3. 返回新状态，未修改的部分与原状态共享引用。
 4. 原状态不被修改。
 
-**答案**：参见 5.12 节完整实现。
+**解析讲解**：参见 5.12 节完整实现。
 
 **题 12**：设计一个基于 Proxy 的权限控制层，根据用户角色限制 API 访问。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function createAuthorizedAPI(api, userRole, permissions) {
@@ -3131,3 +3148,367 @@ new Proxy(obj, {
 ---
 
 > 本文档基于 ECMAScript 2024 规范、V8 12.x 引擎实现与 Vue3 / Immer / MobX / Solid.js 框架源码整理。如需引用，请注明来源：FANDEX 项目 JavaScript 模块。
+## Proxy 基础
+
+**基本写法：创建 Proxy**
+`new Proxy(<目标对象>, <处理器>)`
+```javascript
+// Proxy 代理目标对象拦截操作
+let proxy = new Proxy({}, { get(t, k) { return k in t ? t[k] : 42; } });
+```
+
+---
+
+**基本写法：get 拦截**
+`new Proxy(<目标>, { get(<target>, <prop>) { } })`
+```javascript
+// 拦截属性读取
+let proxy = new Proxy(obj, {
+    get(target, prop) {
+        console.log(`read ${String(prop)}`);
+        return Reflect.get(target, prop);
+    }
+});
+```
+
+---
+
+**基本写法：set 拦截**
+`new Proxy(<目标>, { set(<target>, <prop>, <value>) { } })`
+```javascript
+// 拦截属性设置做校验
+let proxy = new Proxy(obj, {
+    set(target, prop, value) {
+        if (prop === "age" && value < 0) throw new Error("invalid");
+        return Reflect.set(target, prop, value);
+    }
+});
+```
+
+---
+
+**基本写法：has 拦截**
+`new Proxy(<目标>, { has(<target>, <prop>) { } })`
+```javascript
+// 拦截 in 操作符
+let proxy = new Proxy(obj, {
+    has(target, prop) {
+        return prop.startsWith("_") ? false : Reflect.has(target, prop);
+    }
+});
+```
+
+---
+
+**基本写法：deleteProperty 拦截**
+`new Proxy(<目标>, { deleteProperty(<target>, <prop>) { } })`
+```javascript
+// 拦截 delete 操作
+let proxy = new Proxy(obj, {
+    deleteProperty(target, prop) {
+        console.log(`delete ${String(prop)}`);
+        return Reflect.deleteProperty(target, prop);
+    }
+});
+```
+
+---
+
+## 函数拦截
+
+**基本写法：apply 拦截**
+`new Proxy(<函数>, { apply(<target>, <thisArg>, <args>) { } })`
+```javascript
+// 拦截函数调用
+let fn = new Proxy(function (x) { return x; }, {
+    apply(target, thisArg, args) {
+        return Reflect.apply(target, thisArg, args) * 2;
+    }
+});
+fn(5);  // 10
+```
+
+---
+
+**基本写法：construct 拦截**
+`new Proxy(<构造器>, { construct(<target>, <args>) { } })`
+```javascript
+// 拦截 new 调用
+let Klass = new Proxy(function () {}, {
+    construct(target, args) {
+        return Reflect.construct(target, args);
+    }
+});
+new Klass();
+```
+
+---
+
+## Reflect 静态方法
+
+**基本写法：Reflect.get**
+`Reflect.get(<目标>, <属性>, [<this>])`
+```javascript
+// 等同 target[key] 但可指定 this
+let val = Reflect.get(obj, "name");
+```
+
+---
+
+**基本写法：Reflect.set**
+`Reflect.set(<目标>, <属性>, <值>, [<this>])`
+```javascript
+// 等同赋值返回布尔表示成功
+let ok = Reflect.set(obj, "name", "Tom");
+```
+
+---
+
+**基本写法：Reflect.has**
+`Reflect.has(<目标>, <属性>)`
+```javascript
+// 等同 in 操作符
+let exists = Reflect.has(obj, "name");
+```
+
+---
+
+**基本写法：Reflect.ownKeys**
+`Reflect.ownKeys(<目标>)`
+```javascript
+// 返回所有自有键含 Symbol
+let keys = Reflect.ownKeys(obj);
+```
+
+---
+
+**基本写法：Reflect.deleteProperty**
+`Reflect.deleteProperty(<目标>, <属性>)`
+```javascript
+// 等同 delete 返回布尔
+let ok = Reflect.deleteProperty(obj, "name");
+```
+
+---
+
+**基本写法：Reflect.construct**
+`Reflect.construct(<构造器>, <参数列表>)`
+```javascript
+// 等同 new 但可指定原型
+let instance = Reflect.construct(Klass, [1, 2]);
+```
+
+---
+
+**基本写法：Reflect.apply**
+`Reflect.apply(<函数>, <this>, <参数列表>)`
+```javascript
+// 函数调用替代 fn.apply
+let result = Reflect.apply(fn, thisArg, [1, 2]);
+```
+
+---
+
+## 常见陷阱
+
+**基本写法：响应式对象**
+`new Proxy(<目标>, { get, set })`
+```javascript
+// 简易响应式系统
+function reactive(obj) {
+    return new Proxy(obj, {
+        get(target, key, receiver) {
+            track(target, key);
+            return Reflect.get(target, key, receiver);
+        },
+        set(target, key, value, receiver) {
+            const result = Reflect.set(target, key, value, receiver);
+            trigger(target, key);
+            return result;
+        }
+    });
+}
+```
+
+---
+
+**基本写法：私有属性保护**
+`new Proxy(<目标>, { get, has })`
+```javascript
+// 禁止访问下划线开头属性
+let proxy = new Proxy(obj, {
+    get(target, prop) {
+        if (prop[0] === "_") throw new Error("private");
+        return Reflect.get(target, prop);
+    }
+});
+```
+
+---
+
+**基本写法：默认值**
+`new Proxy(<目标>, { get })`
+```javascript
+// 属性不存在时返回默认值
+let proxy = new Proxy({}, {
+    get(target, prop) {
+        return prop in target ? target[prop] : "default";
+    }
+});
+```
+
+---
+
+**基本写法：缓存代理**
+`new Proxy(<函数>, { apply })`
+```javascript
+// 缓存函数结果
+function memoize(fn) {
+    let cache = new Map();
+    return new Proxy(fn, {
+        apply(target, thisArg, args) {
+            let key = JSON.stringify(args);
+            if (!cache.has(key)) cache.set(key, Reflect.apply(target, thisArg, args));
+            return cache.get(key);
+        }
+    });
+}
+```
+
+---
+
+**基本写法：属性验证**
+`new Proxy(<目标>, { set })`
+```javascript
+// 设置属性时做类型校验
+let proxy = new Proxy({}, {
+    set(target, prop, value) {
+        if (prop === "age" && typeof value !== "number") return false;
+        return Reflect.set(target, prop, value);
+    }
+});
+```
+
+---
+
+**基本写法：日志代理**
+`new Proxy(<目标>, { get, set })`
+```javascript
+// 记录属性访问与修改
+let proxy = new Proxy(obj, {
+    get(target, prop) {
+        console.log(`get ${String(prop)}`);
+        return Reflect.get(target, prop);
+    },
+    set(target, prop, value) {
+        console.log(`set ${String(prop)} = ${value}`);
+        return Reflect.set(target, prop, value);
+    }
+});
+```
+
+---
+
+## receiver 参数
+
+**基本写法：receiver 保持 this 指向**
+`Reflect.get(<target>, <prop>, <receiver>)`
+```javascript
+// receiver 保证 getter 中的 this 正确
+let proxy = new Proxy(obj, {
+    get(target, prop, receiver) {
+        return Reflect.get(target, prop, receiver);
+    }
+});
+```
+
+---
+
+## 可撤销 Proxy
+
+**基本写法：revoke 撤销**
+`Proxy.revocable(<目标>, <处理器>)`
+```javascript
+// 创建可撤销代理
+let { proxy, revoke } = Proxy.revocable(obj, {
+    get(t, k) { return Reflect.get(t, k); }
+});
+revoke();  // 之后访问 proxy 抛出 TypeError
+```
+
+---
+
+## 数组代理
+
+**基本写法：数组索引拦截**
+`new Proxy(<数组>, { get, set })`
+```javascript
+// 拦截数组读写触发更新
+let arr = new Proxy([1, 2, 3], {
+    set(target, prop, value, receiver) {
+        if (!isNaN(prop)) console.log(`set index ${prop}`);
+        return Reflect.set(target, prop, value, receiver);
+    }
+});
+arr[0] = 99;
+```
+
+---
+
+## 实用模式
+
+**基本写法：观察者模式**
+`function <observable>(<对象>, <回调>)`
+```javascript
+// 监听对象所有修改
+function observable(obj, callback) {
+    return new Proxy(obj, {
+        set(target, prop, value, receiver) {
+            const old = target[prop];
+            const result = Reflect.set(target, prop, value, receiver);
+            if (old !== value) callback(prop, value, old);
+            return result;
+        }
+    });
+}
+```
+
+---
+
+**基本写法：单例代理**
+`new Proxy(<构造器>, { construct })`
+```javascript
+// 限制只能创建一个实例
+let Singleton = new Proxy(class {}, {
+    construct(target, args) {
+        if (!instance) instance = Reflect.construct(target, args);
+        return instance;
+    }
+});
+```
+
+---
+
+## Proxy 限制
+
+**基本写法：不可代理的对象**
+`new Proxy(<目标>, <处理器>)`
+```javascript
+// 一些内置对象不可代理如 Map 的内部槽
+let proxy = new Proxy(new Map(), {});
+proxy.set("a", 1);  // 抛出 TypeError
+```
+
+---
+
+**基本写法：兼容性处理**
+`Object.defineProperty(<对象>, <属性>, <描述>)`
+```javascript
+// Proxy 不支持时退回 defineProperty
+function defineReactive(obj, key, val) {
+    Object.defineProperty(obj, key, {
+        get() { return val; },
+        set(newVal) { val = newVal; }
+    });
+}
+```

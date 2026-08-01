@@ -276,16 +276,13 @@ protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundE
 
 HotSpot 中对象在堆中的内存布局为三部分：
 
-```
-+---------------------+
-|      对象头          |  12~16 字节（64 位 JVM）
-|  - Mark Word (8B)   |  存储 hashCode、GC 年龄、锁状态
-|  - Klass Pointer    |  4B（开启压缩指针）或 8B
-+---------------------+
-|      实例数据        |  各字段值，按类型对齐
-+---------------------+
-|      对齐填充        |  补齐到 8 字节整数倍
-+---------------------+
+```mermaid
+flowchart TD
+    B0["对象头 | 12~16 字节（64 位 JVM） / Mark Word (8B) | 存储 hashCode、GC 年龄、锁状态 / Klass Pointer | 4B（开启压缩指针）或 8B"]
+    B1["实例数据 | 各字段值，按类型对齐"]
+    B0 --> B1
+    B2["对齐填充 | 补齐到 8 字节整数倍"]
+    B1 --> B2
 ```
 
 #### 4.2.1 Mark Word 的状态机
@@ -1312,22 +1309,33 @@ public record User(String name, int age) {}
 
 #### 8.1.1 调优决策树
 
-```
-1. 确定业务目标
-   ├─ 低延迟（P99 < 100ms）→ ZGC / Shenandoah
-   ├─ 高吞吐（批处理）→ Parallel Scavenge + Parallel Old
-   └─ 平衡（Web 服务）→ G1（默认）
-
-2. 评估堆大小
-   ├─ 数据量 < 4GB → 8GB 堆，G1
-   ├─ 4~32GB → G1，MaxGCPauseMillis=100ms
-   └─ > 32GB → ZGC，停顿时间无关堆大小
-
-3. 配置关键参数
-   ├─ -Xms == -Xmx（避免动态调整开销）
-   ├─ -XX:MaxGCPauseMillis（G1 目标停顿）
-   ├─ -XX:MetaspaceSize / -XX:MaxMetaspaceSize
-   └─ -XX:+HeapDumpOnOutOfMemoryError + 路径
+```mermaid
+flowchart TD
+    T0["1. 确定业务目标"]
+    T1["低延迟（P99 < 100ms）→ ZGC / Shenandoah"]
+    T2["高吞吐（批处理）→ Parallel Scavenge + Parallel Old"]
+    T3["平衡（Web 服务）→ G1（默认）"]
+    T4["2. 评估堆大小"]
+    T5["数据量 < 4GB → 8GB 堆，G1"]
+    T6["4~32GB → G1，MaxGCPauseMillis=100ms"]
+    T7["> 32GB → ZGC，停顿时间无关堆大小"]
+    T8["3. 配置关键参数"]
+    T9["-Xms == -Xmx（避免动态调整开销）"]
+    T10["-XX:MaxGCPauseMillis（G1 目标停顿）"]
+    T11["-XX:MetaspaceSize / -XX:MaxMetaspaceSize"]
+    T12["-XX:+HeapDumpOnOutOfMemoryError + 路径"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T8 --> T12
 ```
 
 #### 8.1.2 推荐的通用参数（JDK 17+ Web 服务）
@@ -1699,7 +1707,7 @@ public Class<?> getMapper(String sql) {
 
 **效果**：类数量稳定在 2000 左右，Metaspace 占用 100MB，问题根除。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1997,6 +2005,3 @@ public class NetworkClassLoader extends ClassLoader {
 
 ---
 
-### 更新日志
-
-- 2026-07-21: 全面重写，按金标准扩充至 12 章节结构，涵盖 Bloom 学习目标、形式化定义、JVM 架构、类加载、GC 算法、JIT 编译、性能调优、案例研究与参考文献。

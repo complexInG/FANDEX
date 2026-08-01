@@ -2265,7 +2265,7 @@ public enum AggregateType { Count, Sum, Average, Max, Min }
 
 ---
 
-## 9. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 9.1 基础题
 

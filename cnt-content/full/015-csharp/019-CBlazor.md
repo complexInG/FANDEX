@@ -1291,19 +1291,28 @@ public record PagedResult<T>(IReadOnlyList<T> Items, int TotalCount);
 
 ### 6.3 渲染模式选择决策矩阵
 
-```
-是否需要离线支持？
-├── 是 → Blazor WebAssembly / Auto
-│   └── 首屏速度是否关键？
-│       ├── 是 → Blazor Auto
-│       └── 否 → Blazor WebAssembly
-└── 否
-    └── 是否为内网应用？
-        ├── 是 → Blazor Server
-        └── 否
-            └── 用户是否主要使用 C# 团队？
-                ├── 是 → Blazor Auto
-                └── 否 → 考虑 React/Vue
+```mermaid
+flowchart TD
+    T0["是否需要离线支持？"]
+    T1["是 → Blazor WebAssembly / Auto"]
+    T2["首屏速度是否关键？"]
+    T3["是 → Blazor Auto"]
+    T4["否 → Blazor WebAssembly"]
+    T5["否"]
+    T6["是否为内网应用？"]
+    T7["是 → Blazor Server"]
+    T8["否"]
+    T9["用户是否主要使用 C# 团队？"]
+    T10["是 → Blazor Auto"]
+    T11["否 → 考虑 React/Vue"]
+    T0 --> T1
+    T4 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
 ```
 
 ## 7. 常见陷阱与误区
@@ -1524,30 +1533,34 @@ var response = await httpClient.GetAsync("https://api.example.com/data");
 
 ### 8.1 项目结构规范
 
-```
-MyBlazorApp/
-├── src/
-│   ├── MyBlazorApp/                # 主项目
-│   │   ├── Components/
-│   │   │   ├── Layout/             # 布局组件
-│   │   │   ├── Pages/              # 路由页面
-│   │   │   ├── Shared/             # 共享组件
-│   │   │   └── _Imports.razor      # 全局 using
-│   │   ├── wwwroot/
-│   │   │   ├── css/
-│   │   │   ├── js/
-│   │   │   └── lib/                # 第三方库
-│   │   ├── Models/                 # 数据模型
-│   │   ├── Services/               # 业务服务
-│   │   ├── Data/                   # 数据访问
-│   │   ├── Program.cs
-│   │   └── appsettings.json
-│   ├── MyBlazorApp.Client/         # WASM 客户端项目（Auto 模式）
-│   └── MyBlazorApp.Shared/         # 共享代码
-├── tests/
-│   ├── MyBlazorApp.UnitTests/
-│   └── MyBlazorApp.E2ETests/
-└── MyBlazorApp.sln
+```mermaid
+flowchart TD
+    T0["MyBlazorApp/"]
+    T1["src/"]
+    T2["MyBlazorApp/                # 主项目"]
+    T3["Components/"]
+    T4["Layout/             # 布局组件"]
+    T5["Pages/              # 路由页面"]
+    T6["Shared/             # 共享组件"]
+    T7["_Imports.razor      # 全局 using"]
+    T8["wwwroot/"]
+    T9["css/"]
+    T10["js/"]
+    T11["lib/                # 第三方库"]
+    T12["Models/                 # 数据模型"]
+    T13["Services/               # 业务服务"]
+    T14["Data/                   # 数据访问"]
+    T15["Program.cs"]
+    T16["appsettings.json"]
+    T17["MyBlazorApp.Client/         # WASM 客户端项目（Auto 模式）"]
+    T18["MyBlazorApp.Shared/         # 共享代码"]
+    T19["tests/"]
+    T20["MyBlazorApp.UnitTests/"]
+    T21["MyBlazorApp.E2ETests/"]
+    T22["MyBlazorApp.sln"]
+    T0 --> T1
+    T18 --> T19
+    T21 --> T22
 ```
 
 ### 8.2 组件设计原则
@@ -2194,13 +2207,13 @@ app.MapRazorComponents<App>()
 <component type="typeof(Shared.WeatherWidget)" render-mode="Server" />
 ```
 
-## 10. 习题与参考答案
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（L1-L2：记忆与理解）
 
 **习题 10.1.1**：列举 Blazor 的四种托管模型，并简述各自的运行位置。
 
-**参考答案**：
+**解析讲解**：
 - Blazor Server：服务端运行，通过 SignalR 通信
 - Blazor WebAssembly：浏览器端运行，编译为 WASM 字节码
 - Blazor Auto：先 Server 快速加载，后切换至 WASM
@@ -2208,20 +2221,20 @@ app.MapRazorComponents<App>()
 
 **习题 10.1.2**：解释 `@bind` 与 `@bind-Value` 的区别。
 
-**参考答案**：
+**解析讲解**：
 - `@bind` 是双向绑定的简写形式，自动绑定到 `value` 属性与 `onchange` 事件
 - `@bind-Value` 用于 `EditForm` 中的输入组件（如 `InputText`），绑定到组件的 `Value` 属性与 `ValueChanged` 回调，支持验证
 
 **习题 10.1.3**：Blazor 组件生命周期的执行顺序是什么？
 
-**参考答案**：
+**解析讲解**：
 构造函数 → `OnInitialized` → `OnInitializedAsync` → `OnParametersSet` → `OnParametersSetAsync` → `ShouldRender` → `BuildRenderTree` → `OnAfterRender` → `OnAfterRenderAsync` → （状态变化时回到 `ShouldRender`）→ `Dispose` / `DisposeAsync`
 
-### 10.2 应用题（L3：应用）
+### 应用题知识点讲解
 
 **习题 10.2.1**：实现一个倒计时组件，每秒更新一次，到 0 时触发 `OnComplete` 事件。
 
-**参考答案**：
+**解析讲解**：
 
 ```razor
 @* Countdown.razor *@
@@ -2260,7 +2273,7 @@ app.MapRazorComponents<App>()
 
 **习题 10.2.2**：实现一个级联选择器，省市联动。
 
-**参考答案**：
+**解析讲解**：
 
 ```razor
 @* CascadeSelector.razor *@
@@ -2321,7 +2334,7 @@ app.MapRazorComponents<App>()
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 **问题分析**：
 1. 未使用 `@key`，列表变化时所有元素重新渲染，复杂度 $O(m \cdot n)$
@@ -2340,7 +2353,7 @@ app.MapRazorComponents<App>()
 
 **习题 10.3.2**：分析 Blazor Server 模式下，为什么长时间运行的任务会导致用户掉线？
 
-**参考答案**：
+**解析讲解**：
 
 Blazor Server 通过 SignalR 维持长连接。长时间运行的任务会：
 1. 阻止 SignalR 心跳消息处理，导致服务器认为客户端掉线
@@ -2359,7 +2372,7 @@ Blazor Server 通过 SignalR 维持长连接。长时间运行的任务会：
 
 场景：医疗影像查看系统，用户为医院医生，在内网使用，需处理大量 DICOM 图像（单张 50-500MB），需要 3D 渲染。
 
-**参考答案**：
+**解析讲解**：
 
 **推荐方案**：Blazor Server
 
@@ -2379,7 +2392,7 @@ Blazor Server 通过 SignalR 维持长连接。长时间运行的任务会：
 
 **习题 10.5.1**：设计一个支持多人协作的在线文档编辑器，描述架构与关键技术选型。
 
-**参考答案**（设计要点）：
+**解析讲解**：（设计要点）：
 
 **架构概述**：
 - 前端：Blazor WebAssembly（离线编辑、低延迟）

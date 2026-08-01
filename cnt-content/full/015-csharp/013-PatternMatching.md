@@ -15,6 +15,11 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
+# C# 模式匹配
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 一、学习目标
 
@@ -329,23 +334,31 @@ double Area(Shape s) => s switch {
 
 ### 5.1 项目结构
 
-```
-FandexPatternMatching/
-├── FandexPatternMatching.csproj
-├── Program.cs
-├── Domain/
-│   ├── Order.cs
-│   ├── OrderEvent.cs
-│   └── Discount.cs
-├── Handlers/
-│   ├── OrderEventHandler.cs
-│   ├── DiscountCalculator.cs
-│   └── ExceptionClassifier.cs
-├── Expressions/
-│   ├── Expr.cs
-│   └── ExprEvaluator.cs
-└── Validators/
-    └── InputValidator.cs
+```mermaid
+flowchart TD
+    T0["FandexPatternMatching/"]
+    T1["FandexPatternMatching.csproj"]
+    T2["Program.cs"]
+    T3["Domain/"]
+    T4["Order.cs"]
+    T5["OrderEvent.cs"]
+    T6["Discount.cs"]
+    T7["Handlers/"]
+    T8["OrderEventHandler.cs"]
+    T9["DiscountCalculator.cs"]
+    T10["ExceptionClassifier.cs"]
+    T11["Expressions/"]
+    T12["Expr.cs"]
+    T13["ExprEvaluator.cs"]
+    T14["Validators/"]
+    T15["InputValidator.cs"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T6 --> T7
+    T10 --> T11
+    T13 --> T14
+    T14 --> T15
 ```
 
 ### 5.2 csproj 配置（.NET 8 / C# 12）
@@ -1529,7 +1542,7 @@ public record RuleResult(bool IsMatch, decimal Rate, string Reason) {
 
 **题目 1**：用 switch 表达式实现一个将 HTTP 状态码转换为描述的函数。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 string StatusDescription(int code) => code switch {
@@ -1551,7 +1564,7 @@ string StatusDescription(int code) => code switch {
 
 **题目 2**：用属性模式与逻辑模式实现用户权限校验。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public sealed class PermissionChecker {
@@ -1574,11 +1587,11 @@ public sealed class PermissionChecker {
 }
 ```
 
-### 10.3 应用题
+### 应用题知识点讲解
 
 **题目 3**：实现一个基于模式匹配的状态机，处理订单状态转换。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public sealed class OrderStateMachine {
@@ -1610,7 +1623,7 @@ public sealed class OrderStateMachine {
 
 **题目 4**：用列表模式实现一个简单的 JSON 数组解析器。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public static int SumJsonArray(string json) {
@@ -1632,7 +1645,7 @@ public static int SumJsonArray(string json) {
 
 **题目 5**：为什么 C# 选择**警告**而非**错误**来处理 switch 表达式的穷尽性？这种设计的优缺点是什么？
 
-**参考答案**：
+**解析讲解**：
 
 **优点**：
 1. 向后兼容：新增枚举值不会破坏现有代码编译；
@@ -1655,7 +1668,7 @@ public static int SumJsonArray(string json) {
 
 **题目 6**：设计一个支持活动模式（active patterns）的扩展方法系统，用于识别偶数、质数、斐波那契数。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public static class NumberPatterns {
@@ -1685,11 +1698,11 @@ string Classify(int n) => n switch {
 };
 ```
 
-### 10.7 综合题
+### 综合题知识点讲解
 
 **题目 7**：实现一个基于模式匹配的 JSON Schema 校验器（简化版）。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public sealed class JsonSchemaValidator {
@@ -1740,7 +1753,7 @@ public abstract record JsonSchema {
 
 **题目 8**：用模式匹配实现归并排序的合并步骤。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public static int[] Merge(int[] a, int[] b) => (a, b) switch {
@@ -1767,7 +1780,7 @@ string Classify(object obj) => obj switch {
 };
 ```
 
-**参考答案**：
+**解析讲解**：
 
 问题：类型模式需要绑定变量（C# 9+ 后可省略变量名，但 C# 7-8 必须有）。
 
@@ -1795,7 +1808,7 @@ string Classify(object obj) => obj switch {
 
 **题目 10**：用模式匹配实现一个简单的银行账户交易处理器，支持存款、取款、转账，并处理各种异常情况。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public abstract record Transaction {
@@ -1981,3 +1994,532 @@ public record TransactionResult(bool Success, string Message);
 - 《源生成器》：编译期代码生成与模式匹配结合
 - 《表达式树》：理解模式匹配的编译期翻译
 - 《F# 入门》：体验完整穷尽性检查与活动模式
+## 类型模式
+
+**基本写法：is 类型检查**
+`if (<变量> is <类型>)`
+```csharp
+// 检查对象是否为指定类型
+object obj = "Hello";
+if (obj is string)
+{
+    Console.WriteLine("是字符串");
+}
+```
+
+---
+
+**基本写法：is 类型声明**
+`if (<变量> is <类型> <变量名>)`
+```csharp
+// 类型检查并赋值给新变量
+object obj = "Hello";
+if (obj is string s)
+{
+    Console.WriteLine($"长度: {s.Length}");
+}
+```
+
+---
+
+**基本写法：switch 类型分支**
+`switch (<变量>) { case <类型> <变量名>: <语句>; break; }`
+```csharp
+// switch 语句中的类型模式
+object obj = 42;
+switch (obj)
+{
+    case int i:
+        Console.WriteLine($"整数: {i}");
+        break;
+    case string s:
+        Console.WriteLine($"字符串: {s}");
+        break;
+}
+```
+
+---
+
+**基本写法：switch 表达式类型分支**
+`<变量> switch { <类型> <变量名> => <结果>, _ => <默认> }`
+```csharp
+// switch 表达式中的类型模式
+object obj = 42;
+string label = obj switch
+{
+    int i => $"整数 {i}",
+    string s => $"字符串 {s}",
+    _ => "未知类型"
+};
+```
+
+---
+
+## 常量模式
+
+**基本写法：null 检查**
+`if (<变量> is null)`
+```csharp
+// 检查变量是否为 null
+string? name = null;
+if (name is null)
+{
+    Console.WriteLine("未设置");
+}
+```
+
+---
+
+**基本写法：not null 检查**
+`if (<变量> is not null)`
+```csharp
+// 检查变量是否非 null
+string? name = "张三";
+if (name is not null)
+{
+    Console.WriteLine(name);
+}
+```
+
+---
+
+**基本写法：常量值匹配**
+`<变量> switch { <常量> => <结果>, _ => <默认> }`
+```csharp
+// 匹配常量值
+int statusCode = 404;
+string label = statusCode switch
+{
+    200 => "OK",
+    404 => "Not Found",
+    500 => "Server Error",
+    _ => "Unknown"
+};
+```
+
+---
+
+## 关系模式
+
+**基本写法：大于关系**
+`<变量> switch { > <值> => <结果> }`
+```csharp
+// 匹配大于指定值
+int score = 85;
+string grade = score switch
+{
+    > 90 => "A",
+    > 80 => "B",
+    > 70 => "C",
+    _ => "F"
+};
+```
+
+---
+
+**基本写法：小于关系**
+`<变量> switch { < <值> => <结果> }`
+```csharp
+// 匹配小于指定值
+int temperature = -5;
+string label = temperature switch
+{
+    < 0 => "冰冻",
+    < 20 => "寒冷",
+    _ => "温暖"
+};
+```
+
+---
+
+**基本写法：范围匹配**
+`<变量> switch { >= <最小> and <= <最大> => <结果> }`
+```csharp
+// 匹配指定范围
+int age = 25;
+string category = age switch
+{
+    >= 0 and < 18 => "未成年",
+    >= 18 and < 60 => "成年",
+    >= 60 => "老年",
+    _ => "无效"
+};
+```
+
+---
+
+## 逻辑模式
+
+**基本写法：and 组合模式**
+`<模式1> and <模式2>`
+```csharp
+// 同时满足两个模式
+object value = 42;
+if (value is int and > 0)
+{
+    Console.WriteLine("正整数");
+}
+```
+
+---
+
+**基本写法：or 选择模式**
+`<模式1> or <模式2>`
+```csharp
+// 满足任一模式
+DayOfWeek day = DayOfWeek.Saturday;
+if (day is DayOfWeek.Saturday or DayOfWeek.Sunday)
+{
+    Console.WriteLine("周末");
+}
+```
+
+---
+
+**基本写法：not 否定模式**
+`not <模式>`
+```csharp
+// 不满足指定模式
+object value = "Hello";
+if (value is not null)
+{
+    Console.WriteLine("非 null");
+}
+```
+
+---
+
+**基本写法：复杂逻辑组合**
+`<模式1> and (<模式2> or <模式3>)`
+```csharp
+// 复杂逻辑组合
+int score = 85;
+if (score is > 60 and (< 80 or > 90))
+{
+    Console.WriteLine("特殊分数段");
+}
+```
+
+---
+
+## 属性模式
+
+**基本写法：单属性匹配**
+`<变量> switch { { <属性>: <值> } => <结果> }`
+```csharp
+// 匹配对象单个属性值
+var user = new User("张三", 25);
+string label = user switch
+{
+    { Age: 25 } => "25岁用户",
+    _ => "其他"
+};
+```
+
+---
+
+**基本写法：多属性匹配**
+`<变量> switch { { <属性1>: <值1>, <属性2>: <值2> } => <结果> }`
+```csharp
+// 匹配对象多个属性值
+var user = new User("张三", 25);
+string label = user switch
+{
+    { Name: "张三", Age: 25 } => "匹配张三",
+    _ => "不匹配"
+};
+```
+
+---
+
+**基本写法：嵌套属性匹配**
+`<变量> switch { { <属性>.<子属性>: <值> } => <结果> }`
+```csharp
+// 匹配嵌套对象的属性
+var order = new Order(new Customer("VIP"), 1500m);
+string discount = order switch
+{
+    { Customer.Level: "VIP" } => "8折",
+    _ => "无折扣"
+};
+```
+
+---
+
+**基本写法：属性带关系匹配**
+`<变量> switch { { <属性>: > <值> } => <结果> }`
+```csharp
+// 属性值与关系运算符组合
+var order = new Order(1500m);
+string label = order switch
+{
+    { Amount: > 1000m } => "大额订单",
+    { Amount: > 100m } => "中额订单",
+    _ => "小额订单"
+};
+```
+
+---
+
+## 位置模式
+
+**基本写法：元组位置匹配**
+`(<变量1>, <变量2>) switch { (<值1>, <值2>) => <结果> }`
+```csharp
+// 匹配元组的值
+var point = (10, 20);
+string quadrant = point switch
+{
+    (0, 0) => "原点",
+    (> 0, > 0) => "第一象限",
+    (< 0, > 0) => "第二象限",
+    _ => "其他象限"
+};
+```
+
+---
+
+**基本写法：记录位置匹配**
+`<变量> switch { <类型>(<值1>, <值2>) => <结果> }`
+```csharp
+// 匹配记录的位置参数
+public record Point(int X, int Y);
+Point p = new(10, 20);
+string label = p switch
+{
+    Point(0, 0) => "原点",
+    Point(_, 0) => "X 轴",
+    Point(0, _) => "Y 轴",
+    _ => "其他"
+};
+```
+
+---
+
+**基本写法：位置模式带类型**
+`<变量> switch { <类型>(<模式1>, <模式2>) => <结果> }`
+```csharp
+// 位置模式与类型组合
+public record Point(int X, int Y);
+Point p = new(10, 20);
+string label = p switch
+{
+    Point(> 0, > 0) => "第一象限",
+    Point(< 0, > 0) => "第二象限",
+    _ => "其他"
+};
+```
+
+---
+
+## 列表模式
+
+**基本写法：空列表匹配**
+`<数组> switch { [] => <结果> }`
+```csharp
+// 匹配空列表
+int[] numbers = [];
+string label = numbers switch
+{
+    [] => "空列表",
+    _ => "非空列表"
+};
+```
+
+---
+
+**基本写法：单元素列表匹配**
+`<数组> switch { [<元素>] => <结果> }`
+```csharp
+// 匹配仅含单个元素的列表
+int[] numbers = [42];
+string label = numbers switch
+{
+    [single] => $"单元素: {single}",
+    _ => "其他"
+};
+```
+
+---
+
+**基本写法：双元素列表匹配**
+`<数组> switch { [<元素1>, <元素2>] => <结果> }`
+```csharp
+// 匹配包含两个元素的列表
+int[] numbers = [1, 2];
+string label = numbers switch
+{
+    [first, second] => $"两元素: {first}, {second}",
+    _ => "其他"
+};
+```
+
+---
+
+**基本写法：首尾元素匹配**
+`<数组> switch { [first, .., last] => <结果> }`
+```csharp
+// 匹配列表的首尾元素
+int[] numbers = [1, 2, 3, 4, 5];
+string label = numbers switch
+{
+    [first, .., last] => $"首: {first}, 尾: {last}",
+    _ => "其他"
+};
+```
+
+---
+
+**基本写法：特定值列表匹配**
+`<数组> switch { [1, 2, ..] => <结果> }`
+```csharp
+// 匹配以特定值开头的列表
+int[] numbers = [1, 2, 3, 4];
+string label = numbers switch
+{
+    [1, 2, ..] => "以 1, 2 开头",
+    _ => "其他"
+};
+```
+
+---
+
+**基本写法：列表模式带条件**
+`<数组> switch { [var x, ..] when <条件> => <结果> }`
+```csharp
+// 列表模式与 when 守卫组合
+int[] numbers = [10, 20, 30];
+string label = numbers switch
+{
+    [var first, ..] when first > 5 => "首元素大于 5",
+    _ => "其他"
+};
+```
+
+---
+
+## when 守卫
+
+**基本写法：when 条件守卫**
+`case <模式> when <条件>:`
+```csharp
+// switch 语句中的 when 守卫
+int score = 85;
+switch (score)
+{
+    case int s when s >= 90:
+        Console.WriteLine("优秀");
+        break;
+    case int s when s >= 80:
+        Console.WriteLine("良好");
+        break;
+}
+```
+
+---
+
+**基本写法：switch 表达式 when 守卫**
+`<模式> when <条件> => <结果>`
+```csharp
+// switch 表达式中的 when 守卫
+var user = new User("张三", 25);
+string label = user switch
+{
+    { Age: var age } when age < 18 => "未成年",
+    { Age: var age } when age >= 18 => "成年",
+    _ => "未知"
+};
+```
+
+---
+
+## 模式组合
+
+**基本写法：类型与属性组合**
+`<类型> { <属性>: <值> }`
+```csharp
+// 类型模式与属性模式组合
+object obj = new User("张三", 25);
+string label = obj switch
+{
+    User { Age: > 18 } u => $"成年用户: {u.Name}",
+    User u => $"未成年用户: {u.Name}",
+    _ => "非用户"
+};
+```
+
+---
+
+**基本写法：类型与位置组合**
+`<类型>(<模式1>, <模式2>)`
+```csharp
+// 类型模式与位置模式组合
+public record Point(int X, int Y);
+object obj = new Point(10, 20);
+string label = obj switch
+{
+    Point(0, 0) => "原点",
+    Point(_, _) => "非原点",
+    _ => "非点"
+};
+```
+
+---
+
+**基本写法：复杂模式组合**
+`<类型> { <属性>: <模式> } when <条件>`
+```csharp
+// 多种模式组合使用
+public record Order(decimal Amount, string Status);
+var order = new Order(1500m, "VIP");
+string label = order switch
+{
+    Order { Amount: > 1000m, Status: "VIP" } when order.Amount < 2000m => "中额 VIP",
+    _ => "其他"
+};
+```
+
+---
+
+## 解构模式
+
+**基本写法：Deconstruct 解构**
+`var (<变量1>, <变量2>) = <对象>;`
+```csharp
+// 使用 Deconstruct 方法解构对象
+public record Point(int X, int Y);
+Point p = new(10, 20);
+var (x, y) = p;
+Console.WriteLine($"X: {x}, Y: {y}");
+```
+
+---
+
+**基本写法：自定义 Deconstruct**
+`public void Deconstruct(out <类型1> <变量1>, out <类型2> <变量2>)`
+```csharp
+// 为类型添加解构方法
+public class Rectangle
+{
+    public double Width { get; init; }
+    public double Height { get; init; }
+    public void Deconstruct(out double width, out double height)
+    {
+        width = Width;
+        height = Height;
+    }
+}
+```
+
+---
+
+**基本写法：解构与模式匹配**
+`if (<对象> is (<模式1>, <模式2>))`
+```csharp
+// 解构后进行模式匹配
+var rect = new Rectangle { Width = 10, Height = 20 };
+if (rect is ( > 5, > 5))
+{
+    Console.WriteLine("宽高都大于 5");
+}
+```

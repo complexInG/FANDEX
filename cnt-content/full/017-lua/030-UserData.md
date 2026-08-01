@@ -234,20 +234,11 @@ $$
 
 假设 64 位平台、Lua 5.4，full userdata 的内存布局：
 
-```
-+---------------------------+ <- Udata 起始
-| CommonHeader (8 bytes)    |
-| nuvalue (2 bytes)         |
-| padding (2 bytes)         |
-| *metatable (8 bytes)       |
-| *gclist (8 bytes)          |
-| UValue uv[0] (16 bytes)   | <- 每个 uservalue 占 16 字节（tt + value）
-| ...                       |
-| UValue uv[n-1] (16 bytes) |
-+---------------------------+ <- userdata 起始
-| user data (size bytes)    |
-| (按 align 对齐)            |
-+---------------------------+
+```mermaid
+flowchart TD
+    B0["CommonHeader (8 bytes) / nuvalue (2 bytes) / padding (2 bytes) / *metatable (8 bytes) / *gclist (8 bytes) / UValue uv[0] (16 bytes) | <- 每个 uservalue 占 16 字节（tt + value）"]
+    B1["UValue uv[n-1] (16 bytes) / user data (size bytes) / (按 align 对齐)"]
+    B0 --> B1
 ```
 
 由 `lua_newuserdata(L, sz)` 返回的指针指向 `user data` 区域起始，与 `Udata` 头相距固定偏移。
@@ -1110,91 +1101,91 @@ end
 
 ---
 
-## 9. 习题
+## 知识讲解与要点分析（原习题）
 
-### 9.1 选择题
+### 选择题知识点讲解
 
-**Q1**. 下列关于 light userdata 的描述，正确的是：
+**常见疑问 1**：. 下列关于 light userdata 的描述，正确的是：
 
 A. 可以有 `__gc` 元方法
 B. 内存由 Lua GC 管理
 C. 是一个 `void*` 指针值，不参与 GC
 D. 必须通过 `lua_newuserdata` 创建
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：light userdata 仅存储一个 `void*` 指针值，不参与 GC，也不能有独立的 `__gc`（Lua 5.4 起支持全局 light userdata metatable，但仅作类型化，不触发 `__gc`）。
+**解析讲解**：light userdata 仅存储一个 `void*` 指针值，不参与 GC，也不能有独立的 `__gc`（Lua 5.4 起支持全局 light userdata metatable，但仅作类型化，不触发 `__gc`）。
 
 ---
 
-**Q2**. 在 Lua 5.4 中，`lua_newuserdatauv(L, sz, n)` 的第三个参数 `n` 表示：
+**常见疑问 2**：. 在 Lua 5.4 中，`lua_newuserdatauv(L, sz, n)` 的第三个参数 `n` 表示：
 
 A. 用户数据大小
 B. uservalue 数量
 C. 元方法数量
 D. 内存对齐
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Lua 5.4 引入多 uservalue 支持，`n` 指定每个 userdata 关联的 uservalue 数量（0 到 `LUA_UTYPE_LIMIT`）。
+**解析讲解**：Lua 5.4 引入多 uservalue 支持，`n` 指定每个 userdata 关联的 uservalue 数量（0 到 `LUA_UTYPE_LIMIT`）。
 
 ---
 
-**Q3**. 关于 `__gc` 元方法，下列说法错误的是：
+**常见疑问 3**：. 关于 `__gc` 元方法，下列说法错误的是：
 
 A. 仅 full userdata 支持
 B. metatable 首次设置时 `__gc` 被标记为可终结
 C. `__gc` 至多被调用一次
 D. 可以在 `__gc` 中调用 `luaL_error` 抛出 Lua 错误
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：`__gc` 中调用 `luaL_error` 是未定义行为，可能导致 Lua 状态损坏。
+**解析讲解**：`__gc` 中调用 `luaL_error` 是未定义行为，可能导致 Lua 状态损坏。
 
 ---
 
-**Q4**. `luaL_checkudata(L, idx, tname)` 的类型识别机制基于：
+**常见疑问 4**：. `luaL_checkudata(L, idx, tname)` 的类型识别机制基于：
 
 A. userdata 的大小
 B. metatable 的引用比较
 C. userdata 的内存地址
 D. 字符串匹配
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`luaL_checkudata` 通过比较 userdata 的 metatable 与 registry 中 `tname` 对应的 metatable 的**引用**来判断类型。
-
----
-
-### 9.2 填空题
-
-**Q1**. full userdata 在 Lua 内部由 `______` 结构表示，其类型标签为 `LUA_TUSERDATA`，数值为 `______`。
-
-**答案**：`Udata`；7
+**解析讲解**：`luaL_checkudata` 通过比较 userdata 的 metatable 与 registry 中 `tname` 对应的 metatable 的**引用**来判断类型。
 
 ---
 
-**Q2**. Lua 5.4 引入的 `______` 关键字允许变量在离开作用域时自动调用 `__close` 元方法，提供确定性资源释放。
+### 填空题知识点讲解
 
-**答案**：`<close>`
+**常见疑问 5**：. full userdata 在 Lua 内部由 `______` 结构表示，其类型标签为 `LUA_TUSERDATA`，数值为 `______`。
 
----
-
-**Q3**. 创建 full userdata 的 C API 是 `______`（Lua 5.1-5.3）或 `______`（Lua 5.4 多 uservalue 版本）。
-
-**答案**：`lua_newuserdata`；`lua_newuserdatauv`
+**解析讲解**：`Udata`；7
 
 ---
 
-**Q4**. `luaL_setmetatable(L, tname)` 等价于两步操作：`______` + `______`。
+**常见疑问 6**：. Lua 5.4 引入的 `______` 关键字允许变量在离开作用域时自动调用 `__close` 元方法，提供确定性资源释放。
 
-**答案**：`luaL_getmetatable(L, tname)`；`lua_setmetatable(L, -2)`
+**解析讲解**：`<close>`
 
 ---
 
-### 9.3 编程题
+**常见疑问 7**：. 创建 full userdata 的 C API 是 `______`（Lua 5.1-5.3）或 `______`（Lua 5.4 多 uservalue 版本）。
 
-**Q1**. 实现一个 `Vector3` userdata，包含 `x`, `y`, `z` 三个 double 字段，支持以下操作：
+**解析讲解**：`lua_newuserdata`；`lua_newuserdatauv`
+
+---
+
+**常见疑问 8**：. `luaL_setmetatable(L, tname)` 等价于两步操作：`______` + `______`。
+
+**解析讲解**：`luaL_getmetatable(L, tname)`；`lua_setmetatable(L, -2)`
+
+---
+
+### 编程题知识点讲解
+
+**常见疑问 9**：. 实现一个 `Vector3` userdata，包含 `x`, `y`, `z` 三个 double 字段，支持以下操作：
 
 - `Vector3.new(x, y, z)` 创建
 - `v:length()` 计算长度
@@ -1203,7 +1194,7 @@ D. 字符串匹配
 - `v == w` 相等比较
 - `tostring(v)` 字符串表示
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 #define LUA_LIB
@@ -1303,9 +1294,9 @@ int luaopen_vector3(lua_State *L) {
 
 ---
 
-**Q2**. 实现一个 `StringBuilder` userdata，内部维护一个 C 端的动态字符缓冲区，支持 `append(str)`、`tostring()` 和 `__gc` 释放内存。
+**常见疑问 10**：. 实现一个 `StringBuilder` userdata，内部维护一个 C 端的动态字符缓冲区，支持 `append(str)`、`tostring()` 和 `__gc` 释放内存。
 
-**参考答案**（关键部分）：
+**解析讲解**：（关键部分）：
 
 ```c
 #define LUA_LIB
@@ -1405,9 +1396,9 @@ int luaopen_sb(lua_State *L) {
 
 ### 9.4 思考题
 
-**Q1**. 为什么 Lua 设计两种 userdata（full 与 light），而不是统一一种？
+**常见疑问 11**：. 为什么 Lua 设计两种 userdata（full 与 light），而不是统一一种？
 
-**参考答案**：
+**解析讲解**：
 
 light userdata 的设计动机包括：
 
@@ -1420,9 +1411,9 @@ light userdata 的设计动机包括：
 
 ---
 
-**Q2**. 在什么情况下，full userdata 的 `__gc` 不会被调用？
+**常见疑问 12**：. 在什么情况下，full userdata 的 `__gc` 不会被调用？
 
-**参考答案**：
+**解析讲解**：
 
 1. **程序正常退出**：Lua 状态通过 `lua_close` 关闭时，所有 userdata 的 `__gc` **会被调用**（除非显式禁用）。
 2. **强制退出**：调用 `os.exit(0, true)` 第二参数为 true 时，跳过所有 `__gc`。
@@ -1432,9 +1423,9 @@ light userdata 的设计动机包括：
 
 ---
 
-**Q3**. 比较 `lua_newuserdatauv(L, sz, 0)` 和 `lua_newuserdatauv(L, sz, 1)` 的内存差异，并分析在何种场景下应选择 0 个 uservalue。
+**常见疑问 13**：. 比较 `lua_newuserdatauv(L, sz, 0)` 和 `lua_newuserdatauv(L, sz, 1)` 的内存差异，并分析在何种场景下应选择 0 个 uservalue。
 
-**参考答案**：
+**解析讲解**：
 
 内存差异：
 

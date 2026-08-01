@@ -1212,24 +1212,30 @@ ngx.timer.at(10, timer_callback, ngx.var.uri)
 
 推荐的 OpenResty 项目目录结构：
 
-```
-my-app/
-├── conf/
-│   └── nginx.conf          # Nginx 配置文件
-├── lua/
-│   ├── lib/                # 第三方库（通过 opm 或 luarocks 安装）
-│   │   └── resty/
-│   ├── modules/            # 业务模块
-│   │   ├── auth.lua
-│   │   ├── rate_limit.lua
-│   │   └── cache.lua
-│   └── init.lua            # 初始化脚本
-├── logs/
-│   ├── access.log
-│   └── error.log
-├── t/                      # 测试目录（Test::Nginx）
-│   └── auth.t
-└── Makefile
+```mermaid
+flowchart TD
+    T0["my-app/"]
+    T1["conf/"]
+    T2["nginx.conf          # Nginx 配置文件"]
+    T3["lua/"]
+    T4["lib/                # 第三方库（通过 opm 或 luarocks 安装）"]
+    T5["resty/"]
+    T6["modules/            # 业务模块"]
+    T7["auth.lua"]
+    T8["rate_limit.lua"]
+    T9["cache.lua"]
+    T10["init.lua            # 初始化脚本"]
+    T11["logs/"]
+    T12["access.log"]
+    T13["error.log"]
+    T14["t/                      # 测试目录（Test::Nginx）"]
+    T15["auth.t"]
+    T16["Makefile"]
+    T0 --> T1
+    T2 --> T3
+    T10 --> T11
+    T13 --> T14
+    T15 --> T16
 ```
 
 `nginx.conf` 中配置 Lua 路径：
@@ -1761,7 +1767,7 @@ return _M
 - 共享内存的原子操作保证了限流的准确性。
 - 熔断降级是最后一道防线，必须提前规划。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 

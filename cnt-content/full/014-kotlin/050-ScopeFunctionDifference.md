@@ -1222,14 +1222,19 @@ val animal: Animal = Dog().apply { bark() }
 
 ### 8.1 选择决策树
 
-```
-是否需要返回上下文对象本身？
-├── 是
-│   ├── 是否需要修改对象？ → apply
-│   └── 是否仅插入副作用？ → also
-└── 否
-    ├── 是否需要 this 上下文？ → run / with
-    └── 是否需要 it 引用？ → let
+```mermaid
+flowchart TD
+    T0["是否需要返回上下文对象本身？"]
+    T1["是"]
+    T2["是否需要修改对象？ → apply"]
+    T3["是否仅插入副作用？ → also"]
+    T4["否"]
+    T5["是否需要 this 上下文？ → run / with"]
+    T6["是否需要 it 引用？ → let"]
+    T0 --> T1
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
 ```
 
 ### 8.2 团队代码规范建议
@@ -1659,7 +1664,7 @@ fun main() {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1670,7 +1675,7 @@ B. `run`
 C. `with`
 D. `apply`
 
-**参考答案**：C。`with` 是普通函数，接收对象作为第一个参数。
+**解析讲解**：C。`with` 是普通函数，接收对象作为第一个参数。
 
 **题目 2**：以下代码的输出是什么？
 
@@ -1683,7 +1688,7 @@ val result = "Hello".let {
 println(result)
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```
 5
@@ -1696,11 +1701,11 @@ println(result)
 
 **题目 3**：解释为什么 `apply` 使用 `this` 而非 `it`。
 
-**参考答案**：`apply` 设计用于对象初始化场景，使用 `this` 可省略前缀直接访问属性与方法，代码更简洁。例如 `name = "Alice"` 比 `it.name = "Alice"` 更简洁。
+**解析讲解**：`apply` 设计用于对象初始化场景，使用 `this` 可省略前缀直接访问属性与方法，代码更简洁。例如 `name = "Alice"` 比 `it.name = "Alice"` 更简洁。
 
 **题目 4**：解释 `let` 与 `run` 的核心差异。
 
-**参考答案**：
+**解析讲解**：
 
 | 维度 | let | run |
 |---|---|---|
@@ -1709,7 +1714,7 @@ println(result)
 
 `let` 通过 `it` 显式引用，不遮蔽外部 `this`；`run` 通过 `this` 隐式引用，会遮蔽外部 `this`。
 
-### 10.3 应用题
+### 应用题知识点讲解
 
 **题目 5**：使用作用域函数重构以下代码：
 
@@ -1729,7 +1734,7 @@ for (num in filtered) {
 println(sum)
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 val sum = (1..10)
@@ -1743,7 +1748,7 @@ println(sum)
 
 **题目 6**：实现一个 `guard` 函数，类似 Swift 的 `guard let`，用于提前返回。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 inline fun <T : Any> T?.guard(block: () -> Nothing): T {
@@ -1775,7 +1780,7 @@ val result = user?.let {
 }
 ```
 
-**参考答案**：嵌套 `let` 过深，可读性差。
+**解析讲解**：嵌套 `let` 过深，可读性差。
 
 改进：
 
@@ -1791,7 +1796,7 @@ val result = user?.name?.length?.let {
 val result = "Hello".let { it.length }
 ```
 
-**参考答案**：无额外开销。由于 `let` 是 `inline` 函数，编译时 Lambda 被内联，等价于：
+**解析讲解**：无额外开销。由于 `let` 是 `inline` 函数，编译时 Lambda 被内联，等价于：
 
 ```kotlin
 val result = "Hello".length
@@ -1803,7 +1808,7 @@ val result = "Hello".length
 
 **题目 9**：设计一个 DSL 用于配置 HTTP 请求，使用作用域函数构建流畅 API。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 class HttpRequest {
@@ -1833,7 +1838,7 @@ fun main() {
 
 **题目 10**：设计一个代码规范规则，自动检测 `apply` 中是否返回了值（反模式）。
 
-**参考答案**：Detekt 规则伪代码：
+**解析讲解**：Detekt 规则伪代码：
 
 ```kotlin
 class ApplyReturnsValueRule : Rule() {
@@ -2002,18 +2007,22 @@ class ApplyReturnsValueRule : Rule() {
 
 ### 12.11 决策流程图
 
-```
-要在对象上执行操作？
-├── 是
-│   ├── 需要返回对象本身？
-│   │   ├── 是
-│   │   │   ├── 修改对象属性？ → apply
-│   │   │   └── 仅插入副作用？ → also
-│   │   └── 否（返回计算结果）
-│   │       ├── 需要替换 this 上下文？ → run / with
-│   │       └── 需要保持 this 上下文？ → let
-└── 否
-    └── 使用普通代码块
+```mermaid
+flowchart TD
+    T0["要在对象上执行操作？"]
+    T1["是"]
+    T2["需要返回对象本身？"]
+    T3["是"]
+    T4["修改对象属性？ → apply"]
+    T5["仅插入副作用？ → also"]
+    T6["否（返回计算结果）"]
+    T7["需要替换 this 上下文？ → run / with"]
+    T8["需要保持 this 上下文？ → let"]
+    T9["否"]
+    T10["使用普通代码块"]
+    T0 --> T1
+    T8 --> T9
+    T9 --> T10
 ```
 
 ### 12.12 反模式速查

@@ -287,15 +287,13 @@ $$
 
 每个 `lua_State` 拥有一个独立的 TValue 数组作为栈：
 
-```
-+---------------------+ <- stack (StkId)
-| TValue[0]           |
-| TValue[1]           |
-| ...                 |
-| TValue[top-1]       | <- top (StkId)
-| ...                 |
-| TValue[stacksize-1] | <- stack_last
-+---------------------+
+```mermaid
+flowchart TD
+    B0["TValue[0] / TValue[1]"]
+    B1["TValue[top-1] | <- top (StkId)"]
+    B0 --> B1
+    B2["TValue[stacksize-1] | <- stack_last"]
+    B1 --> B2
 ```
 
 每个 TValue 占 16 字节（64 位平台）：
@@ -1435,117 +1433,117 @@ static int l_graphics_rectangle(lua_State *L) {
 
 ---
 
-## 9. 习题
+## 知识讲解与要点分析（原习题）
 
-### 9.1 选择题
+### 选择题知识点讲解
 
-**Q1**. 在 Lua C-API 中，栈索引 -1 表示：
+**常见疑问 1**：. 在 Lua C-API 中，栈索引 -1 表示：
 
 A. 栈底元素
 B. 栈顶元素
 C. 第一个参数
 D. 无效索引
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：负索引从栈顶向下计数，-1 是栈顶元素。
+**解析讲解**：负索引从栈顶向下计数，-1 是栈顶元素。
 
 ---
 
-**Q2**. `lua_pcall(L, nargs, nresults, errfunc)` 的第四个参数 `errfunc` 表示：
+**常见疑问 2**：. `lua_pcall(L, nargs, nresults, errfunc)` 的第四个参数 `errfunc` 表示：
 
 A. 错误代码
 B. 错误处理函数的栈索引
 C. 错误消息
 D. 错误重试次数
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`errfunc` 是错误处理函数的栈索引，若为 0 则不使用错误处理函数。
+**解析讲解**：`errfunc` 是错误处理函数的栈索引，若为 0 则不使用错误处理函数。
 
 ---
 
-**Q3**. 下列关于 `lua_tostring` 的描述，错误的是：
+**常见疑问 3**：. 下列关于 `lua_tostring` 的描述，错误的是：
 
 A. 返回 `const char*`
 B. 不会抛出错误
 C. 可能修改 number 类型栈值
 D. 返回的指针永久有效
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：`lua_tostring` 返回的指针仅在栈未变化时有效，一旦栈发生变化（如 pop），指针可能失效。
+**解析讲解**：`lua_tostring` 返回的指针仅在栈未变化时有效，一旦栈发生变化（如 pop），指针可能失效。
 
 ---
 
-**Q4**. `lua_next(L, idx)` 返回 0 表示：
+**常见疑问 4**：. `lua_next(L, idx)` 返回 0 表示：
 
 A. 出错
 B. 遍历结束
 C. 表为空
 D. 表不存在
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`lua_next` 返回 0 表示遍历结束，否则返回非零并压入 key 和 value。
+**解析讲解**：`lua_next` 返回 0 表示遍历结束，否则返回非零并压入 key 和 value。
 
 ---
 
-**Q5**. `luaL_checktype(L, idx, t)` 在类型不匹配时会：
+**常见疑问 5**：. `luaL_checktype(L, idx, t)` 在类型不匹配时会：
 
 A. 返回 0
 B. 返回 NULL
 C. 抛出 Lua 错误
 D. 转换类型
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`luaL_checktype` 在类型不匹配时调用 `luaL_error` 抛出错误，不会返回。
-
----
-
-### 9.2 填空题
-
-**Q1**. `lua_State` 是 Lua 与 C 交互的核心数据结构，其内部维护______、______、______三部分。
-
-**答案**：栈；调用信息链表；全局状态
+**解析讲解**：`luaL_checktype` 在类型不匹配时调用 `luaL_error` 抛出错误，不会返回。
 
 ---
 
-**Q2**. 创建新 `lua_State` 的 API 是______，关闭的 API 是______。
+### 填空题知识点讲解
 
-**答案**：`luaL_newstate()`；`lua_close(L)`
+**常见疑问 6**：. `lua_State` 是 Lua 与 C 交互的核心数据结构，其内部维护______、______、______三部分。
 
----
-
-**Q3**. `lua_callk` 中的 'k' 代表______，用于支持______。
-
-**答案**：continuation；协程挂起后恢复
+**解析讲解**：栈；调用信息链表；全局状态
 
 ---
 
-**Q4**. Lua 默认最大栈深度为______，超过会抛出"______"错误。
+**常见疑问 7**：. 创建新 `lua_State` 的 API 是______，关闭的 API 是______。
 
-**答案**：`LUAI_MAXSTACK`（默认 1000000）；"stack overflow"
-
----
-
-**Q5**. `lua_pushcfunction(L, fn)` 实际等价于 `lua_pushcclosure(L, fn, ___)`。
-
-**答案**：0
+**解析讲解**：`luaL_newstate()`；`lua_close(L)`
 
 ---
 
-### 9.3 编程题
+**常见疑问 8**：. `lua_callk` 中的 'k' 代表______，用于支持______。
 
-**Q1**. 实现一个 C 函数 `sum_array`，从 Lua 接收一个 number 数组，返回所有元素的和。要求：
+**解析讲解**：continuation；协程挂起后恢复
+
+---
+
+**常见疑问 9**：. Lua 默认最大栈深度为______，超过会抛出"______"错误。
+
+**解析讲解**：`LUAI_MAXSTACK`（默认 1000000）；"stack overflow"
+
+---
+
+**常见疑问 10**：. `lua_pushcfunction(L, fn)` 实际等价于 `lua_pushcclosure(L, fn, ___)`。
+
+**解析讲解**：0
+
+---
+
+### 编程题知识点讲解
+
+**常见疑问 11**：. 实现一个 C 函数 `sum_array`，从 Lua 接收一个 number 数组，返回所有元素的和。要求：
 
 - 使用 `luaL_checktype` 验证参数是 table
 - 使用 `lua_rawlen` 或 `luaL_len` 获取长度
 - 使用 `lua_geti` 或 `lua_rawgeti` 获取元素
 - 处理空数组和错误情况
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 #define LUA_LIB
@@ -1607,9 +1605,9 @@ print(ok, err)  -- false, element at index 2 is not a number
 
 ---
 
-**Q2**. 实现一个安全的 `pcall` 包装函数 `safe_call(fn, ...)`，返回 `(true, results...)` 或 `(false, error_msg, traceback)`。
+**常见疑问 12**：. 实现一个安全的 `pcall` 包装函数 `safe_call(fn, ...)`，返回 `(true, results...)` 或 `(false, error_msg, traceback)`。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 #define LUA_LIB
@@ -1683,9 +1681,9 @@ print(tb)        -- traceback
 
 ---
 
-**Q3**. 实现 `table_merge(t1, t2)`，将 `t2` 的所有键值对合并到 `t1`，并返回 `t1`。
+**常见疑问 13**：. 实现 `table_merge(t1, t2)`，将 `t2` 的所有键值对合并到 `t1`，并返回 `t1`。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 #define LUA_LIB
@@ -1726,9 +1724,9 @@ int luaopen_mergelib(lua_State *L) {
 
 ### 9.4 思考题
 
-**Q1**. 为什么 Lua 使用虚拟栈而非直接内存引用？
+**常见疑问 14**：. 为什么 Lua 使用虚拟栈而非直接内存引用？
 
-**参考答案**：
+**解析讲解**：
 
 虚拟栈的设计带来以下优势：
 
@@ -1745,9 +1743,9 @@ int luaopen_mergelib(lua_State *L) {
 
 ---
 
-**Q2**. 比较 `lua_call` 和 `lua_pcall` 的性能差异，并说明何时应使用 `lua_pcall`。
+**常见疑问 15**：. 比较 `lua_call` 和 `lua_pcall` 的性能差异，并说明何时应使用 `lua_pcall`。
 
-**参考答案**：
+**解析讲解**：
 
 性能差异：
 
@@ -1768,9 +1766,9 @@ int luaopen_mergelib(lua_State *L) {
 
 ---
 
-**Q3**. 解释 `luaL_checkinteger` 和 `lua_tointeger` 的差异，并分析在何时应使用 `luaL_optinteger`。
+**常见疑问 16**：. 解释 `luaL_checkinteger` 和 `lua_tointeger` 的差异，并分析在何时应使用 `luaL_optinteger`。
 
-**参考答案**：
+**解析讲解**：
 
 | API | 类型不匹配时 | 是否可获取默认值 | 适用场景 |
 |-----|--------------|------------------|----------|

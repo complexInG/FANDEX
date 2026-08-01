@@ -15,10 +15,11 @@ related:
 prerequisites:
   - python/语法速查
 ---
+# Python pydantic 数据验证
 
-# 数据类与 Pydantic
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.005 "Software Construction" 中 "Data Abstraction" 章节、Stanford CS106A "Programming Methodology" 中数据建模部分、CMU 15-214 "Software Architecture" 中数据模型设计模块的教学水准，系统讲解 Python 中 `dataclasses`、`pydantic`、`attrs`、`msgspec` 等数据建模库的形式化定义、工程实现与生产实践。
+---
 
 ## 1. 学习目标
 
@@ -400,20 +401,33 @@ class User(Base):
 
 ### 5.1 项目结构
 
-```
-dataclass_demo/
-├── pyproject.toml
-├── requirements.txt
-├── README.md
-└── src/
-    └── dataclass_demo/
-        ├── __init__.py
-        ├── value_objects.py    # 不可变值对象
-        ├── domain_models.py    # Pydantic 领域模型
-        ├── settings.py         # pydantic-settings 配置
-        ├── fastapi_app.py      # FastAPI 集成
-        ├── custom_types.py     # 自定义类型
-        └── serializers.py      # 序列化工具
+```mermaid
+flowchart TD
+    T0["dataclass_demo/"]
+    T1["pyproject.toml"]
+    T2["requirements.txt"]
+    T3["README.md"]
+    T4["src/"]
+    T5["dataclass_demo/"]
+    T6["__init__.py"]
+    T7["value_objects.py    # 不可变值对象"]
+    T8["domain_models.py    # Pydantic 领域模型"]
+    T9["settings.py         # pydantic-settings 配置"]
+    T10["fastapi_app.py      # FastAPI 集成"]
+    T11["custom_types.py     # 自定义类型"]
+    T12["serializers.py      # 序列化工具"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T4 --> T5
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T5 --> T9
+    T5 --> T10
+    T5 --> T11
+    T5 --> T12
 ```
 
 ### 5.2 pyproject.toml
@@ -1487,19 +1501,22 @@ async def create_user(req: UserCreate) -> UserResponse:
 
 ### 8.2 monorepo 共享 schema
 
-```
-monorepo/
-├── packages/
-│   ├── schemas/          # 共享 Pydantic 模型
-│   │   ├── pyproject.toml
-│   │   └── src/schemas/
-│   │       ├── user.py
-│   │       └── order.py
-│   ├── backend/          # FastAPI 后端
-│   │   └── pyproject.toml  # 依赖 schemas
-│   └── frontend/         # 前端
-│       └── package.json   # 通过 datamodel-code-generator 生成 TS 类型
-└── pyproject.toml
+```mermaid
+flowchart TD
+    T0["monorepo/"]
+    T1["packages/"]
+    T2["schemas/          # 共享 Pydantic 模型"]
+    T3["pyproject.toml"]
+    T4["src/schemas/"]
+    T5["user.py"]
+    T6["order.py"]
+    T7["backend/          # FastAPI 后端"]
+    T8["pyproject.toml  # 依赖 schemas"]
+    T9["frontend/         # 前端"]
+    T10["package.json   # 通过 datamodel-code-generator 生成 TS 类型"]
+    T11["pyproject.toml"]
+    T0 --> T1
+    T10 --> T11
 ```
 
 通过 `pydantic-to-typescript` 或 `datamodel-code-generator` 自动同步：
@@ -1796,33 +1813,33 @@ print(asdict(dto))  # {'id': 1, 'username': '...', 'email': '...'}
 
 ---
 
-## 10. 练习与思考题
+## 知识讲解与要点分析（原练习）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个 `@dataclass` 装饰器参数会使实例不可变？
+**常见疑问 1**：以下哪个 `@dataclass` 装饰器参数会使实例不可变？
 
 A. `eq=True`  
 B. `frozen=True`  
 C. `slots=True`  
 D. `kw_only=True`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`frozen=True` 在 `__setattr__` 与 `__delattr__` 中抛出 `FrozenInstanceError`，使实例不可变。`slots=True` 仅影响内存布局，不影响可变性。
+**解析讲解**：`frozen=True` 在 `__setattr__` 与 `__delattr__` 中抛出 `FrozenInstanceError`，使实例不可变。`slots=True` 仅影响内存布局，不影响可变性。
 
-**Q2**：Pydantic v2 中，以下哪个方法将模型导出为 JSON 字符串？
+**常见疑问 2**：Pydantic v2 中，以下哪个方法将模型导出为 JSON 字符串？
 
 A. `.dict()`  
 B. `.json()`  
 C. `.model_dump_json()`  
 D. `.to_json()`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：v2 重命名了 API，`.dict()` → `.model_dump()`，`.json()` → `.model_dump_json()`。`.dict()` 和 `.json()` 在 v2 中仍可调用但会发出 deprecation warning。
+**解析讲解**：v2 重命名了 API，`.dict()` → `.model_dump()`，`.json()` → `.model_dump_json()`。`.dict()` 和 `.json()` 在 v2 中仍可调用但会发出 deprecation warning。
 
-**Q3**：以下代码的输出是什么？
+**常见疑问 3**：以下代码的输出是什么？
 
 ```python
 @dataclass
@@ -1843,48 +1860,48 @@ B. `10 20 30`
 C. `TypeError`  
 D. `1 2 30`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`@dataclass` 继承时，字段按 MRO 顺序合并：`A.x, A.y, B.z`。所有字段都有默认值，所以 `B(10, 20, 30)` 按位置参数赋值。
+**解析讲解**：`@dataclass` 继承时，字段按 MRO 顺序合并：`A.x, A.y, B.z`。所有字段都有默认值，所以 `B(10, 20, 30)` 按位置参数赋值。
 
-**Q4**：Pydantic v2 中，`@field_validator` 默认的 `mode` 是？
+**常见疑问 4**：Pydantic v2 中，`@field_validator` 默认的 `mode` 是？
 
 A. `before`  
 B. `after`  
 C. `wrap`  
 D. `plain`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：默认 `mode="after"`，即在类型转换与约束校验之后执行。`mode="before"` 在类型转换之前执行，常用于规范化输入。
+**解析讲解**：默认 `mode="after"`，即在类型转换与约束校验之后执行。`mode="before"` 在类型转换之前执行，常用于规范化输入。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**：`@dataclass` 中，可变默认值应使用 `field(default_factory=____)` 创建。
+**常见疑问 5**：`@dataclass` 中，可变默认值应使用 `field(default_factory=____)` 创建。
 
-**答案**：`list`（或 `dict`、`set` 等可调用对象）
+**解析讲解**：`list`（或 `dict`、`set` 等可调用对象）
 
-**Q2**：Pydantic v2 中，从 ORM 对象创建模型需在 `model_config` 中设置 `____=True`。
+**常见疑问 6**：Pydantic v2 中，从 ORM 对象创建模型需在 `model_config` 中设置 `____=True`。
 
-**答案**：`from_attributes`
+**解析讲解**：`from_attributes`
 
-**Q3**：`@dataclass(slots=True)` 通过 `____` 替代 `__dict__` 节省内存。
+**常见疑问 7**：`@dataclass(slots=True)` 通过 `____` 替代 `__dict__` 节省内存。
 
-**答案**：`__slots__`
+**解析讲解**：`__slots__`
 
-**Q4**：Pydantic v2 中，`____` 装饰器用于跨字段验证（如"开始时间 < 结束时间"）。
+**常见疑问 8**：Pydantic v2 中，`____` 装饰器用于跨字段验证（如"开始时间 < 结束时间"）。
 
-**答案**：`@model_validator`
+**解析讲解**：`@model_validator`
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q1**：实现一个 `Rectangle` 值对象，满足：
+**常见疑问 9**：实现一个 `Rectangle` 值对象，满足：
 - 不可变
 - 校验长宽 > 0
 - 提供 `area()` 和 `perimeter()` 方法
 - 可哈希
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from dataclasses import dataclass
@@ -1908,13 +1925,13 @@ class Rectangle:
         return 2 * (self.width + self.height)
 ```
 
-**Q2**：实现一个 Pydantic 模型 `Order`，满足：
+**常见疑问 10**：实现一个 Pydantic 模型 `Order`，满足：
 - `id: int`（>0）
 - `items: list[OrderItem]`（至少 1 个）
 - `total: Decimal`（自动计算，无需用户提供）
 - 自定义验证器：`total` 必须等于所有 `item.subtotal` 之和
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 from decimal import Decimal
@@ -1948,13 +1965,13 @@ class Order(BaseModel):
 
 ### 10.4 思考题
 
-**Q1**：为什么 `@dataclass(frozen=True, slots=True)` 在 Python 3.10+ 才能同时使用？3.10 之前有什么限制？
+**常见疑问 11**：为什么 `@dataclass(frozen=True, slots=True)` 在 Python 3.10+ 才能同时使用？3.10 之前有什么限制？
 
-**参考答案**：Python 3.10 之前，`@dataclass(frozen=True)` 会生成 `__setattr__` 抛出异常，但 `slots=True` 生成的 `__slots__` 不包含 `__dict__`，导致 `__setattr__` 无法找到属性来设置。3.10+ 修复了 `__slots__` 与 `frozen` 的交互，使 `@dataclass` 在 `slots=True` 时正确处理 `__setattr__`。
+**解析讲解**：Python 3.10 之前，`@dataclass(frozen=True)` 会生成 `__setattr__` 抛出异常，但 `slots=True` 生成的 `__slots__` 不包含 `__dict__`，导致 `__setattr__` 无法找到属性来设置。3.10+ 修复了 `__slots__` 与 `frozen` 的交互，使 `@dataclass` 在 `slots=True` 时正确处理 `__setattr__`。
 
-**Q2**：Pydantic v2 用 Rust 重写内核，带来 5-50x 性能提升，但增加了供应链复杂度（pydantic-core 是二进制 wheel）。请讨论这一权衡的利弊。
+**常见疑问 12**：Pydantic v2 用 Rust 重写内核，带来 5-50x 性能提升，但增加了供应链复杂度（pydantic-core 是二进制 wheel）。请讨论这一权衡的利弊。
 
-**参考答案**：
+**解析讲解**：
 
 利：
 - 性能提升使 Pydantic 从"边缘瓶颈"变为"零成本抽象"
@@ -1967,9 +1984,9 @@ class Order(BaseModel):
 - 跨平台编译复杂（musl、ARM 等场景需等待 wheel）
 - 供应商锁定（pydantic-core 不易 fork）
 
-**Q3**：在微服务架构中，多个服务共享 Pydantic schema 有哪些方案？各自的优缺点？
+**常见疑问 13**：在微服务架构中，多个服务共享 Pydantic schema 有哪些方案？各自的优缺点？
 
-**参考答案**：
+**解析讲解**：
 
 方案 1：共享 Python 包
 - 优点：类型安全、IDE 支持
@@ -1993,25 +2010,32 @@ class Order(BaseModel):
 
 ## 11. 工具选型决策树
 
-```
-需要数据建模？
-├── 仅内部使用，无序列化？
-│   └── dataclass（标准库，零依赖）
-├── 需要运行时校验？
-│   ├── 需要 JSON Schema 或 FastAPI 集成？
-│   │   └── Pydantic v2
-│   ├── 极致性能？
-│   │   └── msgspec
-│   └── 已有 attrs 代码库？
-│       └── attrs
-├── 需要配置管理（env、.env）？
-│   └── pydantic-settings
-├── 需要 ORM 互操作？
-│   ├── SQLAlchemy 2.0+ → dataclass + SQLAlchemy dataclass
-│   ├── Django Model → dataclass DTO
-│   └── Tortoise ORM → Pydantic Model
-└── 需要不可变值对象？
-    └── @dataclass(frozen=True, slots=True)
+```mermaid
+flowchart TD
+    T0["需要数据建模？"]
+    T1["仅内部使用，无序列化？"]
+    T2["dataclass（标准库，零依赖）"]
+    T3["需要运行时校验？"]
+    T4["需要 JSON Schema 或 FastAPI 集成？"]
+    T5["Pydantic v2"]
+    T6["极致性能？"]
+    T7["msgspec"]
+    T8["已有 attrs 代码库？"]
+    T9["attrs"]
+    T10["需要配置管理（env、.env）？"]
+    T11["pydantic-settings"]
+    T12["需要 ORM 互操作？"]
+    T13["SQLAlchemy 2.0+ → dataclass + SQLAlchemy dataclass"]
+    T14["Django Model → dataclass DTO"]
+    T15["Tortoise ORM → Pydantic Model"]
+    T16["需要不可变值对象？"]
+    T17["@dataclass(frozen=True, slots=True)"]
+    T0 --> T1
+    T2 --> T3
+    T9 --> T10
+    T11 --> T12
+    T15 --> T16
+    T16 --> T17
 ```
 
 ---
@@ -2203,3 +2227,330 @@ strict = true
 - [ ] 检查 JSON Schema 输出格式变化
 - [ ] 性能基准测试（应提升 5-50x）
 
+## BaseModel 基础
+
+**基本写法：定义模型**
+`class <模型>(pydantic.BaseModel):\n    <字段>: <类型>`
+```python
+# pydantic v2 模型定义
+from pydantic import BaseModel
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str = ""
+```
+
+**基本写法：从字典创建**
+`<模型>(**<字典>)` | `<模型>.model_validate(<字典>)`
+```python
+# 从字典创建并验证
+u = User(id=1, name="Alice")
+u2 = User.model_validate({"id": 2, "name": "Bob"})
+```
+
+**基本写法：转换为字典**
+`<实例>.model_dump()`
+```python
+# 模型转字典
+print(u.model_dump())
+```
+
+**基本写法：转换为 JSON**
+`<实例>.model_dump_json()`
+```python
+# 模型转 JSON 字符串
+print(u.model_dump_json())
+```
+
+**基本写法：从 JSON 创建**
+`<模型>.model_validate_json(<字符串>)`
+```python
+# 从 JSON 字符串创建
+u = User.model_validate_json('{"id": 1, "name": "Alice"}')
+```
+
+---
+
+## 字段验证
+
+**基本写法：Field 字段配置**
+`<字段>: <类型> = pydantic.Field(...)`
+```python
+# 字段元数据
+from pydantic import BaseModel, Field
+
+class Item(BaseModel):
+    name: str = Field(min_length=1, max_length=50)
+    price: float = Field(gt=0, description="价格")
+    qty: int = Field(default=0, ge=0)
+```
+
+**基本写法：默认值与默认工厂**
+`<字段>: <类型> = Field(default=<值>)` | `Field(default_factory=<函数>)`
+```python
+# 默认值
+class Config(BaseModel):
+    timeout: int = Field(default=30)
+    tags: list = Field(default_factory=list)
+```
+
+**基本写法：Optional 与可空**
+`<字段>: <类型> | None = None`
+```python
+# 可空字段
+class User(BaseModel):
+    email: str | None = None
+```
+
+---
+
+## 验证器
+
+**基本写法：field_validator**
+`@pydantic.field_validator(<字段>)`
+```python
+# 字段级验证器
+from pydantic import BaseModel, field_validator
+
+class User(BaseModel):
+    name: str
+    @field_validator("name")
+    @classmethod
+    def name_must_not_be_empty(cls, v):
+        if not v.strip():
+            raise ValueError("名称不能为空")
+        return v
+```
+
+**基本写法：model_validator 模型级**
+`@pydantic.model_validator(mode=<模式>)`
+```python
+# 模型级验证
+from pydantic import BaseModel, model_validator
+
+class DateRange(BaseModel):
+    start: int
+    end: int
+    @model_validator(mode="after")
+    def check_range(self):
+        if self.start > self.end:
+            raise ValueError("起始大于结束")
+        return self
+```
+
+**基本写法：before 验证器**
+`@field_validator(<字段>, mode="before")`
+```python
+# 在类型转换前验证
+class Item(BaseModel):
+    qty: int
+    @field_validator("qty", mode="before")
+    @classmethod
+    def parse_qty(cls, v):
+        if isinstance(v, str):
+            return int(v)
+        return v
+```
+
+---
+
+## 类型注解
+
+**基本写法：约束类型**
+`Annotated[<类型>, <约束>]`
+```python
+# 使用 Annotated 添加约束
+from typing import Annotated
+from pydantic import BaseModel, Field
+
+PosInt = Annotated[int, Field(gt=0)]
+class Model(BaseModel):
+    n: PosInt
+```
+
+**基本写法：Literal 枚举**
+`<字段>: Literal[<值1>, <值2>]`
+```python
+# 字面值类型
+from typing import Literal
+
+class Config(BaseModel):
+    mode: Literal["r", "w", "a"]
+```
+
+**基本写法：EmailStr 邮箱**
+`<字段>: pydantic.EmailStr`
+```python
+# 邮箱字段（需安装 email-validator）
+from pydantic import BaseModel, EmailStr
+
+class User(BaseModel):
+    email: EmailStr
+```
+
+---
+
+## 嵌套模型
+
+**基本写法：嵌套模型**
+`<字段>: <另一个模型>`
+```python
+# 模型嵌套
+class Address(BaseModel):
+    city: str
+    zip: str
+
+class User(BaseModel):
+    name: str
+    addr: Address
+
+u = User(name="Alice", addr={"city": "Shanghai", "zip": "200000"})
+```
+
+**基本写法：列表模型**
+`<字段>: list[<模型>]`
+```python
+# 模型列表
+class Group(BaseModel):
+    name: str
+    users: list[User]
+```
+
+---
+
+## 配置
+
+**基本写法：model_config**
+`model_config = pydantic.ConfigDict(...)`
+```python
+# 模型配置
+class User(BaseModel):
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        frozen=True,
+        extra="forbid",
+    )
+    name: str
+```
+
+**基本写法：禁止额外字段**
+`model_config = ConfigDict(extra="forbid")`
+```python
+# 拒绝未定义字段
+class Strict(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    x: int
+```
+
+**基本写法：str_strip_whitespace**
+`model_config = ConfigDict(str_strip_whitespace=True)`
+```python
+# 自动去除字符串空白
+class User(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+    name: str
+```
+
+---
+
+## 序列化
+
+**基本写法：自定义序列化**
+`@pydantic.field_serializer(<字段>)`
+```python
+# 自定义字段序列化
+from pydantic import BaseModel, field_serializer
+
+class User(BaseModel):
+    created_at: int
+    @field_serializer("created_at")
+    def ser_time(self, v):
+        from datetime import datetime
+        return datetime.fromtimestamp(v).isoformat()
+```
+
+**基本写法：排除字段**
+`<实例>.model_dump(exclude=<键集>)`
+```python
+# 序列化排除字段
+print(u.model_dump(exclude={"email"}))
+```
+
+**基本写法：include 包含**
+`<实例>.model_dump(include=<键集>)`
+```python
+# 只包含指定字段
+print(u.model_dump(include={"id", "name"}))
+```
+
+---
+
+## 不可变模型
+
+**基本写法：frozen 不可变**
+`model_config = ConfigDict(frozen=True)`
+```python
+# 不可变模型
+class Config(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    host: str
+
+c = Config(host="localhost")
+# c.host = "other"  # 抛出 ValidationError
+```
+
+---
+
+## 类型转换
+
+**基本写法：严格模式**
+`model_config = ConfigDict(strict=True)`
+```python
+# 严格模式，不自动转换类型
+class M(BaseModel):
+    model_config = ConfigDict(strict=True)
+    x: int
+
+# M(x="1")  # 抛出 ValidationError
+M(x=1)
+```
+
+**基本写法：自动转换**
+`pydantic` 默认行为
+```python
+# 默认会自动转换兼容类型
+class M(BaseModel):
+    x: int
+
+m = M(x="123")
+print(m.x)
+```
+
+---
+
+## 错误处理
+
+**基本写法：捕获 ValidationError**
+`except pydantic.ValidationError:`
+```python
+# 捕获验证错误
+from pydantic import BaseModel, ValidationError
+
+class User(BaseModel):
+    id: int
+
+try:
+    User(id="abc")
+except ValidationError as e:
+    for err in e.errors():
+        print(err["loc"], err["msg"])
+```
+
+**基本写法：errors 错误列表**
+`e.errors()`
+```python
+# 获取所有错误
+for err in e.errors():
+    print(err)
+```

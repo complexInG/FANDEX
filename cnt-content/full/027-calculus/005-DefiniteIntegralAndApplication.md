@@ -3185,7 +3185,7 @@ flowchart LR
 
 本章给出 frontmatter 中 10 道习题的详细解答,涵盖 fill-blank、choice、code-fix、open-ended 四类题型。所有证明题均给出完整证明步骤,代码题给出可运行的参考实现。
 
-### 12.1 填空题解答
+### 填空题知识点讲解
 
 **习题 ex-calc-di-fb-01**:Riemann 可积的极限值与 ____ 及 ξ_i 的取法无关。
 
@@ -3199,7 +3199,7 @@ flowchart LR
 
 **详细解释**:微积分第二基本定理表明,若 $f$ 在 $[a, b]$ 上连续,$F$ 是 $f$ 的原函数(即 $F'(x) = f(x)$),则 $\int_a^b f(x)\,dx = F(b) - F(a)$。连续性是充分条件;对 Riemann 可积但有不连续点的函数,需用更一般的 Lebesgue 微分定理形式。
 
-### 12.2 选择题解答
+### 选择题知识点讲解
 
 **习题 ex-calc-di-ch-01**:Riemann 可积性论断。
 
@@ -3366,7 +3366,7 @@ $$
 **习题 ex-calc-di-oe-03**:设计 Python 实验验证 $\int_0^1 \sqrt{x}\,dx = 2/3$。
 
 ```python
-# 习题 oe-03:数值验证 ∫_0^1 √x dx = 2/3
+## 知识讲解与要点分析（原习题 oe-03:数值验证 ∫_0^1 √x dx = 2/3）
 import numpy as np
 from scipy.integrate import quad
 import sympy as sp
@@ -3600,13 +3600,13 @@ $$
 
 | 主题       | 推荐资源                                                     | 难度 |
 | ---------- | ------------------------------------------------------------ | ---- |
-| 实分析入门 | Tao, _Analysis I & II_                                       | ★★★  |
-| 测度论     | Folland, _Real Analysis_                                     | ★★★★ |
-| 概率论     | Durrett, _Probability: Theory and Examples_                  | ★★★★ |
-| 微分方程   | Arnold, _Ordinary Differential Equations_                    | ★★★  |
-| 微分几何   | Spivak, _Calculus on Manifolds_                              | ★★★★ |
-| 调和分析   | Stein & Shakarchi, _Fourier Analysis_                        | ★★★★ |
-| 数值分析   | Trefethen, _Approximation Theory and Approximation Practice_ | ★★★  |
+| 实分析入门 | Tao, _Analysis I & II_                                       | 较高  |
+| 测度论     | Folland, _Real Analysis_                                     | 很高 |
+| 概率论     | Durrett, _Probability: Theory and Examples_                  | 很高 |
+| 微分方程   | Arnold, _Ordinary Differential Equations_                    | 较高  |
+| 微分几何   | Spivak, _Calculus on Manifolds_                              | 很高 |
+| 调和分析   | Stein & Shakarchi, _Fourier Analysis_                        | 很高 |
+| 数值分析   | Trefethen, _Approximation Theory and Approximation Practice_ | 较高  |
 
 ---
 

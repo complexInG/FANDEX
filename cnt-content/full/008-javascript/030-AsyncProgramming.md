@@ -17,6 +17,11 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
+# JavaScript 异步编程
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 0. 学习目标
 
@@ -1271,9 +1276,9 @@ const dbStream = database.queryStream('SELECT * FROM large_table');
 await exportToCsv(dbStream, '/tmp/export.csv');
 ```
 
-## 9. 习题
+## 知识讲解与要点分析（原习题）
 
-### 9.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下代码的输出顺序是？
 
@@ -1289,7 +1294,7 @@ console.log('D');
 - C. A, C, D, B
 - D. A, D, B, C
 
-**答案**：B。同步代码先执行（A, D），然后微任务（C），最后宏任务（B）。
+**解析讲解**：B。同步代码先执行（A, D），然后微任务（C），最后宏任务（B）。
 
 **题目 2**：`Promise.all` 在以下哪种情况下会 reject？
 
@@ -1298,7 +1303,7 @@ console.log('D');
 - C. 第一个完成的 Promise reject
 - D. 永远不会 reject
 
-**答案**：A。`Promise.all` 是"fail-fast"，任一 Promise reject 即立即 reject。
+**解析讲解**：A。`Promise.all` 是"fail-fast"，任一 Promise reject 即立即 reject。
 
 **题目 3**：以下代码的输出是？
 
@@ -1314,19 +1319,19 @@ console.log(foo());
 - C. `Promise { undefined }`
 - D. `TypeError`
 
-**答案**：B。async 函数永远返回 Promise。
+**解析讲解**：B。async 函数永远返回 Promise。
 
-### 9.2 简答题
+### 简答题知识点讲解
 
 **题目 4**：解释 `process.nextTick`、`Promise.then`、`setTimeout(fn, 0)` 在 Node.js 中的执行优先级。
 
-**参考答案**：`process.nextTick` > `Promise.then`（微任务）> `setTimeout`（宏任务）。nextTick 队列独立于微任务队列，且在每个阶段切换前都会清空。
+**解析讲解**：`process.nextTick` > `Promise.then`（微任务）> `setTimeout`（宏任务）。nextTick 队列独立于微任务队列，且在每个阶段切换前都会清空。
 
 **题目 5**：为什么 `forEach` 中使用 `await` 不会等待？应如何正确处理？
 
-**参考答案**：`forEach` 接受的是同步回调，它不会等待回调返回的 Promise。正确做法是使用 `for...of` 串行等待，或使用 `Promise.all` 配合 `map` 并发执行。
+**解析讲解**：`forEach` 接受的是同步回调，它不会等待回调返回的 Promise。正确做法是使用 `for...of` 串行等待，或使用 `Promise.all` 配合 `map` 并发执行。
 
-### 9.3 编程题
+### 编程题知识点讲解
 
 **题目 6**：实现一个 `memoizeAsync` 函数，缓存异步函数的结果，并支持手动失效。
 
@@ -1566,35 +1571,28 @@ const result = await Promise.try(() => {
 
 ### C.1 浏览器事件循环
 
-```
-┌──────────────────────────────────────────┐
-│           浏览器事件循环一轮              │
-├──────────────────────────────────────────┤
-│ 1. 执行一个宏任务（来自 task queue）     │
-│ 2. 清空所有微任务（Promise、MutationOb） │
-│ 3. 执行 requestAnimationFrame 回调       │
-│ 4. 渲染（如果需要）                       │
-│ 5. 重复                                   │
-└──────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[浏览器事件循环一轮] --> B[1. 执行一个宏任务（来自 task queue）]
+    B --> C[2. 清空所有微任务（Promise、MutationObserver）]
+    C --> D[3. 执行 requestAnimationFrame 回调]
+    D --> E[4. 渲染（如果需要）]
+    E --> B
 ```
 
 ### C.2 Node.js 事件循环（libuv 六阶段）
 
-```
-┌──────────────────────────────────────────┐
-│           Node.js 事件循环一轮           │
-├──────────────────────────────────────────┤
-│ 1. timers 阶段：执行 setTimeout/setInterval│
-│ 2. pending callbacks：系统级回调          │
-│ 3. idle/prepare：内部使用                  │
-│ 4. poll 阶段：I/O 事件                     │
-│ 5. check 阶段：setImmediate                │
-│ 6. close callbacks：close 事件             │
-└──────────────────────────────────────────┘
-
-每个阶段切换前：
-- 清空 process.nextTick 队列
-- 清空微任务队列（Promise.then 等）
+```mermaid
+flowchart TD
+    A[Node.js 事件循环一轮] --> B[1. timers 阶段：执行 setTimeout/setInterval]
+    B --> C[2. pending callbacks：系统级回调]
+    C --> D[3. idle/prepare：内部使用]
+    D --> E[4. poll 阶段：I/O 事件]
+    E --> F[5. check 阶段：setImmediate]
+    F --> G[6. close callbacks：close 事件]
+    G --> B
+    H[每个阶段切换前] --> H1[清空 process.nextTick 队列]
+    H --> H2[清空微任务队列（Promise.then 等）]
 ```
 
 ### C.3 关键差异示例
@@ -1786,17 +1784,27 @@ macrotaskBench(100000); // 约 10000ms（慢 100 倍）
 
 ## 附录 F：异步编程范式选型决策树
 
-```
-是否需要处理 I/O 或网络请求？
-├── 否 → 使用同步代码
-└── 是 → 任务复杂度？
-    ├── 简单（单个回调）→ 事件回调或 Promise
-    └── 复杂（多个异步步骤）
-        ├── 需要并发控制？→ Promise.all / allSettled / any
-        ├── 需要取消支持？→ AbortController
-        ├── 需要流式处理？→ AsyncIterator / for await...of
-        └── 业务逻辑层 → async/await（首选）
-            └── 需要跨异步边界传播上下文？→ AsyncLocalStorage / AsyncContext
+```mermaid
+flowchart TD
+    T0["是否需要处理 I/O 或网络请求？"]
+    T1["否 → 使用同步代码"]
+    T2["是 → 任务复杂度？"]
+    T3["简单（单个回调）→ 事件回调或 Promise"]
+    T4["复杂（多个异步步骤）"]
+    T5["需要并发控制？→ Promise.all / allSettled / any"]
+    T6["需要取消支持？→ AbortController"]
+    T7["需要流式处理？→ AsyncIterator / for await...of"]
+    T8["业务逻辑层 → async/await（首选）"]
+    T9["需要跨异步边界传播上下文？→ AsyncLocalStorage / AsyncContext"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T4 --> T8
+    T8 --> T9
 ```
 
 ## 附录 G：ES2024-2026 异步新特性展望
@@ -2099,3 +2107,364 @@ async function concurrent(items) {
 ---
 
 **总结**：JavaScript 异步编程是单线程模型下的核心能力。从 callback 到 Promise 再到 async/await，范式演进不断提升可读性与可维护性。掌握事件循环、Promise 状态机、并发控制、错误处理、取消机制、上下文传播，是构建高可靠、高性能 JavaScript 应用的基础。ES2024-2026 持续推出的新特性（Promise.try、withResolvers、AsyncContext、Iterator Helpers）进一步简化了异步编程，值得持续关注与学习。
+## 回调函数
+
+**基本写法：回调函数**
+`function <函数>(<参数>, <回调>) { <回调>(); }`
+```javascript
+// 使用回调函数处理异步
+function fetchData(url, callback) {
+    callback(data);
+}
+```
+
+---
+
+**基本写法：错误优先回调**
+`function <回调>(<错误>, <数据>) { }`
+```javascript
+// Node.js 风格错误优先回调
+function handler(err, data) {
+    if (err) {
+    }
+}
+```
+
+---
+
+**基本写法：回调地狱**
+`<函数>(<参数>, function() { <函数>(<参数>, function() { }) })`
+```javascript
+// 嵌套回调
+step1(function() {
+    step2(function() {
+    });
+});
+```
+
+---
+
+## Promise
+
+**基本写法：创建 Promise**
+`new Promise((<resolve>, <reject>) => { })`
+```javascript
+// 创建 Promise 对象
+let promise = new Promise((resolve, reject) => {
+});
+```
+
+---
+
+**基本写法：Promise resolve**
+`new Promise((resolve) => { resolve(<值>); })`
+```javascript
+// 创建已完成的 Promise
+let p = Promise.resolve(42);
+```
+
+---
+
+**基本写法：Promise reject**
+`new Promise((_, reject) => { reject(<错误>); })`
+```javascript
+// 创建已拒绝的 Promise
+let p = Promise.reject(new Error("Failed"));
+```
+
+---
+
+**基本写法：then 处理成功**
+`<promise>.then(<成功回调>)`
+```javascript
+// 处理 Promise 成功结果
+promise.then(result => {
+});
+```
+
+---
+
+**基本写法：catch 处理失败**
+`<promise>.catch(<失败回调>)`
+```javascript
+// 处理 Promise 失败错误
+promise.catch(error => {
+});
+```
+
+---
+
+**基本写法：finally 最终处理**
+`<promise>.finally(<回调>)`
+```javascript
+// 无论成功失败都执行
+promise.finally(() => {
+});
+```
+
+---
+
+**基本写法：链式调用**
+`<promise>.then(<回调1>).then(<回调2>)`
+```javascript
+// Promise 链式调用
+promise.then(result => result * 2).then(doubled => {
+});
+```
+
+---
+
+## async-await
+
+**基本写法：async 函数**
+`async function <函数名>() { }`
+```javascript
+// 声明异步函数
+async function fetchData() {
+}
+```
+
+---
+
+**基本写法：await 等待**
+`await <Promise>`
+```javascript
+// 等待 Promise 完成获取结果
+let data = await promise;
+```
+
+---
+
+**基本写法：async 箭头函数**
+`async (<参数>) => { }`
+```javascript
+// 异步箭头函数
+let fetch = async (url) => {
+};
+```
+
+---
+
+**基本写法：await 错误处理**
+`try { await <Promise> } catch (<错误>) { }`
+```javascript
+// 使用 try-catch 处理 await 错误
+try {
+    let data = await promise;
+} catch (error) {
+}
+```
+
+---
+
+**基本写法：async 返回值**
+`async function <函数>() { return <值>; }`
+```javascript
+// async 函数返回 Promise
+async function getValue() {
+    return 42;
+}
+```
+
+---
+
+## Promise 静态方法
+
+**基本写法：Promise.all**
+`Promise.all([<promise1>, <promise2>])`
+```javascript
+// 等待所有 Promise 完成
+Promise.all([p1, p2, p3]).then(results => {
+});
+```
+
+---
+
+**基本写法：Promise.race**
+`Promise.race([<promise1>, <promise2>])`
+```javascript
+// 返回第一个完成的 Promise
+Promise.race([p1, p2]).then(result => {
+});
+```
+
+---
+
+**基本写法：Promise.allSettled**
+`Promise.allSettled([<promise1>, <promise2>])`
+```javascript
+// 等待所有 Promise 落定无论成功失败
+Promise.allSettled([p1, p2]).then(results => {
+});
+```
+
+---
+
+**基本写法：Promise.any**
+`Promise.any([<promise1>, <promise2>])`
+```javascript
+// 返回第一个成功的 Promise
+Promise.any([p1, p2]).then(result => {
+});
+```
+
+---
+
+## 定时器
+
+**基本写法：setTimeout**
+`setTimeout(<回调>, <毫秒>)`
+```javascript
+// 延迟执行一次
+setTimeout(() => {
+}, 1000);
+```
+
+---
+
+**基本写法：setInterval**
+`setInterval(<回调>, <毫秒>)`
+```javascript
+// 重复执行
+setInterval(() => {
+}, 1000);
+```
+
+---
+
+**基本写法：clearTimeout**
+`clearTimeout(<定时器ID>)`
+```javascript
+// 清除延迟定时器
+clearTimeout(timerId);
+```
+
+---
+
+**基本写法：clearInterval**
+`clearInterval(<定时器ID>)`
+```javascript
+// 清除重复定时器
+clearInterval(timerId);
+```
+
+---
+
+## Promise 封装
+
+**基本写法：Promise 封装 setTimeout**
+`new Promise(<resolve> => setTimeout(<resolve>, <毫秒>))`
+```javascript
+// 将 setTimeout 封装为 Promise
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+```
+
+---
+
+**基本写法：Promise 封装回调函数**
+`new Promise((<resolve>, <reject>) => { <回调函数>(<参数>, (<错误>, <数据>) => { }) })`
+```javascript
+// 将回调函数封装为 Promise
+function promisify(fn) {
+    return new Promise((resolve, reject) => {
+        fn((err, data) => {
+            if (err) reject(err);
+            else resolve(data);
+        });
+    });
+}
+```
+
+---
+
+## 并发控制
+
+**基本写法：async 并发执行**
+`await Promise.all([<异步1>(), <异步2>()])`
+```javascript
+// 并发执行多个异步操作
+let [a, b] = await Promise.all([fetchA(), fetchB()]);
+```
+
+---
+
+**基本写法：async 顺序执行**
+`let <结果1> = await <异步1>(); let <结果2> = await <异步2>();`
+```javascript
+// 顺序执行多个异步操作
+let a = await fetchA();
+let b = await fetchB();
+```
+
+---
+
+**基本写法：async 循环处理**
+`for (let <项> of <数组>) { await <异步>(<项>); }`
+```javascript
+// 顺序处理数组中的异步操作
+for (let item of items) {
+    await processItem(item);
+}
+```
+
+---
+
+## 事件循环
+
+**基本写法：微任务 queueMicrotask**
+`queueMicrotask(<回调>)`
+```javascript
+// 将任务添加到微任务队列
+queueMicrotask(() => {
+});
+```
+
+---
+
+**基本写法：宏任务 setTimeout**
+`setTimeout(<回调>, 0)`
+```javascript
+// 将任务添加到宏任务队列
+setTimeout(() => {
+}, 0);
+```
+
+---
+
+## ES2025 异步新特性
+
+**基本写法：using 显式资源管理**
+`using <变量> = <资源>`
+```javascript
+// 同步资源在作用域结束时自动调用 Symbol.dispose
+{
+    using handle = createResource();
+    handle.doWork();
+} // 自动调用 handle[Symbol.dispose]()
+```
+
+---
+
+**基本写法：await using 异步资源管理**
+`await using <变量> = <异步资源>`
+```javascript
+// 异步资源在作用域结束时自动 await Symbol.asyncDispose
+{
+    await using conn = await getConnection();
+    await conn.query("SELECT 1");
+} // 自动 await conn[Symbol.asyncDispose]()
+```
+
+---
+
+**基本写法：Promise.try 替代 async 函数包装**
+`Promise.try(<函数>)`
+```javascript
+// 将同步或异步函数统一包装为 Promise 无需 async 关键字
+let p = Promise.try(() => {
+    if (cached) return cached;
+    return fetch("/api");
+});
+```

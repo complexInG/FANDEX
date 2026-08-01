@@ -15,6 +15,11 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+# C++ 类型萃取与 SFINAE
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -2052,25 +2057,25 @@ int main() {
 
 ---
 
-## 10. 练习题与思考题
+## 知识讲解与要点分析（原练习题）
 
 ### 10.1 基础题（记忆与理解）
 
-**Q1**：SFINAE 缩写展开是什么？它在 ISO/IEC 14882 中的定义位置是？
+**常见疑问 1**：SFINAE 缩写展开是什么？它在 ISO/IEC 14882 中的定义位置是？
 
-**Q2**：列出 `<type_traits>` 中至少 10 个类型查询特征，并说明其语义。
+**常见疑问 2**：列出 `<type_traits>` 中至少 10 个类型查询特征，并说明其语义。
 
-**Q3**：`std::enable_if`、`std::void_t`、`std::conditional` 三者的设计动机分别是什么？
+**常见疑问 3**：`std::enable_if`、`std::void_t`、`std::conditional` 三者的设计动机分别是什么？
 
-**Q4**：`std::decay` 的变换规则是什么？写出 `decay_t<const int&>`、`decay_t<int[10]>`、`decay_t<void(int)>` 的结果。
+**常见疑问 4**：`std::decay` 的变换规则是什么？写出 `decay_t<const int&>`、`decay_t<int[10]>`、`decay_t<void(int)>` 的结果。
 
-**Q5**：C++17 的 `if constexpr` 与 SFINAE 在语义上有什么本质区别？
+**常见疑问 5**：C++17 的 `if constexpr` 与 SFINAE 在语义上有什么本质区别？
 
-### 10.2 应用题（应用与分析）
+### 应用题知识点讲解
 
-**Q6**：实现一个 `is_stl_container` 类型特征，检测类型是否为 STL 容器（std::vector、std::list、std::map 等）。
+**常见疑问 6**：实现一个 `is_stl_container` 类型特征，检测类型是否为 STL 容器（std::vector、std::list、std::map 等）。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <type_traits>
@@ -2102,9 +2107,9 @@ static_assert(!is_stl_container_v<int>);
 static_assert(!is_stl_container_v<std::string>);  // 注意：std::string 也有这些成员
 ```
 
-**Q7**：使用 `enable_if` 实现 `safe_add`，仅当两个类型都是算术类型时启用，返回 `std::common_type_t` 类型。
+**常见疑问 7**：使用 `enable_if` 实现 `safe_add`，仅当两个类型都是算术类型时启用，返回 `std::common_type_t` 类型。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <type_traits>
@@ -2124,9 +2129,9 @@ int main() {
 }
 ```
 
-**Q8**：使用 `if constexpr` 实现一个通用的 `print` 函数，支持基本类型、字符串、容器。
+**常见疑问 8**：使用 `if constexpr` 实现一个通用的 `print` 函数，支持基本类型、字符串、容器。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <type_traits>
@@ -2171,7 +2176,7 @@ int main() {
 
 ### 10.3 进阶题（分析与评价）
 
-**Q9**：分析以下代码的问题并修正：
+**常见疑问 9**：分析以下代码的问题并修正：
 
 ```cpp
 template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
@@ -2206,7 +2211,7 @@ T sum(T a, T b) {
 }
 ```
 
-**Q10**：评价以下 SFINAE 代码的可维护性，并提出改进建议：
+**常见疑问 10**：评价以下 SFINAE 代码的可维护性，并提出改进建议：
 
 ```cpp
 template<typename T, typename = std::enable_if_t<
@@ -2248,7 +2253,7 @@ void process(T value) { /* ... */ }
 
 ### 10.4 创造题（设计与实现）
 
-**Q11**：设计一个完整的 type-erased 容器，基于 `std::any` 与类型特征，支持任意可比较类型的有序存储。
+**常见疑问 11**：设计一个完整的 type-erased 容器，基于 `std::any` 与类型特征，支持任意可比较类型的有序存储。
 
 **参考实现**：
 
@@ -2312,7 +2317,7 @@ int main() {
 }
 ```
 
-**Q12**：实现一个自定义的 `is_printable` 类型特征，覆盖所有满足 `std::ostream& << T` 约束的类型，并给出概念等价的 C++20 版本。
+**常见疑问 12**：实现一个自定义的 `is_printable` 类型特征，覆盖所有满足 `std::ostream& << T` 约束的类型，并给出概念等价的 C++20 版本。
 
 **参考实现**：
 
@@ -2357,7 +2362,7 @@ int main() {
 
 ### 10.5 综合应用题
 
-**Q13**：设计并实现一个基于类型特征的"调度器"，根据类型特征自动选择最优实现策略。
+**常见疑问 13**：设计并实现一个基于类型特征的"调度器"，根据类型特征自动选择最优实现策略。
 
 **参考实现**：
 
@@ -2707,14 +2712,14 @@ void f(T);
 
 | 类型特征 | C++11 | C++14 | C++17 | C++20 | GCC | Clang | MSVC |
 | -------- | ----- | ----- | ----- | ----- | --- | ----- | ---- |
-| `enable_if` | ✓ | ✓ | ✓ | ✓ | 4.3 | 3.3 | 2010 |
-| `void_t` | - | 部分 | ✓ | ✓ | 5.1 | 3.5 | 2017 |
-| `conditional` | ✓ | ✓ | ✓ | ✓ | 4.3 | 3.3 | 2010 |
-| `decay_t` | - | ✓ | ✓ | ✓ | 4.8 | 3.3 | 2015 |
-| `enable_if_t` | - | ✓ | ✓ | ✓ | 4.8 | 3.3 | 2015 |
-| `if constexpr` | - | - | ✓ | ✓ | 7.0 | 5.0 | 2019 |
-| Concepts | - | - | - | ✓ | 10.0 | 10.0 | 19.30 |
-| `is_constant_evaluated` | - | - | - | ✓ | 10.0 | 10.0 | 19.25 |
+| `enable_if` | √ | √ | √ | √ | 4.3 | 3.3 | 2010 |
+| `void_t` | - | 部分 | √ | √ | 5.1 | 3.5 | 2017 |
+| `conditional` | √ | √ | √ | √ | 4.3 | 3.3 | 2010 |
+| `decay_t` | - | √ | √ | √ | 4.8 | 3.3 | 2015 |
+| `enable_if_t` | - | √ | √ | √ | 4.8 | 3.3 | 2015 |
+| `if constexpr` | - | - | √ | √ | 7.0 | 5.0 | 2019 |
+| Concepts | - | - | - | √ | 10.0 | 10.0 | 19.30 |
+| `is_constant_evaluated` | - | - | - | √ | 10.0 | 10.0 | 19.25 |
 | `if consteval` | - | - | - | C++23 | 12.0 | 14.0 | 19.32 |
 
 ### 13.4 常用宏与类型特征组合
@@ -2834,3 +2839,218 @@ check_cxx_source_compiles("
 ---
 
 > **本章节遵循 MIT 6.096（Introduction to C++）、Stanford CS106L（Standard C++ Programming）、CMU 15-411（Compiler Design）等海外名校课程标准组织内容，确保教学性、严谨性、可自学性。所有代码示例均经过编译器验证，参考文献采用 ACM Reference Format 标注 DOI。**
+## 类型萃取基础
+
+**基本写法：判断整型**
+`std::is_integral_v<<类型>>`
+```cpp
+// 检查类型是否为整型
+bool b = std::is_integral_v<int>;
+```
+
+---
+
+**基本写法：判断浮点型**
+`std::is_floating_point_v<<类型>>`
+```cpp
+// 检查类型是否为浮点型
+bool b = std::is_floating_point_v<double>;
+```
+
+---
+
+**基本写法：判断指针**
+`std::is_pointer_v<<类型>>`
+```cpp
+// 检查类型是否为指针
+bool b = std::is_pointer_v<int*>;
+```
+
+---
+
+**基本写法：判断引用**
+`std::is_lvalue_reference_v<<类型>>` / `std::is_rvalue_reference_v<<类型>>`
+```cpp
+// 区分左值与右值引用
+bool l = std::is_lvalue_reference_v<T>;
+```
+
+---
+
+**基本写法：判断相同类型**
+`std::is_same_v<<T1>, <T2>>`
+```cpp
+// 判断两个类型是否相同
+bool b = std::is_same_v<int, int32_t>;
+```
+
+---
+
+## 类型变换
+
+**基本写法：移除 const**
+`std::remove_const_t<<类型>>`
+```cpp
+// 去掉 const 限定
+using T = std::remove_const_t<const int>;  // int
+```
+
+---
+
+**基本写法：移除引用**
+`std::remove_reference_t<<类型>>`
+```cpp
+// 去掉引用
+using T = std::remove_reference_t<int&>;  // int
+```
+
+---
+
+**基本写法：移除指针**
+`std::remove_pointer_t<<类型>>`
+```cpp
+// 去掉指针
+using T = std::remove_pointer_t<int*>;  // int
+```
+
+---
+
+**基本写法：添加 const**
+`std::add_const_t<<类型>>`
+```cpp
+// 添加 const 限定
+using T = std::add_const_t<int>;  // const int
+```
+
+---
+
+**基本写法：decay**
+`std::decay_t<<类型>>`
+```cpp
+// 模拟按值传参的退化
+using T = std::decay_t<const int&>;  // int
+```
+
+---
+
+## 条件类型选择
+
+**基本写法：编译期选择类型**
+`std::conditional_t<<条件>, <真类型>, <假类型>>`
+```cpp
+// 根据条件选择类型
+using T = std::conditional_t<sizeof(int) == 4, int, long>;
+```
+
+---
+
+**基本写法：enable_if 启用模板**
+`std::enable_if_t<<条件>, [<类型>]>`
+```cpp
+// 条件满足时类型有效
+template <typename T,
+          typename = std::enable_if_t<std::is_integral_v<T>>>
+void f(T x);
+```
+
+---
+
+**基本写法：enable_if 用于返回类型**
+`template <typename T> std::enable_if_t<<条件>, <返回类型>> <函数名>(T);`
+```cpp
+// 通过返回类型 SFINAE
+template <typename T>
+std::enable_if_t<std::is_integral_v<T>, int> to_int(T x) {
+    return static_cast<int>(x);
+}
+```
+
+---
+
+## SFINAE 技巧
+
+**基本写法：函数模板 SFINAE**
+`template <typename T> auto <函数名>(T x) -> decltype(<表达式>);`
+```cpp
+// 表达式有效才匹配
+template <typename T>
+auto size(T& c) -> decltype(c.size()) {
+    return c.size();
+}
+```
+
+---
+
+**基本写法：void_t 检测成员**
+`template <typename T, typename = void> struct <名称> { };`
+```cpp
+// 检测类型是否有 size 成员
+template <typename T, typename = void>
+struct has_size : std::false_type {};
+
+template <typename T>
+struct has_size<T, std::void_t<decltype(std::declval<T>().size())>>
+    : std::true_type {};
+```
+
+---
+
+**基本写法：declval 生成假想值**
+`std::declval<<类型>>()`
+```cpp
+// 在不求值上下文生成右值引用
+decltype(std::declval<T>().foo()) ret;
+```
+
+---
+
+## Concepts 替代 SFINAE
+
+**基本写法：用 concept 替代 enable_if**
+`template <typename T> requires <概念> <返回类型> <函数名>(T);`
+```cpp
+// C++20 更清晰的约束
+template <typename T>
+requires std::integral<T>
+T add(T a, T b) { return a + b; }
+```
+
+---
+
+## 编译期断言
+
+**基本写法：static_assert**
+`static_assert(<条件>, "[<消息>]");`
+```cpp
+// 编译期检查条件
+static_assert(sizeof(int) == 4, "int must be 4 bytes");
+```
+
+---
+
+**基本写法：断言类型属性**
+`static_assert(std::is_integral_v<<类型>>);`
+```cpp
+// 编译期验证类型特征
+static_assert(std::is_default_constructible_v<Widget>);
+```
+
+---
+
+## 类型推断辅助
+
+**基本写法：common_type**
+`std::common_type_t<<T1>, <T2>>`
+```cpp
+// 取多个类型的公共类型
+using T = std::common_type_t<int, double>;  // double
+```
+
+---
+
+**基本写法：underlying_type**
+`std::underlying_type_t<<枚举类型>>`
+```cpp
+// 获取枚举底层类型
+using U = std::underlying_type_t<Color>;
+```

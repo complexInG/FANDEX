@@ -1552,37 +1552,46 @@ early_stopping = EarlyStopping(patience=10)
 
 ### 8.1 项目结构
 
-```
-deep-learning-project/
-├── pyproject.toml
-├── README.md
-├── src/
-│   ├── __init__.py
-│   ├── data/
-│   │   ├── dataset.py
-│   │   └── transforms.py
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── mlp.py
-│   │   ├── cnn.py
-│   │   └── transformer.py
-│   ├── losses/
-│   │   └── custom_losses.py
-│   ├── optim/
-│   │   └── custom_optim.py
-│   ├── train.py
-│   └── evaluate.py
-├── configs/
-│   ├── default.yaml
-│   └── experiment_1.yaml
-├── tests/
-│   ├── test_models.py
-│   └── test_losses.py
-├── scripts/
-│   ├── train.sh
-│   └── export_onnx.py
-└── notebooks/
-    └── exploration.ipynb
+```mermaid
+flowchart TD
+    T0["deep-learning-project/"]
+    T1["pyproject.toml"]
+    T2["README.md"]
+    T3["src/"]
+    T4["__init__.py"]
+    T5["data/"]
+    T6["dataset.py"]
+    T7["transforms.py"]
+    T8["models/"]
+    T9["__init__.py"]
+    T10["mlp.py"]
+    T11["cnn.py"]
+    T12["transformer.py"]
+    T13["losses/"]
+    T14["custom_losses.py"]
+    T15["optim/"]
+    T16["custom_optim.py"]
+    T17["train.py"]
+    T18["evaluate.py"]
+    T19["configs/"]
+    T20["default.yaml"]
+    T21["experiment_1.yaml"]
+    T22["tests/"]
+    T23["test_models.py"]
+    T24["test_losses.py"]
+    T25["scripts/"]
+    T26["train.sh"]
+    T27["export_onnx.py"]
+    T28["notebooks/"]
+    T29["exploration.ipynb"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T18 --> T19
+    T21 --> T22
+    T24 --> T25
+    T27 --> T28
+    T28 --> T29
 ```
 
 ### 8.2 配置管理（Hydra）
@@ -2016,9 +2025,9 @@ Hugging Face 使用 ONNX Runtime + Triton Inference Server 部署 Stable Diffusi
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **Q1.** 以下哪个不是 PyTorch 自动微分的核心组件？
 
@@ -2029,7 +2038,7 @@ D. `tf.GradientTape`
 
 **答案：D**
 
-解析：`tf.GradientTape` 是 TensorFlow 2.x 的自动微分 API，不属于 PyTorch。PyTorch 通过 `requires_grad`、`backward()` 与 `torch.autograd.Function` 实现自动微分。
+解析讲解：`tf.GradientTape` 是 TensorFlow 2.x 的自动微分 API，不属于 PyTorch。PyTorch 通过 `requires_grad`、`backward()` 与 `torch.autograd.Function` 实现自动微分。
 
 ---
 
@@ -2042,7 +2051,7 @@ D. 两者都是静态图
 
 **答案：B**
 
-解析：PyTorch 默认是动态图（Define-by-Run），TensorFlow 1.x 是静态图，TensorFlow 2.x 引入 Eager Execution 后变为动态图。
+解析讲解：PyTorch 默认是动态图（Define-by-Run），TensorFlow 1.x 是静态图，TensorFlow 2.x 引入 Eager Execution 后变为动态图。
 
 ---
 
@@ -2055,7 +2064,7 @@ D. 不需要偏差修正
 
 **答案：B**
 
-解析：Adam 的偏差修正公式为 $\hat{m}_t = m_t / (1 - \beta_1^t)$ 与 $\hat{v}_t = v_t / (1 - \beta_2^t)$，以消除初始化偏差。
+解析讲解：Adam 的偏差修正公式为 $\hat{m}_t = m_t / (1 - \beta_1^t)$ 与 $\hat{v}_t = v_t / (1 - \beta_2^t)$，以消除初始化偏差。
 
 ---
 
@@ -2068,7 +2077,7 @@ D. AMP 总是能加速训练 10 倍以上
 
 **答案：D**
 
-解析：AMP 加速通常为 1.5-3 倍，而非 10 倍以上。加速比取决于硬件（A100 上更显著）、模型结构与 batch size。
+解析讲解：AMP 加速通常为 1.5-3 倍，而非 10 倍以上。加速比取决于硬件（A100 上更显著）、模型结构与 batch size。
 
 ---
 
@@ -2081,11 +2090,11 @@ D. $O(n^2 \cdot d^2)$
 
 **答案：B**
 
-解析：自注意力 $QK^\top$ 的矩阵乘法复杂度为 $O(n^2 \cdot d)$，其中 $n$ 为序列长度，$d$ 为嵌入维度。
+解析讲解：自注意力 $QK^\top$ 的矩阵乘法复杂度为 $O(n^2 \cdot d)$，其中 $n$ 为序列长度，$d$ 为嵌入维度。
 
 ---
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **Q1.** PyTorch 中，将张量从 CPU 移到 GPU 的方法是 ________。
 
@@ -2117,7 +2126,7 @@ D. $O(n^2 \cdot d^2)$
 
 ---
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **Q1.** 实现一个简单的 2 层 MLP，使用 PyTorch 训练 MNIST，要求测试准确率 > 95%。
 

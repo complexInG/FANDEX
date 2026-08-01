@@ -286,6 +286,11 @@ etymology:
   english: Scoped Values
   origin: 由 JEP 446（JDK 21 Preview）提出，借鉴 Haskell的 implicit parameters、Rust 的 scoped threads；本质是不可变、有界作用域的线程本地变量，由 JVM 内部 ScopedValueContainer 管理，自动随 run() 结束而销毁。
 ---
+# Java ThreadLocal 与内存泄漏
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 引言：从"安全"到"陷阱"
 
@@ -387,22 +392,25 @@ public class ThreadLocal<T> {
 
 ### 2.2 引用关系图
 
-```
-GC Root: Thread
-  │
-  └── threadLocals (强引用)
-        │
-        └── ThreadLocalMap
-              │
-              └── Entry[] table
-                    │
-                    └── Entry
-                          ├── key  (WeakReference<ThreadLocal>)  ← 弱引用
-                          └── value (强引用)                       ← 强引用
-
-外部: ThreadLocal 实例 (通常为 private static final)
-  │
-  └── 业务代码持有强引用（如 static final 字段）
+```mermaid
+flowchart TD
+    T0["GC Root: Thread"]
+    T1["threadLocals (强引用)"]
+    T2["ThreadLocalMap"]
+    T3["Entry[] table"]
+    T4["Entry"]
+    T5["key  (WeakReference<ThreadLocal>)  ← 弱引用"]
+    T6["value (强引用)                       ← 强引用"]
+    T7["外部: ThreadLocal 实例 (通常为 private static final)"]
+    T8["业务代码持有强引用（如 static final 字段）"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T6 --> T7
+    T7 --> T8
 ```
 
 ### 2.3 引用强度的形式化定义
@@ -1396,29 +1404,29 @@ Mono.fromCallable(() -> USER_ID_TL.get())
 
 未来 Scoped Values 将与 Reactor Context 深度集成，形成统一的上下文传播层。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 习题 1（填空题 - remember）
+## 知识讲解与要点分析（原习题 1（填空题 - remember））
 ThreadLocal 的数据并非存储在 ThreadLocal 对象本身，而是存储在每个线程私有的 ThreadLocal____ 中，其 Entry 类继承自 WeakReference。
 
-### 习题 2（填空题 - understand）
+## 知识讲解与要点分析（原习题 2（填空题 - understand））
 ThreadLocal 内存泄漏的根因是：当 ThreadLocal 对象被回收后，Entry 的 key 变为 null，但 value 仍被 ThreadLocalMap 强引用，且 ThreadLocalMap 被 ____ 强引用，形成不可回收的引用链。
 
-### 习题 3（选择题 - apply）
+## 知识讲解与要点分析（原习题 3（选择题 - apply））
 下列哪种写法能最安全地在线程池任务中使用 ThreadLocal？
 - A. 在任务开头 set()，依赖线程池销毁时清理
 - B. 在任务开头 set()，使用 try-finally 在 finally 中 remove()
 - C. 声明为实例字段（非 static），让 GC 自动回收
 - D. 使用 InheritableThreadLocal 替代 ThreadLocal
 
-### 习题 4（选择题 - analyze）
+## 知识讲解与要点分析（原习题 4（选择题 - analyze））
 关于 ThreadLocalMap 的 Entry 设计，下列哪项描述最准确？
 - A. Entry 继承 WeakReference 是为了让 ThreadLocalMap 自动清理 key 与 value
 - B. Entry 的 key 与 value 都是弱引用，因此不会发生内存泄漏
 - C. Entry 的 key 是弱引用、value 是强引用，泄漏发生在 key 被回收但 value 未被回收时
 - D. Entry 继承 WeakReference 仅为节省内存，与泄漏无关
 
-### 习题 5（代码修正 - apply）
+## 知识讲解与要点分析（原习题 5（代码修正 - apply））
 下列代码在线程池中存在 ThreadLocal 泄漏风险。请修复：
 
 ```java
@@ -1432,7 +1440,7 @@ public void handle(Request req, Response resp) {
 }
 ```
 
-### 习题 6（代码修正 - analyze）
+## 知识讲解与要点分析（原习题 6（代码修正 - analyze））
 下列代码尝试通过 set(null) 清理 ThreadLocal，但仍存在泄漏。请修复：
 
 ```java
@@ -1445,27 +1453,27 @@ void process() {
 }
 ```
 
-### 习题 7（开放性 - create）
+## 知识讲解与要点分析（原习题 7（开放性 - create））
 请设计一个请求上下文框架，要求：(1) 在线程池与虚拟线程（JEP 444）下都安全；(2) 支持父子线程传递；(3) 自动清理无泄漏；(4) 兼容 Reactor/WebFlux 反应式栈。讨论：是否应直接采用 JEP 446 Scoped Values？给出关键代码与权衡分析。
 
-### 习题 8（开放性 - evaluate）
+## 知识讲解与要点分析（原习题 8（开放性 - evaluate））
 JEP 446（Scoped Values）的官方说明指出 "It is unsafe to use thread-local variables in a large virtual-thread-intensive program"。请评估：(1) 为何 ThreadLocal 在虚拟线程场景下不安全？(2) Scoped Values 如何解决该问题？(3) 在 JDK 21 LTS 中，迁移策略应如何规划？
 
 ## 11. 参考答案
 
-### 习题 1 答案
+## 知识讲解与要点分析（原习题 1 答案）
 **Map**。ThreadLocalMap 是 Thread 类的实例字段（`Thread.threadLocals`），每个线程持有自己的 ThreadLocalMap；其 Entry 继承自 `WeakReference<ThreadLocal<?>>`，以 ThreadLocal 对象作为弱引用 key，value 为强引用。这种设计使 ThreadLocal 对象本身可回收，但 value 仍可能泄漏。
 
-### 习题 2 答案
+## 知识讲解与要点分析（原习题 2 答案）
 **Thread**。Thread 持有 `threadLocals` 字段（ThreadLocalMap），ThreadLocalMap 持有 Entry[]，Entry 持有 value（强引用）。线程存活期间 Thread 是 GC Root，整个引用链不可回收。在线程池场景下线程长期存活，导致 value 持续累积。
 
-### 习题 3 答案
+## 知识讲解与要点分析（原习题 3 答案）
 **B**。线程池线程长期存活，必须显式 remove()；try-finally 保证异常路径下也能清理；声明为实例字段反而加速 ThreadLocal 本身回收（key 变 null）但 value 仍泄漏；InheritableThreadLocal 仅在线程创建时传递，不解决清理问题。
 
-### 习题 4 答案
+## 知识讲解与要点分析（原习题 4 答案）
 **C**。Entry extends WeakReference<ThreadLocal<?>> 仅 key 为弱引用，value 是普通强引用字段；当 ThreadLocal 对象本身被回收（无外部强引用），key 自动变 null，但 value 仍被 Entry 引用、Entry 被 ThreadLocalMap 引用、ThreadLocalMap 被 Thread 引用，形成泄漏。设计目的是避免 ThreadLocal 对象本身泄漏，但不能避免 value 泄漏。
 
-### 习题 5 答案
+## 知识讲解与要点分析（原习题 5 答案）
 
 ```java
 private static final ThreadLocal<UserContext> CTX = new ThreadLocal<>();
@@ -1483,7 +1491,7 @@ public void handle(Request req, Response resp) {
 
 **解释**：在线程池场景下，线程生命周期远长于单个任务；ThreadLocal 必须在 try-finally 的 finally 块中 remove()，保证无论正常返回还是抛异常都清理。这是 Bloch 《Effective Java》Item 9 与 JSR 133 的明确建议。
 
-### 习题 6 答案
+## 知识讲解与要点分析（原习题 6 答案）
 
 ```java
 ThreadLocal<byte[]> buffer = ThreadLocal.withInitial(() -> new byte[1024 * 1024]);
@@ -1497,7 +1505,7 @@ void process() {
 
 **解释**：ThreadLocalMap.set(null) 不会删除 Entry，仅在 Entry 内将 value 置 null（且会触发 replaceStaleEntry 探测）；remove() 通过 expungeStaleEntry 彻底清除 Entry 并清理相邻 stale entry。set(null) 是常见误解，应严格使用 remove()。
 
-### 习题 7 参考要点
+## 知识讲解与要点分析（原习题 7 参考要点）
 
 1. **基础层**：ThreadLocal + try-finally + remove()，封装为 RequestContext.close() 实现 AutoCloseable。
 2. **父子传递**：InheritableThreadLocal 在 new Thread() 时复制，但不支持线程池；需用 TransmittableThreadLocal（阿里 TTL）。
@@ -1507,7 +1515,7 @@ void process() {
 6. **权衡**：Scoped Values 优于 ThreadLocal（不可变、自动清理），但生态未成熟；过渡期用 TTL + ContextPropagation。
 7. **代码**：`ScopedValue.where(NAME, value).run(() -> business())`
 
-### 习题 8 参考要点
+## 知识讲解与要点分析（原习题 8 参考要点）
 
 1. **虚拟线程场景不安全的原因**：
    - 虚拟线程极轻量（KB 级栈），单 JVM 可达数百万；每个虚拟线程都有 ThreadLocalMap，导致内存爆炸；
@@ -1605,3 +1613,192 @@ void process() {
 - Stanford CS149 Parallel Computing：https://cs149.stanford.edu/
 - CMU 15-440 Distributed Systems：https://www.cs.cmu.edu/~dga/15-440/F12/
 - Doug Lea's concurrency tutorials：http://gee.cs.oswego.edu/
+## 创建 ThreadLocal
+
+**基本写法：创建 ThreadLocal**
+`ThreadLocal.<类型>withInitial(() -> <初始值>);`
+```java
+// 创建带初始值的 ThreadLocal
+ThreadLocal<Integer> counter = ThreadLocal.withInitial(() -> 0);
+```
+
+---
+
+**基本写法：匿名内部类创建**
+`new ThreadLocal<<类型>>() { protected <类型> initialValue() {} }`
+```java
+// 重写 initialValue 创建
+ThreadLocal<List<String>> ctx = new ThreadLocal<>() {
+    @Override
+    protected List<String> initialValue() { return new ArrayList<>(); }
+};
+```
+
+---
+
+## 读写操作
+
+**基本写法：设置值**
+`<threadLocal>.set(<值>);`
+```java
+// 为当前线程设置值
+counter.set(10);
+```
+
+---
+
+**基本写法：获取值**
+`<threadLocal>.get();`
+```java
+// 获取当前线程的值
+int v = counter.get();
+```
+
+---
+
+**基本写法：移除值**
+`<threadLocal>.remove();`
+```java
+// 移除当前线程的值，防止内存泄漏
+counter.remove();
+```
+
+---
+
+## InheritableThreadLocal 子线程继承
+
+**基本写法：创建可继承 ThreadLocal**
+`new InheritableThreadLocal<<类型>>();`
+```java
+// 子线程可继承父线程的值
+InheritableThreadLocal<String> itl = new InheritableThreadLocal<>();
+itl.set("parent");
+```
+
+---
+
+**基本写法：自定义子线程值**
+`new InheritableThreadLocal<<类型>>() { protected <类型> childValue(<类型> p) {} }`
+```java
+// 子线程继承时对值做转换
+InheritableThreadLocal<String> itl = new InheritableThreadLocal<>() {
+    @Override
+    protected String childValue(String parent) { return parent + "-child"; }
+};
+```
+
+---
+
+## TransmittableThreadLocal 跨线程池传递
+
+**基本写法：使用 TransmittableThreadLocal（阿里 TTL 库）**
+`new TransmittableThreadLocal<<类型>>();`
+```java
+// 线程池场景下传递上下文
+TransmittableThreadLocal<String> ttl = new TransmittableThreadLocal<>();
+ttl.set("ctx");
+```
+
+---
+
+**基本写法：包装 Runnable**
+`TtlRunnable.get(<runnable>);`
+```java
+// 提交任务时包装以传递上下文
+executor.submit(TtlRunnable.get(() -> doWork(ttl.get())));
+```
+
+---
+
+## ScopedValue（Java 21+ 预览）
+
+**基本写法：创建 ScopedValue**
+`private static final ScopedValue<<类型>> NAME = ScopedValue.newInstance();`
+```java
+// 创建不可变作用域值
+static final ScopedValue<String> USER = ScopedValue.newInstance();
+```
+
+---
+
+**基本写法：绑定并执行**
+`ScopedValue.where(<sv>, <值>).run(() -> <方法>);`
+```java
+// 在作用域内绑定值并执行
+ScopedValue.where(USER, "Alice").run(() -> {
+    System.out.println(USER.get());
+});
+```
+
+---
+
+**基本写法：返回结果**
+`ScopedValue.where(<sv>, <值>).call(() -> <表达式>);`
+```java
+// 作用域内执行并返回值
+String r = ScopedValue.where(USER, "Alice").call(() -> "hello " + USER.get());
+```
+
+---
+
+## 内存泄漏原理与排查
+
+**基本写法：try-finally 清理**
+`try { <tl>.set(<值>); ... } finally { <tl>.remove(); }`
+```java
+// 标准清理模式防止线程池泄漏
+try {
+    ctx.set(request);
+    handle();
+} finally {
+    ctx.remove();
+}
+```
+
+---
+
+## 与线程池配合
+
+**基本写法：装饰 Runnable 自动清理**
+`Runnable wrapped = () -> { try { <tl>.set(v); run(); } finally { <tl>.remove(); } };`
+```java
+// 线程池任务包装自动清理 ThreadLocal
+Runnable task = () -> {
+    try { counter.set(1); doWork(); }
+    finally { counter.remove(); }
+};
+```
+
+---
+
+## ThreadLocalRandom 随机数
+
+**基本写法：获取当前线程随机数**
+`ThreadLocalRandom.current().nextInt(<上界>);`
+```java
+// 线程本地随机数生成器
+int n = ThreadLocalRandom.current().nextInt(100);
+```
+
+---
+
+**基本写法：指定范围**
+`ThreadLocalRandom.current().nextInt(<起>, <止>);`
+```java
+// 生成区间内随机数
+int n = ThreadLocalRandom.current().nextInt(10, 20);
+```
+
+---
+
+## ThreadLocal 与虚拟线程
+
+**基本写法：虚拟线程下使用 ThreadLocal**
+`Thread.ofVirtual().start(() -> { <tl>.set(v); ... });`
+```java
+// 虚拟线程下使用 ThreadLocal（不推荐大量使用）
+Thread.ofVirtual().start(() -> {
+    ctx.set("v");
+    try { work(); } finally { ctx.remove(); }
+});
+```

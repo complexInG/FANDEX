@@ -15,6 +15,11 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
+# 命名空间与链接
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -2521,7 +2526,7 @@ int main() {
 
 ---
 
-## 10. 练习与参考答案
+## 知识讲解与要点分析（原练习）
 
 ### 10.1 练习一：命名空间基础
 
@@ -2546,7 +2551,7 @@ int main() {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 代码存在歧义错误。`using namespace a;` 引入 `a::x`，`using namespace a::b;` 引入 `a::b::x`，两者都叫 `x`，导致 `std::cout << x` 存在歧义。
 
@@ -2587,7 +2592,7 @@ void test() {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 - **(1) `std::swap(a, b)`**：显式限定，调用 `std::swap`，内部可能调用 `mylib::swap`（如果 `std::swap` 实现使用 ADL）。
 - **(2) `swap(a, b)`**：惯用法 `using std::swap; swap(a, b);`，ADL 优先匹配 `mylib::swap`（因为实参类型是 `mylib::Buffer`）。
@@ -2629,7 +2634,7 @@ void function() {                  // (14) 定义
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 | 编号 | 实体 | 链接性 | 说明 |
 | ---- | ---- | ------ | ---- |
@@ -2678,7 +2683,7 @@ static int counter = 0;
 // static template<typename T> T identity(T x);  // 错误：static 不能修饰模板
 ```
 
-**参考答案**：
+**解析讲解**：
 
 **差异**：
 
@@ -2704,7 +2709,7 @@ extern "C" {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 C 语言不支持函数重载——同名函数只能有一个。`extern "C"` 禁用 C++ 名称修饰，使函数符号为 `process`（无参数信息），因此两个 `process` 重载会产生相同的符号，导致链接冲突。
 
@@ -2744,7 +2749,7 @@ namespace mylib {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 直接修改 `Service` 类可能导致 ABI 不兼容——新增虚函数、修改成员布局都会破坏二进制兼容性。推荐使用内联命名空间管理版本：
 
@@ -2799,7 +2804,7 @@ namespace abc = a::b::c;
 abc::Container<int> v;
 ```
 
-**参考答案**：
+**解析讲解**：
 
 可以编译。命名空间别名（`namespace abc = a::b::c;`）创建一个等价的名称，可以像原命名空间一样使用，包括模板实例化。`abc::Container<int>` 等价于 `a::b::c::Container<int>`。
 
@@ -2824,7 +2829,7 @@ int f1() { return compute(10); }
 int f2() { return compute(20); }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 不违反 ODR。`inline` 函数允许在多个翻译单元中定义，只要所有定义完全相同。编译器保证所有翻译单元中的 `compute` 指向同一地址（或行为一致）。
 
@@ -2838,7 +2843,7 @@ int f2() { return compute(20); }
 
 **题目**：设计一个 `Vector3d` 类型，使得 `dot(a, b)`、`cross(a, b)`、`norm(a)` 可以通过 ADL 调用。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <cmath>
@@ -2902,7 +2907,7 @@ int main() {
 4. 支持版本管理（v1、v2）。
 5. 提供 C 兼容接口（`extern "C"`）。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 // logger.h
@@ -3228,22 +3233,30 @@ namespace mylib {
 
 ### 13.2 链接性决策树
 
-```
-实体需要被其他翻译单元访问吗？
-├─ 是 → 需要外部链接
-│   ├─ 函数 → 不写 static（默认外部链接）
-│   ├─ 变量 → 使用 extern 声明 + 定义在 .cpp 中
-│   │       或使用 inline 变量（C++17，定义在头文件）
-│   ├─ 类型 → 类定义自动外部链接
-│   └─ 模板 → 模板定义自动外部链接
-│
-└─ 否 → 需要内部链接或无链接
-    ├─ 全局作用域 → 使用匿名命名空间
-    │   namespace { /* ... */ }
-    ├─ 局部作用域 → 无链接（局部变量）
-    └─ 模块内部 → 模块链接（C++20）
-        module mylib;
-        // 不 export 的实体具有模块链接
+```mermaid
+flowchart TD
+    T0["实体需要被其他翻译单元访问吗？"]
+    T1["是 → 需要外部链接"]
+    T2["函数 → 不写 static（默认外部链接）"]
+    T3["变量 → 使用 extern 声明 + 定义在 .cpp 中"]
+    T4["或使用 inline 变量（C++17，定义在头文件）"]
+    T5["类型 → 类定义自动外部链接"]
+    T6["模板 → 模板定义自动外部链接"]
+    T7["否 → 需要内部链接或无链接"]
+    T8["全局作用域 → 使用匿名命名空间"]
+    T9["namespace { /* ... */ }"]
+    T10["局部作用域 → 无链接（局部变量）"]
+    T11["模块内部 → 模块链接（C++20）"]
+    T12["module mylib;"]
+    T13["// 不 export 的实体具有模块链接"]
+    T0 --> T1
+    T6 --> T7
+    T7 --> T8
+    T7 --> T9
+    T9 --> T10
+    T9 --> T11
+    T11 --> T12
+    T12 --> T13
 ```
 
 ### 13.3 ADL 查找规则速查
@@ -3463,3 +3476,246 @@ int main() {
 5. 尝试将现有项目迁移到 C++20 模块，理解模块链接与传统链接的差异。
 
 命名空间与链接性看似基础，但其细节深远影响大型项目的架构与可维护性。深入理解这些机制，是成为 C++ 工程师的必备素质。
+## 命名空间定义
+
+**基本写法：定义命名空间**
+`namespace <name> { ... }`
+```cpp
+// 定义命名空间
+namespace MyMath {
+    int add(int a, int b) { return a + b; }
+}
+```
+
+---
+
+**嵌套写法：嵌套命名空间**
+`namespace <outer> { namespace <inner> { ... } }`
+```cpp
+// 嵌套命名空间
+namespace Outer {
+    namespace Inner {
+        int value = 10;
+    }
+}
+```
+
+---
+
+**C++17 写法：嵌套命名空间简化**
+`namespace <outer>::<inner> { ... }`
+```cpp
+// C++17 嵌套命名空间简化写法
+namespace Outer::Inner {
+    int value = 10;
+}
+```
+
+---
+
+## 使用命名空间
+
+**基本写法：使用整个命名空间**
+`using namespace <name>;`
+```cpp
+// 使用标准命名空间
+using namespace std;
+```
+
+---
+
+**特定成员写法：使用命名空间中的特定成员**
+`using <namespace>::<member>;`
+```cpp
+// 使用 std::cout
+using std::cout;
+```
+
+---
+
+**限定写法：使用完整限定名**
+`<namespace>::<member>`
+```cpp
+// 使用完整限定名
+std::cout << "Hello" << std::endl;
+```
+
+---
+
+**作用域写法：命名空间别名**
+`namespace <alias> = <original>;`
+```cpp
+// 命名空间别名
+namespace fs = std::filesystem;
+```
+
+---
+
+## 内部链接
+
+**static 写法：内部链接变量**
+`static <type> <var_name> = <value>;`
+```cpp
+// static 全局变量，仅当前文件可见
+static int file_count = 0;
+```
+
+---
+
+**static 写法：内部链接函数**
+`static <return_type> <func>(<params>) { ... }`
+```cpp
+// static 函数，仅当前文件可见
+static void helper() {
+    // 内部辅助函数
+}
+```
+
+---
+
+**匿名命名空间写法：匿名命名空间**
+`namespace { ... }`
+```cpp
+// 匿名命名空间，内容仅当前文件可见
+namespace {
+    int internal_var = 10;
+}
+```
+
+---
+
+## 外部链接
+
+**extern 写法：外部变量声明**
+`extern <type> <var_name>;`
+```cpp
+// 声明在其他文件中定义的外部变量
+extern int global_var;
+```
+
+---
+
+**extern 写法：外部变量定义**
+`<type> <var_name> = <value>;`
+```cpp
+// 定义外部变量（其他文件可通过 extern 访问）
+int global_var = 100;
+```
+
+---
+
+**extern 写法：外部函数声明**
+`extern <return_type> <func>(<params>);`
+```cpp
+// 声明外部函数
+extern void external_function();
+```
+
+---
+
+**extern "C" 写法：C 链接**
+`extern "C" <return_type> <func>(<params>);`
+```cpp
+// 使用 C 链接，避免名称修饰
+extern "C" void c_function(int arg);
+```
+
+---
+
+**extern "C" 块写法：C 链接块**
+`extern "C" { ... }`
+```cpp
+// 多个函数使用 C 链接
+extern "C" {
+    void func1();
+    void func2();
+}
+```
+
+---
+
+## inline 命名空间
+
+**基本写法：inline 命名空间**
+`inline namespace <name> { ... }`
+```cpp
+// inline 命名空间，成员直接暴露到外层
+inline namespace V1 {
+    void func() {}
+}
+```
+
+---
+
+## 链接属性
+
+**基本写法：查看符号链接属性**
+`nm <object_file>`
+```bash
+# 查看目标文件的符号表
+nm myprogram.o
+```
+
+---
+
+**extern template 写法：显式实例化声明**
+`extern template class <ClassName><<type>>;`
+```cpp
+// 显式实例化声明，避免重复实例化
+extern template class std::vector<int>;
+```
+
+---
+
+**显式实例化写法：显式实例化定义**
+`template class <ClassName><<type>>;`
+```cpp
+// 显式实例化定义
+template class std::vector<int>;
+```
+
+---
+
+## 头文件与源文件分离
+
+**头文件写法：声明放在头文件**
+`// header.h: <return_type> <func>(<params>);`
+```cpp
+// header.h
+#ifndef MY_HEADER_H
+#define MY_HEADER_H
+void my_function();
+#endif
+```
+
+---
+
+**源文件写法：定义放在源文件**
+`// source.cpp: <return_type> <func>(<params>) { ... }`
+```cpp
+// source.cpp
+#include "header.h"
+void my_function() {
+    // 函数实现
+}
+```
+
+---
+
+## 编译与链接
+
+**编译写法：编译为目标文件**
+`g++ -c <source.cpp> -o <object.o>`
+```bash
+# 编译 source.cpp 生成目标文件
+g++ -c source.cpp -o source.o
+```
+
+---
+
+**链接写法：链接多个目标文件**
+`g++ <file1.o> <file2.o> -o <output>`
+```bash
+# 链接多个目标文件生成可执行文件
+g++ main.o utils.o -o program
+```

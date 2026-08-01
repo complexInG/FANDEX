@@ -495,6 +495,11 @@ exercises:
     explanation: '这是「假转发」反模式的核心：开发者误以为「std::forward<T>(x)」总能保留值类别，但其正确性完全依赖 T 的推导规则。在 forwarding reference 之外使用 std::forward 会导致「无条件转为右值」的语义错误，且因无编译期警告而难以察觉。C++ Core Guidelines F.19 显式警告此类误用。'
     difficulty: 5
 ---
+# 右值引用与移动语义
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 第 1 章 学习目标与导论
 
@@ -2994,31 +2999,31 @@ int main() {
 
 ## 第 15 章 习题与解答
 
-### 15.1 填空题
+### 填空题知识点讲解
 
 **习题 ex-rv-fb-01**（记忆层，难度 2）：在 C++11 的值类别分类中，具有「identity」但不具有「movability」的表达式称为 ____。
 
-**答案**：lvalue（左值）。
+**解析讲解**：lvalue（左值）。
 
-**解析**：按 [basic.lval] 定义，glvalue = identity（任意）；lvalue = identity 且非 xvalue；xvalue 同时具备 identity 与 movability；prvalue 仅具备 movability；rvalue = prvalue ∪ xvalue。lvalue 因不具备 movability，无法被 `std::move` 直接掠夺资源。
+**解析讲解**：按 [basic.lval] 定义，glvalue = identity（任意）；lvalue = identity 且非 xvalue；xvalue 同时具备 identity 与 movability；prvalue 仅具备 movability；rvalue = prvalue ∪ xvalue。lvalue 因不具备 movability，无法被 `std::move` 直接掠夺资源。
 
 ---
 
 **习题 ex-rv-fb-02**（理解层，难度 3）：`std::move(x)` 的返回类型经引用折叠后为 `T&&`，其本质是一个 ____（填值类别）表达式，因此可绑定到右值引用形参。
 
-**答案**：xvalue（临临值）。
+**解析讲解**：xvalue（临临值）。
 
-**解析**：`static_cast<T&&>(x)` 将 x 转为「指向 T 的右值引用」类型的表达式，按 [expr.type] 规则其为 xvalue。xvalue 既具有 identity（指向具名对象）又具有 movability（标记可被掠夺），可绑定到 `T&&` 形参。
+**解析讲解**：`static_cast<T&&>(x)` 将 x 转为「指向 T 的右值引用」类型的表达式，按 [expr.type] 规则其为 xvalue。xvalue 既具有 identity（指向具名对象）又具有 movability（标记可被掠夺），可绑定到 `T&&` 形参。
 
 ---
 
 **习题 ex-rv-fb-03**（应用层，难度 4）：在模板推导中，对 forwarding reference `T&&` 形参，若实参为 lvalue of `int`，则 `T` 被推导为 ____；若实参为 rvalue of `int`，则 `T` 被推导为 ____。
 
-**答案**：第一空 `int&`，第二空 `int`。
+**解析讲解**：第一空 `int&`，第二空 `int`。
 
-**解析**：forwarding reference 的特殊推导规则：实参为 lvalue 时 `T` 推导为 `T&`（左值引用），经折叠 `T& && → T&`；实参为 rvalue 时 `T` 推导为 `T`（非引用），经折叠 `T&&`（无折叠）。这是完美转发能保留值类别的根本机制。
+**解析讲解**：forwarding reference 的特殊推导规则：实参为 lvalue 时 `T` 推导为 `T&`（左值引用），经折叠 `T& && → T&`；实参为 rvalue 时 `T` 推导为 `T`（非引用），经折叠 `T&&`（无折叠）。这是完美转发能保留值类别的根本机制。
 
-### 15.2 选择题
+### 选择题知识点讲解
 
 **习题 ex-rv-ch-01**（理解层，难度 2）：下列关于 `std::move` 与 `std::forward` 的描述，哪项正确？
 
@@ -3027,9 +3032,9 @@ B. `std::move` 是无条件转为右值；`std::forward` 是有条件转为右�
 C. `std::move` 与 `std::forward` 是同一函数的不同名称  
 D. `std::forward` 可以替代 `std::move` 在任何场景使用
 
-**答案**：B。
+**解析讲解**：B。
 
-**解析**：`std::move` 等价于 `static_cast<T&&>`，无条件将实参转为 xvalue；`std::forward<T>` 仅在 `T` 被推导为非引用类型（即实参原本为 rvalue）时执行 `static_cast<T&&>`，否则保持 lvalue。两者运行期均为零开销，仅做编译期类型转换。
+**解析讲解**：`std::move` 等价于 `static_cast<T&&>`，无条件将实参转为 xvalue；`std::forward<T>` 仅在 `T` 被推导为非引用类型（即实参原本为 rvalue）时执行 `static_cast<T&&>`，否则保持 lvalue。两者运行期均为零开销，仅做编译期类型转换。
 
 ---
 
@@ -3055,9 +3060,9 @@ B. lvalue / rvalue / const lvalue / const lvalue
 C. lvalue / lvalue / const lvalue / const lvalue  
 D. lvalue / rvalue / lvalue / rvalue
 
-**答案**：B。
+**解析讲解**：B。
 
-**解析**：(1) `x` 是 lvalue 绑定 `int&`；(2) `std::move(x)` 是 xvalue 绑定 `int&&`；(3) `y` 是 const lvalue 绑定 `const int&`；(4) `std::move(y)` 即 `static_cast<const int&&>(y)`，仍是 const 限定的 xvalue，无法绑定 `int&&`（去 const 是非法的），重载解析选择 `const int&`。这是 `std::move` 对 const 对象「失效」的经典现象。
+**解析讲解**：(1) `x` 是 lvalue 绑定 `int&`；(2) `std::move(x)` 是 xvalue 绑定 `int&&`；(3) `y` 是 const lvalue 绑定 `const int&`；(4) `std::move(y)` 即 `static_cast<const int&&>(y)`，仍是 const 限定的 xvalue，无法绑定 `int&&`（去 const 是非法的），重载解析选择 `const int&`。这是 `std::move` 对 const 对象「失效」的经典现象。
 
 ---
 
@@ -3068,9 +3073,9 @@ B. 在 prvalue 初始化对象的语境中，编译器必须省略拷贝/移动�
 C. 自 C++17 起，所有移动构造函数均不再被调用  
 D. 强制省略仅适用于字面量类型
 
-**答案**：B。
+**解析讲解**：B。
 
-**解析**：C++17 引入的「guaranteed copy elision」仅作用于「prvalue 初始化对象」场景（如 return prvalue、函数实参传递、变量初始化），编译器将 prvalue 视为「初始物化」（materialization）而非临时对象，不构造中间临时对象。NRVO 与 RVO 命名返回仍为可选优化。其他场景（如将已具名对象返回）仍需调用移动/拷贝构造。
+**解析讲解**：C++17 引入的「guaranteed copy elision」仅作用于「prvalue 初始化对象」场景（如 return prvalue、函数实参传递、变量初始化），编译器将 prvalue 视为「初始物化」（materialization）而非临时对象，不构造中间临时对象。NRVO 与 RVO 命名返回仍为可选优化。其他场景（如将已具名对象返回）仍需调用移动/拷贝构造。
 
 ### 15.3 代码修正题
 
@@ -3413,13 +3418,325 @@ constexpr T&& forward(remove_reference_t<T>& x) noexcept {
 
 ---
 
-## 更新日志
+## 右值引用
 
-| 版本 | 日期       | 修订人                     | 主要变更                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ---- | ---------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.0  | 2026-06-14 | fanquanpp                  | 初版文档，77 行，仅含基础语法与简单示例。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| 2.0  | 2026-07-18 | FANDEX Content Engineering | 重写至论文级专业度，约 3200+ 行；新增 17 章结构覆盖 12 项质量基准；含 7 条 Bloom 学习目标、11 道习题（4 类题型）、12 条 ACM 格式参考文献、9 条词源标注；含 4 个 Mermaid 图（timeline/flowchart/stateDiagram-v2/sequenceDiagram）、5+ 个块级 KaTeX 公式块、60+ 个可编译 C++ 代码示例；新增 `learningObjectives`、`exercises`、`references`、`etymology`、`estimatedReadingTime`、`lastReviewed`、`reviewer` 字段；按 ISO/IEC 14882:2023 标准章节号引用（[basic.lval]、[expr.type]、[forwarding.ref]、[temp.deduct.call] 等）。 |
+**基本写法：右值引用声明**
+`<type>&& <ref_name> = <value>;`
+```cpp
+// 右值引用，绑定到临时值
+int&& rref = 10;
+```
 
 ---
 
-**文档结束** | FANDEX Content Engineering · 2026-07-18
+**基本写法：右值引用绑定到临时对象**
+`<Type>&& <ref> = <Type>(<args>);`
+```cpp
+// 右值引用绑定到临时对象
+std::string&& ref = std::string("Hello");
+```
+
+---
+
+**修改写法：通过右值引用修改值**
+`<ref_name> = <new_value>;`
+```cpp
+// 通过右值引用修改值
+int&& rref = 10;
+rref = 20;
+```
+
+---
+
+## std::move
+
+**基本写法：将左值转换为右值**
+`std::move(<var>)`
+```cpp
+#include <utility>
+// 将左值转换为右值引用
+std::string str = "Hello";
+std::string moved = std::move(str);
+```
+
+---
+
+**移动容器写法：移动容器内容**
+`std::move(<begin>, <end>, <dest>)`
+```cpp
+#include <algorithm>
+#include <vector>
+// 移动范围内的元素
+std::vector<int> src = {1, 2, 3};
+std::vector<int> dest(3);
+std::move(src.begin(), src.end(), dest.begin());
+```
+
+---
+
+**移动元素写法：移动单个元素**
+`<container>.push_back(std::move(<element>));`
+```cpp
+#include <vector>
+// 移动元素到容器
+std::vector<std::string> vec;
+std::string str = "Hello";
+vec.push_back(std::move(str));
+```
+
+---
+
+## 移动构造函数
+
+**基本写法：移动构造函数**
+`<ClassName>(<ClassName>&& <other>) noexcept { ... }`
+```cpp
+// 移动构造函数
+class String {
+    char* data;
+    size_t size;
+public:
+    String(String&& other) noexcept : data(other.data), size(other.size) {
+        other.data = nullptr;
+        other.size = 0;
+    }
+};
+```
+
+---
+
+**默认写法：默认移动构造函数**
+`<ClassName>(<ClassName>&&) = default;`
+```cpp
+// 使用默认移动构造函数
+class Point {
+    int x, y;
+public:
+    Point(Point&&) = default;
+};
+```
+
+---
+
+**禁用写法：禁用移动构造函数**
+`<ClassName>(<ClassName>&&) = delete;`
+```cpp
+// 禁用移动构造函数
+class NonMovable {
+public:
+    NonMovable(NonMovable&&) = delete;
+};
+```
+
+---
+
+## 移动赋值运算符
+
+**基本写法：移动赋值运算符**
+`<ClassName>& operator=(<ClassName>&& <other>) noexcept { ... }`
+```cpp
+// 移动赋值运算符
+class String {
+    char* data;
+public:
+    String& operator=(String&& other) noexcept {
+        if (this != &other) {
+            delete[] data;
+            data = other.data;
+            other.data = nullptr;
+        }
+        return *this;
+    }
+};
+```
+
+---
+
+**默认写法：默认移动赋值运算符**
+`<ClassName>& operator=(<ClassName>&&) = default;`
+```cpp
+// 使用默认移动赋值运算符
+class Point {
+    int x, y;
+public:
+    Point& operator=(Point&&) = default;
+};
+```
+
+---
+
+## 完美转发
+
+**万能引用写法：模板中的万能引用**
+`template<typename T> void <func>(T&& <param>) { ... }`
+```cpp
+// 万能引用，可以接受左值或右值
+template<typename T>
+void process(T&& arg) {
+    // 使用 std::forward 完美转发
+}
+```
+
+---
+
+**std::forward 写法：完美转发**
+`std::forward<T>(<arg>)`
+```cpp
+#include <utility>
+// 完美转发参数
+template<typename T>
+void wrapper(T&& arg) {
+    target(std::forward<T>(arg));
+}
+```
+
+---
+
+**多参数转发写法：转发多个参数**
+`template<typename... Args> void <func>(Args&&... <args>) { <target>(std::forward<Args>(<args>)...); }`
+```cpp
+#include <utility>
+// 转发多个参数
+template<typename... Args>
+void wrapper(Args&&... args) {
+    target(std::forward<Args>(args)...);
+}
+```
+
+---
+
+## 移动语义与容器
+
+**emplace_back 写法：原地构造元素**
+`<container>.emplace_back(<args>);`
+```cpp
+#include <vector>
+// 原地构造元素，避免临时对象
+std::vector<std::string> vec;
+vec.emplace_back("Hello");
+```
+
+---
+
+**push_back 写法：使用 push_back 配合 move**
+`<container>.push_back(std::move(<element>));`
+```cpp
+#include <vector>
+// 使用 move 配合 push_back
+std::vector<std::string> vec;
+std::string str = "Hello";
+vec.push_back(std::move(str));
+```
+
+---
+
+## 返回值优化
+
+**返回写法：返回局部对象**
+`<Type> <func>() { <Type> <local>; return <local>; }`
+```cpp
+// 返回局部对象，可能触发 RVO
+std::string create_string() {
+    std::string s = "Hello";
+    return s;
+}
+```
+
+---
+
+**返回右值写法：返回右值引用**
+`<Type>&& <func>() { return std::move(<var>); }`
+```cpp
+#include <utility>
+// 返回右值引用
+std::string get_string() {
+    std::string s = "Hello";
+    return std::move(s);
+}
+```
+
+---
+
+## 移动语义与智能指针
+
+**unique_ptr 移动写法**
+`std::unique_ptr<<type>> <new_ptr> = std::move(<old_ptr>);`
+```cpp
+#include <memory>
+// 移动 unique_ptr 所有权
+std::unique_ptr<int> p1 = std::make_unique<int>(10);
+std::unique_ptr<int> p2 = std::move(p1);
+```
+
+---
+
+**shared_ptr 移动写法**
+`std::shared_ptr<<type>> <new_ptr> = std::move(<old_ptr>);`
+```cpp
+#include <memory>
+// 移动 shared_ptr
+std::shared_ptr<int> p1 = std::make_shared<int>(10);
+std::shared_ptr<int> p2 = std::move(p1);
+```
+
+---
+
+## 移动语义最佳实践
+
+**noexcept 写法：移动操作标记为 noexcept**
+`<ClassName>(<ClassName>&&) noexcept { ... }`
+```cpp
+// 移动操作应标记为 noexcept
+class MyClass {
+public:
+    MyClass(MyClass&&) noexcept {}
+};
+```
+
+---
+
+**swap 写法：使用 move 实现 swap**
+`void <swap>(<Type>& <a>, <Type>& <b>) { <Type> <temp> = std::move(<a>); <a> = std::move(<b>); <b> = std::move(<temp>); }`
+```cpp
+#include <utility>
+// 使用 move 实现 swap
+void my_swap(std::string& a, std::string& b) {
+    std::string temp = std::move(a);
+    a = std::move(b);
+    b = std::move(temp);
+}
+```
+
+---
+
+## 区分左值与右值
+
+**is_lvalue_reference 写法：检查左值引用**
+`std::is_lvalue_reference<<type>>::value`
+```cpp
+#include <type_traits>
+// 检查是否为左值引用
+bool is_lref = std::is_lvalue_reference<int&>::value;
+```
+
+---
+
+**is_rvalue_reference 写法：检查右值引用**
+`std::is_rvalue_reference<<type>>::value`
+```cpp
+#include <type_traits>
+// 检查是否为右值引用
+bool is_rref = std::is_rvalue_reference<int&&>::value;
+```
+
+---
+
+## std::move_if_noexcept
+
+**基本写法：条件移动**
+`std::move_if_noexcept(<var>)`
+```cpp
+#include <utility>
+// 如果移动构造不是 noexcept 则返回 const 引用
+auto result = std::move_if_noexcept(obj);
+```

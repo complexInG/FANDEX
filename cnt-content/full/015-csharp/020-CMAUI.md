@@ -1389,39 +1389,43 @@ public class MainPage : ContentPage
 
 ### 7.1 项目架构分层
 
-```
-MauiApp/
-├── MauiApp/                    # 主项目
-│   ├── Models/                 # 数据模型
-│   │   ├── TaskItem.cs
-│   │   └── UserPreference.cs
-│   ├── ViewModels/             # ViewModel
-│   │   ├── MainViewModel.cs
-│   │   └── BaseViewModel.cs
-│   ├── Views/                  # 视图（XAML + Code-behind）
-│   │   ├── MainPage.xaml
-│   │   └── DetailPage.xaml
-│   ├── Services/               # 业务服务
-│   │   ├── IDataService.cs
-│   │   ├── DataService.cs
-│   │   └── IApiService.cs
-│   ├── Handlers/               # 自定义 Handler
-│   │   └── CardViewHandler.cs
-│   ├── Controls/               # 自定义控件
-│   │   └── CardView.cs
-│   ├── Platforms/              # 平台特定代码
-│   │   ├── Android/
-│   │   ├── iOS/
-│   │   ├── Windows/
-│   │   └── MacCatalyst/
-│   ├── Resources/              # 跨平台资源
-│   │   ├── Images/
-│   │   ├── Fonts/
-│   │   └── AppResources/
-│   ├── App.xaml
-│   └── MauiProgram.cs          # 应用入口
-├── MauiApp.Tests/              # 单元测试
-└── MauiApp.UITests/            # UI 测试
+```mermaid
+flowchart TD
+    T0["MauiApp/"]
+    T1["MauiApp/                    # 主项目"]
+    T2["Models/                 # 数据模型"]
+    T3["TaskItem.cs"]
+    T4["UserPreference.cs"]
+    T5["ViewModels/             # ViewModel"]
+    T6["MainViewModel.cs"]
+    T7["BaseViewModel.cs"]
+    T8["Views/                  # 视图（XAML + Code-behind）"]
+    T9["MainPage.xaml"]
+    T10["DetailPage.xaml"]
+    T11["Services/               # 业务服务"]
+    T12["IDataService.cs"]
+    T13["DataService.cs"]
+    T14["IApiService.cs"]
+    T15["Handlers/               # 自定义 Handler"]
+    T16["CardViewHandler.cs"]
+    T17["Controls/               # 自定义控件"]
+    T18["CardView.cs"]
+    T19["Platforms/              # 平台特定代码"]
+    T20["Android/"]
+    T21["iOS/"]
+    T22["Windows/"]
+    T23["MacCatalyst/"]
+    T24["Resources/              # 跨平台资源"]
+    T25["Images/"]
+    T26["Fonts/"]
+    T27["AppResources/"]
+    T28["App.xaml"]
+    T29["MauiProgram.cs          # 应用入口"]
+    T30["MauiApp.Tests/              # 单元测试"]
+    T31["MauiApp.UITests/            # UI 测试"]
+    T0 --> T1
+    T29 --> T30
+    T29 --> T31
 ```
 
 ### 7.2 BaseViewModel 抽象
@@ -1699,17 +1703,21 @@ public class MainViewModelTests
 
 **架构设计**：
 
-```
-TaskApp/
-├── Core/                    # 共享业务逻辑
-│   ├── Models/
-│   ├── Services/            # 接口定义
-│   └── ViewModels/
-├── TaskApp/                 # MAUI 应用
-│   ├── Views/
-│   ├── Platforms/           # 平台特定实现
-│   └── Resources/
-└── TaskApp.Tests/           # 单元测试
+```mermaid
+flowchart TD
+    T0["TaskApp/"]
+    T1["Core/                    # 共享业务逻辑"]
+    T2["Models/"]
+    T3["Services/            # 接口定义"]
+    T4["ViewModels/"]
+    T5["TaskApp/                 # MAUI 应用"]
+    T6["Views/"]
+    T7["Platforms/           # 平台特定实现"]
+    T8["Resources/"]
+    T9["TaskApp.Tests/           # 单元测试"]
+    T0 --> T1
+    T4 --> T5
+    T8 --> T9
 ```
 
 **关键决策**：
@@ -1854,7 +1862,7 @@ public class OfflineFirstRepository<T> where T : class, ISyncable, new()
 
 ---
 
-## 9. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 9.1 基础题
 

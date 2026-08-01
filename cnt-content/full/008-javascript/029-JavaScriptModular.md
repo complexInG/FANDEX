@@ -17,6 +17,11 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
+# JavaScript 模块化
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 0. 学习目标
 
@@ -1476,29 +1481,35 @@ const result = strategies[mode].execute(data);
 
 **项目结构**：
 
-```
-string-utils/
-├── src/
-│   ├── index.ts
-│   ├── camelCase.ts
-│   ├── kebabCase.ts
-│   └── snakeCase.ts
-├── dist/
-│   ├── esm/
-│   │   ├── index.js
-│   │   ├── camelCase.js
-│   │   ├── kebabCase.js
-│   │   └── snakeCase.js
-│   ├── cjs/
-│   │   ├── index.cjs
-│   │   ├── camelCase.cjs
-│   │   ├── kebabCase.cjs
-│   │   └── snakeCase.cjs
-│   └── types/
-│       └── index.d.ts
-├── package.json
-├── tsconfig.json
-└── rollup.config.js
+```mermaid
+flowchart TD
+    T0["string-utils/"]
+    T1["src/"]
+    T2["index.ts"]
+    T3["camelCase.ts"]
+    T4["kebabCase.ts"]
+    T5["snakeCase.ts"]
+    T6["dist/"]
+    T7["esm/"]
+    T8["index.js"]
+    T9["camelCase.js"]
+    T10["kebabCase.js"]
+    T11["snakeCase.js"]
+    T12["cjs/"]
+    T13["index.cjs"]
+    T14["camelCase.cjs"]
+    T15["kebabCase.cjs"]
+    T16["snakeCase.cjs"]
+    T17["types/"]
+    T18["index.d.ts"]
+    T19["package.json"]
+    T20["tsconfig.json"]
+    T21["rollup.config.js"]
+    T0 --> T1
+    T5 --> T6
+    T18 --> T19
+    T18 --> T20
+    T18 --> T21
 ```
 
 **`package.json`**：
@@ -1672,27 +1683,31 @@ grep -r "__dirname" src/
 
 **项目结构**：
 
-```
-my-monorepo/
-├── packages/
-│   ├── core/
-│   │   ├── src/
-│   │   │   ├── index.ts          # 公开 API
-│   │   │   ├── internal/         # 内部实现
-│   │   │   │   ├── utils.ts
-│   │   │   │   └── helpers.ts
-│   │   │   └── public/
-│   │   │       ├── api.ts
-│   │   │       └── types.ts
-│   │   └── package.json
-│   ├── ui/
-│   │   ├── src/
-│   │   └── package.json
-│   └── utils/
-│       ├── src/
-│       └── package.json
-├── pnpm-workspace.yaml
-└── package.json
+```mermaid
+flowchart TD
+    T0["my-monorepo/"]
+    T1["packages/"]
+    T2["core/"]
+    T3["src/"]
+    T4["index.ts          # 公开 API"]
+    T5["internal/         # 内部实现"]
+    T6["utils.ts"]
+    T7["helpers.ts"]
+    T8["public/"]
+    T9["api.ts"]
+    T10["types.ts"]
+    T11["package.json"]
+    T12["ui/"]
+    T13["src/"]
+    T14["package.json"]
+    T15["utils/"]
+    T16["src/"]
+    T17["package.json"]
+    T18["pnpm-workspace.yaml"]
+    T19["package.json"]
+    T0 --> T1
+    T17 --> T18
+    T17 --> T19
 ```
 
 **`packages/core/package.json`**：
@@ -2012,9 +2027,9 @@ import(/* webpackPrefetch: true */ './pages/Dashboard.js'); // 空闲时预获�
 import(/* webpackPreload: true */ './pages/Dashboard.js'); // 父 chunk 加载时并行预加载
 ```
 
-## 15. 习题
+## 知识讲解与要点分析（原习题）
 
-### 15.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下代码在 ESM 中的输出是？
 
@@ -2036,7 +2051,7 @@ console.log(count);
 - C. `undefined`
 - D. `TypeError`
 
-**答案**：B。ESM 是 live binding，`count` 反映最新值。
+**解析讲解**：B。ESM 是 live binding，`count` 反映最新值。
 
 **题目 2**：以下 CommonJS 代码的输出是？
 
@@ -2056,7 +2071,7 @@ console.log(count);
 - C. `undefined`
 - D. `TypeError`
 
-**答案**：A。CommonJS 是值拷贝，`count` 是 require 时的快照。
+**解析讲解**：A。CommonJS 是值拷贝，`count` 是 require 时的快照。
 
 **题目 3**：以下哪个字段可以控制 npm 包的子路径暴露？
 
@@ -2065,19 +2080,19 @@ console.log(count);
 - C. `exports`
 - D. `types`
 
-**答案**：C。`exports` 字段可以精确控制哪些子路径可被外部导入。
+**解析讲解**：C。`exports` 字段可以精确控制哪些子路径可被外部导入。
 
-### 15.2 简答题
+### 简答题知识点讲解
 
 **题目 4**：解释 ESM 的 Tree-shaking 比 CommonJS 更好的根本原因。
 
-**参考答案**：ESM 的 `import`/`export` 必须在顶层静态声明，依赖图可在编译时构建，打包工具能进行可达性分析删除未使用代码。CommonJS 的 `require` 可在运行时任意位置调用，依赖图只能运行时构建，无法静态分析哪些导出未使用。
+**解析讲解**：ESM 的 `import`/`export` 必须在顶层静态声明，依赖图可在编译时构建，打包工具能进行可达性分析删除未使用代码。CommonJS 的 `require` 可在运行时任意位置调用，依赖图只能运行时构建，无法静态分析哪些导出未使用。
 
 **题目 5**：为什么 `exports = { add }` 在 CommonJS 中不生效？
 
-**参考答案**：`exports` 是 `module.exports` 的引用，`exports.add = ...` 等价于 `module.exports.add = ...`，但 `exports = {...}` 只修改了局部变量 `exports`，不影响 `module.exports`。
+**解析讲解**：`exports` 是 `module.exports` 的引用，`exports.add = ...` 等价于 `module.exports.add = ...`，但 `exports = {...}` 只修改了局部变量 `exports`，不影响 `module.exports`。
 
-### 15.3 编程题
+### 编程题知识点讲解
 
 **题目 6**：实现一个支持双格式（CJS+ESM）的工具模块，提供 `add` 和 `subtract` 函数。
 
@@ -2373,42 +2388,37 @@ console.log(process.version);
 
 ### B.1 CommonJS 解析流程
 
-```
-require('lodash')
-  │
-  ├─ 核心模块？ ─── 是 ─── 返回内置模块
-  │
-  ├─ 相对路径？ ─── 是 ─── 查找文件
-  │   ├─ ./math
-  │   ├─ ./math.js
-  │   ├─ ./math.json
-  │   ├─ ./math.node
-  │   ├─ ./math/index.js
-  │   └─ ./math/package.json main
-  │
-  └─ node_modules 查找
-      ├─ /当前/node_modules/lodash
-      ├─ /父/node_modules/lodash
-      ├─ /祖父/node_modules/lodash
-      └─ /node_modules/lodash
+```mermaid
+flowchart TD
+    A[require('lodash')] --> B{核心模块?}
+    B -- 是 --> C[返回内置模块]
+    B -- 否 --> D{相对路径?}
+    D -- 是 --> E[查找文件]
+    E --> E1[./math]
+    E --> E2[./math.js]
+    E --> E3[./math.json]
+    E --> E4[./math.node]
+    E --> E5[./math/index.js]
+    E --> E6[./math/package.json main]
+    D -- 否 --> F[node_modules 查找]
+    F --> F1[/当前/node_modules/lodash]
+    F --> F2[/父/node_modules/lodash]
+    F --> F3[/祖父/node_modules/lodash]
+    F --> F4[/node_modules/lodash]
 ```
 
 ### B.2 ESM 解析流程
 
-```
-import 'lodash'
-  │
-  ├─ 裸模块说明符？
-  │   ├─ 是 ─── node_modules 查找（同 CJS）
-  │   │         但优先使用 package.json exports
-  │   │
-  │   └─ 否（相对/绝对路径）── 必须包含扩展名
-  │       ├─ ./math.js
-  │       ├─ ./math.mjs
-  │       └─ 目录: ./math/index.js
-  │
-  └─ URL 导入（浏览器）
-      import 'https://cdn.skypack.dev/lodash'
+```mermaid
+flowchart TD
+    A[import 'lodash'] --> B{裸模块说明符?}
+    B -- 是 --> C[node_modules 查找（同 CJS）<br/>优先使用 package.json exports]
+    B -- 否 --> D[相对/绝对路径，必须包含扩展名]
+    D --> D1[./math.js]
+    D --> D2[./math.mjs]
+    D --> D3[目录: ./math/index.js]
+    A --> E[URL 导入（浏览器）]
+    E --> E1[import 'https://cdn.skypack.dev/lodash']
 ```
 
 ### B.3 条件导出解析
@@ -2621,3 +2631,376 @@ const esmMod = require('./esm-mod.mjs');
 ---
 
 **总结**：JavaScript 模块化从 IIFE 到 ESM 经历了 30 年演进，ESM 以静态分析、Live Binding、Tree-shaking 能力成为最终标准。理解 CommonJS 与 ESM 的本质差异、掌握 `package.json` 的 `exports` 配置、选择合适的打包工具、避免循环依赖与 Tree-shaking 失效，是构建高质量 JavaScript 项目的关键。Node.js 22 的 `require(esm)` 标志着两大模块系统的最终融合，未来 ESM 将一统天下，但过渡期内仍需关注双格式发布与互操作细节。
+## export 导出
+
+**基本写法：命名导出变量**
+`export let <变量名> = <值>;`
+```javascript
+// 导出变量
+export let name = "Alice";
+```
+
+---
+
+**基本写法：命名导出函数**
+`export function <函数名>() { }`
+```javascript
+// 导出函数
+export function greet() {
+}
+```
+
+---
+
+**基本写法：命名导出类**
+`export class <类名> { }`
+```javascript
+// 导出类
+export class Person {
+}
+```
+
+---
+
+**基本写法：命名导出常量**
+`export const <常量名> = <值>;`
+```javascript
+// 导出常量
+export const PI = 3.14159;
+```
+
+---
+
+**基本写法：统一导出**
+`export { <标识符1>, <标识符2> };`
+```javascript
+// 统一导出多个标识符
+export { name, greet, Person };
+```
+
+---
+
+**基本写法：导出时重命名**
+`export { <原名> as <新名> };`
+```javascript
+// 导出时重命名标识符
+export { greet as sayHello };
+```
+
+---
+
+**基本写法：默认导出**
+`export default <表达式>`
+```javascript
+// 默认导出
+export default function() {
+}
+```
+
+---
+
+**基本写法：默认导出命名函数**
+`export default function <函数名>() { }`
+```javascript
+// 默认导出命名函数
+export default function main() {
+}
+```
+
+---
+
+**基本写法：默认导出类**
+`export default class <类名> { }`
+```javascript
+// 默认导出类
+export default class App {
+}
+```
+
+---
+
+**基本写法：默认导出对象**
+`export default { <属性> };`
+```javascript
+// 默认导出对象
+export default {
+    name: "Alice",
+    age: 25
+};
+```
+
+---
+
+## import 导入
+
+**基本写法：导入命名导出**
+`import { <标识符> } from "<模块>";`
+```javascript
+// 导入指定的命名导出
+import { name } from "./module.js";
+```
+
+---
+
+**单行写法：导入多个命名导出**
+`import { <标识符1>, <标识符2> } from "<模块>";`
+```javascript
+// 单行导入多个命名导出
+import { name, greet, Person } from "./module.js";
+```
+
+---
+
+**换行写法：导入多个命名导出**
+`import { <标识符1>, <标识符2>, <标识符3> } from "<模块>";`
+```javascript
+// 换行导入多个命名导出
+import {
+    name,
+    greet,
+    Person
+} from "./module.js";
+```
+
+---
+
+**基本写法：导入时重命名**
+`import { <原名> as <新名> } from "<模块>";`
+```javascript
+// 导入时重命名标识符
+import { greet as sayHello } from "./module.js";
+```
+
+---
+
+**基本写法：导入默认导出**
+`import <名称> from "<模块>";`
+```javascript
+// 导入默认导出
+import main from "./module.js";
+```
+
+---
+
+**基本写法：混合导入**
+`import <默认>, { <命名1>, <命名2> } from "<模块>";`
+```javascript
+// 同时导入默认导出和命名导出
+import main, { name, greet } from "./module.js";
+```
+
+---
+
+**基本写法：命名空间导入**
+`import * as <命名空间> from "<模块>";`
+```javascript
+// 导入整个模块作为命名空间
+import * as utils from "./module.js";
+```
+
+---
+
+**基本写法：使用命名空间**
+`<命名空间>.<标识符>`
+```javascript
+// 通过命名空间访问导出
+utils.greet();
+```
+
+---
+
+**基本写法：副作用导入**
+`import "<模块>";`
+```javascript
+// 仅执行模块不导入内容
+import "./polyfill.js";
+```
+
+---
+
+**基本写法：动态导入**
+`import("<模块>")`
+```javascript
+// 动态导入返回 Promise
+import("./module.js").then(module => {
+});
+```
+
+---
+
+**基本写法：await 动态导入**
+`const <模块> = await import("<模块>");`
+```javascript
+// 使用 await 等待动态导入
+const module = await import("./module.js");
+```
+
+---
+
+## re-export 重新导出
+
+**基本写法：重新导出**
+`export { <标识符> } from "<模块>";`
+```javascript
+// 从其他模块重新导出
+export { name } from "./module.js";
+```
+
+---
+
+**基本写法：重新导出全部**
+`export * from "<模块>";`
+```javascript
+// 重新导出模块全部内容
+export * from "./module.js";
+```
+
+---
+
+**基本写法：重新导出默认**
+`export { default } from "<模块>";`
+```javascript
+// 重新导出默认导出
+export { default } from "./module.js";
+```
+
+---
+
+**基本写法：重新导出并重命名**
+`export { <原名> as <新名> } from "<模块>";`
+```javascript
+// 重新导出并重命名
+export { greet as sayHello } from "./module.js";
+```
+
+---
+
+## 模块模式
+
+**基本写法：模块文件结构**
+`// <导出> <导入>`
+```javascript
+// 模块文件包含导入和导出
+import { helper } from "./helper.js";
+export function main() {
+}
+```
+
+---
+
+**基本写法：具名导入与默认导入**
+`import <默认>, * as <命名空间> from "<模块>";`
+```javascript
+// 同时导入默认和命名空间
+import main, * as utils from "./module.js";
+```
+
+---
+
+## CommonJS 模块
+
+**基本写法：module.exports**
+`module.exports = <值>;`
+```javascript
+// CommonJS 导出模块
+module.exports = {
+    name: "Alice"
+};
+```
+
+---
+
+**基本写法：exports 属性**
+`exports.<属性> = <值>;`
+```javascript
+// CommonJS 导出属性
+exports.greet = function() {
+};
+```
+
+---
+
+**基本写法：require 导入**
+`const <模块> = require("<模块>");`
+```javascript
+// CommonJS 导入模块
+const fs = require("fs");
+```
+
+---
+
+**基本写法：require 解构导入**
+`const { <属性> } = require("<模块>");`
+```javascript
+// CommonJS 解构导入
+const { readFile } = require("fs");
+```
+
+---
+
+## 模块路径
+
+**基本写法：相对路径**
+`import <模块> from "./<文件>";`
+```javascript
+// 使用相对路径导入
+import { helper } from "./utils.js";
+```
+
+---
+
+**基本写法：上级目录**
+`import <模块> from "../<文件>";`
+```javascript
+// 使用上级目录路径
+import { config } from "../config.js";
+```
+
+---
+
+**基本写法：包名导入**
+`import <模块> from "<包名>";`
+```javascript
+// 导入 npm 包
+import React from "react";
+```
+
+---
+
+**基本写法：子路径导入**
+`import <模块> from "<包名>/<子路径>";`
+```javascript
+// 导入包的子路径
+import { button } from "react-bootstrap";
+```
+
+---
+
+## ES2025 Import Attributes
+
+**基本写法：import json 模块**
+`import <内容> from "<模块>" with { type: "json" }`
+```javascript
+// 使用 import attributes 显式声明模块类型
+import config from "./config.json" with { type: "json" };
+```
+
+---
+
+**基本写法：动态 import 断言**
+`import("<模块>", { with: { type: "json" } })`
+```javascript
+// 动态导入时使用 with 选项声明模块类型
+let mod = await import("./config.json", { with: { type: "json" } });
+```
+
+---
+
+**基本写法：import attributes 与 import assertions 区别**
+`// assert 已废弃改用 with 关键字`
+```javascript
+// 旧写法 import assertions 使用 assert 已废弃
+// import x from "./a.json" assert { type: "json" };
+// 新写法 import attributes 使用 with 关键字
+import x from "./a.json" with { type: "json" };
+```

@@ -2188,9 +2188,9 @@ const result = pipe(
 
 fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative）。
 
-## 20. 习题
+## 知识讲解与要点分析（原习题）
 
-### 20.1 填空题（fill-blank）
+### 填空题知识点讲解
 
 1. **[remember]** TypeScript 的类型兼容性采用 ____ 子类型化规则，即如果 S 的结构包含 T 的所有成员，则 S 是 T 的子类型。
 
@@ -2212,7 +2212,7 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 
 10. **[understand]** 映射类型 `{ [P in keyof T]: U }` 是 ____ 操作，可将现有类型映射为新类型。
 
-### 20.2 选择题（choice）
+### 选择题知识点讲解
 
 1. **[understand]** 下列关于结构化类型与名义化类型的描述，哪一项是正确的？
    - A. Java 的泛型是结构化的

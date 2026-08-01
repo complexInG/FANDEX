@@ -372,19 +372,12 @@ etymology:
 
 3. **算法设计与分析**（Algorithm Design and Analysis）：研究如何高效求解具体问题。包括分治、贪心、动态规划、回溯、分支限界等设计范式，以及摊还分析、竞争分析等分析方法。
 
-```
-算法理论层次模型：
-
-                            算法理论
-                                |
-        ┌────────────────────┬────────────────────┐
-   可计算性理论          计算复杂性理论          算法设计与分析
-        │                    │                       │
-   ┌────┴────┐         ┌─────┴─────┐           ┌────┴────┐
-  图灵机      λ-演算    P/NP/NPC    PSPACE      摊还分析   竞争分析
-  Church-Turing         EXPTIME    BPP/QC      聚合/核/势能 在线算法
-  停机问题              P vs NP    PCP 定理     数据流      近似算法
-  Rice 定理             归约        不可近似性   随机化      启发式
+```mermaid
+flowchart TD
+    T[算法理论]
+    T --> C[可计算性理论<br/>图灵机/λ-演算/Church-Turing/停机问题/Rice 定理]
+    T --> X[计算复杂性理论<br/>P/NP/NPC/PSPACE/EXPTIME/BPP-QC/PCP 定理/归约/不可近似性]
+    T --> D[算法设计与分析<br/>摊还分析/竞争分析/聚合-核-势能/数据流/随机化/近似算法/启发式]
 ```
 
 **为什么算法理论重要**？算法理论为工程师提供"判断问题难度"的科学依据。当你面对一个新问题：
@@ -1025,39 +1018,17 @@ A 可在多项式时间判定 SAT 可满足性，矛盾 P ≠ NP。$\square$
 
 ### 4.6 复杂性类的包含关系图
 
+```mermaid
+flowchart TD
+    EXP[EXPTIME EXP]
+    PSP[PSPACE]
+    NP[NP<br/>NPC 内部]
+    P[P]
+    NL[NL ⊆ P<br/>L 内部]
+    EXP --> PSP --> NP --> P --> NL
 ```
-                         ┌────────────┐
-                         │  EXPTIME   │
-                         │  (EXP)     │
-                         └────────────┘
-                              │
-                         ┌────┴────┐
-                         │ PSPACE  │
-                         └─────────┘
-                              │
-                    ┌─────────┴─────────┐
-                    │        NP         │
-                    │  ┌────────────┐   │
-                    │  │ NP-Complete│   │
-                    │  │  (NPC)     │   │
-                    │  └────────────┘   │
-                    └─────────┬─────────┘
-                              │
-                    ┌─────────┴─────────┐
-                    │        P          │
-                    └───────────────────┘
-                              │
-                    ┌─────────┴─────────┐
-                    │   NL ⊆ P          │
-                    │   ┌───┐           │
-                    │   │ L │           │
-                    │   └───┘           │
-                    └───────────────────┘
 
-已知：L ⊆ NL ⊆ P ⊆ NP ⊆ PSPACE ⊆ EXPTIME
-已知：L ⊊ PSPACE, P ⊊ EXPTIME（层次定理）
-开放：L vs P, P vs NP, NP vs PSPACE
-```
+已知：L ⊆ NL ⊆ P ⊆ NP ⊆ PSPACE ⊆ EXPTIME；L ⊊ PSPACE，P ⊊ EXPTIME（层次定理）；开放：L vs P，P vs NP，NP vs PSPACE
 
 ---
 
@@ -2066,9 +2037,9 @@ Concorde 证明 NP-Hard 问题在大规模下也可精确求解（虽然最坏�
 
 ---
 
-## 10. 习题与参考答案
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1** 下列哪个陈述是 Baker-Gill-Solovay 1975 定理的内容？
 
@@ -2077,9 +2048,9 @@ B. 存在 oracle A 使 P^A = NP^A，存在 oracle B 使 P^B ≠ NP^B
 C. NP ≠ PSPACE
 D. NP = co-NP
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Baker-Gill-Solovay 1975《Relativizations of the P=?NP Question》SICOMP 4(4):431-442 证明了对 oracle 的相对化结果不一致，因此相对化技术无法解决 P vs NP。
+**解析讲解**：Baker-Gill-Solovay 1975《Relativizations of the P=?NP Question》SICOMP 4(4):431-442 证明了对 oracle 的相对化结果不一致，因此相对化技术无法解决 P vs NP。
 
 ---
 
@@ -2090,9 +2061,9 @@ B. NSPACE(f(n)) ⊆ DSPACE(f(n)^2)
 C. NTIME(f(n)) ⊆ DTIME(2^f(n))
 D. PSPACE = NPSPACE
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Savitch 1970 证明 NSPACE(f(n)) ⊆ DSPACE(f(n)^2)，蕴含 PSPACE = NPSPACE。
+**解析讲解**：Savitch 1970 证明 NSPACE(f(n)) ⊆ DSPACE(f(n)^2)，蕴含 PSPACE = NPSPACE。
 
 ---
 
@@ -2103,9 +2074,9 @@ B. NP = PCP[O(log n), O(1)]
 C. NP = PCP[O(1), O(log n)]
 D. NP = PCP[poly(n), O(1)]
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：PCP 定理（Arora-Safra 1998）证明 NP = PCP[O(log n), O(1)]，即 NP 证明可用 $O(\log n)$ 随机位与 $O(1)$ 次证明查询验证。
+**解析讲解**：PCP 定理（Arora-Safra 1998）证明 NP = PCP[O(log n), O(1)]，即 NP 证明可用 $O(\log n)$ 随机位与 $O(1)$ 次证明查询验证。
 
 ---
 
@@ -2116,9 +2087,9 @@ B. P ≠ NP 蕴含 NP-intermediate 存在
 C. NP-intermediate 是 NP 完全
 D. NP-intermediate 不存在
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Ladner 1975 证明若 P ≠ NP，则存在 NP-intermediate 问题（在 NP 中但既非 P 也非 NPC）。
+**解析讲解**：Ladner 1975 证明若 P ≠ NP，则存在 NP-intermediate 问题（在 NP 中但既非 P 也非 NPC）。
 
 ---
 
@@ -2129,9 +2100,9 @@ B. 1.5
 C. 2
 D. $\ln n$
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Christofides 1976 给出度量 TSP 的 1.5-近似算法，使用 MST + 最小权重完美匹配 + Euler 回路。
+**解析讲解**：Christofides 1976 给出度量 TSP 的 1.5-近似算法，使用 MST + 最小权重完美匹配 + Euler 回路。
 
 ---
 
@@ -2142,9 +2113,9 @@ B. $O(\log k)$
 C. $k$
 D. $k^2$
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：Sleator-Tarjan 1985 证明对容量 k 的缓存，LRU 是 k-竞争的。
+**解析讲解**：Sleator-Tarjan 1985 证明对容量 k 的缓存，LRU 是 k-竞争的。
 
 ---
 
@@ -2155,53 +2126,53 @@ B. 概率方法
 C. 摊还分析
 D. 归约法
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：对角线法是相对化技术（relativizing technique），被 Baker-Gill-Solovay 1975 屏障阻拦。
+**解析讲解**：对角线法是相对化技术（relativizing technique），被 Baker-Gill-Solovay 1975 屏障阻拦。
 
 ---
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1** Turing 1936 证明的不可判定问题是 ____。
 
-**答案**：停机问题（Halting Problem）
+**解析讲解**：停机问题（Halting Problem）
 
 ---
 
 **题目 2** Cook 1971 证明 NP 完全的具体问题是 ____。
 
-**答案**：SAT（布尔可满足性问题）
+**解析讲解**：SAT（布尔可满足性问题）
 
 ---
 
 **题目 3** Karp 1972 论文证明的 NP 完全问题数量是 ____。
 
-**答案**：21
+**解析讲解**：21
 
 ---
 
 **题目 4** 摊还分析的三种方法是 ____、____、____。
 
-**答案**：聚合分析、核算法、势能法
+**解析讲解**：聚合分析、核算法、势能法
 
 ---
 
 **题目 5** PCP 定理的原始证明由 ____ 和 ____ 于 1992 年完成（1998 年发表）。
 
-**答案**：Arora-Safra、Arora-Lund-Motwani-Sudan-Szegedy
+**解析讲解**：Arora-Safra、Arora-Lund-Motwani-Sudan-Szegedy
 
 ---
 
 **题目 6** Savitch 定理蕴含 PSPACE = ____。
 
-**答案**：NPSPACE
+**解析讲解**：NPSPACE
 
 ---
 
 **题目 7** 千禧年大奖问题中唯一的计算机科学问题是 ____。
 
-**答案**：P vs NP
+**解析讲解**：P vs NP
 
 ---
 
@@ -2272,7 +2243,7 @@ def dpll_correct(formula, assignment):
 
 **题目 1** 论述 P vs NP 千禧年大奖问题为何至今未解，列出至少三个已知屏障。
 
-**参考答案**：
+**解析讲解**：
 
 P vs NP 是 Clay 数学研究所 2000 年设立的千禧年大奖问题之一，悬赏 $1,000,000。问题陈述简单：P = NP？但至今未解，主要原因有三：
 
@@ -2290,7 +2261,7 @@ P vs NP 是 Clay 数学研究所 2000 年设立的千禧年大奖问题之一，
 
 **题目 2** 论述摊还分析三方法的等价性与适用场景。
 
-**参考答案**：
+**解析讲解**：
 
 摊还分析三方法：
 

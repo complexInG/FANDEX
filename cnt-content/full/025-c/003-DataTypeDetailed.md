@@ -20,10 +20,11 @@ related:
 prerequisites:
   - c/概述
 ---
-
 # 数据类型详解
 
-> 本章节面向已掌握 C 基本语法的读者，深入剖析 C 语言的类型系统、内存布局、ABI 对齐要求与 C23 新类型特性，对标 MIT 6.S081、Stanford CS107、CMU 15-213 的系统编程教学水准。所有结论均给出标准依据与可运行示例，支持 0 基础自学。
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -193,12 +194,17 @@ $$
 - $E = 2047, M = 0$：$\pm \infty$
 - $E = 2047, M \neq 0$：NaN（Not a Number）
 
-```
-双精度浮点数位布局（64 位）：
-+-----+------------+---------------------+
-|  S  |  E (11位)  |    M (52 位)        |
-+-----+------------+---------------------+
- 63   62        52  51                  0
+```mermaid
+flowchart TD
+    C0_0["双精度浮点数位布局（64 位）："]
+    C0_1["63   62        52  51                  0"]
+    C1_0["S"]
+    C2_0["E (11位)"]
+    C3_0["M (52 位)"]
+    C0_0 --> C0_1
+    C0_0 --> C1_0
+    C1_0 --> C2_0
+    C2_0 --> C3_0
 ```
 
 ### 3.5 内存对齐的形式化定义
@@ -1282,9 +1288,9 @@ void *aligned_alloc(size_t alignment, size_t size);
 
 但 C11 的 `aligned_alloc` 要求 `size` 是 `alignment` 的整数倍（C17 放宽）。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 习题 1：内存布局分析
+## 知识讲解与要点分析（原习题 1：内存布局分析）
 
 给定以下结构体（x86-64 Linux）：
 
@@ -1304,7 +1310,7 @@ struct S {
 2. `offsetof(struct S, d)` 是多少？
 3. 如何重新排列成员以最小化 `sizeof`？
 
-**答案**：
+**解析讲解**：
 
 1. `sizeof = 24`：
    - `a` 偏移 0，1 字节
@@ -1323,7 +1329,7 @@ struct S {
 3. 重排为 `{ double d; int b; char a; char c; char e; }`，大小为 16 字节：
    - d(8) + b(4) + a(1) + c(1) + e(1) + pad(1) = 16 字节
 
-### 习题 2：整数提升
+## 知识讲解与要点分析（原习题 2：整数提升）
 
 预测以下表达式的结果（x86-64 Linux，`char` 为 signed）：
 
@@ -1334,14 +1340,14 @@ unsigned char uc = 200;
 int j = uc + 0;     /* j = ? */
 ```
 
-**答案**：
+**解析讲解**：
 
 - `c = -56`（signed char 溢出环绕）
 - `c + 0`：`c` 提升为 `int`（值为 -56），`-56 + 0 = -56`，`i = -56`
 - `uc = 200`
 - `uc + 0`：`uc` 提升为 `int`（值为 200），`200 + 0 = 200`，`j = 200`
 
-### 习题 3：浮点数陷阱
+## 知识讲解与要点分析（原习题 3：浮点数陷阱）
 
 解释以下现象：
 
@@ -1351,11 +1357,11 @@ int i = (int)f;
 printf("%d\n", i);  /* 输出 16777216，而非 16777217 */
 ```
 
-**答案**：
+**解析讲解**：
 
 `float` 只有 24 位尾数（含隐含前导 1），最大精确整数为 $2^{24} = 16777216$。$16777217 = 2^{24} + 1$ 无法精确表示，被舍入到最近的浮点数 $2^{24} = 16777216$。
 
-### 习题 4：类型双关
+## 知识讲解与要点分析（原习题 4：类型双关）
 
 实现一个函数，将 `float` 的位模式转为 `uint32_t`，不使用 `memcpy`：
 
@@ -1365,7 +1371,7 @@ uint32_t float_to_bits(float f) {
 }
 ```
 
-**答案**：
+**解析讲解**：
 
 ```c
 uint32_t float_to_bits(float f) {
@@ -1377,7 +1383,7 @@ uint32_t float_to_bits(float f) {
 
 注意：这是 C99 起允许的，但 C++ 中仍为 UB。跨语言代码推荐 `memcpy`。
 
-### 习题 5：跨平台类型设计
+## 知识讲解与要点分析（原习题 5：跨平台类型设计）
 
 设计一个"通用 32 位整数"类型，要求：
 
@@ -1385,7 +1391,7 @@ uint32_t float_to_bits(float f) {
 2. 支持有符号/无符号
 3. 格式化打印跨平台
 
-**答案**：
+**解析讲解**：
 
 ```c
 #include <stdint.h>
@@ -1409,7 +1415,7 @@ int main(void) {
 }
 ```
 
-### 习题 6：C23 `_BitInt` 应用
+## 知识讲解与要点分析（原习题 6：C23 `_BitInt` 应用）
 
 实现一个 24 位有符号整数类型，要求：
 
@@ -1417,7 +1423,7 @@ int main(void) {
 2. 支持加减乘除
 3. 溢出时环绕
 
-**答案**：
+**解析讲解**：
 
 ```c
 #include <stdio.h>
@@ -1443,7 +1449,7 @@ int main(void) {
 }
 ```
 
-### 习题 7：位域布局
+## 知识讲解与要点分析（原习题 7：位域布局）
 
 给定以下结构体（x86-64 Linux，gcc）：
 
@@ -1461,7 +1467,7 @@ struct Flags {
 1. `sizeof(struct Flags)` 是多少？
 2. 在不同编译器/平台上结果是否一致？
 
-**答案**：
+**解析讲解**：
 
 1. `sizeof = 4`（gcc 将所有位域打包到一个 `unsigned int` 中）
 2. 不一致。位域布局是实现定义的：
@@ -1471,19 +1477,19 @@ struct Flags {
 
 **结论**：位域不可用于跨平台序列化，应使用手动位移。
 
-### 思考题 1：为什么 `sizeof('a')` 在 C 中是 `sizeof(int)`，而在 C++ 中是 `sizeof(char)`？
+## 知识讲解与要点分析（原思考题 1：为什么 `sizeof('a')` 在 C 中是 `sizeof(int)`，而在 C++ 中是 `sizeof(char)`？）
 
 **提示**：C 标准规定字符字面量 `'a'` 的类型是 `int`，目的是支持多字符常量（如 `'AB'`）。C++ 标准规定字符字面量类型是 `char`，以避免这种"意外"的整数提升。
 
-### 思考题 2：为什么 C 标准不规定 `int` 的大小？
+## 知识讲解与要点分析（原思考题 2：为什么 C 标准不规定 `int` 的大小？）
 
 **提示**：C 语言设计目标是"可移植汇编"，允许实现根据硬件特性选择最优的 `int` 大小。16 位机上 `int` 是 16 位，64 位机上理论上可以是 64 位（但实际为 32 位，原因见 LLP64/LP64 历史争议）。
 
-### 思考题 3：`NULL` 在 C 中是什么类型？
+## 知识讲解与要点分析（原思考题 3：`NULL` 在 C 中是什么类型？）
 
 **提示**：C 标准规定 `NULL` 是"实现定义的空指针常量"，可以是 `((void*)0)`、`0`、`0L` 等。C23 引入 `nullptr` 关键字解决这个问题。
 
-### 思考题 4：为什么严格别名规则允许 `char*` 别名任何类型？
+## 知识讲解与要点分析（原思考题 4：为什么严格别名规则允许 `char*` 别名任何类型？）
 
 **提示**：`char*` 是"字节指针"，访问内存的任何字节都是合法的。这是为了支持 `memcpy`、`memset` 等字节级操作的实现。
 
@@ -1531,3 +1537,386 @@ struct Flags {
 ---
 
 > 本章节遵循 C23 标准，所有示例代码已在 `gcc 13.2` 与 `clang 17.0` 上通过 `-Wall -Wextra -std=c11` 编译验证，部分 C23 特性需使用 `-std=c2x` 编译。x86-64 反汇编与内存布局示例基于 System V AMD64 ABI，Windows 用户需参考 Microsoft x64 ABI 与 LLP64 数据模型。如发现错误，欢迎指正。
+## 整型
+
+**基本写法：char 类型声明**
+`char <var_name> = <value>;`
+```c
+// 1 字节字符型
+char c = 'A';
+```
+
+---
+
+**基本写法：short 类型声明**
+`short <var_name> = <value>;`
+```c
+// 2 字节短整型
+short s = 1000;
+```
+
+---
+
+**基本写法：int 类型声明**
+`int <var_name> = <value>;`
+```c
+// 4 字节整型
+int i = 100000;
+```
+
+---
+
+**基本写法：long 类型声明**
+`long <var_name> = <value>L;`
+```c
+// 长整型
+long l = 100000L;
+```
+
+---
+
+**基本写法：unsigned 整型声明**
+`unsigned <type> <var_name> = <value>;`
+```c
+// 无符号整型
+unsigned int u = 100U;
+```
+
+---
+
+## 浮点型
+
+**基本写法：float 类型声明**
+`float <var_name> = <value>f;`
+```c
+// 4 字节单精度浮点
+float f = 3.14f;
+```
+
+---
+
+**基本写法：double 类型声明**
+`double <var_name> = <value>;`
+```c
+// 8 字节双精度浮点
+double d = 3.14159;
+```
+
+---
+
+**基本写法：long double 类型声明**
+`long double <var_name> = <value>L;`
+```c
+// 长双精度浮点
+long double ld = 3.14L;
+```
+
+---
+
+## 布尔型
+
+**基本写法：布尔型声明（C99+）**
+`bool <var_name> = <true|false>;`
+```c
+#include <stdbool.h>
+// 布尔类型变量
+bool is_valid = true;
+```
+
+---
+
+## 类型修饰符
+
+**基本写法：signed 修饰符**
+`signed <type> <var_name>;`
+```c
+// 有符号整型（默认）
+signed int x = -10;
+```
+
+---
+
+**基本写法：unsigned 修饰符**
+`unsigned <type> <var_name>;`
+```c
+// 无符号整型
+unsigned int y = 10;
+```
+
+---
+
+**基本写法：const 修饰符**
+`const <type> <var_name> = <value>;`
+```c
+// 只读常量
+const int MAX_VALUE = 100;
+```
+
+---
+
+**基本写法：volatile 修饰符**
+`volatile <type> <var_name>;`
+```c
+// 防止编译器优化
+volatile int sensor_value;
+```
+
+---
+
+## sizeof 运算符
+
+**基本写法：获取类型大小**
+`sizeof(<type>)`
+```c
+// 获取 int 类型字节数
+printf("int: %zu\n", sizeof(int));
+```
+
+---
+
+**基本写法：获取变量大小**
+`sizeof(<var>)`
+```c
+// 获取数组元素个数
+int arr[10];
+size_t count = sizeof(arr) / sizeof(arr[0]);
+```
+
+---
+
+## 数组
+
+**基本写法：一维数组声明**
+`<type> <array_name>[<size>];`
+```c
+// 声明大小为 5 的整型数组
+int numbers[5];
+```
+
+---
+
+**初始化写法：一维数组完全初始化**
+`<type> <array_name>[<size>] = {<values>};`
+```c
+// 完全初始化数组
+int arr[5] = {1, 2, 3, 4, 5};
+```
+
+---
+
+**自动推断写法：一维数组**
+`<type> <array_name>[] = {<values>};`
+```c
+// 自动推断数组大小为 3
+int arr[] = {10, 20, 30};
+```
+
+---
+
+**基本写法：二维数组声明**
+`<type> <array_name>[<rows>][<cols>];`
+```c
+// 声明 3x3 矩阵
+int matrix[3][3];
+```
+
+---
+
+## 指针
+
+**基本写法：指针声明与初始化**
+`<type> *<ptr_name> = &<var>;`
+```c
+// ptr 指向 x 的地址
+int x = 10;
+int *ptr = &x;
+```
+
+---
+
+**解引用写法：通过指针访问值**
+`*<ptr>`
+```c
+// 解引用获取指针指向的值
+int x = 10;
+int *ptr = &x;
+printf("值: %d\n", *ptr);
+```
+
+---
+
+## 结构体
+
+**基本写法：结构体定义**
+`typedef struct { <members> } <Name>;`
+```c
+// 定义 Employee 结构体类型
+typedef struct {
+    int id;
+    char name[50];
+    float salary;
+} Employee;
+```
+
+---
+
+**初始化写法：结构体变量初始化**
+`<Name> <var> = {<values>};`
+```c
+// 初始化结构体变量
+Employee emp = {101, "John Doe", 5000.0};
+```
+
+---
+
+## 联合体
+
+**基本写法：联合体定义**
+`union <Name> { <members> };`
+```c
+// 定义联合体
+union Data {
+    int i;
+    float f;
+    char str[20];
+};
+```
+
+---
+
+## 枚举
+
+**基本写法：枚举定义**
+`enum <Name> { <MEM1>, <MEM2>, ... };`
+```c
+// 定义星期枚举
+enum Weekday { MONDAY, TUESDAY, WEDNESDAY };
+```
+
+---
+
+**自定义写法：指定枚举值**
+`enum <Name> { <MEM1> = <val>, <MEM2> = <val>, ... };`
+```c
+// 显式指定枚举值
+enum Color { RED = 1, GREEN = 2, BLUE = 4 };
+```
+
+---
+
+## 空类型
+
+**基本写法：void 函数返回类型**
+`void <func_name>(<params>) { ... }`
+```c
+// 无返回值的函数
+void print_hello() {
+    printf("Hello!\n");
+}
+```
+
+---
+
+**基本写法：void 函数参数**
+`<type> <func_name>(void) { ... }`
+```c
+// 明确表示无参数
+int main(void) {
+    return 0;
+}
+```
+
+---
+
+**基本写法：void 通用指针**
+`void *<ptr_name>;`
+```c
+// 可以指向任何类型的通用指针
+void *generic_ptr;
+```
+
+---
+
+## 类型转换
+
+**隐式写法：自动类型转换**
+`<type> <var> = <other_type_var>;`
+```c
+// int 隐式转换为 double
+int x = 10;
+double y = x;
+```
+
+---
+
+**显式写法：强制类型转换**
+`(<target_type>)<expression>`
+```c
+// double 显式转换为 int
+double pi = 3.14159;
+int rounded_pi = (int)pi;
+```
+
+---
+
+**指针转换写法：指针类型转换**
+`(<target_type> *)<ptr>`
+```c
+// void 指针转换为 int 指针
+void *ptr = &x;
+int *int_ptr = (int *)ptr;
+```
+
+---
+
+## typedef 类型别名
+
+**基本写法：为基本类型创建别名**
+`typedef <existing_type> <new_name>;`
+```c
+// 为 unsigned int 创建别名
+typedef unsigned int uint;
+```
+
+---
+
+**基本写法：为结构体创建别名**
+`typedef struct { <members> } <Name>;`
+```c
+// 定义 Point 结构体别名
+typedef struct {
+    int x;
+    int y;
+} Point;
+```
+
+---
+
+## 标准固定宽度整数
+
+**基本写法：stdint.h 固定宽度类型**
+`#include <stdint.h>`
+```c
+// 包含固定宽度整数类型定义
+#include <stdint.h>
+```
+
+---
+
+**基本写法：8 位整数声明**
+`int8_t <var>;` 或 `uint8_t <var>;`
+```c
+// 有符号和无符号 8 位整数
+int8_t s8 = -1;
+uint8_t u8 = 255;
+```
+
+---
+
+**基本写法：32 位整数声明**
+`int32_t <var>;` 或 `uint32_t <var>;`
+```c
+// 有符号和无符号 32 位整数
+int32_t s32 = -1000;
+uint32_t u32 = 1000;
+```

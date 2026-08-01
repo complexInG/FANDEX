@@ -126,12 +126,14 @@ DevEco Studio NEXT 引入：
 
 ### 2.6 时间线总览
 
-```
-2020 ──── DevEco Studio 1.0 ──── 基础断点调试
-2021 ──── DevEco Studio 2.0 ──── 初步 Profiler
-2022 ──── DevEco Studio 3.0 ──── CPU/Memory/Network Profiler
-2023 ──── DevEco Studio 4.0 ──── HiTrace、分布式调试
-2024 ──── DevEco NEXT ─── AI 辅助调试
+```mermaid
+timeline
+    title DevEco Studio 时间线
+    2020: DevEco Studio 1.0 基础断点调试
+    2021: DevEco Studio 2.0 初步 Profiler
+    2022: DevEco Studio 3.0 CPU/Memory/Network Profiler
+    2023: DevEco Studio 4.0 HiTrace、分布式调试
+    2024: DevEco NEXT AI 辅助调试
 ```
 
 ---
@@ -224,20 +226,14 @@ $$
 
 DevEco Studio 调试器采用多层协议：
 
-```
-┌─────────────────────────────────────┐
-│  DevEco Studio UI                   │  Debugger/Profiler/Inspector 面板
-├─────────────────────────────────────┤
-│  Debug Protocol Layer               │  DAP (Debug Adapter Protocol)
-├─────────────────────────────────────┤
-│  ArkTS Debug Protocol               │  V8 Inspector Protocol
-├─────────────────────────────────────┤
-│  C++ Debug Protocol                 │  LLDB
-├─────────────────────────────────────┤
-│  Device Transport                   │  HDC (over USB / TCP)
-├─────────────────────────────────────┤
-│  Target Process                     │  ArkTS Engine / Native
-└─────────────────────────────────────┘
+```mermaid
+flowchart TD
+    UI[DevEco Studio UI<br/>Debugger/Profiler/Inspector 面板] --> DP[Debug Protocol Layer<br/>DAP Debug Adapter Protocol]
+    DP --> AT[ArkTS Debug Protocol<br/>V8 Inspector Protocol]
+    DP --> CP[C++ Debug Protocol<br/>LLDB]
+    AT --> DT[Device Transport<br/>HDC over USB / TCP]
+    CP --> DT
+    DT --> TP[Target Process<br/>ArkTS Engine / Native]
 ```
 
 ---
@@ -280,11 +276,12 @@ $$
 
 火焰图（Flame Graph）：
 
-```
-│████████████████████████████████████████████████│ main
-│████████████████│████████████████████│ onWindowStageCreate
-│█████████│ loadContent │█████████│ init │
-│ parseJSON │
+```mermaid
+flowchart TD
+    M[main] --> W[onWindowStageCreate]
+    W --> L[loadContent]
+    W --> I[init]
+    L --> P[parseJSON]
 ```
 
 - **x 轴**：采样次数（不等于时间，但成正比）。
@@ -314,15 +311,21 @@ GC Root 包括：
 
 两台设备时钟偏差测量：
 
-```
-Device A                                Device B
-    │                                       │
-    │ 1. ping(t_A1)                         │
-    │──────────────────────────────────────>│
-    │                                       │ 2. recv(t_B1)
-    │                                       │ 3. send(t_B2)
-    │ 4. recv(t_A2)                         │
-    │<──────────────────────────────────────│
+```mermaid
+flowchart TD
+    T0["Device A                                Device B"]
+    T1["1. ping(t_A1)"]
+    T2[">"]
+    T3["2. recv(t_B1)"]
+    T4["3. send(t_B2)"]
+    T5["4. recv(t_A2)"]
+    T6["<"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
 ```
 
 时钟偏差估算：
@@ -1402,143 +1405,111 @@ struct ForceGraph {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：DevEco Studio 调试 ArkTS 代码使用的底层协议是？
+**常见疑问 1**：DevEco Studio 调试 ArkTS 代码使用的底层协议是？
 
 - A. JDWP
 - B. V8 Inspector Protocol
 - C. LLDB Remote
 - D. Chrome DevTools Protocol
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：DevEco Studio 调试 ArkTS 代码使用 V8 Inspector Protocol，因为 ArkTS 基于 V8 引擎。C++ 层调试使用 LLDB，设备连接使用 HDC（类似 ADB）。
+**解析讲解**：DevEco Studio 调试 ArkTS 代码使用 V8 Inspector Protocol，因为 ArkTS 基于 V8 引擎。C++ 层调试使用 LLDB，设备连接使用 HDC（类似 ADB）。
 
-</details>
 
-**Q2**：采样 Profiler 的默认采样频率是多少？
+**常见疑问 2**：采样 Profiler 的默认采样频率是多少？
 
 - A. 100 Hz
 - B. 1 kHz
 - C. 10 kHz
 - D. 100 kHz
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：DevEco Studio 默认采样频率为 1kHz（每毫秒一次），平衡精度与开销。10kHz 开销达 25% CPU，仅用于深度分析。
+**解析讲解**：DevEco Studio 默认采样频率为 1kHz（每毫秒一次），平衡精度与开销。10kHz 开销达 25% CPU，仅用于深度分析。
 
-</details>
 
-**Q3**：以下哪种断点不会阻塞应用执行？
+**常见疑问 3**：以下哪种断点不会阻塞应用执行？
 
 - A. 行断点
 - B. 条件断点
 - C. 日志断点
 - D. 异常断点
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：日志断点（Log Breakpoint）在触发时仅输出日志，不暂停执行。适合在循环或高频回调中追踪状态。
+**解析讲解**：日志断点（Log Breakpoint）在触发时仅输出日志，不暂停执行。适合在循环或高频回调中追踪状态。
 
-</details>
 
-**Q4**：HiTrace 跨设备时钟对齐使用什么协议？
+**常见疑问 4**：HiTrace 跨设备时钟对齐使用什么协议？
 
 - A. NTP
 - B. PTP
 - C. NTP + PTP
 - D. 自定义 ping-pong 测量
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：DevEco Studio 通过自定义 ping-pong 协议测量两台设备间时钟偏差（offset = t_B1 - t_A1 - RTT/2），自动应用偏移对齐多设备 trace。
+**解析讲解**：DevEco Studio 通过自定义 ping-pong 协议测量两台设备间时钟偏差（offset = t_B1 - t_A1 - RTT/2），自动应用偏移对齐多设备 trace。
 
-</details>
 
-**Q5**：以下哪个 HDC 命令用于查看应用堆栈？
+**常见疑问 5**：以下哪个 HDC 命令用于查看应用堆栈？
 
 - A. `hdc shell ps`
 - B. `hdc shell jstack`
 - C. `hdc shell kill`
 - D. `hdc shell cat`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`hdc shell jstack <pid>` 用于抓取 Java/ArkTS 堆栈，等同于 Android 的 `kill -3`。`ps` 仅查看进程列表。
+**解析讲解**：`hdc shell jstack <pid>` 用于抓取 Java/ArkTS 堆栈，等同于 Android 的 `kill -3`。`ps` 仅查看进程列表。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**：DevEco Studio 调试 C++ 代码使用 ______ 协议。
+**常见疑问 6**：DevEco Studio 调试 C++ 代码使用 ______ 协议。
 
-<details>
-<summary>答案</summary>
 
 LLDB
 
-</details>
 
-**Q2**：HiTrace 的 ______ API 用于在长流程中插入中间计时点。
+**常见疑问 7**：HiTrace 的 ______ API 用于在长流程中插入中间计时点。
 
-<details>
-<summary>答案</summary>
 
 middleTrace
 
-</details>
 
-**Q3**：火焰图的 x 轴表示 ______，y 轴表示 ______。
+**常见疑问 8**：火焰图的 x 轴表示 ______，y 轴表示 ______。
 
-<details>
-<summary>答案</summary>
 
 采样次数（不等于时间但成正比）；调用栈深度
 
-</details>
 
-**Q4**：Memory Profiler 通过 ______ 检测内存泄漏。
+**常见疑问 9**：Memory Profiler 通过 ______ 检测内存泄漏。
 
-<details>
-<summary>答案</summary>
 
 多次堆快照对比
 
-</details>
 
-**Q5**：HDC 的 ______ 模式比 USB 模式更稳定。
+**常见疑问 10**：HDC 的 ______ 模式比 USB 模式更稳定。
 
-<details>
-<summary>答案</summary>
 
 TCP
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q1**：实现一个 ArkUI 组件重建监控装饰器，统计 build 方法被调用次数
+**常见疑问 11**：实现一个 ArkUI 组件重建监控装饰器，统计 build 方法被调用次数
 
-<details>
-<summary>参考答案</summary>
 
 ```typescript
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -1610,12 +1581,9 @@ struct MonitoredList {
 }
 ```
 
-</details>
 
-**Q2**：实现一个 HiTrace 跨设备调用追踪器，自动生成 traceId 并跨设备传递
+**常见疑问 12**：实现一个 HiTrace 跨设备调用追踪器，自动生成 traceId 并跨设备传递
 
-<details>
-<summary>参考答案</summary>
 
 ```typescript
 import hiTraceMeter from '@ohos.hiTraceMeter';
@@ -1739,14 +1707,11 @@ class TargetAbility extends UIAbility {
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
-**Q1**：为什么采样 Profiler 在 1kHz 下无法发现 1ms 以下的函数？如何改进？
+**常见疑问 13**：为什么采样 Profiler 在 1kHz 下无法发现 1ms 以下的函数？如何改进？
 
-<details>
-<summary>参考思路</summary>
 
 **原因**：采样间隔 1ms，函数执行时间小于 1ms 时，被采样到的概率极低（< 1%）。
 
@@ -1757,12 +1722,9 @@ class TargetAbility extends UIAbility {
 3. 使用硬件性能计数器（PMU），如 CPU 周期计数器，开销极小。
 4. 多次重复执行热点代码，统计平均时间。
 
-</details>
 
-**Q2**：在分布式调试中，两台设备时钟偏差 100ms。如果不对齐时钟，trace 会呈现什么异常？举例说明。
+**常见疑问 14**：在分布式调试中，两台设备时钟偏差 100ms。如果不对齐时钟，trace 会呈现什么异常？举例说明。
 
-<details>
-<summary>参考思路</summary>
 
 **异常表现**：
 
@@ -1774,12 +1736,9 @@ class TargetAbility extends UIAbility {
 
 A 在 $t_A = 1000\text{ms}$ 发起调用，B 在 $t_B = 1800\text{ms}$ 收到，实际 RTT = 800ms。若 B 时钟快 100ms（$t_B' = 1900\text{ms}$），trace 显示 RTT = 900ms，误差 12.5%。
 
-</details>
 
-**Q3**：DevEco Studio 的 Inspector 显示 ArkUI 组件树而非 DOM 树，这一设计有哪些优劣？
+**常见疑问 15**：DevEco Studio 的 Inspector 显示 ArkUI 组件树而非 DOM 树，这一设计有哪些优劣？
 
-<details>
-<summary>参考思路</summary>
 
 **优势**：
 
@@ -1793,12 +1752,9 @@ A 在 $t_A = 1000\text{ms}$ 发起调用，B 在 $t_B = 1800\text{ms}$ 收到，
 2. **学习曲线**：Web 开发者需重新学习。
 3. **跨平台调试难**：若同一应用在 Web 端跑，需两套工具。
 
-</details>
 
-**Q4**：如果让你设计一个 CI 集成的自动化 UI 回归测试框架，基于 HDC 与 Inspector，会如何架构？
+**常见疑问 16**：如果让你设计一个 CI 集成的自动化 UI 回归测试框架，基于 HDC 与 Inspector，会如何架构？
 
-<details>
-<summary>参考思路</summary>
 
 **架构设计**：
 
@@ -1826,7 +1782,6 @@ hdc shell snapshot_display -f /data/local/tmp/shot.png
 hdc file recv /data/local/tmp/shot.png ./shot.png
 ```
 
-</details>
 
 ---
 
@@ -2072,3 +2027,301 @@ hdc shell hilog -L W -T MyApp | grep -v "noise"
 | Shift+F9 | Debug |
 | Ctrl+Shift+F10 | Run 当前文件 |
 | Ctrl+Shift+F9 | Debug 当前文件 |
+## 工程构建
+
+**基本写法：构建项目**
+`hvigorw assembleHap`
+```bash
+# 命令行构建 HAP
+hvigorw --mode module -p module=entry@default assembleHap --parallel --daemon
+```
+
+---
+
+**基本写法：构建 Release 包**
+`hvigorw --mode project -p product=default assembleApp --build-mode release`
+```bash
+# 构建 Release 模式的 APP 包
+hvigorw --mode project -p product=default assembleApp --build-mode release
+```
+
+---
+
+**基本写法：清理构建产物**
+`hvigorw clean`
+```bash
+# 清理所有构建产物
+hvigorw clean
+```
+
+---
+
+**基本写法：构建多模块**
+`hvigorw --mode project -p product=<产品> assembleHap`
+```bash
+# 构建所有模块
+hvigorw --mode project -p product=default assembleHap
+```
+
+---
+
+## 签名配置
+
+**基本写法：DevEco Studio 图形化配置**
+`// File → Project Structure → Signing Configs`
+```text
+// 自动签名流程
+// 1. 打开 File → Project Structure
+// 2. 选择 Signing Configs 标签
+// 3. 勾选 Automatically sign
+// 4. 选择或创建密钥库
+// 5. 配置 Profile 和证书
+```
+
+---
+
+**基本写法：手动签名**
+`// Signing Configs → 添加 Release 配置`
+```text
+// 手动签名流程
+// 1. Signing Configs → 点击 +
+// 2. 名称填写 release
+// 3. Store File 选择 .p12 文件
+// 4. Store Password / Key Alias / Key Password
+// 5. Sign Profile 选择 .p7b
+// 6. Sign Cert 选择 .cer
+// 7. Apply → OK
+```
+
+---
+
+**基本写法：构建变体切换**
+`// Build → Select Build Variant`
+```text
+// 切换构建变体
+// 1. 左下角 Build Variants 面板
+// 2. 或 Build → Select Build Variant
+// 3. 选择 debug 或 release
+// 4. 重新构建
+```
+
+---
+
+## 断点调试
+
+**基本写法：设置断点**
+`// 点击代码行号左侧空白区域`
+```text
+// 断点操作
+// 左键点击行号旁 → 设置断点（红点）
+// 再次点击 → 取消断点
+// 右键断点 → 更多选项（条件、日志断点）
+```
+
+---
+
+**基本写法：条件断点**
+`// 右键断点 → Condition: <表达式>`
+```typescript
+// 条件断点：仅当条件为真时暂停
+for (let i = 0; i < 1000; i++) {
+  // 断点条件: i === 500
+  this.process(i)
+}
+```
+
+---
+
+**基本写法：调试快捷键**
+`// F8: Step Over | F7: Step Into | F9: Resume`
+```text
+// 调试快捷键
+// F9  / Resume Program    → 继续执行
+// F8  / Step Over         → 单步跳过
+// F7  / Step Into         → 单步进入
+// Shift+F8 / Step Out     → 跳出当前函数
+// Ctrl+F8 / Toggle        → 切换断点
+```
+
+---
+
+**基本写法：变量监视**
+`// Variables 面板 → 右键 Add to Watches`
+```text
+// 监视变量变化
+// 1. 调试时打开 Variables 面板
+// 2. 右键变量 → Add to Watches
+// 3. 或在 Watches 面板手动输入表达式
+```
+
+---
+
+**基本写法：表达式求值**
+`// Alt+F8 / Evaluate Expression`
+```typescript
+// 调试时动态计算表达式
+// 按 Alt+F8 打开求值窗口
+// 输入表达式如: this.items.length
+// 或: 1 + 2 * 3
+```
+
+---
+
+## 日志调试
+
+**基本写法：DevEco Studio 日志面板**
+`// View → Tool Windows → Log`
+```text
+// 日志面板使用
+// 1. View → Tool Windows → HiLog
+// 2. 选择设备与应用进程
+// 3. 日志级别筛选（D/I/W/E/F）
+// 4. 关键词搜索过滤
+// 5. 保存日志到文件
+```
+
+---
+
+**基本写法：hilog 过滤**
+`// 日志面板搜索栏输入过滤条件`
+```text
+// 日志过滤技巧
+// 按标签过滤: tag:MyTag
+// 按级别过滤: level:E
+// 按内容过滤: 关键词
+// 组合过滤: tag:MyTag level:E
+```
+
+---
+
+**基本写法：代码中输出日志**
+`hilog.info(<域>, '<标签>', '<消息>')`
+```typescript
+// 使用 hilog 输出日志
+import { hilog } from '@kit.PerformanceAnalysisKit'
+
+const DOMAIN = 0x0001
+hilog.info(DOMAIN, 'MyApp', '页面加载完成')
+hilog.error(DOMAIN, 'MyApp', '网络请求失败: %{public}s', err.message)
+```
+
+---
+
+## hdc 命令
+
+**基本写法：查看连接设备**
+`hdc list targets`
+```bash
+# 列出所有已连接设备
+hdc list targets
+```
+
+---
+
+**基本写法：安装应用**
+`hdc install <hap路径>`
+```bash
+# 安装 HAP 包到设备
+hdc install entry-default-signed.hap
+# 覆盖安装
+hdc install -r entry-default-signed.hap
+```
+
+---
+
+**基本写法：卸载应用**
+`hdc uninstall <包名>`
+```bash
+# 卸载指定应用
+hdc uninstall com.example.myapp
+```
+
+---
+
+**基本写法：查看日志**
+`hdc shell hilog`
+```bash
+# 实时查看设备日志
+hdc shell hilog
+# 过滤指定标签
+hdc shell hilog -T MyApp
+# 仅显示错误级别
+hdc shell hilog -L E
+```
+
+---
+
+**基本写法：文件操作**
+`hdc file send <本地> <设备>`
+```bash
+# 推送文件到设备
+hdc file send ./config.json /data/local/tmp/
+# 从设备拉取文件
+hdc file recv /data/local/tmp/log.txt ./
+```
+
+---
+
+**基本写法：截屏**
+`hdc shell snapshot_display -f <路径>`
+```bash
+# 设备截屏并拉取
+hdc shell snapshot_display -f /data/local/tmp/screen.png
+hdc file recv /data/local/tmp/screen.png ./
+```
+
+---
+
+**基本写法：进入 shell**
+`hdc shell`
+```bash
+# 进入设备终端
+hdc shell
+# 执行单条命令
+hdc shell ps -ef | grep myapp
+```
+
+---
+
+## 内存与性能分析
+
+**基本写法：Profiler 面板**
+`// View → Tool Windows → Profiler`
+```text
+// 性能分析流程
+// 1. View → Tool Windows → Profiler
+// 2. 选择设备与应用
+// 3. 选择分析维度：
+//    - CPU：函数调用栈与耗时
+//    - Memory：内存分配与泄漏
+//    - Energy：能耗分析
+//    - Disk：磁盘 IO
+//    - Network：网络请求
+```
+
+---
+
+**基本写法：内存泄漏分析**
+`// Profiler → Memory → Capture Heap Dump`
+```text
+// 内存泄漏排查步骤
+// 1. Profiler → Memory 面板
+// 2. 操作应用触发可疑场景
+// 3. 点击 Capture Heap Dump
+// 4. 分析对象分布与引用链
+// 5. 定位未释放的对象
+```
+
+---
+
+**基本写法：CPU 热点分析**
+`// Profiler → CPU → Record → Stop → 查看火焰图`
+```text
+// CPU 性能分析
+// 1. Profiler → CPU
+// 2. 点击 Record 开始录制
+// 3. 操作应用复现性能问题
+// 4. Stop 停止录制
+// 5. 查看 Call Chart / Flame Chart
+// 6. 识别耗时最长的函数
+```

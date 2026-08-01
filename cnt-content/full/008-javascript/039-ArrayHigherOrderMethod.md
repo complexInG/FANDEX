@@ -993,116 +993,116 @@ const $items = $('li').toArray().map((el) => el.textContent);
 
 ---
 
-## 10. 习题（Exercises）
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个方法**不会**创建新数组？
+**常见疑问 1**：以下哪个方法**不会**创建新数组？
 
 - A. `map`
 - B. `filter`
 - C. `forEach`
 - D. `flatMap`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`forEach` 返回 `undefined`，仅执行副作用，不创建新数组。`map` / `filter` / `flatMap` 均返回新数组。
+**解析讲解**：`forEach` 返回 `undefined`，仅执行副作用，不创建新数组。`map` / `filter` / `flatMap` 均返回新数组。
 
 ---
 
-**Q2**：`[1, 2, 3].reduce((a, b) => a + b)` 的结果是？
+**常见疑问 2**：`[1, 2, 3].reduce((a, b) => a + b)` 的结果是？
 
 - A. `6`
 - B. `[6]`
 - C. 抛出 `TypeError`
 - D. `undefined`
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：未提供初始值时，`reduce` 以第一个元素 `1` 为初始累加器，从第二个元素开始折叠：`(1+2)+3 = 6`。
+**解析讲解**：未提供初始值时，`reduce` 以第一个元素 `1` 为初始累加器，从第二个元素开始折叠：`(1+2)+3 = 6`。
 
 ---
 
-**Q3**：关于 `Array.prototype.sort`，以下说法**正确**的是？
+**常见疑问 3**：关于 `Array.prototype.sort`，以下说法**正确**的是？
 
 - A. 默认按数值大小升序排序
 - B. 在 ES2018 之前规范未要求稳定性
 - C. 不修改原数组
 - D. 时间复杂度为 $O(n)$
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：ES2018 之前规范未要求 sort 稳定，V8 在 7.0 前（Chrome 70）对小数组使用插入排序（稳定），大数组用快排（不稳定）。ES2019 起规范强制稳定，V8 统一用 TimSort。
+**解析讲解**：ES2018 之前规范未要求 sort 稳定，V8 在 7.0 前（Chrome 70）对小数组使用插入排序（稳定），大数组用快排（不稳定）。ES2019 起规范强制稳定，V8 统一用 TimSort。
 
 ---
 
-**Q4**：`[[1,2],[3,4]].flatMap(x => x)` 的结果是？
+**常见疑问 4**：`[[1,2],[3,4]].flatMap(x => x)` 的结果是？
 
 - A. `[1,2,3,4]`
 - B. `[[1,2],[3,4]]`
 - C. `[1,2,[3,4]]`
 - D. 抛出错误
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：`flatMap` 等价于 `map` 后 `flat(1)`。回调返回 `[1,2]` 与 `[3,4]`，再展平一层得 `[1,2,3,4]`。
+**解析讲解**：`flatMap` 等价于 `map` 后 `flat(1)`。回调返回 `[1,2]` 与 `[3,4]`，再展平一层得 `[1,2,3,4]`。
 
 ---
 
-**Q5**：以下哪种写法可以实现"数组去重"？
+**常见疑问 5**：以下哪种写法可以实现"数组去重"？
 
 - A. `[...new Set(arr)]`
 - B. `arr.filter((x, i) => arr.indexOf(x) === i)`
 - C. `arr.reduce((acc, x) => acc.includes(x) ? acc : [...acc, x], [])`
 - D. 以上均可
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：A 用 `Set` 最简洁（$O(n)$）；B 用 `filter + indexOf`（$O(n^2)$）；C 用 `reduce`（$O(n^2)$）。三者语义等价，性能递减。
-
----
-
-### 10.2 填空题
-
-**Q1**：`[1,2,3,4,5].reduce((acc, x) => acc + x, 10)` 的结果是 ____。
-
-**答案**：25
-
-**解析**：初始值 10，依次累加 1+2+3+4+5 = 15，10 + 15 = 25。
+**解析讲解**：A 用 `Set` 最简洁（$O(n)$）；B 用 `filter + indexOf`（$O(n^2)$）；C 用 `reduce`（$O(n^2)$）。三者语义等价，性能递减。
 
 ---
 
-**Q2**：`[1,2,3].map(x => x * 2).filter(x => x > 2)` 的结果是 ____。
+### 填空题知识点讲解
 
-**答案**：`[4, 6]`
+**常见疑问 6**：`[1,2,3,4,5].reduce((acc, x) => acc + x, 10)` 的结果是 ____。
 
-**解析**：map 后 `[2, 4, 6]`，filter 后保留 `> 2` 的 `[4, 6]`。
+**解析讲解**：25
 
----
-
-**Q3**：ECMAScript ____ 规范引入了 `Array.prototype.flat` 与 `flatMap`。
-
-**答案**：ES2019（第 10 版）
+**解析讲解**：初始值 10，依次累加 1+2+3+4+5 = 15，10 + 15 = 25。
 
 ---
 
-**Q4**：`Array.prototype.find` 的返回值是 ____，若未找到则返回 ____。
+**常见疑问 7**：`[1,2,3].map(x => x * 2).filter(x => x > 2)` 的结果是 ____。
 
-**答案**：第一个匹配元素；`undefined`
+**解析讲解**：`[4, 6]`
 
----
-
-**Q5**：Functor 的两条公理是 ____ 与 ____。
-
-**答案**：同一律（Identity）；复合律（Composition）
+**解析讲解**：map 后 `[2, 4, 6]`，filter 后保留 `> 2` 的 `[4, 6]`。
 
 ---
 
-### 10.3 编程题
+**常见疑问 8**：ECMAScript ____ 规范引入了 `Array.prototype.flat` 与 `flatMap`。
 
-**Q1**：实现 `chunk(arr, size)`，将数组按 `size` 分块。
+**解析讲解**：ES2019（第 10 版）
 
-**参考答案**：
+---
+
+**常见疑问 9**：`Array.prototype.find` 的返回值是 ____，若未找到则返回 ____。
+
+**解析讲解**：第一个匹配元素；`undefined`
+
+---
+
+**常见疑问 10**：Functor 的两条公理是 ____ 与 ____。
+
+**解析讲解**：同一律（Identity）；复合律（Composition）
+
+---
+
+### 编程题知识点讲解
+
+**常见疑问 11**：实现 `chunk(arr, size)`，将数组按 `size` 分块。
+
+**解析讲解**：
 
 ```javascript
 // ES2015 — 数组分块
@@ -1116,13 +1116,13 @@ const chunk = (arr, size) =>
 console.log(chunk([1, 2, 3, 4, 5], 2)); // [[1,2],[3,4],[5]]
 ```
 
-**解析**：利用 `i / size` 计算块索引，`||=` 确保块数组存在。时间复杂度 $O(n)$。
+**解析讲解**：利用 `i / size` 计算块索引，`||=` 确保块数组存在。时间复杂度 $O(n)$。
 
 ---
 
-**Q2**：实现 `uniqueBy(arr, keyFn)`，按自定义键去重。
+**常见疑问 12**：实现 `uniqueBy(arr, keyFn)`，按自定义键去重。
 
-**参考答案**：
+**解析讲解**：
 
 ```javascript
 // ES2015 — 按键去重
@@ -1145,13 +1145,13 @@ console.log(uniqueBy(users, (u) => u.id));
 // [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }]
 ```
 
-**解析**：用 `Map` 记录已见键，$O(n)$ 时间复杂度。比 `indexOf` 方案（$O(n^2)$）高效。
+**解析讲解**：用 `Map` 记录已见键，$O(n)$ 时间复杂度。比 `indexOf` 方案（$O(n^2)$）高效。
 
 ---
 
-**Q3**：实现 `pipe` 与 `compose`，分别从左到右与从右到左组合函数。
+**常见疑问 13**：实现 `pipe` 与 `compose`，分别从左到右与从右到左组合函数。
 
-**参考答案**：
+**解析讲解**：
 
 ```javascript
 // ES2015 — 函数组合
@@ -1165,13 +1165,13 @@ console.log(pipe(f, g)(3));      // (3+1)*2 = 8
 console.log(compose(f, g)(3));   // 3*2+1 = 7
 ```
 
-**解析**：`pipe` 用 `reduce`（左折叠），`compose` 用 `reduceRight`（右折叠）。
+**解析讲解**：`pipe` 用 `reduce`（左折叠），`compose` 用 `reduceRight`（右折叠）。
 
 ---
 
-**Q4**：实现 `transduce`，将 map/filter 融合为单遍遍历。
+**常见疑问 14**：实现 `transduce`，将 map/filter 融合为单遍遍历。
 
-**参考答案**：
+**解析讲解**：
 
 ```javascript
 // ES2015 — Transducer 实现
@@ -1190,13 +1190,13 @@ const result = transduce(xf, (acc, x) => [...acc, x], [], [1, 2, 3, 4, 5, 6]);
 // [12, 16, 20]
 ```
 
-**解析**：transducer 将 map/filter 转化为 reducer 的组合，避免中间数组。这是 Rich Hickey 在 Clojure 中引入的技术。
+**解析讲解**：transducer 将 map/filter 转化为 reducer 的组合，避免中间数组。这是 Rich Hickey 在 Clojure 中引入的技术。
 
 ---
 
 ### 10.4 思考题
 
-**Q1**：为什么 `forEach` 不能 `break`，而 `some` / `every` 可以模拟 break？请从语义与实现角度分析。
+**常见疑问 15**：为什么 `forEach` 不能 `break`，而 `some` / `every` 可以模拟 break？请从语义与实现角度分析。
 
 **参考答案要点**：
 
@@ -1207,7 +1207,7 @@ const result = transduce(xf, (acc, x) => [...acc, x], [], [1, 2, 3, 4, 5, 6]);
 
 ---
 
-**Q2**：在什么场景下应优先用 `for..of` 而非 `reduce`？给出至少 3 个理由。
+**常见疑问 16**：在什么场景下应优先用 `for..of` 而非 `reduce`？给出至少 3 个理由。
 
 **参考答案要点**：
 
@@ -1219,7 +1219,7 @@ const result = transduce(xf, (acc, x) => [...acc, x], [], [1, 2, 3, 4, 5, 6]);
 
 ---
 
-**Q3**：`Array.prototype.map` 在 ECMAScript 规范中是否保证"按索引顺序"执行回调？请引用规范条款。
+**常见疑问 17**：`Array.prototype.map` 在 ECMAScript 规范中是否保证"按索引顺序"执行回调？请引用规范条款。
 
 **参考答案要点**：
 
@@ -1229,7 +1229,7 @@ const result = transduce(xf, (acc, x) => [...acc, x], [], [1, 2, 3, 4, 5, 6]);
 
 ---
 
-**Q4**：Functor 律的"同一律"在 JavaScript 数组上是否严格成立？给出反例或证明。
+**常见疑问 18**：Functor 律的"同一律"在 JavaScript 数组上是否严格成立？给出反例或证明。
 
 **参考答案要点**：
 
@@ -1314,3 +1314,388 @@ const result = transduce(xf, (acc, x) => [...acc, x], [], [1, 2, 3, 4, 5, 6]);
 ---
 
 > **结语**：数组高阶方法是 JavaScript 函数式编程的基石。理解其背后的 Functor / Monad / Foldable 类型类理论，掌握其在 V8 引擎中的性能特性，并在工程实践中遵循纯函数与不可变原则，是每一位前端工程师进阶为架构师的关键路径。本篇对标 MIT 6.031 / Stanford CS110L / CMU 15-150 的教学水准，旨在为学习者提供一条从语法到语义、从实践到理论的完整路径。
+## map 方法
+
+**基本写法：map 转换元素**
+`<数组>.map(<回调函数>)`
+```javascript
+// 将数组元素转换为新值
+let doubled = numbers.map(n => n * 2);
+```
+
+---
+
+**基本写法：map 提取属性**
+`<数组>.map(<回调函数>)`
+```javascript
+// 从对象数组提取属性
+let names = users.map(user => user.name);
+```
+
+---
+
+**基本写法：map 带索引**
+`<数组>.map((<元素>, <索引>) => <表达式>)`
+```javascript
+// map 回调函数使用索引
+let indexed = numbers.map((n, i) => `${i}: ${n}`);
+```
+
+---
+
+## filter 方法
+
+**基本写法：filter 过滤**
+`<数组>.filter(<条件函数>)`
+```javascript
+// 过滤满足条件的元素
+let evens = numbers.filter(n => n % 2 === 0);
+```
+
+---
+
+**基本写法：filter 过滤对象**
+`<数组>.filter(<条件函数>)`
+```javascript
+// 过滤对象数组
+let adults = users.filter(user => user.age >= 18);
+```
+
+---
+
+**基本写法：filter 去重**
+`<数组>.filter((<元素>, <索引>, <数组>) => <条件>)`
+```javascript
+// 使用 filter 去重
+let unique = arr.filter((item, index, array) => array.indexOf(item) === index);
+```
+
+---
+
+## reduce 方法
+
+**基本写法：reduce 求和**
+`<数组>.reduce((<累加器>, <当前值>) => <表达式>, <初始值>)`
+```javascript
+// 计算数组元素总和
+let sum = numbers.reduce((acc, n) => acc + n, 0);
+```
+
+---
+
+**基本写法：reduce 求最大值**
+`<数组>.reduce((<累加器>, <当前值>) => <表达式>)`
+```javascript
+// 查找数组最大值
+let max = numbers.reduce((a, b) => Math.max(a, b));
+```
+
+---
+
+**基本写法：reduce 计数**
+`<数组>.reduce((<累加器>, <当前值>) => <表达式>, <初始值>)`
+```javascript
+// 统计元素出现次数
+let count = words.reduce((acc, word) => {
+    acc[word] = (acc[word] || 0) + 1;
+    return acc;
+}, {});
+```
+
+---
+
+**基本写法：reduce 数组转对象**
+`<数组>.reduce((<累加器>, <当前值>) => <表达式>, <初始值>)`
+```javascript
+// 将数组转换为对象
+let obj = users.reduce((acc, user) => {
+    acc[user.id] = user;
+    return acc;
+}, {});
+```
+
+---
+
+## find 方法
+
+**基本写法：find 查找元素**
+`<数组>.find(<条件函数>)`
+```javascript
+// 查找第一个满足条件的元素
+let user = users.find(u => u.age > 18);
+```
+
+---
+
+**基本写法：findIndex 查找索引**
+`<数组>.findIndex(<条件函数>)`
+```javascript
+// 查找第一个满足条件的元素索引
+let index = users.findIndex(u => u.age > 18);
+```
+
+---
+
+## some 方法
+
+**基本写法：some 判断存在**
+`<数组>.some(<条件函数>)`
+```javascript
+// 判断是否有元素满足条件
+let hasAdult = users.some(u => u.age >= 18);
+```
+
+---
+
+## every 方法
+
+**基本写法：every 判断全部**
+`<数组>.every(<条件函数>)`
+```javascript
+// 判断是否所有元素都满足条件
+let allAdult = users.every(u => u.age >= 18);
+```
+
+---
+
+## flat 方法
+
+**基本写法：flat 展平一层**
+`<数组>.flat()`
+```javascript
+// 展平数组一层
+let flat = [1, [2, 3], [4]].flat();
+```
+
+---
+
+**基本写法：flat 展平多层**
+`<数组>.flat(<深度>)`
+```javascript
+// 展平数组指定深度
+let flat = [1, [2, [3, [4]]]].flat(Infinity);
+```
+
+---
+
+## flatMap 方法
+
+**基本写法：flatMap 映射并展平**
+`<数组>.flatMap(<回调函数>)`
+```javascript
+// 先映射再展平一层
+let result = numbers.flatMap(n => [n, n * 2]);
+```
+
+---
+
+## sort 方法
+
+**基本写法：sort 数字升序**
+`<数组>.sort((<a>, <b>) => <a> - <b>)`
+```javascript
+// 数字升序排序
+numbers.sort((a, b) => a - b);
+```
+
+---
+
+**基本写法：sort 数字降序**
+`<数组>.sort((<a>, <b>) => <b> - <a>)`
+```javascript
+// 数字降序排序
+numbers.sort((a, b) => b - a);
+```
+
+---
+
+**基本写法：sort 对象数组**
+`<数组>.sort((<a>, <b>) => <a>.<属性> - <b>.<属性>)`
+```javascript
+// 按对象属性排序
+users.sort((a, b) => a.age - b.age);
+```
+
+---
+
+## 链式调用
+
+**基本写法：filter 链 map**
+`<数组>.filter(<条件>).map(<映射>)`
+```javascript
+// 过滤后映射
+let names = users.filter(u => u.age >= 18).map(u => u.name);
+```
+
+---
+
+**基本写法：map 链 filter**
+`<数组>.map(<映射>).filter(<条件>)`
+```javascript
+// 映射后过滤
+let evens = numbers.map(n => n * 2).filter(n => n > 10);
+```
+
+---
+
+**基本写法：filter 链 reduce**
+`<数组>.filter(<条件>).reduce(<累加>, <初始值>)`
+```javascript
+// 过滤后求和
+let sum = numbers.filter(n => n > 0).reduce((acc, n) => acc + n, 0);
+```
+
+---
+
+**换行写法：多方法链式**
+`<数组>.filter(<条件>).map(<映射>).reduce(<累加>, <初始值>)`
+```javascript
+// 多方法链式调用换行书写
+let result = numbers
+    .filter(n => n > 0)
+    .map(n => n * 2)
+    .reduce((acc, n) => acc + n, 0);
+```
+
+---
+
+## 其他高阶方法
+
+**基本写法：fill 填充**
+`<数组>.fill(<值>, <起始>, <结束>)`
+```javascript
+// 用指定值填充数组
+let arr = new Array(5).fill(0);
+```
+
+---
+
+**基本写法：copyWithin**
+`<数组>.copyWithin(<目标位置>, <起始>, <结束>)`
+```javascript
+// 数组内部复制
+[1, 2, 3, 4, 5].copyWithin(0, 3);
+```
+
+---
+
+**基本写法：at 访问**
+`<数组>.at(<索引>)`
+```javascript
+// 使用 at 方法访问元素支持负索引
+let last = numbers.at(-1);
+```
+
+---
+
+## 数组判断
+
+**基本写法：Array.isArray**
+`Array.isArray(<变量>)`
+```javascript
+// 判断变量是否为数组
+let isArray = Array.isArray(numbers);
+```
+
+---
+
+**基本写法：includes 判断**
+`<数组>.includes(<元素>)`
+```javascript
+// 判断数组是否包含元素
+let has = numbers.includes(3);
+```
+
+---
+
+## 数组转换
+
+**基本写法：join 转字符串**
+`<数组>.join("<分隔符>")`
+```javascript
+// 将数组连接为字符串
+let str = numbers.join(", ");
+```
+
+---
+
+**基本写法：toString**
+`<数组>.toString()`
+```javascript
+// 数组转字符串默认逗号分隔
+let str = numbers.toString();
+```
+
+---
+
+**基本写法：entries 获取迭代器**
+`<数组>.entries()`
+```javascript
+// 获取键值对迭代器
+let entries = numbers.entries();
+```
+
+---
+
+**基本写法：keys 获取键迭代器**
+`<数组>.keys()`
+```javascript
+// 获取键索引迭代器
+let keys = numbers.keys();
+```
+
+---
+
+**基本写法：values 获取值迭代器**
+`<数组>.values()`
+```javascript
+// 获取值迭代器
+let values = numbers.values();
+```
+
+---
+
+## ES2025 Iterator Helpers
+
+**基本写法：Iterator.map 链式映射**
+`<iterator>.map(<回调函数>)`
+```javascript
+// 迭代器映射元素不创建中间数组惰性求值
+let iter = [1, 2, 3].values().map(x => x * 2);
+```
+
+---
+
+**基本写法：Iterator.filter 链式过滤**
+`<iterator>.filter(<条件函数>)`
+```javascript
+// 迭代器过滤满足条件的元素
+let iter = [1, 2, 3, 4].values().filter(x => x % 2 === 0);
+```
+
+---
+
+**基本写法：Iterator.take 取前 N 个**
+`<iterator>.take(<数量>)`
+```javascript
+// 从迭代器取前 N 个元素后停止迭代
+let iter = [1, 2, 3, 4].values().take(2);
+```
+
+---
+
+**基本写法：Iterator.drop 跳过前 N 个**
+`<iterator>.drop(<数量>)`
+```javascript
+// 跳过迭代器前 N 个元素返回剩余元素
+let iter = [1, 2, 3, 4].values().drop(2);
+```
+
+---
+
+**基本写法：Iterator.toArray 转数组**
+`<iterator>.toArray()`
+```javascript
+// 将迭代器消费为数组终结链式操作
+let arr = [1, 2, 3].values().map(x => x * 2).toArray();
+```

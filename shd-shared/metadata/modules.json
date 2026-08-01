@@ -1003,6 +1003,138 @@
         "ai"
       ],
       "folder_order": 52
+    },
+    {
+      "id": "rust",
+      "title": "Rust",
+      "icon": "Rs",
+      "description": "????????????",
+      "categories": [
+        "backend"
+      ],
+      "folder_order": 53,
+      "officialDocs": [
+        {
+          "label": "????",
+          "url": "https://www.rust-lang.org/zh-CN/learn",
+          "type": "docs"
+        },
+        {
+          "label": "???",
+          "url": "https://doc.rust-lang.org/std/",
+          "type": "api"
+        }
+      ]
+    },
+    {
+      "id": "shell",
+      "title": "Shell",
+      "icon": "Sh",
+      "description": "Shell ?????????",
+      "categories": [
+        "tools"
+      ],
+      "folder_order": 54,
+      "officialDocs": [
+        {
+          "label": "Bash ??",
+          "url": "https://www.gnu.org/software/bash/manual/",
+          "type": "docs"
+        },
+        {
+          "label": "ShellCheck",
+          "url": "https://www.shellcheck.net/",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": "astro",
+      "title": "Astro",
+      "icon": "As",
+      "description": "?????????????",
+      "categories": [
+        "frontend"
+      ],
+      "folder_order": 55,
+      "officialDocs": [
+        {
+          "label": "????",
+          "url": "https://docs.astro.build/zh-cn/",
+          "type": "docs"
+        },
+        {
+          "label": "????",
+          "url": "https://astro.build/themes/",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": "vite",
+      "title": "Vite",
+      "icon": "Vi",
+      "description": "?????????",
+      "categories": [
+        "frontend"
+      ],
+      "folder_order": 56,
+      "officialDocs": [
+        {
+          "label": "????",
+          "url": "https://cn.vitejs.dev/",
+          "type": "docs"
+        },
+        {
+          "label": "Vitest",
+          "url": "https://cn.vitest.dev/",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": "pnpm-monorepo",
+      "title": "pnpm ? Monorepo",
+      "icon": "Pm",
+      "description": "?????????????",
+      "categories": [
+        "tools"
+      ],
+      "folder_order": 57,
+      "officialDocs": [
+        {
+          "label": "pnpm ??",
+          "url": "https://pnpm.io/zh/",
+          "type": "docs"
+        },
+        {
+          "label": "Turborepo",
+          "url": "https://turborepo.com/",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": "tailwind",
+      "title": "Tailwind CSS",
+      "icon": "Tw",
+      "description": "????? CSS ??",
+      "categories": [
+        "frontend"
+      ],
+      "folder_order": 58,
+      "officialDocs": [
+        {
+          "label": "????",
+          "url": "https://tailwindcss.com/docs",
+          "type": "docs"
+        },
+        {
+          "label": "????",
+          "url": "https://www.tailwindcss.cn/docs",
+          "type": "docs"
+        }
+      ]
     }
   ],
   "modulePrerequisites": {

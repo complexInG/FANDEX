@@ -626,13 +626,19 @@ print(config.value)  -- 新值
 
 **目录结构**：
 
-```
-myapp/
-├── init.lua        -- myapp 模块入口
-├── utils.lua       -- myapp.utils
-└── auth/
-    ├── init.lua    -- myapp.auth
-    └── session.lua -- myapp.auth.session
+```mermaid
+flowchart TD
+    T0["myapp/"]
+    T1["init.lua        -- myapp 模块入口"]
+    T2["utils.lua       -- myapp.utils"]
+    T3["auth/"]
+    T4["init.lua    -- myapp.auth"]
+    T5["session.lua -- myapp.auth.session"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T3 --> T5
 ```
 
 **`myapp/init.lua`**：
@@ -940,23 +946,29 @@ return M  -- 必须！
 
 典型 Lua 项目结构：
 
-```
-myproject/
-├── lua/                    -- Lua 模块源码
-│   ├── myproject/
-│   │   ├── init.lua        -- myproject 模块入口
-│   │   ├── config.lua
-│   │   └── utils.lua
-│   └── third_party/        -- 第三方库
-│       └── cjson.lua
-├── c/                      -- C 模块源码
-│   ├── mycmod.c
-│   └── Makefile
-├── bin/                    -- 可执行文件
-│   └── myapp
-├── tests/                  -- 测试
-│   └── test_*.lua
-└── lua_modules/            -- 安装的第三方模块
+```mermaid
+flowchart TD
+    T0["myproject/"]
+    T1["lua/                    -- Lua 模块源码"]
+    T2["myproject/"]
+    T3["init.lua        -- myproject 模块入口"]
+    T4["config.lua"]
+    T5["utils.lua"]
+    T6["third_party/        -- 第三方库"]
+    T7["cjson.lua"]
+    T8["c/                      -- C 模块源码"]
+    T9["mycmod.c"]
+    T10["Makefile"]
+    T11["bin/                    -- 可执行文件"]
+    T12["myapp"]
+    T13["tests/                  -- 测试"]
+    T14["test_*.lua"]
+    T15["lua_modules/            -- 安装的第三方模块"]
+    T0 --> T1
+    T7 --> T8
+    T10 --> T11
+    T12 --> T13
+    T14 --> T15
 ```
 
 **启动脚本**：
@@ -1174,13 +1186,19 @@ print(vim.o.runtimepath)
 
 Neovim 还支持 `lua/` 目录下的模块自动加载：
 
-```
-~/.config/nvim/
-├── init.lua
-└── lua/
-    └── myconfig/
-        ├── init.lua
-        └── settings.lua
+```mermaid
+flowchart TD
+    T0["~/.config/nvim/"]
+    T1["init.lua"]
+    T2["lua/"]
+    T3["myconfig/"]
+    T4["init.lua"]
+    T5["settings.lua"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
 ```
 
 ```lua
@@ -1237,112 +1255,112 @@ Love2D 通过 `love.filesystem` 提供跨平台文件访问。
 
 ---
 
-## 9. 习题
+## 知识讲解与要点分析（原习题）
 
-### 9.1 选择题
+### 选择题知识点讲解
 
-**Q1**. `require` 函数搜索模块的顺序是：
+**常见疑问 1**：. `require` 函数搜索模块的顺序是：
 
 A. `package.searchers` → `package.preload` → `package.loaded`
 B. `package.loaded` → `package.preload` → `package.searchers`
 C. `package.path` → `package.cpath` → `package.preload`
 D. `package.loaded` → `package.searchers` → `package.preload`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`require` 首先检查 `package.loaded` 缓存，然后 `package.preload`，最后通过 `package.searchers` 搜索。
+**解析讲解**：`require` 首先检查 `package.loaded` 缓存，然后 `package.preload`，最后通过 `package.searchers` 搜索。
 
 ---
 
-**Q2**. Lua 5.2 移除 `module()` 函数的主要原因是：
+**常见疑问 2**：. Lua 5.2 移除 `module()` 函数的主要原因是：
 
 A. 性能问题
 B. 污染全局环境，破坏封装
 C. 不支持 C 模块
 D. 与 `require` 冲突
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`module()` 函数会隐式设置全局环境，破坏模块封装性，推荐使用"返回模块表"模式。
+**解析讲解**：`module()` 函数会隐式设置全局环境，破坏模块封装性，推荐使用"返回模块表"模式。
 
 ---
 
-**Q3**. C 模块的入口函数命名规则是：
+**常见疑问 3**：. C 模块的入口函数命名规则是：
 
 A. `lua_module_<name>`
 B. `luaopen_<name>`
 C. `<name>_luaopen`
 D. `register_<name>`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：C 模块的入口函数必须命名为 `luaopen_<name>`，其中 `<name>` 是模块名（点号替换为下划线）。
+**解析讲解**：C 模块的入口函数必须命名为 `luaopen_<name>`，其中 `<name>` 是模块名（点号替换为下划线）。
 
 ---
 
-**Q4**. 强制重新加载模块的方法是：
+**常见疑问 4**：. 强制重新加载模块的方法是：
 
 A. `require(name, true)`
 B. `reload(name)`
 C. `package.loaded[name] = nil; require(name)`
 D. `dofile(name)`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`require` 检查 `package.loaded` 缓存，置 nil 后会重新加载。
+**解析讲解**：`require` 检查 `package.loaded` 缓存，置 nil 后会重新加载。
 
 ---
 
-**Q5**. `package.path` 中的 `?` 表示：
+**常见疑问 5**：. `package.path` 中的 `?` 表示：
 
 A. 任意字符
 B. 模块名占位符
 C. 路径分隔符
 D. 文件扩展名
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`?` 在路径模板中被替换为模块名（点号转为路径分隔符）。
-
----
-
-### 9.2 填空题
-
-**Q1**. Lua 5.1 中的 `package.loaders` 在 Lua 5.2 中改名为 `______`，强调其"搜索"语义。
-
-**答案**：`package.searchers`
+**解析讲解**：`?` 在路径模板中被替换为模块名（点号转为路径分隔符）。
 
 ---
 
-**Q2**. C 模块的入口函数签名是 `______`，返回 `______` 表示加载成功。
+### 填空题知识点讲解
 
-**答案**：`int luaopen_*(lua_State *L)`；1（模块表数量）
+**常见疑问 6**：. Lua 5.1 中的 `package.loaders` 在 Lua 5.2 中改名为 `______`，强调其"搜索"语义。
 
----
-
-**Q3**. Lua 5.3+ 推荐使用 `______` 替代 `luaL_register` 创建模块表。
-
-**答案**：`luaL_newlib`
+**解析讲解**：`package.searchers`
 
 ---
 
-**Q4**. `luaL_requiref(L, name, openf, glb)` 中 `glb` 参数非零表示 `______`。
+**常见疑问 7**：. C 模块的入口函数签名是 `______`，返回 `______` 表示加载成功。
 
-**答案**：同时将模块设置为全局变量
-
----
-
-**Q5**. `package.config` 字段中，第一个字符表示 `______`，第二个字符表示 `______`，第三个字符表示 `______`。
-
-**答案**：目录分隔符；路径分隔符；模块名占位符
+**解析讲解**：`int luaopen_*(lua_State *L)`；1（模块表数量）
 
 ---
 
-### 9.3 编程题
+**常见疑问 8**：. Lua 5.3+ 推荐使用 `______` 替代 `luaL_register` 创建模块表。
 
-**Q1**. 实现一个自定义 searcher，从 ZIP 文件加载 Lua 模块（模拟）。
+**解析讲解**：`luaL_newlib`
 
-**参考答案**：
+---
+
+**常见疑问 9**：. `luaL_requiref(L, name, openf, glb)` 中 `glb` 参数非零表示 `______`。
+
+**解析讲解**：同时将模块设置为全局变量
+
+---
+
+**常见疑问 10**：. `package.config` 字段中，第一个字符表示 `______`，第二个字符表示 `______`，第三个字符表示 `______`。
+
+**解析讲解**：目录分隔符；路径分隔符；模块名占位符
+
+---
+
+### 编程题知识点讲解
+
+**常见疑问 11**：. 实现一个自定义 searcher，从 ZIP 文件加载 Lua 模块（模拟）。
+
+**解析讲解**：
 
 ```lua
 -- zip_searcher.lua
@@ -1394,9 +1412,9 @@ print(math.add(2, 3))  -- 5
 
 ---
 
-**Q2**. 实现一个支持版本化的模块加载器。
+**常见疑问 12**：. 实现一个支持版本化的模块加载器。
 
-**参考答案**：
+**解析讲解**：
 
 ```lua
 -- versioned_require.lua
@@ -1435,9 +1453,9 @@ return M
 
 ---
 
-**Q3**. 实现一个 C 模块 `math_utils`，提供 `factorial` 和 `fibonacci` 函数。
+**常见疑问 13**：. 实现一个 C 模块 `math_utils`，提供 `factorial` 和 `fibonacci` 函数。
 
-**参考答案**：
+**解析讲解**：
 
 ```c
 #define LUA_LIB
@@ -1521,9 +1539,9 @@ print(math_utils.fibonacci(20))   -- 6765
 
 ### 9.4 思考题
 
-**Q1**. 为什么 Lua 5.2 移除了 `module()` 函数？请从语言设计角度分析。
+**常见疑问 14**：. 为什么 Lua 5.2 移除了 `module()` 函数？请从语言设计角度分析。
 
-**参考答案**：
+**解析讲解**：
 
 `module()` 函数的设计问题：
 
@@ -1537,9 +1555,9 @@ print(math_utils.fibonacci(20))   -- 6765
 
 ---
 
-**Q2**. 比较 `package.loaded` 与 Python 的 `sys.modules` 的异同。
+**常见疑问 15**：. 比较 `package.loaded` 与 Python 的 `sys.modules` 的异同。
 
-**参考答案**：
+**解析讲解**：
 
 相同点：
 
@@ -1557,9 +1575,9 @@ print(math_utils.fibonacci(20))   -- 6765
 
 ---
 
-**Q3**. 设计一个支持热重载的开发环境，需考虑哪些问题？
+**常见疑问 16**：. 设计一个支持热重载的开发环境，需考虑哪些问题？
 
-**参考答案**：
+**解析讲解**：
 
 1. **模块状态保存**：热重载时需保存模块的状态（如配置、缓存）。
 2. **引用更新**：持有旧模块引用的代码需更新引用。

@@ -135,28 +135,20 @@ Go 1.0（2012 年 3 月）发布时即包含 `regexp` 标准库，由 Russ Cox �
 
 ### 2.6 演进时间轴
 
-```
-1956 ── Kleene 正则集合与 Kleene 代数
-   │
-1968 ── Thompson NFA 构造法 + qed/grep
-   │
-1986 ── POSIX BRE/ERE 标准化
-   │
-1994 ── Perl 5 引入反向引用、零宽断言
-   │
-1997 ── PCRE（Philip Hazel）
-   │
-2007 ── Russ Cox 系列文章《Regular Expression Matching Can Be Simple And Fast》
-   │
-2010 ── Google RE2 发布
-   │
-2012 ── Go 1.0 regexp 包（Russ Cox 实现）
-   │
-2015 ── Rust regex crate（Burntsushi）
-   │
-2020 ── Hyperscan（Intel）高性能多模式匹配
-   │
-2024 ── Go 1.22 Unicode 15.1 + 性能优化
+```mermaid
+timeline
+    title 发展时间线
+    1956: Kleene 正则集合与 Kleene 代数
+    1968: Thompson NFA 构造法 + qed/grep
+    1986: POSIX BRE/ERE 标准化
+    1994: Perl 5 引入反向引用、零宽断言
+    1997: PCRE（Philip Hazel）
+    2007: Russ Cox 系列文章《Regular Expression Matching Can Be Simple And Fast》
+    2010: Google RE2 发布
+    2012: Go 1.0 regexp 包（Russ Cox 实现）
+    2015: Rust regex crate（Burntsushi）
+    2020: Hyperscan（Intel）高性能多模式匹配
+    2024: Go 1.22 Unicode 15.1 + 性能优化
 ```
 
 ---
@@ -231,30 +223,38 @@ $$
 
 ```
 新状态 i ──a──> 新状态 f
-```
-
-3. **连接 $r_1 \cdot r_2$**：将 $N(r_1)$ 的终态与 $N(r_2)$ 的初态合并。
-
-```
-N(r_1): i1 ──...──> f1 ──ε──> i2 ──...──> f2 :N(r_2)
+```mermaid
+flowchart LR
+    S[新 s] -->|ε| N1[N(r1)]
+    N1 -->|ε| T[新 t]
+    S -->|ε| N2[N(r2)]
+    N2 -->|ε| T
+```mermaid
+flowchart LR
+    S[新 s] -->|ε| N1[N(r1)]
+    N1 -->|ε| T[新 t]
+    S -->|ε| N2[N(r2)]
+    N2 -->|ε| T
 ```
 
 4. **选择 $r_1 | r_2$**：新建初态 $s$ 与终态 $t$，分别通过 $\epsilon$ 连接到两个子 NFA。
 
-```
-       ┌──ε──> N(r_1) ──ε──┐
-新 s ──┤                    ├──> 新 t
-       └──ε──> N(r_2) ──ε──┘
+```mermaid
+flowchart LR
+    S[新 s] -->|ε| N1[N(r1)]
+    N1 -->|ε| T[新 t]
+    S -->|ε| N2[N(r2)]
+    N2 -->|ε| T
 ```
 
 5. **Kleene 闭包 $r^*$**：新建初态 $s$ 与终态 $t$，添加四条 $\epsilon$ 转移（进、出、循环、跳过）。
 
-```
-       ┌──────ε──────────┐
-       ↓                 │
-新 s ──ε──> N(r) ──ε──> t
-       ↑            │
-       └─────ε──────┘
+```mermaid
+flowchart LR
+    S[新 s] -->|ε| N[N(r)]
+    N -->|ε| T[t]
+    N -->|ε| S
+    T -->|ε| N
 ```
 
 ### 3.4 Pike 虚拟机算法
@@ -333,19 +333,24 @@ $$
 
 **Step 2**：构造 `b|c` 的 NFA：
 
-```
-状态 0 ──ε──> 状态 2 ──b──> 状态 3 ──ε──> 状态 1
-       └──ε──> 状态 4 ──c──> 状态 5 ──ε──┘
+```mermaid
+flowchart LR
+    S0[状态 0] -->|ε| S2[状态 2]
+    S2 -->|b| S3[状态 3]
+    S3 -->|ε| S1[状态 1]
+    S0 -->|ε| S4[状态 4]
+    S4 -->|c| S5[状态 5]
+    S5 -->|ε| S1
 ```
 
 **Step 3**：构造 `(b|c)*` 的 NFA（添加循环与跳过）：
 
-```
-       ┌──────────ε────────────┐
-       ↓                        │
-状态 6 ──ε──> [b|c NFA] ──ε──> 状态 7
-       ↑                   │
-       └─────────ε─────────┘
+```mermaid
+flowchart LR
+    S6[状态 6] -->|ε| N[b|c NFA]
+    N -->|ε| S7[状态 7]
+    N -->|ε| S6
+    S7 -->|ε| N
 ```
 
 **Step 4**：连接 `a` 与 `d`：
@@ -1860,7 +1865,7 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -2184,3 +2189,285 @@ Go `regexp` 包基于 Russ Cox 实现的 RE2 算法，通过 Thompson NFA + Pike
 
 正则表达式是工程师的工具箱中的"瑞士军刀"，但它并非银弹。在复杂解析场景（如 JSON、HTML、CSV）下，专用解析器（`encoding/json`、`golang.org/x/net/html`、`encoding/csv`）在正确性与性能上均优于正则。掌握正则的边界，方能用得其所。
 
+## 编译正则
+
+**基本写法：编译正则**
+`regexp.Compile(<表达式>) (*regexp.Regexp, error)`
+```go
+// 编译正则，错误时返回 error
+re, err := regexp.Compile(`\d+`)
+```
+
+**基本写法：编译或 panic**
+`regexp.MustCompile(<表达式>) *regexp.Regexp`
+```go
+// 表达式确定合法时使用，错误直接 panic
+re := regexp.MustCompile(`^[a-z]+$`)
+```
+
+**基本写法：POSIX 最左最长匹配**
+`regexp.CompilePOSIX(<表达式>) (*regexp.Regexp, error)`
+```go
+// 使用 POSIX 语义，匹配最左最长子串
+re, _ := regexp.CompilePOSIX(`a|ab`)
+```
+
+**基本写法：编译并校验 UTF-8**
+`regexp.Compile(<表达式>)`
+```go
+// regexp 默认要求表达式与目标均为合法 UTF-8
+// 语法：. * + ? () [] {} ^ $ | \d \w \s
+```
+
+---
+
+## 正则语法速查
+
+**基本写法：常用字符类**
+`\d \w \s \D \W \S`
+```go
+// \d 数字 \w 单词字符 \s 空白
+// 大写为取反：\D 非数字
+re := regexp.MustCompile(`\w+@\w+`)
+```
+
+**基本写法：重复次数**
+`<字符>{<n>,<m>} 或 <字符>* + ?`
+```go
+// * 0 次或多次  + 1 次或多次  ? 0 或 1 次
+// {3} 恰好 3 次  {2,5} 2 到 5 次
+re := regexp.MustCompile(`\d{2,4}`)
+```
+
+**基本写法：分组与捕获**
+`(<子表达式>)`
+```go
+// 捕获分组，后续可用索引引用
+re := regexp.MustCompile(`(\d+)-(\d+)`)
+```
+
+**基本写法：非捕获分组**
+`(?:<子表达式>)`
+```go
+// 仅分组不捕获
+re := regexp.MustCompile(`(?:ab)+`)
+```
+
+**基本写法：命名捕获**
+`(?P<名称><子表达式>)`
+```go
+// 命名捕获组，Go 采用 RE2 的 (?P<name>) 语法
+re := regexp.MustCompile(`(?P<year>\d{4})-(?P<month>\d{2})`)
+```
+
+**基本写法：字符集合**
+`[<字符集>] [^<字符集>]`
+```go
+// [a-z] 小写字母  [^0-9] 非数字
+re := regexp.MustCompile(`[A-Za-z0-9_]+`)
+```
+
+---
+
+## 匹配判断
+
+**基本写法：判断是否匹配**
+`<re>.MatchString(<字符串>) bool`
+```go
+// 返回是否包含匹配子串
+if re.MatchString("abc123") { }
+```
+
+**基本写法：匹配字节切片**
+`<re>.Match(<字节>) bool`
+```go
+// 对 []byte 进行匹配
+if re.Match([]byte("abc123")) { }
+```
+
+**基本写法：匹配 Reader**
+`<re>.MatchReader(<reader>) bool`
+```go
+// 对 io.RuneReader 进行匹配
+if re.MatchReader(strings.NewReader("abc123")) { }
+```
+
+---
+
+## 查找结果
+
+**基本写法：查找首个匹配**
+`<re>.FindString(<字符串>) string`
+```go
+// 返回第一个匹配子串，无匹配返回空串
+s := re.FindString("phone: 13800000000")
+```
+
+**基本写法：查找首个匹配及位置**
+`<re>.FindStringIndex(<字符串>) []int`
+```go
+// 返回 [起始, 结束] 索引，无匹配返回 nil
+loc := re.FindStringIndex("a1b2")
+```
+
+**基本写法：查找所有匹配**
+`<re>.FindAllString(<字符串>, <数量>) []string`
+```go
+// 返回所有匹配，-1 表示全部
+list := re.FindAllString("a1b2c3", -1)
+```
+
+**基本写法：查找所有位置**
+`<re>.FindAllStringIndex(<字符串>, <数量>) [][]int`
+```go
+// 返回所有匹配的 [起, 止] 索引切片
+locs := re.FindAllStringIndex("a1b2c3", -1)
+```
+
+**基本写法：查找所有子匹配**
+`<re>.FindAllStringSubmatch(<字符串>, <数量>) [][]string`
+```go
+// 返回每条匹配的分组切片
+subs := re.FindAllStringSubmatch("2024-01 2025-02", -1)
+```
+
+---
+
+## 子匹配与分组
+
+**基本写法：查找首个子匹配**
+`<re>.FindStringSubmatch(<字符串>) []string`
+```go
+// 返回 [全匹配, 分组1, 分组2, ...]
+sub := re.FindStringSubmatch("2024-01")
+// sub[0]="2024-01" sub[1]="2024" sub[2]="01"
+```
+
+**基本写法：命名捕获取值**
+`<re>.SubexpNames() []string`
+```go
+// 返回分组名列表，结合 Submatch 使用
+re := regexp.MustCompile(`(?P<y>\d{4})`)
+names := re.SubexpNames()
+m := re.FindStringSubmatch("2024")
+val := m[1]
+```
+
+---
+
+## 替换
+
+**基本写法：替换首个匹配**
+`<re>.ReplaceAllString(<源串>, <替换串>) string`
+```go
+// 将所有匹配替换为指定字符串
+out := re.ReplaceAllString("a1b2", "X")
+```
+
+**基本写法：引用捕获分组**
+`<re>.ReplaceAllString(<源串>, "${<名称>}")`
+```go
+// 用命名分组内容替换
+re := regexp.MustCompile(`(\d+)-(\d+)`)
+out := re.ReplaceAllString("2024-01", "${2}/${1}")
+```
+
+**基本写法：函数替换**
+`<re>.ReplaceAllStringFunc(<源串>, <函数>) string`
+```go
+// 对每个匹配调用函数决定替换值
+out := re.ReplaceAllStringFunc("a1b2", func(s string) string {
+    return "[" + s + "]"
+})
+```
+
+**基本写法：替换字节切片**
+`<re>.ReplaceAll(<源字节>, <替换字节>) []byte`
+```go
+// 对 []byte 进行替换
+out := re.ReplaceAll([]byte("a1b2"), []byte("X"))
+```
+
+---
+
+## 分割与拆分
+
+**基本写法：按正则分割**
+`<re>.Split(<字符串>, <数量>) []string`
+```go
+// 按匹配分割字符串，-1 表示全部分割
+parts := re.Split("a,b;c:d", -1)
+```
+
+**基本写法：限定分割次数**
+`<re>.Split(<字符串>, <n>) []string`
+```go
+// n>0 时最多分割 n 次，返回最多 n+1 段
+parts := regexp.MustCompile(`,`).Split("a,b,c,d", 2)
+```
+
+---
+
+## 字符串提取辅助
+
+**基本写法：提取数字**
+`regexp.MustCompile(`\d+`).FindString(<字符串>)`
+```go
+// 提取字符串中第一段数字
+num := regexp.MustCompile(`\d+`).FindString("id: 42, ok")
+```
+
+**基本写法：提取邮箱**
+`regexp.MustCompile(`[\w.]+@[\w.]+`).FindString(<字符串>)`
+```go
+// 简易邮箱提取
+email := regexp.MustCompile(`[\w.]+@[\w.]+`).FindString("contact: a@b.com")
+```
+
+---
+
+## 高级用法
+
+**基本写法：转义元字符**
+`regexp.QuoteMeta(<字符串>) string`
+```go
+// 将字符串中的正则元字符转义，用于字面匹配
+lit := regexp.QuoteMeta("1+1=2")
+```
+
+**基本写法：展开捕获变量**
+`<re>.ExpandString(<dst>, <模板>, <源串>, <匹配>) []byte`
+```go
+// 按 $name 或 ${name} 模板展开捕获内容
+re := regexp.MustCompile(`(?P<x>\d+)`)
+m := re.FindStringSubmatchIndex("42")
+out := re.ExpandString(nil, "$x", "42", m)
+```
+
+**基本写法：字面量前缀**
+`<re>.LiteralPrefix() (前缀 string, 完整 bool)`
+```go
+// 返回正则的固定字面前缀，用于优化预过滤
+re := regexp.MustCompile(`/api/v\d+/user`)
+prefix, complete := re.LiteralPrefix()
+```
+
+---
+
+## RE2 限制说明
+
+**基本写法：不支持回溯**
+`regexp 使用 RE2 引擎`
+```go
+// RE2 不支持反向引用 \1、不支持环视 (?=...)
+// 保证线性时间，避免灾难性回溯
+// 需要回溯特性请使用第三方库 regexp2
+```
+
+**基本写法：贪婪与懒惰**
+`<量词>? 切换为懒惰匹配`
+```go
+// 默认贪婪，加 ? 变懒惰
+greedy := regexp.MustCompile(`a.*b`)    // 贪婪
+lazy := regexp.MustCompile(`a.*?b`)     // 懒惰
+```

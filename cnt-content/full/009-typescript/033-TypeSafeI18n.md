@@ -1081,7 +1081,7 @@ const contextualTranslations: Record<Locale, ContextualTranslations> = {
 //   ↓
 // [params: { name: string }]
 //   ↓
-// 参数 { name: '张三' } 匹配 { name: string } ✓
+// 参数 { name: '张三' } 匹配 { name: string } √
 //   ↓
 // 返回类型: string
 ```
@@ -1824,29 +1824,29 @@ type ExtractedKeys = {
 
 ### 12.6 练习题
 
-#### 练习 1：基础类型安全 i18n
+## 知识讲解与要点分析（原练习 1：基础类型安全 i18n）
 
 实现一个支持 3 种语言、5 个翻译键的类型安全 i18n 系统，其中 2 个键有参数。
 
-#### 练习 2：嵌套键展开
+## 知识讲解与要点分析（原练习 2：嵌套键展开）
 
 实现 `FlattenKeys<T>` 类型，将 `{ app: { title: string } }` 展开为 `'app.title'`。
 
-#### 练习 3：复数形式
+## 知识讲解与要点分析（原练习 3：复数形式）
 
 实现类型安全的复数翻译函数，支持英语与中文的复数规则。
 
-#### 练习 4：ICU MessageFormat 解析
+## 知识讲解与要点分析（原练习 4：ICU MessageFormat 解析）
 
 实现 `ParseICUParams<M>` 类型，从 ICU 消息中提取参数名。
 
-#### 练习 5：翻译完整性检查
+## 知识讲解与要点分析（原练习 5：翻译完整性检查）
 
 使用 `satisfies` 实现翻译完整性检查，确保所有语言的翻译键完整。
 
 ### 12.7 练习题答案
 
-#### 练习 1 答案
+## 知识讲解与要点分析（原练习 1 答案）
 
 ```typescript
 type Locale = 'zh-CN' | 'en-US' | 'ja-JP';
@@ -1907,7 +1907,7 @@ const t: Translate = (key, ...args) => {
 };
 ```
 
-#### 练习 2 答案
+## 知识讲解与要点分析（原练习 2 答案）
 
 ```typescript
 type FlattenKeys<T, Prefix extends string = ''> = T extends object
@@ -1931,7 +1931,7 @@ type Flat = FlattenKeys<Test>;
 // 'app.title' | 'app.subtitle' | 'user.name' | 'user.age'
 ```
 
-#### 练习 3 答案
+## 知识讲解与要点分析（原练习 3 答案）
 
 ```typescript
 type Locale = 'zh-CN' | 'en-US';
@@ -1974,7 +1974,7 @@ function tPlural(baseKey: 'items', count: number): string {
 }
 ```
 
-#### 练习 4 答案
+## 知识讲解与要点分析（原练习 4 答案）
 
 ```typescript
 type ParseICUParams<M extends string> =
@@ -1995,7 +1995,7 @@ type Params3 = ParseICUParams<'{gender, select, male {He} female {She}} likes {w
 // 'gender' | 'what'
 ```
 
-#### 练习 5 答案
+## 知识讲解与要点分析（原练习 5 答案）
 
 ```typescript
 type Locale = 'zh-CN' | 'en-US';

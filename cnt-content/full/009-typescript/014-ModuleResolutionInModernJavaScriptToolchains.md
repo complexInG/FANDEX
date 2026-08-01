@@ -1271,24 +1271,29 @@ import { logger } from '#internal/logger';
 
 **目录结构**：
 
-```
-my-monorepo/
-├── packages/
-│   ├── core/
-│   │   ├── src/
-│   │   ├── package.json
-│   │   └── tsconfig.json
-│   ├── ui/
-│   │   ├── src/
-│   │   ├── package.json
-│   │   └── tsconfig.json
-│   └── utils/
-│       ├── src/
-│       ├── package.json
-│       └── tsconfig.json
-├── tsconfig.base.json
-├── tsconfig.json
-└── pnpm-workspace.yaml
+```mermaid
+flowchart TD
+    T0["my-monorepo/"]
+    T1["packages/"]
+    T2["core/"]
+    T3["src/"]
+    T4["package.json"]
+    T5["tsconfig.json"]
+    T6["ui/"]
+    T7["src/"]
+    T8["package.json"]
+    T9["tsconfig.json"]
+    T10["utils/"]
+    T11["src/"]
+    T12["package.json"]
+    T13["tsconfig.json"]
+    T14["tsconfig.base.json"]
+    T15["tsconfig.json"]
+    T16["pnpm-workspace.yaml"]
+    T0 --> T1
+    T13 --> T14
+    T13 --> T15
+    T13 --> T16
 ```
 
 **tsconfig.base.json**（根配置）：
@@ -1479,13 +1484,16 @@ export function doSomething(): Result<string, Error> {
 
 **目录结构**：
 
-```
-src/
-├── components/
-│   ├── Button.ts          # 默认实现
-│   ├── Button.ios.ts      # iOS 特定实现
-│   └── Button.android.ts  # Android 特定实现
-└── index.ts
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["components/"]
+    T2["Button.ts          # 默认实现"]
+    T3["Button.ios.ts      # iOS 特定实现"]
+    T4["Button.android.ts  # Android 特定实现"]
+    T5["index.ts"]
+    T0 --> T1
+    T4 --> T5
 ```
 
 **src/index.ts**：
@@ -1858,16 +1866,25 @@ export const getB = () => getA() + 1;
 
 选择 `moduleResolution` 的决策流程：
 
-```
-1. 项目运行在 Node.js 原生环境？
-   ├─ 是 → 项目使用 ESM（package.json type: module）？
-   │       ├─ 是 → moduleResolution: NodeNext
-   │       └─ 否 → moduleResolution: Node16 或 NodeNext
-   └─ 否 → 项目使用 Vite/webpack/esbuild 等打包工具？
-           ├─ 是 → moduleResolution: Bundler
-           └─ 否 → 维护老旧 Node.js 项目？
-                   ├─ 是 → moduleResolution: Node10
-                   └─ 否 → moduleResolution: Bundler（默认推荐）
+```mermaid
+flowchart TD
+    T0["1. 项目运行在 Node.js 原生环境？"]
+    T1["是 → 项目使用 ESM（package.json type: module）？"]
+    T2["是 → moduleResolution: NodeNext"]
+    T3["否 → moduleResolution: Node16 或 NodeNext"]
+    T4["否 → 项目使用 Vite/webpack/esbuild 等打包工具？"]
+    T5["是 → moduleResolution: Bundler"]
+    T6["否 → 维护老旧 Node.js 项目？"]
+    T7["是 → moduleResolution: Node10"]
+    T8["否 → moduleResolution: Bundler（默认推荐）"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T6 --> T7
+    T6 --> T8
 ```
 
 ### 11.2 tsconfig.json 推荐配置
@@ -2048,9 +2065,9 @@ jobs:
 
 `type-check` 脚本运行纯类型检查，不产生输出，是 CI 校验模块解析正确性的关键步骤。
 
-## 12. 习题
+## 知识讲解与要点分析（原习题）
 
-### 12.1 填空题
+### 填空题知识点讲解
 
 1. TypeScript 5.0 引入的 moduleResolution: `____` 策略模拟现代打包工具的解析行为，允许相对路径不带扩展名且更宽松地解析 package.json 的 exports 字段。
 2. package.json 的 exports 字段中，`____` 条件用于匹配 Node.js 的 `require()` 调用，`____` 条件用于匹配 `import` 语句。
@@ -2059,7 +2076,7 @@ jobs:
 5. package.json 的 `____` 字段允许包内部通过包名引用自身的导出，而不需要使用相对路径。
 6. TypeScript 5.0 引入的 `____` 选项强制 `import type` 与 `export type` 语法在生成的 JavaScript 中精确擦除。
 
-### 12.2 选择题
+### 选择题知识点讲解
 
 1. 关于 moduleResolution: node16 与 nodenext 的关系，下列说法正确的是？
    - A. node16 是 nodenext 的别名，两者完全等价

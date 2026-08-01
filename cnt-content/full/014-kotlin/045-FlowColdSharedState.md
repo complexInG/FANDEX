@@ -1215,27 +1215,13 @@ shared.collect { println(it) }
 
 在大型项目中，推荐以下分层架构：
 
-```
-┌─────────────────────────────────────┐
-│  UI Layer (Compose / View)          │
-│   - collectAsStateWithLifecycle()   │
-└──────────────┬──────────────────────┘
-               │
-┌──────────────▼──────────────────────┐
-│  ViewModel / Presenter             │
-│   - StateFlow<UiState>             │
-│   - SharedFlow<UiEvent>            │
-└──────────────┬──────────────────────┘
-               │
-┌──────────────▼──────────────────────┐
-│  Domain / UseCase                  │
-│   - suspend fun / Flow<T>          │
-└──────────────┬──────────────────────┘
-               │
-┌──────────────▼──────────────────────┐
-│  Data / Repository                 │
-│   - Flow<T> from DB / Network     │
-└─────────────────────────────────────┘
+```mermaid
+flowchart TD
+    UI[UI Layer Compose / View<br/>collectAsStateWithLifecycle()]
+    VM[ViewModel / Presenter<br/>StateFlow&lt;UiState&gt;<br/>SharedFlow&lt;UiEvent&gt;]
+    Dom[Domain / UseCase<br/>suspend fun / Flow&lt;T&gt;]
+    Data[Data / Repository<br/>Flow&lt;T&gt; from DB / Network]
+    UI --> VM --> Dom --> Data
 ```
 
 **关键约定**：
@@ -1676,7 +1662,7 @@ class ChatRoom : ViewModel() {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1687,7 +1673,7 @@ B. `MutableStateFlow<String>` (replay=1, conflate)
 C. `MutableSharedFlow<String>` (replay=0)
 D. `Channel<String>`
 
-**参考答案**：B 或 C 均可，但更倾向 B（StateFlow）。
+**解析讲解**：B 或 C 均可，但更倾向 B（StateFlow）。
 - 如果需要"当前最新查询"作为状态，用 StateFlow。
 - 如果只关心"输入变化事件"，用 SharedFlow (replay=0)。
 - 用 debounce 配合使用。
@@ -1706,7 +1692,7 @@ runBlocking {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```
 3
@@ -1726,11 +1712,11 @@ val flow = flow {
 }
 ```
 
-**参考答案**：违反上下文保存规则。Flow 要求 `emit` 的上下文与 `collect` 的上下文一致，由 `flowOn` 在框架内处理切换。直接用 `withContext` 会触发 `SafeCollector` 的检查，抛出 `IllegalStateException`。
+**解析讲解**：违反上下文保存规则。Flow 要求 `emit` 的上下文与 `collect` 的上下文一致，由 `flowOn` 在框架内处理切换。直接用 `withContext` 会触发 `SafeCollector` 的检查，抛出 `IllegalStateException`。
 
 **题目 4**：比较 `buffer()` 与 `flowOn()` 的差异。
 
-**参考答案**：
+**解析讲解**：
 
 | 维度 | buffer() | flowOn() |
 |---|---|---|
@@ -1740,7 +1726,7 @@ val flow = flow {
 
 `flowOn` 内部使用 Channel 桥接两个上下文，因此必然引入缓冲。`buffer()` 不切换上下文，只引入缓冲，允许上游与下游并发执行。
 
-### 10.3 应用题
+### 应用题知识点讲解
 
 **题目 5**：实现一个 `timer` 函数，每秒发射一次，永不停止。
 
@@ -1748,7 +1734,7 @@ val flow = flow {
 fun timer(): Flow<Long> = ???
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 fun timer(): Flow<Long> = flow {
@@ -1765,7 +1751,7 @@ fun timer(): Flow<Long> = (0L..Long.MAX_VALUE).asFlow().onEach { delay(1000) }
 
 **题目 6**：实现一个 `retryWithDelay` 操作符，捕获异常后等待 N 毫秒重试。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 fun <T> Flow<T>.retryWithDelay(
@@ -1796,7 +1782,7 @@ class MyViewModel : ViewModel() {
 }
 ```
 
-**参考答案**：竞态条件。多个 `increment` 并发执行时，可能同时读到 `current`，导致只增 1。
+**解析讲解**：竞态条件。多个 `increment` 并发执行时，可能同时读到 `current`，导致只增 1。
 
 修复：
 
@@ -1814,7 +1800,7 @@ fun increment() {
 2. 支持取消。
 3. 支持重试。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 class Downloader(

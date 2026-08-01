@@ -261,21 +261,14 @@ etymology:
 
 环检测借助**并查集**（Disjoint Set Union, DSU）实现：维护顶点的连通分量归属，每次查询 `find(u) != find(v)` 即可 $O(\alpha(n))$ 判断。结合 Tarjan 1975 的路径压缩+按秩合并优化，$m$ 次操作总代价 $O(m \cdot \alpha(n)) \approx O(m)$，瓶颈在于初始的边排序 $O(m \log m)$。
 
-```
-最小生成树算法家族层次模型：
-
-              最小生成树 (MST)
-                    |
-    ┌───────────────┼───────────────┐
-Kruskal 1956     Prim 1957       Borůvka 1926
-边排序贪心       点扩展贪心       分治合并
-O(E log E)       O(V²) / O(E log V)  O(E log V)
-稀疏图优         稠密图优         并行友好
-并查集           优先队列         分量合并
-                    |
-                ┌───┴───┐
-            Jarník 1930  Karger-Klein-Tarjan 1995
-            Prim 前身     随机化线性 O(E) 期望
+```mermaid
+flowchart TD
+    M[最小生成树 MST]
+    M --> K[Kruskal 1956<br/>边排序贪心 O(E log E)<br/>稀疏图优/并查集]
+    M --> P[Prim 1957<br/>点扩展贪心 O(V²)/O(E log V)<br/>稠密图优/优先队列]
+    M --> B[Borůvka 1926<br/>分治合并 O(E log V)<br/>并行友好/分量合并]
+    P --> J[Jarník 1930<br/>Prim 前身]
+    P --> KKT[Karger-Klein-Tarjan 1995<br/>随机化线性 O(E) 期望]
 ```
 
 ### 1.2 算法在图算法家族中的位置
@@ -1299,23 +1292,39 @@ if __name__ == "__main__":
 
 ### 6.5 选型决策树
 
-```
-是否求 MST？
-├── 否 → 不使用 Kruskal
-└── 是
-    ├── 图是否稠密 (E ≈ V²)？
-    │   ├── 是 → Prim 邻接矩阵 O(V²)
-    │   └── 否 → 继续
-    ├── 是否需要并行化？
-    │   ├── 是 → Borůvka O(E log V)
-    │   └── 否 → 继续
-    ├── 图是否连通？
-    │   ├── 否 → Kruskal 天然生成森林
-    │   └── 是 → 继续
-    ├── 边是否可流式到达？
-    │   ├── 是 → Kruskal + 外部排序
-    │   └── 否 → Kruskal（默认）或 Prim 堆版
-    └── Kruskal O(E log E)
+```mermaid
+flowchart TD
+    T0["是否求 MST？"]
+    T1["否 → 不使用 Kruskal"]
+    T2["是"]
+    T3["图是否稠密 (E ≈ V²)？"]
+    T4["是 → Prim 邻接矩阵 O(V²)"]
+    T5["否 → 继续"]
+    T6["是否需要并行化？"]
+    T7["是 → Borůvka O(E log V)"]
+    T8["否 → 继续"]
+    T9["图是否连通？"]
+    T10["否 → Kruskal 天然生成森林"]
+    T11["是 → 继续"]
+    T12["边是否可流式到达？"]
+    T13["是 → Kruskal + 外部排序"]
+    T14["否 → Kruskal（默认）或 Prim 堆版"]
+    T15["Kruskal O(E log E)"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T2 --> T5
+    T5 --> T6
+    T2 --> T7
+    T2 --> T8
+    T8 --> T9
+    T2 --> T10
+    T2 --> T11
+    T11 --> T12
+    T2 --> T13
+    T2 --> T14
+    T14 --> T15
 ```
 
 ---
@@ -1970,9 +1979,9 @@ def second_minimum_spanning_tree(n, edges):
 
 ---
 
-## 10. 习题与解答
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **习题 10.1**：Kruskal 算法的时间复杂度主要由哪部分决定？
 - A. 并查集初始化 $O(V)$
@@ -2004,7 +2013,7 @@ def second_minimum_spanning_tree(n, edges):
 - C. $O(\alpha(n))$（反 Ackermann 函数）
 - D. $O(n)$
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **习题 10.6**：Kruskal 算法的核心策略是按边权 ____ 排序，依次加入不形成 ____ 的边。
 
@@ -2063,7 +2072,7 @@ def find_recursive(x):
 
 ## 11. 参考答案
 
-### 11.1 选择题答案
+### 选择题知识点讲解
 
 **10.1**：B。边排序 $O(E \log E)$ 是主导项。并查集操作 $O(E \cdot \alpha(V)) \approx O(E)$ 在实际中可视为线性，远小于排序。
 
@@ -2075,7 +2084,7 @@ def find_recursive(x):
 
 **10.5**：C。Tarjan 1975 证明路径压缩+按秩合并的均摊复杂度为 $O(\alpha(n))$，其中 $\alpha$ 是反 Ackermann 函数，对所有实际 $n \leq 10^{80}$ 有 $\alpha(n) \leq 4$。
 
-### 11.2 填空题答案
+### 填空题知识点讲解
 
 **10.6**：升序；环
 

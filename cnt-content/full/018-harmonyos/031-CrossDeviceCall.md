@@ -132,13 +132,15 @@ OpenHarmony 中的 DSoftBus 完全开源，仓库 `foundation/communication/dsof
 
 ### 2.7 时间线总览
 
-```
-2019 ──── HarmonyOS 1.0 ──── DSoftBus 1.0 诞生
-2020 ──── HarmonyOS 2.0 ──── DSoftBus 1.5，跨设备 FA 调用
-2022 ──── HarmonyOS 3.0 ──── distributedScheduler 引入
-2023 ──── HarmonyOS 3.1 ──── Stage 模型稳定，跨设备 UIAbility
-2023 ──── HarmonyOS 4.0  ──── DSoftBus 3.0，启动提速 40%
-2024 ──── HarmonyOS NEXT ─── 超级终端 2.0，能力联邦
+```mermaid
+timeline
+    title 分布式软总线时间线
+    2019: HarmonyOS 1.0 DSoftBus 1.0 诞生
+    2020: HarmonyOS 2.0 DSoftBus 1.5，跨设备 FA 调用
+    2022: HarmonyOS 3.0 distributedScheduler 引入
+    2023: HarmonyOS 3.1 Stage 模型稳定，跨设备 UIAbility
+    2023: HarmonyOS 4.0 DSoftBus 3.0，启动提速 40%
+    2024: HarmonyOS NEXT 超级终端 2.0，能力联邦
 ```
 
 ---
@@ -229,18 +231,12 @@ $$
 
 DSoftBus 采用分层协议栈：
 
-```
-┌─────────────────────────────────────┐
-│  Application Layer                   │  distributedScheduler / KV / File
-├─────────────────────────────────────┤
-│  IPC Session Layer                   │  SoftBus Session / RPC
-├─────────────────────────────────────┤
-│  Transport Layer                     │  TCP / UDP / BLE GATT
-├─────────────────────────────────────┤
-│  Network Layer                       │  IP / BLE Mesh
-├─────────────────────────────────────┤
-│  Link Layer                          │  Wi-Fi / BT / Ethernet
-└─────────────────────────────────────┘
+```mermaid
+flowchart TD
+    App[Application Layer<br/>distributedScheduler / KV / File] --> IPC[IPC Session Layer<br/>SoftBus Session / RPC]
+    IPC --> Trans[Transport Layer<br/>TCP / UDP / BLE GATT]
+    Trans --> Net[Network Layer<br/>IP / BLE Mesh]
+    Net --> Link[Link Layer<br/>Wi-Fi / BT / Ethernet]
 ```
 
 会话层（Session Layer）是 DSoftBus 的核心创新。它将"逻辑会话"与"物理传输"解耦：
@@ -295,30 +291,19 @@ PIN 码配对流程：
 
 `startRemoteAbility` 的完整流程：
 
-```
-Device A (source)                   DSoftBus                     Device B (target)
-     │                                  │                                │
-     │ 1. startRemoteAbility(want)      │                                │
-     │─────────────────────────────────>│                                │
-     │                                  │ 2. Route to target             │
-     │                                  │───────────────────────────────>│
-     │                                  │                                │
-     │                                  │                                │ 3. AMS query ability
-     │                                  │                                │    match(want, ability)
-     │                                  │                                │
-     │                                  │ 4. Ability not found           │
-     │                                  │<───────────────────────────────│
-     │ 5. Error 16000004                │                                │
-     │<─────────────────────────────────│                                │
-     │                                  │                                │
-     │                                  │ 6. Ability found, launch       │
-     │                                  │───────────────────────────────>│
-     │                                  │                                │ 7. onCreate(want)
-     │                                  │                                │
-     │                                  │ 8. Ability launched            │
-     │                                  │<───────────────────────────────│
-     │ 9. Promise resolve               │                                │
-     │<─────────────────────────────────│                                │
+```mermaid
+sequenceDiagram
+    participant A as Device A (source)
+    participant B as DSoftBus
+    participant C as Device B (target)
+    A->>B: 1. continueAbility(deviceId)
+    Note over A: 2. onSaveData(wantParam)，app serializes state
+    A->>B: 3. Send state（≤100KB）
+    B->>C: 4. Forward state
+    Note over C: 5. onCreate(want)<br/>6. onRestoreData(want)<br/>7. onWindowStageCreate()
+    C-->>B: 8. Restore complete
+    B-->>A: 9. onContinueStateChange OK
+    Note over A: 10. onDestroy（optional）
 ```
 
 总延迟模型：
@@ -341,28 +326,19 @@ HarmonyOS 4.0 各阶段典型延迟：
 
 `continueAbility` 的状态同步流程：
 
-```
-Device A (source)                   DSoftBus                     Device B (target)
-     │                                  │                                │
-     │ 1. continueAbility(deviceId)     │                                │
-     │─────────────────────────────────>│                                │
-     │                                  │                                │
-     │ 2. onSaveData(wantParam)         │                                │
-     │   [app serializes state]         │                                │
-     │                                  │                                │
-     │ 3. Send state (≤100KB)           │                                │
-     │─────────────────────────────────>│ 4. Forward state               │
-     │                                  │───────────────────────────────>│
-     │                                  │                                │ 5. onCreate(want)
-     │                                  │                                │ 6. onRestoreData(wantParam)
-     │                                  │                                │ 7. onWindowStageCreate
-     │                                  │                                │
-     │                                  │ 8. Restore complete            │
-     │                                  │<───────────────────────────────│
-     │ 9. onContinueStateChange OK      │                                │
-     │<─────────────────────────────────│                                │
-     │                                  │                                │
-     │ 10. onDestroy (optional)         │                                │
+```mermaid
+sequenceDiagram
+    participant A as Device A (source)
+    participant B as DSoftBus
+    participant C as Device B (target)
+    A->>B: 1. continueAbility(deviceId)
+    Note over A: 2. onSaveData(wantParam)，app serializes state
+    A->>B: 3. Send state（≤100KB）
+    B->>C: 4. Forward state
+    Note over C: 5. onCreate(want)<br/>6. onRestoreData(wantParam)<br/>7. onWindowStageCreate()
+    C-->>B: 8. Restore complete
+    B-->>A: 9. onContinueStateChange OK
+    Note over A: 10. onDestroy（optional）
 ```
 
 状态序列化的字节数：
@@ -1485,9 +1461,9 @@ OpenHarmony 官方 sample `code/Solutions/DistributedMusic`：
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题 1.1**：HarmonyOS 跨设备调用的底层通信抽象是：
 
@@ -1496,14 +1472,11 @@ B. DSoftBus
 C. AIDL  
 D. WebSocket  
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：DSoftBus（Distributed Soft Bus）是 HarmonyOS 分布式软总线，统一封装 Wi-Fi、蓝牙、Ethernet 等底层网络，为上层提供会话抽象。Binder 是 Android 的 IPC 机制，AIDL 是 Android 接口描述语言，WebSocket 是 Web 协议。
+**解析讲解**：DSoftBus（Distributed Soft Bus）是 HarmonyOS 分布式软总线，统一封装 Wi-Fi、蓝牙、Ethernet 等底层网络，为上层提供会话抽象。Binder 是 Android 的 IPC 机制，AIDL 是 Android 接口描述语言，WebSocket 是 Web 协议。
 
-</details>
 
 **题 1.2**：跨设备迁移 `onSaveData` 的数据上限是：
 
@@ -1512,14 +1485,11 @@ B. 100 KB
 C. 1 MB  
 D. 10 MB  
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：HarmonyOS 4.0 中 `onSaveData` 序列化数据上限为 100 KB，超限会拒绝迁移。大数据应通过分布式 KV 或分布式文件同步。
+**解析讲解**：HarmonyOS 4.0 中 `onSaveData` 序列化数据上限为 100 KB，超限会拒绝迁移。大数据应通过分布式 KV 或分布式文件同步。
 
-</details>
 
 **题 1.3**：跨设备调用必须声明的权限是：
 
@@ -1528,14 +1498,11 @@ B. ohos.permission.DISTRIBUTED_DATASYNC
 C. ohos.permission.CAMERA  
 D. ohos.permission.LOCATION  
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`ohos.permission.DISTRIBUTED_DATASYNC` 是分布式数据同步权限，所有跨设备调用必须声明。INTERNET 用于网络访问，CAMERA 用于相机，LOCATION 用于定位。
+**解析讲解**：`ohos.permission.DISTRIBUTED_DATASYNC` 是分布式数据同步权限，所有跨设备调用必须声明。INTERNET 用于网络访问，CAMERA 用于相机，LOCATION 用于定位。
 
-</details>
 
 **题 1.4**：跨设备启动 Ability 的 API 是：
 
@@ -1544,14 +1511,11 @@ B. `context.startAbility(want)`，Want 中带 deviceId
 C. `context.startRemoteAbility(want)`  
 D. `distributedScheduler.startRemoteAbility(want)`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Stage 模型中 `context.startAbility(want)` 是统一启动 API，本地与远程的区别仅在 Want 中是否带 `deviceId` 字段。早期 FA 模型使用 `featureAbility.startAbility`，旧版 Stage 模型曾有 `distributedScheduler.startRemoteAbility`，已统一为 `context.startAbility`。
+**解析讲解**：Stage 模型中 `context.startAbility(want)` 是统一启动 API，本地与远程的区别仅在 Want 中是否带 `deviceId` 字段。早期 FA 模型使用 `featureAbility.startAbility`，旧版 Stage 模型曾有 `distributedScheduler.startRemoteAbility`，已统一为 `context.startAbility`。
 
-</details>
 
 **题 1.5**：跨设备 IPC 的 `MessageSequence` 使用后必须调用：
 
@@ -1560,73 +1524,55 @@ B. `destroy()`
 C. `reclaim()`  
 D. `release()`  
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`rpc.MessageSequence.create()` 创建的对象必须调用 `reclaim()` 释放 native 资源，否则高频调用会导致内存泄漏。
+**解析讲解**：`rpc.MessageSequence.create()` 创建的对象必须调用 `reclaim()` 释放 native 资源，否则高频调用会导致内存泄漏。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题 2.1**：DSoftBus 协议栈分为 ________、________、________、________ 四层。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：应用层、IPC 会话层、传输层、网络层（链路层也算）
+**解析讲解**：应用层、IPC 会话层、传输层、网络层（链路层也算）
 
-**解析**：DSoftBus 分层从上到下：Application Layer（distributedScheduler/KV/File）→ IPC Session Layer → Transport Layer（TCP/UDP/BLE）→ Network Layer（IP/BLE Mesh）→ Link Layer（Wi-Fi/BT/Ethernet）。
+**解析讲解**：DSoftBus 分层从上到下：Application Layer（distributedScheduler/KV/File）→ IPC Session Layer → Transport Layer（TCP/UDP/BLE）→ Network Layer（IP/BLE Mesh）→ Link Layer（Wi-Fi/BT/Ethernet）。
 
-</details>
 
 **题 2.2**：设备配对时使用 ________ 协议派生会话密钥。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：PAKE（Password-Authenticated Key Exchange）
+**解析讲解**：PAKE（Password-Authenticated Key Exchange）
 
-**解析**：DSoftBus 设备配对使用 PAKE 协议，基于 PIN 码派生会话密钥，确保即使 PIN 码被截获，攻击者也无法解密后续通信。
+**解析讲解**：DSoftBus 设备配对使用 PAKE 协议，基于 PIN 码派生会话密钥，确保即使 PIN 码被截获，攻击者也无法解密后续通信。
 
-</details>
 
 **题 2.3**：跨设备迁移的四个阶段是 ________、________、________、________。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：SaveState、Transfer、RestoreState、Terminate（可选）
+**解析讲解**：SaveState、Transfer、RestoreState、Terminate（可选）
 
-**解析**：源端 SaveState 序列化状态，Transfer 通过 DSoftBus 传输，目标端 RestoreState 反序列化恢复，Terminate 终止源端实例（可选）。
+**解析讲解**：源端 SaveState 序列化状态，Transfer 通过 DSoftBus 传输，目标端 RestoreState 反序列化恢复，Terminate 终止源端实例（可选）。
 
-</details>
 
 **题 2.4**：HarmonyOS 4.0 跨设备启动延迟典型值约为 ________ ms。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：720
+**解析讲解**：720
 
-**解析**：根据华为官方基准，HarmonyOS 4.0 跨设备启动延迟约 720 ms，相比 HarmonyOS 3.0 的 1200 ms 提升 40%。
+**解析讲解**：根据华为官方基准，HarmonyOS 4.0 跨设备启动延迟约 720 ms，相比 HarmonyOS 3.0 的 1200 ms 提升 40%。
 
-</details>
 
 **题 2.5**：跨设备 IPC 使用的序列化协议是 ________，相比 JSON 优势是 ________。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：FlatBuffers；零拷贝反序列化，速度提升 5 倍
+**解析讲解**：FlatBuffers；零拷贝反序列化，速度提升 5 倍
 
-**解析**：DSoftBus 3.0 使用 FlatBuffers 替代 JSON，FlatBuffers 支持零拷贝反序列化，避免了 JSON 解析的内存分配开销。
+**解析讲解**：DSoftBus 3.0 使用 FlatBuffers 替代 JSON，FlatBuffers 支持零拷贝反序列化，避免了 JSON 解析的内存分配开销。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题 3.1**：实现一个跨设备播放器迁移功能，要求：
 
@@ -1636,8 +1582,6 @@ D. `release()`
 4. 实现 `onRestoreData`，反序列化并恢复 `playerState`。
 5. 实现 `onCreate`，检测是否为迁移启动（launchReason === CONTINUE）。
 
-<details>
-<summary>参考答案</summary>
 
 ```typescript
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
@@ -1703,12 +1647,9 @@ export default class PlayerAbility extends UIAbility {
 }
 ```
 
-</details>
 
 **题 3.2**：编写 `module.json5`，配置一个可跨设备迁移的 EntryAbility 与可被远程调用的 ServiceExtAbility，并申请所需权限。
 
-<details>
-<summary>参考答案</summary>
 
 ```json5
 {
@@ -1753,14 +1694,11 @@ export default class PlayerAbility extends UIAbility {
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **题 4.1**：为什么 HarmonyOS 选择自研 DSoftBus 而非直接使用 gRPC/MQTT？
 
-<details>
-<summary>参考答案要点</summary>
 
 1. **统一抽象**：DSoftBus 屏蔽 Wi-Fi/BLE/Ethernet 差异，gRPC/MQTT 仅基于 IP 网络。
 2. **自发现**：DSoftBus 内建 mDNS + BLE 发现机制，gRPC/MQTT 需外部服务注册中心。
@@ -1769,12 +1707,9 @@ export default class PlayerAbility extends UIAbility {
 5. **系统能力**：DSoftBus 与 Ability 框架、AMS、WMS 深度集成，可触发远程 Ability 启动，gRPC/MQTT 无法做到。
 6. **代价**：仅限 HarmonyOS 生态，跨生态场景需回退到通用协议。
 
-</details>
 
 **题 4.2**：跨设备迁移的 100KB 限制是否合理？如何设计能突破此限制？
 
-<details>
-<summary>参考答案要点</summary>
 
 **合理性**：
 - 100KB 限制保证迁移延迟在 1s 以内，用户感知流畅。
@@ -1803,12 +1738,9 @@ onSaveData(wantParam: Record<string, Object>): void {
 }
 ```
 
-</details>
 
 **题 4.3**：分析跨设备调用的安全威胁模型，并提出防御措施。
 
-<details>
-<summary>参考答案要点</summary>
 
 **威胁模型**：
 1. **中间人攻击（MITM）**：攻击者截获 DSoftBus 通信。
@@ -1832,12 +1764,9 @@ onSaveData(wantParam: Record<string, Object>): void {
 - 速率限制：单设备单位时间最大调用次数。
 - 异常检测：识别异常调用模式。
 
-</details>
 
 **题 4.4**：在弱网环境下，跨设备调用应如何降级？
 
-<details>
-<summary>参考答案要点</summary>
 
 **降级策略**：
 1. **延迟感知**：根据 RTT 动态选择策略，RTT > 500ms 触发降级。
@@ -1867,7 +1796,6 @@ async robustMigrate(deviceId: string): Promise<void> {
 }
 ```
 
-</details>
 
 ---
 
@@ -1995,33 +1923,12 @@ async robustMigrate(deviceId: string): Promise<void> {
 
 ## 附录 C：DSoftBus 协议层详解
 
-```
-┌─────────────────────────────────────────────────────┐
-│ Application Layer                                    │
-│  - distributedScheduler (远程 Ability 调用)           │
-│  - distributedKVStore (KV 同步)                      │
-│  - distributedFile (文件同步)                         │
-├─────────────────────────────────────────────────────┤
-│ IPC Session Layer                                    │
-│  - SoftBus Session (流式会话)                         │
-│  - RPC RemoteObject (方法调用)                        │
-│  - Serialization (FlatBuffers)                       │
-├─────────────────────────────────────────────────────┤
-│ Transport Layer                                      │
-│  - TCP (大数据, > 100KB)                              │
-│  - UDP (流媒体)                                       │
-│  - BLE GATT (小数据, < 10KB)                          │
-├─────────────────────────────────────────────────────┤
-│ Network Layer                                        │
-│  - IP (Wi-Fi/Ethernet/Cellular)                      │
-│  - BLE Mesh                                          │
-├─────────────────────────────────────────────────────┤
-│ Link Layer                                           │
-│  - Wi-Fi (P2P/LAN)                                   │
-│  - Bluetooth (BR/BLE)                                │
-│  - Ethernet                                          │
-│  - Cellular                                          │
-└─────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    App[Application Layer<br/>distributedScheduler 远程 Ability 调用<br/>distributedKVStore KV 同步<br/>distributedFile 文件同步] --> IPC[IPC Session Layer<br/>SoftBus Session 流式会话<br/>RPC RemoteObject 方法调用<br/>Serialization FlatBuffers]
+    IPC --> Trans[Transport Layer<br/>TCP 大数据 &gt;100KB<br/>UDP 流媒体<br/>BLE GATT 小数据 &lt;10KB]
+    Trans --> Net[Network Layer<br/>IP Wi-Fi/Ethernet/Cellular<br/>BLE Mesh]
+    Net --> Link[Link Layer<br/>Wi-Fi P2P/LAN<br/>Bluetooth BR/BLE<br/>Ethernet<br/>Cellular]
 ```
 
 ## 附录 D：分布式调试速查
@@ -2040,3 +1947,236 @@ async robustMigrate(deviceId: string): Promise<void> {
 ---
 
 > **本章总结**：HarmonyOS 跨设备调用是"超级终端"理念的技术实现。DSoftBus 提供统一通信抽象，distributedScheduler 提供 Ability 级语义，DeviceManager 管理可信圈与配对。掌握跨设备调用需理解：协议栈分层、安全模型、状态迁移机制、IPC 性能优化。下一章将深入分布式数据管理，与本章的状态迁移形成数据同步的完整闭环。
+## continuationManager 设备选择
+
+**基本写法：注册 continuation**
+`continuationManager.register(<选项>, <回调>)`
+```typescript
+// 注册跨设备迁移管理器
+import { continuationManager } from '@kit.DistributedServiceKit'
+
+let token = -1
+continuationManager.registerContinuation({
+  deviceId: '',
+  type: continuationManager.ContinuationDeviceTypes.CONNECTED_SAME_ACCOUNT
+}, (err, data) => {
+  if (err) { console.error('注册失败'); return }
+  token = data
+  console.info(`注册成功 token: ${token}`)
+})
+```
+
+---
+
+**基本写法：拉起设备选择面板**
+`continuationManager.startContinuationDeviceManager(<token>, <选项>, <回调>)`
+```typescript
+// 弹出设备选择 UI
+let options: continuationManager.ContinuationExtraOptions = {
+  continuationMode: continuationManager.ContinuationMode.COLLABORATION_MUTABLE
+}
+continuationManager.startContinuationDeviceManager(token, options, (err, data) => {
+  if (err) { console.error('取消选择'); return }
+  console.info(`已选设备: ${data.deviceId}`)
+})
+```
+
+---
+
+**基本写法：取消注册**
+`continuationManager.unregisterContinuation(<token>)`
+```typescript
+// 注销迁移管理器
+continuationManager.unregisterContinuation(token, (err) => {
+  console.info('已注销')
+})
+```
+
+---
+
+**基本写法：更新连接状态**
+`continuationManager.updateContinuationState(<token>, '<设备ID>', <状态>, <回调>)`
+```typescript
+// 更新设备连接状态
+continuationManager.updateContinuationState(token, 'device_id', 1, (err) => {
+  console.info('状态已更新')
+})
+```
+
+---
+
+## 启动远程 Ability
+
+**基本写法：启动远程 UIAbility**
+`this.context.startAbility({ deviceId: '<设备ID>', bundleName: '<包名>', abilityName: '<Ability名>' })`
+```typescript
+// 通过 UIAbility context 拉起远程页面
+import { Want } from '@kit.AbilityKit'
+
+let want: Want = {
+  deviceId: 'remote_device_id',
+  bundleName: 'com.example.myapp',
+  abilityName: 'EntryAbility',
+  parameters: { action: 'remote_start' }
+}
+this.context.startAbility(want).then(() => {
+  console.info('远程启动成功')
+}).catch((err) => {
+  console.error(`启动失败: ${err}`)
+})
+```
+
+---
+
+**基本写法：带返回值启动**
+`this.context.startAbilityForResult(<want>)`
+```typescript
+// 启动远程 Ability 并获取返回结果
+let want: Want = {
+  deviceId: 'remote_device_id',
+  bundleName: 'com.example.myapp',
+  abilityName: 'EntryAbility'
+}
+let result = await this.context.startAbilityForResult(want)
+if (result.resultCode === 0) {
+  let data = result.want.parameters['result']
+  console.info(`返回数据: ${data}`)
+}
+```
+
+---
+
+**基本写法：处理返回数据**
+`onRemoteRequest(<code>, <data>, <reply>, <option>)`
+```typescript
+// 远程 Ability 返回数据
+onActive() {
+  let result = AppStorage.get('remoteResult')
+  console.info(`远程返回: ${result}`)
+}
+```
+
+---
+
+## RPC 远程调用
+
+**基本写法：创建 RemoteObject**
+`class <名> extends rpc.RemoteObject { asObject() { return this } }`
+```typescript
+// ServiceAbility 暴露远程接口
+import { rpc } from '@kit.IPCKit'
+
+class MyServiceStub extends rpc.RemoteObject {
+  onRemoteRequest(code: number, data: rpc.MessageSequence, reply: rpc.MessageSequence, option: rpc.MessageOption): boolean {
+    if (code === 1) {
+      let param = data.readString()
+      reply.writeString(`处理: ${param}`)
+      return true
+    }
+    return false
+  }
+}
+```
+
+---
+
+**基本写法：ServiceAbility 返回代理**
+`onConnect(<want>) { return new <Stub>() }`
+```typescript
+// ServiceAbility onConnect 返回 RemoteObject
+export default class ServiceAbilityExt extends Ability {
+  onConnect(want: Want): rpc.RemoteObject {
+    return new MyServiceStub('MyService')
+  }
+}
+```
+
+---
+
+**基本写法：获取远程代理**
+`this.context.connectServiceExtensionAbility(<want>, <连接选项>)`
+```typescript
+// 连接远程 Service
+import { Want } from '@kit.AbilityKit'
+import { rpc } from '@kit.IPCKit'
+
+let connectionId = -1
+let remoteProxy: rpc.IRemoteObject | null = null
+
+let want: Want = {
+  deviceId: 'remote_device_id',
+  bundleName: 'com.example.myapp',
+  abilityName: 'ServiceAbilityExt'
+}
+
+connectionId = this.context.connectServiceExtensionAbility(want, {
+  onConnect: (elementName, remoteObject) => {
+    remoteProxy = remoteObject
+    console.info('远程服务已连接')
+  },
+  onDisconnect: (elementName) => {
+    console.info('远程服务已断开')
+  }
+})
+```
+
+---
+
+**基本写法：发送远程请求**
+`remoteProxy.sendMessageRequest(<code>, <data>, <reply>, <option>)`
+```typescript
+// 通过代理调用远程方法
+let option = new rpc.MessageOption()
+let data = rpc.MessageSequence.create()
+data.writeString('hello from client')
+let reply = rpc.MessageSequence.create()
+
+remoteProxy.sendMessageRequest(1, data, reply, option).then((result) => {
+  let response = result.reply.readString()
+  console.info(`远程响应: ${response}`)
+})
+```
+
+---
+
+**基本写法：断开远程连接**
+`this.context.disconnectServiceExtensionAbility(<connectionId>)`
+```typescript
+// 断开远程 Service 连接
+this.context.disconnectServiceExtensionAbility(connectionId, (err) => {
+  console.info('已断开')
+})
+```
+
+---
+
+## Want 传参
+
+**基本写法：通过 Want 传递参数**
+`let want: Want = { parameters: { '<键>': <值> } }`
+```typescript
+// 使用 Want.parameters 传递自定义参数
+let want: Want = {
+  deviceId: 'remote_device_id',
+  bundleName: 'com.example.myapp',
+  abilityName: 'EntryAbility',
+  parameters: {
+    userId: 1001,
+    userName: 'Alice',
+    action: 'view_detail'
+  }
+}
+```
+
+---
+
+**基本写法：接收 Want 参数**
+`onCreate(<want>) { let <值> = want.parameters['<键>'] }`
+```typescript
+// 在目标 Ability 中读取参数
+onCreate(want: Want) {
+  let userId = want.parameters['userId'] as number
+  let userName = want.parameters['userName'] as string
+  console.info(`用户: ${userName} (ID: ${userId})`)
+}
+```

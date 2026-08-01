@@ -1250,27 +1250,32 @@ const (
 
 ### 8.1 项目目录组织
 
-```
-project/
-├── cmd/
-│   └── app/
-│       └── main.go
-├── internal/
-│   ├── service/
-│   │   ├── service.go          # 接口定义
-│   │   ├── service_impl.go     # 实现
-│   │   └── mock/
-│   │       └── service.go      # 生成的 Mock
-│   ├── repo/
-│   │   ├── repo.go
-│   │   ├── queries/            # SQL 查询
-│   │   └── db/                 # 生成的 db 代码
-│   └── api/
-│       ├── api.proto           # Protobuf 定义
-│       └── api.pb.go           # 生成的 gRPC 代码
-├── tools/
-│   └── gen/                    # 自定义生成器
-└── Makefile
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["cmd/"]
+    T2["app/"]
+    T3["main.go"]
+    T4["internal/"]
+    T5["service/"]
+    T6["service.go          # 接口定义"]
+    T7["service_impl.go     # 实现"]
+    T8["mock/"]
+    T9["service.go      # 生成的 Mock"]
+    T10["repo/"]
+    T11["repo.go"]
+    T12["queries/            # SQL 查询"]
+    T13["db/                 # 生成的 db 代码"]
+    T14["api/"]
+    T15["api.proto           # Protobuf 定义"]
+    T16["api.pb.go           # 生成的 gRPC 代码"]
+    T17["tools/"]
+    T18["gen/                    # 自定义生成器"]
+    T19["Makefile"]
+    T0 --> T1
+    T3 --> T4
+    T16 --> T17
+    T18 --> T19
 ```
 
 ### 8.2 Makefile 标准化
@@ -1609,9 +1614,9 @@ go run -mod=mod entgo.io/ent/cmd/ent generate ./ent/schema
 
 ---
 
-## 10. 练习与解答
+## 知识讲解与要点分析（原练习）
 
-### 练习一（基础）
+## 知识讲解与要点分析（原练习一（基础））
 
 为以下枚举添加 `//go:generate` 指令，使用 stringer 生成 String 方法：
 
@@ -1649,7 +1654,7 @@ const (
 )
 ```
 
-### 练习二（优化）
+## 知识讲解与要点分析（原练习二（优化））
 
 以下接口需要 Mock，编写 `//go:generate` 指令：
 
@@ -1682,7 +1687,7 @@ type Cache interface {
 }
 ```
 
-### 练习三（分析）
+## 知识讲解与要点分析（原练习三（分析））
 
 分析以下 `//go:generate` 指令的问题：
 
@@ -1694,7 +1699,7 @@ type Cache interface {
 - `//` 前有空格，Go 工具不会识别此指令。
 - 正确写法：`//go:generate stringer -type=Status`（紧贴行首）。
 
-### 练习四（设计）
+## 知识讲解与要点分析（原练习四（设计））
 
 设计一个代码生成器，为结构体生成 `Equal` 方法：
 
@@ -1728,7 +1733,7 @@ func generateEqual(structName string, fields []Field) string {
 }
 ```
 
-### 练习五（综合）
+## 知识讲解与要点分析（原练习五（综合））
 
 对比使用 `wire`（代码生成）与 `dig`（反射）实现依赖注入的优劣：
 
@@ -1834,8 +1839,8 @@ func generateEqual(structName string, fields []Field) string {
 
 ### 12.6 进阶实验
 
-- 编写一个生成 `DeepCopy` 方法的工具。
-- 实现一个从 Go 接口生成 TypeScript 类型定义的生成器。
+- 要点：一个生成 `DeepCopy` 方法的工具。
+- 要点：一个从 Go 接口生成 TypeScript 类型定义的生成器。
 - 对比 sqlc 与 GORM 在相同查询下的性能差异。
 - 研究 ent 如何通过 Schema 生成图数据库 ORM。
 

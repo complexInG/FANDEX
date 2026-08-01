@@ -15,6 +15,11 @@ related:
 prerequisites:
   - python/语法速查
 ---
+# Python 迭代器与生成器进阶
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -1626,27 +1631,32 @@ class PipelineBuilder:
 
 ### 8.1 项目结构
 
-```
-project/
-├── src/
-│   ├── generators/
-│   │   ├── __init__.py
-│   │   ├── core.py          # 核心生成器
-│   │   ├── pipelines.py     # 管道组合
-│   │   ├── async_gens.py    # 异步生成器
-│   │   └── decorators.py    # 生成器装饰器
-│   ├── utils/
-│   │   ├── itertools_ext.py # itertools 扩展
-│   │   └── types.py         # 类型定义
-│   └── api/
-│       ├── routes.py
-│       └── streaming.py     # 流式响应
-├── tests/
-│   ├── test_generators.py
-│   ├── test_pipelines.py
-│   └── test_async_gens.py
-├── pyproject.toml
-└── README.md
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["src/"]
+    T2["generators/"]
+    T3["__init__.py"]
+    T4["core.py          # 核心生成器"]
+    T5["pipelines.py     # 管道组合"]
+    T6["async_gens.py    # 异步生成器"]
+    T7["decorators.py    # 生成器装饰器"]
+    T8["utils/"]
+    T9["itertools_ext.py # itertools 扩展"]
+    T10["types.py         # 类型定义"]
+    T11["api/"]
+    T12["routes.py"]
+    T13["streaming.py     # 流式响应"]
+    T14["tests/"]
+    T15["test_generators.py"]
+    T16["test_pipelines.py"]
+    T17["test_async_gens.py"]
+    T18["pyproject.toml"]
+    T19["README.md"]
+    T0 --> T1
+    T13 --> T14
+    T17 --> T18
+    T17 --> T19
 ```
 
 ### 8.2 pyproject.toml 配置
@@ -2239,9 +2249,9 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## 10. 练习题
+## 知识讲解与要点分析（原练习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **1. 下列关于 Python 生成器的描述，正确的是？**
 
@@ -2250,9 +2260,9 @@ B. 生成器对象可以多次迭代
 C. `yield` 表达式的值是 `send()` 传入的值
 D. 生成器在 `return` 后仍可继续 yield
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`yield expr` 是一个表达式，其值由 `send(value)` 传入；若通过 `next()` 调用，则 `yield` 表达式值为 `None`。A 错误（调用生成器函数返回生成器对象，不执行函数体）；B 错误（生成器一次性，迭代完毕后再次迭代为空）；D 错误（`return` 后生成器结束，抛出 `StopIteration`）。
+**解析讲解**：`yield expr` 是一个表达式，其值由 `send(value)` 传入；若通过 `next()` 调用，则 `yield` 表达式值为 `None`。A 错误（调用生成器函数返回生成器对象，不执行函数体）；B 错误（生成器一次性，迭代完毕后再次迭代为空）；D 错误（`return` 后生成器结束，抛出 `StopIteration`）。
 
 **2. 执行以下代码的输出是？**
 
@@ -2276,14 +2286,14 @@ B. 1, 15, StopIteration: 8
 C. 1, 15, 8
 D. 1, 10, 8
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：
+**解析讲解**：
 - `next(g)`：启动生成器，执行到 `x = yield 1`，返回 1；
 - `g.send(5)`：`x = 5`，执行到 `y = yield x + 10 = 15`，返回 15；
 - `g.send(3)`：`y = 3`，`return x + y = 8`，抛出 `StopIteration(8)`，`e.value = 8`。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **1. 以下代码输出是？**
 
@@ -2298,9 +2308,9 @@ result = list(g)
 print(result)
 ```
 
-**答案**：`[1, 2, 3, 'a', 'b', 'c']`
+**解析讲解**：`[1, 2, 3, 'a', 'b', 'c']`
 
-**解析**：`yield from` 展开迭代器，`list()` 收集所有 yield 的值，`return` 的值通过 `StopIteration.value` 获取，不会被 `list()` 收集。
+**解析讲解**：`yield from` 展开迭代器，`list()` 收集所有 yield 的值，`return` 的值通过 `StopIteration.value` 获取，不会被 `list()` 收集。
 
 **2. 以下代码输出是？**
 
@@ -2317,11 +2327,11 @@ result = list(islice(fibonacci(), 5, 10))
 print(result)
 ```
 
-**答案**：`[5, 8, 13, 21, 34]`
+**解析讲解**：`[5, 8, 13, 21, 34]`
 
-**解析**：`islice(gen, 5, 10)` 跳过前 5 个，取接下来 5 个。Fibonacci 序列：0,1,1,2,3,5,8,13,21,34，跳过前 5 个（0,1,1,2,3），取第 6-10 个（5,8,13,21,34）。
+**解析讲解**：`islice(gen, 5, 10)` 跳过前 5 个，取接下来 5 个。Fibonacci 序列：0,1,1,2,3,5,8,13,21,34，跳过前 5 个（0,1,1,2,3），取第 6-10 个（5,8,13,21,34）。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **1. 实现一个 `buffered` 生成器，将输入流按指定大小缓冲后输出。**
 
@@ -2425,7 +2435,7 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 
 **1. 为什么 Python 的生成器不能"重置"（重新从头迭代）？这带来了哪些优势和劣势？**
 
-**参考答案**：
+**解析讲解**：
 
 优势：
 - 内存效率：生成器无需保存已产出的值，只需当前状态；
@@ -2440,7 +2450,7 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 
 **2. `yield from` 与 `for x in subgen: yield x` 在性能、语义、异常处理上有何区别？**
 
-**参考答案**：
+**解析讲解**：
 
 - 性能：`yield from` 直接调用子生成器的 C 实现，避免 Python 层的循环，快约 20%；
 - 语义：`yield from` 透明转发 `send`、`throw`、`close`，手动迭代只产出值不转发；
@@ -2449,7 +2459,7 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 
 **3. 异步生成器与同步生成器在哪些场景下应该选用？有何性能差异？**
 
-**参考答案**：
+**解析讲解**：
 
 - 同步生成器：纯 CPU 计算、本地文件 I/O、内存数据处理；
 - 异步生成器：网络 I/O、数据库查询、文件系统慢操作；
@@ -2623,12 +2633,272 @@ def generator_state(gen: Generator) -> str:
 
 | 特性 | Python 2.2 | 2.5 | 3.3 | 3.5 | 3.6 | 3.7 | 3.10+ |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `yield` 语句 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `yield` 表达式 | - | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `send`/`throw`/`close` | - | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `yield from` | - | - | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `async def` + `await` | - | - | - | ✓ | ✓ | ✓ | ✓ |
-| 异步生成器 | - | - | - | - | ✓ | ✓ | ✓ |
-| `async for`/`async with` | - | - | - | ✓ | ✓ | ✓ | ✓ |
-| `return value` in generator | - | partial | ✓ | ✓ | ✓ | ✓ | ✓ |
-| 生成器协程弃用警告 | - | - | - | ✓ | ✓ | ✓ | removed |
+| `yield` 语句 | √ | √ | √ | √ | √ | √ | √ |
+| `yield` 表达式 | - | √ | √ | √ | √ | √ | √ |
+| `send`/`throw`/`close` | - | √ | √ | √ | √ | √ | √ |
+| `yield from` | - | - | √ | √ | √ | √ | √ |
+| `async def` + `await` | - | - | - | √ | √ | √ | √ |
+| 异步生成器 | - | - | - | - | √ | √ | √ |
+| `async for`/`async with` | - | - | - | √ | √ | √ | √ |
+| `return value` in generator | - | partial | √ | √ | √ | √ | √ |
+| 生成器协程弃用警告 | - | - | - | √ | √ | √ | removed |
+## 迭代器协议
+
+**基本写法：自定义迭代器**
+`class <迭代器>:\n    def __iter__(self): return self\n    def __next__(self):`
+```python
+# 实现 __iter__ 与 __next__ 的迭代器
+class Counter:
+    def __init__(self, low, high):
+        self.cur = low
+        self.high = high
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if self.cur >= self.high:
+            raise StopIteration
+        v = self.cur
+        self.cur += 1
+        return v
+
+for x in Counter(1, 4):
+    print(x)
+```
+
+**基本写法：可迭代对象**
+`class <可迭代>:\n    def __iter__(self):`
+```python
+# 可迭代对象返回独立迭代器
+class Range:
+    def __init__(self, n):
+        self.n = n
+    def __iter__(self):
+        for i in range(self.n):
+            yield i
+```
+
+---
+
+## 生成器函数
+
+**基本写法：yield 生成值**
+`def <生成器>():\n    yield <值>`
+```python
+# 生成器函数惰性产出值
+def counter(n):
+    i = 0
+    while i < n:
+        yield i
+        i += 1
+
+print(list(counter(3)))
+```
+
+**基本写法：yield from 委托**
+`yield from <可迭代>`
+```python
+# 委托给子生成器
+def chained(*iters):
+    for it in iters:
+        yield from it
+
+print(list(chained([1, 2], [3, 4])))
+```
+
+**基本写法：无限生成器**
+`def <生成器>():\n    while True: yield <值>`
+```python
+# 无限序列生成器
+def naturals(start=1):
+    n = start
+    while True:
+        yield n
+        n += 1
+
+from itertools import islice
+print(list(islice(naturals(), 5)))
+```
+
+---
+
+## 生成器高级方法
+
+**基本写法：send 发送值**
+`gen.send(<值>)`
+```python
+# send 向生成器注入值
+def echo():
+    while True:
+        received = yield
+        print(f"收到: {received}")
+
+g = echo()
+next(g)            # 预激到第一个 yield
+g.send("hello")
+```
+
+**基本写法：throw 抛异常**
+`gen.throw(<异常类>, <消息>)`
+```python
+# 在 yield 处抛出异常
+def handler():
+    try:
+        while True:
+            try:
+                x = yield
+                print(f"处理 {x}")
+            except ValueError as e:
+                print(f"捕获 {e}")
+    except GeneratorExit:
+        print("生成器关闭")
+
+g = handler()
+next(g)
+g.send(1)
+g.throw(ValueError, "无效值")
+```
+
+**基本写法：close 关闭生成器**
+`gen.close()`
+```python
+# 关闭生成器，触发 GeneratorExit
+g = counter(10)
+next(g)
+g.close()
+```
+
+**基本写法：return 终止生成器**
+`return <值>`
+```python
+# return 触发 StopIteration 携带返回值
+def worker():
+    yield 1
+    yield 2
+    return "done"
+
+g = worker()
+try:
+    while True:
+        print(next(g))
+except StopIteration as e:
+    print("返回值:", e.value)
+```
+
+---
+
+## 生成器表达式
+
+**基本写法：生成器表达式**
+`(<表达式> for <变量> in <可迭代>)`
+```python
+# 惰性求值的生成器表达式
+gen = (x * 2 for x in range(1000000))
+print(next(gen))
+```
+
+**基本写法：带条件**
+`(<表达式> for <变量> in <可迭代> if <条件>)`
+```python
+# 带过滤的生成器表达式
+evens = (x for x in range(20) if x % 2 == 0)
+print(list(evens))
+```
+
+**基本写法：链式生成器**
+`(<表达式> for <变量1> in <可迭代1> for <变量2> in <可迭代2>)`
+```python
+# 笛卡尔积
+pairs = ((x, y) for x in "ab" for y in "12")
+print(list(pairs))
+```
+
+---
+
+## 协程生成器
+
+**基本写法：yield 接收返回**
+`x = yield`
+```python
+# 双向通信的协程生成器
+def accumulator():
+    total = 0
+    while True:
+        value = yield total
+        if value is None:
+            return total
+        total += value
+
+acc = accumulator()
+next(acc)
+print(acc.send(10))
+print(acc.send(20))
+print(acc.send(None))
+```
+
+---
+
+## 异步生成器
+
+**基本写法：async 生成器**
+`async def <异步生成器>():\n    yield <值>`
+```python
+# 异步生成器 yield 之间可 await
+import asyncio
+
+async def async_counter(n):
+    for i in range(n):
+        await asyncio.sleep(0.1)
+        yield i
+
+async def main():
+    async for x in async_counter(3):
+        print(x)
+
+asyncio.run(main())
+```
+
+**基本写法：async for 迭代**
+`async for <变量> in <异步生成器>:`
+```python
+# 异步迭代
+async def main():
+    async for x in async_counter(3):
+        print(x)
+```
+
+---
+
+## 内置迭代工具
+
+**基本写法：iter 双参形式**
+`iter(<可调用>, <哨兵>)`
+```python
+# 调用可调用直到返回哨兵值
+import random
+data = iter(lambda: random.randint(1, 10), 5)
+print(list(data))
+```
+
+**基本写法：next 取下一值**
+`next(<迭代器>, <默认值>)`
+```python
+# 带默认值的 next
+g = iter([])
+print(next(g, "empty"))
+```
+
+**基本写法：zip 并行**
+`zip(*<可迭代>, strict=<bool>)`
+```python
+# strict=True 要求长度一致（3.10+）
+for a, b in zip([1, 2, 3], ["a", "b", "c"], strict=True):
+    print(a, b)
+```
+
+**基本写法：enumerate 索引**
+`enumerate(<可迭代>, start=<起>)`
+```python
+# 带索引迭代
+for i, v in enumerate(["a", "b"], start=1):
+    print(i, v)
+```

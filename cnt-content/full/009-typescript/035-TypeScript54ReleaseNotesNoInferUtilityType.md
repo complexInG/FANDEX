@@ -1621,21 +1621,26 @@ type DeepReadonly<T> = T extends
 
 ### 10.2 项目结构
 
-```
-src/
-├── config/
-│   ├── schema.ts          # Zod Schema 定义
-│   ├── loader.ts          # 配置加载器
-│   ├── manager.ts         # ConfigManager
-│   ├── env.ts             # 环境变量校验
-│   ├── merge.ts           # 深度合并工具
-│   └── types.ts           # 类型工具（Path, PathValue, DeepGet 等）
-├── content/
-│   ├── docs/
-│   │   └── typescript/
-│   │       └── 类型安全的配置系统.md
-└── scripts/
-    └── check-config-schema.mjs
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["config/"]
+    T2["schema.ts          # Zod Schema 定义"]
+    T3["loader.ts          # 配置加载器"]
+    T4["manager.ts         # ConfigManager"]
+    T5["env.ts             # 环境变量校验"]
+    T6["merge.ts           # 深度合并工具"]
+    T7["types.ts           # 类型工具（Path, PathValue, DeepGet 等）"]
+    T8["content/"]
+    T9["docs/"]
+    T10["typescript/"]
+    T11["类型安全的配置系统.md"]
+    T12["scripts/"]
+    T13["check-config-schema.mjs"]
+    T0 --> T1
+    T7 --> T8
+    T11 --> T12
+    T12 --> T13
 ```
 
 ### 10.3 测试策略

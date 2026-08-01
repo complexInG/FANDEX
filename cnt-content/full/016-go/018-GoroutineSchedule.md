@@ -86,18 +86,11 @@ Linux pthread 创建 + 销毁耗时（2.6 GHz CPU，2009 年测量）：
 
 Go 1.0 由 Dmitry Vyukov、Russ Cox 等设计，首次将 M:N 调度模型引入主流语言。早期的调度器结构为 **GM 模型**：
 
-```text
-+-------+   +-------+   +-------+
-|  M    |   |  M    |   |  M    |     <-- OS 线程
-+---+---+   +---+---+   +---+---+
-    |           |           |
-    v           v           v
-+--------------------------------+
-|       Global Run Queue         |     <-- 全局队列
-+--------------------------------+
-    ^   ^   ^   ^   ^   ^   ^
-    |   |   |   |   |   |   |
-   G1  G2  G3  G4  G5  G6  G7      <-- goroutines
+```mermaid
+flowchart TD
+    B0["M | M | M | <-- OS 线程"]
+    B1["Global Run Queue | <-- 全局队列"]
+    B0 --> B1
 ```
 
 GM 模型的核心缺陷：
@@ -312,38 +305,25 @@ $$
 
 每个 goroutine 有以下状态（简化版，实际 runtime 中有更多细节）：
 
-```text
-                  +---------+
-                  |  Dead   |
-                  +----+----+
-                       |
-                       | go func()
-                       v
-                  +---------+
-        +-------->|Runnable |
-        |         +----+----+
-        |              |
-        |              | schedule()
-        |              v
-        |         +---------+
-        |         |Running  |<----+
-        |         +----+----+     |
-        |              |          |
-        |              |          | preempt/yield
-        |              v          |
-        |    +----------------+   |
-        |    | blocked?       |   |
-        |    +-------+--------+   |
-        |            |            |
-        |       yes  |  no        |
-        |            v            |
-        |    +----------------+   |
-        |    | Waiting        |   |
-        |    +-------+--------+   |
-        |            |            |
-        |            | unblock    |
-        +------------+            |
-                                  |
+```mermaid
+flowchart TD
+    B0["Dead"]
+    B1["go func()"]
+    B0 --> B1
+    B2["schedule() / v"]
+    B1 --> B2
+    B3["Running | <"]
+    B2 --> B3
+    B4["preempt/yield / v"]
+    B3 --> B4
+    B5["blocked?"]
+    B4 --> B5
+    B6["yes | no / v"]
+    B5 --> B6
+    B7["Waiting"]
+    B6 --> B7
+    B8["unblock"]
+    B7 --> B8
 ```
 
 形式化状态转移函数：
@@ -1462,13 +1442,19 @@ Kubernetes 的设计原则：
 
 Docker daemon（containerd）的 goroutine 结构：
 
-```text
-containerd
-├── main goroutine                  # 主循环
-├── supervisor                      # 容器监控（每容器一个 goroutine）
-├── events                          # 事件分发（goroutine per subscriber）
-├── snapshotter                     # 快照管理
-└── ttrpc server                    # 每个 RPC 一个 goroutine
+```mermaid
+flowchart TD
+    T0["containerd"]
+    T1["main goroutine                  # 主循环"]
+    T2["supervisor                      # 容器监控（每容器一个 goroutine）"]
+    T3["events                          # 事件分发（goroutine per subscriber）"]
+    T4["snapshotter                     # 快照管理"]
+    T5["ttrpc server                    # 每个 RPC 一个 goroutine"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
 ```
 
 containerd 通过 `errgroup` 管理 RPC handler goroutine 的生命周期，确保任一 handler 出错时能优雅退出。
@@ -1550,7 +1536,7 @@ Prometheus 查询引擎使用 worker pool 限制并发查询数：
 
 ---
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 选择题
 
@@ -1564,7 +1550,7 @@ D. Work Stealing 从其他 P 的本地队列偷取一半 G
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 P 的本地队列容量为 256（`runtime/proc.go` 中的 `runqcap`），超过容量后会有一半被移到全局队列。这避免了某个 P 的本地队列过长导致负载不均。
 
@@ -1580,7 +1566,7 @@ D. SIGUSR1
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 Go 1.14 选择 `SIGURG` 是因为：
 1. 该信号默认动作是忽略，不会终止进程
@@ -1600,7 +1586,7 @@ D. `time.Sleep`
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 简单赋值是单一指令，不涉及调度点。Go 调度器在函数调用栈检查、channel 操作、syscall、time.Sleep 等点检查抢占标志。Go 1.14+ 虽然支持异步抢占，但简单赋值本身不主动触发调度。
 
@@ -1616,7 +1602,7 @@ D. GOMAXPROCS 控制同时执行 Go 代码的 M 数量
 <details>
 <summary>答案与解析</summary>
 
-**答案：D**
+**讲解要点：D**
 
 A 错误，Go 1.5 之前默认为 1；B 错误，Go 1.22 之前不自动感知 cgroup，需要 `automaxprocs`；C 错误，可以大于 CPU 核心数（但不推荐）；D 正确，GOMAXPROCS 等于 P 的数量，限制了同时执行 Go 代码的 M 数量（阻塞 syscall 的 M 不计入）。
 
@@ -1632,7 +1618,7 @@ D. 栈缩小时立即释放内存
 <details>
 <summary>答案与解析</summary>
 
-**答案：C**
+**讲解要点：C**
 
 A 错误，初始栈为 2KB（`_StackMin = 2048`）；B 错误，最大为 1GB（`_StackMax`）；C 正确，Go 使用拷贝栈，栈空间不足时分配双倍空间并拷贝；D 错误，栈缩小时 GC 阶段才会释放，不是立即。
 
@@ -1841,7 +1827,7 @@ func (d *LeakDetector) Stop() {
 }
 ```
 
-### 思考题
+## 知识讲解与要点分析（原思考题）
 
 **1.** 为什么 Go 选择 work stealing 而不是全局队列？请从 cache 局部性、锁竞争、负载均衡三个角度分析。
 

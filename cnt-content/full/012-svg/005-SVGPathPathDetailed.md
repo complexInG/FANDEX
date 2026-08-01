@@ -14,6 +14,11 @@ related:
 prerequisites:
   - svg/基本图形详解
 ---
+# SVG 路径 path 语法速查手册
+
+> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -607,7 +612,7 @@ console.log(point.x, point.y);
 </svg>
 ```
 
-**解析**:
+**解析讲解**：
 
 - 起点 (50,30):心形顶部凹陷
 - C 到 (0,50):左半弧
@@ -1354,9 +1359,9 @@ FANDEX 项目使用 path 命令绘制知识图谱节点连接线:
 3. 数据可视化曲线
 4. 装饰性背景
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**:`M 10 10 L 100 100` 与 `m 10 10 l 100 100` 的区别是?
 
@@ -1365,13 +1370,10 @@ FANDEX 项目使用 path 命令绘制知识图谱节点连接线:
 - C. 前者绝对,后者相对
 - D. 前者使用直线,后者使用曲线
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:C
+**解析讲解**：C
 
-**解析**:大写字母 M/L 使用绝对坐标(以原点为参考),小写字母 m/l 使用相对坐标(以前一终点为参考)。若前一终点为原点(初始状态),两者结果相同;否则不同。
-</details>
+**解析讲解**：大写字母 M/L 使用绝对坐标(以原点为参考),小写字母 m/l 使用相对坐标(以前一终点为参考)。若前一终点为原点(初始状态),两者结果相同;否则不同。
 
 **题目 2**:绘制一个完整的圆形(从 (50,50) 到 (150,50),半径 50),正确的 arc 命令是?
 
@@ -1380,13 +1382,10 @@ FANDEX 项目使用 path 命令绘制知识图谱节点连接线:
 - C. `A 50 50 0 1 1 150 50`
 - D. `A 50 50 0 0 1 150 50`
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:B 或 C
+**解析讲解**：B 或 C
 
-**解析**:完整圆形需要 large-arc-flag=1(长弧,因为是半圆以上),sweep-flag 决定方向(0 逆时针下半圆,1 顺时针上半圆)。两种都可绘制半圆,组合为完整圆。
-</details>
+**解析讲解**：完整圆形需要 large-arc-flag=1(长弧,因为是半圆以上),sweep-flag 决定方向(0 逆时针下半圆,1 顺时针上半圆)。两种都可绘制半圆,组合为完整圆。
 
 **题目 3**:三次贝塞尔曲线有几个控制点?
 
@@ -1395,13 +1394,10 @@ FANDEX 项目使用 path 命令绘制知识图谱节点连接线:
 - C. 3 个
 - D. 4 个
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:三次贝塞尔曲线由 4 个点定义:起点(当前点)+ 2 个控制点 + 终点。SVG C 命令格式为 `C x1,y1 x2,y2 x,y`,其中 x1,y1 和 x2,y2 是控制点。
-</details>
+**解析讲解**：三次贝塞尔曲线由 4 个点定义:起点(当前点)+ 2 个控制点 + 终点。SVG C 命令格式为 `C x1,y1 x2,y2 x,y`,其中 x1,y1 和 x2,y2 是控制点。
 
 **题目 4**:`fill-rule="evenodd"` 与 `nonzero` 的核心区别是?
 
@@ -1410,13 +1406,10 @@ FANDEX 项目使用 path 命令绘制知识图谱节点连接线:
 - C. evenodd 性能更高
 - D. evenodd 仅适用于矩形
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:A
+**解析讲解**：A
 
-**解析**:nonzero 规则统计射线穿越路径的代数和(顺时针 +1,逆时针 -1),非零填充;evenodd 仅统计穿越次数(奇数填充),不考虑方向。因此 evenodd 在复杂嵌套图形中更易预测。
-</details>
+**解析讲解**：nonzero 规则统计射线穿越路径的代数和(顺时针 +1,逆时针 -1),非零填充;evenodd 仅统计穿越次数(奇数填充),不考虑方向。因此 evenodd 在复杂嵌套图形中更易预测。
 
 **题目 5**:`S` 命令的第一控制点如何确定?
 
@@ -1425,67 +1418,49 @@ FANDEX 项目使用 path 命令绘制知识图谱节点连接线:
 - C. 反射前一个 C/S 命令的第二控制点关于当前点
 - D. 随机生成
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:C
+**解析讲解**：C
 
-**解析**:`S x2,y2 x,y` 命令的第一控制点 $P_1'$ 自动反射前一个 C/S 命令的第二控制点 $P_{lc}$ 关于当前点 $P_c$:$P_1' = 2P_c - P_{lc}$。这保证曲线在连接点处切线连续。
-</details>
+**解析讲解**：`S x2,y2 x,y` 命令的第一控制点 $P_1'$ 自动反射前一个 C/S 命令的第二控制点 $P_{lc}$ 关于当前点 $P_c$:$P_1' = 2P_c - P_{lc}$。这保证曲线在连接点处切线连续。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 6**:贝塞尔曲线的数学基础由 ________ 于 1959 年提出,但工业推广由 ________ 于 1960 年完成。
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:`Paul de Casteljau`(de Casteljau);`Pierre Bézier`(Bézier)
+**解析讲解**：`Paul de Casteljau`(de Casteljau);`Pierre Bézier`(Bézier)
 
-**解析**:de Casteljau 在 Citroën 提出算法,Bézier 在 Renault 推广工业应用。由于 Bézier 公开发表,曲线以他命名,但 de Casteljau 算法保留原创者名。
-</details>
+**解析讲解**：de Casteljau 在 Citroën 提出算法,Bézier 在 Renault 推广工业应用。由于 Bézier 公开发表,曲线以他命名,但 de Casteljau 算法保留原创者名。
 
 **题目 7**:`pathLength="100"` 的作用是将路径长度归一化为 ________,后续 stroke-dasharray 基于 ________ 计算。
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:`100`;`100`(归一化值)
+**解析讲解**：`100`;`100`(归一化值)
 
-**解析**:pathLength 不改变实际路径长度,只是将引用路径长度的属性(stroke-dasharray、stroke-dashoffset)按归一化值计算。例如 stroke-dasharray="50 50" 在 pathLength=100 时表示画一半留一半。
-</details>
+**解析讲解**：pathLength 不改变实际路径长度,只是将引用路径长度的属性(stroke-dasharray、stroke-dashoffset)按归一化值计算。例如 stroke-dasharray="50 50" 在 pathLength=100 时表示画一半留一半。
 
 **题目 8**:arc 命令的 `large-arc-flag` 与 `sweep-flag` 共可表示 ________ 种弧组合。
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:`4`
+**解析讲解**：`4`
 
-**解析**:large-arc-flag(0/1) × sweep-flag(0/1) = 4 种组合,分别对应:短弧逆时针、短弧顺时针、长弧逆时针、长弧顺时针。
-</details>
+**解析讲解**：large-arc-flag(0/1) × sweep-flag(0/1) = 4 种组合,分别对应:短弧逆时针、短弧顺时针、长弧逆时针、长弧顺时针。
 
 **题目 9**:`Z` 命令将当前点连接到 ________,并使路径 ________。
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:`M 命令的起点(子路径起点)`;`闭合(可填充内部)`
+**解析讲解**：`M 命令的起点(子路径起点)`;`闭合(可填充内部)`
 
-**解析**:Z 命令画一条直线从当前点回到子路径起点(最近 M 命令终点),形成闭合路径。闭合后 fill 才能正确填充内部。
-</details>
+**解析讲解**：Z 命令画一条直线从当前点回到子路径起点(最近 M 命令终点),形成闭合路径。闭合后 fill 才能正确填充内部。
 
 **题目 10**:三次贝塞尔曲线 $B(t) = \sum_{i=0}^{3} \binom{3}{i} (1-t)^{3-i} t^i P_i$ 的展开形式是 ________。
 
-<details>
-<summary>查看答案</summary>
 
-**答案**:$B(t) = (1-t)^3 P_0 + 3(1-t)^2 t P_1 + 3(1-t) t^2 P_2 + t^3 P_3$
+**解析讲解**：$B(t) = (1-t)^3 P_0 + 3(1-t)^2 t P_1 + 3(1-t) t^2 P_2 + t^3 P_3$
 
-**解析**:三次贝塞尔的 Bernstein 多项式展开,其中 $\binom{3}{0}=\binom{3}{3}=1$, $\binom{3}{1}=\binom{3}{2}=3$。
-</details>
+**解析讲解**：三次贝塞尔的 Bernstein 多项式展开,其中 $\binom{3}{0}=\binom{3}{3}=1$, $\binom{3}{1}=\binom{3}{2}=3$。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 11**:用 path 命令绘制一个五角星,中心在 (100,100),外接圆半径 80,要求:
 
@@ -1686,8 +1661,6 @@ console.log(points);
 
 **题目 13**:为什么 SVG 选择贝塞尔曲线而非 B 样条或 NURBS 作为路径曲线?这一选择有哪些优势与劣势?
 
-<details>
-<summary>参考答案</summary>
 
 **选择贝塞尔曲线的原因**:
 
@@ -1715,12 +1688,9 @@ console.log(points);
 - CAD/CAM 工程图(精确圆锥曲线)
 - 高级建模(权重控制)
 - 工业设计(汽车、飞机外形)
-</details>
 
 **题目 14**:设计一个 SVG 图标库的路径数据规范,要求支持主题化、多尺寸、可访问性。请描述关键设计决策。
 
-<details>
-<summary>参考答案</summary>
 
 **设计决策**:
 
@@ -1783,12 +1753,9 @@ interface IconSpec {
 .icon-md { width: 24px; height: 24px; }
 .icon-lg { width: 48px; height: 48px; }
 ```
-</details>
 
 **题目 15**:解释 `stroke-dasharray` 动画的原理,并说明如何用 pathLength 实现基于百分比的路径动画。
 
-<details>
-<summary>参考答案</summary>
 
 **stroke-dasharray 动画原理**:
 
@@ -1871,7 +1838,6 @@ function setProgress(path, percent) {
 const path = document.querySelector('path');
 setProgress(path, 30); // 30% 进度
 ```
-</details>
 
 ## 11. 参考文献
 
@@ -1953,3 +1919,275 @@ setProgress(path, 30); // 30% 进度
 - **Variable Fonts**:可变字体与路径插值
 
 下一篇介绍 SVG 文本,包括 `<text>`、`<tspan>`、`<textPath>` 等排版能力,在路径基础上扩展沿路径排版的复合应用。
+## path 元素
+
+**path 路径元素**
+`<path d="<命令序列>" [fill="<填充色>"] [stroke="<描边色>"] [stroke-width="<描边宽度>"] [fill-rule="<填充规则>"] [pathLength="<归一化长度>"] />`
+```html
+<svg viewBox="0 0 200 100">
+  <path d="M 10 10 L 190 10 L 190 90 L 10 90 Z" fill="#4f5bd5" />
+</svg>
+```
+
+---
+
+## 命令总览
+
+| 命令 | 含义             | 参数                      | 大小写区别         |
+| ---- | ---------------- | ------------------------- | ------------------ |
+| `M`  | 移动到(moveTo) | x,y                       | 大写绝对,小写相对 |
+| `L`  | 直线到(lineTo) | x,y                       | 同上               |
+| `H`  | 水平线           | x                         | 同上               |
+| `V`  | 垂直线           | y                         | 同上               |
+| `C`  | 三次贝塞尔       | x1,y1 x2,y2 x,y           | 同上               |
+| `S`  | 平滑三次贝塞尔   | x2,y2 x,y                 | 同上               |
+| `Q`  | 二次贝塞尔       | x1,y1 x,y                 | 同上               |
+| `T`  | 平滑二次贝塞尔   | x,y                       | 同上               |
+| `A`  | 弧线             | rx,ry rot large,sweep x,y | 同上               |
+| `Z`  | 闭合路径         | 无                        | 大小写等价         |
+
+> **绝对坐标**:以坐标系原点为参考;**相对坐标**:以前一命令终点为参考。
+
+---
+
+## 直线命令
+
+### M / L 移动与直线
+
+**M L 直线**
+`d="M <x> <y> L <x> <y> ..."`
+```html
+<path d="M 10 10 L 100 10 L 100 50 L 10 50 Z" fill="#4f5bd5" />
+```
+
+### H / V 水平与垂直线
+
+**H V 直线**
+`d="M <x> <y> H <x> V <y> ..."`
+```html
+<path d="M 10 10 H 100 V 50 H 10 Z" fill="#00b894" />
+```
+
+`H 100` 等价于 `L 100 当前y`,`V 50` 等价于 `L 当前x 50`。
+
+### 相对坐标
+
+**小写命令相对坐标**
+```html
+<!-- 绝对 -->
+<path d="M 10 10 L 100 10 L 100 50" />
+<!-- 相对:等价效果 -->
+<path d="M 10 10 l 90 0 l 0 40" />
+```
+
+相对命令 `l 90 0` 表示从前一点向右移动 90,y 不变。
+
+---
+
+## 贝塞尔曲线
+
+### Q 二次贝塞尔
+
+**Q 二次贝塞尔**
+`d="... Q <控制点x> <控制点y> <终点x> <终点y>"`
+```html
+<svg viewBox="0 0 200 100">
+  <!-- 控制点 (100,10),终点 (190,90) -->
+  <path d="M 10 90 Q 100 10 190 90" fill="none" stroke="#4f5bd5" stroke-width="3" />
+  <!-- 辅助线 -->
+  <line x1="10" y1="90" x2="100" y2="10" stroke="#ccc" stroke-dasharray="3" />
+  <line x1="100" y1="10" x2="190" y2="90" stroke="#ccc" stroke-dasharray="3" />
+</svg>
+```
+
+### T 平滑二次贝塞尔
+
+**T 平滑二次贝塞尔**
+`d="... T <终点x> <终点y>"`
+```html
+<path d="M 10 90 Q 100 10 190 90 T 370 90" fill="none" stroke="#d63031" stroke-width="3" />
+```
+
+第二个控制点自动为 (280, 170),形成波浪。
+
+### C 三次贝塞尔
+
+**C 三次贝塞尔**
+`d="... C <控制点1x> <控制点1y> <控制点2x> <控制点2y> <终点x> <终点y>"`
+```html
+<svg viewBox="0 0 200 100">
+  <path d="M 10 50 C 50 10 150 90 190 50" fill="none" stroke="#00b894" stroke-width="3" />
+</svg>
+```
+
+### S 平滑三次贝塞尔
+
+**S 平滑三次贝塞尔**
+`d="... S <控制点2x> <控制点2y> <终点x> <终点y>"`
+```html
+<path d="M 10 50 C 50 10 100 90 150 50 S 250 10 290 50" fill="none" stroke="#d63031" />
+```
+
+---
+
+## 弧线命令 A
+
+**A 弧线命令**
+`d="... A <rx> <ry> <x-axis-rotation> <large-arc-flag> <sweep-flag> <终点x> <终点y>"`
+
+| 参数              | 含义                |
+| ----------------- | ------------------- |
+| `rx,ry`           | 椭圆半径            |
+| `x-axis-rotation` | 椭圆 x 轴旋转角度   |
+| `large-arc-flag`  | 0 短弧 / 1 长弧     |
+| `sweep-flag`      | 0 逆时针 / 1 顺时针 |
+| `x,y`             | 终点                |
+
+### 四种弧组合
+
+```html
+<svg viewBox="0 0 400 200">
+  <!-- 从 (50,100) 到 (150,100),半径 50 -->
+  <path d="M 50 100 A 50 50 0 0 0 150 100" fill="none" stroke="#4f5bd5" />
+  <path d="M 250 100 A 50 50 0 0 1 350 100" fill="none" stroke="#00b894" />
+  <path d="M 50 50 A 50 50 0 1 0 150 50" fill="none" stroke="#d63031" />
+  <path d="M 250 50 A 50 50 0 1 1 350 50" fill="none" stroke="#f9a825" />
+</svg>
+```
+
+### 圆弧扇形
+
+**扇形路径**
+`d="M <圆心x> <圆心y> L <起点x> <起点y> A <rx> <ry> <rot> <large> <sweep> <终点x> <终点y> Z"`
+```html
+<svg viewBox="0 0 200 200">
+  <path d="M 100 100 L 100 20 A 80 80 0 0 1 180 100 Z" fill="#4f5bd5" />
+</svg>
+```
+
+绘制 1/4 扇形:从圆心 (100,100) → (100,20) → 顺时针弧到 (180,100) → 闭合。
+
+---
+
+## 闭合路径 Z
+
+**Z 闭合路径**
+`d="... Z"`
+```html
+<!-- 不闭合:不画最后一条边 -->
+<path d="M 10 10 L 100 10 L 100 50" fill="none" stroke="#000" />
+<!-- 闭合:自动连接终点到起点 -->
+<path d="M 10 10 L 100 10 L 100 50 Z" fill="#4f5bd5" />
+```
+
+> 闭合后 `fill` 才能正确填充内部。
+
+---
+
+## fill-rule 填充规则
+
+### nonzero(默认)
+
+**fill-rule="nonzero"**
+```html
+<path
+  d="M 10 10 L 190 10 L 190 90 L 10 90 Z M 50 30 L 150 30 L 150 70 L 50 70 Z"
+  fill="#4f5bd5"
+  fill-rule="nonzero"
+/>
+```
+
+外矩形 + 内矩形:nonzero 规则下内矩形被"挖空"(外顺时针 + 内逆时针 → 区域计数为 0)。
+
+### evenodd
+
+**fill-rule="evenodd"**
+```html
+<path
+  d="M 10 10 L 190 10 L 190 90 L 10 90 Z M 50 30 L 150 30 L 150 70 L 50 70 Z"
+  fill="#00b894"
+  fill-rule="evenodd"
+/>
+```
+
+evenodd 规则下,无论方向,奇数次穿越绘制,偶数次不绘制 → 形成环带效果。
+
+### 五角星示例
+
+```html
+<!-- nonzero:中心填充 -->
+<path
+  d="M 100 10 L 120 70 L 180 70 L 130 105 L 150 165 L 100 130 L 50 165 L 70 105 L 20 70 L 80 70 Z"
+  fill="#d63031"
+  fill-rule="nonzero"
+/>
+
+<!-- evenodd:中心镂空 -->
+<path
+  d="M 100 10 L 120 70 L 180 70 L 130 105 L 150 165 L 100 130 L 50 165 L 70 105 L 20 70 L 80 70 Z"
+  fill="#f9a825"
+  fill-rule="evenodd"
+/>
+```
+
+---
+
+## 多子路径
+
+**单个 path 包含多个 M**
+`d="M <起点1> ... Z M <起点2> ... Z"`
+```html
+<!-- 两个独立三角形 -->
+<path d="M 10 10 L 90 10 L 50 90 Z M 110 10 L 190 10 L 150 90 Z" fill="#4f5bd5" />
+```
+
+---
+
+## pathLength 路径归一化
+
+**pathLength 归一化路径长度**
+`pathLength="<归一化长度>"`
+```html
+<path
+  d="M 10 50 Q 100 10 190 50"
+  fill="none"
+  stroke="#4f5bd5"
+  stroke-width="3"
+  pathLength="100"
+  stroke-dasharray="50 50"
+/>
+<!-- pathLength=100,dasharray 50 50 表示画一半留一半 -->
+```
+
+### JavaScript 路径测量 API
+```javascript
+const path = document.querySelector('path');
+const length = path.getTotalLength();
+console.log(length); // 例如 200
+const point = path.getPointAtLength(100); // 路径中点坐标
+```
+
+---
+
+## 综合示例:心形
+
+**心形路径**
+```html
+<svg viewBox="0 0 100 100" width="200" height="200">
+  <path
+    d="M 50 30
+       C 30 10 0 20 0 50
+       C 0 70 30 90 50 100
+       C 70 90 100 70 100 50
+       C 100 20 70 10 50 30 Z"
+    fill="#d63031"
+  />
+</svg>
+```
+
+路径解析:
+- 起点 (50,30):心形顶部凹陷
+- C 到 (0,50):左半弧
+- C 到 (50,100):底部尖角
+- C 到 (100,50):右半弧
+- C 回 (50,30):闭合

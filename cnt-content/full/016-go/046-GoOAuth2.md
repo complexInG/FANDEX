@@ -2764,25 +2764,17 @@ func (v *CachedValidator) Validate(tokenString string) (*CustomClaims, error) {
 
 **统一身份网关**：
 
-```
-┌─────────┐
-│  Client │
-└────┬────┘
-     │
-     ▼
-┌─────────────────┐
-│  Auth Gateway   │  ← 统一入口
-└────┬────────────┘
-     │
-     ├──── /auth/github ────► GitHub OAuth2
-     ├──── /auth/google ────► Google OIDC
-     ├──── /auth/apple  ────► Apple Sign In
-     └──── /auth/saml   ────► SAML IdP
-                                 │
-                                 ▼
-                         ┌──────────────┐
-                         │ Local JWT    │  ← 统一签发本地 JWT
-                         └──────────────┘
+```mermaid
+flowchart TD
+    C[Client] --> GW[Auth Gateway<br/>统一入口]
+    GW --> GH[/auth/github → GitHub OAuth2]
+    GW --> GO[/auth/google → Google OIDC]
+    GW --> GA[/auth/apple → Apple Sign In]
+    GW --> GS[/auth/saml → SAML IdP]
+    GH --> JWT[Local JWT<br/>统一签发本地 JWT]
+    GO --> JWT
+    GA --> JWT
+    GS --> JWT
 ```
 
 ### 4. 零信任架构
@@ -3036,9 +3028,9 @@ deviceURL := "https://github.com/login/device/code"
 
 ---
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
-### 习题 1（基础）
+## 知识讲解与要点分析（原习题 1（基础））
 
 **题目**：解释 OAuth 2.0 授权码流程中的 `state` 参数的作用，以及不使用它会导致什么安全风险？
 
@@ -3063,7 +3055,7 @@ deviceURL := "https://github.com/login/device/code"
 - 一次性使用
 - 回调时严格校验
 
-### 习题 2（应用）
+## 知识讲解与要点分析（原习题 2（应用））
 
 **题目**：编写一个 Go 函数，验证 RS256 JWT 并校验 `iss`、`aud`、`exp`，要求在 `exp` 后允许 30 秒的宽限期（clock skew）。
 
@@ -3108,7 +3100,7 @@ func ValidateRS256WithSkew(
 }
 ```
 
-### 习题 3（分析）
+## 知识讲解与要点分析（原习题 3（分析））
 
 **题目**：分析为什么 OAuth 2.1 草案废弃了 Implicit Flow？有什么替代方案？
 
@@ -3131,7 +3123,7 @@ func ValidateRS256WithSkew(
 
 **OAuth 2.1 的立场**：所有客户端都应使用授权码 + PKCE，包括 SPA 与移动端。
 
-### 习题 4（评估）
+## 知识讲解与要点分析（原习题 4（评估））
 
 **题目**：评估以下场景应使用哪种 JWT 签名算法，说明理由：
 - 内部微服务，单一团队
@@ -3153,7 +3145,7 @@ func ValidateRS256WithSkew(
 - 兼容性要求高选 RS256（最广泛支持）
 - 单方系统可选 HS256（性能最优）
 
-### 习题 5（创造）
+## 知识讲解与要点分析（原习题 5（创造））
 
 **题目**：设计一个支持多 IdP（GitHub、Google、Apple）的统一身份网关，要求：
 - 用户可用任一 IdP 登录
@@ -3163,35 +3155,17 @@ func ValidateRS256WithSkew(
 
 **答案设计**：
 
-```
-架构：
-┌──────┐
-│ User │
-└───┬──┘
-    │
-    ▼
-┌─────────────────┐
-│  Auth Gateway   │
-└───┬─────────────┘
-    │
-    ├─ /auth/github  ──► GitHub OAuth2
-    ├─ /auth/google  ──► Google OIDC
-    └─ /auth/apple   ──► Apple Sign In
-                       │
-                       ▼
-              ┌─────────────────┐
-              │ Identity Linker │  ← 根据邮箱关联用户
-              └────────┬────────┘
-                       │
-                       ▼
-              ┌─────────────────┐
-              │ Token Issuer    │  ← 签发内部 JWT
-              └────────┬────────┘
-                       │
-                       ▼
-              ┌─────────────────┐
-              │ Refresh Store   │  ← Redis 存储 Refresh Token
-              └─────────────────┘
+```mermaid
+flowchart TD
+    U[User] --> GW[Auth Gateway]
+    GW --> GH[/auth/github → GitHub OAuth2]
+    GW --> GO[/auth/google → Google OIDC]
+    GW --> GA[/auth/apple → Apple Sign In]
+    GH --> IL[Identity Linker<br/>根据邮箱关联用户]
+    GO --> IL
+    GA --> IL
+    IL --> TI[Token Issuer<br/>签发内部 JWT]
+    TI --> RS[Refresh Store<br/>Redis 存储 Refresh Token]
 ```
 
 关键实现：
@@ -3264,7 +3238,7 @@ func (g *IdentityGateway) HandleProviderCallback(provider string) http.HandlerFu
 }
 ```
 
-### 习题 6（综合）
+## 知识讲解与要点分析（原习题 6（综合））
 
 **题目**：分析以下 JWT 安全事件，指出至少 3 个问题：
 

@@ -1539,7 +1539,7 @@ print(tcp("send", {payload = "hello"}))  -- ESTABLISHED
 print(tcp("close"))  -- FIN_WAIT_1
 ```
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 

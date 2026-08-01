@@ -15,10 +15,11 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+# 图像与响应式图片 语法速查手册
 
-# 图像与响应式图片（Images and Responsive Images）
+> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档依据 WHATWG HTML Living Standard §4.8.3 "The img element" 与 W3C HTML5.3 规范，系统阐述 HTML5 图像处理体系：`<img>` 元素、`srcset`/`sizes` 属性、`<picture>` 元素、现代图像格式（WebP/AVIF/JPEG XL）、响应式图片选择算法及性能优化策略，对标 MIT 6.S192、Stanford CS142 与 CMU 15-410 教学深度。
+---
 
 ## 1. 学习目标
 
@@ -133,34 +134,23 @@ iPhone（2007）开启移动互联网时代。2010 年 retina 显示屏（DPR=2�
 
 ### 2.5 演进时间线
 
-```
-1993  Mosaic 引入 <img>
-  │
-1995  HTML 2.0 (RFC 1866) 规范化 <img>
-  │
-1996  PNG 1.0 发布（W3C 推荐）
-  │
-2007  iPhone 发布，移动互联网时代开启
-  │
-2010  Retina 显示屏；WebP 发布
-  │
-2012  W3C 响应式图片提案（srcset / picture）
-  │
-2014  HTML5 标准化（不含响应式图片）
-  │
-2016  HTML5.1 纳入 srcset / sizes / <picture>
-  │
-2017  Chrome 56 支持 <img loading="lazy">（实验性）
-  │
-2019  AVIF 1.0 发布
-  │
-2020  Chrome 85 <img loading="lazy"> 正式可用
-  │
-2022  JPEG XL 1.0 发布
-  │
-2023  fetchpriority 属性进入 HTML Living Standard
-  │
-2024  AVIF 全球支持率 >92%；JPEG XL 仍在 Chrome flag 阶段
+```mermaid
+timeline
+    title 发展时间线
+    1993: Mosaic 引入 <img>
+    1995: HTML 2.0 (RFC 1866) 规范化 <img>
+    1996: PNG 1.0 发布（W3C 推荐）
+    2007: iPhone 发布，移动互联网时代开启
+    2010: Retina 显示屏；WebP 发布
+    2012: W3C 响应式图片提案（srcset / picture）
+    2014: HTML5 标准化（不含响应式图片）
+    2016: HTML5.1 纳入 srcset / sizes / <picture>
+    2017: Chrome 56 支持 <img loading="lazy">（实验性）
+    2019: AVIF 1.0 发布
+    2020: Chrome 85 <img loading="lazy"> 正式可用
+    2022: JPEG XL 1.0 发布
+    2023: fetchpriority 属性进入 HTML Living Standard
+    2024: AVIF 全球支持率 >92%；JPEG XL 仍在 Chrome flag 阶段
 ```
 
 ### 2.6 规范族谱
@@ -1181,11 +1171,11 @@ Cloudinary 提供 `f_auto,q_auto` 自动格式与质量协商：
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个 `srcset` 语法是**错误**的？
+**常见疑问 1**：以下哪个 `srcset` 语法是**错误**的？
 
 A. `srcset="small.jpg 400w, large.jpg 800w"`
 
@@ -1195,16 +1185,13 @@ C. `srcset="small.jpg 400w, large.jpg 2x"`
 
 D. `srcset="photo.jpg 1x, photo@3x.jpg 3x"`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
-**解析**：`srcset` 中所有候选必须使用**相同类型**的描述符，不能 `w`（宽度）与 `x`（密度）混用。C 选项混用了 `400w` 和 `2x`，浏览器会忽略整个 `srcset`，仅使用 `src` 属性。
+**解析讲解**：`srcset` 中所有候选必须使用**相同类型**的描述符，不能 `w`（宽度）与 `x`（密度）混用。C 选项混用了 `400w` 和 `2x`，浏览器会忽略整个 `srcset`，仅使用 `src` 属性。
 
-</details>
 
-**Q2**：关于 `loading="lazy"` 与 `fetchpriority="high"`，以下说法正确的是：
+**常见疑问 2**：关于 `loading="lazy"` 与 `fetchpriority="high"`，以下说法正确的是：
 
 A. 所有图片都应设置 `loading="lazy"` 以节省带宽
 
@@ -1214,20 +1201,17 @@ C. `loading="lazy"` 与 `fetchpriority="high"` 可以同时使用
 
 D. `fetchpriority` 仅对 `loading="eager"` 生效
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
-**解析**：
+**解析讲解**：
 - A 错误：首屏 LCP 图片不能用 `lazy`，否则延迟 LCP。
 - B 正确：首屏 LCP 图片应立即加载并提升优先级。
 - C 错误：`lazy` 表示延迟加载，与 `high` 优先级语义冲突，浏览器会忽略 `high`。
 - D 错误：`fetchpriority` 对所有图片生效，但 `lazy` 图片在加载前不参与优先级调度。
 
-</details>
 
-**Q3**：浏览器如何选择 `srcset` 中的图片？（设 `srcset="a.jpg 400w, b.jpg 800w, c.jpg 1200w"`，`sizes="(max-width: 600px) 100vw"`，视口宽度 500px，DPR=2）
+**常见疑问 3**：浏览器如何选择 `srcset` 中的图片？（设 `srcset="a.jpg 400w, b.jpg 800w, c.jpg 1200w"`，`sizes="(max-width: 600px) 100vw"`，视口宽度 500px，DPR=2）
 
 A. 选择 `a.jpg`（400w）
 
@@ -1237,50 +1221,39 @@ C. 选择 `c.jpg`（1200w）
 
 D. 选择默认 `src`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
-**解析**：
+**解析讲解**：
 1. 命中媒体条件 `(max-width: 600px)`，渲染宽度 = 100vw = 500px。
 2. 目标宽度 = 500 × 2 (DPR) = 1000px。
 3. 选择最接近且 ≥ 1000px 的候选：`b.jpg (800w)` 与 `c.jpg (1200w)` 中，800w < 1000w < 1200w，浏览器选最接近且 ≥ 的，即 `c.jpg (1200w)`。
 
 实际浏览器实现略有差异，多数会选 `c.jpg`。但部分浏览器（如 Chrome）在边界情况选 `b.jpg`（避免过大）。题目答案取决于具体实现，标准要求选 `c.jpg`。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q4**：`<img>` 元素的 `currentSrc` 属性返回________，即浏览器根据 `srcset`/`sizes` 实际选择的图片 URL。
+**常见疑问 4**：`<img>` 元素的 `currentSrc` 属性返回________，即浏览器根据 `srcset`/`sizes` 实际选择的图片 URL。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：当前实际加载的图片 URL（`DOMString` 类型）
+**解析讲解**：当前实际加载的图片 URL（`DOMString` 类型）
 
-**解析**：`img.currentSrc` 是只读属性，返回浏览器从 `srcset` 中选择的实际 URL，若未使用 `srcset` 则返回 `src`。
+**解析讲解**：`img.currentSrc` 是只读属性，返回浏览器从 `srcset` 中选择的实际 URL，若未使用 `srcset` 则返回 `src`。
 
-</details>
 
-**Q5**：`<picture>` 元素必须包含一个________子元素作为回退。
+**常见疑问 5**：`<picture>` 元素必须包含一个________子元素作为回退。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`<img>` 元素
+**解析讲解**：`<img>` 元素
 
-**解析**：`<picture>` 必须以 `<img>` 子元素结尾，作为所有 `<source>` 都不匹配时的回退，也是无障碍技术与 SEO 索引的入口。
+**解析讲解**：`<picture>` 必须以 `<img>` 子元素结尾，作为所有 `<source>` 都不匹配时的回退，也是无障碍技术与 SEO 索引的入口。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q6**：实现一个 Node.js 脚本，自动为 `public/img/` 目录下所有 JPEG 图片生成 320/640/1024/1920 四档 WebP 与 AVIF 格式，并输出 `manifest.json` 记录所有图片的多档 URL。
+**常见疑问 6**：实现一个 Node.js 脚本，自动为 `public/img/` 目录下所有 JPEG 图片生成 320/640/1024/1920 四档 WebP 与 AVIF 格式，并输出 `manifest.json` 记录所有图片的多档 URL。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 // scripts/generate-images.js
@@ -1332,16 +1305,13 @@ async function generate() {
 generate().catch(console.error);
 ```
 
-</details>
 
-**Q7**：实现一个 React Hook `useResponsiveImage`，根据当前视口宽度返回最优图片 URL。要求：
+**常见疑问 7**：实现一个 React Hook `useResponsiveImage`，根据当前视口宽度返回最优图片 URL。要求：
 
 - 输入：候选图列表 `[{width, url}]`。
 - 输出：最优 URL 与 naturalWidth。
 - 监听视口 resize，但使用 debounce 200ms。
 
-<details>
-<summary>参考答案</summary>
 
 ```jsx
 // useResponsiveImage.js
@@ -1389,14 +1359,11 @@ export function useResponsiveImage(sources, defaultUrl) {
 // ], '/img/photo-320.jpg');
 ```
 
-</details>
 
 ### 10.4 思考题
 
-**Q8**：为什么 `srcset` 让浏览器选择而非开发者用 JS 选择？请从性能、缓存、SSR 三个角度分析。
+**常见疑问 8**：为什么 `srcset` 让浏览器选择而非开发者用 JS 选择？请从性能、缓存、SSR 三个角度分析。
 
-<details>
-<summary>参考答案</summary>
 
 1. **性能角度**：浏览器在解析 HTML 时即可选择图片 URL，比 JS 解析+执行更早（提前约 200~500ms）。JS 方案需等待主线程空闲，导致图片请求延后，损害 LCP。
 
@@ -1404,12 +1371,9 @@ export function useResponsiveImage(sources, defaultUrl) {
 
 3. **SSR 角度**：`srcset` 是 HTML 属性，SSR 输出后浏览器立即解析，无需 hydration。JS 方案在 hydration 前显示空占位，体验差。
 
-</details>
 
-**Q9**：设计一个图像性能监控 SDK，需采集：(a) LCP 图片 URL 与加载耗时，(b) CLS 来源图片，(c) 图片下载字节数，(d) 错误图片。请给出采集方案与上报协议。
+**常见疑问 9**：设计一个图像性能监控 SDK，需采集：(a) LCP 图片 URL 与加载耗时，(b) CLS 来源图片，(c) 图片下载字节数，(d) 错误图片。请给出采集方案与上报协议。
 
-<details>
-<summary>参考答案</summary>
 
 **采集方案**：
 
@@ -1519,12 +1483,9 @@ export class ImagePerfSDK {
 }
 ```
 
-</details>
 
-**Q10**：对比 `<picture>` + `<source>` 与 CSS `image-set()` 函数。何时应该选择前者？何时应该选择后者？
+**常见疑问 10**：对比 `<picture>` + `<source>` 与 CSS `image-set()` 函数。何时应该选择前者？何时应该选择后者？
 
-<details>
-<summary>参考答案</summary>
 
 | 维度 | `<picture>` + `<source>` | CSS `image-set()` |
 | ---- | ------------------------ | ------------------ |
@@ -1541,7 +1502,6 @@ export class ImagePerfSDK {
 - 装饰背景图片 → CSS `image-set()`。
 - 需要艺术指导 → `<picture>`（CSS 媒体查询 + background 也可，但需手写）。
 
-</details>
 
 ---
 
@@ -1656,3 +1616,213 @@ export class ImagePerfSDK {
 ---
 
 > 本文档遵循 MIT/Stanford/CMU 教学水准，结合 WHATWG HTML Living Standard 与 W3C HTML5.3 规范，系统呈现 HTML5 图像与响应式图片 API 的设计原理与工程实践。如需进一步学习，请参阅延伸阅读章节列出的书籍、论文与课程。
+## img 元素
+
+**图像标签**
+`<img src="<URL>" alt="<替代文本>" [width="<宽>"] [height="<高>"] [loading="lazy|eager"] [decoding="async|sync|auto"] [srcset] [sizes] />`
+```html
+<!-- 基础图像 -->
+<img src="photo.jpg" alt="美丽的风景" width="800" height="600" />
+
+<!-- 延迟加载 -->
+<img src="photo.jpg" alt="照片" loading="lazy" />
+
+<!-- 异步解码 -->
+<img src="large.jpg" alt="大图" decoding="async" />
+
+<!-- 错误回退 -->
+<img src="photo.jpg" alt="照片" onerror="this.src='fallback.jpg'" />
+```
+
+| 属性         | 作用                          |
+| ------------ | ----------------------------- |
+| `src`        | 图像 URL                      |
+| `alt`        | 替代文本(必填,无障碍)         |
+| `width`      | 宽度(像素)                   |
+| `height`     | 高度(像素)                   |
+| `loading`    | lazy 懒加载 / eager 立即加载  |
+| `decoding`   | 解码方式 async/sync/auto      |
+| `srcset`     | 多源图像列表                  |
+| `sizes`      | 不同视口下的显示尺寸          |
+| `referrerpolicy` | Referer 策略              |
+| `usemap`     | 关联 image map                |
+
+---
+
+## 响应式图片 srcset
+
+**宽度描述符**
+`<img srcset="<URL> <宽度>w, <URL> <宽度>w, ..." />`
+```html
+<!-- 浏览器根据视口自动选择合适尺寸 -->
+<img
+  src="small.jpg"
+  srcset="small.jpg 400w, medium.jpg 800w, large.jpg 1200w"
+  alt="响应式图片"
+/>
+```
+
+**像素密度描述符**
+`<img srcset="<URL> 1x, <URL> 2x, <URL> 3x" />`
+```html
+<!-- Retina 屏适配 -->
+<img
+  src="photo.jpg"
+  srcset="photo.jpg 1x, photo@2x.jpg 2x, photo@3x.jpg 3x"
+  alt="高分辨率图片"
+/>
+```
+
+---
+
+## sizes 属性
+
+**显示尺寸声明**
+`<img srcset="..." sizes="<媒体查询> <尺寸>, ... <默认尺寸>" />`
+```html
+<img
+  src="photo.jpg"
+  srcset="small.jpg 400w, medium.jpg 800w, large.jpg 1200w"
+  sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="响应式图片"
+/>
+```
+
+**选择宽度计算**
+`选择宽度 = sizes 计算值 × 设备像素比`
+
+```javascript
+// JavaScript 读取当前显示的图片
+const img = document.querySelector('img');
+console.log(img.currentSrc); // 当前加载的 URL
+```
+
+---
+
+## picture 元素
+
+**多格式回退**
+`<picture><source srcset="<URL>" type="<MIME>" />...<img src="<URL>" alt="<替代>" /></picture>`
+```html
+<!-- 按格式优先级回退 -->
+<picture>
+  <source srcset="photo.avif" type="image/avif" />
+  <source srcset="photo.webp" type="image/webp" />
+  <img src="photo.jpg" alt="照片" width="800" height="600" />
+</picture>
+```
+
+**按媒体查询切换**
+`<source media="<媒体查询>" srcset="<URL>" />`
+```html
+<!-- 不同视口加载不同图片 -->
+<picture>
+  <source media="(min-width: 1200px)" srcset="wide.jpg" />
+  <source media="(min-width: 768px)" srcset="medium.jpg" />
+  <img src="small.jpg" alt="响应式图片" />
+</picture>
+
+<!-- 同时指定宽度和格式 -->
+<picture>
+  <source
+    media="(min-width: 1200px)"
+    srcset="large.avif 1200w"
+    type="image/avif"
+  />
+  <source
+    media="(min-width: 768px)"
+    srcset="medium.webp 768w"
+    type="image/webp"
+  />
+  <img src="small.jpg" alt="照片" />
+</picture>
+```
+
+---
+
+## 图片格式对照
+
+| 格式 | 压缩类型  | 透明度 | 动画 | 压缩率 | 浏览器支持 |
+| ---- | --------- | ------ | ---- | ------ | ---------- |
+| JPEG | 有损      | 不支持 | 不支持 | 中等 | 全部       |
+| PNG  | 无损      | 支持   | 不支持 | 较低 | 全部       |
+| WebP | 有损/无损 | 支持   | 支持 | 高   | 97%+       |
+| AVIF | 有损/无损 | 支持   | 支持 | 最高 | 92%+       |
+| SVG  | 矢量      | 支持   | 支持 | —    | 全部       |
+| GIF  | 无损      | 支持   | 支持 | 低   | 全部       |
+| APNG | 无损      | 支持   | 支持 | 中等 | 95%+       |
+
+---
+
+## 图片预加载
+
+**link preload**
+`<link rel="preload" as="image" href="<URL>" [type="<MIME>"] [imagesrcset] [imagesizes] />`
+```html
+<!-- 预加载关键图片 -->
+<link rel="preload" as="image" href="hero.webp" type="image/webp" />
+
+<!-- 预加载响应式图片 -->
+<link
+  rel="preload"
+  as="image"
+  href="small.webp"
+  imagesrcset="small.webp 400w, medium.webp 800w, large.webp 1200w"
+  imagesizes="100vw"
+/>
+```
+
+---
+
+## image map 图像映射
+
+**usemap 关联映射**
+`<img src="<URL>" usemap="#<map名称>" alt="<替代>" />` + `<map name="<名称>">...<area>...</map>`
+```html
+<img src="map.png" alt="地图" usemap="#workmap" width="400" height="300" />
+
+<map name="workmap">
+  <area shape="rect" coords="34,44,270,350" alt="区域1" href="area1.html" />
+  <area shape="circle" coords="337,300,44" alt="区域2" href="area2.html" />
+  <area shape="poly" coords="140,21,180,40,150,80" alt="区域3" href="area3.html" />
+</map>
+```
+
+| shape 值 | coords 含义              |
+| -------- | ------------------------ |
+| `rect`   | x1,y1,x2,y2              |
+| `circle` | center-x,center-y,radius |
+| `poly`   | x1,y1,x2,y2,...,xn,yn    |
+| `default`| 整个区域                 |
+
+---
+
+## 性能优化技巧
+
+**宽高属性防止布局跳动**
+```html
+<!-- 指定 width/height,CSS 用比例缩放 -->
+<img
+  src="photo.jpg"
+  alt="照片"
+  width="800" height="600"
+  style="width: 100%; height: auto;"
+/>
+```
+
+**fetchpriority 优先级**
+```html
+<!-- 关键首屏图片 -->
+<img src="hero.jpg" alt="主图" fetchpriority="high" />
+
+<!-- 非关键图片 -->
+<img src="icon.png" alt="图标" fetchpriority="low" loading="lazy" />
+```
+
+**figure 与 figcaption**
+```html
+<figure>
+  <img src="chart.png" alt="销售数据图表" />
+  <figcaption>图1:2026年上半年销售数据</figcaption>
+</figure>
+```

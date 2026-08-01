@@ -2207,13 +2207,13 @@ except ImportError:
     print("PyTorch 未安装, 跳过 autograd 验证, 仅展示 NumPy 实现")
 ```
 
-## 9. 习题与解答
+## 知识讲解与要点分析（原习题）
 
 本章节对 frontmatter 中 10 道习题给出完整严格解答，涵盖填空、选择、代码纠错与开放证明四类题型。每题均包含「思路分析 → 严格解答 → 数值/符号验证 → 易错点提示」四段式结构，遵循 Spivak《Calculus》4th edition 习题解答风格。
 
-### 9.1 填空题详解
+### 填空题知识点讲解
 
-#### 习题 9.1.1（ex-calc-mvt-fb-01，记忆级）
+## 知识讲解与要点分析（原习题 9.1.1（ex-calc-mvt-fb-01，记忆级））
 
 **题目**：设 $f$ 在 $[a,b]$ 上连续，在 $(a,b)$ 内可导，且 $f(a)=f(b)=0$，由 Rolle 定理，存在 $\xi\in(a,b)$ 使得 $\underline{\quad}(\xi)=0$，该定理的证明依据是 Fermat 引理与闭区间连续函数的 $\underline{\quad}$ 定理。
 
@@ -2267,7 +2267,7 @@ for xi in xi_list:
 
 ---
 
-#### 习题 9.1.2（ex-calc-mvt-fb-02，理解级）
+## 知识讲解与要点分析（原习题 9.1.2（ex-calc-mvt-fb-02，理解级））
 
 **题目**：Taylor 定理的 Peano 余项 $R_n(x)=o((x-x_0)^n)$ 仅要求 $f$ 在 $x_0$ 处有 $\underline{\quad}$ 阶导数；而 Lagrange 余项 $R_n(x)=\dfrac{f^{(n+1)}(\xi)}{(n+1)!}\cdot(x-x_0)^{n+1}$ 则要求 $f$ 在含 $x_0$ 的开区间内有 $\underline{\quad}$ 阶导数。
 
@@ -2324,9 +2324,9 @@ print(f"  xi 应在 (0, {x_val}) 内: {0 < float(xi_numerical) < x_val}")
 - 不要混淆"在 $x_0$ 处 $n$ 阶可导"与"在 $x_0$ 邻域内 $n$ 阶可导"。前者是局部点性质，后者是邻域性质，强弱不同。
 - Schlömilch 余项 $R_n = \dfrac{(x-x_0)^{n+1-p}}{n!}\cdot p\cdot f^{(n+1)}(\xi)\cdot(x-\xi)^{p-1}$ 中取 $p=n+1$ 得 Lagrange 余项，取 $p=1$ 得 Cauchy 余项。
 
-### 9.2 选择题详解
+### 选择题知识点讲解
 
-#### 习题 9.2.1（ex-calc-mvt-mc-01，理解级）
+## 知识讲解与要点分析（原习题 9.2.1（ex-calc-mvt-mc-01，理解级））
 
 **题目**：下列函数在 $[-1,1]$ 上不满足 Lagrange 中值定理条件的是：
 
@@ -2339,10 +2339,10 @@ print(f"  xi 应在 (0, {x_val}) 内: {0 < float(xi_numerical) < x_val}")
 
 **严格解答**：正确答案为 **A**（最典型违反者）。逐项分析：
 
-- **A. $f(x)=|x|$**：在 $[-1,1]$ 上连续 ✓，但在 $x=0$ 处不可导（左导数 $-1$，右导数 $+1$），开区间不可导 ✗。**违反条件 (2)**。
-- **B. $f(x)=x^{1/3}$**：在 $[-1,1]$ 上连续 ✓，但在 $x=0$ 处导数 $f'(x)=\dfrac{1}{3}x^{-2/3}\to\infty$（垂直切线），开区间不可导 ✗。**违反条件 (2)**。
+- **A. $f(x)=|x|$**：在 $[-1,1]$ 上连续 √，但在 $x=0$ 处不可导（左导数 $-1$，右导数 $+1$），开区间不可导 ×。**违反条件 (2)**。
+- **B. $f(x)=x^{1/3}$**：在 $[-1,1]$ 上连续 √，但在 $x=0$ 处导数 $f'(x)=\dfrac{1}{3}x^{-2/3}\to\infty$（垂直切线），开区间不可导 ×。**违反条件 (2)**。
 - **C. $f(x)=\dfrac{1}{1-x}$**：在 $[-1,1)$ 连续，但在 $x=1$ 处即使定义 $f(1)=0$ 也不连续（$\lim_{x\to 1^-} f(x)=+\infty\ne 0$）。**违反条件 (1)**。
-- **D. $f(x)=x^2\sin(1/x)$**：在 $x=0$ 处 $f'(0)=\lim_{h\to 0}\dfrac{h^2\sin(1/h)}{h}=\lim_{h\to 0} h\sin(1/h)=0$（夹逼定理），故在 $[-1,1]$ 连续 ✓、$(-1,1)$ 可导 ✓。**满足全部条件**。
+- **D. $f(x)=x^2\sin(1/x)$**：在 $x=0$ 处 $f'(0)=\lim_{h\to 0}\dfrac{h^2\sin(1/h)}{h}=\lim_{h\to 0} h\sin(1/h)=0$（夹逼定理），故在 $[-1,1]$ 连续 √、$(-1,1)$ 可导 √。**满足全部条件**。
 
 **Python 验证**：
 
@@ -2381,7 +2381,7 @@ print(f"D: lim_{{x->0}} f'(x) = {limit_df_D} (None 表示极限不存在, f' 不
 
 ---
 
-#### 习题 9.2.2（ex-calc-mvt-mc-02，应用级）
+## 知识讲解与要点分析（原习题 9.2.2（ex-calc-mvt-mc-02，应用级））
 
 **题目**：设 $f(x)=e^x$，在 $[0,1]$ 上应用 Lagrange 中值定理，中值点 $\xi$ 满足：
 
@@ -2398,7 +2398,7 @@ print(f"D: lim_{{x->0}} f'(x) = {limit_df_D} (None 表示极限不存在, f' 不
 
 1. $f'(\xi)=\dfrac{f(1)-f(0)}{1-0}=\dfrac{e-1}{1}=e-1$。
 2. 因 $f'(\xi)=e^\xi$，故 $e^\xi=e-1$。
-3. 解得 $\xi=\ln(e-1)\approx\ln(1.71828)\approx 0.5413\in(0,1)$ ✓。
+3. 解得 $\xi=\ln(e-1)\approx\ln(1.71828)\approx 0.5413\in(0,1)$ √。
 
 **选项分析**：
 
@@ -2440,7 +2440,7 @@ print(f"验证: f'(xi) = e^xi = {sp.exp(xi_val)} = {sp.simplify(sp.exp(xi_val) -
 
 ---
 
-#### 习题 9.2.3（ex-calc-mvt-mc-03，分析级）
+## 知识讲解与要点分析（原习题 9.2.3（ex-calc-mvt-mc-03，分析级））
 
 **题目**：关于 Darboux 定理（导数介值定理），下列说法正确的是：
 
@@ -2512,7 +2512,7 @@ print(f"  Darboux 性质在含 0 的区间上仍成立 (即便 f' 不连续)")
 
 ### 9.3 代码纠错题详解
 
-#### 习题 9.3.1（ex-calc-mvt-cf-01，应用级）
+## 知识讲解与要点分析（原习题 9.3.1（ex-calc-mvt-cf-01，应用级））
 
 **题目**：下列 Python 代码意在用 sympy 符号验证 Lagrange 中值定理对 $f(x)=x^3-x$ 在 $[0,2]$ 上的成立性，但存在两处错误导致输出错误的中值点。请指出错误并修正。
 
@@ -2591,7 +2591,7 @@ for xi in xi_list:
 
 ---
 
-#### 习题 9.3.2（ex-calc-mvt-cf-02，分析级）
+## 知识讲解与要点分析（原习题 9.3.2（ex-calc-mvt-cf-02，分析级））
 
 **题目**：下列代码用 Taylor 展开近似计算 $e^{0.5}$，误差控制目标为 $10^{-8}$，但运行结果远小于真实值。请定位错误并修正。
 
@@ -2675,7 +2675,7 @@ print(f"误差在机器精度量级: {abs(approx - math.exp(x_val)) < 1e-12}")
 
 ### 9.4 开放性证明题详解
 
-#### 习题 9.4.1（ex-calc-mvt-oe-01，分析级）
+## 知识讲解与要点分析（原习题 9.4.1（ex-calc-mvt-oe-01，分析级））
 
 **题目**：设 $f(x)=x^2\sin\left(\dfrac{1}{x}\right)$（$f(0)=0$），$g(x)=x^2\cos\left(\dfrac{1}{x}\right)$（$g(0)=0$）。证明：虽然 $f'$ 与 $g'$ 在 $x=0$ 处不连续，但 $f$ 与 $g$ 均满足 Darboux 定理。给出 Python 数值验证。
 
@@ -2773,7 +2773,7 @@ print(f"  Darboux 性质仍成立 (即便 f' 在 0 处不连续)")
 
 ---
 
-#### 习题 9.4.2（ex-calc-mvt-oe-02，评价级）
+## 知识讲解与要点分析（原习题 9.4.2（ex-calc-mvt-oe-02，评价级））
 
 **题目**：设 $f$ 在 $[a,b]$ 上连续，在 $(a,b)$ 内二阶可导，$f(a)=f(b)=0$，且存在 $c\in(a,b)$ 使 $f(c)>0$。证明：存在 $\xi\in(a,b)$ 使 $f''(\xi)<0$。给出几何解释与 sympy 数值实例。
 
@@ -2842,7 +2842,7 @@ print(f"\n第一步: 在 [{a}, {c}] 上, 斜率 = {float(slope1):.6f}")
 print(f"  f'(xi_1) = {slope1} 的解: {xi1_sols}")
 print(f"  区间 ({a}, {c}) 内的 xi_1: {xi1_list}")
 xi1 = xi1_list[0]
-print(f"  选取 xi_1 = {float(xi1):.6f}, f'(xi_1) = {float(df.subs(x, xi1)):.6f} > 0 ✓")
+print(f"  选取 xi_1 = {float(xi1):.6f}, f'(xi_1) = {float(df.subs(x, xi1)):.6f} > 0 √")
 
 # 第二步: 在 [c, b] 上应用 Lagrange, 求 xi_2
 slope2 = (f.subs(x, b) - f.subs(x, c)) / (b - c)
@@ -2852,7 +2852,7 @@ print(f"\n第二步: 在 [{c}, {b}] 上, 斜率 = {float(slope2):.6f}")
 print(f"  f'(xi_2) = {slope2} 的解: {xi2_sols}")
 print(f"  区间 ({c}, {b}) 内的 xi_2: {xi2_list}")
 xi2 = xi2_list[0]
-print(f"  选取 xi_2 = {float(xi2):.6f}, f'(xi_2) = {float(df.subs(x, xi2)):.6f} < 0 ✓")
+print(f"  选取 xi_2 = {float(xi2):.6f}, f'(xi_2) = {float(df.subs(x, xi2)):.6f} < 0 √")
 
 # 第三步: 在 [xi_1, xi_2] 上对 f' 应用 Lagrange, 求 xi
 slope3 = (df.subs(x, xi2) - df.subs(x, xi1)) / (xi2 - xi1)
@@ -2864,7 +2864,7 @@ print(f"  f''(xi) = {slope3} 的解: {xi_sols}")
 print(f"  区间内的 xi: {xi_list}")
 if xi_list:
     xi = xi_list[0]
-    print(f"  选取 xi = {float(xi):.6f}, f''(xi) = {float(d2f.subs(x, xi)):.6f} < 0 ✓")
+    print(f"  选取 xi = {float(xi):.6f}, f''(xi) = {float(d2f.subs(x, xi)):.6f} < 0 √")
 
 # 进一步: 绘制 f, f', f'' 的图像
 import matplotlib.pyplot as plt
@@ -2907,7 +2907,7 @@ print("\n图像已保存: mvt_ex_oe_02.png")
 
 ---
 
-#### 习题 9.4.3（ex-calc-mvt-oe-03，创造级）
+## 知识讲解与要点分析（原习题 9.4.3（ex-calc-mvt-oe-03，创造级））
 
 **题目**：设计一个 Python 类 `TaylorApproximator`，接受任意 sympy 可微函数 $f$ 与展开点 $x_0$，实现：(1) 计算 $n$ 阶 Taylor 多项式；(2) 给出 Peano 与 Lagrange 余项；(3) 绘制不同 $n$ 下的逼近误差曲线；(4) 数值估计使误差低于给定 `tol` 的最小 $n$。在 $f(x)=\sin(x)$，$x_0=0$，$x=0.5$，$\text{tol}=10^{-10}$ 上验证。
 

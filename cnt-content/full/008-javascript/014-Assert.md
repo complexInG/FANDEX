@@ -1551,26 +1551,37 @@ const simple = /^\w+@\w+\.\w+$/;
 
 在决定是否使用断言时，遵循以下决策树：
 
-```
-1. 是否需要"匹配但不消费"字符？
-   ├─ 是 → 使用断言
-   └─ 否 → 继续
-
-2. 是否需要"上下文条件"？
-   ├─ 是 → 使用断言
-   └─ 否 → 使用普通匹配
-
-3. 是否需要"多条件叠加"？
-   ├─ 是 → 使用多个先行断言
-   └─ 否 → 继续
-
-4. 性能是否敏感？
-   ├─ 是 → 避免后行断言，考虑替代方案
-   └─ 否 → 可自由使用
-
-5. 是否需要兼容旧引擎？
-   ├─ 是 → 仅使用先行断言
-   └─ 否 → 可使用后行断言
+```mermaid
+flowchart TD
+    T0["1. 是否需要'匹配但不消费'字符？"]
+    T1["是 → 使用断言"]
+    T2["否 → 继续"]
+    T3["2. 是否需要'上下文条件'？"]
+    T4["是 → 使用断言"]
+    T5["否 → 使用普通匹配"]
+    T6["3. 是否需要'多条件叠加'？"]
+    T7["是 → 使用多个先行断言"]
+    T8["否 → 继续"]
+    T9["4. 性能是否敏感？"]
+    T10["是 → 避免后行断言，考虑替代方案"]
+    T11["否 → 可自由使用"]
+    T12["5. 是否需要兼容旧引擎？"]
+    T13["是 → 仅使用先行断言"]
+    T14["否 → 可使用后行断言"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
+    T11 --> T12
+    T12 --> T13
+    T12 --> T14
 ```
 
 ### 8.2 实践：性能测试基准
@@ -1831,7 +1842,7 @@ console.log(hanRegex.test('a'));   // false
 
 // 2. 匹配 emoji
 const emojiRegex = /\p{Emoji}/u;
-console.log(emojiRegex.test('😀'));  // true
+console.log(emojiRegex.test('\u{1F600}'));  // true
 console.log(emojiRegex.test('a'));   // false
 
 // 3. 中英文混排加空格
@@ -1868,8 +1879,8 @@ console.log(numberRegex.test('۱۲۳'));           // true (阿拉伯-印度数�
 **原始数据**：
 
 ```
-【爆款】🔥 限时特价！Apple iPhone 15 Pro Max 256GB 全网通5G📱 原装正品
-【包邮】Samsung Galaxy S24 Ultra 12+512GB 钛黑色 新品上市✨
+【爆款】 限时特价！Apple iPhone 15 Pro Max 256GB 全网通5G手机 原装正品
+【包邮】Samsung Galaxy S24 Ultra 12+512GB 钛黑色 新品上市
 ```
 
 **清洗方案**：
@@ -1902,8 +1913,8 @@ class TitleCleaner {
 const cleaner = new TitleCleaner();
 
 const titles = [
-  '【爆款】🔥 限时特价！Apple iPhone 15 Pro Max 256GB 全网通5G📱 原装正品',
-  '【包邮】Samsung Galaxy S24 Ultra 12+512GB 钛黑色 新品上市✨'
+  '【爆款】 限时特价！Apple iPhone 15 Pro Max 256GB 全网通5G手机 原装正品',
+  '【包邮】Samsung Galaxy S24 Ultra 12+512GB 钛黑色 新品上市'
 ];
 
 titles.forEach(t => console.log(cleaner.clean(t)));
@@ -2335,13 +2346,13 @@ console.log('统计:', tools.generateStats(md));
 
 ---
 
-## 10. 练习与答案
+## 知识讲解与要点分析（原练习）
 
 ### 10.1 基础练习
 
 **练习 1**：使用正向先行断言匹配所有以 "ing" 结尾的单词（不包含 "ing"）。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 const regex = /\b\w+(?=ing\b)/g;
@@ -2354,7 +2365,7 @@ const better = /\b[a-zA-Z]+(?=ing\b)/g;
 
 **练习 2**：使用负向先行断言匹配所有不以 "test" 开头的单词。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 const regex = /\b(?!test)\w+\b/g;
@@ -2368,7 +2379,7 @@ const precise = /\b(?!test\b)\w+\b/g;
 
 **练习 3**：使用后行断言提取 JSON 字符串中的键名。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 const json = '{"name":"Alice","age":30,"city":"Beijing"}';
@@ -2381,7 +2392,7 @@ console.log(json.match(keyRegex));
 
 **练习 4**：编写一个正则，匹配不在 HTML 标签内的"JavaScript"字符串。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 const html = '<p>JavaScript is great</p><script>JavaScript</script>';
@@ -2395,7 +2406,7 @@ console.log(html.match(regex));
 
 **练习 5**：编写一个正则，验证 IPv4 地址格式（0.0.0.0 到 255.255.255.255）。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 const ipv4Regex = /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
@@ -2408,7 +2419,7 @@ console.log(ipv4Regex.test('192.168.1'));      // false
 
 **练习 6**：使用断言实现一个简单的模板引擎，替换 `{{var}}` 为变量值。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function renderTemplate(template, vars) {
@@ -2424,7 +2435,7 @@ console.log(renderTemplate(template, { name: 'Alice', age: 30 }));
 
 **练习 7**：编写一个正则，匹配所有不在引号内的逗号（用于 CSV 分割）。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 const csvCommaRegex = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/g;
@@ -2435,7 +2446,7 @@ console.log(line.split(csvCommaRegex));
 
 **练习 8**：实现一个函数，验证密码强度，要求：至少 12 位，包含大小写字母、数字、特殊字符，且不能包含连续 3 个相同字符。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function validatePassword(password) {
@@ -2465,7 +2476,7 @@ console.log(validatePassword('Aaabbbccc123!@'));
 
 **练习 9**：编写一个正则，提取 Markdown 中所有代码块的语言标识。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function extractLanguages(md) {
@@ -2494,7 +2505,7 @@ console.log(extractLanguages(md));
 
 **练习 10**：实现一个函数，将驼峰命名转换为下划线命名。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function camelToSnake(str) {
@@ -2520,7 +2531,7 @@ console.log(camelToSnakeAdvanced('XMLHttpRequest'));
 
 **练习 11**：编写一个正则，匹配所有 HTML 自闭合标签（如 `<img />`、`<br/>`）。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 const selfClosingRegex = /<\w+(?:\s+[^>]*)?\s*\/>/g;
@@ -2531,7 +2542,7 @@ console.log(html.match(selfClosingRegex));
 
 **练习 12**：实现一个函数，提取字符串中所有 URL。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function extractUrls(text) {
@@ -2549,7 +2560,7 @@ console.log(extractUrls(text));
 
 **练习 13**：实现一个简易的 Markdown 转 HTML 转换器，支持标题、粗体、斜体、代码块。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function markdownToHtml(md) {
@@ -2589,7 +2600,7 @@ console.log(markdownToHtml(md));
 
 **练习 14**：实现一个函数，统计代码中的圈复杂度（Cyclomatic Complexity）。
 
-**答案**：
+**解析讲解**：
 
 ```javascript
 function cyclomaticComplexity(code) {

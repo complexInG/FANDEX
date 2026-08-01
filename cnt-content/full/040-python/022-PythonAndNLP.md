@@ -1496,32 +1496,23 @@ GitHub Copilot 基于 OpenAI Codex 实现 Python 代码补全：
 - 上下文裁剪策略（保留最近文件 + 同目录文件）对效果影响大
 - 隐私与版权问题需通过数据过滤与许可证检测缓解
 
-## 11. 习题
+## 知识讲解与要点分析（原习题）
 
-### 11.1 填空题
+### 填空题知识点讲解
 
 **习题 11.1**（记忆层）：在 BERT 的掩码语言模型中，被选中掩码的位置会被替换为特殊标记 ____，其原始词用于计算交叉熵损失。
 
-<details>
-<summary>查看答案</summary>
 [MASK]
-</details>
 
 **习题 11.2**（理解层）：spaCy 处理文本时，`doc.ents` 返回的实体类型由 ____ 字段决定，该字段在加载模型时通过配置文件指定。
 
-<details>
-<summary>查看答案</summary>
 label（或 label_）
-</details>
 
 **习题 11.3**（应用层）：使用 Transformers 库调用 `pipeline("ner")` 时，需通过参数 ____ 控制是否合并同实体的多个子词 token。
 
-<details>
-<summary>查看答案</summary>
 grouped_entities=True（新版为 aggregation_strategy="simple"）
-</details>
 
-### 11.2 选择题
+### 选择题知识点讲解
 
 **习题 11.4**（理解层）：关于 BPE（Byte-Pair Encoding）分词算法，下列说法错误的是？
 
@@ -1530,10 +1521,7 @@ grouped_entities=True（新版为 aggregation_strategy="simple"）
 - C. BPE 词表越大，模型推理速度越快
 - D. GPT-2、Llama 等模型均采用 BPE 或其变体
 
-<details>
-<summary>查看答案与解析</summary>
-答案：C。BPE 词表大小影响编码长度（更大的词表通常产生更短的序列），但推理速度主要由模型参数量与序列长度决定，而非词表大小。更大的词表会增加 embedding 层参数量。
-</details>
+解析讲解：C。BPE 词表大小影响编码长度（更大的词表通常产生更短的序列），但推理速度主要由模型参数量与序列长度决定，而非词表大小。更大的词表会增加 embedding 层参数量。
 
 **习题 11.5**（分析层）：以下 Python 代码在 Hugging Face Transformers 中调用 `AutoModel.from_pretrained` 时，最可能触发警告或错误的是？
 
@@ -1542,10 +1530,7 @@ grouped_entities=True（新版为 aggregation_strategy="simple"）
 - C. `AutoModel.from_pretrained("gpt2")` 加载后用于序列分类
 - D. `AutoModel.from_pretrained("./local-model")` 但目录中无 config.json
 
-<details>
-<summary>查看答案与解析</summary>
-答案：D。`AutoModel` 是通用基类，调用分类任务需用 `AutoModelForSequenceClassification`；C 会有警告但能加载；D 缺少 config.json 会直接报错，无法加载。
-</details>
+解析讲解：D。`AutoModel` 是通用基类，调用分类任务需用 `AutoModelForSequenceClassification`；C 会有警告但能加载；D 缺少 config.json 会直接报错，无法加载。
 
 ### 11.3 代码修正题
 
@@ -1561,8 +1546,6 @@ similarity = doc1.similarity(doc2)
 print(f"相似度: {similarity}")
 ```
 
-<details>
-<summary>查看答案与解析</summary>
 
 问题：`zh_core_web_sm` 是小型模型，不含词向量，`similarity` 方法退化为基于上下文张量的相似度计算，结果不可靠。
 
@@ -1575,7 +1558,6 @@ doc1 = nlp("猫")
 doc2 = nlp("狗")
 print(f"相似度: {doc1.similarity(doc2)}")  # 应在 0.5-0.7 之间
 ```
-</details>
 
 **习题 11.7**（分析层）：以下代码使用 PyTorch 训练 BERT 分类模型，存在三个性能或正确性问题，请定位并修正。
 
@@ -1598,8 +1580,6 @@ optimizer.step()
 optimizer.zero_grad()
 ```
 
-<details>
-<summary>查看答案与解析</summary>
 
 问题1：`optimizer` 应在 `backward()` 之前创建（虽然在循环中创建也能用，但效率低）。
 问题2：`optimizer.step()` 应在 `loss.backward()` 之后调用（顺序正确但 optimizer 应提前定义）。
@@ -1635,7 +1615,6 @@ optimizer.step()
 scheduler.step()
 optimizer.zero_grad()
 ```
-</details>
 
 ### 11.4 开放性问题
 
@@ -1647,8 +1626,6 @@ optimizer.zero_grad()
 
 请从延迟、成本、可定制性、数据隐私四个维度对比三种方案，并给出推荐。
 
-<details>
-<summary>查看参考要点</summary>
 
 | 维度 | 方案A (GPT-4 API) | 方案B (RoBERTa微调) | 方案C (spaCy+规则) |
 |------|------------------|--------------------|-------------------|
@@ -1659,7 +1636,6 @@ optimizer.zero_grad()
 | 准确率 | 90-95% | 92-97% | 70-85% |
 
 推荐：若数据敏感且量大，方案B；若需要快速原型，方案A；若任务边界清晰且预算极低，方案C。
-</details>
 
 **习题 11.9**（创造层）：假设你需要为医院构建一个智能问诊系统，输入是患者自然语言描述，输出是初步科室推荐。请描述：
 
@@ -1668,19 +1644,14 @@ optimizer.zero_grad()
 3. 风险控制（误诊责任、模型漂移、可解释性）
 4. 上线节奏（MVP、迭代、监控）
 
-<details>
-<summary>查看参考要点</summary>
 
 1. 架构：患者描述 → 文本清洗 → 实体识别（症状、部位）→ 意图分类（科室）→ 风险评估 → 输出。模型选型建议：实体识别用 BERT-NER，科室分类用 RoBERTa 微调，风险评分用规则+模型。
 2. 数据：与三甲医院合作获取脱敏病历；遵循 HIPAA 与《个人信息保护法》；标注由执业医师完成。
 3. 风险：明确"非诊断、仅辅助建议"声明；设置高风险症状（如胸痛、急性意识障碍）强制人工介入；模型每周评估漂移。
 4. 节奏：MVP（3 个月，单一科室）→ 横向扩展（6 个月，5 科室）→ 全院上线（12 个月，含监控闭环）。
-</details>
 
 **习题 11.10**（分析层）：解释为什么 Transformer 在长序列上注意力复杂度为 $O(n^2)$，并描述 Longformer、BigBird、Linear Attention 等改进方案的核心思路与权衡。
 
-<details>
-<summary>查看参考要点</summary>
 
 标准 Transformer 注意力需计算所有 $n \times n$ 个 query-key 对，复杂度 $O(n^2 d_k)$，内存 $O(n^2)$。
 
@@ -1689,7 +1660,6 @@ optimizer.zero_grad()
 - Linear Attention：用核函数近似 softmax，复杂度 $O(n \cdot d^2)$，但表达力下降
 
 权衡：稀疏注意力保留局部性但损失全局信息；线性注意力速度快但近似精度有限。
-</details>
 
 ## 12. 参考文献
 

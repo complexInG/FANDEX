@@ -790,7 +790,7 @@ func tracedWork() {
 
 **结果**:GC 频率从 50 次/秒降至 5 次/秒,P99 从 200ms 降至 30ms。
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 
@@ -1466,39 +1466,61 @@ func processFiles(files []string) error {
 
 针对不同场景的 GC 调优决策流程:
 
-```
-1. 测量当前 GC 行为
-   ├─ STW P99 < 1ms?
-   │  ├─ 是:无需调优,保持默认
-   │  └─ 否:进入 2
-   ├─ GC CPU < 5%?
-   │  ├─ 是:进入 3
-   │  └─ 否:进入 4
-   └─ HeapAlloc 稳定?
-      ├─ 是:进入 5
-      └─ 否:进入 6
-
-2. STW 过长
-   ├─ goroutine 数 > 1万?
-   │  ├─ 是:减少 goroutine,使用 worker pool
-   │  └─ 否:检查全局变量数,大对象数
-   └─ 调整 GOMAXPROCS,确保 GC 线程充分调度
-
-3. STW 可接受但 CPU 高
-   ├─ 减少分配:sync.Pool, 对象复用
-   └─ 降低 GC 频率:GOGC=200
-
-4. CPU 高且 STW 长
-   ├─ 优化分配热点:pprof 定位
-   └─ 考虑 off-heap:大对象走 mmap
-
-5. HeapAlloc 不稳定
-   ├─ 检查内存泄漏:pprof heap diff
-   └─ 检查 map 容量:周期性重建
-
-6. 容器场景
-   ├─ GOMEMLIMIT = limit * 0.85
-   └─ GOGC 保持 100 或调至 200
+```mermaid
+flowchart TD
+    T0["1. 测量当前 GC 行为"]
+    T1["STW P99 < 1ms?"]
+    T2["是:无需调优,保持默认"]
+    T3["否:进入 2"]
+    T4["GC CPU < 5%?"]
+    T5["是:进入 3"]
+    T6["否:进入 4"]
+    T7["HeapAlloc 稳定?"]
+    T8["是:进入 5"]
+    T9["否:进入 6"]
+    T10["2. STW 过长"]
+    T11["goroutine 数 > 1万?"]
+    T12["是:减少 goroutine,使用 worker pool"]
+    T13["否:检查全局变量数,大对象数"]
+    T14["调整 GOMAXPROCS,确保 GC 线程充分调度"]
+    T15["3. STW 可接受但 CPU 高"]
+    T16["减少分配:sync.Pool, 对象复用"]
+    T17["降低 GC 频率:GOGC=200"]
+    T18["4. CPU 高且 STW 长"]
+    T19["优化分配热点:pprof 定位"]
+    T20["考虑 off-heap:大对象走 mmap"]
+    T21["5. HeapAlloc 不稳定"]
+    T22["检查内存泄漏:pprof heap diff"]
+    T23["检查 map 容量:周期性重建"]
+    T24["6. 容器场景"]
+    T25["GOMEMLIMIT = limit * 0.85"]
+    T26["GOGC 保持 100 或调至 200"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T0 --> T5
+    T0 --> T6
+    T6 --> T7
+    T7 --> T8
+    T7 --> T9
+    T9 --> T10
+    T10 --> T11
+    T10 --> T12
+    T10 --> T13
+    T13 --> T14
+    T14 --> T15
+    T15 --> T16
+    T15 --> T17
+    T17 --> T18
+    T18 --> T19
+    T18 --> T20
+    T20 --> T21
+    T21 --> T22
+    T21 --> T23
+    T23 --> T24
+    T24 --> T25
+    T24 --> T26
 ```
 
 ### 实践 7:基于 Prometheus 的 GC 监控告警

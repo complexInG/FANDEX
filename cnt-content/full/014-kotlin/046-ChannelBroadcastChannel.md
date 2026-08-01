@@ -598,18 +598,27 @@ CAS 是原子操作，由 CPU 指令直接支持（x86 的 `lock cmpxchg`、ARM 
 
 形式化地，会合点的状态机：
 
-```
-              send(v) arrives
-                    |
-                    v
-        +---+   +---+   +---+
-        | S |-->| W |-->| D |
-        +---+   +---+   +---+
-        Empty   Waiting Done
-
-S: Empty (无等待)
-W: Waiting (send 等待 receive)
-D: Done (会合完成)
+```mermaid
+flowchart TD
+    C0_0["send(v) arrives"]
+    C0_1["Empty   Waiting Done"]
+    C0_2["S: Empty (无等待)"]
+    C0_3["W: Waiting (send 等待 receive)"]
+    C0_4["D: Done (会合完成)"]
+    C1_0["S"]
+    C2_0[">"]
+    C3_0["W"]
+    C4_0[">"]
+    C5_0["D"]
+    C0_0 --> C0_1
+    C0_1 --> C0_2
+    C0_2 --> C0_3
+    C0_3 --> C0_4
+    C0_0 --> C1_0
+    C1_0 --> C2_0
+    C2_0 --> C3_0
+    C3_0 --> C4_0
+    C4_0 --> C5_0
 ```
 
 在 `kotlinx.coroutines` 源码中，会合点通过 `AbstractSendChannel` 的 `BufferedChannel` 实现：
@@ -2521,9 +2530,9 @@ class AsyncTaskService(
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪种 `Channel` 容量模式是默认的？
 
@@ -2532,9 +2541,9 @@ B. `BUFFERED`
 C. `RENDEZVOUS`
 D. `CONFLATED`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`Channel<T>()` 不传参时默认使用 `RENDEZVOUS`，即无缓冲模式，发送方必须等待接收方就绪。
+**解析讲解**：`Channel<T>()` 不传参时默认使用 `RENDEZVOUS`，即无缓冲模式，发送方必须等待接收方就绪。
 
 ---
 
@@ -2545,9 +2554,9 @@ B. Kotlin 1.4
 C. Kotlin 1.5
 D. Kotlin 2.0
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：Kotlin 1.5 将 `BroadcastChannel` 标记为 `@ObsoleteCoroutinesApi`，推荐使用 `SharedFlow` 替代。
+**解析讲解**：Kotlin 1.5 将 `BroadcastChannel` 标记为 `@ObsoleteCoroutinesApi`，推荐使用 `SharedFlow` 替代。
 
 ---
 
@@ -2558,9 +2567,9 @@ B. `cancel()`
 C. `dispose()`
 D. `consumeEach` 完成后自动关闭
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`Channel` 没有 `dispose()` 方法。`close()` 关闭发送端，`cancel()` 关闭接收端，`consumeEach` 完成后会取消 `Channel`。
+**解析讲解**：`Channel` 没有 `dispose()` 方法。`close()` 关闭发送端，`cancel()` 关闭接收端，`consumeEach` 完成后会取消 `Channel`。
 
 ---
 
@@ -2571,9 +2580,9 @@ B. 选择最后一个 clause
 C. 随机选择一个 clause
 D. 抛出异常
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`select` 在多个 clause 同时就绪时随机选择一个，避免饥饿。
+**解析讲解**：`select` 在多个 clause 同时就绪时随机选择一个，避免饥饿。
 
 ---
 
@@ -2584,45 +2593,45 @@ B. `receiveAsFlow()`
 C. `toFlow()`
 D. `flowOf()`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`receiveAsFlow()` 将 `ReceiveChannel<T>` 转换为 `Flow<T>`，`consumeAsFlow()` 是单次消费版本。
+**解析讲解**：`receiveAsFlow()` 将 `ReceiveChannel<T>` 转换为 `Flow<T>`，`consumeAsFlow()` 是单次消费版本。
 
 ---
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：`Channel` 的四种容量类型分别是 ______、______、______、______。
 
-**答案**：RENDEZVOUS、UNLIMITED、BUFFERED、CONFLATED
+**解析讲解**：RENDEZVOUS、UNLIMITED、BUFFERED、CONFLATED
 
 ---
 
 **题目 2**：`Channel` 接口同时继承了 ______ 和 ______ 两个接口。
 
-**答案**：SendChannel、ReceiveChannel
+**解析讲解**：SendChannel、ReceiveChannel
 
 ---
 
 **题目 3**：`produce` 构建器返回 ______ 类型。
 
-**答案**：`ReceiveChannel<T>`
+**解析讲解**：`ReceiveChannel<T>`
 
 ---
 
 **题目 4**：替代废弃的 `BroadcastChannel` 的现代 API 是 ______。
 
-**答案**：`SharedFlow`（或 `MutableSharedFlow`）
+**解析讲解**：`SharedFlow`（或 `MutableSharedFlow`）
 
 ---
 
 **题目 5**：在 `select` 表达式中，用于超时控制的函数是 ______。
 
-**答案**：`onTimeout`
+**解析讲解**：`onTimeout`
 
 ---
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个限流的生产者-消费者系统
 

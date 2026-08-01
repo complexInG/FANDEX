@@ -1429,21 +1429,13 @@ std::string s2 = std::format("{:L}", 3.14);    // "3.14" 或 "3,14"
 
 {fmt} 的核心组件层次：
 
-```text
-┌─────────────────────────────────────────┐
-│       Public API (fmt::format, etc.)    │
-├─────────────────────────────────────────┤
-│       format_string (编译期校验)        │
-├─────────────────────────────────────────┤
-│  format_args_store / format_args        │
-│  (类型擦除参数容器)                     │
-├─────────────────────────────────────────┤
-│  basic_format_arg / handler (访问者)    │
-├─────────────────────────────────────────┤
-│  formatter<T> 特化 (类型分发)           │
-├─────────────────────────────────────────┤
-│  writer / buffer (输出缓冲)             │
-└─────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    API[Public API fmt::format 等] --> FS[format_string 编译期校验]
+    FS --> FAS[format_args_store / format_args<br/>类型擦除参数容器]
+    FAS --> BFA[basic_format_arg / handler 访问者]
+    BFA --> FT[formatter&lt;T&gt; 特化 类型分发]
+    FT --> WB[writer / buffer 输出缓冲]
 ```
 
 #### 9.1.2 性能优化关键
@@ -1481,20 +1473,17 @@ spdlog 是 C++ 最流行的日志库之一，基于 {fmt} 构建。
 
 spdlog 的核心格式化路径：
 
-```text
-SPDLOG_INFO("User {} logged in", username);
-       │
-       ▼
-spdlog::source_loc + fmt::format_string<...>
-       │
-       ▼
-fmt::vformat_to(buffer, fmt, args)
-       │
-       ▼
-写入门槛缓冲 (ring buffer)
-       │
-       ▼
-异步线程刷盘
+```mermaid
+flowchart TD
+    T0["SPDLOG_INFO('User {} logged in', username);"]
+    T1["spdlog::source_loc + fmt::format_string<...>"]
+    T2["fmt::vformat_to(buffer, fmt, args)"]
+    T3["写入门槛缓冲 (ring buffer)"]
+    T4["异步线程刷盘"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
 ```
 
 #### 9.2.2 性能数据
@@ -1563,9 +1552,9 @@ Folly 的 `formatv` 支持 `fbstring` 与异构类型，性能与 {fmt} 接近�
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1.1**：以下哪个 C++ 标准**首次**引入了 `std::format`？
 
@@ -1574,8 +1563,8 @@ Folly 的 `formatv` 支持 `fbstring` 与异构类型，性能与 {fmt} 接近�
 - C. C++23
 - D. C++26
 
-**答案**：B
-**解析**：C++20（ISO/IEC 14882:2020）通过 P0645R10 提案引入 `<format>` 头与 `std::format` 函数。C++23 引入 `std::print`/`std::println`，C++26 草案拟引入命名参数。
+**解析讲解**：B
+**解析讲解**：C++20（ISO/IEC 14882:2020）通过 P0645R10 提案引入 `<format>` 头与 `std::format` 函数。C++23 引入 `std::print`/`std::println`，C++26 草案拟引入命名参数。
 
 ---
 
@@ -1586,8 +1575,8 @@ Folly 的 `formatv` 支持 `fbstring` 与异构类型，性能与 {fmt} 接近�
 - C. `0x0000ff`
 - D. `ff000000`
 
-**答案**：A
-**解析**：`0>8x` 表示：用 `0` 填充，右对齐（`>`），宽度 8，十六进制小写输出。`255` 的十六进制是 `ff`，填充至 8 位为 `000000ff`。
+**解析讲解**：A
+**解析讲解**：`0>8x` 表示：用 `0` 填充，右对齐（`>`），宽度 8，十六进制小写输出。`255` 的十六进制是 `ff`，填充至 8 位为 `000000ff`。
 
 ---
 
@@ -1602,8 +1591,8 @@ std::cout << std::format("{:>{}}", "ab", 5);
 - C. `ab`
 - D. `   ab   `
 
-**答案**：B
-**解析**：`{:>{}}` 中嵌套的 `{}` 引用下一个参数（5）作为宽度。`>` 表示右对齐，宽度 5，故 `"ab"` 右对齐填充空格至 5 字符，得到 `"   ab"`。
+**解析讲解**：B
+**解析讲解**：`{:>{}}` 中嵌套的 `{}` 引用下一个参数（5）作为宽度。`>` 表示右对齐，宽度 5，故 `"ab"` 右对齐填充空格至 5 字符，得到 `"   ab"`。
 
 ---
 
@@ -1614,8 +1603,8 @@ std::cout << std::format("{:>{}}", "ab", 5);
 - C. {fmt} `fmt::format`
 - D. C `printf`
 
-**答案**：D
-**解析**：C `printf` 仅在编译器提供"最佳努力"警告（`-Wformat`），无强制编译期校验。Rust、C++20、{fmt} 均通过宏或 `consteval` 实现强制校验。
+**解析讲解**：D
+**解析讲解**：C `printf` 仅在编译器提供"最佳努力"警告（`-Wformat`），无强制编译期校验。Rust、C++20、{fmt} 均通过宏或 `consteval` 实现强制校验。
 
 ---
 
@@ -1626,8 +1615,8 @@ std::cout << std::format("{:>{}}", "ab", 5);
 - C. `std::format_function<T>`
 - D. `std::formattable<T>`
 
-**答案**：A
-**解析**：C++20 `std::format` 通过特化 `std::formatter<T, CharT>` 实现自定义类型支持。`operator<<` 是 `iostream` 机制，`formattable` 是概念而非特化点。
+**解析讲解**：A
+**解析讲解**：C++20 `std::format` 通过特化 `std::formatter<T, CharT>` 实现自定义类型支持。`operator<<` 是 `iostream` 机制，`formattable` 是概念而非特化点。
 
 ---
 
@@ -1643,8 +1632,8 @@ std::string s = std::format(fmt, 42);
 - C. 输出 `"42"`
 - D. 未定义行为
 
-**答案**：A
-**解析**：`std::format` 的格式串参数必须是 `consteval` 可求值的常量表达式。`fmt` 是运行期 `std::string`，无法在编译期校验，触发编译错误。应改用 `std::vformat(fmt, std::make_format_args(42))`。
+**解析讲解**：A
+**解析讲解**：`std::format` 的格式串参数必须是 `consteval` 可求值的常量表达式。`fmt` 是运行期 `std::string`，无法在编译期校验，触发编译错误。应改用 `std::vformat(fmt, std::make_format_args(42))`。
 
 ---
 
@@ -1655,8 +1644,8 @@ std::string s = std::format(fmt, 42);
 - C. 避免双重内存分配
 - D. 支持 Unicode
 
-**答案**：C
-**解析**：`std::cout << std::format(...)` 先调用 `std::format` 分配 `std::string`，再写入 `std::cout`，涉及两次内存操作。`std::print` 直接写入 `stdout`，避免中间 `std::string`。两者均支持类型安全、编译期校验、Unicode。
+**解析讲解**：C
+**解析讲解**：`std::cout << std::format(...)` 先调用 `std::format` 分配 `std::string`，再写入 `std::cout`，涉及两次内存操作。`std::print` 直接写入 `stdout`，避免中间 `std::string`。两者均支持类型安全、编译期校验、Unicode。
 
 ---
 
@@ -1667,56 +1656,56 @@ std::string s = std::format(fmt, 42);
 - C. 未定义行为
 - D. 编译错误
 
-**答案**：C
-**解析**：`%d` 期望 `int`，但实际传入 `double`。`printf` 通过 `va_arg` 按 `int` 大小读取 `double` 内存表示，属于未定义行为。编译器可能发出 `-Wformat` 警告但不强制错误。
+**解析讲解**：C
+**解析讲解**：`%d` 期望 `int`，但实际传入 `double`。`printf` 通过 `va_arg` 按 `int` 大小读取 `double` 内存表示，属于未定义行为。编译器可能发出 `-Wformat` 警告但不强制错误。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 2.1**：`std::format` 的格式串文法中，`{:.2f}` 中的 `.2` 表示 ____，`f` 表示 ____。
 
-**答案**：精度（precision）；浮点类型说明符（fixed-point notation）。
+**解析讲解**：精度（precision）；浮点类型说明符（fixed-point notation）。
 
 ---
 
 **题目 2.2**：C++20 `std::format` 通过 ____ 关键字实现编译期格式串校验。
 
-**答案**：`consteval`
+**解析讲解**：`consteval`
 
 ---
 
 **题目 2.3**：C++23 引入的 `std::print` 函数定义在 ____ 头文件中。
 
-**答案**：`<print>`
+**解析讲解**：`<print>`
 
 ---
 
 **题目 2.4**：为运行期构造的格式串，应使用 `std::format` 的运行期版本 ____，配合 ____ 构造参数包。
 
-**答案**：`std::vformat`；`std::make_format_args`
+**解析讲解**：`std::vformat`；`std::make_format_args`
 
 ---
 
 **题目 2.5**：`std::format` 的对齐说明符中，`<` 表示 ____，`>` 表示 ____，`^` 表示 ____。
 
-**答案**：左对齐；右对齐；居中对齐。
+**解析讲解**：左对齐；右对齐；居中对齐。
 
 ---
 
 **题目 2.6**：在 64 位 Linux (LP64) 上，`std::format("{:x}", 0xDEADBEEFL)` 的输出是 ____。
 
-**答案**：`deadbeef`
+**解析讲解**：`deadbeef`
 
 ---
 
 **题目 2.7**：`std::format` 的 `L` 修饰符作用是 ____。
 
-**答案**：使用本地化（locale-aware）分组与符号，如千分位分隔符、小数点符号。
+**解析讲解**：使用本地化（locale-aware）分组与符号，如千分位分隔符、小数点符号。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 3.1**：实现一个 `std::formatter` 特化，使 `std::vector<T>` 可直接格式化为 `[a, b, c]` 形式。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <format>
@@ -1752,13 +1741,13 @@ int main() {
 }
 ```
 
-**解析**：`std::formatter` 特化需要提供 `parse` 与 `format` 两个成员。`parse` 接受格式说明（本题忽略），`format` 写入输出迭代器。注意 `std::format_to` 返回新的迭代器位置。
+**解析讲解**：`std::formatter` 特化需要提供 `parse` 与 `format` 两个成员。`parse` 接受格式说明（本题忽略），`format` 写入输出迭代器。注意 `std::format_to` 返回新的迭代器位置。
 
 ---
 
 **题目 3.2**：实现一个 `format_to_n_safe` 函数，模拟 `std::format_to_n` 但在截断时返回警告。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <format>
@@ -1790,13 +1779,13 @@ int main() {
 }
 ```
 
-**解析**：`std::format_to_n` 写入最多 `n` 字符，返回 `format_to_n_result`，含 `out`（结束迭代器）与 `size`（实际写入字节数，可能大于 n）。通过比较 `size` 与缓冲大小判断是否截断。
+**解析讲解**：`std::format_to_n` 写入最多 `n` 字符，返回 `format_to_n_result`，含 `out`（结束迭代器）与 `size`（实际写入字节数，可能大于 n）。通过比较 `size` 与缓冲大小判断是否截断。
 
 ---
 
 **题目 3.3**：实现一个简单的 `printf` 到 `std::format` 的转换工具（仅支持 `%d`、`%s`、`%f`）。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <format>
@@ -1837,13 +1826,13 @@ int main() {
 }
 ```
 
-**解析**：该简化工具仅支持三种说明符，实际迁移需处理宽度、精度、`%x`、`%o` 等。可结合 `clang-tidy` 自定义规则自动化迁移。
+**解析讲解**：该简化工具仅支持三种说明符，实际迁移需处理宽度、精度、`%x`、`%o` 等。可结合 `clang-tidy` 自定义规则自动化迁移。
 
 ### 10.4 思考题
 
 **题目 4.1**：为什么 `std::format` 选择编译期校验而非运行期校验？运行期校验的优势与劣势是什么？
 
-**参考答案**：
+**解析讲解**：
 - 编译期校验优势：零运行期开销、错误在编译期暴露、强制格式串为字面量。
 - 编译期校验劣势：不支持运行期动态格式串（如 i18n）、增加编译时间、跨模块共享格式串困难。
 - 运行期校验优势：支持动态格式串、便于国际化。
@@ -1854,7 +1843,7 @@ int main() {
 
 **题目 4.2**：`std::format` 与 `fmt::format` 在性能上几乎一致，为什么实际项目仍可能选择 `fmt::format`？
 
-**参考答案**：
+**解析讲解**：
 - 功能更全：`fmt::arg` 命名参数、`fmt::join`、`fmt::grouped`。
 - 编译器兼容性：旧编译器（GCC < 13）无 `std::format`。
 - 单文件嵌入：{fmt} 支持单头文件嵌入，便于交付。
@@ -1866,7 +1855,7 @@ int main() {
 
 **题目 4.3**：C++20 `std::format` 不支持命名参数，C++26 草案拟引入。命名参数的设计难点是什么？
 
-**参考答案**：
+**解析讲解**：
 - 类型擦除：命名参数需在 `format_args_store` 中保留参数名，增加内存开销。
 - 编译期校验：`consteval` 需校验命名参数集合与格式串引用的名称匹配。
 - API 设计：`std::arg("name", value)` 还是 `std::format("{name}", name=value)`？
@@ -1877,7 +1866,7 @@ int main() {
 
 **题目 4.4**：在嵌入式系统中，`std::format` 是否合适？有哪些替代方案？
 
-**参考答案**：
+**解析讲解**：
 - 不合适点：`std::format` 依赖动态内存分配、`std::string`、异常处理。
 - 替代方案：
   - {fmt} 的核心模式（`FMT_HEADER_ONLY` + `FMT_USE_EXCEPTIONS=0`）。
@@ -1889,7 +1878,7 @@ int main() {
 
 **题目 4.5**：为什么 `std::print`（C++23）相比 `std::cout << std::format(...)` 更快？从内存分配、同步、缓冲三个角度分析。
 
-**参考答案**：
+**解析讲解**：
 - 内存分配：`std::cout << std::format(...)` 先分配 `std::string` 暂存结果，再写入流；`std::print` 直接写入流内部缓冲，避免中间分配。
 - 同步：`std::cout` 默认与 C `stdio` 同步（`sync_with_stdio(true)`），引入额外锁；`std::print` 直接调用 `fwrite` 或底层系统调用。
 - 缓冲：`std::cout` 是 buffered stream，每次 `<<` 触发状态检查；`std::print` 单次批量写入，缓存命中率高。
@@ -1907,7 +1896,7 @@ int main() {
 - 用 `std::format_to` 写入缓冲而非 `std::format` 返回 string。
 - 示例代码见本文 5.7 节 `mini_logger.cpp`。
 
-### 10.5 综合题
+### 综合题知识点讲解
 
 **题目 5.1**：给定以下需求，设计一个完整的格式化解决方案：
 
@@ -1984,7 +1973,7 @@ void fmt_print(std::format_string<Args...> fmt, Args&&... args) {
 std::string fmt_legacy(const std::string& printf_fmt, const std::string& args);
 ```
 
-**解析**：该方案通过模板重载与 `__cplusplus` 条件编译，统一了 C++17/20/23 三种入口。自定义类型 `Money` 通过 `std::formatter` 特化支持本地化。性能基准见 5.4 节。
+**解析讲解**：该方案通过模板重载与 `__cplusplus` 条件编译，统一了 C++17/20/23 三种入口。自定义类型 `Money` 通过 `std::formatter` 特化支持本地化。性能基准见 5.4 节。
 
 ---
 
@@ -2143,3 +2132,215 @@ std::string fmt_legacy(const std::string& printf_fmt, const std::string& args);
 ---
 
 > 本文档基于 ISO/IEC 14882:2020 与 ISO/IEC 14882:2023 编写，C++26 部分基于截至 2025 年 7 月的草案。示例代码已在 GCC 14.1、Clang 18.1、MSVC 19.39 上验证通过。
+## std::format 基础
+
+**基本写法：格式化字符串**
+`std::format(<格式串>, <参数>...);`
+```cpp
+// 返回格式化后的字符串
+std::string s = std::format("x = {}, y = {}", 1, 2);
+```
+
+---
+
+**基本写法：占位符位置**
+`std::format("{<索引>}", <参数>...)`
+```cpp
+// 通过索引指定参数顺序
+std::string s = std::format("{1} before {0}", "B", "A");
+```
+
+---
+
+## 格式说明
+
+**基本写法：填充与对齐**
+`{:[<填充>]<对齐><宽度>}`
+```cpp
+// 居中对齐宽度 10 填充 *
+std::string s = std::format("{:*^10}", "hi");
+```
+
+---
+
+**基本写法：整数进制**
+`{:<进制>}`
+```cpp
+// 二进制与十六进制输出
+std::string b = std::format("{:b}", 42);
+std::string h = std::format("{:x}", 255);
+```
+
+---
+
+**基本写法：显示前缀**
+`{:<#进制>}`
+```cpp
+// 显示 0x 0b 前缀
+std::string s = std::format("{:#x}", 255);  // 0xff
+```
+
+---
+
+**基本写法：浮点精度**
+`{:<宽度>.<精度>f}`
+```cpp
+// 保留两位小数
+std::string s = std::format("{:.2f}", 3.14159);
+```
+
+---
+
+**基本写法：科学计数法**
+`{:<宽度>.<精度>e}`
+```cpp
+// 科学计数法输出
+std::string s = std::format("{:.3e}", 12345.6);
+```
+
+---
+
+**基本写法：正负号**
+`{:+<格式>}`
+```cpp
+// 总是显示正负号
+std::string s = std::format("{:+}", 42);
+```
+
+---
+
+**基本写法：零填充**
+`{:0<宽度>}`
+```cpp
+// 前导零填充
+std::string s = std::format("{:05}", 42);  // 00042
+```
+
+---
+
+## format_to 输出
+
+**基本写法：输出到迭代器**
+`std::format_to(<迭代器>, <格式串>, <参数>...);`
+```cpp
+// 写入容器避免临时字符串
+std::string out;
+std::format_to(std::back_inserter(out), "x={}", 1);
+```
+
+---
+
+**基本写法：限定输出数量**
+`std::format_to_n(<迭代器>, <数量>, <格式串>, <参数>...);`
+```cpp
+// 限制输出字符数
+char buf[16];
+auto r = std::format_to_n(buf, 15, "{}", 12345);
+*r.out = '\0';
+```
+
+---
+
+**基本写法：计算所需大小**
+`std::formatted_size(<格式串>, <参数>...);`
+```cpp
+// 预先获取输出长度
+size_t n = std::formatted_size("{}", value);
+```
+
+---
+
+## format_to_n 结果
+
+**基本写法：获取结果信息**
+`auto <r> = std::format_to_n(...); <r>.out; <r>.size;`
+```cpp
+// 结果包含输出迭代器与字符数
+auto r = std::format_to_n(buf, n, "{}", x);
+size_t written = r.size;
+```
+
+---
+
+## 自定义类型格式化
+
+**基本写法：特化 formatter**
+`template <> struct std::formatter<<类型>> { };`
+```cpp
+// 为自定义类型支持 format
+template <>
+struct std::formatter<Point> {
+    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
+    auto format(const Point& p, format_context& ctx) const {
+        return std::format_to(ctx.out(), "({}, {})", p.x, p.y);
+    }
+};
+```
+
+---
+
+**基本写法：使用自定义格式化**
+`std::format("{}", <对象>);`
+```cpp
+// 自定义类型可直接格式化
+Point p{1, 2};
+std::string s = std::format("{}", p);
+```
+
+---
+
+## std::print C++23
+
+**基本写法：打印输出**
+`std::print(<格式串>, <参数>...);`
+```cpp
+// 直接输出到标准输出
+std::print("value = {}\n", x);
+```
+
+---
+
+**基本写法：自动换行**
+`std::println(<格式串>, <参数>...);`
+```cpp
+// C++23 自动追加换行
+std::println("sum = {}", total);
+```
+
+---
+
+**基本写法：输出到文件流**
+`std::print(<流>, <格式串>, <参数>...);`
+```cpp
+// 输出到指定流
+std::print(std::cerr, "error: {}\n", msg);
+```
+
+---
+
+## 常用格式速查
+
+**基本写法：字符与字符串**
+`{:s}` 或 `{}`
+```cpp
+// 字符串直接输出
+std::format("name={}, ch={}", "Tom", 'A');
+```
+
+---
+
+**基本写法：布尔值**
+`{}`
+```cpp
+// 布尔输出为 0/1 或 true/false
+std::format("{}", true);  // 1 或 true
+```
+
+---
+
+**基本写法：指针**
+`{:p}`
+```cpp
+// 指针地址输出
+std::format("{:p}", (void*)ptr);
+```

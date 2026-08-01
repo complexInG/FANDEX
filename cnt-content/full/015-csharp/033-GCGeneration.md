@@ -214,16 +214,14 @@ $$
 
 ### 3.4 .NET 的代划分
 
-```
-┌──────────────────────────────────────────────────────────┐
-│                       Managed Heap                       │
-├──────────────────────────────────────────────────────────┤
-│  Gen 0  (small, ~16MB-256KB)    ── ephemeral, frequent   │
-│  Gen 1  (small, ~buffer)        ── ephemeral, less freq  │
-│  Gen 2  (large, unbounded)      ── full GC               │
-│  LOH    (>=85KB objects)        ── collected with Gen 2  │
-│  POH    (pinned objects, .NET 5+) ── collected with Gen 2│
-└──────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    MH[Managed Heap]
+    MH --> G0[Gen 0  small ~16MB-256KB<br/>ephemeral, frequent]
+    MH --> G1[Gen 1  small ~buffer<br/>ephemeral, less freq]
+    MH --> G2[Gen 2  large, unbounded<br/>full GC]
+    MH --> LOH[LOH &gt;=85KB objects<br/>collected with Gen 2]
+    MH --> POH[POH pinned objects .NET 5+<br/>collected with Gen 2]
 ```
 
 ### 3.5 LOH 与 SOH 的形式化
@@ -1319,30 +1317,43 @@ lldb dotnet -p <pid>
 
 ### 8.6 GC 调优决策树
 
-```
-1. 应用类型？
-   ├─ 桌面/单核容器 → Workstation GC
-   └─ 服务端/多核容器 → Server GC
-
-2. 停顿敏感度？
-   ├─ 高（实时、游戏） → Background GC + Gen 0 优化
-   └─ 低（批处理） → Server GC + 吞吐量优先
-
-3. 内存占用？
-   ├─ 严格限制（容器） → GCHeapHardLimit
-   └─ 无限制 → 默认
-
-4. LOH 占比高？
-   ├─ 是 → ArrayPool<T> + LOH 压缩模式 1
-   └─ 否 → 默认
-
-5. 固定对象多？
-   ├─ 是 → POH (.NET 5+)
-   └─ 否 → 默认
-
-6. 终结器多？
-   ├─ 是 → 改为 IDisposable + SafeHandle
-   └─ 否 → 默认
+```mermaid
+flowchart TD
+    T0["1. 应用类型？"]
+    T1["桌面/单核容器 → Workstation GC"]
+    T2["服务端/多核容器 → Server GC"]
+    T3["2. 停顿敏感度？"]
+    T4["高（实时、游戏） → Background GC + Gen 0 优化"]
+    T5["低（批处理） → Server GC + 吞吐量优先"]
+    T6["3. 内存占用？"]
+    T7["严格限制（容器） → GCHeapHardLimit"]
+    T8["无限制 → 默认"]
+    T9["4. LOH 占比高？"]
+    T10["是 → ArrayPool<T> + LOH 压缩模式 1"]
+    T11["否 → 默认"]
+    T12["5. 固定对象多？"]
+    T13["是 → POH (.NET 5+)"]
+    T14["否 → 默认"]
+    T15["6. 终结器多？"]
+    T16["是 → 改为 IDisposable + SafeHandle"]
+    T17["否 → 默认"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
+    T11 --> T12
+    T12 --> T13
+    T12 --> T14
+    T14 --> T15
+    T15 --> T16
+    T15 --> T17
 ```
 
 ---
@@ -1521,9 +1532,9 @@ void mark_phase()
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪个对象会直接分配在 LOH？
 
@@ -1532,9 +1543,9 @@ B. `new byte[85000]`（85KB）
 C. `new string('x', 10000)`（20KB）
 D. `new List<int>(1000)`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：LOH 阈值为 85,000 字节（约 85KB）。`byte[85000]` = 85000 字节，恰好达到阈值。`string('x', 10000)` = 10000 * 2 + 24 ≈ 20024 字节（UTF-16）。`List<int>(1000)` 内部数组为 `int[1000]` = 4000 字节。
+**解析讲解**：LOH 阈值为 85,000 字节（约 85KB）。`byte[85000]` = 85000 字节，恰好达到阈值。`string('x', 10000)` = 10000 * 2 + 24 ≈ 20024 字节（UTF-16）。`List<int>(1000)` 内部数组为 `int[1000]` = 4000 字节。
 
 ---
 
@@ -1545,9 +1556,9 @@ B. Server GC + Background
 C. Workstation GC + Non-concurrent
 D. Server GC + Non-concurrent
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：ASP.NET Core 服务端推荐 Server GC（多核并行）+ Background GC（Gen 2 回收时不阻塞 Gen 0/1 分配）。
+**解析讲解**：ASP.NET Core 服务端推荐 Server GC（多核并行）+ Background GC（Gen 2 回收时不阻塞 Gen 0/1 分配）。
 
 ---
 
@@ -1558,39 +1569,39 @@ B. 仅可 await 一次，多次 await 行为未定义
 C. 可以多次 await，但第二次 await 必然抛异常
 D. 仅可 await 两次
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`ValueTask<T>` 是结构体，可能基于同步结果（`IValueTaskSource<T>` 池化），多次 await 行为未定义。需要多次 await 时应调用 `.AsTask()`。
+**解析讲解**：`ValueTask<T>` 是结构体，可能基于同步结果（`IValueTaskSource<T>` 池化），多次 await 行为未定义。需要多次 await 时应调用 `.AsTask()`。
 
 ---
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 4**：.NET GC 中，Gen 0 的预算默认约为 ____ KB 到 ____ MB。
 
-**答案**：256 KB 到 16 MB（自适应调整）
+**解析讲解**：256 KB 到 16 MB（自适应调整）
 
-**解析**：Gen 0 预算根据存活率自适应。初始约 256KB，存活率高时增大到 16MB+。
+**解析讲解**：Gen 0 预算根据存活率自适应。初始约 256KB，存活率高时增大到 16MB+。
 
 ---
 
 **题目 5**：`fixed` 语句固定对象时，对象被标记为 ____，GC 不会移动它。
 
-**答案**：pinned（固定）
+**解析讲解**：pinned（固定）
 
-**解析**：`fixed` 在 IL 层面生成 `pin` 修饰符，对象在 GC 期间不被移动。
+**解析讲解**：`fixed` 在 IL 层面生成 `pin` 修饰符，对象在 GC 期间不被移动。
 
 ---
 
 **题目 6**：.NET 5 引入的 ____ Heap 专门用于存放固定对象，避免污染 SOH。
 
-**答案**：POH（Pinned Object Heap）
+**解析讲解**：POH（Pinned Object Heap）
 
-**解析**：POH 通过 `GC.AllocateArray<T>(size, pinned: true)` 分配。
+**解析讲解**：POH 通过 `GC.AllocateArray<T>(size, pinned: true)` 分配。
 
 ---
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 7**：实现一个线程安全的 `ByteArrayPool`，支持容量限制与超时回收。
 
@@ -1639,7 +1650,7 @@ public sealed class ByteArrayPool
 }
 ```
 
-**解析**：
+**解析讲解**：
 - 使用 `ConcurrentBag<T>` 实现线程安全。
 - `Interlocked` 保证计数原子性。
 - 超过容量时丢弃，让 GC 回收。

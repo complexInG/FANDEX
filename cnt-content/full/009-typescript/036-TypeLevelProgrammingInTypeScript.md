@@ -1448,16 +1448,19 @@ const usersWithPosts = await db.selectFrom('user')
 
 ### 8.2 项目结构
 
-```
-src/
-├── db/
-│   ├── schema.ts          # 数据库 schema 类型定义
-│   ├── client.ts          # 客户端实例
-│   ├── repositories/
-│   │   ├── user.repo.ts
-│   │   └── post.repo.ts
-│   └── migrations/        # 迁移文件
-└── ...
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["db/"]
+    T2["schema.ts          # 数据库 schema 类型定义"]
+    T3["client.ts          # 客户端实例"]
+    T4["repositories/"]
+    T5["user.repo.ts"]
+    T6["post.repo.ts"]
+    T7["migrations/        # 迁移文件"]
+    T8["..."]
+    T0 --> T1
+    T7 --> T8
 ```
 
 ### 8.3 Repository 模式
@@ -1702,9 +1705,9 @@ const booking = await prisma.booking.findFirst({
 // booking 的类型完全自动推导，无需手动定义
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 填空题
+### 填空题知识点讲解
 
 1. **（remember）** Kysely 由 ______ 在 2021 年开源，名称取自芬兰语 ______，意为"查询"。
 
@@ -1716,7 +1719,7 @@ const booking = await prisma.booking.findFirst({
 
 5. **（evaluate）** Prisma 通过 `prisma ______` 命令生成 TypeScript 类型与客户端代码，这是 schema-first 设计的核心。
 
-### 10.2 选择题
+### 选择题知识点讲解
 
 1. **（understand）** 下列关于三个 ORM 的描述，哪项正确？
    - A. Prisma 不依赖代码生成，所有类型由 schema.prisma 直接推导

@@ -193,15 +193,23 @@ class ErrorBoundary extends React.Component {
 
 JavaScript 内建 7 种错误类型，构成原型链：
 
-```
-Error
-├── EvalError
-├── RangeError
-├── ReferenceError
-├── SyntaxError
-├── TypeError
-├── URIError
-└── AggregateError (ES2021)
+```mermaid
+flowchart TD
+    T0["Error"]
+    T1["EvalError"]
+    T2["RangeError"]
+    T3["ReferenceError"]
+    T4["SyntaxError"]
+    T5["TypeError"]
+    T6["URIError"]
+    T7["AggregateError (ES2021)"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
 ```
 
 原型链验证：
@@ -1480,7 +1488,7 @@ const config = await api.request('/api/config');
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1497,7 +1505,7 @@ try {
 }
 ```
 
-参考答案：`A`、`finally`、然后抛出 `Error('B')`。
+解析讲解：`A`、`finally`、然后抛出 `Error('B')`。
 
 2. 解释为什么以下代码 `catch` 不到错误：
 
@@ -1509,7 +1517,7 @@ try {
 }
 ```
 
-参考答案：`setTimeout` 的回调在新的调用栈中执行，原 try 块已退出。
+解析讲解：`setTimeout` 的回调在新的调用栈中执行，原 try 块已退出。
 
 ### 10.2 进阶题
 
@@ -1546,7 +1554,7 @@ async function withRetry(fn, retries = 3) {
 }
 ```
 
-### 10.3 应用题
+### 应用题知识点讲解
 
 5. 设计一个错误监控系统的数据结构（上报字段、聚合策略、采样规则）。
 
@@ -1759,35 +1767,18 @@ class App extends React.Component {
 
 ## 附录 C：try/catch/finally 执行流程
 
-```
-┌─────────────────────────────────┐
-│ 进入 try 块                      │
-└──────────────┬──────────────────┘
-               │
-   ┌───────────┴───────────┐
-   ▼                       ▼
-抛出错误                  正常结束
-   │                       │
-   ▼                       │
-进入 catch 块              │
-(error 变量绑定)            │
-   │                       │
-   ▼                       │
-catch 结束                 │
-   │                       │
-   └───────────┬───────────┘
-               ▼
-        进入 finally 块
-               │
-               ▼
-        finally 结束
-               │
-   ┌───────────┴───────────┐
-   ▼                       ▼
-finally 有 return/throw   无
-   │                       │
-   ▼                       ▼
-覆盖原结果                使用 try/catch 结果
+```mermaid
+flowchart TD
+    A[进入 try 块] --> B{抛出错误?}
+    B -- 是 --> C[进入 catch 块<br/>error 变量绑定]
+    B -- 否 --> D[正常结束]
+    C --> E[catch 结束]
+    D --> F[进入 finally 块]
+    E --> F
+    F --> G[finally 结束]
+    G --> H{finally 有 return/throw?}
+    H -- 是 --> I[覆盖原结果]
+    H -- 否 --> J[使用 try/catch 结果]
 ```
 
 ## 附录 D：错误上报字段对照表
@@ -1869,54 +1860,68 @@ functionName@filename:line:col
 
 ## 附录 H：思维导图
 
-```
-错误边界与全局错误捕获
-├── 错误类型
-│   ├── 内建：Error、TypeError、RangeError、...
-│   ├── AggregateError (ES2021)
-│   ├── 自定义：AppError、NetworkError、...
-│   └── ES2022 Error.cause 链式
-├── 捕获机制
-│   ├── try/catch/finally (同步)
-│   ├── async/await + try (Promise)
-│   ├── .catch (Promise 链)
-│   ├── window.onerror (同步兜底)
-│   ├── window.unhandledrejection (Promise 兜底)
-│   ├── addEventListener('error', ..., true) (资源)
-│   ├── React ErrorBoundary
-│   ├── Vue errorCaptured
-│   ├── Node process.on
-│   └── Worker onerror
-├── 全局监控
-│   ├── window.addEventListener
-│   ├── 拦截 console.error
-│   ├── 拦截 fetch/XHR
-│   ├── 拦截 History API
-│   └── Breadcrumbs 行为追踪
-├── 错误上报
-│   ├── 采样策略
-│   ├── 节流去重
-│   ├── 批量上报
-│   ├── sendBeacon
-│   └── Source Map 解析
-├── 错误聚合
-│   ├── 指纹生成
-│   ├── 时序聚合
-│   ├── Release 追踪
-│   └── 用户维度聚合
-├── 工程实践
-│   ├── React 分层 ErrorBoundary
-│   ├── 重试与降级
-│   ├── 自动回滚
-│   ├── 用户反馈
-│   └── APM SDK 接入
-└── 陷阱
-    ├── 异步错误未捕获
-    ├── Promise 链无 .catch
-    ├── async 未 await
-    ├── 跨域 Script error
-    ├── error 事件不冒泡
-    └── finally 覆盖返回值
+```mermaid
+flowchart TD
+    T0["错误边界与全局错误捕获"]
+    T1["错误类型"]
+    T2["内建：Error、TypeError、RangeError、..."]
+    T3["AggregateError (ES2021)"]
+    T4["自定义：AppError、NetworkError、..."]
+    T5["ES2022 Error.cause 链式"]
+    T6["捕获机制"]
+    T7["try/catch/finally (同步)"]
+    T8["async/await + try (Promise)"]
+    T9[".catch (Promise 链)"]
+    T10["window.onerror (同步兜底)"]
+    T11["window.unhandledrejection (Promise 兜底)"]
+    T12["addEventListener('error', ..., true) (资源)"]
+    T13["React ErrorBoundary"]
+    T14["Vue errorCaptured"]
+    T15["Node process.on"]
+    T16["Worker onerror"]
+    T17["全局监控"]
+    T18["window.addEventListener"]
+    T19["拦截 console.error"]
+    T20["拦截 fetch/XHR"]
+    T21["拦截 History API"]
+    T22["Breadcrumbs 行为追踪"]
+    T23["错误上报"]
+    T24["采样策略"]
+    T25["节流去重"]
+    T26["批量上报"]
+    T27["sendBeacon"]
+    T28["Source Map 解析"]
+    T29["错误聚合"]
+    T30["指纹生成"]
+    T31["时序聚合"]
+    T32["Release 追踪"]
+    T33["用户维度聚合"]
+    T34["工程实践"]
+    T35["React 分层 ErrorBoundary"]
+    T36["重试与降级"]
+    T37["自动回滚"]
+    T38["用户反馈"]
+    T39["APM SDK 接入"]
+    T40["陷阱"]
+    T41["异步错误未捕获"]
+    T42["Promise 链无 .catch"]
+    T43["async 未 await"]
+    T44["跨域 Script error"]
+    T45["error 事件不冒泡"]
+    T46["finally 覆盖返回值"]
+    T0 --> T1
+    T5 --> T6
+    T16 --> T17
+    T22 --> T23
+    T28 --> T29
+    T33 --> T34
+    T39 --> T40
+    T40 --> T41
+    T40 --> T42
+    T40 --> T43
+    T40 --> T44
+    T40 --> T45
+    T40 --> T46
 ```
 
 ## 附录 I：版本兼容性
@@ -1959,32 +1964,13 @@ functionName@filename:line:col
 
 前端错误监控系统通常与后端服务协作：
 
-```
-┌──────────────┐    上报     ┌──────────────┐    存储     ┌──────────────┐
-│   浏览器     │ ─────────→ │  收集服务    │ ─────────→ │   数据库     │
-│  (SDK)       │             │  (API)       │             │  (Postgres)  │
-└──────────────┘             └──────────────┘             └──────────────┘
-                                                                  │
-                                                                  │ 聚合
-                                                                  ▼
-                                                          ┌──────────────┐
-                                                          │  聚合服务    │
-                                                          │  (Cron)      │
-                                                          └──────────────┘
-                                                                  │
-                                                                  │ 查询
-                                                                  ▼
-                                                          ┌──────────────┐
-                                                          │   仪表盘     │
-                                                          │  (前端)      │
-                                                          └──────────────┘
-                                                                  │
-                                                                  │ 告警
-                                                                  ▼
-                                                          ┌──────────────┐
-                                                          │   告警系统   │
-                                                          │ (PagerDuty)  │
-                                                          └──────────────┘
+```mermaid
+flowchart LR
+    Browser[浏览器<br/>SDK] -->|上报| Collector[收集服务<br/>API]
+    Collector -->|存储| DB[数据库<br/>Postgres]
+    DB -->|聚合| Agg[聚合服务<br/>Cron]
+    Agg -->|查询| Dashboard[仪表盘<br/>前端]
+    Dashboard -->|告警| Alert[告警系统<br/>PagerDuty]
 ```
 
 各环节技术选型：

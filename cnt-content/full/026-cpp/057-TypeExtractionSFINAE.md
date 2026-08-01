@@ -852,17 +852,23 @@ int main() {
 
 **项目结构**：
 
-```
-traits_lib/
-├── CMakeLists.txt
-├── include/
-│   └── traits_lib/
-│       ├── detect.hpp
-│       └── algorithms.hpp
-├── src/
-│   └── demo.cpp
-└── tests/
-    └── test_detect.cpp
+```mermaid
+flowchart TD
+    T0["traits_lib/"]
+    T1["CMakeLists.txt"]
+    T2["include/"]
+    T3["traits_lib/"]
+    T4["detect.hpp"]
+    T5["algorithms.hpp"]
+    T6["src/"]
+    T7["demo.cpp"]
+    T8["tests/"]
+    T9["test_detect.cpp"]
+    T0 --> T1
+    T0 --> T2
+    T5 --> T6
+    T7 --> T8
+    T8 --> T9
 ```
 
 **文件**：`CMakeLists.txt`
@@ -1589,24 +1595,24 @@ struct IsRelocatable : std::integral_constant<bool,
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个不是 SFINAE 友好的失败位置？
+**常见疑问 1**：以下哪个不是 SFINAE 友好的失败位置？
 
 - (A) 函数返回类型
 - (B) 函数参数类型
 - (C) 函数体内
 - (D) 模板参数默认值
 
-**答案**：(C)
+**解析讲解**：(C)
 
-**解析**：SFINAE 仅在"即时上下文"中生效，即函数签名、模板参数列表、尾随返回类型。函数体内的语法或语义错误不属于 SFINAE，会直接导致编译错误。
+**解析讲解**：SFINAE 仅在"即时上下文"中生效，即函数签名、模板参数列表、尾随返回类型。函数体内的语法或语义错误不属于 SFINAE，会直接导致编译错误。
 
 ---
 
-**Q2**：以下代码的输出是什么？
+**常见疑问 2**：以下代码的输出是什么？
 
 ```cpp
 template<typename T, typename = std::void_t<decltype(T::foo())>>
@@ -1629,13 +1635,13 @@ int main() {
 - (C) BB
 - (D) BA
 
-**答案**：(A)
+**解析讲解**：(A)
 
-**解析**：(1) 中 `WithFoo::foo()` 是有效表达式，第一个模板的偏特化成功，优先选择它，输出 A。(2) 中 `WithoutFoo::foo()` 无效，第一个模板的 SFINAE 触发，仅第二个模板可选，输出 B。
+**解析讲解**：(1) 中 `WithFoo::foo()` 是有效表达式，第一个模板的偏特化成功，优先选择它，输出 A。(2) 中 `WithoutFoo::foo()` 无效，第一个模板的 SFINAE 触发，仅第二个模板可选，输出 B。
 
 ---
 
-**Q3**：以下代码的编译结果是什么？
+**常见疑问 3**：以下代码的编译结果是什么？
 
 ```cpp
 template<typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
@@ -1652,13 +1658,13 @@ int main() { g(42); }
 - (C) 编译错误：重定义
 - (D) 编译错误：歧义
 
-**答案**：(C)
+**解析讲解**：(C)
 
-**解析**：两个 `g` 的签名在替换前完全相同（`void g(T)`，第二个参数都是默认值），构成重定义错误。正确写法应使用尾随实参或返回类型。
+**解析讲解**：两个 `g` 的签名在替换前完全相同（`void g(T)`，第二个参数都是默认值），构成重定义错误。正确写法应使用尾随实参或返回类型。
 
 ---
 
-**Q4**：以下代码的输出是什么？
+**常见疑问 4**：以下代码的输出是什么？
 
 ```cpp
 template<typename... Ts>
@@ -1678,58 +1684,58 @@ int main() {
 - (C) 编译错误
 - (D) 1
 
-**答案**：(A)
+**解析讲解**：(A)
 
-**解析**：这是二元左折叠 `init op ... op pack`，展开为 `((0 + A::value) + B::value) + C::value = 0 + 1 + 2 + 3 = 6`。
+**解析讲解**：这是二元左折叠 `init op ... op pack`，展开为 `((0 + A::value) + B::value) + C::value = 0 + 1 + 2 + 3 = 6`。
 
 ---
 
-**Q5**：以下哪种类型特征不是 C++11 引入的？
+**常见疑问 5**：以下哪种类型特征不是 C++11 引入的？
 
 - (A) `std::is_integral`
 - (B) `std::remove_const`
 - (C) `std::void_t`
 - (D) `std::enable_if`
 
-**答案**：(C)
+**解析讲解**：(C)
 
-**解析**：`std::void_t` 是 C++17 才标准化的，C++11 仅引入了 `std::enable_if`、`std::is_integral`、`std::remove_const` 等基础类型特征。
+**解析讲解**：`std::void_t` 是 C++17 才标准化的，C++11 仅引入了 `std::enable_if`、`std::is_integral`、`std::remove_const` 等基础类型特征。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**：SFINAE 缩写展开为 ________。
+**常见疑问 6**：SFINAE 缩写展开为 ________。
 
-**答案**：Substitution Failure Is Not An Error
-
----
-
-**Q2**：`std::enable_if_t<B, T>` 等价于 ________。
-
-**答案**：`typename std::enable_if<B, T>::type`
+**解析讲解**：Substitution Failure Is Not An Error
 
 ---
 
-**Q3**：检测 T 是否有 `value_type` 嵌套类型，应使用 `std::________<typename T::value_type>` 作为偏特化参数。
+**常见疑问 7**：`std::enable_if_t<B, T>` 等价于 ________。
 
-**答案**：`void_t`
-
----
-
-**Q4**：C++17 引入的 `if constexpr` 关键字替代了 ________ 在函数体内分支的场景。
-
-**答案**：SFINAE / `enable_if`
+**解析讲解**：`typename std::enable_if<B, T>::type`
 
 ---
 
-**Q5**：C++20 引入的 concepts 通过 ________ 子句与 `requires` 表达式实现类型约束。
+**常见疑问 8**：检测 T 是否有 `value_type` 嵌套类型，应使用 `std::________<typename T::value_type>` 作为偏特化参数。
 
-**答案**：`requires`
+**解析讲解**：`void_t`
 
-### 10.3 编程题
+---
 
-**Q1**：实现一个 `has_iterator` 类型特征，检测类型 T 是否有 `iterator` 嵌套类型，并写一个测试用例。
+**常见疑问 9**：C++17 引入的 `if constexpr` 关键字替代了 ________ 在函数体内分支的场景。
 
-**参考答案**：
+**解析讲解**：SFINAE / `enable_if`
+
+---
+
+**常见疑问 10**：C++20 引入的 concepts 通过 ________ 子句与 `requires` 表达式实现类型约束。
+
+**解析讲解**：`requires`
+
+### 编程题知识点讲解
+
+**常见疑问 11**：实现一个 `has_iterator` 类型特征，检测类型 T 是否有 `iterator` 嵌套类型，并写一个测试用例。
+
+**解析讲解**：
 
 ```cpp
 #include <type_traits>
@@ -1757,9 +1763,9 @@ int main() {
 
 ---
 
-**Q2**：使用 SFINAE 实现一个 `print_if_printable` 函数模板，仅当类型可流输出（`std::ostream << T`）时启用。
+**常见疑问 12**：使用 SFINAE 实现一个 `print_if_printable` 函数模板，仅当类型可流输出（`std::ostream << T`）时启用。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <type_traits>
@@ -1802,9 +1808,9 @@ int main() {
 
 ---
 
-**Q3**：用 C++20 concepts 重写 Q2 的实现，比较两种方案的差异。
+**常见疑问 13**：用 C++20 concepts 重写 Q2 的实现，比较两种方案的差异。
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <concepts>
@@ -1846,9 +1852,9 @@ int main() {
 
 ### 10.4 思考题
 
-**Q1**：为什么 SFINAE 仅在"即时上下文"中生效？这一设计选择的工程权衡是什么？
+**常见疑问 14**：为什么 SFINAE 仅在"即时上下文"中生效？这一设计选择的工程权衡是什么？
 
-**参考答案**：
+**解析讲解**：
 
 SFINAE 的"即时上下文"限制是出于编译器实现复杂度的考虑。若允许函数体内的失败触发 SFINAE，编译器必须完整实例化每个候选模板的函数体才能确定是否可调用——这会显著增加编译时间，并可能引发循环依赖（A 的函数体调用 B，B 的函数体调用 A，无法确定哪个先失败）。
 
@@ -1858,9 +1864,9 @@ C++17 的 `if constexpr` 与 C++20 的 concepts 提供了部分解决方案：`i
 
 ---
 
-**Q2**：在什么场景下应该使用 SFINAE 而非 concepts？反之又如何？
+**常见疑问 15**：在什么场景下应该使用 SFINAE 而非 concepts？反之又如何？
 
-**参考答案**：
+**解析讲解**：
 
 **使用 SFINAE 的场景**：
 
@@ -1878,9 +1884,9 @@ C++17 的 `if constexpr` 与 C++20 的 concepts 提供了部分解决方案：`i
 
 ---
 
-**Q3**：`std::void_t` 看似简单（只有一行 `using void_t = void`），为什么在 C++17 中才标准化？这反映了 C++ 标准化的哪些特点？
+**常见疑问 16**：`std::void_t` 看似简单（只有一行 `using void_t = void`），为什么在 C++17 中才标准化？这反映了 C++ 标准化的哪些特点？
 
-**参考答案**：
+**解析讲解**：
 
 `void_t` 之所以延迟到 C++17 标准化，反映了 C++ 标准化的几个特点：
 

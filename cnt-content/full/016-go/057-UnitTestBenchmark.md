@@ -369,17 +369,27 @@ $$
 
 ### 4.1 项目结构
 
-```text
-user_service/
-├── go.mod
-├── go.sum
-├── user.go
-├── user_test.go
-├── bench_test.go
-├── fuzz_test.go
-├── example_test.go
-└── testdata/
-    └── golden.json
+```mermaid
+flowchart TD
+    T0["user_service/"]
+    T1["go.mod"]
+    T2["go.sum"]
+    T3["user.go"]
+    T4["user_test.go"]
+    T5["bench_test.go"]
+    T6["fuzz_test.go"]
+    T7["example_test.go"]
+    T8["testdata/"]
+    T9["golden.json"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T0 --> T8
+    T8 --> T9
 ```
 
 `go.mod`:
@@ -2226,9 +2236,9 @@ func TestRangeQuery(t *testing.T) {
 
 ---
 
-## 9. 习题
+## 知识讲解与要点分析（原习题）
 
-### 9.1 选择题
+### 选择题知识点讲解
 
 **题目 1**:以下关于 `testing.T.Parallel()` 的描述,正确的是?
 
@@ -2237,17 +2247,14 @@ B. 调用后,该测试会被暂停,直到所有非并行测试完成后再开始
 C. `Parallel` 只能在 `t.Run` 子测试中调用,不能在顶层 `Test*` 中调用
 D. 同一测试中可多次调用 `Parallel` 以提高并行度
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:
+**解析讲解**：
 - A 错误:`Parallel` 不会立即执行,而是注册到并行队列。
 - B 正确:Go testing 框架会先运行所有非并行测试,然后运行并行测试(受 `-parallel` 限制)。
 - C 错误:顶层 `Test*` 也可调用 `Parallel`。
 - D 错误:同一测试中多次调用 `Parallel` 是无效的,第二次调用会 panic。
-</details>
 
 **题目 2**:关于 `Benchmark` 中 `b.N`,以下说法错误的是?
 
@@ -2256,17 +2263,14 @@ B. 首次运行 `b.N` 为 1
 C. 若单次执行过快,`b.N` 会指数增长
 D. 可通过 `-benchtime=100x` 强制 `b.N=100`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:C
+**解析讲解**：C
 
-**解析**:
+**解析讲解**：
 - A 正确:`b.N` 自适应。
 - B 正确:首次 `b.N=1`。
 - C 错误:不是指数增长,而是基于目标时间(默认 1s)计算,增长率约为 1.2x。
 - D 正确:`-benchtime=100x` 强制循环 100 次。
-</details>
 
 **题目 3**:关于 Go 1.18 引入的 fuzzing,以下说法正确的是?
 
@@ -2276,17 +2280,14 @@ C. 语料库存储在 `$GOCACHE/fuzz/` 下
 D. Fuzzing 发现的崩溃输入会自动加入语料库
 E. 以上全对
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:E
+**解析讲解**：E
 
-**解析**:所有描述均正确。
+**解析讲解**：所有描述均正确。
 - Fuzzing 函数签名:`func FuzzXxx(f *testing.F)`。
 - `f.Add(seed)` 添加种子,类型需与 `f.Fuzz` 回调参数匹配。
 - 语料库路径:`$GOCACHE/fuzz/<package>/<func>/`。
 - 崩溃输入自动持久化,后续 `go test` 会自动重放。
-</details>
 
 **题目 4**:以下哪种情况会导致 `go test -race` 报告 data race?
 
@@ -2295,19 +2296,16 @@ B. 多个 goroutine 同时读一个未受保护的变量
 C. 多个 goroutine 同时写一个 `sync.Mutex` 保护的变量
 D. 一个 goroutine 写,另一个 goroutine 通过 `atomic.Load` 读
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:B
+**解析讲解**：B
 
-**解析**:
+**解析讲解**：
 - A 错误:RWMutex 允许多读。
 - B 正确:同时读虽然不会数据损坏,但 race 检测器会报告。
 - C 错误:Mutex 提供互斥保护。
 - D 错误:atomic 操作是 race-free 的。
 
 注意:`-race` 检测的是无同步的并发访问,即使全是读也会报告。
-</details>
 
 **题目 5**:关于 `TestMain`,以下说法错误的是?
 
@@ -2316,57 +2314,39 @@ B. `TestMain` 必须调用 `m.Run()` 才能运行测试
 C. `TestMain` 返回值是测试退出码
 D. 一个包可以有多个 `TestMain`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**:D
+**解析讲解**：D
 
-**解析**:一个包只能有一个 `TestMain`,否则编译错误。
-</details>
+**解析讲解**：一个包只能有一个 `TestMain`,否则编译错误。
 
-### 9.2 填空题
+### 填空题知识点讲解
 
 **题目 1**:`go test -bench=. -benchmem` 中,`-benchmem` 的作用是 _________。
 
-<details>
-<summary>答案</summary>
 
 报告每次操作的内存分配(B/op)和分配次数(allocs/op)。
-</details>
 
 **题目 2**:`go test -coverprofile=coverage.out` 生成的覆盖率基于 _________ 覆盖,而非分支覆盖。
 
-<details>
-<summary>答案</summary>
 
 语句(statement)
-</details>
 
 **题目 3**:在 `t.Run` 子测试中调用 `t.Parallel()` 时,需要先 _________ 循环变量以避免 Go 1.21 及以下的闭包陷阱。
 
-<details>
-<summary>答案</summary>
 
 shadow(或:重新声明 `tc := tc`)
-</details>
 
 **题目 4**:Go 1.18 引入的 fuzzing,通过 `f._________()` 添加种子语料,通过 `f._________()` 注册 fuzzing 回调。
 
-<details>
-<summary>答案</summary>
 
 Add、Fuzz
-</details>
 
 **题目 5**:`t.Cleanup()` 注册的函数执行顺序是 _________(LIFO/FIFO)。
 
-<details>
-<summary>答案</summary>
 
 LIFO(后进先出)
-</details>
 
-### 9.3 编程题
+### 编程题知识点讲解
 
 **题目 1**:为以下函数编写表驱动单元测试:
 
@@ -2402,8 +2382,6 @@ func min(a, b, c int) int {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -2447,7 +2425,6 @@ func BenchmarkLevenshtein(b *testing.B) {
     }
 }
 ```
-</details>
 
 **题目 2**:为以下函数编写 fuzzing 测试,确保不 panic:
 
@@ -2458,8 +2435,6 @@ func ParseIPv4(s string) ([4]byte, error) {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 func FuzzParseIPv4(f *testing.F) {
@@ -2487,12 +2462,9 @@ func FuzzParseIPv4(f *testing.F) {
     })
 }
 ```
-</details>
 
 **题目 3**:编写一个基准测试,对比 `strings.Builder`、`fmt.Sprintf`、`+` 拼接 10 个字符串的性能:
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 func BenchmarkConcat(b *testing.B) {
@@ -2535,26 +2507,20 @@ func BenchmarkConcat(b *testing.B) {
     })
 }
 ```
-</details>
 
 ### 9.4 思考题
 
 **题目 1**:为什么 Go 团队坚持不将 `assert` 库纳入标准库?这种设计决策对生态有何影响?
 
-<details>
-<summary>参考思路</summary>
 
 1. **设计哲学**:Go 强调显式(explicit)与简洁(minimal)。`t.Errorf` 已经足够,引入 assert 会增加 API 表面积。
 2. **避免断言滥用**:断言库可能诱导开发者写"宽泛断言"(如 `assert.NotNil`),而非精确的语义检查。
 3. **生态分化**:催生了 `testify`、`goconvey`、`Gomega` 等多种风格,各有适用场景,反而是优势。
 4. **影响**:学习成本低,但代码冗长;社区生态活跃,但缺乏统一标准。
 5. **对比**:Rust 选择将 `assert_eq!` 等宏纳入标准库,体现不同的取舍。
-</details>
 
 **题目 2**:覆盖率达到 100% 是否意味着测试充分?请结合实际案例论述。
 
-<details>
-<summary>参考思路</summary>
 
 1. **覆盖率局限**:语句覆盖不等于分支覆盖,更不等于路径覆盖。
 2. **反例**:`if x > 0 { return x } else { return -x }`,若只测试 `x=1`,覆盖率 100% 但未覆盖 `x=-1`。
@@ -2562,12 +2528,9 @@ func BenchmarkConcat(b *testing.B) {
 4. **边界条件**:覆盖率不反映边界值测试。
 5. **实践建议**:将覆盖率作为门槛(80%+),但结合 code review、fuzzing、property test 综合评估。
 6. **业界案例**:Kubernetes 核心包覆盖率约 80%,但通过大规模集成测试与 e2e 弥补。
-</details>
 
 **题目 3**:在微服务架构中,如何平衡单元测试与集成测试的比例?过度 mock 有哪些危害?
 
-<details>
-<summary>参考思路</summary>
 
 1. **金字塔原则**:70% 单元测试 + 20% 集成测试 + 10% e2e。
 2. **过度 mock 的危害**:
@@ -2580,12 +2543,9 @@ func BenchmarkConcat(b *testing.B) {
    - API 层:契约测试(Pact)+ 集成测试。
 4. **避免 mock 反模式**:不 mock 值对象、不 mock 标准库、不 mock 自身实现。
 5. **案例**:Netflix 团队提出"测试金字塔"的演进,从单元为主转向集成为主,以减少 mock 维护成本。
-</details>
 
 **题目 4**:Fuzzing 与传统单元测试的互补关系是什么?在 CI 中如何高效集成?
 
-<details>
-<summary>参考思路</summary>
 
 1. **互补关系**:
    - 单元测试:固化已知行为,验证预期。
@@ -2599,12 +2559,9 @@ func BenchmarkConcat(b *testing.B) {
    - 结构感知:对结构化输入使用自定义 mutation。
    - 并行 fuzzing:多 worker 同时探索。
 4. **业界案例**:Go 标准库自身通过 fuzzing 发现了多个 bug,如 `encoding/json` 的栈溢出。
-</details>
 
 **题目 5**:在大型 Go 项目中,如何设计可维护的测试夹具(fixture)管理机制?
 
-<details>
-<summary>参考思路</summary>
 
 1. **分层夹具**:
    - 全局夹具(`TestMain`):数据库连接池、配置加载。
@@ -2622,7 +2579,6 @@ func BenchmarkConcat(b *testing.B) {
    - 抽取到 `testutil` 包,供多包复用。
    - 提供工厂函数,而非全局变量。
 5. **案例**:Kubernetes 的 `test/e2e/framework` 提供完整的夹具管理,支持 namespace 隔离、资源清理。
-</details>
 
 ---
 

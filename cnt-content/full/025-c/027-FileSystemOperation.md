@@ -18,10 +18,11 @@ prerequisites:
   - c/数据类型详解
   - c/指针详解
 ---
+# C 文件系统操作
 
-# 文件系统操作
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本章节面向已掌握 C 基本语法与指针的读者，深入讲解 POSIX 文件系统 API、目录遍历算法、文件权限模型、inotify 实时监控、跨平台抽象层设计，对标 MIT 6.S081、Stanford CS107、CMU 15-213 的系统编程教学水准。所有代码示例均可直接编译运行，支持 0 基础自学。
+---
 
 ## 1. 学习目标
 
@@ -149,12 +150,37 @@ $$
 
 `st_mode` 包含文件类型与权限信息：
 
-```
-st_mode 位布局（16 位）：
-+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-| setuid | setgid | sticky | rwx | rwx | rwx | file type (4 bits) |
-|  15  |  14  |  13  | owner | group | other |  12..9  8..3       |
-+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+```mermaid
+flowchart TD
+    C0_0["st_mode 位布局（16 位）："]
+    C1_0["setuid"]
+    C1_1["15"]
+    C2_0["setgid"]
+    C2_1["14"]
+    C3_0["sticky"]
+    C3_1["13"]
+    C4_0["rwx"]
+    C4_1["owner"]
+    C5_0["rwx"]
+    C5_1["group"]
+    C6_0["rwx"]
+    C6_1["other"]
+    C7_0["file type (4 bits)"]
+    C7_1["12..9  8..3"]
+    C1_0 --> C1_1
+    C2_0 --> C2_1
+    C3_0 --> C3_1
+    C4_0 --> C4_1
+    C5_0 --> C5_1
+    C6_0 --> C6_1
+    C7_0 --> C7_1
+    C0_0 --> C1_0
+    C1_0 --> C2_0
+    C2_0 --> C3_0
+    C3_0 --> C4_0
+    C4_0 --> C5_0
+    C5_0 --> C6_0
+    C6_0 --> C7_0
 ```
 
 权限位常量：
@@ -2048,9 +2074,9 @@ int compute_chunks(const char *path, Chunk *chunks, size_t max_chunks) {
 /* 服务端：比较哈希，只请求缺失的块 */
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 习题 1：目录大小统计
+## 知识讲解与要点分析（原习题 1：目录大小统计）
 
 实现一个函数，递归计算目录的总大小（包括所有子目录中的文件）：
 
@@ -2058,7 +2084,7 @@ int compute_chunks(const char *path, Chunk *chunks, size_t max_chunks) {
 long long calc_dir_size(const char *path);
 ```
 
-**答案**：
+**解析讲解**：
 
 ```c
 #include <dirent.h>
@@ -2095,7 +2121,7 @@ long long calc_dir_size(const char *path) {
 }
 ```
 
-### 习题 2：文件搜索工具
+## 知识讲解与要点分析（原习题 2：文件搜索工具）
 
 实现一个简单的 `find` 命令，支持按名称搜索：
 
@@ -2103,7 +2129,7 @@ long long calc_dir_size(const char *path) {
 ./myfind <dir> -name <pattern>
 ```
 
-**答案**：
+**解析讲解**：
 
 ```c
 #include <stdio.h>
@@ -2150,7 +2176,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 习题 3：原子配置文件更新
+## 知识讲解与要点分析（原习题 3：原子配置文件更新）
 
 实现一个函数，原子地更新配置文件（避免崩溃导致配置丢失）：
 
@@ -2158,7 +2184,7 @@ int main(int argc, char *argv[]) {
 int update_config(const char *path, const char *new_content);
 ```
 
-**答案**：
+**解析讲解**：
 
 ```c
 #include <stdio.h>
@@ -2194,7 +2220,7 @@ int update_config(const char *path, const char *new_content) {
 }
 ```
 
-### 习题 4：文件复制（带进度）
+## 知识讲解与要点分析（原习题 4：文件复制（带进度））
 
 实现一个带进度显示的文件复制函数：
 
@@ -2202,7 +2228,7 @@ int update_config(const char *path, const char *new_content) {
 int copy_with_progress(const char *src, const char *dst);
 ```
 
-**答案**：
+**解析讲解**：
 
 ```c
 #include <stdio.h>
@@ -2247,17 +2273,17 @@ int copy_with_progress(const char *src, const char *dst) {
 }
 ```
 
-### 习题 5：监控目录变化
+## 知识讲解与要点分析（原习题 5：监控目录变化）
 
 使用 inotify 实现一个目录变化监控器，输出所有创建、删除、修改事件：
 
-**答案**：见 5.7 节的完整示例。
+**解析讲解**：见 5.7 节的完整示例。
 
-### 习题 6：跨平台文件锁
+## 知识讲解与要点分析（原习题 6：跨平台文件锁）
 
 实现一个跨平台（Linux + Windows）的文件锁函数：
 
-**答案**：
+**解析讲解**：
 
 ```c
 #ifdef _WIN32
@@ -2294,19 +2320,19 @@ void file_lock_release(file_lock_t lock) {
 }
 ```
 
-### 思考题 1：为什么 `readdir_r` 被废弃？
+## 知识讲解与要点分析（原思考题 1：为什么 `readdir_r` 被废弃？）
 
 **提示**：接口设计缺陷（`NAME_MAX` 不可靠）、现代 `readdir` 已在不同 `DIR*` 上线程安全、性能开销（memcpy）。
 
-### 思考题 2：`stat` 与 `lstat` 的差异在哪些场景下重要？
+## 知识讲解与要点分析（原思考题 2：`stat` 与 `lstat` 的差异在哪些场景下重要？）
 
 **提示**：符号链接处理。备份工具、安全审计、目录遍历需用 `lstat` 避免循环。
 
-### 思考题 3：为什么 `rename` 在跨文件系统时非原子？
+## 知识讲解与要点分析（原思考题 3：为什么 `rename` 在跨文件系统时非原子？）
 
 **提示**：跨文件系统需要复制数据 + 删除原文件，无法在内核中原子完成。Linux 在 rename 跨文件系统时返回 `EXDEV`，要求应用层手动复制。
 
-### 思考题 4：`O_APPEND` 如何保证多进程写入的原子性？
+## 知识讲解与要点分析（原思考题 4：`O_APPEND` 如何保证多进程写入的原子性？）
 
 **提示**：内核在每次 `write` 前原子地将偏移量设为文件末尾，整个"定位 + 写入"在 inode 锁保护下完成。
 
@@ -2354,3 +2380,313 @@ void file_lock_release(file_lock_t lock) {
 ---
 
 > 本章节基于 POSIX.1-2017 与 Linux 5.x 内核，所有示例代码已在 `gcc 13.2` 与 `clang 17.0` 上通过 `-Wall -Wextra -std=c11` 编译验证，并在 Linux 6.5 + glibc 2.38 上运行测试。Windows 用户需参考 Win32 API 章节，macOS 用户需注意 BSD 与 Linux 的差异（如 `fts` 与 `nftw` 的可用性）。inotify 示例仅适用于 Linux，macOS 用户可参考 `kqueue`/`fsevents`。如发现错误，欢迎指正。
+## 文件信息
+
+**基本写法：获取文件状态**
+`stat(<路径>, &<结构>);`
+```c
+// 获取文件元数据
+struct stat st;
+stat("file.txt", &st);
+```
+
+---
+
+**基本写法：获取文件大小**
+`<st>.st_size`
+```c
+// 取出文件字节数
+off_t size = st.st_size;
+```
+
+---
+
+**基本写法：判断是否目录**
+`S_ISDIR(<st>.st_mode)`
+```c
+// 检查是否为目录
+if (S_ISDIR(st.st_mode)) { }
+```
+
+---
+
+**基本写法：判断是否普通文件**
+`S_ISREG(<st>.st_mode)`
+```c
+// 检查是否为普通文件
+if (S_ISREG(st.st_mode)) { }
+```
+
+---
+
+**基本写法：获取文件权限**
+`<st>.st_mode & 0777`
+```c
+// 取出权限位
+mode_t perm = st.st_mode & 0777;
+```
+
+---
+
+**基本写法：获取修改时间**
+`<st>.st_mtime`
+```c
+// 文件最后修改时间戳
+time_t mtime = st.st_mtime;
+```
+
+---
+
+## 目录操作
+
+**基本写法：创建目录**
+`mkdir(<路径>, <权限>);`
+```c
+// 创建目录
+mkdir("newdir", 0755);
+```
+
+---
+
+**基本写法：删除目录**
+`rmdir(<路径>);`
+```c
+// 删除空目录
+rmdir("newdir");
+```
+
+---
+
+**基本写法：打开目录**
+`opendir(<路径>);`
+```c
+// 打开目录流
+DIR* dir = opendir(".");
+```
+
+---
+
+**基本写法：读取目录项**
+`readdir(<dir>);`
+```c
+// 逐个读取目录项
+struct dirent* entry;
+while ((entry = readdir(dir)) != NULL) {
+    printf("%s\n", entry->d_name);
+}
+```
+
+---
+
+**基本写法：关闭目录**
+`closedir(<dir>);`
+```c
+// 关闭目录流
+closedir(dir);
+```
+
+---
+
+**基本写法：切换工作目录**
+`chdir(<路径>);`
+```c
+// 改变当前工作目录
+chdir("/tmp");
+```
+
+---
+
+**基本写法：获取工作目录**
+`getcwd(<缓冲>, <大小>);`
+```c
+// 取得当前工作目录
+char buf[256];
+getcwd(buf, sizeof(buf));
+```
+
+---
+
+## 文件操作
+
+**基本写法：创建文件**
+`creat(<路径>, <权限>);`
+```c
+// 创建或截断文件
+int fd = creat("file.txt", 0644);
+```
+
+---
+
+**基本写法：删除文件**
+`unlink(<路径>);`
+```c
+// 删除文件
+unlink("file.txt");
+```
+
+---
+
+**基本写法：重命名**
+`rename(<旧名>, <新名>);`
+```c
+// 重命名或移动文件
+rename("old.txt", "new.txt");
+```
+
+---
+
+**基本写法：链接文件**
+`link(<原路径>, <新路径>);`
+```c
+// 创建硬链接
+link("file.txt", "hardlink.txt");
+```
+
+---
+
+**基本写法：符号链接**
+`symlink(<目标>, <链接名>);`
+```c
+// 创建软链接
+symlink("file.txt", "softlink.txt");
+```
+
+---
+
+**基本写法：读取符号链接**
+`readlink(<链接>, <缓冲>, <大小>);`
+```c
+// 读取链接指向的目标
+char buf[256];
+ssize_t n = readlink("softlink.txt", buf, sizeof(buf));
+buf[n] = '\0';
+```
+
+---
+
+## 权限与所有者
+
+**基本写法：修改权限**
+`chmod(<路径>, <权限>);`
+```c
+// 修改文件权限
+chmod("file.txt", 0644);
+```
+
+---
+
+**基本写法：修改所有者**
+`chown(<路径>, <uid>, <gid>);`
+```c
+// 修改文件所有者
+chown("file.txt", 1000, 1000);
+```
+
+---
+
+**基本写法：修改文件描述符权限**
+`fchmod(<fd>, <权限>);`
+```c
+// 通过描述符修改权限
+fchmod(fd, 0644);
+```
+
+---
+
+## 文件描述符操作
+
+**基本写法：复制描述符**
+`dup(<fd>);` / `dup2(<fd>, <新fd>);`
+```c
+// 重定向到指定描述符
+dup2(fd, STDOUT_FILENO);
+```
+
+---
+
+**基本写法：打开文件**
+`open(<路径>, <标志>);`
+```c
+// 读写方式打开
+int fd = open("file.txt", O_RDWR | O_CREAT, 0644);
+```
+
+---
+
+**基本写法：读写**
+`read(<fd>, <缓冲>, <大小>);` `write(<fd>, <数据>, <大小>);`
+```c
+// 底层读写
+ssize_t n = read(fd, buf, sizeof(buf));
+write(fd, buf, n);
+```
+
+---
+
+**基本写法：定位文件偏移**
+`lseek(<fd>, <偏移>, <起始>);`
+```c
+// 移动文件读写位置
+lseek(fd, 0, SEEK_SET);   // 回到开头
+```
+
+---
+
+**基本写法：关闭描述符**
+`close(<fd>);`
+```c
+// 关闭文件描述符
+close(fd);
+```
+
+---
+
+## 遍历目录树
+
+**基本写法：递归遍历目录**
+`nftw(<路径>, <回调>, <深度>, <标志>);`
+```c
+// 文件树遍历
+int cb(const char* path, const struct stat* st, int type, struct FTW* ftw) {
+    if (type == FTW_F) printf("%s\n", path);
+    return 0;
+}
+nftw(".", cb, 10, FTW_PHYS);
+```
+
+---
+
+## glob 模式匹配
+
+**基本写法：通配符匹配文件**
+`glob(<模式>, 0, NULL, &<结果>);`
+```c
+// 匹配所有 .txt 文件
+glob_t g;
+glob("*.txt", 0, NULL, &g);
+for (size_t i = 0; i < g.gl_pathc; i++) {
+    printf("%s\n", g.gl_pathv[i]);
+}
+globfree(&g);
+```
+
+---
+
+## 临时文件
+
+**基本写法：创建临时文件**
+`tmpfile();`
+```c
+// 创建自动删除的临时文件
+FILE* fp = tmpfile();
+```
+
+---
+
+**基本写法：生成临时文件名**
+`mkstemp(<模板>);`
+```c
+// 安全创建临时文件
+char tmpl[] = "/tmp/myfileXXXXXX";
+int fd = mkstemp(tmpl);
+```

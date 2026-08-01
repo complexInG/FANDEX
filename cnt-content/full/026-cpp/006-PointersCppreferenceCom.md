@@ -284,6 +284,11 @@ exercises:
     explanation: auto_ptr 的破坏性复制使其不满足 STL 容器对元素类型的 CopyConstructible 要求，可能在算法拷贝过程中悄然丢失元素。unique_ptr 通过删除拷贝构造、提供移动构造，使所有权转移显式且安全，符合 C++11 引入的右值引用体系。C++17 已正式移除 auto_ptr。
     difficulty: 4
 ---
+# 指针
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 第 1 章 学习目标与导论
 
@@ -1939,39 +1944,30 @@ int main() {
 
 ## 第 13 章 习题与解答
 
-### 13.1 填空题
+### 填空题知识点讲解
 
 **习题 1**（remember，难度 1）：在 64 位系统上，`sizeof(int*)` 的值为 ____ 字节。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：8
+**解析讲解**：8
 
-**解析**：64 位系统的地址总线宽度为 64 位（8 字节），任何对象指针占 8 字节；指针大小与所指对象类型无关（`sizeof(int*) == sizeof(double*) == sizeof(char*) == 8`）。
-</details>
+**解析讲解**：64 位系统的地址总线宽度为 64 位（8 字节），任何对象指针占 8 字节；指针大小与所指对象类型无关（`sizeof(int*) == sizeof(double*) == sizeof(char*) == 8`）。
 
 **习题 2**（understand，难度 2）：表达式 `arr[i]` 在 C++ 中等价于指针算术表达式 ____。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：`*(arr + i)`
+**解析讲解**：`*(arr + i)`
 
-**解析**：根据 C++ 标准 [expr.sub]，下标运算符 `E1[E2]` 等价于 `*((E1)+(E2))`。因此 `arr[i] = *(arr + i) = *(i + arr) = i[arr]`（最后一项合法但不推荐）。
-</details>
+**解析讲解**：根据 C++ 标准 [expr.sub]，下标运算符 `E1[E2]` 等价于 `*((E1)+(E2))`。因此 `arr[i] = *(arr + i) = *(i + arr) = i[arr]`（最后一项合法但不推荐）。
 
 **习题 3**（understand，难度 2）：两个指向同一数组内元素的指针 `p1` 与 `p2` 相减，结果类型为 ____（标准类型名）。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：`std::ptrdiff_t`
+**解析讲解**：`std::ptrdiff_t`
 
-**解析**：指针减法返回有符号整数类型 `std::ptrdiff_t`（定义于 `<cstddef>`），其宽度由实现定义但足以表示任意数组下标差。在 64 位系统上通常为 `long long`（8 字节）。
-</details>
+**解析讲解**：指针减法返回有符号整数类型 `std::ptrdiff_t`（定义于 `<cstddef>`），其宽度由实现定义但足以表示任意数组下标差。在 64 位系统上通常为 `long long`（8 字节）。
 
-### 13.2 选择题
+### 选择题知识点讲解
 
 **习题 4**（understand，难度 2）：以下哪段代码存在严格别名违规（Strict Aliasing Violation）？
 
@@ -1980,13 +1976,10 @@ int main() {
 - C. `int x = 42; int* p = &x; *p = 100;`
 - D. `int x = 42; void* p = &x;`
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：选项 B 通过 `float*` 访问 `int` 对象的存储，违反 C++ 标准 [basic.lval] 中的严格别名规则。`void*`（选项 D）只是存储地址未解引用，不违规。正确做法是使用 `std::memcpy` 或 `std::bit_cast`（C++20）。
-</details>
+**解析讲解**：选项 B 通过 `float*` 访问 `int` 对象的存储，违反 C++ 标准 [basic.lval] 中的严格别名规则。`void*`（选项 D）只是存储地址未解引用，不违规。正确做法是使用 `std::memcpy` 或 `std::bit_cast`（C++20）。
 
 **习题 5**（analyze，难度 3）：关于 `const int* const p = &x;`，下列说法正确的是？
 
@@ -1995,13 +1988,10 @@ int main() {
 - C. 既不能通过 `p` 修改所指对象，也不能让 `p` 指向其他对象
 - D. 可以让 `p` 指向其他对象，但不能通过 `p` 修改所指对象
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：第一个 `const` 修饰所指对象（不能通过 `p` 写入），第二个 `const` 修饰指针本身（不能重新赋值 `p`）。两者结合后 `p` 与 `*p` 均为只读。
-</details>
+**解析讲解**：第一个 `const` 修饰所指对象（不能通过 `p` 写入），第二个 `const` 修饰指针本身（不能重新赋值 `p`）。两者结合后 `p` 与 `*p` 均为只读。
 
 **习题 6**（analyze，难度 3）：关于 `std::unique_ptr` 与 `std::shared_ptr`，下列哪项描述正确？
 
@@ -2010,13 +2000,10 @@ int main() {
 - C. `shared_ptr` 的引用计数操作是零开销的
 - D. `unique_ptr` 的大小始终等于裸指针
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`unique_ptr` 是 move-only 类型，独占对象；`shared_ptr` 通过原子引用计数共享所有权。选项 C 错误：`shared_ptr` 的计数器需原子操作，存在性能开销。选项 D 错误：当 `unique_ptr` 持有自定义删除器时，大小可能大于裸指针。
-</details>
+**解析讲解**：`unique_ptr` 是 move-only 类型，独占对象；`shared_ptr` 通过原子引用计数共享所有权。选项 C 错误：`shared_ptr` 的计数器需原子操作，存在性能开销。选项 D 错误：当 `unique_ptr` 持有自定义删除器时，大小可能大于裸指针。
 
 ### 13.3 代码修正题
 
@@ -2031,8 +2018,6 @@ void process(bool error) {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
 **修正方案**：
 
@@ -2046,8 +2031,7 @@ void process(bool error) {
 }
 ```
 
-**解析**：使用 `std::unique_ptr<int[]>` 替代裸 `new[]`，利用 RAII 在任意退出路径（含异常）自动释放内存。这也符合 C++ Core Guidelines R.10（避免裸 new/delete）与 R.11（避免显式管理生命周期）。
-</details>
+**解析讲解**：使用 `std::unique_ptr<int[]>` 替代裸 `new[]`，利用 RAII 在任意退出路径（含异常）自动释放内存。这也符合 C++ Core Guidelines R.10（避免裸 new/delete）与 R.11（避免显式管理生命周期）。
 
 **习题 8**（evaluate，难度 4）：以下代码存在未定义行为，请指出并修正：
 
@@ -2058,8 +2042,6 @@ free(p);
 int x = *p;  // UB!
 ```
 
-<details>
-<summary>参考答案</summary>
 
 **修正方案**：
 
@@ -2076,8 +2058,7 @@ int main() {
 }
 ```
 
-**解析**：`free(p)` 后 `p` 成为悬空指针，再解引用 `*p` 访问已释放内存，属于未定义行为（C++ 标准 [basic.life]）。最佳实践是在 `free` 前完成所有访问，并将指针置空，或直接使用 `std::unique_ptr<int>`。
-</details>
+**解析讲解**：`free(p)` 后 `p` 成为悬空指针，再解引用 `*p` 访问已释放内存，属于未定义行为（C++ 标准 [basic.life]）。最佳实践是在 `free` 前完成所有访问，并将指针置空，或直接使用 `std::unique_ptr<int>`。
 
 ### 13.4 开放性问题
 
@@ -2089,8 +2070,6 @@ int main() {
 
 给出核心代码并说明设计思路。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <memory>
@@ -2142,12 +2121,9 @@ int main() {
 3. **`mutex` 保护共享数据**：`pool_` 是共享数据结构，必须互斥访问。
 4. **复用 vs 新建的权衡**：遍历 `pool_` 查找可用对象，若全部失效则新建。对于构造开销大的对象，池化可显著提升性能。
 
-</details>
 
 **习题 10**（evaluate，难度 4）：分析为什么 C++ 标准委员会在 C++11 中废弃 `std::auto_ptr` 而引入 `std::unique_ptr`。请从所有权语义、移动语义、容器兼容性三个维度论证，并给出一个 `auto_ptr` 会导致问题的具体示例。
 
-<details>
-<summary>参考答案</summary>
 
 **三个维度的论证**：
 
@@ -2187,7 +2163,6 @@ int main() {
 ```
 
 **结论**：`auto_ptr` 的设计缺陷源于其在没有右值引用的时代强行实现所有权转移，导致与值语义和 STL 容器不兼容。`unique_ptr` 通过 C++11 的移动语义原生解决了这一问题，因此委员会在 C++11 标记 `auto_ptr` 为废弃，并在 C++17 正式移除。
-</details>
 
 ## 第 14 章 参考文献
 
@@ -2234,7 +2209,311 @@ int main() {
 
 ---
 
-### 更新日志（Changelog）
+## 指针基础
 
-- 2026-05-27：从 C13_103 拆分，专注于指针相关内容。
-- 2026-07-18：Phase 2 试点升级，按 FANDEX 内容工程规范 12 项质量基准全面重写，扩展 frontmatter schema，新增形式化定义、对比分析、案例研究、习题与解答、参考文献等章节，达到论文级专业度。
+**基本写法：指针声明与初始化**
+`<type>* <ptr_name> = &<var>;`
+```cpp
+// ptr 指向 x 的地址
+int x = 10;
+int* ptr = &x;
+```
+
+---
+
+**空指针写法：C++11 nullptr**
+`<type>* <ptr_name> = nullptr;`
+```cpp
+// 初始化为空指针
+int* ptr = nullptr;
+```
+
+---
+
+**解引用写法：通过指针访问值**
+`*<ptr_name>`
+```cpp
+// 解引用获取指针指向的值
+int x = 10;
+int* ptr = &x;
+std::cout << *ptr << std::endl;
+```
+
+---
+
+**修改写法：通过指针修改值**
+`*<ptr_name> = <new_value>;`
+```cpp
+// 通过指针修改变量的值
+int x = 10;
+int* ptr = &x;
+*ptr = 20;
+```
+
+---
+
+## const 指针
+
+**指向常量的指针写法**
+`const <type>* <ptr_name>;`
+```cpp
+// 不能通过指针修改所指向的值
+const int* p1;
+```
+
+---
+
+**常量指针写法**
+`<type>* const <ptr_name> = &<var>;`
+```cpp
+// 指针本身不能改变指向
+int x = 10;
+int* const p3 = &x;
+```
+
+---
+
+**双重 const 写法**
+`const <type>* const <ptr_name> = &<var>;`
+```cpp
+// 既不能修改值，也不能修改指针
+int x = 10;
+const int* const p4 = &x;
+```
+
+---
+
+## 指针与数组
+
+**基本写法：数组名作为指针**
+`<type>* <ptr> = <array_name>;`
+```cpp
+// 数组名即首元素地址
+int arr[5] = {1, 2, 3, 4, 5};
+int* p = arr;
+```
+
+---
+
+**指针算术写法：指针加减运算**
+`<ptr> + <n>`
+```cpp
+// 指针向后移动 n 个元素
+int arr[5] = {1, 2, 3, 4, 5};
+int* p = arr;
+int* q = p + 2;
+```
+
+---
+
+**下标写法：指针下标访问**
+`<ptr>[<index>]`
+```cpp
+// 指针使用下标访问
+int arr[5] = {1, 2, 3, 4, 5};
+int* p = arr;
+std::cout << p[2] << std::endl;
+```
+
+---
+
+## 动态内存分配
+
+**new 写法：分配单个变量**
+`<type>* <ptr> = new <type>(<value>);`
+```cpp
+// 动态分配单个变量
+int* p = new int(10);
+```
+
+---
+
+**new 写法：分配数组**
+`<type>* <ptr> = new <type>[<size>];`
+```cpp
+// 动态分配数组
+int* arr = new int[10];
+```
+
+---
+
+**delete 写法：释放单个变量**
+`delete <ptr>;`
+```cpp
+// 释放动态分配的单个变量
+delete p;
+```
+
+---
+
+**delete[] 写法：释放数组**
+`delete[] <ptr>;`
+```cpp
+// 释放动态分配的数组
+delete[] arr;
+```
+
+---
+
+## 智能指针
+
+**unique_ptr 写法：独占所有权**
+`std::unique_ptr<<type>> <ptr> = std::make_unique<<type>>(<args>);`
+```cpp
+#include <memory>
+// 独占所有权的智能指针
+std::unique_ptr<int> p = std::make_unique<int>(10);
+```
+
+---
+
+**shared_ptr 写法：共享所有权**
+`std::shared_ptr<<type>> <ptr> = std::make_shared<<type>>(<args>);`
+```cpp
+#include <memory>
+// 共享所有权的智能指针
+std::shared_ptr<int> p = std::make_shared<int>(10);
+```
+
+---
+
+**weak_ptr 写法：弱引用**
+`std::weak_ptr<<type>> <ptr> = <shared_ptr>;`
+```cpp
+#include <memory>
+// 弱引用，不增加引用计数
+std::shared_ptr<int> shared = std::make_shared<int>(10);
+std::weak_ptr<int> weak = shared;
+```
+
+---
+
+**移动写法：转移 unique_ptr 所有权**
+`std::unique_ptr<<type>> <new_ptr> = std::move(<old_ptr>);`
+```cpp
+#include <memory>
+// 转移 unique_ptr 所有权
+std::unique_ptr<int> p1 = std::make_unique<int>(10);
+std::unique_ptr<int> p2 = std::move(p1);
+```
+
+---
+
+## 函数指针
+
+**基本写法：函数指针定义**
+`<return_type> (*<ptr_name>)(<parameter_list>);`
+```cpp
+// 定义函数指针
+int (*add_ptr)(int, int);
+```
+
+---
+
+**using 写法：使用类型别名定义函数指针**
+`using <FuncType> = <return_type>(*)(<params>);`
+```cpp
+// 使用 using 定义函数指针类型
+using Operation = int (*)(int, int);
+```
+
+---
+
+**调用写法：通过函数指针调用**
+`<result> = <func_ptr>(<args>);`
+```cpp
+// 通过函数指针调用函数
+int result = add_ptr(10, 20);
+```
+
+---
+
+## 多级指针
+
+**二级指针写法**
+`<type>** <ptr_name>;`
+```cpp
+// 二级指针
+int x = 10;
+int* p = &x;
+int** pp = &p;
+```
+
+---
+
+**访问写法：解引用二级指针**
+`**<ptr_name>`
+```cpp
+// 通过二级指针访问原始值
+int x = 10;
+int* p = &x;
+int** pp = &p;
+std::cout << **pp << std::endl;
+```
+
+---
+
+## 指针与结构体
+
+**基本写法：指向结构体的指针**
+`<StructType>* <ptr_name> = &<var>;`
+```cpp
+// 指向结构体的指针
+struct Point { int x; int y; };
+Point p = {10, 20};
+Point* ptr = &p;
+```
+
+---
+
+**成员访问写法：通过指针访问成员**
+`<ptr>-><member>`
+```cpp
+// 使用 -> 访问结构体成员
+std::cout << ptr->x << std::endl;
+```
+
+---
+
+## void 指针
+
+**基本写法：void 指针声明**
+`void* <ptr_name>;`
+```cpp
+// 通用指针
+void* generic_ptr;
+int x = 10;
+generic_ptr = &x;
+```
+
+---
+
+**转换写法：void 指针类型转换**
+`static_cast<<type>*>(<void_ptr>)`
+```cpp
+// void 指针转换为具体类型指针
+void* ptr = &x;
+int* int_ptr = static_cast<int*>(ptr);
+```
+
+---
+
+## 指针常见陷阱
+
+**野指针写法：未初始化的指针**
+`<type>* <ptr>;` （危险）
+```cpp
+// 危险：未初始化的指针
+int* ptr;
+// *ptr = 10; // 未定义行为
+```
+
+---
+
+**悬空指针写法：释放后仍使用**
+`delete <ptr>; <ptr> = nullptr;`
+```cpp
+// 释放后将指针置空
+delete p;
+p = nullptr;
+```

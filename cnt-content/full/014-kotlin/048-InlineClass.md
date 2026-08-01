@@ -1311,12 +1311,12 @@ impl UserId {
 
 | 特性 | Kotlin | Java | C# | Scala | Rust |
 |------|--------|------|----|----|------|
-| value class | ✓ | ✗（Valhalla 提案） | ✓ struct | ✓ AnyVal | ✓ struct |
-| 类型安全 | ✓ | N/A | ✓ | ✓ | ✓ |
-| 零开销 | ✓（非装箱） | N/A | ✓ | ✓（非装箱） | ✓ |
+| value class | √ | ×（Valhalla 提案） | √ struct | √ AnyVal | √ struct |
+| 类型安全 | √ | N/A | √ | √ | √ |
+| 零开销 | √（非装箱） | N/A | √ | √（非装箱） | √ |
 | 装箱 | 装箱场景 | 总是 | 装箱到 object | 装箱场景 | 无 |
-| 单一属性限制 | ✓ | N/A | ✗ | ✓ | ✗ |
-| 接口实现 | ✓ | N/A | ✓ | ✓ | ✓ trait |
+| 单一属性限制 | √ | N/A | × | √ | × |
+| 接口实现 | √ | N/A | √ | √ | √ trait |
 | 学习曲线 | 低 | N/A | 中 | 高 | 中 |
 
 ---
@@ -1823,9 +1823,9 @@ class UserService(private val repo: UserRepository) {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下关于 Kotlin value class 的描述，哪一项是错误的？
 
@@ -1834,9 +1834,9 @@ B. value class 不能继承其他类
 C. value class 在所有场景下都零开销
 D. value class 在 JVM 平台需要 @JvmInline 注解
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：value class 在装箱场景（可空、泛型、集合、数组、Any）会退化为对象，存在装箱开销。
+**解析讲解**：value class 在装箱场景（可空、泛型、集合、数组、Any）会退化为对象，存在装箱开销。
 
 ---
 
@@ -1859,9 +1859,9 @@ B. false, false
 C. true, false
 D. false, true
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：value class 的 equals 和 hashCode 默认基于底层属性，因此 `a == b` 为 true，hashCode 相同。
+**解析讲解**：value class 的 equals 和 hashCode 默认基于底层属性，因此 `a == b` 为 true，hashCode 相同。
 
 ---
 
@@ -1872,9 +1872,9 @@ B. 为非 JVM 平台的真正值类型预留语法
 C. `inline` 关键字被废弃
 D. 性能优化
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`value class` 是语言关键字，`@JvmInline` 是 JVM 平台特定注解。这种分离为 Kotlin/Native 等平台实现真正的栈分配值类型预留了空间。
+**解析讲解**：`value class` 是语言关键字，`@JvmInline` 是 JVM 平台特定注解。这种分离为 Kotlin/Native 等平台实现真正的栈分配值类型预留了空间。
 
 ---
 
@@ -1885,9 +1885,9 @@ B. value class 作为可空参数
 C. value class 的方法调用
 D. value class 的属性访问
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：可空类型 `V?` 需要表示 null，而底层类型（如 Long）不能为 null，因此退化为对象，触发装箱。
+**解析讲解**：可空类型 `V?` 需要表示 null，而底层类型（如 Long）不能为 null，因此退化为对象，触发装箱。
 
 ---
 
@@ -1898,55 +1898,55 @@ B. data class
 C. value class
 D. sealed class
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`UInt`、`ULong`、`UByte`、`UShort` 都是 `@JvmInline value class`，包装对应的有符号整型。
+**解析讲解**：`UInt`、`ULong`、`UByte`、`UShort` 都是 `@JvmInline value class`，包装对应的有符号整型。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：value class 必须有且仅有 ________ 个 val 属性。
 
-**答案**：一
+**解析讲解**：一
 
-**解析**：value class 的核心约束是单一属性，不能有多个属性。
+**解析讲解**：value class 的核心约束是单一属性，不能有多个属性。
 
 ---
 
 **题目 2**：value class 在 JVM 平台需要 ________ 注解标记。
 
-**答案**：@JvmInline
+**解析讲解**：@JvmInline
 
-**解析**：`@JvmInline` 是 JVM 平台特定的注解，提示编译器进行内联优化。
+**解析讲解**：`@JvmInline` 是 JVM 平台特定的注解，提示编译器进行内联优化。
 
 ---
 
 **题目 3**：Kotlin ________ 版本将 value class 提升为稳定状态。
 
-**答案**：1.5
+**解析讲解**：1.5
 
-**解析**：Kotlin 1.5 将 `value class` 提升为 GA（Stable）。
+**解析讲解**：Kotlin 1.5 将 `value class` 提升为 GA（Stable）。
 
 ---
 
 **题目 4**：value class 不能继承其他类，但可以实现 ________。
 
-**答案**：接口
+**解析讲解**：接口
 
-**解析**：value class 可以实现接口，但不能继承其他类。
+**解析讲解**：value class 可以实现接口，但不能继承其他类。
 
 ---
 
 **题目 5**：value class 的 equals 和 hashCode 默认基于 ________。
 
-**答案**：底层属性（单一属性）
+**解析讲解**：底层属性（单一属性）
 
-**解析**：value class 的 equals 比较底层属性，hashCode 基于底层属性计算。
+**解析讲解**：value class 的 equals 比较底层属性，hashCode 基于底层属性计算。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个类型安全的温度类型，支持摄氏度与华氏度转换。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 @JvmInline
@@ -1977,7 +1977,7 @@ fun main() {
 
 **题目 2**：实现一个类型安全的 URL 类型，带验证。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 @JvmInline
@@ -2005,7 +2005,7 @@ fun main() {
 
 **题目 3**：实现一个分数类型，支持加减乘除。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 @JvmInline
@@ -2032,7 +2032,7 @@ fun main() {
 
 **题目 1**：讨论 value class 与 data class 的适用场景，何时使用哪个？
 
-**参考答案**：
+**解析讲解**：
 
 使用 value class 的场景：
 
@@ -2052,7 +2052,7 @@ fun main() {
 
 **题目 2**：value class 在装箱场景中退化为对象，这是否违背了"零开销"承诺？
 
-**参考答案**：
+**解析讲解**：
 
 不违背。"零开销"指的是"在非装箱场景下零开销"，而非"所有场景零开销"。JetBrains 的设计哲学是"在不退化的场景下，性能与底层类型一致"。装箱场景的退化是 JVM 类型系统的限制（类型擦除），是不可避免的。
 
@@ -2060,7 +2060,7 @@ fun main() {
 
 **题目 3**：Kotlin 2.0 的 K2 编译器对 value class 有哪些改进？
 
-**参考答案**：
+**解析讲解**：
 
 1. **更激进的装箱消除**：K2 在 IR 阶段更激进地识别不必要的装箱点。
 2. **方法内联**：value class 的方法被内联到调用处。
@@ -2072,7 +2072,7 @@ fun main() {
 
 **题目 4**：value class 在 KMP 项目中的优势是什么？
 
-**参考答案**：
+**解析讲解**：
 
 1. **跨平台一致**：JVM、JS、Native、Wasm 行为一致。
 2. **零开销**：在 Kotlin/Native 中真正栈分配。
@@ -2092,7 +2092,7 @@ value class User(val name: String, val age: Int)
 value class Container(val inner: Container?)
 ```
 
-**参考答案**：
+**解析讲解**：
 
 问题：
 
@@ -2117,7 +2117,7 @@ value class User(val data: String) {
 
 **题目 6**：value class 在序列化时需要注意什么？
 
-**参考答案**：
+**解析讲解**：
 
 1. **使用 kotlinx.serialization**：它对 value class 有完整支持。
 2. **避免 Java 默认序列化**：可能不正确处理 value class。
@@ -2129,7 +2129,7 @@ value class User(val data: String) {
 
 **题目 7**：value class 与 inline 函数如何协同避免装箱？
 
-**参考答案**：
+**解析讲解**：
 
 `inline` 函数 + `reified` 类型参数可以在编译期展开，避免泛型类型擦除导致的装箱：
 
@@ -2158,7 +2158,7 @@ fun main() {
 
 **题目 8**：讨论 value class 在领域驱动设计（DDD）中的角色。
 
-**参考答案**：
+**解析讲解**：
 
 在 DDD 中，value class 用于实现**值对象**（Value Object）：
 
@@ -2174,7 +2174,7 @@ fun main() {
 
 **题目 9**：分析 value class 在 JVM 字节码中的 `box` 和 `unbox` 方法。
 
-**参考答案**：
+**解析讲解**：
 
 JVM 字节码中，value class 编译为 final 类，带有 `box` 和 `unbox` 静态方法：
 
@@ -2200,7 +2200,7 @@ public final class UserId {
 
 **题目 10**：value class 在反射中的行为如何？
 
-**参考答案**：
+**解析讲解**：
 
 1. **KClass.isValue**：Kotlin 1.5+ 提供 `KClass.isValue` 属性判断是否为 value class。
 2. **装箱**：反射操作通常触发装箱（因为接收 `Any?`）。
@@ -2225,7 +2225,7 @@ fun main() {
 
 **题目 1**：设计一个类型安全的 HTTP 状态码库。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 @JvmInline
@@ -2276,7 +2276,7 @@ fun main() {
 
 **题目 2**：实现一个支持多种货币的金额计算库。
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 package com.example.money
@@ -2352,7 +2352,7 @@ value class UserId(val id: Long) {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 问题：
 

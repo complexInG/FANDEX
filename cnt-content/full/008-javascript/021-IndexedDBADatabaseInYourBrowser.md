@@ -1741,43 +1741,43 @@ VS Code Web 使用 IndexedDB：
 
 ---
 
-## 14. 习题详解
+## 知识讲解与要点分析（原习题）
 
 ### 14.1 习题 1（fill-blank，remember）
 
 **题目**：IndexedDB 是一种 ______ 型数据库，所有读写操作必须在 ______ 中执行，且 API 为 ______ 以避免阻塞主线程。
 
-**答案**：NoSQL/事务、事务、异步
+**解析讲解**：NoSQL/事务、事务、异步
 
-**解析**：IndexedDB 是事务型 NoSQL 数据库，与 Web SQL 的关系型不同。所有读写必须包裹在事务中以保证 ACID。API 异步设计避免阻塞主线程，与 localStorage 的同步 API 形成对比。
+**解析讲解**：IndexedDB 是事务型 NoSQL 数据库，与 Web SQL 的关系型不同。所有读写必须包裹在事务中以保证 ACID。API 异步设计避免阻塞主线程，与 localStorage 的同步 API 形成对比。
 
 ### 14.2 习题 2（fill-blank，understand）
 
 **题目**：IndexedDB 使用 ______ 事件触发 schema 升级，通过 ______ 方法创建对象存储，使用 ______ 方法创建索引；事务的隔离级别默认为 ______。
 
-**答案**：onupgradeneeded、createObjectStore、createIndex、readwrite/readonly
+**解析讲解**：onupgradeneeded、createObjectStore、createIndex、readwrite/readonly
 
-**解析**：schema 升级只能在 `onupgradeneeded` 回调中进行；`createObjectStore` 与 `createIndex` 必须在该回调内调用；事务隔离基于对象存储锁，readwrite 串行、readonly 可并发。
+**解析讲解**：schema 升级只能在 `onupgradeneeded` 回调中进行；`createObjectStore` 与 `createIndex` 必须在该回调内调用；事务隔离基于对象存储锁，readwrite 串行、readonly 可并发。
 
 ### 14.3 习题 3（choice，understand）
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：D 项错误——readonly 事务可与 readwrite 事务并发访问同一对象存储，但 readwrite 之间必须串行。IndexedDB 锁粒度基于对象存储，readwrite 事务按作用域字典序排序获取锁以避免死锁。
+**解析讲解**：D 项错误——readonly 事务可与 readwrite 事务并发访问同一对象存储，但 readwrite 之间必须串行。IndexedDB 锁粒度基于对象存储，readwrite 事务按作用域字典序排序获取锁以避免死锁。
 
 ### 14.4 习题 4（choice，analyze）
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：IndexedDB 每次写入需创建事务，存在固定开销（1-5ms），不适合每秒数百次的小数据高频写入。应使用内存缓冲批量写入，或考虑其他机制。
+**解析讲解**：IndexedDB 每次写入需创建事务，存在固定开销（1-5ms），不适合每秒数百次的小数据高频写入。应使用内存缓冲批量写入，或考虑其他机制。
 
 ### 14.5 习题 5（code-fix，apply）
 
-**解析**：原代码同步返回 `request.result`，但 IndexedDB 是异步 API，需用 Promise 封装在 `onsuccess` 回调中 resolve 结果。
+**解析讲解**：原代码同步返回 `request.result`，但 IndexedDB 是异步 API，需用 Promise 封装在 `onsuccess` 回调中 resolve 结果。
 
 ### 14.6 习题 6（code-fix，evaluate）
 
-**解析**：原实现为每条数据创建独立事务，性能极差。修复后使用单事务批量插入并分片，避免事务过长被浏览器中止。
+**解析讲解**：原实现为每条数据创建独立事务，性能极差。修复后使用单事务批量插入并分片，避免事务过长被浏览器中止。
 
 ### 14.7 习题 7（open-ended，create）
 

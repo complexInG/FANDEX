@@ -65,31 +65,41 @@ tags:
 
 ### 1.3 前置知识地图
 
-```
-Java 基础
-    │
-    ├── 面向对象（封装、继承、多态）
-    ├── 集合框架（List、Map、Set）
-    ├── 异常处理
-    └── JDBC 基础（Connection、Statement、ResultSet）
-            │
-            ▼
-Spring 基础（本章前置）
-    │
-    ├── IoC 容器（Bean、依赖注入）
-    ├── AOP（切面、代理）
-    ├── 配置（@Configuration、@Component）
-    └── 事务抽象（PlatformTransactionManager）
-            │
-            ▼
-Spring Boot 数据访问（本章）
-    │
-    ├── 底层：JDBC（JdbcTemplate、SimpleJdbcInsert）
-    ├── ORM：JPA / Hibernate（实体、Repository、JPQL、Criteria）
-    ├── SQL Mapper：MyBatis（@Mapper、XML、动态 SQL）
-    ├── 响应式：R2DBC（Reactive Repository）
-    ├── 横切：事务、连接池（HikariCP）、缓存（Redis）
-    └── 工程实践：多数据源、读写分离、分库分表、批量优化
+```mermaid
+flowchart TD
+    T0["Java 基础"]
+    T1["面向对象（封装、继承、多态）"]
+    T2["集合框架（List、Map、Set）"]
+    T3["异常处理"]
+    T4["JDBC 基础（Connection、Statement、ResultSet）"]
+    T5["Spring 基础（本章前置）"]
+    T6["IoC 容器（Bean、依赖注入）"]
+    T7["AOP（切面、代理）"]
+    T8["配置（@Configuration、@Component）"]
+    T9["事务抽象（PlatformTransactionManager）"]
+    T10["Spring Boot 数据访问（本章）"]
+    T11["底层：JDBC（JdbcTemplate、SimpleJdbcInsert）"]
+    T12["ORM：JPA / Hibernate（实体、Repository、JPQL、Criteria）"]
+    T13["SQL Mapper：MyBatis（@Mapper、XML、动态 SQL）"]
+    T14["响应式：R2DBC（Reactive Repository）"]
+    T15["横切：事务、连接池（HikariCP）、缓存（Redis）"]
+    T16["工程实践：多数据源、读写分离、分库分表、批量优化"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T4 --> T5
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T5 --> T9
+    T9 --> T10
+    T10 --> T11
+    T10 --> T12
+    T10 --> T13
+    T10 --> T14
+    T10 --> T15
+    T10 --> T16
 ```
 
 ### 1.4 章节阅读建议
@@ -164,18 +174,25 @@ Spring Data 项目的核心设计哲学：
 
 数据访问的核心矛盾是 **抽象程度** 与 **SQL 控制力** 的权衡：
 
-```
-高抽象          低控制          ← JPA、Spring Data JPA
-  │                                    方法名查询、JPQL
-  │                                    自动生成 SQL
-  │
-中抽象          中控制          ← Hibernate、MyBatis
-  │                                    HQL、Criteria
-  │                                    XML/注解 SQL
-  │
-低抽象          高控制          ← JdbcTemplate、JDBC
-                                     原生 SQL
-                                     手动映射
+```mermaid
+flowchart TD
+    T0["高抽象          低控制          ← JPA、Spring Data JPA"]
+    T1["方法名查询、JPQL"]
+    T2["自动生成 SQL"]
+    T3["中抽象          中控制          ← Hibernate、MyBatis"]
+    T4["HQL、Criteria"]
+    T5["XML/注解 SQL"]
+    T6["低抽象          高控制          ← JdbcTemplate、JDBC"]
+    T7["原生 SQL"]
+    T8["手动映射"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
+    T5 --> T6
+    T6 --> T7
+    T7 --> T8
 ```
 
 **选型原则**：
@@ -421,16 +438,17 @@ public class User {
 
 **缓存层次**：
 
-```
-L1 Cache（Session 级，默认开启）
-    │
-    │ miss
-    ▼
-L2 Cache（SessionFactory 级，需配置）
-    │
-    │ miss
-    ▼
-Database
+```mermaid
+flowchart TD
+    T0["L1 Cache（Session 级，默认开启）"]
+    T1["miss"]
+    T2["L2 Cache（SessionFactory 级，需配置）"]
+    T3["miss"]
+    T4["Database"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
 ```
 
 **缓存并发策略**：
@@ -470,14 +488,19 @@ spring:
 
 Spring 的事务抽象：
 
-```
-PlatformTransactionManager（接口）
-    │
-    ├── DataSourceTransactionManager（JDBC/JPA/MyBatis）
-    ├── JpaTransactionManager（JPA，扩展 DataSource 事务）
-    ├── JtaTransactionManager（JTA，分布式事务）
-    ├── R2dbcTransactionManager（R2DBC，响应式）
-    └── ChainedTransactionManager（多事务管理器链）
+```mermaid
+flowchart TD
+    T0["PlatformTransactionManager（接口）"]
+    T1["DataSourceTransactionManager（JDBC/JPA/MyBatis）"]
+    T2["JpaTransactionManager（JPA，扩展 DataSource 事务）"]
+    T3["JtaTransactionManager（JTA，分布式事务）"]
+    T4["R2dbcTransactionManager（R2DBC，响应式）"]
+    T5["ChainedTransactionManager（多事务管理器链）"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
 ```
 
 `@Transactional` 的工作原理（AOP 代理）：
@@ -520,17 +543,23 @@ class UserServiceProxy extends UserService {
 
 MyBatis 的核心抽象是 `SqlSession`，它封装了 `Connection` 与执行器：
 
-```
-SqlSession
-    │
-    ├── Executor（执行器）
-    │   ├── SimpleExecutor：每次都新建 PreparedStatement
-    │   ├── ReuseExecutor：复用 PreparedStatement
-    │   └── CachingExecutor：二级缓存装饰器
-    │
-    ├── StatementHandler：处理 JDBC Statement
-    ├── ParameterHandler：设置参数
-    └── ResultSetHandler：映射结果集
+```mermaid
+flowchart TD
+    T0["SqlSession"]
+    T1["Executor（执行器）"]
+    T2["SimpleExecutor：每次都新建 PreparedStatement"]
+    T3["ReuseExecutor：复用 PreparedStatement"]
+    T4["CachingExecutor：二级缓存装饰器"]
+    T5["StatementHandler：处理 JDBC Statement"]
+    T6["ParameterHandler：设置参数"]
+    T7["ResultSetHandler：映射结果集"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
 ```
 
 **MyBatis 的三层缓存**：
@@ -1449,14 +1478,17 @@ spring:
 
 这三者常被混淆，关键区别：
 
-```
-Spring Data JPA（Repository 抽象）
-    │ 依赖
-    ▼
-JPA（规范，jakarta.persistence.*）
-    │ 实现于
-    ▼
-Hibernate（JPA 实现，含 Hibernate 特有 API）
+```mermaid
+flowchart TD
+    T0["Spring Data JPA（Repository 抽象）"]
+    T1["依赖"]
+    T2["JPA（规范，jakarta.persistence.*）"]
+    T3["实现于"]
+    T4["Hibernate（JPA 实现，含 Hibernate 特有 API）"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
 ```
 
 - **JPA**：规范（JSR-338），定义 `EntityManager`、`@Entity` 等接口与注解。
@@ -2183,7 +2215,7 @@ public class ReactiveUserService {
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 

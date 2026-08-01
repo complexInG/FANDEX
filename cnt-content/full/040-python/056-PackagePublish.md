@@ -256,21 +256,27 @@ $$
 
 **flat 布局**：
 
-```
-project/
-├── mypackage/
-│   └── __init__.py
-└── pyproject.toml
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["mypackage/"]
+    T2["__init__.py"]
+    T3["pyproject.toml"]
+    T0 --> T1
+    T2 --> T3
 ```
 
 **src 布局**：
 
-```
-project/
-├── src/
-│   └── mypackage/
-│       └── __init__.py
-└── pyproject.toml
+```mermaid
+flowchart TD
+    T0["project/"]
+    T1["src/"]
+    T2["mypackage/"]
+    T3["__init__.py"]
+    T4["pyproject.toml"]
+    T0 --> T1
+    T3 --> T4
 ```
 
 在 flat 布局下，当用户在项目根目录运行 `python -c "import mypackage"` 时，会从当前目录导入未安装的源码，导致：
@@ -329,19 +335,27 @@ $$
 
 完整目录结构：
 
-```
-minimal-package/
-├── pyproject.toml
-├── README.md
-├── LICENSE
-├── src/
-│   └── minimal/
-│       ├── __init__.py
-│       ├── cli.py
-│       └── py.typed
-└── tests/
-    ├── __init__.py
-    └── test_core.py
+```mermaid
+flowchart TD
+    T0["minimal-package/"]
+    T1["pyproject.toml"]
+    T2["README.md"]
+    T3["LICENSE"]
+    T4["src/"]
+    T5["minimal/"]
+    T6["__init__.py"]
+    T7["cli.py"]
+    T8["py.typed"]
+    T9["tests/"]
+    T10["__init__.py"]
+    T11["test_core.py"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
 ```
 
 `pyproject.toml`：
@@ -1145,17 +1159,21 @@ trusted-host = nexus.example.com
 
 使用 `uv` 或 `pdm` 管理 monorepo：
 
-```
-monorepo/
-├── packages/
-│   ├── core/
-│   │   ├── pyproject.toml
-│   │   └── src/core/
-│   └── api/
-│       ├── pyproject.toml
-│       └── src/api/
-├── pyproject.toml  # workspace 根
-└── uv.lock
+```mermaid
+flowchart TD
+    T0["monorepo/"]
+    T1["packages/"]
+    T2["core/"]
+    T3["pyproject.toml"]
+    T4["src/core/"]
+    T5["api/"]
+    T6["pyproject.toml"]
+    T7["src/api/"]
+    T8["pyproject.toml  # workspace 根"]
+    T9["uv.lock"]
+    T0 --> T1
+    T7 --> T8
+    T7 --> T9
 ```
 
 `packages/api/pyproject.toml`：
@@ -1343,9 +1361,9 @@ Instagram（Meta）的 Python monorepo 规模超过 1000 万行代码，每日�
 4. CI 缓存 wheel，构建时间从 30 分钟降至 3 分钟；
 5. 使用 `uv` 替代 `pip` 后，依赖解析速度提升 10 倍以上。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题 1**：以下哪个 PEP 标准化了 `pyproject.toml` 中的 `[project]` 表？
 
@@ -1354,9 +1372,9 @@ B. PEP 518
 C. PEP 621  
 D. PEP 660  
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：PEP 517 定义构建后端接口，PEP 518 引入 `[build-system]`，PEP 621 标准化 `[project]` 表，PEP 660 标准化可编辑安装。
+**解析讲解**：PEP 517 定义构建后端接口，PEP 518 引入 `[build-system]`，PEP 621 标准化 `[project]` 表，PEP 660 标准化可编辑安装。
 
 ---
 
@@ -1367,9 +1385,9 @@ B. `1.0-beta`
 C. `1.0b1`  
 D. `v1.0.0`  
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：PEP 440 不允许 `1.0.beta`、`1.0-beta` 或 `v1.0.0`。`1.0b1` 表示 1.0 的第一个 beta。
+**解析讲解**：PEP 440 不允许 `1.0.beta`、`1.0-beta` 或 `v1.0.0`。`1.0b1` 表示 1.0 的第一个 beta。
 
 ---
 
@@ -1380,9 +1398,9 @@ B. version
 C. build tag  
 D. license  
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：wheel 文件名格式为 `distribution-version-build_tag-python_tag-abi_tag-platform_tag.whl`，不包含 license。
+**解析讲解**：wheel 文件名格式为 `distribution-version-build_tag-python_tag-abi_tag-platform_tag.whl`，不包含 license。
 
 ---
 
@@ -1393,9 +1411,9 @@ B. `id-token: write`
 C. `packages: write`  
 D. `deployments: write`  
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Trusted Publisher 基于 OIDC，需要 `id-token: write` 权限获取短期 token，无需存储长期凭证。
+**解析讲解**：Trusted Publisher 基于 OIDC，需要 `id-token: write` 权限获取短期 token，无需存储长期凭证。
 
 ---
 
@@ -1406,41 +1424,41 @@ B. `tomli >= 2.0 ; python_version > "3.11"`
 C. `tomli >= 2.0 ; python_version < "3.11"`  
 D. `tomli >= 2.0 ; sys_platform == "linux"`  
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`python_version < "3.11"` 表示仅在 Python 3.11 之前安装，因为 Python 3.11+ 内置 `tomllib`。
+**解析讲解**：`python_version < "3.11"` 表示仅在 Python 3.11 之前安装，因为 Python 3.11+ 内置 `tomllib`。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题 1**：Python 打包生态中，构建后端接口由 PEP ______ 规范，元数据表 `[project]` 由 PEP ______ 规范，可编辑安装由 PEP ______ 规范。
 
-**答案**：517；621；660
+**解析讲解**：517；621；660
 
 ---
 
 **题 2**：wheel 文件名 `numpy-1.26.4-cp312-cp312-win_amd64.whl` 中，`cp312` 表示 ______ ，`win_amd64` 表示 ______ 。
 
-**答案**：CPython 3.12 解释器和 ABI；Windows x86_64 平台
+**解析讲解**：CPython 3.12 解释器和 ABI；Windows x86_64 平台
 
 ---
 
 **题 3**：使用 `setuptools_scm` 自动推断版本号时，需要在 `[project]` 中声明 ______ 字段，并在 `[tool.setuptools_scm]` 中配置 ______ 字段。
 
-**答案**：`dynamic = ["version"]`；`write_to` 或 `version_file`
+**解析讲解**：`dynamic = ["version"]`；`write_to` 或 `version_file`
 
 ---
 
 **题 4**：在 pyproject.toml 中声明命令行入口点 `mycli = "mypackage.cli:main"` 应放在 `[project.______]` 表中。
 
-**答案**：`scripts`
+**解析讲解**：`scripts`
 
 ---
 
 **题 5**：sdist 是 ______ 包，wheel 是 ______ 包，安装速度上 ______ 更优。
 
-**答案**：源码；预编译；wheel
+**解析讲解**：源码；预编译；wheel
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题 1**：为以下项目编写完整的 `pyproject.toml`。
 
@@ -1456,7 +1474,7 @@ D. `tomli >= 2.0 ; sys_platform == "linux"`
 - 构建后端：hatchling
 - src 布局
 
-**参考答案**：
+**解析讲解**：
 
 ```toml
 [build-system]
@@ -1514,7 +1532,7 @@ packages = ["src/mathutils"]
 
 **题 2**：编写一个 GitHub Actions workflow，在打 tag 时使用 Trusted Publisher 自动发布到 PyPI。
 
-**参考答案**：
+**解析讲解**：
 
 ```yaml
 name: Publish
@@ -1561,7 +1579,7 @@ jobs:
 
 **题 3**：编写一个函数，验证版本号是否符合 PEP 440，并返回排序后的版本列表。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 """PEP 440 版本号验证与排序工具。"""
@@ -1964,28 +1982,28 @@ jobs:
 
 ### K. 常见问答（FAQ）
 
-**Q1**：`pip install -e .` 与 `pip install .` 有何区别？
+**常见疑问 1**：`pip install -e .` 与 `pip install .` 有何区别？
 
 `-e`（editable）模式在 `site-packages` 创建一个链接到源码的 `.pth` 文件，源码修改立即生效。普通模式将文件复制到 `site-packages`，修改源码需要重新安装。
 
-**Q2**：sdist 与 wheel 哪个应该上传到 PyPI？
+**常见疑问 2**：sdist 与 wheel 哪个应该上传到 PyPI？
 
 两个都上传。wheel 是首选（安装快），sdist 是回退（当无对应 wheel 时）。
 
-**Q3**：能否在 pyproject.toml 中执行 Python 代码？
+**常见疑问 3**：能否在 pyproject.toml 中执行 Python 代码？
 
 不能。pyproject.toml 是声明式配置，不允许执行任意代码。动态版本号通过构建后端读取文件实现。
 
-**Q4**：如何向已发布的版本添加 README？
+**常见疑问 4**：如何向已发布的版本添加 README？
 
 不能修改已发布版本。只能发布新版本（如 `1.0.0.post1`）并附上 README。
 
-**Q5**：私有索引推荐用什么？
+**常见疑问 5**：私有索引推荐用什么？
 
 - 开源：devpi、Bandersnatch
 - 商业：JFrog Artifactory、Sonatype Nexus、AWS CodeArtifact
 
-**Q6**：如何回滚已发布的包？
+**常见疑问 6**：如何回滚已发布的包？
 
 不能删除已发布的包（PyPI 不允许覆盖版本）。可以 yank（标记为已弃用），新安装会拒绝，已锁定的依赖仍可使用。
 
@@ -1995,11 +2013,11 @@ pip install pypi-simple
 yank mypackage==1.0.0
 ```
 
-**Q7**：`extras_require` 与 `optional-dependencies` 是一回事吗？
+**常见疑问 7**：`extras_require` 与 `optional-dependencies` 是一回事吗？
 
 是的，`extras_require` 是 setuptools 的旧名，`optional-dependencies` 是 PEP 621 的标准名。
 
-**Q8**：是否必须使用 src 布局？
+**常见疑问 8**：是否必须使用 src 布局？
 
 不是强制，但强烈推荐。MIT、PyPA 官方文档均推荐 src 布局。
 

@@ -15,10 +15,11 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
+# 自定义数据属性 语法速查手册
 
-# 自定义数据属性（Custom Data Attributes / data-\*）
+> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数 | `{ }` 分组 | `|` 或 | `...` 重复
 
-> 本文档依据 WHATWG HTML Living Standard §3.2.6 "Embedding custom non-visible data" 与 W3C HTML5.3 规范，系统阐述 HTML5 自定义数据属性（`data-*`）的设计哲学、形式化语义、`dataset` API、CSS 交互、可访问性、性能与工程实践，对标 MIT 6.S192、Stanford CS142 与 CMU 15-410 教学深度。
+---
 
 ## 1. 学习目标
 
@@ -91,28 +92,20 @@ prerequisites:
 
 ### 2.3 演进时间线
 
-```
-1995  HTML 3.0 草案提出"任意属性"被否决
-  │
-2000  开发者滥用 class / id / hidden span 存储数据
-  │
-2007  WHATWG HTML5 草案首次提出 data-* 属性
-  │
-2009  W3C HTML5 Working Draft 纳入 §3.2.4
-  │
-2010  jQuery 1.4.3 支持 .data() 方法（封装 dataset）
-  │
-2011  HTMLElement.dataset 进入 HTML Living Standard
-  │
-2014  HTML5 W3C 推荐标准定稿
-  │
-2016  Stimulus.js 框架基于 data-action 模式发布
-  │
-2018  dataset API 在所有主流浏览器全面可用
-  │
-2022  HTML Living Standard §3.2.6.8 稳定
-  │
-2024  data-* 属性在 Web Components 中作为属性反射机制
+```mermaid
+timeline
+    title 发展时间线
+    1995: HTML 3.0 草案提出"任意属性"被否决
+    2000: 开发者滥用 class / id / hidden span 存储数据
+    2007: WHATWG HTML5 草案首次提出 data-* 属性
+    2009: W3C HTML5 Working Draft 纳入 §3.2.4
+    2010: jQuery 1.4.3 支持 .data() 方法（封装 dataset）
+    2011: HTMLElement.dataset 进入 HTML Living Standard
+    2014: HTML5 W3C 推荐标准定稿
+    2016: Stimulus.js 框架基于 data-action 模式发布
+    2018: dataset API 在所有主流浏览器全面可用
+    2022: HTML Living Standard §3.2.6.8 稳定
+    2024: data-* 属性在 Web Components 中作为属性反射机制
 ```
 
 ### 2.4 规范族谱
@@ -538,8 +531,8 @@ console.log(el.dataset.userId); // undefined
   [data-theme='light'] { background: #fff; color: #000; }
 
   /* 主题切换按钮 */
-  [data-theme='dark'] .theme-toggle::before { content: '☀️'; }
-  [data-theme='light'] .theme-toggle::before { content: '🌙'; }
+  [data-theme='dark'] .theme-toggle::before { content: '日'; }
+  [data-theme='light'] .theme-toggle::before { content: '月'; }
 
   /* 拖拽状态 */
   [data-dragging='true'] { opacity: 0.5; cursor: grabbing; }
@@ -1220,11 +1213,11 @@ Bootstrap 5 使用 `data-bs-*` 命名空间初始化组件：
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个 `data-*` 命名是**无效**的？
+**常见疑问 1**：以下哪个 `data-*` 命名是**无效**的？
 
 A. `data-user-id`
 
@@ -1234,20 +1227,17 @@ C. `data--foo`
 
 D. `data-1`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
-**解析**：
+**解析讲解**：
 - A 有效：`data-` + 小写 + 连字符。
 - B 无效：HTML 属性名不区分大小写，`data-userId` 会被规范化为 `data-userid`，`dataset.userId` 返回 `undefined`，应改为 `data-user-id`。
 - C 有效：`data-` 后跟连字符是允许的，`dataset.Foo` 可访问。
 - D 有效：`data-` 后跟数字是允许的。
 
-</details>
 
-**Q2**：关于 `dataset` API，以下说法错误的是：
+**常见疑问 2**：关于 `dataset` API，以下说法错误的是：
 
 A. `el.dataset.userId = '123'` 等价于 `el.setAttribute('data-user-id', '123')`
 
@@ -1257,18 +1247,15 @@ C. `el.dataset` 返回的对象是只读的，不能添加新属性
 
 D. `el.dataset.userId` 的值始终是字符串或 `undefined`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
-**解析**：
+**解析讲解**：
 - A、B、D 均正确。
 - C 错误：`dataset` 是 `DOMStringMap` 实例，其**属性**可读可写可删，但 `dataset` 本身（即 `el.dataset`）是只读的，不能 `el.dataset = {}`。
 
-</details>
 
-**Q3**：以下哪种数据**最适合**存入 `data-*` 属性？
+**常见疑问 3**：以下哪种数据**最适合**存入 `data-*` 属性？
 
 A. 用户的 API Token
 
@@ -1278,53 +1265,42 @@ C. 用户上传的 10MB 图片数据
 
 D. 实时股票价格（每秒更新）
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
-**解析**：
+**解析讲解**：
 - A 错误：敏感数据不应存入 `data-*`，F12 可见。
 - B 正确：小量、非敏感、需被 CSS/JS 访问的数据最适合。
 - C 错误：大数据应使用 `WeakMap` 或 IndexedDB。
 - D 错误：高频更新应使用 JS 变量，避免 DOM 重渲染。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q4**：HTML 属性 `data-last-modified` 在 `dataset` API 中对应的键是 `________`。
+**常见疑问 4**：HTML 属性 `data-last-modified` 在 `dataset` API 中对应的键是 `________`。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：`lastModified`
+**解析讲解**：`lastModified`
 
-**解析**：连字符转驼峰规则：`data-` 后的 `last-modified` 转换为 `lastModified`。
+**解析讲解**：连字符转驼峰规则：`data-` 后的 `last-modified` 转换为 `lastModified`。
 
-</details>
 
-**Q5**：`data-*` 属性的值在 DOM 中始终是________类型。
+**常见疑问 5**：`data-*` 属性的值在 DOM 中始终是________类型。
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：字符串（`DOMString`）
+**解析讲解**：字符串（`DOMString`）
 
-**解析**：HTML 属性值始终是字符串，任何 JS 类型存入时会被 `String()` 转换。取出时需手动恢复类型。
+**解析讲解**：HTML 属性值始终是字符串，任何 JS 类型存入时会被 `String()` 转换。取出时需手动恢复类型。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q6**：实现一个 `DataStore` 工具类，提供类型化的 `data-*` 读写接口。要求：
+**常见疑问 6**：实现一个 `DataStore` 工具类，提供类型化的 `data-*` 读写接口。要求：
 
 - 支持 `getNumber(el, key)`、`getBoolean(el, key)`、`getJSON(el, key)`、`setJSON(el, key, obj)` 四个方法。
 - 自动处理 `data-` 前缀与驼峰转换。
 - 错误处理：无效 JSON 抛出 `SyntaxError`。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 // DataStore.js
@@ -1370,16 +1346,13 @@ const id = DataStore.getNumber(el, 'userId'); // 123
 const active = DataStore.getBoolean(el, 'isActive'); // true
 ```
 
-</details>
 
-**Q7**：实现一个简化版 Stimulus 控制器，支持通过 `data-controller`、`data-action`、`data-{name}-target` 实现声明式绑定。要求：
+**常见疑问 7**：实现一个简化版 Stimulus 控制器，支持通过 `data-controller`、`data-action`、`data-{name}-target` 实现声明式绑定。要求：
 
 - 自动初始化所有 `[data-controller]` 元素。
 - 支持多个 action（空格分隔）。
 - 支持事件委托（在控制器根元素上监听）。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 // mini-stimulus.js
@@ -1453,14 +1426,11 @@ app.register('todo', TodoController);
 app.start();
 ```
 
-</details>
 
 ### 10.4 思考题
 
-**Q8**：为什么 `data-*` 属性值始终是字符串？请从 HTML 规范、DOM 序列化、跨平台三个角度分析。
+**常见疑问 8**：为什么 `data-*` 属性值始终是字符串？请从 HTML 规范、DOM 序列化、跨平台三个角度分析。
 
-<details>
-<summary>参考答案</summary>
 
 1. **HTML 规范角度**：HTML 是基于 SGML 的标记语言，属性值本质是文本。HTML 规范未定义类型化的属性值机制（不同于 XML Schema）。
 
@@ -1468,12 +1438,9 @@ app.start();
 
 3. **跨平台角度**：HTML 跨浏览器、跨语言（PHP/Python/Node 渲染），字符串是最低公共类型。任何环境都能读写字符串属性。
 
-</details>
 
-**Q9**：设计一个 `data-*` 属性审计工具，自动检测以下反模式：(a) 大对象 JSON 序列化，(b) 敏感数据（token/password/secret），(c) 类型滥用（布尔值存为字符串）。请给出检测算法与示例输出。
+**常见疑问 9**：设计一个 `data-*` 属性审计工具，自动检测以下反模式：(a) 大对象 JSON 序列化，(b) 敏感数据（token/password/secret），(c) 类型滥用（布尔值存为字符串）。请给出检测算法与示例输出。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 // data-audit.js
@@ -1559,12 +1526,9 @@ export class DataAttrAuditor {
 // ]
 ```
 
-</details>
 
-**Q10**：对比 `data-*` + 事件委托与 React 状态管理在大型列表（10,000 项）中的性能表现。何时应该选择前者？
+**常见疑问 10**：对比 `data-*` + 事件委托与 React 状态管理在大型列表（10,000 项）中的性能表现。何时应该选择前者？
 
-<details>
-<summary>参考答案</summary>
 
 | 维度 | `data-*` + 事件委托 | React 状态管理 |
 | ---- | -------------------- | --------------- |
@@ -1580,7 +1544,6 @@ export class DataAttrAuditor {
 - 动态列表 + 复杂状态 → React 状态管理（如 TODO、聊天）。
 - 混合场景 → React 虚拟化 + `data-*` 辅助（如 react-window）。
 
-</details>
 
 ---
 
@@ -1688,3 +1651,222 @@ export class DataAttrAuditor {
 ---
 
 > 本文档遵循 MIT/Stanford/CMU 教学水准，结合 WHATWG HTML Living Standard 与 W3C HTML5.3 规范，系统呈现 HTML5 自定义数据属性（`data-*`）的设计原理与工程实践。如需进一步学习，请参阅延伸阅读章节列出的书籍、论文与课程。
+## data-* 属性定义
+
+**HTML 自定义数据属性**
+`<element data-<name>="<value>">`
+
+```html
+<!-- 在 HTML 元素上存储自定义数据 -->
+<div
+  id="user"
+  data-user-id="123"
+  data-role="admin"
+  data-login-count="42"
+  data-last-active="2026-07-20"
+>
+  用户信息
+</div>
+```
+
+**命名规则**
+
+| 规则                       | 说明                                              |
+| -------------------------- | ------------------------------------------------- |
+| 必须以 `data-` 开头         | 前缀标识自定义属性                                |
+| 仅允许小写字母、数字、连字符 | 不支持大写字母、下划线、特殊字符                  |
+| 不能以连字符开头            | `data--name` 不合法                               |
+| 不能以数字开头(连字符后)  | `data-1name` 不合法                               |
+| XML 兼容                   | 名称必须符合 XML 规范                             |
+
+---
+
+## JavaScript 访问
+
+**dataset 属性(驼峰命名)**
+`element.dataset.<camelCaseName>`
+
+```javascript
+const el = document.getElementById('user');
+
+// 读取 data-* 属性(连字符转驼峰)
+console.log(el.dataset.userId);      // '123'(对应 data-user-id)
+console.log(el.dataset.role);        // 'admin'
+console.log(el.dataset.loginCount);  // '42'(对应 data-login-count)
+
+// 设置 data-* 属性
+el.dataset.active = 'true';          // 添加 data-active="true"
+el.dataset.lastLogin = '2026-07-20'; // 添加 data-last-login
+
+// 删除 data-* 属性
+delete el.dataset.role;              // 移除 data-role
+```
+
+**getAttribute / setAttribute 方法**
+`element.getAttribute('data-<name>')`
+
+```javascript
+const el = document.getElementById('user');
+
+// 读取属性(原始连字符格式)
+const userId = el.getAttribute('data-user-id'); // '123'
+
+// 设置属性
+el.setAttribute('data-user-id', '456');
+
+// 判断属性是否存在
+const hasRole = el.hasAttribute('data-role'); // true / false
+
+// 删除属性
+el.removeAttribute('data-role');
+```
+
+**dataset vs getAttribute 对比**
+
+| 特性                | `dataset`                | `getAttribute / setAttribute` |
+| ------------------- | ------------------------ | ----------------------------- |
+| 属性名格式          | 驼峰(`userId`)          | 连字符(`data-user-id`)       |
+| 性能                | 略慢                     | 略快                          |
+| 类型                | DOMStringMap 对象        | 字符串                        |
+| IE 支持             | IE11+                    | 所有版本                      |
+| 推荐场景            | 现代 Web 应用            | 兼容旧浏览器                  |
+
+---
+
+## CSS 访问
+
+**属性选择器**
+`[data-<name>] | [data-<name>="<value>"]`
+
+```css
+/* 通过 data-* 属性选择元素 */
+[data-role='admin'] {
+  background-color: gold;
+  font-weight: bold;
+}
+
+[data-role='user'] {
+  background-color: #f0f0f0;
+}
+
+/* 仅判断属性存在性 */
+[data-featured] {
+  border: 2px solid blue;
+}
+```
+
+**content 与 attr()**
+`content: attr(data-<name>)`
+
+```css
+/* 使用 attr() 在 CSS 中读取 data-* 值 */
+.tooltip::after {
+  content: attr(data-tooltip);
+  display: none;
+  padding: 8px;
+  background: #333;
+  color: #fff;
+  border-radius: 4px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+
+.tooltip:hover::after {
+  display: block;
+}
+```
+
+```html
+<!-- 配合 CSS 实现纯 CSS 提示框 -->
+<button class="tooltip" data-tooltip="点击此处提交表单">提交</button>
+```
+
+**data-* 配合 CSS 状态切换**
+
+```css
+/* 通过 data-* 控制 Tab 切换 */
+.tab-panel {
+  display: none;
+}
+
+[data-active='true'].tab-panel {
+  display: block;
+}
+```
+
+```html
+<div class="tab-panel" data-active="true">面板1</div>
+<div class="tab-panel" data-active="false">面板2</div>
+```
+
+---
+
+## 事件委托应用
+
+**事件委托模式**
+`container.addEventListener('click', handler)`
+
+```html
+<!-- 列表项通过 data-* 存储用户数据 -->
+<ul id="user-list">
+  <li data-user-id="1" data-name="张三" data-role="admin">张三</li>
+  <li data-user-id="2" data-name="李四" data-role="user">李四</li>
+  <li data-user-id="3" data-name="王五" data-role="user">王五</li>
+</ul>
+```
+
+```javascript
+// 事件委托:在父元素上监听,通过 data-* 获取数据
+document.getElementById('user-list').addEventListener('click', (e) => {
+  const li = e.target.closest('li');
+  if (!li) return;
+
+  console.log(`用户 ID: ${li.dataset.userId}`);
+  console.log(`用户名: ${li.dataset.name}`);
+  console.log(`角色: ${li.dataset.role}`);
+
+  // 根据 data-* 执行不同操作
+  if (li.dataset.role === 'admin') {
+    showAdminPanel(li.dataset.userId);
+  } else {
+    showUserProfile(li.dataset.userId);
+  }
+});
+```
+
+---
+
+## 类型转换
+
+**手动类型转换**
+
+```javascript
+const el = document.getElementById('user');
+
+// 字符串转数字
+const userId = parseInt(el.dataset.userId, 10);      // 123
+const loginCount = Number(el.dataset.loginCount);    // 42
+
+// 字符串转布尔
+const isActive = el.dataset.active === 'true';       // true
+
+// 字符串转对象(需 JSON.parse)
+const data = JSON.parse(el.dataset.config);          // 对象
+
+// 存储对象需先序列化
+el.dataset.user = JSON.stringify({ name: '张三', age: 25 });
+const user = JSON.parse(el.dataset.user);
+```
+
+---
+
+## 注意事项
+
+- **字符串类型**:data-* 值始终是字符串,使用时需手动类型转换
+- **大小限制**:不适合存储大量数据,大数据请用 `WeakMap` 或 `IndexedDB`
+- **XSS 风险**:避免用 `innerHTML` 输出 data-* 值,防止 XSS 攻击
+- **可读性**:data-* 会在 HTML 中可见,不要存储敏感信息(如 Token、密码)
+- **语义化**:data-* 是自定义数据属性,不应替代 class、id 等语义化属性
+- **性能优化**:大量元素访问 data-* 时,优先使用 `getAttribute`(略快于 `dataset`)
+- **命名一致性**:全项目统一使用连字符命名(如 `data-user-id`),不要混用驼峰

@@ -64,28 +64,35 @@ tags:
 
 ### 1.3 前置知识地图
 
-```
-Java 基础
-    │
-    ├── 面向对象（封装、继承、多态）
-    ├── 集合框架（List、Map、Set）
-    ├── 泛型（类型参数、通配符、类型擦除）
-    └── 异常处理（try-catch-finally）
-            │
-            ▼
-Java 函数式编程（本章）
-    │
-    ├── 语法层：Lambda 表达式、方法引用、构造引用
-    ├── API 层：函数式接口、Stream、Optional、Collectors
-    ├── 语义层：纯函数、不可变性、惰性求值、高阶函数
-    └── 字节码层：invokedynamic、LambdaMetafactory、LambdaForm
-            │
-            ▼
-进阶应用
-    │
-    ├── 响应式编程（Reactor、RxJava）
-    ├── 并行计算（ForkJoinPool、parallelStream）
-    └── DSL 设计（Builder 模式 + 函数组合）
+```mermaid
+flowchart TD
+    T0["Java 基础"]
+    T1["面向对象（封装、继承、多态）"]
+    T2["集合框架（List、Map、Set）"]
+    T3["泛型（类型参数、通配符、类型擦除）"]
+    T4["异常处理（try-catch-finally）"]
+    T5["Java 函数式编程（本章）"]
+    T6["语法层：Lambda 表达式、方法引用、构造引用"]
+    T7["API 层：函数式接口、Stream、Optional、Collectors"]
+    T8["语义层：纯函数、不可变性、惰性求值、高阶函数"]
+    T9["字节码层：invokedynamic、LambdaMetafactory、LambdaForm"]
+    T10["进阶应用"]
+    T11["响应式编程（Reactor、RxJava）"]
+    T12["并行计算（ForkJoinPool、parallelStream）"]
+    T13["DSL 设计（Builder 模式 + 函数组合）"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T4 --> T5
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T5 --> T9
+    T9 --> T10
+    T10 --> T11
+    T10 --> T12
+    T10 --> T13
 ```
 
 ### 1.4 章节阅读建议
@@ -1649,21 +1656,28 @@ list.stream()
 
 ### 8.1 项目结构建议
 
-```
-src/main/java/com/example/
-├── domain/                  # 领域模型（不可变值对象）
-│   ├── User.java            # record User(...)
-│   └── Order.java
-├── service/                 # 函数式服务
-│   ├── UserService.java
-│   └── OrderService.java
-├── functional/              # 自定义函数式接口
-│   ├── Transformer.java
-│   └── ThrowingFunction.java  # 处理受检异常
-├── collector/               # 自定义收集器
-│   └── PercentileCollector.java
-└── util/                    # 函数式工具
-    └── StreamUtils.java
+```mermaid
+flowchart TD
+    T0["src/main/java/com/example/"]
+    T1["domain/                  # 领域模型（不可变值对象）"]
+    T2["User.java            # record User(...)"]
+    T3["Order.java"]
+    T4["service/                 # 函数式服务"]
+    T5["UserService.java"]
+    T6["OrderService.java"]
+    T7["functional/              # 自定义函数式接口"]
+    T8["Transformer.java"]
+    T9["ThrowingFunction.java  # 处理受检异常"]
+    T10["collector/               # 自定义收集器"]
+    T11["PercentileCollector.java"]
+    T12["util/                    # 函数式工具"]
+    T13["StreamUtils.java"]
+    T0 --> T1
+    T3 --> T4
+    T6 --> T7
+    T9 --> T10
+    T11 --> T12
+    T12 --> T13
 ```
 
 ### 8.2 处理受检异常的工具
@@ -1941,7 +1955,7 @@ ImmutableList<User> immutable = users.stream()
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（记忆与理解）
 
@@ -1951,7 +1965,7 @@ ImmutableList<User> immutable = users.stream()
 4. 说明 Stream 中间操作与终端操作的区别，各举 3 个例子。
 5. 解释 `flatMap` 与 `map` 的语义差异，并各给出一个适用场景。
 
-### 10.2 应用题
+### 应用题知识点讲解
 
 6. 使用 Stream API 实现以下功能：给定一个字符串列表，统计每个单词的出现频率，并按频率降序输出前 10 个。
 7. 实现一个自定义 Collector，将订单流按月份分组，并计算每月的总金额、平均金额、最大金额。
@@ -2173,3 +2187,156 @@ ImmutableList<User> immutable = users.stream()
 ---
 
 *最后更新：2026-07-21*
+## Function 函数
+
+**基本写法：定义 Function**
+`Function<<入参类型>, <返回类型>> <变量> = <Lambda>;`
+```java
+// 接收一个参数返回一个结果
+Function<String, Integer> len = s -> s.length();
+```
+
+---
+
+**基本写法：应用函数**
+`<function>.apply(<参数>);`
+```java
+// 执行函数并返回结果
+int n = len.apply("hello");
+```
+
+---
+
+**基本写法：复合函数**
+`<f1>.andThen(<f2>);`
+```java
+// 先执行 f1 再执行 f2
+Function<String, String> upper = s -> s.toUpperCase();
+Function<String, String> bang = upper.andThen(s -> s + "!");
+```
+
+---
+
+**基本写法：反向复合**
+`<f2>.compose(<f1>);`
+```java
+// 先执行 f1 再执行 f2
+Function<Integer, Integer> add1 = x -> x + 1;
+Function<Integer, Integer> mul2 = x -> x * 2;
+Function<Integer, Integer> h = mul2.compose(add1);
+```
+
+---
+
+## Predicate 断言
+
+**基本写法：定义 Predicate**
+`Predicate<<类型>> <变量> = <Lambda>;`
+```java
+// 返回 boolean 的判断函数
+Predicate<String> nonEmpty = s -> s != null && !s.isEmpty();
+```
+
+---
+
+**基本写法：测试断言**
+`<predicate>.test(<参数>);`
+```java
+// 对输入进行判断
+boolean ok = nonEmpty.test("abc");
+```
+
+---
+
+**基本写法：与运算**
+`<p1>.and(<p2>);`
+```java
+// 两个断言都为真
+Predicate<Integer> positive = x -> x > 0;
+Predicate<Integer> even = x -> x % 2 == 0;
+Predicate<Integer> posEven = positive.and(even);
+```
+
+---
+
+**基本写法：取反**
+`<predicate>.negate();`
+```java
+// 取反断言
+Predicate<String> isEmpty = nonEmpty.negate();
+```
+
+---
+
+## Consumer 消费者
+
+**基本写法：定义 Consumer**
+`Consumer<<类型>> <变量> = <Lambda>;`
+```java
+// 接收一个参数无返回值
+Consumer<String> printer = s -> System.out.println(s);
+```
+
+---
+
+**基本写法：链式消费**
+`<c1>.andThen(<c2>);`
+```java
+// 先执行 c1 再执行 c2
+Consumer<String> c1 = s -> System.out.print("[" + s);
+Consumer<String> c2 = s -> System.out.println("]");
+Consumer<String> chained = c1.andThen(c2);
+```
+
+---
+
+## Supplier 供应者
+
+**基本写法：定义 Supplier**
+`Supplier<<类型>> <变量> = <Lambda>;`
+```java
+// 无参数返回一个结果
+Supplier<String> now = () -> java.time.Instant.now().toString();
+```
+
+---
+
+**基本写法：获取值**
+`<supplier>.get();`
+```java
+// 执行并返回结果
+String v = now.get();
+```
+
+---
+
+## BiFunction 双参函数
+
+**基本写法：定义 BiFunction**
+`BiFunction<<T>, <U>, <R>> <变量> = <Lambda>;`
+```java
+// 接收两个参数返回一个结果
+BiFunction<Integer, Integer, Integer> add = (a, b) -> a + b;
+```
+
+---
+
+## 原始类型特化
+
+**基本写法：IntFunction**
+`IntFunction<<R>> <变量> = <Lambda>;`
+```java
+// 接收 int 返回 R
+IntFunction<String> idx = i -> "#" + i;
+```
+
+---
+
+**基本写法：IntPredicate**
+`IntPredicate <变量> = <Lambda>;`
+```java
+// 接收 int 返回 boolean
+IntPredicate positive = i -> i > 0;
+```
+
+---

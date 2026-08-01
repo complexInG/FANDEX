@@ -1239,20 +1239,27 @@ for (const k in obj) {
 
 ### 12.1 项目组织
 
-```
-src/
-├── types/
-│   ├── branded.ts          # 品牌类型工具
-│   ├── opaque.ts           # 不透明类型工具
-│   └── symbols.ts          # 共享 Symbol 声明
-├── protocols/
-│   ├── Serializable.ts     # 序列化协议
-│   ├── Iterable.ts         # 迭代协议
-│   └── Disposable.ts       # 资源释放协议
-└── domain/
-    ├── UserId.ts           # 用户 ID（不透明）
-    ├── Email.ts            # 邮箱（不透明）
-    └── Money.ts            # 金额（多币种品牌）
+```mermaid
+flowchart TD
+    T0["src/"]
+    T1["types/"]
+    T2["branded.ts          # 品牌类型工具"]
+    T3["opaque.ts           # 不透明类型工具"]
+    T4["symbols.ts          # 共享 Symbol 声明"]
+    T5["protocols/"]
+    T6["Serializable.ts     # 序列化协议"]
+    T7["Iterable.ts         # 迭代协议"]
+    T8["Disposable.ts       # 资源释放协议"]
+    T9["domain/"]
+    T10["UserId.ts           # 用户 ID（不透明）"]
+    T11["Email.ts            # 邮箱（不透明）"]
+    T12["Money.ts            # 金额（多币种品牌）"]
+    T0 --> T1
+    T4 --> T5
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
+    T9 --> T12
 ```
 
 ### 12.2 tsconfig.json 推荐配置
@@ -1356,9 +1363,9 @@ jobs:
       - run: npm run build
 ```
 
-## 13. 习题
+## 知识讲解与要点分析（原习题）
 
-### 13.1 填空题
+### 填空题知识点讲解
 
 1. Symbol 是 JavaScript 自 ES6 引入的第 ______ 种基本数据类型，typeof 返回 ______。
 2. TypeScript 中 `const sym = Symbol()` 推断为 ______ 类型，`let sym = Symbol()` 推断为 ______ 类型。
@@ -1369,7 +1376,7 @@ jobs:
 7. JSON.stringify 会 ______（保留/跳过）Symbol 键的属性。
 8. 跨模块共享 Symbol 应使用 ______，而非 ______。
 
-### 13.2 选择题
+### 选择题知识点讲解
 
 1. 关于 TypeScript unique symbol，下列说法错误的是？
    - A. 必须用 const 声明才能推断为 unique

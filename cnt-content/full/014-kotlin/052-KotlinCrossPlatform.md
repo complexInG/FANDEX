@@ -704,13 +704,19 @@ val commonMain by getting {
 
 Gradle 会将 `kotlinx-coroutines-core` 解析为各平台的子构件：
 
-```
-kotlinx-coroutines-core
-├── kotlinx-coroutines-core-jvm-1.8.0.jar     (JVM)
-├── kotlinx-coroutines-core-js-1.8.0.klib      (JS)
-├── kotlinx-coroutines-core-iosarm64-1.8.0.klib (iOS Arm64)
-├── kotlinx-coroutines-core-iosx64-1.8.0.klib   (iOS X64)
-└── kotlinx-coroutines-core-iossimulatorarm64-1.8.0.klib (iOS Sim Arm64)
+```mermaid
+flowchart TD
+    T0["kotlinx-coroutines-core"]
+    T1["kotlinx-coroutines-core-jvm-1.8.0.jar     (JVM)"]
+    T2["kotlinx-coroutines-core-js-1.8.0.klib      (JS)"]
+    T3["kotlinx-coroutines-core-iosarm64-1.8.0.klib (iOS Arm64)"]
+    T4["kotlinx-coroutines-core-iosx64-1.8.0.klib   (iOS X64)"]
+    T5["kotlinx-coroutines-core-iossimulatorarm64-1.8.0.klib (iOS Sim Arm64)"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
 ```
 
 形式化地：
@@ -727,41 +733,48 @@ $$
 
 一个典型的 KMP 项目目录结构：
 
-```
-my-app/
-├── build.gradle.kts
-├── settings.gradle.kts
-├── shared/
-│   ├── build.gradle.kts
-│   └── src/
-│       ├── commonMain/
-│       │   └── kotlin/
-│       │       └── com/example/shared/
-│       │           ├── Platform.kt
-│       │           └── Calculator.kt
-│       ├── commonTest/
-│       │   └── kotlin/
-│       │       └── com/example/shared/
-│       │           └── CalculatorTest.kt
-│       ├── androidMain/
-│       │   └── kotlin/
-│       │       └── com/example/shared/
-│       │           └── Platform.android.kt
-│       ├── iosMain/
-│       │   └── kotlin/
-│       │       └── com/example/shared/
-│       │           └── Platform.ios.kt
-│       ├── jvmMain/
-│       │   └── kotlin/
-│       │       └── com/example/shared/
-│       │           └── Platform.jvm.kt
-│       └── jsMain/
-│           └── kotlin/
-│               └── com/example/shared/
-│                   └── Platform.js.kt
-├── androidApp/
-├── iosApp/
-└── desktopApp/
+```mermaid
+flowchart TD
+    T0["my-app/"]
+    T1["build.gradle.kts"]
+    T2["settings.gradle.kts"]
+    T3["shared/"]
+    T4["build.gradle.kts"]
+    T5["src/"]
+    T6["commonMain/"]
+    T7["kotlin/"]
+    T8["com/example/shared/"]
+    T9["Platform.kt"]
+    T10["Calculator.kt"]
+    T11["commonTest/"]
+    T12["kotlin/"]
+    T13["com/example/shared/"]
+    T14["CalculatorTest.kt"]
+    T15["androidMain/"]
+    T16["kotlin/"]
+    T17["com/example/shared/"]
+    T18["Platform.android.kt"]
+    T19["iosMain/"]
+    T20["kotlin/"]
+    T21["com/example/shared/"]
+    T22["Platform.ios.kt"]
+    T23["jvmMain/"]
+    T24["kotlin/"]
+    T25["com/example/shared/"]
+    T26["Platform.jvm.kt"]
+    T27["jsMain/"]
+    T28["kotlin/"]
+    T29["com/example/shared/"]
+    T30["Platform.js.kt"]
+    T31["androidApp/"]
+    T32["iosApp/"]
+    T33["desktopApp/"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T30 --> T31
+    T30 --> T32
+    T30 --> T33
 ```
 
 ### 5.2 根 `build.gradle.kts`
@@ -1902,26 +1915,15 @@ fun MyButton(text: String, onClick: () -> Unit) {
 
 推荐的 KMP 项目分层架构：
 
-```
-┌──────────────────────────────────────────────┐
-│           Platform UI Layer                  │
-│  (Jetpack Compose / SwiftUI / Compose MP)    │
-├──────────────────────────────────────────────┤
-│         Shared UI Layer (可选)                │
-│       (Compose Multiplatform)                │
-├──────────────────────────────────────────────┤
-│       Shared Presentation Layer              │
-│         (ViewModel / MVI)                    │
-├──────────────────────────────────────────────┤
-│         Shared Domain Layer                  │
-│           (Use Cases / Entities)             │
-├──────────────────────────────────────────────┤
-│         Shared Data Layer                    │
-│      (Repository / DataSource)               │
-├──────────────────────────────────────────────┤
-│       Platform Integration Layer             │
-│  (Network: Ktor / DB: SQLDelight / etc.)     │
-└──────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    PUI[Platform UI Layer<br/>Jetpack Compose / SwiftUI / Compose MP]
+    SUI[Shared UI Layer 可选<br/>Compose Multiplatform]
+    SP[Shared Presentation Layer<br/>ViewModel / MVI]
+    SD[Shared Domain Layer<br/>Use Cases / Entities]
+    SData[Shared Data Layer<br/>Repository / DataSource]
+    PI[Platform Integration Layer<br/>Network: Ktor / DB: SQLDelight]
+    PUI --> SUI --> SP --> SD --> SData --> PI
 ```
 
 ### 8.2 共享 ViewModel
@@ -2266,18 +2268,14 @@ kotlin {
 
 **架构**：
 
-```
-┌────────────────────────────────────────────┐
-│     平台 UI（Compose Web / Android / iOS）  │
-├────────────────────────────────────────────┤
-│   Shared UI（Compose Multiplatform）        │
-├────────────────────────────────────────────┤
-│ Shared VM（MVIKotlin 跨平台 ViewModel）     │
-├────────────────────────────────────────────┤
-│  Shared Domain（Space 业务逻辑）            │
-├────────────────────────────────────────────┤
-│ Shared Data（Ktor + SQLDelight）            │
-└────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    PUI[平台 UI<br/>Compose Web / Android / iOS]
+    SUI[Shared UI<br/>Compose Multiplatform]
+    SVM[Shared VM<br/>MVIKotlin 跨平台 ViewModel]
+    SD[Shared Domain<br/>Space 业务逻辑]
+    SData[Shared Data<br/>Ktor + SQLDelight]
+    PUI --> SUI --> SVM --> SD --> SData
 ```
 
 **共享代码比例**：约 70% 代码在 `commonMain`，30% 在平台源集。
@@ -2387,16 +2385,25 @@ fun main(args: Array<String>) {
 
 **架构**：
 
-```
-ktor-client-core (commonMain)
-├── ktor-client-cio (JVM)
-├── ktor-client-android (Android)
-├── ktor-client-darwin (iOS / macOS)
-├── ktor-client-js (JS)
-├── ktor-client-wasmjs (Wasm)
-├── ktor-client-curl (Native Linux)
-├── ktor-client-mock (commonTest)
-└── ktor-client-logging (commonMain)
+```mermaid
+flowchart TD
+    T0["ktor-client-core (commonMain)"]
+    T1["ktor-client-cio (JVM)"]
+    T2["ktor-client-android (Android)"]
+    T3["ktor-client-darwin (iOS / macOS)"]
+    T4["ktor-client-js (JS)"]
+    T5["ktor-client-wasmjs (Wasm)"]
+    T6["ktor-client-curl (Native Linux)"]
+    T7["ktor-client-mock (commonTest)"]
+    T8["ktor-client-logging (commonMain)"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T0 --> T8
 ```
 
 **关键设计**：
@@ -2425,9 +2432,9 @@ class HttpClient(
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1.1**：以下关于 KMP 的描述，正确的是？
 
@@ -2436,9 +2443,9 @@ B. KMP 的核心哲学是"共享业务逻辑、保留原生 UI"。
 C. KMP 不支持 iOS 平台，因为 iOS 仅支持 Swift。
 D. KMP 的运行时基于 Java 虚拟机，所有平台都需要 JVM。
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：KMP 的核心哲学是"共享业务逻辑、保留原生 UI"，UI 层可选 Compose Multiplatform 或原生 UI（SwiftUI、Jetpack Compose）。KMP 支持 iOS、Android、JVM、JS、Wasm、Native 多平台。KMP 不依赖 JVM，Kotlin/Native 直接编译为原生二进制。
+**解析讲解**：KMP 的核心哲学是"共享业务逻辑、保留原生 UI"，UI 层可选 Compose Multiplatform 或原生 UI（SwiftUI、Jetpack Compose）。KMP 支持 iOS、Android、JVM、JS、Wasm、Native 多平台。KMP 不依赖 JVM，Kotlin/Native 直接编译为原生二进制。
 
 **题目 1.2**：关于 `expect`/`actual` 机制，以下描述错误的是？
 
@@ -2447,9 +2454,9 @@ B. 每个目标平台都必须提供对应的 `actual` 实现。
 C. `actual` 的签名必须与 `expect` 完全一致（参数、返回类型、可见性）。
 D. `expect`/`actual` 在运行时通过反射绑定，存在性能开销。
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：`expect`/`actual` 在编译期绑定，链接期校验，运行时无反射开销。所有绑定在编译期完成，与普通函数调用性能一致。
+**解析讲解**：`expect`/`actual` 在编译期绑定，链接期校验，运行时无反射开销。所有绑定在编译期完成，与普通函数调用性能一致。
 
 **题目 1.3**：关于 Kotlin/Native，以下描述正确的是？
 
@@ -2458,9 +2465,9 @@ B. Kotlin/Native 1.9+ 默认使用新内存管理器，支持对象跨线程自�
 C. Kotlin/Native 不支持调用 C/C++ 库。
 D. Kotlin/Native 的内存管理采用引用计数，与 Swift 完全一致。
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Kotlin/Native 直接编译为原生二进制，无需 JVM。Kotlin 1.9+ 默认使用新内存管理器，移除了线程隔离约束。Kotlin/Native 通过 `cinterop` 工具调用 C/C++ 库。新内存管理器使用全局 GC（基于 Immix），不是简单的引用计数。
+**解析讲解**：Kotlin/Native 直接编译为原生二进制，无需 JVM。Kotlin 1.9+ 默认使用新内存管理器，移除了线程隔离约束。Kotlin/Native 通过 `cinterop` 工具调用 C/C++ 库。新内存管理器使用全局 GC（基于 Immix），不是简单的引用计数。
 
 **题目 1.4**：关于 Kotlin/JS IR 编译器，以下描述错误的是？
 
@@ -2469,9 +2476,9 @@ B. IR 编译器在 Kotlin 1.5+ 成为默认。
 C. IR 编译器生成的 JS 代码与旧编译器完全兼容。
 D. IR 编译器通过 `@JsExport` 显式导出 API。
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：IR 编译器与旧编译器在产物结构上有显著差异：IR 编译器默认不导出任何符号（需 `@JsExport`），旧编译器默认导出所有 public 符号。两者不兼容，迁移需调整代码。
+**解析讲解**：IR 编译器与旧编译器在产物结构上有显著差异：IR 编译器默认不导出任何符号（需 `@JsExport`），旧编译器默认导出所有 public 符号。两者不兼容，迁移需调整代码。
 
 **题目 1.5**：关于 Compose Multiplatform，以下描述正确的是？
 
@@ -2480,43 +2487,43 @@ B. Compose Multiplatform 的 iOS 渲染路径基于 UIKit 互操作。
 C. Compose Multiplatform 在所有平台上使用 Skia 自绘引擎。
 D. Compose Multiplatform 在 iOS 上使用 SwiftUI 渲染。
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：Compose Multiplatform 在所有平台（Android、iOS、Desktop、Web）上都使用 Skia 自绘引擎（iOS 在 1.5.0+ 可选 Skiko / Metal 后端）。Android 平台使用 Android 的 Canvas，iOS 使用 Skia + Metal，Desktop 使用 Skia + OpenGL。
+**解析讲解**：Compose Multiplatform 在所有平台（Android、iOS、Desktop、Web）上都使用 Skia 自绘引擎（iOS 在 1.5.0+ 可选 Skiko / Metal 后端）。Android 平台使用 Android 的 Canvas，iOS 使用 Skia + Metal，Desktop 使用 Skia + OpenGL。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 2.1**：KMP 的四大编译目标分别是 ________、________、________、________。
 
-**答案**：JVM、JS、Native、Wasm
+**解析讲解**：JVM、JS、Native、Wasm
 
-**解析**：KMP 支持 JVM（Java 虚拟机）、JS（JavaScript，IR 编译器）、Native（LLVM 编译为原生二进制）、Wasm（WebAssembly）四大目标平台。
+**解析讲解**：KMP 支持 JVM（Java 虚拟机）、JS（JavaScript，IR 编译器）、Native（LLVM 编译为原生二进制）、Wasm（WebAssembly）四大目标平台。
 
 **题目 2.2**：KMP 项目中，`commonMain` 的源文件由所有平台共享，平台特定的源集命名规则是 ________。
 
-**答案**：`<platformName>Main`（如 `androidMain`、`iosMain`、`jvmMain`、`jsMain`）
+**解析讲解**：`<platformName>Main`（如 `androidMain`、`iosMain`、`jvmMain`、`jsMain`）
 
-**解析**：KMP 的源集命名遵循 `<platformName>Main` / `<platformName>Test` 的规则，便于识别和管理。
+**解析讲解**：KMP 的源集命名遵循 `<platformName>Main` / `<platformName>Test` 的规则，便于识别和管理。
 
 **题目 2.3**：Kotlin/Native 的编译流水线为：Source → ________ → KtIR → ________ → Object → Binary。
 
-**答案**：FIR（Frontend IR）、LLVM IR
+**解析讲解**：FIR（Frontend IR）、LLVM IR
 
-**解析**：Kotlin/Native 的编译流水线：源码经前端解析为 FIR，再转换为 KtIR（Kotlin IR），然后降低为 LLVM IR，最终通过 LLVM 编译为 Object 文件，链接器合并为可执行文件。
+**解析讲解**：Kotlin/Native 的编译流水线：源码经前端解析为 FIR，再转换为 KtIR（Kotlin IR），然后降低为 LLVM IR，最终通过 LLVM 编译为 Object 文件，链接器合并为可执行文件。
 
 **题目 2.4**：Kotlin/JS IR 编译器的 Tree-shaking 算法基于 ________ 分析，从 ________ 出发标记可达代码。
 
-**答案**：可达性（Reachability）、入口点（Entry Points，即 `@JsExport` 与 `main` 函数）
+**解析讲解**：可达性（Reachability）、入口点（Entry Points，即 `@JsExport` 与 `main` 函数）
 
-**解析**：IR 编译器从 `@JsExport` 标注的函数与 `main` 函数出发，进行可达性分析，标记所有可达的代码，移除不可达代码以减小产物体积。
+**解析讲解**：IR 编译器从 `@JsExport` 标注的函数与 `main` 函数出发，进行可达性分析，标记所有可达的代码，移除不可达代码以减小产物体积。
 
 **题目 2.5**：KMP 的源集层次结构是一棵树，`commonMain` 是根，`iosMain` 的父节点是 ________，`iosArm64Main` 的父节点是 ________。
 
-**答案**：`nativeMain`（或 `appleMain`）、`iosMain`
+**解析讲解**：`nativeMain`（或 `appleMain`）、`iosMain`
 
-**解析**：源集层次：`commonMain` → `nativeMain` → `appleMain` → `iosMain` → `iosArm64Main`。每个子源集继承父源集的源文件与依赖。
+**解析讲解**：源集层次：`commonMain` → `nativeMain` → `appleMain` → `iosMain` → `iosArm64Main`。每个子源集继承父源集的源文件与依赖。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 3.1**：实现一个跨平台的 `FileLogger`，要求：
 
@@ -2535,7 +2542,7 @@ expect class FileLogger(filePath: String) {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 // commonMain
@@ -2662,7 +2669,7 @@ inline fun <T> Mutex.withLock(block: () -> T): T {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 // jvmMain
@@ -2728,7 +2735,7 @@ expect fun getPlatformName(): String
 expect fun getHourOfDay(): Int
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```kotlin
 // jvmMain
@@ -2773,7 +2780,7 @@ actual fun getHourOfDay(): Int = js("new Date().getHours()")
 
 **题目 4.1**：为什么 KMP 选择"共享业务逻辑、保留原生 UI"而非"全栈共享"（如 Flutter）？请从架构、性能、生态三个维度论证。
 
-**参考答案**：
+**解析讲解**：
 
 - **架构维度**：保留原生 UI 允许应用深度集成平台特性（如 Android 的 Material You、iOS 的 Live Activities），避免"一刀切"的 UI 抽象。同时，业务逻辑层的跨平台共享已能覆盖 60-80% 的代码，复用率足够高。
 - **性能维度**：原生 UI 直接调用平台 API，无中间抽象层，性能最佳。自绘引擎（如 Flutter 的 Skia）虽能实现 UI 一致性，但牺牲了原生动画、手势、辅助功能等系统集成。
@@ -2781,7 +2788,7 @@ actual fun getHourOfDay(): Int = js("new Date().getHours()")
 
 **题目 4.2**：`expect`/`actual` 机制与 Java 的 SPI（Service Provider Interface）有何本质区别？请从绑定时机、类型安全、性能三个角度分析。
 
-**参考答案**：
+**解析讲解**：
 
 - **绑定时机**：`expect`/`actual` 在编译期绑定，编译器在生成字节码/二进制时即确定具体实现。SPI 在运行时通过 `ServiceLoader` 动态加载，绑定推迟到运行时。
 - **类型安全**：`expect`/`actual` 是编译期类型安全的，签名不匹配会编译失败。SPI 通过反射加载，类型不匹配在运行时抛出 `ClassCastException`。
@@ -2789,7 +2796,7 @@ actual fun getHourOfDay(): Int = js("new Date().getHours()")
 
 **题目 4.3**：Kotlin/Native 选择 LLVM 而非自研后端的技术决策有哪些权衡？请列举至少 3 个优势与 2 个劣势。
 
-**参考答案**：
+**解析讲解**：
 
 **优势**：
 
@@ -2806,7 +2813,7 @@ actual fun getHourOfDay(): Int = js("new Date().getHours()")
 
 **题目 4.4**：Kotlin/Wasm 相对 Kotlin/JS 的核心优势是什么？为什么 Wasm 不是 JS 的简单替代？
 
-**参考答案**：
+**解析讲解**：
 
 Kotlin/Wasm 的核心优势：
 
@@ -2824,7 +2831,7 @@ Kotlin/Wasm 的核心优势：
 
 **题目 4.5**：在 KMP 项目中，何时应该使用 `expect`/`actual`，何时应该使用接口注入（依赖注入）？请给出决策准则。
 
-**参考答案**：
+**解析讲解**：
 
 **决策准则**：
 
@@ -2844,7 +2851,7 @@ Kotlin/Wasm 的核心优势：
 
 **题目 4.6**：Compose Multiplatform 在 iOS 上的渲染路径是怎样的？为什么选择 Skia 而非 UIKit 互操作？
 
-**参考答案**：
+**解析讲解**：
 
 Compose Multiplatform 在 iOS 上的渲染路径：
 
@@ -2886,32 +2893,40 @@ Composable
 2. Gradle 配置。
 3. 关键模块的代码骨架。
 
-**参考答案**：
+**解析讲解**：
 
 **目录结构**：
 
-```
-todo-app/
-├── build.gradle.kts
-├── settings.gradle.kts
-├── shared/
-│   ├── build.gradle.kts
-│   └── src/
-│       ├── commonMain/
-│       │   └── kotlin/com/example/todo/
-│       │       ├── data/
-│       │       ├── domain/
-│       │       ├── ui/
-│       │       └── di/
-│       ├── androidMain/
-│       ├── iosMain/
-│       ├── jvmMain/
-│       ├── jsMain/
-│       └── commonTest/
-├── androidApp/
-├── iosApp/
-├── desktopApp/
-└── webApp/
+```mermaid
+flowchart TD
+    T0["todo-app/"]
+    T1["build.gradle.kts"]
+    T2["settings.gradle.kts"]
+    T3["shared/"]
+    T4["build.gradle.kts"]
+    T5["src/"]
+    T6["commonMain/"]
+    T7["kotlin/com/example/todo/"]
+    T8["data/"]
+    T9["domain/"]
+    T10["ui/"]
+    T11["di/"]
+    T12["androidMain/"]
+    T13["iosMain/"]
+    T14["jvmMain/"]
+    T15["jsMain/"]
+    T16["commonTest/"]
+    T17["androidApp/"]
+    T18["iosApp/"]
+    T19["desktopApp/"]
+    T20["webApp/"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T16 --> T17
+    T16 --> T18
+    T16 --> T19
+    T16 --> T20
 ```
 
 **Gradle 配置**：
@@ -3036,7 +3051,7 @@ class UserManager {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 **问题**：
 

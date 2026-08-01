@@ -22,6 +22,38 @@ prerequisites:
 
 ---
 
+## 头文件
+
+**基本写法：头文件保护**
+`#pragma once`
+```cpp
+// 现代 C++ 推荐用 #pragma once
+#pragma once
+class Widget {};
+
+// 传统 include guard
+#ifndef MY_HEADER_H
+#define MY_HEADER_H
+class Widget {};
+#endif
+```
+
+---
+
+**基本写法：include 顺序**
+`<标准库> → <第三方> → <项目>`
+```cpp
+// 推荐顺序
+#include <vector>           // 1. C++ 标准库
+#include <string>
+
+#include <fmt/format.h>     // 2. 第三方库
+
+#include "myproject/widget.h" // 3. 项目头文件
+```
+
+---
+
 ## 1. 学习目标
 
 本节使用 Bloom 分类法刻画学习者应达到的认知层级。每一层级对应可观测的行为动词，便于自评与教学评估。
@@ -1151,38 +1183,59 @@ public:
 
 引入代码规范到既有项目的标准流程：
 
-```text
-1. 评估现状
-   ├── 收集既有代码的风格分布
-   ├── 识别主要违规模式
-   └── 评估技术债规模
-
-2. 选择规范基线
-   ├── 确定主规范（如 Google、CppCoreGuidelines）
-   ├── 识别必要的偏离（如禁用异常的项目）
-   └── 编写项目特定规范文档
-
-3. 配置工具链
-   ├── 编写 .clang-format
-   ├── 编写 .clang-tidy
-   ├── 集成到 CMake/构建系统
-   └── 配置 CI/CD 检查
-
-4. 渐进式实施
-   ├── Phase 1: 格式化（clang-format -i）
-   ├── Phase 2: 启用低严重性检查
-   ├── Phase 3: 启用中严重性检查
-   └── Phase 4: 启用高严重性检查
-
-5. 团队培训
-   ├── 规范文档宣讲
-   ├── 工具使用培训
-   └── Code Review 实践
-
-6. 持续改进
-   ├── 定期回顾违规数据
-   ├── 调整规则配置
-   └── 更新规范文档
+```mermaid
+flowchart TD
+    T0["1. 评估现状"]
+    T1["收集既有代码的风格分布"]
+    T2["识别主要违规模式"]
+    T3["评估技术债规模"]
+    T4["2. 选择规范基线"]
+    T5["确定主规范（如 Google、CppCoreGuidelines）"]
+    T6["识别必要的偏离（如禁用异常的项目）"]
+    T7["编写项目特定规范文档"]
+    T8["3. 配置工具链"]
+    T9["编写 .clang-format"]
+    T10["编写 .clang-tidy"]
+    T11["集成到 CMake/构建系统"]
+    T12["配置 CI/CD 检查"]
+    T13["4. 渐进式实施"]
+    T14["Phase 1: 格式化（clang-format -i）"]
+    T15["Phase 2: 启用低严重性检查"]
+    T16["Phase 3: 启用中严重性检查"]
+    T17["Phase 4: 启用高严重性检查"]
+    T18["5. 团队培训"]
+    T19["规范文档宣讲"]
+    T20["工具使用培训"]
+    T21["Code Review 实践"]
+    T22["6. 持续改进"]
+    T23["定期回顾违规数据"]
+    T24["调整规则配置"]
+    T25["更新规范文档"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T8 --> T12
+    T12 --> T13
+    T13 --> T14
+    T13 --> T15
+    T13 --> T16
+    T13 --> T17
+    T17 --> T18
+    T18 --> T19
+    T18 --> T20
+    T18 --> T21
+    T21 --> T22
+    T22 --> T23
+    T22 --> T24
+    T22 --> T25
 ```
 
 ### 8.2 CI/CD 集成
@@ -1324,11 +1377,6 @@ endif()
 - [ ] 类型、函数、变量、常量命名符合规范
 - [ ] 名称具有描述性，无缩写歧义
 - [ ] 成员变量使用统一后缀（如 `_`）
-
-## 头文件
-- [ ] 头文件包含最小化（使用前向声明）
-- [ ] 头文件保护（`#pragma once` 或 include guard）
-- [ ] 头文件与实现文件命名一致
 
 ## 类设计
 - [ ] 遵循单一职责原则
@@ -1497,9 +1545,9 @@ Qt 的启示：大型框架常需扩展 C++ 语法（通过代码生成），规
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪个规范明确禁用异常？
 
@@ -1508,7 +1556,7 @@ B. Google C++ Style Guide
 C. CppCoreGuidelines
 D. Boost 规范
 
-**答案**：B。Google C++ Style Guide 因历史代码库兼容性禁用异常。
+**解析讲解**：B。Google C++ Style Guide 因历史代码库兼容性禁用异常。
 
 ---
 
@@ -1519,7 +1567,7 @@ B. 前者基于 GCC，后者基于 Clang
 C. 前者是商业工具，后者是开源工具
 D. 前者只支持 C，后者只支持 C++
 
-**答案**：A。`clang-format` 负责格式化（缩进、换行、对齐），`clang-tidy` 负责语义检查（命名、类型、最佳实践）。
+**解析讲解**：A。`clang-format` 负责格式化（缩进、换行、对齐），`clang-tidy` 负责语义检查（命名、类型、最佳实践）。
 
 ---
 
@@ -1530,7 +1578,7 @@ B. Mandatory / Required / Advisory
 C. Critical / Major / Minor
 D. Blocker / High / Low
 
-**答案**：B。MISRA 使用 Mandatory（强制）、Required（必须）、Advisory（建议）三级。
+**解析讲解**：B。MISRA 使用 Mandatory（强制）、Required（必须）、Advisory（建议）三级。
 
 ---
 
@@ -1541,7 +1589,7 @@ B. 加快编译速度
 C. 隐藏实现细节
 D. 提高运行时性能
 
-**答案**：D。PImpl 增加一次间接访问（指针解引用），略微降低运行时性能，但换来编译速度与 ABI 稳定。
+**解析讲解**：D。PImpl 增加一次间接访问（指针解引用），略微降低运行时性能，但换来编译速度与 ABI 稳定。
 
 ---
 
@@ -1552,7 +1600,7 @@ B. 资源生命周期与对象生命周期绑定
 C. 资源分配总是成功
 D. 资源访问总是线程安全
 
-**答案**：B。RAII 保证资源获取即初始化，释放即析构，资源生命周期与对象生命周期严格绑定。
+**解析讲解**：B。RAII 保证资源获取即初始化，释放即析构，资源生命周期与对象生命周期严格绑定。
 
 ---
 
@@ -1563,7 +1611,7 @@ B. 前者独占所有权，后者共享所有权
 C. 前者更快，后者更慢
 D. 前者支持数组，后者不支持
 
-**答案**：B。`unique_ptr` 独占所有权（不可拷贝），`shared_ptr` 共享所有权（引用计数）。
+**解析讲解**：B。`unique_ptr` 独占所有权（不可拷贝），`shared_ptr` 共享所有权（引用计数）。
 
 ---
 
@@ -1574,7 +1622,7 @@ B. 函数名 `ProcessOrder`
 C. 函数名 `process_order`
 D. 函数名 `PROCESS_ORDER`
 
-**答案**：B。Google 规范要求函数名使用 `CamelCase`（首字母大写）。
+**解析讲解**：B。Google 规范要求函数名使用 `CamelCase`（首字母大写）。
 
 ---
 
@@ -1585,55 +1633,55 @@ B. 替代 `try-catch` 块
 C. 禁用异常处理
 D. 强制函数返回 `void`
 
-**答案**：A。`noexcept` 标记函数不抛异常，标准库容器（如 `vector`）在扩容时优先调用 `noexcept` 移动构造。
+**解析讲解**：A。`noexcept` 标记函数不抛异常，标准库容器（如 `vector`）在扩容时优先调用 `noexcept` 移动构造。
 
 ---
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：CppCoreGuidelines 的三大核心目标是______、______、______。
 
-**答案**：类型安全、资源安全、错误安全。
+**解析讲解**：类型安全、资源安全、错误安全。
 
 ---
 
 **题目 2**：`clang-tidy` 的检查类别前缀包括 `bugprone-`、`cert-`、`cppcoreguidelines-`、`google-`、`llvm-`、______。
 
-**答案**：`modernize-`、`performance-`、`readability-`。
+**解析讲解**：`modernize-`、`performance-`、`readability-`。
 
 ---
 
 **题目 3**：异常安全的四个级别是______、______、______、______。
 
-**答案**：No-throw（nothrow guarantee）、Strong（strong exception guarantee）、Basic（basic exception guarantee）、No-throw-neutral（throw-neutral guarantee）。
+**解析讲解**：No-throw（nothrow guarantee）、Strong（strong exception guarantee）、Basic（basic exception guarantee）、No-throw-neutral（throw-neutral guarantee）。
 
 ---
 
 **题目 4**：PImpl 惯用法中，头文件仅暴露______，实现细节放在______。
 
-**答案**：前向声明的 `Impl` 类与 `std::unique_ptr<Impl>` 成员；`.cpp` 文件中的 `Impl` 类完整定义。
+**解析讲解**：前向声明的 `Impl` 类与 `std::unique_ptr<Impl>` 成员；`.cpp` 文件中的 `Impl` 类完整定义。
 
 ---
 
 **题目 5**：Google C++ Style Guide 中，常量命名使用前缀______。
 
-**答案**：`k`（如 `kMaxSize`）。
+**解析讲解**：`k`（如 `kMaxSize`）。
 
 ---
 
 **题目 6**：MISRA C++:2023 基于 C++______标准。
 
-**答案**：C++17/C++20。
+**解析讲解**：C++17/C++20。
 
 ---
 
 **题目 7**：`clang-format` 的配置文件格式是______。
 
-**答案**：YAML（`.clang-format`）。
+**解析讲解**：YAML（`.clang-format`）。
 
 ---
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：重构以下代码，使其符合 CppCoreGuidelines。
 
@@ -1657,7 +1705,7 @@ public:
 };
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include <gsl/pointers>
@@ -1734,7 +1782,7 @@ public:
 };
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 #include "calculator.h"
@@ -1797,7 +1845,7 @@ TEST_F(CalculatorTest, DivideIsNotNoexcept) {
 
 **题目 3**：编写 `.clang-tidy` 配置，启用 CppCoreGuidelines 与现代 C++ 改造检查，排除过于严格的规则。
 
-**参考答案**：
+**解析讲解**：
 
 ```yaml
 ---
@@ -1855,13 +1903,13 @@ CheckOptions:
 
 **题目 1**：为什么 Google 禁用异常，而 CppCoreGuidelines 推荐异常？这种分歧的根本原因是什么？
 
-**参考答案**：根本原因是应用场景与历史包袱的差异。Google 拥有数十亿行的既有 C++ 代码库，这些代码在 C++ 异常机制成熟前编写，异常安全改造成本极高；且 Google 的服务端架构通过进程隔离与快速失败 (fail-fast) 替代异常处理。CppCoreGuidelines 面向新项目与现代 C++，异常是 RAII 错误处理的自然补充，禁用异常会削弱资源安全保证。
+**解析讲解**：根本原因是应用场景与历史包袱的差异。Google 拥有数十亿行的既有 C++ 代码库，这些代码在 C++ 异常机制成熟前编写，异常安全改造成本极高；且 Google 的服务端架构通过进程隔离与快速失败 (fail-fast) 替代异常处理。CppCoreGuidelines 面向新项目与现代 C++，异常是 RAII 错误处理的自然补充，禁用异常会削弱资源安全保证。
 
 ---
 
 **题目 2**：在什么场景下应使用 `std::shared_ptr`，什么场景下应使用 `std::unique_ptr`？
 
-**参考答案**：
+**解析讲解**：
 
 - `unique_ptr`：默认选择，独占所有权，零开销抽象。适用于大多数资源管理场景。
 - `shared_ptr`：当所有权需要在多个对象间共享且生命周期不确定时使用。如 DAG 结构、观察者模式、异步回调中的对象捕获。
@@ -1871,7 +1919,7 @@ CheckOptions:
 
 **题目 3**：MISRA C++ 限制模板的使用，这与现代 C++ 的模板元编程趋势是否矛盾？如何调和？
 
-**参考答案**：表面矛盾，实质是不同场景的权衡。MISRA 面向安全关键系统，模板元编程的复杂性与调试难度增加风险。调和方式：
+**解析讲解**：表面矛盾，实质是不同场景的权衡。MISRA 面向安全关键系统，模板元编程的复杂性与调试难度增加风险。调和方式：
 
 1. 使用模板的"简单"子集（如 `std::vector`、`std::array`），避免深度元编程。
 2. 使用 C++20 concept 替代 SFINAE，提高可读性。
@@ -1884,7 +1932,7 @@ MISRA C++:2023 已适度放宽对模板的限制，反映现代 C++ 的接受度
 
 **题目 4**：为什么 `clang-format` 不能替代 `clang-tidy`，反之亦然？
 
-**参考答案**：两者分工不同：
+**解析讲解**：两者分工不同：
 
 - `clang-format` 处理词法与语法层面（缩进、换行、空格），不改变语义。
 - `clang-tidy` 处理语义层面（命名规范、类型安全、最佳实践），可能涉及代码重构。
@@ -1895,7 +1943,7 @@ MISRA C++:2023 已适度放宽对模板的限制，反映现代 C++ 的接受度
 
 **题目 5**：在既有项目中引入代码规范，应采用"大爆炸式"（一次性全量改造）还是"渐进式"（分阶段改造）？各自的优缺点？
 
-**参考答案**：
+**解析讲解**：
 
 - **大爆炸式**：优点是一次达成一致，避免规范与代码长期不一致；缺点是改动巨大，易引入 bug，阻塞业务开发。
 - **渐进式**：优点是风险可控，可与业务迭代并行；缺点是过渡期长，规范与代码长期不一致。
@@ -1911,7 +1959,7 @@ MISRA C++:2023 已适度放宽对模板的限制，反映现代 C++ 的接受度
 
 **题目 6**：为什么 C++ 代码规范如此之多（MISRA、AUTOSAR、Google、LLVM、CppCoreGuidelines），却没有一个"统一规范"？
 
-**参考答案**：C++ 应用于极其广泛的领域（安全关键、服务端、游戏、嵌入式、系统软件），各领域的约束差异巨大：
+**解析讲解**：C++ 应用于极其广泛的领域（安全关键、服务端、游戏、嵌入式、系统软件），各领域的约束差异巨大：
 
 - 安全关键：可预测性、可验证性优先，禁用动态特性。
 - 服务端：开发效率优先，允许动态特性。
@@ -1922,7 +1970,7 @@ MISRA C++:2023 已适度放宽对模板的限制，反映现代 C++ 的接受度
 
 ---
 
-### 10.5 综合题
+### 综合题知识点讲解
 
 **题目**：假设你是一家自动驾驶初创公司的 C++ 技术负责人，团队规模 20 人，项目需满足 ISO 26262 ASIL-B 安全等级。请设计一套完整的 C++ 代码规范方案，包括：
 
@@ -1932,7 +1980,7 @@ MISRA C++:2023 已适度放宽对模板的限制，反映现代 C++ 的接受度
 4. 团队培训计划
 5. 持续改进机制
 
-**参考答案**：
+**解析讲解**：
 
 **1. 规范选型**
 
@@ -2202,3 +2250,179 @@ ColumnLimit: 120
 | MC/DC            | Modified Condition/Decision Coverage | 修正条件/判定覆盖                      |
 | WCET             | Worst-Case Execution Time | 最坏执行时间                                        |
 | UB               | Undefined Behavior      | 未定义行为                                            |
+## 命名规范
+
+**基本写法：命名约定**
+`<作用域> <命名风格>`
+```cpp
+// 常见命名风格
+int localVar;          // 局部变量：小驼峰或下划线
+int g_counter;         // 全局变量：g_ 前缀
+constexpr int MAX_SIZE = 100; // 常量：全大写下划线
+class HttpClient {};   // 类名：大驼峰
+struct Point {};       // 结构体：大驼峰
+void fetchData();      // 函数：小驼峰或下划线
+int m_count;           // 成员变量：m_ 前缀
+int m_data;            // 或 _data 前缀
+```
+
+---
+
+**基本写法：Google 风格**
+`<类型> <命名>`
+```cpp
+// Google C++ 风格
+class MyClass {
+public:
+    void DoWork();        // 公开方法：大驼峰
+private:
+    int counter_;         // 成员变量：下划线后缀
+};
+enum class Color { kRed, kGreen }; // 枚举值 k 前缀
+constexpr int kBufferSize = 1024;  // 常量 k 前缀
+```
+
+---
+
+**基本写法：STL/标准库风格**
+`<小写下划线>`
+```cpp
+// 标准库风格
+class string_view {};
+template <typename T> class unique_ptr {};
+int some_value = 0;
+void make_unique();
+```
+
+---
+
+## const 与 constexpr
+
+**基本写法：const 修饰**
+`const <类型> <变量>` 或 `<类型> const <变量>`
+```cpp
+// const 正确性
+const int max = 100;        // 不可变变量
+const int* p1;              // 指向 const 的指针
+int* const p2 = &x;         // const 指针
+const int& ref = x;         // const 引用
+void print() const;         // const 成员函数
+```
+
+---
+
+**基本写法：constexpr 编译期**
+`constexpr <返回> <函数>()`
+```cpp
+// 编译期常量与函数
+constexpr int factorial(int n) {
+    return n <= 1 ? 1 : n * factorial(n - 1);
+}
+constexpr int x = factorial(5); // 120，编译期计算
+```
+
+---
+
+## 现代类型推导
+
+**基本写法：auto 与 decltype**
+`auto <变量> = <表达式>;`
+```cpp
+// 类型推导
+auto i = 42;                // int
+auto& ref = obj;            // 引用
+const auto& cref = obj;     // const 引用
+auto ptr = std::make_unique<int>(5); // unique_ptr<int>
+
+decltype(auto) x = expr;    // 保持表达式类型
+decltype(obj.member) m;     // 成员类型
+```
+
+---
+
+**基本写法：函数返回类型推导**
+`auto <函数>() -> <返回类型>`
+```cpp
+// 尾随返回类型
+auto divide(double a, double b) -> double {
+    return a / b;
+}
+// C++14 直接 auto
+auto add(int a, int b) { return a + b; }
+```
+
+---
+
+## 资源管理
+
+**基本写法：智能指针优先**
+`std::unique_ptr` / `std::shared_ptr`
+```cpp
+// 避免裸 new/delete
+std::unique_ptr<Widget> w = std::make_unique<Widget>();
+std::shared_ptr<Widget> s = std::make_shared<Widget>();
+// 函数参数传引用或指针
+void process(const Widget& w);  // 输入参数用 const 引用
+void update(Widget& w);          // 输出参数用引用
+```
+
+---
+
+**基本写法：RAII 守卫**
+`std::lock_guard` `std::unique_lock`
+```cpp
+// RAII 管理锁
+std::mutex m;
+{
+    std::lock_guard<std::mutex> lk(m);
+    // 临界区
+} // 自动解锁
+```
+
+---
+
+## 异常与错误处理
+
+**基本写法：异常安全**
+`try { } catch (const <异常>& e) {}`
+```cpp
+// 异常处理
+try {
+    riskyOperation();
+} catch (const std::runtime_error& e) {
+    std::cerr << e.what();
+} catch (...) {
+    // 捕获所有异常
+}
+// noexcept 标记不抛异常
+void swap(T& a, T& b) noexcept;
+```
+
+---
+
+## 格式化工具
+
+**基本写法：clang-format 配置**
+`.clang-format`
+```yaml
+# clang-format 配置文件示例
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 100
+BreakBeforeBraces: Attach
+AllowShortFunctionsOnASingleLine: Empty
+```
+
+---
+
+**基本写法：现代格式化输出**
+`std::format` / `std::print`
+```cpp
+// C++20 std::format
+#include <format>
+std::string s = std::format("x={}, y={}", x, y);
+
+// C++23 std::print
+#include <print>
+std::println("result = {}", result);
+```

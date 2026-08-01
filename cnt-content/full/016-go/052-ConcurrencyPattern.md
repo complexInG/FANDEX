@@ -461,22 +461,37 @@ $$
 
 ### 4.1 项目结构
 
-```text
-concurrency_patterns/
-├── go.mod
-├── generator.go
-├── pipeline.go
-├── fanout_fanin.go
-├── worker_pool.go
-├── done_channel.go
-├── or_channel.go
-├── tee.go
-├── bridge.go
-├── errgroup_demo.go
-├── semaphore.go
-├── context_cancel.go
-├── generic_patterns.go
-└── *_test.go
+```mermaid
+flowchart TD
+    T0["concurrency_patterns/"]
+    T1["go.mod"]
+    T2["generator.go"]
+    T3["pipeline.go"]
+    T4["fanout_fanin.go"]
+    T5["worker_pool.go"]
+    T6["done_channel.go"]
+    T7["or_channel.go"]
+    T8["tee.go"]
+    T9["bridge.go"]
+    T10["errgroup_demo.go"]
+    T11["semaphore.go"]
+    T12["context_cancel.go"]
+    T13["generic_patterns.go"]
+    T14["*_test.go"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T0 --> T8
+    T0 --> T9
+    T0 --> T10
+    T0 --> T11
+    T0 --> T12
+    T0 --> T13
+    T0 --> T14
 ```
 
 `go.mod`:
@@ -2013,9 +2028,9 @@ func (p *scrapePool) sync(targets []Target) {
 
 ---
 
-## 9. 习题
+## 知识讲解与要点分析（原习题）
 
-### 9.1 选择题
+### 选择题知识点讲解
 
 **1. 下列关于 channel 关闭的描述,正确的是?**
 
@@ -2024,8 +2039,6 @@ B. 向已关闭 channel 发送会返回错误
 C. 从已关闭 channel 接收会返回零值
 D. 关闭 nil channel 是安全的
 
-<details>
-<summary>答案与解析</summary>
 
 **答案:C**
 
@@ -2033,7 +2046,6 @@ D. 关闭 nil channel 是安全的
 - B 错误:向已关闭 channel 发送会 panic,而非返回错误。
 - C 正确:从已关闭 channel 接收会返回零值,`ok` 返回 false。
 - D 错误:关闭 nil channel 会 panic。
-</details>
 
 **2. errgroup.Group 的 Wait 方法返回的错误是?**
 
@@ -2042,13 +2054,10 @@ B. 第一个非 nil 错误
 C. 最后一个非 nil 错误
 D. 随机一个错误
 
-<details>
-<summary>答案与解析</summary>
 
 **答案:B**
 
 `errgroup` 使用 `sync.Once` 确保只记录第一个非 nil 错误。后续错误被丢弃。若需聚合所有错误,需手动收集(Go 1.20+ 可用 `errors.Join`)。
-</details>
 
 **3. 下列哪种模式最适合"将一个输入分发给多个 worker 并行处理"?**
 
@@ -2057,14 +2066,11 @@ B. Fan-out
 C. Fan-in
 D. Tee
 
-<details>
-<summary>答案与解析</summary>
 
 **答案:B**
 
 - Fan-out 将一个输入 channel 分发给多个 worker,每个 worker 独立处理。
 - Fan-in 是合并多个输入,Pipeline 是串联多个 stage,Tee 是分流为两个相同输出。
-</details>
 
 **4. context.WithTimeout 的超时是从何时开始计算?**
 
@@ -2073,13 +2079,10 @@ B. 从 WithTimeout 调用时刻开始
 C. 从 goroutine 启动开始
 D. 从 ctx.Err() 被调用开始
 
-<details>
-<summary>答案与解析</summary>
 
 **答案:B**
 
 `context.WithTimeout(parent, timeout)` 内部调用 `WithDeadline(parent, time.Now().Add(timeout))`,超时从调用时刻开始计算。
-</details>
 
 **5. 下列关于 worker pool 模式的描述,错误的是?**
 
@@ -2088,70 +2091,50 @@ B. 任务队列容量影响抗突发能力
 C. worker pool 可防止 goroutine 爆炸
 D. worker 数量越多,吞吐量一定越高
 
-<details>
-<summary>答案与解析</summary>
 
 **答案:D**
 
 worker 数量超过 CPU 核数后,吞吐量增长趋于平缓(因上下文切换开销)。对于 CPU 密集型任务,worker 数 = CPU 核数是合理起点;对于 IO 密集型,可适当增加。
-</details>
 
-### 9.2 填空题
+### 填空题知识点讲解
 
 **1. Little's Law 的公式是 `______`,其中 L 表示 `______`,λ 表示 `______`,W 表示 `______`。**
 
-<details>
-<summary>答案</summary>
 
 公式:$L = \lambda \cdot W$
 - L:系统中平均并发数
 - λ:到达率(任务/秒)
 - W:平均响应时间(秒)
-</details>
 
 **2. Go 1.14 引入的 `______` 机制解决了长循环 goroutine 导致的调度饥饿问题。**
 
-<details>
-<summary>答案</summary>
 
 异步抢占(基于 SIGURG 信号的异步抢占)
-</details>
 
 **3. errgroup 设置并发上限的方法是 `______`,非阻塞启动的方法是 `______`。**
 
-<details>
-<summary>答案</summary>
 
 - `SetLimit(n int)`
 - `TryGo(f func() error) bool`
-</details>
 
 **4. 在 select 语句中,向 nil channel 发送或接收会 `______`,利用此特性可以 `______`。**
 
-<details>
-<summary>答案</summary>
 
 - 永久阻塞
 - 在 select 中动态禁用某个分支(将 channel 置为 nil)
-</details>
 
 **5. context 包提供了四种派生 context 的方法:`______`、`______`、`______`、`______`。**
 
-<details>
-<summary>答案</summary>
 
 - `WithCancel(parent Context) (Context, CancelFunc)`
 - `WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc)`
 - `WithDeadline(parent Context, deadline time.Time) (Context, CancelFunc)`
 - `WithValue(parent Context, key, val any) Context`
-</details>
 
-### 9.3 编程题
+### 编程题知识点讲解
 
 **1. 实现一个支持优先级的 fan-in 模式:高优先级 channel 的数据优先被消费。**
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -2261,12 +2244,9 @@ func StrictPriorityFanIn[T any](ctx context.Context, high, low <-chan T) <-chan 
     return out
 }
 ```
-</details>
 
 **2. 实现一个动态扩缩容的 worker pool:根据队列长度自动调整 worker 数量。**
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package main
@@ -2376,14 +2356,11 @@ func (p *DynamicWorkerPool) Shutdown() {
     p.wg.Wait()
 }
 ```
-</details>
 
 ### 9.4 思考题
 
 **1. 为什么 Go 推荐使用 channel 而非 mutex?在什么场景下 mutex 更合适?**
 
-<details>
-<summary>参考答案</summary>
 
 Go 推荐 channel 的原因:
 - **可组合性**:channel 是一等公民,可作为参数、返回值,易于组合成复杂模式。
@@ -2398,12 +2375,9 @@ Mutex 更合适的场景:
 - **不涉及生命周期**:不需要取消传播时,mutex 更简单。
 
 经验法则:"通过通信共享内存"适用于数据所有权转移;"通过共享内存通信"适用于数据共享访问。
-</details>
 
 **2. errgroup 和 sync.WaitGroup 在什么场景下应选择哪个?**
 
-<details>
-<summary>参考答案</summary>
 
 选择 errgroup 的场景:
 - 需要错误传播(任一 goroutine 失败需感知)。
@@ -2418,12 +2392,9 @@ Mutex 更合适的场景:
 - 极致性能(避免 errgroup 的内部开销)。
 
 实践中,大多数并发场景推荐 errgroup,它能自动处理错误传播和取消,减少样板代码。
-</details>
 
 **3. 在容器环境(Kubernetes/Docker)中,为什么需要 go.uber.org/automaxprocs?**
 
-<details>
-<summary>参考答案</summary>
 
 Go runtime 默认将 `GOMAXPROCS` 设置为宿主机的 CPU 核数。但在容器环境中:
 - 容器的 CPU 限制(如 `cpu.limit=2`)不会被 Go runtime 感知。
@@ -2436,12 +2407,9 @@ Go runtime 默认将 `GOMAXPROCS` 设置为宿主机的 CPU 核数。但在容�
 - 容器被 CPU throttle,延迟升高。
 - goroutine 调度竞争加剧,吞吐量下降。
 - pprof 显示大量 `runtime.schedule` 时间。
-</details>
 
 **4. pipeline 模式中,如何决定每个 stage 的并行度?**
 
-<details>
-<summary>参考答案</summary>
 
 决定 stage 并行度的因素:
 1. **stage 处理时间**:处理时间长的 stage 需更高并行度,避免成为瓶颈。
@@ -2459,12 +2427,9 @@ Go runtime 默认将 `GOMAXPROCS` 设置为宿主机的 CPU 核数。但在容�
 - 通过 benchmark 调整,观察 pprof。
 - 使用 `runtime.GOMAXPROCS` 控制全局并行度。
 - 监控队列长度,动态调整(如 DynamicWorkerPool)。
-</details>
 
 **5. 为什么不推荐在 context.Value 中传递业务参数?**
 
-<details>
-<summary>参考答案</summary>
 
 不推荐的原因:
 1. **隐式依赖**:函数签名看不出依赖,难以理解、测试、重构。
@@ -2479,7 +2444,6 @@ context.Value 的合理用途:
 - **可选配置**:超时、重试策略等。
 
 业务参数应通过函数参数显式传递,便于类型检查、测试、重构。
-</details>
 
 ---
 

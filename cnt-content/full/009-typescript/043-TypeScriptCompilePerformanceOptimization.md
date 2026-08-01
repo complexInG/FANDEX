@@ -431,23 +431,27 @@ npx tsc --noEmit
 
 #### 5.3.1 项目结构
 
-```
-my-monorepo/
-├── packages/
-│   ├── core/
-│   │   ├── src/
-│   │   ├── tsconfig.json      # composite: true
-│   │   └── package.json
-│   ├── utils/
-│   │   ├── src/
-│   │   ├── tsconfig.json      # composite: true, references: []
-│   │   └── package.json
-│   └── ui/
-│       ├── src/
-│       ├── tsconfig.json      # composite: true, references: [../utils]
-│       └── package.json
-├── tsconfig.json              # references: [packages/core, packages/utils, packages/ui]
-└── package.json
+```mermaid
+flowchart TD
+    T0["my-monorepo/"]
+    T1["packages/"]
+    T2["core/"]
+    T3["src/"]
+    T4["tsconfig.json      # composite: true"]
+    T5["package.json"]
+    T6["utils/"]
+    T7["src/"]
+    T8["tsconfig.json      # composite: true, references: []"]
+    T9["package.json"]
+    T10["ui/"]
+    T11["src/"]
+    T12["tsconfig.json      # composite: true, references: [../utils]"]
+    T13["package.json"]
+    T14["tsconfig.json              # references: [packages/core, packages/utils, packages/ui]"]
+    T15["package.json"]
+    T0 --> T1
+    T13 --> T14
+    T13 --> T15
 ```
 
 #### 5.3.2 子项目配置
@@ -1564,7 +1568,7 @@ jobs:
 
 ---
 
-## 10. 练习与答案
+## 知识讲解与要点分析（原练习）
 
 ### 10.1 基础练习
 
@@ -1575,7 +1579,7 @@ jobs:
 - 增量编译
 - 跳过库检查
 
-**答案**：
+**解析讲解**：
 
 ```jsonc
 {
@@ -1599,7 +1603,7 @@ jobs:
 - `Check time` 占总时间的比例通常是多少？
 - 如何定位编译最慢的文件？
 
-**答案**：
+**解析讲解**：
 
 - `Instantiations` 超过 1,000,000 时需关注，超过 5,000,000 需立即优化。
 - `Check time` 通常占总时间 50%-70%，属于正常范围。
@@ -1613,22 +1617,26 @@ jobs:
 - `packages/utils` 依赖 `packages/core`
 - `packages/ui` 依赖 `packages/utils`
 
-**答案**：
+**解析讲解**：
 
-```
-my-monorepo/
-├── packages/
-│   ├── core/
-│   │   ├── src/
-│   │   └── tsconfig.json      # composite: true, references: []
-│   ├── utils/
-│   │   ├── src/
-│   │   └── tsconfig.json      # composite: true, references: [../core]
-│   └── ui/
-│       ├── src/
-│       └── tsconfig.json      # composite: true, references: [../utils]
-├── tsconfig.json              # references: [packages/core, packages/utils, packages/ui]
-└── package.json
+```mermaid
+flowchart TD
+    T0["my-monorepo/"]
+    T1["packages/"]
+    T2["core/"]
+    T3["src/"]
+    T4["tsconfig.json      # composite: true, references: []"]
+    T5["utils/"]
+    T6["src/"]
+    T7["tsconfig.json      # composite: true, references: [../core]"]
+    T8["ui/"]
+    T9["src/"]
+    T10["tsconfig.json      # composite: true, references: [../utils]"]
+    T11["tsconfig.json              # references: [packages/core, packages/utils, packages/ui]"]
+    T12["package.json"]
+    T0 --> T1
+    T10 --> T11
+    T10 --> T12
 ```
 
 ```jsonc
@@ -1694,7 +1702,7 @@ type BigUnion = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j';
 type Mapped = { [K in BigUnion]: DeepFlatten<K extends string ? K[] : never> };
 ```
 
-**答案**：
+**解析讲解**：
 
 ```typescript
 // 优化后
@@ -1714,7 +1722,7 @@ type Mapped = { [K in BigUnion]: K };  // 简化，避免不必要的递归
 - 并行执行类型检查与单元测试
 - 仅在 TypeScript 文件变更时执行类型检查
 
-**答案**：
+**解析讲解**：
 
 ```yaml
 name: CI
@@ -1780,11 +1788,11 @@ jobs:
 
 **思考题 10.6**：为什么 TypeScript 的类型检查是不可判定的？这对编译性能有什么影响？
 
-**答案**：TypeScript 2.8 引入条件类型后，类型系统图灵完备。可以构造类型层面的图灵机模拟器，因此类型检查等价于停机问题，不可判定。编译器通过递归深度限制（50/1000 层）与类型实例化计数限制（5,000,000）来近似处理。这意味着理论上无法保证所有代码都能在有限时间内完成类型检查，需依赖工程约束。
+**解析讲解**：TypeScript 2.8 引入条件类型后，类型系统图灵完备。可以构造类型层面的图灵机模拟器，因此类型检查等价于停机问题，不可判定。编译器通过递归深度限制（50/1000 层）与类型实例化计数限制（5,000,000）来近似处理。这意味着理论上无法保证所有代码都能在有限时间内完成类型检查，需依赖工程约束。
 
 **思考题 10.7**：增量编译与项目引用的适用场景有何不同？
 
-**答案**：增量编译适用于中小型项目的开发模式，通过 `.tsbuildinfo` 缓存实现文件级增量。项目引用适用于大型 monorepo，将项目拆分为可独立编译的子项目，支持并行编译与依赖管理。项目引用的开销更高（需配置 `composite`、`declaration` 等），但大型项目收益更大。
+**解析讲解**：增量编译适用于中小型项目的开发模式，通过 `.tsbuildinfo` 缓存实现文件级增量。项目引用适用于大型 monorepo，将项目拆分为可独立编译的子项目，支持并行编译与依赖管理。项目引用的开销更高（需配置 `composite`、`declaration` 等），但大型项目收益更大。
 
 ---
 

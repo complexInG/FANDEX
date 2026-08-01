@@ -566,11 +566,15 @@ $$
 
 #### 5.1.1 项目结构
 
-```
-StateMachineDemo/
-├── StateMachineDemo.csproj
-├── Program.cs
-└── README.md
+```mermaid
+flowchart TD
+    T0["StateMachineDemo/"]
+    T1["StateMachineDemo.csproj"]
+    T2["Program.cs"]
+    T3["README.md"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
 ```
 
 #### 5.1.2 csproj 配置（.NET 9，C# 12）
@@ -648,12 +652,17 @@ ilspycmd -p StateMachineDemo.dll > decompiled.cs
 
 #### 5.2.1 项目结构
 
-```
-PoolableAsync/
-├── PoolableAsync.csproj
-├── PoolableTask.cs
-├── PoolableAsyncMethodBuilder.cs
-├── Program.cs
+```mermaid
+flowchart TD
+    T0["PoolableAsync/"]
+    T1["PoolableAsync.csproj"]
+    T2["PoolableTask.cs"]
+    T3["PoolableAsyncMethodBuilder.cs"]
+    T4["Program.cs"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
 ```
 
 #### 5.2.2 csproj 配置
@@ -1846,9 +1855,9 @@ public async Awaitable FadeAsync(Image image, float duration)
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：以下哪个不是 `async` 方法的合法返回类型？
 
@@ -1857,14 +1866,11 @@ B. `ValueTask<string>`
 C. `void`  
 D. `IEnumerable<int>`
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：D**
 
 `async` 方法返回类型必须是 `Task`、`Task<T>`、`ValueTask`、`ValueTask<T>`、自定义带 `[AsyncMethodBuilder]` 的类型，或 `void`（仅事件处理器）。`IEnumerable<int>` 不是可等待类型，但可以是同步迭代器返回类型。`async IAsyncEnumerable<int>` 是合法的（异步流），但 `async IEnumerable<int>` 不合法。
 
-</details>
 
 **题目 2**：`ConfigureAwait(false)` 的作用是？
 
@@ -1873,14 +1879,11 @@ B. 不捕获 SynchronizationContext
 C. 立即执行 continuation  
 D. 设置超时
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：B**
 
 `ConfigureAwait(false)` 告诉 builder 不要捕获 `SynchronizationContext`，continuation 在底层 Task 完成的线程上继续执行。在 ASP.NET Core 中无影响（无 SynchronizationContext），在 WPF/WinForms 中避免死锁。
 
-</details>
 
 **题目 3**：以下代码在 WPF 中执行会发生什么？
 
@@ -1903,50 +1906,36 @@ B. 编译错误
 C. 死锁  
 D. 抛出异常
 
-<details>
-<summary>答案与解析</summary>
 
 **答案：C**
 
 `GetDataAsync` 内部 `await Task.Delay(100)` 默认捕获 UI SynchronizationContext。但 UI 线程被 `.Result` 阻塞，无法执行 continuation，导致死锁。修复：将 `Button_Click` 改为 `async void` 并 `await`，或在 `GetDataAsync` 中使用 `ConfigureAwait(false)`。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 4**：编译器为 `async` 方法生成的状态机结构体实现了 _________ 接口。
 
-<details>
-<summary>答案</summary>
 
 `IAsyncStateMachine`（包含 `MoveNext` 和 `SetStateMachine` 两个方法）
 
-</details>
 
 **题目 5**：`ValueTask<T>` 不能 _________，但 `Task<T>` 可以。
 
-<details>
-<summary>答案</summary>
 
 多次 await 或并发 await（`ValueTask<T>` 是单消费的，除非转换为 `Task`）
 
-</details>
 
 **题目 6**：在 `async` 方法中，`await` 表达式要求右侧操作数是 _________ 类型。
 
-<details>
-<summary>答案</summary>
 
 可等待的（awaitable）：具有 `GetAwaiter` 方法返回的对象，该对象有 `IsCompleted` 属性、`OnCompleted`（或 `UnsafeOnCompleted`）方法、`GetResult` 方法。
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 7**：实现一个异步限流器 `AsyncRateLimiter`，每秒最多允许 N 次操作。
 
-<details>
-<summary>参考答案</summary>
 
 ```csharp
 using System;
@@ -2038,12 +2027,9 @@ public class Program
 }
 ```
 
-</details>
 
 **题目 8**：实现一个 `RetryPolicy`，支持指数退避和抖动（jitter）。
 
-<details>
-<summary>参考答案</summary>
 
 ```csharp
 using System;
@@ -2131,14 +2117,11 @@ public class Program
 }
 ```
 
-</details>
 
 ### 10.4 思考题
 
 **题目 9**：为什么 .NET 设计 `ValueTask<T>` 而不是直接优化 `Task<T>` 减少分配？
 
-<details>
-<summary>分析与参考答案</summary>
 
 核心原因：
 
@@ -2150,12 +2133,9 @@ public class Program
 
 参考：Stephen Toub 的博客 "ValueTask" 和 ECMA-334 第 15.15 节。
 
-</details>
 
 **题目 10**：在 .NET 9 中，`Task.WaitAsync` 的重载如何避免 `ConfigureAwait` 的争议？
 
-<details>
-<summary>分析与参考答案</summary>
 
 .NET 6+ 引入 `Task.WaitAsync`：
 
@@ -2174,12 +2154,9 @@ public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
 
 但 `ConfigureAwait` 仍然是必要的，因为 `WaitAsync` 本身是 `await` 的辅助，不能替代 `ConfigureAwait(false)` 在库代码中的作用。
 
-</details>
 
 **题目 11**：为什么 `async` 迭代器（`async IAsyncEnumerable<T>`）的实现比 `async Task` 更复杂？
 
-<details>
-<summary>分析与参考答案</summary>
 
 `async IAsyncEnumerable<T>` 的复杂性源于：
 
@@ -2191,7 +2168,6 @@ public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
 
 源码：[AsyncIteratorMethodBuilder.cs](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/AsyncIteratorMethodBuilder.cs)
 
-</details>
 
 ---
 

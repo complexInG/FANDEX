@@ -15,10 +15,11 @@ related:
 prerequisites:
   - python/语法速查
 ---
+# Python 虚拟环境与包管理
 
-# Python 与虚拟环境
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.005 "Software Construction" 中 "Module Systems & Isolation" 章节、Stanford CS107 "Computer Organization & Systems" 中"程序执行环境"模块、CMU 15-712 "Advanced Compilers" 中"链接与符号解析"相关内容的教学水准，系统讲解 Python 虚拟环境、依赖解析、包管理工具链的形式化定义、工程原理与生产级实践。
+---
 
 ## 1. 学习目标
 
@@ -298,19 +299,30 @@ lockfile 的关键性质：
 1. **确定基础 Python**：`sys.executable` 指向当前解释器。
 2. **创建目录结构**：
 
-   ```
-   .venv/
-   ├── bin/                  # Linux/macOS（Windows 为 Scripts/）
-   │   ├── python            # 软链接到基础 Python
-   │   ├── python3           # 软链接
-   │   ├── pip               # pip 副本
-   │   └── activate          # 激活脚本
-   ├── lib/
-   │   └── python3.12/
-   │       └── site-packages/  # 空目录，待安装包
-   ├── include/              # 头文件（软链接）
-   └── pyvenv.cfg            # 配置文件
-   ```
+```mermaid
+flowchart TD
+    T0[".venv/"]
+    T1["bin/                  # Linux/macOS（Windows 为 Scripts/）"]
+    T2["python            # 软链接到基础 Python"]
+    T3["python3           # 软链接"]
+    T4["pip               # pip 副本"]
+    T5["activate          # 激活脚本"]
+    T6["lib/"]
+    T7["python3.12/"]
+    T8["site-packages/  # 空目录，待安装包"]
+    T9["include/              # 头文件（软链接）"]
+    T10["pyvenv.cfg            # 配置文件"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T5 --> T6
+    T0 --> T7
+    T0 --> T8
+    T8 --> T9
+    T8 --> T10
+```
 
 3. **写入 `pyvenv.cfg`**：记录 `home`、`version_info` 等。
 4. **安装 `pip`**：通过 `ensurepip` 模块安装基础 `pip`。
@@ -475,20 +487,33 @@ CMD ["python", "-m", "app"]
 
 ### 5.1 项目结构
 
-```
-venv_demo/
-├── pyproject.toml          # 项目元数据与依赖
-├── uv.lock                 # uv 锁定文件
-├── requirements.txt        # pip 兼容锁定文件
-├── requirements-dev.txt    # 开发依赖锁定
-├── .python-version         # pyenv 版本指定
-├── README.md
-└── src/
-    └── venv_demo/
-        ├── __init__.py
-        ├── config.py       # 环境配置
-        ├── deps.py         # 依赖检查
-        └── main.py
+```mermaid
+flowchart TD
+    T0["venv_demo/"]
+    T1["pyproject.toml          # 项目元数据与依赖"]
+    T2["uv.lock                 # uv 锁定文件"]
+    T3["requirements.txt        # pip 兼容锁定文件"]
+    T4["requirements-dev.txt    # 开发依赖锁定"]
+    T5[".python-version         # pyenv 版本指定"]
+    T6["README.md"]
+    T7["src/"]
+    T8["venv_demo/"]
+    T9["__init__.py"]
+    T10["config.py       # 环境配置"]
+    T11["deps.py         # 依赖检查"]
+    T12["main.py"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T0 --> T6
+    T0 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T8 --> T12
 ```
 
 ### 5.2 `pyproject.toml`
@@ -954,7 +979,7 @@ def diagnose() -> None:
     ]
     for name, min_ver in required:
         result = check_package(name, min_ver)
-        status = "✓" if result["satisfied"] else "✗"
+        status = "√" if result["satisfied"] else "×"
         ver_str = result["version"] or "未安装"
         print(f"  {status} {name}: {ver_str} (要求 >= {min_ver})")
 
@@ -1731,94 +1756,71 @@ JupyterLab 拥有 50+ monorepo 子包，依赖管理复杂。其方案：
 
 ---
 
-## 10. 练习与思考
+## 知识讲解与要点分析（原练习）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个工具不是用 Rust 实现的？
+**常见疑问 1**：以下哪个工具不是用 Rust 实现的？
 
 A. `uv`
 B. `ruff`
 C. `pixi`
 D. `poetry`
 
-<details>
-<summary>答案</summary>
 
 D。`poetry` 用 Python 实现。`uv`、`ruff`、`pixi` 均为 Rust 实现。
-</details>
 
-**Q2**：PEP 405 标准化的虚拟环境配置文件是？
+**常见疑问 2**：PEP 405 标准化的虚拟环境配置文件是？
 
 A. `virtualenv.cfg`
 B. `pyvenv.cfg`
 C. `.python-version`
 D. `environment.yml`
 
-<details>
-<summary>答案</summary>
 
 B。PEP 405 标准化 `pyvenv.cfg`，包含 `home`、`version_info` 等键。
-</details>
 
-**Q3**：以下哪个算法被 `uv` 用于依赖解析？
+**常见疑问 3**：以下哪个算法被 `uv` 用于依赖解析？
 
 A. DPLL
 B. PubGrub
 C. resolvelib
 D. SAT4J
 
-<details>
-<summary>答案</summary>
 
 B。`uv` 使用 PubGrub 算法（借鉴 SAT 求解器的 CDCL 思想）。
-</details>
 
-**Q4**：在 Docker 容器中，以下哪种做法最推荐？
+**常见疑问 4**：在 Docker 容器中，以下哪种做法最推荐？
 
 A. 不使用虚拟环境，直接安装到系统 Python
 B. 使用虚拟环境，便于多阶段构建
 C. 使用 conda 管理所有依赖
 D. 手动编译所有依赖
 
-<details>
-<summary>答案</summary>
 
 B。使用虚拟环境便于多阶段构建，与本地开发环境一致，隔离清晰。
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**：Python 标准库中创建虚拟环境的模块是 `______`。
+**常见疑问 5**：Python 标准库中创建虚拟环境的模块是 `______`。
 
-<details>
-<summary>答案</summary>
 
 `venv`（Python 3.3+ 引入，PEP 405 规范）。
-</details>
 
-**Q2**：`pip` 从 ______ 版本开始默认使用 resolvelib 解析器。
+**常见疑问 6**：`pip` 从 ______ 版本开始默认使用 resolvelib 解析器。
 
-<details>
-<summary>答案</summary>
 
 20.3（2020 年 11 月发布）。
-</details>
 
-**Q3**：`uv` 的全局缓存在 `______` 目录下。
+**常见疑问 7**：`uv` 的全局缓存在 `______` 目录下。
 
-<details>
-<summary>答案</summary>
 
 `~/.cache/uv/`（Linux/macOS）或 `%LOCALAPPDATA%\uv\cache`（Windows）。
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q1**：编写一个 Python 函数，使用 `venv` 模块创建虚拟环境，并安装指定包列表，无需 shell 激活。
+**常见疑问 8**：编写一个 Python 函数，使用 `venv` 模块创建虚拟环境，并安装指定包列表，无需 shell 激活。
 
-<details>
-<summary>参考答案</summary>
 
 ```python
 import subprocess
@@ -1861,12 +1863,9 @@ if __name__ == "__main__":
     create_and_install(".venv", ["requests", "rich"])
 ```
 
-</details>
 
-**Q2**：编写一个函数，检测当前 Python 是否在虚拟环境中运行，并返回虚拟环境路径。
+**常见疑问 9**：编写一个函数，检测当前 Python 是否在虚拟环境中运行，并返回虚拟环境路径。
 
-<details>
-<summary>参考答案</summary>
 
 ```python
 import sys
@@ -1891,48 +1890,60 @@ if __name__ == "__main__":
         print(f"虚拟环境路径: {path}")
 ```
 
-</details>
 
 ### 10.4 思考题
 
-**Q1**：为什么 `uv` 比 `pip` 快 10-100 倍？从语言、算法、缓存三个维度分析。
+**常见疑问 10**：为什么 `uv` 比 `pip` 快 10-100 倍？从语言、算法、缓存三个维度分析。
 
-**Q2**：在什么场景下 `conda` 仍然不可替代？`uv` 能否完全取代 `conda`？
+**常见疑问 11**：在什么场景下 `conda` 仍然不可替代？`uv` 能否完全取代 `conda`？
 
-**Q3**：monorepo 中"共享虚拟环境"与"每包独立虚拟环境"各有什么优缺点？如何选择？
+**常见疑问 12**：monorepo 中"共享虚拟环境"与"每包独立虚拟环境"各有什么优缺点？如何选择？
 
-**Q4**：为什么 Python 不能像 Rust 一样完全摒弃虚拟环境，采用 `cargo` 的"项目本地依赖 + 全局缓存"模型？根本原因是什么？
+**常见疑问 13**：为什么 Python 不能像 Rust 一样完全摒弃虚拟环境，采用 `cargo` 的"项目本地依赖 + 全局缓存"模型？根本原因是什么？
 
 ---
 
 ## 11. 工具选型决策树
 
-```
-开始
-  │
-  ├── 数据科学 / 机器学习项目？
-  │     ├── 是 → 需要 CUDA / C 库？
-  │     │     ├── 是 → conda 或 pixi
-  │     │     └── 否 → uv + pyproject.toml
-  │     └── 否 ↓
-  │
-  ├── 新项目（2024+）？
-  │     ├── 是 → uv（推荐）
-  │     └── 否 ↓
-  │
-  ├── 已有 poetry 项目？
-  │     ├── 性能瓶颈？ → 迁移到 uv
-  │     └── 无瓶颈 → 保持 poetry
-  │
-  ├── 已有 pip + requirements.txt？
-  │     ├── 需要精确锁定？ → pip-tools
-  │     └── 愿意迁移？ → uv
-  │
-  ├── 需要 Python 2 支持？
-  │     └── virtualenv
-  │
-  └── 需要多版本测试？
-        └── pyenv + tox + uv
+```mermaid
+flowchart TD
+    T0["开始"]
+    T1["数据科学 / 机器学习项目？"]
+    T2["是 → 需要 CUDA / C 库？"]
+    T3["是 → conda 或 pixi"]
+    T4["否 → uv + pyproject.toml"]
+    T5["否"]
+    T6["新项目（2024+）？"]
+    T7["是 → uv（推荐）"]
+    T8["否"]
+    T9["已有 poetry 项目？"]
+    T10["性能瓶颈？ → 迁移到 uv"]
+    T11["无瓶颈 → 保持 poetry"]
+    T12["已有 pip + requirements.txt？"]
+    T13["需要精确锁定？ → pip-tools"]
+    T14["愿意迁移？ → uv"]
+    T15["需要 Python 2 支持？"]
+    T16["virtualenv"]
+    T17["需要多版本测试？"]
+    T18["pyenv + tox + uv"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T5 --> T6
+    T0 --> T7
+    T0 --> T8
+    T8 --> T9
+    T0 --> T10
+    T0 --> T11
+    T11 --> T12
+    T0 --> T13
+    T0 --> T14
+    T14 --> T15
+    T0 --> T16
+    T16 --> T17
+    T17 --> T18
 ```
 
 **快速选型表**：
@@ -2145,24 +2156,31 @@ build-backend = "hatchling.build"
 
 ### 14.5 依赖冲突诊断流程
 
-```
-遇到 ResolutionImpossible
-  │
-  ├── 1. 读取完整错误信息，识别冲突的包与版本约束
-  │
-  ├── 2. 使用 uv pip tree 或 pipdeptree 查看依赖树
-  │     uv pip tree --invert pydantic
-  │
-  ├── 3. 识别冲突路径：
-  │     谁（直接依赖）→ 经过谁（传递依赖）→ 导致什么冲突
-  │
-  ├── 4. 解决策略：
-  │     ├── 放宽约束（如 >=1.0 改为 >=1.0,<3.0）
-  │     ├── 升级冲突包到兼容版本
-  │     ├── 使用 override（uv.tool.uv.override-dependencies）
-  │     └── 替换为不冲突的替代包
-  │
-  └── 5. 验证：重新 uv sync，运行测试
+```mermaid
+flowchart TD
+    T0["遇到 ResolutionImpossible"]
+    T1["1. 读取完整错误信息，识别冲突的包与版本约束"]
+    T2["2. 使用 uv pip tree 或 pipdeptree 查看依赖树"]
+    T3["uv pip tree --invert pydantic"]
+    T4["3. 识别冲突路径："]
+    T5["谁（直接依赖）→ 经过谁（传递依赖）→ 导致什么冲突"]
+    T6["4. 解决策略："]
+    T7["放宽约束（如 >=1.0 改为 >=1.0,<3.0）"]
+    T8["升级冲突包到兼容版本"]
+    T9["使用 override（uv.tool.uv.override-dependencies）"]
+    T10["替换为不冲突的替代包"]
+    T11["5. 验证：重新 uv sync，运行测试"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T0 --> T5
+    T5 --> T6
+    T0 --> T7
+    T0 --> T8
+    T0 --> T9
+    T0 --> T10
+    T10 --> T11
 ```
 
 ### 14.6 团队配置模板
@@ -2301,3 +2319,334 @@ Python 虚拟环境与依赖管理经历了从"全局混沌"到"标准库隔离"
 > "Tools come and go, principles endure. Master the why, not just the how."
 >
 > —— 借鉴 Brett Cannon, Python 核心开发者
+## venv 标准库
+
+**基本写法：创建虚拟环境**
+`python -m venv <目录>`
+```python
+# 在当前目录创建 .venv 虚拟环境
+# python -m venv .venv
+```
+
+---
+
+**基本写法：激活虚拟环境（Windows）**
+`.venv\Scripts\Activate.ps1`
+```python
+# PowerShell 激活脚本，激活后提示符前缀显示 (.venv)
+# .venv\Scripts\Activate.ps1
+```
+
+---
+
+**基本写法：激活虚拟环境（Linux/macOS）**
+`source <目录>/bin/activate`
+```python
+# bash/zsh 下激活
+# source .venv/bin/activate
+```
+
+---
+
+**基本写法：退出虚拟环境**
+`deactivate`
+```python
+# 在已激活环境中退出
+# deactivate
+```
+
+---
+
+**基本写法：指定不安装 pip**
+`python -m venv <目录> --without-pip`
+```python
+# 创建不含 pip 的轻量环境
+# python -m venv myenv --without-pip
+```
+
+---
+
+**基本写法：升级环境内部组件**
+`python -m venv <目录> --upgrade`
+```python
+# 升级已有环境的 Python 内部组件，保留已装包
+# python -m venv myenv --upgrade
+```
+
+---
+
+## pip 包管理
+
+**基本写法：安装包**
+`pip install <包名>`
+```python
+# 安装最新版本的 requests
+# pip install requests
+```
+
+---
+
+**基本写法：安装指定版本**
+`pip install <包名>==<版本>`
+```python
+# 安装指定版本
+# pip install requests==2.32.3
+```
+
+---
+
+**基本写法：从需求文件安装**
+`pip install -r <需求文件>`
+```python
+# 按 requirements.txt 批量安装
+# pip install -r requirements.txt
+```
+
+---
+
+**基本写法：卸载包**
+`pip uninstall <包名>`
+```python
+# 卸载指定包
+# pip uninstall requests
+```
+
+---
+
+**基本写法：导出依赖列表**
+`pip freeze > <文件>`
+```python
+# 将当前已安装包导出为 requirements
+# pip freeze > requirements.txt
+```
+
+---
+
+**基本写法：查看已安装包**
+`pip list`
+```python
+# 列出所有已安装包及版本
+# pip list
+```
+
+---
+
+**基本写法：升级包**
+`pip install --upgrade <包名>`
+```python
+# 升级到最新版本
+# pip install --upgrade requests
+```
+
+---
+
+**基本写法：查看包详情**
+`pip show <包名>`
+```python
+# 显示包元信息与依赖
+# pip show requests
+```
+
+---
+
+## poetry 项目管理
+
+**基本写法：初始化项目**
+`poetry init`
+```python
+# 交互式生成 pyproject.toml
+# poetry init
+```
+
+---
+
+**基本写法：新建项目**
+`poetry new <项目名>`
+```python
+# 创建标准目录结构
+# poetry new mypkg
+```
+
+---
+
+**基本写法：添加依赖**
+`poetry add <包名>`
+```python
+# 安装并写入 pyproject.toml
+# poetry add fastapi
+```
+
+---
+
+**基本写法：添加开发依赖**
+`poetry add <包名> --group dev`
+```python
+# 添加到 dev 依赖组
+# poetry add pytest --group dev
+```
+
+---
+
+**基本写法：安装全部依赖**
+`poetry install`
+```python
+# 按 pyproject.toml 安装并锁定
+# poetry install
+```
+
+---
+
+**基本写法：指定解释器创建环境**
+`poetry env use <python版本>`
+```python
+# 使用指定解释器创建虚拟环境
+# poetry env use python3.12
+```
+
+---
+
+**基本写法：运行命令**
+`poetry run <命令>`
+```python
+# 在项目环境中执行
+# poetry run python main.py
+```
+
+---
+
+**基本写法：打包构建**
+`poetry build`
+```python
+# 生成 sdist 与 wheel 包
+# poetry build
+```
+
+---
+
+**基本写法：发布到 PyPI**
+`poetry publish`
+```python
+# 发布构建产物到 PyPI
+# poetry publish
+```
+
+---
+
+## uv 极速管理
+
+**基本写法：创建虚拟环境**
+`uv venv [目录]`
+```python
+# 默认在 .venv 创建环境
+# uv venv
+```
+
+---
+
+**基本写法：指定 Python 版本**
+`uv venv --python <版本>`
+```python
+# 自动下载并使用指定版本
+# uv venv --python 3.13
+```
+
+---
+
+**基本写法：pip 兼容安装**
+`uv pip install <包名>`
+```python
+# 兼容 pip 语法但更快
+# uv pip install requests
+```
+
+---
+
+**基本写法：按需求文件安装**
+`uv pip install -r <需求文件>`
+```python
+# 批量安装依赖
+# uv pip install -r requirements.txt
+```
+
+---
+
+**基本写法：导出依赖**
+`uv pip freeze > <文件>`
+```python
+# 导出当前环境依赖
+# uv pip freeze > requirements.txt
+```
+
+---
+
+**基本写法：添加项目依赖**
+`uv add <包名>`
+```python
+# 写入 pyproject.toml 并安装
+# uv add fastapi
+```
+
+---
+
+**基本写法：移除依赖**
+`uv remove <包名>`
+```python
+# 从项目中移除
+# uv remove fastapi
+```
+
+---
+
+**基本写法：同步依赖**
+`uv sync`
+```python
+# 按锁文件精确重建环境
+# uv sync
+```
+
+---
+
+**基本写法：运行脚本**
+`uv run <脚本>`
+```python
+# 自动加载环境运行
+# uv run python main.py
+```
+
+---
+
+**基本写法：临时依赖运行**
+`uv run --with <包名> <命令>`
+```python
+# 隔离环境临时安装并执行
+# uv run --with httpx python -c "import httpx"
+```
+
+---
+
+**基本写法：初始化项目**
+`uv init <项目名>`
+```python
+# 生成标准项目结构
+# uv init myproject
+```
+
+---
+
+**基本写法：安装指定 Python**
+`uv python install <版本>`
+```python
+# 下载安装指定解释器
+# uv python install 3.13
+```
+
+---
+
+**基本写法：列出可用 Python**
+`uv python list`
+```python
+# 查看本地及可下载版本
+# uv python list
+```
+
+---

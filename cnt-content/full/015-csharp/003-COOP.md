@@ -1992,14 +1992,14 @@ foreach (var change in account.Changes)
 // 14:30:01 Status: Active -> Suspended
 ```
 
-## 习题
+## 知识讲解与要点分析（原习题）
 
 ### 基础题
 
 **习题 1**：设计一个 `Temperature` 类，支持摄氏度与华氏度相互转换，要求：
 
 - 通过属性 `Celsius` 与 `Fahrenheit` 都可读写，且相互联动
-- 实现运算符重载，支持 `t1 + t2`（结果单位与左操作数一致）
+- 要点：运算符重载，支持 `t1 + t2`（结果单位与左操作数一致）
 - 重写 `Equals` 与 `GetHashCode`，实现值相等
 - 提供隐式转换 `double celsius -> Temperature`
 
@@ -2008,8 +2008,8 @@ foreach (var change in account.Changes)
 **习题 2**：实现一个 `Stack<T>` 简化版（不使用 `System.Collections.Generic.Stack<T>`），要求：
 
 - 使用链表节点存储数据
-- 实现 `Push`、`Pop`、`Peek`、`Count`、`IsEmpty`、`Clear`
-- 实现 `IEnumerable<T>` 支持遍历
+- 要点： `Push`、`Pop`、`Peek`、`Count`、`IsEmpty`、`Clear`
+- 要点： `IEnumerable<T>` 支持遍历
 - 使用 `yield return` 实现惰性遍历
 
 **参考答案要点**：定义私有 `Node<T>` 嵌套类；`Push` 创建新节点并调整头指针；`IEnumerable<T>` 使用 `yield return` 从栈顶到栈底遍历；处理空栈时 `Pop` 抛出 `InvalidOperationException`。
@@ -2041,15 +2041,15 @@ c.M(); // 输出？
 - 提供 `Add`、`Remove`、`Insert`、`Contains`、`IndexOf`、`Count`、索引器
 - 所有"修改"操作返回新列表
 - 基于 AVL 树或单链表实现
-- 实现迭代器
+- 要点：迭代器
 
 **参考答案要点**：单链表实现简单但 `IndexOf` 为 O(n)；AVL 树实现索引访问 O(log n) 但复杂。推荐单链表：`Add` 在头部插入 O(1)，构造新节点链；`Remove` 复制到目标节点前，剩余复用；索引访问 O(n)。注意实现 `IEnumerable<T>` 与索引器。
 
 **习题 5**：实现一个 `Result<T, TError>` 类型（类似 Rust 的 Result），要求：
 
 - 隐式转换 `T -> Result<T, TError>` 与 `TError -> Result<T, TError>`
-- 实现 `Match` 方法进行模式匹配
-- 实现 `Bind`（SelectMany）支持链式组合
+- 要点： `Match` 方法进行模式匹配
+- 要点： `Bind`（SelectMany）支持链式组合
 - 提供 `Ensure` 扩展进行校验
 
 **参考答案要点**：使用抽象类 + 两个 sealed 子类 `Ok<T, TError>` 与 `Err<T, TError>`；`Match` 接受两个委托返回统一类型；`Bind` 在 Ok 时调用下一个函数，Err 时短路；`Ensure` 接受谓词与错误，失败返回 Err。
@@ -2117,9 +2117,9 @@ public class GodService
 **习题 7**：设计一个表达式树求值与简化系统，要求：
 
 - 支持 `Const`、`Add`、`Sub`、`Mul`、`Div`、`Neg`、`Var`（变量）
-- 实现 `Evaluate(Dictionary<string, double> variables)`
-- 实现 `Simplify` 进行常量折叠与代数简化（如 `x + 0 = x`、`x * 1 = x`、`2 * (3 + x) = 6 + 2x`）
-- 实现 `Derive(string variable)` 求导
+- 要点： `Evaluate(Dictionary<string, double> variables)`
+- 要点： `Simplify` 进行常量折叠与代数简化（如 `x + 0 = x`、`x * 1 = x`、`2 * (3 + x) = 6 + 2x`）
+- 要点： `Derive(string variable)` 求导
 
 **参考答案要点**：使用抽象类 `Expr` 与各子类；`Derive` 在 `Mul` 时应用乘积法则 `d(uv) = u'v + uv'`，`Div` 时应用商法则；`Simplify` 使用模式匹配递归处理子表达式后尝试合并。
 

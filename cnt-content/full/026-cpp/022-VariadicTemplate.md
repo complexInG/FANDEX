@@ -1812,7 +1812,7 @@ Folly 的实现使用变参模板 + `std::initializer_list` 类型擦除，平�
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1831,14 +1831,14 @@ int main() {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 ```
 0
 1
 6
 ```
 
-**解析**：二元右折叠 `(args + ... + 0)`，空包时返回初值 `0`。
+**解析讲解**：二元右折叠 `(args + ... + 0)`，空包时返回初值 `0`。
 
 ---
 
@@ -1856,7 +1856,7 @@ int main() {
 }
 ```
 
-**参考答案**：不合法。第二个调用 `f(1, 2)` 触发 `static_assert` 失败，编译错误。
+**解析讲解**：不合法。第二个调用 `f(1, 2)` 触发 `static_assert` 失败，编译错误。
 
 ---
 
@@ -1873,7 +1873,7 @@ void print(T first, Rest... rest) {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 template<typename... Args>
@@ -1893,7 +1893,7 @@ template<typename... Ts>
 constexpr bool all_same_v = /* ? */;
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 template<typename T, typename... Rest>
@@ -1943,7 +1943,7 @@ constexpr auto max_of(Args... args) {
 }
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```cpp
 template<typename T>
@@ -1992,7 +1992,7 @@ int main() {
 }
 ```
 
-**参考答案**：参数包 `Ts...` 不在参数列表末尾，且 `last` 无默认值。编译器无法确定 `Ts` 应匹配哪些参数。修正：
+**解析讲解**：参数包 `Ts...` 不在参数列表末尾，且 `last` 无默认值。编译器无法确定 `Ts` 应匹配哪些参数。修正：
 
 ```cpp
 // 方案1：显式指定
@@ -2012,7 +2012,7 @@ f(1, 2, 3);  // last=1, args={2,3}
 
 **思考题 1**：为什么 C++17 引入折叠表达式后，标准库中 `std::make_tuple` 的实现仍然使用递归？
 
-**参考答案**：
+**解析讲解**：
 - `std::make_tuple` 需要构造 `std::tuple<Ts...>` 对象，折叠表达式只能用于表达式求值，不能用于类型构造。
 - 折叠表达式适用于"对每个参数执行相同操作并合并结果"的场景，而 `make_tuple` 需要将所有参数作为整体传递给构造函数。
 - 标准库实现内部确实使用了折叠表达式进行某些辅助操作（如 `std::apply`），但核心构造仍需递归或直接展开。
@@ -2021,7 +2021,7 @@ f(1, 2, 3);  // last=1, args={2,3}
 
 **思考题 2**：在何种情况下，递归展开比折叠表达式更优？
 
-**参考答案**：
+**解析讲解**：
 1. **需要对不同类型参数执行不同操作**：折叠表达式要求相同的运算符，递归可以针对每个类型特化。
 2. **需要中断条件**：递归可在某次调用中提前返回，折叠表达式必须处理所有参数。
 3. **复杂的副作用顺序**：递归可以精确控制执行顺序，折叠表达式的求值顺序在某些运算符上不明确。
@@ -2031,7 +2031,7 @@ f(1, 2, 3);  // last=1, args={2,3}
 
 **思考题 3**：变参模板如何影响编译时间？有哪些优化策略？
 
-**参考答案**：
+**解析讲解**：
 - **影响**：
   - 每种参数组合生成独立的实例，编译时间随组合数线性增长。
   - 递归展开的深度影响实例化链长度。
@@ -2049,7 +2049,7 @@ f(1, 2, 3);  // last=1, args={2,3}
 
 **思考题 4**：C++26 的静态反射将如何改变变参模板的使用模式？
 
-**参考答案**：
+**解析讲解**：
 - **现状**：变参模板需要显式传递类型，无法在编译期"枚举"结构体的字段。
 - **反射后**：`^T`（反射运算符）可获取类型的元信息，包括字段列表、方法签名。
   ```cpp
@@ -2232,3 +2232,294 @@ error: template instantiation depth exceeds maximum of 900
 ---
 
 *文档版本：v2.0 | 最后更新：2026-07-21 | 维护者：fanquanpp*
+## 函数模板
+
+**基本写法：函数模板定义**
+`template<typename T> <return_type> <func>(T <param>) { ... }`
+```cpp
+// 定义通用加法函数模板
+template<typename T>
+T add(T a, T b) {
+    return a + b;
+}
+```
+
+---
+
+**调用写法：隐式实例化**
+`<func>(<arg1>, <arg2>);`
+```cpp
+// 编译器自动推导模板参数
+int result = add(10, 20);
+```
+
+---
+
+**调用写法：显式指定模板参数**
+`<func><<type>>(<args>);`
+```cpp
+// 显式指定模板参数类型
+double result = add<double>(10.5, 20.5);
+```
+
+---
+
+**多参数写法：多类型参数函数模板**
+`template<typename T1, typename T2> <return_type> <func>(T1 <a>, T2 <b>) { ... }`
+```cpp
+// 多类型参数函数模板
+template<typename T1, typename T2>
+void print(T1 a, T2 b) {
+    std::cout << a << ", " << b << std::endl;
+}
+```
+
+---
+
+**非类型写法：非类型模板参数**
+`template<int N> <return_type> <func>() { ... }`
+```cpp
+// 非类型模板参数
+template<int N>
+int get_size() {
+    return N;
+}
+```
+
+---
+
+## 类模板
+
+**基本写法：类模板定义**
+`template<typename T> class <ClassName> { ... };`
+```cpp
+// 定义栈类模板
+template<typename T>
+class Stack {
+    std::vector<T> data;
+public:
+    void push(const T& value) { data.push_back(value); }
+    T pop() { T val = data.back(); data.pop_back(); return val; }
+};
+```
+
+---
+
+**使用写法：实例化类模板**
+`<ClassName><<type>> <var_name>;`
+```cpp
+// 实例化 int 类型的栈
+Stack<int> int_stack;
+```
+
+---
+
+**多参数写法：多类型参数类模板**
+`template<typename T1, typename T2> class <ClassName> { ... };`
+```cpp
+// 多类型参数类模板
+template<typename Key, typename Value>
+class Map {
+    std::vector<std::pair<Key, Value>> data;
+};
+```
+
+---
+
+**非类型写法：非类型参数类模板**
+`template<int N> class <ClassName> { ... };`
+```cpp
+// 非类型参数类模板
+template<int N>
+class Array {
+    T data[N];
+};
+```
+
+---
+
+**默认参数写法：模板默认参数**
+`template<typename T = int> class <ClassName> { ... };`
+```cpp
+// 模板默认参数
+template<typename T = int>
+class Container {
+    T value;
+};
+```
+
+---
+
+## 模板特化
+
+**全特化写法：完全特化**
+`template<> class <ClassName><<type>> { ... };`
+```cpp
+// 对 int 类型完全特化
+template<>
+class Stack<int> {
+    int data[100];
+};
+```
+
+---
+
+**偏特化写法：部分特化**
+`template<typename T> class <ClassName><T*> { ... };`
+```cpp
+// 对指针类型部分特化
+template<typename T>
+class Stack<T*> {
+    std::vector<T*> data;
+};
+```
+
+---
+
+**函数特化写法：函数模板全特化**
+`template<> <return_type> <func><<type>>(<type> <param>) { ... }`
+```cpp
+// 对 const char* 类型特化
+template<>
+std::string add(const char* a, const char* b) {
+    return std::string(a) + std::string(b);
+}
+```
+
+---
+
+## 变长参数模板
+
+**基本写法：变长参数模板**
+`template<typename... Args> <return_type> <func>(Args... <args>) { ... }`
+```cpp
+// 变长参数模板
+template<typename... Args>
+void print(Args... args) {
+    // 使用折叠表达式展开参数包
+}
+```
+
+---
+
+**sizeof 写法：获取参数包大小**
+`sizeof...(args)`
+```cpp
+// 获取参数包中的参数个数
+template<typename... Args>
+void count_args(Args... args) {
+    std::cout << sizeof...(args) << std::endl;
+}
+```
+
+---
+
+**折叠写法：C++17 折叠表达式**
+`(... <op> <args>)`
+```cpp
+// 使用折叠表达式求和
+template<typename... Args>
+auto sum(Args... args) {
+    return (... + args);
+}
+```
+
+---
+
+## 模板元编程
+
+**编译期计算写法：模板递归**
+`template<int N> struct <Factorial> { static const int value = N * <Factorial><N-1>::value; };`
+```cpp
+// 编译期计算阶乘
+template<int N>
+struct Factorial {
+    static const int value = N * Factorial<N - 1>::value;
+};
+
+template<>
+struct Factorial<0> {
+    static const int value = 1;
+};
+```
+
+---
+
+**类型萃取写法：使用 type_traits**
+`std::is_integral<<type>>::value`
+```cpp
+#include <type_traits>
+// 检查类型是否为整数
+bool is_int = std::is_integral<int>::value;
+```
+
+---
+
+## SFINAE
+
+**enable_if 写法：启用/禁用函数模板**
+`template<typename T, typename = std::enable_if_t<<condition>>>`
+```cpp
+#include <type_traits>
+// 仅当 T 为整数类型时启用
+template<typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
+void process(T value) {
+    std::cout << value << std::endl;
+}
+```
+
+---
+
+## if constexpr
+
+**基本写法：编译期条件判断**
+`if constexpr (<condition>) { ... } else { ... }`
+```cpp
+// 编译期条件判断
+template<typename T>
+void process(T value) {
+    if constexpr (std::is_integral_v<T>) {
+        std::cout << "Integer: " << value << std::endl;
+    } else {
+        std::cout << "Other: " << value << std::endl;
+    }
+}
+```
+
+---
+
+## 概念与约束（C++20）
+
+**基本写法：定义概念**
+`template<typename T> concept <ConceptName> = <condition>;`
+```cpp
+#include <concepts>
+// 定义概念
+template<typename T>
+concept Numeric = std::is_integral_v<T> || std::is_floating_point_v<T>;
+```
+
+---
+
+**约束写法：使用概念约束模板**
+`template<Numeric T> <return_type> <func>(T <param>) { ... }`
+```cpp
+// 使用概念约束模板参数
+template<Numeric T>
+T add(T a, T b) {
+    return a + b;
+}
+```
+
+---
+
+**requires 写法：使用 requires 子句**
+`template<typename T> requires <Concept> <return_type> <func>(T <param>) { ... }`
+```cpp
+// 使用 requires 子句
+template<typename T>
+requires std::integral<T>
+T add(T a, T b) {
+    return a + b;
+}
+```

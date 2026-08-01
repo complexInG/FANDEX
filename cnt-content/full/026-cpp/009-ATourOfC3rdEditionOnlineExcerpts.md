@@ -3498,42 +3498,33 @@ extern template class TemplateHeavy<double>;
 
 ## 第 15 章 习题与解答
 
-### 15.1 填空题
+### 填空题知识点讲解
 
 **习题 1（ex-tmp-fb-01）**：C++ 模板元编程最早由 ____ 在 1994 年用模板编译期计算素数的程序无意中发现。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：Erwin Unruh
+**解析讲解**：Erwin Unruh
 
-**解析**：Erwin Unruh 时为 Siemens 程序员，在 1994 年 C++ 委员会会议上演示了该程序，虽未在运行时输出，但编译器错误信息中包含素数序列，首次证明 C++ 模板系统图灵完备。Todd Veldhuizen 随后在 1995 年的 Expression Templates 论文中系统化 TMP 概念。
+**解析讲解**：Erwin Unruh 时为 Siemens 程序员，在 1994 年 C++ 委员会会议上演示了该程序，虽未在运行时输出，但编译器错误信息中包含素数序列，首次证明 C++ 模板系统图灵完备。Todd Veldhuizen 随后在 1995 年的 Expression Templates 论文中系统化 TMP 概念。
 
-</details>
 
 **习题 2（ex-tmp-fb-02）**：SFINAE 是首字母缩写，全称为 ____；其核心语义是「模板参数替换时的格式错误不立即报错，而是将候选从重载集中 ____」。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：Substitution Failure Is Not An Error；移除（剔除）
+**解析讲解**：Substitution Failure Is Not An Error；移除（剔除）
 
-**解析**：SFINAE 由 [temp.deduct] 规定：在模板参数推导期间，若在立即上下文（immediate context）中发生替换失败（如无法形成有效类型），不产生编译错误，而是将该候选函数/特化从重载集中移除。注意「立即上下文」是关键限定——非立即上下文中的错误仍是硬错误。
+**解析讲解**：SFINAE 由 [temp.deduct] 规定：在模板参数推导期间，若在立即上下文（immediate context）中发生替换失败（如无法形成有效类型），不产生编译错误，而是将该候选函数/特化从重载集中移除。注意「立即上下文」是关键限定——非立即上下文中的错误仍是硬错误。
 
-</details>
 
 **习题 3（ex-tmp-fb-03）**：C++20 Concepts 的包含关系（subsumption）：若 C1 ⊢ C2（C1 蕴含 C2），则称 C1 ____ C2；在重载解析中，更 ____ 的概念（即 C1）会被优先选择。
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：refines；constrained（更受约束的）
+**解析讲解**：refines；constrained（更受约束的）
 
-**解析**：C++20 Concepts 的 subsumption 规则：若 C1 的约束合取范式蕴含 C2，则 C1 比 C2 更受约束（more constrained），重载时优先选择 C1。这是 Concepts 实现部分排序与精细重载的形式化基础。
+**解析讲解**：C++20 Concepts 的 subsumption 规则：若 C1 的约束合取范式蕴含 C2，则 C1 比 C2 更受约束（more constrained），重载时优先选择 C1。这是 Concepts 实现部分排序与精细重载的形式化基础。
 
-</details>
 
-### 15.2 选择题
+### 选择题知识点讲解
 
 **习题 4（ex-tmp-ch-01）**：关于 C++ 模板元编程的图灵完备性，下列哪项正确？
 
@@ -3542,14 +3533,11 @@ extern template class TemplateHeavy<double>;
 - C. C++20 Concepts 之前，模板不能表达循环，因此并非图灵完备
 - D. constexpr 函数的引入使模板失去图灵完备性的价值
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Todd Veldhuizen 在 2003 年正式证明 C++ 模板图灵完备（参见《C++ Templates are Turing Complete》）。模板可通过特化模拟模式匹配、通过递归实例化模拟递归、通过类型/枚举模拟状态，等价于无界 λ 演算。但编译器对递归深度（如 -ftemplate-depth=900）与编译时间有实际限制。constexpr 与模板是互补而非替代关系。
+**解析讲解**：Todd Veldhuizen 在 2003 年正式证明 C++ 模板图灵完备（参见《C++ Templates are Turing Complete》）。模板可通过特化模拟模式匹配、通过递归实例化模拟递归、通过类型/枚举模拟状态，等价于无界 λ 演算。但编译器对递归深度（如 -ftemplate-depth=900）与编译时间有实际限制。constexpr 与模板是互补而非替代关系。
 
-</details>
 
 **习题 5（ex-tmp-ch-02）**：以下 C++17 代码的输出是什么？
 
@@ -3575,14 +3563,11 @@ int main() {
 - C. 编译错误：f 重载歧义
 - D. 编译错误：第二个 f 的 SFINAE 失败
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：f(42) 实参为 int，is_integral_v<int> 为 true，第一个 f 的 enable_if_t<true, int> = int 有效，第二个 f 的 enable_if_t<!true,...> 替换失败被 SFINAE 剔除，选择第一个返回 1。f(3.14) 实参为 double，is_integral_v<double> 为 false，第一个 f 被剔除，第二个 f 有效返回 2。输出 12。这是 SFINAE 实现条件重载的经典范式，注意 enable_if_t 作用于返回类型时，替换失败发生在「立即上下文」中，故被 SFINAE 静默处理而非硬错误。
+**解析讲解**：f(42) 实参为 int，is_integral_v<int> 为 true，第一个 f 的 enable_if_t<true, int> = int 有效，第二个 f 的 enable_if_t<!true,...> 替换失败被 SFINAE 剔除，选择第一个返回 1。f(3.14) 实参为 double，is_integral_v<double> 为 false，第一个 f 被剔除，第二个 f 有效返回 2。输出 12。这是 SFINAE 实现条件重载的经典范式，注意 enable_if_t 作用于返回类型时，替换失败发生在「立即上下文」中，故被 SFINAE 静默处理而非硬错误。
 
-</details>
 
 **习题 6（ex-tmp-ch-03）**：关于 C++20 Concepts 与 SFINAE 的对比，下列哪项**错误**？
 
@@ -3591,14 +3576,11 @@ int main() {
 - C. Concepts 不能与可变参数模板、auto 占位符组合使用
 - D. Concepts 的约束检查在重载解析前完成，避免 SFINAE 的「立即上下文」局限
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：C 项错误。C++20 Concepts 可与可变参数模板（`template<typename... Ts> requires (Convertible<Ts> && ...)`）、auto 占位符（`void f(std::integral auto x)`）、缩写模板（`template<Addable T>`）等组合。A、B、D 均为 Concepts 相对于 SFINAE 的真实优势：错误诊断精确到原子约束、subsumption 提供部分排序、约束原子化检查避免「立即上下文」硬错误。Concepts 的约束在模板参数推导后、重载解析前进行，且不限于「立即上下文」，这是其诊断能力优于 SFINAE 的根本原因。
+**解析讲解**：C 项错误。C++20 Concepts 可与可变参数模板（`template<typename... Ts> requires (Convertible<Ts> && ...)`）、auto 占位符（`void f(std::integral auto x)`）、缩写模板（`template<Addable T>`）等组合。A、B、D 均为 Concepts 相对于 SFINAE 的真实优势：错误诊断精确到原子约束、subsumption 提供部分排序、约束原子化检查避免「立即上下文」硬错误。Concepts 的约束在模板参数推导后、重载解析前进行，且不限于「立即上下文」，这是其诊断能力优于 SFINAE 的根本原因。
 
-</details>
 
 ### 15.3 代码修正题
 
@@ -3616,10 +3598,8 @@ static_assert(has_value_type<std::vector<int>>::value);
 static_assert(!has_value_type<int>::value);
 ```
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：将特化的第二个模板参数从 `decltype(T::value_type)` 改为 `std::void_t<typename T::value_type>`。
+**解析讲解**：将特化的第二个模板参数从 `decltype(T::value_type)` 改为 `std::void_t<typename T::value_type>`。
 
 **修正代码**：
 
@@ -3640,9 +3620,8 @@ static_assert(!has_value_type<int>::value);
 
 **错误原因**：`decltype(T::value_type)` 在 T 无 value_type 时为硬错误（不在 SFINAE 立即上下文中），导致编译失败而非特化失败。`std::void_t` 将替换失败纳入 SFINAE 上下文，使特化在 `T::value_type` 不存在时被静默剔除而非报错。
 
-**解析**：`std::void_t` 由 Walter Brown 在 N3911（2014）提出，是 C++17 标准化的「SFINAE 友好」工具。其魔法在于：当 `typename T::value_type` 替换失败时，由于 void_t 是别名模板（alias template），其替换发生在 SFINAE 立即上下文中，故失败被静默处理。直接使用 `decltype` 或 `typename T::value_type` 在主模板参数位置可能构成硬错误。这是 detection idiom 的核心机制。
+**解析讲解**：`std::void_t` 由 Walter Brown 在 N3911（2014）提出，是 C++17 标准化的「SFINAE 友好」工具。其魔法在于：当 `typename T::value_type` 替换失败时，由于 void_t 是别名模板（alias template），其替换发生在 SFINAE 立即上下文中，故失败被静默处理。直接使用 `decltype` 或 `typename T::value_type` 在主模板参数位置可能构成硬错误。这是 detection idiom 的核心机制。
 
-</details>
 
 **习题 8（ex-tmp-cf-02）**：以下 CRTP 代码试图在基类中调用派生类的方法，但编译错误。请指出并修正：
 
@@ -3664,10 +3643,8 @@ int main() {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
-**答案**：问题在于 `Concrete::impl` 在 `Base<Concrete>::doSomething` 实例化时声明不可见（基类模板实例化发生在派生类定义完成前）。修正方案：在派生类中先声明 `impl` 再使用，或用 C++20 requires 约束延迟实例化。
+**解析讲解**：问题在于 `Concrete::impl` 在 `Base<Concrete>::doSomething` 实例化时声明不可见（基类模板实例化发生在派生类定义完成前）。修正方案：在派生类中先声明 `impl` 再使用，或用 C++20 requires 约束延迟实例化。
 
 **修正代码**：
 
@@ -3709,9 +3686,8 @@ struct Base2 {
 
 **错误原因**：CRTP 中基类模板成员函数在派生类未完整定义前不可见。基类实例化发生在派生类定义内嵌套上下文中，此时派生类成员尚未声明。
 
-**解析**：CRTP 是「静态多态」核心范式，但存在「定义顺序悖论」：基类需要派生类完整定义，派生类又继承自基类。C++17 constexpr if 与 C++20 requires 可延迟成员函数实例化，部分缓解此问题。工程实践中常用「声明在前 + 实现在外」或「friend 注入」模式绕过。
+**解析讲解**：CRTP 是「静态多态」核心范式，但存在「定义顺序悖论」：基类需要派生类完整定义，派生类又继承自基类。C++17 constexpr if 与 C++20 requires 可延迟成员函数实例化，部分缓解此问题。工程实践中常用「声明在前 + 实现在外」或「friend 注入」模式绕过。
 
-</details>
 
 ### 15.4 开放性问题
 
@@ -3725,8 +3701,6 @@ struct Base2 {
 
 要求给出完整可编译代码与不少于 300 字的设计分析。
 
-<details>
-<summary>参考答案</summary>
 
 **参考实现**：
 
@@ -3805,7 +3779,6 @@ int main() {
 
 可扩展性优势：新增节点类型（如 `UnaryExpr`、`ScalarMul`）只需继承 `VecExpr` 并实现 `operator[]` 与 `size()`，无需修改 `operator+`。Concepts 约束确保操作数类型安全，编译器报错时能精确指出哪个原子约束未满足，远优于 SFINAE 时代的「no matching function」。Eigen、Blaze、Armadillo 等数值库均采用此技术，是现代 C++ 高性能科学计算库的基石。
 
-</details>
 
 **习题 10（ex-tmp-oe-02）**：评论以下论述并给出你的判断：「C++20 Concepts 完全取代了 SFINAE，新代码不应再使用 `std::enable_if` 与 `void_t`。」
 
@@ -3815,8 +3788,6 @@ int main() {
 2. 给出至少 2 个 Concepts 当前无法替代 SFINAE 的具体场景；
 3. 给出你的最终建议（200 字以上）。
 
-<details>
-<summary>参考答案</summary>
 
 **判断**：该论述过于绝对。Concepts 在绝大多数场景优于 SFINAE，但仍存在 SFINAE 不可替代的边缘场景。
 
@@ -3838,7 +3809,6 @@ int main() {
 
 **最终建议**：新代码优先使用 Concepts，享受其诊断与 subsumption 优势；仅在 Concepts 不便表达（如纯 detection idiom）或需兼容 C++17 时使用 `void_t`/`enable_if`。避免在同一接口中混用两者，以免造成可读性与诊断一致性下降。Concepts 与 SFINAE 在 C++20+ 中将长期共存，务实选择优于教条排斥。
 
-</details>
 
 **习题 11（ex-tmp-oe-03）**：用 C++20 Concepts 设计一个「可序列化」类型系统，要求：
 
@@ -3850,8 +3820,6 @@ int main() {
 
 要求完整可编译代码与不少于 250 字的分析。
 
-<details>
-<summary>参考答案</summary>
 
 **参考实现**：
 
@@ -3928,7 +3896,6 @@ Concepts 的错误诊断优势源于其约束的「原子化」。当 `save(Some
 
 此外，Concepts 的 subsumption 使重载层级清晰：`save<T>` 对 `JsonSerializable` 的重载比 `Serializable` 更受约束，编译器自动选择前者。SFINAE 实现此层级需手动编排 `enable_if` 优先级，易出错且诊断更差。Concepts 的 atomic constraint normalization 还允许编译器缓存约束检查结果，在大型代码库中编译速度通常更优。这是 Concepts 相对 SFINAE 的核心工程价值：将「类型约束」从隐式元编程技巧提升为显式、可诊断、可组合的语言级抽象。
 
-</details>
 
 ## 第 16 章 参考文献
 
@@ -4026,9 +3993,3 @@ Concepts 的错误诊断优势源于其约束的「原子化」。当 `save(Some
 
 ---
 
-## 更新日志
-
-| 版本   | 日期       | 变更说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| v1.0.0 | 2026-06-14 | 初始版本，覆盖模板基础语法与简单示例                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| v2.0.0 | 2026-07-18 | 升级至论文级专业度：新增历史动机（Cfront 1989→C++23 演进）、形式化定义（图灵完备性、类型代数）、理论推导（实例化复杂度 O(d²)、递归深度限制）、SFINAE/void_t/Concepts 深度对比、可变参数模板与折叠表达式、CRTP/Expression Templates/Policy-Based Design/Type Erasure 工程范式、Eigen/Boost.MPL/fmt/std::ranges 案例研究、与 Rust/Java/Haskell/Zig/D 对比分析、18 条 ACM 格式参考文献、9 条词源条目、11 道习题（填空/选择/代码修正/开放性）、9 个 Mermaid 图、9 个 KaTeX 公式块、62+ 可编译 C++ 代码示例；总行数 3700+，预估阅读时长 115 分钟 |

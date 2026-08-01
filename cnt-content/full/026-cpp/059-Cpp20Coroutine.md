@@ -385,6 +385,11 @@ exercises:
     difficulty: 5
     explanation: '本题为创造性设计题，需综合运用 Promise 接口、Awaiter 协议、stop_token 取消机制、Executor 抽象与 P2300 Senders/Receivers 互操作。关键点是 await_transform 的双重重载（Progress + inner Task）、取消传播的递归语义、异常安全的 exception_ptr 存储，以及与 P2300 双向适配的形式化定义。'
 ---
+# C++20 协程
+
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 第 1 章 学习目标与导论
 
@@ -3613,33 +3618,33 @@ int main() {
 
 ## 第 11 章 习题与解答
 
-### 11.1 填空题
+### 填空题知识点讲解
 
 #### ex-co-fb-01（基础）
 
 C++20 协程的三个关键字是 ****、****、____。
 
-**答案**：`co_await`、`co_yield`、`co_return`
+**解析讲解**：`co_await`、`co_yield`、`co_return`
 
-**解析**：C++20 引入三个协程关键字：co_await（挂起并等待 awaitable）、co_yield（挂起并产出值，等价于 `co_await promise.yield_value(expr)`）、co_return（结束协程并派发到 promise.return_value/return_void）。任一关键字出现即触发编译器的协程变换。详见 [dcl.fct.def.coroutine]。
+**解析讲解**：C++20 引入三个协程关键字：co_await（挂起并等待 awaitable）、co_yield（挂起并产出值，等价于 `co_await promise.yield_value(expr)`）、co_return（结束协程并派发到 promise.return_value/return_void）。任一关键字出现即触发编译器的协程变换。详见 [dcl.fct.def.coroutine]。
 
 #### ex-co-fb-02（理解）
 
 C++20 协程的 Promise 必须提供的最小接口集包括 get_return_object、****、****、unhandled_exception 以及 return_void 或 ____。
 
-**答案**：`initial_suspend`、`final_suspend`、`return_value`
+**解析讲解**：`initial_suspend`、`final_suspend`、`return_value`
 
-**解析**：按 [dcl.fct.def.coroutine] 规定，promise_type 必须提供 get_return_object、initial_suspend、final_suspend、unhandled_exception 以及（return_void 或 return_value）共 5 个核心接口。initial_suspend 控制协程是否立即执行，final_suspend 控制协程结束后是否挂起等待销毁。
+**解析讲解**：按 [dcl.fct.def.coroutine] 规定，promise_type 必须提供 get_return_object、initial_suspend、final_suspend、unhandled_exception 以及（return_void 或 return_value）共 5 个核心接口。initial_suspend 控制协程是否立即执行，final_suspend 控制协程结束后是否挂起等待销毁。
 
 #### ex-co-fb-03（应用）
 
 在 awaiter 的 await_suspend 中返回 `std::coroutine_handle<void>` 类型可实现 ____ 转移，编译器保证不增加调用栈深度；这是避免递归协程栈溢出的核心机制。
 
-**答案**：对称（symmetric）
+**解析讲解**：对称（symmetric）
 
-**解析**：当 await_suspend 返回 coroutine_handle 时编译器执行「对称转移」：当前协程挂起后立即恢复目标协程，无中间调用者介入，调用栈深度不变。Lewis Baker 在 CppCon 2017 演讲中详细论证这是「尾调用优化」的协程版变体，可保证 O(1) 栈空间。
+**解析讲解**：当 await_suspend 返回 coroutine_handle 时编译器执行「对称转移」：当前协程挂起后立即恢复目标协程，无中间调用者介入，调用栈深度不变。Lewis Baker 在 CppCon 2017 演讲中详细论证这是「尾调用优化」的协程版变体，可保证 O(1) 栈空间。
 
-### 11.2 选择题
+### 选择题知识点讲解
 
 #### ex-co-ch-01（理解）
 
@@ -3650,9 +3655,9 @@ B. C++20 协程是无栈协程（stackless coroutine），状态保存在堆分�
 C. C++20 协程必须运行在专用线程上
 D. C++20 协程的恢复（resume）必须由编译器自动调度
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：C++20 协程是无栈协程（stackless coroutine），其局部变量与挂起点状态保存在堆分配的协程帧（coroutine frame）中，恢复时无需切换栈。这与 Go goroutine、Boost.Context、Windows Fiber 等有栈协程形成对比，开销更低但无法在任意栈深度挂起。
+**解析讲解**：C++20 协程是无栈协程（stackless coroutine），其局部变量与挂起点状态保存在堆分配的协程帧（coroutine frame）中，恢复时无需切换栈。这与 Go goroutine、Boost.Context、Windows Fiber 等有栈协程形成对比，开销更低但无法在任意栈深度挂起。
 
 #### ex-co-ch-02（分析）
 
@@ -3671,9 +3676,9 @@ B. 协程帧在堆上分配，x 被保存到协程帧中，挂起后仍可访问
 C. 编译错误，co_await 不能与局部变量共存
 D. 程序运行时崩溃
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：协程帧默认堆分配，所有跨挂点存活的局部变量（如 `x`）被编译器提升到协程帧结构体中。即使函数返回后栈帧销毁，协程帧仍存活，恢复时仍可访问 `x`。这是 stackless 协程的核心机制，但也是 use-after-free 陷阱的根源——若协程帧提前被销毁则访问悬挂。HALO（Heap Allocation eLision Optimization）优化在生命周期严格嵌套时可省略堆分配，但默认行为仍是堆分配。
+**解析讲解**：协程帧默认堆分配，所有跨挂点存活的局部变量（如 `x`）被编译器提升到协程帧结构体中。即使函数返回后栈帧销毁，协程帧仍存活，恢复时仍可访问 `x`。这是 stackless 协程的核心机制，但也是 use-after-free 陷阱的根源——若协程帧提前被销毁则访问悬挂。HALO（Heap Allocation eLision Optimization）优化在生命周期严格嵌套时可省略堆分配，但默认行为仍是堆分配。
 
 #### ex-co-ch-03（评估）
 
@@ -3684,9 +3689,9 @@ B. 否则 `coroutine_handle::done()` 在协程结束后不可靠
 C. 否则编译器报错
 D. 这是性能优化的考虑，与语义无关
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：若 `final_suspend` 返回 `suspend_never`，协程帧在结束时立即销毁，此后调用 `handle.done()` 会访问已释放内存（use-after-free）。返回 `suspend_always` 使协程帧在最终挂点保持存活，外部可安全查询 `done()`，再通过 `handle.destroy()` 显式释放。这是 Lewis Baker 提出的「RAII 协程」基本准则。注意：`final_suspend` 必须是 noexcept 的 awaitable，且不允许抛出异常或调用 `co_await` 等挂起点表达式。
+**解析讲解**：若 `final_suspend` 返回 `suspend_never`，协程帧在结束时立即销毁，此后调用 `handle.done()` 会访问已释放内存（use-after-free）。返回 `suspend_always` 使协程帧在最终挂点保持存活，外部可安全查询 `done()`，再通过 `handle.destroy()` 显式释放。这是 Lewis Baker 提出的「RAII 协程」基本准则。注意：`final_suspend` 必须是 noexcept 的 awaitable，且不允许抛出异常或调用 `co_await` 等挂起点表达式。
 
 ### 11.3 代码修正题
 
@@ -3725,7 +3730,7 @@ Task<std::string> get_name() {
 
 **缺陷描述**：原代码假设 `co_return local` 后字符串仍可访问，但若 `Task` 的 promise 按引用存储返回值，则 `local` 在协程帧销毁后析构，调用者 `await_resume` 读取悬挂引用。
 
-**解析**：协程的返回值若为引用类型或按引用存储，则协程帧销毁后调用者访问为 UB。形式化约束：`return_value(T)` 必须按值或移动将结果存入 promise，`await_resume()` 必须按值或右值返回。C++23 `std::generator` 在 P2502 中专门规定「reference 与 yielded value 的生命周期约束」正是为防范此类问题。
+**解析讲解**：协程的返回值若为引用类型或按引用存储，则协程帧销毁后调用者访问为 UB。形式化约束：`return_value(T)` 必须按值或移动将结果存入 promise，`await_resume()` 必须按值或右值返回。C++23 `std::generator` 在 P2502 中专门规定「reference 与 yielded value 的生命周期约束」正是为防范此类问题。
 
 #### ex-co-cf-02（评估）
 
@@ -3759,7 +3764,7 @@ struct SymmetricTransfer {
 
 **缺陷描述**：原实现中 `await_suspend` 返回 `void`，编译器在挂起外层后立即恢复外层，外层再恢复内层，调用链 O(n) 栈深度。
 
-**解析**：对称转移（symmetric transfer）由 Lewis Baker 在 P0187R1 与 CppCon 2017 演讲中提出。形式化语义：当 `await_suspend` 返回 `coroutine_handle<H>` 时，编译器生成的代码等价于「suspend current; resume H;」的尾调用，调用栈深度不变。这是 C++20 协程实现 O(1) 空间递归的关键。GCC 10、Clang 12、MSVC 19.28+ 均已实现该优化。
+**解析讲解**：对称转移（symmetric transfer）由 Lewis Baker 在 P0187R1 与 CppCon 2017 演讲中提出。形式化语义：当 `await_suspend` 返回 `coroutine_handle<H>` 时，编译器生成的代码等价于「suspend current; resume H;」的尾调用，调用栈深度不变。这是 C++20 协程实现 O(1) 空间递归的关键。GCC 10、Clang 12、MSVC 19.28+ 均已实现该优化。
 
 ### 11.4 开放性问题
 
@@ -4092,57 +4097,196 @@ P2300 互操作方案：实现 `sender_of<T>` 概念与 `await_transform(sender)
 
 ---
 
-## 更新日志
+## 协程关键字
 
-### 2026-07-18 v2.0.0 — 论文级专业度升级
-
-**重大变更**：
-
-- 全文重写至论文级专业度，对齐国外顶尖高校教材水平（MIT 6.S081 / Stanford CS110 / CMU 15-445 等）
-- 新增 frontmatter 字段：`learningObjectives`（7 条 Bloom 目标）、`references`（15 条 ACM 格式）、`etymology`（8 条词源）、`exercises`（10 题覆盖四类题型）、`estimatedReadingTime`、`lastReviewed`、`reviewer`
-- 文档行数从原 ~1200 行扩展至 ~3950 行
-
-**新增章节**：
-
-- 第 1 章 学习目标与导论（Bloom 分类法、阅读建议）
-- 第 2 章 历史动机与演进（1958 Conway → Simula 67 → Python → JavaScript → N3762 → P0912R5 → C++20 → P2502R2 → P2300）
-- 第 3 章 形式化定义（状态机模型、continuation、CPS 变换、Promise/Awaitable/Awaiter 三元模型）
-- 第 4 章 理论推导与编译器变换（co_await 展开、HALO、对称 vs 非对称协程、HALO 数学论证）
-- 第 5 章 C++20 协程机制详解（coroutine_handle、promise_type、await_transform、operator co_await 重载）
-- 第 6 章 co_await / co_yield / co_return 详解（三步法协议、yield 等价变换、return 派发逻辑）
-- 第 7 章 对比分析（C++ vs Python / JavaScript / Rust / Go / C# / Java 六语言）
-- 第 8 章 常见陷阱（悬挂引用、UAF、HALO 失效、Executor 选择、co_await 与 co_return 混淆等 7 项）
-- 第 9 章 工程实践（Task、Generator、SyncWait、WhenAll、线程池集成、stop_token 取消）
-- 第 10 章 案例研究（cppcoro、folly::coro、Boost.Asio、P2300、异步 TCP 服务器）
-- 第 11 章 习题与解答（10 题：fill-blank 3 + choice 3 + code-fix 2 + open-ended 2）
-- 第 12 章 参考文献（15 条 ACM 格式）
-- 第 13 章 延伸阅读（关联 9 个模块 + 3 条阅读路径）
-
-**质量基准达成情况**：
-
-- [x] frontmatter 含 `learningObjectives`（7 条 Bloom 目标）
-- [x] 历史动机章节（含 Conway 1958 → C++23 → C++26 完整演进）
-- [x] 形式化定义章节（含 CPS 变换、三元模型）
-- [x] 理论推导章节（含 HALO、对称转移、状态机生成）
-- [x] 代码示例可运行（C++20+，含编译/运行结果注释）
-- [x] 对比分析章节（6 语言对比）
-- [x] 常见陷阱章节（7 项陷阱）
-- [x] 工程实践章节（Task/Generator/SyncWait/WhenAll/Senders）
-- [x] 案例研究章节（5 项案例）
-- [x] 习题与解答章节（10 题）
-- [x] 参考文献章节（15 条 ACM 格式）
-- [x] 延伸阅读章节（关联 9 个模块）
-
-**内容指标**：
-
-- C++20 代码示例：65+ 个（可编译运行）
-- Mermaid 图：6 个（协程状态机、调用栈对比、Promise 接口、对称转移、Senders/Receivers、生命周期）
-- KaTeX 块级公式：6 个（CPS 变换、HALO 条件、栈深度分析、调度开销、引用计数、组合子代数）
-- 词源标注：8 条（coroutine、suspend、resume、continuation、promise、awaitable、awaiter、HALO）
-
-**审阅人**：FANDEX Content Engineering
-**最后审阅日期**：2026-07-18
+**基本写法：暂停等待异步操作**
+`co_await <表达式>;`
+```cpp
+// 暂停协程直到异步操作完成
+co_await std::suspend_always{};
+```
 
 ---
 
-> 本文档遵循 FANDEX Content Engineering 论文级质量标准。如发现错误或建议改进，请提交 issue 至 FANDEX-Web 仓库。本文档内容遵循 CC BY-SA 4.0 协议。
+**基本写法：产出值并暂停**
+`co_yield <表达式>;`
+```cpp
+// 产出当前值后暂停执行
+co_yield 42;
+```
+
+---
+
+**基本写法：结束协程并返回值**
+`co_return <表达式>;`
+```cpp
+// 结束协程并返回最终值
+co_return 100;
+```
+
+---
+
+## Promise 类型
+
+**基本写法：定义 promise_type**
+`struct promise_type { <方法> };`
+```cpp
+// 协程控制中枢必须实现的接口
+struct promise_type {
+    Task get_return_object();
+    std::suspend_never initial_suspend() noexcept;
+    std::suspend_never final_suspend() noexcept;
+    void return_void();
+    void unhandled_exception();
+};
+```
+
+---
+
+**基本写法：初始与最终挂起策略**
+`<返回类型> initial_suspend();`
+```cpp
+// 协程开始时立即挂起
+std::suspend_always initial_suspend() noexcept { return {}; }
+```
+
+---
+
+**基本写法：处理返回值**
+`void return_value(<类型> <值>);`
+```cpp
+// 接收 co_return 的值
+void return_value(int v) { result = v; }
+```
+
+---
+
+**基本写法：处理 yield 值**
+`std::suspend_always yield_value(<类型> <值>);`
+```cpp
+// 接收 co_yield 产出的值
+std::suspend_always yield_value(int v) {
+    current = v;
+    return {};
+}
+```
+
+---
+
+**基本写法：异常处理**
+`void unhandled_exception();`
+```cpp
+// 捕获协程内部未处理异常
+void unhandled_exception() { std::terminate(); }
+```
+
+---
+
+## 协程句柄
+
+**基本写法：从 promise 获取句柄**
+`std::coroutine_handle<<promise类型>>::from_promise(<promise>);`
+```cpp
+// 通过 promise 对象构造协程句柄
+auto h = std::coroutine_handle<promise_type>::from_promise(p);
+```
+
+---
+
+**基本写法：恢复执行**
+`<handle>.resume();`
+```cpp
+// 恢复挂起的协程
+h.resume();
+```
+
+---
+
+**基本写法：判断是否完成**
+`<handle>.done();`
+```cpp
+// 检查协程是否已执行完毕
+bool finished = h.done();
+```
+
+---
+
+**基本写法：销毁协程帧**
+`<handle>.destroy();`
+```cpp
+// 手动销毁协程状态释放资源
+h.destroy();
+```
+
+---
+
+## Awaitable 接口
+
+**基本写法：自定义 awaitable**
+`struct <名称> { bool await_ready(); void await_suspend(<handle>); <类型> await_resume(); };`
+```cpp
+// 实现三个方法构成可等待对象
+struct MyAwaiter {
+    bool await_ready() { return false; }
+    void await_suspend(std::coroutine_handle<> h) { h.resume(); }
+    int await_resume() { return 42; }
+};
+```
+
+---
+
+## 内置挂起器
+
+**基本写法：总是挂起**
+`std::suspend_always{}`
+```cpp
+// 总是暂停协程的 awaitable
+co_await std::suspend_always{};
+```
+
+---
+
+**基本写法：从不挂起**
+`std::suspend_never{}`
+```cpp
+// 从不暂停协程的 awaitable
+co_await std::suspend_never{};
+```
+
+---
+
+## 生成器示例
+
+**基本写法：协程生成器返回类型**
+`struct <名称> { struct promise_type { ... }; };`
+```cpp
+// 简易生成器框架
+struct Generator {
+    struct promise_type {
+        int current;
+        Generator get_return_object() {
+            return Generator{std::coroutine_handle<promise_type>::from_promise(*this)};
+        }
+        std::suspend_always initial_suspend() { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        std::suspend_always yield_value(int v) { current = v; return {}; }
+        void return_void() {}
+        void unhandled_exception() { std::terminate(); }
+    };
+    std::coroutine_handle<promise_type> h;
+};
+```
+
+---
+
+**基本写法：使用生成器产出序列**
+`Generator <函数名>() { while (...) co_yield <值>; }`
+```cpp
+// 产出自然数序列的协程
+Generator counter() {
+    int i = 0;
+    while (true) {
+        co_yield i++;
+    }
+}
+```

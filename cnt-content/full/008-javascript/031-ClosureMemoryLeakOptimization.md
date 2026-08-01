@@ -133,13 +133,19 @@ $$
 
 根据 ECMAScript 规范，环境记录（Environment Record）是抽象类型，其层级结构为：
 
-```
-EnvironmentRecord (抽象基类)
-  ├── DeclarativeEnvironmentRecord
-  │     ├── FunctionEnvironmentRecord
-  │     └── ModuleEnvironmentRecord
-  ├── ObjectEnvironmentRecord
-  └── GlobalEnvironmentRecord
+```mermaid
+flowchart TD
+    T0["EnvironmentRecord (抽象基类)"]
+    T1["DeclarativeEnvironmentRecord"]
+    T2["FunctionEnvironmentRecord"]
+    T3["ModuleEnvironmentRecord"]
+    T4["ObjectEnvironmentRecord"]
+    T5["GlobalEnvironmentRecord"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T3 --> T5
 ```
 
 闭包所捕获的 `[[Environment]]` 内部槽指向一个 `DeclarativeEnvironmentRecord` 实例。每个函数创建时，引擎执行以下伪代码：
@@ -1447,7 +1453,7 @@ function processData(buffer) {
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1465,14 +1471,11 @@ const [a, b, c] = createFunctions();
 console.log(a(), b(), c());
 ```
 
-<details>
-<summary>参考答案</summary>
 
 输出：`3 3 3`。
 
 原因：`var` 声明的 `i` 是函数级作用域，所有闭包共享同一个 `i` 变量。循环结束时 `i = 3`，因此三个闭包都返回 3。若将 `var` 改为 `let`，则输出为 `0 1 2`，因为 `let` 为每次迭代创建新的块级作用域绑定。
 
-</details>
 
 **题目 2**：以下代码是否存在内存泄露？说明理由。
 
@@ -1484,12 +1487,9 @@ function setup() {
 const fn = setup();
 ```
 
-<details>
-<summary>参考答案</summary>
 
 不构成泄露。虽然 `small` 被 `fn` 闭包持有，但其大小仅为一个数字（约 8 字节），且 `fn` 是有用的函数。泄露的判定标准包含"业务上不再需要"，这里 `fn` 仍被使用。但如果 `fn` 后续不再需要而未被置空，且持有更大的对象，则可能构成泄露。
 
-</details>
 
 ### 10.2 进阶题
 
@@ -1509,8 +1509,6 @@ globalHandler();
 globalHandler = null;
 ```
 
-<details>
-<summary>参考答案</summary>
 
 执行流程分析：
 
@@ -1521,12 +1519,9 @@ globalHandler = null;
 
 注意：实际 V8 实现中，`bigArray` 可能更早被回收，因为 V8 的逃逸分析会发现定时器闭包只用了 `bigArray.length`，可能直接内联该值。
 
-</details>
 
 **题目 4**：设计一个 `lazy` 函数，使得闭包仅在第一次访问时计算，后续访问返回缓存值，且不阻止原对象被 GC。
 
-<details>
-<summary>参考答案</summary>
 
 ```javascript
 function lazy(factory) {
@@ -1568,14 +1563,11 @@ function lazyWeak(factory) {
 }
 ```
 
-</details>
 
 ### 10.3 思考题
 
 **题目 5**：为什么 Java 的 lambda 只能捕获 effectively final 变量，而 JavaScript 没有此限制？请从并发模型、内存模型、语言设计哲学三方面分析。
 
-<details>
-<summary>参考答案</summary>
 
 1. **并发模型**：Java 是多线程共享内存模型，lambda 可能在不同线程执行，若允许修改捕获变量，会引入可见性与竞态问题。JavaScript 是单线程事件循环（Web Worker 之间不共享内存），不存在此类问题，因此可以更宽松。
 
@@ -1583,7 +1575,6 @@ function lazyWeak(factory) {
 
 3. **设计哲学**：Java 强调显式与安全，宁可牺牲灵活性。JavaScript 强调灵活与简洁，更接近 Scheme 的"万物皆可闭包"传统。
 
-</details>
 
 **题目 6**：在以下场景中，哪种引用方式最合适？请说明理由。
 
@@ -1591,14 +1582,11 @@ function lazyWeak(factory) {
 - 场景 B：日志系统持有最近 100 条请求的元数据。
 - 场景 C：观察者模式中主题对观察者的引用。
 
-<details>
-<summary>参考答案</summary>
 
 - 场景 A：使用 `WeakMap`。组件实例可能频繁销毁，使用弱引用避免泄露。
 - 场景 B：使用强引用 + 固定容量队列。日志必须可靠保存，不能被 GC，但需限制容量防止无限增长。
 - 场景 C：使用 `WeakSet` 或 `WeakMap`。观察者生命周期独立于主题，弱引用避免主题阻止观察者被回收。
 
-</details>
 
 **题目 7**：分析以下代码在 V8 中的内存分配行为。`big` 是否会被分配到堆？
 
@@ -1611,14 +1599,11 @@ function process() {
 console.log(process());
 ```
 
-<details>
-<summary>参考答案</summary>
 
 `big` 数组本身是对象，必然分配在堆上（数组是引用类型）。但闭包 `(a, b) => a + b` 不逃逸出 `reduce` 调用，且不引用 `big`，因此该闭包对象本身可能在栈上分配（V8 逃逸分析优化）。
 
 注意：`new Array(1_000_000)` 创建的数组对象在堆上，这是由 ECMAScript 规范决定的，与逃逸分析无关。逃逸分析只影响"局部变量本身的存储位置"，而不影响"对象本身的存储位置"。对于引用类型的局部变量，变量本身存的是指针，逃逸分析决定该指针是存栈还是堆。
 
-</details>
 
 ---
 

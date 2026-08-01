@@ -15,10 +15,11 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
-
 # C++23 新特性
 
-> 本文档系统讲解 C++23 标准引入的核心新特性，覆盖 `std::print`/`std::println`、`std::expected`、`std::flat_map`/`std::flat_set`、`if consteval`、`static call operator`、deducing this、`std::mdspan`、`std::generator`、ranges 增强、`std::move_only_function` 等主题。所有代码示例可在支持 C++23 的主流编译器（GCC 13+、Clang 17+、MSVC 19.32+）上编译通过。对标 MIT 6.S060、Stanford CS110L、CMU 15-410 课程教学水准。
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
+
+---
 
 ## 1. 学习目标
 
@@ -1276,110 +1277,84 @@ std::generator<int> fibonacci() {
 
 代码量减少约 90%。
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**. `std::expected<T, E>` 表示什么？
+**常见疑问 1**：. `std::expected<T, E>` 表示什么？
 
 - A. 一定成功
 - B. 一定失败
 - C. 可能成功或失败
 - D. 异常包装
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
 `std::expected<T, E>` 是可能成功（含 `T`）或失败（含 `E`）的运算结果。
-</details>
 
-**Q2**. `std::flat_map` 与 `std::map` 的核心区别是什么？
+**常见疑问 2**：. `std::flat_map` 与 `std::map` 的核心区别是什么？
 
 - A. flat_map 用哈希表，map 用红黑树
 - B. flat_map 用排序连续容器，map 用红黑树
 - C. flat_map 不支持自定义比较器
 - D. 两者完全相同
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
 `std::flat_map` 内部使用排序的连续容器（默认 `std::vector`），缓存友好；`std::map` 使用红黑树。
-</details>
 
-**Q3**. Deducing this 主要解决什么问题？
+**常见疑问 3**：. Deducing this 主要解决什么问题？
 
 - A. 性能问题
 - B. 简化 cv/引用类别的多重载
 - C. 模板推导问题
 - D. 异常处理
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
 Deducing this 允许在成员函数中显式声明 `this` 类型，从而统一处理 `T&`/`const T&`/`T&&` 等不同情况。
-</details>
 
-**Q4**. `if consteval` 与 `std::is_constant_evaluated()` 的区别是什么？
+**常见疑问 4**：. `if consteval` 与 `std::is_constant_evaluated()` 的区别是什么？
 
 - A. 没有区别
 - B. `if consteval` 仅在 consteval 上下文有效
 - C. `if consteval` 性能更好
 - D. `if consteval` 是 C++23 新引入的更简洁的语法
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：D
+**解析讲解**：D
 
 `if consteval` 是 C++23 新引入的语法糖，语义与 `if constexpr (std::is_constant_evaluated())` 等价，但更简洁直观。
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**. C++23 引入了 `std::expected<T, E>`，对应 Rust 的 ______ 类型。
+**常见疑问 5**：. C++23 引入了 `std::expected<T, E>`，对应 Rust 的 ______ 类型。
 
-<details>
-<summary>答案</summary>
 
 `Result<T, E>`。
-</details>
 
-**Q2**. `std::flat_map` 的查找复杂度为 ______，插入复杂度为 ______。
+**常见疑问 6**：. `std::flat_map` 的查找复杂度为 ______，插入复杂度为 ______。
 
-<details>
-<summary>答案</summary>
 
 $O(\log n)$；$O(n)$（最坏）。
-</details>
 
-**Q3**. Deducing this 的关键字是 ______。
+**常见疑问 7**：. Deducing this 的关键字是 ______。
 
-<details>
-<summary>答案</summary>
 
 `this`（显式声明在第一个参数位置）。
-</details>
 
-**Q4**. `std::generator<T>` 满足 ______ 概念，但不可 ______。
+**常见疑问 8**：. `std::generator<T>` 满足 ______ 概念，但不可 ______。
 
-<details>
-<summary>答案</summary>
 
 `input_iterator`；拷贝。
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q1**. 使用 `std::expected` 实现一个简单的 JSON 解析器（仅支持对象、字符串、数字）。
+**常见疑问 9**：. 使用 `std::expected` 实现一个简单的 JSON 解析器（仅支持对象、字符串、数字）。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <expected>
@@ -1493,12 +1468,9 @@ int main() {
     return 0;
 }
 ```
-</details>
 
-**Q2**. 使用 `std::generator` 实现一个无限素数生成器。
+**常见疑问 10**：. 使用 `std::generator` 实现一个无限素数生成器。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <generator>
@@ -1534,12 +1506,9 @@ int main() {
     return 0;
 }
 ```
-</details>
 
-**Q3**. 使用 `std::mdspan` 实现矩阵转置。
+**常见疑问 11**：. 使用 `std::mdspan` 实现矩阵转置。
 
-<details>
-<summary>参考答案</summary>
 
 ```cpp
 #include <mdspan>
@@ -1574,14 +1543,11 @@ int main() {
     return 0;
 }
 ```
-</details>
 
 ### 10.4 思考题
 
-**Q1**. `std::expected` 与异常处理相比，各自的优缺点？
+**常见疑问 12**：. `std::expected` 与异常处理相比，各自的优缺点？
 
-<details>
-<summary>参考解析</summary>
 
 `std::expected` 优点：
 - 显式错误处理，代码意图清晰；
@@ -1608,12 +1574,9 @@ int main() {
 - 跨越深层调用链：异常；
 - 错误是常规情况：`expected`；
 - 错误是异常情况：异常。
-</details>
 
-**Q2**. `std::flat_map` 何时优于 `std::map`？
+**常见疑问 13**：. `std::flat_map` 何时优于 `std::map`？
 
-<details>
-<summary>参考解析</summary>
 
 `std::flat_map` 优于 `std::map` 的场景：
 1. **小数据量**（< 1000 元素）：连续存储 + 二分查找比红黑树快；
@@ -1627,12 +1590,9 @@ int main() {
 3. **迭代器稳定性**：`std::map` 迭代器稳定，`flat_map` 易失效。
 
 经验法则：先测量再决定，不要凭直觉。
-</details>
 
-**Q3**. Deducing this 是否会替代传统的 cv 重载？
+**常见疑问 14**：. Deducing this 是否会替代传统的 cv 重载？
 
-<details>
-<summary>参考解析</summary>
 
 部分场景会，但不会完全替代。Deducing this 适合：
 - 需要统一处理 cv/引用类别的成员函数；
@@ -1645,7 +1605,6 @@ int main() {
 - 编译器尚不支持 C++23 的项目。
 
 C++23 后逐步普及，但完全替代需要数年。
-</details>
 
 ## 11. 参考文献
 
@@ -1779,7 +1738,227 @@ C++23 是 C++20 的"完善版"，新增的库特性多于语言特性，更适�
 
 ---
 
-## 更新日志
+## Deducing this
 
-- 2026-07-20: 金标准升级至对标 MIT/Stanford/CMU 教学水准，新增历史脉络、形式化定义、KaTeX 推导、企业级示例、案例研究、习题与参考文献。
-- 2026-06-14: 初版，覆盖 `std::print`、`std::expected`、`std::generator` 基础用法。
+**基本写法：显式对象参数**
+`<返回类型> <方法名>(this <Self> <self>, <参数>);`
+```cpp
+// 一个方法同时支持 const 与非 const 调用
+template <typename Self>
+auto& get(this Self& self) {
+    return self.value;
+}
+```
+
+---
+
+**基本写法：完美转发 self**
+`auto&& <方法名>(this auto&& <self>) { return std::forward<decltype(<self>)>(<self>).<成员>; }`
+```cpp
+// 保留值类别以支持移动语义
+template <typename Self>
+auto&& data(this Self&& self) {
+    return std::forward<Self>(self).data_;
+}
+```
+
+---
+
+**基本写法：CRTP 简化**
+`void <方法名>(this auto&& <self>) { <self>.<实现>(); }`
+```cpp
+// 无需模板参数即可实现静态多态
+struct Base {
+    template <typename Self>
+    void interface(this Self&& self) {
+        self.impl();
+    }
+};
+```
+
+---
+
+**基本写法：递归 lambda**
+`auto <名> = [](this auto <self>, <参数>) { <body> };`
+```cpp
+// lambda 自身递归调用
+auto factorial = [](this auto self, int n) -> int {
+    return n <= 1 ? 1 : n * self(n - 1);
+};
+```
+
+---
+
+## std::expected
+
+**基本写法：创建 expected**
+`std::expected<<值类型>, <错误类型>> <变量>;`
+```cpp
+// 表示可能成功或失败的结果
+std::expected<int, std::string> result = 42;
+```
+
+---
+
+**基本写法：返回失败**
+`return std::unexpected(<错误>);`
+```cpp
+// 返回错误对象
+return std::unexpected("parse error");
+```
+
+---
+
+**基本写法：检查是否有值**
+`<result>.has_value()` 或 `static_cast<bool>(<result>)`
+```cpp
+// 判断 expected 是否持有成功值
+if (result) { /* 使用 *result */ }
+```
+
+---
+
+**基本写法：获取值**
+`*<result>` 或 `<result>.value()`
+```cpp
+// 取出成功值
+int v = *result;
+```
+
+---
+
+**基本写法：获取错误**
+`<result>.error()`
+```cpp
+// 取出错误对象
+std::string err = result.error();
+```
+
+---
+
+**基本写法：单子转换 transform**
+`<result>.transform(<函数>)`
+```cpp
+// 成功时对值应用函数
+auto doubled = result.transform([](int x) { return x * 2; });
+```
+
+---
+
+**基本写法：失败处理 or_else**
+`<result>.or_else(<函数>)`
+```cpp
+// 失败时应用函数
+auto recovered = result.or_else([](std::string e) {
+    return std::expected<int, std::string>(0);
+});
+```
+
+---
+
+## std::print
+
+**基本写法：格式化输出**
+`std::print(<格式串>, <参数>...);`
+```cpp
+// 不换行的格式化输出
+std::print("x = {}", x);
+```
+
+---
+
+**基本写法：换行输出**
+`std::println(<格式串>, <参数>...);`
+```cpp
+// 自动换行的格式化输出
+std::println("sum = {}", sum);
+```
+
+---
+
+**基本写法：输出到文件流**
+`std::print(<文件流>, <格式串>, <参数>...);`
+```cpp
+// 输出到指定流
+std::print(std::cerr, "error: {}", msg);
+```
+
+---
+
+## std::flat_map / std::flat_set
+
+**基本写法：创建 flat_map**
+`std::flat_map<<键>, <值>> <变量>;`
+```cpp
+// 基于连续存储的有序映射
+std::flat_map<int, std::string> m;
+```
+
+---
+
+**基本写法：插入元素**
+`<map>.insert({<键>, <值>});`
+```cpp
+// 插入键值对
+m.insert({1, "one"});
+```
+
+---
+
+## 其他常用特性
+
+**基本写法：if consteval**
+`if consteval { <编译时分支> } else { <运行时分支> }`
+```cpp
+// 判断是否在常量求值上下文
+if consteval {
+    return compile_impl();
+} else {
+    return runtime_impl();
+}
+```
+
+---
+
+**基本写法：多维下标运算符**
+`<返回类型> operator[](<索引1>, <索引2>);`
+```cpp
+// 支持多维索引
+int& operator[](size_t i, size_t j);
+```
+
+---
+
+**基本写法：不可达声明**
+`std::unreachable();`
+```cpp
+// 标记程序不应到达此处
+throw std::logic_error("unreachable");
+```
+
+---
+
+**基本写法：枚举底层值**
+`std::to_underlying(<枚举值>)`
+```cpp
+// 获取枚举的底层整数值
+int n = std::to_underlying(Color::Red);
+```
+
+---
+
+**基本写法：字节序交换**
+`std::byteswap(<整数>)`
+```cpp
+// 交换字节序用于端序转换
+uint32_t be = std::byteswap(host_val);
+```
+
+---
+
+**基本写法：assume 属性**
+`[[assume(<条件>)]];`
+```cpp
+// 给编译器提供假设以辅助优化
+[[assume(n > 0)]];
+```

@@ -2301,7 +2301,7 @@ class MethodView:
         return dispatch_request
 ```
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 本节提供基础、进阶、挑战三个层次的习题，每道题附参考答案要点。
 

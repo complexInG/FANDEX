@@ -359,44 +359,49 @@ Unity 中 `Instantiate`/`Destroy` 还涉及**跨边界调用**与**资源加载*
 
 ### 5.1 项目结构
 
-```
-FandexUnityGameDemo/
-├── FandexUnityGameDemo.csproj
-├── Packages/
-│   ├── manifest.json
-│   └── UniTask/                # 第三方包
-├── Assets/
-│   ├── Scripts/
-│   │   ├── Core/
-│   │   │   ├── GameManager.cs
-│   │   │   ├── ServiceLocator.cs
-│   │   │   └── EventBus.cs
-│   │   ├── Player/
-│   │   │   ├── PlayerController.cs
-│   │   │   ├── PlayerHealth.cs
-│   │   │   └── PlayerInputHandler.cs
-│   │   ├── Combat/
-│   │   │   ├── WeaponSystem.cs
-│   │   │   ├── DamageCalculator.cs
-│   │   │   └── ProjectilePool.cs
-│   │   ├── AI/
-│   │   │   ├── EnemyAI.cs
-│   │   │   ├── StateMachine.cs
-│   │   │   └── IState.cs
-│   │   ├── Data/
-│   │   │   ├── WeaponConfig.cs
-│   │   │   ├── EnemyConfig.cs
-│   │   │   └── GameSettings.cs
-│   │   └── Editor/
-│   │       └── WeaponConfigEditor.cs
-│   ├── Prefabs/
-│   │   ├── Player.prefab
-│   │   ├── Enemy.prefab
-│   │   └── Projectile.prefab
-│   └── ScriptableObjects/
-│       ├── Weapons/
-│       └── Enemies/
-└── ProjectSettings/
+```mermaid
+flowchart TD
+    T0["FandexUnityGameDemo/"]
+    T1["FandexUnityGameDemo.csproj"]
+    T2["Packages/"]
+    T3["manifest.json"]
+    T4["UniTask/                # 第三方包"]
+    T5["Assets/"]
+    T6["Scripts/"]
+    T7["Core/"]
+    T8["GameManager.cs"]
+    T9["ServiceLocator.cs"]
+    T10["EventBus.cs"]
+    T11["Player/"]
+    T12["PlayerController.cs"]
+    T13["PlayerHealth.cs"]
+    T14["PlayerInputHandler.cs"]
+    T15["Combat/"]
+    T16["WeaponSystem.cs"]
+    T17["DamageCalculator.cs"]
+    T18["ProjectilePool.cs"]
+    T19["AI/"]
+    T20["EnemyAI.cs"]
+    T21["StateMachine.cs"]
+    T22["IState.cs"]
+    T23["Data/"]
+    T24["WeaponConfig.cs"]
+    T25["EnemyConfig.cs"]
+    T26["GameSettings.cs"]
+    T27["Editor/"]
+    T28["WeaponConfigEditor.cs"]
+    T29["Prefabs/"]
+    T30["Player.prefab"]
+    T31["Enemy.prefab"]
+    T32["Projectile.prefab"]
+    T33["ScriptableObjects/"]
+    T34["Weapons/"]
+    T35["Enemies/"]
+    T36["ProjectSettings/"]
+    T0 --> T1
+    T0 --> T2
+    T4 --> T5
+    T35 --> T36
 ```
 
 ### 5.2 csproj 配置（Unity 生成，编辑器外手动管理）
@@ -1751,7 +1756,7 @@ public static void Subscribe<TEvent>(Action<TEvent> handler, int priority = 0)
 
 优化：在 Awake 中缓存 `var rb = GetComponent<Rigidbody>()` 到字段，Update 中直接访问字段，开销仅 1-2ns。
 
-### 思考题
+## 知识讲解与要点分析（原思考题）
 
 **Q5**：MonoBehaviour 模型与 ECS 模型在 CPU 缓存友好性上的差异？请用具体数据说明。
 

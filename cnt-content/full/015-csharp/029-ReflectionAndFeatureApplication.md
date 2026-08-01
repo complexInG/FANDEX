@@ -15,10 +15,11 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
+# C# 反射与特性
 
-# 反射与特性应用
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> "代码即数据，数据即代码。" —— Lisp 格言，在 .NET 反射系统中得到完美体现
+---
 
 ## 1. 学习目标
 
@@ -1200,28 +1201,32 @@ Console.WriteLine(m1 == m2);  // 通常 True（MemberInfo 重写了 ==）
 
 ### 8.1 项目结构组织
 
-```
-Fandex.Framework/
-├── src/
-│   ├── Fandex.Reflection/                # 核心反射工具
-│   │   ├── Caching/
-│   │   │   ├── MemberCache.cs
-│   │   │   └── AttributeCache.cs
-│   │   ├── Emit/
-│   │   │   ├── DynamicTypeBuilder.cs
-│   │   │   └── ProxyBuilder.cs
-│   │   ├── Expressions/
-│   │   │   ├── FastInvoker.cs
-│   │   │   └── ExpressionCompiler.cs
-│   │   └── Metadata/
-│   │       ├── MetadataLoader.cs
-│   │       └── AttributeReader.cs
-│   ├── Fandex.Reflection.Generators/     # Source Generator
-│   │   ├── MapperGenerator.cs
-│   │   └── DependencyInjectionGenerator.cs
-│   └── Fandex.Reflection.Benchmarks/     # 性能测试
-└── tests/
-    └── Fandex.Reflection.Tests/
+```mermaid
+flowchart TD
+    T0["Fandex.Framework/"]
+    T1["src/"]
+    T2["Fandex.Reflection/                # 核心反射工具"]
+    T3["Caching/"]
+    T4["MemberCache.cs"]
+    T5["AttributeCache.cs"]
+    T6["Emit/"]
+    T7["DynamicTypeBuilder.cs"]
+    T8["ProxyBuilder.cs"]
+    T9["Expressions/"]
+    T10["FastInvoker.cs"]
+    T11["ExpressionCompiler.cs"]
+    T12["Metadata/"]
+    T13["MetadataLoader.cs"]
+    T14["AttributeReader.cs"]
+    T15["Fandex.Reflection.Generators/     # Source Generator"]
+    T16["MapperGenerator.cs"]
+    T17["DependencyInjectionGenerator.cs"]
+    T18["Fandex.Reflection.Benchmarks/     # 性能测试"]
+    T19["tests/"]
+    T20["Fandex.Reflection.Tests/"]
+    T0 --> T1
+    T18 --> T19
+    T19 --> T20
 ```
 
 ### 8.2 NuGet 包配置
@@ -1673,9 +1678,9 @@ service.DoWork();
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **Q1.** 以下哪种方式获取 `Type` 对象**不会**触发程序集加载？
 
@@ -1684,14 +1689,11 @@ B. `Type.GetType("MyNamespace.Person, MyAssembly")`
 C. `personInstance.GetType()`
 D. `Assembly.Load("MyAssembly").GetType("Person")`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：A
+**解析讲解**：A
 
-**解析**：`typeof(Person)` 在编译期解析，运行时直接返回已加载类型的 Type 对象。其他方式都可能触发程序集加载（B、D 必然加载，C 取决于实例）。
+**解析讲解**：`typeof(Person)` 在编译期解析，运行时直接返回已加载类型的 Type 对象。其他方式都可能触发程序集加载（B、D 必然加载，C 取决于实例）。
 
-</details>
 
 ---
 
@@ -1702,14 +1704,11 @@ B. 前者不实例化特性，后者实例化
 C. 两者完全等价
 D. 前者仅支持读取构造参数，后者支持读取命名参数
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`CustomAttributeData` 直接读取元数据，不实例化特性；`GetCustomAttribute<T>` 通过反射调用特性构造函数创建实例。
+**解析讲解**：`CustomAttributeData` 直接读取元数据，不实例化特性；`GetCustomAttribute<T>` 通过反射调用特性构造函数创建实例。
 
-</details>
 
 ---
 
@@ -1729,14 +1728,11 @@ B. `False`
 C. 编译错误
 D. 运行时异常
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`MethodInfo` 的 `==` 比较基于 `MetadataToken` 与 `Module`。`Base.M` 与 `Derived.M` 是不同的方法定义（不同的 MetadataToken），故不相等。但 `methodOnBase.Invoke(derivedInstance, null)` 会调用 `Derived.M`（虚方法分派）。
+**解析讲解**：`MethodInfo` 的 `==` 比较基于 `MetadataToken` 与 `Module`。`Base.M` 与 `Derived.M` 是不同的方法定义（不同的 MetadataToken），故不相等。但 `methodOnBase.Invoke(derivedInstance, null)` 会调用 `Derived.M`（虚方法分派）。
 
-</details>
 
 ---
 
@@ -1747,14 +1743,11 @@ B. 支持 NativeAOT
 C. 代码可读性更好
 D. 调试更方便
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Source Generator 在编译期生成代码，无运行时反射开销，因此**支持 NativeAOT**。性能更高是结果，但根本优势是 AOT 兼容性。
+**解析讲解**：Source Generator 在编译期生成代码，无运行时反射开销，因此**支持 NativeAOT**。性能更高是结果，但根本优势是 AOT 兼容性。
 
-</details>
 
 ---
 
@@ -1765,71 +1758,53 @@ B. 可应用于类型参数与参数
 C. 编译器会检查注解一致性
 D. 运行时影响反射行为
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：`[DynamicallyAccessedMembers]` 仅在编译期与 trim 分析时生效，运行时不影响反射行为。
+**解析讲解**：`[DynamicallyAccessedMembers]` 仅在编译期与 trim 分析时生效，运行时不影响反射行为。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **Q6.** `MethodInfo.CreateDelegate` 创建的委托调用比 `MethodInfo.Invoke` 快约 `________` 倍。
 
-<details>
-<summary>答案</summary>
 
 50-100
 
-</details>
 
 ---
 
 **Q7.** ECMA-335 标准定义了 `________` 张元数据表，其中 `TypeRef` 表的编号是 `________`。
 
-<details>
-<summary>答案</summary>
 
 38，0x01
 
-</details>
 
 ---
 
 **Q8.** `System.Reflection.Metadata` 命名空间提供 `________` 类，用于读取 PE 文件元数据而不加载程序集。
 
-<details>
-<summary>答案</summary>
 
 `MetadataReader`
 
-</details>
 
 ---
 
 **Q9.** C# 12 引入的 `________` 特性允许安全访问私有成员，性能接近直接调用。
 
-<details>
-<summary>答案</summary>
 
 `UnsafeAccessor`
 
-</details>
 
 ---
 
 **Q10.** Expression Tree 通过 `________` 方法编译为委托，性能接近直接调用。
 
-<details>
-<summary>答案</summary>
 
 `Compile()`
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **Q11.** 实现一个轻量级 IoC 容器，支持构造函数注入。
 
@@ -1933,8 +1908,6 @@ public class UserDto
 
 **Q13.** 为什么 .NET Core 精简了反射 API？请从 AOT、体积、安全三个角度分析。
 
-<details>
-<summary>参考答案</summary>
 
 **AOT**：移除 `AppDomain`、`ReflectionOnlyLoad` 等 API，减少 NativeAOT 体积。
 
@@ -1942,14 +1915,11 @@ public class UserDto
 
 **安全**：移除 `ReflectionEmit` 的部分能力，降低代码注入风险。
 
-</details>
 
 ---
 
 **Q14.** Source Generator 是否能完全替代运行时反射？请论述。
 
-<details>
-<summary>参考答案</summary>
 
 **不能完全替代**。
 
@@ -1968,14 +1938,11 @@ public class UserDto
 
 **结论**：Source Generator 适合编译期已知的场景；运行时动态发现仍需反射，但应配合缓存与 `CreateDelegate` 优化。
 
-</details>
 
 ---
 
 **Q15.** 在 NativeAOT 场景下，如何实现插件系统？请给出方案。
 
-<details>
-<summary>参考答案</summary>
 
 **方案**：基于接口契约 + 编译期注册。
 
@@ -2003,7 +1970,6 @@ public static class PluginRegistry
 
 **限制**：插件必须编译期已知；运行时下载的插件需使用解释器（如 Lua、Python）。
 
-</details>
 
 ---
 
@@ -2098,23 +2064,35 @@ public static class PluginRegistry
 
 ### 12.4 进阶学习路径
 
-```
-基础阶段（1-2 周）
-├── 1. 阅读 Microsoft Learn - Reflection 官方文档
-├── 2. 编写简单的反射工具（类型浏览器、特性读取器）
-└── 3. 完成本文习题 10.1-10.3
-
-进阶阶段（2-4 周）
-├── 4. 阅读《Metaprogramming in .NET》第 1-5 章
-├── 5. 实现简单的 IoC 容器
-├── 6. 学习 System.Reflection.Emit，实现动态代理
-└── 7. 学习表达式树，实现高性能调用器
-
-专家阶段（1-2 月）
-├── 8. 阅读 ECMA-335 元数据标准
-├── 9. 学习 Source Generator，实现对象映射框架
-├── 10. 研究 NativeAOT 兼容性，重构现有反射代码
-└── 11. 阅读 Roslyn 源码，理解编译器实现
+```mermaid
+flowchart TD
+    T0["基础阶段（1-2 周）"]
+    T1["1. 阅读 Microsoft Learn - Reflection 官方文档"]
+    T2["2. 编写简单的反射工具（类型浏览器、特性读取器）"]
+    T3["3. 完成本文习题 10.1-10.3"]
+    T4["进阶阶段（2-4 周）"]
+    T5["4. 阅读《Metaprogramming in .NET》第 1-5 章"]
+    T6["5. 实现简单的 IoC 容器"]
+    T7["6. 学习 System.Reflection.Emit，实现动态代理"]
+    T8["7. 学习表达式树，实现高性能调用器"]
+    T9["专家阶段（1-2 月）"]
+    T10["8. 阅读 ECMA-335 元数据标准"]
+    T11["9. 学习 Source Generator，实现对象映射框架"]
+    T12["10. 研究 NativeAOT 兼容性，重构现有反射代码"]
+    T13["11. 阅读 Roslyn 源码，理解编译器实现"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T4 --> T8
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
+    T9 --> T12
+    T9 --> T13
 ```
 
 ### 12.5 社区资源
@@ -2192,3 +2170,303 @@ public static class PluginRegistry
 - **目标读者**：中高级 .NET 开发者、框架设计者、AOT 编译器开发者
 - **配套实验代码**：参见 `examples/csharp/reflection/` 目录
 - **问题反馈**：提交至 FANDEX 项目 Issues
+## 获取类型信息
+
+**基本写法：获取 Type 对象**
+`<对象>.GetType();`
+```csharp
+// 运行时获取类型信息
+Type type = obj.GetType();
+```
+
+---
+
+**基本写法：typeof 运算符**
+`typeof(<类型>)`
+```csharp
+// 编译时获取类型信息
+Type type = typeof(string);
+```
+
+---
+
+**基本写法：按名称获取类型**
+`Type.GetType("<完全限定名>");`
+```csharp
+// 通过字符串名称获取类型
+Type type = Type.GetType("System.String, mscorlib");
+```
+
+---
+
+**基本写法：判断类型继承**
+`<类型>.IsAssignableFrom(<另一个类型>);`
+```csharp
+// 判断赋值兼容性
+bool ok = typeof(IComparable).IsAssignableFrom(typeof(int));
+```
+
+---
+
+**基本写法：判断实例类型**
+`<对象> is <类型>`
+```csharp
+// 运行时类型检查
+bool isString = obj is string;
+```
+
+---
+
+## 成员反射
+
+**基本写法：获取公共属性**
+`<类型>.GetProperties();`
+```csharp
+// 获取所有公共属性
+PropertyInfo[] props = type.GetProperties();
+```
+
+---
+
+**基本写法：获取公共方法**
+`<类型>.GetMethods();`
+```csharp
+// 获取所有公共方法
+MethodInfo[] methods = type.GetMethods();
+```
+
+---
+
+**基本写法：获取字段**
+`<类型>.GetFields([<绑定标志>]);`
+```csharp
+// 获取私有字段需指定 BindingFlags
+var fields = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+```
+
+---
+
+**基本写法：获取构造函数**
+`<类型>.GetConstructors();`
+```csharp
+// 获取所有公共构造函数
+ConstructorInfo[] ctors = type.GetConstructors();
+```
+
+---
+
+**基本写法：获取特性**
+`<成员>.GetCustomAttributes([<特性类型>], [<继承>]);`
+```csharp
+// 获取成员上的所有特性
+var attrs = type.GetCustomAttributes(false);
+```
+
+---
+
+## 动态创建实例
+
+**基本写法：Activator 创建实例**
+`Activator.CreateInstance(<类型>, [<参数>]);`
+```csharp
+// 动态创建对象
+object obj = Activator.CreateInstance(typeof(StringBuilder));
+```
+
+---
+
+**基本写法：泛型 Activator**
+`Activator.CreateInstance<<类型>>();`
+```csharp
+// 泛型方式创建实例
+var instance = Activator.CreateInstance<StringBuilder>();
+```
+
+---
+
+**基本写法：调用构造函数反射**
+`<构造函数>.Invoke(<参数>);`
+```csharp
+// 通过 ConstructorInfo 创建实例
+var obj = ctor.Invoke(new object[] { "arg" });
+```
+
+---
+
+## 动态调用成员
+
+**基本写法：调用方法**
+`<方法信息>.Invoke(<实例>, <参数数组>);`
+```csharp
+// 反射调用方法
+var method = type.GetMethod("Substring");
+var result = method.Invoke("hello", new object[] { 1, 3 });
+```
+
+---
+
+**基本写法：获取属性值**
+`<属性信息>.GetValue(<实例>);`
+```csharp
+// 读取属性值
+var prop = type.GetProperty("Length");
+var len = prop.GetValue("hello");
+```
+
+---
+
+**基本写法：设置属性值**
+`<属性信息>.SetValue(<实例>, <值>);`
+```csharp
+// 写入属性值
+prop.SetValue(obj, newValue);
+```
+
+---
+
+**基本写法：获取字段值**
+`<字段信息>.GetValue(<实例>);`
+```csharp
+// 读取字段值
+var field = type.GetField("_count", BindingFlags.NonPublic | BindingFlags.Instance);
+var val = field.GetValue(obj);
+```
+
+---
+
+**基本写法：泛型方法反射**
+`<方法>.MakeGenericMethod(<类型参数>);`
+```csharp
+// 构造泛型方法再调用
+var method = typeof(Enumerable).GetMethod("ToArray").MakeGenericMethod(typeof(int));
+var arr = method.Invoke(null, new object[] { new[] { 1, 2 } });
+```
+
+---
+
+## 内置特性
+
+**基本写法：Obsolete 标记废弃**
+`[Obsolete("<消息>" [, <是否报错>])]`
+```csharp
+// 标记方法已废弃
+[Obsolete("请使用 NewMethod 代替", false)]
+public void OldMethod() { }
+```
+
+---
+
+**基本写法：Conditional 条件编译**
+`[Conditional("<符号>")]`
+```csharp
+// 仅在定义符号时编译调用
+[Conditional("DEBUG")]
+public void DebugLog(string msg) { }
+```
+
+---
+
+**基本写法：Serializable 标记可序列化**
+`[Serializable]`
+```csharp
+// 标记类型可被二进制序列化
+[Serializable]
+public class MyData { }
+```
+
+---
+
+**基本写法：AttributeUsage 限定用途**
+`[AttributeUsage(<目标>, AllowMultiple = <bool>, Inherited = <bool>)]`
+```csharp
+// 限定特性只能用于类且不可重复
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+public class MyAttribute : Attribute { }
+```
+
+---
+
+## 自定义特性
+
+**基本写法：定义特性类**
+`public class <名称> : Attribute { }`
+```csharp
+// 自定义特性必须继承 Attribute
+public class TableAttribute : Attribute
+{
+    public string Name { get; set; }
+    public TableAttribute(string name) { Name = name; }
+}
+```
+
+---
+
+**基本写法：应用特性**
+`[<特性名>(<参数>)]`
+```csharp
+// 在类上应用特性
+[Table("Users")]
+public class User { }
+```
+
+---
+
+**基本写法：读取命名特性**
+`<成员>.GetCustomAttribute<<特性类型>>();`
+```csharp
+// 读取指定特性实例
+var attr = type.GetCustomAttribute<TableAttribute>();
+var name = attr?.Name;
+```
+
+---
+
+## 动态类型与 dynamic
+
+**基本写法：dynamic 声明**
+`dynamic <变量> = <值>;`
+```csharp
+// 运行时绑定成员
+dynamic d = "hello";
+var len = d.Length; // 运行时解析
+```
+
+---
+
+**基本写法：ExpandoObject 动态对象**
+`dynamic <变量> = new ExpandoObject();`
+```csharp
+// 动态添加成员
+dynamic obj = new ExpandoObject();
+obj.Name = "Alice";
+obj.Age = 30;
+```
+
+---
+
+## 程序集加载
+
+**基本写法：加载程序集**
+`Assembly.Load("<程序集名>");`
+```csharp
+// 按名称加载程序集
+var asm = Assembly.Load("MyLibrary");
+```
+
+---
+
+**基本写法：从文件加载**
+`Assembly.LoadFrom("<路径>");`
+```csharp
+// 从 DLL 文件加载程序集
+var asm = Assembly.LoadFrom("MyLibrary.dll");
+```
+
+---
+
+**基本写法：获取所有类型**
+`<程序集>.GetTypes();`
+```csharp
+// 获取程序集中所有类型
+Type[] types = asm.GetTypes();
+```

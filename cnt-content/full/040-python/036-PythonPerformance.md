@@ -376,21 +376,35 @@ Cython 版本编译为原生 C 循环，无 `PyObject` 装箱，性能与 C 相�
 
 ### 5.1 项目结构
 
-```
-perf_demo/
-├── pyproject.toml
-├── requirements.txt
-├── README.md
-└── src/
-    └── perf_demo/
-        ├── __init__.py
-        ├── profiling.py        # 性能分析工具
-        ├── cpu_bound.py        # CPU 密集型优化
-        ├── io_bound.py         # IO 密集型优化
-        ├── memory_opt.py       # 内存优化
-        ├── numpy_demo.py       # NumPy 向量化
-        ├── caching.py          # 缓存策略
-        └── benchmarks.py       # 基准测试
+```mermaid
+flowchart TD
+    T0["perf_demo/"]
+    T1["pyproject.toml"]
+    T2["requirements.txt"]
+    T3["README.md"]
+    T4["src/"]
+    T5["perf_demo/"]
+    T6["__init__.py"]
+    T7["profiling.py        # 性能分析工具"]
+    T8["cpu_bound.py        # CPU 密集型优化"]
+    T9["io_bound.py         # IO 密集型优化"]
+    T10["memory_opt.py       # 内存优化"]
+    T11["numpy_demo.py       # NumPy 向量化"]
+    T12["caching.py          # 缓存策略"]
+    T13["benchmarks.py       # 基准测试"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T4 --> T5
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T5 --> T9
+    T5 --> T10
+    T5 --> T11
+    T5 --> T12
+    T5 --> T13
 ```
 
 ### 5.2 pyproject.toml
@@ -1543,27 +1557,41 @@ elapsed = time.perf_counter() - start
 
 ### 8.1 性能优化流程
 
-```
-1. 测量（Measure）
-   ├── cProfile 定位热点函数
-   ├── line_profiler 细化到行
-   └── py-spy 生产环境采样
-
-2. 分析（Analyze）
-   ├── 算法复杂度分析
-   ├── 内存访问模式
-   └── IO 等待时间
-
-3. 优化（Optimize）
-   ├── 算法层：换更优算法（O(n^2) → O(n log n)）
-   ├── 数据结构层：list → set/dict
-   ├── 实现层：Python 循环 → NumPy/Cython
-   └── 并发层：串行 → 多进程/asyncio
-
-4. 验证（Verify）
-   ├── 单元测试确保正确性
-   ├── pytest-benchmark 确保性能提升
-   └── 监控生产环境指标
+```mermaid
+flowchart TD
+    T0["1. 测量（Measure）"]
+    T1["cProfile 定位热点函数"]
+    T2["line_profiler 细化到行"]
+    T3["py-spy 生产环境采样"]
+    T4["2. 分析（Analyze）"]
+    T5["算法复杂度分析"]
+    T6["内存访问模式"]
+    T7["IO 等待时间"]
+    T8["3. 优化（Optimize）"]
+    T9["算法层：换更优算法（O(n^2) → O(n log n)）"]
+    T10["数据结构层：list → set/dict"]
+    T11["实现层：Python 循环 → NumPy/Cython"]
+    T12["并发层：串行 → 多进程/asyncio"]
+    T13["4. 验证（Verify）"]
+    T14["单元测试确保正确性"]
+    T15["pytest-benchmark 确保性能提升"]
+    T16["监控生产环境指标"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T8 --> T12
+    T12 --> T13
+    T13 --> T14
+    T13 --> T15
+    T13 --> T16
 ```
 
 ### 8.2 性能基线（baseline）
@@ -1815,77 +1843,77 @@ def api_handler():
 
 ---
 
-## 10. 练习与思考题
+## 知识讲解与要点分析（原练习）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪个 profiler 适合生产环境使用？
+**常见疑问 1**：以下哪个 profiler 适合生产环境使用？
 
 A. `cProfile`  
 B. `line_profiler`  
 C. `py-spy`  
 D. `memory_profiler`
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`py-spy` 是采样 profiler，开销 < 1%，适合生产。`cProfile` 开销 30-100%，`line_profiler` 开销极高，`memory_profiler` 也会显著减慢程序。
+**解析讲解**：`py-spy` 是采样 profiler，开销 < 1%，适合生产。`cProfile` 开销 30-100%，`line_profiler` 开销极高，`memory_profiler` 也会显著减慢程序。
 
-**Q2**：Amdahl 定律中，若 90% 代码可并行化，理论最大加速比是？
+**常见疑问 2**：Amdahl 定律中，若 90% 代码可并行化，理论最大加速比是？
 
 A. 5  
 B. 10  
 C. 100  
 D. 无限
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：$S_{\infty} = \frac{1}{1-p} = \frac{1}{0.1} = 10$。
+**解析讲解**：$S_{\infty} = \frac{1}{1-p} = \frac{1}{0.1} = 10$。
 
-**Q3**：以下哪种情况 `lru_cache` 不会带来性能提升？
+**常见疑问 3**：以下哪种情况 `lru_cache` 不会带来性能提升？
 
 A. 纯函数 + 高命中率  
 B. 有副作用的函数  
 C. 参数可哈希  
 D. 计算昂贵
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`lru_cache` 假设纯函数，有副作用的函数缓存会导致行为不一致。
+**解析讲解**：`lru_cache` 假设纯函数，有副作用的函数缓存会导致行为不一致。
 
-**Q4**：NumPy 比 Python 循环快的根本原因是？
+**常见疑问 4**：NumPy 比 Python 循环快的根本原因是？
 
 A. NumPy 用 C 编写  
 B. NumPy 使用 SIMD 指令  
 C. NumPy 单次调用处理整个数组  
 D. 以上全部
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：C 实现 + SIMD + 向量化三者共同作用。
+**解析讲解**：C 实现 + SIMD + 向量化三者共同作用。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q1**：Python 性能优化的第一步是 ____。
+**常见疑问 5**：Python 性能优化的第一步是 ____。
 
-**答案**：profile（性能分析）
+**解析讲解**：profile（性能分析）
 
-**Q2**：`functools.lru_cache` 的空间复杂度是 $O(____)$。
+**常见疑问 6**：`functools.lru_cache` 的空间复杂度是 $O(____)$。
 
-**答案**：`maxsize`（或 k，缓存大小）
+**解析讲解**：`maxsize`（或 k，缓存大小）
 
-**Q3**：NumPy 的内存布局 ____（C order/F order）对行操作更快。
+**常见疑问 7**：NumPy 的内存布局 ____（C order/F order）对行操作更快。
 
-**答案**：C order（行优先）
+**解析讲解**：C order（行优先）
 
-**Q4**：asyncio 在 ____ 密集型任务上比多线程更优。
+**常见疑问 8**：asyncio 在 ____ 密集型任务上比多线程更优。
 
-**答案**：IO
+**解析讲解**：IO
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q1**：实现一个函数，计算 1 到 n 的平方和，提供三个版本：Python 循环、列表推导、NumPy，并比较性能。
+**常见疑问 9**：实现一个函数，计算 1 到 n 的平方和，提供三个版本：Python 循环、列表推导、NumPy，并比较性能。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 import numpy as np
@@ -1914,27 +1942,27 @@ for name, func in [("loop", sum_squares_loop),
     print(f"{name}: {time.perf_counter() - start:.3f}s, result={result}")
 ```
 
-**Q2**：实现一个带 TTL 与 LRU 的缓存装饰器，支持并发安全。
+**常见疑问 10**：实现一个带 TTL 与 LRU 的缓存装饰器，支持并发安全。
 
-**参考答案**：见 `caching.py` 中的 `TTLCache` 实现，加 `threading.Lock` 保证线程安全。
+**解析讲解**：见 `caching.py` 中的 `TTLCache` 实现，加 `threading.Lock` 保证线程安全。
 
 ### 10.4 思考题
 
-**Q1**：为什么 Python 的 `list` 比 `array.array` 慢但更灵活？请从类型系统角度分析。
+**常见疑问 11**：为什么 Python 的 `list` 比 `array.array` 慢但更灵活？请从类型系统角度分析。
 
-**参考答案**：`list` 存储任意类型对象（`PyObject*`），支持异构元素，但每次操作需动态分派。`array.array` 存储同质 C 类型，操作直接但仅支持数值类型。这是动态类型灵活性与静态类型性能的经典权衡。
+**解析讲解**：`list` 存储任意类型对象（`PyObject*`），支持异构元素，但每次操作需动态分派。`array.array` 存储同质 C 类型，操作直接但仅支持数值类型。这是动态类型灵活性与静态类型性能的经典权衡。
 
-**Q2**：在什么情况下应选择 Cython 而非 NumPy？
+**常见疑问 12**：在什么情况下应选择 Cython 而非 NumPy？
 
-**参考答案**：
+**解析讲解**：
 - 数据是异构的（struct 而非数组）
 - 算法是分支密集型（NumPy 优势在向量化）
 - 需要直接调用 C 库
 - 需要细粒度内存控制（指针操作）
 
-**Q3**：讨论"过早优化是万恶之源"在 Python 项目中的适用性。
+**常见疑问 13**：讨论"过早优化是万恶之源"在 Python 项目中的适用性。
 
-**参考答案**：
+**解析讲解**：
 - 适用：在未 profile 前优化非热点、牺牲可读性换性能、引入复杂依赖（Cython）而收益微薄。
 - 不适用：明显 $O(n^2)$ 算法、N+1 查询、循环中拼接字符串、未释放大对象。
 - 平衡：先写正确代码，profile 后优化热点，保持可读性。
@@ -1943,36 +1971,45 @@ for name, func in [("loop", sum_squares_loop),
 
 ## 11. 工具选型决策树
 
-```
-性能瓶颈在哪？
-├── CPU 密集型？
-│   ├── 数值计算？
-│   │   └── NumPy / SciPy
-│   ├── 矩阵运算？
-│   │   └── NumPy + BLAS
-│   ├── 复杂数据结构？
-│   │   └── Cython / Rust (PyO3)
-│   └── 多核并行？
-│       └── multiprocessing / joblib
-├── IO 密集型？
-│   ├── 网络请求？
-│   │   └── asyncio + aiohttp/httpx
-│   ├── 文件读写？
-│   │   └── aiofiles / mmap
-│   └── 数据库？
-│       └── asyncpg / SQLAlchemy 2.0 async
-├── 内存问题？
-│   ├── 大数据集？
-│   │   └── NumPy / Polars / Dask
-│   ├── 大文件？
-│   │   └── 流式读取 / mmap
-│   └── 内存泄漏？
-│       └── memray / objgraph
-└── 启动慢？
-    ├── 导入开销？
-    │   └── lazy import / module preload
-    └── JIT 预热？
-        └── 考虑 PyPy / Numba
+```mermaid
+flowchart TD
+    T0["性能瓶颈在哪？"]
+    T1["CPU 密集型？"]
+    T2["数值计算？"]
+    T3["NumPy / SciPy"]
+    T4["矩阵运算？"]
+    T5["NumPy + BLAS"]
+    T6["复杂数据结构？"]
+    T7["Cython / Rust (PyO3)"]
+    T8["多核并行？"]
+    T9["multiprocessing / joblib"]
+    T10["IO 密集型？"]
+    T11["网络请求？"]
+    T12["asyncio + aiohttp/httpx"]
+    T13["文件读写？"]
+    T14["aiofiles / mmap"]
+    T15["数据库？"]
+    T16["asyncpg / SQLAlchemy 2.0 async"]
+    T17["内存问题？"]
+    T18["大数据集？"]
+    T19["NumPy / Polars / Dask"]
+    T20["大文件？"]
+    T21["流式读取 / mmap"]
+    T22["内存泄漏？"]
+    T23["memray / objgraph"]
+    T24["启动慢？"]
+    T25["导入开销？"]
+    T26["lazy import / module preload"]
+    T27["JIT 预热？"]
+    T28["考虑 PyPy / Numba"]
+    T0 --> T1
+    T9 --> T10
+    T16 --> T17
+    T23 --> T24
+    T24 --> T25
+    T24 --> T26
+    T26 --> T27
+    T27 --> T28
 ```
 
 ---

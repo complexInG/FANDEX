@@ -19,10 +19,11 @@ prerequisites:
   - python/装饰器进阶
   - python/描述符协议
 ---
+# Python 元类与描述符
 
-# 元类（Metaclass）：Python 类的造物主
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> "Metaclasses are deeper magic than 99% of users should ever worry about. If you wonder whether you need them, you don't." —— Tim Peters
+---
 
 ## 1. 学习目标（基于 Bloom 分类法）
 
@@ -1183,16 +1184,25 @@ class AnnotationMeta(type):
 
 **决策树**：
 
-```
-是否需要修改类的 __call__ 行为？
-├─ 是 → 必须用元类
-└─ 否 → 是否需要在类创建时收集字段/注册类？
-        ├─ 是 → 优先用 __init_subclass__
-        └─ 否 → 是否需要在类创建时修改方法？
-                ├─ 是 → 优先用类装饰器
-                └─ 否 → 是否需要自定义类命名空间容器？
-                        ├─ 是 → 必须用元类（__prepare__）
-                        └─ 否 → 不要用元类
+```mermaid
+flowchart TD
+    T0["是否需要修改类的 __call__ 行为？"]
+    T1["是 → 必须用元类"]
+    T2["否 → 是否需要在类创建时收集字段/注册类？"]
+    T3["是 → 优先用 __init_subclass__"]
+    T4["否 → 是否需要在类创建时修改方法？"]
+    T5["是 → 优先用类装饰器"]
+    T6["否 → 是否需要自定义类命名空间容器？"]
+    T7["是 → 必须用元类（__prepare__）"]
+    T8["否 → 不要用元类"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T2 --> T4
+    T4 --> T5
+    T4 --> T6
+    T6 --> T7
+    T6 --> T8
 ```
 
 ---
@@ -1983,7 +1993,7 @@ print(User.__create_table_sql__)
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题（记忆与理解）
 
@@ -2001,7 +2011,7 @@ print(isinstance(B, Meta))
 print(isinstance(Meta, type))
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```
 <class '__main__.Meta'>
@@ -2023,17 +2033,17 @@ class B(metaclass=M2): pass
 class C(A, B): pass
 ```
 
-**参考答案**：会报错。`TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases`。原因是 `C` 的基类 `A` 元类为 `M1`，`B` 元类为 `M2`，而 `M1` 与 `M2` 互不为子类，无法找到共同的子类元类。
+**解析讲解**：会报错。`TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases`。原因是 `C` 的基类 `A` 元类为 `M1`，`B` 元类为 `M2`，而 `M1` 与 `M2` 互不为子类，无法找到共同的子类元类。
 
 **题目 10.1.3**：解释 `type.__class__ is type` 与 `object.__class__ is type` 的含义。
 
-**参考答案**：`type.__class__ is type` 表示 `type` 是自身的元类（自指环，截断无限上升）。`object.__class__ is type` 表示 `object` 这个类是 `type` 的实例，即 `object` 也是一个由 `type` 创建的类。两者共同构成 Python 类型系统的"鸡生蛋"闭合结构。
+**解析讲解**：`type.__class__ is type` 表示 `type` 是自身的元类（自指环，截断无限上升）。`object.__class__ is type` 表示 `object` 这个类是 `type` 的实例，即 `object` 也是一个由 `type` 创建的类。两者共同构成 Python 类型系统的"鸡生蛋"闭合结构。
 
-### 10.2 应用题
+### 应用题知识点讲解
 
 **题目 10.2.1**：编写一个元类 `ValidatedMeta`，强制使用该元类的类中，所有方法必须有类型注解（即 `__annotations__` 必须包含 `return`）。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 class ValidatedMeta(type):
@@ -2059,7 +2069,7 @@ class Service(metaclass=ValidatedMeta):
 
 **题目 10.2.2**：用 `__init_subclass__` 重写题目 10.2.1，对比两种方案。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 class Service:
@@ -2083,7 +2093,7 @@ class MyService(Service):
 
 **题目 10.2.3**：编写一个元类 `SingletonMeta`，使所有使用该元类的类都成为单例，且支持 `clear()` 方法清除缓存。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 class SingletonMeta(type):
@@ -2140,7 +2150,7 @@ w3 = Widget("C")
 print(CountingMeta.counter)
 ```
 
-**参考答案**：
+**解析讲解**：
 
 ```
 Creating instance #1 of Widget
@@ -2153,7 +2163,7 @@ Creating instance #3 of Widget
 
 **题目 10.3.2**：以下代码中，`__prepare__` 返回 `OrderedDict`，但 Python 3.7+ 普通 `dict` 已保持插入顺序。`__prepare__` 还有何价值？给出两个使用场景。
 
-**参考答案**：
+**解析讲解**：
 
 `__prepare__` 在 Python 3.7+ 仍有以下价值：
 
@@ -2220,7 +2230,7 @@ class StrictMeta(type):
 4. 支持通过 `Plugin.get(name)` 获取插件类；
 5. 支持插件类被卸载（`Plugin.unregister(name)`）。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 class Plugin:
@@ -2267,7 +2277,7 @@ print(Plugin.all())  # {'json': <class 'JSONPlugin'>}
 
 **题目 10.5.2**：用元类实现一个"不可变类"工厂，使所有实例的属性在初始化后不可修改。
 
-**参考答案**：
+**解析讲解**：
 
 ```python
 class ImmutableMeta(type):
@@ -2309,11 +2319,11 @@ print(p.x, p.y)  # 1 2
 
 **题目 10.6.1**：为什么 Python 选择 `type` 作为自身的元类（自指），而不是引入一个"超元类"？
 
-**参考答案**：自指避免了无限回归（Smalltalk 的元类元类元类...问题）。从实现角度，CPython 在解释器初始化时静态分配 `type` 对象，使其 `ob_type` 指向自身，形成闭合环。从理论角度，自指对应于类型论中的"类型:type"递归类型（如 Martin-Löf 类型论中的 universes），是类型系统的自然选择。
+**解析讲解**：自指避免了无限回归（Smalltalk 的元类元类元类...问题）。从实现角度，CPython 在解释器初始化时静态分配 `type` 对象，使其 `ob_type` 指向自身，形成闭合环。从理论角度，自指对应于类型论中的"类型:type"递归类型（如 Martin-Löf 类型论中的 universes），是类型系统的自然选择。
 
 **题目 10.6.2**：元类与 AOP（面向切面编程）的关系是什么？元类能否完全实现 AOP？
 
-**参考答案**：元类是 Python 实现 AOP 的主要机制之一。通过元类，可以在类创建时：
+**解析讲解**：元类是 Python 实现 AOP 的主要机制之一。通过元类，可以在类创建时：
 
 - 自动为方法添加日志（前/后置增强）；
 - 自动为方法添加事务管理（环绕增强）；
@@ -2329,7 +2339,7 @@ print(p.x, p.y)  # 1 2
 
 **题目 10.6.3**：PEP 487 是否"消灭"了元类？哪些场景仍必须使用元类？
 
-**参考答案**：PEP 487 消灭了约 90% 的元类需求，但以下场景仍必须使用元类：
+**解析讲解**：PEP 487 消灭了约 90% 的元类需求，但以下场景仍必须使用元类：
 
 1. **修改类的 `__call__` 行为**：如单例、对象池、延迟初始化；
 2. **自定义类命名空间容器**：如 `__prepare__` 返回 `defaultdict` 或带校验的容器；
@@ -2339,7 +2349,7 @@ print(p.x, p.y)  # 1 2
 
 **题目 10.6.4**：如果让你设计 Python 4，你会保留元类吗？如何改进？
 
-**参考答案**（开放题，以下是一种可能的设计）：
+**解析讲解**：（开放题，以下是一种可能的设计）：
 
 保留元类，但做以下改进：
 
@@ -2814,47 +2824,47 @@ class ThreadSafeMeta(type):
 
 ### H.1 初级面试题
 
-**Q1**：什么是元类？请用一句话定义。
+**常见疑问 1**：什么是元类？请用一句话定义。
 
 **A**：元类是实例为类的类，即"类的类"。
 
-**Q2**：Python 中默认的元类是什么？
+**常见疑问 2**：Python 中默认的元类是什么？
 
 **A**：`type`。
 
-**Q3**：如何声明一个类使用自定义元类？
+**常见疑问 3**：如何声明一个类使用自定义元类？
 
 **A**：在 Python 3 中，使用 `class Foo(metaclass=MyMeta):`。
 
 ### H.2 中级面试题
 
-**Q4**：元类的 `__new__` 与 `__init__` 有何区别？
+**常见疑问 4**：元类的 `__new__` 与 `__init__` 有何区别？
 
 **A**：`__new__` 创建并返回类对象，可修改命名空间；`__init__` 在类创建后初始化类对象，可设置类属性但无法修改命名空间。
 
-**Q5**：什么是元类冲突？如何解决？
+**常见疑问 5**：什么是元类冲突？如何解决？
 
 **A**：多继承时，若多个基类的元类不同且无共同子类，会触发 `TypeError: metaclass conflict`。解决方案是定义一个同时继承所有基类元类的桥接元类。
 
-**Q6**：元类与类装饰器有何区别？
+**常见疑问 6**：元类与类装饰器有何区别？
 
 **A**：元类在类创建时运行，可修改命名空间、控制实例化；类装饰器在类创建后运行，仅能修改类的 `__dict__`。元类可向子类传播，类装饰器不会。
 
 ### H.3 高级面试题
 
-**Q7**：为什么 `type.__class__ is type`？这是否构成悖论？
+**常见疑问 7**：为什么 `type.__class__ is type`？这是否构成悖论？
 
 **A**：这是 Python 的自指设计，截断元类层级的无限上升。`type` 在 CPython 中是静态分配的对象，其 `ob_type` 指向自身。这不构成逻辑悖论，因为"实例化"是语义自指，而非"集合属于"的语义自指。
 
-**Q8**：PEP 487 引入的 `__init_subclass__` 是否使元类过时？
+**常见疑问 8**：PEP 487 引入的 `__init_subclass__` 是否使元类过时？
 
 **A**：未完全过时。`__init_subclass__` 替代了约 90% 的元类场景（如字段收集、接口检查、插件注册），但以下场景仍需元类：修改 `__call__` 行为、自定义命名空间容器（`__prepare__`）、拦截实例化、实现抽象基类严格检查。
 
-**Q9**：如何调试元类代码？
+**常见疑问 9**：如何调试元类代码？
 
 **A**：1) 在元类 `__new__`/`__init__` 中打印日志；2) 使用 `traceback.print_stack()` 追踪调用栈；3) 检查 `cls.__class__`、`cls.__bases__`、`cls.__dict__`；4) 用 `print_metaclass_chain` 工具可视化元类链。
 
-**Q10**：设计一个生产级 ORM 元类，需要考虑哪些因素？
+**常见疑问 10**：设计一个生产级 ORM 元类，需要考虑哪些因素？
 
 **A**：1) 字段收集与继承；2) 表名推断与覆盖；3) 主键自动添加；4) 外键关系解析；5) 索引声明；6) 字段类型校验；7) 默认值处理；8) 与查询集（QuerySet）集成；9) 序列化支持；10) 迁移生成；11) 多数据库后端兼容；12) 线程安全；13) 性能优化（如延迟字段解析）；14) 类型注解协同；15) IDE 支持（`.pyi` 存根）。
 
@@ -3194,3 +3204,258 @@ Python 之禅（PEP 20）说"应该有一种——最好只有一种——显而
 本节涵盖了元类的形式化定义、理论推导、代码示例、对比分析、陷阱反模式、工程实践、案例研究与习题，旨在为学习者提供从入门到精通的完整路径。建议读者在掌握基础概念后，研读 Django ORM、Pydantic 等生产级元类源码，深化理解。
 
 > "元类是 99% 的开发者无需担心的深层魔法。但当你真正需要它时，理解它的本质远胜于套用模板。" —— 改编自 Tim Peters
+## type 动态创建类
+
+**基本写法：type 三参数创建类**
+`type(<类名>, <父类元组>, <属性字典>)`
+```python
+# 动态创建一个类
+MyClass = type("MyClass", (), {"x": 10, "greet": lambda self: "hi"})
+obj = MyClass()
+print(obj.x, obj.greet())  # 10 hi
+```
+
+**基本写法：带父类动态创建**
+`type(<类名>, (<父类>,), <属性>)`
+```python
+# 继承父类动态创建
+class Base:
+    def show(self):
+        return "base"
+
+Derived = type("Derived", (Base,), {"y": 20})
+print(Derived().show())  # base
+```
+
+---
+
+## 自定义元类
+
+**换行写法：定义元类**
+`class <元类>(type):`
+`    def __new__(mcs, name, bases, ns): <语句>`
+```python
+# 通过元类统一改造类创建过程
+class Meta(type):
+    def __new__(mcs, name, bases, namespace):
+        namespace["created_by"] = "Meta"
+        return super().__new__(mcs, name, bases, namespace)
+
+class Foo(metaclass=Meta):
+    pass
+
+print(Foo.created_by)  # Meta
+```
+
+**基本写法：使用元类**
+`class <类>(metaclass=<元类>):`
+```python
+# 指定类创建时使用的元类
+class SingletonMeta(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super().__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class DB(metaclass=SingletonMeta):
+    pass
+
+a, b = DB(), DB()
+print(a is b)  # True
+```
+
+**基本写法：元类拦截属性**
+`def __init_subclass__(cls, **<参数>):`
+```python
+# 子类创建时触发，无需自定义元类
+class Plugin:
+    registry = []
+    def __init_subclass__(cls, name=None, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if name:
+            Plugin.registry.append(name)
+
+class Foo(Plugin, name="foo"):
+    pass
+
+print(Plugin.registry)  # ['foo']
+```
+
+**基本写法：类参数化**
+`def __class_getitem__(cls, <参数>):`
+```python
+# 支持 SomeClass[int] 形式
+class Container:
+    def __class_getitem__(cls, item):
+        return f"Container[{item.__name__}]"
+
+print(Container[int])  # Container[int]
+```
+
+---
+
+## 描述符协议
+
+**基本写法：定义描述符**
+`class <描述符>:`
+`    def __get__(self, obj, owner): <语句>`
+```python
+# 实现描述符协议的对象作为类属性时被特殊处理
+class TypedField:
+    def __init__(self, expected_type):
+        self.expected_type = expected_type
+    def __get__(self, obj, owner):
+        return obj.__dict__.get(self.name)
+    def __set_name__(self, owner, name):
+        self.name = name
+    def __set__(self, obj, value):
+        if not isinstance(value, self.expected_type):
+            raise TypeError(f"{self.name} 需要 {self.expected_type}")
+        obj.__dict__[self.name] = value
+
+class User:
+    age = TypedField(int)
+
+u = User()
+u.age = 18
+# u.age = "x"  # 抛出 TypeError
+```
+
+**基本写法：数据描述符**
+`__get__ + __set__`
+```python
+# 同时定义 __get__ 和 __set__ 为数据描述符
+# 优先级高于实例字典
+class Validator:
+    def __get__(self, obj, owner):
+        return obj.__dict__.get("_val")
+    def __set__(self, obj, value):
+        if value < 0:
+            raise ValueError("不能为负")
+        obj.__dict__["_val"] = value
+```
+
+**基本写法：非数据描述符**
+`仅 __get__`
+```python
+# 只定义 __get__ 为非数据描述符
+# 实例字典优先级高于它
+class Const:
+    def __init__(self, value):
+        self.value = value
+    def __get__(self, obj, owner):
+        return self.value
+
+class Config:
+    version = Const("1.0.0")
+
+print(Config().version)  # 1.0.0
+```
+
+**基本写法：删除描述符**
+`def __delete__(self, obj):`
+```python
+# 实现删除拦截
+class Protected:
+    def __get__(self, obj, owner):
+        return obj._data
+    def __delete__(self, obj):
+        raise PermissionError("禁止删除")
+```
+
+**基本写法：__set_name__ 自动命名**
+`def __set_name__(self, owner, <属性名>):`
+```python
+# 类创建时自动获取属性名
+class Field:
+    def __set_name__(self, owner, name):
+        self.name = name
+    def __get__(self, obj, owner):
+        return obj.__dict__.get(self.name)
+```
+
+---
+
+## property 内置描述符
+
+**基本写法：property 定义**
+`property(<fget>, [fset], [fdel], [doc])`
+```python
+# property 本质是数据描述符
+class Temperature:
+    def __init__(self):
+        self._c = 0
+    @property
+    def celsius(self):
+        return self._c
+    @celsius.setter
+    def celsius(self, value):
+        self._c = value
+
+t = Temperature()
+t.celsius = 25
+```
+
+---
+
+## 元类与描述符组合
+
+**换行写法：元类收集描述符**
+`class <元类>(type):`
+`    def __new__(mcs, name, bases, ns): <收集描述符>`
+```python
+# ORM 风格字段收集
+class Field:
+    def __set_name__(self, owner, name):
+        self.name = name
+
+class ModelMeta(type):
+    def __new__(mcs, name, bases, ns):
+        fields = {k: v for k, v in ns.items() if isinstance(v, Field)}
+        ns["_fields"] = fields
+        return super().__new__(mcs, name, bases, ns)
+
+class Model(metaclass=ModelMeta):
+    pass
+
+class User(Model):
+    id = Field()
+    name = Field()
+
+print(User._fields.keys())  # dict_keys(['id', 'name'])
+```
+
+---
+
+## abstractmethod 抽象方法
+
+**基本写法：抽象基类**
+`from abc import ABC, abstractmethod`
+```python
+# 强制子类实现抽象方法
+from abc import ABC, abstractmethod
+
+class Animal(ABC):
+    @abstractmethod
+    def sound(self):
+        ...
+
+class Dog(Animal):
+    def sound(self):
+        return "汪"
+
+# Animal()  # 抛出 TypeError
+print(Dog().sound())  # 汪
+```
+
+**基本写法：抽象属性**
+`@property @abstractmethod`
+```python
+# 强制子类实现属性
+class Shape(ABC):
+    @property
+    @abstractmethod
+    def area(self):
+        ...
+```

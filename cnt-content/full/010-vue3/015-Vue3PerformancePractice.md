@@ -1011,7 +1011,7 @@ const selectedCount = computed(() => rows.value.filter((r) => r.selected).length
         <td>{{ row.age }}</td>
         <td>{{ row.department }}</td>
         <td>{{ row.salary }}</td>
-        <td>{{ row.selected ? '✓' : '' }}</td>
+        <td>{{ row.selected ? '√' : '' }}</td>
       </tr>
     </tbody>
   </table>
@@ -2391,9 +2391,9 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 
 ---
 
-## 10. 习题 | Exercises
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：下列哪个 API 不会触发深度响应式转换？
 
@@ -2402,18 +2402,15 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - C. `shallowReactive`
 - D. `readonly`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：
+**解析讲解**：
 - `reactive`：深度响应式，递归转换所有嵌套属性。
 - `ref`：对对象类型使用 `reactive` 进行深度转换。
 - `shallowReactive`：只对第一层属性响应式，嵌套属性不转换。
 - `readonly`：深度只读，但仍保留响应式。
 
-</details>
 
 **题目 2**：Vue 3 编译器生成的 PatchFlag 的作用是？
 
@@ -2422,14 +2419,11 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - C. 标记静态节点以提升到渲染函数外
 - D. 标记组件是否使用 SSR
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：PatchFlag 是编译器为动态节点附加的整数标记，表示该节点在更新时需要被 Patch 的部分（如 TEXT、CLASS、STYLE、PROPS）。运行时 Diff 算法根据 PatchFlag 只比对动态部分，跳过静态部分，将复杂度从 $O(n)$ 降至 $O(d)$。
+**解析讲解**：PatchFlag 是编译器为动态节点附加的整数标记，表示该节点在更新时需要被 Patch 的部分（如 TEXT、CLASS、STYLE、PROPS）。运行时 Diff 算法根据 PatchFlag 只比对动态部分，跳过静态部分，将复杂度从 $O(n)$ 降至 $O(d)$。
 
-</details>
 
 **题目 3**：关于 `v-memo` 指令，下列说法错误的是？
 
@@ -2438,14 +2432,11 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - C. `v-memo` 可以用于任何元素，包括组件
 - D. `v-memo` 适合用于所有 `v-for` 列表
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：`v-memo` 适合用于依赖变化少、子树渲染开销大的场景。对于简单的列表项（如纯文本），`v-memo` 的依赖比对开销可能大于其节省的渲染开销，反而降低性能。`v-memo` 应当用于复杂子树（如多列表格、嵌套组件）。
+**解析讲解**：`v-memo` 适合用于依赖变化少、子树渲染开销大的场景。对于简单的列表项（如纯文本），`v-memo` 的依赖比对开销可能大于其节省的渲染开销，反而降低性能。`v-memo` 应当用于复杂子树（如多列表格、嵌套组件）。
 
-</details>
 
 **题目 4**：KeepAlive 的 `max` 属性使用的数据结构是？
 
@@ -2454,14 +2445,11 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - C. LRU 缓存
 - D. 哈希表
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：KeepAlive 使用 LRU（Least Recently Used，最近最少使用）缓存算法。当缓存的组件数量超过 `max` 时，淘汰最近最少访问的组件。LRU 通过双向链表 + 哈希表实现，查询、插入、淘汰均为 $O(1)$。
+**解析讲解**：KeepAlive 使用 LRU（Least Recently Used，最近最少使用）缓存算法。当缓存的组件数量超过 `max` 时，淘汰最近最少访问的组件。LRU 通过双向链表 + 哈希表实现，查询、插入、淘汰均为 $O(1)$。
 
-</details>
 
 **题目 5**：下列哪种情况不会触发 Vue 3 的响应式更新？
 
@@ -2470,63 +2458,45 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - C. 修改 `shallowRef.value` 的嵌套属性
 - D. 修改 `shallowReactive` 对象的第一层属性
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：`shallowRef` 只追踪 `.value` 本身的变化，不深度追踪 `.value` 内部属性的变化。修改 `shallowRef.value` 的嵌套属性不会触发更新，需要调用 `triggerRef` 手动触发。
+**解析讲解**：`shallowRef` 只追踪 `.value` 本身的变化，不深度追踪 `.value` 内部属性的变化。修改 `shallowRef.value` 的嵌套属性不会触发更新，需要调用 `triggerRef` 手动触发。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：Vue 3 的响应式系统使用 ES6 的 ________ 替代了 Vue 2 的 `Object.defineProperty`。
 
-<details>
-<summary>答案</summary>
 
 Proxy
 
-</details>
 
 **题目 2**：Vue 3 编译器通过 ________ 算法将虚拟 DOM 的 Diff 复杂度从 $O(n)$ 降至 $O(d)$，其中 $d$ 为动态节点数。
 
-<details>
-<summary>答案</summary>
 
 Block Tree + PatchFlag
 
-</details>
 
 **题目 3**：`computed` 属性的缓存失效条件是 ________。
 
-<details>
-<summary>答案</summary>
 
 任一依赖项发生变化（dirty 标记为 true）
 
-</details>
 
 **题目 4**：Vue 3 中，使用 ________ API 可以将一个对象标记为永不响应式，跳过 Proxy 转换。
 
-<details>
-<summary>答案</summary>
 
 `markRaw`
 
-</details>
 
 **题目 5**：HTTP/2 相比 HTTP/1.1 的关键性能优势是 ________，允许在同一 TCP 连接上并行传输多个请求。
 
-<details>
-<summary>答案</summary>
 
 多路复用（Multiplexing）
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个性能优化的可编辑大型表格组件，要求：
 
@@ -2724,8 +2694,6 @@ export function useCachedRequest<T>(
 
 **题目 1**：为什么 Vue 3 选择 Proxy 而不是 `Object.defineProperty`？请从能力、性能、兼容性三个维度分析。
 
-<details>
-<summary>参考答案</summary>
 
 1. **能力维度**：
    - Proxy 可以监听属性的新增与删除，`Object.defineProperty` 不能。
@@ -2740,24 +2708,18 @@ export function useCachedRequest<T>(
    - Proxy 是 ES6 特性，不支持 IE11；`Object.defineProperty` 是 ES5，支持 IE9+。
    - Vue 3 放弃 IE11 支持，因此选择 Proxy。Vue 2.7 作为 Vue 2 的最后一个版本，仍支持 IE11。
 
-</details>
 
 **题目 2**：在什么场景下应该使用 `shallowRef` 而不是 `ref`？请给出至少 3 个具体场景。
 
-<details>
-<summary>参考答案</summary>
 
 1. **大型数据列表**：万级以上的数据列表，深度响应式转换开销大，且通常整列表替换而非逐项修改。
 2. **第三方库实例**：Monaco Editor、ECharts、Leaflet 等第三方库的实例，内部已有自己的事件系统，响应式转换会导致性能问题。
 3. **静态配置对象**：如路由配置、菜单配置等不会动态修改的对象，无需深度响应式。
 4. **复杂嵌套对象**：深度嵌套的对象（如 DOM 树、AST），深度响应式转换开销大于收益。
 
-</details>
 
 **题目 3**：如何在一个 Vue 3 应用中实现性能监控？请设计一套完整的监控方案。
 
-<details>
-<summary>参考答案</summary>
 
 完整方案应包括：
 
@@ -2785,12 +2747,9 @@ export function useCachedRequest<T>(
    - 性能预算检查。
    - 性能回退阻断合并。
 
-</details>
 
 **题目 4**：对比 CSR、SSR、SSG、ISR 四种渲染策略，分析各自的适用场景与性能权衡。
 
-<details>
-<summary>参考答案</summary>
 
 | 策略 | 首屏速度 | SEO | 服务器成本 | 实时性 | 适用场景 |
 |------|----------|-----|------------|--------|----------|
@@ -2811,12 +2770,9 @@ export function useCachedRequest<T>(
 - SSG：VitePress、Nuxt 3 SSG 模式
 - ISR：Nuxt 3 + Nitro ISR
 
-</details>
 
 **题目 5**：请分析 `computed` 与 `watch` 的执行时机差异，并说明何时使用何者。
 
-<details>
-<summary>参考答案</summary>
 
 **执行时机差异**：
 
@@ -2842,7 +2798,6 @@ export function useCachedRequest<T>(
 - 副作用 + 自动依赖收集用 `watchEffect`。
 - 避免在 `watch` 中修改被监听的数据，可能导致无限循环。
 
-</details>
 
 ---
 
@@ -3034,3 +2989,374 @@ export function useCachedRequest<T>(
 ---
 
 *本文档对标 MIT 6.170 Software Studio、Stanford CS142 Web Applications、CMU 17-437 Engineering of Web Applications 课程水准，旨在为 Vue 3 开发者提供系统化、工程化的性能优化参考。*
+## 列表 key 优化
+
+**基本写法：为 v-for 提供稳定 key**
+`<div v-for="<项> in <列表>" :key="<项>.id">`
+```vue
+<!-- 使用业务 id 而非 index -->
+<div v-for="item in list" :key="item.id">{{ item.name }}</div>
+```
+
+---
+
+## v-show 与 v-if 选择
+
+**基本写法：频繁切换用 v-show**
+`<div v-show="<可见>">`
+```vue
+<!-- 仅切换 display 频繁切换成本低 -->
+<div v-show="open">面板</div>
+```
+
+---
+
+**基本写法：条件少变用 v-if**
+`<div v-if="<条件>">`
+```vue
+<!-- 真正销毁与创建 不常用更省内存 -->
+<div v-if="loaded">内容</div>
+```
+
+---
+
+## 计算属性缓存
+
+**基本写法：用 computed 替代方法**
+`const <c> = computed(() => <计算>)`
+```ts
+// 缓存结果避免重复计算
+const total = computed(() => items.value.reduce((s, i) => s + i.price, 0));
+```
+
+---
+
+## shallowRef 大型数据
+
+**基本写法：大对象用 shallowRef**
+`const <data> = shallowRef(<大对象>)`
+```ts
+// 跳过深层代理提升性能
+const bigList = shallowRef({ items: hugeArray });
+bigList.value = { items: newHugeArray };
+```
+
+---
+
+## markRaw 第三方实例
+
+**基本写法：标记不被代理**
+`const <raw> = markRaw(<对象>)`
+```ts
+// 避免代理第三方库实例
+const chart = markRaw(echarts.init(dom));
+```
+
+---
+
+## 异步组件懒加载
+
+**基本写法：defineAsyncComponent 按需加载**
+`const <comp> = defineAsyncComponent(() => import('<路径>'))`
+```ts
+// 路由级或重组件懒加载
+const Heavy = defineAsyncComponent(() => import('./Heavy.vue'));
+```
+
+---
+
+**基本写法：配置加载与错误组件**
+`defineAsyncComponent({ loader, loadingComponent, errorComponent })`
+```ts
+// 提升用户体验
+const Async = defineAsyncComponent({
+  loader: () => import('./Heavy.vue'),
+  loadingComponent: Loading,
+  errorComponent: Error
+});
+```
+
+---
+
+## KeepAlive 缓存组件
+
+**基本写法：缓存切换的组件实例**
+`<keep-alive> <组件 /> </keep-alive>`
+```vue
+<!-- 保留状态避免重新创建 -->
+<keep-alive>
+  <component :is="currentTab" />
+</keep-alive>
+```
+
+---
+
+**基本写法：限定缓存**
+`<keep-alive include="<组件名>">`
+```vue
+<!-- 仅缓存指定组件 -->
+<keep-alive include="User,Order">
+  <component :is="current" />
+</keep-alive>
+```
+
+---
+
+**基本写法：缓存数量限制**
+`<keep-alive :max="<数量>">`
+```vue
+<!-- 限制缓存实例数 -->
+<keep-alive :max="10">
+  <component :is="current" />
+</keep-alive>
+```
+
+---
+
+## v-once 一次性渲染
+
+**基本写法：静态内容只渲染一次**
+`<div v-once>{{ <静态值> }}</div>`
+```vue
+<!-- 提升后续更新性能 -->
+<header v-once>{{ title }}</header>
+```
+
+---
+
+## v-memo 选择性更新
+
+**基本写法：依赖未变跳过更新**
+`<div v-memo="[<依赖1>, <依赖2>]">`
+```vue
+<!-- 依赖数组不变时跳过 patch -->
+<div v-memo="[item.id, item.selected]">
+  {{ item.name }}
+</div>
+```
+
+---
+
+## 虚拟列表长列表
+
+**基本写法：使用虚拟滚动**
+`<VirtualList :data="<大列表>" :item-size="<高度>" />`
+```ts
+// 借助 vue-virtual-scroller
+import { RecycleScroller } from 'vue-virtual-scroller';
+<RecycleScroller :items="items" :item-size="40">
+  <template #default="{ item }">{{ item.name }}</template>
+</RecycleScroller>
+```
+
+---
+
+## 事件防抖节流
+
+**基本写法：搜索输入防抖**
+`const <debounced> = useDebounceFn(<fn>, <延迟>)`
+```ts
+// 借助 VueUse
+import { useDebounceFn } from '@vueuse/core';
+const onSearch = useDebounceFn(search, 300);
+```
+
+---
+
+## 图片懒加载
+
+**基本写法：使用 v-lazy 或原生 loading**
+`<img loading="lazy" />`
+```vue
+<!-- 原生懒加载 -->
+<img src="/a.jpg" loading="lazy" />
+```
+
+---
+
+**基本写法：IntersectionObserver 自定义**
+`const { <isVisible> } = useIntersectionObserver(<ref>)`
+```ts
+// VueUse 提供组合式函数
+import { useIntersectionObserver } from '@vueuse/core';
+const target = ref(null);
+const { stop } = useIntersectionObserver(target, ([{ isIntersecting }]) => {
+  if (isIntersecting) load();
+});
+```
+
+---
+
+## 组件拆分
+
+**基本写法：将重型组件拆分为子组件**
+`function <HeavyChild>() {}`
+```vue
+<!-- 拆分后细粒度更新 -->
+<script setup>
+import HeavyChild from './HeavyChild.vue';
+</script>
+<template><HeavyChild :data="data" /></template>
+```
+
+---
+
+## 依赖未变避免更新
+
+**基本写法：使用 computed 衍生数据**
+`const <derived> = computed(() => <原始>.filter(<条件>))`
+```ts
+// 原始未变时复用衍生
+const active = computed(() => list.value.filter(i => i.active));
+```
+
+---
+
+## Pinia 优化
+
+**基本写法：按需订阅 store**
+`const <字段> = storeToRefs(<store>)`
+```ts
+// 只订阅需要的字段
+const { count } = storeToRefs(counterStore);
+```
+
+---
+
+## 路由懒加载
+
+**基本写法：路由组件动态导入**
+`component: () => import('<路径>')`
+```ts
+// 路由配置懒加载
+const routes = [
+  { path: '/user', component: () => import('./User.vue') }
+];
+```
+
+---
+
+## 避免深层响应
+
+**基本写法：大对象用 shallowReactive**
+`const <state> = shallowReactive(<大对象>)`
+```ts
+// 仅根属性响应减少代理开销
+const state = shallowReactive({ config: hugeConfig });
+```
+
+---
+
+## CSS 优化
+
+**基本写法：使用 scoped 隔离样式**
+`<style scoped>`
+```vue
+<!-- 避免全局污染 -->
+<style scoped>
+.title { color: red; }
+</style>
+```
+
+---
+
+## v-for 与 v-if 优先级
+
+**基本写法：避免同时使用 v-for 与 v-if**
+`<div v-for="x in list" v-if="x.show"> // 不推荐`
+```vue
+<!-- 推荐用 computed 过滤 -->
+<div v-for="x in filteredList">{{ x.name }}</div>
+```
+
+---
+
+## 静态资源压缩
+
+**基本写法：构建时压缩图片**
+`vite-plugin-imagemin`
+```bash
+# 安装图片压缩插件
+npm install -D vite-plugin-imagemin
+```
+
+---
+
+## 包体积分析
+
+**基本写法：分析打包体积**
+`rollup-plugin-visualizer`
+```bash
+# 可视化依赖体积
+npm install -D rollup-plugin-visualizer
+```
+
+---
+
+## tree shaking 按需引入
+
+**基本写法：按需导入工具函数**
+`import { <函数> } from '<库>'`
+```ts
+// 仅打包使用部分
+import { debounce } from 'lodash-es';
+```
+
+---
+
+## SSR 优化首屏
+
+**基本写法：服务端渲染提升首屏**
+`renderToString(<app>)`
+```ts
+// 首屏直出 HTML 利于 SEO
+const html = await renderToString(app);
+```
+
+---
+
+## 性能分析
+
+**基本写法：Vue DevTools 性能面板**
+`npm run dev`
+```bash
+# 浏览器扩展分析组件渲染耗时
+# 安装 Vue DevTools 扩展
+```
+
+---
+
+## defineModel 优化双向绑定
+
+**基本写法：Vue 3.4+ 简化 v-model**
+`const <model> = defineModel()`
+```vue
+<!-- 替代手动 props 与 emits -->
+<script setup>
+const model = defineModel();
+</script>
+<template><input v-model="model" /></template>
+```
+
+---
+
+## 编译优化提示
+
+**基本写法：静态提升与补丁标记**
+`<div class="static">静态</div>`
+```vue
+<!-- 编译器自动提升静态节点 -->
+<div class="static">静态内容</div>
+```
+
+---
+
+## 减少响应式开销
+
+**基本写法：基础值用 ref 对象用 reactive**
+`const <n> = ref(0); const <obj> = reactive({})`
+```ts
+// 根据类型选择合适 API
+const count = ref(0);
+const state = reactive({ list: [] });
+```

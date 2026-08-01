@@ -2420,9 +2420,9 @@ function defensiveCopy(obj) {
 
 ---
 
-## 23. 习题
+## 知识讲解与要点分析（原习题）
 
-### 23.1 填空题
+### 填空题知识点讲解
 
 **习题 1**(remember):Proxy 提供的陷阱数量是 ______ 种,其中 `apply` 陷阱只能用于 ______ 类型的 target。
 
@@ -2430,7 +2430,7 @@ function defensiveCopy(obj) {
 
 **习题 3**(remember):代理不变量是规范定义的 ______,违反时引擎抛出 ______ 错误。
 
-### 23.2 选择题
+### 选择题知识点讲解
 
 **习题 4**(understand):以下代码的输出是?
 ```javascript

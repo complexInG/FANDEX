@@ -326,7 +326,7 @@ x  = 12 = 0b1100, ctz(12) = 2, lowbit(12) = 2^2 = 4  = 0b0100
 x  = 7  = 0b0111, ctz(7)  = 0, lowbit(7)  = 2^0 = 1  = 0b0001
 x  = 8  = 0b1000, ctz(8)  = 3, lowbit(8)  = 2^3 = 8  = 0b1000
 x  = 16 = 0b10000, ctz(16) = 4, lowbit(16) = 2^4 = 16 = 0b10000
--x = -6 = 0b1010 (补码), 6 & (-6) = 0b0110 & 0b1010 = 0b0010 = 2 ✓
+-x = -6 = 0b1010 (补码), 6 & (-6) = 0b0110 & 0b1010 = 0b0010 = 2 √
 ```
 
 ### 3.2 树状数组的结构定义
@@ -1577,51 +1577,51 @@ CREATE TABLE column_stats (
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**（easy）下列关于树状数组的描述，正确的是：
+**常见疑问 1**：（easy）下列关于树状数组的描述，正确的是：
 
 A. 树状数组的 tree 数组使用 0-indexed
 B. 树状数组的 tree[i] 管辖区间 $[i - \text{lowbit}(i), i]$
 C. 树状数组单点更新的时间复杂度为 $O(\log n)$
 D. 树状数组原生支持区间最值查询
 
-**Q2**（medium）在长度为 16 的数组上，update(5, 1) 会修改哪些 tree 元素？
+**常见疑问 2**：（medium）在长度为 16 的数组上，update(5, 1) 会修改哪些 tree 元素？
 
 A. tree[5], tree[6], tree[8], tree[16]
 B. tree[5], tree[7], tree[9], tree[17]
 C. tree[5], tree[10], tree[12], tree[16]
 D. tree[5], tree[6], tree[10], tree[16]
 
-**Q3**（medium）差分树状数组中，range_add(l, r, delta) 等价于：
+**常见疑问 3**：（medium）差分树状数组中，range_add(l, r, delta) 等价于：
 
 A. update(l, delta)
 B. update(l, delta); update(r, -delta)
 C. update(l, delta); update(r + 1, -delta)
 D. update(l, delta); update(r + 1, delta)
 
-**Q4**（hard）关于双树状数组实现区间更新 + 区间查询，下列说法错误的是：
+**常见疑问 4**：（hard）关于双树状数组实现区间更新 + 区间查询，下列说法错误的是：
 
 A. 需要 t1 维护差分数组 $d[i]$
 B. 需要 t2 维护 $d[i] \cdot i$
 C. 前缀和 $S(x) = (x+1) \cdot \text{query}(t1, x) - \text{query}(t2, x)$
 D. range_add 操作需要 6 次单点更新
 
-### 10.2 填空题
+### 填空题知识点讲解
 
-**Q5**（easy）树状数组由 Peter M. Fenwick 在 ____ 年提出，发表于期刊《____》，DOI 为 ____。
+**常见疑问 5**：（easy）树状数组由 Peter M. Fenwick 在 ____ 年提出，发表于期刊《____》，DOI 为 ____。
 
-**Q6**（medium）lowbit(x) 的经典位运算实现为 ____。当 x = 12 (0b1100) 时，lowbit(x) = ____。
+**常见疑问 6**：（medium）lowbit(x) 的经典位运算实现为 ____。当 x = 12 (0b1100) 时，lowbit(x) = ____。
 
-**Q7**（medium）在长度为 n 的数组上，BIT 的空间复杂度为 ____，单点更新的时间复杂度为 ____，前缀查询的时间复杂度为 ____。
+**常见疑问 7**：（medium）在长度为 n 的数组上，BIT 的空间复杂度为 ____，单点更新的时间复杂度为 ____，前缀查询的时间复杂度为 ____。
 
-**Q8**（hard）双树状数组实现区间更新 + 区间查询时，前缀和公式为 $S(x) = $ ____ · query(t1, x) - query(t2, x)。
+**常见疑问 8**：（hard）双树状数组实现区间更新 + 区间查询时，前缀和公式为 $S(x) = $ ____ · query(t1, x) - query(t2, x)。
 
 ### 10.3 代码修正题
 
-**Q9**（medium）以下 Python 代码计算逆序对，但存在 bug，请修正：
+**常见疑问 9**：（medium）以下 Python 代码计算逆序对，但存在 bug，请修正：
 
 ```python
 def count_inversions_buggy(arr):
@@ -1637,7 +1637,7 @@ def count_inversions_buggy(arr):
     return inversions
 ```
 
-**Q10**（hard）以下 C++ 代码实现差分 BIT 的 range_add，但存在 bug：
+**常见疑问 10**：（hard）以下 C++ 代码实现差分 BIT 的 range_add，但存在 bug：
 
 ```cpp
 void rangeAddBug(int l, int r, long long delta) {
@@ -1648,19 +1648,19 @@ void rangeAddBug(int l, int r, long long delta) {
 
 ### 10.4 开放论述题
 
-**Q11**（medium）论述树状数组相对于线段树的优势与劣势。在什么场景下应优先选择 BIT？什么场景下应优先选择线段树？
+**常见疑问 11**：（medium）论述树状数组相对于线段树的优势与劣势。在什么场景下应优先选择 BIT？什么场景下应优先选择线段树？
 
-**Q12**（hard）假设你需要设计一个搜索引擎的倒排索引，需要支持：①新增文档时更新词频；②查询包含某词的文档数；③查询词频排名前 k 的词。请设计数据结构并分析复杂度。BIT 是否适用？如不适用，提出替代方案。
+**常见疑问 12**：（hard）假设你需要设计一个搜索引擎的倒排索引，需要支持：①新增文档时更新词频；②查询包含某词的文档数；③查询词频排名前 k 的词。请设计数据结构并分析复杂度。BIT 是否适用？如不适用，提出替代方案。
 
-**Q13**（hard）分析双树状数组实现区间更新 + 区间查询的数学原理。推导前缀和公式 $S(x) = (x+1) \cdot \text{query}(t1, x) - \text{query}(t2, x)$。
+**常见疑问 13**：（hard）分析双树状数组实现区间更新 + 区间查询的数学原理。推导前缀和公式 $S(x) = (x+1) \cdot \text{query}(t1, x) - \text{query}(t2, x)$。
 
-**Q14**（medium）二维树状数组的时间复杂度为 $O(\log^2 n)$，而二维线段树为 $O(\log^2 n)$。两者在常数因子、实现复杂度、可扩展性上有何差异？
+**常见疑问 14**：（medium）二维树状数组的时间复杂度为 $O(\log^2 n)$，而二维线段树为 $O(\log^2 n)$。两者在常数因子、实现复杂度、可扩展性上有何差异？
 
 ---
 
 ## 11. 参考答案
 
-### 11.1 选择题答案
+### 选择题知识点讲解
 
 **A1**: **C**。BIT 单点更新沿前向 lowbit 链，长度 $O(\log n)$。A 错（BIT 使用 1-indexed）；B 错（应管辖 $[i - \text{lowbit}(i) + 1, i]$）；D 错（BIT 仅支持可逆运算如加法，不支持 max/min）。
 
@@ -1676,7 +1676,7 @@ void rangeAddBug(int l, int r, long long delta) {
 
 **A4**: **D**。range_add 只需 4 次单点更新：t1 在 l 与 r+1 各更新一次（共 2 次），t2 在 l 与 r+1 各更新一次（共 2 次），总计 4 次。
 
-### 11.2 填空题答案
+### 填空题知识点讲解
 
 **A5**: 1994；《Software: Practice and Experience》；10.1002/spe.4380240306
 

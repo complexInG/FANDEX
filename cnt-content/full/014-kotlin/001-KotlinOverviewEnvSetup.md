@@ -15,10 +15,11 @@ related:
   - java/概述与开发环境
 prerequisites: []
 ---
+# Kotlin Channel 通道
 
-# Kotlin 概述与环境配置（Kotlin Overview and Environment Setup）
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文档对标 MIT 6.005 Software Construction、Stanford CS193P iOS Development、CMU 15-214 Software Engineering 等海外名校入门课程的教学水准，系统讲解 Kotlin 语言的设计哲学、历史脉络、运行平台、生态系统与开发环境搭建。本文不假设读者具备 Java 或任何特定语言的前置经验，所有概念均由浅入深、从"为什么"到"怎么做"逐层展开。完成本文学习后，读者将能够独立搭建 Kotlin 多平台开发环境、编写第一个可运行的 Kotlin 程序，并理解 Kotlin 在现代软件工程中的定位与价值。
+---
 
 ## 目录
 
@@ -419,17 +420,25 @@ fun add(a: Int, b: Int): Int = a + b
 
 对应的 AST（简化）：
 
-```
-FunctionDeclaration
-├── name: "add"
-├── parameters
-│   ├── Parameter(name: "a", type: Int)
-│   └── Parameter(name: "b", type: Int)
-├── returnType: Int
-└── body
-    └── BinaryExpression(op: "+")
-        ├── Reference("a")
-        └── Reference("b")
+```mermaid
+flowchart TD
+    T0["FunctionDeclaration"]
+    T1["name: 'add'"]
+    T2["parameters"]
+    T3["Parameter(name: 'a', type: Int)"]
+    T4["Parameter(name: 'b', type: Int)"]
+    T5["returnType: Int"]
+    T6["body"]
+    T7["BinaryExpression(op: '+')"]
+    T8["Reference('a')"]
+    T9["Reference('b')"]
+    T0 --> T1
+    T0 --> T2
+    T4 --> T5
+    T4 --> T6
+    T6 --> T7
+    T7 --> T8
+    T7 --> T9
 ```
 
 #### 4.1.3 语义分析（Semantic Analysis）
@@ -1274,51 +1283,81 @@ class MyService(private val config: Config) {
 
 推荐的 Kotlin/JVM 项目结构：
 
-```
-my-app/
-├── build.gradle.kts
-├── settings.gradle.kts
-├── gradle.properties
-├── gradle/
-│   └── libs.versions.toml
-├── gradlew
-├── gradlew.bat
-└── src/
-    ├── main/
-    │   ├── kotlin/
-    │   │   └── com/example/myapp/
-    │   │       ├── Main.kt
-    │   │       ├── model/
-    │   │       ├── service/
-    │   │       ├── repository/
-    │   │       └── controller/
-    │   └── resources/
-    │       └── application.yml
-    └── test/
-        └── kotlin/
-            └── com/example/myapp/
-                └── ...
+```mermaid
+flowchart TD
+    T0["my-app/"]
+    T1["build.gradle.kts"]
+    T2["settings.gradle.kts"]
+    T3["gradle.properties"]
+    T4["gradle/"]
+    T5["libs.versions.toml"]
+    T6["gradlew"]
+    T7["gradlew.bat"]
+    T8["src/"]
+    T9["main/"]
+    T10["kotlin/"]
+    T11["com/example/myapp/"]
+    T12["Main.kt"]
+    T13["model/"]
+    T14["service/"]
+    T15["repository/"]
+    T16["controller/"]
+    T17["resources/"]
+    T18["application.yml"]
+    T19["test/"]
+    T20["kotlin/"]
+    T21["com/example/myapp/"]
+    T22["..."]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T5 --> T6
+    T5 --> T7
+    T5 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T8 --> T12
+    T8 --> T13
+    T8 --> T14
+    T8 --> T15
+    T8 --> T16
+    T8 --> T17
+    T8 --> T18
+    T18 --> T19
+    T19 --> T20
+    T20 --> T21
+    T21 --> T22
 ```
 
 推荐的 KMP 项目结构：
 
-```
-my-kmp-app/
-├── build.gradle.kts
-├── settings.gradle.kts
-├── gradle/libs.versions.toml
-├── shared/
-│   ├── build.gradle.kts
-│   └── src/
-│       ├── commonMain/kotlin/
-│       ├── jvmMain/kotlin/
-│       ├── jsMain/kotlin/
-│       ├── androidMain/kotlin/
-│       └── iosMain/kotlin/
-├── androidApp/
-│   └── build.gradle.kts
-└── iosApp/
-    └── iosApp.xcodeproj
+```mermaid
+flowchart TD
+    T0["my-kmp-app/"]
+    T1["build.gradle.kts"]
+    T2["settings.gradle.kts"]
+    T3["gradle/libs.versions.toml"]
+    T4["shared/"]
+    T5["build.gradle.kts"]
+    T6["src/"]
+    T7["commonMain/kotlin/"]
+    T8["jvmMain/kotlin/"]
+    T9["jsMain/kotlin/"]
+    T10["androidMain/kotlin/"]
+    T11["iosMain/kotlin/"]
+    T12["androidApp/"]
+    T13["build.gradle.kts"]
+    T14["iosApp/"]
+    T15["iosApp.xcodeproj"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T11 --> T12
+    T13 --> T14
+    T14 --> T15
 ```
 
 ### 8.2 Gradle 构建脚本
@@ -1888,7 +1927,7 @@ fun main() {
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1902,7 +1941,7 @@ fun main() {
 }
 ```
 
-**答案**：`0`。`x` 为 null，使用 Elvis 运算符返回默认值 0。
+**解析讲解**：`0`。`x` 为 null，使用 Elvis 运算符返回默认值 0。
 
 **习题 2**：以下代码会编译错误吗？为什么？
 
@@ -1916,7 +1955,7 @@ fun main() {
 }
 ```
 
-**答案**：编译错误。`name` 是非空 `String`，不能传入 `null`。
+**解析讲解**：编译错误。`name` 是非空 `String`，不能传入 `null`。
 
 **习题 3**：将以下 Java 代码转换为 Kotlin。
 
@@ -1941,7 +1980,7 @@ public class Point {
 }
 ```
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 data class Point(val x: Double, val y: Double) {
@@ -1957,7 +1996,7 @@ data class Point(val x: Double, val y: Double) {
 
 **习题 4**：实现一个 `Result<T>` 类型，使用密封类表示成功与失败。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 sealed class Result<out T> {
@@ -1994,7 +2033,7 @@ fun <T> resultOf(block: () -> T): Result<T> = try {
 
 **习题 5**：使用扩展函数为 `List<Int>` 添加 `median()` 方法。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 fun List<Int>.median(): Double {
@@ -2017,7 +2056,7 @@ fun main() {
 
 **习题 6**：使用协程并发获取多个 API 数据。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -2051,7 +2090,7 @@ fun main() = runBlocking {
 
 **习题 7**：设计一个 KMP 项目，共享一个 HTTP 客户端接口。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 // commonMain
@@ -2158,7 +2197,7 @@ class Counter {
 
 **习题 9**：设计一个简单的 DI（依赖注入）框架。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 class Container {
@@ -2201,7 +2240,7 @@ fun main() {
 
 **习题 10**：构建一个 HTTP API 测试 DSL。
 
-**答案**：
+**解析讲解**：
 
 ```kotlin
 class HttpTestBuilder {
@@ -2486,3 +2525,304 @@ fun main() {
 > **维护者**：fanquanpp
 > **对标课程**：MIT 6.005、Stanford CS193P、CMU 15-214
 > **许可证**：CC BY-SA 4.0
+## 创建 Channel
+
+**基本写法：创建无缓冲通道**
+`Channel<<类型>>()`
+```kotlin
+// 创建无缓冲 rendezvous 通道
+val ch = Channel<Int>()
+```
+
+---
+
+**基本写法：创建带缓冲通道**
+`Channel<<类型>>(<容量>)`
+```kotlin
+// 创建容量为 10 的缓冲通道
+val ch = Channel<Int>(10)
+```
+
+---
+
+**基本写法：创建无限缓冲通道**
+`Channel<<类型>>(Channel.UNLIMITED)`
+```kotlin
+// 容量无上限的链表缓冲
+val ch = Channel<Int>(Channel.UNLIMITED)
+```
+
+---
+
+**基本写法：创建带满策略通道**
+`Channel<<类型>>(<容量>, <溢出策略>)`
+```kotlin
+// 满时丢弃最新值
+val ch = Channel<Int>(10, BufferOverflow.DROP_LATEST)
+```
+
+---
+
+## 发送与接收
+
+**基本写法：发送值**
+`<channel>.send(<值>)`
+```kotlin
+// 挂起发送值到通道
+ch.send(1)
+```
+
+---
+
+**基本写法：非阻塞发送**
+`<channel>.trySend(<值>)`
+```kotlin
+// 尝试发送不挂起
+val r = ch.trySend(1)
+```
+
+---
+
+**基本写法：接收值**
+`<channel>.receive()`
+```kotlin
+// 挂起接收通道值
+val v = ch.receive()
+```
+
+---
+
+**基本写法：非阻塞接收**
+`<channel>.tryReceive()`
+```kotlin
+// 尝试接收不挂起
+val r = ch.tryReceive()
+```
+
+---
+
+## 关闭通道
+
+**基本写法：关闭通道**
+`<channel>.close()`
+```kotlin
+// 关闭通道不再接收新值
+ch.close()
+```
+
+---
+
+**基本写法：判断关闭**
+`<channel>.isClosedForSend | <channel>.isClosedForReceive`
+```kotlin
+// 判断发送或接收侧是否关闭
+if (ch.isClosedForSend) { }
+```
+
+---
+
+## 遍历接收
+
+**基本写法：for 循环接收**
+`for (<变量> in <channel>) { }`
+```kotlin
+// 持续接收直到关闭
+for (v in ch) { println(v) }
+```
+
+---
+
+**基本写法：consumeEach 接收**
+`<channel>.consumeEach { }`
+```kotlin
+// 消费全部并关闭通道
+ch.consumeEach { println(it) }
+```
+
+---
+
+## produce 生产者
+
+**基本写法：创建生产者**
+`produce { <send> }`
+```kotlin
+// 启动协程生产并返回 ReceiveChannel
+val ch = GlobalScope.produce {
+    for (i in 1..5) send(i)
+}
+```
+
+---
+
+**基本写法：指定调度器**
+`produce(<dispatcher>) { }`
+```kotlin
+// 生产者在 IO 调度器
+val ch = scope.produce(Dispatchers.IO) { send(read()) }
+```
+
+---
+
+## actor 消费者
+
+**基本写法：创建 actor**
+`actor<<类型>> { for (<变量> in channel) { } }`
+```kotlin
+// 启动协程消费 SendChannel
+val a = scope.actor<Int> {
+    for (v in channel) println(v)
+}
+a.send(1)
+```
+
+---
+
+## Channel 与 Flow
+
+**基本写法：Channel 转 Flow**
+`<channel>.receiveAsFlow()`
+```kotlin
+// 将 Channel 转为 Flow 便于操作
+val flow = ch.receiveAsFlow()
+```
+
+---
+
+**基本写法：Flow 转 Channel**
+`<flow>.produceIn(<scope>)`
+```kotlin
+// 将 Flow 转为 ReceiveChannel
+val rc = flow.produceIn(scope)
+```
+
+---
+
+## BufferOverflow 溢出策略
+
+**基本写法：挂起等待**
+`BufferOverflow.SUSPEND`
+```kotlin
+// 满时挂起发送者
+val ch = Channel<Int>(2, BufferOverflow.SUSPEND)
+```
+
+---
+
+**基本写法：丢弃最旧**
+`BufferOverflow.DROP_OLDEST`
+```kotlin
+// 满时丢弃队列最旧值
+val ch = Channel<Int>(2, BufferOverflow.DROP_OLDEST)
+```
+
+---
+
+**基本写法：丢弃最新**
+`BufferOverflow.DROP_LATEST`
+```kotlin
+// 满时丢弃新发送的值
+val ch = Channel<Int>(2, BufferOverflow.DROP_LATEST)
+```
+
+---
+
+## select 多路接收
+
+**基本写法：select 等待多通道**
+`select<<类型>> { <channel>.onReceive { } }`
+```kotlin
+// 从多个通道获取首个就绪值
+val r = select<Int> {
+    ch1.onReceive { "from ch1: $it" }
+    ch2.onReceive { "from ch2: $it" }
+}
+```
+
+---
+
+**基本写法：select 发送**
+`select<<类型>> { <channel>.onSend(<值>) { } }`
+```kotlin
+// 向多个通道首个就绪者发送
+select<Unit> {
+    ch1.onSend(1) { }
+    ch2.onSend(1) { }
+}
+```
+
+---
+
+## BroadcastChannel（已弃用改用 SharedFlow）
+
+**基本写法：Channel 转 SharedFlow**
+`<channel>.broadcast(<容量>)`
+```kotlin
+// 旧版广播通道
+val bc = ch.broadcast(10)
+```
+
+---
+
+## Channel 容量常量
+
+**基本写法：无缓冲**
+`Channel.RENDEZVOUS`
+```kotlin
+// 发送接收同步会合
+val ch = Channel<Int>(Channel.RENDEZVOUS)
+```
+
+---
+
+**基本写法：合并缓冲**
+`Channel.CONFLATED`
+```kotlin
+// 仅保留最新值
+val ch = Channel<Int>(Channel.CONFLATED)
+```
+
+---
+
+## Channel 取消
+
+**基本写法：取消通道**
+`<channel>.cancel()`
+```kotlin
+// 取消通道并关闭
+ch.cancel()
+```
+
+---
+
+**基本写法：带原因取消**
+`<channel>.cancel(<异常>)`
+```kotlin
+// 携带异常取消通道
+ch.cancel(CancellationException("done"))
+```
+
+---
+
+## fan-out 多消费者
+
+**基本写法：多个消费者分摊**
+`for (i in 1..N) launch { for (v in <channel>) { } }`
+```kotlin
+// 多个协程分摊通道元素
+repeat(3) {
+    launch { for (v in ch) process(v) }
+}
+```
+
+---
+
+## fan-in 多生产者
+
+**基本写法：多协程向同一通道发送**
+`launch { <channel>.send(<值>) }`
+```kotlin
+// 多协程合并到同一通道
+val ch = Channel<Int>()
+launch { ch.send(1) }
+launch { ch.send(2) }
+```

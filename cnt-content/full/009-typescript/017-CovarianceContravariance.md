@@ -1571,11 +1571,11 @@ const pipeline = Channel.pipeTo(producer, consumer);
 
 ---
 
-## 15. 习题
+## 知识讲解与要点分析（原习题）
 
 > 习题按 Bloom 分类法分级，覆盖记忆、理解、应用、分析、评价、创造六个层次。
 
-### 15.1 填空题（fill-blank）
+### 填空题知识点讲解
 
 1. **[remember]** 在 TypeScript 中，函数参数在 strictFunctionTypes 启用后处于____位置，子类型关系会____。
 
@@ -1587,7 +1587,7 @@ const pipeline = Channel.pipeTo(producer, consumer);
 
 5. **[remember]** Liskov 替换原则要求子类型方法的____不能加强，____不能减弱。
 
-### 15.2 选择题（choice）
+### 选择题知识点讲解
 
 1. **[understand]** 下列哪个泛型修饰符组合表示"不变"（invariance）？
 
@@ -1861,16 +1861,21 @@ const pipeline = Channel.pipeTo(producer, consumer);
 
 为了便于工程实践，以下提供型变决策树，帮助开发者快速判断应该使用哪种型变策略：
 
-```
-当前类型 T 是输入位置（参数）还是输出位置（返回值）？
-├── 输入位置
-│   ├── 仅输入 → 使用 in T（逆变）
-│   └── 同时输入输出 → 使用 in out T（不变）
-├── 输出位置
-│   ├── 仅输出 → 使用 out T（协变）
-│   └── 同时输入输出 → 使用 in out T（不变）
-└── 既是输入也是输出
-    └── 使用 in out T（不变）
+```mermaid
+flowchart TD
+    T0["当前类型 T 是输入位置（参数）还是输出位置（返回值）？"]
+    T1["输入位置"]
+    T2["仅输入 → 使用 in T（逆变）"]
+    T3["同时输入输出 → 使用 in out T（不变）"]
+    T4["输出位置"]
+    T5["仅输出 → 使用 out T（协变）"]
+    T6["同时输入输出 → 使用 in out T（不变）"]
+    T7["既是输入也是输出"]
+    T8["使用 in out T（不变）"]
+    T0 --> T1
+    T3 --> T4
+    T6 --> T7
+    T7 --> T8
 ```
 
 ## 附录 B：TypeScript 版本与型变支持对照
@@ -1928,7 +1933,3 @@ const pipeline = Channel.pipeTo(producer, consumer);
 
 ---
 
-## 更新日志
-
-- 2026-07-20：金标准升级，新增形式化定义、历史动机、对比分析、案例研究、习题与参考文献，扩展至金标准长度。
-- 2026-06-14：初版，覆盖协变、逆变、strictFunctionTypes、in/out 修饰符基础。

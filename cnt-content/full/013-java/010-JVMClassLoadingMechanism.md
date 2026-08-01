@@ -63,29 +63,37 @@ tags:
 
 ### 1.3 前置知识地图
 
-```
-Java 基础
-    │
-    ├── 面向对象（类、对象、继承）
-    ├── 反射（Class、Method、Field）
-    └── 异常处理
-            │
-            ▼
-JVM 基础（本章前置）
-    │
-    ├── 运行时数据区（方法区、堆、栈）
-    ├── 字节码（class 文件格式）
-    └── 执行引擎（解释器 + JIT）
-            │
-            ▼
-JVM 类加载机制（本章）
-    │
-    ├── 类加载生命周期：加载 → 链接（验证、准备、解析） → 初始化
-    ├── 类加载器层次：Bootstrap → Platform → Application → Custom
-    ├── 双亲委派模型与打破场景
-    ├── 模块系统（JPMS）对类加载的影响
-    ├── 字节码增强：ASM、Javassist、ByteBuddy
-    └── 工程实践：热部署、Java Agent、SPI、OSGi、Tomcat
+```mermaid
+flowchart TD
+    T0["Java 基础"]
+    T1["面向对象（类、对象、继承）"]
+    T2["反射（Class、Method、Field）"]
+    T3["异常处理"]
+    T4["JVM 基础（本章前置）"]
+    T5["运行时数据区（方法区、堆、栈）"]
+    T6["字节码（class 文件格式）"]
+    T7["执行引擎（解释器 + JIT）"]
+    T8["JVM 类加载机制（本章）"]
+    T9["类加载生命周期：加载 → 链接（验证、准备、解析） → 初始化"]
+    T10["类加载器层次：Bootstrap → Platform → Application → Custom"]
+    T11["双亲委派模型与打破场景"]
+    T12["模块系统（JPMS）对类加载的影响"]
+    T13["字节码增强：ASM、Javassist、ByteBuddy"]
+    T14["工程实践：热部署、Java Agent、SPI、OSGi、Tomcat"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T8 --> T12
+    T8 --> T13
+    T8 --> T14
 ```
 
 ### 1.4 章节阅读建议
@@ -439,15 +447,15 @@ JPMS（Java 9+）将双亲委派改造为"模块感知"：
 
 加载流程（简化）：
 
-```
-Application ClassLoader.loadClass("com.example.Foo")
-    │
-    ▼
-查找模块图：com.example 是否在某模块中？
-    │
-    ├── 是 → 由该模块的加载器加载（可能是 AppClassLoader 或自定义）
-    │
-    └── 否 → 走传统双亲委派（Platform → Bootstrap）
+```mermaid
+flowchart TD
+    T0["Application ClassLoader.loadClass('com.example.Foo')"]
+    T1["查找模块图：com.example 是否在某模块中？"]
+    T2["是 → 由该模块的加载器加载（可能是 AppClassLoader 或自定义）"]
+    T3["否 → 走传统双亲委派（Platform → Bootstrap）"]
+    T0 --> T1
+    T1 --> T2
+    T1 --> T3
 ```
 
 这一改造使得"模块内类由固定加载器加载"，加强了封装，但也带来兼容性问题（旧代码依赖双亲委派的可能失效）。
@@ -1241,7 +1249,7 @@ JRebel 通过 Java Agent + 字节码增强实现 **不重启** 的热部署：
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1250,7 +1258,7 @@ JRebel 通过 Java Agent + 字节码增强实现 **不重启** 的热部署：
 3. 解释 `findLoadedClass` 为何能避免重复加载。
 4. 为何 `static final` 常量不触发类初始化？
 
-### 10.2 应用题
+### 应用题知识点讲解
 
 5. 实现一个自定义 ClassLoader，从网络 URL 加载类，并支持缓存。
 6. 编写 Java Agent，在方法进入时打印方法名与参数。
@@ -1309,7 +1317,7 @@ c.cast(o);  // ClassCastException
 15. 比较 JVM 类加载与 Python 模块加载的本质差异。
 16. 在云原生时代，类加载机制是否还重要？GraalVM Native Image 的"无类加载"模式是否会成为主流？
 
-### 10.6 综合题
+### 综合题知识点讲解
 
 17. 阅读以下代码，回答问题：
 

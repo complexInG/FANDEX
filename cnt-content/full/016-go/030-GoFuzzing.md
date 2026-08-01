@@ -1066,24 +1066,30 @@ rsync -av ./cache-2/testdata/fuzz/FuzzParser/ ./merged/
 
 **目录结构**：
 
-```
-testdata/
-├── fuzz/
-│   ├── FuzzParser/
-│   │   ├── <hash-1>          # 自动生成的崩溃/兴趣语料
-│   │   ├── <hash-2>
-│   │   └── ...
-│   ├── FuzzDecoder/
-│   │   └── ...
-├── corpus/                    # 手工维护的种子库
-│   ├── parser/
-│   │   ├── valid-1.bin
-│   │   ├── valid-2.bin
-│   │   └── edge-cases/
-│   └── decoder/
-└── regression/                # 历史崩溃归档
-    ├── CVE-2023-xxxx.bin
-    └── issue-123.bin
+```mermaid
+flowchart TD
+    T0["testdata/"]
+    T1["fuzz/"]
+    T2["FuzzParser/"]
+    T3["<hash-1>          # 自动生成的崩溃/兴趣语料"]
+    T4["<hash-2>"]
+    T5["..."]
+    T6["FuzzDecoder/"]
+    T7["..."]
+    T8["corpus/                    # 手工维护的种子库"]
+    T9["parser/"]
+    T10["valid-1.bin"]
+    T11["valid-2.bin"]
+    T12["edge-cases/"]
+    T13["decoder/"]
+    T14["regression/                # 历史崩溃归档"]
+    T15["CVE-2023-xxxx.bin"]
+    T16["issue-123.bin"]
+    T0 --> T1
+    T7 --> T8
+    T13 --> T14
+    T14 --> T15
+    T14 --> T16
 ```
 
 **语料去重**：Go 1.23+ 自动去重，对老版本可手动：
@@ -1444,7 +1450,7 @@ func FuzzYAMLParse(f *testing.F) {
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -1454,8 +1460,6 @@ func FuzzYAMLParse(f *testing.F) {
 - 限制输入大小至 1MB。
 - 验证 `Encode` 后 `Decode` 的往返一致性。
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 package base64fuzz
@@ -1488,7 +1492,6 @@ func FuzzBase64(f *testing.F) {
 }
 ```
 
-</details>
 
 **习题 2**：解释为什么以下 fuzz target 在 fuzzing 30 分钟后覆盖率停滞在 30%：
 
@@ -1506,8 +1509,6 @@ func FuzzStuck(f *testing.F) {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
 两个问题导致覆盖率停滞：
 
@@ -1516,7 +1517,6 @@ func FuzzStuck(f *testing.F) {
 
 改进：移除长度限制，提供 `f.Add([]byte("GOxx"))` 等多种子。
 
-</details>
 
 ### 10.2 进阶题
 
@@ -1547,8 +1547,6 @@ func ParseMessage(data []byte) (*Message, error) {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
 ```go
 func FuzzParseMessage(f *testing.F) {
@@ -1579,7 +1577,6 @@ func FuzzParseMessage(f *testing.F) {
 }
 ```
 
-</details>
 
 **习题 4**：解释覆盖率引导模糊测试与符号执行（symbolic execution）在求解以下分支时的差异：
 
@@ -1589,8 +1586,6 @@ if (x * 1234567 == 0xdeadbeef) {
 }
 ```
 
-<details>
-<summary>参考答案</summary>
 
 - **覆盖率引导**：随机变异几乎不可能命中 `x == 0xdeadbeef / 1234567` 这一具体值，需要 $O(2^{32})$ 次尝试，实际不可行。
 - **符号执行**：将 $x \cdot 1234567 = \text{0xdeadbeef}$ 作为约束提交给 SMT 求解器（Z3），可在毫秒级求解出 $x$。
@@ -1598,7 +1593,6 @@ if (x * 1234567 == 0xdeadbeef) {
 
 Go 原生 fuzzing 不集成符号执行，对此类"魔法值"分支效果较差，需通过字典或人工种子辅助。
 
-</details>
 
 ### 10.3 思考题
 

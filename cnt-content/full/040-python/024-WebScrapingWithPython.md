@@ -2357,40 +2357,51 @@ resp = requests.get(url, verify='/path/to/ca.pem')
 
 ### 9.1 项目结构
 
-```
-my_crawler/
-├── scrapy.cfg
-├── requirements.txt
-├── pyproject.toml
-├── README.md
-├── docker/
-│   ├── Dockerfile
-│   └── docker-compose.yml
-├── my_crawler/
-│   ├── __init__.py
-│   ├── items.py
-│   ├── middlewares.py
-│   ├── pipelines.py
-│   ├── settings.py
-│   ├── extensions.py
-│   ├── utils/
-│   │   ├── __init__.py
-│   │   ├── url.py
-│   │   ├── text.py
-│   │   └── storage.py
-│   └── spiders/
-│       ├── __init__.py
-│       ├── base.py           # 基类
-│       ├── news_spider.py
-│       └── ecommerce_spider.py
-├── tests/
-│   ├── __init__.py
-│   ├── test_spiders.py
-│   ├── test_pipelines.py
-│   └── fixtures/
-└── scripts/
-    ├── run.sh
-    └── deploy.sh
+```mermaid
+flowchart TD
+    T0["my_crawler/"]
+    T1["scrapy.cfg"]
+    T2["requirements.txt"]
+    T3["pyproject.toml"]
+    T4["README.md"]
+    T5["docker/"]
+    T6["Dockerfile"]
+    T7["docker-compose.yml"]
+    T8["my_crawler/"]
+    T9["__init__.py"]
+    T10["items.py"]
+    T11["middlewares.py"]
+    T12["pipelines.py"]
+    T13["settings.py"]
+    T14["extensions.py"]
+    T15["utils/"]
+    T16["__init__.py"]
+    T17["url.py"]
+    T18["text.py"]
+    T19["storage.py"]
+    T20["spiders/"]
+    T21["__init__.py"]
+    T22["base.py           # 基类"]
+    T23["news_spider.py"]
+    T24["ecommerce_spider.py"]
+    T25["tests/"]
+    T26["__init__.py"]
+    T27["test_spiders.py"]
+    T28["test_pipelines.py"]
+    T29["fixtures/"]
+    T30["scripts/"]
+    T31["run.sh"]
+    T32["deploy.sh"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T0 --> T4
+    T0 --> T5
+    T7 --> T8
+    T24 --> T25
+    T29 --> T30
+    T30 --> T31
+    T30 --> T32
 ```
 
 ### 9.2 配置管理
@@ -2814,7 +2825,7 @@ Go (goroutine)                3s      100MB   10K goroutine
 - 实时性优化（连接复用、缓存预热）；
 - 多渠道通知（邮件、短信、微信）。
 
-## 11. 习题
+## 知识讲解与要点分析（原习题）
 
 见 frontmatter 中的 `exercises` 字段，共 4 道，覆盖 Bloom 六个认知层次：
 

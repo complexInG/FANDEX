@@ -1221,29 +1221,33 @@ await Task.WhenAll(tasks);
 
 ### 8.1 项目结构组织
 
-```
-Fandex.Project/
-├── src/
-│   ├── Fandex.Domain/                # 领域层：record 值对象与聚合根
-│   │   ├── ValueObjects/
-│   │   │   ├── Money.cs
-│   │   │   ├── Address.cs
-│   │   │   └── Email.cs
-│   │   ├── Aggregates/
-│   │   │   ├── BankAccount.cs
-│   │   │   └── Order.cs
-│   │   └── Events/
-│   │       ├── AccountCreated.cs
-│   │       └── MoneyDeposited.cs
-│   ├── Fandex.Application/           # 应用层：record 命令、查询、DTO
-│   │   ├── Commands/
-│   │   ├── Queries/
-│   │   └── DTOs/
-│   └── Fandex.Infrastructure/        # 基础设施层
-│       ├── Persistence/
-│       └── Messaging/
-└── tests/
-    └── Fandex.Domain.Tests/
+```mermaid
+flowchart TD
+    T0["Fandex.Project/"]
+    T1["src/"]
+    T2["Fandex.Domain/                # 领域层：record 值对象与聚合根"]
+    T3["ValueObjects/"]
+    T4["Money.cs"]
+    T5["Address.cs"]
+    T6["Email.cs"]
+    T7["Aggregates/"]
+    T8["BankAccount.cs"]
+    T9["Order.cs"]
+    T10["Events/"]
+    T11["AccountCreated.cs"]
+    T12["MoneyDeposited.cs"]
+    T13["Fandex.Application/           # 应用层：record 命令、查询、DTO"]
+    T14["Commands/"]
+    T15["Queries/"]
+    T16["DTOs/"]
+    T17["Fandex.Infrastructure/        # 基础设施层"]
+    T18["Persistence/"]
+    T19["Messaging/"]
+    T20["tests/"]
+    T21["Fandex.Domain.Tests/"]
+    T0 --> T1
+    T19 --> T20
+    T20 --> T21
 ```
 
 ### 8.2 NuGet 包配置
@@ -1720,9 +1724,9 @@ public class ShoppingCartService
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **Q1.** 以下关于 C# record 的描述，哪项是**错误**的？
 
@@ -1731,12 +1735,10 @@ B. record 默认实现 `Equals`、`GetHashCode`、`ToString`、`Deconstruct`
 C. record 的 `with` 表达式在编译时展开为 `<Clone>$` 调用 + 属性赋值
 D. record class 必须显式定义主构造函数
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：D
+**解析讲解**：D
 
-**解析**：record class 可以使用非位置语法，通过对象初始化器初始化属性，不必显式定义主构造函数。例如：
+**解析讲解**：record class 可以使用非位置语法，通过对象初始化器初始化属性，不必显式定义主构造函数。例如：
 ```csharp
 public record Person
 {
@@ -1745,7 +1747,6 @@ public record Person
 }
 ```
 
-</details>
 
 ---
 
@@ -1765,14 +1766,11 @@ B. `False`
 C. 编译错误
 D. 运行时异常
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：record 的 `Equals` 检查 `EqualityContract`。`a.EqualityContract` 为 `typeof(A)`，`b.EqualityContract` 为 `typeof(B)`，两者不同，故不相等。即使 X 相同，子类 record 与父类 record 不相等。
+**解析讲解**：record 的 `Equals` 检查 `EqualityContract`。`a.EqualityContract` 为 `typeof(A)`，`b.EqualityContract` 为 `typeof(B)`，两者不同，故不相等。即使 X 相同，子类 record 与父类 record 不相等。
 
-</details>
 
 ---
 
@@ -1783,12 +1781,10 @@ B. `record R(int X) { public int X { get; set; } = X; } var r = new R(1) with { 
 C. `readonly record struct S(int X); var s = new S(1) with { X = 2 };`
 D. `record struct S(int X); var s = new S(1) with { X = 2 };`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：无错误（陷阱题）
+**解析讲解**：无错误（陷阱题）
 
-**解析**：
+**解析讲解**：
 - A：`with` 调用 `<Clone>$`，通过 `init` 设置 X，正确。
 - B：属性为 `set`（非 `init`），`with` 表达式可使用 `set` 属性，正确。
 - C：`readonly record struct` 的属性为 `init`，`with` 创建新实例，正确。
@@ -1796,7 +1792,6 @@ D. `record struct S(int X); var s = new S(1) with { X = 2 };`
 
 所有选项均可编译。注意 B 中的 `set` 属性使 record 不再不可变。
 
-</details>
 
 ---
 
@@ -1807,18 +1802,15 @@ B. readonly record struct 不允许定义 `set` 属性
 C. record struct 不能实现接口
 D. readonly record struct 装箱后不能调用 `Equals`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：A、B
+**解析讲解**：A、B
 
-**解析**：
+**解析讲解**：
 - A：正确。两者都支持 `with`，编译器合成 `<Clone>$`。
 - B：正确。`readonly` 修饰符禁止所有字段修改，包括 `set` 属性。
 - C：错误。两者都可实现接口。
 - D：错误。装箱后调用 `Equals` 通过虚方法分派，正常工作。
 
-</details>
 
 ---
 
@@ -1837,74 +1829,56 @@ B. `p1` 在栈，`p2` 在栈，`o` 在堆
 C. 全部在堆
 D. 全部在栈
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：
+**解析讲解**：
 - `p1` 是值类型局部变量，分配在栈（或寄存器）。
 - `p2 = p1 with { X = 10 }` 也是值类型，分配在栈。
 - `object o = p1` 触发装箱，p1 的副本分配在堆上，o 引用该副本。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **Q6.** record 的 `with` 表达式在编译时调用 `________` 方法创建实例副本，再通过 `________` 访问器修改属性。
 
-<details>
-<summary>答案</summary>
 
 `<Clone>$`，`init`
 
-</details>
 
 ---
 
 **Q7.** record 的 `EqualityContract` 属性返回类型为 `________`，用于在继承场景下区分 `________`。
 
-<details>
-<summary>答案</summary>
 
 `Type`，子类与父类 record
 
-</details>
 
 ---
 
 **Q8.** `init` 访问器在 IL 层通过 `________` modreq 标识，仅允许在 `________` 阶段或 `________` 表达式中调用。
 
-<details>
-<summary>答案</summary>
 
 `System.Runtime.CompilerServices.IsExternalInit`，对象初始化器，`with`
 
-</details>
 
 ---
 
 **Q9.** record struct 的默认布局特性是 `________`，而 record class 是 `________`。
 
-<details>
-<summary>答案</summary>
 
 `Sequential`（顺序布局），`Auto`（自动布局）
 
-</details>
 
 ---
 
 **Q10.** record 重写的 `GetHashCode` 使用 `________` 算法组合各属性哈希，常数因子通常为 `________`。
 
-<details>
-<summary>答案</summary>
 
 乘法混合（multiplicative hashing），31（或 prime）
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **Q11.** 实现一个不可变的二叉搜索树（BST），支持插入、查找、删除操作，全部基于 record。
 
@@ -2044,8 +2018,6 @@ var result = ParseInt("42")
 
 **Q13.** 为什么 C# record 选择支持继承，而 Java record 与 Kotlin data class 不支持？请从语言设计哲学、运行时实现、性能影响三个角度分析。
 
-<details>
-<summary>参考答案</summary>
 
 **设计哲学**：
 - C# 强调"多范式融合"，支持函数式 + 面向对象。record 作为不可变类型仍可参与继承体系。
@@ -2060,14 +2032,11 @@ var result = ParseInt("42")
 - C# record 继承引入虚方法分派（EqualityContract、Equals），略微增加调用开销。
 - 不支持继承的语言可在编译期确定类型，更多内联优化。
 
-</details>
 
 ---
 
 **Q14.** 在事件溯源（Event Sourcing）系统中，使用 record 表示领域事件有何优势？请结合一致性、可重放性、调试性展开论述。
 
-<details>
-<summary>参考答案</summary>
 
 **一致性**：
 - 不可变事件：一旦写入事件存储（Event Store）即不可修改，保证历史可追溯。
@@ -2082,14 +2051,11 @@ var result = ParseInt("42")
 - 模式匹配支持事件分发，代码清晰。
 - 不可变性使得并发重放安全，无需加锁。
 
-</details>
 
 ---
 
 **Q15.** 假设你正在设计一个高频交易系统，每秒需处理百万级订单事件。订单状态使用 record class 还是 record struct？请详细论证。
 
-<details>
-<summary>参考答案</summary>
 
 **推荐**：`readonly record struct` + 对象池。
 
@@ -2106,7 +2072,6 @@ var result = ParseInt("42")
 
 **反例**：record class 会触发 Gen 0 GC，每秒百万级分配导致 GC 暂停超过交易延迟容忍（< 1ms）。
 
-</details>
 
 ---
 
@@ -2210,23 +2175,35 @@ var result = ParseInt("42")
 
 ### 12.4 进阶学习路径
 
-```
-基础阶段（1-2 周）
-├── 1. 阅读 Microsoft Learn - C# Records 官方文档
-├── 2. 在 Sharplab.io 查看 record 的 IL 生成
-└── 3. 完成本文习题 10.1-10.3
-
-进阶阶段（2-4 周）
-├── 4. 阅读 Okasaki《Purely Functional Data Structures》第 1-3 章
-├── 5. 实现不可变 BST、AVL 树、HashMap（基于 record）
-└── 6. 在个人项目中将 DTO 改造为 record，编写 Benchmark 对比
-
-专家阶段（1-2 月）
-├── 7. 阅读 ECMA-334 第 5 版 record 相关章节
-├── 8. 阅读 dotnet/csharplang proposals/csharp-9.0/records.md
-├── 9. 阅读 dotnet/runtime 中 System.Text.Json 的 record 应用
-├── 10. 实现 Source Generator，为 record 自动生成 EF Core 配置
-└── 11. 研究基于 record 的事件溯源系统（如 Orleans、Akka.NET）
+```mermaid
+flowchart TD
+    T0["基础阶段（1-2 周）"]
+    T1["1. 阅读 Microsoft Learn - C# Records 官方文档"]
+    T2["2. 在 Sharplab.io 查看 record 的 IL 生成"]
+    T3["3. 完成本文习题 10.1-10.3"]
+    T4["进阶阶段（2-4 周）"]
+    T5["4. 阅读 Okasaki《Purely Functional Data Structures》第 1-3 章"]
+    T6["5. 实现不可变 BST、AVL 树、HashMap（基于 record）"]
+    T7["6. 在个人项目中将 DTO 改造为 record，编写 Benchmark 对比"]
+    T8["专家阶段（1-2 月）"]
+    T9["7. 阅读 ECMA-334 第 5 版 record 相关章节"]
+    T10["8. 阅读 dotnet/csharplang proposals/csharp-9.0/records.md"]
+    T11["9. 阅读 dotnet/runtime 中 System.Text.Json 的 record 应用"]
+    T12["10. 实现 Source Generator，为 record 自动生成 EF Core 配置"]
+    T13["11. 研究基于 record 的事件溯源系统（如 Orleans、Akka.NET）"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T8 --> T12
+    T8 --> T13
 ```
 
 ### 12.5 社区资源
@@ -2252,32 +2229,32 @@ var result = ParseInt("42")
 
 | 成员 | record class | record struct | readonly record struct |
 |------|:------------:|:-------------:|:---------------------:|
-| 主构造函数 | ✓ | ✓ | ✓ |
-| 属性（init） | ✓（默认） | ×（默认 set） | ✓ |
-| 属性（set） | 可选 | ✓（默认） | × |
-| `<Clone>$` 方法 | ✓ | ✓ | ✓ |
-| `Equals(T)` | ✓ | ✓ | ✓ |
-| `Equals(object)` | ✓ | ✓ | ✓ |
-| `GetHashCode()` | ✓ | ✓ | ✓ |
-| `==` / `!=` | ✓ | ✓ | ✓ |
-| `ToString()` | ✓ | ✓ | ✓ |
-| `PrintMembers` | ✓ | ✓ | ✓ |
-| `Deconstruct` | ✓（位置参数） | ✓（位置参数） | ✓（位置参数） |
-| `EqualityContract` | ✓ | × | × |
+| 主构造函数 | √ | √ | √ |
+| 属性（init） | √（默认） | ×（默认 set） | √ |
+| 属性（set） | 可选 | √（默认） | × |
+| `<Clone>$` 方法 | √ | √ | √ |
+| `Equals(T)` | √ | √ | √ |
+| `Equals(object)` | √ | √ | √ |
+| `GetHashCode()` | √ | √ | √ |
+| `==` / `!=` | √ | √ | √ |
+| `ToString()` | √ | √ | √ |
+| `PrintMembers` | √ | √ | √ |
+| `Deconstruct` | √（位置参数） | √（位置参数） | √（位置参数） |
+| `EqualityContract` | √ | × | × |
 
 ## 附录 B：版本兼容性矩阵
 
 | 特性 | C# 9.0+ | C# 10.0+ | C# 11.0+ | C# 12.0+ |
 |------|:-------:|:--------:|:--------:|:--------:|
-| `record class` | ✓ | ✓ | ✓ | ✓ |
-| `record struct` | × | ✓ | ✓ | ✓ |
-| `readonly record struct` | × | ✓ | ✓ | ✓ |
-| `required` 修饰符 | × | × | ✓ | ✓ |
-| `init` 访问器 | ✓ | ✓ | ✓ | ✓ |
-| `with` 表达式 | ✓ | ✓ | ✓ | ✓ |
-| 主构造函数（class） | 仅 record | 仅 record | 仅 record | ✓（所有 class） |
-| record 继承 | ✓ | ✓ | ✓ | ✓ |
-| 模式匹配增强 | 部分 | ✓ | ✓ | ✓ |
+| `record class` | √ | √ | √ | √ |
+| `record struct` | × | √ | √ | √ |
+| `readonly record struct` | × | √ | √ | √ |
+| `required` 修饰符 | × | × | √ | √ |
+| `init` 访问器 | √ | √ | √ | √ |
+| `with` 表达式 | √ | √ | √ | √ |
+| 主构造函数（class） | 仅 record | 仅 record | 仅 record | √（所有 class） |
+| record 继承 | √ | √ | √ | √ |
+| 模式匹配增强 | 部分 | √ | √ | √ |
 
 ## 附录 C：常见错误信息与解决方案
 

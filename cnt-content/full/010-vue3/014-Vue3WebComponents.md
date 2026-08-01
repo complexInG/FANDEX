@@ -1656,9 +1656,9 @@ VueUse 部分工具可作为 Web Components 分发，提供跨框架的状态管
 
 ---
 
-## 10. 习题 | Exercises
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **题目 1**：Web Components 的四大核心规范不包括？
 
@@ -1667,14 +1667,11 @@ VueUse 部分工具可作为 Web Components 分发，提供跨框架的状态管
 - C. Virtual DOM
 - D. HTML Templates
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：Web Components 的四大核心规范是 Custom Elements、Shadow DOM、HTML Templates、ES Modules。Virtual DOM 是 React 提出的概念，不属于 Web Components 规范。
+**解析讲解**：Web Components 的四大核心规范是 Custom Elements、Shadow DOM、HTML Templates、ES Modules。Virtual DOM 是 React 提出的概念，不属于 Web Components 规范。
 
-</details>
 
 **题目 2**：Vue 3 中将 Vue 组件转换为 Custom Element 的 API 是？
 
@@ -1683,14 +1680,11 @@ VueUse 部分工具可作为 Web Components 分发，提供跨框架的状态管
 - C. `createApp`
 - D. `customElements.define`
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`defineCustomElement` 是 Vue 3 提供的 API，将 Vue 组件选项转换为 Custom Element 类。`customElements.define` 是浏览器原生 API，用于注册 Custom Element。
+**解析讲解**：`defineCustomElement` 是 Vue 3 提供的 API，将 Vue 组件选项转换为 Custom Element 类。`customElements.define` 是浏览器原生 API，用于注册 Custom Element。
 
-</details>
 
 **题目 3**：Shadow DOM 的样式隔离机制阻断的是什么？
 
@@ -1699,14 +1693,11 @@ VueUse 部分工具可作为 Web Components 分发，提供跨框架的状态管
 - C. 事件传播
 - D. DOM 查询
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Shadow DOM 阻断的是 CSS 选择器穿透，外部 CSS 无法选择 Shadow DOM 内部元素。事件传播可以通过 `composed: true` 穿透。DOM 查询也被阻断，但样式隔离主要指 CSS。
+**解析讲解**：Shadow DOM 阻断的是 CSS 选择器穿透，外部 CSS 无法选择 Shadow DOM 内部元素。事件传播可以通过 `composed: true` 穿透。DOM 查询也被阻断，但样式隔离主要指 CSS。
 
-</details>
 
 **题目 4**：Custom Element 的标签名必须包含什么？
 
@@ -1715,14 +1706,11 @@ VueUse 部分工具可作为 Web Components 分发，提供跨框架的状态管
 - C. 数字
 - D. 下划线（_）
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：Custom Element 的标签名必须包含连字符（kebab-case），如 `<my-element>`。这是为了避免与未来 HTML 标准标签冲突。
+**解析讲解**：Custom Element 的标签名必须包含连字符（kebab-case），如 `<my-element>`。这是为了避免与未来 HTML 标准标签冲突。
 
-</details>
 
 **题目 5**：下列哪种方式可以穿透 Shadow Boundary？
 
@@ -1731,63 +1719,45 @@ VueUse 部分工具可作为 Web Components 分发，提供跨框架的状态管
 - C. querySelector 查询
 - D. 外部 ID 选择器
 
-<details>
-<summary>答案与解析</summary>
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：CSS 自定义属性（如 `--color-primary`）通过继承机制穿透 Shadow Boundary。其他 CSS 选择器（类、ID）被 Shadow Boundary 阻断。querySelector 也无法穿透。
+**解析讲解**：CSS 自定义属性（如 `--color-primary`）通过继承机制穿透 Shadow Boundary。其他 CSS 选择器（类、ID）被 Shadow Boundary 阻断。querySelector 也无法穿透。
 
-</details>
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **题目 1**：Web Components 的四大核心规范是 Custom Elements、________、HTML Templates 和 ES Modules。
 
-<details>
-<summary>答案</summary>
 
 Shadow DOM
 
-</details>
 
 **题目 2**：Vue 3 中通过 ________ API 将 Vue 组件转换为 Custom Element。
 
-<details>
-<summary>答案</summary>
 
 `defineCustomElement`
 
-</details>
 
 **题目 3**：Custom Event 要穿透 Shadow Boundary，需设置 ________ 属性为 true。
 
-<details>
-<summary>答案</summary>
 
 `composed`
 
-</details>
 
 **题目 4**：Vue SFC 文件名以 ________ 后缀结尾时，Vue 会将其编译为 Custom Element。
 
-<details>
-<summary>答案</summary>
 
 `.ce.vue`
 
-</details>
 
 **题目 5**：在 Vite 配置中，通过 ________ 选项告诉 Vue 编译器识别自定义元素标签。
 
-<details>
-<summary>答案</summary>
 
 `compilerOptions.isCustomElement`
 
-</details>
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **题目 1**：实现一个可跨框架复用的模态框 Web Component。
 
@@ -1903,8 +1873,6 @@ function App() {
 
 **题目 1**：何时应该使用 Vue Web Components 而非 Vue SFC？请列出至少 3 个场景。
 
-<details>
-<summary>参考答案</summary>
 
 1. **跨框架复用**：组件需要在 Vue、React、Angular 中使用，如企业设计系统。
 2. **微前端架构**：不同子应用使用不同框架，需要共享组件。
@@ -1912,12 +1880,9 @@ function App() {
 4. **遗留系统集成**：将 Vue 组件集成到 jQuery 或原生 HTML 项目中。
 5. **CMS 内容嵌入**：在 WordPress、Drupal 等 CMS 中嵌入交互式 Vue 组件。
 
-</details>
 
 **题目 2**：Shadow DOM 的样式隔离有哪些优点与缺点？
 
-<details>
-<summary>参考答案</summary>
 
 **优点**：
 
@@ -1933,12 +1898,9 @@ function App() {
 3. 第三方 CSS 库（如 Tailwind）无法直接使用。
 4. 调试时 Shadow DOM 内部较难检查。
 
-</details>
 
 **题目 3**：Vue Web Components 与原生 Vue SFC 在依赖注入（Provide/Inject）上的差异？如何解决？
 
-<details>
-<summary>参考答案</summary>
 
 **差异**：
 
@@ -1952,12 +1914,9 @@ function App() {
 3. **事件通信**：通过 Custom Event 与宿主应用通信。
 4. **共享 Vue 实例**：通过外部 Vue 全局 API 共享响应式状态（如 `reactive` 创建的全局对象）。
 
-</details>
 
 **题目 4**：如何实现一个支持 SSR 的 Vue Web Component？需要考虑哪些问题？
 
-<details>
-<summary>参考答案</summary>
 
 **关键问题**：
 
@@ -1973,12 +1932,9 @@ function App() {
 3. 客户端水合时检测已有 Shadow Root，避免重复创建。
 4. Vue 3.3+ 提供实验性 Declarative Shadow DOM 支持。
 
-</details>
 
 **题目 5**：在企业设计系统中，应选择 Web Components 还是各框架原生组件？请分析权衡因素。
 
-<details>
-<summary>参考答案</summary>
 
 **选择 Web Components 的场景**：
 
@@ -2000,7 +1956,6 @@ function App() {
 - 复杂组件（表格、表单）使用各框架原生实现，深度集成。
 - 通过设计令牌（Design Tokens）统一视觉规范。
 
-</details>
 
 ---
 

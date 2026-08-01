@@ -126,16 +126,14 @@ func WithoutCancel(parent Context) Context
 
 ### 2.6 演进时间轴
 
-```
-2014 ─── golang.org/x/net/context (Google 内部)
-   │
-Go 1.7  (2016) ── 进入标准库 context
-   │
-Go 1.13 (2019) ── errors.Is/As 集成
-   │
-Go 1.21 (2023) ── WithCancelCause / Cause / AfterFunc
-   │
-Go 1.22 (2024) ── WithoutCancel
+```mermaid
+timeline
+    title Go context 演进时间线
+    2014: golang.org/x/net/context（Google 内部）
+    2016: Go 1.7 进入标准库 context
+    2019: Go 1.13 errors.Is/As 集成
+    2023: Go 1.21 WithCancelCause / Cause / AfterFunc
+    2024: Go 1.22 WithoutCancel
 ```
 
 ---
@@ -1350,9 +1348,9 @@ func (s *Server) Apply(ctx context.Context, req *ApplyRequest) (*ApplyResponse, 
 
 ---
 
-## 10. 习题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
 **Q1.** 下列关于 `context.Context` 的描述，哪个是错误的？
 
@@ -1361,9 +1359,9 @@ B. `context.WithValue` 的 key 必须是 comparable 类型
 C. context 一旦创建就不可取消
 D. `ctx.Done()` 返回的 channel 在 context 取消时关闭
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：通过 `WithCancel`/`WithTimeout` 创建的 context 可通过 cancel 函数取消。C 错误。
+**解析讲解**：通过 `WithCancel`/`WithTimeout` 创建的 context 可通过 cancel 函数取消。C 错误。
 
 ---
 
@@ -1374,9 +1372,9 @@ B. 返回 context 取消的原始原因（而非泛化的 Canceled）
 C. 返回 context 的父 context
 D. 等同于 `ctx.Err()`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`WithCancelCause` 创建的 context，cancel 时可携带原因 error，`Cause(ctx)` 返回该原始原因。
+**解析讲解**：`WithCancelCause` 创建的 context，cancel 时可携带原因 error，`Cause(ctx)` 返回该原始原因。
 
 ---
 
@@ -1387,9 +1385,9 @@ B. `type S struct { ctx context.Context }`
 C. `ctx, cancel := context.WithTimeout(ctx, 5*time.Second); defer cancel()`
 D. `context.AfterFunc(ctx, cleanup)`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：context 不应作为 struct 字段，应作为函数首参传递。
+**解析讲解**：context 不应作为 struct 字段，应作为函数首参传递。
 
 ---
 
@@ -1400,9 +1398,9 @@ B. $O(\log n)$
 C. $O(n)$（n 是 context 链长度）
 D. $O(n^2)$
 
-**答案**：C
+**解析讲解**：C
 
-**解析**：valueCtx 是单链表，沿父链线性查找。
+**解析讲解**：valueCtx 是单链表，沿父链线性查找。
 
 ---
 
@@ -1413,45 +1411,45 @@ B. 创建一个继承 parent Value 但不继承取消信号的 context
 C. 取消 parent context
 D. 等同于 `context.Background()`
 
-**答案**：B
+**解析讲解**：B
 
-**解析**：`WithoutCancel` 保留 parent 的 Value 与 Deadline，但取消信号不传播。
+**解析讲解**：`WithoutCancel` 保留 parent 的 Value 与 Deadline，但取消信号不传播。
 
-### 10.2 填空题
+### 填空题知识点讲解
 
 **Q1.** `Context` 接口的四个方法是 `Deadline`、____、____、`Value`。
 
-**答案**：`Done`、`Err`
+**解析讲解**：`Done`、`Err`
 
 ---
 
 **Q2.** 创建带超时的 context 用 `WithTimeout` 或 ____ 函数。
 
-**答案**：`WithDeadline`
+**解析讲解**：`WithDeadline`
 
 ---
 
 **Q3.** Go 1.21+ 用 ____ 函数注册 context 取消时的回调，避免手写 goroutine。
 
-**答案**：`context.AfterFunc`
+**解析讲解**：`context.AfterFunc`
 
 ---
 
 **Q4.** `cancelCtx` 内部用 ____ 数据结构维护子 context 集合。
 
-**答案**：`map[canceler]struct{}`
+**解析讲解**：`map[canceler]struct{}`
 
 ---
 
 **Q5.** context 的 key 应使用 ____ 类型，避免跨包冲突。
 
-**答案**：私有（unexported）
+**解析讲解**：私有（unexported）
 
-### 10.3 编程题
+### 编程题知识点讲解
 
 **Q1.** 实现一个 `WithRetry(ctx, maxRetry, fn)` 函数，支持 context 取消与重试间隔。
 
-**参考答案**：
+**解析讲解**：
 
 ```go
 package main
@@ -1503,7 +1501,7 @@ func main() {
 
 **Q2.** 实现一个 `TraceContext` 类型，用 context.Value 传递 trace ID，并提供 `WithTraceID`、`GetTraceID` 方法。
 
-**参考答案**：
+**解析讲解**：
 
 ```go
 package main
@@ -1542,7 +1540,7 @@ func main() {
 
 **Q3.** 实现一个 `GracefulServer`，支持 Shutdown 时等待活跃请求完成或超时。
 
-**参考答案**：
+**解析讲解**：
 
 ```go
 package main
@@ -1773,12 +1771,17 @@ func main() {
 
 ## 附录 B：context 类型层次
 
-```
-Context (interface)
-  ├── emptyCtx            (Background/TODO)
-  ├── cancelCtx           (WithCancel/WithCancelCause)
-  │    └── timerCtx       (WithDeadline/WithTimeout)
-  └── valueCtx            (WithValue)
+```mermaid
+flowchart TD
+    T0["Context (interface)"]
+    T1["emptyCtx            (Background/TODO)"]
+    T2["cancelCtx           (WithCancel/WithCancelCause)"]
+    T3["timerCtx       (WithDeadline/WithTimeout)"]
+    T4["valueCtx            (WithValue)"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
 ```
 
 ## 附录 C：术语表

@@ -63,29 +63,37 @@ tags:
 
 ### 1.3 前置知识地图
 
-```
-Java 基础
-    │
-    ├── 并发编程（Thread、Executor、Future）
-    ├── 函数式编程（Lambda、Stream、Optional）
-    └── 异步编程（CompletableFuture、NIO）
-            │
-            ▼
-Reactive Streams 规范（本章基础）
-    │
-    ├── Publisher / Subscriber / Subscription / Processor
-    ├── 推拉混合模型（Push + Pull）
-    └── 背压协议（request(n)）
-            │
-            ▼
-Java 响应式编程（本章）
-    │
-    ├── 实现层：RxJava 3、Project Reactor 3、Mutiny
-    ├── 操作符层：map、filter、flatMap、merge、zip、combineLatest
-    ├── 调度层：Schedulers（parallel、boundedElastic、single、elastic）
-    ├── Web 层：Spring WebFlux、Reactor Netty、RSocket
-    ├── 数据层：R2DBC、Reactive MongoDB、Reactive Redis
-    └── 工程实践：调试、测试、错误处理、监控、与虚拟线程对比
+```mermaid
+flowchart TD
+    T0["Java 基础"]
+    T1["并发编程（Thread、Executor、Future）"]
+    T2["函数式编程（Lambda、Stream、Optional）"]
+    T3["异步编程（CompletableFuture、NIO）"]
+    T4["Reactive Streams 规范（本章基础）"]
+    T5["Publisher / Subscriber / Subscription / Processor"]
+    T6["推拉混合模型（Push + Pull）"]
+    T7["背压协议（request(n)）"]
+    T8["Java 响应式编程（本章）"]
+    T9["实现层：RxJava 3、Project Reactor 3、Mutiny"]
+    T10["操作符层：map、filter、flatMap、merge、zip、combineLatest"]
+    T11["调度层：Schedulers（parallel、boundedElastic、single、elastic）"]
+    T12["Web 层：Spring WebFlux、Reactor Netty、RSocket"]
+    T13["数据层：R2DBC、Reactive MongoDB、Reactive Redis"]
+    T14["工程实践：调试、测试、错误处理、监控、与虚拟线程对比"]
+    T0 --> T1
+    T0 --> T2
+    T0 --> T3
+    T3 --> T4
+    T4 --> T5
+    T4 --> T6
+    T4 --> T7
+    T7 --> T8
+    T8 --> T9
+    T8 --> T10
+    T8 --> T11
+    T8 --> T12
+    T8 --> T13
+    T8 --> T14
 ```
 
 ### 1.4 章节阅读建议
@@ -126,23 +134,27 @@ Java 响应式编程（本章）
 
 2015 年 4 月，来自 Netflix、Pivotal、Lightbend、Twitter 等公司的工程师联合发布了 **Reactive Streams 规范**（RS规范，规范号 RS-1.0）。该规范定义了 4 个核心接口与一套非阻塞背压协议，目标是让不同实现之间能互操作：
 
-```
-Publisher<T>      // 数据生产者
-    │
-    │ subscribe(Subscriber)
-    ▼
-Subscriber<T>     // 数据消费者
-    │
-    │ onSubscribe(Subscription)
-    │ onNext(T) × N
-    │ onError(Throwable) | onComplete()
-    ▼
-Subscription      // 订阅关系（控制背压）
-    │
-    │ request(long n)
-    │ cancel()
-    ▼
-Processor<T, R>   // 既是 Publisher 又是 Subscriber（中间操作符）
+```mermaid
+flowchart TD
+    T0["Publisher<T>      // 数据生产者"]
+    T1["subscribe(Subscriber)"]
+    T2["Subscriber<T>     // 数据消费者"]
+    T3["onSubscribe(Subscription)"]
+    T4["onNext(T) × N"]
+    T5["onError(Throwable) | onComplete()"]
+    T6["Subscription      // 订阅关系（控制背压）"]
+    T7["request(long n)"]
+    T8["cancel()"]
+    T9["Processor<T, R>   // 既是 Publisher 又是 Subscriber（中间操作符）"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T2 --> T4
+    T2 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
+    T8 --> T9
 ```
 
 RS 规范的关键贡献：
@@ -442,24 +454,25 @@ Flux.range(1, 3)
 
 时序图：
 
-```
-subscribe() 调用
-    │
-    │ 在 subscribeOn(boundedElastic) 指定的线程
-    ▼
-range(1, 3) 生成数据
-    │
-    │ 仍在 boundedElastic
-    ▼
-map1 (i * 2)
-    │
-    │ publishOn(parallel) 切换线程
-    ▼
-map2 (i + 1)
-    │
-    │ 仍在 parallel
-    ▼
-subscribe (消费)
+```mermaid
+flowchart TD
+    T0["subscribe() 调用"]
+    T1["在 subscribeOn(boundedElastic) 指定的线程"]
+    T2["range(1, 3) 生成数据"]
+    T3["仍在 boundedElastic"]
+    T4["map1 (i * 2)"]
+    T5["publishOn(parallel) 切换线程"]
+    T6["map2 (i + 1)"]
+    T7["仍在 parallel"]
+    T8["subscribe (消费)"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
+    T5 --> T6
+    T6 --> T7
+    T7 --> T8
 ```
 
 ### 4.6 错误处理机制
@@ -504,19 +517,21 @@ flux.retryWhen(
 
 `ConnectableFlux` 是 Reactor 的 Hot Publisher 基类，其生命周期：
 
-```
-未连接（No Subscriber）
-    │
-    │ connect() 或 autoConnect(n)
-    ▼
-已连接（开始生成数据）
-    │
-    │ Subscriber 加入 → 收到后续数据
-    │ Subscriber 退出 → 不再收到数据
-    │
-    │ 数据完成或出错
-    ▼
-终止（所有 Subscriber 收到 onComplete/onError）
+```mermaid
+flowchart TD
+    T0["未连接（No Subscriber）"]
+    T1["connect() 或 autoConnect(n)"]
+    T2["已连接（开始生成数据）"]
+    T3["Subscriber 加入 → 收到后续数据"]
+    T4["Subscriber 退出 → 不再收到数据"]
+    T5["数据完成或出错"]
+    T6["终止（所有 Subscriber 收到 onComplete/onError）"]
+    T0 --> T1
+    T1 --> T2
+    T2 --> T3
+    T2 --> T4
+    T2 --> T5
+    T5 --> T6
 ```
 
 **关键变体**：
@@ -1468,33 +1483,15 @@ Flux.range(1, 1000)
 
 典型的响应式微服务架构：
 
-```
-                     ┌─────────────────┐
-                     │   API Gateway   │
-                     │  (Spring Cloud  │
-                     │   Gateway)      │
-                     └────────┬────────┘
-                              │
-              ┌───────────────┼───────────────┐
-              │               │               │
-              ▼               ▼               ▼
-       ┌──────────┐    ┌──────────┐    ┌──────────┐
-       │ Service A│    │ Service B│    │ Service C│
-       │ WebFlux  │    │ WebFlux  │    │ WebFlux  │
-       └────┬─────┘    └────┬─────┘    └────┬─────┘
-            │               │               │
-            ▼               ▼               ▼
-       ┌──────────┐    ┌──────────┐    ┌──────────┐
-       │PostgreSQL│    │ MongoDB  │    │  Redis   │
-       │  R2DBC   │    │ Reactive │    │ Reactive │
-       └──────────┘    └──────────┘    └──────────┘
-            │
-            ▼
-       ┌──────────┐
-       │  Kafka   │
-       │ Reactive │
-       │ Kafka    │
-       └──────────┘
+```mermaid
+flowchart TD
+    GW[API Gateway<br/>Spring Cloud Gateway] --> SA[Service A<br/>WebFlux]
+    GW --> SB[Service B<br/>WebFlux]
+    GW --> SC[Service C<br/>WebFlux]
+    SA --> PG[PostgreSQL<br/>R2DBC]
+    SB --> MG[MongoDB<br/>Reactive]
+    SC --> RD[Redis<br/>Reactive]
+    SA --> KF[Kafka<br/>Reactive Kafka]
 ```
 
 **关键组件**：
@@ -1925,7 +1922,7 @@ public class StreamProcessingPipeline {
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
 ### 10.1 基础题
 
@@ -2209,41 +2206,25 @@ public interface Processor<T, R> extends Subscriber<T>, Publisher<R> {
 
 ## 附录 C：响应式生态全景图
 
-```
-                     ┌──────────────────┐
-                     │   Reactive Streams│
-                     │   Specification   │
-                     │  (JVM Standard)   │
-                     └────────┬──────────┘
-                              │
-            ┌─────────────────┼──────────────────┐
-            │                 │                  │
-            ▼                 ▼                  ▼
-    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-    │   Project    │  │   RxJava 3   │  │   Mutiny     │
-    │   Reactor    │  │  (Netflix)   │  │ (Quarkus)    │
-    └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-           │                 │                  │
-           ▼                 ▼                  ▼
-    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-    │ Spring       │  │  RxJava      │  │  Quarkus     │
-    │ WebFlux      │  │  Android     │  │  Mutiny      │
-    │ (VMware)     │  │  Bindings    │  │  Reactive    │
-    └──────┬───────┘  └──────────────┘  └──────────────┘
-           │
-           ▼
-    ┌──────────────────────────────────┐
-    │      Reactive Drivers            │
-    ├──────────────────────────────────┤
-    │ R2DBC (PostgreSQL, MySQL, H2)    │
-    │ Reactive MongoDB                 │
-    │ Reactive Redis (Lettuce)         │
-    │ Reactive Kafka                   │
-    │ Reactive RabbitMQ                │
-    │ WebClient (HTTP)                 │
-    │ RSocket                          │
-    │ Reactor Netty (TCP/UDP/HTTP)     │
-    └──────────────────────────────────┘
+```mermaid
+flowchart TD
+    Spec[Reactive Streams Specification<br/>JVM Standard] --> PR[Project Reactor<br/>VMware]
+    Spec --> RX[RxJava 3<br/>Netflix]
+    Spec --> MU[Mutiny<br/>Quarkus]
+    PR --> WF[Spring WebFlux]
+    RX --> AX[RxJava Android Bindings]
+    MU --> QM[Quarkus Mutiny Reactive]
+    WF --> Drivers[Reactive Drivers]
+    AX --> Drivers
+    QM --> Drivers
+    Drivers --> D1[R2DBC（PostgreSQL, MySQL, H2）]
+    Drivers --> D2[Reactive MongoDB]
+    Drivers --> D3[Reactive Redis（Lettuce）]
+    Drivers --> D4[Reactive Kafka]
+    Drivers --> D5[Reactive RabbitMQ]
+    Drivers --> D6[WebClient（HTTP）]
+    Drivers --> D7[RSocket]
+    Drivers --> D8[Reactor Netty（TCP/UDP/HTTP）]
 ```
 
 ---

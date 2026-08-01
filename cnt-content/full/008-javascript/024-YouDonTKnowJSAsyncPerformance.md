@@ -353,10 +353,11 @@ etymology:
     english: Rejection
     origin: 源自拉丁语 "rejicere"(扔回、拒绝),Promise 中指"将 pending 状态转为 rejected,表示异步操作失败"。
 ---
+# JavaScript Promise 构造器
 
-# Promise 构造器
+> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
-> 本文是 FANDEX JavaScript 模块的核心理论文档之一,定位为 MIT 6.S081 / Stanford CS107 / CMU 15-410 级别的工程教学材料,涵盖 Promise A+ 规范、状态机形式化、thenable 鸭子类型、微任务调度、并发原语、Promise.withResolvers 等高级主题。
+---
 
 ## 0. 学习导览
 
@@ -2692,7 +2693,7 @@ console.log(manager.getStats());
 
 ---
 
-## 18. 习题
+## 知识讲解与要点分析（原习题）
 
 ### 18.1 基础题
 
@@ -2807,7 +2808,7 @@ Promise.delay(1000, 'hello').then((v) => console.log(v)); // 1 秒后 'hello'
 
 **题 6 答案**:输出顺序为 1, 5, 3, 4, 2。
 
-解析:
+解析讲解：
 - 1, 5:同步代码
 - 3, 4:微任务(then 与 queueMicrotask 同优先级,按注册顺序)
 - 2:宏任务(setTimeout)
@@ -3008,16 +3009,13 @@ cachedFetch.clear(); // 清空缓存
 
 ## 附录 B:状态机转换图
 
-```
-                  resolve(value)
-       pending ─────────────────► fulfilled
-          │                            │
-          │                            │
-          │ reject(reason)             │ (不可转换)
-          │                            │
-          ▼                            ▼
-       rejected ──────────────► (不可转换)
-                  (不可转换)
+```mermaid
+stateDiagram-v2
+    [*] --> Pending
+    Pending --> Fulfilled: resolve(value)
+    Pending --> Rejected: reject(reason)
+    Fulfilled --> [*]
+    Rejected --> [*]
 ```
 
 转换规则:
@@ -3031,88 +3029,69 @@ cachedFetch.clear(); // 清空缓存
 
 ## 附录 C:微任务调度时序
 
-```
-时间轴
-─────────────────────────────────────────────►
-
-[同步代码]              [微任务]           [宏任务]
-   │                       │                  │
-   │ Promise.resolve().then(cb)               │
-   │ ──► cb 入队                              │
-   │                                          │
-   ▼                       ▼                  ▼
-   console.log(1)         cb()              setTimeout
-   console.log(2)         console.log(3)    console.log(4)
-   console.log(end)                         (在下一轮)
+```mermaid
+flowchart TD
+    T0["时间轴"]
+    T1["►"]
+    T2["[同步代码]              [微任务]           [宏任务]"]
+    T3["Promise.resolve().then(cb)"]
+    T4["► cb 入队"]
+    T5["▼                       ▼                  ▼"]
+    T6["console.log(1)         cb()              setTimeout"]
+    T7["console.log(2)         console.log(3)    console.log(4)"]
+    T8["console.log(end)                         (在下一轮)"]
+    T1 --> T2
+    T2 --> T3
+    T2 --> T4
+    T4 --> T5
+    T5 --> T6
+    T6 --> T7
+    T7 --> T8
 ```
 
 ---
 
 ## 附录 D:thenable 判定流程
 
-```
-resolve(x)
-   │
-   ▼
-x === this? ──── Yes ──► reject(TypeError)
-   │
-   No
-   │
-   ▼
-x 是 Promise? ── Yes ──► 采用 x 的状态
-   │
-   No
-   │
-   ▼
-x 是对象/函数? ── No ──► fulfill(x)
-   │
-   Yes
-   │
-   ▼
-try { then = x.then }
-   │
-   ├─ 抛错 ──► reject(err)
-   │
-   ▼
-then 是函数? ── No ──► fulfill(x)
-   │
-   Yes
-   │
-   ▼
-调用 then.call(x, resolveY, rejectY)
-   │
-   ├─ resolveY(y) ──► 递归 resolve(y)
-   ├─ rejectY(r) ──► reject(r)
-   └─ 抛错 ──► reject(err)(若未调用 resolve/reject)
+```mermaid
+flowchart TD
+    A[resolve(x)] --> B{x === this?}
+    B -- Yes --> R1[reject(TypeError)]
+    B -- No --> C{x 是 Promise?}
+    C -- Yes --> R2[采用 x 的状态]
+    C -- No --> D{x 是对象/函数?}
+    D -- No --> R3[fulfill(x)]
+    D -- Yes --> E[try { then = x.then }]
+    E -- 抛错 --> R4[reject(err)]
+    E --> F{then 是函数?}
+    F -- No --> R5[fulfill(x)]
+    F -- Yes --> G[调用 then.call(x, resolveY, rejectY)]
+    G --> H[resolveY(y) → 递归 resolve(y)]
+    G --> I[rejectY(r) → reject(r)]
+    G --> J[抛错 → reject(err)（若未调用 resolve/reject）]
 ```
 
 ---
 
 ## 附录 E:并发原语对比
 
-```
-all:        [p1, p2, p3]
-              │  │  │
-              ▼  ▼  ▼
-              ✓  ✓  ✓ ──► [v1, v2, v3]
-              ✗  �  ──► reject(r1) 立即
-
-race:       [p1, p2, p3]
-              │  │  │
-              ▼  ▼  ▼
-              ✓ ──────► resolve(v1) 立即(第一个 settled)
-              ✗ ──────► reject(r1) 立即(第一个 settled)
-
-allSettled: [p1, p2, p3]
-              │  │  │
-              ▼  ▼  ▼
-              ✓  ✗  ✓ ──► [{v1}, {r2}, {v3}]
-
-any:        [p1, p2, p3]
-              │  │  │
-              ▼  ▼  ▼
-              ✓ ──────► resolve(v1) 立即(第一个 fulfilled)
-              ✗  ✗  ✗ ──► reject(AggregateError)
+```mermaid
+flowchart LR
+    subgraph All[Promise.all]
+        A1[p1] --> A2[fulfilled]
+        A2 --> A3[[v1, v2, v3]]
+    end
+    subgraph Race[Promise.race]
+        R1[p1] --> R2[第一个 settled → resolve/reject]
+    end
+    subgraph Settled[Promise.allSettled]
+        S1[p1] --> S2[fulfilled → v1]
+        S2 --> S3[[{v1}, {r2}, {v3}]]
+    end
+    subgraph Any[Promise.any]
+        Y1[p1] --> Y2[第一个 fulfilled → resolve]
+        Y2 --> Y3[全部 rejected → AggregateError]
+    end
 ```
 
 ---
@@ -3256,3 +3235,347 @@ console.time('await');
 ---
 
 > 本文档基于 Promise A+ 规范、ECMAScript 2025、WHATWG HTML Living Standard 编写,涵盖 Promise 构造器的形式化定义、状态机模型、thenable 解析、微任务调度、并发原语、错误处理、生产级模式等内容,旨在作为 MIT/Stanford/CMU 级别的工程教学材料。如需进一步深入,请参阅参考文献与延伸阅读章节。
+## Promise 创建
+
+**基本写法：创建 Promise**
+`new Promise((<resolve>, <reject>) => { })`
+```javascript
+// 创建 Promise 对象
+let promise = new Promise((resolve, reject) => {
+});
+```
+
+---
+
+**基本写法：resolve 完成**
+`new Promise((resolve) => { resolve(<值>); })`
+```javascript
+// 创建已完成的 Promise
+let p = new Promise((resolve) => {
+    resolve("success");
+});
+```
+
+---
+
+**基本写法：reject 拒绝**
+`new Promise((_, reject) => { reject(<错误>); })`
+```javascript
+// 创建已拒绝的 Promise
+let p = new Promise((_, reject) => {
+    reject(new Error("failed"));
+});
+```
+
+---
+
+## Promise 状态
+
+**基本写法：pending 状态**
+`new Promise(() => { })`
+```javascript
+// 创建 pending 状态的 Promise 永不落定
+let p = new Promise(() => {
+});
+```
+
+---
+
+**基本写法：fulfilled 状态**
+`Promise.resolve(<值>)`
+```javascript
+// 创建 fulfilled 状态的 Promise
+let p = Promise.resolve(42);
+```
+
+---
+
+**基本写法：rejected 状态**
+`Promise.reject(<错误>)`
+```javascript
+// 创建 rejected 状态的 Promise
+let p = Promise.reject(new Error("error"));
+```
+
+---
+
+## then 方法
+
+**基本写法：then 成功回调**
+`<promise>.then(<回调>)`
+```javascript
+// 处理 Promise 成功结果
+promise.then(result => {
+});
+```
+
+---
+
+**基本写法：then 成功和失败回调**
+`<promise>.then(<成功回调>, <失败回调>)`
+```javascript
+// 同时处理成功和失败
+promise.then(
+    result => {
+    },
+    error => {
+    }
+);
+```
+
+---
+
+**基本写法：then 返回值**
+`<promise>.then(<回调>).then(<回调>)`
+```javascript
+// then 返回值传递给下一个 then
+promise.then(result => result * 2).then(doubled => {
+});
+```
+
+---
+
+**基本写法：then 返回 Promise**
+`<promise>.then(() => <Promise>)`
+```javascript
+// then 返回 Promise 会等待完成
+promise.then(result => {
+    return anotherPromise;
+});
+```
+
+---
+
+## catch 方法
+
+**基本写法：catch 错误处理**
+`<promise>.catch(<错误回调>)`
+```javascript
+// 捕获 Promise 错误
+promise.catch(error => {
+});
+```
+
+---
+
+**基本写法：catch 链式**
+`<promise>.then(<回调>).catch(<回调>)`
+```javascript
+// then 后接 catch 捕获错误
+promise.then(result => {
+}).catch(error => {
+});
+```
+
+---
+
+**基本写法：catch 恢复**
+`<promise>.catch(() => <恢复值>)`
+```javascript
+// catch 返回值可以恢复链
+promise.catch(() => "default value").then(result => {
+});
+```
+
+---
+
+## finally 方法
+
+**基本写法：finally 最终处理**
+`<promise>.finally(<回调>)`
+```javascript
+// 无论成功失败都执行
+promise.finally(() => {
+});
+```
+
+---
+
+**基本写法：finally 链式**
+`<promise>.then(<回调>).catch(<回调>).finally(<回调>)`
+```javascript
+// 完整的 Promise 链
+promise
+    .then(result => {
+    })
+    .catch(error => {
+    })
+    .finally(() => {
+    });
+```
+
+---
+
+## Promise 链
+
+**基本写法：链式调用**
+`<promise>.then(<回调1>).then(<回调2>).then(<回调3>)`
+```javascript
+// 多个 then 链式调用
+promise.then(step1).then(step2).then(step3);
+```
+
+---
+
+**换行写法：长链式调用**
+`<promise>.then(<回调>).then(<回调>).then(<回调>)`
+```javascript
+// 换行书写长链式调用
+promise
+    .then(result => process(result))
+    .then(processed => transform(processed))
+    .then(transformed => save(transformed));
+```
+
+---
+
+**基本写法：链中抛出错误**
+`<promise>.then(() => { throw new Error("<消息>"); })`
+```javascript
+// then 中抛出错误会被 catch 捕获
+promise.then(() => {
+    throw new Error("Something went wrong");
+}).catch(error => {
+});
+```
+
+---
+
+## Promise 组合
+
+**基本写法：Promise.all**
+`Promise.all([<promise1>, <promise2>])`
+```javascript
+// 等待所有 Promise 完成
+Promise.all([p1, p2]).then(results => {
+});
+```
+
+---
+
+**基本写法：Promise.race**
+`Promise.race([<promise1>, <promise2>])`
+```javascript
+// 返回第一个完成的 Promise
+Promise.race([p1, p2]).then(result => {
+});
+```
+
+---
+
+**基本写法：Promise.allSettled**
+`Promise.allSettled([<promise1>, <promise2>])`
+```javascript
+// 等待所有 Promise 落定
+Promise.allSettled([p1, p2]).then(results => {
+});
+```
+
+---
+
+**基本写法：Promise.any**
+`Promise.any([<promise1>, <promise2>])`
+```javascript
+// 返回第一个成功的 Promise
+Promise.any([p1, p2]).then(result => {
+});
+```
+
+---
+
+## Promise 静态方法
+
+**基本写法：Promise.resolve**
+`Promise.resolve(<值>)`
+```javascript
+// 创建已完成的 Promise
+let p = Promise.resolve(42);
+```
+
+---
+
+**基本写法：Promise.reject**
+`Promise.reject(<错误>)`
+```javascript
+// 创建已拒绝的 Promise
+let p = Promise.reject(new Error("error"));
+```
+
+---
+
+**基本写法：Promise.resolve thenable**
+`Promise.resolve(<thenable对象>)`
+```javascript
+// 将 thenable 对象转换为 Promise
+let p = Promise.resolve({ then: (resolve) => resolve(42) });
+```
+
+---
+
+## 错误处理
+
+**基本写法：throw 错误**
+`throw new Error("<消息>")`
+```javascript
+// 在 Promise 中抛出错误
+new Promise(() => {
+    throw new Error("Failed");
+});
+```
+
+---
+
+**基本写法：reject 错误**
+`reject(new Error("<消息>"))`
+```javascript
+// 使用 reject 拒绝 Promise
+new Promise((_, reject) => {
+    reject(new Error("Failed"));
+});
+```
+
+---
+
+**基本写法：捕获特定错误**
+`<promise>.catch(<错误> => { if (<错误> instanceof <类型>) { } })`
+```javascript
+// 捕获特定类型的错误
+promise.catch(error => {
+    if (error instanceof TypeError) {
+    }
+});
+```
+
+---
+
+## Promise 实用模式
+
+**基本写法：Promise 超时**
+`Promise.race([<promise>, <超时Promise>])`
+```javascript
+// 实现 Promise 超时
+Promise.race([
+    fetchData(),
+    new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000))
+]);
+```
+
+---
+
+**基本写法：Promise 重试**
+`function <重试函数>(<函数>, <次数>) { return <函数>().catch(() => <次数> > 0 ? <重试函数>(<函数>, <次数> - 1) : Promise.reject()); }`
+```javascript
+// 实现 Promise 重试机制
+function retry(fn, times) {
+    return fn().catch(() => times > 0 ? retry(fn, times - 1) : Promise.reject());
+}
+```
+
+---
+
+**基本写法：Promise 顺序执行**
+`<数组>.reduce((<链>, <promise>) => <链>.then(() => <promise>()), Promise.resolve())`
+```javascript
+// 顺序执行 Promise 数组
+promises.reduce((chain, promise) => chain.then(() => promise()), Promise.resolve());
+```

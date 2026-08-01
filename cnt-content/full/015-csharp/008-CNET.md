@@ -2161,42 +2161,42 @@ await connection.InvokeAsync("SendMessage", "Alice", "Hello");
 
 ---
 
-## 10. 习题与思考题
+## 知识讲解与要点分析（原习题）
 
-### 10.1 选择题
+### 选择题知识点讲解
 
-**Q1**：以下哪种 DI 生命周期适合数据库上下文（DbContext）？
+**常见疑问 1**：以下哪种 DI 生命周期适合数据库上下文（DbContext）？
 
 A. Singleton
 B. Scoped
 C. Transient
 D. 都可以
 
-**答案**：B。DbContext 不是线程安全的，应在请求范围内共享一个实例。
+**解析讲解**：B。DbContext 不是线程安全的，应在请求范围内共享一个实例。
 
-**Q2**：Native AOT 编译应用无法执行以下哪个操作？
+**常见疑问 2**：Native AOT 编译应用无法执行以下哪个操作？
 
 A. 调用 .NET BCL 方法
 B. 运行时反射生成动态方法
 C. 使用 `await/async`
 D. 使用泛型集合
 
-**答案**：B。Native AOT 无运行时 JIT，无法生成动态方法。
+**解析讲解**：B。Native AOT 无运行时 JIT，无法生成动态方法。
 
-**Q3**：EF Core 中以下哪种写法会产生 N+1 查询？
+**常见疑问 3**：EF Core 中以下哪种写法会产生 N+1 查询？
 
 A. `db.Users.Include(u => u.Orders).ToList()`
 B. `db.Users.ToList()` 然后访问 `user.Orders`
 C. `db.Users.Select(u => new { u.Id, u.Name }).ToList()`
 D. `db.Users.Join(db.Orders, ...).ToList()`
 
-**答案**：B。访问未 Include 的导航属性触发延迟加载，每次产生一次查询。
+**解析讲解**：B。访问未 Include 的导航属性触发延迟加载，每次产生一次查询。
 
-### 10.2 简答题
+### 简答题知识点讲解
 
-**Q4**：解释 .NET 中 GC 的分代机制，为何能提升性能？
+**常见疑问 4**：解释 .NET 中 GC 的分代机制，为何能提升性能？
 
-**参考答案**：
+**解析讲解**：
 
 .NET GC 分为三代（Gen0/Gen1/Gen2）+ LOH/POH：
 
@@ -2212,19 +2212,19 @@ D. `db.Users.Join(db.Orders, ...).ToList()`
 2. **分代假设**：新对象死亡率高，Gen0 GC 仅扫描 Gen0，速度快。
 3. **暂停优化**：Gen0 GC 暂停时间 < 1ms，Gen2 GC 较少触发。
 
-**Q5**：说明 `IOptions<T>`、`IOptionsSnapshot<T>`、`IOptionsMonitor<T>` 的差异。
+**常见疑问 5**：说明 `IOptions<T>`、`IOptionsSnapshot<T>`、`IOptionsMonitor<T>` 的差异。
 
-**参考答案**：
+**解析讲解**：
 
 - **`IOptions<T>`**：单例，启动时绑定一次，值不变。
 - **`IOptionsSnapshot<T>`**：Scoped，每次请求重新绑定，支持配置热更新（仅 Scoped）。
 - **`IOptionsMonitor<T>`**：Singleton，监听配置变更，触发 `OnChange` 回调，支持热更新。
 
-### 10.3 编程题
+### 编程题知识点讲解
 
-**Q6**：实现一个 ASP.NET Core 最小 API，包含 GET/POST/PUT/DELETE 操作，使用 EF Core 与 SQLite。
+**常见疑问 6**：实现一个 ASP.NET Core 最小 API，包含 GET/POST/PUT/DELETE 操作，使用 EF Core 与 SQLite。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 // Program.cs
@@ -2296,9 +2296,9 @@ public class Todo
 }
 ```
 
-**Q7**：使用 `Channel<T>` 实现一个简单的后台任务队列。
+**常见疑问 7**：使用 `Channel<T>` 实现一个简单的后台任务队列。
 
-**参考答案**：
+**解析讲解**：
 
 ```csharp
 public class BackgroundTaskQueue
@@ -2349,9 +2349,9 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 
 ### 10.4 思考题
 
-**Q8**：在微服务架构中，何时选择 gRPC，何时选择 REST API？
+**常见疑问 8**：在微服务架构中，何时选择 gRPC，何时选择 REST API？
 
-**参考答案**：
+**解析讲解**：
 
 - **gRPC 优势**：
   - 二进制 Protobuf，体积小，性能高（约 5-10 倍 JSON）。
@@ -2365,9 +2365,9 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
   - 调试方便。
   - 适合：外部 API、Web 应用、第三方集成。
 
-**Q9**：分析 Native AOT 在生产环境的适用场景与限制。
+**常见疑问 9**：分析 Native AOT 在生产环境的适用场景与限制。
 
-**参考答案**：
+**解析讲解**：
 
 - **适用场景**：
   - 云函数（AWS Lambda / Azure Functions）：冷启动敏感。
@@ -2381,9 +2381,9 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
   - 动态加载程序集不可用（`Assembly.LoadFrom` 不可用）。
   - 部分库不兼容（需 `IsAotCompatible` 标注）。
 
-**Q10**：解释 `Server GC` 与 `Workstation GC` 的差异，何时使用 Server GC？
+**常见疑问 10**：解释 `Server GC` 与 `Workstation GC` 的差异，何时使用 Server GC？
 
-**参考答案**：
+**解析讲解**：
 
 - **Workstation GC**：单堆，单 GC 线程，适合客户端应用（少量 CPU）。
 - **Server GC**：每 CPU 一个堆与 GC 线程，适合服务器应用（多核）。
