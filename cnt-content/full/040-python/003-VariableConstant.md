@@ -422,19 +422,16 @@ lst1.append(4)  # 原地修改
 print(lst2)  # [1, 2, 3, 4]（lst2 指向同一对象）
 print(lst1 is lst2)  # True
 
-
 # 函数参数传递：对象引用传递
 def modify_list(lst):
     """修改传入的列表（影响外部）"""
     lst.append(100)
     return lst
 
-
 def rebind_list(lst):
     """重新绑定（不影响外部）"""
     lst = [100, 200, 300]  # 重新绑定到新对象
     return lst
-
 
 original = [1, 2, 3]
 modify_list(original)
@@ -443,7 +440,6 @@ print(original)  # [1, 2, 3, 100]（原地修改）
 original = [1, 2, 3]
 rebind_list(original)
 print(original)  # [1, 2, 3]（未受影响）
-
 
 # is vs ==
 a = 256
@@ -476,22 +472,18 @@ LEGB 作用域查找规则演示
 # Built-in 作用域
 x = "global x"
 
-
 def test_builtin():
     # Python 内置函数 len、print 等来自 builtins 模块
     print(len([1, 2, 3]))  # 3（从 builtins 查找）
-
 
 # Global 作用域
 def test_global():
     print(x)  # global x（从 global 查找）
 
-
 def modify_global():
     global x  # 声明修改全局变量
     x = "modified global"
     print(x)  # modified global
-
 
 # Enclosing 作用域
 def outer():
@@ -502,39 +494,31 @@ def outer():
 
     inner()
 
-
 # Local 作用域
 def test_local():
     z = "local z"
     print(z)  # local z
 
-
 # 作用域遮蔽（shadowing）
 x = "global"
-
 
 def shadow_test():
     x = "local"  # 遮蔽全局 x
     print(x)  # local
 
-
 shadow_test()
 print(x)  # global（未受影响）
 
-
 # global 关键字
 counter = 0
-
 
 def increment():
     global counter
     counter += 1
 
-
 increment()
 increment()
 print(counter)  # 2
-
 
 # nonlocal 关键字
 def make_counter():
@@ -547,19 +531,16 @@ def make_counter():
 
     return increment
 
-
 c = make_counter()
 print(c())  # 1
 print(c())  # 2
 print(c())  # 3
-
 
 # globals() 与 locals()
 def test_namespaces():
     local_var = "local"
     print("locals:", locals())  # {'local_var': 'local'}
     print("globals has x:", 'x' in globals())  # True
-
 
 # 嵌套作用域与闭包
 def make_adder(n):
@@ -570,12 +551,10 @@ def make_adder(n):
 
     return adder
 
-
 add5 = make_adder(5)
 add10 = make_adder(10)
 print(add5(3))  # 8
 print(add10(3))  # 13
-
 
 # 查看闭包变量
 print(add5.__closure__)  # (<cell at 0x...: int object at 0x...>,)
@@ -592,7 +571,6 @@ global 与 nonlocal 的常见陷阱
 # 陷阱 1：未声明 global 导致 UnboundLocalError
 counter = 0
 
-
 def bad_increment():
     # counter += 1 等价于 counter = counter + 1
     # 解释器看到赋值，将 counter 视为局部变量
@@ -602,19 +580,15 @@ def bad_increment():
     except UnboundLocalError as e:
         print(f"Error: {e}")  # local variable 'counter' referenced before assignment
 
-
 bad_increment()
-
 
 # 修复：声明 global
 def good_increment():
     global counter
     counter += 1
 
-
 good_increment()
 print(counter)  # 1
-
 
 # 陷阱 2：nonlocal 跨多层函数
 def outer():
@@ -633,9 +607,7 @@ def outer():
     middle()
     print(f"outer x: {x}")  # outer（未受影响）
 
-
 outer()
-
 
 # 陷阱 3：循环中的闭包延迟绑定
 funcs = []
@@ -644,11 +616,9 @@ for i in range(3):
 
 print([f() for f in funcs])  # [2, 2, 2]（延迟绑定）
 
-
 # 修复方案 1：默认参数
 funcs = [lambda i=i: i for i in range(3)]
 print([f() for f in funcs])  # [0, 1, 2]
-
 
 # 修复方案 2：functools.partial
 from functools import partial
@@ -656,11 +626,9 @@ from functools import partial
 funcs = [partial(lambda x: x, i) for i in range(3)]
 print([f() for f in funcs])  # [0, 1, 2]
 
-
 # 修复方案 3：立即执行的工厂函数
 def make_func(i):
     return lambda: i
-
 
 funcs = [make_func(i) for i in range(3)]
 print([f() for f in funcs])  # [0, 1, 2]
@@ -729,7 +697,6 @@ print(merged)  # {'a': 1, 'b': 2}
 def add(a, b, c):
     return a + b + c
 
-
 args = [1, 2, 3]
 print(add(*args))  # 6
 
@@ -772,7 +739,6 @@ def handle_command(command):
             return f"Listing with args: {args}"
         case _:
             return "Unknown command"
-
 
 print(handle_command("hello Alice"))  # Hello, Alice
 print(handle_command("add 3 5"))  # 8
@@ -827,12 +793,10 @@ def modify_immutable(x):
     x += 1
     return x
 
-
 def modify_mutable(lst):
     """可变参数：原地修改影响外部"""
     lst.append(100)
     return lst
-
 
 n = 10
 new_n = modify_immutable(n)
@@ -901,7 +865,6 @@ print(original)  # [[1, 2, 100], [3, 4], [5, 6]]
 print(shallow1)  # [[1, 2, 100], [3, 4], [5, 6]]
 print(shallow2)  # [[1, 2, 100], [3, 4], [5, 6]]（也受影响）
 
-
 # 深拷贝：递归复制所有嵌套对象
 original = [[1, 2], [3, 4], [5, 6]]
 deep = copy.deepcopy(original)
@@ -912,7 +875,6 @@ print(original[0] is deep[0])  # False（内层列表也是新对象）
 deep[0].append(100)
 print(original)  # [[1, 2], [3, 4], [5, 6]]（不受影响）
 print(deep)  # [[1, 2, 100], [3, 4], [5, 6]]
-
 
 # 字典的浅拷贝与深拷贝
 original = {"a": [1, 2], "b": [3, 4]}
@@ -927,7 +889,6 @@ original = {"a": [1, 2], "b": [3, 4]}  # 重置
 deep = copy.deepcopy(original)
 deep["a"].append(100)
 print(original)  # {'a': [1, 2], 'b': [3, 4]}（不受影响）
-
 
 # 自定义类的拷贝
 class Point:
@@ -946,14 +907,12 @@ class Point:
     def __repr__(self):
         return f"Point({self.x}, {self.y})"
 
-
 p1 = Point(1, 2)
 p2 = copy.copy(p1)
 p3 = copy.deepcopy(p1)
 
 print(p1 is p2)  # False
 print(p1.x is p2.x)  # True（浅拷贝，属性引用相同）
-
 
 # 循环引用的深拷贝
 class Node:
@@ -965,7 +924,6 @@ class Node:
     def add_child(self, child):
         child.parent = self
         self.children.append(child)
-
 
 root = Node("root")
 child1 = Node("child1")
@@ -997,14 +955,12 @@ PI = 3.14159265359
 # 缺点：无强制力，可被修改
 MAX_CONNECTIONS = 200  # 不会报错
 
-
 # 方案 2：typing.Final（类型检查器检测）
 from typing import Final
 
 MAX_SIZE: Final[int] = 100
 # MAX_SIZE = 200  # mypy 报错：Cannot assign to final name "MAX_SIZE"
 # 但运行时不报错
-
 
 # 方案 3：__setattr__ 拦截的不可变类
 class Constants:
@@ -1020,7 +976,6 @@ class Constants:
     def __delattr__(self, name):
         raise AttributeError(f"Cannot delete constant '{name}'")
 
-
 const = Constants()
 print(const.PI)  # 3.14159265359
 try:
@@ -1028,10 +983,8 @@ try:
 except AttributeError as e:
     print(f"Error: {e}")  # Cannot modify constant 'PI'
 
-
 # 方案 4：模块级常量（替换模块对象）
 import sys
-
 
 class _Const:
     class ConstError(TypeError):
@@ -1047,12 +1000,10 @@ class _Const:
             raise self.ConstError(f"Can't unbind const '{name}'")
         raise AttributeError(f"'{type(self).__name__}' has no attribute '{name}'")
 
-
 # sys.modules[__name__] = _Const()
 # 之后 import 此模块得到的是 _Const 实例
 # const.MAX_SIZE = 100  # 第一次设置允许
 # const.MAX_SIZE = 200  # ConstError: Can't rebind const 'MAX_SIZE'
-
 
 # 方案 5：enum.Enum（一组相关常量）
 class Color(Enum):
@@ -1060,13 +1011,11 @@ class Color(Enum):
     GREEN = 2
     BLUE = 3
 
-
 class Direction(Enum):
     NORTH = auto()
     SOUTH = auto()
     EAST = auto()
     WEST = auto()
-
 
 print(Color.RED)  # Color.RED
 print(Color.RED.value)  # 1
@@ -1081,21 +1030,17 @@ try:
 except AttributeError as e:
     print(f"Error: {e}")  # cannot reassign member 'RED'
 
-
 # IntEnum：可与整数比较
 class Status(IntEnum):
     OK = 200
     NOT_FOUND = 404
     SERVER_ERROR = 500
 
-
 print(Status.OK == 200)  # True
 print(Status.OK + 1)  # 201
 
-
 # 方案 6：frozen dataclass（不可变数据类）
 from dataclasses import dataclass
-
 
 @dataclass(frozen=True)
 class Config:
@@ -1103,7 +1048,6 @@ class Config:
     host: str
     port: int
     debug: bool = False
-
 
 config = Config(host="localhost", port=8080, debug=True)
 print(config.host)  # localhost
@@ -1116,7 +1060,6 @@ except Exception as e:
 # frozen dataclass 可哈希，可作为字典键或集合元素
 print(hash(config))  # 哈希值
 configs = {config: "default"}
-
 
 # 方案 7：types.MappingProxyType（不可变字典视图）
 from types import MappingProxyType
@@ -1133,7 +1076,6 @@ except TypeError as e:
 # 但原字典可修改（影响代理视图）
 _config["host"] = "0.0.0.0"
 print(readonly_config["host"])  # 0.0.0.0
-
 
 # 方案 8：__slots__ + __setattr__（节省内存的不可变类）
 class ImmutablePoint:
@@ -1159,7 +1101,6 @@ class ImmutablePoint:
 
     def __repr__(self):
         return f"ImmutablePoint({self._x}, {self._y})"
-
 
 p = ImmutablePoint(1, 2)
 print(p.x, p.y)  # 1 2
@@ -1206,17 +1147,14 @@ class Counter:
     def increment(self) -> None:
         Counter.count += 1
 
-
 # Optional 与 Union
 def greet(name: Optional[str] = None) -> str:
     if name is None:
         return "Hello, stranger"
     return f"Hello, {name}"
 
-
 def process(data: Union[int, str, float]) -> str:
     return str(data)
-
 
 # Python 3.10+ 使用 | 语法
 def greet2(name: str | None = None) -> str:
@@ -1224,10 +1162,8 @@ def greet2(name: str | None = None) -> str:
         return "Hello, stranger"
     return f"Hello, {name}"
 
-
 def process2(data: int | str | float) -> str:
     return str(data)
-
 
 # 复杂类型注解
 def process_users(users: list[dict[str, int]]) -> dict[str, list[int]]:
@@ -1238,20 +1174,16 @@ def process_users(users: list[dict[str, int]]) -> dict[str, list[int]]:
         result.setdefault(status, []).append(user["id"])
     return result
 
-
 # Tuple 类型
 def get_point() -> tuple[float, float]:
     return (1.0, 2.0)
-
 
 # 可变长度元组
 def process_items(items: tuple[int, ...]) -> int:
     return sum(items)
 
-
 # TypedDict：类型化字典
 from typing import TypedDict
-
 
 class UserDict(TypedDict):
     id: int
@@ -1259,30 +1191,23 @@ class UserDict(TypedDict):
     email: str
     active: bool
 
-
 user: UserDict = {"id": 1, "name": "Alice", "email": "alice@example.com", "active": True}
-
 
 # Protocol：结构子类型（鸭子类型的形式化）
 from typing import Protocol
-
 
 class SupportsClose(Protocol):
     def close(self) -> None:
         ...
 
-
 def close_resource(resource: SupportsClose) -> None:
     resource.close()
-
 
 class File:
     def close(self) -> None:
         print("File closed")
 
-
 close_resource(File())  # 类型检查通过
-
 
 # dataclass 与类型注解
 @dataclass
@@ -1293,10 +1218,8 @@ class User:
     active: bool = True
     tags: list[str] = None  # 错误！可变默认参数陷阱
 
-
 # 正确写法：使用 field(default_factory=list)
 from dataclasses import dataclass, field
-
 
 @dataclass
 class User2:
@@ -1307,25 +1230,20 @@ class User2:
     tags: list[str] = field(default_factory=list)
     metadata: dict[str, str] = field(default_factory=dict)
 
-
 u1 = User2(id=1, name="Alice", email="alice@example.com")
 u2 = User2(id=2, name="Bob", email="bob@example.com")
 u1.tags.append("admin")
 print(u1.tags)  # ['admin']
 print(u2.tags)  # []（独立列表）
 
-
 # Literal 类型：字面量类型
 from typing import Literal
-
 
 def set_mode(mode: Literal["read", "write", "append"]) -> None:
     print(f"Mode set to: {mode}")
 
-
 set_mode("read")  # OK
 # set_mode("delete")  # mypy 报错
-
 
 # NewType：创建新类型（类型安全别名）
 from typing import NewType
@@ -1333,11 +1251,9 @@ from typing import NewType
 UserId = NewType("UserId", int)
 UserName = NewType("UserName", str)
 
-
 def get_user(user_id: UserId) -> UserName:
     # ...
     return UserName("Alice")
-
 
 # 必须显式转换
 user_id = UserId(123)
@@ -1434,11 +1350,9 @@ def add_item(item, lst=[]):  # 默认参数在定义时求值一次
     lst.append(item)
     return lst
 
-
 print(add_item(1))  # [1]
 print(add_item(2))  # [1, 2]（不是 [2]！）
 print(add_item(3))  # [1, 2, 3]
-
 
 # 正确模式：使用 None 哨兵
 def add_item_fixed(item, lst=None):
@@ -1446,7 +1360,6 @@ def add_item_fixed(item, lst=None):
         lst = []
     lst.append(item)
     return lst
-
 
 print(add_item_fixed(1))  # [1]
 print(add_item_fixed(2))  # [2]
@@ -1469,7 +1382,6 @@ print([f() for f in funcs])  # [0, 1, 2]
 # 正确模式 2：工厂函数
 def make_func(i):
     return lambda: i
-
 
 funcs = [make_func(i) for i in range(3)]
 print([f() for f in funcs])  # [0, 1, 2]
@@ -1538,14 +1450,11 @@ if x == None:  # 不推荐（PEP 8 警告）
 # 反模式：全局可变状态
 _global_cache = {}
 
-
 def cache_get(key):
     return _global_cache.get(key)
 
-
 def cache_set(key, value):
     _global_cache[key] = value
-
 
 # 问题：测试间状态污染、多线程不安全
 
@@ -1560,24 +1469,19 @@ class Cache:
     def set(self, key, value):
         self._data[key] = value
 
-
 cache = Cache()
-
 
 # 正确模式 2：依赖注入
 class Service:
     def __init__(self, cache):
         self.cache = cache
 
-
 service = Service(Cache())
-
 
 # 正确模式 3：contextvars（异步安全）
 import contextvars
 
 _request_cache = contextvars.ContextVar('request_cache', default={})
-
 
 def handle_request():
     cache = _request_cache.get()
@@ -1602,7 +1506,6 @@ deep = copy.deepcopy(original)
 
 deep[0].append(100)
 print(original)  # [[1, 2], [3, 4]]（不受影响）
-
 
 # 反模式：字典浅拷贝
 original = {"a": [1, 2], "b": [3, 4]}
@@ -1636,12 +1539,10 @@ MAX_SIZE: Final[int] = 100
 # 正确模式 2：frozen dataclass
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True)
 class Config:
     MAX_SIZE: int = 100
     TIMEOUT: int = 30
-
 
 config = Config()
 # config.MAX_SIZE = 200  # FrozenInstanceError（运行时报错）
@@ -1649,11 +1550,9 @@ config = Config()
 # 正确模式 3：enum
 from enum import Enum
 
-
 class Limits(Enum):
     MAX_SIZE = 100
     TIMEOUT = 30
-
 
 # Limits.MAX_SIZE = 200  # AttributeError（运行时报错）
 ```
@@ -1668,31 +1567,25 @@ x: int = "hello"  # 运行时不报错，但 mypy 报错
 def add(a: int, b: int) -> int:
     return a + b
 
-
 print(add(1, 2))  # 3
 print(add("1", "2"))  # "12"（运行时不报错！）
 
 # 正确模式：运行时类型检查
 from pydantic import BaseModel, validator
 
-
 class AddRequest(BaseModel):
     a: int
     b: int
 
-
 req = AddRequest(a=1, b=2)  # OK
 # req = AddRequest(a="1", b="2")  # ValidationError（自动转换或报错）
-
 
 # 反模式：可变默认参数与类型注解
 from dataclasses import dataclass
 
-
 @dataclass
 class User:
     tags: list[str] = []  # 错误！共享默认参数
-
 
 u1 = User()
 u2 = User()
@@ -1702,11 +1595,9 @@ print(u2.tags)  # ['admin']（受影响！）
 # 正确模式：default_factory
 from dataclasses import field
 
-
 @dataclass
 class User2:
     tags: list[str] = field(default_factory=list)
-
 
 u1 = User2()
 u2 = User2()
@@ -1726,10 +1617,8 @@ print(u2.tags)  # []（独立列表）
 # 变量与函数：snake_case
 user_name = "Alice"
 
-
 def calculate_total_price(items):
     pass
-
 
 # 常量：UPPER_CASE
 MAX_CONNECTIONS = 100
@@ -1739,7 +1628,6 @@ PI = 3.14159265359
 # 类名：PascalCase（CapWords）
 class UserProfile:
     pass
-
 
 # 模块名：lower_case
 # user_utils.py
@@ -1757,12 +1645,10 @@ class Account:
     def _validate(self):  # 私有方法
         pass
 
-
 # 名称重整：__前缀（双下划线）
 class BankAccount:
     def __init__(self):
         self.__pin = 1234  # _BankAccount__pin
-
 
 # 特殊方法：__前后双下划线
 class Vector:
@@ -1775,7 +1661,6 @@ class Vector:
 
     def __repr__(self):
         return f"Vector({self.x}, {self.y})"
-
 
 # 类型变量：T、T_co、T_contra、K、V
 from typing import TypeVar
@@ -1800,10 +1685,8 @@ def process_data(data):
 
     return result
 
-
 def transform(item):
     return item * 2
-
 
 # 避免：函数开头集中定义所有变量
 def bad_practice(data):
@@ -1816,7 +1699,6 @@ def bad_practice(data):
         result.append(processed)
 
     return result
-
 
 # 最佳实践：使用闭包封装状态
 def make_counter(start=0):
@@ -1833,23 +1715,19 @@ def make_counter(start=0):
 
     return increment, reset
 
-
 inc, reset = make_counter(10)
 print(inc())  # 11
 print(inc())  # 12
 reset()
 print(inc())  # 11
 
-
 # 最佳实践：避免全局变量，使用类或模块封装
 # 反模式
 _global_counter = 0
 
-
 def increment_global():
     global _global_counter
     _global_counter += 1
-
 
 # 正确模式：类封装
 class Counter:
@@ -1862,7 +1740,6 @@ class Counter:
 
     def reset(self):
         self._count = 0
-
 
 counter = Counter()
 print(counter.increment())  # 1
@@ -1879,13 +1756,11 @@ from enum import Enum
 from typing import Final
 from dataclasses import dataclass
 
-
 # 1. 模块级常量（简单场景）
 # constants.py
 APP_NAME = "MyApp"
 VERSION = "1.0.0"
 MAX_CONNECTIONS = 100
-
 
 # 2. 分类常量（枚举）
 class Environment(Enum):
@@ -1893,19 +1768,16 @@ class Environment(Enum):
     STAGING = "staging"
     PRODUCTION = "production"
 
-
 class HttpStatus(Enum):
     OK = 200
     NOT_FOUND = 404
     SERVER_ERROR = 500
-
 
 class LogLevel(Enum):
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
-
 
 # 3. 配置常量（frozen dataclass）
 @dataclass(frozen=True)
@@ -1920,7 +1792,6 @@ class DatabaseConfig:
 
     def get_url(self) -> str:
         return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
-
 
 # 4. 环境配置
 @dataclass(frozen=True)
@@ -1947,7 +1818,6 @@ class AppConfig:
             secret_key=os.getenv("SECRET_KEY", "dev-secret-key"),
         )
 
-
 # 5. 类型安全的常量访问
 config = AppConfig.from_env()
 print(config.env)  # Environment.DEVELOPMENT
@@ -1955,10 +1825,8 @@ print(config.database.host)  # localhost
 
 # config.env = "test"  # FrozenInstanceError（不可修改）
 
-
 # 6. 动态常量（运行时计算但不变）
 import math
-
 
 class MathConstants:
     PI: Final[float] = math.pi
@@ -1973,7 +1841,6 @@ class MathConstants:
             "GOLDEN_RATIO": cls.GOLDEN_RATIO,
         }
 
-
 print(MathConstants.PI)  # 3.141592653589793
 ```
 
@@ -1987,12 +1854,10 @@ from typing import Final, Optional, Union, List, Dict, Tuple, Callable, Any, Typ
 from dataclasses import dataclass, field
 from pydantic import BaseModel
 
-
 # 1. 始终为函数添加类型注解
 def calculate_total(items: list[dict[str, float]]) -> float:
     """计算商品总价"""
     return sum(item["price"] for item in items)
-
 
 # 2. 使用 Optional 表示可选参数
 def greet(name: Optional[str] = None) -> str:
@@ -2000,27 +1865,21 @@ def greet(name: Optional[str] = None) -> str:
         return "Hello, stranger"
     return f"Hello, {name}"
 
-
 # 3. 使用 Final 声明常量
 MAX_RETRIES: Final[int] = 3
 DEFAULT_TIMEOUT: Final[float] = 30.0
 
-
 # 4. 使用 Literal 限制取值范围
 from typing import Literal
-
 
 def set_log_level(level: Literal["DEBUG", "INFO", "WARNING", "ERROR"]) -> None:
     print(f"Log level set to: {level}")
 
-
 set_log_level("INFO")  # OK
 # set_log_level("TRACE")  # mypy 报错
 
-
 # 5. 使用 TypedDict 类型化字典
 from typing import TypedDict
-
 
 class UserDict(TypedDict):
     id: int
@@ -2028,10 +1887,8 @@ class UserDict(TypedDict):
     email: str
     active: bool
 
-
 # 6. 使用 Protocol 定义接口
 from typing import Protocol
-
 
 class Repository(Protocol):
     def get(self, id: int) -> dict:
@@ -2040,7 +1897,6 @@ class Repository(Protocol):
     def save(self, entity: dict) -> int:
         ...
 
-
 class UserRepository:
     def get(self, id: int) -> dict:
         return {"id": id, "name": "Alice"}
@@ -2048,18 +1904,14 @@ class UserRepository:
     def save(self, entity: dict) -> int:
         return entity["id"]
 
-
 def process(repo: Repository) -> None:
     user = repo.get(1)
     print(user)
 
-
 process(UserRepository())  # 类型检查通过
-
 
 # 7. 使用 TypeVar 与 Generic 实现泛型
 T = TypeVar('T')
-
 
 class Stack(Generic[T]):
     def __init__(self) -> None:
@@ -2078,12 +1930,10 @@ class Stack(Generic[T]):
             raise IndexError("peek from empty stack")
         return self._items[-1]
 
-
 stack: Stack[int] = Stack()
 stack.push(1)
 stack.push(2)
 print(stack.pop())  # 2
-
 
 # 8. 使用 Pydantic 进行运行时验证
 class User(BaseModel):
@@ -2092,7 +1942,6 @@ class User(BaseModel):
     email: str
     age: int
     active: bool = True
-
 
 user = User(id=1, name="Alice", email="alice@example.com", age=30)
 print(user.name)  # Alice
@@ -2110,7 +1959,6 @@ import gc
 import tracemalloc
 import linecache
 
-
 # 1. 引用计数
 x = [1, 2, 3]
 print(sys.getrefcount(x))  # 2（x 与 getrefcount 的参数）
@@ -2124,22 +1972,18 @@ print(sys.getrefcount(x))  # 5
 del y, z
 print(sys.getrefcount(x))  # 2
 
-
 # 2. 对象大小
 print(sys.getsizeof(0))  # 28（小整数）
 print(sys.getsizeof(1000000))  # 36（大整数）
 print(sys.getsizeof("hello"))  # 54（字符串）
 print(sys.getsizeof([1, 2, 3]))  # 88（列表）
 
-
 # 3. 内存追踪
 tracemalloc.start()
-
 
 def process_data():
     data = [i ** 2 for i in range(10000)]
     return sum(data)
-
 
 result = process_data()
 
@@ -2150,17 +1994,14 @@ print("[ Top 5 memory allocations ]")
 for stat in top_stats[:5]:
     print(stat)
 
-
 # 4. 垃圾回收
 gc.enable()
 gc.set_debug(gc.DEBUG_STATS)
-
 
 class Node:
     def __init__(self, value):
         self.value = value
         self.next = None
-
 
 # 创建循环引用
 node1 = Node(1)
@@ -2176,7 +2017,6 @@ node2 = None
 collected = gc.collect()
 print(f"Collected {collected} objects")
 
-
 # 5. 闭包变量检查
 def make_adder(n):
     def adder(x):
@@ -2184,17 +2024,14 @@ def make_adder(n):
 
     return adder
 
-
 add5 = make_adder(5)
 print(add5.__closure__)  # (<cell at 0x...: int object at 0x...>,)
 print(add5.__closure__[0].cell_contents)  # 5
-
 
 # 6. 函数注解与变量
 def greet(name: str, times: int = 1) -> str:
     """问候函数"""
     return f"Hello, {name}! " * times
-
 
 print(greet.__annotations__)  # {'name': <class 'str'>, 'times': <class 'int'>, 'return': <class 'str'>}
 print(greet.__doc__)  # 问候函数
@@ -2214,7 +2051,6 @@ Django Settings 模式分析
 """
 import os
 from pathlib import Path
-
 
 # settings.py
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -2256,16 +2092,13 @@ DATABASES = {
     }
 }
 
-
 # 使用 settings
 from django.conf import settings
-
 
 def get_database_url():
     """获取数据库 URL"""
     db = settings.DATABASES["default"]
     return f"postgresql://{db['USER']}:{db['PASSWORD']}@{db['HOST']}:{db['PORT']}/{db['NAME']}"
-
 
 # 优点：
 # 1. 模块级常量，全局唯一
@@ -2292,12 +2125,10 @@ from pydantic import Field, PostgresDsn
 from typing import Optional
 from enum import Enum
 
-
 class Environment(str, Enum):
     DEVELOPMENT = "development"
     STAGING = "staging"
     PRODUCTION = "production"
-
 
 class Settings(BaseSettings):
     """应用配置（pydantic-settings 自动从环境变量加载）"""
@@ -2333,12 +2164,10 @@ class Settings(BaseSettings):
     def is_development(self) -> bool:
         return self.ENVIRONMENT == Environment.DEVELOPMENT
 
-
 # 使用
 # settings = Settings()  # 自动从 .env 与环境变量加载
 # print(settings.DATABASE_URL)
 # print(settings.is_production)
-
 
 # 优点：
 # 1. 类型安全（自动类型转换与校验）
@@ -2362,12 +2191,10 @@ from dataclasses import dataclass, field
 from typing import Optional
 from enum import Enum
 
-
 class FeatureStatus(Enum):
     ON = "on"
     OFF = "off"
     EXPERIMENTAL = "experimental"
-
 
 @dataclass(frozen=True)
 class FeatureFlag:
@@ -2375,7 +2202,6 @@ class FeatureFlag:
     status: FeatureStatus
     description: str = ""
     rollout_percentage: int = 100  # 灰度发布百分比
-
 
 class FeatureFlags:
     """功能开关管理器"""
@@ -2401,7 +2227,6 @@ class FeatureFlags:
     def all_flags(cls) -> dict[str, FeatureFlag]:
         return dict(cls._flags)
 
-
 # 注册功能开关
 FeatureFlags.register(FeatureFlag(
     name="new_dashboard",
@@ -2416,21 +2241,17 @@ FeatureFlags.register(FeatureFlag(
     rollout_percentage=10,
 ))
 
-
 # 使用
 def render_dashboard():
     if FeatureFlags.is_enabled("new_dashboard"):
         return render_new_dashboard()
     return render_old_dashboard()
 
-
 def render_new_dashboard():
     return "New Dashboard"
 
-
 def render_old_dashboard():
     return "Old Dashboard"
-
 
 print(render_dashboard())  # New Dashboard
 print(FeatureFlags.is_enabled("ai_assistant"))  # False
@@ -2445,13 +2266,11 @@ Flask 配置模式
 import os
 from flask import Flask
 
-
 class Config:
     """基础配置"""
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
-
 
 class DevelopmentConfig(Config):
     """开发环境配置"""
@@ -2460,18 +2279,15 @@ class DevelopmentConfig(Config):
         "DEV_DATABASE_URL", "sqlite:///dev.db"
     )
 
-
 class TestingConfig(Config):
     """测试环境配置"""
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     WTF_CSRF_ENABLED = False
 
-
 class ProductionConfig(Config):
     """生产环境配置"""
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
-
 
 config = {
     "development": DevelopmentConfig,
@@ -2479,7 +2295,6 @@ config = {
     "production": ProductionConfig,
     "default": DevelopmentConfig,
 }
-
 
 def create_app(config_name="default"):
     app = Flask(__name__)
@@ -2490,7 +2305,6 @@ def create_app(config_name="default"):
         raise RuntimeError("SECRET_KEY must be set in production")
 
     return app
-
 
 # 使用
 app = create_app("development")
@@ -2507,7 +2321,6 @@ Pandas 与 NumPy 的内存模型：视图（View）与副本（Copy）
 import numpy as np
 import pandas as pd
 
-
 # NumPy 视图
 arr = np.array([1, 2, 3, 4, 5])
 view = arr[1:4]  # 视图（共享内存）
@@ -2519,7 +2332,6 @@ arr = np.array([1, 2, 3, 4, 5])
 copy = arr[1:4].copy()  # 显式副本
 copy[0] = 100
 print(arr)  # [1 2 3 4 5]（不受影响）
-
 
 # Pandas 视图与副本
 df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
@@ -2535,7 +2347,6 @@ print(df)
 # 1  2  100
 # 2  3  100
 
-
 # Pandas 内存优化
 df = pd.DataFrame({
     "category": ["A", "B", "A", "C", "B"] * 1000,
@@ -2547,7 +2358,6 @@ print(f"原始内存: {df.memory_usage(deep=True).sum()} bytes")
 # 转换为 category 类型节省内存
 df["category"] = df["category"].astype("category")
 print(f"优化后内存: {df.memory_usage(deep=True).sum()} bytes")
-
 
 # NumPy 数组的共享内存
 a = np.zeros((3, 3))
@@ -2571,25 +2381,20 @@ import threading
 import contextvars
 from concurrent.futures import ThreadPoolExecutor
 
-
 # 1. threading.local：线程本地存储
 thread_local = threading.local()
-
 
 def process_request(user_id):
     """每个线程独立的 user_id"""
     thread_local.user_id = user_id
     print(f"Thread {threading.current_thread().name}: user_id = {thread_local.user_id}")
 
-
 with ThreadPoolExecutor(max_workers=3) as executor:
     executor.map(process_request, [1, 2, 3])
-
 
 # 2. contextvars：异步安全的上下文变量（Python 3.7+）
 request_id_var: contextvars.ContextVar[str] = contextvars.ContextVar('request_id', default='')
 user_id_var: contextvars.ContextVar[int] = contextvars.ContextVar('user_id', default=0)
-
 
 async def handle_request(request_id: str, user_id: int):
     """异步处理请求，每个协程独立的上下文"""
@@ -2599,14 +2404,11 @@ async def handle_request(request_id: str, user_id: int):
     # 在调用链中传递
     await process_business_logic()
 
-
 async def process_business_logic():
     """业务逻辑函数，可访问上下文变量"""
     print(f"Request {request_id_var.get()}: processing for user {user_id_var.get()}")
 
-
 import asyncio
-
 
 async def main():
     await asyncio.gather(
@@ -2615,9 +2417,7 @@ async def main():
         handle_request("req-3", 1003),
     )
 
-
 # asyncio.run(main())
-
 
 # 3. 上下文管理器封装
 class RequestContext:
@@ -2637,13 +2437,11 @@ class RequestContext:
         for token in reversed(self._tokens):
             token.var.reset(token)
 
-
 # 使用
 def process_with_context():
     with RequestContext("req-123", 1001):
         print(f"Inside: {request_id_var.get()}, {user_id_var.get()}")
     # 离开上下文后自动恢复
-
 
 process_with_context()
 ```
@@ -2659,7 +2457,6 @@ import gc
 import weakref
 import objgraph  # pip install objgraph
 
-
 # 1. 检测循环引用
 class Node:
     def __init__(self, value):
@@ -2670,14 +2467,12 @@ class Node:
     def __repr__(self):
         return f"Node({self.value})"
 
-
 def create_cycle():
     root = Node("root")
     child = Node("child")
     root.children.append(child)
     child.parent = root  # 循环引用
     return root
-
 
 # 手动触发 GC
 gc.collect()
@@ -2688,7 +2483,6 @@ del root
 
 # 查看 GC 追踪的对象
 print(f"GC objects: {len(gc.garbage)}")
-
 
 # 2. 弱引用：避免循环引用
 class WeakNode:
@@ -2705,7 +2499,6 @@ class WeakNode:
     def parent(self, node):
         self._parent = weakref.ref(node) if node else None
 
-
 root = WeakNode("root")
 child = WeakNode("child")
 root.children.append(child)
@@ -2713,7 +2506,6 @@ child.parent = root
 
 # 弱引用不增加引用计数
 print(sys.getrefcount(root))  # 2（root 与 getrefcount 参数）
-
 
 # 3. 内存泄漏检测
 def find_leaking_objects():
@@ -2725,9 +2517,7 @@ def find_leaking_objects():
     for obj_type, count in objgraph.most_common_types(limit=5):
         print(f"  {obj_type}: {count}")
 
-
 # find_leaking_objects()
-
 
 # 4. 引用链追踪
 def trace_references(obj):
@@ -2737,12 +2527,10 @@ def trace_references(obj):
     for ref in referrers[:5]:  # 限制输出
         print(f"  Referenced by: {type(ref).__name__}")
 
-
 x = [1, 2, 3]
 y = [x]
 z = {"list": x}
 trace_references(x)
-
 
 # 5. 变量作用域检查
 def inspect_scope():
@@ -2751,9 +2539,7 @@ def inspect_scope():
     print("locals():", list(locals().keys()))
     print("globals() keys:", list(globals().keys())[:5])
 
-
 inspect_scope()
-
 
 # 6. 闭包变量检查
 def make_counter():
@@ -2765,7 +2551,6 @@ def make_counter():
         return count
 
     return increment
-
 
 counter = make_counter()
 print(f"Closure variables: {counter.__code__.co_freevars}")
@@ -2878,7 +2663,6 @@ print([f() for f in funcs])  # [0, 1, 2]
 ```python
 import threading
 
-
 def make_thread_safe_counter(start=0):
     count = start
     lock = threading.Lock()
@@ -2906,14 +2690,11 @@ def make_thread_safe_counter(start=0):
 
     return increment, decrement, get, reset
 
-
 inc, dec, get, reset = make_thread_safe_counter()
-
 
 def worker():
     for _ in range(1000):
         inc()
-
 
 threads = [threading.Thread(target=worker) for _ in range(10)]
 for t in threads:
@@ -2934,7 +2715,6 @@ print(get())  # 10000
 from dataclasses import dataclass
 import math
 
-
 @dataclass(frozen=True)
 class Vector2D:
     x: float
@@ -2954,7 +2734,6 @@ class Vector2D:
 
     def distance_to(self, other: "Vector2D") -> float:
         return (self - other).magnitude()
-
 
 v1 = Vector2D(1, 2)
 v2 = Vector2D(3, 4)
@@ -2986,7 +2765,6 @@ from typing import Optional
 request_id_var: contextvars.ContextVar[str] = contextvars.ContextVar('request_id', default='')
 user_id_var: contextvars.ContextVar[Optional[int]] = contextvars.ContextVar('user_id', default=None)
 
-
 class RequestContext:
     """请求上下文管理器"""
 
@@ -3004,14 +2782,11 @@ class RequestContext:
         for token in reversed(self._tokens):
             token.var.reset(token)
 
-
 def get_current_request_id() -> str:
     return request_id_var.get()
 
-
 def get_current_user_id() -> Optional[int]:
     return user_id_var.get()
-
 
 # 使用
 with RequestContext("req-123", 1001):
@@ -3036,7 +2811,6 @@ class Cache:
     @classmethod
     def set(cls, key, value):
         cls._cache[key] = value
-
 
 for i in range(1000000):
     Cache.set(f"key_{i}", f"value_{i}" * 100)
@@ -3092,7 +2866,6 @@ def increment():
     global counter
     counter += 1
 
-
 # 方案 2：使用类封装（推荐）
 class Counter:
     def __init__(self):
@@ -3103,7 +2876,6 @@ class Counter:
 
     def get(self):
         return self._count
-
 
 counter = Counter()
 for _ in range(10):
@@ -3159,13 +2931,10 @@ import os
 import threading
 from contextlib import contextmanager
 
-
 T = TypeVar('T')
-
 
 class ConfigError(Exception):
     """配置错误"""
-
 
 @dataclass(frozen=True)
 class DatabaseConfig:
@@ -3181,14 +2950,12 @@ class DatabaseConfig:
     def url(self) -> str:
         return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
 
-
 @dataclass(frozen=True)
 class RedisConfig:
     host: str
     port: int
     db: int = 0
     password: str = ""
-
 
 @dataclass(frozen=True)
 class AppConfig:
@@ -3215,7 +2982,6 @@ class AppConfig:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
         return cls.from_dict(data)
-
 
 class ConfigManager:
     """配置管理器：支持原子热更新"""
@@ -3270,7 +3036,6 @@ class ConfigManager:
     def remove_listener(self, listener) -> None:
         """移除监听器"""
         self._listeners.remove(listener)
-
 
 # 使用示例
 if __name__ == "__main__":

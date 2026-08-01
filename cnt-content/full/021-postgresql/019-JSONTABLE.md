@@ -15,13 +15,6 @@ related:
 prerequisites:
   - postgresql/概述与安装配置
 ---
-
-# PostgreSQL JSON/JSONB 操作
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. JSON_TABLE 概述
 
 JSON_TABLE 是 SQL:2016 标准函数，将 JSON 数据转换为关系表，PostgreSQL 17+ 支持。
@@ -357,8 +350,6 @@ SELECT JSON_QUERY(attributes, '$.地址') FROM users WHERE id = 1;
 
 ## 参考文献
 
-
-
 PostgreSQL 官方文档：https://www.postgresql.org/docs/
 PostgreSQL 中文文档：https://www.postgresql.org/docs/current/index.html
 PGXN 扩展仓库：https://pgxn.org/
@@ -366,8 +357,6 @@ PostGIS：https://postgis.net/
 pgvector：https://github.com/pgvector/pgvector
 
 ## 延伸阅读
-
-
 
 PostgreSQL 窗口函数，见 021-postgresql 模块文档。
 PostgreSQL 递归查询，见 021-postgresql 模块相关文档。

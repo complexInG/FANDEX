@@ -16,12 +16,6 @@ prerequisites:
   - svg/JavaScript交互
   - svg/图标与可访问性
 ---
-# SVG 实战项目 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 项目一：环形进度条
 
 结合 path、stroke-dasharray、动画的综合应用。

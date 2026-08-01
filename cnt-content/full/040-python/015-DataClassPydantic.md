@@ -15,13 +15,6 @@ related:
 prerequisites:
   - python/语法速查
 ---
-
-# Python pydantic 数据验证
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 前史：手工 `__init__` 与命名元组（1991–2017）
@@ -453,7 +446,6 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Self
 
-
 @dataclass(frozen=True, slots=True)
 class Money:
     """货币值对象：金额 + 币种，不可变。
@@ -490,7 +482,6 @@ class Money:
         """格式化展示。"""
         return f"{self.amount:,.2f} {self.currency}"
 
-
 @dataclass(frozen=True, slots=True)
 class Coordinate:
     """地理坐标值对象：纬度 + 经度。"""
@@ -514,7 +505,6 @@ class Coordinate:
         dlon = lon2 - lon1
         a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
         return 2 * 6371 * asin(sqrt(a))
-
 
 # 使用示例
 if __name__ == "__main__":
@@ -557,14 +547,12 @@ from pydantic import (
     model_validator,
 )
 
-
 class UserRole(str, Enum):
     """用户角色枚举：继承 str 便于 JSON 序列化。"""
 
     ADMIN = "admin"
     USER = "user"
     GUEST = "guest"
-
 
 class Address(BaseModel):
     """地址：嵌套模型。"""
@@ -575,7 +563,6 @@ class Address(BaseModel):
     city: str = Field(min_length=1, max_length=100)
     postal_code: str = Field(pattern=r"^\d{6}$")  # 中国邮编
     country: str = Field(default="CN", min_length=2, max_length=2)
-
 
 class User(BaseModel):
     """用户领域模型：演示 Pydantic v2 核心特性。"""
@@ -637,7 +624,6 @@ class User(BaseModel):
         data.pop("email", None)
         return data
 
-
 # 使用示例
 if __name__ == "__main__":
     user = User(
@@ -688,7 +674,6 @@ from typing import Literal
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 class DatabaseSettings(BaseSettings):
     """数据库配置：从环境变量与 .env 加载。"""
 
@@ -708,7 +693,6 @@ class DatabaseSettings(BaseSettings):
     pool_size: int = Field(default=10, ge=1, le=100)
     echo: bool = False
 
-
 class RedisSettings(BaseSettings):
     """Redis 配置。"""
 
@@ -721,7 +705,6 @@ class RedisSettings(BaseSettings):
     port: int = 6379
     db: int = 0
     password: SecretStr = Field(default="")
-
 
 class AppSettings(BaseSettings):
     """应用全局配置：聚合多个子配置。"""
@@ -740,12 +723,10 @@ class AppSettings(BaseSettings):
     database: DatabaseSettings = Field(default_factory=DatabaseSettings)
     redis: RedisSettings = Field(default_factory=RedisSettings)
 
-
 @lru_cache
 def get_settings() -> AppSettings:
     """单例：lru_cache 缓存，整个应用共享一份配置。"""
     return AppSettings()
-
 
 # .env 文件示例
 ENV_EXAMPLE = """
@@ -792,14 +773,12 @@ from typing import Annotated
 
 from pydantic import AfterValidator, BaseModel, Field, StringConstraints
 
-
 def _validate_email(v: str) -> str:
     """邮箱格式校验。"""
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     if not re.match(pattern, v):
         raise ValueError(f"无效的邮箱格式: {v}")
     return v.lower()  # 规范化为小写
-
 
 def _validate_isbn(v: str) -> str:
     """ISBN-13 校验（含校验位算法）。"""
@@ -814,13 +793,11 @@ def _validate_isbn(v: str) -> str:
         raise ValueError(f"ISBN 校验位错误: {v}")
     return v
 
-
 # 自定义类型：通过 Annotated 组合约束
 Email = Annotated[str, AfterValidator(_validate_email)]
 ISBN = Annotated[str, AfterValidator(_validate_isbn)]
 PositiveInt = Annotated[int, Field(gt=0)]
 NonEmptyStr = Annotated[str, StringConstraints(min_length=1, max_length=255)]
-
 
 class Book(BaseModel):
     """图书模型：使用自定义类型。"""
@@ -830,7 +807,6 @@ class Book(BaseModel):
     author_email: Email
     price_cents: PositiveInt
     stock: Annotated[int, Field(ge=0)] = 0
-
 
 # 使用示例
 if __name__ == "__main__":
@@ -881,14 +857,12 @@ app = FastAPI(
     description="演示 Pydantic v2 与 FastAPI 集成",
 )
 
-
 class UserCreateRequest(BaseModel):
     """创建用户请求模型。"""
 
     username: str = Field(min_length=3, max_length=32, pattern=r"^[a-zA-Z0-9_]+$")
     email: str = Field(pattern=r"^[^@]+@[^@]+\.[^@]+$")
     age: Annotated[int, Field(ge=0, le=150)]
-
 
 class UserResponse(BaseModel):
     """用户响应模型：隐藏敏感字段。"""
@@ -899,11 +873,9 @@ class UserResponse(BaseModel):
     age: int
     created_at: datetime
 
-
 # 模拟数据库
 _DB: dict[int, dict] = {}
 _NEXT_ID = 1
-
 
 @app.post("/users", response_model=UserResponse, status_code=201)
 async def create_user(req: UserCreateRequest) -> UserResponse:
@@ -930,7 +902,6 @@ async def create_user(req: UserCreateRequest) -> UserResponse:
 
     return UserResponse(**user_data)
 
-
 @app.get("/users/{user_id}", response_model=UserResponse)
 async def get_user(
     user_id: Annotated[int, Path(gt=0, description="用户ID")]
@@ -941,7 +912,6 @@ async def get_user(
         raise HTTPException(status_code=404, detail="用户不存在")
     return UserResponse(**user)
 
-
 @app.get("/users", response_model=list[UserResponse])
 async def list_users(
     limit: Annotated[int, Query(ge=1, le=100)] = 10,
@@ -950,7 +920,6 @@ async def list_users(
     """分页查询用户。"""
     users = list(_DB.values())[offset : offset + limit]
     return [UserResponse(**u) for u in users]
-
 
 # 启动：uvicorn fastapi_app:app --reload
 ```
@@ -977,7 +946,6 @@ from pydantic import ValidationError
 
 from domain_models import Address, User, UserRole
 from value_objects import Coordinate, Money
-
 
 class TestMoney:
     """Money 值对象测试。"""
@@ -1016,7 +984,6 @@ class TestMoney:
         assert hash(m1) == hash(m2)
         assert m1 == m2
 
-
 class TestCoordinate:
     """Coordinate 值对象测试。"""
 
@@ -1036,7 +1003,6 @@ class TestCoordinate:
         shanghai = Coordinate(31.2, 121.5)
         d = beijing.distance_to(shanghai)
         assert 1000 < d < 1200  # 北京到上海约 1000-1200 公里
-
 
 class TestUser:
     """User Pydantic 模型测试。"""
@@ -1490,12 +1456,10 @@ pydantic2ts --module schemas.user --output frontend/src/types/user.ts
 ```python
 from pydantic import BaseModel, Field, model_validator
 
-
 class UserV1(BaseModel):
     """v1 schema：基础字段。"""
     username: str
     email: str
-
 
 class UserV2(BaseModel):
     """v2 schema：新增 age，移除 email（改用 contact）。"""
@@ -1513,7 +1477,6 @@ class UserV2(BaseModel):
             data["age"] = 0  # 默认值
         return data
 
-
 # v1 数据可被 v2 接受
 v1_data = {"username": "alice", "email": "alice@example.com"}
 user = UserV2(**v1_data)
@@ -1528,11 +1491,9 @@ from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
-
 class Status(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
-
 
 class Record(BaseModel):
     id: UUID
@@ -1560,10 +1521,8 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import DeclarativeBase
 
-
 class Base(DeclarativeBase):
     pass
-
 
 class UserORM(Base):
     """SQLAlchemy ORM 模型。"""
@@ -1571,7 +1530,6 @@ class UserORM(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(32))
     email = Column(String(255))
-
 
 class UserSchema(BaseModel):
     """Pydantic schema：用于 API。
@@ -1583,7 +1541,6 @@ class UserSchema(BaseModel):
     id: int
     username: str
     email: str
-
 
 # ORM → Pydantic
 orm_user = UserORM(id=1, username="alice", email="alice@example.com")
@@ -1746,11 +1703,9 @@ Django 4.0+ 引入 `django.core.serializers.json`，支持将 Django Model 序�
 from dataclasses import dataclass, asdict
 from django.db import models
 
-
 class User(models.Model):
     username = models.CharField(max_length=32)
     email = models.EmailField()
-
 
 @dataclass
 class UserDTO:
@@ -1762,7 +1717,6 @@ class UserDTO:
     @classmethod
     def from_orm(cls, user: User) -> "UserDTO":
         return cls(id=user.id, username=user.username, email=user.email)
-
 
 # 使用
 user = User.objects.get(id=1)
@@ -1865,7 +1819,6 @@ D. `plain`
 ```python
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True, slots=True)
 class Rectangle:
     width: float
@@ -1897,7 +1850,6 @@ from decimal import Decimal
 from typing import Annotated
 from pydantic import BaseModel, Field, model_validator
 
-
 class OrderItem(BaseModel):
     name: str
     price: Decimal
@@ -1906,7 +1858,6 @@ class OrderItem(BaseModel):
     @property
     def subtotal(self) -> Decimal:
         return self.price * self.quantity
-
 
 class Order(BaseModel):
     id: int = Field(gt=0)

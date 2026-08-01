@@ -15,13 +15,6 @@ related:
 prerequisites:
   - python/语法速查
 ---
-
-# Python threading 同步原语
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 早期单核时代（Python 0.9 – 1.x，1991–2000）
@@ -399,7 +392,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
 @dataclass(slots=True, frozen=True)
 class FetchResult:
     """抓取结果：不可变数据类，线程安全。"""
@@ -409,7 +401,6 @@ class FetchResult:
     elapsed_ms: float
     body_size: int
     error: str | None = None
-
 
 @dataclass
 class FetchStats:
@@ -430,7 +421,6 @@ class FetchStats:
                 self.total_bytes += result.body_size
             else:
                 self.failed += 1
-
 
 class TokenBucket:
     """
@@ -463,7 +453,6 @@ class TokenBucket:
                 return False
             time.sleep(min(wait, 0.5))
 
-
 def fetch_one(
     client: httpx.Client,
     url: str,
@@ -490,7 +479,6 @@ def fetch_one(
     except Exception as exc:
         logger.warning("fetch %s failed: %s", url, exc)
         return FetchResult(url, 0, 0, 0, error=str(exc))
-
 
 def fetch_all(urls: list[str], max_workers: int = 16) -> tuple[list[FetchResult], FetchStats]:
     """
@@ -520,7 +508,6 @@ def fetch_all(urls: list[str], max_workers: int = 16) -> tuple[list[FetchResult]
                 )
 
     return results, stats
-
 
 if __name__ == "__main__":
     urls = [f"https://httpbin.org/delay/{i % 3}" for i in range(50)]
@@ -559,7 +546,6 @@ from typing import Iterator
 
 import numpy as np
 
-
 def monte_carlo_pi_chunk(n_samples: int, seed: int) -> int:
     """
     在单个进程内估算 π：返回落在单位圆内的点数。
@@ -573,14 +559,12 @@ def monte_carlo_pi_chunk(n_samples: int, seed: int) -> int:
             inside += 1
     return inside
 
-
 def monte_carlo_pi_numpy(n_samples: int, seed: int) -> int:
     """NumPy 向量化版本：比纯 Python 快 50-100 倍。"""
     rng = np.random.default_rng(seed)
     x = rng.random(n_samples)
     y = rng.random(n_samples)
     return int(np.sum(x * x + y * y <= 1.0))
-
 
 def estimate_pi(total_samples: int, n_workers: int | None = None) -> float:
     """
@@ -598,7 +582,6 @@ def estimate_pi(total_samples: int, n_workers: int | None = None) -> float:
         total_inside = sum(f.result() for f in as_completed(futures))
 
     return 4.0 * total_inside / total_samples
-
 
 def shared_memory_demo() -> None:
     """使用 shared_memory 在进程间共享大数组，避免 pickle 开销。"""
@@ -625,7 +608,6 @@ def shared_memory_demo() -> None:
     finally:
         shm.close()
         shm.unlink()
-
 
 if __name__ == "__main__":
     n = 10_000_000
@@ -660,12 +642,10 @@ logger = logging.getLogger(__name__)
 
 POISON_PILL = None  # 哨兵值：消费者收到后退出
 
-
 @dataclass
 class Job:
     job_id: int
     payload: bytes
-
 
 def producer(q: Queue[Job | None], n: int, name: str) -> None:
     """生产者：生成 n 个任务后投入哨兵。"""
@@ -676,7 +656,6 @@ def producer(q: Queue[Job | None], n: int, name: str) -> None:
         time.sleep(random.uniform(0.01, 0.05))
     q.put(POISON_PILL)
     logger.info("[%s] producer done", name)
-
 
 def consumer(q: Queue[Job | None], name: str) -> None:
     """消费者：从队列取任务处理，收到哨兵后退出。"""
@@ -694,7 +673,6 @@ def consumer(q: Queue[Job | None], name: str) -> None:
         time.sleep(random.uniform(0.02, 0.08))
         logger.info("[%s] consumed job %d", name, item.job_id)
         q.task_done()
-
 
 def main() -> None:
     q: Queue[Job | None] = Queue(maxsize=100)
@@ -714,7 +692,6 @@ def main() -> None:
     for t in consumers:
         t.join()
     logger.info("all done")
-
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(threadName)s] %(message)s")
@@ -740,7 +717,6 @@ import time
 from multiprocessing.managers import SyncManager
 from typing import Any
 
-
 def pipe_worker(conn: mp.Pipe.Connection, name: str) -> None:
     """通过 Pipe 接收消息，回复确认。"""
     while True:
@@ -752,12 +728,10 @@ def pipe_worker(conn: mp.Pipe.Connection, name: str) -> None:
         conn.send(f"{name}: got {msg!r}")
         time.sleep(0.1)
 
-
 def queue_producer(q: mp.Queue, items: list[Any]) -> None:
     for x in items:
         q.put(x)
     q.put(None)  # 哨兵
-
 
 def queue_consumer(q: mp.Queue, result: list[Any]) -> None:
     while True:
@@ -766,18 +740,15 @@ def queue_consumer(q: mp.Queue, result: list[Any]) -> None:
             return
         result.append(x * 2)
 
-
 def shared_value_demo(v: mp.Value, lock: mp.Lock) -> None:
     """使用 Value + Lock 实现原子计数。"""
     with lock:
         v.value += 1
 
-
 def manager_worker(d: dict, key: str, val: int) -> None:
     """Manager 代理的 dict：跨进程共享。"""
     d[key] = val
     time.sleep(0.1)
-
 
 def main() -> None:
     # 1. Pipe
@@ -825,7 +796,6 @@ def main() -> None:
             p.join()
         print(f"manager dict: {dict(shared_dict)}")
 
-
 if __name__ == "__main__":
     mp.set_start_method("spawn", force=True)  # 跨平台兼容
     main()
@@ -845,21 +815,17 @@ import time
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from typing import Callable
 
-
 def fib(n: int) -> int:
     a, b = 0, 1
     for _ in range(n):
         a, b = b, a + b
     return a
 
-
 def cpu_task(n: int = 100_000) -> int:
     return fib(n)
 
-
 async def io_task(delay: float = 0.1) -> None:
     await asyncio.sleep(delay)
-
 
 def benchmark(name: str, fn: Callable[[], Any], n: int = 10) -> float:
     start = time.perf_counter()
@@ -868,29 +834,23 @@ def benchmark(name: str, fn: Callable[[], Any], n: int = 10) -> float:
     print(f"{name:>20s}: {elapsed:.3f}s for {n} tasks")
     return elapsed
 
-
 def run_sequential(n: int) -> None:
     for _ in range(n):
         cpu_task(50_000)
-
 
 def run_thread_pool(n: int) -> None:
     with ThreadPoolExecutor(max_workers=8) as pool:
         list(pool.map(cpu_task, [50_000] * n))
 
-
 def run_process_pool(n: int) -> None:
     with ProcessPoolExecutor(max_workers=8) as pool:
         list(pool.map(cpu_task, [50_000] * n))
 
-
 async def run_asyncio(n: int) -> None:
     await asyncio.gather(*[io_task(0.1) for _ in range(n)])
 
-
 def run_asyncio_sync(n: int) -> None:
     asyncio.run(run_asyncio(n))
-
 
 if __name__ == "__main__":
     N = 20
@@ -1213,7 +1173,6 @@ from prometheus_client import Gauge, start_http_server
 active_threads = Gauge("app_active_threads", "Active worker threads")
 queue_size = Gauge("app_queue_size", "Pending tasks in queue")
 
-
 class InstrumentedExecutor(ThreadPoolExecutor):
     def submit(self, fn, *args, **kwargs):
         active_threads.inc()
@@ -1232,7 +1191,6 @@ class InstrumentedExecutor(ThreadPoolExecutor):
 import pytest
 from concurrent.futures import ThreadPoolExecutor
 
-
 @pytest.mark.parametrize("n_threads", [1, 4, 16])
 def test_counter_thread_safety(n_threads: int):
     from yourmodule import ThreadSafeCounter
@@ -1243,7 +1201,6 @@ def test_counter_thread_safety(n_threads: int):
     with ThreadPoolExecutor(max_workers=n_threads) as pool:
         list(pool.map(lambda _: inc(), range(n_threads)))
     assert counter.value == n_threads * 10_000
-
 
 def test_no_deadlock():
     """超时测试：若死锁，pytest-timeout 触发失败"""
@@ -1400,7 +1357,6 @@ import threading
 from collections import OrderedDict
 from typing import Any
 
-
 class LRUCache:
     """线程安全 LRU Cache。Python 3.10+。"""
 
@@ -1447,7 +1403,6 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-
 def count_words(path: str) -> Counter:
     """统计单个文件的单词频率。"""
     p = Path(path)
@@ -1462,14 +1417,12 @@ def count_words(path: str) -> Counter:
                     counter[word] += 1
     return counter
 
-
 def merge_counters(counters: list[Counter]) -> Counter:
     """合并多个 Counter。"""
     total: Counter = Counter()
     for c in counters:
         total.update(c)
     return total
-
 
 def word_count_distributed(
     paths: list[str],
@@ -1494,7 +1447,6 @@ def word_count_distributed(
                 logger.error("failed: %s: %s", path, exc)
 
     return merge_counters(results)
-
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")

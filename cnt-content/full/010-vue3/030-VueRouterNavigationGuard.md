@@ -448,7 +448,6 @@ Pinia 状态管理与守卫配合的完整示例，见 010-vue3 模块的 Pinia 
 
 Vue Router 官方示例仓库：https://github.com/vuejs/router 。
 
-
 ### 1. 全局守卫
 
 #### 1.1 beforeEach

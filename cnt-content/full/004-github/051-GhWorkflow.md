@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# gh workflow 工作流命令速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 查看工作流
 
 **基本用法:列出工作流**
@@ -80,8 +73,6 @@ gh workflow disable deploy.yml
 
 ## 参考文献
 
-
-
 GitHub 文档：https://docs.github.com/zh
 GitHub Actions 文档：https://docs.github.com/zh/actions
 GitHub REST API：https://docs.github.com/zh/rest
@@ -89,15 +80,12 @@ GitHub GraphQL API：https://docs.github.com/zh/graphql
 
 ## 延伸阅读
 
-
-
 GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
 Git 协作基础，见 003-git 模块。
 DevOps 自动化，见 031-devops 模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

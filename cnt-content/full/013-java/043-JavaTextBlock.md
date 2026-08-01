@@ -15,13 +15,6 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
-
-# Java 文本块与字符串
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 文本块（Text Blocks）是 Java 15 正式引入的特性，它让你可以在代码中书写多行字符串，而不需要手动拼接或转义。在文本块出现之前，写一段 JSON、SQL 或 HTML 需要大量转义引号和换行符，代码既难读又容易出错。文本块用三个双引号包裹，内部可以直接换行，不需要转义。
@@ -699,8 +692,6 @@ boolean b = "".isEmpty();
 
 ## 参考文献
 
-
-
 Oracle Java 官方文档：https://docs.oracle.com/en/java/
 OpenJDK 项目：https://openjdk.org/
 Java 语言规范：https://docs.oracle.com/javase/specs/
@@ -709,8 +700,6 @@ Baeldung 教程站：https://www.baeldung.com/
 Maven 官方文档：https://maven.apache.org/guides/
 
 ## 延伸阅读
-
-
 
 Java 并发与 JUC，见 013-java 模块并发文档。
 JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。

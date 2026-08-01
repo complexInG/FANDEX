@@ -25,7 +25,6 @@ updated: '2026-08-01'
 - 004-布局基础：display、position 与浮动。
 - 005-Flexbox 布局：一维弹性布局。
 
-
 ## 1. CSS3 概述
 
 CSS (Cascading Style Sheets) 层叠样式表，用于控制网页的视觉呈现。CSS3 是其最新标准，引入了模块化开发、动画、Flexbox/Grid 布局等强大功能，使网页设计更加灵活和丰富。
@@ -713,8 +712,6 @@ CSS3 是现代网页设计的重要组成部分，提供了丰富的特性和功
 - [HTML5](html5/overview-and-semantics)
 
 ## 参考文献
-
-
 
 MDN CSS 文档：https://developer.mozilla.org/zh-CN/docs/Web/CSS
 CSS 规范（W3C）：https://www.w3.org/Style/CSS/

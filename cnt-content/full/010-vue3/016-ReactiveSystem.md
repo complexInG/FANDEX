@@ -18,13 +18,6 @@ related:
 prerequisites:
   - vue3/语法速查
 ---
-
-# 响应式 API 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 响应式系统概述 | Reactive System Overview
 
 Vue3 的响应式系统是其核心特性之一，它使得数据变化能够自动触发视图更新。与 Vue2 相比，Vue3 的响应式系统进行了重构，使用 ES6 Proxy 替代了 Object.defineProperty，提供了更强大的响应式能力。
@@ -864,8 +857,6 @@ set.has(1);           // true
 ```
 
 ## 参考文献
-
-
 
 Vue 官方文档：https://vuejs.org/
 Vue Router：https://router.vuejs.org/zh/

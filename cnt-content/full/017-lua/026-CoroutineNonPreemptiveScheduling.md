@@ -1920,7 +1920,6 @@ D. `true, 7, true`
 
 **C**. 第一次 `resume(co, 3, 4)` 返回 `true, 7`（yield 的值）。第二次 `resume(co, 5)` 返回 `true, 10`（5 * 2 = 10，coroutine 返回）。
 
-
 **常见疑问 2**：. 下列代码的输出是什么？
 
 ```lua
@@ -1943,7 +1942,6 @@ D. 抛出错误
 
 **B**. 第一次 resume 打印 "start"，yield。第二次 resume 打印 "end"，coroutine 返回（dead）。第三次 resume 返回 false，错误 "cannot resume dead coroutine"。
 
-
 **常见疑问 3**：. 下列哪个状态不能转换为 `running`？
 
 A. `suspended`
@@ -1955,7 +1953,6 @@ D. 以上都不是
 
 **C**. `dead` 状态的 coroutine 不能被 resume。`suspended` 通过 resume 转 `running`；`normal` 是中间状态（resume 了其他 coroutine）。
 
-
 **常见疑问 4**：. 关于 `coroutine.wrap` 与 `coroutine.resume` 的差异，正确的是？
 
 A. `wrap` 创建并返回函数，调用时自动 resume
@@ -1966,7 +1963,6 @@ D. 以上都正确
 <details><summary>答案</summary>
 
 **D**. `wrap` 将 `create` + `resume` 封装为单一函数，调用时自动 resume，省略状态返回值，出错时直接抛出（需要 pcall 包裹）。
-
 
 **常见疑问 5**：. 下列代码的输出是什么？
 
@@ -1989,7 +1985,6 @@ D. `error`
 
 **A**. 每次 `f()` 调用相当于一次 resume，依次返回 1, 2, 3。
 
-
 ### 填空题知识点讲解
 
 **常见疑问 6**：. `coroutine.create(f)` 返回一个 `_____` 类型的值。
@@ -2000,7 +1995,6 @@ D. `error`
 thread
 ```
 
-
 **常见疑问 7**：. coroutine 的四种状态是 `_____`、`running`、`normal`、`dead`。
 
 <details><summary>答案</summary>
@@ -2009,7 +2003,6 @@ thread
 suspended
 ```
 
-
 **常见疑问 8**：. Lua 5.4 引入的显式关闭 coroutine 的函数是 `coroutine._____`。
 
 <details><summary>答案</summary>
@@ -2017,7 +2010,6 @@ suspended
 ```
 close
 ```
-
 
 **常见疑问 9**：. 下列代码输出 `_____`：
 
@@ -2035,7 +2027,6 @@ print(ok, result, coroutine.status(co))
 true   42   dead
 ```
 
-
 **常见疑问 10**：. coroutine 在 `yield` 时，控制权返回给 `_____`。
 
 <details><summary>答案</summary>
@@ -2043,7 +2034,6 @@ true   42   dead
 ```
 调用者（resume 的发起者）
 ```
-
 
 ### 编程题知识点讲解
 
@@ -2068,7 +2058,6 @@ for i = 1, 5 do
     print(gen())  -- 1, 2, 4, 8, 16
 end
 ```
-
 
 **常见疑问 12**：. 实现一个协作式任务调度器，支持：
 - `add(fn)`：添加任务
@@ -2122,7 +2111,6 @@ sched:run()
 -- A: 1, B: 1, A: 2, B: 2, A: 3, B: 3
 ```
 
-
 **常见疑问 13**：. 用 coroutine 实现一个简单的状态机：电梯控制器
 - 状态：`closed`（关门）、`moving`（运行）、`opened`（开门）
 - 输入：`open`、`close`、`move`
@@ -2174,7 +2162,6 @@ local ok, err = coroutine.resume(co, "move")
 print(ok, err)  -- false   cannot move from opened
 ```
 
-
 ### 8.4 思考题
 
 **常见疑问 14**：. 为什么 Lua 选择非对称协程而非对称协程？
@@ -2187,7 +2174,6 @@ print(ok, err)  -- false   cannot move from opened
 4. **可模拟对称**：通过非对称原语可模拟对称协程（见 §7.3），反之则复杂。
 
 对称协程（如 Symmetric Coroutines in Lua）虽更灵活，但增加了实现复杂度与调试难度。
-
 
 **常见疑问 15**：. coroutine 与 OS 线程的根本差异是什么？
 
@@ -2207,7 +2193,6 @@ print(ok, err)  -- false   cannot move from opened
 选择依据：
 - I/O 密集型 + 高并发：coroutine（如 OpenResty、Nginx）。
 - CPU 密集型 + 多核利用：OS 线程。
-
 
 **常见疑问 16**：. Lua 5.4 的 `coroutine.close` 解决了什么问题？
 
@@ -2237,7 +2222,6 @@ local function with_co()
     -- co 在作用域结束时自动 close
 end
 ```
-
 
 ---
 

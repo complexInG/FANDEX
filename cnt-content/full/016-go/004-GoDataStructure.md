@@ -14,13 +14,6 @@ related:
   - go/并发编程
 prerequisites: []
 ---
-
-# Go 数据结构
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 数组
 
 ### 1.1 数组基础
@@ -877,8 +870,6 @@ fmt.Println(unsafe.Sizeof(Optimized{})); // 16
 
 ## 参考文献
 
-
-
 Go 官方文档：https://go.dev/doc/
 Go 内存模型：https://go.dev/ref/mem
 Effective Go：https://go.dev/doc/effective_go
@@ -886,8 +877,6 @@ Go 标准库：https://pkg.go.dev/std
 Go 官方博客：https://go.dev/blog/
 
 ## 延伸阅读
-
-
 
 Go 并发与 channel，见 016-go 模块并发文档。
 Go 原子操作与竞争检测，见 016-go/058-RaceDetectionAtomic 文档。

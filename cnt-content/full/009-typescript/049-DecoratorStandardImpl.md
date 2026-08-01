@@ -1509,13 +1509,11 @@ B. Stage 3 装饰器使用上下文对象（context object）作为第二参数
 C. Stage 3 装饰器不支持类装饰器
 D. Stage 3 装饰器仅支持方法装饰器
 
-
 **答案：B**
 
 Stage 3 装饰器的核心变化是引入上下文对象（context object），包含 `kind`、`name`、`metadata`、`access`、`addInitializer` 等字段，提供精确的类型签名与标准化的元数据协议。
 
 Legacy 装饰器使用描述符（descriptor）作为参数，类型签名宽松。
-
 
 **题目 2**：以下代码的执行顺序是？
 
@@ -1531,13 +1529,11 @@ B. `C → B → A`（从下到上）
 C. `A → C → B`
 D. 不确定
 
-
 **答案：B**
 
 装饰器的**求值顺序**是从上到下（`A` 先求值为函数），但**应用顺序**是从下到上（`C` 先应用到类）。
 
 等价于 `A(B(C(X)))`。
-
 
 **题目 3**：Stage 3 属性装饰器应返回什么？
 
@@ -1546,13 +1542,11 @@ B. 初始化函数 `(initialValue) => initialValue`
 C. `void`
 D. `PropertyDescriptor`
 
-
 **答案：B**
 
 Stage 3 属性装饰器返回一个初始化函数，该函数在实例化时被调用，接收属性初始值，返回最终值。这与 ES2022 类字段语义自然对齐。
 
 如果返回静态值，会被当作初始值；返回 `void` 表示不修改。
-
 
 **题目 4**：Stage 3 装饰器的元数据存储在哪里？
 
@@ -1561,13 +1555,11 @@ B. `Symbol.metadata`
 C. 全局变量
 D. `context.metadata`（独立于类）
 
-
 **答案：B**
 
 Stage 3 装饰器通过 `Symbol.metadata` 在类上挂载元数据对象。所有装饰器通过 `context.metadata` 访问同一个对象，实现元数据共享。
 
 `Reflect.metadata` 是 Legacy 装饰器使用的 polyfill，Stage 3 不再需要。
-
 
 **题目 5**：以下装饰器实现的错误是？
 
@@ -1585,7 +1577,6 @@ B. `value.call` 不存在
 C. `context` 未使用
 D. 返回类型错误
 
-
 **答案：A**
 
 箭头函数继承外层 `this`，在类方法装饰器中 `this` 是 `undefined`，调用 `value.call(this, ...)` 会失败。
@@ -1599,14 +1590,11 @@ return function (this: any, ...args: any[]) {
 };
 ```
 
-
 ### 填空题知识点讲解
 
 **题目 1**：Stage 3 装饰器在 TypeScript ____ 版本正式支持。
 
-
 5.0
-
 
 **题目 2**：完成以下类装饰器实现，使其打印类名：
 
@@ -1621,11 +1609,9 @@ function logged<T extends { new(...args: any[]): {} }>(value: T, context: ClassD
 }
 ```
 
-
 ```typescript
 ${String(context.name)}
 ```
-
 
 **题目 3**：完成以下属性装饰器实现，提供默认值：
 
@@ -1639,25 +1625,20 @@ function defaultValue(defaultVal: any) {
 }
 ```
 
-
 ```typescript
 defaultVal
 initialValue
 ```
 
-
 **题目 4**：装饰器组合 `@A @B @C class X` 等价于函数调用 ____。
-
 
 ```typescript
 A(B(C(X)))
 ```
 
-
 ### 编程题知识点讲解
 
 **题目 1**：实现 `@deprecated` 装饰器，在方法调用时打印弃用警告。
-
 
 ```typescript
 function deprecated(message?: string) {
@@ -1688,9 +1669,7 @@ service.getUser('1');
 // DeprecationWarning: getUser is deprecated. Use getUserById instead
 ```
 
-
 **题目 2**：实现 `@retry` 装饰器，在方法抛出异常时自动重试指定次数。
-
 
 ```typescript
 function retry(times: number) {
@@ -1720,9 +1699,7 @@ class ApiService {
 }
 ```
 
-
 **题目 3**：实现 `@measure` 装饰器，测量方法执行时间并记录到元数据。
-
 
 ```typescript
 function measure(value: Function, context: ClassMethodDecoratorContext) {
@@ -1755,11 +1732,9 @@ console.log((DataService as any)[Symbol.metadata].measurements);
 // { process: 5 }
 ```
 
-
 ### 9.4 思考题
 
 **题目 1**：为什么 TC39 装饰器提案耗时 8 年才进入 Stage 3？请分析主要争议点。
-
 
 TC39 装饰器提案耗时 8 年的主要争议点：
 
@@ -1777,9 +1752,7 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 7. **与现有框架的兼容性**：Angular、NestJS 等框架已基于 Legacy 装饰器构建庞大生态，Stage 3 需提供平滑迁移路径。
 
-
 **题目 2**：装饰器与高阶函数在概念上有何异同？何时选择装饰器，何时选择高阶函数？
-
 
 **相同点**：
 
@@ -1803,9 +1776,7 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 - 选择装饰器：类方法、需要元数据、声明式配置（如 NestJS 控制器、TypeORM 实体）
 - 选择高阶函数：顶层函数、无类上下文、需要运行时动态组合
 
-
 **题目 3**：Stage 3 装饰器为什么不支持参数装饰器？这对实际开发有何影响？
-
 
 **不支持的原因**：
 
@@ -1825,9 +1796,7 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 3. **替代方案**：使用方法装饰器读取元数据，在运行时通过 `arguments` 访问参数。
 
-
 **题目 4**：装饰器在微前端架构中可能引发哪些问题？如何解决？
-
 
 **问题**：
 
@@ -1848,7 +1817,6 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 3. **容器隔离**：每个微应用使用独立的 IoC 容器，通过共享 token 实现跨应用通信。
 
 4. **版本统一**：在微前端基座中强制使用统一的装饰器版本，通过适配层兼容旧代码。
-
 
 ---
 

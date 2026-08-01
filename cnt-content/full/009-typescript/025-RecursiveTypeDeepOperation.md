@@ -65,13 +65,6 @@ etymology:
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---
-
-# TypeScript 递归类型与 infer 语法速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 目录
 
 - [1. 学习导论](#1-学习导论)

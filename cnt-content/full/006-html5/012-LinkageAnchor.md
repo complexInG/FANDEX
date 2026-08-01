@@ -38,7 +38,6 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-
 ## 1. 历史动机与发展脉络
 
 超链接是万维网诞生的核心概念。1989 年 Tim Berners-Lee 提出“信息管理提议”，把“链接”作为 Web 的根本机制；1991 年 HTML Tags 中 `<A>` 元素即已存在，`HREF` 属性从一开始就承担“超文本引用”职责。HTML 2.0（1995）正式标准化 `<a>`；HTML 4.01（1999）引入 `target`、`rel`、`type` 等属性并支持 `name` 锚点；HTML5（2014）移除了 `name` 锚点（统一用全局 `id`），为 `<a>` 增加 `download` 属性，并明确了 `target="_blank"` 的 `rel="noopener"` 安全要求。
@@ -419,10 +418,6 @@ URL 解析与网络协议细节，见 032-networking 模块相关文档；
 MDN 的超链接教程：https://developer.mozilla.org/zh-CN/docs/Learn_web_development/Core/Structuring_content/Creating_links ；
 
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）与黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供前端基础课程视频。
-
-# 链接与锚点 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 

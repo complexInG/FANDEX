@@ -650,16 +650,12 @@ pull-requests: write
 
 ## 参考文献
 
-
-
 GitHub 文档：https://docs.github.com/zh
 GitHub Actions 文档：https://docs.github.com/zh/actions
 GitHub REST API：https://docs.github.com/zh/rest
 GitHub GraphQL API：https://docs.github.com/zh/graphql
 
 ## 延伸阅读
-
-
 
 GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
 Git 协作基础，见 003-git 模块。

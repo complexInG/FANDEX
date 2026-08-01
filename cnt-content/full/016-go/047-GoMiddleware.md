@@ -1710,7 +1710,6 @@ Istio 的 Envoy sidecar 本质是一个网络层中间件：
 
 **题 1**：实现一个中间件 `RequestSizeLimit(max int64)`，限制请求体大小，超过则返回 413。
 
-
 ```go
 func RequestSizeLimit(max int64) func(http.Handler) http.Handler {
     return func(next http.Handler) http.Handler {
@@ -1727,9 +1726,7 @@ func RequestSizeLimit(max int64) func(http.Handler) http.Handler {
 }
 ```
 
-
 **题 2**：解释为何 `Recovery` 中间件应该放在 Chain 的最外层。
-
 
 `Recovery` 中间件通过 `defer recover()` 捕获 panic。如果 `Recovery` 不在最外层，外层中间件（如 Logging）若发生 panic，将无法被捕获，导致进程崩溃。
 
@@ -1741,7 +1738,6 @@ handler := Chain(mux, Recovery, Logging, Auth)
 
 这样 `Recovery` 的 defer 在最外层，能捕获任何内层中间件或 Handler 的 panic。
 
-
 ### 9.2 进阶题
 
 **题 3**：实现一个支持路由级中间件的 `Group` 函数，语法如下：
@@ -1751,7 +1747,6 @@ mux := http.NewServeMux()
 api := Group(mux, "/api", AuthMiddleware, RateLimitMiddleware)
 api.HandleFunc("/users", getUsers) // 自动注册为 /api/users，并应用组中间件
 ```
-
 
 ```go
 type Group struct {
@@ -1786,7 +1781,6 @@ api.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 
-
 **题 4**：分析以下中间件代码的并发安全问题并修复：
 
 ```go
@@ -1801,7 +1795,6 @@ func (c *counter) Middleware(next http.Handler) http.Handler {
     })
 }
 ```
-
 
 **问题**：`c.count++` 不是原子操作，在并发请求下会发生数据竞争。
 
@@ -1825,11 +1818,9 @@ func (c *counter) Get() int64 {
 }
 ```
 
-
 ### 9.3 思考题
 
 **题 5**：在微服务架构中，认证中间件应该在 API 网关层还是业务服务层实现？请从性能、安全、可维护性三个维度分析。
-
 
 **API 网关层实现**：
 
@@ -1850,9 +1841,7 @@ func (c *counter) Get() int64 {
 
 这样既保证性能（网关拦截无效请求），又保证安全（业务服务不信任网关，自行校验权限）。
 
-
 **题 6**：假设你需要实现一个支持灰度发布的中间件，根据请求头 `X-Canary: true` 将流量路由到灰度版本。请设计中间件实现，并说明如何与反向代理集成。
-
 
 ```go
 type CanaryConfig struct {
@@ -1899,7 +1888,6 @@ func mustParseURL(raw string) *url.URL {
 1. 将 Canary 中间件放在最内层，替代业务 Handler。
 2. 通过配置中心（如 Apollo、Nacos）动态调整 `CanaryPercent`。
 3. 监控灰度版本与稳定版本的错误率、延迟，自动调整比例。
-
 
 ---
 

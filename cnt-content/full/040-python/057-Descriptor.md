@@ -364,7 +364,6 @@ class SimpleDescriptor:
         else:
             raise AttributeError(f"属性 {self.name!r} 不存在")
 
-
 class Person:
     # 描述符必须定义为类属性
     name = SimpleDescriptor('_name_internal')
@@ -372,7 +371,6 @@ class Person:
     def __init__(self, name):
         # 通过描述符写入值
         self.name = name
-
 
 # 测试
 p = Person('Alice')
@@ -442,7 +440,6 @@ class TypedField:
         else:
             raise AttributeError(f'字段 {self.name!r} 不存在')
 
-
 class User:
     """使用 TypedField 进行字段类型校验的用户模型"""
     
@@ -454,7 +451,6 @@ class User:
         self.name = name
         self.age = age
         self.email = email
-
 
 # 测试
 user = User('Alice', 30, 'alice@example.com')
@@ -519,7 +515,6 @@ class RangeField:
             )
         obj.__dict__[self._storage_name] = value
 
-
 class Product:
     """商品模型，演示范围校验"""
     
@@ -534,7 +529,6 @@ class Product:
         self.price = price
         self.stock = stock
         self.discount = discount
-
 
 # 测试
 p = Product(99.9, 100, 0.8)
@@ -587,7 +581,6 @@ class LazyProperty:
         obj.__dict__[self.name] = value
         return value
 
-
 class DataFrame:
     """演示惰性计算的 DataFrame 模型"""
     
@@ -616,7 +609,6 @@ class DataFrame:
             'rows': self.row_count,
             'cols': self.column_count,
         }
-
 
 # 测试
 df = DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
@@ -670,7 +662,6 @@ class ReadOnly:
     def __delete__(self, obj):
         raise AttributeError(f'只读属性 {self.name!r} 不可删除')
 
-
 class Configuration:
     """配置类，关键字段只读"""
     
@@ -681,7 +672,6 @@ class Configuration:
         # 在 __init__ 中首次设置允许
         self.host = host
         self.port = port
-
 
 # 测试
 config = Configuration('localhost', 8080)
@@ -760,7 +750,6 @@ class Field:
         """将数据库值转换为 Python 值（子类可覆盖）"""
         return db_value
 
-
 class CharField(Field):
     """字符串字段"""
     field_type = str
@@ -780,7 +769,6 @@ class CharField(Field):
                     f'字段 {self.name!r} 长度 {len(value)} 超过最大值 {self.max_length}'
                 )
         super().__set__(obj, value)
-
 
 class IntegerField(Field):
     """整数字段"""
@@ -803,7 +791,6 @@ class IntegerField(Field):
                 )
         super().__set__(obj, value)
 
-
 class DateTimeField(Field):
     """日期时间字段"""
     field_type = None  # 类型在 __set__ 中动态检查
@@ -816,7 +803,6 @@ class DateTimeField(Field):
                     f'字段 {self.name!r} 期望 datetime，收到 {type(value).__name__}'
                 )
         super().__set__(obj, value)
-
 
 class Model:
     """模型基类"""
@@ -838,7 +824,6 @@ class Model:
             fields.append(f'{field.name}={value!r}')
         return f'{type(self).__name__}({", ".join(fields)})'
 
-
 class User(Model):
     """用户模型，使用 ORM 字段定义"""
     
@@ -847,7 +832,6 @@ class User(Model):
     email = CharField(max_length=100, nullable=True)
     age = IntegerField(min_val=0, max_val=150, nullable=True)
     created_at = DateTimeField(nullable=True)
-
 
 # 测试
 user = User(
@@ -942,7 +926,6 @@ class ForeignKey:
         print(f'  [数据库查询] 加载 {self.related_model.__name__} id={related_id}')
         return self.related_model._db.get(related_id)
 
-
 # 模拟数据库存储
 class Author:
     _db = {}
@@ -954,7 +937,6 @@ class Author:
     
     def __repr__(self):
         return f'Author(id={self.id}, name={self.name!r})'
-
 
 class Book:
     """图书模型，包含对 Author 的外键"""
@@ -968,7 +950,6 @@ class Book:
     
     def __repr__(self):
         return f'Book(id={self.id}, title={self.title!r}, author={self.author})'
-
 
 # 准备测试数据
 author1 = Author(1, 'Alice')
@@ -1032,7 +1013,6 @@ class MyProperty:
     def deleter(self, fdel):
         return type(self)(self.fget, self.fset, fdel, self.__doc__)
 
-
 class Temperature:
     """温度类，演示自定义 property"""
     
@@ -1049,7 +1029,6 @@ class Temperature:
         if value < -459.67:
             raise ValueError('低于绝对零度')
         self.celsius = (value - 32) * 5 / 9
-
 
 # 测试
 t = Temperature(100)
@@ -1094,7 +1073,6 @@ class FieldMeta(type):
         
         return cls
 
-
 class ValidatedField:
     """可校验字段描述符基类"""
     
@@ -1125,7 +1103,6 @@ class ValidatedField:
         if self.required and value is None:
             raise ValueError(f'字段 {self.name!r} 必填')
 
-
 class StringType(ValidatedField):
     """字符串类型字段"""
     
@@ -1149,7 +1126,6 @@ class StringType(ValidatedField):
                 f'字段 {self.name!r} 长度 {len(value)} 小于 {self.min_length}'
             )
 
-
 class IntegerType(ValidatedField):
     """整数类型字段"""
     
@@ -1168,7 +1144,6 @@ class IntegerType(ValidatedField):
             raise ValueError(f'字段 {self.name!r} 值 {value} 小于 {self.min_val}')
         if self.max_val is not None and value > self.max_val:
             raise ValueError(f'字段 {self.name!r} 值 {value} 大于 {self.max_val}')
-
 
 class Schema(metaclass=FieldMeta):
     """使用 FieldMeta 元类的 Schema 基类"""
@@ -1192,14 +1167,12 @@ class Schema(metaclass=FieldMeta):
         """从字典反序列化"""
         return cls(**data)
 
-
 class UserSchema(Schema):
     """用户 Schema"""
     
     username = StringType(min_length=3, max_length=20, required=True)
     age = IntegerType(min_val=0, max_val=150, required=True)
     email = StringType(max_length=100, required=False)
-
 
 # 测试
 user = UserSchema(username='alice', age=30, email='alice@example.com')
@@ -1254,7 +1227,6 @@ class MyClassMethod:
         bound_method.__doc__ = self.func.__doc__
         return bound_method
 
-
 class MyStaticMethod:
     """从零实现的 staticmethod
     
@@ -1269,7 +1241,6 @@ class MyStaticMethod:
     def __get__(self, obj, objtype=None):
         # staticmethod 不做任何绑定，直接返回原函数
         return self.func
-
 
 class MathHelper:
     """演示自定义 classmethod 与 staticmethod"""
@@ -1287,7 +1258,6 @@ class MathHelper:
     def __init__(self, value):
         self.value = value
 
-
 # 测试
 m = MathHelper.from_string('42')
 print(f'构造结果: {m.value}')  # 42
@@ -1302,7 +1272,6 @@ print(f'is_positive(-5): {MathHelper.is_positive(-5)}')  # False
 # 弱引用键描述符：避免在描述符实例上存储实例状态
 
 import weakref
-
 
 class WeakDescriptor:
     """使用弱引用存储实例状态的描述符
@@ -1333,7 +1302,6 @@ class WeakDescriptor:
         else:
             raise AttributeError(f'属性 {self.name!r} 不存在')
 
-
 class Session:
     """会话类，演示弱引用描述符"""
     
@@ -1343,7 +1311,6 @@ class Session:
     def __init__(self, user_id, token):
         self.user_id = user_id
         self.token = token
-
 
 # 测试
 s1 = Session(1, 'token-1')
@@ -1399,7 +1366,6 @@ class ObservableField:
         for listener in listeners:
             listener(obj, self.name, old_value, new_value)
 
-
 class Observable:
     """可观察对象基类"""
     
@@ -1418,13 +1384,11 @@ class Observable:
         if field_name in self._listeners:
             self._listeners[field_name].remove(listener)
 
-
 class ShoppingCart(Observable):
     """购物车，演示可观察字段"""
     
     item_count = ObservableField(default=0)
     total_price = ObservableField(default=0.0)
-
 
 # 测试
 cart = ShoppingCart()
@@ -1534,10 +1498,8 @@ class BadField:
     def __set__(self, obj, value):
         self.value = value  # 错误：所有实例共享同一个 self.value
 
-
 class Model:
     field = BadField()
-
 
 # 测试：实例间数据串扰
 m1 = Model()
@@ -1579,10 +1541,8 @@ class BadGet:
         # 错误：未处理 obj is None
         return obj.value  # 通过类访问时 obj 为 None，抛出 AttributeError
 
-
 class Model:
     attr = BadGet()
-
 
 # 通过类访问触发错误
 print(Model.attr)  # AttributeError: 'NoneType' object has no attribute 'value'
@@ -1648,12 +1608,10 @@ class Descriptor:
     def __get__(self, obj, objtype=None):
         return 'descriptor'
 
-
 class Model:
     def __init__(self):
         # 错误：描述符定义为实例属性
         self.attr = Descriptor()
-
 
 m = Model()
 print(m.attr)  # 输出 <Descriptor object>，而非 'descriptor'
@@ -1664,7 +1622,6 @@ print(m.attr)  # 输出 <Descriptor object>，而非 'descriptor'
 ```python
 class Model:
     attr = Descriptor()  # 正确：类属性
-
 
 m = Model()
 print(m.attr)  # 输出 'descriptor'
@@ -1687,10 +1644,8 @@ class NonDataValidator:
     
     # 缺少 __set__，因此是非数据描述符
 
-
 class Model:
     attr = NonDataValidator()
-
 
 m = Model()
 m.attr = 'hello'  # 直接写入实例字典，不触发任何校验
@@ -1718,10 +1673,8 @@ class BadField:
     def __set__(self, obj, value):
         obj.__dict__[self.name] = value
 
-
 class Model:
     attr = BadField('attr')  # 存储键名 'attr' 与字段名 'attr' 相同
-
 
 m = Model()
 m.attr = 'hello'
@@ -1766,11 +1719,9 @@ class SlotField:
     def __set__(self, obj, value):
         setattr(obj, self._storage_name, value)  # 若 _storage_name 不在 __slots__，失败
 
-
 class Model:
     __slots__ = ()  # 空 slots，不允许任何实例属性
     attr = SlotField()
-
 
 m = Model()
 m.attr = 'hello'  # AttributeError: 'Model' object has no attribute '_slot_attr'
@@ -1794,10 +1745,8 @@ class Model:
 class Base:
     field = SomeField('field')
 
-
 class Child(Base):
     field = SomeField('field')  # 覆盖父类描述符
-
 
 c = Child()
 c.field = 'hello'
@@ -1855,7 +1804,6 @@ class Field:
 from typing import Any, Optional, Type, TypeVar
 
 T = TypeVar('T')
-
 
 class TypedField:
     """带类型校验的描述符"""
@@ -1936,7 +1884,6 @@ class CachedField:
 ```python
 import pytest
 
-
 class TestTypedField:
     def test_normal_assignment(self):
         class Model:
@@ -1973,7 +1920,6 @@ class TestTypedField:
 
 ```python
 from hypothesis import given, strategies as st
-
 
 class TestRangeField:
     @given(st.integers(min_value=0, max_value=100))

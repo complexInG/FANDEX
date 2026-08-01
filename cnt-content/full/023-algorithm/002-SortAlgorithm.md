@@ -540,7 +540,6 @@ Timsort 的复杂度分析依赖**run 长度与归并栈不变式**。
 ```python
 from typing import List
 
-
 def bubble_sort(arr: List[int]) -> List[int]:
     """
     冒泡排序（含提前终止优化）
@@ -567,7 +566,6 @@ def bubble_sort(arr: List[int]) -> List[int]:
         if not swapped:
             break
     return arr
-
 
 def cocktail_sort(arr: List[int]) -> List[int]:
     """
@@ -731,7 +729,6 @@ def insertion_sort(arr: list[int]) -> list[int]:
             j -= 1
         arr[j + 1] = key
     return arr
-
 
 def binary_insertion_sort(arr: list[int]) -> list[int]:
     """
@@ -901,7 +898,6 @@ def shell_sort(arr: list[int], gaps: str = "ciura") -> list[int]:
 ```python
 from typing import List
 
-
 def merge_sort_topdown(arr: List[int]) -> List[int]:
     """
     自顶向下归并排序（递归版）
@@ -916,7 +912,6 @@ def merge_sort_topdown(arr: List[int]) -> List[int]:
     left = merge_sort_topdown(arr[:mid])
     right = merge_sort_topdown(arr[mid:])
     return _merge(left, right)
-
 
 def _merge(left: List[int], right: List[int]) -> List[int]:
     """合并两个有序数组"""
@@ -933,7 +928,6 @@ def _merge(left: List[int], right: List[int]) -> List[int]:
     result.extend(left[i:])
     result.extend(right[j:])
     return result
-
 
 def merge_sort_bottomup(arr: List[int]) -> List[int]:
     """
@@ -1112,7 +1106,6 @@ def partition_lomuto(arr: list[int], low: int, high: int) -> int:
     arr[i + 1], arr[high] = arr[high], arr[i + 1]
     return i + 1
 
-
 def quicksort_lomuto(arr: list[int], low: int, high: int) -> None:
     if low < high:
         p = partition_lomuto(arr, low, high)
@@ -1142,7 +1135,6 @@ def partition_hoare(arr: list[int], low: int, high: int) -> int:
         if i >= j:
             return j
         arr[i], arr[j] = arr[j], arr[i]
-
 
 def quicksort_hoare(arr: list[int], low: int, high: int) -> None:
     if low < high:
@@ -1177,7 +1169,6 @@ def partition_three_way(arr: list[int], low: int, high: int) -> tuple[int, int]:
             i += 1
     return lt, gt
 
-
 def quicksort_three_way(arr: list[int], low: int, high: int) -> None:
     if low < high:
         lt, gt = partition_three_way(arr, low, high)
@@ -1189,7 +1180,6 @@ def quicksort_three_way(arr: list[int], low: int, high: int) -> None:
 
 ```python
 import random
-
 
 def quicksort_randomized(arr: list[int], low: int, high: int) -> None:
     """
@@ -1308,7 +1298,6 @@ def radix_sort_lsd(arr: list[int]) -> list[int]:
         exp *= 10
     return arr
 
-
 def _counting_sort_by_digit(arr: list[int], exp: int) -> list[int]:
     """按某一位做计数排序"""
     n = len(arr)
@@ -1329,7 +1318,6 @@ def _counting_sort_by_digit(arr: list[int], exp: int) -> list[int]:
         output[count[digit]] = x
     
     return output
-
 
 def radix_sort_msd(arr: list[str], digit: int = 0) -> list[str]:
     """
@@ -1416,7 +1404,6 @@ def bucket_sort(arr: list[float], bucket_count: int = 10) -> list[float]:
 ```python
 import math
 
-
 def introsort(arr: list[int]) -> list[int]:
     """
     内省排序（introsort）
@@ -1433,7 +1420,6 @@ def introsort(arr: list[int]) -> list[int]:
     _insertion_sort_range(arr, 0, len(arr) - 1)
     return arr
 
-
 def _introsort_helper(arr: list[int], low: int, high: int, depth: int) -> None:
     while high - low > 16:
         if depth == 0:
@@ -1444,7 +1430,6 @@ def _introsort_helper(arr: list[int], low: int, high: int, depth: int) -> None:
         p = _partition_median_three(arr, low, high)
         _introsort_helper(arr, low, p - 1, depth)
         low = p + 1  # 尾递归优化
-
 
 def _partition_median_three(arr: list[int], low: int, high: int) -> int:
     """三数取中选主元"""
@@ -1467,7 +1452,6 @@ def _partition_median_three(arr: list[int], low: int, high: int) -> int:
     arr[i + 1], arr[high] = arr[high], arr[i + 1]
     return i + 1
 
-
 def _heapsort_range(arr: list[int], low: int, high: int) -> None:
     """对 arr[low..high] 做堆排"""
     n = high - low + 1
@@ -1476,7 +1460,6 @@ def _heapsort_range(arr: list[int], low: int, high: int) -> None:
     for i in range(n - 1, 0, -1):
         arr[low], arr[low + i] = arr[low + i], arr[low]
         _sift_down(arr, low, 0, i)
-
 
 def _sift_down(arr: list[int], base: int, start: int, size: int) -> None:
     root = start
@@ -1491,7 +1474,6 @@ def _sift_down(arr: list[int], base: int, start: int, size: int) -> None:
             root = child
         else:
             break
-
 
 def _insertion_sort_range(arr: list[int], low: int, high: int) -> None:
     for i in range(low + 1, high + 1):
@@ -1550,7 +1532,6 @@ def timsort_simple(arr: list[int]) -> list[int]:
     _merge_force_collapse(arr, runs)
     return arr
 
-
 def _compute_minrun(n: int) -> int:
     """计算 minrun：取 6 位使 n/minrun 接近 2^k"""
     r = 0
@@ -1558,7 +1539,6 @@ def _compute_minrun(n: int) -> int:
         r |= n & 1
         n >>= 1
     return n + r
-
 
 def _find_run(arr: list[int], start: int) -> int:
     """检测自然升序或降序 run"""
@@ -1576,7 +1556,6 @@ def _find_run(arr: list[int], start: int) -> int:
         arr[start:end + 1] = arr[start:end + 1][::-1]
     return end
 
-
 def _merge_collapse(arr: list[int], runs: list[tuple[int, int]]) -> None:
     """维护栈顶三 run 不变式"""
     while len(runs) > 1:
@@ -1593,7 +1572,6 @@ def _merge_collapse(arr: list[int], runs: list[tuple[int, int]]) -> None:
         else:
             break
 
-
 def _merge_at(arr: list[int], runs: list[tuple[int, int]], idx: int) -> None:
     """合并 runs[idx] 和 runs[idx+1]"""
     left_start, left_end = runs[idx]
@@ -1603,16 +1581,13 @@ def _merge_at(arr: list[int], runs: list[tuple[int, int]], idx: int) -> None:
     runs[idx] = (left_start, right_end)
     runs.pop(idx + 1)
 
-
 def _merge_gallop(left: list[int], right: list[int]) -> list[int]:
     """合并（含 gallop 优化，简化版省略 gallop）"""
     return _merge(left, right)
 
-
 def _merge_force_collapse(arr: list[int], runs: list[tuple[int, int]]) -> None:
     while len(runs) > 1:
         _merge_at(arr, runs, len(runs) - 2)
-
 
 def _binary_insertion_range(arr: list[int], low: int, high: int) -> None:
     for i in range(low + 1, high + 1):
@@ -1627,7 +1602,6 @@ def _binary_insertion_range(arr: list[int], low: int, high: int) -> None:
         for j in range(i, left, -1):
             arr[j] = arr[j - 1]
         arr[left] = key
-
 
 def binary_insertion_sort(arr: list[int]) -> list[int]:
     _binary_insertion_range(arr, 0, len(arr) - 1)

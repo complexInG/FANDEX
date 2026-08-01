@@ -15,13 +15,6 @@ related:
 prerequisites:
   - c/概述
 ---
-
-# C 原子操作与内存模型
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 在多线程编程中，多个线程同时访问共享数据会导致数据竞争（data race），产生未定义行为。C11 标准引入了 `<stdatomic.h>` 头文件，提供了原子类型和原子操作，确保对共享变量的读写是不可分割的。同时，C11 定义了内存序（memory order）模型，允许开发者在性能和一致性之间做出权衡。
@@ -878,8 +871,6 @@ size_t sz = sizeof(_Atomic(int));
 
 ## 参考文献
 
-
-
 cppreference C 文档：https://zh.cppreference.com/w/c
 C 标准草案：https://www.open-std.org/jtc1/sc22/wg14/
 GCC 官方文档：https://gcc.gnu.org/onlinedocs/
@@ -887,8 +878,6 @@ Linux man pages：https://man7.org/linux/man-pages/
 C 语言常见误解：https://www.yodaiken.com/
 
 ## 延伸阅读
-
-
 
 C 指针与数组深入，见 025-c 模块指针文档。
 C 枚举与 typedef，见 025-c/007-EnumTypedef 文档。

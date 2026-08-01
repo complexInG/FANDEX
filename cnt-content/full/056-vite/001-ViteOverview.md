@@ -46,7 +46,6 @@ pnpm dev 启动 Vite 开发服务器：它不会打包整个项目，而是按�
 - 003-环境变量与模式：区分开发/生产环境。
 - 004-生产构建：产物优化、分包与部署。
 
-
 ## 1. Vite 是什么
 
 Vite（法语“快”的意思）是尤雨溪于 2020 年发布的下一代前端构建工具，2021 年起成为 Vue 官方推荐，随后被 React、Svelte、Astro 等生态广泛采用。它的核心创新是：开发环境基于原生 ES Modules，按需编译；生产环境基于 Rollup，深度优化。
@@ -230,8 +229,6 @@ Vite 用“原生 ESM + 按需编译”解决了开发体验问题，用 Rollup 
 
 ## 参考文献
 
-
-
 Vite 官方文档：https://cn.vitejs.dev/
 Vite 插件市场：https://github.com/vitejs/awesome-vite
 Vitest：https://cn.vitest.dev/
@@ -239,15 +236,12 @@ Rollup 文档：https://rollupjs.org/
 
 ## 延伸阅读
 
-
-
 Astro 构建集成 Vite，见 055-astro 模块。
 前端框架工程化，见 011-react/010-vue3 模块。
 Monorepo 中的 Vite，见 057-pnpm-monorepo 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Vite 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

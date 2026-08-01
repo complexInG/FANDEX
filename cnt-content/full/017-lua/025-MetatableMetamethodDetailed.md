@@ -15,13 +15,6 @@ related:
 prerequisites:
   - lua/概述与环境配置
 ---
-
-# Lua 元表与元方法详解速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 Lua 1.0（1993）：tag method 雏形
@@ -2079,7 +2072,6 @@ D. `nil`
 
 **C**. `__newindex` 拦截赋值，`rawset` 写入 `t.foo = "bar_modified"`。后续读取 `t.foo` 直接命中（不触发 `__index`），返回 `bar_modified`。
 
-
 **常见疑问 2**：. 下列代码的输出是什么？
 
 ```lua
@@ -2100,7 +2092,6 @@ D. `nil`
 
 **B**. `t1` 和 `t2` 是两个不同的表对象（引用不同），且没有 `__eq` 元方法。Lua 默认使用引用相等，返回 `false`。
 
-
 **常见疑问 3**：. 下列代码的输出是什么？
 
 ```lua
@@ -2117,7 +2108,6 @@ D. `nil 2 3 nil`
 
 **A**. `t.a` 直接命中（1）。`t.b`、`t.c` 触发 `__index`，从 `{ b = 2, c = 3 }` 表中查找。`t.d` 触发 `__index`，但表中无 `d`，返回 `nil`。
 
-
 **常见疑问 4**：. 下列关于 `__gc` 的说法正确的是？
 
 A. Lua 5.1 中 table 可以设置 `__gc` 并会被自动调用
@@ -2128,7 +2118,6 @@ D. `__gc` 可被多次调用
 <details><summary>答案</summary>
 
 **C**. Lua 5.1 / 5.2 不支持 table 的 `__gc`（仅 userdata）。Lua 5.3+ 通过 `luaL_setmetatable` 在创建 metatable 时标记 `__gc`，但 `setmetatable` 后再添加 `__gc` 字段无效。`__gc` 每个对象最多调用一次。
-
 
 **常见疑问 5**：. 下列代码的输出是什么？
 
@@ -2149,7 +2138,6 @@ D. `nil 1`
 
 **A**. `t(5)` 触发 `__call`，返回 `5 * 2 = 10`。`t.x` 触发 `__index`，返回 1。
 
-
 ### 填空题知识点讲解
 
 **常见疑问 6**：. 完成以下代码，使 `t` 的访问返回 `42`：
@@ -2166,7 +2154,6 @@ print(t.anything)  -- 42
 ```lua
 __index
 ```
-
 
 **常见疑问 7**：. 下列代码的输出是 `_____`：
 
@@ -2185,7 +2172,6 @@ true
 
 因为 `a` 和 `b` 共享同一个 metatable（`mt`），且 `__eq` 返回 true。
 
-
 **常见疑问 8**：. `getmetatable` 返回的值取决于 metatable 的 `_____` 字段。
 
 <details><summary>答案</summary>
@@ -2195,7 +2181,6 @@ __metatable
 ```
 
 如果存在，`getmetatable` 返回该字段的值；否则返回真实 metatable。
-
 
 **常见疑问 9**：. 下列代码的输出是 `_____`：
 
@@ -2212,7 +2197,6 @@ print(t.x, t.y)
 
 `t.x` 直接命中，返回 1。`t.y` 不在 `t` 中，触发 `__index`，返回 999。
 
-
 **常见疑问 10**：. 在 Lua 5.4 中，`#t` 对 table 触发 `_____` 元方法。
 
 <details><summary>答案</summary>
@@ -2222,7 +2206,6 @@ __len
 ```
 
 Lua 5.2+ 支持 table 的 `__len`。
-
 
 ### 编程题知识点讲解
 
@@ -2268,7 +2251,6 @@ print(#v1)              -- 3.74166
 print(v1:dot(v2))       -- 32
 ```
 
-
 **常见疑问 12**：. 实现一个 `Lazy` 类，延迟计算值：
 - `Lazy.new(fn)`：创建延迟对象
 - `Lazy:value()`：首次调用时计算，后续返回缓存
@@ -2312,7 +2294,6 @@ print(lazy)         -- computing...; 42
 print(lazy:value()) -- 42（不重新计算）
 print(lazy())       -- 42
 ```
-
 
 **常见疑问 13**：. 实现一个链式 Builder，使以下代码工作：
 
@@ -2365,7 +2346,6 @@ local result = Chain.new()
 print(result)  -- 60
 ```
 
-
 ### 8.4 思考题
 
 **常见疑问 14**：. 为什么 Lua 不内置类系统，而通过 metatable 模拟？
@@ -2373,7 +2353,6 @@ print(result)  -- 60
 <details><summary>答案</summary>
 
 Lua 的设计哲学是"提供元机制，而非具体特性"。metatable 作为元编程工具，允许用户根据需要实现不同的范式（OOP、函数式、原型继承等），而非被锁定在单一模型中。这与 Scheme 的"最小核心 + 宏"哲学一致。如果内置类系统，会引入类型系统的复杂度（如 MRO、`instanceof`、访问控制），与 Lua 的极简目标冲突。
-
 
 **常见疑问 15**：. 为什么 `__eq` 要求两个操作数共享 metatable？
 
@@ -2384,7 +2363,6 @@ Lua 的设计哲学是"提供元机制，而非具体特性"。metatable 作为�
 - 要求共享 metatable 确保类型一致性，避免"苹果等于橘子"的逻辑错误（如 `Point(1,2) == Complex(1,2)` 应返回 false）。
 - 简化了实现：Lua 只需检查类型与 metatable 是否相同，无需复杂的多分派。
 
-
 **常见疑问 16**：. `__index` 链的循环检测为何不由 Lua 自动处理？
 
 <details><summary>答案</summary>
@@ -2394,7 +2372,6 @@ Lua 的设计哲学是"提供元机制，而非具体特性"。metatable 作为�
 3. **设计简洁**：Lua 鼓励显式控制，将循环检测责任交给开发者。
 
 实际上 Lua 会在递归深度达到 `LUAI_MAXSTACK` 时抛出 "stack overflow" 错误，相当于间接的循环检测。
-
 
 ---
 

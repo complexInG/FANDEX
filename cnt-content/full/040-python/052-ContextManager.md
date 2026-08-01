@@ -20,13 +20,6 @@ prerequisites:
   - python/装饰器进阶
   - python/生成器与协程
 ---
-
-# Python 上下文管理器进阶
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 上下文管理器（Context Manager）是 Python 资源管理的核心抽象。它将"资源获取即初始化"（Resource Acquisition Is Initialization, RAII）的思想融入 Python 对象模型，通过 `with` 语句确保资源在使用后被正确释放，即使代码块中发生异常也能保证清理逻辑被执行。这是 Python 区别于 C/C++ 等手动管理资源语言的标志性能力之一。
@@ -377,7 +370,6 @@ class DatabaseConnection:
         return type('Conn', (), {'close': lambda self: print("关闭连接"), 
                                    'execute': lambda self, q: print(f"执行：{q}")})()
 
-
 # 使用示例
 with DatabaseConnection('postgresql://localhost/mydb') as conn:
     conn.execute('SELECT 1')
@@ -394,7 +386,6 @@ import time
 import logging
 
 logger = logging.getLogger(__name__)
-
 
 @contextmanager
 def timer(name: str):
@@ -413,12 +404,10 @@ def timer(name: str):
         elapsed = time.perf_counter() - start
         logger.info(f"{name} 耗时：{elapsed:.3f}s")
 
-
 # 使用示例
 with timer("数据库查询"):
     # 模拟耗时操作
     time.sleep(0.5)
-
 
 # yield 返回值的例子
 @contextmanager
@@ -429,7 +418,6 @@ def temporary_list():
         yield lst  # yield 的值绑定到 as 变量
     finally:
         lst.clear()  # 清理
-
 
 with temporary_list() as items:
     items.append(1)
@@ -444,7 +432,6 @@ with temporary_list() as items:
 # 异常抑制示例：忽略指定异常
 from contextlib import contextmanager
 
-
 @contextmanager
 def ignore_errors(*exceptions):
     """忽略指定异常的上下文管理器
@@ -458,12 +445,10 @@ def ignore_errors(*exceptions):
         # 捕获并忽略
         print(f"忽略异常：{type(e).__name__}: {e}")
 
-
 # 使用
 with ignore_errors(ValueError, TypeError):
     int("not a number")  # 抛 ValueError，被忽略
 print("继续执行")
-
 
 # 类实现的异常抑制
 class SuppressErrors:
@@ -481,11 +466,9 @@ class SuppressErrors:
             return True  # 返回 True 抑制异常
         return False  # 其他异常继续传播
 
-
 with SuppressErrors(ZeroDivisionError):
     result = 1 / 0  # ZeroDivisionError 被抑制
 print("除零异常被抑制，继续执行")
-
 
 # 对比 contextlib.suppress（标准库）
 from contextlib import suppress
@@ -500,7 +483,6 @@ print("文件不存在异常被忽略")
 ```python
 # 事务上下文管理器：自动 commit/rollback
 from contextlib import contextmanager
-
 
 @contextmanager
 def transaction(db_session):
@@ -517,7 +499,6 @@ def transaction(db_session):
     except Exception:
         db_session.rollback()  # 异常时回滚
         raise  # 重新抛出异常
-
 
 # 使用示例
 class MockSession:
@@ -537,14 +518,12 @@ class MockSession:
     def execute(self, sql):
         print(f"执行：{sql}")
 
-
 # 正常场景
 session = MockSession()
 with transaction(session):
     session.execute("INSERT INTO users VALUES (1, '张三')")
     session.execute("INSERT INTO orders VALUES (100, 1)")
 # 退出后 session.committed == True
-
 
 # 异常场景
 session = MockSession()
@@ -563,7 +542,6 @@ except ValueError:
 # ExitStack 示例：动态管理多个资源
 from contextlib import ExitStack
 
-
 # 场景：根据配置文件打开不定数量的文件
 def process_files(filenames: list[str]):
     """处理多个文件
@@ -577,7 +555,6 @@ def process_files(filenames: list[str]):
         for f in files:
             content = f.read()
             print(f"处理：{content[:50]}")
-
 
 # 场景：混合多种上下文管理器
 def complex_workflow():
@@ -596,7 +573,6 @@ def complex_workflow():
         log_file.write("工作流开始\n")
         db.execute("SELECT 1")
 
-
 # callback：注册普通清理函数
 def with_callbacks():
     """使用 callback 注册清理函数"""
@@ -608,7 +584,6 @@ def with_callbacks():
         
         print("工作...")
         # 退出时按 LIFO 顺序执行：清理 3 → 清理 2 → 清理 1
-
 
 # push：注册任意上下文管理器或清理函数
 def with_push():
@@ -627,7 +602,6 @@ def with_push():
 import os
 import sys
 from contextlib import contextmanager
-
 
 @contextmanager
 def temp_env(**kwargs):
@@ -649,14 +623,12 @@ def temp_env(**kwargs):
             else:
                 os.environ[key] = old_value
 
-
 # 使用
 with temp_env(DATABASE_URL="postgresql://test", DEBUG="1"):
     # 在此块中环境变量被临时修改
     print(os.environ['DATABASE_URL'])  # postgresql://test
     print(os.environ['DEBUG'])  # 1
 # 退出后恢复原值
-
 
 @contextmanager
 def temp_chdir(path):
@@ -668,10 +640,8 @@ def temp_chdir(path):
     finally:
         os.chdir(old_cwd)
 
-
 # Python 3.11+ 提供 contextlib.chdir
 # from contextlib import chdir
-
 
 # 重定向 stdout
 @contextmanager
@@ -685,13 +655,11 @@ def capture_stdout():
     finally:
         sys.stdout = old_stdout
 
-
 # 使用
 with capture_stdout() as output:
     print("这行被捕获")
     print("这行也被捕获")
 print(f"捕获内容：{output.getvalue()}")  # 捕获内容：这行被捕获\n这行也被捕获\n
-
 
 # 标准库提供 redirect_stdout
 from contextlib import redirect_stdout
@@ -710,7 +678,6 @@ print(f"内容：{output.getvalue()}")
 import os
 import tempfile
 from contextlib import contextmanager
-
 
 @contextmanager
 def atomic_write(filepath: str, mode: str = 'w'):
@@ -743,7 +710,6 @@ def atomic_write(filepath: str, mode: str = 'w'):
             os.remove(tmp_path)
         raise
 
-
 # 使用
 import json
 
@@ -752,7 +718,6 @@ config = {"name": "myapp", "version": "1.0.0"}
 with atomic_write('config.json') as f:
     json.dump(config, f, indent=2)
 # 若写入过程中崩溃，原 config.json 不受影响
-
 
 # Python 3.10+ 可使用 atomic_write 的更简单实现
 @contextmanager
@@ -775,7 +740,6 @@ def atomic_write_simple(filepath: str):
 # 异步上下文管理器示例
 import asyncio
 from contextlib import asynccontextmanager
-
 
 # 类实现
 class AsyncDBConnection:
@@ -805,12 +769,10 @@ class AsyncDBConnection:
             'execute': lambda self, q: asyncio.sleep(0.1)
         })()
 
-
 # 使用
 async def main():
     async with AsyncDBConnection('postgresql://localhost/db') as conn:
         await conn.execute('SELECT 1')
-
 
 # @asynccontextmanager 实现
 @asynccontextmanager
@@ -823,11 +785,9 @@ async def async_timer(name: str):
         elapsed = asyncio.get_event_loop().time() - start
         print(f"{name} 耗时：{elapsed:.3f}s")
 
-
 async def timed_operation():
     async with async_timer("异步操作"):
         await asyncio.sleep(0.5)
-
 
 # 异步锁管理
 @asynccontextmanager
@@ -839,13 +799,11 @@ async def async_lock_section(lock: asyncio.Lock):
     finally:
         lock.release()
 
-
 async def protected_section():
     lock = asyncio.Lock()
     async with async_lock_section(lock):
         # 临界区
         await asyncio.sleep(0.1)
-
 
 # Python 3.10+ 提供 contextlib.aclosing
 from contextlib import aclosing
@@ -856,7 +814,6 @@ async def consume_async_generator():
         async for item in agen:
             if item.is_target():
                 break  # 提前退出，aclosing 确保资源释放
-
 
 async def async_data_source():
     while True:
@@ -870,7 +827,6 @@ async def async_data_source():
 import cProfile
 import pstats
 from contextlib import contextmanager
-
 
 @contextmanager
 def profile(output_file: str = None):
@@ -892,17 +848,14 @@ def profile(output_file: str = None):
         else:
             stats.print_stats(20)  # 打印前 20 行
 
-
 # 使用
 def expensive_computation():
     """模拟耗时计算"""
     return sum(i * i for i in range(1000000))
 
-
 with profile("profile.stats"):
     result = expensive_computation()
 # 退出后生成 profile.stats 文件
-
 
 # 带参数的灵活 profiling
 @contextmanager
@@ -918,7 +871,6 @@ def profile_section(name: str, top_n: int = 10):
         stats = pstats.Stats(profiler)
         stats.sort_stats('tottime').print_stats(top_n)
 
-
 with profile_section("数据处理", top_n=5):
     data = [i ** 2 for i in range(100000)]
     filtered = [x for x in data if x % 2 == 0]
@@ -930,7 +882,6 @@ with profile_section("数据处理", top_n=5):
 # 线程锁与超时管理
 import threading
 from contextlib import contextmanager
-
 
 @contextmanager
 def acquire_lock(lock: threading.Lock, timeout: float = 5.0):
@@ -951,7 +902,6 @@ def acquire_lock(lock: threading.Lock, timeout: float = 5.0):
     finally:
         lock.release()
 
-
 # 使用
 shared_lock = threading.Lock()
 
@@ -959,7 +909,6 @@ def update_shared_resource():
     with acquire_lock(shared_lock, timeout=10):
         # 在锁保护下操作共享资源
         pass
-
 
 # 读写锁示例
 class ReadWriteLock:
@@ -990,7 +939,6 @@ class ReadWriteLock:
                 self._read_ready.wait()
             yield
 
-
 rw_lock = ReadWriteLock()
 
 def read_data():
@@ -1015,7 +963,6 @@ from contextlib import asynccontextmanager
 request_id_var: contextvars.ContextVar[str] = contextvars.ContextVar('request_id', default='')
 user_var: contextvars.ContextVar[dict] = contextvars.ContextVar('user', default={})
 
-
 @asynccontextmanager
 async def request_context(request_id: str, user: dict):
     """请求上下文管理器
@@ -1030,7 +977,6 @@ async def request_context(request_id: str, user: dict):
         request_id_var.reset(token1)
         user_var.reset(token2)
 
-
 async def process_request(request_id: str):
     """处理请求"""
     async with request_context(request_id, {"name": "张三"}):
@@ -1038,15 +984,12 @@ async def process_request(request_id: str):
         await step1()
         await step2()
 
-
 async def step1():
     print(f"step1 - request_id: {request_id_var.get()}")
     print(f"step1 - user: {user_var.get()}")
 
-
 async def step2():
     print(f"step2 - request_id: {request_id_var.get()}")
-
 
 # contextvars 的关键特性：每个 asyncio.Task 有独立的 Context 副本
 # 修改不会影响其他任务
@@ -1068,7 +1011,6 @@ from contextlib import ContextDecorator
 from functools import wraps
 import time
 
-
 # 方式一：继承 ContextDecorator
 class Timer(ContextDecorator):
     """可作为上下文管理器与装饰器使用"""
@@ -1086,20 +1028,16 @@ class Timer(ContextDecorator):
         print(f"{self.name} 耗时：{elapsed:.3f}s")
         return False
 
-
 # 作为上下文管理器
 with Timer("块计时"):
     time.sleep(0.1)
-
 
 # 作为装饰器
 @Timer("函数计时")
 def slow_function():
     time.sleep(0.2)
 
-
 slow_function()
-
 
 # 方式二：通用转换器
 def contextmanager_to_decorator(cm_factory):
@@ -1112,12 +1050,10 @@ def contextmanager_to_decorator(cm_factory):
         return wrapper
     return decorator
 
-
 # 使用
 @contextmanager_to_decorator(lambda: timer("装饰器计时"))
 def another_function():
     time.sleep(0.1)
-
 
 another_function()
 ```
@@ -1195,7 +1131,6 @@ class BadManager:
     
     def __exit__(self, exc_type, exc_val, exc_tb):
         return True  # 吞掉所有异常，包括 KeyboardInterrupt
-
 
 with BadManager():
     1 / 0  # 异常被吞，程序继续执行错误状态
@@ -1451,7 +1386,6 @@ from typing import Any, TypeVar, Generic
 
 T = TypeVar('T')
 
-
 class Resource(ABC, Generic[T]):
     """资源管理抽象基类
     
@@ -1489,7 +1423,6 @@ class Resource(ABC, Generic[T]):
         """释放资源"""
         ...
 
-
 class DatabaseConnection(Resource):
     """数据库连接资源"""
     
@@ -1502,7 +1435,6 @@ class DatabaseConnection(Resource):
     
     def _release(self, conn):
         conn.close()
-
 
 class RedisClient(Resource):
     """Redis 客户端资源"""
@@ -1525,7 +1457,6 @@ class RedisClient(Resource):
 # 多层级事务管理器
 from contextlib import contextmanager, ExitStack
 
-
 @contextmanager
 def db_transaction(session, isolation_level: str = 'READ COMMITTED'):
     """数据库事务管理器
@@ -1541,7 +1472,6 @@ def db_transaction(session, isolation_level: str = 'READ COMMITTED'):
         session.rollback()
         raise
 
-
 @contextmanager
 def nested_transaction(session):
     """嵌套事务（基于 SAVEPOINT）"""
@@ -1552,7 +1482,6 @@ def nested_transaction(session):
     except Exception:
         session.execute("ROLLBACK TO SAVEPOINT sp1")
         raise
-
 
 # 多资源事务
 @contextmanager
@@ -1572,7 +1501,6 @@ def distributed_transaction(*sessions):
 import pytest
 from contextlib import contextmanager
 
-
 @contextmanager
 def test_database():
     """测试数据库上下文管理器"""
@@ -1583,13 +1511,11 @@ def test_database():
         db.drop_all()
         db.close()
 
-
 @pytest.fixture
 def db():
     """pytest fixture 包装上下文管理器"""
     with test_database() as db:
         yield db
-
 
 @contextmanager
 def mock_external_api():
@@ -1597,7 +1523,6 @@ def mock_external_api():
     with patch('requests.get') as mock:
         mock.return_value.json.return_value = {"status": "ok"}
         yield mock
-
 
 @pytest.fixture
 def mock_api():
@@ -1612,7 +1537,6 @@ def mock_api():
 import logging
 from contextlib import contextmanager
 from typing import Iterator
-
 
 @contextmanager
 def request_logging(request_id: str, logger: logging.Logger) -> Iterator[logging.LoggerAdapter]:
@@ -1631,7 +1555,6 @@ def request_logging(request_id: str, logger: logging.Logger) -> Iterator[logging
     finally:
         elapsed = time.perf_counter() - start_time
         adapter.info(f"请求结束，耗时 {elapsed:.3f}s")
-
 
 # 使用
 logger = logging.getLogger(__name__)
@@ -1653,9 +1576,7 @@ class StatelessCM:
     def __exit__(self, *args):
         return False
 
-
 shared_cm = StatelessCM()  # 全局复用
-
 
 # 2. 避免在紧密循环中创建
 # 反模式
@@ -1668,7 +1589,6 @@ start = time.perf_counter()
 for i in range(1000000):
     process(i)
 elapsed = time.perf_counter() - start
-
 
 # 3. 使用 __slots__ 减少内存
 class OptimizedCM:
@@ -1690,7 +1610,6 @@ class OptimizedCM:
 import asyncio
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
-
 
 class AsyncResourcePool:
     """异步资源池"""
@@ -1720,7 +1639,6 @@ class AsyncResourcePool:
     
     async def _put(self, resource):
         await self.pool.put(resource)
-
 
 # 使用
 async def db_factory():
@@ -1798,7 +1716,6 @@ httpx 的设计考虑了连接池复用：
 import sys
 from contextlib import contextmanager
 
-
 @contextmanager
 def redirect_stdout(new_target):
     """重定向标准输出"""
@@ -1867,7 +1784,6 @@ from contextlib import contextmanager
 
 app = FastAPI()
 
-
 @contextmanager
 def get_db():
     """数据库依赖：上下文管理器"""
@@ -1876,7 +1792,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
 
 @app.get("/users")
 def list_users(db = Depends(get_db)):

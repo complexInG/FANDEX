@@ -15,13 +15,6 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
-
-# Java 模块系统 JPMS
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 Java 模块系统（Java Platform Module System，简称 JPMS）是 Java 9 引入的重要特性，它为 Java 提供了原生的模块化支持。在模块系统出现之前，Java 只有包（package）这一层组织结构，无法控制包之间的访问权限，也无法声明依赖关系。模块系统解决了这些问题，让大型应用的代码组织更清晰、依赖管理更明确。
@@ -670,8 +663,6 @@ jdeps -s app.jar
 
 ## 参考文献
 
-
-
 Oracle Java 官方文档：https://docs.oracle.com/en/java/
 OpenJDK 项目：https://openjdk.org/
 Java 语言规范：https://docs.oracle.com/javase/specs/
@@ -680,8 +671,6 @@ Baeldung 教程站：https://www.baeldung.com/
 Maven 官方文档：https://maven.apache.org/guides/
 
 ## 延伸阅读
-
-
 
 Java 并发与 JUC，见 013-java 模块并发文档。
 JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。

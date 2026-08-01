@@ -2200,7 +2200,6 @@ B. 调用后,该测试会被暂停,直到所有非并行测试完成后再开始
 C. `Parallel` 只能在 `t.Run` 子测试中调用,不能在顶层 `Test*` 中调用
 D. 同一测试中可多次调用 `Parallel` 以提高并行度
 
-
 **解析讲解**：B
 
 **解析讲解**：
@@ -2215,7 +2214,6 @@ A. `b.N` 由 testing 框架自适应调整
 B. 首次运行 `b.N` 为 1
 C. 若单次执行过快,`b.N` 会指数增长
 D. 可通过 `-benchtime=100x` 强制 `b.N=100`
-
 
 **解析讲解**：C
 
@@ -2233,7 +2231,6 @@ C. 语料库存储在 `$GOCACHE/fuzz/` 下
 D. Fuzzing 发现的崩溃输入会自动加入语料库
 E. 以上全对
 
-
 **解析讲解**：E
 
 **解析讲解**：所有描述均正确。
@@ -2248,7 +2245,6 @@ A. 多个 goroutine 同时读同一个 `sync.RWMutex` 保护的变量
 B. 多个 goroutine 同时读一个未受保护的变量
 C. 多个 goroutine 同时写一个 `sync.Mutex` 保护的变量
 D. 一个 goroutine 写,另一个 goroutine 通过 `atomic.Load` 读
-
 
 **解析讲解**：B
 
@@ -2267,7 +2263,6 @@ B. `TestMain` 必须调用 `m.Run()` 才能运行测试
 C. `TestMain` 返回值是测试退出码
 D. 一个包可以有多个 `TestMain`
 
-
 **解析讲解**：D
 
 **解析讲解**：一个包只能有一个 `TestMain`,否则编译错误。
@@ -2276,26 +2271,21 @@ D. 一个包可以有多个 `TestMain`
 
 **题目 1**:`go test -bench=. -benchmem` 中,`-benchmem` 的作用是 _________。
 
-
 报告每次操作的内存分配(B/op)和分配次数(allocs/op)。
 
 **题目 2**:`go test -coverprofile=coverage.out` 生成的覆盖率基于 _________ 覆盖,而非分支覆盖。
-
 
 语句(statement)
 
 **题目 3**:在 `t.Run` 子测试中调用 `t.Parallel()` 时,需要先 _________ 循环变量以避免 Go 1.21 及以下的闭包陷阱。
 
-
 shadow(或:重新声明 `tc := tc`)
 
 **题目 4**:Go 1.18 引入的 fuzzing,通过 `f._________()` 添加种子语料,通过 `f._________()` 注册 fuzzing 回调。
 
-
 Add、Fuzz
 
 **题目 5**:`t.Cleanup()` 注册的函数执行顺序是 _________(LIFO/FIFO)。
-
 
 LIFO(后进先出)
 
@@ -2334,7 +2324,6 @@ func min(a, b, c int) int {
     return m
 }
 ```
-
 
 ```go
 package main
@@ -2388,7 +2377,6 @@ func ParseIPv4(s string) ([4]byte, error) {
 }
 ```
 
-
 ```go
 func FuzzParseIPv4(f *testing.F) {
     f.Add("192.168.1.1")
@@ -2417,7 +2405,6 @@ func FuzzParseIPv4(f *testing.F) {
 ```
 
 **题目 3**:编写一个基准测试,对比 `strings.Builder`、`fmt.Sprintf`、`+` 拼接 10 个字符串的性能:
-
 
 ```go
 func BenchmarkConcat(b *testing.B) {
@@ -2465,7 +2452,6 @@ func BenchmarkConcat(b *testing.B) {
 
 **题目 1**:为什么 Go 团队坚持不将 `assert` 库纳入标准库?这种设计决策对生态有何影响?
 
-
 1. **设计哲学**:Go 强调显式(explicit)与简洁(minimal)。`t.Errorf` 已经足够,引入 assert 会增加 API 表面积。
 2. **避免断言滥用**:断言库可能诱导开发者写"宽泛断言"(如 `assert.NotNil`),而非精确的语义检查。
 3. **生态分化**:催生了 `testify`、`goconvey`、`Gomega` 等多种风格,各有适用场景,反而是优势。
@@ -2473,7 +2459,6 @@ func BenchmarkConcat(b *testing.B) {
 5. **对比**:Rust 选择将 `assert_eq!` 等宏纳入标准库,体现不同的取舍。
 
 **题目 2**:覆盖率达到 100% 是否意味着测试充分?请结合实际案例论述。
-
 
 1. **覆盖率局限**:语句覆盖不等于分支覆盖,更不等于路径覆盖。
 2. **反例**:`if x > 0 { return x } else { return -x }`,若只测试 `x=1`,覆盖率 100% 但未覆盖 `x=-1`。
@@ -2483,7 +2468,6 @@ func BenchmarkConcat(b *testing.B) {
 6. **业界案例**:Kubernetes 核心包覆盖率约 80%,但通过大规模集成测试与 e2e 弥补。
 
 **题目 3**:在微服务架构中,如何平衡单元测试与集成测试的比例?过度 mock 有哪些危害?
-
 
 1. **金字塔原则**:70% 单元测试 + 20% 集成测试 + 10% e2e。
 2. **过度 mock 的危害**:
@@ -2499,7 +2483,6 @@ func BenchmarkConcat(b *testing.B) {
 
 **题目 4**:Fuzzing 与传统单元测试的互补关系是什么?在 CI 中如何高效集成?
 
-
 1. **互补关系**:
    - 单元测试:固化已知行为,验证预期。
    - Fuzzing:发现未知边界,验证不变量。
@@ -2514,7 +2497,6 @@ func BenchmarkConcat(b *testing.B) {
 4. **业界案例**:Go 标准库自身通过 fuzzing 发现了多个 bug,如 `encoding/json` 的栈溢出。
 
 **题目 5**:在大型 Go 项目中,如何设计可维护的测试夹具(fixture)管理机制?
-
 
 1. **分层夹具**:
    - 全局夹具(`TestMain`):数据库连接池、配置加载。

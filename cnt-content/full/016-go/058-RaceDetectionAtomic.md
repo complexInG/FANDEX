@@ -487,7 +487,6 @@ CPU 缓存与伪共享的硬件原理，见 024-cs-fundamentals 模块相关文�
 
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Go 并发编程课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Go 相关课程。
 
-
 ### 概述
 
 并发编程中，多个 goroutine 同时访问共享数据可能导致数据竞争（data race），产生难以复现和调试的问题。Go 提供了内置的竞态检测器（race detector）和 atomic 包来帮助发现和解决竞态问题。竞态检测器可以在运行时发现数据竞争，原子操作则提供了无锁的并发安全原语。

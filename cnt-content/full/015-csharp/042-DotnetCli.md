@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# C# .NET CLI 命令
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## SDK 与环境
 
 **基本写法：查看版本**
@@ -416,16 +409,12 @@ dotnet sn -k key.snk
 
 ## 参考文献
 
-
-
 Microsoft Learn C# 文档：https://learn.microsoft.com/zh-cn/dotnet/csharp/
 .NET 官方文档：https://learn.microsoft.com/zh-cn/dotnet/
 ASP.NET Core 文档：https://learn.microsoft.com/zh-cn/aspnet/core/
 C# 语言规范：https://learn.microsoft.com/zh-cn/dotnet/csharp/language-reference/
 
 ## 延伸阅读
-
-
 
 C# 与 .NET 生态，见 015-csharp 模块基础文档。
 异步编程与 Task，见 015-csharp 模块异步文档。

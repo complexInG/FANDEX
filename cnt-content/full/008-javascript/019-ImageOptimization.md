@@ -2904,9 +2904,7 @@ class ChatMetrics {
 
 fetch() 函数返回一个 ______ 对象,该对象在响应 ______ 到达时 resolve(注意:不是响应体完成)。
 
-
 Promise;头部(状态行+响应头)
-
 
 ## 知识讲解与要点分析（原习题 2(选择)）
 
@@ -2916,11 +2914,9 @@ B. HTTP 500 Internal Server Error
 C. CORS 预检失败
 D. 响应体为空
 
-
 C
 
 fetch 只在网络层错误(DNS、连接拒绝、CORS 失败)时 reject。HTTP 4xx/5xx 不会 reject,需要手动检查 response.ok。
-
 
 ### 应用题知识点讲解
 
@@ -2939,7 +2935,6 @@ async function parallelLimit(urls, limit) {
   return results;
 }
 ```
-
 
 ```javascript
 async function parallelLimit(urls, limit) {
@@ -2961,11 +2956,9 @@ async function parallelLimit(urls, limit) {
 
 原实现是"分批并发",每批内并发但批间串行,效率低。修复后采用 worker pool 模式,持续补充新请求,保持并发度。
 
-
 ## 知识讲解与要点分析（原习题 4(代码编写)）
 
 实现一个"竞速取消"函数:同时发起多个请求,任一完成则取消其他。
-
 
 ```javascript
 async function raceCancel(urls) {
@@ -2993,7 +2986,6 @@ const response = await raceCancel([
 ]);
 ```
 
-
 ### 24.3 分析题
 
 ## 知识讲解与要点分析（原习题 5(分析)）
@@ -3009,7 +3001,6 @@ self.addEventListener('fetch', (event) => {
   );
 });
 ```
-
 
 **原因**:
 - 使用 Cache First 策略,缓存命中后立即返回,不更新缓存
@@ -3052,7 +3043,6 @@ self.addEventListener('fetch', (event) => {
 });
 ```
 
-
 ### 24.4 创造题
 
 ## 知识讲解与要点分析（原习题 6(开放)）
@@ -3063,7 +3053,6 @@ self.addEventListener('fetch', (event) => {
 3. 在弱网下自动启用压缩
 4. 离线时自动切换到缓存
 5. 提供可观测性指标(请求数、成功率、P95 延迟)
-
 
 ```javascript
 class AdaptiveHttpClient {
@@ -3154,7 +3143,6 @@ class AdaptiveHttpClient {
 4. 离线时降级到 Service Worker 缓存
 5. 指标收集用于监控与调优
 6. 实际生产还需考虑:请求优先级、队列调度、AB 测试
-
 
 ---
 

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - c/概述
 ---
-
-# C 位运算
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 位运算是直接对整数的二进制位进行操作的运算方式，是C语言接近硬件底层的核心能力之一。通过位运算，程序员可以用最少的指令完成标志管理、数据压缩、硬件寄存器操控等任务。位域则是C语言结构体的特殊成员，允许以位为单位指定成员的存储宽度，在内存受限的嵌入式场景中尤为实用。两者结合使用，是编写高效底层代码的基本功。
@@ -1266,8 +1259,6 @@ int big = 0b1010'1010;
 
 ## 参考文献
 
-
-
 cppreference C 文档：https://zh.cppreference.com/w/c
 C 标准草案：https://www.open-std.org/jtc1/sc22/wg14/
 GCC 官方文档：https://gcc.gnu.org/onlinedocs/
@@ -1275,8 +1266,6 @@ Linux man pages：https://man7.org/linux/man-pages/
 C 语言常见误解：https://www.yodaiken.com/
 
 ## 延伸阅读
-
-
 
 C 指针与数组深入，见 025-c 模块指针文档。
 C 枚举与 typedef，见 025-c/007-EnumTypedef 文档。

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
-
-# C++23 新特性
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 C++23 标准的定位
@@ -1276,7 +1269,6 @@ std::generator<int> fibonacci() {
 - C. 可能成功或失败
 - D. 异常包装
 
-
 **解析讲解**：C
 
 `std::expected<T, E>` 是可能成功（含 `T`）或失败（含 `E`）的运算结果。
@@ -1287,7 +1279,6 @@ std::generator<int> fibonacci() {
 - B. flat_map 用排序连续容器，map 用红黑树
 - C. flat_map 不支持自定义比较器
 - D. 两者完全相同
-
 
 **解析讲解**：B
 
@@ -1300,7 +1291,6 @@ std::generator<int> fibonacci() {
 - C. 模板推导问题
 - D. 异常处理
 
-
 **解析讲解**：B
 
 Deducing this 允许在成员函数中显式声明 `this` 类型，从而统一处理 `T&`/`const T&`/`T&&` 等不同情况。
@@ -1312,7 +1302,6 @@ Deducing this 允许在成员函数中显式声明 `this` 类型，从而统一�
 - C. `if consteval` 性能更好
 - D. `if consteval` 是 C++23 新引入的更简洁的语法
 
-
 **解析讲解**：D
 
 `if consteval` 是 C++23 新引入的语法糖，语义与 `if constexpr (std::is_constant_evaluated())` 等价，但更简洁直观。
@@ -1321,28 +1310,23 @@ Deducing this 允许在成员函数中显式声明 `this` 类型，从而统一�
 
 **常见疑问 5**：. C++23 引入了 `std::expected<T, E>`，对应 Rust 的 ______ 类型。
 
-
 `Result<T, E>`。
 
 **常见疑问 6**：. `std::flat_map` 的查找复杂度为 ______，插入复杂度为 ______。
-
 
 $O(\log n)$；$O(n)$（最坏）。
 
 **常见疑问 7**：. Deducing this 的关键字是 ______。
 
-
 `this`（显式声明在第一个参数位置）。
 
 **常见疑问 8**：. `std::generator<T>` 满足 ______ 概念，但不可 ______。
-
 
 `input_iterator`；拷贝。
 
 ### 编程题知识点讲解
 
 **常见疑问 9**：. 使用 `std::expected` 实现一个简单的 JSON 解析器（仅支持对象、字符串、数字）。
-
 
 ```cpp
 #include <expected>
@@ -1459,7 +1443,6 @@ int main() {
 
 **常见疑问 10**：. 使用 `std::generator` 实现一个无限素数生成器。
 
-
 ```cpp
 #include <generator>
 #include <print>
@@ -1496,7 +1479,6 @@ int main() {
 ```
 
 **常见疑问 11**：. 使用 `std::mdspan` 实现矩阵转置。
-
 
 ```cpp
 #include <mdspan>
@@ -1536,7 +1518,6 @@ int main() {
 
 **常见疑问 12**：. `std::expected` 与异常处理相比，各自的优缺点？
 
-
 `std::expected` 优点：
 - 显式错误处理，代码意图清晰；
 - 无运行时开销（与异常相比）；
@@ -1565,7 +1546,6 @@ int main() {
 
 **常见疑问 13**：. `std::flat_map` 何时优于 `std::map`？
 
-
 `std::flat_map` 优于 `std::map` 的场景：
 1. **小数据量**（< 1000 元素）：连续存储 + 二分查找比红黑树快；
 2. **读多写少**：查找 $O(\log n)$，但缓存友好；
@@ -1580,7 +1560,6 @@ int main() {
 经验法则：先测量再决定，不要凭直觉。
 
 **常见疑问 14**：. Deducing this 是否会替代传统的 cv 重载？
-
 
 部分场景会，但不会完全替代。Deducing this 适合：
 - 需要统一处理 cv/引用类别的成员函数；

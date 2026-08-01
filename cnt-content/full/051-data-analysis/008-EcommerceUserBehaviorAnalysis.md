@@ -719,16 +719,12 @@ df.groupby('dim').agg(
 
 ## 参考文献
 
-
-
 Pandas 文档：https://pandas.pydata.org/docs/
 NumPy 文档：https://numpy.org/doc/stable/
 Matplotlib：https://matplotlib.org/
 Kaggle Learn：https://www.kaggle.com/learn
 
 ## 延伸阅读
-
-
 
 数据分析工具，见 051-data-analysis 模块文档。
 概率统计基础，见 030-probability-statistics 模块。

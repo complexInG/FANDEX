@@ -1686,11 +1686,9 @@ B. `noImplicitAny`
 C. `noUncheckedIndexedAccess`
 D. `strictFunctionTypes`
 
-
 **答案：C**
 
 `noUncheckedIndexedAccess` 是一个独立的严格性选项，不属于 `strict: true` 总开关的聚合范围。`strict: true` 聚合的子选项包括：`strictNullChecks`、`noImplicitAny`、`strictFunctionTypes`、`strictBindCallApply`、`strictPropertyInitialization`、`noImplicitThis`、`alwaysStrict`、`useUnknownInCatchVariables`。
-
 
 **第 2 题**：启用 `strictFunctionTypes` 后，以下哪段代码会报错？
 
@@ -1718,7 +1716,6 @@ const c: Container = { handle(dog: Dog) {} };
 
 D. 以上都不会报错
 
-
 **答案：A**
 
 `strictFunctionTypes` 启用后，函数类型字面量采用逆变规则。选项 A 中，`DogHandler`（接收 `Dog`）不能赋值给 `AnimalHandler`（接收 `Animal`），因为 `AnimalHandler` 可能被传入 `Cat`（`Animal` 的另一个子类），但 `DogHandler` 只能处理 `Dog`。
@@ -1727,7 +1724,6 @@ D. 以上都不会报错
 
 选项 C 正确：方法声明（method declaration）仍采用双向兼容，不受 `strictFunctionTypes` 影响。
 
-
 **第 3 题**：以下关于 `useUnknownInCatchVariables` 的描述，哪项是正确的？
 
 A. catch 变量类型为 `any`
@@ -1735,11 +1731,9 @@ B. catch 变量类型为 `unknown`
 C. catch 变量类型为 `Error`
 D. catch 变量类型为 `never`
 
-
 **答案：B**
 
 `useUnknownInCatchVariables: true`（属于 `strict: true` 聚合范围）使 catch 子句的变量类型为 `unknown`。`unknown` 类型必须经过类型守卫或类型断言后才能使用，强制开发者安全地处理错误。
-
 
 **第 4 题**：以下哪种方式不能解决 `strictPropertyInitialization` 报错？
 
@@ -1748,11 +1742,9 @@ B. 使用 `!` 确定赋值断言
 C. 使用 `?` 将属性声明为可选
 D. 使用 `as any` 类型断言
 
-
 **答案：D**
 
 `as any` 类型断言不能解决 `strictPropertyInitialization` 报错，因为该检查针对的是属性初始化状态，而非类型兼容性。正确的解决方式包括：构造函数初始化（A）、确定赋值断言（B）、可选属性（C）。
-
 
 **第 5 题**：以下关于 `noUncheckedIndexedAccess` 的描述，哪项是错误的？
 
@@ -1761,50 +1753,37 @@ B. 对象索引签名访问返回 `T | undefined`
 C. 元组索引访问返回 `T | undefined`
 D. `Map.get()` 返回 `T | undefined`
 
-
 **答案：C**
 
 `noUncheckedIndexedAccess` 不影响元组索引访问。元组类型 `[string, number]` 的索引 `0` 和 `1` 在范围内，类型分别为 `string` 和 `number`，不包含 `undefined`。只有超出元组长度的索引（如 `tuple[10]`）才会返回 `T | undefined`（因为元组也是数组）。
 
 注意：`Map.get()` 本身就返回 `T | undefined`，与该选项无关。
 
-
 ### 填空题知识点讲解
 
 **第 1 题**：`strict: true` 等价于同时启用 ________ 个子选项。
 
-
 `strict: true` 在 TypeScript 5.x 中等价于同时启用 8 个子选项：`strictNullChecks`、`noImplicitAny`、`strictFunctionTypes`、`strictBindCallApply`、`strictPropertyInitialization`、`noImplicitThis`、`alwaysStrict`、`useUnknownInCatchVariables`。
-
 
 **第 2 题**：`strictFunctionTypes` 启用后，函数参数采用 ________ 规则，而非 ________ 规则。
 
-
 `strictFunctionTypes` 启用后，函数参数采用**逆变**（contravariance）规则，而非**双向兼容**（bivariance）规则。
-
 
 **第 3 题**：`catch` 变量在 `useUnknownInCatchVariables` 启用后类型为 ________，必须通过 ________ 或 ________ 后才能使用。
 
-
 `catch` 变量在 `useUnknownInCatchVariables` 启用后类型为 `unknown`，必须通过**类型守卫**（type guard）或**类型断言**（type assertion）后才能使用。
-
 
 **第 4 题**：解决 `strictPropertyInitialization` 报错的方式有 ________、________、________。
 
-
 解决 `strictPropertyInitialization` 报错的方式有：构造函数中初始化、确定赋值断言（`!`）、可选属性（`?`）。
-
 
 **第 5 题**：TypeScript 在 `strict` 模式下的类型系统可形式化为带空值的 ________ 类型系统。
 
-
 TypeScript 在 `strict` 模式下的类型系统可形式化为带空值的**渐变**类型系统（gradual type system with nullability）。
-
 
 ### 编程题知识点讲解
 
 **第 1 题**：实现一个类型安全的 `Result<T, E>` 类型与 `tryCatch` 函数，要求在 `strict: true` 下编译通过。
-
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -1886,9 +1865,7 @@ if (!result3.ok) {
 }
 ```
 
-
 **第 2 题**：实现一个类型安全的依赖注入容器，要求在 `strict: true` 下编译通过。
-
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -1979,9 +1956,7 @@ const userService = container.resolve(UserService);
 console.log(userService.getUser('u-1'));
 ```
 
-
 **第 3 题**：实现一个类型安全的 `EventEmitter`，要求事件名称与回调参数类型一一对应，在 `strict: true` 下编译通过。
-
 
 ```typescript
 // TS 5.4, tsconfig.json: { "strict": true }
@@ -2122,11 +2097,9 @@ await service.update('1', { name: 'Bob' });
 await service.delete('1');
 ```
 
-
 ### 9.4 思考题
 
 **第 1 题**：为什么 TypeScript 默认不启用所有严格选项（如 `noUncheckedIndexedAccess`、`exactOptionalPropertyTypes`）？请从向后兼容性、迁移成本、社区生态三个维度分析。
-
 
 TypeScript 默认不启用所有严格选项的原因：
 
@@ -2140,9 +2113,7 @@ TypeScript 默认不启用所有严格选项的原因：
 
 5. **设计哲学**：TypeScript 的渐变类型系统（gradual typing）允许开发者按需添加类型注解，过严的默认配置违背了这一设计哲学。
 
-
 **第 2 题**：在大型团队中推行 TypeScript 严格模式时，应如何制定迁移策略？请给出具体的阶段性计划。
-
 
 大型团队推行严格模式的迁移策略：
 
@@ -2185,9 +2156,7 @@ TypeScript 默认不启用所有严格选项的原因：
 - 跟踪 TypeScript 新版本的严格性改进
 - 持续优化类型设计规范
 
-
 **第 3 题**：TypeScript 的 `strictNullChecks` 与 Rust 的 `Option<T>`、Haskell 的 `Maybe a` 在设计哲学上有何异同？请从类型系统、运行时开销、开发者体验三个维度分析。
-
 
 **类型系统维度**：
 
@@ -2210,7 +2179,6 @@ TypeScript 默认不启用所有严格选项的原因：
 **核心差异**：
 
 TypeScript 的方案是渐进式的，允许开发者在类型安全与开发效率之间权衡；Rust 与 Haskell 的方案是强制的，类型安全是语言的核心承诺。这反映了三种语言的设计哲学差异：TypeScript 追求兼容性与渐进性，Rust 追求零成本抽象与安全性，Haskell 追求纯函数式编程的严谨性。
-
 
 ---
 

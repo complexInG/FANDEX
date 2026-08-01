@@ -541,7 +541,6 @@ def tsp_held_karp(dist: List[List[float]]) -> float:
             ans = min(ans, dp[full_mask][i] + dist[i][0])
     return ans
 
-
 # 示例：5 城市 TSP
 if __name__ == "__main__":
     dist = [
@@ -728,7 +727,6 @@ def can_partition(nums: list[int]) -> bool:
             return True
     return False
 
-
 # 示例
 if __name__ == "__main__":
     print(can_partition([1, 5, 11, 5]))  # 输出: True (划分为 [1,5,5] 和 [11])
@@ -784,7 +782,6 @@ def domino_tiling(m: int, n: int) -> int:
     
     return dp[full]
 
-
 if __name__ == "__main__":
     # 2×3 棋盘有 3 种覆盖方式
     print(domino_tiling(2, 3))  # 输出: 3
@@ -839,7 +836,6 @@ def can_distribute(nums: list[int], quantity: list[int]) -> bool:
         return False
     
     return can_sieve(0, full)
-
 
 if __name__ == "__main__":
     print(can_distribute([1,2,3,4], [2]))  # 输出: True
@@ -1543,9 +1539,7 @@ B. $O(n^2 \cdot 2^n)$
 C. $O(n \cdot 2^n)$
 D. $O(2^n)$
 
-
 B。状态数 $O(n \cdot 2^n)$，每状态转移 $O(n)$，总 $O(n^2 \cdot 2^n)$。
-
 
 **题 2**（medium）：枚举 $n$ 元集合 $U$ 的所有子集的所有子集，总迭代次数为？
 
@@ -1554,9 +1548,7 @@ B. $n \cdot 2^n$
 C. $3^n$
 D. $n!$
 
-
 C。$\sum_{S \subseteq U} 2^{|S|} = \sum_{k=0}^{n} \binom{n}{k} 2^k = 3^n$。
-
 
 **题 3**（medium）：`x & (-x)` 的作用是？
 
@@ -1565,9 +1557,7 @@ B. 取最低位的 1
 C. 取最高位的 1
 D. 统计 1 的个数
 
-
 B。`-x` 在补码表示下为 `~x + 1`，与 `x` 按位与后仅保留最低位的 1。例如 `x = 12 = 1100`，`-x = ...10100`，`x & -x = 0100 = 4`。
-
 
 **题 4**（hard）：以下哪种情况下 bitmask DP 比 Meet-in-the-Middle 更优？
 
@@ -1576,9 +1566,7 @@ B. $n = 20$ 的 TSP 问题
 C. $n = 100$ 的图着色问题
 D. $n = 1000$ 的 0-1 背包问题
 
-
 B。$n = 20$ 时 bitmask DP 需 $2^{20} \cdot 20^2 \approx 4 \times 10^8$ 操作，可解；Meet-in-the-Middle 不直接适用 TSP。$n = 40$ 的子集和应用 Meet-in-the-Middle 需 $2^{20} \approx 10^6$，更优。$n = 100$ 和 $n = 1000$ 超出 bitmask DP 范围。
-
 
 **题 5**（hard）：Held-Karp 算法在 $n = 22$ 时的状态数约为？
 
@@ -1587,35 +1575,25 @@ B. $9 \times 10^7$
 C. $4 \times 10^8$
 D. $1 \times 10^{10}$
 
-
 B。$n \cdot 2^{n-1} = 22 \cdot 2^{21} = 22 \cdot 2097152 \approx 4.6 \times 10^7$。状态数 $n \cdot 2^n = 22 \cdot 4194304 \approx 9.2 \times 10^7$，选 B。
-
 
 ### 填空题知识点讲解
 
 **题 1**（easy）：Bellman ______ 年在专著《Dynamic Programming》中系统化了动态规划理论，Held-Karp ______ 年在 J. SIAM 上发表 TSP 的 $O(n^2 2^n)$ 算法。
 
-
 1957, 1962
-
 
 **题 2**（medium）：枚举集合 $S$ 的所有子集的标准循环为 `sub = S; while sub >= 0: process(sub); if sub == 0: break; sub = ______`。
 
-
 `(sub - 1) & S`
-
 
 **题 3**（medium）：bitmask DP 通常适用的最大 $n$ 约为 ______，对应状态数 $2^n \cdot n$ 约为 ______。
 
-
 22, $9 \times 10^7$（或 $10^8$ 量级）
-
 
 **题 4**（hard）：若 DP 转移仅依赖 $|S'| = |S| - 1$ 的状态，可使用 ______ 将空间从 $O(n \cdot 2^n)$ 优化至 ______。
 
-
 滚动数组, $O(2^n)$
-
 
 ### 10.3 代码修正题
 
@@ -1636,7 +1614,6 @@ def tsp_buggy(dist):
     
     return dp[(1 << n) - 1][0]
 ```
-
 
 错误：(1) 起点状态应为 `dp[1][0] = 0`（已访问城市 0）；(2) 遍历顺序需保证 `mask` 的子集先于 `mask` 计算，即按 `mask` 数值递增（这恰好满足 `mask | (1 << j) > mask`）；(3) 未检查 `i` 是否在 `mask` 中。
 
@@ -1666,7 +1643,6 @@ def tsp_fixed(dist):
     return ans
 ```
 
-
 **题 2**（hard）：以下代码使用 bitmask DP 求解子集和问题，但当 `nums` 含负数时失效。请修正。
 
 ```python
@@ -1676,7 +1652,6 @@ def subset_sum_buggy(nums, target):
         reachable |= reachable << num  # 错误：num 为负时左移未定义
     return (reachable >> target) & 1 == 1
 ```
-
 
 错误：Python 左移负数位未定义；负数应通过右移处理，或改用字典 DP。
 
@@ -1705,11 +1680,9 @@ def subset_sum_dict(nums, target):
     return target in reachable
 ```
 
-
 ### 10.4 开放性论述题
 
 **题 1**（medium）：论述 bitmask DP 与分支限界在求解 TSP 时的优劣，并说明各自适用的规模。
-
 
 **bitmask DP（Held-Karp）**：
 
@@ -1748,9 +1721,7 @@ def subset_sum_dict(nums, target):
 
 **结论**：bitmask DP 是小规模 TSP 的首选，分支限界适合中等规模，工业级大规模求解需 Concorde 或 LKH3。
 
-
 **题 2**（hard）：讨论 SETH（强指数时间假设）对 bitmask DP 算法设计的影响。
-
 
 **SETH（Strong Exponential Time Hypothesis）**：由 Impagliazzo-Paturi 2001 提出，断言 SAT 不存在 $O(2^{(1-\epsilon)n})$ 算法（对任意 $\epsilon > 0$）。
 
@@ -1772,9 +1743,7 @@ def subset_sum_dict(nums, target):
 
 **结论**：SETH 为 bitmask DP 的 $O(n^2 \cdot 2^n)$ 复杂度提供了理论下界支撑，说明 Held-Karp 算法"可能已接近最优"。工程实践应聚焦常数优化与启发式扩展，而非追求渐近改进。
 
-
 **题 3**（hard）：对比轮廓线 DP（Broken Profile DP）与传统 bitmask DP 的差异，各举一个应用实例。
-
 
 **传统 bitmask DP**：
 
@@ -1808,7 +1777,6 @@ def subset_sum_dict(nums, target):
 2. **轮廓线 DP - 骨牌覆盖**：$dp[\text{profile}]$ 表示扫描到位置 $(r, c)$ 时，轮廓 $\text{profile}$ 编码 $\{(r, c'), (r+1, c''), \ldots\}$ 的填充状态，转移考虑水平/竖直放置骨牌。
 
 **结论**：传统 bitmask DP 适用于"全集固定、枚举子集"的问题；轮廓线 DP 适用于"网格扫描、状态滚动"的问题。两者均为状态压缩思想的不同实现形态。
-
 
 ---
 

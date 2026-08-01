@@ -52,7 +52,6 @@ workspace:* 是一种特殊版本号：表示“不要从 npm 下载，直接使
 - 003-常用命令：filter、递归构建、依赖分析。
 - 004-版本与发布：changesets 管理多包版本。
 
-
 ## 1. 什么是 Monorepo
 
 Monorepo（单仓库多包）是把多个应用、共享库与工具链放在同一个 Git 仓库中管理的工程模式。与之相对的是多仓库（Polyrepo）：每个项目独立仓库。
@@ -251,8 +250,6 @@ pnpm + Monorepo 是现代前端工程化的主流组合：内容寻址存储节�
 
 ## 参考文献
 
-
-
 pnpm 官方文档：https://pnpm.io/zh/
 pnpm workspace 文档：https://pnpm.io/zh/workspaces
 Turborepo：https://turborepo.com/
@@ -261,15 +258,12 @@ Monorepo 模式（Nx 博客）：https://nx.dev/blog/
 
 ## 延伸阅读
 
-
-
 FANDEX 项目结构解析，见 058-pnpm-monorepo 模块文档。
 Vite 多包构建，见 056-vite 模块。
 CI/CD 与发布，见 031-devops 模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供工程化课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

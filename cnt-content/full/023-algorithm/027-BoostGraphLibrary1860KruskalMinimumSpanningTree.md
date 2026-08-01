@@ -623,7 +623,6 @@ $$T(E, V) = O(E \log E) + O(V) + O(E \cdot \alpha(V)) = O(E \log E) = O(E \log V
 
 from typing import List, Tuple, Optional
 
-
 class UnionFind:
     """并查集数据结构，支持路径压缩与按秩合并。
 
@@ -682,7 +681,6 @@ class UnionFind:
         """判断 x 与 y 是否在同一集合。"""
         return self.find(x) == self.find(y)
 
-
 def kruskal(n: int, edges: List[Tuple[int, int, float]]) -> Tuple[List[Tuple[int, int, float]], float]:
     """Kruskal 最小生成树算法。
 
@@ -714,7 +712,6 @@ def kruskal(n: int, edges: List[Tuple[int, int, float]]) -> Tuple[List[Tuple[int
                 break
 
     return mst, total_weight
-
 
 # 使用示例
 if __name__ == "__main__":
@@ -752,7 +749,6 @@ if __name__ == "__main__":
 
 from typing import Callable, Dict, Hashable, List, Tuple, Any
 from collections import defaultdict
-
 
 class NetworkXStyleKruskal:
     """NetworkX 风格 Kruskal MST。
@@ -831,7 +827,6 @@ class NetworkXStyleKruskal:
                     break
 
         return mst
-
 
 # 使用示例
 if __name__ == "__main__":
@@ -1066,7 +1061,6 @@ public class KruskalMST {
 
 from typing import List, Tuple
 
-
 def maximum_spanning_tree(n: int, edges: List[Tuple[int, int, float]]) -> Tuple[List[Tuple[int, int, float]], float]:
     """最大生成树: 边按权值降序排序，其余与 Kruskal 一致。
 
@@ -1110,7 +1104,6 @@ def maximum_spanning_tree(n: int, edges: List[Tuple[int, int, float]]) -> Tuple[
                 break
     return mst, total
 
-
 def minimum_spanning_forest(n: int, edges: List[Tuple[int, int, float]]) -> List[Tuple[int, int, float]]:
     """最小生成森林: 不要求连通，遍历所有边。
 
@@ -1149,7 +1142,6 @@ def minimum_spanning_forest(n: int, edges: List[Tuple[int, int, float]]) -> List
         if union(u, v):
             forest.append((u, v, w))
     return forest
-
 
 def k_clustering(n: int, edges: List[Tuple[int, int, float]], k: int) -> Tuple[List[Tuple[int, int, float]], float]:
     """K-聚类（基于最大生成树）: 保留前 n-k 条最大边。

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - kotlin/概述与环境配置
 ---
-
-# Kotlin Ktor 客户端
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 Ktor Client 是 JetBrains 开发的 Kotlin HTTP 客户端库。它完全基于协程构建，支持多种引擎（CIO、OkHttp、Darwin 等），可以运行在 JVM、Android、iOS 和原生平台上。如果你需要在 Kotlin 项目中调用 REST API、下载文件或与 Web 服务交互，Ktor Client 是一个轻量且 Kotlin 风格的选择。
@@ -754,8 +747,6 @@ val client = HttpClient()
 
 ## 参考文献
 
-
-
 Kotlin 官方文档：https://kotlinlang.org/docs/home.html
 Kotlin 协程指南：https://kotlinlang.org/docs/coroutines-guide.html
 Compose Multiplatform：https://www.jetbrains.com/compose-multiplatform/
@@ -763,8 +754,6 @@ Ktor 框架：https://ktor.io/
 Android 开发者文档：https://developer.android.com/kotlin
 
 ## 延伸阅读
-
-
 
 Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
 协程与 Flow，见 014-kotlin 模块协程文档。

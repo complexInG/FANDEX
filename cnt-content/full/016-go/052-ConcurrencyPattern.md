@@ -1992,7 +1992,6 @@ B. 向已关闭 channel 发送会返回错误
 C. 从已关闭 channel 接收会返回零值
 D. 关闭 nil channel 是安全的
 
-
 **答案:C**
 
 - A 错误:应由发送方关闭,接收方关闭可能导致发送方 panic。
@@ -2007,7 +2006,6 @@ B. 第一个非 nil 错误
 C. 最后一个非 nil 错误
 D. 随机一个错误
 
-
 **答案:B**
 
 `errgroup` 使用 `sync.Once` 确保只记录第一个非 nil 错误。后续错误被丢弃。若需聚合所有错误,需手动收集(Go 1.20+ 可用 `errors.Join`)。
@@ -2018,7 +2016,6 @@ A. Pipeline
 B. Fan-out
 C. Fan-in
 D. Tee
-
 
 **答案:B**
 
@@ -2032,7 +2029,6 @@ B. 从 WithTimeout 调用时刻开始
 C. 从 goroutine 启动开始
 D. 从 ctx.Err() 被调用开始
 
-
 **答案:B**
 
 `context.WithTimeout(parent, timeout)` 内部调用 `WithDeadline(parent, time.Now().Add(timeout))`,超时从调用时刻开始计算。
@@ -2044,7 +2040,6 @@ B. 任务队列容量影响抗突发能力
 C. worker pool 可防止 goroutine 爆炸
 D. worker 数量越多,吞吐量一定越高
 
-
 **答案:D**
 
 worker 数量超过 CPU 核数后,吞吐量增长趋于平缓(因上下文切换开销)。对于 CPU 密集型任务,worker 数 = CPU 核数是合理起点;对于 IO 密集型,可适当增加。
@@ -2053,7 +2048,6 @@ worker 数量超过 CPU 核数后,吞吐量增长趋于平缓(因上下文切换
 
 **1. Little's Law 的公式是 `______`,其中 L 表示 `______`,λ 表示 `______`,W 表示 `______`。**
 
-
 公式:$L = \lambda \cdot W$
 - L:系统中平均并发数
 - λ:到达率(任务/秒)
@@ -2061,23 +2055,19 @@ worker 数量超过 CPU 核数后,吞吐量增长趋于平缓(因上下文切换
 
 **2. Go 1.14 引入的 `______` 机制解决了长循环 goroutine 导致的调度饥饿问题。**
 
-
 异步抢占(基于 SIGURG 信号的异步抢占)
 
 **3. errgroup 设置并发上限的方法是 `______`,非阻塞启动的方法是 `______`。**
-
 
 - `SetLimit(n int)`
 - `TryGo(f func() error) bool`
 
 **4. 在 select 语句中,向 nil channel 发送或接收会 `______`,利用此特性可以 `______`。**
 
-
 - 永久阻塞
 - 在 select 中动态禁用某个分支(将 channel 置为 nil)
 
 **5. context 包提供了四种派生 context 的方法:`______`、`______`、`______`、`______`。**
-
 
 - `WithCancel(parent Context) (Context, CancelFunc)`
 - `WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc)`
@@ -2087,7 +2077,6 @@ worker 数量超过 CPU 核数后,吞吐量增长趋于平缓(因上下文切换
 ### 编程题知识点讲解
 
 **1. 实现一个支持优先级的 fan-in 模式:高优先级 channel 的数据优先被消费。**
-
 
 ```go
 package main
@@ -2199,7 +2188,6 @@ func StrictPriorityFanIn[T any](ctx context.Context, high, low <-chan T) <-chan 
 ```
 
 **2. 实现一个动态扩缩容的 worker pool:根据队列长度自动调整 worker 数量。**
-
 
 ```go
 package main
@@ -2314,7 +2302,6 @@ func (p *DynamicWorkerPool) Shutdown() {
 
 **1. 为什么 Go 推荐使用 channel 而非 mutex?在什么场景下 mutex 更合适?**
 
-
 Go 推荐 channel 的原因:
 - **可组合性**:channel 是一等公民,可作为参数、返回值,易于组合成复杂模式。
 - **取消传播**:关闭 channel 即可广播取消,天然支持 goroutine 生命周期管理。
@@ -2330,7 +2317,6 @@ Mutex 更合适的场景:
 经验法则:"通过通信共享内存"适用于数据所有权转移;"通过共享内存通信"适用于数据共享访问。
 
 **2. errgroup 和 sync.WaitGroup 在什么场景下应选择哪个?**
-
 
 选择 errgroup 的场景:
 - 需要错误传播(任一 goroutine 失败需感知)。
@@ -2348,7 +2334,6 @@ Mutex 更合适的场景:
 
 **3. 在容器环境(Kubernetes/Docker)中,为什么需要 go.uber.org/automaxprocs?**
 
-
 Go runtime 默认将 `GOMAXPROCS` 设置为宿主机的 CPU 核数。但在容器环境中:
 - 容器的 CPU 限制(如 `cpu.limit=2`)不会被 Go runtime 感知。
 - 宿主机可能有 64 核,但容器只允许使用 2 核。
@@ -2362,7 +2347,6 @@ Go runtime 默认将 `GOMAXPROCS` 设置为宿主机的 CPU 核数。但在容�
 - pprof 显示大量 `runtime.schedule` 时间。
 
 **4. pipeline 模式中,如何决定每个 stage 的并行度?**
-
 
 决定 stage 并行度的因素:
 1. **stage 处理时间**:处理时间长的 stage 需更高并行度,避免成为瓶颈。
@@ -2382,7 +2366,6 @@ Go runtime 默认将 `GOMAXPROCS` 设置为宿主机的 CPU 核数。但在容�
 - 监控队列长度,动态调整(如 DynamicWorkerPool)。
 
 **5. 为什么不推荐在 context.Value 中传递业务参数?**
-
 
 不推荐的原因:
 1. **隐式依赖**:函数签名看不出依赖,难以理解、测试、重构。

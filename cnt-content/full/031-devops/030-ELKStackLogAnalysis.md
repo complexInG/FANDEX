@@ -15,13 +15,6 @@ related:
 prerequisites:
   - devops/概述与Linux基础
 ---
-
-# ELK 日志栈命令速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. Elasticsearch
 
 ### 1.1 索引与分片
@@ -870,8 +863,6 @@ curl -X POST "localhost:9200/logs-2023.01/_open"
 
 ## 参考文献
 
-
-
 GitHub Actions 文档：https://docs.github.com/zh/actions
 GitLab CI 文档：https://docs.gitlab.com/ci/
 Argo CD：https://argo-cd.readthedocs.io/
@@ -879,8 +870,6 @@ DORA 研究：https://dora.dev/
 DevOps 手册（Gene Kim 等）：https://itrevolution.com/devops-handbook/
 
 ## 延伸阅读
-
-
 
 Docker 与 Kubernetes 深入，见 031-devops 模块文档。
 CI/CD 管线设计，见 031-devops 模块 CICD 文档。

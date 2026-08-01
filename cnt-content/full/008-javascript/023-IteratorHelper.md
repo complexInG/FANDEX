@@ -15,13 +15,6 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
-
-# JavaScript Symbol 与迭代协议语法速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 ES5 时代：数组的统治
@@ -1177,11 +1170,9 @@ B. `[6, 8, 10]` 和 `[]`
 C. `[]` 和 `[]`
 D. `[6, 8, 10]` 和 `[2, 4, 6, 8, 10]`
 
-
 **答案：B**
 
 迭代器是一次性的。`[...filtered]` 消耗了 `it`（通过 `mapped` 与 `filtered` 链路）。第二次 `console.log([...it])` 时 `it` 已耗尽。
-
 
 **题目 2**：以下哪个表达式会抛出 `RangeError`？
 
@@ -1190,11 +1181,9 @@ B. `[1,2,3].values().take(-1)`
 C. `[1,2,3].values().take(NaN)`
 D. B 和 C
 
-
 **答案：D**
 
 `take(0)` 返回空迭代器，合法。`take(-1)` 与 `take(NaN)` 抛出 `RangeError`，因 limit 必须是非负整数。
-
 
 **题目 3**：以下哪个方法属于"惰性"方法（不立即消耗迭代器）？
 
@@ -1203,36 +1192,27 @@ B. `reduce()`
 C. `forEach()`
 D. `flatMap()`
 
-
 **答案：D**
 
 `flatMap` 返回新的 Iterator，是惰性的。`toArray`、`reduce`、`forEach` 都是终结方法，立即消耗迭代器。
-
 
 ### 填空题知识点讲解
 
 **题目 4**：Iterator 协议要求对象实现 ______ 方法，可迭代协议要求对象实现 ______ 方法。
 
-
 `next()`、`[Symbol.iterator]`
-
 
 **题目 5**：`Iterator.from` 的作用是将 ______ 转为 Iterator 对象。
 
-
 任意可迭代对象或迭代器
-
 
 **题目 6**：Iterator Helpers 链式调用中，`take(n)` 的复杂度是 ______，因为它是 ______ 求值。
 
-
 `O(1)`、惰性
-
 
 ### 编程题知识点讲解
 
 **题目 7**：实现一个 `range(start, end, step)` 函数，返回惰性 Iterator。
-
 
 ```javascript
 function range(start, end, step = 1) {
@@ -1262,9 +1242,7 @@ const result = range(0, 100)
 // [0, 9, 36, 81, 144]
 ```
 
-
 **题目 8**：实现一个 `zip(iter1, iter2)` 函数，将两个迭代器"拉链"合并。
-
 
 ```javascript
 function zip(iter1, iter2) {
@@ -1299,9 +1277,7 @@ const result2 = zip(naturals(), fib)
 // [[7, 13], [8, 21], [9, 34]]
 ```
 
-
 **题目 9**：实现一个 `chunk(iter, size)` 函数，将迭代器按定长分块。
-
 
 ```javascript
 function* chunk(iter, size) {
@@ -1331,11 +1307,9 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
 }
 ```
 
-
 ### 9.4 思考题
 
 **题目 10**：为什么 Iterator Helpers 没有提供 `sort()` 方法？如何对迭代器排序？
-
 
 1. **原因**：排序需要看到所有元素才能确定顺序，与惰性求值矛盾。`sort()` 必须缓存全部数据，等价于 `toArray().sort()`。
 2. **方法**：
@@ -1345,9 +1319,7 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
 3. **替代方案**：若数据源本身有序（如已索引数据库），用 `drop` + `take` 实现分页，无需排序。
 4. **特殊场景**：若只需前 K 个最大/小元素，用最小堆/最大堆维护，避免全排序。
 
-
 **题目 11**：Iterator Helpers 与 Generator 函数在功能上重合，何时该用哪个？
-
 
 1. **用 Iterator Helpers**：
    - 简单的 map/filter/take 链
@@ -1372,7 +1344,6 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
      .take(5)
      .toArray();
    ```
-
 
 ---
 

@@ -1580,7 +1580,6 @@ Shopify Hydrogen 7 基于 Remix + RSC：
 - C. `'client-side'`
 - D. `'isomorphic'`
 
-
 **B. `'use client'`**
 
 `'use client'` 必须放在文件顶部（在 import 之前），标记该文件为 Client Component 模块。`'use server'` 用于标记 Server Actions。
@@ -1591,7 +1590,6 @@ Shopify Hydrogen 7 基于 Remix + RSC：
 - B. 通过 children prop
 - C. 通过 context
 - D. 通过 ref
-
 
 **B. 通过 children prop**
 
@@ -1604,7 +1602,6 @@ Client Component 不能直接 import Server Component，但可以接收 Server C
 - C. `function`
 - D. `Map`
 
-
 **C. `function`**
 
 函数不可序列化，不能作为 props 传递。Date、RegExp、Map 都是 RSC 协议支持的可序列化类型。
@@ -1615,7 +1612,6 @@ Client Component 不能直接 import Server Component，但可以接收 Server C
 - B. HTTP POST
 - C. GraphQL
 - D. gRPC
-
 
 **B. HTTP POST**
 
@@ -1628,7 +1624,6 @@ Server Actions 通过 HTTP POST 请求调用，请求体包含 action ID 与参�
 - C. `useSearchParams`
 - D. `useParams`
 
-
 **C. `useSearchParams`**
 
 `useSearchParams` 会导致静态渲染退化为动态渲染，必须包裹在 Suspense 中以避免整个页面失去静态优化。
@@ -1637,13 +1632,11 @@ Server Actions 通过 HTTP POST 请求调用，请求体包含 action ID 与参�
 
 **题目 1**：RSC 协议的输出格式称为 ________，它是一种流式 JSON 格式。
 
-
 **RSC Payload**
 
 RSC Payload 是 Server Components 渲染的可序列化输出，客户端 React 运行时将其转换为 DOM 操作。
 
 **题目 2**：Next.js App Router 中，`error.tsx` 必须是 ________ Component。
-
 
 **Client**
 
@@ -1651,20 +1644,17 @@ RSC Payload 是 Server Components 渲染的可序列化输出，客户端 React 
 
 **题目 3**：Server Component 传递给 Client Component 的 props 必须是 ________ 的。
 
-
 **可序列化**
 
 Props 会通过 RSC Payload 传输，必须支持 JSON 序列化。函数、类实例、Symbol 等不可序列化。
 
 **题目 4**：React 19 的 `useOptimistic` Hook 用于实现 ________ 更新。
 
-
 **乐观**
 
 `useOptimistic` 让开发者在 Server Action 执行期间显示乐观状态，提升用户体验。
 
 **题目 5**：Server Components 的数据获取使用 ________ 关键字，无需 useEffect。
-
 
 **await**
 
@@ -1678,7 +1668,6 @@ Server Components 是 `async` 函数，可以直接 `await` 数据获取，无�
 - 在服务端获取数据
 - 支持 URL 参数控制分页
 - 包含加载状态与错误处理
-
 
 ```tsx
 // app/orders/page.tsx
@@ -1748,7 +1737,6 @@ function OrderListSkeleton() {
 - 使用 `useOptimistic` 实现乐观更新
 - 使用 `useTransition` 处理过渡状态
 - Server Action 返回结构化结果
-
 
 ```tsx
 // app/posts/LikeButton.tsx
@@ -1844,7 +1832,6 @@ export async function toggleLike(postId: string): Promise<LikeResult> {
 ```
 
 **题目 3**：实现一个 Server Component，使用 Suspense 分层加载商品详情页（商品信息优先、评论延迟加载）。
-
 
 ```tsx
 // app/products/[id]/page.tsx
@@ -1952,7 +1939,6 @@ function RecommendationsSkeleton() {
 
 **题目 1**：为什么 RSC 选择"组件级"渲染环境划分，而非"页面级"？这种设计带来了哪些优势与挑战？
 
-
 **优势**：
 - 灵活性：同一页面可混合 Server 与 Client 组件，按需选择
 - 渐进迁移：老项目可逐步迁移，无需整体重写
@@ -1966,7 +1952,6 @@ function RecommendationsSkeleton() {
 **设计权衡**：React 团队选择组件级是为了最大化灵活性，但代价是增加了心智负担。这与 Astro 的 Islands（页面级）和 Remix 的 loader/action（路由级）形成对比。
 
 **题目 2**：在什么场景下应该选择 RSC，什么场景下应该选择传统 CSR？请给出至少 3 个判断维度。
-
 
 **选择 RSC 的场景**：
 1. **SEO 要求高**：内容型网站、电商、博客
@@ -1986,7 +1971,6 @@ function RecommendationsSkeleton() {
 - 数据流向（服务端为主 vs 客户端为主）
 
 **题目 3**：Server Actions 相比传统 REST API 有哪些优势？又会引入哪些新问题？
-
 
 **优势**：
 1. **类型安全**：端到端 TypeScript 类型推导，无需手动维护 API 类型

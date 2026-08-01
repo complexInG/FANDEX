@@ -15,13 +15,6 @@ related:
 prerequisites:
   - sql/概述与标准
 ---
-
-# 集合操作
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 集合操作概述
 
 SQL 集合操作将多个查询的结果集合并为一个结果集，基于集合论中的并、交、差运算。
@@ -438,8 +431,6 @@ SELECT customer_id FROM orders_2026;
 
 ## 参考文献
 
-
-
 SQL 标准（ISO/IEC 9075）：https://www.iso.org/standard/76583.html
 PostgreSQL 文档（SQL 章节）：https://www.postgresql.org/docs/current/sql.html
 MySQL 文档：https://dev.mysql.com/doc/
@@ -447,8 +438,6 @@ SQLite 文档：https://www.sqlite.org/docs.html
 Use The Index, Luke：https://use-the-index-luke.com/
 
 ## 延伸阅读
-
-
 
 SQL 连接与子查询，见 019-sql 模块文档。
 SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。

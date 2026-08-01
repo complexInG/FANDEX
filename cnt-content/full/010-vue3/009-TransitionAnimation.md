@@ -15,13 +15,6 @@ related:
 prerequisites:
   - vue3/语法速查
 ---
-
-# Transition + TransitionGroup 组件语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. Transition 组件
 
 ```vue
@@ -456,8 +449,6 @@ const toggle = () => { isA.value = !isA.value; };
 
 ## 参考文献
 
-
-
 Vue 官方文档：https://vuejs.org/
 Vue Router：https://router.vuejs.org/zh/
 Pinia：https://pinia.vuejs.org/zh/
@@ -466,8 +457,6 @@ VueUse 组合函数库：https://vueuse.org/
 
 ## 延伸阅读
 
-
-
 Vue Teleport 与 Portal，见 010-vue3/026-TeleportPortalApp 文档。
 Vue KeepAlive 缓存，见 010-vue3/027-KeepAliveCacheLifecycle 文档。
 Vue Router 导航守卫，见 010-vue3/030-VueRouterNavigationGuard 文档。
@@ -475,7 +464,6 @@ TypeScript 与 Vue 组合，见 009-typescript 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Vue3 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

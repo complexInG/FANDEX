@@ -84,13 +84,6 @@ etymology:
     english: Coroutine
     origin: 由 Melvin Conway 于 1958 年提出,前缀 "co-" 表示协作,"routine" 即例程,指多个例程之间协作式切换执行。
 ---
-
-# JavaScript 生成器函数
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 0. 学习导览
 
 ### 0.1 学习路径

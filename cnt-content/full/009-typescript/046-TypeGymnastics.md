@@ -1386,7 +1386,6 @@ D.
 type Flatten<T> = T extends any[] ? T[number] : T;
 ```
 
-
 **答案：B**
 
 B 正确处理了元组的递归扁平化：
@@ -1396,7 +1395,6 @@ B 正确处理了元组的递归扁平化：
 
 A 不进行任何扁平化；C 丢失了元组结构；D 将元组转为联合类型而非扁平元组。
 
-
 **题目 2**：关于 TypeScript 类型体操的递归深度限制，以下说法正确的是？
 
 A. 递归深度无限制
@@ -1404,13 +1402,11 @@ B. 递归深度限制约为 100 层
 C. 递归深度限制约为 1000 层
 D. 递归深度限制可通过 tsconfig 配置
 
-
 **答案：C**
 
 TypeScript 类型递归深度限制约为 1000 层（具体数值随版本变化）。超过限制会报错 "Type instantiation is excessively deep and possibly infinite"。
 
 该限制无法通过 tsconfig 配置修改，是编译器内置的硬性限制，用于防止无限递归导致编译器卡死。
-
 
 **题目 3**：以下代码的输出类型是？
 
@@ -1424,13 +1420,11 @@ B. `{ value: string } | { value: number }`
 C. `{ value: never }`
 D. `never`
 
-
 **答案：B**
 
 条件类型在检查类型是裸类型参数（naked type parameter）时，对联合类型分布。`Wrap<string | number>` 等价于 `Wrap<string> | Wrap<number>`，即 `{ value: string } | { value: number }`。
 
 如果希望阻止分布，可以使用 `[T] extends [any]` 的形式包裹类型参数。
-
 
 **题目 4**：邱奇编码中，自然数 $n$ 在 TypeScript 类型系统中通常表示为？
 
@@ -1439,13 +1433,11 @@ B. 长度为 $n$ 的元组 `[any, any, ..., any]`
 C. 字符串字面量 `'n'`
 D. 联合类型 `1 | 2 | ... | n`
 
-
 **答案：B**
 
 邱奇编码将自然数 $n$ 表示为长度为 $n$ 的元组。这样可以通过元组的模式匹配 `[any, ...Rest]` 实现"减一"操作，通过 `[...M, ...N]` 实现"加法"操作。
 
 数字字面量类型本身不可计算（无法在类型层做加减），因此需要通过元组长度间接表示。
-
 
 **题目 5**：关于 `infer` 关键字，以下说法错误的是？
 
@@ -1453,7 +1445,6 @@ A. `infer` 只能在条件类型的 `extends` 子句中使用
 B. `infer` 可以同时推断多个类型变量
 C. `infer` 推断失败时返回 `never`
 D. `infer` 可以在任意位置推断任意类型
-
 
 **答案：D**
 
@@ -1464,7 +1455,6 @@ D. `infer` 可以在任意位置推断任意类型
 - `infer` 不能推断任意位置的类型，例如无法直接从对象类型中推断"所有值为 string 的键"
 
 D 选项错误。
-
 
 ### 填空题知识点讲解
 
@@ -1478,11 +1468,9 @@ type DeepReadonly<T> = T extends Function
     : T;
 ```
 
-
 ```typescript
 readonly [K in keyof T]: DeepReadonly<T[K]>
 ```
-
 
 **题目 2**：完成以下 `Reverse<S>` 字符串反转的实现：
 
@@ -1492,13 +1480,11 @@ type Reverse<S extends string> = S extends `${infer First}${infer Rest}`
   : S;
 ```
 
-
 ```typescript
 Reverse<Rest>}${First}
 ```
 
 完整形式：`` `${Reverse<Rest>}${First}` ``
-
 
 **题目 3**：完成以下 `Join<T, Sep>` 的实现：
 
@@ -1511,23 +1497,18 @@ type Join<T extends readonly string[], Sep extends string> =
     : '';
 ```
 
-
 ```typescript
 First
 `${First}${Sep}${Join<Rest, Sep>}`
 ```
 
-
 **题目 4**：TypeScript 类型递归深度限制约为 ____ 层。
 
-
 约 1000 层（具体数值随版本变化）。
-
 
 ### 编程题知识点讲解
 
 **题目 1**：实现 `DeepMutable<T>` 类型，递归地移除对象所有层级的 `readonly` 修饰符。
-
 
 ```typescript
 type DeepMutable<T> = T extends Function
@@ -1563,9 +1544,7 @@ user.profile.name = 'Bob';          // OK
 user.profile.address.city = 'LA';   // OK
 ```
 
-
 **题目 2**：实现 `Length<T>` 类型，计算字符串的长度。
-
 
 ```typescript
 type Length<S extends string, Acc extends any[] = []> =
@@ -1579,9 +1558,7 @@ type L2 = Length<''>;       // 0
 type L3 = Length<'TypeScript'>;  // 10
 ```
 
-
 **题目 3**：实现 `IndexOf<T, V>` 类型，返回元组中某个值的索引位置（未找到返回 -1）。
-
 
 ```typescript
 type IndexOf<T extends any[], V, Acc extends any[] = []> =
@@ -1597,11 +1574,9 @@ type I2 = IndexOf<['a', 'b', 'c'], 'd'>;  // -1
 type I3 = IndexOf<['a', 'b', 'a'], 'a'>;  // 0（返回第一个匹配位置）
 ```
 
-
 ### 9.4 思考题
 
 **题目 1**：为什么 TypeScript 类型系统被认为是图灵完备的？请从理论上解释。
-
 
 TypeScript 类型系统具备图灵完备性，原因如下：
 
@@ -1614,9 +1589,7 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 
 实际证明：可以构造一个类型层的 Busy Beaver 函数，或模拟图灵机。type-challenges 仓库中的 "extreme" 难度题目（如实现类型层 SQL 解析器）也证明了这一点。
 
-
 **题目 2**：类型体操在生产环境中有哪些适用场景？哪些场景应避免使用？
-
 
 **适用场景**：
 
@@ -1635,9 +1608,7 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 4. **团队不熟悉类型体操**：复杂类型可能难以维护
 5. **可由运行时代码替代的场景**：如果运行时校验更简单清晰，应优先运行时
 
-
 **题目 3**：TypeScript 类型体操的递归深度限制对实际开发有何影响？如何规避？
-
 
 **影响**：
 
@@ -1655,9 +1626,7 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 5. **使用 `satisfies` 校验**：在关键位置使用 `satisfies` 校验类型，避免全量推导
 6. **监控编译性能**：在 CI 中监控 `Instantiations` 指标，及时优化
 
-
 **题目 4**：比较 TypeScript 类型体操与 Haskell Type Families 的优劣，并讨论何时选择哪个。
-
 
 **TypeScript 类型体操的优势**：
 
@@ -1679,7 +1648,6 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 
 - 选择 TypeScript：Web 前端、Node.js 后端、需要与 JavaScript 生态深度集成
 - 选择 Haskell：学术研究、形式化验证、对类型安全性要求极高的场景
-
 
 ---
 

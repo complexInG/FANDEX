@@ -2122,7 +2122,6 @@ class DLinkedNode:
         self.prev = None
         self.next = None
 
-
 class LRUCache:
     """LRU 缓存：哈希表 + 双向链表
     get/put 均摊 O(1)
@@ -2231,7 +2230,6 @@ class UnionFind:
         self.count -= 1
         return True
 
-
 def find_redundant_connection(edges: list[list[int]]) -> list[int]:
     """LC-684 冗余连接
     应用：K8s 网络策略循环依赖检测
@@ -2257,7 +2255,6 @@ def find_redundant_connection(edges: list[list[int]]) -> list[int]:
 ```python
 from collections import deque
 
-
 class MonotonicQueue:
     """单调队列：支持 O(1) 求滑动窗口最大/最小值
     应用：Prometheus range query、股票移动平均
@@ -2279,7 +2276,6 @@ class MonotonicQueue:
 
     def max_index(self) -> int:
         return self.queue[0]
-
 
 def sliding_window_max(nums: list[int], k: int) -> list[int]:
     """LC-239 滑动窗口最大值
@@ -2468,7 +2464,6 @@ class GitMergeDetector:
         self.parent[root_b] = root_a
         return True
 
-
 # 实际 Git 场景
 detector = GitMergeDetector()
 # 主分支 main 与 feature 分支
@@ -2499,7 +2494,6 @@ class TrieNode:
     def __init__(self):
         self.children = {}
         self.is_end = False  # 是否构成完整词
-
 
 class Trie:
     """Trie 字典树
@@ -2533,7 +2527,6 @@ class Trie:
             node = node.children[ch]
         return node
 
-
 class SensitiveWordFilter:
     """敏感词过滤器：Trie + AC 自动机思想
     应用：内容平台违规词过滤
@@ -2560,7 +2553,6 @@ class SensitiveWordFilter:
                         result[k] = replace_char
         return "".join(result)
 
-
 # 实际应用
 filter = SensitiveWordFilter(["spam", "abuse", "violence"])
 print(filter.filter("This is SPAM content with abuse words"))
@@ -2575,7 +2567,6 @@ print(filter.filter("This is SPAM content with abuse words"))
 
 ```python
 from collections import deque
-
 
 def right_side_view(root) -> list[int]:
     """LC-199 二叉树右侧视图
@@ -2612,7 +2603,6 @@ def right_side_view(root) -> list[int]:
 ```python
 import random
 
-
 def find_kth_largest(nums: list[int], k: int) -> int:
     """LC-215 第 K 大元素
     应用：Top-K 查询、Prometheus topk()
@@ -2639,7 +2629,6 @@ def find_kth_largest(nums: list[int], k: int) -> int:
             return quick_select(left, i - 1)
 
     return quick_select(0, len(nums) - 1)
-
 
 def top_k_elements(nums: list[int], k: int) -> list[int]:
     """工业版 Top-K：用堆实现，O(n log k)

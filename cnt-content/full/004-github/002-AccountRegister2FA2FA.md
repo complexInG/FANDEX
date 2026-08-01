@@ -264,15 +264,12 @@ updated: '2026-08-01'
 
 ## 参考文献
 
-
-
 GitHub 文档：https://docs.github.com/zh
 GitHub Actions 文档：https://docs.github.com/zh/actions
 GitHub REST API：https://docs.github.com/zh/rest
 GitHub GraphQL API：https://docs.github.com/zh/graphql
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

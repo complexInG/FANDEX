@@ -15,13 +15,6 @@ related:
 prerequisites: []
 updated: '2026-08-01'
 ---
-
-# 基础标签与全局属性 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 基础文本标签
 
 基础文本标签用于定义和格式化网页中的文本内容，是构建网页结构的基础。
@@ -1007,16 +1000,12 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 
 ## 参考文献
 
-
-
 WHATWG HTML Living Standard：https://html.spec.whatwg.org/
 MDN HTML 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTML
 W3C Markup Validation Service：https://validator.w3.org/
 WebAIM 可访问性指南：https://webaim.org/
 
 ## 延伸阅读
-
-
 
 HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
 CSS 样式与布局，见 007-css 模块。

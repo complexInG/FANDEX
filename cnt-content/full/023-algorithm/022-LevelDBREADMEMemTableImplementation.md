@@ -306,7 +306,6 @@ $$E\left[\sum_x (\text{level}(x) + 1)\right] = n \cdot \left(1 + \frac{p}{1-p}\r
 import random
 from typing import Any, Optional
 
-
 class SkipNode:
     """跳跃表节点。
 
@@ -800,7 +799,6 @@ def range_query(self, low: Any, high: Any) -> list:
         result.append((current.key, current.value))
         current = current.forward[0]
     return result
-
 
 def rank(self, key: Any) -> int:
     """返回 key 在跳跃表中的排名（0-based）。

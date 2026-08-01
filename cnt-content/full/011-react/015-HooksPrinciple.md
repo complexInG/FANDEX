@@ -15,13 +15,6 @@ related:
 prerequisites:
   - react/概述与环境配置
 ---
-
-# React Hooks 原理与闭包陷阱
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 React Hooks 的底层实现基于 Fiber 架构。每个函数组件对应的 Fiber 节点上挂载了一个 Hooks 链表，Hooks 按调用顺序以链表形式串联。理解 Hooks 的底层原理有助于避免常见的使用错误（如条件调用 Hooks），也能帮助开发者编写更高效的自定义 Hooks。
@@ -649,8 +642,6 @@ renderHooks(fiber);
 
 ## 参考文献
 
-
-
 React 官方文档：https://react.dev/
 React 19 发布说明：https://react.dev/blog/2024/12/05/react-19
 TanStack Query：https://tanstack.com/query/latest
@@ -658,8 +649,6 @@ Zustand：https://zustand.docs.pmnd.rs/
 Next.js：https://nextjs.org/
 
 ## 延伸阅读
-
-
 
 React Hooks 深入，见 011-react 模块 Hooks 文档。
 React 与 TypeScript 类型，见 009-typescript 模块。

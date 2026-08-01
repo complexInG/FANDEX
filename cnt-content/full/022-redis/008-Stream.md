@@ -15,12 +15,6 @@ related:
 prerequisites:
   - redis/概述与核心数据结构
 ---
-# 流
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 第 1 章 概述与学习目标
 
 ### 1.1 Stream 是什么
@@ -2903,7 +2897,6 @@ class StreamMonitor:
         except Exception:
             return -1
 
-
 # 使用示例
 if __name__ == "__main__":
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)
@@ -3510,7 +3503,6 @@ class StreamConsumer:
         )
         client.close()
 
-
 # 使用示例
 def order_handler(fields: dict):
     """订单消息处理函数
@@ -3528,7 +3520,6 @@ def order_handler(fields: dict):
     amount = float(fields.get('amount', 0))
     # 执行业务逻辑
     print(f"处理订单 {order_id}：用户 {user_id}，金额 {amount}")
-
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
@@ -4329,7 +4320,6 @@ class OrderService:
         )
         return order_id
 
-
 # 库存消费组：扣减库存
 class InventoryConsumer:
     """库存消费者：处理订单事件，扣减库存"""
@@ -4376,7 +4366,6 @@ class InventoryConsumer:
         if result == 0:
             raise Exception(f"库存不足: {product_id}")
         print(f"订单 {order_id} 扣减库存 {quantity}")
-
 
 # 通知消费组：发送通知
 class NotifyConsumer:
@@ -4471,7 +4460,6 @@ class LogProducer:
             self.stream_key, fields,
             id='*', maxlen=self.max_len, approximate=True
         )
-
 
 # 实时分析消费者
 class LogAnalyzer:
@@ -4750,7 +4738,6 @@ class EventSourcingService:
             if len(batch) < 100:
                 break
         return events
-
 
 # 用户聚合根示例
 class UserAggregate:
@@ -5054,7 +5041,6 @@ class StreamMonitor:
                 for alert in metrics['alerts']:
                     print(f"[{alert['level']}] {alert['message']}")
             time.sleep(interval)
-
 
 # 使用示例
 if __name__ == '__main__':
@@ -5943,7 +5929,6 @@ class SeckillSystem:
                     except Exception as e:
                         print(f"通知发送失败: {e}")
 
-
 # 使用示例
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
@@ -6158,7 +6143,6 @@ class DistributedTaskScheduler:
         # 默认实现：模拟任务执行
         print(f"执行任务 {task_type}: {task_data}")
         time.sleep(0.5)
-
 
 # 使用示例
 if __name__ == '__main__':

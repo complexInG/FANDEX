@@ -123,7 +123,6 @@ from __future__ import annotations
 
 import strawberry
 
-
 # 对象类型：映射业务实体
 @strawberry.type
 class Post:
@@ -134,7 +133,6 @@ class Post:
     def excerpt(self) -> str:
         return self.title[:20]
 
-
 # 查询根类型：所有只读入口
 @strawberry.type
 class Query:
@@ -142,7 +140,6 @@ class Query:
     def post(self, id: strawberry.ID) -> Post | None:
         # 实际项目从数据库读取
         return Post(id=id, title="GraphQL 教程")
-
 
 # 构建 Schema 并输出 SDL
 schema = strawberry.Schema(query=Query)
@@ -158,19 +155,16 @@ from __future__ import annotations
 
 import strawberry
 
-
 # 输入类型：变更的批量参数容器
 @strawberry.input
 class CreatePostInput:
     title: str
     content: str = ""
 
-
 @strawberry.type
 class Post:
     id: strawberry.ID
     title: str
-
 
 @strawberry.type
 class Mutation:
@@ -180,7 +174,6 @@ class Mutation:
         if not input.title.strip():
             raise ValueError("标题不能为空")
         return Post(id="p-1", title=input.title)
-
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 ```
@@ -195,13 +188,11 @@ from strawberry.fastapi import GraphQLRouter
 
 import strawberry
 
-
 @strawberry.type
 class Query:
     @strawberry.field
     def hello(self) -> str:
         return "Hello GraphQL"
-
 
 schema = strawberry.Schema(query=Query)
 graphql_app = GraphQLRouter(schema)
@@ -245,7 +236,6 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-
 class PostLoader:
     """简单 DataLoader：按批次加载文章，避免 N+1 查询。"""
 
@@ -279,7 +269,6 @@ class PostLoader:
 import asyncio
 import strawberry
 
-
 @strawberry.type
 class Subscription:
     @strawberry.subscription
@@ -288,7 +277,6 @@ class Subscription:
         for i in range(max):
             await asyncio.sleep(1)
             yield i
-
 
 schema = strawberry.Schema(query=Query, subscription=Subscription)
 ```
@@ -300,7 +288,6 @@ schema = strawberry.Schema(query=Query, subscription=Subscription)
 ```python
 from graphql import GraphQLError
 import strawberry
-
 
 @strawberry.type
 class Query:
@@ -383,7 +370,6 @@ app/
 ```python
 from strawberry.permission import BasePermission
 
-
 class IsAuthenticated(BasePermission):
     # 权限校验失败时抛出错误
     message = "需要登录"
@@ -391,7 +377,6 @@ class IsAuthenticated(BasePermission):
     async def has_permission(self, source, info, **kwargs) -> bool:
         request = info.context["request"]
         return request.user.is_authenticated
-
 
 @strawberry.type
 class Query:
@@ -410,7 +395,6 @@ PERSISTED = {
     "sha256hash1": "query Home { posts { title } }",
 }
 
-
 async def resolve_operation(operation_name, query):
     # 客户端传哈希时从白名单取查询
     return PERSISTED.get(operation_name, query)
@@ -427,19 +411,16 @@ from __future__ import annotations
 
 import strawberry
 
-
 @strawberry.type
 class User:
     id: strawberry.ID
     name: str
-
 
 @strawberry.type
 class Comment:
     id: strawberry.ID
     content: str
     author: User
-
 
 @strawberry.type
 class Post:
@@ -452,7 +433,6 @@ class Post:
     def comments_page(self, limit: int = 10, offset: int = 0) -> list[Comment]:
         return self.comments[offset:offset + limit]
 
-
 @strawberry.type
 class Query:
     @strawberry.field
@@ -464,7 +444,6 @@ class Query:
     def post(self, id: strawberry.ID) -> Post | None:
         return fetch_post(id)
 
-
 @strawberry.type
 class Mutation:
     @strawberry.mutation
@@ -475,7 +454,6 @@ class Mutation:
         # 触发订阅通知
         await notify_comment(comment)
         return comment
-
 
 schema = strawberry.Schema(query=Query, mutation=Mutation, subscription=Subscription)
 ```
@@ -515,7 +493,6 @@ API 设计整体对比，见 038-software-architecture 模块相关文档；
 GraphQL 客户端（Apollo/urql）与前端集成，见 008-javascript/009-typescript 模块相关文档；
 
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Python 与后端课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Python 全栈课程。
-
 
 ### 什么是 GraphQL
 

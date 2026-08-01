@@ -1039,7 +1039,6 @@ from typing import List, Set, Dict, Optional
 Clause = frozenset
 Formula = List[Clause]
 
-
 def dpll(formula: Formula, assignment: Dict[int, bool]) -> Optional[Dict[int, bool]]:
     """DPLL 算法求解 CNF-SAT
 
@@ -1073,7 +1072,6 @@ def dpll(formula: Formula, assignment: Dict[int, bool]) -> Optional[Dict[int, bo
     # 尝试 var = False
     return dpll(simplify(formula, var, False), {**assignment, var: False})
 
-
 def unit_propagate(formula: Formula, assignment: Dict[int, bool]) -> tuple:
     """单元传播：反复处理单文字子句"""
     while True:
@@ -1098,7 +1096,6 @@ def unit_propagate(formula: Formula, assignment: Dict[int, bool]) -> tuple:
         assignment[var] = value
         formula = simplify(formula, var, value)
 
-
 def simplify(formula: Formula, var: int, value: bool) -> Formula:
     """简化公式：删除满足子句，删除矛盾文字"""
     new_formula = []
@@ -1114,13 +1111,11 @@ def simplify(formula: Formula, var: int, value: bool) -> Formula:
         new_formula.append(new_clause)
     return new_formula
 
-
 def is_satisfied(lit: int, assignment: Dict[int, bool]) -> bool:
     var = abs(lit)
     if var not in assignment:
         return False
     return assignment[var] == (lit > 0)
-
 
 def pure_literal_eliminate(formula: Formula, assignment: Dict[int, bool]) -> tuple:
     """纯文字消除：仅以一种极性出现的文字可立即赋值"""
@@ -1144,7 +1139,6 @@ def pure_literal_eliminate(formula: Formula, assignment: Dict[int, bool]) -> tup
 
     return formula, assignment
 
-
 def choose_branching_variable(formula: Formula) -> int:
     """选择分支变量：使用最多出现次数启发式"""
     count = {}
@@ -1153,7 +1147,6 @@ def choose_branching_variable(formula: Formula) -> int:
             var = abs(lit)
             count[var] = count.get(var, 0) + 1
     return max(count, key=count.get)
-
 
 # 测试：(x1 ∨ ¬x2) ∧ (¬x1 ∨ x3) ∧ (x2 ∨ x3)
 formula = [frozenset([1, -2]), frozenset([-1, 3]), frozenset([2, 3])]
@@ -1235,7 +1228,6 @@ int main() {
 import math
 from typing import Any, Iterator
 
-
 class DynamicArray:
     """动态数组实现，演示摊还分析
 
@@ -1302,7 +1294,6 @@ class DynamicArray:
         for i in range(self._size):
             yield self._data[i]
 
-
 def verify_amortized_analysis(n: int = 10000) -> None:
     """验证 append 的摊还 O(1) 性质
 
@@ -1322,7 +1313,6 @@ def verify_amortized_analysis(n: int = 10000) -> None:
     # 验证势能函数 Φ(D) = 2*size - capacity 的非负性
     # 当 size > capacity/2 时 Φ > 0；扩容后 size = capacity/2，Φ = 0
     # 操作序列中 Φ 始终非负
-
 
 verify_amortized_analysis(10000)
 ```
@@ -1410,7 +1400,6 @@ public class LRUCache<K, V> {
 from typing import List, Tuple
 import heapq
 
-
 def tsp_2_approx(points: List[Tuple[float, float]]) -> float:
     """度量 TSP 的 2-近似算法（基于 MST）
 
@@ -1458,7 +1447,6 @@ def tsp_2_approx(points: List[Tuple[float, float]]) -> float:
         total += dist(points[u], points[v])
     return total
 
-
 def prim_mst(points: List[Tuple[float, float]]) -> List[Tuple[int, int]]:
     """Prim 算法构造 MST，O(n^2) 时间"""
     n = len(points)
@@ -1488,11 +1476,9 @@ def prim_mst(points: List[Tuple[float, float]]) -> List[Tuple[int, int]]:
                     parent[v] = u
     return edges
 
-
 def dist(p1: Tuple[float, float], p2: Tuple[float, float]) -> float:
     """欧几里得距离（满足三角不等式，故为度量 TSP）"""
     return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
-
 
 # 测试
 points = [(0, 0), (1, 1), (2, 0), (1, -1), (3, 2)]
@@ -1506,7 +1492,6 @@ print(f"2-近似解: {approx:.4f}")
 ```python
 from typing import List, Tuple, Dict
 import networkx as nx
-
 
 def christofides_tsp(points: List[Tuple[float, float]]) -> float:
     """Christofides 1.5-近似算法（度量 TSP）
@@ -1570,10 +1555,8 @@ def christofides_tsp(points: List[Tuple[float, float]]) -> float:
     total = sum(dist(points[tour[i]], points[tour[i + 1]]) for i in range(len(tour) - 1))
     return total
 
-
 def dist(p1, p2):
     return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
-
 
 points = [(0, 0), (1, 1), (2, 0), (1, -1), (3, 2)]
 approx = christofides_tsp(points)
@@ -1586,7 +1569,6 @@ print(f"Christofides 1.5-近似解: {approx:.4f}")
 import numpy as np
 import mmh3  # MurmurHash3
 from typing import List
-
 
 class CountMinSketch:
     """Count-Min Sketch 频率估计算法
@@ -1623,7 +1605,6 @@ class CountMinSketch:
             self.table[i][mmh3.hash(key, self.seeds[i], signed=False) % self.w]
             for i in range(self.d)
         )
-
 
 # 测试
 cms = CountMinSketch(epsilon=0.01, delta=0.01)
@@ -1812,7 +1793,6 @@ Google OR-Tools 的 **CP-SAT** 求解器是工业级组合优化利器：
 # 员工排班问题（OR-Tools CP-SAT 示例）
 from ortools.sat.python import cp_model
 
-
 def employee_scheduling():
     """员工排班：5 名员工、7 天、每天 3 班，约束：
         - 每班至少 1 人
@@ -1864,7 +1844,6 @@ def employee_scheduling():
     else:
         print('无可行解')
 
-
 employee_scheduling()
 ```
 
@@ -1915,7 +1894,6 @@ def reversePairs(nums):
     nums[:] = merge(left, right)
     return count
 
-
 def merge(a, b):
     result = []
     i = j = 0
@@ -1939,7 +1917,6 @@ def merge(a, b):
 
 ```python
 from collections import deque, defaultdict
-
 
 def canFinish(numCourses, prerequisites):
     """Kahn 算法判定有向图无环"""
@@ -1994,7 +1971,6 @@ def maxCoins(nums):
 
 ```python
 from collections import deque
-
 
 def findRotateSteps(ring, key):
     """BFS + 记忆化求最少操作次数"""

@@ -17,13 +17,6 @@ prerequisites:
   - c/概述
 updated: '2026-08-01'
 ---
-
-# 运算符与表达式
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 运算符分类 (Operator Categories)
 
 ### 1.1 算术运算符 (Arithmetic)
@@ -1436,8 +1429,6 @@ fread(&r, sizeof(Record), 1, fp);
 
 ## 参考文献
 
-
-
 cppreference C 文档：https://zh.cppreference.com/w/c
 C 标准草案：https://www.open-std.org/jtc1/sc22/wg14/
 GCC 官方文档：https://gcc.gnu.org/onlinedocs/
@@ -1445,8 +1436,6 @@ Linux man pages：https://man7.org/linux/man-pages/
 C 语言常见误解：https://www.yodaiken.com/
 
 ## 延伸阅读
-
-
 
 C 指针与数组深入，见 025-c 模块指针文档。
 C 枚举与 typedef，见 025-c/007-EnumTypedef 文档。

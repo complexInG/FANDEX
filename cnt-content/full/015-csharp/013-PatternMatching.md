@@ -15,12 +15,6 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
-# C# 模式匹配
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 一、学习目标
 
 本文以 MIT 6.102 *Software Construction*、Stanford CS193p、CMU 15-150 *Functional Programming* 的模式匹配教学水准为参照，对 C# 模式匹配（Pattern Matching）进行系统性、形式化与工程化的深度剖析。阅读完毕后，读者应能达成以下 Bloom 认知层级目标：

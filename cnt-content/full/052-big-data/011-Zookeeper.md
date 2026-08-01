@@ -13,13 +13,6 @@ related:
   - 'big-data/YARN资源管理'
 prerequisites: []
 ---
-
-# 大数据 ZooKeeper 命令
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. ZooKeeper架构
 
 ZooKeeper 是一个**分布式协调服务**，为分布式应用提供一致性管理、配置维护、组服务和命名等功能。
@@ -819,8 +812,6 @@ redo 10
 
 ## 参考文献
 
-
-
 Apache Spark：https://spark.apache.org/docs/latest/
 Apache Flink：https://flink.apache.org/
 Apache Kafka：https://kafka.apache.org/documentation/
@@ -828,8 +819,6 @@ ClickHouse：https://clickhouse.com/docs
 Airflow：https://airflow.apache.org/docs/
 
 ## 延伸阅读
-
-
 
 大数据生态概览，见 052-big-data 模块文档。
 数据分析与统计，见 051-data-analysis/030-probability-statistics 模块。

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
-
-# 卡片开发 语法速查手册
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 服务卡片（Widget）是 HarmonyOS 的桌面小组件，用户可以在桌面上直接查看应用的关键信息，无需打开应用。卡片支持静态展示和动态更新，尺寸从 1x1 到 4x4 不等。合理使用卡片可以提升应用的可见性和用户粘性。
@@ -767,16 +760,12 @@ struct CardPage {
 
 ## 参考文献
 
-
-
 华为开发者联盟 HarmonyOS 文档：https://developer.huawei.com/consumer/cn/harmonyos
 ArkTS 语言规范：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-overview
 ArkUI 组件参考：https://developer.huawei.com/consumer/cn/doc/harmonyos-references/
 DevEco Studio：https://developer.huawei.com/consumer/cn/deveco-studio/
 
 ## 延伸阅读
-
-
 
 TypeScript 基础（ArkTS 语言底座），见 009-typescript 模块。
 声明式 UI 概念与 React/Vue 对比，见 011-react/010-vue3 模块。

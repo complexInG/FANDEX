@@ -26,11 +26,6 @@ updated: '2026-08-01'
 - 004-泛型基础：类型参数与复用。
 - 005-工程配置：tsconfig 与严格模式。
 
-
-# TypeScript 5.x 新特性语法速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
 ---
 
 ## 1. TypeScript 概述 (Overview)
@@ -824,8 +819,6 @@ c.home; // "/" 字面量
 ---
 
 ## 参考文献
-
-
 
 TypeScript 官方文档：https://www.typescriptlang.org/docs/
 TS 手册中文版：https://www.typescriptlang.org/zh/docs/handbook/

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
-
-# C++ 内存模型
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 多核时代的内存模型挑战
@@ -1178,7 +1171,6 @@ int rte_ring_enqueue(struct rte_ring* r, void* obj) {
 - C. `release`
 - D. `seq_cst`
 
-
 **解析讲解**：D
 
 `seq_cst` 提供全局总序，所有线程观察一致。是最强的内存序。
@@ -1203,7 +1195,6 @@ print(data);
 - C. 安全但性能差
 - D. 编译错误
 
-
 **解析讲解**：B
 
 A 线程使用了 `relaxed` store，不建立 synchronizes-with 关系。即使 B 线程使用 `acquire` load，A 线程的 `data = 42` 也不保证对 B 可见。需要 A 使用 `release` store。
@@ -1214,7 +1205,6 @@ A 线程使用了 `relaxed` store，不建立 synchronizes-with 关系。即使 
 - B. 单生产者单消费者队列
 - C. 互斥锁实现
 - D. 全部以上
-
 
 **解析讲解**：A
 
@@ -1227,7 +1217,6 @@ ABA 问题主要发生在使用 CAS 的无锁数据结构中，特别是无锁�
 - C. weak 在循环中使用更优
 - D. 全部以上
 
-
 **解析讲解**：D
 
 weak 可能伪失败（即使值匹配也返回 false），但在循环场景中性能更优（避免不必要的内存屏障）。strong 保证不会伪失败，适合单次判断。
@@ -1236,28 +1225,23 @@ weak 可能伪失败（即使值匹配也返回 false），但在循环场景中
 
 **常见疑问 5**：. C++11 定义了 ______ 种 `std::memory_order`。
 
-
 6 种：relaxed, consume, acquire, release, acq_rel, seq_cst。
 
 **常见疑问 6**：. `std::atomic<T>` 默认内存序是 ______。
-
 
 `seq_cst`。
 
 **常见疑问 7**：. x86 上 `mfence` 指令对应 C++ 的 ______ 内存序。
 
-
 `seq_cst`。
 
 **常见疑问 8**：. 缓存行通常大小为 ______ 字节，可通过 ______ 关键字对齐。
-
 
 64；`alignas(64)`。
 
 ### 编程题知识点讲解
 
 **常见疑问 9**：. 实现一个无锁自旋锁 `SpinLock`，使用 `acquire`/`release` 内存序。
-
 
 ```cpp
 #include <atomic>
@@ -1278,7 +1262,6 @@ public:
 
 **常见疑问 10**：. 实现一个简单的 `MPMCCounter`，允许多线程递增，最终读取总数。
 
-
 ```cpp
 #include <atomic>
 
@@ -1295,7 +1278,6 @@ public:
 ```
 
 **常见疑问 11**：. 实现一个简化版的 `LockFreeQueue<T>`（单生产者单消费者）。
-
 
 ```cpp
 #include <atomic>
@@ -1330,11 +1312,9 @@ public:
 
 **常见疑问 12**：. 为什么 `seq_cst` 在 x86 上比 `relaxed` 贵得多？
 
-
 x86 的 TSO 模型允许 store-load 重排。`seq_cst` 需要禁止这种重排，必须插入 `mfence` 指令或使用 `xchg`（隐含 lock 前缀）。这些操作会强制刷新写缓冲，导致显著的性能开销（5-10 倍）。而 `relaxed` 仅是普通的 `mov` 指令，几乎免费。
 
 **常见疑问 13**：. 无锁数据结构一定比互斥锁快吗？
-
 
 不一定。无锁数据结构在高争用场景下可能反而更慢：
 - CAS 失败重试导致 CPU 浪费；
@@ -1346,7 +1326,6 @@ x86 的 TSO 模型允许 store-load 重排。`seq_cst` 需要禁止这种重排�
 工程实践中应先测量再优化，避免过早使用无锁。
 
 **常见疑问 14**：. 为什么 C++ 不像 Java 那样使用 `volatile` 实现跨线程可见性？
-
 
 C++ 的 `volatile` 语义与 Java 不同：
 - C++ `volatile` 仅禁止编译器优化（如寄存器缓存），不保证 CPU 层面的可见性；

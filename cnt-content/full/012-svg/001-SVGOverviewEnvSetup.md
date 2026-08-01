@@ -14,13 +14,6 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
-
-# SVG 嵌入方式 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 矢量图形的起源:从 PostScript 到 Web
@@ -1188,7 +1181,6 @@ B. Scalable Vector Graphics
 C. Simple Vector Graphics
 D. Scalable Visual Graphics
 
-
 解析讲解：B
 
 SVG 全称为 Scalable Vector Graphics(可缩放矢量图形),由 W3C 制定并维护。"Scalable" 强调其可无损缩放的特性,"Vector" 强调基于矢量描述而非位图。
@@ -1199,7 +1191,6 @@ A. `<img src="logo.svg">`
 B. CSS `background-image: url('logo.svg')`
 C. 内联 `<svg>` 直接写在 HTML 中
 D. `<object data="logo.svg">`
-
 
 解析讲解：C
 
@@ -1212,7 +1203,6 @@ B. 2001
 C. 2003
 D. 2011
 
-
 解析讲解：B
 
 SVG 1.0 于 2001 年 9 月 4 日正式成为 W3C 推荐标准(Recommendation)。1998 年是 VML 与 PGML 提交 W3C 的年份,2003 年是 SVG 1.1 发布,2011 年是 SVG Tiny 1.2 成为推荐标准。
@@ -1223,7 +1213,6 @@ A. 缩放
 B. 旋转
 C. 平移
 D. 倾斜
-
 
 解析讲解：C
 
@@ -1236,7 +1225,6 @@ B. 数据可视化折线图(50 个数据点)
 C. 实时粒子系统(10000 粒子)
 D. 图标系统(20 个图标)
 
-
 解析讲解：C
 
 10000 粒子的实时系统远超 SVG 的合理承载范围(SVG 元素数建议 5000 以内),Canvas 的立即模式更适合大规模重绘。其他场景 SVG 更合适:Logo 需要无损缩放,折线图 50 个点 SVG 完全胜任且支持交互,图标系统 SVG 标准方案。
@@ -1245,13 +1233,11 @@ D. 图标系统(20 个图标)
 
 **题目 1.6** SVG 是基于 ______ 的矢量图像格式,由 ______ 组织制定并维护。
 
-
 解析讲解：XML;W3C(World Wide Web Consortium)
 
 SVG 全称 Scalable Vector Graphics,是基于 XML 的矢量图像格式,由 W3C 组织制定并维护。W3C 是 Web 标准的制定机构,负责 HTML、CSS、DOM 等核心规范。
 
 **题目 1.7** SVG 坐标系的原点位于 ______,Y 轴方向 ______。
-
 
 解析讲解：左上角;向下递增
 
@@ -1259,20 +1245,17 @@ SVG 坐标系原点(0,0)在左上角,X 轴向右递增,Y 轴向下递增。这�
 
 **题目 1.8** SVG 与 Canvas 的核心描述模式差异在于:SVG 采用 ______ 模式,Canvas 采用 ______ 模式。
 
-
 解析讲解：保留模式(retained mode);立即模式(immediate mode)
 
 SVG 采用保留模式:浏览器维护一棵图形场景树,应用层只声明图形对象。Canvas 采用立即模式:应用层主动调用绘图命令,浏览器不保留场景状态。保留模式适合静态或半静态场景,立即模式适合高频重绘的动态场景。
 
 **题目 1.9** SVGO 工具主要用于 ______,通常可减小 SVG 文件体积 ______%。
 
-
 解析讲解：SVG 优化压缩;30-70%
 
 SVGO(SVG Optimizer)是基于 Node.js 的 SVG 优化工具,通过移除冗余属性、合并路径、简化坐标精度等方式减小体积。根据 SVG 复杂度,通常可减小 30-70% 体积,部分情况可达 80% 以上。
 
 **题目 1.10** SVG 渲染管线的五个阶段是:XML 解析 → ______ → 样式计算 → ______ → 光栅化与合成。
-
 
 解析讲解：DOM 树构建;布局与变换
 
@@ -1288,7 +1271,6 @@ SVG 渲染管线五阶段:1) XML 解析(字符串扫描与 token 化)2) DOM 树�
 2. 使用 currentColor 支持主题化
 3. SVGO 配置文件必须移除注释、合并路径
 4. 输出优化后的体积对比
-
 
 目录结构:
 
@@ -1414,7 +1396,6 @@ await Promise.all(
 4. 包含 `<title>` 与 `<desc>` 可访问性元素
 5. 文字使用 `text-anchor="middle"` 居中
 
-
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" role="img" aria-labelledby="title desc">
@@ -1459,7 +1440,6 @@ await Promise.all(
 
 **题目 1.13** 为什么 SVG 选择 XML 作为语法基础而非自定义二进制格式?分析这一决策的优缺点。
 
-
 优点:
 1. 可读性:文本格式让开发者能直接阅读与调试,降低门槛
 2. DOM 互操作性:XML 与 HTML DOM 自然衔接,SVG 元素是真实 DOM 节点,支持事件绑定与 CSS 样式化
@@ -1476,7 +1456,6 @@ await Promise.all(
 总体而言,XML 的选择是 2001 年时代的合理决策,其优势(可读性、互操作性、生态成熟)远超劣势。SVG 2 虽保留 XML 语法,但允许 HTML 解析器宽松解析内联 SVG,降低了对严格 XML 的依赖。
 
 **题目 1.14** 在 10000 个数据点的散点图场景中,应该选择 SVG 还是 Canvas?请给出技术决策依据。
-
 
 建议选择 Canvas,理由:
 
@@ -1498,7 +1477,6 @@ await Promise.all(
 - 数据量 > 50000 或需 3D 渲染 → WebGL
 
 **题目 1.15** 假设你的团队需要为一个大型企业级应用构建图标系统,需要支持 500+ 图标、React/Vue 双框架、按需加载、主题化。请设计完整的工程方案。
-
 
 工程方案设计:
 

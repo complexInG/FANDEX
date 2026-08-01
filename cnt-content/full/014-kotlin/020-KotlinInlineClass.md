@@ -18,13 +18,6 @@ prerequisites:
   - kotlin/类与对象
   - kotlin/基础语法
 ---
-
-# Kotlin 内联类与 Value Class
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 历史动机与背景
 
 ### 基本类型缺陷：原始 Obsession 反模式

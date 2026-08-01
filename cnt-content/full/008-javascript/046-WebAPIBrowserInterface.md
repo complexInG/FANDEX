@@ -20,13 +20,6 @@ prerequisites:
   - javascript/ES6+新特性
   - javascript/控制流
 ---
-
-# JavaScript Web API 浏览器接口语法速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 引言
 
 Web API 是浏览器暴露给 JavaScript 的一组宿主对象与接口集合，它构成了 ECMAScript 语言内核与外部世界（网络、存储、设备、渲染管线、操作系统）之间的契约层。如果没有 Web API，JavaScript 仅是一门能操作数值、字符串与对象的纯计算语言；正是 Web API 让 JavaScript 具备了"感知与改造现实世界"的能力——发起网络请求、持久化数据、监听视口变化、调度后台线程、获取地理位置、推送系统通知、剪贴板读写、设备方向感知等。

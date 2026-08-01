@@ -15,13 +15,6 @@ related:
 prerequisites:
   - python/语法速查
 ---
-
-# Python 迭代器与生成器进阶
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 生成器与协程并非 Python 独创，其理论根源可追溯至 1958 年的协程概念与 1970 年代的惰性求值思想。理解这一脉络有助于把握 Python 设计的取舍。
@@ -497,7 +490,6 @@ from __future__ import annotations
 import sys
 from collections.abc import Generator, Iterator
 
-
 def count_up(n: int) -> Generator[int, None, None]:
     """生成 0 到 n-1 的整数序列。
 
@@ -514,7 +506,6 @@ def count_up(n: int) -> Generator[int, None, None]:
         yield i
         i += 1
     print(f"[count_up] 结束")
-
 
 def basic_generator_demo() -> None:
     """基本生成器演示。"""
@@ -533,7 +524,6 @@ def basic_generator_demo() -> None:
     except StopIteration:
         print("生成器已结束")
 
-
 if __name__ == "__main__":
     basic_generator_demo()
 ```
@@ -545,7 +535,6 @@ if __name__ == "__main__":
 from __future__ import annotations
 
 from collections.abc import Generator
-
 
 def accumulator() -> Generator[float, float, None]:
     """累加器协程：接收值并返回当前总和。
@@ -563,7 +552,6 @@ def accumulator() -> Generator[float, float, None]:
             break
         total += value
 
-
 def send_demo() -> None:
     """send 方法演示。"""
     gen = accumulator()
@@ -580,7 +568,6 @@ def send_demo() -> None:
     # 关闭生成器
     gen.close()
 
-
 if __name__ == "__main__":
     send_demo()
 ```
@@ -592,7 +579,6 @@ if __name__ == "__main__":
 from __future__ import annotations
 
 from collections.abc import Generator
-
 
 def robust_processor() -> Generator[str, str, None]:
     """可处理异常的协程。
@@ -619,7 +605,6 @@ def robust_processor() -> Generator[str, str, None]:
         # 这里可以执行清理逻辑
         raise  # 必须重新抛出 GeneratorExit
 
-
 def throw_close_demo() -> None:
     """throw 与 close 演示。"""
     gen = robust_processor()
@@ -635,7 +620,6 @@ def throw_close_demo() -> None:
     # 关闭生成器
     gen.close()
 
-
 if __name__ == "__main__":
     throw_close_demo()
 ```
@@ -647,7 +631,6 @@ if __name__ == "__main__":
 from __future__ import annotations
 
 from collections.abc import Generator
-
 
 def inner() -> Generator[str, str, str]:
     """子生成器：接收值并返回最终结果。"""
@@ -661,7 +644,6 @@ def inner() -> Generator[str, str, str]:
         received.append(value)
     print(f"[inner] 收到: {received}")
     return f"inner_done({len(received)})"
-
 
 def simpler_inner() -> Generator[str, str, str]:
     """简化版子生成器。"""
@@ -677,7 +659,6 @@ def simpler_inner() -> Generator[str, str, str]:
         pass
     return f"completed_at_{count}"
 
-
 def outer() -> Generator[str, str, str]:
     """外层生成器：委托给 inner。"""
     print("[outer] 启动")
@@ -686,7 +667,6 @@ def outer() -> Generator[str, str, str]:
     print(f"[outer] inner 返回: {result}")
     yield "outer_final"
     return "outer_done"
-
 
 def yield_from_demo() -> None:
     """yield from 演示。"""
@@ -700,7 +680,6 @@ def yield_from_demo() -> None:
     except StopIteration as e:
         print(f"outer 返回: {e.value}")  # "outer_done"
 
-
 if __name__ == "__main__":
     yield_from_demo()
 ```
@@ -713,18 +692,15 @@ from __future__ import annotations
 
 from collections.abc import Generator, Iterable
 
-
 def read_lines(filepath: str) -> Generator[str, None, None]:
     """逐行读取文件。"""
     with open(filepath, encoding="utf-8") as f:
         yield from f
 
-
 def strip_lines(lines: Iterable[str]) -> Generator[str, None, None]:
     """去除每行首尾空白。"""
     for line in lines:
         yield line.strip()
-
 
 def filter_comments(lines: Iterable[str]) -> Generator[str, None, None]:
     """过滤注释行（以 # 开头）。"""
@@ -732,13 +708,11 @@ def filter_comments(lines: Iterable[str]) -> Generator[str, None, None]:
         if not line.startswith("#"):
             yield line
 
-
 def parse_csv(rows: Iterable[str]) -> Generator[list[str], None, None]:
     """解析 CSV 行。"""
     for row in rows:
         if row:
             yield row.split(",")
-
 
 def transform_records(
     records: Iterable[list[str]],
@@ -751,7 +725,6 @@ def transform_records(
             continue
         yield dict(zip(headers, record))
 
-
 def pipeline_demo() -> None:
     """组合生成器管道。"""
     # 嵌套调用：数据流式处理
@@ -762,7 +735,6 @@ def pipeline_demo() -> None:
 
     for record in pipeline:
         print(record)
-
 
 # 更优雅的管道组合方式
 class Pipeline:
@@ -783,7 +755,6 @@ class Pipeline:
             data = stage(data)
         yield from data
 
-
 def fluent_pipeline_demo() -> None:
     """流式管道 API 演示。"""
     pipeline = (
@@ -799,7 +770,6 @@ def fluent_pipeline_demo() -> None:
     # {'name': 'Alice', 'age': '30'}
     # {'name': 'Bob', 'age': '25'}
 
-
 if __name__ == "__main__":
     fluent_pipeline_demo()
 ```
@@ -812,7 +782,6 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from enum import Enum
-
 
 class TCPState(str, Enum):
     """TCP 连接状态。"""
@@ -828,7 +797,6 @@ class TCPState(str, Enum):
     LAST_ACK = "LAST_ACK"
     TIME_WAIT = "TIME_WAIT"
 
-
 def tcp_fsm() -> Generator[TCPState, str, None]:
     """TCP 状态机协程。
 
@@ -838,7 +806,6 @@ def tcp_fsm() -> Generator[TCPState, str, None]:
     while True:
         event = yield state
         state = _transition(state, event)
-
 
 def _transition(state: TCPState, event: str) -> TCPState:
     """状态转移函数。"""
@@ -856,7 +823,6 @@ def _transition(state: TCPState, event: str) -> TCPState:
     }
     return transitions.get((state, event), state)
 
-
 def state_machine_demo() -> None:
     """状态机演示。"""
     fsm = tcp_fsm()
@@ -868,7 +834,6 @@ def state_machine_demo() -> None:
     print(fsm.send("rcv_ack"))        # FIN_WAIT_2
     print(fsm.send("rcv_fin"))        # TIME_WAIT
     print(fsm.send("timeout"))        # CLOSED
-
 
 if __name__ == "__main__":
     state_machine_demo()
@@ -886,14 +851,12 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
-
 def fibonacci() -> Generator[int, None, None]:
     """无限斐波那契数列。"""
     a, b = 0, 1
     while True:
         yield a
         a, b = b, a + b
-
 
 def primes() -> Generator[int, None, None]:
     """无限素数序列（埃拉托色尼筛法变体）。"""
@@ -905,7 +868,6 @@ def primes() -> Generator[int, None, None]:
             yield candidate
         candidate += 1
 
-
 def naturals(start: int = 0) -> Generator[int, None, None]:
     """自然数序列。"""
     n = start
@@ -913,12 +875,10 @@ def naturals(start: int = 0) -> Generator[int, None, None]:
         yield n
         n += 1
 
-
 def cycle(items: list[T]) -> Generator[T, None, None]:
     """循环序列。"""
     while True:
         yield from items
-
 
 def infinite_demo() -> None:
     """无限序列演示。"""
@@ -941,7 +901,6 @@ def infinite_demo() -> None:
     first_1000_sum = sum(itertools.islice((x * x for x in naturals()), 1000))
     print(f"前 1000 个自然数平方和: {first_1000_sum}")
 
-
 if __name__ == "__main__":
     infinite_demo()
 ```
@@ -954,7 +913,6 @@ from __future__ import annotations
 
 import itertools
 from collections.abc import Generator, Iterable
-
 
 def batched(iterable: Iterable, size: int) -> Generator[list, None, None]:
     """分批处理可迭代对象。
@@ -972,7 +930,6 @@ def batched(iterable: Iterable, size: int) -> Generator[list, None, None]:
         if not batch:
             break
         yield batch
-
 
 def sliding_window(
     iterable: Iterable, window_size: int
@@ -995,14 +952,12 @@ def sliding_window(
         window.append(item)
         yield tuple(window)
 
-
 def grouped_by(
     iterable: Iterable, key_func
 ) -> Generator[tuple, None, None]:
     """按键分组（要求输入已排序）。"""
     for key, group in itertools.groupby(iterable, key_func):
         yield key, list(group)
-
 
 def chunked_ranges(
     start: int, end: int, chunk_size: int
@@ -1011,7 +966,6 @@ def chunked_ranges(
     for chunk_start in range(start, end, chunk_size):
         chunk_end = min(chunk_start + chunk_size, end)
         yield range(chunk_start, chunk_end)
-
 
 def itertools_demo() -> None:
     """itertools 组合演示。"""
@@ -1032,7 +986,6 @@ def itertools_demo() -> None:
     for chunk in chunked_ranges(0, 100, 30):
         print(f"块: {list(chunk)}")
 
-
 if __name__ == "__main__":
     itertools_demo()
 ```
@@ -1046,13 +999,11 @@ from __future__ import annotations
 import asyncio
 from collections.abc import AsyncGenerator
 
-
 async def async_range(n: int) -> AsyncGenerator[int, None]:
     """异步范围生成器。"""
     for i in range(n):
         await asyncio.sleep(0.01)  # 模拟异步操作
         yield i
-
 
 async def async_read_lines(filepath: str) -> AsyncGenerator[str, None]:
     """异步逐行读取文件。"""
@@ -1064,7 +1015,6 @@ async def async_read_lines(filepath: str) -> AsyncGenerator[str, None]:
                 yield line.rstrip()
     except FileNotFoundError:
         return
-
 
 async def async_fetch_pages(
     url: str, page_size: int = 100
@@ -1084,14 +1034,12 @@ async def async_fetch_pages(
             break
         page += 1
 
-
 async def async_pipeline() -> AsyncGenerator[dict, None]:
     """异步管道：分页 -> 过滤 -> 转换。"""
     async for page in async_fetch_pages("https://api.example.com"):
         for item in page["items"]:
             if item["id"] % 2 == 0:  # 仅保留偶数 ID
                 yield {"processed_id": item["id"] * 10}
-
 
 async def async_generator_demo() -> None:
     """异步生成器演示。"""
@@ -1115,7 +1063,6 @@ async def async_generator_demo() -> None:
     # 关闭
     await agen.aclose()
 
-
 if __name__ == "__main__":
     asyncio.run(async_generator_demo())
 ```
@@ -1132,7 +1079,6 @@ from collections.abc import Generator, Iterable
 from dataclasses import dataclass
 from datetime import datetime
 
-
 @dataclass(frozen=True)
 class LogEntry:
     """日志条目。"""
@@ -1141,13 +1087,11 @@ class LogEntry:
     message: str
     raw: str
 
-
 LOG_PATTERN = re.compile(
     r"(?P<ts>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"
     r"\s+(?P<level>INFO|WARN|ERROR|DEBUG)"
     r"\s+(?P<message>.*)"
 )
-
 
 def parse_log_lines(lines: Iterable[str]) -> Generator[LogEntry, None, None]:
     """解析日志行为 LogEntry 对象。"""
@@ -1161,7 +1105,6 @@ def parse_log_lines(lines: Iterable[str]) -> Generator[LogEntry, None, None]:
                 raw=line,
             )
 
-
 def filter_by_level(
     entries: Iterable[LogEntry], levels: set[str]
 ) -> Generator[LogEntry, None, None]:
@@ -1169,7 +1112,6 @@ def filter_by_level(
     for entry in entries:
         if entry.level in levels:
             yield entry
-
 
 def window_by_time(
     entries: Iterable[LogEntry], window_seconds: int
@@ -1188,7 +1130,6 @@ def window_by_time(
     if window:
         yield window
 
-
 def count_levels(
     windows: Iterable[list[LogEntry]],
 ) -> Generator[dict, None, None]:
@@ -1201,14 +1142,12 @@ def count_levels(
             "levels": dict(counter),
         }
 
-
 def analyze_log_stream(log_lines: Iterable[str]) -> Generator[dict, None, None]:
     """完整日志分析管道。"""
     entries = parse_log_lines(log_lines)
     filtered = filter_by_level(entries, {"ERROR", "WARN"})
     windows = window_by_time(filtered, window_seconds=60)
     yield from count_levels(windows)
-
 
 def log_analysis_demo() -> None:
     """日志分析演示。"""
@@ -1224,7 +1163,6 @@ def log_analysis_demo() -> None:
 
     for stats in analyze_log_stream(sample_logs):
         print(f"窗口开始: {stats['start']}, 总数: {stats['total']}, 分布: {stats['levels']}")
-
 
 if __name__ == "__main__":
     log_analysis_demo()
@@ -1670,7 +1608,6 @@ from fastapi.responses import StreamingResponse
 
 app = FastAPI()
 
-
 async def generate_large_dataset() -> AsyncGenerator[str, None]:
     """生成大型数据集（SSE 格式）。"""
     for i in range(10000):
@@ -1680,7 +1617,6 @@ async def generate_large_dataset() -> AsyncGenerator[str, None]:
         import asyncio
         await asyncio.sleep(0.001)
 
-
 @app.get("/stream")
 async def stream_data() -> StreamingResponse:
     """流式返回数据。"""
@@ -1689,7 +1625,6 @@ async def stream_data() -> StreamingResponse:
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
-
 
 @app.get("/csv")
 async def stream_csv() -> StreamingResponse:
@@ -1718,7 +1653,6 @@ from contextlib import contextmanager
 import psycopg2
 from psycopg2.extras import DictCursor
 
-
 @contextmanager
 def stream_query(
     dsn: str, query: str, params: tuple = ()
@@ -1745,7 +1679,6 @@ def stream_query(
         cursor.close()
         conn.close()
 
-
 # 使用示例
 def process_large_table():
     """处理大表数据。"""
@@ -1763,7 +1696,6 @@ from __future__ import annotations
 
 import time
 from collections.abc import Generator
-
 
 def benchmark_generator_vs_list():
     """生成器 vs 列表性能对比。"""
@@ -1785,7 +1717,6 @@ def benchmark_generator_vs_list():
     gen_size = squares_gen.__sizeof__() / 1024
     print(f"生成器: {gen_time:.3f}s, {gen_size:.1f} KB")
 
-
 def optimized_chain():
     """优化的链式生成器。"""
     # 使用 yield from 比手动迭代快约 20%
@@ -1803,7 +1734,6 @@ def optimized_chain():
     list(chain_yield_from(*data))  # 更快
     list(chain_manual(*data))       # 较慢
 
-
 if __name__ == "__main__":
     benchmark_generator_vs_list()
 ```
@@ -1817,13 +1747,11 @@ from __future__ import annotations
 import pytest
 from collections.abc import Generator
 
-
 def fib_gen(n: int) -> Generator[int, None, None]:
     a, b = 0, 1
     for _ in range(n):
         yield a
         a, b = b, a + b
-
 
 class TestFibGenerator:
     """生成器测试类。"""
@@ -1875,7 +1803,6 @@ class TestFibGenerator:
         """参数化测试。"""
         assert list(fib_gen(n)) == expected
 
-
 # 异步生成器测试
 import asyncio
 
@@ -1883,7 +1810,6 @@ async def async_range(n):
     for i in range(n):
         await asyncio.sleep(0)
         yield i
-
 
 @pytest.mark.asyncio
 async def test_async_generator():
@@ -1901,7 +1827,6 @@ from __future__ import annotations
 import inspect
 import sys
 from collections.abc import Generator
-
 
 def inspect_generator(gen: Generator) -> dict:
     """检查生成器状态。"""
@@ -1929,7 +1854,6 @@ def inspect_generator(gen: Generator) -> dict:
         ),
     }
 
-
 def debug_demo():
     """调试演示。"""
     def sample():
@@ -1954,7 +1878,6 @@ def debug_demo():
         print(f"返回值: {e.value}")  # done
 
     print(f"结束状态: {inspect_generator(gen)['state']}")  # closed
-
 
 if __name__ == "__main__":
     debug_demo()
@@ -1982,7 +1905,6 @@ def walk(top: str) -> Generator[tuple, None, None]:
     yield top, dirs, files
     for dir_name in dirs:
         yield from walk(os.path.join(top, dir_name))
-
 
 # 实际使用
 for root, dirs, files in walk("."):
@@ -2066,7 +1988,6 @@ import time
 
 app = Flask(__name__)
 
-
 def generate_log_stream():
     """生成实时日志流。"""
     while True:
@@ -2075,7 +1996,6 @@ def generate_log_stream():
             break
         yield f"data: {log_line}\n\n"
         time.sleep(0.1)
-
 
 @app.route("/logs")
 def logs():
@@ -2096,7 +2016,6 @@ from models import User
 
 engine = create_engine("postgresql://user:pass@localhost/db")
 
-
 def stream_users(batch_size: int = 1000):
     """流式查询用户表。
 
@@ -2110,7 +2029,6 @@ def stream_users(batch_size: int = 1000):
         for partition in session.execute(stmt).partitions():
             for row in partition:
                 yield row[0]
-
 
 # 使用
 for user in stream_users():
@@ -2131,13 +2049,11 @@ from collections.abc import AsyncGenerator
 from dataclasses import dataclass
 from datetime import datetime
 
-
 @dataclass
 class Tick:
     symbol: str
     price: float
     timestamp: datetime
-
 
 async def tick_stream(symbols: list[str]) -> AsyncGenerator[Tick, None]:
     """模拟股票行情流。"""
@@ -2151,7 +2067,6 @@ async def tick_stream(symbols: list[str]) -> AsyncGenerator[Tick, None]:
             timestamp=datetime.now(),
         )
         await asyncio.sleep(random.uniform(0.01, 0.1))
-
 
 def moving_average(
     ticks: AsyncGenerator[Tick, None], window: int = 5
@@ -2173,7 +2088,6 @@ def moving_average(
 
     return inner()
 
-
 async def threshold_alert(
     ticks: AsyncGenerator[dict, None], threshold: float = 0.02
 ) -> AsyncGenerator[dict, None]:
@@ -2192,7 +2106,6 @@ async def threshold_alert(
                 }
         prev[symbol] = price
 
-
 async def main():
     """主流程：组合管道。"""
     symbols = ["AAPL", "GOOG", "MSFT", "TSLA"]
@@ -2204,7 +2117,6 @@ async def main():
 
     async for alert in alert_stream:
         print(json.dumps(alert, indent=2))
-
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -2358,7 +2270,6 @@ from collections.abc import Generator, Iterable
 from typing import TypeVar
 
 T = TypeVar("T")
-
 
 def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
     """将一个可迭代对象复制为 n 个独立生成器。

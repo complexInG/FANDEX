@@ -469,7 +469,6 @@ Spring Cloud 微服务体系，见 013-java 模块的 Spring 相关文档；
 
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Java 微服务与 Kubernetes 实战课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Java EE 与云原生课程。
 
-
 ### 概述
 
 Kubernetes 是容器编排的事实标准，Java 应用的云原生部署需要关注资源限制、健康检查、优雅停机和自动伸缩等方面。本文介绍 Java 应用在 Kubernetes 上的部署最佳实践，包括 Deployment 配置、服务发现、配置管理和监控集成。

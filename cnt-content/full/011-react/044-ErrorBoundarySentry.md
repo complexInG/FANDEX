@@ -1321,11 +1321,9 @@ B. `setTimeout` 回调中的错误
 C. 组件 `render` 方法中的错误
 D. `fetch().then()` 中的错误
 
-
 **答案：C**
 
 Error Boundary 只捕获 Render Phase、生命周期方法、组件构造函数中的错误。事件处理器（onClick）、异步代码（setTimeout/Promise）中的错误需要 try-catch 或全局错误监听器处理。
-
 
 **Q2.** `getDerivedStateFromError` 与 `componentDidCatch` 的关键差异是？
 
@@ -1334,11 +1332,9 @@ B. 前者在 Render Phase 调用，后者在 Commit Phase 调用
 C. 前者允许副作用，后者不允许
 D. 两者无差异
 
-
 **答案：B**
 
 `getDerivedStateFromError` 是 static method，在 Render Phase 调用，必须为纯函数（返回 state）；`componentDidCatch` 是 instance method，在 Commit Phase 调用，允许副作用（如日志上报）。
-
 
 **Q3.** Sentry 的 `tracesSampleRate: 0.1` 表示？
 
@@ -1347,11 +1343,9 @@ B. 10% 的性能 transaction 被采集
 C. 10% 的会话被录屏
 D. 10% 的用户被监控
 
-
 **答案：B**
 
 `tracesSampleRate` 控制性能追踪（performance transaction）的采样率。错误上报是 100%（`beforeSend` 过滤）；会话录屏由 `replaysSessionSampleRate` 控制。
-
 
 **Q4.** 关于 Source Map，下列说法**正确**的是？
 
@@ -1360,11 +1354,9 @@ B. Sentry 可以通过上传 Source Map 反解压缩后的堆栈
 C. Source Map 不影响包体积
 D. Source Map 仅用于调试，与错误监控无关
 
-
 **答案：B**
 
 生产环境推荐使用 `hidden` Source Map（仅 Sentry 可访问，不通过 `sourceMappingURL` 暴露）。Sentry 接收错误后用上传的 Source Map 反解堆栈，定位到源码。
-
 
 **Q5.** React 19 中 `useErrorBoundary`（或类似 Hook）相比类组件 Error Boundary 的优势是？
 
@@ -1373,43 +1365,31 @@ B. 函数式 API，无需类组件
 C. 自动捕获异步错误
 D. 自动上报到 Sentry
 
-
 **答案：B**
 
 React 19 提供函数式 API（如 `useErrorBoundary`）让函数组件也能声明错误边界，无需类组件。性能、错误范围、上报能力与类组件版本一致。
-
 
 ### 填空题知识点讲解
 
 **Q1.** React Error Boundary 通过 `______` 与 `______` 两个生命周期方法实现错误捕获与状态更新。
 
-
 `getDerivedStateFromError`、`componentDidCatch`
-
 
 **Q2.** Sentry 的 `______` 字段将错误与代码版本绑定，`______` 字段记录错误发生前的用户行为序列。
 
-
 release、breadcrumb
-
 
 **Q3.** 未处理的 Promise rejection 可通过 `______` 事件捕获。
 
-
 `unhandledrejection`
-
 
 **Q4.** 跨域脚本错误在 `window.onerror` 中只能拿到 `______`，无法获取堆栈。
 
-
 `"Script error."`
-
 
 **Q5.** Next.js App Router 中，route 级错误由 `______` 文件处理，应用根级错误由 `______` 文件处理。
 
-
 `error.tsx`、`global-error.tsx`
-
 
 ### 编程题知识点讲解
 
@@ -1425,7 +1405,6 @@ release、breadcrumb
 1. 错误时显示重试按钮
 2. 重试次数达到上限后显示"请联系管理员"
 3. 重试时记录到 Sentry
-
 
 ```tsx
 import React, { Component, ReactNode } from 'react';
@@ -1487,13 +1466,11 @@ export class RetryErrorBoundary extends Component<Props, State> {
 }
 ```
 
-
 **Q2.** 实现一个 Sentry 全局初始化模块，要求：
 1. 区分 dev/prod 环境
 2. 自动注入 release（从 package.json 读取）
 3. 集成 React Router v6 路由追踪
 4. 集成 Session Replay
-
 
 ```typescript
 // lib/sentry.ts
@@ -1540,7 +1517,6 @@ export function initSentry() {
 }
 ```
 
-
 **Q3.** 实现一个 `useAsyncError` Hook，用于在异步代码中触发 Error Boundary：
 
 ```tsx
@@ -1553,7 +1529,6 @@ function Component() {
   }, []);
 }
 ```
-
 
 ```tsx
 import { useCallback, useState } from 'react';
@@ -1571,19 +1546,15 @@ export function useAsyncError() {
 }
 ```
 
-
 ### 9.4 思考题
 
 **Q1.** 为什么 Error Boundary 不能捕获事件处理器中的错误？请从 React 设计哲学与执行时序两个角度论述。
-
 
 1. **设计哲学**：React 错误边界针对"渲染阶段"的错误（即 React 控制的代码执行）。事件处理器是浏览器调用的，不在 React 调用栈中。
 2. **执行时序**：事件处理器在浏览器事件循环中执行，错误抛出时 React 已经完成渲染。React 无法"撤销"已经提交的渲染来回滚到错误边界。
 3. **权衡**：若 React 拦截所有事件处理器，会带来性能开销与心智模型复杂性。开发者用 try-catch 处理事件错误更直观。
 
-
 **Q2.** 设计一套企业级错误监控方案，覆盖 100 万 DAU 的 React 应用。需要考虑：成本、性能、可观测性、告警响应。
-
 
 1. **成本控制**：
    - 错误采样：100%（必须捕获）
@@ -1607,9 +1578,7 @@ export function useAsyncError() {
    - 错误分类：P0（全站崩溃）、P1（关键路径）、P2（次要功能）
    - 24h 内响应 P0/P1，72h 内响应 P2
 
-
 **Q3.** 在 Next.js App Router 中，Server Components 抛出错误时如何传递到客户端？与 CSR 错误处理有何不同？
-
 
 1. **传递机制**：
    - Server Components 错误通过 React Streaming 传递
@@ -1623,7 +1592,6 @@ export function useAsyncError() {
    - 服务器端：用 `Sentry.captureException` 上报完整堆栈
    - 客户端：仅上报 `digest`，关联服务器记录
    - `global-error.tsx` 处理 root layout 错误
-
 
 ---
 

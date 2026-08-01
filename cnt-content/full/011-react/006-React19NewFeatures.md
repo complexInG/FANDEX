@@ -16,13 +16,6 @@ related:
   - react/性能优化
 prerequisites: []
 ---
-
-# React 19 Actions 与表单深入
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. React Server Components (RSC)
 
 React Server Components 是 React 19 最重要的特性，允许组件在服务端渲染，减少客户端 JavaScript 体积。
@@ -873,8 +866,6 @@ const { pending } = useFormStatus();
 
 ## 参考文献
 
-
-
 React 官方文档：https://react.dev/
 React 19 发布说明：https://react.dev/blog/2024/12/05/react-19
 TanStack Query：https://tanstack.com/query/latest
@@ -882,8 +873,6 @@ Zustand：https://zustand.docs.pmnd.rs/
 Next.js：https://nextjs.org/
 
 ## 延伸阅读
-
-
 
 React Hooks 深入，见 011-react 模块 Hooks 文档。
 React 与 TypeScript 类型，见 009-typescript 模块。

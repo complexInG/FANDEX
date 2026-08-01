@@ -1288,7 +1288,6 @@ B. JVM 启动时
 C. javac 编译时  
 D. 运行时反射
 
-
 **C**。JSR 269 规定注解处理器在 `javac` 编译时执行，位于 parse / enter 之后、attribute / flow 之前。Java 6 起 `apt` 工具被废弃，注解处理完全集成进 javac。
 
 **Q2.** 以下哪个方法用于向 javac 报告编译错误？
@@ -1297,7 +1296,6 @@ A. `System.err.println`
 B. `Logger.error`  
 C. `Messager.printMessage(ERROR, ...)`  
 D. `throw new RuntimeException`
-
 
 **C**。`Messager.printMessage` 是 JSR 269 规范的方式，关联到具体 Element，IDE 可定位到源码位置。其他方式不会影响 javac 退出码。
 
@@ -1308,7 +1306,6 @@ B. 该注解已被认领，其他 Processor 不应处理
 C. 已经生成所有源码  
 D. 编译失败
 
-
 **B**。`process` 返回 `true` 表示"已认领这些注解"，其他 Processor 不会再次处理同一批注解。返回 `false` 表示未认领，后续 Processor 仍可处理。
 
 **Q4.** Lombok 与 MapStruct 的根本差异是？
@@ -1317,7 +1314,6 @@ A. Lombok 是标准 JSR 269，MapStruct 不是
 B. Lombok 修改 AST，MapStruct 只生成新源码  
 C. Lombok 不需要 Maven 插件  
 D. MapStruct 性能更差
-
 
 **B**。Lombok 通过反射访问 `JavacProcessingEnvironment` 直接修改 AST，违反 JSR 269 "只生成不修改"约束。MapStruct 严格遵循 JSR 269，仅生成新源码。
 
@@ -1328,40 +1324,33 @@ B. `META-INF/gradle/incremental.annotation.processors`
 C. `META-INF/services/javax.annotation.processing.Processor`  
 D. `gradle.properties`
 
-
 **B**。Gradle 通过 `META-INF/gradle/incremental.annotation.processors` 文件声明每个 Processor 的增量类型（`isolating` / `aggregating` / `dynamic`）。
 
 ### 填空题知识点讲解
 
 **Q1.** JSR 269 提供的两个核心 API 包是 `javax.annotation.processing` 与 ________。
 
-
 `javax.lang.model`（含 `javax.lang.model.element`、`javax.lang.model.type`、`javax.lang.model.util`）。
 
 **Q2.** Element 接口代表**声明**视角，而 ________ 接口代表**类型**视角。
-
 
 `TypeMirror`。
 
 **Q3.** Processor 通过 ________ 方法告知 javac 支持哪些注解类型。
 
-
 `getSupportedAnnotationTypes()`（或 `@SupportedAnnotationTypes` 注解）。
 
 **Q4.** 注解处理的不动点迭代终止条件是 ________。
 
-
 某一轮 `process` 不再生成新源码（`roundEnv.processingOver() == true`）。
 
 **Q5.** JavaPoet 中代表一个完整 Java 源文件的类是 ________。
-
 
 `com.squareup.javapoet.JavaFile`。
 
 ### 编程题知识点讲解
 
 **Q1.** 实现一个 `@DeepCopy` 注解处理器，为 record 类型生成 `deepCopy()` 方法。
-
 
 ```java
 @Retention(RetentionPolicy.SOURCE)
@@ -1421,7 +1410,6 @@ public class DeepCopyProcessor extends AbstractProcessor {
 
 **Q2.** 实现一个 `@VerifyNotNull` 注解处理器，检查类中所有字段是否带 `@NonNull`，未标注的报编译错误。
 
-
 ```java
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
@@ -1456,7 +1444,6 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 
 **Q3.** 编写一个 `@GenerateMapper` 处理器，为两个 record 类型生成 MapStruct 风格的转换器（字段同名则自动映射）。
 
-
 - 解析两个 `TypeElement`，获取 record components；
 - 按字段名匹配，生成 `toDto` 方法；
 - 使用 JavaPoet 生成 `*Mapper` 类；
@@ -1466,7 +1453,6 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 ### 9.4 思考题
 
 **Q1.** 为什么 Lombok 选择突破 JSR 269 修改 AST？这种做法的长期风险是什么？
-
 
 - **动机**：仅生成新源码无法实现"修改已有类"（如 `@Getter` 必须在原类中添加方法）；
 - **替代方案**：如 AutoValue 生成子类，但需用户改为抽象类，使用上有差异；
@@ -1479,7 +1465,6 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 
 **Q2.** 如何设计一个支持 Gradle 与 Bazel 增量编译的注解处理器？
 
-
 - **Gradle**：声明 `META-INF/gradle/incremental.annotation.processors`，标记 `isolating`（推荐）或 `aggregating`；
 - **Bazel**：使用 `java_plugin` 与 `java_annotation_processing` 规则，无显式增量支持；
 - **设计原则**：
@@ -1489,7 +1474,6 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
   - 使用 `Filer` 创建文件（不要直接写文件系统）。
 
 **Q3.** 注解处理器与 Java Records 的设计哲学差异？为什么 Records 不能完全替代 Lombok？
-
 
 - **Records 设计哲学**：语言级、不可变、约束式（强制 final 字段、无继承、自动方法）；
 - **Lombok 设计哲学**：库级别、灵活、可定制（@Data 允许可变、@Builder 允许任意类）；

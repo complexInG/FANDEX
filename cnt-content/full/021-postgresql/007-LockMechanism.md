@@ -100,8 +100,6 @@ JOIN pg_locks blocker ON blocked.locktype = blocker.locktype
 
 ## 参考文献
 
-
-
 PostgreSQL 官方文档：https://www.postgresql.org/docs/
 PostgreSQL 中文文档：https://www.postgresql.org/docs/current/index.html
 PGXN 扩展仓库：https://pgxn.org/
@@ -110,15 +108,12 @@ pgvector：https://github.com/pgvector/pgvector
 
 ## 延伸阅读
 
-
-
 PostgreSQL 窗口函数，见 021-postgresql 模块文档。
 PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
 SQL 基础，见 019-sql 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 PostgreSQL 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

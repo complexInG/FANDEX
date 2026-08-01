@@ -2690,20 +2690,17 @@ class atomic_shared_ptr {
 
 **习题 1**（remember，难度 1）：`std::unique_ptr` 的复制构造函数被声明为 ____（C++ 关键字），因此它是 move-only 类型。
 
-
 **解析讲解**：`delete`（或 `= delete`）
 
 **解析讲解**：C++11 起将 `unique_ptr` 的拷贝构造与拷贝赋值显式声明为 `= delete`，强制所有权转移通过 `std::move` 完成，对应标准 [unique.ptr.single.ctor] 与 [unique.ptr.single.asgn]。这是 `auto_ptr` 设计缺陷的根本修复。
 
 **习题 2**（understand，难度 2）：`std::shared_ptr` 的控制块包含两个原子计数器：strong count 与 ____ count；后者由 `weak_ptr` 维护。
 
-
 **解析讲解**：weak
 
 **解析讲解**：shared_ptr 控制块同时维护 strong count（强引用计数，shared_ptr 维护）与 weak count（弱引用计数，weak_ptr 维护）。weak count 大于 0 时控制块本身不被释放，避免 weak_ptr::lock 的竞态。
 
 **习题 3**（apply，难度 3）：调用 `std::shared_ptr::reset()` 后，若 strong count 减为 0，对象析构；若同时 weak count 也为 0，则 ____ 被释放。
-
 
 **解析讲解**：控制块（control block）
 
@@ -2718,7 +2715,6 @@ class atomic_shared_ptr {
 - C. 两者性能完全相同
 - D. `make_shared` 不构造控制块
 
-
 **解析讲解**：B
 
 **解析讲解**：`make_shared` 将对象本体与控制块合并为单次堆分配，提升缓存局部性并减少分配次数。直接构造方式先 `new` 分配对象、再在 `shared_ptr` 构造内部分配控制块，共两次堆分配。
@@ -2730,7 +2726,6 @@ class atomic_shared_ptr {
 - C. `lock()` 是非原子操作，多线程下不安全
 - D. `lock()` 等价于 `expired()`
 
-
 **解析讲解**：B
 
 **解析讲解**：`lock()` 原子地执行"检查 strong count 是否为 0 + 若不为 0 则 +1"的复合操作，避免 TOCTOU 竞态。返回一个新的 `shared_ptr`；若 strong count 已为 0（对象已析构）则返回空 `shared_ptr`。
@@ -2741,7 +2736,6 @@ class atomic_shared_ptr {
 - B. 返回指向 this 的 `shared_ptr`
 - C. 抛出 `std::bad_weak_ptr` 异常
 - D. 编译错误
-
 
 **解析讲解**：C
 
@@ -2761,7 +2755,6 @@ auto b = std::make_shared<Node>();
 a->next = b;
 b->prev = a;
 ```
-
 
 **修正方案**：
 
@@ -2788,7 +2781,6 @@ std::shared_ptr<int> p1(raw);
 std::shared_ptr<int> p2(raw);
 ```
 
-
 **修正方案**：
 
 ```cpp
@@ -2814,7 +2806,6 @@ public:
     void processResult() {}
 };
 ```
-
 
 **修正方案**：
 
@@ -2846,7 +2837,6 @@ public:
 3. 解释为何使用 `weak_ptr` 而非 `shared_ptr` 维护反向链。
 
 给出核心代码并说明设计思路。
-
 
 ```cpp
 #include <memory>
@@ -2905,7 +2895,6 @@ public:
 4. 运行时开销（控制块布局、内存分配次数）。
 
 给出两个等价示例代码并论证设计哲学差异。
-
 
 **C++ shared_ptr**：
 

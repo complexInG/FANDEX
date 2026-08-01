@@ -50,7 +50,6 @@ prerequisites: []
 - 003-关系：等价关系、偏序与函数。
 - 004-图论：图、路径、树与连通性。
 
-
 ## 1. 命题与联结词
 
 ### 1.1 命题
@@ -291,15 +290,11 @@ $n$ 个变元有 $2^n$ 个极小项，第 $i$ 个极小项 $m_i$ 对应使公式
 
 ## 参考文献
 
-
-
 MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
 Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
 Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
 
 ## 延伸阅读
-
-
 
 离散数学基础，见 028-discrete-math 模块文档。
 算法与图论，见 023-algorithm 模块。
@@ -307,7 +302,6 @@ Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.c
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供离散数学课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

@@ -170,13 +170,6 @@ etymology:
     english: "Structured Concurrency"
     origin: "由 Martin Sústrik 在 2016 年博客提出，Nathaniel J. Smith 在 Python trio 库中系统化（2017）；Java 在 JEP 453（JDK 21 Preview）借鉴该思想。'Structured' 借自 Dijkstra 1968 年《Go To Statement Considered Harmful》倡导的结构化编程——并发任务应有明确的进入/退出边界，子任务生命周期不能逃逸父作用域。"
 ---
-
-# Java CompletableFuture 异步编程
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 引言：从"阻塞等待"到"组合式异步"
 
 Java 在 1.0（1996）就提供了 `Thread` 与 `Runnable`，但异步编程的演化历经四个阶段才达到今天的形态：

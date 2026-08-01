@@ -139,13 +139,6 @@ etymology:
   origin: Heap Pollution 一词由 Bloch 在《Effective Java》第 2 版第 23 条正式定义：当一个泛型类型变量引用了非泛型类型的对象时，导致堆中存放了与声明类型不匹配的对象。JLS §4.12.2 给出了形式化定义。
 estimatedReadingTime: 65
 ---
-
-# Java 泛型进阶
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 引言：从「集合需要强转」到「编译期类型安全」
 
 Java 在 1.0 版本（1996）发布时并不支持泛型，所有集合类如 `Vector`、`Hashtable`、`ArrayList` 都基于 `Object` 元素类型。开发者每次从集合中取出元素都必须显式强制转换（cast）：

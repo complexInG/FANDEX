@@ -16,13 +16,6 @@ related:
 prerequisites: []
 updated: '2026-08-01'
 ---
-
-# CSS 盒模型详解
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 盒模型组成 (Components)
 
 ### 1.1 基本组成
@@ -1386,8 +1379,6 @@ a::after {
 
 ## 参考文献
 
-
-
 MDN CSS 文档：https://developer.mozilla.org/zh-CN/docs/Web/CSS
 CSS 规范（W3C）：https://www.w3.org/Style/CSS/
 CSS-Tricks：https://css-tricks.com/
@@ -1395,8 +1386,6 @@ Can I use：https://caniuse.com/
 Tailwind CSS：https://tailwindcss.com/
 
 ## 延伸阅读
-
-
 
 CSS 圆角与形状，见 007-css/018-BorderRadius 文档。
 CSS 媒体查询与响应式，见 007-css/019-MediaQuery 文档。

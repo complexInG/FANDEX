@@ -206,8 +206,6 @@ Rust 是系统编程领域近十年最重要的语言创新：所有权系统把
 
 ## 参考文献
 
-
-
 Rust 官方文档：https://www.rust-lang.org/zh-CN/learn
 Rust 程序设计语言（中文书）：https://kaisery.github.io/trpl-zh-cn/
 Rust 标准库文档：https://doc.rust-lang.org/std/
@@ -216,15 +214,12 @@ Rust 异步编程：https://rust-lang.github.io/async-book/
 
 ## 延伸阅读
 
-
-
 Rust 与 C 对比（内存安全），见 025-c 模块。
 Rust 与 C++ 对比，见 026-cpp 模块。
 系统编程与嵌入式，见 035-iot 模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Rust 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

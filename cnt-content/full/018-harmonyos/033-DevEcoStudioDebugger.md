@@ -1374,11 +1374,9 @@ struct ForceGraph {
 - C. LLDB Remote
 - D. Chrome DevTools Protocol
 
-
 **解析讲解**：B
 
 **解析讲解**：DevEco Studio 调试 ArkTS 代码使用 V8 Inspector Protocol，因为 ArkTS 基于 V8 引擎。C++ 层调试使用 LLDB，设备连接使用 HDC（类似 ADB）。
-
 
 **常见疑问 2**：采样 Profiler 的默认采样频率是多少？
 
@@ -1387,11 +1385,9 @@ struct ForceGraph {
 - C. 10 kHz
 - D. 100 kHz
 
-
 **解析讲解**：B
 
 **解析讲解**：DevEco Studio 默认采样频率为 1kHz（每毫秒一次），平衡精度与开销。10kHz 开销达 25% CPU，仅用于深度分析。
-
 
 **常见疑问 3**：以下哪种断点不会阻塞应用执行？
 
@@ -1400,11 +1396,9 @@ struct ForceGraph {
 - C. 日志断点
 - D. 异常断点
 
-
 **解析讲解**：C
 
 **解析讲解**：日志断点（Log Breakpoint）在触发时仅输出日志，不暂停执行。适合在循环或高频回调中追踪状态。
-
 
 **常见疑问 4**：HiTrace 跨设备时钟对齐使用什么协议？
 
@@ -1413,11 +1407,9 @@ struct ForceGraph {
 - C. NTP + PTP
 - D. 自定义 ping-pong 测量
 
-
 **解析讲解**：D
 
 **解析讲解**：DevEco Studio 通过自定义 ping-pong 协议测量两台设备间时钟偏差（offset = t_B1 - t_A1 - RTT/2），自动应用偏移对齐多设备 trace。
-
 
 **常见疑问 5**：以下哪个 HDC 命令用于查看应用堆栈？
 
@@ -1426,48 +1418,35 @@ struct ForceGraph {
 - C. `hdc shell kill`
 - D. `hdc shell cat`
 
-
 **解析讲解**：B
 
 **解析讲解**：`hdc shell jstack <pid>` 用于抓取 Java/ArkTS 堆栈，等同于 Android 的 `kill -3`。`ps` 仅查看进程列表。
-
 
 ### 填空题知识点讲解
 
 **常见疑问 6**：DevEco Studio 调试 C++ 代码使用 ______ 协议。
 
-
 LLDB
-
 
 **常见疑问 7**：HiTrace 的 ______ API 用于在长流程中插入中间计时点。
 
-
 middleTrace
-
 
 **常见疑问 8**：火焰图的 x 轴表示 ______，y 轴表示 ______。
 
-
 采样次数（不等于时间但成正比）；调用栈深度
-
 
 **常见疑问 9**：Memory Profiler 通过 ______ 检测内存泄漏。
 
-
 多次堆快照对比
-
 
 **常见疑问 10**：HDC 的 ______ 模式比 USB 模式更稳定。
 
-
 TCP
-
 
 ### 编程题知识点讲解
 
 **常见疑问 11**：实现一个 ArkUI 组件重建监控装饰器，统计 build 方法被调用次数
-
 
 ```typescript
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -1539,9 +1518,7 @@ struct MonitoredList {
 }
 ```
 
-
 **常见疑问 12**：实现一个 HiTrace 跨设备调用追踪器，自动生成 traceId 并跨设备传递
-
 
 ```typescript
 import hiTraceMeter from '@ohos.hiTraceMeter';
@@ -1665,11 +1642,9 @@ class TargetAbility extends UIAbility {
 }
 ```
 
-
 ### 9.4 思考题
 
 **常见疑问 13**：为什么采样 Profiler 在 1kHz 下无法发现 1ms 以下的函数？如何改进？
-
 
 **原因**：采样间隔 1ms，函数执行时间小于 1ms 时，被采样到的概率极低（< 1%）。
 
@@ -1680,9 +1655,7 @@ class TargetAbility extends UIAbility {
 3. 使用硬件性能计数器（PMU），如 CPU 周期计数器，开销极小。
 4. 多次重复执行热点代码，统计平均时间。
 
-
 **常见疑问 14**：在分布式调试中，两台设备时钟偏差 100ms。如果不对齐时钟，trace 会呈现什么异常？举例说明。
-
 
 **异常表现**：
 
@@ -1694,9 +1667,7 @@ class TargetAbility extends UIAbility {
 
 A 在 $t_A = 1000\text{ms}$ 发起调用，B 在 $t_B = 1800\text{ms}$ 收到，实际 RTT = 800ms。若 B 时钟快 100ms（$t_B' = 1900\text{ms}$），trace 显示 RTT = 900ms，误差 12.5%。
 
-
 **常见疑问 15**：DevEco Studio 的 Inspector 显示 ArkUI 组件树而非 DOM 树，这一设计有哪些优劣？
-
 
 **优势**：
 
@@ -1710,9 +1681,7 @@ A 在 $t_A = 1000\text{ms}$ 发起调用，B 在 $t_B = 1800\text{ms}$ 收到，
 2. **学习曲线**：Web 开发者需重新学习。
 3. **跨平台调试难**：若同一应用在 Web 端跑，需两套工具。
 
-
 **常见疑问 16**：如果让你设计一个 CI 集成的自动化 UI 回归测试框架，基于 HDC 与 Inspector，会如何架构？
-
 
 **架构设计**：
 
@@ -1739,7 +1708,6 @@ hdc shell uitest dumpLayout
 hdc shell snapshot_display -f /data/local/tmp/shot.png
 hdc file recv /data/local/tmp/shot.png ./shot.png
 ```
-
 
 ---
 

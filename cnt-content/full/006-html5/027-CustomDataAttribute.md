@@ -15,13 +15,6 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
-
-# 自定义数据属性 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数 | `{ }` 分组 | `|` 或 | `...` 重复
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 前自定义属性时代（1995—2006）
@@ -1184,7 +1177,6 @@ C. `data--foo`
 
 D. `data-1`
 
-
 **答案：B**
 
 **解析讲解**：
@@ -1192,7 +1184,6 @@ D. `data-1`
 - B 无效：HTML 属性名不区分大小写，`data-userId` 会被规范化为 `data-userid`，`dataset.userId` 返回 `undefined`，应改为 `data-user-id`。
 - C 有效：`data-` 后跟连字符是允许的，`dataset.Foo` 可访问。
 - D 有效：`data-` 后跟数字是允许的。
-
 
 **常见疑问 2**：关于 `dataset` API，以下说法错误的是：
 
@@ -1204,13 +1195,11 @@ C. `el.dataset` 返回的对象是只读的，不能添加新属性
 
 D. `el.dataset.userId` 的值始终是字符串或 `undefined`
 
-
 **答案：C**
 
 **解析讲解**：
 - A、B、D 均正确。
 - C 错误：`dataset` 是 `DOMStringMap` 实例，其**属性**可读可写可删，但 `dataset` 本身（即 `el.dataset`）是只读的，不能 `el.dataset = {}`。
-
 
 **常见疑问 3**：以下哪种数据**最适合**存入 `data-*` 属性？
 
@@ -1222,7 +1211,6 @@ C. 用户上传的 10MB 图片数据
 
 D. 实时股票价格（每秒更新）
 
-
 **答案：B**
 
 **解析讲解**：
@@ -1231,24 +1219,19 @@ D. 实时股票价格（每秒更新）
 - C 错误：大数据应使用 `WeakMap` 或 IndexedDB。
 - D 错误：高频更新应使用 JS 变量，避免 DOM 重渲染。
 
-
 ### 填空题知识点讲解
 
 **常见疑问 4**：HTML 属性 `data-last-modified` 在 `dataset` API 中对应的键是 `________`。
-
 
 **解析讲解**：`lastModified`
 
 **解析讲解**：连字符转驼峰规则：`data-` 后的 `last-modified` 转换为 `lastModified`。
 
-
 **常见疑问 5**：`data-*` 属性的值在 DOM 中始终是________类型。
-
 
 **解析讲解**：字符串（`DOMString`）
 
 **解析讲解**：HTML 属性值始终是字符串，任何 JS 类型存入时会被 `String()` 转换。取出时需手动恢复类型。
-
 
 ### 编程题知识点讲解
 
@@ -1257,7 +1240,6 @@ D. 实时股票价格（每秒更新）
 - 支持 `getNumber(el, key)`、`getBoolean(el, key)`、`getJSON(el, key)`、`setJSON(el, key, obj)` 四个方法。
 - 自动处理 `data-` 前缀与驼峰转换。
 - 错误处理：无效 JSON 抛出 `SyntaxError`。
-
 
 ```javascript
 // DataStore.js
@@ -1303,13 +1285,11 @@ const id = DataStore.getNumber(el, 'userId'); // 123
 const active = DataStore.getBoolean(el, 'isActive'); // true
 ```
 
-
 **常见疑问 7**：实现一个简化版 Stimulus 控制器，支持通过 `data-controller`、`data-action`、`data-{name}-target` 实现声明式绑定。要求：
 
 - 自动初始化所有 `[data-controller]` 元素。
 - 支持多个 action（空格分隔）。
 - 支持事件委托（在控制器根元素上监听）。
-
 
 ```javascript
 // mini-stimulus.js
@@ -1383,11 +1363,9 @@ app.register('todo', TodoController);
 app.start();
 ```
 
-
 ### 9.4 思考题
 
 **常见疑问 8**：为什么 `data-*` 属性值始终是字符串？请从 HTML 规范、DOM 序列化、跨平台三个角度分析。
-
 
 1. **HTML 规范角度**：HTML 是基于 SGML 的标记语言，属性值本质是文本。HTML 规范未定义类型化的属性值机制（不同于 XML Schema）。
 
@@ -1395,9 +1373,7 @@ app.start();
 
 3. **跨平台角度**：HTML 跨浏览器、跨语言（PHP/Python/Node 渲染），字符串是最低公共类型。任何环境都能读写字符串属性。
 
-
 **常见疑问 9**：设计一个 `data-*` 属性审计工具，自动检测以下反模式：(a) 大对象 JSON 序列化，(b) 敏感数据（token/password/secret），(c) 类型滥用（布尔值存为字符串）。请给出检测算法与示例输出。
-
 
 ```javascript
 // data-audit.js
@@ -1483,9 +1459,7 @@ export class DataAttrAuditor {
 // ]
 ```
 
-
 **常见疑问 10**：对比 `data-*` + 事件委托与 React 状态管理在大型列表（10,000 项）中的性能表现。何时应该选择前者？
-
 
 | 维度 | `data-*` + 事件委托 | React 状态管理 |
 | ---- | -------------------- | --------------- |
@@ -1500,7 +1474,6 @@ export class DataAttrAuditor {
 - 10,000+ 项静态列表 + 少量交互 → `data-*` + 事件委托（如长列表、表格）。
 - 动态列表 + 复杂状态 → React 状态管理（如 TODO、聊天）。
 - 混合场景 → React 虚拟化 + `data-*` 辅助（如 react-window）。
-
 
 ---
 

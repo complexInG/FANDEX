@@ -672,8 +672,6 @@ root.print("");  // 打印目录树
 
 ## 参考文献
 
-
-
 Oracle Java 官方文档：https://docs.oracle.com/en/java/
 OpenJDK 项目：https://openjdk.org/
 Java 语言规范：https://docs.oracle.com/javase/specs/
@@ -682,8 +680,6 @@ Baeldung 教程站：https://www.baeldung.com/
 Maven 官方文档：https://maven.apache.org/guides/
 
 ## 延伸阅读
-
-
 
 Java 并发与 JUC，见 013-java 模块并发文档。
 JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。

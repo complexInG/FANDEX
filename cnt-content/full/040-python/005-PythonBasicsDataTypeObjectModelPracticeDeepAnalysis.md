@@ -529,7 +529,6 @@ Python 整数类型与运算示例
 import sys
 import time
 
-
 def demo_integer_basics() -> None:
     """演示整数基础运算"""
     # 任意精度整数
@@ -553,7 +552,6 @@ def demo_integer_basics() -> None:
     big_num_readable = 1_000_000_000
     print(f"下划线分隔: {big_num_readable}")  # 1000000000
 
-
 def demo_bit_operations() -> None:
     """演示位运算"""
     a = 0b1100  # 12
@@ -567,7 +565,6 @@ def demo_bit_operations() -> None:
     print(f"~a = {~a}")                        # 按位取反: -13
     print(f"a << 2 = {a << 2} ({bin(a << 2)})")  # 左移: 0b110000 = 48
     print(f"a >> 2 = {a >> 2} ({bin(a >> 2)})")  # 右移: 0b11 = 3
-
 
 def demo_integer_division() -> None:
     """演示 Python 3 的除法语义"""
@@ -591,7 +588,6 @@ def demo_integer_division() -> None:
     quotient, remainder = divmod(a, b)
     print(f"divmod({a}, {b}) = ({quotient}, {remainder})")  # (3, 2)
 
-
 def demo_performance_comparison() -> None:
     """对比小整数与大整数的运算性能"""
     # 小整数运算
@@ -612,7 +608,6 @@ def demo_performance_comparison() -> None:
     print(f"大整数加法 1000 万次: {big_int_time:.3f}s")
     print(f"性能比: {big_int_time / small_int_time:.1f}x")
 
-
 def demo_integer_memory() -> None:
     """演示整数的内存占用"""
     # 小整数（缓存范围内）
@@ -625,7 +620,6 @@ def demo_integer_memory() -> None:
 
     # 对比 C 语言的 int（4 字节）
     print(f"Python int 是 C int 的 {sys.getsizeof(42) / 4} 倍")
-
 
 if __name__ == '__main__':
     print("=== 整数基础 ===")
@@ -656,7 +650,6 @@ Python 浮点数与精度陷阱示例
 import math
 import sys
 
-
 def demo_float_precision() -> None:
     """演示浮点精度问题"""
     # 经典案例：0.1 + 0.2 != 0.3
@@ -684,7 +677,6 @@ def demo_float_precision() -> None:
     print(f"\n0.1 累加 10 次: {total}")    # 0.9999999999999999
     print(f"等于 1.0: {total == 1.0}")    # False
 
-
 def demo_float_comparison() -> None:
     """演示浮点数的正确比较方法"""
     a = 0.1 + 0.2
@@ -709,7 +701,6 @@ def demo_float_comparison() -> None:
         return abs(x - y) <= rel_tol * max(abs(x), abs(y))
 
     print(f"relative_equal(1e10, 1e10 + 1): {relative_equal(1e10, 1e10 + 1)}")
-
 
 def demo_special_values() -> None:
     """演示浮点数的特殊值"""
@@ -741,7 +732,6 @@ def demo_special_values() -> None:
     # 检测无穷大
     print(f"math.isinf(positive_inf): {math.isinf(positive_inf)}")
 
-
 def demo_float_limits() -> None:
     """演示浮点数的限制"""
     print(f"最大浮点数: {sys.float_info.max}")           # 约 1.8e308
@@ -757,7 +747,6 @@ def demo_float_limits() -> None:
     # 下溢为零
     small = sys.float_info.min
     print(f"min / 2 = {small / 2}")  # 0.0（下溢）
-
 
 def demo_decimal_for_finance() -> None:
     """演示 Decimal 在金融场景的应用"""
@@ -790,7 +779,6 @@ def demo_decimal_for_finance() -> None:
     print(f"总计: {total}")
     print(f"四舍五入: {total_rounded}")
 
-
 if __name__ == '__main__':
     print("=== 浮点精度 ===")
     demo_float_precision()
@@ -818,7 +806,6 @@ Python 字符串与编码示例
 5. 字符串格式化
 """
 import sys
-
 
 def demo_str_vs_bytes() -> None:
     """演示 str 与 bytes 的区别"""
@@ -853,7 +840,6 @@ def demo_str_vs_bytes() -> None:
     # 错误处理策略
     print(f"ignore: {bad_bytes.decode('utf-8', errors='ignore')}")  # 忽略错误字节
     print(f"replace: {bad_bytes.decode('utf-8', errors='replace')}")  # 替换为 ?
-
 
 def demo_string_operations() -> None:
     """演示字符串常用操作"""
@@ -890,7 +876,6 @@ def demo_string_operations() -> None:
     print(f"'abc'.isalpha(): {'abc'.isalpha()}")     # True
     print(f"'abc123'.isalnum(): {'abc123'.isalnum()}")  # True
     print(f"'  '.isspace(): {'  '.isspace()}")       # True
-
 
 def demo_string_formats() -> None:
     """演示字符串格式化方法"""
@@ -936,7 +921,6 @@ def demo_string_formats() -> None:
     print(f"科学计数: {123456.789:e}")  # 1.234568e+05
     print(f"千分位: {1234567:,}")   # 1,234,567
 
-
 def demo_raw_strings() -> None:
     """演示原始字符串与转义"""
     # 普通字符串中的转义
@@ -961,7 +945,6 @@ def demo_raw_strings() -> None:
     print(f"普通路径: {path_normal}")
     print(f"原始路径: {path_raw}")
     print(f"路径相等: {path_normal == path_raw}")
-
 
 def demo_string_memory() -> None:
     """演示字符串的内存占用"""
@@ -992,7 +975,6 @@ def demo_string_memory() -> None:
     f = sys_module.intern("interned string")
     print(f"显式驻留: {e is f}")  # True
 
-
 if __name__ == '__main__':
     print("=== str 与 bytes ===")
     demo_str_vs_bytes()
@@ -1020,7 +1002,6 @@ Python 布尔类型与 None 示例
 5. 短路求值
 """
 
-
 def demo_bool_basics() -> None:
     """演示布尔值基础"""
     # 布尔字面量
@@ -1045,7 +1026,6 @@ def demo_bool_basics() -> None:
     print(f"True + True: {True + True}")      # 2
     print(f"True + False: {True + False}")    # 1
     print(f"sum([True, False, True, True]): {sum([True, False, True, True])}")  # 3
-
 
 def demo_truthiness() -> None:
     """演示真值测试（truthiness）"""
@@ -1083,7 +1063,6 @@ def demo_truthiness() -> None:
     if not data:
         print("数据为空（Pythonic）")
 
-
 def demo_short_circuit() -> None:
     """演示短路求值"""
     # and 短路：第一个为 False 时，不计算第二个
@@ -1114,7 +1093,6 @@ def demo_short_circuit() -> None:
     config = {}
     timeout = config.get('timeout') or 30  # 如果 timeout 为 None 或 0，使用 30
     print(f"默认值: {timeout}")
-
 
 def demo_none_usage() -> None:
     """演示 None 的使用"""
@@ -1178,7 +1156,6 @@ def demo_none_usage() -> None:
     print(process(False))  # 假值: False
     print(process(1))      # 真值: 1
 
-
 def demo_null_object_pattern() -> None:
     """演示空对象模式（替代 None 检查）"""
     from typing import Protocol, Optional
@@ -1216,7 +1193,6 @@ def demo_null_object_pattern() -> None:
     print("\n不传日志（使用空对象）:")
     do_work()  # 不输出日志
 
-
 if __name__ == '__main__':
     print("=== 布尔基础 ===")
     demo_bool_basics()
@@ -1246,7 +1222,6 @@ Python 类型转换与高精度数值示例
 from decimal import Decimal, getcontext, localcontext
 from fractions import Fraction
 import math
-
 
 def demo_explicit_conversion() -> None:
     """演示显式类型转换"""
@@ -1282,7 +1257,6 @@ def demo_explicit_conversion() -> None:
     except ValueError as e:
         print(f"\n  转换失败: {e}")
 
-
 def demo_implicit_conversion() -> None:
     """演示隐式类型转换"""
     # int 与 float 运算，int 自动转为 float
@@ -1310,7 +1284,6 @@ def demo_implicit_conversion() -> None:
     # 必须显式转换
     result = "count: " + str(42)
     print(f"显式转换: {result}")
-
 
 def demo_decimal_advanced() -> None:
     """演示 Decimal 高级用法"""
@@ -1355,7 +1328,6 @@ def demo_decimal_advanced() -> None:
     print(f"\nfloat 2.675 的实际值: {Decimal(2.675)}")
     print(f"round(2.675, 2) = {round(2.675, 2)}")  # 2.67（不是 2.68！）
 
-
 def demo_fraction() -> None:
     """演示 Fraction 有理数运算"""
     # 创建 Fraction
@@ -1391,7 +1363,6 @@ def demo_fraction() -> None:
     # 转换为 float
     print(f"float(Fraction(1, 3)) = {float(Fraction(1, 3))}")  # 0.3333...
 
-
 def demo_numeric_choice() -> None:
     """演示数值类型的选型决策"""
     import timeit
@@ -1425,7 +1396,6 @@ def demo_numeric_choice() -> None:
     print("  - 数学计算、分数运算：Fraction（精确有理数）")
     print("  - 大整数（RSA、密码学）：int（任意精度）")
 
-
 if __name__ == '__main__':
     print("=== 显式转换 ===")
     demo_explicit_conversion()
@@ -1454,7 +1424,6 @@ Python 二进制数据类型示例
 """
 import struct
 from base64 import b64encode, b64decode
-
 
 def demo_bytes_bytearray() -> None:
     """演示 bytes 与 bytearray"""
@@ -1490,7 +1459,6 @@ def demo_bytes_bytearray() -> None:
     print(f"\nhex(): {data.hex()}")  # 000102ff
     print(f"hex('-'): {data.hex('-')}")  # 00-01-02-ff
 
-
 def demo_byte_order() -> None:
     """演示字节序处理"""
     # 整数的字节序
@@ -1519,7 +1487,6 @@ def demo_byte_order() -> None:
     b = 0x00FF
     print(f"\n0xFF00 & 0x00FF = {a & b:#x}")  # 0x0
     print(f"0xFF00 | 0x00FF = {a | b:#x}")    # 0xffff
-
 
 def demo_struct_module() -> None:
     """演示 struct 模块处理二进制协议"""
@@ -1573,7 +1540,6 @@ def demo_struct_module() -> None:
     name_unpacked = name_bytes.decode()
     print(f"解包 person: age={age_unpacked}, name={name_unpacked}")
 
-
 def demo_memoryview() -> None:
     """演示 memoryview 零拷贝访问"""
     # 创建大字节数组
@@ -1616,7 +1582,6 @@ def demo_memoryview() -> None:
     unpacked = struct.unpack_from('>IIf', mv)
     print(f"\n从 memoryview 解包: {unpacked}")
 
-
 def demo_base64_hex() -> None:
     """演示 Base64 与十六进制编码"""
     # 原始数据
@@ -1647,7 +1612,6 @@ def demo_base64_hex() -> None:
     png_header = b'\x89PNG\r\n\x1a\n'
     data_url = f"data:image/png;base64,{b64encode(png_header).decode()}"
     print(f"\nData URL: {data_url}")
-
 
 if __name__ == '__main__':
     print("=== bytes 与 bytearray ===")
@@ -2000,7 +1964,6 @@ from decimal import Decimal, Context, ROUND_HALF_UP
 from typing import Union
 from dataclasses import dataclass
 
-
 # 场景一：金融系统
 @dataclass
 class Money:
@@ -2055,7 +2018,6 @@ class Money:
     def __str__(self) -> str:
         return f"{self.amount} {self.currency}"
 
-
 # 使用示例
 price = Money("19.99")
 quantity = 3
@@ -2083,9 +2045,7 @@ for i, share in enumerate(shares):
 from typing import TypeVar, Callable, Optional
 import os
 
-
 T = TypeVar('T')
-
 
 def get_config(
     key: str,
@@ -2117,7 +2077,6 @@ def get_config(
     except (ValueError, TypeError) as e:
         raise ValueError(f"环境变量 {key}={value} 转换失败: {e}")
 
-
 # 布尔值转换（处理 "false"、"0"、"no" 等）
 def str_to_bool(s: str) -> bool:
     """
@@ -2133,12 +2092,10 @@ def str_to_bool(s: str) -> bool:
         return False
     raise ValueError(f"无法将 '{s}' 转换为布尔值")
 
-
 # 列表转换（逗号分隔）
 def str_to_list(s: str, sep: str = ',') -> list[str]:
     """字符串转列表"""
     return [item.strip() for item in s.split(sep) if item.strip()]
-
 
 # 使用示例
 if __name__ == '__main__':
@@ -2166,7 +2123,6 @@ if __name__ == '__main__':
 import struct
 from typing import NamedTuple
 from dataclasses import dataclass
-
 
 class PacketHeader(NamedTuple):
     """数据包头部"""

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
-
-# 列表与网格 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 列表和网格是移动应用中最常见的布局方式。HarmonyOS 提供了 List 和 Grid 两个核心组件，分别用于线性列表和二维网格的展示。它们内置了滚动、复用和懒加载能力，能够高效地处理大量数据的渲染。配合 ForEach 或 LazyForEach，可以灵活地实现动态数据驱动的列表与网格界面。
@@ -851,16 +844,12 @@ List() { ... }.sticky(StickyStyle.Header)  // Header | Footer
 
 ## 参考文献
 
-
-
 华为开发者联盟 HarmonyOS 文档：https://developer.huawei.com/consumer/cn/harmonyos
 ArkTS 语言规范：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-overview
 ArkUI 组件参考：https://developer.huawei.com/consumer/cn/doc/harmonyos-references/
 DevEco Studio：https://developer.huawei.com/consumer/cn/deveco-studio/
 
 ## 延伸阅读
-
-
 
 TypeScript 基础（ArkTS 语言底座），见 009-typescript 模块。
 声明式 UI 概念与 React/Vue 对比，见 011-react/010-vue3 模块。

@@ -1116,8 +1116,6 @@ console.log(readonlyOrder);
 
 ## 参考文献
 
-
-
 TypeScript 官方文档：https://www.typescriptlang.org/docs/
 TS 手册中文版：https://www.typescriptlang.org/zh/docs/handbook/
 TypeScript 发布计划：https://github.com/microsoft/TypeScript/wiki/Roadmap
@@ -1125,8 +1123,6 @@ tsconfig 参考：https://www.typescriptlang.org/tsconfig/
 Type Challenges：https://github.com/type-challenges/type-challenges
 
 ## 延伸阅读
-
-
 
 TS 基础类型与接口，见 009-typescript 模块文档。
 TS 泛型与工具类型，见 009-typescript 模块进阶文档。

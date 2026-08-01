@@ -1163,7 +1163,6 @@ type Keys = DeepKeyOf<LargeApplicationConfig>; // 假设有 1000 个嵌套属性
 - 优化 3：拆分为多个小类型，让 IDE 增量编译受益。
 - 优化 4：用 `// @ts-ignore` 在热路径上跳过类型检查，或用泛型参数延迟实例化。
 
-
 ## 参考文献
 
 [1] Microsoft. 2017. TypeScript 2.8 Release Notes: Conditional Types. Microsoft Developer Network. Retrieved July 21, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html
@@ -1530,7 +1529,6 @@ TypeScript 类型系统的演进方向：
 | 函数空间 | Function Space | 键到类型的映射 |
 
 通过本附录，读者可以快速对照英文术语查阅相关资料。
-
 
 ---
 

@@ -347,7 +347,6 @@ import hashlib
 import shutil
 from pathlib import Path
 
-
 def list_files_by_extension(directory: Path, extension: str) -> list[Path]:
     """按扩展名列出文件。
 
@@ -362,7 +361,6 @@ def list_files_by_extension(directory: Path, extension: str) -> list[Path]:
         p for p in directory.rglob(f'*.{extension}')
         if p.is_file()
     )
-
 
 def batch_rename(directory: Path, pattern: str, replacement: str,
                   dry_run: bool = True) -> list[tuple[Path, Path]]:
@@ -389,7 +387,6 @@ def batch_rename(directory: Path, pattern: str, replacement: str,
                     f.rename(new_path)
     return renamed
 
-
 def batch_resize_images(src_dir: Path, dst_dir: Path,
                          sizes: list[tuple[int, int]]):
     """批量调整图片大小。
@@ -408,7 +405,6 @@ def batch_resize_images(src_dir: Path, dst_dir: Path,
                 out_path = dst_dir / f'{img_path.stem}_{w}x{h}.jpg'
                 resized.save(out_path, quality=85)
 
-
 def file_sha256(path: Path, chunk_size: int = 65536) -> str:
     """计算文件 SHA-256 摘要。"""
     h = hashlib.sha256()
@@ -416,7 +412,6 @@ def file_sha256(path: Path, chunk_size: int = 65536) -> str:
         while chunk := f.read(chunk_size):
             h.update(chunk)
     return h.hexdigest()
-
 
 def incremental_backup(src: Path, dst: Path, manifest_path: Path):
     """增量备份：仅复制哈希变化的文件。
@@ -462,7 +457,6 @@ from watchdog.events import FileSystemEventHandler, FileSystemEvent
 from pathlib import Path
 import time
 
-
 class LogChangeHandler(FileSystemEventHandler):
     """日志文件变化处理器。"""
 
@@ -479,7 +473,6 @@ class LogChangeHandler(FileSystemEventHandler):
         if not event.is_directory:
             print(f'新文件创建: {event.src_path}')
 
-
 def start_watching(directory: Path, recursive: bool = True):
     """启动文件系统监控。"""
     observer = Observer()
@@ -495,7 +488,6 @@ def start_watching(directory: Path, recursive: bool = True):
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
-
 
 def main():
     import sys
@@ -517,7 +509,6 @@ def main():
 """
 import subprocess
 from typing import Optional
-
 
 def run_command(cmd: list[str], cwd: Optional[str] = None,
                  timeout: int = 60, capture: bool = True) -> subprocess.CompletedProcess:
@@ -547,7 +538,6 @@ def run_command(cmd: list[str], cwd: Optional[str] = None,
         errors='replace',
     )
 
-
 def stream_command(cmd: list[str]) -> None:
     """实时输出命令的 stdout/stderr。"""
     process = subprocess.Popen(
@@ -568,7 +558,6 @@ def stream_command(cmd: list[str]) -> None:
             process.returncode, cmd,
         )
 
-
 def run_in_background(cmd: list[str], output_file: str) -> subprocess.Popen:
     """在后台运行命令，输出重定向到文件。"""
     with open(output_file, 'w', encoding='utf-8') as f:
@@ -579,7 +568,6 @@ def run_in_background(cmd: list[str], output_file: str) -> subprocess.Popen:
             text=True,
             start_new_session=True,  # 脱离父进程会话
         )
-
 
 def git_clone_or_pull(repo_url: str, target_dir: str) -> bool:
     """克隆或更新 Git 仓库。"""
@@ -613,16 +601,13 @@ from apscheduler.triggers.date import DateTrigger
 from datetime import datetime, timedelta
 import logging
 
-
 def daily_report():
     """每日报告任务。"""
     print(f'[{datetime.now()}] 生成日报...')
 
-
 def hourly_cleanup():
     """每小时清理任务。"""
     print(f'[{datetime.now()}] 清理临时文件...')
-
 
 def setup_scheduler() -> BackgroundScheduler:
     """配置调度器。"""
@@ -658,7 +643,6 @@ def setup_scheduler() -> BackgroundScheduler:
 
     return scheduler
 
-
 def main():
     scheduler = setup_scheduler()
     scheduler.start()
@@ -669,7 +653,6 @@ def main():
             time.sleep(1)
     except (KeyboardInterrupt, SystemExit):
         scheduler.shutdown(wait=False)
-
 
 if __name__ == '__main__':
     main()
@@ -729,7 +712,6 @@ app.conf.update(
     },
 )
 
-
 class BaseTaskWithRetry(Task):
     """带重试的任务基类。"""
     autoretry_for = (Exception,)
@@ -737,7 +719,6 @@ class BaseTaskWithRetry(Task):
     retry_backoff = True  # 指数退避
     retry_backoff_max = 600  # 最大间隔 10 分钟
     retry_jitter = True  # 添加随机抖动
-
 
 @app.task(bind=True, base=BaseTaskWithRetry)
 def process_order(self, order_id: str):
@@ -751,14 +732,12 @@ def process_order(self, order_id: str):
         # 重试前可记录日志
         raise self.retry(exc=exc)
 
-
 @app.task
 def send_email(to: str, subject: str, body: str):
     """发送邮件任务。"""
     import smtplib
     # 略: SMTP 发送逻辑
     return {'status': 'sent', 'to': to}
-
 
 @app.task
 def generate_report(date: str):
@@ -767,14 +746,12 @@ def generate_report(date: str):
     time.sleep(10)
     return {'report': f'report_{date}.pdf'}
 
-
 @app.task
 def upload_to_s3(file_path: str):
     """上传 S3 任务。"""
     import time
     time.sleep(3)
     return {'url': f's3://bucket/{file_path}'}
-
 
 def chain_example(report_date: str):
     """任务链: 生成报告 -> 上传 S3 -> 发送邮件。"""
@@ -786,13 +763,11 @@ def chain_example(report_date: str):
     result = workflow.apply_async()
     return result.id
 
-
 def group_example(orders: list[str]):
     """任务组: 并行处理多个订单。"""
     job = group(process_order.s(oid) for oid in orders)
     result = job.apply_async()
     return result.id
-
 
 def get_task_status(task_id: str) -> dict:
     """查询任务状态。"""
@@ -826,7 +801,6 @@ from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
 from airflow.utils.task_state import TaskState
 
-
 default_args = {
     'owner': 'data_team',
     'depends_on_past': False,
@@ -841,7 +815,6 @@ default_args = {
     'execution_timeout': timedelta(hours=2),
     'sla': timedelta(hours=3),
 }
-
 
 def extract(**context):
     """从 MySQL 抽取数据。"""
@@ -858,7 +831,6 @@ def extract(**context):
     # 暂存到本地或 S3
     return len(rows)
 
-
 def transform(**context):
     """数据清洗与转换。"""
     import pandas as pd
@@ -868,14 +840,12 @@ def transform(**context):
     # 略: Pandas 转换逻辑
     return {'transformed_count': count}
 
-
 def load(**context):
     """加载到 ClickHouse。"""
     from clickhouse_driver import Client
     client = Client(host='clickhouse', port=9000)
     # 略: 批量插入逻辑
     return {'loaded': True}
-
 
 def notify_slack(**context):
     """Slack 通知。"""
@@ -885,7 +855,6 @@ def notify_slack(**context):
         'text': f"DAG {context['dag'].dag_id} 完成！"
     }
     requests.post(webhook_url, json=message)
-
 
 with DAG(
     dag_id='etl_orders',
@@ -951,7 +920,6 @@ from prefect import flow, task, get_run_logger
 from datetime import timedelta
 import asyncio
 
-
 @task(
     retries=3,
     retry_delay_seconds=[10, 30, 60],  # 渐进重试
@@ -967,7 +935,6 @@ async def extract_data(date: str) -> list[dict]:
     await asyncio.sleep(2)
     return [{'id': i, 'date': date} for i in range(100)]
 
-
 @task
 async def transform_data(rows: list[dict]) -> list[dict]:
     """数据转换。"""
@@ -975,14 +942,12 @@ async def transform_data(rows: list[dict]) -> list[dict]:
     logger.info(f'转换 {len(rows)} 行数据')
     return [{**r, 'transformed': True} for r in rows]
 
-
 @task
 async def load_data(rows: list[dict]) -> int:
     """加载数据。"""
     logger = get_run_logger()
     logger.info(f'加载 {len(rows)} 行')
     return len(rows)
-
 
 @flow(name='daily_etl', log_prints=True)
 async def daily_etl_pipeline(date: str):
@@ -992,14 +957,12 @@ async def daily_etl_pipeline(date: str):
     loaded_count = await load_data(transformed)
     return loaded_count
 
-
 @flow(name='scheduled_etl')
 async def scheduled_etl():
     """定时调度的 ETL。"""
     from datetime import datetime
     date = datetime.now().strftime('%Y-%m-%d')
     await daily_etl_pipeline(date)
-
 
 if __name__ == '__main__':
     # 本地运行
@@ -1033,7 +996,6 @@ from dagster import (
 )
 import pandas as pd
 
-
 @asset(
     group_name='raw',
     description='从 MySQL 抽取的原始订单数据',
@@ -1044,7 +1006,6 @@ def raw_orders(context: AssetExecutionContext) -> pd.DataFrame:
     context.log.info('抽取订单...')
     return pd.DataFrame({'id': [1, 2, 3], 'amount': [100, 200, 300]})
 
-
 @asset(group_name='staging', deps=[raw_orders])
 def cleaned_orders(context: AssetExecutionContext) -> pd.DataFrame:
     """清洗后的订单数据。"""
@@ -1052,7 +1013,6 @@ def cleaned_orders(context: AssetExecutionContext) -> pd.DataFrame:
     # 略: 清洗逻辑
     df['amount'] = df['amount'].astype(float)
     return df
-
 
 @asset(group_name='marts')
 def daily_revenue(context: AssetExecutionContext) -> MaterializeResult:
@@ -1066,7 +1026,6 @@ def daily_revenue(context: AssetExecutionContext) -> MaterializeResult:
             'row_count': MetadataValue.int(len(df)),
         }
     )
-
 
 daily_etl_job = define_asset_job(
     name='daily_etl_job',
@@ -1101,7 +1060,6 @@ Playwright Web 自动化示例。
 """
 from playwright.sync_api import sync_playwright, Browser, Page
 
-
 def scrape_quotes():
     """爬取 quotes.toscrape.com 的引言。"""
     quotes = []
@@ -1126,7 +1084,6 @@ def scrape_quotes():
         browser.close()
     return quotes
 
-
 def fill_form(url: str, form_data: dict):
     """自动化填写表单。"""
     with sync_playwright() as p:
@@ -1141,7 +1098,6 @@ def fill_form(url: str, form_data: dict):
         page.wait_for_url('**/success**')
         browser.close()
 
-
 def screenshot_page(url: str, output: str, full_page: bool = True):
     """截图保存。"""
     with sync_playwright() as p:
@@ -1150,7 +1106,6 @@ def screenshot_page(url: str, output: str, full_page: bool = True):
         page.goto(url)
         page.screenshot(path=output, full_page=full_page)
         browser.close()
-
 
 def intercept_network(url: str):
     """拦截网络请求示例。"""
@@ -1166,7 +1121,6 @@ def intercept_network(url: str):
         page.route('**', handle_route)
         page.goto(url)
         browser.close()
-
 
 async def async_scrape(urls: list[str]):
     """异步并发爬取多个页面。"""
@@ -1186,7 +1140,6 @@ async def async_scrape(urls: list[str]):
         titles = await asyncio.gather(*tasks)
         await browser.close()
         return titles
-
 
 import asyncio
 if __name__ == '__main__':
@@ -1212,12 +1165,10 @@ from enum import Enum
 
 app = typer.Typer(help='文件自动化工具集', add_completion=False)
 
-
 class SortBy(str, Enum):
     name = 'name'
     size = 'size'
     modified = 'modified'
-
 
 @app.command()
 def list_files(
@@ -1242,7 +1193,6 @@ def list_files(
     for f in files:
         typer.echo(f'{f.stat().st_size:>10}  {f}')
 
-
 @app.command()
 def rename(
     directory: Path = typer.Argument(...),
@@ -1260,7 +1210,6 @@ def rename(
                 if not dry_run:
                     f.rename(f.parent / new_name)
 
-
 @app.command()
 def backup(
     source: Path = typer.Argument(...),
@@ -1273,7 +1222,6 @@ def backup(
         shutil.make_archive(str(destination), 'zip', source)
     else:
         shutil.copytree(source, destination)
-
 
 if __name__ == '__main__':
     app()
@@ -1294,7 +1242,6 @@ pydantic-settings 配置管理示例。
 from pydantic import Field, SecretStr, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 class DatabaseConfig(BaseSettings):
     """数据库配置。"""
     host: str = 'localhost'
@@ -1313,7 +1260,6 @@ class DatabaseConfig(BaseSettings):
             raise ValueError('port must be in [1, 65535]')
         return v
 
-
 class RedisConfig(BaseSettings):
     """Redis 配置。"""
     host: str = 'localhost'
@@ -1322,7 +1268,6 @@ class RedisConfig(BaseSettings):
     password: SecretStr | None = None
 
     model_config = SettingsConfigDict(env_prefix='REDIS_')
-
 
 class AppConfig(BaseSettings):
     """应用主配置。"""
@@ -1338,7 +1283,6 @@ class AppConfig(BaseSettings):
         env_nested_delimiter='__',
         env_prefix='APP_',
     )
-
 
 # 使用示例
 if __name__ == '__main__':
@@ -1368,7 +1312,6 @@ import asyncio
 from typing import Any
 import aiohttp
 
-
 async def fetch_url(session: aiohttp.ClientSession, url: str) -> dict:
     """异步获取 URL。"""
     async with session.get(url) as response:
@@ -1377,7 +1320,6 @@ async def fetch_url(session: aiohttp.ClientSession, url: str) -> dict:
             'status': response.status,
             'body': await response.text(),
         }
-
 
 async def fetch_all(urls: list[str], concurrency: int = 10) -> list[dict]:
     """并发获取多个 URL，限制并发数。
@@ -1402,7 +1344,6 @@ async def fetch_all(urls: list[str], concurrency: int = 10) -> list[dict]:
             return_exceptions=True,
         )
     return results
-
 
 async def process_queue():
     """生产者-消费者模式。"""
@@ -1430,7 +1371,6 @@ async def process_queue():
     for c in consumers:
         c.cancel()
 
-
 async def main():
     """主入口。"""
     urls = [
@@ -1440,7 +1380,6 @@ async def main():
     ]
     results = await fetch_all(urls)
     print(f'获取 {len(results)} 个结果')
-
 
 if __name__ == '__main__':
     # Python 3.7+
@@ -1470,7 +1409,6 @@ import psutil
 import time
 from datetime import datetime
 
-
 def system_health_check() -> dict:
     """系统健康检查。"""
     return {
@@ -1489,7 +1427,6 @@ def system_health_check() -> dict:
         ).isoformat(),
     }
 
-
 def find_top_processes(n: int = 10, by: str = 'memory') -> list[dict]:
     """查找资源占用最高的进程。
 
@@ -1504,7 +1441,6 @@ def find_top_processes(n: int = 10, by: str = 'memory') -> list[dict]:
     key = 'memory_percent' if by == 'memory' else 'cpu_percent'
     procs.sort(key=lambda x: x.get(key, 0), reverse=True)
     return procs[:n]
-
 
 def kill_process_by_name(name: str, force: bool = False) -> int:
     """按名称杀死进程。
@@ -1528,7 +1464,6 @@ def kill_process_by_name(name: str, force: bool = False) -> int:
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 pass
     return killed
-
 
 def monitor_resource_usage(interval: float = 1.0, duration: float = 60.0):
     """监控资源使用率。
@@ -1816,7 +1751,6 @@ import json
 import sys
 from datetime import datetime, timezone
 
-
 class JSONFormatter(logging.Formatter):
     """JSON 格式化器。"""
 
@@ -1835,7 +1769,6 @@ class JSONFormatter(logging.Formatter):
         if hasattr(record, 'task_id'):
             log_entry['task_id'] = record.task_id
         return json.dumps(log_entry, ensure_ascii=False)
-
 
 def setup_logging(level: str = 'INFO', json_output: bool = False):
     """配置全局日志。
@@ -1885,7 +1818,6 @@ from typing import Callable, Type, Tuple
 
 logger = logging.getLogger(__name__)
 
-
 def retry(
     max_retries: int = 3,
     delay: float = 1.0,
@@ -1927,7 +1859,6 @@ def retry(
         return wrapper
     return decorator
 
-
 def async_retry(
     max_retries: int = 3,
     delay: float = 1.0,
@@ -1950,13 +1881,11 @@ def async_retry(
         return wrapper
     return decorator
 
-
 # 使用示例
 @retry(max_retries=5, exceptions=(ConnectionError, TimeoutError))
 def fetch_data(url: str):
     import requests
     return requests.get(url, timeout=10).json()
-
 
 @async_retry(max_retries=3)
 async def async_fetch(url: str):
@@ -1977,7 +1906,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import requests
 
-
 def send_slack(webhook_url: str, message: str, channel: str = None):
     """发送 Slack 消息。"""
     payload = {'text': message}
@@ -1985,7 +1913,6 @@ def send_slack(webhook_url: str, message: str, channel: str = None):
         payload['channel'] = channel
     response = requests.post(webhook_url, json=payload, timeout=10)
     response.raise_for_status()
-
 
 def send_dingtalk(webhook_url: str, message: str, at_all: bool = False):
     """发送钉钉消息。"""
@@ -1996,7 +1923,6 @@ def send_dingtalk(webhook_url: str, message: str, at_all: bool = False):
     }
     response = requests.post(webhook_url, json=payload, timeout=10)
     response.raise_for_status()
-
 
 def send_email(
     smtp_host: str,
@@ -2185,7 +2111,6 @@ Uber 从 Airflow 迁移到 Prefect 以提升开发体验。
 import asyncio
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
-
 def cpu_bound_task(n: int) -> int:
     """CPU 密集任务。"""
     total = 0
@@ -2193,13 +2118,11 @@ def cpu_bound_task(n: int) -> int:
         total += i ** 2
     return total
 
-
 def run_cpu_bound_parallel(tasks: list[int]) -> list[int]:
     """并行执行 CPU 密集任务。"""
     with ProcessPoolExecutor() as executor:
         results = list(executor.map(cpu_bound_task, tasks))
     return results
-
 
 async def io_bound_task(url: str) -> str:
     """IO 密集任务。"""
@@ -2207,7 +2130,6 @@ async def io_bound_task(url: str) -> str:
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             return await resp.text()
-
 
 async def run_io_bound_concurrent(urls: list[str]) -> list[str]:
     """并发执行 IO 密集任务。"""
@@ -2219,14 +2141,12 @@ async def run_io_bound_concurrent(urls: list[str]) -> list[str]:
 
     return await asyncio.gather(*[bounded(u) for u in urls])
 
-
 # 批处理优化
 def batch_process(items: list, batch_size: int = 100):
     """分批处理，避免内存爆炸。"""
     for i in range(0, len(items), batch_size):
         batch = items[i:i + batch_size]
         yield process_batch(batch)
-
 
 def process_batch(batch: list):
     """处理一批数据。"""
@@ -2242,7 +2162,6 @@ def process_batch(batch: list):
 Prometheus 监控集成。
 """
 from prometheus_client import Counter, Histogram, Gauge, start_http_server
-
 
 # 定义指标
 TASKS_TOTAL = Counter(
@@ -2262,7 +2181,6 @@ ACTIVE_TASKS = Gauge(
     'automation_active_tasks',
     'Currently running tasks',
 )
-
 
 def monitored_task(func):
     """任务监控装饰器。"""
@@ -2291,7 +2209,6 @@ def monitored_task(func):
             ACTIVE_TASKS.dec()
     return wrapper
 
-
 import functools
 import time
 ```
@@ -2305,7 +2222,6 @@ Sentry 异常追踪集成。
 import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
-
 
 def init_sentry(dsn: str, environment: str = 'production'):
     """初始化 Sentry。"""
@@ -2323,7 +2239,6 @@ def init_sentry(dsn: str, environment: str = 'production'):
         send_default_pii=False,  # 不发送 PII
         before_send=scrub_sensitive_data,
     )
-
 
 def scrub_sensitive_data(event, hint):
     """脱敏处理。"""
@@ -2350,7 +2265,6 @@ from my_automation.file_ops import (
     batch_rename,
     incremental_backup,
 )
-
 
 class TestFileOps:
     """文件操作测试。"""
@@ -2407,7 +2321,6 @@ class TestFileOps:
 from unittest.mock import patch, MagicMock
 import my_automation.tasks as tasks
 
-
 class TestETLTask:
     """ETL 任务测试。"""
 
@@ -2442,18 +2355,15 @@ Airflow DAG 单元测试。
 import pytest
 from airflow.models import DagBag
 
-
 @pytest.fixture(scope='session')
 def dagbag():
     """加载 DAG。"""
     return DagBag(dag_folder='dags/', include_examples=False)
 
-
 def test_dag_loaded(dagbag):
     """测试 DAG 是否加载成功。"""
     assert dagbag.import_errors == {}
     assert 'etl_orders' in dagbag.dags
-
 
 def test_dag_structure(dagbag):
     """测试 DAG 结构。"""
@@ -2492,7 +2402,6 @@ import logging
 import traceback
 import sys
 
-
 def debug_task(func):
     """调试装饰器。"""
     @functools.wraps(func)
@@ -2508,9 +2417,7 @@ def debug_task(func):
             raise
     return wrapper
 
-
 import functools
-
 
 def enable_asyncio_debug():
     """启用 asyncio 调试模式。"""

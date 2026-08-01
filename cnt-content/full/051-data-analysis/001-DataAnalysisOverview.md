@@ -49,11 +49,6 @@ f"...{mean:.1f}..." 是格式化字符串：把计算结果插入文本并保留
 - 003-探索性分析：分布、缺失值与相关性。
 - 004-可视化：用图表讲清数据结论。
 
-
-# 数据分析 分析工作流
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
 ---
 
 ## 1. 什么是数据分析
@@ -972,16 +967,12 @@ df["growth_rate"] = df.groupby("city")["sales"].pct_change()
 
 ## 参考文献
 
-
-
 Pandas 文档：https://pandas.pydata.org/docs/
 NumPy 文档：https://numpy.org/doc/stable/
 Matplotlib：https://matplotlib.org/
 Kaggle Learn：https://www.kaggle.com/learn
 
 ## 延伸阅读
-
-
 
 数据分析工具，见 051-data-analysis 模块文档。
 概率统计基础，见 030-probability-statistics 模块。

@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# C gdb 调试 语法速查手册
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 启动与退出
 
 **基本写法：调试可执行文件**
@@ -492,8 +485,6 @@ gdb ./app core.12345
 
 ## 参考文献
 
-
-
 cppreference C 文档：https://zh.cppreference.com/w/c
 C 标准草案：https://www.open-std.org/jtc1/sc22/wg14/
 GCC 官方文档：https://gcc.gnu.org/onlinedocs/
@@ -501,8 +492,6 @@ Linux man pages：https://man7.org/linux/man-pages/
 C 语言常见误解：https://www.yodaiken.com/
 
 ## 延伸阅读
-
-
 
 C 指针与数组深入，见 025-c 模块指针文档。
 C 枚举与 typedef，见 025-c/007-EnumTypedef 文档。

@@ -1414,7 +1414,6 @@ func main() {
 
 **习题 1**：编写一个程序，捕获 `SIGINT` 后打印"Ctrl-C pressed"，但前 3 次不退出，第 4 次才退出。
 
-
 ```go
 package main
 
@@ -1441,7 +1440,6 @@ func main() {
 }
 ```
 
-
 **习题 2**：解释以下程序为何会丢失信号：
 
 ```go
@@ -1449,9 +1447,7 @@ sigCh := make(chan os.Signal)  // 无缓冲
 signal.Notify(sigCh, syscall.SIGTERM)
 ```
 
-
 无缓冲 channel 要求发送方与接收方同时就绪。Go runtime 在投递信号时若发现 channel 已满（无缓冲即满），会丢弃信号而不阻塞。修复：`make(chan os.Signal, 1)`。
-
 
 ### 9.2 进阶题
 
@@ -1461,7 +1457,6 @@ signal.Notify(sigCh, syscall.SIGTERM)
 - 等待所有活跃请求完成或 30 秒超时。
 - 超时后强制关闭并打印未完成请求数。
 
-
 参考 5.3 节的 `GracefulServer` 实现，关键点：
 
 1. `atomic.Int32` 标记 `shutdownStarted`。
@@ -1469,9 +1464,7 @@ signal.Notify(sigCh, syscall.SIGTERM)
 3. `http.Server.Shutdown(ctx)` 等待活跃请求。
 4. 超时后 `ctx.Done()`，强制退出。
 
-
 **习题 4**：解释为什么 Go 程序作为容器 PID 1 时需要显式处理信号，并提供两种解决方案。
-
 
 Linux 内核对 PID 1 的特殊保护：
 
@@ -1482,7 +1475,6 @@ Linux 内核对 PID 1 的特殊保护：
 
 1. **使用 init 系统**：在容器中使用 `tini` 或 `dumb-init` 作为 PID 1，由它们转发信号。
 2. **Go 程序显式注册**：在 `main()` 中调用 `signal.Notify` 注册所有需要处理的信号。
-
 
 ### 9.3 思考题
 

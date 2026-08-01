@@ -19,13 +19,6 @@ related:
 prerequisites:
   - mysql/语法速查
 ---
-
-# MySQL 触发器与事件
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 触发器基础
 
 ### 1.1 什么是触发器
@@ -875,16 +868,12 @@ SET @skip_trigger = 0;
 
 ## 参考文献
 
-
-
 MySQL 官方文档：https://dev.mysql.com/doc/
 MySQL 8.0 参考手册：https://dev.mysql.com/doc/refman/8.0/en/
 High Performance MySQL（O'Reilly）：https://www.oreilly.com/library/view/high-performance-mysql/
 Percona 博客：https://www.percona.com/blog/
 
 ## 延伸阅读
-
-
 
 MySQL 索引与优化，见 020-mysql 模块文档。
 MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。

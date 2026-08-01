@@ -18,13 +18,6 @@ prerequisites:
   - mysql/语法速查
 updated: '2026-08-01'
 ---
-
-# MySQL 索引与执行计划
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 索引是什么 (What is an Index)
 
 索引是为了加速检索而构建的数据结构。对 InnoDB 来说，常见索引是 B+Tree。
@@ -314,8 +307,6 @@ SELECT * FROM users WHERE username LIKE '张%';
 
 ## 参考文献
 
-
-
 MySQL 官方文档：https://dev.mysql.com/doc/
 MySQL 8.0 参考手册：https://dev.mysql.com/doc/refman/8.0/en/
 High Performance MySQL（O'Reilly）：https://www.oreilly.com/library/view/high-performance-mysql/
@@ -323,15 +314,12 @@ Percona 博客：https://www.percona.com/blog/
 
 ## 延伸阅读
 
-
-
 MySQL 索引与优化，见 020-mysql 模块文档。
 MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
 Redis 缓存与 MySQL 组合，见 022-redis 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 MySQL 高级课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

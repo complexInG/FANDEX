@@ -649,7 +649,6 @@ from typing import Generic, TypeVar
 
 T = TypeVar('T')
 
-
 class MaxHeap(Generic[T]):
     """最大堆的完整实现，基于动态数组。"""
 
@@ -1033,7 +1032,6 @@ def heap_sort(arr: list[int]) -> list[int]:
 
     return arr
 
-
 def _sift_down(heap: list[int], i: int, size: int) -> None:
     """最大堆的下沉操作。"""
     while True:
@@ -1147,7 +1145,6 @@ from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
 T = TypeVar('T')
-
 
 class PriorityQueue(ABC, Generic[T]):
     """优先队列抽象数据类型。"""

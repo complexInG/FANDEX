@@ -18,13 +18,6 @@ prerequisites:
   - kotlin/类与对象
   - kotlin/属性与字段
 ---
-
-# Kotlin 委托属性速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 目录
 
 1. [学习目标](#1-学习目标)
@@ -2291,7 +2284,6 @@ println(lazy)
 println(lazy)
 ```
 
-
 ```
 Before
 Computing
@@ -2302,7 +2294,6 @@ Computing
 `lazy` 在首次访问时计算，之后返回缓存。
 
 **题目 2**：实现一个"只读一次"的委托，首次访问返回值，之后访问抛异常。
-
 
 ```kotlin
 class ReadOnce<T>(private val value: T) : ReadOnlyProperty<Any?, T> {
@@ -2325,11 +2316,9 @@ println(x)  // IllegalStateException
 
 **题目 3**：实现一个带 TTL 的缓存委托。
 
-
 参见 9.7 案例。
 
 **题目 4**：实现一个"防抖"委托，赋值后延迟 N 毫秒才真正生效。
-
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -2362,7 +2351,6 @@ class DebounceProperty<T>(
 ### 应用题知识点讲解
 
 **题目 5**：设计一个属性绑定框架，支持双向绑定。
-
 
 ```kotlin
 class BindableProperty<T>(
@@ -2413,7 +2401,6 @@ fun main() {
 }
 ```
 
-
 问题：
 1. 每个 User 实例都有 2 个 lazy 委托对象，10000 个 User 实例产生 20000 个 lazy 对象。
 2. lazy 默认是 SYNCHRONIZED，每次访问都有 volatile 读取。
@@ -2442,7 +2429,6 @@ class User {
 ### 9.5 设计题
 
 **题目 7**：设计一个支持"事务"的属性委托，多个属性可以一起提交。
-
 
 ```kotlin
 class TransactionalProperty<T>(

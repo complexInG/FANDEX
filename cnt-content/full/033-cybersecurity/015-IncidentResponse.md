@@ -15,13 +15,6 @@ related:
 prerequisites:
   - cybersecurity/安全基础与防御
 ---
-
-# Cybersecurity 应急响应命令
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 应急响应框架
 
 ### 1.1 PICERL 模型
@@ -609,8 +602,6 @@ sha256sum -c evidence.hash
 
 ## 参考文献
 
-
-
 OWASP Top 10：https://owasp.org/www-project-top-ten/
 OWASP Cheat Sheets：https://cheatsheetseries.owasp.org/
 NIST 网络安全框架：https://www.nist.gov/cyberframework
@@ -618,8 +609,6 @@ CWE 数据库：https://cwe.mitre.org/
 PortSwigger Web Security Academy：https://portswigger.net/web-security
 
 ## 延伸阅读
-
-
 
 密码学与证书，见 033-cybersecurity 模块文档。
 Web 攻击与防御，见 033-cybersecurity 模块相关文档。

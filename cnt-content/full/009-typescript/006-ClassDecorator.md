@@ -16,12 +16,6 @@ related:
 prerequisites:
   - typescript/语法速查
 ---
-# 类与装饰器
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 类成员修饰符 (Access Modifiers)
 
 TypeScript 提供了四种访问修饰符，用于控制类成员的访问权限：

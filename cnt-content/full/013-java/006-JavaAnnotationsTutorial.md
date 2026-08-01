@@ -127,13 +127,6 @@ etymology:
   origin: JSR 308（2013, Annotations on Java Types）扩展注解到任意类型使用处，如 `List<@NonNull String>`。Checker Framework 是首个基于类型注解的静态分析框架。
 estimatedReadingTime: 60
 ---
-
-# Java 枚举与注解
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 引言：从「int 常量」到「类型安全的领域建模」
 
 Java 1.0（1996）发布时，开发者通常用 `public static final int` 常量模拟枚举：

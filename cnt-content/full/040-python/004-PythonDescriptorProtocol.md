@@ -416,7 +416,6 @@ class TypedField:
         # 通过验证，存入实例 __dict__
         setattr(obj, self._private_name, value)
 
-
 class User:
     """使用 TypedField 定义带类型校验的用户类"""
     # 字符串类型的 name 字段，不允许为 None
@@ -425,7 +424,6 @@ class User:
     age = TypedField(int, default=0)
     # 浮点类型的 score 字段
     score = TypedField(float, default=0.0)
-
 
 # 使用示例
 user = User()
@@ -494,13 +492,11 @@ class RangeField:
         # 存储值
         setattr(obj, self._private_name, value)
 
-
 class Student:
     """学生类，使用 RangeField 限制属性范围"""
     age = RangeField(min_value=0, max_value=150, default=18)
     score = RangeField(min_value=0, max_value=100, default=60)
     height = RangeField(min_value=0, max_value=300, default=170)
-
 
 student = Student()
 student.age = 20       # 正确
@@ -557,7 +553,6 @@ class CachedProperty:
         obj.__dict__[self.name] = value
         return value
 
-
 class DataProcessor:
     """数据处理类，演示 CachedProperty 的使用"""
 
@@ -582,7 +577,6 @@ class DataProcessor:
         print("执行耗时计算 variance...")
         m = self.mean  # 复用缓存
         return sum((x - m) ** 2 for x in self.data) / len(self.data) if self.data else 0
-
 
 # 使用示例
 processor = DataProcessor(list(range(1000)))
@@ -631,7 +625,6 @@ class ClearableCachedProperty:
         if self.name in obj.__dict__:
             del obj.__dict__[self.name]
 
-
 class ImageProcessor:
     """图像处理类，演示可失效缓存"""
 
@@ -654,7 +647,6 @@ class ImageProcessor:
         self._modified = True
         # 失效缩略图缓存
         del self.thumbnail
-
 
 processor = ImageProcessor("photo.jpg")
 print("首次访问缩略图:")
@@ -726,7 +718,6 @@ class Field:
                 raise ValueError(f"{self.name} 不能为空")
             return
 
-
 class CharField(Field):
     """字符串字段"""
 
@@ -742,7 +733,6 @@ class CharField(Field):
             raise TypeError(f"{self.name} 必须是 str, 实际 {type(value).__name__}")
         if len(value) > self.max_length:
             raise ValueError(f"{self.name} 长度 {len(value)} 超过最大 {self.max_length}")
-
 
 class IntegerField(Field):
     """整数字段"""
@@ -763,7 +753,6 @@ class IntegerField(Field):
         if self.max_value is not None and value > self.max_value:
             raise ValueError(f"{self.name} 不能大于 {self.max_value}")
 
-
 class BooleanField(Field):
     """布尔字段"""
 
@@ -773,7 +762,6 @@ class BooleanField(Field):
             return
         if not isinstance(value, bool):
             raise TypeError(f"{self.name} 必须是 bool, 实际 {type(value).__name__}")
-
 
 class ModelMeta(type):
     """
@@ -792,7 +780,6 @@ class ModelMeta(type):
                 fields.update(base._fields)
         namespace['_fields'] = fields
         return super().__new__(mcs, name, bases, namespace)
-
 
 class Model(metaclass=ModelMeta):
     """模型基类"""
@@ -817,14 +804,12 @@ class Model(metaclass=ModelMeta):
         attrs = ', '.join(f"{k}={v!r}" for k, v in self.to_dict().items())
         return f"{type(self).__name__}({attrs})"
 
-
 class User(Model):
     """用户模型"""
     id = IntegerField(primary_key=True, nullable=False)
     name = CharField(max_length=100, nullable=False)
     age = IntegerField(min_value=0, max_value=150, default=18)
     is_active = BooleanField(default=True)
-
 
 # 使用示例
 user = User(id=1, name="张三", age=25, is_active=True)
@@ -889,7 +874,6 @@ class ObservableField:
         for callback in observers:
             callback(self.name, old_value, new_value)
 
-
 class Observable:
     """可观察对象基类"""
 
@@ -906,12 +890,10 @@ class Observable:
         if callback in self._observers:
             self._observers.remove(callback)
 
-
 class Order(Observable):
     """订单类，状态变化时通知观察者"""
     status = ObservableField(default="pending")
     amount = ObservableField(default=0.0)
-
 
 # 使用示例
 def log_status_change(attr: str, old: Any, new: Any) -> None:
@@ -966,7 +948,6 @@ class ReadOnly:
             raise AttributeError(f"'{self.name}' 是只读属性，不可修改")
         setattr(obj, self._private_name, value)
 
-
 class Configuration:
     """配置类，关键属性只读"""
     api_key = ReadOnly()
@@ -978,7 +959,6 @@ class Configuration:
         self.api_key = api_key
         self.base_url = base_url
         self.timeout = timeout
-
 
 # 使用示例
 config = Configuration(
@@ -1043,7 +1023,6 @@ class LazyAttribute:
         if obj in self._storage:
             del self._storage[obj]
 
-
 class SlottedClass:
     """
     使用 __slots__ 的类，演示 LazyAttribute 的弱引用存储
@@ -1060,7 +1039,6 @@ class SlottedClass:
         """模拟耗时计算"""
         print(f"计算实例 {self.id} 的数据...")
         return [i ** 2 for i in range(self.id)]
-
 
 # 使用示例
 obj1 = SlottedClass(5)
@@ -1429,7 +1407,6 @@ class ValidationError:
     def __str__(self):
         return f"[{self.field}] {self.message} (code: {self.code})"
 
-
 class Validator:
     """校验器基类"""
 
@@ -1441,7 +1418,6 @@ class Validator:
 
     def __call__(self, value: Any) -> Optional[str]:
         return self.validate(value)
-
 
 class TypeValidator(Validator):
     """类型校验器"""
@@ -1456,7 +1432,6 @@ class TypeValidator(Validator):
                 f"实际 {type(value).__name__}"
             )
         return None
-
 
 class RangeValidator(Validator):
     """范围校验器"""
@@ -1476,7 +1451,6 @@ class RangeValidator(Validator):
             return f"值 {value} 大于最大值 {self.max_value}"
         return None
 
-
 class LengthValidator(Validator):
     """长度校验器"""
 
@@ -1492,7 +1466,6 @@ class LengthValidator(Validator):
             return f"长度 {length} 大于最大长度 {self.max_len}"
         return None
 
-
 class RegexValidator(Validator):
     """正则校验器"""
 
@@ -1505,7 +1478,6 @@ class RegexValidator(Validator):
         if not self.pattern.match(str(value)):
             return self.message
         return None
-
 
 class ValidatedField:
     """
@@ -1578,7 +1550,6 @@ class ValidatedField:
         # 通过校验，存储
         setattr(obj, self._private_name, value)
 
-
 class UserForm:
     """用户表单，使用 ValidatedField 进行严格校验"""
     # 用户名：3-20 字符，仅字母数字下划线
@@ -1602,7 +1573,6 @@ class UserForm:
         ],
         nullable=False
     )
-
 
 # 使用示例
 form = UserForm()
@@ -1671,13 +1641,11 @@ class PositiveInt:
             raise ValueError(f"必须为正整数, 实际 {value}")
         setattr(obj, self._private_name, value)
 
-
 @dataclass
 class Product:
     """产品类，dataclass 与描述符协作"""
     name: str
     price: PositiveInt = PositiveInt()  # 描述符作为默认值
-
 
 p = Product("phone", 999)
 print(p.price)  # 999
@@ -1738,7 +1706,6 @@ class FieldInfo:
             raise ValueError(f"{self.name} 不能大于 {self.max_value}")
         setattr(obj, f'_field_{self.name}', value)
 
-
 class PydanticStyleModel:
     """Pydantic 风格的模型基类"""
 
@@ -1761,13 +1728,11 @@ class PydanticStyleModel:
                 result[name] = getattr(self, name)
         return result
 
-
 class UserConfig(PydanticStyleModel):
     """用户配置"""
     name: str = FieldInfo(default="", description="用户名")
     age: int = FieldInfo(default=18, min_value=0, max_value=150)
     email: str = FieldInfo(default="", description="邮箱")
-
 
 user = UserConfig(name="张三", age=25, email="zhang@example.com")
 print(user.to_dict())  # {'name': '张三', 'age': 25, 'email': 'zhang@example.com'}
@@ -1814,7 +1779,6 @@ class TestTypedField(unittest.TestCase):
     def test_class_access(self):
         """测试类访问返回描述符"""
         self.assertIsInstance(self.TestClass.name, TypedField)
-
 
 if __name__ == '__main__':
     unittest.main()
@@ -1868,13 +1832,11 @@ class ForeignKeyDescriptor:
         # 实际中调用 self.related_model.objects.get(id=related_id)
         return {'id': related_id, 'name': f'User_{related_id}'}
 
-
 class Order:
     """订单模型"""
     # 外键：关联 User 模型
     user = ForeignKeyDescriptor(related_model='User')
     amount = TypedField(float, default=0.0)
-
 
 # 使用示例
 order = Order()
@@ -1941,7 +1903,6 @@ class PydanticField:
             elif key == 'min_length' and len(value) < constraint:
                 raise ValueError(f"{self.name} 长度必须 >= {constraint}")
 
-
 class BaseModel:
     """Pydantic 风格基类"""
 
@@ -1954,13 +1915,11 @@ class BaseModel:
                 elif field.default is not ...:
                     setattr(self, name, field.default)
 
-
 class User(BaseModel):
     """用户模型"""
     name: str = PydanticField(default="", min_length=2)
     age: int = PydanticField(default=18, ge=0, le=150)
     email: str = PydanticField(default="")
-
 
 user = User(name="张三", age="25", email="zhang@example.com")
 print(f"姓名: {user.name}, 年龄: {user.age}")  # 年龄被强制转换为 int
@@ -2005,7 +1964,6 @@ class DataAnalyzer:
             'max': max(data),
             'min': min(data),
         }
-
 
 # 首次访问：30 秒
 analyzer = DataAnalyzer([1, 2, 3, 4, 5])
@@ -2060,7 +2018,6 @@ class ConfigOption:
     def __set__(self, obj, value):
         setattr(obj, f'_config_{self.name}', value)
 
-
 class AppConfig:
     """应用配置，声明式定义"""
 
@@ -2097,7 +2054,6 @@ class AppConfig:
         description="监听端口",
         converter=int
     )
-
 
 # 使用示例
 import os

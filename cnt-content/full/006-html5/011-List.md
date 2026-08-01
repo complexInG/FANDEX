@@ -38,7 +38,6 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-
 ## 1. 历史动机与发展脉络
 
 列表是 HTML 最早的语义元素之一。Tim Berners-Lee 在 1991 年发布的 HTML 初版（HTML Tags）中就有 `<UL>` 与 `<LI>`，因为 Web 的初衷是共享学术文档，而学术文档中目录、参考条目天然是列表结构。1993 年 HTML+ 草案加入 `<OL>` 的 `start` 属性；1995 年 HTML 2.0 将三类列表标准化；HTML 4.01（1999 年）把 `<dl>` 定义为定义列表；HTML5（2014 年）重新定义 `<dl>` 为名称-值组列表，并新增 `<menu>` 与 `<hr>` 语义调整。
@@ -401,10 +400,6 @@ Vue 组件化渲染列表的更多模式，见 010-vue3 模块相关文档；
 MDN 的 HTML 列表教程：https://developer.mozilla.org/zh-CN/docs/Learn_web_development/Core/Structuring_content/Lists ；
 
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 HTML/CSS 入门课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供前端基础与工程化课程。
-
-# 列表 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 

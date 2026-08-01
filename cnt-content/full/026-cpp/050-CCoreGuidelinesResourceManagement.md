@@ -144,13 +144,6 @@ quiz:
     code: 'int* p = new int(42); std::cout << *p;'
     answer: 'auto p = std::make_unique<int>(42); std::cout << *p;'
 ---
-
-# C++ 核心指南资源管理
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 第 1 章 学习目标与导论
 
 ### 1.1 本章在 C++ 知识体系中的位置
@@ -2807,20 +2800,17 @@ folly 的设计哲学是 RAII 不仅用于资源释放，也用于"主动管理�
 
 **习题 1**（remember，难度 1）：RAII 缩写展开为 ____（英文全称）。
 
-
 **解析讲解**：Resource Acquisition Is Initialization
 
 **解析讲解**：RAII 是 Resource Acquisition Is Initialization 的首字母缩写，由 Bjarne Stroustrup 于 1980s 提出，强调资源获取与对象初始化的同构性。这一范式将资源生命周期绑定到对象生命周期，利用 C++ 的确定性析构保证资源释放。
 
 **习题 2**（understand，难度 2）：C++ 异常抛出后，从抛出点到 catch 点之间逐帧调用自动对象析构函数的过程称为 ____。
 
-
 **解析讲解**：栈展开（Stack Unwinding）
 
 **解析讲解**：栈展开是 C++ 异常机制的核心，运行时从抛出点开始，逐帧回溯调用栈，对每个栈帧中已构造的自动对象调用析构函数，直至找到匹配的 catch 块。这是 RAII 异常安全的基石：无论异常从哪抛出，所有 RAII 对象的析构函数都会被调用。
 
 **习题 3**（understand，难度 3）：shared_ptr 通过 ____ 引用计数实现共享所有权（填"原子"或"非原子"）。
-
 
 **解析讲解**：原子
 
@@ -2834,7 +2824,6 @@ folly 的设计哲学是 RAII 不仅用于资源释放，也用于"主动管理�
 - B. RAII 类若持有独占资源应删除拷贝或实现移动；若持有共享资源可实现拷贝（如 shared_ptr）
 - C. RAII 类的移动构造函数必须为 noexcept，否则违反标准
 - D. RAII 类的析构函数可以抛出异常，由调用者捕获
-
 
 **解析讲解**：B
 
@@ -2858,7 +2847,6 @@ int main() {
 - C. AD
 - D. 0AD
 
-
 **解析讲解**：B
 
 **解析讲解**：make_unique 构造 W 输出 A；std::move 后 p 为空、q 持有对象，输出 0；main 返回时 q 析构 W 输出 D。顺序为 A0D。
@@ -2869,7 +2857,6 @@ int main() {
 - B. strong guarantee 要求操作要么成功，要么回滚到操作前的状态
 - C. nothrow guarantee 由 noexcept 标注保证，编译器自动生成
 - D. 析构函数默认提供 strong guarantee
-
 
 **解析讲解**：B
 
@@ -2888,7 +2875,6 @@ public:
     FILE* get() { return f_; }
 };
 ```
-
 
 **修正方案**：
 
@@ -2926,7 +2912,6 @@ struct Conn {
 };
 ```
 
-
 **修正方案**：
 
 ```cpp
@@ -2957,7 +2942,6 @@ struct Conn {
 5. 提供宏 SCOPED_GUARD(name, action) 简化使用。
 
 给出完整代码并说明设计权衡。
-
 
 ```cpp
 #include <utility>
@@ -3006,7 +2990,6 @@ ScopeGuard 是 RAII 的泛化形式，由 Alexandrescu 在 2000 年发表于 Gen
 5. 各自的"安全性盲区"（RAII 的悬空指针 vs GC 的循环引用）。
 
 给出具体场景说明哪种模型更优。
-
 
 **RAII 与 GC 的本质差异**：
 

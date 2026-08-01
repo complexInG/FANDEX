@@ -19,13 +19,6 @@ prerequisites:
   - python/装饰器进阶
   - python/描述符协议
 ---
-
-# Python 元类与描述符
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与演化
 
 ### 1.1 Smalltalk 的根源：一切皆对象，类也是对象
@@ -322,7 +315,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 class LoggedMeta(type):
     """记录所有使用本元类的类的创建过程。"""
 
@@ -337,15 +329,12 @@ class LoggedMeta(type):
         logger.info("Initializing class %s", name)
         super().__init__(name, bases, namespace, **kwargs)
 
-
 class Base(metaclass=LoggedMeta):
     pass
-
 
 class User(Base):
     def __init__(self, name):
         self.name = name
-
 
 # 输出：
 # INFO:__main__:Creating class Base with bases=[], attrs=['__module__', '__qualname__', '__doc__']
@@ -362,7 +351,6 @@ class User(Base):
 # 示例 5.3：用 __prepare__ 实现有序字段收集
 from collections import OrderedDict
 
-
 class OrderedMeta(type):
     """使类体命名空间保持定义顺序。"""
 
@@ -375,20 +363,17 @@ class OrderedMeta(type):
         note_order(name, namespace)
         return super().__new__(mcs, name, bases, dict(namespace))
 
-
 def note_order(name, namespace):
     print(f"Field order in {name}:")
     for i, key in enumerate(namespace.keys()):
         if not key.startswith("__"):
             print(f"  {i}: {key}")
 
-
 class Form(metaclass=OrderedMeta):
     username = None
     email = None
     password = None
     submit = None
-
 
 # Python 3.7+ 普通 dict 已保持插入顺序，__prepare__ 仍可用于
 # 返回自定义容器（如带默认值工厂、属性拦截的命名空间）。
@@ -410,7 +395,6 @@ class InterfaceMeta(type):
             )
         super().__init__(name, bases, namespace, **kwargs)
 
-
 class Storage(metaclass=InterfaceMeta):
     _required_methods = ("get", "set", "delete")
 
@@ -422,7 +406,6 @@ class Storage(metaclass=InterfaceMeta):
 
     def delete(self, key):
         raise NotImplementedError
-
 
 class MemoryStorage(Storage):
     def __init__(self):
@@ -436,7 +419,6 @@ class MemoryStorage(Storage):
 
     def delete(self, key):
         self._data.pop(key, None)
-
 
 # 以下代码会抛出 TypeError：
 # class BrokenStorage(Storage):
@@ -469,7 +451,6 @@ class Field:
     def __set__(self, instance, value):
         instance.__dict__[self.name] = value
 
-
 class ModelMeta(type):
     """收集子类中所有 Field 描述符，构建 _fields 字典。"""
 
@@ -490,16 +471,13 @@ class ModelMeta(type):
             cls.__table__ = name.lower()
         return cls
 
-
 class Model(metaclass=ModelMeta):
     pass
-
 
 class User(Model):
     id = Field("INTEGER PRIMARY KEY")
     name = Field("TEXT")
     email = Field("TEXT")
-
 
 print(User.__table__)              # user
 print(list(User._fields.keys()))   # ['id', 'name', 'email']
@@ -515,7 +493,6 @@ print(u.name, u.id)                # Alice 1
 ```python
 # 示例 5.6：元类 __call__ 实现线程安全单例
 import threading
-
 
 class SingletonMeta(type):
     """通过元类 __call__ 拦截实例化，实现单例。"""
@@ -533,7 +510,6 @@ class SingletonMeta(type):
                     cls._instances[cls] = instance
         return cls._instances[cls]
 
-
 class Database(metaclass=SingletonMeta):
     def __init__(self):
         print(f"Initializing Database (id={id(self)})")
@@ -542,7 +518,6 @@ class Database(metaclass=SingletonMeta):
     def connect(self):
         self.connections += 1
         return self.connections
-
 
 # 测试：多次实例化只会创建一个对象
 db1 = Database()
@@ -572,7 +547,6 @@ class Field:
     def __set__(self, instance, value):
         instance.__dict__[self.name] = value
 
-
 class Model:
     _fields = {}
 
@@ -590,11 +564,9 @@ class Model:
         if not hasattr(cls, "__table__"):
             cls.__table__ = cls.__name__.lower()
 
-
 class User(Model):
     id = Field("INTEGER PRIMARY KEY")
     name = Field("TEXT")
-
 
 print(User.__table__)
 print(list(User._fields.keys()))
@@ -607,32 +579,25 @@ print(list(User._fields.keys()))
 class MetaA(type):
     pass
 
-
 class MetaB(type):
     pass
-
 
 class A(metaclass=MetaA):
     pass
 
-
 class B(metaclass=MetaB):
     pass
-
 
 # 以下代码会抛出 TypeError: metaclass conflict
 # class C(A, B):
 #     pass
 
-
 # 解决方案：定义一个同时继承 MetaA 和 MetaB 的元类
 class MetaAB(MetaA, MetaB):
     pass
 
-
 class C(A, B, metaclass=MetaAB):
     pass
-
 
 print(type(C))            # <class 'MetaAB'>
 print(isinstance(C, MetaA))  # True
@@ -660,17 +625,14 @@ class RouteMeta(type):
         cls._routes = routes
         return cls
 
-
 def route(path):
     def decorator(func):
         func._route_path = path
         return func
     return decorator
 
-
 class BaseController(metaclass=RouteMeta):
     pass
-
 
 class UserController(BaseController):
     @route("/users")
@@ -680,7 +642,6 @@ class UserController(BaseController):
     @route("/users/<id>")
     def get_user(self, user_id):
         return {"id": user_id}
-
 
 print(UserController._routes)
 # {'/users': <function ...>, '/users/<id>': <function ...>}
@@ -718,7 +679,6 @@ class Column:
             )
         instance.__dict__[self.name] = value
 
-
 class ORMMeta(type):
     def __new__(mcs, name, bases, namespace, **kwargs):
         cls = super().__new__(mcs, name, bases, namespace, **kwargs)
@@ -744,18 +704,15 @@ class ORMMeta(type):
             cols.append(line)
         return f"CREATE TABLE {cls.__table__} (\n  " + ",\n  ".join(cols) + "\n);"
 
-
 class Model(metaclass=ORMMeta):
     @classmethod
     def create_table_sql(cls):
         return type(cls).create_table_sql(cls)
 
-
 class Product(Model):
     id = Column("INTEGER", primary_key=True)
     name = Column("TEXT", nullable=False)
     price = Column("REAL")
-
 
 print(Product.__table__)
 # product
@@ -932,14 +889,11 @@ class SingletonMeta(type):
             SingletonMeta._instances[cls] = super().__call__(*args, **kwargs)
         return SingletonMeta._instances[cls]
 
-
 class Base(metaclass=SingletonMeta):
     pass
 
-
 class Child(Base):
     pass
-
 
 # 问题：Base 和 Child 共享 _instances 字典吗？
 # 答案：不共享，因为 _instances 是 SingletonMeta 的类属性，
@@ -965,7 +919,6 @@ def singleton(cls):
     wrapper.__wrapped__ = cls
     return wrapper
 
-
 @singleton
 class OnlyOne:
     pass
@@ -985,12 +938,10 @@ class StrictMeta(type):
                 raise TypeError(f"Method {key} must have docstring")
         return super().__new__(mcs, name, bases, namespace, **kwargs)
 
-
 class Base(metaclass=StrictMeta):
     """Base class."""
     def method(self):
         """Has docstring."""
-
 
 class Child(Base):
     def new_method(self):
@@ -1189,14 +1140,11 @@ class Plugin:
         name = plugin_name or cls.__name__
         Plugin._registry[name] = cls
 
-
 class CSVPlugin(Plugin, plugin_name="csv"):
     pass
 
-
 class JSONPlugin(Plugin, plugin_name="json"):
     pass
-
 
 print(Plugin._registry)
 # {'CSVPlugin': <class '...CSVPlugin'>, 'JSONPlugin': <class '...JSONPlugin'>}
@@ -1218,7 +1166,6 @@ class KitchenSinkMeta(type):
         # 日志记录
         # ... 100 行代码
         pass
-
 
 # 最佳实践：拆分为多个元类或使用组合
 class FieldCollectMeta(type):
@@ -1278,7 +1225,6 @@ class ModelMeta(type):
 # 最佳实践 8.5：元类单元测试
 import unittest
 
-
 class TestModelMeta(unittest.TestCase):
     def test_field_collection(self):
         class MyModel(Model):
@@ -1309,7 +1255,6 @@ class TestModelMeta(unittest.TestCase):
             __table__ = "custom_table"
 
         self.assertEqual(Custom.__table__, "custom_table")
-
 
 if __name__ == "__main__":
     unittest.main()
@@ -1350,7 +1295,6 @@ class ModelMeta(type):
 # 最佳实践 8.7：使用 abc 替代自定义元类
 from abc import ABC, abstractmethod
 
-
 class Storage(ABC):
     @abstractmethod
     def get(self, key):
@@ -1359,7 +1303,6 @@ class Storage(ABC):
     @abstractmethod
     def set(self, key, value):
         ...
-
 
 class MemoryStorage(Storage):
     def __init__(self):
@@ -1370,7 +1313,6 @@ class MemoryStorage(Storage):
 
     def set(self, key, value):
         self._data[key] = value
-
 
 # s = Storage()  # TypeError: Can't instantiate abstract class
 s = MemoryStorage()
@@ -1386,7 +1328,6 @@ print(s.get("k"))  # v
 # 最佳实践 8.8：元类与类型注解协同
 import typing
 
-
 class TypedModelMeta(type):
     def __new__(mcs, name, bases, namespace, **kwargs):
         cls = super().__new__(mcs, name, bases, namespace, **kwargs)
@@ -1398,16 +1339,13 @@ class TypedModelMeta(type):
             cls._type_hints = {}
         return cls
 
-
 class TypedModel(metaclass=TypedModelMeta):
     pass
-
 
 class User(TypedModel):
     id: int
     name: str
     email: str | None = None
-
 
 print(User._type_hints)
 # {'id': <class 'int'>, 'name': <class 'str'>, 'email': typing.Optional[str]}
@@ -1487,7 +1425,6 @@ class Field:
         self.attname = name
         self.model = owner
 
-
 class ForeignKey(Field):
     def __init__(self, to, **kwargs):
         super().__init__(**kwargs)
@@ -1498,13 +1435,11 @@ class ForeignKey(Field):
         super().__set_name__(owner, name)
         self.attname = f"{name}_id"  # 外键列名
 
-
 class Options:
     def __init__(self, meta_class=None):
         self.abstract = getattr(meta_class, "abstract", False)
         self.fields = []
         self.local_fields = []
-
 
 class ModelBase(type):
     def __new__(mcs, name, bases, namespace, **kwargs):
@@ -1542,20 +1477,16 @@ class ModelBase(type):
 
         return cls
 
-
 class Model(metaclass=ModelBase):
     class Meta:
         abstract = True
 
-
 class Author(Model):
     name = Field()
-
 
 class Book(Model):
     title = Field()
     author = ForeignKey(Author)
-
 
 print(Author._meta.fields)
 # [<Field id>, <Field name>]
@@ -1581,12 +1512,10 @@ Pydantic v2 的 `ModelMetaclass` 是元类深度应用的现代范例。它负�
 import typing
 from typing import get_type_hints, Any
 
-
 class FieldInfo:
     def __init__(self, default=..., default_factory=None):
         self.default = default
         self.default_factory = default_factory
-
 
 class ModelMetaclass(type):
     def __new__(mcs, name, bases, namespace, **kwargs):
@@ -1629,17 +1558,14 @@ class ModelMetaclass(type):
                 setattr(self, name, value)
         return validate
 
-
 class BaseModel(metaclass=ModelMetaclass):
     def __init__(self, **data):
         self._validate(self, data)
-
 
 class User(BaseModel):
     id: int
     name: str
     email: str = "default@example.com"
-
 
 u = User(id=1, name="Alice")
 print(u.id, u.name, u.email)
@@ -1687,16 +1613,13 @@ class EnumMeta(type):
             return cls._value2member_map_[value]
         raise ValueError(f"{value} is not a valid {cls.__name__}")
 
-
 class Enum(metaclass=EnumMeta):
     pass
-
 
 class Color(Enum):
     RED = 1
     GREEN = 2
     BLUE = 3
-
 
 print(Color.RED)              # <Color.RED: 1>
 print(Color(1))               # <Color.RED: 1>
@@ -1714,7 +1637,6 @@ for c in Color:
 def abstractmethod(func):
     func.__isabstractmethod__ = True
     return func
-
 
 class ABCMeta(type):
     def __new__(mcs, name, bases, namespace, **kwargs):
@@ -1736,10 +1658,8 @@ class ABCMeta(type):
             )
         return super().__call__(*args, **kwargs)
 
-
 class ABC(metaclass=ABCMeta):
     pass
-
 
 class Shape(ABC):
     @abstractmethod
@@ -1750,7 +1670,6 @@ class Shape(ABC):
     def perimeter(self):
         ...
 
-
 class Circle(Shape):
     def __init__(self, r):
         self.r = r
@@ -1760,7 +1679,6 @@ class Circle(Shape):
 
     def perimeter(self):
         return 2 * 3.14 * self.r
-
 
 # s = Shape()  # TypeError: Can't instantiate abstract class Shape
 c = Circle(2)
@@ -1785,10 +1703,8 @@ class ResourceMeta(type):
             cls._routes = []
         return cls
 
-
 class Resource(metaclass=ResourceMeta):
     pass
-
 
 def route(path, **kwargs):
     def decorator(cls):
@@ -1797,7 +1713,6 @@ def route(path, **kwargs):
         return cls
     return decorator
 
-
 @route("/api/users")
 class UserList(Resource):
     def get(self):
@@ -1805,7 +1720,6 @@ class UserList(Resource):
 
     def post(self):
         return {"id": 2}
-
 
 print(UserList._routes)
 # [('/api/users', {})]
@@ -1824,7 +1738,6 @@ class GenericMeta(type):
         # 返回参数化类型别名
         return ParameterizedType(cls, item)
 
-
 class ParameterizedType:
     def __init__(self, origin, args):
         self.origin = origin
@@ -1837,10 +1750,8 @@ class ParameterizedType:
         # 简化版：仅检查 origin
         return isinstance(instance, self.origin)
 
-
 class List(metaclass=GenericMeta):
     pass
-
 
 print(List[int])       # List[int]
 print(List[str, int])  # List[str, int]
@@ -1867,7 +1778,6 @@ class HookPluginMeta(type):
             PluginManager.register(cls)
         return cls
 
-
 class PluginManager:
     _plugins = []
 
@@ -1875,10 +1785,8 @@ class PluginManager:
     def register(cls, plugin_cls):
         cls._plugins.append(plugin_cls)
 
-
 class HookPlugin(metaclass=HookPluginMeta):
     pass
-
 
 def hook(spec):
     def decorator(func):
@@ -1886,12 +1794,10 @@ def hook(spec):
         return func
     return decorator
 
-
 class MyPlugin(HookPlugin):
     @hook("pytest_collection_modifyitems")
     def modify_items(self, items):
         print(f"Modifying {len(items)} items")
-
 
 print(MyPlugin._hooks)  # {'modify_items': <function ...>}
 print(PluginManager._plugins)  # [<class '...MyPlugin'>]
@@ -1932,16 +1838,13 @@ class SQLModelMeta(type):
             cols.append(line)
         return f"CREATE TABLE {name.lower()} (\n  " + ",\n  ".join(cols) + "\n);"
 
-
 class SQLModel(metaclass=SQLModelMeta):
     pass
-
 
 class User(SQLModel):
     id: int
     name: str
     email: str = ""
-
 
 print(User.__sqlmodel_fields__)
 # {'id': {'type': <class 'int'>, 'default': Ellipsis, 'primary_key': True}, ...}
@@ -2019,7 +1922,6 @@ class ValidatedMeta(type):
                     )
         return super().__new__(mcs, name, bases, namespace, **kwargs)
 
-
 class Service(metaclass=ValidatedMeta):
     def get(self, id: int) -> str:  # 合法
         return str(id)
@@ -2045,7 +1947,6 @@ class Service:
                         f"Method {cls.__name__}.{key} must have return type annotation"
                     )
 
-
 class MyService(Service):
     def get(self, id: int) -> str:
         return str(id)
@@ -2069,14 +1970,12 @@ class SingletonMeta(type):
     def clear(cls):
         cls._instances.pop(cls, None)
 
-
 class Database(metaclass=SingletonMeta):
     def __init__(self):
         self.connected = False
 
     def connect(self):
         self.connected = True
-
 
 db1 = Database()
 db2 = Database()
@@ -2100,11 +1999,9 @@ class CountingMeta(type):
         print(f"Creating instance #{CountingMeta.counter} of {cls.__name__}")
         return super().__call__(*args, **kwargs)
 
-
 class Widget(metaclass=CountingMeta):
     def __init__(self, name):
         self.name = name
-
 
 w1 = Widget("A")
 w2 = Widget("B")
@@ -2217,17 +2114,14 @@ class Plugin:
     def all(cls):
         return dict(cls._registry)
 
-
 class CSVPlugin(Plugin, name="csv", version="2.0.0"):
     def parse(self, data):
         return data.split(",")
-
 
 class JSONPlugin(Plugin, name="json"):
     def parse(self, data):
         import json
         return json.loads(data)
-
 
 print(Plugin.all())
 # {'csv': <class 'CSVPlugin'>, 'json': <class 'JSONPlugin'>}
@@ -2249,7 +2143,6 @@ class ImmutableMeta(type):
         object.__setattr__(instance, "_frozen", True)
         return instance
 
-
 class Immutable(metaclass=ImmutableMeta):
     __slots__ = ("_frozen",)
 
@@ -2263,14 +2156,12 @@ class Immutable(metaclass=ImmutableMeta):
             raise AttributeError(f"Cannot modify frozen {type(self).__name__}")
         super().__delattr__(name)
 
-
 class Point(Immutable):
     __slots__ = ("x", "y")
 
     def __init__(self, x, y):
         self.x = x
         self.y = y
-
 
 p = Point(1, 2)
 print(p.x, p.y)  # 1 2
@@ -2581,7 +2472,6 @@ def print_metaclass_chain(cls):
             break
     print(" -> ".join(chain))
 
-
 class MyMeta(type): pass
 class MyClass(metaclass=MyMeta): pass
 
@@ -2599,11 +2489,9 @@ class TraceMeta(type):
         traceback.print_stack()
         return super().__call__(*args, **kwargs)
 
-
 class Foo(metaclass=TraceMeta):
     def __init__(self, x):
         self.x = x
-
 
 f = Foo(42)
 ```
@@ -2865,13 +2753,11 @@ class FactoryMeta(type):
             raise ValueError(f"No builder for {kind}")
         return builder(*args, **kwargs)
 
-
 def builds(kind):
     def decorator(func):
         func._builds = kind
         return func
     return decorator
-
 
 class WidgetFactory(metaclass=FactoryMeta):
     @builds("button")
@@ -2881,7 +2767,6 @@ class WidgetFactory(metaclass=FactoryMeta):
     @builds("input")
     def build_input(self, placeholder):
         return {"type": "input", "placeholder": placeholder}
-
 
 f = WidgetFactory()
 print(f.create("button", label="OK"))
@@ -2901,13 +2786,11 @@ class ObserverMeta(type):
                 cls._events[value._event_name] = value
         return cls
 
-
 def event(name):
     def decorator(func):
         func._event_name = name
         return func
     return decorator
-
 
 class EventEmitter(metaclass=ObserverMeta):
     def __init__(self):
@@ -2931,7 +2814,6 @@ class StrategyMeta(type):
             StrategyContext._strategies[namespace["strategy_name"]] = cls
         return cls
 
-
 class StrategyContext:
     _strategies = {}
 
@@ -2939,14 +2821,11 @@ class StrategyContext:
     def get(cls, name):
         return cls._strategies.get(name)
 
-
 class SortStrategy(metaclass=StrategyMeta):
     strategy_name = "sort"
 
-
 class FilterStrategy(metaclass=StrategyMeta):
     strategy_name = "filter"
-
 
 print(StrategyContext.get("sort"))   # <class 'SortStrategy'>
 print(StrategyContext.get("filter")) # <class 'FilterStrategy'>
@@ -2972,13 +2851,11 @@ class ImmutableMeta(type):
         object.__setattr__(instance, "_frozen", True)
         return instance
 
-
 class Immutable(metaclass=ImmutableMeta):
     def __setattr__(self, name, value):
         if getattr(self, "_frozen", False):
             raise AttributeError("Cannot modify immutable instance")
         super().__setattr__(name, value)
-
 
 class Point(Immutable):
     x: int
@@ -2987,7 +2864,6 @@ class Point(Immutable):
     def __init__(self, x, y):
         object.__setattr__(self, "x", x)
         object.__setattr__(self, "y", y)
-
 
 p = Point(1, 2)
 print(p.x, p.y)  # 1 2
@@ -3020,13 +2896,11 @@ class ADTMeta(type):
                 setattr(self, name, value)
         return __init__
 
-
 class Maybe(metaclass=ADTMeta):
     variants = {
         "Just": ("value",),
         "Nothing": (),
     }
-
 
 j = Maybe.Just(42)
 print(j.value)  # 42
@@ -3043,7 +2917,6 @@ print(n._fields)  # ()
 
 ```python
 import threading
-
 
 class ThreadSafeSingletonMeta(type):
     _instances = {}
@@ -3063,11 +2936,9 @@ class ThreadSafeSingletonMeta(type):
                     cls._instances[cls] = instance
         return cls._instances[cls]
 
-
 class Database(metaclass=ThreadSafeSingletonMeta):
     def __init__(self):
         print("Database initialized")
-
 
 # 多线程测试
 import concurrent.futures
@@ -3098,17 +2969,14 @@ class AsyncTaskMeta(type):
                 cls._async_tasks[key] = value
         return cls
 
-
 class AsyncTask(metaclass=AsyncTaskMeta):
     pass
-
 
 class MyTask(AsyncTask):
     async def fetch(self, url):
         import asyncio
         await asyncio.sleep(0.1)
         return f"Response from {url}"
-
 
 print(MyTask._async_tasks)  # {'fetch': <coroutine function ...>}
 ```

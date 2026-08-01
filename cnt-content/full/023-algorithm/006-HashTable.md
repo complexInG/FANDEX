@@ -537,7 +537,6 @@ $$h_{a,b}(k) = ((a \cdot k + b) \mod p) \mod m$$
 ```python
 import random
 
-
 class UniversalHash:
     """Carter-Wegman 全域哈希函数族。
 
@@ -608,7 +607,6 @@ def polynomial_hash(s: str, base: int = 31, mod: int = 10**9 + 7) -> int:
     for ch in s:
         h = (h * base + ord(ch)) % mod
     return h
-
 
 def rolling_hash(s: str, window: int, base: int = 31, mod: int = 10**9 + 7) -> list:
     """滑动窗口哈希：在 O(1) 时间内更新窗口哈希值。
@@ -793,7 +791,6 @@ def double_hash(s: str) -> tuple:
 
 ```python
 from typing import Any, Optional, Iterator
-
 
 class ChainingHashTable:
     """链地址法哈希表。
@@ -1133,7 +1130,6 @@ $h_2(k)$ 必须与 $m$ 互素。常用做法：
 
 ```python
 from typing import Any, Optional
-
 
 class OpenAddressingHashTable:
     """开放寻址法哈希表（线性探测 + 删除标记）。
@@ -1488,7 +1484,6 @@ Key2 -> Node B (顺时针最近)
 import hashlib
 import bisect
 
-
 class ConsistentHashRing:
     """一致性哈希环（带虚拟节点）。
 
@@ -1576,7 +1571,6 @@ $$P_{\text{fp}} \approx \left(1 - e^{-kn/m}\right)^k$$
 import mmh3  # MurmurHash3
 from typing import Iterable
 
-
 class BloomFilter:
     """布隆过滤器：支持 O(1) 判重，允许假阳性。"""
 
@@ -1621,7 +1615,6 @@ class BloomFilter:
 
 ```python
 import random
-
 
 class CuckooHashTable:
     """布谷鸟哈希表：最坏 O(1) 查找。"""
@@ -1736,7 +1729,6 @@ class CuckooHashTable:
 ```python
 import mmh3
 import random
-
 
 class CountMinSketch:
     """Count-Min Sketch：频率估计近似数据结构。"""
@@ -2013,7 +2005,6 @@ typedef struct dictht {
 ```python
 from typing import Optional
 
-
 class LRUCache:
     """LRU 缓存：哈希表 + 双向链表，O(1) get/put。"""
 
@@ -2156,7 +2147,6 @@ def twoSum(nums: list[int], target: int) -> list[int]:
 ```python
 from collections import defaultdict
 
-
 def groupAnagrams(strs: list[str]) -> list[list[str]]:
     """字母异位词分组：排序后字符串作为键。"""
     groups = defaultdict(list)
@@ -2204,7 +2194,6 @@ def longestConsecutive(nums: list[int]) -> int:
 ```python
 import hashlib
 import base64
-
 
 class URLShortener:
     """URL 短链服务（简化版）。"""

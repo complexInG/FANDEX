@@ -633,7 +633,6 @@ def build_next(pattern: str) -> list[int]:
         next_arr[i] = j
     return next_arr
 
-
 def kmp_search(text: str, pattern: str) -> list[int]:
     """
     KMP 字符串匹配，返回 pattern 在 text 中所有出现位置
@@ -678,7 +677,6 @@ def kmp_search(text: str, pattern: str) -> list[int]:
             j = next_arr[j]
 
     return matches
-
 
 # 演示
 if __name__ == "__main__":
@@ -725,7 +723,6 @@ def build_nextval(pattern: str) -> list[int]:
         else:
             nextval[j] = next_arr[j]
     return nextval
-
 
 # 测试 nextval
 if __name__ == "__main__":
@@ -945,7 +942,6 @@ class KMPAutomaton:
                 matches.append(i - self.m + 1)
         return matches
 
-
 if __name__ == "__main__":
     auto = KMPAutomaton("ABABC", alphabet="ABC")
     print(auto.search("ABABABCAB"))  # 输出: [2]
@@ -989,7 +985,6 @@ def minimal_period(s: str) -> int:
         return period
     return n  # 无严格小于 n 的循环节
 
-
 # 测试
 if __name__ == "__main__":
     print(minimal_period("ABCABCABC"))  # 输出: 3
@@ -1024,7 +1019,6 @@ def is_periodic(s: str, k: int) -> bool:
             j += 1
         pmt[i] = j
     return pmt[n - 1] >= n - k
-
 
 # 测试
 if __name__ == "__main__":
@@ -1152,7 +1146,6 @@ def build_next_correct(pattern):
             j += 1
         next_arr[i] = j
     return next_arr
-
 
 def kmp_correct(text, pattern):
     next_arr = build_next_correct(pattern)
@@ -1479,7 +1472,6 @@ def benchmark_kmp(algo: Callable, text: str, pattern: str, repeat: int = 100) ->
         total += time.perf_counter() - start
     return total / repeat
 
-
 def generate_test_case(n: int, m: int, case_type: str = "random") -> tuple[str, str]:
     """
     生成测试用例
@@ -1506,7 +1498,6 @@ def generate_test_case(n: int, m: int, case_type: str = "random") -> tuple[str, 
     else:
         raise ValueError(f"Unknown case_type: {case_type}")
     return text, pattern
-
 
 # 运行基准测试
 if __name__ == "__main__":
@@ -1650,7 +1641,6 @@ def find_seeds(read: str, reference: str, seed_length: int = 20) -> list[tuple[i
         for ref_pos in matches:
             seeds.append((i, ref_pos))
     return seeds
-
 
 def seed_and_extend(read: str, reference: str) -> list[tuple[int, int, int]]:
     """

@@ -16,13 +16,6 @@ related:
 prerequisites: []
 updated: '2026-08-01'
 ---
-
-# 表单与验证 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 表单基础
 
 表单是网页中用于收集用户输入的重要组件，HTML5 提供了丰富的表单元素和验证功能。
@@ -1236,8 +1229,6 @@ fetch('/api/submit', {
 ```
 
 ## 参考文献
-
-
 
 WHATWG HTML Living Standard：https://html.spec.whatwg.org/
 MDN HTML 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTML

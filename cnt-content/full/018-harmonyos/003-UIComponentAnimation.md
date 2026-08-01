@@ -14,13 +14,6 @@ related:
   - harmonyos/多媒体与设备能力
 prerequisites: []
 ---
-
-# UI 组件与动画 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 基础组件
 
 ### 1.1 Text 文本组件
@@ -1291,16 +1284,12 @@ Refresh({ refreshing: $$this.isRefreshing }) {
 
 ## 参考文献
 
-
-
 华为开发者联盟 HarmonyOS 文档：https://developer.huawei.com/consumer/cn/harmonyos
 ArkTS 语言规范：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-overview
 ArkUI 组件参考：https://developer.huawei.com/consumer/cn/doc/harmonyos-references/
 DevEco Studio：https://developer.huawei.com/consumer/cn/deveco-studio/
 
 ## 延伸阅读
-
-
 
 TypeScript 基础（ArkTS 语言底座），见 009-typescript 模块。
 声明式 UI 概念与 React/Vue 对比，见 011-react/010-vue3 模块。

@@ -538,7 +538,6 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from tqdm import tqdm
 
-
 class MLP(nn.Module):
     """多层感知机。"""
 
@@ -556,7 +555,6 @@ class MLP(nn.Module):
         x = self.dropout(x)
         return self.fc2(x)
 
-
 def get_dataloaders(batch_size: int = 64) -> tuple[DataLoader, DataLoader]:
     """加载 MNIST 数据集。"""
     transform = transforms.Compose([
@@ -569,7 +567,6 @@ def get_dataloaders(batch_size: int = 64) -> tuple[DataLoader, DataLoader]:
         DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=4),
         DataLoader(test_set, batch_size=1000, shuffle=False, num_workers=4),
     )
-
 
 def train(
     model: nn.Module,
@@ -592,7 +589,6 @@ def train(
         total_loss += loss.item() * data.size(0)
     return total_loss / len(train_loader.dataset)
 
-
 def evaluate(model: nn.Module, device: torch.device, test_loader: DataLoader) -> float:
     """评估模型。"""
     model.eval()
@@ -604,7 +600,6 @@ def evaluate(model: nn.Module, device: torch.device, test_loader: DataLoader) ->
             pred = output.argmax(dim=1)
             correct += (pred == target).sum().item()
     return correct / len(test_loader.dataset)
-
 
 def main() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -619,7 +614,6 @@ def main() -> None:
         loss = train(model, device, train_loader, optimizer, criterion, epoch)
         acc = evaluate(model, device, test_loader)
         print(f"Epoch {epoch}: loss={loss:.4f}, accuracy={acc:.4f}")
-
 
 if __name__ == "__main__":
     main()
@@ -640,7 +634,6 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms, models
 
-
 def get_resnet18(num_classes: int = 10, pretrained: bool = True) -> nn.Module:
     """加载 ResNet-18 并适配 CIFAR-10。"""
     weights = models.ResNet18_Weights.DEFAULT if pretrained else None
@@ -651,7 +644,6 @@ def get_resnet18(num_classes: int = 10, pretrained: bool = True) -> nn.Module:
     # 修改分类头
     model.fc = nn.Linear(model.fc.in_features, num_classes)
     return model
-
 
 def get_cifar10_loaders(batch_size: int = 128) -> tuple[DataLoader, DataLoader]:
     """CIFAR-10 数据加载器。"""
@@ -671,7 +663,6 @@ def get_cifar10_loaders(batch_size: int = 128) -> tuple[DataLoader, DataLoader]:
         DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True),
         DataLoader(test_set, batch_size=256, shuffle=False, num_workers=4),
     )
-
 
 def train_one_epoch(
     model: nn.Module,
@@ -717,7 +708,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class Swish(nn.Module):
     """Swish 激活函数: x * sigmoid(x)。"""
 
@@ -727,7 +717,6 @@ class Swish(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return x * torch.sigmoid(self.beta * x)
-
 
 class LayerNorm(nn.Module):
     """自定义 LayerNorm 实现。"""
@@ -743,7 +732,6 @@ class LayerNorm(nn.Module):
         var = x.var(dim=-1, keepdim=True, unbiased=False)
         x_norm = (x - mean) / torch.sqrt(var + self.eps)
         return self.gamma * x_norm + self.beta
-
 
 class SelfAttention(nn.Module):
     """单头自注意力。"""
@@ -762,7 +750,6 @@ class SelfAttention(nn.Module):
         v = self.v(x)
         attn = torch.softmax(torch.bmm(q, k.transpose(1, 2)) * self.scale, dim=-1)
         return torch.bmm(attn, v)
-
 
 # 测试
 if __name__ == "__main__":
@@ -790,7 +777,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class FocalLoss(nn.Module):
     """Focal Loss，解决类别不平衡问题。
 
@@ -807,7 +793,6 @@ class FocalLoss(nn.Module):
         pt = torch.exp(-ce_loss)
         loss = self.alpha * (1 - pt) ** self.gamma * ce_loss
         return loss.mean()
-
 
 class ContrastiveLoss(nn.Module):
     """对比学习损失（SimCLR 风格）。"""
@@ -836,7 +821,6 @@ class ContrastiveLoss(nn.Module):
         labels = torch.cat([torch.arange(batch_size) + batch_size, torch.arange(batch_size)]).to(z.device)
         return F.cross_entropy(sim, labels)
 
-
 if __name__ == "__main__":
     focal = FocalLoss()
     logits = torch.randn(8, 10)
@@ -860,7 +844,6 @@ from __future__ import annotations
 
 import torch
 from torch.optim import Optimizer
-
 
 class AdamW(Optimizer):
     """AdamW 优化器实现。
@@ -932,7 +915,6 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 from PIL import Image
 
-
 class ImageFolderDataset(Dataset):
     """自定义图像数据集。"""
 
@@ -965,7 +947,6 @@ class ImageFolderDataset(Dataset):
             img = self.transform(img)
         return img, label
 
-
 def get_train_transforms(image_size: int = 224) -> transforms.Compose:
     """训练时的数据增强。"""
     return transforms.Compose([
@@ -976,7 +957,6 @@ def get_train_transforms(image_size: int = 224) -> transforms.Compose:
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
-
 
 def get_eval_transforms(image_size: int = 224) -> transforms.Compose:
     """评估时的预处理。"""
@@ -1000,7 +980,6 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 from torch.cuda.amp import GradScaler, autocast
-
 
 def train_with_amp(
     model: nn.Module,
@@ -1059,18 +1038,15 @@ import torch.nn as nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader, DistributedSampler
 
-
 def setup(rank: int, world_size: int) -> None:
     """初始化进程组。"""
     os.environ["MASTER_ADDR"] = "localhost"
     os.environ["MASTER_PORT"] = "12355"
     dist.init_process_group("nccl", rank=rank, world_size=world_size)
 
-
 def cleanup() -> None:
     """清理进程组。"""
     dist.destroy_process_group()
-
 
 def train_ddp(rank: int, world_size: int) -> None:
     """DDP 训练。"""
@@ -1098,7 +1074,6 @@ def train_ddp(rank: int, world_size: int) -> None:
 
     cleanup()
 
-
 if __name__ == "__main__":
     world_size = torch.cuda.device_count()
     mp.spawn(train_ddp, args=(world_size,), nprocs=world_size, join=True)
@@ -1116,7 +1091,6 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 
-
 class SimpleModel(nn.Module):
     def __init__(self) -> None:
         super().__init__()
@@ -1125,13 +1099,11 @@ class SimpleModel(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.fc(x.view(x.size(0), -1))
 
-
 def export_torchscript(model: nn.Module, path: str) -> None:
     """导出 TorchScript 模型。"""
     scripted = torch.jit.script(model)
     scripted.save(path)
     print(f"TorchScript 模型已保存到 {path}")
-
 
 def export_onnx(model: nn.Module, path: str, input_shape: tuple = (1, 1, 28, 28)) -> None:
     """导出 ONNX 模型。"""
@@ -1149,7 +1121,6 @@ def export_onnx(model: nn.Module, path: str, input_shape: tuple = (1, 1, 28, 28)
     )
     print(f"ONNX 模型已保存到 {path}")
 
-
 def benchmark_inference(model: nn.Module, input_shape: tuple, n_iter: int = 100) -> float:
     """推理基准测试。"""
     model.eval()
@@ -1165,7 +1136,6 @@ def benchmark_inference(model: nn.Module, input_shape: tuple, n_iter: int = 100)
             _ = model(dummy)
         elapsed = time.perf_counter() - start
     return elapsed / n_iter * 1000  # ms
-
 
 if __name__ == "__main__":
     model = SimpleModel().eval()
@@ -1188,7 +1158,6 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
-
 def build_mlp(input_shape: tuple = (784,), num_classes: int = 10) -> keras.Model:
     """构建 MLP 模型。"""
     inputs = keras.Input(shape=input_shape)
@@ -1196,7 +1165,6 @@ def build_mlp(input_shape: tuple = (784,), num_classes: int = 10) -> keras.Model
     x = layers.Dropout(0.5)(x)
     outputs = layers.Dense(num_classes, activation="softmax")(x)
     return keras.Model(inputs, outputs)
-
 
 def main() -> None:
     (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
@@ -1220,7 +1188,6 @@ def main() -> None:
     test_loss, test_acc = model.evaluate(x_test, y_test, verbose=0)
     print(f"Test accuracy: {test_acc:.4f}")
 
-
 if __name__ == "__main__":
     main()
 ```
@@ -1236,7 +1203,6 @@ from __future__ import annotations
 
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
-
 
 def sentiment_analysis(texts: list[str], model_name: str = "distilbert-base-uncased-finetuned-sst-2-english") -> list[dict]:
     """批量情感分析。"""
@@ -1258,7 +1224,6 @@ def sentiment_analysis(texts: list[str], model_name: str = "distilbert-base-unca
             "score": predictions[i][pred_idx].item(),
         })
     return results
-
 
 if __name__ == "__main__":
     texts = [
@@ -1612,7 +1577,6 @@ Python 3.10+
 import mlflow
 import torch
 
-
 def train_with_mlflow(cfg, model, train_loader, test_loader):
     """使用 MLflow 追踪训练过程。"""
     mlflow.set_experiment("cifar10-resnet18")
@@ -1653,13 +1617,11 @@ import torch
 import torch.nn as nn
 import torch.quantization
 
-
 def quantize_dynamic(model: nn.Module) -> nn.Module:
     """动态量化（仅权重 INT8）。"""
     return torch.quantization.quantize_dynamic(
         model, {nn.Linear, nn.LSTM}, dtype=torch.qint8
     )
-
 
 def quantize_static(model: nn.Module, calibration_loader) -> nn.Module:
     """静态量化（权重+激活 INT8）。"""
@@ -1674,7 +1636,6 @@ def quantize_static(model: nn.Module, calibration_loader) -> nn.Module:
 
     torch.quantization.convert(model, inplace=True)
     return model
-
 
 # 基准对比
 # FP32 模型大小: 100MB, 推理 50ms
@@ -1693,13 +1654,11 @@ Python 3.10+
 import torch
 from torch2trt import torch2trt
 
-
 def optimize_with_tensorrt(model: nn.Module, input_shape: tuple = (1, 3, 224, 224)) -> nn.Module:
     """使用 TensorRT 优化模型。"""
     dummy = torch.randn(*input_shape).cuda()
     model_trt = torch2trt(model.cuda(), [dummy], fp16_mode=True)
     return model_trt
-
 
 # 实测：ResNet-50 在 RTX 3090 上
 # FP32 PyTorch: 5.2 ms
@@ -1716,7 +1675,6 @@ Python 3.10+
 import time
 import torch
 import torch.nn as nn
-
 
 def benchmark_training(
     model: nn.Module,
@@ -1746,7 +1704,6 @@ def benchmark_training(
         "samples_per_second": total_samples / elapsed,
         "ms_per_batch": elapsed * 1000 / (total_samples / data_loader.batch_size),
     }
-
 
 def benchmark_inference(
     model: nn.Module,
@@ -1785,7 +1742,6 @@ Python 3.10+
 import torch
 import torch.nn as nn
 
-
 def check_gradient_flow(model: nn.Module) -> dict:
     """检查梯度流，识别梯度消失/爆炸。"""
     gradient_info = {}
@@ -1800,7 +1756,6 @@ def check_gradient_flow(model: nn.Module) -> dict:
                 "has_inf": torch.isinf(param.grad).any().item(),
             }
     return gradient_info
-
 
 def check_activation_stats(model: nn.Module, input_data: torch.Tensor) -> dict:
     """检查激活值统计。"""
@@ -1884,7 +1839,6 @@ class RMSNorm(nn.Module):
         rms = x.pow(2).mean(-1, keepdim=True).add(self.eps).rsqrt()
         return x * rms * self.weight
 
-
 def precompute_rope(dim: int, max_seq_len: int, theta: float = 10000.0) -> torch.Tensor:
     """预计算 RoPE 旋转矩阵。"""
     freqs = 1.0 / (theta ** (torch.arange(0, dim, 2)[: dim // 2].float() / dim))
@@ -1928,7 +1882,6 @@ Python 3.10+ / diffusers 0.25+
 import torch
 from diffusers import StableDiffusionPipeline
 
-
 def generate_image(
     prompt: str,
     model_id: str = "stable-diffusion-v1-5/stable-diffusion-v1-5",
@@ -1948,7 +1901,6 @@ def generate_image(
     ).images[0]
 
     return image
-
 
 if __name__ == "__main__":
     img = generate_image("a cat playing piano, photorealistic")
@@ -2112,7 +2064,6 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
-
 class MLP(nn.Module):
     def __init__(self):
         super().__init__()
@@ -2126,7 +2077,6 @@ class MLP(nn.Module):
 
     def forward(self, x):
         return self.net(x)
-
 
 def main():
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
@@ -2154,7 +2104,6 @@ def main():
                 correct += (model(x).argmax(1) == y).sum().item()
         print(f"Epoch {epoch+1}: test acc = {correct/len(test_set):.4f}")
 
-
 if __name__ == "__main__":
     main()
 ```
@@ -2166,7 +2115,6 @@ if __name__ == "__main__":
 ```python
 import torch
 import torch.nn as nn
-
 
 class TransformerBlock(nn.Module):
     def __init__(self, d_model: int, n_heads: int, d_ff: int, dropout: float = 0.1):
@@ -2190,7 +2138,6 @@ class TransformerBlock(nn.Module):
         x = x + self.dropout(self.ffn(self.ln2(x)))
         return x
 
-
 # 测试
 block = TransformerBlock(d_model=512, n_heads=8, d_ff=2048)
 x = torch.randn(2, 10, 512)  # (batch, seq, dim)
@@ -2207,7 +2154,6 @@ import math
 import torch
 from torch.optim.lr_scheduler import LambdaLR
 
-
 def get_cosine_schedule_with_warmup(
     optimizer: torch.optim.Optimizer,
     num_warmup_steps: int,
@@ -2222,7 +2168,6 @@ def get_cosine_schedule_with_warmup(
         return max(min_lr_ratio, 0.5 * (1.0 + math.cos(math.pi * progress)))
 
     return LambdaLR(optimizer, lr_lambda)
-
 
 # 使用示例
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
@@ -2239,7 +2184,6 @@ for step in range(10000):
 
 ```python
 import torch
-
 
 def clip_grad_norm(
     parameters,
@@ -2275,7 +2219,6 @@ import torch
 import torchvision.transforms as T
 from PIL import Image
 
-
 def get_augmentation_pipeline(image_size: int = 224) -> T.Compose:
     """SimCLR 风格的强增强。"""
     return T.Compose([
@@ -2287,7 +2230,6 @@ def get_augmentation_pipeline(image_size: int = 224) -> T.Compose:
         T.ToTensor(),
         T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
-
 
 # 使用
 transform = get_augmentation_pipeline(224)

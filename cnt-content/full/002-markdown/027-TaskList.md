@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# Markdown 任务列表
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 基本语法
 
 **基本写法：未完成任务**
@@ -319,8 +312,6 @@ prerequisites: []
 
 ## 参考文献
 
-
-
 CommonMark 规范：https://spec.commonmark.org/
 GFM 规范：https://github.github.com/gfm/
 Markdown 指南：https://www.markdownguide.org/
@@ -328,15 +319,12 @@ Markdownlint：https://github.com/DavidAnson/markdownlint
 
 ## 延伸阅读
 
-
-
 Markdown 基础语法，见 002-markdown 模块文档。
 Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
 文档站构建（Astro），见 056-astro 模块（如已加入）。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供文档写作课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

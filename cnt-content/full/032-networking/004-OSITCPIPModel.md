@@ -15,13 +15,6 @@ related:
 prerequisites:
   - networking/网络基础与协议
 ---
-
-# Networking TCP/IP 协议模型
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. OSI 七层模型详解
 
 ### 1.1 各层功能
@@ -640,8 +633,6 @@ arp -a
 
 ## 参考文献
 
-
-
 MDN HTTP 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTTP
 RFC 9110（HTTP 语义）：https://www.rfc-editor.org/rfc/rfc9110
 TCP/IP 详解（W. Richard Stevens）：https://www.oreilly.com/library/view/tcpip-illustrated-vol/
@@ -649,8 +640,6 @@ Cloudflare 学习中心：https://www.cloudflare.com/learning/
 DNS 原理（RFC 1035）：https://www.rfc-editor.org/rfc/rfc1035
 
 ## 延伸阅读
-
-
 
 网络基础与协议，见 032-networking 模块文档。
 网络安全（TLS/WAF），见 033-cybersecurity 模块。

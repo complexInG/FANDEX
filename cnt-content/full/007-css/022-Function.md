@@ -38,7 +38,6 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-
 ## 1. 历史动机与发展脉络
 
 CSS 早期没有计算能力，布局中“容器宽度减去固定侧栏”只能依赖百分比近似或 JS 计算。CSS Values and Units Level 3 于 2011 年前后开始定义 `calc()`，2013 年后主流浏览器陆续支持。`min()`/`max()`/`clamp()` 属于 CSS Values and Units Level 4，2020 年前后获得主流支持，补齐了“取极值”与“钳制”能力。
@@ -406,10 +405,6 @@ MDN Web Docs, Using CSS custom properties, 访问日期 2026-08-01, https://deve
 Sass 预处理器函数对比，见 007-css 模块的预处理器文档；
 
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 CSS 进阶与工程化课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供前端实战课程。
-
-# 现代 CSS 函数速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 

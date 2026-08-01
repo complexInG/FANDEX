@@ -161,13 +161,6 @@ etymology:
   english: Microbenchmark
   origin: 由 Aleksey Shipilev 在 OpenJDK 项目中系统化，2013 年 JMH（Java Microbenchmark Harness）成为事实标准；'micro' 强调对单个方法/代码块的纳秒级测量，区别于 'macro'（系统级）与 'meso'（模块级）。
 ---
-
-# Java 单元测试 JUnit 5
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 引言：从"测试是验证"到"测试是设计"
 
 Java 是企业级软件的主力语言，而单元测试是 Java 工程质量的基石。然而，业界普遍存在两种误区：

@@ -2015,13 +2015,11 @@ B. `linear-gradient(135deg, red, blue)`
 C. `linear-gradient(-45deg, red, blue)`
 D. `linear-gradient(225deg, red, blue)`
 
-
 **解析讲解**：B
 
 **解析讲解**：`to top right` 表示梯度线指向右上角，方向角为 315°（从上至下为 0°，顺时针）。但 CSS 规范中，`to top right` 的角度计算为 `atan2(width, height)`，对于正方形容器约为 315°。而 `135deg` 是从下到上偏右的方向。
 
 注意：`to <corner>` 的角度取决于容器长宽比，并非固定 45°。对于正方形容器，`to top right` 约等于 `315deg`（或 `-45deg`）。但题目选项中 `135deg` 是从左下到右上的方向，与 `to top right` 一致（梯度线方向相反，但视觉效果相同）。
-
 
 **题目 2**：`radial-gradient(circle closest-side at 30% 40%, red, blue)` 中，渐变半径取决于？
 
@@ -2030,11 +2028,9 @@ B. 容器高度
 C. 中心到最近边的距离
 D. 中心到最近角的距离
 
-
 **解析讲解**：C
 
 **解析讲解**：`closest-side` 关键字表示渐变半径为中心到最近边的距离。具体计算：`min(x_0, w - x_0, y_0, h - y_0)`。
-
 
 **题目 3**：以下哪种插值方式能产生最平滑的暗部渐变？
 
@@ -2043,11 +2039,9 @@ B. `in hsl`
 C. `in oklab`
 D. `in hwb`
 
-
 **解析讲解**：C
 
 **解析讲解**：`oklab` 是感知均匀的色彩空间，相同数值差对应相同感知色差，因此在暗部能产生更平滑的渐变，减少色带效应。`srgb` 在暗部易出现色带，`hsl` / `hwb` 主要用于色相过渡。
-
 
 **题目 4**：`conic-gradient(red 0% 30%, yellow 30% 60%, green 60% 100%)` 实现的是？
 
@@ -2056,11 +2050,9 @@ B. 三色硬边界饼图
 C. 三色径向渐变
 D. 三色线性渐变
 
-
 **解析讲解**：B
 
 **解析讲解**：色标位置相同（如 `30%` 出现在前一个色标的结束和后一个色标的开始）形成硬边界。`conic-gradient` 的硬边界用于饼图、分块进度环等。
-
 
 **题目 5**：以下哪种方式可以实现「渐变文字」效果？
 
@@ -2069,58 +2061,45 @@ B. `text-fill-color: linear-gradient(red, blue)`
 C. `background-clip: text` + `background: linear-gradient(red, blue)`
 D. `text-gradient: linear-gradient(red, blue)`
 
-
 **解析讲解**：C
 
 **解析讲解**：CSS 没有直接的「渐变文字」属性，需通过 `background` 设置渐变 + `background-clip: text` 裁剪到文字区域 + `-webkit-text-fill-color: transparent` 透明填充实现。
-
 
 ### 填空题知识点讲解
 
 **题目 1**：`linear-gradient` 的默认方向是 ________。
 
-
 **解析讲解**：`to bottom`（从上到下）
 
 **解析讲解**：未指定方向时，`linear-gradient` 默认从上到下，即 `to bottom`，对应角度 `180deg`。
 
-
 **题目 2**：`repeating-linear-gradient` 的周期由 ________ 决定。
-
 
 **解析讲解**：最后一个色标的位置
 
 **解析讲解**：`repeating-linear-gradient` 将色标位置模「最后一个色标位置」，形成周期性渐变。例如 `repeating-linear-gradient(45deg, red 0px, blue 20px)` 的周期为 20px。
 
-
 **题目 3**：CSS Images Level 4 中，`in oklch longer hue` 表示 ________。
-
 
 **解析讲解**：在 OkLCH 色彩空间中，色相取较长弧插值
 
 **解析讲解**：`longer hue` 关键字指定色相插值取较长弧（>180°），适用于需要经过完整色相轮的渐变。
 
-
 **题目 4**：`background-clip: text` 需要配合 ________ 属性使文字颜色透明，以显示背景渐变。
-
 
 **解析讲解**：`-webkit-text-fill-color: transparent`（或 `color: transparent`）
 
 **解析讲解**：`background-clip: text` 将背景裁剪到文字区域，但文字本身的颜色仍会覆盖背景。需通过 `-webkit-text-fill-color: transparent`（WebKit 前缀）或 `color: transparent` 使文字颜色透明。
 
-
 **题目 5**：`conic-gradient` 的起始角度（12 点方向）可通过 ________ 关键字调整。
-
 
 **解析讲解**：`from <angle>`
 
 **解析讲解**：`conic-gradient(from 45deg, ...)` 表示从 45° 开始（顺时针），用于调整起始位置，常用于隐藏接缝。
 
-
 ### 编程题知识点讲解
 
 **题目 1**：使用 `conic-gradient` 实现一个 75% 完成的进度环，带中心镂空与百分比文字。
-
 
 **解析讲解**：
 
@@ -2182,9 +2161,7 @@ D. `text-gradient: linear-gradient(red, blue)`
 2. `::before` 伪元素实现中心镂空。
 3. 绝对定位的 `<span>` 显示百分比。
 
-
 **题目 2**：使用 `repeating-linear-gradient` 实现棋盘格纹理。
-
 
 **解析讲解**：
 
@@ -2207,9 +2184,7 @@ D. `text-gradient: linear-gradient(red, blue)`
 3. 两层叠加形成棋盘格。
 4. `background-color: #fff` 提供底色。
 
-
 **题目 3**：编写 JavaScript 函数，生成随机彩虹渐变字符串。
-
 
 **解析讲解**：
 
@@ -2246,11 +2221,9 @@ document.body.style.background = generateRainbowGradient(6);
 3. 使用 `oklch longer hue` 插值，确保色相完整过渡。
 4. 首尾颜色相同，适用于 `conic-gradient`。
 
-
 ### 9.4 思考题
 
 **题目 1**：为什么 CSS 渐变在 sRGB 空间容易出现色带？OkLab 如何解决？
-
 
 **解析讲解**：
 
@@ -2268,9 +2241,7 @@ document.body.style.background = generateRainbowGradient(6);
 
 **结论**：使用 `in oklab` 插值能显著减少色带，提升渐变质量。
 
-
 **题目 2**：在性能敏感场景下，CSS 渐变与 SVG 渐变如何选择？
-
 
 **解析讲解**：
 
@@ -2293,9 +2264,7 @@ document.body.style.background = generateRainbowGradient(6);
 - **需色标动画**：使用 SVG 渐变或 CSS Houdini `@property`。
 - **移动端**：优先 CSS 渐变，避免 SVG 解析开销。
 
-
 **题目 3**：如何设计一套支持主题切换的渐变设计令牌系统？
-
 
 **解析讲解**：
 
@@ -2334,7 +2303,6 @@ document.body.style.background = generateRainbowGradient(6);
 1. **一致性**：全站渐变统一管理。
 2. **可维护**：修改令牌即可切换主题。
 3. **可扩展**：新增主题只需添加 `[data-theme]` 规则。
-
 
 ---
 

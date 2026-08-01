@@ -26,11 +26,6 @@ prerequisites: []
 - 004-组件基础：props 与 emit。
 - 005-路由入门：Vue Router 的页面跳转。
 
-
-# createApp 应用入口 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
 ---
 
 ## 1. Vue3 概述 | Vue3 Overview
@@ -344,8 +339,6 @@ createApp(App)
 
 ## 参考文献
 
-
-
 Vue 官方文档：https://vuejs.org/
 Vue Router：https://router.vuejs.org/zh/
 Pinia：https://pinia.vuejs.org/zh/
@@ -353,7 +346,6 @@ Vue 3 迁移指南：https://v3-migration.vuejs.org/
 VueUse 组合函数库：https://vueuse.org/
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

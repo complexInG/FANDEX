@@ -15,13 +15,6 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
-
-# 网络请求 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 网络请求是现代应用与远端服务交互的核心能力。HarmonyOS 提供了完整的网络通信栈：`@ohos.net.http` 用于基于 HTTP/HTTPS 的请求-响应通信，`@ohos.net.webSocket` 用于全双工实时通信，`@ohos.net.socket` 用于 TCP/UDP 原始套接字，`@ohos.net.connection` 用于网络状态监听与切换。这套能力覆盖了从应用层到传输层的完整 OSI 模型。

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - mysql/语法速查
 ---
-
-# GTID 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. GTID 概述
 
 全局事务标识符（Global Transaction Identifier，GTID）为每个事务分配唯一标识，简化复制管理。
@@ -303,8 +296,6 @@ RESET MASTER;
 
 ## 参考文献
 
-
-
 MySQL 官方文档：https://dev.mysql.com/doc/
 MySQL 8.0 参考手册：https://dev.mysql.com/doc/refman/8.0/en/
 High Performance MySQL（O'Reilly）：https://www.oreilly.com/library/view/high-performance-mysql/
@@ -312,15 +303,12 @@ Percona 博客：https://www.percona.com/blog/
 
 ## 延伸阅读
 
-
-
 MySQL 索引与优化，见 020-mysql 模块文档。
 MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
 Redis 缓存与 MySQL 组合，见 022-redis 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 MySQL 高级课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

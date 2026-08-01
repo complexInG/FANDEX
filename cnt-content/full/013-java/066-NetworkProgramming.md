@@ -18,13 +18,6 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
-
-# Java 网络编程 API 速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 网络编程基础
 
 ### 1.1 网络基本概念
@@ -893,8 +886,6 @@ try (InputStream in = socket.getInputStream();
 
 ## 参考文献
 
-
-
 Oracle Java 官方文档：https://docs.oracle.com/en/java/
 OpenJDK 项目：https://openjdk.org/
 Java 语言规范：https://docs.oracle.com/javase/specs/
@@ -903,8 +894,6 @@ Baeldung 教程站：https://www.baeldung.com/
 Maven 官方文档：https://maven.apache.org/guides/
 
 ## 延伸阅读
-
-
 
 Java 并发与 JUC，见 013-java 模块并发文档。
 JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。

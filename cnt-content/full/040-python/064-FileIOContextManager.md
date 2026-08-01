@@ -17,13 +17,6 @@ prerequisites:
   - python/语法速查
 updated: '2026-08-01'
 ---
-
-# 文件IO与上下文管理器
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 文件打开与关闭 (Open & Close)
 
 ### 1.1 `open()` 函数
@@ -1377,8 +1370,6 @@ async def write_file(path, content):
 ```
 
 ## 参考文献
-
-
 
 Python 官方文档：https://docs.python.org/zh-cn/3/
 PEP 8 样式指南：https://peps.python.org/pep-0008/

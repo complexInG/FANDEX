@@ -15,13 +15,6 @@ related:
 prerequisites:
   - python/语法速查
 ---
-
-# Python weakref 弱引用
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 弱引用的提出源于编程语言对"对象生命周期管理"的长期探索，其本质是区分"知道对象存在"与"保持对象存活"两种语义。
@@ -288,7 +281,6 @@ from __future__ import annotations
 import weakref
 import sys
 
-
 class Resource:
     """可被弱引用的资源类。"""
 
@@ -297,7 +289,6 @@ class Resource:
 
     def __repr__(self) -> str:
         return f"Resource(name={self.name!r})"
-
 
 def basic_weakref() -> None:
     """基本弱引用演示。"""
@@ -317,7 +308,6 @@ def basic_weakref() -> None:
     del resource
     print(f"删除强引用后: {ref()}")  # None
 
-
 if __name__ == "__main__":
     basic_weakref()
 ```
@@ -331,7 +321,6 @@ from __future__ import annotations
 import gc
 import weakref
 
-
 class TempFile:
     """临时文件，需在对象回收时清理。"""
 
@@ -342,7 +331,6 @@ class TempFile:
     def __repr__(self) -> str:
         return f"TempFile(path={self.path!r})"
 
-
 def on_finalize(ref: weakref.ReferenceType) -> None:
     """对象被回收时的回调。
 
@@ -350,7 +338,6 @@ def on_finalize(ref: weakref.ReferenceType) -> None:
         ref: 失效的弱引用对象（target 已为 None）。
     """
     print(f"弱引用回调触发: {ref} (target={ref()})")
-
 
 def callback_demo() -> None:
     """弱引用回调演示。"""
@@ -361,7 +348,6 @@ def callback_demo() -> None:
     del tmp
     gc.collect()  # 强制 GC
     # 输出：弱引用回调触发: <weakref at 0x...; dead> (target=None)
-
 
 if __name__ == "__main__":
     callback_demo()
@@ -375,7 +361,6 @@ from __future__ import annotations
 
 import weakref
 
-
 class Node:
     """图节点。"""
     def __init__(self, name: str) -> None:
@@ -384,10 +369,8 @@ class Node:
     def __repr__(self) -> str:
         return f"Node({self.name!r})"
 
-
 # 使用弱键字典存储节点元数据
 metadata: weakref.WeakKeyDictionary[Node, dict] = weakref.WeakKeyDictionary()
-
 
 def weak_key_dict_demo() -> None:
     """弱键字典演示。"""
@@ -409,7 +392,6 @@ def weak_key_dict_demo() -> None:
     for node, data in metadata.items():
         print(f"剩余: {node} -> {data}")
 
-
 if __name__ == "__main__":
     weak_key_dict_demo()
 ```
@@ -422,7 +404,6 @@ from __future__ import annotations
 
 import weakref
 from typing import Callable
-
 
 class ExpensiveObject:
     """昂贵的对象，需要缓存复用。"""
@@ -450,7 +431,6 @@ class ExpensiveObject:
             cls._instances[key] = obj  # 缓存为弱引用
         return obj
 
-
 def weak_value_dict_demo() -> None:
     """弱值字典演示。"""
     # 第一次创建（昂贵）
@@ -468,7 +448,6 @@ def weak_value_dict_demo() -> None:
     # 再次创建（需重新计算）
     obj3 = ExpensiveObject.get_or_create("query_1")
 
-
 if __name__ == "__main__":
     weak_value_dict_demo()
 ```
@@ -482,7 +461,6 @@ from __future__ import annotations
 import weakref
 from typing import Callable
 
-
 class Observer:
     """观察者。"""
     def __init__(self, name: str) -> None:
@@ -490,7 +468,6 @@ class Observer:
 
     def update(self, message: str) -> None:
         print(f"[{self.name}] 收到: {message}")
-
 
 class Subject:
     """被观察者。"""
@@ -512,7 +489,6 @@ class Subject:
         for observer in self._observers:
             observer.update(message)
 
-
 def weak_set_demo() -> None:
     """WeakSet 演示。"""
     subject = Subject()
@@ -528,7 +504,6 @@ def weak_set_demo() -> None:
     del obs1
     subject.notify("事件 B")  # 只通知观察者2
 
-
 if __name__ == "__main__":
     weak_set_demo()
 ```
@@ -541,7 +516,6 @@ from __future__ import annotations
 
 import weakref
 
-
 class Service:
     """远程服务客户端。"""
     def __init__(self, url: str) -> None:
@@ -549,7 +523,6 @@ class Service:
 
     def call(self, method: str) -> str:
         return f"调用 {self.url}/{method}"
-
 
 class Client:
     """持有服务代理的客户端。"""
@@ -560,7 +533,6 @@ class Client:
     def invoke(self, method: str) -> str:
         # 直接调用，无需 ref()
         return self._service.call(method)
-
 
 def proxy_demo() -> None:
     """代理演示。"""
@@ -576,7 +548,6 @@ def proxy_demo() -> None:
     except ReferenceError as e:
         print(f"代理已失效: {e}")
 
-
 if __name__ == "__main__":
     proxy_demo()
 ```
@@ -591,7 +562,6 @@ import os
 import tempfile
 import weakref
 from pathlib import Path
-
 
 class TempWorkspace:
     """临时工作空间，对象回收时自动清理目录。"""
@@ -625,7 +595,6 @@ class TempWorkspace:
     def is_closed(self) -> bool:
         return not self._finalizer.alive
 
-
 def finalize_demo() -> None:
     """finalize 演示。"""
     ws = TempWorkspace()
@@ -641,7 +610,6 @@ def finalize_demo() -> None:
     ws2.close()
     print(f"ws2 已关闭: {ws2.is_closed}")  # True
 
-
 if __name__ == "__main__":
     finalize_demo()
 ```
@@ -654,7 +622,6 @@ from __future__ import annotations
 
 import gc
 import weakref
-
 
 class TreeNode:
     """树节点，使用弱引用避免父子循环。"""
@@ -682,7 +649,6 @@ class TreeNode:
     def __repr__(self) -> str:
         return f"TreeNode({self.name!r})"
 
-
 def cyclic_ref_demo() -> None:
     """循环引用规避演示。"""
     root = TreeNode("root")
@@ -704,7 +670,6 @@ def cyclic_ref_demo() -> None:
     print(f"child2.parent: {child2.parent}")  # None
     gc.enable()
 
-
 if __name__ == "__main__":
     cyclic_ref_demo()
 ```
@@ -719,7 +684,6 @@ import weakref
 from typing import Callable, TypeVar
 
 T = TypeVar("T")
-
 
 class SingletonRegistry:
     """弱引用单例注册表。
@@ -765,13 +729,11 @@ class SingletonRegistry:
         else:
             cls._instances.pop(key, None)
 
-
 # 使用示例
 class Database:
     def __init__(self, dsn: str):
         self.dsn = dsn
         print(f"连接数据库: {dsn}")
-
 
 def singleton_demo() -> None:
     db1 = SingletonRegistry.get_or_create("db", lambda: Database("postgresql://localhost"))
@@ -783,7 +745,6 @@ def singleton_demo() -> None:
 
     # 再次创建（需重新初始化）
     db3 = SingletonRegistry.get_or_create("db", lambda: Database("postgresql://localhost"))
-
 
 if __name__ == "__main__":
     singleton_demo()
@@ -797,7 +758,6 @@ from __future__ import annotations
 
 import weakref
 from typing import Callable
-
 
 class ObservableAttribute:
     """可观察的属性描述符。
@@ -838,7 +798,6 @@ class ObservableAttribute:
         for cb in callbacks:
             cb(old, new)
 
-
 class User:
     """使用可观察属性的用户类。"""
     name = ObservableAttribute(default="")
@@ -847,7 +806,6 @@ class User:
     def __init__(self, name: str, age: int) -> None:
         self.name = name
         self.age = age
-
 
 def descriptor_demo() -> None:
     user = User("Alice", 30)
@@ -865,7 +823,6 @@ def descriptor_demo() -> None:
     # 修改属性触发回调
     user.name = "Bob"  # 输出：姓名变化: 'Alice' -> 'Bob'
     user.age = 31      # 输出：年龄变化: 30 -> 31
-
 
 if __name__ == "__main__":
     descriptor_demo()
@@ -1176,7 +1133,6 @@ import weakref
 from collections import OrderedDict
 from typing import Any, Callable
 
-
 class TTLCache:
     """带 TTL 和 LRU 的弱引用缓存。
 
@@ -1235,7 +1191,6 @@ class TTLCache:
         with self._lock:
             self._data.clear()
 
-
 # 使用示例
 if __name__ == "__main__":
     cache = TTLCache(maxsize=100, ttl=60)
@@ -1258,7 +1213,6 @@ from __future__ import annotations
 
 import weakref
 from typing import Callable, Any
-
 
 class EventBus:
     """事件总线，观察者使用弱引用。"""
@@ -1289,14 +1243,12 @@ class EventBus:
             except Exception as e:
                 print(f"事件处理器异常: {e}")
 
-
 # 使用示例
 def on_user_created(event):
     print(f"用户创建: {event}")
 
 def on_user_deleted(event):
     print(f"用户删除: {event}")
-
 
 if __name__ == "__main__":
     bus = EventBus()
@@ -1325,7 +1277,6 @@ import weakref
 from pathlib import Path
 from typing import Callable
 
-
 class ManagedResource:
     """受管资源，自动清理。"""
 
@@ -1345,20 +1296,17 @@ class ManagedResource:
         """手动关闭。"""
         self._finalizer()
 
-
 def create_temp_file(prefix: str = "tmp_") -> Path:
     """创建临时文件。"""
     fd, path = tempfile.mkstemp(prefix=prefix)
     os.close(fd)
     return Path(path)
 
-
 def cleanup_file(path: Path) -> None:
     """清理临时文件。"""
     if path.exists():
         path.unlink()
         print(f"已清理: {path}")
-
 
 # 使用示例
 if __name__ == "__main__":
@@ -1398,7 +1346,6 @@ import gc
 import sys
 import weakref
 
-
 def test_weak_ref_basic():
     """测试弱引用基础功能。"""
     class Obj:
@@ -1410,7 +1357,6 @@ def test_weak_ref_basic():
 
     del obj
     assert ref() is None
-
 
 def test_weak_value_dict():
     """测试弱值字典。"""
@@ -1424,7 +1370,6 @@ def test_weak_value_dict():
 
     del obj
     assert "key" not in cache
-
 
 def test_finalize():
     """测试 finalize。"""
@@ -1446,7 +1391,6 @@ def test_finalize():
     gc.collect()
     assert not os.path.exists(path)
 
-
 def test_callbacks():
     """测试弱引用回调。"""
     class Obj:
@@ -1465,7 +1409,6 @@ def test_callbacks():
 
     assert len(called) == 1
     assert called[0] is ref
-
 
 if __name__ == "__main__":
     test_weak_ref_basic()
@@ -1580,7 +1523,6 @@ B. 函数对象
 C. `list` 实例
 D. 类型对象
 
-
 **答案：C**
 
 `list` 是 Python 内置不可变类型（实际上是可变，但作为内置类型不支持弱引用），不支持 `weakref.ref()`。
@@ -1618,7 +1560,6 @@ B. `None`
 C. `False`
 D. 抛出 `ReferenceError`
 
-
 **答案：B**
 
 `weakref.ref` 在对象被回收后返回 `None`。若使用 `weakref.proxy`，访问失效代理会抛出 `ReferenceError`。
@@ -1632,7 +1573,6 @@ B. 自动删除该条目
 C. 保留键为 `None`
 D. 抛出异常
 
-
 **答案：B**
 
 `WeakKeyDictionary` 在键对象被回收时，通过弱引用回调自动删除对应的 `(key, value)` 条目。这是其与普通字典的核心区别。
@@ -1645,7 +1585,6 @@ A. `__dict__`
 B. `__weakref__`
 C. `__ref__`
 D. 不需要额外声明
-
 
 **答案：B**
 
@@ -1684,7 +1623,6 @@ B. 1
 C. 2
 D. 不确定
 
-
 **答案：B**
 
 对象被回收时，弱引用回调会被调用一次。即使有多个弱引用指向同一对象，每个弱引用的回调都会被调用，但本题只有一个弱引用，所以 `callback_called` 长度为 1。
@@ -1695,13 +1633,11 @@ D. 不确定
 
 **1.** Python 中获取对象引用计数的函数是 `________`。
 
-
 `sys.getrefcount`
 
 ---
 
 **2.** `WeakValueDictionary` 在 ________ 被回收时自动删除对应条目。
-
 
 值对象
 
@@ -1709,20 +1645,17 @@ D. 不确定
 
 **3.** `weakref.finalize` 的回调函数中 ________（能/不能）访问被回收的对象。
 
-
 不能（应使用静态方法，通过参数传递所需信息）
 
 ---
 
 **4.** 使用 `weakref.proxy` 时，若目标对象已被回收，访问代理会抛出 `________` 异常。
 
-
 `ReferenceError`
 
 ---
 
 **5.** `WeakSet` 中的元素被回收时，会自动从集合中 ________。
-
 
 移除
 
@@ -1747,14 +1680,12 @@ class ObjectPool:
         # ...
 ```
 
-
 ```python
 import weakref
 from collections import deque
 from typing import Callable, TypeVar
 
 T = TypeVar("T")
-
 
 class ObjectPool:
     """对象池，跟踪借出对象（弱引用）。"""
@@ -1786,7 +1717,6 @@ class ObjectPool:
         """当前借出数量。"""
         return len(self._borrowed)
 
-
 # 测试
 class Connection:
     _next_id = 0
@@ -1798,7 +1728,6 @@ class Connection:
 
     def __repr__(self):
         return f"Connection({self.id})"
-
 
 if __name__ == "__main__":
     pool = ObjectPool(factory=Connection, max_size=3)
@@ -1840,11 +1769,9 @@ class ObservableProperty:
         # ...
 ```
 
-
 ```python
 import weakref
 from typing import Callable, Any
-
 
 class ObservableProperty:
     """可观察属性描述符。"""
@@ -1885,12 +1812,10 @@ class ObservableProperty:
         for cb in callbacks:
             cb(old, new)
 
-
 # 测试
 class Config:
     debug = ObservableProperty(default=False)
     timeout = ObservableProperty(default=30)
-
 
 if __name__ == "__main__":
     config = Config()
@@ -1927,11 +1852,9 @@ class ResourceManager:
         # ...
 ```
 
-
 ```python
 import weakref
 from typing import Dict
-
 
 class Resource:
     """受管资源。"""
@@ -1953,7 +1876,6 @@ class Resource:
             self._closed = True
             self._manager._release(self.name)
             print(f"关闭资源: {self.name}")
-
 
 class ResourceManager:
     """资源管理器，使用 finalize 确保清理。"""
@@ -1985,7 +1907,6 @@ class ResourceManager:
         """活跃资源数。"""
         return len(self._resources)
 
-
 # 测试
 if __name__ == "__main__":
     import gc
@@ -2010,7 +1931,6 @@ if __name__ == "__main__":
 
 **1. 为什么 Python 的 `int`、`str`、`list` 等内置类型不支持弱引用？这样设计有什么好处？**
 
-
 **设计原因**：
 
 1. **性能考虑**：内置类型实例数量巨大（如所有 `int` 字面量），若每个都维护弱引用链表，内存开销过高；
@@ -2032,7 +1952,6 @@ if __name__ == "__main__":
 ---
 
 **2. 描述 `weakref.finalize` 与 `__del__` 的区别，并说明为什么推荐使用 `finalize`。**
-
 
 **区别**：
 
@@ -2076,7 +1995,6 @@ class Good:
 ---
 
 **3. 在什么场景下应该使用弱引用？什么时候应该避免使用？**
-
 
 **适合使用弱引用的场景**：
 

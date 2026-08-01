@@ -46,7 +46,6 @@ Reduce（归约）：把所有机器的中间结果合并，得到最终答案�
 - 003-批处理计算：Spark RDD/DataFrame 基础。
 - 004-数据仓库：Hive 如何用 SQL 查询海量数据。
 
-
 ## 1. 大数据概念与定义
 
 大数据（Big Data）是指**无法用传统数据处理工具在合理时间内捕获、管理和处理的数据集合**。其核心在于从海量、复杂的数据中提取有价值的信息，以支撑业务决策和科学发现。
@@ -180,8 +179,6 @@ flowchart LR
 
 ## 参考文献
 
-
-
 Apache Spark：https://spark.apache.org/docs/latest/
 Apache Flink：https://flink.apache.org/
 Apache Kafka：https://kafka.apache.org/documentation/
@@ -190,15 +187,12 @@ Airflow：https://airflow.apache.org/docs/
 
 ## 延伸阅读
 
-
-
 大数据生态概览，见 052-big-data 模块文档。
 数据分析与统计，见 051-data-analysis/030-probability-statistics 模块。
 分布式系统基础，见 034-cloud-computing 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供大数据课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

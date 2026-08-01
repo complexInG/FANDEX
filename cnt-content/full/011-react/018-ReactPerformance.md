@@ -1255,11 +1255,9 @@ B. 列表项组件，父组件频繁 setState 但 props 引用稳定
 C. 父组件每次渲染都创建新对象作为 props
 D. 组件内部使用 useState 频繁更新
 
-
 **答案：C**
 
 `React.memo` 通过浅比较 props 判断是否跳过渲染。若父组件每次都创建新对象（如 `style={{ color: 'red' }}`），浅比较永远返回 false，memo 失效，反而增加比较开销。应配合 `useMemo`/`useCallback` 或提取常量。
-
 
 **Q2.** React 18 自动批处理（Automatic Batching）相比 React 17 的改进是？
 
@@ -1268,11 +1266,9 @@ B. 在 Promise、setTimeout 中也能批处理多个 setState
 C. 自动 memo 化所有组件
 D. 自动启用并发模式
 
-
 **答案：B**
 
 React 17 仅在 React 事件处理器内批处理；React 18 通过 `createRoot` 在所有上下文（Promise、setTimeout、原生事件）中批处理。这减少了不必要的 Render 次数。
-
 
 **Q3.** 关于 `useTransition` 与 `useDeferredValue`，下列说法**错误**的是？
 
@@ -1281,11 +1277,9 @@ B. `useDeferredValue` 延迟某个值的传递
 C. 两者都能让用户输入保持响应
 D. `useTransition` 可用于监听外部 store 的变化
 
-
 **答案：D**
 
 `useTransition` 用于将 `setState` 标记为低优先级；`useDeferredValue` 用于延迟某个值的消费。两者都用于让高优先级更新（如输入）插队。`useSyncExternalStore` 才是用于监听外部 store 的 Hook。
-
 
 **Q4.** 下列哪种 key 策略**最不**可能导致性能问题？
 
@@ -1294,11 +1288,9 @@ B. 使用 Math.random() 生成 key
 C. 使用数据中稳定的唯一 id
 D. 不设置 key（让 React 自动用 index）
 
-
 **答案：C**
 
 稳定的唯一 id 让 React 能精确识别元素身份，最小化 DOM 操作。index 在列表顺序变化时会导致 React 错误地复用 DOM；Math.random() 每次渲染都不同，导致全量重建。
-
 
 **Q5.** React Compiler 的核心假设是？
 
@@ -1307,43 +1299,31 @@ B. 所有状态都不可变
 C. 所有副作用都在 useEffect 中
 D. 所有依赖数组都正确
 
-
 **答案：A**
 
 React Compiler 假设组件、Hook 是纯函数（相同输入产生相同输出，无副作用）。在此假设下，编译器可以安全地缓存中间结果。违反该假设（如 render 中修改全局变量）会导致编译产物行为不正确。
-
 
 ### 填空题知识点讲解
 
 **Q1.** React Fiber 架构中，工作循环（Work Loop）默认的时间切片长度约为 `______` ms。
 
-
 5ms（基于 `react/packages/scheduler/src/forks/Scheduler.js` 中的 `frameInterval = 5`）
-
 
 **Q2.** `useMemo(factory, deps)` 中，当 `deps` 数组为空数组 `[]` 时，`factory` 会在 `______` 时执行一次。
 
-
 组件首次渲染（mount）时执行一次，后续重渲染直接返回缓存值。
-
 
 **Q3.** React 协调算法将朴素的 $O(n^3)$ 树编辑距离问题通过 `______` 与 `______` 两个假设降为 $O(n)$。
 
-
 同层比较（不同层级的节点不会跨层移动复用）、同类型节点才合并（不同 type 直接销毁重建）。
-
 
 **Q4.** 虚拟化列表（如 `react-window`）通过只渲染 `______` 区域内的元素，将 DOM 节点数从 $O(n)$ 降为 `______`。
 
-
 可视（viewport）；$O(k)$（其中 $k$ 为可视区域内元素数，远小于 $n$）
-
 
 **Q5.** React 18 中，`createRoot` 替代 `ReactDOM.render` 后启用的三大特性是 `______`、`______`、`______`。
 
-
 并发渲染（Concurrent Rendering）、自动批处理（Automatic Batching）、Suspense for Data Fetching。
-
 
 ### 编程题知识点讲解
 
@@ -1362,7 +1342,6 @@ function UserGreeting({ user, time }) {
 要求：
 1. 使用 `React.memo` 包裹
 2. 自定义比较函数，仅当 `user.id` 与 `user.name` 变化时重渲染（忽略 time）
-
 
 ```tsx
 import React from 'react';
@@ -1393,12 +1372,10 @@ export const UserGreeting = React.memo(function UserGreeting({
 }, areEqual);
 ```
 
-
 **Q2.** 实现一个 `useDebouncedCallback` Hook，要求：
 1. 返回一个 debounced 函数
 2. 在组件卸载时清理定时器
 3. 使用 `useRef` 避免重建定时器
-
 
 ```tsx
 import { useRef, useCallback, useEffect } from 'react';
@@ -1438,13 +1415,11 @@ function useDebouncedCallback<T extends (...args: any[]) => void>(
 }
 ```
 
-
 **Q3.** 给定一个渲染 10000 项数据的表格组件，请：
 
 1. 使用 `react-window` 实现虚拟化
 2. 添加 `useDeferredValue` 让搜索输入保持响应
 3. 用 `Profiler` 包裹并打印渲染耗时
-
 
 ```tsx
 import {
@@ -1513,20 +1488,16 @@ export default function VirtualTable() {
 }
 ```
 
-
 ### 9.4 思考题
 
 **Q1.** 为什么 React 选择"组件级渲染 + memo 精细化"而非 Vue 的"字段级响应式"？请从设计哲学、可预测性、生态成熟度三个角度论述。
-
 
 1. **设计哲学**：React 强调"UI 是状态的函数" $f(state) = UI$，组件级渲染保证语义清晰；Vue 字段级响应式更接近原生 JS 心智模型，但隐式追踪增加黑盒。
 2. **可预测性**：组件级渲染使开发者能通过 `React.memo`、`Profiler` 精确控制边界；字段级追踪在大型应用中难以调试（"为什么这个 watcher 触发了？"）。
 3. **生态成熟度**：组件级模型催生了 Redux、Zustand 等成熟状态库；字段级模型在 SSR、Time Travel 调试上挑战更大。
 4. **权衡**：React 19 的 React Compiler 实际上在编译期达到了字段级优化效果，同时保留了组件级的心智模型。
 
-
 **Q2.** 在一个包含 5000 个表单项的复杂表单应用中，你会如何设计性能优化方案？请列出至少 5 项策略并说明理由。
-
 
 1. **状态拆分**：每个表单项独立 `useState`，避免任一输入触发全表单重渲染。
 2. **非受控组件**：用 `useRef` 存储值，仅在提交时读取，避免每次按键触发 setState。
@@ -1537,9 +1508,7 @@ export default function VirtualTable() {
 7. **代码分割**：分步骤表单按步骤懒加载。
 8. **React Compiler**：自动 memo 化所有 props 与中间值。
 
-
 **Q3.** 假设你的 React 应用在低端 Android 设备上 INP（Interaction to Next Paint）为 600ms，请设计一套诊断与优化流程。
-
 
 诊断：
 1. 使用 Chrome DevTools Performance 录制交互，识别 Long Task。
@@ -1555,7 +1524,6 @@ export default function VirtualTable() {
 5. 拆分大组件，降低单次渲染 Fiber 节点数。
 6. 静态内容用 Server Components 或 `dangerouslySetInnerHTML`。
 7. 监控：上报 INP 到 RUM 平台，建立 P95 < 200ms 的 SLA。
-
 
 ---
 

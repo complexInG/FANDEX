@@ -36,7 +36,6 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-
 ## 1. 历史动机与发展脉络
 
 Kotlin 由 JetBrains 于 2010 年开始研发，2011 年公开，2016 年 2 月发布 1.0。设计动机是解决 Java 的长期痛点：冗长（样板代码）、空指针风险、类型推断不足、函数式支持薄弱。Kotlin 与 Java 100% 互操作，编译器（kotlinc）输出 JVM 字节码，因此可以在既有 Java 项目中渐进采用。
@@ -499,10 +498,6 @@ JVM 字节码与内存模型，见 013-java 模块相关文档；
 Android 开发中的 Kotlin 应用，见 018-harmonyos 或移动端相关模块；
 
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Kotlin 与 Android 课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Kotlin 入门课程。
-
-# Kotlin 基础语法速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 

@@ -14,12 +14,6 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
-# C# 值类型与引用类型
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 一、学习目标
 
 本文以 MIT 6.102 *Software Construction*、Stanford CS193、CMU 15-410 *Operating Systems* 的内存模型教学水准为参照，对 C# 值类型与引用类型进行系统性的形式化与工程化剖析。阅读完毕后，读者应能达成以下 Bloom 认知层级目标：
@@ -1222,11 +1216,9 @@ Console.WriteLine($"{p1.X}, {p2.X}");
 - C. `1, 1`
 - D. `10, 1`
 
-
 **答案：B**
 
 `p1` 和 `p2` 是独立的值类型实例。`p2 = p1` 复制所有字段。修改 `p2.X` 不影响 `p1`。输出 `1, 10`。
-
 
 **题 2**：下列哪种情况下值类型会分配在堆上？
 
@@ -1234,7 +1226,6 @@ Console.WriteLine($"{p1.X}, {p2.X}");
 - B. `List<int> list = new() { 1, 2, 3 };`
 - C. `struct Point { public int X, Y; } Point p = new();`
 - D. `int[] arr = new int[10];` 中 `arr` 变量本身
-
 
 **答案：B**
 
@@ -1244,7 +1235,6 @@ A 中 `x` 是局部值类型，在栈上；C 中 `p` 同理；D 中 `arr` 变量
 
 注意：`List<int>` 中的 `int` 不装箱，因为 `List<T>` 对值类型有编译期特化（CLR 泛型不为每个 T 生成新代码，但为值类型 T 生成专用布局）。
 
-
 **题 3**：下列哪个修饰符能让 struct 字段不可被外部修改？
 
 - A. `private`
@@ -1252,31 +1242,25 @@ A 中 `x` 是局部值类型，在栈上；C 中 `p` 同理；D 中 `arr` 变量
 - C. `const`
 - D. `static`
 
-
 **答案：B**
 
 `readonly` 修饰字段后，仅构造器能赋值，其他方法不能修改。`private` 仅限制访问，不限制修改；`const` 用于编译期常量；`static` 是类级别字段。
 
 最佳实践是用 `readonly struct` 修饰整个 struct，使所有字段隐式 readonly。
 
-
 ### 填空题知识点讲解
 
 **题 4**：`int` 装箱为 `object` 时，会在堆上创建一个大小为 ________ 字节的对象（64 位系统）。
-
 
 **24` 字节（64 位系统）`
 
 布局：4 字节同步块 + 8 字节方法表指针 + 4 字节 int 数据 + 8 字节对齐填充 = 24 字节。
 
-
 **题 5**：`ref struct` 不能被 ________ 操作，否则会违反栈约束。
-
 
 **装箱**（box）
 
 `ref struct` 不能装箱为 `object`/`ValueType`/接口（C# 11 前完全不允许，C# 11+ 允许装箱为接口但有运行时限制）。装箱会让 ref struct 逃逸到堆，破坏其设计契约。
-
 
 ### 编程题知识点讲解
 
@@ -1287,7 +1271,6 @@ A 中 `x` 是局部值类型，在栈上；C 中 `p` 同理；D 中 `arr` 变量
 3. 实现值相等
 4. 提供 `Length` 属性与 `Normalize` 方法
 5. 支持 `+`/`-` 运算符
-
 
 ```csharp
 public readonly struct Vector3 : IEquatable<Vector3> {
@@ -1341,9 +1324,7 @@ public readonly struct Vector3 : IEquatable<Vector3> {
 }
 ```
 
-
 **题 7**：实现一个 `ref struct SpanReader`，从 `ReadOnlySpan<byte>` 读取基本类型，要求零拷贝。
-
 
 ```csharp
 using System.Runtime.InteropServices;
@@ -1411,7 +1392,6 @@ public ref struct SpanReader {
 }
 ```
 
-
 **题 8**：分析以下代码，找出 3 个性能问题并修正：
 
 ```csharp
@@ -1439,7 +1419,6 @@ public class Processor {
     }
 }
 ```
-
 
 问题与修正：
 
@@ -1474,11 +1453,9 @@ public class Processor {
 }
 ```
 
-
 ### 10.4 思考题
 
 **题 9**：为何 .NET 设计 `System.ValueType` 本身是引用类型？这一设计有何优劣？
-
 
 **优势**：
 1. **统一类型系统**：所有类型最终都可视为 `object`，便于反射、API 设计（如 `object.Equals(object)`）。
@@ -1492,9 +1469,7 @@ public class Processor {
 
 替代设计如 Swift 直接区分 value/reference，无统一基类，避免装箱但失去一些统一性。
 
-
 **题 10**：在微服务架构中，跨服务传递值类型（如 `Money`、`Point`）应如何处理？请列出 3 种策略并权衡。
-
 
 1. **DTO 折叠为引用类型**：跨服务边界用 `record class` 表示相同数据，避免序列化器处理 struct 的复杂性。
    - 优点：序列化器（System.Text.Json、Protobuf）对 class 支持更好。
@@ -1509,7 +1484,6 @@ public class Processor {
    - 缺点：版本兼容性差，需固定布局。
 
 **推荐**：默认用策略 1（DTO 折叠），热点路径用策略 3（如游戏服务器、金融行情）。
-
 
 ## 十一、参考文献
 

@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# C POSIX 与系统调用速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 文件描述符
 
 **基本写法：open 打开文件**
@@ -278,8 +271,6 @@ perror("open failed");
 
 ## 参考文献
 
-
-
 cppreference C 文档：https://zh.cppreference.com/w/c
 C 标准草案：https://www.open-std.org/jtc1/sc22/wg14/
 GCC 官方文档：https://gcc.gnu.org/onlinedocs/
@@ -288,8 +279,6 @@ C 语言常见误解：https://www.yodaiken.com/
 
 ## 延伸阅读
 
-
-
 C 指针与数组深入，见 025-c 模块指针文档。
 C 枚举与 typedef，见 025-c/007-EnumTypedef 文档。
 C++ 面向对象与模板，见 026-cpp 模块。
@@ -297,7 +286,6 @@ C++ 面向对象与模板，见 026-cpp 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 C 语言课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

@@ -17,13 +17,6 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
-
-# JavaScript 模块化
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与背景
 
 ### 1.1 没有模块化的痛点

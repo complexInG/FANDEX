@@ -16,13 +16,6 @@ related:
 prerequisites: []
 updated: '2026-08-01'
 ---
-
-# Pandas DataFrame
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 基本属性
 
 **基本写法：访问 DataFrame 属性**
@@ -1221,16 +1214,12 @@ print(new_s)
 
 ## 参考文献
 
-
-
 Pandas 文档：https://pandas.pydata.org/docs/
 NumPy 文档：https://numpy.org/doc/stable/
 Matplotlib：https://matplotlib.org/
 Kaggle Learn：https://www.kaggle.com/learn
 
 ## 延伸阅读
-
-
 
 数据分析工具，见 051-data-analysis 模块文档。
 概率统计基础，见 030-probability-statistics 模块。

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - go/概述与环境配置
 ---
-
-# Go testing 包
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ### 表驱动测试
 
 表驱动测试是 Go 中最推荐的测试模式，将测试用例组织为结构体切片，便于维护和扩展。
@@ -706,8 +699,6 @@ func TestTimeout(t *testing.T) {
 
 ## 参考文献
 
-
-
 Go 官方文档：https://go.dev/doc/
 Go 内存模型：https://go.dev/ref/mem
 Effective Go：https://go.dev/doc/effective_go
@@ -715,8 +706,6 @@ Go 标准库：https://pkg.go.dev/std
 Go 官方博客：https://go.dev/blog/
 
 ## 延伸阅读
-
-
 
 Go 并发与 channel，见 016-go 模块并发文档。
 Go 原子操作与竞争检测，见 016-go/058-RaceDetectionAtomic 文档。

@@ -48,7 +48,6 @@ pnpm dev 启动开发服务器：修改文件保存后浏览器自动刷新，�
 - 003-组件与布局：复用页头页脚等公共结构。
 - 004-内容集合：用 Markdown 管理文章与文档。
 
-
 ## 1. Astro 是什么
 
 Astro 是一个面向内容驱动网站（博客、文档站、营销页）的 Web 框架，2021 年发布，当前主流版本为 Astro 5-7。它的核心思想是：默认输出零 JavaScript 的静态 HTML，只有显式标记的交互组件才在浏览器加载脚本。这一模式被称为“岛屿架构”（Islands Architecture）。
@@ -273,8 +272,6 @@ Astro 重新定义了内容站的性能基线：默认零 JS、按需交互、�
 
 ## 参考文献
 
-
-
 Astro 官方文档：https://docs.astro.build/zh-cn/
 Astro 主题市场：https://astro.build/themes/
 Astro 集成：https://astro.build/integrations/
@@ -282,15 +279,12 @@ Astro 博客：https://astro.build/blog/
 
 ## 延伸阅读
 
-
-
 Vite 构建机制，见 056-vite 模块。
 Markdown/MDX 写作，见 002-markdown 模块。
 Tailwind 样式，见 058-tailwind 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供前端工程化课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

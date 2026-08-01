@@ -1442,7 +1442,6 @@ B. 父元素与首个子元素（父无 border/padding）
 C. 两个 flex 容器内的子元素
 D. 空块元素自身的 margin-top 与 margin-bottom
 
-
 **答案：C**
 
 **解析讲解**：CSS Flexbox 规范明确规定，flex 容器内的子元素（flex item）之间不发生 margin 合并。这与 BFC 的隔离性一致——flex 容器建立了独立的格式化上下文（FFC）。
@@ -1451,14 +1450,12 @@ D. 空块元素自身的 margin-top 与 margin-bottom
 - B：父子塌陷是 margin 合并的第二种场景。
 - D：空块自身合并是第三种场景。
 
-
 **题目 2**：以下哪种方式触发 BFC **没有副作用**？
 
 A. `overflow: hidden`
 B. `display: flow-root`
 C. `float: left`
 D. `position: absolute`
-
 
 **答案：B**
 
@@ -1468,14 +1465,12 @@ D. `position: absolute`
 - C：使元素脱离文档流，影响布局。
 - D：使元素脱离文档流，需要手动定位。
 
-
 **题目 3**：两个相邻块级元素的 `margin-bottom: 30px` 与 `margin-top: -10px` 合并后的值是？
 
 A. 30px
 B. 20px
 C. -10px
 D. 40px
-
 
 **答案：B**
 
@@ -1484,14 +1479,12 @@ D. 40px
 公式：
 $$M_{\text{collapsed}} = M_{\text{max positive}} + M_{\text{min negative}} = 30 + (-10) = 20$$
 
-
 **题目 4**：以下哪个 CSS 属性是 CSS Box Model Level 4 引入的实验性属性？
 
 A. `margin-trim`
 B. `margin-block-start`
 C. `gap`
 D. `flow-root`
-
 
 **答案：A**
 
@@ -1501,14 +1494,12 @@ D. `flow-root`
 - C：`gap` 是 CSS Grid Level 1 / Flexbox Level 1 引入的间距属性。
 - D：`flow-root` 是 CSS Box Model Level 3 引入的 display 值。
 
-
 **题目 5**：以下哪个选择器的优先级最高？
 
 A. `#nav .list li:hover`
 B. `:where(#id, .class) p`
 C. `.nav li`
 D. `:is(#id, .class) p`
-
 
 **答案：D**
 
@@ -1523,48 +1514,37 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 
 **修正答案**：A
 
-
 ### 填空题知识点讲解
 
 **题目 1**：CSS 2.1 §___ 中正式定义了 margin collapsing 的 4 条规则。
-
 
 **解析讲解**：8.3.1
 
 **解析讲解**：CSS 2.1 第 8 章是盒模型，§8.3.1 标题为「Collapsing margins」，给出了 4 条精确规则。
 
-
 **题目 2**：margin 合并只在________方向发生，水平方向不合并。
-
 
 **解析讲解**：垂直（block 方向）
 
 **解析讲解**：在水平书写模式下，margin 合并只发生在垂直方向（margin-top 与 margin-bottom）。在垂直书写模式下（如 `writing-mode: vertical-rl`），合并方向相应改变。
 
-
 **题目 3**：触边 BFC 的现代推荐属性是________。
-
 
 **解析讲解**：`display: flow-root`
 
 **解析讲解**：`display: flow-root` 是 CSS Box Model Level 3 专为触发 BFC 设计的属性，无 `overflow: hidden` 的副作用。
 
-
 **题目 4**：负 margin 合并的规则是________。
-
 
 **解析讲解**：最大正 margin + 最小负 margin（即正负相加）
 
 **解析讲解**：当参与合并的 margin 含负值时，规则为「最大正值 + 最小负值」。例如 `margin-bottom: 30px` 与 `margin-top: -10px` 合并为 `30 + (-10) = 20px`。
 
-
 **题目 5**：flex 容器内的子元素之间________（会/不会）发生 margin 合并。
-
 
 **解析讲解**：不会
 
 **解析讲解**：CSS Flexbox §4.2 明确规定，flex item 之间的 margin 不会折叠。
-
 
 ### 编程题知识点讲解
 
@@ -1573,7 +1553,6 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 1. 卡片间距为 16px。
 2. 完全规避 margin 合并。
 3. 支持响应式（移动端单列、桌面端两列）。
-
 
 ```html
 <!DOCTYPE html>
@@ -1663,7 +1642,6 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 - 卡片内部使用 padding 而非 margin（+5 分）
 - 文字与标题使用 margin-bottom + margin: 0 重置（+5 分）
 
-
 **题目 2**：修复以下代码中的 margin 塌陷问题（不改变视觉效果）：
 
 ```html
@@ -1682,7 +1660,6 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
   }
 </style>
 ```
-
 
 ```html
 <div class="container">
@@ -1707,13 +1684,11 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 - `.container { padding-top: 1px; }`（占用 1px 空间）
 - `.container { border-top: 1px solid transparent; }`（占用 1px 空间）
 
-
 **题目 3**：实现一个自适应两栏布局，左侧定宽 200px，右侧自适应剩余宽度。要求：
 
 1. 不使用 flex 或 grid。
 2. 利用 BFC 特性。
 3. 左右两栏间距 20px。
-
 
 ```html
 <!DOCTYPE html>
@@ -1754,11 +1729,9 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 - 右侧 `overflow: hidden` 触发 BFC，BFC 不会与浮动元素重叠，因此自动占据剩余宽度。
 - 通过 `margin-right: 20px` 实现间距（浮动元素之间不合并，间距准确）。
 
-
 ### 9.4 思考题
 
 **题目 1**：为什么 CSS 设计者选择让 margin 合并，而不是简单相加？请从排版美学与规范简洁性两个角度分析。
-
 
 **排版美学角度**：
 - 段落间距取最大值符合排版直觉：两段文字之间的视觉间距应取决于「需要更大留白的那一段」。
@@ -1774,9 +1747,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 - 合并机制在简单文档场景下表现优异，但在复杂组件化场景下成为负担。
 - 现代布局方案（flex/grid + gap）通过完全规避合并，提供了更可预测的间距管理。
 
-
 **题目 2**：在现代组件化开发中，margin 合并机制是「特性」还是「缺陷」？请论证你的观点。
-
 
 **观点**：在现代组件化开发中，margin 合并机制更接近「缺陷」而非「特性」。
 
@@ -1795,9 +1766,7 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 - 新项目应全面采用 flex/grid + gap 规避合并。
 - 长期来看，CSS 规范应考虑引入「opt-out」机制（如 `margin-collapse: none`）。
 
-
 **题目 3**：设计一个企业级间距管理系统，要求支持多主题、响应式、可访问性。请给出设计方案。
-
 
 **设计方案**：
 
@@ -1863,7 +1832,6 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 - Figma 设计令牌同步
 - Storybook 文档
 - 代码注释规范
-
 
 ---
 

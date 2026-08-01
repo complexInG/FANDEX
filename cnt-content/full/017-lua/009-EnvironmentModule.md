@@ -15,13 +15,6 @@ related:
 prerequisites:
   - lua/概述与环境配置
 ---
-
-# Lua 环境与模块
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 Lua 的环境与模块系统是组织代码和管理命名空间的核心机制。Lua 的模块系统非常简洁，一个模块本质上就是一个返回表的 Lua 文件。通过 require 函数加载模块，Lua 会自动处理模块的搜索路径、缓存和重复加载等问题。这种设计使得 Lua 的模块系统既灵活又高效，无需复杂的包管理工具即可组织大型项目。
@@ -1142,8 +1135,6 @@ myapp.utils = utils
 
 ## 参考文献
 
-
-
 Lua 官方文档：https://www.lua.org/docs.html
 Lua 5.4 参考手册：https://www.lua.org/manual/5.4/
 LuaJIT：https://luajit.org/
@@ -1151,8 +1142,6 @@ OpenResty 文档：https://openresty.org/cn/
 Redis EVAL 文档：https://redis.io/docs/latest/develop/programming/
 
 ## 延伸阅读
-
-
 
 Lua 与 Redis 脚本，见 022-redis 模块相关文档。
 Lua 与 OpenResty 网关，见 031-devops 模块相关文档。

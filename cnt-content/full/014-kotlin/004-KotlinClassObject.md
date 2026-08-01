@@ -14,13 +14,6 @@ related:
   - kotlin/集合与协程
 prerequisites: []
 ---
-
-# Kotlin 类与对象速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 类定义
 
 ### 1.1 基本类
@@ -1119,8 +1112,6 @@ class Preference<T>(private val key: String, private val default: T) {
 
 ## 参考文献
 
-
-
 Kotlin 官方文档：https://kotlinlang.org/docs/home.html
 Kotlin 协程指南：https://kotlinlang.org/docs/coroutines-guide.html
 Compose Multiplatform：https://www.jetbrains.com/compose-multiplatform/
@@ -1128,8 +1119,6 @@ Ktor 框架：https://ktor.io/
 Android 开发者文档：https://developer.android.com/kotlin
 
 ## 延伸阅读
-
-
 
 Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
 协程与 Flow，见 014-kotlin 模块协程文档。

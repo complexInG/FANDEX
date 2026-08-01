@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# Jest 异步测试
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## async / await 测试
 
 **换行写法：使用 async/await 测试异步**
@@ -195,8 +188,6 @@ await expect(asyncFail()).rejects.toThrow("失败原因");
 
 ## 参考文献
 
-
-
 ISTQB 官方资源：https://www.istqb.org/
 Testing Library：https://testing-library.com/
 Playwright：https://playwright.dev/
@@ -204,15 +195,12 @@ Martin Fowler 测试专题：https://martinfowler.com/testing/
 
 ## 延伸阅读
 
-
-
 测试分层与用例设计，见 036-software-testing 模块文档。
 CI 集成测试，见 031-devops 模块。
 代码质量与评审，见 037-software-engineering 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供测试课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# AWS RDS 数据库命令
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 实例创建与查看
 
 **基本写法：查看可用数据库引擎**
@@ -516,8 +509,6 @@ aws rds modify-db-instance \
 
 ## 参考文献
 
-
-
 AWS 文档：https://docs.aws.amazon.com/
 Microsoft Azure 文档：https://learn.microsoft.com/zh-cn/azure/
 Google Cloud 文档：https://cloud.google.com/docs?hl=zh-cn
@@ -525,8 +516,6 @@ Google Cloud 文档：https://cloud.google.com/docs?hl=zh-cn
 CNCF 云原生全景：https://landscape.cncf.io/
 
 ## 延伸阅读
-
-
 
 虚拟化与容器，见 034-cloud-computing 模块相关文档。
 Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。

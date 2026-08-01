@@ -15,13 +15,6 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
-
-# 测试与调试 语法速查手册
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 测试与调试是软件工程的两面盾牌：前者在变更发生时守护既有行为的稳定性，后者在行为偏离预期时定位根本原因。HarmonyOS 提供了完整的测试金字塔（Test Pyramid）支持：底层是基于 Jest 的 `@ohos/hypium` 单元测试框架，中层是基于 `@ohos/uitest` 的 UI 自动化测试，顶层是 `DevEco Profiler` 与 `hilog` 日志体系构成的运行时观测能力。这套体系借鉴了 JUnit、Espresso、XCTest 等成熟框架的设计哲学，并在此基础上针对 ArkUI 的声明式渲染模型做了适配。

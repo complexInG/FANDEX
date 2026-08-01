@@ -19,13 +19,6 @@ prerequisites:
   - javascript/原型与继承
   - javascript/闭包的内存泄露与优化
 ---
-
-# JavaScript Proxy 与 Reflect
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与演化
 
 ### 1.1 元编程的思想起源（1960-1990）

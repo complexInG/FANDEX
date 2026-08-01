@@ -18,13 +18,6 @@ prerequisites:
   - javascript/模块化
   - javascript/异步编程
 ---
-
-# JavaScript 动态 import 与代码分割
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与演化
 
 ### 1.1 模块化之前的黑暗时代（1995-2009）
@@ -1743,7 +1736,6 @@ import('./math.js').then((mod) => {
 console.log('main end');
 ```
 
-
 输出顺序：
 
 ```
@@ -1754,7 +1746,6 @@ then: 3
 ```
 
 原因：`import()` 是异步的，回调在微任务队列中执行。`console.log('main end')` 在主任务中，先于微任务执行。`math.js` 的求值发生在 `import()` Promise resolve 之前。
-
 
 **题目 2**：以下代码会被分割成几个 chunk？
 
@@ -1775,12 +1766,10 @@ import('./lazy.js').then(m => console.log(m.default()));
 export default function() { return 'lazy'; }
 ```
 
-
 会被分割成 2 个 chunk：
 
 1. 主 chunk：包含 `main.js`、`a.js`、`b.js`（静态依赖，必须在同一 chunk）。
 2. 异步 chunk：`lazy.js`（动态导入，单独 chunk）。
-
 
 ### 9.2 进阶题
 
@@ -1796,7 +1785,6 @@ async function loadAll() {
 }
 ```
 
-
 问题：使用 `await` 串行加载，5 个模块需要 5 个 RTT。应改为并行加载。
 
 ```javascript
@@ -1809,9 +1797,7 @@ async function loadAll() {
 
 但需注意：在某些场景下串行加载是有意的（如依赖前一个模块的结果）。这里假设无依赖关系。
 
-
 **题目 4**：设计一个 `lazyImport` 函数，支持失败重试和超时。
-
 
 ```javascript
 /**
@@ -1864,19 +1850,15 @@ const mod = await lazyImport('./heavy-module.js', {
 });
 ```
 
-
 ### 9.3 思考题
 
 **题目 5**：为什么 Vite 在开发期能比 Webpack 快这么多？请从 ESM、esbuild、按需编译三方面分析。
-
 
 1. **浏览器原生 ESM**：Vite 开发服务器不打包代码，直接利用浏览器对 ESM 的原生支持。浏览器按需发起请求，仅需当前页面用到的模块。
 2. **esbuild 预构建**：第三方依赖用 esbuild（Go 实现）预构建为 ESM 格式，比 Webpack（JavaScript）快 10-100 倍。
 3. **按需编译**：只有被请求的模块才会被编译，而非全量构建。修改某个文件时仅重新编译该文件，HMR 速度与项目规模无关。
 
-
 **题目 6**：在 SSR 场景下，动态导入有什么特殊考虑？如何正确处理水合？
-
 
 SSR 中的动态导入特殊考虑：
 
@@ -1884,7 +1866,6 @@ SSR 中的动态导入特殊考虑：
 2. **客户端水合**：服务端渲染的 HTML 包含已加载组件的内容，客户端需在导入相同 chunk 后才能水合。通过 `<link rel="modulepreload">` 预加载这些 chunk。
 3. **chunk 清单同步**：服务端需将已加载的 chunk 清单注入 HTML，客户端据此预加载。
 4. **避免水合不匹配**：服务端与客户端加载的组件版本必须一致，否则 React 会警告 hydration mismatch。
-
 
 **题目 7**：分析以下 Webpack 配置，指出问题并修复。
 
@@ -1906,7 +1887,6 @@ module.exports = {
   }
 };
 ```
-
 
 问题：
 
@@ -1943,7 +1923,6 @@ module.exports = {
   }
 };
 ```
-
 
 ---
 

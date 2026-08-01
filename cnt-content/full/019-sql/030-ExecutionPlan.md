@@ -15,13 +15,6 @@ related:
 prerequisites:
   - sql/概述与标准
 ---
-
-# SQL 执行计划 语法速查手册
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 执行计划概述
 
 执行计划（Execution Plan）是数据库优化器为 SQL 查询选择的执行策略。理解执行计划是 SQL 性能优化的核心技能。
@@ -549,8 +542,6 @@ EXPLAIN SELECT * FROM employees e JOIN departments d ON e.dept_id = d.id;
 
 ## 参考文献
 
-
-
 SQL 标准（ISO/IEC 9075）：https://www.iso.org/standard/76583.html
 PostgreSQL 文档（SQL 章节）：https://www.postgresql.org/docs/current/sql.html
 MySQL 文档：https://dev.mysql.com/doc/
@@ -558,8 +549,6 @@ SQLite 文档：https://www.sqlite.org/docs.html
 Use The Index, Luke：https://use-the-index-luke.com/
 
 ## 延伸阅读
-
-
 
 SQL 连接与子查询，见 019-sql 模块文档。
 SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。

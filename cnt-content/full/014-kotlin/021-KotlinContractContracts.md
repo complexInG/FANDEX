@@ -16,13 +16,6 @@ prerequisites:
   - kotlin/Kotlin作用域函数
   - kotlin/Kotlin内联类
 ---
-
-# Kotlin 契约 Contracts
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与背景
 
 ### 1.1 契约式设计（Design by Contract）溯源

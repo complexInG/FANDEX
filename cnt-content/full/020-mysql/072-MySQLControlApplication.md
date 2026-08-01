@@ -523,16 +523,12 @@ Repository模式将数据访问逻辑与业务逻辑分离，通过抽象接口�
 
 ## 参考文献
 
-
-
 MySQL 官方文档：https://dev.mysql.com/doc/
 MySQL 8.0 参考手册：https://dev.mysql.com/doc/refman/8.0/en/
 High Performance MySQL（O'Reilly）：https://www.oreilly.com/library/view/high-performance-mysql/
 Percona 博客：https://www.percona.com/blog/
 
 ## 延伸阅读
-
-
 
 MySQL 索引与优化，见 020-mysql 模块文档。
 MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。

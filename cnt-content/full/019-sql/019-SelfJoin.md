@@ -38,7 +38,6 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-
 ## 1. 历史动机与发展脉络
 
 关系模型的奠基人 E. F. Codd 在 1970 年论文《A Relational Model of Data for Large Shared Data Banks》中定义了关系代数，连接（join）是核心运算。自连接并非特殊语法，而是连接运算的自然应用：把一张表同时当作两个关系实例使用。SQL 标准从一开始就允许表与自身连接，通过别名区分。
@@ -371,10 +370,6 @@ PostgreSQL 递归查询与物化路径对比，见 021-postgresql 模块相关�
 树结构与图数据建模，见 020-mysql 模块或 021-postgresql 模块相关文档；
 
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 MySQL 高级课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供数据库课程。
-
-# SQL 自连接 语法速查手册
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 

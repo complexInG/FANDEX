@@ -14,13 +14,6 @@ related:
 prerequisites:
   - svg/基础语法与文档结构
 ---
-
-# SVG 符号与复用 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 为什么要复用
 
 重复代码会带来体积膨胀、维护困难、不一致风险。SVG 提供三种复用机制：
@@ -638,16 +631,12 @@ CSS 变量可穿透 shadow DOM,实现实例级定制。
 
 ## 参考文献
 
-
-
 MDN SVG 文档：https://developer.mozilla.org/zh-CN/docs/Web/SVG
 SVG 规范（W3C）：https://www.w3.org/TR/SVG2/
 SVGO 优化工具：https://github.com/svg/svgo
 D3.js：https://d3js.org/
 
 ## 延伸阅读
-
-
 
 SVG 图形语法，见 012-svg 模块文档。
 CSS 样式与动画，见 007-css 模块。

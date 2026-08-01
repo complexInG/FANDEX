@@ -15,13 +15,6 @@ related:
 prerequisites:
   - kotlin/概述与环境配置
 ---
-
-# Kotlin 时间 API
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 kotlinx-datetime 是 Kotlin 官方的跨平台日期时间库。它基于 ISO 8601 标准，提供了统一的 API 来处理日期、时间、时区等概念。与 Java 的 `java.time` 不同，kotlinx-datetime 从一开始就为 Kotlin 多平台设计，可以在 JVM、JS、Native 等平台上使用。
@@ -699,8 +692,6 @@ val until = d1.until(d2)
 
 ## 参考文献
 
-
-
 Kotlin 官方文档：https://kotlinlang.org/docs/home.html
 Kotlin 协程指南：https://kotlinlang.org/docs/coroutines-guide.html
 Compose Multiplatform：https://www.jetbrains.com/compose-multiplatform/
@@ -708,8 +699,6 @@ Ktor 框架：https://ktor.io/
 Android 开发者文档：https://developer.android.com/kotlin
 
 ## 延伸阅读
-
-
 
 Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
 协程与 Flow，见 014-kotlin 模块协程文档。

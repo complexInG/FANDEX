@@ -1301,7 +1301,6 @@ class TextPreprocessor:
         )
         return tokenized
 
-
 # 使用示例
 preprocessor = TextPreprocessor("bert-base-chinese", max_length=128)
 sample = {"text": ["<p>测试文本1</p>", "<a href='x'>测试2</a>"]}
@@ -1474,7 +1473,6 @@ similarity = doc1.similarity(doc2)
 print(f"相似度: {similarity}")
 ```
 
-
 问题：`zh_core_web_sm` 是小型模型，不含词向量，`similarity` 方法退化为基于上下文张量的相似度计算，结果不可靠。
 
 修正：加载含词向量的中等或大型模型：
@@ -1507,7 +1505,6 @@ optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 optimizer.step()
 optimizer.zero_grad()
 ```
-
 
 问题1：`optimizer` 应在 `backward()` 之前创建（虽然在循环中创建也能用，但效率低）。
 问题2：`optimizer.step()` 应在 `loss.backward()` 之后调用（顺序正确但 optimizer 应提前定义）。
@@ -1554,7 +1551,6 @@ optimizer.zero_grad()
 
 请从延迟、成本、可定制性、数据隐私四个维度对比三种方案，并给出推荐。
 
-
 | 维度 | 方案A (GPT-4 API) | 方案B (RoBERTa微调) | 方案C (spaCy+规则) |
 |------|------------------|--------------------|-------------------|
 | 延迟 | 500-2000ms | 20-80ms (CPU) | 5-20ms |
@@ -1572,14 +1568,12 @@ optimizer.zero_grad()
 3. 风险控制（误诊责任、模型漂移、可解释性）
 4. 上线节奏（MVP、迭代、监控）
 
-
 1. 架构：患者描述 → 文本清洗 → 实体识别（症状、部位）→ 意图分类（科室）→ 风险评估 → 输出。模型选型建议：实体识别用 BERT-NER，科室分类用 RoBERTa 微调，风险评分用规则+模型。
 2. 数据：与三甲医院合作获取脱敏病历；遵循 HIPAA 与《个人信息保护法》；标注由执业医师完成。
 3. 风险：明确"非诊断、仅辅助建议"声明；设置高风险症状（如胸痛、急性意识障碍）强制人工介入；模型每周评估漂移。
 4. 节奏：MVP（3 个月，单一科室）→ 横向扩展（6 个月，5 科室）→ 全院上线（12 个月，含监控闭环）。
 
 **习题 11.10**（分析层）：解释为什么 Transformer 在长序列上注意力复杂度为 $O(n^2)$，并描述 Longformer、BigBird、Linear Attention 等改进方案的核心思路与权衡。
-
 
 标准 Transformer 注意力需计算所有 $n \times n$ 个 query-key 对，复杂度 $O(n^2 d_k)$，内存 $O(n^2)$。
 

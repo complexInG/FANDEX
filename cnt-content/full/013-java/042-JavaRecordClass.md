@@ -15,12 +15,6 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
-# Java 记录类
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 一、学习目标
 
 本节遵循 Bloom 分类法,从低阶认知到高阶创造,系统构建读者对 Java Record(记录类)、Sealed Class/Interface(密封类型)与 Pattern Matching(模式匹配)三大相关特性的认知体系。

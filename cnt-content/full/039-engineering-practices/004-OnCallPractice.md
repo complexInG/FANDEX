@@ -153,8 +153,6 @@ prerequisites: []
 
 ## 参考文献
 
-
-
 Google 工程实践文档：https://google.github.io/eng-practices/
 12 因素应用：https://12factor.net/zh_cn/
 SemVer：https://semver.org/lang/zh-CN/
@@ -162,15 +160,12 @@ Conventional Commits：https://www.conventionalcommits.org/zh-hans/
 
 ## 延伸阅读
 
-
-
 工程实践总览，见 039-engineering-practices 模块文档。
 Git 协作规范，见 003-git 模块。
 CI/CD 与 DevOps，见 031-devops 模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供工程化课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

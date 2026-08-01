@@ -18,13 +18,6 @@ prerequisites:
   - mysql/语法速查
 updated: '2026-08-01'
 ---
-
-# MySQL SQL 数据操作与查询
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. SQL 概述
 
 ### 1.1 SQL 是什么
@@ -1065,8 +1058,6 @@ FROM users GROUP BY status;
 ```
 
 ## 参考文献
-
-
 
 MySQL 官方文档：https://dev.mysql.com/doc/
 MySQL 8.0 参考手册：https://dev.mysql.com/doc/refman/8.0/en/

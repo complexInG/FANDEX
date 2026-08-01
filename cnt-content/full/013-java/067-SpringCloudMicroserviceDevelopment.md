@@ -444,8 +444,6 @@ spec:
 
 ## 参考文献
 
-
-
 Oracle Java 官方文档：https://docs.oracle.com/en/java/
 OpenJDK 项目：https://openjdk.org/
 Java 语言规范：https://docs.oracle.com/javase/specs/
@@ -455,8 +453,6 @@ Maven 官方文档：https://maven.apache.org/guides/
 
 ## 延伸阅读
 
-
-
 Java 并发与 JUC，见 013-java 模块并发文档。
 JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
 Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
@@ -464,7 +460,6 @@ Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Java 全栈课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Java 进阶课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

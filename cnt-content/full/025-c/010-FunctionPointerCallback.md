@@ -15,13 +15,6 @@ related:
 prerequisites:
   - c/概述
 ---
-
-# C 函数指针与回调
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 函数指针(function pointer)是 C 语言中存储函数入口地址的指针变量,是实现运行时多态、回调函数(callback)、策略模式(strategy pattern)、事件驱动编程(event-driven programming)、跳转表(jump table)与插件架构(plugin architecture)的核心机制。回调函数是一种通过函数指针实现的设计模式,允许调用者将自定义行为注入被调用者,使被调用者在特定时机"回调"调用者的代码。

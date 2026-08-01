@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# C++ variant / optional / any
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## std::optional 可选值
 
 **基本写法：构造 optional**
@@ -283,8 +276,6 @@ a.reset();
 
 ## 参考文献
 
-
-
 cppreference C++ 文档：https://zh.cppreference.com/w/cpp
 C++ 核心指南：https://isocpp.github.io/CppCoreGuidelines/
 C++ 标准草案（WG21）：https://isocpp.org/std/the-standard
@@ -293,8 +284,6 @@ Compiler Explorer：https://godbolt.org/
 
 ## 延伸阅读
 
-
-
 C++ 模板深入，见 026-cpp/062-CppTemplate 文档。
 STL 容器与算法，见 026-cpp 模块 STL 文档。
 并发与原子，见 026-cpp 模块并发文档。
@@ -302,7 +291,6 @@ Rust 内存安全对比，见 053-rust 模块（若已加入）。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 C++ 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

@@ -56,13 +56,6 @@ etymology:
 lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 ---
-
-# JavaScript 自定义 Error
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 0. 导言
 
 错误处理是软件工程中最被低估的复杂度来源之一。一段看似简单的 `throw new Error('...')` 在生产环境中会衍生出一系列工程问题：

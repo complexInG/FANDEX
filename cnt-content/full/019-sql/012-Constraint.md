@@ -15,13 +15,6 @@ related:
 prerequisites:
   - sql/概述与标准
 ---
-
-# 约束
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 约束概述
 
 约束（Constraint）是数据库强制执行的数据完整性规则，确保数据满足业务逻辑要求。约束在 DDL 层面保证数据质量，比应用层验证更可靠。
@@ -594,8 +587,6 @@ ALTER TABLE users ENABLE CONSTRAINT uk_email;
 
 ## 参考文献
 
-
-
 SQL 标准（ISO/IEC 9075）：https://www.iso.org/standard/76583.html
 PostgreSQL 文档（SQL 章节）：https://www.postgresql.org/docs/current/sql.html
 MySQL 文档：https://dev.mysql.com/doc/
@@ -603,8 +594,6 @@ SQLite 文档：https://www.sqlite.org/docs.html
 Use The Index, Luke：https://use-the-index-luke.com/
 
 ## 延伸阅读
-
-
 
 SQL 连接与子查询，见 019-sql 模块文档。
 SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。

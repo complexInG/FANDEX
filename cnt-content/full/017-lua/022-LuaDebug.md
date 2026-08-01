@@ -15,13 +15,6 @@ related:
 prerequisites:
   - lua/概述与环境配置
 ---
-
-# Lua 调试库与排错
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 调试是软件开发中不可或缺的环节。Lua 作为一门嵌入式脚本语言，其调试方式与编译型语言有所不同。Lua 提供了内置的 debug 库，支持运行时检查调用栈、查看局部变量、设置钩子函数等功能。掌握这些调试技巧，能够帮助开发者快速定位问题、分析性能瓶颈，提升开发效率。
@@ -1163,8 +1156,6 @@ end
 
 ## 参考文献
 
-
-
 Lua 官方文档：https://www.lua.org/docs.html
 Lua 5.4 参考手册：https://www.lua.org/manual/5.4/
 LuaJIT：https://luajit.org/
@@ -1172,8 +1163,6 @@ OpenResty 文档：https://openresty.org/cn/
 Redis EVAL 文档：https://redis.io/docs/latest/develop/programming/
 
 ## 延伸阅读
-
-
 
 Lua 与 Redis 脚本，见 022-redis 模块相关文档。
 Lua 与 OpenResty 网关，见 031-devops 模块相关文档。

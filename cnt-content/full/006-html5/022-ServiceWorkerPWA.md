@@ -15,13 +15,6 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
-
-# Service Worker 与 PWA 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. Service Worker 概述
 
 Service Worker 是浏览器后台独立于网页运行的脚本，充当网络代理，支持离线缓存、推送通知和后台同步。
@@ -508,16 +501,12 @@ window.addEventListener('appinstalled', () => {
 
 ## 参考文献
 
-
-
 WHATWG HTML Living Standard：https://html.spec.whatwg.org/
 MDN HTML 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTML
 W3C Markup Validation Service：https://validator.w3.org/
 WebAIM 可访问性指南：https://webaim.org/
 
 ## 延伸阅读
-
-
 
 HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
 CSS 样式与布局，见 007-css 模块。

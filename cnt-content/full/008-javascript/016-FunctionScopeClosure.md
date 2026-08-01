@@ -20,13 +20,6 @@ prerequisites:
   - javascript/语法速查
   - javascript/控制流
 ---
-
-# JavaScript 函数-作用域与闭包
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 引言
 
 函数是 JavaScript 中"一等公民"（first-class citizen）的抽象机制：它可以赋值给变量、作为参数传递、从函数返回、存储在数据结构中。这种设计让 JavaScript 拥有函数式编程的能力，但也带来了一些独特的语义——作用域链、闭包、`this` 绑定——这些机制是 React Hooks、Vue 响应式、Node.js 事件循环等现代框架与运行时的基石。

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - markdown/语法指南
 ---
-
-# LaTeX 数学公式
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 数学公式概述
 
 ### 1.1 Markdown 中的数学公式
@@ -761,16 +754,12 @@ $$
 
 ## 参考文献
 
-
-
 CommonMark 规范：https://spec.commonmark.org/
 GFM 规范：https://github.github.com/gfm/
 Markdown 指南：https://www.markdownguide.org/
 Markdownlint：https://github.com/DavidAnson/markdownlint
 
 ## 延伸阅读
-
-
 
 Markdown 基础语法，见 002-markdown 模块文档。
 Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。

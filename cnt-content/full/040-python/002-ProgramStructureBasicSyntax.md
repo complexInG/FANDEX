@@ -16,13 +16,6 @@ related:
 prerequisites: []
 updated: '2026-08-01'
 ---
-
-# 程序结构与基本语法
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 程序结构 (Program Structure)
 
 Python 程序由多个组件组成，包括模块导入、全局变量、函数定义、类定义和主逻辑。一个完整的 Python 程序通常遵循以下结构：
@@ -1017,8 +1010,6 @@ if (condition1 and
 
 ## 参考文献
 
-
-
 Python 官方文档：https://docs.python.org/zh-cn/3/
 PEP 8 样式指南：https://peps.python.org/pep-0008/
 Python 之禅（PEP 20）：https://peps.python.org/pep-0020/
@@ -1027,8 +1018,6 @@ Python 打包用户指南：https://packaging.python.org/
 Real Python 教程站：https://realpython.com/
 
 ## 延伸阅读
-
-
 
 Python 数据类型与内置容器，见 040-python 模块的基础文档。
 Python 异步编程（asyncio/FastAPI），见 040-python 模块的异步与 Web 文档。

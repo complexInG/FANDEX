@@ -17,13 +17,6 @@ prerequisites:
   - 'data-analysis/数据分析概述'
 updated: '2026-08-01'
 ---
-
-# Matplotlib 可视化
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. Matplotlib 简介
 
 ### 1.1 两种绘图风格
@@ -1068,16 +1061,12 @@ plt.show()
 
 ## 参考文献
 
-
-
 Pandas 文档：https://pandas.pydata.org/docs/
 NumPy 文档：https://numpy.org/doc/stable/
 Matplotlib：https://matplotlib.org/
 Kaggle Learn：https://www.kaggle.com/learn
 
 ## 延伸阅读
-
-
 
 数据分析工具，见 051-data-analysis 模块文档。
 概率统计基础，见 030-probability-statistics 模块。

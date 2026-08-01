@@ -16,13 +16,6 @@ related:
 prerequisites: []
 updated: '2026-08-01'
 ---
-
-# JavaScript 程序结构与基本语法
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 引入方式 (Inclusion)
 
 JavaScript 可以通过多种方式引入到网页中，每种方式都有其适用场景和特点。
@@ -1175,8 +1168,6 @@ alert("操作成功");
 
 ## 参考文献
 
-
-
 MDN JavaScript 文档：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript
 ECMAScript 规范：https://tc39.es/ecma262/
 Node.js 官方文档：https://nodejs.org/docs/latest/api/
@@ -1184,8 +1175,6 @@ JavaScript 秘密花园：https://bonsaiden.github.io/JavaScript-Garden/
 Can I use：https://caniuse.com/
 
 ## 延伸阅读
-
-
 
 JavaScript 基础语法，见 008-javascript 模块文档。
 TypeScript 类型系统，见 009-typescript 模块。

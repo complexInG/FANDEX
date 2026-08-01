@@ -17,13 +17,6 @@ prerequisites:
   - markdown/语法指南
 updated: '2026-08-01'
 ---
-
-# 代码块与语法高亮
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 行内代码 (Inline Code)
 
 **语法**：使用反引号 `` ` `` 包围代码
@@ -659,16 +652,12 @@ E = mc^2
 
 ## 参考文献
 
-
-
 CommonMark 规范：https://spec.commonmark.org/
 GFM 规范：https://github.github.com/gfm/
 Markdown 指南：https://www.markdownguide.org/
 Markdownlint：https://github.com/DavidAnson/markdownlint
 
 ## 延伸阅读
-
-
 
 Markdown 基础语法，见 002-markdown 模块文档。
 Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。

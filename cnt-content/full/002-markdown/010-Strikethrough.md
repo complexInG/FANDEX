@@ -38,7 +38,6 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-
 ## 1. 历史动机与发展脉络
 
 删除线的历史可以追溯到打字机时代。在还没有文档处理软件的年代，修订文本时人们用横线划过需要废弃的文字，同时保留这些文字以便审阅者看到原始内容。这种“保留原文并标记失效”的物理习惯，后来被 WYSIWYG 文字处理器中的删除线（strikethrough）字体样式继承。
@@ -369,7 +368,6 @@ Markdown Guide 站点：https://www.markdownguide.org/basic-syntax/ 提供各语
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）与尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供了 Markdown、Git 与前端开发的系列视频课程，可作为实践补充；
 
 GitHub 官方文档中关于写作与格式化的说明：https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax 。
-
 
 ### 1. 历史动机与发展脉络
 
@@ -702,10 +700,6 @@ Markdown Guide 站点：https://www.markdownguide.org/basic-syntax/ 提供各语
 
 GitHub 官方文档中关于写作与格式化的说明：https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax 。
 
-# 删除线
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
 ---
 
 #### 1. 删除线语法
@@ -962,5 +956,4 @@ GitHub 官方文档中关于写作与格式化的说明：https://docs.github.co
 - ~~`oldMethod()`~~ → `newMethod()`
 - ~~`Config.default`~~ → `Config.defaults`
 ```
-
 

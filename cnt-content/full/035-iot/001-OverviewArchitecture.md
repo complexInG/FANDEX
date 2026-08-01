@@ -51,7 +51,6 @@ delay(1000) 让程序暂停 1 秒，否则 LED 亮灭切换太快肉眼无法分
 - 003-Wi-Fi 连接：让开发板联网并上报数据。
 - 004-MQTT 协议：设备与服务器通信的标准方式。
 
-
 ## 1. IoT 概念
 
 ### 1.1 定义
@@ -262,8 +261,6 @@ IoT 是连接物理世界和数字世界的桥梁：
 
 ## 参考文献
 
-
-
 MQTT 规范：https://mqtt.org/
 CoAP（RFC 7252）：https://www.rfc-editor.org/rfc/rfc7252
 EMQX 文档：https://www.emqx.io/docs/zh/latest/
@@ -272,15 +269,12 @@ InfluxDB 文档：https://docs.influxdata.com/
 
 ## 延伸阅读
 
-
-
 MQTT 与设备接入，见 035-iot 模块文档。
 嵌入式 C 与硬件，见 025-c 模块。
 时序数据与数据平台，见 052-big-data 模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供物联网课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

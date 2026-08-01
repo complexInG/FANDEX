@@ -16,12 +16,6 @@ related:
 prerequisites:
   - javascript/语法速查
 ---
-# JavaScript 数据类型与运算符
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 数据类型 (Data Types)
 
 JavaScript 是一种动态类型语言，变量的类型会在运行时自动推断。JavaScript 中的数据类型分为两大类：原始类型（Primitive Types）和引用类型（Reference Types）。

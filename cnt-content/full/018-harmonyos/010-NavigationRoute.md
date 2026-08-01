@@ -15,13 +15,6 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
-
-# 导航与路由 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 HarmonyOS 提供了两套路由导航方案：Navigation 组件和 Router 模块。Navigation 是声明式的导航容器，支持 NavDestination 子页面管理、导航栏定制和路由栈操作，适合复杂的单页面应用架构。Router 是命令式的页面路由，通过 API 调用实现页面跳转和返回，适合简单的多页面应用。在实际开发中，推荐优先使用 Navigation，它提供了更丰富的导航能力和更好的类型安全。
@@ -963,16 +956,12 @@ struct Index {
 
 ## 参考文献
 
-
-
 华为开发者联盟 HarmonyOS 文档：https://developer.huawei.com/consumer/cn/harmonyos
 ArkTS 语言规范：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-overview
 ArkUI 组件参考：https://developer.huawei.com/consumer/cn/doc/harmonyos-references/
 DevEco Studio：https://developer.huawei.com/consumer/cn/deveco-studio/
 
 ## 延伸阅读
-
-
 
 TypeScript 基础（ArkTS 语言底座），见 009-typescript 模块。
 声明式 UI 概念与 React/Vue 对比，见 011-react/010-vue3 模块。

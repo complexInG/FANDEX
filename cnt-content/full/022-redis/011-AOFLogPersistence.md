@@ -15,13 +15,6 @@ related:
 prerequisites:
   - redis/概述与核心数据结构
 ---
-
-# AOF 日志持久化
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. AOF 概述
 
 AOF（Append Only File）以日志形式记录 Redis 服务器收到的每一条写命令，以追加（append）方式写入 AOF 文件。Redis 重启时通过重放 AOF 文件中的命令来恢复数据。
@@ -561,16 +554,12 @@ dir /var/lib/redis
 
 ## 参考文献
 
-
-
 Redis 官方文档：https://redis.io/docs/latest/
 Redis 命令参考：https://redis.io/docs/latest/commands/
 Redis 中文资料：https://redis.com.cn/
 Redisson 文档：https://redisson.org/
 
 ## 延伸阅读
-
-
 
 Redis 数据结构详解，见 022-redis 模块文档。
 Redis 持久化与集群，见 022-redis 模块相关文档。

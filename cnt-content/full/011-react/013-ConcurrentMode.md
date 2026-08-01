@@ -15,13 +15,6 @@ related:
 prerequisites:
   - react/概述与环境配置
 ---
-
-# React 并发特性
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 Concurrent 模式是 React 18 引入的核心特性，允许 React 在渲染过程中中断、暂停和恢复工作。传统模式下 React 的渲染是同步不可中断的，一旦开始就会执行到底，这可能导致长时间的任务阻塞用户交互。并发渲染通过可中断的渲染机制，使 React 能够优先处理高优先级更新（如用户输入），将低优先级更新（如数据获取）推迟到空闲时执行。
@@ -648,8 +641,6 @@ setCount(c => c + 1);
 
 ## 参考文献
 
-
-
 React 官方文档：https://react.dev/
 React 19 发布说明：https://react.dev/blog/2024/12/05/react-19
 TanStack Query：https://tanstack.com/query/latest
@@ -657,8 +648,6 @@ Zustand：https://zustand.docs.pmnd.rs/
 Next.js：https://nextjs.org/
 
 ## 延伸阅读
-
-
 
 React Hooks 深入，见 011-react 模块 Hooks 文档。
 React 与 TypeScript 类型，见 009-typescript 模块。

@@ -45,11 +45,6 @@ echo hello > test.txt 创建一个内容为 hello 的测试文件；sha256sum �
 - 003-加密基础：对称加密与非对称加密的区别。
 - 004-常见攻击与防御：SQL 注入、XSS 的原理与防护。
 
-
-# Cybersecurity JWT 安全命令
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
 ---
 
 ## 1. 防火墙策略配置
@@ -775,8 +770,6 @@ python3 -c "import jwt; h=jwt.get_unverified_header('eyJ...'); print('算法:', 
 
 ## 参考文献
 
-
-
 OWASP Top 10：https://owasp.org/www-project-top-ten/
 OWASP Cheat Sheets：https://cheatsheetseries.owasp.org/
 NIST 网络安全框架：https://www.nist.gov/cyberframework
@@ -784,8 +777,6 @@ CWE 数据库：https://cwe.mitre.org/
 PortSwigger Web Security Academy：https://portswigger.net/web-security
 
 ## 延伸阅读
-
-
 
 密码学与证书，见 033-cybersecurity 模块文档。
 Web 攻击与防御，见 033-cybersecurity 模块相关文档。

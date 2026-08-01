@@ -49,7 +49,6 @@ at line X 给出出错位置，看到它第一件事就是去检查那一行。
 - 003-技术文档阅读法：标题、代码、结论的速读技巧。
 - 004-技术写作：提交信息与 PR 描述模板。
 
-
 ## 1. 编程语言与软件工程 (Programming Languages & Software Engineering)
 
 | 单词          | 音标               | 释义              | 例句                                                            |
@@ -371,8 +370,6 @@ at line X 给出出错位置，看到它第一件事就是去检查那一行。
 
 ## 参考文献
 
-
-
 Merriam-Webster：https://www.merriam-webster.com/
 Stack Overflow：https://stackoverflow.com/
 Hacker News：https://news.ycombinator.com/
@@ -380,15 +377,12 @@ BBC Learning English：https://www.bbc.co.uk/learningenglish
 
 ## 延伸阅读
 
-
-
 英语学习材料与规划，见 005-english 模块文档。
 技术写作（Markdown），见 002-markdown 模块。
 开源协作中的英语沟通，见 004-github 模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供英语课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# Python math/random/statistics
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## math 数学函数
 
 **基本写法：平方根与幂**
@@ -260,8 +253,6 @@ print(statistics.harmonic_mean([1, 2, 4]))   # 1.714...
 
 ## 参考文献
 
-
-
 Python 官方文档：https://docs.python.org/zh-cn/3/
 PEP 8 样式指南：https://peps.python.org/pep-0008/
 Python 之禅（PEP 20）：https://peps.python.org/pep-0020/
@@ -271,8 +262,6 @@ Real Python 教程站：https://realpython.com/
 
 ## 延伸阅读
 
-
-
 Python 数据类型与内置容器，见 040-python 模块的基础文档。
 Python 异步编程（asyncio/FastAPI），见 040-python 模块的异步与 Web 文档。
 Python 数据分析（NumPy/Pandas），见 051-data-analysis 模块。
@@ -280,7 +269,6 @@ Python 与数据库交互（SQLAlchemy），见 019-sql 模块相关文档。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Python 全栈课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Python 后端课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

@@ -38,7 +38,6 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-
 ## 1. 历史动机与发展脉络
 
 SPA 中组件随路由切换频繁创建与销毁。Vue 2 时期，开发者用 `<keep-alive>` 包裹动态组件保存状态，但只能缓存组件树中的组件；Vue Router 场景则需要 `keep-alive` 包裹 `<router-view>`，配合路由 meta 判断。Vue 3 保留 `<KeepAlive>`（PascalCase 命名），内部实现基于 `MoveType` 的移动缓存：被缓存组件卸载时以“失活”状态移入隐藏容器，而不是销毁。
@@ -381,10 +380,6 @@ KeepAlive 与 Teleport 的组合模式，见本模块 026-TeleportPortalApp 文�
 状态管理方案对比，见 010-vue3 模块的 Pinia 相关文档；
 
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Vue3 实战课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Vue3 全家桶课程。
-
-# KeepAlive 组件语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 

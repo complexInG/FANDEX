@@ -1917,7 +1917,6 @@ fmt.Println(errors.Is(err, os.ErrNotExist))
 - C. 编译错误
 - D. panic
 
-
 **答案：B**
 
 `%w` 动词包装错误，保留错误链。`errors.Is` 会递归调用 `Unwrap`，最终找到 `os.ErrNotExist`，返回 true。
@@ -1939,7 +1938,6 @@ fmt.Println(errors.As(err, &pathErr))
 - C. panic
 - D. 编译错误
 
-
 **答案：B**
 
 `errors.As` 递归遍历错误链，找到第一个可赋值给 `*os.PathError` 的错误。`*os.PathError` 实现了 `Error() string`，是 `error` 接口的实例，可赋值给 `*os.PathError` 类型的目标。
@@ -1952,7 +1950,6 @@ fmt.Println(errors.As(err, &pathErr))
 - B. `Unwrap() []error`
 - C. `Is(error) bool`
 - D. `As(interface{}) bool`
-
 
 **答案：B**
 
@@ -1972,7 +1969,6 @@ func main() {
 - B. 输出 `B` `A` 后打印 panic 信息并退出
 - C. 直接打印 panic 信息并退出
 - D. 编译错误
-
 
 **答案：B**
 
@@ -2003,7 +1999,6 @@ func main() {
 - C. 直接 panic 退出
 - D. 编译错误
 
-
 **答案：B**
 
 `recover` 在 defer 函数中调用会停止 panic 传播，函数正常返回。所以 `recoverInDefer` 正常返回，`main` 继续执行打印 `after recover`。
@@ -2012,33 +2007,27 @@ func main() {
 
 **题目 1**：Go 语言的 `error` 接口定义了单一方法 `______()`，返回 `string`。
 
-
 `Error`
 
 **题目 2**：Go 1.13 引入的 `fmt.Errorf` 的 `______` 动词用于包装错误，保留错误链。
-
 
 `%w`
 
 **题目 3**：`errors.Is` 与 `errors.As` 的区别：前者按 ______ 匹配，后者按 ______ 匹配。
 
-
 值；类型
 
 **题目 4**：Go 1.20 引入的 `errors.Join` 返回的错误实现 `Unwrap() ______` 方法。
 
-
 `[]error`
 
 **题目 5**：`recover` 函数仅在 ______ 函数中直接调用时生效。
-
 
 `defer`
 
 ### 编程题知识点讲解
 
 **题目 1**：实现一个 `MultiError` 类型，支持添加多个错误，并实现 `Error() string`、`Unwrap() []error` 方法。
-
 
 ```go
 package main
@@ -2106,7 +2095,6 @@ func main() {
 ```
 
 **题目 2**：实现一个 `Retry` 函数，支持上下文取消、指数退避、最大重试次数。
-
 
 ```go
 package main
@@ -2194,7 +2182,6 @@ func main() {
 
 **题目 3**：实现一个 HTTP 中间件，捕获 panic 并返回 500 错误，同时记录日志。
 
-
 ```go
 package main
 
@@ -2261,7 +2248,6 @@ func main() {
 
 **题目 1**：为什么 Go 选择 `error` 接口而非异常机制？这种设计的优缺点是什么？
 
-
 **优点**：
 
 1. **显式控制流**：错误处理与正常流程分离，无隐式跳转
@@ -2283,7 +2269,6 @@ func main() {
 Rob Pike 的 *"Errors are values"* 强调：错误是普通值，开发者应主动处理而非被强制。这体现了 Go 的"信任开发者"哲学，与 Rust 的"编译器强制"形成对比。
 
 **题目 2**：何时应该使用 `panic` 而非 `error`？
-
 
 **使用 panic 的场景**：
 
@@ -2309,7 +2294,6 @@ Rob Pike 的 *"Errors are values"* 强调：错误是普通值，开发者应主
 
 **题目 3**：`errors.Is` 与 `errors.As` 的性能差异为何较大？如何优化？
 
-
 **性能差异原因**：
 
 1. **反射开销**：`errors.As` 使用 `reflectlite` 进行类型检查与赋值，反射操作开销约为直接比较的 10 倍
@@ -2334,7 +2318,6 @@ BenchmarkAs-8   20000000    72 ns/op
 `As` 约慢 7 倍。
 
 **题目 4**：设计一个生产级错误库需要考虑哪些方面？
-
 
 **核心设计要素**：
 
@@ -2388,7 +2371,6 @@ BenchmarkAs-8   20000000    72 ns/op
     - 模糊测试
 
 **题目 5**：Go 1.20 的 `errors.Join` 解决了什么问题？与第三方 `multierror` 库相比有何优势？
-
 
 **解决的问题**：
 

@@ -328,11 +328,9 @@ from typing import Optional
 from sqlalchemy import String, Integer, Boolean, DateTime, ForeignKey, Text, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-
 class Base(DeclarativeBase):
     """声明式基类，所有模型继承此类。"""
     pass
-
 
 class User(Base):
     """用户模型。"""
@@ -371,7 +369,6 @@ class User(Base):
     def __repr__(self) -> str:
         return f"User(id={self.id}, name={self.name!r}, email={self.email!r})"
 
-
 class Article(Base):
     """文章模型。"""
     __tablename__ = "articles"
@@ -388,7 +385,6 @@ class Article(Base):
 
     def __repr__(self) -> str:
         return f"Article(id={self.id}, title={self.title!r})"
-
 
 # 创建所有表
 engine = create_engine("sqlite:///myapp.db", echo=True)
@@ -593,7 +589,6 @@ article_tags = Table(
     mapped_column("tag_id", ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True),
 )
 
-
 class Tag(Base):
     __tablename__ = "tags"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -602,7 +597,6 @@ class Tag(Base):
     articles: Mapped[list["Article"]] = relationship(
         secondary=article_tags, back_populates="tags"
     )
-
 
 # 修改 Article 模型，添加 tags 关系
 class Article(Base):
@@ -613,7 +607,6 @@ class Article(Base):
     tags: Mapped[list["Tag"]] = relationship(
         secondary=article_tags, back_populates="tags"
     )
-
 
 # 使用
 with Session(engine) as session:
@@ -657,7 +650,6 @@ AsyncSessionLocal = async_sessionmaker(
     expire_on_commit=False,  # 异步下必须关闭，否则访问属性触发同步懒加载
 )
 
-
 async def create_user(name: str, email: str) -> int:
     """异步创建用户。"""
     async with AsyncSessionLocal() as session:
@@ -665,7 +657,6 @@ async def create_user(name: str, email: str) -> int:
         session.add(user)
         await session.commit()
         return user.id
-
 
 async def get_user_with_articles(user_id: int) -> User:
     """异步查询用户及其文章（必须预加载）。"""
@@ -678,14 +669,12 @@ async def get_user_with_articles(user_id: int) -> User:
         result = await session.execute(stmt)
         return result.scalar_one()
 
-
 async def main():
     user_id = await create_user("张三", "zhangsan@example.com")
     user = await get_user_with_articles(user_id)
     print(user.name)
     for article in user.articles:
         print(article.title)
-
 
 asyncio.run(main())
 ```
@@ -694,7 +683,6 @@ asyncio.run(main())
 
 ```python
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-
 
 class User(Base):
     __tablename__ = "users"
@@ -721,7 +709,6 @@ class User(Base):
     def is_adult(cls):
         return cls.age >= 18
 
-
 # 使用：混合属性可在 Python 与 SQL 两端使用
 with Session(engine) as session:
     # Python 端
@@ -741,7 +728,6 @@ from sqlalchemy import event
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-
 # 事件一：before_flush，校验数据
 @event.listens_for(Session, "before_flush")
 def validate_before_flush(session, flush_context, instances):
@@ -753,7 +739,6 @@ def validate_before_flush(session, flush_context, instances):
         if isinstance(obj, User) and not obj.name:
             raise ValueError("姓名不能为空")
 
-
 # 事件二：after_commit，发送事件
 @event.listens_for(Session, "after_commit")
 def publish_events(session):
@@ -762,13 +747,11 @@ def publish_events(session):
         if isinstance(obj, User):
             print(f"[EVENT] 用户创建: {obj.id}")
 
-
 # 事件三：ORM 实例级事件
 @event.listens_for(User, "before_insert")
 def set_created_at(mapper, connection, target):
     """插入前设置 created_at。"""
     target.created_at = datetime.utcnow()
-
 
 @event.listens_for(User, "load")
 def on_user_load(target, context):
@@ -840,7 +823,6 @@ Create Date: 2026-07-21
 from alembic import op
 import sqlalchemy as sa
 
-
 def upgrade() -> None:
     op.create_table(
         "users",
@@ -849,7 +831,6 @@ def upgrade() -> None:
         sa.Column("email", sa.String(200), unique=True, nullable=False),
     )
     op.create_index("ix_users_email", "users", ["email"])
-
 
 def downgrade() -> None:
     op.drop_index("ix_users_email", table_name="users")
@@ -1127,7 +1108,6 @@ def session_scope(session_factory):
     finally:
         session.close()
 
-
 # 使用
 with session_scope(SessionLocal) as session:
     user = User(name="张三", email="z@example.com")
@@ -1146,10 +1126,8 @@ DATABASE_URL = "postgresql://user:pass@localhost/mydb"
 engine = create_engine(DATABASE_URL, pool_size=10, max_overflow=20)
 SessionLocal = sessionmaker(bind=engine)
 
-
 class Base(DeclarativeBase):
     pass
-
 
 class User(Base):
     __tablename__ = "users"
@@ -1157,11 +1135,9 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(String(200), unique=True)
 
-
 class UserCreate(BaseModel):
     name: str
     email: str
-
 
 class UserResponse(BaseModel):
     id: int
@@ -1171,9 +1147,7 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 app = FastAPI()
-
 
 def get_db():
     """依赖：获取数据库会话。"""
@@ -1183,7 +1157,6 @@ def get_db():
     finally:
         db.close()
 
-
 @app.post("/users", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = User(name=user.name, email=user.email)
@@ -1191,7 +1164,6 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return db_user
-
 
 @app.get("/users/{user_id}", response_model=UserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):
@@ -1209,7 +1181,6 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 ModelT = TypeVar("ModelT")
-
 
 class Repository(Generic[ModelT]):
     """通用仓储基类，封装常见 CRUD 操作。"""
@@ -1240,7 +1211,6 @@ class Repository(Generic[ModelT]):
         self.session.delete(obj)
         self.session.commit()
 
-
 # 使用
 class UserService:
     def __init__(self, session: Session):
@@ -1257,7 +1227,6 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, Boolean
 from sqlalchemy.orm import Session, query
 
-
 class SoftDeleteMixin:
     """软删除混入，提供 deleted_at 字段与查询过滤。"""
 
@@ -1270,13 +1239,11 @@ class SoftDeleteMixin:
     def soft_delete(self) -> None:
         self.deleted_at = datetime.utcnow()
 
-
 # 使用
 class User(SoftDeleteMixin, Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
-
 
 # 查询时过滤已删除记录
 with Session(engine) as session:
@@ -1290,7 +1257,6 @@ with Session(engine) as session:
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-
 class TenantMiddleware:
     """多租户中间件，根据请求上下文设置搜索路径。"""
 
@@ -1302,7 +1268,6 @@ class TenantMiddleware:
         # PostgreSQL：设置 search_path
         session.execute(text(f"SET search_path TO tenant_{tenant_id}"))
         return session
-
 
 # 使用
 middleware = TenantMiddleware(SessionLocal)
@@ -1316,7 +1281,6 @@ with middleware.get_session("acme") as session:
 ```python
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
 
 class ReadWriteSplit:
     """读写分离：写操作走主库，读操作走从库。"""
@@ -1333,7 +1297,6 @@ class ReadWriteSplit:
         engine = self.slave_engines[self.slave_index % len(self.slave_engines)]
         self.slave_index += 1
         return sessionmaker(bind=engine)()
-
 
 # 使用
 split = ReadWriteSplit(
@@ -1357,7 +1320,6 @@ from sqlalchemy import event, inspect
 from sqlalchemy.orm import Session
 import json
 
-
 class AuditLog(Base):
     __tablename__ = "audit_logs"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -1367,7 +1329,6 @@ class AuditLog(Base):
     old_values: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     new_values: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
 
 @event.listens_for(Session, "before_flush")
 def audit_log(session, flush_context, instances):
@@ -1432,14 +1393,12 @@ from decimal import Decimal
 from sqlalchemy import Numeric, CheckConstraint
 from sqlalchemy.orm import Session
 
-
 class Product(Base):
     __tablename__ = "products"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(200))
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     stock: Mapped[int] = mapped_column(Integer, default=0)
-
 
 class Order(Base):
     __tablename__ = "orders"
@@ -1452,7 +1411,6 @@ class Order(Base):
         back_populates="order", cascade="all, delete-orphan"
     )
 
-
 class OrderItem(Base):
     __tablename__ = "order_items"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -1463,7 +1421,6 @@ class OrderItem(Base):
 
     order: Mapped["Order"] = relationship(back_populates="items")
     product: Mapped["Product"] = relationship()
-
 
 class OrderService:
     def __init__(self, session: Session):
@@ -1534,7 +1491,6 @@ class Category(Base):
 
     posts: Mapped[list["Post"]] = relationship(back_populates="category")
 
-
 class Post(Base):
     __tablename__ = "posts"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -1553,7 +1509,6 @@ class Post(Base):
     author: Mapped["User"] = relationship()
     category: Mapped[Optional["Category"]] = relationship(back_populates="posts")
     tags: Mapped[list["Tag"]] = relationship(secondary=post_tags, back_populates="posts")
-
 
 # 查询：获取某分类及其所有子分类下的已发布文章
 def get_posts_by_category_tree(session: Session, category_id: int):
@@ -1606,7 +1561,6 @@ engine = create_engine(
     f"postgresql://{db['USER']}:{db['PASSWORD']}@{db['HOST']}:{db['PORT']}/{db['NAME']}"
 )
 SessionLocal = sessionmaker(bind=engine)
-
 
 # 在 Django 视图中使用
 from django.http import JsonResponse
@@ -1663,7 +1617,6 @@ SessionLocal = sessionmaker(bind=engine)
 
 app = Celery("tasks", broker="redis://localhost:6379/0")
 
-
 @app.task
 def process_user_data(user_id: int):
     """Celery 任务中使用 SQLAlchemy。
@@ -1678,14 +1631,12 @@ def process_user_data(user_id: int):
 
     return {"user_id": user_id, "status": "processed"}
 
-
 # 任务链
 @app.task
 def fetch_users():
     with SessionLocal() as session:
         users = session.execute(select(User).where(User.processed == False)).scalars().all()
         return [user.id for user in users]
-
 
 # 工作流
 workflow = fetch_users.s() | process_user_data.s()
@@ -1703,17 +1654,14 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-
 
 @app.route("/users")
 def list_users():
     users = db.session.execute(select(User)).scalars().all()
     return {"users": [{"id": u.id, "name": u.name} for u in users]}
-
 
 @app.route("/users", methods=["POST"])
 def create_user():
@@ -1732,7 +1680,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from myapp.models import Base
 
-
 @pytest.fixture(scope="session")
 def engine():
     """会话级引擎：使用内存数据库。"""
@@ -1740,7 +1687,6 @@ def engine():
     Base.metadata.create_all(engine)
     yield engine
     Base.metadata.drop_all(engine)
-
 
 @pytest.fixture
 def session(engine):
@@ -1754,7 +1700,6 @@ def session(engine):
     session.close()
     transaction.rollback()
     connection.close()
-
 
 def test_create_user(session):
     user = User(name="测试用户", email="test@example.com")
@@ -1775,12 +1720,10 @@ from sqlalchemy.engine import Engine
 
 logger = logging.getLogger("sqlalchemy.performance")
 
-
 @event.listens_for(Engine, "before_cursor_execute")
 def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
     """记录 SQL 执行开始时间。"""
     context._query_start_time = time.perf_counter()
-
 
 @event.listens_for(Engine, "after_cursor_execute")
 def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
@@ -1793,12 +1736,10 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
     else:
         logger.debug(f"SQL ({duration:.3f}s): {statement[:100]}")
 
-
 # 集成 OpenTelemetry
 from opentelemetry import trace
 
 tracer = trace.get_tracer(__name__)
-
 
 @event.listens_for(Engine, "before_cursor_execute")
 def trace_before_execute(conn, cursor, statement, parameters, context, executemany):
@@ -1806,7 +1747,6 @@ def trace_before_execute(conn, cursor, statement, parameters, context, executema
     span = tracer.start_span("SQL")
     span.set_attribute("db.statement", statement[:500])
     context._span = span
-
 
 @event.listens_for(Engine, "after_cursor_execute")
 def trace_after_execute(conn, cursor, statement, parameters, context, executemany):
@@ -1873,13 +1813,11 @@ Detached --merge()--> Persistent (创建新实例)
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session, selectinload
 
-
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
     posts: Mapped[list["Post"]] = relationship(back_populates="author")
-
 
 class Post(Base):
     __tablename__ = "posts"
@@ -1893,7 +1831,6 @@ class Post(Base):
         back_populates="post", cascade="all, delete-orphan"
     )
 
-
 class Comment(Base):
     __tablename__ = "comments"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -1903,7 +1840,6 @@ class Comment(Base):
 
     post: Mapped["Post"] = relationship(back_populates="comments")
     author: Mapped["User"] = relationship()
-
 
 # 查询：某用户的所有文章及其评论数
 def get_user_posts_with_comment_count(session: Session, user_id: int):
@@ -2031,7 +1967,6 @@ Session 状态：进入"失败"状态，后续操作需先调用 `session.rollba
 from sqlalchemy import Integer, version_id
 from sqlalchemy.orm import mapped_column
 
-
 class VersionedMixin:
     """乐观锁混入，通过 version 字段实现并发控制。"""
 
@@ -2039,13 +1974,11 @@ class VersionedMixin:
         Integer, nullable=False, default=1, version_id=True
     )
 
-
 # 使用
 class User(VersionedMixin, Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
-
 
 # 并发修改时，SQLAlchemy 自动在 UPDATE 中加入 WHERE version_id = ?
 # 若版本不匹配（已被其他事务修改），UPDATE 影响 0 行，抛出 StaleDataError
@@ -2071,7 +2004,6 @@ from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 from contextlib import contextmanager
 import time
-
 
 class DistributedLock:
     """基于 PostgreSQL 行锁的分布式锁。"""
@@ -2104,7 +2036,6 @@ class DistributedLock:
         finally:
             session.commit()  # 释放锁
             session.close()
-
 
 # 使用
 def critical_section():
@@ -2280,7 +2211,6 @@ from sqlalchemy.ext.asyncio import (
 class Base(DeclarativeBase):
     pass
 
-
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -2290,7 +2220,6 @@ class User(Base):
     posts: Mapped[list["Post"]] = relationship(
         back_populates="author", cascade="all, delete-orphan"
     )
-
 
 class Post(Base):
     __tablename__ = "posts"
@@ -2597,7 +2526,6 @@ class UnitOfWork:
             self.session.commit()
         self.session.close()
 
-
 # 使用
 with UnitOfWork(SessionLocal) as session:
     user = User(name="张三")
@@ -2615,7 +2543,6 @@ class LoadingStrategy:
     def apply(self, stmt):
         raise NotImplementedError
 
-
 class SelectInLoad(LoadingStrategy):
     def __init__(self, *relationships):
         self.relationships = relationships
@@ -2625,7 +2552,6 @@ class SelectInLoad(LoadingStrategy):
         for rel in self.relationships:
             stmt = stmt.options(selectinload(rel))
         return stmt
-
 
 # 使用
 strategy = SelectInLoad(User.posts, User.comments)
@@ -2643,31 +2569,26 @@ from functools import reduce
 from sqlalchemy import select, and_
 from sqlalchemy.orm import Session
 
-
 def compose(*funcs):
     """函数组合器。"""
     def composed(x):
         return reduce(lambda acc, f: f(acc), reversed(funcs), x)
     return composed
 
-
 def where_age_gt(min_age):
     def apply(stmt):
         return stmt.where(User.age > min_age)
     return apply
-
 
 def order_by_name():
     def apply(stmt):
         return stmt.order_by(User.name)
     return apply
 
-
 def limit(n):
     def apply(stmt):
         return stmt.limit(n)
     return apply
-
 
 # 使用
 query = compose(
@@ -2683,7 +2604,6 @@ stmt = query(select(User))
 ```python
 from dataclasses import dataclass
 from typing import Callable
-
 
 @dataclass(frozen=True)
 class QuerySpec:
@@ -2709,7 +2629,6 @@ class QuerySpec:
         if self.limit:
             stmt = stmt.limit(self.limit)
         return stmt
-
 
 # 使用
 spec = QuerySpec().with_filter(User.age > 18).with_order(User.name).with_limit(10)

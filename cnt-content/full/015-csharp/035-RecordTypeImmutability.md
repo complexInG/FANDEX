@@ -1688,7 +1688,6 @@ B. record 默认实现 `Equals`、`GetHashCode`、`ToString`、`Deconstruct`
 C. record 的 `with` 表达式在编译时展开为 `<Clone>$` 调用 + 属性赋值
 D. record class 必须显式定义主构造函数
 
-
 **解析讲解**：D
 
 **解析讲解**：record class 可以使用非位置语法，通过对象初始化器初始化属性，不必显式定义主构造函数。例如：
@@ -1699,7 +1698,6 @@ public record Person
     public int Age { get; init; }
 }
 ```
-
 
 ---
 
@@ -1719,11 +1717,9 @@ B. `False`
 C. 编译错误
 D. 运行时异常
 
-
 **解析讲解**：B
 
 **解析讲解**：record 的 `Equals` 检查 `EqualityContract`。`a.EqualityContract` 为 `typeof(A)`，`b.EqualityContract` 为 `typeof(B)`，两者不同，故不相等。即使 X 相同，子类 record 与父类 record 不相等。
-
 
 ---
 
@@ -1733,7 +1729,6 @@ A. `record R(int X); var r = new R(1) with { X = 2 };`
 B. `record R(int X) { public int X { get; set; } = X; } var r = new R(1) with { X = 2 };`
 C. `readonly record struct S(int X); var s = new S(1) with { X = 2 };`
 D. `record struct S(int X); var s = new S(1) with { X = 2 };`
-
 
 **解析讲解**：无错误（陷阱题）
 
@@ -1745,7 +1740,6 @@ D. `record struct S(int X); var s = new S(1) with { X = 2 };`
 
 所有选项均可编译。注意 B 中的 `set` 属性使 record 不再不可变。
 
-
 ---
 
 **Q4.** 关于 record struct 与 readonly record struct 的区别，下列哪项**正确**？
@@ -1755,7 +1749,6 @@ B. readonly record struct 不允许定义 `set` 属性
 C. record struct 不能实现接口
 D. readonly record struct 装箱后不能调用 `Equals`
 
-
 **解析讲解**：A、B
 
 **解析讲解**：
@@ -1763,7 +1756,6 @@ D. readonly record struct 装箱后不能调用 `Equals`
 - B：正确。`readonly` 修饰符禁止所有字段修改，包括 `set` 属性。
 - C：错误。两者都可实现接口。
 - D：错误。装箱后调用 `Equals` 通过虚方法分派，正常工作。
-
 
 ---
 
@@ -1782,7 +1774,6 @@ B. `p1` 在栈，`p2` 在栈，`o` 在堆
 C. 全部在堆
 D. 全部在栈
 
-
 **解析讲解**：B
 
 **解析讲解**：
@@ -1790,46 +1781,35 @@ D. 全部在栈
 - `p2 = p1 with { X = 10 }` 也是值类型，分配在栈。
 - `object o = p1` 触发装箱，p1 的副本分配在堆上，o 引用该副本。
 
-
 ### 填空题知识点讲解
 
 **Q6.** record 的 `with` 表达式在编译时调用 `________` 方法创建实例副本，再通过 `________` 访问器修改属性。
 
-
 `<Clone>$`，`init`
-
 
 ---
 
 **Q7.** record 的 `EqualityContract` 属性返回类型为 `________`，用于在继承场景下区分 `________`。
 
-
 `Type`，子类与父类 record
-
 
 ---
 
 **Q8.** `init` 访问器在 IL 层通过 `________` modreq 标识，仅允许在 `________` 阶段或 `________` 表达式中调用。
 
-
 `System.Runtime.CompilerServices.IsExternalInit`，对象初始化器，`with`
-
 
 ---
 
 **Q9.** record struct 的默认布局特性是 `________`，而 record class 是 `________`。
 
-
 `Sequential`（顺序布局），`Auto`（自动布局）
-
 
 ---
 
 **Q10.** record 重写的 `GetHashCode` 使用 `________` 算法组合各属性哈希，常数因子通常为 `________`。
 
-
 乘法混合（multiplicative hashing），31（或 prime）
-
 
 ### 编程题知识点讲解
 
@@ -1971,7 +1951,6 @@ var result = ParseInt("42")
 
 **Q13.** 为什么 C# record 选择支持继承，而 Java record 与 Kotlin data class 不支持？请从语言设计哲学、运行时实现、性能影响三个角度分析。
 
-
 **设计哲学**：
 - C# 强调"多范式融合"，支持函数式 + 面向对象。record 作为不可变类型仍可参与继承体系。
 - Java record 强调"纯函数式数据载体"，继承会引入复杂性（如 EqualityContract），故禁止。
@@ -1985,11 +1964,9 @@ var result = ParseInt("42")
 - C# record 继承引入虚方法分派（EqualityContract、Equals），略微增加调用开销。
 - 不支持继承的语言可在编译期确定类型，更多内联优化。
 
-
 ---
 
 **Q14.** 在事件溯源（Event Sourcing）系统中，使用 record 表示领域事件有何优势？请结合一致性、可重放性、调试性展开论述。
-
 
 **一致性**：
 - 不可变事件：一旦写入事件存储（Event Store）即不可修改，保证历史可追溯。
@@ -2004,11 +1981,9 @@ var result = ParseInt("42")
 - 模式匹配支持事件分发，代码清晰。
 - 不可变性使得并发重放安全，无需加锁。
 
-
 ---
 
 **Q15.** 假设你正在设计一个高频交易系统，每秒需处理百万级订单事件。订单状态使用 record class 还是 record struct？请详细论证。
-
 
 **推荐**：`readonly record struct` + 对象池。
 
@@ -2024,7 +1999,6 @@ var result = ParseInt("42")
 - 跨线程共享时，struct 自动按值拷贝，天然线程安全。
 
 **反例**：record class 会触发 Gen 0 GC，每秒百万级分配导致 GC 暂停超过交易延迟容忍（< 1ms）。
-
 
 ---
 

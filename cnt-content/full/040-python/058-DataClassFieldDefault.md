@@ -372,13 +372,11 @@ def __init__(self, x, y):
 ```python
 from dataclasses import dataclass
 
-
 @dataclass
 class Point:
     """基础数据类：自动生成 __init__、__repr__、__eq__"""
     x: float
     y: float
-
 
 p1 = Point(1.0, 2.0)
 p2 = Point(1.0, 2.0)
@@ -392,14 +390,12 @@ print(p1 is p2)    # False（不同实例）
 ```python
 from dataclasses import dataclass
 
-
 @dataclass
 class Config:
     """带默认值的配置类"""
     host: str = "localhost"
     port: int = 8080
     debug: bool = False
-
 
 # 使用默认值
 c1 = Config()
@@ -415,12 +411,10 @@ print(c2)  # Config(host='0.0.0.0', port=3000, debug=False)
 ```python
 from dataclasses import dataclass
 
-
 @dataclass
 class Bad:
     """错误：使用可变对象作为默认值"""
     items: list = []  # 所有实例共享同一个列表！
-
 
 b1 = Bad()
 b2 = Bad()
@@ -433,12 +427,10 @@ print(b2.items)  # [1] — 被污染了！
 ```python
 from dataclasses import dataclass, field
 
-
 @dataclass
 class Good:
     """正确：使用 default_factory 创建独立列表"""
     items: list = field(default_factory=list)
-
 
 g1 = Good()
 g2 = Good()
@@ -452,7 +444,6 @@ print(g2.items)  # [] — 独立的列表
 from dataclasses import dataclass, field
 import uuid
 from datetime import datetime
-
 
 @dataclass
 class User:
@@ -475,7 +466,6 @@ class User:
     # metadata：自定义元数据
     tags: list = field(default_factory=list, metadata={"description": "用户标签"})
 
-
 u = User("Alice", 30, password="secret", email="alice@example.com")
 print(u)  # User(name='Alice', age=30, id='...', created_at=..., tags=[])
 # 注意：password 与 email 不在 repr 中
@@ -489,13 +479,11 @@ print(User.__dataclass_fields__["tags"].metadata)  # {'description': '用户标�
 ```python
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True)
 class Coordinate:
     """不可变坐标类：可用作字典键"""
     latitude: float
     longitude: float
-
 
 c = Coordinate(39.9, 116.4)
 
@@ -515,7 +503,6 @@ print(locations[Coordinate(39.9, 116.4)])  # 北京
 ```python
 from dataclasses import dataclass, field
 
-
 @dataclass
 class Rectangle:
     """使用 __post_init__ 计算字段"""
@@ -527,7 +514,6 @@ class Rectangle:
         """在 __init__ 后自动调用"""
         self.area = self.width * self.height
 
-
 r = Rectangle(10, 5)
 print(r.area)  # 50.0
 print(r)       # Rectangle(width=10.0, height=5.0, area=50.0)
@@ -538,17 +524,14 @@ print(r)       # Rectangle(width=10.0, height=5.0, area=50.0)
 ```python
 from dataclasses import dataclass
 
-
 @dataclass
 class Base:
     x: int = 0
     y: int = 0
 
-
 @dataclass
 class Derived(Base):
     z: int = 0  # 必须有默认值（因父类字段有默认值）
-
 
 d = Derived(x=1, y=2, z=3)
 print(d)  # Derived(x=1, y=2, z=3)
@@ -559,7 +542,6 @@ print(d)  # Derived(x=1, y=2, z=3)
 ```python
 from dataclasses import dataclass, KW_ONLY
 
-
 @dataclass
 class Point:
     """使用 KW_ONLY 分离位置参数与关键字参数"""
@@ -567,7 +549,6 @@ class Point:
     _: KW_ONLY  # 之后的字段必须用关键字
     y: float = 0.0
     z: float = 0.0
-
 
 # p = Point(1.0, 2.0)  # 错误：y 和 z 必须用关键字
 p = Point(1.0, y=2.0, z=3.0)
@@ -580,13 +561,11 @@ print(p)  # Point(x=1.0, y=2.0, z=3.0)
 from dataclasses import dataclass, field
 from typing import List
 
-
 @dataclass
 class Address:
     city: str
     street: str = ""
     zipcode: str = ""
-
 
 @dataclass
 class Employee:
@@ -596,7 +575,6 @@ class Employee:
     address: Address = field(default_factory=lambda: Address(city="未知"))
     # 列表字段：使用 default_factory
     skills: List[str] = field(default_factory=list)
-
 
 emp = Employee("Alice", 30, Address("北京", "长安街", "100000"), ["Python", "SQL"])
 print(emp)
@@ -608,12 +586,10 @@ print(emp)
 ```python
 from dataclasses import dataclass, asdict, astuple
 
-
 @dataclass
 class Point:
     x: float
     y: float
-
 
 p = Point(1.0, 2.0)
 print(asdict(p))   # {'x': 1.0, 'y': 2.0}
@@ -625,12 +601,10 @@ print(astuple(p))  # (1.0, 2.0)
 ```python
 from dataclasses import dataclass, replace
 
-
 @dataclass(frozen=True)
 class Config:
     host: str = "localhost"
     port: int = 8080
-
 
 default_config = Config()
 prod_config = replace(default_config, host="0.0.0.0", port=3000)
@@ -644,7 +618,6 @@ print(prod_config)      # Config(host='0.0.0.0', port=3000)
 ```python
 from dataclasses import dataclass, field
 
-
 @dataclass
 class User:
     id: int
@@ -655,7 +628,6 @@ class User:
     # 只有 id 参与哈希
     def __hash__(self):
         return hash(self.id)
-
 
 u1 = User(1, "Alice", "alice@test.com")
 u2 = User(1, "Alice", "alice@other.com")
@@ -668,13 +640,11 @@ print(hash(u1) == hash(u2))  # True
 ```python
 from dataclasses import dataclass
 
-
 @dataclass(slots=True)
 class Point:
     """使用 __slots__ 优化内存与访问速度"""
     x: float
     y: float
-
 
 p = Point(1.0, 2.0)
 # p.z = 3.0  # AttributeError: 'Point' object has no attribute 'z'
@@ -686,12 +656,10 @@ print(p.__slots__)  # ('x', 'y')
 ```python
 from dataclasses import dataclass
 
-
 @dataclass(match_args=True)  # 默认就是 True
 class Point:
     x: float
     y: float
-
 
 # 支持结构化模式匹配
 def describe(point):
@@ -705,7 +673,6 @@ def describe(point):
         case Point(x, y):
             return f"普通点 ({x}, {y})"
 
-
 print(describe(Point(0, 0)))    # 原点
 print(describe(Point(3, 0)))    # x 轴上，x=3.0
 print(describe(Point(1, 2)))    # 普通点 (1.0, 2.0)
@@ -716,7 +683,6 @@ print(describe(Point(1, 2)))    # 普通点 (1.0, 2.0)
 ```python
 from dataclasses import dataclass, field
 from typing import Optional, Dict, List
-
 
 @dataclass(frozen=True)
 class DatabaseConfig:
@@ -733,7 +699,6 @@ class DatabaseConfig:
     def url(self) -> str:
         return f"postgresql://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}"
 
-
 @dataclass(frozen=True)
 class AppConfig:
     """应用配置：嵌套 dataclass"""
@@ -745,7 +710,6 @@ class AppConfig:
     @property
     def is_production(self) -> bool:
         return not self.debug
-
 
 # 使用
 config = AppConfig(
@@ -766,7 +730,6 @@ print(config)                   # AppConfig(app_name='ProdApp', debug=False, dat
 from dataclasses import dataclass, field, asdict
 from typing import List, Optional
 from datetime import datetime
-
 
 @dataclass
 class UserResponse:
@@ -789,7 +752,6 @@ class UserResponse:
         """转换为字典"""
         return asdict(self)
 
-
 # 使用
 response = UserResponse.from_dict({
     "id": 1,
@@ -806,13 +768,11 @@ print(response.to_dict())
 from dataclasses import dataclass
 from pydantic import TypeAdapter, ValidationError
 
-
 @dataclass
 class User:
     name: str
     age: int
     email: str = ""
-
 
 # 使用 Pydantic 的 TypeAdapter 进行运行时验证
 adapter = TypeAdapter(User)
@@ -834,7 +794,6 @@ except ValidationError as e:
 from dataclasses import dataclass, field, fields, replace
 from typing import Any, Optional
 
-
 @dataclass
 class User:
     """支持部分更新的用户模型"""
@@ -848,7 +807,6 @@ class User:
         valid_fields = {f.name for f in fields(self) if f.name != "id"}
         updates = {k: v for k, v in kwargs.items() if k in valid_fields and v is not None}
         return replace(self, **updates)
-
 
 # 使用
 user = User(id=1, name="Alice", email="alice@example.com", age=30)
@@ -864,9 +822,7 @@ from dataclasses import dataclass, asdict
 import json
 from typing import Type, TypeVar, Any
 
-
 T = TypeVar("T", bound="SerializableMixin")
-
 
 class SerializableMixin:
     """可序列化混入：提供 to_dict / from_dict / to_json / from_json"""
@@ -886,13 +842,11 @@ class SerializableMixin:
     def from_json(cls: Type[T], json_str: str) -> T:
         return cls.from_dict(json.loads(json_str))
 
-
 @dataclass
 class User(SerializableMixin):
     name: str
     age: int
     email: str = ""
-
 
 # 使用
 user = User("Alice", 30, "alice@example.com")
@@ -926,19 +880,16 @@ print(restored)  # User(name='Alice', age=30, email='alice@example.com')
 from dataclasses import dataclass
 from typing import NamedTuple
 
-
 # dataclass
 @dataclass
 class PointDC:
     x: float
     y: float = 0.0
 
-
 # NamedTuple
 class PointNT(NamedTuple):
     x: float
     y: float = 0.0
-
 
 p1 = PointDC(1.0, 2.0)
 p2 = PointNT(1.0, 2.0)
@@ -966,13 +917,11 @@ print(p2)  # PointNT(x=1.0, y=2.0)
 ```python
 import attr
 
-
 @attr.s
 class User:
     name: str = attr.ib()
     age: int = attr.ib(default=0, validator=attr.validators.ge(0))
     email: str = attr.ib(default="", converter=str.lower)
-
 
 # 验证
 try:
@@ -1001,7 +950,6 @@ print(u.email)  # bob@example.com
 ```python
 from pydantic import BaseModel, validator
 
-
 class User(BaseModel):
     name: str
     age: int
@@ -1012,7 +960,6 @@ class User(BaseModel):
         if v < 0:
             raise ValueError("age must be positive")
         return v
-
 
 # 自动验证与转换
 user = User(name="Alice", age="30")  # age 字符串自动转换为 int
@@ -1109,7 +1056,6 @@ class Derived(Base):
 class Container:
     items: list  # 虽然容器不可变，但 list 仍可修改
 
-
 c = Container([1, 2, 3])
 c.items.append(4)  # 可以修改！frozen 只阻止字段重新赋值
 print(c.items)  # [1, 2, 3, 4]
@@ -1136,7 +1082,6 @@ class User:
     id: int
     name: str
 
-
 u = User(1, "Alice")
 d = {u: "value"}  # TypeError: unhashable type: 'User'
 ```
@@ -1150,7 +1095,6 @@ d = {u: "value"}  # TypeError: unhashable type: 'User'
 class User:
     id: int
     name: str
-
 
 u = User(1, "Alice")
 d = {u: "value"}  # OK
@@ -1211,12 +1155,10 @@ class Good:
 from dataclasses import dataclass, asdict
 from datetime import datetime
 
-
 @dataclass
 class Event:
     timestamp: datetime
     name: str
-
 
 e = Event(datetime.now(), "click")
 d = asdict(e)
@@ -1238,7 +1180,6 @@ def to_serializable_dict(obj):
             d[k] = v.isoformat()
     return d
 
-
 print(to_serializable_dict(e))
 # {'timestamp': '2026-07-21T...', 'name': 'click'}
 ```
@@ -1256,7 +1197,6 @@ class User:
 
     # __hash__ 自动生成时，只基于 compare=True 的字段（即 id, name）
     # 但若 name 相同而 email 不同，两个 User 会被视为相等
-
 
 u1 = User(1, "Alice", "alice@test.com")
 u2 = User(1, "Alice", "alice@other.com")
@@ -1295,7 +1235,6 @@ class Good:
 class User:
     name: str
 
-
 u = User("Alice")
 u.age = 30  # AttributeError: 'User' object has no attribute 'age'
 ```
@@ -1317,7 +1256,6 @@ from sqlalchemy.orm import declarative_base, Mapped, mapped_column
 
 Base = declarative_base()
 
-
 @dataclass
 class User(Base):
     __tablename__ = "users"
@@ -1333,10 +1271,8 @@ class User(Base):
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from dataclasses import dataclass
 
-
 class Base(DeclarativeBase):
     pass
-
 
 @dataclass
 class User(Base):
@@ -1344,14 +1280,12 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
 
-
 # 方式二：分开定义
 @dataclass
 class UserData:
     """数据传输对象"""
     id: int
     name: str
-
 
 class UserORM(Base):
     """ORM 模型"""
@@ -1369,7 +1303,6 @@ class UserORM(Base):
 ```python
 from dataclasses import dataclass
 from typing import Optional, List
-
 
 @dataclass
 class User:
@@ -1412,7 +1345,6 @@ class AppConfig:
 ```python
 from dataclasses import dataclass
 
-
 @dataclass
 class Rectangle:
     width: float
@@ -1422,7 +1354,6 @@ class Rectangle:
         if self.width <= 0 or self.height <= 0:
             raise ValueError("宽高必须为正数")
 
-
 # Rectangle(-1, 5)  # ValueError
 ```
 
@@ -1431,13 +1362,11 @@ class Rectangle:
 ```python
 from dataclasses import dataclass, field
 
-
 @dataclass
 class User:
     name: str
     password: str = field(repr=False)  # 不在 repr 中显示密码
     api_key: str = field(repr=False)
-
 
 u = User("Alice", "secret123", "key456")
 print(u)  # User(name='Alice')  — password 与 api_key 被隐藏
@@ -1448,12 +1377,10 @@ print(u)  # User(name='Alice')  — password 与 api_key 被隐藏
 ```python
 from dataclasses import dataclass, replace
 
-
 @dataclass(frozen=True)
 class Point:
     x: float
     y: float
-
 
 p1 = Point(1.0, 2.0)
 p2 = replace(p1, x=10.0)  # 不可变风格的"修改"
@@ -1465,12 +1392,10 @@ print(p2)  # Point(x=10.0, y=2.0)
 ```python
 from dataclasses import dataclass, field
 
-
 @dataclass
 class User:
     name: str = field(metadata={"description": "用户名", "max_length": 50})
     age: int = field(metadata={"description": "年龄", "min": 0, "max": 150})
-
 
 # 访问元数据
 fields = User.__dataclass_fields__
@@ -1486,7 +1411,6 @@ class Point:
     x: float
     y: float
 
-
 # 创建大量实例时，slots 节省内存
 points = [Point(i, i) for i in range(1_000_000)]
 ```
@@ -1501,14 +1425,12 @@ points = [Point(i, i) for i in range(1_000_000)]
 ```python
 from dataclasses import dataclass, KW_ONLY
 
-
 @dataclass
 class User:
     id: int  # 位置参数
     _: KW_ONLY
     name: str = ""  # 关键字参数
     email: str = ""
-
 
 # 强制 name 与 email 使用关键字
 u = User(1, name="Alice", email="alice@example.com")
@@ -1538,7 +1460,6 @@ class User:
     name: str
     email: str
 
-
 class EmailService:
     def send_email(self, user: User, subject: str, body: str):
         # 业务逻辑
@@ -1556,7 +1477,6 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 from fastapi import FastAPI
 
-
 @dataclass
 class CreateUserRequest:
     """创建用户请求模型"""
@@ -1564,7 +1484,6 @@ class CreateUserRequest:
     email: str
     age: Optional[int] = None
     roles: List[str] = field(default_factory=list)
-
 
 @dataclass
 class UserResponse:
@@ -1575,9 +1494,7 @@ class UserResponse:
     age: Optional[int] = None
     roles: List[str] = field(default_factory=list)
 
-
 app = FastAPI()
-
 
 @app.post("/users", response_model=UserResponse)
 async def create_user(request: CreateUserRequest):
@@ -1598,7 +1515,6 @@ from dataclasses import dataclass, field
 from typing import Dict, List
 import os
 
-
 @dataclass(frozen=True)
 class DjangoSettings:
     """Django 配置对象（不可变）"""
@@ -1616,7 +1532,6 @@ class DjangoSettings:
         "django.contrib.contenttypes",
     ])
 
-
 # 使用
 settings = DjangoSettings(debug=True)
 print(settings.debug)  # True
@@ -1630,14 +1545,12 @@ from datetime import datetime
 from typing import Any, Dict
 import uuid
 
-
 @dataclass(frozen=True)
 class Event:
     """事件基类（不可变）"""
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: datetime = field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = field(default_factory=dict)
-
 
 @dataclass(frozen=True)
 class UserCreated(Event):
@@ -1646,7 +1559,6 @@ class UserCreated(Event):
     name: str
     email: str
 
-
 @dataclass(frozen=True)
 class OrderPlaced(Event):
     """下单事件"""
@@ -1654,7 +1566,6 @@ class OrderPlaced(Event):
     user_id: int
     total: float
     items: list = field(default_factory=list)
-
 
 # 使用
 event = UserCreated(user_id=1, name="Alice", email="alice@example.com")
@@ -1670,7 +1581,6 @@ from dataclasses import dataclass, field, asdict
 from typing import Optional, List
 import json
 
-
 @dataclass
 class OptimizerConfig:
     name: str = "adam"
@@ -1678,14 +1588,12 @@ class OptimizerConfig:
     beta1: float = 0.9
     beta2: float = 0.999
 
-
 @dataclass
 class ModelConfig:
     architecture: str = "resnet50"
     num_classes: int = 10
     pretrained: bool = True
     hidden_dims: List[int] = field(default_factory=lambda: [256, 128])
-
 
 @dataclass
 class ExperimentConfig:
@@ -1700,7 +1608,6 @@ class ExperimentConfig:
     def save(self, path: str):
         with open(path, "w") as f:
             json.dump(asdict(self), f, indent=2)
-
 
 # 使用
 config = ExperimentConfig(
@@ -1721,7 +1628,6 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 from sqlalchemy import create_engine, select, MetaData, Table
 
-
 @dataclass
 class UserDTO:
     """用户数据传输对象"""
@@ -1739,7 +1645,6 @@ class UserDTO:
             email=row.email,
             age=row.age,
         )
-
 
 # 查询并映射
 engine = create_engine("sqlite:///app.db")
@@ -1761,20 +1666,17 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Set, List
 
-
 class Permission(Enum):
     READ = auto()
     WRITE = auto()
     DELETE = auto()
     ADMIN = auto()
 
-
 @dataclass(frozen=True)
 class Role:
     """角色（不可变）"""
     name: str
     permissions: frozenset  # 不可变集合
-
 
 @dataclass
 class User:
@@ -1785,7 +1687,6 @@ class User:
 
     def has_permission(self, perm: Permission) -> bool:
         return any(perm in role.permissions for role in self.roles)
-
 
 # 定义角色
 admin_role = Role("admin", frozenset({Permission.READ, Permission.WRITE, Permission.DELETE, Permission.ADMIN}))
@@ -1808,13 +1709,11 @@ from enum import Enum, auto
 from typing import Any, Dict, Optional
 import json
 
-
 class LogLevel(Enum):
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
-
 
 @dataclass
 class LogEntry:
@@ -1831,7 +1730,6 @@ class LogEntry:
         d["timestamp"] = self.timestamp.isoformat()
         d["level"] = self.level.value
         return json.dumps(d)
-
 
 # 使用
 log = LogEntry(
@@ -1852,13 +1750,11 @@ print(log.to_json())
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-
 @dataclass
 class InventoryItem:
     name: str
     quantity: int = 1
     weight: float = 0.0
-
 
 @dataclass
 class Character:
@@ -1883,7 +1779,6 @@ class Character:
     def is_alive(self) -> bool:
         return self.health > 0
 
-
 # 使用
 hero = Character(name="Hero", level=5)
 hero.take_damage(30)
@@ -1906,7 +1801,6 @@ print(hero.inventory)  # [InventoryItem(name='Potion', quantity=3, weight=0.5)]
 from dataclasses import dataclass, field
 from typing import List
 
-
 @dataclass
 class Book:
     title: str
@@ -1914,7 +1808,6 @@ class Book:
     isbn: str = ""
     price: float = 0.0
     tags: List[str] = field(default_factory=list)
-
 
 b = Book("Python 之美", "Guido")
 print(b)  # Book(title='Python 之美', author='Guido', isbn='', price=0.0, tags=[])
@@ -1960,7 +1853,6 @@ class Config:
 ```python
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True, order=True)
 class Money:
     amount: float
@@ -1973,7 +1865,6 @@ class Money:
 
     def __mul__(self, factor: float) -> "Money":
         return Money(self.amount * factor, self.currency)
-
 
 # 使用
 m1 = Money(100, "CNY")
@@ -1994,7 +1885,6 @@ print(m1 < m2)  # False
 ```python
 from dataclasses import dataclass, field
 
-
 @dataclass
 class Counter:
     count: int = 0
@@ -2003,7 +1893,6 @@ class Counter:
     def increment(self):
         self.count += 1
         self.history.append(self.count)
-
 
 c1 = Counter()
 c1.increment()
@@ -2075,7 +1964,6 @@ print(c2.history)
 from dataclasses import dataclass, field, fields
 from typing import Callable, Any
 
-
 def validated_dataclass(cls=None, **kwargs):
     """验证型 dataclass 装饰器"""
 
@@ -2102,17 +1990,14 @@ def validated_dataclass(cls=None, **kwargs):
         return wrap
     return wrap(cls)
 
-
 # 验证函数
 def positive(value, name):
     if value <= 0:
         raise ValueError(f"{name} 必须为正数")
 
-
 def non_empty(value, name):
     if not value:
         raise ValueError(f"{name} 不能为空")
-
 
 # 使用
 @validated_dataclass
@@ -2120,7 +2005,6 @@ class Product:
     name: str = field(metadata={"validator": non_empty})
     price: float = field(metadata={"validator": positive})
     stock: int = field(default=0, metadata={"validator": positive})
-
 
 # 测试
 try:
@@ -2340,13 +2224,11 @@ print(p)  # Product(name='Pen', price=5.0, stock=10)
 ```python
 from dataclasses import fields
 
-
 @dataclass
 class User:
     name: str
     age: int = 0
     email: str = field(default="", repr=False)
-
 
 # 检查字段
 for f in fields(User):
@@ -2358,15 +2240,12 @@ for f in fields(User):
 ```python
 from dataclasses import is_dataclass
 
-
 @dataclass
 class A:
     x: int
 
-
 class B:
     pass
-
 
 print(is_dataclass(A))  # True
 print(is_dataclass(B))  # False
@@ -2377,7 +2256,6 @@ print(is_dataclass(A(1)))  # True（实例也返回 True）
 
 ```python
 from dataclasses import dataclass, field
-
 
 @dataclass
 class Debug:
@@ -2390,7 +2268,6 @@ class Debug:
         traceback.print_stack()
         self.y = self.x * 2
 
-
 d = Debug(5)
 # 输出调用栈，便于调试
 ```
@@ -2401,13 +2278,11 @@ d = Debug(5)
 import timeit
 from dataclasses import dataclass, field
 
-
 # 普通 dataclass
 @dataclass
 class PointDC:
     x: float
     y: float
-
 
 # frozen dataclass
 @dataclass(frozen=True)
@@ -2415,20 +2290,17 @@ class PointFrozen:
     x: float
     y: float
 
-
 # slots dataclass
 @dataclass(slots=True)
 class PointSlots:
     x: float
     y: float
 
-
 # 普通类
 class PointClass:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-
 
 # 性能测试
 def benchmark():
@@ -2443,7 +2315,6 @@ def benchmark():
     print(f"frozen dataclass: {frozen_time:.2f}s")
     print(f"slots dataclass: {slots_time:.2f}s")
     print(f"普通类: {class_time:.2f}s")
-
 
 benchmark()
 ```
@@ -2469,18 +2340,15 @@ slots dataclass: 0.38s
 import sys
 from dataclasses import dataclass
 
-
 @dataclass
 class PointDict:
     x: float
     y: float
 
-
 @dataclass(slots=True)
 class PointSlots:
     x: float
     y: float
-
 
 p1 = PointDict(1.0, 2.0)
 p2 = PointSlots(1.0, 2.0)
@@ -2548,7 +2416,6 @@ class Example:
 from dataclasses import dataclass, field
 from typing import Optional
 
-
 @dataclass
 class QueryBuilder:
     table: str
@@ -2578,7 +2445,6 @@ class QueryBuilder:
             sql += f" LIMIT {self.limit}"
         return sql
 
-
 # 使用
 query = (
     QueryBuilder("users")
@@ -2596,7 +2462,6 @@ print(query)  # SELECT * FROM users WHERE age > 18 AND is_active = True ORDER BY
 ```python
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True)
 class Money:
     """值对象：金额（不可变）"""
@@ -2611,7 +2476,6 @@ class Money:
     def multiply(self, factor: float) -> "Money":
         return Money(int(self.amount * factor), self.currency)
 
-
 # 使用
 price = Money(9999, "CNY")  # 99.99 元
 total = price.multiply(3)
@@ -2623,7 +2487,6 @@ print(total)  # Money(amount=29997, currency='CNY')
 ```python
 from dataclasses import dataclass, field
 from typing import Callable, List
-
 
 @dataclass
 class Subject:
@@ -2645,11 +2508,9 @@ class Subject:
         self.state = new_state
         self.notify()
 
-
 # 使用
 def log_observer(state):
     print(f"日志: 状态变更为 {state}")
-
 
 subject = Subject()
 subject.attach(log_observer)
@@ -2663,17 +2524,14 @@ subject.set_state(42)  # 日志: 状态变更为 42
 ```python
 from dataclasses import dataclass, replace
 
-
 @dataclass(frozen=True)
 class Point:
     x: float
     y: float
 
-
 # 纯函数：不变原对象，返回新对象
 def translate(p: Point, dx: float, dy: float) -> Point:
     return replace(p, x=p.x + dx, y=p.y + dy)
-
 
 p1 = Point(1.0, 2.0)
 p2 = translate(p1, 3.0, 4.0)
@@ -2686,29 +2544,24 @@ print(p2)  # Point(x=4.0, y=6.0) — 新对象
 ```python
 from dataclasses import dataclass
 
-
 @dataclass
 class Shape:
     pass
 
-
 @dataclass
 class Circle(Shape):
     radius: float
-
 
 @dataclass
 class Rectangle(Shape):
     width: float
     height: float
 
-
 @dataclass
 class Triangle(Shape):
     a: float
     b: float
     c: float
-
 
 def area(shape: Shape) -> float:
     match shape:
@@ -2722,7 +2575,6 @@ def area(shape: Shape) -> float:
             return (s * (s - a) * (s - b) * (s - c)) ** 0.5
         case _:
             raise ValueError("未知形状")
-
 
 print(area(Circle(5)))            # 78.54
 print(area(Rectangle(4, 6)))      # 24.0

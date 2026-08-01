@@ -534,7 +534,6 @@ $$\text{act}(x + y, s) = s + (x+y) \cdot |I| = (s + y \cdot |I|) + x \cdot |I| =
     20  # 3 + 10 + 7
 """
 
-
 class SegmentTree:
     """1-indexed 数组实现，支持单点更新与区间求和。"""
 
@@ -585,7 +584,6 @@ class SegmentTree:
         left = self._query(node * 2, start, mid, l, r)
         right = self._query(node * 2 + 1, mid + 1, end, l, r)
         return left + right
-
 
 # 知识讲解与要点分析（原自测）
 if __name__ == "__main__":
@@ -813,7 +811,6 @@ class SegmentTreeMax:
         return max(self._query(node * 2, start, mid, l, r),
                    self._query(node * 2 + 1, mid + 1, end, l, r))
 
-
 # 测试
 arr = [1, 3, 5, 7, 9, 11]
 st = SegmentTreeMax(arr)
@@ -826,7 +823,6 @@ print(st.query(0, 1))  # 输出: 3
 
 ```python
 from math import gcd
-
 
 class SegmentTreeGCD:
     """区间 GCD 线段树，单位元为 0（gcd(a, 0) = a）。"""
@@ -856,7 +852,6 @@ class SegmentTreeGCD:
         mid = (start + end) // 2
         return gcd(self._query(node * 2, start, mid, l, r),
                    self._query(node * 2 + 1, mid + 1, end, l, r))
-
 
 # 测试
 arr = [12, 18, 24, 30, 36]
@@ -911,7 +906,6 @@ class SegmentTreeXor:
         mid = (start + end) // 2
         return self._query(node * 2, start, mid, l, r) ^ \
                self._query(node * 2 + 1, mid + 1, end, l, r)
-
 
 # 测试
 arr = [1, 2, 3, 4, 5]
@@ -1042,7 +1036,6 @@ class LazySegmentTree:
         return (self._query_range(node * 2, start, mid, l, r) +
                 self._query_range(node * 2 + 1, mid + 1, end, l, r))
 
-
 # 测试
 arr = [1, 3, 5, 7, 9, 11]
 st = LazySegmentTree(arr)
@@ -1132,7 +1125,6 @@ class AssignSegmentTree:
         return (self._query(node * 2, start, mid, l, r) +
                 self._query(node * 2 + 1, mid + 1, end, l, r))
 
-
 # 测试
 arr = [1, 3, 5, 7, 9, 11]
 st = AssignSegmentTree(arr)
@@ -1201,7 +1193,6 @@ class AddMaxSegmentTree:
         mid = (start + end) // 2
         return max(self._query(node * 2, start, mid, l, r),
                    self._query(node * 2 + 1, mid + 1, end, l, r))
-
 
 # 测试
 arr = [1, 3, 5, 7, 9, 11]
@@ -1449,7 +1440,6 @@ class IterativeSegTree:
             r //= 2
         return self.op(res_l, res_r)
 
-
 # 测试
 arr = [1, 3, 5, 7, 9, 11]
 st = IterativeSegTree(arr, lambda a, b: a + b, 0)
@@ -1576,7 +1566,6 @@ class IterativeLazySegTree:
             r //= 2
         return res
 
-
 # 测试
 arr = [1, 3, 5, 7, 9, 11]
 st = IterativeLazySegTree(arr)
@@ -1667,7 +1656,6 @@ class RangeMaxAddSegTree:
         return max(self._query(node * 2, start, mid, l, r),
                    self._query(node * 2 + 1, mid + 1, end, l, r))
 
-
 # 测试
 arr = [1, 3, 5, 7, 9, 11]
 st = RangeMaxAddSegTree(arr)
@@ -1729,7 +1717,6 @@ class ChthollyTree:
             total += cv * (ir - il + 1)
         return total
 
-
 # 测试
 arr = [1, 1, 2, 2, 3, 3]
 ct = ChthollyTree(arr)
@@ -1753,7 +1740,6 @@ class DynamicNode:
         self.right = None
         self.val = 0
         self.lazy = 0
-
 
 class DynamicSegTree:
     """动态开点线段树：区间加 + 区间求和，值域 [lo, hi]。"""
@@ -1810,7 +1796,6 @@ class DynamicSegTree:
         return (self._query(node.left, lo, mid, l, r) +
                 self._query(node.right, mid + 1, hi, l, r))
 
-
 # 测试：值域 [-10^9, 10^9]
 st = DynamicSegTree(-10**9, 10**9)
 st.update(0, 100, 1)
@@ -1832,13 +1817,11 @@ def discretize(values):
     discretized = [mapping[v] for v in values]
     return discretized, mapping
 
-
 # 测试
 arr = [100, 200, 50, 100, 300, 200]
 disc, mp = discretize(arr)
 print(disc)  # 输出: [1, 2, 0, 1, 3, 2]
 print(mp)    # 输出: {50: 0, 100: 1, 200: 2, 300: 3}
-
 
 # 应用：离散化 + 线段树求逆序对
 def count_inversions(arr):
@@ -1854,7 +1837,6 @@ def count_inversions(arr):
         # 标记 disc[i] 已出现
         st.update(disc[i], 1)
     return inv
-
 
 # 测试
 print(count_inversions([3, 1, 2]))  # 输出: 2 (对为 (3,1) 和 (3,2))
@@ -1876,7 +1858,6 @@ class PersistNode:
         self.left = left
         self.right = right
         self.val = val
-
 
 class PersistSegTree:
     """可持久化线段树：单点更新 + 区间求和。
@@ -1926,7 +1907,6 @@ class PersistSegTree:
         """查询第 version 个版本的 [l, r] 区间和。"""
         return self._query(self.roots[version], 0, self.n - 1, l, r)
 
-
 # 测试：k 大数查询（静态区间第 k 小）
 def kth_smallest(arr, l, r, k):
     """查询 arr[l..r] 中第 k 小的数（k 从 1 开始）。
@@ -1944,7 +1924,6 @@ def kth_smallest(arr, l, r, k):
     # 完整实现需要"版本 i 表示 arr[0..i-1] 的离散值计数"
     # 由于篇幅，略去完整 kth 查询逻辑
     pass
-
 
 # 简单测试可持久化功能
 pst = PersistSegTree(10)
@@ -1976,7 +1955,6 @@ def merge(a, b, lo, hi):
     a.right = merge(a.right, b.right, mid + 1, hi)
     a.val = (a.left.val if a.left else 0) + (a.right.val if a.right else 0)
     return a
-
 
 # 测试：树上统计
 class TreeMerge:
@@ -2011,7 +1989,6 @@ class TreeMerge:
     def merge_trees(self, a, b):
         return merge(a, b, self.lo, self.hi)
 
-
 # 测试
 tm = TreeMerge((1, 100))
 t1 = tm.build_single(5)
@@ -2035,7 +2012,6 @@ class Line:
 
     def eval(self, x):
         return self.a * x + self.b
-
 
 class LiChaoTree:
     """李超树：维护线段集合，支持查询某 x 处的最大值。
@@ -2090,7 +2066,6 @@ class LiChaoTree:
     def query(self, x):
         """查询 x 处的最大值。"""
         return self._query(1, self.lo, self.hi, x)
-
 
 # 测试
 lct = LiChaoTree(-100, 100)
@@ -2196,7 +2171,6 @@ class SegmentTreeBeats:
 
     def query_max(self, l, r):
         return self._query_max(1, 0, self.n - 1, l, r)
-
 
 # 测试
 arr = [10, 20, 30, 40, 50]
@@ -2379,7 +2353,6 @@ int main() {
 """
 from typing import List, Tuple
 
-
 class ScanLineSegTree:
     """扫描线专用线段树：维护 x 轴上被覆盖长度。
     每个节点维护 cnt（被覆盖次数）与 len（被覆盖长度）。
@@ -2424,7 +2397,6 @@ class ScanLineSegTree:
             return 0
         return self.length[1]
 
-
 def rectangle_union_area(rects: List[Tuple[int, int, int, int]]) -> int:
     """计算矩形并集面积。rects: [(x1, y1, x2, y2), ...]"""
     if not rects:
@@ -2447,7 +2419,6 @@ def rectangle_union_area(rects: List[Tuple[int, int, int, int]]) -> int:
         st.update(xl, xr, typ)
         prev_y = y
     return area
-
 
 # 测试：两个矩形 (0,0)-(2,2) 与 (1,1)-(3,3)
 # 并集 = 2*2 + 2*2 - 1*1 = 7
@@ -2778,7 +2749,6 @@ class NumArray:
         return self._query(node * 2, start, mid, l, r) + \
                self._query(node * 2 + 1, mid + 1, end, l, r)
 
-
 # 测试
 obj = NumArray([1, 3, 5])
 print(obj.sumRange(0, 2))  # 输出: 9
@@ -2833,7 +2803,6 @@ def countSmaller(nums):
         update(1, 0, m - 1, idx, 1)
     return res
 
-
 # 测试
 print(countSmaller([5, 2, 6, 1]))  # 输出: [2, 1, 1, 0]
 print(countSmaller([-1]))           # 输出: [0]
@@ -2876,7 +2845,6 @@ def getSkyline(buildings):
             prev_max = cur_max
     return res
 
-
 # 测试
 buildings = [[2, 9, 10], [3, 7, 15], [5, 12, 12], [15, 20, 10], [19, 24, 8]]
 print(getSkyline(buildings))
@@ -2903,7 +2871,6 @@ class PersistNode:
         self.left = left
         self.right = right
         self.cnt = cnt
-
 
 class PersistSegTree:
     """可持久化权值线段树：求区间第 k 小。"""
@@ -2949,7 +2916,6 @@ class PersistSegTree:
         """查询第 l_version..r_version 版本之间第 k 小。"""
         return self._kth(self.roots[l_version], self.roots[r_version],
                          self.lo, self.hi, k)
-
 
 # 测试
 arr = [1, 5, 2, 6, 3, 7, 4]
@@ -3036,7 +3002,6 @@ class ModSegTree:
         return self._query(node * 2, start, mid, l, r) + \
                self._query(node * 2 + 1, mid + 1, end, l, r)
 
-
 # 测试
 arr = [1, 2, 3, 4, 5]
 st = ModSegTree(arr)
@@ -3113,7 +3078,6 @@ class IntervalHashSegTree:
         combined = (left_hash + right_hash * self.pow[left_len]) % self.M
         return (combined, left_len + right_len)
 
-
 # 测试
 arr = [ord(c) for c in "hello"]
 st = IntervalHashSegTree(arr)
@@ -3168,7 +3132,6 @@ class IntervalIndexSegTree:
         mid = (start + end) // 2
         return self._query(node * 2, start, mid, l, r) + \
                self._query(node * 2 + 1, mid + 1, end, l, r)
-
 
 # 测试
 intervals = [(1, 5), (3, 8), (10, 15)]

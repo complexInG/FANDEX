@@ -299,7 +299,6 @@ from __future__ import annotations
 
 import asyncio
 
-
 async def say_hello(name: str, delay: float) -> None:
     """异步函数：等待 delay 秒后打印问候。
 
@@ -310,7 +309,6 @@ async def say_hello(name: str, delay: float) -> None:
     await asyncio.sleep(delay)
     print(f"Hello, {name}!")
 
-
 async def main() -> None:
     """主协程：并发执行两个问候任务。"""
     # 并发执行，总耗时约 2 秒（最大 delay）
@@ -319,7 +317,6 @@ async def main() -> None:
         say_hello("Bob", 1.0),
     )
     # 输出顺序：Bob（1秒后）, Alice（2秒后）
-
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -334,14 +331,12 @@ from __future__ import annotations
 import asyncio
 import time
 
-
 async def fetch_data(name: str, duration: float) -> str:
     """模拟异步数据获取。"""
     print(f"[{time.strftime('%H:%M:%S')}] {name} 开始获取")
     await asyncio.sleep(duration)
     print(f"[{time.strftime('%H:%M:%S')}] {name} 完成")
     return f"{name}_result"
-
 
 async def main() -> None:
     # 方式一：使用 create_task 创建并发任务
@@ -372,7 +367,6 @@ async def main() -> None:
         result = await coro
         print(f"完成: {result}")
 
-
 if __name__ == "__main__":
     asyncio.run(main())
 ```
@@ -384,7 +378,6 @@ if __name__ == "__main__":
 from __future__ import annotations
 
 import asyncio
-
 
 # 1. Lock：保护共享资源
 class AsyncCounter:
@@ -401,7 +394,6 @@ class AsyncCounter:
     def value(self) -> int:
         return self._value
 
-
 # 2. Semaphore：限制并发数
 class ConcurrentLimiter:
     def __init__(self, limit: int) -> None:
@@ -411,13 +403,11 @@ class ConcurrentLimiter:
         async with self._sem:
             return await coro_factory()
 
-
 # 3. Event：跨协程通知
 async def worker(event: asyncio.Event, wid: int) -> None:
     print(f"Worker {wid} 等待事件...")
     await event.wait()
     print(f"Worker {wid} 收到事件，开始工作")
-
 
 async def controller():
     event = asyncio.Event()
@@ -427,7 +417,6 @@ async def controller():
     print("触发事件")
     event.set()  # 唤醒所有等待的 worker
     await asyncio.gather(*workers)
-
 
 # 4. Condition：复杂条件等待
 class AsyncQueue:
@@ -446,7 +435,6 @@ class AsyncQueue:
                 await self._cond.wait()
             return self._items.pop(0)
 
-
 # 5. Barrier：等待多个协程同步
 async def phase_worker(barrier: asyncio.Barrier, wid: int):
     print(f"Worker {wid} 阶段 1 开始")
@@ -454,7 +442,6 @@ async def phase_worker(barrier: asyncio.Barrier, wid: int):
     print(f"Worker {wid} 阶段 1 完成，等待其他")
     await barrier.wait()  # 等待所有 worker 完成阶段 1
     print(f"Worker {wid} 阶段 2 开始")
-
 
 async def main():
     # 演示 Lock
@@ -469,7 +456,6 @@ async def main():
     barrier = asyncio.Barrier(3)
     await asyncio.gather(*[phase_worker(barrier, i) for i in range(3)])
 
-
 if __name__ == "__main__":
     asyncio.run(main())
 ```
@@ -482,12 +468,10 @@ from __future__ import annotations
 
 import asyncio
 
-
 async def slow_operation():
     print("开始慢操作...")
     await asyncio.sleep(10)
     return "完成"
-
 
 async def main():
     # 方式一：wait_for（兼容旧版本）
@@ -522,7 +506,6 @@ async def main():
     except TimeoutError:
         print("timeout_at 超时")
 
-
 if __name__ == "__main__":
     asyncio.run(main())
 ```
@@ -535,7 +518,6 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import AsyncIterator
-
 
 # 1. 异步迭代器
 class AsyncRange:
@@ -556,7 +538,6 @@ class AsyncRange:
         self._i += 1
         return self._i
 
-
 # 2. 异步生成器
 async def async_count(start: int = 0, step: int = 1) -> AsyncIterator[int]:
     """无限异步计数器。"""
@@ -565,7 +546,6 @@ async def async_count(start: int = 0, step: int = 1) -> AsyncIterator[int]:
         await asyncio.sleep(0.1)
         yield i
         i += step
-
 
 # 3. 异步文件读取（需要 aiofiles）
 async def async_read_lines(filepath: str) -> AsyncIterator[str]:
@@ -591,18 +571,15 @@ async def async_read_lines(filepath: str) -> AsyncIterator[str]:
         async for line in f:
             yield line.rstrip()
 
-
 # 4. 异步生成器管道
 async def filter_async(source: AsyncIterator[int], predicate) -> AsyncIterator[int]:
     async for item in source:
         if predicate(item):
             yield item
 
-
 async def map_async(source: AsyncIterator[int], func) -> AsyncIterator:
     async for item in source:
         yield func(item)
-
 
 async def main():
     # 异步迭代器
@@ -625,7 +602,6 @@ async def main():
     async for result in pipeline:
         print(f"Pipeline: {result}")
 
-
 if __name__ == "__main__":
     asyncio.run(main())
 ```
@@ -639,7 +615,6 @@ from __future__ import annotations
 import asyncio
 import random
 
-
 async def producer(queue: asyncio.Queue[int], pid: int, count: int) -> None:
     """生产者：向队列中放入数据。"""
     for i in range(count):
@@ -649,7 +624,6 @@ async def producer(queue: asyncio.Queue[int], pid: int, count: int) -> None:
         await asyncio.sleep(random.uniform(0.05, 0.2))
     # 放入结束标记
     await queue.put(-1)
-
 
 async def consumer(queue: asyncio.Queue[int], cid: int) -> None:
     """消费者：从队列中取出数据处理。"""
@@ -661,7 +635,6 @@ async def consumer(queue: asyncio.Queue[int], cid: int) -> None:
         print(f"[C{cid}] 消费 {item}")
         await asyncio.sleep(random.uniform(0.1, 0.3))
         queue.task_done()
-
 
 async def main():
     queue: asyncio.Queue[int] = asyncio.Queue(maxsize=10)
@@ -684,7 +657,6 @@ async def main():
     await queue.join()
     print("所有任务处理完成")
 
-
 if __name__ == "__main__":
     asyncio.run(main())
 ```
@@ -706,7 +678,6 @@ try:
     import httpx
 except ImportError:
     httpx = None  # type: ignore
-
 
 async def fetch_url(client: "httpx.AsyncClient", url: str) -> dict[str, Any]:
     """异步获取 URL 内容。
@@ -735,7 +706,6 @@ async def fetch_url(client: "httpx.AsyncClient", url: str) -> dict[str, Any]:
             "elapsed": time.perf_counter() - start,
         }
 
-
 async def fetch_all(urls: list[str], concurrency: int = 10) -> list[dict[str, Any]]:
     """并发获取多个 URL，限制并发数。
 
@@ -759,7 +729,6 @@ async def fetch_all(urls: list[str], concurrency: int = 10) -> list[dict[str, An
         tasks = [limited_fetch(client, url) for url in urls]
         return await asyncio.gather(*tasks)
 
-
 async def main():
     urls = [
         "https://httpbin.org/delay/1",
@@ -775,7 +744,6 @@ async def main():
 
     success = sum(1 for r in results if "error" not in r)
     print(f"完成 {len(results)} 个请求，成功 {success} 个，耗时 {elapsed:.2f}s")
-
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -797,7 +765,6 @@ try:
     import asyncpg
 except ImportError:
     asyncpg = None  # type: ignore
-
 
 class Database:
     """异步数据库连接池封装。"""
@@ -841,7 +808,6 @@ class Database:
             )
             return dict(row) if row else None
 
-
 async def main():
     db = Database("postgresql://user:pass@localhost/mydb")
     await db.connect()
@@ -854,7 +820,6 @@ async def main():
         print(f"用户 42: {user}")
     finally:
         await db.close()
-
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -870,7 +835,6 @@ import asyncio
 import signal
 import sys
 from contextlib import asynccontextmanager
-
 
 class GracefulServer:
     """支持优雅关闭的异步服务器。"""
@@ -924,7 +888,6 @@ class GracefulServer:
             await asyncio.gather(*self._tasks, return_exceptions=True)
         print("服务器已关闭")
 
-
 @asynccontextmanager
 async def lifespan():
     """FastAPI 风格的 lifespan 上下文管理器。"""
@@ -932,11 +895,9 @@ async def lifespan():
     yield
     print("应用关闭")
 
-
 async def main():
     server = GracefulServer()
     await server.run()
-
 
 if __name__ == "__main__":
     try:
@@ -956,7 +917,6 @@ import math
 from concurrent.futures import ProcessPoolExecutor
 from typing import Iterable
 
-
 def is_prime(n: int) -> bool:
     """判断素数（CPU 密集型）。"""
     if n < 2:
@@ -970,11 +930,9 @@ def is_prime(n: int) -> bool:
             return False
     return True
 
-
 def count_primes(start: int, end: int) -> int:
     """统计区间内的素数数量。"""
     return sum(1 for i in range(start, end) if is_prime(i))
-
 
 async def main():
     loop = asyncio.get_running_loop()
@@ -992,7 +950,6 @@ async def main():
 
     total = sum(results)
     print(f"0-800000 内的素数数量: {total}")
-
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -1316,7 +1273,6 @@ import asyncio
 import time
 from typing import Any
 
-
 # 1. 使用 uvloop 替代默认事件循环（Linux/macOS）
 def setup_uvloop():
     """安装 uvloop 提升性能 2-4 倍。"""
@@ -1327,7 +1283,6 @@ def setup_uvloop():
     except ImportError:
         print("uvloop 未安装，使用默认循环")
 
-
 # 2. 批量化处理
 async def fetch_batch(client, urls: list[str], batch_size: int = 50):
     """分批处理，避免一次性提交过多任务。"""
@@ -1337,7 +1292,6 @@ async def fetch_batch(client, urls: list[str], batch_size: int = 50):
         tasks = [client.get(url) for url in batch]
         results.extend(await asyncio.gather(*tasks))
     return results
-
 
 # 3. 连接复用
 class HttpClientPool:
@@ -1359,10 +1313,8 @@ class HttpClientPool:
         if self._client:
             await self._client.aclose()
 
-
 # 4. 缓存
 from functools import lru_cache
-
 
 class AsyncCache:
     """异步缓存装饰器。"""
@@ -1382,7 +1334,6 @@ class AsyncCache:
             self._cache[key] = (value, time.time() + self.ttl)
             return value
         return wrapper
-
 
 # 5. 背压控制
 class BoundedProcessor:
@@ -1417,7 +1368,6 @@ import asyncio
 import logging
 import tracemalloc
 
-
 def enable_debug():
     """启用 asyncio 调试模式。"""
     logging.basicConfig(level=logging.DEBUG)
@@ -1430,7 +1380,6 @@ def enable_debug():
 
     # 3. 慢回调阈值（默认 100ms）
     asyncio.get_event_loop().slow_callback_duration = 0.1
-
 
 # 检测阻塞调用
 async def detect_blocking():
@@ -1445,7 +1394,6 @@ async def detect_blocking():
     elapsed = time.perf_counter() - start
     if elapsed > 0.01:
         print(f"警告：事件循环被阻塞 {elapsed * 1000:.1f}ms")
-
 
 # 使用 aiomonitor 实时监控
 async def monitor():
@@ -1472,7 +1420,6 @@ import pytest
 import pytest_asyncio
 from typing import AsyncIterator
 
-
 @pytest_asyncio.fixture
 async def db_connection():
     """异步 fixture。"""
@@ -1480,13 +1427,11 @@ async def db_connection():
     yield {"connected": True}
     print("Teardown")
 
-
 @pytest.mark.asyncio
 async def test_basic_async():
     """基础异步测试。"""
     result = await asyncio.sleep(0.1, result="done")
     assert result == "done"
-
 
 @pytest.mark.asyncio
 async def test_concurrent_operations():
@@ -1498,13 +1443,11 @@ async def test_concurrent_operations():
     results = await asyncio.gather(*[task(i) for i in range(5)])
     assert results == [0, 2, 4, 6, 8]
 
-
 @pytest.mark.asyncio
 async def test_timeout():
     """测试超时。"""
     with pytest.raises(asyncio.TimeoutError):
         await asyncio.wait_for(asyncio.sleep(10), timeout=0.1)
-
 
 @pytest.mark.asyncio
 async def test_cancel():
@@ -1623,7 +1566,6 @@ import asyncio
 from pathlib import Path
 from watchfiles import awatch
 
-
 class FileSync:
     """Dropbox 风格的文件同步客户端。"""
 
@@ -1687,19 +1629,16 @@ from django.views import View
 import asyncio
 import httpx
 
-
 async def fetch_user_data(user_id: int):
     """异步获取用户数据。"""
     async with httpx.AsyncClient() as client:
         response = await client.get(f"https://api.example.com/users/{user_id}")
         return response.json()
 
-
 async def async_user_view(request, user_id: int):
     """Django 异步视图。"""
     data = await fetch_user_data(user_id)
     return JsonResponse({"user": data})
-
 
 class AsyncDashboardView(View):
     """异步仪表盘视图。"""
@@ -1746,12 +1685,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-
 class User(BaseModel):
     id: int
     name: str
     email: str
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -1764,15 +1701,12 @@ async def lifespan(app: FastAPI):
     print("关闭数据库连接池...")
     await app.state.db.close()
 
-
 app = FastAPI(lifespan=lifespan)
-
 
 async def init_db_pool():
     """初始化数据库连接池。"""
     # 实际使用 asyncpg.create_pool
     return {"connected": True}
-
 
 @app.get("/users/{user_id}", response_model=User)
 async def get_user(user_id: int):
@@ -1782,7 +1716,6 @@ async def get_user(user_id: int):
     if user_id == 1:
         return User(id=1, name="Alice", email="alice@example.com")
     raise HTTPException(status_code=404, detail="User not found")
-
 
 @app.get("/users")
 async def list_users(limit: int = 10):
@@ -1794,16 +1727,13 @@ async def list_users(limit: int = 10):
     )
     return {"users": users, "total": total}
 
-
 async def fetch_users_from_db(limit: int):
     await asyncio.sleep(0.1)
     return [User(id=i, name=f"User{i}", email=f"user{i}@example.com") for i in range(limit)]
 
-
 async def count_users_in_db():
     await asyncio.sleep(0.05)
     return 1000
-
 
 # 启动：uvicorn main:app --reload
 ```
@@ -1838,7 +1768,6 @@ B. A C D B
 C. C A D B
 D. A C B D
 
-
 **答案：B**
 
 执行顺序：
@@ -1859,7 +1788,6 @@ B. `await some_async_function()`
 C. `time.sleep(1)`
 D. `await asyncio.gather(...)`
 
-
 **答案：C**
 
 `time.sleep` 是同步阻塞调用，会阻塞整个事件循环。其他选项都是异步操作，会让出控制权。
@@ -1874,7 +1802,6 @@ A. 性能比 `gather` 更快
 B. 提供结构化并发，更好的错误处理
 C. 支持取消单个任务
 D. 可以嵌套使用
-
 
 **答案：B**
 
@@ -1893,7 +1820,6 @@ A. asyncio 不受 GIL 限制，可以充分利用多核
 B. asyncio 在单线程内运行，GIL 不影响其并发能力
 C. asyncio 通过多线程绕过 GIL
 D. GIL 仅影响 CPU 密集型异步代码
-
 
 **答案：B、D**
 
@@ -1916,7 +1842,6 @@ A. 缺少 `await`
 B. 返回的是协程对象列表，不是结果
 C. 没有创建 Task
 D. 没有错误
-
 
 **答案：B**
 
@@ -1943,7 +1868,6 @@ finally:
     loop.__________()
 ```
 
-
 ```python
 loop = asyncio.new_event_loop()
 try:
@@ -1956,7 +1880,6 @@ finally:
 
 **2.** 异步生成器使用 `________` 关键字返回值，异步迭代器需要实现 `________` 和 `________` 方法。
 
-
 - `yield`
 - `__aiter__`
 - `__anext__`
@@ -1965,20 +1888,17 @@ finally:
 
 **3.** Python 3.11 引入的 `________` 上下文管理器替代了 `asyncio.wait_for`，更符合 Python 风格。
 
-
 `asyncio.timeout`
 
 ---
 
 **4.** 在异步代码中调用同步阻塞函数应使用 `________` 函数（Python 3.9+）。
 
-
 `asyncio.to_thread`
 
 ---
 
 **5.** `asyncio.gather(*tasks, return_exceptions=________)` 可以让异常作为结果返回，不中断其他任务。
-
 
 `True`
 
@@ -2000,11 +1920,9 @@ class RateLimiter:
         # ...
 ```
 
-
 ```python
 import asyncio
 import time
-
 
 class RateLimiter:
     """令牌桶限流器。"""
@@ -2025,14 +1943,12 @@ class RateLimiter:
             else:
                 self._last_time = now
 
-
 # 测试
 async def main():
     limiter = RateLimiter(rate=5)  # 每秒 5 次
     for i in range(10):
         await limiter.acquire()
         print(f"[{time.strftime('%H:%M:%S')}] 操作 {i}")
-
 
 asyncio.run(main())
 ```
@@ -2049,13 +1965,11 @@ def async_cache(ttl: float = 60.0):
     # ...
 ```
 
-
 ```python
 import asyncio
 import time
 from collections import OrderedDict
 from functools import wraps
-
 
 def async_cache(ttl: float = 60.0, maxsize: int = 128):
     """异步缓存装饰器，支持 TTL 和 LRU。
@@ -2091,7 +2005,6 @@ def async_cache(ttl: float = 60.0, maxsize: int = 128):
         return wrapper
     return decorator
 
-
 # 测试
 @async_cache(ttl=5)
 async def slow_fetch(url: str):
@@ -2099,13 +2012,11 @@ async def slow_fetch(url: str):
     await asyncio.sleep(1)
     return f"result of {url}"
 
-
 async def main():
     print(await slow_fetch("a"))  # 慢
     print(await slow_fetch("a"))  # 快（缓存）
     await asyncio.sleep(6)
     print(await slow_fetch("a"))  # 慢（缓存过期）
-
 
 asyncio.run(main())
 ```
@@ -2127,11 +2038,9 @@ class TaskOrchestrator:
         # ...
 ```
 
-
 ```python
 import asyncio
 from typing import Callable, Coroutine, Any
-
 
 class TaskOrchestrator:
     """异步任务编排器，支持依赖关系。"""
@@ -2172,7 +2081,6 @@ class TaskOrchestrator:
         await asyncio.gather(*tasks)
         return self._results
 
-
 # 测试
 async def main():
     orch = TaskOrchestrator()
@@ -2204,14 +2112,12 @@ async def main():
     results = await orch.run()
     print(results)
 
-
 asyncio.run(main())
 ```
 
 ### 9.4 思考题
 
 **1. 为什么 asyncio 不能很好地处理 CPU 密集型任务？如何解决？**
-
 
 asyncio 基于单线程协作式调度，同一时刻只有一个协程在执行。当协程执行 CPU 密集型计算（无 await）时，会占用整个事件循环，导致其他协程无法被调度，造成整体阻塞。
 
@@ -2235,7 +2141,6 @@ asyncio 基于单线程协作式调度，同一时刻只有一个协程在执行
 ---
 
 **2. 描述 `asyncio.gather` 与 `asyncio.wait` 的区别，并说明各自的适用场景。**
-
 
 **`asyncio.gather(*coros, return_exceptions=False)`**：
 
@@ -2271,7 +2176,6 @@ for task in pending:
 ---
 
 **3. 在生产环境中，如何监控和排查 asyncio 应用的性能问题？**
-
 
 **1. 启用调试模式**：
 ```python

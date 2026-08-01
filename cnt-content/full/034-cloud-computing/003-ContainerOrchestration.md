@@ -629,8 +629,6 @@ trivy image --exit-code 1 --severity HIGH,CRITICAL myapp:v1
 
 ## 参考文献
 
-
-
 AWS 文档：https://docs.aws.amazon.com/
 Microsoft Azure 文档：https://learn.microsoft.com/zh-cn/azure/
 Google Cloud 文档：https://cloud.google.com/docs?hl=zh-cn
@@ -638,8 +636,6 @@ Google Cloud 文档：https://cloud.google.com/docs?hl=zh-cn
 CNCF 云原生全景：https://landscape.cncf.io/
 
 ## 延伸阅读
-
-
 
 虚拟化与容器，见 034-cloud-computing 模块相关文档。
 Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。

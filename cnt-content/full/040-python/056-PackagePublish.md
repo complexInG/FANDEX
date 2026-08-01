@@ -398,7 +398,6 @@ import argparse
 import sys
 from typing import Sequence
 
-
 def main(argv: Sequence[str] | None = None) -> int:
     """主入口函数。
 
@@ -425,7 +424,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"Hello, {args.name}!")
     return 0
 
-
 def _get_version() -> str | None:
     """从包元数据读取版本号。"""
     try:
@@ -433,7 +431,6 @@ def _get_version() -> str | None:
         return version("minimal")
     except ImportError:  # pragma: no cover
         return None
-
 
 if __name__ == "__main__":
     sys.exit(main())
@@ -1554,7 +1551,6 @@ try:
 except ImportError as exc:
     raise ImportError("请先安装 packaging：pip install packaging") from exc
 
-
 def validate_version(version: str) -> str:
     """验证版本号是否符合 PEP 440。
 
@@ -1566,7 +1562,6 @@ def validate_version(version: str) -> str:
         return str(Version(version))
     except InvalidVersion as exc:
         raise ValueError(f"版本号 {version!r} 不符合 PEP 440: {exc}") from exc
-
 
 def sort_versions(versions: Iterable[str]) -> list[str]:
     """对版本号列表按 PEP 440 排序。
@@ -1581,7 +1576,6 @@ def sort_versions(versions: Iterable[str]) -> list[str]:
         except InvalidVersion as exc:
             raise ValueError(f"版本号 {v!r} 不符合 PEP 440: {exc}") from exc
     return [str(v) for v in sorted(parsed)]
-
 
 if __name__ == "__main__":
     test_cases = [
@@ -2040,7 +2034,6 @@ from __future__ import annotations
 import zipfile
 from pathlib import Path
 
-
 def inspect_wheel(wheel_path: str | Path) -> None:
     """检查 wheel 内容。
 
@@ -2067,7 +2060,6 @@ def inspect_wheel(wheel_path: str | Path) -> None:
         ]
         for name in metadata_files:
             print(zf.read(name).decode("utf-8"))
-
 
 if __name__ == "__main__":
     import sys

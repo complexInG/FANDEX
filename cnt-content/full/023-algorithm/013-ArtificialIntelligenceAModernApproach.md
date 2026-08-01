@@ -434,7 +434,6 @@ def fib_recursive(n: int) -> int:
         return n
     return fib_recursive(n - 1) + fib_recursive(n - 2)
 
-
 # 测试
 print(fib_recursive(10))   # 输出: 55
 print(fib_recursive(20))   # 输出: 6765
@@ -491,7 +490,6 @@ def fib_memo(n: int, memo: dict = None) -> int:
     memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
     return memo[n]
 
-
 # 测试
 print(fib_memo(100))   # 输出: 354224848179261915075
 ```
@@ -535,7 +533,6 @@ def fib_dp_array(n: int) -> int:
         dp[i] = dp[i - 1] + dp[i - 2]
     return dp[n]
 
-
 def fib_dp_optimized(n: int) -> int:
     """滚动数组优化求斐波那契数。时间 O(n)，空间 O(1)。"""
     if n <= 1:
@@ -544,7 +541,6 @@ def fib_dp_optimized(n: int) -> int:
     for _ in range(2, n + 1):
         prev, curr = curr, prev + curr
     return curr
-
 
 # 测试
 print(fib_dp_array(10))     # 输出: 55
@@ -613,7 +609,6 @@ def climb_stairs(n: int) -> int:
         prev, curr = curr, prev + curr
     return curr
 
-
 # 测试
 print(climb_stairs(5))   # 输出: 8
 print(climb_stairs(10))  # 输出: 89
@@ -662,7 +657,6 @@ def rob(nums: list[int]) -> int:
         prev, curr = curr, max(curr, prev + nums[i])
     return curr
 
-
 # 测试
 print(rob([1, 2, 3, 1]))    # 输出: 4
 print(rob([2, 7, 9, 3, 1]))  # 输出: 12
@@ -709,7 +703,6 @@ def max_profit_one_transaction(prices: list[int]) -> int:
         min_price = min(min_price, p)
     return max_profit
 
-
 # 测试
 print(max_profit_one_transaction([7, 1, 5, 3, 6, 4]))  # 输出: 5
 ```
@@ -738,7 +731,6 @@ def max_profit_unlimited(prices: list[int]) -> int:
         cash, hold = max(cash, hold + p), max(hold, cash - p)
     return cash
 
-
 # 测试
 print(max_profit_unlimited([7, 1, 5, 3, 6, 4]))  # 输出: 7
 ```
@@ -755,7 +747,6 @@ def max_profit_with_fee(prices: list[int], fee: int) -> int:
         cash = max(cash, hold + p - fee)
         hold = max(hold, cash - p)
     return cash
-
 
 # 测试
 print(max_profit_with_fee([1, 3, 2, 8, 4, 9], 2))  # 输出: 8
@@ -776,7 +767,6 @@ def max_profit_with_cooldown(prices: list[int]) -> int:
         freeze = prev_hold + p
         unfreeze = max(prev_unfreeze, prev_freeze)
     return max(freeze, unfreeze)
-
 
 # 测试
 print(max_profit_with_cooldown([1, 2, 3, 0, 2]))  # 输出: 3
@@ -800,7 +790,6 @@ def max_subarray(nums: list[int]) -> int:
         curr_sum = max(x, curr_sum + x)
         max_sum = max(max_sum, curr_sum)
     return max_sum
-
 
 # 测试
 print(max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))  # 输出: 6
@@ -846,7 +835,6 @@ def coin_change(coins: list[int], amount: int) -> int:
                 dp[a] = min(dp[a], dp[a - c] + 1)
     return dp[amount] if dp[amount] != INF else -1
 
-
 # 测试
 print(coin_change([1, 2, 5], 11))   # 输出: 3
 print(coin_change([2], 3))          # 输出: -1
@@ -887,7 +875,6 @@ def coin_change_ways(coins: list[int], amount: int) -> int:
             dp[a] += dp[a - c]
     return dp[amount]
 
-
 # 测试
 print(coin_change_ways([1, 2, 5], 5))   # 输出: 4
 ```
@@ -905,7 +892,6 @@ def integer_break(n: int) -> int:
         for j in range(1, i):
             dp[i] = max(dp[i], j * (i - j), j * dp[i - j])
     return dp[n]
-
 
 # 测试
 print(integer_break(10))  # 输出: 36
@@ -930,7 +916,6 @@ def num_decodings(s: str) -> int:
         if 10 <= two <= 26:
             dp[i] += dp[i - 2]
     return dp[n]
-
 
 # 测试
 print(num_decodings("226"))   # 输出: 3
@@ -980,7 +965,6 @@ def lcs_length(text1: str, text2: str) -> int:
                 dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
     return dp[m][n]
 
-
 def lcs_string(text1: str, text2: str) -> str:
     """还原 LCS 字符串。"""
     m, n = len(text1), len(text2)
@@ -1004,7 +988,6 @@ def lcs_string(text1: str, text2: str) -> str:
         else:
             j -= 1
     return ''.join(reversed(result))
-
 
 # 测试
 print(lcs_length("ABCBDAB", "BDCABA"))   # 输出: 4
@@ -1055,7 +1038,6 @@ def longest_common_substring(s1: str, s2: str) -> str:
                     max_len, end_i = dp[i][j], i
     return s1[end_i - max_len:end_i]
 
-
 # 测试
 print(longest_common_substring("abcdef", "zcdem"))   # 输出: cde
 ```
@@ -1089,7 +1071,6 @@ def edit_distance(word1: str, word2: str) -> int:
                 dp[i][j] = min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1
     return dp[m][n]
 
-
 def edit_distance_optimized(word1: str, word2: str) -> int:
     """滚动数组优化版。空间 O(min(m, n))。"""
     if len(word1) < len(word2):
@@ -1105,7 +1086,6 @@ def edit_distance_optimized(word1: str, word2: str) -> int:
                 curr[j] = min(prev[j], curr[j - 1], prev[j - 1]) + 1
         prev = curr
     return prev[n]
-
 
 # 测试
 print(edit_distance("horse", "ros"))           # 输出: 3
@@ -1163,7 +1143,6 @@ def lis_dp(nums: list[int]) -> int:
                 dp[i] = max(dp[i], dp[j] + 1)
     return max(dp)
 
-
 # 测试
 print(lis_dp([10, 9, 2, 5, 3, 7, 101, 18]))  # 输出: 4
 ```
@@ -1195,7 +1174,6 @@ int lisDP(const std::vector<int>& nums) {
 ```python
 import bisect
 
-
 def lis_binary(nums: list[int]) -> int:
     """LIS O(n log n) 贪心+二分。空间 O(n)。"""
     tails = []
@@ -1206,7 +1184,6 @@ def lis_binary(nums: list[int]) -> int:
         else:
             tails[pos] = x
     return len(tails)
-
 
 # 测试
 print(lis_binary([10, 9, 2, 5, 3, 7, 101, 18]))  # 输出: 4
@@ -1257,7 +1234,6 @@ def longest_palindrome_subseq(s: str) -> int:
                 dp[i][j] = max(dp[i + 1][j], dp[i][j - 1])
     return dp[0][n - 1]
 
-
 # 测试
 print(longest_palindrome_subseq("bbbab"))  # 输出: 4
 ```
@@ -1287,7 +1263,6 @@ def longest_palindrome_substring(s: str) -> str:
             max_len = curr
             start = i - (curr - 1) // 2
     return s[start:start + max_len]
-
 
 # 测试
 print(longest_palindrome_substring("babad"))  # 输出: bab
@@ -1352,7 +1327,6 @@ def knapsack_01(weights: list[int], values: list[int], capacity: int) -> int:
                 dp[i][w] = max(dp[i][w], dp[i - 1][w - weights[i - 1]] + values[i - 1])
     return dp[n][capacity]
 
-
 def knapsack_01_optimized(weights: list[int], values: list[int], capacity: int) -> int:
     """0-1 背包一维实现。空间 O(W)。"""
     n = len(weights)
@@ -1362,7 +1336,6 @@ def knapsack_01_optimized(weights: list[int], values: list[int], capacity: int) 
         for w in range(capacity, weights[i] - 1, -1):
             dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
     return dp[capacity]
-
 
 # 测试
 print(knapsack_01([2, 3, 4], [3, 4, 5], 5))           # 输出: 7
@@ -1419,7 +1392,6 @@ def knapsack_complete(weights: list[int], values: list[int], capacity: int) -> i
             dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
     return dp[capacity]
 
-
 # 测试
 print(knapsack_complete([2, 3, 4], [3, 4, 5], 5))  # 输出: 7
 ```
@@ -1462,7 +1434,6 @@ def knapsack_multiple(weights: list[int], values: list[int],
         for j in range(capacity, w - 1, -1):
             dp[j] = max(dp[j], dp[j - w] + v)
     return dp[capacity]
-
 
 # 测试
 print(knapsack_multiple([2, 3, 4], [3, 4, 5], [2, 3, 1], 10))  # 输出: 15
@@ -1508,7 +1479,6 @@ def knapsack_grouped(groups: list[list[tuple[int, int]]], capacity: int) -> int:
                 if w >= gw:
                     dp[w] = max(dp[w], dp[w - gw] + gv)
     return dp[capacity]
-
 
 # 测试
 groups = [[(2, 3), (3, 4)], [(4, 5), (5, 6)]]
@@ -1562,7 +1532,6 @@ def matrix_chain_order(p: list[int]) -> int:
                 dp[i][j] = min(dp[i][j], cost)
     return dp[0][n - 1]
 
-
 # 测试：3 个矩阵 10x100, 100x5, 5x50，最优为 7500
 print(matrix_chain_order([10, 100, 5, 50]))  # 输出: 7500
 ```
@@ -1615,7 +1584,6 @@ def max_coins(nums: list[int]) -> int:
                                vals[i] * vals[k] * vals[j])
     return dp[0][n - 1]
 
-
 # 测试
 print(max_coins([3, 1, 5, 8]))  # 输出: 167
 ```
@@ -1645,7 +1613,6 @@ def merge_stones(stones: list[int]) -> int:
                                dp[i][k] + dp[k + 1][j])
             dp[i][j] += prefix[j + 1] - prefix[i]
     return dp[0][n - 1]
-
 
 # 测试
 print(merge_stones([3, 1, 4, 1, 5]))  # 输出: 21
@@ -1679,13 +1646,11 @@ $$\text{dp}[u][1] = u.\text{val} + \text{dp}[l][0] + \text{dp}[r][0]$$
 ```python
 from typing import Optional
 
-
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
         self.left = left
         self.right = right
-
 
 def rob_tree(root: Optional[TreeNode]) -> int:
     """打家劫舍 III。后序遍历。"""
@@ -1699,7 +1664,6 @@ def rob_tree(root: Optional[TreeNode]) -> int:
         rob = node.val + left[0] + right[0]
         return (not_rob, rob)
     return max(dfs(root))
-
 
 # 测试：树 [3,2,3,null,3,null,1]
 root = TreeNode(3,
@@ -1729,7 +1693,6 @@ def max_path_sum(root: Optional[TreeNode]) -> int:
 
     dfs(root)
     return int(result[0])
-
 
 # 测试：树 [-10,9,20,null,null,15,7]
 root = TreeNode(-10,
@@ -1781,7 +1744,6 @@ def party_no_boss(n: int, happy: list[int], edges: list[tuple[int, int]]) -> int
         return (attend, not_attend)
 
     return max(dfs(root))
-
 
 # 测试：5 个节点
 print(party_no_boss(5, [3, 2, 1, 10, 4],
@@ -1849,7 +1811,6 @@ def tsp(dist: list[list[int]]) -> int:
     full_mask = (1 << n) - 1
     return min(dp[full_mask][u] + dist[u][0] for u in range(1, n))
 
-
 # 测试：4 个城市
 dist = [
     [0, 10, 15, 20],
@@ -1908,7 +1869,6 @@ def sum_over_subsets(arr: list[int]) -> list[int]:
                 dp[mask] += dp[mask ^ (1 << i)]
     return dp
 
-
 # 测试
 print(sum_over_subsets([1, 2, 4, 8]))  # 输出: [1, 3, 5, 15]
 ```
@@ -1952,7 +1912,6 @@ def find_integers(n: int) -> int:
 
     return dfs(0, 0, True)
 
-
 # 测试
 print(find_integers(5))   # 输出: 5  (0, 1, 10, 100, 101)
 print(find_integers(10))  # 输出: 8
@@ -1982,7 +1941,6 @@ def count_digit_one(n: int) -> int:
         return total
 
     return dfs(0, 0, True)
-
 
 # 测试
 print(count_digit_one(13))  # 输出: 6
@@ -2015,7 +1973,6 @@ def count_with_digit_sum(n: int, k: int) -> int:
 
     return dfs(0, 0, True) - 1  # 减去 0
 
-
 # 测试
 print(count_with_digit_sum(20, 5))  # 输出: 10
 ```
@@ -2043,7 +2000,6 @@ def lcs_rolling(text1: str, text2: str) -> int:
         prev = curr
     return prev[n]
 
-
 print(lcs_rolling("abcde", "ace"))  # 输出: 3
 ```
 
@@ -2055,7 +2011,6 @@ print(lcs_rolling("abcde", "ace"))  # 输出: 3
 
 ```python
 from collections import deque
-
 
 def sliding_window_max(nums: list[int], k: int) -> list[int]:
     """滑动窗口最大值。时间 O(n)，空间 O(k)。"""
@@ -2073,7 +2028,6 @@ def sliding_window_max(nums: list[int], k: int) -> list[int]:
             result.append(nums[dq[0]])
     return result
 
-
 # 测试
 print(sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 3))
 # 输出: [3, 3, 5, 5, 6, 7]
@@ -2087,7 +2041,6 @@ print(sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 3))
 
 ```python
 from collections import deque
-
 
 def slope_dp(n: int) -> int:
     """斜率优化 DP 示例：dp[i] = min_{j<i} (dp[j] + (i-j)^2)。"""
@@ -2114,7 +2067,6 @@ def slope_dp(n: int) -> int:
                 break
         dq.append(i)
     return dp[n]
-
 
 # 测试
 print(slope_dp(10))  # 输出: 10 (i^2 当 j=0 时最小)
@@ -2469,7 +2421,6 @@ def smith_waterman(seq1: str, seq2: str,
             max_score = max(max_score, dp[i][j])
     return max_score
 
-
 # 预期输出: 7
 # 示例: seq1="ACGTACGT", seq2="AGTACGT"
 # 局部最优对齐:
@@ -2601,7 +2552,6 @@ def viterbi(observations: Sequence[str],
     best_final = max(states, key=lambda s: V[-1].get(s, 0.0))
     return path[best_final]
 
-
 # 预期输出: ['SUNNY', 'SUNNY', 'RAINY']
 # 示例: 海藻湿度观测序列 ['dry', 'damp', 'soggy']，根据 HMM 推断最可能的天气
 ```
@@ -2668,7 +2618,6 @@ def american_option_price(S0: float, K: float, r: float, sigma: float,
 
     return values[0]
 
-
 # 预期输出: 约 10.45（参数 S0=100, K=100, r=0.05, sigma=0.2, T=1, steps=100, is_call=True）
 ```
 
@@ -2707,7 +2656,6 @@ def detect_arbitrage(rates: dict[str, dict[str, float]]) -> bool:
         if not updated:
             return False
     return False
-
 
 # 预期输出: True
 # 示例: rates = {'USD': {'EUR': 0.9}, 'EUR': {'CNY': 8}, 'CNY': {'USD': 0.15}}
@@ -2773,7 +2721,6 @@ def sequential_recommendation_dp(user_history: Sequence[int],
     # 按累积奖励降序取 Top-K
     future_values.sort(key=lambda x: x[1], reverse=True)
     return [item for item, _ in future_values[:top_k]]
-
 
 # 预期输出: 形如 [3, 7, 1, 5, 2]
 # 示例: user_history=[0, 2], item_count=8, reward_matrix 为 8×8 矩阵

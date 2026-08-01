@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# 大数据 HBase 命令
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 进入 Shell
 
 **基本写法：启动 HBase Shell**
@@ -621,8 +614,6 @@ hbase org.apache.hadoop.hbase.mapreduce.RowCounter 'users'
 
 ## 参考文献
 
-
-
 Apache Spark：https://spark.apache.org/docs/latest/
 Apache Flink：https://flink.apache.org/
 Apache Kafka：https://kafka.apache.org/documentation/
@@ -630,8 +621,6 @@ ClickHouse：https://clickhouse.com/docs
 Airflow：https://airflow.apache.org/docs/
 
 ## 延伸阅读
-
-
 
 大数据生态概览，见 052-big-data 模块文档。
 数据分析与统计，见 051-data-analysis/030-probability-statistics 模块。

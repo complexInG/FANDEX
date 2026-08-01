@@ -445,7 +445,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 def build_wheels(output_dir: str = "wheelhouse") -> None:
     """调用 cibuildwheel 构建跨平台 wheel。
 
@@ -486,7 +485,6 @@ def build_wheels(output_dir: str = "wheelhouse") -> None:
     if result.returncode != 0:
         print("cibuildwheel 失败，请检查日志", file=sys.stderr)
         sys.exit(result.returncode)
-
 
 if __name__ == "__main__":
     build_wheels()
@@ -630,13 +628,11 @@ import os
 import pytest
 from pathlib import Path
 
-
 def pytest_configure(config: pytest.Config) -> None:
     """注册自定义标记，避免 unknown marker 警告。"""
     config.addinivalue_line("markers", "slow: 标记慢测试")
     config.addinivalue_line("markers", "integration: 集成测试，依赖外部服务")
     config.addinivalue_line("markers", "benchmark: 性能基准测试")
-
 
 def pytest_collection_modifyitems(
     session: pytest.Session,
@@ -660,7 +656,6 @@ def pytest_collection_modifyitems(
             if marker in item.keywords:
                 item.add_marker(skip)
 
-
 @pytest.fixture(scope="session")
 def tmp_workspace(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """会话级临时工作目录：用于需要持久化文件的测试。"""
@@ -675,7 +670,6 @@ import pytest
 from fanquan_demo import __version__
 from fanquan_demo.cli import main
 
-
 def test_version() -> None:
     """版本号应符合语义化版本规范。"""
     # 严格匹配 semver: MAJOR.MINOR.PATCH[-prerelease][+build]
@@ -683,14 +677,12 @@ def test_version() -> None:
     semver_pattern = r"^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?(?:\+[a-zA-Z0-9.]+)?$"
     assert re.match(semver_pattern, __version__), f"非法版本号: {__version__}"
 
-
 @pytest.mark.slow
 def test_slow_operation() -> None:
     """慢测试：用于演示 -m 'not slow' 的过滤效果。"""
     import time
     time.sleep(5)
     assert True
-
 
 def test_cli_help(capsys: pytest.CaptureFixture[str]) -> None:
     """CLI help 子命令应正常输出。"""
@@ -700,10 +692,8 @@ def test_cli_help(capsys: pytest.CaptureFixture[str]) -> None:
     captured = capsys.readouterr()
     assert "usage" in captured.out.lower()
 
-
 # 参数化测试：使用 hypothesis 进行基于属性的测试
 from hypothesis import given, strategies as st
-
 
 @given(st.integers(min_value=0, max_value=1000))
 def test_fibonacci_property(n: int) -> None:
@@ -832,7 +822,6 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass(frozen=True)
 class CanaryConfig:
     """金丝雀发布配置。
@@ -850,7 +839,6 @@ class CanaryConfig:
     p99_latency_threshold_ms: float = 500.0
     step_duration_seconds: int = 60
     service_name: str = "fandex-demo"
-
 
 class CanaryController:
     """金丝雀发布控制器核心逻辑。"""
@@ -962,7 +950,6 @@ class CanaryController:
         """设置金丝雀流量比例（此处为占位实现）。"""
         # 实际实现应通过 kubectl 或 Kubernetes API 修改 Istio VirtualService
         logger.info(f"设置金丝雀流量比例为 {percent}%")
-
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

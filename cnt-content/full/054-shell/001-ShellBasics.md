@@ -24,7 +24,6 @@ prerequisites:
 - 003-文本处理：grep、sed、awk 三件套。
 - 004-脚本进阶：函数、参数与调试。
 
-
 ## 1. Shell 是什么
 
 Shell 是操作系统提供的命令解释器：读取用户输入的命令，调用系统程序，并把结果返回给用户。它既是交互式工具，也是脚本语言。Linux/macOS 默认是 bash（或 zsh），Windows 的 PowerShell 是另一套体系，但 Git Bash/WSL 可以运行 bash 脚本。
@@ -289,8 +288,6 @@ Shell 是运维与后端开发者的基本功：命令、管道、控制流、�
 
 ## 参考文献
 
-
-
 Bash 参考手册：https://www.gnu.org/software/bash/manual/
 ShellCheck：https://www.shellcheck.net/
 Explain Shell：https://explainshell.com/
@@ -298,15 +295,12 @@ Bash 陷阱：https://mywiki.wooledge.org/BashPitfalls
 
 ## 延伸阅读
 
-
-
 Shell 与 Linux 命令，见 001-getting-started/012-CommandLineBasics 文档。
 CI/CD 中的 Shell，见 031-devops 模块。
 文本处理工具，见 051-data-analysis 模块相关文档。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Linux 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

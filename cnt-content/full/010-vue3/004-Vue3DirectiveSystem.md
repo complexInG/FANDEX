@@ -17,13 +17,6 @@ related:
 prerequisites:
   - vue3/语法速查
 ---
-
-# 内置指令 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 指令概述
 
 指令是 Vue 模板中特殊的标记，以 `v-` 前缀开头，用于在 DOM 上应用特殊的响应式行为。Vue3 提供了丰富的内置指令，同时支持自定义指令。
@@ -908,8 +901,6 @@ Vue3 的指令系统提供了丰富的功能，从基本的条件渲染、列表
 
 ## 参考文献
 
-
-
 Vue 官方文档：https://vuejs.org/
 Vue Router：https://router.vuejs.org/zh/
 Pinia：https://pinia.vuejs.org/zh/
@@ -917,8 +908,6 @@ Vue 3 迁移指南：https://v3-migration.vuejs.org/
 VueUse 组合函数库：https://vueuse.org/
 
 ## 延伸阅读
-
-
 
 Vue Teleport 与 Portal，见 010-vue3/026-TeleportPortalApp 文档。
 Vue KeepAlive 缓存，见 010-vue3/027-KeepAliveCacheLifecycle 文档。

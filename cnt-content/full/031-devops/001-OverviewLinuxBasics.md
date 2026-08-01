@@ -24,7 +24,6 @@ prerequisites: []
 - 004-包管理与软件安装：apt/yum 的使用。
 - 005-容器入门：Docker 基本命令。
 
-
 ## 1. DevOps 与 SRE 理念
 
 ### 1.1 DevOps 定义
@@ -501,8 +500,6 @@ Linux 基础是 DevOps 工程师的必备技能：
 
 ## 参考文献
 
-
-
 GitHub Actions 文档：https://docs.github.com/zh/actions
 GitLab CI 文档：https://docs.gitlab.com/ci/
 Argo CD：https://argo-cd.readthedocs.io/
@@ -511,15 +508,12 @@ DevOps 手册（Gene Kim 等）：https://itrevolution.com/devops-handbook/
 
 ## 延伸阅读
 
-
-
 Docker 与 Kubernetes 深入，见 031-devops 模块文档。
 CI/CD 管线设计，见 031-devops 模块 CICD 文档。
 云原生架构，见 034-cloud-computing 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 DevOps 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

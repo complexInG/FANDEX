@@ -18,13 +18,6 @@ related:
 prerequisites:
   - python/语法速查
 ---
-
-# 正则表达式
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 正则表达式起源于 1956 年数学家 Stephen Cole Kleene 在 *Representation of Events in Nerve Nets and Finite Automata* 一文中提出的"正则集合"（regular sets）代数。这一数学理论在 60 余年里演化为程序员每日使用的工具。
@@ -510,12 +503,10 @@ from __future__ import annotations
 
 import re
 
-
 def extract_urls(text: str) -> list[str]:
     """从文本中提取所有 URL。"""
     pattern = re.compile(r"https?://[^\s<>\"']+")
     return pattern.findall(text)
-
 
 def strip_html_tags(html: str) -> str:
     """去除 HTML 标签，保留文本内容。"""
@@ -524,22 +515,18 @@ def strip_html_tags(html: str) -> str:
     # 压缩多余空白
     return re.sub(r"\s+", " ", cleaned).strip()
 
-
 def extract_chinese(text: str) -> list[str]:
     """提取所有中文字符片段。"""
     return re.findall(r"[\u4e00-\u9fa5]+", text)
-
 
 def format_thousands(n: int | str) -> str:
     """千分位格式化数字。"""
     return re.sub(r"(?<=\d)(?=(\d{3})+$)", ",", str(n))
 
-
 def camel_to_snake(name: str) -> str:
     """驼峰命名转下划线命名。"""
     s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
-
 
 def check_password_strength(password: str) -> tuple[int, dict[str, bool]]:
     """检查密码强度。
@@ -556,7 +543,6 @@ def check_password_strength(password: str) -> tuple[int, dict[str, bool]]:
     }
     score = sum(checks.values())
     return score, checks
-
 
 # 使用示例
 text = "Visit https://example.com and http://test.org for info."
@@ -590,7 +576,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import NamedTuple
 
-
 class LogEntry(NamedTuple):
     """日志条目结构。"""
     ip: str
@@ -600,7 +585,6 @@ class LogEntry(NamedTuple):
     protocol: str
     status: int
     size: int
-
 
 # Apache combined log format
 APACHE_LOG_PATTERN = re.compile(
@@ -620,7 +604,6 @@ APACHE_LOG_PATTERN = re.compile(
     """,
     re.VERBOSE,
 )
-
 
 def parse_apache_log_line(line: str) -> LogEntry | None:
     """解析一行 Apache 日志。
@@ -646,7 +629,6 @@ def parse_apache_log_line(line: str) -> LogEntry | None:
         size=size,
     )
 
-
 def analyze_log_file(filepath: str | Path) -> dict[str, int]:
     """分析日志文件，统计各状态码出现次数。
 
@@ -664,7 +646,6 @@ def analyze_log_file(filepath: str | Path) -> dict[str, int]:
                 ip_counts[entry.ip] += 1
 
     return dict(status_counts)
-
 
 # 示例日志行
 sample_log = (
@@ -687,13 +668,11 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-
 @dataclass
 class ValidationResult:
     """验证结果。"""
     is_valid: bool
     message: str
-
 
 # 邮箱验证（RFC 5322 简化版）
 EMAIL_PATTERN = re.compile(
@@ -731,7 +710,6 @@ IPV4_PATTERN = re.compile(
     r"(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$"
 )
 
-
 def validate_email(email: str) -> ValidationResult:
     """验证邮箱格式。"""
     if not email:
@@ -742,7 +720,6 @@ def validate_email(email: str) -> ValidationResult:
         return ValidationResult(True, "邮箱格式正确")
     return ValidationResult(False, "邮箱格式不正确")
 
-
 def validate_phone(phone: str) -> ValidationResult:
     """验证中国手机号格式。"""
     if not phone:
@@ -750,7 +727,6 @@ def validate_phone(phone: str) -> ValidationResult:
     if PHONE_PATTERN.match(phone):
         return ValidationResult(True, "手机号格式正确")
     return ValidationResult(False, "手机号格式不正确")
-
 
 def validate_id_card(id_card: str) -> ValidationResult:
     """验证中国身份证号格式。"""
@@ -766,7 +742,6 @@ def validate_id_card(id_card: str) -> ValidationResult:
         return ValidationResult(False, "身份证校验位错误")
 
     return ValidationResult(True, "身份证号格式正确")
-
 
 # 使用示例
 print(validate_email("user@example.com"))     # is_valid=True
@@ -788,7 +763,6 @@ try:
     HAS_REGEX = True
 except ImportError:
     HAS_REGEX = False
-
 
 # 1. 原子组（atomic group）：避免回溯
 # Python re 不支持原子组，使用 regex 库
@@ -1016,7 +990,6 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-
 @dataclass
 class RegexPattern:
     """封装预编译的正则表达式，提供类型安全的接口。"""
@@ -1047,7 +1020,6 @@ class RegexPattern:
     def sub(self, replacement: str, text: str) -> str:
         """替换。"""
         return self.pattern.sub(replacement, text)
-
 
 # 预定义的常用模式
 EMAIL_REGEX = RegexPattern.compile(
@@ -1080,7 +1052,6 @@ from __future__ import annotations
 import re
 import timeit
 
-
 # 1. 预编译正则
 PATTERN_COMPILED = re.compile(r"\d+")
 
@@ -1090,7 +1061,6 @@ def with_compile(text: str) -> list[str]:
 def without_compile(text: str) -> list[str]:
     return re.findall(r"\d+", text)
 
-
 # 2. 使用非捕获分组提升性能
 def use_non_capturing(text: str) -> list[str]:
     # 使用 (?:...) 避免捕获开销
@@ -1098,7 +1068,6 @@ def use_non_capturing(text: str) -> list[str]:
 
 def use_capturing(text: str) -> list[str]:
     return re.findall(r"(\d{4})-(\d{2})-(\d{2})", text)
-
 
 # 3. 锚定提升性能
 def with_anchors(text: str) -> bool:
@@ -1108,7 +1077,6 @@ def with_anchors(text: str) -> bool:
 def without_anchors(text: str) -> bool:
     return bool(re.search(r"\d", text))
 
-
 # 4. 字符类优于选择
 def with_charclass(text: str) -> list[str]:
     # 使用 [abc] 比 (a|b|c) 快
@@ -1116,7 +1084,6 @@ def with_charclass(text: str) -> list[str]:
 
 def with_alternation(text: str) -> list[str]:
     return re.findall(r"(a|b|c)", text)
-
 
 # 5. 避免灾难性回溯
 def safe_pattern(text: str) -> bool:
@@ -1126,7 +1093,6 @@ def safe_pattern(text: str) -> bool:
 def unsafe_pattern(text: str) -> bool:
     # 危险的嵌套量词
     return bool(re.match(r"(a+)+b", text))
-
 
 # 性能基准
 text = "2026-07-21 abc 123 def"
@@ -1141,7 +1107,6 @@ print("without_compile:", timeit.timeit(lambda: without_compile(text), number=10
 from __future__ import annotations
 
 import re
-
 
 def debug_pattern(pattern: str, text: str) -> None:
     """调试正则表达式。
@@ -1170,7 +1135,6 @@ def debug_pattern(pattern: str, text: str) -> None:
     )
     print(f"高亮: {highlighted}")
 
-
 if __name__ == "__main__":
     debug_pattern(r"\d{4}-\d{2}-\d{2}", "Date: 2026-07-21")
 ```
@@ -1183,7 +1147,6 @@ from __future__ import annotations
 
 import re
 import unittest
-
 
 class TestEmailRegex(unittest.TestCase):
     """邮箱正则的单元测试。"""
@@ -1219,7 +1182,6 @@ class TestEmailRegex(unittest.TestCase):
             with self.subTest(email=email):
                 self.assertIsNone(self.PATTERN.match(email))
 
-
 class TestPhoneRegex(unittest.TestCase):
     """手机号正则的单元测试。"""
 
@@ -1250,7 +1212,6 @@ class TestPhoneRegex(unittest.TestCase):
             with self.subTest(phone=phone):
                 self.assertIsNone(self.PATTERN.match(phone))
 
-
 if __name__ == "__main__":
     unittest.main()
 ```
@@ -1276,13 +1237,11 @@ URL_PATTERN: Final = re.compile(r"https?://[^\s<>\"']+")
 PHONE_PATTERN: Final = re.compile(r"^1[3-9]\d{9}$")
 SLUG_PATTERN: Final = re.compile(r"^[a-z0-9-]+$")
 
-
 @dataclass(frozen=True)
 class ValidationError(Exception):
     """验证错误。"""
     field: str
     message: str
-
 
 def validate_user_input(email: str, phone: str, website: str) -> None:
     """验证用户输入。
@@ -1302,7 +1261,6 @@ def validate_user_input(email: str, phone: str, website: str) -> None:
         raise ValidationError("website", "URL 格式不正确")
 
     logger.info("用户输入验证通过")
-
 
 # 使用示例
 try:
@@ -1325,13 +1283,11 @@ import re
 from typing import Callable
 from dataclasses import dataclass
 
-
 @dataclass
 class Route:
     """路由定义。"""
     pattern: re.Pattern[str]
     handler: Callable[..., str]
-
 
 class Router:
     """简单的 URL 路由器。"""
@@ -1360,7 +1316,6 @@ class Router:
             if match:
                 return route.handler(**match.groupdict())
         raise ValueError(f"No route for {path}")
-
 
 # 使用
 router = Router()
@@ -1392,7 +1347,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterable
 
-
 @dataclass
 class AccessLog:
     """访问日志条目。"""
@@ -1403,7 +1357,6 @@ class AccessLog:
     status: int
     size: int
     duration_ms: float
-
 
 # 复杂的日志模式
 LOG_PATTERN = re.compile(
@@ -1426,7 +1379,6 @@ LOG_PATTERN = re.compile(
     """,
     re.VERBOSE,
 )
-
 
 def parse_logs(filepath: str | Path) -> Iterable[AccessLog]:
     """解析日志文件。
@@ -1455,7 +1407,6 @@ def parse_logs(filepath: str | Path) -> Iterable[AccessLog]:
             except (ValueError, TypeError) as e:
                 # 跳过格式错误的行
                 continue
-
 
 def analyze_logs(logs: Iterable[AccessLog]) -> dict[str, object]:
     """分析日志，生成统计报告。"""
@@ -1497,7 +1448,6 @@ try:
 except ImportError:
     HAS_BS4 = False
 
-
 def extract_emails_from_html(html: str) -> list[str]:
     """从 HTML 中提取所有邮箱。"""
     if not HAS_BS4:
@@ -1507,7 +1457,6 @@ def extract_emails_from_html(html: str) -> list[str]:
     soup = BeautifulSoup(html, "html.parser")
     text = soup.get_text()
     return re.findall(r"[\w.+-]+@[\w.-]+\.\w+", text)
-
 
 def extract_links_by_pattern(html: str, pattern: str) -> list[str]:
     """提取匹配特定模式的链接。
@@ -1526,7 +1475,6 @@ def extract_links_by_pattern(html: str, pattern: str) -> list[str]:
         for a in soup.find_all("a", href=True)
         if regex.search(a["href"])
     ]
-
 
 # 使用示例
 html = """
@@ -1555,7 +1503,6 @@ from __future__ import annotations
 
 import re
 
-
 # SQL 注入常见模式
 SQL_INJECTION_PATTERNS = [
     # 注释
@@ -1580,7 +1527,6 @@ SQL_INJECTION_PATTERNS = [
     re.compile(r"CHAR\s*\(", re.IGNORECASE),
 ]
 
-
 def detect_sql_injection(input_str: str) -> list[str]:
     """检测输入是否包含 SQL 注入特征。
 
@@ -1592,7 +1538,6 @@ def detect_sql_injection(input_str: str) -> list[str]:
         if pattern.search(input_str):
             matches.append(pattern.pattern)
     return matches
-
 
 # 测试
 test_inputs = [
@@ -1622,7 +1567,6 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-
 @dataclass
 class Subtitle:
     """字幕条目。"""
@@ -1630,12 +1574,10 @@ class Subtitle:
     end: str    # 结束时间
     text: str
 
-
 # VTT 时间戳模式
 VTT_TIME_PATTERN = re.compile(
     r"(\d{2}:\d{2}:\d{2}\.\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}\.\d{3})"
 )
-
 
 def parse_vtt(content: str) -> list[Subtitle]:
     """解析 VTT 字幕文件。
@@ -1666,7 +1608,6 @@ def parse_vtt(content: str) -> list[Subtitle]:
             i += 1
 
     return subtitles
-
 
 # 示例
 vtt_content = """WEBVTT
@@ -1797,7 +1738,6 @@ from __future__ import annotations
 import re
 from urllib.parse import urlparse
 
-
 URL_PATTERN = re.compile(
     r"""
     https?://                              # 协议
@@ -1810,7 +1750,6 @@ URL_PATTERN = re.compile(
     re.VERBOSE,
 )
 
-
 def extract_urls(text: str) -> list[str]:
     """从文本中提取所有 URL。
 
@@ -1818,7 +1757,6 @@ def extract_urls(text: str) -> list[str]:
     :return: URL 列表
     """
     return URL_PATTERN.findall(text)
-
 
 # 测试
 text = """
@@ -1846,7 +1784,6 @@ from __future__ import annotations
 
 import re
 
-
 def camel_to_snake(name: str) -> str:
     """驼峰转下划线。
 
@@ -1862,7 +1799,6 @@ def camel_to_snake(name: str) -> str:
     # 处理小写或数字后的大写字母
     return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
-
 def snake_to_camel(name: str) -> str:
     """下划线转驼峰。
 
@@ -1872,11 +1808,9 @@ def snake_to_camel(name: str) -> str:
     parts = name.split("_")
     return parts[0] + "".join(p.title() for p in parts[1:])
 
-
 def pascal_to_camel(name: str) -> str:
     """帕斯卡转驼峰。"""
     return name[0].lower() + name[1:] if name else name
-
 
 # 测试
 if __name__ == "__main__":
@@ -1897,14 +1831,12 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-
 @dataclass
 class PasswordStrength:
     """密码强度评估结果。"""
     score: int  # 0-5
     checks: dict[str, bool]
     level: str  # weak / medium / strong / very_strong
-
 
 def check_password_strength(password: str) -> PasswordStrength:
     """检查密码强度。
@@ -1931,7 +1863,6 @@ def check_password_strength(password: str) -> PasswordStrength:
         level = "very_strong"
 
     return PasswordStrength(score=score, checks=checks, level=level)
-
 
 # 测试
 test_passwords = [
@@ -2327,10 +2258,8 @@ import re
 import signal
 from typing import Any
 
-
 class TimeoutError(Exception):
     """正则匹配超时。"""
-
 
 def safe_match(pattern: str, text: str, timeout: float = 1.0) -> re.Match[str] | None:
     """带超时的安全正则匹配。
@@ -2359,7 +2288,6 @@ def safe_match(pattern: str, text: str, timeout: float = 1.0) -> re.Match[str] |
         # Windows 不支持 SIGALRM，退化为直接匹配
         return compiled.match(text)
 
-
 # 使用示例
 try:
     match = safe_match(r"\d+", "12345")
@@ -2379,7 +2307,6 @@ from __future__ import annotations
 
 import re
 
-
 def tokenize(text: str) -> list[str]:
     """简单的英文分词。
 
@@ -2394,7 +2321,6 @@ def tokenize(text: str) -> list[str]:
         |\S             # 其他非空白字符
     """, re.VERBOSE)
     return pattern.findall(text)
-
 
 def normalize_text(text: str) -> str:
     """文本标准化。
@@ -2416,7 +2342,6 @@ def normalize_text(text: str) -> str:
     text = re.sub(r"&\w+;", " ", text)
     return text.strip()
 
-
 def extract_features(text: str) -> dict[str, int]:
     """提取文本特征。
 
@@ -2433,7 +2358,6 @@ def extract_features(text: str) -> dict[str, int]:
         "punctuation_count": len(re.findall(r"[.,!?;:]", text)),
         "whitespace_count": len(re.findall(r"\s", text)),
     }
-
 
 # 使用示例
 text = "Hello, World! This is a Test. 123"
@@ -2459,7 +2383,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
-
 @dataclass
 class TextStats:
     """文本统计信息。"""
@@ -2471,7 +2394,6 @@ class TextStats:
     top_words: list[tuple[str, int]]
     top_bigrams: list[tuple[str, int]]
 
-
 WORD_PATTERN = re.compile(r"\b\w+\b")
 SENTENCE_PATTERN = re.compile(r"[.!?]+")
 PARAGRAPH_PATTERN = re.compile(r"\n\s*\n")
@@ -2480,7 +2402,6 @@ STOPWORDS = frozenset({
     "to", "for", "of", "with", "by", "from", "as", "is", "was",
     "are", "were", "be", "been", "being", "have", "has", "had",
 })
-
 
 def analyze_text(text: str) -> TextStats:
     """分析文本，生成统计信息。
@@ -2510,7 +2431,6 @@ def analyze_text(text: str) -> TextStats:
         top_bigrams=Counter(bigrams).most_common(10),
     )
 
-
 def analyze_file(filepath: str | Path) -> TextStats:
     """分析文本文件。
 
@@ -2519,7 +2439,6 @@ def analyze_file(filepath: str | Path) -> TextStats:
     """
     text = Path(filepath).read_text(encoding="utf-8")
     return analyze_text(text)
-
 
 # 使用示例
 sample_text = """

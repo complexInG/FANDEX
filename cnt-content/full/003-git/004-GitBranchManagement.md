@@ -18,13 +18,6 @@ related:
 prerequisites:
   - git/语法速查
 ---
-
-# Git 分支管理
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 2. 分支概述
 
 分支是 Git 中非常重要的概念，它允许你在独立的环境中开发新功能或修复 bug，而不影响主分支的稳定性。
@@ -691,16 +684,12 @@ git merge --abort;
 
 ## 参考文献
 
-
-
 Git 官方文档：https://git-scm.com/doc
 Pro Git 中文版：https://git-scm.com/book/zh/v2
 Git 参考手册：https://git-scm.com/docs
 Conventional Commits：https://www.conventionalcommits.org/zh-hans/
 
 ## 延伸阅读
-
-
 
 Git 基础操作与分支，见 003-git 模块文档。
 GitHub 协作与 PR，见 004-github 模块。

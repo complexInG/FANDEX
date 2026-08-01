@@ -1494,7 +1494,6 @@ B. FA 模型在 HarmonyOS NEXT 中仍可创建新工程
 C. Stage 模型的 UIAbility 显式分离了窗口创建与前台切换  
 D. FA 模型支持 multiton 启动模式  
 
-
 **解析讲解**：C
 
 **解析讲解**：
@@ -1503,7 +1502,6 @@ D. FA 模型支持 multiton 启动模式
 - C 正确：Stage 模型的 `onWindowStageCreate` 与 `onForeground` 是分离的两个回调，FA 模型的 Page Ability 没有这种分离。
 - D 错：FA 模型仅有 `singleton` 与 `standard` 两种启动模式，`multiton` 是 Stage 模型新增。
 
-
 **题 1.2**：HarmonyOS NEXT 的应用配置文件是：
 
 A. `AndroidManifest.xml`  
@@ -1511,11 +1509,9 @@ B. `config.json`
 C. `module.json5`  
 D. `Info.plist`  
 
-
 **解析讲解**：C
 
 **解析讲解**：HarmonyOS NEXT 仅支持 Stage 模型，配置文件为 `module.json5`（JSON5 格式，支持注释）。`config.json` 是 FA 模型的配置文件，在 NEXT 中已移除。
-
 
 **题 1.3**：下列哪种 ExtensionAbility 类型用于实现桌面卡片？
 
@@ -1524,11 +1520,9 @@ B. `FormExtensionAbility`
 C. `ShareExtensionAbility`  
 D. `DataShareExtensionAbility`  
 
-
 **解析讲解**：B
 
 **解析讲解**：`FormExtensionAbility` 专门用于桌面卡片服务，对应 FA 模型的 Form Ability。`ServiceExtensionAbility` 用于后台服务，`ShareExtensionAbility` 用于跨应用分享，`DataShareExtensionAbility` 用于数据共享。
-
 
 **题 1.4**：跨设备迁移数据量的上限是（HarmonyOS 4.0）：
 
@@ -1537,11 +1531,9 @@ B. 10 KB
 C. 100 KB  
 D. 1 MB  
 
-
 **解析讲解**：C
 
 **解析讲解**：HarmonyOS 4.0 中 `onSaveData` 序列化数据上限为 100 KB。超出会被截断，大数据应通过分布式 KV 或分布式文件同步。
-
 
 **题 1.5**：Stage 模型的 launchType 不包含以下哪种？
 
@@ -1550,53 +1542,41 @@ B. multiton
 C. specified  
 D. standard  
 
-
 **解析讲解**：D
 
 **解析讲解**：Stage 模型支持 `singleton`（单例）、`multiton`（多实例）、`specified`（指定实例）三种启动模式。`standard` 是 FA 模型的启动模式之一，Stage 模型已用 `multiton` 取代。
-
 
 ### 填空题知识点讲解
 
 **题 2.1**：FA 模型支持四种 Ability 类型，分别是 ________、________、________、________。
 
-
 **解析讲解**：Page Ability、Service Ability、Data Ability、Form Ability
 
 **解析讲解**：FA 模型的四种 Ability 类型对应不同的应用场景。Page Ability 用于 UI 页面，Service Ability 用于后台服务，Data Ability 用于数据共享，Form Ability 用于桌面卡片。
 
-
 **题 2.2**：Stage 模型中，UIAbility 的 `onCreate` 回调之后、`onForeground` 之前，必经的回调是 ________。
-
 
 **解析讲解**：`onWindowStageCreate`
 
 **解析讲解**：Stage 模型 UIAbility 的标准生命周期顺序为：`onCreate` → `onWindowStageCreate` → `onForeground` → `onBackground` → `onWindowStageDestroy` → `onDestroy`。
 
-
 **题 2.3**：跨设备迁移时，源端调用 ________ 序列化状态，目标端调用 ________ 反序列化状态。
-
 
 **解析讲解**：`onSaveData`、`onRestoreData`
 
 **解析讲解**：Stage 模型跨设备迁移由 `distributedScheduler` 触发，源端 UIAbility 的 `onSaveData(wantParam)` 将状态写入 `wantParam`，目标端 UIAbility 的 `onRestoreData(wantParam)` 读取并恢复。
 
-
 **题 2.4**：HSP 模块在 `module.json5` 中的 `type` 字段值为 ________。
-
 
 **解析讲解**：`shared`
 
 **解析讲解**：HAP 模块类型为 `entry` 或 `feature`，HSP 模块类型为 `shared`。
 
-
 **题 2.5**：HarmonyOS 4.0 中跨设备启动性能相比 FA 模型提升约 ________ %。
-
 
 **解析讲解**：40
 
 **解析讲解**：根据华为官方基准，HarmonyOS 4.0 Stage 模型的分布式软总线 v3 对接 `distributedScheduler`，跨设备启动性能提升 40%。
-
 
 ### 编程题知识点讲解
 
@@ -1607,7 +1587,6 @@ D. standard
 3. 在 `onForeground` 中触发数据刷新，通过 `eventHub` 通知 UI。
 4. 在 `onSaveData` 中持久化 `userId` 与最近访问时间。
 5. 在 `onRestoreData` 中恢复上述状态。
-
 
 ```typescript
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
@@ -1661,14 +1640,12 @@ export default class UserAbility extends UIAbility {
 }
 ```
 
-
 **题 3.2**：编写一个 `module.json5`，配置：
 
 1. EntryAbility，launchType 为 singleton，支持深链 `fandex://app/home`。
 2. CalculatorAbility，launchType 为 multiton。
 3. FormExtAbility（form 类型）。
 4. 申请 INTERNET 权限（安装即授予）与 CAMERA 权限（运行时申请，EntryAbility 使用，inuse 时机）。
-
 
 ```json5
 {
@@ -1730,11 +1707,9 @@ export default class UserAbility extends UIAbility {
 }
 ```
 
-
 ### 9.4 思考题
 
 **题 4.1**：为什么 HarmonyOS NEXT 选择彻底移除 FA 模型？请从系统性能、生态演进、开发体验三个维度分析。
-
 
 **性能维度**：
 - FA 模型同进程模型导致内存浪费，移除后系统进程调度更精细。
@@ -1755,9 +1730,7 @@ export default class UserAbility extends UIAbility {
 - 旧 FA 应用迁移成本高，可能流失部分开发者。
 - 通过提供 FA→Stage 迁移工具与文档缓解。
 
-
 **题 4.2**：在多账号聊天应用中，如何选择 `launchType`？说明理由。
-
 
 **推荐 `multiton`**：
 
@@ -1780,9 +1753,7 @@ class MyAbilityStage {
 }
 ```
 
-
 **题 4.3**：分析 Stage 模型中 `WindowStage` 抽象对 ArkUI 与窗口管理的影响。
-
 
 **ArkUI 影响**：
 - ArkUI 页面树挂在 `WindowStage` 上，与 UIAbility 解耦。
@@ -1798,9 +1769,7 @@ class MyAbilityStage {
 - 开发者需理解 WindowStage 概念，学习曲线略陡。
 - 跨窗口状态管理需要通过 `AppStorage` 或 `eventHub` 协调。
 
-
 **题 4.4**：FA 模型 `config.json` 中 `module.abilities[].type` 与 Stage 模型 `module.json5` 中 `extensionAbilities[].type` 的设计差异背后反映的架构思想是什么？
-
 
 **差异**：
 - FA 模型 `type` 字段统一描述 Page/Service/Data/Form，所有 Ability 在同一列表中。
@@ -1812,7 +1781,6 @@ class MyAbilityStage {
 - **加载策略差异**：UIAbility 由系统按需实例化，ExtensionAbility 由调用方按需拉起。
 - **生命周期差异**：UIAbility 有完整窗口生命周期，ExtensionAbility 仅有 onCreate/onConnect/onDisconnect。
 - **可扩展性**：新增 ExtensionAbility 类型（如 InputMethod、Accessibility）不影响 UIAbility 设计。
-
 
 ---
 

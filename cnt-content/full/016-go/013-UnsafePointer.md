@@ -15,13 +15,6 @@ related:
 prerequisites:
   - go/概述与环境配置
 ---
-
-# Go unsafe 与指针
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 unsafe 包的设计动机
@@ -1312,7 +1305,6 @@ B. unsafe.Pointer 可以被 GC 追踪,uintptr 不可以
 C. 两者都不可以被 GC 追踪
 D. uintptr 可以被 GC 追踪,unsafe.Pointer 不可以
 
-
 **答案:B**
 
 - `unsafe.Pointer` 是指针类型,GC 在标记阶段会追踪其指向的对象。
@@ -1324,7 +1316,6 @@ A. `uintptr` 存储在变量中,稍后转回 `Pointer`
 B. `Pointer` 转 `uintptr` 后立即在同一表达式中运算并转回 `Pointer`
 C. 将 `Pointer` 传给 `fmt.Println` 显示地址
 D. 通过 `Pointer` 修改字符串字面量
-
 
 **答案:B**
 
@@ -1349,7 +1340,6 @@ B. 32 字节
 C. 40 字节
 D. 16 字节
 
-
 **答案:B**
 
 布局分析:
@@ -1370,7 +1360,6 @@ B. 类型更安全
 C. API 更简洁
 D. B 和 C
 
-
 **答案:D**
 
 - A 错误:性能相当。
@@ -1385,7 +1374,6 @@ B. 用于 cgo 场景,固定 Go 对象不被 GC 回收
 C. 只能 pin 一个对象
 D. Unpin 后对象立即被回收
 
-
 **答案:B**
 
 - A 错误:`Pinner` 是显式 pin 多个对象,`KeepAlive` 是延长生命周期到调用点。
@@ -1397,19 +1385,16 @@ D. Unpin 后对象立即被回收
 
 **1. `unsafe.Pointer` 的六种合法转换模式包括:`*T1 -> Pointer -> *T2`、`Pointer -> uintptr`、`______`、`Pointer -> syscall.Syscall`、`reflect.Value.Pointer -> Pointer`、`______`。**
 
-
 - `Pointer -> uintptr -> Pointer`(立即算术运算)
 - `reflect.SliceHeader/StringHeader.Data -> Pointer`(Go 1.20 前使用)
 
 **2. 64 位平台上,`string` 的大小是 `______` 字节,`[]byte` 的大小是 `______` 字节,`interface{}` 的大小是 `______` 字节。**
-
 
 - `string`:16 字节(Data 8 + Len 8)
 - `[]byte`:24 字节(Data 8 + Len 8 + Cap 8)
 - `interface{}`:16 字节(type 8 + value 8)
 
 **3. Go 1.20 引入的四个 unsafe 新函数是 `______`、`______`、`______`、`______`。**
-
 
 - `unsafe.String(ptr *byte, n int) string`
 - `unsafe.StringData(s string) *byte`
@@ -1418,12 +1403,10 @@ D. Unpin 后对象立即被回收
 
 **4. 零拷贝 `string -> []byte` 转换的风险是 `______`,安全使用场景是 `______`。**
 
-
 - 风险:修改 `[]byte` 会破坏 `string` 的不可变性,导致未定义行为
 - 安全场景:只读访问(如 JSON 解析、哈希计算)
 
 **5. `atomic.Pointer[T]` 是 Go `______` 版本引入的,底层使用 `______` 类型存储指针。**
-
 
 - Go 1.19
 - `unsafe.Pointer`
@@ -1431,7 +1414,6 @@ D. Unpin 后对象立即被回收
 ### 编程题知识点讲解
 
 **1. 实现一个高性能的字段访问器,通过预计算偏移量,避免反射开销。**
-
 
 ```go
 package main
@@ -1521,7 +1503,6 @@ func main() {
 
 **2. 实现一个 slab allocator,管理固定大小内存块,减少 GC 压力。**
 
-
 ```go
 package main
 
@@ -1601,7 +1582,6 @@ func (a *SlabAllocator) Stats() (totalSlabs, freeBlocks int) {
 
 **1. 为什么 Go 不直接禁止 `unsafe` 包,而要提供它?**
 
-
 Go 提供 `unsafe` 的原因:
 1. **cgo 互操作**:与 C 代码交互必须能传递指针,绕过类型系统。
 2. **runtime 实现**:Go runtime 自身大量使用 `unsafe`(如 GC、调度器、channel)。
@@ -1612,7 +1592,6 @@ Go 提供 `unsafe` 的原因:
 设计哲学:**默认安全,需要时逃生**。Go 通过强类型 + GC 保证默认安全,`unsafe` 作为必要的逃生舱,但明确不保证兼容性,促使开发者谨慎使用。
 
 **2. 在什么场景下,零拷贝 string/[]byte 转换是值得的?**
-
 
 值得的场景:
 1. **高频只读场景**:JSON 解析、日志处理、哈希计算,每次节省一次内存分配。
@@ -1630,7 +1609,6 @@ Go 提供 `unsafe` 的原因:
 
 **3. `unsafe.Pointer` 与 C 的 `void*` 有何本质区别?**
 
-
 本质区别:
 1. **GC 集成**:`unsafe.Pointer` 被 GC 追踪,`void*` 不被任何 GC 管理。
 2. **类型系统**:Go 的 `unsafe.Pointer` 是独立类型,需显式转换;C 的 `void*` 可隐式转换。
@@ -1642,7 +1620,6 @@ Go 提供 `unsafe` 的原因:
 设计差异:Go 在安全与性能间平衡,`unsafe.Pointer` 是"受控的逃生舱";C 的 `void*` 是通用底层工具。
 
 **4. 如何检测和防止 `unsafe` 代码的滥用?**
-
 
 检测方法:
 1. **go vet**:`-unsafeptr` 检测可疑的 `uintptr` 使用。
@@ -1659,7 +1636,6 @@ Go 提供 `unsafe` 的原因:
 4. **替代方案**:优先用 `atomic.Pointer[T]` 替代直接 `unsafe.Pointer` 操作。
 
 **5. Go 1.20 引入 `unsafe.String`/`unsafe.Slice` 的动机是什么?相比旧 API 有何优势?**
-
 
 动机:
 1. **替代 `reflect.Header`**:`reflect.StringHeader`/`SliceHeader` 是实现细节,可能变化。

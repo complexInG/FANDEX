@@ -17,13 +17,6 @@ prerequisites:
   - html5/概述与核心特性
 updated: '2026-08-01'
 ---
-
-# 多媒体与 Canvas 绘图 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 音视频支持
 
 HTML5 提供了原生的音视频支持，不再需要依赖 Flash 插件，使网页能够直接播放音视频内容。
@@ -1265,8 +1258,6 @@ oscillator.stop(audioCtx.currentTime + 2); // 2 秒后停止
 ```
 
 ## 参考文献
-
-
 
 WHATWG HTML Living Standard：https://html.spec.whatwg.org/
 MDN HTML 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTML

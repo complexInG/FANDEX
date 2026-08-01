@@ -1223,7 +1223,6 @@ func main() {
 
 **题 1**：使用 `syscall/js` 实现一个函数 `isPrime(n int) bool`，在浏览器中调用并显示 1-100 的所有素数。
 
-
 ```go
 package main
 
@@ -1272,9 +1271,7 @@ func isPrime(n int) bool {
 }
 ```
 
-
 **题 2**：解释为何 Go wasm 的二进制体积远大于 Rust wasm，并给出三种优化方案。
-
 
 Go wasm 体积大的根本原因：
 
@@ -1288,11 +1285,9 @@ Go wasm 体积大的根本原因：
 - 使用 TinyGo 替代官方编译器（牺牲部分标准库兼容性）。
 - 使用 brotli 压缩并启用 HTTP 缓存（传输体积可减 75%+）。
 
-
 ### 9.2 进阶题
 
 **题 3**：实现一个 Go wasm 模块，在浏览器中加载一张图片，应用 Sobel 边缘检测算法，并将结果显示在 Canvas 上。要求：使用 `js.CopyBytesToGo` 批量传输数据，避免每像素边界调用。
-
 
 ```go
 package main
@@ -1367,7 +1362,6 @@ func abs(x int) int {
 }
 ```
 
-
 **题 4**：分析以下代码的性能问题并优化：
 
 ```go
@@ -1379,7 +1373,6 @@ func process(data js.Value) {
     }
 }
 ```
-
 
 **问题**：每次调用 `data.Index(i)` 都涉及一次 wasm↔JS 边界切换，对于 length=10000 的数组，会有 10000 次边界调用，总开销约 2 ms。
 
@@ -1404,11 +1397,9 @@ func process(data js.Value) {
 }
 ```
 
-
 ### 9.3 思考题
 
 **题 5**：在浏览器中，Go wasm 与 JavaScript 共享同一个事件循环。若 Go wasm 中启动了 1000 个 goroutine，调度器如何避免某个 goroutine 长时间占用 CPU 导致 UI 卡顿？请从协作式调度与抢占式调度的角度分析。
-
 
 Go wasm 的调度器是协作式（cooperative）的：
 
@@ -1422,9 +1413,7 @@ Go wasm 的调度器是协作式（cooperative）的：
 - 将长任务切分为多个 macrotask，通过 `time.Sleep(0)` 或 `Promise.resolve().then()` 串联。
 - 使用 Web Worker 将 wasm 放到独立线程，避免阻塞主线程。
 
-
 **题 6**：WASI Preview 1 不支持 socket，但 WASI Preview 2 引入了 `wasi-sockets` 提案。请分析在 Go 中如何编写一个跨平台的 HTTP 客户端，同时支持 `js/wasm`（浏览器）与 `wasip1`（WASI）。
-
 
 通过接口抽象 + 编译标签：
 
@@ -1487,7 +1476,6 @@ func New() Client { return &nativeClient{c: &http.Client{}} }
 ```
 
 业务代码统一通过 `httpclient.New()` 获取客户端实例，编译器根据目标平台选择具体实现。
-
 
 ---
 

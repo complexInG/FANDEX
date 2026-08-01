@@ -862,11 +862,9 @@ B. `Object.freeze({a:1}) === Object.freeze({a:1})`
 C. `#{a:1} === #{a:1}`
 D. `Immutable.Map({a:1}) === Immutable.Map({a:1})`
 
-
 **答案：C**
 
 Record/Tuple 使用值语义比较，相同内容即相等。A、B 都是普通对象，引用不同。D 中 Immutable.js 仍使用引用比较，需调用 `.equals()`。
-
 
 **题目 2**：以下哪段代码会抛出 `TypeError`？
 
@@ -875,11 +873,9 @@ B. `const t = #[1, 2]; t.push(3);`
 C. `const r = #{ arr: [1, 2] };`
 D. 以上都是
 
-
 **答案：D**
 
 A：Record 不可修改，会抛 TypeError。B：Tuple 没有 push 方法，会抛 TypeError。C：Record 不能包含可变数组，会抛 TypeError。
-
 
 **题目 3**：使用 `Tuple.from([1, {a:1}])` 会发生什么？
 
@@ -888,36 +884,27 @@ B. 抛出 TypeError，因为对象不能放入 Tuple
 C. 自动将 `{a:1}` 转为 `#{a:1}`
 D. 返回 `#[1, #[‘a’, 1]]`
 
-
 **答案：B**
 
 Tuple 的值域与 Record 相同，不能包含可变对象。若需放入，必须显式转换：`Tuple.from([1, Record({a:1})])`。
-
 
 ### 填空题知识点讲解
 
 **题目 4**：Record 的键只能是 ______ 或 ______。
 
-
 字符串、Symbol
-
 
 **题目 5**：`#{a:1, b:2} === #{b:2, a:1}` 的结果是 ______。
 
-
 `true`（Record 字段顺序无关，值语义比较）
-
 
 **题目 6**：Record/Tuple 比较的期望时间复杂度是 ______，最坏时间复杂度是 ______。
 
-
 `O(1)`、`O(n)`（哈希缓存命中时为 O(1)，首次比较需 O(n)）
-
 
 ### 编程题知识点讲解
 
 **题目 7**：实现一个函数 `deepToRecord(obj)`，将任意可变对象（含嵌套）转为 Record/Tuple。
-
 
 ```javascript
 function deepToRecord(value) {
@@ -959,9 +946,7 @@ const result = deepToRecord(input);
 console.log(result === deepToRecord(input)); // true
 ```
 
-
 **题目 8**：实现一个 LRU 缓存，键为 Tuple，支持 `get(key)` 与 `set(key, value)`，容量为 100。
-
 
 ```javascript
 class TupleLRU {
@@ -1006,11 +991,9 @@ console.log(lru.get(#[1, 'a']));  // undefined（已驱逐）
 console.log(lru.get(#[2, 'b']));  // 'second'
 ```
 
-
 ### 9.4 思考题
 
 **题目 9**：为什么 Record/Tuple 不允许包含函数？这对函数式编程有何影响？如何绕过这一限制？
-
 
 1. **原因**：函数是引用类型，包含闭包与环境引用。若允许放入 Record，则 Record 的值语义无法保证——相同源代码的两个函数引用不同环境，无法判定相等。
 2. **影响**：无法在 Record 中直接存储事件处理器、策略对象等函数式常见模式。
@@ -1019,9 +1002,7 @@ console.log(lru.get(#[2, 'b']));  // 'second'
    - 用字符串名 + 查找表（如 Flux 标准的 action type）
    - 用 `Tuple` 存储参数，外部 `apply` 函数
 
-
 **题目 10**：假设 Record/Tuple 进入 ES2026 标准，React 是否会完全移除 `React.memo` 的 `areEqual` 参数？为什么？
-
 
 1. **不会完全移除**，但默认行为会变好。
 2. **原因**：
@@ -1029,7 +1010,6 @@ console.log(lru.get(#[2, 'b']));  // 'second'
    - 但若 props 全部为 Record/Tuple，浅比较即等价于深比较，无需自定义 `areEqual`
    - 混合 props（含函数、可变对象）时仍需自定义比较
 3. **演进方向**：React Forget 编译器可自动将状态转为 Record，使绝大多数 `areEqual` 变得冗余。
-
 
 ---
 
@@ -1173,7 +1153,6 @@ new Set().add(#[1,2]).has(#[1,2]);        // true
 
 ## 参考文献
 
-
 MDN JavaScript 文档：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript
 ECMAScript 规范：https://tc39.es/ecma262/
 Node.js 官方文档：https://nodejs.org/docs/latest/api/
@@ -1181,7 +1160,6 @@ JavaScript 秘密花园：https://bonsaiden.github.io/JavaScript-Garden/
 Can I use：https://caniuse.com/
 
 ## 延伸阅读
-
 
 JavaScript 基础语法，见 008-javascript 模块文档。
 TypeScript 类型系统，见 009-typescript 模块。

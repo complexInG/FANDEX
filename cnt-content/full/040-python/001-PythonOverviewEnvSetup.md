@@ -26,7 +26,6 @@ updated: '2026-08-01'
 - 004-运算符与表达式：算术、比较、逻辑。
 - 005-控制流：if、for、while。
 
-
 ## 1. Python 概述 (Overview)
 
 Python 是由 **Guido van Rossum** 于 1989 年圣诞节期间开始设计的一种高级脚本语言。它以英国电视喜剧《Monty Python's Flying Circus》命名，于 1991 年发布第一个正式版本。Python 的设计哲学强调代码可读性和简洁性，提倡 "优雅"、"明确"、"简单" 的编程风格。
@@ -535,8 +534,6 @@ Python 作为一种不断发展的编程语言，未来将继续在以下方面�
 
 ## 参考文献
 
-
-
 Python 官方文档：https://docs.python.org/zh-cn/3/
 PEP 8 样式指南：https://peps.python.org/pep-0008/
 Python 之禅（PEP 20）：https://peps.python.org/pep-0020/
@@ -545,7 +542,6 @@ Python 打包用户指南：https://packaging.python.org/
 Real Python 教程站：https://realpython.com/
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

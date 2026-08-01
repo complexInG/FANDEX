@@ -16,13 +16,6 @@ related:
   - react/Context与全局状态
 prerequisites: []
 ---
-
-# useState + 事件类型 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. useState
 
 `useState` 是最基础的 Hook，用于在函数组件中声明状态变量。
@@ -669,8 +662,6 @@ const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
 
 ## 参考文献
 
-
-
 React 官方文档：https://react.dev/
 React 19 发布说明：https://react.dev/blog/2024/12/05/react-19
 TanStack Query：https://tanstack.com/query/latest
@@ -678,8 +669,6 @@ Zustand：https://zustand.docs.pmnd.rs/
 Next.js：https://nextjs.org/
 
 ## 延伸阅读
-
-
 
 React Hooks 深入，见 011-react 模块 Hooks 文档。
 React 与 TypeScript 类型，见 009-typescript 模块。

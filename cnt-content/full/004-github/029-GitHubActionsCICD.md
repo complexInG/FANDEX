@@ -18,13 +18,6 @@ prerequisites:
   - github/GitHub概述
 updated: '2026-08-01'
 ---
-
-# GitHub Actions 工作流配置
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 背景
 
 **GitHub Actions** 是内置于仓库的 **CI/CD（持续集成/持续交付）** 引擎：用 **YAML** 描述 **workflow（工作流）**，在 **runner（运行器）** 上执行 **job（任务）**。**GitHub Marketplace** 提供可复用的 **Action（动作）** 封装常见步骤。
@@ -1256,16 +1249,12 @@ concurrency:
 
 ## 参考文献
 
-
-
 GitHub 文档：https://docs.github.com/zh
 GitHub Actions 文档：https://docs.github.com/zh/actions
 GitHub REST API：https://docs.github.com/zh/rest
 GitHub GraphQL API：https://docs.github.com/zh/graphql
 
 ## 延伸阅读
-
-
 
 GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
 Git 协作基础，见 003-git 模块。

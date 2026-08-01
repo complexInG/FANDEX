@@ -18,13 +18,6 @@ related:
 prerequisites:
   - git/语法速查
 ---
-
-# Git 远程仓库操作
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 2. 远程仓库概述
 
 远程仓库是存储在网络或其他位置的 Git 仓库副本，用于团队协作和代码共享。它是 Git 分布式版本控制系统的重要组成部分，使得多人可以协同开发同一个项目。
@@ -656,8 +649,6 @@ git pull backup main;
 ```
 
 ## 参考文献
-
-
 
 Git 官方文档：https://git-scm.com/doc
 Pro Git 中文版：https://git-scm.com/book/zh/v2

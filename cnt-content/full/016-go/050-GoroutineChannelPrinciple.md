@@ -15,13 +15,6 @@ related:
 prerequisites:
   - go/概述与环境配置
 ---
-
-# Go goroutine 与 channel
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 CSP 设计哲学
@@ -1713,7 +1706,6 @@ B. goroutine 的栈大小固定为 2KB
 C. goroutine 由 Go runtime 调度,不需要 OS 介入
 D. goroutine 之间可以通过共享内存或 channel 通信
 
-
 **解析讲解**：D
 
 **解析讲解**：
@@ -1728,7 +1720,6 @@ A. 任何 goroutine 都可以关闭 channel
 B. 关闭已关闭的 channel 会 panic
 C. 向已关闭 channel 发送数据会返回零值
 D. 从已关闭 channel 接收会 panic
-
 
 **解析讲解**：B
 
@@ -1745,7 +1736,6 @@ B. SIGTERM
 C. SIGURG
 D. SIGUSR1
 
-
 **解析讲解**：C
 
 **解析讲解**：Go 1.14 使用 SIGURG 信号实现异步抢占,因为 SIGURG 默认不会终止进程,且不在常用信号范围内。
@@ -1756,7 +1746,6 @@ A. CPU 核数
 B. `GOMAXPROCS`
 C. `runtime.NumGoroutine()`
 D. OS 线程数
-
 
 **解析讲解**：B
 
@@ -1769,7 +1758,6 @@ B. 接收方阻塞直到发送方就绪
 C. `make(chan int)` 创建无缓冲 channel
 D. 无缓冲 channel 的容量为 1
 
-
 **解析讲解**：D
 
 **解析讲解**：无缓冲 channel 容量为 0,不是 1。
@@ -1778,33 +1766,27 @@ D. 无缓冲 channel 的容量为 1
 
 **题目 1**:Go 的 GMP 模型中,G 代表 _________,M 代表 _________,P 代表 _________。
 
-
 goroutine、Machine(OS 线程)、Processor(逻辑处理器)
 
 **题目 2**:channel 底层的 `hchan` 结构体中,`recvq` 存储 _________,`sendq` 存储 _________。
-
 
 等待接收的 goroutine 队列、等待发送的 goroutine 队列
 
 **题目 3**:goroutine 的初始栈大小为 _________ KB,最大可增长到 _________。
 
-
 2、1GB
 
 **题目 4**:Go 1.14 引入的 _________ 抢占机制,通过 _________ 信号实现。
 
-
 异步、SIGURG
 
 **题目 5**:work-stealing 算法中,当 P 的本地队列为空时,会先检查 _________,再从其他 P 偷取 _________ 个 G。
-
 
 全局运行队列、一半
 
 ### 编程题知识点讲解
 
 **题目 1**:实现一个 worker pool,接收 jobs channel,处理后将结果发送到 results channel:
-
 
 ```go
 package main
@@ -1856,7 +1838,6 @@ func main() {
 
 **题目 2**:实现一个 rate limiter,每秒最多处理 N 个请求:
 
-
 ```go
 package main
 
@@ -1899,7 +1880,6 @@ func main() {
 
 **题目 1**:为什么 Go 选择 CSP 模型而非 Actor 模型?两者在工程实践中有何差异?
 
-
 1. **CSP 优势**:
    - channel 解耦,发送方不需知道接收方身份。
    - 与 Go 的接口、组合设计哲学一致。
@@ -1914,7 +1894,6 @@ func main() {
 4. **案例**:WhatsApp 用 Erlang(actor)支撑百万连接;Kubernetes 用 Go(CSP)编排容器。
 
 **题目 2**:异步抢占(Go 1.14)解决了什么问题?有哪些场景不适用?
-
 
 1. **解决的问题**:
    - Go 1.13 及之前,长循环 goroutine 不会被抢占,导致调度饥饿。
@@ -1933,7 +1912,6 @@ func main() {
 
 **题目 3**:在微服务架构中,如何利用 context + channel 实现请求级别的取消与超时?
 
-
 1. **context 设计**:
    - 入口创建 `context.WithTimeout` 或 `WithDeadline`。
    - 沿调用链传递,每层可派生子 context。
@@ -1951,7 +1929,6 @@ func main() {
 5. **案例**:Kubernetes API server 的每个请求都携带 context,可被 cancel 传播到 etcd 调用。
 
 **题目 4**:如何诊断并修复一个 goroutine 泄漏问题?请描述完整流程。
-
 
 1. **症状识别**:
    - 进程内存持续增长。
@@ -1977,7 +1954,6 @@ func main() {
    - 监控 goroutine 数量,设置告警阈值。
 
 **题目 5**:对比 Go channel 与 Rust mpsc 的设计,分析性能与语义差异。
-
 
 1. **设计差异**:
    - Go channel:多生产者多消费者(MPMC),内置锁。

@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# 类型转换 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## CAST 标准转换
 
 **基本写法：CAST 函数**
@@ -188,8 +181,6 @@ SELECT CAST(JSON_EXTRACT(config, '$.name') AS CHAR) AS name;
 
 ## 参考文献
 
-
-
 SQL 标准（ISO/IEC 9075）：https://www.iso.org/standard/76583.html
 PostgreSQL 文档（SQL 章节）：https://www.postgresql.org/docs/current/sql.html
 MySQL 文档：https://dev.mysql.com/doc/
@@ -198,8 +189,6 @@ Use The Index, Luke：https://use-the-index-luke.com/
 
 ## 延伸阅读
 
-
-
 SQL 连接与子查询，见 019-sql 模块文档。
 SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。
 MySQL 深入，见 020-mysql 模块。
@@ -207,7 +196,6 @@ PostgreSQL 深入，见 021-postgresql 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 MySQL 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

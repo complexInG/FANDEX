@@ -394,7 +394,6 @@ def generate_token(num_bytes: int = 32) -> str:
     """
     return secrets.token_urlsafe(num_bytes)
 
-
 def generate_password(length: int = 16) -> str:
     """生成指定长度的强口令。
 
@@ -408,7 +407,6 @@ def generate_password(length: int = 16) -> str:
     alphabet = string.ascii_letters + string.digits
     # secrets.choice 保证等概率，避免 random.choice 的微弱偏差
     return ''.join(secrets.choice(alphabet) for _ in range(length))
-
 
 def generate_aes_key() -> bytes:
     """生成 AES-256 随机密钥（32 字节）。"""
@@ -429,7 +427,6 @@ AES-GCM 加密示例（推荐方案）。
 import os
 import cryptography
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-
 
 def aes_gcm_encrypt(plaintext: bytes, key: bytes,
                     associated_data: bytes = b'') -> tuple[bytes, bytes]:
@@ -453,7 +450,6 @@ def aes_gcm_encrypt(plaintext: bytes, key: bytes,
     ciphertext = aesgcm.encrypt(nonce, plaintext, associated_data)
     return nonce, ciphertext
 
-
 def aes_gcm_decrypt(ciphertext: bytes, key: bytes, nonce: bytes,
                     associated_data: bytes = b'') -> bytes:
     """AES-GCM 解密。
@@ -472,7 +468,6 @@ def aes_gcm_decrypt(ciphertext: bytes, key: bytes, nonce: bytes,
     """
     aesgcm = AESGCM(key)
     return aesgcm.decrypt(nonce, ciphertext, associated_data)
-
 
 def demo_aes_gcm():
     """AES-GCM 端到端示例。"""
@@ -501,17 +496,14 @@ Fernet 是 cryptography 库提供的高层对称加密接口。
 """
 from cryptography.fernet import Fernet
 
-
 def generate_fernet_key() -> bytes:
     """生成 Fernet 密钥（44 字符 base64 字符串）。"""
     return Fernet.generate_key()
-
 
 def fernet_encrypt(plaintext: str, key: bytes) -> bytes:
     """使用 Fernet 加密字符串。"""
     f = Fernet(key)
     return f.encrypt(plaintext.encode('utf-8'))
-
 
 def fernet_decrypt(token: bytes, key: bytes) -> str:
     """解密 Fernet token。
@@ -521,7 +513,6 @@ def fernet_decrypt(token: bytes, key: bytes) -> str:
     """
     f = Fernet(key)
     return f.decrypt(token).decode('utf-8')
-
 
 def rotate_key(old_key: bytes, new_key: bytes, tokens: list[bytes]) -> list[bytes]:
     """密钥轮转：用旧密钥解密后用新密钥重新加密。
@@ -556,7 +547,6 @@ def rotate_key(old_key: bytes, new_key: bytes, tokens: list[bytes]) -> list[byte
 """
 import hashlib
 
-
 def file_sha256(path: str, chunk_size: int = 65536) -> str:
     """计算大文件的 SHA-256 摘要。
 
@@ -573,7 +563,6 @@ def file_sha256(path: str, chunk_size: int = 65536) -> str:
             h.update(chunk)
     return h.hexdigest()
 
-
 def hmac_sha256(key: bytes, message: bytes) -> bytes:
     """计算 HMAC-SHA256。
 
@@ -586,7 +575,6 @@ def hmac_sha256(key: bytes, message: bytes) -> bytes:
     """
     import hmac
     return hmac.new(key, message, hashlib.sha256).digest()
-
 
 def verify_hmac(key: bytes, message: bytes, expected_mac: bytes) -> bool:
     """使用恒定时间比较验证 HMAC，防止时序攻击。
@@ -619,7 +607,6 @@ def verify_hmac(key: bytes, message: bytes, expected_mac: bytes) -> bool:
 """
 import bcrypt
 
-
 def hash_password_bcrypt(password: str, rounds: int = 12) -> bytes:
     """使用 bcrypt 哈希口令。
 
@@ -640,11 +627,9 @@ def hash_password_bcrypt(password: str, rounds: int = 12) -> bytes:
     salt = bcrypt.gensalt(rounds=rounds)
     return bcrypt.hashpw(password.encode('utf-8'), salt)
 
-
 def verify_password_bcrypt(password: str, hashed: bytes) -> bool:
     """验证 bcrypt 口令。"""
     return bcrypt.checkpw(password.encode('utf-8'), hashed)
-
 
 def hash_password_argon2(password: str) -> str:
     """使用 argon2id 哈希口令（OWASP 2023 首选）。
@@ -670,7 +655,6 @@ def hash_password_argon2(password: str) -> str:
     )
     return ph.hash(password)
 
-
 def verify_password_argon2(password: str, hashed: str) -> bool:
     """验证 argon2 口令。
 
@@ -686,7 +670,6 @@ def verify_password_argon2(password: str, hashed: str) -> bool:
         return False
     except InvalidHash:
         return False
-
 
 def needs_rehash_argon2(hashed: str,
                         target_memory: int = 65536,
@@ -720,7 +703,6 @@ RSA-OAEP 非对称加密示例。
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
-
 def generate_rsa_keypair(key_size: int = 4096) -> tuple[rsa.RSAPrivateKey, rsa.RSAPublicKey]:
     """生成 RSA 密钥对。
 
@@ -735,7 +717,6 @@ def generate_rsa_keypair(key_size: int = 4096) -> tuple[rsa.RSAPrivateKey, rsa.R
         key_size=key_size,
     )
     return private_key, private_key.public_key()
-
 
 def rsa_encrypt(plaintext: bytes, public_key: rsa.RSAPublicKey) -> bytes:
     """使用 RSA-OAEP 加密。
@@ -757,7 +738,6 @@ def rsa_encrypt(plaintext: bytes, public_key: rsa.RSAPublicKey) -> bytes:
         ),
     )
 
-
 def rsa_decrypt(ciphertext: bytes, private_key: rsa.RSAPrivateKey) -> bytes:
     """使用 RSA-OAEP 解密。"""
     return private_key.decrypt(
@@ -768,7 +748,6 @@ def rsa_decrypt(ciphertext: bytes, private_key: rsa.RSAPrivateKey) -> bytes:
             label=None,
         ),
     )
-
 
 def serialize_private_key(private_key: rsa.RSAPrivateKey,
                           password: str | None) -> bytes:
@@ -794,7 +773,6 @@ def serialize_private_key(private_key: rsa.RSAPrivateKey,
             password.encode('utf-8'),
         ),
     )
-
 
 def load_private_key(pem: bytes, password: str | None = None) -> rsa.RSAPrivateKey:
     """从 PEM 加载私钥。"""
@@ -823,17 +801,14 @@ ECDSA 优势:
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec, ed25519, padding
 
-
 def generate_ecdsa_keypair():
     """生成 ECDSA P-256 密钥对。"""
     private_key = ec.generate_private_key(ec.SECP256R1())
     return private_key, private_key.public_key()
 
-
 def ecdsa_sign(message: bytes, private_key: ec.EllipticCurvePrivateKey) -> bytes:
     """ECDSA 签名（SHA-256）。"""
     return private_key.sign(message, ec.ECDSA(hashes.SHA256()))
-
 
 def ecdsa_verify(message: bytes, signature: bytes,
                  public_key: ec.EllipticCurvePublicKey) -> bool:
@@ -845,17 +820,14 @@ def ecdsa_verify(message: bytes, signature: bytes,
     except InvalidSignature:
         return False
 
-
 def generate_ed25519_keypair():
     """生成 Ed25519 密钥对（推荐方案）。"""
     private_key = ed25519.Ed25519PrivateKey.generate()
     return private_key, private_key.public_key()
 
-
 def ed25519_sign(message: bytes, private_key) -> bytes:
     """Ed25519 签名。"""
     return private_key.sign(message)
-
 
 def ed25519_verify(message: bytes, signature: bytes, public_key) -> bool:
     """Ed25519 验签。"""
@@ -888,7 +860,6 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF, HKDFExpand
 
-
 def derive_key_pbkdf2(password: str, salt: bytes = None,
                       length: int = 32, iterations: int = 600000) -> tuple[bytes, bytes]:
     """PBKDF2-HMAC-SHA256 密钥派生。
@@ -913,7 +884,6 @@ def derive_key_pbkdf2(password: str, salt: bytes = None,
     derived = kdf.derive(password.encode('utf-8'))
     return salt, derived
 
-
 def derive_key_scrypt(password: str, salt: bytes = None,
                       length: int = 32) -> tuple[bytes, bytes]:
     """scrypt 密钥派生（内存困难，抗 GPU/ASIC）。
@@ -934,7 +904,6 @@ def derive_key_scrypt(password: str, salt: bytes = None,
     )
     derived = kdf.derive(password.encode('utf-8'))
     return salt, derived
-
 
 def hkdf_expand(input_key: bytes, length: int = 32,
                 info: bytes = b'', salt: bytes = b'') -> bytes:
@@ -967,7 +936,6 @@ from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
-
 
 def create_self_signed_cert(private_key, common_name: str,
                             san_dns: list[str] = None,
@@ -1028,7 +996,6 @@ def create_self_signed_cert(private_key, common_name: str,
         sign_alg = hashes.SHA256()
     return builder.sign(private_key, sign_alg)
 
-
 def create_csr(private_key, common_name: str,
                organization: str, country: str = 'CN') -> x509.CertificateSigningRequest:
     """生成 CSR（证书签名请求）。"""
@@ -1058,7 +1025,6 @@ TLS 客户端与服务端示例。
 import socket
 import ssl
 from pathlib import Path
-
 
 def create_tls_context(server_side: bool = False,
                        certfile: str = None,
@@ -1112,7 +1078,6 @@ def create_tls_context(server_side: bool = False,
         context.check_hostname = True
 
     return context
-
 
 def tls_client(host: str, port: int, cafile: str) -> str:
     """建立 TLS 连接并接收数据。"""
@@ -1297,7 +1262,6 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
 
-
 def hybrid_encrypt(plaintext: bytes, rsa_public_key):
     """混合加密：AES-GCM + RSA-OAEP。"""
     aes_key = os.urandom(32)
@@ -1381,7 +1345,6 @@ AWS KMS 集成示例。
 import boto3
 from botocore.exceptions import ClientError
 
-
 class KMSService:
     """AWS KMS 服务封装。"""
 
@@ -1435,7 +1398,6 @@ HashiCorp Vault 密钥管理示例。
 - 审计日志
 """
 import hvac
-
 
 class VaultService:
     """Vault 客户端封装。"""
@@ -1491,7 +1453,6 @@ class VaultService:
 import argparse
 from datetime import datetime, timezone
 
-
 def rotate_fernet_keys(old_key: bytes) -> tuple[bytes, list]:
     """轮转 Fernet 密钥。
 
@@ -1516,7 +1477,6 @@ def rotate_fernet_keys(old_key: bytes) -> tuple[bytes, list]:
     })
     return new_key, log
 
-
 def main():
     parser = argparse.ArgumentParser(description='密钥轮转工具')
     parser.add_argument('--old-key-file', required=True)
@@ -1529,7 +1489,6 @@ def main():
     with open(args.new_key_file, 'wb') as f:
         f.write(new_key)
     print(f'轮转完成: {log}')
-
 
 if __name__ == '__main__':
     main()
@@ -1551,7 +1510,6 @@ if __name__ == '__main__':
 import os
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-
 def encrypt_large_file(input_path: str, output_path: str, key: bytes,
                        chunk_size: int = 1024 * 1024):
     """分块加密大文件。
@@ -1570,7 +1528,6 @@ def encrypt_large_file(input_path: str, output_path: str, key: bytes,
             ct = aesgcm.encrypt(nonce, chunk, str(idx).encode())
             fout.write(len(ct).to_bytes(4, 'big'))
             fout.write(ct)
-
 
 def benchmark_throughput():
     """简单吞吐量基准测试。"""
@@ -1606,7 +1563,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
 
-
 @dataclass
 class KeyVersion:
     """单个密钥版本。"""
@@ -1618,7 +1574,6 @@ class KeyVersion:
     @property
     def is_active(self) -> bool:
         return self.revoked_at is None
-
 
 @dataclass
 class KeyRing:
@@ -1681,7 +1636,6 @@ import base64
 import hashlib
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import hashes, serialization
-
 
 class ACMEClient:
     """ACME 协议客户端最小示例。"""
@@ -1776,7 +1730,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import x25519
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
-
 class DoubleRatchetState:
     """Double Ratchet 状态机（示意）。"""
 
@@ -1833,7 +1786,6 @@ import os
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import x25519
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-
 
 def tls13_handshake_simulation():
     """模拟 TLS 1.3 1-RTT 握手。"""
@@ -1902,7 +1854,6 @@ Instagram 在 API 请求中加入 HMAC-SHA256 签名，密钥由设备指纹 + �
 import hmac
 import hashlib
 import time
-
 
 def sign_request(url: str, body: bytes, secret: bytes) -> str:
     """生成 Instagram 风格的请求签名。"""
@@ -1984,7 +1935,6 @@ import os
 import time
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-
 def bench_aes_gcm(size_mb: int = 10, iterations: int = 10) -> float:
     """AES-GCM 吞吐量基准。"""
     data = os.urandom(size_mb * 1024 * 1024)
@@ -2001,7 +1951,6 @@ def bench_aes_gcm(size_mb: int = 10, iterations: int = 10) -> float:
     throughput = (iterations * size_mb) / elapsed
     return throughput
 
-
 if __name__ == '__main__':
     t = bench_aes_gcm(size_mb=50, iterations=20)
     print(f'AES-256-GCM: {t:.2f} MB/s')
@@ -2017,7 +1966,6 @@ NIST CAVP（Cryptographic Algorithm Validation Program）测试向量验证。
 """
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-
 # NIST GCM 测试向量（来自 gcmEncryptExtIV128.rsp）
 NIST_VECTORS = [
     {
@@ -2030,7 +1978,6 @@ NIST_VECTORS = [
     },
     # ... 更多向量
 ]
-
 
 def verify_nist_vectors():
     """验证 NIST GCM 测试向量。"""
@@ -2051,7 +1998,6 @@ def verify_nist_vectors():
 import pytest
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from my_crypto.symmetric import aes_gcm_encrypt, aes_gcm_decrypt
-
 
 class TestAesGcm:
     """AES-GCM 加解密单元测试。"""
@@ -2098,7 +2044,6 @@ class TestAesGcm:
 import os
 from hypothesis import given, strategies as st
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-
 
 @given(
     plaintext=st.binary(min_size=0, max_size=4096),
@@ -2163,7 +2108,6 @@ from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from dataclasses import dataclass, field, asdict
 from typing import Optional
 
-
 @dataclass
 class EncryptedFile:
     """加密文件元数据。"""
@@ -2185,7 +2129,6 @@ class EncryptedFile:
             'created_at': self.created_at,
             'key_version': self.key_version,
         }
-
 
 class SecureFileService:
     """端到端安全文件服务（示意实现）。"""

@@ -1474,11 +1474,9 @@ B. 在自定义 Hook 中调用 `useEffect`
 C. 在 `if` 条件中调用 `useMemo`
 D. 在 `useEffect` 的回调中调用 `setState`
 
-
 **答案：C**
 
 Hooks 必须在组件函数体顶层调用，不能放在条件、循环、嵌套函数中。这会导致 Hook 调用顺序在多次渲染间不一致，破坏 React 内部的 Hook 链表映射。
-
 
 **Q2.** 关于 `useEffect` 的清理函数（cleanup），下列说法**正确**的是？
 
@@ -1487,11 +1485,9 @@ B. 清理函数在下次 effect 执行前调用
 C. 清理函数与 effect 并行执行
 D. 清理函数仅在依赖变化时执行
 
-
 **答案：B**
 
 `useEffect` 的清理时序：mount 时执行 effect → 依赖变化时，先执行上次 effect 的清理，再执行新 effect → unmount 时执行最后清理。所以"下次 effect 执行前"是正确的。
-
 
 **Q3.** 自定义 Hook 命名必须以 `use` 开头的原因是？
 
@@ -1500,11 +1496,9 @@ B. React Linter 据此识别并应用 Hooks 规则
 C. TypeScript 类型推导需要
 D. 浏览器解析需要
 
-
 **答案：B**
 
 ESLint 的 `eslint-plugin-react-hooks` 通过函数名前缀 `use` 判断是否为 Hook，从而应用 rules-of-hooks 与 exhaustive-deps 规则。React DevTools 也据此在 Profiler 中识别 Hook。
-
 
 **Q4.** 下列哪种场景适合用 `useRef` 而非 `useState`？
 
@@ -1513,11 +1507,9 @@ B. 需要在事件处理器中读取最新值
 C. 需要在 JSX 中显示的文本
 D. 需要在 props 中传递的状态
 
-
 **答案：B**
 
 `useRef` 的 `.current` 变化不会触发重渲染，适合存储"不参与渲染但需要在事件中读取"的值（如定时器 ID、最新 props 快照）。`useState` 用于"参与渲染"的状态。
-
 
 **Q5.** `useSyncExternalStore` 解决的核心问题是？
 
@@ -1526,43 +1518,31 @@ B. 并发渲染下的 tearing（撕裂）问题
 C. 闭包陷阱
 D. 依赖数组遗漏
 
-
 **答案：B**
 
 在并发渲染中，多个组件可能从同一外部 store 读取到不同快照（tearing）。`useSyncExternalStore` 通过在每次 render 与 paint 前校验快照一致性，强制同步重渲染，消除 tearing。
-
 
 ### 填空题知识点讲解
 
 **Q1.** React 内部将每个组件的 Hook 调用维护为一个 `______` 数据结构，以保证 Hook 调用顺序与状态映射正确。
 
-
 链表（linked list）
-
 
 **Q2.** `useLayoutEffect` 与 `useEffect` 的关键差异在于执行时机：前者在 `______` 阶段同步执行，后者在 `______` 后异步执行。
 
-
 DOM 更新后、浏览器 paint 前；浏览器 paint 后
-
 
 **Q3.** 自定义 Hook 返回多个值时，推荐返回 `______` 或 `______`，前者便于解构重命名，后者便于稳定引用。
 
-
 元组（tuple，如 `[value, setValue]`）；对象（用 useMemo 稳定）
-
 
 **Q4.** 解决闭包陷阱的三种方法是 `______`、`______`、`______`。
 
-
 函数式更新（setState((prev) => next)）、useRef 持久化最新值、useEffect 完整依赖数组
-
 
 **Q5.** 在 SSR 场景下，自定义 Hook 中访问 `window`、`document` 等 DOM API 时，应先检查 `______`。
 
-
 `typeof window !== 'undefined'` 或 `typeof document !== 'undefined'`
-
 
 ### 编程题知识点讲解
 
@@ -1570,7 +1550,6 @@ DOM 更新后、浏览器 paint 前；浏览器 paint 后
 1. 支持动态调整 delay（设为 null 时暂停）
 2. 在 unmount 时清理定时器
 3. 回调函数始终引用最新值（无闭包陷阱）
-
 
 ```tsx
 import { useRef, useEffect } from 'react';
@@ -1615,13 +1594,11 @@ function Timer() {
 }
 ```
 
-
 **Q2.** 实现一个 `useKeyPress` Hook，监听指定按键的按下状态：
 
 ```tsx
 const isEnterPressed = useKeyPress('Enter');
 ```
-
 
 ```tsx
 import { useState, useEffect } from 'react';
@@ -1650,12 +1627,10 @@ export function useKeyPress(targetKey: string): boolean {
 }
 ```
 
-
 **Q3.** 实现一个 `useDebounce` 的回调版本 `useDebouncedCallback`，要求：
 1. 返回稳定引用的 debounced 函数
 2. 支持 `.cancel()` 与 `.flush()` 方法
 3. TypeScript 类型完整
-
 
 ```tsx
 import { useRef, useCallback, useEffect } from 'react';
@@ -1717,20 +1692,16 @@ export function useDebouncedCallback<Args extends any[]>(
 }
 ```
 
-
 ### 9.4 思考题
 
 **Q1.** 为什么 React 选择"显式依赖数组"而非 Vue 的"自动依赖追踪"？请从可预测性、性能、并发兼容性三个角度论述。
-
 
 1. **可预测性**：显式依赖让开发者明确知道副作用何时触发，便于调试；Vue 的 Proxy 追踪对开发者透明，但出问题时难以排查。
 2. **性能**：Vue 的自动追踪有运行时开销（Proxy 拦截）；React 的依赖数组是 O(n) 比较，n 通常很小（5-10 个依赖）。
 3. **并发兼容**：React 的并发模式下，渲染可能被中断与重启，自动追踪难以保证一致性；显式依赖让"何时触发"完全由开发者控制。
 4. **权衡**：React Compiler 在编译期自动分析依赖，达到"无显式依赖数组"的便利，同时保留运行时的可预测性。
 
-
 **Q2.** 设计一个企业级 Hook 库的目录结构、版本策略与发布流程。
-
 
 目录结构：
 ```mermaid
@@ -1768,9 +1739,7 @@ flowchart TD
 3. CI 跑测试 → 发布到 npm → 创建 GitHub Release
 4. 文档站自动构建部署
 
-
 **Q3.** 在 Next.js App Router 中，自定义 Hook 如何与 Server Components 共存？哪些 Hook 不能在 Server Components 中使用？
-
 
 Server Components 限制：
 - 不能用 `useState`、`useReducer`（无客户端状态）
@@ -1787,7 +1756,6 @@ Server Components 限制：
 - Server Components 负责数据获取（async/await）
 - 客户端逻辑封装在 `'use client'` 组件中
 - 通过 props 将 server data 传给 client hooks
-
 
 ---
 

@@ -52,7 +52,6 @@ text-2xl 是字号工具类，font-bold 是加粗；text-blue-600 是蓝色文�
 - 003-响应式与状态：sm:、hover: 等变体。
 - 004-主题配置：用 @theme 定义设计令牌。
 
-
 ## 1. Tailwind CSS 是什么
 
 Tailwind CSS 是一个“实用优先”（utility-first）的 CSS 框架：它不提供预设组件，而是提供大量原子工具类（如 `flex`、`p-4`、`text-lg`），开发者直接在 HTML/组件中组合出设计。
@@ -235,8 +234,6 @@ Tailwind 用“约束下的原子类”平衡了效率与一致性：设计令�
 
 ## 参考文献
 
-
-
 Tailwind 官方文档：https://tailwindcss.com/docs
 Tailwind 中文文档：https://www.tailwindcss.cn/docs
 Tailwind UI 组件：https://tailwindui.com/
@@ -244,15 +241,12 @@ prettier-plugin-tailwindcss：https://github.com/tailwindlabs/prettier-plugin-ta
 
 ## 延伸阅读
 
-
-
 CSS 基础与变量，见 007-css 模块。
 Astro + Tailwind 集成，见 055-astro 模块。
 设计系统与主题，见 007-css 模块相关文档。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Tailwind 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

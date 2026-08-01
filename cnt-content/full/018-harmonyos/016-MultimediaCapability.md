@@ -15,13 +15,6 @@ related:
 prerequisites:
   - harmonyos/概述与环境搭建
 ---
-
-# 多媒体能力 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 HarmonyOS 提供了完整的多媒体能力，涵盖相机拍照录像、音频录制与播放、视频播放与录制等功能。这些能力通过 @ohos.multimedia 命名空间下的模块提供，包括 camera（相机）、audio（音频）、media（媒体播放）等。多媒体操作通常需要申请相应权限，并在使用完毕后及时释放资源，避免占用系统硬件。
@@ -1190,16 +1183,12 @@ enum XComponentType {
 
 ## 参考文献
 
-
-
 华为开发者联盟 HarmonyOS 文档：https://developer.huawei.com/consumer/cn/harmonyos
 ArkTS 语言规范：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-overview
 ArkUI 组件参考：https://developer.huawei.com/consumer/cn/doc/harmonyos-references/
 DevEco Studio：https://developer.huawei.com/consumer/cn/deveco-studio/
 
 ## 延伸阅读
-
-
 
 TypeScript 基础（ArkTS 语言底座），见 009-typescript 模块。
 声明式 UI 概念与 React/Vue 对比，见 011-react/010-vue3 模块。

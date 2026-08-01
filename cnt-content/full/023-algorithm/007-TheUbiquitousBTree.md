@@ -506,7 +506,6 @@ timeline
 # Python 实现：二叉树节点
 from typing import Optional, Any, Iterator
 
-
 class TreeNode:
     """二叉树节点。
 
@@ -599,13 +598,11 @@ def preorder(root: Optional[TreeNode]) -> list:
         return []
     return [root.val] + preorder(root.left) + preorder(root.right)
 
-
 def inorder(root: Optional[TreeNode]) -> list:
     """中序遍历：左 -> 根 -> 右。BST 得到升序序列。"""
     if not root:
         return []
     return inorder(root.left) + [root.val] + inorder(root.right)
-
 
 def postorder(root: Optional[TreeNode]) -> list:
     """后序遍历：左 -> 右 -> 根。常用于资源释放（先释放子节点再释放根）。"""
@@ -671,7 +668,6 @@ public List<Integer> postorder(TreeNode root) {
 ```python
 from collections import deque
 
-
 def preorder_iterative(root: Optional[TreeNode]) -> list:
     """前序迭代：栈，先压右再压左（出栈顺序为左先于右）。"""
     if not root:
@@ -686,7 +682,6 @@ def preorder_iterative(root: Optional[TreeNode]) -> list:
             stack.append(node.left)
     return result
 
-
 def inorder_iterative(root: Optional[TreeNode]) -> list:
     """中序迭代：一路向左压栈，访问节点后转向右子树。"""
     result, stack, cur = [], [], root
@@ -698,7 +693,6 @@ def inorder_iterative(root: Optional[TreeNode]) -> list:
         result.append(cur.val)
         cur = cur.right  # 转向右子树
     return result
-
 
 def postorder_iterative(root: Optional[TreeNode]) -> list:
     """后序迭代：前序的"根左右"改为"根右左"，再反转得"左右根"。"""
@@ -713,7 +707,6 @@ def postorder_iterative(root: Optional[TreeNode]) -> list:
         if node.right:
             stack.append(node.right)
     return result[::-1]  # 反转
-
 
 def levelorder(root: Optional[TreeNode]) -> list:
     """层序遍历：BFS，队列实现。"""
@@ -1446,7 +1439,6 @@ Treap（Seidel-Aragon 1996）= Tree + Heap，每个节点同时满足：
 ```python
 import random
 
-
 class Treap:
     """Treap 树堆：随机化平衡二叉搜索树。
 
@@ -2007,7 +1999,6 @@ B. 插入节点最多触发 1 次旋转
 C. 删除节点最多触发 $O(\log n)$ 次旋转
 D. AVL 树的平衡因子定义为 $BF(v) = h(v.\text{right}) - h(v.\text{left})$，要求 $|BF| \leq 1$
 
-
 **解析讲解**：D
 
 **解析讲解**：A、B、C 均正确。D 错误在于平衡因子定义方向：标准定义为 $BF(v) = h(v.\text{left}) - h(v.\text{right})$（左高减右高），$|BF| \leq 1$。虽然方向反过来也能定义，但教材标准约定是左减右。
@@ -2019,7 +2010,6 @@ B. 红节点的子节点必为黑色
 C. 任意节点到叶子的所有路径黑高相同
 D. 任意节点到叶子的所有路径长度相同
 
-
 **解析讲解**：D
 
 **解析讲解**：红黑树只要求"黑高相同"（性质 5），不要求"路径长度相同"。事实上，红黑树最长路径最多是最短路径的 2 倍（因红节点不能连续，最短全黑，最长红黑相间）。
@@ -2030,7 +2020,6 @@ A. B+ 树内部节点存储数据，B 树不存储
 B. B 树叶子节点通过链表相连，B+ 树不连
 C. B+ 树内部节点仅存索引键，数据全在叶子
 D. B 树查找可能提前在内部节点终止，B+ 树必须到叶子
-
 
 **解析讲解**：C、D
 
@@ -2044,11 +2033,9 @@ D. B 树查找可能提前在内部节点终止，B+ 树必须到叶子
 
 **1.** 含 $n$ 个节点的完美二叉树高度为 _______。
 
-
 $\log_2(n+1) - 1$（根高度为 0）。若定义叶子高度为 1，则为 $\log_2(n+1)$。
 
 **2.** 红黑树的高度上界为 _______。
-
 
 $2 \log_2(n+1)$。证明：黑高 $bh \geq h/2$（红节点不连续），$n \geq 2^{bh} - 1 \geq 2^{h/2} - 1$。
 
@@ -2066,7 +2053,6 @@ def isValidBST(root):
         return False
     return isValidBST(root.left) and isValidBST(root.right)
 ```
-
 
 **Bug**：仅检查直接子节点，未检查整棵子树。例如：
 
@@ -2105,7 +2091,6 @@ def rotate_right(y):
     # 缺少高度更新
 ```
 
-
 **Bug**：旋转后未更新 y 和 x 的高度，导致后续平衡因子计算错误。
 
 **修正**：
@@ -2125,7 +2110,6 @@ def rotate_right(y):
 
 **1.** 论述为何 Linux CFS 调度器选择红黑树而非 AVL 树。
 
-
 Linux CFS 调度器选择红黑树基于三大考量：
 
 1. **删除旋转次数**：进程切换频繁，每次阻塞与唤醒都涉及树节点删除与插入。AVL 树删除可能触发 $O(\log n)$ 次向上旋转（因为 AVL 严格平衡，删除任一层都可能失衡），而红黑树删除最多 3 次旋转即可恢复（红黑性质更松散）。在频繁调度的场景下，红黑树的旋转次数优势转化为显著性能优势。
@@ -2137,7 +2121,6 @@ Linux CFS 调度器选择红黑树基于三大考量：
 综上，红黑树在"写性能 + 实现成熟度"上优于 AVL，是 CFS 的最优选择。
 
 **2.** 论述 LSM 树相比 B+ 树的写优势与读劣势。
-
 
 **写优势**：
 
@@ -2156,7 +2139,6 @@ Linux CFS 调度器选择红黑树基于三大考量：
 **结论**：LSM 适合写远多于读的场景（如日志系统、监控数据），B+ 树适合读写均衡且查询延迟敏感的场景（如 OLTP 数据库）。
 
 **3.** 论述 Splay 树的均摊分析为何使用势能函数而非最坏情况分析。
-
 
 Splay 树的单次操作最坏 $O(n)$（如退化为链表时访问叶子），最坏分析无法反映其整体性能。势能函数分析的优势在于：
 

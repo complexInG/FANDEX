@@ -844,7 +844,6 @@ import math
 import mmh3
 from typing import Any, Iterable
 
-
 class BloomFilter:
     """布隆过滤器（Bloom Filter）
 
@@ -937,7 +936,6 @@ class BloomFilter:
             f"count={self.count})"
         )
 
-
 # 使用示例
 if __name__ == "__main__":
     # 创建 100 万元素容量、1% 假阳性率的布隆过滤器
@@ -968,7 +966,6 @@ if __name__ == "__main__":
 import math
 import mmh3
 from typing import Any
-
 
 class CountingBloomFilter:
     """Counting Bloom Filter（CBF）
@@ -1051,7 +1048,6 @@ class CountingBloomFilter:
 
     def __len__(self) -> int:
         return self.count
-
 
 # 使用示例
 if __name__ == "__main__":

@@ -660,7 +660,6 @@ class BSTNode:
         self.left = None
         self.right = None
 
-
 class BST:
     """二叉搜索树
     平均 O(log n), 最坏 O(n)（退化为链表）
@@ -739,7 +738,6 @@ class BST:
             result.append(node.key)
             self._inorder(node.right, result)
 
-
 # 测试
 bst = BST()
 for k in [50, 30, 70, 20, 40, 60, 80]:
@@ -760,7 +758,6 @@ class AVLNode:
         self.left = None
         self.right = None
         self.height = 1  # 叶子节点高度为 1
-
 
 class AVLTree:
     """AVL 树: 自平衡 BST
@@ -886,7 +883,6 @@ class AVLTree:
             else:
                 node = node.right
         return node is not None
-
 
 # 测试
 avl = AVLTree()
@@ -1163,7 +1159,6 @@ class SplayNode:
         self.right = None
         self.parent = None
 
-
 class SplayTree:
     """Splay 树
     无显式平衡信息, 通过 splay 操作将访问节点移至根
@@ -1280,14 +1275,12 @@ class SplayTree:
 # Python: Treap 树堆实现
 import random
 
-
 class TreapNode:
     def __init__(self, key):
         self.key = key
         self.priority = random.random()  # 随机优先级
         self.left = None
         self.right = None
-
 
 class Treap:
     """Treap: BST + Heap
@@ -1369,7 +1362,6 @@ class Treap:
             self._inorder(node.left, result)
             result.append((node.key, round(node.priority, 3)))
             self._inorder(node.right, result)
-
 
 # 测试
 treap = Treap()

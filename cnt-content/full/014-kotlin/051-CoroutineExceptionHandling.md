@@ -17,13 +17,6 @@ prerequisites:
   - kotlin/概述与环境配置
   - kotlin/协程调度器与上下文
 ---
-
-# Kotlin 协程异常处理
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 目录
 
 1. [学习目标](#1-学习目标)
@@ -2189,7 +2182,6 @@ scope.launch {
 Thread.sleep(500)
 ```
 
-
 输出：
 
 ```
@@ -2199,7 +2191,6 @@ Exception in thread "DefaultDispatcher-worker-2" java.lang.RuntimeException: A
 `B` 不会被打印，因为子协程 A 失败会取消兄弟协程 B。
 
 **题目 2**：如何修改上述代码，使 `B` 能正常运行？
-
 
 ```kotlin
 val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -2224,7 +2215,6 @@ try {
 }
 ```
 
-
 `Caught` 不会被打印，因为 `launch` 的异常无法通过外层 `try/catch` 捕获。异常会传播到根协程，触发 `CoroutineExceptionHandler` 或 `Thread.UncaughtExceptionHandler`。
 
 ### 9.2 进阶题
@@ -2241,7 +2231,6 @@ suspend fun <T> retryOnFailure(
     // TODO
 }
 ```
-
 
 ```kotlin
 suspend fun <T> retryOnFailure(
@@ -2287,7 +2276,6 @@ scope.launch {
 Thread.sleep(500)
 ```
 
-
 输出：
 
 ```
@@ -2299,7 +2287,6 @@ launch done
 ### 应用题知识点讲解
 
 **题目 6**：设计一个"并发请求聚合器"，对多个 API 并发请求，返回所有结果（成功的值与失败的异常）。
-
 
 ```kotlin
 sealed class ApiResult<out T> {
@@ -2342,7 +2329,6 @@ runBlocking {
 }
 ```
 
-
 输出：
 
 ```
@@ -2375,7 +2361,6 @@ scope.launch {
 }
 ```
 
-
 执行流程：
 1. 父协程启动，打印 "Parent start"。
 2. 进入 `coroutineScope`，启动两个子协程。
@@ -2392,7 +2377,6 @@ scope.launch {
 ### 9.5 设计题
 
 **题目 9**：设计一个支持"熔断器"模式的协程工具，在连续失败 N 次后熔断一段时间。
-
 
 ```kotlin
 class CircuitBreaker(
@@ -2445,7 +2429,6 @@ class UserRepository(private val api: UserApi) {
     }
 }
 ```
-
 
 问题：
 1. `scope` 没有指定 `SupervisorJob`，一个 async 失败会影响其他。

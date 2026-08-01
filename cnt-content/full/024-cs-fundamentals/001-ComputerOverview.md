@@ -49,7 +49,6 @@ c = [1, 2, 3] 创建了一个列表：列表本体在堆内存中，变量 c 只
 - 003-内存与存储：栈、堆、缓存的分工。
 - 004-操作系统：进程、线程与调度。
 
-
 ## 1. 学科定义与边界
 
 ### 1.1 核心问题
@@ -513,15 +512,12 @@ graph LR
 
 ## 参考文献
 
-
-
 CSAPP（深入理解计算机系统）：https://csapp.cs.cmu.edu/
 算法导论（CLRS）：https://mitpress.mit.edu/9780262046305/
 MIT OpenCourseWare 6.006：https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/
 Teach Yourself CS：https://teachyourselfcs.com/
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

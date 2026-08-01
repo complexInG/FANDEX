@@ -1769,9 +1769,7 @@ B. $\sum_{i=1}^{n} i^2$
 C. $\sum_{i=1}^{n} 2^i$
 D. $n \log n + n^2 / 2$
 
-
 C。$\sum_{i=1}^{n} 2^i = 2^{n+1} - 2 = O(2^n)$，是指数级。
-
 
 **题 2**（medium）：递推 $T(n) = 4T(n/2) + n^2 \log n$ 的解是？
 
@@ -1780,9 +1778,7 @@ B. $O(n^2 \log n)$
 C. $O(n^2 \log^2 n)$
 D. $O(n^3)$
 
-
 C。由主定理情形 2（$a = 4, b = 2, \log_b a = 2, f(n) = n^2 \log n = \Theta(n^2 \log^1 n)$，$k = 1$），解为 $\Theta(n^2 \log^{k+1} n) = \Theta(n^2 \log^2 n)$。
-
 
 **题 3**（medium）：动态数组 push_back 的摊还复杂度是？
 
@@ -1791,9 +1787,7 @@ B. $O(1)$ 摊还
 C. $O(\log n)$ 摊还
 D. $O(n)$ 摊还
 
-
 B。单次 push_back 最坏 $O(n)$（扩容时），但 $n$ 次操作总代价 $O(n)$，摊还 $O(1)$。
-
 
 **题 4**（hard）：递推 $T(n) = 2T(n/2) + n / \log n$ 的解是？
 
@@ -1802,9 +1796,7 @@ B. $O(n \log n)$
 C. $O(n \log \log n)$
 D. 主定理不适用
 
-
 C。主定理不直接适用（$f(n) = n/\log n$ 不满足 $n^{\log_b a} \log^k n$ 中 $k \geq 0$）。用 Akra-Bazzi：$p = 1$，$T(n) = \Theta(n (1 + \int_1^n \frac{u/\log u}{u^2} du)) = \Theta(n (1 + \log \log n)) = \Theta(n \log \log n)$。
-
 
 **题 5**（hard）：下列陈述哪个正确？
 
@@ -1813,35 +1805,25 @@ B. NP 完全问题至少有一个被证明有多项式时间算法
 C. SAT 是 NP 完全的（Cook-Levin 定理）
 D. 所有 NP 问题都是 NP 完全的
 
-
 C。Cook 1971 STOC 证明 SAT 是 NP 完全的（Cook-Levin 定理）。P vs NP 仍为开放问题。
-
 
 ### 填空题知识点讲解
 
 **题 1**（easy）：大 O 符号由德国数论学家 Paul ______ 在 1894 年的著作《Analytische Zahlentheorie》中首次引入，后由 Edmund ______ 推广。
 
-
 Bachmann, Landau
-
 
 **题 2**（medium）：主定理的递推形式为 $T(n) = $ ______，其中 $a \geq $ ______, $b > $ ______。
 
-
 $aT(n/b) + f(n)$, 1, 1
-
 
 **题 3**（medium）：摊还分析的三种方法是 ______、______、______。
 
-
 聚合分析（Aggregate Method）、核算方法（Accounting Method）、势能方法（Potential Method）
-
 
 **题 4**（hard）：$T(n) = 7T(n/2) + n^2$ 的解是 $\Theta(n^{\log_2 7}) \approx \Theta($______$)$，对应 ______ 算法。
 
-
 $n^{2.807}$, Strassen 矩阵乘法
-
 
 ### 13.3 代码修正题
 
@@ -1853,7 +1835,6 @@ def fib(n: int) -> int:
         return n
     return fib(n - 1) + fib(n - 2)
 ```
-
 
 朴素递归 $O(2^n)$，加记忆化后 $O(n)$：
 
@@ -1876,7 +1857,6 @@ def fib_iter(n: int) -> int:
     return b
 ```
 
-
 **题 2**（hard）：以下代码在 $n = 10^5$ 时栈溢出，请修正。
 
 ```python
@@ -1887,7 +1867,6 @@ def sum_range(arr: list[int], lo: int, hi: int) -> int:
 
 total = sum_range(list(range(10**5)), 0, 10**5 - 1)
 ```
-
 
 Python 默认递归深度 1000，需改为迭代：
 
@@ -1903,11 +1882,9 @@ total = sum_range_iterative(list(range(10**5)))
 total = sum(range(10**5))
 ```
 
-
 ### 13.4 开放性论述题
 
 **题 1**（medium）：论述 P vs NP 问题的意义，并解释为何它被列为千禧年七大难题之首。
-
 
 P vs NP 问题的核心是：能否在多项式时间内验证解的问题，也能在多项式时间内求解？若 P = NP，则所有 NP 问题（包括 SAT、TSP 判定、子集和、图着色等 21 个 Karp 1972 NP 完全问题）都有多项式时间算法。这将产生深远影响：
 
@@ -1925,9 +1902,7 @@ P vs NP 问题的核心是：能否在多项式时间内验证解的问题，也
 
 Clay 数学研究所 2000 年悬赏 100 万美元，至今无人领取。
 
-
 **题 2**（hard）：对比分析聚合分析、核算方法、势能方法三种摊还分析的优缺点，并各举一个应用实例。
-
 
 | 方法 | 优点 | 缺点 | 应用实例 |
 | ---- | ---- | ---- | -------- |
@@ -1943,9 +1918,7 @@ Clay 数学研究所 2000 年悬赏 100 万美元，至今无人领取。
 
 工业实践中，势能方法用于分析 Redis 的 ziplist、Linux 内核的 LRU 缓存、PostgreSQL 的 WAL 日志等。
 
-
 **题 3**（hard）：论述"为什么多项式时间被作为'易解'（tractable）的判据"。这一选择有哪些哲学与实际考虑？有哪些反例？
-
 
 **Cobham-Edmonds 论题**：P 类（多项式时间）= "易解"问题。这一选择基于以下考虑：
 
@@ -1974,7 +1947,6 @@ Clay 数学研究所 2000 年悬赏 100 万美元，至今无人领取。
 **哲学意义**：
 
 P vs NP 实质是"创造（求解）是否比验证（检查）更难"的问题。若 P = NP，则创造与验证等价，将颠覆我们对"创造性"的理解。
-
 
 ---
 

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
-
-# Java 安全与加密 MessageDigest/Cipher/KeyStore/SecureRandom 语法速查手册
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 历史动机与发展脉络
 
 ### Java 安全演进的三十年

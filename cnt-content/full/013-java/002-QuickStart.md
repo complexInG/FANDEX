@@ -1029,7 +1029,6 @@ B. Java 11
 C. Java 17  
 D. Java 18
 
-
 **D**。Java 18 不是 LTS。Java LTS 序列为 8、11、17、21、25。Java 18 是非 LTS 版本，仅支持 6 个月。
 
 **Q2.** 关于 `public static void main(String[] args)`，下列说法正确的是？
@@ -1038,7 +1037,6 @@ A. `args` 可以为 `null`
 B. 当无命令行参数时，`args.length == 0`  
 C. 返回值 `int` 也可作为入口签名  
 D. `public` 可省略
-
 
 **B**。JVM 会在调用 `main` 时传入长度为 0 的数组而非 `null`。`main` 必须是 `public static void`，返回 `int` 不会被识别为入口（C 错）。`public` 是 JVM 跨类加载器访问要求，不可省略（D 错）。
 
@@ -1049,7 +1047,6 @@ B. `0xCAFEBABE`
 C. `0x7F45 4C46` (`ELF`)  
 D. `0x4D5A` (`MZ`)
 
-
 **B**。`0xCAFEBABE` 是 class 文件的 magic number，由 Patrick Naughton 选定。其他选项：ELF 是 Linux 可执行格式，MZ 是 Windows PE。
 
 **Q4.** `var` 关键字的使用范围是？
@@ -1058,7 +1055,6 @@ A. 类字段
 B. 方法参数  
 C. 局部变量  
 D. 方法返回类型
-
 
 **C**。`var`（Java 10+）仅用于**局部变量**声明，不能用于字段、方法参数、方法返回类型。`var` 是编译时语法糖，不影响字节码。
 
@@ -1069,40 +1065,33 @@ B. Project Panama
 C. Project Valhalla  
 D. Project Skynet
 
-
 **A**。虚拟线程属于 Project Loom（JEP 444）。Panama 是外部函数与内存 API，Valhalla 是 Value Types，Skynet 不存在。
 
 ### 填空题知识点讲解
 
 **Q1.** JDK 21 的 class 文件 major version 是 ________。
 
-
 65（即 `0x41`）。Java 17 是 61，Java 21 是 65（每升一版加 1，21 - 17 = 4，61 + 4 = 65）。
 
 **Q2.** `javac` 的语义阶段中，将 Lambda 表达式转为 `invokedynamic` 调用的阶段称为 ________。
-
 
 Desugaring（脱糖）。
 
 **Q3.** Maven 的生命周期顺序为：`validate` → `compile` → `test` → ________ → `verify` → `install` → `deploy`。
 
-
 `package`。
 
 **Q4.** HotSpot JIT 的两个编译器分别是 C1（Client Compiler）与 ________（Server Compiler）。
 
-
 C2。
 
 **Q5.** Java 18 起（JEP 400），`Charset.defaultCharset()` 默认返回 ________。
-
 
 UTF-8。
 
 ### 编程题知识点讲解
 
 **Q1.** 编写一个 Java 21 程序，使用 record 与 sealed interface 表示几何图形（圆形、矩形、三角形），并提供 `area()` 方法。使用 Pattern Matching for switch。
-
 
 ```java
 public sealed interface Shape permits Circle, Rectangle, Triangle {
@@ -1154,7 +1143,6 @@ public class ShapeDemo {
 
 **Q2.** 使用 `CompletableFuture` 并行查询三个数据源（模拟 `fetchA`、`fetchB`、`fetchC`），合并结果并设置 500ms 超时。
 
-
 ```java
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -1187,7 +1175,6 @@ public class ParallelDemo {
 ```
 
 **Q3.** 使用虚拟线程（Java 21）并发请求 100 个 URL 并打印响应长度。
-
 
 ```java
 import java.net.URI;
@@ -1232,7 +1219,6 @@ public class VirtualThreadDemo {
 
 **Q1.** 为什么 Java 选择类型擦除（Type Erasure）而非具化泛型（Reified Generics）？这对库设计有什么影响？
 
-
 - **兼容性**：Java 5 引入泛型时必须保证与 JDK 1.4 的二进制兼容性，类型擦除使泛型类在字节码层面与非泛型类完全一致；
 - **简单性**：JVM 不需要支持泛型类型，对字节码与 verifier 改动最小；
 - **代价**：无法在运行时获取泛型类型（`new T()` 不可行、`instanceof List<String>` 不可行）；
@@ -1240,7 +1226,6 @@ public class VirtualThreadDemo {
 - **未来**：Project Valhalla 可能引入 Specialized Generics，部分解决此问题。
 
 **Q2.** Java 21 虚拟线程与 Reactor 模式（如 Reactor Core、RxJava）有何本质区别？何时该选哪一个？
-
 
 - **本质区别**：
   - 虚拟线程：JVM 级别的轻量级线程，调度由 JVM 在用户态完成，编写风格与平台线程一致（同步阻塞写法）；
@@ -1254,7 +1239,6 @@ public class VirtualThreadDemo {
   - 需要背压与流式语义的场景用 Reactor。
 
 **Q3.** Java 选择 AOT（GraalVM Native Image）作为 Java 25 LTS 标准特性的工程动因是什么？
-
 
 - **云端原生趋势**：容器化、Serverless 场景对启动时间敏感（< 100ms）；
 - **资源成本**：传统 JVM 启动需 200-500MB 内存，Native Image 可压至 50MB 以下；

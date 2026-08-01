@@ -156,8 +156,6 @@ stride_tricks在工程实践中需要根据具体场景选择合适的策略，�
 
 ## 参考文献
 
-
-
 Pandas 文档：https://pandas.pydata.org/docs/
 NumPy 文档：https://numpy.org/doc/stable/
 Matplotlib：https://matplotlib.org/
@@ -165,15 +163,12 @@ Kaggle Learn：https://www.kaggle.com/learn
 
 ## 延伸阅读
 
-
-
 数据分析工具，见 051-data-analysis 模块文档。
 概率统计基础，见 030-probability-statistics 模块。
 SQL 取数，见 019-sql 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供数据分析课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

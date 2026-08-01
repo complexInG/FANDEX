@@ -1174,7 +1174,6 @@ B. 16
 C. 24  
 D. 32
 
-
 **解析讲解**：C
 
 **解析讲解**：
@@ -1187,7 +1186,6 @@ D. 32
 - 整体对齐值 = max(1, 4, 8, 2) = 8
 - 末尾填充 6 字节到 8 的倍数
 - `sizeof = 24`
-
 
 **题 2**：以下哪种对齐方式可以消除伪共享？
 
@@ -1203,7 +1201,6 @@ B. `alignas(64) atomic_int a, b;`
 C. `alignas(64)` 整个 struct  
 D. 仅 `alignas(64) atomic_int a;`
 
-
 **解析讲解**：B、C
 
 **解析讲解**：
@@ -1214,7 +1211,6 @@ D. 仅 `alignas(64) atomic_int a;`
 - D 选项仅对齐 `a`，`b` 仍可能位于同一缓存行。
 
 正确做法是 B（每个并发变量独立缓存行对齐），或在 struct 末尾填充至 128 字节并整体 `alignas(64)`。
-
 
 **题 3**：以下代码在 ARMv7（不允许未对齐访问）上的行为是？
 
@@ -1227,7 +1223,6 @@ A. 总是返回 0
 B. 触发 `SIGBUS`  
 C. 触发 `SIGSEGV`  
 D. UB，可能触发 `SIGBUS` 也可能正常返回
-
 
 **解析讲解**：D
 
@@ -1242,7 +1237,6 @@ C 标准规定未对齐访问是 UB（undefined behavior）。具体行为：
 
 UB 意味着标准未规定行为，任何结果都可能。D 是最准确描述。
 
-
 ### 填空题知识点讲解
 
 **题 4**：以下代码输出为：
@@ -1254,7 +1248,6 @@ printf("%zu\n", sizeof(struct S));
 
 在 LP64 Linux x86_64 上，输出是 _____。
 
-
 **解析讲解**：12
 
 **解析讲解**：
@@ -1265,14 +1258,11 @@ printf("%zu\n", sizeof(struct S));
 - 末尾 padding 2 到 4 的倍数
 - sizeof = 12
 
-
 **题 5**：`alignof(max_align_t)` 在 x86_64 Linux glibc 上的值是 _____。
-
 
 **解析讲解**：16
 
 **解析讲解**：glibc 定义 `max_align_t` 为 `long double`（80 位扩展精度，对齐 16）或 `__attribute__((aligned(16)))` 修饰的 struct，对齐值为 16。这超过 C 标准最低要求 8，以匹配 SSE/AVX 的 16 字节对齐需求。
-
 
 ### 编程题知识点讲解
 
@@ -1281,7 +1271,6 @@ printf("%zu\n", sizeof(struct S));
 - 不调用任何库函数。
 - 处理 `alignment` 非 2 的幂的情况。
 - 处理 `alignment == 0` 的情况。
-
 
 ```c
 #include <stdint.h>
@@ -1322,7 +1311,6 @@ int main(void) {
 }
 ```
 
-
 **题 7**：给定以下结构体：
 
 ```c
@@ -1336,7 +1324,6 @@ struct S {
 ```
 
 手工计算在 LP64 Linux x86_64 上的 `sizeof`、`alignof`、各成员 `offsetof`。然后用 C 程序验证。
-
 
 **手工计算**（LP64，`alignof(double) = 8`）：
 
@@ -1374,11 +1361,9 @@ int main(void) {
 }
 ```
 
-
 ### 9.4 思考题
 
 **题 8**：为什么 `aligned_alloc(16, 20)` 在 C 标准下是 UB？请从内存分配器实现角度解释。
-
 
 C11 §7.22.3.1 规定 `aligned_alloc(alignment, size)` 要求 `size` 是 `alignment` 的整数倍，否则 UB。
 
@@ -1407,9 +1392,7 @@ size_t safe_size = (size + alignment - 1) & ~(alignment - 1);
 void *p = aligned_alloc(alignment, safe_size);
 ```
 
-
 **题 9**：在多核 CPU 上，为何 `alignas(64)` 一个 `atomic_int` 比单纯使用 `atomic_int` 性能更好？请从缓存一致性协议角度分析。
-
 
 **缓存一致性协议（MESI/MOESI）**：
 
@@ -1437,9 +1420,7 @@ void *p = aligned_alloc(alignment, safe_size);
 
 性能差距 20 倍。
 
-
 **题 10**：C++ 的 `std::vector<struct S>` 与 C 中 `struct S *arr = malloc(N * sizeof(struct S))` 在对齐处理上有何异同？
-
 
 **相同点**：
 
@@ -1467,7 +1448,6 @@ void *p = aligned_alloc(alignment, safe_size);
    - C++ 通过 `std::vector<T, Alloc>` 可注入。
 
 **结论**：C++ 在对齐分配上更自动化，但 C 通过显式 `aligned_alloc` + 自定义分配器也能达到同等效果，只是需要更多手工工作。
-
 
 ---
 

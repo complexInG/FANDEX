@@ -15,13 +15,6 @@ related:
 prerequisites:
   - csharp/概述与环境配置
 ---
-
-# C# 反射与特性
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 .NET Framework 1.0（2002）：反射的诞生
@@ -1642,11 +1635,9 @@ B. `Type.GetType("MyNamespace.Person, MyAssembly")`
 C. `personInstance.GetType()`
 D. `Assembly.Load("MyAssembly").GetType("Person")`
 
-
 **解析讲解**：A
 
 **解析讲解**：`typeof(Person)` 在编译期解析，运行时直接返回已加载类型的 Type 对象。其他方式都可能触发程序集加载（B、D 必然加载，C 取决于实例）。
-
 
 ---
 
@@ -1657,11 +1648,9 @@ B. 前者不实例化特性，后者实例化
 C. 两者完全等价
 D. 前者仅支持读取构造参数，后者支持读取命名参数
 
-
 **解析讲解**：B
 
 **解析讲解**：`CustomAttributeData` 直接读取元数据，不实例化特性；`GetCustomAttribute<T>` 通过反射调用特性构造函数创建实例。
-
 
 ---
 
@@ -1681,11 +1670,9 @@ B. `False`
 C. 编译错误
 D. 运行时异常
 
-
 **解析讲解**：B
 
 **解析讲解**：`MethodInfo` 的 `==` 比较基于 `MetadataToken` 与 `Module`。`Base.M` 与 `Derived.M` 是不同的方法定义（不同的 MetadataToken），故不相等。但 `methodOnBase.Invoke(derivedInstance, null)` 会调用 `Derived.M`（虚方法分派）。
-
 
 ---
 
@@ -1696,11 +1683,9 @@ B. 支持 NativeAOT
 C. 代码可读性更好
 D. 调试更方便
 
-
 **解析讲解**：B
 
 **解析讲解**：Source Generator 在编译期生成代码，无运行时反射开销，因此**支持 NativeAOT**。性能更高是结果，但根本优势是 AOT 兼容性。
-
 
 ---
 
@@ -1711,51 +1696,39 @@ B. 可应用于类型参数与参数
 C. 编译器会检查注解一致性
 D. 运行时影响反射行为
 
-
 **解析讲解**：D
 
 **解析讲解**：`[DynamicallyAccessedMembers]` 仅在编译期与 trim 分析时生效，运行时不影响反射行为。
-
 
 ### 填空题知识点讲解
 
 **Q6.** `MethodInfo.CreateDelegate` 创建的委托调用比 `MethodInfo.Invoke` 快约 `________` 倍。
 
-
 50-100
-
 
 ---
 
 **Q7.** ECMA-335 标准定义了 `________` 张元数据表，其中 `TypeRef` 表的编号是 `________`。
 
-
 38，0x01
-
 
 ---
 
 **Q8.** `System.Reflection.Metadata` 命名空间提供 `________` 类，用于读取 PE 文件元数据而不加载程序集。
 
-
 `MetadataReader`
-
 
 ---
 
 **Q9.** C# 12 引入的 `________` 特性允许安全访问私有成员，性能接近直接调用。
 
-
 `UnsafeAccessor`
-
 
 ---
 
 **Q10.** Expression Tree 通过 `________` 方法编译为委托，性能接近直接调用。
 
-
 `Compile()`
-
 
 ### 编程题知识点讲解
 
@@ -1861,18 +1834,15 @@ public class UserDto
 
 **Q13.** 为什么 .NET Core 精简了反射 API？请从 AOT、体积、安全三个角度分析。
 
-
 **AOT**：移除 `AppDomain`、`ReflectionOnlyLoad` 等 API，减少 NativeAOT 体积。
 
 **体积**：移除不常用 API（如 `Assembly.LoadFrom` 的部分重载），降低部署包大小。
 
 **安全**：移除 `ReflectionEmit` 的部分能力，降低代码注入风险。
 
-
 ---
 
 **Q14.** Source Generator 是否能完全替代运行时反射？请论述。
-
 
 **不能完全替代**。
 
@@ -1891,11 +1861,9 @@ public class UserDto
 
 **结论**：Source Generator 适合编译期已知的场景；运行时动态发现仍需反射，但应配合缓存与 `CreateDelegate` 优化。
 
-
 ---
 
 **Q15.** 在 NativeAOT 场景下，如何实现插件系统？请给出方案。
-
 
 **方案**：基于接口契约 + 编译期注册。
 
@@ -1922,7 +1890,6 @@ public static class PluginRegistry
 ```
 
 **限制**：插件必须编译期已知；运行时下载的插件需使用解释器（如 Lua、Python）。
-
 
 ---
 

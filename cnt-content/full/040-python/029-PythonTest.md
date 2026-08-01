@@ -255,7 +255,6 @@ def add(a: int, b: int) -> int:
     """
     return a + b
 
-
 def divide(a: int, b: int) -> float:
     """除法函数
     
@@ -273,7 +272,6 @@ def divide(a: int, b: int) -> float:
         raise ZeroDivisionError("除数不能为零")
     return a / b
 
-
 # 测试函数：以 test_ 开头，pytest 自动发现
 def test_add_basic():
     """测试加法基础场景"""
@@ -281,12 +279,10 @@ def test_add_basic():
     assert add(-1, 1) == 0
     assert add(0, 0) == 0
 
-
 def test_add_edge_cases():
     """测试加法边界场景"""
     assert add(10**18, 1) == 10**18 + 1  # 大整数
     assert add(-10**18, -10**18) == -2 * 10**18
-
 
 import pytest
 
@@ -306,7 +302,6 @@ def test_divide_by_zero():
 import pytest
 from typing import Iterator
 
-
 # 基础 fixture：通过参数名注入
 @pytest.fixture
 def sample_users() -> list[dict]:
@@ -321,11 +316,9 @@ def sample_users() -> list[dict]:
         {"id": 3, "name": "王五", "age": 20},
     ]
 
-
 def test_user_count(sample_users):
     """通过参数名自动注入 fixture"""
     assert len(sample_users) == 3
-
 
 # 带 yield 的 fixture：yield 之前是 setup，之后是 teardown
 @pytest.fixture
@@ -339,23 +332,19 @@ def db_session() -> Iterator['Session']:
     yield session
     session.close()
 
-
 # 作用域控制
 @pytest.fixture(scope="function")  # 默认：每个测试函数一次
 def fresh_list():
     return []
 
-
 @pytest.fixture(scope="class")  # 每个测试类一次
 def class_config():
     return {"debug": True}
-
 
 @pytest.fixture(scope="module")  # 每个模块一次
 def module_logger():
     import logging
     return logging.getLogger(__name__)
-
 
 @pytest.fixture(scope="session")  # 整个测试会话一次
 def expensive_resource():
@@ -363,19 +352,16 @@ def expensive_resource():
     resource = load_large_model()
     return resource
 
-
 # fixture 嵌套：通过参数引用其他 fixture
 @pytest.fixture
 def user_repository(db_session):
     """依赖 db_session fixture"""
     return UserRepository(db_session)
 
-
 @pytest.fixture
 def user_service(user_repository):
     """依赖 user_repository fixture"""
     return UserService(user_repository)
-
 
 def test_create_user(user_service):
     """自动注入完整依赖链"""
@@ -391,7 +377,6 @@ def test_create_user(user_service):
 
 import pytest
 
-
 def is_palindrome(s: str) -> bool:
     """判断是否为回文
     
@@ -403,7 +388,6 @@ def is_palindrome(s: str) -> bool:
     """
     s = s.lower().replace(" ", "")
     return s == s[::-1]
-
 
 # 参数化：每组参数独立运行一次测试
 @pytest.mark.parametrize("input_str,expected", [
@@ -419,7 +403,6 @@ def test_is_palindrome(input_str, expected):
     """每组参数独立运行、独立报告"""
     assert is_palindrome(input_str) == expected
 
-
 # 参数化 + fixture：通过 indirect 引用 fixture
 @pytest.fixture
 def db_connection(request):
@@ -430,13 +413,11 @@ def db_connection(request):
     elif db_type == "postgres":
         return create_postgres()
 
-
 @pytest.mark.parametrize("db_connection", ["sqlite", "postgres"], indirect=True)
 def test_query(db_connection):
     """对多数据库运行同一测试"""
     result = db_connection.query("SELECT 1")
     assert result == 1
-
 
 # 多参数组合：pytest 自动笛卡尔积
 @pytest.mark.parametrize("x", [1, 2])
@@ -455,7 +436,6 @@ def test_combination(x, y):
 from unittest.mock import patch, MagicMock, call
 import pytest
 
-
 # 被测函数：调用外部 HTTP API
 def get_weather(city: str) -> int:
     """获取城市温度
@@ -469,7 +449,6 @@ def get_weather(city: str) -> int:
     import requests
     response = requests.get(f"https://api.weather.com/{city}")
     return response.json()["temperature"]
-
 
 # 使用 patch 装饰器替换 requests.get
 @patch("requests.get")
@@ -491,7 +470,6 @@ def test_get_weather(mock_get):
     # 验证 mock 被正确调用
     mock_get.assert_called_once_with("https://api.weather.com/北京")
 
-
 # 上下文管理器形式
 def test_get_weather_context():
     """使用 with patch 限制 mock 作用域"""
@@ -502,7 +480,6 @@ def test_get_weather_context():
         
         assert get_weather("上海") == 30
 
-
 # side_effect：让 mock 模拟副作用
 @patch("requests.get")
 def test_get_weather_network_error(mock_get):
@@ -511,7 +488,6 @@ def test_get_weather_network_error(mock_get):
     
     with pytest.raises(ConnectionError):
         get_weather("广州")
-
 
 # 验证多次调用
 @patch("requests.get")
@@ -532,17 +508,14 @@ def test_multiple_calls(mock_get):
         call("https://api.weather.com/上海"),
     ]
 
-
 # patch.object：替换对象的属性
 class EmailSender:
     def send(self, to: str, subject: str, body: str) -> bool:
         # 真实发送邮件
         ...
 
-
 def notify_user(email_sender: EmailSender, user_email: str, message: str) -> bool:
     return email_sender.send(user_email, "通知", message)
-
 
 def test_notify_user():
     """使用 patch.object 替换方法"""
@@ -567,13 +540,11 @@ import pytest
 from fastapi.testclient import TestClient
 from myapp.main import app
 
-
 @pytest.fixture(scope="module")
 def client():
     """FastAPI TestClient fixture"""
     with TestClient(app) as c:
         yield c
-
 
 def test_create_user(client):
     """测试创建用户接口"""
@@ -585,7 +556,6 @@ def test_create_user(client):
     data = response.json()
     assert data["name"] == "张三"
     assert "id" in data
-
 
 def test_get_user(client):
     """测试获取用户接口"""
@@ -601,12 +571,10 @@ def test_get_user(client):
     assert response.status_code == 200
     assert response.json()["name"] == "李四"
 
-
 def test_user_not_found(client):
     """测试 404 场景"""
     response = client.get("/users/99999")
     assert response.status_code == 404
-
 
 def test_invalid_payload(client):
     """测试参数校验"""
@@ -625,16 +593,13 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 
-
 Base = declarative_base()
-
 
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
     email = Column(String(100), unique=True)
-
 
 @pytest.fixture(scope="session")
 def engine():
@@ -643,7 +608,6 @@ def engine():
     Base.metadata.create_all(engine)
     yield engine
     engine.dispose()
-
 
 @pytest.fixture
 def db_session(engine):
@@ -663,7 +627,6 @@ def db_session(engine):
     transaction.rollback()
     connection.close()
 
-
 def test_create_user(db_session):
     """测试创建用户"""
     user = User(name="张三", email="z@example.com")
@@ -673,7 +636,6 @@ def test_create_user(db_session):
     result = db_session.query(User).filter_by(name="张三").first()
     assert result is not None
     assert result.email == "z@example.com"
-
 
 def test_unique_email(db_session):
     """测试 email 唯一约束"""
@@ -685,7 +647,6 @@ def test_unique_email(db_session):
     with pytest.raises(IntegrityError):
         db_session.add(User(name="李四", email="dup@example.com"))
         db_session.commit()
-
 
 def test_user_isolation(db_session):
     """测试隔离：上一个测试的 '张三' 不可见"""
@@ -702,13 +663,11 @@ def test_user_isolation(db_session):
 import pytest
 import asyncio
 
-
 @pytest.mark.asyncio
 async def test_async_operation():
     """测试异步函数"""
     result = await fetch_data("https://api.example.com/data")
     assert result["status"] == "ok"
-
 
 @pytest.fixture
 async def async_client():
@@ -717,13 +676,11 @@ async def async_client():
     yield client
     await client.close()
 
-
 @pytest.mark.asyncio
 async def test_async_with_fixture(async_client):
     """异步测试 + 异步 fixture"""
     response = await async_client.get("/users")
     assert response.status_code == 200
-
 
 # 并发执行多个协程
 @pytest.mark.asyncio
@@ -774,7 +731,6 @@ directory = htmlcov
 # --cov-report=html    HTML 报告
 # --cov-fail-under=80  覆盖率低于 80% 时返回非零退出码
 
-
 # 条件分支测试示例
 def classify(score: int) -> str:
     """根据分数分类
@@ -789,7 +745,6 @@ def classify(score: int) -> str:
         return "C"
     else:
         return "F"
-
 
 # 测试：必须覆盖每个分支
 def test_classify_a():
@@ -821,12 +776,10 @@ def test_classify_boundary():
 from hypothesis import given, strategies as st, assume
 import pytest
 
-
 # 被测函数
 def encode_decode(s: str) -> str:
     """编码后立即解码，应得到原字符串"""
     return s.encode("utf-8").decode("utf-8")
-
 
 # 属性 1：编解码后等于原值
 @given(st.text())
@@ -834,20 +787,17 @@ def test_encode_decode_identity(s):
     """对任意字符串，encode → decode 应保持恒等"""
     assert encode_decode(s) == s
 
-
 # 属性 2：列表反转两次等于原列表
 @given(st.lists(st.integers()))
 def test_reverse_twice(lst):
     """列表反转两次应等于原列表"""
     assert list(reversed(list(reversed(lst)))) == lst
 
-
 # 属性 3：加法交换律
 @given(st.integers(), st.integers())
 def test_add_commutative(a, b):
     """加法交换律：a + b == b + a"""
     assert a + b == b + a
-
 
 # 使用 assume 过滤不满足前置条件的输入
 @given(st.integers())
@@ -857,7 +807,6 @@ def test_sqrt_non_negative(x):
     import math
     assert math.isqrt(x) ** 2 <= x < (math.isqrt(x) + 1) ** 2
 
-
 # 自定义策略：生成特定结构的数据
 email_strategy = st.builds(
     lambda local, domain: f"{local}@{domain}.com",
@@ -865,13 +814,11 @@ email_strategy = st.builds(
     st.text(min_size=1, max_size=10, alphabet=st.characters(min_codepoint=97, max_codepoint=122)),
 )
 
-
 @given(email_strategy)
 def test_email_format(email):
     """生成的 email 应包含 @ 与 ."""
     assert "@" in email
     assert email.endswith(".com")
-
 
 # 复合策略：生成用户对象
 user_strategy = st.fixed_dictionaries({
@@ -879,7 +826,6 @@ user_strategy = st.fixed_dictionaries({
     "age": st.integers(min_value=0, max_value=150),
     "email": email_strategy,
 })
-
 
 @given(user_strategy)
 def test_user_creation(user):
@@ -925,7 +871,6 @@ asyncio_mode = "auto"
 import pytest
 from typing import Iterator
 
-
 @pytest.fixture(scope="session")
 def app_config() -> dict:
     """会话级配置"""
@@ -935,12 +880,10 @@ def app_config() -> dict:
         "debug": True,
     }
 
-
 @pytest.fixture
 def temp_dir(tmp_path) -> 'Path':
     """使用 pytest 内置 tmp_path 创建临时目录"""
     return tmp_path
-
 
 @pytest.fixture(autouse=True)
 def reset_state():
@@ -953,14 +896,12 @@ def reset_state():
     # teardown
     clear_global_cache()
 
-
 # hook：自定义测试结果输出
 def pytest_runtest_makereport(item, call):
     """测试失败时自动截图（Web 测试场景）"""
     if call.when == "call" and call.excinfo is not None:
         # 失败时执行的动作
         pass
-
 
 # 命令行选项扩展
 def pytest_addoption(parser):
@@ -970,7 +911,6 @@ def pytest_addoption(parser):
         default="test",
         help="测试环境：test / staging"
     )
-
 
 @pytest.fixture
 def env(request):
@@ -993,7 +933,6 @@ def test_list_append_benchmark(benchmark):
         rounds=100,
     )
 
-
 def test_string_concat_benchmark(benchmark):
     """字符串拼接性能"""
     def concat():
@@ -1004,13 +943,11 @@ def test_string_concat_benchmark(benchmark):
     
     benchmark(concat)
 
-
 # 对比多个实现
 def slow_fibonacci(n: int) -> int:
     if n < 2:
         return n
     return slow_fibonacci(n-1) + slow_fibonacci(n-2)
-
 
 def fast_fibonacci(n: int) -> int:
     a, b = 0, 1
@@ -1018,15 +955,12 @@ def fast_fibonacci(n: int) -> int:
         a, b = b, a + b
     return a
 
-
 def test_fibonacci_benchmark(benchmark):
     """对比两种实现"""
     benchmark(slow_fibonacci, 20)
 
-
 def test_fast_fibonacci_benchmark(benchmark):
     benchmark(fast_fibonacci, 20)
-
 
 # 运行：pytest --benchmark-only
 # 对比：pytest --benchmark-compare
@@ -1039,7 +973,6 @@ def test_fast_fibonacci_benchmark(benchmark):
 # 步骤 1：先写测试（红）
 
 import pytest
-
 
 class TestStack:
     """栈的 TDD 测试"""
@@ -1077,7 +1010,6 @@ class TestStack:
         stack.push(1)
         assert stack.peek() == 1
         assert len(stack) == 1
-
 
 # 步骤 2：写最少代码让测试通过（绿）
 # myapp/stack.py

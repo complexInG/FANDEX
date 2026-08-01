@@ -106,13 +106,6 @@ lastReviewed: '2026-07-20'
 reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 90
 ---
-
-# Python 打包与发布
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 概述与定位
 
 Python 打包发布（Packaging and Distribution）是将 Python 代码从开发环境交付到目标用户或生产环境的工程化过程。它涵盖依赖声明、源码分发（sdist）、二进制分发（wheel）、PyPI 上传、版本管理、可信发布等环节。Python 打包生态历经 20 余年演进，从早期的 distutils 到 setuptools、pip、Poetry、hatch、pdm，每一步都伴随 PEP（Python Enhancement Proposal）的标准化推进。
@@ -645,7 +638,6 @@ __all__ = ["greet", "calculate", "__version__"]
 """核心功能模块"""
 from typing import Sequence
 
-
 def greet(name: str) -> str:
     """生成问候语
 
@@ -659,7 +651,6 @@ def greet(name: str) -> str:
         'Hello, Python!'
     """
     return f"Hello, {name}!"
-
 
 def calculate(values: Sequence[float]) -> dict:
     """计算统计量
@@ -687,7 +678,6 @@ import sys
 
 from my_awesome_lib.core import greet, calculate
 
-
 def main() -> int:
     """命令行入口：解析参数并执行"""
     parser = argparse.ArgumentParser(prog="mycli", description="my-awesome-lib 命令行")
@@ -711,7 +701,6 @@ def main() -> int:
 
     return 0
 
-
 if __name__ == "__main__":
     sys.exit(main())
 ```
@@ -724,16 +713,13 @@ import pytest
 
 from my_awesome_lib.core import greet, calculate
 
-
 def test_greet_basic():
     """测试问候语生成"""
     assert greet("Python") == "Hello, Python!"
 
-
 def test_greet_empty():
     """测试空名字"""
     assert greet("") == "Hello, !"
-
 
 def test_calculate_normal():
     """测试正常计算"""
@@ -742,12 +728,10 @@ def test_calculate_normal():
     assert result["max"] == 3.0
     assert result["min"] == 1.0
 
-
 def test_calculate_empty_raises():
     """测试空列表抛出异常"""
     with pytest.raises(ValueError, match="values 不能为空"):
         calculate([])
-
 
 @pytest.mark.parametrize("values,expected_mean", [
     ([1, 2, 3, 4, 5], 3.0),
@@ -1182,7 +1166,6 @@ from pathlib import Path
 
 import pytest
 
-
 def test_package_metadata():
     """测试包元数据完整性"""
     try:
@@ -1195,7 +1178,6 @@ def test_package_metadata():
     assert metadata["Version"]
     assert metadata["Summary"]
     assert "Programming Language :: Python :: 3" in metadata.get_all("Classifier")
-
 
 def test_cli_entry_point():
     """测试 CLI 入口脚本"""
@@ -1291,16 +1273,13 @@ cryptography 库从 C 扩展迁移到 Rust：
 
 **习题 11.1**（记忆层）：PEP 518 引入的配置文件名为 ____，其格式为 ____，主要用于声明构建系统依赖。
 
-
 pyproject.toml；TOML（Tom's Obvious Minimal Language）
 
 **习题 11.2**（理解层）：在 wheel 文件名 `numpy-1.26.0-cp311-cp311-manylinux_2_17_x86_64.whl` 中，`cp311` 表示 ____，`manylinux_2_17` 表示 ____。
 
-
 Python 实现 = CPython 3.11；目标平台 = manylinux glibc 2.17+ x86_64
 
 **习题 11.3**（应用层）：构建 Python 包的标准命令为 `python -m ____`，上传到 PyPI 的标准命令为 `python -m ____`。
-
 
 build；twine
 
@@ -1313,7 +1292,6 @@ build；twine
 - C. `1.0.0.post1`
 - D. `1.0.0-rc1`
 
-
 解析讲解：D。PEP 440 不支持连字符分隔，预发布应写为 `1.0.0rc1`（无分隔符）或 `1.0.0.rc1`。
 
 **习题 11.5**（分析层）：关于 pyproject.toml 的 [project] 段，下列说法错误的是？
@@ -1322,7 +1300,6 @@ build；twine
 - B. version 字段可声明为 dynamic，从代码中读取
 - C. dependencies 字段必须是字符串数组
 - D. classifiers 字段必须包含所有支持的 Python 版本
-
 
 解析讲解：D。classifiers 是元数据分类标签，PyPI 用于检索分类，但不强制要求列出所有支持的 Python 版本（虽为最佳实践）。
 
@@ -1342,7 +1319,6 @@ description = "A package"
 dependencies = "requests, numpy"
 python-requires = ">=3.8"
 ```
-
 
 问题1：`build-backend` 应为模块路径 `setuptools.build_meta`，而非 `setuptools`。
 问题2：`name` 不能含空格，应改为 `my-awesome-package`。
@@ -1384,7 +1360,6 @@ jobs:
       - run: python -m build
       - run: twine upload dist/*
 ```
-
 
 问题：
 
@@ -1428,7 +1403,6 @@ jobs:
 
 请从可复现性、兼容性、维护成本三个维度对比，并给出推荐。
 
-
 | 策略 | 可复现性 | 兼容性 | 维护成本 |
 |------|---------|--------|---------|
 | A 精确 | 极高 | 极低（依赖地狱） | 高（每次升级需改） |
@@ -1447,14 +1421,12 @@ jobs:
 3. 依赖管理（开发依赖 vs 运行依赖、跨库版本同步）
 4. 安全（私有 token、供应链攻击防护）
 
-
 1. 仓库：使用 Artifactory 或 Sonatype Nexus 自建 PyPI 镜像；或用 GitLab Package Registry（若已用 GitLab）。
 2. 版本：内部库用 `0.x.y`（开发期）→ `1.0.0`（稳定后）；每周发布 PATCH，每月 MINOR。
 3. 依赖：内部库依赖用 `>=x.y,<x+1.0` 范围；引入 Renovate / Dependabot 自动升级 PR。
 4. 安全：所有上传用 Trusted Publishing；CI 强制签名 sigstore；定期扫描 pip-audit。
 
 **习题 11.10**（分析层）：解释为什么 `pip install .` 与 `python -m build && pip install dist/*.whl` 行为不同，以及为什么后者更推荐。
-
 
 - `pip install .` 直接在源码目录调用构建后端，可能依赖当前环境，污染构建产物
 - `python -m build` 在隔离环境（默认 `build` 目录）中构建，确保构建依赖完整且不污染源码

@@ -722,16 +722,12 @@ def reverse_k_group(head, k):
 
 ## 参考文献
 
-
-
 算法导论（CLRS）：https://mitpress.mit.edu/9780262046305/
 LeetCode：https://leetcode.cn/
 OI Wiki：https://oi-wiki.org/
 Visualgo 可视化：https://visualgo.net/zh
 
 ## 延伸阅读
-
-
 
 数据结构与算法基础，见 023-algorithm 模块文档。
 数学基础（离散数学），见 028-discrete-math 模块。

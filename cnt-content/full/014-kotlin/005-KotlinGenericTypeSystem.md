@@ -14,13 +14,6 @@ related:
   - kotlin/协程进阶
 prerequisites: []
 ---
-
-# Kotlin 泛型与类型系统速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 泛型基础
 
 ### 1.1 泛型类与接口
@@ -783,8 +776,6 @@ val nullable: Any? = null;
 
 ## 参考文献
 
-
-
 Kotlin 官方文档：https://kotlinlang.org/docs/home.html
 Kotlin 协程指南：https://kotlinlang.org/docs/coroutines-guide.html
 Compose Multiplatform：https://www.jetbrains.com/compose-multiplatform/
@@ -792,8 +783,6 @@ Ktor 框架：https://ktor.io/
 Android 开发者文档：https://developer.android.com/kotlin
 
 ## 延伸阅读
-
-
 
 Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
 协程与 Flow，见 014-kotlin 模块协程文档。

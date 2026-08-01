@@ -835,8 +835,6 @@ function safeMerge(target, source) {
 
 ## 参考文献
 
-
-
 MDN JavaScript 文档：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript
 ECMAScript 规范：https://tc39.es/ecma262/
 Node.js 官方文档：https://nodejs.org/docs/latest/api/

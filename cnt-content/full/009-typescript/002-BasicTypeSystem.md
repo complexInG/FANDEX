@@ -15,12 +15,6 @@ related:
   - typescript/函数与泛型
 prerequisites: []
 ---
-# 基础类型系统
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 基础类型 (Basic Types)
 
 TypeScript 提供了丰富的类型系统，包括 JavaScript 原有的类型和 TypeScript 增强的类型。

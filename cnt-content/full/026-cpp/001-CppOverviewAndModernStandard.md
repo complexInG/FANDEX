@@ -578,8 +578,6 @@ C++ 是一门强大、灵活且高性能的编程语言，它在系统编程、�
 
 ## 参考文献
 
-
-
 cppreference C++ 文档：https://zh.cppreference.com/w/cpp
 C++ 核心指南：https://isocpp.github.io/CppCoreGuidelines/
 C++ 标准草案（WG21）：https://isocpp.org/std/the-standard
@@ -587,7 +585,6 @@ CMake 官方文档：https://cmake.org/documentation/
 Compiler Explorer：https://godbolt.org/
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

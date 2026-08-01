@@ -116,13 +116,6 @@ etymology:
     english: Rejection
     origin: 源自拉丁语 "rejicere"(扔回、拒绝),Promise 中指"将 pending 状态转为 rejected,表示异步操作失败"。
 ---
-
-# JavaScript Promise 构造器
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 0. 学习导览
 
 ### 0.1 学习路径

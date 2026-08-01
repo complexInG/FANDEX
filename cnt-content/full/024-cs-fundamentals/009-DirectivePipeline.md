@@ -277,8 +277,6 @@ SMT 加速比通常为 **1.2x~1.8x**。
 
 ## 参考文献
 
-
-
 CSAPP（深入理解计算机系统）：https://csapp.cs.cmu.edu/
 算法导论（CLRS）：https://mitpress.mit.edu/9780262046305/
 MIT OpenCourseWare 6.006：https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/
@@ -286,15 +284,12 @@ Teach Yourself CS：https://teachyourselfcs.com/
 
 ## 延伸阅读
 
-
-
 数据结构与算法，见 023-algorithm 模块。
 操作系统概念，见 024-cs-fundamentals 模块相关文档。
 计算机体系结构，见 001-getting-started 模块相关文档。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供计算机基础课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

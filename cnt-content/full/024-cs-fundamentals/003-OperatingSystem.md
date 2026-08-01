@@ -784,8 +784,6 @@ I/O调度算法:
 
 ## 参考文献
 
-
-
 CSAPP（深入理解计算机系统）：https://csapp.cs.cmu.edu/
 算法导论（CLRS）：https://mitpress.mit.edu/9780262046305/
 MIT OpenCourseWare 6.006：https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/

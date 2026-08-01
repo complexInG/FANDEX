@@ -1193,13 +1193,11 @@ LINQ 比手写循环慢约 45%，主要源于委托调用与迭代器状态机�
 - C. `OrderBy`
 - D. `Count`
 
-
 **答案：D**
 
 `Count` 是立即执行操作符，调用即遍历序列并返回结果。`Where`、`Select`、`OrderBy` 都是延迟执行（`OrderBy` 虽然需要缓冲，但仍延迟到枚举时才排序）。
 
 判断标准：返回 `IEnumerable<T>` 的通常是延迟；返回具体值（int、T、bool）或集合类型（`List<T>`、`Dictionary<K,V>`）的通常是立即。
-
 
 **题 2**：下列代码会发生几次枚举？
 
@@ -1215,7 +1213,6 @@ foreach (var n in query) { }
 - C. 3
 - D. 4
 
-
 **答案：C**
 
 `Count()`、`ToList()`、`foreach` 各枚举一次，共 3 次。每次枚举都会重新执行 `Where` 谓词。如果 `numbers` 是 1000 个元素，谓词会被调用 3000 次。
@@ -1227,14 +1224,12 @@ var count = list.Count;
 foreach (var n in list) { }
 ```
 
-
 **题 3**：下列哪个表达式在 EF Core 中**无法**翻译为 SQL？
 
 - A. `Where(o => o.Amount > 100)`
 - B. `Where(o => o.Name.StartsWith("A"))`
 - C. `Where(o => Regex.IsMatch(o.Name, @"\d+"))`
 - D. `Where(o => o.CreatedAt > DateTime.UtcNow.AddDays(-7))`
-
 
 **答案：C**
 
@@ -1243,24 +1238,19 @@ foreach (var n in list) { }
 - B：`StartsWith` 翻译为 `LIKE 'A%'`
 - D：`DateTime.UtcNow.AddDays(-7)` 会被求值为参数，翻译为 `WHERE CreatedAt > @p0`
 
-
 ### 填空题知识点讲解
 
 **题 4**：在 LINQ 中，`SelectMany` 的作用是将 `IEnumerable<IEnumerable<T>>` ________ 为 `IEnumerable<T>`。
-
 
 **扁平化**（或 flatten / 平坦化）
 
 `SelectMany` 对应函数式编程中的 `flatMap` / `bind` 操作，是 LINQ 中最强大的操作符之一，常用于处理嵌套集合。
 
-
 **题 5**：`IQueryable<T>` 与 `IEnumerable<T>` 的关键区别在于前者接收 `_____<TDelegate>` 而后者接收 `Func<T>`，使得查询可以被翻译为目标数据源的语言。
-
 
 **Expression**
 
 `Expression<TDelegate>` 把 lambda 编译为表达式树（数据），而非委托（代码）。EF Core 通过遍历表达式树生成 SQL。
-
 
 ### 编程题知识点讲解
 
@@ -1273,7 +1263,6 @@ public static IEnumerable<TSource> DistinctBy<TSource, TKey>(
     Func<TSource, TKey> keySelector,
     IEqualityComparer<TKey>? comparer = null);
 ```
-
 
 ```csharp
 public static IEnumerable<TSource> DistinctBy<TSource, TKey>(
@@ -1305,7 +1294,6 @@ private static IEnumerable<TSource> DistinctByIterator<TSource, TKey>(
 3. 参数校验在调用时立即执行（非迭代时），符合 LINQ 习惯。
 4. 流式操作：不需要缓冲整个序列，内存占用为 $O(k)$（k 为唯一键数）。
 
-
 **题 7**：实现一个 `Paged` 操作符，支持分页查询。
 
 ```csharp
@@ -1313,7 +1301,6 @@ private static IEnumerable<TSource> DistinctByIterator<TSource, TKey>(
 public static IEnumerable<T> Paged<T>(
     this IEnumerable<T> source, int page, int pageSize);
 ```
-
 
 ```csharp
 public static IEnumerable<T> Paged<T>(
@@ -1336,13 +1323,11 @@ var page2 = allItems.Paged(page: 2, pageSize: 20);
 2. 对 `IQueryable<T>`，EF Core 会翻译为 `OFFSET ... FETCH NEXT ...`（SQL Server 2012+）或 `LIMIT ... OFFSET ...`（PostgreSQL/MySQL）。
 3. 注意：大偏移量的分页性能差，生产环境应考虑 keyset pagination（基于游标）。
 
-
 **题 8**：给定一个 `Order` 列表，编写 LINQ 查询：
 
 1. 按客户分组，计算每个客户的总消费与订单数
 2. 按总消费降序排序，取前 10 名
 3. 返回 `(CustomerName, TotalAmount, OrderCount)` 元组列表
-
 
 ```csharp
 var top10 = orders
@@ -1357,11 +1342,9 @@ var top10 = orders
     .ToList();
 ```
 
-
 ### 10.4 思考题
 
 **题 9**：为什么 `IEnumerable<T>` 上的 LINQ 操作符返回 `IEnumerable<T>` 而非 `List<T>`？请从内存、可组合性、抽象层级三个角度分析。
-
 
 1. **内存**：返回 `List<T>` 意味着每次操作都分配 $O(n)$ 内存；返回 `IEnumerable<T>` 允许流式处理，内存为 $O(1)$（对于流式操作符）。这对大集合或无限序列至关重要。
 2. **可组合性**：返回 `IEnumerable<T>` 允许链式调用继续延迟，组合成复杂管道而不立即执行。如果每步都 Materialize，管道会失去惰性优势。
@@ -1369,9 +1352,7 @@ var top10 = orders
 
 代价是多次枚举的潜在开销，需要开发者用 `ToList` 显式控制 Materialize 时机。这是"延迟默认 + 显式缓存"的设计权衡。
 
-
 **题 10**：假设你要设计一个支持远程查询（如 REST API）的 `IRemoteQueryable<T>`，需要解决哪些问题？请列出至少 3 个挑战与应对策略。
-
 
 1. **谓词翻译的完整性**：并非所有 C# 表达式都能翻译为 URL 查询参数。需要定义可翻译子集，对不可翻译的表达式抛出异常或回退到客户端评估。策略：使用 `ExpressionVisitor` 检测，对白名单操作符翻译，其余报错。
 
@@ -1386,7 +1367,6 @@ var top10 = orders
 6. **异步支持**：远程查询天然异步，需要实现 `IAsyncQueryProvider`。策略：返回 `IAsyncEnumerable<T>`，支持 `await foreach`。
 
 参考实现：OData .NET 库、Stripe.NET 的 `SearchAsync`、GitHub GraphQL SDK。
-
 
 ## 十一、参考文献
 
@@ -1461,16 +1441,12 @@ var top10 = orders
 
 ## 参考文献
 
-
-
 Microsoft Learn C# 文档：https://learn.microsoft.com/zh-cn/dotnet/csharp/
 .NET 官方文档：https://learn.microsoft.com/zh-cn/dotnet/
 ASP.NET Core 文档：https://learn.microsoft.com/zh-cn/aspnet/core/
 C# 语言规范：https://learn.microsoft.com/zh-cn/dotnet/csharp/language-reference/
 
 ## 延伸阅读
-
-
 
 C# 与 .NET 生态，见 015-csharp 模块基础文档。
 异步编程与 Task，见 015-csharp 模块异步文档。

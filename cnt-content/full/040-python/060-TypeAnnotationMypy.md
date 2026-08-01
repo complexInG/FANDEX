@@ -19,13 +19,6 @@ prerequisites:
   - python/面向对象编程
   - python/描述符
 ---
-
-# 类型注解与mypy
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 Python 类型注解（Type Hints）是 Python 3.0 以来最重要的语言演进之一。它改变了 Python 作为"动态类型语言"的传统定位，引入了一套"渐进式类型系统"（Gradual Typing System），让开发者可以在保留动态类型灵活性的同时，获得静态类型检查的工程收益。
@@ -322,7 +315,6 @@ def greet(name: str, times: int = 1) -> str:
     """
     return ', '.join([f'Hello, {name}!'] * times)
 
-
 # 变量注解
 count: int = 0
 name: str = 'Alice'
@@ -340,7 +332,6 @@ fixed_length: tuple[int, ...] = (1, 2, 3, 4)  # 任意长度
 unique_numbers: set[int] = {1, 2, 3}
 frozen: frozenset[str] = frozenset({'a', 'b'})
 
-
 # Optional 与 Union
 from typing import Optional, Union
 
@@ -349,16 +340,13 @@ def find_user(user_id: int) -> Optional[str]:
     users = {1: 'Alice', 2: 'Bob'}
     return users.get(user_id)
 
-
 def process(value: Union[int, str, float]) -> str:
     """处理多种类型输入"""
     return str(value)
 
-
 # Python 3.10+ 的 | 语法
 def find_user_new(user_id: int) -> str | None:
     return find_user(user_id)
-
 
 def process_new(value: int | str | float) -> str:
     return str(value)
@@ -376,7 +364,6 @@ T = TypeVar('T')
 K = TypeVar('K')
 V = TypeVar('V')
 
-
 # 泛型函数
 def first(items: list[T]) -> T:
     """返回列表第一个元素，类型与列表元素类型一致"""
@@ -384,11 +371,9 @@ def first(items: list[T]) -> T:
         raise IndexError('列表为空')
     return items[0]
 
-
 def get_value(mapping: dict[K, V], key: K, default: V) -> V:
     """从字典获取值，类型与字典一致"""
     return mapping.get(key, default)
-
 
 # 泛型类
 class Stack(Generic[T]):
@@ -420,7 +405,6 @@ class Stack(Generic[T]):
     def __len__(self) -> int:
         return len(self._items)
 
-
 # 使用泛型类
 int_stack: Stack[int] = Stack()
 int_stack.push(1)
@@ -433,7 +417,6 @@ print(str_stack.pop())  # hello
 
 # 类型错误会被 mypy 检测
 # int_stack.push('hello')  # mypy 报错：str 不能赋给 int
-
 
 # 受限 TypeVar
 from typing import TypeVar
@@ -460,7 +443,6 @@ def concat(a: AnyStr, b: AnyStr) -> AnyStr:
 
 from typing import Protocol, runtime_checkable
 
-
 # 定义 Protocol
 @runtime_checkable
 class Drawable(Protocol):
@@ -471,12 +453,10 @@ class Drawable(Protocol):
     """
     def draw(self) -> None: ...
 
-
 @runtime_checkable
 class Comparable(Protocol):
     """可比较对象的 Protocol"""
     def __lt__(self, other: 'Comparable') -> bool: ...
-
 
 # 实现类（无需显式继承 Protocol）
 class Circle:
@@ -487,7 +467,6 @@ class Circle:
     def draw(self) -> None:
         print(f'绘制圆形，半径 {self.radius}')
 
-
 class Square:
     """方形"""
     def __init__(self, side: float):
@@ -496,12 +475,10 @@ class Square:
     def draw(self) -> None:
         print(f'绘制方形，边长 {self.side}')
 
-
 class TextLabel:
     """文本标签（无 draw 方法，不满足 Drawable）"""
     def __init__(self, text: str):
         self.text = text
-
 
 # 使用 Protocol 作为类型注解
 def render_all(items: list[Drawable]) -> None:
@@ -509,17 +486,14 @@ def render_all(items: list[Drawable]) -> None:
     for item in items:
         item.draw()
 
-
 # 测试
 shapes: list[Drawable] = [Circle(5.0), Square(3.0)]
 render_all(shapes)
-
 
 # 排序示例
 def sort_items(items: list[Comparable]) -> list[Comparable]:
     """对可比较对象排序"""
     return sorted(items)
-
 
 # runtime_checkable 允许使用 isinstance 检查
 print(isinstance(Circle(1.0), Drawable))  # True
@@ -533,7 +507,6 @@ print(isinstance(TextLabel('hi'), Drawable))  # False
 
 from typing import TypedDict, Required, NotRequired
 
-
 # 基础 TypedDict
 class UserInfo(TypedDict):
     """用户信息字典类型
@@ -543,7 +516,6 @@ class UserInfo(TypedDict):
     id: int
     name: str
     email: str
-
 
 # 使用
 user: UserInfo = {
@@ -555,14 +527,12 @@ user: UserInfo = {
 # 类型检查
 # user['id'] = 'abc'  # mypy 报错：str 不能赋给 int
 
-
 # 可选字段（Python 3.11+）
 class UserOptional(TypedDict, total=False):
     """所有字段都是可选的"""
     id: int
     name: str
     email: str
-
 
 # 混合必需与可选字段（Python 3.11+）
 class UserMixed(TypedDict):
@@ -572,11 +542,9 @@ class UserMixed(TypedDict):
     email: NotRequired[str]
     age: NotRequired[int]
 
-
 # 函数式语法
 Point2D = TypedDict('Point2D', {'x': int, 'y': int})
 p: Point2D = {'x': 1, 'y': 2}
-
 
 # 嵌套 TypedDict
 class Address(TypedDict):
@@ -584,12 +552,10 @@ class Address(TypedDict):
     street: str
     zip_code: str
 
-
 class UserWithAddress(TypedDict):
     id: int
     name: str
     address: Address
-
 
 user_with_addr: UserWithAddress = {
     'id': 1,
@@ -600,7 +566,6 @@ user_with_addr: UserWithAddress = {
         'zip_code': '100000',
     },
 }
-
 
 # 在函数签名中使用
 def create_user(data: UserInfo) -> UserWithAddress:
@@ -623,29 +588,23 @@ def create_user(data: UserInfo) -> UserWithAddress:
 
 from typing import Literal, overload
 
-
 # 基础 Literal
 def set_mode(mode: Literal['read', 'write', 'append']) -> None:
     """设置文件模式"""
     print(f'模式: {mode}')
 
-
 set_mode('read')  # 正确
 # set_mode('delete')  # mypy 报错：'delete' 不是 'read' | 'write' | 'append'
 
-
 # Literal 与 Union 组合
 Direction = Literal['up', 'down', 'left', 'right']
-
 
 def move(direction: Direction, steps: int) -> None:
     """移动"""
     print(f'向 {direction} 移动 {steps} 步')
 
-
 move('up', 5)
 # move('forward', 5)  # mypy 报错
-
 
 # Literal 用于状态机
 class TrafficLight:
@@ -663,7 +622,6 @@ class TrafficLight:
         elif self.state == 'yellow':
             self.state = 'red'
 
-
 # overload 配合 Literal
 @overload
 def get_config(key: Literal['timeout']) -> int: ...
@@ -671,7 +629,6 @@ def get_config(key: Literal['timeout']) -> int: ...
 def get_config(key: Literal['host']) -> str: ...
 @overload
 def get_config(key: Literal['debug']) -> bool: ...
-
 
 def get_config(key: Literal['timeout', 'host', 'debug']) -> int | str | bool:
     """根据 key 返回不同类型的配置
@@ -684,7 +641,6 @@ def get_config(key: Literal['timeout', 'host', 'debug']) -> int | str | bool:
         'debug': True,
     }
     return configs[key]
-
 
 # 使用时 mypy 能精确推断返回类型
 timeout: int = get_config('timeout')
@@ -700,30 +656,24 @@ debug: bool = get_config('debug')
 from typing import Callable, ParamSpec, TypeVar
 from collections.abc import Callable as CallableABC
 
-
 # 基础 Callable
 def apply(func: Callable[[int, int], int], a: int, b: int) -> int:
     """应用函数"""
     return func(a, b)
 
-
 def add(a: int, b: int) -> int:
     return a + b
-
 
 def multiply(a: int, b: int) -> int:
     return a * b
 
-
 print(apply(add, 3, 4))  # 7
 print(apply(multiply, 3, 4))  # 12
-
 
 # 无参数的 Callable
 def run_callback(cb: Callable[[], None]) -> None:
     """运行无参数回调"""
     cb()
-
 
 # 任意参数的 Callable
 from typing import Any
@@ -732,11 +682,9 @@ def run_anything(func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
     """运行任意函数"""
     return func(*args, **kwargs)
 
-
 # ParamSpec（Python 3.10+）：保留函数参数签名
 P = ParamSpec('P')
 R = TypeVar('R')
-
 
 def log_call(func: Callable[P, R]) -> Callable[P, R]:
     """装饰器：记录函数调用
@@ -749,11 +697,9 @@ def log_call(func: Callable[P, R]) -> Callable[P, R]:
         return func(*args, **kwargs)
     return wrapper
 
-
 @log_call
 def greet(name: str, times: int = 1) -> str:
     return f'Hello, {name}! ' * times
-
 
 print(greet('Alice', 2))
 # mypy 知道 greet('Alice', 2) 返回 str，参数是 (name: str, times: int = 1)
@@ -765,7 +711,6 @@ print(greet('Alice', 2))
 # ClassVar 与 Final 示例
 
 from typing import ClassVar, Final
-
 
 class Configuration:
     """配置类"""
@@ -779,7 +724,6 @@ class Configuration:
     def __init__(self, port: int) -> None:
         self.port: int = port  # 实例变量
 
-
 config = Configuration(9000)
 print(config.port)  # 9000
 print(Configuration.DEFAULT_PORT)  # 8080
@@ -787,17 +731,14 @@ print(Configuration.DEFAULT_PORT)  # 8080
 # ClassVar 不应通过实例赋值
 # config.DEFAULT_PORT = 9090  # mypy 报错
 
-
 # Final：不可重新赋值的变量
 MAX_CONNECTIONS: Final[int] = 100
 # MAX_CONNECTIONS = 200  # mypy 报错：Final 变量不可重新赋值
-
 
 class MathConstants:
     """数学常量"""
     PI: Final[float] = 3.141592653589793
     E: Final[float] = 2.718281828459045
-
 
 # Final 方法：禁止子类覆盖
 class Base:
@@ -805,7 +746,6 @@ class Base:
     def base_method(self) -> None:
         """此方法不可被子类覆盖"""
         print('base method')
-
 
 # class Child(Base):
 #     def base_method(self) -> None:  # mypy 报错
@@ -819,18 +759,15 @@ class Base:
 
 from typing import NewType
 
-
 # 创建新类型
 UserId = NewType('UserId', int)
 UserName = NewType('UserName', str)
 Email = NewType('Email', str)
 
-
 # 使用 NewType 区分语义
 def get_user(user_id: UserId) -> dict:
     """根据用户 ID 查询"""
     return {'id': user_id, 'name': 'Alice'}
-
 
 # UserId 是 int 的子类型，可以与 int 互操作
 user_id: UserId = UserId(123)
@@ -839,14 +776,12 @@ print(user_id + 1)  # 124，可作为 int 使用
 # 但不能直接将 int 赋给 UserId
 # user_id = 123  # mypy 报错：int 不能赋给 UserId
 
-
 def create_user(name: UserName, email: Email) -> dict:
     """创建用户
     
     使用 NewType 防止参数顺序颠倒。
     """
     return {'name': name, 'email': email}
-
 
 # 显式构造增强可读性
 user = create_user(
@@ -863,7 +798,6 @@ print(user)
 
 from typing import overload
 
-
 # 同一函数的多个类型签名
 @overload
 def parse(value: int) -> int: ...
@@ -873,7 +807,6 @@ def parse(value: str) -> str: ...
 def parse(value: list[int]) -> list[int]: ...
 @overload
 def parse(value: None) -> None: ...
-
 
 def parse(value: int | str | list[int] | None) -> int | str | list[int] | None:
     """根据输入类型返回相应类型
@@ -890,20 +823,17 @@ def parse(value: int | str | list[int] | None) -> int | str | list[int] | None:
         return [x * 2 for x in value]
     return None
 
-
 # mypy 能精确推断返回类型
 result1: int = parse(42)
 result2: str = parse('hello')
 result3: list[int] = parse([1, 2, 3])
 result4: None = parse(None)
 
-
 # 实际应用：数据库查询
 @overload
 def query(sql: str, fetch_one: Literal[True]) -> dict | None: ...
 @overload
 def query(sql: str, fetch_one: Literal[False] = False) -> list[dict]: ...
-
 
 def query(sql: str, fetch_one: bool = False) -> dict | list[dict] | None:
     """查询数据库
@@ -915,7 +845,6 @@ def query(sql: str, fetch_one: bool = False) -> dict | list[dict] | None:
     if fetch_one:
         return {'id': 1, 'name': 'Alice'}
     return [{'id': 1, 'name': 'Alice'}, {'id': 2, 'name': 'Bob'}]
-
 
 # 使用
 single: dict | None = query('SELECT * FROM users LIMIT 1', fetch_one=True)
@@ -929,7 +858,6 @@ multi: list[dict] = query('SELECT * FROM users')
 
 from typing import TypeGuard, TypeIs
 
-
 # TypeGuard（Python 3.10+）
 def is_str_list(items: list[object]) -> TypeGuard[list[str]]:
     """判断列表是否全是字符串
@@ -938,7 +866,6 @@ def is_str_list(items: list[object]) -> TypeGuard[list[str]]:
     mypy 将 items 的类型收窄为 list[str]。
     """
     return all(isinstance(x, str) for x in items)
-
 
 def process_items(items: list[object]) -> None:
     """处理项目列表"""
@@ -949,10 +876,8 @@ def process_items(items: list[object]) -> None:
     else:
         print('列表包含非字符串元素')
 
-
 process_items(['hello', 'world'])  # HELLO, WORLD
 process_items([1, 2, 3])  # 列表包含非字符串元素
-
 
 # TypeIs（Python 3.13+）：双向类型收窄
 def is_positive_int(x: object) -> TypeIs[int]:
@@ -963,7 +888,6 @@ def is_positive_int(x: object) -> TypeIs[int]:
     - TypeIs 双向收窄（if 与 else 分支）
     """
     return isinstance(x, int) and x > 0
-
 
 def classify(x: object) -> str:
     if is_positive_int(x):
@@ -981,7 +905,6 @@ def classify(x: object) -> str:
 
 from dataclasses import dataclass, field
 from typing import ClassVar
-
 
 @dataclass
 class User:
@@ -1002,11 +925,9 @@ class User:
             raise ValueError('年龄不能为负')
         User.counter += 1
 
-
 # 使用
 user = User(id=1, name='Alice', email='alice@example.com', age=30)
 print(user)
-
 
 # frozen dataclass：不可变
 @dataclass(frozen=True)
@@ -1019,13 +940,11 @@ class Point:
         """计算距离"""
         return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
 
-
 p1 = Point(0.0, 0.0)
 p2 = Point(3.0, 4.0)
 print(f'距离: {p1.distance_to(p2)}')  # 5.0
 
 # p1.x = 1.0  # mypy 报错：frozen dataclass 不可变
-
 
 # slots dataclass（Python 3.10+）
 @dataclass(slots=True)
@@ -1104,54 +1023,43 @@ disallow_untyped_defs = false
 def new_function(x: int, y: int) -> int:
     return x + y
 
-
 # 第 2 步：为现有函数添加注解，参数与返回值
 def existing_function(name: str, count: int = 1) -> list[str]:
     """已有函数添加注解"""
     return [name] * count
 
-
 # 第 3 步：复杂函数使用 overload
 from typing import overload, Union
-
 
 @overload
 def process(data: int) -> int: ...
 @overload
 def process(data: str) -> str: ...
 
-
 def process(data: Union[int, str]) -> Union[int, str]:
     if isinstance(data, int):
         return data * 2
     return data.upper()
 
-
 # 第 4 步：使用 Any 作为过渡，逐步精确化
 from typing import Any
-
 
 def legacy_handler(data: Any) -> Any:
     """遗留代码，先标注 Any，后续精确化"""
     return data
 
-
 # 第 5 步：用 Protocol 替代 Any
 from typing import Protocol
 
-
 class DataHandler(Protocol):
     def handle(self, data: bytes) -> bytes: ...
-
 
 def modern_handler(handler: DataHandler, data: bytes) -> bytes:
     """使用 Protocol 替代 Any"""
     return handler.handle(data)
 
-
 # 第 6 步：使用 cast 进行类型断言（谨慎使用）
 from typing import cast
-
 
 def unsafe_cast(data: Any) -> dict[str, int]:
     """类型断言，告诉 mypy data 的实际类型"""
@@ -1172,7 +1080,6 @@ mypy 插件允许扩展 mypy 的类型推断与检查规则，
 from mypy.plugin import Plugin, ClassDefContext
 from mypy.plugins import dataclasses
 
-
 class CustomPlugin(Plugin):
     """自定义 mypy 插件"""
     
@@ -1189,11 +1096,9 @@ class CustomPlugin(Plugin):
         # 添加自定义逻辑
         # ...
 
-
 def plugin(version: str):
     """插件入口"""
     return CustomPlugin
-
 
 # 在 pyproject.toml 中启用插件
 """
@@ -1283,10 +1188,8 @@ def process(data: Any) -> Any:
 ```python
 from typing import Protocol
 
-
 class HasKey(Protocol):
     def __getitem__(self, key: str) -> str: ...
-
 
 def process(data: HasKey) -> str:
     return data['key']  # mypy 检查 data 支持 [] 操作
@@ -1303,7 +1206,6 @@ def add_item(item: str, items: list[str] = []) -> list[str]:
     items.append(item)
     return items
 
-
 # 多次调用共享同一列表
 print(add_item('a'))  # ['a']
 print(add_item('b'))  # ['a', 'b']，而非 ['b']
@@ -1313,7 +1215,6 @@ print(add_item('b'))  # ['a', 'b']，而非 ['b']
 
 ```python
 from typing import Optional
-
 
 def add_item(item: str, items: Optional[list[str]] = None) -> list[str]:
     if items is None:
@@ -1355,10 +1256,8 @@ def greet(name: str | None = None) -> str:
 class Animal: ...
 class Dog(Animal): ...
 
-
 def add_animal(animals: list[Animal]) -> None:
     animals.append(Animal())
-
 
 dogs: list[Dog] = [Dog()]
 # add_animal(dogs)  # mypy 报错：list 是不变的
@@ -1370,11 +1269,9 @@ dogs: list[Dog] = [Dog()]
 ```python
 from collections.abc import Sequence
 
-
 def count_animals(animals: Sequence[Animal]) -> int:
     """Sequence 是只读的，协变安全"""
     return len(animals)
-
 
 count_animals(dogs)  # 正确
 ```
@@ -1397,7 +1294,6 @@ from typing import TypeVar
 
 T = TypeVar('T')
 
-
 def first(items: list[T]) -> T:
     return items[0]
 ```
@@ -1418,7 +1314,6 @@ class Node:
 ```python
 from __future__ import annotations
 
-
 class Node:
     def set_next(self, next: Node) -> None: ...  # 正确
 ```
@@ -1433,7 +1328,6 @@ class Node:
 def process(data: dict[str, int]) -> int:
     return sum(data.values())
 
-
 # 外部 JSON 数据不保证类型
 import json
 raw = json.loads('{"a": "not an int"}')
@@ -1445,14 +1339,11 @@ raw = json.loads('{"a": "not an int"}')
 ```python
 from pydantic import BaseModel
 
-
 class Data(BaseModel):
     values: dict[str, int]
 
-
 def process(data: Data) -> int:
     return sum(data.values.values())
-
 
 raw = json.loads('{"a": "not an int"}')
 # Data(**raw)  # Pydantic 在运行时校验，抛出 ValidationError
@@ -1470,7 +1361,6 @@ from typing import Callable, Union, TypeVar, ParamSpec
 P = ParamSpec('P')
 R = TypeVar('R')
 T = TypeVar('T')
-
 
 def complex_decorator(
     func: Callable[P, R]
@@ -1533,7 +1423,6 @@ def get_user(user_id):
 class Config:
     host: str = 'localhost'
     port: int = 8080
-
 
 DEFAULT_TIMEOUT: Final[int] = 30
 ```
@@ -1631,12 +1520,10 @@ dmypy run -- src/
 ```python
 from pydantic import BaseModel
 
-
 class User(BaseModel):
     id: int
     name: str
     email: str
-
 
 user = User(id=1, name='Alice', email='alice@example.com')
 ```
@@ -1645,7 +1532,6 @@ user = User(id=1, name='Alice', email='alice@example.com')
 
 ```python
 from sqlalchemy.orm import Mapped, mapped_column
-
 
 class User(Base):
     __tablename__ = 'users'
@@ -1658,9 +1544,7 @@ class User(Base):
 ```python
 from fastapi import FastAPI
 
-
 app = FastAPI()
-
 
 @app.get('/users/{user_id}')
 def get_user(user_id: int) -> dict:
@@ -1696,15 +1580,12 @@ FastAPI 是基于 Starlette 与 Pydantic 的现代 Web 框架，其设计哲学�
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-
 app = FastAPI()
-
 
 class Item(BaseModel):
     name: str
     price: float
     is_offer: bool | None = None
-
 
 @app.post('/items/')
 def create_item(item: Item) -> dict:
@@ -1734,10 +1615,8 @@ SQLAlchemy 2.0 引入了完整的类型系统：
 ```python
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
-
 class Base(DeclarativeBase):
     pass
-
 
 class User(Base):
     __tablename__ = 'users'
@@ -1759,12 +1638,10 @@ Pydantic v2 用 Rust 重写核心，性能提升 5-50 倍：
 ```python
 from pydantic import BaseModel
 
-
 class User(BaseModel):
     id: int
     name: str
     email: str
-
 
 # Rust 核心在运行时校验类型
 user = User(id=1, name='Alice', email='alice@example.com')

@@ -369,7 +369,6 @@ $$T(m, n) = \Theta(m \cdot \alpha(m, n))$$
 # Python 实现：并查集节点
 from typing import Optional
 
-
 class DSUNode:
     """并查集节点。
 
@@ -1598,7 +1597,6 @@ def kruskal(n: int, edges: list[tuple[int, int, int]]) -> tuple[list[tuple[int,i
                 break
     return mst, total
 
-
 # 测试
 edges = [
     (0, 1, 4), (0, 7, 8),
@@ -1636,7 +1634,6 @@ def findCircleNum(isConnected: list[list[int]]) -> int:
                 uf.union(i, j)
     return uf.count
 
-
 # 测试
 assert findCircleNum([[1,1,0],[1,1,0],[0,0,1]]) == 2
 assert findCircleNum([[1,0,0],[0,1,0],[0,0,1]]) == 3
@@ -1657,7 +1654,6 @@ def findRedundantConnection(edges: list[list[int]]) -> list[int]:
         if not uf.union(u, v):   # 已连通，该边冗余
             return [u, v]
     return []
-
 
 # 测试
 assert findRedundantConnection([[1,2],[1,3],[2,3]]) == [2,3]
@@ -1698,7 +1694,6 @@ def numIslands(grid: list[list[str]]) -> int:
                 land_roots.add(uf.find(i * n + j))
     return len(land_roots)
 
-
 # 测试
 grid = [
     ['1','1','0','0','0'],
@@ -1717,7 +1712,6 @@ assert numIslands(grid) == 3
 
 ```python
 from collections import defaultdict
-
 
 def accountsMerge(accounts: list[list[str]]) -> list[list[str]]:
     """LeetCode 721: 账户合并"""
@@ -1769,11 +1763,9 @@ def accountsMerge(accounts: list[list[str]]) -> list[list[str]]:
 - C. $O(\alpha(n))$
 - D. $O(n)$
 
-
 **C. $O(\alpha(n))$**
 
 Tarjan 1975 证明双优化结合的均摊复杂度为 $\Theta(\alpha(n))$，其中 $\alpha$ 是反 Ackermann 函数。对所有实际 $n$，$\alpha(n) \leq 4$，可视为 $O(1)$，但严格意义下 $\alpha(n) \to \infty$。
-
 
 **题目 2**（中等，medium）：以下哪种优化组合能保证 find 的**最坏**复杂度为 $O(\log n)$？
 
@@ -1782,13 +1774,11 @@ Tarjan 1975 证明双优化结合的均摊复杂度为 $\Theta(\alpha(n))$，其
 - C. 路径压缩 + 按秩合并
 - D. 朴素 union
 
-
 **B. 仅按秩合并**
 
 按秩合并保证树高 $h \leq \log_2 n$，故 find 最坏 $O(\log n)$。路径压缩的**单次最坏**仍为 $O(\log n)$（首次压缩需遍历整条路径），但均摊为 $O(\alpha(n))$。
 
 注意：C 选项的双优化结合，**单次最坏**仍为 $O(\log n)$，均摊才为 $O(\alpha(n))$。题干问"最坏"，故 B 也正确，C 的最坏也是 $O(\log n)$。但 B 是更精确的答案，因为它在**没有路径压缩**的前提下就保证了 $O(\log n)$ 最坏。
-
 
 **题目 3**（中等，medium）：Ackermann 函数 $A(2, 3)$ 的值为？
 
@@ -1796,7 +1786,6 @@ Tarjan 1975 证明双优化结合的均摊复杂度为 $\Theta(\alpha(n))$，其
 - B. 7
 - C. 9
 - D. 13
-
 
 **B. 7**
 
@@ -1813,24 +1802,19 @@ $A(2, 3) = A(1, 7) = 7 + 2 = 9$
 
 更一般地：$A(2, n) = 2n + 3$。验证：$A(2, 0) = 3, A(2, 1) = 5, A(2, 2) = 7, A(2, 3) = 9$。
 
-
 ### 填空题知识点讲解
 
 **题目 4**（基础，easy）：Tarjan 1975 证明的并查集总操作复杂度 $O(m \cdot \alpha(m, n))$ 中，$\alpha$ 是 ________ 函数的反函数。
-
 
 **Ackermann**
 
 $\alpha(m, n) = \min \{ k \geq 0 : A(k, \lfloor m/n \rfloor) > \log_2 n \}$，其中 $A$ 是 Ackermann 函数。
 
-
 **题目 5**（中等，medium）：按秩合并中，"秩"（rank）的精确含义是 ________，路径压缩后秩 ________（填"会"或"不会"）更新。
-
 
 **树高度的上界估计 / 不会**
 
 CLRS 第 21 章明确指出：路径压缩会改变树的实际高度，但不影响任何节点的 rank。rank 仅在 union 时根据两根 rank 是否相等决定是否增加，永不减少。这种"懒更新"是双优化结合仍能保证 $O(\alpha(n))$ 的关键。
-
 
 ### 12.3 代码修正题
 
@@ -1860,7 +1844,6 @@ class UnionFind:
         return True
 ```
 
-
 **错误**：`else` 分支中无条件增加 rank，应在 `rank[root_x] == rank[root_y]` 时才增加。
 
 **修正**：
@@ -1883,7 +1866,6 @@ def union(self, x, y):
 
 原代码在 `rank[root_x] > rank[root_y]` 时也会增加 rank，导致 rank 失去"高度上界"含义。
 
-
 **题目 7**（中等，medium）：以下路径压缩实现有一个错误，找出并修正：
 
 ```python
@@ -1897,7 +1879,6 @@ def find(self, x):
         x = self.parent[x]   # 错误：x 已被改为 root，无法继续
     return root
 ```
-
 
 **错误**：`self.parent[x] = root` 后，`x = self.parent[x]` 等于 `x = root`，立即跳出循环，仅压缩了一个节点。
 
@@ -1916,11 +1897,9 @@ def find(self, x):
     return root
 ```
 
-
 ### 12.4 开放论述题
 
 **题目 8**（困难，hard）：为什么并查集的均摊复杂度 $O(\alpha(n))$ 不能简单地说成 $O(1)$？请从数学严谨性与工程实践两个角度论述。
-
 
 **数学严谨性角度**：
 
@@ -1938,9 +1917,7 @@ def find(self, x):
 
 **结论**：学术论文必须写 $O(\alpha(n))$ 以保持严谨；工程文档可近似为 $O(1)$ 但应注明前提。
 
-
 **题目 9**（困难，hard）：对比并查集与哈希表在"判断两元素是否等价"问题上的优劣。何时选择 DSU，何时选择哈希？
-
 
 **DSU 优势**：
 
@@ -1963,9 +1940,7 @@ def find(self, x):
 - **键非整数** → 哈希表或字典版 DSU；
 - **超大规模** → DSU（空间更优）。
 
-
 **题目 10**（困难，hard）：设计一个支持**删除**操作的并查集（提示：离线处理）。
-
 
 **核心思想**：标准 DSU 不支持删除，但若所有操作已知（离线场景），可用**逆序处理**将删除转为合并。
 
@@ -2031,7 +2006,6 @@ def offline_dynamic_connectivity(n, operations):
 ```
 
 **适用场景**：所有操作预先已知的离线场景，如批处理图查询。在线场景需用更复杂的动态连通性结构（如 HDT 算法 $O(\log^2 n)$）。
-
 
 ---
 

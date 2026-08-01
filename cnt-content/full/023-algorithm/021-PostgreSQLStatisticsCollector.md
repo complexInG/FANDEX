@@ -568,7 +568,6 @@ class FenwickTree:
         # 容斥原理: sum(l..r) = sum(1..r) - sum(1..l-1)
         return self.query(r) - self.query(l - 1)
 
-
 # 使用示例
 if __name__ == "__main__":
     arr = [1, 3, 5, 7, 9, 11, 13, 15]
@@ -621,7 +620,6 @@ class FenwickTreeLinear:
             i -= i & (-i)
         return s
 
-
 # 示例
 arr_1indexed = [0, 1, 3, 5, 7, 9, 11, 13, 15]  # arr[0] 闲置
 ftl = FenwickTreeLinear(arr_1indexed)
@@ -673,7 +671,6 @@ class FenwickDiff:
         :return: a[i] = sum(d[1..i])
         """
         return self._query(i)
-
 
 # 示例
 fd = FenwickDiff(10)
@@ -734,7 +731,6 @@ class FenwickRange:
     def range_query(self, l: int, r: int) -> int:
         """查询 sum(a[l..r])"""
         return self._prefix_sum(r) - self._prefix_sum(l - 1)
-
 
 # 示例
 fr = FenwickRange(10)
@@ -921,7 +917,6 @@ def count_inversions(arr: list) -> int:
 
     return inversions
 
-
 # 示例
 print(count_inversions([3, 1, 4, 1, 5, 9, 2, 6]))  # 输出: 10
 # 解释: 逆序对为 (3,1), (3,2), (4,1), (4,2), (9,2), (9,6) 等
@@ -976,7 +971,6 @@ class FenwickTree2D:
                 - self.query(x1 - 1, y2)
                 - self.query(x2, y1 - 1)
                 + self.query(x1 - 1, y1 - 1))
-
 
 # 示例
 ft2d = FenwickTree2D(5, 5)
@@ -1419,7 +1413,6 @@ class NumArray:
             i -= i & (-i)
         return s
 
-
 # 测试
 obj = NumArray([1, 3, 5])
 print(obj.sumRange(0, 2))  # 输出: 9
@@ -1532,7 +1525,6 @@ class RankMaintainer:
             return -1
         score = self.elements[member]
         return self.ft.query(score - 1) + 1
-
 
 # 示例: Redis ZADD/ZRANK 风格
 rm = RankMaintainer(1000)

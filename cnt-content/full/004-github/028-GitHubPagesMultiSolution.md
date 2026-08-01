@@ -17,13 +17,6 @@ prerequisites:
   - github/GitHub概述
 updated: '2026-08-01'
 ---
-
-# GitHub Pages 部署配置速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 背景
 
 **GitHub Pages** 可从分支或 **GitHub Actions** 发布静态文件到 `*.github.io` 或自定义域名。常见生成器：**Jekyll（Ruby）**、**VitePress（Vite + Vue 文档框架）**、**Hugo（Go）**。三者均输出 HTML/CSS/JS，差异在 **模板语言**、**构建速度** 与 **生态**。
@@ -709,16 +702,12 @@ npx gh-pages -d dist -b gh-pages -m "deploy [skip ci]"
 
 ## 参考文献
 
-
-
 GitHub 文档：https://docs.github.com/zh
 GitHub Actions 文档：https://docs.github.com/zh/actions
 GitHub REST API：https://docs.github.com/zh/rest
 GitHub GraphQL API：https://docs.github.com/zh/graphql
 
 ## 延伸阅读
-
-
 
 GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
 Git 协作基础，见 003-git 模块。

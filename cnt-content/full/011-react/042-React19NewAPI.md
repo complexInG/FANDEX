@@ -15,13 +15,6 @@ related:
 prerequisites:
   - react/概述与环境配置
 ---
-
-# React 19 新 Hooks 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. use() API
 
 ```jsx
@@ -345,8 +338,6 @@ preconnect('https://cdn.example.com');
 
 ## 参考文献
 
-
-
 React 官方文档：https://react.dev/
 React 19 发布说明：https://react.dev/blog/2024/12/05/react-19
 TanStack Query：https://tanstack.com/query/latest
@@ -355,15 +346,12 @@ Next.js：https://nextjs.org/
 
 ## 延伸阅读
 
-
-
 React Hooks 深入，见 011-react 模块 Hooks 文档。
 React 与 TypeScript 类型，见 009-typescript 模块。
 前端构建与 Vite，见 057-vite 模块（如已加入）。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 React 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

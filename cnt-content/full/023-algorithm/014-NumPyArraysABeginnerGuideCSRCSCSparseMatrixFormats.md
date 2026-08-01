@@ -605,7 +605,6 @@ import sys
 
 T = TypeVar('T')
 
-
 class DynamicArray(Generic[T]):
     """动态数组完整实现（Python 3.9+ Generic 语法）
 
@@ -716,7 +715,6 @@ class DynamicArray(Generic[T]):
 
     def __repr__(self) -> str:
         return f'DynamicArray({list(self)!r}, capacity={self._capacity})'
-
 
 # 使用示例
 if __name__ == '__main__':
@@ -1323,7 +1321,6 @@ class SparseMatrix:
     def density(self) -> float:
         """稀疏度 = 非零元素 / 总元素"""
         return len(self.triplets) / (self.rows * self.cols)
-
 
 # 示例：五子棋棋盘
 board = SparseMatrix(19, 19)

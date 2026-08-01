@@ -15,13 +15,6 @@ related:
 prerequisites:
   - lua/概述与环境配置
 ---
-
-# Lua 错误处理速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 错误处理是编写健壮程序的基础。Lua 采用了一种简洁而灵活的错误处理机制：通过 error 函数主动抛出错误，通过 pcall 和 xpcall 进行保护调用。与 Java、Python 等语言使用 try-catch 结构不同，Lua 没有内置的异常语法，而是依赖函数调用的返回值来传递错误信息。这种设计虽然简单，但足以应对大多数场景，并且与 Lua 作为嵌入式语言的定位非常契合。
@@ -1251,8 +1244,6 @@ end
 
 ## 参考文献
 
-
-
 Lua 官方文档：https://www.lua.org/docs.html
 Lua 5.4 参考手册：https://www.lua.org/manual/5.4/
 LuaJIT：https://luajit.org/
@@ -1260,8 +1251,6 @@ OpenResty 文档：https://openresty.org/cn/
 Redis EVAL 文档：https://redis.io/docs/latest/develop/programming/
 
 ## 延伸阅读
-
-
 
 Lua 与 Redis 脚本，见 022-redis 模块相关文档。
 Lua 与 OpenResty 网关，见 031-devops 模块相关文档。

@@ -47,7 +47,6 @@ prerequisites: []
 - 003-代码质量：命名、评审、重构。
 - 004-项目管理：估算、排期与风险管理。
 
-
 ## 1. 软件工程定义
 
 软件工程是将**系统化、规范化、可度量**的方法应用于软件的开发、运行和维护的学科。
@@ -177,8 +176,6 @@ flowchart TD
 
 ## 参考文献
 
-
-
 IEEE Software 期刊：https://www.computer.org/csdl/magazine/so
 Martin Fowler 网站：https://martinfowler.com/
 敏捷宣言：https://agilemanifesto.org/iso/zhchs/manifesto.html
@@ -186,15 +183,12 @@ Martin Fowler 网站：https://martinfowler.com/
 
 ## 延伸阅读
 
-
-
 软件架构设计，见 038-software-architecture 模块。
 工程实践（Git/CI），见 003-git/031-devops 模块。
 测试工程，见 036-software-testing 模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供软件工程课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - python/语法速查
 ---
-
-# Python 虚拟环境与包管理
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 前史：全局 `site-packages` 的混沌年代（1991–2007）
@@ -535,7 +528,6 @@ import sys
 import venv
 from pathlib import Path
 
-
 def create_venv(env_dir: str | Path, *, system_site_packages: bool = False,
                 clear: bool = False, upgrade: bool = False) -> Path:
     """创建虚拟环境。
@@ -572,13 +564,11 @@ def create_venv(env_dir: str | Path, *, system_site_packages: bool = False,
 
     return env_path
 
-
 def get_venv_python(env_path: Path) -> Path:
     """获取虚拟环境内的 Python 可执行文件路径。"""
     if os.name == "nt":
         return env_path / "Scripts" / "python.exe"
     return env_path / "bin" / "python"
-
 
 def install_packages(env_path: Path, packages: list[str]) -> None:
     """在虚拟环境中安装包（无需激活）。"""
@@ -592,7 +582,6 @@ def install_packages(env_path: Path, packages: list[str]) -> None:
         [str(python), "-m", "pip", "install", *packages],
     )
 
-
 def list_packages(env_path: Path) -> list[tuple[str, str]]:
     """列出虚拟环境中已安装的包。"""
     python = get_venv_python(env_path)
@@ -605,7 +594,6 @@ def list_packages(env_path: Path) -> list[tuple[str, str]]:
     import json
     data = json.loads(result.stdout)
     return [(pkg["name"], pkg["version"]) for pkg in data]
-
 
 if __name__ == "__main__":
     env = create_venv(".venv_demo", clear=True)
@@ -854,7 +842,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-
 @dataclass(frozen=True)
 class EnvInfo:
     """环境信息快照。"""
@@ -864,7 +851,6 @@ class EnvInfo:
     base_prefix: str
     in_venv: bool
     venv_path: str | None
-
 
 def get_env_info() -> EnvInfo:
     """获取当前 Python 环境信息。
@@ -882,7 +868,6 @@ def get_env_info() -> EnvInfo:
         in_venv=in_venv,
         venv_path=venv_path,
     )
-
 
 def check_package(name: str, min_version: str | None = None) -> dict[str, Any]:
     """检查包是否安装及版本。
@@ -915,7 +900,6 @@ def check_package(name: str, min_version: str | None = None) -> dict[str, Any]:
             "satisfied": False,
         }
 
-
 def diagnose() -> None:
     """诊断当前环境并打印报告。"""
     info = get_env_info()
@@ -946,7 +930,6 @@ def diagnose() -> None:
     for i, p in enumerate(sys.path[:5], 1):
         print(f"  {i}. {p}")
 
-
 if __name__ == "__main__":
     diagnose()
 ```
@@ -968,7 +951,6 @@ from pathlib import Path
 import pytest
 
 from venv_demo.deps import EnvInfo, check_package, get_env_info
-
 
 class TestEnvInfo:
     """EnvInfo 数据类测试。"""
@@ -992,7 +974,6 @@ class TestEnvInfo:
         with pytest.raises(AttributeError):
             info.python_version = "3.13.0"  # type: ignore[misc]
 
-
 class TestGetEnvInfo:
     """get_env_info 函数测试。"""
 
@@ -1010,7 +991,6 @@ class TestGetEnvInfo:
         """测试虚拟环境检测。"""
         info = get_env_info()
         assert info.in_venv == (sys.prefix != sys.base_prefix)
-
 
 class TestCheckPackage:
     """check_package 函数测试。"""
@@ -1032,7 +1012,6 @@ class TestCheckPackage:
         result = check_package("pytest", "999.0.0")
         assert result["installed"] is True
         assert result["satisfied"] is False
-
 
 @pytest.mark.skipif(os.name == "nt", reason="Linux/macOS 专属测试")
 class TestVenvCreation:
@@ -1726,7 +1705,6 @@ B. `ruff`
 C. `pixi`
 D. `poetry`
 
-
 D。`poetry` 用 Python 实现。`uv`、`ruff`、`pixi` 均为 Rust 实现。
 
 **常见疑问 2**：PEP 405 标准化的虚拟环境配置文件是？
@@ -1735,7 +1713,6 @@ A. `virtualenv.cfg`
 B. `pyvenv.cfg`
 C. `.python-version`
 D. `environment.yml`
-
 
 B。PEP 405 标准化 `pyvenv.cfg`，包含 `home`、`version_info` 等键。
 
@@ -1746,7 +1723,6 @@ B. PubGrub
 C. resolvelib
 D. SAT4J
 
-
 B。`uv` 使用 PubGrub 算法（借鉴 SAT 求解器的 CDCL 思想）。
 
 **常见疑问 4**：在 Docker 容器中，以下哪种做法最推荐？
@@ -1756,23 +1732,19 @@ B. 使用虚拟环境，便于多阶段构建
 C. 使用 conda 管理所有依赖
 D. 手动编译所有依赖
 
-
 B。使用虚拟环境便于多阶段构建，与本地开发环境一致，隔离清晰。
 
 ### 填空题知识点讲解
 
 **常见疑问 5**：Python 标准库中创建虚拟环境的模块是 `______`。
 
-
 `venv`（Python 3.3+ 引入，PEP 405 规范）。
 
 **常见疑问 6**：`pip` 从 ______ 版本开始默认使用 resolvelib 解析器。
 
-
 20.3（2020 年 11 月发布）。
 
 **常见疑问 7**：`uv` 的全局缓存在 `______` 目录下。
-
 
 `~/.cache/uv/`（Linux/macOS）或 `%LOCALAPPDATA%\uv\cache`（Windows）。
 
@@ -1780,13 +1752,11 @@ B。使用虚拟环境便于多阶段构建，与本地开发环境一致，隔�
 
 **常见疑问 8**：编写一个 Python 函数，使用 `venv` 模块创建虚拟环境，并安装指定包列表，无需 shell 激活。
 
-
 ```python
 import subprocess
 import sys
 import venv
 from pathlib import Path
-
 
 def create_and_install(env_dir: str, packages: list[str]) -> None:
     """创建虚拟环境并安装包。
@@ -1817,19 +1787,15 @@ def create_and_install(env_dir: str, packages: list[str]) -> None:
             [str(python), "-m", "pip", "install", *packages]
         )
 
-
 if __name__ == "__main__":
     create_and_install(".venv", ["requests", "rich"])
 ```
 
-
 **常见疑问 9**：编写一个函数，检测当前 Python 是否在虚拟环境中运行，并返回虚拟环境路径。
-
 
 ```python
 import sys
 from pathlib import Path
-
 
 def detect_venv() -> tuple[bool, Path | None]:
     """检测当前是否在虚拟环境中运行。
@@ -1841,14 +1807,12 @@ def detect_venv() -> tuple[bool, Path | None]:
     venv_path = Path(sys.prefix) if in_venv else None
     return in_venv, venv_path
 
-
 if __name__ == "__main__":
     in_venv, path = detect_venv()
     print(f"在虚拟环境: {in_venv}")
     if in_venv:
         print(f"虚拟环境路径: {path}")
 ```
-
 
 ### 9.4 思考题
 

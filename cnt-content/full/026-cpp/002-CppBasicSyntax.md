@@ -15,13 +15,6 @@ related:
 prerequisites: []
 updated: '2026-08-01'
 ---
-
-# 基础语法
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 数据类型 (Data Types)
 
 C++ 具有丰富的类型系统，分为基本类型和复合类型。
@@ -1310,8 +1303,6 @@ std::rcu_retire(p);  // 等待所有读者退出后回收
 
 ## 参考文献
 
-
-
 cppreference C++ 文档：https://zh.cppreference.com/w/cpp
 C++ 核心指南：https://isocpp.github.io/CppCoreGuidelines/
 C++ 标准草案（WG21）：https://isocpp.org/std/the-standard
@@ -1319,8 +1310,6 @@ CMake 官方文档：https://cmake.org/documentation/
 Compiler Explorer：https://godbolt.org/
 
 ## 延伸阅读
-
-
 
 C++ 模板深入，见 026-cpp/062-CppTemplate 文档。
 STL 容器与算法，见 026-cpp 模块 STL 文档。

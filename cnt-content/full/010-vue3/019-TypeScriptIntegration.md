@@ -18,13 +18,6 @@ related:
 prerequisites:
   - vue3/语法速查
 ---
-
-# Vue + TypeScript 类型语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. TypeScript 集成概述 | TypeScript Integration Overview
 
 TypeScript 是 JavaScript 的超集，它添加了静态类型系统，提供了更好的代码提示、类型检查和代码重构能力。Vue3 对 TypeScript 提供了良好的支持，通过集成 TypeScript，可以提高代码的可维护性和类型安全性。
@@ -1174,8 +1167,6 @@ defineExpose({ selectedUser });
 ```
 
 ## 参考文献
-
-
 
 Vue 官方文档：https://vuejs.org/
 Vue Router：https://router.vuejs.org/zh/

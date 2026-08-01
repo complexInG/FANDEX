@@ -575,7 +575,6 @@ TOKEN_PATTERN: Final[re.Pattern[str]] = re.compile(
     r"(?P<number>\d+\.?\d*)|(?P<op>[+\-*/^])|(?P<lparen>\()|(?P<rparen>\))|(?P<space>\s+)"
 )
 
-
 class TokenType(Enum):
     """Token 类型枚举。"""
 
@@ -585,7 +584,6 @@ class TokenType(Enum):
     RPAREN = auto()
     EOF = auto()
 
-
 @dataclass(frozen=True, slots=True)
 class Token:
     """词法 token：不可变，slots 优化内存。"""
@@ -594,22 +592,17 @@ class Token:
     value: str
     position: int
 
-
 class CalculatorError(Exception):
     """计算器错误基类。"""
-
 
 class LexError(CalculatorError):
     """词法错误。"""
 
-
 class ParseError(CalculatorError):
     """语法错误。"""
 
-
 class EvalError(CalculatorError):
     """求值错误（如除零）。"""
-
 
 def tokenize(expr: str) -> list[Token]:
     """
@@ -650,11 +643,9 @@ Token(TokenType.NUMBER, '2', 4), Token(TokenType.EOF, '', 5)]
     tokens.append(Token(TokenType.EOF, "", len(expr)))
     return tokens
 
-
 # 递归下降解析器：expr := term (('+' | '-') term)*
 #                   term := factor (('*' | '/') factor)*
 #                   factor := NUMBER | '(' expr ')' | ('+' | '-') factor
-
 
 class Parser:
     """递归下降解析器，输出 AST 后求值。"""
@@ -723,7 +714,6 @@ class Parser:
             return -factor if tok.value == "-" else factor
         raise ParseError(f"意外的 token {tok.type.name} 在位置 {tok.position}")
 
-
 def calculate(expr: str) -> float:
     """
     计算算术表达式。
@@ -745,7 +735,6 @@ def calculate(expr: str) -> float:
     """
     tokens = tokenize(expr)
     return Parser(tokens).parse()
-
 
 if __name__ == "__main__":  # pragma: no cover
     import sys
@@ -783,11 +772,9 @@ from quality_demo.calculator import (
     TokenType,
 )
 
-
 @pytest.fixture
 def simple_expr() -> str:
     return "1 + 2 * 3"
-
 
 class TestTokenize:
     """词法分析器测试。"""
@@ -815,7 +802,6 @@ class TestTokenize:
     def test_illegal_char(self) -> None:
         with pytest.raises(LexError, match="非法字符"):
             tokenize("1 @ 2")
-
 
 class TestCalculate:
     """计算器测试：参数化覆盖所有路径。"""
@@ -853,7 +839,6 @@ class TestCalculate:
     def test_invalid_expressions(self, expr: str, error_type: type[CalculatorError]) -> None:
         with pytest.raises(error_type):
             calculate(expr)
-
 
 class TestPropertyBased:
     """基于性质的测试（property-based testing 简化版）。"""
@@ -1171,7 +1156,6 @@ Ruff 支持 Python 编写自定义规则（通过 `ruff_python_ast`）：
 from ruff_python_ast import AST, Expr, Call
 from ruff_python_checker import Checker, Rule
 
-
 class DisallowPrint(Rule):
     """禁止使用 print 函数。"""
 
@@ -1480,20 +1464,17 @@ from __future__ import annotations
 
 from typing import TypedDict
 
-
 class UserInput(TypedDict):
     """输入用户结构。"""
 
     name: str
     age: int
 
-
 class UserOutput(TypedDict):
     """输出用户结构。"""
 
     name: str
     adult: bool
-
 
 def process_users(users: list[UserInput]) -> list[UserOutput]:
     """
@@ -1513,7 +1494,6 @@ def process_users(users: list[UserInput]) -> list[UserOutput]:
         {"name": u["name"], "adult": u["age"] >= 18}
         for u in users
     ]
-
 
 # 测试
 import pytest

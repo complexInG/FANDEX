@@ -14,13 +14,6 @@ related:
   - redis/语法速查
 prerequisites: []
 ---
-
-# Redis Cluster 集群命令速查手册
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 主从复制
 
 ### 1.1 全量同步
@@ -626,16 +619,12 @@ CLUSTER RESET [HARD|SOFT]
 
 ## 参考文献
 
-
-
 Redis 官方文档：https://redis.io/docs/latest/
 Redis 命令参考：https://redis.io/docs/latest/commands/
 Redis 中文资料：https://redis.com.cn/
 Redisson 文档：https://redisson.org/
 
 ## 延伸阅读
-
-
 
 Redis 数据结构详解，见 022-redis 模块文档。
 Redis 持久化与集群，见 022-redis 模块相关文档。

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
-
-# C++ 设计模式
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 设计模式是面向对象编程中经过验证的解决方案模板，用于解决常见的软件设计问题。GoF（Gang of Four）定义了 23 种经典设计模式，分为创建型、结构型和行为型三大类。C++ 的多态、模板、RAII 和智能指针等特性为设计模式的实现提供了丰富的手段，使得许多模式在 C++ 中有比传统面向对象语言更优雅的实现方式。
@@ -668,8 +661,6 @@ actions.push_back([]{ std::cout << "hi"; });
 
 ## 参考文献
 
-
-
 cppreference C++ 文档：https://zh.cppreference.com/w/cpp
 C++ 核心指南：https://isocpp.github.io/CppCoreGuidelines/
 C++ 标准草案（WG21）：https://isocpp.org/std/the-standard
@@ -677,8 +668,6 @@ CMake 官方文档：https://cmake.org/documentation/
 Compiler Explorer：https://godbolt.org/
 
 ## 延伸阅读
-
-
 
 C++ 模板深入，见 026-cpp/062-CppTemplate 文档。
 STL 容器与算法，见 026-cpp 模块 STL 文档。

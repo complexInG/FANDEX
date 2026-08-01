@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# Cybersecurity AIDE 文件完整性检查
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## AIDE 安装与初始化
 
 **基本写法:安装 AIDE**
@@ -383,8 +376,6 @@ grep -E "^/" /etc/aide/aide.conf | head -20
 
 ## 参考文献
 
-
-
 OWASP Top 10：https://owasp.org/www-project-top-ten/
 OWASP Cheat Sheets：https://cheatsheetseries.owasp.org/
 NIST 网络安全框架：https://www.nist.gov/cyberframework
@@ -392,8 +383,6 @@ CWE 数据库：https://cwe.mitre.org/
 PortSwigger Web Security Academy：https://portswigger.net/web-security
 
 ## 延伸阅读
-
-
 
 密码学与证书，见 033-cybersecurity 模块文档。
 Web 攻击与防御，见 033-cybersecurity 模块相关文档。

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - cpp/概述与环境配置
 ---
-
-# C++ 网络编程
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 C++ 网络编程是使用 C++ 通过网络协议进行数据通信的技术。最基础的方式是使用操作系统提供的 Socket API，它允许程序通过网络发送和接收数据。更高级的方式是使用第三方库如 Boost.Asio、libcurl 等，它们封装了底层细节，提供了更易用的接口。
@@ -782,8 +775,6 @@ struct Socket {
 
 ## 参考文献
 
-
-
 cppreference C++ 文档：https://zh.cppreference.com/w/cpp
 C++ 核心指南：https://isocpp.github.io/CppCoreGuidelines/
 C++ 标准草案（WG21）：https://isocpp.org/std/the-standard
@@ -791,8 +782,6 @@ CMake 官方文档：https://cmake.org/documentation/
 Compiler Explorer：https://godbolt.org/
 
 ## 延伸阅读
-
-
 
 C++ 模板深入，见 026-cpp/062-CppTemplate 文档。
 STL 容器与算法，见 026-cpp 模块 STL 文档。

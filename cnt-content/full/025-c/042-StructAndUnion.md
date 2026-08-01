@@ -17,13 +17,6 @@ prerequisites:
   - c/概述
 updated: '2026-08-01'
 ---
-
-# 结构体与联合体
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 结构体 (Structures)
 
 ### 1.1 结构体的概念
@@ -1172,8 +1165,6 @@ struct __attribute__((aligned(16))) AlignedStruct {
 ```
 
 ## 参考文献
-
-
 
 cppreference C 文档：https://zh.cppreference.com/w/c
 C 标准草案：https://www.open-std.org/jtc1/sc22/wg14/

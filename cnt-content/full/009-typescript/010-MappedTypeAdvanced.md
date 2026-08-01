@@ -15,12 +15,6 @@ related:
 prerequisites:
   - typescript/语法速查
 ---
-# TypeScript 映射类型
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 第一章 概述
 
 ### 1.1 为什么需要映射类型进阶

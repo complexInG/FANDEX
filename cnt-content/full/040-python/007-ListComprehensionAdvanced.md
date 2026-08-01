@@ -15,13 +15,6 @@ related:
 prerequisites:
   - python/语法速查
 ---
-
-# 列表推导式进阶
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 摘要
 
 本文档系统阐述 Python 推导式（comprehension）与生成器表达式（generator expression）的设计哲学、形式语义、底层实现与工程实践。内容覆盖 PEP 202（list comprehension）、PEP 274（dict/set comprehension）、PEP 289（generator expression）以及 PEP 704（推导式内变量作用域修订）等核心提案，从 CPython 字节码层面剖析推导式的执行模型，并对照 Haskell、Scala、Rust 等语言的同源构造。结合 NumPy、Pandas、CPython 标准库等真实案例，给出可运行的企业级 production-ready 代码、性能基准、陷阱分析与最佳实践。
@@ -508,7 +501,6 @@ def flatten(matrix: list[list[int]]) -> list[int]:
     """
     return [x for row in matrix for x in row]
 
-
 def reshape_to_matrix(flat: list[int], cols: int) -> list[list[int]]:
     """一维列表按指定列数重塑为二维矩阵。
 
@@ -525,7 +517,6 @@ def reshape_to_matrix(flat: list[int], cols: int) -> list[list[int]]:
     if len(flat) % cols != 0:
         raise ValueError(f"长度 {len(flat)} 不能被 cols={cols} 整除")
     return [flat[i : i + cols] for i in range(0, len(flat), cols)]
-
 
 if __name__ == "__main__":
     matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
@@ -614,7 +605,6 @@ import random
 from pathlib import Path
 from typing import Iterator
 
-
 def generate_logs(path: Path, n: int = 1_000_000) -> None:
     """生成 n 条模拟日志到 path。"""
     levels = ("INFO", "WARN", "ERROR", "DEBUG")
@@ -627,13 +617,11 @@ def generate_logs(path: Path, n: int = 1_000_000) -> None:
             }
             f.write(json.dumps(record) + "\n")
 
-
 def parse_logs(path: Path) -> Iterator[dict[str, object]]:
     """逐行解析日志文件，返回生成器。"""
     with path.open(encoding="utf-8") as f:
         for line in f:
             yield json.loads(line)
-
 
 def analyze_logs(path: Path) -> dict[str, float]:
     """流式分析日志：计算各级别平均耗时。
@@ -654,7 +642,6 @@ def analyze_logs(path: Path) -> dict[str, float]:
 
     return {"error_count": count, "avg_duration_ms": total / count if count else 0.0}
 
-
 if __name__ == "__main__":
     log_path = Path("sample.log")
     if not log_path.exists():
@@ -674,13 +661,11 @@ from __future__ import annotations
 
 from itertools import chain, groupby, islice, starmap
 
-
 # 1. 链接多个生成器表达式
 def concatenated_squares(*ranges: range) -> list[int]:
     """对多个 range 的平方进行链接。"""
     squared_iters = (x**2 for r in ranges for x in r)
     return list(squared_iters)
-
 
 # 2. groupby + 推导式：按首字符分组
 def group_by_first_letter(words: list[str]) -> dict[str, list[str]]:
@@ -691,14 +676,12 @@ def group_by_first_letter(words: list[str]) -> dict[str, list[str]]:
         for key, group in groupby(sorted_words, key=lambda w: w[0].lower())
     }
 
-
 # 3. starmap + 推导式：对参数元组应用函数
 def compute_distances(points: list[tuple[float, float]]) -> list[float]:
     """计算二维点到原点的距离。"""
     import math
 
     return list(starmap(lambda x, y: math.hypot(x, y), points))
-
 
 if __name__ == "__main__":
     print(concatenated_squares(range(3), range(3, 5)))
@@ -718,13 +701,11 @@ from __future__ import annotations
 import asyncio
 from typing import AsyncIterator
 
-
 async def async_range(n: int) -> AsyncIterator[int]:
     """异步范围迭代器。"""
     for i in range(n):
         await asyncio.sleep(0.001)  # 模拟 IO 等待
         yield i
-
 
 async def main() -> None:
     # 异步列表推导式
@@ -734,7 +715,6 @@ async def main() -> None:
     # 异步生成器表达式
     total = sum(x async for x in async_range(100))
     print(f"async total: {total}")
-
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -751,14 +731,12 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-
 class User(BaseModel):
     """用户模型。"""
 
     id: int
     name: str
     age: int = Field(ge=0, le=150)
-
 
 # 从原始字典批量构造 Pydantic 模型
 raw_users = [
@@ -793,7 +771,6 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
-
 def deduplicate_preserve_order(items: list[T]) -> list[T]:
     """去重并保留首次出现顺序。
 
@@ -806,13 +783,11 @@ def deduplicate_preserve_order(items: list[T]) -> list[T]:
     seen: set[T] = set()
     return [x for x in items if not (x in seen or seen.add(x))]
 
-
 def chunked(items: list[T], size: int) -> list[list[T]]:
     """按 size 切分列表。"""
     if size <= 0:
         raise ValueError("size 必须为正整数")
     return [items[i : i + size] for i in range(0, len(items), size)]
-
 
 if __name__ == "__main__":
     print(deduplicate_preserve_order([1, 2, 2, 3, 3, 3, 4]))
@@ -1081,11 +1056,9 @@ from __future__ import annotations
 
 import pytest
 
-
 def squares_comprehension(n: int) -> list[int]:
     """列表推导式。"""
     return [x**2 for x in range(n)]
-
 
 def squares_for_loop(n: int) -> list[int]:
     """显式 for 循环。"""
@@ -1094,11 +1067,9 @@ def squares_for_loop(n: int) -> list[int]:
         result.append(x**2)
     return result
 
-
 def squares_map_lambda(n: int) -> list[int]:
     """map + lambda。"""
     return list(map(lambda x: x**2, range(n)))
-
 
 @pytest.mark.parametrize("n", [100, 1000, 10000])
 @pytest.mark.benchmark
@@ -1119,10 +1090,8 @@ from __future__ import annotations
 
 from hypothesis import given, strategies as st
 
-
 def flatten_comp(matrix: list[list[int]]) -> list[int]:
     return [x for row in matrix for x in row]
-
 
 def flatten_loop(matrix: list[list[int]]) -> list[int]:
     result = []
@@ -1130,7 +1099,6 @@ def flatten_loop(matrix: list[list[int]]) -> list[int]:
         for x in row:
             result.append(x)
     return result
-
 
 @given(st.lists(st.lists(st.integers(min_value=0, max_value=100), min_size=0, max_size=10), min_size=0, max_size=10))
 def test_flatten_equivalence(matrix: list[list[int]]) -> None:
@@ -1150,14 +1118,12 @@ from __future__ import annotations
 import dis
 import sys
 
-
 def inspect_comprehension() -> None:
     """反汇编推导式字节码。"""
     code = compile("[x**2 for x in range(10) if x % 2 == 0]", "<demo>", "eval")
     dis.dis(code)
     print(f"co_consts: {code.co_consts}")
     print(f"co_names: {code.co_names}")
-
 
 def debug_with_intermediate() -> None:
     """通过中间变量调试推导式。"""
@@ -1172,7 +1138,6 @@ def debug_with_intermediate() -> None:
         intermediate = x**2
         # print(f"x={x}, square={intermediate}")  # 调试输出
         result.append(intermediate)
-
 
 if __name__ == "__main__":
     inspect_comprehension()
@@ -1337,7 +1302,6 @@ Dropbox 客户端使用推导式 + `os.walk` 实现高效的增量同步：
 ```python
 import os
 from pathlib import Path
-
 
 def find_large_files(root: Path, min_size: int = 1024 * 1024) -> list[Path]:
     """找出所有大于 min_size 的文件。

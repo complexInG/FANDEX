@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# 管道与重定向速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 标准输出重定向
 
 **基本用法:覆盖写入文件**
@@ -162,8 +155,6 @@ EOF
 
 ## 参考文献
 
-
-
 本模块各文档：环境搭建、编程基础、调试思维等。
 MDN 学习区：https://developer.mozilla.org/zh-CN/docs/Learn_web_development
 freeCodeCamp：https://www.freecodecamp.org/chinese/
@@ -171,14 +162,11 @@ freeCodeCamp：https://www.freecodecamp.org/chinese/
 
 ## 延伸阅读
 
-
-
 从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
 语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供基础课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

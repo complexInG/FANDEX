@@ -38,7 +38,6 @@ reviewer: fanquanpp
 updated: '2026-08-01'
 ---
 
-
 ## 1. 历史动机与发展脉络
 
 C++ 模板由 Bjarne Stroustrup 于 1988 年前后引入 C++ 2.0 的实验版本，1990 年正式加入 C++ 标准草案，1998 年 C++98 标准化。设计动机是“参数化多态”：让同一份代码适用于多种类型，同时保持静态类型检查与零运行时开销。
@@ -508,10 +507,6 @@ cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreferen
 泛型编程与设计模式，见 038-software-architecture 模块相关文档；
 
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 C++ 进阶课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 C++ 课程。
-
-# C++ 模板编程
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 

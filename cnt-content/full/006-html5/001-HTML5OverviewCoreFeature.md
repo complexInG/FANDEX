@@ -25,11 +25,6 @@ updated: '2026-08-01'
 - 004-列表与链接：掌握页面导航的基本结构。
 - 005-表单与验证：输入框、按钮与数据提交。
 
-
-# HTML5 全局属性与文档结构 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数 | `{ }` 分组 | `|` 或 | `...` 重复
-
 ---
 
 ## 1. HTML5 概述 (Overview)
@@ -959,8 +954,6 @@ HTML5 是现代 Web 开发的基础，它的语义化标签和新特性为 Web �
 - **preconnect 跨域**:跨域资源预加载需添加 `crossorigin` 属性
 
 ## 参考文献
-
-
 
 WHATWG HTML Living Standard：https://html.spec.whatwg.org/
 MDN HTML 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTML

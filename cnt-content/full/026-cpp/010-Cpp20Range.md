@@ -15,13 +15,6 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
-
-# C++20 Ranges 速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 C++20 引入的 Ranges 库为标准库算法带来了范式级的变革。它将算法与数据源解耦，通过视图（View）实现惰性求值的链式管道操作，使数据处理代码更加声明式和高效。传统 STL 算法依赖迭代器对，而 Ranges 以"范围"为基本抽象，配合管道操作符 `|` 实现数据流的组合变换，代码可读性显著提升。
@@ -574,8 +567,6 @@ std::ranges::transform(v, std::back_inserter(dest), [](int x) { return x * 2; })
 
 ## 参考文献
 
-
-
 cppreference C++ 文档：https://zh.cppreference.com/w/cpp
 C++ 核心指南：https://isocpp.github.io/CppCoreGuidelines/
 C++ 标准草案（WG21）：https://isocpp.org/std/the-standard
@@ -583,8 +574,6 @@ CMake 官方文档：https://cmake.org/documentation/
 Compiler Explorer：https://godbolt.org/
 
 ## 延伸阅读
-
-
 
 C++ 模板深入，见 026-cpp/062-CppTemplate 文档。
 STL 容器与算法，见 026-cpp 模块 STL 文档。

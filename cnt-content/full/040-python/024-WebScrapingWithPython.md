@@ -279,7 +279,6 @@ Scrapy 引擎简化模型：基于 asyncio 的核心循环。
 import asyncio
 from typing import AsyncIterator
 
-
 async def scrapy_engine_loop(spider, scheduler, downloader, pipeline):
     """Scrapy 3.x 引擎核心循环（基于 asyncio 简化版）。"""
     async for request in spider.start_requests():
@@ -404,7 +403,6 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-
 def build_session(
     total_retries: int = 3,
     backoff_factor: float = 0.5,
@@ -434,7 +432,6 @@ def build_session(
     })
     return session
 
-
 def fetch_with_session(url: str, proxies: dict | None = None) -> str:
     """使用 Session 抓取页面，支持代理与超时。"""
     session = build_session()
@@ -454,7 +451,6 @@ def fetch_with_session(url: str, proxies: dict | None = None) -> str:
         return ''
     finally:
         session.close()
-
 
 if __name__ == '__main__':
     html = fetch_with_session('https://example.com')
@@ -477,7 +473,6 @@ import asyncio
 import httpx
 from typing import Iterable
 
-
 async def fetch_one(client: httpx.AsyncClient, url: str) -> str:
     """抓取单个 URL。"""
     try:
@@ -487,7 +482,6 @@ async def fetch_one(client: httpx.AsyncClient, url: str) -> str:
     except httpx.HTTPError as exc:
         print(f'请求失败 {url}: {exc}')
         return ''
-
 
 async def fetch_many(urls: Iterable[str], concurrency: int = 10) -> dict[str, str]:
     """并发抓取多个 URL，限制并发数。"""
@@ -507,7 +501,6 @@ async def fetch_many(urls: Iterable[str], concurrency: int = 10) -> dict[str, st
     ) as client:
         await asyncio.gather(*[bounded_fetch(client, url) for url in urls])
     return results
-
 
 if __name__ == '__main__':
     urls = [
@@ -533,7 +526,6 @@ aiohttp 异步爬虫：与 httpx 类似但更轻量，性能略高。
 """
 import asyncio
 import aiohttp
-
 
 async def crawl(urls: list[str], max_concurrency: int = 100) -> list[str]:
     """使用 aiohttp 并发抓取。"""
@@ -561,7 +553,6 @@ async def crawl(urls: list[str], max_concurrency: int = 100) -> list[str]:
     ) as session:
         return await asyncio.gather(*[fetch(session, url) for url in urls])
 
-
 if __name__ == '__main__':
     urls = [f'https://example.com/page/{i}' for i in range(50)]
     results = asyncio.run(crawl(urls, max_concurrency=20))
@@ -582,7 +573,6 @@ BeautifulSoup 解析示例：使用 lxml 后端提升 10 倍性能。
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
-
 def parse_quotes(html: str, base_url: str) -> list[dict]:
     """解析 quotes.toscrape.com 页面。"""
     soup = BeautifulSoup(html, 'lxml')  # lxml 比 html.parser 快 10 倍
@@ -601,7 +591,6 @@ def parse_quotes(html: str, base_url: str) -> list[dict]:
     next_link = soup.select_one('li.next > a')
     next_url = urljoin(base_url, next_link['href']) if next_link else None
     return quotes
-
 
 def parse_table(html: str) -> list[dict]:
     """解析 HTML 表格为字典列表。"""
@@ -634,7 +623,6 @@ lxml 与 parsel 性能对比：lxml 直接 API，parsel 封装 CSS 选择器。
 from lxml import html as lxml_html
 from parsel import Selector
 
-
 def parse_with_lxml(html_bytes: bytes) -> list[dict]:
     """使用 lxml 直接 API 解析。"""
     tree = lxml_html.fromstring(html_bytes)
@@ -648,7 +636,6 @@ def parse_with_lxml(html_bytes: bytes) -> list[dict]:
                 'author': author_elem[0].text_content().strip(),
             })
     return results
-
 
 def parse_with_parsel(html_text: str) -> list[dict]:
     """使用 parsel 解析（Scrapy 内置）。"""
@@ -691,7 +678,6 @@ my_scraper/
 # my_scraper/items.py
 import scrapy
 
-
 class QuoteItem(scrapy.Item):
     """名言数据模型。"""
     text = scrapy.Field()
@@ -700,12 +686,10 @@ class QuoteItem(scrapy.Item):
     url = scrapy.Field()
     crawled_at = scrapy.Field()
 
-
 # my_scraper/spiders/quotes_spider.py
 import scrapy
 from datetime import datetime, timezone
 from my_scraper.items import QuoteItem
-
 
 class QuotesSpider(scrapy.Spider):
     """抓取 quotes.toscrape.com 全站名言。"""
@@ -756,11 +740,9 @@ class QuotesSpider(scrapy.Spider):
         ).get()
         yield item
 
-
 # my_scraper/pipelines.py
 import hashlib
 from itemadapter import ItemAdapter
-
 
 class DuplicateFilterPipeline:
     """URL 指纹去重管道。"""
@@ -778,7 +760,6 @@ class DuplicateFilterPipeline:
         self.seen.add(fingerprint)
         return item
 
-
 class ValidationPipeline:
     """数据校验管道。"""
 
@@ -788,7 +769,6 @@ class ValidationPipeline:
         if not text or len(text) < 10:
             raise DropItem(f'文本过短: {text}')
         return item
-
 
 class JsonWriterPipeline:
     """JSON Lines 写入管道。"""
@@ -804,7 +784,6 @@ class JsonWriterPipeline:
         line = json.dumps(dict(item), ensure_ascii=False) + '\n'
         self.file.write(line)
         return item
-
 
 from scrapy.exceptions import DropItem  # noqa: E402
 ```
@@ -830,7 +809,6 @@ import requests
 from scrapy import signals
 from scrapy.http import Request
 
-
 USER_AGENTS = [
     # 桌面浏览器
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
@@ -844,7 +822,6 @@ USER_AGENTS = [
     '(KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
 ]
 
-
 class RandomUserAgentMiddleware:
     """随机 User-Agent 中间件。"""
 
@@ -857,7 +834,6 @@ class RandomUserAgentMiddleware:
 
     def process_request(self, request: Request, spider):
         request.headers['User-Agent'] = random.choice(self.user_agents)
-
 
 class ProxyMiddleware:
     """代理池中间件，自动轮换与故障转移。"""
@@ -937,7 +913,6 @@ Playwright Python 示例：抓取 JS 动态渲染页面。
 from playwright.async_api import async_playwright, Browser, Page
 import asyncio
 
-
 async def scrape_spa(url: str) -> str:
     """抓取 SPA 页面的完整 HTML。"""
     async with async_playwright() as p:
@@ -964,7 +939,6 @@ async def scrape_spa(url: str) -> str:
         await browser.close()
         return html
 
-
 async def scrape_with_login(login_url: str, target_url: str) -> str:
     """带登录的爬取：使用持久化存储。"""
     async with async_playwright() as p:
@@ -977,7 +951,6 @@ async def scrape_with_login(login_url: str, target_url: str) -> str:
         content = await page.content()
         await browser.close()
         return content
-
 
 async def scrape_with_stealth(url: str) -> str:
     """使用 playwright-stealth 反检测。"""
@@ -997,7 +970,6 @@ async def scrape_with_stealth(url: str) -> str:
         html = await page.content()
         await browser.close()
         return html
-
 
 async def concurrent_scrape(urls: list[str], max_concurrency: int = 5) -> list[str]:
     """并发抓取多个 URL，使用单浏览器多上下文。"""
@@ -1022,7 +994,6 @@ async def concurrent_scrape(urls: list[str], max_concurrency: int = 5) -> list[s
         await browser.close()
         return results
 
-
 if __name__ == '__main__':
     html = asyncio.run(scrape_spa('https://quotes.toscrape.com/js/'))
     print(f'获取 {len(html)} 字节')
@@ -1046,7 +1017,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-
 
 def scrape_with_selenium(url: str) -> list[dict]:
     """使用 Selenium 抓取动态页面。"""
@@ -1103,7 +1073,6 @@ from urllib.parse import urljoin
 import aiohttp
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
-
 
 class AsyncCrawler:
     """异步爬虫框架。"""
@@ -1207,7 +1176,6 @@ class AsyncCrawler:
                 await queue.put(new_url)
         return result
 
-
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     crawler = AsyncCrawler(max_concurrency=20, per_host_limit=5, download_delay=1.0)
@@ -1245,7 +1213,6 @@ Scrapy-Redis 分布式爬虫：Redis 作为共享调度器。
 import scrapy
 from scrapy_redis.spiders import RedisSpider
 from scrapy_redis.utils import bytes_to_str
-
 
 class DistributedQuotesSpider(RedisSpider):
     """基于 Redis 队列的分布式爬虫。"""
@@ -1287,7 +1254,6 @@ class DistributedQuotesSpider(RedisSpider):
         url = bytes_to_str(data)
         return self.make_requests_from_url(url)
 
-
 # 启动多个 worker:
 # redis-cli lpush quotes:start_urls https://quotes.toscrape.com/
 # scrapy crawl distributed_quotes  # 在多台机器上执行
@@ -1311,7 +1277,6 @@ from typing import Iterable
 import psycopg2
 from psycopg2.extras import execute_values
 from clickhouse_driver import Client as ClickHouseClient
-
 
 class PostgresStorage:
     """PostgreSQL 存储层。"""
@@ -1380,7 +1345,6 @@ class PostgresStorage:
             """, rows)
         self.conn.commit()
         return len(rows)
-
 
 class ClickHouseStorage:
     """ClickHouse 列式存储，用于聚合分析。"""
@@ -1454,7 +1418,6 @@ from urllib.parse import urlparse
 from urllib.robotparser import RobotFileParser
 import requests
 
-
 class RobotsChecker:
     """robots.txt 检查器。"""
 
@@ -1499,7 +1462,6 @@ class RobotsChecker:
             rp.parse(['User-agent: *', 'Disallow: /'])
         return rp
 
-
 if __name__ == '__main__':
     checker = RobotsChecker(user_agent='FANDEXBot')
     url = 'https://example.com/some/page'
@@ -1523,7 +1485,6 @@ Bloom Filter URL 去重：内存占用仅为 HashSet 的 1/10。
 import math
 import mmh3  # MurmurHash3
 from bitarray import bitarray
-
 
 class BloomFilter:
     """可持久化的布隆过滤器。"""
@@ -1591,7 +1552,6 @@ class BloomFilter:
             bf.bit_array.fromfile(f)
             return bf
 
-
 if __name__ == '__main__':
     bf = BloomFilter(capacity=10_000_000, error_rate=0.001)
     urls = [f'https://example.com/page/{i}' for i in range(1000)]
@@ -1621,7 +1581,6 @@ import time
 from typing import Optional
 
 import httpx
-
 
 class ProxyPool:
     """代理池管理器。"""
@@ -1724,7 +1683,6 @@ class ProxyPool:
         except Exception:
             await self.mark_failure(proxy)
 
-
 if __name__ == '__main__':
     pool = ProxyPool(
         sources=[
@@ -1755,7 +1713,6 @@ from typing import Any
 from prometheus_client import Counter, Histogram, Gauge, start_http_server
 from sentry_sdk import capture_exception
 
-
 # Prometheus 指标定义
 REQUESTS_TOTAL = Counter(
     'scrapy_requests_total',
@@ -1783,7 +1740,6 @@ QUEUE_SIZE = Gauge(
     'Current scheduler queue size',
     ['spider'],
 )
-
 
 class MonitoringMiddleware:
     """Scrapy 监控中间件。"""
@@ -1819,7 +1775,6 @@ class MonitoringMiddleware:
         ).inc()
         capture_exception(exception)
         return None
-
 
 class AlertManager:
     """告警管理器。"""
@@ -1857,7 +1812,6 @@ class AlertManager:
         except Exception:
             pass
 
-
 # 在 settings.py 中启用:
 # start_http_server(8000)  # Prometheus metrics 端口
 # EXTENSIONS = {
@@ -1887,7 +1841,6 @@ from my_scraper.spiders.quotes_spider import QuotesSpider
 from my_scraper.pipelines import DuplicateFilterPipeline, ValidationPipeline
 from scrapy.exceptions import DropItem
 from scrapy.http import HtmlResponse, Request
-
 
 class TestQuotesSpider(unittest.TestCase):
     """QuotesSpider 测试用例。"""
@@ -1937,7 +1890,6 @@ class TestQuotesSpider(unittest.TestCase):
             'https://quotes.toscrape.com/page/2/',
         )
 
-
 class TestPipelines(unittest.TestCase):
     """Pipeline 测试。"""
 
@@ -1958,7 +1910,6 @@ class TestPipelines(unittest.TestCase):
         with self.assertRaises(DropItem):
             pipeline.process_item({'text': 'short'}, spider=MagicMock())
 
-
 class TestWithResponses(unittest.TestCase):
     """使用 responses 库 Mock HTTP。"""
 
@@ -1975,7 +1926,6 @@ class TestWithResponses(unittest.TestCase):
         resp = requests.get('https://example.com/test')
         self.assertEqual(resp.status_code, 200)
         self.assertIn('Hello', resp.text)
-
 
 if __name__ == '__main__':
     unittest.main()
@@ -2327,7 +2277,6 @@ from typing import Optional
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 class CrawlerSettings(BaseSettings):
     """爬虫全局配置。"""
     model_config = SettingsConfigDict(
@@ -2364,7 +2313,6 @@ class CrawlerSettings(BaseSettings):
     # 合规
     obey_robots: bool = True
     max_depth: int = 3
-
 
 settings = CrawlerSettings()
 ```
@@ -2533,7 +2481,6 @@ from datetime import datetime, timezone
 
 import structlog
 
-
 def configure_logging(level: str = 'INFO') -> None:
     """配置结构化日志。"""
     logging.basicConfig(
@@ -2556,10 +2503,8 @@ def configure_logging(level: str = 'INFO') -> None:
         cache_logger_on_first_use=True,
     )
 
-
 # 使用示例
 logger = structlog.get_logger()
-
 
 def crawl(url: str) -> dict:
     """带结构化日志的爬取。"""
@@ -2592,14 +2537,12 @@ import httpx
 import aiohttp
 from aiohttp.resolver import AsyncResolver
 
-
 # 1. HTTP/2 多路复用
 async def http2_client():
     async with httpx.AsyncClient(http2=True) as client:
         urls = [f'https://httpbin.org/get?i={i}' for i in range(100)]
         # HTTP/2 单连接多路复用，比 HTTP/1.1 快 2-3 倍
         return await asyncio.gather(*[client.get(u) for u in urls])
-
 
 # 2. DNS 缓存
 async def dns_cached():
@@ -2615,13 +2558,11 @@ async def dns_cached():
         # 后续请求复用 DNS 缓存
         pass
 
-
 # 3. 压缩
 HEADERS = {
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept': 'text/html,*/*',
 }
-
 
 # 4. 内存优化：流式读取大响应
 async def stream_download(url: str, path: str) -> None:
@@ -2631,7 +2572,6 @@ async def stream_download(url: str, path: str) -> None:
             with open(path, 'wb') as f:
                 async for chunk in resp.aiter_bytes(chunk_size=8192):
                     f.write(chunk)
-
 
 # 5. 性能基准
 """

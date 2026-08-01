@@ -15,13 +15,6 @@ related:
 prerequisites:
   - kotlin/概述与环境配置
 ---
-
-# Kotlin 测试
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 测试是保证代码质量的关键手段。Kotlin 项目可以使用 JUnit 5、Kotest、MockK 等测试框架，结合 Kotlin 的语言特性（如扩展函数、协程、数据类），编写简洁而强大的测试代码。本文介绍 Kotlin 中常用的测试方法和最佳实践。
@@ -764,8 +757,6 @@ dependencies {
 
 ## 参考文献
 
-
-
 Kotlin 官方文档：https://kotlinlang.org/docs/home.html
 Kotlin 协程指南：https://kotlinlang.org/docs/coroutines-guide.html
 Compose Multiplatform：https://www.jetbrains.com/compose-multiplatform/
@@ -773,8 +764,6 @@ Ktor 框架：https://ktor.io/
 Android 开发者文档：https://developer.android.com/kotlin
 
 ## 延伸阅读
-
-
 
 Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
 协程与 Flow，见 014-kotlin 模块协程文档。

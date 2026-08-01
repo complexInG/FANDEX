@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# GitHub CLI 仓库管理
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 创建仓库
 
 **基本写法：创建公开仓库**
@@ -454,16 +447,12 @@ gh release delete v1.0.0
 
 ## 参考文献
 
-
-
 GitHub 文档：https://docs.github.com/zh
 GitHub Actions 文档：https://docs.github.com/zh/actions
 GitHub REST API：https://docs.github.com/zh/rest
 GitHub GraphQL API：https://docs.github.com/zh/graphql
 
 ## 延伸阅读
-
-
 
 GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
 Git 协作基础，见 003-git 模块。

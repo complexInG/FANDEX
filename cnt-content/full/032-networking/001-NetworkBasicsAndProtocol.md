@@ -44,11 +44,6 @@ ping 失败不一定是网络断了，也可能是对方禁止 ping（很多服�
 - 003-TCP/UDP 基础：理解可靠传输与不可靠传输。
 - 004-HTTP 协议：理解浏览器与服务器的对话规则。
 
-
-# Networking 网络配置
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
 ---
 
 ## 1. OSI 七层模型
@@ -894,8 +889,6 @@ sysctl -p
 
 ## 参考文献
 
-
-
 MDN HTTP 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTTP
 RFC 9110（HTTP 语义）：https://www.rfc-editor.org/rfc/rfc9110
 TCP/IP 详解（W. Richard Stevens）：https://www.oreilly.com/library/view/tcpip-illustrated-vol/
@@ -903,8 +896,6 @@ Cloudflare 学习中心：https://www.cloudflare.com/learning/
 DNS 原理（RFC 1035）：https://www.rfc-editor.org/rfc/rfc1035
 
 ## 延伸阅读
-
-
 
 网络基础与协议，见 032-networking 模块文档。
 网络安全（TLS/WAF），见 033-cybersecurity 模块。

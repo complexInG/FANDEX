@@ -18,13 +18,6 @@ related:
 prerequisites:
   - cpp/概述与现代标准
 ---
-
-# 智能指针
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 智能指针概述
 
 ### 1.1 为什么需要智能指针
@@ -855,8 +848,6 @@ std::unique_ptr<int> p = std::make_unique<int>(10);
 
 ## 参考文献
 
-
-
 cppreference C++ 文档：https://zh.cppreference.com/w/cpp
 C++ 核心指南：https://isocpp.github.io/CppCoreGuidelines/
 C++ 标准草案（WG21）：https://isocpp.org/std/the-standard
@@ -864,8 +855,6 @@ CMake 官方文档：https://cmake.org/documentation/
 Compiler Explorer：https://godbolt.org/
 
 ## 延伸阅读
-
-
 
 C++ 模板深入，见 026-cpp/062-CppTemplate 文档。
 STL 容器与算法，见 026-cpp 模块 STL 文档。

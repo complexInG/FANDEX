@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# TypeScript tsc 编译命令速查
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 基础编译
 
 **基本写法：编译文件**
@@ -265,8 +258,6 @@ tsc -b --force     # 强制全量构建
 
 ## 参考文献
 
-
-
 TypeScript 官方文档：https://www.typescriptlang.org/docs/
 TS 手册中文版：https://www.typescriptlang.org/zh/docs/handbook/
 TypeScript 发布计划：https://github.com/microsoft/TypeScript/wiki/Roadmap
@@ -275,8 +266,6 @@ Type Challenges：https://github.com/type-challenges/type-challenges
 
 ## 延伸阅读
 
-
-
 TS 基础类型与接口，见 009-typescript 模块文档。
 TS 泛型与工具类型，见 009-typescript 模块进阶文档。
 React + TS 组件类型，见 011-react 模块。
@@ -284,7 +273,6 @@ Vue3 + TS 组合式 API，见 010-vue3 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 TypeScript 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

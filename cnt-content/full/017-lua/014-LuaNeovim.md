@@ -15,13 +15,6 @@ related:
 prerequisites:
   - lua/概述与环境配置
 ---
-
-# Lua Neovim 配置
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ### LSP 配置
 
 使用 nvim-lspconfig 配置语言服务器：
@@ -1042,8 +1035,6 @@ vim.notify("错误", vim.log.levels.ERROR)
 
 ## 参考文献
 
-
-
 Lua 官方文档：https://www.lua.org/docs.html
 Lua 5.4 参考手册：https://www.lua.org/manual/5.4/
 LuaJIT：https://luajit.org/
@@ -1051,8 +1042,6 @@ OpenResty 文档：https://openresty.org/cn/
 Redis EVAL 文档：https://redis.io/docs/latest/develop/programming/
 
 ## 延伸阅读
-
-
 
 Lua 与 Redis 脚本，见 022-redis 模块相关文档。
 Lua 与 OpenResty 网关，见 031-devops 模块相关文档。

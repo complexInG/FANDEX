@@ -264,7 +264,6 @@ import os
 import json
 from pathlib import Path
 
-
 class _Config:
     """配置类（私有，外部不应直接实例化）"""
 
@@ -294,10 +293,8 @@ class _Config:
         """重置为默认配置（测试用）"""
         self._load_default()
 
-
 # 模块级单例：首次 import 时创建，之后所有 import 返回同一对象
 config = _Config()
-
 
 # 使用示例
 # 在其他模块中
@@ -342,7 +339,6 @@ class Singleton:
             self.value = value
             self._initialized = True
 
-
 # 测试
 s1 = Singleton(10)
 s2 = Singleton(20)  # 不会重新初始化，value 仍为 10
@@ -355,7 +351,6 @@ print(s2.value)      # 10
 
 ```python
 import functools
-
 
 def singleton(cls):
     """单例装饰器：使用闭包缓存实例。
@@ -377,7 +372,6 @@ def singleton(cls):
 
     return get_instance
 
-
 @singleton
 class Logger:
     def __init__(self):
@@ -385,7 +379,6 @@ class Logger:
 
     def log(self, message):
         self.logs.append(message)
-
 
 # 测试
 log1 = Logger()
@@ -414,7 +407,6 @@ class SingletonMeta(type):
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class Database(metaclass=SingletonMeta):
     def __init__(self, url="sqlite:///app.db"):
         print(f"初始化数据库连接: {url}")
@@ -423,7 +415,6 @@ class Database(metaclass=SingletonMeta):
 
     def query(self, sql):
         return f"查询: {sql} on {self.url}"
-
 
 # 测试
 db1 = Database()  # 输出: 初始化数据库连接: sqlite:///app.db
@@ -437,7 +428,6 @@ print(db1.query("SELECT 1"))  # 查询: SELECT 1 on sqlite:///app.db
 ```python
 import threading
 from typing import Any, Dict, Type
-
 
 class ThreadSafeSingletonMeta(type):
     """线程安全单例元类：双重检查锁定（DCL）。
@@ -457,7 +447,6 @@ class ThreadSafeSingletonMeta(type):
                     cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class ConnectionPool(metaclass=ThreadSafeSingletonMeta):
     def __init__(self, max_size=10):
         self.max_size = max_size
@@ -474,12 +463,10 @@ class ConnectionPool(metaclass=ThreadSafeSingletonMeta):
         with self._lock:
             self._pool.append(conn)
 
-
 # 多线程测试
 def worker(pool_class, results, idx):
     pool = pool_class()
     results[idx] = id(pool)
-
 
 results = [None] * 10
 threads = [
@@ -510,13 +497,11 @@ class PerClassSingletonMeta(type):
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class BasePlugin(metaclass=PerClassSingletonMeta):
     name = "base"
 
     def execute(self):
         raise NotImplementedError
-
 
 class MySQLPlugin(BasePlugin):
     name = "mysql"
@@ -524,13 +509,11 @@ class MySQLPlugin(BasePlugin):
     def execute(self):
         return f"MySQL 执行: {self.name}"
 
-
 class RedisPlugin(BasePlugin):
     name = "redis"
 
     def execute(self):
         return f"Redis 执行: {self.name}"
-
 
 # 测试
 m1 = MySQLPlugin()
@@ -547,7 +530,6 @@ print(r1.execute())   # Redis 执行: redis
 
 ```python
 import threading
-
 
 class DestroyableSingletonMeta(type):
     """可销毁单例元类：支持在测试中重置实例。
@@ -575,7 +557,6 @@ class DestroyableSingletonMeta(type):
                 if callable(cleanup):
                     cleanup()
 
-
 class CacheService(metaclass=DestroyableSingletonMeta):
     def __init__(self):
         self._cache = {}
@@ -591,7 +572,6 @@ class CacheService(metaclass=DestroyableSingletonMeta):
         """资源清理"""
         self._cache.clear()
         self._connected = False
-
 
 # 测试
 c1 = CacheService()
@@ -622,7 +602,6 @@ class Borg:
             self.initialized = True
             self.data = {}
 
-
 class ConfigBorg(Borg):
     def __init__(self):
         super().__init__()
@@ -634,7 +613,6 @@ class ConfigBorg(Borg):
 
     def set(self, key, value):
         self.config[key] = value
-
 
 # 测试
 c1 = ConfigBorg()
@@ -663,16 +641,13 @@ class PluginRegistry:
     def execute(self):
         raise NotImplementedError
 
-
 class MySQLPlugin(PluginRegistry, name="mysql"):
     def execute(self):
         return "MySQL 执行"
 
-
 class RedisPlugin(PluginRegistry, name="redis"):
     def execute(self):
         return "Redis 执行"
-
 
 # 测试
 print(PluginRegistry.registry)
@@ -685,7 +660,6 @@ print(PluginRegistry.registry)
 ```python
 import functools
 
-
 @functools.cache
 def get_database(url="sqlite:///app.db"):
     """使用 functools.cache 实现惰性单例。
@@ -695,7 +669,6 @@ def get_database(url="sqlite:///app.db"):
     """
     print(f"创建数据库实例: {url}")
     return {"url": url, "connection": f"Connection({url})"}
-
 
 # 测试
 db1 = get_database()
@@ -714,7 +687,6 @@ get_database.cache_clear()
 ```python
 from enum import Enum, auto
 
-
 class AppState(Enum):
     """使用 enum 实现单例。
 
@@ -728,7 +700,6 @@ class AppState(Enum):
     def transition_to(self, new_state):
         print(f"{self.name} -> {new_state.name}")
         return new_state
-
 
 # 测试
 s1 = AppState.RUNNING
@@ -746,7 +717,6 @@ print(current_state)  # AppState.RUNNING
 ```python
 import threading
 from typing import Any, Dict, Optional
-
 
 class EnvironmentScopedSingletonMeta(type):
     """环境隔离单例元类：每个环境拥有独立单例。
@@ -779,13 +749,11 @@ class EnvironmentScopedSingletonMeta(type):
             for k in keys_to_remove:
                 del mcs._instances[k]
 
-
 class ConfigService(metaclass=EnvironmentScopedSingletonMeta):
     def __init__(self):
         import secrets
         self.token = secrets.token_hex(8)
         self.settings = {}
-
 
 # 测试
 EnvironmentScopedSingletonMeta.set_environment("dev")
@@ -808,7 +776,6 @@ import logging
 import threading
 import time
 from typing import Any, Dict
-
 
 class ObservableSingletonMeta(type):
     """可观测单例元类：自动记录创建、访问、销毁事件。
@@ -838,12 +805,10 @@ class ObservableSingletonMeta(type):
             cls._logger.debug("访问已有单例: class=%s", cls.__name__)
         return cls._instances[cls]
 
-
 class ExpensiveService(metaclass=ObservableSingletonMeta):
     def __init__(self):
         time.sleep(0.1)  # 模拟昂贵的初始化
         self.data = "loaded"
-
 
 # 配置日志
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -1070,7 +1035,6 @@ class BadSingleton:
         # 陷阱：每次 Singleton() 都会调用 __init__！
         self.value = value
 
-
 s1 = BadSingleton(10)
 s2 = BadSingleton(20)  # __init__ 再次执行，value 被覆盖
 print(s1.value)  # 20（被污染）
@@ -1093,7 +1057,6 @@ class GoodSingleton:
         if not self._initialized:
             self.value = value
             self._initialized = True
-
 
 s1 = GoodSingleton(10)
 s2 = GoodSingleton(20)
@@ -1135,7 +1098,6 @@ class LeakySingletonMeta(type):
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 # 长时间运行的进程中，动态创建大量单例类
 for i in range(10000):
     cls = type(f"DynamicClass{i}", (), {"__metaclass__": LeakySingletonMeta})
@@ -1148,7 +1110,6 @@ for i in range(10000):
 
 ```python
 import weakref
-
 
 class WeakSingletonMeta(type):
     _instances = weakref.WeakKeyDictionary()
@@ -1169,11 +1130,9 @@ class Config(metaclass=SingletonMeta):
     def __init__(self):
         self.debug = False
 
-
 def test_debug_mode():
     Config().debug = True
     assert Config().debug is True
-
 
 def test_default_mode():
     # 陷阱：上一个测试修改了状态，这里 Config().debug 仍为 True
@@ -1185,7 +1144,6 @@ def test_default_mode():
 ```python
 import pytest
 
-
 @pytest.fixture
 def config():
     """每个测试独立的 Config 实例"""
@@ -1193,11 +1151,9 @@ def config():
     yield Config()
     Config.destroy()  # 清理
 
-
 def test_debug_mode(config):
     config.debug = True
     assert config.debug is True
-
 
 def test_default_mode(config):
     assert config.debug is False  # 通过
@@ -1216,15 +1172,12 @@ class SingletonMeta(type):
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class ORMMeta(type):
     """另一个元类"""
     pass
 
-
 class BaseModel(metaclass=ORMMeta):
     pass
-
 
 class User(BaseModel, metaclass=SingletonMeta):
     # TypeError: metaclass conflict
@@ -1238,7 +1191,6 @@ class CombinedMeta(ORMMeta, SingletonMeta):
     """组合元类：同时满足 ORM 与单例需求"""
     pass
 
-
 class User(BaseModel, metaclass=CombinedMeta):
     pass
 ```
@@ -1250,7 +1202,6 @@ class User(BaseModel, metaclass=CombinedMeta):
 ```python
 import copy
 
-
 class SingletonMeta(type):
     _instances = {}
 
@@ -1259,11 +1210,9 @@ class SingletonMeta(type):
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class Config(metaclass=SingletonMeta):
     def __init__(self):
         self.data = {"key": "value"}
-
 
 c1 = Config()
 c2 = copy.deepcopy(c1)  # 创建新实例，违反单例！
@@ -1291,7 +1240,6 @@ class Config(metaclass=SingletonMeta):
 ```python
 import pickle
 
-
 class SingletonMeta(type):
     _instances = {}
 
@@ -1300,11 +1248,9 @@ class SingletonMeta(type):
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class Config(metaclass=SingletonMeta):
     def __init__(self):
         self.value = 42
-
 
 c1 = Config()
 data = pickle.dumps(c1)
@@ -1338,18 +1284,14 @@ class SharedSingletonMeta(type):
             cls._instance = super().__call__(*args, **kwargs)
         return cls._instance
 
-
 class Base(metaclass=SharedSingletonMeta):
     pass
-
 
 class ChildA(Base):
     pass
 
-
 class ChildB(Base):
     pass
-
 
 a = ChildA()
 b = ChildB()
@@ -1377,13 +1319,11 @@ class Logger(metaclass=SingletonMeta):
     def log(self, msg):
         print(msg)
 
-
 class UserService:
     def create_user(self, name):
         # 隐藏依赖：Logger 单例
         Logger().log(f"创建用户: {name}")
         return {"name": name}
-
 
 # 测试时难以 Mock Logger
 def test_create_user():
@@ -1402,7 +1342,6 @@ class UserService:
         self.logger.log(f"创建用户: {name}")
         return {"name": name}
 
-
 # 测试
 class MockLogger:
     def __init__(self):
@@ -1410,7 +1349,6 @@ class MockLogger:
 
     def log(self, msg):
         self.logs.append(msg)
-
 
 def test_create_user():
     mock_logger = MockLogger()
@@ -1465,7 +1403,6 @@ from config import config
 ```python
 import threading
 
-
 class SingletonMeta(type):
     _instances = {}
     _lock = threading.Lock()
@@ -1495,10 +1432,8 @@ class TestableSingletonMeta(type):
         """重置单例（测试用）"""
         cls._instances.pop(cls, None)
 
-
 # 测试夹具
 import pytest
-
 
 @pytest.fixture
 def singleton_instance():
@@ -1511,7 +1446,6 @@ def singleton_instance():
 
 ```python
 import weakref
-
 
 class WeakSingletonMeta(type):
     """使用 WeakKeyDictionary 避免类对象无法回收"""
@@ -1596,7 +1530,6 @@ from typing import Any, Dict, Optional, Type, TypeVar
 
 T = TypeVar("T")
 
-
 class TypedSingletonMeta(type):
     _instances: Dict[Type, Any] = {}
     _lock = threading.Lock()
@@ -1607,7 +1540,6 @@ class TypedSingletonMeta(type):
                 if cls not in cls._instances:
                     cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
-
 
 class Config(metaclass=TypedSingletonMeta):
     def __init__(self) -> None:
@@ -1623,7 +1555,6 @@ class Config(metaclass=TypedSingletonMeta):
 ```python
 import logging
 import structlog
-
 
 class LoggedSingletonMeta(type):
     _instances = {}
@@ -1651,7 +1582,6 @@ class LoggedSingletonMeta(type):
 ```python
 import threading
 from typing import Optional
-
 
 class ResilientSingletonMeta(type):
     """容错单例：初始化失败时返回 None 或上次成功实例"""
@@ -1681,7 +1611,6 @@ Python 标准库 `logging` 模块是单例模式的经典应用：
 
 ```python
 import logging
-
 
 # Logger 对象通过名称全局唯一
 logger1 = logging.getLogger("myapp")
@@ -1726,7 +1655,6 @@ class AppConfig:
         self.module = app_module
         self.models = {}
 
-
 # django/apps/registry.py（简化）
 class Apps:
     """Django 应用注册表（模块级单例）"""
@@ -1741,7 +1669,6 @@ class Apps:
 
     def get_app_config(self, app_label):
         return self.app_configs[app_label]
-
 
 # 全局单例
 apps = Apps()
@@ -1769,7 +1696,6 @@ SQLAlchemy 使用模块级单例管理数据库元数据：
 ```python
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.orm import declarative_base
-
 
 # 模块级单例：Base 类
 Base = declarative_base()
@@ -1799,7 +1725,6 @@ Pydantic v2 的 `BaseSettings` 常用作配置单例：
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
-
 class Settings(BaseSettings):
     """应用配置（从环境变量加载）"""
     app_name: str = "MyApp"
@@ -1809,12 +1734,10 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
 
-
 @lru_cache
 def get_settings() -> Settings:
     """使用 lru_cache 实现惰性单例"""
     return Settings()
-
 
 # 使用
 settings = get_settings()
@@ -1846,7 +1769,6 @@ app = Celery(
 def add(x, y):
     return x + y
 
-
 # 其他模块
 from celery_app import app
 app.send_task("myapp.add", args=[1, 2])
@@ -1866,7 +1788,6 @@ app.send_task("myapp.add", args=[1, 2])
 import redis
 from threading import Lock
 
-
 class RedisClientMeta(type):
     """Redis 客户端单例元类"""
     _instances = {}
@@ -1879,7 +1800,6 @@ class RedisClientMeta(type):
                     cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class RedisClient(metaclass=RedisClientMeta):
     def __init__(self, url="redis://localhost:6379"):
         self.pool = redis.ConnectionPool.from_url(url)
@@ -1887,7 +1807,6 @@ class RedisClient(metaclass=RedisClientMeta):
     @property
     def conn(self):
         return redis.Redis(connection_pool=self.pool)
-
 
 # 全局唯一 Redis 客户端
 r1 = RedisClient()
@@ -1903,7 +1822,6 @@ print(r1 is r2)  # True
 import threading
 import torch
 
-
 class GPUResourceManagerMeta(type):
     """GPU 资源管理器单例"""
     _instance = None
@@ -1915,7 +1833,6 @@ class GPUResourceManagerMeta(type):
                 if cls._instance is None:
                     cls._instance = super().__call__(*args, **kwargs)
         return cls._instance
-
 
 class GPUResourceManager(metaclass=GPUResourceManagerMeta):
     def __init__(self):
@@ -1944,20 +1861,16 @@ from fastapi import FastAPI, Depends
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
-
 class Settings(BaseSettings):
     app_name: str = "My API"
     admin_email: str = "admin@example.com"
     items_per_page: int = 10
 
-
 @lru_cache
 def get_settings():
     return Settings()
 
-
 app = FastAPI()
-
 
 @app.get("/info")
 async def info(settings: Settings = Depends(get_settings)):
@@ -1965,7 +1878,6 @@ async def info(settings: Settings = Depends(get_settings)):
         "app_name": settings.app_name,
         "admin_email": settings.admin_email,
     }
-
 
 @app.get("/items")
 async def list_items(
@@ -1990,7 +1902,6 @@ async def list_items(
 # logger.py
 from datetime import datetime
 
-
 class _Logger:
     def _log(self, level, message):
         time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -2005,9 +1916,7 @@ class _Logger:
     def error(self, message):
         self._log("ERROR", message)
 
-
 logger = _Logger()
-
 
 # 使用
 # from logger import logger
@@ -2021,7 +1930,6 @@ logger = _Logger()
 ```python
 import threading
 
-
 class SingletonMeta(type):
     _instances = {}
     _lock = threading.Lock()
@@ -2032,7 +1940,6 @@ class SingletonMeta(type):
                 if cls not in cls._instances:
                     cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
-
 
 class Cache(metaclass=SingletonMeta):
     def __init__(self):
@@ -2065,7 +1972,6 @@ class Cache(metaclass=SingletonMeta):
 ```python
 import copy
 
-
 class SingletonMeta(type):
     _instances = {}
 
@@ -2073,7 +1979,6 @@ class SingletonMeta(type):
         if cls not in cls._instances:
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
-
 
 class Config(metaclass=SingletonMeta):
     def __init__(self):
@@ -2084,7 +1989,6 @@ class Config(metaclass=SingletonMeta):
 
     def __deepcopy__(self, memo):
         return self
-
 
 c1 = Config()
 c2 = copy.copy(c1)
@@ -2106,14 +2010,11 @@ class SingletonMeta(type):
             cls._instance = super().__call__(*args, **kwargs)
         return cls._instance
 
-
 class Base(metaclass=SingletonMeta):
     pass
 
-
 class A(Base):
     pass
-
 
 class B(Base):
     pass
@@ -2188,7 +2089,6 @@ import threading
 import logging
 from typing import Any, Callable, Dict, Optional, Type
 
-
 class SingletonRegistry:
     """单例治理框架"""
 
@@ -2242,19 +2142,15 @@ class SingletonRegistry:
                 results[name] = False
         return results
 
-
 # 全局注册表
 registry = SingletonRegistry()
-
 
 # 使用
 def create_database():
     return Database(url="sqlite:///app.db")
 
-
 def database_health_check(db):
     return db is not None and db.connection.is_active
-
 
 registry.register("database", create_database, database_health_check)
 
@@ -2435,7 +2331,6 @@ def assert_singleton(cls):
     assert all(inst is first for inst in instances), f"{cls.__name__} 不是单例"
     print(f"{cls.__name__} 单例验证通过")
 
-
 assert_singleton(Database)
 ```
 
@@ -2443,7 +2338,6 @@ assert_singleton(Database)
 
 ```python
 import traceback
-
 
 class DebugSingletonMeta(type):
     _instances = {}
@@ -2462,7 +2356,6 @@ class DebugSingletonMeta(type):
 import gc
 import weakref
 
-
 def check_singleton_leak():
     """检查单例字典是否泄漏"""
     gc.collect()
@@ -2477,7 +2370,6 @@ def check_singleton_leak():
 ```python
 import timeit
 import threading
-
 
 def benchmark_singleton():
     """单例获取性能基准"""
@@ -2507,7 +2399,6 @@ Service()
     print(f"获取单例 1,000,000 次: {time_taken:.2f}s")
     print(f"平均每次: {time_taken * 1000:.2f}ns")
 
-
 benchmark_singleton()
 ```
 
@@ -2526,7 +2417,6 @@ benchmark_singleton()
 import copy
 import pickle
 
-
 class SecureSingletonMeta(type):
     _instances = {}
 
@@ -2534,7 +2424,6 @@ class SecureSingletonMeta(type):
         if cls not in cls._instances:
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
-
 
 class SecureConfig(metaclass=SecureSingletonMeta):
     def __init__(self):
@@ -2562,7 +2451,6 @@ class SecureConfig(metaclass=SecureSingletonMeta):
 ```python
 import os
 
-
 class SecretManagerMeta(type):
     _instances = {}
 
@@ -2578,7 +2466,6 @@ class SecretManagerMeta(type):
                 for key in list(instance._secrets.keys()):
                     instance._secrets[key] = "0" * len(instance._secrets[key])
                     del instance._secrets[key]
-
 
 class SecretManager(metaclass=SecretManagerMeta):
     def __init__(self):
@@ -2654,19 +2541,15 @@ from fastapi import FastAPI, Depends
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
-
 class Settings(BaseSettings):
     app_name: str = "MyApp"
     database_url: str = "sqlite:///app.db"
-
 
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
 
-
 app = FastAPI()
-
 
 @app.get("/")
 async def root(settings: Settings = Depends(get_settings)):
@@ -2712,7 +2595,6 @@ class EventBusMeta(type):
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class EventBus(metaclass=EventBusMeta):
     def __init__(self):
         self._subscribers = {}
@@ -2743,12 +2625,10 @@ class StrategyRegistry:
     def get(cls, name):
         return cls._strategies.get(name)
 
-
 @StrategyRegistry.register("sort_asc")
 class AscSortStrategy:
     def sort(self, data):
         return sorted(data)
-
 
 @StrategyRegistry.register("sort_desc")
 class DescSortStrategy:
@@ -2766,13 +2646,11 @@ class DescSortStrategy:
 from functools import lru_cache
 from dataclasses import dataclass
 
-
 @dataclass(frozen=True)
 class Config:
     """不可变配置"""
     debug: bool = False
     host: str = "localhost"
-
 
 @lru_cache
 def load_config(env: str = "default") -> Config:
@@ -2780,7 +2658,6 @@ def load_config(env: str = "default") -> Config:
     if env == "prod":
         return Config(debug=False, host="api.example.com")
     return Config(debug=True, host="localhost")
-
 
 # 使用
 config = load_config("prod")
@@ -2795,7 +2672,6 @@ from typing import Callable, TypeVar, Generic
 A = TypeVar("A")
 B = TypeVar("B")
 
-
 class Reader(Generic[A, B]):
     """Reader Monad：依赖注入的函数式实现"""
     def __init__(self, run: Callable[[A], B]):
@@ -2807,19 +2683,15 @@ class Reader(Generic[A, B]):
     def bind(self, f: Callable[[B], "Reader[A, B]"]) -> "Reader[A, B]":
         return Reader(lambda env: f(self.run(env)).run(env))
 
-
 # 配置作为环境
 config = {"debug": True, "host": "localhost"}
-
 
 # 依赖配置的函数
 def get_host() -> Reader[dict, str]:
     return Reader(lambda env: env["host"])
 
-
 def format_url(host: str) -> Reader[dict, str]:
     return Reader(lambda env: f"http://{host}:{env.get('port', 80)}")
-
 
 # 组合
 program = get_host().bind(format_url)
@@ -2833,7 +2705,6 @@ print(program.run(config))  # http://localhost:80
 ```python
 import asyncio
 from typing import Any, Dict, Type
-
 
 class AsyncSingletonMeta(type):
     """异步安全单例元类"""
@@ -2855,7 +2726,6 @@ class AsyncSingletonMeta(type):
                     cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class AsyncDatabase(metaclass=AsyncSingletonMeta):
     def __init__(self):
         self.connection = None
@@ -2864,12 +2734,10 @@ class AsyncDatabase(metaclass=AsyncSingletonMeta):
         await asyncio.sleep(0.1)  # 模拟异步连接
         self.connection = "connected"
 
-
 async def main():
     db1 = await AsyncDatabase.aget_instance()
     db2 = await AsyncDatabase.aget_instance()
     print(db1 is db2)  # True
-
 
 asyncio.run(main())
 ```
@@ -2878,7 +2746,6 @@ asyncio.run(main())
 
 ```python
 from multiprocessing import Manager, Lock
-
 
 class ProcessSafeSingleton:
     """多进程安全单例：使用 Manager 共享状态"""

@@ -18,13 +18,6 @@ prerequisites:
   - c/概述
 updated: '2026-08-01'
 ---
-
-# 指针深度解析
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 指针的概念与重要性
 
 ### 1.1 什么是指针
@@ -1165,8 +1158,6 @@ p = NULL;
 ```
 
 ## 参考文献
-
-
 
 cppreference C 文档：https://zh.cppreference.com/w/c
 C 标准草案：https://www.open-std.org/jtc1/sc22/wg14/

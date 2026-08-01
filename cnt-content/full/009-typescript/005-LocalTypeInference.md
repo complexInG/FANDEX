@@ -173,13 +173,6 @@ etymology:
   english: Type Narrowing
   origin: 源自 Flow（Facebook 2014）的控制流分析（control flow analysis, CFA）；TypeScript 2.0 起逐步引入 typeof / instanceof / in 与用户定义类型谓词；理论基础上溯到 Appel 1998 的 SSA 是 Functional Programming 一文。
 ---
-
-# 字面量类型与联合类型
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 引言：从 JavaScript 的灵活性到 TypeScript 的精确性
 
 JavaScript 是动态类型语言，所有值在运行时携带类型信息，但编译期无类型约束。这导致大量"undefined is not a function"类错误。TypeScript 的核心价值在于：**把运行时类型信息上移到编译期**，让开发者在编写代码时就暴露类型不匹配。

@@ -43,7 +43,6 @@ prerequisites: []
 - 003-质量属性：性能、可用性、安全如何驱动设计。
 - 004-架构决策记录：如何用 ADR 沉淀决策。
 
-
 ## 1. 软件架构定义
 
 ### 1.1 什么是软件架构
@@ -173,8 +172,6 @@ flowchart TD
 
 ## 参考文献
 
-
-
 SEI 架构定义：https://www.sei.cmu.edu/architecture/
 C4 模型：https://c4model.com/
 Martin Fowler 微服务：https://martinfowler.com/articles/microservices.html
@@ -182,15 +179,12 @@ DDD 社区：https://www.dddcommunity.org/
 
 ## 延伸阅读
 
-
-
 架构模式与案例，见 038-software-architecture 模块文档。
 云原生架构，见 034-cloud-computing 模块。
 软件工程方法，见 037-software-engineering 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供架构课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

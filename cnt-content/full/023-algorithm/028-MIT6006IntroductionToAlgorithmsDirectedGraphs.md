@@ -665,7 +665,6 @@ DAG 上的最短路径问题可类似用拓扑序在 $O(V + E)$ 解决（即使�
 from collections import deque
 from typing import List, Optional, Tuple
 
-
 def kahn_topological_sort(n: int, edges: List[Tuple[int, int]]) -> Optional[List[int]]:
     """Kahn 算法（BFS 入度法）求解有向图的拓扑排序。
 
@@ -716,7 +715,6 @@ def kahn_topological_sort(n: int, edges: List[Tuple[int, int]]) -> Optional[List
 import heapq
 from typing import List, Optional, Tuple
 
-
 def kahn_lexicographic_topo_sort(n: int, edges: List[Tuple[int, int]]) -> Optional[List[int]]:
     """字典序最小的拓扑排序：使用最小堆替代 FIFO 队列。
 
@@ -763,7 +761,6 @@ def kahn_lexicographic_topo_sort(n: int, edges: List[Tuple[int, int]]) -> Option
 ```python
 import sys
 from typing import List, Optional, Tuple
-
 
 def dfs_topological_sort(n: int, edges: List[Tuple[int, int]]) -> Optional[List[int]]:
     """DFS 后序逆序法求解拓扑排序，同时使用三色标记检测环。
@@ -829,7 +826,6 @@ def dfs_topological_sort(n: int, edges: List[Tuple[int, int]]) -> Optional[List[
 ```python
 from collections import deque
 from typing import List, Optional, Tuple
-
 
 def critical_path(n: int, edges: List[Tuple[int, int, int]],
                   source: int, sink: int) -> Optional[Tuple[int, List[int]]]:
@@ -914,7 +910,6 @@ def critical_path(n: int, edges: List[Tuple[int, int, int]],
 import networkx as nx
 from typing import List, Optional
 
-
 def topological_sort_nx(graph: nx.DiGraph) -> Optional[List]:
     """使用 NetworkX 库执行拓扑排序。
 
@@ -933,7 +928,6 @@ def topological_sort_nx(graph: nx.DiGraph) -> Optional[List]:
     if not nx.is_directed_acyclic_graph(graph):
         return None  # 图中有环
     return list(nx.topological_sort(graph))
-
 
 def lexicographic_topo_sort_nx(graph: nx.DiGraph) -> Optional[List]:
     """字典序最小拓扑排序（NetworkX）。
@@ -1192,7 +1186,6 @@ public class LexicographicTopologicalSort {
 from collections import deque
 from typing import List, Optional, Tuple
 
-
 def dag_longest_path(n: int, edges: List[Tuple[int, int, int]],
                      source: int) -> Tuple[List[int], List[int]]:
     """DAG 上的最长路径（拓扑序 DP）。
@@ -1252,7 +1245,6 @@ def dag_longest_path(n: int, edges: List[Tuple[int, int, int]],
 from collections import deque
 from typing import List, Tuple
 
-
 def dag_shortest_path(n: int, edges: List[Tuple[int, int, int]],
                       source: int) -> Tuple[List[float], List[int]]:
     """DAG 上的最短路径（拓扑序 DP，支持负权边）。
@@ -1307,7 +1299,6 @@ def dag_shortest_path(n: int, edges: List[Tuple[int, int, int]],
 
 ```python
 from typing import List, Optional, Tuple
-
 
 def find_cycle_dfs(n: int, edges: List[Tuple[int, int]]) -> Optional[List[int]]:
     """使用 DFS 三色标记检测有向图中的环，并返回环上顶点序列。
@@ -1368,7 +1359,6 @@ def find_cycle_dfs(n: int, edges: List[Tuple[int, int]]) -> Optional[List[int]]:
 ```python
 from typing import List, Optional, Tuple
 
-
 def demo_topological_sort() -> None:
     """演示拓扑排序算法的完整使用流程。"""
     # 示例：课程先修关系
@@ -1416,7 +1406,6 @@ def demo_topological_sort() -> None:
     pos: dict = {v: i for i, v in enumerate(result)}
     valid: bool = all(pos[u] < pos[v] for u, v in edges)
     print(f"拓扑序验证: {'通过' if valid else '失败'}")
-
 
 if __name__ == "__main__":
     demo_topological_sort()

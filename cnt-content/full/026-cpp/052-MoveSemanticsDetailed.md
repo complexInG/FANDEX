@@ -1226,14 +1226,12 @@ public:
 - C. `std::move(x)`
 - D. `"hello"`
 
-
 **解析讲解**：C
 
 - A 是 prvalue；
 - B 是 lvalue；
 - C 是 xvalue（`std::move` 将 lvalue 转为 xvalue）；
 - D 是 lvalue（字符串字面量是 const char 数组，可取地址）。
-
 
 **常见疑问 2**：. 以下代码输出什么？
 
@@ -1248,11 +1246,9 @@ std::cout << a.size();
 - C. 5
 - D. 未定义行为
 
-
 **解析讲解**：B（在主流实现中）
 
 `std::move(a)` 后，`a` 处于 "valid but unspecified" 状态。标准保证 `a.size()` 是合法操作，但不保证具体值。在 libstdc++ 和 libc++ 的实现中，移动后的 `std::string` 会将 size 设为 0。严格来说答案 C 也可能正确，但 0 是主流实现的行为。
-
 
 **常见疑问 3**：. 以下代码会发生什么？
 
@@ -1266,11 +1262,9 @@ auto v2 = std::move(v);
 - C. 编译错误
 - D. UB
 
-
 **解析讲解**：B
 
 `v` 是 `const`，`std::move(v)` 将其转为 `const vector<int>&&`。但 `vector` 的移动构造签名为 `vector(vector&&)`，不能接受 `const vector&&`。重载决议退回到 `vector(const vector&)` 拷贝构造。
-
 
 **常见疑问 4**：. 为什么移动构造必须标记 `noexcept`？
 
@@ -1279,38 +1273,31 @@ auto v2 = std::move(v);
 - C. 影响 `std::vector::reserve` 的策略
 - D. 强制要求
 
-
 **解析讲解**：C
 
 `std::vector` 在扩容时若 `is_nothrow_move_constructible_v<T>` 为真，则使用移动；否则退化为拷贝以保证强异常安全。非 `noexcept` 的移动构造会导致 vector 退化为拷贝，失去性能优势。
-
 
 ### 填空题知识点讲解
 
 **常见疑问 5**：. C++17 起，对 prvalue 的拷贝消除变为 ______（强制/可选）。
 
-
 强制（mandatory copy elision）。
 
 **常见疑问 6**：. `std::move(x)` 的本质是 `static_cast<______>(x)`。
-
 
 `std::remove_reference_t<T>&&`，即无条件转为右值引用。
 
 **常见疑问 7**：. C++11 中 `T&&` 在模板参数推导上下文中称为 ______，非推导上下文中称为 ______。
 
-
 转发引用（forwarding reference），右值引用（rvalue reference）。
 
 **常见疑问 8**：. Rule of Five 包括：析构函数、拷贝构造、拷贝赋值、______、______。
-
 
 移动构造、移动赋值。
 
 ### 编程题知识点讲解
 
 **常见疑问 9**：. 实现一个 `SimpleVector<T>` 类，包含完整的 Rule of Five，并保证移动操作 `noexcept`。
-
 
 ```cpp
 #include <cstddef>
@@ -1385,9 +1372,7 @@ public:
 };
 ```
 
-
 **常见疑问 10**：. 实现一个 `LockedQueue<T>`，支持 `push(T)` 和 `pop()` 方法，要求使用 `std::move` 转移所有权，并保证线程安全。
-
 
 ```cpp
 #include <mutex>
@@ -1421,9 +1406,7 @@ public:
 };
 ```
 
-
 **常见疑问 11**：. 实现一个工厂函数 `make_string`，接受任意参数并完美转发到 `std::string` 构造函数。
-
 
 ```cpp
 #include <string>
@@ -1445,11 +1428,9 @@ int main() {
 }
 ```
 
-
 ### 9.4 思考题
 
 **常见疑问 12**：. 为什么 C++ 不像 Rust 那样在编译期禁止使用移动后的对象？
-
 
 C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 - 大量已有代码依赖"移动后对象仍可析构"的语义；
@@ -1460,7 +1441,6 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 两者是设计哲学的不同选择，各有取舍。
 
 **常见疑问 13**：. 在什么场景下应该使用 `std::move`，什么场景下应该让编译器隐式移动？
-
 
 显式 `std::move` 的场景：
 - 容器 `push_back(emplace_back)` 时传入局部变量；
@@ -1475,7 +1455,6 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 简言之：**只有确需将 lvalue 强制转为 rvalue 时才 `std::move`**。
 
 **常见疑问 14**：. 移动语义能完全替代 `std::shared_ptr` 吗？为什么？
-
 
 不能。`std::shared_ptr` 解决的是**共享所有权**问题，多个所有者共同管理同一对象的生命周期；移动语义解决的是**独占所有权**的转移问题。
 

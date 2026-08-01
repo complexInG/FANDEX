@@ -60,7 +60,6 @@ SELECT * 中的星号表示“所有字段”；执行后你会看到刚才插�
 - 003-数据类型与约束：掌握 INT、VARCHAR、DATE 等类型的选择规则。
 - 004-数据定义：深入 CREATE/ALTER/DROP 的完整用法。
 
-
 ## 1. 数据库概述 (Overview)
 
 MySQL 是全球最受欢迎的**开源关系型数据库管理系统 (RDBMS)**，由 Oracle 公司维护和开发。它是 Web 应用开发中最常用的数据库之一，广泛应用于各种规模的应用系统。
@@ -391,15 +390,12 @@ MySQL 8.0 带来了众多新特性和改进：
 
 ## 参考文献
 
-
-
 MySQL 官方文档：https://dev.mysql.com/doc/
 MySQL 8.0 参考手册：https://dev.mysql.com/doc/refman/8.0/en/
 High Performance MySQL（O'Reilly）：https://www.oreilly.com/library/view/high-performance-mysql/
 Percona 博客：https://www.percona.com/blog/
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

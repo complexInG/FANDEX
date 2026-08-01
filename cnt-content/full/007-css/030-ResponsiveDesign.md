@@ -18,13 +18,6 @@ related:
 prerequisites:
   - css/概述与基本语法
 ---
-
-# CSS 响应式设计
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 2. 媒体查询
 
 ### 基本语法
@@ -910,8 +903,6 @@ img {
 ```
 
 ## 参考文献
-
-
 
 MDN CSS 文档：https://developer.mozilla.org/zh-CN/docs/Web/CSS
 CSS 规范（W3C）：https://www.w3.org/Style/CSS/

@@ -17,13 +17,6 @@ prerequisites:
   - python/语法速查
 updated: '2026-08-01'
 ---
-
-# 内置数据结构
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 列表 (List - `list`)
 
 列表是Python中最常用的数据结构之一，它是一个有序、可变的序列，允许存储重复元素。
@@ -1335,8 +1328,6 @@ matrix = {
 ---
 
 ## 参考文献
-
-
 
 Python 官方文档：https://docs.python.org/zh-cn/3/
 PEP 8 样式指南：https://peps.python.org/pep-0008/

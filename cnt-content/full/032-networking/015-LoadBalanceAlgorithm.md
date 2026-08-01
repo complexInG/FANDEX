@@ -169,8 +169,6 @@ L4 vs L7 负载均衡在工程实践中需要根据具体场景选择合适的�
 
 ## 参考文献
 
-
-
 MDN HTTP 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTTP
 RFC 9110（HTTP 语义）：https://www.rfc-editor.org/rfc/rfc9110
 TCP/IP 详解（W. Richard Stevens）：https://www.oreilly.com/library/view/tcpip-illustrated-vol/
@@ -179,15 +177,12 @@ DNS 原理（RFC 1035）：https://www.rfc-editor.org/rfc/rfc1035
 
 ## 延伸阅读
 
-
-
 网络基础与协议，见 032-networking 模块文档。
 网络安全（TLS/WAF），见 033-cybersecurity 模块。
 负载均衡与网关，见 031-devops 模块相关文档。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供计算机网络课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

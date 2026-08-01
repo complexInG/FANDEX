@@ -18,13 +18,6 @@ prerequisites:
   - lua/标准库详解
   - lua/Lua与C交互
 ---
-
-# Lua LuaJIT
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## FFI 外部函数接口
 
 **基本写法：ffi.cdef 声明**

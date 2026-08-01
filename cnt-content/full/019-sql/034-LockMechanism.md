@@ -15,13 +15,6 @@ related:
 prerequisites:
   - sql/概述与标准
 ---
-
-# SQL 锁机制 语法速查手册
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 锁概述
 
 锁是数据库实现事务隔离的核心机制，通过限制并发访问来保证数据一致性。
@@ -627,8 +620,6 @@ KILL 12345;
 
 ## 参考文献
 
-
-
 SQL 标准（ISO/IEC 9075）：https://www.iso.org/standard/76583.html
 PostgreSQL 文档（SQL 章节）：https://www.postgresql.org/docs/current/sql.html
 MySQL 文档：https://dev.mysql.com/doc/
@@ -636,8 +627,6 @@ SQLite 文档：https://www.sqlite.org/docs.html
 Use The Index, Luke：https://use-the-index-luke.com/
 
 ## 延伸阅读
-
-
 
 SQL 连接与子查询，见 019-sql 模块文档。
 SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。

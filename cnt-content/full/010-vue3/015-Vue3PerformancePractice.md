@@ -2340,7 +2340,6 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - C. `shallowReactive`
 - D. `readonly`
 
-
 **解析讲解**：C
 
 **解析讲解**：
@@ -2349,7 +2348,6 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - `shallowReactive`：只对第一层属性响应式，嵌套属性不转换。
 - `readonly`：深度只读，但仍保留响应式。
 
-
 **题目 2**：Vue 3 编译器生成的 PatchFlag 的作用是？
 
 - A. 标记组件是否需要更新
@@ -2357,11 +2355,9 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - C. 标记静态节点以提升到渲染函数外
 - D. 标记组件是否使用 SSR
 
-
 **解析讲解**：B
 
 **解析讲解**：PatchFlag 是编译器为动态节点附加的整数标记，表示该节点在更新时需要被 Patch 的部分（如 TEXT、CLASS、STYLE、PROPS）。运行时 Diff 算法根据 PatchFlag 只比对动态部分，跳过静态部分，将复杂度从 $O(n)$ 降至 $O(d)$。
-
 
 **题目 3**：关于 `v-memo` 指令，下列说法错误的是？
 
@@ -2370,11 +2366,9 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - C. `v-memo` 可以用于任何元素，包括组件
 - D. `v-memo` 适合用于所有 `v-for` 列表
 
-
 **解析讲解**：D
 
 **解析讲解**：`v-memo` 适合用于依赖变化少、子树渲染开销大的场景。对于简单的列表项（如纯文本），`v-memo` 的依赖比对开销可能大于其节省的渲染开销，反而降低性能。`v-memo` 应当用于复杂子树（如多列表格、嵌套组件）。
-
 
 **题目 4**：KeepAlive 的 `max` 属性使用的数据结构是？
 
@@ -2383,11 +2377,9 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - C. LRU 缓存
 - D. 哈希表
 
-
 **解析讲解**：C
 
 **解析讲解**：KeepAlive 使用 LRU（Least Recently Used，最近最少使用）缓存算法。当缓存的组件数量超过 `max` 时，淘汰最近最少访问的组件。LRU 通过双向链表 + 哈希表实现，查询、插入、淘汰均为 $O(1)$。
-
 
 **题目 5**：下列哪种情况不会触发 Vue 3 的响应式更新？
 
@@ -2396,43 +2388,31 @@ GitLab 在 2023-2024 年间逐步将部分模块从 Vue 2 迁移至 Vue 3，其�
 - C. 修改 `shallowRef.value` 的嵌套属性
 - D. 修改 `shallowReactive` 对象的第一层属性
 
-
 **解析讲解**：C
 
 **解析讲解**：`shallowRef` 只追踪 `.value` 本身的变化，不深度追踪 `.value` 内部属性的变化。修改 `shallowRef.value` 的嵌套属性不会触发更新，需要调用 `triggerRef` 手动触发。
-
 
 ### 填空题知识点讲解
 
 **题目 1**：Vue 3 的响应式系统使用 ES6 的 ________ 替代了 Vue 2 的 `Object.defineProperty`。
 
-
 Proxy
-
 
 **题目 2**：Vue 3 编译器通过 ________ 算法将虚拟 DOM 的 Diff 复杂度从 $O(n)$ 降至 $O(d)$，其中 $d$ 为动态节点数。
 
-
 Block Tree + PatchFlag
-
 
 **题目 3**：`computed` 属性的缓存失效条件是 ________。
 
-
 任一依赖项发生变化（dirty 标记为 true）
-
 
 **题目 4**：Vue 3 中，使用 ________ API 可以将一个对象标记为永不响应式，跳过 Proxy 转换。
 
-
 `markRaw`
-
 
 **题目 5**：HTTP/2 相比 HTTP/1.1 的关键性能优势是 ________，允许在同一 TCP 连接上并行传输多个请求。
 
-
 多路复用（Multiplexing）
-
 
 ### 编程题知识点讲解
 
@@ -2632,7 +2612,6 @@ export function useCachedRequest<T>(
 
 **题目 1**：为什么 Vue 3 选择 Proxy 而不是 `Object.defineProperty`？请从能力、性能、兼容性三个维度分析。
 
-
 1. **能力维度**：
    - Proxy 可以监听属性的新增与删除，`Object.defineProperty` 不能。
    - Proxy 可以监听数组索引与 `length` 变化，`Object.defineProperty` 不能。
@@ -2646,18 +2625,14 @@ export function useCachedRequest<T>(
    - Proxy 是 ES6 特性，不支持 IE11；`Object.defineProperty` 是 ES5，支持 IE9+。
    - Vue 3 放弃 IE11 支持，因此选择 Proxy。Vue 2.7 作为 Vue 2 的最后一个版本，仍支持 IE11。
 
-
 **题目 2**：在什么场景下应该使用 `shallowRef` 而不是 `ref`？请给出至少 3 个具体场景。
-
 
 1. **大型数据列表**：万级以上的数据列表，深度响应式转换开销大，且通常整列表替换而非逐项修改。
 2. **第三方库实例**：Monaco Editor、ECharts、Leaflet 等第三方库的实例，内部已有自己的事件系统，响应式转换会导致性能问题。
 3. **静态配置对象**：如路由配置、菜单配置等不会动态修改的对象，无需深度响应式。
 4. **复杂嵌套对象**：深度嵌套的对象（如 DOM 树、AST），深度响应式转换开销大于收益。
 
-
 **题目 3**：如何在一个 Vue 3 应用中实现性能监控？请设计一套完整的监控方案。
-
 
 完整方案应包括：
 
@@ -2685,9 +2660,7 @@ export function useCachedRequest<T>(
    - 性能预算检查。
    - 性能回退阻断合并。
 
-
 **题目 4**：对比 CSR、SSR、SSG、ISR 四种渲染策略，分析各自的适用场景与性能权衡。
-
 
 | 策略 | 首屏速度 | SEO | 服务器成本 | 实时性 | 适用场景 |
 |------|----------|-----|------------|--------|----------|
@@ -2708,9 +2681,7 @@ export function useCachedRequest<T>(
 - SSG：VitePress、Nuxt 3 SSG 模式
 - ISR：Nuxt 3 + Nitro ISR
 
-
 **题目 5**：请分析 `computed` 与 `watch` 的执行时机差异，并说明何时使用何者。
-
 
 **执行时机差异**：
 
@@ -2735,7 +2706,6 @@ export function useCachedRequest<T>(
 - 副作用用 `watch`（如 `watch(userId, fetchUser)`）。
 - 副作用 + 自动依赖收集用 `watchEffect`。
 - 避免在 `watch` 中修改被监听的数据，可能导致无限循环。
-
 
 ---
 

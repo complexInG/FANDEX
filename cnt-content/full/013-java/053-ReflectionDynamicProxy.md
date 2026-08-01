@@ -15,13 +15,6 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
-
-# Java 反射与动态代理
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 目录
 
 - [1. 学习目标](#1-学习目标)
@@ -1619,11 +1612,9 @@ public <T> T create(final Class<T> service) {
 - C. `new User().getClass()`
 - D. `User.staticMethod()`
 
-
 **答案：B**
 
 `User.class` 是类字面量，仅获取 Class 对象，不触发初始化（JLS §12.4.1）。`Class.forName` 默认 `initialize=true`，会触发初始化。`new User()` 和 `staticMethod()` 都会触发初始化。
-
 
 **题目 2**：JDK 动态代理的限制是什么？
 
@@ -1632,11 +1623,9 @@ public <T> T create(final Class<T> service) {
 - C. 只能代理 final 类
 - D. 性能比 CGLib 差
 
-
 **答案：B**
 
 JDK Proxy 生成的代理类继承 `java.lang.reflect.Proxy`，由于 Java 单继承，代理类只能实现接口，不能继承类。CGLib 通过生成子类解决了这一限制。
-
 
 **题目 3**：`invokedynamic` 指令首次执行时调用什么？
 
@@ -1645,11 +1634,9 @@ JDK Proxy 生成的代理类继承 `java.lang.reflect.Proxy`，由于 Java 单�
 - C. 构造器
 - D. `InvocationHandler.invoke`
 
-
 **答案：B**
 
 `invokedynamic` 首次执行时调用 `bootstrap method`，返回 `CallSite`。`CallSite` 持有 `MethodHandle` 作为目标，后续调用直接通过 `MethodHandle`。
-
 
 **题目 4**：CGLib 不能代理以下哪种？
 
@@ -1658,11 +1645,9 @@ JDK Proxy 生成的代理类继承 `java.lang.reflect.Proxy`，由于 Java 单�
 - C. final 类
 - D. 接口
 
-
 **答案：C**
 
 CGLib 通过生成子类实现代理，final 类不能被继承，因此无法代理。final 方法也不能被代理（无法 override）。接口可用 JDK Proxy 或 CGLib（CGLib 也能代理接口）。
-
 
 **题目 5**：MethodHandle 相比反射的优势是？
 
@@ -1671,42 +1656,33 @@ CGLib 通过生成子类实现代理，final 类不能被继承，因此无法�
 - C. 无需类加载
 - D. 可以代理 final 方法
 
-
 **答案：B**
 
 MethodHandle 在编译期检查签名类型，JIT 可以将 `invokeExact` 内联优化为直接调用，性能接近原生调用。反射 `Method.invoke` 需要运行时类型检查和装箱，性能较差。
-
 
 ### 填空题知识点讲解
 
 **题目 6**：反射中，`Method.invoke` 调用静态方法时，第一个参数应传入 _____。
 
-
 **答案：`null`**
 
 静态方法不依赖实例，`invoke` 的第一个参数（obj）被忽略，通常传 `null`。
 
-
 **题目 7**：JDK Proxy 生成的代理类名前缀是 _____。
-
 
 **答案：`com.sun.proxy.$Proxy`**
 
 JDK Proxy 生成的类名为 `com.sun.proxy.$Proxy0`、`$Proxy1` 等，序号递增。可通过 `ProxyGenerator.saveGeneratedFiles` 保存到磁盘查看。
 
-
 **题目 8**：Java 9 模块系统中，反射访问非导出包需使用 _____ 命令行参数。
-
 
 **答案：`--add-opens`**
 
 `--add-opens module/package=accessing-module` 声明模块的包对指定模块开放深度反射。如 `--add-opens java.base/java.lang=ALL-UNNAMED`。
 
-
 ### 编程题知识点讲解
 
 **题目 9**：使用反射实现一个通用的 `toString` 方法，输出对象的所有字段及其值。
-
 
 ```java
 import java.lang.reflect.Field;
@@ -1760,9 +1736,7 @@ public class ReflectionToString {
 }
 ```
 
-
 **题目 10**：使用 JDK 动态代理实现一个缓存代理：对相同参数的方法调用，返回缓存结果。
-
 
 ```java
 import java.lang.reflect.*;
@@ -1839,9 +1813,7 @@ public class CacheProxy {
 }
 ```
 
-
 **题目 11**：使用 MethodHandle 实现一个简单的策略模式，根据输入动态切换方法。
-
 
 ```java
 import java.lang.invoke.*;
@@ -1877,11 +1849,9 @@ public class StrategyPattern {
 }
 ```
 
-
 ### 12.4 思考题
 
 **题目 12**：为什么 Spring AOP 在 Bean 实现接口时默认使用 JDK Proxy，而不是统一用 CGLib？
-
 
 Spring AOP 的代理选择策略（Spring 5.x 之前）：
 
@@ -1906,9 +1876,7 @@ Spring AOP 的代理选择策略（Spring 5.x 之前）：
 
 Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，类型一致性比依赖大小更重要。
 
-
 **题目 13**：反射调用的性能开销主要来自哪里？如何优化？
-
 
 **反射调用的性能开销来源**：
 
@@ -1965,9 +1933,7 @@ Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，�
    - 运行时生成直接调用字节码
    - 性能等同于原生调用
 
-
 **题目 14**：Java 9 模块系统对反射有什么影响？如何在迁移时处理？
-
 
 **Java 9 模块系统对反射的影响**：
 
@@ -2020,7 +1986,6 @@ Spring Boot 选择 CGLib 作为默认，是因为在现代 Spring 应用中，�
 - Spring Framework 5.0+ 支持模块系统
 - Hibernate 5.2+ 支持
 - Lombok 需要额外配置（`--add-opens`）
-
 
 ---
 

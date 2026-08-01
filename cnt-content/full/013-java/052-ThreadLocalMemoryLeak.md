@@ -166,13 +166,6 @@ etymology:
   english: Scoped Values
   origin: 由 JEP 446（JDK 21 Preview）提出，借鉴 Haskell的 implicit parameters、Rust 的 scoped threads；本质是不可变、有界作用域的线程本地变量，由 JVM 内部 ScopedValueContainer 管理，自动随 run() 结束而销毁。
 ---
-
-# Java ThreadLocal 与内存泄漏
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 引言：从"安全"到"陷阱"
 
 `ThreadLocal` 在 1998 年随 JDK 1.2 发布时，被设计为 "线程私有的变量容器"，用以解决 SimpleDateFormat 非线程安全、JDBC Connection 复用等问题。Joshua Bloch 在《Effective Java》第 9 条明确建议：

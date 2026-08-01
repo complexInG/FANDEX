@@ -17,13 +17,6 @@ related:
 prerequisites:
   - markdown/语法指南
 ---
-
-# 基础文本格式
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 引言
 
 基础文本格式是 Markdown 中用于强调和格式化文本的基本元素，包括斜体、粗体、删除线等。
@@ -339,8 +332,6 @@ H<sub>2</sub>O
 
 ## 参考文献
 
-
-
 CommonMark 规范：https://spec.commonmark.org/
 GFM 规范：https://github.github.com/gfm/
 Markdown 指南：https://www.markdownguide.org/
@@ -348,15 +339,12 @@ Markdownlint：https://github.com/DavidAnson/markdownlint
 
 ## 延伸阅读
 
-
-
 Markdown 基础语法，见 002-markdown 模块文档。
 Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
 文档站构建（Astro），见 056-astro 模块（如已加入）。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供文档写作课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

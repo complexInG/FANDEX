@@ -15,13 +15,6 @@ related:
 prerequisites:
   - git/语法速查
 ---
-
-# 合并冲突解决
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 冲突概述
 
 ### 1.1 什么是合并冲突
@@ -442,16 +435,12 @@ git merge --abort;
 
 ## 参考文献
 
-
-
 Git 官方文档：https://git-scm.com/doc
 Pro Git 中文版：https://git-scm.com/book/zh/v2
 Git 参考手册：https://git-scm.com/docs
 Conventional Commits：https://www.conventionalcommits.org/zh-hans/
 
 ## 延伸阅读
-
-
 
 Git 基础操作与分支，见 003-git 模块文档。
 GitHub 协作与 PR，见 004-github 模块。

@@ -44,7 +44,6 @@ prerequisites: []
 - 003-随机变量与分布：期望、方差。
 - 004-统计推断：从样本估计总体、假设检验。
 
-
 ## 1. 随机试验
 
 ### 1.1 随机现象与随机试验
@@ -269,8 +268,6 @@ $$P(A - B) = P(A) - P(AB)$$
 
 ## 参考文献
 
-
-
 Khan Academy 统计：https://zh.khanacademy.org/math/statistics-probability
 Seeing Theory：https://seeing-theory.brown.edu/
 OpenIntro Statistics：https://www.openintro.org/book/os/
@@ -278,15 +275,12 @@ StatQuest（B站/YouTube）：https://www.youtube.com/@statquest
 
 ## 延伸阅读
 
-
-
 概率统计基础，见 030-probability-statistics 模块文档。
 数据分析应用，见 051-data-analysis 模块。
 机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供概率统计课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

@@ -327,7 +327,6 @@ app = Celery(
     backend='redis://localhost:6379/1'
 )
 
-
 @app.task
 def add(x: int, y: int) -> int:
     """
@@ -340,7 +339,6 @@ def add(x: int, y: int) -> int:
         两数之和
     """
     return x + y
-
 
 @app.task
 def send_email(to: str, subject: str, body: str) -> bool:
@@ -359,7 +357,6 @@ def send_email(to: str, subject: str, body: str) -> bool:
     print(f"邮件已发送: {to} - {subject}")
     return True
 
-
 @app.task
 def long_running_task(duration: int) -> str:
     """
@@ -373,7 +370,6 @@ def long_running_task(duration: int) -> str:
     print(f"开始执行任务，持续 {duration} 秒...")
     time.sleep(duration)
     return f"任务完成，耗时 {duration} 秒"
-
 
 # 调用方式一：delay（最简单，apply_async 的语法糖）
 result = add.delay(4, 6)
@@ -466,7 +462,6 @@ from celery import Task
 from celery.exceptions import Retry
 import requests
 
-
 @app.task(bind=True, max_retries=5)
 def call_external_api(self, url: str, params: dict):
     """
@@ -489,7 +484,6 @@ def call_external_api(self, url: str, params: dict):
         countdown = 5 * (2 ** retry_count)
         print(f"第 {retry_count + 1} 次重试，{countdown} 秒后执行")
         raise self.retry(exc=exc, countdown=countdown)
-
 
 class CustomTask(Task):
     """
@@ -521,7 +515,6 @@ class CustomTask(Task):
         """任务重试时的回调"""
         print(f"任务 {task_id} 第 {self.request.retries} 次重试")
 
-
 @app.task(base=CustomTask, bind=True)
 def process_payment(self, order_id: str, amount: float):
     """
@@ -543,7 +536,6 @@ def process_payment(self, order_id: str, amount: float):
         return result.json()
     except requests.RequestException as exc:
         raise self.retry(exc=exc)
-
 
 @app.task(bind=True, autoretry_for=(Exception,), retry_backoff=True, retry_backoff_max=300, retry_jitter=True)
 def fetch_data(self, url: str):
@@ -573,13 +565,11 @@ Canvas 是 Celery 的工作流组合工具：
 """
 from celery import chain, group, chord
 
-
 @app.task
 def process_step1(data: str) -> str:
     """第一步：数据预处理"""
     print(f"步骤1处理: {data}")
     return f"processed_{data}"
-
 
 @app.task
 def process_step2(data: str) -> str:
@@ -587,13 +577,11 @@ def process_step2(data: str) -> str:
     print(f"步骤2处理: {data}")
     return f"transformed_{data}"
 
-
 @app.task
 def process_step3(data: str) -> str:
     """第三步：数据存储"""
     print(f"步骤3处理: {data}")
     return f"stored_{data}"
-
 
 @app.task
 def aggregate_results(results: list) -> dict:
@@ -603,7 +591,6 @@ def aggregate_results(results: list) -> dict:
         'count': len(results),
         'results': results
     }
-
 
 # 1. chain：串行执行
 # process_step1 → process_step2 → process_step3
@@ -704,7 +691,6 @@ def cleanup_expired_sessions():
     deleted = Session.objects.filter(updated_at__lt=cutoff).delete()
     print(f"清理了 {deleted[0]} 条过期会话")
 
-
 @app.task
 def generate_daily_report():
     """生成日报"""
@@ -717,7 +703,6 @@ def generate_daily_report():
         body=report.summary
     )
 
-
 @app.task
 def generate_weekly_summary():
     """生成周报"""
@@ -729,13 +714,11 @@ def generate_weekly_summary():
         body=summary
     )
 
-
 @app.task
 def process_monthly_billing():
     """处理月度账单"""
     from myapp.services import BillingService
     BillingService.process_all_users()
-
 
 @app.task
 def health_check():
@@ -747,7 +730,6 @@ def health_check():
             send_alert.delay('API 健康检查失败')
     except requests.RequestException:
         send_alert.delay('API 不可达')
-
 
 # 启动 Beat 调度器
 # 命令: celery -A tasks beat --loglevel=info
@@ -802,12 +784,10 @@ app.conf.task_queues = {
 app.conf.task_default_queue = 'celery'
 app.conf.task_default_routing_key = 'celery'
 
-
 @app.task(queue='high_priority')
 def process_urgent_payment(order_id: str):
     """紧急支付任务，放入高优先级队列"""
     print(f"处理紧急支付: {order_id}")
-
 
 @app.task(queue='low_priority')
 def cleanup_temp_files():
@@ -820,12 +800,10 @@ def cleanup_temp_files():
         if os.path.getmtime(filepath) < cutoff:
             os.remove(filepath)
 
-
 # 启动 Worker 时指定消费的队列
 # celery -A tasks worker -Q celery,email_queue --loglevel=info
 # celery -A tasks worker -Q report_queue --loglevel=info
 # celery -A tasks worker -Q high_priority --concurrency=2 --loglevel=info
-
 
 # Redis 支持优先级队列（Celery 5.0+）
 app.conf.broker_queue_order = ['high_priority', 'celery', 'low_priority']
@@ -856,7 +834,6 @@ result = process_urgent_payment.apply_async(
 """
 from celery.exceptions import SoftTimeLimitExceeded, TimeLimitExceeded
 
-
 # 撤销任务
 result = long_running_task.delay(60)
 
@@ -871,7 +848,6 @@ result.revoke(terminate=True, signal='SIGKILL')
 
 # 撤销所有等待中的任务
 app.control.purge()
-
 
 @app.task(time_limit=60, soft_time_limit=50)
 def long_task_with_timeout():
@@ -897,16 +873,13 @@ def long_task_with_timeout():
         # 硬超时，无法捕获（进程已被杀死）
         pass
 
-
 def save_intermediate_state():
     """保存中间状态，便于后续恢复"""
     pass
 
-
 # Worker 级别的超时配置
 app.conf.task_time_limit = 300  # 全局硬超时 5 分钟
 app.conf.task_soft_time_limit = 270  # 全局软超时 4.5 分钟
-
 
 # 任务级超时（apply_async 时指定）
 result = long_running_task.apply_async(
@@ -928,7 +901,6 @@ result = long_running_task.apply_async(
 - 用户需要知道任务执行状态
 """
 from celery import current_task
-
 
 @app.task(bind=True)
 def process_large_dataset(self, dataset_id: str, total_items: int):
@@ -975,7 +947,6 @@ def process_large_dataset(self, dataset_id: str, total_items: int):
         'total': total_items
     }
 
-
 def process_single_item(dataset_id: str, index: int):
     """处理单个数据条目"""
     import random
@@ -983,7 +954,6 @@ def process_single_item(dataset_id: str, index: int):
         raise ValueError(f"处理失败: {index}")
     # 实际处理逻辑
     pass
-
 
 # 查询任务进度
 result = process_large_dataset.delay('dataset_123', 1000)
@@ -998,7 +968,6 @@ while not result.ready():
     time.sleep(1)
 
 print(f"最终结果: {result.get()}")
-
 
 # 使用 Redis 自定义进度追踪（更高效）
 import redis
@@ -1019,7 +988,6 @@ def batch_process_with_redis_progress(self, items: list, batch_id: str):
     r.expire(f'batch:{batch_id}', 3600)  # 1 小时后过期
 
     return {'batch_id': batch_id, 'total': total}
-
 
 def get_batch_progress(batch_id: str) -> dict:
     """查询批次进度"""
@@ -1366,7 +1334,6 @@ app.conf.update(
     worker_task_log_format='[%(asctime)s: %(levelname)s/%(processName)s][%(task_name)s(%(task_id)s)] %(message)s',
 )
 
-
 # 任务路由
 app.conf.task_routes = {
     'tasks.email.*': {'queue': 'email'},
@@ -1374,7 +1341,6 @@ app.conf.task_routes = {
     'tasks.urgent_*': {'queue': 'high_priority'},
     'tasks.cleanup_*': {'queue': 'low_priority'},
 }
-
 
 # 任务注解（动态配置）
 app.conf.task_annotations = {
@@ -1419,18 +1385,15 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # 自动发现各 app 的 tasks.py
 app.autodiscover_tasks()
 
-
 @app.task(bind=True)
 def debug_task(self):
     """调试任务，打印请求信息"""
     print(f'Request: {self.request!r}')
 
-
 # myproject/__init__.py
 from .celery import app as celery_app
 
 __all__ = ('celery_app',)
-
 
 # myproject/settings.py
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
@@ -1440,14 +1403,12 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 300
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
-
 # apps/tasks.py
 from myproject.celery import app
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-
 
 @app.task
 def send_welcome_email(user_id: int):
@@ -1459,7 +1420,6 @@ def send_welcome_email(user_id: int):
         from_email='noreply@example.com',
         recipient_list=[user.email],
     )
-
 
 @app.task
 def generate_user_report(user_id: int):
@@ -1487,7 +1447,6 @@ from celery import signals
 
 # 1. 配置日志
 logger = logging.getLogger('celery')
-
 
 @signals.setup_logging.connect
 def setup_logging(**kwargs):
@@ -1522,19 +1481,16 @@ def setup_logging(**kwargs):
         },
     })
 
-
 # 2. 任务执行信号钩子
 @signals.task_prerun.connect
 def task_prerun_handler(task_id, task, args, kwargs, **extra):
     """任务开始前记录"""
     logger.info(f'任务开始: {task.name} (id={task_id})')
 
-
 @signals.task_postrun.connect
 def task_postrun_handler(task_id, task, args, kwargs, retval, state, **extra):
     """任务结束后记录"""
     logger.info(f'任务结束: {task.name} (id={task_id}, state={state})')
-
 
 @signals.task_failure.connect
 def task_failure_handler(task_id, exception, args, kwargs, traceback, einfo, **extra):
@@ -1544,12 +1500,10 @@ def task_failure_handler(task_id, exception, args, kwargs, traceback, einfo, **e
     import sentry_sdk
     sentry_sdk.capture_exception(exception)
 
-
 # 3. Prometheus 指标（使用 celery-exporter）
 # 安装: pip install celery-exporter
 # 启动: celery-exporter --broker-url=redis://localhost:6379/0
 # Prometheus 自动采集任务执行数、成功率、延迟等指标
-
 
 # 4. Flower 监控
 # 安装: pip install flower
@@ -1592,7 +1546,6 @@ def trigger_bulk_emails():
         batch = user_ids[i:i+batch_size]
         send_bulk_emails.delay(batch)
 
-
 # 2. 连接池：复用数据库连接
 from django.db import connection
 
@@ -1603,7 +1556,6 @@ def query_database():
         cursor.execute("SELECT COUNT(*) FROM auth_user")
         return cursor.fetchone()[0]
 
-
 # 3. 异步 I/O：eventlet 并发
 # 启动: celery -A tasks worker --pool=eventlet --concurrency=1000
 @app.task
@@ -1613,13 +1565,11 @@ def fetch_url(url: str):
     response = requests.get(url, timeout=10)
     return response.status_code
 
-
 # 4. 任务分片：分布式处理大数据
 @app.task
 def process_chunk(data_chunk: list):
     """处理数据分片"""
     return [process_item(item) for item in data_chunk]
-
 
 def process_large_data(data: list, chunk_size: int = 1000):
     """将大数据分片，并行处理"""
@@ -1632,7 +1582,6 @@ def process_large_data(data: list, chunk_size: int = 1000):
     results = result.get()
     # 合并结果
     return [item for chunk in results for item in chunk]
-
 
 def process_item(item):
     """处理单个数据项"""
@@ -1728,7 +1677,6 @@ volumes:
 """
 from celery import chain
 
-
 @app.task(queue='high_priority')
 def create_order(user_id: int, items: list) -> dict:
     """创建订单"""
@@ -1736,7 +1684,6 @@ def create_order(user_id: int, items: list) -> dict:
     for item in items:
         OrderItem.objects.create(order=order, **item)
     return {'order_id': order.id, 'items': items}
-
 
 @app.task(queue='high_priority')
 def deduct_stock(order_data: dict) -> dict:
@@ -1750,7 +1697,6 @@ def deduct_stock(order_data: dict) -> dict:
         product.save()
     return order_data
 
-
 @app.task(queue='high_priority')
 def process_payment(order_data: dict) -> dict:
     """处理支付"""
@@ -1759,7 +1705,6 @@ def process_payment(order_data: dict) -> dict:
         return order_data
     Payment.objects.create(order_id=order_data['order_id'], amount=order_data['total'])
     return order_data
-
 
 @app.task(queue='email')
 def send_order_confirmation(order_data: dict) -> dict:
@@ -1773,14 +1718,12 @@ def send_order_confirmation(order_data: dict) -> dict:
     )
     return order_data
 
-
 @app.task(queue='low_priority')
 def generate_shipping_label(order_data: dict) -> dict:
     """生成物流单"""
     shipping = Shipping.objects.create(order_id=order_data['order_id'])
     order_data['tracking_number'] = shipping.tracking_number
     return order_data
-
 
 # 使用 chain 组合完整流程
 def place_order(user_id: int, items: list):
@@ -1794,7 +1737,6 @@ def place_order(user_id: int, items: list):
     )
     result = workflow.apply_async()
     return result.id
-
 
 # 优化：并行化独立步骤
 from celery import group, chord
@@ -1827,7 +1769,6 @@ def place_order_optimized(user_id: int, items: list):
 from celery import group, chord
 import pandas as pd
 
-
 @app.task(queue='report')
 def generate_user_report(user_id: int, year: int, month: int) -> dict:
     """生成单个用户的月度报表"""
@@ -1849,7 +1790,6 @@ def generate_user_report(user_id: int, year: int, month: int) -> dict:
     report['file'] = filename
     return report
 
-
 @app.task(queue='report')
 def aggregate_monthly_reports(reports: list) -> dict:
     """聚合所有用户报表，生成总览"""
@@ -1868,7 +1808,6 @@ def aggregate_monthly_reports(reports: list) -> dict:
         recipient_list=['admin@example.com'],
     )
     return summary
-
 
 def generate_monthly_reports(year: int, month: int):
     """触发全量报表生成"""
@@ -1901,7 +1840,6 @@ def generate_monthly_reports(year: int, month: int):
 import subprocess
 from celery import chord, group
 
-
 @app.task(queue='high_priority')
 def extract_metadata(video_path: str) -> dict:
     """提取视频元数据"""
@@ -1916,7 +1854,6 @@ def extract_metadata(video_path: str) -> dict:
         'duration': float(metadata['format']['duration']),
         'bitrate': int(metadata['format']['bit_rate']),
     }
-
 
 @app.task(queue='default')
 def transcode_video(video_path: str, resolution: str, video_id: int) -> dict:
@@ -1946,7 +1883,6 @@ def transcode_video(video_path: str, resolution: str, video_id: int) -> dict:
     size = os.path.getsize(output_path)
     return {'video_id': video_id, 'resolution': resolution, 'path': output_path, 'size': size}
 
-
 @app.task(queue='email')
 def notify_video_ready(results: list, video_id: int, user_id: int):
     """所有分辨率转码完成后通知用户"""
@@ -1960,7 +1896,6 @@ def notify_video_ready(results: list, video_id: int, user_id: int):
     )
     # 更新数据库状态
     Video.objects.filter(id=video_id).update(status='ready')
-
 
 def process_video_upload(video_path: str, user_id: int):
     """视频上传后触发转码"""
@@ -2001,7 +1936,6 @@ import requests
 from bs4 import BeautifulSoup
 from celery import group, chord
 
-
 @app.task(bind=True, max_retries=3, queue='default')
 def crawl_page(self, url: str) -> dict:
     """爬取单个页面"""
@@ -2018,7 +1952,6 @@ def crawl_page(self, url: str) -> dict:
     except requests.RequestException as exc:
         raise self.retry(exc=exc, countdown=60)
 
-
 @app.task(queue='default')
 def save_crawl_results(results: list) -> dict:
     """保存爬取结果"""
@@ -2026,7 +1959,6 @@ def save_crawl_results(results: list) -> dict:
     for result in results:
         CrawlResult.objects.create(**result)
     return {'total': len(results)}
-
 
 def crawl_websites(urls: list):
     """分布式爬取多个网站"""
@@ -2037,7 +1969,6 @@ def crawl_websites(urls: list):
     )
     result = workflow.apply_async()
     return result.id
-
 
 # 动态扩展：发现新链接后继续爬取
 @app.task(queue='default')

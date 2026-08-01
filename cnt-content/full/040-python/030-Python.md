@@ -26,13 +26,6 @@ prerequisites:
   - python/基础数据类型
   - python/类与对象
 ---
-
-# Python 3.12/3.13 新特性语法
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与背景
 
 ### 1.1 配置管理的起源
@@ -302,11 +295,9 @@ import os
 import sys
 from typing import Optional
 
-
 # 布尔值转换映射表
 TRUE_VALUES = {'true', '1', 'yes', 'on', 'y', 't'}
 FALSE_VALUES = {'false', '0', 'no', 'off', 'n', 'f', ''}
-
 
 def get_str(key: str, default: Optional[str] = None, required: bool = False) -> str:
     """
@@ -327,7 +318,6 @@ def get_str(key: str, default: Optional[str] = None, required: bool = False) -> 
             raise ValueError(f"必需的环境变量 {key} 未设置")
         return default
     return value
-
 
 def get_int(key: str, default: Optional[int] = None, required: bool = False) -> int:
     """
@@ -351,7 +341,6 @@ def get_int(key: str, default: Optional[int] = None, required: bool = False) -> 
         return int(value)
     except ValueError:
         raise ValueError(f"环境变量 {key}={value} 不是有效的整数")
-
 
 def get_bool(key: str, default: Optional[bool] = None, required: bool = False) -> bool:
     """
@@ -381,7 +370,6 @@ def get_bool(key: str, default: Optional[bool] = None, required: bool = False) -
         return False
     raise ValueError(f"环境变量 {key}={value} 不是有效的布尔值")
 
-
 def get_list(key: str, default: Optional[list] = None, separator: str = ',', required: bool = False) -> list:
     """
     读取列表类型环境变量（逗号分隔的字符串）
@@ -401,7 +389,6 @@ def get_list(key: str, default: Optional[list] = None, separator: str = ',', req
         return default or []
     return [item.strip() for item in value.split(separator) if item.strip()]
 
-
 # 应用启动时校验必需的环境变量
 def validate_required_env_vars() -> None:
     """校验所有必需的环境变量是否已设置"""
@@ -409,7 +396,6 @@ def validate_required_env_vars() -> None:
     missing = [var for var in required_vars if not os.getenv(var)]
     if missing:
         sys.exit(f"启动失败：缺少必需的环境变量: {', '.join(missing)}")
-
 
 # 实际使用示例
 if __name__ == '__main__':
@@ -441,7 +427,6 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv, dotenv_values
 
-
 # 示例：创建 .env 文件内容
 ENV_FILE_CONTENT = """\
 # 数据库配置
@@ -463,7 +448,6 @@ LOG_LEVEL=DEBUG
 LOG_FILE=app.log
 """
 
-
 def create_env_file(path: str = '.env', content: str = ENV_FILE_CONTENT) -> None:
     """
     创建 .env 文件
@@ -475,7 +459,6 @@ def create_env_file(path: str = '.env', content: str = ENV_FILE_CONTENT) -> None
     env_path = Path(path)
     env_path.write_text(content, encoding='utf-8')
     print(f"已创建 {path}")
-
 
 def load_env_examples() -> None:
     """
@@ -501,7 +484,6 @@ def load_env_examples() -> None:
     load_dotenv('.env', override=True)
     print(f"[覆盖后] DEBUG={os.getenv('DEBUG')}")  # true（来自 .env）
 
-
 def multi_env_loading() -> None:
     """
     多环境 .env 文件加载策略
@@ -524,7 +506,6 @@ def multi_env_loading() -> None:
     
     print(f"当前环境: {app_env}")
     print(f"DATABASE_URL={os.getenv('DATABASE_URL')}")
-
 
 if __name__ == '__main__':
     create_env_file()
@@ -550,7 +531,6 @@ from pydantic import Field, field_validator, model_validator, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
-
 class DatabaseSettings(BaseSettings):
     """
     数据库配置（嵌套配置）
@@ -563,13 +543,11 @@ class DatabaseSettings(BaseSettings):
     echo: bool = False
     connect_timeout: int = Field(default=10, ge=1, le=60)
 
-
 class RedisSettings(BaseSettings):
     """Redis 配置"""
     url: str = Field(default='redis://localhost:6379/0', alias='REDIS_URL')
     max_connections: int = Field(default=20, ge=1, le=100)
     socket_timeout: float = Field(default=5.0, ge=0.1)
-
 
 class LogSettings(BaseSettings):
     """日志配置"""
@@ -587,7 +565,6 @@ class LogSettings(BaseSettings):
         if upper not in valid_levels:
             raise ValueError(f"日志级别必须是 {valid_levels} 之一")
         return upper
-
 
 class Settings(BaseSettings):
     """
@@ -663,7 +640,6 @@ class Settings(BaseSettings):
         """是否为开发环境"""
         return self.app_env == 'development'
 
-
 @lru_cache()
 def get_settings() -> Settings:
     """
@@ -675,7 +651,6 @@ def get_settings() -> Settings:
     3. 便于测试时通过 cache_clear 重置
     """
     return Settings()
-
 
 # 使用示例
 if __name__ == '__main__':
@@ -719,7 +694,6 @@ Dynaconf 多环境配置示例
 from dynaconf import Dynaconf
 from dynaconf import validators
 
-
 # 创建 Dynaconf 配置实例
 settings = Dynaconf(
     # 配置文件（按顺序加载，后面的覆盖前面的）
@@ -742,7 +716,6 @@ settings = Dynaconf(
     fresh_vars=['TOKEN'],  # 这些变量每次访问时重新读取
 )
 
-
 # 添加验证器（确保必需配置存在）
 settings.validators.register(
     validators.Validator('DATABASE_URL', must_exist=True, is_type_of=str),
@@ -751,7 +724,6 @@ settings.validators.register(
     validators.Validator('APP_ENV', must_exist=True, is_in=['dev', 'staging', 'prod']),
 )
 
-
 # 验证配置
 try:
     settings.validators.validate()
@@ -759,23 +731,19 @@ try:
 except validators.ValidationError as e:
     print(f"配置验证失败: {e}")
 
-
 # 使用配置
 print(f"当前环境: {settings.current_env}")
 print(f"数据库 URL: {settings.DATABASE_URL}")
 print(f"端口: {settings.PORT}")
-
 
 # 切换环境
 settings.setenv('prod')
 print(f"切换后环境: {settings.current_env}")
 print(f"生产数据库 URL: {settings.DATABASE_URL}")
 
-
 # 动态更新配置
 settings.set('NEW_FEATURE_ENABLED', True, loader_identifier='runtime')
 print(f"新功能启用: {settings.NEW_FEATURE_ENABLED}")
-
 
 # 示例 config/default.yaml 内容：
 """
@@ -794,7 +762,6 @@ production:
   DEBUG: false
   LOG_LEVEL: WARNING
 """
-
 
 # 示例 config/default.toml 内容：
 """
@@ -838,7 +805,6 @@ from typing import Any, Dict, Optional, List
 from dataclasses import dataclass, field, asdict
 from functools import lru_cache
 
-
 @dataclass
 class ConfigSource:
     """配置来源记录，用于审计与调试"""
@@ -864,7 +830,6 @@ def load_default_config() -> Dict[str, Any]:
         'log_level': 'INFO',
     }
 
-
 def load_config_file(file_path: str) -> Dict[str, Any]:
     """
     加载配置文件（支持 JSON/TOML）
@@ -888,7 +853,6 @@ def load_config_file(file_path: str) -> Dict[str, Any]:
     else:
         raise ValueError(f"不支持的配置文件格式: {suffix}")
 
-
 def load_env_vars(prefix: str = '') -> Dict[str, Any]:
     """
     从环境变量加载配置
@@ -907,7 +871,6 @@ def load_env_vars(prefix: str = '') -> Dict[str, Any]:
         config[config_key] = value
     return config
 
-
 def parse_cli_args() -> Dict[str, Any]:
     """
     解析命令行参数（最高优先级）
@@ -925,7 +888,6 @@ def parse_cli_args() -> Dict[str, Any]:
     
     # 过滤未设置的参数（值为 None）
     return {k: v for k, v in asdict(args).items() if v is not None and k != 'config'}
-
 
 def merge_configs(sources: List[ConfigSource]) -> tuple[Dict[str, Any], List[ConfigSource]]:
     """
@@ -955,7 +917,6 @@ def merge_configs(sources: List[ConfigSource]) -> tuple[Dict[str, Any], List[Con
     ]
     
     return merged, audit_sources
-
 
 @lru_cache()
 def load_config(config_file: Optional[str] = None) -> Dict[str, Any]:
@@ -1000,7 +961,6 @@ def load_config(config_file: Optional[str] = None) -> Dict[str, Any]:
     
     return merged_config
 
-
 # 使用示例
 if __name__ == '__main__':
     config = load_config()
@@ -1033,7 +993,6 @@ from typing import Any, Dict, Optional, Callable, List
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import redis
-
 
 @dataclass
 class FeatureFlag:
@@ -1079,7 +1038,6 @@ class FeatureFlag:
             hash_value = hash(user_id) % 100
             return hash_value < self.percentage
         return True
-
 
 class DynamicConfigManager:
     """
@@ -1257,7 +1215,6 @@ class DynamicConfigManager:
         if self._pubsub_thread:
             self._pubsub_thread.join(timeout=5)
 
-
 # 使用示例
 if __name__ == '__main__':
     # 初始化动态配置管理器
@@ -1313,7 +1270,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field, SecretStr
-
 
 class K8sSettings(BaseSettings):
     """
@@ -1387,7 +1343,6 @@ class K8sSettings(BaseSettings):
         
         return secrets
 
-
 # K8s 部署 YAML 示例（configmap.yaml）
 K8S_CONFIGMAP_YAML = """\
 apiVersion: v1
@@ -1457,7 +1412,6 @@ spec:
           secretName: app-secret
 """
 
-
 def watch_configmap_changes(callback) -> None:
     """
     监听 ConfigMap 挂载卷的变更（基于 inotify）
@@ -1480,7 +1434,6 @@ def watch_configmap_changes(callback) -> None:
         if 'IN_MODIFY' in type_names or 'IN_CREATE' in type_names:
             print(f"配置文件变更: {filename}")
             callback(filename)
-
 
 if __name__ == '__main__':
     settings = K8sSettings()
@@ -1516,7 +1469,6 @@ from typing import Any, Dict, List, Set, Optional
 from pydantic import SecretStr, Field
 from pydantic_settings import BaseSettings
 
-
 # 敏感字段名模式（大小写不敏感）
 SENSITIVE_PATTERNS = [
     r'password',
@@ -1533,7 +1485,6 @@ SENSITIVE_PATTERNS = [
 # 编译正则
 SENSITIVE_REGEX = re.compile('|'.join(SENSITIVE_PATTERNS), re.IGNORECASE)
 
-
 def is_sensitive_key(key: str) -> bool:
     """
     判断键名是否敏感
@@ -1544,7 +1495,6 @@ def is_sensitive_key(key: str) -> bool:
         是否敏感
     """
     return bool(SENSITIVE_REGEX.search(key))
-
 
 def mask_value(value: Any, mask_char: str = '*', visible_chars: int = 4) -> str:
     """
@@ -1563,7 +1513,6 @@ def mask_value(value: Any, mask_char: str = '*', visible_chars: int = 4) -> str:
     if len(s) <= visible_chars:
         return mask_char * len(s)
     return mask_char * (len(s) - visible_chars) + s[-visible_chars:]
-
 
 def safe_dump_config(config: Dict[str, Any], sensitive_keys: Optional[Set[str]] = None) -> Dict[str, Any]:
     """
@@ -1588,7 +1537,6 @@ def safe_dump_config(config: Dict[str, Any], sensitive_keys: Optional[Set[str]] 
     
     return safe
 
-
 class SensitiveFilter(logging.Filter):
     """
     日志过滤器：自动脱敏敏感信息
@@ -1608,7 +1556,6 @@ class SensitiveFilter(logging.Filter):
                 flags=re.IGNORECASE
             )
         return True
-
 
 class SecureSettings(BaseSettings):
     """
@@ -1661,7 +1608,6 @@ class SecureSettings(BaseSettings):
                 safe[key] = value
         
         return safe
-
 
 # 使用示例
 if __name__ == '__main__':
@@ -2017,7 +1963,6 @@ import os
 import json
 from pathlib import Path
 
-
 @dataclass(frozen=True)
 class AppConfig:
     """应用配置（不可变，线程安全）"""
@@ -2047,7 +1992,6 @@ class AppConfig:
     secret_key: str = 'change-me'
     jwt_algorithm: str = 'HS256'
     jwt_expire_minutes: int = 30
-
 
 def load_layered_config() -> AppConfig:
     """
@@ -2105,7 +2049,6 @@ def load_layered_config() -> AppConfig:
         jwt_expire_minutes=int(config_dict.get('jwt_expire_minutes', 30)),
     )
 
-
 @lru_cache()
 def get_config() -> AppConfig:
     """获取全局配置实例（单例）"""
@@ -2130,7 +2073,6 @@ import os
 from pydantic import ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 class TestSettings(BaseSettings):
     """测试用配置类"""
     app_name: str = 'TestApp'
@@ -2139,7 +2081,6 @@ class TestSettings(BaseSettings):
     database_url: str = 'sqlite:///test.db'
     
     model_config = SettingsConfigDict(env_prefix='TEST_', case_sensitive=False)
-
 
 class TestConfigDefaults:
     """默认值测试"""
@@ -2156,7 +2097,6 @@ class TestConfigDefaults:
         assert settings.port == 8000
         assert settings.debug is False
         assert settings.database_url == 'sqlite:///test.db'
-
 
 class TestConfigEnvOverride:
     """环境变量覆盖测试"""
@@ -2189,7 +2129,6 @@ class TestConfigEnvOverride:
             monkeypatch.setenv('TEST_DEBUG', false_value)
             assert TestSettings().debug is False
 
-
 class TestConfigValidation:
     """配置验证测试"""
     
@@ -2205,7 +2144,6 @@ class TestConfigValidation:
         with pytest.raises(ValidationError):
             TestSettings()
 
-
 # pytest fixture：配置测试环境
 @pytest.fixture
 def clean_env(monkeypatch):
@@ -2214,7 +2152,6 @@ def clean_env(monkeypatch):
         if key.startswith('TEST_'):
             monkeypatch.delenv(key)
     return monkeypatch
-
 
 @pytest.fixture
 def prod_env(monkeypatch):
@@ -2330,7 +2267,6 @@ SENTRY_DSN=
 METRICS_PORT=9090
 """
 
-
 def generate_env_example(settings_class) -> str:
     """
     根据 Pydantic Settings 类生成 .env.example
@@ -2358,7 +2294,6 @@ def generate_env_example(settings_class) -> str:
     
     return "\n".join(lines)
 
-
 if __name__ == '__main__':
     # 生成 .env.example
     print(ENV_EXAMPLE)
@@ -2379,25 +2314,21 @@ import time
 from functools import lru_cache
 from pydantic_settings import BaseSettings
 
-
 class Settings(BaseSettings):
     database_url: str = 'sqlite:///default.db'
     redis_url: str = 'redis://localhost:6379/0'
     # ... 更多配置
-
 
 # 反模式：每次调用都创建新实例
 def get_config_bad():
     """每次都创建新实例（性能差）"""
     return Settings()
 
-
 # 正确模式：使用 lru_cache 缓存
 @lru_cache(maxsize=1)
 def get_config_good():
     """全局单例（性能好）"""
     return Settings()
-
 
 # 性能对比
 def benchmark():
@@ -2419,7 +2350,6 @@ def benchmark():
     print(f"不缓存: {bad_time:.3f}s ({n} 次创建)")
     print(f"缓存: {good_time:.3f}s ({n} 次访问)")
     print(f"性能提升: {bad_time / good_time:.1f}x")
-
 
 if __name__ == '__main__':
     benchmark()
@@ -2448,7 +2378,6 @@ from functools import lru_cache
 from pydantic import Field, SecretStr, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from fastapi import FastAPI, Depends, HTTPException
-
 
 class Settings(BaseSettings):
     """FastAPI 应用配置"""
@@ -2497,19 +2426,16 @@ class Settings(BaseSettings):
                 raise ValueError('生产环境必须设置非默认 secret_key')
         return v
 
-
 @lru_cache()
 def get_settings() -> Settings:
     """获取配置实例（单例，通过依赖注入使用）"""
     return Settings()
-
 
 # FastAPI 应用
 app = FastAPI(
     title=get_settings().app_name,
     debug=get_settings().debug,
 )
-
 
 @app.get("/info")
 async def info(settings: Settings = Depends(get_settings)):
@@ -2520,12 +2446,10 @@ async def info(settings: Settings = Depends(get_settings)):
         "debug": settings.debug,
     }
 
-
 @app.get("/health")
 async def health(settings: Settings = Depends(get_settings)):
     """健康检查"""
     return {"status": "healthy", "env": settings.app_env}
-
 
 # 启动时验证配置
 @app.on_event("startup")
@@ -2563,7 +2487,6 @@ from pathlib import Path
 import requests
 from functools import lru_cache
 
-
 @dataclass
 class ApolloConfig:
     """Apollo 配置中心连接配置"""
@@ -2572,7 +2495,6 @@ class ApolloConfig:
     cluster: str = 'default'
     namespace: str = 'application'
     polling_interval: int = 60  # 秒
-
 
 class ApolloClient:
     """
@@ -2692,7 +2614,6 @@ class ApolloClient:
             except Exception as e:
                 print(f"加载本地缓存失败: {e}")
 
-
 # 使用示例
 if __name__ == '__main__':
     apollo_config = ApolloConfig(
@@ -2747,7 +2668,6 @@ from typing import Optional, List
 from dataclasses import dataclass, field, asdict
 import redis
 
-
 @dataclass
 class FeatureFlag:
     """特性开关"""
@@ -2782,7 +2702,6 @@ class FeatureFlag:
         hash_value = int(hashlib.md5(user_id.encode()).hexdigest(), 16) % 100
         return hash_value < self.percentage
 
-
 class FeatureFlagService:
     """特性开关服务"""
     
@@ -2804,7 +2723,6 @@ class FeatureFlagService:
         """检查特性是否对用户启用"""
         flag = self.get_flag(flag_name)
         return flag.is_enabled_for(user_id)
-
 
 # 灰度发布流程示例
 def gradual_rollout_example():
@@ -2842,7 +2760,6 @@ def gradual_rollout_example():
         enabled = service.is_enabled('new_dashboard', user_id)
         print(f"  用户 {user_id}: {'启用' if enabled else '未启用'}")
 
-
 if __name__ == '__main__':
     gradual_rollout_example()
 ```
@@ -2869,7 +2786,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 class K8sAppSettings(BaseSettings):
     """K8s 部署的应用配置"""
@@ -2923,7 +2839,6 @@ class K8sAppSettings(BaseSettings):
         
         return f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
-
 # K8s 部署文件示例
 K8S_DEPLOYMENT_YAML = """
 apiVersion: apps/v1
@@ -2963,7 +2878,6 @@ spec:
         secret:
           secretName: app-secret
 """
-
 
 if __name__ == '__main__':
     settings = K8sAppSettings()

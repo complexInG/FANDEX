@@ -17,13 +17,6 @@ prerequisites:
   - markdown/语法指南
 updated: '2026-08-01'
 ---
-
-# 链接与图片
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 链接 (Links)
 
 ### 1.1 行内链接 (Inline Links)
@@ -372,8 +365,6 @@ Markdown 提供了简洁而强大的语法来添加链接和图片，使文档�
 
 ## 参考文献
 
-
-
 CommonMark 规范：https://spec.commonmark.org/
 GFM 规范：https://github.github.com/gfm/
 Markdown 指南：https://www.markdownguide.org/
@@ -381,15 +372,12 @@ Markdownlint：https://github.com/DavidAnson/markdownlint
 
 ## 延伸阅读
 
-
-
 Markdown 基础语法，见 002-markdown 模块文档。
 Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
 文档站构建（Astro），见 056-astro 模块（如已加入）。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供文档写作课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

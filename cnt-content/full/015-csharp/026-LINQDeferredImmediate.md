@@ -1932,11 +1932,9 @@ B. `Where`
 C. `OrderBy`  
 D. `Count`
 
-
 **答案：D**
 
 `Select`、`Where` 是延迟流式操作符。`OrderBy` 是延迟但缓冲的操作符。`Count` 是立即执行操作符，调用时立即枚举源并返回计数。
-
 
 **题目 2**：以下代码会触发几次数据库查询？
 
@@ -1952,11 +1950,9 @@ B. 2 次
 C. 3 次  
 D. 0 次
 
-
 **答案：C**
 
 每次 `ToList` 和 `Count` 都触发一次数据库查询（因为 `q` 是 `IQueryable`，延迟执行）。共 3 次：两次 `SELECT * FROM Users WHERE Age > 18` 和一次 `SELECT COUNT(*) FROM Users WHERE Age > 18`。修复：将 `q` 缓存为 `List`。
-
 
 **题目 3**：以下哪个表达式是**表达式树**？
 
@@ -1965,36 +1961,27 @@ B. `Expression<Func<int, bool>> e = x => x > 0;`
 C. `var f = (int x) => x > 0;`  
 D. `delegate(int x) { return x > 0; };`
 
-
 **答案：B**
 
 当 Lambda 被赋值给 `Expression<Func<T, T2>>` 类型时，编译器将其编译为表达式树（AST 数据），而非委托（IL 代码）。其他选项都是委托。
-
 
 ### 填空题知识点讲解
 
 **题目 4**：`yield return` 编译器生成的状态机实现了 _________ 接口。
 
-
 `IEnumerable<T>`、`IEnumerator<T>`（以及非泛型版本）。状态机类同时实现这两个接口，作为迭代器。
-
 
 **题目 5**：`IQueryable<T>` 与 `IEnumerable<T>` 的关键区别在于 `IQueryable<T>` 持有 _________ 和 _________。
 
-
 `Expression`（表达式树）和 `IQueryProvider`（查询提供者）。`Expression` 描述查询，`Provider` 负责将表达式翻译并执行。
-
 
 **题目 6**：`OrderBy` 是延迟但 _________ 的操作符，因为首次枚举时需要 _________ 整个源。
 
-
 缓冲（buffered）；加载（或缓冲、排序）。`OrderBy` 首次枚举时将整个源加载到内部数组并排序，后续枚举从排序后的数组返回。
-
 
 ### 编程题知识点讲解
 
 **题目 7**：实现一个 `Batch` 操作符，将序列按 `size` 分组。
-
 
 ```csharp
 using System;
@@ -2098,9 +2085,7 @@ public class Program
 }
 ```
 
-
 **题目 8**：实现一个动态查询过滤器，根据多个条件构建 `Expression<Func<User, bool>>`。
-
 
 ```csharp
 using System;
@@ -2216,11 +2201,9 @@ public class Program
 }
 ```
 
-
 ### 9.4 思考题
 
 **题目 9**：为什么 `IEnumerable<T>` 支持多次枚举，而 `IObservable<T>` 与 Java `Stream<T>` 不支持？
-
 
 `IEnumerable<T>` 是**拉取模型**（pull-based），消费者主动调用 `MoveNext`，每次枚举都是新的状态机实例（除非源本身是单次流如 `FileStream`）。
 
@@ -2234,9 +2217,7 @@ Java `Stream<T>` 设计上明确禁止多次使用，因为：
 
 C# `IEnumerable<T>` 的多次枚举既有便利性（`foreach` + `Count` + `ToList`），也有陷阱（多次执行）。.NET 6+ 的 `TryGetNonEnumeratedCount` 缓解了 `Count` 的开销。
 
-
 **题目 10**：在 EF Core 中，`IQueryable<T>` 翻译为 SQL 时有哪些限制？
-
 
 EF Core 翻译限制：
 
@@ -2251,9 +2232,7 @@ EF Core 翻译限制：
 
 EF Core 7+ 显著扩展了翻译能力，但仍有限制。开发者应使用 `ToQueryString()` 检查生成的 SQL。
 
-
 **题目 11**：表达式树如何用于动态编译与元编程？
-
 
 表达式树是 C# 的"代码即数据"机制。通过 `Expression.Lambda<T>(body).Compile()` 可将表达式树编译为委托，实现动态代码生成。
 
@@ -2273,7 +2252,6 @@ Console.WriteLine(compiled(5));  // 26
 ```
 
 .NET 9 引入 `Expression.TryGetRefGCData` 等扩展，进一步增强元编程能力。
-
 
 ---
 

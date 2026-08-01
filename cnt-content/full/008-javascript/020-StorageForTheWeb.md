@@ -107,13 +107,6 @@ lastReviewed: 2026-07-20
 reviewer: FANDEX Content Engineering Team
 estimatedReadingTime: 50
 ---
-
-# JavaScript Web 存储 API
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 0. 学习导言
 
 > 「Web 存储是浏览器从『无状态终端』迈向『应用平台』的关键基石。从 1994 年 Cookie 的诞生解决状态保持，到 2009 年 Web Storage 简化键值存储，再到 2015 年 IndexedDB 提供完整的事务型数据库，Web 平台的存储能力经历了 30 年的演进。」

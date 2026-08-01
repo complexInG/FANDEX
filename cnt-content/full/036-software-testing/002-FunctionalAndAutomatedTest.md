@@ -169,7 +169,6 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import pytest
 
-
 class TestLogin:
     """登录功能测试"""
 
@@ -236,7 +235,6 @@ class TestLogin:
 ```python
 import unittest
 
-
 class Calculator:
     """被测类"""
     def add(self, a, b):
@@ -246,7 +244,6 @@ class Calculator:
         if b == 0:
             raise ValueError("除数不能为零")
         return a / b
-
 
 class TestCalculator(unittest.TestCase):
     """计算器测试"""
@@ -281,7 +278,6 @@ class TestCalculator(unittest.TestCase):
     def test_divide_by_zero(self):
         with self.assertRaises(ValueError):
             self.calc.divide(1, 0)
-
 
 if __name__ == '__main__':
     unittest.main()
@@ -490,7 +486,6 @@ flowchart TD
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-
 class BasePage:
     """页面基类，封装通用操作"""
 
@@ -537,7 +532,6 @@ class BasePage:
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
-
 class LoginPage(BasePage):
     """登录页面对象"""
 
@@ -577,7 +571,6 @@ class LoginPage(BasePage):
 # tests/test_login.py
 import pytest
 from pages.login_page import LoginPage
-
 
 class TestLogin:
     """登录测试 - 使用 POM 模式"""
@@ -621,16 +614,12 @@ class TestLogin:
 
 ## 参考文献
 
-
-
 ISTQB 官方资源：https://www.istqb.org/
 Testing Library：https://testing-library.com/
 Playwright：https://playwright.dev/
 Martin Fowler 测试专题：https://martinfowler.com/testing/
 
 ## 延伸阅读
-
-
 
 测试分层与用例设计，见 036-software-testing 模块文档。
 CI 集成测试，见 031-devops 模块。

@@ -178,8 +178,6 @@ $A$ 的特征多项式：$|\lambda I - A| = (\lambda-1)^2(\lambda-4)$
 
 ## 参考文献
 
-
-
 3Blue1Brown 线性代数的本质：https://www.3blue1brown.com/topics/linear-algebra
 MIT 18.06：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
 NumPy 文档：https://numpy.org/doc/stable/
@@ -187,15 +185,12 @@ Interactive Linear Algebra：https://textbooks.math.gatech.edu/ila/
 
 ## 延伸阅读
 
-
-
 线性代数基础，见 029-linear-algebra 模块文档。
 微积分与优化，见 027-calculus 模块。
 数据分析（PCA/矩阵），见 051-data-analysis 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供线性代数课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

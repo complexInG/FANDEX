@@ -15,13 +15,6 @@ related:
 prerequisites:
   - kotlin/概述与环境配置
 ---
-
-# Kotlin Ktor 服务端
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 Ktor 是 JetBrains 开发的 Kotlin 服务端框架，基于协程构建，轻量、灵活、非阻塞。与 Spring Boot 等全功能框架不同，Ktor 采用插件化架构，你只引入需要的功能。它的 DSL 风格 API 让路由定义和配置非常直观。
@@ -786,8 +779,6 @@ docker run -p 8080:8080 ktor-app
 
 ## 参考文献
 
-
-
 Kotlin 官方文档：https://kotlinlang.org/docs/home.html
 Kotlin 协程指南：https://kotlinlang.org/docs/coroutines-guide.html
 Compose Multiplatform：https://www.jetbrains.com/compose-multiplatform/
@@ -795,8 +786,6 @@ Ktor 框架：https://ktor.io/
 Android 开发者文档：https://developer.android.com/kotlin
 
 ## 延伸阅读
-
-
 
 Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
 协程与 Flow，见 014-kotlin 模块协程文档。

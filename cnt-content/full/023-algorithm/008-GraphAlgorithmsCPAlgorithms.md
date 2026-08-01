@@ -1358,7 +1358,6 @@ class UnionFind:
             self.rank[px] += 1
         return True
 
-
 def kruskal(n, edges):
     """Kruskal 最小生成树算法
 
@@ -1681,7 +1680,6 @@ def dag_shortest_path(n, graph, start):
             if dist[u] + w < dist[v]:
                 dist[v] = dist[u] + w
     return dist
-
 
 def dag_longest_path(n, graph, start):
     """DAG 单源最长路径
@@ -2484,14 +2482,12 @@ def common_neighbors(graph, u, v):
     """
     return len(set(graph[u]) & set(graph[v]))
 
-
 def jaccard_coefficient(graph, u, v):
     """Jaccard 系数（共同邻居占并集比例）"""
     union = set(graph[u]) | set(graph[v])
     if not union:
         return 0.0
     return len(set(graph[u]) & set(graph[v])) / len(union)
-
 
 def adamic_adar(graph, u, v):
     """Adamic-Adar 指数（对共同邻居的度数取对数惩罚）"""
@@ -2577,7 +2573,6 @@ def random_walk(graph, start, length, restart_prob=0.15):
             current = random.choice(graph[current])
         path.append(current)
     return path
-
 
 def deepwalk_embedding(graph, walks_per_node=10, walk_length=40, dim=128):
     """DeepWalk 简化版：随机游走生成序列后送入 Word2Vec

@@ -155,13 +155,6 @@ etymology:
     english: forwarding reference
     origin: '由 Scott Meyers 在《Effective Modern C++》（2015）中提出的术语，指「函数模板参数中形式为 T&& 的引用」，与「右值引用」区分；标准正式名称为「forwarding reference」（N4277, 2015）'
 ---
-
-# 右值引用与移动语义
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 第 1 章 学习目标与导论
 
 ### 1.1 本章在 C++ 知识体系中的位置

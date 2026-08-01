@@ -13,13 +13,6 @@ related:
   - cybersecurity/安全工具与实战
 prerequisites: []
 ---
-
-# Cybersecurity 渗透测试命令综合
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. OWASP Top 10
 
 ### 1.1 2021 版 OWASP Top 10
@@ -800,8 +793,6 @@ grep -E "CVE-[0-9]+-[0-9]+|OSVDB" scan_report.txt > vulnerabilities.txt
 
 ## 参考文献
 
-
-
 OWASP Top 10：https://owasp.org/www-project-top-ten/
 OWASP Cheat Sheets：https://cheatsheetseries.owasp.org/
 NIST 网络安全框架：https://www.nist.gov/cyberframework
@@ -809,8 +800,6 @@ CWE 数据库：https://cwe.mitre.org/
 PortSwigger Web Security Academy：https://portswigger.net/web-security
 
 ## 延伸阅读
-
-
 
 密码学与证书，见 033-cybersecurity 模块文档。
 Web 攻击与防御，见 033-cybersecurity 模块相关文档。

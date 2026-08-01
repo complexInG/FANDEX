@@ -38,7 +38,6 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-
 ## 1. 历史动机与发展脉络
 
 圆角在平面设计中长期用于柔化界面。CSS 2.1 没有圆角能力，开发者只能使用背景图片（九个切片）模拟圆角，成本高且难以缩放。2005 年起 Mozilla 率先在 Firefox 中实现 `-moz-border-radius`，WebKit 随后跟进 `-webkit-border-radius`；2010 年 CSS Backgrounds and Borders Level 3 工作草案将 `border-radius` 标准化，2017 年该规范成为 W3C Recommendation。如今 `border-radius` 是支持度最完整的 CSS 属性之一。
@@ -392,10 +391,6 @@ CSS 函数 calc/clamp 与圆角联动，见本模块 022-Function 文档；
 MDN 圆角实战教程：https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_backgrounds_and_borders/Border-radius_generator ；
 
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 CSS 进阶课程。
-
-# CSS 边框圆角
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 

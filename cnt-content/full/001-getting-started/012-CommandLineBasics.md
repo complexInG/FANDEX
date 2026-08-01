@@ -15,13 +15,6 @@ related:
 prerequisites:
   - 'getting-started/入门指南'
 ---
-
-# 命令行基础速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 文件列表查看
 
 **基本写法：列出目录内容**
@@ -922,16 +915,12 @@ cd -
 
 ## 参考文献
 
-
-
 本模块各文档：环境搭建、编程基础、调试思维等。
 MDN 学习区：https://developer.mozilla.org/zh-CN/docs/Learn_web_development
 freeCodeCamp：https://www.freecodecamp.org/chinese/
 黑马程序员官网：https://www.itheima.com/
 
 ## 延伸阅读
-
-
 
 从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
 语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。

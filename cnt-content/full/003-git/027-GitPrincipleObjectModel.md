@@ -783,16 +783,12 @@ Git 是一个强大的版本控制系统，它的核心是基于对象模型的�
 
 ## 参考文献
 
-
-
 Git 官方文档：https://git-scm.com/doc
 Pro Git 中文版：https://git-scm.com/book/zh/v2
 Git 参考手册：https://git-scm.com/docs
 Conventional Commits：https://www.conventionalcommits.org/zh-hans/
 
 ## 延伸阅读
-
-
 
 Git 基础操作与分支，见 003-git 模块文档。
 GitHub 协作与 PR，见 004-github 模块。

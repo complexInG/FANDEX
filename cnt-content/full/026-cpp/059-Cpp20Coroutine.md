@@ -174,13 +174,6 @@ etymology:
     english: 'HALO (Heap Allocation eLision Optimization)'
     origin: '由 Gor Nishanov 在 C++17 协程提案中提出，指编译器在「协程生命周期严格嵌套于调用者生命周期」时省略堆分配，将协程帧分配到调用者栈帧中的优化；命名借鉴 RVO（Return Value Optimization）的「省略」语义'
 ---
-
-# C++20 协程
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 第 1 章 学习目标与导论
 
 ### 1.1 本章在 C++ 知识体系中的位置

@@ -15,13 +15,6 @@ related:
 prerequisites:
   - java/概述与开发环境
 ---
-
-# Java 序列化
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 序列化是将 Java 对象转换为字节流的过程，反序列化是将字节流恢复为 Java 对象的过程。序列化的核心用途是让对象可以脱离内存存在：存储到文件、通过网络传输、保存到数据库。当你需要把一个对象从一台机器发送到另一台机器，或者把对象持久化保存时，就需要序列化。
@@ -700,8 +693,6 @@ UserProto.User u = UserProto.User.parseFrom(new FileInputStream("u.bin"));
 
 ## 参考文献
 
-
-
 Oracle Java 官方文档：https://docs.oracle.com/en/java/
 OpenJDK 项目：https://openjdk.org/
 Java 语言规范：https://docs.oracle.com/javase/specs/
@@ -710,8 +701,6 @@ Baeldung 教程站：https://www.baeldung.com/
 Maven 官方文档：https://maven.apache.org/guides/
 
 ## 延伸阅读
-
-
 
 Java 并发与 JUC，见 013-java 模块并发文档。
 JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。

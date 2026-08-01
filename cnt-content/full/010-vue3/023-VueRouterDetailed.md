@@ -17,13 +17,6 @@ related:
 prerequisites:
   - vue3/语法速查
 ---
-
-# Vue Router API 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. Vue Router 概述
 
 Vue Router 是 Vue.js 官方的路由管理器，它与 Vue.js 核心深度集成，让构建单页应用变得更加简单。
@@ -917,8 +910,6 @@ export default router;
 
 ## 参考文献
 
-
-
 Vue 官方文档：https://vuejs.org/
 Vue Router：https://router.vuejs.org/zh/
 Pinia：https://pinia.vuejs.org/zh/
@@ -926,8 +917,6 @@ Vue 3 迁移指南：https://v3-migration.vuejs.org/
 VueUse 组合函数库：https://vueuse.org/
 
 ## 延伸阅读
-
-
 
 Vue Teleport 与 Portal，见 010-vue3/026-TeleportPortalApp 文档。
 Vue KeepAlive 缓存，见 010-vue3/027-KeepAliveCacheLifecycle 文档。

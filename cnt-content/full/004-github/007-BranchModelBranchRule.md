@@ -17,13 +17,6 @@ related:
 prerequisites:
   - github/GitHub概述
 ---
-
-# GitHub 分支管理
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 2. 分支模型详解
 
 ### 2.1 Git Flow 分支模型
@@ -661,16 +654,12 @@ git branch -vv
 
 ## 参考文献
 
-
-
 GitHub 文档：https://docs.github.com/zh
 GitHub Actions 文档：https://docs.github.com/zh/actions
 GitHub REST API：https://docs.github.com/zh/rest
 GitHub GraphQL API：https://docs.github.com/zh/graphql
 
 ## 延伸阅读
-
-
 
 GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
 Git 协作基础，见 003-git 模块。

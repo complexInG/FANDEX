@@ -1753,7 +1753,6 @@ B. 组件能感知自身容器尺寸而非视口
 C. 替代 JavaScript 的 ResizeObserver
 D. 支持所有浏览器
 
-
 **答案：B**
 
 **解析讲解**：容器查询的核心优势是让组件能感知自身容器的尺寸，从而实现真正的组件级响应式设计。这与媒体查询（基于视口）有本质区别。
@@ -1762,7 +1761,6 @@ D. 支持所有浏览器
 - C：容器查询无法完全替代 ResizeObserver（后者支持复杂逻辑）。
 - D：旧浏览器不支持（需 polyfill）。
 
-
 **题目 2**：`container-type: size` 与 `container-type: inline-size` 的关键差异是？
 
 A. `size` 仅查询宽度，`inline-size` 查询宽高
@@ -1770,11 +1768,9 @@ B. `size` 查询宽高，`inline-size` 仅查询 inline 方向
 C. `size` 性能更好
 D. 两者完全相同
 
-
 **答案：B**
 
 **解析讲解**：`container-type: size` 允许查询容器的宽与高，但会触发 `contain: size`，导致容器高度必须显式设置。`inline-size` 仅查询 inline 方向（通常是宽度），容器高度仍可被子元素撑开。
-
 
 **题目 3**：以下哪个单位是相对于容器 inline 方向的 1%？
 
@@ -1783,11 +1779,9 @@ B. `cqw`
 C. `cqi`
 D. `cqh`
 
-
 **答案：C**
 
 **解析讲解**：`cqi`（container query inline）是容器 inline 方向的 1%。`cqw` 是宽度的 1%，`cqh` 是高度的 1%。在水平书写模式下，`cqi` 等价于 `cqw`。
-
 
 **题目 4**：以下哪种写法在 `@container` 中是**无效**的？
 
@@ -1795,7 +1789,6 @@ A. `@container (min-width: 400px)`
 B. `@container card (min-width: 400px)`
 C. `@container style(--theme: dark)`
 D. `@container (min-viewport-width: 400px)`
-
 
 **答案：D**
 
@@ -1805,7 +1798,6 @@ D. `@container (min-viewport-width: 400px)`
 - B：命名容器查询，有效。
 - C：样式查询（实验性），有效。
 
-
 **题目 5**：以下哪种情况会触发循环依赖问题？
 
 A. `container-type: inline-size` 容器内查询宽度
@@ -1813,53 +1805,41 @@ B. `container-type: size` 容器内查询高度
 C. 不声明 `container-type` 的容器
 D. 命名容器嵌套
 
-
 **答案：C**
 
 **解析讲解**：未声明 `container-type` 的容器不会触发 `contain`，若尝试查询其尺寸，子元素样式变化可能回流影响容器尺寸，形成循环。这正是 CSS Containment 通过 `container-type` 解决的问题。
-
 
 ### 填空题知识点讲解
 
 **题目 1**：容器查询的规范属于 CSS ________ Module Level 3。
 
-
 **解析讲解**：Containment
 
 **解析讲解**：容器查询规范归入 [CSS Containment Module Level 3](https://www.w3.org/TR/css-contain-3/)。
 
-
 **题目 2**：声明 `container-type: size` 会隐式触发 `contain: ________`。
-
 
 **解析讲解**：`size`
 
 **解析讲解**：`container-type: size` 隐式触发 `contain: size`，使容器尺寸不受子元素影响，从而打破循环依赖。
 
-
 **题目 3**：`cqi` 单位的全称是 ________。
-
 
 **解析讲解**：container query inline
 
 **解析讲解**：`cqi` 全称为 container query inline，是容器 inline 方向尺寸的 1%。
 
-
 **题目 4**：容器查询的命名属性是 ________。
-
 
 **解析讲解**：`container-name`
 
 **解析讲解**：`container-name` 属性为容器命名，用于在嵌套场景下精确匹配 `@container` 规则。
 
-
 **题目 5**：Style Queries 使用 `________()` 函数查询容器的 CSS 变量。
-
 
 **解析讲解**：`style`
 
 **解析讲解**：Style Queries 使用 `style()` 函数查询容器的 CSS 变量，例如 `@container style(--theme: dark)`。
-
 
 ### 编程题知识点讲解
 
@@ -1868,7 +1848,6 @@ D. 命名容器嵌套
 1. 窄容器（< 400px）：垂直堆叠，菜单折叠为汉堡按钮。
 2. 中等容器（400-700px）：水平排列，菜单展开。
 3. 宽容器（> 700px）：水平排列，菜单展开并显示搜索框。
-
 
 ```html
 <!DOCTYPE html>
@@ -2027,7 +2006,6 @@ D. 命名容器嵌套
 - 三个断点的样式切换（+10 分）
 - 默认样式（窄容器）正确（+5 分）
 
-
 **题目 2**：修复以下代码中的错误：
 
 ```css
@@ -2043,7 +2021,6 @@ D. 命名容器嵌套
   }
 }
 ```
-
 
 **问题**：`container-type: size` 触发 `contain: size`，但容器未显式设置高度，导致容器高度为 0，`@container (min-height: 300px)` 永不匹配。
 
@@ -2081,13 +2058,11 @@ D. 命名容器嵌套
 }
 ```
 
-
 **题目 3**：使用容器查询实现一个响应式图片网格：
 
 1. 窄容器（< 400px）：单列。
 2. 中等容器（400-700px）：双列。
 3. 宽容器（> 700px）：三列。
-
 
 ```html
 <!DOCTYPE html>
@@ -2163,11 +2138,9 @@ D. 命名容器嵌套
 </html>
 ```
 
-
 ### 9.4 思考题
 
 **题目 1**：容器查询是否会取代媒体查询？请论证你的观点。
-
 
 **观点**：容器查询不会完全取代媒体查询，两者将共存。
 
@@ -2179,9 +2152,7 @@ D. 命名容器嵌套
 
 **结论**：新项目应优先使用容器查询管理组件级响应式，保留媒体查询用于视口级布局与用户偏好。
 
-
 **题目 2**：在 SSR 场景下，如何处理容器查询的布局抖动问题？
-
 
 **问题**：服务端渲染时，容器尺寸未知，`@container` 规则无法预先评估。客户端 hydration 后，容器尺寸变化可能导致布局抖动（CLS）。
 
@@ -2218,9 +2189,7 @@ D. 命名容器嵌套
 </style>
 ```
 
-
 **题目 3**：设计一套基于容器查询的设计系统，要求支持主题切换、响应式字体、可访问性。
-
 
 **设计方案**：
 
@@ -2294,7 +2263,6 @@ D. 命名容器嵌套
 - Storybook 测试各种容器尺寸
 - Chromatic 视觉回归
 - Playwright CLS 检测
-
 
 ---
 

@@ -490,7 +490,6 @@ def merge_sort(arr: List[int]) -> List[int]:
     right = merge_sort(arr[mid:])
     return _merge(left, right)
 
-
 def _merge(left: List[int], right: List[int]) -> List[int]:
     """合并两个有序数组
 
@@ -517,7 +516,6 @@ def _merge(left: List[int], right: List[int]) -> List[int]:
     result.extend(right[j:])
     return result
 
-
 def merge_sort_inplace(arr: List[int]) -> None:
     """归并排序 - 原地版（自底向上迭代）
 
@@ -537,7 +535,6 @@ def merge_sort_inplace(arr: List[int]) -> None:
             merged = _merge(left, right)
             arr[i:i + len(merged)] = merged
         width *= 2
-
 
 # 测试
 if __name__ == "__main__":
@@ -631,7 +628,6 @@ def quick_sort_lomuto(arr: List[int], low: int = 0, high: int = None) -> List[in
         quick_sort_lomuto(arr, pivot_idx + 1, high)
     return arr
 
-
 def _partition_lomuto(arr: List[int], low: int, high: int) -> int:
     """Lomuto 分区：选 arr[high] 为 pivot，单指针 i 维护 <= pivot 区域边界
 
@@ -646,7 +642,6 @@ def _partition_lomuto(arr: List[int], low: int, high: int) -> int:
     arr[i + 1], arr[high] = arr[high], arr[i + 1]
     return i + 1
 
-
 def quick_sort_hoare(arr: List[int], low: int = 0, high: int = None) -> List[int]:
     """快速排序 - Hoare 双指针分区方案
 
@@ -660,7 +655,6 @@ def quick_sort_hoare(arr: List[int], low: int = 0, high: int = None) -> List[int
         quick_sort_hoare(arr, low, pivot_idx)
         quick_sort_hoare(arr, pivot_idx + 1, high)
     return arr
-
 
 def _partition_hoare(arr: List[int], low: int, high: int) -> int:
     """Hoare 分区：选 arr[low] 为 pivot（实际中点更好）"""
@@ -677,7 +671,6 @@ def _partition_hoare(arr: List[int], low: int, high: int) -> int:
         if i >= j:
             return j
         arr[i], arr[j] = arr[j], arr[i]
-
 
 def quick_sort_3way(arr: List[int], low: int = 0, high: int = None) -> List[int]:
     """三路快排 - Dijkstra 国旗问题变种
@@ -708,7 +701,6 @@ def quick_sort_3way(arr: List[int], low: int = 0, high: int = None) -> List[int]
     quick_sort_3way(arr, low, lt - 1)
     quick_sort_3way(arr, gt + 1, high)
     return arr
-
 
 # 测试
 if __name__ == "__main__":
@@ -793,7 +785,6 @@ def karatsuba(x: int, y: int) -> int:
 
     # 合并: xy = ac * 2^(2m) + (ad+bc) * 2^m + bd
     return (ac << (2 * m)) + (ad_plus_bc << m) + bd
-
 
 # 测试
 if __name__ == "__main__":
@@ -907,7 +898,6 @@ def strassen(A: List[List[int]], B: List[List[int]]) -> List[List[int]]:
         C[mid + i][mid:] = C22[i]
     return C
 
-
 def _matmul_naive(A, B):
     n = len(A)
     C = [[0] * n for _ in range(n)]
@@ -917,21 +907,17 @@ def _matmul_naive(A, B):
                 C[i][j] += A[i][k] * B[k][j]
     return C
 
-
 def _add(A, B):
     n = len(A)
     return [[A[i][j] + B[i][j] for j in range(n)] for i in range(n)]
-
 
 def _sub(A, B):
     n = len(A)
     return [[A[i][j] - B[i][j] for j in range(n)] for i in range(n)]
 
-
 def _pad_matrix(M, new_size):
     n = len(M)
     return [row + [0] * (new_size - n) for row in M] + [[0] * new_size for _ in range(new_size - n)]
-
 
 # 测试
 if __name__ == "__main__":
@@ -1036,7 +1022,6 @@ def fft_recursive(x: List[complex]) -> List[complex]:
         result[k + N // 2] = even[k] - twiddle * odd[k]
     return result
 
-
 def fft_iterative(x: List[complex]) -> List[complex]:
     """Cooley-Tukey FFT 迭代实现（bit-reversal + 蝶形）
 
@@ -1073,7 +1058,6 @@ def fft_iterative(x: List[complex]) -> List[complex]:
         size *= 2
     return result
 
-
 def ifft(X: List[complex]) -> List[complex]:
     """逆 FFT：X -> x
 
@@ -1083,7 +1067,6 @@ def ifft(X: List[complex]) -> List[complex]:
     conj_X = [v.conjugate() for v in X]
     y = fft_recursive(conj_X)
     return [v.conjugate() / N for v in y]
-
 
 # 测试
 if __name__ == "__main__":
@@ -1142,7 +1125,6 @@ from typing import List, Tuple
 
 Point = Tuple[float, float]
 
-
 def closest_pair(points: List[Point]) -> float:
     """最近点对问题 - 分治算法 O(n log n)
 
@@ -1195,7 +1177,6 @@ def closest_pair(points: List[Point]) -> float:
         return d
 
     return helper(points_x)
-
 
 # 测试
 if __name__ == "__main__":

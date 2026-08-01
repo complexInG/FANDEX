@@ -1482,7 +1482,6 @@ Shopify Hydrogen 7 在 2025 年集成 Compiler：
 - C. 组件必须使用 TypeScript
 - D. 组件必须用 React 19
 
-
 **B. 组件必须是纯函数**
 
 Compiler 假设组件是纯函数：相同的输入（props/state/context）产生相同的输出（JSX）。违反纯函数假设会导致记忆化错误。
@@ -1493,7 +1492,6 @@ Compiler 假设组件是纯函数：相同的输入（props/state/context）产�
 - B. `useCallback`
 - C. `useMemoCache`
 - D. `useRef`
-
 
 **C. `useMemoCache`**
 
@@ -1506,7 +1504,6 @@ Compiler 假设组件是纯函数：相同的输入（props/state/context）产�
 - C. `state.push(item);`
 - D. `useEffect(() => {}, [dep]);`
 
-
 **C. `state.push(item);`**
 
 直接修改 state 违反不可变更新规则。Compiler 会通过 ESLint 插件报告此错误。
@@ -1517,7 +1514,6 @@ Compiler 假设组件是纯函数：相同的输入（props/state/context）产�
 - B. 互补，可以组合使用
 - C. Compiler 取代 React.memo
 - D. React.memo 取代 Compiler
-
 
 **B. 互补，可以组合使用**
 
@@ -1530,7 +1526,6 @@ Compiler 在组件**内部**保持值引用稳定，`React.memo` 在组件**外�
 - C. `vite.config.ts`
 - D. `.babelrc`
 
-
 **C. `vite.config.ts`**
 
 在 `vite.config.ts` 的 `react()` 插件配置中添加 `babel.plugins`，包含 `babel-plugin-react-compiler`。
@@ -1539,13 +1534,11 @@ Compiler 在组件**内部**保持值引用稳定，`React.memo` 在组件**外�
 
 **题目 1**：React Compiler 原名 ________。
 
-
 **React Forget**
 
 React Compiler 在 2021 年启动时名为 React Forget，2024 年更名为 React Compiler。
 
 **题目 2**：Compiler 通过 ________ 分析识别需要记忆化的值。
-
 
 **AST（抽象语法树）**
 
@@ -1553,20 +1546,17 @@ Compiler 解析源代码为 AST，遍历每个表达式，收集依赖并构建�
 
 **题目 3**：Compiler 遇到不确定的代码时，策略是 ________ 优化。
 
-
 **不**
 
 Compiler 采用"保守优于激进"策略，遇到不确定的场景（如动态代码、第三方库）时选择不优化，而非错误优化。
 
 **题目 4**：Compiler 通过 ________ 插件检测违反 Rules of React 的代码。
 
-
 **ESLint**
 
 `eslint-plugin-react-compiler` 插件在开发与 CI 中检测违反 Rules of React 的代码，帮助开发者修复问题。
 
 **题目 5**：Compiler 与 Server Components 的关系是 ________。
-
 
 **互补**
 
@@ -1594,7 +1584,6 @@ function ProductList({ products, category, onAddToCart }) {
 }
 ```
 
-
 ```tsx
 function ProductList({ products, category, onAddToCart }) {
   // Compiler 自动记忆化
@@ -1617,7 +1606,6 @@ function ProductList({ products, category, onAddToCart }) {
 启用 Compiler 后，所有手动 `useMemo`/`useCallback` 都可以移除，代码更简洁，性能更优。
 
 **题目 2**：实现一个 ESLint 自定义规则，检测在 render 中调用 `Date.now()`。
-
 
 ```javascript
 // eslint-rules/no-date-now-in-render.js
@@ -1701,7 +1689,6 @@ module.exports = {
 
 **题目 3**：编写一个性能基准测试脚本，对比启用 Compiler 前后的渲染次数。
 
-
 ```typescript
 // scripts/benchmark-compiler.ts
 import { renderHook, act } from '@testing-library/react-hooks';
@@ -1778,7 +1765,6 @@ console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / 
 
 **题目 1**：为什么 React Compiler 选择在编译期优化，而非运行时自动追踪依赖（如 Solid.js）？这种选择带来了哪些优势与劣势？
 
-
 **优势**：
 1. **零运行时开销**：编译期完成分析，运行时无需依赖追踪
 2. **保持心智模型**：React 的"重新渲染"模型不变，开发者无需学习新概念
@@ -1794,7 +1780,6 @@ console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / 
 **设计权衡**：React 团队选择编译期是为了保持向后兼容与心智模型一致性，代价是优化效果略逊于 Solid.js 的运行时细粒度响应式。
 
 **题目 2**：在什么场景下应该启用 Compiler，什么场景下应该暂缓？请给出至少 3 个判断维度。
-
 
 **适合启用的场景**：
 1. **新项目**：从一开始就遵守 Rules of React，无历史包袱
@@ -1815,7 +1800,6 @@ console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / 
 - 第三方库的兼容性
 
 **题目 3**：Compiler 自动记忆化后，`useMemo`/`useCallback` 是否完全无用？请说明保留它们的场景。
-
 
 **Compiler 不完全取代 useMemo/useCallback**，以下场景仍需保留：
 

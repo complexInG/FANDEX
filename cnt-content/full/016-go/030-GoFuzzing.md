@@ -1417,7 +1417,6 @@ func FuzzYAMLParse(f *testing.F) {
 - 限制输入大小至 1MB。
 - 验证 `Encode` 后 `Decode` 的往返一致性。
 
-
 ```go
 package base64fuzz
 
@@ -1449,7 +1448,6 @@ func FuzzBase64(f *testing.F) {
 }
 ```
 
-
 **习题 2**：解释为什么以下 fuzz target 在 fuzzing 30 分钟后覆盖率停滞在 30%：
 
 ```go
@@ -1466,14 +1464,12 @@ func FuzzStuck(f *testing.F) {
 }
 ```
 
-
 两个问题导致覆盖率停滞：
 
 1. **过度严格的 Skip**：`len(data) != 4` 跳过了 99% 的输入，fuzzer 几乎无法探索。
 2. **种子单一**：仅一个 `"seed"` 种子，未覆盖目标长度 4 与特定前缀 `GO`。
 
 改进：移除长度限制，提供 `f.Add([]byte("GOxx"))` 等多种子。
-
 
 ### 9.2 进阶题
 
@@ -1504,7 +1500,6 @@ func ParseMessage(data []byte) (*Message, error) {
 }
 ```
 
-
 ```go
 func FuzzParseMessage(f *testing.F) {
 	// 种子：覆盖所有分支
@@ -1534,7 +1529,6 @@ func FuzzParseMessage(f *testing.F) {
 }
 ```
 
-
 **习题 4**：解释覆盖率引导模糊测试与符号执行（symbolic execution）在求解以下分支时的差异：
 
 ```c
@@ -1543,13 +1537,11 @@ if (x * 1234567 == 0xdeadbeef) {
 }
 ```
 
-
 - **覆盖率引导**：随机变异几乎不可能命中 `x == 0xdeadbeef / 1234567` 这一具体值，需要 $O(2^{32})$ 次尝试，实际不可行。
 - **符号执行**：将 $x \cdot 1234567 = \text{0xdeadbeef}$ 作为约束提交给 SMT 求解器（Z3），可在毫秒级求解出 $x$。
 - **混合模糊测试**（如 Driller）：在覆盖率引导无法穿透此分支时，自动调用符号执行求解。
 
 Go 原生 fuzzing 不集成符号执行，对此类"魔法值"分支效果较差，需通过字典或人工种子辅助。
-
 
 ### 9.3 思考题
 

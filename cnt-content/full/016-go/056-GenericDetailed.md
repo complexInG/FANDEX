@@ -2210,7 +2210,6 @@ Sum([]int{1, 2, 3})
 - C. 编译错误：类型推断失败
 - D. 运行时 panic
 
-
 **答案：A**
 
 `int` 在 `Number` 约束的类型集合中（`int | float64`），类型推断从 `[]int{1,2,3}` 推断出 `T = int`，编译成功。
@@ -2237,7 +2236,6 @@ fmt.Println(Length(s))
 - C. 编译错误
 - D. panic
 
-
 **答案：A**
 
 `MyString` 的底层类型是 `string`（`~string`），满足 `Stringer` 约束。`Length` 接收 `MyString` 类型，转换为 `string` 后 `len("hello") = 5`。
@@ -2257,7 +2255,6 @@ func F[T any](x T) {
 - C. 运行时 panic
 - D. 编译错误：T 不实现 Stringer
 
-
 **答案：B**
 
 类型参数 `T` 在编译期是抽象的，不能直接用于类型断言。需要先转为 `any`：
@@ -2274,7 +2271,6 @@ if s, ok := any(x).(string); ok {
 - B. 类型擦除（如 Java generics）
 - C. GC shape stenciling
 - D. 运行时实例化（如 C# generics）
-
 
 **答案：C**
 
@@ -2299,7 +2295,6 @@ func (s Stack[T]) Push(item T) {
 - C. 编译错误
 - D. 运行时 panic
 
-
 **答案：B**
 
 `Push` 使用值接收者 `Stack[T]`，修改的是副本，不影响原 Stack。应使用指针接收者：
@@ -2314,33 +2309,27 @@ func (s *Stack[T]) Push(item T) {
 
 **题目 1**：Go 泛型使用 ______ 方括号语法声明类型参数。
 
-
 `[]`
 
 **题目 2**：泛型约束本质是 ______，可包含类型集合。
-
 
 `interface`
 
 **题目 3**：Go 1.18 引入泛型，使用 ______ 关键字表示任意类型约束。
 
-
 `any`
 
 **题目 4**：`comparable` 约束要求类型支持 ______ 与 ______ 操作。
 
-
 `==`；`!=`
 
 **题目 5**：Go 泛型的实现策略是 ______，按 GC 形状分组生成代码。
-
 
 `GC shape stenciling`
 
 ### 编程题知识点讲解
 
 **题目 1**：实现一个泛型 `Cache[K, V]`，支持 TTL（生存时间）与并发安全。
-
 
 ```go
 package main
@@ -2425,7 +2414,6 @@ func main() {
 ```
 
 **题目 2**：实现泛型 `BinaryTree[T]`，支持插入、查找、中序遍历。
-
 
 ```go
 package main
@@ -2517,7 +2505,6 @@ func main() {
 ```
 
 **题目 3**：实现泛型 `Pipeline[T, U]`，支持多阶段数据处理。
-
 
 ```go
 package main
@@ -2667,7 +2654,6 @@ func main() {
 
 **题目 1**：为什么 Go 选择 GC shape stenciling 而非完全单态化？
 
-
 **选择 GC shape stenciling 的原因**：
 
 1. **编译速度**：完全单态化（C++ templates）会导致代码爆炸，编译时间长。Go 的卖点是秒级编译，GC shape stenciling 显著减少生成的代码量。
@@ -2696,7 +2682,6 @@ func main() {
 | 类型安全 | 编译期 | 编译期 |
 
 **题目 2**：泛型与接口的边界是什么？何时该用泛型，何时该用接口？
-
 
 **泛型 vs 接口**：
 
@@ -2734,7 +2719,6 @@ func main() {
 **混合使用**：泛型可与接口结合，如 `Repository[T Entity]`，T 必须实现 `Entity` 接口。
 
 **题目 3**：Go 泛型为什么不支持特化（specialization）？
-
 
 **特化（Specialization）**：为特定类型提供定制实现，如 C++ 的 `template<>`。
 
@@ -2792,7 +2776,6 @@ func AbsInt(x int) int {
 
 **题目 4**：泛型对 Go 生态的影响是什么？
 
-
 **正面影响**：
 
 1. **类型安全**：消除 `interface{}` 转换，编译期捕获类型错误
@@ -2824,7 +2807,6 @@ func AbsInt(x int) int {
 - 与 Rust、TypeScript 等语言竞争
 
 **题目 5**：设计一个泛型 ORM 框架需要考虑哪些方面？
-
 
 **核心设计要素**：
 

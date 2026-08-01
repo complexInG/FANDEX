@@ -1431,11 +1431,9 @@ B. DSoftBus
 C. AIDL  
 D. WebSocket  
 
-
 **解析讲解**：B
 
 **解析讲解**：DSoftBus（Distributed Soft Bus）是 HarmonyOS 分布式软总线，统一封装 Wi-Fi、蓝牙、Ethernet 等底层网络，为上层提供会话抽象。Binder 是 Android 的 IPC 机制，AIDL 是 Android 接口描述语言，WebSocket 是 Web 协议。
-
 
 **题 1.2**：跨设备迁移 `onSaveData` 的数据上限是：
 
@@ -1444,11 +1442,9 @@ B. 100 KB
 C. 1 MB  
 D. 10 MB  
 
-
 **解析讲解**：B
 
 **解析讲解**：HarmonyOS 4.0 中 `onSaveData` 序列化数据上限为 100 KB，超限会拒绝迁移。大数据应通过分布式 KV 或分布式文件同步。
-
 
 **题 1.3**：跨设备调用必须声明的权限是：
 
@@ -1457,11 +1453,9 @@ B. ohos.permission.DISTRIBUTED_DATASYNC
 C. ohos.permission.CAMERA  
 D. ohos.permission.LOCATION  
 
-
 **解析讲解**：B
 
 **解析讲解**：`ohos.permission.DISTRIBUTED_DATASYNC` 是分布式数据同步权限，所有跨设备调用必须声明。INTERNET 用于网络访问，CAMERA 用于相机，LOCATION 用于定位。
-
 
 **题 1.4**：跨设备启动 Ability 的 API 是：
 
@@ -1470,11 +1464,9 @@ B. `context.startAbility(want)`，Want 中带 deviceId
 C. `context.startRemoteAbility(want)`  
 D. `distributedScheduler.startRemoteAbility(want)`
 
-
 **解析讲解**：B
 
 **解析讲解**：Stage 模型中 `context.startAbility(want)` 是统一启动 API，本地与远程的区别仅在 Want 中是否带 `deviceId` 字段。早期 FA 模型使用 `featureAbility.startAbility`，旧版 Stage 模型曾有 `distributedScheduler.startRemoteAbility`，已统一为 `context.startAbility`。
-
 
 **题 1.5**：跨设备 IPC 的 `MessageSequence` 使用后必须调用：
 
@@ -1483,53 +1475,41 @@ B. `destroy()`
 C. `reclaim()`  
 D. `release()`  
 
-
 **解析讲解**：C
 
 **解析讲解**：`rpc.MessageSequence.create()` 创建的对象必须调用 `reclaim()` 释放 native 资源，否则高频调用会导致内存泄漏。
-
 
 ### 填空题知识点讲解
 
 **题 2.1**：DSoftBus 协议栈分为 ________、________、________、________ 四层。
 
-
 **解析讲解**：应用层、IPC 会话层、传输层、网络层（链路层也算）
 
 **解析讲解**：DSoftBus 分层从上到下：Application Layer（distributedScheduler/KV/File）→ IPC Session Layer → Transport Layer（TCP/UDP/BLE）→ Network Layer（IP/BLE Mesh）→ Link Layer（Wi-Fi/BT/Ethernet）。
 
-
 **题 2.2**：设备配对时使用 ________ 协议派生会话密钥。
-
 
 **解析讲解**：PAKE（Password-Authenticated Key Exchange）
 
 **解析讲解**：DSoftBus 设备配对使用 PAKE 协议，基于 PIN 码派生会话密钥，确保即使 PIN 码被截获，攻击者也无法解密后续通信。
 
-
 **题 2.3**：跨设备迁移的四个阶段是 ________、________、________、________。
-
 
 **解析讲解**：SaveState、Transfer、RestoreState、Terminate（可选）
 
 **解析讲解**：源端 SaveState 序列化状态，Transfer 通过 DSoftBus 传输，目标端 RestoreState 反序列化恢复，Terminate 终止源端实例（可选）。
 
-
 **题 2.4**：HarmonyOS 4.0 跨设备启动延迟典型值约为 ________ ms。
-
 
 **解析讲解**：720
 
 **解析讲解**：根据华为官方基准，HarmonyOS 4.0 跨设备启动延迟约 720 ms，相比 HarmonyOS 3.0 的 1200 ms 提升 40%。
 
-
 **题 2.5**：跨设备 IPC 使用的序列化协议是 ________，相比 JSON 优势是 ________。
-
 
 **解析讲解**：FlatBuffers；零拷贝反序列化，速度提升 5 倍
 
 **解析讲解**：DSoftBus 3.0 使用 FlatBuffers 替代 JSON，FlatBuffers 支持零拷贝反序列化，避免了 JSON 解析的内存分配开销。
-
 
 ### 编程题知识点讲解
 
@@ -1540,7 +1520,6 @@ D. `release()`
 3. 实现 `onSaveData`，序列化 `playerState` 并写入 `wantParam`。
 4. 实现 `onRestoreData`，反序列化并恢复 `playerState`。
 5. 实现 `onCreate`，检测是否为迁移启动（launchReason === CONTINUE）。
-
 
 ```typescript
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
@@ -1606,9 +1585,7 @@ export default class PlayerAbility extends UIAbility {
 }
 ```
 
-
 **题 3.2**：编写 `module.json5`，配置一个可跨设备迁移的 EntryAbility 与可被远程调用的 ServiceExtAbility，并申请所需权限。
-
 
 ```json5
 {
@@ -1653,11 +1630,9 @@ export default class PlayerAbility extends UIAbility {
 }
 ```
 
-
 ### 9.4 思考题
 
 **题 4.1**：为什么 HarmonyOS 选择自研 DSoftBus 而非直接使用 gRPC/MQTT？
-
 
 1. **统一抽象**：DSoftBus 屏蔽 Wi-Fi/BLE/Ethernet 差异，gRPC/MQTT 仅基于 IP 网络。
 2. **自发现**：DSoftBus 内建 mDNS + BLE 发现机制，gRPC/MQTT 需外部服务注册中心。
@@ -1666,9 +1641,7 @@ export default class PlayerAbility extends UIAbility {
 5. **系统能力**：DSoftBus 与 Ability 框架、AMS、WMS 深度集成，可触发远程 Ability 启动，gRPC/MQTT 无法做到。
 6. **代价**：仅限 HarmonyOS 生态，跨生态场景需回退到通用协议。
 
-
 **题 4.2**：跨设备迁移的 100KB 限制是否合理？如何设计能突破此限制？
-
 
 **合理性**：
 - 100KB 限制保证迁移延迟在 1s 以内，用户感知流畅。
@@ -1697,9 +1670,7 @@ onSaveData(wantParam: Record<string, Object>): void {
 }
 ```
 
-
 **题 4.3**：分析跨设备调用的安全威胁模型，并提出防御措施。
-
 
 **威胁模型**：
 1. **中间人攻击（MITM）**：攻击者截获 DSoftBus 通信。
@@ -1723,9 +1694,7 @@ onSaveData(wantParam: Record<string, Object>): void {
 - 速率限制：单设备单位时间最大调用次数。
 - 异常检测：识别异常调用模式。
 
-
 **题 4.4**：在弱网环境下，跨设备调用应如何降级？
-
 
 **降级策略**：
 1. **延迟感知**：根据 RTT 动态选择策略，RTT > 500ms 触发降级。
@@ -1754,7 +1723,6 @@ async robustMigrate(deviceId: string): Promise<void> {
   }
 }
 ```
-
 
 ---
 

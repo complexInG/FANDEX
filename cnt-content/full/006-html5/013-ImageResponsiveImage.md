@@ -15,13 +15,6 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
-
-# 图像与响应式图片 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 早期图像时代（1993—2000）
@@ -1142,11 +1135,9 @@ C. `srcset="small.jpg 400w, large.jpg 2x"`
 
 D. `srcset="photo.jpg 1x, photo@3x.jpg 3x"`
 
-
 **答案：C**
 
 **解析讲解**：`srcset` 中所有候选必须使用**相同类型**的描述符，不能 `w`（宽度）与 `x`（密度）混用。C 选项混用了 `400w` 和 `2x`，浏览器会忽略整个 `srcset`，仅使用 `src` 属性。
-
 
 **常见疑问 2**：关于 `loading="lazy"` 与 `fetchpriority="high"`，以下说法正确的是：
 
@@ -1158,7 +1149,6 @@ C. `loading="lazy"` 与 `fetchpriority="high"` 可以同时使用
 
 D. `fetchpriority` 仅对 `loading="eager"` 生效
 
-
 **答案：B**
 
 **解析讲解**：
@@ -1166,7 +1156,6 @@ D. `fetchpriority` 仅对 `loading="eager"` 生效
 - B 正确：首屏 LCP 图片应立即加载并提升优先级。
 - C 错误：`lazy` 表示延迟加载，与 `high` 优先级语义冲突，浏览器会忽略 `high`。
 - D 错误：`fetchpriority` 对所有图片生效，但 `lazy` 图片在加载前不参与优先级调度。
-
 
 **常见疑问 3**：浏览器如何选择 `srcset` 中的图片？（设 `srcset="a.jpg 400w, b.jpg 800w, c.jpg 1200w"`，`sizes="(max-width: 600px) 100vw"`，视口宽度 500px，DPR=2）
 
@@ -1178,7 +1167,6 @@ C. 选择 `c.jpg`（1200w）
 
 D. 选择默认 `src`
 
-
 **答案：B**
 
 **解析讲解**：
@@ -1188,29 +1176,23 @@ D. 选择默认 `src`
 
 实际浏览器实现略有差异，多数会选 `c.jpg`。但部分浏览器（如 Chrome）在边界情况选 `b.jpg`（避免过大）。题目答案取决于具体实现，标准要求选 `c.jpg`。
 
-
 ### 填空题知识点讲解
 
 **常见疑问 4**：`<img>` 元素的 `currentSrc` 属性返回________，即浏览器根据 `srcset`/`sizes` 实际选择的图片 URL。
-
 
 **解析讲解**：当前实际加载的图片 URL（`DOMString` 类型）
 
 **解析讲解**：`img.currentSrc` 是只读属性，返回浏览器从 `srcset` 中选择的实际 URL，若未使用 `srcset` 则返回 `src`。
 
-
 **常见疑问 5**：`<picture>` 元素必须包含一个________子元素作为回退。
-
 
 **解析讲解**：`<img>` 元素
 
 **解析讲解**：`<picture>` 必须以 `<img>` 子元素结尾，作为所有 `<source>` 都不匹配时的回退，也是无障碍技术与 SEO 索引的入口。
 
-
 ### 编程题知识点讲解
 
 **常见疑问 6**：实现一个 Node.js 脚本，自动为 `public/img/` 目录下所有 JPEG 图片生成 320/640/1024/1920 四档 WebP 与 AVIF 格式，并输出 `manifest.json` 记录所有图片的多档 URL。
-
 
 ```javascript
 // scripts/generate-images.js
@@ -1262,13 +1244,11 @@ async function generate() {
 generate().catch(console.error);
 ```
 
-
 **常见疑问 7**：实现一个 React Hook `useResponsiveImage`，根据当前视口宽度返回最优图片 URL。要求：
 
 - 输入：候选图列表 `[{width, url}]`。
 - 输出：最优 URL 与 naturalWidth。
 - 监听视口 resize，但使用 debounce 200ms。
-
 
 ```jsx
 // useResponsiveImage.js
@@ -1316,11 +1296,9 @@ export function useResponsiveImage(sources, defaultUrl) {
 // ], '/img/photo-320.jpg');
 ```
 
-
 ### 9.4 思考题
 
 **常见疑问 8**：为什么 `srcset` 让浏览器选择而非开发者用 JS 选择？请从性能、缓存、SSR 三个角度分析。
-
 
 1. **性能角度**：浏览器在解析 HTML 时即可选择图片 URL，比 JS 解析+执行更早（提前约 200~500ms）。JS 方案需等待主线程空闲，导致图片请求延后，损害 LCP。
 
@@ -1328,9 +1306,7 @@ export function useResponsiveImage(sources, defaultUrl) {
 
 3. **SSR 角度**：`srcset` 是 HTML 属性，SSR 输出后浏览器立即解析，无需 hydration。JS 方案在 hydration 前显示空占位，体验差。
 
-
 **常见疑问 9**：设计一个图像性能监控 SDK，需采集：(a) LCP 图片 URL 与加载耗时，(b) CLS 来源图片，(c) 图片下载字节数，(d) 错误图片。请给出采集方案与上报协议。
-
 
 **采集方案**：
 
@@ -1440,9 +1416,7 @@ export class ImagePerfSDK {
 }
 ```
 
-
 **常见疑问 10**：对比 `<picture>` + `<source>` 与 CSS `image-set()` 函数。何时应该选择前者？何时应该选择后者？
-
 
 | 维度 | `<picture>` + `<source>` | CSS `image-set()` |
 | ---- | ------------------------ | ------------------ |
@@ -1458,7 +1432,6 @@ export class ImagePerfSDK {
 - 内容图片（应被索引、可访问）→ `<picture>`。
 - 装饰背景图片 → CSS `image-set()`。
 - 需要艺术指导 → `<picture>`（CSS 媒体查询 + background 也可，但需手写）。
-
 
 ---
 

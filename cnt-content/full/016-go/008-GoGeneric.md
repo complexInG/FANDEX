@@ -14,13 +14,6 @@ related:
   - go/Web开发与微服务
 prerequisites: []
 ---
-
-# Go 泛型
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 泛型概述
 
 Go 1.18（2022.03）正式引入泛型，是 Go 语言最重要的特性之一。泛型允许编写与类型无关的代码，同时保持类型安全。
@@ -858,8 +851,6 @@ func Reduce[T, U any](slice []T, initial U, fn func(U, T) U) U {
 
 ## 参考文献
 
-
-
 Go 官方文档：https://go.dev/doc/
 Go 内存模型：https://go.dev/ref/mem
 Effective Go：https://go.dev/doc/effective_go
@@ -867,8 +858,6 @@ Go 标准库：https://pkg.go.dev/std
 Go 官方博客：https://go.dev/blog/
 
 ## 延伸阅读
-
-
 
 Go 并发与 channel，见 016-go 模块并发文档。
 Go 原子操作与竞争检测，见 016-go/058-RaceDetectionAtomic 文档。

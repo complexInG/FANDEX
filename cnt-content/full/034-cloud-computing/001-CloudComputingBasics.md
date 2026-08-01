@@ -45,7 +45,6 @@ cat /etc/os-release 显示系统发行版信息；nproc 显示 CPU 核数；free
 - 003-计算与存储：对象存储、块存储的适用场景。
 - 004-网络与安全组：如何配置防火墙开放端口。
 
-
 ## 1. 云计算概念与演进
 
 ### 1.1 什么是云计算
@@ -400,8 +399,6 @@ def find_idle_resources():
 
 ## 参考文献
 
-
-
 AWS 文档：https://docs.aws.amazon.com/
 Microsoft Azure 文档：https://learn.microsoft.com/zh-cn/azure/
 Google Cloud 文档：https://cloud.google.com/docs?hl=zh-cn
@@ -410,15 +407,12 @@ CNCF 云原生全景：https://landscape.cncf.io/
 
 ## 延伸阅读
 
-
-
 虚拟化与容器，见 034-cloud-computing 模块相关文档。
 Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
 DevOps 与 IaC，见 031-devops 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供云计算课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

@@ -18,8 +18,6 @@ prerequisites:
 
 ﻿# Lua 脚本原子执行
 
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
 ---
 
 ## 1. Lua 脚本基础
@@ -512,16 +510,12 @@ EVAL "local stock_key = KEYS[1] local user_key = KEYS[2] local user_id = ARGV[1]
 
 ## 参考文献
 
-
-
 Redis 官方文档：https://redis.io/docs/latest/
 Redis 命令参考：https://redis.io/docs/latest/commands/
 Redis 中文资料：https://redis.com.cn/
 Redisson 文档：https://redisson.org/
 
 ## 延伸阅读
-
-
 
 Redis 数据结构详解，见 022-redis 模块文档。
 Redis 持久化与集群，见 022-redis 模块相关文档。

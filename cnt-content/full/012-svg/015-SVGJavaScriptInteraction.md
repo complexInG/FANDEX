@@ -14,13 +14,6 @@ related:
 prerequisites:
   - svg/CSS样式化
 ---
-
-# SVG JavaScript 交互 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. SVG DOM 与 HTML DOM
 
 内联 SVG 的元素是真实 DOM 节点，可用标准 DOM API 操作。
@@ -995,16 +988,12 @@ document.querySelectorAll('svg *').forEach((el) => {
 
 ## 参考文献
 
-
-
 MDN SVG 文档：https://developer.mozilla.org/zh-CN/docs/Web/SVG
 SVG 规范（W3C）：https://www.w3.org/TR/SVG2/
 SVGO 优化工具：https://github.com/svg/svgo
 D3.js：https://d3js.org/
 
 ## 延伸阅读
-
-
 
 SVG 图形语法，见 012-svg 模块文档。
 CSS 样式与动画，见 007-css 模块。

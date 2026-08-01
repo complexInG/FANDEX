@@ -2477,7 +2477,6 @@ func cudaError(rc C.cudaError_t) error {
 - C. 500-1000ns
 - D. 1-5ms
 
-
 **解析讲解**：B
 
 **解析讲解**：CGO 调用涉及栈切换(Go 栈 → M 系统栈 → C 栈)、TLS 切换、调度器协作等,典型开销为 50-200ns。纯 Go 函数调用约 2-5ns,CGO 比纯 Go 慢 10-50 倍。
@@ -2488,7 +2487,6 @@ func cudaError(rc C.cudaError_t) error {
 - B. C 堆,需手动 `C.free` 释放
 - C. 栈上,函数返回时自动释放
 - D. 全局静态区,程序结束时释放
-
 
 **解析讲解**：B
 
@@ -2501,7 +2499,6 @@ func cudaError(rc C.cudaError_t) error {
 - C. cgo 交叉编译限制
 - D. `//export` 函数的类型安全
 
-
 **解析讲解**：B
 
 **解析讲解**：Go 1.6 指针规则禁止 C 代码长期持有 Go 指针(因 GC 可能回收)。`runtime.Pinner` 提供显式固定机制,固定后 C 代码可安全持有 Go 指针,直到 `Unpin` 调用。
@@ -2512,7 +2509,6 @@ func cudaError(rc C.cudaError_t) error {
 - B. C 代码将 Go 指针存入全局变量
 - C. Go 代码使用 `unsafe.Pointer`
 - D. C 代码返回 C 字符串
-
 
 **解析讲解**：B
 
@@ -2525,7 +2521,6 @@ func cudaError(rc C.cudaError_t) error {
 - C. 含 `//export` 的文件中,`import "C"` 必须是第一个 import
 - D. 导出函数不能有返回值
 
-
 **解析讲解**：C
 
 **解析讲解**：`//export` 指令要求:1) 必须在 `import "C"` 之后的 Go 文件中;2) 导出函数的参数与返回值必须是 C 兼容类型(不能是 `string`、`slice` 等 Go 特有类型);3) 含 `//export` 的文件中,`import "C"` 必须是第一个 import。
@@ -2534,13 +2529,11 @@ func cudaError(rc C.cudaError_t) error {
 
 **题 1**:CGO 调用涉及三个栈:Go goroutine 栈、______、C 函数栈。
 
-
 **解析讲解**：M 线程系统栈(g0 栈)
 
 **解析讲解**：CGO 调用链为:Go code → `runtime.cgocall` → 切换到 M 系统栈 → `runtime.asmcgocall` → C 函数栈 → 返回。M 系统栈用于 runtime 调度与系统调用。
 
 **题 2**:Go 1.20 引入的 ______ 函数可在 C 堆分配内存,不被 GC 追踪。
-
 
 **解析讲解**：`C.Alloc`
 
@@ -2548,20 +2541,17 @@ func cudaError(rc C.cudaError_t) error {
 
 **题 3**:`C.long` 在 Linux 64 位平台是 ______ 字节,在 Windows 64 位平台是 ______ 字节。
 
-
 **解析讲解**：8;4
 
 **解析讲解**：Linux 64 位采用 LP64 模型,`long` 为 8 字节;Windows 64 位采用 LLP64 模型,`long` 为 4 字节。跨平台代码应使用 `C.longlong` 或 `int64_t`。
 
 **题 4**:禁用 CGO 的环境变量设置为 ______。
 
-
 **解析讲解**：`CGO_ENABLED=0`
 
 **解析讲解**：设置 `CGO_ENABLED=0` 后,Go 编译器会忽略所有 `import "C"`,实现纯 Go 编译,获得交叉编译能力。
 
 **题 5**:CGO 调用期间,goroutine 状态转为 ______,不参与调度。
-
 
 **解析讲解**：`Gsyscall`
 
@@ -2570,7 +2560,6 @@ func cudaError(rc C.cudaError_t) error {
 ### 编程题知识点讲解
 
 **题 1**:实现一个 CGO 程序,调用 C 的 `qsort` 对 Go slice 排序。
-
 
 ```go
 package main
@@ -2630,7 +2619,6 @@ func main() {
 5. 注意:Go 1.6 指针规则允许此操作,因 C 只在调用期间持有指针。
 
 **题 2**:实现一个 CGO 程序,使用 `runtime.Pinner` 固定 Go 对象供 C 异步处理。
-
 
 ```go
 package main
@@ -2704,7 +2692,6 @@ func main() {
 
 **题 1**:为什么 Go 团队对 CGO 采取"可用但不鼓励"的立场?从工程角度分析其利弊。
 
-
 **Go 团队立场的原因**:
 
 1. **交叉编译受限**:cgo 破坏了 Go 的"一次编译,到处运行"承诺,需目标平台 C 工具链。
@@ -2730,7 +2717,6 @@ func main() {
 - 监控 cgo 调用开销与 GC 影响。
 
 **题 2**:假设你需要在 Go 服务中集成一个高性能压缩库,有 C 实现和纯 Go 实现可选,如何决策?
-
 
 **决策框架**:
 
@@ -2765,7 +2751,6 @@ func main() {
 
 **题 3**:分析 Go 1.6 cgo 指针传递规则的设计动机,为何禁止 C 代码长期持有 Go 指针?
 
-
 **设计动机**:
 
 1. **GC 移动对象**:Go GC 可能移动堆对象(虽然当前实现不移动,但未来可能启用 compacting GC),C 代码持有的指针会失效。
@@ -2791,7 +2776,6 @@ func main() {
 - 使用 C 端的数据结构,避免共享 Go 内存。
 
 **题 4**:为何 CGO 程序失去交叉编译能力?有哪些解决方案?
-
 
 **原因**:
 
@@ -2842,7 +2826,6 @@ func main() {
 - 大规模 CI/CD 可考虑 zig cc,统一管理交叉编译。
 
 **题 5**:比较 CGO 与 purego 的适用场景,论述两种方案在云原生生态中的优劣。
-
 
 **CGO**:
 

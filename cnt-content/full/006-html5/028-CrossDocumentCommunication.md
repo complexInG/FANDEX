@@ -15,13 +15,6 @@ related:
 prerequisites:
   - html5/概述与核心特性
 ---
-
-# 跨文档通信 语法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数 | `{ }` 分组 | `|` 或 | `...` 重复
-
----
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 前同源策略时代（1995—1999）
@@ -989,7 +982,6 @@ C. `iframe.contentWindow.postMessage(JSON.stringify(data), '*')`
 
 D. `iframe.contentWindow.postMessage(data, window.location.origin)`
 
-
 **答案：B**
 
 **解析讲解**：
@@ -997,7 +989,6 @@ D. `iframe.contentWindow.postMessage(data, window.location.origin)`
 - B 明确指定目标源，是最安全的做法。
 - C 使用 `*` 仍然不安全，且手动序列化不如原生 structured clone。
 - D 使用 `window.location.origin` 是父窗口自身的源，而非 iframe 的源，可能导致消息无法送达。
-
 
 **常见疑问 2**：关于 `MessageChannel`，以下说法正确的是：
 
@@ -1009,7 +1000,6 @@ C. 端口转移后，原上下文仍可发送消息
 
 D. `MessageChannel` 支持跨源通信
 
-
 **答案：D**
 
 **解析讲解**：
@@ -1017,7 +1007,6 @@ D. `MessageChannel` 支持跨源通信
 - B 错误：接收方需显式调用 `port.start()` 或设置 `onmessage` 才会派发事件。
 - C 错误：转移后原端口失效。
 - D 正确：`MessageChannel` 通过 `postMessage` 的 `transfer` 参数跨源转移端口。
-
 
 **常见疑问 3**：以下哪种数据类型**不能**通过 `postMessage` 直接传输？
 
@@ -1029,29 +1018,23 @@ C. `Function` 和 `Symbol`
 
 D. `Date` 和 `RegExp`
 
-
 **答案：C**
 
 **解析讲解**：structured clone 算法不支持 `Function` 和 `Symbol`，会抛出 `DataCloneError`。`Map`、`Set`、`ArrayBuffer`、`TypedArray`、`Date`、`RegExp` 均支持。
-
 
 ### 填空题知识点讲解
 
 **常见疑问 4**：`MessageEvent` 接口的 `origin` 属性返回发送方文档的源，格式为 `________`（scheme + host + port）。
 
-
 **解析讲解**：`scheme://host:port`（如 `https://example.com:443`，若 port 为默认值则省略）。
 
 **解析讲解**：`event.origin` 返回发送方 `window.location.origin`，即 `scheme://host:port` 形式。默认端口（80/443）会被省略。
 
-
 **常见疑问 5**：`BroadcastChannel` 仅能在________文档之间通信。
-
 
 **解析讲解**：同源（same-origin）
 
 **解析讲解**：`BroadcastChannel` 仅在同源的所有浏览上下文（标签页、iframe、Worker）之间广播消息。跨源通信需使用 `postMessage`。
-
 
 ### 编程题知识点讲解
 
@@ -1060,7 +1043,6 @@ D. `Date` 和 `RegExp`
 - 类暴露 `get(key)` 和 `set(key, value)` 两个 Promise 方法。
 - 使用 `MessageChannel` 建立私有通信管道。
 - 包含超时（默认 3s）和错误处理。
-
 
 ```javascript
 // CrossDomainStorage.js
@@ -1189,13 +1171,11 @@ window.addEventListener('message', async (event) => {
 });
 ```
 
-
 **常见疑问 7**：使用 `BroadcastChannel` 实现一个多标签页登录状态同步器。要求：
 
 - 一个标签页登录后，其他标签页自动更新登录状态。
 - 一个标签页登出后，其他标签页自动登出。
 - 支持心跳检测，3 秒内未响应的标签页视为关闭。
-
 
 ```javascript
 // TabAuthSync.js
@@ -1262,11 +1242,9 @@ export class TabAuthSync {
 }
 ```
 
-
 ### 9.4 思考题
 
 **常见疑问 8**：为什么 WHATWG 规范要求 `postMessage` 异步派发（而非同步调用）？请从事件循环、安全、性能三个角度分析。
-
 
 1. **事件循环角度**：同步调用会打破 JS 单线程事件循环模型。若 `postMessage` 同步派发，接收方的 `message` 处理函数会插入当前执行栈，可能导致栈溢出（递归 `postMessage`）和不可预测的执行顺序。
 
@@ -1274,9 +1252,7 @@ export class TabAuthSync {
 
 3. **性能角度**：异步派发允许浏览器批量处理消息（coalescing），合并多次 `postMessage` 调用为一次事件循环 tick，减少 reflow/repaint。
 
-
 **常见疑问 9**：设计一个跨域微前端框架的通信层，需支持：(a) RPC 调用，(b) 事件订阅/发布，(c) 能力协商（子应用声明可调用的方法）。请给出核心接口定义与协议设计。
-
 
 **核心接口**：
 
@@ -1314,9 +1290,7 @@ type Message =
 - 接收方校验 `event.origin` + `appId` 映射表。
 - RPC 调用前查询能力声明，拒绝未声明方法。
 
-
 **常见疑问 10**：对比 `postMessage` 与 WebSocket 在实时通信场景下的优劣。何时应该选择前者？何时应该选择后者？
-
 
 | 维度 | postMessage | WebSocket |
 | ---- | ----------- | --------- |
@@ -1330,7 +1304,6 @@ type Message =
 - 通信主体在同一浏览器内 → `postMessage`。
 - 通信主体跨设备 → WebSocket。
 - 混合场景（如多标签页同步服务器状态）→ WebSocket + `BroadcastChannel` 桥接。
-
 
 ---
 

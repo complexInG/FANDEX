@@ -10,13 +10,6 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
-
-# Cybersecurity CSRF 防御命令与配置
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## CSRF Token 生成与校验
 
 **基本写法:生成随机 CSRF Token**
@@ -386,8 +379,6 @@ curl -sI https://example.com | grep -iE "x-frame|x-content|set-cookie|strict-tra
 
 ## 参考文献
 
-
-
 OWASP Top 10：https://owasp.org/www-project-top-ten/
 OWASP Cheat Sheets：https://cheatsheetseries.owasp.org/
 NIST 网络安全框架：https://www.nist.gov/cyberframework
@@ -395,8 +386,6 @@ CWE 数据库：https://cwe.mitre.org/
 PortSwigger Web Security Academy：https://portswigger.net/web-security
 
 ## 延伸阅读
-
-
 
 密码学与证书，见 033-cybersecurity 模块文档。
 Web 攻击与防御，见 033-cybersecurity 模块相关文档。

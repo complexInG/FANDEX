@@ -15,13 +15,6 @@ related:
 prerequisites:
   - git/语法速查
 ---
-
-# git log 高级用法速查手册
-
-> **符号约定**:`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. git log 基础
 
 ### 1.1 基本用法
@@ -354,8 +347,6 @@ git log --shortstat
 
 ## 参考文献
 
-
-
 Git 官方文档：https://git-scm.com/doc
 Pro Git 中文版：https://git-scm.com/book/zh/v2
 Git 参考手册：https://git-scm.com/docs
@@ -363,15 +354,12 @@ Conventional Commits：https://www.conventionalcommits.org/zh-hans/
 
 ## 延伸阅读
 
-
-
 Git 基础操作与分支，见 003-git 模块文档。
 GitHub 协作与 PR，见 004-github 模块。
 CI/CD 自动化，见 031-devops 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Git 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

@@ -215,8 +215,6 @@ $$|f(b)-f(a)| \leq \frac{(b-a)^2}{8}[|f''(\xi_1)| + |f''(\xi_2)|] \leq \frac{(b-
 
 ## 参考文献
 
-
-
 Khan Academy 微积分：https://zh.khanacademy.org/math/calculus-1
 3Blue1Brown 微积分的本质：https://www.3blue1brown.com/topics/calculus
 MIT 18.01：https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/
@@ -224,15 +222,12 @@ Desmos：https://www.desmos.com/
 
 ## 延伸阅读
 
-
-
 微积分基础，见 027-calculus 模块文档。
 线性代数（梯度与向量），见 029-linear-algebra 模块。
 概率统计（积分应用），见 030-probability-statistics 模块。
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供数学课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

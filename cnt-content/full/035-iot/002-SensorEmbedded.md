@@ -13,13 +13,6 @@ related:
   - iot/边缘计算
 prerequisites: []
 ---
-
-# 物联网 ESP32 传感器读取
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 传感器类型与原理
 
 ### 1.1 传感器分类
@@ -865,8 +858,6 @@ lastValid = value;
 
 ## 参考文献
 
-
-
 MQTT 规范：https://mqtt.org/
 CoAP（RFC 7252）：https://www.rfc-editor.org/rfc/rfc7252
 EMQX 文档：https://www.emqx.io/docs/zh/latest/
@@ -874,8 +865,6 @@ AWS IoT Core：https://aws.amazon.com/iot-core/
 InfluxDB 文档：https://docs.influxdata.com/
 
 ## 延伸阅读
-
-
 
 MQTT 与设备接入，见 035-iot 模块文档。
 嵌入式 C 与硬件，见 025-c 模块。

@@ -433,7 +433,6 @@ from typing import Any, Callable, TypeVar
 
 T = TypeVar("T")
 
-
 @contextmanager
 def timer(name: str = "block"):
     """简单计时器：上下文管理器形式。
@@ -449,7 +448,6 @@ def timer(name: str = "block"):
     finally:
         elapsed = time.perf_counter() - start
         print(f"[{name}] elapsed: {elapsed:.4f}s")
-
 
 def profile_func(sort: str = "cumulative", top: int = 20):
     """cProfile 装饰器：输出函数级 profile。
@@ -474,7 +472,6 @@ def profile_func(sort: str = "cumulative", top: int = 20):
                 print(s.getvalue())
         return wrapper
     return decorator
-
 
 def line_profile(func: Callable[..., T]) -> Callable[..., T]:
     """line_profiler 装饰器：逐行分析。
@@ -503,7 +500,6 @@ def line_profile(func: Callable[..., T]) -> Callable[..., T]:
             lp.print_stats()
     return wrapper
 
-
 def memory_profile_func(func: Callable[..., T]) -> Callable[..., T]:
     """memory_profiler 装饰器：逐行内存分析。
 
@@ -514,7 +510,6 @@ def memory_profile_func(func: Callable[..., T]) -> Callable[..., T]:
         return profile(func)
     except ImportError:
         return func
-
 
 # 使用示例
 if __name__ == "__main__":
@@ -551,7 +546,6 @@ from typing import Callable
 
 import numpy as np
 
-
 # ============ 1. 蒙特卡洛 π 估算 ============
 
 def monte_carlo_pi_python(n: int) -> float:
@@ -568,7 +562,6 @@ def monte_carlo_pi_python(n: int) -> float:
             inside += 1
     return 4.0 * inside / n
 
-
 def monte_carlo_pi_numpy(n: int) -> float:
     """NumPy 向量化实现。
 
@@ -582,7 +575,6 @@ def monte_carlo_pi_numpy(n: int) -> float:
     inside = np.sum(x * x + y * y <= 1.0)
     return 4.0 * inside / n
 
-
 def monte_carlo_pi_chunk(args: tuple[int, int]) -> int:
     """单进程 chunk 计算。"""
     start, end = args
@@ -593,7 +585,6 @@ def monte_carlo_pi_chunk(args: tuple[int, int]) -> int:
         if x * x + y * y <= 1.0:
             inside += 1
     return inside
-
 
 def monte_carlo_pi_multiprocessing(n: int, workers: int = 4) -> float:
     """多进程实现：绕过 GIL。
@@ -609,7 +600,6 @@ def monte_carlo_pi_multiprocessing(n: int, workers: int = 4) -> float:
         results = list(executor.map(monte_carlo_pi_chunk, chunks))
 
     return 4.0 * sum(results) / n
-
 
 # ============ 2. 矩阵乘法 ============
 
@@ -627,7 +617,6 @@ def matrix_multiply_python(A: list[list[float]], B: list[list[float]]) -> list[l
             C[i][j] = s
     return C
 
-
 def matrix_multiply_numpy(A: np.ndarray, B: np.ndarray) -> np.ndarray:
     """NumPy 矩阵乘法：调用 BLAS。
 
@@ -639,7 +628,6 @@ def matrix_multiply_numpy(A: np.ndarray, B: np.ndarray) -> np.ndarray:
     """
     return A @ B  # 等价于 np.matmul(A, B)
 
-
 # ============ 3. 基准测试 ============
 
 def benchmark(name: str, func: Callable, *args, **kwargs) -> None:
@@ -649,7 +637,6 @@ def benchmark(name: str, func: Callable, *args, **kwargs) -> None:
     result = func(*args, **kwargs)
     elapsed = time.perf_counter() - start
     print(f"[{name}] elapsed: {elapsed:.4f}s, result: {result}")
-
 
 if __name__ == "__main__":
     n = 1_000_000
@@ -691,7 +678,6 @@ from typing import Any
 import aiohttp
 import httpx
 
-
 # ============ 1. 同步 HTTP 抓取 ============
 
 def fetch_sync(url: str) -> dict[str, Any]:
@@ -700,11 +686,9 @@ def fetch_sync(url: str) -> dict[str, Any]:
         r = client.get(url)
         return {"url": url, "status": r.status_code, "size": len(r.content)}
 
-
 def fetch_all_sync(urls: list[str]) -> list[dict[str, Any]]:
     """顺序抓取：总时间 = sum(每个请求时间)。"""
     return [fetch_sync(url) for url in urls]
-
 
 # ============ 2. 多线程 HTTP ============
 
@@ -712,7 +696,6 @@ def fetch_all_threading(urls: list[str], workers: int = 10) -> list[dict[str, An
     """多线程抓取：绕过 GIL（IO 操作释放 GIL）。"""
     with ThreadPoolExecutor(max_workers=workers) as executor:
         return list(executor.map(fetch_sync, urls))
-
 
 # ============ 3. asyncio + aiohttp ============
 
@@ -722,13 +705,11 @@ async def fetch_async(session: aiohttp.ClientSession, url: str) -> dict[str, Any
         content = await r.read()
         return {"url": url, "status": r.status, "size": len(content)}
 
-
 async def fetch_all_async(urls: list[str]) -> list[dict[str, Any]]:
     """并发抓取：总时间 ≈ max(每个请求时间)。"""
     async with aiohttp.ClientSession() as session:
         tasks = [fetch_async(session, url) for url in urls]
         return await asyncio.gather(*tasks)
-
 
 # ============ 4. asyncio + 信号量限流 ============
 
@@ -741,7 +722,6 @@ async def fetch_with_semaphore(
     async with sem:
         return await fetch_async(session, url)
 
-
 async def fetch_all_rate_limited(
     urls: list[str],
     max_concurrent: int = 100,
@@ -751,7 +731,6 @@ async def fetch_all_rate_limited(
     async with aiohttp.ClientSession() as session:
         tasks = [fetch_with_semaphore(session, url, sem) for url in urls]
         return await asyncio.gather(*tasks)
-
 
 # ============ 5. 基准测试 ============
 
@@ -779,7 +758,6 @@ async def main() -> None:
     await fetch_all_rate_limited(urls, max_concurrent=20)
     print(f"[asyncio 30/20c] {time.perf_counter() - start:.2f}s")
 
-
 if __name__ == "__main__":
     asyncio.run(main())
 ```
@@ -805,7 +783,6 @@ import sys
 from dataclasses import dataclass, field
 from typing import Iterator
 
-
 # ============ 1. __slots__ 内存对比 ============
 
 class PointDict:
@@ -815,14 +792,12 @@ class PointDict:
         self.y = y
         self.z = z
 
-
 @dataclass(slots=True)
 class PointSlots:
     """slots 类：节省内存。"""
     x: float
     y: float
     z: float
-
 
 def compare_point_memory() -> None:
     """对比 100 万实例内存。"""
@@ -839,7 +814,6 @@ def compare_point_memory() -> None:
     size_slots = sum(sys.getsizeof(p) for p in points_slots[:100]) / 100 * n
     print(f"PointSlots: {size_slots / 1024 / 1024:.1f} MB")
     print(f"节省: {(size_dict - size_slots) / size_dict * 100:.1f}%")
-
 
 # ============ 2. array.array vs list ============
 
@@ -858,7 +832,6 @@ def compare_array_list() -> None:
     print(f"array[int]: {size_arr / 1024 / 1024:.1f} MB")
     print(f"节省: {(size_list - size_arr) / size_list * 100:.1f}%")
 
-
 # ============ 3. 生成器 vs 列表 ============
 
 def read_large_file_list(path: str) -> list[str]:
@@ -866,12 +839,10 @@ def read_large_file_list(path: str) -> list[str]:
     with open(path, encoding="utf-8") as f:
         return f.readlines()
 
-
 def read_large_file_generator(path: str) -> Iterator[str]:
     """生成器逐行读取：内存 O(1)。"""
     with open(path, encoding="utf-8") as f:
         yield from f
-
 
 def process_large_file(path: str) -> int:
     """流式处理：内存友好。"""
@@ -879,7 +850,6 @@ def process_large_file(path: str) -> int:
     for line in read_large_file_generator(path):
         total += len(line)
     return total
-
 
 # ============ 4. 内存视图（零拷贝） ============
 
@@ -891,7 +861,6 @@ def zero_copy_slice(data: bytes, start: int, end: int) -> memoryview:
     """
     mv = memoryview(data)
     return mv[start:end]
-
 
 # ============ 5. mmap 大文件 ============
 
@@ -907,7 +876,6 @@ def process_large_file_mmap(path: str) -> int:
                 block = mm[offset:offset + block_size]
                 total += block.count(b'\n')
             return total
-
 
 if __name__ == "__main__":
     compare_point_memory()
@@ -932,13 +900,11 @@ import time
 
 import numpy as np
 
-
 # ============ 1. 欧氏距离计算 ============
 
 def euclidean_distance_python(a: list[float], b: list[float]) -> float:
     """纯 Python 欧氏距离。"""
     return sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5
-
 
 def euclidean_distance_numpy(a: np.ndarray, b: np.ndarray) -> float:
     """NumPy 向量化欧氏距离。
@@ -952,11 +918,9 @@ def euclidean_distance_numpy(a: np.ndarray, b: np.ndarray) -> float:
     diff = a - b
     return float(np.sqrt(np.sum(diff * diff)))
 
-
 def euclidean_distance_numpy_norm(a: np.ndarray, b: np.ndarray) -> float:
     """使用 np.linalg.norm：最快实现。"""
     return float(np.linalg.norm(a - b))
-
 
 # ============ 2. 矩阵运算：广播 ============
 
@@ -968,7 +932,6 @@ def normalize_rows_python(matrix: list[list[float]]) -> list[list[float]]:
         result.append([x / norm for x in row])
     return result
 
-
 def normalize_rows_numpy(matrix: np.ndarray) -> np.ndarray:
     """行归一化（NumPy 广播）。
 
@@ -978,7 +941,6 @@ def normalize_rows_numpy(matrix: np.ndarray) -> np.ndarray:
     """
     norms = np.sqrt(np.sum(matrix * matrix, axis=1, keepdims=True))
     return matrix / norms
-
 
 # ============ 3. 滑动窗口 ============
 
@@ -990,7 +952,6 @@ def moving_average_python(data: list[float], window: int) -> list[float]:
         result.append(sum(window_data) / window)
     return result
 
-
 def moving_average_numpy(data: np.ndarray, window: int) -> np.ndarray:
     """滑动平均（NumPy 卷积）。
 
@@ -999,7 +960,6 @@ def moving_average_numpy(data: np.ndarray, window: int) -> np.ndarray:
     weights = np.ones(window) / window
     return np.convolve(data, weights, mode='valid')
 
-
 def moving_average_strides(data: np.ndarray, window: int) -> np.ndarray:
     """滑动平均（stride tricks + mean）。
 
@@ -1007,7 +967,6 @@ def moving_average_strides(data: np.ndarray, window: int) -> np.ndarray:
     """
     windows = np.lib.stride_tricks.sliding_window_view(data, window)
     return np.mean(windows, axis=1)
-
 
 # ============ 4. 内存布局优化 ============
 
@@ -1042,7 +1001,6 @@ def compare_memory_layout() -> None:
     for _ in range(100):
         np.sum(a_f, axis=0)
     print(f"F order, axis=0: {time.perf_counter() - start:.3f}s")
-
 
 if __name__ == "__main__":
     # 欧氏距离基准
@@ -1083,7 +1041,6 @@ from typing import Any, Callable, TypeVar
 
 T = TypeVar("T")
 
-
 # ============ 1. lru_cache ============
 
 @functools.lru_cache(maxsize=128)
@@ -1096,7 +1053,6 @@ def fibonacci(n: int) -> int:
     if n < 2:
         return n
     return fibonacci(n - 1) + fibonacci(n - 2)
-
 
 # ============ 2. 自定义 TTL 缓存 ============
 
@@ -1130,7 +1086,6 @@ class TTLCache:
     def clear(self) -> None:
         self._cache.clear()
 
-
 def ttl_cached(maxsize: int = 128, ttl: float = 60.0) -> Callable:
     """TTL 缓存装饰器。"""
     cache = TTLCache(maxsize=maxsize, ttl=ttl)
@@ -1148,7 +1103,6 @@ def ttl_cached(maxsize: int = 128, ttl: float = 60.0) -> Callable:
         wrapper.cache_clear = cache.clear  # type: ignore[attr-defined]
         return wrapper
     return decorator
-
 
 # ============ 3. 多级缓存 ============
 
@@ -1189,7 +1143,6 @@ class MultiLevelCache:
                 return v
         return None
 
-
 if __name__ == "__main__":
     # fibonacci 性能对比
     start = time.perf_counter()
@@ -1228,13 +1181,11 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-
 def test_monte_carlo_python(benchmark) -> None:
     """蒙特卡洛 π - Python 实现。"""
     from cpu_bound import monte_carlo_pi_python
     result = benchmark(monte_carlo_pi_python, 100_000)
     assert 3.0 < result < 3.5
-
 
 def test_monte_carlo_numpy(benchmark) -> None:
     """蒙特卡洛 π - NumPy 实现。"""
@@ -1242,13 +1193,11 @@ def test_monte_carlo_numpy(benchmark) -> None:
     result = benchmark(monte_carlo_pi_numpy, 100_000)
     assert 3.0 < result < 3.5
 
-
 def test_monte_carlo_multiprocessing(benchmark) -> None:
     """蒙特卡洛 π - 多进程实现。"""
     from cpu_bound import monte_carlo_pi_multiprocessing
     result = benchmark(monte_carlo_pi_multiprocessing, 100_000, workers=4)
     assert 3.0 < result < 3.5
-
 
 def test_matrix_multiply_numpy(benchmark) -> None:
     """矩阵乘法 - NumPy 实现。"""
@@ -1258,7 +1207,6 @@ def test_matrix_multiply_numpy(benchmark) -> None:
     C = benchmark(matrix_multiply_numpy, A, B)
     assert C.shape == (200, 200)
 
-
 def test_euclidean_python(benchmark) -> None:
     """欧氏距离 - Python 实现。"""
     from numpy_demo import euclidean_distance_python
@@ -1266,7 +1214,6 @@ def test_euclidean_python(benchmark) -> None:
     b = list(range(1000, 2000))
     result = benchmark(euclidean_distance_python, a, b)
     assert result > 0
-
 
 def test_euclidean_numpy(benchmark) -> None:
     """欧氏距离 - NumPy 实现。"""
@@ -1625,7 +1572,6 @@ FUNCTION_LATENCY = Summary(
     ["function"],
 )
 
-
 @contextmanager
 def measure_latency(method: str, endpoint: str) -> Iterator[None]:
     """测量请求延迟。"""
@@ -1636,7 +1582,6 @@ def measure_latency(method: str, endpoint: str) -> Iterator[None]:
         REQUEST_LATENCY.labels(method=method, endpoint=endpoint).observe(
             time.perf_counter() - start
         )
-
 
 def track_function(func):
     """函数级延迟追踪装饰器。"""
@@ -1667,7 +1612,6 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-
 @dataclass
 class PerfBudget:
     """性能预算。"""
@@ -1689,7 +1633,6 @@ class PerfBudget:
             raise RuntimeError(
                 f"CPU 超预算: {cpu:.1f}% > {self.max_cpu_percent}%"
             )
-
 
 # 使用
 budget = PerfBudget(max_latency_ms=50, max_memory_mb=200)

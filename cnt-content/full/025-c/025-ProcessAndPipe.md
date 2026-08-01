@@ -15,13 +15,6 @@ related:
 prerequisites:
   - c/概述
 ---
-
-# C 进程与管道
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 概述
 
 进程是 Unix/Linux 系统中程序运行的基本资源分配单位,而管道则是最古老的进程间通信(Inter-Process Communication, IPC)机制。1969 年 Unix V1 引入 `fork` 系统调用后,管道的概念在 1973 年 Unix V4 中正式成型,Ken Thompson 借助 shell 中的 `|` 运算符将管道引入用户日常生活,开创了"小工具协作"的软件哲学。这一设计哲学直接催生了 Do One Thing And Do It Well 的 Unix 文化,影响了此后四十年的操作系统与系统软件设计。

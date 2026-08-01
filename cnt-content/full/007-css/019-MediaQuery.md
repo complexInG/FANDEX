@@ -38,7 +38,6 @@ lastReviewed: '2026-08-01'
 reviewer: fanquanpp
 ---
 
-
 ## 1. 历史动机与发展脉络
 
 2004 年前后，移动设备开始访问 Web，固定宽度布局在窄屏上需要横向滚动。2007 年 iPhone 发布后，响应式 Web 设计（Responsive Web Design）由 Ethan Marcotte 于 2010 年在 A List Apart 提出，其三大支柱是流式网格、弹性图片与媒体查询。
@@ -406,10 +405,6 @@ MDN Web Docs, Responsive images, 访问日期 2026-08-01, https://developer.mozi
 JS 中 matchMedia 的更多用法，见 008-javascript 模块相关文档；
 
 尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 CSS 响应式与移动端课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供前端实战课程。
-
-# CSS 媒体查询
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
 
 ---
 

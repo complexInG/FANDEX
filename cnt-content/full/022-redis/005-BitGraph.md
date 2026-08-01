@@ -15,13 +15,6 @@ related:
 prerequisites:
   - redis/概述与核心数据结构
 ---
-
-# 位图
-
-> **符号约定**：`< >` 必填参数 | `[ ]` 可选参数
-
----
-
 ## 1. 位图概述
 
 位图（Bitmap）不是独立数据类型，而是基于 String 类型的位操作，每个 String 键最多存储 $2^{32}$ 个位。
@@ -242,8 +235,6 @@ BITCOUNT mau:2026-06
 
 ## 参考文献
 
-
-
 Redis 官方文档：https://redis.io/docs/latest/
 Redis 命令参考：https://redis.io/docs/latest/commands/
 Redis 中文资料：https://redis.com.cn/
@@ -251,15 +242,12 @@ Redisson 文档：https://redisson.org/
 
 ## 延伸阅读
 
-
-
 Redis 数据结构详解，见 022-redis 模块文档。
 Redis 持久化与集群，见 022-redis 模块相关文档。
 MySQL 与 Redis 缓存架构，见 020-mysql 模块。
 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Redis 课程。
 
 ## 深度专题扩展
-
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
 

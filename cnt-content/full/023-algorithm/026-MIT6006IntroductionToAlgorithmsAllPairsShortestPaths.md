@@ -561,7 +561,6 @@ def floyd_warshall(dist):
                     dist[i][j] = dist[i][k] + dist[k][j]
     return dist
 
-
 # 示例：4 顶点带权图
 # 顶点: 0, 1, 2, 3
 # 边: (0,1,5), (0,3,10), (1,2,3), (2,3,1)
@@ -618,7 +617,6 @@ def floyd_warshall_with_path(dist):
 
     return dist, nxt
 
-
 def reconstruct_path(nxt, i, j):
     """
     根据路径矩阵 nxt 重建 i 到 j 的最短路径
@@ -633,7 +631,6 @@ def reconstruct_path(nxt, i, j):
         i = nxt[i][j]
         path.append(i)
     return path
-
 
 # 示例
 graph = [
@@ -675,7 +672,6 @@ def has_negative_cycle(dist):
             return True
     return False
 
-
 # 负环示例：3 顶点环形图，总权 -1
 # 0 -> 1 (1), 1 -> 2 (-1), 2 -> 0 (-1)  总权 -1
 neg_graph = [
@@ -710,7 +706,6 @@ def transitive_closure_boolean(reach):
                 # 布尔版本：(i -> j) 或 (i -> k 且 k -> j)
                 reach[i][j] = reach[i][j] or (reach[i][k] and reach[k][j])
     return reach
-
 
 # 示例：判断有向图可达性
 # 0 -> 1 -> 2, 0 不可达 3
@@ -755,7 +750,6 @@ def transitive_closure_bitwise(reach_bits):
             if reach_bits[i] & (1 << k):
                 reach_bits[i] |= reach_bits[k]
     return reach_bits
-
 
 # 示例：4 顶点图
 # 0 -> 1, 1 -> 2, 2 -> 3
@@ -815,7 +809,6 @@ def minimum_cycle(n, edges):
                 if dist[i][k] + dist[k][j] < dist[i][j]:
                     dist[i][j] = dist[i][k] + dist[k][j]
     return ans
-
 
 # 示例：3 顶点三角形
 edges = [(0, 1, 1), (1, 2, 2), (0, 2, 3)]
@@ -1460,7 +1453,6 @@ class TestFloydWarshall(unittest.TestCase):
         # 正确实现：0 -> 2 = 0 -> 1 -> 2 = 2
         self.assertEqual(correct[0][2], 2)
 
-
 if __name__ == '__main__':
     unittest.main()
 ```
@@ -1582,7 +1574,6 @@ def compute_data_dependencies(statements, direct_deps):
 
     return transitive
 
-
 # 示例：4 条语句的依赖分析
 # S1: x = 1
 # S2: y = x + 1   (依赖 S1)
@@ -1691,7 +1682,6 @@ def social_network_analysis(members, friendships):
                     if reach[k][j]:
                         reach[i][j] = True
     return reach
-
 
 # 示例：6 人社交网络
 members = ['Alice', 'Bob', 'Carol', 'Dave', 'Eve', 'Frank']
