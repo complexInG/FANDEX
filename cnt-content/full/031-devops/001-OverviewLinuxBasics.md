@@ -13,17 +13,6 @@ related:
   - git/语法速查
 prerequisites: []
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.3 学习路径
-
-完成上面的第一步后，按以下顺序继续学习：
-
-- 002-Linux 文件与权限：ls、cd、chmod 等核心命令。
-- 003-进程与系统管理：ps、top、systemd。
-- 004-包管理与软件安装：apt/yum 的使用。
-- 005-容器入门：Docker 基本命令。
-
 ## 1. DevOps 与 SRE 理念
 
 ### 1.1 DevOps 定义

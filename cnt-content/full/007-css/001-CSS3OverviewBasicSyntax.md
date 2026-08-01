@@ -14,17 +14,6 @@ related:
 prerequisites: []
 updated: '2026-08-01'
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.3 学习路径
-
-完成上面的第一步后，按以下顺序继续学习：
-
-- 002-选择器：标签、类、ID 选择器与优先级。
-- 003-盒模型：content、padding、border、margin 的关系。
-- 004-布局基础：display、position 与浮动。
-- 005-Flexbox 布局：一维弹性布局。
-
 ## 1. CSS3 概述
 
 CSS (Cascading Style Sheets) 层叠样式表，用于控制网页的视觉呈现。CSS3 是其最新标准，引入了模块化开发、动画、Flexbox/Grid 布局等强大功能，使网页设计更加灵活和丰富。

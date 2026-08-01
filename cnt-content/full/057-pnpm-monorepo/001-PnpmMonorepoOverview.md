@@ -44,14 +44,6 @@ workspace:* 是一种特殊版本号：表示“不要从 npm 下载，直接使
 之后可以用 pnpm --filter @my/utils dev 只启动指定包，或 pnpm -r build 按依赖顺序构建全部包。
 这套结构就是 FANDEX 仓库本身采用的布局：app-web、shd-shared、tls-tools 都通过 workspace 关联。
 
-### 0.3 学习路径
-
-完成上面的第一步后，按以下顺序继续学习：
-
-- 002-依赖管理机制：内容寻址存储与严格隔离。
-- 003-常用命令：filter、递归构建、依赖分析。
-- 004-版本与发布：changesets 管理多包版本。
-
 ## 1. 什么是 Monorepo
 
 Monorepo（单仓库多包）是把多个应用、共享库与工具链放在同一个 Git 仓库中管理的工程模式。与之相对的是多仓库（Polyrepo）：每个项目独立仓库。

@@ -14,16 +14,6 @@ related:
 prerequisites:
   - getting-started/命令行基础
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.3 学习路径
-
-完成上面的第一步后，按以下顺序继续学习：
-
-- 002-文件与目录命令：ls、cd、cp、mv、rm 的完整用法。
-- 003-文本处理：grep、sed、awk 三件套。
-- 004-脚本进阶：函数、参数与调试。
-
 ## 1. Shell 是什么
 
 Shell 是操作系统提供的命令解释器：读取用户输入的命令，调用系统程序，并把结果返回给用户。它既是交互式工具，也是脚本语言。Linux/macOS 默认是 bash（或 zsh），Windows 的 PowerShell 是另一套体系，但 Git Bash/WSL 可以运行 bash 脚本。
