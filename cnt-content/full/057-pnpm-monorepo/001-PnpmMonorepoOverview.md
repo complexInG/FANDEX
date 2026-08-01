@@ -14,36 +14,6 @@ related:
 prerequisites:
   - getting-started/包管理器
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.1 零基础起点
-
-本模块讲解 pnpm 与 Monorepo（单仓库多包）工程化。零基础可学，但建议先读完 013 包管理器、003-git 与 039 工程实践模块，并已安装 Node.js 与 pnpm。
-先理解场景：一个项目可能同时包含网站、桌面应用、共享组件库三个部分。把它们放在一个 Git 仓库里统一管理，就是 Monorepo；pnpm 负责高效安装和隔离依赖。
-
-### 0.2 第一个 pnpm workspace 项目
-
-```json
-// pnpm-workspace.yaml：声明哪些目录是“包”
-packages:
-  - 'apps/*'        # apps/web、apps/admin 都是包
-  - 'packages/*'    # packages/ui、packages/utils 都是包
-
-// packages/utils/package.json：声明依赖本地的 ui 包
-{
-  "name": "@my/utils",
-  "dependencies": {
-    "@my/ui": "workspace:*"   // 指向本地包
-  }
-}
-```
-
-pnpm-workspace.yaml 告诉 pnpm：apps 和 packages 目录下的每个子目录都是独立的“包”，它们可以互相引用。
-workspace:* 是一种特殊版本号：表示“不要从 npm 下载，直接使用本仓库里那个包”。这样共享代码无需发布到 npm 就能联调。
-在仓库根目录运行 pnpm install，pnpm 会一次性安装所有包的依赖，并按依赖关系建立链接。
-之后可以用 pnpm --filter @my/utils dev 只启动指定包，或 pnpm -r build 按依赖顺序构建全部包。
-这套结构就是 FANDEX 仓库本身采用的布局：app-web、shd-shared、tls-tools 都通过 workspace 关联。
-
 ## 1. 什么是 Monorepo
 
 Monorepo（单仓库多包）是把多个应用、共享库与工具链放在同一个 Git 仓库中管理的工程模式。与之相对的是多仓库（Polyrepo）：每个项目独立仓库。

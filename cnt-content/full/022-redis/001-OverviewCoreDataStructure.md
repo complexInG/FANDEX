@@ -12,32 +12,6 @@ related:
   - redis/集群与高可用
 prerequisites: []
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.1 零基础起点
-
-本模块介绍 Redis 这个“内存数据库”。零基础即可开始：你需要一台电脑并安装 Redis（Windows 可使用 WSL 或官方 Windows 移植版），启动 redis-server 后再开一个窗口运行 redis-cli 进入命令行。
-先建立一个直觉：Redis 把数据存在内存里，因此读写极快，常用于缓存。它最基本的使用方式就是“存一个键，取一个值”，例如把用户登录状态存成 key=session:1001, value=abc123。
-
-### 0.2 第一个 Redis 操作：存值、取值、设置过期
-
-```bash
-# 设置键 name 的值为 'zhangsan'
-SET name zhangsan
-# 读取键 name 的值
-GET name
-# 设置键 code 的值，且 60 秒后自动删除（常用于验证码）
-SET code 123456 EX 60
-# 查看剩余存活时间（秒）
-TTL code
-```
-
-SET name zhangsan 是 Redis 最核心的命令：第一个参数是键（key），第二个是值（value）。
-GET name 按键取值，返回 zhangsan；如果键不存在会返回 (nil)。
-SET code 123456 EX 60 中的 EX 60 表示“过期时间 60 秒”，60 秒后 Redis 自动删除这个键——验证码、限流这类临时数据都用它实现。
-TTL code 查看键还有多少秒存活；返回 -1 表示永不过期，-2 表示键已不存在。
-这四条命令构成了 Redis 最常用的“写-读-设过期-查过期”流程，后面的数据结构（Hash、List、Set）都是在这个基础上的扩展。
-
 ## 1. Redis 8.0 概述
 
 ### 1.1 Redis 简介

@@ -12,34 +12,6 @@ related:
   - postgresql/索引与查询优化
 prerequisites: []
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.1 零基础起点
-
-本模块讲解 PostgreSQL 数据库。零基础可学，建议先完成 019-sql 模块掌握通用 SQL，再安装 PostgreSQL 16+（官网下载安装包，记住安装时设置的 postgres 用户密码）。
-启动 psql 命令行（Windows: 开始菜单里的 SQL Shell，macOS/Linux: psql -U postgres），输入密码后看到 postgres=# 提示符即连接成功。
-
-### 0.2 第一个 PostgreSQL 操作：建表、插入、查询
-
-```sql
--- 创建一张书籍表
-CREATE TABLE books (
-  id SERIAL PRIMARY KEY,     -- SERIAL: 自动递增整数
-  title TEXT NOT NULL,       -- 书名
-  price NUMERIC(8,2)         -- 价格：最多 8 位，2 位小数
-);
-
-INSERT INTO books (title, price) VALUES ('深入理解计算机系统', 139.00);
-
-SELECT title, price FROM books;
-```
-
-CREATE TABLE 定义表结构；SERIAL 是 PostgreSQL 的特色写法，等价于“自动递增整数”，每插入一行自动编号，无需手动指定 id。
-NUMERIC(8,2) 表示最多 8 位有效数字、其中 2 位小数，适合存储金额，避免浮点误差。
-INSERT 语句的写法与标准 SQL 一致：字符串用单引号，数值直接写。
-SELECT title, price FROM books 查询全部书籍的书名与价格，执行后看到一行结果。
-这套“建表-插入-查询”流程是所有 PostgreSQL 应用的起点；后续的约束、索引、视图都在此基础上增强。
-
 ## 1. PostgreSQL 17 概述
 
 ### 1.1 PostgreSQL 简介

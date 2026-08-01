@@ -15,29 +15,6 @@ related:
 prerequisites:
   - javascript/JavaScript基础
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.1 零基础起点
-
-本模块讲解 Vite 构建工具。零基础可学，但需要：已安装 Node.js 18+、pnpm，并至少写过一次简单的 HTML/JavaScript（见 006-html5 与 008-javascript 模块）。
-Vite 解决什么问题：现代前端项目文件很多、依赖很多，需要一个工具把几十个文件“组装”成浏览器能直接运行的样子，并在开发时即时预览。Vite 就是当前最主流的这个工具。
-
-### 0.2 第一个 Vite 项目
-
-```bash
-# 用模板创建项目（这里选 react-ts：React + TypeScript）
-pnpm create vite my-app --template react-ts
-# 安装依赖并启动开发服务器
-cd my-app && pnpm install && pnpm dev
-# 浏览器打开 http://localhost:5173 即可看到页面
-```
-
-create vite 是官方脚手架命令，--template react-ts 指定项目模板；模板决定语言与框架的初始配置。
-pnpm install 安装 package.json 中声明的所有依赖，生成 node_modules 目录。
-pnpm dev 启动 Vite 开发服务器：它不会打包整个项目，而是按需把浏览器请求的文件即时转换返回，所以冷启动只需几百毫秒。
-修改 src 下的任意文件，页面会毫秒级热更新（HMR），且不会丢失页面状态——这是 Vite 对比旧工具最大的体验优势。
-开发完成后再用 pnpm build 生成生产版本：Vite 会调用 Rollup 做压缩、代码分割等优化，输出到 dist 目录。
-
 ## 1. Vite 是什么
 
 Vite（法语“快”的意思）是尤雨溪于 2020 年发布的下一代前端构建工具，2021 年起成为 Vue 官方推荐，随后被 React、Svelte、Astro 等生态广泛采用。它的核心创新是：开发环境基于原生 ES Modules，按需编译；生产环境基于 Rollup，深度优化。

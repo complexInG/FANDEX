@@ -12,40 +12,6 @@ related:
   - sql/多表查询
 prerequisites: []
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.1 零基础起点
-
-本模块面向完全没有数据库经验的读者。学习 SQL 不需要先学会任何编程语言，只需要一台电脑和一个可以运行的数据库。
-学习前请先安装一个数据库环境，推荐 SQLite（零配置、单文件）或 MySQL。SQLite 无需安装服务器，下载命令行工具即可使用。
-需要理解的一个核心概念：数据库是存放数据的仓库，SQL 是与仓库对话的语言。你只需要学会“用一句话描述你要什么数据”，数据库就会把结果返回给你。
-
-### 0.2 第一个 SQL 查询
-
-```sql
--- 创建一个数据表：students（学生表）
-CREATE TABLE students (
-  id INTEGER PRIMARY KEY,      -- 学号：整数，主键，唯一
-  name TEXT NOT NULL,          -- 姓名：文本，不能为空
-  score INTEGER                -- 分数：整数
-);
-
--- 向表中插入一行数据
-INSERT INTO students (name, score) VALUES ('张三', 92);
-
--- 查询所有学生的姓名和分数
-SELECT name, score FROM students;
-```
-
-这段代码做了三件事：建表、插数据、查数据。
-CREATE TABLE 定义表的结构：括号里每一行是一个字段，字段名在前、类型在后。id INTEGER PRIMARY KEY 表示学号是整数且不允许重复；NOT NULL 表示姓名不能为空。
-INSERT INTO 把一行真实数据放进表里，VALUES 后面按字段顺序给值：'张三' 是姓名，92 是分数。
-SELECT 是 SQL 中最常用的查询语句：SELECT 后写你想看的字段，FROM 后写从哪张表取。执行后你会看到一行结果：张三 | 92。
-把这三条语句按顺序执行完，你就已经完成了一次完整的“建库-写入-读取”流程，这也是所有数据库应用的最小闭环。
-遇到报错时先看提示里的表名、字段名是否拼写一致——SQL 对大小写不敏感，但字段名必须与建表时完全一致。
-
-# SQL 概述与标准
-
 ## 什么是 SQL
 
 SQL（Structured Query Language，结构化查询语言）是用于管理关系型数据库管理系统（RDBMS）的标准化语言。它由 IBM 的 Donald D. Chamberlin 和 Raymond F. Boyce 于 1974 年首次提出，最初被称为 SEQUEL（Structured English Query Language），后因商标问题改名为 SQL。

@@ -16,30 +16,6 @@ prerequisites:
   - html5/HTML5语义化
   - markdown/Markdown语法指南
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.1 零基础起点
-
-本模块讲解 Astro 静态站点框架。零基础可学，但建议先完成 006-html5 与 007-css 两个模块，并且已经会打开命令行、安装过 Node.js 18+。
-Astro 用来做什么：把 Markdown/HTML 文档变成网站。FANDEX 这个文档站本身就是用 Astro 构建的——学完本模块你就能理解整个站点的运作方式。
-
-### 0.2 第一个 Astro 页面
-
-```bash
-# 创建项目（官方脚手架）
-pnpm create astro@latest my-site -- --template minimal
-# 进入项目并安装依赖
-cd my-site && pnpm install
-# 启动开发服务器，浏览器打开 http://localhost:4321
-pnpm dev
-```
-
-create astro 命令生成一个最小项目骨架；--template minimal 表示只保留最基础的文件，方便从零理解。
-项目里最重要的目录是 src/pages：里面的 .astro 文件就是网页。每个文件对应一个 URL。
-pnpm dev 启动开发服务器：修改文件保存后浏览器自动刷新，这就是“开发预览”。
-打开 src/pages/index.astro 你会看到类似 HTML 的代码——Astro 的页面文件本质就是 HTML 加一些扩展语法，学过 HTML 就能看懂。
-完成这四步，你已经跑起了一个真实的网站；后续学习路由、布局、Markdown 内容集合，就能搭出完整的文档站。
-
 ## 1. Astro 是什么
 
 Astro 是一个面向内容驱动网站（博客、文档站、营销页）的 Web 框架，2021 年发布，当前主流版本为 Astro 5-7。它的核心思想是：默认输出零 JavaScript 的静态 HTML，只有显式标记的交互组件才在浏览器加载脚本。这一模式被称为“岛屿架构”（Islands Architecture）。

@@ -14,36 +14,6 @@ related:
 prerequisites:
   - css/CSS概述
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.1 零基础起点
-
-本模块讲解 Tailwind CSS。零基础可学，但需要先完成 007-css 模块（理解选择器与盒模型），并已安装 Node.js。
-Tailwind 的理念：不再为每个样式块单独写 CSS 类，而是直接在 HTML 上组合现成的“工具类”，例如 p-4（内边距 16px）、bg-blue-500（蓝色背景）。
-
-### 0.2 第一个 Tailwind 页面
-
-```html
-<!doctype html>
-<html>
-<head>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@4/dist/tailwind.min.css">
-</head>
-<body class="bg-gray-100 p-8">
-  <!-- p-8: 四周 32px 内边距; text-2xl: 大字号; font-bold: 加粗 -->
-  <h1 class="text-2xl font-bold text-blue-600">你好，Tailwind</h1>
-  <!-- mt-4: 上外边距 16px; rounded-lg: 大圆角; px-4 py-2: 内边距 -->
-  <button class="mt-4 rounded-lg bg-blue-500 px-4 py-2 text-white">按钮</button>
-</body>
-</html>
-```
-
-用 CDN 引入 Tailwind 样式表后，任何 class 中出现的工具类都会被生成对应的 CSS。
-bg-gray-100 表示浅灰色背景；p-8 表示四周 32px 内边距——Tailwind 的间距刻度以 0.25rem 为基数，8 就是 2rem。
-text-2xl 是字号工具类，font-bold 是加粗；text-blue-600 是蓝色文字。
-按钮上 mt-4（上边距 16px）、rounded-lg（大圆角）、bg-blue-500（蓝色背景）、px-4 py-2（水平/垂直内边距）、text-white（白色文字）全部由类名组合而成，不需要写一行自定义 CSS。
-这种写法的好处：样式与组件同处一个文件，删组件时样式自动消失，不会留下死代码。
-
 ## 1. Tailwind CSS 是什么
 
 Tailwind CSS 是一个“实用优先”（utility-first）的 CSS 框架：它不提供预设组件，而是提供大量原子工具类（如 `flex`、`p-4`、`text-lg`），开发者直接在 HTML/组件中组合出设计。

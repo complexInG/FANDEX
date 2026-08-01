@@ -13,36 +13,6 @@ related:
   - c/概述
 prerequisites: []
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.1 零基础起点
-
-本模块讲解物联网（IoT），零基础可学。硬件方面建议准备一块 ESP32 开发板（约 20-50 元）和一根 USB 数据线；软件方面安装 Arduino IDE 或 VS Code + PlatformIO。
-物联网的直觉模型：传感器（如温度计）采集物理世界的数据，开发板把数据通过 Wi-Fi 发给服务器，你可以在手机或网页上看到并控制它。
-
-### 0.2 第一个物联网程序：让 LED 灯闪烁
-
-```cpp
-// 每个 ESP32 程序都有 setup 和 loop 两个函数
-void setup() {
-  // 把 GPIO 2 引脚设置为输出模式（板上自带 LED 接在 2 号引脚）
-  pinMode(2, OUTPUT);
-}
-
-void loop() {
-  digitalWrite(2, HIGH);   // 引脚输出高电平：LED 点亮
-  delay(1000);             // 保持 1 秒
-  digitalWrite(2, LOW);    // 引脚输出低电平：LED 熄灭
-  delay(1000);             // 保持 1 秒
-}
-```
-
-ESP32 程序固定包含两个函数：setup 只运行一次（初始化），loop 不断循环（主逻辑）。
-pinMode(2, OUTPUT) 把 2 号引脚配置为输出模式，表示这个引脚要向外供电驱动 LED。
-digitalWrite(2, HIGH) 让引脚输出高电平（3.3V），LED 点亮；LOW 输出低电平（0V），LED 熄灭。
-delay(1000) 让程序暂停 1 秒，否则 LED 亮灭切换太快肉眼无法分辨。
-把代码上传到开发板后，你会看到板载 LED 每秒闪烁一次——这相当于物联网世界的“Hello World”，之后把 delay 换成传感器读数，就进入了真正的物联网开发。
-
 ## 1. IoT 概念
 
 ### 1.1 定义

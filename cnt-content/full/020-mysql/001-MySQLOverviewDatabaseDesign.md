@@ -16,42 +16,6 @@ related:
 prerequisites: []
 updated: '2026-08-01'
 ---
-## 0. 零基础入门（从零开始）
-
-### 0.1 零基础起点
-
-本模块以 MySQL 数据库为核心，面向零基础读者。你不需要任何编程基础，但需要先在自己的电脑上安装 MySQL 8.x 并记住安装时设置的 root 密码。
-安装完成后，打开命令行输入 mysql -u root -p 并输入密码，看到 mysql> 提示符就说明连接成功。
-学习时建议先理解三个词：数据库（database）是仓库，表（table）是仓库里的货架，SQL 是取货指令。本模块所有内容都围绕这三者展开。
-
-### 0.2 第一个 MySQL 操作：建库建表并写入数据
-
-```sql
--- 创建一个名为 school 的数据库
-CREATE DATABASE school;
--- 进入这个数据库（后续操作都在它里面进行）
-USE school;
-
--- 创建学生表
-CREATE TABLE student (
-  id INT AUTO_INCREMENT PRIMARY KEY,  -- 自增主键：自动编号
-  name VARCHAR(50) NOT NULL,          -- 姓名，最长 50 个字符
-  score INT                            -- 分数
-);
-
--- 插入数据
-INSERT INTO student (name, score) VALUES ('李四', 88);
--- 查询
-SELECT * FROM student;
-```
-
-第一条语句 CREATE DATABASE school 创建一个数据库；数据库是最大容器，表必须建在某个数据库里。
-USE school 切换当前数据库，之后的建表语句都会进入 school。
-建表语句中 INT 是整数类型，VARCHAR(50) 是可变长度字符串（最多 50 字符）；AUTO_INCREMENT 让 MySQL 自动给新行分配 1、2、3... 的编号，PRIMARY KEY 表示主键（唯一且非空）。
-INSERT INTO ... VALUES 插入一行；字符串必须用单引号，数字直接写。
-SELECT * 中的星号表示“所有字段”；执行后你会看到刚才插入的那一行数据。
-注意每条语句必须以分号结尾，MySQL 遇到分号才执行；这也是初学者最常见的报错来源。
-
 ## 1. 数据库概述 (Overview)
 
 MySQL 是全球最受欢迎的**开源关系型数据库管理系统 (RDBMS)**，由 Oracle 公司维护和开发。它是 Web 应用开发中最常用的数据库之一，广泛应用于各种规模的应用系统。
