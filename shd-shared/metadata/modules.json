@@ -1008,19 +1008,19 @@
       "id": "rust",
       "title": "Rust",
       "icon": "Rs",
-      "description": "????????????",
+      "description": "安全高性能的系统编程语言",
       "categories": [
         "backend"
       ],
       "folder_order": 53,
       "officialDocs": [
         {
-          "label": "????",
+          "label": "官方文档",
           "url": "https://www.rust-lang.org/zh-CN/learn",
           "type": "docs"
         },
         {
-          "label": "???",
+          "label": "标准库 API",
           "url": "https://doc.rust-lang.org/std/",
           "type": "api"
         }
@@ -1030,14 +1030,14 @@
       "id": "shell",
       "title": "Shell",
       "icon": "Sh",
-      "description": "Shell ?????????",
+      "description": "命令行与脚本自动化",
       "categories": [
         "tools"
       ],
       "folder_order": 54,
       "officialDocs": [
         {
-          "label": "Bash ??",
+          "label": "Bash 参考手册",
           "url": "https://www.gnu.org/software/bash/manual/",
           "type": "docs"
         },
@@ -1052,19 +1052,19 @@
       "id": "astro",
       "title": "Astro",
       "icon": "As",
-      "description": "?????????????",
+      "description": "内容驱动的现代前端框架",
       "categories": [
         "frontend"
       ],
       "folder_order": 55,
       "officialDocs": [
         {
-          "label": "????",
+          "label": "官方文档",
           "url": "https://docs.astro.build/zh-cn/",
           "type": "docs"
         },
         {
-          "label": "????",
+          "label": "主题商店",
           "url": "https://astro.build/themes/",
           "type": "docs"
         }
@@ -1074,14 +1074,14 @@
       "id": "vite",
       "title": "Vite",
       "icon": "Vi",
-      "description": "?????????",
+      "description": "现代前端构建工具",
       "categories": [
         "frontend"
       ],
       "folder_order": 56,
       "officialDocs": [
         {
-          "label": "????",
+          "label": "官方文档",
           "url": "https://cn.vitejs.dev/",
           "type": "docs"
         },
@@ -1094,16 +1094,16 @@
     },
     {
       "id": "pnpm-monorepo",
-      "title": "pnpm ? Monorepo",
+      "title": "pnpm Monorepo",
       "icon": "Pm",
-      "description": "?????????????",
+      "description": "包管理器与 Monorepo 工程化",
       "categories": [
         "tools"
       ],
       "folder_order": 57,
       "officialDocs": [
         {
-          "label": "pnpm ??",
+          "label": "pnpm 官方文档",
           "url": "https://pnpm.io/zh/",
           "type": "docs"
         },
@@ -1118,19 +1118,19 @@
       "id": "tailwind",
       "title": "Tailwind CSS",
       "icon": "Tw",
-      "description": "????? CSS ??",
+      "description": "原子化 CSS 框架",
       "categories": [
         "frontend"
       ],
       "folder_order": 58,
       "officialDocs": [
         {
-          "label": "????",
+          "label": "官方文档",
           "url": "https://tailwindcss.com/docs",
           "type": "docs"
         },
         {
-          "label": "????",
+          "label": "中文文档",
           "url": "https://www.tailwindcss.cn/docs",
           "type": "docs"
         }
