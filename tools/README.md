@@ -10,10 +10,6 @@ tools/
   README.md                 # 本文件：索引与治理约定
   kb/                       # enrich 引擎的模块知识库（Python 数据文件）
   thesis-fragments/         # 论文级正文片段（手工编写，供 thesis-merge 合并）
-  archive/                  # 一次性内容工程资产（冻结，不再维护）
-    batch-fixes/            # 22 个 fix-*-batch.py 一次性批量修复脚本
-    diagnostics/            # 临时诊断与一次性修复脚本
-    data/                   # 会话数据产物（worklist/mapping/report）
   其余 *.py                 # 可复跑的内容工程管线与校验工具（见下）
 ```
 
@@ -26,16 +22,6 @@ tools/
 | 清理管线 | clean-doc-sections.py、clean-enrichment-filler.py、strip-enrichment.py、convert-remaining-exercises.py、convert-ascii-diagrams.py、clean-emoji.py、remove-learning-objectives.py、remove-island-fragments.py、remove-learning-path.py、remove-toc-sections.py、remove-zero-section.py、add-beginner-intro.py | 习题转讲解、删更新记录、ASCII 转 Mermaid、删目录/学习目标/零基础节等全库清理 |
 | 修复/校验 | fix-bad-images.py、repair-registry-modules.py、check-content.py、verify-cleanup.py、verify-no-ascii-diagrams.py、scan-ascii-diagrams.py、scan-bad-images.py、scan-entry-docs.py、scan-islands.py、scan-sections.py、scan-toc-sections.py | 内容质量门禁与巡检 |
 
-## 已归档资产（archive/，冻结）
-
-batch-fixes/：2025-2026 年间按模块编写的一次性批量修复脚本（fix-algo、fix-cloud、fix-java 等 22 个）。它们针对当时的文档缺陷一次性执行完毕，继续保留在根目录会造成脚本漂移（无法判断哪个仍有效、是否可安全复跑）。
-
-diagnostics/：audit-docs.py、classify-diagrams.py、preview-converted.py、fix-024-intro.py 等临时诊断脚本。
-
-data/：worklist.json/csv、unconverted.json、broken-report.json、mobile-full-map.json 等会话数据产物，作为历史留档。
-
-归档原则：git mv 保留提交历史；冻结脚本不改动、不删除。
-
 ## 是否迁移进 tls-tools：评估结论
 
 不建议整体迁移。理由：
@@ -46,7 +32,7 @@ data/：worklist.json/csv、unconverted.json、broken-report.json、mobile-full-
 
 建议的治理方式（本目录已落实前三条）：
 
-1. 一次性脚本即时归档到 tools/archive/，不再混入根目录；
+1. 一次性脚本使用完毕直接删除（git 历史可找回），不再留档混入根目录；
 2. 可复跑管线保留在根目录，并以本 README 建立索引与状态标注；
 3. 全库清理类操作前先运行 check-content.py 记录基线，操作后复跑验证；
 4. 若某能力需要跨端复用（如文档 YAML 校验、frontmatter 归一化），以明确 CLI 接口在 tls-tools 中重新实现（TS），而非整包移植 Python 脚本；
