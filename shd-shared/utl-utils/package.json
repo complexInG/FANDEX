@@ -5,7 +5,8 @@
   "type": "module",
   "description": "FANDEX L3 纯函数工具层 — 零框架依赖，三端共享（modules 数据访问；search-history/favorites/keyboard-shortcuts 等端专属功能由各端独立实现）",
   "exports": {
-    "./modules": "./modules.ts"
+    "./modules": "./modules.ts",
+    "./learning-path": "./learning-path.ts"
   },
   "dependencies": {
     "zod": "catalog:"
