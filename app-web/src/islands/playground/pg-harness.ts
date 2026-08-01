@@ -97,8 +97,8 @@ function buildPythonHarness(exercise: Exercise): string {
   const fnName = exercise.functionName;
   const mutate = exercise.kind === 'mutate';
   const callLine = mutate
-    ? `        __args = list(__c['args'])\n        ${fnName}(__args[0])\n        __out = __args[0]`
-    : `        __out = ${fnName}(*__c['args'])`;
+    ? `            __args = list(__c['args'])\n            ${fnName}(__args[0])\n            __out = __args[0]`
+    : `            __out = ${fnName}(*__c['args'])`;
   return `
 # ===== 测试脚手架（自动生成） =====
 import base64
