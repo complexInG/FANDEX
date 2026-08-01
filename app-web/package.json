@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "node scripts/build-stats.mjs && astro dev",
-    "build": "node scripts/build-stats.mjs && astro build",
+    "build": "node scripts/build-stats.mjs && astro build && node scripts/clean-prerender.mjs",
     "preview": "astro preview",
     "qa": "node scripts/qa-check.mjs",
     "typecheck": "astro check"

@@ -5,7 +5,9 @@
  * 功能概述：
  * - 文档页左侧导航面板，展示当前模块文档列表与全部模块视图
  * - 章节视图：当前模块的文档列表，按 order 排序，含进度指示器
- * - 全部模块视图：模块按分类分组，预渲染子文档列表，支持点击展开/收起
+ * - 全部模块视图：模块按分类分组，支持点击展开/收起；
+ *   面板内容由 SidebarModules 岛按需挂载（见 sidebar-modules-mount.ts），
+ *   避免在服务端把全站导航重复内联到每个页面
  * - sessionStorage 滚动位置记忆（导航后恢复滚动位置）
  * - 模块折叠状态持久化（通过 localStorage 的 expanded 集合）
  * - 基于 @fandex/styles 的 .fndx-sidebar 命名规范实现样式
@@ -27,16 +29,9 @@ import { categoryColors, getPrimaryCategory } from '@/lib/modules'
 import {
   getModule,
   getDocsByModule,
-  getCategories,
-  getModulesByCategory,
-  // 全部模块面板改用预构建索引缓存（getDocsIndex），避免运行时全量 getCollection 导致 dev 模式 OOM
-  // 章节面板仍用 getDocsByModule（仅查询当前模块，文档量小无 OOM 风险）
-  getDocsIndex,
   docSlug,
   type DocEntry,
-  type DocIndexItem,
   type Module,
-  type CategoryInfo,
 } from '@/services'
 
 const { moduleId, currentSlug, sortedDocs } = Astro.props as {
@@ -50,40 +45,11 @@ const { moduleId, currentSlug, sortedDocs } = Astro.props as {
 const sorted = sortedDocs || await getDocsByModule(moduleId)
 const meta = getModule(moduleId)
 // 通过 module-service 获取分类列表，用于"全部模块"面板按分类分组渲染
-const categories = getCategories()
-
-/**
- * 预加载文档索引并按 module 字段分组
- *
- * 实现说明：
- * - 读取预构建的 doc-index.json（由 scripts/build-stats.mjs 生成），
- *   仅含 slug/module/title/order 四个轻量字段，避免运行时全量 getCollection('docs')
- *   加载所有文档正文导致 dev 模式 OOM
- * - 索引数组已在构建期按 module 字母序 + order 升序排序，分组后顺序保持不变，无需再次排序
- * - 渲染时内联到 HTML，客户端点击展开按钮切换显隐，无需网络请求
- *
- * 性能对比：
- * - 旧方案 getAllDocs()：dev 模式每页请求全量加载所有 DocEntry（含 body/render），12GB 堆内存 OOM
- * - 新方案 getDocsIndex()：读取静态 import JSON（~180KB），O(1) 内存占用，dev/build 模式均无 OOM 风险
- */
-const docsIndex = getDocsIndex()
-const docsByModule: Map<string, DocIndexItem[]> = new Map()
-for (const doc of docsIndex) {
-  const m = doc.module
-  if (!docsByModule.has(m)) docsByModule.set(m, [])
-  docsByModule.get(m)?.push(doc)
-}
-
 const base = import.meta.env.BASE_URL
 
 /** 构建文档链接（兼容 BASE_URL） */
 function docHref(slug: string): string {
   return `${base}${moduleId}/${slug}/`
-}
-
-/** 模块首页链接 */
-function moduleHref(id: string): string {
-  return `${base}${id}/`
 }
 
 /** 获取模块的主分类颜色（用于色条/圆点）
@@ -252,7 +218,9 @@ function moduleColorStyle(m: Module | undefined): string | undefined {
     </div>
   </nav>
 
-  <!-- 全部模块面板（默认隐藏，点击 tabs 切换显示） -->
+  <!-- 全部模块面板（默认隐藏，点击 tabs 切换显示）
+       面板内容由 sidebar-modules-mount.ts 按需动态挂载 SidebarModules 岛，
+       挂载点携带当前模块/文档信息，供岛组件渲染激活态 -->
   <nav
     id="sidebar-all-modules-panel"
     class="fndx-sidebar__panel is-hidden"
@@ -261,86 +229,9 @@ function moduleColorStyle(m: Module | undefined): string | undefined {
     <div
       id="sidebar-all-modules-scroll"
       class="fndx-sidebar__scroll"
+      data-module-id={moduleId}
+      data-current-slug={currentSlug ?? ''}
     >
-      {
-        categories.map((category: CategoryInfo) => {
-          const modulesInCategory = getModulesByCategory(category.id)
-          if (modulesInCategory.length === 0) return null
-          return (
-            <div class="fndx-sidebar__group">
-              <h3 class="fndx-sidebar__group-title" style={category.color ? `--module-color:${category.color}` : undefined}>
-                {category.label}
-              </h3>
-              <ul class="fndx-sidebar__list">
-                {modulesInCategory.map((m: Module) => {
-                  const moduleDocs = docsByModule.get(m.id) ?? []
-                  const hasDocs = moduleDocs.length > 0
-                  return (
-                    <li class="fndx-sidebar__module" data-module={m.id}>
-                      <div class="fndx-sidebar__module-row">
-                        <a
-                          href={moduleHref(m.id)}
-                          class={`fndx-sidebar__link${m.id === moduleId ? ' is-active' : ''}`}
-                          style={moduleColorStyle(m)}
-                          aria-current={m.id === moduleId ? 'page' : undefined}
-                        >
-                          <span class="fndx-sidebar__link-text">{m.title}</span>
-                        </a>
-                        {hasDocs && (
-                          <button
-                            type="button"
-                            class="fndx-sidebar__module-arrow"
-                            aria-label={`展开 ${m.title} 文档列表`}
-                            aria-expanded="false"
-                            data-module-toggle={m.id}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-width="2"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              class="fndx-sidebar__module-arrow-icon"
-                              aria-hidden="true"
-                            >
-                              <polyline points="9 18 15 12 9 6" />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                      {hasDocs && (
-                        <ul
-                          class="fndx-sidebar__module-docs is-collapsed"
-                          data-module={m.id}
-                        >
-                          {moduleDocs.map((doc: DocIndexItem) => {
-                            // doc.slug 已是预构建期与 docSlug(collectionId) 等价的 slug，无需再次调用 docSlug
-                            const docIsActive = m.id === moduleId && currentSlug === doc.slug
-                            return (
-                              <li>
-                                <a
-                                  href={`${base}${m.id}/${doc.slug}/`}
-                                  class={`fndx-sidebar__link fndx-sidebar__link--sub${docIsActive ? ' is-active' : ''}`}
-                                  style={moduleColorStyle(m)}
-                                  aria-current={docIsActive ? 'page' : undefined}
-                                >
-                                  <span class="fndx-sidebar__link-text">{doc.title}</span>
-                                </a>
-                              </li>
-                            )
-                          })}
-                        </ul>
-                      )}
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          )
-        })
-      }
     </div>
   </nav>
 </aside>
@@ -375,4 +266,5 @@ function moduleColorStyle(m: Module | undefined): string | undefined {
 <!-- 客户端交互脚本：侧边栏滚动记忆、进度标记、模块折叠、视图切换、折叠收纳 -->
 <script>
   import '@/lib/sidebar-interactions';
+  import '@/lib/sidebar-modules-mount';
 </script>

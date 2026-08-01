@@ -220,6 +220,19 @@ async function checkNoNumberedModuleDirs() {
 }
 
 /**
+ * 检查构建产物中是否存在 .prerender 中间目录（体积门禁）
+ * Astro 7 会在 dist/.prerender 生成内容层中间 JS（数百 MB），
+ * 页面不引用这些文件；存在即说明部署体积超限回归，必须清理。
+ */
+async function checkNoPrerenderDir() {
+  if (await fileExists(join(DIST, '.prerender'))) {
+    fail('dist/.prerender exists - run scripts/clean-prerender.mjs (build script does it)');
+  } else {
+    pass('No .prerender intermediate dir in dist');
+  }
+}
+
+/**
  * 检查超大单页 HTML（移动端体验门禁）
  * 超过 1.5MB 的页面在低端移动设备上解析/渲染成本高，
  * 与历史反馈的"移动端卡顿"直接相关，输出 WARN 提醒后续做分页/折叠。
@@ -451,6 +464,7 @@ console.log('\n[Dimension 5: CI/CD]');
 await checkSitemap();
 await checkModuleConsistency();
 await checkNoNumberedModuleDirs();
+await checkNoPrerenderDir();
 
 console.log('\n[Dimension 6: Quality Control]');
 await checkOversizedPages();
