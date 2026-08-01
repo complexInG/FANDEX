@@ -8,7 +8,7 @@
  * 保留最近 100 次记录，支持分位数统计（p50 / p75 / p95）。
  *
  * 数据流：
- * - WebVitalsTracker.vue 通过 onLCP/onINP 等回调采集指标 → recordVital()
+ * - WebVitalsTracker 组件通过 onLCP/onINP 等回调采集指标 → recordVital()
  * - recordVital() 写入 localStorage（key: fandex-web-vitals）并截断至 100 条
  * - getVitals() / getVitalsSummary() 提供查询接口
  * - exportVitalsJSON() 输出可下载的 JSON 字符串

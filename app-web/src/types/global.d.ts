@@ -23,7 +23,7 @@ declare global {
   interface Window {
     /**
      * 导出 Web Vitals 数据的全局 API
-     * WebVitalsTracker.vue 在 onMounted 中挂载，
+     * WebVitalsTracker 组件在客户端挂载时注册，
      * 供 PerformanceMonitor.astro 的导出按钮调用
      * @returns JSON 格式的 Web Vitals 数据字符串
      */

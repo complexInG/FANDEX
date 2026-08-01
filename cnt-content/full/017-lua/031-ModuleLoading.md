@@ -1635,9 +1635,9 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua: an extensible ex
 
 ### 10.5 与本文档相关章节
 
-- [用户数据](/lua/用户数据)：C 模块中 userdata 的使用
-- [C-API 栈操作](/lua/C-API栈操作)：`luaopen_*` 函数的栈操作
-- [元表与元方法详解](/lua/元表与元方法详解)：模块的元方法设置
+- 用户数据（`/lua/用户数据`）：C 模块中 userdata 的使用
+- C-API 栈操作（`/lua/C-API栈操作`）：`luaopen_*` 函数的栈操作
+- 元表与元方法详解（`/lua/元表与元方法详解`）：模块的元方法设置
 
 ---
 

@@ -78,12 +78,12 @@ updated: '2026-08-01'
 Phase 1: Markdown -> Git -> GitHub
 Phase 2: HTML5 -> CSS -> JavaScript
 Phase 3A: TypeScript -> Vue 3
-Phase 3B: Python -> MySQL -> 数据分析
+Phase 3B: Python -> MySQL
 Phase 3C: C -> C++ -> Java
 Phase 4: 算法 -> CS基础
 ```
 
-详细路径请查看[学习路线图](/roadmap/).
+详细路径请查看学习路线图（`/roadmap/`）。
 
 ## 参考文献
 

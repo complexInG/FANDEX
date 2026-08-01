@@ -179,9 +179,11 @@ function walk(dir) {
       }
 
       // 检查内部链接格式（非外部链接、锚点、邮件的相对路径链接）
+      // 剔除代码块：代码示例中的相对路径属于教学内容，不应视为站内链接
+      const bodyWithoutCode = body.replace(/```[\s\S]*?```/g, '');
       const linkPattern = /\[([^\]]*)\]\(([^)]+)\)/g;
       let m;
-      while ((m = linkPattern.exec(body)) !== null) {
+      while ((m = linkPattern.exec(bodyWithoutCode)) !== null) {
         const href = m[2];
         if (href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto')) continue;
         issues.push({ file: full, issue: `INTERNAL_LINK: ${href}`, severity: 'low' });
@@ -189,7 +191,7 @@ function walk(dir) {
 
       // 检查 Wiki 链接格式（Obsidian 风格，应转换为标准 Markdown）
       const wikiPattern = /\[\[([^\]]+)\]\]/g;
-      while ((m = wikiPattern.exec(body)) !== null) {
+      while ((m = wikiPattern.exec(bodyWithoutCode)) !== null) {
         issues.push({ file: full, issue: `WIKILINK: [[${m[1]}]]`, severity: 'medium' });
       }
     }

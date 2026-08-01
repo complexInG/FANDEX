@@ -4,7 +4,7 @@
  * 功能概述：
  * 遍历 Markdown AST 中的 code 节点，检测 lang 字段是否包含 `runnable` 标记
  * （如 `python runnable`、`js runnable`），将符合条件的代码块替换为带
- * data 属性的容器 div，供客户端脚本扫描并动态挂载 CodeRunner Vue 组件。
+ * data 属性的容器 div，供客户端脚本扫描并动态挂载 CodeRunner React 组件。
  *
  * 设计原则：
  * - 不破坏 Shiki 代码高亮：仅处理带 runnable 标记的代码块，普通代码块不受影响
@@ -26,7 +26,7 @@
  *
  * 客户端扫描：
  *   src/lib/code-runner-mount.ts 会扫描 [data-code-runner] 元素，
- *   使用 Vue createApp 动态挂载 CodeRunner.vue 组件
+ *   使用 React createRoot 动态挂载 CodeRunner 组件
  */
 
 import { visit } from 'unist-util-visit';

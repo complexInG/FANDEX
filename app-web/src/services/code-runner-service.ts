@@ -3,7 +3,7 @@
  *
  * 功能概述：
  * 作为 UI 层与 Web Worker 之间的唯一桥梁，封装多语言代码执行、超时控制、
- * 日志收集与 Worker 生命周期管理。UI 层（islands/CodeRunner.vue）必须通过
+ * 日志收集与 Worker 生命周期管理。UI 层（islands/CodeRunner）必须通过
  * 本模块的 runCode 函数发起运行请求，禁止直接创建 Worker 或调用 Worker API。
  *
  * 核心职责：
@@ -18,10 +18,9 @@
  * - 资源复用：Worker 单例，避免重复创建开销
  * - 安全兜底：超时强制 terminate，重新创建 Worker 保证后续可用
  *
- * 与 src/lib/code-runner.ts 的关系：
- * - lib/code-runner.ts 是旧的 iframe sandbox 实现，保留兼容旧代码块
- * - 本模块是新架构的 Service 层实现，使用 Web Worker 隔离
- * - 后续可逐步迁移旧实现到本模块，统一代码运行入口
+ * 历史说明：
+ * - 旧的 iframe sandbox 实现（src/lib/code-runner.ts）已删除
+ * - 本模块是唯一的代码执行入口，使用 Web Worker 隔离
  */
 
 import { RUNTIME } from '@/config/runtime';

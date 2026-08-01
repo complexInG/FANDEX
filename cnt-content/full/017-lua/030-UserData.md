@@ -1472,9 +1472,9 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua: an extensible ex
 
 ### 10.5 与本文档相关章节
 
-- [C-API 栈操作](/lua/C-API栈操作)：理解 userdata 在虚拟栈中的操作
-- [模块加载](/lua/模块加载)：`luaopen_*` 与 userdata 注册的关系
-- [元表与元方法详解](/lua/元表与元方法详解)：`__gc`、`__index` 等元方法的语义
+- C-API 栈操作（`/lua/C-API栈操作`）：理解 userdata 在虚拟栈中的操作
+- 模块加载（`/lua/模块加载`）：`luaopen_*` 与 userdata 注册的关系
+- 元表与元方法详解（`/lua/元表与元方法详解`）：`__gc`、`__index` 等元方法的语义
 
 ---
 

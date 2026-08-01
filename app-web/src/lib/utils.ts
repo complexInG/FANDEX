@@ -1,8 +1,8 @@
 /**
- * shadcn-vue 通用工具函数
+ * shadcn/ui 通用工具函数
  *
  * 功能概述：
- * 提供 cn 函数用于合并 Tailwind CSS 类名，处理冲突与条件类。该函数是 shadcn-vue
+ * 提供 cn 函数用于合并 Tailwind CSS 类名，处理冲突与条件类。该函数是 shadcn/ui
  * 组件库中所有组件的标准依赖，用于在 props.class 与组件内部默认类之间进行无冲突合并。
  *
  * 实现原理：

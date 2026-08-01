@@ -1997,10 +1997,10 @@ class AdminUserListBDDTest {
 
 ### 13.1 关联模块
 
-- [Java Lambda 与函数式编程](/java/lambda/) — JUnit 5 大量使用函数式接口（`Supplier<String>`、`Executable`、`ThrowingSupplier`）
-- [Java 反射与动态代理](/java/reflection/) — Mockito 字节码增强、`@InjectMocks` 注入原理
-- [Java 并发编程详解](/java/concurrency/) — `@Execution(CONCURRENT)` 并行测试、Testcontainers 容器共享
-- [Java 构建工具](/java/build-tools/) — Maven Surefire/Failsafe、Gradle test 任务配置
+- Java Lambda 与函数式编程（`/java/lambda/`）— JUnit 5 大量使用函数式接口（`Supplier<String>`、`Executable`、`ThrowingSupplier`）
+- Java 反射与动态代理（`/java/reflection/`）— Mockito 字节码增强、`@InjectMocks` 注入原理
+- Java 并发编程详解（`/java/concurrency/`）— `@Execution(CONCURRENT)` 并行测试、Testcontainers 容器共享
+- Java 构建工具（`/java/build-tools/`）— Maven Surefire/Failsafe、Gradle test 任务配置
 
 ### 13.2 进阶书籍
 

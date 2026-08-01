@@ -7,7 +7,6 @@
  * 3. 全屏模式切换：按钮文字更新与状态持久化
  * 4. 代码块复制按钮：Clipboard API + execCommand 降级
  * 5. 微交互动画：懒加载 animations
- * 6. 代码运行器：懒加载 code-runner
  * 7. 监听器清理：View Transitions 切换前移除所有监听器，避免累积
  * 8. Service Worker 注册：支持离线访问
  *
@@ -256,21 +255,9 @@ async function initAnimations(): Promise<void> {
   }
 }
 
-// ========== 代码运行器 ==========
-async function initCodeRunners(): Promise<void> {
-  try {
-    const { initCodeRunners: init } = await import('@/lib/code-runner');
-    init();
-  } catch {
-    /* ignore */
-  }
-}
-
 // 注册各功能模块的页面加载回调
 document.addEventListener('astro:page-load', initAnimations);
-document.addEventListener('astro:page-load', initCodeRunners);
 void initAnimations();
-void initCodeRunners();
 
 // 注：原 onBeforeSwap 错误移除 astro:page-load 监听器，导致首次跳转后
 // 代码复制/动画/运行器永久失效。已删除该函数。

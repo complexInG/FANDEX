@@ -165,8 +165,8 @@ const base = import.meta.env.BASE_URL;
 </html>
 
 <script>
-  // 代码运行器挂载入口：扫描页面中 div[data-code-runner] 容器并动态挂载 CodeRunner.vue
-  // 由 remark-code-runner 插件在 Markdown 渲染期生成容器，惰性加载 Vue 与 CodeRunner 组件
+  // 代码运行器挂载入口：扫描页面中 div[data-code-runner] 容器并动态挂载 CodeRunner 组件
+  // 由 remark-code-runner 插件在 Markdown 渲染期生成容器，惰性加载 React 与 CodeRunner 组件
   import { initCodeRunnerMounting } from '@/lib/code-runner-mount';
   initCodeRunnerMounting();
 </script>

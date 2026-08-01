@@ -158,8 +158,10 @@ async function checkNoAbsoluteRootLinks() {
   let brokenCount = 0;
   await walkDir(DIST, '.html', async (full) => {
     const content = await readFile(full, 'utf-8');
+    // 先剔除代码块（<pre>...</pre>），代码示例中的 href="/xxx" 是教学内容而非真实链接
+    const withoutCodeBlocks = content.replace(/<pre[\s\S]*?<\/pre>/g, '');
     // 匹配 href="/" 开头但不以 /FANDEX/ 开头的链接
-    const broken = content.match(/href="\/(?!FANDEX)[^"]+"/g);
+    const broken = withoutCodeBlocks.match(/href="\/(?!FANDEX)[^"]+"/g);
     if (broken) brokenCount += broken.length;
   });
   if (brokenCount === 0) pass('No absolute root links found');

@@ -1442,10 +1442,10 @@ void process() {
 
 ### 13.1 关联模块
 
-- [Java 并发编程详解](/java/concurrency/) — ThreadLocal 是并发编程的基础工具
-- [Java CompletableFuture异步编排](/java/completable-future/) — 异步任务中的上下文传播
-- [Java JVM 内存模型](/java/jmm/) — GC Roots、可达性分析、弱引用
-- [Java 反射与动态代理](/java/reflection/) — 通过反射分析 ThreadLocalMap
+- Java 并发编程详解（`/java/concurrency/`）— ThreadLocal 是并发编程的基础工具
+- Java CompletableFuture异步编排（`/java/completable-future/`）— 异步任务中的上下文传播
+- Java JVM 内存模型（`/java/jmm/`）— GC Roots、可达性分析、弱引用
+- Java 反射与动态代理（`/java/reflection/`）— 通过反射分析 ThreadLocalMap
 
 ### 13.2 进阶书籍
 

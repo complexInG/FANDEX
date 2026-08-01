@@ -14,9 +14,6 @@
  * 所有样式必须归入 @layer，避免未分层 CSS 覆盖 @layer tokens 中的 ark 令牌
  */
 
-/* ========== KaTeX 数学公式样式导入 ========== */
-@import 'katex/dist/katex.min.css';
-
 /* ========== 全局重置 ========== */
 @layer reset {
   *,

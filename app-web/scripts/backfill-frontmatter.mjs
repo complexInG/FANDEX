@@ -202,28 +202,6 @@ const MODULE_REFERENCES = {
     venue: "O'Reilly",
     url: 'https://sre.google/sre-book/table-of-contents/',
   },
-  agent: {
-    type: 'book',
-    authors: ['Russell, S.', 'Norvig, P.'],
-    year: 2021,
-    title: 'Artificial Intelligence: A Modern Approach',
-    venue: 'Pearson',
-    version: '4th',
-  },
-  'ai-ethics': {
-    type: 'technical-report',
-    authors: ['Jobin, A.', 'Ienca, M.', 'Vayena, E.'],
-    year: 2019,
-    title: 'The Global Landscape of AI Ethics Guidelines',
-    venue: 'Nature Machine Intelligence',
-  },
-  'big-data': {
-    type: 'book',
-    authors: ['Kleppmann, M.'],
-    year: 2017,
-    title: 'Designing Data-Intensive Applications',
-    venue: "O'Reilly",
-  },
   english: {
     type: 'book',
     authors: ['Swales, J. M.', 'Feak, C. B.'],

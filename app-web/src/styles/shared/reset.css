@@ -35,6 +35,7 @@
   body {
     /* 占满视口最小高度，便于 sticky footer 布局 */
     min-height: 100vh;
+    min-height: 100dvh;
     /* 消除移动端默认字体缩放 */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

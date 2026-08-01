@@ -1819,9 +1819,9 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 2007. The evolution of Lua.
 
 ### 10.5 与本文档相关章节
 
-- [用户数据](/lua/用户数据)：理解 userdata 在虚拟栈中的操作
-- [模块加载](/lua/模块加载)：`luaopen_*` 与栈的关系
-- [元表与元方法详解](/lua/元表与元方法详解)：`__index` 等元方法的栈语义
+- 用户数据（`/lua/用户数据`）：理解 userdata 在虚拟栈中的操作
+- 模块加载（`/lua/模块加载`）：`luaopen_*` 与栈的关系
+- 元表与元方法详解（`/lua/元表与元方法详解`）：`__index` 等元方法的栈语义
 
 ---
 
