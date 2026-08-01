@@ -26,7 +26,7 @@ quiz:
   - type: fill
     question: 用 CSS 函数____可以写出随视口平滑变化、又有上下限的字号。
     answer: clamp()
-    hint: 如 font-size: clamp(1rem, 0.9rem + 0.5vw, 1.5rem)。
+    hint: '如 font-size: clamp(1rem, 0.9rem + 0.5vw, 1.5rem)。'
 references:
   - type: website
     authors:

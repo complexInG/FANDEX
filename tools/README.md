@@ -8,8 +8,6 @@
 ```text
 tools/
   README.md                 # 本文件：索引与治理约定
-  kb/                       # enrich 引擎的模块知识库（Python 数据文件）
-  thesis-fragments/         # 论文级正文片段（手工编写，供 thesis-merge 合并）
   其余 *.py                 # 可复跑的内容工程管线与校验工具（见下）
 ```
 
@@ -18,9 +16,20 @@ tools/
 | 类别 | 脚本 | 用途 |
 | --- | --- | --- |
 | 合并/提升 | map-mobile-to-full.py、merge-mobile-into-full.py、promote-mobile-to-full.py | mobile 内容并入 full 并注册文档 ID（幂等，可复跑） |
-| 论文级管线 | enrich-docs.py、thesis-merge.py、upgrade-frontmatter.py | 12 段式结构注入与手工片段合并 |
-| 清理管线 | clean-doc-sections.py、clean-enrichment-filler.py、strip-enrichment.py、convert-remaining-exercises.py、convert-ascii-diagrams.py、clean-emoji.py、remove-learning-objectives.py、remove-island-fragments.py、remove-learning-path.py、remove-toc-sections.py、remove-zero-section.py、add-beginner-intro.py | 习题转讲解、删更新记录、ASCII 转 Mermaid、删目录/学习目标/零基础节等全库清理 |
 | 修复/校验 | fix-bad-images.py、repair-registry-modules.py、check-content.py、verify-cleanup.py、verify-no-ascii-diagrams.py、scan-ascii-diagrams.py、scan-bad-images.py、scan-entry-docs.py、scan-islands.py、scan-sections.py、scan-toc-sections.py | 内容质量门禁与巡检 |
+
+## 已清理的一次性脚本（2026-08-02）
+
+以下脚本为一次性迁移/清理操作，任务已完成，按治理约定从仓库删除（git 历史可找回）：
+
+- 论文级 enrich/thesis 管线：enrich-docs.py、thesis-merge.py、upgrade-frontmatter.py、
+  strip-enrichment.py、clean-enrichment-filler.py、add-beginner-intro.py 及 kb/、thesis-fragments/
+  （文档定位已调整为"笔记、资料"导向，不再使用论文级骨架）
+- 全库清理类：clean-doc-sections.py、clean-emoji.py、convert-ascii-diagrams.py、
+  convert-remaining-exercises.py、remove-island-fragments.py、remove-learning-objectives.py、
+  remove-learning-path.py、remove-toc-sections.py、remove-zero-section.py、repair-registry-modules.py
+
+对应场景的巡检能力保留在 scan-*/verify-*/check-content.py 中，可继续作为质量门禁使用。
 
 ## 是否迁移进 tls-tools：评估结论
 

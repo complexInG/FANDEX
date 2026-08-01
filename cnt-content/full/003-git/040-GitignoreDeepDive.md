@@ -25,7 +25,7 @@ quiz:
     explanation: .gitignore 只影响未跟踪文件；已跟踪文件需先 git rm --cached。
   - type: fill
     question: 在 .gitignore 中用____开头的行可以取反，重新包含被忽略的文件。
-    answer: !
+    answer: '!'
     hint: 感叹号模式。
 references:
   - type: documentation

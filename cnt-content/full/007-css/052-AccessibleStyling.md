@@ -15,7 +15,7 @@ prerequisites:
   - 'css/019-MediaQuery'
 quiz:
   - type: choice
-    question: 为什么不能用 outline: none 去掉焦点框？
+    question: '为什么不能用 outline: none 去掉焦点框？'
     options:
       - 会影响性能
       - 键盘用户将看不到当前焦点位置，无法操作
