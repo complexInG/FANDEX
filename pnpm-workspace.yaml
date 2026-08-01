@@ -141,3 +141,11 @@ allowBuilds:
 # 将未批准的构建脚本降级为警告（不阻断 CI 安装）
 # 配合 allowBuilds 使用：已批准的正常执行，未批准的静默跳过
 strictDepBuilds: false
+
+# -----------------------------------------------------------------------------
+# 依赖覆盖（pnpm 11：overrides 位于 pnpm-workspace.yaml，package.json 已弃用）
+# -----------------------------------------------------------------------------
+# brace-expansion：强制 >=5.0.8，修复 DoS 漏洞（GHSA-mh99-v99m-4gvg）
+# 传递链路：app-web > glob > minimatch > brace-expansion
+overrides:
+  brace-expansion: ^5.0.8
