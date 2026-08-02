@@ -168,6 +168,91 @@
 }
 
 /* ===================================================================
+   竖条装饰类（学习路线页专用 · 点状装饰统一为竖条）
+   =================================================================== */
+
+/* 竖条坐标点缀 · 5 组竖向刻度（替代十字坐标点阵） */
+.geo-bars-marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.7;
+  background-image:
+    linear-gradient(var(--geo-cross), var(--geo-cross)),
+    linear-gradient(var(--geo-cross), var(--geo-cross)),
+    linear-gradient(var(--geo-cross), var(--geo-cross)),
+    linear-gradient(var(--geo-cross), var(--geo-cross)),
+    linear-gradient(var(--geo-cross), var(--geo-cross));
+  background-repeat: no-repeat;
+  background-size:
+    2px 12px,
+    2px 8px,
+    2px 14px,
+    2px 9px,
+    2px 11px;
+  background-position:
+    calc(15% - 1px) 25%,
+    calc(80% - 1px) 15%,
+    calc(35% - 1px) 75%,
+    calc(90% - 1px) 65%,
+    calc(60% - 1px) 45%;
+}
+
+/* 竖向点阵 · 竖线栅格（替代径向点阵） */
+.geo-bars-radial {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  bottom: 8%;
+  left: 12%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--geo-dot-lg) 0,
+    var(--geo-dot-lg) 1.5px,
+    transparent 1.5px,
+    transparent 18px
+  );
+  -webkit-mask-image: radial-gradient(circle at center, #000 20%, transparent 70%);
+  mask-image: radial-gradient(circle at center, #000 20%, transparent 70%);
+}
+
+/* 竖条脉冲 · 竖向刻度呼吸扩散（替代脉冲环） */
+.geo-bars-pulse {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  top: 30%;
+  right: 14%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(var(--geo-curve), var(--geo-curve)),
+    linear-gradient(var(--geo-wave), var(--geo-wave)),
+    linear-gradient(var(--geo-curve), var(--geo-curve));
+  background-repeat: no-repeat;
+  background-size: 3px 100%, 3px 100%, 3px 100%;
+  background-position: 0 50%, 14px 50%, 28px 50%;
+  transform-origin: center;
+  animation: geo-bars-pulse 4s ease-in-out infinite;
+}
+
+@keyframes geo-bars-pulse {
+  0%,
+  100% {
+    transform: scaleY(0.55);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 0.4;
+  }
+}
+
+/* ===================================================================
    平行线束类
    =================================================================== */
 
@@ -510,7 +595,10 @@
   .geo-pulse-ring,
   .geo-float-block,
   .geo-bracket-pair,
-  .geo-terminal-block {
+  .geo-terminal-block,
+  .geo-bars-marks,
+  .geo-bars-radial,
+  .geo-bars-pulse {
     display: none;
   }
   .geo-ripple-tr {
@@ -536,7 +624,8 @@
   .geo-spiral-ccw,
   .geo-bezier-flow,
   .geo-pulse-ring,
-  .geo-float-block {
+  .geo-float-block,
+  .geo-bars-pulse {
     animation: none;
   }
 }

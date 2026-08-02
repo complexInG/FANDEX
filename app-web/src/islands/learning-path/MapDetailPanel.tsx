@@ -32,15 +32,16 @@ export default function MapDetailPanel({ node, techTitle, color, onClose, onFocu
   if (!node) {
     return (
       <aside className="lp-panel lp-panel--empty">
-        <div className="lp-panel__icon" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-            <circle cx="11" cy="11" r="7" />
-            <line x1="21" y1="21" x2="16.5" y2="16.5" />
-          </svg>
-        </div>
-        <p className="lp-panel__hint">
-          悬停或点击知识点节点，查看该知识点的说明与文档入口。
-        </p>
+        {/* 自绘 SVG 导图示意：根节点 → 阶段 → 知识点链 */}
+        <svg className="lp-panel__empty-svg" viewBox="0 0 160 96" aria-hidden="true">
+          <path className="lp-panel__empty-edge" d="M 24 20 C 52 20, 52 44, 82 44" />
+          <path className="lp-panel__empty-edge" d="M 82 44 C 112 44, 112 68, 142 68" />
+          <rect className="lp-panel__empty-node lp-panel__empty-node--root" x="4" y="10" width="20" height="20" rx="2" />
+          <rect className="lp-panel__empty-node" x="82" y="34" width="20" height="20" rx="2" />
+          <rect className="lp-panel__empty-node lp-panel__empty-node--planned" x="142" y="58" width="16" height="20" rx="2" />
+        </svg>
+        <h3 className="lp-panel__empty-title">选择知识点</h3>
+        <p className="lp-panel__hint">悬停或点击地图中的知识点节点，查看说明与文档入口。</p>
         <p className="lp-panel__sub">虚线节点表示文档待补充，可先参考官方资料。</p>
       </aside>
     );

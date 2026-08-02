@@ -10,7 +10,7 @@
  *
  * 美术对齐：
  * - 完全复用项目首页美术体系（styles/pages/index.css）：
- *   Hero 渐变标题 + data-text 残影动效、统计行 + SVG 波浪描边功能入口
+ *   Hero 渐变标题 + 统计行 + SVG 波浪描边功能入口
  * - 卡片复用首页模块卡片特效（module-card.css）：
  *   顶部分类色条展开、hover 边框转色 + 阴影加深、几何图标、按下下沉
  */
@@ -42,14 +42,11 @@ const base = import.meta.env.BASE_URL
     <!-- 几何背景装饰：home 变体，与首页视觉统一 -->
     <GeoBgDecor variant="home" />
 
-    <!-- Hero 区域：复用首页美术（渐变残影标题 + 统计 + SVG 描边入口） -->
+    <!-- Hero 区域：复用首页美术（渐变标题 + 统计 + SVG 描边入口） -->
     <section class="hero">
-      <h1 class="hero-title" data-text="语法速览">
+      <h1 class="hero-title">
         <span class="hero-title-fan">语法</span><span class="hero-title-dex">速览</span>
       </h1>
-      <p class="hero-desc">
-        汇聚各编程语言语法要点，切换语言快速查阅公式与示例代码。
-      </p>
 
       <!-- 统计 + 功能入口同一行容器（与首页 hero-stats-row 结构一致） -->
       <div class="hero-stats-row">

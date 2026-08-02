@@ -45,6 +45,10 @@
     background: var(--color-bg-hover);
   }
 
+  .pg-btn:active {
+    transform: translateY(1px);
+  }
+
   .pg-btn:disabled {
     opacity: 0.55;
     cursor: not-allowed;
@@ -92,6 +96,21 @@
     height: 24px;
     padding: 0 8px;
     font-size: 11px;
+  }
+
+  /* 编辑器开关按钮：紧凑等宽标签，激活态使用强调色 */
+  .pg-btn--editors {
+    height: 24px;
+    padding: 0 9px;
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+  }
+
+  .pg-btn--editors.is-on {
+    color: var(--color-accent-base);
+    border-color: color-mix(in srgb, var(--color-accent-base) 55%, transparent);
+    background: color-mix(in srgb, var(--color-accent-base) 9%, transparent);
   }
 
   /* 顶部工具栏（前端实验与编程练习共用） */
@@ -215,6 +234,15 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+  }
+
+  /* 上下布局：三个编辑器横向并排，预览区位于下方 */
+  .pg-editors--top {
+    flex-direction: row;
+  }
+
+  .pg-editors--top .pg-pane {
+    flex: 1 1 0;
   }
 
   .pg-pane {
@@ -472,7 +500,23 @@
   .pg-console-line {
     display: flex;
     gap: 8px;
-    padding: 1px 0;
+    padding: 3px 4px;
+    border-left: 2px solid transparent;
+  }
+
+  /* 日志类型：左侧强调色刻度 + 类型标签着色，避免与正文互相遮挡 */
+  .pg-console-line--log {
+    border-left-color: var(--color-accent-base);
+  }
+
+  .pg-console-line--warn {
+    border-left-color: var(--color-warning-base);
+    background: color-mix(in srgb, var(--color-warning-base) 6%, transparent);
+  }
+
+  .pg-console-line--error {
+    border-left-color: var(--color-danger-base);
+    background: color-mix(in srgb, var(--color-danger-base) 7%, transparent);
   }
 
   .pg-console-kind {
@@ -482,6 +526,10 @@
     font-size: 10px;
     color: var(--color-fg-tertiary);
     text-transform: uppercase;
+  }
+
+  .pg-console-line--log .pg-console-kind {
+    color: var(--color-accent-base);
   }
 
   .pg-console-line--warn .pg-console-kind {
@@ -496,6 +544,7 @@
     margin: 0;
     white-space: pre-wrap;
     word-break: break-word;
+    background: transparent;
     color: var(--color-fg-primary);
   }
 
@@ -775,6 +824,7 @@
     font-family: var(--font-family-mono);
     font-size: 12px;
     line-height: 1.7;
+    background: transparent;
     color: var(--color-fg-primary);
     white-space: pre-wrap;
     word-break: break-word;
@@ -972,6 +1022,7 @@
     font-family: var(--font-family-mono);
     font-size: 12px;
     line-height: 1.7;
+    background: transparent;
     white-space: pre-wrap;
     word-break: break-word;
   }
@@ -990,22 +1041,22 @@
   .pg-hub {
     max-width: 1080px;
     margin: 0 auto;
-    padding: 8px 0 72px;
+    padding: 8px 0 64px;
   }
 
-  /* 功能入口卡片：沿用 module-card 语法，按模式注入 --module-color */
+  /* 功能入口卡片：紧凑双列，按模式注入 --module-color */
   .pg-hub-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 16px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 26px;
   }
 
   .pg-hub-card {
     --module-color: var(--color-accent-base);
     display: flex;
     flex-direction: column;
-    padding: 22px 24px;
+    padding: 18px 20px 16px;
     border: 1px solid var(--color-border-light);
     border-radius: var(--radius-md, 4px);
     background: var(--color-bg-card);
@@ -1063,18 +1114,71 @@
     --module-color: var(--color-info-base);
   }
 
+  /* 自绘 SVG 几何装饰：右下角低透明度，hover 时随模式色增强 */
+  .pg-hub-card__decor {
+    position: absolute;
+    right: 12px;
+    bottom: 8px;
+    width: 108px;
+    height: 64px;
+    color: var(--module-color);
+    opacity: 0.32;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity var(--motion-duration-normal) var(--motion-easing-out);
+  }
+
+  .pg-hub-card:hover .pg-hub-card__decor {
+    opacity: 0.55;
+  }
+
+  .pg-hub-card__decor-bracket,
+  .pg-hub-card__decor-glyph {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* 卡片序号：右上角等宽小标签 */
+  .pg-hub-card__index {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--module-color);
+    opacity: 0.55;
+    z-index: 1;
+  }
+
+  /* 卡片头部：图标 + 标题/简介并排，压缩纵向空间 */
+  .pg-hub-card__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-right: 28px;
+  }
+
+  .pg-hub-card__heading {
+    flex: 1;
+    min-width: 0;
+  }
+
   /* 几何图标框：低饱和填充 + 细边框 + 左上角坐标标记 */
   .pg-hub-card-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-sm, 3px);
     background: color-mix(in srgb, var(--module-color) 8%, transparent);
     border: 1px solid color-mix(in srgb, var(--module-color) 38%, transparent);
     color: var(--module-color);
-    margin-bottom: 16px;
     position: relative;
     flex-shrink: 0;
     transition:
@@ -1102,9 +1206,9 @@
   }
 
   .pg-hub-card h2 {
-    margin: 0 0 8px;
+    margin: 0 0 3px;
     font-family: var(--font-display);
-    font-size: 18px;
+    font-size: 16px;
     letter-spacing: 0.02em;
     color: var(--color-fg-primary);
     transition: color var(--motion-duration-instant) var(--motion-easing-out);
@@ -1114,40 +1218,47 @@
     color: var(--module-color);
   }
 
-  .pg-hub-card > p {
-    margin: 0 0 14px;
-    font-size: 12px;
-    line-height: 1.8;
+  .pg-hub-card__brief {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.55;
     color: var(--color-fg-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  /* 特性列表：等宽小号 + 模式色方块标记（代码语境） */
+  /* 特性列表：两列等宽小号 + 模式色竖条标记（代码语境） */
   .pg-hub-card-features {
-    margin: 0 0 18px;
+    margin: 0 0 14px;
     padding: 0;
     list-style: none;
     display: grid;
-    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px 12px;
   }
 
   .pg-hub-card-features li {
     position: relative;
-    padding-left: 18px;
+    padding-left: 13px;
     font-family: var(--font-family-mono);
-    font-size: 11px;
+    font-size: 10px;
+    line-height: 1.5;
     color: var(--color-fg-tertiary);
   }
 
   .pg-hub-card-features li::before {
     content: '';
     position: absolute;
-    left: 2px;
+    left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 7px;
-    height: 7px;
-    border: 1px solid var(--module-color);
-    opacity: 0.7;
+    width: 3px;
+    height: 9px;
+    border-radius: 1px;
+    background: var(--module-color);
+    opacity: 0.75;
   }
 
   .pg-hub-card-action {
@@ -1156,7 +1267,7 @@
     gap: 6px;
     margin-top: auto;
     font-family: var(--font-family-mono);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--module-color);
   }
@@ -1171,29 +1282,29 @@
   }
 
   /* 本地数据区 */
-  .pg-hub-local,
-  .pg-hub-recent {
-    margin-bottom: 40px;
+  .pg-hub-local {
+    margin-bottom: 26px;
   }
 
   .pg-hub-section-head {
     display: flex;
     align-items: baseline;
     gap: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     padding-left: 12px;
     position: relative;
   }
 
-  /* 章节标题：左侧强调色方块刻度（站点几何语言） */
+  /* 章节标题：左侧强调色竖条刻度（站点几何语言） */
   .pg-hub-section-head::before {
     content: '';
     position: absolute;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 4px;
-    height: 16px;
+    width: 3px;
+    height: 15px;
+    border-radius: 1px;
     background: var(--color-accent-base);
     opacity: 0.8;
   }
@@ -1201,7 +1312,7 @@
   .pg-hub-section-head h2 {
     margin: 0;
     font-family: var(--font-display);
-    font-size: 17px;
+    font-size: 16px;
     letter-spacing: 0.03em;
     color: var(--color-fg-primary);
   }
@@ -1212,19 +1323,19 @@
     color: var(--color-fg-tertiary);
   }
 
-  /* 本地统计卡片：沿用站点 stat 语法（展示字体数字 + 大写标签） */
+  /* 本地统计卡片：紧凑网格（展示字体数字 + 大写标签） */
   .pg-hub-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 12px;
-    margin-bottom: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
   }
 
   .pg-stat {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 14px 16px;
+    gap: 2px;
+    padding: 10px 14px;
     border: 1px solid var(--color-border-light);
     border-radius: var(--radius-md, 4px);
     background: var(--color-bg-card);
@@ -1233,7 +1344,7 @@
 
   .pg-stat-num {
     font-family: var(--font-display);
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 700;
     color: var(--color-fg-primary);
     font-variant-numeric: tabular-nums;
@@ -1242,19 +1353,19 @@
 
   .pg-stat-label {
     font-family: var(--font-family-mono);
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-fg-tertiary);
   }
 
-  /* 存储用量 */
+  /* 存储用量：进度条与清空按钮同行 */
   .pg-hub-storage {
     border: 1px solid var(--color-border-light);
     border-radius: var(--radius-md, 4px);
     background: var(--color-bg-card);
     box-shadow: var(--shadow-xs);
-    padding: 16px 18px;
+    padding: 14px 16px;
   }
 
   .pg-hub-storage-head {
@@ -1265,7 +1376,7 @@
     font-family: var(--font-family-mono);
     font-size: 11px;
     color: var(--color-fg-secondary);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .pg-hub-storage-head > span:first-child {
@@ -1274,8 +1385,20 @@
     gap: 6px;
   }
 
+  .pg-hub-storage-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pg-hub-storage-main .pg-btn {
+    flex-shrink: 0;
+  }
+
   .pg-hub-storage-bar {
-    height: 6px;
+    flex: 1;
+    min-width: 0;
+    height: 5px;
     border-radius: 999px;
     background: var(--color-bg-hover);
     overflow: hidden;
@@ -1290,21 +1413,20 @@
   }
 
   .pg-hub-storage-note {
-    margin: 10px 0 12px;
-    font-size: 12px;
+    margin: 8px 0 0;
+    font-size: 11px;
     line-height: 1.7;
     color: var(--color-fg-tertiary);
   }
 
-  /* 最近作品 / 最近练习 */
+  /* 最近作品：单列列表 */
   .pg-hub-recent {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
+    grid-template-columns: 1fr;
   }
 
   .pg-hub-empty {
-    padding: 18px;
+    padding: 14px 16px;
     border: 1px dashed var(--color-border-light);
     border-radius: var(--radius-md, 4px);
     font-size: 12px;
@@ -1329,7 +1451,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 11px 14px;
+    padding: 10px 14px;
     text-decoration: none;
     position: relative;
     transition: background-color var(--motion-duration-instant) var(--motion-easing-out);
@@ -1370,21 +1492,73 @@
     white-space: nowrap;
   }
 
-  .pg-hub-list-status {
-    font-style: normal;
-    font-family: var(--font-family-mono);
-    font-size: 10px;
-    padding: 1px 7px;
-    border-radius: 999px;
-    border: 1px solid currentColor;
-    flex-shrink: 0;
-  }
-
   .pg-hub-list-meta {
     font-family: var(--font-family-mono);
     font-size: 10px;
     color: var(--color-fg-tertiary);
     flex-shrink: 0;
+  }
+
+  /* ============================================================
+     动效优化：页面入场 + 区块错峰揭示
+     ------------------------------------------------------------
+     实验场首页、前端实验、编程练习共用 fndx-slide-up / pg-fade-in，
+     所有动效在 prefers-reduced-motion 下关闭
+     ============================================================ */
+  @keyframes pg-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 实验场首页：入口卡片与数据区块依次上滑揭示 */
+  .pg-hub-cards .pg-hub-card {
+    animation: fndx-slide-up var(--motion-duration-normal) var(--motion-easing-out) both;
+  }
+
+  .pg-hub-cards .pg-hub-card:nth-child(2) {
+    animation-delay: 0.06s;
+  }
+
+  .pg-hub-local {
+    animation: fndx-slide-up var(--motion-duration-normal) var(--motion-easing-out) both;
+    animation-delay: 0.12s;
+  }
+
+  .pg-hub-recent {
+    animation: fndx-slide-up var(--motion-duration-normal) var(--motion-easing-out) both;
+    animation-delay: 0.18s;
+  }
+
+  /* 前端实验：工具栏下滑 + 工作区淡入 */
+  .pg-frontend .pg-toolbar {
+    animation: pg-fade-in var(--motion-duration-normal) var(--motion-easing-out) both;
+  }
+
+  .pg-frontend .pg-workspace {
+    animation: pg-fade-in var(--motion-duration-normal) var(--motion-easing-out) both;
+    animation-delay: 0.08s;
+  }
+
+  /* 编程练习：主区域淡入 */
+  .pg-lab-main {
+    animation: pg-fade-in var(--motion-duration-normal) var(--motion-easing-out) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pg-hub-cards .pg-hub-card,
+    .pg-hub-local,
+    .pg-hub-recent,
+    .pg-frontend .pg-toolbar,
+    .pg-frontend .pg-workspace,
+    .pg-lab-main {
+      animation: none;
+    }
   }
 
   /* ============================================================
@@ -1405,9 +1579,6 @@
       min-height: 72vh;
     }
 
-    .pg-hub-recent {
-      grid-template-columns: 1fr;
-    }
   }
 
   @media (max-width: 720px) {
@@ -1442,6 +1613,16 @@
 
     .pg-hub-cards {
       grid-template-columns: 1fr;
+    }
+
+    .pg-hub-stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pg-hub-storage-main {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
     }
   }
 }

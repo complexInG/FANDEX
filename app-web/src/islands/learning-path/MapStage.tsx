@@ -77,19 +77,20 @@ export default function MapStage({
           </text>
         )}
         {/* 节点数徽标 */}
-        <g transform={`translate(${LAYOUT.nodeWidth - 42} 12)`}>
-          <rect className="lp-stage__count-rect" width={30} height={24} rx={12} />
-          <text className="lp-stage__count" x={15} y={16} textAnchor="middle">
+        <g transform={`translate(${LAYOUT.nodeWidth - 52} 12)`}>
+          <rect className="lp-stage__count-rect" width={28} height={24} rx={12} />
+          <text className="lp-stage__count" x={14} y={16} textAnchor="middle">
             {nodeCount}
           </text>
         </g>
-        {/* 折叠箭头 */}
-        <path
-          className={`lp-stage__chevron${collapsed ? ' lp-stage__chevron--collapsed' : ''}`}
-          transform={`translate(${LAYOUT.nodeWidth - 18} 24)`}
-          d="M 0 0 L 7 7 L 0 14"
-          fill="none"
-        />
+        {/* 折叠箭头：外层 g 负责定位，内层 path 仅负责旋转，避免 CSS transform 覆盖定位 */}
+        <g transform={`translate(${LAYOUT.nodeWidth - 18} 24)`}>
+          <path
+            className={`lp-stage__chevron${collapsed ? ' lp-stage__chevron--collapsed' : ''}`}
+            d="M 0 0 L 7 7 L 0 14"
+            fill="none"
+          />
+        </g>
       </g>
       {/* 阶段内知识点链 */}
       {!collapsed && children}

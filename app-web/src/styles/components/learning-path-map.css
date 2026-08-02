@@ -15,6 +15,18 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    animation: lp-map-in var(--motion-duration-normal) var(--motion-easing-out) both;
+  }
+
+  @keyframes lp-map-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .lp-map__toolbar {
@@ -195,13 +207,14 @@
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+    transform-box: fill-box;
+    transform-origin: center;
     transition: transform var(--motion-duration-normal) var(--motion-easing-out);
   }
 
   /* 折叠后箭头旋转为向下，表示可展开 */
   .lp-stage__chevron--collapsed {
     transform: rotate(90deg);
-    transform-origin: 7px 7px;
   }
 
   /* 阶段顶部主题色装饰线 */
@@ -264,19 +277,19 @@
     fill: var(--color-fg-tertiary);
   }
 
-  .lp-node__dot {
+  .lp-node__bar {
     stroke: none;
   }
 
-  .lp-node__dot--beginner {
+  .lp-node__bar--beginner {
     fill: var(--color-success);
   }
 
-  .lp-node__dot--intermediate {
+  .lp-node__bar--intermediate {
     fill: var(--color-warning);
   }
 
-  .lp-node__dot--advanced {
+  .lp-node__bar--advanced {
     fill: var(--color-error);
   }
 
@@ -302,15 +315,42 @@
     color: var(--color-fg-secondary);
   }
 
-  .lp-panel__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border: 1px solid var(--color-border-light);
-    border-radius: 2px;
-    color: var(--color-accent-base);
+  /* 空状态：自绘导图示意 + 引导文案 */
+  .lp-panel__empty-svg {
+    width: 150px;
+    height: 90px;
+    color: var(--lp-panel-color, var(--color-accent-base));
+    margin-bottom: var(--space-1);
+  }
+
+  .lp-panel__empty-edge {
+    fill: none;
+    stroke: var(--color-border-strong);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    opacity: 0.7;
+  }
+
+  .lp-panel__empty-node {
+    fill: color-mix(in oklch, var(--lp-panel-color, var(--color-accent-base)) 8%, var(--color-bg-card));
+    stroke: color-mix(in oklch, var(--lp-panel-color, var(--color-accent-base)) 45%, transparent);
+    stroke-width: 1.2;
+  }
+
+  .lp-panel__empty-node--root {
+    fill: color-mix(in oklch, var(--lp-panel-color, var(--color-accent-base)) 16%, var(--color-bg-card));
+  }
+
+  .lp-panel__empty-node--planned {
+    stroke-dasharray: 4 3;
+  }
+
+  .lp-panel__empty-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-fg-primary);
   }
 
   .lp-panel__hint {
@@ -497,22 +537,22 @@
     border-top: 2px dashed var(--color-warning);
   }
 
-  .lp-legend-dot {
+  .lp-legend-bar {
     display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    width: 2px;
+    height: 10px;
+    border-radius: 1px;
   }
 
-  .lp-legend-dot--beginner {
+  .lp-legend-bar--beginner {
     background: var(--color-success);
   }
 
-  .lp-legend-dot--intermediate {
+  .lp-legend-bar--intermediate {
     background: var(--color-warning);
   }
 
-  .lp-legend-dot--advanced {
+  .lp-legend-bar--advanced {
     background: var(--color-error);
   }
 
@@ -532,6 +572,12 @@
   @media (max-width: 768px) {
     .lp-canvas {
       height: 430px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lp-map {
+      animation: none;
     }
   }
 }

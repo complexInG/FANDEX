@@ -77,6 +77,7 @@ catalog:
 
   # 内容处理
   shiki: ^4.3.1
+  prismjs: ^1.30.0
   katex: ^0.16.47
   unified: ^11.0.5
   remark-parse: ^11.0.0

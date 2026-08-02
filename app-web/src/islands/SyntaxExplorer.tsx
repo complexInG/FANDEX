@@ -23,6 +23,33 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
+// Prism 轻量代码高亮：按需注册语法数据中出现的语言
+import Prism from 'prismjs';
+import 'prismjs/components/prism-markup';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-clike';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-c';
+import 'prismjs/components/prism-cpp';
+import 'prismjs/components/prism-csharp';
+import 'prismjs/components/prism-java';
+import 'prismjs/components/prism-go';
+import 'prismjs/components/prism-groovy';
+import 'prismjs/components/prism-kotlin';
+import 'prismjs/components/prism-lua';
+import 'prismjs/components/prism-bash';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-sql';
+import 'prismjs/components/prism-yaml';
+import 'prismjs/components/prism-toml';
+import 'prismjs/components/prism-properties';
+import 'prismjs/components/prism-ini';
+import 'prismjs/components/prism-cmake';
+import 'prismjs/components/prism-makefile';
+import 'prismjs/components/prism-protobuf';
+import 'prismjs/components/prism-mermaid';
 // 复用首页模块卡片样式（顶部色条、hover 边框/阴影、几何图标、标题变色）
 import '@/styles/components/module-card.css';
 import '@/styles/islands/syntax-explorer.css';
@@ -71,6 +98,52 @@ const COPIED_MS = 1600;
 const DEFAULT_LANGUAGE = 'javascript';
 /** 首页滚动容器选择器：面板打开时锁定滚动 */
 const HOME_MAIN_SELECTOR = '.home-main';
+
+/** 语法数据 lang 字段 → Prism 语言名映射（未知语言按纯文本展示） */
+const PRISM_LANG_ALIAS: Readonly<Record<string, string>> = {
+  bash: 'bash',
+  c: 'c',
+  cmake: 'cmake',
+  conf: 'ini',
+  cpp: 'cpp',
+  csharp: 'csharp',
+  go: 'go',
+  groovy: 'groovy',
+  java: 'java',
+  javascript: 'javascript',
+  json: 'json',
+  kotlin: 'kotlin',
+  lua: 'lua',
+  makefile: 'makefile',
+  mermaid: 'mermaid',
+  properties: 'properties',
+  protobuf: 'protobuf',
+  python: 'python',
+  redis: 'properties',
+  sql: 'sql',
+  toml: 'toml',
+  typescript: 'typescript',
+  xml: 'markup',
+  yaml: 'yaml',
+};
+
+/**
+ * 使用 Prism 高亮代码片段
+ * 代码来自站内构建数据（非用户输入），可安全注入 HTML
+ * @param code - 原始代码文本
+ * @param lang - 语法数据中的语言标识
+ * @returns 高亮后的 HTML 字符串
+ */
+function highlightCode(code: string, lang: string): string {
+  const prismLang = PRISM_LANG_ALIAS[lang];
+  if (!prismLang || !Prism.languages[prismLang]) return code;
+  try {
+    return Prism.highlight(code, Prism.languages[prismLang], prismLang);
+  } catch {
+    // 高亮失败时回退为纯文本，不影响内容展示
+    return code;
+  }
+}
 
 /**
  * 语法速览交互岛
@@ -209,7 +282,7 @@ export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
               aria-pressed={isActive}
               onClick={() => selectLanguage(lang.id)}
             >
-              <span className="syntax-lang-dot" aria-hidden="true" />
+              <span className="syntax-lang-bar" aria-hidden="true" />
               <span className="syntax-lang-name">{lang.title}</span>
               <span className="syntax-lang-count">{lang.count}</span>
             </button>
@@ -341,7 +414,7 @@ export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
                   </button>
                 </div>
                 <pre className="syntax-panel__pre">
-                  <code>{selected.code}</code>
+                  <code dangerouslySetInnerHTML={{ __html: highlightCode(selected.code, selected.lang) }} />
                 </pre>
                 {selected.truncated && (
                   <div className="syntax-panel__truncated">示例已省略，详见完整文档</div>

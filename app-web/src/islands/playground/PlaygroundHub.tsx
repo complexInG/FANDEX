@@ -2,9 +2,9 @@
  * Playground 首页岛组件
  *
  * 功能概述：
- *   - 展示前端实验与编程练习两个功能入口
+ *   - 展示前端实验与编程练习两个功能入口（紧凑卡片，自绘 SVG 几何装饰）
  *   - 汇总本地数据：作品数、练习记录、存储用量（全部来自浏览器本地）
- *   - 展示最近作品与最近练习，支持一键打开继续编辑
+ *   - 展示最近作品，支持一键打开继续编辑
  *
  * 数据原则：
  *   - 所有数据仅存用户浏览器（IndexedDB/localStorage），不对外分享
@@ -13,9 +13,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { PgIcon } from './pg-icons';
-import { clearAllPlaygroundData, getPlaygroundStats, loadLabRecords, loadPens } from './pg-storage';
-import { getExercise } from './exercises';
-import type { FrontendPen, LabRecord, PlaygroundStats } from './types';
+import { clearAllPlaygroundData, getPlaygroundStats, loadPens } from './pg-storage';
+import type { FrontendPen, PlaygroundStats } from './types';
 
 /** 格式化时间戳 */
 function formatTime(ts: number): string {
@@ -31,32 +30,46 @@ function formatBytes(bytes: number): string {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
+/** 卡片右上角几何装饰（自绘 SVG，非位图） */
+function CardDecor({ variant }: { variant: 'code' | 'cpu' }) {
+  return (
+    <svg className="pg-hub-card__decor" viewBox="0 0 120 72" aria-hidden="true">
+      {/* 右上角坐标刻度 */}
+      <path className="pg-hub-card__decor-bracket" d="M 104 8 H 112 V 16" />
+      <path className="pg-hub-card__decor-bracket" d="M 104 64 H 112 V 56" />
+      <path className="pg-hub-card__decor-bracket" d="M 8 8 H 16 V 16" />
+      <path className="pg-hub-card__decor-bracket" d="M 8 64 H 16 V 56" />
+      {variant === 'code' ? (
+        <>
+          <path className="pg-hub-card__decor-glyph" d="M 70 22 L 58 36 L 70 50" />
+          <path className="pg-hub-card__decor-glyph" d="M 82 22 L 94 36 L 82 50" />
+          <path className="pg-hub-card__decor-glyph" d="M 74 20 L 78 52" />
+        </>
+      ) : (
+        <>
+          <rect className="pg-hub-card__decor-glyph" x="62" y="22" width="28" height="28" />
+          <path className="pg-hub-card__decor-glyph" d="M 70 30 h 12 M 70 42 h 12 M 76 26 v 20" />
+          <path className="pg-hub-card__decor-glyph" d="M 70 18 V 22 M 82 18 V 22 M 70 50 V 54 M 82 50 V 54" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 /** Playground 首页组件 */
 function PlaygroundHub() {
   /** 本地统计数据 */
   const [stats, setStats] = useState<PlaygroundStats | null>(null);
   /** 最近前端作品 */
   const [pens, setPens] = useState<FrontendPen[]>([]);
-  /** 最近练习记录 */
-  const [records, setRecords] = useState<LabRecord[]>([]);
 
   /**
-   * 刷新本地统计与最近记录
+   * 刷新本地统计与最近作品
    */
   const refresh = useCallback(async () => {
-    const [nextStats, nextPens, nextRecords] = await Promise.all([
-      getPlaygroundStats(),
-      loadPens(),
-      loadLabRecords(),
-    ]);
+    const [nextStats, nextPens] = await Promise.all([getPlaygroundStats(), loadPens()]);
     setStats(nextStats);
     setPens(nextPens.slice(0, 5));
-    setRecords(
-      nextRecords
-        .slice()
-        .sort((a, b) => b.lastRunAt - a.lastRunAt)
-        .slice(0, 5),
-    );
   }, []);
 
   useEffect(() => {
@@ -78,32 +91,44 @@ function PlaygroundHub() {
 
   return (
     <div className="pg-hub">
-      {/* 功能入口卡片 */}
+      {/* 功能入口卡片：紧凑双卡布局 */}
       <section className="pg-hub-cards">
         <a className="pg-hub-card pg-hub-card--frontend" href={`${import.meta.env.BASE_URL}playground/frontend/`}>
-          <div className="pg-hub-card-icon">
-            <PgIcon name="code" size={26} />
+          <CardDecor variant="code" />
+          <span className="pg-hub-card__index">01</span>
+          <div className="pg-hub-card__head">
+            <div className="pg-hub-card-icon">
+              <PgIcon name="code" size={22} />
+            </div>
+            <div className="pg-hub-card__heading">
+              <h2>前端效果实验</h2>
+              <p className="pg-hub-card__brief">仿 CodePen 的三栏编辑器，HTML / CSS / JavaScript 实时预览</p>
+            </div>
           </div>
-          <h2>前端效果实验</h2>
-          <p>仿 CodePen 的三栏编辑器：同时编写 HTML、CSS 与 JavaScript，实时预览各种前端效果。</p>
           <ul className="pg-hub-card-features">
             <li>实时预览与自动运行</li>
-            <li>内置控制台输出捕获</li>
-            <li>左右/上下布局切换</li>
+            <li>内置控制台输出</li>
+            <li>左右 / 上下布局切换</li>
             <li>本地作品库自动保存</li>
           </ul>
           <span className="pg-hub-card-action">
             进入实验
-            <PgIcon name="arrow-left" size={14} />
+            <PgIcon name="arrow-left" size={13} />
           </span>
         </a>
 
         <a className="pg-hub-card pg-hub-card--lab" href={`${import.meta.env.BASE_URL}playground/lab/`}>
-          <div className="pg-hub-card-icon">
-            <PgIcon name="cpu" size={26} />
+          <CardDecor variant="cpu" />
+          <span className="pg-hub-card__index">02</span>
+          <div className="pg-hub-card__head">
+            <div className="pg-hub-card-icon">
+              <PgIcon name="cpu" size={22} />
+            </div>
+            <div className="pg-hub-card__heading">
+              <h2>编程与算法练习</h2>
+              <p className="pg-hub-card__brief">内置经典算法题目，五种语言在浏览器内直接运行测试</p>
+            </div>
           </div>
-          <h2>编程与算法练习</h2>
-          <p>内置经典算法题目，支持 JavaScript、TypeScript、Python、C、C++ 五种语言，浏览器内直接运行测试。</p>
           <ul className="pg-hub-card-features">
             <li>自动用例测试与结果汇总</li>
             <li>五种语言起始模板</li>
@@ -112,12 +137,12 @@ function PlaygroundHub() {
           </ul>
           <span className="pg-hub-card-action">
             进入练习
-            <PgIcon name="arrow-left" size={14} />
+            <PgIcon name="arrow-left" size={13} />
           </span>
         </a>
       </section>
 
-      {/* 本地数据统计 */}
+      {/* 本地数据面板：统计 + 存储用量合并为单个紧凑区域 */}
       <section className="pg-hub-local">
         <div className="pg-hub-section-head">
           <h2>本地数据</h2>
@@ -154,64 +179,40 @@ function PlaygroundHub() {
                 : '浏览器未提供配额信息'}
             </span>
           </div>
-          <div className="pg-hub-storage-bar" role="progressbar" aria-valuenow={Math.round(usageRatio * 100)} aria-valuemin={0} aria-valuemax={100}>
-            <i style={{ width: `${usageRatio * 100}%` }} />
+          <div className="pg-hub-storage-main">
+            <div className="pg-hub-storage-bar" role="progressbar" aria-valuenow={Math.round(usageRatio * 100)} aria-valuemin={0} aria-valuemax={100}>
+              <i style={{ width: `${usageRatio * 100}%` }} />
+            </div>
+            <button type="button" className="pg-btn pg-btn--danger" onClick={handleClearAll}>
+              <PgIcon name="trash" size={14} />
+              清空全部本地数据
+            </button>
           </div>
           <p className="pg-hub-storage-note">
-            自动保存只写入用户代码文本，占用极小。如需释放空间，可删除不需要的作品，或点击下方按钮清空全部本地数据。
+            自动保存只写入用户代码文本，占用极小。如需释放空间，可删除不需要的作品，或点击上方按钮清空全部本地数据。
           </p>
-          <button type="button" className="pg-btn pg-btn--danger" onClick={handleClearAll}>
-            <PgIcon name="trash" size={14} />
-            清空全部本地数据
-          </button>
         </div>
       </section>
 
-      {/* 最近作品与练习 */}
+      {/* 最近作品 */}
       <section className="pg-hub-recent">
-        <div className="pg-hub-recent-col">
-          <div className="pg-hub-section-head">
-            <h2>最近作品</h2>
-          </div>
-          {pens.length === 0 ? (
-            <p className="pg-hub-empty">暂无保存的前端作品</p>
-          ) : (
-            <ul className="pg-hub-list">
-              {pens.map((pen) => (
-                <li key={pen.id}>
-                  <a href={`${import.meta.env.BASE_URL}playground/frontend/?pen=${encodeURIComponent(pen.id)}`}>
-                    <span className="pg-hub-list-title">{pen.title || '未命名作品'}</span>
-                    <span className="pg-hub-list-meta">{formatTime(pen.updatedAt)}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="pg-hub-section-head">
+          <h2>最近作品</h2>
         </div>
-        <div className="pg-hub-recent-col">
-          <div className="pg-hub-section-head">
-            <h2>最近练习</h2>
-          </div>
-          {records.length === 0 ? (
-            <p className="pg-hub-empty">暂无练习记录</p>
-          ) : (
-            <ul className="pg-hub-list">
-              {records.map((record) => (
-                <li key={record.id}>
-                  <a href={`${import.meta.env.BASE_URL}playground/lab/?exercise=${encodeURIComponent(record.exerciseId)}&lang=${encodeURIComponent(record.language)}`}>
-                    <span className="pg-hub-list-title">
-                      {getExercise(record.exerciseId).title}
-                      <em className={`pg-hub-list-status ${record.status === 'solved' ? 'pg-text-ok' : 'pg-text-fail'}`}>
-                        {record.status === 'solved' ? '已通过' : '未通过'}
-                      </em>
-                    </span>
-                    <span className="pg-hub-list-meta">{formatTime(record.lastRunAt)}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {pens.length === 0 ? (
+          <p className="pg-hub-empty">暂无保存的前端作品</p>
+        ) : (
+          <ul className="pg-hub-list">
+            {pens.map((pen) => (
+              <li key={pen.id}>
+                <a href={`${import.meta.env.BASE_URL}playground/frontend/?pen=${encodeURIComponent(pen.id)}`}>
+                  <span className="pg-hub-list-title">{pen.title || '未命名作品'}</span>
+                  <span className="pg-hub-list-meta">{formatTime(pen.updatedAt)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

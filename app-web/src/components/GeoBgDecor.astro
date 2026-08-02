@@ -14,6 +14,7 @@
  * - home：首页 Hero 区，S 曲线 + 涟漪环 + 三角切片等 7 项装饰
  * - docs：文档详情页，网格底纹 + 几何线条 + 动态元素（克制 7 项）
  * - list：模块/标签列表页，网格底纹 + 平行斜线 + 十字坐标点 + 动态元素
+ * - learning-path：学习路线页，网格底纹 + 竖条点阵装饰（点状装饰统一为竖条）
  * - minimal：轻量变体，仅网格底纹 + 小点阵（搜索/404 等辅助页）
  * - loading：加载态变体，网格底纹 + 小点阵（参考 KeMuONEXueKao 的 loading 变体）
  * - error：错误态变体，网格底纹 + 大点阵（参考 KeMuONEXueKao 的 error 变体）
@@ -25,7 +26,16 @@
  */
 
 /** 支持的视图变体类型 */
-export type GeoBgVariant = 'home' | 'docs' | 'list' | 'minimal' | 'loading' | 'error' | 'info' | 'playground';
+export type GeoBgVariant =
+  | 'home'
+  | 'docs'
+  | 'list'
+  | 'learning-path'
+  | 'minimal'
+  | 'loading'
+  | 'error'
+  | 'info'
+  | 'playground';
 
 /** 装饰层单项：可仅为类名字符串，或携带内联 style 的对象（适配带定位的装饰元素） */
 type GeoDecorItem = string | { readonly className: string; readonly style?: string };
@@ -66,6 +76,16 @@ const GEO_DECOR_CONFIG: Record<GeoBgVariant, GeoDecorItem[]> = {
     'geo-dots-radial',
     'geo-chevron-stack',
     'geo-bezier-flow',
+  ],
+  /** 学习路线页：点状/环形装饰全部替换为竖条装饰，保持构成主义几何语言 */
+  'learning-path': [
+    'geo-bg-grid',
+    'geo-curve-s',
+    'geo-triangle-rt',
+    'geo-bars-marks',
+    'geo-bars-radial',
+    'geo-bars-pulse',
+    'geo-float-block',
   ],
   /** 轻量变体：仅网格底纹 + 小点阵（搜索/404 等辅助页） */
   minimal: ['geo-bg-grid', 'geo-dots-sm'],

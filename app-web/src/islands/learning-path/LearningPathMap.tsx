@@ -130,15 +130,15 @@ export default function LearningPathMap({ tech, base }: Props) {
           文档待补充
         </span>
         <span className="lp-legend-item">
-          <i className="lp-legend-dot lp-legend-dot--beginner" />
+          <i className="lp-legend-bar lp-legend-bar--beginner" />
           入门
         </span>
         <span className="lp-legend-item">
-          <i className="lp-legend-dot lp-legend-dot--intermediate" />
+          <i className="lp-legend-bar lp-legend-bar--intermediate" />
           中级
         </span>
         <span className="lp-legend-item">
-          <i className="lp-legend-dot lp-legend-dot--advanced" />
+          <i className="lp-legend-bar lp-legend-bar--advanced" />
           进阶
         </span>
       </div>

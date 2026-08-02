@@ -371,6 +371,36 @@ function FrontendLab() {
           onChange={(e) => updatePen({ title: e.target.value })}
           aria-label="作品标题"
         />
+        {/* 编辑器开关组：收起全部编辑器后仍可从工具栏重新打开 */}
+        <div className="pg-toolbar-group pg-toolbar-group--editors" role="group" aria-label="编辑器面板开关">
+          <button
+            type="button"
+            className={`pg-btn pg-btn--editors${pen.showHtml ? ' is-on' : ''}`}
+            onClick={() => updatePen({ showHtml: !pen.showHtml })}
+            aria-pressed={pen.showHtml}
+            title="HTML 编辑器"
+          >
+            HTML
+          </button>
+          <button
+            type="button"
+            className={`pg-btn pg-btn--editors${pen.showCss ? ' is-on' : ''}`}
+            onClick={() => updatePen({ showCss: !pen.showCss })}
+            aria-pressed={pen.showCss}
+            title="CSS 编辑器"
+          >
+            CSS
+          </button>
+          <button
+            type="button"
+            className={`pg-btn pg-btn--editors${pen.showJs ? ' is-on' : ''}`}
+            onClick={() => updatePen({ showJs: !pen.showJs })}
+            aria-pressed={pen.showJs}
+            title="JavaScript 编辑器"
+          >
+            JS
+          </button>
+        </div>
         <div className="pg-toolbar-group">
           <button
             type="button"
@@ -437,7 +467,10 @@ function FrontendLab() {
       {/* 主工作区 */}
       <div className="pg-workspace" style={workspaceStyle}>
         {/* 编辑器区域 */}
-        <section className="pg-editors" aria-label="代码编辑器">
+        <section
+          className={`pg-editors pg-editors--${pen.layout}`}
+          aria-label="代码编辑器"
+        >
           {editors.map((editor) => {
             if (!editor.visible) return null;
             const value = editor.key === 'html' ? pen.html : editor.key === 'css' ? pen.css : pen.js;
@@ -477,7 +510,7 @@ function FrontendLab() {
             );
           })}
           {!pen.showHtml && !pen.showCss && !pen.showJs && (
-            <div className="pg-pane-empty">全部编辑器已收起，请从工具栏打开</div>
+            <div className="pg-pane-empty">全部编辑器已收起，请从工具栏的 HTML / CSS / JS 按钮重新打开</div>
           )}
         </section>
 

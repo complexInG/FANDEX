@@ -79,17 +79,13 @@
     background-repeat: no-repeat;
   }
 
-  /* 站点标题：FAN/DEX 分离 + 渐变背景动效 + 残影伪元素
+  /* 站点标题：FAN/DEX 分离 + 渐变背景动效
    * ----------------------------------------------------------------
    * 设计灵感（参考 para-mask + para-ghost 模式，自主重构）：
    * - FAN 与 DEX 拆分为两个 span，独立控制渐变背景与色相
    * - 渐变背景 + background-clip: text 实现文字渐变填充
    * - bgPan keyframes 驱动背景位置缓慢移动，待机呼吸感
    * - hover 时加速背景滚动 + 微缩放，强化交互反馈
-   * - ::after 残影伪元素使用 attr(data-text) 复制文字
-   *   通过 -webkit-text-stroke 形成轮廓残影，z-index:-1 位于本体之下
-   * - ghostIdle keyframes 让残影微小浮动，增加层次感
-   * - hover 时残影逆方向位移，形成视差效果
    * 性能：仅动画 transform 与 background-position，GPU 加速，60fps */
   .hero-title {
     font-family: var(--font-display);
@@ -132,45 +128,9 @@
     100% { background-position: 100% 100%; }
   }
 
-  /* 残影伪元素：通过 attr(data-text) 复制文字内容
-   * - 位于本体下方（z-index: -1），形成视觉层次
-   * - 仅显示轮廓（-webkit-text-stroke），无填充色
-   * - ghostIdle 动画微小浮动，增加残影呼吸感
-   * - hover 时残影逆方向位移，形成视差效果 */
-  .hero-title::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    color: transparent;
-    -webkit-text-stroke: 1px color-mix(in oklch, var(--color-accent-base) 40%, transparent);
-    z-index: -1;
-    opacity: 0.5;
-    /* 残影待机动画：微小位移浮动 */
-    animation: heroGhostIdle 4s ease-in-out infinite alternate;
-    transition: transform 0.6s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.4s ease, -webkit-text-stroke 0.4s ease;
-    pointer-events: none;
-    /* 让残影稍微偏移到左上方，形成视觉错位 */
-    transform: translate(-3px, -3px);
-  }
-
-  .hero-title:hover::after {
-    animation: none;
-    transform: translate(-10px, -10px) scale(1.03);
-    opacity: 0.9;
-    -webkit-text-stroke: 1.5px color-mix(in oklch, var(--color-accent-base) 70%, transparent);
-  }
-
-  @keyframes heroGhostIdle {
-    0% { transform: translate(-2px, -2px); }
-    100% { transform: translate(-4px, -4px); }
-  }
-
-  /* 尊重用户减少动效偏好：禁用背景动画与残影浮动 */
+  /* 尊重用户减少动效偏好：禁用背景动画 */
   @media (prefers-reduced-motion: reduce) {
-    .hero-title,
-    .hero-title::after {
+    .hero-title {
       animation: none;
       transition: none;
     }
@@ -186,19 +146,6 @@
   /* DEX 部分独立色相：保持与 FAN 协调的渐变 */
   .hero-title-dex {
     display: inline-block;
-  }
-
-  /* 站点描述 */
-  .hero-desc {
-    font-size: 0.95rem;
-    color: var(--color-fg-secondary);
-    margin: 0 0 var(--spacing-xl);
-    font-weight: 400;
-    letter-spacing: 0.02em;
-    text-align: center;
-    margin-inline: auto;
-    max-width: 540px;
-    line-height: 1.7;
   }
 
   /* 统计数据 + 功能入口同一行容器
@@ -284,12 +231,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 14px 36px;
+    padding: 12px 34px;
     background: transparent;
     color: var(--color-fg-secondary);
     text-decoration: none;
     font-family: var(--font-display);
-    font-size: 0.78rem;
+    font-size: 0.94rem;
     font-weight: 500;
     letter-spacing: 0.02em;
     cursor: pointer;
@@ -355,6 +302,30 @@
     white-space: nowrap;
     position: relative;
     z-index: 1;
+    padding-bottom: 3px;
+  }
+
+  /* 下划线标记：默认弱可见，hover 时增强，明确按钮可点击语义 */
+  .entry-name::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--color-accent-base);
+    opacity: 0.45;
+    transform: scaleX(0.85);
+    transform-origin: center;
+    transition:
+      opacity var(--motion-duration-instant) var(--motion-easing-out),
+      transform var(--motion-duration-normal) var(--motion-easing-out);
+  }
+
+  .entry-btn:hover .entry-name::after {
+    opacity: 1;
+    transform: scaleX(1);
   }
 
   /* ============================================================
@@ -607,11 +578,6 @@
       margin: 0;
     }
 
-    .hero-desc {
-      font-size: 0.85rem;
-      margin-bottom: var(--spacing-md);
-    }
-
     .hero-stats {
       gap: var(--spacing-sm);
       font-size: 0.75rem;
@@ -728,15 +694,13 @@
 
   /* Hero 区域：依次上滑入场（首屏即时播放，both 保持首尾态） */
   .hero-title,
-  .hero-desc,
   .hero-stats,
   .hero-entries {
     animation: fndx-slide-up var(--motion-duration-normal) var(--motion-easing-out) both;
   }
   .hero-title { animation-delay: 0.06s; }
-  .hero-desc { animation-delay: 0.12s; }
-  .hero-stats { animation-delay: 0.18s; }
-  .hero-entries { animation-delay: 0.24s; }
+  .hero-stats { animation-delay: 0.12s; }
+  .hero-entries { animation-delay: 0.18s; }
 
   /* 模块卡片：滑动器内错峰入场（前 8 张依次显现，其余同步，避免长延迟）
    * 注：JS 克隆的卡片（aria-hidden）不参与入场动画 */
@@ -755,7 +719,6 @@
   /* 可访问性：用户启用减少动效时禁用所有入场动画 */
   @media (prefers-reduced-motion: reduce) {
     .hero-title,
-    .hero-desc,
     .hero-stats,
     .hero-entries,
     .feature-track .module-card {

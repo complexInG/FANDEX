@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  * - 已发布节点渲染为 SVG 链接（整卡可点，支持新标签打开）
  * - 待补充节点渲染为按钮（点击选中并查看详情）
- * - 标题自动换行（最多两行），尾部显示难度圆点与状态
+ * - 标题自动换行（最多两行），尾部显示难度竖条与状态
  */
 import type { NodeVM } from './types';
 
@@ -74,12 +74,14 @@ function NodeBody({ node, index, width, height }: Props) {
           {line}
         </text>
       ))}
-      {/* 元信息：难度圆点 + 状态 + 序号 */}
-      <circle
-        className={`lp-node__dot lp-node__dot--${node.difficulty ?? 'intermediate'}`}
-        cx={12}
-        cy={height - 15}
-        r={3}
+      {/* 元信息：难度竖条 + 状态 + 序号 */}
+      <rect
+        className={`lp-node__bar lp-node__bar--${node.difficulty ?? 'intermediate'}`}
+        x={10}
+        y={height - 19}
+        width={4}
+        height={10}
+        rx={1}
       />
       <text className="lp-node__status" x={21} y={height - 11}>
         {planned ? '文档待补充' : '已发布'}

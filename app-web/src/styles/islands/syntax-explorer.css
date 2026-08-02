@@ -62,17 +62,17 @@
     background-color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 9%, transparent);
   }
 
-  /* 主题色圆点：未激活弱化，激活态饱和 */
-  .syntax-lang-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
+  /* 主题色竖条：未激活弱化，激活态饱和（与学习路线 chip 统一） */
+  .syntax-lang-bar {
+    width: 2px;
+    height: 10px;
+    border-radius: 1px;
     background: var(--lang-color, var(--color-accent-base));
     opacity: 0.5;
     transition: opacity var(--motion-duration-instant) var(--motion-easing-out);
   }
 
-  .syntax-lang-chip.is-active .syntax-lang-dot {
+  .syntax-lang-chip.is-active .syntax-lang-bar {
     opacity: 1;
   }
 
@@ -183,7 +183,8 @@
     position: fixed;
     inset: 0;
     z-index: var(--z-modal, 300);
-    background: color-mix(in oklch, var(--color-fg-primary) 35%, transparent);
+    /* 固定使用近黑中性色，暗色模式下不会因前景色为浅色而泛白 */
+    background: color-mix(in oklch, var(--color-neutral-50) 55%, transparent);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
   }
@@ -205,10 +206,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-sm);
-    width: min(640px, calc(100vw - 32px));
-    max-height: min(78vh, 640px);
+    width: min(760px, calc(100vw - 40px));
+    max-height: min(82vh, 720px);
     overflow: auto;
-    padding: var(--spacing-lg);
+    padding: var(--spacing-xl);
     background: var(--color-bg-card);
     border: 1px solid var(--color-border-light);
     border-radius: var(--fandex-radius-md, 4px);
@@ -259,7 +260,7 @@
   .syntax-panel__section {
     margin: 0;
     font-family: var(--font-display);
-    font-size: 1.2em;
+    font-size: 1.28em;
     font-weight: 700;
     line-height: 1.35;
     color: var(--color-text);
@@ -275,13 +276,14 @@
   /* 完整公式：等宽字体 + 语言色文字 + 淡色底，允许换行 */
   .syntax-panel__formula {
     display: block;
-    padding: 8px 10px;
+    padding: 10px 12px;
     border: 1px solid var(--color-border-light);
+    border-left: 3px solid color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 65%, transparent);
     border-radius: 2px;
-    background: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 6%, var(--color-bg-code));
-    color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 82%, var(--color-text));
+    background: var(--color-bg-code);
+    color: var(--color-text);
     font-family: var(--font-code);
-    font-size: 0.8em;
+    font-size: 0.82em;
     line-height: 1.6;
     white-space: pre-wrap;
     word-break: break-word;
@@ -327,13 +329,74 @@
   .syntax-panel__pre {
     margin: 0;
     padding: var(--spacing-sm) var(--spacing-md);
-    max-height: 260px;
+    max-height: 300px;
     overflow: auto;
     font-family: var(--font-code);
     font-size: 0.78em;
     line-height: 1.6;
+    background: transparent;
     color: var(--color-text);
     tab-size: 2;
+  }
+
+  .syntax-panel__pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: none;
+  }
+
+  /* Prism 高亮配色：复用站点语义令牌，明暗主题自动切换 */
+  .syntax-panel__pre .token.comment,
+  .syntax-panel__pre .token.prolog,
+  .syntax-panel__pre .token.doctype,
+  .syntax-panel__pre .token.cdata {
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  .syntax-panel__pre .token.punctuation,
+  .syntax-panel__pre .token.operator,
+  .syntax-panel__pre .token.entity {
+    color: var(--color-text-secondary);
+  }
+
+  .syntax-panel__pre .token.keyword,
+  .syntax-panel__pre .token.selector,
+  .syntax-panel__pre .token.atrule,
+  .syntax-panel__pre .token.rule,
+  .syntax-panel__pre .token.property,
+  .syntax-panel__pre .token.tag {
+    color: var(--color-accent-base);
+  }
+
+  .syntax-panel__pre .token.string,
+  .syntax-panel__pre .token.char,
+  .syntax-panel__pre .token.attr-value {
+    color: var(--color-success-base);
+  }
+
+  .syntax-panel__pre .token.number,
+  .syntax-panel__pre .token.boolean,
+  .syntax-panel__pre .token.constant {
+    color: var(--color-warning-base);
+  }
+
+  .syntax-panel__pre .token.function,
+  .syntax-panel__pre .token.class-name,
+  .syntax-panel__pre .token.maybe-class-name,
+  .syntax-panel__pre .token.builtin {
+    color: var(--color-info-base);
+  }
+
+  .syntax-panel__pre .token.variable,
+  .syntax-panel__pre .token.parameter,
+  .syntax-panel__pre .token.plain {
+    color: var(--color-text);
+  }
+
+  .syntax-panel__pre .namespace {
+    opacity: 0.8;
   }
 
   .syntax-panel__truncated {

@@ -4,7 +4,7 @@
  * 设计说明：
  * - 页面容器与 Hero 完全复用首页美术（index.css），与语法速览页保持一致
  * - 技术卡片按分类分组，覆盖进度条使用自绘 SVG
- * - 技术切换 chip 栏与语法速览语言切换栏同款（吸顶 + 毛玻璃 + 主题色点）
+ * - 技术切换 chip 栏与语法速览语言切换栏同款（吸顶 + 毛玻璃 + 主题色竖条）
  * - 归入 @layer pages
  */
 @layer pages {
@@ -37,12 +37,378 @@
   .lp-category__title {
     margin: 0 0 var(--spacing-md);
     justify-content: flex-start;
+    position: relative;
+  }
+
+  /* 分类标题常驻曲线装饰：波浪线始终可见，高亮段循环书写动画 */
+  .lp-category__curve {
+    position: absolute;
+    left: 0;
+    bottom: -7px;
+    width: 220px;
+    height: 10px;
+    pointer-events: none;
+    color: var(--marker-color, var(--color-accent-base));
+  }
+
+  .lp-category__curve-base,
+  .lp-category__curve-flow {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+  }
+
+  .lp-category__curve-base {
+    stroke-width: 1.2;
+    opacity: 0.35;
+  }
+
+  .lp-category__curve-flow {
+    stroke-width: 1.8;
+    stroke-dasharray: 230;
+    stroke-dashoffset: 230;
+    animation: lp-curve-flow 3.6s linear infinite;
   }
 
   .lp-tech-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: var(--spacing-md);
+  }
+
+  /* ============================================================
+   * 职业路线规划区
+   * ------------------------------------------------------------
+   * 以职业目标组织知识体系：阶段路线 + 模块芯片 + 职业阶梯，
+   * 卡片底部带常驻波浪曲线动画（与分类标题装饰统一）
+   * ============================================================ */
+  .lp-careers {
+    position: relative;
+    z-index: 1;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .lp-careers__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    padding-left: 12px;
+    position: relative;
+  }
+
+  .lp-careers__head::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 15px;
+    border-radius: 1px;
+    background: var(--color-accent-base);
+    opacity: 0.8;
+  }
+
+  .lp-careers__head h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    letter-spacing: 0.03em;
+    color: var(--color-fg-primary);
+  }
+
+  .lp-careers__note {
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    color: var(--color-fg-tertiary);
+  }
+
+  .lp-careers__grid {
+    display: grid;
+    gap: var(--spacing-md);
+  }
+
+  .lp-career {
+    --career-color: var(--color-accent-base);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 22px 22px;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--fandex-radius-md, 4px);
+    background: var(--color-bg-card);
+    box-shadow: var(--shadow-xs);
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      transform var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      box-shadow var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .lp-career::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--career-color);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--motion-duration-normal) var(--motion-easing-out);
+    z-index: 1;
+  }
+
+  .lp-career:hover {
+    border-color: color-mix(in srgb, var(--career-color) 45%, transparent);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .lp-career:hover::before {
+    transform: scaleX(1);
+  }
+
+  /* 卡片底部常驻曲线动画 */
+  .lp-career__curve {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 10px;
+    pointer-events: none;
+    color: var(--career-color);
+    opacity: 0.55;
+  }
+
+  .lp-career__curve-base,
+  .lp-career__curve-flow {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+  }
+
+  .lp-career__curve-base {
+    stroke-width: 1.2;
+    opacity: 0.4;
+  }
+
+  .lp-career__curve-flow {
+    stroke-width: 1.8;
+    stroke-dasharray: 430;
+    stroke-dashoffset: 430;
+    animation: lp-curve-flow 3.8s linear infinite;
+  }
+
+  @keyframes lp-curve-flow {
+    0% {
+      stroke-dashoffset: 430;
+    }
+    55% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: -430;
+    }
+  }
+
+  .lp-career__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+  }
+
+  .lp-career__index {
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--career-color);
+    opacity: 0.75;
+    flex-shrink: 0;
+  }
+
+  .lp-career__titles {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    flex: 1;
+  }
+
+  .lp-career__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-fg-primary);
+  }
+
+  .lp-career__en {
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-tertiary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lp-career__status {
+    flex-shrink: 0;
+    padding: 2px 10px;
+    border: 1px solid color-mix(in srgb, var(--career-color) 45%, transparent);
+    border-radius: 999px;
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--career-color);
+    background: color-mix(in srgb, var(--career-color) 8%, transparent);
+  }
+
+  .lp-career__status.is-planned {
+    color: var(--color-warning);
+    border-color: color-mix(in srgb, var(--color-warning) 45%, transparent);
+    background: color-mix(in srgb, var(--color-warning) 8%, transparent);
+  }
+
+  .lp-career__desc {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+    max-width: 720px;
+  }
+
+  /* 路线阶段：三列并排，相邻阶段用 CSS 直角箭头连接 */
+  .lp-career__route {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  .lp-career__stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 14px;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--fandex-radius-sm, 2px);
+    background: color-mix(in srgb, var(--career-color) 4%, var(--color-bg-card));
+    min-width: 0;
+  }
+
+  .lp-career__stage:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -11px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-top: 1.5px solid var(--career-color);
+    border-right: 1.5px solid var(--career-color);
+    transform: translateY(-50%) rotate(45deg);
+    opacity: 0.75;
+    pointer-events: none;
+  }
+
+  .lp-career__stage-label {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--career-color);
+  }
+
+  .lp-career__stage-points {
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    word-break: break-word;
+  }
+
+  /* 底部：知识体系芯片 + 职业阶梯 */
+  .lp-career__foot {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    padding-top: 12px;
+    border-top: 1px dashed var(--color-border-light);
+  }
+
+  .lp-career__foot-label {
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-fg-tertiary);
+  }
+
+  .lp-career__modules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .lp-career__chip {
+    padding: 2px 9px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 999px;
+    background: var(--color-bg-card);
+    font-family: var(--font-display);
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition:
+      color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .lp-career__chip:hover {
+    color: var(--career-color);
+    border-color: color-mix(in srgb, var(--career-color) 50%, transparent);
+    background: color-mix(in srgb, var(--career-color) 7%, transparent);
+  }
+
+  .lp-career__ladder {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .lp-career__step {
+    position: relative;
+    padding: 2px 10px;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--fandex-radius-sm, 2px);
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+  }
+
+  .lp-career__step:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    border-top: 1.2px solid var(--career-color);
+    border-right: 1.2px solid var(--career-color);
+    transform: translateY(-50%) rotate(45deg);
+    opacity: 0.7;
   }
 
   /* ============================================================
@@ -300,16 +666,16 @@
     background-color: color-mix(in oklch, var(--chip-color, var(--color-accent-base)) 9%, transparent);
   }
 
-  .lp-tech-chip__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
+  .lp-tech-chip__bar {
+    width: 2px;
+    height: 10px;
+    border-radius: 1px;
     background: var(--chip-color, var(--color-accent-base));
     opacity: 0.5;
     transition: opacity var(--motion-duration-instant) var(--motion-easing-out);
   }
 
-  .lp-tech-chip.is-active .lp-tech-chip__dot {
+  .lp-tech-chip.is-active .lp-tech-chip__bar {
     opacity: 1;
   }
 
@@ -346,6 +712,23 @@
    * 移动端适配
    * ============================================================ */
   @media (max-width: 768px) {
+    .lp-careers__route {
+      grid-template-columns: 1fr;
+    }
+
+    .lp-career__stage:not(:last-child)::after {
+      display: none;
+    }
+
+    .lp-career__head {
+      flex-wrap: wrap;
+    }
+
+    .lp-career__titles {
+      flex-basis: 100%;
+      order: -1;
+    }
+
     .lp-tech-grid {
       grid-template-columns: 1fr;
     }
@@ -353,6 +736,14 @@
     .lp-tech-chips {
       margin: 0 calc(var(--spacing-sm) * -1);
       padding: var(--spacing-sm);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lp-category__curve-flow,
+    .lp-career__curve-flow {
+      animation: none;
+      stroke-dashoffset: 0;
     }
   }
 }

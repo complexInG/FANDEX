@@ -33,10 +33,12 @@
     justify-content: space-between;
     gap: var(--space-inline-md);
     padding: 0 var(--spacing-lg);
-    /* 毛玻璃背景：ark 头部令牌驱动 */
-    background: var(--header-bg, color-mix(in oklch, var(--color-bg-primary) 85%, transparent));
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    /* 毛玻璃背景：ark 头部令牌驱动。
+       不透明度提高到 95% 并去掉 saturate，避免背景装饰的砖红/波纹
+       透过半透明导航层形成"肉色"色偏，保持冷灰中性色 */
+    background: color-mix(in oklch, var(--color-bg-primary) 95%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--color-border-light);
     position: sticky;
     top: 0;
