@@ -1350,3 +1350,32 @@ let range = {
     }
 };
 ```
+
+## 练习：修 Bug（先找错，再看答案）
+
+1. 下面代码输出什么？
+
+```javascript
+console.log(typeof null);
+console.log(0.1 + 0.2 === 0.3);
+```
+
+答案：`typeof null` 是 `"object"`（历史遗留 bug，了解即可）；`0.1 + 0.2 === 0.3` 是 `false`（IEEE 754 浮点误差），用 `Number.EPSILON` 或保留小数位比较。
+
+2. 比较结果是什么？
+
+```javascript
+console.log(1 == '1');
+console.log(1 === '1');
+```
+
+答案：`true`（隐式转换）与 `false`（严格比较）。业务代码一律使用 `===`。
+
+3. 涉及金额时为什么不能直接加减？
+
+```javascript
+const price = 0.1 + 0.2;
+console.log(price === 0.3); // false
+```
+
+答案：浮点误差问题；涉及金额时用整数分单位计算或 `BigInt`。

@@ -1,4 +1,6 @@
 ---
+> 前置：先掌握对象（026）与函数基础；形式化定义部分为【高阶选读】。
+
 order: 320
 title: 原型链继承与class本质
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: JavaScript原型链继承机制与class语法糖本质深度解析。
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-03'
 related:
   - 'javascript/030-AsyncProgramming'
   - 'javascript/031-ClosureMemoryLeakOptimization'

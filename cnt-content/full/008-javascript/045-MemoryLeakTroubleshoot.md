@@ -1,4 +1,6 @@
 ---
+> 前置：先读 031 闭包内存与 057 内存管理；本篇为【进阶专题】。
+
 order: 450
 title: 内存泄漏排查
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: JavaScript内存泄漏排查详解：Chrome DevTools Memory面板、堆快照、分配时间线。
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-03'
 related:
   - 'javascript/043-Regex'
   - 'javascript/044-ErrorBoundaryGlobalErrorCatch'

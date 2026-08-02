@@ -1,4 +1,6 @@
 ---
+> 前置：需先有正则基础（043）。
+
 order: 130
 title: 具名捕获组
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: 正则表达式具名捕获组的形式语义、工程实践与生产级应用
 author: fanquanpp
-updated: '2026-07-20'
+updated: '2026-08-03'
 related:
   - 'javascript/011-ObjectReference'
   - 'javascript/012-EventLoop'

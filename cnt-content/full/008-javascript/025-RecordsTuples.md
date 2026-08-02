@@ -1,4 +1,6 @@
 ---
+> 里程碑标注：提案内容，浏览器支持有限，建议了解即可。
+
 order: 250
 title: Records与Tuples
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: TC39 Record与Tuple不可变数据提案
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'javascript/023-IteratorHelper'
   - 'javascript/024-YouDonTKnowJSAsyncPerformance'

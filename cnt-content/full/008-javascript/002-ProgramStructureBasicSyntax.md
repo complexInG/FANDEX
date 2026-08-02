@@ -1163,3 +1163,34 @@ alert("操作成功");
     let y = 2;
 }
 ```
+
+## 练习：修 Bug（先找错，再看答案）
+
+1. 下面的代码输出什么？为什么？
+
+```javascript
+console.log(name);
+var name = 'Alice';
+```
+
+答案：输出 `undefined`（不是报错）。`var` 声明会被提升，但赋值留在原地；用 `let`/`const` 会直接报错，更安全。
+
+2. 这段代码有什么问题？
+
+```javascript
+function add(a, b) {
+  return
+    a + b;
+}
+```
+
+答案：`return` 后自动插入分号，函数永远返回 `undefined`。把表达式写在 `return` 同一行。
+
+3. 严格模式下有什么不同？
+
+```javascript
+'use strict';
+undeclared = 1;
+```
+
+答案：给未声明变量赋值在严格模式下会抛 `ReferenceError`；非严格模式会静默创建全局变量。

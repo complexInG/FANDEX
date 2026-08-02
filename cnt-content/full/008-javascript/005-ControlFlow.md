@@ -1753,3 +1753,35 @@ function validate(value) {
     }
 }
 ```
+
+## 练习：修 Bug（先找错，再看答案）
+
+1. 下面的 `if` 判断哪里不对？
+
+```javascript
+if (user = null) {
+  console.log('未登录');
+}
+```
+
+答案：`=` 是赋值不是比较，条件恒为 `null`（falsy）。应为 `user === null`，并考虑用可选链。
+
+2. 循环里滥用 try/catch：
+
+```javascript
+for (let i = 0; i < 1e6; i++) {
+  try {
+    risky(i);
+  } catch (e) { /* ... */ }
+}
+```
+
+答案：try/catch 可能阻碍 JIT 优化；先校验参数，只在真正可能抛错的边界用 try/catch。
+
+3. 短路求值写反：
+
+```javascript
+const name = '用户' && getName();
+```
+
+答案：`'用户'` 是 truthy，`&&` 返回 `getName()` 的结果——这与“缺省值”意图相反。想给默认值用 `??` 或 `||`：`const name = getName() ?? '用户'`。

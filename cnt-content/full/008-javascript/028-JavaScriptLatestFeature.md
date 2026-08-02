@@ -1,4 +1,6 @@
 ---
+> 里程碑标注：新特性速览，先掌握 ES6 基础（036）再读。
+
 order: 280
 title: JavaScript 最新特性与运行时
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: ES2024-2026 新特性、V8 引擎原理、Node.js 22+、Deno 2.0、Bun 运行时与 WebAssembly 进阶。
 author: fanquanpp
-updated: '2026-07-21'
+updated: '2026-08-03'
 related:
   - 'javascript/026-ObjectArray'
   - 'javascript/027-DOMOperationEvent'

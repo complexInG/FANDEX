@@ -1,4 +1,6 @@
 ---
+> 阅读建议：先掌握柯里化“是什么、怎么用”；性能分析章节为【进阶原理】。
+
 order: 80
 title: 柯里化与偏函数
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: 函数柯里化与偏函数应用的数学基础、形式语义、工程实现与生产级应用
 author: fanquanpp
-updated: '2026-07-20'
+updated: '2026-08-03'
 related:
   - 'javascript/006-HigherOrderFunction'
   - 'javascript/007-LinearGeneticProgramming'

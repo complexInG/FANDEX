@@ -1,4 +1,6 @@
 ---
+> 里程碑标注：新 API 提案内容，建议学习 6 个月后再读；现阶段可先用date-fns/moment 替代。
+
 order: 220
 title: Temporal
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: TC39 Temporal 现代日期时间 API——类型体系、时区算法、历法支持、Duration 运算与工程实践
 author: fanquanpp
-updated: '2026-07-20'
+updated: '2026-08-03'
 related:
   - 'javascript/020-StorageForTheWeb'
   - 'javascript/021-IndexedDBADatabaseInYourBrowser'

@@ -1,4 +1,6 @@
 ---
+> 里程碑标注：建议先掌握数组方法与生成器（009）后再读。
+
 order: 230
 title: 迭代器帮助器
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: Iterator Helpers提案详解
 author: fanquanpp
-updated: '2026-07-20'
+updated: '2026-08-03'
 related:
   - 'javascript/021-IndexedDBADatabaseInYourBrowser'
   - 'javascript/024-YouDonTKnowJSAsyncPerformance'

@@ -1,4 +1,6 @@
 ---
+> 前置：需先有正则基础（043）。
+
 order: 150
 title: Unicode属性转义
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: 正则表达式 Unicode 属性转义机制、形式语义、性能调优与生产实践
 author: fanquanpp
-updated: '2026-07-20'
+updated: '2026-08-03'
 related:
   - 'javascript/013-ES2018RegExpNamedCaptureGroups'
   - 'javascript/014-Assert'

@@ -1,4 +1,6 @@
 ---
+> 阅读建议：核心必读。形式化模型可先跳过，重点看执行顺序示例与对比表；反复读直到能口算执行顺序。
+
 order: 120
 title: 事件循环
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: JavaScript 事件循环模型——HTML 规范、Node.js 实现、微任务/宏任务、渲染调度
 author: fanquanpp
-updated: '2026-07-20'
+updated: '2026-08-03'
 related:
   - 'javascript/010-ExploringES6ProxiesAndReflect'
   - 'javascript/011-ObjectReference'
@@ -1797,3 +1799,27 @@ setInterval(() => {
 | --- | --- | --- | --- |
 | 1.0 | 2026-06-14 | 初始版本 | fanquanpp |
 | 2.0 | 2026-07-20 | 金标准升级：新增 HTML 规范处理模型、Node.js libuv 阶段、rAF/rIC 调度、微任务优先级、案例研究（React Fiber/Vue nextTick）、习题、参考文献 | FANDEX Content Engineering Team |
+
+## 手推执行时序（先写答案，再跑代码验证）
+
+请按“同步栈 → 微任务队列 → 宏任务队列”手动推演下面的输出顺序：
+
+```javascript
+console.log('A');
+setTimeout(() => console.log('B'), 0);
+Promise.resolve().then(() => console.log('C'));
+console.log('D');
+```
+
+预期输出：`A D C B`。理由：同步代码先执行（A、D）；微任务（Promise.then）在同步栈清空后、下一个宏任务前执行（C）；`setTimeout` 是宏任务，最后执行（B）。
+
+**执行时序表（浏览器）**：
+
+| 队列 | 示例 | 执行时机 |
+| --- | --- | --- |
+| 同步栈 | 普通函数调用 | 当前任务立即执行 |
+| 微任务 | Promise.then / queueMicrotask | 同步栈清空后立即执行 |
+| 宏任务 | setTimeout / 事件回调 | 每个宏任务之间执行所有微任务 |
+| 渲染 | requestAnimationFrame | 渲染前执行，与屏幕刷新同步 |
+
+记住一句话：**微任务清空后才轮到下一个宏任务**。遇到 async/await 时，await 后面的代码相当于 `.then` 回调，也进微任务。

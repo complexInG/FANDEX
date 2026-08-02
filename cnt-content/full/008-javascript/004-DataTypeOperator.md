@@ -1560,3 +1560,38 @@ let isNan = Number.isNaN(value);
 // 保留指定小数位
 let fixed = (3.14159).toFixed(2);
 ```
+
+## 练习：修 Bug（先找错，再看答案）
+
+1. 这段 switch 有什么问题？
+
+```javascript
+const color = 'red';
+switch (color) {
+  case 'red':
+    console.log('红色');
+  case 'blue':
+    console.log('蓝色');
+}
+```
+
+答案：缺少 `break`，会“穿透”同时输出两行。每个分支记得 `break` 或 `return`。
+
+2. 循环漏了元素？
+
+```javascript
+const items = [10, 20, 30];
+for (let i = 1; i < items.length; i++) {
+  console.log(items[i]);
+}
+```
+
+答案：从 1 开始漏掉了第一个元素；应为 `let i = 0`（或 `for...of`）。
+
+3. 运算符优先级陷阱：
+
+```javascript
+const n = 1 + 2 * 3; // ?
+```
+
+答案：`7`，乘法先于加法。不确定优先级时加括号。

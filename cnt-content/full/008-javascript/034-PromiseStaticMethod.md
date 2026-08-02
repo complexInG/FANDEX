@@ -1,4 +1,6 @@
 ---
+> 前置：先读 030 异步编程，掌握 Promise 基本用法。
+
 order: 340
 title: Promise静态方法
 module: 'javascript'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: Promise静态方法详解：allSettled、any、withResolvers及传统方法对比。
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-03'
 related:
   - 'javascript/032-PrototypeChainClassEssence'
   - 'javascript/033-EventLoopDetailed'
