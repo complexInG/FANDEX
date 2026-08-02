@@ -70,6 +70,20 @@
           "desc": "渲染层与 z-index 的真相",
           "difficulty": "advanced",
           "doc": "012-StackingContext"
+        },
+        {
+          "id": "css-032",
+          "title": "列表样式",
+          "desc": "list-style 系列属性与标记定制",
+          "difficulty": "beginner",
+          "doc": "053-CSSListStyle"
+        },
+        {
+          "id": "css-033",
+          "title": "表格样式",
+          "desc": "border-collapse、table-layout 与表格美化",
+          "difficulty": "beginner",
+          "doc": "054-CSSTableStyling"
         }
       ]
     },
@@ -245,6 +259,13 @@
           "desc": "对比度、焦点样式与减少动效",
           "difficulty": "intermediate",
           "doc": "052-AccessibleStyling"
+        },
+        {
+          "id": "css-034",
+          "title": "CSS 计数器",
+          "desc": "counter-reset/increment 与自动编号",
+          "difficulty": "intermediate",
+          "doc": "055-CSSCounters"
         }
       ]
     }
