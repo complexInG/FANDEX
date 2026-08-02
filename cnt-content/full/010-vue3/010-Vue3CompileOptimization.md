@@ -370,7 +370,7 @@ function render() {
 ### 自定义编译优化
 
 ```javascript
-// vue.config.js 或 vite.config.js 中配置编译选项
+// vite.config.ts 中配置编译选项
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 

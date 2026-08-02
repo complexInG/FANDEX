@@ -173,9 +173,9 @@ flowchart TD
 ```json
  {
   "compilerOptions": {
-  "target": "ES2020",
-  "module": "commonjs",
-  "moduleResolution": "node",
+  "target": "ES2022",
+  "module": "esnext",
+  "moduleResolution": "bundler",
   "lib": ["ES2020", "DOM"],
   "strict": true,
   "esModuleInterop": true,
@@ -247,9 +247,9 @@ flowchart TD
 ```json
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "strict": true,
     "esModuleInterop": true,
@@ -270,9 +270,9 @@ flowchart TD
 ```json
  {
   "compilerOptions": {
-  "target": "ES2020",
-  "module": "commonjs",
-  "moduleResolution": "node",
+  "target": "ES2022",
+  "module": "nodenext",
+  "moduleResolution": "nodenext",
   "lib": ["ES2020"],
   "strict": true,
   "esModuleInterop": true,

@@ -577,9 +577,9 @@ npx tsc
 ```json
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "node",
+"target": "ES2020",
+"module": "ESNext",
+"moduleResolution": "bundler",
     "strict": true,
     "lib": ["ES2020", "DOM"],
     "declaration": true,

@@ -273,9 +273,9 @@ $\blacksquare$
 {
   "compilerOptions": {
     // 目标与模块
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "node",
+"target": "ES2022",
+"module": "ESNext",
+"moduleResolution": "bundler",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
 

@@ -188,9 +188,9 @@ npm install @types/node --save-dev
 {
   "compilerOptions": {
     // 语言与目标
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "node",
+"target": "ES2020",
+"module": "ESNext",
+"moduleResolution": "bundler",
     "esModuleInterop": true,
 
     // 渐进式迁移核心配置
@@ -1962,9 +1962,9 @@ module.exports = {
 ```jsonc
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "node",
+"target": "ES2020",
+"module": "ESNext",
+"moduleResolution": "bundler",
     "esModuleInterop": true,
     "allowJs": true,
     "checkJs": false,

@@ -919,9 +919,9 @@ if (value3 !== undefined) {
 // tsconfig.json - 遗留项目渐进式迁移
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+"target": "ES2020",
+"module": "CommonJS",
+"moduleResolution": "node", // 遗留 CJS 项目暂用 node10，迁移完成后切换到 nodenext
     "strict": false,
 
     /* 第一阶段：仅启用 strictNullChecks */

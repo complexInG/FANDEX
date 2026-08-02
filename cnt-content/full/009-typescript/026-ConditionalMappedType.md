@@ -1155,7 +1155,7 @@ type Keys = DeepKeyOf<LargeApplicationConfig>; // 假设有 1000 个嵌套属性
 - 优化 1：把结果缓存到类型别名 `type CachedKeys = DeepKeyOf<LargeApplicationConfig>`，避免重复求值。
 - 优化 2：限制递归深度，如 `DeepKeyOf<T, Depth extends number = 3>`。
 - 优化 3：拆分为多个小类型，让 IDE 增量编译受益。
-- 优化 4：用 `// @ts-ignore` 在热路径上跳过类型检查，或用泛型参数延迟实例化。
+- 优化 4：避免用 `@ts-ignore` 跳过检查（会掩盖真实错误）；必要时用 `// @ts-expect-error` 精确标注，或改用泛型参数延迟实例化。
 
 ### 官方文档
 

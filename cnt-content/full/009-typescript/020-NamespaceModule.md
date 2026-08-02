@@ -465,17 +465,17 @@ namespace App {
     // Classic: 适用于旧项目，不推荐
     // "moduleResolution": "classic"
 
-    // Node: 适用于 CommonJS 项目，TypeScript 默认
-    // 解析逻辑与 Node.js 的 require 一致
-    "moduleResolution": "node"
+// Node (node10): 遗留策略，TypeScript 5.x 前的默认值
+// 解析逻辑与 Node.js 的 require 一致
+// "moduleResolution": "node"
 
-    // Node16/Nodenext: 适用于 Node.js 12+ 的 ESM 项目
-    // 严格区分 .mjs 与 .cjs，支持 package.json 的 exports 字段
-    // "moduleResolution": "nodenext"
+// Node16/Nodenext: 适用于 Node.js ESM 项目
+// 严格区分 .mjs 与 .cjs，支持 package.json 的 exports 字段
+// "moduleResolution": "nodenext"
 
-    // Bundler: 适用于 Webpack/Vite 等构建工具
-    // 允许 import 不带扩展名，支持 package.json exports
-    // "moduleResolution": "bundler"
+// Bundler: 推荐用于 Vite/webpack 等构建工具
+// 允许 import 不带扩展名，支持 package.json exports
+"moduleResolution": "bundler"
   }
 }
 
@@ -1520,7 +1520,7 @@ export default myLib;
      "compilerOptions": {
        "baseUrl": ".",
        "paths": { "@components/*": ["src/components/*"] },
-       "moduleResolution": "node"
+"moduleResolution": "bundler"
      }
    }
    ```

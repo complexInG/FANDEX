@@ -2779,11 +2779,11 @@ interface ImportMeta {
 
 ## 模块解析
 
-**基本写法：node 解析策略**
-`"moduleResolution": "node"`
+**基本写法：bundler 解析策略（现代构建工具推荐）**
+`"moduleResolution": "bundler"`
 ```typescript
-// tsconfig 配置 node 经典解析
-// 查找 node_modules 文件扩展名
+// tsconfig 配置 bundler 解析
+// 允许省略扩展名，支持 package.json exports
 ```
 
 ---

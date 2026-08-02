@@ -30,28 +30,18 @@ Vue3 项目需要 Node.js 环境，推荐安装最新的 LTS 版本：
  npm -v
 ```
 
-### 1.2 安装 Vue CLI 或 Vite
+### 1.2 安装官方脚手架（基于 Vite）
 
-#### 使用 Vite（推荐）
-
-Vite 是 Vue 官方推荐的构建工具，速度更快：
+Vue 官方推荐使用 create-vue 脚手架，底层基于 Vite，交互式选择 TypeScript、Router、Pinia 等选项：
 
 ```bash
- # 安装 create-vite@latest
- npm create vite@latest
- # 按照提示创建 Vue3 项目
- # 选择 Vue + TypeScript 模板获取最佳开发体验
+ # 官方脚手架（推荐）
+ npm create vue@latest
+ # 通用 Vite 模板（轻量替代）
+ npm create vite@latest my-vue3-app -- --template vue
 ```
 
-#### 使用 Vue CLI
-
-```bash
- # 安装 Vue CLI
- npm install -g @vue/cli
- # 创建 Vue3 项目
- Vue create my-vue3-project
- # 选择 Vue 3 预设
-```
+Vue CLI（@vue/cli）已停止新功能开发，仅用于维护存量项目，新项目不应使用。
 
 ## 2. 项目结构
 
