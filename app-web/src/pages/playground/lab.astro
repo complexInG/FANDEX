@@ -1,0 +1,27 @@
+---
+/**
+ * 编程与算法练习页面
+ *
+ * 功能概述：
+ *   - 内置算法题目 + 多语言（JS/TS/Python/C/C++）浏览器内运行
+ *   - 自动用例测试、练习记录与代码草稿本地持久化
+ */
+import HomeLayout from '@/components/HomeLayout.astro'
+import SEO from '@/components/SEO.astro'
+import CodeLab from '@/islands/playground/CodeLab'
+import { SITE } from '@/lib/constants'
+import '@/styles/islands/playground.css'
+
+const base = import.meta.env.BASE_URL
+---
+
+<HomeLayout title="编程与算法练习">
+  <SEO
+    slot="head"
+    title="编程与算法练习 · FANDEX"
+    description="FANDEX 编程与算法练习：内置经典算法题目，支持 JavaScript、TypeScript、Python、C、C++ 五种语言，浏览器内直接运行测试并保存练习记录。"
+    canonical={`${SITE.url}${base}playground/lab/`}
+    type="website"
+  />
+  <CodeLab client:load />
+</HomeLayout>

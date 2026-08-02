@@ -14,7 +14,7 @@
     "fg": {
       "primary": { "$value": "{color.neutral.50}", "$description": "主文字（近黑）" },
       "secondary": { "$value": "{color.neutral.500}", "$description": "二级文字" },
-      "tertiary": { "$value": "{color.neutral.600}", "$description": "三级文字" },
+      "tertiary": { "$value": "{color.neutral.550}", "$description": "三级文字（浅色专用，深色模式保持 neutral.600）" },
       "disabled": { "$value": "{color.neutral.800}", "$description": "禁用态文字" },
       "inverse": { "$value": "{color.neutral.1050}", "$description": "反色文字（用于深色背景）" }
     },

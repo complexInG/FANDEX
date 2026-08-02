@@ -9,22 +9,22 @@
  * - 色阶令牌（primary-50~950 等）：保留原硬编码值，确保 bg-primary-500 等
  *   工具类在迁移过渡期视觉一致
  * - 语义令牌（text/bg/border/success/warning/error/info）：完全映射到 ark
- *   语义令牌，通过 light-dark() 实现双主题自动切换
+ *   语义令牌，通过 ark 的 [data-theme] 选择器方案实现双主题自动切换
  * - 非颜色令牌（font/radius/shadow/spacing/duration/ease）：映射到 ark 令牌
  * - z-index 令牌：保留原值（ark 未定义层级体系）
  *
  * 主题切换机制：
- * - ark 令牌使用 CSS light-dark() 函数，由 :root 的 color-scheme 驱动
- * - shd-shared/styles/theme.css 管理 color-scheme 声明
+ * - ark 令牌使用 [data-theme] 选择器方案，由 color-scheme 驱动
+ * - app-web/src/styles/shared/theme.css 管理 color-scheme 声明
  * - [data-theme="dark"] 强制深色，[data-theme="light"] 强制浅色
  * - 本文件不再需要 [data-theme='dark'] 和 @media (prefers-color-scheme: dark)
- *   重复定义，主题切换由 ark 令牌的 light-dark() 自动处理
+ *   重复定义，主题切换由 ark 令牌的 [data-theme] 方案自动处理
  *
  * 引用链路：
  * 组件 var(--fandex-color-text-primary)
  *   → ark var(--color-fg-primary)
- *   → light-dark(var(--color-neutral-50), var(--color-neutral-1050))
- *   → #0A0A0A (浅色) / #FFFFFF (深色)
+ *   → [data-theme='light'] 取 var(--color-neutral-50) / [data-theme='dark'] 取 var(--color-neutral-1050)
+ *   → #0A0E14 (浅色) / #EBEFF3 (深色)
  */
 
 /* ====================================================================
@@ -34,8 +34,8 @@
    必须包裹在 @layer tokens 中，确保：
    1. 优先级低于 unlayered CSS，但高于 @theme 层
    2. Tailwind v4 解析器能正确处理 var() 引用链
-   3. 主题切换时 light-dark() 函数能正常工作
-   无需 [data-theme='dark'] 覆盖，由 ark 的 light-dark() 自动处理。
+   3. 主题切换由 ark 的 [data-theme] 选择器方案自动处理
+   无需 [data-theme='dark'] 覆盖，由 theme.css 统一管理。
    ==================================================================== */
 @layer tokens {
 :root {
@@ -43,7 +43,7 @@
      1.1 颜色 Tokens — 色阶层（FANDEX 品牌色阶）
      ------------------------------------------------------------
      说明：色阶令牌使用 FANDEX 品牌设计系统色值（冷青-青绿色阶）。
-     浅色模式：primary #0E8C9C，深色模式：accent #00C8F0（主色反转）。
+     浅色模式：primary #0B6E7E（Task 4.2 起以 primary-700 为强调色基准），深色模式：accent #00C8F0（主色反转）。
      引用 shd-shared primitive 层令牌，确保三端色板一致。
      ============================================================ */
 
@@ -84,11 +84,11 @@
   --fandex-color-accent-900: var(--color-accent-900, #002D38);
 
   /* --- 基础色板：Neutral（FANDEX 冷青底灰，替代 Slate 石板灰） --- */
-  --fandex-color-neutral-50: var(--color-neutral-1050, #F2F5F7);
-  --fandex-color-neutral-100: var(--color-neutral-1000, #E8EDF1);
-  --fandex-color-neutral-200: var(--color-neutral-950, #E2E8EC);
-  --fandex-color-neutral-300: var(--color-neutral-900, #D5DDE3);
-  --fandex-color-neutral-400: var(--color-neutral-800, #C5D0D8);
+  --fandex-color-neutral-50: var(--color-neutral-1050, #EBEFF3);
+  --fandex-color-neutral-100: var(--color-neutral-1000, #E2E8EC);
+  --fandex-color-neutral-200: var(--color-neutral-950, #DAE1E6);
+  --fandex-color-neutral-300: var(--color-neutral-900, #CCD5DB);
+  --fandex-color-neutral-400: var(--color-neutral-800, #BCC8D0);
   --fandex-color-neutral-500: var(--color-neutral-700, #9FADB9);
   --fandex-color-neutral-600: var(--color-neutral-600, #6E7E8B);
   --fandex-color-neutral-700: var(--color-neutral-500, #4E5E6B);
@@ -100,7 +100,7 @@
      1.2 颜色 Tokens — 语义层（映射 ark 语义令牌）
      ------------------------------------------------------------
      通过引用 ark 语义令牌，实现双主题自动切换。
-     ark 令牌使用 light-dark() 函数，由 color-scheme 驱动。
+     ark 令牌使用 [data-theme] 选择器方案，由 color-scheme 驱动。
      ============================================================ */
 
   /* --- 语义色：Success（映射 ark success） --- */
@@ -245,9 +245,9 @@
   --fandex-radius-full: var(--radius-full);
 
   /* ============================================================
-     1.6 阴影 Tokens（映射 ark shadow 令牌）
+    1.6 阴影 Tokens（映射 ark shadow 令牌）
      ------------------------------------------------------------
-     ark 阴影令牌已包含 light-dark() 双主题处理，
+     ark 阴影令牌已包含 [data-theme] 双主题处理，
      无需在此处为暗色模式单独定义。
      ============================================================ */
   --fandex-shadow-xs: var(--shadow-xs);

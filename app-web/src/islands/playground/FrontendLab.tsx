@@ -34,14 +34,14 @@ import {
   savePen,
   savePenDraft,
 } from './pg-storage';
-import type { ConsoleEntry, FrontendLayout, FrontendPen } from './types';
+import type { ConsoleEntry, FrontendPen } from './types';
 
 /** 默认草稿模板 */
 const DEFAULT_TEMPLATE: FrontendPen = {
   id: 'draft',
   title: '未命名作品',
   html: '<h1>你好，FANDEX</h1>\n<button id="demo">点我</button>\n<p id="tip">打开控制台查看输出</p>',
-  css: 'body {\n  font-family: var(--font-body, sans-serif);\n  text-align: center;\n  padding: 40px 16px;\n}\nbutton {\n  padding: 8px 20px;\n  border-radius: 8px;\n  border: 1px solid #0E8C9C;\n  background: #E6FBFC;\n  color: #0B6E7E;\n  cursor: pointer;\n}',
+  css: 'body {\n  font-family: var(--font-body, sans-serif);\n  text-align: center;\n  padding: 40px 16px;\n}\nbutton {\n  padding: 8px 20px;\n  border-radius: 8px;\n  border: 1px solid #0B6E7E;\n  background: #E6FBFC;\n  color: #0B6E7E;\n  cursor: pointer;\n}',
   js: "const tip = document.getElementById('tip');\nconst btn = document.getElementById('demo');\nbtn.addEventListener('click', () => {\n  tip.textContent = '点击次数 +1';\n  console.log('按钮被点击');\n});\nconsole.log('预览已就绪');",
   autoRun: true,
   layout: 'left',
@@ -154,6 +154,13 @@ function FrontendLab() {
   }, []);
 
   /**
+   * 同步当前作品字节估算（用于本地占用提示）
+   */
+  useEffect(() => {
+    setPenBytes(estimatePenBytes(pen));
+  }, [pen]);
+
+  /**
    * 自动保存（防抖）：草稿与作品库记录都实时落盘
    */
   useEffect(() => {
@@ -201,14 +208,11 @@ function FrontendLab() {
   }, []);
 
   /**
-   * 更新作品内容的通用入口（同步估算字节数）
+   * 更新作品内容的通用入口
+   * 字节估算由上方独立 effect 随 pen 变化同步，无需在此处重复计算
    */
   const updatePen = useCallback((patch: Partial<FrontendPen>) => {
-    setPen((prev) => {
-      const next = { ...prev, ...patch };
-      setPenBytes(estimatePenBytes(next));
-      return next;
-    });
+    setPen((prev) => ({ ...prev, ...patch }));
   }, []);
 
   /**
@@ -224,9 +228,13 @@ function FrontendLab() {
    */
   const handleSaveAsNew = useCallback(async () => {
     const now = Date.now();
+    const newId =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `pen-${now}-${Math.random().toString(36).slice(2, 10)}`;
     const newPen: FrontendPen = {
       ...pen,
-      id: crypto.randomUUID(),
+      id: newId,
       title: pen.title.trim() || '未命名作品',
       createdAt: now,
       updatedAt: now,
@@ -241,22 +249,19 @@ function FrontendLab() {
    * 新建空白草稿（会覆盖当前未另存的编辑内容，需用户确认）
    */
   const handleNewDraft = useCallback(() => {
-    if (
-      pen.id !== 'draft' ||
-      (pen.html === DEFAULT_TEMPLATE.html && pen.css === DEFAULT_TEMPLATE.css && pen.js === DEFAULT_TEMPLATE.js)
-    ) {
-      setPen({ ...DEFAULT_TEMPLATE, lastOpenedAt: Date.now() });
-      setPreviewDoc(buildPreviewDoc(DEFAULT_TEMPLATE));
-      setRunId((n) => n + 1);
-      setConsoleEntries([]);
-      return;
-    }
-    if (window.confirm('当前草稿尚未另存为作品，新建会覆盖草稿，是否继续？')) {
-      setPen({ ...DEFAULT_TEMPLATE, lastOpenedAt: Date.now() });
-      setPreviewDoc(buildPreviewDoc(DEFAULT_TEMPLATE));
-      setRunId((n) => n + 1);
-      setConsoleEntries([]);
-    }
+    const isTemplate =
+      pen.html === DEFAULT_TEMPLATE.html && pen.css === DEFAULT_TEMPLATE.css && pen.js === DEFAULT_TEMPLATE.js;
+    const needsConfirm =
+      pen.id !== 'draft'
+        ? '当前正在编辑作品库中的作品，新建草稿不会影响已保存的作品，是否继续？'
+        : !isTemplate
+          ? '当前草稿尚未另存为作品，新建会覆盖草稿内容，是否继续？'
+          : '';
+    if (needsConfirm && !window.confirm(needsConfirm)) return;
+    setPen({ ...DEFAULT_TEMPLATE, lastOpenedAt: Date.now() });
+    setPreviewDoc(buildPreviewDoc(DEFAULT_TEMPLATE));
+    setRunId((n) => n + 1);
+    setConsoleEntries([]);
   }, [pen]);
 
   /**
@@ -299,6 +304,8 @@ function FrontendLab() {
   const handleSplitStart = useCallback(
     (e: ReactPointerEvent<HTMLDivElement>) => {
       e.preventDefault();
+      // 捕获指针，保证拖拽移出分隔条后仍能持续更新比例
+      e.currentTarget.setPointerCapture(e.pointerId);
       dragRef.current = {
         start: pen.layout === 'left' ? e.clientX : e.clientY,
         value: split,

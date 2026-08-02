@@ -7,22 +7,22 @@
  *
  * 迁移策略：
  * - 颜色令牌（primary/bg/text/border/success 等）：完全映射到 ark 语义令牌
- *   通过 light-dark() 实现双主题自动切换，无需 [data-theme='dark'] 重复定义
+ *   通过 ark 的 [data-theme] 选择器方案实现双主题自动切换，无需重复定义
  * - 非颜色令牌（spacing/font/shadow/transition）：映射到 ark 令牌
  * - 布局尺寸（content-width/nav-height/sidebar-width）：保留原值（ark 未定义布局概念）
- * - 几何装饰变量（geo-*）：使用 light-dark() 合并双主题，派生自装饰色值
+ * - 几何装饰变量（geo-*）：由 [data-theme] 选择器合并双主题，派生自装饰色值
  *
  * 主题切换机制：
- * - 所有颜色令牌通过 ark 的 light-dark() 函数自动处理双主题
- * - 由 :root 的 color-scheme: light dark 驱动（在 shd-shared/styles/theme.css 声明）
+ * - 所有颜色令牌通过 ark 的 [data-theme] 选择器方案自动处理双主题
+ * - 由 :root 的 color-scheme 驱动（在 app-web/src/styles/shared/theme.css 声明）
  * - [data-theme="dark"] 强制深色，[data-theme="light"] 强制浅色
  * - 本文件不再需要 [data-theme='dark'] 块重复定义
  *
  * 引用链路：
  * 组件 var(--color-text)
  *   → ark var(--color-fg-primary)
- *   → light-dark(var(--color-neutral-50), var(--color-neutral-1050))
- *   → #0A0A0A (浅色) / #FFFFFF (深色)
+ *   → [data-theme='light'] 取 var(--color-neutral-50) / [data-theme='dark'] 取 var(--color-neutral-1050)
+ *   → #0A0E14 (浅色) / #EBEFF3 (深色)
  */
 
 /* ====================================================================
@@ -31,9 +31,9 @@
    所有令牌在 @layer tokens 的 :root 中定义，值引用 ark 语义令牌或保留原值。
    必须包裹在 @layer tokens 中，确保：
    1. 优先级正确（低于 unlayered CSS，但高于 @theme 层）
-   2. Tailwind v4 解析器能正确处理 var() 引用链和 light-dark() 函数
-   3. 主题切换时 light-dark() 函数能正常工作
-   无需 [data-theme='dark'] 覆盖，由 ark 的 light-dark() 自动处理。
+   2. Tailwind v4 解析器能正确处理 var() 引用链
+   3. 主题切换由 ark 的 [data-theme] 选择器方案自动处理
+   无需 [data-theme='dark'] 覆盖，由 theme.css 统一管理。
    ==================================================================== */
 @layer tokens {
 :root {

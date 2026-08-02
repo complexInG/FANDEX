@@ -1,0 +1,27 @@
+---
+/**
+ * 前端效果实验页面
+ *
+ * 功能概述：
+ *   - CodePen 风格三栏编辑器（HTML/CSS/JS）+ 实时预览 + 控制台
+ *   - 编辑内容自动保存到浏览器 IndexedDB，支持本地作品库管理
+ */
+import HomeLayout from '@/components/HomeLayout.astro'
+import SEO from '@/components/SEO.astro'
+import FrontendLab from '@/islands/playground/FrontendLab'
+import { SITE } from '@/lib/constants'
+import '@/styles/islands/playground.css'
+
+const base = import.meta.env.BASE_URL
+---
+
+<HomeLayout title="前端效果实验">
+  <SEO
+    slot="head"
+    title="前端效果实验 · FANDEX"
+    description="FANDEX 前端效果实验：同时编写 HTML、CSS 与 JavaScript，实时预览效果，内置控制台，作品自动保存在本地浏览器。"
+    canonical={`${SITE.url}${base}playground/frontend/`}
+    type="website"
+  />
+  <FrontendLab client:load />
+</HomeLayout>

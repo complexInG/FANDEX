@@ -138,6 +138,8 @@
         "frontend"
       ],
       "folder_order": 6,
+      "updatePriority": true,
+      "updateNote": "重点更新模块",
       "officialDocs": [
         {
           "label": "WHATWG 规范",
@@ -165,6 +167,8 @@
         "frontend"
       ],
       "folder_order": 7,
+      "updatePriority": true,
+      "updateNote": "重点更新模块",
       "officialDocs": [
         {
           "label": "MDN 文档",
@@ -192,6 +196,8 @@
         "frontend"
       ],
       "folder_order": 8,
+      "updatePriority": true,
+      "updateNote": "重点更新模块",
       "officialDocs": [
         {
           "label": "MDN 文档",
@@ -219,6 +225,8 @@
         "frontend"
       ],
       "folder_order": 9,
+      "updatePriority": true,
+      "updateNote": "重点更新模块",
       "officialDocs": [
         {
           "label": "官方文档",
@@ -327,6 +335,8 @@
         "backend"
       ],
       "folder_order": 13,
+      "updatePriority": true,
+      "updateNote": "重点更新模块",
       "officialDocs": [
         {
           "label": "官方文档",
@@ -547,6 +557,8 @@
         "database"
       ],
       "folder_order": 20,
+      "updatePriority": true,
+      "updateNote": "重点更新模块",
       "officialDocs": [
         {
           "label": "官方文档",
@@ -649,6 +661,8 @@
         "cs"
       ],
       "folder_order": 25,
+      "updatePriority": true,
+      "updateNote": "重点更新模块",
       "officialDocs": [
         {
           "label": "cppreference C",
@@ -676,6 +690,8 @@
         "cs"
       ],
       "folder_order": 26,
+      "updatePriority": true,
+      "updateNote": "重点更新模块",
       "officialDocs": [
         {
           "label": "ISO C++ 官方",

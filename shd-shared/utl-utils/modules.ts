@@ -62,6 +62,10 @@ export interface Module {
   readonly description: string;
   /** 所属分类列表（一个模块可属于多个分类） */
   readonly categories: readonly string[];
+  /** 是否为重点更新模块（内容迭代时优先保障更新） */
+  readonly updatePriority?: boolean;
+  /** 重点更新备注（如 "重点更新模块"） */
+  readonly updateNote?: string;
   /** 官方文档/API/规范链接列表，仅编程语言模块填充 */
   readonly officialDocs?: readonly OfficialDoc[];
 }

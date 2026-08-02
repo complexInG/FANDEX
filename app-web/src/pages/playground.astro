@@ -1,36 +1,30 @@
 ---
 /**
- * 在线编程页面（占位）
- * -----------------------------------------------------------------------------
- * 功能规划：
- *   提供浏览器内代码编写与即时运行环境，支持多语言语法高亮与执行结果预览
+ * 在线编程实验场首页
  *
- * 当前状态：即将推出，使用 ComingSoon 组件呈现占位视图
- * 后续实现：替换为 Monaco/WebContainer 编辑器 + 运行沙箱
+ * 功能概述：
+ *   - 提供前端效果实验与编程算法练习两个入口
+ *   - 展示本地作品库统计、存储用量与最近记录（由 PlaygroundHub 岛组件加载）
+ *   - 所有数据仅保存在用户浏览器本地
  */
 import HomeLayout from '@/components/HomeLayout.astro'
 import SEO from '@/components/SEO.astro'
-import ComingSoon from '@/components/ComingSoon.astro'
+import PlaygroundHub from '@/islands/playground/PlaygroundHub'
 import { SITE } from '@/lib/constants'
+import '@/styles/islands/playground.css'
 
 const base = import.meta.env.BASE_URL
-
-// 终端图标（几何 stroke 风格）
-const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>`
 ---
 
-<HomeLayout title="在线编程">
+<HomeLayout title="在线编程实验场">
   <SEO
     slot="head"
-    title="在线编程 · FANDEX"
-    description="FANDEX 在线编程环境：浏览器内编写并运行代码，支持多语言语法高亮与即时结果预览。"
+    title="在线编程实验场 · FANDEX"
+    description="FANDEX 在线编程实验场：前端效果实验（HTML/CSS/JS 实时预览）与编程算法练习（多语言浏览器内运行测试），全部数据保存在本地。"
     canonical={`${SITE.url}${base}playground/`}
     type="website"
   />
-  <ComingSoon
-    title="在线编程"
-    description="浏览器内代码编写与即时运行环境，支持多语言语法高亮与执行结果预览。"
-    icon={icon}
-    accentColor="#10b981"
-  />
+  <div class="pg-page">
+    <PlaygroundHub client:load />
+  </div>
 </HomeLayout>

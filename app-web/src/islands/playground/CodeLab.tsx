@@ -18,7 +18,7 @@ import { PgIcon } from './pg-icons';
 import { DIFFICULTY_CLASS, EXERCISES, getExercise, getStarter, LAB_LANGUAGES, LAB_LANGUAGE_LABELS } from './exercises';
 import { buildHarness, parseRunSummary } from './pg-harness';
 import { labDraftKey, loadLabDraft, loadLabRecord, saveLabDraft, saveLabRecord } from './pg-storage';
-import { runCode, type CodeLanguage, type RunResult } from '@/services';
+import { runCode, type CodeLanguage, type RunResult } from '@/services/code-runner-service';
 import type { LabLanguage, LabRecord } from './types';
 
 /** 自动保存防抖时长（毫秒） */

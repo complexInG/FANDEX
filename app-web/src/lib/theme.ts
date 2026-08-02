@@ -27,8 +27,8 @@ export type Theme = 'light' | 'dark';
 /** 主题存储 key */
 export const THEME_STORAGE_KEY = 'fandex-theme';
 
-/** 亮色模式 theme-color 值（移动端浏览器 UI） */
-const THEME_COLOR_LIGHT = '#ffffff';
+/** 亮色模式 theme-color 值（移动端浏览器 UI，与 bg.primary 冷雾灰一致） */
+const THEME_COLOR_LIGHT = '#EBEFF3';
 
 /** 暗色模式 theme-color 值（移动端浏览器 UI） */
 const THEME_COLOR_DARK = '#0a0e14';

@@ -3,7 +3,7 @@
  *
  * 生成来源：shd-shared/tokens/ 下的 W3C DTCG JSON 令牌
  * 生成脚本：shd-shared/tokens/scripts/generate-tokens-css.ts
- * 生成时间：2026-07-24T15:01:51.479Z
+ * 生成时间：2026-08-02T01:09:26.663Z
  *
  * 令牌分层：
  * - primitive：原始值（颜色、间距、尺寸等原值，无语义）
@@ -40,26 +40,28 @@
     --color-neutral-400: #3A4753;
     /* FANDEX 二级文字（neutral-500） */
     --color-neutral-500: #4E5E6B;
+    /* FANDEX 浅色三级文字（冷雾灰，Task 4.2 配方：新背景上保持 WCAG AA ≥4.5:1） */
+    --color-neutral-550: #596671;
     /* FANDEX 三级文字（neutral-400） */
     --color-neutral-600: #6E7E8B;
     /* FANDEX 深色模式次级文字（neutral-300） */
     --color-neutral-700: #9FADB9;
-    /* FANDEX 浅色强边框（neutral-200） */
-    --color-neutral-800: #C5D0D8;
-    /* FANDEX 浅色默认边框 */
-    --color-neutral-900: #D5DDE3;
-    /* FANDEX 浅色弱边框/三级背景（neutral-100） */
-    --color-neutral-950: #E2E8EC;
-    /* FANDEX 浅色次背景（surface-container-low） */
-    --color-neutral-1000: #E8EDF1;
-    /* FANDEX 浅色主背景（neutral-50，冷青底浅灰） */
-    --color-neutral-1050: #F2F5F7;
-    /* 深青（active 态，FANDEX primary-800） */
-    --color-cyan-100: #085263;
-    /* 中深青（hover 态，浅色模式，FANDEX primary-700） */
-    --color-cyan-200: #0B6E7E;
-    /* 青色基准（浅色模式强调色，FANDEX primary-600） */
-    --color-cyan-300: #0E8C9C;
+    /* FANDEX 浅色强边框（冷雾灰） */
+    --color-neutral-800: #BCC8D0;
+    /* FANDEX 浅色默认边框（冷雾灰） */
+    --color-neutral-900: #CCD5DB;
+    /* FANDEX 浅色弱边框/三级背景（冷雾灰） */
+    --color-neutral-950: #DAE1E6;
+    /* FANDEX 浅色次背景（冷雾灰） */
+    --color-neutral-1000: #E2E8EC;
+    /* FANDEX 浅色主背景（冷雾灰，Task 4.2 配方：亮度 L* 97.9→94.3，主文字对比度 16.7:1） */
+    --color-neutral-1050: #EBEFF3;
+    /* 深青（active 态，浅色模式强调色整体下移一档，FANDEX primary-900） */
+    --color-cyan-100: #053645;
+    /* 中深青（hover 态，浅色模式，FANDEX primary-800） */
+    --color-cyan-200: #085263;
+    /* 青色基准（浅色模式强调色，Task 4.2：新背景上 WCAG AA 5.1:1，FANDEX primary-700） */
+    --color-cyan-300: #0B6E7E;
     /* 中亮青（active 态，深色模式，FANDEX accent-500） */
     --color-cyan-400: #00A6CC;
     /* 亮青（深色模式强调色，FANDEX accent-400） */
@@ -78,7 +80,7 @@
     --color-primary-400: #33C5D1;
     /* FANDEX primary-500 */
     --color-primary-500: #14B0BE;
-    /* FANDEX primary-600（主色） */
+    /* FANDEX primary-600（色阶过渡值，Task 4.2 起浅色强调色基准为 primary-700） */
     --color-primary-600: #0E8C9C;
     /* FANDEX primary-700 */
     --color-primary-700: #0B6E7E;
@@ -118,8 +120,8 @@
     --color-danger-light: #DC2626;
     /* 危险色（深色模式，提亮） */
     --color-danger-dark: #EF4444;
-    /* 信息色（浅色模式，同 FANDEX primary-600） */
-    --color-info-light: #0E8C9C;
+    /* 信息色（浅色模式，Task 4.2：同新强调色基准 FANDEX primary-700） */
+    --color-info-light: #0B6E7E;
     /* 信息色（深色模式，同 FANDEX accent-400） */
     --color-info-dark: #00C8F0;
     /* 阴影色（黑色基底） */
@@ -332,8 +334,8 @@
     --color-fg-primary: var(--color-neutral-50);
     /* 二级文字 */
     --color-fg-secondary: var(--color-neutral-500);
-    /* 三级文字 */
-    --color-fg-tertiary: var(--color-neutral-600);
+    /* 三级文字（浅色专用，深色模式保持 neutral.600） */
+    --color-fg-tertiary: var(--color-neutral-550);
     /* 禁用态文字 */
     --color-fg-disabled: var(--color-neutral-800);
     /* 反色文字（用于深色背景） */
