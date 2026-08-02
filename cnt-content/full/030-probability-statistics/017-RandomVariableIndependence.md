@@ -1,19 +1,20 @@
 ---
-order: 33
+order: 150
 title: 随机变量的独立性
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 随机变量独立性的定义、判定方法（定义法、分解法、条件分布法）、独立性的性质与应用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/边缘分布'
-  - 'probability-statistics/条件分布'
-  - 'probability-statistics/和的分布与极值分布'
+  - 'probability-statistics/015-MarginalDistribution'
+  - 'probability-statistics/016-ConditionalDistribution'
+  - 'probability-statistics/018-SumDistributionAndExtremeValueDistribution'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：两件事"互不影响"
 

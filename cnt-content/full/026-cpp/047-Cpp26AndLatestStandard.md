@@ -1,27 +1,21 @@
 ---
-order: 90
-tags:
-  - cpp
-  - c++26
-  - c++23
-  - c++20
-  - metaprogramming
-  - cmake
+order: 470
+title: C++26 与最新标准
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-title: 'C++26 与最新标准'
-module: cpp
-category: 'C++ Basics'
 description: C++26/23/20/17/14/11标准演进、虚函数表原理、RAII原则、模板元编程、CMake构建系统、vcpkg包管理。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/C++日期时间
-  - cpp/C++格式化输出
-  - cpp/STL容器与迭代器
-  - cpp/并发编程
+  - 'cpp/045-CppDateTime'
+  - 'cpp/046-CppFormatOutput'
+  - 'cpp/048-CSTL'
+  - 'cpp/049-ConcurrentProgramming'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 ## 1. C++26 标准（2026 年）
 

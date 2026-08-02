@@ -1,19 +1,20 @@
 ---
-order: 5
+order: 50
 title: 多媒体与设备能力
-module: harmonyos
-category: 鸿蒙开发
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 相机调用、音视频播放录制、传感器访问、位置服务、通知与后台任务、应用打包签名发布。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/UI组件与动画
-  - harmonyos/网络与数据持久化
-  - harmonyos/ArkTS语言特性
-  - harmonyos/状态管理
+  - 'harmonyos/003-UIComponentAnimation'
+  - 'harmonyos/004-NetworkAndPersistence'
+  - 'harmonyos/006-ArkTSLanguageFeature'
+  - 'harmonyos/007-StateManagement'
 prerequisites: []
 ---
+
 
 ## 1. 相机调用
 

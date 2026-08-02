@@ -1,112 +1,18 @@
 ---
-order: 63
+order: 200
 title: Web存储API
-module: javascript
-category: JavaScript
-tags:
-- JavaScript
-- Web存储
-- localStorage
-- sessionStorage
-- Cookie
-- IndexedDB
-- 浏览器存储
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
 description: 浏览器端存储机制的形式语义、安全模型、工程实践与生产级应用
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- javascript/浏览器对象模型
-- javascript/网络请求API
-- javascript/索引数据库
-- javascript/时间API
-- javascript/ServiceWorker
-prerequisites:
-- javascript/语法速查
-- javascript/浏览器对象模型
-- javascript/Promise与async
-references:
-- type: standard
-  authors:
-  - Ian Hickson
-  year: 2016
-  title: Web Storage (Second Edition) - W3C Recommendation
-  venue: W3C
-  url: https://www.w3.org/TR/webstorage/
-- type: standard
-  authors:
-  - Mike West
-  year: 2026
-  title: HTTP State Management Mechanism (RFC 6265bis)
-  venue: IETF
-  url: https://datatracker.ietf.org/doc/html/rfc6265bis
-- type: standard
-  authors:
-  - Anne van Kesteren
-  year: 2026
-  title: Storage Standard - Living Standard
-  venue: WHATWG
-  url: https://storage.spec.whatwg.org/
-- type: standard
-  authors:
-  - Nikhil Marathe
-  - Jonas Sicking
-  year: 2026
-  title: Indexed Database API 3.0
-  venue: W3C
-  url: https://www.w3.org/TR/IndexedDB-3/
-- type: book
-  authors:
-  - David Flanagan
-  year: 2020
-  title: 'JavaScript: The Definitive Guide (7th Edition)'
-  venue: O'Reilly Media
-  pages: 1-704
-  doi: 10.5555/3372471
-- type: book
-  authors:
-  - Marijn Haverbeke
-  year: 2019
-  title: Eloquent JavaScript (3rd Edition)
-  venue: No Starch Press
-  pages: 1-448
-  url: https://eloquentjavascript.net/
-- type: conference
-  authors:
-  - Adam Barth
-  year: 2011
-  title: HTTP State Management Mechanism
-  venue: IETF RFC 6265
-  url: https://datatracker.ietf.org/doc/html/rfc6265
-- type: documentation
-  authors:
-  - MDN Web Docs
-  year: 2025
-  title: Web Storage API
-  venue: Mozilla Developer Network
-  url: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-- type: website
-  authors:
-  - Jake Archibald
-  year: 2018
-  title: Storage for the web
-  venue: web.dev
-  url: https://web.dev/articles/storage-for-the-web
-  accessedDate: '2026-07-20'
-etymology:
-- term: Cookie
-  english: Cookie
-  origin: 源自 "magic cookie" 一词，最早由 UNIX 程序员使用，指程序间传递的不透明令牌。1994 年网景公司的 Lou Montulli 将其引入 HTTP 协议，用于解决电商购物车状态保持问题。词源说法不一，一说源自 fortune cookie（签语饼），象征"内含信息"
-- term: localStorage
-  english: localStorage
-  origin: 由 Web Storage 规范（HTML5 草案）引入，2009 年首次在 Firefox 3.5 与 IE 8 中实现。"local" 强调其持久化特性，与 sessionStorage 的会话级生命周期相对
-- term: IndexedDB
-  english: Indexed Database API
-  origin: 由 Oracle 的 Nikhil Marathe 与 Mozilla 的 Jonas Sicking 主导设计，2015 年成为 W3C 推荐标准。名称中的 "Indexed" 强调其索引查询能力，区别于简单的键值存储（localStorage）
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
-estimatedReadingTime: 50
+  - 'javascript/019-ImageOptimization'
+  - 'javascript/021-IndexedDBADatabaseInYourBrowser'
+prerequisites: []
 ---
+
 ## 0. 学习导言
 
 > 「Web 存储是浏览器从『无状态终端』迈向『应用平台』的关键基石。从 1994 年 Cookie 的诞生解决状态保持，到 2009 年 Web Storage 简化键值存储，再到 2015 年 IndexedDB 提供完整的事务型数据库，Web 平台的存储能力经历了 30 年的演进。」

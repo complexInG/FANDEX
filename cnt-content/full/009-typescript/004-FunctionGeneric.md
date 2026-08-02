@@ -1,21 +1,20 @@
 ---
 order: 40
-tags:
-  - typescript
-difficulty: intermediate
 title: 函数与泛型
-module: typescript
-category: 'TS Advanced'
+module: 'typescript'
+category: 前端技术
+difficulty: intermediate
 description: 函数类型签名、泛型约束、条件类型与推断。
 author: Anonymous
+updated: '2026-08-01'
 related:
-  - typescript/基础类型系统
-  - typescript/接口与类型别名
-  - typescript/字面量类型与联合类型
-  - typescript/类与装饰器
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/002-BasicTypeSystem'
+  - 'typescript/003-InterfaceTypeAlias'
+  - 'typescript/005-LocalTypeInference'
+  - 'typescript/006-ClassDecorator'
+prerequisites: []
 ---
+
 ## 1. 函数重载 (Function Overloading)
 
 函数重载允许为同一个函数提供多个类型定义，根据传入的参数类型和数量来选择合适的类型定义。

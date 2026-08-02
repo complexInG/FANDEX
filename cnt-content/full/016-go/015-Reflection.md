@@ -1,37 +1,25 @@
 ---
-order: 52
+order: 150
 title: 反射
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: reflect包深度剖析：Type/Value/Kind 三大核心、动态调用、性能优化、反射元编程、生产级应用与陷阱
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - go/unsafe与指针
-  - go/内存对齐
-  - go/Go与JSON
-  - go/Go与模板
-  - go/接口与类型断言
-  - go/泛型详解
+  - 'go/013-UnsafePointer'
+  - 'go/016-MemoryAlignment'
+  - 'go/029-GoJSON'
+  - 'go/037-GoTemplate'
+  - 'go/019-InterfaceTypeAssertion'
+  - 'go/056-GenericDetailed'
 prerequisites:
-  - go/接口与类型断言
-  - go/基础语法
-  - go/函数与方法
-tags:
-  - reflection
-  - reflect
-  - metaprogramming
-  - dynamic-dispatch
-  - type-system
-keywords:
-  - Go 反射
-  - reflect.Type
-  - reflect.Value
-  - struct tag
-  - dynamic call
-  - 反射性能
+  - 'go/019-InterfaceTypeAssertion'
+  - 'go/002-GoBasicSyntax'
+  - 'go/003-GoFunctionMethod'
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 反射的起源

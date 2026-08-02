@@ -1,18 +1,19 @@
 ---
-order: 8
+order: 80
 title: Astro 构建与部署
-module: astro
-category: Astro
+module: 'astro'
+category: 前端技术
 difficulty: intermediate
-description: '旅程驱动理解从构建到上线：astro build、产物分析、适配器与按需渲染、CI 部署、域名与 HTTPS、路由缓存'
+description: 旅程驱动理解从构建到上线：astro build、产物分析、适配器与按需渲染、CI 部署、域名与 HTTPS、路由缓存
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - astro/005-ContentCollections
-  - astro/009-Astro7Features
+  - 'astro/005-ContentCollections'
+  - 'astro/009-Astro7Features'
 prerequisites:
-  - astro/002-QuickStartProject
+  - 'astro/002-QuickStartProject'
 ---
+
 
 ## 0. 开篇：一本书从手稿到书店的旅程
 

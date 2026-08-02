@@ -1,18 +1,19 @@
 ---
-order: 108
+order: 520
 title: Kotlin跨平台
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
 description: Kotlin跨平台详解：Kotlin/JS与Kotlin/Native。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - kotlin/作用域函数区别
-  - kotlin/协程异常处理
+  - 'kotlin/050-ScopeFunctionDifference'
+  - 'kotlin/051-CoroutineExceptionHandling'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 # Kotlin 跨平台（Kotlin Multiplatform）
 

@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 160
 title: 时序数据库
-module: iot
-category: 'eng-infra'
+module: 'iot'
+category: 云与基础设施
 difficulty: intermediate
-description: '时序数据库：InfluxDB、TDengine 的数据模型、查询语言与性能对比。'
+description: 时序数据库：InfluxDB、TDengine 的数据模型、查询语言与性能对比。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/边缘AI
-  - iot/LwM2M设备管理
-  - iot/物联网安全
-  - iot/主流IoT平台
+  - 'iot/014-AI'
+  - 'iot/015-LwM2MManagement'
+  - 'iot/017-IoTSecurity'
+  - 'iot/018-IoT'
 prerequisites:
-  - iot/概述与架构
+  - 'iot/001-OverviewArchitecture'
 ---
+
 
 ## 1. 时序数据特征
 

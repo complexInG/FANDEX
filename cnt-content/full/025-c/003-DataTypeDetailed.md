@@ -1,25 +1,22 @@
 ---
 order: 30
-tags:
-  - c
-  - memory
-difficulty: beginner
 title: 数据类型详解
-module: c
-category: 'C Basics'
-description: 'C 语言的整型、浮点型、派生类型、空类型、内存布局、ABI 与 C23 新类型，对标 MIT/Stanford/CMU 系统编程教学水准。'
+module: 'c'
+category: 计算机科学
+difficulty: beginner
+description: C 语言的整型、浮点型、派生类型、空类型、内存布局、ABI 与 C23 新类型，对标 MIT/Stanford/CMU 系统编程教学水准。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/概述
-  - c/程序结构与基本语法
-  - c/变量与常量
-  - c/位运算与位域
-  - c/指针详解
-  - c/动态内存管理
+  - 'c/001-CLanguageOverview'
+  - 'c/002-ProgramStructureBasicSyntax'
+  - 'c/004-VariableConstant'
+  - 'c/005-BitwiseBitField'
+  - 'c/009-DynamicMemoryManagement'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 K&R C 时代：类型系统的雏形（1972-1989）

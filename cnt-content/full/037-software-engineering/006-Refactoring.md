@@ -1,20 +1,21 @@
 ---
-order: 15
+order: 60
 title: 代码重构
 module: 'software-engineering'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 代码重构原则、常用重构手法与代码坏味道识别。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-engineering/UML图详解'
-  - 'software-engineering/设计模式详解'
-  - 'software-engineering/软件测试方法'
-  - 'software-engineering/软件度量'
+  - 'software-engineering/004-UMLGraphDetailed'
+  - 'software-engineering/005-DesignPatternDetailed'
+  - 'software-engineering/007-SoftwareTestMethod'
+  - 'software-engineering/008-SoftwareMetrics'
 prerequisites:
-  - 'software-engineering/软件工程概述'
+  - 'software-engineering/001-SoftwareEngineeringOverview'
 ---
+
 
 ## 1. 从"整理房间"说起
 

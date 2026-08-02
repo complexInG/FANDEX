@@ -1,20 +1,21 @@
 ---
-order: 70
+order: 310
 title: 事务ACID特性
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
 description: SQL事务ACID特性：原子性、一致性、隔离性、持久性的原理、实现机制与保证
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/索引
-  - sql/执行计划
-  - sql/隔离级别
-  - sql/脏读不可重复读幻读
+  - 'sql/029-Index'
+  - 'sql/030-ExecutionPlan'
+  - 'sql/032-IsolationLevel'
+  - 'sql/033-DirtyReadNonRepeatablePhantom'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 事务概述
 
 事务（Transaction）是数据库操作的逻辑单元，由一组 SQL 语句组成，具有 ACID 四大特性。

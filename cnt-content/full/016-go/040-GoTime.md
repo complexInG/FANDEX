@@ -1,40 +1,25 @@
 ---
-order: 80
+order: 400
 title: Go与时间
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: beginner
 description: time包深度剖析：Time/Duration/Location 三大核心、单调时钟、时区处理、定时器、Ticker、性能优化与陷阱
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - go/Go与HTTP客户端
-  - go/Go与信号处理
-  - go/Go与正则表达式
-  - go/Go与JSON
-  - go/Context详解
-  - go/并发模式
+  - 'go/044-GoHTTPClient'
+  - 'go/042-GoSignalHandling'
+  - 'go/041-GoRegex'
+  - 'go/029-GoJSON'
+  - 'go/017-ContextDetailed'
+  - 'go/052-ConcurrencyPattern'
 prerequisites:
-  - go/基础语法
-  - go/函数与方法
-  - go/并发编程
-tags:
-  - time
-  - monotonic-clock
-  - timezone
-  - timer
-  - ticker
-  - duration
-keywords:
-  - Go time 包
-  - time.Time
-  - time.Duration
-  - time.Location
-  - 单调时钟
-  - 定时器
-  - 时区
-  - 性能优化
+  - 'go/002-GoBasicSyntax'
+  - 'go/003-GoFunctionMethod'
+  - 'go/006-GoConcurrentProgramming'
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 时间度量的物理学基础

@@ -1,107 +1,25 @@
 ---
-order: 106
+order: 470
 title: volatile关键字
-module: c
-category: dev-lang
-tags:
-- c
-- volatile
-- memory-model
-- compiler-optimization
-- atomic
-- mmio
-- signal-handler
-- embedded
+module: 'c'
+category: 计算机科学
 difficulty: advanced
 description: C 语言 volatile 关键字的完整知识体系，涵盖标准语义、编译器优化抑制、内存映射 I/O、信号处理、setjmp/longjmp、C11 原子操作对比、C++20 volatile 弃用、Linux 内核实践与多线程陷阱。
 author: fanquanpp
+updated: '2026-08-02'
 related:
-- c/多文件编译
-- c/指针深度解析
-- c/C23与C2y新标准
-- c/线程与并发
-- c/属性与编译器扩展
-- c/内存模型
+  - 'c/008-TheLinuxProgrammingInterface'
+  - 'c/039-PointerDeep'
+  - 'c/038-C23C2y'
+  - 'c/022-ThreadConcurrency'
+  - 'c/018-AttributeCompilerExtension'
+  - 'c/013-AtomicAndMemoryModel'
 prerequisites:
-- c/概述
-- c/指针深度解析
-- c/多文件编译
-references:
-- type: standard
-  authors:
-  - ISO/IEC JTC1/SC22/WG14
-  year: 2024
-  title: ISO/IEC 9899:2024 Information technology — Programming languages — C
-  venue: International Organization for Standardization
-  version: C23
-  url: https://www.iso.org/standard/82075.html
-- type: standard
-  authors:
-  - ISO/IEC JTC1/SC22/WG21
-  year: 2020
-  title: ISO/IEC 14882:2020 Programming languages — C++
-  venue: International Organization for Standardization
-  version: C++20
-- type: book
-  authors:
-  - Kernighan, Brian W.
-  - Ritchie, Dennis M.
-  year: 1988
-  title: The C Programming Language
-  venue: Prentice Hall
-  edition: 2nd
-- type: book
-  authors:
-  - Bryant, Randal E.
-  - O'Hallaron, David R.
-  year: 2015
-  title: 'Computer Systems: A Programmer''s Perspective'
-  venue: Pearson
-  edition: 3rd
-  pages: 233-280
-  isbn: 9780134092663
-- type: book
-  authors:
-  - Williams, Anthony
-  year: 2019
-  title: C++ Concurrency in Action
-  venue: Manning Publications
-  edition: 2nd
-  isbn: 9781617294693
-- type: book
-  authors:
-  - Cattell, Richard
-  year: 2017
-  title: Embedded C Coding Standard
-  venue: Barr Group
-- type: technical-report
-  authors:
-  - Meyers, Scott
-  - Alexandrescu, Andrei
-  year: 2004
-  title: C++ and the Perils of Double-Checked Locking
-  venue: IsoCpp
-  url: https://www.aristeia.com/Papers/DDJ_Jul_Aug_2004_revised.pdf
-- type: documentation
-  authors:
-  - Kernel.org Documentation Team
-  year: 2024
-  title: Linux Kernel Memory Barriers
-  venue: Linux Foundation
-  url: https://www.kernel.org/doc/Documentation/memory-barriers.txt
-etymology:
-- term: volatile
-  english: volatile
-  origin: 拉丁语 volatilis，意为"飞行的、易挥发的"，引申为"易变的、不稳定的"。C 语言借用此词表达"对象可能在编译器不知情时被改变"的语义，最早出现在 K&R C（1978）
-- term: 副作用
-  english: side effect
-  origin: 来源于形式语义学，指表达式求值过程中对程序状态（如内存、I/O）的改变。C 标准 §5.1.2.3 将 volatile 访问、对象修改、文件读写列为副作用
-- term: 可观察行为
-  english: observable behavior
-  origin: C 标准 as-if 规则的核心概念，指程序对外部世界（I/O、volatile 访问、信号处理）的影响，编译器优化不得改变可观察行为
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
+  - 'c/001-CLanguageOverview'
+  - 'c/039-PointerDeep'
+  - 'c/008-TheLinuxProgrammingInterface'
 ---
+
 
 
 # volatile 关键字

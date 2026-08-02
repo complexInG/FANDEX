@@ -1,19 +1,19 @@
 ---
-order: 4
+order: 40
 title: Kubernetes
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: advanced
-description: 'K8s 架构、核心资源、存储、网络策略、Helm 与 Operator 模式。'
+description: K8s 架构、核心资源、存储、网络策略、Helm 与 Operator 模式。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/网络与安全
-  - devops/容器与Docker
-  - 'devops/CI-CD流水线'
-  - devops/语法速查
+  - 'devops/002-NetworkSecurity'
+  - 'devops/003-ContainerDocker'
+  - 'devops/005-CICDPipeline'
 prerequisites: []
 ---
+
 ## 1. Kubernetes 架构
 
 ### 1.1 整体架构

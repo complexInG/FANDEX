@@ -1,20 +1,21 @@
 ---
-order: 78
+order: 380
 title: Kotlin与IO
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'kotlinx-io与文件操作'
+description: kotlinx-io与文件操作
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与原子操作
-  - kotlin/Kotlin与Benchmark
-  - kotlin/Kotlin与正则
-  - kotlin/Kotlin与时间
+  - 'kotlin/036-KotlinAtomicOperation'
+  - 'kotlin/037-KotlinBenchmark'
+  - 'kotlin/039-KotlinRegex'
+  - 'kotlin/040-KotlinTime'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 ## 概述
 
 IO（Input/Output）操作是程序与外部世界交互的方式，包括读写文件、网络通信、控制台输入输出等。Kotlin 运行在 JVM 上，可以直接使用 Java 的 IO 类，同时 Kotlin 也提供了一些扩展函数让 IO 操作更简洁。此外，kotlinx-io 是 Kotlin 官方的多平台 IO 库，提供了现代化的字节和字符处理 API。

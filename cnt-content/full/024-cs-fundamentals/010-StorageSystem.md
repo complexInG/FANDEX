@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 100
 title: 存储系统
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 存储系统深度：Cache优化、虚拟存储、TLB、内存管理与存储一致性
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/数据表示与运算'
-  - 'cs-fundamentals/指令流水线'
-  - 'cs-fundamentals/总线与接口'
-  - 'cs-fundamentals/并行计算'
+  - 'cs-fundamentals/008-DataRepresentationOperation'
+  - 'cs-fundamentals/009-DirectivePipeline'
+  - 'cs-fundamentals/011-BusAndInterface'
+  - 'cs-fundamentals/012-ParallelCalculate'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 存储层次原理
 

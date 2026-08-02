@@ -1,20 +1,20 @@
 ---
-order: 55
+order: 120
 title: 多进程与多线程
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: threading与multiprocessing
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - python/描述符协议
-  - python/协程与asyncio
-  - python/数据类与Pydantic
-  - python/Python与FastAPI
-prerequisites:
-  - python/语法速查
+  - 'python/004-PythonDescriptorProtocol'
+  - 'python/006-CoroutineAsyncio'
+  - 'python/015-DataClassPydantic'
+  - 'python/013-PythonFastAPI'
+prerequisites: []
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 早期单核时代（Python 0.9 – 1.x，1991–2000）

@@ -1,22 +1,23 @@
 ---
-order: 107
+order: 510
 title: 协程异常处理
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'Kotlin 协程异常处理深度解析：CoroutineExceptionHandler、SupervisorJob、structured concurrency 异常传播机制的形式化定义、字节码实现与企业级工程实践。'
+description: Kotlin 协程异常处理深度解析：CoroutineExceptionHandler、SupervisorJob、structured concurrency 异常传播机制的形式化定义、字节码实现与企业级工程实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/扩展函数的编译原理
-  - kotlin/作用域函数区别
-  - kotlin/Kotlin跨平台
-  - kotlin/协程调度器与上下文
-  - kotlin/Flow冷流与SharedFlow和StateFlow
+  - 'kotlin/049-ExtensionFunctionCompilePrinciple'
+  - 'kotlin/050-ScopeFunctionDifference'
+  - 'kotlin/052-KotlinCrossPlatform'
+  - 'kotlin/044-CoroutineDispatcherContext'
+  - 'kotlin/045-FlowColdSharedState'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/协程调度器与上下文
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/044-CoroutineDispatcherContext'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 问题背景：异步异常的复杂性

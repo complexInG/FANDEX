@@ -1,9 +1,8 @@
 ---
 order: 590
 title: Cybersecurity 隐写术工具命令
-module: cybersecurity
-
-category: '033-cybersecurity'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: Cybersecurity 隐写术工具命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Steghide 隐写工具
 
 **基本写法:嵌入数据到图像**

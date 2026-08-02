@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 640
 title: 两阶段提交
-module: mysql
-category: database
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL InnoDB 两阶段提交（2PC）机制详解：保证 Redo Log 与 Binlog 一致性、崩溃恢复流程与XA事务。'
+description: MySQL InnoDB 两阶段提交（2PC）机制详解：保证 Redo Log 与 Binlog 一致性、崩溃恢复流程与XA事务。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/触发器与事件
-  - mysql/Redo与Undo与Binlog写入时机
-  - mysql/间隙锁与临键锁解决幻读
-  - mysql/主从复制延迟原因与解决
+  - 'mysql/062-TriggerEvent'
+  - 'mysql/063-RedoUndoBinlogWriteTiming'
+  - 'mysql/065-GapLockNextKeyLockSolutionPhantomRead'
+  - 'mysql/066-ReplicationDelayCauseSolution'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 两阶段提交的必要性
 

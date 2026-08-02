@@ -1,22 +1,21 @@
 ---
-order: 40
-tags:
-  - github
-difficulty: intermediate
+order: 50
 title: 协作开发规范
-module: github
-category: 'GitHub Advanced'
-description: '协作开发规范：Commit Message 约定、分支命名、PR 模板、代码审查清单与 CLA/DCO 合规。'
+module: 'github'
+category: 工具链
+difficulty: intermediate
+description: 协作开发规范：Commit Message 约定、分支命名、PR 模板、代码审查清单与 CLA/DCO 合规。
 author: Anonymous
-related:
-  - 'github/仓库创建-克隆-归档-删除'
-  - github/SSH与HTTPS远程配置
-  - github/README文件
-  - github/分支模型与分支保护规则
-prerequisites:
-  - github/GitHub概述
 updated: '2026-08-02'
+related:
+  - 'github/003-RepositoryCreateCloneArchiveDelete'
+  - 'github/004-SSHHTTPS'
+  - 'github/006-READMEFile'
+  - 'github/007-BranchModelBranchRule'
+prerequisites:
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一个生活场景说起：团队协作公约
 

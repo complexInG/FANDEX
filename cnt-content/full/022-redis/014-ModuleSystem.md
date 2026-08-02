@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 140
 title: 模块系统
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: advanced
 description: Redis模块系统：RedisJSON、RedisTimeSeries、RediSearch、RedisBloom等模块原理与使用
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/混合持久化
-  - redis/无盘复制
-  - redis/字符串SDS结构
-  - redis/跳表与有序集合
+  - 'redis/012-MixedPersistence'
+  - 'redis/013-DisklessReplication'
+  - 'redis/015-StringSDSStructure'
+  - 'redis/016-SkipListAndSortedSet'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 
 ## 1. 模块系统概述
 

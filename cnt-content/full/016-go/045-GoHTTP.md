@@ -1,20 +1,21 @@
 ---
-order: 85
+order: 450
 title: Go与HTTP服务器
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: net/http与路由
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与JSON
-  - go/Go与HTTP客户端
-  - go/Go与中间件
-  - go/Go与OAuth2
+  - 'go/029-GoJSON'
+  - 'go/044-GoHTTPClient'
+  - 'go/047-GoMiddleware'
+  - 'go/046-GoOAuth2'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 ## 历史动机与发展脉络
 
 ### Go 1.0（2012 年 3 月）：`net/http` 起步

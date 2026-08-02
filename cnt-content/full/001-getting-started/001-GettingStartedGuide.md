@@ -1,18 +1,16 @@
 ---
 order: 10
-tags:
-  - 'getting-started'
-difficulty: beginner
 title: 入门指南
 module: 'getting-started'
-category: 'Getting Started'
+category: 工具链
+difficulty: beginner
 description: 从零开始的完整学习指南：环境搭建、学习路径与核心概念入门。
 author: fanquanpp
-related:
-  - 'getting-started/开发环境搭建'
-  - 'getting-started/学习指南'
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'getting-started/002-DevEnvSetup'
+  - 'getting-started/003-LearningGuide'
+prerequisites: []
 ---
 
 ## 这是什么

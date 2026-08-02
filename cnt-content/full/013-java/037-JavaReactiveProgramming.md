@@ -1,33 +1,25 @@
 ---
-order: 80
+order: 370
 title: Java与响应式编程
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: Reactive Streams 规范、Project Reactor、Spring WebFlux 与响应式系统设计的系统性深度剖析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/Java与安全
-  - java/Java与WebAssembly
-  - java/方法详解
-  - java/Java与虚拟线程
-  - java/Java函数式编程
-  - java/SpringBoot数据访问
+  - 'java/035-JavaSecurity'
+  - 'java/036-JavaWebAssembly'
+  - 'java/038-MethodDetailed'
+  - 'java/039-JavaVirtualThread'
+  - 'java/022-JavaFunctionalProgramming'
+  - 'java/020-SpringBootDataAccess'
 prerequisites:
-  - java/概述与开发环境
-  - java/Java函数式编程
-  - java/并发编程基础
-tags:
-  - Java
-  - Reactive
-  - ReactiveStreams
-  - ProjectReactor
-  - WebFlux
-  - RxJava
-  - Backpressure
-  - RSocket
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/022-JavaFunctionalProgramming'
+  - 'java/008-ConcurrencyBasics'
 ---
+
 
 
 # Java 响应式编程深度指南

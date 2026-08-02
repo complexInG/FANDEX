@@ -1,20 +1,21 @@
 ---
-order: 3
+order: 30
 title: 集合与关系
 module: 'discrete-math'
-category: 离散数学
+category: 数学
 difficulty: beginner
 description: 集合运算、幂集、笛卡尔积、二元关系、等价关系与划分、偏序关系与Hasse图、闭包运算。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'discrete-math/命题逻辑'
-  - 'discrete-math/谓词逻辑'
-  - 'discrete-math/函数与基数'
-  - 'discrete-math/图论基础'
+  - 'discrete-math/001-PropositionalLogic'
+  - 'discrete-math/002-PredicateLogic'
+  - 'discrete-math/004-FunctionAndNumber'
+  - 'discrete-math/005-GraphTheoryBasics'
 prerequisites:
-  - 'discrete-math/谓词逻辑'
+  - 'discrete-math/002-PredicateLogic'
 ---
+
 
 ## 1. 从"收纳盒"说起
 

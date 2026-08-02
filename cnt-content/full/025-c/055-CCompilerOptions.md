@@ -1,9 +1,8 @@
 ---
 order: 550
 title: C 编译器命令 语法速查手册
-module: c
-
-category: '025-c'
+module: 'c'
+category: 计算机科学
 difficulty: beginner
 description: C 编译器命令 语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 基本编译命令
 
 **基本写法：编译为可执行文件**

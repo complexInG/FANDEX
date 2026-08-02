@@ -1,19 +1,20 @@
 ---
-order: 104
+order: 280
 title: 无服务器架构
 module: 'cloud-computing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: '无服务器架构：Serverless Framework、Lambda 冷启动优化与事件驱动。'
+description: 无服务器架构：Serverless Framework、Lambda 冷启动优化与事件驱动。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/多云与混合云架构'
-  - 'cloud-computing/负载均衡与自动伸缩'
-  - 'cloud-computing/云迁移6R策略'
+  - 'cloud-computing/026-MultiCloudHybridArchitecture'
+  - 'cloud-computing/027-LoadBalanceAutoScaling'
+  - 'cloud-computing/029-CloudMigration6RStrategy'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 ## 1. Serverless 原理
 
 ### 1.1 FaaS 与 BaaS

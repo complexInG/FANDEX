@@ -1,20 +1,21 @@
 ---
-order: 82
+order: 400
 title: C++代码规范
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: beginner
 description: C++编码规范与最佳实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/内存管理
-  - cpp/C++与Rust对比
-  - cpp/C++与WebAssembly
-  - cpp/C++反射与元编程
+  - 'cpp/039-CppMemoryManagement'
+  - 'cpp/033-CppRustComparison'
+  - 'cpp/041-CppWebAssembly'
+  - 'cpp/042-CppReflectionMetaprogramming'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 
 # C++ 代码规范

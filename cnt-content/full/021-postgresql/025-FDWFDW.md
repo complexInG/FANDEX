@@ -1,20 +1,21 @@
 ---
-order: 70
+order: 250
 title: FDW外部数据包装器
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
-description: 'PostgreSQL FDW外部数据包装器：跨数据库查询、postgres_fdw、文件FDW与数据联邦'
+description: PostgreSQL FDW外部数据包装器：跨数据库查询、postgres_fdw、文件FDW与数据联邦
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/触发器与事件触发器
-  - postgresql/扩展模块
-  - postgresql/流复制
-  - postgresql/级联复制
+  - 'postgresql/023-TriggerEventTrigger'
+  - 'postgresql/024-ExtensionModule'
+  - 'postgresql/026-StreamingReplication'
+  - 'postgresql/027-CascadingReplication'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. FDW 概述
 

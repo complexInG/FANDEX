@@ -1,18 +1,19 @@
 ---
-order: 20
+order: 70
 title: 离散型随机变量
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 从彩票号码与离散点数出发，按"分布律→分布函数→数字特征"的路线讲解离散型随机变量，覆盖0-1分布、二项分布、泊松分布、几何分布与超几何分布。
+description: '从彩票号码与离散点数出发，按"分布律→分布函数→数字特征"的路线讲解离散型随机变量，覆盖0-1分布、二项分布、泊松分布、几何分布与超几何分布。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/事件的独立性'
-  - 'probability-statistics/连续型随机变量'
-  - 'probability-statistics/分布函数'
+  - 'probability-statistics/006-EventIndependence'
+  - 'probability-statistics/009-ContinuousRandomVariable'
+  - 'probability-statistics/010-DistributionFunction'
 prerequisites: []
 ---
+
 
 ## 0. 彩票号码与离散点数
 

@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 70
 title: CSRF攻击
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
 description: 跨站请求伪造攻击原理、攻击方式与防御机制详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/XSS攻击
-  - cybersecurity/安全模型与框架
-  - cybersecurity/密码学应用
-  - cybersecurity/SQL注入
+  - 'cybersecurity/005-XSSAttack'
+  - 'cybersecurity/006-SecurityModelFramework'
+  - 'cybersecurity/008-CryptographyApplication'
+  - 'cybersecurity/044-SQLInjection'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. CSRF 攻击原理
 

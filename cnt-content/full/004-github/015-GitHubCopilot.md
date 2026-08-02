@@ -1,20 +1,18 @@
 ---
-order: 58
-title: 'GitHub-Copilot'
-module: github
-category: GitHub
+order: 150
+title: GitHub-Copilot
+module: 'github'
+category: 工具链
 difficulty: intermediate
 description: 'GitHub Copilot深度解析：从"AI 补全代码"的体验切入，讲解订阅计划、安装配置、提示词工程、Copilot Chat 与安全最佳实践。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/知识库
-  - github/社区讨论
-  - github/依赖自动更新
-  - 'github/Issues模板-标签与里程碑'
+  - 'github/017-IssuesTemplateTagMilestone'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一次"被补全"的体验说起：像有个结对编程的老手坐在旁边
 

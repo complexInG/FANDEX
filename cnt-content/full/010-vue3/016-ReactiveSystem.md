@@ -1,23 +1,20 @@
 ---
-order: 60
-tags:
-  - vue3
-  - reactive
-difficulty: intermediate
+order: 160
 title: 响应式系统
-module: vue3
-category: 'Vue3 Basics'
+module: 'vue3'
+category: 前端技术
+difficulty: intermediate
 description: Vue3响应式原理与API详解
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'vue3/Vue3与Web Components'
-  - vue3/Vue3性能优化实践
-  - vue3/自定义Hook
-  - vue3/组件系统
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/014-Vue3WebComponents'
+  - 'vue3/015-Vue3PerformancePractice'
+  - 'vue3/017-CustomHook'
+  - 'vue3/018-ComponentSystem'
+prerequisites: []
 ---
+
 ## 1. 响应式系统概述 | Reactive System Overview
 
 Vue3 的响应式系统是其核心特性之一，它使得数据变化能够自动触发视图更新。与 Vue2 相比，Vue3 的响应式系统进行了重构，使用 ES6 Proxy 替代了 Object.defineProperty，提供了更强大的响应式能力。

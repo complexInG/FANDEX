@@ -1,26 +1,25 @@
 ---
-order: 72
+order: 300
 title: 类型安全的状态管理
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: 构建类型安全的状态管理系统，涵盖 Store 模式、Reducer/Action、选择器、中间件、异步流、不可变更新、有限状态机、原子状态与 Signal 响应式，并提供生产级最佳实践与案例研究。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/类型安全的事件系统
-  - typescript/类型安全的API客户端
-  - typescript/类型安全的表单验证
-  - typescript/类型安全的路由
-  - typescript/不可变数据结构
-  - typescript/条件类型与映射类型
-  - typescript/泛型
+  - 'typescript/028-PurelyFunctionalDataStructures'
+  - 'typescript/029-TypeSafeAPIClient'
+  - 'typescript/032-TypeSafeFormValidation'
+  - 'typescript/034-TypeSafeRoute'
+  - 'typescript/026-ConditionalMappedType'
+  - 'typescript/011-GenericConstraintDefault'
 prerequisites:
-  - typescript/语法速查
-  - typescript/接口与类型别名
-  - typescript/泛型
-  - typescript/字面量类型
+  - 'typescript/003-InterfaceTypeAlias'
+  - 'typescript/011-GenericConstraintDefault'
+  - 'typescript/005-LocalTypeInference'
 ---
+
 
 
 # 类型安全的状态管理

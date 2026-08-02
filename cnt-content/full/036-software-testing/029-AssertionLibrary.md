@@ -1,9 +1,8 @@
 ---
 order: 290
 title: 断言库
-module: software-testing
-
-category: '036-software-testing'
+module: 'software-testing'
+category: 云与基础设施
 difficulty: beginner
 description: 断言库 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Chai BDD 风格
 
 **基本写法：expect 风格断言**

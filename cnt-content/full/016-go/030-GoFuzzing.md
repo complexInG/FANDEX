@@ -1,23 +1,24 @@
 ---
-order: 70
+order: 300
 title: Go与Fuzzing
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'Go 1.18+ 原生 Fuzzing 框架：覆盖率引导、变异引擎、语料库管理与生产级实战'
+description: Go 1.18+ 原生 Fuzzing 框架：覆盖率引导、变异引擎、语料库管理与生产级实战
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与CGO
-  - go/Go与性能分析
-  - go/Go与代码生成
-  - go/Go与Wasm
+  - 'go/031-GoCGO'
+  - 'go/043-GoPerformanceAnalysis'
+  - 'go/033-GoCodeGeneration'
+  - 'go/032-GoWasm'
 prerequisites:
-  - go/概述与环境配置
-  - go/基础语法
-  - go/单元测试与基准测试
-  - go/错误处理
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/002-GoBasicSyntax'
+  - 'go/057-UnitTestBenchmark'
+  - 'go/007-GoErrorHandling'
 ---
+
 
 
 # Go 与 Fuzzing：覆盖率引导的自动化缺陷挖掘

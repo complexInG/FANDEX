@@ -1,29 +1,22 @@
 ---
-order: 59
-title: 'Python 与 Celery：分布式任务队列的设计、实现与工程实践'
-module: python
-category: Python
+order: 170
+title: Python 与 Celery：分布式任务队列的设计、实现与工程实践
+module: 'python'
+category: 后端技术
 difficulty: intermediate
-description: '系统阐述 Celery 分布式任务队列的架构、Broker/Worker/Backend 协作模型、AMQP 协议、任务状态机、Canvas 工作流（chain/group/chord）、Beat 调度、重试与幂等机制，以及生产级部署、监控与性能优化实践。'
+description: 系统阐述 Celery 分布式任务队列的架构、Broker/Worker/Backend 协作模型、AMQP 协议、任务状态机、Canvas 工作流（chain/group/chord）、Beat 调度、重试与幂等机制，以及生产级部署、监控与性能优化实践。
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - python
-  - celery
-  - task-queue
-  - distributed
-  - async
-  - message-broker
 related:
-  - python/Python与Redis
-  - python/Python与Docker
-  - python/Python与消息队列
-  - python/Python与Django
+  - 'python/016-PythonRedis'
+  - 'python/019-PythonDocker'
+  - 'python/032-PythonMessageQueue'
+  - 'python/014-PythonDjango'
 prerequisites:
-  - python/语法速查
-  - python/装饰器
-  - python/Python与Redis
+  - 'python/031-Decorator'
+  - 'python/016-PythonRedis'
 ---
+
 
 
 # Python 与 Celery：分布式任务队列的设计、实现与工程实践

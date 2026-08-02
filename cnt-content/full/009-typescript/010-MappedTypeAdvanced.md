@@ -1,20 +1,20 @@
 ---
-order: 54
+order: 100
 title: 映射类型进阶
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: 键重映射、模板映射与递归映射类型
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - typescript/类型守卫与自定义守卫
-  - typescript/索引签名与动态属性
-  - typescript/泛型约束与默认值
-  - typescript/装饰器详解
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/008-TypeGuardCustomGuard'
+  - 'typescript/009-IndexSignatureDynamicProperty'
+  - 'typescript/011-GenericConstraintDefault'
+  - 'typescript/012-DecoratorDetailed'
+prerequisites: []
 ---
+
 ## 第一章 概述
 
 ### 1.1 为什么需要映射类型进阶

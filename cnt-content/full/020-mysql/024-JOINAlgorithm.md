@@ -1,20 +1,21 @@
 ---
-order: 67
+order: 240
 title: JOIN算法
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL JOIN算法：Nested Loop Join、Block Nested Loop、Hash Join的原理、适用场景与优化'
+description: MySQL JOIN算法：Nested Loop Join、Block Nested Loop、Hash Join的原理、适用场景与优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/派生表优化
-  - 'mysql/GROUP-BY与ORDER-BY优化'
-  - mysql/事务隔离级别底层实现
-  - mysql/MVCC原理
+  - 'mysql/022-DerivedTableOptimization'
+  - 'mysql/023-GroupByOrderByOptimization'
+  - 'mysql/025-TransactionIsolationImplementation'
+  - 'mysql/026-MVCCPrinciple'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. JOIN 算法概述
 
 MySQL 支持多种 JOIN 算法，优化器根据表大小、索引和条件选择最优算法。

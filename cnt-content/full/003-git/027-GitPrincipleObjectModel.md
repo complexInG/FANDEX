@@ -1,23 +1,17 @@
 ---
-order: 70
-tags:
-  - git
-  - 'git-workflow'
+order: 270
+title: Git 原理与对象模型
+module: 'git'
+category: 工具链
 difficulty: advanced
-title: 'Git 原理与对象模型'
-module: git
-category: 'Git Basics'
-description: 'Git 底层对象模型、引用机制与存储原理。'
+description: Git 底层对象模型、引用机制与存储原理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/重置与回退
-  - git/撤销提交
-  - git/标签管理
-  - git/二分查找定位
-prerequisites:
-  - git/语法速查
+  - 'git/028-TagManagement'
+prerequisites: []
 ---
+
 
 ## 1. Git 概述
 

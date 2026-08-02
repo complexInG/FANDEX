@@ -1,22 +1,20 @@
 ---
-order: 120
-tags:
-  - python
-difficulty: intermediate
+order: 630
 title: 异常处理
-module: python
-category: 'Python Basics'
-description: '异常体系、try-except、自定义异常与上下文管理器。'
+module: 'python'
+category: 后端技术
+difficulty: intermediate
+description: 异常体系、try-except、自定义异常与上下文管理器。
 author: Anonymous
-related:
-  - python/打包与发布
-  - python/面向对象编程
-  - python/文件IO与上下文管理器
-  - 'python/项目示例-网页爬虫与数据分析'
-prerequisites:
-  - python/语法速查
 updated: '2026-08-01'
+related:
+  - 'python/056-PackagePublish'
+  - 'python/061-OOP'
+  - 'python/064-FileIOContextManager'
+  - 'python/065-PythonProjectExampleWebCrawlerDataAnalysis'
+prerequisites: []
 ---
+
 ## 1. 异常体系 (Exception Hierarchy)
 
 Python 中的所有异常都派生自 `BaseException` 类，形成了一个层次结构。

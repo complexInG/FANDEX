@@ -1,18 +1,19 @@
 ---
-order: 20
+order: 60
 title: 矩阵运算
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: beginner
-description: 从"表格数据运算"的直觉出发，讲解矩阵的加法、数乘、乘法（含不满足交换律与消去律的辨析）、转置与对称矩阵、方阵的幂与多项式、矩阵的迹。
+description: '从"表格数据运算"的直觉出发，讲解矩阵的加法、数乘、乘法（含不满足交换律与消去律的辨析）、转置与对称矩阵、方阵的幂与多项式、矩阵的迹。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/克莱姆法则'
-  - 'linear-algebra/逆矩阵'
-  - 'linear-algebra/初等变换与初等矩阵'
+  - 'linear-algebra/005-CramersRule'
+  - 'linear-algebra/008-InverseMatrix'
+  - 'linear-algebra/009-ElementaryTransformationAndMatrix'
 prerequisites: []
 ---
+
 
 ## 0. 生活类比：表格数据的运算
 

@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 200
 title: 数字证书
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: '数字证书原理：X.509 标准、PKI 体系、证书链验证与证书管理详解。'
+description: 数字证书原理：X.509 标准、PKI 体系、证书链验证与证书管理详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/安全开发
-  - cybersecurity/合规与审计
-  - cybersecurity/HTTPS原理
-  - cybersecurity/渗透测试方法论
+  - 'cybersecurity/018-SecureDevelopment'
+  - 'cybersecurity/019-ComplianceAudit'
+  - 'cybersecurity/021-HTTPSPrinciple'
+  - 'cybersecurity/022-PenetrationTestingMethodology'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 ## 1. 数字证书基础
 
 ### 1.1 什么是数字证书

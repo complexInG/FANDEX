@@ -1,20 +1,20 @@
 ---
-order: 106
+order: 490
 title: 装饰器标准实现
-module: typescript
-category: 'dev-lang'
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
-description: 'TypeScript Stage 3装饰器标准实现详解：类装饰器、方法装饰器与元数据。'
+description: TypeScript Stage 3装饰器标准实现详解：类装饰器、方法装饰器与元数据。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - typescript/模块声明与全局类型增强
-  - typescript/tsconfig严格模式
-  - 'typescript/项目示例-类型安全的API客户端'
-  - typescript/理论知识点
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/047-ModuleDeclarationGlobalAugmentation'
+  - 'typescript/048-TsconfigStrictMode'
+  - 'typescript/050-TypeScriptProjectExampleTypeSafeAPIClient'
+  - 'typescript/051-ATheoryOfTypePolymorphismInProgramming'
+prerequisites: []
 ---
+
 
 # 装饰器标准实现
 

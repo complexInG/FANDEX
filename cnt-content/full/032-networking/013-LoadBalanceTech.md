@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 130
 title: 负载均衡技术
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: advanced
 description: 负载均衡技术：四层/七层负载、算法、健康检查、会话保持与全局负载
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/网络设计与规划
-  - networking/DNS与DHCP
-  - networking/网络自动化
-  - networking/负载均衡算法
+  - 'networking/011-NetworkDesignPlanning'
+  - 'networking/012-DNSDHCP'
+  - 'networking/014-NetworkAutomation'
+  - 'networking/015-LoadBalanceAlgorithm'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. 负载均衡概述
 

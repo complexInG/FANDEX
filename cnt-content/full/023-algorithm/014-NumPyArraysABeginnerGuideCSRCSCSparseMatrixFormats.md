@@ -1,151 +1,24 @@
 ---
-order: 90
+order: 140
 title: 数组与动态数组
-module: algorithm
-category: Algorithm/Array
+module: 'algorithm'
+category: 计算机科学
 difficulty: beginner
 description: 数组（Array）与动态数组（Dynamic Array）的连续内存模型、随机访问 $O(1)$ 原理、倍增扩容均摊 $O(1)$ 分析、行优先/列优先多维布局、稀疏数组 CSR/CSC、双指针/滑动窗口/前缀和/差分等核心技巧，涵盖 Von Neumann 1945 EDVAC、Iverson 1962 APL、Stepanov 1994 STL 等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 10 章。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-array
-- algorithm-datastructure
-- algorithm-dynamic-array
-- algorithm-amortized-analysis
-- algorithm-prefix-sum
-- algorithm-sliding-window
-- algorithm-cache-locality
-created: 2026-05-27
-updated: 2026-07-20
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 95
+updated: '2026-07-20'
 related:
-- algorithm/算法分析基础与学习路线
-- algorithm/字符串算法
-- algorithm/动态规划
-- algorithm/栈与队列
-- algorithm/链表
-- algorithm/哈希表
-- algorithm/平衡树与高级树
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/012-RipgrepRecursivelySearchDirectoriesForARegexPattern'
+  - 'algorithm/013-ArtificialIntelligenceAModernApproach'
+  - 'algorithm/003-ConcurrencyInGoToolsAndTechniquesForDevelopers'
+  - 'algorithm/005-LinkedList'
+  - 'algorithm/006-HashTable'
+  - 'algorithm/015-PostgreSQLBTreeIndexImplementation'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-references:
-- type: technical-report
-  authors:
-  - von Neumann, John
-  year: 1945
-  title: First Draft of a Report on the EDVAC
-  venue: Moore School of Electrical Engineering, University of Pennsylvania
-  pages: Contract No. W-670-ORD-4926, 101 pages. Reprinted in IEEE Annals of the History of Computing, Vol. 15, No. 4, 1993, pp. 27-75
-- type: book
-  authors:
-  - Iverson, Kenneth E.
-  year: 1962
-  title: A Programming Language
-  venue: John Wiley & Sons
-  pages: ISBN 978-0471430160. The book that first formalized array operations and introduced the notation later implemented as APL
-- type: journal
-  authors:
-  - Stepanov, Alexander
-  - Lee, Meng
-  year: 1995
-  title: The Standard Template Library
-  venue: Hewlett-Packard Laboratories, Technical Report HPL-95-11 (R.1)
-  pages: The original STL design document defining std::vector as a dynamically resizable sequence container
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1997
-  title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
-  venue: Addison-Wesley Professional
-  version: 3rd edition
-  pages: ISBN 978-0201896831, Section 2.2 (Linear Lists) and Section 2.2.2 (Sequential Allocation)
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: Chapter 10 (Elementary Data Structures), Section 10.1 (Stacks and Queues - dynamic array table), Section 17 (Amortized Analysis), ISBN 978-0262046305
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 1.1 (Basics), Section 1.4 (Analysis of Algorithms - amortized cost of array resizing), Section 1.3 (ResizingArrayStack)
-- type: book
-  authors:
-  - Stroustrup, Bjarne
-  year: 2013
-  title: The C++ Programming Language
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321563842, Chapter 31 (STL Containers) - std::vector, std::array, Chapter 4 (Types and Declarations) - array decay
-- type: book
-  authors:
-  - Tanenbaum, Andrew S.
-  - Bos, Herbert
-  year: 2014
-  title: Modern Operating Systems
-  venue: Pearson
-  version: 4th edition
-  pages: ISBN 978-0133591620, Chapter 2 (Processes and Threads) - CPU cache hierarchy, cache lines, spatial locality
-- type: book
-  authors:
-  - Hennessy, John L.
-  - Patterson, David A.
-  year: 2017
-  title: 'Computer Architecture: A Quantitative Approach'
-  venue: Morgan Kaufmann
-  version: 6th edition
-  pages: ISBN 978-0128119051, Appendix B (Memory Hierarchy Design) - cache line, spatial/temporal locality, SIMD vector processing
-- type: website
-  authors:
-  - Python Software Foundation
-  year: 2024
-  title: CPython listobject.c - List object implementation with over-allocation growth formula
-  venue: Python GitHub Repository
-  url: https://github.com/python/cpython/blob/main/Objects/listobject.c
-  pages: 'newsize + (newsize >> 3) + (newsize < 9 ? 3 : 6) over-allocation formula'
-  accessedDate: '2026-07-20'
-- type: book
-  authors:
-  - Bulavin, Pavel
-  year: 2024
-  title: 'NumPy Arrays: A Beginner Guide (CSR/CSC sparse matrix formats)'
-  venue: SciPy Documentation
-  pages: Compressed Sparse Row (CSR), Compressed Sparse Column (CSC), Coordinate (COO), Yale sparse matrix format
-etymology:
-- term: 数组
-  english: array
-  origin: 英文 array 源自拉丁语 arraire（排列、整队），原指"排列成阵的士兵"，引申为"按序排列的同类元素"。在计算机科学中，Von Neumann 1945 年《First Draft of a Report on the EDVAC》首次描述存储程序架构时即使用"array of storage"概念。1962 年 Kenneth Iverson 在《A Programming Language》中将其作为一等数据结构，并设计 APL 语言以数组运算为核心。中文"数组"直译自 array，强调元素按序排列
-- term: 动态数组
-  english: dynamic array
-  origin: dynamic 源自希腊语 dynamis（力量、能力），意为"可变的、动态的"。静态数组大小固定，动态数组在运行期可自动扩容。C++ STL 的 std::vector（向量）是工业级动态数组的代表，1994 年由 Alexander Stepanov 与 Meng Lee 在 HP 实验室设计，1998 年纳入 C++98 标准。Java ArrayList（1998 年 Java 1.2）、Python list（1991 年 Python 0.9）、Go slice（2009）等均是各语言的动态数组实现
-- term: 向量
-  english: vector
-  origin: vector 源自拉丁语 vector（携带者、载体），数学中指有方向的量。C++ STL 选择 vector 作为动态数组容器名，是因为 Stepanov 希望强调其"线性序列"的数学性质，类似数学向量空间的元素序列。Java 的 java.util.Vector 是早期（Java 1.0）的同步动态数组，后因性能问题被 ArrayList 取代
-- term: 切片
-  english: slice
-  origin: slice 源自古法语 esclice（薄片、切片）。Go 语言将动态数组命名为 slice，强调其"对一个底层数组的视图"特性。Python 切片语法 a[start:stop:step] 同样借用此概念。Go slice 的底层是 SliceHeader{ptr, len, cap} 三元组，对底层数组的引用使多个 slice 可共享存储
-- term: 前缀和
-  english: prefix sum
-  origin: prefix 源自拉丁语 praefigere（前面固定），指在原数组前面累加形成的辅助数组。前缀和将区间求和从 $O(n)$ 降为 $O(1)$，是数组最重要的预处理技巧之一，由 competitive programming 社区系统化。又称累积和（cumulative sum）、积分图（integral image）
-- term: 差分数组
-  english: difference array
-  origin: difference 源自拉丁语 differentia（差异）。差分数组是前缀和的逆运算：原数组是差分数组的前缀和，差分数组是原数组的相邻差。对原数组区间 $[l, r]$ 加 $c$ 等价于 diff[l] += c; diff[r+1] -= c。该技巧将区间更新从 $O(n)$ 降为 $O(1)$，在 1109 航班预订统计、370 区间加法等题目中广泛应用
-- term: 缓存行
-  english: cache line
-  origin: cache 源自法语 cacher（隐藏），指 CPU 与主存之间隐藏的高速缓冲存储器。现代 CPU 以 64 字节为单位的 cache line（缓存行）从内存预取数据，因此数组连续存储天然具备良好的空间局部性（spatial locality），相邻元素会被一起加载到缓存中。Denning 1968 年在 *Communications of the ACM* 提出"working set"模型，奠定程序局部性原理
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
 ---
+
 
 
 ## 1. 概述与学习目标

@@ -1,20 +1,21 @@
 ---
-order: 104
+order: 460
 title: 函数指针回调与跳转表
-module: c
-category: 'dev-lang'
+module: 'c'
+category: 计算机科学
 difficulty: advanced
 description: C语言函数指针回调机制与跳转表实现。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/指针与数组的区别
-  - c/二级指针与指针数组
-  - c/动态库与静态库
-  - c/volatile关键字
+  - 'c/044-PointerArrayDifference'
+  - 'c/045-DoublePointerPointerArray'
+  - 'c/029-DynamicStaticLibrary'
+  - 'c/047-LinuxKernelMemoryBarriers'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 ## 概述
 

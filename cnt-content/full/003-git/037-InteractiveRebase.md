@@ -1,20 +1,19 @@
 ---
-order: 101
+order: 370
 title: 交互式rebase
-module: git
-category: toolchain
+module: 'git'
+category: 工具链
 difficulty: advanced
 description: Git交互式rebase详解：reword、squash、fixup、drop等操作改写提交历史。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/垃圾回收
-  - 'git/Git-Flow与GitHub-Flow对比'
-  - 'git/git-revert与reset对比'
-  - 'git/Code-Review流程与最佳实践'
-prerequisites:
-  - git/语法速查
+  - 'git/036-GitFlowGitHubFlowComparison'
+  - 'git/038-GitRevertResetComparison'
+  - 'git/039-CodeReviewBestPractice'
+prerequisites: []
 ---
+
 
 ## 1. 交互式 rebase 基础
 

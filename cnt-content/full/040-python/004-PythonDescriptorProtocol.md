@@ -1,29 +1,20 @@
 ---
-order: 34
-title: 'Python 描述符协议：属性访问的底层机制与工程实践'
-module: python
-category: Python
+order: 40
+title: Python 描述符协议：属性访问的底层机制与工程实践
+module: 'python'
+category: 后端技术
 difficulty: advanced
-description: '系统阐述 Python 描述符协议的形式化定义、属性查找链、数据与非数据描述符的差异、与元类/property/__slots__ 的协作，以及在 ORM、验证器、缓存属性、观察者模式等场景的工程实践。'
+description: 系统阐述 Python 描述符协议的形式化定义、属性查找链、数据与非数据描述符的差异、与元类/property/__slots__ 的协作，以及在 ORM、验证器、缓存属性、观察者模式等场景的工程实践。
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - python
-  - descriptor
-  - metaprogramming
-  - property
-  - attribute-access
-  - oop
 related:
-  - python/装饰器
-  - python/类与对象
-  - python/Python与设计模式
-  - python/元类
+  - 'python/031-Decorator'
+  - 'python/040-PythonDesignPattern'
+  - 'python/010-Metaclass'
 prerequisites:
-  - python/语法速查
-  - python/类与对象
-  - python/装饰器
+  - 'python/031-Decorator'
 ---
+
 
 
 # Python 描述符协议：属性访问的底层机制与工程实践

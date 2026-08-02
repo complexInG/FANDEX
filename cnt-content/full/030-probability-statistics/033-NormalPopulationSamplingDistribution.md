@@ -1,19 +1,20 @@
 ---
-order: 63
+order: 280
 title: 正态总体的抽样分布
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: advanced
 description: 单正态总体和双正态总体的抽样分布定理，统计推断的理论基础，逐条定理给出推导与直观理解。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/统计量'
-  - 'probability-statistics/三大分布'
-  - 'probability-statistics/点估计'
+  - 'probability-statistics/031-Statistic'
+  - 'probability-statistics/032-ThreeMajorDistributions'
+  - 'probability-statistics/035-PointEstimation'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 全班成绩分布抽样的启示
 

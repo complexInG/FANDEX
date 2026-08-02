@@ -1,20 +1,21 @@
 ---
-order: 80
+order: 350
 title: 数据加密存储
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL数据加密存储：pgcrypto扩展、加密函数、列级加密与密钥管理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/基于角色的权限管理
-  - postgresql/行级安全策略
-  - postgresql/审计日志
-  - postgresql/序列与自增列
+  - 'postgresql/033-RoleBasedPermissionManagement'
+  - 'postgresql/034-RowLevelSecurity'
+  - 'postgresql/036-AuditLog'
+  - 'postgresql/037-SequenceAutoIncrement'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. pgcrypto 扩展
 

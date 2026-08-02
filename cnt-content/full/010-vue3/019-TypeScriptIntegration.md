@@ -1,23 +1,20 @@
 ---
-order: 80
-tags:
-  - vue3
-  - typescript
+order: 190
+title: TypeScript 集成
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
-title: 'TypeScript 集成'
-module: vue3
-category: 'Vue3 Basics'
 description: Vue3中TypeScript的集成与使用
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/自定义Hook
-  - vue3/组件系统
-  - vue3/Pinia状态管理详解
-  - vue3/插件开发
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/017-CustomHook'
+  - 'vue3/018-ComponentSystem'
+  - 'vue3/020-PiniaStateManagementDetailed'
+  - 'vue3/021-PluginDevelopment'
+prerequisites: []
 ---
+
 ## 1. TypeScript 集成概述 | TypeScript Integration Overview
 
 TypeScript 是 JavaScript 的超集，它添加了静态类型系统，提供了更好的代码提示、类型检查和代码重构能力。Vue3 对 TypeScript 提供了良好的支持，通过集成 TypeScript，可以提高代码的可维护性和类型安全性。

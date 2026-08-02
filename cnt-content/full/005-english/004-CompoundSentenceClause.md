@@ -1,19 +1,20 @@
 ---
-order: 22
+order: 40
 title: 复合句与从句
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: advanced
 description: 英语复合句系统详解，涵盖名词性从句、定语从句、状语从句三大从句类型及其用法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/英语语法体系总览
-  - english/句子结构与成分分析
-  - english/长难句拆解技巧
-  - english/常见语法错误汇总
+  - 'english/002-EnglishGrammarSystemOverview'
+  - 'english/003-SentenceStructureAnalysis'
+  - 'english/005-LongDifficultSentenceBreakdownTechnique'
+  - 'english/006-CommonGrammarErrorSummary'
 prerequisites: []
 ---
+
 
 ## 1. 复合句概述
 

@@ -1,23 +1,20 @@
 ---
-order: 75
-tags:
-  - python
-  - decorator
-difficulty: intermediate
+order: 310
 title: 装饰器
-module: python
-category: 'Python Basics'
+module: 'python'
+category: 后端技术
+difficulty: intermediate
 description: Python装饰器详解：函数装饰器、类装饰器、带参数装饰器、functools.wraps与实用装饰器模式。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与CLI
-  - python/Python与配置管理
-  - python/Python与消息队列
-  - python/Python与gRPC
-prerequisites:
-  - python/语法速查
+  - 'python/039-PythonCLI'
+  - 'python/030-Python'
+  - 'python/032-PythonMessageQueue'
+  - 'python/033-PythongRPC'
+prerequisites: []
 ---
+
 ## 1. 装饰器基础
 
 ### 1.1 什么是装饰器

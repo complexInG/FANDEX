@@ -1,23 +1,18 @@
 ---
-order: 60
-tags:
-  - git
-  - 'git-workflow'
+order: 160
+title: Git 钩子与 Git LFS
+module: 'git'
+category: 工具链
 difficulty: advanced
-title: 'Git 钩子与 Git LFS'
-module: git
-category: 'Git Basics'
 description: Git钩子自动化与大文件管理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/代码追溯
-  - git/HEAD指针与分支本质
-  - git/合并冲突解决
-  - git/合并工具
-prerequisites:
-  - git/语法速查
+  - 'git/015-HEADPointerBranchEssence'
+  - 'git/017-MergeConflictResolution'
+prerequisites: []
 ---
+
 ## 1. Git 钩子概述
 
 Git 钩子是 Git 仓库中的脚本，在特定 Git 事件发生时自动执行。它们可以用于自动化工作流程、强制执行代码规范、运行测试等。
@@ -199,9 +194,9 @@ Git LFS 是 Git 的扩展，用于管理大文件，通过将大文件存储在�
 
 ```bash
  # .gitattributes 文件
- *
- *
- *
+ * text=auto
+ *.md text
+ *.png binary
 ```
 
 ## 7. 高级钩子示例

@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 210
 title: 网络与安全进阶
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: advanced
 description: 网络与安全进阶：零信任网络、服务网格安全、证书管理与安全自动化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/GitOps与持续交付
-  - devops/监控与告警
-  - devops/数据库运维
-  - devops/Dockerfile多阶段构建
+  - 'devops/019-GitOpsCD'
+  - 'devops/020-MonitorAndAlert'
+  - 'devops/022-DatabaseOps'
+  - 'devops/023-DockerfileMultiBuild'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 零信任网络
 

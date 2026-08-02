@@ -1,22 +1,21 @@
 ---
-order: 50
-tags:
-  - c
-difficulty: intermediate
+order: 60
 title: 运算符与表达式
-module: c
-category: 'C Basics'
+module: 'c'
+category: 计算机科学
+difficulty: intermediate
 description: 算术、关系、逻辑、位运算及运算符优先级详解。
 author: Anonymous
-related:
-  - c/变量与常量
-  - c/位运算与位域
-  - c/枚举与typedef
-  - c/多文件编译
-prerequisites:
-  - c/概述
 updated: '2026-08-01'
+related:
+  - 'c/004-VariableConstant'
+  - 'c/005-BitwiseBitField'
+  - 'c/007-EnumTypedef'
+  - 'c/008-TheLinuxProgrammingInterface'
+prerequisites:
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 1. 运算符分类 (Operator Categories)
 
 ### 1.1 算术运算符 (Arithmetic)

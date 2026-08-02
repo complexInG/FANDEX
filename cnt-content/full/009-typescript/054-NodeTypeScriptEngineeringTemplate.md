@@ -1,57 +1,19 @@
 ---
 order: 540
 title: Node.js 与 TypeScript 工程化
-module: typescript
-category: '009-typescript'
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: 一份开箱即用的 Node.js + TypeScript 工程骨架：目录结构、tsconfig 双配置、开发与构建脚本、常见坑位。
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'typescript/039-TypeScriptEngineeringConfig'
   - 'typescript/048-TsconfigStrictMode'
 prerequisites:
   - 'typescript/001-TypeScriptOverviewEnvSetup'
-quiz:
-  - type: choice
-    question: Node 端开发与构建为什么要用两套 tsconfig？
-    options:
-      - 因为编译器有 bug
-      - 开发要快（不产出文件），构建要严格（产出 dist）
-      - 因为 Node 不认识 tsconfig
-      - 两套配置可以完全一样
-    answer: 1
-    explanation: tsconfig.base 共享编译选项，tsconfig.dev 用 noEmit 提速，tsconfig.build 产出 dist。
-  - type: fill
-    question: Node 的 ESM 模式下，tsconfig 的 module 通常设置为____。
-    answer: NodeNext
-    hint: NodeNext 让 Node 按文件扩展名区分 ESM/CJS。
-references:
-  - type: documentation
-    authors:
-      - Node.js Contributors
-    year: 2026
-    title: Node.js 模块：ESM 与 CJS
-    venue: nodejs.org
-    url: https://nodejs.org/api/esm.html
-    accessedDate: '2026-08-02'
-  - type: documentation
-    authors:
-      - TypeScript Team
-    year: 2026
-    title: TypeScript 模块解析：NodeNext
-    venue: typescriptlang.org
-    url: https://www.typescriptlang.org/docs/handbook/modules/reference.html
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 工程化
-    english: Engineering Setup
-    origin: 把"能跑"的脚本升级为"可维护、可测试、可部署"的项目结构，强调工程而非手艺。
-estimatedReadingTime: 7
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

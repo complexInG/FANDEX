@@ -1,20 +1,19 @@
 ---
-order: 60
+order: 180
 title: 密钥扫描
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: intermediate
-description: 'GitHub密钥扫描详解：密钥泄露危害原理、自动检测、推送保护、自定义模式与泄露补救措施。'
+description: GitHub密钥扫描详解：密钥泄露危害原理、自动检测、推送保护、自定义模式与泄露补救措施。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/依赖自动更新
-  - 'github/Issues模板-标签与里程碑'
-  - github/CodeQL代码扫描
-  - github/命令行工具
+  - 'github/017-IssuesTemplateTagMilestone'
+  - 'github/019-CodeQLCodeScanning'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 先来一个生活场景：保险箱与监控
 

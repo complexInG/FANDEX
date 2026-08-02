@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 140
 title: 网络自动化
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: advanced
 description: 网络自动化：基础设施即代码、NetDevOps、网络CI/CD与自动化运维
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/DNS与DHCP
-  - networking/负载均衡技术
-  - networking/负载均衡算法
-  - networking/高可用LVS
+  - 'networking/012-DNSDHCP'
+  - 'networking/013-LoadBalanceTech'
+  - 'networking/015-LoadBalanceAlgorithm'
+  - 'networking/016-HighAvailabilityLVS'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. NetDevOps 概述
 

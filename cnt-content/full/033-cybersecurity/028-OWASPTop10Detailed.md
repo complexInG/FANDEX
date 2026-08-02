@@ -1,20 +1,21 @@
 ---
-order: 100
-title: 'OWASP-Top-10详解'
-module: cybersecurity
-category: 'eng-infra'
+order: 280
+title: OWASP-Top-10详解
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: 'OWASP Top 10 详解：各漏洞原理、攻击方式与修复方案。'
+description: OWASP Top 10 详解：各漏洞原理、攻击方式与修复方案。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/输入验证
-  - cybersecurity/认证与授权
-  - cybersecurity/XXE攻击
-  - cybersecurity/反序列化漏洞
+  - 'cybersecurity/026-InputValidation'
+  - 'cybersecurity/027-AuthenticationAuthorization'
+  - 'cybersecurity/029-XXEAttack'
+  - 'cybersecurity/030-DeserializationVulnerability'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. 注入与身份认证
 

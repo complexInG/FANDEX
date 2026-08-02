@@ -1,20 +1,21 @@
 ---
-order: 12
+order: 30
 title: 需求分析方法
 module: 'software-engineering'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 用户故事、用例图、需求获取与需求管理。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-engineering/软件工程概述'
-  - 'software-engineering/敏捷开发'
-  - 'software-engineering/UML图详解'
-  - 'software-engineering/设计模式详解'
+  - 'software-engineering/001-SoftwareEngineeringOverview'
+  - 'software-engineering/002-AgileDevelopment'
+  - 'software-engineering/004-UMLGraphDetailed'
+  - 'software-engineering/005-DesignPatternDetailed'
 prerequisites:
-  - 'software-engineering/软件工程概述'
+  - 'software-engineering/001-SoftwareEngineeringOverview'
 ---
+
 
 ## 1. 从"点外卖却收到一本书"说起
 

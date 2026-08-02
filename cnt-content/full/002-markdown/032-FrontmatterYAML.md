@@ -1,9 +1,8 @@
 ---
 order: 320
 title: Markdown Frontmatter YAML 语法速查
-module: markdown
-
-category: '002-markdown'
+module: 'markdown'
+category: 工具链
 difficulty: beginner
 description: Markdown Frontmatter YAML 语法速查 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 基础语法
 
 **基本写法：frontmatter 块**

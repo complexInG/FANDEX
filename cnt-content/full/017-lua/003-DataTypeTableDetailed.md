@@ -1,20 +1,20 @@
 ---
 order: 30
-tags:
-  - lua
+title: 数据类型与 Table 详解
+module: 'lua'
+category: 后端技术
 difficulty: beginner
-title: '数据类型与 Table 详解'
-module: lua
-category: 'Lua Basics'
-description: '基本类型、Table 操作、元方法与面向对象实现。'
+description: 基本类型、Table 操作、元方法与面向对象实现。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - lua/概述与环境配置
-  - lua/程序结构与基本语法
-  - lua/函数与闭包
-  - lua/元表与面向对象编程
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/002-ProgramStructureBasicSyntax'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/005-MetatableOOP'
 prerequisites: []
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 Lua 的诞生与设计哲学

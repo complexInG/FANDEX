@@ -1,20 +1,20 @@
 ---
-order: 57
+order: 130
 title: Lua与Love2D
-module: lua
-category: Lua
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
 description: Love2D游戏开发
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - lua/Lua与C交互
-  - lua/Lua即时编译器
-  - lua/Lua与Neovim
-  - lua/Lua与Redis脚本
+  - 'lua/011-LuaC'
+  - 'lua/014-LuaNeovim'
+  - 'lua/015-LuaRedisScript'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 ## 图形绘制
 
 **基本写法：设置颜色**

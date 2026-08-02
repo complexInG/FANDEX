@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 440
 title: 指针与数组的区别
-module: c
-category: 'dev-lang'
+module: 'c'
+category: 计算机科学
 difficulty: advanced
-description: 'C语言指针与数组的区别：sizeof、&运算、传参差异。'
+description: C语言指针与数组的区别：sizeof、&运算、传参差异。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - c/结构体与联合体
-  - c/函数调用栈帧
-  - c/二级指针与指针数组
-  - c/函数指针回调与跳转表
+  - 'c/042-StructAndUnion'
+  - 'c/043-FunctionCallStackFrame'
+  - 'c/045-DoublePointerPointerArray'
+  - 'c/046-FunctionPointerCallbackJumpTable'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 
 # 指针与数组的区别（Pointers vs Arrays）

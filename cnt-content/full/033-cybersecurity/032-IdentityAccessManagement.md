@@ -1,20 +1,21 @@
 ---
-order: 104
+order: 320
 title: 身份与访问管理
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: '身份与访问管理：SSO、OAuth 2.0、OIDC、JWT 的原理与安全实践。'
+description: 身份与访问管理：SSO、OAuth 2.0、OIDC、JWT 的原理与安全实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/反序列化漏洞
-  - cybersecurity/零信任架构
-  - cybersecurity/安全基线
-  - cybersecurity/漏洞扫描工具
+  - 'cybersecurity/030-DeserializationVulnerability'
+  - 'cybersecurity/031-ZeroTrustArchitecture'
+  - 'cybersecurity/033-SecurityBaseline'
+  - 'cybersecurity/034-VulnerabilityScanTools'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. SSO 单点登录
 

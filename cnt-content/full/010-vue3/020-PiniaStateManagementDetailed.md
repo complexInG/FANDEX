@@ -1,22 +1,20 @@
 ---
-order: 90
-tags:
-  - vue3
+order: 200
+title: Pinia 状态管理详解
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
-title: 'Pinia 状态管理详解'
-module: vue3
-category: 'Vue3 Basics'
-description: 'Store 定义、状态读写、异步操作与插件机制。'
+description: Store 定义、状态读写、异步操作与插件机制。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/组件系统
-  - vue3/TypeScript集成
-  - vue3/插件开发
-  - vue3/computed缓存机制与watch执行时机
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/018-ComponentSystem'
+  - 'vue3/019-TypeScriptIntegration'
+  - 'vue3/021-PluginDevelopment'
+  - 'vue3/022-ComputedCacheWatchTiming'
+prerequisites: []
 ---
+
 ## 1. Pinia 概述
 
 Pinia 是 Vue 3 官方推荐的状态管理库，它是 Vuex 的替代品，提供了更简洁的 API 和更好的 TypeScript 支持。

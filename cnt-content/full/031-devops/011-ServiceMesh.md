@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 110
 title: 服务网格
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: advanced
 description: 服务网格：Istio架构、流量管理、安全策略、可观测性与Envoy代理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/Shell脚本编程
-  - devops/包管理与仓库
-  - devops/日志管理
-  - devops/配置管理
+  - 'devops/009-ShellScriptProgramming'
+  - 'devops/010-PackageManagementRepository'
+  - 'devops/012-LogManagement'
+  - 'devops/013-ConfigManagement'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 服务网格概述
 

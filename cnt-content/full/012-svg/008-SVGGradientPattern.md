@@ -1,19 +1,20 @@
 ---
 order: 80
-title: 'SVG 渐变与图案'
-module: svg
-category: 'SVG Style'
+title: SVG 渐变与图案
+module: 'svg'
+category: 前端技术
 difficulty: intermediate
-description: 'linearGradient、radialGradient、pattern 平铺与复杂纹理。'
+description: linearGradient、radialGradient、pattern 平铺与复杂纹理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/颜色与填充
-  - svg/滤镜详解
-  - svg/变换transform
+  - 'svg/007-SVGColorFill'
+  - 'svg/010-SVGFilterDetailed'
+  - 'svg/009-SVGTransformTransform'
 prerequisites:
-  - svg/颜色与填充
+  - 'svg/007-SVGColorFill'
 ---
+
 ## 1. 线性渐变 linearGradient
 
 `<linearGradient>` 沿直线方向过渡颜色。

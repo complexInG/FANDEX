@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 90
 title: 动态内存管理
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
 description: malloc/calloc/realloc/free详解
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - c/枚举与typedef
-  - c/多文件编译
-  - c/函数指针与回调
-  - c/可变参数函数
+  - 'c/007-EnumTypedef'
+  - 'c/008-TheLinuxProgrammingInterface'
+  - 'c/010-FunctionPointerCallback'
+  - 'c/011-VarargsFunction'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 第 1 章 引言与学习路径
 
 ### 1.1 为什么动态内存管理是 C 工程师的核心能力

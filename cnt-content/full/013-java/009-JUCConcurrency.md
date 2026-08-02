@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 90
 title: JUC并发包
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: java.util.concurrent并发工具
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - java/泛型进阶
-  - java/并发编程基础
-  - java/JVM类加载机制
-  - java/JVM垃圾回收
+  - 'java/007-JavaGenericsTutorial'
+  - 'java/008-ConcurrencyBasics'
+  - 'java/010-JVMClassLoadingMechanism'
+  - 'java/011-JVMGC'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 # JUC 并发包深度解析
 

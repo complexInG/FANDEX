@@ -1,23 +1,21 @@
 ---
-order: 120
-tags:
-  - mysql
-  - database
+order: 700
+title: MySQL 配置与运维
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-title: 'MySQL 配置与运维'
-module: mysql
-category: 'MySQL Basics'
 description: 参数调优、日志管理、备份恢复与监控。
 author: Anonymous
-related:
-  - 'mysql/JSON类型与JSON-TABLE'
-  - mysql/事务与锁机制
-  - mysql/快速查阅
-  - mysql/控制器与应用
-prerequisites:
-  - mysql/语法速查
 updated: '2026-08-01'
+related:
+  - 'mysql/068-JSONTypeJSONTable'
+  - 'mysql/069-TransactionLockMechanism'
+  - 'mysql/071-MySQLQuickLookup'
+  - 'mysql/072-MySQLControlApplication'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 基本操作 (Basic Ops)
 
@@ -26,25 +24,16 @@ updated: '2026-08-01'
 #### 1.1.1 创建数据库
 
 ```sql
- -
  SHOW DATABASES;
- -
  CREATE DATABASE mydb
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
- -
  CREATE DATABASE IF NOT EXISTS mydb;
- -
  CREATE DATABASE mydb;
- -
  DROP DATABASE IF EXISTS mydb;
- -
  use mydb;
- -
  SELECT DATABASE();
- -
  SHOW CREATE DATABASE mydb;
- -
  ALTER DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
@@ -73,7 +62,6 @@ updated: '2026-08-01'
 #### 1.2.1 创建表
 
 ```sql
- -
  CREATE TABLE users (
   id INT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
   username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
@@ -84,47 +72,33 @@ updated: '2026-08-01'
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
  )
- -
  DESCRIBE users;
  SHOW COLUMNS FROM users;
- -
  SHOW CREATE TABLE users;
- -
  SHOW TABLES;
- -
  SHOW TABLE STATUS FROM mydb;
 ```
 
 #### 1.2.2 修改表结构
 
 ```sql
- -
  ALTER TABLE users ADD COLUMN phone VARCHAR(20) AFTER email;
  ALTER TABLE users ADD COLUMN last_login DATETIME AFTER updated_at;
- -
  ALTER TABLE users MODIFY COLUMN age INT UNSIGNED NOT NULL DEFAULT 0;
- -
  ALTER TABLE users CHANGE COLUMN username user_name VARCHAR(50) NOT NULL;
- -
  ALTER TABLE users DROP COLUMN phone;
- -
  ALTER TABLE users ADD INDEX idx_email (email);
  ALTER TABLE users ADD UNIQUE INDEX idx_username (username);
- -
  ALTER TABLE orders ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id);
- -
  ALTER TABLE users RENAME TO customers;
  RENAME TABLE users TO customers, orders TO purchase_orders;
- -
  DROP TABLE IF EXISTS users;
- -
  TRUNCATE TABLE users;
 ```
 
 #### 1.2.3 表结构设计示例
 
 ```sql
- -
  CREATE TABLE orders (
   order_id BIGINT PRIMARY KEY AUTO_INCREMENT,
   order_no VARCHAR(32) NOT NULL UNIQUE COMMENT '订单编号',
@@ -142,7 +116,6 @@ updated: '2026-08-01'
   INDEX idx_order_time (order_time),
   INDEX idx_status (status)
  )
- -
  CREATE TABLE order_items (
   item_id BIGINT PRIMARY KEY AUTO_INCREMENT,
   order_id BIGINT NOT NULL COMMENT '订单ID',
@@ -165,59 +138,41 @@ updated: '2026-08-01'
 #### 1.3.1 插入数据
 
 ```sql
- -
  inSERT INTO users (username, email, password, age) VALUES ('张三', 'zhangsan@example.com', 'encrypted_pass', 25);
- -
  inSERT INTO users (username, email) VALUES ('李四', 'lisi@example.com');
- -
  inSERT INTO users (username, email, password, age) VALUES
  ('王五', 'wangwu@example.com', 'pass1', 30),
  ('赵六', 'zhaoliu@example.com', 'pass2', 28),
  ('钱七', 'qianqi@example.com', 'pass3', 35);
- -
  inSERT INTO users (username, email, age)
  SELECT username, email, age FROM old_users WHERE status = 1;
- -
  inSERT INTO users SET username='孙八', email='sunba@example.com', age=27;
- -
  inSERT INTO users (id, username, email) VALUES (1, '张三', 'new_email@example.com')
  ON DUPLICATE KEY UPDATE email='new_email@example.com', updated_at=NOW();
- -
  replace INTO users (id, username, email) VALUES (1, '张三', 'new_email@example.com');
- -
  SELECT LAST_INSERT_ID();
 ```
 
 #### 1.3.2 查询数据
 
 ```sql
- -
  SELECT * FROM users;
- -
  SELECT id, username, email FROM users;
- -
  SELECT id AS user_id, username AS name FROM users;
- -
  SELECT DISTINCT status FROM users;
  SELECT COUNT(DISTINCT status) FROM users;
- -
  SELECT * FROM users LIMIT 10;
  SELECT * FROM users LIMIT 10 OFFSET 20;
  SELECT * FROM users LIMIT 20, 10;
- -
  SELECT username, price, quantity, price * quantity AS total FROM order_items;
- -
  SELECT * FROM users WHERE age > 25 AND status = 1;
  SELECT * FROM users WHERE age BETWEEN 20 AND 30;
  SELECT * FROM users WHERE username LIKE '张%';
  SELECT * FROM users WHERE email IN ('a@example.com', 'b@example.com');
- -
  SELECT * FROM users ORDER BY created_at DESC;
  SELECT * FROM users ORDER BY age ASC, created_at DESC;
- -
  SELECT status, COUNT(*) AS count FROM users GROUP BY status;
  SELECT status, AVG(age) AS avg_age FROM users GROUP BY status HAVING AVG(age) > 25;
- -
  SELECT u.username, o.order_no, o.total_amount
  from users u
  inNER JOIN orders o ON u.id = o.user_id
@@ -227,20 +182,14 @@ updated: '2026-08-01'
 #### 1.3.3 更新数据
 
 ```sql
- -
  UPDATE users SET age = 26 WHERE id = 1;
- -
  UPDATE users SET age = age + 1 WHERE age < 30;
- -
  UPDATE users SET age = 27, email = 'new_email@example.com', updated_at = NOW() WHERE id = 1;
- -
  UPDATE users SET status = 0 WHERE created_at < '2024-01-01';
- -
  START TRANSACTION;
  UPDATE accounts SET balance = balance - 100 WHERE id = 1;
  UPDATE accounts SET balance = balance + 100 WHERE id = 2;
  commit;
- -
  SELECT * FROM users WHERE id = 1 FOR UPDATE;
  UPDATE users SET age = 26 WHERE id = 1;
 ```
@@ -248,21 +197,13 @@ updated: '2026-08-01'
 #### 1.3.4 删除数据
 
 ```sql
- -
  delete FROM users WHERE id = 1;
- -
  delete FROM users WHERE status = 0 AND created_at < '2024-01-01';
- -
  delete FROM users;
- -
  TRUNCATE TABLE users;
- -
  DROP TABLE IF EXISTS users;
- -
  delete FROM orders WHERE user_id = 1;
- -
  ALTER TABLE orders ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
- -
  SELECT * FROM users WHERE id = 1;
  delete FROM users WHERE id = 1;
 ```
@@ -272,51 +213,31 @@ updated: '2026-08-01'
 #### 1.4.1 用户管理
 
 ```sql
- -
  CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
  CREATE USER 'newuser'@'%' IDENTIFIED BY 'password'; -- 允许远程连接
  CREATE USER 'newuser'@'192.168.1.%' IDENTIFIED BY 'password'; -- 允许特定网段
- -
  ALTER USER 'newuser'@'localhost' IDENTIFIED BY 'new_password';
- -
  SET PASSWORD FOR 'newuser'@'localhost' = 'new_password';
- -
  DROP USER 'newuser'@'localhost';
- -
  SELECT user, host FROM mysql.user;
- -
  SHOW GRANTS FOR 'newuser'@'localhost';
- -
  RENAME USER 'olduser'@'localhost' TO 'newuser'@'localhost';
 ```
 
 #### 1.4.2 权限管理
 
 ```sql
- -
  GRANT ALL PRIVILEGES ON mydb.* TO 'newuser'@'localhost';
  FLUSH PRIVILEGES;
- -
  GRANT SELECT, INSERT, UPDATE, DELETE ON mydb.* TO 'newuser'@'localhost';
- -
  GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost';
- -
  GRANT CREATE USER ON *.* TO 'admin'@'localhost';
  GRANT RELOAD ON *.* TO 'admin'@'localhost';
  GRANT BACKUP ADMIN ON *.* TO 'admin'@'localhost';
- -
  GRANT SELECT, INSERT ON mydb.orders TO 'newuser'@'localhost';
- -
  GRANT EXECUTE ON PROCEDURE mydb.sp_name TO 'newuser'@'localhost';
- -
  REVOKE ALL PRIVILEGES ON mydb.* FROM 'newuser'@'localhost';
  REVOKE DELETE ON mydb.* FROM 'newuser'@'localhost';
- -
- -
- -
- -
- -
- -
  CREATE ROLE 'app_read', 'app_write';
  GRANT SELECT ON mydb.* TO 'app_read';
  GRANT SELECT, INSERT, UPDATE, DELETE ON mydb.* TO 'app_write';
@@ -352,12 +273,9 @@ updated: '2026-08-01'
 #### 2.1.2 连接配置
 
 ```sql
- -
  SET GLOBAL max_connections = 500;
- -
  SET GLOBAL wait_timeout = 600;
  SET GLOBAL interactive_timeout = 600;
- -
  SHOW STATUS LIKE 'Threads_connected';
  SHOW VARIABLES LIKE 'max_connections';
 ```
@@ -381,53 +299,32 @@ updated: '2026-08-01'
 #### 2.2.1 索引优化
 
 ```sql
- -
  CREATE INDEX idx_username ON users(username);
  CREATE INDEX idx_email_status ON users(email, status);
- -
- -
- -
- -
- -
- -
  CREATE INDEX idx_status_created ON users(status, created_at);
 ```
 
 #### 2.2.2 SQL 语句优化
 
 ```sql
- -
  SELECT * FROM users WHERE YEAR(created_at) = 2024;
- -
  SELECT * FROM users WHERE created_at >= '2024-01-01' AND created_at < '2025-01-01';
- -
  SELECT * FROM orders WHERE MONTH(order_time) = 1;
- -
  SELECT * FROM orders WHERE order_time >= '2024-01-01' AND order_time < '2024-02-01';
- -
  EXPLAIN SELECT * FROM users WHERE email = 'test@example.com';
 ```
 
 #### 2.2.3 慢查询优化示例
 
 ```sql
- -
  SET GLOBAL slow_query_log = 'ON';
  SET GLOBAL long_query_time = 1;
  SET GLOBAL slow_query_log_file = '/var/log/mysql/slow.log';
- -
- -
  SHOW FULL PROCESSLIST;
- -
  EXPLAIN SELECT u.username, o.total_amount
  from users u
  inNER JOIN orders o ON u.id = o.user_id
  WHERE o.created_at > '2024-01-01';
- -
- -
- -
- -
- -
 ```
 
 ### 2.3 存储引擎选择详解
@@ -443,7 +340,6 @@ updated: '2026-08-01'
 ### 2.4 分区表详解
 
 ```sql
- -
  CREATE TABLE sales (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   sale_date DATE NOT NULL,
@@ -457,12 +353,10 @@ updated: '2026-08-01'
   PARTITION p2024 VALUES LESS THAN (2025),
   PARTITION pmax VALUES LESS THAN MAXVALUE
  )
- -
  CREATE TABLE users (
   id INT PRIMARY KEY,
   name VARCHAR(50)
  )
- -
  CREATE TABLE products (
   id INT PRIMARY KEY,
   category_id INT,
@@ -479,18 +373,13 @@ updated: '2026-08-01'
 ### 3.1 基础安全配置
 
 ```sql
- -
  ALTER USER 'root'@'localhost' IDENTIFIED BY 'NewStrongPass@123';
- -
  delete FROM mysql.user WHERE User = '';
- -
  delete FROM mysql.user WHERE User = 'root' AND Host != 'localhost';
  FLUSH PRIVILEGES;
- -
  CREATE USER 'app_user'@'%' IDENTIFIED BY 'AppPass@2024';
  GRANT SELECT, INSERT, UPDATE, DELETE ON production_db.* TO 'app_user'@'%';
  FLUSH PRIVILEGES;
- -
  CREATE USER 'app_user'@'192.168.1.%' IDENTIFIED BY 'AppPass@2024';
  CREATE USER 'app_user'@'10.%.%.%' IDENTIFIED BY 'AppPass@2024';
 ```
@@ -498,32 +387,18 @@ updated: '2026-08-01'
 ### 3.2 SSL/TLS 配置
 
 ```sql
- -
  SHOW VARIABLES LIKE 'have_ssl';
  SHOW VARIABLES LIKE 'have_openssl';
- -
- -
- -
- -
- -
- -
  ALTER USER 'root'@'localhost' REQUIRE SSL;
- -
  SELECT user, host, ssl_type FROM mysql.user;
 ```
 
 ### 3.3 审计和监控
 
 ```sql
- -
- -
- -
  SELECT * FROM mysql.general_log WHERE command_type='Connect' ORDER BY event_time DESC LIMIT 100;
- -
  SELECT * FROM information_schema.processlist WHERE Command != 'Sleep' AND Time > 60;
- -
  SELECT * FROM information_schema.innodb_lock_waits;
- -
  SELECT * FROM information_schema.innodb_trx;
 ```
 
@@ -571,12 +446,10 @@ updated: '2026-08-01'
 ### 5.1 常用监控命令
 
 ```sql
- -
  SHOW STATUS; -- 所有状态变量
  SHOW GLOBAL STATUS; -- 全局状态
  SHOW VARIABLES; -- 所有配置变量
  SHOW GLOBAL VARIABLES;
- -
  SHOW STATUS LIKE 'Threads_connected'; -- 当前连接数
  SHOW STATUS LIKE 'Max_used_connections'; -- 历史最大连接数
  SHOW STATUS LIKE 'Slow_queries'; -- 慢查询数量
@@ -585,34 +458,23 @@ updated: '2026-08-01'
  SHOW STATUS LIKE 'Com_insert'; -- 插入次数
  SHOW STATUS LIKE 'Com_update'; -- 更新次数
  SHOW STATUS LIKE 'Com_delete'; -- 删除次数
- -
  SHOW PROCESSLIST;
  SHOW FULL PROCESSLIST;
- -
  SHOW ENGINE INNODB STATUS;
- -
  SHOW TABLE STATUS FROM database_name;
- -
  SHOW INDEX FROM table_name;
 ```
 
 ### 5.2 定期维护任务
 
 ```sql
- -
  ANALYZE TABLE users;
- -
  CHECK TABLE users;
- -
  REPAIR TABLE users;
- -
  OPTIMIZE TABLE users;
- -
  ANALYZE TABLE users;
- -
  PURGE BINARY LOGS BEFORE '2024-01-01 00:00:00';
  PURGE BINARY LOGS TO 'mysql-bin.000010';
- -
  SELECT TABLE_NAME, Data_free FROM information_schema.tables WHERE Data_free > 0;
 ```
 

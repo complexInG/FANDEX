@@ -1,23 +1,20 @@
 ---
-order: 60
-tags:
-  - vue3
-  - composable
+order: 170
+title: 自定义 Hook
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
-title: '自定义 Hook'
-module: vue3
-category: 'Vue3 Basics'
 description: Vue3组合式函数（Composables/自定义Hook）设计模式、最佳实践与常用Hook实现。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/Vue3性能优化实践
-  - vue3/响应式系统
-  - vue3/组件系统
-  - vue3/TypeScript集成
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/015-Vue3PerformancePractice'
+  - 'vue3/016-ReactiveSystem'
+  - 'vue3/018-ComponentSystem'
+  - 'vue3/019-TypeScriptIntegration'
+prerequisites: []
 ---
+
 
 ## 1. 自定义 Hook 概述
 

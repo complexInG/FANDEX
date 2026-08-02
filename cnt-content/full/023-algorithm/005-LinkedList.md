@@ -1,23 +1,21 @@
 ---
-order: 40
-tags:
-  - algorithm
-  - 'data-structure'
-difficulty: intermediate
+order: 50
 title: 链表
-module: algorithm
-category: Algorithm/LinkedList
+module: 'algorithm'
+category: 计算机科学
+difficulty: intermediate
 description: 单链表、双链表与环形链表的原理、操作复杂度分析与多语言实现，涵盖常见面试题型。
 author: fanquanpp
-related:
-  - algorithm/排序算法
-  - algorithm/搜索算法
-  - algorithm/哈希表
-  - algorithm/树
-prerequisites:
-  - algorithm/算法分析基础与学习路线
 updated: '2026-08-01'
+related:
+  - 'algorithm/002-SortAlgorithm'
+  - 'algorithm/004-SearchAlgorithm'
+  - 'algorithm/006-HashTable'
+  - 'algorithm/007-TheUbiquitousBTree'
+prerequisites:
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
 ---
+
 
 ## 1. 链表概述
 

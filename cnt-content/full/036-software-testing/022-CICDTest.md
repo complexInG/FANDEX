@@ -1,18 +1,19 @@
 ---
-order: 107
-title: 'CI-CD测试门禁'
+order: 220
+title: CI-CD测试门禁
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: 'CI/CD 测试门禁：SonarQube 代码质量、Jacoco 覆盖率与质量门配置。'
+description: CI/CD 测试门禁：SonarQube 代码质量、Jacoco 覆盖率与质量门配置。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/测试双'
-  - 'software-testing/TDD与BDD'
+  - 'software-testing/020-TestDouble'
+  - 'software-testing/021-TDDBDD'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 
 ## 1. 测试门禁概念
 

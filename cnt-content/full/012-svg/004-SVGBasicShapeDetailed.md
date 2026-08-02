@@ -1,19 +1,20 @@
 ---
 order: 40
-title: 'SVG 基本图形详解'
-module: svg
-category: 'SVG Basics'
+title: SVG 基本图形详解
+module: 'svg'
+category: 前端技术
 difficulty: beginner
-description: 'rect、circle、ellipse、line、polyline、polygon 六大基本图形属性与用法。'
+description: rect、circle、ellipse、line、polyline、polygon 六大基本图形属性与用法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/坐标系与viewBox
-  - svg/路径path详解
-  - svg/颜色与填充
+  - 'svg/003-SVGCoordinateSystemViewBox'
+  - 'svg/005-SVGPathPathDetailed'
+  - 'svg/007-SVGColorFill'
 prerequisites:
-  - svg/坐标系与viewBox
+  - 'svg/003-SVGCoordinateSystemViewBox'
 ---
+
 ## 1. 矩形 rect
 
 `<rect>` 绘制矩形，支持圆角。

@@ -1,23 +1,24 @@
 ---
-order: 56
+order: 120
 title: LuaJIT
-module: lua
-category: Lua
+module: 'lua'
+category: 后端技术
 difficulty: advanced
-description: 'LuaJIT 即时编译器原理、Trace 录制、FFI 外部函数接口、性能优化与工程实践'
+description: LuaJIT 即时编译器原理、Trace 录制、FFI 外部函数接口、性能优化与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - lua/字符串模式匹配
-  - lua/Lua与C交互
-  - lua/标准库详解
-  - lua/Lua与Love2D
-  - lua/Lua与Neovim
+  - 'lua/010-StringPatternMatching'
+  - 'lua/011-LuaC'
+  - 'lua/024-StandardLibraryDetailed'
+  - 'lua/013-LuaLove2D'
+  - 'lua/014-LuaNeovim'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/标准库详解
-  - lua/Lua与C交互
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/024-StandardLibraryDetailed'
+  - 'lua/011-LuaC'
 ---
+
 ## FFI 外部函数接口
 
 **基本写法：ffi.cdef 声明**

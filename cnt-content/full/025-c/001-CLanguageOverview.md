@@ -1,18 +1,18 @@
 ---
 order: 10
-tags:
-  - c
+title: C 语言概述
+module: 'c'
+category: 计算机科学
 difficulty: beginner
-title: 'C 语言概述'
-module: c
-category: 'C Basics'
-description: 'C 语言的发展历史、设计哲学、核心特点、应用领域与全栈知识图谱，对标 MIT 6.S081、Stanford CS107、CMU 15-213 教学水准。'
+description: C 语言的发展历史、设计哲学、核心特点、应用领域与全栈知识图谱，对标 MIT 6.S081、Stanford CS107、CMU 15-213 教学水准。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - c/程序结构与基本语法
-  - c/数据类型详解
+  - 'c/002-ProgramStructureBasicSyntax'
+  - 'c/003-DataTypeDetailed'
 prerequisites: []
 ---
+
 
 
 # C 语言概述

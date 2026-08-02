@@ -1,28 +1,23 @@
 ---
-order: 87
+order: 450
 title: Java与数据库连接
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
-description: 'JDBC 规范、连接池原理、事务管理、ORM 框架与高性能数据库访问最佳实践。'
+description: JDBC 规范、连接池原理、事务管理、ORM 框架与高性能数据库访问最佳实践。
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - java
-  - jdbc
-  - database
-  - connection-pool
-  - transaction
 related:
-  - java/Java文本块
-  - java/Java模块系统
-  - java/Java新特性与生态
-  - java/数组详解
-  - java/Spring基础
+  - 'java/043-JavaTextBlock'
+  - 'java/044-JavaModuleSystem'
+  - 'java/046-JavaNewFeaturesEcosystem'
+  - 'java/047-ArrayDetailed'
+  - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
 prerequisites:
-  - java/概述与开发环境
-  - java/异常处理
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/058-ExceptionHandlingMechanism'
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 JDBC 的诞生

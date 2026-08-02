@@ -1,20 +1,21 @@
 ---
-order: 75
+order: 320
 title: Java与GraphQL
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
-description: 'GraphQL API开发'
+description: GraphQL API开发
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/Java与Redis
-  - java/Java与Docker
-  - java/Java性能调优
-  - java/Java与AI
+  - 'java/030-JavaRedis'
+  - 'java/031-JavaDocker'
+  - 'java/033-JavaPerformanceTuning'
+  - 'java/034-JavaAI'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 ## 概述
 

@@ -1,19 +1,19 @@
 ---
-order: 1
+order: 10
 title: pnpm 与 Monorepo 工程化
-module: pnpm-monorepo
-category: pnpm 与 Monorepo
+module: 'pnpm-monorepo'
+category: 工具链
 difficulty: intermediate
-description: 'pnpm 与 Monorepo 工程化：workspace、内容寻址存储、依赖隔离、catalog、任务编排与发布'
+description: pnpm 与 Monorepo 工程化：workspace、内容寻址存储、依赖隔离、catalog、任务编排与发布
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - vite/Vite构建工具
-  - git/Git基础操作
-  - devops/CI/CD流水线
+  - 'vite/001-ViteOverview'
+  - 'devops/005-CICDPipeline'
 prerequisites:
-  - getting-started/包管理器
+  - 'getting-started/013-PackageManager'
 ---
+
 
 ## 1. 从"一个仓库装下所有项目"说起
 

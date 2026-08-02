@@ -1,21 +1,21 @@
 ---
 order: 10
 title: Lua 概述与环境配置
-module: lua
-category: Lua
+module: 'lua'
+category: 后端技术
 difficulty: beginner
-description: 'Lua 语言设计哲学、历史演进、形式化语义、运行时模型与多平台环境配置工程实践'
+description: Lua 语言设计哲学、历史演进、形式化语义、运行时模型与多平台环境配置工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - lua/程序结构与基本语法
-  - lua/数据类型与Table详解
-  - lua/标准库详解
-  - lua/环境与模块
-  - lua/Lua即时编译器
-  - lua/Lua与C交互
+  - 'lua/002-ProgramStructureBasicSyntax'
+  - 'lua/003-DataTypeTableDetailed'
+  - 'lua/024-StandardLibraryDetailed'
+  - 'lua/009-EnvironmentModule'
+  - 'lua/011-LuaC'
 prerequisites: []
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 Lua 的诞生背景

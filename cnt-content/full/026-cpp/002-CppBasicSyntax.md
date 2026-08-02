@@ -1,20 +1,19 @@
 ---
 order: 20
-tags:
-  - cpp
+title: C++ 基础语法
+module: 'cpp'
+category: 计算机科学
 difficulty: beginner
-title: 'C++ 基础语法'
-module: cpp
-category: 'C++ Basics'
-description: 'C++ 基本语法、注释、标识符与关键字。'
+description: C++ 基本语法、注释、标识符与关键字。
 author: Anonymous
-related:
-  - cpp/概述与现代标准
-  - cpp/类型系统
-  - cpp/引用
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/003-CppTypeSystem'
+  - 'cpp/004-CppReference'
+prerequisites: []
 ---
+
 ## 1. 数据类型 (Data Types)
 
 C++ 具有丰富的类型系统，分为基本类型和复合类型。

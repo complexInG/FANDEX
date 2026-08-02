@@ -1,9 +1,8 @@
 ---
 order: 430
 title: GitHub 远程仓库管理
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 以多设备协作场景驱动讲解 git remote 系列命令（查看、添加、修改、删除远程关联），覆盖 origin/upstream 双远程、fork 工作流与凭证管理，适合零基础学习者。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 ## 开篇：像多台电脑同步一样管理远程
 
 想象你同时用办公室电脑、家里的笔记本和手机处理同一个项目。没有云盘时，你得靠 U 盘来回拷文件，稍不留神就"哪个版本是最新的"都分不清。有了云盘后，所有设备都以**云端为唯一权威**：在办公室改完上传，到家下载接着改。

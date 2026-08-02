@@ -1,20 +1,21 @@
 ---
-order: 92
+order: 320
 title: 编译与运行时
 module: 'cs-fundamentals'
-category: 计算机基础
+category: 计算机科学
 difficulty: advanced
 description: 编译与运行时深度剖析：词法分析自动机构造、语法分析算法、语义分析、中间代码与SSA、优化技术、JIT编译、GC算法、链接与加载。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/编程语言理论'
-  - 'cs-fundamentals/网络协议深度'
-  - 'cs-fundamentals/进程PCB与线程TCB'
-  - 'cs-fundamentals/中断与系统调用'
+  - 'cs-fundamentals/030-ProgrammingLanguageTheory'
+  - 'cs-fundamentals/031-NetworkProtocolDeep'
+  - 'cs-fundamentals/033-PCBThreadTCB'
+  - 'cs-fundamentals/034-InterruptAndSystemCall'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 词法分析：正则到自动机
 

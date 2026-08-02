@@ -2,19 +2,20 @@
 order: 40
 title: 计算机体系结构
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 冯·诺依曼体系结构、CPU工作原理、指令周期、存储层次与总线系统。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/开发环境搭建'
-  - 'getting-started/学习指南'
-  - 'getting-started/数的表示与编码'
-  - 'getting-started/程序设计基础'
+  - 'getting-started/002-DevEnvSetup'
+  - 'getting-started/003-LearningGuide'
+  - 'getting-started/005-NumberRepresentationEncoding'
+  - 'getting-started/006-ProgrammingBasics'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 冯·诺依曼体系结构
 

@@ -1,20 +1,21 @@
 ---
-order: 50
+order: 60
 title: 伪类与伪元素
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-description: ':nth-child、:not、:is、::before、::after'
+description: :nth-child、:not、:is、::before、::after
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/传统布局技术
-  - css/Flexbox弹性布局
-  - css/优先级计算
-  - css/样式表引入方式
+  - 'css/004-TraditionalLayoutTech'
+  - 'css/005-CSS3FlexboxFlexLayout'
+  - 'css/007-PriorityCalculation'
+  - 'css/008-StyleSheetImportMethod'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 ## 伪元素
 
 **基本写法：::before 前置内容**

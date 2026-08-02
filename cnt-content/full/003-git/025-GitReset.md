@@ -1,20 +1,18 @@
 ---
-order: 68
-title: 'git-reset'
-module: git
-category: 'Git Basics'
+order: 250
+title: git-reset
+module: 'git'
+category: 工具链
 difficulty: advanced
-description: 'git reset三种模式详解：soft、mixed、hard的区别与安全使用。'
+description: git reset三种模式详解：soft、mixed、hard的区别与安全使用。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'git/Git-Flow与GitHub-Flow'
-  - git/修改提交
-  - git/撤销提交
-  - git/Git原理与对象模型
-prerequisites:
-  - git/语法速查
+  - 'git/023-GitFlowGitHubFlow'
+  - 'git/027-GitPrincipleObjectModel'
+prerequisites: []
 ---
+
 
 ## 1. reset 概述
 

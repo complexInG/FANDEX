@@ -1,25 +1,25 @@
 ---
-order: 55
+order: 110
 title: Python与SQLAlchemy
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: SQLAlchemy 深度剖析：从 Core SQL 表达式到 ORM Unit of Work、会话生命周期、N+1 查询治理与企业级架构实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - python/Python与FastAPI
-  - python/Python与数据库迁移
-  - python/Python与Redis
-  - python/数据类与字段默认值
-  - python/元类与单例模式
-  - python/异步编程详解
+  - 'python/013-PythonFastAPI'
+  - 'python/046-PythonDatabaseMigration'
+  - 'python/016-PythonRedis'
+  - 'python/058-DataClassFieldDefault'
+  - 'python/053-MetaclassSingleton'
+  - 'python/054-AsyncProgrammingDetailed'
 prerequisites:
-  - python/语法速查
-  - python/面向对象编程
-  - python/上下文管理器
-  - python/类型注解与mypy
+  - 'python/061-OOP'
+  - 'python/052-ContextManager'
+  - 'python/060-TypeAnnotationMypy'
 ---
+
 
 
 # Python 与 SQLAlchemy（Python & SQLAlchemy）

@@ -1,20 +1,20 @@
 ---
-order: 50
+order: 60
 title: 分布式版本控制原理
-module: git
-category: 'Git Basics'
+module: 'git'
+category: 工具链
 difficulty: intermediate
 description: 分布式版本控制的核心原理：去中心化架构、数据完整性保证与协作模型。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/Git分支管理
-  - git/Git远程仓库操作
-  - git/对象模型
-  - 'git/SHA-1哈希完整性校验'
-prerequisites:
-  - git/语法速查
+  - 'git/004-GitBranchManagement'
+  - 'git/005-GitRemoteRepoOperation'
+  - 'git/007-ObjectModel'
+  - 'git/008-SHA1IntegrityCheck'
+prerequisites: []
 ---
+
 
 ## 1. 分布式架构
 

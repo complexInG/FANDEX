@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 200
 title: 半连接与反半连接
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: 'SQL半连接与反半连接：EXISTS、NOT EXISTS、IN、NOT IN的语义、性能差异与优化策略'
+description: SQL半连接与反半连接：EXISTS、NOT EXISTS、IN、NOT IN的语义、性能差异与优化策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/自然连接与USING
-  - sql/自连接
-  - sql/LATERAL派生表
-  - sql/子查询
+  - 'sql/018-NaturalJoinUsing'
+  - 'sql/019-SelfJoin'
+  - 'sql/021-LateralDerivedTable'
+  - 'sql/022-Subquery'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 半连接与反半连接概念
 
 ### 1.1 定义

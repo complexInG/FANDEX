@@ -1,20 +1,21 @@
 ---
-order: 69
+order: 280
 title: Sass
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: Sass（变量、嵌套、混合、继承、运算、模块化）
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/逻辑属性
-  - css/滚动捕捉
-  - css/Less与Stylus
-  - css/响应式设计
+  - 'css/026-LogicalProperty'
+  - 'css/027-ScrollSnap'
+  - 'css/029-LessStylus'
+  - 'css/030-ResponsiveDesign'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. Sass 概述
 

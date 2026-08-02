@@ -1,19 +1,20 @@
 ---
-order: 44
+order: 210
 title: 矩与协方差矩阵
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: advanced
 description: 原点矩、中心矩、混合矩的定义、偏度与峰度、协方差矩阵与相关矩阵、多元正态分布。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/协方差'
-  - 'probability-statistics/相关系数'
-  - 'probability-statistics/切比雪夫不等式'
+  - 'probability-statistics/022-Covariance'
+  - 'probability-statistics/023-CorrelationCoefficient'
+  - 'probability-statistics/026-ChebyshevInequality'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：一张表格装下一个班的"统计档案"
 

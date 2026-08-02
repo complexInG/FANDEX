@@ -1,20 +1,21 @@
 ---
-order: 50
+order: 110
 title: 数据类型
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
 description: SQL数据类型体系：数值类型、字符串类型、日期时间类型、JSON类型、空间类型的语法、存储与最佳实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'sql/PL-SQL与存储过程'
-  - sql/SQL实战与面试
-  - sql/约束
-  - sql/SELECT执行顺序
+  - 'sql/009-PLSQLStoredProcedure'
+  - 'sql/010-SQLPracticeInterview'
+  - 'sql/012-Constraint'
+  - 'sql/013-SelectExecutionOrder'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 数据类型概述
 
 SQL 数据类型定义了列、参数和表达式可以存储的数据种类及其操作。合理选择数据类型直接影响存储效率、查询性能和数据完整性。

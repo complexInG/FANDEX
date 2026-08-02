@@ -1,19 +1,19 @@
 ---
-order: 6
+order: 60
 title: 监控与可观测性
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
-description: 'Prometheus+Grafana、日志、链路追踪、OpenTelemetry 与 SLO/SLI/SLA。'
+description: Prometheus+Grafana、日志、链路追踪、OpenTelemetry 与 SLO/SLI/SLA。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'devops/CI-CD流水线'
-  - devops/语法速查
-  - devops/基础设施即代码
-  - devops/云原生与SRE
+  - 'devops/005-CICDPipeline'
+  - 'devops/007-IaC'
+  - 'devops/008-CloudNativeSRE'
 prerequisites: []
 ---
+
 
 ## 1. 可观测性三大支柱
 

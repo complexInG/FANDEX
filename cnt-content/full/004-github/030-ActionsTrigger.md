@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 300
 title: Actions触发器
-module: github
-category: toolchain
+module: 'github'
+category: 工具链
 difficulty: intermediate
-description: 'GitHub Actions触发器详解：以触发事件清单为主线，逐一讲解 push、pull_request、schedule、workflow_dispatch 等事件类型、过滤条件与触发优化技巧。'
+description: GitHub Actions触发器详解：以触发事件清单为主线，逐一讲解 push、pull_request、schedule、workflow_dispatch 等事件类型、过滤条件与触发优化技巧。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/GitHubPages多站点方案
-  - github/GitHubActions与CICD
-  - github/常见问题排查
-  - github/Actions矩阵构建
+  - 'github/028-GitHubPagesMultiSolution'
+  - 'github/029-GitHubActionsCICD'
+  - 'github/031-FAQTroubleshoot'
+  - 'github/032-ActionsMatrixBuild'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 ## 0. 开始之前：一个关于"闹钟"的故事
 
 想象你家里有很多**定时触发装置**：早上 7 点的闹钟、门口感应灯、厨房的定时烤箱、还有你亲手按下按钮的咖啡机。它们平时静静躺着，但一旦"事件"发生（时间到了、有人经过、按下按钮），对应的装置就会立刻开始工作——有的会响、有的会亮、有的会烤面包。

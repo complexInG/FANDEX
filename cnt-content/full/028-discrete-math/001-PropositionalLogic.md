@@ -1,17 +1,18 @@
 ---
-order: 1
+order: 10
 title: 命题逻辑
 module: 'discrete-math'
-category: 离散数学
+category: 数学
 difficulty: beginner
 description: 命题与联结词、真值表、等值演算、范式（主析取/主合取）、推理理论、自然推理系统。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'discrete-math/谓词逻辑'
-  - 'discrete-math/集合与关系'
+  - 'discrete-math/002-PredicateLogic'
+  - 'discrete-math/003-SetAndRelation'
 prerequisites: []
 ---
+
 ## 1. 命题与联结词
 
 ### 1.1 命题

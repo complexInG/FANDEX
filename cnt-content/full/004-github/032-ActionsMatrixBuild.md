@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 320
 title: Actions矩阵构建
-module: github
-category: toolchain
+module: 'github'
+category: 工具链
 difficulty: advanced
-description: 'GitHub Actions矩阵策略原理详解：从一次配置多环境测试的痛点出发，深入 strategy.matrix 语法、include/exclude、fail-fast 与动态矩阵。'
+description: GitHub Actions矩阵策略原理详解：从一次配置多环境测试的痛点出发，深入 strategy.matrix 语法、include/exclude、fail-fast 与动态矩阵。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/Actions触发器
-  - github/常见问题排查
-  - github/Actions缓存依赖
-  - github/Actions自托管运行器
+  - 'github/030-ActionsTrigger'
+  - 'github/031-FAQTroubleshoot'
+  - 'github/033-ActionsCacheDependency'
+  - 'github/034-ActionsSelfHostedRunner'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 ## 0. 开始之前：一条"批量生产线"的故事
 
 想象一家饮料厂。过去，工厂里每种口味（橙汁、苹果汁、葡萄汁）都要**单独建一条生产线**，工人重复做同样的事：灌装、贴标、装箱。三倍口味 = 三倍设备、三倍人力、三倍维护成本。

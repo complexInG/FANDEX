@@ -1,20 +1,21 @@
 ---
-order: 74
+order: 340
 title: 嵌入式C编程
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: advanced
 description: 嵌入式系统C编程要点
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/静态分析与调试
-  - c/跨平台编程
-  - c/C与汇编交互
-  - c/数组详解
+  - 'c/032-StaticAnalysisDebug'
+  - 'c/033-CrossPlatformProgramming'
+  - 'c/035-CAssemblyInteraction'
+  - 'c/036-ArrayDetailed'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 
 ## 概述

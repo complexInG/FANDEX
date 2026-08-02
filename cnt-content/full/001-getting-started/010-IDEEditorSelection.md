@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 100
 title: IDE与编辑器选型
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
-description: '主流IDE与编辑器对比选型：VS Code、IntelliJ、Vim及云IDE方案。'
+description: 主流IDE与编辑器对比选型：VS Code、IntelliJ、Vim及云IDE方案。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/学习路线规划'
-  - 'getting-started/环境变量与PATH'
-  - 'getting-started/插件生态'
-  - 'getting-started/命令行基础'
+  - 'getting-started/008-LearningPathPlanning'
+  - 'getting-started/009-EnvVarPath'
+  - 'getting-started/011-PluginEcosystem'
+  - 'getting-started/012-CommandLineBasics'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 编辑器与IDE概述
 

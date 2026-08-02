@@ -1,19 +1,20 @@
 ---
-order: 8
-title: '云原生与 SRE'
-module: devops
-category: 运维
+order: 80
+title: 云原生与 SRE
+module: 'devops'
+category: 云与基础设施
 difficulty: advanced
-description: '云原生架构、12-Factor App、服务网格、混沌工程与 On-Call 实践。'
+description: 云原生架构、12-Factor App、服务网格、混沌工程与 On-Call 实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/监控与可观测性
-  - devops/基础设施即代码
-  - devops/Shell脚本编程
-  - devops/包管理与仓库
+  - 'devops/006-MonitorAndObservability'
+  - 'devops/007-IaC'
+  - 'devops/009-ShellScriptProgramming'
+  - 'devops/010-PackageManagementRepository'
 prerequisites: []
 ---
+
 
 ## 1. 云原生架构
 

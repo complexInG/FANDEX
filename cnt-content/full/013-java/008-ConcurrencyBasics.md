@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 80
 title: 并发编程基础
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: 线程、锁与并发工具
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - java/枚举与注解
-  - java/泛型进阶
-  - java/JUC并发包
-  - java/JVM类加载机制
+  - 'java/006-JavaAnnotationsTutorial'
+  - 'java/007-JavaGenericsTutorial'
+  - 'java/009-JUCConcurrency'
+  - 'java/010-JVMClassLoadingMechanism'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 
 ## 历史动机与背景

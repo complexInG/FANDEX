@@ -1,20 +1,21 @@
 ---
-order: 107
+order: 310
 title: 跨设备调用
-module: harmonyos
-category: 'dev-lang'
+module: 'harmonyos'
+category: 后端技术
 difficulty: advanced
 description: HarmonyOS跨设备调用详解：分布式调度、跨设备启动Ability。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/权限申请
-  - harmonyos/分布式数据管理
-  - harmonyos/元服务开发与发布
-  - 'harmonyos/DevEco-Studio调试器'
+  - 'harmonyos/029-PermissionRequest'
+  - 'harmonyos/030-DistributedDataManagement'
+  - 'harmonyos/032-AtomicServiceDevPublish'
+  - 'harmonyos/033-DevEcoStudioDebugger'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 
 
 # 跨设备调用：HarmonyOS 分布式软总线与远程 Ability 协同

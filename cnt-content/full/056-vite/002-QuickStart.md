@@ -1,19 +1,20 @@
 ---
-order: 2
+order: 20
 title: Vite 快速上手与项目结构
-module: vite
-category: Vite
+module: 'vite'
+category: 前端技术
 difficulty: beginner
-description: 'Vite 快速上手：手把手创建项目、读懂目录结构、掌握 dev/build/preview 三个核心命令与 ESM 加速原理'
+description: Vite 快速上手：手把手创建项目、读懂目录结构、掌握 dev/build/preview 三个核心命令与 ESM 加速原理
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - vite/003-ConfigFile
-  - vite/004-StaticAssets
-  - vite/006-DevServerHMR
+  - 'vite/003-ConfigFile'
+  - 'vite/004-StaticAssets'
+  - 'vite/006-DevServerHMR'
 prerequisites:
-  - javascript/005-ControlFlow
+  - 'javascript/005-ControlFlow'
 ---
+
 
 ## 1. 写在前面：像第一次开火做饭一样开始
 

@@ -1,23 +1,20 @@
 ---
-order: 180
-tags:
-  - java
-  - network
-difficulty: advanced
+order: 660
 title: 网络编程
-module: java
-category: 'Java Basics'
+module: 'java'
+category: 后端技术
+difficulty: advanced
 description: Java网络编程基础、Socket编程、URL处理、NIO网络编程与HTTP客户端详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/流式API
-  - java/SpringBoot学习笔记
-  - java/SpringCloud微服务开发
-  - java/Swing图形界面
+  - 'java/065-SpringBootNotes'
+  - 'java/067-SpringCloudMicroserviceDevelopment'
+  - 'java/068-JavaSwingGUI'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 网络编程基础
 
 ### 1.1 网络基本概念

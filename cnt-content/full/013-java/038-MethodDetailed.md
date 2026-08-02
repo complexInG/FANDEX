@@ -1,22 +1,21 @@
 ---
-order: 80
-tags:
-  - java
-difficulty: intermediate
+order: 380
 title: 方法详解
-module: java
-category: 'Java Basics'
+module: 'java'
+category: 后端技术
+difficulty: intermediate
 description: 方法定义、参数传递、方法重载与递归。
 author: Anonymous
-related:
-  - java/Java与WebAssembly
-  - java/Java与响应式编程
-  - java/Java与虚拟线程
-  - java/Java与GraalVM
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/036-JavaWebAssembly'
+  - 'java/037-JavaReactiveProgramming'
+  - 'java/039-JavaVirtualThread'
+  - 'java/040-JavaGraalVM'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 方法基本语法 (Basic Syntax)
 
 方法是执行特定任务的命名代码块，是Java中代码组织和复用的基本单位。

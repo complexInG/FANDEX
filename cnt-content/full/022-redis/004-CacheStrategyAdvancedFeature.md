@@ -1,19 +1,19 @@
 ---
-order: 4
+order: 40
 title: 缓存策略与高级特性
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: intermediate
 description: 过期键删除、内存淘汰策略、事务与乐观锁、Lua脚本、发布订阅、管道、客户端缓存、ACL、TLS、慢查询日志。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/持久化与模块
-  - redis/集群与高可用
-  - redis/语法速查
-  - redis/位图
+  - 'redis/002-PersistenceModule'
+  - 'redis/003-ClusterHA'
+  - 'redis/005-BitGraph'
 prerequisites: []
 ---
+
 
 ## 1. 过期键删除
 

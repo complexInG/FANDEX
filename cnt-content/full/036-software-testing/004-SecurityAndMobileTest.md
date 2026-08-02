@@ -1,19 +1,20 @@
 ---
-order: 4
+order: 40
 title: 安全与移动测试
 module: 'software-testing'
-category: 软件测试
+category: 云与基础设施
 difficulty: advanced
 description: 安全测试方法、移动应用测试、持续集成中的测试、测试左移与质量内建。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/功能与自动化测试'
-  - 'software-testing/性能与接口测试'
-  - 'software-testing/测试概念与原则'
-  - 'software-testing/测试层级'
+  - 'software-testing/002-FunctionalAndAutomatedTest'
+  - 'software-testing/003-PerformanceInterfaceTest'
+  - 'software-testing/005-TestConceptPrinciple'
+  - 'software-testing/006-TestLevels'
 prerequisites: []
 ---
+
 
 ## 1. 安全测试方法
 

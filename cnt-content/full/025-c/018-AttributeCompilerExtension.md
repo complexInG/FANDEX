@@ -1,25 +1,26 @@
 ---
-order: 61
+order: 180
 title: 属性与编译器扩展
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
-description: 'GCC/Clang/MSVC 属性语法、C23 标准属性、跨编译器扩展与工程实践'
+description: GCC/Clang/MSVC 属性语法、C23 标准属性、跨编译器扩展与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/对齐与内存布局
-  - c/控制流
-  - c/安全函数与边界检查
-  - c/内联函数与宏
-  - c/位域
-  - c/函数指针回调与跳转表
+  - 'c/016-AlignmentMemoryLayout'
+  - 'c/017-ControlFlow'
+  - 'c/019-SafeFunctionBoundsCheck'
+  - 'c/020-InlineFunctionMacro'
+  - 'c/015-BitField'
+  - 'c/046-FunctionPointerCallbackJumpTable'
 prerequisites:
-  - c/概述
-  - c/控制流
-  - c/函数详解
-  - c/对齐与内存布局
+  - 'c/001-CLanguageOverview'
+  - 'c/017-ControlFlow'
+  - 'c/028-FunctionDetailed'
+  - 'c/016-AlignmentMemoryLayout'
 ---
+
 
 
 ## 历史动机与背景

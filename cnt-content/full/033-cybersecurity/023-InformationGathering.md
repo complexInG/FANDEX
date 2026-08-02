@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 230
 title: 信息收集
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
 description: 信息收集技术：被动侦察、主动扫描、OSINT、子域名枚举与指纹识别详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/HTTPS原理
-  - cybersecurity/渗透测试方法论
-  - cybersecurity/漏洞扫描
-  - cybersecurity/安全编码原则
+  - 'cybersecurity/021-HTTPSPrinciple'
+  - 'cybersecurity/022-PenetrationTestingMethodology'
+  - 'cybersecurity/024-VulnerabilityScan'
+  - 'cybersecurity/025-SecureCodingPrinciples'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. 信息收集概述
 

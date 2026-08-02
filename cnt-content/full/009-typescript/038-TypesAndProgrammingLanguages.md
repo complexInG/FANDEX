@@ -1,87 +1,20 @@
 ---
-order: 80
+order: 380
 title: TypeScript5新特性
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: TypeScript 5.x 全版本新特性、形式语义与生产环境迁移指南
 author: fanquanpp
 updated: '2026-07-20'
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
 related:
-- typescript/类型安全的发布订阅
-- typescript/类型安全的环境变量
-- typescript/工程化配置
-- typescript/satisfies操作符
-prerequisites:
-- typescript/语法速查
-tags:
-- typescript
-- typescript-5
-- decorators
-- satisfies
-- const-type-parameters
-- module-resolution
-- enums
-- ecmascript
-references:
-- title: Announcing TypeScript 5.0
-  year: 2023
-  url: https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/
-  type: website
-  authors:
-  - Rosenwasser, Daniel
-  venue: Microsoft Developer Blog
-- title: Announcing TypeScript 5.4
-  year: 2024
-  url: https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/
-  type: website
-  authors:
-  - Rosenwasser, Daniel
-  venue: Microsoft Developer Blog
-- title: Announcing TypeScript 5.5
-  year: 2024
-  url: https://devblogs.microsoft.com/typescript/announcing-typescript-5-5/
-  type: website
-  authors:
-  - Rosenwasser, Daniel
-  venue: Microsoft Developer Blog
-- title: ECMAScript Decorators Proposal, Stage 3
-  year: 2023
-  url: https://github.com/tc39/proposal-decorators
-  type: website
-  authors:
-  - Ehrenberg, Ron and Voss, Gabriel
-  venue: TC39
-- title: Understanding TypeScript
-  year: 2014
-  pages: 257-281
-  doi: 10.1007/978-3-662-44202-9_11
-  type: conference
-  authors:
-  - Bierman, Gavin M. and Abadi, Martín and Torgersen, Mads
-  venue: ECOOP 2014 — Object-Oriented Programming
-- title: 'Mirrors: design principles for meta-level facilities of object-oriented programming languages'
-  year: 2004
-  pages: 331-344
-  doi: 10.1145/1028976.1029004
-  type: conference
-  authors:
-  - Bracha, Gilad and Ungar, David
-  venue: OOPSLA '04
-- title: Types and Programming Languages
-  year: 2002
-  isbn: 978-0-262-16209-8
-  type: book
-  authors:
-  - Pierce, Benjamin C.
-  venue: MIT Press
-etymology:
-- term: Decorator（装饰器）
-  origin: 源自 Python 2.4 (PEP 318, 2004) 引入的 @decorator 语法，后被 Java Annotation、C# Attribute、JavaScript 装饰器提案借鉴。TC39 标准化进程自 2014 年 Yehuda Katz 提出 Stage 1 起历经多次重设计，至 2022 年由 Ron Ehrenberg 与 Peng Li 重写为 Stage 3 提案。
-  english: Decorator
+  - 'typescript/037-ECMAScript2024LanguageSpecificationECMA26215thEdition'
+  - 'typescript/031-TypeSafeEnvVar'
+  - 'typescript/039-TypeScriptEngineeringConfig'
+  - 'typescript/040-SatisfiesOperator'
+prerequisites: []
 ---
+
 
 
 ## 引言：TypeScript 5.x 的时代意义

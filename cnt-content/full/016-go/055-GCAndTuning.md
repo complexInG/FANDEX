@@ -1,20 +1,21 @@
 ---
-order: 105
+order: 550
 title: 垃圾回收与GC调优
-module: go
-category: 'dev-lang'
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: Go垃圾回收与GC调优详解：并发标记清除。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/反射实现通用函数
-  - go/内存逃逸分析
-  - go/泛型详解
-  - go/单元测试与基准测试
+  - 'go/053-ReflectionGenericFunction'
+  - 'go/054-MemoryEscapeAnalysis'
+  - 'go/056-GenericDetailed'
+  - 'go/057-UnitTestBenchmark'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 ## 历史动机与背景

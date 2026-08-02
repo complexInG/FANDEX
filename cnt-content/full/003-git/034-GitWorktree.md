@@ -1,20 +1,17 @@
 ---
-order: 76
-title: 'git-worktree'
-module: git
-category: 'Git Basics'
+order: 340
+title: git-worktree
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git worktree详解：多工作树并行开发，无需频繁切换分支。'
+description: git worktree详解：多工作树并行开发，无需频繁切换分支。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/补丁与邮件工作流
-  - git/内容搜索
-  - git/垃圾回收
-  - 'git/Git-Flow与GitHub-Flow对比'
-prerequisites:
-  - git/语法速查
+  - 'git/036-GitFlowGitHubFlowComparison'
+prerequisites: []
 ---
+
 ## 1. worktree 概述
 
 ### 1.1 什么是 worktree

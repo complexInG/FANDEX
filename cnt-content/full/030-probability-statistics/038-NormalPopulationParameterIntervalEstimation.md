@@ -1,19 +1,20 @@
 ---
-order: 73
+order: 320
 title: 正态总体参数的区间估计
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: advanced
-description: 正态总体均值、方差的区间估计公式（σ已知、σ未知、方差区间），以"体检指标正常范围"类比串联全部公式。
+description: '正态总体均值、方差的区间估计公式（σ已知、σ未知、方差区间），以"体检指标正常范围"类比串联全部公式。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/估计量的评选标准'
-  - 'probability-statistics/区间估计'
-  - 'probability-statistics/假设检验基本概念'
+  - 'probability-statistics/036-EstimatorSelectionCriteria'
+  - 'probability-statistics/037-IntervalEstimation'
+  - 'probability-statistics/040-HypothesisTestingBasics'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 体检指标的正常范围是怎么定的
 

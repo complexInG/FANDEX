@@ -1,19 +1,20 @@
 ---
-order: 3
+order: 30
 title: 容器与编排
 module: 'cloud-computing'
-category: 云计算
+category: 云与基础设施
 difficulty: intermediate
-description: 'Docker 容器技术、Kubernetes 编排、Helm 包管理与容器镜像仓库。'
+description: Docker 容器技术、Kubernetes 编排、Helm 包管理与容器镜像仓库。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/云计算基础'
-  - 'cloud-computing/云网络与存储'
-  - 'cloud-computing/基础设施即代码'
-  - 'cloud-computing/IaaS与PaaS与SaaS'
+  - 'cloud-computing/001-CloudComputingBasics'
+  - 'cloud-computing/002-CloudNetworkStorage'
+  - 'cloud-computing/004-IaC'
+  - 'cloud-computing/005-IaaSPaaSSaaS'
 prerequisites: []
 ---
+
 
 ## 1. Docker 容器技术
 

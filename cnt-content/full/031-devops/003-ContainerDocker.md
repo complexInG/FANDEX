@@ -1,19 +1,20 @@
 ---
-order: 3
-title: '容器与 Docker'
-module: devops
-category: 运维
+order: 30
+title: 容器与 Docker
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
-description: '容器原理、Docker 架构、镜像构建、多阶段构建、Docker Compose 与镜像优化。'
+description: 容器原理、Docker 架构、镜像构建、多阶段构建、Docker Compose 与镜像优化。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/概述与Linux基础
-  - devops/网络与安全
-  - devops/Kubernetes容器编排
-  - 'devops/CI-CD流水线'
+  - 'devops/001-OverviewLinuxBasics'
+  - 'devops/002-NetworkSecurity'
+  - 'devops/004-Kubernetes'
+  - 'devops/005-CICDPipeline'
 prerequisites: []
 ---
+
 ## 1. 容器原理
 
 ### 1.1 容器 vs 虚拟机

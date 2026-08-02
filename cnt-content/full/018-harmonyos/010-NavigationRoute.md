@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 100
 title: 导航与路由
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: Navigation与Router
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/自定义组件
-  - harmonyos/列表与网格
-  - harmonyos/网络请求
-  - harmonyos/数据持久化
+  - 'harmonyos/008-CustomComponent'
+  - 'harmonyos/009-ListGrid'
+  - 'harmonyos/011-NetworkRequest'
+  - 'harmonyos/012-DataPersistence'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 概述
 
 HarmonyOS 提供了两套路由导航方案：Navigation 组件和 Router 模块。Navigation 是声明式的导航容器，支持 NavDestination 子页面管理、导航栏定制和路由栈操作，适合复杂的单页面应用架构。Router 是命令式的页面路由，通过 API 调用实现页面跳转和返回，适合简单的多页面应用。在实际开发中，推荐优先使用 Navigation，它提供了更丰富的导航能力和更好的类型安全。

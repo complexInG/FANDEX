@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 150
 title: 高可用架构
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: advanced
 description: 高可用架构：冗余设计、故障转移、负载均衡、灾备与混沌工程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/配置管理
-  - devops/性能调优
-  - devops/自动化测试
-  - devops/故障排查
+  - 'devops/013-ConfigManagement'
+  - 'devops/014-PerformanceTuning'
+  - 'devops/016-AutomationTest'
+  - 'devops/017-Troubleshooting'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 高可用概述
 

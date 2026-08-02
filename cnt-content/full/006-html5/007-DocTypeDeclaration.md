@@ -1,20 +1,21 @@
 ---
-order: 50
+order: 70
 title: 文档类型声明
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: beginner
-description: 'DOCTYPE与HTML Living Standard'
+description: DOCTYPE与HTML Living Standard
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/表单与验证
-  - html5/多媒体与Canvas绘图
-  - html5/离线存储与WebAPI
-  - html5/元数据与字符编码
+  - 'html5/005-HTML5FormValidation'
+  - 'html5/006-HTML5MultimediaCanvasDrawing'
+  - 'html5/008-HTML5OfflineStorageWebAPI'
+  - 'html5/009-MetadataCharacterEncoding'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. DOCTYPE 声明
 
 ### 1.1 什么是 DOCTYPE

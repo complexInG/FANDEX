@@ -1,19 +1,20 @@
 ---
-order: 13
-title: 'Kotlin 类与对象'
-module: kotlin
-category: Kotlin
+order: 40
+title: Kotlin 类与对象
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: 类定义、构造函数、继承、接口、数据类、密封类、枚举与伴生对象。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/基础语法
-  - kotlin/函数与Lambda
-  - kotlin/泛型与类型系统
-  - kotlin/集合与协程
+  - 'kotlin/002-KotlinBasicSyntax'
+  - 'kotlin/003-KotlinFunctionAndLambda'
+  - 'kotlin/005-KotlinGenericTypeSystem'
+  - 'kotlin/006-KotlinCollectionCoroutine'
 prerequisites: []
 ---
+
 ## 1. 类定义
 
 ### 1.1 基本类

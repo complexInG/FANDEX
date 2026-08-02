@@ -1,20 +1,20 @@
 ---
-order: 55
+order: 160
 title: 自定义Hooks设计模式
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: 自定义Hook设计原则与模式
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - react/服务端组件
-  - react/Hooks原理
-  - react/状态管理方案对比
-  - react/React性能优化
+  - 'react/015-HooksPrinciple'
+  - 'react/017-StateManagementSolutionComparison'
+  - 'react/018-ReactPerformance'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 
 # 自定义 Hooks 设计模式：从原理到工程实践

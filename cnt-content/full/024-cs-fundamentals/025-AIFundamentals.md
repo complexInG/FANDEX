@@ -1,20 +1,21 @@
 ---
-order: 68
+order: 250
 title: 人工智能基础
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 人工智能基础：搜索算法、知识表示、机器学习、神经网络与深度学习
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/网络安全'
-  - 'cs-fundamentals/多媒体技术'
-  - 'cs-fundamentals/计算机图形学'
-  - 'cs-fundamentals/设计模式'
+  - 'cs-fundamentals/023-NetworkSecurity'
+  - 'cs-fundamentals/024-MultimediaTechnology'
+  - 'cs-fundamentals/026-ComputerShape'
+  - 'cs-fundamentals/027-DesignPattern'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 人工智能概述
 

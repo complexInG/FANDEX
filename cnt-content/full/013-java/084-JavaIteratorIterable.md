@@ -1,9 +1,8 @@
 ---
 order: 840
 title: Java Iterator/Iterable/Spliterator 语法速查手册
-module: java
-
-category: '013-java'
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: Java Iterator/Iterable/Spliterator 语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Iterator 接口
 
 **基本写法：获取迭代器**

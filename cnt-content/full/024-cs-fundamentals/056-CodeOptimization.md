@@ -1,19 +1,20 @@
 ---
-order: 123
+order: 560
 title: 代码优化
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
 description: 编译器代码优化：常量传播、死代码消除、循环展开与公共子表达式消除。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/语义分析'
-  - 'cs-fundamentals/中间代码'
-  - 'cs-fundamentals/目标代码生成'
+  - 'cs-fundamentals/054-SemanticAnalysis'
+  - 'cs-fundamentals/055-IntermediateCode'
+  - 'cs-fundamentals/057-TargetCodeGeneration'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 优化概述
 

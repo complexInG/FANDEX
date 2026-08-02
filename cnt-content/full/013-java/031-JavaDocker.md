@@ -1,20 +1,21 @@
 ---
-order: 74
+order: 310
 title: Java与Docker
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Java容器化部署
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - java/Java与消息队列
-  - java/Java与Redis
-  - java/Java与GraphQL
-  - java/Java性能调优
+  - 'java/029-JavaMessageQueue'
+  - 'java/030-JavaRedis'
+  - 'java/032-JavaGraphQL'
+  - 'java/033-JavaPerformanceTuning'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 
 ## 历史动机与发展脉络

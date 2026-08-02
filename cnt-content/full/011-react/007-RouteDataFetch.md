@@ -1,21 +1,20 @@
 ---
-order: 7
-tags:
-  - react
-difficulty: intermediate
+order: 70
 title: 路由与数据获取
-module: react
-category: React
-description: 'React Router v7、嵌套路由、布局路由、数据加载、Next.js App Router、Server Actions、SWR/React Query。'
+module: 'react'
+category: 前端技术
+difficulty: intermediate
+description: React Router v7、嵌套路由、布局路由、数据加载、Next.js App Router、Server Actions、SWR/React Query。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/Context与全局状态
-  - react/React19新特性
-  - react/性能优化
-  - react/测试与工程化
+  - 'react/005-ContextGlobalState'
+  - 'react/006-React19NewFeatures'
+  - 'react/008-PerformanceOptimization'
+  - 'react/009-TestEngineering'
 prerequisites: []
 ---
+
 ## 1. React Router v7
 
 React Router v7 是 React 生态中最流行的路由库，整合了 Remix 的数据加载能力。

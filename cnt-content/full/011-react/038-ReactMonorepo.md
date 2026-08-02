@@ -1,20 +1,21 @@
 ---
-order: 77
+order: 380
 title: React与Monorepo
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: advanced
-description: 'React Monorepo架构'
+description: React Monorepo架构
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React与Storybook
-  - 'react/React与CI-CD'
-  - 'react/React-Compiler自动记忆化'
-  - 'react/Server-Components与Client-Components'
+  - 'react/036-ReactStorybook'
+  - 'react/037-ReactCICD'
+  - 'react/039-ReactCompilerAutoMemoization'
+  - 'react/040-ServerClientComponents'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

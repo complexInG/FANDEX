@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 190
 title: 安全函数与边界检查
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
 description: C11 Annex K安全函数
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/控制流
-  - c/属性与编译器扩展
-  - c/内联函数与宏
-  - c/复杂声明解析
+  - 'c/017-ControlFlow'
+  - 'c/018-AttributeCompilerExtension'
+  - 'c/020-InlineFunctionMacro'
+  - 'c/021-ComplexDeclarationParsing'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 
 ## 概述

@@ -1,20 +1,20 @@
 ---
 order: 50
 title: CommonMark规范
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
 description: CommonMark规范详解：标准化Markdown的定义、解析规则与一致性测试。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/段落与换行
-  - markdown/基础文本格式
-  - markdown/列表语法
-  - markdown/GitHub风格扩展
+  - 'markdown/003-ParagraphLineBreak'
+  - 'markdown/004-BasicTextFormat'
+  - 'markdown/006-ListSyntax'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 
 ## 1. CommonMark 概述
 

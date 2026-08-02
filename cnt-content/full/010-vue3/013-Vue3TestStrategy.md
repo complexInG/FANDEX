@@ -1,20 +1,20 @@
 ---
-order: 56
+order: 130
 title: Vue3测试策略
-module: vue3
-category: Vue3
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
 description: 组件测试与组合式函数测试
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/Vue3服务端渲染
-  - vue3/生命周期钩子
-  - 'vue3/Vue3与Web Components'
-  - vue3/Vue3性能优化实践
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/011-Vue3SSR'
+  - 'vue3/012-LifecycleHook'
+  - 'vue3/014-Vue3WebComponents'
+  - 'vue3/015-Vue3PerformancePractice'
+prerequisites: []
 ---
+
 ## 1. 测试工具
 
 ```bash

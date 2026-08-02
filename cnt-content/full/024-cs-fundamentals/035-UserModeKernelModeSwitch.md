@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 350
 title: 用户态与内核态切换
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: '用户态与内核态的切换机制、切换开销分析、Ring 权限模型。'
+description: 用户态与内核态的切换机制、切换开销分析、Ring 权限模型。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/进程PCB与线程TCB'
-  - 'cs-fundamentals/中断与系统调用'
-  - 'cs-fundamentals/内存分段与分页'
-  - 'cs-fundamentals/页面置换算法'
+  - 'cs-fundamentals/033-PCBThreadTCB'
+  - 'cs-fundamentals/034-InterruptAndSystemCall'
+  - 'cs-fundamentals/036-MemorySegmentationAndPaging'
+  - 'cs-fundamentals/037-PageReplacementAlgorithm'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 特权级模型
 

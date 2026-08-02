@@ -1,9 +1,8 @@
 ---
 order: 760
 title: Python sys/os 平台接口
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python sys/os 平台接口 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## sys 解释器接口
 
 **基本写法：命令行参数**

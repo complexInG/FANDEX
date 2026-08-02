@@ -1,18 +1,19 @@
 ---
-order: 6
+order: 60
 title: Vite 开发服务器与 HMR
-module: vite
-category: Vite
+module: 'vite'
+category: 前端技术
 difficulty: intermediate
-description: 'Vite dev server：server 配置、host 端口、代理、HMR 原理（模块图/WebSocket/热替换边界）与 import.meta.hot API'
+description: Vite dev server：server 配置、host 端口、代理、HMR 原理（模块图/WebSocket/热替换边界）与 import.meta.hot API
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - vite/003-ConfigFile
-  - vite/002-QuickStart
+  - 'vite/003-ConfigFile'
+  - 'vite/002-QuickStart'
 prerequisites:
-  - vite/003-ConfigFile
+  - 'vite/003-ConfigFile'
 ---
+
 ## 0. 一个类比：餐厅后厨的"尝菜"
 
 想象你开了一家餐厅。客人点了一桌菜，如果每次厨师调整一道菜的咸淡，都要把**整桌菜**重新端出去，客人的体验会非常糟糕。真正的大厨是**在后厨先尝一口**：哪道菜咸了，只回锅重做那一道，其他菜原封不动，客人正在进行的交谈也不被打断。

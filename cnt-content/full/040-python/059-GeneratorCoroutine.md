@@ -1,20 +1,20 @@
 ---
-order: 109
+order: 590
 title: 生成器与协程
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: Python生成器与协程详解：yield、send、yield from。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - python/异步编程详解
-  - python/上下文管理器
-  - python/装饰器进阶
-  - python/描述符
-prerequisites:
-  - python/语法速查
+  - 'python/054-AsyncProgrammingDetailed'
+  - 'python/052-ContextManager'
+  - 'python/062-DecoratorAdvanced'
+  - 'python/057-Descriptor'
+prerequisites: []
 ---
+
 ## 1. 历史动机与发展脉络
 
 生成器与协程并非 Python 独创，其理论根源可追溯至 1958 年的协程概念与 1970 年代的惰性求值思想。理解这一脉络有助于把握 Python 设计的取舍。

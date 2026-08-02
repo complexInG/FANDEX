@@ -1,20 +1,21 @@
 ---
-order: 63
+order: 180
 title: 文件IO与文件系统
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-description: '文件操作与std::filesystem'
+description: 文件操作与std::filesystem
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/STL算法详解
-  - cpp/字符串处理
-  - cpp/异常安全
-  - cpp/多线程与并发
+  - 'cpp/016-CSTL'
+  - 'cpp/017-StringProcessing'
+  - 'cpp/019-ExceptionSecurity'
+  - 'cpp/020-MultithreadingConcurrency'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ### 目录遍历
 
 ```cpp

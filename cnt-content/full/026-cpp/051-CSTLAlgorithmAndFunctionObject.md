@@ -1,22 +1,21 @@
 ---
-order: 100
-tags:
-  - cpp
+order: 510
+title: C++ STL 算法与函数对象
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-title: 'C++ STL 算法与函数对象'
-module: cpp
-category: 'C++ Basics'
-description: '标准算法、lambda 表达式、函数对象与范围库。'
+description: 标准算法、lambda 表达式、函数对象与范围库。
 author: Anonymous
-related:
-  - cpp/并发编程
-  - cpp/RAII资源管理
-  - cpp/移动语义详解
-  - cpp/完美转发与引用折叠
-prerequisites:
-  - cpp/概述与现代标准
 updated: '2026-08-01'
+related:
+  - 'cpp/049-ConcurrentProgramming'
+  - 'cpp/050-CCoreGuidelinesResourceManagement'
+  - 'cpp/052-MoveSemanticsDetailed'
+  - 'cpp/053-PerfectForwardingReferenceCollapse'
+prerequisites:
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 常用算法
 
 STL 算法位于 `<algorithm>` 头文件中，提供了各种操作容器元素的函数。

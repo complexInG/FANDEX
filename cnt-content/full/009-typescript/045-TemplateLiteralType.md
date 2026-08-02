@@ -1,121 +1,21 @@
 ---
-order: 102
+order: 450
 title: 模板字面量类型
-module: typescript
-category: TypeScript Advanced
-tags:
-- typescript
-- template-literal-types
-- string-pattern-matching
-- type-level-programming
-- css-typesafety
-- router-typesafety
-- sql-typesafety
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: TypeScript 模板字面量类型（Template Literal Types）的形式化定义、字符串模式匹配规则、内置字符串操作类型、CSS 属性类型、路由参数类型推导、SQL 类型安全与运行时模板字符串的对比
 author: fanquanpp
+updated: '2026-08-02'
 related:
-- typescript/编译与性能优化
-- typescript/映射类型与键重映射
-- typescript/类型体操
-- typescript/递归类型与深度操作
-- typescript/模块声明与全局类型增强
-prerequisites:
-- typescript/语法速查
-references:
-- type: conference
-  title: Understanding TypeScript
-  note: 'Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In 28th European Conference on Object-Oriented Programming (ECOOP 2014). LIPIcs 33, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257'
-  authors:
-  - Bierman, G., Abadi, M., and Torgersen, M
-  year: 2014
-  venue: 28th European Conference on Object-Oriented Programming (ECOOP 2014)
-  doi: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
-- type: website
-  title: Announcing TypeScript 4.1
-  note: 'Rosenwasser, D. 2020. Announcing TypeScript 4.1. Microsoft Developer Blog. Available at: https://devblogs.microsoft.com/typescript/announcing-typescript-4-1/'
-  authors:
-  - Rosenwasser, D
-  year: 2020
-  venue: Microsoft Developer Blog
-  url: https://devblogs.microsoft.com/typescript/announcing-typescript-4-1/
-- type: standard
-  title: ECMAScript 2024 Language Specification (ECMA-262, 15th edition)
-  note: 'ECMA International. 2024. ECMAScript 2024 Language Specification (ECMA-262, 15th edition). Section 6.1.4.1 StringToUpperCase. Standard ECMA-262. DOI: https://doi.org/10.1145/3180267'
-  authors:
-  - ECMA International
-  year: 2024
-  venue: Section 6.1.4.1 StringToUpperCase. Standard ECMA-262
-  doi: https://doi.org/10.1145/3180267
-- type: book
-  title: Regular expression types for XML
-  note: 'Hosoya, H. and Pierce, B. C. 2003. Regular expression types for XML. ACM Transactions on Programming Languages and Systems 25, 4 (July 2003), 439–470. DOI: https://doi.org/10.1145/380796.380798'
-  authors:
-  - Hosoya, H. and Pierce, B. C
-  year: 2003
-  venue: ACM Transactions on Programming Languages and Systems 25, 4 (July 2003), 439–470
-  doi: https://doi.org/10.1145/380796.380798
-- type: conference
-  title: Equations for the working Coq user
-  note: 'Tabareau, N., Tanter, É., and Sozeau, M. 2018. Equations for the working Coq user. In Proceedings of the 7th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2018). ACM, 97–111. DOI: https://doi.org/10.1145/3167081'
-  authors:
-  - Tabareau, N., Tanter, É., and Sozeau, M
-  year: 2018
-  venue: Proceedings of the 7th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2018)
-  doi: https://doi.org/10.1145/3167081
-- type: documentation
-  title: 'TypeScript Handbook: Template Literal Types'
-  note: 'TypeScript Team. 2024. TypeScript Handbook: Template Literal Types. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html'
-  authors:
-  - TypeScript Team
-  year: 2024
-  venue: Microsoft
-  url: https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html
-- type: website
-  title: 'Type-level TypeScript: Template literal types'
-  note: 'Chapman, P. 2021. Type-level TypeScript: Template literal types. Available at: https://type-level-typescript.com/template-literal-types'
-  authors:
-  - Chapman, P
-  year: 2021
-  venue: 'Available at: https://type-level-typescript.com/template-literal-types'
-  url: https://type-level-typescript.com/template-literal-types
-- type: standard
-  title: 'ECMAScript 2024: 22.1.3.27 String.prototype.toUpperCase. Standard ECMA-262, 15th edition'
-  note: 'ECMA International. 2024. ECMAScript 2024: 22.1.3.27 String.prototype.toUpperCase. Standard ECMA-262, 15th edition.'
-  authors:
-  - ECMA International
-  year: 2024
-- type: conference
-  title: Type-based termination of recursion in Haskell
-  note: 'Fu, P. and Komendantskaya, E. 2017. Type-based termination of recursion in Haskell. In Proceedings of the 26th European Symposium on Programming (ESOP 2017). LNCS 10201, 384–410. DOI: https://doi.org/10.1007/978-3-662-54434-1_15'
-  authors:
-  - Fu, P. and Komendantskaya, E
-  year: 2017
-  venue: Proceedings of the 26th European Symposium on Programming (ESOP 2017)
-  doi: https://doi.org/10.1007/978-3-662-54434-1_15
-- type: conference
-  title: Subtyping, declaratively
-  note: 'Danielsson, N. A. and Altenkirch, T. 2010. Subtyping, declaratively. In Proceedings of the 10th International Conference on Mathematics of Program Construction (MPC 2010). LNCS 6120, 100–118. DOI: https://doi.org/10.1007/978-3-642-13321-3_8'
-  authors:
-  - Danielsson, N. A. and Altenkirch, T
-  year: 2010
-  venue: Proceedings of the 10th International Conference on Mathematics of Program Construction (MPC 2010)
-  doi: https://doi.org/10.1007/978-3-642-13321-3_8
-etymology:
-- term: 模板字面量类型 (Template Literal Type)
-  origin: '"Template" 源自法语 templet（建筑用的模板、规尺），15 世纪进入英语，原指木匠用于重复切割相同形状零件的样板。
-
-    "Literal" 源自拉丁语 littera（字母、文字），中世纪拉丁语 literalis（字面上的），在编程语言中指源代码中直接书写的固定值。
-
-    JavaScript 在 ES2015（ES6）引入模板字符串（template strings），允许在字符串中嵌入表达式，由 Dave Herman 与 Dave Herman 等人在 TC39 提案。
-
-    TypeScript 4.1（2020 年 11 月）将这一机制提升至类型层，由 Daniel Rosenwasser 与 Gabriel Bierman 设计，命名为 "Template Literal Types"，使其能用于编译期的字符串模式匹配与派生类型构造。
-
-    '
-  english: Template Literal Type
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
+  - 'typescript/043-TypeScriptCompilePerformanceOptimization'
+  - 'typescript/044-MappedTypeKeyRemap'
+  - 'typescript/046-TypeGymnastics'
+  - 'typescript/025-RecursiveTypeDeepOperation'
+  - 'typescript/047-ModuleDeclarationGlobalAugmentation'
+prerequisites: []
 ---
+
 ## 1. 学习导论
 
 ### 1.1 为什么必须理解模板字面量类型

@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 400
 title: 并行查询
-module: postgresql
-category: database
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
-description: 'PostgreSQL 并行查询机制：并行顺序扫描、并行索引扫描、并行聚合、Gather 节点与并行度配置。'
+description: PostgreSQL 并行查询机制：并行顺序扫描、并行索引扫描、并行聚合、Gather 节点与并行度配置。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/生成列
-  - postgresql/可更新视图
-  - postgresql/逻辑复制与物理复制对比
-  - postgresql/JSONB与JSON差异
+  - 'postgresql/038-GeneratedColumn'
+  - 'postgresql/039-UpdatableView'
+  - 'postgresql/041-LogicalPhysicalReplicationCompare'
+  - 'postgresql/042-JSONBJSONDifference'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 并行查询架构
 

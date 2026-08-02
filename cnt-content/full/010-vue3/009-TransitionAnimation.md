@@ -1,20 +1,20 @@
 ---
-order: 53
+order: 90
 title: Transition与动画
-module: vue3
-category: Vue3
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
 description: Vue3过渡与动画系统
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/Provide与Inject
-  - vue3/自定义指令进阶
-  - vue3/Vue3编译优化
-  - vue3/Vue3服务端渲染
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/007-ProvideInject'
+  - 'vue3/008-CustomDirectiveAdvanced'
+  - 'vue3/010-Vue3CompileOptimization'
+  - 'vue3/011-Vue3SSR'
+prerequisites: []
 ---
+
 ## 1. Transition 组件
 
 ```vue

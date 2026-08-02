@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 250
 title: AWS核心服务
 module: 'cloud-computing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: 'AWS 核心服务：EC2、S3、VPC、RDS、Lambda、IAM 详解。'
+description: AWS 核心服务：EC2、S3、VPC、RDS、Lambda、IAM 详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/服务网格'
-  - 'cloud-computing/可观测性'
-  - 'cloud-computing/多云与混合云架构'
-  - 'cloud-computing/负载均衡与自动伸缩'
+  - 'cloud-computing/023-ServiceMesh'
+  - 'cloud-computing/024-Observability'
+  - 'cloud-computing/026-MultiCloudHybridArchitecture'
+  - 'cloud-computing/027-LoadBalanceAutoScaling'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 计算
 

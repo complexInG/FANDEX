@@ -1,9 +1,8 @@
 ---
 order: 890
 title: Python zipfile 与 tarfile
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python zipfile 与 tarfile 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## zipfile 读取
 
 **基本写法：打开 ZIP**

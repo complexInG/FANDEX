@@ -1,18 +1,19 @@
 ---
-order: 109
+order: 590
 title: 包管理详解
-module: go
-category: 'dev-lang'
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'Go包管理详解：go mod replace、vendor。'
+description: Go包管理详解：go mod replace、vendor。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/单元测试与基准测试
-  - go/竞态检测与原子操作
+  - 'go/057-UnitTestBenchmark'
+  - 'go/058-RaceDetectionAtomic'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 ## 历史动机与发展脉络

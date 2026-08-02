@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 210
 title: Go与GraphQL
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'gqlgen GraphQL框架'
+description: gqlgen GraphQL框架
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/内存对齐
-  - go/Go与gRPC
-  - go/Go与Docker
-  - go/Go与Kubernetes
+  - 'go/016-MemoryAlignment'
+  - 'go/022-GoGRPC'
+  - 'go/024-GoDocker'
+  - 'go/023-GoKubernetes'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

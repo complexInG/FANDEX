@@ -1,19 +1,20 @@
 ---
-order: 34
+order: 150
 title: 解的结构
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 线性方程组解的结构定理——齐次解空间维数等于 n 减秩，非齐次通解等于特解加导出组通解，解集几何描述与定理证明思路。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/齐次线性方程组'
-  - 'linear-algebra/非齐次线性方程组'
-  - 'linear-algebra/线性相关性'
+  - 'linear-algebra/015-HomogeneousLinearSystem'
+  - 'linear-algebra/016-NonHomogeneousLinearSystem'
+  - 'linear-algebra/019-LinearDependence'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从"房子的承重结构"说起
 

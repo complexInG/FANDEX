@@ -1,20 +1,20 @@
 ---
-order: 108
+order: 310
 title: Vue性能优化详解
-module: vue3
-category: 'dev-lang'
+module: 'vue3'
+category: 前端技术
 difficulty: advanced
-description: 'Vue 3性能优化详解：虚拟滚动、shallowRef、冻结数据、v-memo。'
+description: Vue 3性能优化详解：虚拟滚动、shallowRef、冻结数据、v-memo。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/Pinia持久化插件
-  - 'vue3/Vue-Router导航守卫'
-  - vue3/性能优化
-  - vue3/高级组件特性
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/029-PiniaPersistencePlugin'
+  - 'vue3/030-VueRouterNavigationGuard'
+  - 'vue3/032-PerformanceOptimization'
+  - 'vue3/033-Vue3AdvancedComponentFeature'
+prerequisites: []
 ---
+
 
 ## 1. 响应式优化
 

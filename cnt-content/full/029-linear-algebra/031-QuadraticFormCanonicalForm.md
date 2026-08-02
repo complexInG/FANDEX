@@ -1,18 +1,19 @@
 ---
-order: 61
+order: 260
 title: 二次型的规范形
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 从"统一度量衡"的生活类比出发，讲解二次型规范形的定义、惯性定理（Sylvester 惯性定律）、正负惯性指数与合同不变量，并给出多种求法，帮助零基础读者掌握"最简表示"的数学思想。
+description: '从"统一度量衡"的生活类比出发，讲解二次型规范形的定义、惯性定理（Sylvester 惯性定律）、正负惯性指数与合同不变量，并给出多种求法，帮助零基础读者掌握"最简表示"的数学思想。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/二次型的标准形'
-  - 'linear-algebra/正定二次型'
+  - 'linear-algebra/030-QuadraticFormStandardForm'
+  - 'linear-algebra/032-PositiveDefiniteQuadraticForm'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从生活场景说起：统一度量衡
 

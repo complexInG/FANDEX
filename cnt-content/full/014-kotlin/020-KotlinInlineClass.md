@@ -1,23 +1,24 @@
 ---
-order: 58
+order: 200
 title: Kotlin内联类
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'value class 与内联优化的编译原理与工程实践'
+description: value class 与内联优化的编译原理与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/Kotlin与Spring
-  - kotlin/Kotlin与Android
-  - kotlin/Kotlin契约
-  - kotlin/Kotlin序列化
-  - kotlin/泛型与类型系统
+  - 'kotlin/025-KotlinSpring'
+  - 'kotlin/024-KotlinAndroid'
+  - 'kotlin/021-KotlinContractContracts'
+  - 'kotlin/023-KotlinSerialization'
+  - 'kotlin/005-KotlinGenericTypeSystem'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/类与对象
-  - kotlin/基础语法
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/004-KotlinClassObject'
+  - 'kotlin/002-KotlinBasicSyntax'
 ---
+
 ## 历史动机与背景
 
 ### 基本类型缺陷：原始 Obsession 反模式

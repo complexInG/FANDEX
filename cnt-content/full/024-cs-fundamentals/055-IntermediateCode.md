@@ -1,20 +1,21 @@
 ---
-order: 122
+order: 550
 title: 中间代码
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
 description: 编译器中间代码：三地址码、静态单赋值（SSA）与中间表示。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/语法分析'
-  - 'cs-fundamentals/语义分析'
-  - 'cs-fundamentals/代码优化'
-  - 'cs-fundamentals/目标代码生成'
+  - 'cs-fundamentals/053-GrammarAnalysis'
+  - 'cs-fundamentals/054-SemanticAnalysis'
+  - 'cs-fundamentals/056-CodeOptimization'
+  - 'cs-fundamentals/057-TargetCodeGeneration'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 中间表示概述
 

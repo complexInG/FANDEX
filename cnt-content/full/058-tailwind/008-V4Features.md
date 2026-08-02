@@ -1,18 +1,19 @@
 ---
-order: 8
+order: 80
 title: Tailwind CSS v4 新特性
-module: tailwind
-category: Tailwind CSS
+module: 'tailwind'
+category: 前端技术
 difficulty: intermediate
-description: 'Tailwind CSS v4 新特性时间线：Oxide 引擎、CSS-first 配置、自动内容检测、@tailwindcss/vite 插件、原生 @layer 级联与 @source/@utility/@custom-variant 新语法'
+description: Tailwind CSS v4 新特性时间线：Oxide 引擎、CSS-first 配置、自动内容检测、@tailwindcss/vite 插件、原生 @layer 级联与 @source/@utility/@custom-variant 新语法
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - tailwind/002-InstallConfig
-  - tailwind/005-ThemeCustomization
+  - 'tailwind/002-InstallConfig'
+  - 'tailwind/005-ThemeCustomization'
 prerequisites:
-  - tailwind/002-InstallConfig
+  - 'tailwind/002-InstallConfig'
 ---
+
 
 ## 0. 先打个比方：汽车界的"年度改款"
 

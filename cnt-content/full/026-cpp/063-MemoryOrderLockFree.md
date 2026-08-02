@@ -1,20 +1,21 @@
 ---
-order: 111
+order: 630
 title: 内存序与无锁编程
-module: cpp
-category: 'dev-lang'
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-description: 'C++内存序与无锁编程详解：std::memory_order、std::atomic、fence、ABA 问题与无锁数据结构。'
+description: C++内存序与无锁编程详解：std::memory_order、std::atomic、fence、ABA 问题与无锁数据结构。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - cpp/C++23新特性
-  - cpp/模板
-  - cpp/异常处理与性能优化
-  - cpp/调试与性能分析
+  - 'cpp/061-Cpp23NewFeatures'
+  - 'cpp/062-CppTemplate'
+  - 'cpp/064-CppExceptionAndPerformance'
+  - 'cpp/065-CDebugPerformanceAnalysis'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 多核时代的内存模型挑战

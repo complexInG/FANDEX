@@ -1,19 +1,20 @@
 ---
-order: 70
+order: 290
 title: 视口配置与移动优先
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: beginner
 description: viewport、移动优先设计
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/自定义数据属性
-  - html5/跨文档通信
-  - 'html5/项目示例-交互式表单应用'
+  - 'html5/027-CustomDataAttribute'
+  - 'html5/028-CrossDocumentCommunication'
+  - 'html5/030-HTML5ProjectExampleInteractiveFormApplication'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 视口概念
 
 | 视口类型     | 说明                          |

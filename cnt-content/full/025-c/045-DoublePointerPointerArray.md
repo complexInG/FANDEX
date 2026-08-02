@@ -1,113 +1,26 @@
 ---
-order: 103
+order: 450
 title: 二级指针与指针数组
-module: c
-category: dev-lang
-tags:
-- c
-- pointer
-- double-pointer
-- pointer-array
-- array-pointer
-- memory-layout
-- function-pointer
-- multi-level-indirection
+module: 'c'
+category: 计算机科学
 difficulty: advanced
 description: C 语言二级指针与指针数组的完整知识体系，涵盖多级间接寻址的形式化定义、内存布局、指针数组与数组指针的本质区别、函数指针数组、链表与树的二级指针实践、跨语言对比与工业级工程应用。
 author: fanquanpp
+updated: '2026-08-02'
 related:
-- c/函数调用栈帧
-- c/指针与数组的区别
-- c/函数指针回调与跳转表
-- c/动态库与静态库
-- c/指针深度解析
-- c/动态内存管理
-- c/复杂声明解析
+  - 'c/043-FunctionCallStackFrame'
+  - 'c/044-PointerArrayDifference'
+  - 'c/046-FunctionPointerCallbackJumpTable'
+  - 'c/029-DynamicStaticLibrary'
+  - 'c/039-PointerDeep'
+  - 'c/009-DynamicMemoryManagement'
+  - 'c/021-ComplexDeclarationParsing'
 prerequisites:
-- c/概述
-- c/指针深度解析
-- c/动态内存管理
-references:
-- type: standard
-  authors:
-  - ISO/IEC JTC1/SC22/WG14
-  year: 2024
-  title: ISO/IEC 9899:2024 Information technology — Programming languages — C
-  venue: International Organization for Standardization
-  version: C23
-  url: https://www.iso.org/standard/82075.html
-- type: book
-  authors:
-  - Kernighan, Brian W.
-  - Ritchie, Dennis M.
-  year: 1988
-  title: The C Programming Language
-  venue: Prentice Hall
-  edition: 2nd
-  pages: 93-104
-  doi: 10.5555/102697
-- type: book
-  authors:
-  - van der Linden, Peter
-  year: 1994
-  title: 'Expert C Programming: Deep C Secrets'
-  venue: SunSoft Press / Prentice Hall
-  pages: 47-78
-  isbn: 9780131774292
-- type: book
-  authors:
-  - Prinz, Peter
-  - Crawford, Tony
-  year: 2020
-  title: C in a Nutshell
-  venue: O''Reilly Media
-  edition: 2nd
-  pages: 141-176
-  isbn: 9781491904256
-- type: book
-  authors:
-  - Seacord, Robert C.
-  year: 2013
-  title: 'Effective C: An Introduction to Professional C Programming'
-  venue: No Starch Press
-  pages: 187-220
-  isbn: 9781718501048
-- type: conference
-  authors:
-  - Torvalds, Linus
-  year: 2016
-  title: Interview with Linus Torvalds on Linux kernel linked-list implementation
-  venue: Linux Foundation Interviews
-  url: https://www.linux.com/topic/desktop/interview-linus-torvalds/
-- type: documentation
-  authors:
-  - Free Software Foundation
-  year: 2024
-  title: 'GCC Manual: Arrays and Pointers'
-  venue: GNU Project
-  version: '14.1'
-  url: https://gcc.gnu.org/onlinedocs/gcc/
-- type: book
-  authors:
-  - Kerrisk, Michael
-  year: 2010
-  title: 'The Linux Programming Interface: A Linux and UNIX System Programming Handbook'
-  venue: No Starch Press
-  pages: 127-160
-  isbn: 9781593272203
-etymology:
-- term: 二级指针
-  english: pointer to pointer / double pointer
-  origin: 源自 K&R（1988）第 5.6 节"Pointer Arrays; Pointers to Pointers"，用于处理多级间接寻址；C89 标准正式纳入派生类型（derived type）体系
-- term: 指针数组
-  english: array of pointers
-  origin: 源自 K&R 第 5.9 节，将多个字符串字面量组织为指针数组实现参数化命令处理；Unix 程序 argv 即典型应用
-- term: 数组指针
-  english: pointer to array
-  origin: 源自 C 语言声明语法的运算符优先级规则：`*` 与 `[]` 组合时需用括号改变结合方向，`int (*p)[5]` 中的括号是类型语义的强制要求
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
+  - 'c/001-CLanguageOverview'
+  - 'c/039-PointerDeep'
+  - 'c/009-DynamicMemoryManagement'
 ---
+
 
 
 # 二级指针与指针数组

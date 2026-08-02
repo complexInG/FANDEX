@@ -1,9 +1,8 @@
 ---
 order: 580
 title: Cybersecurity auditd 审计命令
-module: cybersecurity
-
-category: '033-cybersecurity'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: Cybersecurity auditd 审计命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## auditd 服务管理
 
 **基本写法:启动 auditd 服务**

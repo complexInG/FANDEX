@@ -1,20 +1,21 @@
 ---
-order: 89
+order: 480
 title: 防火墙插件
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
 description: MySQL企业防火墙插件：SQL白名单、学习模式、拦截模式与SQL注入防护
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/账户与权限管理
-  - 'mysql/SSL-TLS加密'
-  - mysql/InnoDB体系架构
-  - mysql/数据加密
+  - 'mysql/046-AccountPermissionManagement'
+  - 'mysql/047-SSLEncryption'
+  - 'mysql/049-InnoDBSystemArchitecture'
+  - 'mysql/050-DataEncryption'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. MySQL 企业防火墙
 

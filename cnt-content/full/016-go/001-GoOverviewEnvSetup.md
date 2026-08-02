@@ -1,18 +1,19 @@
 ---
-order: 1
-title: 'Go 概述与环境配置'
-module: go
-category: Go
+order: 10
+title: Go 概述与环境配置
+module: 'go'
+category: 后端技术
 difficulty: beginner
-description: 'Go 语言概述、设计哲学、发展历史、Go 1.22+ 新特性、环境搭建、模块系统与 Hello World。'
+description: Go 语言概述、设计哲学、发展历史、Go 1.22+ 新特性、环境搭建、模块系统与 Hello World。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/基础语法
-  - go/函数与方法
-  - algorithm/算法分析基础与学习路线
+  - 'go/002-GoBasicSyntax'
+  - 'go/003-GoFunctionMethod'
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
 prerequisites: []
 ---
+
 
 ## 1. Go 语言概述
 

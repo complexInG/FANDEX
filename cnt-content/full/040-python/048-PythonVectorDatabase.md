@@ -1,20 +1,20 @@
 ---
-order: 89
+order: 480
 title: Python与向量数据库
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: 向量搜索与RAG
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与OAuth2
-  - 'python/Python与WebSocket-2'
-  - python/Python进阶与最新特性
-  - python/推导式与生成器
-prerequisites:
-  - python/语法速查
+  - 'python/047-PythonOAuth2'
+  - 'python/034-PythonWebSocket'
+  - 'python/049-PythonAdvancedLatestFeature'
+  - 'python/050-ComprehensionGenerator'
+prerequisites: []
 ---
+
 
 ## 什么是向量数据库
 

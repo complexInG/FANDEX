@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 110
 title: 插件生态
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 编辑器与IDE插件体系、包管理机制、插件开发基础与生态维护。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/环境变量与PATH'
-  - 'getting-started/IDE与编辑器选型'
-  - 'getting-started/命令行基础'
-  - 'getting-started/包管理器'
+  - 'getting-started/009-EnvVarPath'
+  - 'getting-started/010-IDEEditorSelection'
+  - 'getting-started/012-CommandLineBasics'
+  - 'getting-started/013-PackageManager'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 插件体系概述
 

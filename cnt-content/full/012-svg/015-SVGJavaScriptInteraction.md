@@ -1,19 +1,20 @@
 ---
 order: 150
-title: 'SVG JavaScript 交互'
-module: svg
-category: 'SVG JavaScript'
+title: SVG JavaScript 交互
+module: 'svg'
+category: 前端技术
 difficulty: advanced
-description: 'DOM 操作、事件绑定、属性读写、动态生成与数据驱动可视化。'
+description: DOM 操作、事件绑定、属性读写、动态生成与数据驱动可视化。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/CSS样式化
-  - svg/动画基础
-  - svg/响应式与性能
+  - 'svg/014-SVGCSSStyling'
+  - 'svg/013-SVGAnimationBasics'
+  - 'svg/016-SVGResponsivePerformance'
 prerequisites:
-  - svg/CSS样式化
+  - 'svg/014-SVGCSSStyling'
 ---
+
 ## 1. SVG DOM 与 HTML DOM
 
 内联 SVG 的元素是真实 DOM 节点，可用标准 DOM API 操作。

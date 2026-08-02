@@ -1,19 +1,20 @@
 ---
-order: 7
-title: 'Go 错误处理'
-module: go
-category: Go
+order: 70
+title: Go 错误处理
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'error 接口、errors.Is/As、自定义错误、panic/recover、错误包装、sentinel 错误与最佳实践。'
+description: error 接口、errors.Is/As、自定义错误、panic/recover、错误包装、sentinel 错误与最佳实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/接口与组合
-  - go/并发编程
-  - go/泛型
-  - go/标准库与工具链
+  - 'go/005-GoInterfaceComposition'
+  - 'go/006-GoConcurrentProgramming'
+  - 'go/008-GoGeneric'
+  - 'go/009-GoStandardLibraryToolchain'
 prerequisites: []
 ---
+
 ## 1. error 接口
 
 ### 1.1 基本概念

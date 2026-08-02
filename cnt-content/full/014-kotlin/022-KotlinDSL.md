@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 220
 title: Kotlin与DSL
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
 description: DSL构建
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/扩展函数
-  - kotlin/Kotlin作用域函数
-  - kotlin/Kotlin与Ktor
-  - kotlin/Kotlin与Compose
+  - 'kotlin/015-ExtensionFunction'
+  - 'kotlin/018-KotlinScopeFunction'
+  - 'kotlin/029-KotlinKtor'
+  - 'kotlin/027-KotlinCompose'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 ### 类型安全构建器
 
 ```kotlin

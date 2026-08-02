@@ -1,30 +1,24 @@
 ---
-order: 100
+order: 420
 title: 条件类型与infer
-module: typescript
-category: 'dev-lang'
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
-description: 'TypeScript 条件类型与 infer 关键字详解：Conditional Types、分布式条件类型、类型推断与模式匹配的形式语义、工程实践与生产级应用。'
+description: TypeScript 条件类型与 infer 关键字详解：Conditional Types、分布式条件类型、类型推断与模式匹配的形式语义、工程实践与生产级应用。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/satisfies操作符
-  - typescript/迁移实战
-  - typescript/编译与性能优化
-  - typescript/映射类型与键重映射
-  - typescript/条件类型分发
-  - typescript/类型推断infer扩展
+  - 'typescript/040-SatisfiesOperator'
+  - 'typescript/041-TypeScriptMigrationPractice'
+  - 'typescript/043-TypeScriptCompilePerformanceOptimization'
+  - 'typescript/044-MappedTypeKeyRemap'
+  - 'typescript/023-ConditionalTypeDistribute'
+  - 'typescript/024-ECMAScript2024LanguageSpecification'
 prerequisites:
-  - typescript/语法速查
-  - typescript/泛型约束与默认值
-  - typescript/交叉类型与类型合并
-tags:
-  - typescript
-  - conditional-types
-  - infer
-  - type-inference
-  - pattern-matching
+  - 'typescript/011-GenericConstraintDefault'
+  - 'typescript/007-IntersectionTypeMerge'
 ---
+
 
 
 # 条件类型与 infer

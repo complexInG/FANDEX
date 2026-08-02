@@ -1,20 +1,20 @@
 ---
-order: 100
+order: 150
 title: 白盒测试覆盖度
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: '白盒测试覆盖度：语句覆盖、判定覆盖、条件覆盖、MC/DC 的定义与计算。'
+description: 白盒测试覆盖度：语句覆盖、判定覆盖、条件覆盖、MC/DC 的定义与计算。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/API自动化测试'
-  - 'software-testing/性能测试工具'
-  - 'software-testing/自动化测试框架对比'
-  - 'software-testing/API自动化测试详解'
+  - 'software-testing/013-APIAutomationTest'
+  - 'software-testing/016-AutomationTestFrameworkComparison'
+  - 'software-testing/017-APIAutomationTestDetailed'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 
 ## 1. 覆盖度层次
 

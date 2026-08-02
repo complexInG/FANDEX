@@ -1,18 +1,19 @@
 ---
-order: 2
+order: 20
 title: pnpm 核心特性
-module: pnpm-monorepo
-category: pnpm 与 Monorepo
+module: 'pnpm-monorepo'
+category: 工具链
 difficulty: beginner
-description: 'pnpm 核心机制：内容寻址存储、符号链接与严格依赖隔离'
+description: pnpm 核心机制：内容寻址存储、符号链接与严格依赖隔离
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - pnpm-monorepo/003-WorkspaceSetup
-  - pnpm-monorepo/004-WorkspaceProtocol
+  - 'pnpm-monorepo/003-WorkspaceSetup'
+  - 'pnpm-monorepo/004-WorkspaceProtocol'
 prerequisites:
-  - getting-started/013-PackageManager
+  - 'getting-started/013-PackageManager'
 ---
+
 
 ## 1. 从"图书馆的藏书方式"说起
 

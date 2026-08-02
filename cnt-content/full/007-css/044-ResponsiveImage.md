@@ -1,19 +1,20 @@
 ---
-order: 104
+order: 440
 title: 响应式图片
-module: css
-category: 'dev-lang'
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: HTML响应式图片详解：srcset、sizes、picture元素与艺术指导策略。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/CSS性能优化详解
-  - css/HTML语义化与SEO优化
-  - 'css/项目示例-响应式个人主页'
+  - 'css/042-CSSPerformanceOptimizationDetailed'
+  - 'css/043-HTMLSemanticSEO'
+  - 'css/045-CSSProjectExampleResponsiveHomepage'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. 响应式图片问题
 

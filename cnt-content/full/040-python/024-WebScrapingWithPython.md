@@ -1,147 +1,23 @@
 ---
-order: 69
+order: 240
 title: Python与Web爬虫
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: HTTP 客户端、HTML 解析、Scrapy 框架、动态渲染、反爬对抗、分布式爬虫与合规伦理的工程实践，覆盖 requests、httpx、BeautifulSoup、lxml、parsel、Scrapy、Playwright、Selenium、aiohttp 等核心工具链。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- python/Python与NLP
-- python/Python与计算机视觉
-- python/Python与自动化
-- python/Python与异步编程
-- python/函数详解
+  - 'python/022-PythonAndNLP'
+  - 'python/023-PythonComputerVision'
+  - 'python/025-PythonAutomationCookbook'
+  - 'python/026-FunctionDetailed'
 prerequisites:
-- python/语法速查
-- python/函数详解
-- python/面向对象编程
-- python/Python与异常处理
-tags:
-- python
-- web-scraping
-- crawler
-- scrapy
-- beautifulsoup
-- playwright
-- httpx
-- async
-- data-engineering
-references:
-- type: standard
-  authors:
-  - Scrapy Project
-  year: 2026
-  title: Scrapy 3.x Documentation
-  venue: Scrapy.org
-  url: https://docs.scrapy.org/
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Karl Dubost
-  - Martin Alvarez-Espinar
-  year: 2022
-  title: Robots Exclusion Protocol (RFC 9309)
-  venue: Internet Engineering Task Force (IETF)
-  url: https://www.rfc-editor.org/rfc/rfc9309
-  doi: 10.17487/RFC9309
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Fielding, R.
-  - Reschke, J.
-  year: 2022
-  title: 'Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content (RFC 7231, obsoleted by RFC 9110)'
-  venue: Internet Engineering Task Force (IETF)
-  url: https://www.rfc-editor.org/rfc/rfc9110
-  doi: 10.17487/RFC9110
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Mozilla Developer Network
-  year: 2026
-  title: Web Scraping Ethics and Robots.txt
-  venue: MDN Web Docs
-  url: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Kenneth Reitz Foundation
-  year: 2026
-  title: 'Requests: HTTP for Humans'
-  venue: Python Software Foundation
-  url: https://docs.python-requests.org/
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Encode
-  year: 2026
-  title: 'httpx: A next-generation HTTP client for Python'
-  venue: Encode OSS
-  url: https://www.python-httpx.org/
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Leonard Richardson
-  year: 2026
-  title: Beautiful Soup Documentation
-  venue: Crummy.com
-  url: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Microsoft
-  year: 2026
-  title: Playwright for Python Documentation
-  venue: Microsoft
-  url: https://playwright.dev/python/
-  accessedDate: '2026-07-20'
-- type: conference
-  authors:
-  - Papavasileiou, S.
-  - Plessas, H.
-  - Alexiou, N.
-  year: 2023
-  title: Comparative evaluation of Python web scraping frameworks
-  venue: Proceedings of the 28th Panhellenic Conference on Progress in Computing and Informatics (PCI)
-  pages: 230-237
-  doi: 10.1145/3615835.3615870
-- type: book
-  authors:
-  - Mitchell, R.
-  year: 2018
-  title: 'Web Scraping with Python: Collecting More Data from the Modern Web (2nd Edition)'
-  venue: O'Reilly Media
-  pages: 1-308
-  isbn: 978-1491985571
-- type: book
-  authors:
-  - Lawson, J.
-  year: 2015
-  title: Web Scraping with Python
-  venue: Packt Publishing
-  pages: 1-214
-etymology:
-- term: 爬虫
-  english: Crawler / Spider
-  origin: 源自 1993 年 Matthew Gray 开发的 World Wide Web Wanderer，是首个万维网爬虫，记录网站增长。
-- term: 抓取
-  english: Scraping
-  origin: 英文 scrape 原意为刮取，引申为从网页表面"刮取"数据；与"挖掘 (mining)"类似，强调非结构化数据采集。
-- term: 机器人
-  english: Robot
-  origin: 1920 年捷克作家 Čapek 在剧本《R.U.R.》中提出 robot 一词，源自捷克语 robota（劳役）。
-- term: 选择器
-  english: Selector
-  origin: CSS 选择器源自 W3C CSS 1 (1996)，XPath 源自 XML Path Language 1.0 (1999)。
-- term: 解析
-  english: Parsing
-  origin: 拉丁语 pars（部分），意为将整体分解为成分；计算机术语 1960 年代开始使用。
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
-estimatedReadingTime: 95
+  - 'python/026-FunctionDetailed'
+  - 'python/061-OOP'
+  - 'python/063-ExceptionHandling'
 ---
+
 
 
 # Python 与 Web 爬虫

@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 190
 title: React错误边界
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: 错误边界与异常处理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/状态管理方案对比
-  - react/React性能优化
-  - react/React表单处理
-  - react/React与TypeScript
+  - 'react/017-StateManagementSolutionComparison'
+  - 'react/018-ReactPerformance'
+  - 'react/020-ReactForm'
+  - 'react/021-ReactTypeScript'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 错误边界与异常处理。本文将从基础概念、快速上手、详细用法、常见场景、注意事项和进阶用法六个方面全面介绍React错误边界。

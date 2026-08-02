@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 80
 title: 样式表引入方式
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: beginner
 description: 内联、嵌入、外部、导入
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/伪类与伪元素
-  - css/优先级计算
-  - css/margin合并与塌陷
-  - css/定位详解
+  - 'css/006-PseudoClassPseudoElement'
+  - 'css/007-PriorityCalculation'
+  - 'css/009-MarginCollapse'
+  - 'css/010-PositionDetailed'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. 四种引入方式
 

@@ -1,22 +1,21 @@
 ---
-order: 80
-tags:
-  - c
-difficulty: intermediate
+order: 360
 title: 数组详解
-module: c
-category: 'C Basics'
+module: 'c'
+category: 计算机科学
+difficulty: intermediate
 description: 一维、多维数组、字符数组、数组与指针的关系及内存布局。
 author: Anonymous
-related:
-  - c/嵌入式C编程
-  - c/C与汇编交互
-  - c/预处理器与宏
-  - c/C23与C2y新标准
-prerequisites:
-  - c/概述
 updated: '2026-08-01'
+related:
+  - 'c/034-EmbeddedCProgramming'
+  - 'c/035-CAssemblyInteraction'
+  - 'c/037-PreprocessorMacro'
+  - 'c/038-C23C2y'
+prerequisites:
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 1. 数组的概念与特性
 
 ### 1.1 什么是数组

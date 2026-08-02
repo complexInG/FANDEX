@@ -1,20 +1,20 @@
 ---
-order: 75
+order: 330
 title: 类型安全的国际化
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: 构建类型安全的i18n系统
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - typescript/类型安全的表单验证
-  - typescript/类型安全的路由
-  - typescript/类型安全的配置系统
-  - typescript/类型安全的数据库查询
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/032-TypeSafeFormValidation'
+  - 'typescript/034-TypeSafeRoute'
+  - 'typescript/035-TypeScript54ReleaseNotesNoInferUtilityType'
+  - 'typescript/036-TypeLevelProgrammingInTypeScript'
+prerequisites: []
 ---
+
 
 ## 第一章 概述
 

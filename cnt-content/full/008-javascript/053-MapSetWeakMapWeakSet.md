@@ -1,9 +1,8 @@
 ---
 order: 530
 title: JavaScript Map/Set/WeakMap/WeakSet 语法速查
-module: javascript
-
-category: '008-javascript'
+module: 'javascript'
+category: 前端技术
 difficulty: beginner
 description: JavaScript Map/Set/WeakMap/WeakSet 语法速查 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Map 基础
 
 **基本写法：创建与增删改查**

@@ -1,21 +1,19 @@
 ---
 order: 20
-tags:
-  - vue3
+title: Vue3 快速入门指南
+module: 'vue3'
+category: 前端技术
 difficulty: beginner
-title: 'Vue3 快速入门指南'
-module: vue3
-category: 'Vue3 Basics'
-description: '从零搭建 Vue3 项目、开发工具与核心概念速览。'
+description: 从零搭建 Vue3 项目、开发工具与核心概念速览。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/语法速查
-  - vue3/概述与环境
-  - vue3/模板语法
-  - vue3/指令系统
+  - 'vue3/001-OverviewEnv'
+  - 'vue3/003-Vue3TemplateSyntax'
+  - 'vue3/004-Vue3DirectiveSystem'
 prerequisites: []
 ---
+
 
 ## 1. 环境搭建
 

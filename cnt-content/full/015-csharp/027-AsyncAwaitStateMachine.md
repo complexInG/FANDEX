@@ -1,20 +1,20 @@
 ---
-order: 101
-title: 'async-await状态机'
-module: csharp
-category: 'dev-lang'
+order: 270
+title: async-await状态机
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'C# async/await 状态机生成原理详解：从编译器转换到 AsyncMethodBuilder、IAsyncStateMachine、MoveNext、SynchronizationContext 与 ConfigureAwait 的全链路剖析。'
+description: C# async/await 状态机生成原理详解：从编译器转换到 AsyncMethodBuilder、IAsyncStateMachine、MoveNext、SynchronizationContext 与 ConfigureAwait 的全链路剖析。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - 'csharp/CSharp与反射'
-  - csharp/LINQ延迟与立即执行
-  - csharp/委托与事件底层原理
-  - csharp/反射与特性应用
+  - 'csharp/026-LINQDeferredImmediate'
+  - 'csharp/028-DelegateEventUnderlying'
+  - 'csharp/029-ReflectionAndFeatureApplication'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 # async/await 状态机：从语法糖到执行模型的全景解析
 

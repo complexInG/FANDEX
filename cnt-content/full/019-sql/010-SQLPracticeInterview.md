@@ -1,19 +1,20 @@
 ---
-order: 10
+order: 100
 title: SQL实战与面试
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: '经典面试题、业务场景 SQL、数据仓库 SQL 与编码规范'
+description: 经典面试题、业务场景 SQL、数据仓库 SQL 与编码规范
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/性能优化
-  - 'sql/PL-SQL与存储过程'
-  - sql/数据类型
-  - sql/约束
+  - 'sql/008-PerformanceOptimization'
+  - 'sql/009-PLSQLStoredProcedure'
+  - 'sql/011-DataType'
+  - 'sql/012-Constraint'
 prerequisites: []
 ---
+
 
 # SQL实战与面试
 

@@ -1,20 +1,18 @@
 ---
-order: 65
-title: 'GitHub-Packages'
-module: github
-category: GitHub
+order: 230
+title: GitHub-Packages
+module: 'github'
+category: 工具链
 difficulty: intermediate
 description: 'GitHub Packages深度解析：从 npm/Docker 包管理原理讲起，把 GitHub Packages 讲成团队私有的"软件包超市"，覆盖认证、发布、安装与 CI/CD 集成。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'github/REST与GraphQL-API'
-  - github/Web钩子
-  - github/在线开发环境
-  - github/代码所有者
+  - 'github/021-RESTGraphQLAPI'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一个原理说起：软件世界的"超市货架"
 

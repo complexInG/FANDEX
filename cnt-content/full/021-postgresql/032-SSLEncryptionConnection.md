@@ -1,20 +1,21 @@
 ---
-order: 77
-title: 'SSL-TLS加密连接'
-module: postgresql
-category: PostgreSQL
+order: 320
+title: SSL-TLS加密连接
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
-description: 'PostgreSQL SSL/TLS加密连接：证书配置、强制加密、客户端证书验证'
+description: PostgreSQL SSL/TLS加密连接：证书配置、强制加密、客户端证书验证
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/增量备份
-  - postgresql/订阅与发布
-  - postgresql/基于角色的权限管理
-  - postgresql/行级安全策略
+  - 'postgresql/030-IncrementalBackup'
+  - 'postgresql/031-SubscribePublish'
+  - 'postgresql/033-RoleBasedPermissionManagement'
+  - 'postgresql/034-RowLevelSecurity'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 配置SSL
 

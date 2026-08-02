@@ -1,29 +1,24 @@
 ---
-order: 102
+order: 270
 title: 弱表
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: advanced
-description: 'Lua 弱表（weak table）深度解析：弱引用语义、GC 协同机制、内存治理与高级应用案例'
+description: Lua 弱表（weak table）深度解析：弱引用语义、GC 协同机制、内存治理与高级应用案例
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - lua
-  - weak-table
-  - garbage-collection
-  - memory-management
-  - advanced
 related:
-  - lua/元表与元方法详解
-  - lua/协程非抢占式调度
-  - lua/环境与全局变量管理
-  - 'lua/C-API栈操作'
-  - lua/函数与闭包
+  - 'lua/025-MetatableMetamethodDetailed'
+  - 'lua/026-CoroutineNonPreemptiveScheduling'
+  - 'lua/028-EnvironmentGlobalVariable'
+  - 'lua/029-CAPIStackOperation'
+  - 'lua/004-FunctionAndClosure'
 prerequisites:
-  - lua/元表与元方法详解
-  - lua/环境与全局变量管理
-  - lua/函数与闭包
+  - 'lua/025-MetatableMetamethodDetailed'
+  - 'lua/028-EnvironmentGlobalVariable'
+  - 'lua/004-FunctionAndClosure'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 内存管理范式的演化

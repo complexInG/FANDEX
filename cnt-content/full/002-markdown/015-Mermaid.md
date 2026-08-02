@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 150
 title: Mermaid图表
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
 description: Mermaid图表语法：流程图、时序图、甘特图、类图与状态图的完整用法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/下标与上标
-  - markdown/LaTeX数学公式
-  - markdown/编辑器功能
-  - markdown/链接与图片
+  - 'markdown/013-SubscriptSuperscript'
+  - 'markdown/014-LaTeXMathFormula'
+  - 'markdown/016-EditorFeature'
+  - 'markdown/017-LinkImage'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 1. Mermaid 概述
 
 ### 1.1 什么是 Mermaid

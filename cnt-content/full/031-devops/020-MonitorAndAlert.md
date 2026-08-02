@@ -1,20 +1,21 @@
 ---
-order: 61
+order: 200
 title: 监控与告警
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
-description: '监控与告警：Prometheus、Grafana、告警设计、SLI/SLO与On-Call实践'
+description: 监控与告警：Prometheus、Grafana、告警设计、SLI/SLO与On-Call实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/容器安全
-  - devops/GitOps与持续交付
-  - devops/网络与安全进阶
-  - devops/数据库运维
+  - 'devops/018-ContainerSecurity'
+  - 'devops/019-GitOpsCD'
+  - 'devops/021-NetworkSecurityAdvanced'
+  - 'devops/022-DatabaseOps'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 监控体系
 

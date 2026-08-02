@@ -1,9 +1,8 @@
 ---
 order: 470
 title: AWS DynamoDB 命令
-module: cloud-computing
-
-category: '034-cloud-computing'
+module: 'cloud-computing'
+category: 云与基础设施
 difficulty: beginner
 description: AWS DynamoDB 命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 表创建与管理
 
 **基本写法：创建表**

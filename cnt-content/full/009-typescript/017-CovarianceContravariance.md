@@ -1,86 +1,20 @@
 ---
-order: 62
+order: 170
 title: 协变与逆变
-module: typescript
-category: TypeScript
-tags:
-- typescript
-- type-theory
-- subtyping
-- covariance
-- contravariance
-- liskov-substitution
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: TypeScript 中协变、逆变、双变与不变的型变关系，涵盖函数子类型理论、Liskov 替换原则、严格函数类型检查、数组协变陷阱与 React props 逆变等核心议题
 author: fanquanpp
+updated: '2026-08-02'
 related:
-- typescript/高级类型与类型演算
-- typescript/类型体操实用模式
-- typescript/this类型与多态
-- typescript/符号与唯一类型
-prerequisites:
-- typescript/语法速查
-references:
-- type: journal
-  title: On understanding types, data abstraction, and polymorphism
-  note: 'Cardelli, L. and Wegner, P. 1985. On understanding types, data abstraction, and polymorphism. ACM Computing Surveys 17, 4 (Dec. 1985), 471–523. DOI: https://doi.org/10.1145/6041.6042'
-  authors:
-  - Cardelli, L. and Wegner, P
-  year: 1985
-  venue: ACM Computing Surveys 17, 4 (Dec. 1985), 471–523
-  doi: https://doi.org/10.1145/6041.6042
-- type: journal
-  title: A behavioral notion of subtyping
-  note: 'Liskov, B. H. and Wing, J. M. 1994. A behavioral notion of subtyping. ACM Transactions on Programming Languages and Systems 16, 6 (Nov. 1994), 1811–1841. DOI: https://doi.org/10.1145/197320.197383'
-  authors:
-  - Liskov, B. H. and Wing, J. M
-  year: 1994
-  venue: ACM Transactions on Programming Languages and Systems 16, 6 (Nov. 1994), 1811–1841
-  doi: https://doi.org/10.1145/197320.197383
-- type: book
-  title: Types and Programming Languages
-  note: Pierce, B. C. 2002. Types and Programming Languages. MIT Press, Cambridge, MA, USA.
-  authors:
-  - Pierce, B. C
-  year: 2002
-  venue: MIT Press, Cambridge, MA, USA
-- type: conference
-  title: Understanding TypeScript
-  note: 'Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In 28th European Conference on Object-Oriented Programming (ECOOP 2014). LIPIcs 33, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257'
-  authors:
-  - Bierman, G., Abadi, M., and Torgersen, M
-  year: 2014
-  venue: 28th European Conference on Object-Oriented Programming (ECOOP 2014)
-  doi: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
-- type: conference
-  title: On the incompleteness of the calculus of constructions with subtyping
-  note: 'Riba, C. 2008. On the incompleteness of the calculus of constructions with subtyping. In Proceedings of the 23rd Conference on the Mathematical Foundations of Programming Semantics (MFPS XXIII). Electronic Notes in Theoretical Computer Science 215, 131–149. DOI: https://doi.org/10.1016/j.entcs.2008.06.027'
-  authors:
-  - Riba, C
-  year: 2008
-  venue: Proceedings of the 23rd Conference on the Mathematical Foundations of Programming Semantics (MFPS XXIII). Electronic Notes in Theoretical Computer Science 215, 131–149
-  doi: https://doi.org/10.1016/j.entcs.2008.06.027
-- type: journal
-  title: A semantic model of types and machine instructions for proof-carrying code
-  note: 'Appel, A. W. and Felty, A. P. 2004. A semantic model of types and machine instructions for proof-carrying code. ACM Transactions on Programming Languages and Systems 26, 3 (May 2004), 551–582. DOI: https://doi.org/10.1145/982158.982163'
-  authors:
-  - Appel, A. W. and Felty, A. P
-  year: 2004
-  venue: ACM Transactions on Programming Languages and Systems 26, 3 (May 2004), 551–582
-  doi: https://doi.org/10.1145/982158.982163
-etymology:
-- term: 协变 (Covariance)
-  origin: '拉丁语前缀 co-（共同、同向）+ variantia（变化），17 世纪数学用语，意指"与原始方向一同变化"。
-
-    逆变 (Contravariance) 源自 contra（相反）+ variantia，表示"与原始方向相反变化"。
-
-    在类型论中最早由 Luca Cardelli 与 Peter Wegner 在 1985 年的 ACM Computing Surveys 论文《On understanding types, data abstraction, and polymorphism》中系统化引入面向对象类型系统。
-
-    '
-  english: Covariance
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
+  - 'typescript/015-AdvancedTypeCalculus'
+  - 'typescript/016-OnTheComplexityOfTypeScriptTypeChecking'
+  - 'typescript/018-ThisTypePolymorphism'
+  - 'typescript/019-OnTheRoleOfSymbolicExecutionInTypeSystems'
+prerequisites: []
 ---
+
 
 # 协变与逆变
 

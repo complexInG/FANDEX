@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 90
 title: 环境与模块
-module: lua
-category: Lua
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
 description: Lua环境与require机制
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - lua/面向对象编程
-  - lua/协程详解
-  - lua/字符串模式匹配
-  - lua/Lua与C交互
+  - 'lua/007-OOP'
+  - 'lua/008-CoroutineDetailed'
+  - 'lua/010-StringPatternMatching'
+  - 'lua/011-LuaC'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 ## 概述
 
 Lua 的环境与模块系统是组织代码和管理命名空间的核心机制。Lua 的模块系统非常简洁，一个模块本质上就是一个返回表的 Lua 文件。通过 require 函数加载模块，Lua 会自动处理模块的搜索路径、缓存和重复加载等问题。这种设计使得 Lua 的模块系统既灵活又高效，无需复杂的包管理工具即可组织大型项目。

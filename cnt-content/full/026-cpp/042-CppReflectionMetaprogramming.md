@@ -1,20 +1,21 @@
 ---
-order: 84
+order: 420
 title: C++反射与元编程
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: 编译期反射与代码生成
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/C++代码规范
-  - cpp/C++与WebAssembly
-  - cpp/C++数学库
-  - cpp/智能指针
+  - 'cpp/040-CppCodeStyle'
+  - 'cpp/041-CppWebAssembly'
+  - 'cpp/043-CppMathLibrary'
+  - 'cpp/044-SmartPointer'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## Concepts（C++20）
 
 **基本写法：requires 表达式**

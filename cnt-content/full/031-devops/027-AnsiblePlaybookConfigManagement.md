@@ -1,20 +1,21 @@
 ---
-order: 104
-title: 'Ansible-Playbook配置管理'
-module: devops
-category: 'eng-infra'
+order: 270
+title: Ansible-Playbook配置管理
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
-description: 'Ansible Playbook 配置管理：Inventory、Module、Role 与最佳实践。'
+description: Ansible Playbook 配置管理：Inventory、Module、Role 与最佳实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'devops/Helm-Chart应用打包'
-  - devops/Terraform资源编排
-  - devops/Prometheus指标采集与告警
-  - devops/Grafana仪表盘配置
+  - 'devops/025-HelmChartApplicationPackage'
+  - 'devops/026-Terraform'
+  - 'devops/028-Prometheus'
+  - 'devops/029-GrafanaTableConfig'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 ## 1. Ansible 架构
 
 ### 1.1 Agentless 模型

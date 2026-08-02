@@ -1,21 +1,20 @@
 ---
 order: 40
-tags:
-  - javascript
-difficulty: intermediate
 title: 数据类型与运算符
-module: javascript
-category: 'JS Basics'
+module: 'javascript'
+category: 前端技术
+difficulty: intermediate
 description: 算术、比较、逻辑、位运算及运算符优先级。
 author: Anonymous
+updated: '2026-08-01'
 related:
-  - javascript/程序结构与基本语法
-  - javascript/变量与数据类型
-  - javascript/控制流
-  - javascript/高阶函数
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/002-ProgramStructureBasicSyntax'
+  - 'javascript/003-VariableDataType'
+  - 'javascript/005-ControlFlow'
+  - 'javascript/006-HigherOrderFunction'
+prerequisites: []
 ---
+
 ## 1. 数据类型 (Data Types)
 
 JavaScript 是一种动态类型语言，变量的类型会在运行时自动推断。JavaScript 中的数据类型分为两大类：原始类型（Primitive Types）和引用类型（Reference Types）。

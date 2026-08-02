@@ -1,20 +1,20 @@
 ---
-order: 58
+order: 160
 title: Python与Redis
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: Redis缓存与数据结构
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与Celery
-  - python/Python与Docker
-  - python/Python与消息队列
-  - python/Python与Django
-prerequisites:
-  - python/语法速查
+  - 'python/017-PythonCeleryDistributedTaskQueue'
+  - 'python/019-PythonDocker'
+  - 'python/032-PythonMessageQueue'
+  - 'python/014-PythonDjango'
+prerequisites: []
 ---
+
 
 ## 什么是 Redis
 

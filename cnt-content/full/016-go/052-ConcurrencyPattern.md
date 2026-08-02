@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 520
 title: 并发模式
-module: go
-category: 'dev-lang'
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: Go并发模式详解：工作池、扇出扇入、管道。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/goroutine与channel通信原理
-  - go/GMP调度模型
-  - go/反射实现通用函数
-  - go/内存逃逸分析
+  - 'go/050-GoroutineChannelPrinciple'
+  - 'go/051-GMPModel'
+  - 'go/053-ReflectionGenericFunction'
+  - 'go/054-MemoryEscapeAnalysis'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 ## 1. 历史动机与发展脉络

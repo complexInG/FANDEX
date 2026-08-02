@@ -1,20 +1,21 @@
 ---
-order: 83
+order: 430
 title: Kotlin与安全
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: Kotlin安全编程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与并发安全
-  - kotlin/Kotlin与WebSocket
-  - kotlin/协程调度器与上下文
-  - kotlin/Flow冷流与SharedFlow和StateFlow
+  - 'kotlin/041-KotlinConcurrencySafety'
+  - 'kotlin/042-KotlinWebSocket'
+  - 'kotlin/044-CoroutineDispatcherContext'
+  - 'kotlin/045-FlowColdSharedState'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ## 概述
 

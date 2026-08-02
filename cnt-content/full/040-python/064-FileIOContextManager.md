@@ -1,22 +1,20 @@
 ---
-order: 130
-tags:
-  - python
+order: 640
+title: 文件 I/O 与上下文管理器
+module: 'python'
+category: 后端技术
 difficulty: intermediate
-title: '文件 I/O 与上下文管理器'
-module: python
-category: 'Python Basics'
-description: '文件读写、路径操作、with 语句与上下文管理。'
+description: 文件读写、路径操作、with 语句与上下文管理。
 author: Anonymous
-related:
-  - python/面向对象编程
-  - python/异常处理
-  - 'python/项目示例-网页爬虫与数据分析'
-  - python/理论知识点
-prerequisites:
-  - python/语法速查
 updated: '2026-08-01'
+related:
+  - 'python/061-OOP'
+  - 'python/063-ExceptionHandling'
+  - 'python/065-PythonProjectExampleWebCrawlerDataAnalysis'
+  - 'python/066-PythonTheoryKnowledge'
+prerequisites: []
 ---
+
 ## 1. 文件打开与关闭 (Open & Close)
 
 ### 1.1 `open()` 函数

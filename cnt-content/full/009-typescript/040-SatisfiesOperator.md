@@ -1,30 +1,23 @@
 ---
-order: 81
+order: 400
 title: satisfies操作符
-module: typescript
-category: 'dev-lang'
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
-description: 'TypeScript 4.9 引入的 satisfies 操作符详解：保留具体类型的同时进行类型验证，与类型注解、类型断言的形式语义对比，配置对象、字面量映射、运行时验证库集成的工程实践，类型拓宽与保留的代数性质证明。'
+description: TypeScript 4.9 引入的 satisfies 操作符详解：保留具体类型的同时进行类型验证，与类型注解、类型断言的形式语义对比，配置对象、字面量映射、运行时验证库集成的工程实践，类型拓宽与保留的代数性质证明。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/TypeScript5新特性
-  - typescript/工程化配置
-  - typescript/迁移实战
-  - typescript/条件类型与infer
-  - typescript/映射类型与键重映射
-  - typescript/as const与字面量类型
+  - 'typescript/038-TypesAndProgrammingLanguages'
+  - 'typescript/039-TypeScriptEngineeringConfig'
+  - 'typescript/041-TypeScriptMigrationPractice'
+  - 'typescript/042-ConditionalTypeInfer'
+  - 'typescript/044-MappedTypeKeyRemap'
 prerequisites:
-  - typescript/语法速查
-  - typescript/泛型约束与默认值
-  - typescript/交叉类型与类型合并
-tags:
-  - typescript
-  - satisfies
-  - type-narrowing
-  - type-validation
-  - literal-types
+  - 'typescript/011-GenericConstraintDefault'
+  - 'typescript/007-IntersectionTypeMerge'
 ---
+
 
 
 # satisfies 操作符

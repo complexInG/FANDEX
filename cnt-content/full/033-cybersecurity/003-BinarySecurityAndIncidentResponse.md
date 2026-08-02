@@ -1,19 +1,20 @@
 ---
-order: 3
+order: 30
 title: 二进制安全与应急响应
-module: cybersecurity
-category: 网络安全
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: advanced
 description: 二进制逆向工程、栈/堆溢出利用、格式化字符串漏洞、物联网与工控安全、隐写术、应急响应流程、日志分析、内存/磁盘取证、流量分析、CTF与法律法规。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/安全基础与防御
-  - cybersecurity/Web安全与渗透测试
-  - cybersecurity/安全工具与实战
-  - cybersecurity/XSS攻击
+  - 'cybersecurity/001-SecurityBasicsDefense'
+  - 'cybersecurity/002-WebSecurityPenetrationTesting'
+  - 'cybersecurity/004-SecurityToolsPractice'
+  - 'cybersecurity/005-XSSAttack'
 prerequisites: []
 ---
+
 
 ## 1. 二进制逆向工程
 

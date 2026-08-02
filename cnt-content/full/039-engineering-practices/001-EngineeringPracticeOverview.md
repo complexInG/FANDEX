@@ -2,16 +2,16 @@
 order: 10
 title: 工程实践概述
 module: 'engineering-practices'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: beginner
 description: 工程化思维、实践体系与工程师素养。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'engineering-practices/设计文档规范'
-  - 'engineering-practices/代码审查清单'
+  - 'engineering-practices/002-DesignDocumentStandard'
 prerequisites: []
 ---
+
 
 ## 1. 从一个故事说起：为什么需要"工程化"
 

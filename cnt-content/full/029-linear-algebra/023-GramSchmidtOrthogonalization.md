@@ -1,19 +1,20 @@
 ---
-order: 44
+order: 200
 title: 施密特正交化
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: Gram-Schmidt 正交化的算法步骤（投影-减去），正交矩阵的定义与性质，正交对角化基础，含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/坐标与坐标变换'
-  - 'linear-algebra/内积与正交性'
-  - 'linear-algebra/特征值与特征向量计算'
+  - 'linear-algebra/021-CoordinateAndTransformation'
+  - 'linear-algebra/022-InnerProductAndOrthogonality'
+  - 'linear-algebra/025-EigenvalueAndEigenvectorCalculation'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从一个生活场景说起：把歪斜的坐标轴掰正
 

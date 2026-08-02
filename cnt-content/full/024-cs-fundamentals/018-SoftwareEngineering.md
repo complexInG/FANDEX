@@ -1,20 +1,21 @@
 ---
-order: 61
+order: 180
 title: 软件工程
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 软件工程：需求分析、设计模式、敏捷开发、测试策略与项目管理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/信息安全基础'
-  - 'cs-fundamentals/编译原理'
-  - 'cs-fundamentals/数据库系统原理'
-  - 'cs-fundamentals/编译原理进阶'
+  - 'cs-fundamentals/016-InformationSecurityBasics'
+  - 'cs-fundamentals/017-CompilePrinciple'
+  - 'cs-fundamentals/019-DatabaseSystemPrinciple'
+  - 'cs-fundamentals/020-CompilePrincipleAdvanced'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 软件工程概述
 

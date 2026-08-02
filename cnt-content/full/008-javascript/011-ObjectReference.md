@@ -1,71 +1,20 @@
 ---
-order: 55
+order: 110
 title: Object扩展
-module: javascript
-category: JavaScript
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
 description: ES6+ Object 静态方法体系、属性描述符、对象不可变性、TC39 演进时间线与工程实践
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- javascript/生成器函数
-- javascript/Proxy与Reflect
-- javascript/事件循环
-- javascript/具名捕获组
-- javascript/浏览器对象模型
-prerequisites:
-- javascript/语法速查
-tags:
-- Object
-- ES6
-- PropertyDescriptor
-- Immutability
-- TC39
-- structuredClone
-- Reflection
-references:
-- type: website
-  authors:
-  - ECMA International
-  title: ECMAScript 2026 Language Specification - Objects
-  venue: ECMA-262, 17th Edition
-  year: 2026
-  url: https://tc39.es/ecma262/#sec-objects
-- type: website
-  authors:
-  - TC39
-  title: 'Proposal: Object.groupBy and Map.groupBy'
-  venue: TC39 Proposals
-  year: 2024
-  url: https://github.com/tc39/proposal-array-grouping
-- type: website
-  authors:
-  - TC39
-  title: 'Proposal: Error Cause (includes Object.hasOwn rationale)'
-  venue: TC39 Proposals
-  year: 2022
-  url: https://github.com/tc39/proposal-error-cause
-- type: website
-  authors:
-  - WHATWG
-  title: HTML Living Standard - Structured clone algorithm
-  venue: Web Hypertext Application Technology Working Group
-  year: 2026
-  url: https://html.spec.whatwg.org/multipage/structured-data.html#structuredclone
-- type: documentation
-  authors:
-  - Mozilla Developer Network
-  title: Object reference
-  venue: MDN Web Docs
-  year: 2026
-  url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
-etymology:
-- term: Object
-  english: Object
-  origin: Object 作为 JavaScript 语言的根构造器，由 Brendan Eich 在 1995 年实现。其原型 Object.prototype 是所有对象的隐式原型链终点。ES5（2009）首次引入 Object.keys、Object.freeze 等静态方法，开启了 Object API 的扩展时代；ES6（2015）大规模补全了 Reflect、Object.assign、Object.setPrototypeOf 等；ES2022-2024 进一步引入 Object.hasOwn 与 Object.groupBy。
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
+  - 'javascript/009-CoroutinesInJavaScript'
+  - 'javascript/010-ExploringES6ProxiesAndReflect'
+  - 'javascript/012-EventLoop'
+  - 'javascript/013-ES2018RegExpNamedCaptureGroups'
+prerequisites: []
 ---
+
 
 
 # Object 扩展（ES6+ 静态方法体系）

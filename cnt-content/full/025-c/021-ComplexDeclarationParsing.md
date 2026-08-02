@@ -1,109 +1,25 @@
 ---
-order: 64
+order: 210
 title: 复杂声明解析
-module: c
-category: C Type System
-tags:
-- c
-- declaration
-- syntax
-- function-pointer
-- type-system
-- cdecl
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
 description: C 语言复杂声明的形式语法、右左法则、函数指针与数组指针的解析方法,涵盖 cdecl 工具、ABI 规范与真实项目案例。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- c/安全函数与边界检查
-- c/内联函数与宏
-- c/POSIX线程
-- c/Socket网络编程
-- c/函数指针回调与跳转表
-- c/指针深度解析
+  - 'c/019-SafeFunctionBoundsCheck'
+  - 'c/020-InlineFunctionMacro'
+  - 'c/023-POSIXThread'
+  - 'c/024-SocketNetworkProgramming'
+  - 'c/046-FunctionPointerCallbackJumpTable'
+  - 'c/039-PointerDeep'
 prerequisites:
-- c/概述
-- c/指针深度解析
-- c/数据类型详解
-references:
-- type: standard
-  authors:
-  - ISO/IEC JTC1/SC22/WG14
-  year: 2024
-  title: ISO/IEC 9899:2024 - Programming languages - C (Fifth edition)
-  venue: International Organization for Standardization
-  url: https://www.iso.org/standard/82075.html
-  version: C23
-- type: book
-  authors:
-  - Kernighan, Brian W.
-  - Ritchie, Dennis M.
-  year: 1988
-  title: The C Programming Language
-  venue: Prentice Hall
-  pages: 1-272
-  isbn: 978-0131103627
-- type: book
-  authors:
-  - van der Linden, Peter
-  year: 1994
-  title: 'Expert C Programming: Deep C Secrets'
-  venue: SunSoft Press/Prentice Hall
-  pages: 1-365
-  isbn: 978-0131774292
-- type: book
-  authors:
-  - Harbison, Samuel P.
-  - Steele, Guy L.
-  year: 2017
-  title: 'C: A Reference Manual'
-  venue: Pearson
-  pages: 1-560
-  isbn: 978-0130895929
-- type: technical-report
-  authors:
-  - Ritchie, Dennis M.
-  year: 1993
-  title: The Development of the C Language
-  venue: Bell Labs/Lucent Technologies
-  url: https://www.bell-labs.com/usr/dmr/www/chist.html
-- type: journal
-  authors:
-  - Stroustrup, Bjarne
-  year: 2013
-  title: The C++ Programming Language
-  venue: Addison-Wesley Professional, 4th Edition
-  isbn: 978-0321563842
-- type: website
-  authors:
-  - Anderson, Chris
-  year: 2024
-  title: 'cdecl: C gibberish ↔ English'
-  venue: GitHub
-  url: https://cdecl.org/
-- type: conference
-  authors:
-  - Murphy, Richard C.
-  - Newman, William
-  year: 2018
-  title: Type inference and declaration syntax in modern systems languages
-  venue: Proceedings of the ACM SIGPLAN International Conference on Systems Programming
-  pages: 45-58
-  doi: 10.1145/3210977.3210985
-etymology:
-- term: 声明符
-  english: declarator
-  origin: 源自拉丁语 declarare(声明、宣布),由 declare + -tor(执行者)构成,在 C 标准中指"声明中除类型说明符外的部分",负责引入标识符并修饰类型。
-- term: 右左法则
-  english: right-left rule
-  origin: 由 Bell Labs 工程师在 1980 年代总结的口语化规则,因其从变量名出发先向右再向左交替阅读而得名;1994 年 Peter van der Linden 在《Expert C Programming》中正式文献化。
-- term: cdecl
-  english: cdecl
-  origin: C declaration 的缩写,既是调用约定名(C declaration calling convention),也是经典工具名(cdecl,C 声明 ↔ 英语互译)。
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
-estimatedReadingTime: 90
+  - 'c/001-CLanguageOverview'
+  - 'c/039-PointerDeep'
+  - 'c/003-DataTypeDetailed'
 ---
+
 
 
 ## 1. 历史动机:C 声明语法的演进

@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 130
 title: 模式匹配
-module: csharp
-category: 'C#'
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: 'C#模式匹配与switch表达式'
+description: C#模式匹配与switch表达式
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/LINQ深度解析
-  - csharp/异步编程详解
-  - csharp/记录类型
-  - csharp/泛型与协变逆变
+  - 'csharp/011-LINQDeep'
+  - 'csharp/012-AsyncProgrammingDetailed'
+  - 'csharp/014-CRecordType'
+  - 'csharp/015-GenericCovarianceContravariance'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 ## 一、学习目标
 
 本文以 MIT 6.102 *Software Construction*、Stanford CS193p、CMU 15-150 *Functional Programming* 的模式匹配教学水准为参照，对 C# 模式匹配（Pattern Matching）进行系统性、形式化与工程化的深度剖析。阅读完毕后，读者应能达成以下 Bloom 认知层级目标：

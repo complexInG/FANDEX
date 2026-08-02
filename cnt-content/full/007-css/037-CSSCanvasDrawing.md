@@ -1,23 +1,21 @@
 ---
-order: 80
-tags:
-  - css
-  - performance
+order: 370
+title: CSS Canvas 绘图
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-title: 'CSS Canvas 绘图'
-module: css
-category: 'CSS Basics'
 description: Canvas绘图API与动画实战
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/关键渲染路径优化
-  - css/CSS原生嵌套
-  - 'css/CSS-in-JS与高级布局技巧'
-  - css/CSS架构方法论
+  - 'css/035-CriticalRenderPathOptimization'
+  - 'css/036-CSSNativeNesting'
+  - 'css/038-CSSInJS'
+  - 'css/039-CSSArchitectureMethodology'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. Canvas 概述 | Canvas Overview
 

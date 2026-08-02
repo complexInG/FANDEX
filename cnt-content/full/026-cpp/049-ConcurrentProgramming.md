@@ -1,23 +1,21 @@
 ---
-order: 95
-tags:
-  - cpp
-  - concurrency
-difficulty: advanced
+order: 490
 title: 并发编程
-module: cpp
-category: 'C++ Basics'
+module: 'cpp'
+category: 计算机科学
+difficulty: advanced
 description: C++11/14/17/20多线程编程、互斥量、条件变量、原子操作、异步编程与并发设计模式。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/C++26与最新标准
-  - cpp/STL容器与迭代器
-  - cpp/RAII资源管理
-  - cpp/STL算法与函数对象
+  - 'cpp/047-Cpp26AndLatestStandard'
+  - 'cpp/048-CSTL'
+  - 'cpp/050-CCoreGuidelinesResourceManagement'
+  - 'cpp/051-CSTLAlgorithmAndFunctionObject'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 ## 1. C++ 并发编程概述
 

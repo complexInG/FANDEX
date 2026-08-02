@@ -1,22 +1,20 @@
 ---
-order: 25
-tags:
-  - html5
-  - semantic
-difficulty: beginner
+order: 30
 title: 语义化标签
-module: html5
-category: 'HTML5 Basics'
+module: 'html5'
+category: 前端技术
+difficulty: beginner
 description: HTML5语义化标签详解：header、nav、main、article、section、aside、footer等，提升可访问性与SEO。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/概述与核心特性
-  - html5/基础标签与全局属性
-  - html5/无障碍访问
-  - html5/表单与验证
+  - 'html5/001-HTML5OverviewCoreFeature'
+  - 'html5/002-HTML5BasicTagGlobalAttribute'
+  - 'html5/004-Accessibility'
+  - 'html5/005-HTML5FormValidation'
 prerequisites: []
 ---
+
 ## 1. 语义化标签概述
 
 ### 1.1 什么是语义化

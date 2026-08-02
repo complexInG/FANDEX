@@ -1,19 +1,20 @@
 ---
-order: 107
+order: 220
 title: 缓存穿透击穿雪崩
-module: redis
-category: database
+module: 'redis'
+category: 数据库
 difficulty: intermediate
-description: 'Redis 缓存三大问题：缓存穿透（布隆过滤器）、缓存击穿（互斥锁）、缓存雪崩（随机TTL）的原理与解决方案。'
+description: Redis 缓存三大问题：缓存穿透（布隆过滤器）、缓存击穿（互斥锁）、缓存雪崩（随机TTL）的原理与解决方案。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/管道与事务原子性
-  - redis/Lua脚本原子执行
-  - redis/内存淘汰策略
+  - 'redis/020-PipeTransactionAtomic'
+  - 'redis/021-LuaScriptAtomicExecution'
+  - 'redis/023-MemoryEvictionPolicy'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 
 ## 1. 缓存穿透
 

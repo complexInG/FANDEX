@@ -1,9 +1,8 @@
 ---
 order: 360
 title: Lua math 库语法速查手册
-module: lua
-
-category: '017-lua'
+module: 'lua'
+category: 后端技术
 difficulty: beginner
 description: Lua math 库语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 常量
 
 **基本写法：数学常量**

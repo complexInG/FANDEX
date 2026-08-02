@@ -1,20 +1,21 @@
 ---
-order: 13
+order: 40
 title: 事件驱动架构
 module: 'software-architecture'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: advanced
 description: 事件驱动架构、事件溯源、CQRS模式与应用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-architecture/分层架构'
-  - 'software-architecture/微服务架构'
-  - 'software-architecture/质量属性'
-  - 'software-architecture/CAP理论与最终一致性'
+  - 'software-architecture/002-LayeredArchitecture'
+  - 'software-architecture/003-MicroserviceArchitecture'
+  - 'software-architecture/005-QualityAttribute'
+  - 'software-architecture/006-CAP'
 prerequisites:
-  - 'software-architecture/微服务架构'
+  - 'software-architecture/003-MicroserviceArchitecture'
 ---
+
 
 ## 1. 从"杂志订阅"说起：什么是事件驱动
 

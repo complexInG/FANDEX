@@ -1,22 +1,23 @@
 ---
-order: 53
+order: 90
 title: margin合并与塌陷
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: 深入解析 CSS margin 合并、塌陷机制及 BFC 块格式化上下文的工程实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - css/优先级计算
-  - css/样式表引入方式
-  - css/定位详解
-  - css/浮动与清除
-  - css/盒模型详解
+  - 'css/007-PriorityCalculation'
+  - 'css/008-StyleSheetImportMethod'
+  - 'css/010-PositionDetailed'
+  - 'css/011-FloatClear'
+  - 'css/002-CSS3BoxModelDetailed'
 prerequisites:
-  - css/概述与基本语法
-  - css/盒模型详解
+  - 'css/001-CSS3OverviewBasicSyntax'
+  - 'css/002-CSS3BoxModelDetailed'
 ---
+
 
 # margin 合并与塌陷
 

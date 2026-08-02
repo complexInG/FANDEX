@@ -1,20 +1,21 @@
 ---
-order: 74
+order: 350
 title: React与D3
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: advanced
 description: React中D3数据可视化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React与PWA
-  - react/React与Canvas
-  - react/React与Storybook
-  - 'react/React与CI-CD'
+  - 'react/033-ReactPWA'
+  - 'react/034-ReactCanvas'
+  - 'react/036-ReactStorybook'
+  - 'react/037-ReactCICD'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

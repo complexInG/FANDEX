@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 90
 title: 向量集
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: advanced
-description: 'Redis向量集Vector Set：高维向量存储、近似最近邻搜索与AI嵌入应用'
+description: Redis向量集Vector Set：高维向量存储、近似最近邻搜索与AI嵌入应用
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/地理空间
-  - redis/流
-  - redis/RDB快照持久化
-  - redis/AOF日志持久化
+  - 'redis/007-GeoSpatial'
+  - 'redis/008-Stream'
+  - 'redis/010-RDBSnapshotPersistence'
+  - 'redis/011-AOFLogPersistence'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 
 ## 1. Vector Set 概述
 

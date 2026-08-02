@@ -1,20 +1,21 @@
 ---
-order: 17
+order: 80
 title: 软件度量
 module: 'software-engineering'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 代码行度量、功能点分析、圈复杂度与软件质量指标。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-engineering/代码重构'
-  - 'software-engineering/软件测试方法'
-  - 'software-engineering/技术债务管理'
-  - 'software-engineering/DevOps与CICD集成'
+  - 'software-engineering/006-Refactoring'
+  - 'software-engineering/007-SoftwareTestMethod'
+  - 'software-engineering/009-TechDebtManagement'
+  - 'software-engineering/010-DevOpsCICDIntegration'
 prerequisites:
-  - 'software-engineering/软件工程概述'
+  - 'software-engineering/001-SoftwareEngineeringOverview'
 ---
+
 
 ## 1. 从"体重秤"说起
 

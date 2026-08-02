@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 100
 title: 包管理与仓库
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
 description: 包管理与仓库：RPM/DEB包管理、YUM/APT仓库、Artifactory与制品管理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/云原生与SRE
-  - devops/Shell脚本编程
-  - devops/服务网格
-  - devops/日志管理
+  - 'devops/008-CloudNativeSRE'
+  - 'devops/009-ShellScriptProgramming'
+  - 'devops/011-ServiceMesh'
+  - 'devops/012-LogManagement'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. RPM 包管理
 

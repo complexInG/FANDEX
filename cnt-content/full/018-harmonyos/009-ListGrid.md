@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 90
 title: 列表与网格
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: List与Grid组件
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/状态管理
-  - harmonyos/自定义组件
-  - harmonyos/导航与路由
-  - harmonyos/网络请求
+  - 'harmonyos/007-StateManagement'
+  - 'harmonyos/008-CustomComponent'
+  - 'harmonyos/010-NavigationRoute'
+  - 'harmonyos/011-NetworkRequest'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 概述
 
 列表和网格是移动应用中最常见的布局方式。HarmonyOS 提供了 List 和 Grid 两个核心组件，分别用于线性列表和二维网格的展示。它们内置了滚动、复用和懒加载能力，能够高效地处理大量数据的渲染。配合 ForEach 或 LazyForEach，可以灵活地实现动态数据驱动的列表与网格界面。

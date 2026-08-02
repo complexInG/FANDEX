@@ -1,24 +1,21 @@
 ---
-order: 60
-title: 'C#与EF Core'
-module: csharp
-category: 'C#'
+order: 210
+title: C#与EF Core
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: 'Entity Framework Core ORM 框架：DbContext、实体映射、查询、迁移、并发控制、性能优化、架构模式与生产实践'
+description: Entity Framework Core ORM 框架：DbContext、实体映射、查询、迁移、并发控制、性能优化、架构模式与生产实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - 'csharp/CSharp与Blazor'
-  - 'csharp/CSharp与MAUI'
-  - 'csharp/CSharp与依赖注入'
-  - 'csharp/CSharp与最小API'
-  - 'csharp/LINQ与函数式编程'
+  - 'csharp/006-CLINQFunctionalProgramming'
 prerequisites:
-  - csharp/概述与环境配置
-  - csharp/面向对象编程
-  - csharp/泛型与集合
-  - csharp/异步编程
+  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/003-COOP'
+  - 'csharp/004-CGenericCollection'
+  - 'csharp/005-CAsyncProgramming'
 ---
+
 
 
 ## 历史动机与背景

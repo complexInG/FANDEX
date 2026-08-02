@@ -1,20 +1,20 @@
 ---
-order: 104
+order: 430
 title: 并发渲染与可中断更新
-module: react
-category: 'dev-lang'
+module: 'react'
+category: 前端技术
 difficulty: advanced
-description: 'React并发渲染与可中断更新详解：Concurrent Rendering原理。'
+description: React并发渲染与可中断更新详解：Concurrent Rendering原理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/Next.js应用路由
-  - 'react/React-19新增API'
-  - react/错误边界与Sentry集成
-  - react/自定义Hooks复用逻辑
+  - 'react/042-React19NewAPI'
+  - 'react/044-ErrorBoundarySentry'
+  - 'react/045-CustomHooksReuseLogic'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 1. 并发渲染原理
 

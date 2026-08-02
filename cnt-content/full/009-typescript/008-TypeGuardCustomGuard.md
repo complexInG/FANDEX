@@ -1,22 +1,22 @@
 ---
-order: 52
+order: 80
 title: 类型守卫与自定义守卫
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: 类型守卫、自定义类型谓词、断言函数、判别式联合与生产级类型收窄实践，含形式化定义与工程级案例。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/类与装饰器
-  - typescript/交叉类型与类型合并
-  - typescript/索引签名与动态属性
-  - typescript/映射类型进阶
-  - typescript/条件类型与映射类型
+  - 'typescript/006-ClassDecorator'
+  - 'typescript/007-IntersectionTypeMerge'
+  - 'typescript/009-IndexSignatureDynamicProperty'
+  - 'typescript/010-MappedTypeAdvanced'
+  - 'typescript/026-ConditionalMappedType'
 prerequisites:
-  - typescript/语法速查
-  - typescript/接口与类型别名
+  - 'typescript/003-InterfaceTypeAlias'
 ---
+
 ## 历史动机与背景
 
 JavaScript 是动态类型语言，运行时变量类型可以随时变化。在 TypeScript 出现之前，开发者只能用 `typeof`、`instanceof`、`in` 等运算符做运行时判断，但这些判断对静态分析毫无帮助——IDE 与编译器无法理解 `if (typeof x === "string")` 后 `x` 必然是 string。

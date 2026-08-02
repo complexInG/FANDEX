@@ -1,20 +1,17 @@
 ---
-order: 65
+order: 220
 title: 远程跟踪分支
-module: git
-category: 'Git Basics'
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: '远程跟踪分支机制：远程引用、上游分支与本地-远程同步模型。'
+description: 远程跟踪分支机制：远程引用、上游分支与本地-远程同步模型。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/摘取提交
-  - git/暂存工作区
-  - 'git/Git-Flow与GitHub-Flow'
-  - git/修改提交
-prerequisites:
-  - git/语法速查
+  - 'git/023-GitFlowGitHubFlow'
+prerequisites: []
 ---
+
 
 ## 1. 远程跟踪分支概述
 

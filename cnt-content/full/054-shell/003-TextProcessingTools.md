@@ -1,19 +1,20 @@
 ---
-order: 3
+order: 30
 title: 文本处理三剑客：grep、sed、awk
-module: shell
-category: Shell
+module: 'shell'
+category: 工具链
 difficulty: intermediate
-description: '文本处理三剑客：grep 行匹配、sed 流编辑、awk 列处理与统计、管道组合实战'
+description: 文本处理三剑客：grep 行匹配、sed 流编辑、awk 列处理与统计、管道组合实战
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - shell/008-PracticalScripts
-  - shell/004-ProcessJobControl
+  - 'shell/008-PracticalScripts'
+  - 'shell/004-ProcessJobControl'
 prerequisites:
-  - shell/002-CommandLineBasics
-  - shell/001-ShellBasics
+  - 'shell/002-CommandLineBasics'
+  - 'shell/001-ShellBasics'
 ---
+
 
 ## 1. 从"三个工人"说起
 

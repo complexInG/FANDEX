@@ -1,20 +1,19 @@
 ---
-order: 110
-tags:
-  - css
-  - project
+order: 450
+title: CSS 项目示例：响应式个人主页
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-title: 'CSS 项目示例：响应式个人主页'
-module: css
-category: 'CSS Practice'
-description: '综合运用 Flexbox、Grid 与媒体查询的响应式主页。'
-related:
-  - css/HTML语义化与SEO优化
-  - css/响应式图片
-prerequisites:
-  - css/概述与基本语法
+description: 综合运用 Flexbox、Grid 与媒体查询的响应式主页。
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'css/043-HTMLSemanticSEO'
+  - 'css/044-ResponsiveImage'
+prerequisites:
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 | 英雄区   | 全屏背景，打字机效果，向下滚动指示  |
 | -------- | ----------------------------------- |

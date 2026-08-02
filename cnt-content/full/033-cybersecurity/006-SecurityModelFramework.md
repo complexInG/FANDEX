@@ -1,20 +1,21 @@
 ---
-order: 50
+order: 60
 title: 安全模型与框架
-module: cybersecurity
-category: 网络安全
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
 description: 安全模型与框架：CIA三元组、零信任、NIST、ISO27001、等保2.0
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/安全工具与实战
-  - cybersecurity/XSS攻击
-  - cybersecurity/CSRF攻击
-  - cybersecurity/密码学应用
+  - 'cybersecurity/004-SecurityToolsPractice'
+  - 'cybersecurity/005-XSSAttack'
+  - 'cybersecurity/007-CSRFAttack'
+  - 'cybersecurity/008-CryptographyApplication'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. 安全基本模型
 

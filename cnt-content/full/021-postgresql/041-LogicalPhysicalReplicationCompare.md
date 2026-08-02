@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 410
 title: 逻辑复制与物理复制对比
-module: postgresql
-category: database
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
-description: 'PostgreSQL 逻辑复制与物理复制对比：流复制、逻辑解码、发布订阅模型、适用场景与数据一致性。'
+description: PostgreSQL 逻辑复制与物理复制对比：流复制、逻辑解码、发布订阅模型、适用场景与数据一致性。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/可更新视图
-  - postgresql/并行查询
-  - postgresql/JSONB与JSON差异
-  - postgresql/扩展模块详解
+  - 'postgresql/039-UpdatableView'
+  - 'postgresql/040-ParallelQuery'
+  - 'postgresql/042-JSONBJSONDifference'
+  - 'postgresql/043-ExtensionModuleDetailed'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 复制概述
 

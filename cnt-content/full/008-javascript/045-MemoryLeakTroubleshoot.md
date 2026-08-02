@@ -1,20 +1,20 @@
 ---
-order: 111
+order: 450
 title: 内存泄漏排查
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
-description: 'JavaScript内存泄漏排查详解：Chrome DevTools Memory面板、堆快照、分配时间线。'
+description: JavaScript内存泄漏排查详解：Chrome DevTools Memory面板、堆快照、分配时间线。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - javascript/正则表达式
-  - javascript/错误边界与全局错误捕获
-  - 'javascript/Web API与浏览器接口'
-  - javascript/调试与性能优化
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/043-Regex'
+  - 'javascript/044-ErrorBoundaryGlobalErrorCatch'
+  - 'javascript/046-WebAPIBrowserInterface'
+  - 'javascript/047-DebugPerformanceOptimization'
+prerequisites: []
 ---
+
 
 
 # 内存泄漏排查（Memory Leak Diagnosis）

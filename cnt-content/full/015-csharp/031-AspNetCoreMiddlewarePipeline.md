@@ -1,20 +1,21 @@
 ---
-order: 105
-title: 'ASP-NET-Core中间件管道'
-module: csharp
-category: 'dev-lang'
+order: 310
+title: ASP-NET-Core中间件管道
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'ASP.NET Core中间件管道详解：从IApplicationBuilder到HttpContext的完整指南，涵盖管道构建、依赖注入、性能优化与生产级实践。'
+description: ASP.NET Core中间件管道详解：从IApplicationBuilder到HttpContext的完整指南，涵盖管道构建、依赖注入、性能优化与生产级实践。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/反射与特性应用
-  - 'csharp/Entity-Framework-Core迁移与优化'
-  - csharp/依赖注入生命周期
-  - csharp/GC代机制
+  - 'csharp/029-ReflectionAndFeatureApplication'
+  - 'csharp/030-EFCoreMigrationOptimization'
+  - 'csharp/032-DILifecycle'
+  - 'csharp/033-GCGeneration'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 
 # ASP-NET-Core中间件管道

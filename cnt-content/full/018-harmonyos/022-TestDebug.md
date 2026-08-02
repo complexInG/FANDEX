@@ -1,20 +1,21 @@
 ---
-order: 68
+order: 220
 title: 测试与调试
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 单元测试、UI 测试、断言理论、调试器原理与性能剖析的形式化方法与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - harmonyos/性能优化
-  - harmonyos/应用签名与发布
-  - harmonyos/Stage模型与FA模型区别
-  - harmonyos/国际化与无障碍
+  - 'harmonyos/020-PerformanceOptimization'
+  - 'harmonyos/023-AppSignaturePublish'
+  - 'harmonyos/024-StageFAModelDifference'
+  - 'harmonyos/021-I18nAccessibility'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 概述
 
 测试与调试是软件工程的两面盾牌：前者在变更发生时守护既有行为的稳定性，后者在行为偏离预期时定位根本原因。HarmonyOS 提供了完整的测试金字塔（Test Pyramid）支持：底层是基于 Jest 的 `@ohos/hypium` 单元测试框架，中层是基于 `@ohos/uitest` 的 UI 自动化测试，顶层是 `DevEco Profiler` 与 `hilog` 日志体系构成的运行时观测能力。这套体系借鉴了 JUnit、Espresso、XCTest 等成熟框架的设计哲学，并在此基础上针对 ArkUI 的声明式渲染模型做了适配。

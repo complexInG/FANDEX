@@ -1,22 +1,21 @@
 ---
-order: 70
-tags:
-  - markdown
+order: 230
+title: Markdown 代码块与语法高亮
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
-title: 'Markdown 代码块与语法高亮'
-module: markdown
-category: 'Markdown Basics'
 description: 行内代码、围栏代码块、语言标注与高亮配置。
 author: Anonymous
-related:
-  - markdown/图片CDN加速
-  - markdown/版本控制下的PR协作
-  - markdown/表格
-  - markdown/语法速查
-prerequisites:
-  - markdown/语法指南
 updated: '2026-08-01'
+related:
+  - 'markdown/021-ImageCDNAcceleration'
+  - 'markdown/022-VCSPRCollaboration'
+  - 'markdown/024-Table'
+  - 'markdown/031-BlockquoteNestedList'
+prerequisites:
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 1. 行内代码 (Inline Code)
 
 **语法**：使用反引号 `` ` `` 包围代码

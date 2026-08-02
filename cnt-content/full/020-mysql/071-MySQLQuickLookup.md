@@ -1,23 +1,21 @@
 ---
-order: 130
-tags:
-  - mysql
-  - database
+order: 710
+title: MySQL 快速查阅
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-title: 'MySQL 快速查阅'
-module: mysql
-category: 'MySQL Reference'
-description: '常用 SQL 语句、函数与配置参数速查。'
+description: 常用 SQL 语句、函数与配置参数速查。
 author: Anonymous
-related:
-  - mysql/事务与锁机制
-  - mysql/配置与运维
-  - mysql/控制器与应用
-  - mysql/SQL注入基础与检测
-prerequisites:
-  - mysql/语法速查
 updated: '2026-08-01'
+related:
+  - 'mysql/069-TransactionLockMechanism'
+  - 'mysql/070-MySQLConfigOps'
+  - 'mysql/072-MySQLControlApplication'
+  - 'mysql/073-SQLInjectionBasicsDetection'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 数据库操作
 
@@ -34,7 +32,6 @@ updated: '2026-08-01'
  CREATE DATABASE dbname
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
- -
  CREATE DATABASE ecommerce
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
@@ -53,7 +50,6 @@ updated: '2026-08-01'
 ```sql
  SHOW DATABASES;
  SHOW CREATE DATABASE dbname;
- -
  SELECT table_schema AS '数据库',
   SUM(data_length + index_length) / 1024 / 1024 AS '大小(MB)'
  from information_schema.tables
@@ -86,7 +82,6 @@ updated: '2026-08-01'
   age INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
  )
- -
  CREATE TABLE users (
   id INT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
   username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
@@ -106,7 +101,6 @@ updated: '2026-08-01'
  DESC tablename;
  SHOW COLUMNS FROM tablename;
  SHOW CREATE TABLE tablename;
- -
  SELECT table_name AS '表名',
   data_length / 1024 / 1024 AS '数据大小(MB)',
   index_length / 1024 / 1024 AS '索引大小(MB)'
@@ -117,17 +111,12 @@ updated: '2026-08-01'
 ### 修改表结构
 
 ```sql
- -
  ALTER TABLE tablename ADD COLUMN colname type;
  ALTER TABLE tablename ADD COLUMN colname type AFTER another_col;
- -
  ALTER TABLE tablename MODIFY COLUMN colname new_type;
  ALTER TABLE tablename CHANGE COLUMN oldname newname new_type;
- -
  ALTER TABLE tablename DROP COLUMN colname;
- -
  ALTER TABLE oldname RENAME TO newname;
- -
  ALTER TABLE users ADD COLUMN phone VARCHAR(20) AFTER email;
  ALTER TABLE users MODIFY COLUMN age SMALLINT UNSIGNED;
  ALTER TABLE users CHANGE COLUMN phone mobile VARCHAR(20);
@@ -150,11 +139,8 @@ updated: '2026-08-01'
 ### 复制表
 
 ```sql
- -
  CREATE TABLE newtable LIKE oldtable;
- -
  CREATE TABLE newtable AS SELECT * FROM oldtable;
- -
  CREATE TABLE active_users AS SELECT * FROM users WHERE status = 1;
 ```
 
@@ -227,27 +213,20 @@ updated: '2026-08-01'
 ### 插入数据
 
 ```sql
- -
  inSERT INTO table(col1, col2) VALUES(val1, val2);
- -
  inSERT INTO table(col1, col2) VALUES
   (v1, v2),
   (v3, v4),
   (v5, v6);
- -
  inSERT INTO table(cols) VALUES(vals)
  ON DUPLICATE KEY UPDATE col = new_val;
- -
  replace INTO table(cols) VALUES(vals);
- -
  inSERT INTO users(username, email, password)
  VALUES ('zhangsan', 'zhang@example.com', '123456');
- -
  inSERT INTO users(username, email, password) VALUES
   ('lisi', 'li@example.com', '654321'),
   ('wangwu', 'wang@example.com', 'abc123'),
   ('zhaoliu', 'zhao@example.com', 'xyz789');
- -
  inSERT INTO users(id, username, email)
  VALUES (1, 'zhangsan_new', 'zhang_new@example.com')
  ON DUPLICATE KEY UPDATE username = VALUES(username), email = VALUES(email);
@@ -258,11 +237,8 @@ updated: '2026-08-01'
 ```sql
  UPDATE table SET col = val WHERE condition;
  UPDATE table SET col1 = val1, col2 = val2 WHERE condition;
- -
  UPDATE users SET status = 0 WHERE id = 1;
- -
  UPDATE users SET status = 1 WHERE created_at > '2024-01-01';
- -
  UPDATE orders o
  JOIN users u ON o.user_id = u.id
  SET o.user_name = u.username
@@ -275,11 +251,8 @@ updated: '2026-08-01'
  delete FROM table WHERE condition; -- 按条件删除
  delete FROM table; -- 删除所有行
  TRUNCATE TABLE table; -- 清空表（重置自增ID）
- -
  delete FROM users WHERE id = 1;
- -
  delete FROM logs WHERE created_at < '2024-01-01';
- -
  delete o FROM orders o
  JOIN users u ON o.user_id = u.id
  WHERE u.status = 0;
@@ -296,81 +269,61 @@ updated: '2026-08-01'
  SELECT col1, col2 FROM table;
  SELECT col1 AS alias FROM table;
  SELECT DISTINCT col FROM table;
- -
  SELECT id, username, email FROM users WHERE status = 1;
- -
  SELECT COUNT(*) AS user_count FROM users;
 ```
 
 ### 条件查询
 
 ```sql
- -
  SELECT * FROM table WHERE col = value;
  SELECT * FROM table WHERE col > value;
  SELECT * FROM table WHERE col != value;
- -
  SELECT * FROM table WHERE col1 = v1 AND col2 = v2;
  SELECT * FROM table WHERE col1 = v1 OR col2 = v2;
  SELECT * FROM table WHERE NOT col = value;
- -
  SELECT * FROM table WHERE col BETWEEN val1 AND val2;
  SELECT * FROM table WHERE col IN (val1, val2, val3);
- -
  SELECT * FROM table WHERE col LIKE '%pattern%';
  SELECT * FROM table WHERE col LIKE 'pattern%';
  SELECT * FROM table WHERE col LIKE '_pattern';
- -
  SELECT * FROM table WHERE col IS NULL;
  SELECT * FROM table WHERE col IS NOT NULL;
- -
  SELECT * FROM users WHERE age BETWEEN 18 AND 30;
- -
  SELECT * FROM users WHERE city IN ('北京', '上海', '广州');
- -
  SELECT * FROM users WHERE username LIKE '%zhang%';
- -
  SELECT * FROM users WHERE phone IS NULL;
 ```
 
 ### 排序与分页
 
 ```sql
- -
  SELECT * FROM table ORDER BY col ASC;
  SELECT * FROM table ORDER BY col DESC;
  SELECT * FROM table ORDER BY col1 ASC, col2 DESC;
- -
  SELECT * FROM table LIMIT 10;
  SELECT * FROM table LIMIT 10 OFFSET 20;
  SELECT * FROM table LIMIT 20, 10;
- -
  SELECT * FROM users ORDER BY created_at DESC;
- -
  SELECT * FROM users ORDER BY created_at DESC LIMIT 20, 10;
 ```
 
 ### 分组查询
 
 ```sql
- -
  SELECT col, COUNT(*) FROM table GROUP BY col;
- -
  SELECT col, AVG(price) FROM table
  GROUP BY col
  HAVING AVG(price) > 100;
- -
  SELECT city, COUNT(*) AS user_count
  from users
  GROUP BY city
  ORDER BY user_count DESC;
- -
  SELECT DATE_FORMAT(created_at, '%Y-%m') AS month,
   COUNT(*) AS register_count
  from users
  GROUP BY month
  ORDER BY month;
- -
  SELECT user_id, SUM(amount) AS total_amount
  from orders
  GROUP BY user_id
@@ -387,7 +340,6 @@ updated: '2026-08-01'
   MAX(price) AS max, -- 最大值
   MIN(price) AS min -- 最小值
  from table;
- -
  SELECT
   COUNT(*) AS order_count,
   SUM(amount) AS total_amount,
@@ -401,27 +353,20 @@ updated: '2026-08-01'
 ### 多表连接
 
 ```sql
- -
  SELECT * FROM a INNER JOIN b ON a.id = b.id;
- -
  SELECT * FROM a LEFT JOIN b ON a.id = b.id;
- -
  SELECT * FROM a RIGHT JOIN b ON a.id = b.id;
- -
  SELECT * FROM a LEFT JOIN b ON a.id = b.id
  UNION
  SELECT * FROM a RIGHT JOIN b ON a.id = b.id;
- -
  SELECT e1.name, e2.name AS manager
  from employees e1
  JOIN employees e2 ON e1.manager_id = e2.id;
- -
  SELECT o.id, o.amount, o.created_at,
   u.username, u.email
  from orders o
  JOIN users u ON o.user_id = u.id
  WHERE o.created_at > '2024-01-01';
- -
  SELECT u.username, COUNT(o.id) AS order_count
  from users u
  LEFT JOIN orders o ON u.id = o.user_id
@@ -435,20 +380,14 @@ updated: '2026-08-01'
 ### 创建索引
 
 ```sql
- -
  CREATE INDEX idx_name ON table(col);
- -
  CREATE UNIQUE INDEX idx_name ON table(col);
- -
  CREATE INDEX idx_name ON table(col1, col2);
- -
  ALTER TABLE table ADD FULLTEXT INDEX ft_idx(col);
- -
  CREATE INDEX idx_users_email ON users(email);
  CREATE INDEX idx_users_status ON users(status);
  CREATE INDEX idx_users_created_at ON users(created_at);
  CREATE UNIQUE INDEX idx_users_username ON users(username);
- -
  CREATE INDEX idx_orders_user_date ON orders(user_id, created_at);
 ```
 
@@ -456,7 +395,6 @@ updated: '2026-08-01'
 
 ```sql
  SHOW INDEX FROM table;
- -
  SELECT index_name, column_name
  from information_schema.statistics
  WHERE table_schema = DATABASE() AND table_name = 'users';
@@ -466,7 +404,6 @@ updated: '2026-08-01'
 
 ```sql
  DROP INDEX idx_name ON table;
- -
  DROP INDEX idx_users_email ON users;
 ```
 
@@ -477,38 +414,25 @@ updated: '2026-08-01'
 ### 用户管理
 
 ```sql
- -
  CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
  CREATE USER 'username'@'%' IDENTIFIED BY 'password'; -- 允许远程
- -
  ALTER USER 'username'@'localhost' IDENTIFIED BY 'new_password';
- -
  DROP USER 'username'@'localhost';
- -
  SELECT user, host FROM mysql.user;
- -
  CREATE USER 'readonly'@'%' IDENTIFIED BY 'read123';
- -
  CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin123';
 ```
 
 ### 权限管理
 
 ```sql
- -
  GRANT ALL PRIVILEGES ON dbname.* TO 'username'@'localhost';
  GRANT SELECT, INSERT, UPDATE ON dbname.table TO 'username'@'localhost';
- -
  REVOKE ALL PRIVILEGES ON dbname.* FROM 'username'@'localhost';
- -
  SHOW GRANTS FOR 'username'@'localhost';
- -
  FLUSH PRIVILEGES;
- -
  GRANT SELECT ON ecommerce.* TO 'readonly'@'%';
- -
  GRANT SELECT, INSERT, UPDATE, DELETE ON ecommerce.* TO 'appuser'@'%';
- -
  GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
 ```
 
@@ -528,24 +452,16 @@ updated: '2026-08-01'
 ### 基本操作
 
 ```sql
- -
  START TRANSACTION;
- -
  BEGIN;
- -
  commit;
- -
  ROLLBACK;
- -
  SAVEPOINT savepoint_name;
- -
  ROLLBACK TO SAVEPOINT savepoint_name;
- -
  BEGIN;
  UPDATE accounts SET balance = balance - 100 WHERE id = 1;
  UPDATE accounts SET balance = balance + 100 WHERE id = 2;
  commit;
- -
  BEGIN;
  inSERT INTO orders (...) VALUES (...);
  SAVEPOINT order_saved;
@@ -559,9 +475,7 @@ updated: '2026-08-01'
 ### 隔离级别
 
 ```sql
- -
  SELECT @@transaction_isolation;
- -
  SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;
  SET GLOBAL TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 ```
@@ -591,11 +505,8 @@ updated: '2026-08-01'
  LEFT('Hello', 2) -- 取左边字符
  RIGHT('Hello', 2) -- 取右边字符
  inSTR('Hello', 'll') -- 查找位置
- -
  SELECT CONCAT(last_name, ' ', first_name) AS full_name FROM users;
- -
  SELECT SUBSTRING(email, INSTR(email, '@') + 1) AS domain FROM users;
- -
  SELECT LOWER(CONCAT(SUBSTRING(first_name, 1, 1), last_name)) AS username FROM users;
 ```
 
@@ -616,11 +527,8 @@ updated: '2026-08-01'
  DATEDIFF('2024-01-15', '2024-01-01') -- 日期差
  DATE_FORMAT(NOW(), '%Y-%m-%d') -- 格式化日期
  LAST_DAY(NOW()) -- 月份最后一天
- -
  SELECT * FROM users WHERE DATE_FORMAT(created_at, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m');
- -
  SELECT TIMESTAMPDIFF(YEAR, birthday, CURDATE()) AS age FROM users;
- -
  SELECT DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AS monday;
 ```
 
@@ -637,11 +545,8 @@ updated: '2026-08-01'
  RAND() -- 随机数
  TRUNCATE(3.14159, 3) -- 截断
  SIGN(-10) -- 符号
- -
  SELECT ROUND(AVG(rating), 1) AS avg_rating FROM products;
- -
  SELECT FLOOR(RAND() * 9000 + 1000) AS captcha;
- -
  SELECT price * 0.8 AS discounted_price FROM products;
 ```
 
@@ -656,9 +561,7 @@ updated: '2026-08-01'
   WHEN score >= 60 THEN '及格'
   ELSE '不及格'
  END -- 多条件判断
- -
  SELECT id, username, IF(status = 1, '活跃', '禁用') AS status_text FROM users;
- -
  SELECT
   username,
   CASE
@@ -667,7 +570,6 @@ updated: '2026-08-01'
   ELSE '普通会员'
   END AS level
  from users;
- -
  SELECT name, IFNULL(phone, '未填写') AS phone FROM customers;
 ```
 

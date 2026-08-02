@@ -1,9 +1,8 @@
 ---
 order: 440
 title: GitHub 历史与日志
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 以侦探查案驱动方式讲解 git log 的各类查看姿势与 git diff、git show、git blame、git reflog 的取证技巧，覆盖历史筛选、差异对比与引用日志，适合零基础学习者。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 ## 开篇：像侦探查案一样翻阅历史
 
 想象你是一名侦探，接手一桩"代码失踪案"：昨晚还能运行的程序，今天早上突然崩溃了。你需要回答三个问题：

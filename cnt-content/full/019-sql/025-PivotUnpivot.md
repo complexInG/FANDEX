@@ -1,20 +1,19 @@
 ---
-order: 64
+order: 250
 title: PIVOT与UNPIVOT
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: 'SQL PIVOT与UNPIVOT：行列转换的语法、条件聚合实现、跨数据库兼容方案与性能优化'
+description: SQL PIVOT与UNPIVOT：行列转换的语法、条件聚合实现、跨数据库兼容方案与性能优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/公用表表达式
-  - sql/递归CTE
-  - sql/集合操作
-  - sql/数据控制语言
+  - 'sql/024-RecursiveCTE'
+  - 'sql/026-SetOperation'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 行列转换概述
 
 - **PIVOT（行转列）**：将行数据旋转为列，常用于交叉报表

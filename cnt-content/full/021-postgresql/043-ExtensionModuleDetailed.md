@@ -1,18 +1,19 @@
 ---
-order: 103
+order: 430
 title: 扩展模块详解
-module: postgresql
-category: database
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
-description: 'PostgreSQL 扩展模块详解：PostGIS 地理空间、pgvector 向量搜索、pg_stat_statements 性能分析。'
+description: PostgreSQL 扩展模块详解：PostGIS 地理空间、pgvector 向量搜索、pg_stat_statements 性能分析。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/逻辑复制与物理复制对比
-  - postgresql/JSONB与JSON差异
+  - 'postgresql/041-LogicalPhysicalReplicationCompare'
+  - 'postgresql/042-JSONBJSONDifference'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 扩展模块体系
 

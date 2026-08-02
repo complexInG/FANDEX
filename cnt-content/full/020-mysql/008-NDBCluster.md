@@ -1,20 +1,21 @@
 ---
-order: 52
-title: 'NDB-Cluster'
-module: mysql
-category: MySQL
+order: 80
+title: NDB-Cluster
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL NDB Cluster集群引擎：分布式架构、数据节点、SQL节点、管理节点与高可用方案'
+description: MySQL NDB Cluster集群引擎：分布式架构、数据节点、SQL节点、管理节点与高可用方案
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/SQL数据操作与查询
-  - mysql/Memory存储引擎
-  - mysql/聚簇索引与二级索引
-  - mysql/联合索引与最左前缀原则
+  - 'mysql/006-SQLDataOperationQuery'
+  - 'mysql/007-MemoryStorageEngine'
+  - 'mysql/009-ClusteredIndexSecondaryIndex'
+  - 'mysql/010-CompositeIndexLeftmostPrefixPrinciple'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. NDB Cluster 概述
 

@@ -1,9 +1,8 @@
 ---
 order: 430
 title: Cybersecurity 密码哈希
-module: cybersecurity
-
-category: '033-cybersecurity'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: Cybersecurity 密码哈希 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## bcrypt 哈希
 
 **基本写法：使用 Python 生成 bcrypt 哈希**

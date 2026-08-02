@@ -1,18 +1,19 @@
 ---
-order: 51
+order: 230
 title: 大数定律
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 依概率收敛的概念、切比雪夫大数定律、伯努利大数定律、辛钦大数定律及其应用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/切比雪夫不等式'
-  - 'probability-statistics/中心极限定理'
+  - 'probability-statistics/026-ChebyshevInequality'
+  - 'probability-statistics/028-CentralLimitTheorem'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：掷硬币掷到"手麻"，频率终于老实了
 

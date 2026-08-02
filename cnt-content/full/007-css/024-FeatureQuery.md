@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 240
 title: 特性查询
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: '@supports'
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/函数
-  - css/CSS变量与自定义属性
-  - css/层叠层
-  - css/逻辑属性
+  - 'css/022-Function'
+  - 'css/023-CSSVariableCustomAttribute'
+  - 'css/025-CascadeLayer'
+  - 'css/026-LogicalProperty'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. @supports 语法
 

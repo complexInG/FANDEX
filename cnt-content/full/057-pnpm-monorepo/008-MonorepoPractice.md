@@ -1,19 +1,20 @@
 ---
-order: 8
+order: 80
 title: Monorepo 实战
-module: pnpm-monorepo
-category: pnpm 与 Monorepo
+module: 'pnpm-monorepo'
+category: 工具链
 difficulty: intermediate
-description: 'Monorepo 实战：apps/packages 结构设计、共享包示例与 CI 优化'
+description: Monorepo 实战：apps/packages 结构设计、共享包示例与 CI 优化
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - pnpm-monorepo/006-TurborepoTasks
-  - pnpm-monorepo/007-ChangesetsRelease
+  - 'pnpm-monorepo/006-TurborepoTasks'
+  - 'pnpm-monorepo/007-ChangesetsRelease'
 prerequisites:
-  - pnpm-monorepo/003-WorkspaceSetup
-  - pnpm-monorepo/006-TurborepoTasks
+  - 'pnpm-monorepo/003-WorkspaceSetup'
+  - 'pnpm-monorepo/006-TurborepoTasks'
 ---
+
 
 ## 1. 从"完整搬进新家"说起
 

@@ -1,18 +1,19 @@
 ---
-order: 3
+order: 30
 title: Tailwind CSS 核心概念与工具类
-module: tailwind
-category: Tailwind CSS
+module: 'tailwind'
+category: 前端技术
 difficulty: beginner
-description: 'Tailwind CSS 核心工具类清单：颜色、间距、排版、边框、圆角、阴影、滤镜七大族逐一盘点，含类名命名规律、状态变体与任意值'
+description: Tailwind CSS 核心工具类清单：颜色、间距、排版、边框、圆角、阴影、滤镜七大族逐一盘点，含类名命名规律、状态变体与任意值
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - tailwind/002-InstallConfig
-  - tailwind/004-LayoutFlexGrid
+  - 'tailwind/002-InstallConfig'
+  - 'tailwind/004-LayoutFlexGrid'
 prerequisites:
-  - tailwind/002-InstallConfig
+  - 'tailwind/002-InstallConfig'
 ---
+
 
 ## 0. 工具箱里的成套扳手
 

@@ -1,44 +1,21 @@
 ---
-order: 83
+order: 410
 title: Java与Kubernetes
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Java 应用在 Kubernetes 上的部署完整指南：资源限制、健康检查、优雅停机、自动伸缩与云原生实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-- java/Java与虚拟线程
-- java/Java与GraalVM
-- java/Java记录类
-- java/Java文本块
+  - 'java/039-JavaVirtualThread'
+  - 'java/040-JavaGraalVM'
+  - 'java/042-JavaRecordClass'
+  - 'java/043-JavaTextBlock'
 prerequisites:
-- java/概述与开发环境
-references:
-- type: documentation
-  authors:
-  - Kubernetes 团队
-  year: 2026
-  title: Kubernetes Documentation - Configure Liveness, Readiness and Startup Probes
-  venue: kubernetes.io
-  url: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-  accessedDate: '2026-08-01'
-- type: documentation
-  authors:
-  - Microsoft Learn
-  year: 2026
-  title: Containerize your Java applications for Kubernetes
-  venue: Microsoft Learn
-  url: https://learn.microsoft.com/en-us/azure/developer/java/containers/kubernetes
-  accessedDate: '2026-08-01'
-etymology:
-- term: 容器编排
-  english: orchestration
-  origin: 借音乐指挥意象，指统一调度、部署与管理容器集群。
-estimatedReadingTime: 30
-lastReviewed: '2026-08-01'
-reviewer: fanquanpp
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 
 ## 1. 历史动机与发展脉络

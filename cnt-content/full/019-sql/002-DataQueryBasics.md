@@ -1,18 +1,19 @@
 ---
-order: 2
+order: 20
 title: 数据查询基础
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: beginner
-description: 'SELECT 语句、WHERE 条件、排序、分页、去重、别名、表达式与聚合函数'
+description: SELECT 语句、WHERE 条件、排序、分页、去重、别名、表达式与聚合函数
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/概述与标准
-  - sql/多表查询
-  - sql/数据操作
+  - 'sql/001-OverviewStandard'
+  - 'sql/003-MultiTableQuery'
+  - 'sql/004-DML'
 prerequisites: []
 ---
+
 ## WHERE 条件
 
 **单行写法：AND 组合条件**

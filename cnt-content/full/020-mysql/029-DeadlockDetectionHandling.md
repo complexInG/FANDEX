@@ -1,20 +1,21 @@
 ---
-order: 71
+order: 290
 title: 死锁检测与处理
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL InnoDB死锁检测与处理：死锁检测算法、死锁日志分析、预防策略与自动恢复'
+description: MySQL InnoDB死锁检测与处理：死锁检测算法、死锁日志分析、预防策略与自动恢复
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/多表联查详解
-  - mysql/锁分类
-  - mysql/分布式事务
-  - mysql/二进制日志
+  - 'mysql/027-MultiTableJoinDetailed'
+  - 'mysql/028-LockClassification'
+  - 'mysql/030-DistributedTransaction'
+  - 'mysql/031-Binlog'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 死锁检测
 

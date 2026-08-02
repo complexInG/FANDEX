@@ -1,24 +1,21 @@
 ---
 order: 50
-tags:
-  - javascript
-  - control-flow
-difficulty: intermediate
 title: 控制流
-module: javascript
-category: 'JS Basics'
-description: 'JavaScript 控制流的数学语义、形式化推导、工程实践与反模式：条件分支、循环结构、迭代器协议、短路求值、异常控制流的完整剖析。'
+module: 'javascript'
+category: 前端技术
+difficulty: intermediate
+description: JavaScript 控制流的数学语义、形式化推导、工程实践与反模式：条件分支、循环结构、迭代器协议、短路求值、异常控制流的完整剖析。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - javascript/变量与数据类型
-  - javascript/数据类型与运算符
-  - javascript/高阶函数
-  - javascript/递归与尾调用优化
-  - javascript/事件循环详解
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/003-VariableDataType'
+  - 'javascript/004-DataTypeOperator'
+  - 'javascript/006-HigherOrderFunction'
+  - 'javascript/007-LinearGeneticProgramming'
+  - 'javascript/033-EventLoopDetailed'
+prerequisites: []
 ---
+
 ## 0. 引言
 
 控制流（Control Flow）是程序设计语言中描述指令执行顺序的机制。在 JavaScript 这门同时具备命令式、函数式与异步特征的多范式语言中，控制流不仅包含经典的顺序、分支、循环三类，还延伸到基于异常的非局部跳转、基于 Promise 与事件循环的异步调度、基于迭代器协议的惰性求值等多个维度。

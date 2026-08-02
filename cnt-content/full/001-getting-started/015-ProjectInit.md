@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 150
 title: 项目初始化
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 项目初始化流程、脚手架工具、模板选择与项目结构规范。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/包管理器'
-  - 'getting-started/版本控制系统选型'
-  - 'getting-started/构建工具'
-  - 'getting-started/编程范式基础'
+  - 'getting-started/013-PackageManager'
+  - 'getting-started/014-VCSSelection'
+  - 'getting-started/016-BuildTool'
+  - 'getting-started/017-ProgrammingParadigmBasics'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 项目初始化概述
 

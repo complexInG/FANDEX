@@ -1,20 +1,20 @@
 ---
-order: 102
+order: 330
 title: 事件循环详解
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: JavaScript事件循环深度解析：宏任务与微任务优先级、浏览器与Node.js差异。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - javascript/闭包的内存泄露与优化
-  - javascript/原型链继承与class本质
-  - javascript/Promise静态方法
-  - javascript/异步并发控制
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/031-ClosureMemoryLeakOptimization'
+  - 'javascript/032-PrototypeChainClassEssence'
+  - 'javascript/034-PromiseStaticMethod'
+  - 'javascript/035-AsyncConcurrencyControl'
+prerequisites: []
 ---
+
 
 
 # 事件循环详解（Event Loop In Depth）

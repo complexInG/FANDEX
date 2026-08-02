@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 180
 title: 容器安全
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: advanced
 description: 容器安全：镜像安全、运行时安全、K8s安全、安全策略与合规
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/自动化测试
-  - devops/故障排查
-  - devops/GitOps与持续交付
-  - devops/监控与告警
+  - 'devops/016-AutomationTest'
+  - 'devops/017-Troubleshooting'
+  - 'devops/019-GitOpsCD'
+  - 'devops/020-MonitorAndAlert'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 容器安全概述
 

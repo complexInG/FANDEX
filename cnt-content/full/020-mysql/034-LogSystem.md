@@ -1,20 +1,21 @@
 ---
-order: 76
+order: 340
 title: 日志系统
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
 description: MySQL日志系统：错误日志、通用查询日志、慢查询日志的配置、查看与运维
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/重做日志
-  - mysql/撤销日志
-  - mysql/逻辑备份
-  - mysql/物理备份
+  - 'mysql/032-RedoLog'
+  - 'mysql/033-UndoLog'
+  - 'mysql/035-LogicalBackup'
+  - 'mysql/036-PhysicalBackup'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. MySQL 日志体系
 
 | 日志类型     | 用途               | 默认状态 |

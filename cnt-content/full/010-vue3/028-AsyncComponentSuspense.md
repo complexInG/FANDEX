@@ -1,20 +1,20 @@
 ---
-order: 105
+order: 280
 title: 异步组件与Suspense
-module: vue3
-category: 'dev-lang'
+module: 'vue3'
+category: 前端技术
 difficulty: advanced
-description: 'Vue 3异步组件defineAsyncComponent与Suspense配合使用。'
+description: Vue 3异步组件defineAsyncComponent与Suspense配合使用。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - vue3/Teleport传送门应用
-  - vue3/KeepAlive缓存与生命周期
-  - vue3/Pinia持久化插件
-  - 'vue3/Vue-Router导航守卫'
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/026-TeleportPortalApp'
+  - 'vue3/027-KeepAliveCacheLifecycle'
+  - 'vue3/029-PiniaPersistencePlugin'
+  - 'vue3/030-VueRouterNavigationGuard'
+prerequisites: []
 ---
+
 
 # 异步组件与 Suspense | Async Components and Suspense in Vue 3
 

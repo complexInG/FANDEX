@@ -1,18 +1,19 @@
 ---
-order: 5
+order: 50
 title: Astro 内容集合与 Schema
-module: astro
-category: Astro
+module: 'astro'
+category: 前端技术
 difficulty: intermediate
-description: '以知识管理者的困惑为引，讲解内容集合：content.config.ts、glob loader、zod schema 校验、getCollection 查询、render 渲染与 Live Content Collections'
+description: 以知识管理者的困惑为引，讲解内容集合：content.config.ts、glob loader、zod schema 校验、getCollection 查询、render 渲染与 Live Content Collections
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - astro/003-PagesRouting
-  - astro/006-IslandsClientComponents
+  - 'astro/003-PagesRouting'
+  - 'astro/006-IslandsClientComponents'
 prerequisites:
-  - astro/002-QuickStartProject
+  - 'astro/002-QuickStartProject'
 ---
+
 
 ## 0. 一个知识管理者的困惑
 

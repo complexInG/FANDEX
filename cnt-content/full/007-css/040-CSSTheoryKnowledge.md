@@ -1,22 +1,21 @@
 ---
-title: 'CSS 理论知识点'
-module: css
-category: 'CSS Theory'
-order: 100
-tags:
-  - css
-  - theory
+order: 400
+title: CSS 理论知识点
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: 层叠规则、包含块、格式化上下文与渲染原理。
-related:
-  - 'css/CSS-in-JS与高级布局技巧'
-  - css/CSS架构方法论
-  - css/CSS新特性
-  - css/CSS性能优化详解
-prerequisites:
-  - css/概述与基本语法
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'css/038-CSSInJS'
+  - 'css/039-CSSArchitectureMethodology'
+  - 'css/041-CSSNewFeatures'
+  - 'css/042-CSSPerformanceOptimizationDetailed'
+prerequisites:
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
          |
          v

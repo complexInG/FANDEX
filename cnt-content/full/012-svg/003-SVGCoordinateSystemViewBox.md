@@ -1,19 +1,20 @@
 ---
 order: 30
-title: 'SVG 坐标系与 viewBox'
-module: svg
-category: 'SVG Basics'
+title: SVG 坐标系与 viewBox
+module: 'svg'
+category: 前端技术
 difficulty: beginner
-description: '视口、viewBox、preserveAspectRatio、坐标系变换原理与适配技巧。'
+description: 视口、viewBox、preserveAspectRatio、坐标系变换原理与适配技巧。
 author: fanquanpp
 updated: '2026-07-18'
 related:
-  - svg/基础语法与文档结构
-  - svg/基本图形详解
-  - svg/变换transform
+  - 'svg/002-SVGBasicSyntaxDocStructure'
+  - 'svg/004-SVGBasicShapeDetailed'
+  - 'svg/009-SVGTransformTransform'
 prerequisites:
-  - svg/基础语法与文档结构
+  - 'svg/002-SVGBasicSyntaxDocStructure'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 坐标系设计的几何渊源

@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 120
 title: 云数据库服务
 module: 'cloud-computing'
-category: 云计算
+category: 云与基础设施
 difficulty: advanced
 description: 云数据库服务选型、托管关系型数据库、云原生数据库、NoSQL托管服务、数据库迁移策略、多区域复制与容灾。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/云原生应用'
-  - 'cloud-computing/Kubernetes架构'
-  - 'cloud-computing/Kubernetes核心资源'
-  - 'cloud-computing/云存储服务'
+  - 'cloud-computing/010-CloudNativeApp'
+  - 'cloud-computing/011-KubernetesArchitecture'
+  - 'cloud-computing/013-KubernetesCore'
+  - 'cloud-computing/014-CloudStorageService'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 云数据库服务概述
 

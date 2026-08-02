@@ -1,21 +1,21 @@
 ---
 order: 50
-tags:
-  - lua
-difficulty: intermediate
 title: 元表与面向对象编程
-module: lua
-category: 'Lua Advanced'
+module: 'lua'
+category: 后端技术
+difficulty: intermediate
 description: 元表机制、元方法、面向对象设计模式与原型继承体系的工程级深度解析。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - lua/数据类型与Table详解
-  - lua/函数与闭包
-  - lua/表与元表进阶
-  - lua/面向对象编程
+  - 'lua/003-DataTypeTableDetailed'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/006-TableMetatableAdvanced'
+  - 'lua/007-OOP'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 
 
 ## 1. 历史动机与背景

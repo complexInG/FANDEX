@@ -1,9 +1,8 @@
 ---
 order: 690
 title: C++ STL 迭代器
-module: cpp
-
-category: '026-cpp'
+module: 'cpp'
+category: 计算机科学
 difficulty: beginner
 description: C++ STL 迭代器 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 迭代器类别
 
 **基本写法：输入迭代器**

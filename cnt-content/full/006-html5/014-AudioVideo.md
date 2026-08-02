@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 140
 title: 音频与视频
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
 description: audio、video、source、track字幕
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/链接与锚点
-  - html5/图像与响应式图片
-  - html5/SVG矢量图形
-  - html5/嵌入式内容
+  - 'html5/012-LinkageAnchor'
+  - 'html5/013-ImageResponsiveImage'
+  - 'html5/015-SVG'
+  - 'html5/016-EmbeddedContent'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. audio 元素
 
 ```html

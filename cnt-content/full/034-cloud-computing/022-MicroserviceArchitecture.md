@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 220
 title: 微服务架构
 module: 'cloud-computing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 微服务架构设计：拆分策略、通信模式、数据管理与服务治理详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/云成本优化'
-  - 'cloud-computing/12要素应用'
-  - 'cloud-computing/服务网格'
-  - 'cloud-computing/可观测性'
+  - 'cloud-computing/020-CloudCostOptimization'
+  - 'cloud-computing/021-TwelveFactorApp'
+  - 'cloud-computing/023-ServiceMesh'
+  - 'cloud-computing/024-Observability'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 微服务概述
 

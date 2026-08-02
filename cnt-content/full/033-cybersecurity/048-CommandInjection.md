@@ -1,9 +1,8 @@
 ---
 order: 480
 title: Cybersecurity 命令注入防御与检测
-module: cybersecurity
-
-category: '033-cybersecurity'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: Cybersecurity 命令注入防御与检测 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 命令注入原理检测
 
 **基本写法:常见分隔符探测**

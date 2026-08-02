@@ -1,9 +1,8 @@
 ---
 order: 290
 title: Markdown 提示框（admonition/callout）
-module: markdown
-
-category: '002-markdown'
+module: 'markdown'
+category: 工具链
 difficulty: beginner
 description: Markdown 提示框（admonition/callout） 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Obsidian Callout 语法
 
 **基本写法：基础 callout**

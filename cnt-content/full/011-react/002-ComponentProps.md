@@ -1,20 +1,19 @@
 ---
-order: 2
-tags:
-  - react
-difficulty: beginner
+order: 20
 title: 组件与Props
-module: react
-category: React
-description: '函数组件、Props 传递、children、组件组合模式、条件渲染、列表与 key、Fragment。'
+module: 'react'
+category: 前端技术
+difficulty: beginner
+description: 函数组件、Props 传递、children、组件组合模式、条件渲染、列表与 key、Fragment。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/概述与环境配置
-  - react/状态与事件
-  - react/Hooks深入
+  - 'react/001-OverviewEnvSetup'
+  - 'react/003-StateEvent'
+  - 'react/004-HooksDeep'
 prerequisites: []
 ---
+
 ## 1. 函数组件
 
 React 中组件是构建 UI 的基本单元。函数组件是现代 React 的主流写法，它是一个接收 Props 并返回 React 元素的纯函数。

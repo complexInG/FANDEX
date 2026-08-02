@@ -1,35 +1,25 @@
 ---
-order: 64
+order: 200
 title: SpringBoot数据访问
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Spring Data JPA、MyBatis、R2DBC、JdbcTemplate 与事务、缓存、连接池的系统性深度剖析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/SpringBoot进阶
-  - java/SpringBoot安全
-  - java/Java设计模式
-  - java/Java函数式编程
-  - java/Java与响应式编程
-  - java/Java并发编程基础
+  - 'java/018-SpringBootAdvanced'
+  - 'java/019-SpringBootSecurity'
+  - 'java/021-JavaDesignPattern'
+  - 'java/022-JavaFunctionalProgramming'
+  - 'java/037-JavaReactiveProgramming'
+  - 'java/008-ConcurrencyBasics'
 prerequisites:
-  - java/概述与开发环境
-  - java/Spring基础
-  - java/集合框架详解
-tags:
-  - Java
-  - SpringBoot
-  - JPA
-  - MyBatis
-  - R2DBC
-  - JdbcTemplate
-  - Hibernate
-  - Transaction
-  - HikariCP
-  - Redis
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
+  - 'java/049-CollectionFrameworkDetailed'
 ---
+
 
 
 # Spring Boot 数据访问深度指南

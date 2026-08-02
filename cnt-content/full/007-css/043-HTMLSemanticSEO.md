@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 430
 title: HTML语义化与SEO优化
-module: css
-category: 'dev-lang'
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: HTML语义化标签与SEO优化详解：结构化标记、Schema.org、无障碍与搜索引擎友好实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/CSS新特性
-  - css/CSS性能优化详解
-  - css/响应式图片
-  - 'css/项目示例-响应式个人主页'
+  - 'css/041-CSSNewFeatures'
+  - 'css/042-CSSPerformanceOptimizationDetailed'
+  - 'css/044-ResponsiveImage'
+  - 'css/045-CSSProjectExampleResponsiveHomepage'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. 语义化标签体系
 

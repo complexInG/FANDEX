@@ -1,20 +1,18 @@
 ---
-order: 63
-title: 'C#12与C#13新特性'
-module: csharp
-category: 'C#'
+order: 240
+title: C#12与C#13新特性
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: '最新C#语言特性'
+description: 最新C#语言特性
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - 'csharp/CSharp与依赖注入'
-  - 'csharp/CSharp与最小API'
-  - 'csharp/CSharp与反射'
-  - csharp/LINQ延迟与立即执行
+  - 'csharp/026-LINQDeferredImmediate'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 ## 一、概述
 

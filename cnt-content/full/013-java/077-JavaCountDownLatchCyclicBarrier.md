@@ -1,9 +1,8 @@
 ---
 order: 770
 title: Java 同步器 CountDownLatch/CyclicBarrier/Phaser 语法速查手册
-module: java
-
-category: '013-java'
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: Java 同步器 CountDownLatch/CyclicBarrier/Phaser 语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## CountDownLatch 一次性倒数
 
 **基本写法：创建倒数器**

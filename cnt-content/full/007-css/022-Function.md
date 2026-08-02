@@ -1,44 +1,21 @@
 ---
-order: 64
+order: 220
 title: 函数
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: CSS 数值函数完整原理：calc/min/max/clamp 的语法、单位混合规则、嵌套与响应式应用。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-- css/容器查询
-- css/移动端适配
-- css/CSS变量与自定义属性
-- css/特性查询
+  - 'css/020-ContainerQuery'
+  - 'css/021-MobileAdaptation'
+  - 'css/023-CSSVariableCustomAttribute'
+  - 'css/024-FeatureQuery'
 prerequisites:
-- css/概述与基本语法
-references:
-- type: standard
-  authors:
-  - W3C
-  year: 2024
-  title: CSS Values and Units Module Level 4
-  venue: W3C
-  url: https://www.w3.org/TR/css-values-4/
-  accessedDate: '2026-08-01'
-- type: documentation
-  authors:
-  - MDN Web Docs
-  year: 2026
-  title: calc() - CSS
-  venue: MDN Web Docs
-  url: https://developer.mozilla.org/en-US/docs/Web/CSS/calc
-  accessedDate: '2026-08-01'
-etymology:
-- term: 钳制
-  english: clamp
-  origin: 电子学钳位术语，把信号限制在上下限之间。
-estimatedReadingTime: 30
-lastReviewed: '2026-08-01'
-reviewer: fanquanpp
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. 历史动机与发展脉络
 

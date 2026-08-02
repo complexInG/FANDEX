@@ -1,22 +1,21 @@
 ---
-order: 60
-tags:
-  - c
-difficulty: intermediate
+order: 170
 title: 控制流
-module: c
-category: 'C Basics'
+module: 'c'
+category: 计算机科学
+difficulty: intermediate
 description: 条件判断、循环结构及其控制语句。
 author: Anonymous
-related:
-  - c/线程与并发
-  - c/对齐与内存布局
-  - c/属性与编译器扩展
-  - c/安全函数与边界检查
-prerequisites:
-  - c/概述
 updated: '2026-08-01'
+related:
+  - 'c/022-ThreadConcurrency'
+  - 'c/016-AlignmentMemoryLayout'
+  - 'c/018-AttributeCompilerExtension'
+  - 'c/019-SafeFunctionBoundsCheck'
+prerequisites:
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 1. 条件判断 (Selection)
 
 ### 1.1 `if-else` 结构

@@ -1,21 +1,20 @@
 ---
-order: 210
-tags:
-  - java
-  - project
+order: 690
+title: Java 项目示例：图书管理系统
+module: 'java'
+category: 后端技术
 difficulty: intermediate
-title: 'Java 项目示例：图书管理系统'
-module: java
-category: 'Java Practice'
-description: '综合运用面向对象、集合框架与文件 I/O 的图书管理系统。'
-related:
-  - java/SpringCloud微服务开发
-  - java/Swing图形界面
-  - java/理论知识点
-prerequisites:
-  - java/概述与开发环境
+description: 综合运用面向对象、集合框架与文件 I/O 的图书管理系统。
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'java/067-SpringCloudMicroserviceDevelopment'
+  - 'java/068-JavaSwingGUI'
+  - 'java/070-JavaTheoryJVMClassLoadingMemory'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 | 用户管理   | 注册、登录、用户信息维护           |
 | ---------- | ---------------------------------- |

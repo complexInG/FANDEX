@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 150
 title: 泛型与协变逆变
-module: csharp
-category: 'C#'
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
 description: 泛型约束与型变
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/模式匹配
-  - csharp/记录类型
-  - csharp/Span与Memory
-  - csharp/源生成器
+  - 'csharp/013-PatternMatching'
+  - 'csharp/014-CRecordType'
+  - 'csharp/016-SpanMemory'
+  - 'csharp/017-SourceGenerator'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 ## 一、概述
 

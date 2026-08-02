@@ -1,19 +1,20 @@
 ---
-order: 104
+order: 350
 title: Actions制品传递
-module: github
-category: toolchain
+module: 'github'
+category: 工具链
 difficulty: intermediate
 description: 'GitHub Actions制品（Artifacts）流程驱动详解：按"上传→下载→过期管理"完整流程，讲透 upload-artifact、download-artifact 与跨 Job/跨工作流传递。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/Actions缓存依赖
-  - github/Actions自托管运行器
-  - github/Actions环境部署
+  - 'github/033-ActionsCacheDependency'
+  - 'github/034-ActionsSelfHostedRunner'
+  - 'github/036-ActionsEnvironmentDeploy'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 ## 0. 开始之前：一个"快递驿站"的故事
 
 小区里有个**快递驿站**。你在淘宝下单，快递员（构建 Job A）把包裹放到驿站（GitHub 存储），你在驿站取了包裹回家（测试 Job B / 部署 Job C 下载使用）。驿站还有三个特点：

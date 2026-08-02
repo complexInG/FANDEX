@@ -1,20 +1,21 @@
 ---
-order: 74
+order: 340
 title: Go与依赖注入
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: Wire与依赖注入
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与配置管理
-  - go/Go与代码生成
-  - go/Go与日志
-  - go/Go与模板
+  - 'go/035-GoConfigManagement'
+  - 'go/033-GoCodeGeneration'
+  - 'go/036-GoLog'
+  - 'go/037-GoTemplate'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 ## 历史动机与背景

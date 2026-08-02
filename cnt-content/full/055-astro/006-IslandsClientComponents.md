@@ -1,18 +1,19 @@
 ---
-order: 6
+order: 60
 title: Astro 岛屿架构与客户端指令
-module: astro
-category: Astro
+module: 'astro'
+category: 前端技术
 difficulty: intermediate
-description: '问题驱动理解岛屿架构：为什么页面没有交互、client 指令全家桶、水合原理、多框架集成与岛屿间通信'
+description: 问题驱动理解岛屿架构：为什么页面没有交互、client 指令全家桶、水合原理、多框架集成与岛屿间通信
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - astro/004-ComponentsProps
-  - astro/005-ContentCollections
+  - 'astro/004-ComponentsProps'
+  - 'astro/005-ContentCollections'
 prerequisites:
-  - astro/004-ComponentsProps
+  - 'astro/004-ComponentsProps'
 ---
+
 
 ## 0. 开篇：一座冰山和几座浮岛
 

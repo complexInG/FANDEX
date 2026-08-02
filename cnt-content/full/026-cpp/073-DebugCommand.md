@@ -1,9 +1,8 @@
 ---
 order: 730
 title: C++ 调试命令
-module: cpp
-
-category: '026-cpp'
+module: 'cpp'
+category: 计算机科学
 difficulty: beginner
 description: C++ 调试命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## gdb 基础
 
 **基本写法：启动 gdb**

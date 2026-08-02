@@ -1,30 +1,24 @@
 ---
-order: 60
+order: 170
 title: 模块与包
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
-description: 'Lua 模块与包系统深度解析：require 机制、searchers/loaders 演化、LuaRocks 包管理、循环依赖治理、热重载、命名空间模式与多领域工程实践'
+description: Lua 模块与包系统深度解析：require 机制、searchers/loaders 演化、LuaRocks 包管理、循环依赖治理、热重载、命名空间模式与多领域工程实践
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - lua
-  - module
-  - package
-  - require
-  - luarocks
-  - intermediate
 related:
-  - lua/函数与闭包
-  - lua/环境与全局变量管理
-  - lua/元表与元方法详解
-  - lua/协程与异步
-  - lua/弱表
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/028-EnvironmentGlobalVariable'
+  - 'lua/025-MetatableMetamethodDetailed'
+  - 'lua/023-CoroutineAsync'
+  - 'lua/027-WeakTable'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/函数与闭包
-  - lua/元表与元方法详解
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/025-MetatableMetamethodDetailed'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 模块系统的范式演化

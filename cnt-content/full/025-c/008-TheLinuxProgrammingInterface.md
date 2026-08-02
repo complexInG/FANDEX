@@ -1,105 +1,24 @@
 ---
-order: 52
+order: 80
 title: 多文件编译
-module: c
-category: dev-lang
-tags:
-- c
-- translation-unit
-- linkage
-- linker
-- build-system
-- abi
-- makefile
-- cmake
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
 description: C 语言多文件编译的完整知识体系，涵盖翻译单元、链接性、ODR、头文件、预处理器、Makefile/CMake/Ninja、静态/动态库、ABI、链接器原理与工业级工程实践。
 author: fanquanpp
+updated: '2026-08-02'
 related:
-- c/运算符与表达式
-- c/枚举与typedef
-- c/动态内存管理
-- c/函数指针与回调
-- c/预处理器与宏
-- c/属性与编译器扩展
-- c/静态库与动态库
+  - 'c/006-OperatorExpression'
+  - 'c/007-EnumTypedef'
+  - 'c/009-DynamicMemoryManagement'
+  - 'c/010-FunctionPointerCallback'
+  - 'c/037-PreprocessorMacro'
+  - 'c/018-AttributeCompilerExtension'
 prerequisites:
-- c/概述
-- c/指针深度解析
-references:
-- type: standard
-  authors:
-  - ISO/IEC JTC1/SC22/WG14
-  year: 2024
-  title: ISO/IEC 9899:2024 Information technology — Programming languages — C
-  venue: International Organization for Standardization
-  version: C23
-  url: https://www.iso.org/standard/82075.html
-- type: book
-  authors:
-  - Kernighan, Brian W.
-  - Ritchie, Dennis M.
-  year: 1988
-  title: The C Programming Language
-  venue: Prentice Hall
-  edition: 2nd
-  pages: '225'
-  doi: 10.5555/102697
-- type: book
-  authors:
-  - Levine, John R.
-  year: 2000
-  title: Linkers and Loaders
-  venue: Morgan Kaufmann
-  pages: 1-15
-  isbn: 9781558604964
-- type: book
-  authors:
-  - Sloane, Steve
-  - Quinn, Michael
-  year: 2017
-  title: Managing Projects with GNU Make
-  venue: O''Reilly Media
-  edition: 4th
-- type: book
-  authors:
-  - Stallman, Richard M.
-  - McGrath, Roland
-  - Smith, Paul D.
-  year: 2022
-  title: GNU Make Manual
-  venue: Free Software Foundation
-  version: '4.4'
-  url: https://www.gnu.org/software/make/manual/make.html
-- type: documentation
-  authors:
-  - Kitware Inc.
-  year: 2024
-  title: CMake Reference Documentation
-  venue: Kitware
-  version: '3.30'
-  url: https://cmake.org/cmake/help/latest/
-- type: book
-  authors:
-  - Petersen, Remedy
-  year: 2016
-  title: The Linux Programming Interface
-  venue: No Starch Press
-  pages: 845-880
-  isbn: 9781593272209
-etymology:
-- term: 翻译单元
-  english: translation unit
-  origin: 源自 C 标准 §5.1.1.2，"translation" 指将源代码翻译为目标代码的多阶段过程，"unit" 强调其作为编译器最小独立处理单元的语义边界
-- term: 链接性
-  english: linkage
-  origin: 源自 1970s Unix 链接器（linker）概念，描述标识符在不同翻译单元间的可见性，C89 标准正式引入 external/internal/no linkage 三分类
-- term: ODR
-  english: One Definition Rule
-  origin: 术语起源于 C++ 标准（§3.2），后由 C 社区广泛采纳为约定，C 标准本身使用 "shall have exactly one external definition" 表述，工程上统称 ODR
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
+  - 'c/001-CLanguageOverview'
+  - 'c/039-PointerDeep'
 ---
+
 
 
 # 多文件编译

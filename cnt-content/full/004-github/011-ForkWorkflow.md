@@ -1,20 +1,20 @@
 ---
-order: 54
+order: 110
 title: Fork工作流
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: intermediate
 description: 'GitHub Fork工作流深度解析：以"菜谱复刻"类比，按 fork→clone→修改→PR→合回 的完整流程讲解开源协作、同步策略与冲突解决。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/开源许可证选择
-  - github/依赖安全选项
-  - github/Projects看板
-  - github/知识库
+  - 'github/009-OpenSourceLicense'
+  - 'github/010-DependencySecurityOptions'
+  - 'github/012-ProjectsBoard'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一道菜说起：Fork 就像"复刻菜谱"
 

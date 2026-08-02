@@ -1,9 +1,8 @@
 ---
 order: 970
 title: Python 性能分析与优化
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python 性能分析与优化 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## timeit 计时
 
 **基本写法：timeit 计时**

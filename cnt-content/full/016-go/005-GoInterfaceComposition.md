@@ -1,19 +1,20 @@
 ---
-order: 5
-title: 'Go 接口与组合'
-module: go
-category: Go
+order: 50
+title: Go 接口与组合
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: '接口定义、隐式实现、空接口、类型断言、类型开关、接口组合、io.Reader/Writer、sort.Interface 与常见接口模式。'
+description: 接口定义、隐式实现、空接口、类型断言、类型开关、接口组合、io.Reader/Writer、sort.Interface 与常见接口模式。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/函数与方法
-  - go/数据结构
-  - go/并发编程
-  - go/错误处理
+  - 'go/003-GoFunctionMethod'
+  - 'go/004-GoDataStructure'
+  - 'go/006-GoConcurrentProgramming'
+  - 'go/007-GoErrorHandling'
 prerequisites: []
 ---
+
 
 ## 1. 接口定义
 

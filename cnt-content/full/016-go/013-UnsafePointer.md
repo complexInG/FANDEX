@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 130
 title: unsafe与指针
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: unsafe包与指针运算
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/反射
-  - go/内存对齐
-  - go/Go与CGO
-  - go/Go与性能分析
+  - 'go/015-Reflection'
+  - 'go/016-MemoryAlignment'
+  - 'go/031-GoCGO'
+  - 'go/043-GoPerformanceAnalysis'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 unsafe 包的设计动机

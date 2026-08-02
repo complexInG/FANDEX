@@ -1,21 +1,20 @@
 ---
-order: 9
-tags:
-  - react
-difficulty: intermediate
+order: 90
 title: 测试与工程化
-module: react
-category: React
-description: 'Vitest/Testing Library、组件测试、E2E 测试、Storybook、ESLint/Prettier、CI/CD 与项目结构最佳实践。'
+module: 'react'
+category: 前端技术
+difficulty: intermediate
+description: Vitest/Testing Library、组件测试、E2E 测试、Storybook、ESLint/Prettier、CI/CD 与项目结构最佳实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/路由与数据获取
-  - react/性能优化
-  - react/Next.js全栈开发
-  - react/JSX深度解析
+  - 'react/007-RouteDataFetch'
+  - 'react/008-PerformanceOptimization'
+  - 'react/010-NextJSFullStack'
+  - 'react/011-JSXDeepAnalysis'
 prerequisites: []
 ---
+
 
 ## 1. Vitest 与 Testing Library
 

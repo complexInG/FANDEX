@@ -1,20 +1,21 @@
 ---
-order: 105
+order: 670
 title: 分库分表策略
-module: mysql
-category: database
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL 分库分表策略详解：垂直拆分、水平拆分、ShardingSphere 与 MyCAT 中间件、分布式主键与跨片查询。'
+description: MySQL 分库分表策略详解：垂直拆分、水平拆分、ShardingSphere 与 MyCAT 中间件、分布式主键与跨片查询。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/间隙锁与临键锁解决幻读
-  - mysql/主从复制延迟原因与解决
-  - 'mysql/JSON类型与JSON-TABLE'
-  - mysql/事务与锁机制
+  - 'mysql/065-GapLockNextKeyLockSolutionPhantomRead'
+  - 'mysql/066-ReplicationDelayCauseSolution'
+  - 'mysql/068-JSONTypeJSONTable'
+  - 'mysql/069-TransactionLockMechanism'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 分库分表概述
 

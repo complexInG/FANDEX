@@ -1,22 +1,20 @@
 ---
-order: 60
-tags:
-  - typescript
-difficulty: advanced
+order: 150
 title: 高级类型与类型演算
-module: typescript
-category: 'TS Advanced'
+module: 'typescript'
+category: 前端技术
+difficulty: advanced
 description: 映射类型、条件类型、模板字面量类型与类型体操。
 author: Anonymous
-related:
-  - typescript/声明文件编写
-  - typescript/模块解析策略
-  - typescript/类型体操实用模式
-  - typescript/协变与逆变
-prerequisites:
-  - typescript/语法速查
 updated: '2026-08-01'
+related:
+  - 'typescript/013-DeclarationFileWriting'
+  - 'typescript/014-ModuleResolutionInModernJavaScriptToolchains'
+  - 'typescript/016-OnTheComplexityOfTypeScriptTypeChecking'
+  - 'typescript/017-CovarianceContravariance'
+prerequisites: []
 ---
+
 
 ## 1. 类型断言 (Type Assertions)
 
@@ -781,19 +779,17 @@ type Result3 = Length<[1, 2, 3]>; // 3
 ```typescript
  // 类型级别的逻辑
  // 类型相等性检查
- type IsEqual<T, U> = [T] extends [U] ? [U] extends [T] ?  : false : false;
+ type IsEqual<T, U> = [T] extends [U] ? ([U] extends [T] ? true : false) : false;
  // 类型包含性检查
  type Includes<T extends any[], U> = T extends [infer F, ...infer R]
-  ? IsEqual<F, U> extends
-  ?
-  : Includes<R, U>
+  ? (IsEqual<F, U> extends true ? true : Includes<R, U>)
   : false;
  // 类型条件逻辑
- type If<C extends boolean, T, F> = C extends  ? T : F;
+ type If<C extends boolean, T, F> = C extends true ? T : F;
  // 使用示例
- type TestEqual1 = IsEqual<string, string>; //
+ type TestEqual1 = IsEqual<string, string>; // true
  type TestEqual2 = IsEqual<string, number>; // false
- type TestIncludes1 = Includes<[1, 2, 3, 4, 5], 3>; //
+ type TestIncludes1 = Includes<[1, 2, 3, 4, 5], 3>; // true
  type TestIncludes2 = Includes<[1, 2, 3, 4, 5], 6>; // false
  type TestIf1 = If<true, string, number>; // string
  type TestIf2 = If<false, string, number>; // number

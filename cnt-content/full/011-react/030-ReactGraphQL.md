@@ -1,20 +1,21 @@
 ---
-order: 69
+order: 300
 title: React与GraphQL
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: React中GraphQL数据获取
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React与WebAssembly
-  - react/React与WebSocket
-  - react/React与微前端
-  - react/React无障碍
+  - 'react/028-ReactWebAssembly'
+  - 'react/029-ReactWebSocket'
+  - 'react/031-ReactMicroFrontend'
+  - 'react/032-ReactAccessibility'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

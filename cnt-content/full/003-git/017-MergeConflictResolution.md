@@ -1,20 +1,18 @@
 ---
-order: 60
+order: 170
 title: 合并冲突解决
-module: git
-category: 'Git Basics'
+module: 'git'
+category: 工具链
 difficulty: intermediate
 description: Git合并冲突的产生机制、解决策略与预防方法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/HEAD指针与分支本质
-  - git/Git钩子与GitLFS
-  - git/合并工具
-  - git/变基操作
-prerequisites:
-  - git/语法速查
+  - 'git/015-HEADPointerBranchEssence'
+  - 'git/016-GitHookGitLFS'
+prerequisites: []
 ---
+
 ## 1. 冲突概述
 
 ### 1.1 什么是合并冲突

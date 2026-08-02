@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 240
 title: Go与Docker
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'Go 与 Docker 容器化：镜像分层、多阶段构建、scratch/distroless 镜像、CGO 静态编译、BuildKit、镜像安全与生产级最佳实践'
+description: Go 与 Docker 容器化：镜像分层、多阶段构建、scratch/distroless 镜像、CGO 静态编译、BuildKit、镜像安全与生产级最佳实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与Kubernetes
-  - go/Go与配置管理
-  - go/Go与信号处理
-  - go/Go与日志
+  - 'go/023-GoKubernetes'
+  - 'go/035-GoConfigManagement'
+  - 'go/042-GoSignalHandling'
+  - 'go/036-GoLog'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 # Go 与 Docker：从镜像分层到 distroless 的容器化工程实践

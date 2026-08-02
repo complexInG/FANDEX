@@ -1,20 +1,19 @@
 ---
-order: 57
-title: 'C#与Unity游戏开发'
-module: csharp
-category: 'C#'
+order: 180
+title: C#与Unity游戏开发
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
 description: Unity脚本与组件系统
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/Span与Memory
-  - csharp/源生成器
-  - 'csharp/CSharp与Blazor'
-  - 'csharp/CSharp与MAUI'
+  - 'csharp/016-SpanMemory'
+  - 'csharp/017-SourceGenerator'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 ## 一、学习目标
 

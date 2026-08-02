@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 190
 title: Kotlin集合操作
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: beginner
 description: 集合函数式操作
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin序列化
-  - kotlin/Kotlin契约
-  - kotlin/扩展函数
-  - kotlin/Kotlin作用域函数
+  - 'kotlin/023-KotlinSerialization'
+  - 'kotlin/021-KotlinContractContracts'
+  - 'kotlin/015-ExtensionFunction'
+  - 'kotlin/018-KotlinScopeFunction'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 ## 过滤操作
 
 **基本写法：filter 过滤元素**

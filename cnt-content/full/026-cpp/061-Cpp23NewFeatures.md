@@ -1,20 +1,21 @@
 ---
-order: 110
+order: 610
 title: C++23新特性
-module: cpp
-category: 'dev-lang'
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-description: 'C++23新特性详解：std::print、std::expected、std::flat_map、deducing this、std::mdspan、std::generator 等。'
+description: C++23新特性详解：std::print、std::expected、std::flat_map、deducing this、std::mdspan、std::generator 等。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - cpp/C++20协程
-  - cpp/C++20概念
-  - cpp/模板
-  - cpp/内存序与无锁编程
+  - 'cpp/059-Cpp20Coroutine'
+  - 'cpp/060-Cpp20Concept'
+  - 'cpp/062-CppTemplate'
+  - 'cpp/063-MemoryOrderLockFree'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 C++23 标准的定位

@@ -1,20 +1,20 @@
 ---
-order: 53
+order: 90
 title: 索引签名与动态属性
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: 索引签名、Record与动态属性访问
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - typescript/交叉类型与类型合并
-  - typescript/类型守卫与自定义守卫
-  - typescript/映射类型进阶
-  - typescript/泛型约束与默认值
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/007-IntersectionTypeMerge'
+  - 'typescript/008-TypeGuardCustomGuard'
+  - 'typescript/010-MappedTypeAdvanced'
+  - 'typescript/011-GenericConstraintDefault'
+prerequisites: []
 ---
+
 ## 第一章 概述
 
 ### 1.1 为什么需要索引签名

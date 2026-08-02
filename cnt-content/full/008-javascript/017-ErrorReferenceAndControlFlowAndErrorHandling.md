@@ -1,72 +1,21 @@
 ---
-order: 60
+order: 170
 title: 自定义Error
-module: javascript
-category: JavaScript
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
 description: JavaScript 自定义错误类型体系——Error 子类化、Error Cause、AggregateError、堆栈追踪与生产级错误监控
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- javascript/Object扩展
-- javascript/事件循环
-- javascript/Promise构造器
-- javascript/Proxy与Reflect
-- javascript/网络请求API
-prerequisites:
-- javascript/语法速查
-tags:
-- Error
-- CustomError
-- ErrorCause
-- AggregateError
-- StackTrace
-- TC39
-- Sentry
-- ExceptionHandling
-references:
-- title: ECMAScript 2026 Language Specification - Error Objects
-  year: 2026
-  url: https://tc39.es/ecma262/#sec-error-objects
-  type: standard
-  authors:
-  - ECMA International
-  venue: ECMA-262, 17th Edition
-- title: 'Proposal: Error Cause'
-  year: 2022
-  url: https://github.com/tc39/proposal-error-cause
-  type: website
-  authors:
-  - TC39
-  venue: TC39 Proposals
-- title: 'Proposal: Promise.any (AggregateError)'
-  year: 2021
-  url: https://github.com/tc39/proposal-promise-any
-  type: website
-  authors:
-  - TC39
-  venue: TC39 Proposals
-- title: Stack traces in V8 - Collecting and displaying stack traces
-  year: 2026
-  url: https://v8.dev/docs/stack-trace-api
-  type: documentation
-  authors:
-  - V8 Team
-  venue: V8 Developer Documentation
-- title: Error reference and Control flow and error handling
-  year: 2026
-  url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
-  type: documentation
-  authors:
-  - Mozilla Developer Network
-  venue: MDN Web Docs
-etymology:
-- term: Error
-  origin: Error 作为 JavaScript 内置对象由 Brendan Eich 于 1995 年实现，借鉴 Java 的 java.lang.Throwable 体系但大幅简化——只保留 Error 与其子类，剔除受检异常（checked exception）概念。ES3（1999）正式标准化 6 个原生子类（EvalError、RangeError、ReferenceError、SyntaxError、TypeError、URIError）。ES6（2015）的类语法让自定义 Error 子类成为主流模式，但因 transpile 后原型链丢失引发 `instanceof` 失效陷阱。ES2021 引入 AggregateError 配合 Promise.any，ES2022 引入 Error Cause（由阿里巴巴 Hemanth HM 推进，TC39 历史上首个由中国公司主导的语言级提案）。
-  english: Error
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
+  - 'javascript/011-ObjectReference'
+  - 'javascript/012-EventLoop'
+  - 'javascript/024-YouDonTKnowJSAsyncPerformance'
+  - 'javascript/010-ExploringES6ProxiesAndReflect'
+  - 'javascript/019-ImageOptimization'
+prerequisites: []
 ---
+
 ## 0. 导言
 
 错误处理是软件工程中最被低估的复杂度来源之一。一段看似简单的 `throw new Error('...')` 在生产环境中会衍生出一系列工程问题：

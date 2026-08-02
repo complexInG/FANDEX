@@ -1,23 +1,21 @@
 ---
 order: 30
 title: 变量与常量
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python 变量与常量深度剖析：从名字绑定、LEGB 作用域到引用语义、不可变性与企业级配置管理实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - python/基础数据类型
-  - python/函数参数与返回值
-  - python/作用域与闭包
-  - python/类型注解与mypy
-  - python/面向对象编程
-  - python/内存模型与垃圾回收
+  - 'python/067-BasicDataType'
+  - 'python/060-TypeAnnotationMypy'
+  - 'python/061-OOP'
 prerequisites:
-  - python/概述与环境配置
-  - python/程序结构与基本语法
+  - 'python/001-PythonOverviewEnvSetup'
+  - 'python/002-ProgramStructureBasicSyntax'
 ---
+
 
 
 # 变量与常量（Variables & Constants）

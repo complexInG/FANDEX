@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 170
 title: Keepalived双机热备
-module: networking
-category: 'eng-infra'
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
-description: 'Keepalived 双机热备：VRRP 协议、主备切换与脑裂防护。'
+description: Keepalived 双机热备：VRRP 协议、主备切换与脑裂防护。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/负载均衡算法
-  - networking/高可用LVS
-  - networking/网络命名空间与虚拟网桥
-  - networking/隧道技术
+  - 'networking/015-LoadBalanceAlgorithm'
+  - 'networking/016-HighAvailabilityLVS'
+  - 'networking/018-NetworkNamespaceVirtualBridge'
+  - 'networking/019-Tunneling'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. VRRP 协议
 

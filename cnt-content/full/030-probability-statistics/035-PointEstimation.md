@@ -1,19 +1,20 @@
 ---
-order: 70
+order: 290
 title: 点估计
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 矩估计法与极大似然估计法的原理与计算，两种点估计方法的对比与选择。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/正态总体的抽样分布'
-  - 'probability-statistics/估计量的评选标准'
-  - 'probability-statistics/区间估计'
+  - 'probability-statistics/033-NormalPopulationSamplingDistribution'
+  - 'probability-statistics/036-EstimatorSelectionCriteria'
+  - 'probability-statistics/037-IntervalEstimation'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 用样本"尝汤"猜总体的配方
 

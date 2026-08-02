@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 220
 title: Lua调试技巧
-module: lua
-category: Lua
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
 description: 调试与性能分析
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'lua/Lua与World of Warcraft'
-  - lua/Lua性能优化
-  - lua/协程与异步
-  - lua/标准库详解
+  - 'lua/020-LuaWorldOfWarcraft'
+  - 'lua/021-LuaPerformance'
+  - 'lua/023-CoroutineAsync'
+  - 'lua/024-StandardLibraryDetailed'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 ## 概述
 
 调试是软件开发中不可或缺的环节。Lua 作为一门嵌入式脚本语言，其调试方式与编译型语言有所不同。Lua 提供了内置的 debug 库，支持运行时检查调用栈、查看局部变量、设置钩子函数等功能。掌握这些调试技巧，能够帮助开发者快速定位问题、分析性能瓶颈，提升开发效率。

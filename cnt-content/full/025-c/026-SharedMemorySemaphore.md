@@ -1,20 +1,21 @@
 ---
-order: 68
+order: 260
 title: 共享内存与信号量
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: advanced
-description: 'System V与POSIX IPC'
+description: System V与POSIX IPC
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/Socket网络编程
-  - c/进程与管道
-  - c/文件系统操作
-  - c/函数详解
+  - 'c/024-SocketNetworkProgramming'
+  - 'c/025-ProcessAndPipe'
+  - 'c/027-FileSystemOperation'
+  - 'c/028-FunctionDetailed'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ### System V 共享内存
 
 ```c

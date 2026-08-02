@@ -1,22 +1,21 @@
 ---
-order: 190
-tags:
-  - java
+order: 670
+title: Spring Cloud 微服务开发
+module: 'java'
+category: 后端技术
 difficulty: intermediate
-title: 'Spring Cloud 微服务开发'
-module: java
-category: 'Java Basics'
-description: 'Spring Cloud微服务架构与开发'
+description: Spring Cloud微服务架构与开发
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/SpringBoot学习笔记
-  - java/网络编程
-  - java/Swing图形界面
-  - 'java/项目示例-图书管理系统'
+  - 'java/065-SpringBootNotes'
+  - 'java/066-NetworkProgramming'
+  - 'java/068-JavaSwingGUI'
+  - 'java/069-JavaProjectExampleLibrarySystem'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 ## 1. 微服务架构概述
 

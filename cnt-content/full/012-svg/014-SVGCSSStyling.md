@@ -1,19 +1,20 @@
 ---
 order: 140
-title: 'SVG CSS 样式化'
-module: svg
-category: 'SVG Styling'
+title: SVG CSS 样式化
+module: 'svg'
+category: 前端技术
 difficulty: intermediate
-description: '内联样式、style 标签、外部 CSS、CSS 变量、伪类与媒体查询。'
+description: 内联样式、style 标签、外部 CSS、CSS 变量、伪类与媒体查询。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/颜色与填充
-  - svg/符号与复用
-  - svg/动画基础
+  - 'svg/007-SVGColorFill'
+  - 'svg/012-SVGSymbolReuse'
+  - 'svg/013-SVGAnimationBasics'
 prerequisites:
-  - svg/颜色与填充
+  - 'svg/007-SVGColorFill'
 ---
+
 ## 1. 样式优先级
 
 SVG 元素的样式可通过多种方式声明，优先级从低到高：

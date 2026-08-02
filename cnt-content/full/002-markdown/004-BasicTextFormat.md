@@ -1,22 +1,21 @@
 ---
 order: 40
-tags:
-  - markdown
+title: Markdown 基础文本格式
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
-title: 'Markdown 基础文本格式'
-module: markdown
-category: 'Markdown Basics'
-description: 'Markdown 基础文本格式：斜体、粗体、删除线等。'
+description: Markdown 基础文本格式：斜体、粗体、删除线等。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/标题语法
-  - markdown/段落与换行
-  - markdown/CommonMark规范
-  - markdown/列表语法
+  - 'markdown/002-HeadingSyntax'
+  - 'markdown/003-ParagraphLineBreak'
+  - 'markdown/005-CommonMarkSpec'
+  - 'markdown/006-ListSyntax'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 1. 引言
 
 基础文本格式是 Markdown 中用于强调和格式化文本的基本元素，包括斜体、粗体、删除线等。
@@ -28,8 +27,8 @@ prerequisites:
 使用 `*` 或 `_` 包裹文本，实现斜体效果。
 
 ```markdown
--
--
+*斜体文本*
+_斜体文本_
 ```
 
 ### 3.2 渲染效果
@@ -44,8 +43,8 @@ _斜体文本_
 使用 `**` 或 `__` 包裹文本，实现粗体效果。
 
 ```markdown
--
--
+**粗体文本**
+__粗体文本__
 ```
 
 ### 4.2 渲染效果
@@ -60,8 +59,8 @@ _斜体文本_
 使用 `***` 或 `___` 包裹文本，实现粗斜体效果。
 
 ```markdown
--
--
+***粗斜体文本***
+___粗斜体文本___
 ```
 
 ### 5.2 渲染效果

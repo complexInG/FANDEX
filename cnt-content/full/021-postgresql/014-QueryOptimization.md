@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 140
 title: 查询优化
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL查询优化：统计信息ANALYZE、代价估算、执行计划EXPLAIN与优化器提示
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/覆盖索引与部分索引
-  - postgresql/KNN向量索引
-  - postgresql/分区表
-  - postgresql/分区裁剪与分区连接
+  - 'postgresql/012-CoveringIndexPartialIndex'
+  - 'postgresql/013-KNNVectorIndex'
+  - 'postgresql/015-PartitionedTable'
+  - 'postgresql/016-PartitionPruningPartitionJoin'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 统计信息
 

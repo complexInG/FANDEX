@@ -1,23 +1,21 @@
 ---
-order: 95
-tags:
-  - mysql
-  - 'stored-procedure'
-difficulty: advanced
+order: 590
 title: 存储过程与函数
-module: mysql
-category: 'MySQL Basics'
+module: 'mysql'
+category: 数据库
+difficulty: advanced
 description: MySQL存储过程与自定义函数详解：创建、参数、变量、流程控制、游标与异常处理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/性能调优与安全
-  - mysql/函数索引
-  - mysql/MVCC快照读与当前读
-  - mysql/索引原理与性能优化
+  - 'mysql/057-PerformanceTuningSecurity'
+  - 'mysql/058-FunctionalIndex'
+  - 'mysql/060-MVCCSnapshotCurrentRead'
+  - 'mysql/061-IndexPrinciplePerformanceOptimization'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. 存储过程基础
 
 ### 1.1 什么是存储过程

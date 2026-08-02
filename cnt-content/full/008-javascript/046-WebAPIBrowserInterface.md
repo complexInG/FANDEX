@@ -1,25 +1,22 @@
 ---
-order: 120
-tags:
-  - javascript
-  - 'web-api'
+order: 460
+title: Web API 与浏览器接口
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
-title: 'Web API 与浏览器接口'
-module: javascript
-category: 'JS Basics'
-description: '浏览器 Web API 详解：Fetch、Storage、IntersectionObserver、Web Workers、Geolocation、Broadcast Channel、ResizeObserver 等常用接口的形式化定义、工程实践与性能优化。'
+description: 浏览器 Web API 详解：Fetch、Storage、IntersectionObserver、Web Workers、Geolocation、Broadcast Channel、ResizeObserver 等常用接口的形式化定义、工程实践与性能优化。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - javascript/错误边界与全局错误捕获
-  - javascript/内存泄漏排查
-  - javascript/调试与性能优化
-  - javascript/典型项目实战
+  - 'javascript/044-ErrorBoundaryGlobalErrorCatch'
+  - 'javascript/045-MemoryLeakTroubleshoot'
+  - 'javascript/047-DebugPerformanceOptimization'
+  - 'javascript/048-TypicalProjectPractice'
 prerequisites:
-  - javascript/语法速查
-  - javascript/ES6+新特性
-  - javascript/控制流
+  - 'javascript/036-ES6NewFeatures'
+  - 'javascript/005-ControlFlow'
 ---
+
 ## 1. 引言
 
 Web API 是浏览器暴露给 JavaScript 的一组宿主对象与接口集合，它构成了 ECMAScript 语言内核与外部世界（网络、存储、设备、渲染管线、操作系统）之间的契约层。如果没有 Web API，JavaScript 仅是一门能操作数值、字符串与对象的纯计算语言；正是 Web API 让 JavaScript 具备了"感知与改造现实世界"的能力——发起网络请求、持久化数据、监听视口变化、调度后台线程、获取地理位置、推送系统通知、剪贴板读写、设备方向感知等。

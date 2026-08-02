@@ -1,9 +1,8 @@
 ---
 order: 730
 title: Java Optional 类
-module: java
-
-category: '013-java'
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: Java Optional 类 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 创建 Optional
 
 **基本写法：创建非空 Optional**

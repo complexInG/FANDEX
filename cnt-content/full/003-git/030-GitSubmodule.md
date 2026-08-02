@@ -1,20 +1,17 @@
 ---
-order: 72
-title: 'git-submodule'
-module: git
-category: 'Git Basics'
+order: 300
+title: git-submodule
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git submodule详解：子模块的添加、更新、管理与常见问题。'
+description: git submodule详解：子模块的添加、更新、管理与常见问题。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/标签管理
-  - git/二分查找定位
-  - git/稀疏检出
-  - git/补丁与邮件工作流
-prerequisites:
-  - git/语法速查
+  - 'git/028-TagManagement'
+prerequisites: []
 ---
+
 ## 1. submodule 概述
 
 ### 1.1 什么是 submodule

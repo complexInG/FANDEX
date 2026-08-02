@@ -1,9 +1,8 @@
 ---
 order: 400
 title: GitHub 合并与变基
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 以对比驱动方式讲解 git merge 与 git rebase 两种分支整合路线的原理、适用场景与选择原则，覆盖快进合并、三方合并与交互式变基，适合零基础学习者。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 ## 开篇：像双人写作合并一样整合分支
 
 假设你和同事合写一本书：你负责"第 1-3 章"，他负责"第 4-6 章"。你俩在各自的文档副本上写作，最后要把两份稿子合成一本完整的书。此时有两条路线：

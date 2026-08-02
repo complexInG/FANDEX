@@ -1,21 +1,19 @@
 ---
-order: 140
-tags:
-  - cpp
-  - project
+order: 660
+title: C++ 项目实战
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-title: 'C++ 项目实战'
-module: cpp
-category: 'C++ Basics'
-description: '综合运用面向对象、模板与 STL 的实战项目。'
+description: 综合运用面向对象、模板与 STL 的实战项目。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/异常处理与性能优化
-  - cpp/调试与性能分析
+  - 'cpp/064-CppExceptionAndPerformance'
+  - 'cpp/065-CDebugPerformanceAnalysis'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 项目一：简易文件管理器
 
 ### 1.1 项目需求

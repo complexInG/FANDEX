@@ -1,20 +1,21 @@
 ---
-order: 84
+order: 420
 title: Java记录类
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Record类与密封接口
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - java/Java与GraalVM
-  - java/Java与Kubernetes
-  - java/Java文本块
-  - java/Java模块系统
+  - 'java/040-JavaGraalVM'
+  - 'java/041-JavaKubernetes'
+  - 'java/043-JavaTextBlock'
+  - 'java/044-JavaModuleSystem'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 一、学习目标
 
 本节遵循 Bloom 分类法,从低阶认知到高阶创造,系统构建读者对 Java Record(记录类)、Sealed Class/Interface(密封类型)与 Pattern Matching(模式匹配)三大相关特性的认知体系。

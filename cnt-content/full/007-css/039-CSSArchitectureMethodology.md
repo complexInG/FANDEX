@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 390
 title: CSS架构方法论
-module: css
-category: 'dev-lang'
+module: 'css'
+category: 前端技术
 difficulty: advanced
 description: CSS架构方法论详解：BEM、OOCSS、SMACSS的核心理念、对比分析与实战应用。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/Canvas绘图
-  - 'css/CSS-in-JS与高级布局技巧'
-  - css/理论知识点
-  - css/CSS新特性
+  - 'css/037-CSSCanvasDrawing'
+  - 'css/038-CSSInJS'
+  - 'css/040-CSSTheoryKnowledge'
+  - 'css/041-CSSNewFeatures'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. BEM — Block Element Modifier
 

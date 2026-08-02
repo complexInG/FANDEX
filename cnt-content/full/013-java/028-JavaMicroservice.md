@@ -1,20 +1,21 @@
 ---
-order: 71
+order: 280
 title: Java与微服务
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: advanced
-description: 'Spring Cloud微服务架构'
+description: Spring Cloud微服务架构
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/Java构建工具
-  - java/控制流
-  - java/Java与消息队列
-  - java/Java与Redis
+  - 'java/026-JavaBuildTool'
+  - 'java/027-ControlFlow'
+  - 'java/029-JavaMessageQueue'
+  - 'java/030-JavaRedis'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 ## 概述
 

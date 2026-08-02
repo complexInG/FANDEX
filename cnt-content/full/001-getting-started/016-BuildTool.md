@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 160
 title: 构建工具
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 构建工具对比：Make、CMake、Vite的工作原理、配置方法与适用场景。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/版本控制系统选型'
-  - 'getting-started/项目初始化'
-  - 'getting-started/编程范式基础'
-  - 'getting-started/调试思想'
+  - 'getting-started/014-VCSSelection'
+  - 'getting-started/015-ProjectInit'
+  - 'getting-started/017-ProgrammingParadigmBasics'
+  - 'getting-started/018-DebugThinking'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 构建工具概述
 

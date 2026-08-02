@@ -1,22 +1,21 @@
 ---
-order: 40
-tags:
-  - html5
+order: 60
+title: HTML5 多媒体与 Canvas 绘图
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
-title: 'HTML5 多媒体与 Canvas 绘图'
-module: html5
-category: 'HTML5 Basics'
-description: 'audio/video 元素、Canvas API 与 SVG 基础。'
+description: audio/video 元素、Canvas API 与 SVG 基础。
 author: Anonymous
-related:
-  - html5/无障碍访问
-  - html5/表单与验证
-  - html5/文档类型声明
-  - html5/离线存储与WebAPI
-prerequisites:
-  - html5/概述与核心特性
 updated: '2026-08-01'
+related:
+  - 'html5/004-Accessibility'
+  - 'html5/005-HTML5FormValidation'
+  - 'html5/007-DocTypeDeclaration'
+  - 'html5/008-HTML5OfflineStorageWebAPI'
+prerequisites:
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 音视频支持
 
 HTML5 提供了原生的音视频支持，不再需要依赖 Flash 插件，使网页能够直接播放音视频内容。

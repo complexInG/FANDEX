@@ -1,20 +1,21 @@
 ---
-order: 50
+order: 60
 title: README文件
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 'GitHub README文件深度解析：用"店铺招牌与产品说明书"的对比讲透README的结构、写作要点与开源项目最佳实践。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/SSH与HTTPS远程配置
-  - github/协作开发规范
-  - github/分支模型与分支保护规则
-  - github/Gitignore配置
+  - 'github/004-SSHHTTPS'
+  - 'github/005-CollaborationDevelopmentStandard'
+  - 'github/007-BranchModelBranchRule'
+  - 'github/008-GitignoreConfig'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一家饭店说起：README 就是店铺的招牌和产品说明书
 

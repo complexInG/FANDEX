@@ -1,22 +1,21 @@
 ---
-order: 60
-tags:
-  - css
-  - 'css-layout'
+order: 160
+title: CSS3 Grid 网格布局
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-title: 'CSS3 Grid 网格布局'
-module: css
-category: 'CSS Basics'
 description: 网格容器与项目属性、区域命名与响应式网格。
 author: Anonymous
+updated: '2026-08-01'
 related:
-  - css/阴影
-  - css/背景增强
-  - css/动画与过渡
-  - css/边框圆角
+  - 'css/014-Shadow'
+  - 'css/015-BackgroundEnhancement'
+  - 'css/017-CSSAnimationTransition'
+  - 'css/018-BorderRadius'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 ## 1. 核心概念
 
 Grid 布局是一种二维布局系统，能够同时处理行和列，为网页布局提供了更灵活、更强大的方式。

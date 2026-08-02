@@ -1,20 +1,21 @@
 ---
-order: 75
+order: 360
 title: React与Storybook
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: React组件文档与开发
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React与Canvas
-  - react/React与D3
-  - 'react/React与CI-CD'
-  - react/React与Monorepo
+  - 'react/034-ReactCanvas'
+  - 'react/035-ReactD3'
+  - 'react/037-ReactCICD'
+  - 'react/038-ReactMonorepo'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

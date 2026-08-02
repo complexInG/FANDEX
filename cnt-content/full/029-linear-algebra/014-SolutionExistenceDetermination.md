@@ -1,22 +1,23 @@
 ---
-order: 31
+order: 120
 title: 解的存在性判定
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 用 Rouché–Capelli 定理（秩判定定理）一次性判定线性方程组有解、无解、唯一解或无穷多解：决策图、操作流水线、行列式快捷通道、含参数方程组的分类讨论模板。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/矩阵的秩'
-  - 'linear-algebra/高斯消元法'
-  - 'linear-algebra/齐次线性方程组'
-  - 'linear-algebra/非齐次线性方程组'
+  - 'linear-algebra/010-MatrixRank'
+  - 'linear-algebra/013-GaussianElimination'
+  - 'linear-algebra/015-HomogeneousLinearSystem'
+  - 'linear-algebra/016-NonHomogeneousLinearSystem'
 prerequisites:
-  - 'linear-algebra/矩阵运算'
-  - 'linear-algebra/矩阵的秩'
-  - 'linear-algebra/高斯消元法'
+  - 'linear-algebra/007-MatrixOperation'
+  - 'linear-algebra/010-MatrixRank'
+  - 'linear-algebra/013-GaussianElimination'
 ---
+
 
 ## 0. 一张决策图，回答全部问题
 

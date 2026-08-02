@@ -1,20 +1,21 @@
 ---
-order: 77
+order: 340
 title: Java与AI
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Java机器学习与AI集成
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/Java与GraphQL
-  - java/Java性能调优
-  - java/Java与安全
-  - java/Java与WebAssembly
+  - 'java/032-JavaGraphQL'
+  - 'java/033-JavaPerformanceTuning'
+  - 'java/035-JavaSecurity'
+  - 'java/036-JavaWebAssembly'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 
 ## 历史动机与发展脉络

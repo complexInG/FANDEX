@@ -1,23 +1,24 @@
 ---
-order: 62
+order: 200
 title: 容器查询
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: advanced
 description: 深入解析 CSS Container Queries 容器查询的规范、算法、工程实践与跨浏览器兼容性
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - css/边框圆角
-  - css/媒体查询
-  - css/移动端适配
-  - css/函数
-  - css/CSS变量与自定义属性
+  - 'css/018-BorderRadius'
+  - 'css/019-MediaQuery'
+  - 'css/021-MobileAdaptation'
+  - 'css/022-Function'
+  - 'css/023-CSSVariableCustomAttribute'
 prerequisites:
-  - css/概述与基本语法
-  - css/媒体查询
-  - css/CSS变量与自定义属性
+  - 'css/001-CSS3OverviewBasicSyntax'
+  - 'css/019-MediaQuery'
+  - 'css/023-CSSVariableCustomAttribute'
 ---
+
 
 # 容器查询（Container Queries）
 

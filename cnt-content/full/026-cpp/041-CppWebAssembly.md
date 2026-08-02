@@ -1,20 +1,21 @@
 ---
-order: 83
+order: 410
 title: C++与WebAssembly
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: C++编译为WebAssembly
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/C++与Rust对比
-  - cpp/C++代码规范
-  - cpp/C++反射与元编程
-  - cpp/C++数学库
+  - 'cpp/033-CppRustComparison'
+  - 'cpp/040-CppCodeStyle'
+  - 'cpp/042-CppReflectionMetaprogramming'
+  - 'cpp/043-CppMathLibrary'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 
 ## 概述

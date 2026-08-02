@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 150
 title: 聚合函数
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
 description: SQL聚合函数：COUNT、SUM、AVG、MAX、MIN的语法、NULL处理、DISTINCT聚合与高级聚合技巧
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/SELECT执行顺序
-  - sql/过滤条件
-  - 'sql/GROUP-BY与分组集'
-  - sql/连接查询
+  - 'sql/013-SelectExecutionOrder'
+  - 'sql/014-FilterCondition'
+  - 'sql/016-GROUPBYGroupingSet'
+  - 'sql/017-JoinQuery'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 聚合函数概述
 
 聚合函数对一组值进行计算，返回单个汇总值。它们常与 GROUP BY 子句配合使用，也可单独使用对整个表进行汇总。

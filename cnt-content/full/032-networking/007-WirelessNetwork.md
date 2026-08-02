@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 70
 title: 无线网络
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
 description: 无线网络：WiFi标准、WLAN架构、无线安全、无线规划与优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/交换与路由技术
-  - networking/网络安全技术
-  - networking/SDN与网络自动化
-  - networking/网络存储技术
+  - 'networking/005-SwitchingAndRouting'
+  - 'networking/006-NetworkSecurityTech'
+  - 'networking/008-SDNNetworkAutomation'
+  - 'networking/009-NetworkStorageTechnology'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. WiFi 标准演进
 

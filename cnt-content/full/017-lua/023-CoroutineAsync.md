@@ -1,30 +1,24 @@
 ---
-order: 70
+order: 230
 title: 协程与异步
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: advanced
-description: 'Lua 协程与异步编程深度解析：协作式调度语义、CPS 变换、生成器与 Promise、async/await 模式、工程级异步框架设计与多领域实战案例'
+description: Lua 协程与异步编程深度解析：协作式调度语义、CPS 变换、生成器与 Promise、async/await 模式、工程级异步框架设计与多领域实战案例
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - lua
-  - coroutine
-  - async
-  - concurrency
-  - generators
-  - advanced
 related:
-  - lua/函数与闭包
-  - lua/环境与全局变量管理
-  - lua/弱表
-  - lua/元表与元方法详解
-  - lua/模块与包
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/028-EnvironmentGlobalVariable'
+  - 'lua/027-WeakTable'
+  - 'lua/025-MetatableMetamethodDetailed'
+  - 'lua/017-ModulePackage'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/函数与闭包
-  - lua/元表与元方法详解
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/025-MetatableMetamethodDetailed'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 协程理论的起源

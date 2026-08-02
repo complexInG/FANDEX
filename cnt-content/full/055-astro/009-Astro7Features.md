@@ -1,18 +1,19 @@
 ---
-order: 9
+order: 90
 title: Astro 7 新特性速览
-module: astro
-category: Astro
+module: 'astro'
+category: 前端技术
 difficulty: intermediate
-description: '时间线驱动了解 Astro 版本演进：1 到 7 的关键特性，重点解析 Astro 7 的 Rust 编译器、Sätteri、Vite 8 与路由缓存'
+description: 时间线驱动了解 Astro 版本演进：1 到 7 的关键特性，重点解析 Astro 7 的 Rust 编译器、Sätteri、Vite 8 与路由缓存
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - astro/005-ContentCollections
-  - astro/008-BuildDeploy
+  - 'astro/005-ContentCollections'
+  - 'astro/008-BuildDeploy'
 prerequisites:
-  - astro/003-PagesRouting
+  - 'astro/003-PagesRouting'
 ---
+
 
 ## 0. 开篇：一辆车的年度改款
 

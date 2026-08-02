@@ -1,9 +1,8 @@
 ---
 order: 670
 title: 基础数据类型
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: 基础数据类型 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 整数类型
 
 **基本写法：十进制整数**

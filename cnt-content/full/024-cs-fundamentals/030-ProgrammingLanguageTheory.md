@@ -1,20 +1,21 @@
 ---
-order: 72
+order: 300
 title: 编程语言理论
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 编程语言理论：类型系统、Lambda演算、语义学与程序验证
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/软件体系结构'
-  - 'cs-fundamentals/人机交互'
-  - 'cs-fundamentals/网络协议深度'
-  - 'cs-fundamentals/编译与运行时'
+  - 'cs-fundamentals/028-SoftwareSystemStructure'
+  - 'cs-fundamentals/029-HCI'
+  - 'cs-fundamentals/031-NetworkProtocolDeep'
+  - 'cs-fundamentals/032-CompileAndRuntime'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 类型系统
 

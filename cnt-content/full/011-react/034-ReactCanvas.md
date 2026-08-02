@@ -1,20 +1,21 @@
 ---
-order: 73
+order: 340
 title: React与Canvas
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: React中Canvas绘图
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React无障碍
-  - react/React与PWA
-  - react/React与D3
-  - react/React与Storybook
+  - 'react/032-ReactAccessibility'
+  - 'react/033-ReactPWA'
+  - 'react/035-ReactD3'
+  - 'react/036-ReactStorybook'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

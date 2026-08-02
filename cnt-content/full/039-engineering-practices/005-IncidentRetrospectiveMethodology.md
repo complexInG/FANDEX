@@ -1,19 +1,19 @@
 ---
-order: 14
+order: 50
 title: 事故复盘方法论
 module: 'engineering-practices'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: 'Blameless Postmortem、5-Whys根因分析与复盘报告。'
+description: Blameless Postmortem、5-Whys根因分析与复盘报告。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'engineering-practices/代码审查清单'
-  - 'engineering-practices/On-Call最佳实践'
-  - 'engineering-practices/技术方案评审'
-  - 'engineering-practices/知识管理'
+  - 'engineering-practices/004-OnCallPractice'
+  - 'engineering-practices/006-TechnicalReview'
+  - 'engineering-practices/007-KnowledgeManagement'
 prerequisites: []
 ---
+
 
 ## 1. 从"飞机失事调查"说起
 

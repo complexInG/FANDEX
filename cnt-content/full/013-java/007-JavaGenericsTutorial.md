@@ -1,144 +1,24 @@
 ---
-order: 51
+order: 70
 title: 泛型进阶
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: Java 泛型进阶——类型擦除机制、通配符语义、边界约束、桥接方法与 Project Valhalla 演进的形式化定义、理论推导与工程实践
 author: fanquanpp
 updated: '2026-07-20'
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
 related:
-- java/变量与常量
-- java/枚举与注解
-- java/并发编程基础
-- java/JUC并发包
-- java/泛型详解
-- java/反射与动态代理
+  - 'java/005-VariableConstant'
+  - 'java/006-JavaAnnotationsTutorial'
+  - 'java/008-ConcurrencyBasics'
+  - 'java/009-JUCConcurrency'
+  - 'java/059-GenericDetailed'
+  - 'java/053-ReflectionDynamicProxy'
 prerequisites:
-- java/概述与开发环境
-- java/泛型详解
-tags:
-- java
-- generics
-- type-erasure
-- wildcards
-- pecs
-- type-inference
-- project-valhalla
-- bounded-type-parameters
-- bridge-methods
-- heap-pollution
-references:
-- type: conference
-  authors:
-  - Bracha, Gilad
-  - Odersky, Martin
-  - Wadler, Philip
-  - Thorup, Makholm
-  year: 1998
-  title: 'Making the future safe for the present: Theorem about type erasure'
-  venue: Proceedings of the 13th ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '98)
-  pages: 221-232
-  doi: 10.1145/286936.286960
-- type: conference
-  authors:
-  - Agesen, Ole
-  - Freund, Stephen N.
-  - Mitchell, John C.
-  year: 1997
-  title: Adding Type Parameterization to the Java Language
-  venue: Proceedings of the 12th ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '97)
-  pages: 49-65
-  doi: 10.1145/263698.263721
-- type: book
-  authors:
-  - Naughton, Patrick
-  - Schildt, Herbert
-  year: 2018
-  title: 'Java: The Complete Reference (Eleventh Edition)'
-  venue: Oracle Press / McGraw-Hill
-  pages: 327-372
-  isbn: 978-1260440232
-- type: book
-  authors:
-  - Bloch, Joshua
-  year: 2018
-  title: Effective Java (Third Edition)
-  venue: Addison-Wesley Professional
-  pages: 117-162
-  isbn: 978-0134685991
-- type: standard
-  authors:
-  - Gosling, James
-  - Joy, Bill
-  - Steele, Guy
-  - Bracha, Gilad
-  - Buckley, Alex
-  year: 2023
-  title: The Java Language Specification, Java SE 21 Edition
-  venue: Oracle America, Inc.
-  pages: §4.5-§4.8
-  url: https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html
-- type: technical-report
-  authors:
-  - Oracle Corporation
-  year: 2014
-  title: 'JSR 14: Add Generic Types to the Java Programming Language'
-  venue: Java Community Process
-  url: https://www.jcp.org/en/jsr/detail?id=14
-- type: conference
-  authors:
-  - Wadler, Philip
-  year: 2004
-  title: Featherweight Generic Java
-  venue: Journal of Functional Programming
-  pages: 1-32
-  doi: 10.1017/S0956796803005023
-- type: book
-  authors:
-  - Pierce, Benjamin C.
-  year: 2002
-  title: Types and Programming Languages
-  venue: MIT Press
-  pages: chapter 23-26
-  isbn: 978-0262162098
-- type: technical-report
-  authors:
-  - Project Valhalla Team
-  year: 2024
-  title: 'JEP 401: Value Objects and Primitive Classes (Preview)'
-  venue: OpenJDK
-  url: https://openjdk.org/jeps/401
-- type: documentation
-  authors:
-  - Oracle Corporation
-  year: 2024
-  title: Java Generics Tutorial
-  venue: Oracle Documentation
-  url: https://docs.oracle.com/javase/tutorial/java/generics/index.html
-etymology:
-- term: 泛型（Generic）
-  english: Generic Type
-  origin: 源自希腊语 genos（种类、族属），拉丁语 genus（出生、种类）。编程语言中泛型一词最早出现在 CLU 语言（1975, Barbara Liskov），由 Musa & Liskov 的参数化类型抽象演化而来。Ada（1980）正式使用 generic 关键字。Java 在 Pizza 语言（1997, Odersky & Wadler）中首次实验性引入，2004 年 JSR 14 正式纳入 Java 5。
-- term: 类型擦除（Type Erasure）
-  english: Type Erasure
-  origin: 'Type Erasure 一词最早出现在 Bracha, Odersky, Wadler & Thorup 1998 年 OOPSLA 论文《Making the future safe for the present: Theorem about type erasure》。其设计动机源于 Java 1.4 之前的二进制兼容性约束——为保证旧字节码能与新的泛型代码互操作，编译器在编译期擦除类型参数，运行时不保留泛型信息。'
-- term: 通配符（Wildcard）
-  english: Wildcard
-  origin: 源自扑克牌中的「万能牌」概念（约 1875 年），编程语言中最早见于 Java 5（2004）。其存在量词语义（existential type）由 Torgersen, Ernst, Hansen, von der Ahe, Bracha, Gafter（2004）《Adding Wildcards to the Java Programming Language》OOPSLA 论文形式化。
-- term: PECS 原则
-  english: PECS (Producer Extends, Consumer Super)
-  origin: 由 Joshua Bloch 在《Effective Java》第 2 版（2008）第 28 条首次提出，是 use-site variance 的记忆口诀。其理论基础是声明点变体（declaration-site variance）与使用点变体（use-site variance）的对比，最早由 Burak Emir 等人在 Scala 体系中讨论。
-- term: 桥接方法（Bridge Method）
-  english: Bridge Method
-  origin: 桥接方法是 javac 编译器为支持泛型擦除后的多态而引入的合成方法（synthetic method）。其语义最早在 JSR 14 规范中定义，JLS §15.12.4.5 描述了方法分派时如何通过桥接方法实现协变返回类型与泛型重写。
-- term: 堆污染（Heap Pollution）
-  english: Heap Pollution
-  origin: Heap Pollution 一词由 Bloch 在《Effective Java》第 2 版第 23 条正式定义：当一个泛型类型变量引用了非泛型类型的对象时，导致堆中存放了与声明类型不匹配的对象。JLS §4.12.2 给出了形式化定义。
-estimatedReadingTime: 65
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/059-GenericDetailed'
 ---
+
 ## 引言：从「集合需要强转」到「编译期类型安全」
 
 Java 在 1.0 版本（1996）发布时并不支持泛型，所有集合类如 `Vector`、`Hashtable`、`ArrayList` 都基于 `Object` 元素类型。开发者每次从集合中取出元素都必须显式强制转换（cast）：

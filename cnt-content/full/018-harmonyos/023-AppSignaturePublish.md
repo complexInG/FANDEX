@@ -1,20 +1,21 @@
 ---
-order: 69
+order: 230
 title: 应用签名与发布
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 应用签名打包与上架
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/性能优化
-  - harmonyos/测试与调试
-  - harmonyos/Stage模型与FA模型区别
-  - harmonyos/国际化与无障碍
+  - 'harmonyos/020-PerformanceOptimization'
+  - 'harmonyos/022-TestDebug'
+  - 'harmonyos/024-StageFAModelDifference'
+  - 'harmonyos/021-I18nAccessibility'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 
 
 # 应用签名与发布：HarmonyOS 代码签名体系与分发工程实践

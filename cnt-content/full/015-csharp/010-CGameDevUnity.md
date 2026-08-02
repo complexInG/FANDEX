@@ -1,19 +1,20 @@
 ---
-order: 10
-title: 'C# 游戏开发与Unity'
-module: csharp
-category: 'C#'
+order: 100
+title: C# 游戏开发与Unity
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'Unity 中 C# 编程、MonoBehaviour 生命周期、协程、ScriptableObject、ECS 模式、DOTS/Burst、性能优化'
+description: Unity 中 C# 编程、MonoBehaviour 生命周期、协程、ScriptableObject、ECS 模式、DOTS/Burst、性能优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - csharp/NET平台与生态
-  - csharp/测试与工程化
-  - csharp/LINQ深度解析
-  - csharp/异步编程详解
+  - 'csharp/008-CNET'
+  - 'csharp/009-CTestEngineering'
+  - 'csharp/011-LINQDeep'
+  - 'csharp/012-AsyncProgrammingDetailed'
 prerequisites: []
 ---
+
 
 ## 1. Unity 中的 C#
 

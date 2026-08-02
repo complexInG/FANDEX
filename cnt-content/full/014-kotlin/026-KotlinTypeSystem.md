@@ -1,24 +1,25 @@
 ---
-order: 64
+order: 260
 title: Kotlin类型系统
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'Kotlin 类型系统深度解析：泛型、型变（协变 out / 逆变 in / 不变）、星投影、类型擦除、reified 类型参数、上下界约束、declaration-site 与 use-site variance 的形式化定义、编译器实现与企业级工程实践。对标 MIT 6.005、Stanford CS193P、CMU 15-312 教学水准。'
+description: Kotlin 类型系统深度解析：泛型、型变（协变 out / 逆变 in / 不变）、星投影、类型擦除、reified 类型参数、上下界约束、declaration-site 与 use-site variance 的形式化定义、编译器实现与企业级工程实践。对标 MIT 6.005、Stanford CS193P、CMU 15-312 教学水准。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/Kotlin集合操作
-  - kotlin/Kotlin作用域函数
-  - kotlin/Kotlin与Compose
-  - kotlin/Kotlin与Gradle
-  - kotlin/空安全详解
-  - kotlin/密封类与密封接口
-  - kotlin/概述与环境配置
+  - 'kotlin/019-KotlinCollectionOperation'
+  - 'kotlin/018-KotlinScopeFunction'
+  - 'kotlin/027-KotlinCompose'
+  - 'kotlin/035-KotlinGradle'
+  - 'kotlin/012-NullSafetyDetailed'
+  - 'kotlin/047-SealedClassSealedInterface'
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/类与对象
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/004-KotlinClassObject'
 ---
+
 
 # Kotlin 类型系统深度解析（Kotlin Type System in Depth）
 

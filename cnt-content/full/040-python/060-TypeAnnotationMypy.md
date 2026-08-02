@@ -1,24 +1,24 @@
 ---
-order: 110
+order: 600
 title: 类型注解与mypy
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: Python类型注解与mypy详解：typing模块、泛型、Protocol、TypeVar、Literal、TypedDict与渐进式类型系统。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - python/数据类与字段默认值
-  - python/装饰器进阶
-  - python/描述符
-  - python/打包与发布
-  - python/Python与测试
-  - python/Python与代码质量
+  - 'python/058-DataClassFieldDefault'
+  - 'python/062-DecoratorAdvanced'
+  - 'python/057-Descriptor'
+  - 'python/056-PackagePublish'
+  - 'python/029-PythonTest'
+  - 'python/044-PythonCodeQuality'
 prerequisites:
-  - python/语法速查
-  - python/面向对象编程
-  - python/描述符
+  - 'python/061-OOP'
+  - 'python/057-Descriptor'
 ---
+
 ## 概述
 
 Python 类型注解（Type Hints）是 Python 3.0 以来最重要的语言演进之一。它改变了 Python 作为"动态类型语言"的传统定位，引入了一套"渐进式类型系统"（Gradual Typing System），让开发者可以在保留动态类型灵活性的同时，获得静态类型检查的工程收益。

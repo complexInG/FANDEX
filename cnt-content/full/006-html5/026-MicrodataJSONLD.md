@@ -1,20 +1,19 @@
 ---
-order: 67
-title: '微数据与JSON-LD'
-module: html5
-category: HTML5
+order: 260
+title: 微数据与JSON-LD
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
-description: 'Microdata与JSON-LD'
+description: Microdata与JSON-LD
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/全双工通信
-  - html5/实时通信
-  - html5/自定义数据属性
-  - html5/跨文档通信
+  - 'html5/027-CustomDataAttribute'
+  - 'html5/028-CrossDocumentCommunication'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 结构化数据概述
 
 | 格式          | 嵌入方式        | 优点                    | 缺点       |

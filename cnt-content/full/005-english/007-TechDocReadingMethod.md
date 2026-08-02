@@ -1,20 +1,21 @@
 ---
-order: 32
+order: 70
 title: 技术文档阅读方法
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: intermediate
-description: '技术文档阅读方法论，涵盖 README、API 文档、源码注释、技术规范等文档类型的阅读策略。'
+description: 技术文档阅读方法论，涵盖 README、API 文档、源码注释、技术规范等文档类型的阅读策略。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/长难句拆解技巧
-  - english/常见语法错误汇总
-  - english/学术论文阅读指南
-  - english/学术写作规范
+  - 'english/005-LongDifficultSentenceBreakdownTechnique'
+  - 'english/006-CommonGrammarErrorSummary'
+  - 'english/008-AcademicPaperReadingGuide'
+  - 'english/009-AcademicWritingStandard'
 prerequisites:
-  - english/计算机专业英语词汇
+  - 'english/001-ComputerProfessionalEnglishVocabulary'
 ---
+
 
 ## 1. 技术文档类型总览
 

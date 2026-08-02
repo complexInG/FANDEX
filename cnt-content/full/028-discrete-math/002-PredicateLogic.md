@@ -1,19 +1,20 @@
 ---
-order: 2
+order: 20
 title: 谓词逻辑
 module: 'discrete-math'
-category: 离散数学
+category: 数学
 difficulty: intermediate
 description: 量词、谓词公式、等值演算、前束范式、推理理论、一阶逻辑形式化。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'discrete-math/命题逻辑'
-  - 'discrete-math/集合与关系'
-  - 'discrete-math/函数与基数'
+  - 'discrete-math/001-PropositionalLogic'
+  - 'discrete-math/003-SetAndRelation'
+  - 'discrete-math/004-FunctionAndNumber'
 prerequisites:
-  - 'discrete-math/命题逻辑'
+  - 'discrete-math/001-PropositionalLogic'
 ---
+
 
 ## 1. 从"命题逻辑的局限"说起
 

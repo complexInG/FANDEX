@@ -1,89 +1,20 @@
 ---
-order: 70
-tags:
-- typescript
-- module-resolution
-- declaration-files
-- esm
-- cjs
-- bundler
-difficulty: intermediate
+order: 270
 title: TypeScript 类型声明与模块解析
-module: typescript
-category: TypeScript Advanced
+module: 'typescript'
+category: 前端技术
+difficulty: intermediate
 description: TypeScript 声明文件（.d.ts）结构、模块解析策略（Node/NodeNext/Bundler）、ESM/CJS 互操作、路径映射与包导出的全面工程指南
 author: Anonymous
+updated: '2026-08-02'
 related:
-- typescript/递归类型与深度操作
-- typescript/条件类型与映射类型
-- typescript/类型安全的事件系统
-- typescript/类型安全的API客户端
-prerequisites:
-- typescript/语法速查
-references:
-- type: conference
-  title: Understanding TypeScript
-  note: 'Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In 28th European Conference on Object-Oriented Programming (ECOOP 2014). LIPIcs 33, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257'
-  authors:
-  - Bierman, G., Abadi, M., and Torgersen, M
-  year: 2014
-  venue: 28th European Conference on Object-Oriented Programming (ECOOP 2014)
-  doi: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
-- type: standard
-  title: ECMAScript 2024 Language Specification (ECMA-262, 15th edition). Standard ECMA-262
-  note: 'ECMA International. 2024. ECMAScript 2024 Language Specification (ECMA-262, 15th edition). Standard ECMA-262. Available at: https://tc39.es/ecma262/'
-  authors:
-  - ECMA International
-  year: 2024
-  venue: 'Available at: https://tc39.es/ecma262/'
-  url: https://tc39.es/ecma262/
-- type: documentation
-  title: 'Node.js Modules API: Package Exports'
-  note: 'Node.js Foundation. 2024. Node.js Modules API: Package Exports. Available at: https://nodejs.org/api/packages.html'
-  authors:
-  - Node.js Foundation
-  year: 2024
-  venue: 'Available at: https://nodejs.org/api/packages.html'
-  url: https://nodejs.org/api/packages.html
-- type: documentation
-  title: 'TypeScript Handbook: Modules Reference'
-  note: 'TypeScript Team. 2024. TypeScript Handbook: Modules Reference. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/modules/reference.html'
-  authors:
-  - TypeScript Team
-  year: 2024
-  venue: Microsoft
-  url: https://www.typescriptlang.org/docs/handbook/modules/reference.html
-- type: conference
-  title: ECMA-262 Module Specification
-  note: 'TC39. 2018. ECMA-262 Module Specification. In Proceedings of ECMA TC39. DOI: https://doi.org/10.1145/3180267'
-  authors:
-  - TC39
-  year: 2018
-  venue: Proceedings of ECMA TC39
-  doi: https://doi.org/10.1145/3180267
-- type: conference
-  title: A formal semantics for ES modules
-  note: 'Guarneri, S. and Gardner, P. 2021. A formal semantics for ES modules. In Proceedings of the 30th European Symposium on Programming (ESOP 2021). LNCS 12648, 287–314. DOI: https://doi.org/10.1007/978-3-030-72019-3_11'
-  authors:
-  - Guarneri, S. and Gardner, P
-  year: 2021
-  venue: Proceedings of the 30th European Symposium on Programming (ESOP 2021)
-  doi: https://doi.org/10.1007/978-3-030-72019-3_11
-etymology:
-- term: 模块解析 (Module Resolution)
-  origin: '"Module" 源自拉丁语 modulus（小尺寸、度量），16 世纪数学用语。
-
-    "Resolution" 源自拉丁语 resolvere（解开、松解），14 世纪进入英语。
-
-    在编程语言语境中，"模块解析"指编译器将 import 语句的模块说明符映射到具体文件的过程。
-
-    Node.js 在 2009 年首次定义了 CommonJS 解析算法，TypeScript 2014 年起为其提供静态类型支持。
-
-    '
-  english: Module Resolution
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
+  - 'typescript/025-RecursiveTypeDeepOperation'
+  - 'typescript/026-ConditionalMappedType'
+  - 'typescript/028-PurelyFunctionalDataStructures'
+  - 'typescript/029-TypeSafeAPIClient'
+prerequisites: []
 ---
+
 ## 1. 学习导论
 
 ### 1.1 为什么必须理解模块解析

@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 230
 title: POSIX线程
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: advanced
 description: pthread多线程编程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/内联函数与宏
-  - c/复杂声明解析
-  - c/Socket网络编程
-  - c/进程与管道
+  - 'c/020-InlineFunctionMacro'
+  - 'c/021-ComplexDeclarationParsing'
+  - 'c/024-SocketNetworkProgramming'
+  - 'c/025-ProcessAndPipe'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ### 读写锁
 
 ```c

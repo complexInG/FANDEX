@@ -1,20 +1,21 @@
 ---
-order: 67
+order: 250
 title: 进程与管道
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: advanced
 description: 进程创建与进程间通信
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/POSIX线程
-  - c/Socket网络编程
-  - c/共享内存与信号量
-  - c/文件系统操作
+  - 'c/023-POSIXThread'
+  - 'c/024-SocketNetworkProgramming'
+  - 'c/026-SharedMemorySemaphore'
+  - 'c/027-FileSystemOperation'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 概述
 
 进程是 Unix/Linux 系统中程序运行的基本资源分配单位,而管道则是最古老的进程间通信(Inter-Process Communication, IPC)机制。1969 年 Unix V1 引入 `fork` 系统调用后,管道的概念在 1973 年 Unix V4 中正式成型,Ken Thompson 借助 shell 中的 `|` 运算符将管道引入用户日常生活,开创了"小工具协作"的软件哲学。这一设计哲学直接催生了 Do One Thing And Do It Well 的 Unix 文化,影响了此后四十年的操作系统与系统软件设计。

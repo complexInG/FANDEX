@@ -1,21 +1,20 @@
 ---
 order: 30
-tags:
-  - 'cs-fundamentals'
-difficulty: intermediate
 title: 操作系统
 module: 'cs-fundamentals'
-category: 'Computer Science / Operating System'
+category: 计算机科学
+difficulty: intermediate
 description: 操作系统核心原理：进程管理、内存管理、文件系统、I/O系统、并发与同步。
 author: fanquanpp
-related:
-  - 'cs-fundamentals/计算机科学概述'
-  - 'cs-fundamentals/计算机体系结构'
-  - 'cs-fundamentals/计算机网络'
-  - 'cs-fundamentals/数字逻辑'
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'cs-fundamentals/001-ComputerOverview'
+  - 'cs-fundamentals/002-ComputerArchitecture'
+  - 'cs-fundamentals/004-ComputerNetwork'
+  - 'cs-fundamentals/005-DigitalLogic'
+prerequisites: []
 ---
+
 
 ## 1. 操作系统概述
 

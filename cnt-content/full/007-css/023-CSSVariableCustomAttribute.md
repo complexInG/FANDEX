@@ -1,23 +1,21 @@
 ---
-order: 65
-tags:
-  - css
-  - 'css-variables'
+order: 230
+title: CSS 变量与自定义属性
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-title: 'CSS 变量与自定义属性'
-module: css
-category: 'CSS Basics'
 description: CSS自定义属性（变量）定义、作用域、动态更新、主题系统与最佳实践详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/移动端适配
-  - css/函数
-  - css/特性查询
-  - css/层叠层
+  - 'css/021-MobileAdaptation'
+  - 'css/022-Function'
+  - 'css/024-FeatureQuery'
+  - 'css/025-CascadeLayer'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 ## 1. CSS 自定义属性基础
 
 ### 1.1 什么是 CSS 自定义属性

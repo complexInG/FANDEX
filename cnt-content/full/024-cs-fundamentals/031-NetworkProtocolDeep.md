@@ -1,20 +1,21 @@
 ---
-order: 91
+order: 310
 title: 网络协议深度
 module: 'cs-fundamentals'
-category: 计算机基础
+category: 计算机科学
 difficulty: advanced
-description: '网络协议深度剖析：TCP拥塞控制机制、QUIC协议设计、HTTP演进、TLS 1.3握手、DNS解析、CDN原理、WebSocket与网络编程模型。'
+description: 网络协议深度剖析：TCP拥塞控制机制、QUIC协议设计、HTTP演进、TLS 1.3握手、DNS解析、CDN原理、WebSocket与网络编程模型。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/人机交互'
-  - 'cs-fundamentals/编程语言理论'
-  - 'cs-fundamentals/编译与运行时'
-  - 'cs-fundamentals/进程PCB与线程TCB'
+  - 'cs-fundamentals/029-HCI'
+  - 'cs-fundamentals/030-ProgrammingLanguageTheory'
+  - 'cs-fundamentals/032-CompileAndRuntime'
+  - 'cs-fundamentals/033-PCBThreadTCB'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. TCP拥塞控制深度
 

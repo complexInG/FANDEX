@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 120
 title: 命令行基础
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 命令行操作基础：文件系统导航、进程管理、网络工具与Shell脚本入门。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/IDE与编辑器选型'
-  - 'getting-started/插件生态'
-  - 'getting-started/包管理器'
-  - 'getting-started/版本控制系统选型'
+  - 'getting-started/010-IDEEditorSelection'
+  - 'getting-started/011-PluginEcosystem'
+  - 'getting-started/013-PackageManager'
+  - 'getting-started/014-VCSSelection'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 ## 文件列表查看
 
 **基本写法：列出目录内容**

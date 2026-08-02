@@ -1,20 +1,21 @@
 ---
-order: 5
+order: 50
 title: catalog 依赖目录管理
-module: pnpm-monorepo
-category: pnpm 与 Monorepo
+module: 'pnpm-monorepo'
+category: 工具链
 difficulty: intermediate
-description: 'catalog 协议：pnpm-workspace.yaml 目录配置、catalogMode 与依赖版本统一'
+description: catalog 协议：pnpm-workspace.yaml 目录配置、catalogMode 与依赖版本统一
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - pnpm-monorepo/003-WorkspaceSetup
-  - pnpm-monorepo/004-WorkspaceProtocol
-  - pnpm-monorepo/007-ChangesetsRelease
+  - 'pnpm-monorepo/003-WorkspaceSetup'
+  - 'pnpm-monorepo/004-WorkspaceProtocol'
+  - 'pnpm-monorepo/007-ChangesetsRelease'
 prerequisites:
-  - pnpm-monorepo/003-WorkspaceSetup
-  - pnpm-monorepo/002-PnpmCore
+  - 'pnpm-monorepo/003-WorkspaceSetup'
+  - 'pnpm-monorepo/002-PnpmCore'
 ---
+
 
 ## 1. 从"公司统一采购"说起
 

@@ -1,17 +1,18 @@
 ---
-order: 13
+order: 10
 title: 计算机专业英语词汇
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: intermediate
-description: '计算机专业英语词汇 1000 词，按编程语言、Web 开发、操作系统、网络、数据库、AI 分类，助力技术文档阅读与写作。'
+description: 计算机专业英语词汇 1000 词，按编程语言、Web 开发、操作系统、网络、数据库、AI 分类，助力技术文档阅读与写作。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/英语语法体系总览
-  - english/句子结构与成分分析
+  - 'english/002-EnglishGrammarSystemOverview'
+  - 'english/003-SentenceStructureAnalysis'
 prerequisites: []
 ---
+
 ## 1. 编程语言与软件工程 (Programming Languages & Software Engineering)
 
 | 单词          | 音标               | 释义              | 例句                                                            |

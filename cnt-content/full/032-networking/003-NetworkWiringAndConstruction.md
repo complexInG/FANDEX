@@ -1,19 +1,20 @@
 ---
-order: 3
+order: 30
 title: 网络布线与施工
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: beginner
 description: 综合布线工程设计、铜缆端接、光纤熔接、配线架安装、理线标识、室外光缆敷设、信息模块端接、施工工艺规范、网络测试与项目组织管理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/网络基础与协议
-  - networking/网络系统管理
-  - 'networking/OSI与TCP-IP模型'
-  - networking/交换与路由技术
+  - 'networking/001-NetworkBasicsAndProtocol'
+  - 'networking/002-NetworkSystemManagement'
+  - 'networking/004-OSITCPIPModel'
+  - 'networking/005-SwitchingAndRouting'
 prerequisites: []
 ---
+
 
 ## 1. 综合布线工程设计
 

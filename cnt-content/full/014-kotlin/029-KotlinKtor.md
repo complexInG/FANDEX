@@ -1,20 +1,21 @@
 ---
-order: 68
+order: 290
 title: Kotlin与Ktor
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: Ktor服务端框架
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与Gradle
-  - kotlin/Kotlin与Arrow
-  - kotlin/Kotlin与Exposed
-  - kotlin/Kotlin与Koin
+  - 'kotlin/035-KotlinGradle'
+  - 'kotlin/028-KotlinArrow'
+  - 'kotlin/030-KotlinExposed'
+  - 'kotlin/031-KotlinKoin'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 ## 概述
 
 Ktor 是 JetBrains 开发的 Kotlin 服务端框架，基于协程构建，轻量、灵活、非阻塞。与 Spring Boot 等全功能框架不同，Ktor 采用插件化架构，你只引入需要的功能。它的 DSL 风格 API 让路由定义和配置非常直观。

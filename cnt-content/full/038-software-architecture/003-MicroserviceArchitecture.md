@@ -1,21 +1,22 @@
 ---
-order: 12
+order: 30
 title: 微服务架构
 module: 'software-architecture'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: advanced
 description: 微服务拆分策略、API网关、服务发现、数据管理与分布式事务。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-architecture/软件架构概述'
-  - 'software-architecture/分层架构'
-  - 'software-architecture/事件驱动架构'
-  - 'software-architecture/质量属性'
+  - 'software-architecture/001-SoftwareArchitectureOverview'
+  - 'software-architecture/002-LayeredArchitecture'
+  - 'software-architecture/004-EventDrivenArchitecture'
+  - 'software-architecture/005-QualityAttribute'
 prerequisites:
-  - 'software-architecture/分层架构'
-  - 'software-architecture/软件架构概述'
+  - 'software-architecture/002-LayeredArchitecture'
+  - 'software-architecture/001-SoftwareArchitectureOverview'
 ---
+
 
 ## 1. 从"一家大餐厅 vs 连锁餐饮集团"说起
 

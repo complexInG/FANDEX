@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 190
 title: 数据库系统原理
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 数据库系统原理：关系模型、关系代数、函数依赖、范式理论与查询优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/编译原理'
-  - 'cs-fundamentals/软件工程'
-  - 'cs-fundamentals/编译原理进阶'
-  - 'cs-fundamentals/操作系统进阶'
+  - 'cs-fundamentals/017-CompilePrinciple'
+  - 'cs-fundamentals/018-SoftwareEngineering'
+  - 'cs-fundamentals/020-CompilePrincipleAdvanced'
+  - 'cs-fundamentals/021-OperatingSystemAdvanced'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 数据库系统概述
 

@@ -1,20 +1,20 @@
 ---
-order: 55
+order: 160
 title: Span与Memory
-module: csharp
-category: 'C#'
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: '.NET 零分配内存操作全景解析：Span<T>/ReadOnlySpan<T>/Memory<T> 的 ref struct 约束、stackalloc、切片运算、零拷贝、MemoryMarshal、ArrayPool<T>、MemoryManager<T> 的深度原理与工程实践。'
+description: .NET 零分配内存操作全景解析：Span<T>/ReadOnlySpan<T>/Memory<T> 的 ref struct 约束、stackalloc、切片运算、零拷贝、MemoryMarshal、ArrayPool<T>、MemoryManager<T> 的深度原理与工程实践。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - csharp/记录类型
-  - csharp/泛型与协变逆变
-  - csharp/源生成器
-  - 'csharp/CSharp与Unity游戏开发'
+  - 'csharp/014-CRecordType'
+  - 'csharp/015-GenericCovarianceContravariance'
+  - 'csharp/017-SourceGenerator'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 C/C++ 时代：指针与缓冲区溢出（1970s-2000s）

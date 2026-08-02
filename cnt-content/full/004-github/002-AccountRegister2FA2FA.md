@@ -1,21 +1,19 @@
 ---
-order: 10
-tags:
-  - github
-  - security
-difficulty: intermediate
+order: 20
 title: 账户注册与双因素认证（2FA）
-module: github
-category: 'GitHub Basics'
-description: 'GitHub 账户注册、邮箱验证、密码策略与双因素认证（2FA）配置指南：安全意义、TOTP 原理与恢复方案。'
+module: 'github'
+category: 工具链
+difficulty: intermediate
+description: GitHub 账户注册、邮箱验证、密码策略与双因素认证（2FA）配置指南：安全意义、TOTP 原理与恢复方案。
 author: Anonymous
-related:
-  - github/GitHub概述
-  - 'github/仓库创建-克隆-归档-删除'
-  - github/SSH与HTTPS远程配置
-prerequisites: []
 updated: '2026-08-02'
+related:
+  - 'github/001-GitHubOverview'
+  - 'github/003-RepositoryCreateCloneArchiveDelete'
+  - 'github/004-SSHHTTPS'
+prerequisites: []
 ---
+
 
 ## 0. 从一个生活场景说起：账户安全就像"实名认证 + 家门双锁"
 

@@ -1,23 +1,20 @@
 ---
-order: 110
-tags:
-  - vue3
-  - performance
-difficulty: advanced
+order: 320
 title: 性能优化
-module: vue3
-category: 'Vue3 Basics'
+module: 'vue3'
+category: 前端技术
+difficulty: advanced
 description: Vue3应用性能优化策略与实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'vue3/Vue-Router导航守卫'
-  - vue3/Vue性能优化详解
-  - vue3/高级组件特性
-  - 'vue3/项目示例-个人博客站点'
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/030-VueRouterNavigationGuard'
+  - 'vue3/031-VuePerformanceDetailed'
+  - 'vue3/033-Vue3AdvancedComponentFeature'
+  - 'vue3/034-Vue3ProjectExampleBlog'
+prerequisites: []
 ---
+
 
 ## 1. 性能优化概述 | Performance Optimization Overview
 

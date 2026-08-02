@@ -1,18 +1,19 @@
 ---
-order: 11
+order: 20
 title: 行列式基本性质
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: beginner
 description: 行列式的七条基本性质——转置不变、交换变号、公因子提取、成比例为零、可加性、倍加不变、乘法公式——逐条证明与示例，以及性质在化简和抽象行列式计算中的应用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/行列式定义与几何意义'
-  - 'linear-algebra/行列式按行列展开'
-  - 'linear-algebra/行列式计算方法'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
+  - 'linear-algebra/003-DeterminantRowColumnExpansion'
+  - 'linear-algebra/004-DeterminantCalculationMethods'
 prerequisites: []
 ---
+
 
 ## 0. 生活类比：数独游戏的"交换规则"
 

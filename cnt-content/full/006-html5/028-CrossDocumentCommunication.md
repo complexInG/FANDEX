@@ -1,20 +1,21 @@
 ---
-order: 69
+order: 280
 title: 跨文档通信
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
 description: postMessage
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - 'html5/微数据与JSON-LD'
-  - html5/自定义数据属性
-  - html5/视口配置与移动优先
-  - 'html5/项目示例-交互式表单应用'
+  - 'html5/026-MicrodataJSONLD'
+  - 'html5/027-CustomDataAttribute'
+  - 'html5/029-ViewportConfigMobileFirst'
+  - 'html5/030-HTML5ProjectExampleInteractiveFormApplication'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 前同源策略时代（1995—1999）

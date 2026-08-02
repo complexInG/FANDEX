@@ -1,43 +1,21 @@
 ---
-order: 51
+order: 70
 title: 枚举与typedef
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: beginner
 description: C 语言枚举与 typedef 详解：枚举本质、typedef 别名、函数指针、状态机与可移植类型体系。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-- c/位运算与位域
-- c/运算符与表达式
-- c/多文件编译
-- c/动态内存管理
+  - 'c/005-BitwiseBitField'
+  - 'c/006-OperatorExpression'
+  - 'c/008-TheLinuxProgrammingInterface'
+  - 'c/009-DynamicMemoryManagement'
 prerequisites:
-- c/概述
-references:
-- type: documentation
-  authors:
-  - cppreference
-  year: 2026
-  title: Enumeration declaration
-  venue: cppreference.com
-  url: https://en.cppreference.com/w/c/language/enum
-  accessedDate: '2026-08-01'
-- type: book
-  authors:
-  - Kernighan, B. W.
-  - Ritchie, D. M.
-  year: 1988
-  title: The C Programming Language (2nd Edition)
-  venue: Prentice Hall
-etymology:
-- term: 枚举
-  english: enumeration
-  origin: 来自 enumerate（列举），指把一组具名常量逐一列举出来。
-estimatedReadingTime: 30
-lastReviewed: '2026-08-01'
-reviewer: fanquanpp
+  - 'c/001-CLanguageOverview'
 ---
+
 
 ## 1. 历史动机与发展脉络
 

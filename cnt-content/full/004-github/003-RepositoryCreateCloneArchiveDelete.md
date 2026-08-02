@@ -1,21 +1,20 @@
 ---
-order: 20
-tags:
-  - github
-difficulty: intermediate
+order: 30
 title: 仓库创建、克隆、归档、删除
-module: github
-category: 'GitHub Basics'
-description: 'GitHub 仓库创建、克隆、归档、删除的完整操作指南：从开新店到关店的全流程向导。'
+module: 'github'
+category: 工具链
+difficulty: intermediate
+description: GitHub 仓库创建、克隆、归档、删除的完整操作指南：从开新店到关店的全流程向导。
 author: Anonymous
-related:
-  - github/GitHub概述
-  - github/账户注册与双因素认证(2FA)
-  - github/SSH与HTTPS远程配置
-  - github/协作开发规范
-prerequisites: []
 updated: '2026-08-02'
+related:
+  - 'github/001-GitHubOverview'
+  - 'github/002-AccountRegister2FA2FA'
+  - 'github/004-SSHHTTPS'
+  - 'github/005-CollaborationDevelopmentStandard'
+prerequisites: []
 ---
+
 
 ## 0. 从一个生活场景说起：仓库就像一家"店铺"
 

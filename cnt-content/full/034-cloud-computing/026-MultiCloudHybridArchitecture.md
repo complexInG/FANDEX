@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 260
 title: 多云与混合云架构
 module: 'cloud-computing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: '多云与混合云架构：Terraform 多云管理、VPC 互联、VPN 与专线。'
+description: 多云与混合云架构：Terraform 多云管理、VPC 互联、VPN 与专线。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/可观测性'
-  - 'cloud-computing/AWS核心服务'
-  - 'cloud-computing/负载均衡与自动伸缩'
-  - 'cloud-computing/无服务器架构'
+  - 'cloud-computing/024-Observability'
+  - 'cloud-computing/025-AWSCore'
+  - 'cloud-computing/027-LoadBalanceAutoScaling'
+  - 'cloud-computing/028-ServerlessArchitecture'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 ## 1. 多云策略
 
 ### 1.1 多云动机

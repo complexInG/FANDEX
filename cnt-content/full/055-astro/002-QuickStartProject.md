@@ -1,18 +1,19 @@
 ---
-order: 2
+order: 20
 title: Astro 项目创建与目录结构
-module: astro
-category: Astro
+module: 'astro'
+category: 前端技术
 difficulty: beginner
-description: '手把手从零创建并运行第一个 Astro 项目：环境检查、create astro 向导、目录结构、配置文件、修改页面、构建与预览'
+description: 手把手从零创建并运行第一个 Astro 项目：环境检查、create astro 向导、目录结构、配置文件、修改页面、构建与预览
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - astro/003-PagesRouting
-  - astro/004-ComponentsProps
+  - 'astro/003-PagesRouting'
+  - 'astro/004-ComponentsProps'
 prerequisites:
-  - html5/003-SemanticTag
+  - 'html5/003-SemanticTag'
 ---
+
 
 ## 0. 先想清楚：我们要搭一座什么样的"房子"
 

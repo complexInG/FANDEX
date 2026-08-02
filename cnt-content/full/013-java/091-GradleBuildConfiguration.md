@@ -1,9 +1,8 @@
 ---
 order: 910
 title: Gradle build.gradle 配置语法速查手册
-module: java
-
-category: '013-java'
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: Gradle build.gradle 配置语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 插件应用
 
 **基本写法：应用插件**

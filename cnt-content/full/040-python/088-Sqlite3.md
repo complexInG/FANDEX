@@ -1,9 +1,8 @@
 ---
 order: 880
 title: Python sqlite3 数据库
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python sqlite3 数据库 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 连接数据库
 
 **基本写法：连接数据库**

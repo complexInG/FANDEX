@@ -1,9 +1,8 @@
 ---
 order: 490
 title: Cybersecurity OAuth2/OIDC 配置命令
-module: cybersecurity
-
-category: '033-cybersecurity'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: Cybersecurity OAuth2/OIDC 配置命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## OAuth2 端点探测
 
 **基本写法:获取授权服务器元数据**

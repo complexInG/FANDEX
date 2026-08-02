@@ -1,20 +1,17 @@
 ---
-order: 63
-title: 'git-cherry-pick'
-module: git
-category: 'Git Basics'
+order: 200
+title: git-cherry-pick
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git cherry-pick详解：选择性移植提交、跨分支应用与冲突处理。'
+description: git cherry-pick详解：选择性移植提交、跨分支应用与冲突处理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/合并工具
-  - git/变基操作
-  - git/暂存工作区
-  - git/远程跟踪分支
-prerequisites:
-  - git/语法速查
+  - 'git/022-RemoteTrackingBranch'
+prerequisites: []
 ---
+
 ## 1. cherry-pick 概述
 
 ### 1.1 什么是 cherry-pick

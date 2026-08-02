@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 120
 title: 信号处理
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
 description: signal.h与信号处理
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - c/函数指针与回调
-  - c/可变参数函数
-  - c/原子操作与内存模型
-  - c/泛型选择
+  - 'c/010-FunctionPointerCallback'
+  - 'c/011-VarargsFunction'
+  - 'c/013-AtomicAndMemoryModel'
+  - 'c/014-GenericSelection'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 第 1 章 引言与学习路径
 
 ### 1.1 为什么信号处理是系统编程的核心能力

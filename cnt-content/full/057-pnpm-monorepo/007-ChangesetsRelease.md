@@ -1,20 +1,21 @@
 ---
-order: 7
+order: 70
 title: changesets 版本管理与发布
-module: pnpm-monorepo
-category: pnpm 与 Monorepo
+module: 'pnpm-monorepo'
+category: 工具链
 difficulty: intermediate
-description: 'changesets 版本管理：变更记录、版本 bump、CHANGELOG 生成与 npm 发布流程'
+description: changesets 版本管理：变更记录、版本 bump、CHANGELOG 生成与 npm 发布流程
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - pnpm-monorepo/004-WorkspaceProtocol
-  - pnpm-monorepo/005-CatalogManagement
-  - pnpm-monorepo/008-MonorepoPractice
+  - 'pnpm-monorepo/004-WorkspaceProtocol'
+  - 'pnpm-monorepo/005-CatalogManagement'
+  - 'pnpm-monorepo/008-MonorepoPractice'
 prerequisites:
-  - pnpm-monorepo/003-WorkspaceSetup
-  - pnpm-monorepo/004-WorkspaceProtocol
+  - 'pnpm-monorepo/003-WorkspaceSetup'
+  - 'pnpm-monorepo/004-WorkspaceProtocol'
 ---
+
 
 ## 1. 从"图书再版"说起
 

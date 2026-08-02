@@ -1,20 +1,16 @@
 ---
-order: 73
-title: 'sparse-checkout'
-module: git
-category: 'Git Basics'
+order: 310
+title: sparse-checkout
+module: 'git'
+category: 工具链
 difficulty: advanced
-description: 'git sparse-checkout详解：部分克隆与稀疏检出，优化大型仓库工作流。'
+description: git sparse-checkout详解：部分克隆与稀疏检出，优化大型仓库工作流。
 author: fanquanpp
 updated: '2026-08-01'
-related:
-  - git/二分查找定位
-  - git/子模块管理
-  - git/补丁与邮件工作流
-  - git/内容搜索
-prerequisites:
-  - git/语法速查
+related: []
+prerequisites: []
 ---
+
 ## 1. sparse-checkout 概述
 
 ### 1.1 什么是 sparse-checkout

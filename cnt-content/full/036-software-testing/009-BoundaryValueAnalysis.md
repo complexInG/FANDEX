@@ -1,20 +1,19 @@
 ---
-order: 54
+order: 90
 title: 边界值分析
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 边界值分析方法：边界条件识别、测试值选取、健壮性测试与实战应用详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/测试类型'
-  - 'software-testing/等价类划分'
-  - 'software-testing/Web自动化测试'
-  - 'software-testing/Python测试框架'
+  - 'software-testing/007-TestType'
+  - 'software-testing/008-EquivalenceClassPartition'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 
 ## 1. 边界值分析原理
 

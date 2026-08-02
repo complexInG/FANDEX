@@ -1,20 +1,20 @@
 ---
-order: 68
+order: 230
 title: Python与计算机视觉
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: OpenCV与图像处理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与深度学习
-  - python/Python与NLP
-  - python/Python与Web爬虫
-  - python/Python与自动化
-prerequisites:
-  - python/语法速查
+  - 'python/021-PythonDeepLearning'
+  - 'python/022-PythonAndNLP'
+  - 'python/024-WebScrapingWithPython'
+  - 'python/025-PythonAutomationCookbook'
+prerequisites: []
 ---
+
 
 ## 什么是计算机视觉
 

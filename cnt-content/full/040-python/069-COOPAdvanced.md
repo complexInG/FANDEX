@@ -1,9 +1,8 @@
 ---
 order: 690
 title: Python 面向对象进阶
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python 面向对象进阶 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 抽象基类
 
 **换行写法：定义抽象基类**

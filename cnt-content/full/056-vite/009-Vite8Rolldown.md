@@ -1,19 +1,20 @@
 ---
-order: 9
+order: 90
 title: Vite 8 与 Rolldown 新特性
-module: vite
-category: Vite
+module: 'vite'
+category: 前端技术
 difficulty: intermediate
-description: 'Vite 8 单引擎架构：版本演进时间线、Rolldown（Rust 打包器）、Oxc、Lightning CSS、Bundled Dev Mode 与升级迁移指南'
+description: Vite 8 单引擎架构：版本演进时间线、Rolldown（Rust 打包器）、Oxc、Lightning CSS、Bundled Dev Mode 与升级迁移指南
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - vite/007-BuildSplit
-  - vite/008-PluginSystem
+  - 'vite/007-BuildSplit'
+  - 'vite/008-PluginSystem'
 prerequisites:
-  - vite/002-QuickStart
-  - vite/007-BuildSplit
+  - 'vite/002-QuickStart'
+  - 'vite/007-BuildSplit'
 ---
+
 ## 0. 一个类比：给跑车换发动机
 
 想象一辆老跑车，装配了两台发动机：日常市区代步用一台"省油小引擎"，上了赛道又换另一台"暴力大引擎"。问题来了——两套引擎的调校逻辑不同，市区开得顺的车，上赛道却可能熄火；你在市区验证过的所有行为，上赛道都要重新适应。

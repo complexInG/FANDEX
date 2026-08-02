@@ -1,20 +1,21 @@
 ---
-order: 104
+order: 550
 title: 智能指针循环引用
-module: cpp
-category: 'dev-lang'
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: C++智能指针循环引用问题与weak_ptr解决方案。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/完美转发与引用折叠
-  - cpp/虚函数表与多态内存布局
-  - cpp/Lambda捕获详解
-  - cpp/类型萃取与SFINAE
+  - 'cpp/053-PerfectForwardingReferenceCollapse'
+  - 'cpp/054-VTablePolymorphismMemoryLayout'
+  - 'cpp/056-LambdaCaptureDetailed'
+  - 'cpp/057-TypeExtractionSFINAE'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## enable_shared_from_this
 
 **基本写法：安全获取自身 shared_ptr**

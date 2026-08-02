@@ -1,20 +1,20 @@
 ---
-order: 73
+order: 310
 title: C++与Python交互
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: pybind11与C API
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/C++序列化
-  - cpp/C++网络编程
-  - cpp/C++与Rust对比
-  - cpp/C++23与C++26新特性
-prerequisites:
-  - cpp/概述与环境配置
+  - 'cpp/036-CppSerialization'
+  - 'cpp/025-CppNetworkProgramming'
+  - 'cpp/033-CppRustComparison'
+  - 'cpp/034-Cpp23Cpp26NewFeatures'
+prerequisites: []
 ---
+
 
 ## 概述
 

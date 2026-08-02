@@ -1,20 +1,20 @@
 ---
-order: 86
+order: 460
 title: Python与数据库迁移
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: Alembic与数据库迁移
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与代码质量
-  - python/并发编程
-  - python/Python与OAuth2
-  - 'python/Python与WebSocket-2'
-prerequisites:
-  - python/语法速查
+  - 'python/044-PythonCodeQuality'
+  - 'python/045-ConcurrentProgramming'
+  - 'python/047-PythonOAuth2'
+  - 'python/034-PythonWebSocket'
+prerequisites: []
 ---
+
 
 ## 什么是数据库迁移
 

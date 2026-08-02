@@ -1,18 +1,19 @@
 ---
-order: 7
+order: 70
 title: Vite 生产构建与代码分割
-module: vite
-category: Vite
+module: 'vite'
+category: 前端技术
 difficulty: intermediate
-description: 'Vite 生产构建：build 配置、动态 import 与 manualChunks 分包、tree-shaking、资源压缩与产物体积分析'
+description: Vite 生产构建：build 配置、动态 import 与 manualChunks 分包、tree-shaking、资源压缩与产物体积分析
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - vite/009-Vite8Rolldown
-  - vite/008-PluginSystem
+  - 'vite/009-Vite8Rolldown'
+  - 'vite/008-PluginSystem'
 prerequisites:
-  - vite/003-ConfigFile
+  - 'vite/003-ConfigFile'
 ---
+
 ## 0. 一个类比：搬家打包与快递分装
 
 假设你要搬家，把所有家当堆进**一个**巨大的行李箱，然后整个搬走。后果是什么？路上每开一段就要翻箱倒柜找东西；到了新家，哪怕只想用一把勺子，也得先把整个行李箱翻个底朝天。

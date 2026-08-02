@@ -1,19 +1,20 @@
 ---
-order: 3
+order: 30
 title: 性能与接口测试
 module: 'software-testing'
-category: 软件测试
+category: 云与基础设施
 difficulty: intermediate
-description: 'LoadRunner 与 JMeter 性能测试、API 接口测试、Postman 工具使用、REST Assured 与接口 Mock。'
+description: LoadRunner 与 JMeter 性能测试、API 接口测试、Postman 工具使用、REST Assured 与接口 Mock。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/测试基础与方法'
-  - 'software-testing/功能与自动化测试'
-  - 'software-testing/安全与移动测试'
-  - 'software-testing/测试概念与原则'
+  - 'software-testing/001-TestBasicsMethod'
+  - 'software-testing/002-FunctionalAndAutomatedTest'
+  - 'software-testing/004-SecurityAndMobileTest'
+  - 'software-testing/005-TestConceptPrinciple'
 prerequisites: []
 ---
+
 
 ## 1. 性能测试概述
 

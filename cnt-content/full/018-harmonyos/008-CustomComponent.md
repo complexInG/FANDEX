@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 80
 title: 自定义组件
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 自定义组件与生命周期
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/ArkTS语言特性
-  - harmonyos/状态管理
-  - harmonyos/列表与网格
-  - harmonyos/导航与路由
+  - 'harmonyos/006-ArkTSLanguageFeature'
+  - 'harmonyos/007-StateManagement'
+  - 'harmonyos/009-ListGrid'
+  - 'harmonyos/010-NavigationRoute'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 
 
 # 自定义组件：ArkUI 声明式组件模型与组合复用工程实践

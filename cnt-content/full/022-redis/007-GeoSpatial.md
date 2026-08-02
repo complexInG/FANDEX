@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 70
 title: 地理空间
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: intermediate
-description: 'Redis地理空间GEO：基于Sorted Set的地理位置存储、距离计算与范围查询'
+description: Redis地理空间GEO：基于Sorted Set的地理位置存储、距离计算与范围查询
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/位图
-  - redis/基数统计
-  - redis/流
-  - redis/向量集
+  - 'redis/005-BitGraph'
+  - 'redis/006-NumberStats'
+  - 'redis/008-Stream'
+  - 'redis/009-VectorSet'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 ## 1. GEO 概述
 
 Redis GEO 基于 Sorted Set 实现，使用 GeoHash 编码经纬度，支持地理位置存储和查询。

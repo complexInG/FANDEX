@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 220
 title: 派生表优化
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL派生表优化：合并策略、物化策略、LATERAL派生表与性能调优
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/优化器追踪
-  - mysql/子查询优化
-  - 'mysql/GROUP-BY与ORDER-BY优化'
-  - mysql/JOIN算法
+  - 'mysql/020-OptimizerTrace'
+  - 'mysql/021-SubqueryOptimization'
+  - 'mysql/023-GroupByOrderByOptimization'
+  - 'mysql/024-JOINAlgorithm'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 派生表概述
 

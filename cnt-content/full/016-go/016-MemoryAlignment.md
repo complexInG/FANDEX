@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 160
 title: 内存对齐
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: 结构体对齐与内存布局
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/unsafe与指针
-  - go/反射
-  - go/Goroutine调度
-  - go/Go与性能分析
+  - 'go/013-UnsafePointer'
+  - 'go/015-Reflection'
+  - 'go/018-GoroutineSchedule'
+  - 'go/043-GoPerformanceAnalysis'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 ## 历史动机与背景
 
 ### 硬件层面的对齐需求

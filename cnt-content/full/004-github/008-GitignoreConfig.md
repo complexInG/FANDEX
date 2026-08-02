@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 80
 title: Gitignore配置
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: beginner
-description: '.gitignore配置详解：忽略规则清单、语法、优先级、全局配置与官方模板库使用。'
+description: .gitignore配置详解：忽略规则清单、语法、优先级、全局配置与官方模板库使用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/README文件
-  - github/分支模型与分支保护规则
-  - github/开源许可证选择
-  - github/依赖安全选项
+  - 'github/006-READMEFile'
+  - 'github/007-BranchModelBranchRule'
+  - 'github/009-OpenSourceLicense'
+  - 'github/010-DependencySecurityOptions'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 先来一个生活场景：搬家打包清单
 

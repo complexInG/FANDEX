@@ -1,21 +1,20 @@
 ---
-order: 30
-tags:
-  - html5
+order: 50
+title: HTML5 表单与验证
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
-title: 'HTML5 表单与验证'
-module: html5
-category: 'HTML5 Basics'
 description: 表单控件、输入类型、内建验证与自定义校验。
 author: Anonymous
-related:
-  - html5/语义化标签
-  - html5/无障碍访问
-  - html5/多媒体与Canvas绘图
-  - html5/文档类型声明
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'html5/003-SemanticTag'
+  - 'html5/004-Accessibility'
+  - 'html5/006-HTML5MultimediaCanvasDrawing'
+  - 'html5/007-DocTypeDeclaration'
+prerequisites: []
 ---
+
 ## 1. 表单基础
 
 表单是网页中用于收集用户输入的重要组件，HTML5 提供了丰富的表单元素和验证功能。

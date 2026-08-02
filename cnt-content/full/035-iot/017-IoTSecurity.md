@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 170
 title: 物联网安全
-module: iot
-category: 'eng-infra'
+module: 'iot'
+category: 云与基础设施
 difficulty: intermediate
 description: 物联网安全：设备认证、TLS/DTLS、固件签名与安全启动。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/LwM2M设备管理
-  - iot/时序数据库
-  - iot/主流IoT平台
-  - iot/数字孪生
+  - 'iot/015-LwM2MManagement'
+  - 'iot/016-TimeSeriesDatabase'
+  - 'iot/018-IoT'
+  - 'iot/019-DigitalTwin'
 prerequisites:
-  - iot/概述与架构
+  - 'iot/001-OverviewArchitecture'
 ---
+
 
 ## 1. 设备认证
 

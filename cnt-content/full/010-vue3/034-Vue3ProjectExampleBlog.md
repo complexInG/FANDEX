@@ -1,21 +1,19 @@
 ---
-order: 130
-tags:
-  - vue3
-  - project
+order: 340
+title: Vue3 项目示例：个人博客站点
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
-title: 'Vue3 项目示例：个人博客站点'
-module: vue3
-category: 'Vue3 Practice'
-description: '综合运用组合式 API、Pinia 与 Vue Router 的个人博客项目。'
-related:
-  - vue3/性能优化
-  - vue3/高级组件特性
-  - vue3/理论知识点
-prerequisites:
-  - vue3/语法速查
+description: 综合运用组合式 API、Pinia 与 Vue Router 的个人博客项目。
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'vue3/032-PerformanceOptimization'
+  - 'vue3/033-Vue3AdvancedComponentFeature'
+  - 'vue3/035-Vue3TheoryKnowledge'
+prerequisites: []
 ---
+
 
 | 文章详情   | Markdown 渲染、目录导航、阅读进度 |
 | ---------- | --------------------------------- |

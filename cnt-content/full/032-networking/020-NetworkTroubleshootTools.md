@@ -1,20 +1,20 @@
 ---
-order: 105
+order: 200
 title: 网络故障排查工具
-module: networking
-category: 'eng-infra'
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
-description: '网络故障排查工具：tcpdump、ss、netstat、iperf 的使用方法。'
+description: 网络故障排查工具：tcpdump、ss、netstat、iperf 的使用方法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/网络命名空间与虚拟网桥
-  - networking/隧道技术
-  - networking/BGP与多线机房互联
-  - networking/软件定义网络
+  - 'networking/018-NetworkNamespaceVirtualBridge'
+  - 'networking/019-Tunneling'
+  - 'networking/021-BGP'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. 抓包分析
 

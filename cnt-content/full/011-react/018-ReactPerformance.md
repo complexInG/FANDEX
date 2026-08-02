@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 180
 title: React性能优化
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: React应用性能优化策略
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - react/自定义Hooks设计模式
-  - react/状态管理方案对比
-  - react/React错误边界
-  - react/React表单处理
+  - 'react/016-CustomHooksDesignPattern'
+  - 'react/017-StateManagementSolutionComparison'
+  - 'react/019-ReactErrorBoundary'
+  - 'react/020-ReactForm'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 
 # React 性能优化：从原理到工程实践

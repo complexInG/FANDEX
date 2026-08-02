@@ -1,19 +1,19 @@
 ---
-order: 13
-title: 'On-Call最佳实践'
+order: 40
+title: On-Call最佳实践
 module: 'engineering-practices'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: '值班制度、告警管理、轮值策略与On-Call素养。'
+description: 值班制度、告警管理、轮值策略与On-Call素养。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'engineering-practices/设计文档规范'
-  - 'engineering-practices/代码审查清单'
-  - 'engineering-practices/事故复盘方法论'
-  - 'engineering-practices/技术方案评审'
+  - 'engineering-practices/002-DesignDocumentStandard'
+  - 'engineering-practices/005-IncidentRetrospectiveMethodology'
+  - 'engineering-practices/006-TechnicalReview'
 prerequisites: []
 ---
+
 
 ## 1. 从"急诊室值班"说起
 

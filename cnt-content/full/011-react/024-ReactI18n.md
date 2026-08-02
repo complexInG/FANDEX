@@ -1,20 +1,21 @@
 ---
-order: 63
+order: 240
 title: React国际化
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
-description: 'React i18n实现方案'
+description: React i18n实现方案
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React测试
-  - react/React路由进阶
-  - react/React动画
-  - react/React服务端渲染
+  - 'react/022-ReactTest'
+  - 'react/023-ReactRouteAdvanced'
+  - 'react/025-ReactAnimation'
+  - 'react/026-ReactSSR'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 React i18n实现方案。本文将从基础概念、快速上手、详细用法、常见场景、注意事项和进阶用法六个方面全面介绍React国际化。

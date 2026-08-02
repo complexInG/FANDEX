@@ -1,19 +1,20 @@
 ---
 order: 10
-title: 'SVG 概述与环境配置'
-module: svg
-category: 'SVG Basics'
+title: SVG 概述与环境配置
+module: 'svg'
+category: 前端技术
 difficulty: beginner
-description: 'SVG 发展历程、核心特性、与 Canvas/位图对比、嵌入方式与开发环境。'
+description: SVG 发展历程、核心特性、与 Canvas/位图对比、嵌入方式与开发环境。
 author: fanquanpp
 updated: '2026-07-18'
 related:
-  - svg/基础语法与文档结构
-  - svg/坐标系与viewBox
-  - html5/SVG矢量图形
+  - 'svg/002-SVGBasicSyntaxDocStructure'
+  - 'svg/003-SVGCoordinateSystemViewBox'
+  - 'html5/015-SVG'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 矢量图形的起源:从 PostScript 到 Web

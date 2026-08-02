@@ -1,20 +1,21 @@
 ---
-order: 63
+order: 210
 title: 移动端适配
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: rem、vw、vh、clamp
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/媒体查询
-  - css/容器查询
-  - css/函数
-  - css/CSS变量与自定义属性
+  - 'css/019-MediaQuery'
+  - 'css/020-ContainerQuery'
+  - 'css/022-Function'
+  - 'css/023-CSSVariableCustomAttribute'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. 适配单位
 

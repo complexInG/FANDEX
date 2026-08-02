@@ -1,21 +1,19 @@
 ---
 order: 10
-tags:
-  - mysql
-  - database
+title: MySQL 概述与数据库设计
+module: 'mysql'
+category: 数据库
 difficulty: beginner
-title: 'MySQL 概述与数据库设计'
-module: mysql
-category: 'MySQL Basics'
-description: 'MySQL 发展历程、体系结构与数据库设计范式。'
+description: MySQL 发展历程、体系结构与数据库设计范式。
 author: Anonymous
-related:
-  - mysql/语法速查
-  - mysql/环境搭建
-  - mysql/数据类型与约束
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'mysql/085-View'
+  - 'mysql/002-MySQLEnvSetup'
+  - 'mysql/003-MySQLDataTypeConstraint'
+prerequisites: []
 ---
+
 ## 1. 数据库概述 (Overview)
 
 MySQL 是全球最受欢迎的**开源关系型数据库管理系统 (RDBMS)**，由 Oracle 公司维护和开发。它是 Web 应用开发中最常用的数据库之一，广泛应用于各种规模的应用系统。
@@ -68,11 +66,8 @@ flowchart TD
   **连接方式**：
 
 ```sql
- -
  mysql -h 127.0.0.1 -P 3306 -u root -p
- -
  mysql -u root -p --socket=/tmp/mysql.sock
- -
  mysql -u root -p --pipe
 ```
 
@@ -215,13 +210,10 @@ MySQL 8.0 带来了众多新特性和改进：
 **金额计算示例**：
 
 ```sql
- -
  CREATE TABLE accounts (
   id INT PRIMARY KEY,
   balance DECIMAL(10,2) NOT NULL DEFAULT 0.00
  )
- -
- -
 ```
 
 ### 2.3 数据库设计示例
@@ -229,7 +221,6 @@ MySQL 8.0 带来了众多新特性和改进：
 #### 2.3.1 电商系统完整设计
 
 ```sql
- -
  CREATE TABLE categories (
   id INT PRIMARY KEY AUTO_INCREMENT,
   parent_id INT DEFAULT NULL COMMENT '父分类ID',
@@ -239,7 +230,6 @@ MySQL 8.0 带来了众多新特性和改进：
   FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL,
   INDEX idx_parent_id (parent_id)
  )
- -
  CREATE TABLE products (
   id INT PRIMARY KEY AUTO_INCREMENT,
   category_id INT NOT NULL COMMENT '分类ID',
@@ -259,7 +249,6 @@ MySQL 8.0 带来了众多新特性和改进：
   INDEX idx_status (status),
   INDEX idx_sales (sales)
  )
- -
  CREATE TABLE product_skus (
   id INT PRIMARY KEY AUTO_INCREMENT,
   product_id INT NOT NULL COMMENT '商品ID',
@@ -270,7 +259,6 @@ MySQL 8.0 带来了众多新特性和改进：
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
   INDEX idx_product_id (product_id)
  )
- -
  CREATE TABLE users (
   id INT PRIMARY KEY AUTO_INCREMENT,
   username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
@@ -291,7 +279,6 @@ MySQL 8.0 带来了众多新特性和改进：
   INDEX idx_phone (phone),
   INDEX idx_email (email)
  )
- -
  CREATE TABLE addresses (
   id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT NOT NULL COMMENT '用户ID',

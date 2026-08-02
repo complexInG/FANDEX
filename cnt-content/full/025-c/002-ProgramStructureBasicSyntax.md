@@ -1,19 +1,19 @@
 ---
 order: 20
-tags:
-  - c
-difficulty: beginner
 title: 程序结构与基本语法
-module: c
-category: 'C Basics'
-description: 'C 程序的组成部分、注释规范、标识符规则、关键字与编译过程，对标 MIT/Stanford/CMU 教学水准。'
+module: 'c'
+category: 计算机科学
+difficulty: beginner
+description: C 程序的组成部分、注释规范、标识符规则、关键字与编译过程，对标 MIT/Stanford/CMU 教学水准。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - c/概述
-  - c/数据类型详解
-  - c/变量与常量
+  - 'c/001-CLanguageOverview'
+  - 'c/003-DataTypeDetailed'
+  - 'c/004-VariableConstant'
 prerequisites: []
 ---
+
 ## 0. 前言与导读
 
 本文是 FANDEX C 模块的基础章节，系统讲解 C 程序的组成结构、语法元素与编译过程。掌握本章是后续学习数据类型、指针、函数、模块化编程的前提。本文对标 K&R《The C Programming Language》第 1 章与 ISO/IEC 9899:2024 (C23) 标准。

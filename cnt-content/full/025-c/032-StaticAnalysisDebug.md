@@ -1,20 +1,21 @@
 ---
-order: 72
+order: 320
 title: 静态分析与调试
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
 description: 代码静态分析与调试技巧
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - c/国际化与本地化
-  - c/构建系统
-  - c/跨平台编程
-  - c/嵌入式C编程
+  - 'c/030-HelloWorldOrOr'
+  - 'c/031-BuildSystem'
+  - 'c/033-CrossPlatformProgramming'
+  - 'c/034-EmbeddedCProgramming'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 # 静态分析与调试 (Static Analysis and Debugging)
 

@@ -1,19 +1,20 @@
 ---
-order: 22
+order: 80
 title: 初等变换与初等矩阵
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 三种初等变换（对换、倍乘、倍加）与三种初等矩阵，行变换=左乘初等矩阵、列变换=右乘初等矩阵的核心对应关系，矩阵的等价标准形，用初等变换求逆矩阵与求秩。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/矩阵运算'
-  - 'linear-algebra/逆矩阵'
-  - 'linear-algebra/矩阵的秩'
-  - 'linear-algebra/分块矩阵'
+  - 'linear-algebra/007-MatrixOperation'
+  - 'linear-algebra/008-InverseMatrix'
+  - 'linear-algebra/010-MatrixRank'
+  - 'linear-algebra/011-ChunkingMatrix'
 prerequisites: []
 ---
+
 
 ## 0. 生活类比：消元法的"步步操作"
 

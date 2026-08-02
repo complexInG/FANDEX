@@ -1,9 +1,8 @@
 ---
 order: 390
 title: GitHub 拉取与获取
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 以对比驱动方式讲解 git pull 与 git fetch 的区别与适用场景，覆盖远程更新同步、远程跟踪分支与拉取冲突处理，适合零基础学习者。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 ## 开篇：像收发室取件一样拉取更新
 
 想象你所在的小区有个收发室，快递员把新包裹送到收发室后，会发短信通知你。这时你有两种取件方式：

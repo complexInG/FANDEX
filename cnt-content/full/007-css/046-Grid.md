@@ -1,9 +1,8 @@
 ---
 order: 460
 title: CSS Grid 布局速查
-module: css
-
-category: '007-css'
+module: 'css'
+category: 前端技术
 difficulty: beginner
 description: CSS Grid 布局速查 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 容器属性
 
 **基本写法：grid 容器**

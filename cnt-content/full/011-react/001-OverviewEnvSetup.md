@@ -1,20 +1,18 @@
 ---
-order: 1
-tags:
-  - react
-difficulty: beginner
+order: 10
 title: 概述与环境配置
-module: react
-category: React
-description: 'React 概述、发展历史、React 19 新特性、环境搭建与 JSX 语法基础。'
+module: 'react'
+category: 前端技术
+difficulty: beginner
+description: React 概述、发展历史、React 19 新特性、环境搭建与 JSX 语法基础。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/组件与Props
-  - react/状态与事件
-  - javascript/语法速查
+  - 'react/002-ComponentProps'
+  - 'react/003-StateEvent'
 prerequisites: []
 ---
+
 ## 1. React 概述
 
 React 是由 Meta（原 Facebook）开发并维护的开源 JavaScript UI 库，于 2013 年 5 月首次开源。它采用声明式编程范式，以组件化思想构建用户界面，是目前全球使用最广泛的前端框架之一。

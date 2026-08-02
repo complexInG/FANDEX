@@ -1,19 +1,17 @@
 ---
-order: 1
+order: 10
 title: Tailwind CSS 概述
-module: tailwind
-category: Tailwind CSS
+module: 'tailwind'
+category: 前端技术
 difficulty: beginner
-description: 'Tailwind CSS 概述：从传统 CSS 到 utility-first 的演进对比、Tailwind 与 Bootstrap 的区别、Tailwind 4 新特性与适用场景'
+description: Tailwind CSS 概述：从传统 CSS 到 utility-first 的演进对比、Tailwind 与 Bootstrap 的区别、Tailwind 4 新特性与适用场景
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - css/CSS概述
-  - astro/Astro框架概述
-  - react/React基础
-prerequisites:
-  - css/CSS概述
+  - 'astro/001-AstroOverview'
+prerequisites: []
 ---
+
 
 ## 0. 从一盒乐高说起
 

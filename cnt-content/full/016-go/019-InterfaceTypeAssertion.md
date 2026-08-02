@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 190
 title: 接口与类型断言
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: Go接口与动态派发
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Goroutine调度
-  - go/Context详解
-  - go/错误处理进阶
-  - go/反射
+  - 'go/018-GoroutineSchedule'
+  - 'go/017-ContextDetailed'
+  - 'go/020-ErrorHandlingAdvanced'
+  - 'go/015-Reflection'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 ## 历史动机与背景
 
 ### 多态性的语言演化

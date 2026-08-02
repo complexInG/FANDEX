@@ -1,21 +1,20 @@
 ---
-order: 70
-tags:
-  - javascript
-difficulty: intermediate
+order: 260
 title: 对象与数组
-module: javascript
-category: 'JS Basics'
+module: 'javascript'
+category: 前端技术
+difficulty: intermediate
 description: 对象操作、数组方法与解构赋值。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - javascript/Promise构造器
-  - javascript/Records与Tuples
-  - javascript/DOM操作与事件
-  - javascript/JavaScript最新特性与运行时
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/024-YouDonTKnowJSAsyncPerformance'
+  - 'javascript/025-RecordsTuples'
+  - 'javascript/027-DOMOperationEvent'
+  - 'javascript/028-JavaScriptLatestFeature'
+prerequisites: []
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 JavaScript 对象模型的诞生

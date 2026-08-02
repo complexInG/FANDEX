@@ -1,57 +1,19 @@
 ---
 order: 520
 title: 可访问性样式
-module: css
-category: '007-css'
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: 让样式不成为障碍：对比度、焦点可见、减少动效与文本缩放，四个维度讲清可访问性样式的落地要点。
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'html5/004-Accessibility'
   - 'css/023-CSSVariableCustomAttribute'
 prerequisites:
   - 'css/019-MediaQuery'
-quiz:
-  - type: choice
-    question: '为什么不能用 outline: none 去掉焦点框？'
-    options:
-      - 会影响性能
-      - 键盘用户将看不到当前焦点位置，无法操作
-      - outline 会影响布局
-      - 浏览器不支持 outline
-    answer: 1
-    explanation: 焦点指示是键盘可达性的核心；要去掉默认样式时必须提供自定义焦点样式。
-  - type: fill
-    question: 尊重用户减少动效偏好的媒体查询是 prefers-____。
-    answer: reduced-motion
-    hint: 写作 prefers-reduced-motion。
-references:
-  - type: documentation
-    authors:
-      - MDN Contributors
-    year: 2026
-    title: MDN 无障碍（Accessibility）
-    venue: MDN
-    url: https://developer.mozilla.org/zh-CN/docs/Web/Accessibility
-    accessedDate: '2026-08-02'
-  - type: documentation
-    authors:
-      - W3C WAI
-    year: 2026
-    title: WCAG 2.2 对比度要求
-    venue: w3.org
-    url: https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 可访问性
-    english: Accessibility
-    origin: 源于"人人可用"的设计伦理，a11y 是 accessibility 的行业缩写（首尾字母 + 中间 11 个字母）。
-estimatedReadingTime: 7
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

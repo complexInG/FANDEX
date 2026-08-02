@@ -1,20 +1,21 @@
 ---
-order: 64
+order: 220
 title: 线程与并发
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: advanced
 description: C11线程与并发原语
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/原子操作与内存模型
-  - c/POSIX线程
-  - c/信号处理
-  - c/函数指针与回调
+  - 'c/013-AtomicAndMemoryModel'
+  - 'c/023-POSIXThread'
+  - 'c/012-SignalHandling'
+  - 'c/010-FunctionPointerCallback'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ### 条件变量
 
 ```c

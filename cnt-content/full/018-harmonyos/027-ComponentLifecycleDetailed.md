@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 270
 title: 组件生命周期详解
-module: harmonyos
-category: 'dev-lang'
+module: 'harmonyos'
+category: 后端技术
 difficulty: advanced
 description: HarmonyOS组件生命周期详解：aboutToAppear、aboutToDisappear。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/ArkTS与TypeScript差异
-  - harmonyos/ArkUI声明式语法
-  - harmonyos/路由跳转与路由栈
-  - harmonyos/权限申请
+  - 'harmonyos/025-ArkTSTypeScriptDifference'
+  - 'harmonyos/026-ArkUIDeclarativeSyntax'
+  - 'harmonyos/028-RouteJumpStack'
+  - 'harmonyos/029-PermissionRequest'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 1. 概述与背景
 
 ### 1.1 什么是生命周期

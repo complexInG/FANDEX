@@ -1,20 +1,21 @@
 ---
-order: 63
+order: 220
 title: 数据库运维
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: advanced
 description: 数据库运维：备份恢复、主从复制、读写分离、分库分表与数据迁移
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/监控与告警
-  - devops/网络与安全进阶
-  - devops/Dockerfile多阶段构建
-  - devops/Kubernetes核心资源详解
+  - 'devops/020-MonitorAndAlert'
+  - 'devops/021-NetworkSecurityAdvanced'
+  - 'devops/023-DockerfileMultiBuild'
+  - 'devops/024-KubernetesCoreDetailed'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 备份与恢复
 

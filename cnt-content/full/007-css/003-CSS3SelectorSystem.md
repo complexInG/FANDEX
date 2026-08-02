@@ -1,20 +1,20 @@
 ---
 order: 30
-tags:
-  - css
+title: CSS3 选择器系统
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-title: 'CSS3 选择器系统'
-module: css
-category: 'CSS Basics'
 description: 基础选择器、组合选择器、伪类伪元素与优先级。
 author: Anonymous
+updated: '2026-08-01'
 related:
-  - css/概述与基本语法
-  - css/盒模型详解
-  - css/传统布局技术
-  - css/Flexbox弹性布局
+  - 'css/001-CSS3OverviewBasicSyntax'
+  - 'css/002-CSS3BoxModelDetailed'
+  - 'css/004-TraditionalLayoutTech'
+  - 'css/005-CSS3FlexboxFlexLayout'
 prerequisites: []
 ---
+
 ## 1. 基础选择器
 
 基础选择器是 CSS 中最基本的选择器类型，用于选择 HTML 元素。
@@ -25,7 +25,7 @@ prerequisites: []
 
 ```css
  /* 匹配所有元素 */
- *
+ * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -379,7 +379,7 @@ input:checked {
   display: none;
  }
  /* 匹配根元素 */
- :
+ :root {
   --primary-color: #3498db;
   --secondary-color: #2ecc71;
  }
@@ -457,21 +457,21 @@ input:read-write {
 
 ```css
  /* 匹配当前激活的元素 */
- :
+ :active {
   background-color: #f0f8ff;
   padding: 10px;
   border-radius: 4px;
  }
  /* 匹配语言为英语的元素 */
- :
+ :lang(en) {
   font-family: Arial, sans-serif;
  }
  /* 匹配语言为中文的元素 */
- :
+ :lang(zh) {
   font-family: "SimSun", serif;
  }
- /* 匹配包含指定文本的元素 */
- :
+ /* 匹配包含指定子元素的元素 */
+ div:has(.keyword) {
   background-color: yellow;
  }
  /* 匹配具有指定父元素的元素 */
@@ -570,7 +570,7 @@ input:read-write {
 
 ```css
  /* 为选中的文本应用样式 */
- :
+ ::selection {
   background-color: #3498db;
   color: white;
  }
@@ -714,7 +714,7 @@ div {
   color: #333;
  }
  /* 不良实践：使用通配符选择器 */
- *
+ * {
   margin: 0;
   padding: 0;
  }
@@ -793,13 +793,13 @@ div {
 
 ```css
  /* 重置样式 */
- *
+ * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
  }
  /* 全局变量 */
- :
+ :root {
   --primary-color: #3498db;
   --secondary-color: #2ecc71;
   --text-color: #333;

@@ -1,20 +1,21 @@
 ---
-order: 71
+order: 320
 title: 隔离级别
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
 description: SQL事务隔离级别：读未提交、读已提交、可重复读、序列化的原理、实现机制与选择策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/执行计划
-  - sql/事务ACID特性
-  - sql/脏读不可重复读幻读
-  - sql/锁机制
+  - 'sql/030-ExecutionPlan'
+  - 'sql/031-TransactionACIDProperty'
+  - 'sql/033-DirtyReadNonRepeatablePhantom'
+  - 'sql/034-LockMechanism'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 隔离级别概述
 
 事务隔离级别定义了一个事务必须与其它事务隔离的程度。更高的隔离级别提供更强的一致性保证，但并发性能更低。

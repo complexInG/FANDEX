@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 80
 title: 数据表示与运算
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 数据表示与运算：数值编码、浮点标准、定点运算、溢出检测与校验码
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/离散数学'
-  - 'cs-fundamentals/计算机组成原理'
-  - 'cs-fundamentals/指令流水线'
-  - 'cs-fundamentals/存储系统'
+  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-ComputerPrinciple'
+  - 'cs-fundamentals/009-DirectivePipeline'
+  - 'cs-fundamentals/010-StorageSystem'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 数值编码
 

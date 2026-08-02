@@ -1,19 +1,20 @@
 ---
-order: 11
+order: 20
 title: 分层架构
 module: 'software-architecture'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 分层架构模式、表现层/业务层/持久层设计与实践。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-architecture/软件架构概述'
-  - 'software-architecture/微服务架构'
-  - 'software-architecture/事件驱动架构'
+  - 'software-architecture/001-SoftwareArchitectureOverview'
+  - 'software-architecture/003-MicroserviceArchitecture'
+  - 'software-architecture/004-EventDrivenArchitecture'
 prerequisites:
-  - 'software-architecture/软件架构概述'
+  - 'software-architecture/001-SoftwareArchitectureOverview'
 ---
+
 
 ## 1. 从"餐厅厨房"说起：为什么要分层
 

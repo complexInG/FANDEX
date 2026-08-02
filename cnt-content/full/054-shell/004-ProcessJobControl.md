@@ -1,19 +1,20 @@
 ---
-order: 4
+order: 40
 title: 进程与作业控制
-module: shell
-category: Shell
+module: 'shell'
+category: 工具链
 difficulty: intermediate
-description: '进程与作业控制：ps/top/kill、后台任务、nohup 与 timeout 限时运行'
+description: 进程与作业控制：ps/top/kill、后台任务、nohup 与 timeout 限时运行
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - shell/005-EnvVariablesConfig
-  - shell/003-TextProcessingTools
+  - 'shell/005-EnvVariablesConfig'
+  - 'shell/003-TextProcessingTools'
 prerequisites:
-  - shell/002-CommandLineBasics
-  - shell/001-ShellBasics
+  - 'shell/002-CommandLineBasics'
+  - 'shell/001-ShellBasics'
 ---
+
 
 ## 1. 从"工厂车间"说起
 

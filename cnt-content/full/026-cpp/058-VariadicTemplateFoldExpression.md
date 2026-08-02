@@ -1,20 +1,21 @@
 ---
-order: 107
+order: 580
 title: 可变参数模板与折叠表达式
-module: cpp
-category: 'dev-lang'
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: C++可变参数模板与折叠表达式详解。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/Lambda捕获详解
-  - cpp/类型萃取与SFINAE
-  - cpp/C++20协程
-  - cpp/C++20概念
+  - 'cpp/056-LambdaCaptureDetailed'
+  - 'cpp/057-TypeExtractionSFINAE'
+  - 'cpp/059-Cpp20Coroutine'
+  - 'cpp/060-Cpp20Concept'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 史前时代：变长参数的 C 时代

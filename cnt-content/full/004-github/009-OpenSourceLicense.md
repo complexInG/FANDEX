@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 90
 title: 开源许可证选择
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: beginner
-description: '开源许可证对比与选择：MIT、Apache、GPL三大类许可证的权利义务对比表、选择方法与GitHub添加流程。'
+description: 开源许可证对比与选择：MIT、Apache、GPL三大类许可证的权利义务对比表、选择方法与GitHub添加流程。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/分支模型与分支保护规则
-  - github/Gitignore配置
-  - github/依赖安全选项
-  - github/Fork工作流
+  - 'github/007-BranchModelBranchRule'
+  - 'github/008-GitignoreConfig'
+  - 'github/010-DependencySecurityOptions'
+  - 'github/011-ForkWorkflow'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 先来一个生活场景：作品版权授权合同
 

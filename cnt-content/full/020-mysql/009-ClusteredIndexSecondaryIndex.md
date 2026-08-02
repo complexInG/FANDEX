@@ -1,20 +1,20 @@
 ---
-order: 53
+order: 90
 title: 聚簇索引与二级索引
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL InnoDB聚簇索引与二级索引：B+树结构、回表查询、覆盖索引与索引优化策略'
+description: MySQL InnoDB聚簇索引与二级索引：B+树结构、回表查询、覆盖索引与索引优化策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/Memory存储引擎
-  - mysql/NDB集群
-  - mysql/联合索引与最左前缀原则
-  - mysql/索引下推
+  - 'mysql/007-MemoryStorageEngine'
+  - 'mysql/010-CompositeIndexLeftmostPrefixPrinciple'
+  - 'mysql/011-IndexConditionPushdown'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 聚簇索引
 

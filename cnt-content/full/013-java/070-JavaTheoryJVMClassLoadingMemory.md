@@ -1,25 +1,20 @@
 ---
-title: 'Java 理论知识点：JVM 原理、类加载机制与内存管理'
-module: java
-category: 'Java Theory'
-order: 220
-tags:
-  - java
-  - theory
-  - performance
-  - jvm
-  - gc
-  - classloader
+order: 700
+title: Java 理论知识点：JVM 原理、类加载机制与内存管理
+module: 'java'
+category: 后端技术
 difficulty: advanced
-description: '系统阐述 JVM 架构、类加载机制、内存模型、垃圾回收算法与性能调优核心知识。'
+description: 系统阐述 JVM 架构、类加载机制、内存模型、垃圾回收算法与性能调优核心知识。
+author: fanquanpp
+updated: '2026-08-02'
 related:
-  - java/Java网络编程
-  - java/Spring基础
-  - java/Java与数据库连接
+  - 'java/023-JavaNetworkProgramming'
+  - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
+  - 'java/045-JavaDatabaseConnection'
 prerequisites:
-  - java/概述与开发环境
-  - java/面向对象基础
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 
 # Java 理论知识点：JVM 原理、类加载机制与内存管理

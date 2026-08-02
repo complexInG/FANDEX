@@ -1,20 +1,21 @@
 ---
-order: 70
+order: 280
 title: 锁分类
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL InnoDB锁分类：全局锁、表级锁、元数据锁、意向锁、行锁、间隙锁、临键锁、插入意向锁'
+description: MySQL InnoDB锁分类：全局锁、表级锁、元数据锁、意向锁、行锁、间隙锁、临键锁、插入意向锁
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/MVCC原理
-  - mysql/多表联查详解
-  - mysql/死锁检测与处理
-  - mysql/分布式事务
+  - 'mysql/026-MVCCPrinciple'
+  - 'mysql/027-MultiTableJoinDetailed'
+  - 'mysql/029-DeadlockDetectionHandling'
+  - 'mysql/030-DistributedTransaction'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 锁分类总览
 

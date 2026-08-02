@@ -113,16 +113,20 @@ const docs = defineCollection({
     generateId: ({ entry }) => entry.replace(/[#\\]/g, '-'),
   }),
   schema: z.object({
-    // === 现有字段（保持不变，向后兼容） ===
+    // === 统一后的 10 个标准字段 ===
+    // 文档 frontmatter 仅允许以下字段（见根目录 AGENTS.md 文档规范）：
+    // order / title / module / category / difficulty / description /
+    // author / updated / related / prerequisites
+    // 其中 title / module / category / difficulty / author / updated 为必填。
     title: z.string(),
     module: z.string(),
-    category: z.string().optional(),
+    category: z.string(),
     tags: z.array(z.string()).default([]),
-    difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+    difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
     order: z.number().default(0),
     created: z.coerce.date().optional(),
-    updated: z.coerce.date().optional(),
-    author: z.string().default('fanquanpp'),
+    updated: z.coerce.date(),
+    author: z.string(),
     description: z.string().optional(),
     readingTime: z.number().optional(),
     related: z.array(z.string()).default([]),

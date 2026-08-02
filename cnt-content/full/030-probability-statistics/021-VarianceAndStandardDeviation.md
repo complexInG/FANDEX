@@ -1,19 +1,20 @@
 ---
-order: 41
+order: 180
 title: 方差与标准差
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 方差与标准差的定义、计算公式、性质、常用分布的方差、变异系数与应用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/数学期望'
-  - 'probability-statistics/协方差'
-  - 'probability-statistics/相关系数'
+  - 'probability-statistics/020-MathematicalExpectation'
+  - 'probability-statistics/022-Covariance'
+  - 'probability-statistics/023-CorrelationCoefficient'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：平均分相同的两个班，谁更稳定？
 

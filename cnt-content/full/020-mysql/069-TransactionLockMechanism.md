@@ -1,23 +1,21 @@
 ---
-order: 110
-tags:
-  - mysql
-  - database
-difficulty: intermediate
+order: 690
 title: 事务与锁机制
-module: mysql
-category: 'MySQL Advanced'
-description: 'ACID 特性、隔离级别、MVCC 与锁类型。'
+module: 'mysql'
+category: 数据库
+difficulty: intermediate
+description: ACID 特性、隔离级别、MVCC 与锁类型。
 author: Anonymous
-related:
-  - mysql/分库分表策略
-  - 'mysql/JSON类型与JSON-TABLE'
-  - mysql/配置与运维
-  - mysql/快速查阅
-prerequisites:
-  - mysql/语法速查
 updated: '2026-08-01'
+related:
+  - 'mysql/067-ShardingStrategy'
+  - 'mysql/068-JSONTypeJSONTable'
+  - 'mysql/070-MySQLConfigOps'
+  - 'mysql/071-MySQLQuickLookup'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 ## 1. 事务特性 (ACID)
 
 ### 1.1 原子性 (Atomicity)
@@ -84,11 +82,8 @@ updated: '2026-08-01'
 ### 2.3 设置隔离级别
 
 ```sql
- -
  SELECT @@transaction_isolation;
- -
  SET GLOBAL transaction_isolation = 'READ-COMMITTED';
- -
  SET SESSION transaction_isolation = 'REPEATABLE-READ';
 ```
 
@@ -167,16 +162,13 @@ MVCC (Multi-Version Concurrency Control) 是 InnoDB 实现隔离级别的核心�
 #### 4.2.1 共享锁
 
 ```sql
- -
  SELECT * FROM users WHERE id = 1 LOCK IN SHARE MODE;
 ```
 
 #### 4.2.2 排他锁
 
 ```sql
- -
  SELECT * FROM users WHERE id = 1 FOR UPDATE;
- -
  inSERT INTO users (name) VALUES ('John');
  UPDATE users SET name = 'John' WHERE id = 1;
  delete FROM users WHERE id = 1;
@@ -214,9 +206,7 @@ MVCC (Multi-Version Concurrency Control) 是 InnoDB 实现隔离级别的核心�
 #### 5.3.1 死锁检测
 
 ```sql
- -
  SHOW ENGINE INNODB STATUS;
- -
  SET GLOBAL innodb_deadlock_detect = ON;
 ```
 

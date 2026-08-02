@@ -1,24 +1,20 @@
 ---
-order: 65
-tags:
-  - typescript
-  - namespace
-  - module
-difficulty: intermediate
+order: 200
 title: 命名空间与模块
-module: typescript
-category: 'TS Advanced'
+module: 'typescript'
+category: 前端技术
+difficulty: intermediate
 description: TypeScript命名空间、ES模块、CommonJS模块、模块解析策略与声明文件详解。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/this类型与多态
-  - typescript/符号与唯一类型
-  - typescript/枚举进阶
-  - typescript/工具类型实现原理
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/018-ThisTypePolymorphism'
+  - 'typescript/019-OnTheRoleOfSymbolicExecutionInTypeSystems'
+  - 'typescript/021-EnumAdvanced'
+  - 'typescript/022-UtilityTypePrinciple'
+prerequisites: []
 ---
+
 
 
 ## 历史动机与背景

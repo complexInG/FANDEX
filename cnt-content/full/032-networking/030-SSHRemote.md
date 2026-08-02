@@ -1,9 +1,8 @@
 ---
 order: 300
 title: Networking SSH 远程连接
-module: networking
-
-category: '032-networking'
+module: 'networking'
+category: 云与基础设施
 difficulty: beginner
 description: Networking SSH 远程连接 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## ssh 基本连接
 
 **基本写法：连接远程主机**

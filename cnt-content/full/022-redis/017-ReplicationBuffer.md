@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 170
 title: 主从复制缓冲区
-module: redis
-category: database
+module: 'redis'
+category: 数据库
 difficulty: advanced
-description: 'Redis 主从复制缓冲区机制：repl_backlog 环形缓冲区、全量同步与部分同步、缓冲区溢出与配置优化。'
+description: Redis 主从复制缓冲区机制：repl_backlog 环形缓冲区、全量同步与部分同步、缓冲区溢出与配置优化。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/字符串SDS结构
-  - redis/跳表与有序集合
-  - redis/哨兵选举
-  - 'redis/Redis-Cluster哈希槽'
+  - 'redis/015-StringSDSStructure'
+  - 'redis/016-SkipListAndSortedSet'
+  - 'redis/018-SentinelElection'
+  - 'redis/019-RedisClusterHashSlot'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 ## 1. 复制缓冲区体系
 
 ### 1.1 三种复制缓冲区

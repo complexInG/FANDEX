@@ -1,20 +1,19 @@
 ---
-order: 68
+order: 290
 title: 索引
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
 description: SQL索引体系：B+树索引、哈希索引、全文索引、空间索引的原理、结构与适用场景
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/数据控制语言
-  - sql/事务控制语言
-  - sql/执行计划
-  - sql/事务ACID特性
+  - 'sql/030-ExecutionPlan'
+  - 'sql/031-TransactionACIDProperty'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 
 # SQL 索引体系：从数据结构到工程实践
 

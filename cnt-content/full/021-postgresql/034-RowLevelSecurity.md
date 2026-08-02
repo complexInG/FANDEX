@@ -1,20 +1,21 @@
 ---
-order: 79
+order: 340
 title: 行级安全策略
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
-description: 'PostgreSQL行级安全策略RLS：策略定义、角色策略、WITH CHECK与多租户隔离'
+description: PostgreSQL行级安全策略RLS：策略定义、角色策略、WITH CHECK与多租户隔离
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'postgresql/SSL-TLS加密连接'
-  - postgresql/基于角色的权限管理
-  - postgresql/数据加密存储
-  - postgresql/审计日志
+  - 'postgresql/032-SSLEncryptionConnection'
+  - 'postgresql/033-RoleBasedPermissionManagement'
+  - 'postgresql/035-DataEncryptionStorage'
+  - 'postgresql/036-AuditLog'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. RLS 概述
 

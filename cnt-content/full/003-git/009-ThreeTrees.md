@@ -1,20 +1,20 @@
 ---
-order: 53
+order: 90
 title: 三棵树
-module: git
-category: 'Git Basics'
+module: 'git'
+category: 工具链
 difficulty: intermediate
 description: Git三棵树模型：工作区、暂存区、本地仓库的状态管理与转换。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/对象模型
-  - 'git/SHA-1哈希完整性校验'
-  - 'git/git-diff与暂存区操作'
-  - 'git/git-restore与文件操作'
-prerequisites:
-  - git/语法速查
+  - 'git/007-ObjectModel'
+  - 'git/008-SHA1IntegrityCheck'
+  - 'git/010-GitDiffStagingOperation'
+  - 'git/011-GitRestoreFileOperation'
+prerequisites: []
 ---
+
 
 ## 1. 三棵树模型
 

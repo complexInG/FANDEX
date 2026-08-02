@@ -1,23 +1,20 @@
 ---
 order: 50
-tags:
-  - git
-  - 'git-workflow'
+title: Git 远程仓库操作
+module: 'git'
+category: 工具链
 difficulty: intermediate
-title: 'Git 远程仓库操作'
-module: git
-category: 'Git Basics'
 description: 远程仓库关联、推送拉取与协作工作流。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/Git基本操作
-  - git/Git分支管理
-  - git/分布式版本控制原理
-  - git/对象模型
-prerequisites:
-  - git/语法速查
+  - 'git/003-GitBasicOperation'
+  - 'git/004-GitBranchManagement'
+  - 'git/006-DistributedVCSPrinciple'
+  - 'git/007-ObjectModel'
+prerequisites: []
 ---
+
 ## 2. 远程仓库概述
 
 远程仓库是存储在网络或其他位置的 Git 仓库副本，用于团队协作和代码共享。它是 Git 分布式版本控制系统的重要组成部分，使得多人可以协同开发同一个项目。

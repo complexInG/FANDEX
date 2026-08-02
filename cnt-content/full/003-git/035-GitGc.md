@@ -1,20 +1,18 @@
 ---
-order: 77
-title: 'git-gc'
-module: git
-category: 'Git Basics'
+order: 350
+title: git-gc
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git gc垃圾回收详解：仓库清理、对象打包与性能优化。'
+description: git gc垃圾回收详解：仓库清理、对象打包与性能优化。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/内容搜索
-  - git/工作树管理
-  - 'git/Git-Flow与GitHub-Flow对比'
-  - git/交互式rebase
-prerequisites:
-  - git/语法速查
+  - 'git/036-GitFlowGitHubFlowComparison'
+  - 'git/037-InteractiveRebase'
+prerequisites: []
 ---
+
 
 ## 1. gc 概述
 

@@ -1,20 +1,21 @@
 ---
-order: 64
+order: 250
 title: 安全编码原则
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: '安全编码实践：OWASP Top 10、安全编码原则、威胁建模与代码审计详解。'
+description: 安全编码实践：OWASP Top 10、安全编码原则、威胁建模与代码审计详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/信息收集
-  - cybersecurity/漏洞扫描
-  - cybersecurity/输入验证
-  - cybersecurity/认证与授权
+  - 'cybersecurity/023-InformationGathering'
+  - 'cybersecurity/024-VulnerabilityScan'
+  - 'cybersecurity/026-InputValidation'
+  - 'cybersecurity/027-AuthenticationAuthorization'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. 安全编码基础
 

@@ -1,20 +1,21 @@
 ---
-order: 104
-title: 'C-API栈操作'
-module: lua
-category: 'dev-lang'
+order: 290
+title: C-API栈操作
+module: 'lua'
+category: 后端技术
 difficulty: advanced
-description: 'Lua C-API栈操作详解：lua_State、lua_push、lua_to。'
+description: Lua C-API栈操作详解：lua_State、lua_push、lua_to。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - lua/弱表
-  - lua/环境与全局变量管理
-  - lua/用户数据
-  - lua/模块加载
+  - 'lua/027-WeakTable'
+  - 'lua/028-EnvironmentGlobalVariable'
+  - 'lua/030-UserData'
+  - 'lua/031-ModuleLoading'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 
 
 # C-API 栈操作：Lua 与 C 的交互核心

@@ -1,20 +1,21 @@
 ---
-order: 67
+order: 260
 title: 逻辑属性
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-description: 'margin-inline、margin-block'
+description: margin-inline、margin-block
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/特性查询
-  - css/层叠层
-  - css/滚动捕捉
-  - css/Sass预处理器
+  - 'css/024-FeatureQuery'
+  - 'css/025-CascadeLayer'
+  - 'css/027-ScrollSnap'
+  - 'css/028-Sass'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. 逻辑属性概述
 

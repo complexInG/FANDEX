@@ -1,18 +1,19 @@
 ---
-order: 30
+order: 110
 title: 高斯消元法
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: beginner
 description: 高斯消元法的操作流程——前向消元与回代，增广矩阵的初等行变换，行阶梯形与行最简形，主元选取策略，计算量与程序实现思路。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/分块矩阵'
-  - 'linear-algebra/解的存在性判定'
-  - 'linear-algebra/齐次线性方程组'
+  - 'linear-algebra/011-ChunkingMatrix'
+  - 'linear-algebra/014-SolutionExistenceDetermination'
+  - 'linear-algebra/015-HomogeneousLinearSystem'
 prerequisites: []
 ---
+
 
 ## 0. 从"削土豆"说起
 

@@ -1,20 +1,20 @@
 ---
-order: 110
+order: 440
 title: 错误边界与全局错误捕获
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: JavaScript错误边界与全局错误捕获：ErrorBoundary、window.onerror、unhandledrejection。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - javascript/原型与继承
-  - javascript/正则表达式
-  - javascript/内存泄漏排查
-  - 'javascript/Web API与浏览器接口'
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/042-JavaScriptPrototypeInheritance'
+  - 'javascript/043-Regex'
+  - 'javascript/045-MemoryLeakTroubleshoot'
+  - 'javascript/046-WebAPIBrowserInterface'
+prerequisites: []
 ---
+
 
 
 # 错误边界与全局错误捕获

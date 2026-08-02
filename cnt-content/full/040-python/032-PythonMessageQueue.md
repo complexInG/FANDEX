@@ -1,20 +1,20 @@
 ---
-order: 76
+order: 320
 title: Python与消息队列
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: RabbitMQ与Kafka
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与配置管理
-  - python/装饰器
-  - python/Python与gRPC
-  - python/Python与WebSocket
-prerequisites:
-  - python/语法速查
+  - 'python/030-Python'
+  - 'python/031-Decorator'
+  - 'python/033-PythongRPC'
+  - 'python/034-PythonWebSocket'
+prerequisites: []
 ---
+
 
 ## 什么是消息队列
 

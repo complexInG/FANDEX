@@ -1,179 +1,32 @@
 ---
-order: 108
+order: 590
 title: C++20协程
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: 深入解析 C++20 协程：co_await、co_yield、co_return 的形式化语义、Promise/Awaitable/Awaiter 三元模型、编译器状态机变换（HALO 优化、对称转移、CPS 变换）、对称与非对称协程对比、跨语言协程模型对比（Python/JavaScript/Rust/Go/C#/Java）、工程实践（Task/Generator/SyncWait/WhenAll/线程池集成）、案例研究（cppcoro/folly::coro/Boost.Asio/P2300 std::execution/异步 TCP 服务器）与习题，覆盖 C++20/23/26 的演进与生产级最佳实践。
 author: fanquanpp
-created: 2026-06-14
-updated: 2026-07-18
-lastReviewed: 2026-07-18
-reviewer: FANDEX Content Engineering
-readingTime: 110
-estimatedReadingTime: 110
-tags:
-- cpp
-- coroutine
-- async
-- co_await
-- co_yield
-- co_return
-- promise
-- awaitable
-- c++20
-- c++23
-- c++26
-- senders-receivers
+updated: '2026-07-18'
 related:
-- cpp/右值引用与移动语义
-- cpp/模板元编程
-- cpp/智能指针详解
-- cpp/RAII资源管理
-- cpp/C++20概念
-- cpp/C++23新特性
-- cpp/Lambda表达式
-- cpp/STL容器与迭代器
-- cpp/异常处理
+  - 'cpp/005-RvalueReferenceMoveSemantics'
+  - 'cpp/009-ATourOfC3rdEditionOnlineExcerpts'
+  - 'cpp/007-N4089DeletingSafeBoolInFavorOfExplicitBool'
+  - 'cpp/050-CCoreGuidelinesResourceManagement'
+  - 'cpp/060-Cpp20Concept'
+  - 'cpp/061-Cpp23NewFeatures'
+  - 'cpp/008-LambdaExpression'
+  - 'cpp/048-CSTL'
+  - 'cpp/064-CppExceptionAndPerformance'
 prerequisites:
-- cpp/概述与现代标准
-- cpp/基础语法
-- cpp/数据类型详解
-- cpp/指针
-- cpp/引用
-- cpp/面向对象基础
-- cpp/模板元编程
-- cpp/右值引用与移动语义
-references:
-- type: standard
-  authors:
-  - ISO/IEC
-  year: 2023
-  title: Information technology — Programming languages — C++
-  venue: ISO/IEC 14882:2023
-  version: Eighth edition
-- type: book
-  authors:
-  - Stroustrup, Bjarne
-  year: 2013
-  title: The C++ Programming Language
-  venue: Addison-Wesley Professional
-  version: 4th edition
-- type: technical-report
-  authors:
-  - Kohlhoff, Hartmut
-  - Falconer, Gor
-  year: 2017
-  title: N3762 - Resumable Functions V2
-  venue: ISO C++ Committee
-- type: technical-report
-  authors:
-  - ISO/IEC WG21
-  year: 2018
-  title: P0912R5 - Merge Coroutines TS into Working Draft
-  venue: ISO C++ Committee
-- type: technical-report
-  authors:
-  - Kaiser, Hartmut
-  - Sutter, Herb
-  year: 2022
-  title: 'P2300R7 - std::execution: A General Purpose Asynchronous Framework'
-  venue: ISO C++ Committee
-- type: conference
-  authors:
-  - Kohlhoff, Hartmut
-  year: 2017
-  title: cppcoro - A C++20 Coroutine Library
-  venue: GitHub Repository
-- type: conference
-  authors:
-  - Sutter, Herb
-  year: 2019
-  title: 'Structured Concurrency: Writing Safer Concurrent Code with Coroutines'
-  venue: CppCon 2019
-- type: book
-  authors:
-  - Williams, Anthony
-  year: 2019
-  title: C++ Concurrency in Action
-  venue: Manning Publications
-  version: 2nd edition
-- type: book
-  authors:
-  - Meyers, Scott
-  year: 2015
-  title: 'Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14'
-  venue: O'Reilly Media
-  version: 1st edition
-- type: documentation
-  authors:
-  - C++ Core Guidelines Contributors
-  year: 2024
-  title: C++ Core Guidelines — Concurrency (CP.20-26) and Coroutines (CP.50-CP.61)
-  venue: isocpp
-  url: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
-  accessedDate: '2024-12-01'
-- type: website
-  authors:
-  - cppreference.com
-  year: 2024
-  title: Coroutines — cppreference.com
-  url: https://en.cppreference.com/w/cpp/language/coroutines
-  accessedDate: '2024-12-01'
-- type: website
-  authors:
-  - Kohlhoff, Hartmut
-  year: 2024
-  title: cppcoro README
-  url: https://github.com/lewissbaker/cppcoro
-  accessedDate: '2024-12-01'
-- type: video
-  authors:
-  - Baker, Lewis
-  year: 2017
-  title: 'C++ Coroutines: Under the Hood'
-  venue: CppCon 2017
-  url: https://www.youtube.com/watch?v=J7rdYQI6aIM
-- type: course
-  authors:
-  - Baker, Lewis
-  year: 2024
-  title: Coroutines and Structured Concurrency Lecture Series
-  venue: Personal Blog
-  url: https://lewissbaker.github.io/
-  accessedDate: '2024-12-01'
-- type: technical-report
-  authors:
-  - ISO/IEC WG21
-  year: 2023
-  title: 'P2502R2 - std::generator: Synchronous Coroutine Generator Support'
-  venue: ISO C++ Committee
-etymology:
-- term: 协程
-  english: coroutine
-  origin: 由 Melvin Conway 于 1958 年在 COBOL 编译器设计中首次提出，由「cooperative routine」缩写而来，强调「子程序主动让出控制权」的协作式调度，与操作系统抢占式调度的「routine」相对
-- term: 挂起
-  english: suspend
-  origin: 源自拉丁语 suspendere，字面意为「悬挂、暂停」，在协程语境中指「保存当前执行状态（包括局部变量与下一条指令地址）后将控制权返回给调用者」
-- term: 恢复
-  english: resume
-  origin: 源自拉丁语 resumere，字面意为「重新拿起」，在协程语境中指「从挂起点的下一条指令继续执行，恢复所有局部变量状态」
-- term: 续延
-  english: continuation
-  origin: 由美国计算机科学家 Peter Landin 于 1964 年在 SECD 机器论文中引入，指「程序剩余待执行的运算」，是函数式编程语言理论中的核心概念；CPS 变换（Continuation-Passing Style transform）是协程编译器实现的理论基础
-- term: 承诺
-  english: promise
-  origin: 源自拉丁语 promissum，字面意为「承诺、约定」；C++20 协程中 promise_type 是协程行为的「策略对象」，承诺提供 get_return_object、initial_suspend、final_suspend 等接口来控制协程的生命周期
-- term: 可等待体
-  english: awaitable
-  origin: 由 await（古英语 awæitan，意为「守望、等待」）与 -able 后缀组成，指「可被 co_await 表达式操作的类型」；C++20 协程通过 awaitable 类型与 awaiter 概念解耦了「等待语义」与「协程机制」
-- term: 等待器
-  english: awaiter
-  origin: 由 await 与 -er（执行者）后缀组成；C++20 协程规范要求 awaitable 类型可通过 operator co_await 或直接提供 await_ready/await_suspend/await_resume 三个成员函数转化为 awaiter，对应「等待的三步法协议」
-- term: 堆分配省略优化
-  english: HALO (Heap Allocation eLision Optimization)
-  origin: 由 Gor Nishanov 在 C++17 协程提案中提出，指编译器在「协程生命周期严格嵌套于调用者生命周期」时省略堆分配，将协程帧分配到调用者栈帧中的优化；命名借鉴 RVO（Return Value Optimization）的「省略」语义
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/002-CppBasicSyntax'
+  - 'cpp/006-PointersCppreferenceCom'
+  - 'cpp/004-CppReference'
+  - 'cpp/015-COOPBasics'
+  - 'cpp/009-ATourOfC3rdEditionOnlineExcerpts'
+  - 'cpp/005-RvalueReferenceMoveSemantics'
 ---
+
 ## 第 1 章 学习目标与导论
 
 ### 1.1 本章在 C++ 知识体系中的位置

@@ -1,71 +1,21 @@
 ---
-order: 61
+order: 180
 title: BOM
-module: javascript
-category: JavaScript
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
 description: 浏览器对象模型（BOM）原理、API 体系、工程实践与规范演进
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- javascript/函数-作用域与闭包
-- javascript/自定义Error
-- javascript/网络请求API
-- javascript/Web存储API
-- javascript/事件循环
-prerequisites:
-- javascript/语法速查
-tags:
-- BOM
-- window
-- location
-- navigator
-- history
-- WHATWG
-- HTML-Living-Standard
-references:
-- title: HTML Living Standard
-  year: 2026
-  url: https://html.spec.whatwg.org/
-  type: standard
-  authors:
-  - WHATWG
-  venue: Web Hypertext Application Technology Working Group
-- title: ECMAScript 2026 Language Specification
-  year: 2026
-  url: https://tc39.es/ecma262/
-  type: standard
-  authors:
-  - ECMA International
-  venue: ECMA-262, 17th Edition
-- title: Browser Object Model (BOM) Reference
-  year: 2026
-  url: https://developer.mozilla.org/en-US/docs/Web/API/Window
-  type: documentation
-  authors:
-  - Mozilla Developer Network
-  venue: MDN Web Docs
-- title: Web Storage (Second Edition)
-  year: 2016
-  url: https://www.w3.org/TR/webstorage/
-  type: standard
-  authors:
-  - W3C
-  venue: W3C Recommendation
-- title: Cross-document messaging
-  year: 2026
-  url: https://html.spec.whatwg.org/multipage/web-messaging.html
-  type: standard
-  authors:
-  - WHATWG
-  venue: HTML Living Standard
-etymology:
-- term: Browser Object Model
-  origin: 1995 年 Netscape Navigator 2.0 引入 window、document、location 等对象，但 BOM 在很长时期内未进入任何标准。直至 HTML5 才将这些事实 API 纳入 WHATWG HTML 规范。
-  english: Browser Object Model
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
+  - 'javascript/016-FunctionScopeClosure'
+  - 'javascript/017-ErrorReferenceAndControlFlowAndErrorHandling'
+  - 'javascript/019-ImageOptimization'
+  - 'javascript/020-StorageForTheWeb'
+  - 'javascript/012-EventLoop'
+prerequisites: []
 ---
+
 
 
 # 浏览器对象模型（BOM）

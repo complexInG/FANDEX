@@ -1,22 +1,23 @@
 ---
-order: 70
+order: 240
 title: 标准库详解
-module: lua
-category: 'Lua Basics'
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
-description: 'Lua 标准库的形式化定义、内部实现、性能特性、版本差异与工程实践'
+description: Lua 标准库的形式化定义、内部实现、性能特性、版本差异与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - lua/Lua调试技巧
-  - lua/协程与异步
-  - lua/元表与元方法详解
-  - lua/协程非抢占式调度
-  - lua/字符串模式匹配
+  - 'lua/022-LuaDebug'
+  - 'lua/023-CoroutineAsync'
+  - 'lua/025-MetatableMetamethodDetailed'
+  - 'lua/026-CoroutineNonPreemptiveScheduling'
+  - 'lua/010-StringPatternMatching'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/字符串模式匹配
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/010-StringPatternMatching'
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 Lua 标准库的设计理念

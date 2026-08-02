@@ -1,20 +1,21 @@
 ---
-order: 13
+order: 40
 title: UML图详解
 module: 'software-engineering'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: UML类图、时序图、活动图、状态图等核心图类型详解。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-engineering/敏捷开发'
-  - 'software-engineering/需求分析方法'
-  - 'software-engineering/设计模式详解'
-  - 'software-engineering/代码重构'
+  - 'software-engineering/002-AgileDevelopment'
+  - 'software-engineering/003-RequirementAnalysisMethod'
+  - 'software-engineering/005-DesignPatternDetailed'
+  - 'software-engineering/006-Refactoring'
 prerequisites:
-  - 'software-engineering/软件工程概述'
+  - 'software-engineering/001-SoftwareEngineeringOverview'
 ---
+
 
 ## 1. 从"建筑施工图"说起
 

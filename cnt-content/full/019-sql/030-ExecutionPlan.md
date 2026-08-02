@@ -1,20 +1,20 @@
 ---
-order: 69
+order: 300
 title: 执行计划
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: 'SQL执行计划：EXPLAIN与EXPLAIN ANALYZE的输出解读、扫描类型、连接策略与性能诊断'
+description: SQL执行计划：EXPLAIN与EXPLAIN ANALYZE的输出解读、扫描类型、连接策略与性能诊断
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/事务控制语言
-  - sql/索引
-  - sql/事务ACID特性
-  - sql/隔离级别
+  - 'sql/029-Index'
+  - 'sql/031-TransactionACIDProperty'
+  - 'sql/032-IsolationLevel'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 执行计划概述
 
 执行计划（Execution Plan）是数据库优化器为 SQL 查询选择的执行策略。理解执行计划是 SQL 性能优化的核心技能。

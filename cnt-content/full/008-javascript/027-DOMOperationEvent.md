@@ -1,22 +1,20 @@
 ---
-order: 80
-tags:
-  - javascript
+order: 270
+title: DOM 操作与事件
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
-title: 'DOM 操作与事件'
-module: javascript
-category: 'JS Basics'
-description: 'DOM 树操作、事件模型与事件委托。'
+description: DOM 树操作、事件模型与事件委托。
 author: Anonymous
-related:
-  - javascript/Records与Tuples
-  - javascript/对象与数组
-  - javascript/JavaScript最新特性与运行时
-  - javascript/模块化
-prerequisites:
-  - javascript/语法速查
 updated: '2026-08-01'
+related:
+  - 'javascript/025-RecordsTuples'
+  - 'javascript/026-ObjectArray'
+  - 'javascript/028-JavaScriptLatestFeature'
+  - 'javascript/029-JavaScriptModular'
+prerequisites: []
 ---
+
 ## 1. DOM 基础 (DOM Basics)
 
 ### 1.1 DOM 树结构

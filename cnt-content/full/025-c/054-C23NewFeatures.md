@@ -1,9 +1,8 @@
 ---
 order: 540
 title: C23 新特性
-module: c
-
-category: '025-c'
+module: 'c'
+category: 计算机科学
 difficulty: beginner
 description: C23 新特性 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## nullptr
 
 **基本写法：空指针常量**

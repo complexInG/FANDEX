@@ -1,19 +1,18 @@
 ---
 order: 10
-tags:
-  - javascript
+title: JavaScript 概述与运行环境
+module: 'javascript'
+category: 前端技术
 difficulty: beginner
-title: 'JavaScript 概述与运行环境'
-module: javascript
-category: 'JS Basics'
-description: 'JavaScript 发展历程、ECMAScript 标准与运行环境。'
+description: JavaScript 发展历程、ECMAScript 标准与运行环境。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - javascript/语法速查
-  - javascript/程序结构与基本语法
-  - javascript/变量与数据类型
+  - 'javascript/002-ProgramStructureBasicSyntax'
+  - 'javascript/003-VariableDataType'
 prerequisites: []
 ---
+
 
 
 # JavaScript 概述与运行环境

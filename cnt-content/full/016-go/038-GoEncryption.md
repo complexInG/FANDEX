@@ -1,20 +1,21 @@
 ---
-order: 78
+order: 380
 title: Go与加密
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: crypto包与安全编程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与日志
-  - go/Go与模板
-  - go/Go与信号处理
-  - go/Go与文件监控
+  - 'go/036-GoLog'
+  - 'go/037-GoTemplate'
+  - 'go/042-GoSignalHandling'
+  - 'go/039-GoFileMonitor'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

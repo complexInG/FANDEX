@@ -1,23 +1,23 @@
 ---
-order: 109
+order: 410
 title: 模块动态导入与代码分割
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: JavaScript 模块动态导入 import() 与代码分割策略深度剖析，涵盖 ES2020 规范、V8 模块图、Webpack/Vite/Rollup 实现细节与企业级性能优化。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - javascript/数组高阶方法
-  - javascript/Proxy与Reflect实际应用
-  - javascript/原型与继承
-  - javascript/正则表达式
-  - javascript/模块化
+  - 'javascript/039-ArrayHigherOrderMethod'
+  - 'javascript/040-ProxyReflectPractice'
+  - 'javascript/042-JavaScriptPrototypeInheritance'
+  - 'javascript/043-Regex'
+  - 'javascript/029-JavaScriptModular'
 prerequisites:
-  - javascript/语法速查
-  - javascript/模块化
-  - javascript/异步编程
+  - 'javascript/029-JavaScriptModular'
+  - 'javascript/030-AsyncProgramming'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 模块化之前的黑暗时代（1995-2009）

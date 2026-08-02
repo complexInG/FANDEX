@@ -1,20 +1,21 @@
 ---
-order: 73
+order: 330
 title: Kotlin与测试
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: Kotlin测试框架
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与Gradle
-  - kotlin/Kotlin与Android
-  - kotlin/Kotlin与Koin
-  - kotlin/Kotlin与编译器插件
+  - 'kotlin/035-KotlinGradle'
+  - 'kotlin/024-KotlinAndroid'
+  - 'kotlin/031-KotlinKoin'
+  - 'kotlin/034-KotlinCompilerPlugin'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 ## 概述
 
 测试是保证代码质量的关键手段。Kotlin 项目可以使用 JUnit 5、Kotest、MockK 等测试框架，结合 Kotlin 的语言特性（如扩展函数、协程、数据类），编写简洁而强大的测试代码。本文介绍 Kotlin 中常用的测试方法和最佳实践。

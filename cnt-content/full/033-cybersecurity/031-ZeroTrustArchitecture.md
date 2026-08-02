@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 310
 title: 零信任架构
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: '零信任架构：Never trust, always verify 原则、实现框架与落地实践。'
+description: 零信任架构：Never trust, always verify 原则、实现框架与落地实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/XXE攻击
-  - cybersecurity/反序列化漏洞
-  - cybersecurity/身份与访问管理
-  - cybersecurity/安全基线
+  - 'cybersecurity/029-XXEAttack'
+  - 'cybersecurity/030-DeserializationVulnerability'
+  - 'cybersecurity/032-IdentityAccessManagement'
+  - 'cybersecurity/033-SecurityBaseline'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. 零信任原则
 

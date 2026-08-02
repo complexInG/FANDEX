@@ -1,18 +1,19 @@
 ---
-order: 11
+order: 110
 title: 常用生态与实战
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: advanced
-description: 'axum Web 服务、serde 序列化、clap CLI、tracing 日志与项目实战'
+description: axum Web 服务、serde 序列化、clap CLI、tracing 日志与项目实战
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - rust/010-RustAsyncTokio
-  - rust/009-RustTestingDebugging
+  - 'rust/010-RustAsyncTokio'
+  - 'rust/009-RustTestingDebugging'
 prerequisites:
-  - rust/010-RustAsyncTokio
+  - 'rust/010-RustAsyncTokio'
 ---
+
 
 ## 1. 生态全景
 

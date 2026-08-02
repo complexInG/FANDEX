@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 200
 title: 多线程与并发
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-description: 'std::thread与同步原语'
+description: std::thread与同步原语
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/文件IO与文件系统
-  - cpp/异常安全
-  - cpp/类型特征与SFINAE
-  - cpp/变参模板
+  - 'cpp/018-FileIOFileSystem'
+  - 'cpp/019-ExceptionSecurity'
+  - 'cpp/021-TypeTraitsSFINAE'
+  - 'cpp/022-VariadicTemplate'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 概述
 
 并发（Concurrency）是指多个执行流在逻辑上同时进行的能力，并行（Parallelism）则是指多个执行流在物理上同时运行。在多核处理器普及之前，操作系统通过时间片轮转实现"伪并行"——多个线程交替使用单一 CPU 核心，造成同时运行的错觉；而现代多核 CPU 可以让多个线程真正同时执行。C++ 的多线程模型既支持并发（在单核上通过时间片实现），也支持并行（在多核上真正并行）。

@@ -1,178 +1,22 @@
 ---
 order: 50
 title: 字面量类型与联合类型
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: 字面量类型、联合类型、可辨识联合的形式语义、类型论基础与穷尽性检查的工程实践
 author: fanquanpp
 updated: '2026-07-20'
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
 related:
-- typescript/接口与类型别名
-- typescript/函数与泛型
-- typescript/类与装饰器
-- typescript/交叉类型与类型合并
-- typescript/条件类型与infer
-- typescript/映射类型与键重映射
-prerequisites:
-- typescript/语法速查
-- typescript/泛型与类型约束
-tags:
-- typescript
-- literal-types
-- union-types
-- discriminated-union
-- exhaustiveness-checking
-- type-narrowing
-- pattern-matching
-- singleton-types
-- type-theory
-references:
-- type: book
-  authors:
-  - Pierce, Benjamin C.
-  year: 2002
-  title: Types and Programming Languages
-  venue: MIT Press
-  isbn: 978-0-262-16209-8
-- type: conference
-  authors:
-  - Bierman, Gavin M.
-  - Abadi, Martín
-  - Torgersen, Mads
-  year: 2014
-  title: Understanding TypeScript
-  venue: ECOOP 2014 — Object-Oriented Programming
-  pages: 257-281
-  doi: 10.1007/978-3-662-44202-9_11
-- type: journal
-  authors:
-  - Xi, Hongwei
-  - Pfenning, Frank
-  year: 1998
-  title: Eliminating Array Bound Checking Through Dependent Types
-  venue: Proceedings of the ACM SIGPLAN 1998 Conference on Programming Language Design and Implementation (PLDI)
-  pages: 249-257
-  doi: 10.1145/277650.277732
-- type: conference
-  authors:
-  - Freeman, Tim
-  - Pfenning, Frank
-  year: 1991
-  title: Refinement Types for ML
-  venue: Proceedings of the 1991 ACM Conference on Programming Language Design and Implementation (PLDI)
-  pages: 268-277
-  doi: 10.1145/113445.113468
-- type: journal
-  authors:
-  - Dunfield, Joshua
-  - Krishnaswami, Neel
-  year: 2021
-  title: Bidirectional Typing
-  venue: ACM Computing Surveys (CSUR)
-  volume: 54
-  issue: 5
-  pages: 1-38
-  doi: 10.1145/3450952
-- type: journal
-  authors:
-  - Appel, Andrew W.
-  year: 1998
-  title: SSA is Functional Programming
-  venue: ACM SIGPLAN Notices
-  volume: 33
-  issue: 4
-  pages: 17-20
-  doi: 10.1145/278283.278285
-- type: conference
-  authors:
-  - Hofer, Christian
-  - Ostermann, Klaus
-  - Rendel, Tillmann
-  - Moors, Adriaan
-  year: 2008
-  title: Polymorphic Embedding of DSLs
-  venue: Proceedings of the 7th International Conference on Generative Programming and Component Engineering (GPCE)
-  pages: 137-148
-  doi: 10.1145/1449913.1449935
-- type: journal
-  authors:
-  - Hejlsberg, Anders
-  - Torgersen, Mads
-  year: 2018
-  title: 'TypeScript 2.0 Release Notes: Tagged Unions'
-  venue: Microsoft Developer Network
-  url: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html
-- type: journal
-  authors:
-  - Rosenwasser, Daniel
-  year: 2021
-  title: 'TypeScript 4.5 Release Notes: Tail-Recursion Elimination on Conditional Types'
-  venue: Microsoft Developer Network
-  url: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html
-- type: documentation
-  authors:
-  - Microsoft Corporation
-  year: 2024
-  title: 'TypeScript Handbook: Narrowing'
-  venue: TypeScript Official Documentation
-  url: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
-- type: documentation
-  authors:
-  - Microsoft Corporation
-  year: 2024
-  title: 'TypeScript Handbook: Everyday Types'
-  venue: TypeScript Official Documentation
-  url: https://www.typescriptlang.org/docs/handbook/2/everyday-types.html
-- type: journal
-  authors:
-  - Maranget, Luc
-  year: 2007
-  title: Compiling Pattern Matching to Good Decision Trees
-  venue: Proceedings of the 2007 Workshop on ML
-  pages: 35-46
-  doi: 10.1145/1292535.1292540
-- type: book
-  authors:
-  - Gamma, Erich
-  - Helm, Richard
-  - Johnson, Ralph
-  - Vlissides, John
-  year: 1994
-  title: 'Design Patterns: Elements of Reusable Object-Oriented Software'
-  venue: Addison-Wesley Professional
-  pages: 293-303
-  doi: 10.5555/186897
-- type: journal
-  authors:
-  - Pierce, Benjamin C.
-  - Turner, David N.
-  year: 2000
-  title: Local Type Inference
-  venue: ACM Transactions on Programming Languages and Systems (TOPLAS)
-  volume: 22
-  issue: 1
-  pages: 1-44
-  doi: 10.1145/345099.345100
-etymology:
-- term: 字面量类型（Literal Type）
-  english: Literal Type
-  origin: TypeScript 1.3（2014）首次引入字符串字面量类型，受 OCaml 的 polymorphic variants 与 Flow 的 refined types 启发；类型论中称为 singleton type（单例类型），即类型空间中只有一个值的类型。
-- term: 联合类型（Union Type）
-  english: Union Type
-  origin: 源自类型论的和类型（sum type / tagged union），最早见于 ML 系列（Standard ML, OCaml）；TypeScript 2.0（2016）正式引入；与积类型（product type，即元组/对象类型）共同构成代数数据类型（ADT）。
-- term: 可辨识联合（Discriminated Union）
-  english: Discriminated Union
-  origin: 源自 Pascal 的 variant record（1970）与 ML 的 tagged union；TypeScript 2.0 引入 'Tagged Union' 概念，官方称 discriminated union；其判别字段（discriminant）在类型论中称 tag 或 label。
-- term: 穷尽性检查（Exhaustiveness Checking）
-  english: Exhaustiveness Checking
-  origin: 源自 ML/Haskell 的模式匹配（pattern matching）系统；TypeScript 通过 never 类型与 default 分支的赋值错误实现近似穷尽性检查；标准 ML 与 Haskell 是真正的穷尽性检查（编译器强制 switch/match 覆盖所有分支）。
-- term: 类型收窄（Type Narrowing）
-  english: Type Narrowing
-  origin: 源自 Flow（Facebook 2014）的控制流分析（control flow analysis, CFA）；TypeScript 2.0 起逐步引入 typeof / instanceof / in 与用户定义类型谓词；理论基础上溯到 Appel 1998 的 SSA 是 Functional Programming 一文。
+  - 'typescript/003-InterfaceTypeAlias'
+  - 'typescript/004-FunctionGeneric'
+  - 'typescript/006-ClassDecorator'
+  - 'typescript/007-IntersectionTypeMerge'
+  - 'typescript/042-ConditionalTypeInfer'
+  - 'typescript/044-MappedTypeKeyRemap'
+prerequisites: []
 ---
+
 ## 引言：从 JavaScript 的灵活性到 TypeScript 的精确性
 
 JavaScript 是动态类型语言，所有值在运行时携带类型信息，但编译期无类型约束。这导致大量"undefined is not a function"类错误。TypeScript 的核心价值在于：**把运行时类型信息上移到编译期**，让开发者在编写代码时就暴露类型不匹配。

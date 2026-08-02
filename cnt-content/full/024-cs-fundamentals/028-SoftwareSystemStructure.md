@@ -1,20 +1,21 @@
 ---
-order: 70
+order: 280
 title: 软件体系结构
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 软件体系结构：架构风格、质量属性、架构评估与文档化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/计算机图形学'
-  - 'cs-fundamentals/设计模式'
-  - 'cs-fundamentals/人机交互'
-  - 'cs-fundamentals/编程语言理论'
+  - 'cs-fundamentals/026-ComputerShape'
+  - 'cs-fundamentals/027-DesignPattern'
+  - 'cs-fundamentals/029-HCI'
+  - 'cs-fundamentals/030-ProgrammingLanguageTheory'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 软件体系结构概述
 

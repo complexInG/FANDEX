@@ -1,20 +1,21 @@
 ---
-order: 5
+order: 50
 title: 图论基础
 module: 'discrete-math'
-category: 离散数学
+category: 数学
 difficulty: intermediate
 description: 图的基本概念、度与握手定理、路径与回路、连通性、欧拉图与哈密顿图、二部图、树与生成树。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'discrete-math/集合与关系'
-  - 'discrete-math/函数与基数'
-  - 'discrete-math/图论进阶'
-  - 'discrete-math/代数系统'
+  - 'discrete-math/003-SetAndRelation'
+  - 'discrete-math/004-FunctionAndNumber'
+  - 'discrete-math/006-GraphTheoryAdvanced'
+  - 'discrete-math/007-AlgebraicSystem'
 prerequisites:
-  - 'discrete-math/集合与关系'
+  - 'discrete-math/003-SetAndRelation'
 ---
+
 
 ## 1. 从"人际关系网"说起
 

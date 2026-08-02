@@ -1,57 +1,19 @@
 ---
 order: 310
 title: 关键渲染路径与资源加载
-module: html5
-category: '006-html5'
+module: 'html5'
+category: 前端技术
 difficulty: advanced
 description: 从 HTML 解析到首屏像素，讲清关键渲染路径的每一步，以及 async、defer、preload、prefetch 的正确用法。
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'css/035-CriticalRenderPathOptimization'
   - 'javascript/059-CoreWebVitalsAndPerformanceMetrics'
 prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
-quiz:
-  - type: choice
-    question: 以下哪种资源会阻塞首次渲染？
-    options:
-      - 带 defer 的外部脚本
-      - 带 async 的外部脚本
-      - 不带 defer/async 的外部脚本
-      - 图片资源
-    answer: 2
-    explanation: 普通外部脚本会阻塞 HTML 解析，进而延迟首次渲染；defer/async 可缓解。
-  - type: fill
-    question: ____属性让浏览器提前请求"首屏确定会用到"的关键资源。
-    answer: preload
-    hint: 如 <link rel="preload" href="..." as="font">。
-references:
-  - type: website
-    authors:
-      - web.dev Team
-    year: 2026
-    title: Critical rendering path
-    venue: web.dev
-    url: https://web.dev/articles/critical-rendering-path
-    accessedDate: '2026-08-02'
-  - type: documentation
-    authors:
-      - MDN Contributors
-    year: 2026
-    title: HTML 资源提示：preload/prefetch
-    venue: MDN
-    url: https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes/rel/preload
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 关键渲染路径
-    english: Critical Rendering Path
-    origin: 指从网络收到 HTML 到浏览器完成首屏绘制所必经的一系列步骤，critical 强调其不可跳过。
-estimatedReadingTime: 7
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

@@ -1,9 +1,8 @@
 ---
 order: 740
 title: Python 序列化 JSON/CSV/Pickle
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python 序列化 JSON/CSV/Pickle 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## json 序列化
 
 **基本写法：对象转 JSON 字符串**

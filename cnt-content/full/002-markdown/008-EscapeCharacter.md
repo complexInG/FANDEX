@@ -1,20 +1,20 @@
 ---
-order: 52
+order: 80
 title: 转义字符
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: beginner
 description: Markdown转义机制：反斜杠转义规则、可转义字符列表与常见陷阱。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/列表语法
-  - markdown/GitHub风格扩展
-  - markdown/脚注
-  - markdown/删除线
+  - 'markdown/006-ListSyntax'
+  - 'markdown/009-Footnote'
+  - 'markdown/010-Strikethrough'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 1. 转义机制概述
 
 ### 1.1 为什么需要转义

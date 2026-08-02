@@ -1,35 +1,26 @@
 ---
-order: 60
+order: 150
 title: Java新特性
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Java 8 至 21 现代语言特性、API 演进与 JVM 改进全景式深度解析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/Java序列化
-  - java/JavaIO与NIO
-  - java/运算符与表达式
-  - java/Spring基础
-  - java/Java与虚拟线程
-  - java/Java与GraalVM
+  - 'java/013-JavaSerialization'
+  - 'java/014-JavaIONIO'
+  - 'java/016-OperatorExpression'
+  - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
+  - 'java/039-JavaVirtualThread'
+  - 'java/040-JavaGraalVM'
 prerequisites:
-  - java/概述与开发环境
-  - java/面向对象编程
-  - java/集合框架详解
-  - java/Java函数式编程
-tags:
-  - Java
-  - Java17
-  - Java21
-  - LTS
-  - Record
-  - SealedClass
-  - PatternMatching
-  - VirtualThread
-  - JEP
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/056-OOP'
+  - 'java/049-CollectionFrameworkDetailed'
+  - 'java/022-JavaFunctionalProgramming'
 ---
+
 
 
 # Java 现代特性深度指南（Java 8-21）

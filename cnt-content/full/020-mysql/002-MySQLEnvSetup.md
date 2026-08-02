@@ -1,22 +1,20 @@
 ---
 order: 20
-tags:
-  - mysql
-  - database
+title: MySQL 环境搭建
+module: 'mysql'
+category: 数据库
 difficulty: beginner
-title: 'MySQL 环境搭建'
-module: mysql
-category: 'MySQL Basics'
-description: 'MySQL 安装、配置、启动与客户端工具使用。'
+description: MySQL 安装、配置、启动与客户端工具使用。
 author: Anonymous
-related:
-  - mysql/语法速查
-  - mysql/概述与数据库设计
-  - mysql/数据类型与约束
-  - mysql/SQL数据定义与高级对象
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'mysql/085-View'
+  - 'mysql/001-MySQLOverviewDatabaseDesign'
+  - 'mysql/003-MySQLDataTypeConstraint'
+  - 'mysql/004-SQLDataDefinitionAdvanced'
+prerequisites: []
 ---
+
 
 ## 1. 安装方法对比
 

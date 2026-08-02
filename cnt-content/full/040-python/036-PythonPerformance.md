@@ -1,20 +1,20 @@
 ---
-order: 80
+order: 360
 title: Python与性能优化
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: 性能分析与优化技巧
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - python/Python与WebSocket
-  - 'python/Python与CI-CD'
-  - python/内置数据结构
-  - python/正则表达式
-prerequisites:
-  - python/语法速查
+  - 'python/034-PythonWebSocket'
+  - 'python/035-PythonCICD'
+  - 'python/037-BuiltinDataStructure'
+  - 'python/038-Regex'
+prerequisites: []
 ---
+
 
 
 # Python 与性能优化

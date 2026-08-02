@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 160
 title: 云网络服务
 module: 'cloud-computing'
-category: 云计算
+category: 云与基础设施
 difficulty: advanced
 description: 虚拟私有云、子网与安全组、负载均衡、CDN与边缘计算、DNS服务、专线与VPN、网络架构设计。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/云存储服务'
-  - 'cloud-computing/Kubernetes网络'
-  - 'cloud-computing/Kubernetes存储'
-  - 'cloud-computing/云安全服务'
+  - 'cloud-computing/014-CloudStorageService'
+  - 'cloud-computing/015-KubernetesNetwork'
+  - 'cloud-computing/017-KubernetesStorage'
+  - 'cloud-computing/018-CloudSecurityService'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 虚拟私有云（VPC）
 

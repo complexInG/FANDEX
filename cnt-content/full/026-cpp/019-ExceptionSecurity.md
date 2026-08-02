@@ -1,30 +1,24 @@
 ---
-order: 64
+order: 190
 title: 异常安全
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: 异常安全保证(Exception Safety Guarantees)、RAII、强异常安全事务与异常中立性的完整原理与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/字符串处理
-  - cpp/文件IO与文件系统
-  - cpp/多线程与并发
-  - cpp/类型特征与SFINAE
-  - cpp/RAII与资源管理
+  - 'cpp/017-StringProcessing'
+  - 'cpp/018-FileIOFileSystem'
+  - 'cpp/020-MultithreadingConcurrency'
+  - 'cpp/021-TypeTraitsSFINAE'
+  - 'cpp/013-RAIIResourceManagement'
 prerequisites:
-  - cpp/RAII与资源管理
-  - cpp/智能指针
-  - cpp/移动语义详解
-tags:
-  - Exception Safety
-  - RAII
-  - Strong Exception Guarantee
-  - Copy-and-Swap
-  - noexcept
-  - Transactional Semantics
+  - 'cpp/013-RAIIResourceManagement'
+  - 'cpp/044-SmartPointer'
+  - 'cpp/052-MoveSemanticsDetailed'
 ---
+
 
 # 异常安全（Exception Safety）
 

@@ -1,32 +1,22 @@
 ---
-order: 57
+order: 110
 title: C++20模块
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: C++20模块系统(Modules)完整原理：模块接口单元、分区、私有模块、编译模型、ABI影响与迁移策略
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/模板元编程
-  - cpp/C++20范围
-  - cpp/C++23与C++26新特性
-  - cpp/RAII与资源管理
-  - cpp/命名空间与链接
+  - 'cpp/009-ATourOfC3rdEditionOnlineExcerpts'
+  - 'cpp/010-Cpp20Range'
+  - 'cpp/034-Cpp23Cpp26NewFeatures'
+  - 'cpp/013-RAIIResourceManagement'
+  - 'cpp/024-NamespaceLinkage'
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/头文件与翻译单元
-  - cpp/编译与链接过程
-tags:
-  - C++20
-  - Modules
-  - import
-  - export
-  - ABI
-  - Build System
-  - Header Units
-  - Translation Unit
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 # C++20 模块（Modules）
 

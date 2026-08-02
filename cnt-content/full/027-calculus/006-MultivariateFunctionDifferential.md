@@ -1,19 +1,20 @@
 ---
-order: 6
+order: 60
 title: 多元函数微分
-module: calculus
-category: 高等数学
+module: 'calculus'
+category: 数学
 difficulty: advanced
 description: 空间解析几何、多元函数极限与连续、偏导数、全微分、方向导数与梯度、多元复合函数求导、隐函数定理、极值与条件极值。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - calculus/不定积分
-  - calculus/定积分与应用
-  - calculus/重积分
-  - calculus/曲线积分与曲面积分
+  - 'calculus/004-IndefiniteIntegral'
+  - 'calculus/005-DefiniteIntegralAndApplication'
+  - 'calculus/007-MultipleIntegral'
+  - 'calculus/008-CurveAndSurfaceIntegral'
 prerequisites: []
 ---
+
 
 ## 1. 空间解析几何基础
 

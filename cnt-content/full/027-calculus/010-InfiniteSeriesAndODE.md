@@ -1,18 +1,19 @@
 ---
-order: 90
+order: 100
 title: 无穷级数与常微分方程
-module: calculus
-category: 高等数学
+module: 'calculus'
+category: 数学
 difficulty: advanced
 description: 常数项级数收敛判别法、幂级数收敛半径与展开、傅里叶级数；常微分方程：一阶/可降阶/二阶常系数线性/欧拉方程。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - calculus/曲线积分与曲面积分
-  - calculus/公式速查表
+  - 'calculus/008-CurveAndSurfaceIntegral'
+  - 'calculus/009-FormulaQuickReference'
 prerequisites:
-  - calculus/函数与极限
+  - 'calculus/001-FunctionAndLimit'
 ---
+
 
 ## 1. 常数项级数
 

@@ -1,20 +1,21 @@
 ---
-order: 109
+order: 420
 title: HTTP缓存策略
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: 'HTTP 缓存策略：强缓存（Cache-Control、Expires）、协商缓存（ETag、Last-Modified）与缓存流程。'
+description: HTTP 缓存策略：强缓存（Cache-Control、Expires）、协商缓存（ETag、Last-Modified）与缓存流程。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/零拷贝'
-  - 'cs-fundamentals/进程间通信'
-  - 'cs-fundamentals/HTTPS握手过程'
-  - 'cs-fundamentals/TCP拥塞控制'
+  - 'cs-fundamentals/040-ZeroCopy'
+  - 'cs-fundamentals/041-IPC'
+  - 'cs-fundamentals/043-HTTPSHandshake'
+  - 'cs-fundamentals/044-TCPControl'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 强缓存
 

@@ -1,20 +1,18 @@
 ---
-order: 64
-title: 'git-stash'
-module: git
-category: 'Git Basics'
+order: 210
+title: git-stash
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git stash详解：暂存工作进度、多栈管理与典型应用场景。'
+description: git stash详解：暂存工作进度、多栈管理与典型应用场景。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/变基操作
-  - git/摘取提交
-  - git/远程跟踪分支
-  - 'git/Git-Flow与GitHub-Flow'
-prerequisites:
-  - git/语法速查
+  - 'git/022-RemoteTrackingBranch'
+  - 'git/023-GitFlowGitHubFlow'
+prerequisites: []
 ---
+
 ## 1. stash 概述
 
 ### 1.1 什么是 stash

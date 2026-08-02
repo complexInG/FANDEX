@@ -1,22 +1,23 @@
 ---
-order: 51
+order: 70
 title: 状态管理
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
-description: 'HarmonyOS ArkUI 状态管理系统深度剖析：@State/@Prop/@Link/@Provide/@Consume/@ObjectLink/@Watch/@StorageLink 全装饰器矩阵、响应式系统形式化语义、性能模型、跨组件数据流、不可变更新与可变更新的边界。'
+description: HarmonyOS ArkUI 状态管理系统深度剖析：@State/@Prop/@Link/@Provide/@Consume/@ObjectLink/@Watch/@StorageLink 全装饰器矩阵、响应式系统形式化语义、性能模型、跨组件数据流、不可变更新与可变更新的边界。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - harmonyos/ArkTS语言特性
-  - harmonyos/自定义组件
-  - harmonyos/组件生命周期详解
-  - harmonyos/列表与网格
-  - harmonyos/ArkTS与TypeScript差异
+  - 'harmonyos/006-ArkTSLanguageFeature'
+  - 'harmonyos/008-CustomComponent'
+  - 'harmonyos/027-ComponentLifecycleDetailed'
+  - 'harmonyos/009-ListGrid'
+  - 'harmonyos/025-ArkTSTypeScriptDifference'
 prerequisites:
-  - harmonyos/概述与环境搭建
-  - harmonyos/ArkTS语言特性
+  - 'harmonyos/001-OverviewSetup'
+  - 'harmonyos/006-ArkTSLanguageFeature'
 ---
+
 
 
 # 状态管理：ArkUI 响应式系统的形式化语义与工程实践

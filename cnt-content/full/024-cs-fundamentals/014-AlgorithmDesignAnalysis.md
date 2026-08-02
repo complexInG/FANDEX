@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 140
 title: 算法设计与分析
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 算法设计与分析：分治、贪心、动态规划、回溯、分支限界与NP理论
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/并行计算'
-  - 'cs-fundamentals/分布式系统'
-  - 'cs-fundamentals/形式语言与自动机'
-  - 'cs-fundamentals/信息安全基础'
+  - 'cs-fundamentals/012-ParallelCalculate'
+  - 'cs-fundamentals/013-DistributedSystem'
+  - 'cs-fundamentals/015-FormalLanguageAndAutomata'
+  - 'cs-fundamentals/016-InformationSecurityBasics'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 算法分析基础
 

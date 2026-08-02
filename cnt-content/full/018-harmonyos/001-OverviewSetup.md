@@ -1,18 +1,18 @@
 ---
-order: 1
+order: 10
 title: 概述与环境搭建
-module: harmonyos
-category: 鸿蒙开发
+module: 'harmonyos'
+category: 后端技术
 difficulty: beginner
-description: 'HarmonyOS 系统架构、FA 模型与 Stage 模型、DevEco Studio 安装配置、SDK 管理、模拟器配置与第一个 Hello World 应用。'
+description: HarmonyOS 系统架构、FA 模型与 Stage 模型、DevEco Studio 安装配置、SDK 管理、模拟器配置与第一个 Hello World 应用。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/ArkTS与ArkUI
-  - harmonyos/UI组件与动画
-  - javascript/语法速查
+  - 'harmonyos/002-ArkTSArkUI'
+  - 'harmonyos/003-UIComponentAnimation'
 prerequisites: []
 ---
+
 
 
 # 概述与环境搭建：HarmonyOS 系统架构与开发环境工程实践

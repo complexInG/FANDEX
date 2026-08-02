@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 440
 title: 协程调度器与上下文
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
 description: Kotlin协程调度器与上下文详解：Dispatchers选择与切换。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - kotlin/Kotlin与WebSocket
-  - kotlin/Kotlin与安全
-  - kotlin/Flow冷流与SharedFlow和StateFlow
-  - kotlin/Channel与BroadcastChannel
+  - 'kotlin/042-KotlinWebSocket'
+  - 'kotlin/043-KotlinSecurity'
+  - 'kotlin/045-FlowColdSharedState'
+  - 'kotlin/046-ChannelBroadcastChannel'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 问题背景：异步编程的复杂性

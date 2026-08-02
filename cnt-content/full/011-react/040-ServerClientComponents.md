@@ -1,20 +1,20 @@
 ---
-order: 101
-title: 'Server-Components与Client-Components'
-module: react
-category: 'dev-lang'
+order: 400
+title: Server-Components与Client-Components
+module: 'react'
+category: 前端技术
 difficulty: advanced
-description: 'React Server Components与Client Components界限划分与最佳实践。'
+description: React Server Components与Client Components界限划分与最佳实践。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - react/React与Monorepo
-  - 'react/React-Compiler自动记忆化'
-  - react/Next.js应用路由
-  - 'react/React-19新增API'
+  - 'react/038-ReactMonorepo'
+  - 'react/039-ReactCompilerAutoMemoization'
+  - 'react/042-React19NewAPI'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 
 # Server Components 与 Client Components：从原理到工程实践

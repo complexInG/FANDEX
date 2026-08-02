@@ -1,19 +1,20 @@
 ---
-order: 4
+order: 40
 title: 所有权与借用
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: beginner
-description: 'Rust 核心机制：所有权规则、移动与复制、借用与引用、切片、生命周期与内存安全'
+description: Rust 核心机制：所有权规则、移动与复制、借用与引用、切片、生命周期与内存安全
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - rust/003-RustBasicSyntax
-  - rust/005-RustStructEnumMatch
-  - rust/008-RustGenericTrait
+  - 'rust/003-RustBasicSyntax'
+  - 'rust/005-RustStructEnumMatch'
+  - 'rust/008-RustGenericTrait'
 prerequisites:
-  - rust/003-RustBasicSyntax
+  - 'rust/003-RustBasicSyntax'
 ---
+
 
 ## 1. 从"图书馆借书"说起：为什么需要所有权
 

@@ -1,20 +1,21 @@
 ---
-order: 70
+order: 310
 title: React与微前端
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: advanced
 description: React微前端架构
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React与WebSocket
-  - react/React与GraphQL
-  - react/React无障碍
-  - react/React与PWA
+  - 'react/029-ReactWebSocket'
+  - 'react/030-ReactGraphQL'
+  - 'react/032-ReactAccessibility'
+  - 'react/033-ReactPWA'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

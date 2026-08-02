@@ -1,19 +1,20 @@
 ---
-order: 100
+order: 190
 title: 软件下载地址汇总
 module: 'getting-started'
-category: toolchain
+category: 工具链
 difficulty: beginner
 description: 常用开发软件的官网与下载地址汇总，涵盖编辑器、IDE、运行时、版本控制、容器、数据库客户端、API测试、终端、设计等全栈工具。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/调试思想'
-  - 'getting-started/Windows环境配置教程'
-  - 'getting-started/macOS环境配置教程'
+  - 'getting-started/018-DebugThinking'
+  - 'getting-started/020-WindowsEnvConfigTutorial'
+  - 'getting-started/021-MacOSEnvConfigTutorial'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 编辑器与 IDE
 

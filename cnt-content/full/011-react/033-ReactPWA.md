@@ -1,20 +1,21 @@
 ---
-order: 72
+order: 330
 title: React与PWA
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: React渐进式Web应用
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React与微前端
-  - react/React无障碍
-  - react/React与Canvas
-  - react/React与D3
+  - 'react/031-ReactMicroFrontend'
+  - 'react/032-ReactAccessibility'
+  - 'react/034-ReactCanvas'
+  - 'react/035-ReactD3'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

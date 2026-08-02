@@ -1,23 +1,21 @@
 ---
-order: 95
-tags:
-  - c
-  - memory
-difficulty: advanced
+order: 400
 title: 内存管理
-module: c
-category: 'C Basics'
+module: 'c'
+category: 计算机科学
+difficulty: advanced
 description: C语言动态内存分配、内存布局、常见内存错误与调试技术详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/C23与C2y新标准
-  - c/指针深度解析
-  - c/内存对齐
-  - c/结构体与联合体
+  - 'c/038-C23C2y'
+  - 'c/039-PointerDeep'
+  - 'c/041-MemoryAlignment'
+  - 'c/042-StructAndUnion'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 ## 1. C语言内存布局
 

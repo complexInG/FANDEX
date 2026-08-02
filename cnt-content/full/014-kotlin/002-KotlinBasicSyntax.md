@@ -1,42 +1,19 @@
 ---
-order: 11
+order: 20
 title: Kotlin 基础语法
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: beginner
 description: Kotlin 基础语法完整讲解：变量声明、基本类型、字符串模板、包与导入、控制流与区间。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-- kotlin/概述与环境配置
-- kotlin/函数与Lambda
-- kotlin/类与对象
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/003-KotlinFunctionAndLambda'
+  - 'kotlin/004-KotlinClassObject'
 prerequisites: []
-references:
-- type: documentation
-  authors:
-  - JetBrains
-  year: 2026
-  title: Basic syntax - Kotlin Documentation
-  venue: kotlinlang.org
-  url: https://kotlinlang.org/docs/basic-syntax.html
-  accessedDate: '2026-08-01'
-- type: standard
-  authors:
-  - JetBrains
-  year: 2026
-  title: Kotlin Language Specification
-  venue: kotlinlang.org
-  url: https://kotlinlang.org/spec/syntax-and-grammar.html
-  accessedDate: '2026-08-01'
-etymology:
-- term: 只读变量
-  english: val
-  origin: 取自 value（值），表示一经赋值不可再变的绑定。
-estimatedReadingTime: 30
-lastReviewed: '2026-08-01'
-reviewer: fanquanpp
 ---
+
 
 ## 1. 历史动机与发展脉络
 

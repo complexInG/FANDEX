@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 150
 title: Lua与Redis脚本
-module: lua
-category: Lua
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
-description: 'Redis Lua脚本'
+description: Redis Lua脚本
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - lua/Lua与Love2D
-  - lua/Lua与Neovim
-  - lua/Lua与Nginx
-  - lua/模块与包
+  - 'lua/013-LuaLove2D'
+  - 'lua/014-LuaNeovim'
+  - 'lua/016-LuaNginx'
+  - 'lua/017-ModulePackage'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 
 
 ## 1. 历史动机与背景

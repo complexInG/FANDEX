@@ -1,20 +1,20 @@
 ---
-order: 68
+order: 250
 title: Records与Tuples
-module: javascript
-category: JavaScript
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
-description: 'TC39 Record与Tuple不可变数据提案'
+description: TC39 Record与Tuple不可变数据提案
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - javascript/迭代器帮助器
-  - javascript/Promise构造器
-  - javascript/对象与数组
-  - javascript/DOM操作与事件
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/023-IteratorHelper'
+  - 'javascript/024-YouDonTKnowJSAsyncPerformance'
+  - 'javascript/026-ObjectArray'
+  - 'javascript/027-DOMOperationEvent'
+prerequisites: []
 ---
+
 
 
 # Records 与 Tuples：JavaScript 不可变值语义数据结构

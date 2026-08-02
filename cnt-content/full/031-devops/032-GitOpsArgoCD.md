@@ -1,18 +1,19 @@
 ---
-order: 109
+order: 320
 title: GitOps与ArgoCD
-module: devops
-category: 'eng-infra'
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
-description: 'GitOps 与 ArgoCD 持续交付：声明式基础设施、Git 单一事实来源与自动同步。'
+description: GitOps 与 ArgoCD 持续交付：声明式基础设施、Git 单一事实来源与自动同步。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'devops/ELK-Stack日志分析'
-  - devops/OpenTelemetry可观测性
+  - 'devops/030-ELKStackLogAnalysis'
+  - 'devops/031-OpenTelemetry'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 ## 1. GitOps 原则
 
 ### 1.1 声明式描述

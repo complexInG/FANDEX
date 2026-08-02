@@ -1,21 +1,20 @@
 ---
 order: 30
-tags:
-  - cpp
+title: C++ 类型系统
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-title: 'C++ 类型系统'
-module: cpp
-category: 'C++ Basics'
-description: 'C++ 基本类型、类型推导、类型转换与类型安全。'
+description: C++ 基本类型、类型推导、类型转换与类型安全。
 author: Anonymous
-related:
-  - cpp/概述与现代标准
-  - cpp/基础语法
-  - cpp/引用
-  - cpp/右值引用与移动语义
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/002-CppBasicSyntax'
+  - 'cpp/004-CppReference'
+  - 'cpp/005-RvalueReferenceMoveSemantics'
+prerequisites: []
 ---
+
 ## 1. 常量 (Constants)
 
 ### 1.1 const 常量

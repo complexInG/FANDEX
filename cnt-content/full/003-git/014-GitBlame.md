@@ -1,20 +1,19 @@
 ---
-order: 58
-title: 'git-blame'
-module: git
-category: 'Git Basics'
+order: 140
+title: git-blame
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git blame详解：逐行追溯代码作者、时间与提交，辅助代码审查与问题定位。'
+description: git blame详解：逐行追溯代码作者、时间与提交，辅助代码审查与问题定位。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'git/git-log详解'
-  - git/引用日志
-  - git/HEAD指针与分支本质
-  - git/Git钩子与GitLFS
-prerequisites:
-  - git/语法速查
+  - 'git/012-GitLogDetailed'
+  - 'git/015-HEADPointerBranchEssence'
+  - 'git/016-GitHookGitLFS'
+prerequisites: []
 ---
+
 ## 1. git blame 概述
 
 ### 1.1 什么是 git blame

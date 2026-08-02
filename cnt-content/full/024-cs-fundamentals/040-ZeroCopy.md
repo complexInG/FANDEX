@@ -1,20 +1,21 @@
 ---
-order: 107
+order: 400
 title: 零拷贝
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: '零拷贝技术：sendfile、mmap、splice 的原理与性能对比。'
+description: 零拷贝技术：sendfile、mmap、splice 的原理与性能对比。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/文件系统inode'
-  - 'cs-fundamentals/磁盘调度'
-  - 'cs-fundamentals/进程间通信'
-  - 'cs-fundamentals/HTTP缓存策略'
+  - 'cs-fundamentals/038-FileSystemInode'
+  - 'cs-fundamentals/039-DiskScheduling'
+  - 'cs-fundamentals/041-IPC'
+  - 'cs-fundamentals/042-HTTPCacheStrategy'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 传统数据拷贝
 

@@ -1,20 +1,21 @@
 ---
-order: 67
+order: 210
 title: 国际化与无障碍
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 多语言适配、文化感知、无障碍 API 的形式化理论与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - harmonyos/性能优化
-  - harmonyos/测试与调试
-  - harmonyos/Stage模型与FA模型区别
-  - harmonyos/ArkTS与TypeScript差异
+  - 'harmonyos/020-PerformanceOptimization'
+  - 'harmonyos/022-TestDebug'
+  - 'harmonyos/024-StageFAModelDifference'
+  - 'harmonyos/025-ArkTSTypeScriptDifference'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 概述
 
 国际化（Internationalization，简称 i18n，因首尾字母 i 与 n 之间有 18 个字母而得名）与无障碍（Accessibility，简称 a11y）是衡量应用质量的两项关键工程指标。前者决定了应用能否被全球不同语言、不同文化背景的用户使用；后者决定了应用能否被视障、听障、运动障碍等残障群体使用。

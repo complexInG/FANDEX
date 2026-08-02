@@ -1,9 +1,8 @@
 ---
 order: 440
 title: AWS RDS 数据库命令
-module: cloud-computing
-
-category: '034-cloud-computing'
+module: 'cloud-computing'
+category: 云与基础设施
 difficulty: beginner
 description: AWS RDS 数据库命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 实例创建与查看
 
 **基本写法：查看可用数据库引擎**

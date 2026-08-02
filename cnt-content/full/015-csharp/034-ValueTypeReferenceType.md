@@ -1,19 +1,20 @@
 ---
-order: 108
+order: 340
 title: 值类型与引用类型
-module: csharp
-category: 'dev-lang'
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'C#值类型与引用类型详解：struct vs class。'
+description: C#值类型与引用类型详解：struct vs class。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/依赖注入生命周期
-  - csharp/GC代机制
-  - csharp/记录类型与不可变性
+  - 'csharp/032-DILifecycle'
+  - 'csharp/033-GCGeneration'
+  - 'csharp/035-RecordTypeImmutability'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 ## 一、学习目标
 
 本文以 MIT 6.102 *Software Construction*、Stanford CS193、CMU 15-410 *Operating Systems* 的内存模型教学水准为参照，对 C# 值类型与引用类型进行系统性的形式化与工程化剖析。阅读完毕后，读者应能达成以下 Bloom 认知层级目标：

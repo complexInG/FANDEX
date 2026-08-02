@@ -1,24 +1,25 @@
 ---
-order: 106
+order: 500
 title: 作用域函数区别
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'Kotlin 作用域函数深度解析：let、run、with、apply、also 的设计哲学、形式化定义与工程实践。'
+description: Kotlin 作用域函数深度解析：let、run、with、apply、also 的设计哲学、形式化定义与工程实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/函数与Lambda
-  - kotlin/类与对象
-  - kotlin/基础语法
-  - kotlin/Kotlin作用域函数
-  - kotlin/Kotlin与DSL
+  - 'kotlin/003-KotlinFunctionAndLambda'
+  - 'kotlin/004-KotlinClassObject'
+  - 'kotlin/002-KotlinBasicSyntax'
+  - 'kotlin/018-KotlinScopeFunction'
+  - 'kotlin/022-KotlinDSL'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/基础语法
-  - kotlin/函数与Lambda
-  - kotlin/类与对象
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/002-KotlinBasicSyntax'
+  - 'kotlin/003-KotlinFunctionAndLambda'
+  - 'kotlin/004-KotlinClassObject'
 ---
+
 
 # 作用域函数区别（Scope Functions: let, run, with, apply, also）
 

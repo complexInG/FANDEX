@@ -1,20 +1,21 @@
 ---
-order: 79
+order: 370
 title: 基于时间点恢复
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL基于时间点恢复PITR：全量恢复+binlog重放、时间点定位与误操作恢复
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/逻辑备份
-  - mysql/物理备份
-  - mysql/主从复制
-  - mysql/进阶查询与多表操作
+  - 'mysql/035-LogicalBackup'
+  - 'mysql/036-PhysicalBackup'
+  - 'mysql/038-Replication'
+  - 'mysql/039-AdvancedQueryMultiTableOperation'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. PITR 概述
 

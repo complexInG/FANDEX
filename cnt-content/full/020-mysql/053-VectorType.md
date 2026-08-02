@@ -1,20 +1,21 @@
 ---
-order: 91
+order: 530
 title: VECTOR向量类型
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL VECTOR向量类型：向量存储、距离计算、AI嵌入与近似最近邻搜索'
+description: MySQL VECTOR向量类型：向量存储、距离计算、AI嵌入与近似最近邻搜索
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/索引与执行计划
-  - mysql/MySQL9新特性与并行查询
-  - mysql/JSON模式验证与聚合函数
-  - mysql/复制与高可用
+  - 'mysql/051-MySQLIndexExecutionPlan'
+  - 'mysql/052-MySQL9NewFeaturesParallelQuery'
+  - 'mysql/054-JSONSchemaValidationAggregate'
+  - 'mysql/055-ReplicationHA'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. VECTOR 类型概述
 

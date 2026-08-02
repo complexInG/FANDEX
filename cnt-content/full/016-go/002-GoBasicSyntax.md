@@ -1,18 +1,19 @@
 ---
-order: 2
-title: 'Go 基础语法'
-module: go
-category: Go
+order: 20
+title: Go 基础语法
+module: 'go'
+category: 后端技术
 difficulty: beginner
-description: '变量与常量、基本类型、零值、类型转换、字符串、指针、控制流与 defer 语句。'
+description: 变量与常量、基本类型、零值、类型转换、字符串、指针、控制流与 defer 语句。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/概述与环境配置
-  - go/函数与方法
-  - go/数据结构
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/003-GoFunctionMethod'
+  - 'go/004-GoDataStructure'
 prerequisites: []
 ---
+
 ## 1. 变量与常量
 
 ### 1.1 变量声明

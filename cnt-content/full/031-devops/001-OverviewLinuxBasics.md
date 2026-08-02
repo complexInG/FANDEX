@@ -1,18 +1,18 @@
 ---
-order: 1
-title: '概述与 Linux 基础'
-module: devops
-category: 运维
+order: 10
+title: 概述与 Linux 基础
+module: 'devops'
+category: 云与基础设施
 difficulty: beginner
-description: 'DevOps/SRE 理念、Linux 系统管理、文件系统、用户权限、Shell 脚本与日志管理。'
+description: DevOps/SRE 理念、Linux 系统管理、文件系统、用户权限、Shell 脚本与日志管理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/网络与安全
-  - devops/容器与Docker
-  - git/语法速查
+  - 'devops/002-NetworkSecurity'
+  - 'devops/003-ContainerDocker'
 prerequisites: []
 ---
+
 ## 1. DevOps 与 SRE 理念
 
 ### 1.1 DevOps 定义

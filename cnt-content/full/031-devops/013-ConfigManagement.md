@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 130
 title: 配置管理
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
 description: 配置管理：Ansible、配置中心、环境管理、密钥管理与GitOps
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/服务网格
-  - devops/日志管理
-  - devops/性能调优
-  - devops/高可用架构
+  - 'devops/011-ServiceMesh'
+  - 'devops/012-LogManagement'
+  - 'devops/014-PerformanceTuning'
+  - 'devops/015-HighAvailabilityArchitecture'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 配置管理概述
 

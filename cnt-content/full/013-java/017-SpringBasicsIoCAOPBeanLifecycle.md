@@ -1,30 +1,23 @@
 ---
-order: 61
-title: 'Spring 基础：IoC 容器、AOP、Bean 生命周期与企业级开发核心'
-module: java
-category: Java
+order: 170
+title: Spring 基础：IoC 容器、AOP、Bean 生命周期与企业级开发核心
+module: 'java'
+category: 后端技术
 difficulty: intermediate
-description: '系统阐述 Spring 框架的 IoC 容器、AOP、Bean 生命周期、依赖注入、事务管理、Spring MVC 与 Spring Boot 核心机制。'
+description: 系统阐述 Spring 框架的 IoC 容器、AOP、Bean 生命周期、依赖注入、事务管理、Spring MVC 与 Spring Boot 核心机制。
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - java
-  - spring
-  - ioc
-  - aop
-  - bean
-  - framework
 related:
-  - java/Java新特性
-  - java/运算符与表达式
-  - java/SpringBoot进阶
-  - java/SpringBoot安全
-  - java/Java与数据库连接
+  - 'java/015-JavaNewFeatures'
+  - 'java/016-OperatorExpression'
+  - 'java/018-SpringBootAdvanced'
+  - 'java/019-SpringBootSecurity'
+  - 'java/045-JavaDatabaseConnection'
 prerequisites:
-  - java/概述与开发环境
-  - java/面向对象基础
-  - java/Java与数据库连接
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/045-JavaDatabaseConnection'
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 EJB 时代的痛点

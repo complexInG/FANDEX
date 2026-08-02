@@ -1,19 +1,20 @@
 ---
-order: 3
+order: 30
 title: Vite 配置文件详解
-module: vite
-category: Vite
+module: 'vite'
+category: 前端技术
 difficulty: beginner
 description: 'vite.config.ts 详解：defineConfig、plugins、路径别名、开发服务器代理与构建选项，用"不配 vs 配 vs 配好"三段对比讲透'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - vite/002-QuickStart
-  - vite/006-DevServerHMR
-  - vite/007-BuildSplit
+  - 'vite/002-QuickStart'
+  - 'vite/006-DevServerHMR'
+  - 'vite/007-BuildSplit'
 prerequisites:
-  - vite/002-QuickStart
+  - 'vite/002-QuickStart'
 ---
+
 
 ## 1. 从汽车仪表盘与方向盘说起
 

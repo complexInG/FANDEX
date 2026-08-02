@@ -1,20 +1,21 @@
 ---
-order: 75
+order: 350
 title: Go与配置管理
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: Viper与配置
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与代码生成
-  - go/Go与依赖注入
-  - go/Go与日志
-  - go/Go与模板
+  - 'go/033-GoCodeGeneration'
+  - 'go/034-GoDependencyInjection'
+  - 'go/036-GoLog'
+  - 'go/037-GoTemplate'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

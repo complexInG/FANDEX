@@ -1,20 +1,20 @@
 ---
-order: 57
+order: 140
 title: Python与Django
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: Django Web框架
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与Docker
-  - python/Python与Celery
-  - python/Python与Redis
-  - python/Python与数据库迁移
-prerequisites:
-  - python/语法速查
+  - 'python/019-PythonDocker'
+  - 'python/017-PythonCeleryDistributedTaskQueue'
+  - 'python/016-PythonRedis'
+  - 'python/046-PythonDatabaseMigration'
+prerequisites: []
 ---
+
 
 ## 什么是 Django
 

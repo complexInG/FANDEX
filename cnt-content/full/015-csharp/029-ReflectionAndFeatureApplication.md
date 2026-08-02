@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 290
 title: 反射与特性应用
-module: csharp
-category: 'dev-lang'
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'C#反射与特性（Attribute）应用详解：从ECMA-335元数据到Source Generator的完整指南。'
+description: C#反射与特性（Attribute）应用详解：从ECMA-335元数据到Source Generator的完整指南。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - 'csharp/async-await状态机'
-  - csharp/委托与事件底层原理
-  - 'csharp/Entity-Framework-Core迁移与优化'
-  - 'csharp/ASP-NET-Core中间件管道'
+  - 'csharp/027-AsyncAwaitStateMachine'
+  - 'csharp/028-DelegateEventUnderlying'
+  - 'csharp/030-EFCoreMigrationOptimization'
+  - 'csharp/031-AspNetCoreMiddlewarePipeline'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 .NET Framework 1.0（2002）：反射的诞生

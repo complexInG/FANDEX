@@ -1,22 +1,20 @@
 ---
-order: 90
-tags:
-  - python
-difficulty: intermediate
+order: 500
 title: 推导式与生成器
-module: python
-category: 'Python Basics'
+module: 'python'
+category: 后端技术
+difficulty: intermediate
 description: 列表推导、字典推导、生成器表达式与迭代器。
 author: Anonymous
-related:
-  - python/Python与向量数据库
-  - python/Python进阶与最新特性
-  - 'python/模块-包与工程化'
-  - python/装饰器进阶
-prerequisites:
-  - python/语法速查
 updated: '2026-08-01'
+related:
+  - 'python/048-PythonVectorDatabase'
+  - 'python/049-PythonAdvancedLatestFeature'
+  - 'python/051-ModulePackageEngineering'
+  - 'python/062-DecoratorAdvanced'
+prerequisites: []
 ---
+
 ## 1. 推导式 (Comprehensions)
 
 推导式是一种简洁高效的方式，用于从现有的序列创建新的序列。

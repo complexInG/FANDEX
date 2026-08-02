@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 330
 title: Actions缓存依赖
-module: github
-category: toolchain
+module: 'github'
+category: 工具链
 difficulty: intermediate
-description: 'GitHub Actions缓存机制问题驱动详解：从每次CI都重新下载依赖太慢的痛点切入，讲透 actions/cache 用法、缓存键设计、命中逻辑与依赖加速最佳实践。'
+description: GitHub Actions缓存机制问题驱动详解：从每次CI都重新下载依赖太慢的痛点切入，讲透 actions/cache 用法、缓存键设计、命中逻辑与依赖加速最佳实践。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/常见问题排查
-  - github/Actions矩阵构建
-  - github/Actions自托管运行器
-  - github/Actions制品传递
+  - 'github/031-FAQTroubleshoot'
+  - 'github/032-ActionsMatrixBuild'
+  - 'github/034-ActionsSelfHostedRunner'
+  - 'github/035-ActionsArtifact'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 ## 0. 开始之前：一个"厨房储物柜"的故事
 
 想象你开了一家小餐馆，每天要做 50 道菜。没有储物柜的话，厨师每次做菜都要**从零开始**：去买菜、洗菜、切菜、备料，做完一道菜再全部重来一遍——哪怕今天和昨天的菜单一模一样。

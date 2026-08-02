@@ -1,9 +1,8 @@
 ---
 order: 470
 title: CSS transform 与 3D 变换语法速查手册
-module: css
-
-category: '007-css'
+module: 'css'
+category: 前端技术
 difficulty: beginner
 description: CSS transform 与 3D 变换语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 2D 变换
 
 **基本写法：平移**

@@ -1,20 +1,18 @@
 ---
 order: 10
-tags:
-  - python
+title: Python 概述与环境配置
+module: 'python'
+category: 后端技术
 difficulty: beginner
-title: 'Python 概述与环境配置'
-module: python
-category: 'Python Basics'
-description: 'Python 发展历程、版本特性与开发环境搭建。'
+description: Python 发展历程、版本特性与开发环境搭建。
 author: Anonymous
-related:
-  - python/语法速查
-  - python/程序结构与基本语法
-  - python/变量与常量
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'python/002-ProgramStructureBasicSyntax'
+  - 'python/003-VariableConstant'
+prerequisites: []
 ---
+
 ## 1. Python 概述 (Overview)
 
 Python 是由 **Guido van Rossum** 于 1989 年圣诞节期间开始设计的一种高级脚本语言。它以英国电视喜剧《Monty Python's Flying Circus》命名，于 1991 年发布第一个正式版本。Python 的设计哲学强调代码可读性和简洁性，提倡 "优雅"、"明确"、"简单" 的编程风格。

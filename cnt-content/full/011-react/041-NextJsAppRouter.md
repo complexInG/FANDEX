@@ -1,20 +1,21 @@
 ---
-order: 102
-title: 'Next.js-App-Router'
-module: react
-category: 'dev-lang'
+order: 410
+title: Next.js-App-Router
+module: 'react'
+category: 前端技术
 difficulty: advanced
-description: 'Next.js App Router详解：文件夹约定、布局、加载态、错误态。'
+description: Next.js App Router详解：文件夹约定、布局、加载态、错误态。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'react/React-Compiler自动记忆化'
-  - 'react/Server-Components与Client-Components'
-  - 'react/React-19新增API'
-  - react/并发渲染与可中断更新
+  - 'react/039-ReactCompilerAutoMemoization'
+  - 'react/040-ServerClientComponents'
+  - 'react/042-React19NewAPI'
+  - 'react/043-ConcurrentRenderInterruptible'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 1. 文件夹约定
 
 ### 1.1 路由结构

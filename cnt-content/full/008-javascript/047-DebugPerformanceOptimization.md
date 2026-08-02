@@ -1,27 +1,23 @@
 ---
-order: 120
-tags:
-  - javascript
-  - performance
-  - debugging
-difficulty: advanced
+order: 470
 title: 调试与性能优化
-module: javascript
-category: 'JavaScript Basics'
-description: '浏览器 DevTools、性能分析模型、内存泄漏排查、火焰图解读、Core Web Vitals 治理与生产级性能优化实践的形式化定义与工程指南。'
+module: 'javascript'
+category: 前端技术
+difficulty: advanced
+description: 浏览器 DevTools、性能分析模型、内存泄漏排查、火焰图解读、Core Web Vitals 治理与生产级性能优化实践的形式化定义与工程指南。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - javascript/内存泄漏排查
-  - 'javascript/Web API与浏览器接口'
-  - javascript/典型项目实战
-  - javascript/Node.js高级特性与性能优化
+  - 'javascript/045-MemoryLeakTroubleshoot'
+  - 'javascript/046-WebAPIBrowserInterface'
+  - 'javascript/048-TypicalProjectPractice'
+  - 'javascript/049-NodeJsAdvancedFeaturePerformanceOptimization'
 prerequisites:
-  - javascript/语法速查
-  - javascript/控制流
-  - javascript/函数-作用域与闭包
-  - javascript/ES6+新特性
+  - 'javascript/005-ControlFlow'
+  - 'javascript/016-FunctionScopeClosure'
+  - 'javascript/036-ES6NewFeatures'
 ---
+
 ## 1. 引言
 
 调试（Debugging）与性能优化（Performance Optimization）是软件工程中最具工程性、最依赖工具链与形式化模型的两个领域。调试的本质是**从观测到的异常状态回溯到根因状态**的逆向推理过程；性能优化的本质是**在有限资源约束下最大化用户感知质量**的优化问题。两者共同的特征是：不能依靠经验直觉，必须以**可观测数据**（Observability）为基础，以**形式化模型**为指引，以**工具链**为手段。

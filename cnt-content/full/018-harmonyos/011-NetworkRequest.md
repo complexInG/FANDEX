@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 110
 title: 网络请求
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: HTTP 协议、TCP/IP 栈、WebSocket、RESTful API、缓存与重试机制的形式化理论与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - harmonyos/列表与网格
-  - harmonyos/导航与路由
-  - harmonyos/数据持久化
-  - harmonyos/动画系统
+  - 'harmonyos/009-ListGrid'
+  - 'harmonyos/010-NavigationRoute'
+  - 'harmonyos/012-DataPersistence'
+  - 'harmonyos/013-AnimationSystem'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 概述
 
 网络请求是现代应用与远端服务交互的核心能力。HarmonyOS 提供了完整的网络通信栈：`@ohos.net.http` 用于基于 HTTP/HTTPS 的请求-响应通信，`@ohos.net.webSocket` 用于全双工实时通信，`@ohos.net.socket` 用于 TCP/UDP 原始套接字，`@ohos.net.connection` 用于网络状态监听与切换。这套能力覆盖了从应用层到传输层的完整 OSI 模型。

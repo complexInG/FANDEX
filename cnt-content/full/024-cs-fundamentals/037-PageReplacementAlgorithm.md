@@ -1,20 +1,21 @@
 ---
-order: 104
+order: 370
 title: 页面置换算法
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: '页面置换算法：FIFO、LRU 实现、Clock 算法、LFU 与工作集模型。'
+description: 页面置换算法：FIFO、LRU 实现、Clock 算法、LFU 与工作集模型。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/用户态与内核态切换'
-  - 'cs-fundamentals/内存分段与分页'
-  - 'cs-fundamentals/文件系统inode'
-  - 'cs-fundamentals/磁盘调度'
+  - 'cs-fundamentals/035-UserModeKernelModeSwitch'
+  - 'cs-fundamentals/036-MemorySegmentationAndPaging'
+  - 'cs-fundamentals/038-FileSystemInode'
+  - 'cs-fundamentals/039-DiskScheduling'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 页面置换问题
 

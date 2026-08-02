@@ -1,18 +1,19 @@
 ---
-order: 2
+order: 20
 title: 网络系统管理
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
-description: 'Windows Server部署、活动目录、DNS/DHCP/IIS/文件/终端服务、组策略、Linux服务器、Shell脚本、数据中心网络、无线网络规划与安全。'
+description: Windows Server部署、活动目录、DNS/DHCP/IIS/文件/终端服务、组策略、Linux服务器、Shell脚本、数据中心网络、无线网络规划与安全。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/网络基础与协议
-  - networking/网络布线与施工
-  - 'networking/OSI与TCP-IP模型'
+  - 'networking/001-NetworkBasicsAndProtocol'
+  - 'networking/003-NetworkWiringAndConstruction'
+  - 'networking/004-OSITCPIPModel'
 prerequisites: []
 ---
+
 
 ## 1. Windows Server 部署
 

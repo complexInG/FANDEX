@@ -1,23 +1,20 @@
 ---
-order: 130
-tags:
-  - c
-  - networking
-  - concurrency
+order: 500
+title: C 语言高级特性与系统编程
+module: 'c'
+category: 计算机科学
 difficulty: advanced
-title: 'C 语言高级特性与系统编程'
-module: c
-category: 'C Basics'
 description: 高级数据结构、内存管理、文件系统、网络编程与并发模型。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/文件IO操作
-  - c/理论知识点
-  - 'c/项目示例-学生成绩管理系统'
+  - 'c/048-IO'
+  - 'c/049-CLanguageTheory'
+  - 'c/051-CProjectExampleStudentGradeSystem'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 ## 1. 高级数据结构
 

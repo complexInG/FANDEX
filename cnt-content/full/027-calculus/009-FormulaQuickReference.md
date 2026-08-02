@@ -1,19 +1,20 @@
 ---
 order: 90
 title: 公式速查表
-module: calculus
-category: 'comp-sci'
+module: 'calculus'
+category: 数学
 difficulty: intermediate
 description: 高等数学全部核心公式速查：极限、导数、积分、级数、微分方程等公式汇总。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - calculus/重积分
-  - calculus/曲线积分与曲面积分
-  - calculus/无穷级数与常微分方程
+  - 'calculus/007-MultipleIntegral'
+  - 'calculus/008-CurveAndSurfaceIntegral'
+  - 'calculus/010-InfiniteSeriesAndODE'
 prerequisites:
-  - calculus/函数与极限
+  - 'calculus/001-FunctionAndLimit'
 ---
+
 
 ## 1. 极限公式
 

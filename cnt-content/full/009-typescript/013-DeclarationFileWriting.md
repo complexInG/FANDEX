@@ -1,167 +1,21 @@
 ---
-order: 59
+order: 130
 title: 声明文件编写
-module: typescript
-category: TypeScript Advanced
-tags:
-- typescript
-- declaration-files
-- d-ts
-- module-declaration
-- global-augmentation
-- umd
-- declaration-merging
-- definitely-typed
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: TypeScript 声明文件（.d.ts）的语法结构、模块声明、全局类型增强、UMD 声明、声明合并规则、三斜线指令、DefinitelyTyped 生态与发布实践的形式化定义与工程指南
 author: fanquanpp
+updated: '2026-08-02'
 related:
-- typescript/类型声明与模块解析
-- typescript/泛型约束与默认值
-- typescript/装饰器详解
-- typescript/模块解析策略
-- typescript/高级类型与类型演算
-prerequisites:
-- typescript/语法速查
-references:
-- type: conference
-  title: Understanding TypeScript
-  note: 'Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In 28th European Conference on Object-Oriented Programming (ECOOP 2014). LIPIcs 33, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257'
-  authors:
-  - Bierman, G., Abadi, M., and Torgersen, M
-  year: 2014
-  venue: 28th European Conference on Object-Oriented Programming (ECOOP 2014)
-  doi: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
-- type: documentation
-  title: 'TypeScript Handbook: Declaration Files'
-  note: 'TypeScript Team. 2024. TypeScript Handbook: Declaration Files. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html'
-  authors:
-  - TypeScript Team
-  year: 2024
-  venue: Microsoft
-  url: https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
-- type: documentation
-  title: 'TypeScript Handbook: Declaration Merging'
-  note: 'TypeScript Team. 2024. TypeScript Handbook: Declaration Merging. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/declaration-merging.html'
-  authors:
-  - TypeScript Team
-  year: 2024
-  venue: Microsoft
-  url: https://www.typescriptlang.org/docs/handbook/declaration-merging.html
-- type: documentation
-  title: 'TypeScript Handbook: Modules Reference'
-  note: 'TypeScript Team. 2024. TypeScript Handbook: Modules Reference. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/modules/reference.html'
-  authors:
-  - TypeScript Team
-  year: 2024
-  venue: Microsoft
-  url: https://www.typescriptlang.org/docs/handbook/modules/reference.html
-- type: standard
-  title: ECMAScript 2024 Language Specification (ECMA-262, 15th edition)
-  note: 'ECMA International. 2024. ECMAScript 2024 Language Specification (ECMA-262, 15th edition). Section 8.2 Module Records. Standard ECMA-262. DOI: https://doi.org/10.1145/3180267'
-  authors:
-  - ECMA International
-  year: 2024
-  venue: Section 8.2 Module Records. Standard ECMA-262
-  doi: https://doi.org/10.1145/3180267
-- type: documentation
-  title: 'Node.js Modules API: Package Exports'
-  note: 'Node.js Foundation. 2024. Node.js Modules API: Package Exports. Available at: https://nodejs.org/api/packages.html'
-  authors:
-  - Node.js Foundation
-  year: 2024
-  venue: 'Available at: https://nodejs.org/api/packages.html'
-  url: https://nodejs.org/api/packages.html
-- type: website
-  title: 'DefinitelyTyped: The repository for high quality TypeScript type definitions'
-  note: 'DefinitelyTyped Contributors. 2024. DefinitelyTyped: The repository for high quality TypeScript type definitions. Available at: https://github.com/DefinitelyTyped/DefinitelyTyped'
-  authors:
-  - DefinitelyTyped Contributors
-  year: 2024
-  venue: 'Available at: https://github.com/DefinitelyTyped/DefinitelyTyped'
-  url: https://github.com/DefinitelyTyped/DefinitelyTyped
-- type: conference
-  title: A formal semantics for ES modules
-  note: 'Guarneri, S. and Gardner, P. 2021. A formal semantics for ES modules. In Proceedings of the 30th European Symposium on Programming (ESOP 2021). LNCS 12648, 287–314. DOI: https://doi.org/10.1007/978-3-030-72019-3_11'
-  authors:
-  - Guarneri, S. and Gardner, P
-  year: 2021
-  venue: Proceedings of the 30th European Symposium on Programming (ESOP 2021)
-  doi: https://doi.org/10.1007/978-3-030-72019-3_11
-- type: conference
-  title: Well-typed programs can't be blamed
-  note: 'Wadler, P. and Findler, R. B. 2009. Well-typed programs can''t be blamed. In Proceedings of the 18th European Symposium on Programming (ESOP 2009). LNCS 5502, 1–16. DOI: https://doi.org/10.1007/978-3-642-00590-9_1'
-  authors:
-  - Wadler, P. and Findler, R. B
-  year: 2009
-  venue: Proceedings of the 18th European Symposium on Programming (ESOP 2009)
-  doi: https://doi.org/10.1007/978-3-642-00590-9_1
-- type: book
-  title: Types and Programming Languages
-  note: 'Pierce, B. C. 2002. Types and Programming Languages. MIT Press, Cambridge, MA, USA. Chapter 11: Simple Extensions (Records). Section 11.7 on Recursive Types and Module Systems.'
-  authors:
-  - Pierce, B. C
-  year: 2002
-  venue: MIT Press, Cambridge, MA, USA
-- type: journal
-  title: Is the Java Type System Sound?
-  note: 'Drossopoulou, S., Eisenbach, S., and Khurshid, S. 1999. Is the Java Type System Sound? Theory and Practice of Object Systems 5, 1, 3–19. DOI: https://doi.org/10.1002/(SICI)1096-9942(199901/03)5:1<3::AID-TAPO3>3.0.CO;2-L'
-  authors:
-  - Drossopoulou, S., Eisenbach, S., and Khurshid, S
-  year: 1999
-  venue: Theory and Practice of Object Systems 5, 1, 3–19
-  doi: https://doi.org/10.1002/(SICI)1096-9942(199901/03)5:1<3::AID-TAPO3>3.0.CO;2-L
-- type: conference
-  title: 'Java and Scala''s type systems are unsound: the existential crisis of null pointers'
-  note: 'Amin, N. and Tate, R. 2016. Java and Scala''s type systems are unsound: the existential crisis of null pointers. In Proceedings of the 25th European Symposium on Programming (ESOP 2016). LNCS 9632, 270–297. DOI: https://doi.org/10.1007/978-3-662-49498-1_11'
-  authors:
-  - Amin, N. and Tate, R
-  year: 2016
-  venue: Proceedings of the 25th European Symposium on Programming (ESOP 2016)
-  doi: https://doi.org/10.1007/978-3-662-49498-1_11
-- type: conference
-  title: What is a recursive module?
-  note: 'Crary, K., Harper, R., and Puri, S. 1999. What is a recursive module? In Proceedings of the 26th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL ''99). ACM, 50–63. DOI: https://doi.org/10.1145/292540.292556'
-  authors:
-  - Crary, K., Harper, R., and Puri, S
-  year: 1999
-  venue: Proceedings of the 26th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '99)
-  doi: https://doi.org/10.1145/292540.292556
-- type: technical-report
-  title: Abstract types and the dot notation. Digital Systems Research Center
-  note: 'Cardelli, L. and Leroy, X. 1990. Abstract types and the dot notation. Digital Systems Research Center Research Report 56. Available at: https://www.dagstuhl.de/En/DelLen/Lehrmaterialien/Literaturlisten/LiteraturCardelliLeroy-AbstractTypesAndDotNotation.pdf'
-  authors:
-  - Cardelli, L. and Leroy, X
-  year: 1990
-  venue: Research Report 56
-  url: https://www.dagstuhl.de/En/DelLen/Lehrmaterialien/Literaturlisten/LiteraturCardelliLeroy-AbstractTypesAndDotNotation.pdf
-- type: conference
-  title: Modules for Standard ML
-  note: 'MacQueen, G. 1984. Modules for Standard ML. In Proceedings of the 1984 ACM Symposium on LISP and Functional Programming (LFP ''84). ACM, 198–207. DOI: https://doi.org/10.1145/800055.802036'
-  authors:
-  - MacQueen, G
-  year: 1984
-  venue: Proceedings of the 1984 ACM Symposium on LISP and Functional Programming (LFP '84)
-  doi: https://doi.org/10.1145/800055.802036
-etymology:
-- term: 声明文件 (Declaration File)
-  origin: '"Declaration" 源自拉丁语 declarare（使清晰、表明），由 de-（完全）+ clarare（使清晰）构成，14 世纪进入英语，原指"正式声明"。
-
-    "File" 源自拉丁语 filum（线、绳），中世纪指用线穿起的文件集，19 世纪引申为"计算机文件"。
-
-    TypeScript 在 2012 年首次发布时即引入 .d.ts 文件扩展名，由 Microsoft TypeScript 团队设计，用于描述 JavaScript 库的类型信息而不包含实现代码。
-
-    "declare" 关键字借鉴自 C/C++ 的 extern 声明机制，意在向编译器声明"此符号存在但定义在别处"。
-
-    "Ambient"（环境声明）一词源自拉丁语 ambire（环绕），在 TypeScript 中指"描述已存在但非 TypeScript 编译产物的代码"。
-
-    "Augmentation"（增强）源自拉丁语 augmentum（增加），TypeScript 2.0 引入模块增强机制，允许跨文件扩展已存在的模块类型。
-
-    '
-  english: Declaration File
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
+  - 'typescript/027-TypeScriptTypeDeclarationModuleResolution'
+  - 'typescript/011-GenericConstraintDefault'
+  - 'typescript/012-DecoratorDetailed'
+  - 'typescript/014-ModuleResolutionInModernJavaScriptToolchains'
+  - 'typescript/015-AdvancedTypeCalculus'
+prerequisites: []
 ---
+
 
 # TypeScript 声明文件编写
 

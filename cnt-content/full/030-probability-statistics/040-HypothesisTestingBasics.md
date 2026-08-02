@@ -1,19 +1,20 @@
 ---
-order: 80
+order: 330
 title: 假设检验基本概念
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 假设检验的基本思想：原假设、备择假设、显著性水平、两类错误、检验步骤，以"法庭审判"类比贯穿全文。
+description: '假设检验的基本思想：原假设、备择假设、显著性水平、两类错误、检验步骤，以"法庭审判"类比贯穿全文。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/正态总体参数的区间估计'
-  - 'probability-statistics/Z检验'
-  - 'probability-statistics/t检验'
+  - 'probability-statistics/038-NormalPopulationParameterIntervalEstimation'
+  - 'probability-statistics/041-ZTest'
+  - 'probability-statistics/042-TTest'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 法庭审判：假设检验的"母本"
 

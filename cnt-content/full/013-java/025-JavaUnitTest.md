@@ -1,166 +1,25 @@
 ---
-order: 69
+order: 250
 title: Java单元测试
-module: java
-category: dev-lang
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: JUnit 5 Jupiter API、Mockito 桩件框架、AssertJ 流式断言、Spring Boot Test 测试切片、Testcontainers 集成测试、JMH 微基准测试与 TDD/BDD 工程实践
 author: fanquanpp
 updated: '2026-07-20'
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
 related:
-- java/Java网络编程
-- java/Java日志系统
-- java/Java构建工具
-- java/反射与动态代理
-- java/Lambda与函数式编程
-- java/控制流
+  - 'java/023-JavaNetworkProgramming'
+  - 'java/024-JavaLogSystem'
+  - 'java/026-JavaBuildTool'
+  - 'java/053-ReflectionDynamicProxy'
+  - 'java/063-LambdaFunctionalProgramming'
+  - 'java/027-ControlFlow'
 prerequisites:
-- java/概述与开发环境
-- java/Lambda与函数式编程
-- java/反射与动态代理
-tags:
-- java
-- junit
-- jupiter
-- mockito
-- testng
-- assertj
-- tdd
-- bdd
-- spring-boot-test
-- testcontainers
-- jmh
-- parameterized-test
-- extension-model
-references:
-- type: book
-  authors:
-  - Beck, Kent
-  year: 2002
-  title: 'Test-Driven Development: By Example'
-  venue: Addison-Wesley Professional
-  isbn: 978-0321146533
-- type: book
-  authors:
-  - Beck, Kent
-  - Andres, Cynthia
-  year: 2004
-  title: 'Extreme Programming Explained: Embrace Change (2nd ed.)'
-  venue: Addison-Wesley Professional
-  isbn: 978-0321278654
-- type: book
-  authors:
-  - Cohn, Mike
-  year: 2009
-  title: 'Succeeding with Agile: Software Development Using Scrum'
-  venue: Addison-Wesley Professional
-  isbn: 978-0321579362
-- type: conference
-  authors:
-  - Beck, Kent
-  - Gamma, Erich
-  year: 1998
-  title: 'Test Infected: Programmers Love Writing Tests'
-  venue: Java Report, Vol. 3, No. 7
-  pages: 37-50
-- type: documentation
-  authors:
-  - JUnit Team
-  year: 2024
-  title: JUnit 5 User Guide
-  venue: JUnit Official Documentation
-  url: https://junit.org/junit5/docs/current/user-guide/
-- type: documentation
-  authors:
-  - Mockito Team
-  year: 2024
-  title: Mockito 5 Documentation
-  venue: Mockito Official Documentation
-  url: https://site.mockito.org/
-- type: documentation
-  authors:
-  - AssertJ Team
-  year: 2024
-  title: AssertJ Core Documentation
-  venue: AssertJ Official Documentation
-  url: https://assertj.github.io/doc/
-- type: documentation
-  authors:
-  - TestNG Team
-  year: 2024
-  title: TestNG Documentation
-  venue: TestNG Official Documentation
-  url: https://testng.org/doc/documentation-main.html
-- type: documentation
-  authors:
-  - Spring Team
-  year: 2024
-  title: 'Spring Boot Reference: Testing'
-  venue: Spring Official Documentation
-  url: https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.testing
-- type: documentation
-  authors:
-  - Testcontainers Team
-  year: 2024
-  title: Testcontainers Documentation
-  venue: Testcontainers Official Documentation
-  url: https://java.testcontainers.org/
-- type: documentation
-  authors:
-  - OpenJDK Team
-  year: 2024
-  title: Java Microbenchmark Harness (JMH)
-  venue: OpenJDK Official Project
-  url: https://openjdk.org/projects/code-tools/jmh/
-- type: conference
-  authors:
-  - North, Dan
-  year: 2006
-  title: Introducing BDD
-  venue: Better Software Magazine
-  url: https://dannorth.net/introducing-bdd/
-- type: journal
-  authors:
-  - Fowler, Martin
-  year: 2006
-  title: Mocks Aren't Stubs
-  venue: Martin Fowler's Bliki
-  url: https://martinfowler.com/articles/mocksArentStubs.html
-- type: journal
-  authors:
-  - Meszaros, Gerard
-  year: 2003
-  title: Test Double Patterns
-  venue: XUnit Test Patterns Wiki
-  url: http://xunitpatterns.com/
-- type: standard
-  authors:
-  - ISO/IEC
-  year: 2023
-  title: ISO/IEC/IEEE 29119-1:2023 Software and systems engineering — Software testing
-  venue: International Organization for Standardization
-etymology:
-- term: 单元测试（Unit Test）
-  english: Unit Test
-  origin: 源自 1970 年代 IBM 的层级测试实践，由 Kent Beck 在 1990 年代 Smalltalk 项目 SUnit 中系统化；2000 年与 Erich Gamma 合作用 Java 实现 JUnit，'unit' 一词借自模块化编程中的最小可测单元。
-- term: 桩件（Mock）
-  english: Mock Object
-  origin: '由 Tim Mackinnon、Steve Freeman 与 Philip Craig 在 1999 年伦敦 XP Day 上首次提出，文章 ''Endo-Testing: Unit Testing with Mock Objects'' 发表于 XP 2000 会议；''mock'' 原意为 ''模仿''，与 ''stub''（桩）、''fake''、''spy''、''dummy'' 共同构成 Test Double 五分类（Meszaros 2003）。'
-- term: 断言（Assertion）
-  english: Assertion
-  origin: 源自 C 语言 assert() 宏（1980 年代），由 Brian Kernighan 与 Rob Pike 在《The Practice of Programming》中推广；JUnit 沿用 assertEquals/assertTrue 命名，AssertJ 进一步发展为流式断言（Fluent Assertion）。
-- term: 测试驱动开发（TDD）
-  english: Test-Driven Development
-  origin: 'Kent Beck 在 1990 年代 Chrysler Comprehensive Compensation (C3) 项目中提炼，2002 年成书《Test-Driven Development: By Example》；核心循环 Red-Green-Refactor 源自 Smalltalk SUnit 实践。'
-- term: 行为驱动开发（BDD）
-  english: Behavior-Driven Development
-  origin: Dan North 在 2006 年文章《Introducing BDD》中提出，旨在让 TDD 更贴近业务语言；Given-When-Then 结构由 Chris Matts 与 North 共同发展，工具代表为 JBehave 与 Cucumber。
-- term: 微基准测试（Microbenchmark）
-  english: Microbenchmark
-  origin: 由 Aleksey Shipilev 在 OpenJDK 项目中系统化，2013 年 JMH（Java Microbenchmark Harness）成为事实标准；'micro' 强调对单个方法/代码块的纳秒级测量，区别于 'macro'（系统级）与 'meso'（模块级）。
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/063-LambdaFunctionalProgramming'
+  - 'java/053-ReflectionDynamicProxy'
 ---
+
 ## 引言：从"测试是验证"到"测试是设计"
 
 Java 是企业级软件的主力语言，而单元测试是 Java 工程质量的基石。然而，业界普遍存在两种误区：

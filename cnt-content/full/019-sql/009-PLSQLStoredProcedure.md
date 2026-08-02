@@ -1,19 +1,20 @@
 ---
-order: 9
-title: 'PL-SQL与存储过程'
-module: sql
-category: SQL
+order: 90
+title: PL-SQL与存储过程
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: '存储过程与函数、触发器、游标、异常处理、动态 SQL 与方言对比'
+description: 存储过程与函数、触发器、游标、异常处理、动态 SQL 与方言对比
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/高级查询
-  - sql/性能优化
-  - sql/SQL实战与面试
-  - sql/数据类型
+  - 'sql/007-AdvancedQuery'
+  - 'sql/008-PerformanceOptimization'
+  - 'sql/010-SQLPracticeInterview'
+  - 'sql/011-DataType'
 prerequisites: []
 ---
+
 ## 游标
 
 **基本写法：声明游标**

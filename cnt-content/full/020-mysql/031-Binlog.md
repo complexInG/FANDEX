@@ -1,20 +1,21 @@
 ---
-order: 73
+order: 310
 title: 二进制日志
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL二进制日志binlog：格式、配置、用途（复制与恢复）、清理策略与最佳实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/死锁检测与处理
-  - mysql/分布式事务
-  - mysql/重做日志
-  - mysql/撤销日志
+  - 'mysql/029-DeadlockDetectionHandling'
+  - 'mysql/030-DistributedTransaction'
+  - 'mysql/032-RedoLog'
+  - 'mysql/033-UndoLog'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. binlog 概述
 

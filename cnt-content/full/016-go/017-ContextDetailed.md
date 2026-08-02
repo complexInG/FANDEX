@@ -1,24 +1,25 @@
 ---
-order: 54
+order: 170
 title: Context详解
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'context.Context接口、cancel传播、超时控制、值传递、最佳实践与陷阱'
+description: context.Context接口、cancel传播、超时控制、值传递、最佳实践与陷阱
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Channel原理
-  - go/Goroutine调度
-  - go/接口与类型断言
-  - go/错误处理进阶
-  - go/GMP调度模型
-  - go/Go与中间件
+  - 'go/014-ChannelPrinciple'
+  - 'go/018-GoroutineSchedule'
+  - 'go/019-InterfaceTypeAssertion'
+  - 'go/020-ErrorHandlingAdvanced'
+  - 'go/051-GMPModel'
+  - 'go/047-GoMiddleware'
 prerequisites:
-  - go/概述与环境配置
-  - go/Channel原理
-  - go/接口与类型断言
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/014-ChannelPrinciple'
+  - 'go/019-InterfaceTypeAssertion'
 ---
+
 
 
 # Context 详解：取消传播、超时控制与值传递

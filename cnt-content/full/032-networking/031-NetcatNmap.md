@@ -1,9 +1,8 @@
 ---
 order: 310
 title: Networking nc 与 nmap
-module: networking
-
-category: '032-networking'
+module: 'networking'
+category: 云与基础设施
 difficulty: beginner
 description: Networking nc 与 nmap 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## nc 基本用法
 
 **基本写法：连接 TCP 端口**

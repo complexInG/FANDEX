@@ -1,20 +1,20 @@
 ---
-order: 57
-title: 'Vue3与Web Components'
-module: vue3
-category: Vue3
+order: 140
+title: Vue3与Web Components
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
-description: 'Vue组件与Web Components互操作'
+description: Vue组件与Web Components互操作
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - vue3/生命周期钩子
-  - vue3/Vue3测试策略
-  - vue3/Vue3性能优化实践
-  - vue3/响应式系统
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/012-LifecycleHook'
+  - 'vue3/013-Vue3TestStrategy'
+  - 'vue3/015-Vue3PerformancePractice'
+  - 'vue3/016-ReactiveSystem'
+prerequisites: []
 ---
+
 
 # Vue3 与 Web Components | Vue3 and Web Components Interoperability
 

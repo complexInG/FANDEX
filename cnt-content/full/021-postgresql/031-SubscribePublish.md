@@ -1,20 +1,21 @@
 ---
-order: 76
+order: 310
 title: 订阅与发布
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL逻辑复制：发布与订阅、选择性复制、冲突处理与监控
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/逻辑解码与输出插件
-  - postgresql/增量备份
-  - 'postgresql/SSL-TLS加密连接'
-  - postgresql/基于角色的权限管理
+  - 'postgresql/029-LogicalDecodingOutputPlugin'
+  - 'postgresql/030-IncrementalBackup'
+  - 'postgresql/032-SSLEncryptionConnection'
+  - 'postgresql/033-RoleBasedPermissionManagement'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 逻辑复制概述
 

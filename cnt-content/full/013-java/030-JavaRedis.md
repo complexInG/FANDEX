@@ -1,20 +1,21 @@
 ---
-order: 73
+order: 300
 title: Java与Redis
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Redis缓存与数据结构
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/Java与微服务
-  - java/Java与消息队列
-  - java/Java与Docker
-  - java/Java与GraphQL
+  - 'java/028-JavaMicroservice'
+  - 'java/029-JavaMessageQueue'
+  - 'java/031-JavaDocker'
+  - 'java/032-JavaGraphQL'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 ## 概述
 

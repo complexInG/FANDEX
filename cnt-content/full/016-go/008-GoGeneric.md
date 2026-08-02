@@ -1,19 +1,20 @@
 ---
-order: 8
-title: 'Go 泛型'
-module: go
-category: Go
+order: 80
+title: Go 泛型
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'Go 1.18+ 泛型、类型参数、约束、泛型函数与类型、类型推断、slices/maps/cmp 标准库包与泛型实际应用。'
+description: Go 1.18+ 泛型、类型参数、约束、泛型函数与类型、类型推断、slices/maps/cmp 标准库包与泛型实际应用。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/并发编程
-  - go/错误处理
-  - go/标准库与工具链
-  - go/Web开发与微服务
+  - 'go/006-GoConcurrentProgramming'
+  - 'go/007-GoErrorHandling'
+  - 'go/009-GoStandardLibraryToolchain'
+  - 'go/010-GoWebDevelopmentMicroservice'
 prerequisites: []
 ---
+
 ## 1. 泛型概述
 
 Go 1.18（2022.03）正式引入泛型，是 Go 语言最重要的特性之一。泛型允许编写与类型无关的代码，同时保持类型安全。

@@ -1,24 +1,21 @@
 ---
-order: 100
-tags:
-  - mysql
-  - performance
-  - database
-difficulty: advanced
+order: 610
 title: 索引原理与性能优化
-module: mysql
-category: 'MySQL Advanced'
+module: 'mysql'
+category: 数据库
+difficulty: advanced
 description: 索引结构、覆盖索引、最左前缀与查询调优。
 author: Anonymous
-related:
-  - mysql/存储过程与函数
-  - mysql/MVCC快照读与当前读
-  - mysql/触发器与事件
-  - mysql/Redo与Undo与Binlog写入时机
-prerequisites:
-  - mysql/语法速查
 updated: '2026-08-01'
+related:
+  - 'mysql/059-StoredProcedureAndFunction'
+  - 'mysql/060-MVCCSnapshotCurrentRead'
+  - 'mysql/062-TriggerEvent'
+  - 'mysql/063-RedoUndoBinlogWriteTiming'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 索引原理 (Index Mechanism)
 
@@ -83,7 +80,6 @@ MySQL (InnoDB) 默认使用的索引结构是 B+ 树，它是一种平衡树结�
 #### 4.1.1 创建表时创建索引
 
 ```sql
- -
  CREATE TABLE users (
   id INT PRIMARY KEY,
   name VARCHAR(50),
@@ -97,38 +93,29 @@ MySQL (InnoDB) 默认使用的索引结构是 B+ 树，它是一种平衡树结�
 #### 4.1.2 为现有表添加索引
 
 ```sql
- -
  CREATE INDEX idx_age ON users(age);
- -
  CREATE UNIQUE INDEX idx_email ON users(email);
- -
  CREATE INDEX idx_name_age ON users(name, age);
- -
  CREATE FULLTEXT INDEX idx_content ON articles(content);
 ```
 
 ### 4.2 修改索引
 
 ```sql
- -
  ALTER TABLE users RENAME INDEX idx_age TO idx_user_age;
 ```
 
 ### 4.3 删除索引
 
 ```sql
- -
  DROP INDEX idx_age ON users;
- -
  ALTER TABLE users DROP INDEX idx_age;
 ```
 
 ### 4.4 查看索引
 
 ```sql
- -
  SHOW INDEX FROM users;
- -
  SELECT * FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema = 'database_name' AND table_name = 'users';
 ```
 
@@ -174,26 +161,18 @@ MySQL (InnoDB) 默认使用的索引结构是 B+ 树，它是一种平衡树结�
 #### 5.2.1 开启慢查询日志
 
 ```sql
- -
  SHOW VARIABLES LIKE '%slow_query%';
- -
  SET GLOBAL slow_query_log = 'ON';
- -
  SET GLOBAL long_query_time = 1;
- -
  SET GLOBAL slow_query_log_file = '/var/lib/mysql/slow-query.log';
- -
  SET GLOBAL log_queries_not_using_indexes = 'ON';
 ```
 
 #### 5.2.2 分析慢查询日志
 
 ```bash
- -
  mysqldumpslow -s t /var/lib/mysql/slow-query.log
- -
  mysqldumpslow -s c /var/lib/mysql/slow-query.log
- -
  mysqldumpslow -s r /var/lib/mysql/slow-query.log
 ```
 
@@ -226,10 +205,7 @@ MySQL (InnoDB) 默认使用的索引结构是 B+ 树，它是一种平衡树结�
 当查询的列都包含在索引中时，MySQL 不需要回表查询，直接从索引中获取数据，提高查询效率。
 
 ```sql
- -
- -
  SELECT name, age FROM users WHERE name = 'John';
- -
  SELECT id, name, age FROM users WHERE name = 'John';
 ```
 

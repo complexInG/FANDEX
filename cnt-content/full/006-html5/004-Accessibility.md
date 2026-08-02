@@ -1,22 +1,20 @@
 ---
-order: 30
-tags:
-  - html5
-  - accessibility
-difficulty: intermediate
+order: 40
 title: 无障碍访问
-module: html5
-category: 'HTML5 Basics'
+module: 'html5'
+category: 前端技术
+difficulty: intermediate
 description: Web无障碍访问（A11y）核心概念、ARIA属性、键盘导航、屏幕阅读器适配与WCAG标准。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/基础标签与全局属性
-  - html5/语义化标签
-  - html5/表单与验证
-  - html5/多媒体与Canvas绘图
+  - 'html5/002-HTML5BasicTagGlobalAttribute'
+  - 'html5/003-SemanticTag'
+  - 'html5/005-HTML5FormValidation'
+  - 'html5/006-HTML5MultimediaCanvasDrawing'
 prerequisites: []
 ---
+
 ## 1. 无障碍访问概述
 
 ### 1.1 什么是 Web 无障碍

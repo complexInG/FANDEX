@@ -1,18 +1,19 @@
 ---
-order: 5
+order: 50
 title: 结构体、枚举与模式匹配
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: beginner
-description: '结构体与 impl、枚举与 Option、match 模式匹配与 if let'
+description: 结构体与 impl、枚举与 Option、match 模式匹配与 if let
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - rust/004-RustOwnershipBorrowing
-  - rust/006-RustErrorHandling
+  - 'rust/004-RustOwnershipBorrowing'
+  - 'rust/006-RustErrorHandling'
 prerequisites:
-  - rust/004-RustOwnershipBorrowing
+  - 'rust/004-RustOwnershipBorrowing'
 ---
+
 
 ## 1. 从"登记表"说起：结构体（Struct）
 

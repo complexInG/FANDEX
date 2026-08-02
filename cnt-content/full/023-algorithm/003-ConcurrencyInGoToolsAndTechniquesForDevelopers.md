@@ -1,156 +1,26 @@
 ---
-order: 20
+order: 30
 title: 栈与队列
-module: algorithm
-category: Algorithm/StackQueue
+module: 'algorithm'
+category: 计算机科学
 difficulty: beginner
 description: 栈（Stack）与队列（Queue）的形式化定义、LIFO/FIFO 原理、顺序栈/链式栈/循环队列/链式队列/双端队列/单调栈/单调队列的实现与复杂度分析，涵盖 Bauer-Samelson 1955 叠加原理、Dijkstra 1965 信号量、Hoare 1978 CSP 等历史脉络，附 Python/C++/Java 多语言实现。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-stack
-- algorithm-queue
-- algorithm-datastructure
-- algorithm-lifo-fifo
-- algorithm-monotonic
-- algorithm-deque
-created: 2026-05-27
-updated: 2026-07-20
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 90
+updated: '2026-07-20'
 related:
-- algorithm/算法分析基础与学习路线
-- algorithm/数组与动态数组
-- algorithm/链表
-- algorithm/堆与优先队列
-- algorithm/搜索算法
-- algorithm/递归与回溯
-- algorithm/排序算法
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
+  - 'algorithm/005-LinkedList'
+  - 'algorithm/016-HeapAndPriorityQueue'
+  - 'algorithm/004-SearchAlgorithm'
+  - 'algorithm/011-NQueensBenchmarkBitManipulationApproach'
+  - 'algorithm/002-SortAlgorithm'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/数组与动态数组
-- algorithm/链表
-references:
-- type: journal
-  authors:
-  - Bauer, Friedrich L.
-  - Samelson, Klaus
-  year: 1960
-  title: Sequential formula translation
-  venue: Communications of the ACM
-  volume: 3
-  issue: 2
-  pages: 76-83
-  doi: 10.1145/366994.367017
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1997
-  title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
-  venue: Addison-Wesley Professional
-  version: 3rd edition
-  pages: ISBN 978-0201896831, Section 2.2.1 (Stacks, Queues and Deques) and Section 2.3.2 (Binary Tree Traversal)
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: Chapter 10 (Elementary Data Structures), Section 10.1 (Stacks and Queues), ISBN 978-0262046305
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 1.3 (Bags, Queues, and Stacks) and Section 1.4 (Analysis of Algorithms)
-- type: journal
-  authors:
-  - Dijkstra, Edsger W.
-  year: 1965
-  title: Cooperating sequential processes
-  venue: Technological University Eindhoven, Mathematics Department Report EWD-123
-  pages: 'Reprinted in: Genys, F. (ed.) 1968, The Origin of Concurrent Programming, Springer, pp. 65-138'
-- type: journal
-  authors:
-  - Hoare, C. A. R.
-  year: 1978
-  title: Communicating sequential processes
-  venue: Communications of the ACM
-  volume: 21
-  issue: 8
-  pages: 666-677
-  doi: 10.1145/359576.359585
-- type: journal
-  authors:
-  - Brinch Hansen, Per
-  year: 1973
-  title: Structured multiprogramming
-  venue: Communications of the ACM
-  volume: 16
-  issue: 7
-  pages: 395-397
-  doi: 10.1145/355600.362315
-- type: book
-  authors:
-  - Stroustrup, Bjarne
-  year: 2013
-  title: The C++ Programming Language
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: 'ISBN 978-0321563842, Chapter 31 (STL Containers): std::stack, std::queue, std::deque'
-- type: book
-  authors:
-  - Tanenbaum, Andrew S.
-  - Bos, Herbert
-  year: 2014
-  title: Modern Operating Systems
-  venue: Pearson
-  version: 4th edition
-  pages: ISBN 978-0133591620, Chapter 2 (Processes and Threads) - Ready Queue, Blocked Queue, Round-Robin Scheduler
-- type: website
-  authors:
-  - Oracle Corporation
-  year: 2024
-  title: Java Collections Framework - Deque and ArrayDeque documentation
-  venue: Oracle Java Documentation
-  url: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayDeque.html
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - Cox-Buday, Katherine
-  year: 2017
-  title: 'Concurrency in Go: Tools and Techniques for Developers'
-  venue: O'Reilly Media
-  url: https://www.oreilly.com/library/view/concurrency-in-go/9781491941294/
-  pages: 'ISBN 978-1491941195, Chapter 4 (Go Concurrency Patterns: Channels as Queues)'
-etymology:
-- term: 栈
-  english: stack
-  origin: stack 一词源自古英语 staca（桩、柱），原指一堆叠放的物品。在计算机科学中，Bauer-Samelson 1955 在慕尼黑工业大学研究 ALGOL 编译器时首次系统化"叠加原理"（"延期最后的操作首先执行"），1960 年在 Communications of the ACM 3(2):76-83 发表《Sequential formula translation》。中文"栈"原指马厩中供马站立的木栅栏，引申为"码放、堆叠"，与英文 stack 的物理意象一致
-- term: 队列
-  english: queue
-  origin: queue 源自法语 queue（尾巴），拉丁语 cauda（尾）。原指"等待行列"，如排队买票。最早在计算机科学中作为"作业调度"数据结构出现于 1950 年代早期批处理系统。Knuth TAOCP Vol.1 §2.2.1 给出系统化定义。中文"队列"沿用军事术语"队形、列队"，强调元素有序排列
-- term: 双端队列
-  english: deque (Double-Ended Queue)
-  origin: deque 是 double-ended queue 的缩写，由 Donald Knuth 在 1968 年 TAOCP Vol.1 §2.2.1 中首次系统化定义。允许在两端进行插入删除，兼具栈与队列的特性。常见发音为"deck"（甲板），因其形似双端开口的牌堆。C++ STL 的 std::deque 是工业级实现
-- term: 单调栈
-  english: monotonic stack
-  origin: monotonic 源自希腊语 monos（单一）+ tonos（张力、调子），数学中指单调递增或单调递减的序列。单调栈是栈的受限变体，要求栈内元素始终保持单调性，由 competitive programming 社区在 2000 年代系统化。常用于"寻找下一个更大/更小元素"类问题，时间复杂度均摊 O(n)
-- term: 信号量
-  english: semaphore
-  origin: semaphore 源自希腊语 sema（标志）+ phero（携带），原指铁路信号臂板或旗语。1965 年 Dijkstra 在论文《Cooperating sequential processes》中借用此词命名同步原语，P/V 操作源自荷兰语 proberen（测试）与 verhogen（增加）。信号量内部维护一个等待队列，是队列在并发同步中的核心应用
-- term: 通道
-  english: channel
-  origin: channel 在 CSP 模型中指进程间通信的抽象通道。1978 年 Hoare 在《Communicating sequential processes》提出，每个 channel 是一个无界 FIFO 队列，发送方与接收方通过 channel 同步。Go 语言将 channel 作为一等公民，其底层实现是有锁队列或无锁环形队列
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
+  - 'algorithm/005-LinkedList'
 ---
+
 
 
 ## 1. 概述与学习目标

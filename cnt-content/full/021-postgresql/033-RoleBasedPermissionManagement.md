@@ -1,20 +1,21 @@
 ---
-order: 78
+order: 330
 title: 基于角色的权限管理
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
 description: PostgreSQL基于角色的权限管理：角色继承、组角色、默认权限与权限审计
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/订阅与发布
-  - 'postgresql/SSL-TLS加密连接'
-  - postgresql/行级安全策略
-  - postgresql/数据加密存储
+  - 'postgresql/031-SubscribePublish'
+  - 'postgresql/032-SSLEncryptionConnection'
+  - 'postgresql/034-RowLevelSecurity'
+  - 'postgresql/035-DataEncryptionStorage'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 ## 1. 角色体系
 
 PostgreSQL 使用角色统一管理用户和组。

@@ -1,20 +1,20 @@
 ---
-order: 76
+order: 360
 title: CSS原生嵌套
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: CSS原生嵌套
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/CSS模块化
-  - css/关键渲染路径优化
-  - css/Canvas绘图
-  - 'css/CSS-in-JS与高级布局技巧'
+  - 'css/035-CriticalRenderPathOptimization'
+  - 'css/037-CSSCanvasDrawing'
+  - 'css/038-CSSInJS'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. CSS 原生嵌套概述
 

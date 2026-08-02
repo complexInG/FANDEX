@@ -1,19 +1,20 @@
 ---
-order: 4
+order: 40
 title: 网络与数据持久化
-module: harmonyos
-category: 鸿蒙开发
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
-description: 'HTTP 网络通信、WebSocket 长连接、数据持久化、分布式数据库、跨设备协同与数据同步。'
+description: HTTP 网络通信、WebSocket 长连接、数据持久化、分布式数据库、跨设备协同与数据同步。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/ArkTS与ArkUI
-  - harmonyos/UI组件与动画
-  - harmonyos/多媒体与设备能力
-  - harmonyos/ArkTS语言特性
+  - 'harmonyos/002-ArkTSArkUI'
+  - 'harmonyos/003-UIComponentAnimation'
+  - 'harmonyos/005-MultimediaDeviceCapability'
+  - 'harmonyos/006-ArkTSLanguageFeature'
 prerequisites: []
 ---
+
 
 ## 1. HTTP 网络通信
 

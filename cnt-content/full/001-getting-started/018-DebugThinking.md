@@ -1,19 +1,20 @@
 ---
-order: 60
+order: 180
 title: 调试思想
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 系统化调试方法论：断点调试、日志策略、二分排查与常见调试工具。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/构建工具'
-  - 'getting-started/编程范式基础'
-  - 'getting-started/软件下载地址汇总'
+  - 'getting-started/016-BuildTool'
+  - 'getting-started/017-ProgrammingParadigmBasics'
+  - 'getting-started/019-SoftwareDownloadURLSummary'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 调试概述
 

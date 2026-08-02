@@ -1,18 +1,19 @@
 ---
-order: 2
+order: 20
 title: Web安全与渗透测试
-module: cybersecurity
-category: 网络安全
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: 'OWASP Top 10漏洞、SQL注入、XSS、CSRF、文件上传与命令执行漏洞、渗透测试流程、Nmap扫描、Burp Suite漏洞扫描。'
+description: OWASP Top 10漏洞、SQL注入、XSS、CSRF、文件上传与命令执行漏洞、渗透测试流程、Nmap扫描、Burp Suite漏洞扫描。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/安全基础与防御
-  - cybersecurity/二进制安全与应急响应
-  - cybersecurity/安全工具与实战
+  - 'cybersecurity/001-SecurityBasicsDefense'
+  - 'cybersecurity/003-BinarySecurityAndIncidentResponse'
+  - 'cybersecurity/004-SecurityToolsPractice'
 prerequisites: []
 ---
+
 ## 1. OWASP Top 10
 
 ### 1.1 2021 版 OWASP Top 10

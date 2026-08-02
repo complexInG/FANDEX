@@ -1,33 +1,21 @@
 ---
-order: 103
+order: 540
 title: 虚函数表与多态内存布局
-module: cpp
-category: 'dev-lang'
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: C++虚函数表(vtable)、虚指针(vptr)、多重继承内存布局、RTTI机制与多态实现原理的完整深度解析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/移动语义详解
-  - cpp/完美转发与引用折叠
-  - cpp/智能指针循环引用
-  - cpp/Lambda捕获详解
-  - cpp/对象切片与克隆
+  - 'cpp/052-MoveSemanticsDetailed'
+  - 'cpp/053-PerfectForwardingReferenceCollapse'
+  - 'cpp/055-SmartPointerCircularReference'
+  - 'cpp/056-LambdaCaptureDetailed'
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/类与对象
-  - cpp/继承与多态
-  - cpp/内存模型与对齐
-tags:
-  - Virtual Function
-  - vtable
-  - vptr
-  - Polymorphism
-  - Memory Layout
-  - Multiple Inheritance
-  - RTTI
-  - ABI
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 # 虚函数表与多态内存布局（Virtual Function Table & Polymorphic Memory Layout）
 

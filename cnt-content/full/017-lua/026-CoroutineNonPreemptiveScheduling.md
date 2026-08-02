@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 260
 title: 协程非抢占式调度
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: advanced
 description: Lua协程非抢占式调度详解。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - lua/标准库详解
-  - lua/元表与元方法详解
-  - lua/弱表
-  - lua/环境与全局变量管理
+  - 'lua/024-StandardLibraryDetailed'
+  - 'lua/025-MetatableMetamethodDetailed'
+  - 'lua/027-WeakTable'
+  - 'lua/028-EnvironmentGlobalVariable'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 
 
 # 协程非抢占式调度：Lua 的协作式并发模型

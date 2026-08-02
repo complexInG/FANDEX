@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 120
 title: DNS与DHCP
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
 description: DNS与DHCP：域名解析体系、DNSSEC、DHCP协议与IP地址管理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/网络故障诊断
-  - networking/网络设计与规划
-  - networking/负载均衡技术
-  - networking/网络自动化
+  - 'networking/010-NetworkDiagnosis'
+  - 'networking/011-NetworkDesignPlanning'
+  - 'networking/013-LoadBalanceTech'
+  - 'networking/014-NetworkAutomation'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. DNS 体系
 

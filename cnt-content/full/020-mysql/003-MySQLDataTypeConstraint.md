@@ -1,22 +1,20 @@
 ---
 order: 30
-tags:
-  - mysql
-  - database
+title: MySQL 数据类型与约束
+module: 'mysql'
+category: 数据库
 difficulty: beginner
-title: 'MySQL 数据类型与约束'
-module: mysql
-category: 'MySQL Basics'
 description: 数值、字符串、日期类型及主键、外键、唯一约束。
 author: Anonymous
-related:
-  - mysql/概述与数据库设计
-  - mysql/环境搭建
-  - mysql/SQL数据定义与高级对象
-  - mysql/MyISAM存储引擎
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'mysql/001-MySQLOverviewDatabaseDesign'
+  - 'mysql/002-MySQLEnvSetup'
+  - 'mysql/004-SQLDataDefinitionAdvanced'
+  - 'mysql/005-MyISAMStorageEngine'
+prerequisites: []
 ---
+
 ## 1. 数据类型选择原则 (Selection Principles)
 
 核心目标：

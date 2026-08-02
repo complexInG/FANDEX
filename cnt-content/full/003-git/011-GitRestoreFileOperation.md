@@ -1,20 +1,19 @@
 ---
-order: 55
-title: 'git-restore与文件操作'
-module: git
-category: 'Git Basics'
+order: 110
+title: git-restore与文件操作
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git restore、rm、mv、clean等文件操作命令的详细用法与安全实践。'
+description: git restore、rm、mv、clean等文件操作命令的详细用法与安全实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/三棵树
-  - 'git/git-diff与暂存区操作'
-  - 'git/git-log详解'
-  - git/引用日志
-prerequisites:
-  - git/语法速查
+  - 'git/009-ThreeTrees'
+  - 'git/010-GitDiffStagingOperation'
+  - 'git/012-GitLogDetailed'
+prerequisites: []
 ---
+
 
 ## 1. git restore
 

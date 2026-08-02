@@ -1,57 +1,19 @@
 ---
 order: 380
 title: 组件库工程化
-module: vue3
-category: '010-vue3'
+module: 'vue3'
+category: 前端技术
 difficulty: advanced
 description: 从源码、构建到发布，讲清 Vue 3 组件库的工程骨架：目录设计、样式方案、类型导出与版本发布。
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'vue3/018-ComponentSystem'
   - 'vue3/019-TypeScriptIntegration'
 prerequisites:
   - 'vue3/018-ComponentSystem'
-quiz:
-  - type: choice
-    question: 组件库构建时为什么要同时产出 ESM 与类型声明？
-    options:
-      - 为了文件更多
-      - 应用侧需要按需导入的 ESM，编辑器需要 d.ts 提供类型提示
-      - 只有浏览器需要类型声明
-      - 类型声明会被打包进 JS
-    answer: 1
-    explanation: ESM 支持按需 tree-shaking，d.ts 让使用者获得完整类型体验。
-  - type: fill
-    question: 组件库中用于隔离样式的 Vue 特性是 scoped 与 CSS ____。
-    answer: 变量（CSS Variables）
-    hint: 即设计令牌，常通过 CSS 变量实现主题定制。
-references:
-  - type: documentation
-    authors:
-      - Vue.js Team
-    year: 2026
-    title: Vue 组件基础
-    venue: cn.vuejs.org
-    url: https://cn.vuejs.org/guide/components/
-    accessedDate: '2026-08-02'
-  - type: documentation
-    authors:
-      - Vite Team
-    year: 2026
-    title: Vite 库模式构建
-    venue: cn.vitejs.dev
-    url: https://cn.vitejs.dev/guide/build.html#library-mode
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 组件库
-    english: Component Library
-    origin: library 意为"藏书处"，组件库把可复用的 UI 零件按统一规范"入库"管理。
-estimatedReadingTime: 8
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

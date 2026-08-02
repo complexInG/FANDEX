@@ -1,9 +1,8 @@
 ---
 order: 550
 title: JavaScript 包管理命令速查（npm/pnpm/yarn）
-module: javascript
-
-category: '008-javascript'
+module: 'javascript'
+category: 前端技术
 difficulty: beginner
 description: JavaScript 包管理命令速查（npm/pnpm/yarn） 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 初始化项目
 
 **基本写法：生成 package.json**

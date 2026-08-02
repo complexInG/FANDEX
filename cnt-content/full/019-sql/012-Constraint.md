@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 120
 title: 约束
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
-description: 'SQL约束机制：NOT NULL、UNIQUE、PRIMARY KEY、FOREIGN KEY、CHECK约束的语法、行为与最佳实践'
+description: SQL约束机制：NOT NULL、UNIQUE、PRIMARY KEY、FOREIGN KEY、CHECK约束的语法、行为与最佳实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/SQL实战与面试
-  - sql/数据类型
-  - sql/SELECT执行顺序
-  - sql/过滤条件
+  - 'sql/010-SQLPracticeInterview'
+  - 'sql/011-DataType'
+  - 'sql/013-SelectExecutionOrder'
+  - 'sql/014-FilterCondition'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 约束概述
 
 约束（Constraint）是数据库强制执行的数据完整性规则，确保数据满足业务逻辑要求。约束在 DDL 层面保证数据质量，比应用层验证更可靠。

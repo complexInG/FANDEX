@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 340
 title: 中断与系统调用
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: '中断机制（硬件中断、软件中断）与系统调用（int 0x80、syscall）的原理与流程。'
+description: 中断机制（硬件中断、软件中断）与系统调用（int 0x80、syscall）的原理与流程。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/编译与运行时'
-  - 'cs-fundamentals/进程PCB与线程TCB'
-  - 'cs-fundamentals/用户态与内核态切换'
-  - 'cs-fundamentals/内存分段与分页'
+  - 'cs-fundamentals/032-CompileAndRuntime'
+  - 'cs-fundamentals/033-PCBThreadTCB'
+  - 'cs-fundamentals/035-UserModeKernelModeSwitch'
+  - 'cs-fundamentals/036-MemorySegmentationAndPaging'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 中断机制
 

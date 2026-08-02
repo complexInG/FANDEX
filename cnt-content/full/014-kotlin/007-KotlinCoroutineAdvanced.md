@@ -1,19 +1,20 @@
 ---
-order: 16
-title: 'Kotlin 协程进阶'
-module: kotlin
-category: Kotlin
+order: 70
+title: Kotlin 协程进阶
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: '协程异常处理、取消、超时、Flow 高级操作、StateFlow/SharedFlow 与 Select。'
+description: 协程异常处理、取消、超时、Flow 高级操作、StateFlow/SharedFlow 与 Select。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/泛型与类型系统
-  - kotlin/集合与协程
-  - kotlin/Kotlin多平台
-  - kotlin/DSL与领域特定语言
+  - 'kotlin/005-KotlinGenericTypeSystem'
+  - 'kotlin/006-KotlinCollectionCoroutine'
+  - 'kotlin/008-KotlinMultiplatform'
+  - 'kotlin/009-KotlinDSLDomainSpecificLanguage'
 prerequisites: []
 ---
+
 ## 1. 协程异常处理
 
 ### 1.1 异常传播

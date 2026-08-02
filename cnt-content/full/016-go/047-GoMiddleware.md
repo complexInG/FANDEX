@@ -1,22 +1,23 @@
 ---
-order: 87
+order: 470
 title: Go与中间件
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'Go HTTP 中间件：Handler/HandlerFunc 接口、洋葱模型、Chain 组合律、context 传播、企业级网关实战'
+description: Go HTTP 中间件：Handler/HandlerFunc 接口、洋葱模型、Chain 组合律、context 传播、企业级网关实战
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与HTTP服务器
-  - go/Go与OAuth2
-  - go/Go与限流
-  - go/Go与日志
+  - 'go/045-GoHTTP'
+  - 'go/046-GoOAuth2'
+  - 'go/049-Go'
+  - 'go/036-GoLog'
 prerequisites:
-  - go/概述与环境配置
-  - go/Go与HTTP服务器
-  - go/Channel原理
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/045-GoHTTP'
+  - 'go/014-ChannelPrinciple'
 ---
+
 
 
 # Go HTTP 中间件：从洋葱模型到企业级网关

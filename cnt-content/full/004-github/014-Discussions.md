@@ -1,20 +1,18 @@
 ---
-order: 57
+order: 140
 title: Discussions
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 'GitHub Discussions深度解析：从"Issue 还是 Discussion 怎么选"的困惑切入，讲解论坛式讨论的分类体系、问答、公告、投票与维护者协作。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/Projects看板
-  - github/知识库
-  - github/AI编程助手
-  - github/依赖自动更新
+  - 'github/012-ProjectsBoard'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一个困惑说起：我该用 Issue 还是 Discussion？
 

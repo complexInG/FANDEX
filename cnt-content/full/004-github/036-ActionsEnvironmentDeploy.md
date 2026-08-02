@@ -1,18 +1,19 @@
 ---
-order: 105
+order: 360
 title: Actions环境部署
-module: github
-category: toolchain
+module: 'github'
+category: 工具链
 difficulty: advanced
 description: 'GitHub Actions环境（Environments）旅程驱动详解：按"开发→测试→预发布→生产"的环境旅程，讲透保护规则、必需审查者审批流、环境密钥与部署策略。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/Actions自托管运行器
-  - github/Actions制品传递
+  - 'github/034-ActionsSelfHostedRunner'
+  - 'github/035-ActionsArtifact'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 ## 0. 开始之前：一次"考场分区"的旅程
 
 一所学校办大型考试，考生要经过**四个教室**，每个教室的"门禁"不一样：

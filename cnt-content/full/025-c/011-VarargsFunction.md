@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 110
 title: 可变参数函数
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
 description: stdarg.h 机制、ABI 调用约定、类型安全与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/动态内存管理
-  - c/函数指针与回调
-  - c/信号处理
-  - c/原子操作与内存模型
+  - 'c/009-DynamicMemoryManagement'
+  - 'c/010-FunctionPointerCallback'
+  - 'c/012-SignalHandling'
+  - 'c/013-AtomicAndMemoryModel'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 早期 C 语言的"参数不检查"传统

@@ -1,20 +1,18 @@
 ---
-order: 66
+order: 240
 title: Codespaces
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: intermediate
-description: 'GitHub Codespaces 详解：云端开发环境原理（远程容器）、devcontainer 配置、预构建与使用。'
+description: GitHub Codespaces 详解：云端开发环境原理（远程容器）、devcontainer 配置、预构建与使用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/Web钩子
-  - github/包管理服务
-  - github/代码所有者
-  - github/社区健康文件
+  - 'github/026-CommunityHealthFile'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一个生活场景说起：云端电脑与远程办公
 

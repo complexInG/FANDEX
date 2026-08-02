@@ -1,9 +1,8 @@
 ---
 order: 420
 title: 云计算 Terraform 状态与模块
-module: cloud-computing
-
-category: '034-cloud-computing'
+module: 'cloud-computing'
+category: 云与基础设施
 difficulty: beginner
 description: 云计算 Terraform 状态与模块 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 状态查看
 
 **基本写法：列出状态中所有资源**

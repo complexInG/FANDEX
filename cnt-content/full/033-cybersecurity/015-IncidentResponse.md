@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 150
 title: 应急响应
-module: cybersecurity
-category: 网络安全
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: advanced
 description: 应急响应：事件分类、取证分析、遏制策略、恢复流程与复盘
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/云安全
-  - cybersecurity/对称加密
-  - cybersecurity/非对称加密
-  - cybersecurity/哈希算法
+  - 'cybersecurity/013-CloudSecurity'
+  - 'cybersecurity/014-SymmetricEncryption'
+  - 'cybersecurity/016-AsymmetricEncryption'
+  - 'cybersecurity/017-HashAlgorithm'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 ## 1. 应急响应框架
 
 ### 1.1 PICERL 模型

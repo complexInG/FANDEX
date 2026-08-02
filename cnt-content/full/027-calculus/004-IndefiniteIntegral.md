@@ -1,19 +1,20 @@
 ---
-order: 4
+order: 40
 title: 不定积分
-module: calculus
-category: 高等数学
+module: 'calculus'
+category: 数学
 difficulty: intermediate
 description: 原函数与不定积分、基本积分公式、换元积分法（第一/二类）、分部积分法、有理函数积分、三角函数积分。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - calculus/导数与微分
-  - calculus/微分中值定理
-  - calculus/定积分与应用
-  - calculus/多元函数微分
+  - 'calculus/002-PhilosophiaeNaturalisPrincipiaMathematica'
+  - 'calculus/003-AMeanValueTheorem'
+  - 'calculus/005-DefiniteIntegralAndApplication'
+  - 'calculus/006-MultivariateFunctionDifferential'
 prerequisites: []
 ---
+
 
 ## 1. 原函数与不定积分
 

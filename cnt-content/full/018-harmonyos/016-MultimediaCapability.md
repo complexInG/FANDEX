@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 160
 title: 多媒体能力
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 相机、音频与视频
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/手势与交互
-  - harmonyos/通知与权限
-  - harmonyos/传感器与位置
-  - harmonyos/分布式能力
+  - 'harmonyos/014-GestureInteraction'
+  - 'harmonyos/015-NotificationPermission'
+  - 'harmonyos/017-SensorLocation'
+  - 'harmonyos/019-DistributedCapability'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 概述
 
 HarmonyOS 提供了完整的多媒体能力，涵盖相机拍照录像、音频录制与播放、视频播放与录制等功能。这些能力通过 @ohos.multimedia 命名空间下的模块提供，包括 camera（相机）、audio（音频）、media（媒体播放）等。多媒体操作通常需要申请相应权限，并在使用完毕后及时释放资源，避免占用系统硬件。

@@ -1,20 +1,20 @@
 ---
-order: 51
+order: 70
 title: Provide与Inject
-module: vue3
-category: Vue3
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
 description: 依赖注入与跨层级通信
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - vue3/Teleport与Suspense
-  - vue3/组合式API
-  - vue3/自定义指令进阶
-  - vue3/Transition与动画
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/005-TeleportSuspense'
+  - 'vue3/006-API'
+  - 'vue3/008-CustomDirectiveAdvanced'
+  - 'vue3/009-TransitionAnimation'
+prerequisites: []
 ---
+
 
 # Provide 与 Inject | Dependency Injection in Vue 3
 

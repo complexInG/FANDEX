@@ -1,19 +1,20 @@
 ---
-order: 51
+order: 220
 title: 特征值性质
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 特征值的基本性质，迹与特征值的关系，行列式与特征值的关系，矩阵运算的特征值，Cayley-Hamilton 定理，含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/特征值与特征向量计算'
-  - 'linear-algebra/矩阵对角化'
-  - 'linear-algebra/实对称矩阵的对角化'
+  - 'linear-algebra/025-EigenvalueAndEigenvectorCalculation'
+  - 'linear-algebra/027-MatrixDiagonalization'
+  - 'linear-algebra/028-RealSymmetricMatrixDiagonalization'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从一个生活场景说起：矩阵的"身份证"
 

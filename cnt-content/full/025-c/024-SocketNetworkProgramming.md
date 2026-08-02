@@ -1,20 +1,21 @@
 ---
-order: 66
+order: 240
 title: Socket网络编程
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: advanced
 description: TCP/UDP套接字编程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/复杂声明解析
-  - c/POSIX线程
-  - c/进程与管道
-  - c/共享内存与信号量
+  - 'c/021-ComplexDeclarationParsing'
+  - 'c/023-POSIXThread'
+  - 'c/025-ProcessAndPipe'
+  - 'c/026-SharedMemorySemaphore'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 概述
 
 Socket（套接字）是网络通信的端点，由IP地址和端口号标识。C语言通过BSD Socket API提供网络编程接口，支持TCP（可靠传输）和UDP（快速传输）两种主要协议。Socket编程是构建网络服务器、客户端应用和分布式系统的基础。

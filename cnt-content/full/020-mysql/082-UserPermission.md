@@ -1,9 +1,8 @@
 ---
 order: 820
 title: MySQL 用户与权限管理
-module: mysql
-
-category: '020-mysql'
+module: 'mysql'
+category: 数据库
 difficulty: beginner
 description: MySQL 用户与权限管理 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 用户管理
 
 **单行写法：创建用户**

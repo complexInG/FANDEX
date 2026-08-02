@@ -1,20 +1,19 @@
 ---
-order: 56
+order: 170
 title: 源生成器
-module: csharp
-category: 'C#'
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'C# Source Generators'
+description: C# Source Generators
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/泛型与协变逆变
-  - csharp/Span与Memory
-  - 'csharp/CSharp与Unity游戏开发'
-  - 'csharp/CSharp与Blazor'
+  - 'csharp/015-GenericCovarianceContravariance'
+  - 'csharp/016-SpanMemory'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 # C# 源生成器深度解析
 

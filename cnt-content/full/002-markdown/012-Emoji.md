@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 120
 title: Emoji表情
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: beginner
 description: Markdown中Emoji的使用方式：短代码语法、Unicode字符与平台兼容性。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/删除线
-  - markdown/自动链接
-  - markdown/下标与上标
-  - markdown/LaTeX数学公式
+  - 'markdown/010-Strikethrough'
+  - 'markdown/011-AutoLink'
+  - 'markdown/013-SubscriptSuperscript'
+  - 'markdown/014-LaTeXMathFormula'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 
 ## 1. Emoji 概述
 

@@ -1,19 +1,20 @@
 ---
 order: 90
-title: 'SVG 变换 transform'
-module: svg
-category: 'SVG Transform'
+title: SVG 变换 transform
+module: 'svg'
+category: 前端技术
 difficulty: intermediate
-description: 'translate、rotate、scale、skew、matrix 与 transform-origin 变换组合。'
+description: translate、rotate、scale、skew、matrix 与 transform-origin 变换组合。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/坐标系与viewBox
-  - svg/渐变与图案
-  - svg/动画基础
+  - 'svg/003-SVGCoordinateSystemViewBox'
+  - 'svg/008-SVGGradientPattern'
+  - 'svg/013-SVGAnimationBasics'
 prerequisites:
-  - svg/坐标系与viewBox
+  - 'svg/003-SVGCoordinateSystemViewBox'
 ---
+
 ## 1. transform 属性
 
 `transform` 对元素或分组应用几何变换，**不影响后续元素的坐标系**（除非在 `<g>` 上）。

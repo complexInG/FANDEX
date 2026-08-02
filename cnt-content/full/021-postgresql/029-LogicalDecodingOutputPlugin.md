@@ -1,20 +1,21 @@
 ---
-order: 74
+order: 290
 title: 逻辑解码与输出插件
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL逻辑解码与输出插件：逻辑复制基础、pgoutput、wal2json与CDC
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/级联复制
-  - postgresql/物理复制槽
-  - postgresql/增量备份
-  - postgresql/订阅与发布
+  - 'postgresql/027-CascadingReplication'
+  - 'postgresql/028-PhysicalReplicationSlot'
+  - 'postgresql/030-IncrementalBackup'
+  - 'postgresql/031-SubscribePublish'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 逻辑解码概述
 

@@ -1,20 +1,21 @@
 ---
-order: 61
+order: 180
 title: 转换工具
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
 description: Markdown转换工具：Pandoc的安装、使用与高级转换技巧。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/编辑器功能
-  - markdown/链接与图片
-  - markdown/自动目录
-  - markdown/锚点跳转
+  - 'markdown/016-EditorFeature'
+  - 'markdown/017-LinkImage'
+  - 'markdown/019-AutoTOC'
+  - 'markdown/020-AnchorJump'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 
 ## 1. 转换工具概述
 

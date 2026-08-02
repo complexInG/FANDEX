@@ -1,20 +1,21 @@
 ---
-order: 74
-title: 'CSS-Modules'
-module: css
-category: CSS
+order: 340
+title: CSS-Modules
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-description: 'CSS Modules'
+description: CSS Modules
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/BEM命名方法论
-  - css/CSS原子化
-  - css/关键渲染路径优化
-  - css/CSS原生嵌套
+  - 'css/032-BEMNamingMethodology'
+  - 'css/033-CSSAtomic'
+  - 'css/035-CriticalRenderPathOptimization'
+  - 'css/036-CSSNativeNesting'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. CSS Modules 概述
 

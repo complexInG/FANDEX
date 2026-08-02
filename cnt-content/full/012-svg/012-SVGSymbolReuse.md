@@ -1,19 +1,20 @@
 ---
 order: 120
-title: 'SVG 符号与复用'
-module: svg
-category: 'SVG Reuse'
+title: SVG 符号与复用
+module: 'svg'
+category: 前端技术
 difficulty: intermediate
-description: 'symbol、use、defs 复用机制与图标系统构建。'
+description: symbol、use、defs 复用机制与图标系统构建。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/基础语法与文档结构
-  - svg/CSS样式化
-  - svg/图标与可访问性
+  - 'svg/002-SVGBasicSyntaxDocStructure'
+  - 'svg/014-SVGCSSStyling'
+  - 'svg/017-SVGIconAccessibility'
 prerequisites:
-  - svg/基础语法与文档结构
+  - 'svg/002-SVGBasicSyntaxDocStructure'
 ---
+
 ## 1. 为什么要复用
 
 重复代码会带来体积膨胀、维护困难、不一致风险。SVG 提供三种复用机制：

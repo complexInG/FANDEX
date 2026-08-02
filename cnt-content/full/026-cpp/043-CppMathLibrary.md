@@ -1,22 +1,23 @@
 ---
-order: 85
+order: 430
 title: C++数学库
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: 数值计算、标准数学库与高性能第三方数学库的工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/C++与WebAssembly
-  - cpp/C++反射与元编程
-  - cpp/智能指针
-  - cpp/C++正则表达式
-  - cpp/C++性能优化
+  - 'cpp/041-CppWebAssembly'
+  - 'cpp/042-CppReflectionMetaprogramming'
+  - 'cpp/044-SmartPointer'
+  - 'cpp/030-CppRegex'
+  - 'cpp/035-CppPerformance'
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/模板
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/062-CppTemplate'
 ---
+
 ## 历史动机与背景
 
 C++ 数学库的发展历史反映了数值计算从基础算术到高性能科学计算的演进过程。

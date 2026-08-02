@@ -1,9 +1,8 @@
 ---
 order: 500
 title: GCP GKE Kubernetes 命令
-module: cloud-computing
-
-category: '034-cloud-computing'
+module: 'cloud-computing'
+category: 云与基础设施
 difficulty: beginner
 description: GCP GKE Kubernetes 命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 凭证与项目
 
 **基本写法：登录 GCP**

@@ -1,19 +1,20 @@
 ---
-order: 106
+order: 210
 title: TDD与BDD
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: 'TDD 测试驱动开发与 BDD 行为驱动开发：红-绿-重构循环、Given-When-Then 模式。'
+description: TDD 测试驱动开发与 BDD 行为驱动开发：红-绿-重构循环、Given-When-Then 模式。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/安全测试'
-  - 'software-testing/测试双'
-  - 'software-testing/CI-CD测试门禁'
+  - 'software-testing/019-SecurityTesting'
+  - 'software-testing/020-TestDouble'
+  - 'software-testing/022-CICDTest'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 
 ## 1. TDD
 

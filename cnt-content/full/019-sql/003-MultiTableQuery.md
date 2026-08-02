@@ -1,19 +1,20 @@
 ---
-order: 3
+order: 30
 title: 多表查询
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
-description: 'JOIN 类型、自连接、子查询、EXISTS/IN、CTE 与递归 CTE'
+description: JOIN 类型、自连接、子查询、EXISTS/IN、CTE 与递归 CTE
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/概述与标准
-  - sql/数据查询基础
-  - sql/数据操作
-  - sql/数据定义
+  - 'sql/001-OverviewStandard'
+  - 'sql/002-DataQueryBasics'
+  - 'sql/004-DML'
+  - 'sql/005-DDL'
 prerequisites: []
 ---
+
 ## INNER JOIN
 
 **换行写法：基本内连接**

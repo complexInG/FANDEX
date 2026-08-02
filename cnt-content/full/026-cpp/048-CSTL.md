@@ -1,22 +1,21 @@
 ---
-order: 90
-tags:
-  - cpp
+order: 480
+title: C++ STL 容器与迭代器
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-title: 'C++ STL 容器与迭代器'
-module: cpp
-category: 'C++ Basics'
 description: 顺序容器、关联容器、无序容器及迭代器体系。
 author: Anonymous
-related:
-  - cpp/C++格式化输出
-  - cpp/C++26与最新标准
-  - cpp/并发编程
-  - cpp/RAII资源管理
-prerequisites:
-  - cpp/概述与现代标准
 updated: '2026-08-01'
+related:
+  - 'cpp/046-CppFormatOutput'
+  - 'cpp/047-Cpp26AndLatestStandard'
+  - 'cpp/049-ConcurrentProgramming'
+  - 'cpp/050-CCoreGuidelinesResourceManagement'
+prerequisites:
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 ## 1. 序列容器
 

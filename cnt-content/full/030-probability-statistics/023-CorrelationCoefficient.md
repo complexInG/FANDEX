@@ -1,19 +1,20 @@
 ---
-order: 43
+order: 200
 title: 相关系数
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 相关系数的定义（标准化变量的协方差）、性质、有界性证明、意义与局限性、与独立性的关系。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/方差与标准差'
-  - 'probability-statistics/协方差'
-  - 'probability-statistics/矩与协方差矩阵'
+  - 'probability-statistics/021-VarianceAndStandardDeviation'
+  - 'probability-statistics/022-Covariance'
+  - 'probability-statistics/024-MomentAndCovarianceMatrix'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：一把"标准尺子"量遍所有关联
 

@@ -1,23 +1,24 @@
 ---
-order: 5
-title: 'C# 异步编程'
-module: csharp
-category: 'C#'
+order: 50
+title: C# 异步编程
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: 'APM/EAP/TAP 演化、async/await 状态机、Task/ValueTask、SynchronizationContext、ConfigureAwait、并行编程(TPL)、Channel、IAsyncEnumerable、异步流、常见陷阱与最佳实践'
+description: APM/EAP/TAP 演化、async/await 状态机、Task/ValueTask、SynchronizationContext、ConfigureAwait、并行编程(TPL)、Channel、IAsyncEnumerable、异步流、常见陷阱与最佳实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - csharp/概述与环境配置
-  - csharp/基础语法
-  - csharp/面向对象编程
-  - csharp/泛型与集合
-  - csharp/高级特性
-  - csharp/NET平台与生态
+  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/002-CBasicSyntax'
+  - 'csharp/003-COOP'
+  - 'csharp/004-CGenericCollection'
+  - 'csharp/007-CAdvancedFeature'
+  - 'csharp/008-CNET'
 prerequisites:
-  - csharp/概述与环境配置
-  - csharp/基础语法
+  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/002-CBasicSyntax'
 ---
+
 
 # C# 异步编程
 

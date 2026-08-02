@@ -1,22 +1,21 @@
 ---
-order: 70
-tags:
-  - c
-difficulty: intermediate
+order: 280
 title: 函数详解
-module: c
-category: 'C Basics'
+module: 'c'
+category: 计算机科学
+difficulty: intermediate
 description: 函数定义、参数传递、作用域、递归及函数指针。
 author: Anonymous
-related:
-  - c/共享内存与信号量
-  - c/文件系统操作
-  - c/国际化与本地化
-  - c/构建系统
-prerequisites:
-  - c/概述
 updated: '2026-08-01'
+related:
+  - 'c/026-SharedMemorySemaphore'
+  - 'c/027-FileSystemOperation'
+  - 'c/030-HelloWorldOrOr'
+  - 'c/031-BuildSystem'
+prerequisites:
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 1. 函数的概念与重要性
 
 ### 1.1 函数的定义

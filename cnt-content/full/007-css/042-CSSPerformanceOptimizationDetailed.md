@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 420
 title: CSS性能优化详解
-module: css
-category: 'dev-lang'
+module: 'css'
+category: 前端技术
 difficulty: advanced
 description: CSS性能优化深度指南：关键CSS内联、异步加载、选择器优化、渲染性能提升。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/理论知识点
-  - css/CSS新特性
-  - css/HTML语义化与SEO优化
-  - css/响应式图片
+  - 'css/040-CSSTheoryKnowledge'
+  - 'css/041-CSSNewFeatures'
+  - 'css/043-HTMLSemanticSEO'
+  - 'css/044-ResponsiveImage'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. 关键渲染路径与 CSS
 

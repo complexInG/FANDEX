@@ -1,19 +1,20 @@
 ---
 order: 110
-title: 'SVG 裁剪与蒙版'
-module: svg
-category: 'SVG Effects'
+title: SVG 裁剪与蒙版
+module: 'svg'
+category: 前端技术
 difficulty: advanced
-description: 'clipPath 硬裁剪、mask 软蒙版、 luminance 与 alpha 蒙版技巧。'
+description: clipPath 硬裁剪、mask 软蒙版、 luminance 与 alpha 蒙版技巧。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/滤镜详解
-  - svg/渐变与图案
-  - svg/变换transform
+  - 'svg/010-SVGFilterDetailed'
+  - 'svg/008-SVGGradientPattern'
+  - 'svg/009-SVGTransformTransform'
 prerequisites:
-  - svg/滤镜详解
+  - 'svg/010-SVGFilterDetailed'
 ---
+
 ## 1. clipPath 裁剪路径
 
 `<clipPath>` 定义硬裁剪区域，区域外的内容完全不显示（无过渡）。

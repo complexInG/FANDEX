@@ -1,21 +1,19 @@
 ---
-order: 110
-tags:
-  - typescript
-  - project
+order: 500
+title: TypeScript 项目示例：类型安全的 API 客户端
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
-title: 'TypeScript 项目示例：类型安全的 API 客户端'
-module: typescript
-category: 'TS Practice'
-description: '综合运用泛型、装饰器与类型体操的类型安全 API 客户端。'
-related:
-  - typescript/tsconfig严格模式
-  - typescript/装饰器标准实现
-  - typescript/理论知识点
-prerequisites:
-  - typescript/语法速查
+description: 综合运用泛型、装饰器与类型体操的类型安全 API 客户端。
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'typescript/048-TsconfigStrictMode'
+  - 'typescript/049-DecoratorStandardImpl'
+  - 'typescript/051-ATheoryOfTypePolymorphismInProgramming'
+prerequisites: []
 ---
+
 
 | 请求拦截器 | 请求前添加认证头、日志等       |
 | ---------- | ------------------------------ |

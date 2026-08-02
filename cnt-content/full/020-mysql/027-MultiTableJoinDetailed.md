@@ -1,23 +1,21 @@
 ---
-order: 70
-tags:
-  - mysql
-  - database
-difficulty: intermediate
+order: 270
 title: 多表联查详解
-module: mysql
-category: 'MySQL Advanced'
+module: 'mysql'
+category: 数据库
+difficulty: intermediate
 description: 内连接、外连接、交叉连接与自连接。
 author: Anonymous
-related:
-  - mysql/事务隔离级别底层实现
-  - mysql/MVCC原理
-  - mysql/锁分类
-  - mysql/死锁检测与处理
-prerequisites:
-  - mysql/语法速查
 updated: '2026-08-01'
+related:
+  - 'mysql/025-TransactionIsolationImplementation'
+  - 'mysql/026-MVCCPrinciple'
+  - 'mysql/028-LockClassification'
+  - 'mysql/029-DeadlockDetectionHandling'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 联查基础概念
 
@@ -26,7 +24,6 @@ updated: '2026-08-01'
 多表联查是指通过一定的条件将两个或多个表的数据关联在一起，从而获取更丰富的信息。
 
 ```sql
- -
  SELECT 列列表
  from 表1
  JOIN 表2 ON 连接条件
@@ -76,7 +73,6 @@ flowchart LR
  SELECT *
  from table1
  inNER JOIN table2 ON table1.id = table2.id;
- -
  SELECT *
  from table1
  JOIN table2 ON table1.id = table2.id;
@@ -85,7 +81,6 @@ flowchart LR
 **示例**：
 
 ```sql
- -
  SELECT e.emp_name, d.dept_name
  from employees e
  inNER JOIN departments d ON e.dept_id = d.dept_id;
@@ -120,7 +115,6 @@ flowchart LR
 **示例**：
 
 ```sql
- -
  SELECT d.dept_name, e.emp_name
  from departments d
  LEFT JOIN employees e ON d.dept_id = e.dept_id;
@@ -154,7 +148,6 @@ flowchart LR
 **示例**：
 
 ```sql
- -
  SELECT o.order_id, u.username
  from users u
  RIGHT JOIN orders o ON u.id = o.user_id;
@@ -181,7 +174,6 @@ flowchart LR
 **语法**：
 
 ```sql
- -
  SELECT *
  from table1
  LEFT JOIN table2 ON table1.id = table2.id
@@ -198,18 +190,14 @@ flowchart LR
 **语法**：
 
 ```sql
- -
  SELECT * FROM table1 CROSS JOIN table2;
- -
  SELECT * FROM table1, table2;
- -
  SELECT * FROM table1 CROSS JOIN table2 WHERE condition;
 ```
 
 **示例**：
 
 ```sql
- -
  SELECT d.dept_name, e.emp_name
  from departments d
  CROSS JOIN employees e;
@@ -222,11 +210,8 @@ flowchart LR
 **语法**：
 
 ```sql
- -
  SELECT * FROM employees NATURAL JOIN departments;
- -
  SELECT * FROM employees NATURAL LEFT JOIN departments;
- -
  SELECT * FROM employees NATURAL RIGHT JOIN departments;
 ```
 
@@ -275,7 +260,6 @@ flowchart LR
 **适用场景**：小表驱动大表
 
 ```sql
- -
  EXPLAIN
  SELECT e.emp_name, d.dept_name
  from employees e
@@ -294,7 +278,6 @@ flowchart LR
 **适用场景**：大表之间的连接，MySQL 8.0+ 支持
 
 ```sql
- -
  SELECT /*+ HASH_JOIN(d) */
   e.emp_name, d.dept_name
  from employees e
@@ -326,7 +309,6 @@ flowchart LR
 3. 查看执行计划中的 `type` 和 `rows` 字段判断
 
 ```sql
- -
  EXPLAIN ANALYZE
  SELECT e.emp_name, d.dept_name
  from employees e
@@ -340,7 +322,6 @@ flowchart LR
 ### 4.1 一对多关系联查
 
 ```sql
- -
  SELECT
   o.order_id,
   o.order_date,
@@ -355,7 +336,6 @@ flowchart LR
 ### 4.2 多对多关系联查
 
 ```sql
- -
  SELECT
   s.student_name,
   c.course_name
@@ -368,13 +348,11 @@ flowchart LR
 ### 4.3 自连接
 
 ```sql
- -
  SELECT
   e.emp_name AS 员工,
   m.emp_name AS 上级
  from employees e
  LEFT JOIN employees m ON e.manager_id = m.emp_id;
- -
  with RECURSIVE emp_hierarchy AS (
   SELECT emp_id, emp_name, manager_id, 1 AS level
   FROM employees
@@ -390,7 +368,6 @@ flowchart LR
 ### 4.4 三表及以上联查
 
 ```sql
- -
  SELECT
   u.username,
   o.order_id,
@@ -408,7 +385,6 @@ flowchart LR
 ### 4.5 条件联查
 
 ```sql
- -
  SELECT
   e.emp_name,
   d.dept_name,
@@ -431,12 +407,9 @@ flowchart LR
 **原则**：确保连接列和 WHERE 条件列有索引
 
 ```sql
- -
  CREATE INDEX idx_employees_dept_id ON employees(dept_id);
  CREATE INDEX idx_orders_user_id ON orders(user_id);
- -
  CREATE INDEX idx_orders_user_date ON orders(user_id, order_date);
- -
  CREATE UNIQUE INDEX idx_users_email ON users(email);
 ```
 
@@ -449,9 +422,7 @@ flowchart LR
 3. 使用 LIMIT 限制结果集
 
 ```sql
- -
  SELECT * FROM employees JOIN departments ON ...;
- -
  SELECT e.emp_name, d.dept_name
  from employees e
  JOIN departments d ON e.dept_id = d.dept_id
@@ -464,7 +435,6 @@ flowchart LR
 **原则**：小表驱动大表
 
 ```sql
- -
  EXPLAIN
  SELECT e.emp_name, o.order_id
  from employees e
@@ -474,17 +444,14 @@ flowchart LR
 ### 5.4 使用提示优化器
 
 ```sql
- -
  SELECT /*+ INDEX(e idx_employees_dept_id) */
   e.emp_name, d.dept_name
  from employees e
  JOIN departments d ON e.dept_id = d.dept_id;
- -
  SELECT /*+ HASH_JOIN(d) */
   e.emp_name, d.dept_name
  from employees e
  JOIN departments d ON e.dept_id = d.dept_id;
- -
  SELECT /*+ MERGE_JOIN(d) */
   e.emp_name, d.dept_name
  from employees e
@@ -521,11 +488,9 @@ flowchart LR
 **解决方案**：
 
 ```sql
- -
  SELECT DISTINCT e.emp_name
  from employees e
  JOIN orders o ON e.emp_id = o.emp_id;
- -
  SELECT e.emp_name
  from employees e
  JOIN orders o ON e.emp_id = o.emp_id
@@ -538,13 +503,11 @@ flowchart LR
 **解决方案**：
 
 ```sql
- -
  SELECT
   e.emp_name,
   COALESCE(d.dept_name, '无部门') AS dept_name
  from employees e
  LEFT JOIN departments d ON e.dept_id = d.dept_id;
- -
  SELECT
   e.emp_name,
   IFNULL(d.dept_name, '无部门') AS dept_name
@@ -563,12 +526,9 @@ flowchart LR
 4. 减少返回数据量
 
 ```sql
- -
  EXPLAIN ANALYZE
  SELECT ...
- -
  SHOW INDEX FROM employees;
- -
  SHOW VARIABLES LIKE 'slow_query_log';
 ```
 
@@ -583,13 +543,9 @@ flowchart LR
   **解决方案**：
 
 ```sql
- -
  SELECT * FROM employees, departments; -- 笛卡尔积
- -
  SELECT * FROM employees e JOIN departments d ON e.dept_id = d.dept_id;
- -
  SELECT * FROM employees e JOIN departments d ON e.emp_id = d.dept_id;
- -
  SELECT * FROM employees e JOIN departments d ON e.dept_id = d.dept_id;
 ```
 

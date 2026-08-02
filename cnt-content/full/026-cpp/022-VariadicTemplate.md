@@ -1,30 +1,24 @@
 ---
-order: 67
+order: 220
 title: 变参模板
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: 可变参数模板(Variadic Templates)与折叠表达式(Fold Expressions)的完整原理、实现与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/多线程与并发
-  - cpp/类型特征与SFINAE
-  - cpp/constexpr与编译期计算
-  - cpp/命名空间与链接
-  - cpp/模板元编程
+  - 'cpp/020-MultithreadingConcurrency'
+  - 'cpp/021-TypeTraitsSFINAE'
+  - 'cpp/023-ConstexprCompileTime'
+  - 'cpp/024-NamespaceLinkage'
+  - 'cpp/009-ATourOfC3rdEditionOnlineExcerpts'
 prerequisites:
-  - cpp/模板
-  - cpp/类型系统
-  - cpp/constexpr与编译期计算
-tags:
-  - C++11
-  - C++17
-  - Variadic Templates
-  - Fold Expressions
-  - Template Metaprogramming
-  - Parameter Pack
+  - 'cpp/062-CppTemplate'
+  - 'cpp/003-CppTypeSystem'
+  - 'cpp/023-ConstexprCompileTime'
 ---
+
 
 # 变参模板（Variadic Templates）
 

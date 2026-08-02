@@ -1,20 +1,21 @@
 ---
-order: 105
+order: 330
 title: 安全基线
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: '安全基线：CIS Benchmark、等保 2.0 与加固实践。'
+description: 安全基线：CIS Benchmark、等保 2.0 与加固实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/零信任架构
-  - cybersecurity/身份与访问管理
-  - cybersecurity/漏洞扫描工具
-  - cybersecurity/WAF规则
+  - 'cybersecurity/031-ZeroTrustArchitecture'
+  - 'cybersecurity/032-IdentityAccessManagement'
+  - 'cybersecurity/034-VulnerabilityScanTools'
+  - 'cybersecurity/035-WAFRule'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. CIS Benchmark
 

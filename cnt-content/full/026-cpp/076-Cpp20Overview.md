@@ -1,9 +1,8 @@
 ---
 order: 760
 title: C++20 新特性汇总
-module: cpp
-
-category: '026-cpp'
+module: 'cpp'
+category: 计算机科学
 difficulty: beginner
 description: C++20 新特性汇总 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 四大核心特性
 
 **基本写法：Concepts 概念**

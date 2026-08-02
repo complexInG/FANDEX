@@ -1,19 +1,20 @@
 ---
-order: 81
+order: 340
 title: Z检验
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 单总体均值Z检验、双总体均值差Z检验、大样本比例Z检验的原理与应用，以"已知标准尺子"类比贯穿。
+description: '单总体均值Z检验、双总体均值差Z检验、大样本比例Z检验的原理与应用，以"已知标准尺子"类比贯穿。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/假设检验基本概念'
-  - 'probability-statistics/t检验'
-  - 'probability-statistics/卡方检验'
+  - 'probability-statistics/040-HypothesisTestingBasics'
+  - 'probability-statistics/042-TTest'
+  - 'probability-statistics/043-ChiSquareTest'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 用一把"已知刻度的标准尺"量东西
 

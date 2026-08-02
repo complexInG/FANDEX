@@ -1,18 +1,19 @@
 ---
-order: 7
+order: 70
 title: 集合与迭代器
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: intermediate
-description: 'Vec、HashMap、HashSet、String 与迭代器链式操作'
+description: Vec、HashMap、HashSet、String 与迭代器链式操作
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - rust/004-RustOwnershipBorrowing
-  - rust/008-RustGenericTrait
+  - 'rust/004-RustOwnershipBorrowing'
+  - 'rust/008-RustGenericTrait'
 prerequisites:
-  - rust/004-RustOwnershipBorrowing
+  - 'rust/004-RustOwnershipBorrowing'
 ---
+
 
 ## 1. 从"工具箱"说起：集合总览
 

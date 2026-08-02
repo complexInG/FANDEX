@@ -1,21 +1,20 @@
 ---
 order: 30
-tags:
-  - markdown
+title: Markdown 段落与换行
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
-title: 'Markdown 段落与换行'
-module: markdown
-category: 'Markdown Basics'
-description: 'Markdown 段落与换行的基本语法和最佳实践。'
+description: Markdown 段落与换行的基本语法和最佳实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/语法指南
-  - markdown/标题语法
-  - markdown/基础文本格式
-  - markdown/CommonMark规范
+  - 'markdown/001-SyntaxGuide'
+  - 'markdown/002-HeadingSyntax'
+  - 'markdown/004-BasicTextFormat'
+  - 'markdown/005-CommonMarkSpec'
 prerequisites: []
 ---
+
 ## 1. 引言
 
 段落与换行是 Markdown 文档中控制文本布局的基本元素，正确使用它们可以提高文档的可读性。
@@ -115,8 +114,8 @@ prerequisites: []
 # 标题
 
 ## 这是一个段落。
-
--
+- 无序列表项 1
+- 无序列表项 2
 
 ```java
 // 代码块

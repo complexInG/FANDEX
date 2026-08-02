@@ -1,20 +1,20 @@
 ---
-order: 50
+order: 60
 title: 体系架构
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL体系架构：进程模型、共享内存、本地内存、后台进程与数据目录结构
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/复制与高可用
-  - postgresql/语法速查
-  - postgresql/锁机制
-  - postgresql/死锁检测与处理
+  - 'postgresql/005-ReplicationHA'
+  - 'postgresql/007-LockMechanism'
+  - 'postgresql/008-DeadlockDetectionHandling'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 进程模型
 

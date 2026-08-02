@@ -1,18 +1,19 @@
 ---
-order: 7
+order: 70
 title: Astro 样式与资源优化
-module: astro
-category: Astro
+module: 'astro'
+category: 前端技术
 difficulty: intermediate
-description: '流程驱动掌握 Astro 样式与资源：全局风格、scoped 样式、Fonts API、Image 组件与 SVG 优化'
+description: 流程驱动掌握 Astro 样式与资源：全局风格、scoped 样式、Fonts API、Image 组件与 SVG 优化
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - astro/002-QuickStartProject
-  - astro/009-Astro7Features
+  - 'astro/002-QuickStartProject'
+  - 'astro/009-Astro7Features'
 prerequisites:
-  - astro/002-QuickStartProject
+  - 'astro/002-QuickStartProject'
 ---
+
 
 ## 0. 开篇：装修一套房子，先打底还是先挂画？
 

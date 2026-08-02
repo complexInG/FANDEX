@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 120
 title: 覆盖索引与部分索引
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL覆盖索引、部分索引、表达式索引：INCLUDE子句、条件索引与优化策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/事务ID回卷预防
-  - postgresql/索引类型
-  - postgresql/KNN向量索引
-  - postgresql/查询优化
+  - 'postgresql/010-TransactionIDWraparoundPrevention'
+  - 'postgresql/011-IndexType'
+  - 'postgresql/013-KNNVectorIndex'
+  - 'postgresql/014-QueryOptimization'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 覆盖索引（INCLUDE）
 

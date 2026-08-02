@@ -1,19 +1,20 @@
 ---
 order: 20
-title: 'SVG 基础语法与文档结构'
-module: svg
-category: 'SVG Basics'
+title: SVG 基础语法与文档结构
+module: 'svg'
+category: 前端技术
 difficulty: beginner
-description: 'svg 根元素、命名空间、defs/metadata/title、嵌套与分组。'
+description: svg 根元素、命名空间、defs/metadata/title、嵌套与分组。
 author: fanquanpp
 updated: '2026-07-18'
 related:
-  - svg/概述与环境配置
-  - svg/坐标系与viewBox
-  - svg/符号与复用
+  - 'svg/001-SVGOverviewEnvSetup'
+  - 'svg/003-SVGCoordinateSystemViewBox'
+  - 'svg/012-SVGSymbolReuse'
 prerequisites:
-  - svg/概述与环境配置
+  - 'svg/001-SVGOverviewEnvSetup'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 XML 与 SVG 的语法渊源

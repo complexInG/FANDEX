@@ -1,25 +1,26 @@
 ---
-order: 54
+order: 160
 title: 协程基础
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'Kotlin 协程基础深度解析：suspend 函数、CoroutineScope、Job、Deferred、launch/async/runBlocking、结构化并发、Continuation 状态机原理。对标 MIT 6.005、Stanford CS193P、CMU 15-440 教学水准。'
+description: Kotlin 协程基础深度解析：suspend 函数、CoroutineScope、Job、Deferred、launch/async/runBlocking、结构化并发、Continuation 状态机原理。对标 MIT 6.005、Stanford CS193P、CMU 15-440 教学水准。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/密封类与代数数据类型
-  - kotlin/委托属性
-  - kotlin/Flow与响应式流
-  - kotlin/Kotlin与Spring
-  - kotlin/概述与环境配置
-  - kotlin/协程进阶
-  - kotlin/协程异常处理
-  - kotlin/协程调度器与上下文
+  - 'kotlin/013-SealedClassAlgebraicDataType'
+  - 'kotlin/014-DelegateProperty'
+  - 'kotlin/017-FlowReactiveStream'
+  - 'kotlin/025-KotlinSpring'
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/007-KotlinCoroutineAdvanced'
+  - 'kotlin/051-CoroutineExceptionHandling'
+  - 'kotlin/044-CoroutineDispatcherContext'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/函数与Lambda
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/003-KotlinFunctionAndLambda'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 问题背景：异步编程的演进痛点

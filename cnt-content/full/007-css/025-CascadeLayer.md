@@ -1,20 +1,21 @@
 ---
-order: 66
+order: 250
 title: 层叠层
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: advanced
 description: '@layer'
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/CSS变量与自定义属性
-  - css/特性查询
-  - css/逻辑属性
-  - css/滚动捕捉
+  - 'css/023-CSSVariableCustomAttribute'
+  - 'css/024-FeatureQuery'
+  - 'css/026-LogicalProperty'
+  - 'css/027-ScrollSnap'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 ## 1. @layer 概述
 
 CSS 层叠层（Cascade Layers）允许开发者将 CSS 规则分组到不同的层中，控制层叠优先级。

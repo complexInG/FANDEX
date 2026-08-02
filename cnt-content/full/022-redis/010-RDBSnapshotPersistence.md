@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 100
 title: RDB快照持久化
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: advanced
-description: 'Redis RDB快照持久化：save与bgsave机制、写时复制原理、配置优化与恢复流程'
+description: Redis RDB快照持久化：save与bgsave机制、写时复制原理、配置优化与恢复流程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/流
-  - redis/向量集
-  - redis/AOF日志持久化
-  - redis/混合持久化
+  - 'redis/008-Stream'
+  - 'redis/009-VectorSet'
+  - 'redis/011-AOFLogPersistence'
+  - 'redis/012-MixedPersistence'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 ## 1. RDB 概述
 
 RDB（Redis Database）是 Redis 的默认持久化方式，通过在指定时间间隔内对数据集进行快照（snapshot），将内存中的数据以二进制文件形式写入磁盘。生成的 RDB 文件紧凑、体积小，非常适合用于备份和灾难恢复。

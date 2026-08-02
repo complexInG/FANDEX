@@ -1,20 +1,21 @@
 ---
-order: 104
+order: 190
 title: 隧道技术
-module: networking
-category: 'eng-infra'
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
-description: '网络隧道技术：VxLAN、GRE、IPIP 原理与配置。'
+description: 网络隧道技术：VxLAN、GRE、IPIP 原理与配置。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/Keepalived双机热备
-  - networking/网络命名空间与虚拟网桥
-  - networking/网络故障排查工具
-  - networking/BGP与多线机房互联
+  - 'networking/017-KeepalivedDualHotStandby'
+  - 'networking/018-NetworkNamespaceVirtualBridge'
+  - 'networking/020-NetworkTroubleshootTools'
+  - 'networking/021-BGP'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. 隧道技术概述
 

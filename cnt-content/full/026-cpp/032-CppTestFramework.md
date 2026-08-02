@@ -1,23 +1,24 @@
 ---
-order: 73
+order: 320
 title: C++测试框架
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: Google Test、Catch2、doctest 等主流 C++ 测试框架的工程实践与对比
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/C++内存模型
-  - cpp/C++工具链
-  - cpp/C++与Python交互
-  - cpp/C++性能优化
-  - cpp/设计模式与C++
+  - 'cpp/027-CppMemoryModel'
+  - 'cpp/029-CppToolchain'
+  - 'cpp/031-CppPythonInteraction'
+  - 'cpp/035-CppPerformance'
+  - 'cpp/012-DesignPatternCpp'
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/智能指针详解
-  - cpp/C++工具链
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/007-N4089DeletingSafeBoolInFavorOfExplicitBool'
+  - 'cpp/029-CppToolchain'
 ---
+
 ## 历史动机与背景
 
 C++ 测试框架的发展反映了软件工程从"调试驱动"到"测试驱动"再到"行为驱动"的范式演进。

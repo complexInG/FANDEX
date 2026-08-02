@@ -1,17 +1,18 @@
 ---
-order: 1
+order: 10
 title: 网络基础与协议
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: beginner
 description: OSI七层模型、TCP/IP协议栈、IPv4/IPv6地址规划、子网划分、路由协议、VLAN、生成树、链路聚合、VRRP、广域网、隧道、ACL、SSH、SNMP、NAPT、认证与VPN技术。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/网络系统管理
-  - networking/网络布线与施工
+  - 'networking/002-NetworkSystemManagement'
+  - 'networking/003-NetworkWiringAndConstruction'
 prerequisites: []
 ---
+
 ## 1. OSI 七层模型
 
 ### 1.1 模型概述

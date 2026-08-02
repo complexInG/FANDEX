@@ -1,18 +1,19 @@
 ---
-order: 19
+order: 100
 title: DevOps与CICD集成
 module: 'software-engineering'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: DevOps文化、CI/CD流水线、自动化测试集成与发布策略。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-engineering/软件度量'
-  - 'software-engineering/技术债务管理'
+  - 'software-engineering/008-SoftwareMetrics'
+  - 'software-engineering/009-TechDebtManagement'
 prerequisites:
-  - 'software-engineering/软件工程概述'
+  - 'software-engineering/001-SoftwareEngineeringOverview'
 ---
+
 
 ## 1. 从"两个部门打架"说起
 

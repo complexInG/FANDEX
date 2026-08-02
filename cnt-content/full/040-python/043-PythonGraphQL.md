@@ -1,44 +1,20 @@
 ---
-order: 84
+order: 430
 title: Python与GraphQL
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: Python GraphQL API 开发完整指南：Strawberry + FastAPI、Schema/Query/Mutation/Subscription、DataLoader 与工程实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-- python/Python与FastAPI
-- python/Python与OAuth2
-- python/Python与Redis
-- python/Python与SQLAlchemy
-prerequisites:
-- python/语法速查
-references:
-- type: documentation
-  authors:
-  - GraphQL 基金会
-  year: 2026
-  title: GraphQL Specification
-  venue: spec.graphql.org
-  url: https://spec.graphql.org/
-  accessedDate: '2026-08-01'
-- type: documentation
-  authors:
-  - Strawberry GraphQL 团队
-  year: 2026
-  title: Strawberry GraphQL - FastAPI Integration
-  venue: strawberry.rocks
-  url: https://strawberry.rocks/docs/integrations/fastapi
-  accessedDate: '2026-08-01'
-etymology:
-- term: 图查询语言
-  english: GraphQL
-  origin: 由 Graph（图）与 QL（Query Language）组合，指基于数据图结构进行查询的语言。
-estimatedReadingTime: 30
-lastReviewed: '2026-08-01'
-reviewer: fanquanpp
+  - 'python/013-PythonFastAPI'
+  - 'python/047-PythonOAuth2'
+  - 'python/016-PythonRedis'
+  - 'python/011-PythonSQLAlchemy'
+prerequisites: []
 ---
+
 
 
 ## 1. 历史动机与发展脉络

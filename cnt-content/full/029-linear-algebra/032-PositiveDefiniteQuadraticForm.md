@@ -1,19 +1,20 @@
 ---
-order: 62
+order: 270
 title: 正定二次型
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: advanced
-description: 从"能量恒正"的生活类比出发，系统讲解正定二次型与正定矩阵的定义、五种判定方法（特征值、顺序主子式、合同、惯性指数、Cholesky 分解）、正定矩阵的性质与半正定，。
+description: '从"能量恒正"的生活类比出发，系统讲解正定二次型与正定矩阵的定义、五种判定方法（特征值、顺序主子式、合同、惯性指数、Cholesky 分解）、正定矩阵的性质与半正定，。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/二次型的标准形'
-  - 'linear-algebra/二次型的规范形'
-  - 'linear-algebra/LU分解'
+  - 'linear-algebra/030-QuadraticFormStandardForm'
+  - 'linear-algebra/031-QuadraticFormCanonicalForm'
+  - 'linear-algebra/034-LU'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从生活场景说起：能量恒正的系统才是稳定的
 

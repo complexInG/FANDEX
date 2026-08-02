@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 170
 title: 索引失效场景
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL索引失效场景：函数操作、隐式转换、LIKE前缀、OR条件、范围查询与优化策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/索引统计信息与直方图
-  - mysql/SQL函数与高级查询
-  - mysql/EXPLAIN输出详解
-  - mysql/慢查询日志
+  - 'mysql/015-IndexStatsHistogram'
+  - 'mysql/016-SQLFunctionAndAdvancedQuery'
+  - 'mysql/018-EXPLAINDetailed'
+  - 'mysql/019-SlowQueryLog'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 索引失效常见场景
 

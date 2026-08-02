@@ -1,20 +1,20 @@
 ---
 order: 50
 title: Teleport与Suspense
-module: vue3
-category: Vue3
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
 description: 传送门与异步组件
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/模板语法
-  - vue3/指令系统
-  - vue3/组合式API
-  - vue3/Provide与Inject
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/003-Vue3TemplateSyntax'
+  - 'vue3/004-Vue3DirectiveSystem'
+  - 'vue3/006-API'
+  - 'vue3/007-ProvideInject'
+prerequisites: []
 ---
+
 ## 1. Teleport
 
 ### 1.1 基本用法

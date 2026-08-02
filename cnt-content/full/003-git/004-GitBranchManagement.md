@@ -1,23 +1,20 @@
 ---
 order: 40
-tags:
-  - git
-  - 'git-workflow'
+title: Git 分支管理
+module: 'git'
+category: 工具链
 difficulty: intermediate
-title: 'Git 分支管理'
-module: git
-category: 'Git Basics'
 description: 分支创建、合并、变基与分支策略。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/Git环境配置与初始化
-  - git/Git基本操作
-  - git/Git远程仓库操作
-  - git/分布式版本控制原理
-prerequisites:
-  - git/语法速查
+  - 'git/002-GitEnvConfigInit'
+  - 'git/003-GitBasicOperation'
+  - 'git/005-GitRemoteRepoOperation'
+  - 'git/006-DistributedVCSPrinciple'
+prerequisites: []
 ---
+
 ## 2. 分支概述
 
 分支是 Git 中非常重要的概念，它允许你在独立的环境中开发新功能或修复 bug，而不影响主分支的稳定性。

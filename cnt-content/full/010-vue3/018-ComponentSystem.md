@@ -1,22 +1,20 @@
 ---
-order: 70
-tags:
-  - vue3
-difficulty: intermediate
+order: 180
 title: 组件系统
-module: vue3
-category: 'Vue3 Basics'
+module: 'vue3'
+category: 前端技术
+difficulty: intermediate
 description: Vue3组件系统与通信机制
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/响应式系统
-  - vue3/自定义Hook
-  - vue3/TypeScript集成
-  - vue3/Pinia状态管理详解
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/016-ReactiveSystem'
+  - 'vue3/017-CustomHook'
+  - 'vue3/019-TypeScriptIntegration'
+  - 'vue3/020-PiniaStateManagementDetailed'
+prerequisites: []
 ---
+
 ## 1. 组件系统概述 | Component System Overview
 
 组件是 Vue3 应用的基本构建块，它允许我们将 UI 拆分为独立、可复用的部分。Vue3 的组件系统提供了一种清晰的方式来组织和管理应用的 UI 结构，使代码更加模块化、可维护。

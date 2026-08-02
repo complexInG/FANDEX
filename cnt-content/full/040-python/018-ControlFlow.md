@@ -1,22 +1,20 @@
 ---
-order: 60
-tags:
-  - python
-difficulty: intermediate
+order: 180
 title: 控制流
-module: python
-category: 'Python Basics'
+module: 'python'
+category: 后端技术
+difficulty: intermediate
 description: 条件判断、循环结构与推导式。
 author: Anonymous
-related:
-  - python/Python与Django
-  - python/Python与SQLAlchemy
-  - python/Python与Celery
-  - python/Python与Docker
-prerequisites:
-  - python/语法速查
 updated: '2026-08-01'
+related:
+  - 'python/014-PythonDjango'
+  - 'python/011-PythonSQLAlchemy'
+  - 'python/017-PythonCeleryDistributedTaskQueue'
+  - 'python/019-PythonDocker'
+prerequisites: []
 ---
+
 ## 1. 条件分支 (Selection)
 
 条件分支用于根据不同的条件执行不同的代码块。

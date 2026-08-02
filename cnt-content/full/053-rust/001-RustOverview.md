@@ -1,19 +1,19 @@
 ---
-order: 1
+order: 10
 title: Rust 语言概述与学习路线
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: beginner
-description: 'Rust 编程语言概述：设计目标、所有权与借用、Cargo 生态、学习路线与工程实践'
+description: Rust 编程语言概述：设计目标、所有权与借用、Cargo 生态、学习路线与工程实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/枚举与typedef
-  - cpp/模板
-  - go/并发
-prerequisites:
-  - getting-started/编程基础
+  - 'c/007-EnumTypedef'
+  - 'cpp/062-CppTemplate'
+  - 'go/006-GoConcurrentProgramming'
+prerequisites: []
 ---
+
 
 ## 1. 从"给汽车装安全气囊"说起
 

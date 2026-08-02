@@ -1,21 +1,20 @@
 ---
-order: 130
-tags:
-  - cpp
+order: 650
+title: C++ 调试与性能分析
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-title: 'C++ 调试与性能分析'
-module: cpp
-category: 'C++ Basics'
-description: 'GDB/LLDB 调试、性能剖析工具与内存泄漏检测。'
+description: GDB/LLDB 调试、性能剖析工具与内存泄漏检测。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/内存序与无锁编程
-  - cpp/异常处理与性能优化
-  - cpp/项目实战
+  - 'cpp/063-MemoryOrderLockFree'
+  - 'cpp/064-CppExceptionAndPerformance'
+  - 'cpp/066-CppProjectPractice'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 调试工具
 
 ### 1.1 GDB (GNU Debugger)
@@ -200,7 +199,7 @@ prerequisites:
 ```cpp
  // 不好的做法
  int* ptr = nullptr;
- *
+ *ptr = 10;
  // 好的做法
  int* ptr = nullptr;
  if (ptr) {

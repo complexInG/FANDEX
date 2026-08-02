@@ -1,23 +1,20 @@
 ---
-order: 130
-tags:
-  - javascript
-  - project
-difficulty: intermediate
+order: 480
 title: 典型项目实战
-module: javascript
-category: 'JavaScript Basics'
-description: '综合运用 DOM、异步与模块化的项目实践。'
+module: 'javascript'
+category: 前端技术
+difficulty: intermediate
+description: 综合运用 DOM、异步与模块化的项目实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'javascript/Web API与浏览器接口'
-  - javascript/调试与性能优化
-  - javascript/Node.js高级特性与性能优化
-  - 'javascript/项目示例-待办事项应用'
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/046-WebAPIBrowserInterface'
+  - 'javascript/047-DebugPerformanceOptimization'
+  - 'javascript/049-NodeJsAdvancedFeaturePerformanceOptimization'
+  - 'javascript/050-JavaScriptProjectExampleTodoApp'
+prerequisites: []
 ---
+
 
 ## 1. 项目实战案例
 

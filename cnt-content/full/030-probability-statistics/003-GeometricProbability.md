@@ -1,19 +1,20 @@
 ---
-order: 12
+order: 30
 title: 几何概型
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: beginner
 description: 从飞镖盘与线段平面体积上的投点场景出发，讲解几何概型的定义、长度面积体积测度之比的计算方法、会面问题与蒲丰投针等经典例题及其与古典概型的区别。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/样本空间与事件'
-  - 'probability-statistics/古典概型'
-  - 'probability-statistics/条件概率'
-  - 'probability-statistics/贝叶斯公式'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
+  - 'probability-statistics/002-ClassicalProbability'
+  - 'probability-statistics/004-ConditionalProbability'
+  - 'probability-statistics/005-BayesFormula'
 prerequisites: []
 ---
+
 
 ## 0. 飞镖盘上的概率
 

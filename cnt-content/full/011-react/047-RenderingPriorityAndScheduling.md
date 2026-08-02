@@ -1,57 +1,19 @@
 ---
 order: 470
 title: React 渲染优先级与调度
-module: react
-category: '011-react'
+module: 'react'
+category: 前端技术
 difficulty: advanced
-description: 从 update 优先级、调度器到并发渲染，讲清 React 如何决定"先渲染谁、能不能中断、中断后怎么办"。
+description: '从 update 优先级、调度器到并发渲染，讲清 React 如何决定"先渲染谁、能不能中断、中断后怎么办"。'
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'react/013-ConcurrentMode'
   - 'react/012-FiberArchitecture'
 prerequisites:
   - 'react/012-FiberArchitecture'
-quiz:
-  - type: choice
-    question: React 中标记"可中断的低优先级更新"的 Hook 是哪个？
-    options:
-      - useState
-      - useTransition
-      - useMemo
-      - useEffect
-    answer: 1
-    explanation: useTransition 把状态更新标记为低优先级，可被紧急更新打断。
-  - type: fill
-    question: 高优先级更新打断低优先级渲染后，低优先级工作会被____并稍后重新开始。
-    answer: 丢弃（放弃）
-    hint: 即 discard/abort，重新调度。
-references:
-  - type: documentation
-    authors:
-      - React Team
-    year: 2026
-    title: useTransition 参考文档
-    venue: react.dev
-    url: https://react.dev/reference/react/useTransition
-    accessedDate: '2026-08-02'
-  - type: documentation
-    authors:
-      - React Team
-    year: 2026
-    title: 并发特性（Concurrent Features）
-    venue: react.dev
-    url: https://react.dev/learn/you-might-not-need-an-effect
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 调度
-    english: Scheduling
-    origin: 源自操作系统进程调度，React 借用"按优先级分配执行权"的思想管理渲染工作。
-estimatedReadingTime: 8
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

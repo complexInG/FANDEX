@@ -1,79 +1,22 @@
 ---
-order: 50
-tags:
-- cpp
-difficulty: intermediate
+order: 60
 title: C++ 指针
-module: cpp
-category: C++ Basics
+module: 'cpp'
+category: 计算机科学
+difficulty: intermediate
 description: 深入解析 C++ 指针的内存模型、算术运算、类型系统与安全实践，涵盖原始指针、智能指针与所有权语义。
 author: fanquanpp
-created: 2026-05-27
-updated: 2026-07-18
-lastReviewed: 2026-07-18
-reviewer: fanquanpp
+updated: '2026-07-18'
 related:
-- cpp/引用
-- cpp/右值引用与移动语义
-- cpp/智能指针详解
-- cpp/Lambda表达式
+  - 'cpp/004-CppReference'
+  - 'cpp/005-RvalueReferenceMoveSemantics'
+  - 'cpp/007-N4089DeletingSafeBoolInFavorOfExplicitBool'
+  - 'cpp/008-LambdaExpression'
 prerequisites:
-- cpp/概述与现代标准
-- cpp/基础语法
-- cpp/数据类型详解
-references:
-- type: standard
-  authors:
-  - ISO/IEC
-  year: 2023
-  title: Information technology — Programming languages — C++
-  venue: ISO/IEC 14882:2023
-  version: Eighth edition
-- type: book
-  authors:
-  - Stroustrup, Bjarne
-  year: 2013
-  title: The C++ Programming Language
-  venue: Addison-Wesley Professional
-  version: 4th edition
-- type: book
-  authors:
-  - Sutter, Herb
-  - Alexandrescu, Andrei
-  year: 2004
-  title: 'C++ Coding Standards: 101 Rules, Guidelines, and Best Practices'
-  venue: Addison-Wesley Professional
-- type: book
-  authors:
-  - Meyers, Scott
-  year: 2005
-  title: 'Effective C++: 55 Specific Ways to Improve Your Programs and Designs'
-  venue: Addison-Wesley Professional
-  version: 3rd edition
-- type: website
-  authors:
-  - cppreference.com
-  year: 2024
-  title: Pointers — cppreference.com
-  url: https://en.cppreference.com/w/cpp/language/pointer
-  accessedDate: '2024-12-01'
-etymology:
-- term: 指针
-  english: pointer
-  origin: 源自拉丁语 "punctus"（点），隐喻"指向"内存地址的箭头；与数学中的"指针"（圆规）同源
-- term: 解引用
-  english: dereference
-  origin: '"de-"（去除）+ "reference"（引用），意为"通过引用访问原始对象"'
-- term: 野指针
-  english: dangling pointer
-  origin: '"dangling" 意为"悬挂、悬空"，指指针指向的内存已释放但指针仍存活'
-- term: 所有权
-  english: ownership
-  origin: 借用日常语义，指"负责管理某资源生命周期"的责任归属
-- term: RAII
-  english: Resource Acquisition Is Initialization
-  origin: Bjarne Stroustrup 于 1980s 提出，"资源获取即初始化"，将资源生命周期绑定到对象生命周期
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/002-CppBasicSyntax'
 ---
+
 ## 第 1 章 学习目标与导论
 
 ### 1.1 本章在 C++ 知识体系中的位置

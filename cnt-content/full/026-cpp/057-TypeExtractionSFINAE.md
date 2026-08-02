@@ -1,20 +1,21 @@
 ---
-order: 106
+order: 570
 title: 类型萃取与SFINAE
-module: cpp
-category: 'dev-lang'
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: C++类型萃取与SFINAE详解：type_traits与编译期类型判断。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/智能指针循环引用
-  - cpp/Lambda捕获详解
-  - cpp/可变参数模板与折叠表达式
-  - cpp/C++20协程
+  - 'cpp/055-SmartPointerCircularReference'
+  - 'cpp/056-LambdaCaptureDetailed'
+  - 'cpp/058-VariadicTemplateFoldExpression'
+  - 'cpp/059-Cpp20Coroutine'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 
 ## 1. 历史动机与发展脉络

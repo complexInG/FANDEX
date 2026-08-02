@@ -1,22 +1,20 @@
 ---
-order: 70
-tags:
-  - github
+order: 270
+title: Pull Request 完整协作流程
+module: 'github'
+category: 工具链
 difficulty: intermediate
-title: 'Pull Request 完整协作流程'
-module: github
-category: 'GitHub Advanced'
-description: 'Pull Request 完整生命周期：创建分支、提交推送、发起 PR、审查、合并到关闭与同步上游。'
+description: Pull Request 完整生命周期：创建分支、提交推送、发起 PR、审查、合并到关闭与同步上游。
 author: Anonymous
-related:
-  - github/代码所有者
-  - github/社区健康文件
-  - github/GitHubPages多站点方案
-  - github/GitHubActions与CICD
-prerequisites:
-  - github/GitHub概述
 updated: '2026-08-02'
+related:
+  - 'github/026-CommunityHealthFile'
+  - 'github/028-GitHubPagesMultiSolution'
+  - 'github/029-GitHubActionsCICD'
+prerequisites:
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一个生活场景说起：完整走一遍"交作业"流程
 

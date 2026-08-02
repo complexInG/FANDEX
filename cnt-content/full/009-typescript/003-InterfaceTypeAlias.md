@@ -1,21 +1,20 @@
 ---
 order: 30
-tags:
-  - typescript
-difficulty: intermediate
 title: 接口与类型别名
-module: typescript
-category: 'TS Advanced'
-description: 'interface 与 type 的定义、扩展、交叉与合并。'
+module: 'typescript'
+category: 前端技术
+difficulty: intermediate
+description: interface 与 type 的定义、扩展、交叉与合并。
 author: Anonymous
-related:
-  - typescript/概述与环境配置
-  - typescript/基础类型系统
-  - typescript/函数与泛型
-  - typescript/字面量类型与联合类型
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'typescript/001-TypeScriptOverviewEnvSetup'
+  - 'typescript/002-BasicTypeSystem'
+  - 'typescript/004-FunctionGeneric'
+  - 'typescript/005-LocalTypeInference'
+prerequisites: []
 ---
+
 ## 1. 接口 (Interface)
 
 接口是 TypeScript 中用于定义对象结构的重要工具，它描述了对象应该具有的属性和方法。

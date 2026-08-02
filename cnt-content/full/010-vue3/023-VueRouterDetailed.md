@@ -1,22 +1,20 @@
 ---
-order: 100
-tags:
-  - vue3
+order: 230
+title: Vue Router 详解
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
-title: 'Vue Router 详解'
-module: vue3
-category: 'Vue3 Basics'
 description: 路由配置、导航守卫、懒加载与路由元信息。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/插件开发
-  - vue3/computed缓存机制与watch执行时机
-  - vue3/组合式API优势场景
-  - vue3/自定义组合函数封装
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/021-PluginDevelopment'
+  - 'vue3/022-ComputedCacheWatchTiming'
+  - 'vue3/024-CompositionAPIAdvantageScene'
+  - 'vue3/025-CustomComposableWrapper'
+prerequisites: []
 ---
+
 ## 1. Vue Router 概述
 
 Vue Router 是 Vue.js 官方的路由管理器，它与 Vue.js 核心深度集成，让构建单页应用变得更加简单。

@@ -1,31 +1,24 @@
 ---
-order: 120
-title: 'C 语言理论知识点'
-module: c
-category: 'C Theory'
+order: 490
+title: C 语言理论知识点
+module: 'c'
+category: 计算机科学
 difficulty: advanced
-description: '编译流程、内存模型、ABI、链接与加载、未定义行为、严格别名、序列点等 C 语言核心理论，对标 MIT/Stanford/CMU 系统编程教学水准。'
+description: 编译流程、内存模型、ABI、链接与加载、未定义行为、严格别名、序列点等 C 语言核心理论，对标 MIT/Stanford/CMU 系统编程教学水准。
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - c
-  - theory
-  - compilation
-  - memory-model
-  - abi
-  - undefined-behavior
 related:
-  - c/位域
-  - c/文件IO操作
-  - c/高级特性与系统编程
-  - c/项目示例-学生成绩管理系统
-  - c/数据类型详解
-  - c/内存对齐
+  - 'c/015-BitField'
+  - 'c/048-IO'
+  - 'c/050-CAdvancedSystemProgramming'
+  - 'c/051-CProjectExampleStudentGradeSystem'
+  - 'c/003-DataTypeDetailed'
+  - 'c/041-MemoryAlignment'
 prerequisites:
-  - c/概述
-  - c/数据类型详解
-  - c/指针详解
+  - 'c/001-CLanguageOverview'
+  - 'c/003-DataTypeDetailed'
 ---
+
 
 
 # C 语言理论知识点

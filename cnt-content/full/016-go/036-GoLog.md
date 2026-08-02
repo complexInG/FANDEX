@@ -1,20 +1,21 @@
 ---
-order: 76
+order: 360
 title: Go与日志
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: beginner
 description: slog与结构化日志
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与依赖注入
-  - go/Go与配置管理
-  - go/Go与模板
-  - go/Go与加密
+  - 'go/034-GoDependencyInjection'
+  - 'go/035-GoConfigManagement'
+  - 'go/037-GoTemplate'
+  - 'go/038-GoEncryption'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 ## 历史动机与发展脉络

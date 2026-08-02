@@ -1,156 +1,26 @@
 ---
-order: 50
+order: 60
 title: 哈希表
-module: algorithm
-category: Algorithm/HashTable
+module: 'algorithm'
+category: 计算机科学
 difficulty: intermediate
 description: 哈希表（Hash Table）的形式化定义、哈希函数设计（除法/乘法/全域/多项式滚动）、冲突处理（链地址法/开放寻址法/布谷鸟哈希）、扩容与再哈希、一致性哈希、Bloom Filter 与 LRU/LFU 缓存的工程实现，附 Python/C++/Java 多语言实现。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-hash-table
-- algorithm-datastructure
-- algorithm-hash-function
-- algorithm-lru-cache
-created: 2026-05-27
-updated: 2026-07-20
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 90
+updated: '2026-07-20'
 related:
-- algorithm/算法分析基础与学习路线
-- algorithm/链表
-- algorithm/树
-- algorithm/图算法
-- algorithm/搜索算法
-- algorithm/跳跃表
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/005-LinkedList'
+  - 'algorithm/007-TheUbiquitousBTree'
+  - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
+  - 'algorithm/004-SearchAlgorithm'
+  - 'algorithm/022-LevelDBREADMEMemTableImplementation'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/链表
-- algorithm/树
-- cs-fundamentals/离散数学
-references:
-- type: journal
-  authors:
-  - Carter, J. Lawrence
-  - Wegman, Mark N.
-  year: 1979
-  title: Universal classes of hash functions
-  venue: Journal of Computer and System Sciences
-  volume: 18
-  issue: 2
-  pages: 143-154
-  doi: 10.1016/0022-0000(79)90044-8
-- type: journal
-  authors:
-  - Bloom, Burton H.
-  year: 1970
-  title: Space/time trade-offs in hash coding with allowable errors
-  venue: Communications of the ACM
-  volume: 13
-  issue: 7
-  pages: 422-426
-  doi: 10.1145/362686.362692
-- type: journal
-  authors:
-  - Pagh, Rasmus
-  - Rodler, Flemming Friche
-  year: 2004
-  title: Cuckoo hashing
-  venue: Journal of Algorithms
-  volume: 51
-  issue: 2
-  pages: 122-144
-  doi: 10.1016/j.jalgor.2003.12.002
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1998
-  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-  venue: Addison-Wesley Professional
-  version: 2nd edition
-  pages: ISBN 978-0201896855, Section 6.4 (Hashing)
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: Chapter 11 (Hash Tables), ISBN 978-0262046305
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 3.4 (Hash Tables)
-- type: book
-  authors:
-  - Kleinberg, Jon
-  - Tardos, Eva
-  year: 2006
-  title: Algorithm Design
-  venue: Pearson
-  pages: ISBN 978-0321295354, Chapter 13 (Randomized Algorithms) - Universal Hashing
-- type: website
-  authors:
-  - Hettinger, Raymond
-  year: 2012
-  title: Python PEP 412 - Key-sharing dictionary implementation
-  venue: Python Enhancement Proposals
-  url: https://peps.python.org/pep-0412/
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - Sanfilippo, Salvatore
-  year: 2018
-  title: Redis dict.c source code with incremental rehashing design
-  venue: Redis GitHub Repository
-  url: https://github.com/redis/redis/blob/unstable/src/dict.c
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - Oracle Corporation
-  year: 2024
-  title: Java HashMap source documentation (array + linked list + red-black tree)
-  venue: Oracle Java Documentation
-  url: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html
-  accessedDate: '2026-07-20'
-- type: book
-  authors:
-  - Mitzenmacher, Michael
-  - Upfal, Eli
-  year: 2017
-  title: 'Probability and Computing: Randomization and Probabilistic Techniques in Algorithms and Data Analysis'
-  venue: Cambridge University Press
-  version: 2nd edition
-  pages: ISBN 978-1107154849, Chapter 5 (Balls and Bins) and Chapter 15 (Pairwise Independent Hashing)
-etymology:
-- term: 哈希表
-  english: hash table / hash map
-  origin: hash 一词源自古法语 hacher（切碎），意为"将输入剁碎后得到固定长度的摘要"。Hans Peter Luhn 1953 年在 IBM 内部报告中首次使用 hash function 描述"将键打散后映射到地址"的机制。中文"哈希"为音译，亦称"散列表"（强调打散均匀之意）
-- term: 负载因子
-  english: load factor
-  origin: load（负载）指哈希表中已存元素对槽位的占用比例 α = n/m。Knuth TAOCP Vol.3 §6.4 给出系统化定义：α 直接决定平均查找长度，链地址法 α 可大于 1，开放寻址法 α 必须严格小于 1
-- term: 链地址法
-  english: separate chaining
-  origin: separate（分离）+ chaining（链式）指每个槽位独立维护一个链表，冲突元素通过链表"链"在一起。该方法由 Knuth TAOCP Vol.3 系统化总结，是 Java HashMap 1.7、Redis dict、Python dict 的核心冲突处理策略
-- term: 开放寻址法
-  english: open addressing
-  origin: open（开放）指所有元素都存放在哈希表数组本身中，不另开链表；addressing（寻址）指冲突时按探测序列寻找下一个"开放"的槽位。由 Knuth TAOCP Vol.3 §6.4 命名，包含线性探测、二次探测、双重哈希三大变体
-- term: 全域哈希
-  english: universal hashing
-  origin: universal（全域）指从一类哈希函数族 H 中随机选取函数，使得任意两个不同键冲突概率不超过 1/m。由 Carter-Wegman 1979 JCSS 论文《Universal classes of hash functions》提出，解决了"对手构造恶意输入使哈希退化"的最坏情况问题
-- term: 一致性哈希
-  english: consistent hashing
-  origin: consistent（一致性）指节点增减时只有相邻区间的数据需要迁移，而非全局重哈希。由 Karger et al. 1997 IEEE WCSA 论文《Consistent hashing and random trees》提出，是分布式缓存（Memcached/Redis Cluster/Cassandra/DynamoDB）路由的核心算法
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/005-LinkedList'
+  - 'algorithm/007-TheUbiquitousBTree'
+  - 'cs-fundamentals/006-DiscreteMathematics'
 ---
+
 
 
 ## 1. 概述与学习目标

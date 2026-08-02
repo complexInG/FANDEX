@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 100
 title: C++20范围
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: Ranges库与视图组合
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/Lambda表达式
-  - cpp/模板元编程
-  - cpp/C++20模块
-  - cpp/C++23与C++26新特性
+  - 'cpp/008-LambdaExpression'
+  - 'cpp/009-ATourOfC3rdEditionOnlineExcerpts'
+  - 'cpp/011-Cpp20Module'
+  - 'cpp/034-Cpp23Cpp26NewFeatures'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 概述
 
 C++20 引入的 Ranges 库为标准库算法带来了范式级的变革。它将算法与数据源解耦，通过视图（View）实现惰性求值的链式管道操作，使数据处理代码更加声明式和高效。传统 STL 算法依赖迭代器对，而 Ranges 以"范围"为基本抽象，配合管道操作符 `|` 实现数据流的组合变换，代码可读性显著提升。

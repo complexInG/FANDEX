@@ -1,20 +1,20 @@
 ---
-order: 101
+order: 440
 title: 映射类型与键重映射
-module: typescript
-category: 'dev-lang'
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
-description: 'TypeScript映射类型与键重映射详解：Mapped Types、as子句与高级模式。'
+description: TypeScript映射类型与键重映射详解：Mapped Types、as子句与高级模式。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - typescript/条件类型与infer
-  - typescript/编译与性能优化
-  - typescript/模板字面量类型
-  - typescript/类型体操
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/042-ConditionalTypeInfer'
+  - 'typescript/043-TypeScriptCompilePerformanceOptimization'
+  - 'typescript/045-TemplateLiteralType'
+  - 'typescript/046-TypeGymnastics'
+prerequisites: []
 ---
+
 
 # 映射类型与键重映射
 

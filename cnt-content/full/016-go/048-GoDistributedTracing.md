@@ -1,20 +1,21 @@
 ---
-order: 88
+order: 480
 title: Go与分布式追踪
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: OpenTelemetry集成
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与中间件
-  - go/Go与OAuth2
-  - go/Go与限流
-  - go/goroutine与channel通信原理
+  - 'go/047-GoMiddleware'
+  - 'go/046-GoOAuth2'
+  - 'go/049-Go'
+  - 'go/050-GoroutineChannelPrinciple'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

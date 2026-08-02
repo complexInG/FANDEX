@@ -1,19 +1,19 @@
 ---
-order: 5
-title: 'CI/CD 流水线'
-module: devops
-category: 运维
+order: 50
+title: CI/CD 流水线
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
-description: 'CI/CD 原理、GitHub Actions、GitLab CI、Jenkins、ArgoCD 与发布策略。'
+description: CI/CD 原理、GitHub Actions、GitLab CI、Jenkins、ArgoCD 与发布策略。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/容器与Docker
-  - devops/Kubernetes容器编排
-  - devops/语法速查
-  - devops/监控与可观测性
+  - 'devops/003-ContainerDocker'
+  - 'devops/004-Kubernetes'
+  - 'devops/006-MonitorAndObservability'
 prerequisites: []
 ---
+
 ## 1. CI/CD 原理
 
 ### 1.1 核心概念

@@ -1,23 +1,24 @@
 ---
-order: 101
+order: 450
 title: Flow冷流与SharedFlow和StateFlow
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'Kotlin Flow冷流与SharedFlow和StateFlow详解：响应式流原理、冷热流对比、状态管理实践。'
+description: Kotlin Flow冷流与SharedFlow和StateFlow详解：响应式流原理、冷热流对比、状态管理实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/协程基础
-  - kotlin/协程调度器与上下文
-  - kotlin/Channel与BroadcastChannel
-  - kotlin/Flow与响应式流
-  - kotlin/协程异常处理
+  - 'kotlin/016-CoroutineBasics'
+  - 'kotlin/044-CoroutineDispatcherContext'
+  - 'kotlin/046-ChannelBroadcastChannel'
+  - 'kotlin/017-FlowReactiveStream'
+  - 'kotlin/051-CoroutineExceptionHandling'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/协程基础
-  - kotlin/协程调度器与上下文
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/016-CoroutineBasics'
+  - 'kotlin/044-CoroutineDispatcherContext'
 ---
+
 
 # Flow 冷流与 SharedFlow 和 StateFlow（Cold Flow, SharedFlow and StateFlow）
 

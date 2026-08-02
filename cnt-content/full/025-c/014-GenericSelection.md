@@ -1,24 +1,25 @@
 ---
-order: 58
+order: 140
 title: 泛型选择
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
-description: 'C11 _Generic 泛型选择表达式原理、工程实现与最佳实践'
+description: C11 _Generic 泛型选择表达式原理、工程实现与最佳实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/信号处理
-  - c/原子操作与内存模型
-  - c/线程与并发
-  - c/对齐与内存布局
-  - c/属性与编译器扩展
-  - c/内联函数与宏
+  - 'c/012-SignalHandling'
+  - 'c/013-AtomicAndMemoryModel'
+  - 'c/022-ThreadConcurrency'
+  - 'c/016-AlignmentMemoryLayout'
+  - 'c/018-AttributeCompilerExtension'
+  - 'c/020-InlineFunctionMacro'
 prerequisites:
-  - c/概述
-  - c/数据类型详解
-  - c/预处理器与宏
+  - 'c/001-CLanguageOverview'
+  - 'c/003-DataTypeDetailed'
+  - 'c/037-PreprocessorMacro'
 ---
+
 ## 历史动机与背景
 
 ### C 语言缺乏泛型的长期痛点

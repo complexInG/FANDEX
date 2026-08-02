@@ -1,19 +1,20 @@
 ---
-order: 60
+order: 250
 title: 随机样本
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 总体与个体、简单随机样本（独立同分布）、样本的两重性、样本的联合分布、经验分布函数与抽样方法。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/中心极限定理'
-  - 'probability-statistics/统计量'
-  - 'probability-statistics/三大分布'
+  - 'probability-statistics/028-CentralLimitTheorem'
+  - 'probability-statistics/031-Statistic'
+  - 'probability-statistics/032-ThreeMajorDistributions'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：尝一口汤，判断一锅汤
 

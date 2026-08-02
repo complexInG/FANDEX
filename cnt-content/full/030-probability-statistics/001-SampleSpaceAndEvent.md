@@ -2,16 +2,17 @@
 order: 10
 title: 样本空间与事件
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: beginner
 description: 从抽奖箱类比出发，系统讲解随机试验、样本空间、随机事件及其关系与运算，并给出概率的公理化定义，为零基础读者搭建概率论的第一块基石。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/古典概型'
-  - 'probability-statistics/几何概型'
+  - 'probability-statistics/002-ClassicalProbability'
+  - 'probability-statistics/003-GeometricProbability'
 prerequisites: []
 ---
+
 
 ## 0. 从一个抽奖箱开始
 

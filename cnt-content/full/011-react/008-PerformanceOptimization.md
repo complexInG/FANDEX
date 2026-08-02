@@ -1,21 +1,20 @@
 ---
-order: 8
-tags:
-  - react
-difficulty: advanced
+order: 80
 title: 性能优化
-module: react
-category: React
-description: 'React.memo、useMemo/useCallback、代码分割、虚拟化、并发特性、Profiler 与性能分析。'
+module: 'react'
+category: 前端技术
+difficulty: advanced
+description: React.memo、useMemo/useCallback、代码分割、虚拟化、并发特性、Profiler 与性能分析。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React19新特性
-  - react/路由与数据获取
-  - react/测试与工程化
-  - react/Next.js全栈开发
+  - 'react/006-React19NewFeatures'
+  - 'react/007-RouteDataFetch'
+  - 'react/009-TestEngineering'
+  - 'react/010-NextJSFullStack'
 prerequisites: []
 ---
+
 ## 1. React.memo
 
 `React.memo` 是高阶组件，对组件进行浅比较，避免不必要的重渲染。

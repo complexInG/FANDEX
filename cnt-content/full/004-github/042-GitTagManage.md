@@ -1,9 +1,8 @@
 ---
 order: 420
 title: GitHub 标签管理
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 以清单驱动方式按标签全生命周期讲解 git tag 的创建、查看、推送、删除与检出，覆盖附注标签与轻量标签的区别和语义化版本规范，适合零基础学习者。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 ## 开篇：像里程碑书签一样打标签
 
 长途自驾时，你会在导航里设置几个**途经点**：出发 100 公里是服务区、300 公里是加油站、终点是目的地。这些途经点让你的行程有了"可回溯的刻度"——无论开到哪，都知道离哪个节点还有多远。

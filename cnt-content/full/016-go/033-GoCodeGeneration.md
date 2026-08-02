@@ -1,44 +1,25 @@
 ---
-order: 73
+order: 330
 title: Go与代码生成
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'go generate与代码生成：Stringer、mockgen、sqlc、protobuf、wire 等工具与 AST 解析'
+description: go generate与代码生成：Stringer、mockgen、sqlc、protobuf、wire 等工具与 AST 解析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - go/Go与CGO
-  - go/Go与Wasm
-  - go/Go与依赖注入
-  - go/Go与配置管理
-  - go/反射
-  - go/泛型详解
+  - 'go/031-GoCGO'
+  - 'go/032-GoWasm'
+  - 'go/034-GoDependencyInjection'
+  - 'go/035-GoConfigManagement'
+  - 'go/015-Reflection'
+  - 'go/056-GenericDetailed'
 prerequisites:
-  - go/概述与环境配置
-  - go/基础语法
-  - go/接口与类型系统
-  - go/反射
-tags:
-  - code-generation
-  - go-generate
-  - ast
-  - stringer
-  - mockgen
-  - sqlc
-  - protobuf
-  - wire
-keywords:
-  - Go 代码生成
-  - go generate
-  - Stringer
-  - mockgen
-  - sqlc
-  - protobuf
-  - wire
-  - AST 解析
-  - 自定义代码生成器
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/002-GoBasicSyntax'
+  - 'go/015-Reflection'
 ---
+
 
 
 # Go 与代码生成（Code Generation）

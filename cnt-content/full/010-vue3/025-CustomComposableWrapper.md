@@ -1,20 +1,20 @@
 ---
-order: 102
+order: 250
 title: 自定义组合函数封装
-module: vue3
-category: 'dev-lang'
+module: 'vue3'
+category: 前端技术
 difficulty: advanced
-description: 'Vue 3自定义组合函数（Composables）封装模式与最佳实践。'
+description: Vue 3自定义组合函数（Composables）封装模式与最佳实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/Router详解
-  - vue3/组合式API优势场景
-  - vue3/Teleport传送门应用
-  - vue3/KeepAlive缓存与生命周期
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/023-VueRouterDetailed'
+  - 'vue3/024-CompositionAPIAdvantageScene'
+  - 'vue3/026-TeleportPortalApp'
+  - 'vue3/027-KeepAliveCacheLifecycle'
+prerequisites: []
 ---
+
 ## 1. Composable 设计原则
 
 ### 1.1 命名约定

@@ -1,21 +1,21 @@
 ---
-order: 59
+order: 210
 title: Kotlin 契约（Contracts）
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'Kotlin 契约机制的形式化语义、编译器交互、效果系统与工程实践'
+description: Kotlin 契约机制的形式化语义、编译器交互、效果系统与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/Kotlin作用域函数
-  - kotlin/Flow与响应式流
-  - kotlin/Kotlin内联类
-  - kotlin/Kotlin契约
+  - 'kotlin/018-KotlinScopeFunction'
+  - 'kotlin/017-FlowReactiveStream'
+  - 'kotlin/020-KotlinInlineClass'
 prerequisites:
-  - kotlin/Kotlin作用域函数
-  - kotlin/Kotlin内联类
+  - 'kotlin/018-KotlinScopeFunction'
+  - 'kotlin/020-KotlinInlineClass'
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 契约式设计（Design by Contract）溯源

@@ -1,23 +1,21 @@
 ---
-order: 70
-tags:
-  - css
-  - 'css-layout'
-difficulty: intermediate
+order: 300
 title: 响应式设计
-module: css
-category: 'CSS Basics'
+module: 'css'
+category: 前端技术
+difficulty: intermediate
 description: CSS响应式设计与媒体查询实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/Sass预处理器
-  - css/Less与Stylus
-  - css/PostCSS与构建工具
-  - css/BEM命名方法论
+  - 'css/028-Sass'
+  - 'css/029-LessStylus'
+  - 'css/031-PostCSS'
+  - 'css/032-BEMNamingMethodology'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 ## 2. 媒体查询
 
 ### 基本语法
@@ -103,7 +101,7 @@ img {
 ### 相对字体单位
 
 ```css
- :
+ :root {
   font-size: 16px;
  }
  @media (max-width: 768px) {

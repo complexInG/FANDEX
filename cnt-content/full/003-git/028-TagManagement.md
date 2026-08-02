@@ -1,20 +1,17 @@
 ---
-order: 70
+order: 280
 title: 标签管理
-module: git
-category: 'Git Basics'
+module: 'git'
+category: 工具链
 difficulty: intermediate
 description: Git标签管理：轻量标签与附注标签的创建、操作与发布流程。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/撤销提交
-  - git/Git原理与对象模型
-  - git/二分查找定位
-  - git/子模块管理
-prerequisites:
-  - git/语法速查
+  - 'git/027-GitPrincipleObjectModel'
+prerequisites: []
 ---
+
 ## 1. 标签概述
 
 ### 1.1 什么是标签

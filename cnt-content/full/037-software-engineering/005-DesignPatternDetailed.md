@@ -1,20 +1,21 @@
 ---
-order: 14
+order: 50
 title: 设计模式详解
 module: 'software-engineering'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: advanced
 description: 23种GoF设计模式分类、原理与应用场景。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-engineering/需求分析方法'
-  - 'software-engineering/UML图详解'
-  - 'software-engineering/代码重构'
-  - 'software-engineering/软件测试方法'
+  - 'software-engineering/003-RequirementAnalysisMethod'
+  - 'software-engineering/004-UMLGraphDetailed'
+  - 'software-engineering/006-Refactoring'
+  - 'software-engineering/007-SoftwareTestMethod'
 prerequisites:
-  - 'software-engineering/UML图详解'
+  - 'software-engineering/004-UMLGraphDetailed'
 ---
+
 
 ## 1. 从"盖房子的预制件"说起
 

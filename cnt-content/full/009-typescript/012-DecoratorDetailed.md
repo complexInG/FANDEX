@@ -1,20 +1,20 @@
 ---
-order: 58
+order: 120
 title: 装饰器详解
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: TypeScript装饰器与元编程
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - typescript/映射类型进阶
-  - typescript/泛型约束与默认值
-  - typescript/声明文件编写
-  - typescript/模块解析策略
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/010-MappedTypeAdvanced'
+  - 'typescript/011-GenericConstraintDefault'
+  - 'typescript/013-DeclarationFileWriting'
+  - 'typescript/014-ModuleResolutionInModernJavaScriptToolchains'
+prerequisites: []
 ---
+
 
 
 # 装饰器详解：从实验性到 TC39 Stage 3 标准

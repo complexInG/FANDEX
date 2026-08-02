@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 160
 title: 嵌入式内容
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
 description: iframe、embed、object
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - html5/音频与视频
-  - html5/SVG矢量图形
-  - html5/progress与meter
-  - html5/WebComponents与PWA开发
+  - 'html5/014-AudioVideo'
+  - 'html5/015-SVG'
+  - 'html5/017-ProgressMeter'
+  - 'html5/018-WebComponentsPWADevelopment'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 框架集时代（1995—1999）

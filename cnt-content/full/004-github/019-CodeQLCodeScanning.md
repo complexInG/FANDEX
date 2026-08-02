@@ -1,20 +1,20 @@
 ---
-order: 61
+order: 190
 title: CodeQL代码扫描
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: intermediate
-description: 'GitHub CodeQL代码扫描详解：以安检机类比讲透语义分析原理、代码扫描配置、告警处理与自定义查询。'
+description: GitHub CodeQL代码扫描详解：以安检机类比讲透语义分析原理、代码扫描配置、告警处理与自定义查询。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'github/Issues模板-标签与里程碑'
-  - github/密钥扫描
-  - github/命令行工具
-  - 'github/REST与GraphQL-API'
+  - 'github/017-IssuesTemplateTagMilestone'
+  - 'github/018-SecretScanning'
+  - 'github/021-RESTGraphQLAPI'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 先来一个生活场景：安检机
 

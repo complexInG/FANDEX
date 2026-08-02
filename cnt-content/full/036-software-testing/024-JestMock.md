@@ -1,9 +1,8 @@
 ---
 order: 240
 title: Jest Mock 模拟
-module: software-testing
-
-category: '036-software-testing'
+module: 'software-testing'
+category: 云与基础设施
 difficulty: beginner
 description: Jest Mock 模拟 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## jest.fn 创建 Mock 函数
 
 **基本写法：创建模拟函数**

@@ -1,18 +1,19 @@
 ---
-order: 1
-title: 'C# 概述与环境配置'
-module: csharp
-category: 'C#'
+order: 10
+title: C# 概述与环境配置
+module: 'csharp'
+category: 后端技术
 difficulty: beginner
-description: 'C# 语言概述、.NET 生态、.NET 8/9 新特性、环境搭建与 Hello World'
+description: C# 语言概述、.NET 生态、.NET 8/9 新特性、环境搭建与 Hello World
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - csharp/基础语法
-  - csharp/面向对象编程
-  - algorithm/算法分析基础与学习路线
+  - 'csharp/002-CBasicSyntax'
+  - 'csharp/003-COOP'
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
 prerequisites: []
 ---
+
 
 # C# 概述与环境配置
 

@@ -1,21 +1,22 @@
 ---
-order: 21
+order: 70
 title: 逆矩阵
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 以"可逆性判据全家桶"为主线讲逆矩阵：定义与唯一性、八条等价判据、伴随矩阵法与初等变换法求逆、逆矩阵性质的推导（穿衣脱衣法则）、矩阵方程与应用。
+description: '以"可逆性判据全家桶"为主线讲逆矩阵：定义与唯一性、八条等价判据、伴随矩阵法与初等变换法求逆、逆矩阵性质的推导（穿衣脱衣法则）、矩阵方程与应用。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/行列式按行列展开'
-  - 'linear-algebra/初等变换与初等矩阵'
-  - 'linear-algebra/矩阵的秩'
-  - 'linear-algebra/克莱姆法则'
+  - 'linear-algebra/003-DeterminantRowColumnExpansion'
+  - 'linear-algebra/009-ElementaryTransformationAndMatrix'
+  - 'linear-algebra/010-MatrixRank'
+  - 'linear-algebra/005-CramersRule'
 prerequisites:
-  - 'linear-algebra/矩阵运算'
-  - 'linear-algebra/行列式按行列展开'
+  - 'linear-algebra/007-MatrixOperation'
+  - 'linear-algebra/003-DeterminantRowColumnExpansion'
 ---
+
 
 ## 0. 本篇的组织方式：先问"有没有资格"，再问"怎么算"
 

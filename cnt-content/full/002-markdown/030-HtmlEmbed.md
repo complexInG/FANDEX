@@ -1,9 +1,8 @@
 ---
 order: 300
 title: Markdown HTML 内嵌
-module: markdown
-
-category: '002-markdown'
+module: 'markdown'
+category: 工具链
 difficulty: beginner
 description: Markdown HTML 内嵌 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 基础 HTML 嵌入
 
 **基本写法：行内 HTML 标签`

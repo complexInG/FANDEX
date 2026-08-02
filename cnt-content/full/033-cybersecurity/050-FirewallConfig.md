@@ -1,9 +1,8 @@
 ---
 order: 500
 title: Cybersecurity 防火墙配置(ufw/firewalld)
-module: cybersecurity
-
-category: '033-cybersecurity'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: Cybersecurity 防火墙配置(ufw/firewalld) 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## ufw 基础操作
 
 **基本写法:启用 ufw 防火墙**

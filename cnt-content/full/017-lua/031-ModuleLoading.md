@@ -1,18 +1,19 @@
 ---
-order: 106
+order: 310
 title: 模块加载
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: advanced
 description: Lua模块加载详解：require搜索路径、自定义加载器。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - 'lua/C-API栈操作'
-  - lua/用户数据
+  - 'lua/029-CAPIStackOperation'
+  - 'lua/030-UserData'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 
 
 # 模块加载：`require`、`package` 与 C 模块机制

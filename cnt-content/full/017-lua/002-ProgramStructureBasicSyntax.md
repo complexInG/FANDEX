@@ -1,19 +1,19 @@
 ---
 order: 20
-tags:
-  - lua
-difficulty: beginner
 title: 程序结构与基本语法
-module: lua
-category: 'Lua Basics'
-description: 'Lua 语法基础、变量、运算符、控制结构与作用域规则的工程级深度解析。'
+module: 'lua'
+category: 后端技术
+difficulty: beginner
+description: Lua 语法基础、变量、运算符、控制结构与作用域规则的工程级深度解析。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - lua/概述与环境配置
-  - lua/数据类型与Table详解
-  - lua/函数与闭包
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/003-DataTypeTableDetailed'
+  - 'lua/004-FunctionAndClosure'
 prerequisites: []
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 Lua 的设计背景

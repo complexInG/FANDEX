@@ -1,18 +1,19 @@
 ---
-order: 5
+order: 50
 title: Tailwind CSS 主题定制与设计令牌
-module: tailwind
-category: Tailwind CSS
+module: 'tailwind'
+category: 前端技术
 difficulty: intermediate
-description: 'Tailwind CSS 4 主题定制全攻略：@theme 设计令牌、@theme inline、@utility、OKLCH 色彩与运行时换肤，从品牌设计规范视角落地你的设计系统'
+description: Tailwind CSS 4 主题定制全攻略：@theme 设计令牌、@theme inline、@utility、OKLCH 色彩与运行时换肤，从品牌设计规范视角落地你的设计系统
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - tailwind/002-InstallConfig
-  - tailwind/008-V4Features
+  - 'tailwind/002-InstallConfig'
+  - 'tailwind/008-V4Features'
 prerequisites:
-  - tailwind/002-InstallConfig
+  - 'tailwind/002-InstallConfig'
 ---
+
 
 ## 0. 先打个比方：装修前先出"设计图纸"
 

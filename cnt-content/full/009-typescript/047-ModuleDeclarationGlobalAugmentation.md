@@ -1,30 +1,24 @@
 ---
-order: 104
+order: 470
 title: 模块声明与全局类型增强
-module: typescript
-category: 'dev-lang'
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
-description: 'TypeScript 模块声明与全局类型增强：declare module、声明合并、全局扩展与 DefinitelyRoots 类型生态的形式语义、工程实践与生产级模式。'
+description: TypeScript 模块声明与全局类型增强：declare module、声明合并、全局扩展与 DefinitelyRoots 类型生态的形式语义、工程实践与生产级模式。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/模板字面量类型
-  - typescript/类型体操
-  - typescript/tsconfig严格模式
-  - typescript/装饰器标准实现
-  - typescript/声明文件编写
-  - typescript/模块解析策略
+  - 'typescript/045-TemplateLiteralType'
+  - 'typescript/046-TypeGymnastics'
+  - 'typescript/048-TsconfigStrictMode'
+  - 'typescript/049-DecoratorStandardImpl'
+  - 'typescript/013-DeclarationFileWriting'
+  - 'typescript/014-ModuleResolutionInModernJavaScriptToolchains'
 prerequisites:
-  - typescript/语法速查
-  - typescript/接口与类型别名
-  - typescript/命名空间与模块
-tags:
-  - typescript
-  - declaration-files
-  - module-augmentation
-  - global-types
-  - d-ts
+  - 'typescript/003-InterfaceTypeAlias'
+  - 'typescript/020-NamespaceModule'
 ---
+
 
 
 # 模块声明与全局类型增强

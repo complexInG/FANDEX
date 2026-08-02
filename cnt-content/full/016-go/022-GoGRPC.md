@@ -1,20 +1,21 @@
 ---
-order: 63
+order: 220
 title: Go与gRPC
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: gRPC与Protobuf
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与GraphQL
-  - go/Go与HTTP服务器
-  - go/Go与Kubernetes
-  - go/Go与分布式追踪
+  - 'go/021-GoGraphQL'
+  - 'go/045-GoHTTP'
+  - 'go/023-GoKubernetes'
+  - 'go/048-GoDistributedTracing'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

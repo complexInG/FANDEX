@@ -1,9 +1,8 @@
 ---
 order: 480
 title: CSS @scope 规则语法速查手册
-module: css
-
-category: '007-css'
+module: 'css'
+category: 前端技术
 difficulty: beginner
 description: CSS @scope 规则语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 基础语法
 
 **基本写法：定义作用域**

@@ -1,18 +1,19 @@
 ---
-order: 6
+order: 60
 title: Rust 错误处理
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: beginner
-description: 'panic 与 Result、? 运算符、unwrap/expect、自定义错误与错误转换'
+description: panic 与 Result、? 运算符、unwrap/expect、自定义错误与错误转换
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - rust/005-RustStructEnumMatch
-  - rust/008-RustGenericTrait
+  - 'rust/005-RustStructEnumMatch'
+  - 'rust/008-RustGenericTrait'
 prerequisites:
-  - rust/005-RustStructEnumMatch
+  - 'rust/005-RustStructEnumMatch'
 ---
+
 
 ## 1. 从"外卖送餐"说起：错误处理的两条路径
 

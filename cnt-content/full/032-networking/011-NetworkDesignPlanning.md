@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 110
 title: 网络设计与规划
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: advanced
-description: '网络设计与规划：层次化设计、数据中心网络、SD-WAN与网络虚拟化'
+description: 网络设计与规划：层次化设计、数据中心网络、SD-WAN与网络虚拟化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/网络存储技术
-  - networking/网络故障诊断
-  - networking/DNS与DHCP
-  - networking/负载均衡技术
+  - 'networking/009-NetworkStorageTechnology'
+  - 'networking/010-NetworkDiagnosis'
+  - 'networking/012-DNSDHCP'
+  - 'networking/013-LoadBalanceTech'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. 层次化网络设计
 

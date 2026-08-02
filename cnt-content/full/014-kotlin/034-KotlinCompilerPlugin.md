@@ -1,20 +1,21 @@
 ---
-order: 74
+order: 340
 title: Kotlin与编译器插件
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
 description: kapt、KSP与编译器插件的原理、工程实践与性能优化
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/Kotlin与测试
-  - kotlin/Kotlin与协程Channel
-  - kotlin/Kotlin与DSL
-  - kotlin/Kotlin与原子操作
+  - 'kotlin/033-KotlinTest'
+  - 'kotlin/011-KotlinCoroutineChannel'
+  - 'kotlin/022-KotlinDSL'
+  - 'kotlin/036-KotlinAtomicOperation'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ﻿# Kotlin kotlinc 编译命令速查手册
 

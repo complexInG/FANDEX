@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 340
 title: Actions自托管运行器
-module: github
-category: toolchain
+module: 'github'
+category: 工具链
 difficulty: advanced
-description: 'GitHub Actions自托管运行器对比驱动详解：GitHub托管运行器 vs 自托管运行器全程对比，覆盖注册安装、标签路由、安全加固与运维管理。'
+description: GitHub Actions自托管运行器对比驱动详解：GitHub托管运行器 vs 自托管运行器全程对比，覆盖注册安装、标签路由、安全加固与运维管理。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/Actions矩阵构建
-  - github/Actions缓存依赖
-  - github/Actions制品传递
-  - github/Actions环境部署
+  - 'github/032-ActionsMatrixBuild'
+  - 'github/033-ActionsCacheDependency'
+  - 'github/035-ActionsArtifact'
+  - 'github/036-ActionsEnvironmentDeploy'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 ## 0. 开始之前："自家健身房"与"商业健身房"的选择
 
 想健身，你有两种选择：

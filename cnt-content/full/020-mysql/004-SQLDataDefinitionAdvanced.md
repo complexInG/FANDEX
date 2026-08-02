@@ -1,23 +1,21 @@
 ---
 order: 40
-tags:
-  - mysql
-  - database
+title: SQL 数据定义与高级对象
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-title: 'SQL 数据定义与高级对象'
-module: mysql
-category: 'MySQL Basics'
 description: CREATE/ALTER/DROP、视图、索引与存储过程。
 author: Anonymous
-related:
-  - mysql/环境搭建
-  - mysql/数据类型与约束
-  - mysql/MyISAM存储引擎
-  - mysql/SQL数据操作与查询
-prerequisites:
-  - mysql/语法速查
 updated: '2026-08-01'
+related:
+  - 'mysql/002-MySQLEnvSetup'
+  - 'mysql/003-MySQLDataTypeConstraint'
+  - 'mysql/005-MyISAMStorageEngine'
+  - 'mysql/006-SQLDataOperationQuery'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 ## 1. DDL (数据定义语言) - Data Definition Language
 
 DDL 用于创建、修改和删除数据库对象，包括数据库、表、索引、视图等。
@@ -27,13 +25,10 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 #### 1.1.1 创建数据库
 
 ```sql
- -
  CREATE DATABASE mydb;
- -
  CREATE DATABASE mydb
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
- -
  CREATE DATABASE IF NOT EXISTS mydb
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
@@ -42,11 +37,8 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 #### 1.1.2 查看数据库
 
 ```sql
- -
  SHOW DATABASES;
- -
  SHOW CREATE DATABASE mydb;
- -
  SELECT DATABASE();
 ```
 
@@ -59,16 +51,13 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 #### 1.1.4 删除数据库
 
 ```sql
- -
  DROP DATABASE mydb;
- -
  DROP DATABASE IF EXISTS mydb;
 ```
 
 #### 1.1.5 修改数据库
 
 ```sql
- -
  ALTER DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
@@ -77,7 +66,6 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 #### 1.2.1 创建表
 
 ```sql
- -
  CREATE TABLE users (
   id INT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
   username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
@@ -122,43 +110,28 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 #### 1.2.3 查看表结构
 
 ```sql
- -
  DESC users;
- -
  SHOW COLUMNS FROM users;
- -
  SHOW CREATE TABLE users;
- -
  SHOW TABLES;
- -
  SHOW TABLE STATUS FROM mydb;
- -
  SHOW TABLES LIKE '%user%';
 ```
 
 #### 1.2.4 修改表结构
 
 ```sql
- -
  ALTER TABLE users ADD COLUMN address VARCHAR(255) AFTER email;
  ALTER TABLE users ADD COLUMN is_verified TINYINT DEFAULT 0 AFTER status;
- -
  ALTER TABLE users MODIFY COLUMN phone VARCHAR(20) NOT NULL;
- -
  ALTER TABLE users CHANGE COLUMN phone telephone VARCHAR(20) NOT NULL;
- -
  ALTER TABLE users DROP COLUMN address;
- -
  ALTER TABLE users ADD INDEX idx_age (age);
  ALTER TABLE users ADD UNIQUE INDEX idx_phone (phone);
  ALTER TABLE users ADD INDEX idx_age_gender (age, gender);
- -
  ALTER TABLE orders ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id);
- -
  ALTER TABLE orders DROP FOREIGN KEY fk_user_id;
- -
  ALTER TABLE users COMMENT '用户信息表';
- -
  ALTER TABLE users RENAME TO user_info;
  RENAME TABLE users TO user_info, orders TO order_info;
 ```
@@ -166,26 +139,18 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 #### 1.2.5 删除表
 
 ```sql
- -
  DROP TABLE users;
- -
  DROP TABLE IF EXISTS users;
- -
  DROP TABLE IF EXISTS users, orders, products;
- -
  TRUNCATE TABLE users;
 ```
 
 #### 1.2.6 表复制
 
 ```sql
- -
  CREATE TABLE users_copy LIKE users;
- -
  CREATE TABLE users_copy AS SELECT * FROM users;
- -
  CREATE TABLE users_copy AS SELECT id, username, email FROM users WHERE 1=0;
- -
  CREATE TABLE users_copy AS SELECT * FROM users WHERE status = 1;
 ```
 
@@ -208,37 +173,26 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 #### 1.3.2 创建索引
 
 ```sql
- -
  CREATE INDEX idx_username ON users(username);
- -
  CREATE UNIQUE INDEX idx_email ON users(email);
- -
  CREATE INDEX idx_name_status ON users(username, status);
- -
  CREATE UNIQUE INDEX idx_order_product ON order_items(order_id, product_id);
- -
  ALTER TABLE articles ADD FULLTEXT INDEX ft_title_content (title, content);
- -
  CREATE INDEX idx_email_prefix ON users(email(10));
 ```
 
 #### 1.3.3 查看索引
 
 ```sql
- -
  SHOW INDEX FROM users;
- -
  SHOW INDEX FROM users\G
- -
  EXPLAIN SELECT * FROM users WHERE username = 'test';
 ```
 
 #### 1.3.4 删除索引
 
 ```sql
- -
  DROP INDEX idx_username ON users;
- -
  ALTER TABLE users MODIFY id INT NOT NULL;
  ALTER TABLE users DROP PRIMARY KEY;
 ```
@@ -259,12 +213,9 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
   **复合索引最左前缀原则**：
 
 ```sql
- -
  CREATE INDEX idx_status_created ON users(status, created_at);
- -
  SELECT * FROM users WHERE status = 1;
  SELECT * FROM users WHERE status = 1 AND created_at > '2024-01-01';
- -
  SELECT * FROM users WHERE created_at > '2024-01-01';
 ```
 
@@ -326,19 +277,13 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 ### 2.2 事务基本语法
 
 ```sql
- -
  START TRANSACTION;
- -
  BEGIN;
- -
  inSERT INTO users (username, email) VALUES ('张三', 'zhangsan@example.com');
  UPDATE accounts SET balance = balance - 100 WHERE user_id = 1;
  UPDATE accounts SET balance = balance + 100 WHERE user_id = 2;
- -
  commit;
- -
  ROLLBACK;
- -
  START TRANSACTION;
  inSERT INTO users (username) VALUES ('张三');
  SAVEPOINT sp1;
@@ -357,31 +302,24 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 | SERIALIZABLE           | 不可能 | 不可能     | 不可能 |
 
 ```sql
- -
  SELECT @@tx_isolation;
  SELECT @@transaction_isolation;
- -
  SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;
- -
  SET GLOBAL TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 ```
 
 ### 2.4 事务实战
 
 ```sql
- -
  START TRANSACTION;
  UPDATE accounts SET balance = balance - 1000 WHERE user_id = 1;
  UPDATE accounts SET balance = balance + 1000 WHERE user_id = 2;
- -
  SELECT balance FROM accounts WHERE user_id IN (1, 2);
- -
  if (SELECT balance FROM accounts WHERE user_id = 1) < 0 THEN
   ROLLBACK;
  else
   COMMIT;
  END IF;
- -
  START TRANSACTION;
  inSERT INTO orders (user_id, total_amount) VALUES (1, 500);
  SET @order_id = LAST_INSERT_ID();
@@ -401,12 +339,10 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 ### 3.2 创建视图
 
 ```sql
- -
  CREATE VIEW active_users AS
  SELECT id, username, email, status
  from users
  WHERE status = 1;
- -
  CREATE VIEW order_details AS
  SELECT
   o.id AS order_id,
@@ -418,7 +354,6 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
   o.created_at
  from orders o
  inNER JOIN users u ON o.user_id = u.id;
- -
  CREATE VIEW user_stats AS
  SELECT
   u.id,
@@ -434,14 +369,11 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 ### 3.3 使用视图
 
 ```sql
- -
  SELECT * FROM active_users WHERE username LIKE '张%';
- -
  SELECT v.username, v.order_count, o.order_no
  from user_stats v
  LEFT JOIN orders o ON v.id = o.user_id
  WHERE o.created_at > '2024-01-01';
- -
  CREATE TABLE monthly_sales AS
  SELECT
   DATE_FORMAT(created_at, '%Y-%m') AS month,
@@ -454,24 +386,17 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 ### 3.4 修改和删除视图
 
 ```sql
- -
  CREATE OR REPLACE VIEW active_users AS
  SELECT id, username, email, status, created_at
  from users
  WHERE status = 1;
- -
  DROP VIEW IF EXISTS active_users;
- -
  SHOW CREATE VIEW order_details;
 ```
 
 ### 3.5 视图限制
 
 ```sql
- -
- -
- -
- -
 ```
 
 ## 4. 存储过程详解
@@ -505,14 +430,10 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 ### 4.3 调用存储过程
 
 ```sql
- -
  CALL get_all_users();
- -
  CALL get_user_by_age(20, 30);
- -
  CALL count_users_by_status(@active, @inactive);
  SELECT @active AS active_users, @inactive AS inactive_users;
- -
  SET @user_id = 1;
  CALL update_user_status(@user_id, 0);
 ```
@@ -533,7 +454,6 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
 
 ```sql
  DELIMITER //
- -
  CREATE TRIGGER before_user_insert
  BEFORE INSERT ON users
  for EACH ROW
@@ -544,7 +464,6 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
   SET NEW.status = 1;
   END IF;
  END //
- -
  CREATE TRIGGER after_order_update
  AFTER UPDATE ON orders
  for EACH ROW
@@ -554,7 +473,6 @@ DDL 用于创建、修改和删除数据库对象，包括数据库、表、索�
   VALUES (OLD.id, OLD.status, NEW.status, NOW());
   END IF;
  END //
- -
  CREATE TRIGGER after_user_delete
  AFTER DELETE ON users
  for EACH ROW

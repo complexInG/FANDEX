@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 130
 title: 密封类与代数数据类型
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: 密封类、密封接口与代数数据类型（ADT）的原理、形式化与实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/空安全详解
-  - kotlin/扩展函数
-  - kotlin/委托属性
-  - kotlin/协程基础
+  - 'kotlin/012-NullSafetyDetailed'
+  - 'kotlin/015-ExtensionFunction'
+  - 'kotlin/014-DelegateProperty'
+  - 'kotlin/016-CoroutineBasics'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 
 ## 历史动机与背景

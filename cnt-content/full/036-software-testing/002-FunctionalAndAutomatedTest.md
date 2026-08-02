@@ -1,18 +1,19 @@
 ---
-order: 2
+order: 20
 title: 功能与自动化测试
 module: 'software-testing'
-category: 软件测试
+category: 云与基础设施
 difficulty: intermediate
-description: '功能测试执行、自动化测试脚本编写、Selenium 框架、Unittest/pytest 框架、测试数据管理与页面对象模式。'
+description: 功能测试执行、自动化测试脚本编写、Selenium 框架、Unittest/pytest 框架、测试数据管理与页面对象模式。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/测试基础与方法'
-  - 'software-testing/性能与接口测试'
-  - 'software-testing/安全与移动测试'
+  - 'software-testing/001-TestBasicsMethod'
+  - 'software-testing/003-PerformanceInterfaceTest'
+  - 'software-testing/004-SecurityAndMobileTest'
 prerequisites: []
 ---
+
 
 ## 1. 功能测试执行
 

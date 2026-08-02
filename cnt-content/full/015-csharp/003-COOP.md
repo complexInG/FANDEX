@@ -1,20 +1,21 @@
 ---
-order: 3
-title: 'C# 面向对象编程'
-module: csharp
-category: 'C#'
+order: 30
+title: C# 面向对象编程
+module: 'csharp'
+category: 后端技术
 difficulty: beginner
-description: '类与对象、构造函数、继承、多态、抽象类与接口、属性与索引器、运算符重载、记录类型(record)、SOLID 原则与设计模式'
+description: 类与对象、构造函数、继承、多态、抽象类与接口、属性与索引器、运算符重载、记录类型(record)、SOLID 原则与设计模式
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - csharp/概述与环境配置
-  - csharp/基础语法
-  - csharp/泛型与集合
-  - csharp/异步编程
-  - csharp/LINQ与函数式编程
+  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/002-CBasicSyntax'
+  - 'csharp/004-CGenericCollection'
+  - 'csharp/005-CAsyncProgramming'
+  - 'csharp/006-CLINQFunctionalProgramming'
 prerequisites: []
 ---
+
 
 
 ## 历史动机与背景

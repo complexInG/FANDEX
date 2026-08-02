@@ -1,19 +1,20 @@
 ---
-order: 4
+order: 40
 title: 边缘计算
-module: iot
-category: 物联网
+module: 'iot'
+category: 云与基础设施
 difficulty: advanced
-description: '边缘计算架构、边缘节点部署、KubeEdge/k3s、AI 推理与边云协同。'
+description: 边缘计算架构、边缘节点部署、KubeEdge/k3s、AI 推理与边云协同。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/传感器与嵌入式
-  - iot/通信协议
-  - iot/IoT平台
-  - iot/数据处理与分析
+  - 'iot/002-SensorEmbedded'
+  - 'iot/003-CommunicationProtocol'
+  - 'iot/005-IoT'
+  - 'iot/006-DataProcessingAnalysis'
 prerequisites: []
 ---
+
 
 ## 1. 边缘计算架构
 

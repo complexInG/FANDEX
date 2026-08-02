@@ -1,20 +1,21 @@
 ---
-order: 50
+order: 110
 title: 英译汉技巧
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: advanced
 description: 英译汉翻译技巧详解，涵盖直译与意译、词性转换、增减词、语序调整等核心方法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/学术写作规范
-  - english/技术文档写作
-  - english/汉译英技巧
-  - english/技术翻译要点
+  - 'english/009-AcademicWritingStandard'
+  - 'english/010-TechDocWriting'
+  - 'english/012-ChineseToEnglishTechnique'
+  - 'english/013-TechTranslationPoints'
 prerequisites:
-  - english/计算机专业英语词汇
+  - 'english/001-ComputerProfessionalEnglishVocabulary'
 ---
+
 
 ## 1. 英译汉的基本原则
 

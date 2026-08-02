@@ -1,23 +1,23 @@
 ---
-order: 69
+order: 270
 title: 文件系统操作
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
-description: 'POSIX 文件系统 API、目录遍历、文件属性、权限管理、inotify 监控与跨平台文件操作，对标 MIT/Stanford/CMU 系统编程教学水准。'
+description: POSIX 文件系统 API、目录遍历、文件属性、权限管理、inotify 监控与跨平台文件操作，对标 MIT/Stanford/CMU 系统编程教学水准。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/进程与管道
-  - c/共享内存与信号量
-  - c/函数详解
-  - c/国际化与本地化
-  - c/动态库与静态库
+  - 'c/025-ProcessAndPipe'
+  - 'c/026-SharedMemorySemaphore'
+  - 'c/028-FunctionDetailed'
+  - 'c/030-HelloWorldOrOr'
+  - 'c/029-DynamicStaticLibrary'
 prerequisites:
-  - c/概述
-  - c/数据类型详解
-  - c/指针详解
+  - 'c/001-CLanguageOverview'
+  - 'c/003-DataTypeDetailed'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 Unix 文件系统的设计哲学（1970s）

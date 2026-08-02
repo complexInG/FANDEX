@@ -1,23 +1,21 @@
 ---
-order: 70
-tags:
-  - 'cs-fundamentals'
-  - 'design-patterns'
-difficulty: intermediate
+order: 270
 title: 设计模式
 module: 'cs-fundamentals'
-category: 'Computer Science / Design Patterns'
+category: 计算机科学
+difficulty: intermediate
 description: 设计模式核心：创建型、结构型、行为型模式，SOLID原则，模式间关系与选择策略。
 author: fanquanpp
-related:
-  - 'cs-fundamentals/人工智能基础'
-  - 'cs-fundamentals/计算机图形学'
-  - 'cs-fundamentals/软件体系结构'
-  - 'cs-fundamentals/人机交互'
-prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
 updated: '2026-08-01'
+related:
+  - 'cs-fundamentals/025-AIFundamentals'
+  - 'cs-fundamentals/026-ComputerShape'
+  - 'cs-fundamentals/028-SoftwareSystemStructure'
+  - 'cs-fundamentals/029-HCI'
+prerequisites:
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 设计原则
 

@@ -1,21 +1,21 @@
 ---
-order: 70
-tags:
-  - java
-difficulty: intermediate
+order: 270
 title: 控制流
-module: java
-category: 'Java Basics'
+module: 'java'
+category: 后端技术
+difficulty: intermediate
 description: 条件判断、循环结构与跳转语句。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - java/Java单元测试
-  - java/Java构建工具
-  - java/Java与微服务
-  - java/Java与消息队列
+  - 'java/025-JavaUnitTest'
+  - 'java/026-JavaBuildTool'
+  - 'java/028-JavaMicroservice'
+  - 'java/029-JavaMessageQueue'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 历史动机与背景
 
 ### 控制流的起源与理论根基

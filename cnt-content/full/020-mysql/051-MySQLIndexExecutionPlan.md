@@ -1,23 +1,21 @@
 ---
-order: 90
-tags:
-  - mysql
-  - database
+order: 510
+title: MySQL 索引与执行计划
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-title: 'MySQL 索引与执行计划'
-module: mysql
-category: 'MySQL Basics'
-description: 'B+Tree 索引、EXPLAIN 分析与索引优化策略。'
+description: B+Tree 索引、EXPLAIN 分析与索引优化策略。
 author: Anonymous
-related:
-  - mysql/InnoDB体系架构
-  - mysql/数据加密
-  - mysql/MySQL9新特性与并行查询
-  - mysql/VECTOR向量类型
-prerequisites:
-  - mysql/语法速查
 updated: '2026-08-01'
+related:
+  - 'mysql/049-InnoDBSystemArchitecture'
+  - 'mysql/050-DataEncryption'
+  - 'mysql/052-MySQL9NewFeaturesParallelQuery'
+  - 'mysql/053-VectorType'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 ## 1. 索引是什么 (What is an Index)
 
 索引是为了加速检索而构建的数据结构。对 InnoDB 来说，常见索引是 B+Tree。

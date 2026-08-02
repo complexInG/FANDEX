@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 180
 title: 云安全服务
 module: 'cloud-computing'
-category: 云计算
+category: 云与基础设施
 difficulty: advanced
 description: 共享责任模型、身份与访问管理、数据加密与密钥管理、网络安全、合规与审计、安全运营与事件响应。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/云网络服务'
-  - 'cloud-computing/Kubernetes存储'
-  - 'cloud-computing/Helm包管理'
-  - 'cloud-computing/云成本优化'
+  - 'cloud-computing/016-CloudNetworkService'
+  - 'cloud-computing/017-KubernetesStorage'
+  - 'cloud-computing/019-HelmPackageManagement'
+  - 'cloud-computing/020-CloudCostOptimization'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 共享责任模型
 

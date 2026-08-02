@@ -1,19 +1,20 @@
 ---
-order: 102
+order: 420
 title: JSONB与JSON差异
-module: postgresql
-category: database
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
-description: 'PostgreSQL JSONB 与 JSON 类型对比：存储格式、查询性能、索引策略、GIN 索引与 JSON 路径表达式。'
+description: PostgreSQL JSONB 与 JSON 类型对比：存储格式、查询性能、索引策略、GIN 索引与 JSON 路径表达式。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/并行查询
-  - postgresql/逻辑复制与物理复制对比
-  - postgresql/扩展模块详解
+  - 'postgresql/040-ParallelQuery'
+  - 'postgresql/041-LogicalPhysicalReplicationCompare'
+  - 'postgresql/043-ExtensionModuleDetailed'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. JSON 与 JSONB 对比
 

@@ -1,23 +1,20 @@
 ---
-order: 80
-tags:
-  - mysql
-  - database
-difficulty: advanced
+order: 390
 title: 进阶查询与多表操作
-module: mysql
-category: 'MySQL Basics'
+module: 'mysql'
+category: 数据库
+difficulty: advanced
 description: 复杂查询优化、分组聚合与结果集处理。
 author: Anonymous
-related:
-  - mysql/基于时间点恢复
-  - mysql/主从复制
-  - mysql/全局事务标识
-  - mysql/并行复制
-prerequisites:
-  - mysql/语法速查
 updated: '2026-08-01'
+related:
+  - 'mysql/037-PITR'
+  - 'mysql/038-Replication'
+  - 'mysql/041-ParallelReplication'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 多表联查 (Joins)
 
@@ -134,7 +131,6 @@ flowchart LR
 **语法**：
 
 ```sql
- -
  SELECT *
  from table1
  LEFT JOIN table2
@@ -168,12 +164,10 @@ flowchart LR
 **示例表结构**:
 
 ```sql
- -
  CREATE TABLE departments (
   dept_id INT PRIMARY KEY,
   dept_name VARCHAR(50) NOT NULL
  )
- -
  CREATE TABLE employees (
   emp_id INT PRIMARY KEY,
   emp_name VARCHAR(50) NOT NULL,
@@ -182,7 +176,6 @@ flowchart LR
   hire_date DATE,
   FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
  )
- -
  inSERT INTO departments VALUES (1, '技术部'), (2, '市场部'), (3, '财务部');
  inSERT INTO employees VALUES
  (1, '张三', 1, 8000, '2020-01-01'),
@@ -195,55 +188,30 @@ flowchart LR
 **INNER JOIN 示例**:
 
 ```sql
- -
  SELECT e.emp_id, e.emp_name, d.dept_name, e.salary
  from employees e
  inNER JOIN departments d ON e.dept_id = d.dept_id;
- -
- -
- -
- -
- -
- -
- -
 ```
 
 **LEFT JOIN 示例**:
 
 ```sql
- -
  SELECT d.dept_id, d.dept_name, e.emp_name, e.salary
  from departments d
  LEFT JOIN employees e ON d.dept_id = e.dept_id;
- -
- -
- -
- -
- -
- -
- -
 ```
 
 **RIGHT JOIN 示例**:
 
 ```sql
- -
  SELECT e.emp_id, e.emp_name, d.dept_name, e.salary
  from departments d
  RIGHT JOIN employees e ON d.dept_id = e.dept_id;
- -
- -
- -
- -
- -
- -
- -
 ```
 
 **FULL JOIN 模拟**:
 
 ```sql
- -
  SELECT d.dept_id, d.dept_name, e.emp_name, e.salary
  from departments d
  LEFT JOIN employees e ON d.dept_id = e.dept_id
@@ -258,12 +226,6 @@ flowchart LR
 以下示例基于商品管理系统数据库，包含完整的多表联查实战场景：
 
 ```sql
- -
- -
- -
- -
- -
- -
 ```
 
 **实战示例1：查询员工及其销售订单**
@@ -448,11 +410,8 @@ flowchart LR
 返回两个表的笛卡尔积：
 
 ```sql
- -
  SELECT * FROM table1 CROSS JOIN table2;
- -
  SELECT * FROM table1, table2;
- -
  SELECT d.dept_name, e.emp_name
  from departments d
  CROSS JOIN employees e;
@@ -463,11 +422,8 @@ flowchart LR
 自动根据相同列名进行连接：
 
 ```sql
- -
  SELECT * FROM employees NATURAL JOIN departments;
- -
  SELECT * FROM employees NATURAL LEFT JOIN departments;
- -
  SELECT * FROM employees NATURAL RIGHT JOIN departments;
 ```
 
@@ -476,7 +432,6 @@ flowchart LR
 当两个表有相同列名时，可以使用 USING 简化连接：
 
 ```sql
- -
  SELECT e.emp_name, d.dept_name
  from employees e
  JOIN departments d USING (dept_id);
@@ -485,7 +440,6 @@ flowchart LR
 ### 1.5 连接优先级与括号
 
 ```sql
- -
  SELECT *
  from employees e
  LEFT JOIN (
@@ -501,15 +455,9 @@ flowchart LR
 使用 `GROUP BY` 配合聚合函数进行分组统计：
 
 ```sql
- -
  SELECT dept_id, AVG(salary) as avg_salary
  from employees
  GROUP BY dept_id;
- -
- -
- -
- -
- -
 ```
 
 ### 2.2 HAVING 子句
@@ -517,21 +465,15 @@ flowchart LR
 `HAVING` 用于对分组后的结果进行过滤，而 `WHERE` 是在分组前过滤：
 
 ```sql
- -
  SELECT dept_id, AVG(salary) as avg_salary
  from employees
  GROUP BY dept_id
  HAVING AVG(salary) > 7000;
- -
- -
- -
- -
 ```
 
 ### 2.3 多列分组
 
 ```sql
- -
  SELECT dept_id, YEAR(hire_date) as hire_year, AVG(salary) as avg_salary
  from employees
  GROUP BY dept_id, YEAR(hire_date);
@@ -549,7 +491,6 @@ flowchart LR
 | `GROUP_CONCAT()` | 拼接字符串   | `GROUP_CONCAT(name SEPARATOR ',')`                    |
 
 ```sql
- -
  SELECT
   COUNT(*) as total_employees,
   SUM(salary) as total_salary,
@@ -566,22 +507,12 @@ flowchart LR
 生成小计和总计：
 
 ```sql
- -
  SELECT
   dept_id,
   YEAR(hire_date) as hire_year,
   COUNT(*) as employee_count
  from employees
  GROUP BY dept_id, YEAR(hire_date) WITH ROLLUP;
- -
- -
- -
- -
- -
- -
- -
- -
- -
 ```
 
 #### 2.5.2 GROUPING SETS
@@ -589,7 +520,6 @@ flowchart LR
 灵活指定分组组合：
 
 ```sql
- -
  SELECT
   dept_id,
   YEAR(hire_date) as hire_year,
@@ -605,18 +535,11 @@ flowchart LR
 ### 2.6 GROUP_CONCAT 的高级用法
 
 ```sql
- -
  SELECT
   dept_id,
   GROUP_CONCAT(emp_name SEPARATOR ', ') as employees
  from employees
  GROUP BY dept_id;
- -
- -
- -
- -
- -
- -
  SELECT
   dept_id,
   GROUP_CONCAT(emp_name ORDER BY salary DESC SEPARATOR ', ') as employees
@@ -631,14 +554,9 @@ flowchart LR
 返回单一值的子查询：
 
 ```sql
- -
  SELECT emp_name, salary
  from employees
  WHERE salary > (SELECT AVG(salary) FROM employees);
- -
- -
- -
- -
 ```
 
 ### 3.2 列子查询
@@ -646,16 +564,9 @@ flowchart LR
 返回一列值的子查询，通常配合 `IN`, `ANY`, `ALL` 使用：
 
 ```sql
- -
  SELECT emp_name, dept_id
  from employees
  WHERE dept_id IN (SELECT dept_id FROM departments WHERE dept_name IN ('技术部', '市场部'));
- -
- -
- -
- -
- -
- -
 ```
 
 ### 3.3 行子查询
@@ -663,7 +574,6 @@ flowchart LR
 返回一行多列的子查询：
 
 ```sql
- -
  SELECT emp_name, dept_id, salary
  from employees
  WHERE (dept_id, salary) = (SELECT dept_id, salary FROM employees WHERE emp_name = '张三');
@@ -674,7 +584,6 @@ flowchart LR
 返回一个表的子查询，可以作为临时表使用：
 
 ```sql
- -
  SELECT e.emp_name, e.dept_id, e.salary
  from employees e
  JOIN (
@@ -682,11 +591,6 @@ flowchart LR
   FROM employees
   GROUP BY dept_id
  )
- -
- -
- -
- -
- -
 ```
 
 ### 3.5 相关子查询
@@ -694,7 +598,6 @@ flowchart LR
 子查询中使用了外部查询的列：
 
 ```sql
- -
  SELECT
   emp_name,
   dept_id,
@@ -704,13 +607,6 @@ flowchart LR
   WHERE e2.dept_id = e1.dept_id AND e2.salary > e1.salary) as rank
  from employees e1
  ORDER BY dept_id, rank;
- -
- -
- -
- -
- -
- -
- -
 ```
 
 ### 3.6 EXISTS 子查询
@@ -718,19 +614,16 @@ flowchart LR
 检查子查询是否返回任何行：
 
 ```sql
- -
  SELECT dept_id, dept_name
  from departments d
  WHERE EXISTS (
   SELECT 1 FROM employees e WHERE e.dept_id = d.dept_id
  )
- -
  SELECT dept_id, dept_name
  from departments d
  WHERE NOT EXISTS (
   SELECT 1 FROM employees e WHERE e.dept_id = d.dept_id
  )
- -
  SELECT dept_id, dept_name
  from departments d
  WHERE EXISTS (
@@ -742,19 +635,16 @@ flowchart LR
 ### 3.7 ANY/SOME 和 ALL
 
 ```sql
- -
  SELECT emp_name, salary
  from employees
  WHERE salary > ANY (
   SELECT AVG(salary) FROM employees GROUP BY dept_id
  )
- -
  SELECT emp_name, salary
  from employees
  WHERE salary > ALL (
   SELECT AVG(salary) FROM employees GROUP BY dept_id
  )
- -
  SELECT emp_name, salary
  from employees
  WHERE salary > SOME (
@@ -765,12 +655,10 @@ flowchart LR
 ### 3.8 子查询的性能考虑
 
 ```sql
- -
  SELECT e.emp_name, e.salary
  from employees e
  JOIN (SELECT AVG(salary) as avg_sal FROM employees) t
  WHERE e.salary > t.avg_sal;
- -
  SELECT emp_name, salary
  from employees e1
  WHERE salary > (SELECT AVG(salary) FROM employees e2 WHERE e2.dept_id = e1.dept_id);
@@ -803,7 +691,6 @@ flowchart LR
 **示例**:
 
 ```sql
- -
  SELECT
   emp_name,
   dept_id,
@@ -812,19 +699,11 @@ flowchart LR
   RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) as rank,
   DENSE_RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) as dense_rank
  from employees;
- -
- -
- -
- -
- -
- -
- -
 ```
 
 #### 4.2.2 聚合函数作为窗口函数
 
 ```sql
- -
  SELECT
   emp_name,
   dept_id,
@@ -833,13 +712,6 @@ flowchart LR
   AVG(salary) OVER (PARTITION BY dept_id) as dept_avg_salary,
   MAX(salary) OVER (PARTITION BY dept_id) as dept_max_salary
  from employees;
- -
- -
- -
- -
- -
- -
- -
 ```
 
 #### 4.2.3 分析函数
@@ -855,7 +727,6 @@ flowchart LR
 **示例**:
 
 ```sql
- -
  SELECT
   emp_name,
   dept_id,
@@ -863,19 +734,11 @@ flowchart LR
   LAG(salary, 1) OVER (PARTITION BY dept_id ORDER BY salary) as prev_salary,
   salary - LAG(salary, 1) OVER (PARTITION BY dept_id ORDER BY salary) as salary_diff
  from employees;
- -
- -
- -
- -
- -
- -
- -
 ```
 
 ### 4.3 窗口范围
 
 ```sql
- -
  SELECT
   emp_name,
   dept_id,
@@ -886,13 +749,6 @@ flowchart LR
   ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING
   ) as moving_sum
  from employees;
- -
- -
- -
- -
- -
- -
- -
 ```
 
 ### 4.4 其他常用窗口函数
@@ -900,21 +756,12 @@ flowchart LR
 #### 4.4.1 百分比排名函数
 
 ```sql
- -
  SELECT
   emp_name,
   dept_id,
   salary,
   PERCENT_RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) as percent_rank
  from employees;
- -
- -
- -
- -
- -
- -
- -
- -
  SELECT
   emp_name,
   dept_id,
@@ -926,26 +773,17 @@ flowchart LR
 #### 4.4.2 NTILE 函数
 
 ```sql
- -
  SELECT
   emp_name,
   dept_id,
   salary,
   NTILE(2) OVER (PARTITION BY dept_id ORDER BY salary DESC) as bucket
  from employees;
- -
- -
- -
- -
- -
- -
- -
 ```
 
 #### 4.4.3 LAG 和 LEAD 的高级用法
 
 ```sql
- -
  SELECT
   emp_name,
   dept_id,
@@ -953,7 +791,6 @@ flowchart LR
   LAG(salary, 1, 0) OVER (PARTITION BY dept_id ORDER BY salary) as prev_salary,
   LEAD(salary, 1, 0) OVER (PARTITION BY dept_id ORDER BY salary) as next_salary
  from employees;
- -
  SELECT
   emp_name,
   dept_id,
@@ -967,7 +804,6 @@ flowchart LR
 ### 4.5 命名窗口
 
 ```sql
- -
  SELECT
   emp_name,
   dept_id,
@@ -985,7 +821,6 @@ flowchart LR
 ### 5.1 复杂查询示例
 
 ```sql
- -
  SELECT
   emp_name,
   dept_name,
@@ -1001,51 +836,37 @@ flowchart LR
   JOIN departments d ON e.dept_id = d.dept_id
  )
  WHERE rank <= 2;
- -
- -
- -
- -
- -
- -
- -
 ```
 
 ### 5.2 内连接实战 (商品管理系统)
 
 ```sql
- -
  SELECT employees_info.Employees_name, post_info.Post_name
  from employees_info
  JOIN post_info ON employees_info.Post_id = post_info.Post_id;
- -
  SELECT commodity_info.Commodity_name, SUM(sales_list.Sales_Number) AS 销售数量
  from commodity_info
  JOIN sales_list ON commodity_info.Commodity_id = sales_list.Commodity_id
  GROUP BY commodity_info.Commodity_name;
- -
  SELECT employees_info.*, sales_info.*
  from employees_info
  inNER JOIN sales_info ON employees_info.Employees_id = sales_info.Employees_id;
- -
  SELECT employees_info.Employees_id, employees_info.Employees_name, employees_info.Employees_sex,
   sales_info.Sales_id, sales_info.Customer_id, sales_info.Sales_time
  from employees_info
  inNER JOIN sales_info ON employees_info.Employees_id = sales_info.Employees_id;
- -
  SELECT employees_info.Employees_id, employees_info.Employees_name, employees_info.Employees_sex,
   sales_info.Sales_id, sales_info.Customer_id, customer_info.Customer_name, sales_info.Sales_time
  from employees_info
  inNER JOIN sales_info ON employees_info.Employees_id = sales_info.Employees_id
  inNER JOIN customer_info ON sales_info.Customer_id = customer_info.Customer_id
  WHERE employees_info.Employees_name = '王小妮';
- -
  SELECT employees_info.Employees_id, employees_info.Employees_name, employees_info.Employees_sex,
   sales_info.Sales_id, sales_info.Customer_id, customer_info.Customer_name, sales_info.Sales_time
  from employees_info, sales_info, customer_info
  WHERE employees_info.Employees_id = sales_info.Employees_id
   AND sales_info.Customer_id = customer_info.Customer_id
   AND employees_info.Employees_name = '王小妮';
- -
  SELECT employees_info.Employees_id, employees_info.Employees_name,
   SUM(sales_list.Sales_price * sales_list.Sales_Number) AS 销售总业绩
  from employees_info
@@ -1053,7 +874,6 @@ flowchart LR
  inNER JOIN sales_list ON sales_info.Sales_id = sales_list.Sales_id
  GROUP BY employees_info.Employees_id, employees_info.Employees_name
  ORDER BY 销售总业绩 DESC;
- -
  SELECT customer_info.Customer_name, commodity_info.Commodity_name,
   SUM(sales_list.Sales_Number) AS 购买数量
  from customer_info
@@ -1061,7 +881,6 @@ flowchart LR
  inNER JOIN sales_list ON sales_info.Sales_id = sales_list.Sales_id
  inNER JOIN commodity_info ON sales_list.Commodity_id = commodity_info.Commodity_id
  GROUP BY customer_info.Customer_name, commodity_info.Commodity_name;
- -
  SELECT employees_info.Employees_name, sales_info.Sales_id, customer_info.Customer_name,
   commodity_info.Commodity_name, sales_info.Sales_time, sales_list.Sales_Number
  from employees_info
@@ -1069,12 +888,10 @@ flowchart LR
  inNER JOIN customer_info ON sales_info.Customer_id = customer_info.Customer_id
  inNER JOIN sales_list ON sales_info.Sales_id = sales_list.Sales_id
  inNER JOIN commodity_info ON sales_list.Commodity_id = commodity_info.Commodity_id;
- -
  SELECT s1.Supplier_name, s1.Address, s2.Supplier_name AS 同城市供应商
  from supplier_info s1
  inNER JOIN supplier_info s2 ON s1.Address = s2.Address
  WHERE s1.Supplier_name = '翔云公司' AND s1.Supplier_id <> s2.Supplier_id;
- -
  SELECT e1.Employees_name, e1.Employees_id, e2.Employees_id AS 同名员工ID
  from employees_info e1
  inNER JOIN employees_info e2 ON e1.Employees_name = e2.Employees_name
@@ -1084,24 +901,19 @@ flowchart LR
 ### 5.3 外连接实战 (商品管理系统)
 
 ```sql
- -
  SELECT Employees_name, b.*
  from employees_info a
  JOIN sales_info b ON a.Employees_id = b.Employees_id;
- -
  SELECT Employees_name, b.*
  from employees_info a
  LEFT JOIN sales_info b ON a.Employees_id = b.Employees_id;
- -
  SELECT Employees_name, b.*
  from sales_info b
  RIGHT JOIN employees_info a ON a.Employees_id = b.Employees_id;
- -
  SELECT Commodity_name, IFNULL(SUM(Sales_Number), 0) AS 销售数量
  from commodity_info a
  LEFT JOIN sales_list b ON a.Commodity_id = b.Commodity_id
  GROUP BY Commodity_name;
- -
  SELECT Commodity_name, Purchase_id, Purchase_time, Purchase_Number, Purchase_price,
   supplier_info.Supplier_name, employees_info.Employees_name
  from commodity_info a
@@ -1122,7 +934,6 @@ flowchart LR
 ### 5.5 复杂报表查询示例
 
 ```sql
- -
  SELECT
   DATE_FORMAT(s.sales_time, '%Y-%m') as month,
   d.dept_name,
@@ -1136,7 +947,6 @@ flowchart LR
  JOIN departments d ON e.dept_id = d.dept_id
  GROUP BY month, d.dept_name
  ORDER BY month DESC, total_amount DESC;
- -
  SELECT
   c.customer_name,
   COUNT(DISTINCT s.sales_id) as order_count,
@@ -1149,7 +959,6 @@ flowchart LR
  GROUP BY c.customer_id, c.customer_name
  ORDER BY total_spent DESC
  LIMIT 10;
- -
  SELECT
   DATE_FORMAT(s.sales_time, '%Y-%m-%d') as date,
   ci.commodity_name,
@@ -1169,7 +978,6 @@ flowchart LR
 ### 5.6 使用 CTE (Common Table Expressions)
 
 ```sql
- -
  with monthly_sales AS (
   SELECT
   DATE_FORMAT(sales_time, '%Y-%m') as month,
@@ -1188,7 +996,6 @@ flowchart LR
   FROM monthly_sales
  )
  SELECT * FROM monthly_growth ORDER BY month DESC;
- -
  with RECURSIVE dept_hierarchy AS (
   SELECT
   dept_id,

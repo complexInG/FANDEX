@@ -1,20 +1,21 @@
 ---
-order: 120
+order: 530
 title: 语法分析
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: '编译器语法分析：递归下降、LL(1)、LR(0)、SLR、LALR 分析方法。'
+description: 编译器语法分析：递归下降、LL(1)、LR(0)、SLR、LALR 分析方法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/BGP路由协议'
-  - 'cs-fundamentals/词法分析'
-  - 'cs-fundamentals/语义分析'
-  - 'cs-fundamentals/中间代码'
+  - 'cs-fundamentals/051-BGPRoute'
+  - 'cs-fundamentals/052-LexicalAnalysis'
+  - 'cs-fundamentals/054-SemanticAnalysis'
+  - 'cs-fundamentals/055-IntermediateCode'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 上下文无关文法
 

@@ -1,24 +1,21 @@
 ---
-order: 170
-tags:
-  - mysql
-  - security
-  - database
+order: 750
+title: SQL 注入防御策略
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-title: 'SQL 注入防御策略'
-module: mysql
-category: 'MySQL Advanced'
-description: '参数化查询、ORM 防御、WAF 与安全编码实践。'
+description: 参数化查询、ORM 防御、WAF 与安全编码实践。
 author: Anonymous
-related:
-  - mysql/SQL注入基础与检测
-  - mysql/SQL注入攻击类型与实战
-  - 'mysql/项目示例-电商数据库设计'
-  - mysql/理论知识点
-prerequisites:
-  - mysql/语法速查
 updated: '2026-08-01'
+related:
+  - 'mysql/073-SQLInjectionBasicsDetection'
+  - 'mysql/074-SQLInjectionAttackTypePractice'
+  - 'mysql/076-MySQLProjectExampleDatabaseDesign'
+  - 'mysql/077-MySQLTheoryKnowledge'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 
 ## 1. SQL 注入防御策略 (Defense Strategies)
 
@@ -132,7 +129,6 @@ updated: '2026-08-01'
   $stmt->execute();
   return $stmt->rowCount();
  }
- ?
 ```
 
 #### 1.1.5 Java (JDBC)
@@ -192,7 +188,6 @@ updated: '2026-08-01'
  <!-- 注意：
   #{param} 使用参数化查询（安全）
   ${param} 直接拼接字符串（危险）
- -
  <!-- 危险示例 -->
  <select id="getUserDangerous" resultType="User">
   SELECT * FROM users
@@ -412,14 +407,12 @@ updated: '2026-08-01'
   SELECT * FROM users WHERE username = p_username AND password = p_password;
  END //
  DELIMITER ;
- -
  CALL GetUser('admin', '123456');
 ```
 
 #### 1.4.2 危险的存储过程
 
 ```sql
- -
  DELIMITER //
  CREATE PROCEDURE DangerousGetUser(IN p_username VARCHAR(50))
  BEGIN
@@ -429,7 +422,6 @@ updated: '2026-08-01'
   DEALLOCATE PREPARE stmt;
  END //
  DELIMITER ;
- -
 ```
 
 ### 1.5 权限控制
@@ -437,13 +429,9 @@ updated: '2026-08-01'
 #### 1.5.1 最小权限原则
 
 ```sql
- -
  CREATE USER 'app_user'@'localhost' IDENTIFIED BY 'strong_password';
- -
  GRANT SELECT, INSERT, UPDATE, DELETE ON test_db.* TO 'app_user'@'localhost';
- -
  REVOKE FILE, SUPER, PROCESS ON *.* FROM 'app_user'@'localhost';
- -
  FLUSH PRIVILEGES;
 ```
 
@@ -494,7 +482,6 @@ updated: '2026-08-01'
  error_reporting(E_ALL);
  log_errors = On
  error_log = /var/log/php_errors.log
- ?
 ```
 
 #### 1.6.2 Python 错误处理
@@ -594,9 +581,7 @@ updated: '2026-08-01'
 #### 1.7.4 Cloudflare WAF 规则
 
 ```sql
- -
  (http.request.uri.path contains "login" and cf.threat_score > 15)
- -
  (cf.threat_score > 50 and not cf.client.bot)
 ```
 
@@ -605,17 +590,13 @@ updated: '2026-08-01'
 #### 1.8.1 启用 SQL 日志
 
 ```sql
- -
  SET GLOBAL general_log = 'ON';
  SET GLOBAL general_log_file = '/var/log/mysql/query.log';
- -
  SET GLOBAL log_output = 'TABLE';
  SET GLOBAL general_log = 'ON';
- -
  SET GLOBAL slow_query_log = 'ON';
  SET GLOBAL long_query_time = 1;
  SET GLOBAL slow_query_log_file = '/var/log/mysql/slow.log';
- -
  SELECT * FROM mysql.general_log;
  SELECT * FROM mysql.slow_log;
 ```

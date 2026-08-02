@@ -1,20 +1,21 @@
 ---
-order: 109
+order: 600
 title: C++20概念
-module: cpp
-category: 'dev-lang'
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-description: 'C++20 Concepts约束模板详解。'
+description: C++20 Concepts约束模板详解。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/可变参数模板与折叠表达式
-  - cpp/C++20协程
-  - cpp/C++23新特性
-  - cpp/模板
+  - 'cpp/058-VariadicTemplateFoldExpression'
+  - 'cpp/059-Cpp20Coroutine'
+  - 'cpp/061-Cpp23NewFeatures'
+  - 'cpp/062-CppTemplate'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 
 # C++20 概念 (Concepts)

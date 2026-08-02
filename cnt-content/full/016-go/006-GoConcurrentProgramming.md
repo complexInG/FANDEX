@@ -1,19 +1,20 @@
 ---
-order: 6
-title: 'Go 并发编程'
-module: go
-category: Go
+order: 60
+title: Go 并发编程
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'goroutine 原理、channel、select、sync 包、context 包、并发模式与竞态检测。'
+description: goroutine 原理、channel、select、sync 包、context 包、并发模式与竞态检测。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/数据结构
-  - go/接口与组合
-  - go/错误处理
-  - go/泛型
+  - 'go/004-GoDataStructure'
+  - 'go/005-GoInterfaceComposition'
+  - 'go/007-GoErrorHandling'
+  - 'go/008-GoGeneric'
 prerequisites: []
 ---
+
 ## 1. Goroutine
 
 ### 1.1 基本使用

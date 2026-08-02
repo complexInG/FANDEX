@@ -1,23 +1,21 @@
 ---
-order: 90
-tags:
-  - c
-  - memory
-difficulty: intermediate
+order: 390
 title: 指针深度解析
-module: c
-category: 'C Basics'
+module: 'c'
+category: 计算机科学
+difficulty: intermediate
 description: 指针概念、指针运算、数组与指针、函数指针及多级指针。
 author: Anonymous
-related:
-  - c/预处理器与宏
-  - c/C23与C2y新标准
-  - c/内存管理
-  - c/内存对齐
-prerequisites:
-  - c/概述
 updated: '2026-08-01'
+related:
+  - 'c/037-PreprocessorMacro'
+  - 'c/038-C23C2y'
+  - 'c/040-MemoryManagement'
+  - 'c/041-MemoryAlignment'
+prerequisites:
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 1. 指针的概念与重要性
 
 ### 1.1 什么是指针

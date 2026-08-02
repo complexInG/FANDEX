@@ -1,19 +1,20 @@
 ---
-order: 108
+order: 320
 title: 元服务开发与发布
-module: harmonyos
-category: 'dev-lang'
+module: 'harmonyos'
+category: 后端技术
 difficulty: advanced
-description: 'HarmonyOS元服务开发与发布详解：Atomic Service。'
+description: HarmonyOS元服务开发与发布详解：Atomic Service。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/分布式数据管理
-  - harmonyos/跨设备调用
-  - 'harmonyos/DevEco-Studio调试器'
+  - 'harmonyos/030-DistributedDataManagement'
+  - 'harmonyos/031-CrossDeviceCall'
+  - 'harmonyos/033-DevEcoStudioDebugger'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 1. 概述与背景
 
 ### 1.1 什么是元服务

@@ -1,156 +1,20 @@
 ---
-order: 67
+order: 220
 title: Python与NLP
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: 自然语言处理核心理论、spaCy/Transformers/NLTK 工程实践与 Transformer 注意力机制形式化推导
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- python/Python与机器学习
-- python/Python与深度学习
-- python/Python与计算机视觉
-- python/Python与Web爬虫
-prerequisites:
-- python/语法速查
-tags:
-- python
-- nlp
-- spacy
-- transformers
-- llm
-- tokenizer
-- attention
-references:
-- type: conference
-  authors:
-  - Vaswani, A.
-  - Shazeer, N.
-  - Parmar, N.
-  - Uszkoreit, J.
-  - Jones, L.
-  - Gomez, A. N.
-  - Kaiser, L.
-  - Polosukhin, I.
-  year: 2017
-  title: Attention Is All You Need
-  venue: Advances in Neural Information Processing Systems (NeurIPS)
-  pages: 5998-6008
-  doi: 10.48550/arXiv.1706.03762
-  url: https://arxiv.org/abs/1706.03762
-- type: conference
-  authors:
-  - Devlin, J.
-  - Chang, M.-W.
-  - Lee, K.
-  - Toutanova, K.
-  year: 2019
-  title: 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'
-  venue: Proceedings of NAACL-HLT
-  pages: 4171-4186
-  doi: 10.18653/v1/N19-1423
-  url: https://aclanthology.org/N19-1423
-- type: conference
-  authors:
-  - Honnibal, M.
-  - Montani, I.
-  - Van Landeghem, S.
-  - Boyd, A.
-  year: 2020
-  title: 'spaCy: Industrial-strength Natural Language Processing in Python'
-  venue: Zenodo Software Release
-  doi: 10.5281/zenodo.1212303
-  url: https://spacy.io
-- type: conference
-  authors:
-  - Bird, S.
-  - Klein, E.
-  - Loper, E.
-  year: 2009
-  title: 'Natural Language Processing with Python: Analyzing Text with the Natural Language Toolkit'
-  venue: O'Reilly Media
-  url: https://www.nltk.org/book/
-- type: conference
-  authors:
-  - Wolf, T.
-  - Debut, L.
-  - Sanh, V.
-  - Chaumond, J.
-  - Delangue, C.
-  - Moi, A.
-  - Cistac, P.
-  - Rault, T.
-  - Louf, R.
-  - Funtowicz, M.
-  - Davison, J.
-  - Shleifer, S.
-  - von Platen, P.
-  - Carr, C.
-  - Rush, A. M.
-  - et al.
-  year: 2020
-  title: 'Transformers: State-of-the-Art Natural Language Processing'
-  venue: Proceedings of EMNLP 2020 (Demonstrations)
-  pages: 38-45
-  doi: 10.18653/v1/2020.emnlp-demos.6
-  url: https://aclanthology.org/2020.emnlp-demos.6
-- type: conference
-  authors:
-  - Brown, T. B.
-  - Mann, B.
-  - Ryder, N.
-  - Subbiah, M.
-  - Kaplan, J.
-  - Dhariwal, P.
-  - Neelakantan, A.
-  - Shyam, P.
-  - Sastry, G.
-  - Askell, A.
-  - et al.
-  year: 2020
-  title: Language Models are Few-Shot Learners
-  venue: Advances in Neural Information Processing Systems (NeurIPS)
-  pages: 1877-1901
-  doi: 10.48550/arXiv.2005.14165
-  url: https://arxiv.org/abs/2005.14165
-- type: journal
-  authors:
-  - Raffel, C.
-  - Shazeer, N.
-  - Roberts, A.
-  - Lee, K.
-  - Narang, S.
-  - Matena, M.
-  - Zhou, Y.
-  - Li, W.
-  - Liu, P. J.
-  year: 2020
-  title: Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
-  venue: Journal of Machine Learning Research
-  volume: 21
-  pages: 1-67
-  url: https://jmlr.org/papers/v21/20-074.html
-etymology:
-- term: 自然语言处理
-  english: Natural Language Processing
-  origin: 1950年代由机器翻译研究催生，术语 NLP 在 1980 年代随统计方法兴起而普及
-- term: 分词
-  english: Tokenization
-  origin: token 源自古英语 tacen（标志、信号），计算机科学中指最小语义单元
-- term: 注意力机制
-  english: Attention Mechanism
-  origin: Bahdanau 等 2014 年在神经机器翻译中首次提出，2017 年 Vaswani 等以自注意力形式化
-- term: 命名实体识别
-  english: Named Entity Recognition
-  origin: 1995 年第六届消息理解会议（MUC-6）首次定义命名实体任务
-- term: 词向量
-  english: Word Embedding
-  origin: embed 源于古英语 embedde（嵌入），表示将离散符号映射到连续向量空间
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
-estimatedReadingTime: 95
+  - 'python/020-PythonMachineLearning'
+  - 'python/021-PythonDeepLearning'
+  - 'python/023-PythonComputerVision'
+  - 'python/024-WebScrapingWithPython'
+prerequisites: []
 ---
+
 
 
 ## 1. 概述与学习路径

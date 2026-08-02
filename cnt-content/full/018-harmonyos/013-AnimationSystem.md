@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 130
 title: 动画系统
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 属性动画与显式动画
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/网络请求
-  - harmonyos/数据持久化
-  - harmonyos/手势与交互
-  - harmonyos/通知与权限
+  - 'harmonyos/011-NetworkRequest'
+  - 'harmonyos/012-DataPersistence'
+  - 'harmonyos/014-GestureInteraction'
+  - 'harmonyos/015-NotificationPermission'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ### 属性动画
 
 ```typescript

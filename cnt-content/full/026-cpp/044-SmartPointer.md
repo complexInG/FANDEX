@@ -1,23 +1,21 @@
 ---
-order: 85
-tags:
-  - cpp
-  - 'smart-pointer'
-difficulty: advanced
+order: 440
 title: 智能指针
-module: cpp
-category: 'C++ Basics'
+module: 'cpp'
+category: 计算机科学
+difficulty: advanced
 description: C++智能指针unique_ptr、shared_ptr、weak_ptr详解，RAII原则与所有权语义。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/C++反射与元编程
-  - cpp/C++数学库
-  - cpp/C++正则表达式
-  - cpp/C++日期时间
+  - 'cpp/042-CppReflectionMetaprogramming'
+  - 'cpp/043-CppMathLibrary'
+  - 'cpp/030-CppRegex'
+  - 'cpp/045-CppDateTime'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 智能指针概述
 
 ### 1.1 为什么需要智能指针

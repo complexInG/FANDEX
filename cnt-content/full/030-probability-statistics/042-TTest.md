@@ -1,20 +1,21 @@
 ---
-order: 82
+order: 350
 title: t检验
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 单总体t检验、双总体t检验（等方差与不等方差）、配对t检验的原理与应用，以"未知尺子"类比贯穿。
+description: '单总体t检验、双总体t检验（等方差与不等方差）、配对t检验的原理与应用，以"未知尺子"类比贯穿。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/假设检验基本概念'
-  - 'probability-statistics/Z检验'
-  - 'probability-statistics/卡方检验'
-  - 'probability-statistics/F检验'
+  - 'probability-statistics/040-HypothesisTestingBasics'
+  - 'probability-statistics/041-ZTest'
+  - 'probability-statistics/043-ChiSquareTest'
+  - 'probability-statistics/044-FTest'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 用一把"刻度未知的尺子"量东西
 

@@ -1,18 +1,19 @@
 ---
-order: 4
+order: 40
 title: Astro 组件与 Props 插槽
-module: astro
-category: Astro
+module: 'astro'
+category: 前端技术
 difficulty: beginner
 description: '通过"没有组件 vs 有组件"的对比理解组件化：组件三段式结构、Props 传参、Slot 插槽、模板语法与作用域样式'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - astro/003-PagesRouting
-  - astro/006-IslandsClientComponents
+  - 'astro/003-PagesRouting'
+  - 'astro/006-IslandsClientComponents'
 prerequisites:
-  - astro/002-QuickStartProject
+  - 'astro/002-QuickStartProject'
 ---
+
 
 ## 0. 乐高零件与说明书：先理解"为什么要组件"
 

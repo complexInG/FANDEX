@@ -1,29 +1,24 @@
 ---
-order: 67
+order: 230
 title: Java网络编程
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Socket与HTTP客户端
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/Java设计模式
-  - java/Java函数式编程
-  - java/Java日志系统
-  - java/Java单元测试
-  - java/JavaIO与NIO
+  - 'java/021-JavaDesignPattern'
+  - 'java/022-JavaFunctionalProgramming'
+  - 'java/024-JavaLogSystem'
+  - 'java/025-JavaUnitTest'
+  - 'java/014-JavaIONIO'
 prerequisites:
-  - java/概述与开发环境
-  - java/JavaIO与NIO
-  - java/并发编程基础
-tags:
-  - java
-  - network
-  - socket
-  - http
-  - netty
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/014-JavaIONIO'
+  - 'java/008-ConcurrencyBasics'
 ---
+
 
 
 # Java 网络编程

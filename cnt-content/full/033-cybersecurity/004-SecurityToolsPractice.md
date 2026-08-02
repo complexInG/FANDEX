@@ -1,19 +1,20 @@
 ---
-order: 4
+order: 40
 title: 安全工具与实战
-module: cybersecurity
-category: 网络安全
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: 'Metasploit框架、Nmap高级用法、Wireshark深度分析、Burp Suite进阶、SQLMap自动化注入、Hydra暴力破解、John密码破解、Kali工具集、安全加固脚本。'
+description: Metasploit框架、Nmap高级用法、Wireshark深度分析、Burp Suite进阶、SQLMap自动化注入、Hydra暴力破解、John密码破解、Kali工具集、安全加固脚本。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/Web安全与渗透测试
-  - cybersecurity/二进制安全与应急响应
-  - cybersecurity/XSS攻击
-  - cybersecurity/安全模型与框架
+  - 'cybersecurity/002-WebSecurityPenetrationTesting'
+  - 'cybersecurity/003-BinarySecurityAndIncidentResponse'
+  - 'cybersecurity/005-XSSAttack'
+  - 'cybersecurity/006-SecurityModelFramework'
 prerequisites: []
 ---
+
 
 ## 1. Metasploit 框架
 

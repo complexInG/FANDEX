@@ -1,20 +1,21 @@
 ---
-order: 75
+order: 350
 title: Kotlin与Gradle
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: Gradle Kotlin DSL
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与编译器插件
-  - kotlin/Kotlin与Android
-  - kotlin/Kotlin与Ktor
-  - kotlin/Kotlin与测试
+  - 'kotlin/034-KotlinCompilerPlugin'
+  - 'kotlin/024-KotlinAndroid'
+  - 'kotlin/029-KotlinKtor'
+  - 'kotlin/033-KotlinTest'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ## 概述
 

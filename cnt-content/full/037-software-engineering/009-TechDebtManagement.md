@@ -1,19 +1,20 @@
 ---
-order: 18
+order: 90
 title: 技术债务管理
 module: 'software-engineering'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 技术债务识别、量化、偿还策略与预防机制。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-engineering/软件测试方法'
-  - 'software-engineering/软件度量'
-  - 'software-engineering/DevOps与CICD集成'
+  - 'software-engineering/007-SoftwareTestMethod'
+  - 'software-engineering/008-SoftwareMetrics'
+  - 'software-engineering/010-DevOpsCICDIntegration'
 prerequisites:
-  - 'software-engineering/软件工程概述'
+  - 'software-engineering/001-SoftwareEngineeringOverview'
 ---
+
 
 ## 1. 从"信用卡欠款"说起
 

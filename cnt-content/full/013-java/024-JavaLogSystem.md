@@ -1,35 +1,25 @@
 ---
-order: 68
+order: 240
 title: Java日志系统
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: SLF4J、Logback、Log4j 2、JUL 与结构化日志的全景式深度解析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/Java函数式编程
-  - java/Java网络编程
-  - java/Java单元测试
-  - java/Java构建工具
-  - java/Java与虚拟线程
-  - java/Java反射
+  - 'java/022-JavaFunctionalProgramming'
+  - 'java/023-JavaNetworkProgramming'
+  - 'java/025-JavaUnitTest'
+  - 'java/026-JavaBuildTool'
+  - 'java/039-JavaVirtualThread'
+  - 'java/012-JavaReflection'
 prerequisites:
-  - java/概述与开发环境
-  - java/异常处理机制
-  - java/JavaIO与NIO
-  - java/Java多线程与并发
-tags:
-  - Java
-  - Logging
-  - SLF4J
-  - Logback
-  - Log4j2
-  - JUL
-  - MDC
-  - 结构化日志
-  - 可观测性
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/058-ExceptionHandlingMechanism'
+  - 'java/014-JavaIONIO'
 ---
+
 
 
 # Java 日志系统深度指南

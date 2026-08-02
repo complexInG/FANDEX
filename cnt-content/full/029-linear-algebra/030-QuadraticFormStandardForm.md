@@ -1,19 +1,20 @@
 ---
-order: 60
+order: 250
 title: 二次型的标准形
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 从生活类比出发，系统讲解二次型的定义与矩阵表示、配方法化标准形、正交变换法化标准形，并帮助零基础读者掌握二次型化简的核心方法。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/实对称矩阵的对角化'
-  - 'linear-algebra/二次型的规范形'
-  - 'linear-algebra/正定二次型'
+  - 'linear-algebra/028-RealSymmetricMatrixDiagonalization'
+  - 'linear-algebra/031-QuadraticFormCanonicalForm'
+  - 'linear-algebra/032-PositiveDefiniteQuadraticForm'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从生活场景说起：整理衣柜，还是配方法？
 

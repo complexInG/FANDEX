@@ -1,20 +1,20 @@
 ---
-order: 61
+order: 220
 title: 子查询
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
 description: SQL子查询：标量子查询、行子查询、表子查询、关联子查询的语法、语义与性能优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/半连接与反半连接
-  - sql/LATERAL派生表
-  - sql/公用表表达式
-  - sql/递归CTE
+  - 'sql/020-SemiAntiJoin'
+  - 'sql/021-LateralDerivedTable'
+  - 'sql/024-RecursiveCTE'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 子查询概述
 
 子查询（Subquery）是嵌套在另一个查询中的 SELECT 语句，可以出现在 SELECT、FROM、WHERE、HAVING 等子句中。

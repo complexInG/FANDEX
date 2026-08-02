@@ -1,44 +1,20 @@
 ---
-order: 107
+order: 300
 title: Vue-Router导航守卫
-module: vue3
-category: dev-lang
+module: 'vue3'
+category: 前端技术
 difficulty: advanced
 description: Vue Router 导航守卫详解：全局守卫、路由独享守卫、组件内守卫、触发顺序与鉴权实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-- vue3/异步组件与Suspense
-- vue3/Pinia持久化插件
-- vue3/Vue性能优化详解
-- vue3/性能优化
-prerequisites:
-- vue3/语法速查
-references:
-- type: documentation
-  authors:
-  - Vue Router 团队
-  year: 2026
-  title: Navigation Guards - Vue Router 官方文档
-  venue: router.vuejs.org
-  url: https://router.vuejs.org/guide/advanced/navigation-guards.html
-  accessedDate: '2026-08-01'
-- type: documentation
-  authors:
-  - Vue Router 团队
-  year: 2026
-  title: Route Meta Fields - Vue Router 官方文档
-  venue: router.vuejs.org
-  url: https://router.vuejs.org/guide/advanced/meta.html
-  accessedDate: '2026-08-01'
-etymology:
-- term: 导航守卫
-  english: navigation guard
-  origin: 类似门口守卫，在导航进入/离开节点检查放行或拦截。
-estimatedReadingTime: 30
-lastReviewed: '2026-08-01'
-reviewer: fanquanpp
+  - 'vue3/028-AsyncComponentSuspense'
+  - 'vue3/029-PiniaPersistencePlugin'
+  - 'vue3/031-VuePerformanceDetailed'
+  - 'vue3/032-PerformanceOptimization'
+prerequisites: []
 ---
+
 
 
 ## 1. 历史动机与发展脉络

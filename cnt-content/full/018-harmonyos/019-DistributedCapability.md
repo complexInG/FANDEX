@@ -1,20 +1,21 @@
 ---
-order: 64
+order: 190
 title: 分布式能力
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: advanced
 description: 跨设备协同、任务迁移与分布式数据同步的形式化理论与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - harmonyos/卡片开发
-  - harmonyos/传感器与位置
-  - harmonyos/网络请求
-  - harmonyos/Stage模型与FA模型区别
+  - 'harmonyos/018-CardDevelopment'
+  - 'harmonyos/017-SensorLocation'
+  - 'harmonyos/011-NetworkRequest'
+  - 'harmonyos/024-StageFAModelDifference'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 分布式任务调度
 
 **基本写法：拉起远程 FA**

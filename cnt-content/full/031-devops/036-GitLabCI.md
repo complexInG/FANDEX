@@ -1,9 +1,8 @@
 ---
 order: 360
 title: DevOps GitLab CI/CD
-module: devops
-
-category: '031-devops'
+module: 'devops'
+category: 云与基础设施
 difficulty: beginner
 description: DevOps GitLab CI/CD 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## .gitlab-ci.yml 基本结构
 
 **基本写法：定义流水线**

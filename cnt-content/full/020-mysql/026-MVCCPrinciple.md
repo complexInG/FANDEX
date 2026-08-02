@@ -1,20 +1,21 @@
 ---
-order: 69
+order: 260
 title: MVCC原理
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL InnoDB MVCC原理：隐藏列、Read View、undo log版本链与可见性判断算法'
+description: MySQL InnoDB MVCC原理：隐藏列、Read View、undo log版本链与可见性判断算法
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/JOIN算法
-  - mysql/事务隔离级别底层实现
-  - mysql/多表联查详解
-  - mysql/锁分类
+  - 'mysql/024-JOINAlgorithm'
+  - 'mysql/025-TransactionIsolationImplementation'
+  - 'mysql/027-MultiTableJoinDetailed'
+  - 'mysql/028-LockClassification'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. MVCC 基础组件
 

@@ -1,20 +1,21 @@
 ---
-order: 42
+order: 180
 title: 坐标与坐标变换
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 向量在基下的坐标，基变换与过渡矩阵，坐标变换公式，不同基下坐标的关系，含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/线性相关性'
-  - 'linear-algebra/基与维数'
-  - 'linear-algebra/内积与正交性'
-  - 'linear-algebra/施密特正交化'
+  - 'linear-algebra/019-LinearDependence'
+  - 'linear-algebra/020-BasisAndDimension'
+  - 'linear-algebra/022-InnerProductAndOrthogonality'
+  - 'linear-algebra/023-GramSchmidtOrthogonalization'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从一个生活场景说起：同一座城市，不同的地图坐标
 

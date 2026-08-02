@@ -1,25 +1,26 @@
 ---
-order: 81
+order: 410
 title: Kotlin与并发安全
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'Kotlin 并发安全深度解析：共享可变状态、数据竞争、Mutex、原子操作、CAS、Actor 模型、Channel、线程限制、Volatile、StateFlow 的形式化定义、字节码实现与企业级工程实践。对标 MIT 6.005、Stanford CS110、CMU 15-440 教学水准。'
+description: Kotlin 并发安全深度解析：共享可变状态、数据竞争、Mutex、原子操作、CAS、Actor 模型、Channel、线程限制、Volatile、StateFlow 的形式化定义、字节码实现与企业级工程实践。对标 MIT 6.005、Stanford CS110、CMU 15-440 教学水准。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/Kotlin与正则
-  - kotlin/Kotlin与时间
-  - kotlin/Kotlin与WebSocket
-  - kotlin/Kotlin与安全
-  - kotlin/协程基础
-  - kotlin/协程调度器与上下文
-  - kotlin/Channel与BroadcastChannel
-  - kotlin/Flow冷流与SharedFlow和StateFlow
+  - 'kotlin/039-KotlinRegex'
+  - 'kotlin/040-KotlinTime'
+  - 'kotlin/042-KotlinWebSocket'
+  - 'kotlin/043-KotlinSecurity'
+  - 'kotlin/016-CoroutineBasics'
+  - 'kotlin/044-CoroutineDispatcherContext'
+  - 'kotlin/046-ChannelBroadcastChannel'
+  - 'kotlin/045-FlowColdSharedState'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/协程基础
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/016-CoroutineBasics'
 ---
+
 
 # Kotlin 与并发安全（Concurrency Safety in Depth）
 

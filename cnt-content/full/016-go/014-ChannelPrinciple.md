@@ -1,24 +1,25 @@
 ---
-order: 52
+order: 140
 title: Channel原理
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'Channel底层实现：hchan结构、send/recv状态机、select实现、close语义与CSP模型'
+description: Channel底层实现：hchan结构、send/recv状态机、select实现、close语义与CSP模型
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/切片原理
-  - go/Map原理
-  - go/Goroutine调度
-  - go/Context详解
-  - go/GMP调度模型
-  - go/竞态检测与原子操作
+  - 'go/011-SlicePrinciple'
+  - 'go/012-MapPrinciple'
+  - 'go/018-GoroutineSchedule'
+  - 'go/017-ContextDetailed'
+  - 'go/051-GMPModel'
+  - 'go/058-RaceDetectionAtomic'
 prerequisites:
-  - go/概述与环境配置
-  - go/Goroutine调度
-  - go/GMP调度模型
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/018-GoroutineSchedule'
+  - 'go/051-GMPModel'
 ---
+
 
 
 # Channel 原理：CSP 模型与 runtime 实现

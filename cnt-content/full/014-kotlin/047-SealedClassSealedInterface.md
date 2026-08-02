@@ -1,25 +1,26 @@
 ---
-order: 103
+order: 470
 title: 密封类与密封接口
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'Kotlin 密封类与密封接口深度解析：受限继承、穷举检查、代数数据类型（ADT）、模式匹配、递归结构、when 表达式编译期检查的形式化定义、字节码实现与企业级工程实践。对标 MIT 6.005、Stanford CS193P、CMU 15-214 教学水准。'
+description: Kotlin 密封类与密封接口深度解析：受限继承、穷举检查、代数数据类型（ADT）、模式匹配、递归结构、when 表达式编译期检查的形式化定义、字节码实现与企业级工程实践。对标 MIT 6.005、Stanford CS193P、CMU 15-214 教学水准。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/Flow冷流与SharedFlow和StateFlow
-  - kotlin/Channel与BroadcastChannel
-  - kotlin/内联类
-  - kotlin/扩展函数的编译原理
-  - kotlin/Kotlin类型系统
-  - kotlin/空安全详解
-  - kotlin/委托属性
+  - 'kotlin/045-FlowColdSharedState'
+  - 'kotlin/046-ChannelBroadcastChannel'
+  - 'kotlin/048-InlineClass'
+  - 'kotlin/049-ExtensionFunctionCompilePrinciple'
+  - 'kotlin/026-KotlinTypeSystem'
+  - 'kotlin/012-NullSafetyDetailed'
+  - 'kotlin/014-DelegateProperty'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/类与对象
-  - kotlin/Kotlin类型系统
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/004-KotlinClassObject'
+  - 'kotlin/026-KotlinTypeSystem'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 问题背景：开放继承与类型安全的矛盾

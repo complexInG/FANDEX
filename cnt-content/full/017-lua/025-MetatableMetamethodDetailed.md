@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 250
 title: 元表与元方法详解
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: advanced
 description: Lua元表与元方法详解：__index、__newindex、__call、__tostring。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - lua/协程与异步
-  - lua/标准库详解
-  - lua/协程非抢占式调度
-  - lua/弱表
+  - 'lua/023-CoroutineAsync'
+  - 'lua/024-StandardLibraryDetailed'
+  - 'lua/026-CoroutineNonPreemptiveScheduling'
+  - 'lua/027-WeakTable'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 Lua 1.0（1993）：tag method 雏形

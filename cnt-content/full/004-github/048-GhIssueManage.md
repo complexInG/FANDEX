@@ -1,9 +1,8 @@
 ---
 order: 480
 title: GitHub CLI Issue 管理
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: GitHub CLI Issue 管理 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 创建 Issue
 
 **基本写法：交互式创建 Issue**

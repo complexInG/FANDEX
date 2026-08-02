@@ -1,16 +1,16 @@
 ---
 order: 500
 title: gh release 发布命令速查手册
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
-description: 以"从代码到正式发布"的完整旅程为主线，讲解 gh release 系列命令，包括创建、查看、上传下载、编辑与删除发布，配以原理讲解、错误对策。
+description: '以"从代码到正式发布"的完整旅程为主线，讲解 gh release 系列命令，包括创建、查看、上传下载、编辑与删除发布，配以原理讲解、错误对策。'
 author: fanquanpp
 updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 
 ## 开篇：把发布当成一场新专辑发布会
 

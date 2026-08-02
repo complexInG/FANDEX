@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 50
 title: 交换与路由技术
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
 description: 交换与路由技术：VLAN、STP、链路聚合、静态路由、动态路由与策略路由
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/网络布线与施工
-  - 'networking/OSI与TCP-IP模型'
-  - networking/网络安全技术
-  - networking/无线网络
+  - 'networking/003-NetworkWiringAndConstruction'
+  - 'networking/004-OSITCPIPModel'
+  - 'networking/006-NetworkSecurityTech'
+  - 'networking/007-WirelessNetwork'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. VLAN 技术
 

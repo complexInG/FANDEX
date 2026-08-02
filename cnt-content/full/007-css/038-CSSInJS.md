@@ -1,23 +1,21 @@
 ---
-order: 90
-tags:
-  - css
-  - 'css-layout'
+order: 380
+title: CSS-in-JS 与高级布局技巧
+module: 'css'
+category: 前端技术
 difficulty: advanced
-title: 'CSS-in-JS 与高级布局技巧'
-module: css
-category: 'CSS Basics'
-description: 'CSS-in-JS方案与Grid高级布局'
+description: CSS-in-JS方案与Grid高级布局
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/CSS原生嵌套
-  - css/Canvas绘图
-  - css/CSS架构方法论
-  - css/理论知识点
+  - 'css/036-CSSNativeNesting'
+  - 'css/037-CSSCanvasDrawing'
+  - 'css/039-CSSArchitectureMethodology'
+  - 'css/040-CSSTheoryKnowledge'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. CSS-in-JS 概述
 
@@ -279,7 +277,7 @@ document.body.innerHTML = `<button class="${classes.button}">Click me</button>`;
 ### 5.1 基本使用
 
 ```css
- :
+ :root {
   --primary-color: #3498db;
   --secondary-color: #2ecc71;
   --text-color: #333333;
@@ -306,7 +304,7 @@ document.body.innerHTML = `<button class="${classes.button}">Click me</button>`;
 ### 5.2 主题切换
 
 ```css
- :
+ :root {
   /* 浅色主题 */
   --bg-color: #ffffff;
   --text-color: #333333;

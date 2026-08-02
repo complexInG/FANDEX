@@ -1,57 +1,19 @@
 ---
 order: 530
 title: TypeScript 类型测试与断言
-module: typescript
-category: '009-typescript'
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: 类型也是代码，也要测试。用 tsd 写 expectType、expectError 断言，在重构时守住类型行为不回归。
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'typescript/022-UtilityTypePrinciple'
   - 'typescript/041-TypeScriptMigrationPractice'
 prerequisites:
   - 'typescript/004-FunctionGeneric'
-quiz:
-  - type: choice
-    question: 为什么运行时断言测不出类型问题？
-    options:
-      - 因为运行时没有类型
-      - 因为断言库有 bug
-      - 因为 TypeScript 编译器不执行代码
-      - 因为测试环境不支持 import
-    answer: 0
-    explanation: 类型在编译期就被擦除了，运行时断言只能测值，测不到类型行为。
-  - type: fill
-    question: tsd 中用于断言"表达式类型必须错误"的辅助函数是____。
-    answer: expectError
-    hint: expectType 断言类型正确，expectError 断言编译报错。
-references:
-  - type: documentation
-    authors:
-      - tsd Contributors
-    year: 2026
-    title: tsd 官方仓库
-    venue: GitHub
-    url: https://github.com/tsdjs/tsd
-    accessedDate: '2026-08-02'
-  - type: documentation
-    authors:
-      - TypeScript Team
-    year: 2026
-    title: TypeScript 条件类型与推断
-    venue: typescriptlang.org
-    url: https://www.typescriptlang.org/docs/handbook/2/conditional-types.html
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 类型测试
-    english: Type Testing
-    origin: 把类型层面的行为当作可验证的契约，借鉴了传统单元测试的断言思想。
-estimatedReadingTime: 7
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

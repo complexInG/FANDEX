@@ -1,20 +1,21 @@
 ---
-order: 104
+order: 190
 title: 安全测试
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: '安全测试：OWASP ZAP、SQLMap、Nmap 的使用与漏洞验证。'
+description: 安全测试：OWASP ZAP、SQLMap、Nmap 的使用与漏洞验证。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/API自动化测试详解'
-  - 'software-testing/压力测试与稳定性测试'
-  - 'software-testing/测试双'
-  - 'software-testing/TDD与BDD'
+  - 'software-testing/017-APIAutomationTestDetailed'
+  - 'software-testing/018-StressAndStabilityTest'
+  - 'software-testing/020-TestDouble'
+  - 'software-testing/021-TDDBDD'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 
 ## 1. OWASP ZAP
 

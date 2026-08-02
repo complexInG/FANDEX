@@ -1,43 +1,20 @@
 ---
-order: 108
+order: 580
 title: 竞态检测与原子操作
-module: go
-category: dev-lang
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: Go 竞态检测与原子操作详解：-race 原理、atomic 包、常见竞态模式与无锁编程实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-- go/泛型详解
-- go/单元测试与基准测试
-- go/包管理详解
+  - 'go/056-GenericDetailed'
+  - 'go/057-UnitTestBenchmark'
+  - 'go/059-PackageManagementDetailed'
 prerequisites:
-- go/概述与环境配置
-references:
-- type: documentation
-  authors:
-  - Go Team
-  year: 2026
-  title: Data Race Detector - Go Documentation
-  venue: go.dev
-  url: https://go.dev/doc/articles/race_detector
-  accessedDate: '2026-08-01'
-- type: documentation
-  authors:
-  - Go Team
-  year: 2026
-  title: Package atomic - Go Documentation
-  venue: pkg.go.dev
-  url: https://pkg.go.dev/sync/atomic
-  accessedDate: '2026-08-01'
-etymology:
-- term: 原子操作
-  english: atomic operation
-  origin: atom 源自希腊语 atomos（不可分割），指不可被并发打断的单一操作。
-estimatedReadingTime: 30
-lastReviewed: '2026-08-01'
-reviewer: fanquanpp
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 ## 1. 历史动机与发展脉络

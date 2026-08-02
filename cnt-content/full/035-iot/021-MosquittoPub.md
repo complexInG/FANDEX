@@ -1,9 +1,8 @@
 ---
 order: 210
 title: 物联网 mosquitto_pub 发布命令
-module: iot
-
-category: '035-iot'
+module: 'iot'
+category: 云与基础设施
 difficulty: beginner
 description: 物联网 mosquitto_pub 发布命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 基本发布
 
 **基本写法：发布单条消息**

@@ -1,22 +1,21 @@
 ---
-order: 120
-tags:
-  - java
-difficulty: intermediate
+order: 570
 title: 抽象类与接口
-module: java
-category: 'Java Basics'
+module: 'java'
+category: 后端技术
+difficulty: intermediate
 description: 抽象类设计、接口定义、默认方法与函数式接口。
 author: Anonymous
-related:
-  - java/分代ZGC详解
-  - java/面向对象编程
-  - java/异常处理机制
-  - java/泛型详解
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/055-GenerationalZGCDetailed'
+  - 'java/056-OOP'
+  - 'java/058-ExceptionHandlingMechanism'
+  - 'java/059-GenericDetailed'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 抽象类 (Abstract Class)
 
 ### 1.1 抽象类的定义

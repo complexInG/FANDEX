@@ -1,22 +1,21 @@
 ---
 order: 40
-tags:
-  - java
-difficulty: beginner
 title: 数据类型与类型转换
-module: java
-category: 'Java Basics'
+module: 'java'
+category: 后端技术
+difficulty: beginner
 description: 基本类型、引用类型、自动装箱与类型转换规则。
 author: Anonymous
-related:
-  - java/快速入门
-  - java/程序结构与基本语法
-  - java/变量与常量
-  - java/枚举与注解
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/002-QuickStart'
+  - 'java/003-ProgramStructureBasicSyntax'
+  - 'java/005-VariableConstant'
+  - 'java/006-JavaAnnotationsTutorial'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 数据类型分类
 
 Java 是一种强类型语言，数据类型分为两大类：

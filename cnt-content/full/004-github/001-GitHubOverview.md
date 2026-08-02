@@ -1,19 +1,18 @@
 ---
 order: 10
-tags:
-  - github
+title: GitHub 概述
+module: 'github'
+category: 工具链
 difficulty: beginner
-title: 'GitHub 概述'
-module: github
-category: GitHub
-description: 'GitHub 平台核心功能与协作开发流程：从注册账户、创建仓库到第一次提交的完整旅程。'
+description: GitHub 平台核心功能与协作开发流程：从注册账户、创建仓库到第一次提交的完整旅程。
 author: fanquanpp
-related:
-  - github/账户注册与双因素认证(2FA)
-  - 'github/仓库创建-克隆-归档-删除'
-prerequisites: []
 updated: '2026-08-02'
+related:
+  - 'github/002-AccountRegister2FA2FA'
+  - 'github/003-RepositoryCreateCloneArchiveDelete'
+prerequisites: []
 ---
+
 
 ## 0. 从一个生活场景说起：GitHub 就像一座"代码图书馆"
 

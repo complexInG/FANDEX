@@ -1,20 +1,21 @@
 ---
-order: 79
+order: 360
 title: Java与WebAssembly
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: Java与Wasm交互
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/Java与AI
-  - java/Java与安全
-  - java/Java与响应式编程
-  - java/方法详解
+  - 'java/034-JavaAI'
+  - 'java/035-JavaSecurity'
+  - 'java/037-JavaReactiveProgramming'
+  - 'java/038-MethodDetailed'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 
 ## 历史动机与背景

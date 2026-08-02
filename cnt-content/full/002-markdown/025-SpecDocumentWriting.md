@@ -1,19 +1,20 @@
 ---
-order: 100
+order: 250
 title: 规范文档编写
-module: markdown
-category: toolchain
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
 description: Markdown规范文档编写进阶：表格进阶、脚注、自动目录、交叉引用等高级技巧。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/表格
-  - markdown/语法速查
-  - markdown/高级语法与文档自动化
+  - 'markdown/024-Table'
+  - 'markdown/031-BlockquoteNestedList'
+  - 'markdown/026-AdvancedSyntaxDocumentAutomation'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 
 ## 1. 表格进阶
 

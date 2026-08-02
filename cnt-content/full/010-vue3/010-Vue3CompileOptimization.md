@@ -1,20 +1,20 @@
 ---
-order: 54
+order: 100
 title: Vue3编译优化
-module: vue3
-category: Vue3
+module: 'vue3'
+category: 前端技术
 difficulty: advanced
 description: 编译时优化与运行时优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/自定义指令进阶
-  - vue3/Transition与动画
-  - vue3/Vue3服务端渲染
-  - vue3/生命周期钩子
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/008-CustomDirectiveAdvanced'
+  - 'vue3/009-TransitionAnimation'
+  - 'vue3/011-Vue3SSR'
+  - 'vue3/012-LifecycleHook'
+prerequisites: []
 ---
+
 ### SSR 优化
 
 ```javascript

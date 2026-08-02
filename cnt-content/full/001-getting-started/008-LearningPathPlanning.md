@@ -1,20 +1,21 @@
 ---
-order: 50
+order: 80
 title: 学习路线规划
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 系统化编程学习路线设计、阶段划分与技能树构建方法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/程序设计基础'
-  - 'getting-started/函数与模块化'
-  - 'getting-started/环境变量与PATH'
-  - 'getting-started/IDE与编辑器选型'
+  - 'getting-started/006-ProgrammingBasics'
+  - 'getting-started/007-FunctionModular'
+  - 'getting-started/009-EnvVarPath'
+  - 'getting-started/010-IDEEditorSelection'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 学习路线设计原则
 

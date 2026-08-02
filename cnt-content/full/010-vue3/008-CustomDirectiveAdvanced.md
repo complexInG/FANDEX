@@ -1,20 +1,20 @@
 ---
-order: 52
+order: 80
 title: 自定义指令进阶
-module: vue3
-category: Vue3
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
 description: 自定义指令高级用法
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/组合式API
-  - vue3/Provide与Inject
-  - vue3/Transition与动画
-  - vue3/Vue3编译优化
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/006-API'
+  - 'vue3/007-ProvideInject'
+  - 'vue3/009-TransitionAnimation'
+  - 'vue3/010-Vue3CompileOptimization'
+prerequisites: []
 ---
+
 ## 1. 指令钩子
 
 ```javascript

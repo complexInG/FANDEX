@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 460
 title: Channel与BroadcastChannel
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'Kotlin Channel与BroadcastChannel详解。'
+description: Kotlin Channel与BroadcastChannel详解。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - kotlin/协程调度器与上下文
-  - kotlin/Flow冷流与SharedFlow和StateFlow
-  - kotlin/密封类与密封接口
-  - kotlin/内联类
+  - 'kotlin/044-CoroutineDispatcherContext'
+  - 'kotlin/045-FlowColdSharedState'
+  - 'kotlin/047-SealedClassSealedInterface'
+  - 'kotlin/048-InlineClass'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 # Channel 与 BroadcastChannel（Channel and BroadcastChannel）
 

@@ -1,20 +1,21 @@
 ---
-order: 71
+order: 310
 title: Go与CGO
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: CGO与C互操作
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与Fuzzing
-  - go/Go与性能分析
-  - go/Go与Wasm
-  - go/Go与代码生成
+  - 'go/030-GoFuzzing'
+  - 'go/043-GoPerformanceAnalysis'
+  - 'go/032-GoWasm'
+  - 'go/033-GoCodeGeneration'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 ## 1. 历史动机与发展脉络

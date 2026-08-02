@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 130
 title: 原子操作与内存模型
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: advanced
 description: C11原子操作与内存序
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/可变参数函数
-  - c/信号处理
-  - c/泛型选择
-  - c/线程与并发
+  - 'c/011-VarargsFunction'
+  - 'c/012-SignalHandling'
+  - 'c/014-GenericSelection'
+  - 'c/022-ThreadConcurrency'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 概述
 
 在多线程编程中，多个线程同时访问共享数据会导致数据竞争（data race），产生未定义行为。C11 标准引入了 `<stdatomic.h>` 头文件，提供了原子类型和原子操作，确保对共享变量的读写是不可分割的。同时，C11 定义了内存序（memory order）模型，允许开发者在性能和一致性之间做出权衡。

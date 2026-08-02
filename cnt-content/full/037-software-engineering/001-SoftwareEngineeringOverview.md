@@ -2,16 +2,17 @@
 order: 10
 title: 软件工程概述
 module: 'software-engineering'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: beginner
 description: 软件工程定义、软件危机、工程化方法与软件生命周期。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-engineering/敏捷开发'
-  - 'software-engineering/需求分析方法'
+  - 'software-engineering/002-AgileDevelopment'
+  - 'software-engineering/003-RequirementAnalysisMethod'
 prerequisites: []
 ---
+
 
 ## 1. 从"盖一座桥"说起
 

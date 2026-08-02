@@ -1,18 +1,19 @@
 ---
-order: 84
+order: 370
 title: F检验
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 两总体方差比的F检验、单因素方差分析（ANOVA）的原理与应用，以"比较两个班级的方差"类比贯穿。
+description: '两总体方差比的F检验、单因素方差分析（ANOVA）的原理与应用，以"比较两个班级的方差"类比贯穿。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/t检验'
-  - 'probability-statistics/卡方检验'
+  - 'probability-statistics/042-TTest'
+  - 'probability-statistics/043-ChiSquareTest'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 比较两个班级的成绩波动
 

@@ -1,21 +1,20 @@
 ---
-order: 20
-tags:
-  - 'getting-started'
-difficulty: beginner
+order: 30
 title: 学习指南
 module: 'getting-started'
-category: Guide
+category: 工具链
+difficulty: beginner
 description: 编程学习节奏规划、常见问题与心态建议。
 author: fanquanpp
-related:
-  - 'getting-started/入门指南'
-  - 'getting-started/开发环境搭建'
-  - 'getting-started/计算机体系结构'
-  - 'getting-started/数的表示与编码'
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'getting-started/001-GettingStartedGuide'
+  - 'getting-started/002-DevEnvSetup'
+  - 'getting-started/004-ComputerArchitecture'
+  - 'getting-started/005-NumberRepresentationEncoding'
+prerequisites: []
 ---
+
 
 ## 1. 学习节奏
 

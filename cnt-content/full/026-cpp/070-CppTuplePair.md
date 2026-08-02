@@ -1,9 +1,8 @@
 ---
 order: 700
 title: C++ tuple 与 pair
-module: cpp
-
-category: '026-cpp'
+module: 'cpp'
+category: 计算机科学
 difficulty: beginner
 description: C++ tuple 与 pair 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## pair 基本用法
 
 **基本写法：构造 pair**

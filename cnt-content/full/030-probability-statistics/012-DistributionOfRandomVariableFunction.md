@@ -1,18 +1,19 @@
 ---
-order: 24
+order: 110
 title: 随机变量函数的分布
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 从身高单位换算出发，讲解随机变量函数的分布：分布函数法、公式法、分段单调处理与离散型变换，并总结常见变换的分布结论。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/分布函数'
-  - 'probability-statistics/常用分布'
-  - 'probability-statistics/联合分布'
+  - 'probability-statistics/010-DistributionFunction'
+  - 'probability-statistics/011-CommonDistributions'
+  - 'probability-statistics/014-JointDistribution'
 prerequisites: []
 ---
+
 
 ## 0. 身高换算单位：一个函数的故事
 

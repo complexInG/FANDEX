@@ -1,20 +1,18 @@
 ---
-order: 64
-title: 'History-API'
-module: html5
-category: HTML5
+order: 230
+title: History-API
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
-description: 'History API（pushState、replaceState）'
+description: History API（pushState、replaceState）
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/Web工作线程
-  - 'html5/Service-Worker与PWA'
-  - html5/全双工通信
-  - html5/实时通信
+  - 'html5/022-ServiceWorkerPWA'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## pushState 与 replaceState
 
 **pushState 添加历史条目**

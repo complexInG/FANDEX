@@ -1,21 +1,19 @@
 ---
 order: 10
-tags:
-  - cpp
-  - performance
+title: C++ 概述与现代标准
+module: 'cpp'
+category: 计算机科学
 difficulty: beginner
-title: 'C++ 概述与现代标准'
-module: cpp
-category: 'C++ Basics'
-description: 'C++ 发展历程、标准演进与现代 C++ 核心特性概览。'
+description: C++ 发展历程、标准演进与现代 C++ 核心特性概览。
 author: Anonymous
-related:
-  - cpp/基础语法
-  - cpp/类型系统
-  - c/概述
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'cpp/002-CppBasicSyntax'
+  - 'cpp/003-CppTypeSystem'
+  - 'c/001-CLanguageOverview'
+prerequisites: []
 ---
+
 
 ## 1. C++ 概述 (Overview)
 

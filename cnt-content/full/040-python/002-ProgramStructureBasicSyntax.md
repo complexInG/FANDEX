@@ -1,21 +1,19 @@
 ---
 order: 20
-tags:
-  - python
-difficulty: beginner
 title: 程序结构与基本语法
-module: python
-category: 'Python Basics'
-description: 'Python 缩进规则、语句、注释与编码规范。'
+module: 'python'
+category: 后端技术
+difficulty: beginner
+description: Python 缩进规则、语句、注释与编码规范。
 author: Anonymous
-related:
-  - python/语法速查
-  - python/概述与环境配置
-  - python/变量与常量
-  - python/基础数据类型
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'python/001-PythonOverviewEnvSetup'
+  - 'python/003-VariableConstant'
+  - 'python/067-BasicDataType'
+prerequisites: []
 ---
+
 ## 1. 程序结构 (Program Structure)
 
 Python 程序由多个组件组成，包括模块导入、全局变量、函数定义、类定义和主逻辑。一个完整的 Python 程序通常遵循以下结构：

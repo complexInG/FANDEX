@@ -1,20 +1,20 @@
 ---
-order: 57
+order: 150
 title: 数据类与Pydantic
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: dataclass与Pydantic模型
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - python/协程与asyncio
-  - python/多进程与多线程
-  - python/Python与FastAPI
-  - python/Python与Django
-prerequisites:
-  - python/语法速查
+  - 'python/006-CoroutineAsyncio'
+  - 'python/012-MultiprocessingMultithreading'
+  - 'python/013-PythonFastAPI'
+  - 'python/014-PythonDjango'
+prerequisites: []
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 前史：手工 `__init__` 与命名元组（1991–2017）

@@ -1,25 +1,21 @@
 ---
-order: 52
+order: 80
 title: Lambda表达式
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: C++11 至 C++23 Lambda 表达式的捕获语义、闭包类型、性能模型与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/函数对象与仿函数
-  - cpp/STL算法
-  - cpp/多线程
-  - cpp/C++14新特性
-  - cpp/C++20概念
-  - cpp/智能指针详解
-  - cpp/模板进阶
+  - 'cpp/016-CSTL'
+  - 'cpp/020-MultithreadingConcurrency'
+  - 'cpp/060-Cpp20Concept'
+  - 'cpp/007-N4089DeletingSafeBoolInFavorOfExplicitBool'
 prerequisites:
-  - cpp/函数
-  - cpp/模板进阶
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 历史动机与背景
 
 Lambda 表达式是现代 C++ 最具影响力的特性之一,其引入彻底改变了 C++ 的回调、算法组合与异步编程风格。

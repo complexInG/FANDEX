@@ -1,20 +1,21 @@
 ---
-order: 90
+order: 500
 title: 数据加密
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL数据加密：透明数据加密TDE、密钥管理、加密表空间与静态数据保护
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/防火墙插件
-  - mysql/InnoDB体系架构
-  - mysql/索引与执行计划
-  - mysql/MySQL9新特性与并行查询
+  - 'mysql/048-FirewallPlugin'
+  - 'mysql/049-InnoDBSystemArchitecture'
+  - 'mysql/051-MySQLIndexExecutionPlan'
+  - 'mysql/052-MySQL9NewFeaturesParallelQuery'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 透明数据加密（TDE）
 

@@ -1,20 +1,21 @@
 ---
-order: 81
+order: 360
 title: 审计日志
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
 description: PostgreSQL审计日志：pgAudit扩展、日志配置、审计策略与合规要求
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/行级安全策略
-  - postgresql/数据加密存储
-  - postgresql/序列与自增列
-  - postgresql/生成列
+  - 'postgresql/034-RowLevelSecurity'
+  - 'postgresql/035-DataEncryptionStorage'
+  - 'postgresql/037-SequenceAutoIncrement'
+  - 'postgresql/038-GeneratedColumn'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. pgAudit 扩展
 

@@ -1,20 +1,21 @@
 ---
-order: 67
+order: 280
 title: React与WebAssembly
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: advanced
 description: React中集成WebAssembly
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React服务端渲染
-  - react/React设计模式
-  - react/React与WebSocket
-  - react/React与GraphQL
+  - 'react/026-ReactSSR'
+  - 'react/027-ReactDesignPattern'
+  - 'react/029-ReactWebSocket'
+  - 'react/030-ReactGraphQL'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

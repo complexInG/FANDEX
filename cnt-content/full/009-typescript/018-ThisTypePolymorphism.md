@@ -1,20 +1,20 @@
 ---
-order: 63
+order: 180
 title: this类型与多态
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: TypeScript中this类型与多态this
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - typescript/类型体操实用模式
-  - typescript/协变与逆变
-  - typescript/符号与唯一类型
-  - typescript/命名空间与模块
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/016-OnTheComplexityOfTypeScriptTypeChecking'
+  - 'typescript/017-CovarianceContravariance'
+  - 'typescript/019-OnTheRoleOfSymbolicExecutionInTypeSystems'
+  - 'typescript/020-NamespaceModule'
+prerequisites: []
 ---
+
 
 
 # this 类型与多态 this

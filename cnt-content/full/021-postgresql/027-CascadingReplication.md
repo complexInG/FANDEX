@@ -1,20 +1,21 @@
 ---
-order: 72
+order: 270
 title: 级联复制
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
 description: PostgreSQL级联复制：备库作为上游、多层级联架构与配置
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/FDW外部数据包装器
-  - postgresql/流复制
-  - postgresql/物理复制槽
-  - postgresql/逻辑解码与输出插件
+  - 'postgresql/025-FDWFDW'
+  - 'postgresql/026-StreamingReplication'
+  - 'postgresql/028-PhysicalReplicationSlot'
+  - 'postgresql/029-LogicalDecodingOutputPlugin'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 概述
 

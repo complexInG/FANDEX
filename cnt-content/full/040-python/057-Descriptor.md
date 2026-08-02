@@ -1,24 +1,23 @@
 ---
-order: 107
+order: 570
 title: 描述符
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: Python描述符协议详解：__get__、__set__、__delete__、数据描述符与非数据描述符、协议底层机制与生产级工程实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - python/元类与单例模式
-  - python/装饰器进阶
-  - python/弱引用
-  - python/数据类与字段默认值
-  - python/属性与方法查找
-  - python/上下文管理器
+  - 'python/053-MetaclassSingleton'
+  - 'python/062-DecoratorAdvanced'
+  - 'python/055-WeakReference'
+  - 'python/058-DataClassFieldDefault'
+  - 'python/052-ContextManager'
 prerequisites:
-  - python/语法速查
-  - python/面向对象编程
-  - python/元类与单例模式
+  - 'python/061-OOP'
+  - 'python/053-MetaclassSingleton'
 ---
+
 
 
 ## 概述

@@ -1,24 +1,23 @@
 ---
-order: 108
+order: 580
 title: 数据类与字段默认值
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: Python 数据类与字段默认值深度剖析：从 dataclass 装饰器到 field 工厂、不可变性与企业级模型设计。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - python/类型注解与mypy
-  - python/描述符
-  - python/装饰器进阶
-  - python/元类与单例模式
-  - python/属性与描述符
-  - python/面向对象编程
+  - 'python/060-TypeAnnotationMypy'
+  - 'python/057-Descriptor'
+  - 'python/062-DecoratorAdvanced'
+  - 'python/053-MetaclassSingleton'
+  - 'python/061-OOP'
 prerequisites:
-  - python/语法速查
-  - python/面向对象编程
-  - python/类型注解与mypy
+  - 'python/061-OOP'
+  - 'python/060-TypeAnnotationMypy'
 ---
+
 
 
 # 数据类与字段默认值（Dataclasses & Field Defaults）

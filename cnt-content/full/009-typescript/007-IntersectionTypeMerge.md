@@ -1,20 +1,20 @@
 ---
-order: 51
+order: 70
 title: 交叉类型与类型合并
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: 交叉类型、接口合并与类型覆盖
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/字面量类型与联合类型
-  - typescript/类与装饰器
-  - typescript/类型守卫与自定义守卫
-  - typescript/索引签名与动态属性
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/005-LocalTypeInference'
+  - 'typescript/006-ClassDecorator'
+  - 'typescript/008-TypeGuardCustomGuard'
+  - 'typescript/009-IndexSignatureDynamicProperty'
+prerequisites: []
 ---
+
 ## 历史动机与背景
 
 类型组合（Type Composition）是类型系统的核心能力之一。在没有类型组合的语言中，每种数据结构都必须从零定义，导致大量重复。TypeScript 提供了多种类型组合机制，其中交叉类型与接口声明合并是最基础也最强大的两种。理解它们的演化背景，有助于在实际工程中做出正确选型。

@@ -1,20 +1,21 @@
 ---
-order: 73
+order: 280
 title: 物理复制槽
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
 description: PostgreSQL物理复制槽：防止WAL清理、复制槽管理、活跃槽与堆积风险
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/流复制
-  - postgresql/级联复制
-  - postgresql/逻辑解码与输出插件
-  - postgresql/增量备份
+  - 'postgresql/026-StreamingReplication'
+  - 'postgresql/027-CascadingReplication'
+  - 'postgresql/029-LogicalDecodingOutputPlugin'
+  - 'postgresql/030-IncrementalBackup'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 概述
 

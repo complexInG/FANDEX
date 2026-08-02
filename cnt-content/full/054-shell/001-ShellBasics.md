@@ -1,19 +1,19 @@
 ---
-order: 1
+order: 10
 title: Shell 脚本编程基础
-module: shell
-category: Shell
+module: 'shell'
+category: 工具链
 difficulty: beginner
-description: 'Shell 脚本编程基础：命令、变量、管道、控制流、函数与工程实践'
+description: Shell 脚本编程基础：命令、变量、管道、控制流、函数与工程实践
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - getting-started/命令行基础
-  - git/Git基础操作
-  - devops/CI/CD流水线
+  - 'getting-started/012-CommandLineBasics'
+  - 'devops/005-CICDPipeline'
 prerequisites:
-  - getting-started/命令行基础
+  - 'getting-started/012-CommandLineBasics'
 ---
+
 
 ## 1. 从"点菜"说起：Shell 是什么
 

@@ -1,20 +1,19 @@
 ---
-order: 66
+order: 230
 title: 迭代器帮助器
-module: javascript
-category: JavaScript
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
-description: 'Iterator Helpers提案详解'
+description: Iterator Helpers提案详解
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - javascript/索引数据库
-  - javascript/时间API
-  - javascript/Promise构造器
-  - javascript/Records与Tuples
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/021-IndexedDBADatabaseInYourBrowser'
+  - 'javascript/024-YouDonTKnowJSAsyncPerformance'
+  - 'javascript/025-RecordsTuples'
+prerequisites: []
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 ES5 时代：数组的统治

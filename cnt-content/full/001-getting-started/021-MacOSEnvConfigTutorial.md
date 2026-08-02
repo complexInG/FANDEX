@@ -1,19 +1,20 @@
 ---
-order: 102
+order: 210
 title: macOS环境配置教程
 module: 'getting-started'
-category: toolchain
+category: 工具链
 difficulty: beginner
-description: 'macOS 开发环境完整配置指南，涵盖 Homebrew、Xcode Command Line Tools、Git、Node.js（nvm）、Python（pyenv）、Java JDK、Docker Desktop、VS Code 安装与配置。'
+description: macOS 开发环境完整配置指南，涵盖 Homebrew、Xcode Command Line Tools、Git、Node.js（nvm）、Python（pyenv）、Java JDK、Docker Desktop、VS Code 安装与配置。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/软件下载地址汇总'
-  - 'getting-started/Windows环境配置教程'
-  - 'getting-started/Linux环境配置教程'
+  - 'getting-started/019-SoftwareDownloadURLSummary'
+  - 'getting-started/020-WindowsEnvConfigTutorial'
+  - 'getting-started/022-LinuxEnvConfigTutorial'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. Homebrew 安装
 

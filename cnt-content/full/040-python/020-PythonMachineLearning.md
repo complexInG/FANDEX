@@ -1,20 +1,20 @@
 ---
-order: 65
+order: 200
 title: Python与机器学习
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
-description: 'scikit-learn与ML基础'
+description: scikit-learn与ML基础
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与Redis
-  - python/Python与GraphQL
-  - python/Python与深度学习
-  - python/Python与NLP
-prerequisites:
-  - python/语法速查
+  - 'python/016-PythonRedis'
+  - 'python/043-PythonGraphQL'
+  - 'python/021-PythonDeepLearning'
+  - 'python/022-PythonAndNLP'
+prerequisites: []
 ---
+
 
 ## 什么是机器学习
 

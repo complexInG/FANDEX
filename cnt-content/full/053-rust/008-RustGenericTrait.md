@@ -1,18 +1,19 @@
 ---
-order: 8
+order: 80
 title: 泛型与 Trait
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: intermediate
-description: '泛型函数与结构体、Trait 定义实现、Trait 对象与生命周期标注'
+description: 泛型函数与结构体、Trait 定义实现、Trait 对象与生命周期标注
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - rust/007-RustCollectionsIterators
-  - rust/006-RustErrorHandling
+  - 'rust/007-RustCollectionsIterators'
+  - 'rust/006-RustErrorHandling'
 prerequisites:
-  - rust/006-RustErrorHandling
+  - 'rust/006-RustErrorHandling'
 ---
+
 
 ## 1. 从"万能插座"说起：泛型
 

@@ -1,57 +1,19 @@
 ---
 order: 580
 title: 模块打包原理与 Tree Shaking
-module: javascript
-category: '008-javascript'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
-description: 讲清打包器把模块变成浏览器可运行文件的原理，以及 Tree Shaking 为什么只能"摇掉"没被用到的 ESM 导出。
+description: '讲清打包器把模块变成浏览器可运行文件的原理，以及 Tree Shaking 为什么只能"摇掉"没被用到的 ESM 导出。'
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'javascript/029-JavaScriptModular'
   - 'javascript/041-ModuleDynamicImportCodeSplitting'
 prerequisites:
   - 'javascript/029-JavaScriptModular'
-quiz:
-  - type: choice
-    question: Tree Shaking 能可靠生效的前提是什么？
-    options:
-      - 使用 CommonJS 模块
-      - 使用 ESM 且模块是纯的（无副作用标记）
-      - 代码全部写在同一个文件里
-      - 使用动态 import()
-    answer: 1
-    explanation: 只有 ESM 的静态 import/export 结构能让打包器静态分析出"哪些导出没被使用"。
-  - type: fill
-    question: 打包器把多个模块合并输出的文件通常称为____。
-    answer: chunk（代码块）
-    hint: 也叫 bundle。
-references:
-  - type: documentation
-    authors:
-      - Rollup Team
-    year: 2026
-    title: Rollup 文档：Tree Shaking
-    venue: rollupjs.org
-    url: https://rollupjs.org/guide/en/#tree-shaking
-    accessedDate: '2026-08-02'
-  - type: documentation
-    authors:
-      - Vite Team
-    year: 2026
-    title: Vite 依赖预构建
-    venue: cn.vitejs.dev
-    url: https://cn.vitejs.dev/guide/dep-pre-bundling.html
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 摇树优化
-    english: Tree Shaking
-    origin: 源自 Rollup 作者 Rich Harris 的比喻：把模块依赖图看作一棵树，摇晃后枯枝（未使用代码）自然落下。
-estimatedReadingTime: 8
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

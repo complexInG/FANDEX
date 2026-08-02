@@ -1,20 +1,21 @@
 ---
-order: 85
+order: 430
 title: Java文本块
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: 文本块与字符串模板
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/Java与Kubernetes
-  - java/Java记录类
-  - java/Java模块系统
-  - java/Java与数据库连接
+  - 'java/041-JavaKubernetes'
+  - 'java/042-JavaRecordClass'
+  - 'java/044-JavaModuleSystem'
+  - 'java/045-JavaDatabaseConnection'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 概述
 
 文本块（Text Blocks）是 Java 15 正式引入的特性，它让你可以在代码中书写多行字符串，而不需要手动拼接或转义。在文本块出现之前，写一段 JSON、SQL 或 HTML 需要大量转义引号和换行符，代码既难读又容易出错。文本块用三个双引号包裹，内部可以直接换行，不需要转义。

@@ -1,9 +1,8 @@
 ---
 order: 370
 title: Cybersecurity OpenSSL 加密解密
-module: cybersecurity
-
-category: '033-cybersecurity'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: Cybersecurity OpenSSL 加密解密 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 对称加密
 
 **基本写法：AES 加密文件**

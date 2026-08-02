@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 480
 title: JVM调优
-module: java
-category: 'dev-lang'
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: JVM调优详解：堆参数、GC日志、MAT分析、G1/ZGC调优、生产级性能工程。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/Java新特性与生态
-  - java/数组详解
-  - java/集合框架详解
-  - java/并发编程详解
+  - 'java/046-JavaNewFeaturesEcosystem'
+  - 'java/047-ArrayDetailed'
+  - 'java/049-CollectionFrameworkDetailed'
+  - 'java/050-ConcurrencyDetailed'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 GC 技术演进时间线（1995—2026）

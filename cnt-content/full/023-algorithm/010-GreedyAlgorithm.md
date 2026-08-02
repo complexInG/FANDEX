@@ -1,209 +1,27 @@
 ---
-order: 80
+order: 100
 title: 贪心算法
-module: algorithm
-category: Algorithm/Greedy
+module: 'algorithm'
+category: 计算机科学
 difficulty: intermediate
 description: 贪心（Greedy）算法的形式化定义、贪心选择性质与最优子结构、拟阵理论（Edmonds 1971）统一框架、交换论证/保持领先/势能下降三大正确性证明方法、活动选择、哈夫曼编码（Huffman 1952）、Kruskal 最小生成树（Kruskal 1956）、Prim 最小生成树（Prim 1957）、Dijkstra 单源最短路（Dijkstra 1959）、分数背包、任务调度、区间调度的原理、实现与对比分析，涵盖 Huffman 1952 MIT、Kruskal 1956 Proc. AMS、Prim 1957 BSTJ、Dijkstra 1959 Numerische Mathematik、Rado 1957、Edmonds 1971 Mathematical Programming 的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 16/23/24 章。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-greedy
-- algorithm-huffman
-- algorithm-mst
-- algorithm-kruskal
-- algorithm-prim
-- algorithm-dijkstra
-- algorithm-matroid
-- algorithm-exchange-argument
-- algorithm-fractional-knapsack
-created: 2026-05-27
 updated: '2026-08-01'
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 105
 related:
-- algorithm/图算法
-- algorithm/分治算法
-- algorithm/递归与回溯
-- algorithm/字符串算法
-- algorithm/动态规划
-- algorithm/算法分析基础与学习路线
-- algorithm/搜索算法
-- algorithm/堆与优先队列
+  - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
+  - 'algorithm/009-GaussAndTheHistoryOfTheFastFourierTransform'
+  - 'algorithm/011-NQueensBenchmarkBitManipulationApproach'
+  - 'algorithm/012-RipgrepRecursivelySearchDirectoriesForARegexPattern'
+  - 'algorithm/013-ArtificialIntelligenceAModernApproach'
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/004-SearchAlgorithm'
+  - 'algorithm/016-HeapAndPriorityQueue'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/图算法
-- algorithm/堆与优先队列
-references:
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: Chapter 16 (Greedy Algorithms - Activity Selection, Huffman Codes, Matroids), Chapter 23 (Minimum Spanning Trees - Kruskal, Prim), Chapter 24 (Single-Source Shortest Paths - Dijkstra), ISBN 978-0262046305
-- type: book
-  authors:
-  - Kleinberg, Jon
-  - Tardos, Eva
-  year: 2006
-  title: Algorithm Design
-  venue: Pearson
-  pages: ISBN 978-0321295354, Chapter 4 (Greedy Algorithms - Interval Scheduling, Shortest Paths, Minimum Spanning Trees, Huffman Codes), Chapter 11 (Approximation Algorithms)
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1998
-  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-  venue: Addison-Wesley Professional
-  version: 2nd edition
-  pages: ISBN 978-0201896855, Section 5.3.1 (Optimum Sorting - Huffman-like codes), Section 6.2.2 (Binary Tree Search - relation to Huffman)
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 4.3 (Minimum Spanning Trees - Prim, Kruskal), Section 5.5 (Data Compression - Huffman)
-- type: journal
-  authors:
-  - Huffman, David A.
-  year: 1952
-  title: A Method for the Construction of Minimum-Redundancy Codes
-  venue: Proceedings of the Institute of Radio Engineers (IRE)
-  volume: 40
-  issue: 9
-  pages: 1098-1101
-  doi: 10.1109/JRPROC.1952.273898
-- type: journal
-  authors:
-  - Kruskal, Joseph B.
-  year: 1956
-  title: On the shortest spanning subtree of a graph and the traveling salesman problem
-  venue: Proceedings of the American Mathematical Society
-  volume: 7
-  issue: 1
-  pages: 48-50
-  doi: 10.1090/S0002-9939-1956-0078686-7
-- type: journal
-  authors:
-  - Prim, Robert C.
-  year: 1957
-  title: Shortest connection networks and some generalizations
-  venue: Bell System Technical Journal
-  volume: 36
-  issue: 6
-  pages: 1389-1401
-  doi: 10.1002/j.1538-7305.1957.tb01515.x
-- type: journal
-  authors:
-  - Dijkstra, Edsger W.
-  year: 1959
-  title: A note on two problems in connexion with graphs
-  venue: Numerische Mathematik
-  volume: 1
-  issue: 1
-  pages: 269-271
-  doi: 10.1007/BF01386390
-- type: journal
-  authors:
-  - Rado, Richard
-  year: 1957
-  title: Note on independence functions
-  venue: Proceedings of the London Mathematical Society
-  volume: 7
-  issue: 1
-  pages: 300-320
-  doi: 10.1112/plms/s3-7.1.300
-- type: journal
-  authors:
-  - Edmonds, Jack
-  year: 1971
-  title: Matroids and the greedy algorithm
-  venue: Mathematical Programming
-  volume: 1
-  issue: 1
-  pages: 127-136
-  doi: 10.1007/BF01584082
-- type: journal
-  authors:
-  - Jarník, Vojtěch
-  year: 1930
-  title: O jistém problému minimálním (On a certain minimum problem)
-  venue: Práce Moravské Přírodovědecké Společnosti
-  volume: 6
-  pages: 57-63
-- type: journal
-  authors:
-  - Graham, Ronald L.
-  - Hell, Pavol
-  year: 1985
-  title: On the history of the minimum spanning tree problem
-  venue: Annals of the History of Computing
-  volume: 7
-  issue: 1
-  pages: 43-57
-  doi: 10.1109/MAHC.1985.10011
-- type: journal
-  authors:
-  - Karp, Richard M.
-  year: 1986
-  title: Combinatorics, complexity, and randomness
-  venue: Communications of the ACM
-  volume: 29
-  issue: 2
-  pages: 98-109
-- type: website
-  authors:
-  - Schwartz, Zvi
-  year: 2012
-  title: Greedy Algorithm - Exchange Argument and Staying Ahead (CMU 15-211 Lecture Notes)
-  venue: Carnegie Mellon University Course Materials
-  url: https://www.cs.cmu.edu/afs/cs/academic/class/15251-f10/Site/Materials/LectureNotes/lecture21notes.pdf
-  pages: Exchange argument and stay-ahead methods for proving greedy correctness
-  accessedDate: '2026-07-20'
-etymology:
-- term: 贪心
-  english: greedy
-  origin: greedy 源自古英语 grǣdig（贪婪的、渴望的）。在算法中，greedy 指每步选择当前最优而不考虑后果。Cormen-Leiserson-Rivest-Stein《CLRS》第 16 章将贪心算法定义为"在每一步都做出当时看起来最优的选择"。中文"贪心"由"贪"（贪婪）与"心"（心意）合成，强调"局部最优"的决策风格
-- term: 贪心选择性质
-  english: greedy choice property
-  origin: greedy choice property 是 CLRS 第 16 章核心概念：存在一个最优解包含了贪心策略在第一步所做的选择。这是贪心算法正确性的两大支柱之一（另一是最优子结构）
-- term: 最优子结构
-  english: optimal substructure
-  origin: optimal 源自拉丁语 optimus（最好的）。最优子结构指：原问题的最优解包含子问题的最优解。最优子结构是贪心与动态规划共同的前提，但贪心还要求贪心选择性质
-- term: 拟阵
-  english: matroid
-  origin: matroid 由 Hassler Whitney 1935 在《On the properties of linear dependence》中提出，由 matrix（矩阵）+ -oid（类似）合成，原指矩阵列向量的"独立"性质的抽象。Jack Edmonds 1971 在《Matroids and the greedy algorithm》Mathematical Programming 1:127-136 中证明：拟阵上的贪心算法必得到最优解，奠定贪心算法的统一理论基础。Rado 1957 早期独立研究
-- term: 交换论证
-  english: exchange argument
-  origin: exchange 源自拉丁语 exchangiare（交换）。交换论证是证明贪心正确性的核心方法：取任意最优解 OPT，逐步将其"交换"为贪心解 GREEDY，证明交换过程不破坏最优性。CMU 15-211 课程系统化此方法
-- term: 保持领先
-  english: stay ahead
-  origin: stay ahead 是 Kleinberg-Tardos《Algorithm Design》第 4 章提出的另一种贪心正确性证明方法：证明贪心算法在每一步都"领先于"或"不落后于"最优解，最终必不劣于最优解
-- term: 哈夫曼编码
-  english: Huffman coding
-  origin: Huffman 编码以发明者 David A. Huffman 命名。Huffman 1952 在 MIT 读博期间于《A Method for the Construction of Minimum-Redundancy Codes》Proc. IRE 40(9):1098-1101 提出，原课程作业（Robert Fano 教授）。Huffman 编码是变长前缀码，使高频字符用短码、低频字符用长码，达到最小冗余。广泛用于 JPEG、MP3、zip、gzip
-- term: 最小生成树
-  english: minimum spanning tree (MST)
-  origin: spanning 源自古英语 spannan（伸展）。MST 是连通加权图的边权之和最小的生成树。Kruskal 1956 与 Prim 1957 分别独立提出。Borůvka 1926 最早研究（捷克电网设计），Jarník 1930 后被 Prim 重新发现。Graham-Hell 1985《On the history of the minimum spanning tree problem》详尽考据
-- term: Dijkstra 算法
-  english: Dijkstra algorithm
-  origin: 以 Edsger W. Dijkstra 命名。Dijkstra 1959 在《A note on two problems in connexion with graphs》Numerische Mathematik 1:269-271 提出，原为展示 ARMAC 计算机性能而设计。Dijkstra 算法是单源最短路径贪心算法，要求非负边权，是 Google Maps、网络路由协议（OSPF）的核心
-- term: 分数背包
-  english: fractional knapsack
-  origin: fractional 源自拉丁语 frangere（打破）。分数背包允许物品被部分装入（如金砂、液体），贪心策略按单位价值降序装入。与 0-1 背包（动态规划）形成经典对比：分数背包贪心 $O(n \log n)$，0-1 背包 DP $O(nW)$
-- term: 区间调度
-  english: interval scheduling
-  origin: interval 源自拉丁语 intervallum（空间之间的距离）。区间调度问题：在给定的多个区间中选出不冲突的最大子集。贪心策略按结束时间排序，Kleinberg-Tardos 第 4.1 节给出 stay-ahead 证明。加权版本需 DP，是贪心与 DP 的经典边界
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
+  - 'algorithm/016-HeapAndPriorityQueue'
 ---
+
 
 
 ## 1. 概述与学习目标

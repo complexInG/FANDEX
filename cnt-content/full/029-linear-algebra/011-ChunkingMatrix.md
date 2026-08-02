@@ -1,18 +1,19 @@
 ---
-order: 24
+order: 100
 title: 分块矩阵
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 分块矩阵的概念与分块原则，分块矩阵的运算（加法、乘法、转置），分块对角矩阵的性质，分块矩阵的求逆与行列式，Schur 补与典型例题。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/初等变换与初等矩阵'
-  - 'linear-algebra/矩阵的秩'
-  - 'linear-algebra/高斯消元法'
+  - 'linear-algebra/009-ElementaryTransformationAndMatrix'
+  - 'linear-algebra/010-MatrixRank'
+  - 'linear-algebra/013-GaussianElimination'
 prerequisites: []
 ---
+
 
 ## 0. 从"大表格分区管理"说起
 

@@ -1,20 +1,20 @@
 ---
-order: 72
+order: 330
 title: 脏读不可重复读幻读
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
 description: SQL并发异常：脏读、不可重复读、幻读的定义、示例、区别与防护策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/事务ACID特性
-  - sql/隔离级别
-  - sql/锁机制
-  - sql/多版本并发控制
+  - 'sql/031-TransactionACIDProperty'
+  - 'sql/032-IsolationLevel'
+  - 'sql/034-LockMechanism'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 
 ## 1. 并发异常概述
 

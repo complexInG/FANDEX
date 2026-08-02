@@ -1,9 +1,8 @@
 ---
 order: 760
 title: 启动 REPL 交互环境
-module: java
-
-category: '013-java'
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: 启动 REPL 交互环境 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 
 ﻿# Java jshell 与 jpackage 命令速查手册
 

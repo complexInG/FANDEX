@@ -1,9 +1,8 @@
 ---
 order: 520
 title: Cybersecurity Metasploit 命令(渗透测试)
-module: cybersecurity
-
-category: '033-cybersecurity'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: Cybersecurity Metasploit 命令(渗透测试) 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## msfconsole 基础操作
 
 **基本写法:启动 msfconsole**

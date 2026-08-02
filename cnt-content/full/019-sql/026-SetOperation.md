@@ -1,20 +1,19 @@
 ---
-order: 65
+order: 260
 title: 集合操作
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
 description: SQL集合操作：UNION、INTERSECT、EXCEPT的语法、去重规则、排序限制与性能优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/递归CTE
-  - sql/PIVOT与UNPIVOT
-  - sql/数据控制语言
-  - sql/事务控制语言
+  - 'sql/024-RecursiveCTE'
+  - 'sql/025-PivotUnpivot'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 集合操作概述
 
 SQL 集合操作将多个查询的结果集合并为一个结果集，基于集合论中的并、交、差运算。

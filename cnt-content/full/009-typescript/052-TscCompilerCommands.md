@@ -1,9 +1,8 @@
 ---
 order: 520
 title: TypeScript tsc 编译命令速查
-module: typescript
-
-category: '009-typescript'
+module: 'typescript'
+category: 前端技术
 difficulty: beginner
 description: TypeScript tsc 编译命令速查 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 基础编译
 
 **基本写法：编译文件**

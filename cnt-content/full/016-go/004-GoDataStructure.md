@@ -1,19 +1,20 @@
 ---
-order: 4
-title: 'Go 数据结构'
-module: go
-category: Go
+order: 40
+title: Go 数据结构
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: '数组、切片底层原理、map 底层实现、struct、嵌套与组合、标签与 JSON 序列化。'
+description: 数组、切片底层原理、map 底层实现、struct、嵌套与组合、标签与 JSON 序列化。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/基础语法
-  - go/函数与方法
-  - go/接口与组合
-  - go/并发编程
+  - 'go/002-GoBasicSyntax'
+  - 'go/003-GoFunctionMethod'
+  - 'go/005-GoInterfaceComposition'
+  - 'go/006-GoConcurrentProgramming'
 prerequisites: []
 ---
+
 ## 1. 数组
 
 ### 1.1 数组基础

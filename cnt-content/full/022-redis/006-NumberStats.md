@@ -1,20 +1,20 @@
 ---
-order: 51
+order: 60
 title: 基数统计
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: intermediate
 description: Redis基数统计HyperLogLog：去重计数、UV统计、误差控制与内存优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/语法速查
-  - redis/位图
-  - redis/地理空间
-  - redis/流
+  - 'redis/005-BitGraph'
+  - 'redis/007-GeoSpatial'
+  - 'redis/008-Stream'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 ## 1. HyperLogLog 概述
 
 HyperLogLog（HLL）是基数估计算法，用极小内存（12KB）估算集合中不同元素的数量，标准误差约 0.81%。

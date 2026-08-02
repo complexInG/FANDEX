@@ -1,9 +1,8 @@
 ---
 order: 860
 title: Python ssl 安全套接字
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python ssl 安全套接字 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## SSLContext 上下文
 
 **基本写法：创建默认上下文**

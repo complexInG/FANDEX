@@ -1,22 +1,20 @@
 ---
-order: 55
-tags:
-  - vue3
-difficulty: intermediate
+order: 120
 title: 生命周期钩子
-module: vue3
-category: 'Vue3 Basics'
+module: 'vue3'
+category: 前端技术
+difficulty: intermediate
 description: Vue3组件生命周期钩子详解：创建、挂载、更新、卸载与调试钩子的使用场景。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/Vue3编译优化
-  - vue3/Vue3服务端渲染
-  - vue3/Vue3测试策略
-  - 'vue3/Vue3与Web Components'
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/010-Vue3CompileOptimization'
+  - 'vue3/011-Vue3SSR'
+  - 'vue3/013-Vue3TestStrategy'
+  - 'vue3/014-Vue3WebComponents'
+prerequisites: []
 ---
+
 ## 1. 生命周期概述
 
 ### 1.1 Vue3 生命周期流程

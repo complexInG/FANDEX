@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 110
 title: 自动链接
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: beginner
 description: Markdown自动链接机制：URL识别规则、邮箱链接与扩展语法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/脚注
-  - markdown/删除线
-  - markdown/Emoji表情
-  - markdown/下标与上标
+  - 'markdown/009-Footnote'
+  - 'markdown/010-Strikethrough'
+  - 'markdown/012-Emoji'
+  - 'markdown/013-SubscriptSuperscript'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 1. 自动链接概述
 
 ### 1.1 什么是自动链接

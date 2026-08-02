@@ -1,20 +1,17 @@
 ---
-order: 62
-title: 'C#与最小API'
-module: csharp
-category: 'C#'
+order: 230
+title: C#与最小API
+module: 'csharp'
+category: 后端技术
 difficulty: beginner
-description: '.NET Minimal API'
+description: .NET Minimal API
 author: fanquanpp
 updated: '2026-06-14'
-related:
-  - 'csharp/CSharp与EF Core'
-  - 'csharp/CSharp与依赖注入'
-  - 'csharp/CSharp12与CSharp13新特性'
-  - 'csharp/CSharp与反射'
+related: []
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 ## 一、概述
 

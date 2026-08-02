@@ -1,20 +1,21 @@
 ---
-order: 61
+order: 240
 title: 可观测性
 module: 'cloud-computing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 可观测性三支柱：日志、指标、分布式追踪的原理、工具与实践详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/微服务架构'
-  - 'cloud-computing/服务网格'
-  - 'cloud-computing/AWS核心服务'
-  - 'cloud-computing/多云与混合云架构'
+  - 'cloud-computing/022-MicroserviceArchitecture'
+  - 'cloud-computing/023-ServiceMesh'
+  - 'cloud-computing/025-AWSCore'
+  - 'cloud-computing/026-MultiCloudHybridArchitecture'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 可观测性概述
 

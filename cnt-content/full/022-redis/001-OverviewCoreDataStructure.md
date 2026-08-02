@@ -1,17 +1,18 @@
 ---
-order: 1
+order: 10
 title: 概述与核心数据结构
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: beginner
-description: 'Redis 8.0概述、字符串SDS、哈希、列表quicklist、集合、有序集合跳表、位图、HyperLogLog、GEO、Stream、Vector Set。'
+description: Redis 8.0概述、字符串SDS、哈希、列表quicklist、集合、有序集合跳表、位图、HyperLogLog、GEO、Stream、Vector Set。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/持久化与模块
-  - redis/集群与高可用
+  - 'redis/002-PersistenceModule'
+  - 'redis/003-ClusterHA'
 prerequisites: []
 ---
+
 ## 1. Redis 8.0 概述
 
 ### 1.1 Redis 简介

@@ -1,20 +1,20 @@
 ---
-order: 100
+order: 360
 title: 窗口函数框架
-module: sql
-category: database
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: 'SQL 窗口函数框架详解：ROWS BETWEEN 与 RANGE BETWEEN 窗口帧定义、滑动窗口计算、累计聚合与排名函数的底层机制。'
+description: SQL 窗口函数框架详解：ROWS BETWEEN 与 RANGE BETWEEN 窗口帧定义、滑动窗口计算、累计聚合与排名函数的底层机制。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/锁机制
-  - sql/多版本并发控制
-  - sql/递归CTE遍历树结构
-  - sql/乐观锁与悲观锁
+  - 'sql/034-LockMechanism'
+  - 'sql/037-RecursiveCTETreeTraversal'
+  - 'sql/038-OptimisticPessimisticLock'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 
 ## 1. 窗口函数基础架构
 

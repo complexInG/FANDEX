@@ -1,9 +1,8 @@
 ---
 order: 280
 title: 物联网 ESP32 OTA 更新
-module: iot
-
-category: '035-iot'
+module: 'iot'
+category: 云与基础设施
 difficulty: beginner
 description: 物联网 ESP32 OTA 更新 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## OTA 库引入
 
 **基本写法：包含 OTA 库**

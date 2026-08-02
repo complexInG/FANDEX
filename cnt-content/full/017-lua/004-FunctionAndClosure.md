@@ -1,27 +1,22 @@
 ---
 order: 40
-tags:
-  - lua
-  - performance
-  - functions
-  - closures
-  - higher-order
-difficulty: intermediate
 title: 函数与闭包
-module: lua
-category: 'Lua Basics'
-description: 'Lua 函数定义、闭包机制、词法作用域与高阶函数的完整教学手册，涵盖形式化语义、性能模型与工程实践'
+module: 'lua'
+category: 后端技术
+difficulty: intermediate
+description: Lua 函数定义、闭包机制、词法作用域与高阶函数的完整教学手册，涵盖形式化语义、性能模型与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - lua/程序结构与基本语法
-  - lua/数据类型与Table详解
-  - lua/环境与全局变量管理
-  - lua/元表与元方法详解
+  - 'lua/002-ProgramStructureBasicSyntax'
+  - 'lua/003-DataTypeTableDetailed'
+  - 'lua/028-EnvironmentGlobalVariable'
+  - 'lua/025-MetatableMetamethodDetailed'
 prerequisites:
-  - lua/程序结构与基本语法
-  - lua/数据类型与Table详解
+  - 'lua/002-ProgramStructureBasicSyntax'
+  - 'lua/003-DataTypeTableDetailed'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 函数式范式的起源

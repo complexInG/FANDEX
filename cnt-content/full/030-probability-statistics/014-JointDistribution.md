@@ -1,18 +1,19 @@
 ---
-order: 30
+order: 120
 title: 联合分布
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 从地图定位的二维坐标出发，讲解二维随机变量的联合分布函数、联合分布律与联合概率密度，并介绍二维均匀分布与二维正态分布。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/随机变量函数的分布'
-  - 'probability-statistics/边缘分布'
-  - 'probability-statistics/条件分布'
+  - 'probability-statistics/012-DistributionOfRandomVariableFunction'
+  - 'probability-statistics/015-MarginalDistribution'
+  - 'probability-statistics/016-ConditionalDistribution'
 prerequisites: []
 ---
+
 
 ## 0. 地图定位：从一维到二维
 

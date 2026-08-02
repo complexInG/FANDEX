@@ -1,20 +1,20 @@
 ---
-order: 53
+order: 90
 title: 脚注
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
 description: Markdown脚注语法：定义方式、引用格式与多平台兼容性。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/GitHub风格扩展
-  - markdown/转义字符
-  - markdown/删除线
-  - markdown/自动链接
+  - 'markdown/008-EscapeCharacter'
+  - 'markdown/010-Strikethrough'
+  - 'markdown/011-AutoLink'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 1. 脚注概述
 
 ### 1.1 什么是脚注

@@ -1,21 +1,21 @@
 ---
 order: 40
-tags:
-  - c
-difficulty: beginner
 title: 变量与常量
-module: c
-category: 'C Basics'
+module: 'c'
+category: 计算机科学
+difficulty: beginner
 description: 变量的定义、生命周期、作用域以及常量的多种实现方式。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - c/程序结构与基本语法
-  - c/数据类型详解
-  - c/位运算与位域
-  - c/运算符与表达式
+  - 'c/002-ProgramStructureBasicSyntax'
+  - 'c/003-DataTypeDetailed'
+  - 'c/005-BitwiseBitField'
+  - 'c/006-OperatorExpression'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 第 1 章 引言与学习路径
 
 ### 1.1 为什么变量与常量是 C 语言的基石

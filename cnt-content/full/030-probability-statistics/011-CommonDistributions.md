@@ -1,18 +1,19 @@
 ---
-order: 23
+order: 100
 title: 常用分布
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 用"常见骰子种类"类比组织六大常用分布家族图谱，从定义、性质、应用场景、分布间关系到选型指南全面梳理二项、泊松、几何、均匀、指数、正态分布。
+description: '用"常见骰子种类"类比组织六大常用分布家族图谱，从定义、性质、应用场景、分布间关系到选型指南全面梳理二项、泊松、几何、均匀、指数、正态分布。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/连续型随机变量'
-  - 'probability-statistics/分布函数'
-  - 'probability-statistics/随机变量函数的分布'
+  - 'probability-statistics/009-ContinuousRandomVariable'
+  - 'probability-statistics/010-DistributionFunction'
+  - 'probability-statistics/012-DistributionOfRandomVariableFunction'
 prerequisites: []
 ---
+
 
 ## 0. 常见的"骰子种类"
 

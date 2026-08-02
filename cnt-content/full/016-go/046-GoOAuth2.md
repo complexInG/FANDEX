@@ -1,20 +1,21 @@
 ---
-order: 86
+order: 460
 title: Go与OAuth2
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: OAuth2与JWT
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与HTTP服务器
-  - go/Go与HTTP客户端
-  - go/Go与加密
-  - go/Go与中间件
+  - 'go/045-GoHTTP'
+  - 'go/044-GoHTTPClient'
+  - 'go/038-GoEncryption'
+  - 'go/047-GoMiddleware'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 ## 历史动机与发展脉络

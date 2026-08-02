@@ -1,20 +1,21 @@
 ---
-order: 79
+order: 390
 title: Kotlin 与正则表达式
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'Kotlin 正则表达式的形式化语义、JDK 集成、性能优化与工程实践'
+description: Kotlin 正则表达式的形式化语义、JDK 集成、性能优化与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/Kotlin作用域函数
-  - kotlin/Flow与响应式流
-  - kotlin/Kotlin内联类
-  - kotlin/Kotlin契约
+  - 'kotlin/018-KotlinScopeFunction'
+  - 'kotlin/017-FlowReactiveStream'
+  - 'kotlin/020-KotlinInlineClass'
+  - 'kotlin/021-KotlinContractContracts'
 prerequisites:
-  - kotlin/Kotlin作用域函数
+  - 'kotlin/018-KotlinScopeFunction'
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 正则表达式的起源

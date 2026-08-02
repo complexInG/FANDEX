@@ -1,19 +1,20 @@
 ---
-order: 14
-title: 'Kotlin 泛型与类型系统'
-module: kotlin
-category: Kotlin
+order: 50
+title: Kotlin 泛型与类型系统
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
 description: 泛型、型变、空安全、智能转换与类型系统深度解析。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/函数与Lambda
-  - kotlin/类与对象
-  - kotlin/集合与协程
-  - kotlin/协程进阶
+  - 'kotlin/003-KotlinFunctionAndLambda'
+  - 'kotlin/004-KotlinClassObject'
+  - 'kotlin/006-KotlinCollectionCoroutine'
+  - 'kotlin/007-KotlinCoroutineAdvanced'
 prerequisites: []
 ---
+
 ## 1. 泛型基础
 
 ### 1.1 泛型类与接口

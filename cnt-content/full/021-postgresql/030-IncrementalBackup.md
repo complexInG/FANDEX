@@ -1,20 +1,21 @@
 ---
-order: 75
+order: 300
 title: 增量备份
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL增量备份：pg_basebackup、pg_receivewal、归档WAL与PITR
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/物理复制槽
-  - postgresql/逻辑解码与输出插件
-  - postgresql/订阅与发布
-  - 'postgresql/SSL-TLS加密连接'
+  - 'postgresql/028-PhysicalReplicationSlot'
+  - 'postgresql/029-LogicalDecodingOutputPlugin'
+  - 'postgresql/031-SubscribePublish'
+  - 'postgresql/032-SSLEncryptionConnection'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. pg_basebackup
 

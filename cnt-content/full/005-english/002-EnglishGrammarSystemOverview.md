@@ -1,18 +1,19 @@
 ---
 order: 20
 title: 英语语法体系总览
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: intermediate
 description: 英语语法完整框架，涵盖词法、句法、时态、语态、语气等核心语法体系。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/计算机专业英语词汇
-  - english/句子结构与成分分析
-  - english/复合句与从句
+  - 'english/001-ComputerProfessionalEnglishVocabulary'
+  - 'english/003-SentenceStructureAnalysis'
+  - 'english/004-CompoundSentenceClause'
 prerequisites: []
 ---
+
 
 ## 1. 英语语法体系概览
 

@@ -1,19 +1,20 @@
 ---
-order: 105
+order: 300
 title: 用户数据
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: advanced
 description: Lua用户数据详解：userdata扩展C类型。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - lua/环境与全局变量管理
-  - 'lua/C-API栈操作'
-  - lua/模块加载
+  - 'lua/028-EnvironmentGlobalVariable'
+  - 'lua/029-CAPIStackOperation'
+  - 'lua/031-ModuleLoading'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 
 
 # 用户数据（userdata）：Lua 与 C 的类型桥梁

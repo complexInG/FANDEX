@@ -1,20 +1,20 @@
 ---
-order: 90
-title: 'Python 进阶与最新特性'
-module: python
-category: 'Python Advanced'
+order: 490
+title: Python 进阶与最新特性
+module: 'python'
+category: 后端技术
 difficulty: advanced
-description: 'Python 3.12-3.14 新特性、dataclass/attrs、asyncio 进阶、类型系统、Pydantic v2、FastAPI 与现代工具链。'
+description: Python 3.12-3.14 新特性、dataclass/attrs、asyncio 进阶、类型系统、Pydantic v2、FastAPI 与现代工具链。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'python/Python与WebSocket-2'
-  - python/Python与向量数据库
-  - python/推导式与生成器
-  - 'python/模块-包与工程化'
-prerequisites:
-  - python/语法速查
+  - 'python/034-PythonWebSocket'
+  - 'python/048-PythonVectorDatabase'
+  - 'python/050-ComprehensionGenerator'
+  - 'python/051-ModulePackageEngineering'
+prerequisites: []
 ---
+
 
 ## 1. Python 3.12-3.14 新特性
 

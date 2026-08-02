@@ -1,20 +1,20 @@
 ---
-order: 74
+order: 320
 title: 类型安全的表单验证
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: 构建类型安全的表单验证系统
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/类型安全的状态管理
-  - typescript/类型安全的API客户端
-  - typescript/类型安全的国际化
-  - typescript/类型安全的路由
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/030-TypeSafeStateManagement'
+  - 'typescript/029-TypeSafeAPIClient'
+  - 'typescript/033-TypeSafeI18n'
+  - 'typescript/034-TypeSafeRoute'
+prerequisites: []
 ---
+
 
 
 ## 历史动机与背景

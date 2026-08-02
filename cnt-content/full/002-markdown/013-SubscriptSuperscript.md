@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 130
 title: 下标与上标
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
 description: Markdown中实现下标与上标的多种方式：HTML标签、LaTeX公式与扩展语法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/自动链接
-  - markdown/Emoji表情
-  - markdown/LaTeX数学公式
-  - markdown/Mermaid图表
+  - 'markdown/011-AutoLink'
+  - 'markdown/012-Emoji'
+  - 'markdown/014-LaTeXMathFormula'
+  - 'markdown/015-Mermaid'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 
 ## 1. 下标与上标概述
 

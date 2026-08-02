@@ -1,9 +1,8 @@
 ---
 order: 370
 title: 压缩解压命令速查手册
-module: getting-started
-
-category: '001-getting-started'
+module: 'getting-started'
+category: 工具链
 difficulty: beginner
 description: 压缩解压命令速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## tar 归档
 
 **基本用法:创建归档**

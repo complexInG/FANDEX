@@ -1,20 +1,21 @@
 ---
-order: 104
+order: 660
 title: 主从复制延迟原因与解决
-module: mysql
-category: database
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL 主从复制延迟的根因分析：单线程回放、大事务、DDL、网络带宽，以及并行复制、半同步复制等解决方案。'
+description: MySQL 主从复制延迟的根因分析：单线程回放、大事务、DDL、网络带宽，以及并行复制、半同步复制等解决方案。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/两阶段提交
-  - mysql/间隙锁与临键锁解决幻读
-  - mysql/分库分表策略
-  - 'mysql/JSON类型与JSON-TABLE'
+  - 'mysql/064-TwoPhaseCommit'
+  - 'mysql/065-GapLockNextKeyLockSolutionPhantomRead'
+  - 'mysql/067-ShardingStrategy'
+  - 'mysql/068-JSONTypeJSONTable'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 主从复制架构
 

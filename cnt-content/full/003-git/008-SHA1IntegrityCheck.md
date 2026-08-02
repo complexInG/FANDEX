@@ -1,20 +1,20 @@
 ---
-order: 52
-title: 'SHA-1哈希完整性校验'
-module: git
-category: 'Git Basics'
+order: 80
+title: SHA-1哈希完整性校验
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'Git中SHA-1哈希的工作原理：内容寻址、完整性校验与碰撞问题。'
+description: Git中SHA-1哈希的工作原理：内容寻址、完整性校验与碰撞问题。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/分布式版本控制原理
-  - git/对象模型
-  - git/三棵树
-  - 'git/git-diff与暂存区操作'
-prerequisites:
-  - git/语法速查
+  - 'git/006-DistributedVCSPrinciple'
+  - 'git/007-ObjectModel'
+  - 'git/009-ThreeTrees'
+  - 'git/010-GitDiffStagingOperation'
+prerequisites: []
 ---
+
 
 ## 1. SHA-1 在 Git 中的作用
 

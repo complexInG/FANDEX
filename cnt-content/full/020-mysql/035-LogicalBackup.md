@@ -1,20 +1,21 @@
 ---
-order: 77
+order: 350
 title: 逻辑备份
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
 description: MySQL逻辑备份：mysqldump、mysqlpump的用法、选项、一致性备份与恢复流程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/撤销日志
-  - mysql/日志系统
-  - mysql/物理备份
-  - mysql/基于时间点恢复
+  - 'mysql/033-UndoLog'
+  - 'mysql/034-LogSystem'
+  - 'mysql/036-PhysicalBackup'
+  - 'mysql/037-PITR'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. mysqldump
 

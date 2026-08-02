@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 60
 title: 网络安全技术
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
 description: 网络安全技术：防火墙、IDS/IPS、VPN、NAT与访问控制
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'networking/OSI与TCP-IP模型'
-  - networking/交换与路由技术
-  - networking/无线网络
-  - networking/SDN与网络自动化
+  - 'networking/004-OSITCPIPModel'
+  - 'networking/005-SwitchingAndRouting'
+  - 'networking/007-WirelessNetwork'
+  - 'networking/008-SDNNetworkAutomation'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. 防火墙技术
 

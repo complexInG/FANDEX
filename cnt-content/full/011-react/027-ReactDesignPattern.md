@@ -1,20 +1,21 @@
 ---
-order: 66
+order: 270
 title: React设计模式
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: React组件设计模式
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React动画
-  - react/React服务端渲染
-  - react/React与WebAssembly
-  - react/React与WebSocket
+  - 'react/025-ReactAnimation'
+  - 'react/026-ReactSSR'
+  - 'react/028-ReactWebAssembly'
+  - 'react/029-ReactWebSocket'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 React组件设计模式。本文将从基础概念、快速上手、详细用法、常见场景、注意事项和进阶用法六个方面全面介绍React设计模式。

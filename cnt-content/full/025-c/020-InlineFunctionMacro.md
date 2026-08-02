@@ -1,20 +1,21 @@
 ---
-order: 63
+order: 200
 title: 内联函数与宏
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
 description: inline函数与预处理器宏
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/属性与编译器扩展
-  - c/安全函数与边界检查
-  - c/复杂声明解析
-  - c/POSIX线程
+  - 'c/018-AttributeCompilerExtension'
+  - 'c/019-SafeFunctionBoundsCheck'
+  - 'c/021-ComplexDeclarationParsing'
+  - 'c/023-POSIXThread'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 
 ## 概述

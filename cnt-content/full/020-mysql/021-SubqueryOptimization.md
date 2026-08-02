@@ -1,20 +1,21 @@
 ---
-order: 64
+order: 210
 title: 子查询优化
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL子查询优化：半连接转换、物化、子查询展开与IN/EXISTS优化策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/慢查询日志
-  - mysql/优化器追踪
-  - mysql/派生表优化
-  - 'mysql/GROUP-BY与ORDER-BY优化'
+  - 'mysql/019-SlowQueryLog'
+  - 'mysql/020-OptimizerTrace'
+  - 'mysql/022-DerivedTableOptimization'
+  - 'mysql/023-GroupByOrderByOptimization'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 子查询优化概述
 

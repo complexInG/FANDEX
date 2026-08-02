@@ -1,180 +1,27 @@
 ---
-order: 93
+order: 160
 title: 堆与优先队列
-module: algorithm
-category: Algorithm/Heap
+module: 'algorithm'
+category: 计算机科学
 difficulty: intermediate
 description: 堆（Heap）与优先队列（Priority Queue）的完全二叉树数组表示、最大堆/最小堆的堆序性质、上浮与下沉操作、Floyd 建堆 $O(n)$ 证明、堆排序、Top-K 问题、索引堆、二项堆、Fibonacci 堆、配对堆的对比分析，涵盖 Williams 1964 Algorithm 232 Heapsort、Floyd 1964 Algorithm 245 Treesort、Vuillemin 1978 二项堆、Fredman-Tarjan 1984 Fibonacci 堆等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 6 章。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-heap
-- algorithm-priority-queue
-- algorithm-datastructure
-- algorithm-binary-heap
-- algorithm-heapsort
-- algorithm-topk
-- algorithm-fibonacci-heap
-- algorithm-amortized-analysis
-created: 2026-05-27
-updated: 2026-07-20
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 100
+updated: '2026-07-20'
 related:
-- algorithm/算法分析基础与学习路线
-- algorithm/树
-- algorithm/数组与动态数组
-- algorithm/排序算法
-- algorithm/查找算法
-- algorithm/栈与队列
-- algorithm/图算法
-- algorithm/平衡树与高级树
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/007-TheUbiquitousBTree'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
+  - 'algorithm/002-SortAlgorithm'
+  - 'algorithm/017-CPythonBisectPyArrayBisectionAlgorithmImplementation'
+  - 'algorithm/003-ConcurrencyInGoToolsAndTechniquesForDevelopers'
+  - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
+  - 'algorithm/015-PostgreSQLBTreeIndexImplementation'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/树
-- algorithm/数组与动态数组
-references:
-- type: journal
-  authors:
-  - Williams, J. W. J.
-  year: 1964
-  title: 'Algorithm 232: Heapsort'
-  venue: Communications of the ACM
-  volume: 7
-  issue: 6
-  pages: 347-348
-  doi: 10.1145/512274.512284
-- type: journal
-  authors:
-  - Floyd, Robert W.
-  year: 1964
-  title: 'Algorithm 245: Treesort 3'
-  venue: Communications of the ACM
-  volume: 7
-  issue: 12
-  pages: '701'
-  doi: 10.1145/355588.361058
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1997
-  title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
-  venue: Addison-Wesley Professional
-  version: 3rd edition
-  pages: ISBN 978-0201896831, Section 2.2.3 (Linked Allocation) and Section 5.2.3 (Sorting by Selection - Heapsort)
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: Chapter 6 (Heapsort), Section 6.1 (The Heap Data Structure), Section 6.2 (Maintaining the Heap Property), Section 6.3 (Building a Heap), Section 6.4 (The Heapsort Algorithm), Chapter 19 (Fibonacci Heaps), ISBN 978-0262046305
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 2.4 (Priority Queues), Section 2.5 (Sorting Applications - Heapsort)
-- type: journal
-  authors:
-  - Vuillemin, Jean
-  year: 1978
-  title: A data structure for manipulating priority queues
-  venue: Communications of the ACM
-  volume: 21
-  issue: 4
-  pages: 309-315
-  doi: 10.1145/359460.359478
-- type: journal
-  authors:
-  - Fredman, Michael L.
-  - Tarjan, Robert Endre
-  year: 1987
-  title: Fibonacci heaps and their uses in improved network optimization algorithms
-  venue: Journal of the ACM
-  volume: 34
-  issue: 3
-  pages: 596-615
-  doi: 10.1145/28869.28874
-- type: journal
-  authors:
-  - Fredman, Michael L.
-  - Sedgewick, Robert
-  - Sleator, Daniel D.
-  - Tarjan, Robert Endre
-  year: 1986
-  title: 'The pairing heap: a new form of self-adjusting heap'
-  venue: Algorithmica
-  volume: 1
-  issue: 1
-  pages: 111-129
-  doi: 10.1007/BF01840416
-- type: book
-  authors:
-  - Tarjan, Robert Endre
-  year: 1983
-  title: Data Structures and Network Algorithms
-  venue: Society for Industrial and Applied Mathematics
-  pages: ISBN 978-0898711875, Chapter 2 (Binomial Queues), Chapter 3 (Pairing Heaps), Chapter 4 (Fibonacci Heaps)
-- type: book
-  authors:
-  - Crane, Clark A.
-  year: 1972
-  title: Linear lists and priority queues as balanced binary trees
-  venue: Stanford University, Department of Computer Science, Technical Report STAN-CS-72-259
-  pages: The original technical report defining leftist heaps
-- type: website
-  authors:
-  - Python Software Foundation
-  year: 2024
-  title: CPython heapq.py - Heap queue algorithm implementation
-  venue: Python GitHub Repository
-  url: https://github.com/python/cpython/blob/main/Lib/heapq.py
-  pages: siftdown (sift-down) and siftup (sift-up) core operations with siftdown_max variants
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - Linux kernel community
-  year: 2024
-  title: Linux kernel timer list (struct hlist_node, timer wheel, rbtree timer in 4.8+)
-  venue: Linux Kernel Documentation
-  url: https://www.kernel.org/doc/html/latest/core-api/timer.html
-  pages: Linux kernel timer implementation evolved from timer wheel (hash heap) to red-black tree
-  accessedDate: '2026-07-20'
-etymology:
-- term: 堆
-  english: heap
-  origin: '英文 heap 源自古英语 hēap（堆积、堆叠），原指"堆积的物品"。在计算机科学中，"heap" 作为数据结构术语由 J. W. J. Williams 在 1964 年《Communications of the ACM》Algorithm 232: Heapsort 中首次系统化使用，特指满足堆序性质的完全二叉树。需注意：此"堆"与操作系统内存管理中的"堆"（dynamic memory heap，由 Knuth 1968 在 TAOCP Vol.1 §2.5 讨论）是不同概念，后者指动态分配的内存池。中文"堆"直译自英文'
-- term: 优先队列
-  english: priority queue
-  origin: priority 源自拉丁语 prior（在前的、优先的），queue 源自法语 queue（尾巴）。优先队列作为抽象数据类型（ADT），由 Vuillemin 1978 在《A data structure for manipulating priority queues》中系统化定义。它不同于 FIFO 普通队列：每次出队的不是最早入队的元素，而是优先级最高（或最低）的元素。堆是优先队列最常用的底层实现，但优先队列也可用有序数组、平衡树等实现
-- term: 堆序性质
-  english: heap-order property
-  origin: property 源自拉丁语 proprietas（特性、所有物）。堆序性质指：对堆中任意节点 $i$（除根外），其父节点的键值 $\leq$（最小堆）或 $\geq$（最大堆）节点 $i$ 的键值。这一性质由 Williams 1964 在 Heapsort 论文中隐式定义，后由 Knuth TAOCP Vol.1 §5.2.3 显式形式化
-- term: 上浮
-  english: sift up / swim / percolate up
-  origin: sift 源自古英语 siftan（筛、过滤），swim 源自古英语 swimman（游泳）。上浮指插入新元素后，将其与父节点比较，不满足堆序性质则交换，直到满足为止。Sedgewick 在《Algorithms》中称其为 swim，CLRS 称为 sift-up，Knuth 称为 percolate-up。三者描述同一过程的不同物理隐喻：元素像被筛子筛上、像鱼游上水面、像水渗滤向上
-- term: 下沉
-  english: sift down / sink / percolate down
-  origin: sink 源自古英语 sincan（沉没）。下沉指删除堆顶后，将末尾元素补到堆顶，然后与较大（最大堆）或较小（最小堆）的子节点比较，不满足堆序性质则交换，直到满足为止。CLRS 与 Sedgewick 分别用 sift-down 与 sink 命名，与 sift-up/swim 形成对称术语对
-- term: Fibonacci 堆
-  english: Fibonacci heap
-  origin: Fibonacci 指 13 世纪意大利数学家 Leonardo Fibonacci（比萨的莱昂纳多），其《计算之书》（Liber Abaci, 1202）引入的 Fibonacci 数列 $F_n = F_{n-1} + F_{n-2}$ 是该堆均摊分析的核心工具。Fredman-Tarjan 1984 在 JACM 论文中命名此结构，因为其节点度数上界用 Fibonacci 数列证明：度数为 $k$ 的节点至少有 $F_{k+2}$ 个后代，故 $k \leq \log_\phi n$（$\phi = (1+\sqrt{5})/2$ 为黄金比）。Fibonacci 堆在 Dijkstra 算法中将时间复杂度从 $O((V+E) \log V)$ 优化到 $O(E + V \log V)$
-- term: 配对堆
-  english: pairing heap
-  origin: 'pairing 源自拉丁语 par（相等、一对）。配对堆由 Fredman-Sedgewick-Sleator-Tarjan 1986 在《Algorithmica》论文《The pairing heap: a new form of self-adjusting heap》中提出，名称源于其 delete-min 操作的核心步骤：将根节点的所有子树两两配对（pair）合并，然后再两两合并剩余子树。配对堆是自调整堆（self-adjusting heap）的代表作，实现简单，均摊性能接近 Fibonacci 堆'
-- term: 索引堆
-  english: index heap / indexed priority queue
-  origin: index 源自拉丁语 index（指示、指针）。索引堆在普通堆基础上维护两个辅助数组：`pq[i]` 表示堆中第 $i$ 个位置存储的元素索引，`qp[j]` 表示元素 $j$ 在堆中的位置。索引堆支持 $O(\log n)$ 修改指定位置元素的键值，是 Dijkstra、Prim 等需要 decrease-key 操作的算法的关键优化。Sedgewick《Algorithms》第 4 版 §2.4 给出完整实现
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/007-TheUbiquitousBTree'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
 ---
+
 
 
 ## 1. 概述与学习目标

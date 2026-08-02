@@ -1,57 +1,19 @@
 ---
 order: 410
 title: 签名提交与安全实践
-module: git
-category: '003-git'
+module: 'git'
+category: 工具链
 difficulty: advanced
-description: 用 GPG 或 SSH 给提交签名，让提交带"防伪认证"；同时给出团队仓库的权限与工作流安全基线。
+description: '用 GPG 或 SSH 给提交签名，让提交带"防伪认证"；同时给出团队仓库的权限与工作流安全基线。'
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'git/008-SHA1IntegrityCheck'
   - 'git/005-GitRemoteRepoOperation'
 prerequisites:
   - 'git/008-SHA1IntegrityCheck'
-quiz:
-  - type: choice
-    question: 签名提交解决的核心问题是什么？
-    options:
-      - 加密提交内容，别人看不到
-      - 证明提交确实来自声明作者，防冒充
-      - 让提交历史无法被修改
-      - 让推送速度更快
-    answer: 1
-    explanation: 签名是身份认证，不是内容加密；提交内容本身仍然是公开的。
-  - type: fill
-    question: git commit 加____参数可以对本条提交签名。
-    answer: -S
-    hint: 如 git commit -S -m "message"。
-references:
-  - type: documentation
-    authors:
-      - Git Project
-    year: 2026
-    title: Pro Git：签署工作
-    venue: git-scm.com
-    url: https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E7%AD%BE%E7%BD%B2%E5%B7%A5%E4%BD%9C
-    accessedDate: '2026-08-02'
-  - type: documentation
-    authors:
-      - GitHub Docs
-    year: 2026
-    title: 关于提交签名验证
-    venue: docs.github.com
-    url: https://docs.github.com/zh/authentication/managing-commit-signature-verification/about-commit-signature-verification
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 签名
-    english: Signature
-    origin: 源自书面签名，数字签名用私钥"盖印"，公钥验证，具有不可抵赖性。
-estimatedReadingTime: 7
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

@@ -1,20 +1,21 @@
 ---
 order: 10
-title: 'Kotlin 概述与环境配置'
-module: kotlin
-category: Kotlin
+title: Kotlin 概述与环境配置
+module: 'kotlin'
+category: 后端技术
 difficulty: beginner
-description: 'Kotlin 语言概述、发展历史、设计哲学、与 Java 的关系、多平台支持、环境搭建与第一批可运行程序。对标 MIT 6.005、Stanford CS193P、CMU 15-214 教学水准。'
+description: Kotlin 语言概述、发展历史、设计哲学、与 Java 的关系、多平台支持、环境搭建与第一批可运行程序。对标 MIT 6.005、Stanford CS193P、CMU 15-214 教学水准。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/基础语法
-  - kotlin/函数与Lambda
-  - kotlin/类与对象
-  - kotlin/协程基础
-  - java/概述与开发环境
+  - 'kotlin/002-KotlinBasicSyntax'
+  - 'kotlin/003-KotlinFunctionAndLambda'
+  - 'kotlin/004-KotlinClassObject'
+  - 'kotlin/016-CoroutineBasics'
+  - 'java/001-JavaOverviewDevEnv'
 prerequisites: []
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 问题背景：Java 的痛点与 JetBrains 的痛点

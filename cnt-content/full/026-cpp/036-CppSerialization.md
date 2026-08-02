@@ -1,20 +1,20 @@
 ---
-order: 76
+order: 360
 title: C++序列化
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: JSON与二进制序列化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/C++网络编程
-  - cpp/C++正则表达式
-  - cpp/C++与Python交互
-  - cpp/C++23与C++26新特性
-prerequisites:
-  - cpp/概述与环境配置
+  - 'cpp/025-CppNetworkProgramming'
+  - 'cpp/030-CppRegex'
+  - 'cpp/031-CppPythonInteraction'
+  - 'cpp/034-Cpp23Cpp26NewFeatures'
+prerequisites: []
 ---
+
 ## 概述
 
 序列化是将内存中的数据结构转换为可存储或传输的格式（如字符串或字节流）的过程，反序列化则是其逆过程。C++ 标准库目前没有内置的序列化支持，但社区提供了多种优秀的第三方库，如 nlohmann/json（JSON 序列化）、protobuf（二进制序列化）、cereal（轻量级序列化）等。

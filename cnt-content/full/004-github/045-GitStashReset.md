@@ -1,9 +1,8 @@
 ---
 order: 450
 title: GitHub 暂存与回退
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 以寄存柜与时光机类比驱动讲解 git stash 暂存系列与 git reset/revert/restore/clean 回退系列命令，覆盖软/混合/硬回退三档选择与撤销安全原则，适合零基础学习者。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 ## 开篇：像寄存柜与时光机一样管理改动
 
 在大型商场里，你拎着大包小包没法逛街。这时你走到**寄存柜**前，把东西暂存进去、拿走钥匙牌，轻装继续逛；逛完凭牌取回，东西原封不动。

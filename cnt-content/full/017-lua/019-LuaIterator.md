@@ -1,31 +1,25 @@
 ---
-order: 62
+order: 190
 title: Lua迭代器
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
-description: 'Lua 迭代器深度解析:泛型 for 语义、无状态与有状态迭代器、协程迭代器、迭代器协议形式化、迭代器组合、惰性序列、跨语言对比及工程实践'
+description: Lua 迭代器深度解析:泛型 for 语义、无状态与有状态迭代器、协程迭代器、迭代器协议形式化、迭代器组合、惰性序列、跨语言对比及工程实践
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - lua
-  - iterator
-  - generator
-  - functional
-  - coroutine
-  - intermediate
 related:
-  - lua/函数与闭包
-  - lua/协程详解
-  - lua/协程与异步
-  - lua/元表与元方法详解
-  - lua/数据类型与Table详解
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/008-CoroutineDetailed'
+  - 'lua/023-CoroutineAsync'
+  - 'lua/025-MetatableMetamethodDetailed'
+  - 'lua/003-DataTypeTableDetailed'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/函数与闭包
-  - lua/程序结构与基本语法
-  - lua/数据类型与Table详解
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/002-ProgramStructureBasicSyntax'
+  - 'lua/003-DataTypeTableDetailed'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 迭代抽象的范式演化

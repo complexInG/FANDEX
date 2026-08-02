@@ -1,19 +1,20 @@
 ---
-order: 6
+order: 60
 title: 脚本调试与严格模式
-module: shell
-category: Shell
+module: 'shell'
+category: 工具链
 difficulty: intermediate
-description: '脚本调试与严格模式：set -euo pipefail、trap 清理、bash -x、shellcheck 与 shfmt'
+description: 脚本调试与严格模式：set -euo pipefail、trap 清理、bash -x、shellcheck 与 shfmt
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - shell/007-FunctionsArguments
-  - shell/008-PracticalScripts
+  - 'shell/007-FunctionsArguments'
+  - 'shell/008-PracticalScripts'
 prerequisites:
-  - shell/005-EnvVariablesConfig
-  - shell/001-ShellBasics
+  - 'shell/005-EnvVariablesConfig'
+  - 'shell/001-ShellBasics'
 ---
+
 
 ## 1. 从"自动驾驶的刹车"说起
 

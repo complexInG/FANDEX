@@ -1,21 +1,19 @@
 ---
-order: 150
-tags:
-  - javascript
-  - project
+order: 500
+title: JavaScript 项目示例：待办事项应用
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
-title: 'JavaScript 项目示例：待办事项应用'
-module: javascript
-category: 'JS Practice'
-description: '综合运用 DOM 操作、事件处理与本地存储的待办事项应用。'
-related:
-  - javascript/典型项目实战
-  - javascript/Node.js高级特性与性能优化
-  - javascript/理论知识点
-prerequisites:
-  - javascript/语法速查
+description: 综合运用 DOM 操作、事件处理与本地存储的待办事项应用。
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'javascript/048-TypicalProjectPractice'
+  - 'javascript/049-NodeJsAdvancedFeaturePerformanceOptimization'
+  - 'javascript/051-JavaScriptTheory'
+prerequisites: []
 ---
+
 
 | 完成任务   | 点击切换完成状态，视觉反馈   |
 | ---------- | ---------------------------- |

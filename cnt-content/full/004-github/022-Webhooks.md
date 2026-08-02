@@ -1,20 +1,18 @@
 ---
-order: 64
+order: 220
 title: Webhooks
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: intermediate
-description: 'GitHub Webhooks详解：按事件→Webhook→Payload→响应完整流程讲解订阅、投递、签名验证与服务器实现。'
+description: GitHub Webhooks详解：按事件→Webhook→Payload→响应完整流程讲解订阅、投递、签名验证与服务器实现。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/命令行工具
-  - 'github/REST与GraphQL-API'
-  - github/包管理服务
-  - github/在线开发环境
+  - 'github/021-RESTGraphQLAPI'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 先来一个生活场景：订杂志与门铃
 

@@ -1,19 +1,19 @@
 ---
-order: 3
+order: 30
 title: 集群与高可用
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: advanced
-description: '主从复制、哨兵模式自动故障转移、Redis Cluster无中心分片、集群代理、Redis Flex混合存储、Redis for AI套件。'
+description: 主从复制、哨兵模式自动故障转移、Redis Cluster无中心分片、集群代理、Redis Flex混合存储、Redis for AI套件。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/概述与核心数据结构
-  - redis/持久化与模块
-  - redis/缓存策略与高级特性
-  - redis/语法速查
+  - 'redis/001-OverviewCoreDataStructure'
+  - 'redis/002-PersistenceModule'
+  - 'redis/004-CacheStrategyAdvancedFeature'
 prerequisites: []
 ---
+
 ## 1. 主从复制
 
 ### 1.1 全量同步

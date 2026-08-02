@@ -1,20 +1,20 @@
 ---
-order: 60
+order: 190
 title: 拖拽API
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
 description: drag/drop
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/progress与meter
-  - html5/WebComponents与PWA开发
-  - html5/地理位置定位
-  - html5/Web工作线程
+  - 'html5/017-ProgressMeter'
+  - 'html5/018-WebComponentsPWADevelopment'
+  - 'html5/020-Geolocation'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 拖拽 API 概述
 
 HTML5 原生拖拽 API 允许用户通过拖拽操作在页面内或页面间移动元素和数据。

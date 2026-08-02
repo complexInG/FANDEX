@@ -1,20 +1,18 @@
 ---
-order: 57
+order: 120
 title: JUnit5
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: 'JUnit 5测试框架：注解、断言、参数化测试、扩展模型与最佳实践详解。'
+description: JUnit 5测试框架：注解、断言、参数化测试、扩展模型与最佳实践详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/Web自动化测试'
-  - 'software-testing/Python测试框架'
-  - 'software-testing/API自动化测试'
-  - 'software-testing/性能测试工具'
+  - 'software-testing/013-APIAutomationTest'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 ## 1. JUnit 5 概述
 
 ### 1.1 架构

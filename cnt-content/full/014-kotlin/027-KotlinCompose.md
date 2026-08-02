@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 270
 title: Kotlin与Compose
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'Jetpack Compose桌面/移动'
+description: Jetpack Compose桌面/移动
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin作用域函数
-  - kotlin/Kotlin类型系统
-  - kotlin/Kotlin与Gradle
-  - kotlin/Kotlin与Arrow
+  - 'kotlin/018-KotlinScopeFunction'
+  - 'kotlin/026-KotlinTypeSystem'
+  - 'kotlin/035-KotlinGradle'
+  - 'kotlin/028-KotlinArrow'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ﻿# Kotlin kotlinc 编译命令速查手册
 

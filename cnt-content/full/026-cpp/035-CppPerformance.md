@@ -1,24 +1,25 @@
 ---
-order: 75
+order: 350
 title: C++性能优化
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: C++性能优化的理论、方法、工具与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/C++测试框架
-  - cpp/C++与Python交互
-  - cpp/C++序列化
-  - cpp/C++网络编程
-  - cpp/内存序与无锁编程
-  - cpp/C++内存模型
+  - 'cpp/032-CppTestFramework'
+  - 'cpp/031-CppPythonInteraction'
+  - 'cpp/036-CppSerialization'
+  - 'cpp/025-CppNetworkProgramming'
+  - 'cpp/063-MemoryOrderLockFree'
+  - 'cpp/027-CppMemoryModel'
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/内存管理
-  - cpp/智能指针详解
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/039-CppMemoryManagement'
+  - 'cpp/007-N4089DeletingSafeBoolInFavorOfExplicitBool'
 ---
+
 ## 历史动机与背景
 
 性能优化是 C++ 区别于其他高级语言的核心价值主张之一。回溯历史,C++ 性能优化的发展可被划分为若干阶段,每一阶段都对应着硬件与软件范式的变迁。

@@ -1,20 +1,21 @@
 ---
-order: 68
+order: 270
 title: 滚动捕捉
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-description: 'scroll-snap'
+description: scroll-snap
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/层叠层
-  - css/逻辑属性
-  - css/Sass预处理器
-  - css/Less与Stylus
+  - 'css/025-CascadeLayer'
+  - 'css/026-LogicalProperty'
+  - 'css/028-Sass'
+  - 'css/029-LessStylus'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. scroll-snap 概述
 

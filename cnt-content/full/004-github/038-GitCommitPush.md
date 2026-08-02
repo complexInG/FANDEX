@@ -1,16 +1,16 @@
 ---
 order: 380
 title: GitHub 提交与推送
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
-description: 按"工作区→暂存区→本地仓库→远程"四步流程讲解 git add、git commit、git push，覆盖提交信息规范与推送追踪关系，适合零基础学习者。
+description: '按"工作区→暂存区→本地仓库→远程"四步流程讲解 git add、git commit、git push，覆盖提交信息规范与推送追踪关系，适合零基础学习者。'
 author: fanquanpp
 updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 ## 开篇：像盖章存档一样提交代码
 
 想象你是单位的档案管理员。领导交给你一份重要文件，你要做三件事才能让它"正式生效"：

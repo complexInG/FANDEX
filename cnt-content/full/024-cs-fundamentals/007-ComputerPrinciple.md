@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 70
 title: 计算机组成原理
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 计算机组成原理：指令系统、CPU数据通路、控制器设计、存储体系与I/O系统
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/数字逻辑'
-  - 'cs-fundamentals/离散数学'
-  - 'cs-fundamentals/数据表示与运算'
-  - 'cs-fundamentals/指令流水线'
+  - 'cs-fundamentals/005-DigitalLogic'
+  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/008-DataRepresentationOperation'
+  - 'cs-fundamentals/009-DirectivePipeline'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 计算机系统层次结构
 

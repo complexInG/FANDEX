@@ -1,20 +1,21 @@
 ---
-order: 61
+order: 230
 title: Kotlin序列化
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: kotlinx.serialization 的核心原理、工程实践与性能优化
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/Kotlin内联类
-  - kotlin/Kotlin契约
-  - kotlin/Kotlin集合操作
-  - kotlin/Kotlin作用域函数
+  - 'kotlin/020-KotlinInlineClass'
+  - 'kotlin/021-KotlinContractContracts'
+  - 'kotlin/019-KotlinCollectionOperation'
+  - 'kotlin/018-KotlinScopeFunction'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 ## 历史动机与背景
 
 ### 1. 序列化的本质问题

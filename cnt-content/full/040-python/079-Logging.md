@@ -1,9 +1,8 @@
 ---
 order: 790
 title: Python logging 日志配置
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python logging 日志配置 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 基础配置
 
 **基本写法：快速配置**

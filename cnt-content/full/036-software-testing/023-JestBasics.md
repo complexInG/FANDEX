@@ -1,9 +1,8 @@
 ---
 order: 230
 title: Jest 基础 API
-module: software-testing
-
-category: '036-software-testing'
+module: 'software-testing'
+category: 云与基础设施
 difficulty: beginner
 description: Jest 基础 API 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## describe 测试分组
 
 **基本写法：将相关测试用例分组**

@@ -1,121 +1,24 @@
 ---
-order: 67
+order: 240
 title: Promise构造器
-module: javascript
-category: JavaScript
-tags:
-- JavaScript
-- Promise
-- Async
-- PromiseA+
-- Microtask
-- ES2024
-- 异步编程
-- 状态机
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: 深入解析 Promise 构造器的形式化语义、Promise A+ 规范、状态机模型、thenable 鸭子类型、微任务调度、并发原语(all/race/allSettled/any)、Promise.withResolvers 等高级主题,涵盖 MIT 6.S081 / Stanford CS107 级别的工程实践
 author: fanquanpp
 updated: '2026-07-20'
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
 related:
-- javascript/时间API
-- javascript/迭代器帮助器
-- javascript/Records与Tuples
-- javascript/对象与数组
-- javascript/生成器函数
-- javascript/事件循环
-- javascript/网络请求API
+  - 'javascript/023-IteratorHelper'
+  - 'javascript/025-RecordsTuples'
+  - 'javascript/026-ObjectArray'
+  - 'javascript/009-CoroutinesInJavaScript'
+  - 'javascript/012-EventLoop'
+  - 'javascript/019-ImageOptimization'
 prerequisites:
-- javascript/语法速查
-- javascript/事件循环
-- javascript/高阶函数
-references:
-- type: standard
-  authors:
-  - Promise/A+ Working Group
-  year: 2014
-  title: Promises/A+ Specification
-  venue: Open Standard
-  url: https://promisesaplus.com/
-- type: standard
-  authors:
-  - ECMA International
-  year: 2025
-  title: ECMAScript 2025 Language Specification (ECMA-262, 16th Edition) - Promise Objects
-  venue: ECMA Standard
-  doi: 10.17445/ECMA-262
-  url: https://tc39.es/ecma262/#sec-promise-objects
-- type: journal
-  authors:
-  - Mark S. Miller
-  - Tom Van Cutsem
-  - Bill Frantz
-  year: 2013
-  title: 'Robust Composition: Towards a Principled Approach to the Promise Abstraction'
-  venue: ECOOP 2013 - Object-Oriented Programming
-  doi: 10.1007/978-3-642-39038-8_8
-- type: journal
-  authors:
-  - Claus Brabrand
-  - Andrzej Wasowski
-  - Andrzej Wąsowski
-  year: 2016
-  title: Programming the Web with High-Level Languages
-  venue: ACM SIGPLAN International Conference on Systems, Programming, Languages and Applications
-  url: https://www.brics.dk/~wasowski/papers/brabrand2016spl.pdf
-- type: journal
-  authors:
-  - Brian Goetz
-  year: 2006
-  title: 'Java Concurrency in Practice - Chapter 5: Building Blocks'
-  venue: Addison-Wesley Professional
-  url: https://jcip.net/
-- type: journal
-  authors:
-  - Domenic Denicola
-  year: 2014
-  title: You're Missing the Point of Promises
-  venue: GitHub Gist
-  url: https://gist.github.com/domenic/3889970
-- type: journal
-  authors:
-  - Kris Kowal
-  year: 2009
-  title: CommonJS Promises/A
-  venue: CommonJS Wiki
-  url: https://wiki.commonjs.org/wiki/Promises/A
-- type: book
-  authors:
-  - Dr. Axel Rauschmayer
-  year: 2014
-  title: 'Exploring ES6: Promises for asynchronous programming'
-  venue: Leanpub
-  url: https://exploringjs.com/es6/ch_promises.html
-- type: book
-  authors:
-  - Kyle Simpson
-  year: 2016
-  title: 'You Don''t Know JS: Async & Performance'
-  venue: O'Reilly Media
-  url: https://github.com/getify/You-Dont-Know-JS/blob/1st-ed/async%20%26%20performance/README.md
-etymology:
-- term: Promise
-  english: Promise
-  origin: 源自拉丁语 "promissum"(承诺、应许),计算机科学中指"对未来值的承诺"。Erik Meijer 等人在 Rx.NET 中使用此概念,JavaScript 社区由 Kris Kowal 的 Q 库普及。
-- term: Thenable
-  english: Thenable
-  origin: 由 "then" + "-able" 构成,意为"具有 then 方法的对象"。这是 Promise A+ 规范定义的鸭子类型,任何含 then 方法的对象都可作为 Promise 的解析值。
-- term: Microtask
-  english: Microtask
-  origin: '"micro-" 希腊语前缀意为"微小",task 即任务。微任务是 HTML 与 ECMAScript 规范定义的延迟任务,优先级高于宏任务,在当前事件循环结束前执行。'
-- term: Resolver
-  english: Resolver
-  origin: 源自拉丁语 "resolvere"(解开、解决),Promise 语境下指"将 pending 状态转为 fulfilled 的函数"。Promise.withResolvers 将 resolve/reject 暴露给构造器外部使用。
-- term: Rejection
-  english: Rejection
-  origin: 源自拉丁语 "rejicere"(扔回、拒绝),Promise 中指"将 pending 状态转为 rejected,表示异步操作失败"。
+  - 'javascript/012-EventLoop'
+  - 'javascript/006-HigherOrderFunction'
 ---
+
 ## 0. 学习导览
 
 ### 0.1 学习路径

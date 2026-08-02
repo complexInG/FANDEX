@@ -1,9 +1,8 @@
 ---
 order: 350
 title: 云计算 AWS CloudFormation
-module: cloud-computing
-
-category: '034-cloud-computing'
+module: 'cloud-computing'
+category: 云与基础设施
 difficulty: beginner
 description: 云计算 AWS CloudFormation 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 模板基础
 
 **基本写法：YAML 模板结构**

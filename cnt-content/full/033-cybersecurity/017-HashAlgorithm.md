@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 170
 title: 哈希算法
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: '哈希算法原理：SHA-1/SHA-2/SHA-3/MD5/Bcrypt 等算法详解与应用场景。'
+description: 哈希算法原理：SHA-1/SHA-2/SHA-3/MD5/Bcrypt 等算法详解与应用场景。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/应急响应
-  - cybersecurity/非对称加密
-  - cybersecurity/安全开发
-  - cybersecurity/合规与审计
+  - 'cybersecurity/015-IncidentResponse'
+  - 'cybersecurity/016-AsymmetricEncryption'
+  - 'cybersecurity/018-SecureDevelopment'
+  - 'cybersecurity/019-ComplianceAudit'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. 哈希算法基础
 

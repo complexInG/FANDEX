@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 140
 title: 过滤条件
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: beginner
-description: 'SQL过滤条件：比较运算符、IN、BETWEEN、LIKE、IS NULL的语法、模式匹配与性能优化'
+description: SQL过滤条件：比较运算符、IN、BETWEEN、LIKE、IS NULL的语法、模式匹配与性能优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/约束
-  - sql/SELECT执行顺序
-  - sql/聚合函数
-  - 'sql/GROUP-BY与分组集'
+  - 'sql/012-Constraint'
+  - 'sql/013-SelectExecutionOrder'
+  - 'sql/015-AggregateFunction'
+  - 'sql/016-GROUPBYGroupingSet'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. WHERE 子句概述
 
 WHERE 子句用于过滤 FROM/JION 结果集中的行，只保留满足条件的行。它是 SQL 查询中最基本也最重要的过滤机制。

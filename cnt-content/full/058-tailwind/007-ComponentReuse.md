@@ -1,18 +1,19 @@
 ---
-order: 7
+order: 70
 title: Tailwind CSS 组件复用
-module: tailwind
-category: Tailwind CSS
+module: 'tailwind'
+category: 前端技术
 difficulty: intermediate
-description: 'Tailwind CSS 组件复用方案对比：纯工具类组件封装 / @apply 提取 / CSS 变量组合，配 cva + clsx + tailwind-merge 工程化实践，附适用场景决策表'
+description: Tailwind CSS 组件复用方案对比：纯工具类组件封装 / @apply 提取 / CSS 变量组合，配 cva + clsx + tailwind-merge 工程化实践，附适用场景决策表
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - tailwind/003-UtilityCore
-  - tailwind/005-ThemeCustomization
+  - 'tailwind/003-UtilityCore'
+  - 'tailwind/005-ThemeCustomization'
 prerequisites:
-  - tailwind/003-UtilityCore
+  - 'tailwind/003-UtilityCore'
 ---
+
 
 ## 0. 先打个比方：从"预制菜"到"中央厨房"
 

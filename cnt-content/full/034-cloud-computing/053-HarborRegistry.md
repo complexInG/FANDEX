@@ -1,9 +1,8 @@
 ---
 order: 530
 title: Harbor 私有镜像仓库命令
-module: cloud-computing
-
-category: '034-cloud-computing'
+module: 'cloud-computing'
+category: 云与基础设施
 difficulty: beginner
 description: Harbor 私有镜像仓库命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 安装与部署
 
 **基本写法：下载 Harbor 安装包**

@@ -1,20 +1,20 @@
 ---
-order: 51
+order: 90
 title: Python与虚拟环境
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: venv与包管理
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - python/Python与Jupyter
-  - python/Python与打包发布
-  - python/Python与代码质量
-  - python/Python与Docker
-prerequisites:
-  - python/语法速查
+  - 'python/042-PythonJupyter'
+  - 'python/041-ASurveyOfPythonPackagingPastPresentAndFuture'
+  - 'python/044-PythonCodeQuality'
+  - 'python/019-PythonDocker'
+prerequisites: []
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 前史：全局 `site-packages` 的混沌年代（1991–2007）

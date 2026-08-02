@@ -1,19 +1,20 @@
 ---
-order: 13
+order: 40
 title: 条件概率
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 从体检报告与已知部分信息的场景出发，讲解条件概率的定义与性质、乘法公式、缩小样本空间法等核心内容，帮助零基础读者建立"概率随信息更新"的思维方式。
+description: '从体检报告与已知部分信息的场景出发，讲解条件概率的定义与性质、乘法公式、缩小样本空间法等核心内容，帮助零基础读者建立"概率随信息更新"的思维方式。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/古典概型'
-  - 'probability-statistics/几何概型'
-  - 'probability-statistics/贝叶斯公式'
-  - 'probability-statistics/事件的独立性'
+  - 'probability-statistics/002-ClassicalProbability'
+  - 'probability-statistics/003-GeometricProbability'
+  - 'probability-statistics/005-BayesFormula'
+  - 'probability-statistics/006-EventIndependence'
 prerequisites: []
 ---
+
 
 ## 0. 体检报告上的"已知信息"
 

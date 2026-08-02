@@ -1,19 +1,20 @@
 ---
-order: 9
-title: 'C# 测试与工程化'
-module: csharp
-category: 'C#'
+order: 90
+title: C# 测试与工程化
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'xUnit/NUnit/Moq、集成测试、BenchmarkDotNet、Source Generator、Roslyn Analyzer、CI/CD、代码规范'
+description: xUnit/NUnit/Moq、集成测试、BenchmarkDotNet、Source Generator、Roslyn Analyzer、CI/CD、代码规范
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/高级特性
-  - csharp/NET平台与生态
-  - csharp/游戏开发与Unity
-  - csharp/LINQ深度解析
+  - 'csharp/007-CAdvancedFeature'
+  - 'csharp/008-CNET'
+  - 'csharp/010-CGameDevUnity'
+  - 'csharp/011-LINQDeep'
 prerequisites: []
 ---
+
 
 
 ## 1. 历史动机与演进脉络

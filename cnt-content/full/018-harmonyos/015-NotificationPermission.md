@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 150
 title: 通知与权限
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 通知系统与权限管理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/动画系统
-  - harmonyos/手势与交互
-  - harmonyos/多媒体能力
-  - harmonyos/传感器与位置
+  - 'harmonyos/013-AnimationSystem'
+  - 'harmonyos/014-GestureInteraction'
+  - 'harmonyos/016-MultimediaCapability'
+  - 'harmonyos/017-SensorLocation'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ### 进度通知
 
 ```typescript

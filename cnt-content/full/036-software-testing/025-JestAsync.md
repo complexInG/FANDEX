@@ -1,9 +1,8 @@
 ---
 order: 250
 title: Jest 异步测试
-module: software-testing
-
-category: '036-software-testing'
+module: 'software-testing'
+category: 云与基础设施
 difficulty: beginner
 description: Jest 异步测试 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## async / await 测试
 
 **换行写法：使用 async/await 测试异步**

@@ -1,9 +1,8 @@
 ---
 order: 900
 title: Python array 与 bisect
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python array 与 bisect 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## array 数组
 
 **基本写法：创建数组**

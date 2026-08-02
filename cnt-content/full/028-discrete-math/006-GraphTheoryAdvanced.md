@@ -1,20 +1,21 @@
 ---
-order: 6
+order: 60
 title: 图论进阶
 module: 'discrete-math'
-category: 离散数学
+category: 数学
 difficulty: advanced
 description: 平面图与Euler公式、图的着色、匹配与覆盖、网络流、最短路径算法、最小生成树、拓扑排序。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'discrete-math/函数与基数'
-  - 'discrete-math/图论基础'
-  - 'discrete-math/代数系统'
-  - 'discrete-math/组合数学'
+  - 'discrete-math/004-FunctionAndNumber'
+  - 'discrete-math/005-GraphTheoryBasics'
+  - 'discrete-math/007-AlgebraicSystem'
+  - 'discrete-math/008-Combinatorics'
 prerequisites:
-  - 'discrete-math/图论基础'
+  - 'discrete-math/005-GraphTheoryBasics'
 ---
+
 
 ## 1. 从"地图上色"说起
 

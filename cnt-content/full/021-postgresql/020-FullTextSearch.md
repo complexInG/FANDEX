@@ -1,20 +1,20 @@
 ---
-order: 65
+order: 200
 title: 全文检索
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL全文检索：tsvector、tsquery、GIN索引、排名与多语言支持
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/MERGE语句增强
-  - postgresql/JSON表格函数
-  - postgresql/地理空间对象
-  - postgresql/存储过程与函数
+  - 'postgresql/018-MERGEStatementEnhancement'
+  - 'postgresql/021-GeoSpatialObject'
+  - 'postgresql/022-StoredProcedureAndFunction'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 ## 1. 全文检索概述
 
 PostgreSQL 内置全文检索功能，基于 tsvector（文档向量）和 tsquery（查询向量）。

@@ -1,20 +1,20 @@
 ---
-order: 66
+order: 210
 title: Python与深度学习
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: PyTorch与TensorFlow
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - python/Python与GraphQL
-  - python/Python与机器学习
-  - python/Python与NLP
-  - python/Python与计算机视觉
-prerequisites:
-  - python/语法速查
+  - 'python/043-PythonGraphQL'
+  - 'python/020-PythonMachineLearning'
+  - 'python/022-PythonAndNLP'
+  - 'python/023-PythonComputerVision'
+prerequisites: []
 ---
+
 
 
 # Python 与深度学习：从感知机到 Transformer 的工程化全景

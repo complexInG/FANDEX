@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 200
 title: 云成本优化
 module: 'cloud-computing'
-category: 云计算
+category: 云与基础设施
 difficulty: advanced
 description: 云成本管理框架、资源优化策略、预留与Spot实例、存储成本优化、网络成本优化、FinOps实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/云安全服务'
-  - 'cloud-computing/Helm包管理'
-  - 'cloud-computing/12要素应用'
-  - 'cloud-computing/微服务架构'
+  - 'cloud-computing/018-CloudSecurityService'
+  - 'cloud-computing/019-HelmPackageManagement'
+  - 'cloud-computing/021-TwelveFactorApp'
+  - 'cloud-computing/022-MicroserviceArchitecture'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 云成本管理框架
 

@@ -1,20 +1,21 @@
 ---
-order: 43
+order: 70
 title: 函数与模块化
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 函数定义与参数传递、模块化编程、文件操作、异常处理与调试基础。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/数的表示与编码'
-  - 'getting-started/程序设计基础'
-  - 'getting-started/学习路线规划'
-  - 'getting-started/环境变量与PATH'
+  - 'getting-started/005-NumberRepresentationEncoding'
+  - 'getting-started/006-ProgrammingBasics'
+  - 'getting-started/008-LearningPathPlanning'
+  - 'getting-started/009-EnvVarPath'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 函数定义
 

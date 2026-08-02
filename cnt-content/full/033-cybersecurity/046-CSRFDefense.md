@@ -1,9 +1,8 @@
 ---
 order: 460
 title: Cybersecurity CSRF 防御命令与配置
-module: cybersecurity
-
-category: '033-cybersecurity'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: Cybersecurity CSRF 防御命令与配置 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## CSRF Token 生成与校验
 
 **基本写法:生成随机 CSRF Token**

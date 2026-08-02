@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 100
 title: 定位详解
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: static、relative、absolute、fixed、sticky
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/样式表引入方式
-  - css/margin合并与塌陷
-  - css/浮动与清除
-  - css/层叠上下文
+  - 'css/008-StyleSheetImportMethod'
+  - 'css/009-MarginCollapse'
+  - 'css/011-FloatClear'
+  - 'css/012-StackingContext'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 ## 1. position 属性
 
 | 值         | 定位类型 | 脱离文档流 | 参照物       |

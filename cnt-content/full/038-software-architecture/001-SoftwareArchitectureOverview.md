@@ -2,16 +2,17 @@
 order: 10
 title: 软件架构概述
 module: 'software-architecture'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: beginner
 description: 软件架构定义、架构师角色、架构决策与架构文档。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-architecture/分层架构'
-  - 'software-architecture/微服务架构'
+  - 'software-architecture/002-LayeredArchitecture'
+  - 'software-architecture/003-MicroserviceArchitecture'
 prerequisites: []
 ---
+
 
 ## 1. 从"盖楼"说起：什么是软件架构
 

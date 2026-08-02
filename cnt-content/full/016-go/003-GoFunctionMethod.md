@@ -1,19 +1,20 @@
 ---
-order: 3
-title: 'Go 函数与方法'
-module: go
-category: Go
+order: 30
+title: Go 函数与方法
+module: 'go'
+category: 后端技术
 difficulty: beginner
-description: '函数定义、多返回值、命名返回值、可变参数、init 函数、方法与接收者、接口与隐式实现。'
+description: 函数定义、多返回值、命名返回值、可变参数、init 函数、方法与接收者、接口与隐式实现。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/概述与环境配置
-  - go/基础语法
-  - go/数据结构
-  - go/接口与组合
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/002-GoBasicSyntax'
+  - 'go/004-GoDataStructure'
+  - 'go/005-GoInterfaceComposition'
 prerequisites: []
 ---
+
 ## 1. 函数定义
 
 ### 1.1 基本语法

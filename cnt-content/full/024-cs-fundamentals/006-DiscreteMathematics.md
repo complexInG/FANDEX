@@ -1,25 +1,21 @@
 ---
+order: 60
 title: 离散数学
 module: 'cs-fundamentals'
-category: 'Computer Science / Discrete Mathematics'
+category: 计算机科学
+difficulty: intermediate
 description: 离散数学核心：逻辑与证明、集合与关系、图论、组合计数、代数结构、形式语言与自动机。
 author: fanquanpp
-order: 50
-tags:
-  - 'cs-fundamentals'
-  - 'computer-science---discrete-mathematics'
-  - algorithm
-  - math
-difficulty: intermediate
-related:
-  - 'cs-fundamentals/计算机网络'
-  - 'cs-fundamentals/数字逻辑'
-  - 'cs-fundamentals/计算机组成原理'
-  - 'cs-fundamentals/数据表示与运算'
-prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
 updated: '2026-08-01'
+related:
+  - 'cs-fundamentals/004-ComputerNetwork'
+  - 'cs-fundamentals/005-DigitalLogic'
+  - 'cs-fundamentals/007-ComputerPrinciple'
+  - 'cs-fundamentals/008-DataRepresentationOperation'
+prerequisites:
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 逻辑与证明
 

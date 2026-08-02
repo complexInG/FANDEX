@@ -1,22 +1,21 @@
 ---
-order: 70
-tags:
-  - cpp
+order: 260
+title: C++ 面向对象进阶
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-title: 'C++ 面向对象进阶'
-module: cpp
-category: 'C++ Basics'
-description: '多重继承、虚继承、RTTI 与面向对象设计原则。'
+description: 多重继承、虚继承、RTTI 与面向对象设计原则。
 author: Anonymous
-related:
-  - cpp/命名空间与链接
-  - cpp/设计模式与C++
-  - cpp/C++内存模型
-  - cpp/C++工具链
-prerequisites:
-  - cpp/概述与现代标准
 updated: '2026-08-01'
+related:
+  - 'cpp/024-NamespaceLinkage'
+  - 'cpp/012-DesignPatternCpp'
+  - 'cpp/027-CppMemoryModel'
+  - 'cpp/029-CppToolchain'
+prerequisites:
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 构造函数与析构函数
 
 ### 1.1 构造函数

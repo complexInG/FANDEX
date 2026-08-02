@@ -1,19 +1,20 @@
 ---
-order: 34
+order: 160
 title: 和的分布与极值分布
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: advanced
 description: 随机变量和的分布（离散卷积、连续卷积公式）、差与商的分布、最大值与最小值分布、系统可靠性应用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/条件分布'
-  - 'probability-statistics/随机变量的独立性'
-  - 'probability-statistics/数学期望'
+  - 'probability-statistics/016-ConditionalDistribution'
+  - 'probability-statistics/017-RandomVariableIndependence'
+  - 'probability-statistics/020-MathematicalExpectation'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：合股开店，利润相加、取最值
 

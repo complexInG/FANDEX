@@ -1,20 +1,21 @@
 ---
-order: 86
+order: 440
 title: Java模块系统
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: JPMS模块系统
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/Java记录类
-  - java/Java文本块
-  - java/Java与数据库连接
-  - java/Java新特性与生态
+  - 'java/042-JavaRecordClass'
+  - 'java/043-JavaTextBlock'
+  - 'java/045-JavaDatabaseConnection'
+  - 'java/046-JavaNewFeaturesEcosystem'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 概述
 
 Java 模块系统（Java Platform Module System，简称 JPMS）是 Java 9 引入的重要特性，它为 Java 提供了原生的模块化支持。在模块系统出现之前，Java 只有包（package）这一层组织结构，无法控制包之间的访问权限，也无法声明依赖关系。模块系统解决了这些问题，让大型应用的代码组织更清晰、依赖管理更明确。

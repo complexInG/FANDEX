@@ -1,17 +1,18 @@
 ---
-order: 1
+order: 10
 title: 概述与安装配置
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: beginner
-description: 'PostgreSQL 17概述、安装与配置、pg_hba.conf认证、postgresql.conf核心参数、连接管理、角色与权限。'
+description: PostgreSQL 17概述、安装与配置、pg_hba.conf认证、postgresql.conf核心参数、连接管理、角色与权限。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/事务与并发控制
-  - postgresql/索引与查询优化
+  - 'postgresql/002-TransactionConcurrencyControl'
+  - 'postgresql/003-IndexQueryOptimization'
 prerequisites: []
 ---
+
 ## 1. PostgreSQL 17 概述
 
 ### 1.1 PostgreSQL 简介

@@ -1,17 +1,18 @@
 ---
-order: 1
+order: 10
 title: 测试基础与方法
 module: 'software-testing'
-category: 软件测试
+category: 云与基础设施
 difficulty: beginner
 description: 软件测试原则、测试分类、黑盒与白盒测试方法、测试用例设计、测试计划与测试报告编写。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/功能与自动化测试'
-  - 'software-testing/性能与接口测试'
+  - 'software-testing/002-FunctionalAndAutomatedTest'
+  - 'software-testing/003-PerformanceInterfaceTest'
 prerequisites: []
 ---
+
 ## 1. 软件测试概述
 
 ### 1.1 定义

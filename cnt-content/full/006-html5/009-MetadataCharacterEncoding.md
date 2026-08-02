@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 90
 title: 元数据与字符编码
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: beginner
-description: 'meta、title、link、UTF-8'
+description: meta、title、link、UTF-8
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/文档类型声明
-  - html5/离线存储与WebAPI
-  - html5/文本语义
-  - html5/列表
+  - 'html5/007-DocTypeDeclaration'
+  - 'html5/008-HTML5OfflineStorageWebAPI'
+  - 'html5/010-TextSemantic'
+  - 'html5/011-List'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 元数据概述
 
 元数据（Metadata）是"关于数据的数据"，在 HTML 中通过 `<head>` 内的元素描述文档的属性、行为和关系。

@@ -1,19 +1,20 @@
 ---
-order: 105
+order: 440
 title: 错误边界与Sentry集成
-module: react
-category: 'dev-lang'
+module: 'react'
+category: 前端技术
 difficulty: advanced
 description: React错误边界与Sentry错误监控集成实践。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - 'react/React-19新增API'
-  - react/并发渲染与可中断更新
-  - react/自定义Hooks复用逻辑
+  - 'react/042-React19NewAPI'
+  - 'react/043-ConcurrentRenderInterruptible'
+  - 'react/045-CustomHooksReuseLogic'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 
 # 错误边界与 Sentry 集成：从原理到生产级监控

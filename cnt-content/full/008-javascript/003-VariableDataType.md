@@ -1,21 +1,20 @@
 ---
 order: 30
-tags:
-  - javascript
-difficulty: beginner
 title: 变量与数据类型
-module: javascript
-category: 'JS Basics'
+module: 'javascript'
+category: 前端技术
+difficulty: beginner
 description: var/let/const、原始类型、引用类型与类型转换。
 author: Anonymous
-related:
-  - javascript/概述与运行环境
-  - javascript/程序结构与基本语法
-  - javascript/数据类型与运算符
-  - javascript/控制流
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'javascript/001-JavaScriptOverviewRuntimeEnv'
+  - 'javascript/002-ProgramStructureBasicSyntax'
+  - 'javascript/004-DataTypeOperator'
+  - 'javascript/005-ControlFlow'
+prerequisites: []
 ---
+
 ## 1. 引入方式 (Inclusion)
 
 JavaScript 可以通过多种方式引入到网页中，每种方式都有其适用场景和特点。

@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 190
 title: 慢查询日志
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-description: 'MySQL慢查询日志：配置、分析工具mysqldumpslow、pt-query-digest与慢查询优化流程'
+description: MySQL慢查询日志：配置、分析工具mysqldumpslow、pt-query-digest与慢查询优化流程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/索引失效场景
-  - mysql/EXPLAIN输出详解
-  - mysql/优化器追踪
-  - mysql/子查询优化
+  - 'mysql/017-IndexFailureScene'
+  - 'mysql/018-EXPLAINDetailed'
+  - 'mysql/020-OptimizerTrace'
+  - 'mysql/021-SubqueryOptimization'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 慢查询日志配置
 

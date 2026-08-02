@@ -1,23 +1,21 @@
 ---
 order: 40
-tags:
-  - css
-  - 'css-layout'
-difficulty: intermediate
 title: 传统布局技术
-module: css
-category: 'CSS Basics'
-description: '浮动、定位、BFC 与经典布局方案。'
+module: 'css'
+category: 前端技术
+difficulty: intermediate
+description: 浮动、定位、BFC 与经典布局方案。
 author: Anonymous
-related:
-  - css/盒模型详解
-  - css/选择器系统
-  - css/Flexbox弹性布局
-  - css/伪类与伪元素
-prerequisites:
-  - css/概述与基本语法
 updated: '2026-08-01'
+related:
+  - 'css/002-CSS3BoxModelDetailed'
+  - 'css/003-CSS3SelectorSystem'
+  - 'css/005-CSS3FlexboxFlexLayout'
+  - 'css/006-PseudoClassPseudoElement'
+prerequisites:
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. 浮动布局 (Float)
 

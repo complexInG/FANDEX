@@ -1,22 +1,20 @@
 ---
 order: 40
-tags:
-  - vue3
+title: Vue3 指令系统
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
-title: 'Vue3 指令系统'
-module: vue3
-category: 'Vue3 Basics'
 description: 内置指令、自定义指令与指令钩子函数。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/快速入门指南
-  - vue3/模板语法
-  - vue3/Teleport与Suspense
-  - vue3/组合式API
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/002-Vue3QuickStartGuide'
+  - 'vue3/003-Vue3TemplateSyntax'
+  - 'vue3/005-TeleportSuspense'
+  - 'vue3/006-API'
+prerequisites: []
 ---
+
 ## 1. 指令概述
 
 指令是 Vue 模板中特殊的标记，以 `v-` 前缀开头，用于在 DOM 上应用特殊的响应式行为。Vue3 提供了丰富的内置指令，同时支持自定义指令。

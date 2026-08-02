@@ -1,9 +1,8 @@
 ---
 order: 540
 title: cloud-init 云实例初始化
-module: cloud-computing
-
-category: '034-cloud-computing'
+module: 'cloud-computing'
+category: 云与基础设施
 difficulty: beginner
 description: cloud-init 云实例初始化 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## cloud-init 基础
 
 **基本写法：查看版本**

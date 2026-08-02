@@ -1,33 +1,25 @@
 ---
-order: 54
+order: 100
 title: JVM类加载机制
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: 类加载器、双亲委派模型、字节码增强与模块化类加载的系统性深度剖析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/并发编程基础
-  - java/JUC并发包
-  - java/JVM垃圾回收
-  - java/Java反射
-  - java/JVM内存模型
-  - java/Java模块系统
+  - 'java/008-ConcurrencyBasics'
+  - 'java/009-JUCConcurrency'
+  - 'java/011-JVMGC'
+  - 'java/012-JavaReflection'
+  - 'java/062-JVMMemoryModel'
+  - 'java/044-JavaModuleSystem'
 prerequisites:
-  - java/概述与开发环境
-  - java/面向对象编程
-  - java/Java反射
-tags:
-  - Java
-  - JVM
-  - ClassLoader
-  - ParentDelegation
-  - Bytecode
-  - HotSwap
-  - JPMS
-  - JavaAgent
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/056-OOP'
+  - 'java/012-JavaReflection'
 ---
+
 
 
 # JVM 类加载机制深度指南

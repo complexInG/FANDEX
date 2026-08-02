@@ -1,19 +1,20 @@
 ---
-order: 12
-title: 'Code-Review-Checklist'
+order: 30
+title: Code-Review-Checklist
 module: 'engineering-practices'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 代码审查清单、审查维度与最佳实践。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'engineering-practices/工程实践概述'
-  - 'engineering-practices/设计文档规范'
-  - 'engineering-practices/On-Call最佳实践'
-  - 'engineering-practices/事故复盘方法论'
+  - 'engineering-practices/001-EngineeringPracticeOverview'
+  - 'engineering-practices/002-DesignDocumentStandard'
+  - 'engineering-practices/004-OnCallPractice'
+  - 'engineering-practices/005-IncidentRetrospectiveMethodology'
 prerequisites: []
 ---
+
 
 ## 1. 从"作文批改"到"代码评审"
 

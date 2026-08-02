@@ -1,19 +1,20 @@
 ---
-order: 108
+order: 310
 title: OpenTelemetry
-module: devops
-category: 'eng-infra'
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
-description: 'OpenTelemetry 可观测性框架：Trace 链路追踪、Metric 指标、Log 日志统一采集。'
+description: OpenTelemetry 可观测性框架：Trace 链路追踪、Metric 指标、Log 日志统一采集。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/Grafana仪表盘配置
-  - 'devops/ELK-Stack日志分析'
-  - devops/GitOps与ArgoCD
+  - 'devops/029-GrafanaTableConfig'
+  - 'devops/030-ELKStackLogAnalysis'
+  - 'devops/032-GitOpsArgoCD'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. OpenTelemetry 概述
 

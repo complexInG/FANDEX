@@ -1,20 +1,21 @@
 ---
-order: 79
+order: 390
 title: Go与文件监控
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'Go 与文件监控：fsnotify、inotify/kqueue/ReadDirectoryChangesW 跨平台机制、事件去重、递归监听、热重载与生产级最佳实践'
+description: Go 与文件监控：fsnotify、inotify/kqueue/ReadDirectoryChangesW 跨平台机制、事件去重、递归监听、热重载与生产级最佳实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与信号处理
-  - go/Go与配置管理
-  - go/Go与日志
-  - go/Go与正则表达式
+  - 'go/042-GoSignalHandling'
+  - 'go/035-GoConfigManagement'
+  - 'go/036-GoLog'
+  - 'go/041-GoRegex'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 # Go 与文件监控：从 fsnotify 到跨平台事件流的工程实践

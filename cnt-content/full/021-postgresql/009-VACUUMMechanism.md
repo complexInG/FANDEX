@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 90
 title: VACUUM机制
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
-description: 'PostgreSQL VACUUM机制：自动清理、FREEZE、可见性映射与空间回收'
+description: PostgreSQL VACUUM机制：自动清理、FREEZE、可见性映射与空间回收
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/锁机制
-  - postgresql/死锁检测与处理
-  - postgresql/事务ID回卷预防
-  - postgresql/索引类型
+  - 'postgresql/007-LockMechanism'
+  - 'postgresql/008-DeadlockDetectionHandling'
+  - 'postgresql/010-TransactionIDWraparoundPrevention'
+  - 'postgresql/011-IndexType'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 # PostgreSQL VACUUM 机制深度解析
 

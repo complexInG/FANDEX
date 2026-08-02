@@ -1,9 +1,8 @@
 ---
 order: 750
 title: C++26 最新标准
-module: cpp
-
-category: '026-cpp'
+module: 'cpp'
+category: 计算机科学
 difficulty: beginner
 description: C++26 最新标准 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## C++26 概览
 
 **基本写法：编译启用 C++26**

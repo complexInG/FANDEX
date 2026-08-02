@@ -1,20 +1,21 @@
 ---
-order: 94
+order: 580
 title: 函数索引
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
 description: MySQL函数索引：基于表达式的索引、虚拟列索引与函数索引优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/不可见索引
-  - mysql/性能调优与安全
-  - mysql/存储过程与函数
-  - mysql/MVCC快照读与当前读
+  - 'mysql/056-InvisibleIndex'
+  - 'mysql/057-PerformanceTuningSecurity'
+  - 'mysql/059-StoredProcedureAndFunction'
+  - 'mysql/060-MVCCSnapshotCurrentRead'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 函数索引概述
 

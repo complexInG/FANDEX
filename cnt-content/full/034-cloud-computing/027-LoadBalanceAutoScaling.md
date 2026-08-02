@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 270
 title: 负载均衡与自动伸缩
 module: 'cloud-computing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: '云负载均衡与自动伸缩：ALB、NLB、Auto Scaling Group 策略。'
+description: 云负载均衡与自动伸缩：ALB、NLB、Auto Scaling Group 策略。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/AWS核心服务'
-  - 'cloud-computing/多云与混合云架构'
-  - 'cloud-computing/无服务器架构'
-  - 'cloud-computing/云迁移6R策略'
+  - 'cloud-computing/025-AWSCore'
+  - 'cloud-computing/026-MultiCloudHybridArchitecture'
+  - 'cloud-computing/028-ServerlessArchitecture'
+  - 'cloud-computing/029-CloudMigration6RStrategy'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 负载均衡
 

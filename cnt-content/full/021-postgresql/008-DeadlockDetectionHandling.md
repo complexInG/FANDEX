@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 80
 title: 死锁检测与处理
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
 description: PostgreSQL死锁检测与处理：检测算法、日志分析、超时配置与预防策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/体系架构
-  - postgresql/锁机制
-  - postgresql/VACUUM机制
-  - postgresql/事务ID回卷预防
+  - 'postgresql/006-SystemArchitecture'
+  - 'postgresql/007-LockMechanism'
+  - 'postgresql/009-VACUUMMechanism'
+  - 'postgresql/010-TransactionIDWraparoundPrevention'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 概述
 

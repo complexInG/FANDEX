@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 70
 title: 测试类型
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: beginner
 description: 软件测试类型：功能测试、性能测试、安全测试、兼容性测试等详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/测试概念与原则'
-  - 'software-testing/测试层级'
-  - 'software-testing/等价类划分'
-  - 'software-testing/边界值分析'
+  - 'software-testing/005-TestConceptPrinciple'
+  - 'software-testing/006-TestLevels'
+  - 'software-testing/008-EquivalenceClassPartition'
+  - 'software-testing/009-BoundaryValueAnalysis'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 
 ## 1. 功能测试
 

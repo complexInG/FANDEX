@@ -1,19 +1,20 @@
 ---
-order: 3
+order: 30
 title: 通信协议
-module: iot
-category: 物联网
+module: 'iot'
+category: 云与基础设施
 difficulty: intermediate
-description: 'MQTT、CoAP、LoRa/LoRaWAN、NB-IoT、Zigbee、BLE 等协议原理与选型。'
+description: MQTT、CoAP、LoRa/LoRaWAN、NB-IoT、Zigbee、BLE 等协议原理与选型。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/概述与架构
-  - iot/传感器与嵌入式
-  - iot/边缘计算
-  - iot/IoT平台
+  - 'iot/001-OverviewArchitecture'
+  - 'iot/002-SensorEmbedded'
+  - 'iot/004-EdgeComputing'
+  - 'iot/005-IoT'
 prerequisites: []
 ---
+
 
 ## 1. MQTT
 

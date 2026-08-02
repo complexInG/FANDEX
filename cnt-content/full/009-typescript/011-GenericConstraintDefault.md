@@ -1,20 +1,20 @@
 ---
-order: 57
+order: 110
 title: 泛型约束与默认值
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: 泛型约束、默认类型参数与条件泛型
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/索引签名与动态属性
-  - typescript/映射类型进阶
-  - typescript/装饰器详解
-  - typescript/声明文件编写
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/009-IndexSignatureDynamicProperty'
+  - 'typescript/010-MappedTypeAdvanced'
+  - 'typescript/012-DecoratorDetailed'
+  - 'typescript/013-DeclarationFileWriting'
+prerequisites: []
 ---
+
 ## 历史动机与背景
 
 ### 1. 泛型的诞生：从"复制粘贴"到"参数化多态"

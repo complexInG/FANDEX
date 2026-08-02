@@ -1,20 +1,21 @@
 ---
-order: 84
+order: 440
 title: Go与HTTP客户端
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: net/http与HTTP请求
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与时间
-  - go/Go与JSON
-  - go/Go与HTTP服务器
-  - go/Go与中间件
+  - 'go/040-GoTime'
+  - 'go/029-GoJSON'
+  - 'go/045-GoHTTP'
+  - 'go/047-GoMiddleware'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

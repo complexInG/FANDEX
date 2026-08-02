@@ -1,23 +1,24 @@
 ---
-order: 55
+order: 180
 title: Kotlin作用域函数
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: beginner
-description: 'let、run、with、apply、also 五大作用域函数深度剖析'
+description: let、run、with、apply、also 五大作用域函数深度剖析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/扩展函数
-  - kotlin/Kotlin集合操作
-  - kotlin/Kotlin与DSL
-  - kotlin/空安全详解
-  - kotlin/类与对象
+  - 'kotlin/015-ExtensionFunction'
+  - 'kotlin/019-KotlinCollectionOperation'
+  - 'kotlin/022-KotlinDSL'
+  - 'kotlin/012-NullSafetyDetailed'
+  - 'kotlin/004-KotlinClassObject'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/基础语法
-  - kotlin/函数与Lambda
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/002-KotlinBasicSyntax'
+  - 'kotlin/003-KotlinFunctionAndLambda'
 ---
+
 ## 历史动机与背景
 
 ### 早期 Java 的冗余代码问题

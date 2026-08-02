@@ -1,20 +1,21 @@
 ---
-order: 69
+order: 300
 title: Kotlin与Exposed
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'Kotlin SQL框架Exposed'
+description: Kotlin SQL框架Exposed
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与Arrow
-  - kotlin/Kotlin与Ktor
-  - kotlin/Kotlin与Koin
-  - 'kotlin/Kotlin与ktor-client'
+  - 'kotlin/028-KotlinArrow'
+  - 'kotlin/029-KotlinKtor'
+  - 'kotlin/031-KotlinKoin'
+  - 'kotlin/032-KotlinKtorClient'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ## 概述
 

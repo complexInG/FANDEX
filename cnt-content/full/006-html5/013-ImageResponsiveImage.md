@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 130
 title: 图像与响应式图片
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
 description: img、srcset、sizes、picture元素
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - html5/列表
-  - html5/链接与锚点
-  - html5/音频与视频
-  - html5/SVG矢量图形
+  - 'html5/011-List'
+  - 'html5/012-LinkageAnchor'
+  - 'html5/014-AudioVideo'
+  - 'html5/015-SVG'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 早期图像时代（1993—2000）

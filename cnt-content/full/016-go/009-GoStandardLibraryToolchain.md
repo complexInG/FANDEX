@@ -1,19 +1,20 @@
 ---
-order: 9
-title: 'Go 标准库与工具链'
-module: go
-category: Go
+order: 90
+title: Go 标准库与工具链
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'io/os/net/http/filepath/encoding/json/time 等核心包、go test/bench/vet/fmt/doc、构建标签、cgo 与 Go 工具链详解。'
+description: io/os/net/http/filepath/encoding/json/time 等核心包、go test/bench/vet/fmt/doc、构建标签、cgo 与 Go 工具链详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/错误处理
-  - go/泛型
-  - go/Web开发与微服务
-  - go/切片原理
+  - 'go/007-GoErrorHandling'
+  - 'go/008-GoGeneric'
+  - 'go/010-GoWebDevelopmentMicroservice'
+  - 'go/011-SlicePrinciple'
 prerequisites: []
 ---
+
 ## 1. 核心 I/O 包
 
 ### 1.1 io 包

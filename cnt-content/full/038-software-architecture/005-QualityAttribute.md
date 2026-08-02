@@ -1,20 +1,21 @@
 ---
-order: 14
+order: 50
 title: 质量属性
 module: 'software-architecture'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 性能、可用性、安全性、可修改性等架构质量属性与策略。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-architecture/微服务架构'
-  - 'software-architecture/事件驱动架构'
-  - 'software-architecture/CAP理论与最终一致性'
-  - 'software-architecture/领域驱动设计'
+  - 'software-architecture/003-MicroserviceArchitecture'
+  - 'software-architecture/004-EventDrivenArchitecture'
+  - 'software-architecture/006-CAP'
+  - 'software-architecture/007-DDD'
 prerequisites:
-  - 'software-architecture/软件架构概述'
+  - 'software-architecture/001-SoftwareArchitectureOverview'
 ---
+
 
 ## 1. 从"买房子"说起：什么是质量属性
 

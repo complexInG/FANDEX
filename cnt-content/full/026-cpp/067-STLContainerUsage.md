@@ -1,9 +1,8 @@
 ---
 order: 670
 title: C++ STL 容器使用速查
-module: cpp
-
-category: '026-cpp'
+module: 'cpp'
+category: 计算机科学
 difficulty: beginner
 description: C++ STL 容器使用速查 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## vector
 
 **基本写法：创建 vector**

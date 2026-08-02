@@ -1,20 +1,21 @@
 ---
-order: 63
+order: 200
 title: 优化器追踪
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL优化器追踪OPTIMIZER_TRACE：执行计划选择过程、代价计算与调试方法
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/EXPLAIN输出详解
-  - mysql/慢查询日志
-  - mysql/子查询优化
-  - mysql/派生表优化
+  - 'mysql/018-EXPLAINDetailed'
+  - 'mysql/019-SlowQueryLog'
+  - 'mysql/021-SubqueryOptimization'
+  - 'mysql/022-DerivedTableOptimization'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 优化器追踪概述
 

@@ -1,18 +1,19 @@
 ---
-order: 103
+order: 390
 title: 常见SQL反模式
-module: sql
-category: database
+module: 'sql'
+category: 数据库
 difficulty: intermediate
-description: 'SQL 开发中的常见反模式：存储 CSV 列、滥用枚举、预优化、隐式类型转换等，以及对应的正确实践。'
+description: SQL 开发中的常见反模式：存储 CSV 列、滥用枚举、预优化、隐式类型转换等，以及对应的正确实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/递归CTE遍历树结构
-  - sql/乐观锁与悲观锁
+  - 'sql/037-RecursiveCTETreeTraversal'
+  - 'sql/038-OptimisticPessimisticLock'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 存储 CSV 列
 
 ### 1.1 反模式描述

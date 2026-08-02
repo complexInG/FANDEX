@@ -1,18 +1,19 @@
 ---
-order: 108
+order: 230
 title: 内存淘汰策略
-module: redis
-category: database
+module: 'redis'
+category: 数据库
 difficulty: intermediate
-description: 'Redis 内存淘汰策略详解：LRU、LFU、Random、TTL 四类八种策略的原理、配置与适用场景。'
+description: Redis 内存淘汰策略详解：LRU、LFU、Random、TTL 四类八种策略的原理、配置与适用场景。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/Lua脚本原子执行
-  - redis/缓存穿透击穿雪崩
+  - 'redis/021-LuaScriptAtomicExecution'
+  - 'redis/022-CachePenetrationBreakdownAvalanche'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 
 ﻿# 内存淘汰策略
 

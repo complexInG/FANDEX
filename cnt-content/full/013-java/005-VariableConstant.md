@@ -1,22 +1,21 @@
 ---
 order: 50
-tags:
-  - java
-difficulty: beginner
 title: 变量与常量
-module: java
-category: 'Java Basics'
+module: 'java'
+category: 后端技术
+difficulty: beginner
 description: 变量声明、作用域、常量定义与命名规范。
 author: Anonymous
-related:
-  - java/程序结构与基本语法
-  - java/数据类型与类型转换
-  - java/枚举与注解
-  - java/泛型进阶
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/003-ProgramStructureBasicSyntax'
+  - 'java/004-DataTypeConversion'
+  - 'java/006-JavaAnnotationsTutorial'
+  - 'java/007-JavaGenericsTutorial'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 变量的概念与分类
 
 ### 1.1 变量的概念

@@ -1,22 +1,20 @@
 ---
-order: 80
-tags:
-  - python
-difficulty: intermediate
+order: 370
 title: 内置数据结构
-module: python
-category: 'Python Basics'
+module: 'python'
+category: 后端技术
+difficulty: intermediate
 description: 列表、元组、字典、集合的操作与性能特征。
 author: Anonymous
-related:
-  - 'python/Python与CI-CD'
-  - python/Python与性能优化
-  - python/正则表达式
-  - python/Python与设计模式
-prerequisites:
-  - python/语法速查
 updated: '2026-08-01'
+related:
+  - 'python/035-PythonCICD'
+  - 'python/036-PythonPerformance'
+  - 'python/038-Regex'
+  - 'python/040-PythonDesignPattern'
+prerequisites: []
 ---
+
 ## 1. 列表 (List - `list`)
 
 列表是Python中最常用的数据结构之一，它是一个有序、可变的序列，允许存储重复元素。

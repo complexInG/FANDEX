@@ -1,60 +1,19 @@
 ---
 order: 570
 title: JavaScript 垃圾回收与内存管理
-module: javascript
-category: '008-javascript'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: 用可达性、标记清除、分代回收三个模型讲透 JavaScript 的自动内存管理，并给出写代码时避免内存泄漏的实用清单。
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'javascript/031-ClosureMemoryLeakOptimization'
   - 'javascript/045-MemoryLeakTroubleshoot'
 prerequisites:
   - 'javascript/016-FunctionScopeClosure'
-quiz:
-  - type: choice
-    question: 以下哪种对象会被 JavaScript 引擎判定为"不可达"并回收？
-    options:
-      - 被全局变量引用的对象
-      - 被当前调用栈局部变量引用的对象
-      - 只被一个已销毁闭包间接引用、且无任何根可达路径的对象
-      - 被 WeakMap 中键引用的对象
-    answer: 2
-    explanation: 只有从根（全局对象、调用栈等）出发无法到达的对象才会被回收；WeakMap 的键不产生强引用，但值本身仍要看是否可达。
-  - type: fill
-    question: 标记清除算法分为____与____两个阶段。
-    answer: 标记；清除
-    hint: 先遍历根标记可达对象，再回收未标记对象。
-references:
-  - type: documentation
-    authors:
-      - MDN Contributors
-    year: 2026
-    title: JavaScript 内存管理
-    venue: MDN
-    url: https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Memory_management
-    accessedDate: '2026-08-02'
-  - type: website
-    authors:
-      - V8 Team
-    year: 2026
-    title: V8 博客：垃圾回收相关文章
-    venue: v8.dev
-    url: https://v8.dev/blog
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 垃圾回收
-    english: Garbage Collection
-    origin: 源于 Lisp 语言 1959 年提出的自动内存管理思想，把"不再使用的对象"比作需要清扫的垃圾。
-  - term: 可达性
-    english: Reachability
-    origin: 图论术语，指从根节点出发能否沿引用边到达某个对象。
-estimatedReadingTime: 8
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

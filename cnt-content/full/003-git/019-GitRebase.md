@@ -1,20 +1,17 @@
 ---
-order: 62
-title: 'git-rebase'
-module: git
-category: 'Git Basics'
+order: 190
+title: git-rebase
+module: 'git'
+category: 工具链
 difficulty: advanced
-description: 'git rebase详解：变基原理、交互式改写历史与安全实践。'
+description: git rebase详解：变基原理、交互式改写历史与安全实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/合并冲突解决
-  - git/合并工具
-  - git/摘取提交
-  - git/暂存工作区
-prerequisites:
-  - git/语法速查
+  - 'git/017-MergeConflictResolution'
+prerequisites: []
 ---
+
 ## 1. rebase 概述
 
 ### 1.1 什么是 rebase

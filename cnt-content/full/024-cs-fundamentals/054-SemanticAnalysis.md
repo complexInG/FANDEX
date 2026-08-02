@@ -1,20 +1,21 @@
 ---
-order: 121
+order: 540
 title: 语义分析
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
 description: 编译器语义分析：符号表管理、类型检查、作用域与类型转换。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/词法分析'
-  - 'cs-fundamentals/语法分析'
-  - 'cs-fundamentals/中间代码'
-  - 'cs-fundamentals/代码优化'
+  - 'cs-fundamentals/052-LexicalAnalysis'
+  - 'cs-fundamentals/053-GrammarAnalysis'
+  - 'cs-fundamentals/055-IntermediateCode'
+  - 'cs-fundamentals/056-CodeOptimization'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 语义分析概述
 

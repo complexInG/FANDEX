@@ -40,12 +40,12 @@ const issues = [];
 // ============================================================
 
 /**
- * Phase 2.0 结构化字段列表
- * 用于检测每篇文档是否已补全这些字段；
- * 值级校验由 content.config.ts 的严格 schema（ReferenceSchema / EtymologyEntrySchema）
- * 在构建期完成，本脚本负责覆盖率统计与缺失告警。
+ * 统一 frontmatter 规范（见根目录 AGENTS.md）后，
+ * 文档仅保留 10 个标准字段，原 Phase 2.0 结构化字段
+ * （references/etymology/lastReviewed/reviewer）已从 frontmatter 移除，
+ * 此处清空待审计字段列表，避免误报缺失。
  */
-const SCHEMA_FIELDS = ['references', 'etymology', 'lastReviewed', 'reviewer'];
+const SCHEMA_FIELDS = [];
 
 /**
  * schema 缺失问题收集数组
@@ -153,6 +153,60 @@ function walk(dir) {
       if (!order && order !== '0')
         issues.push({ file: full, issue: 'MISSING_ORDER', severity: 'medium' });
       if (!diff) issues.push({ file: full, issue: 'MISSING_DIFFICULTY', severity: 'medium' });
+
+      // 统一规范必填字段：category / author / updated
+      const categoryLine = fm.match(/^category:\s*["']?(.*?)["']?\s*$/m);
+      const category = categoryLine ? categoryLine[1] : '';
+      const authorLine = fm.match(/^author:\s*["']?(.*?)["']?\s*$/m);
+      const author = authorLine ? authorLine[1] : '';
+      const updatedLine = fm.match(/^updated:\s*["']?(.*?)["']?\s*$/m);
+      const updated = updatedLine ? updatedLine[1] : '';
+      if (!category)
+        issues.push({ file: full, issue: 'MISSING_CATEGORY', severity: 'medium' });
+      if (!author)
+        issues.push({ file: full, issue: 'MISSING_AUTHOR', severity: 'medium' });
+      if (!updated)
+        issues.push({ file: full, issue: 'MISSING_UPDATED', severity: 'medium' });
+
+      // 统一规范：frontmatter 只允许 10 个标准字段
+      const STANDARD_FIELDS = [
+        'order', 'title', 'module', 'category', 'difficulty',
+        'description', 'author', 'updated', 'related', 'prerequisites',
+      ];
+      const fmKeyRe = /^([A-Za-z_][A-Za-z0-9_]*):/gm;
+      for (const keyMatch of fm.matchAll(fmKeyRe)) {
+        if (!STANDARD_FIELDS.includes(keyMatch[1])) {
+          issues.push({
+            file: full,
+            issue: `EXTRA_FIELD: ${keyMatch[1]}`,
+            severity: 'low',
+          });
+        }
+      }
+
+      // 统一规范：related / prerequisites 必须为 module/文件名 格式
+      const refFormatRe = /^[a-z0-9-]+\/[A-Za-z0-9_-]+$/;
+      let currentList = null;
+      for (const line of fm.split(/\r?\n/)) {
+        const kv = line.match(/^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$/);
+        if (kv) {
+          const isEmptyList =
+            kv[1] === 'related' || kv[1] === 'prerequisites';
+          currentList = isEmptyList && kv[2].trim() === '' ? kv[1] : null;
+          continue;
+        }
+        if (!currentList) continue;
+        const itemMatch = line.match(/^\s*-\s*(.+)$/);
+        if (!itemMatch) continue;
+        const refValue = itemMatch[1].trim().replace(/^['"]|['"]$/g, '');
+        if (!refFormatRe.test(refValue)) {
+          issues.push({
+            file: full,
+            issue: `BAD_REF_FORMAT: ${currentList} ${refValue}`,
+            severity: 'medium',
+          });
+        }
+      }
 
       // 检查正文长度
       if (body.length < 30)
@@ -265,9 +319,9 @@ if (schemaIssues.length > 0) {
 
 // 存在 high 级别问题时以非零退出码退出，用于 CI/CD 流水线拦截
 if (highCount > 0) {
-  console.log(`\n❌ ${highCount} HIGH severity issues found!`);
+  console.log(`\n[FAIL] ${highCount} HIGH severity issues found!`);
   process.exit(1);
 } else {
-  console.log('\n✅ No HIGH severity issues found.');
+  console.log('\n[PASS] No HIGH severity issues found.');
   process.exit(0);
 }

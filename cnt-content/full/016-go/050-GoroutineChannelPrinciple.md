@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 500
 title: goroutine与channel通信原理
-module: go
-category: 'dev-lang'
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'Go goroutine与channel通信原理详解。'
+description: Go goroutine与channel通信原理详解。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与分布式追踪
-  - go/Go与限流
-  - go/GMP调度模型
-  - go/并发模式
+  - 'go/048-GoDistributedTracing'
+  - 'go/049-Go'
+  - 'go/051-GMPModel'
+  - 'go/052-ConcurrencyPattern'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 CSP 设计哲学

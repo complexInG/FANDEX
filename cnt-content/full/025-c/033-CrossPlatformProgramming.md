@@ -1,26 +1,26 @@
 ---
-order: 73
+order: 330
 title: 跨平台编程
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
-description: 'C 语言跨平台编程原理、抽象层设计与工程实践'
+description: C 语言跨平台编程原理、抽象层设计与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/构建系统
-  - c/静态分析与调试
-  - c/嵌入式C编程
-  - c/C与汇编交互
-  - c/属性与编译器扩展
-  - c/数据类型详解
-  - c/预处理器与宏
+  - 'c/031-BuildSystem'
+  - 'c/032-StaticAnalysisDebug'
+  - 'c/034-EmbeddedCProgramming'
+  - 'c/035-CAssemblyInteraction'
+  - 'c/018-AttributeCompilerExtension'
+  - 'c/003-DataTypeDetailed'
+  - 'c/037-PreprocessorMacro'
 prerequisites:
-  - c/概述
-  - c/预处理器与宏
-  - c/数据类型详解
-  - c/头文件与链接
+  - 'c/001-CLanguageOverview'
+  - 'c/037-PreprocessorMacro'
+  - 'c/003-DataTypeDetailed'
 ---
+
 
 
 ## 历史动机与背景

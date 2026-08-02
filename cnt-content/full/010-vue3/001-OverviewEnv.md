@@ -1,20 +1,18 @@
 ---
 order: 10
-tags:
-  - vue3
-difficulty: beginner
 title: 概述与环境
-module: vue3
-category: 'Vue3 Basics'
-description: 'Vue3 发展历程、新特性与开发环境搭建。'
+module: 'vue3'
+category: 前端技术
+difficulty: beginner
+description: Vue3 发展历程、新特性与开发环境搭建。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/语法速查
-  - vue3/快速入门指南
-  - vue3/模板语法
+  - 'vue3/002-Vue3QuickStartGuide'
+  - 'vue3/003-Vue3TemplateSyntax'
 prerequisites: []
 ---
+
 ## 1. Vue3 概述 | Vue3 Overview
 
 Vue3 是 Vue.js 框架的第三个主要版本，于 2020 年 9 月正式发布。它带来了许多重要的改进和新特性，包括：

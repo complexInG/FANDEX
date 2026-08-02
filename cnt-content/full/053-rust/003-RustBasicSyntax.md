@@ -1,18 +1,19 @@
 ---
-order: 3
+order: 30
 title: Rust 基础语法
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: beginner
-description: 'Rust 基础语法：变量与不可变性、标量类型、复合类型、函数与控制流'
+description: Rust 基础语法：变量与不可变性、标量类型、复合类型、函数与控制流
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - rust/002-RustEnvSetup
-  - rust/004-RustOwnershipBorrowing
+  - 'rust/002-RustEnvSetup'
+  - 'rust/004-RustOwnershipBorrowing'
 prerequisites:
-  - rust/002-RustEnvSetup
+  - 'rust/002-RustEnvSetup'
 ---
+
 
 ## 1. 从"写便签"说起：变量与不可变性
 

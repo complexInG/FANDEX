@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 110
 title: 索引类型
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
-description: 'PostgreSQL索引类型：B-tree、Hash、GiST、GIN、SP-GiST、BRIN的原理与适用场景'
+description: PostgreSQL索引类型：B-tree、Hash、GiST、GIN、SP-GiST、BRIN的原理与适用场景
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/VACUUM机制
-  - postgresql/事务ID回卷预防
-  - postgresql/覆盖索引与部分索引
-  - postgresql/KNN向量索引
+  - 'postgresql/009-VACUUMMechanism'
+  - 'postgresql/010-TransactionIDWraparoundPrevention'
+  - 'postgresql/012-CoveringIndexPartialIndex'
+  - 'postgresql/013-KNNVectorIndex'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 ## 1. 索引类型总览
 
 | 类型    | 适用场景           | 特点               |

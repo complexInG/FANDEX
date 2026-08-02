@@ -1,21 +1,19 @@
 ---
+order: 20
 title: 计算机体系结构
 module: 'cs-fundamentals'
-category: 'Computer Science / Architecture'
+category: 计算机科学
+difficulty: intermediate
 description: 计算机体系结构核心原理：冯诺依曼模型、指令集设计、流水线、存储层次、并行体系。
 author: fanquanpp
-order: 20
-tags:
-  - 'cs-fundamentals'
-  - 'computer-science---architecture'
-difficulty: intermediate
-related:
-  - 'cs-fundamentals/计算机科学概述'
-  - 'cs-fundamentals/操作系统'
-  - 'cs-fundamentals/计算机网络'
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'cs-fundamentals/001-ComputerOverview'
+  - 'cs-fundamentals/003-OperatingSystem'
+  - 'cs-fundamentals/004-ComputerNetwork'
+prerequisites: []
 ---
+
 
 ## 1. 冯诺依曼体系与哈佛体系
 

@@ -1,20 +1,20 @@
 ---
-order: 62
+order: 190
 title: Python与Docker
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: Python容器化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/控制流
-  - python/Python与Celery
-  - python/Python与Redis
-  - python/Python与GraphQL
-prerequisites:
-  - python/语法速查
+  - 'python/018-ControlFlow'
+  - 'python/017-PythonCeleryDistributedTaskQueue'
+  - 'python/016-PythonRedis'
+  - 'python/043-PythonGraphQL'
+prerequisites: []
 ---
+
 
 ## 什么是 Docker
 

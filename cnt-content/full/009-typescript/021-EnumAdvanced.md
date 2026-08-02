@@ -1,20 +1,20 @@
 ---
-order: 65
+order: 210
 title: 枚举进阶
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: 枚举高级用法与替代方案
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - typescript/符号与唯一类型
-  - typescript/命名空间与模块
-  - typescript/工具类型实现原理
-  - typescript/条件类型分发
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/019-OnTheRoleOfSymbolicExecutionInTypeSystems'
+  - 'typescript/020-NamespaceModule'
+  - 'typescript/022-UtilityTypePrinciple'
+  - 'typescript/023-ConditionalTypeDistribute'
+prerequisites: []
 ---
+
 
 # 枚举进阶
 

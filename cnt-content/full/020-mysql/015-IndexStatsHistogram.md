@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 150
 title: 索引统计信息与直方图
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL索引统计信息与直方图：ANALYZE TABLE、统计信息存储、直方图类型与优化器利用'
+description: MySQL索引统计信息与直方图：ANALYZE TABLE、统计信息存储、直方图类型与优化器利用
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/前缀索引
-  - mysql/索引提示与强制索引
-  - mysql/SQL函数与高级查询
-  - mysql/索引失效场景
+  - 'mysql/013-PrefixIndex'
+  - 'mysql/014-IndexHintForceIndex'
+  - 'mysql/016-SQLFunctionAndAdvancedQuery'
+  - 'mysql/017-IndexFailureScene'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 索引统计信息
 

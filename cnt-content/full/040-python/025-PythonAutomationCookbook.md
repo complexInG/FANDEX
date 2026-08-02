@@ -1,131 +1,23 @@
 ---
-order: 70
+order: 250
 title: Python与自动化
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: 文件、任务调度、Web 与 DevOps 自动化的工程实践，覆盖 pathlib、APScheduler、Celery、Airflow、Playwright、Fabric、subprocess 等核心工具链。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- python/Python与计算机视觉
-- python/Python与Web爬虫
-- python/函数详解
-- python/Python与测试
-- python/Python与CLI
+  - 'python/023-PythonComputerVision'
+  - 'python/024-WebScrapingWithPython'
+  - 'python/026-FunctionDetailed'
+  - 'python/029-PythonTest'
+  - 'python/039-PythonCLI'
 prerequisites:
-- python/语法速查
-- python/函数详解
-- python/Python与异常处理
-tags:
-- python
-- automation
-- scheduling
-- devops
-- scripting
-- etl
-- rpa
-references:
-- type: standard
-  authors:
-  - Python Software Foundation
-  year: 2026
-  title: subprocess — Subprocess management
-  venue: Python Documentation
-  url: https://docs.python.org/3/library/subprocess.html
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Python Software Foundation
-  year: 2026
-  title: pathlib — Object-oriented filesystem paths (PEP 428/519)
-  venue: Python Documentation
-  url: https://docs.python.org/3/library/pathlib.html
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Apache Software Foundation
-  year: 2026
-  title: Apache Airflow Documentation (Version 2.10+)
-  venue: Apache
-  url: https://airflow.apache.org/docs/
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Celery Project
-  year: 2026
-  title: Celery 5.4 Documentation
-  venue: Celery Project
-  url: https://docs.celeryq.dev/
-  accessedDate: '2026-07-20'
-- type: conference
-  authors:
-  - Hinojosa, G.
-  - Fowler, M.
-  year: 2020
-  title: 'Building data pipelines with Airflow and Prefect: A comparative study'
-  venue: IEEE International Conference on Big Data
-  pages: 4500-4508
-  doi: 10.1109/BigData50022.2020.00048
-- type: standard
-  authors:
-  - Prefect Technologies
-  year: 2026
-  title: Prefect 3.x Documentation
-  venue: Prefect
-  url: https://docs.prefect.io/
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Dagster Labs
-  year: 2026
-  title: Dagster 1.7+ Documentation
-  venue: Dagster
-  url: https://docs.dagster.io/
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Microsoft
-  year: 2026
-  title: Playwright for Python Documentation
-  venue: Microsoft
-  url: https://playwright.dev/python/
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - PSF
-  year: 2026
-  title: concurrent.futures — Launching parallel tasks
-  venue: Python Documentation
-  url: https://docs.python.org/3/library/concurrent.futures.html
-  accessedDate: '2026-07-20'
-- type: book
-  authors:
-  - Lopez, N.
-  year: 2022
-  title: Python Automation Cookbook
-  venue: Packt Publishing
-  pages: 1-450
-etymology:
-- term: 自动化
-  english: Automation
-  origin: 1948 年福特汽车工程师 Hardrod 提出，源自希腊语 automatos（自我移动）。
-- term: 调度器
-  english: Scheduler
-  origin: 拉丁语 schedula（小纸条），原指记录任务的小纸条。
-- term: 守护进程
-  english: Daemon
-  origin: 希腊神话中的守护精灵，1963 年 MIT Project MAC 首次用于计算机术语。
-- term: 幂等
-  english: Idempotent
-  origin: 数学用语，源自 idem（同一）+ potens（能力），意为多次执行结果一致。
-- term: 流水线
-  english: Pipeline
-  origin: 借用石油工业的管道术语，由 Dennis Ritchie 引入 Unix。
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
-estimatedReadingTime: 95
+  - 'python/026-FunctionDetailed'
+  - 'python/063-ExceptionHandling'
 ---
+
 
 
 # Python 与自动化

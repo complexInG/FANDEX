@@ -1,19 +1,20 @@
 ---
-order: 72
+order: 310
 title: 区间估计
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 置信区间的概念、枢轴量构造方法、单侧置信区间，从"给估计值画范围圈"类比理解区间估计。
+description: '置信区间的概念、枢轴量构造方法、单侧置信区间，从"给估计值画范围圈"类比理解区间估计。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/点估计'
-  - 'probability-statistics/估计量的评选标准'
-  - 'probability-statistics/正态总体参数的区间估计'
+  - 'probability-statistics/035-PointEstimation'
+  - 'probability-statistics/036-EstimatorSelectionCriteria'
+  - 'probability-statistics/038-NormalPopulationParameterIntervalEstimation'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 给估计值画一个"范围圈"
 

@@ -1,26 +1,26 @@
 ---
-order: 73
+order: 290
 title: Python与测试
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: Python测试体系深度剖析：pytest框架、unittest标准库、TDD/BDD方法论、Mock与依赖隔离、覆盖率分析、属性测试、性能测试、CI/CD集成与生产级工程实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - python/类型注解与mypy
-  - python/Python与代码质量
-  - python/Python与CI-CD
-  - python/Python与日志
-  - python/Python与CLI
-  - python/异步编程详解
-  - python/装饰器进阶
+  - 'python/060-TypeAnnotationMypy'
+  - 'python/044-PythonCodeQuality'
+  - 'python/035-PythonCICD'
+  - 'python/027-PythonLog'
+  - 'python/039-PythonCLI'
+  - 'python/054-AsyncProgrammingDetailed'
+  - 'python/062-DecoratorAdvanced'
 prerequisites:
-  - python/语法速查
-  - python/面向对象编程
-  - python/装饰器进阶
-  - python/上下文管理器
+  - 'python/061-OOP'
+  - 'python/062-DecoratorAdvanced'
+  - 'python/052-ContextManager'
 ---
+
 
 
 ## 概述

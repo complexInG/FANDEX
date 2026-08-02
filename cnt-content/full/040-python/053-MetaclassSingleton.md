@@ -1,25 +1,25 @@
 ---
-order: 103
+order: 530
 title: 元类与单例模式
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: 元类驱动的单例模式深度剖析：从 __call__ 拦截到线程安全、测试可重置性与企业级应用。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - python/元类
-  - python/生成器与协程
-  - python/上下文管理器
-  - python/异步编程详解
-  - python/类型注解与mypy
-  - python/描述符协议
+  - 'python/010-Metaclass'
+  - 'python/059-GeneratorCoroutine'
+  - 'python/052-ContextManager'
+  - 'python/054-AsyncProgrammingDetailed'
+  - 'python/060-TypeAnnotationMypy'
+  - 'python/004-PythonDescriptorProtocol'
 prerequisites:
-  - python/语法速查
-  - python/面向对象编程
-  - python/装饰器进阶
-  - python/元类
+  - 'python/061-OOP'
+  - 'python/062-DecoratorAdvanced'
+  - 'python/010-Metaclass'
 ---
+
 
 
 # 元类与单例模式（Metaclass & Singleton Pattern）

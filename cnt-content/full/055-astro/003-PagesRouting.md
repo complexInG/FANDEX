@@ -1,18 +1,19 @@
 ---
-order: 3
+order: 30
 title: Astro 页面与路由
-module: astro
-category: Astro
+module: 'astro'
+category: 前端技术
 difficulty: beginner
-description: '以城市路牌为线索讲解 Astro 文件路由：静态路由、动态路由 [slug]、多级与 Rest 参数、嵌套路由、404、重定向与布局'
+description: 以城市路牌为线索讲解 Astro 文件路由：静态路由、动态路由 [slug]、多级与 Rest 参数、嵌套路由、404、重定向与布局
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - astro/004-ComponentsProps
-  - astro/005-ContentCollections
+  - 'astro/004-ComponentsProps'
+  - 'astro/005-ContentCollections'
 prerequisites:
-  - astro/002-QuickStartProject
+  - 'astro/002-QuickStartProject'
 ---
+
 
 ## 0. 城市道路与路牌：理解路由的第一把钥匙
 

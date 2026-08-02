@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 180
 title: 自然连接与USING
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
-description: 'SQL自然连接NATURAL JOIN与USING子句：语法、语义、使用场景与潜在陷阱'
+description: SQL自然连接NATURAL JOIN与USING子句：语法、语义、使用场景与潜在陷阱
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'sql/GROUP-BY与分组集'
-  - sql/连接查询
-  - sql/自连接
-  - sql/半连接与反半连接
+  - 'sql/016-GROUPBYGroupingSet'
+  - 'sql/017-JoinQuery'
+  - 'sql/019-SelfJoin'
+  - 'sql/020-SemiAntiJoin'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 自然连接（NATURAL JOIN）
 
 ### 1.1 概念

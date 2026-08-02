@@ -1,20 +1,18 @@
 ---
-title: 'Python 理论知识点'
-module: python
-category: 'Python Theory'
-order: 160
-tags:
-  - python
-  - theory
+order: 660
+title: Python 理论知识点
+module: 'python'
+category: 后端技术
 difficulty: intermediate
-description: 'GIL 机制、内存管理、字节码与运行时模型。'
-related:
-  - python/文件IO与上下文管理器
-  - 'python/项目示例-网页爬虫与数据分析'
-prerequisites:
-  - python/语法速查
+description: GIL 机制、内存管理、字节码与运行时模型。
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'python/064-FileIOContextManager'
+  - 'python/065-PythonProjectExampleWebCrawlerDataAnalysis'
+prerequisites: []
 ---
+
 
 1. 线程获取 GIL
 2. 执行一定数量的字节码（check interval，默认 100 条）或达到时间片（5ms）

@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 250
 title: ArkTS与TypeScript差异
-module: harmonyos
-category: 'dev-lang'
+module: 'harmonyos'
+category: 后端技术
 difficulty: advanced
-description: 'HarmonyOS ArkTS与TypeScript差异详解。'
+description: HarmonyOS ArkTS与TypeScript差异详解。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/国际化与无障碍
-  - harmonyos/Stage模型与FA模型区别
-  - harmonyos/ArkUI声明式语法
-  - harmonyos/组件生命周期详解
+  - 'harmonyos/021-I18nAccessibility'
+  - 'harmonyos/024-StageFAModelDifference'
+  - 'harmonyos/026-ArkUIDeclarativeSyntax'
+  - 'harmonyos/027-ComponentLifecycleDetailed'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 1. 概述与背景
 
 ### 1.1 语言演进的历史脉络

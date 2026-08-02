@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 110
 title: AOF日志持久化
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: advanced
-description: 'Redis AOF日志持久化：appendfsync策略、AOF重写机制、配置优化与恢复流程'
+description: Redis AOF日志持久化：appendfsync策略、AOF重写机制、配置优化与恢复流程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/向量集
-  - redis/RDB快照持久化
-  - redis/混合持久化
-  - redis/无盘复制
+  - 'redis/009-VectorSet'
+  - 'redis/010-RDBSnapshotPersistence'
+  - 'redis/012-MixedPersistence'
+  - 'redis/013-DisklessReplication'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 ## 1. AOF 概述
 
 AOF（Append Only File）以日志形式记录 Redis 服务器收到的每一条写命令，以追加（append）方式写入 AOF 文件。Redis 重启时通过重放 AOF 文件中的命令来恢复数据。

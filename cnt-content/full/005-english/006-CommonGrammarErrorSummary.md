@@ -1,19 +1,20 @@
 ---
-order: 24
+order: 60
 title: 常见语法错误汇总
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: intermediate
 description: 英语写作和考试中常见语法错误分类汇总，含错误示例、正确形式与解析。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/复合句与从句
-  - english/长难句拆解技巧
-  - english/技术文档阅读方法
-  - english/学术论文阅读指南
+  - 'english/004-CompoundSentenceClause'
+  - 'english/005-LongDifficultSentenceBreakdownTechnique'
+  - 'english/007-TechDocReadingMethod'
+  - 'english/008-AcademicPaperReadingGuide'
 prerequisites: []
 ---
+
 
 ## 1. 主谓一致错误 (Subject-Verb Agreement Errors)
 

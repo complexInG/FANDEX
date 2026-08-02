@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 520
 title: 移动语义详解
-module: cpp
-category: 'dev-lang'
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-description: 'C++移动语义详解：移动构造、移动赋值、std::move与右值引用。'
+description: C++移动语义详解：移动构造、移动赋值、std::move与右值引用。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - cpp/RAII资源管理
-  - cpp/STL算法与函数对象
-  - cpp/完美转发与引用折叠
-  - cpp/虚函数表与多态内存布局
+  - 'cpp/050-CCoreGuidelinesResourceManagement'
+  - 'cpp/051-CSTLAlgorithmAndFunctionObject'
+  - 'cpp/053-PerfectForwardingReferenceCollapse'
+  - 'cpp/054-VTablePolymorphismMemoryLayout'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 
 # 移动语义详解

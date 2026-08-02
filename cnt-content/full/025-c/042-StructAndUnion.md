@@ -1,22 +1,21 @@
 ---
-order: 100
-tags:
-  - c
-difficulty: intermediate
+order: 420
 title: 结构体与联合体
-module: c
-category: 'C Basics'
+module: 'c'
+category: 计算机科学
+difficulty: intermediate
 description: 结构体定义、内存对齐、联合体应用及枚举类型。
 author: Anonymous
-related:
-  - c/内存管理
-  - c/内存对齐
-  - c/函数调用栈帧
-  - c/指针与数组的区别
-prerequisites:
-  - c/概述
 updated: '2026-08-01'
+related:
+  - 'c/040-MemoryManagement'
+  - 'c/041-MemoryAlignment'
+  - 'c/043-FunctionCallStackFrame'
+  - 'c/044-PointerArrayDifference'
+prerequisites:
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 1. 结构体 (Structures)
 
 ### 1.1 结构体的概念

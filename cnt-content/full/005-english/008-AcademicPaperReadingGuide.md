@@ -1,20 +1,21 @@
 ---
-order: 33
+order: 80
 title: 学术论文阅读指南
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: advanced
-description: '英文学术论文阅读方法论，按 Abstract→Introduction→Method→Experiment→Conclusion 结构化阅读。'
+description: 英文学术论文阅读方法论，按 Abstract→Introduction→Method→Experiment→Conclusion 结构化阅读。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/常见语法错误汇总
-  - english/技术文档阅读方法
-  - english/学术写作规范
-  - english/技术文档写作
+  - 'english/006-CommonGrammarErrorSummary'
+  - 'english/007-TechDocReadingMethod'
+  - 'english/009-AcademicWritingStandard'
+  - 'english/010-TechDocWriting'
 prerequisites:
-  - english/计算机专业英语词汇
+  - 'english/001-ComputerProfessionalEnglishVocabulary'
 ---
+
 
 ## 1. 学术论文的结构
 

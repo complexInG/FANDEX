@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 230
 title: React路由进阶
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
-description: 'React Router高级用法'
+description: React Router高级用法
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React与TypeScript
-  - react/React测试
-  - react/React国际化
-  - react/React动画
+  - 'react/021-ReactTypeScript'
+  - 'react/022-ReactTest'
+  - 'react/024-ReactI18n'
+  - 'react/025-ReactAnimation'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 React Router高级用法。本文将从基础概念、快速上手、详细用法、常见场景、注意事项和进阶用法六个方面全面介绍React路由进阶。

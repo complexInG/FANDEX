@@ -1,20 +1,18 @@
 ---
-order: 150
-tags:
-  - vue3
-  - theory
+order: 350
+title: Vue3 理论知识点
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
-title: 'Vue3 理论知识点'
-module: vue3
-category: 'Vue3 Theory'
-description: '虚拟 DOM、响应式原理、编译策略与性能模型。'
-related:
-  - vue3/高级组件特性
-  - 'vue3/项目示例-个人博客站点'
-prerequisites:
-  - vue3/语法速查
+description: 虚拟 DOM、响应式原理、编译策略与性能模型。
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'vue3/033-Vue3AdvancedComponentFeature'
+  - 'vue3/034-Vue3ProjectExampleBlog'
+prerequisites: []
 ---
+
 
 Object.defineProperty(obj, key, {
 enumerable: true,

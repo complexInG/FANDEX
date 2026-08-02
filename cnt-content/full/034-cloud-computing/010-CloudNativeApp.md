@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 100
 title: 云原生应用
 module: 'cloud-computing'
-category: 云计算
+category: 云与基础设施
 difficulty: advanced
-description: '云原生应用设计、12-Factor方法论、容器化最佳实践、Kubernetes编排、服务网格集成、GitOps工作流。'
+description: 云原生应用设计、12-Factor方法论、容器化最佳实践、Kubernetes编排、服务网格集成、GitOps工作流。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/公有云与私有云与混合云'
-  - 'cloud-computing/Docker深度解析'
-  - 'cloud-computing/Kubernetes架构'
-  - 'cloud-computing/云数据库服务'
+  - 'cloud-computing/008-PublicCloudPrivateCloudHybridCloud'
+  - 'cloud-computing/009-DockerDeepAnalysis'
+  - 'cloud-computing/011-KubernetesArchitecture'
+  - 'cloud-computing/012-CloudDatabaseService'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 云原生定义与演进
 

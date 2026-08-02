@@ -1,19 +1,18 @@
 ---
 order: 10
-tags:
-  - css
+title: CSS3 概述与基本语法
+module: 'css'
+category: 前端技术
 difficulty: beginner
-title: 'CSS3 概述与基本语法'
-module: css
-category: 'CSS Basics'
-description: 'CSS 发展历程、语法结构与层叠规则。'
+description: CSS 发展历程、语法结构与层叠规则。
 author: Anonymous
-related:
-  - css/盒模型详解
-  - css/选择器系统
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'css/002-CSS3BoxModelDetailed'
+  - 'css/003-CSS3SelectorSystem'
+prerequisites: []
 ---
+
 ## 1. CSS3 概述
 
 CSS (Cascading Style Sheets) 层叠样式表，用于控制网页的视觉呈现。CSS3 是其最新标准，引入了模块化开发、动画、Flexbox/Grid 布局等强大功能，使网页设计更加灵活和丰富。
@@ -373,7 +372,7 @@ CSS 变量（也称为自定义属性）允许你定义可重用的值，提高�
 
 ```css
  /* 定义变量 */
- :
+ :root {
   --primary-color: #3498db;
   --secondary-color: #2ecc71;
   --font-size: 16px;
@@ -400,7 +399,7 @@ CSS 变量（也称为自定义属性）允许你定义可重用的值，提高�
 
 ```css
  /* 全局变量 */
- :
+ :root {
   --color: blue;
  }
  /* 局部变量 */
@@ -420,7 +419,7 @@ CSS 变量（也称为自定义属性）允许你定义可重用的值，提高�
 
 ```css
  /* 主题变量 */
- :
+ :root {
   /* 浅色主题 */
   --bg-color: #ffffff;
   --text-color: #333333;

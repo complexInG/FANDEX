@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 140
 title: 手势与交互
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 手势识别与触摸事件
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/数据持久化
-  - harmonyos/动画系统
-  - harmonyos/通知与权限
-  - harmonyos/多媒体能力
+  - 'harmonyos/012-DataPersistence'
+  - 'harmonyos/013-AnimationSystem'
+  - 'harmonyos/015-NotificationPermission'
+  - 'harmonyos/016-MultimediaCapability'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ### 点击手势
 
 ```typescript

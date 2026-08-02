@@ -1,9 +1,8 @@
 ---
 order: 260
 title: Jest 配置与快照
-module: software-testing
-
-category: '036-software-testing'
+module: 'software-testing'
+category: 云与基础设施
 difficulty: beginner
 description: Jest 配置与快照 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## jest.config.js 配置
 
 **换行写法：Jest 配置文件**

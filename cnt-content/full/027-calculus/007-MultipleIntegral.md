@@ -1,165 +1,22 @@
 ---
-order: 7
+order: 70
 title: 重积分
-module: calculus
-category: 高等数学
+module: 'calculus'
+category: 数学
 difficulty: advanced
 description: 重积分的 Riemann 与 Lebesgue 形式化定义、Fubini-Tonelli 定理、变量替换与 Jacobian 行列式、极/柱/球坐标系、Gauss-Green-Stokes 向量分析定理、Monte Carlo 高维积分与工程应用。本篇以 Spivak Calculus on Manifolds、Apostol Mathematical Analysis、Rudin PMA/RA、Folland Real Analysis 风格严格阐述,配套 40+ Python/SymPy/scipy 数值与符号计算示例、6 个 Mermaid 图。
 author: fanquanpp
-created: 2026-06-14
-updated: 2026-07-18
-lastReviewed: '2026-07-18'
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 120
-tags:
-- calculus
-- multiple-integral
-- fubini-theorem
-- tonelli-theorem
-- jacobian
-- lebesgue-measure
-- change-of-variables
-- vector-calculus
-- monte-carlo
-- real-analysis
+updated: '2026-07-18'
 related:
-- calculus/定积分与应用
-- calculus/多元函数微分
-- calculus/曲线积分与曲面积分
-- calculus/公式速查表
-- calculus/函数与极限
-- calculus/导数与微分
-- math/实分析
-- math/测度论
+  - 'calculus/005-DefiniteIntegralAndApplication'
+  - 'calculus/006-MultivariateFunctionDifferential'
+  - 'calculus/008-CurveAndSurfaceIntegral'
+  - 'calculus/009-FormulaQuickReference'
+  - 'calculus/001-FunctionAndLimit'
+  - 'calculus/002-PhilosophiaeNaturalisPrincipiaMathematica'
 prerequisites: []
-references:
-- type: book
-  authors:
-  - Spivak, Michael
-  year: 1965
-  title: 'Calculus on Manifolds: A Modern Approach to Classical Theorems of Advanced Calculus'
-  venue: W. A. Benjamin
-- type: book
-  authors:
-  - Apostol, Tom M.
-  year: 1974
-  title: Mathematical Analysis
-  venue: Addison-Wesley
-  version: 2nd edition
-- type: book
-  authors:
-  - Rudin, Walter
-  year: 1976
-  title: Principles of Mathematical Analysis
-  venue: McGraw-Hill Education
-  version: 3rd edition
-- type: book
-  authors:
-  - Rudin, Walter
-  year: 1987
-  title: Real and Complex Analysis
-  venue: McGraw-Hill Education
-  version: 3rd edition
-- type: book
-  authors:
-  - Folland, Gerald B.
-  year: 1999
-  title: 'Real Analysis: Modern Techniques and Their Applications'
-  venue: John Wiley & Sons
-  version: 2nd edition
-- type: book
-  authors:
-  - Royden, H. L.
-  - Fitzpatrick, Patrick M.
-  year: 2010
-  title: Real Analysis
-  venue: Pearson
-  version: 4th edition
-- type: book
-  authors:
-  - Stein, Elias M.
-  - Shakarchi, Rami
-  year: 2005
-  title: 'Real Analysis: Measure Theory, Integration, and Hilbert Spaces'
-  venue: Princeton University Press
-- type: book
-  authors:
-  - Courant, Richard
-  - John, Fritz
-  year: 1989
-  title: Introduction to Calculus and Analysis II/2
-  venue: Springer
-- type: book
-  authors:
-  - Munkres, James R.
-  year: 1991
-  title: Analysis on Manifolds
-  venue: Westview Press
-- type: book
-  authors:
-  - Spivak, Michael
-  year: 1999
-  title: A Comprehensive Introduction to Differential Geometry, Volume 1
-  venue: Publish or Perish
-  version: 3rd edition
-- type: journal
-  authors:
-  - Fubini, Guido
-  year: 1907
-  title: Sugli integrali multipli
-  venue: Rendiconti del Circolo Matematico di Palermo
-  volume: 24
-  issue: 1
-  pages: 1-21
-  doi: 10.1007/BF03015094
-- type: journal
-  authors:
-  - Tonelli, Leonida
-  year: 1909
-  title: Sull'integrazione per parti
-  venue: Atti dell'Accademia Nazionale dei Lincei
-  volume: 18
-  issue: 2
-  pages: 246-253
-- type: journal
-  authors:
-  - Carathéodory, Constantin
-  year: 1914
-  title: Über das lineare Maß von Punktmengen—eine Verallgemeinerung des Längenbegriffs
-  venue: Nachrichten von der Gesellschaft der Wissenschaften zu Göttingen, Mathematisch-Physikalische Klasse
-  pages: 404-426
-- type: book
-  authors:
-  - Lebesgue, Henri
-  year: 1904
-  title: Leçons sur l'intégration et la recherche des fonctions primitives
-  venue: Gauthier-Villars
-etymology:
-- term: 重积分
-  english: multiple integral
-  origin: 源自拉丁语 "integer"(整体的、未分的),多重积分是单变量定积分在 n 维欧氏空间 R^n 上的自然推广;记号 ∫∫∫ 由 Leibniz 学派在 18 世纪逐步演化,1786 年 Legendre 首次在球面坐标下使用三重积分
-- term: 雅可比
-  english: Jacobian
-  origin: 以德国数学家 Carl Gustav Jacob Jacobi(1804-1851)命名,1841 年发表《De determinantibus functionalibus》,Jacobian 行列式刻画多元变量替换下体积元素的伸缩与定向反转
-- term: 富比尼定理
-  english: Fubini theorem
-  origin: 以意大利数学家 Guido Fubini(1879-1943)命名,1907 年发表《Sugli integrali multipli》,给出可积条件下重积分化为累次积分的严格证明
-- term: 托内利定理
-  english: Tonelli theorem
-  origin: 以意大利数学家 Leonida Tonelli(1885-1946)命名,1909 年发表,给出非负可测函数情形下交换积分次序的判定,与 Fubini 定理互补
-- term: 微分同胚
-  english: diffeomorphism
-  origin: 希腊语 "diffeo"(改变形态)+ "morphe"(形状),指光滑可逆且逆亦光滑的映射,是变量替换定理的核心假设
-- term: 测度论
-  english: measure theory
-  origin: 拉丁语 "mensura"(测量),由 Carathéodory 在 1914 年公理化,Lebesgue 在 1902 年首次以"对 y 轴分割"突破 Riemann 理论
-- term: 流形
-  english: manifold
-  origin: 德语 "Mannigfaltigkeit"(多样性、多面体),由 Riemann 在 1854 年就职演讲《论几何学基础的假设》中引入,Spivak 在 1965 年以微分流形统一推广了重积分与 Stokes 定理
-- term: 散度定理
-  english: divergence theorem
-  origin: 拉丁语 "divergere"(分散、散开),由 Gauss(1813)、Green(1828)、Ostrogradsky(1826)各自独立发现,将体积分化为曲面积分
 ---
+
 
 
 ## 第 1 章 引言:从一维到多维的积分

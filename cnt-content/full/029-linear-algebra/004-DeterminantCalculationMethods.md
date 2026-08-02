@@ -1,18 +1,19 @@
 ---
-order: 13
+order: 40
 title: 行列式计算方法
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 行列式计算的"工具箱"：化三角形法、范德蒙德行列式、递推法、数学归纳法、拆分法（拆行/列与加边法）的原理、适用场景，以及方法选择指南。
+description: '行列式计算的"工具箱"：化三角形法、范德蒙德行列式、递推法、数学归纳法、拆分法（拆行/列与加边法）的原理、适用场景，以及方法选择指南。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/行列式基本性质'
-  - 'linear-algebra/行列式按行列展开'
-  - 'linear-algebra/克莱姆法则'
+  - 'linear-algebra/002-DeterminantBasicProperties'
+  - 'linear-algebra/003-DeterminantRowColumnExpansion'
+  - 'linear-algebra/005-CramersRule'
 prerequisites: []
 ---
+
 
 ## 0. 生活类比：工具箱里的多把工具
 

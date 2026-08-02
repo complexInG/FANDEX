@@ -1,20 +1,20 @@
 ---
-order: 85
+order: 440
 title: 分区表
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL分区表：RANGE、LIST、HASH、KEY分区的语法、管理、裁剪与性能优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/组复制
-  - mysql/InnoDB集群
-  - mysql/分库分表中间件
-  - mysql/账户与权限管理
+  - 'mysql/042-GroupReplication'
+  - 'mysql/045-ShardingMiddleware'
+  - 'mysql/046-AccountPermissionManagement'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. 分区概述
 
 分区将大表拆分为多个物理小表，对应用透明，用于提升查询性能和管理便利性。

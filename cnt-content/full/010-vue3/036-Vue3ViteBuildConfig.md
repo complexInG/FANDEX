@@ -1,9 +1,8 @@
 ---
 order: 360
 title: Vue 3 Vite 构建配置与命令
-module: vue3
-
-category: '010-vue3'
+module: 'vue3'
+category: 前端技术
 difficulty: beginner
 description: Vue 3 Vite 构建配置与命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 创建 Vue 项目
 
 **基本写法：使用 create-vue 脚手架**

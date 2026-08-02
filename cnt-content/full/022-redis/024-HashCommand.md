@@ -1,9 +1,8 @@
 ---
 order: 240
 title: Redis Hash 命令速查
-module: redis
-
-category: '022-redis'
+module: 'redis'
+category: 数据库
 difficulty: beginner
 description: Redis Hash 命令速查 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 基本读写
 
 **基本写法：HSET 设置单个字段**

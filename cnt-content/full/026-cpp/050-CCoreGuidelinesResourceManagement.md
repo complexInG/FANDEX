@@ -1,149 +1,30 @@
 ---
-order: 100
+order: 500
 title: RAII资源管理
-module: cpp
-category: dev-lang
-tags:
-- cpp
-- raii
-- smart-pointer
-- resource-management
-- exception-safety
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: C++ RAII 资源管理深度解析：形式化定义、栈展开机制、异常安全保证、智能指针、锁守卫、文件句柄、数据库事务、OpenGL/CUDA 资源、Pimpl、Scope Guard 与跨语言对比。
 author: fanquanpp
-created: 2026-06-14
-updated: 2026-07-18
-lastReviewed: 2026-07-18
-reviewer: FANDEX Content Engineering
-readingTime: 95
-estimatedReadingTime: 95
+updated: '2026-07-18'
 related:
-- cpp/智能指针详解
-- cpp/指针
-- cpp/右值引用与移动语义
-- cpp/并发编程
-- cpp/STL容器与迭代器
-- cpp/STL算法与函数对象
-- cpp/移动语义详解
-- cpp/面向对象基础
-- cpp/运算符重载
-- cpp/异常处理
+  - 'cpp/007-N4089DeletingSafeBoolInFavorOfExplicitBool'
+  - 'cpp/006-PointersCppreferenceCom'
+  - 'cpp/005-RvalueReferenceMoveSemantics'
+  - 'cpp/049-ConcurrentProgramming'
+  - 'cpp/048-CSTL'
+  - 'cpp/051-CSTLAlgorithmAndFunctionObject'
+  - 'cpp/052-MoveSemanticsDetailed'
+  - 'cpp/015-COOPBasics'
+  - 'cpp/014-OperatorOverloading'
+  - 'cpp/064-CppExceptionAndPerformance'
 prerequisites:
-- cpp/概述与现代标准
-- cpp/基础语法
-- cpp/数据类型详解
-- cpp/指针
-- cpp/面向对象基础
-references:
-- type: standard
-  authors:
-  - ISO/IEC
-  year: 2023
-  title: Information technology — Programming languages — C++
-  venue: ISO/IEC 14882:2023
-  version: Eighth edition
-- type: book
-  authors:
-  - Stroustrup, Bjarne
-  year: 2013
-  title: The C++ Programming Language
-  venue: Addison-Wesley Professional
-  version: 4th edition
-- type: book
-  authors:
-  - Meyers, Scott
-  year: 2014
-  title: 'Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14'
-  venue: O'Reilly Media
-- type: book
-  authors:
-  - Sutter, Herb
-  - Alexandrescu, Andrei
-  year: 2004
-  title: 'C++ Coding Standards: 101 Rules, Guidelines, and Best Practices'
-  venue: Addison-Wesley Professional
-- type: book
-  authors:
-  - Alexandrescu, Andrei
-  year: 2001
-  title: 'Modern C++ Design: Generic Programming and Design Patterns Applied'
-  venue: Addison-Wesley Professional
-- type: book
-  authors:
-  - Stroustrup, Bjarne
-  year: 1994
-  title: The Design and Evolution of C++
-  venue: Addison-Wesley Professional
-- type: book
-  authors:
-  - Williams, Anthony
-  year: 2019
-  title: C++ Concurrency in Action
-  venue: Manning Publications
-  version: 2nd edition
-- type: website
-  authors:
-  - Sutter, Herb
-  year: 2013
-  title: 'GotW #89 Solution: Smart Pointers'
-  url: https://herbsutter.com/2013/05/29/gotw-89-solution-smart-pointers/
-  accessedDate: '2026-07-18'
-- type: website
-  authors:
-  - cppreference.com
-  year: 2024
-  title: RAII — cppreference.com
-  url: https://en.cppreference.com/w/cpp/language/raii
-  accessedDate: '2026-07-18'
-- type: documentation
-  authors:
-  - C++ Core Guidelines
-  year: 2024
-  title: 'C++ Core Guidelines: Resource Management'
-  venue: isocpp
-  url: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
-  accessedDate: '2026-07-18'
-etymology:
-- term: RAII
-  english: Resource Acquisition Is Initialization
-  origin: Bjarne Stroustrup 于 1980s 在设计 C++ 时提出，将资源生命周期与对象生命周期绑定；首字母缩写强调"获取即初始化"的同构性
-- term: 栈展开
-  english: Stack Unwinding
-  origin: '"unwind" 意为"解开、回绕"，隐喻异常抛出时逐帧回溯调用栈、调用析构函数清理自动对象的过程'
-- term: 析构函数
-  english: Destructor
-  origin: 源自拉丁语 "de-"（去除、反向）+ "struere"（建造），即"反向构造"，对象生命周期结束时执行的清理过程
-- term: 不变量
-  english: Invariant
-  origin: 源自拉丁语 "in-"（不）+ "variare"（变化），指在对象生命周期内始终保持成立的逻辑条件
-- term: 作用域守卫
-  english: Scope Guard
-  origin: '"scope"（作用域）+ "guard"（守卫），由 Andrei Alexandrescu 在 2000 年发表于 Generic Programming 系列文章，泛化 RAII 至任意清理动作'
-- term: 所有权
-  english: Ownership
-  origin: 借用日常语义，指"负责管理某资源生命周期"的责任归属；Rust 进一步将所有权纳入类型系统
-- term: 引用计数
-  english: Reference Counting
-  origin: 维护指向对象的引用数量，归零时释放；最早可追溯至 1960 年 George Collins 的环形引用回收算法
-quiz:
-- type: choice
-  question: RAII 的核心思想是？
-  options:
-  - 资源获取即初始化，析构释放
-  - 引用计数自动管理内存
-  - 垃圾回收器定期扫描
-  - 手动 new/delete 配对
-  answer: 0
-  explanation: RAII = Resource Acquisition Is Initialization，将资源生命周期绑定到对象生命周期。
-- type: fill
-  question: shared_ptr 通过 ____ 实现共享所有权。
-  answer: 引用计数
-- type: fix
-  question: 修正以下内存泄漏代码
-  code: int* p = new int(42); std::cout << *p;
-  answer: auto p = std::make_unique<int>(42); std::cout << *p;
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/002-CppBasicSyntax'
+  - 'cpp/006-PointersCppreferenceCom'
+  - 'cpp/015-COOPBasics'
 ---
+
 ## 第 1 章 学习目标与导论
 
 ### 1.1 本章在 C++ 知识体系中的位置

@@ -1,173 +1,30 @@
 ---
-order: 60
+order: 70
 title: 树
-module: algorithm
-category: Algorithm/Tree
+module: 'algorithm'
+category: 计算机科学
 difficulty: intermediate
 description: 树（Tree）的形式化定义、二叉树遍历、二叉搜索树（BST）、AVL 树、红黑树、B 树/B+ 树、Splay 伸展树、Treap 树堆、Trie 字典树、LSM 树的原理、复杂度分析与多语言实现，附 Python/C++/Java 实现。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-tree
-- algorithm-datastructure
-- algorithm-binary-tree
-- algorithm-bst
-- algorithm-red-black-tree
-- algorithm-b-tree
-created: 2026-05-27
-updated: 2026-07-20
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 95
+updated: '2026-07-20'
 related:
-- algorithm/算法分析基础与学习路线
-- algorithm/链表
-- algorithm/哈希表
-- algorithm/图算法
-- algorithm/堆与优先队列
-- algorithm/线段树
-- algorithm/树状数组
-- algorithm/并查集
-- algorithm/跳跃表
-- algorithm/排序算法
-- algorithm/搜索算法
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/005-LinkedList'
+  - 'algorithm/006-HashTable'
+  - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
+  - 'algorithm/016-HeapAndPriorityQueue'
+  - 'algorithm/020-AtCoderLibrarySegmentTree'
+  - 'algorithm/021-PostgreSQLStatisticsCollector'
+  - 'algorithm/019-RedisClusterHashSlotAndConsistentHashingDesignNotes'
+  - 'algorithm/022-LevelDBREADMEMemTableImplementation'
+  - 'algorithm/002-SortAlgorithm'
+  - 'algorithm/004-SearchAlgorithm'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/链表
-- cs-fundamentals/离散数学
-references:
-- type: journal
-  authors:
-  - Adelson-Velsky, Georgy M.
-  - Landis, Evgenii M.
-  year: 1962
-  title: An algorithm for the organization of information
-  venue: Soviet Mathematics Doklady
-  volume: 3
-  pages: 1259-1263
-- type: journal
-  authors:
-  - Bayer, Rudolf
-  - McCreight, Edward M.
-  year: 1972
-  title: Organization and maintenance of large ordered indexes
-  venue: Acta Informatica
-  volume: 1
-  issue: 3
-  pages: 173-189
-  doi: 10.1007/BF00288683
-- type: conference
-  authors:
-  - Bayer, Rudolf
-  year: 1972
-  title: 'Symmetric binary B-trees: Data structure and maintenance algorithms'
-  venue: Acta Informatica
-  volume: 1
-  issue: 4
-  pages: 290-306
-  doi: 10.1007/BF00289509
-- type: conference
-  authors:
-  - Guibas, Leo J.
-  - Sedgewick, Robert
-  year: 1978
-  title: A dichromatic framework for balanced trees
-  venue: Proceedings of the 19th Annual Symposium on Foundations of Computer Science (SFCS)
-  pages: 8-21
-  doi: 10.1109/SFCS.1978.3
-- type: journal
-  authors:
-  - Sleator, Daniel D.
-  - Tarjan, Robert E.
-  year: 1985
-  title: Self-adjusting binary search trees
-  venue: Journal of the ACM
-  volume: 32
-  issue: 3
-  pages: 652-686
-  doi: 10.1145/3828.3835
-- type: conference
-  authors:
-  - Seidel, Raimund
-  - Aragon, Cecilia R.
-  year: 1996
-  title: Randomized search trees
-  venue: Algorithmica
-  volume: 16
-  pages: 464-497
-  doi: 10.1007/s004539900061
-- type: journal
-  authors:
-  - O'Neil, Patrick
-  - Cheng, Edward
-  - Gawlick, Dieter
-  - O'Neil, Elizabeth
-  year: 1996
-  title: The log-structured merge-tree (LSM-tree)
-  venue: Acta Informatica
-  volume: 33
-  issue: 4
-  pages: 351-385
-  doi: 10.1007/s002360050048
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1997
-  title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
-  venue: Addison-Wesley Professional
-  version: 3rd edition
-  pages: ISBN 978-0201896831, Section 2.3 (Trees)
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: Chapter 12 (Binary Search Trees) and Chapter 13 (Red-Black Trees), ISBN 978-0262046305
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 3.2 (BST) and Section 3.3 (Balanced Search Trees)
-- type: website
-  authors:
-  - Comer, Douglas
-  year: 1979
-  title: The ubiquitous B-tree
-  venue: ACM Computing Surveys
-  url: https://doi.org/10.1145/356770.356776
-  accessedDate: '2026-07-20'
-etymology:
-- term: 树
-  english: tree
-  origin: tree 一词源自古英语 trēow（树），计算机科学中首次由 Knuth TAOCP Vol.1 §2.3 系统化定义。树形结构因与自然界树木的"根-枝-叶"形态相似而得名，根在上、叶在下的画法是数学传统（家族树、语法树均如此），与自然树相反
-- term: 二叉搜索树
-  english: binary search tree
-  origin: binary 意为"二叉"，每个节点最多两个子节点；search 强调支持 $O(\log n)$ 查找。由 Windley 1960 与 Booth-Llewelyn 1960 等独立提出，Knuth TAOCP Vol.1 §2.3.2 给出系统化定义。中文也称"二叉查找树"或"二叉排序树"（强调中序遍历有序）
-- term: AVL 树
-  english: AVL tree
-  origin: AVL 是发明者 Georgy Adelson-Velsky 与 Evgenii Landis 姓氏首字母缩写。两人 1962 年在《Soviet Mathematics Doklady》发表论文《An algorithm for the organization of information》，首次提出自平衡二叉搜索树，论文翻译为英文后 AVL 树在西方传播。这是苏联对计算机科学最持久的贡献之一
-- term: 红黑树
-  english: red-black tree
-  origin: red-black（红黑）源自节点颜色标记。Bayer 1972 年提出"对称二叉 B 树"（symmetric binary B-trees），用红黑边表示平衡条件；1978 年 Guibas-Sedgewick 在 SFCS 论文《A dichromatic framework for balanced trees》将其改造为现代红黑树形式（节点着色）。"dichromatic"（二色）即红与黑
-- term: B 树
-  english: B-tree
-  origin: B 由 Bayer-McCreight 1972 论文《Organization and maintenance of large ordered indexes》提出。Bayer 从未公开说明 B 的含义，常见猜测包括 Bayer、Boeing（Bayer 当时在 Boeing Scientific Research Labs）、Balance、Broad、Bushy。McCreight 2007 年澄清："B 即 Bayer，亦即 Boeing，亦即 Balanced"
-- term: Splay 树
-  english: splay tree
-  origin: splay 意为"展开、张开"。Sleator-Tarjan 1985 JACM 论文《Self-adjusting binary search trees》中，splay 操作将访问节点通过旋转移至树根，"展开"了访问路径。亦译为"伸展树"，强调沿访问路径伸展调整
-- term: Treap
-  english: Treap
-  origin: Treap = Tree + Heap（树与堆的合成词）。Seidel-Aragon 1996 论文《Randomized search trees》提出，每个节点同时满足 BST 性质（按 key）与堆性质（按随机优先级 priority）。中文称"树堆"，体现其兼具树与堆的双重性质
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/005-LinkedList'
+  - 'cs-fundamentals/006-DiscreteMathematics'
 ---
+
 
 
 ## 1. 概述与学习目标

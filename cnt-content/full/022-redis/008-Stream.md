@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 80
 title: 流
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: advanced
-description: 'Redis Stream消息队列：消费者组、消息确认、消息积压与XREAD/XADD命令'
+description: Redis Stream消息队列：消费者组、消息确认、消息积压与XREAD/XADD命令
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/基数统计
-  - redis/地理空间
-  - redis/向量集
-  - redis/RDB快照持久化
+  - 'redis/006-NumberStats'
+  - 'redis/007-GeoSpatial'
+  - 'redis/009-VectorSet'
+  - 'redis/010-RDBSnapshotPersistence'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 ## 第 1 章 概述与学习目标
 
 ### 1.1 Stream 是什么

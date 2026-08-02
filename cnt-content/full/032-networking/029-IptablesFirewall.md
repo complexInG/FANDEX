@@ -1,9 +1,8 @@
 ---
 order: 290
 title: Networking iptables 防火墙
-module: networking
-
-category: '032-networking'
+module: 'networking'
+category: 云与基础设施
 difficulty: beginner
 description: Networking iptables 防火墙 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## iptables 查看规则
 
 **基本写法：查看所有规则**

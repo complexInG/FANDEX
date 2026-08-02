@@ -1,20 +1,20 @@
 ---
-order: 76
+order: 340
 title: 类型安全的路由
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: 构建类型安全的前端路由系统
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/类型安全的API客户端
-  - typescript/类型安全的国际化
-  - typescript/类型安全的环境变量
-  - typescript/类型安全的状态管理
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/029-TypeSafeAPIClient'
+  - 'typescript/033-TypeSafeI18n'
+  - 'typescript/031-TypeSafeEnvVar'
+  - 'typescript/030-TypeSafeStateManagement'
+prerequisites: []
 ---
+
 
 
 ## 历史动机与背景

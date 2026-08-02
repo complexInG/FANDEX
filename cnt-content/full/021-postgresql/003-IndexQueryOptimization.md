@@ -1,19 +1,20 @@
 ---
-order: 3
+order: 30
 title: 索引与查询优化
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
-description: 'B-tree/Hash/GiST/GIN/SP-GiST/BRIN索引、覆盖/部分/表达式/KNN向量索引、统计信息、代价估算、执行计划分析、并行查询、分区表。'
+description: B-tree/Hash/GiST/GIN/SP-GiST/BRIN索引、覆盖/部分/表达式/KNN向量索引、统计信息、代价估算、执行计划分析、并行查询、分区表。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/概述与安装配置
-  - postgresql/事务与并发控制
-  - postgresql/高级SQL与扩展
-  - postgresql/复制与高可用
+  - 'postgresql/001-OverviewInstallConfig'
+  - 'postgresql/002-TransactionConcurrencyControl'
+  - 'postgresql/004-AdvancedSQLExtension'
+  - 'postgresql/005-ReplicationHA'
 prerequisites: []
 ---
+
 
 ## 1. 索引类型
 

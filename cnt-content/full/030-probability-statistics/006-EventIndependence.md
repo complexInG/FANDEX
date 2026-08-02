@@ -1,18 +1,19 @@
 ---
-order: 15
+order: 60
 title: 事件的独立性
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 从掷两次硬币的对照实验出发，讲解事件独立性的定义与判定方法、独立与互斥的区别、多个事件的独立性与独立重复试验的应用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/条件概率'
-  - 'probability-statistics/贝叶斯公式'
-  - 'probability-statistics/离散型随机变量'
+  - 'probability-statistics/004-ConditionalProbability'
+  - 'probability-statistics/005-BayesFormula'
+  - 'probability-statistics/008-DiscreteRandomVariable'
 prerequisites: []
 ---
+
 
 ## 0. 掷两次硬币的对照实验
 

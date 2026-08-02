@@ -1,18 +1,18 @@
 ---
-order: 11
+order: 20
 title: 设计文档规范
 module: 'engineering-practices'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: RFC、ADR、技术方案文档的编写规范与最佳实践。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'engineering-practices/工程实践概述'
-  - 'engineering-practices/代码审查清单'
-  - 'engineering-practices/On-Call最佳实践'
+  - 'engineering-practices/001-EngineeringPracticeOverview'
+  - 'engineering-practices/004-OnCallPractice'
 prerequisites: []
 ---
+
 
 ## 1. 为什么需要设计文档
 

@@ -1,20 +1,18 @@
 ---
-order: 71
-title: 'git-bisect'
-module: git
-category: 'Git Basics'
+order: 290
+title: git-bisect
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git bisect二分查找：自动化定位引入Bug的提交。'
+description: git bisect二分查找：自动化定位引入Bug的提交。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/Git原理与对象模型
-  - git/标签管理
-  - git/子模块管理
-  - git/稀疏检出
-prerequisites:
-  - git/语法速查
+  - 'git/027-GitPrincipleObjectModel'
+  - 'git/028-TagManagement'
+prerequisites: []
 ---
+
 ## 1. bisect 概述
 
 ### 1.1 什么是 bisect

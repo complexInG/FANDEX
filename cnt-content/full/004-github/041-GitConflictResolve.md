@@ -1,9 +1,8 @@
 ---
 order: 410
 title: GitHub 冲突解决
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 以问题驱动方式讲解 Git 合并冲突的产生原理、冲突标记解读、完整解决流程与预防策略，覆盖 merge/rebase/cherry-pick 冲突场景，适合零基础学习者。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 ## 开篇：冲突了怎么办——先别慌
 
 想象这样一个场景：你和同事在同一张纸上写会议纪要。你在第 3 行写上"预算 5 万元"，同事也在第 3 行写上"预算 8 万元"。最后要把两份纪要合成一份，尴尬的时刻来了——**第 3 行到底听谁的？**

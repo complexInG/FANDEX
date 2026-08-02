@@ -1,19 +1,20 @@
 ---
-order: 33
+order: 140
 title: 非齐次线性方程组
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 非齐次线性方程组的解的性质与结构，特解与导出组通解的关系，非齐次方程组通解的求法，特解选取的灵活性。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/解的存在性判定'
-  - 'linear-algebra/齐次线性方程组'
-  - 'linear-algebra/解的结构'
+  - 'linear-algebra/014-SolutionExistenceDetermination'
+  - 'linear-algebra/015-HomogeneousLinearSystem'
+  - 'linear-algebra/017-SolutionStructure'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从"搬家"说起
 

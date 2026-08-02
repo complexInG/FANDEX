@@ -1,23 +1,24 @@
 ---
-order: 51
+order: 70
 title: 优先级计算
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: 深入解析 CSS 优先级（Specificity）与层叠算法（Cascade Algorithm）的规范、计算、工程实践与跨框架对比
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - css/Flexbox弹性布局
-  - css/伪类与伪元素
-  - css/样式表引入方式
-  - css/margin合并与塌陷
-  - css/层叠上下文
+  - 'css/005-CSS3FlexboxFlexLayout'
+  - 'css/006-PseudoClassPseudoElement'
+  - 'css/008-StyleSheetImportMethod'
+  - 'css/009-MarginCollapse'
+  - 'css/012-StackingContext'
 prerequisites:
-  - css/概述与基本语法
-  - css/选择器
-  - css/层叠上下文
+  - 'css/001-CSS3OverviewBasicSyntax'
+  - 'css/003-CSS3SelectorSystem'
+  - 'css/012-StackingContext'
 ---
+
 
 # 优先级计算（Specificity & Cascade）
 

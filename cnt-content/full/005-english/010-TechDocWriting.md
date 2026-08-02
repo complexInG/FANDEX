@@ -1,20 +1,21 @@
 ---
-order: 42
+order: 100
 title: 技术文档写作
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: intermediate
-description: '英文技术文档写作指南，涵盖 README 写作、API 文档、CHANGELOG 及技术博客写作。'
+description: 英文技术文档写作指南，涵盖 README 写作、API 文档、CHANGELOG 及技术博客写作。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/学术论文阅读指南
-  - english/学术写作规范
-  - english/英译汉技巧
-  - english/汉译英技巧
+  - 'english/008-AcademicPaperReadingGuide'
+  - 'english/009-AcademicWritingStandard'
+  - 'english/011-EnglishToChineseTechnique'
+  - 'english/012-ChineseToEnglishTechnique'
 prerequisites:
-  - english/计算机专业英语词汇
+  - 'english/001-ComputerProfessionalEnglishVocabulary'
 ---
+
 
 ## 1. 技术文档写作原则
 

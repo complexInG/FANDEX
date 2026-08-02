@@ -1,20 +1,20 @@
 ---
-order: 86
+order: 450
 title: 分库分表中间件
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL分库分表中间件：ShardingSphere、Vitess、MyCat的架构、分片策略与适用场景
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/InnoDB集群
-  - mysql/分区表
-  - mysql/账户与权限管理
-  - 'mysql/SSL-TLS加密'
+  - 'mysql/044-PartitionedTable'
+  - 'mysql/046-AccountPermissionManagement'
+  - 'mysql/047-SSLEncryption'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 分库分表概述
 

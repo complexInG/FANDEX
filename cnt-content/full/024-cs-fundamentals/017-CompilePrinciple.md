@@ -1,24 +1,21 @@
 ---
+order: 170
 title: 编译原理
 module: 'cs-fundamentals'
-category: 'Computer Science / Compiler'
+category: 计算机科学
+difficulty: intermediate
 description: 编译原理核心：词法分析、语法分析、语义分析、中间代码生成、优化、目标代码生成。
 author: fanquanpp
-order: 60
-tags:
-  - 'cs-fundamentals'
-  - 'computer-science---compiler'
-  - performance
-difficulty: intermediate
-related:
-  - 'cs-fundamentals/形式语言与自动机'
-  - 'cs-fundamentals/信息安全基础'
-  - 'cs-fundamentals/软件工程'
-  - 'cs-fundamentals/数据库系统原理'
-prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
 updated: '2026-08-01'
+related:
+  - 'cs-fundamentals/015-FormalLanguageAndAutomata'
+  - 'cs-fundamentals/016-InformationSecurityBasics'
+  - 'cs-fundamentals/018-SoftwareEngineering'
+  - 'cs-fundamentals/019-DatabaseSystemPrinciple'
+prerequisites:
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 编译器概述
 

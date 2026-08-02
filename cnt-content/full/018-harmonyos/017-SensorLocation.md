@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 170
 title: 传感器与位置
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 传感器与定位服务
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/网络请求
-  - harmonyos/手势与交互
-  - harmonyos/多媒体能力
-  - harmonyos/通知与权限
+  - 'harmonyos/011-NetworkRequest'
+  - 'harmonyos/014-GestureInteraction'
+  - 'harmonyos/016-MultimediaCapability'
+  - 'harmonyos/015-NotificationPermission'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 概述
 
 HarmonyOS 提供了丰富的传感器和位置服务 API。传感器包括加速度计、陀螺仪、磁力计、光线传感器等，可以感知设备的运动和环境状态。位置服务则通过 GPS、Wi-Fi 和基站等方式获取设备的地理位置信息。这些能力是运动健康、导航、AR 等应用的基础。

@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 120
 title: ESP32开发
-module: iot
-category: 'eng-infra'
+module: 'iot'
+category: 云与基础设施
 difficulty: intermediate
 description: ESP32开发：双核架构、WiFi/蓝牙、FreeRTOS、低功耗模式与项目实战。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/CoAP协议
-  - iot/Arduino开发
-  - 'iot/RT-Thread实时系统'
-  - iot/边缘AI
+  - 'iot/010-CoAP'
+  - 'iot/011-ArduinoDevelopment'
+  - 'iot/013-RTThread'
+  - 'iot/014-AI'
 prerequisites:
-  - iot/概述与架构
+  - 'iot/001-OverviewArchitecture'
 ---
+
 
 ## 1. ESP32 概述
 

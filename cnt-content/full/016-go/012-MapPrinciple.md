@@ -1,23 +1,24 @@
 ---
-order: 51
+order: 120
 title: Map原理
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'Go map底层实现：hmap结构、bucket、hash函数、扩容机制、并发安全与Go 1.24 Swiss Table'
+description: Go map底层实现：hmap结构、bucket、hash函数、扩容机制、并发安全与Go 1.24 Swiss Table
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Web开发与微服务
-  - go/切片原理
-  - go/Channel原理
-  - go/Goroutine调度
-  - go/竞态检测与原子操作
+  - 'go/010-GoWebDevelopmentMicroservice'
+  - 'go/011-SlicePrinciple'
+  - 'go/014-ChannelPrinciple'
+  - 'go/018-GoroutineSchedule'
+  - 'go/058-RaceDetectionAtomic'
 prerequisites:
-  - go/概述与环境配置
-  - go/切片原理
-  - go/接口与类型断言
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/011-SlicePrinciple'
+  - 'go/019-InterfaceTypeAssertion'
 ---
+
 
 
 # Map 原理：从哈希表到 Swiss Table 的演进

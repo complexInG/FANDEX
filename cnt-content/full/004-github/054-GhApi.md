@@ -1,9 +1,8 @@
 ---
 order: 540
 title: gh api 调用命令速查手册
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 原理驱动讲解 gh api：先讲清 REST 与 GraphQL API 是什么，再讲 gh api 如何完成认证请求、传参、输出处理、分页与 GraphQL 查询，配以错误对策。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 
 ## 开篇：把 API 想成"万能遥控器 + 电器说明书"
 

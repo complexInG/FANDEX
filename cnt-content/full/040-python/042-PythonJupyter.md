@@ -1,29 +1,22 @@
 ---
-order: 83
-title: 'Python 与 Jupyter：交互式计算、数据分析与可复现研究'
-module: python
-category: Python
+order: 420
+title: Python 与 Jupyter：交互式计算、数据分析与可复现研究
+module: 'python'
+category: 后端技术
 difficulty: intermediate
-description: '系统阐述 Jupyter Notebook/Lab 的架构、内核协议、魔法命令、可视化、Widgets、性能优化与企业级部署实践。'
+description: 系统阐述 Jupyter Notebook/Lab 的架构、内核协议、魔法命令、可视化、Widgets、性能优化与企业级部署实践。
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - python
-  - jupyter
-  - notebook
-  - data-science
-  - visualization
-  - ipython
 related:
-  - python/Python与设计模式
-  - python/Python与打包发布
-  - python/Python与虚拟环境
-  - python/Python与代码质量
+  - 'python/040-PythonDesignPattern'
+  - 'python/041-ASurveyOfPythonPackagingPastPresentAndFuture'
+  - 'python/009-PythonVirtualEnv'
+  - 'python/044-PythonCodeQuality'
 prerequisites:
-  - python/语法速查
-  - python/基础数据类型
-  - python/列表推导式进阶
+  - 'python/067-BasicDataType'
+  - 'python/007-ListComprehensionAdvanced'
 ---
+
 
 
 # Python 与 Jupyter：交互式计算、数据分析与可复现研究

@@ -1,20 +1,21 @@
 ---
-order: 70
+order: 290
 title: Less与Stylus
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: Less与Stylus
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/滚动捕捉
-  - css/Sass预处理器
-  - css/响应式设计
-  - css/PostCSS与构建工具
+  - 'css/027-ScrollSnap'
+  - 'css/028-Sass'
+  - 'css/030-ResponsiveDesign'
+  - 'css/031-PostCSS'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. Less
 

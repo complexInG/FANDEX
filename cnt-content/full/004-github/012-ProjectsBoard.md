@@ -1,20 +1,19 @@
 ---
-order: 55
+order: 120
 title: Projects看板
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: intermediate
 description: 'GitHub Projects深度解析：以"项目白板与便利贴"为主线，讲解表格/看板/时间线三种视图、自定义字段、内置自动化与洞察图表。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/依赖安全选项
-  - github/Fork工作流
-  - github/知识库
-  - github/社区讨论
+  - 'github/010-DependencySecurityOptions'
+  - 'github/011-ForkWorkflow'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一块白板说起：Projects 就是团队的"项目白板 + 便利贴墙"
 

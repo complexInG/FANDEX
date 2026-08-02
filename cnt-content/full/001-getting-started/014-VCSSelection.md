@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 140
 title: 版本控制系统选型
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 版本控制系统对比选型：Git与SVN的核心差异、适用场景与迁移策略。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/命令行基础'
-  - 'getting-started/包管理器'
-  - 'getting-started/项目初始化'
-  - 'getting-started/构建工具'
+  - 'getting-started/012-CommandLineBasics'
+  - 'getting-started/013-PackageManager'
+  - 'getting-started/015-ProjectInit'
+  - 'getting-started/016-BuildTool'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 版本控制系统概述
 

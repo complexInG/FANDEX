@@ -1,20 +1,20 @@
 ---
-order: 54
+order: 100
 title: 联合索引与最左前缀原则
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL联合索引与最左前缀原则：索引结构、匹配规则、跳列场景与索引设计策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/NDB集群
-  - mysql/聚簇索引与二级索引
-  - mysql/索引下推
-  - mysql/全文索引
+  - 'mysql/009-ClusteredIndexSecondaryIndex'
+  - 'mysql/011-IndexConditionPushdown'
+  - 'mysql/012-FullTextIndex'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 联合索引结构
 

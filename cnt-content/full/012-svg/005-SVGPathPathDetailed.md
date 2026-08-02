@@ -1,19 +1,20 @@
 ---
 order: 50
-title: 'SVG 路径 path 详解'
-module: svg
-category: 'SVG Basics'
+title: SVG 路径 path 详解
+module: 'svg'
+category: 前端技术
 difficulty: intermediate
-description: 'path 命令、贝塞尔曲线、弧线、相对坐标与复杂路径绘制技巧。'
+description: path 命令、贝塞尔曲线、弧线、相对坐标与复杂路径绘制技巧。
 author: fanquanpp
 updated: '2026-07-18'
 related:
-  - svg/基本图形详解
-  - svg/变换transform
-  - svg/符号与复用
+  - 'svg/004-SVGBasicShapeDetailed'
+  - 'svg/009-SVGTransformTransform'
+  - 'svg/012-SVGSymbolReuse'
 prerequisites:
-  - svg/基本图形详解
+  - 'svg/004-SVGBasicShapeDetailed'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 路径数据的演进

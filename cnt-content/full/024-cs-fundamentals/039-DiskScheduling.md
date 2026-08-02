@@ -1,20 +1,21 @@
 ---
-order: 106
+order: 390
 title: 磁盘调度
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: '磁盘调度算法：FCFS、SSTF、SCAN、C-SCAN、LOOK、C-LOOK 的原理与对比。'
+description: 磁盘调度算法：FCFS、SSTF、SCAN、C-SCAN、LOOK、C-LOOK 的原理与对比。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/页面置换算法'
-  - 'cs-fundamentals/文件系统inode'
-  - 'cs-fundamentals/零拷贝'
-  - 'cs-fundamentals/进程间通信'
+  - 'cs-fundamentals/037-PageReplacementAlgorithm'
+  - 'cs-fundamentals/038-FileSystemInode'
+  - 'cs-fundamentals/040-ZeroCopy'
+  - 'cs-fundamentals/041-IPC'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 磁盘结构
 

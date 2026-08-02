@@ -1,18 +1,19 @@
 ---
-order: 73
+order: 310
 title: 矩阵分解应用
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: advanced
-description: 从"工具箱选对工具"的生活类比出发，总览对比 LU/QR/SVD/特征值分解四大分解的适用场景，并逐一讲解解方程组、最小二乘拟合、PCA 主成分分析、推荐系统、图像压缩中的落地应用与选型决策。
+description: '从"工具箱选对工具"的生活类比出发，总览对比 LU/QR/SVD/特征值分解四大分解的适用场景，并逐一讲解解方程组、最小二乘拟合、PCA 主成分分析、推荐系统、图像压缩中的落地应用与选型决策。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/QR分解'
-  - 'linear-algebra/奇异值分解SVD'
+  - 'linear-algebra/035-QR'
+  - 'linear-algebra/036-SVD'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从生活场景说起：选对工具，事半功倍
 

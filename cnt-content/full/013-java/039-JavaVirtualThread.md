@@ -1,35 +1,25 @@
 ---
-order: 81
+order: 390
 title: Java与虚拟线程
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Project Loom 虚拟线程、结构化并发、Continuation 机制与性能调优全景式深度解析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/Java新特性
-  - java/Java多线程与并发
-  - java/Java与响应式编程
-  - java/方法详解
-  - java/Java与GraalVM
-  - java/Java与Kubernetes
-  - java/JavaIO与NIO
+  - 'java/015-JavaNewFeatures'
+  - 'java/037-JavaReactiveProgramming'
+  - 'java/038-MethodDetailed'
+  - 'java/040-JavaGraalVM'
+  - 'java/041-JavaKubernetes'
+  - 'java/014-JavaIONIO'
 prerequisites:
-  - java/概述与开发环境
-  - java/Java多线程与并发
-  - java/JavaIO与NIO
-  - java/Java函数式编程
-tags:
-  - Java
-  - VirtualThread
-  - ProjectLoom
-  - 结构化并发
-  - Continuation
-  - 并发编程
-  - JVM
-  - Java21
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/014-JavaIONIO'
+  - 'java/022-JavaFunctionalProgramming'
 ---
+
 
 
 # Java 虚拟线程深度指南（Project Loom）

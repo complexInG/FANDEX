@@ -1,19 +1,20 @@
 ---
-order: 11
+order: 20
 title: 敏捷开发
 module: 'software-engineering'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: Scrum框架、Kanban方法、Sprint规划、Backlog管理与敏捷实践。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-engineering/软件工程概述'
-  - 'software-engineering/需求分析方法'
-  - 'software-engineering/UML图详解'
+  - 'software-engineering/001-SoftwareEngineeringOverview'
+  - 'software-engineering/003-RequirementAnalysisMethod'
+  - 'software-engineering/004-UMLGraphDetailed'
 prerequisites:
-  - 'software-engineering/软件工程概述'
+  - 'software-engineering/001-SoftwareEngineeringOverview'
 ---
+
 
 ## 1. 从"做菜 vs 外卖"说起
 

@@ -1,9 +1,8 @@
 ---
 order: 870
 title: Python http.client HTTP 客户端
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python http.client HTTP 客户端 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## HTTPConnection
 
 **基本写法：创建连接**

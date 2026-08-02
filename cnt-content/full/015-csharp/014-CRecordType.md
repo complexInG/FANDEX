@@ -1,24 +1,25 @@
 ---
-order: 53
-title: 'C# 记录类型'
-module: csharp
-category: 'C#'
+order: 140
+title: C# 记录类型
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: 'record 与 record struct、位置参数、with 表达式、值相等性、init 访问器、不可变性、Equals/GetHashCode 合约、拷贝语义、序列化、DDD 领域建模、函数式数据流、性能基准'
+description: record 与 record struct、位置参数、with 表达式、值相等性、init 访问器、不可变性、Equals/GetHashCode 合约、拷贝语义、序列化、DDD 领域建模、函数式数据流、性能基准
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - csharp/概述与环境配置
-  - csharp/基础语法
-  - csharp/面向对象编程
-  - csharp/高级特性
-  - csharp/泛型与集合
-  - csharp/NET平台与生态
+  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/002-CBasicSyntax'
+  - 'csharp/003-COOP'
+  - 'csharp/007-CAdvancedFeature'
+  - 'csharp/004-CGenericCollection'
+  - 'csharp/008-CNET'
 prerequisites:
-  - csharp/概述与环境配置
-  - csharp/基础语法
-  - csharp/面向对象编程
+  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/002-CBasicSyntax'
+  - 'csharp/003-COOP'
 ---
+
 
 # C# 记录类型
 

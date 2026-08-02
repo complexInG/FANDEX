@@ -1,24 +1,25 @@
 ---
-order: 71
+order: 270
 title: C++内存模型
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: C++11 原子操作、内存序、happens-before 关系与无锁编程的工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/设计模式与C++
-  - cpp/面向对象进阶
-  - cpp/C++工具链
-  - cpp/C++测试框架
-  - cpp/C++性能优化
-  - cpp/C++并发编程
+  - 'cpp/012-DesignPatternCpp'
+  - 'cpp/026-COOPAdvanced'
+  - 'cpp/029-CppToolchain'
+  - 'cpp/032-CppTestFramework'
+  - 'cpp/035-CppPerformance'
+  - 'cpp/049-ConcurrentProgramming'
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/智能指针详解
-  - cpp/多线程
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/007-N4089DeletingSafeBoolInFavorOfExplicitBool'
+  - 'cpp/020-MultithreadingConcurrency'
 ---
+
 ## 历史动机与背景
 
 C++ 内存模型的诞生是并发编程领域数十年的工程实践与理论研究的结晶。

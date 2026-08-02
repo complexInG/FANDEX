@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 120
 title: 并行计算
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 并行计算：Flynn分类、多处理器架构、并行算法、GPU计算与性能模型
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/存储系统'
-  - 'cs-fundamentals/总线与接口'
-  - 'cs-fundamentals/分布式系统'
-  - 'cs-fundamentals/算法设计与分析'
+  - 'cs-fundamentals/010-StorageSystem'
+  - 'cs-fundamentals/011-BusAndInterface'
+  - 'cs-fundamentals/013-DistributedSystem'
+  - 'cs-fundamentals/014-AlgorithmDesignAnalysis'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 并行计算概述
 

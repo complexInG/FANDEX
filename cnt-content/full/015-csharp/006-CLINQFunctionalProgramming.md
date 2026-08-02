@@ -1,19 +1,20 @@
 ---
-order: 6
-title: 'C# LINQ与函数式编程'
-module: csharp
-category: 'C#'
+order: 60
+title: C# LINQ与函数式编程
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: 'LINQ 查询语法与方法语法、延迟执行、标准查询运算符、PLINQ、表达式树、局部函数、模式匹配进阶、函数式编程范式、Monad 与函子、范畴论应用'
+description: LINQ 查询语法与方法语法、延迟执行、标准查询运算符、PLINQ、表达式树、局部函数、模式匹配进阶、函数式编程范式、Monad 与函子、范畴论应用
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - csharp/泛型与集合
-  - csharp/异步编程
-  - csharp/高级特性
-  - csharp/NET平台与生态
+  - 'csharp/004-CGenericCollection'
+  - 'csharp/005-CAsyncProgramming'
+  - 'csharp/007-CAdvancedFeature'
+  - 'csharp/008-CNET'
 prerequisites: []
 ---
+
 
 
 ## 1. 历史动机与背景

@@ -1,20 +1,19 @@
 ---
-order: 82
+order: 410
 title: 并行复制
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL并行复制：逻辑时钟、写集并行、多线程回放与复制延迟优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/进阶查询与多表操作
-  - mysql/全局事务标识
-  - mysql/组复制
-  - mysql/InnoDB集群
+  - 'mysql/039-AdvancedQueryMultiTableOperation'
+  - 'mysql/042-GroupReplication'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 并行复制概述
 

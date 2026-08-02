@@ -1,22 +1,21 @@
 ---
-order: 58
+order: 140
 title: 断言
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: 正则表达式先行断言（Lookahead）与后行断言（Lookbehind）的形式化理论、自动机基础、V8/SpiderMonkey 实现细节与企业级文本处理实践，对标 MIT 6.004 计算理论课程水准。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - javascript/正则表达式
-  - javascript/具名捕获组
-  - javascript/Unicode属性转义
-  - 'javascript/函数-作用域与闭包'
-  - javascript/字符串与Unicode
+  - 'javascript/043-Regex'
+  - 'javascript/013-ES2018RegExpNamedCaptureGroups'
+  - 'javascript/015-UnicodePropertyEscape'
+  - 'javascript/016-FunctionScopeClosure'
 prerequisites:
-  - javascript/语法速查
-  - javascript/正则表达式
+  - 'javascript/043-Regex'
 ---
+
 
 
 # 断言

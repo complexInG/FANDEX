@@ -1,20 +1,21 @@
 ---
-order: 80
+order: 400
 title: Kotlin与时间
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'kotlinx-datetime'
+description: kotlinx-datetime
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与IO
-  - kotlin/Kotlin与正则
-  - kotlin/Kotlin与并发安全
-  - kotlin/Kotlin与WebSocket
+  - 'kotlin/038-KotlinIO'
+  - 'kotlin/039-KotlinRegex'
+  - 'kotlin/041-KotlinConcurrencySafety'
+  - 'kotlin/042-KotlinWebSocket'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 ## 概述
 
 kotlinx-datetime 是 Kotlin 官方的跨平台日期时间库。它基于 ISO 8601 标准，提供了统一的 API 来处理日期、时间、时区等概念。与 Java 的 `java.time` 不同，kotlinx-datetime 从一开始就为 Kotlin 多平台设计，可以在 JVM、JS、Native 等平台上使用。

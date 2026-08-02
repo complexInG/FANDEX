@@ -1,18 +1,19 @@
 ---
-order: 9
+order: 90
 title: 测试与调试
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: beginner
 description: 'cargo test 与 #[test]、断言宏、cargo clippy、dbg! 与调试技巧'
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - rust/003-RustBasicSyntax
-  - rust/011-RustEcosystemProject
+  - 'rust/003-RustBasicSyntax'
+  - 'rust/011-RustEcosystemProject'
 prerequisites:
-  - rust/006-RustErrorHandling
+  - 'rust/006-RustErrorHandling'
 ---
+
 
 ## 1. 测试为什么重要
 

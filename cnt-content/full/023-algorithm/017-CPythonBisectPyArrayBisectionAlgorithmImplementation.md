@@ -1,215 +1,27 @@
 ---
-order: 94
+order: 170
 title: 查找算法
-module: algorithm
-category: Algorithm/Search
+module: 'algorithm'
+category: 计算机科学
 difficulty: intermediate
 description: 查找（Search）算法的形式化定义、顺序查找 $O(n)$、二分查找 $O(\log n)$、插值查找 $O(\log \log n)$、斐波那契查找、哈希查找 $O(1)$、BST/AVL/红黑树查找、B 树查找、跳表查找（Pugh 1990）、字符串查找（KMP 1977、Boyer-Moore 1977、Rabin-Karp）、布隆过滤器（Bloom 1970）的原理、实现与对比分析，涵盖 Mauchly 1946 二分查找、Luhn 1953 哈希表、Bayer-McCreight 1972 B 树、Guibas-Sedgewick 1978 红黑树、Bloom 1970 布隆过滤器、Knuth-Morris-Pratt 1977 KMP、Boyer-Moore 1977 字符串匹配等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 11/12/13 章。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-search
-- algorithm-binary-search
-- algorithm-hash
-- algorithm-bst
-- algorithm-skip-list
-- algorithm-bloom-filter
-- algorithm-kmp
-- algorithm-interpolation-search
-created: 2026-05-27
-updated: 2026-07-20
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 105
+updated: '2026-07-20'
 related:
-- algorithm/算法分析基础与学习路线
-- algorithm/数组与动态数组
-- algorithm/哈希表
-- algorithm/树
-- algorithm/平衡树与高级树
-- algorithm/堆与优先队列
-- algorithm/字符串算法
-- algorithm/排序算法
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
+  - 'algorithm/006-HashTable'
+  - 'algorithm/007-TheUbiquitousBTree'
+  - 'algorithm/015-PostgreSQLBTreeIndexImplementation'
+  - 'algorithm/016-HeapAndPriorityQueue'
+  - 'algorithm/012-RipgrepRecursivelySearchDirectoriesForARegexPattern'
+  - 'algorithm/002-SortAlgorithm'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/数组与动态数组
-- algorithm/树
-references:
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1998
-  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-  venue: Addison-Wesley Professional
-  version: 2nd edition
-  pages: ISBN 978-0201896855, Section 6.1 (Sequential Searching), Section 6.2 (Searching by Comparison of Keys - Binary Search, Binary Tree Search, Balanced Trees, Multiway Trees), Section 6.3 (Digital Searching), Section 6.4 (Hashing)
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: Chapter 11 (Hash Tables), Chapter 12 (Binary Search Trees), Chapter 13 (Red-Black Trees), Chapter 18 (B-Trees), ISBN 978-0262046305
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 3.1 (Symbol Tables - Sequential Search), Section 3.2 (Binary Search Trees), Section 3.3 (Balanced Search Trees - Red-Black BST), Section 3.4 (Hash Tables), Section 3.5 (Symbol Table Applications), Section 5.1-5.3 (Substring Search - KMP, Boyer-Moore, Rabin-Karp)
-- type: journal
-  authors:
-  - Bloom, Burton H.
-  year: 1970
-  title: Space/Time Trade-offs in Hash Coding with Allowable Errors
-  venue: Communications of the ACM
-  volume: 13
-  issue: 7
-  pages: 422-426
-  doi: 10.1145/362686.362692
-- type: journal
-  authors:
-  - Bayer, Rudolf
-  - McCreight, Edward M.
-  year: 1972
-  title: Organization and Maintenance of Large Ordered Indices
-  venue: Acta Informatica
-  volume: 1
-  issue: 3
-  pages: 173-189
-  doi: 10.1007/BF00288683
-- type: journal
-  authors:
-  - Bayer, Rudolf
-  year: 1972
-  title: 'Symmetric binary B-trees: Data structure and maintenance algorithms'
-  venue: Acta Informatica
-  volume: 1
-  issue: 4
-  pages: 290-306
-  doi: 10.1007/BF00289509
-- type: journal
-  authors:
-  - Guibas, Leonidas J.
-  - Sedgewick, Robert
-  year: 1978
-  title: A Dichromatic Framework for Balanced Trees
-  venue: Proceedings of the 19th Annual Symposium on Foundations of Computer Science (SFCS)
-  pages: 8-21
-  doi: 10.1109/SFCS.1978.3
-- type: journal
-  authors:
-  - Knuth, Donald E.
-  - Morris, James H.
-  - Pratt, Vaughan R.
-  year: 1977
-  title: Fast Pattern Matching in Strings
-  venue: SIAM Journal on Computing
-  volume: 6
-  issue: 2
-  pages: 323-350
-  doi: 10.1137/0206024
-- type: journal
-  authors:
-  - Boyer, Robert S.
-  - Moore, J. Strother
-  year: 1977
-  title: A Fast String Searching Algorithm
-  venue: Communications of the ACM
-  volume: 20
-  issue: 10
-  pages: 762-772
-  doi: 10.1145/359842.359859
-- type: journal
-  authors:
-  - Karp, Richard M.
-  - Rabin, Michael O.
-  year: 1987
-  title: Efficient randomized pattern-matching algorithms
-  venue: IBM Journal of Research and Development
-  volume: 31
-  issue: 2
-  pages: 249-260
-  doi: 10.1147/rd.312.0249
-- type: journal
-  authors:
-  - Pugh, William
-  year: 1990
-  title: 'Skip Lists: A Probabilistic Alternative to Balanced Trees'
-  venue: Communications of the ACM
-  volume: 33
-  issue: 6
-  pages: 668-676
-  doi: 10.1145/78973.78977
-- type: journal
-  authors:
-  - Peterson, W. W.
-  year: 1957
-  title: Addressing for random-access storage
-  venue: IBM Journal of Research and Development
-  volume: 1
-  issue: 2
-  pages: 130-146
-  doi: 10.1147/rd.12.0130
-- type: website
-  authors:
-  - Bloch, Joshua
-  year: 2006
-  title: 'Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken'
-  venue: Google Research Blog
-  url: https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/
-  pages: Bug report on integer overflow in Java Arrays.binarySearch mid = (low + high) / 2, traced back to Jon Bentley Programming Pearls 1986
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - Python Software Foundation
-  year: 2024
-  title: CPython bisect.py - Array bisection algorithm implementation
-  venue: Python GitHub Repository
-  url: https://github.com/python/cpython/blob/main/Lib/bisect.py
-  pages: bisect_left, bisect_right, insort_left, insort_right implementations
-  accessedDate: '2026-07-20'
-etymology:
-- term: 查找
-  english: search
-  origin: search 源自拉丁语 circare（绕圈行走），原指"四处搜寻"。在计算机科学中，search 指在数据集合中寻找满足特定条件的元素。Knuth 在 TAOCP Vol.3 §6 将查找分为：顺序查找（§6.1）、比较查找（§6.2 含二分查找与 BST）、数字查找（§6.3 含 Trie）、哈希查找（§6.4）四大类。中文"查找"由"查"（核查）与"找"（寻找）合成
-- term: 二分查找
-  english: binary search
-  origin: binary 源自拉丁语 bini（两个一组）。二分查找由 John Mauchly 在 1946 年发表（《Sorting and Collating》, Moore School Lectures），但首个正确实现由 Bottenbruch 于 1962 年给出。Knuth 在 TAOCP Vol.3 §6.2.1 详细考据了二分查找的早期历史，指出"虽然二分查找思想简单，但 1946 年至今仍有大量错误实现"——这一论断在 2006 年 Joshua Bloch 发现 Java 标准库 `Arrays.binarySearch` 整数溢出 Bug 后被再次印证。又称折半查找（half-interval search）、对数查找（logarithmic search）
-- term: 哈希查找
-  english: hash search
-  origin: hash 源自法语 hacher（切碎），原指"将食材切碎"。在计算机科学中，hash 指将任意长度的键映射为固定长度的整数地址。Hans Peter Luhn 于 1953 年 1 月在 IBM 内部备忘录中首次提出"使用哈希函数 + 链地址法"的查找方案，这是链式线性表首次应用。1968 年 Bob Morris 在 *Communications of the ACM* 11(1):38-43 系统化哈希理论。Knuth TAOCP Vol.3 §6.4 给出权威论述。又称散列查找
-- term: 插值查找
-  english: interpolation search
-  origin: interpolation 源自拉丁语 inter（在...之间）+ polire（打磨、修饰），数学中指根据已知数据估算中间值。插值查找由 Peterson 1957 在 IBM Journal 论文《Addressing for Random Access Storage》中提出，根据目标值在 [arr[left], arr[right]] 区间中的相对位置估算 mid，平均复杂度 $O(\log \log n)$，最坏 $O(n)$。适用于均匀分布的有序数据（如年龄表、成绩表）
-- term: 斐波那契查找
-  english: Fibonacci search
-  origin: Fibonacci 指 13 世纪意大利数学家 Leonardo Fibonacci 引入的 Fibonacci 数列 $F_n = F_{n-1} + F_{n-2}$。斐波那契查找利用斐波那契数列对有序表进行黄金分割（$\phi = (1+\sqrt{5})/2 \approx 1.618$），与二分查找的等分（1:1）不同。优势：仅用加减法不用除法，对除法运算敏感的硬件有性能优势。平均复杂度 $O(\log n)$，与二分查找相同，但常数因子略大
-- term: 跳表
-  english: skip list
-  origin: 'skip 源自古英语 skipan（跳跃）。跳表由 William Pugh 在 1990 年 *Communications of the ACM* 33(6):668-676《Skip Lists: A Probabilistic Alternative to Balanced Trees》中提出，是一种基于概率均衡而非严格均衡的有序数据结构。跳表通过多级索引实现 $O(\log n)$ 期望查找，实现远比红黑树简单，被 Redis zset、LevelDB MemTable、RocksDB MemTable 广泛采用'
-- term: 红黑树
-  english: red-black tree
-  origin: red-black 由颜色命名。红黑树前身是 Rudolf Bayer 1972 年在 *Acta Informatica* 1(4):290-306《Symmetric binary B-trees》提出的对称二叉 B 树（symmetric binary B-tree, SB-tree）。1978 年 Leonidas J. Guibas 与 Robert Sedgewick 在 FOCS 论文《A Dichromatic Framework for Balanced Trees》中将其重新形式化为红黑树，并简化插入删除操作。颜色"红色"是 Sedgewick 在 Xerox PARC 的彩色显示器上选择的视觉最易辨识颜色。红黑树是 C++ std::map、Java TreeMap、Linux kernel CFS 调度器、Linux VMA 内存管理的核心数据结构
-- term: B 树
-  english: B-tree
-  origin: B-tree 由 Rudolf Bayer 与 Edward M. McCreight 于 1970 年在 Boeing Scientific Research Labs 研究磁盘索引时发明，1972 年发表于 *Acta Informatica* 1(3):173-189《Organization and Maintenance of Large Ordered Indices》。Bayer 从未公开解释"B"的含义，McCreight 在 2010 年访谈中称"B-tree 是 Bayer-B-tree 也是 Boeing-B-tree 也是 Balanced-B-tree 也可能是 Broad-B-tree"。B 树专为磁盘存储设计，通过多路分支减少树高，是所有现代关系数据库（MySQL InnoDB、PostgreSQL、Oracle、SQL Server）索引的基石
-- term: 布隆过滤器
-  english: Bloom filter
-  origin: Bloom filter 由 Burton Howard Bloom 于 1970 年在 *Communications of the ACM* 13(7):422-426《Space/Time Trade-offs in Hash Coding with Allowable Errors》中提出。Bloom 是一家 Computer Usage Corporation 的系统分析师。布隆过滤器用 $m$ 位数组 + $k$ 个哈希函数实现空间高效的概率查找，允许误判（false positive）但不允许漏判（false negative）。误判率约 $(1 - e^{-kn/m})^k$。广泛用于数据库（Cassandra HINT、PostgreSQL bloom 索引）、缓存（Redis 防缓存穿透）、爬虫 URL 去重
-- term: KMP 算法
-  english: Knuth-Morris-Pratt algorithm
-  origin: KMP 算法由 Donald Knuth、James H. Morris、Vaughan Pratt 三人独立发现于 1970 年代早期，1977 年联合发表于 *SIAM Journal on Computing* 6(2):323-350《Fast Pattern Matching in Strings》。Knuth 在斯坦福、Morris 在 CMU（最初研究字符串匹配器硬件）、Pratt 在 MIT，三人独立工作却得到相同算法。KMP 通过预处理模式串构造 next 数组（部分匹配表），使字符串查找从朴素 $O(nm)$ 优化到 $O(n+m)$
-- term: Boyer-Moore 算法
-  english: Boyer-Moore algorithm
-  origin: Boyer-Moore 算法由 Robert S. Boyer 与 J. Strother Moore 于 1977 年在 *Communications of the ACM* 20(10):762-772《A Fast String Searching Algorithm》中提出。两人当时在 SRI International 研究定理证明器。算法核心是"坏字符规则（bad character rule）+ 好后缀规则（good suffix rule）"，从模式串右端开始匹配，平均复杂度 $O(n/m)$，是最快的字符串查找算法之一。PostgreSQL、grep、各种文本编辑器的查找功能（Ctrl+F）大多基于 Boyer-Moore 或其变体
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
+  - 'algorithm/007-TheUbiquitousBTree'
 ---
+
 
 
 ## 1. 概述与学习目标

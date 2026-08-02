@@ -1,20 +1,21 @@
 ---
-order: 68
+order: 280
 title: Go与测试
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: Go测试框架与基准测试
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与Redis
-  - go/Go与消息队列
-  - go/Go与Fuzzing
-  - go/Go与性能分析
+  - 'go/025-GoRedis'
+  - 'go/026-GoMessageQueue'
+  - 'go/030-GoFuzzing'
+  - 'go/043-GoPerformanceAnalysis'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 ### 表驱动测试
 
 表驱动测试是 Go 中最推荐的测试模式，将测试用例组织为结构体切片，便于维护和扩展。

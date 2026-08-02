@@ -1,18 +1,19 @@
 ---
-order: 103
+order: 220
 title: Linux环境配置教程
 module: 'getting-started'
-category: toolchain
+category: 工具链
 difficulty: beginner
-description: 'Linux 开发环境完整配置指南，涵盖 apt/yum/pacman 包管理器、Git、Node.js（nvm）、Python（pyenv）、Java JDK、Docker、VS Code 安装与配置。'
+description: Linux 开发环境完整配置指南，涵盖 apt/yum/pacman 包管理器、Git、Node.js（nvm）、Python（pyenv）、Java JDK、Docker、VS Code 安装与配置。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/Windows环境配置教程'
-  - 'getting-started/macOS环境配置教程'
+  - 'getting-started/020-WindowsEnvConfigTutorial'
+  - 'getting-started/021-MacOSEnvConfigTutorial'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 包管理器
 

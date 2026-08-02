@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 140
 title: 索引提示与强制索引
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-description: 'MySQL索引提示：USE INDEX、FORCE INDEX、IGNORE INDEX的语法、场景与注意事项'
+description: MySQL索引提示：USE INDEX、FORCE INDEX、IGNORE INDEX的语法、场景与注意事项
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/全文索引
-  - mysql/前缀索引
-  - mysql/索引统计信息与直方图
-  - mysql/SQL函数与高级查询
+  - 'mysql/012-FullTextIndex'
+  - 'mysql/013-PrefixIndex'
+  - 'mysql/015-IndexStatsHistogram'
+  - 'mysql/016-SQLFunctionAndAdvancedQuery'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 索引提示概述
 

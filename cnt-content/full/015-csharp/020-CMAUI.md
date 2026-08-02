@@ -1,20 +1,17 @@
 ---
-order: 59
-title: 'C#与MAUI'
-module: csharp
-category: 'C#'
+order: 200
+title: C#与MAUI
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: '.NET MAUI 跨平台应用开发：架构原理、XAML、数据绑定、平台特定代码、原生 API 互操作、性能优化、部署发布全流程'
+description: .NET MAUI 跨平台应用开发：架构原理、XAML、数据绑定、平台特定代码、原生 API 互操作、性能优化、部署发布全流程
 author: fanquanpp
 updated: '2026-07-21'
-related:
-  - 'csharp/CSharp与Unity游戏开发'
-  - 'csharp/CSharp与Blazor'
-  - 'csharp/CSharp与EF Core'
-  - 'csharp/CSharp与依赖注入'
+related: []
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 
 ## 1. 历史动机与背景

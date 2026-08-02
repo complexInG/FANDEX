@@ -1,9 +1,8 @@
 ---
 order: 410
 title: C# 正则表达式
-module: csharp
-
-category: '015-csharp'
+module: 'csharp'
+category: 后端技术
 difficulty: beginner
 description: C# 正则表达式 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 基本匹配
 
 **基本写法：静态匹配**

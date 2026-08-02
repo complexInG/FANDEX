@@ -1,9 +1,8 @@
 ---
 order: 390
 title: C# 文件与流操作
-module: csharp
-
-category: '015-csharp'
+module: 'csharp'
+category: 后端技术
 difficulty: beginner
 description: C# 文件与流操作 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 文件路径
 
 **基本写法：路径拼接**

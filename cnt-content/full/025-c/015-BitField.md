@@ -1,24 +1,25 @@
 ---
-order: 59
+order: 150
 title: 位域
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
-description: '位域原理、内存布局、跨平台实践与性能优化'
+description: 位域原理、内存布局、跨平台实践与性能优化
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/位运算与位域
-  - c/对齐与内存布局
-  - c/属性与编译器扩展
-  - c/枚举与typedef
-  - c/内存对齐
-  - c/数据类型详解
+  - 'c/005-BitwiseBitField'
+  - 'c/016-AlignmentMemoryLayout'
+  - 'c/018-AttributeCompilerExtension'
+  - 'c/007-EnumTypedef'
+  - 'c/041-MemoryAlignment'
+  - 'c/003-DataTypeDetailed'
 prerequisites:
-  - c/概述
-  - c/结构体与联合体
-  - c/数据类型详解
+  - 'c/001-CLanguageOverview'
+  - 'c/042-StructAndUnion'
+  - 'c/003-DataTypeDetailed'
 ---
+
 ## 历史动机与背景
 
 ### 位域诞生的历史背景

@@ -1,24 +1,25 @@
 ---
-order: 8
-title: 'C# .NET 平台与生态'
-module: csharp
-category: 'C#'
+order: 80
+title: C# .NET 平台与生态
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: '.NET Runtime、BCL、NuGet 包管理、依赖注入、配置系统、日志、中间件管道、ASP.NET Core、EF Core、MAUI、性能诊断、AOT 编译'
+description: .NET Runtime、BCL、NuGet 包管理、依赖注入、配置系统、日志、中间件管道、ASP.NET Core、EF Core、MAUI、性能诊断、AOT 编译
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - csharp/概述与环境配置
-  - csharp/基础语法
-  - csharp/异步编程
-  - csharp/LINQ与函数式编程
-  - csharp/高级特性
-  - csharp/测试与工程化
+  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/002-CBasicSyntax'
+  - 'csharp/005-CAsyncProgramming'
+  - 'csharp/006-CLINQFunctionalProgramming'
+  - 'csharp/007-CAdvancedFeature'
+  - 'csharp/009-CTestEngineering'
 prerequisites:
-  - csharp/概述与环境配置
-  - csharp/基础语法
-  - csharp/异步编程
+  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/002-CBasicSyntax'
+  - 'csharp/005-CAsyncProgramming'
 ---
+
 
 # C# .NET 平台与生态
 

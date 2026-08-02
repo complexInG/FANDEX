@@ -1,9 +1,8 @@
 ---
 order: 840
 title: Python enum 枚举
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python enum 枚举 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Enum 基础
 
 **基本写法：定义枚举**

@@ -1,19 +1,20 @@
 ---
 order: 60
-title: 'SVG 文本与排版'
-module: svg
-category: 'SVG Text'
+title: SVG 文本与排版
+module: 'svg'
+category: 前端技术
 difficulty: intermediate
-description: 'text、tspan、textPath、文字锚点、字体属性与可访问文本。'
+description: text、tspan、textPath、文字锚点、字体属性与可访问文本。
 author: fanquanpp
 updated: '2026-07-18'
 related:
-  - svg/路径path详解
-  - svg/颜色与填充
-  - svg/符号与复用
+  - 'svg/005-SVGPathPathDetailed'
+  - 'svg/007-SVGColorFill'
+  - 'svg/012-SVGSymbolReuse'
 prerequisites:
-  - svg/基础语法与文档结构
+  - 'svg/002-SVGBasicSyntaxDocStructure'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 文本渲染的演进

@@ -1,20 +1,21 @@
 ---
-order: 71
-title: 'Kotlin与ktor-client'
-module: kotlin
-category: Kotlin
+order: 320
+title: Kotlin与ktor-client
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'Ktor HTTP客户端'
+description: Ktor HTTP客户端
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与Exposed
-  - kotlin/Kotlin与Koin
-  - kotlin/Kotlin与测试
-  - kotlin/Kotlin与协程Channel
+  - 'kotlin/030-KotlinExposed'
+  - 'kotlin/031-KotlinKoin'
+  - 'kotlin/033-KotlinTest'
+  - 'kotlin/011-KotlinCoroutineChannel'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 ## 概述
 
 Ktor Client 是 JetBrains 开发的 Kotlin HTTP 客户端库。它完全基于协程构建，支持多种引擎（CIO、OkHttp、Darwin 等），可以运行在 JVM、Android、iOS 和原生平台上。如果你需要在 Kotlin 项目中调用 REST API、下载文件或与 Web 服务交互，Ktor Client 是一个轻量且 Kotlin 风格的选择。

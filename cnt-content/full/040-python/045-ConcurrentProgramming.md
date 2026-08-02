@@ -1,23 +1,20 @@
 ---
-order: 85
-tags:
-  - python
-  - concurrency
-difficulty: advanced
+order: 450
 title: 并发编程
-module: python
-category: 'Python Basics'
+module: 'python'
+category: 后端技术
+difficulty: advanced
 description: Python并发编程详解：多线程、多进程、GIL、线程池、进程池与asyncio异步编程。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与虚拟环境
-  - python/Python与代码质量
-  - python/Python与数据库迁移
-  - python/Python与OAuth2
-prerequisites:
-  - python/语法速查
+  - 'python/009-PythonVirtualEnv'
+  - 'python/044-PythonCodeQuality'
+  - 'python/046-PythonDatabaseMigration'
+  - 'python/047-PythonOAuth2'
+prerequisites: []
 ---
+
 ## 1. Python 并发模型概述
 
 ### 1.1 三种并发方式

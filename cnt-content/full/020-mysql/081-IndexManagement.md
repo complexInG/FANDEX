@@ -1,9 +1,8 @@
 ---
 order: 810
 title: MySQL 索引管理
-module: mysql
-
-category: '020-mysql'
+module: 'mysql'
+category: 数据库
 difficulty: beginner
 description: MySQL 索引管理 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 创建索引
 
 **单行写法：创建普通索引**

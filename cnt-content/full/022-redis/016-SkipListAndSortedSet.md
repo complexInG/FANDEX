@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 160
 title: 跳表与有序集合
-module: redis
-category: database
+module: 'redis'
+category: 数据库
 difficulty: advanced
-description: 'Redis 跳表（Skiplist）数据结构详解：层级结构、概率晋升、有序集合 ZSET 的底层实现与范围查询。'
+description: Redis 跳表（Skiplist）数据结构详解：层级结构、概率晋升、有序集合 ZSET 的底层实现与范围查询。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/模块系统
-  - redis/字符串SDS结构
-  - redis/主从复制缓冲区
-  - redis/哨兵选举
+  - 'redis/014-ModuleSystem'
+  - 'redis/015-StringSDSStructure'
+  - 'redis/017-ReplicationBuffer'
+  - 'redis/018-SentinelElection'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 
 ## 1. 跳表原理
 

@@ -1,22 +1,22 @@
 ---
-order: 77
+order: 370
 title: Kotlin与Benchmark
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: 基于 JMH 与 kotlinx-benchmark 的 Kotlin 性能基准测试方法论、工程实践与陷阱分析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/Kotlin与DSL
-  - kotlin/Kotlin与原子操作
-  - kotlin/Kotlin与IO
-  - kotlin/Kotlin与正则
-  - kotlin/Kotlin内联函数
+  - 'kotlin/022-KotlinDSL'
+  - 'kotlin/036-KotlinAtomicOperation'
+  - 'kotlin/038-KotlinIO'
+  - 'kotlin/039-KotlinRegex'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/协程基础
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/016-CoroutineBasics'
 ---
+
 
 
 ## 历史动机与背景

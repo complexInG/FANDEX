@@ -1,20 +1,21 @@
 ---
-order: 8
+order: 80
 title: 实战脚本案例
-module: shell
-category: Shell
+module: 'shell'
+category: 工具链
 difficulty: intermediate
-description: '实战脚本案例：部署脚本模板、日志分析报表、定时备份、文件批量处理'
+description: 实战脚本案例：部署脚本模板、日志分析报表、定时备份、文件批量处理
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - shell/003-TextProcessingTools
-  - shell/006-ScriptDebugging
-  - shell/007-FunctionsArguments
+  - 'shell/003-TextProcessingTools'
+  - 'shell/006-ScriptDebugging'
+  - 'shell/007-FunctionsArguments'
 prerequisites:
-  - shell/007-FunctionsArguments
-  - shell/006-ScriptDebugging
+  - 'shell/007-FunctionsArguments'
+  - 'shell/006-ScriptDebugging'
 ---
+
 
 ## 1. 从"菜谱集"说起
 

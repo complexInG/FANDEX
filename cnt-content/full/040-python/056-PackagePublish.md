@@ -1,20 +1,20 @@
 ---
-order: 106
+order: 560
 title: 打包与发布
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: Python打包与发布详解：setuptools、pyproject.toml。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - python/类型注解与mypy
-  - python/数据类与字段默认值
-  - python/装饰器进阶
-  - python/上下文管理器
-prerequisites:
-  - python/语法速查
+  - 'python/060-TypeAnnotationMypy'
+  - 'python/058-DataClassFieldDefault'
+  - 'python/062-DecoratorAdvanced'
+  - 'python/052-ContextManager'
+prerequisites: []
 ---
+
 
 
 ## 1. 历史动机与发展脉络

@@ -1,9 +1,8 @@
 ---
 order: 800
 title: Python 测试 unittest/pytest
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python 测试 unittest/pytest 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## unittest 基础
 
 **基本写法：编写测试类**

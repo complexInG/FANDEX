@@ -1,20 +1,21 @@
 ---
-order: 84
+order: 390
 title: 可更新视图
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
-description: 'PostgreSQL可更新视图：自动可更新条件、INSTEAD OF触发器、WITH CHECK OPTION'
+description: PostgreSQL可更新视图：自动可更新条件、INSTEAD OF触发器、WITH CHECK OPTION
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/序列与自增列
-  - postgresql/生成列
-  - postgresql/并行查询
-  - postgresql/逻辑复制与物理复制对比
+  - 'postgresql/037-SequenceAutoIncrement'
+  - 'postgresql/038-GeneratedColumn'
+  - 'postgresql/040-ParallelQuery'
+  - 'postgresql/041-LogicalPhysicalReplicationCompare'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 自动可更新视图
 

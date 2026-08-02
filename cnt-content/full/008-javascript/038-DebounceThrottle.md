@@ -1,24 +1,24 @@
 ---
-order: 106
+order: 380
 title: 防抖与节流
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: JavaScript 防抖（debounce）与节流（throttle）的形式化定义、速率限制理论、事件流调度算法、Lodash/VueUse/React Hooks 实现剖析与企业级性能优化实践，对标 MIT 6.831 用户界面工程与 CMU 17-445 软件工程课程水准。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - javascript/ES6+新特性
-  - javascript/深拷贝与浅拷贝
-  - javascript/数组高阶方法
-  - javascript/Proxy与Reflect实际应用
-  - javascript/闭包的内存泄露与优化
-  - javascript/模块动态导入与代码分割
+  - 'javascript/036-ES6NewFeatures'
+  - 'javascript/037-DeepShallowCopy'
+  - 'javascript/039-ArrayHigherOrderMethod'
+  - 'javascript/040-ProxyReflectPractice'
+  - 'javascript/031-ClosureMemoryLeakOptimization'
+  - 'javascript/041-ModuleDynamicImportCodeSplitting'
 prerequisites:
-  - javascript/语法速查
-  - javascript/函数-作用域与闭包
-  - javascript/异步编程
+  - 'javascript/016-FunctionScopeClosure'
+  - 'javascript/030-AsyncProgramming'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 速率限制的思想起源（1960-1980）

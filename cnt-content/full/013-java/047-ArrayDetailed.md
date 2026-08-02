@@ -1,22 +1,21 @@
 ---
-order: 90
-tags:
-  - java
-difficulty: intermediate
+order: 470
 title: 数组详解
-module: java
-category: 'Java Basics'
-description: '一维与多维数组、数组操作与 Arrays 工具类。'
+module: 'java'
+category: 后端技术
+difficulty: intermediate
+description: 一维与多维数组、数组操作与 Arrays 工具类。
 author: Anonymous
-related:
-  - java/Java与数据库连接
-  - java/Java新特性与生态
-  - java/JVM调优
-  - java/集合框架详解
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/045-JavaDatabaseConnection'
+  - 'java/046-JavaNewFeaturesEcosystem'
+  - 'java/048-JVMtuning'
+  - 'java/049-CollectionFrameworkDetailed'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 一维数组 (One-Dimensional Arrays)
 
 数组是一组相同类型数据的有序集合，大小固定，在Java中是引用类型。

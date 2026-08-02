@@ -1,9 +1,8 @@
 ---
 order: 240
 title: 物联网 ESP32 GPIO 与引脚
-module: iot
-
-category: '035-iot'
+module: 'iot'
+category: 云与基础设施
 difficulty: beginner
 description: 物联网 ESP32 GPIO 与引脚 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 引脚模式
 
 **基本写法：设置为输出**

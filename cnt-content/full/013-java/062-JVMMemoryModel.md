@@ -1,24 +1,22 @@
 ---
-title: 'JVM 内存模型'
-module: java
-category: 'Java Advanced'
-order: 170
-tags:
-  - java
-  - memory
+order: 620
+title: JVM 内存模型
+module: 'java'
+category: 后端技术
 difficulty: advanced
-description: 'JVM 内存模型深度解析：运行时数据区、JMM 形式化、分代 GC 算法、对象内存布局、现代收集器（G1/ZGC/Shenandoah）、内存调优与生产案例。'
+description: JVM 内存模型深度解析：运行时数据区、JMM 形式化、分代 GC 算法、对象内存布局、现代收集器（G1/ZGC/Shenandoah）、内存调优与生产案例。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/并发编程详解
-  - java/JVM调优
-  - java/反射与动态代理
-  - java/类加载机制
+  - 'java/050-ConcurrencyDetailed'
+  - 'java/048-JVMtuning'
+  - 'java/053-ReflectionDynamicProxy'
+  - 'java/010-JVMClassLoadingMechanism'
 prerequisites:
-  - java/概述与开发环境
-  - java/并发编程详解
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/050-ConcurrencyDetailed'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 JVM 内存模型演进时间线

@@ -1,22 +1,20 @@
 ---
-title: 'MySQL 项目示例：电商数据库设计'
-module: mysql
-category: 'MySQL Practice'
-order: 180
-tags:
-  - mysql
-  - project
-  - database
+order: 760
+title: MySQL 项目示例：电商数据库设计
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
 description: 综合运用表设计、索引优化与事务的电商数据库项目。
-related:
-  - mysql/SQL注入攻击类型与实战
-  - mysql/SQL注入防御策略
-  - mysql/理论知识点
-prerequisites:
-  - mysql/语法速查
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'mysql/074-SQLInjectionAttackTypePractice'
+  - 'mysql/075-SQLInjectionDefenseStrategy'
+  - 'mysql/077-MySQLTheoryKnowledge'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 
 | 商品管理 | SPU/SKU、分类、品牌、属性    |
 | -------- | ---------------------------- |

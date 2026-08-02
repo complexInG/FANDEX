@@ -1,9 +1,8 @@
 ---
 order: 710
 title: Java NIO 通道与缓冲区
-module: java
-
-category: '013-java'
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: Java NIO 通道与缓冲区 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Buffer 创建
 
 **基本写法：创建字节缓冲区**

@@ -1,20 +1,20 @@
 ---
-order: 58
+order: 140
 title: Lua与Neovim
-module: lua
-category: Lua
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
-description: 'Neovim Lua配置'
+description: Neovim Lua配置
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - lua/Lua即时编译器
-  - lua/Lua与Love2D
-  - lua/Lua与Redis脚本
-  - lua/Lua与Nginx
+  - 'lua/013-LuaLove2D'
+  - 'lua/015-LuaRedisScript'
+  - 'lua/016-LuaNginx'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 ### LSP 配置
 
 使用 nvim-lspconfig 配置语言服务器：

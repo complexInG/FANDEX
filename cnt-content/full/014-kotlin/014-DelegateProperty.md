@@ -1,23 +1,23 @@
 ---
-order: 53
+order: 140
 title: 委托属性
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'Kotlin 委托属性深度解析：lazy、observable、vetoable、map 委托、provideDelegate 的设计哲学、形式化定义、字节码实现与企业级工程实践。'
+description: Kotlin 委托属性深度解析：lazy、observable、vetoable、map 委托、provideDelegate 的设计哲学、形式化定义、字节码实现与企业级工程实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/扩展函数
-  - kotlin/密封类与代数数据类型
-  - kotlin/协程基础
-  - kotlin/Flow与响应式流
-  - kotlin/作用域函数区别
+  - 'kotlin/015-ExtensionFunction'
+  - 'kotlin/013-SealedClassAlgebraicDataType'
+  - 'kotlin/016-CoroutineBasics'
+  - 'kotlin/017-FlowReactiveStream'
+  - 'kotlin/050-ScopeFunctionDifference'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/类与对象
-  - kotlin/属性与字段
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/004-KotlinClassObject'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 问题背景：样板代码的烦恼

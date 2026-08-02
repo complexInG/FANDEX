@@ -1,239 +1,27 @@
 ---
-order: 75
+order: 90
 title: 分治算法
-module: algorithm
-category: Algorithm Strategies
+module: 'algorithm'
+category: 计算机科学
 difficulty: intermediate
 description: 分治（Divide and Conquer）算法的形式化定义、三步范式（分解-解决-合并）、递推关系 $T(n) = aT(n/b) + f(n)$ 与主定理（Master Theorem, Bentley-Haken-Saxe 1980）三种情况的完整证明、分治与递归的关系、归并排序（von Neumann 1945 EDVAC）、快速排序（Hoare 1961）、Karatsuba 大整数乘法（Karatsuba-Ofman 1963 Soviet Physics-Doklady 7:595-596）、Strassen 矩阵乘法（Strassen 1969 Numerische Mathematik 13(4):354-356）、快速傅里叶变换 FFT（Cooley-Tukey 1965 Mathematics of Computation 19:297-301）、最近点对（Bentley-Shamos 1976）的原理、实现与对比分析，涵盖 von Neumann 1945 EDVAC、Karatsuba 1960 莫斯科大学研讨会、Cooley-Tukey 1965 IBM Watson、Strassen 1969 突破 $O(n^3)$、Bentley-Haken-Saxe 1980 主定理的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 2/4/7 章。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-divideconquer
-- algorithm-master-theorem
-- algorithm-merge-sort
-- algorithm-quick-sort
-- algorithm-karatsuba
-- algorithm-strassen
-- algorithm-fft
-- algorithm-closest-pair
-- algorithm-recurrence
-created: 2026-05-27
-updated: 2026-07-20
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 110
+updated: '2026-07-20'
 related:
-- algorithm/算法分析基础与学习路线
-- algorithm/排序算法
-- algorithm/递归与回溯
-- algorithm/贪心算法
-- algorithm/动态规划
-- algorithm/树
-- algorithm/图算法
-- algorithm/字符串算法
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/002-SortAlgorithm'
+  - 'algorithm/011-NQueensBenchmarkBitManipulationApproach'
+  - 'algorithm/010-GreedyAlgorithm'
+  - 'algorithm/013-ArtificialIntelligenceAModernApproach'
+  - 'algorithm/007-TheUbiquitousBTree'
+  - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
+  - 'algorithm/012-RipgrepRecursivelySearchDirectoriesForARegexPattern'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/排序算法
-- algorithm/递归与回溯
-references:
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: Chapter 2 (Getting Started - Merge Sort), Chapter 4 (Divide-and-Conquer - Master Theorem, Substitution, Recursion Tree, Strassen, Max-Subarray), Chapter 7 (Quicksort), Chapter 33 (Computational Geometry - Closest Pair), ISBN 978-0262046305
-- type: book
-  authors:
-  - Kleinberg, Jon
-  - Tardos, Eva
-  year: 2006
-  title: Algorithm Design
-  venue: Pearson
-  pages: ISBN 978-0321295354, Chapter 5 (Divide and Conquer - Recurrences, Counting Inversions, Closest Pair, Integer Multiplication, Matrix Multiplication, FFT), Chapter 13 (NP-Computational Geometry)
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1998
-  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-  venue: Addison-Wesley Professional
-  version: 2nd edition
-  pages: ISBN 978-0201896855, Section 5.2.4 (External Sorting - Merge Sort), Section 5.3.4 (Asymptotic Analysis), Section 5.2.2 (Quicksort History)
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 2.2 (Mergesort), Section 2.3 (Quicksort), Section 2.4 (Priority Queues), Section 5.1 (String Sorts)
-- type: journal
-  authors:
-  - Cooley, James W.
-  - Tukey, John W.
-  year: 1965
-  title: An algorithm for the machine calculation of complex Fourier series
-  venue: Mathematics of Computation
-  volume: 19
-  issue: 90
-  pages: 297-301
-  doi: 10.1090/S0025-5718-1965-0178586-1
-- type: journal
-  authors:
-  - Strassen, Volker
-  year: 1969
-  title: Gaussian Elimination is not Optimal
-  venue: Numerische Mathematik
-  volume: 13
-  issue: 4
-  pages: 354-356
-  doi: 10.1007/BF02165411
-- type: journal
-  authors:
-  - Karatsuba, Anatolii A.
-  - Ofman, Yuri P.
-  year: 1963
-  title: Multiplication of multidigit numbers on automata
-  venue: Soviet Physics-Doklady
-  volume: 7
-  issue: 7
-  pages: 595-596
-  pagesNote: English translation of the 1960 Russian original. Original presented at the Moscow State University seminar in 1960, published in Doklady Akademii Nauk SSSR 145:293-294. The first algorithm to break the O(n^2) barrier for integer multiplication
-- type: journal
-  authors:
-  - Bentley, Jon L.
-  - Haken, Dorothea
-  - Saxe, James B.
-  year: 1980
-  title: A general method for solving divide-and-conquer recurrences
-  venue: SIGACT News
-  volume: 12
-  issue: 3
-  pages: 36-44
-  doi: 10.1145/1008861.1008865
-  pagesNote: The original derivation of what is now called the Master Theorem. Generalizes the recursion-tree method for T(n) = aT(n/b) + f(n)
-- type: journal
-  authors:
-  - Hoare, C. A. R.
-  year: 1962
-  title: Quicksort
-  venue: The Computer Journal
-  volume: 5
-  issue: 1
-  pages: 10-15
-  doi: 10.1093/comjnl/5.1.10
-- type: journal
-  authors:
-  - von Neumann, John
-  year: 1945
-  title: First Draft of a Report on the EDVAC
-  venue: Moore School of Electrical Engineering, University of Pennsylvania
-  pages: Annotated and reprinted in IEEE Annals of the History of Computing 15(4):27-75 (1993). Contains the first written description of merge sort
-- type: journal
-  authors:
-  - Coppersmith, Don
-  - Winograd, Shmuel
-  year: 1990
-  title: Matrix multiplication via arithmetic progressions
-  venue: Journal of Symbolic Computation
-  volume: 9
-  issue: 3
-  pages: 251-280
-  doi: 10.1016/S0747-7171(08)80013-2
-  pagesNote: Achieved O(n^2.376) matrix multiplication, the first major improvement over Strassen 1969
-- type: journal
-  authors:
-  - Bentley, Jon L.
-  - Shamos, Michael I.
-  year: 1976
-  title: Divide-and-conquer in multidimensional space
-  venue: Proceedings of the 8th Annual ACM Symposium on Theory of Computing (STOC 76)
-  pages: 220-230
-  doi: 10.1145/800113.803652
-  pagesNote: Introduced the O(n log n) closest pair algorithm using divide-and-conquer with strip check
-- type: journal
-  authors:
-  - Williams, Virginia Vassilevska
-  year: 2012
-  title: Multiplying matrices faster than Coppersmith-Winograd
-  venue: Proceedings of the 44th Annual ACM Symposium on Theory of Computing (STOC 12)
-  pages: 887-898
-  doi: 10.1145/2213977.2214056
-  pagesNote: Improved matrix multiplication to O(n^2.3727), breaking the 22-year-old Coppersmith-Winograd bound
-- type: journal
-  authors:
-  - Alman, Josh
-  - Williams, Virginia Vassilevska
-  year: 2021
-  title: A refined laser method and faster matrix multiplication
-  venue: Proceedings of the 32nd Annual ACM-SIAM Symposium on Discrete Algorithms (SODA 21)
-  pages: 522-539
-  doi: 10.1137/1.9781611976465.32
-  pagesNote: Current best matrix multiplication bound O(n^2.3728596)
-- type: website
-  authors:
-  - Frigo, Matteo
-  - Johnson, Steven G.
-  year: 2005
-  title: The Design and Implementation of FFTW3
-  venue: Proceedings of the IEEE 93(2):216-231
-  url: https://fftw.org/fftw-paper-ieee.pdf
-  pages: The "Fastest Fourier Transform in the West" library, production-quality FFT implementation using Cooley-Tukey plus many specialized kernels
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - Heideman, Michael T.
-  - Johnson, Don H.
-  - Burrus, C. Sidney
-  year: 1984
-  title: Gauss and the history of the fast Fourier transform
-  venue: IEEE ASSP Magazine 1(4):14-21
-  url: https://ieeexplore.ieee.org/document/1162257
-  pages: Shows that FFT was originally discovered by Gauss in 1805, predating Cooley-Tukey by 160 years
-  accessedDate: '2026-07-20'
-etymology:
-- term: 分治
-  english: divide and conquer
-  origin: divide and conquer 源自拉丁语 divide et impera（分裂而统治），原为罗马帝国的政治军事策略，被凯撒《高卢战记》频繁使用。在计算机科学中，divide and conquet 作为算法设计策略的系统化由 John von Neumann 1945 EDVAC 报告中的归并排序首次明确体现。Cormen-Leiserson-Rivest-Stein《CLRS》第 2/4 章将分治形式化为三步范式：Divide（分解）、Conquer（解决）、Combine（合并）。中文"分治"由"分"（分解）与"治"（治理）合成
-- term: 主定理
-  english: Master Theorem
-  origin: Master Theorem 是求解形如 $T(n) = aT(n/b) + f(n)$ 递推关系的通用方法。Bentley、Haken、Saxe 1980 在《A general method for solving divide-and-conquer recurrences》SIGACT News 12(3):36-44 首次给出系统化证明。Cormen-Leiserson-Rivest《CLRS》第 4 章将其命名为 "Master Theorem"。三情况分类基于 $f(n)$ 与 $n^{\log_b a}$ 的渐近比较
-- term: 递推关系
-  english: recurrence
-  origin: recurrence 源自拉丁语 recurrere（往回跑）。递推关系用自身较小规模定义 $T(n)$，是分治算法复杂度分析的标准工具。除主定理外，还有代入法（substitution method）、递归树法（recursion-tree method）、Akra-Bazzi 方法等更通用解法
-- term: 递归树
-  english: recursion tree
-  origin: recursion tree 是可视化解递推的工具：以原问题为根，每层按 $a$ 分支展开，叶节点为基线情况。每层贡献求和即总复杂度。Cormen-Leiserson-Rivest-Stein《CLRS》第 4.4 节系统化。递归树法虽不严格但直观，常与代入法配合使用
-- term: 归并排序
-  english: merge sort
-  origin: merge 源自拉丁语 mergere（合并）。归并排序由 John von Neumann 于 1945 年在 EDVAC 报告《First Draft of a Report on the EDVAC》中首次描述（Knuth TAOCP Vol.3 §5.2.4 考据），是首个 $O(n \log n)$ 算法。Herman Goldstine 与 John von Neumann 1948 在《Planning and Coding of Problems for an Electronic Computing Instrument》Part II Vol.3 给出更详细版本
-- term: 快速排序
-  english: quicksort
-  origin: 'quick 源自古英语 cwic（活的、敏捷的）。快速排序由 C. A. R. Hoare（Tony Hoare）在 1959 年开发 ALGOL 60 翻译器时发明，1961 年发表于《Communications of the ACM》4(7):321《Algorithm 64: Quicksort》与《The Computer Journal》5(1):10-15《Quicksort》。Hoare 因此获 1980 年 Turing Award。快排平均 $O(n \log n)$ 但最坏 $O(n^2)$，是 C qsort、C++ std::sort（introsort）、Java Arrays.sort 的核心'
-- term: Karatsuba 算法
-  english: Karatsuba algorithm
-  origin: 以 Anatolii Alexeevich Karatsuba 命名。1960 年莫斯科大学研讨会上，Andrey Kolmogorov 提出 $O(n^2)$ 是大整数乘法下界的猜想，并让全班尝试证明。Karatsuba 一周后发现 $O(n^{\log_2 3}) \approx O(n^{1.585})$ 算法，颠覆了 Kolmogorov 的猜想。Karatsuba-Ofman 1963 在《Soviet Physics-Doklady》7(7):595-596 发表英文翻译版。此为"分治突破下界"的开山之作，启发 Toom-Cook、Schönhage-Strassen、Fürer、Harvey-van der Hoeven 2019 $O(n \log n)$ 等后续工作
-- term: Strassen 算法
-  english: Strassen algorithm
-  origin: 以 Volker Strassen 命名。Strassen 1969 在《Gaussian Elimination is not Optimal》Numerische Mathematik 13(4):354-356 提出 7 次乘法替代朴素 8 次乘法的 $2 \times 2$ 矩阵乘法，复杂度 $O(n^{\log_2 7}) \approx O(n^{2.807})$，首次突破 $O(n^3)$。后续工作 Coppersmith-Winograd 1990 $O(n^{2.376})$、Williams 2012 $O(n^{2.3727})$、Alman-Williams 2021 $O(n^{2.3728596})$ 不断改进
-- term: 快速傅里叶变换
-  english: Fast Fourier Transform (FFT)
-  origin: Fourier 变换以法国数学家 Joseph Fourier 命名（1807《热扩散理论》）。FFT 是计算离散傅里叶变换（DFT）的快速算法。Cooley-Tukey 1965 在《Mathematics of Computation》19:297-301《An algorithm for the machine calculation of complex Fourier series》提出。Heideman-Johnson-Burrus 1984 考据发现 Gauss 在 1805 年已发现同样思想（早 160 年）。FFT 把 DFT 从 $O(n^2)$ 降到 $O(n \log n)$，被誉为 20 世纪最重要的算法之一，广泛用于信号处理、压缩、卷积神经网络
-- term: 最近点对
-  english: closest pair of points
-  origin: closest pair 是计算几何经典问题：在 $n$ 个二维点中找距离最近的两个点。Bentley-Shamos 1976 在 STOC 提出 $O(n \log n)$ 分治算法：按 $x$ 排序后对半分，递归求左右最近距离 $d$，再用 strip 检查跨越中线的点对。strip 内每个点只需检查 $y$ 排序后 7 个邻居，故 strip 检查 $O(n)$
-- term: 蝶形运算
-  english: butterfly operation
-  origin: butterfly（蝴蝶）指 Cooley-Tukey FFT 中 $X_k = E_k + \omega_N^k O_k$ 与 $X_{k+N/2} = E_k - \omega_N^k O_k$ 的一对运算。信号流图中形状类似蝴蝶。每个蝶形含一次复数乘法与两次加减。FFT 总共 $N/2 \log N$ 个蝶形，故 $O(N \log N)$
-- term: 摊还分析
-  english: amortized analysis
-  origin: amortize 源自拉丁语 ad-（向）+ mortalis（死亡），原指分期偿还债务。在算法分析中，amortized analysis 将偶尔高代价的操作分摊到低代价操作上。Cormen-Leiserson-Rivest-Stein《CLRS》第 17 章系统化，分聚合分析、核算方法、势能方法三种。最近点对 strip 检查的 $O(1)$ 摊还即聚合分析实例
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/002-SortAlgorithm'
+  - 'algorithm/011-NQueensBenchmarkBitManipulationApproach'
 ---
+
 
 
 ## 1. 概述与学习目标

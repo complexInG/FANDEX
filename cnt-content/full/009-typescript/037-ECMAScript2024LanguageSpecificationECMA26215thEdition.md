@@ -1,172 +1,22 @@
 ---
-order: 78
+order: 370
 title: 类型安全的发布订阅
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: 发布订阅模式的形式语义、TypeScript 类型级实现、与主流事件库对比及生产级工程实践
 author: fanquanpp
 updated: '2026-07-20'
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
 related:
-- typescript/类型安全的配置系统
-- typescript/类型安全的数据库查询
-- typescript/协变与逆变
-- typescript/字面量类型与联合类型
-- typescript/TypeScript5新特性
+  - 'typescript/035-TypeScript54ReleaseNotesNoInferUtilityType'
+  - 'typescript/036-TypeLevelProgrammingInTypeScript'
+  - 'typescript/017-CovarianceContravariance'
+  - 'typescript/005-LocalTypeInference'
+  - 'typescript/038-TypesAndProgrammingLanguages'
 prerequisites:
-- typescript/语法速查
-- typescript/泛型与类型约束
-- typescript/字面量类型与联合类型
-tags:
-- typescript
-- publish-subscribe
-- observer-pattern
-- event-driven
-- type-safety
-- covariance
-- contravariance
-references:
-- type: book
-  authors:
-  - Gamma, Erich
-  - Helm, Richard
-  - Johnson, Ralph
-  - Vlissides, John
-  year: 1994
-  title: 'Design Patterns: Elements of Reusable Object-Oriented Software'
-  venue: Addison-Wesley Professional
-  pages: 293-303
-  doi: 10.5555/186897
-- type: journal
-  authors:
-  - Bainomugisha, Engineer
-  - Carreton, Alvise L.
-  - Cutsem, Tom Van
-  - Mostinckx, Stijn
-  - Meuter, Wolfgang De
-  year: 2013
-  title: A Survey on Reactive Programming
-  venue: ACM Computing Surveys (CSUR)
-  volume: 45
-  issue: 4
-  pages: 1-34
-  doi: 10.1145/2501654.2501666
-- type: conference
-  authors:
-  - Bierman, Gavin M.
-  - Abadi, Martín
-  - Torgersen, Mads
-  year: 2014
-  title: Understanding TypeScript
-  venue: ECOOP 2014 — Object-Oriented Programming
-  pages: 257-281
-  doi: 10.1007/978-3-662-44202-9_11
-- type: journal
-  authors:
-  - Elliott, Conal
-  - Hudak, Paul
-  year: 1997
-  title: Functional Reactive Animation
-  venue: ACM SIGPLAN Notices
-  volume: 32
-  issue: 8
-  pages: 263-273
-  doi: 10.1145/258949.258973
-- type: technical-report
-  authors:
-  - Salvaneschi, Guido
-  - Mezini, Mira
-  year: 2014
-  title: Towards a Theory of Refactoring for Reactive Programming
-  venue: arXiv preprint arXiv:1409.5441
-  doi: 10.48550/arXiv.1409.5441
-- type: journal
-  authors:
-  - Hejlsberg, Anders
-  - Torgersen, Mads
-  year: 2018
-  title: 'TypeScript 2.8 Release Notes: Conditional Types'
-  venue: Microsoft Developer Network
-  url: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html
-- type: documentation
-  authors:
-  - Node.js Foundation
-  year: 2024
-  title: Node.js EventEmitter Documentation
-  venue: Node.js v22 Official Docs
-  url: https://nodejs.org/api/events.html
-- type: documentation
-  authors:
-  - Microsoft Corporation
-  year: 2024
-  title: VS Code Emitter API Reference
-  venue: Visual Studio Code API
-  url: https://code.visualstudio.com/api/references/vscode-api#EventEmitter
-- type: documentation
-  authors:
-  - Reactive Extensions Team
-  year: 2024
-  title: RxJS Subject Documentation
-  venue: RxJS 7.x Official Documentation
-  url: https://rxjs.dev/guide/subject
-- type: journal
-  authors:
-  - Okasaki, Chris
-  year: 1999
-  title: Purely Functional Data Structures
-  venue: Cambridge University Press
-  isbn: 978-0-521-66350-2
-- type: conference
-  authors:
-  - Cardelli, Luca
-  - Martini, Simone
-  year: 1992
-  title: An Extension of System F with Subtyping
-  venue: Information and Computation
-  volume: 109
-  issue: 1-2
-  pages: 4-56
-  doi: 10.1016/0890-5401(92)90018-G
-- type: journal
-  authors:
-  - Pierce, Benjamin C.
-  year: 2002
-  title: Types and Programming Languages
-  venue: MIT Press
-  isbn: 978-0-262-16209-8
-- type: conference
-  authors:
-  - Jeffrey, Alan
-  year: 1998
-  title: A Distributed Object-Oriented Calculus with Subtyping
-  venue: Electronic Notes in Theoretical Computer Science
-  volume: 16
-  issue: 1
-  pages: 47-72
-  doi: 10.1016/S1571-0661(04)00054-3
-- type: standard
-  authors:
-  - Ecma International
-  year: 2024
-  title: ECMAScript 2024 Language Specification (ECMA-262 15th Edition)
-  venue: Ecma International Standard
-  url: https://tc39.es/ecma262/
-etymology:
-- term: 发布订阅（Publish-Subscribe）
-  english: Publish-Subscribe Pattern
-  origin: 起源于 1987 年 Birman 与 Joseph 在 Cornell 大学提出的 ISIS 系统中的虚拟同步组通信原语，后由 GoF《设计模式》（1994）正式纳入观察者模式的变体形式；现代事件总线实现源自 Java JMS（Java Message Service, 1998）规范。
-- term: 观察者（Observer）
-  english: Observer Pattern
-  origin: Smalltalk-80 时代的 Model-View-Controller（MVC）框架中已隐含观察者模式，GoF 1994 将其形式化为独立设计模式，与之相关的 dependents（依赖者）与 publish-subscribe 在 GoF 原书中作为同义术语出现。
-- term: 事件总线（Event Bus）
-  english: Event Bus
-  origin: 2008 年 Spring Framework 推出的 ApplicationEvent 类与 Guava EventBus（2010）使事件总线成为 Java 生态的通用术语；前端框架 Backbone.Events（2010）、Node.js EventEmitter（2009）将这一概念普及至 JavaScript 生态。
-- term: Subject
-  english: RxJS Subject
-  origin: 源自 ReactiveX 项目（Microsoft 2012），借用 Observer 模式的 dual concept（对偶概念）— 同时具备 Observable 与 Observer 双重身份的对象，其类型论基础可追溯至 Elliott & Hudak 1997 年的 Functional Reactive Animation 论文。
+  - 'typescript/005-LocalTypeInference'
 ---
+
 
 
 ## 引言：为什么需要类型安全的发布订阅

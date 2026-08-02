@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 130
 title: 前缀索引
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
 description: MySQL前缀索引：长字符串列的索引优化、选择性计算、适用场景与限制
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/索引下推
-  - mysql/全文索引
-  - mysql/索引提示与强制索引
-  - mysql/索引统计信息与直方图
+  - 'mysql/011-IndexConditionPushdown'
+  - 'mysql/012-FullTextIndex'
+  - 'mysql/014-IndexHintForceIndex'
+  - 'mysql/015-IndexStatsHistogram'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 前缀索引概述
 

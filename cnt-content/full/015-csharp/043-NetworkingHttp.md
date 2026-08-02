@@ -1,9 +1,8 @@
 ---
 order: 430
 title: C# HttpClient 网络请求
-module: csharp
-
-category: '015-csharp'
+module: 'csharp'
+category: 后端技术
 difficulty: beginner
 description: C# HttpClient 网络请求 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## HttpClient 基础
 
 **基本写法：创建 HttpClient**

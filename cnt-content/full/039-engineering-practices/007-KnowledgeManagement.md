@@ -1,17 +1,18 @@
 ---
-order: 16
+order: 70
 title: 知识管理
 module: 'engineering-practices'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 技术文档体系、Wiki建设、知识分享与组织学习。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'engineering-practices/事故复盘方法论'
-  - 'engineering-practices/技术方案评审'
+  - 'engineering-practices/005-IncidentRetrospectiveMethodology'
+  - 'engineering-practices/006-TechnicalReview'
 prerequisites: []
 ---
+
 
 ## 1. 从"图书馆"说起：团队的知识从哪里来
 

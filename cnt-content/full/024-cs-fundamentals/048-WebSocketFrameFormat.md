@@ -1,20 +1,21 @@
 ---
-order: 115
+order: 480
 title: WebSocket帧格式
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: 'WebSocket 协议帧格式与心跳机制：帧结构、控制帧、数据帧与 Ping/Pong。'
+description: WebSocket 协议帧格式与心跳机制：帧结构、控制帧、数据帧与 Ping/Pong。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/DNS解析流程'
-  - 'cs-fundamentals/CDN原理'
-  - 'cs-fundamentals/QUIC协议'
-  - 'cs-fundamentals/ARP协议与ARP欺骗'
+  - 'cs-fundamentals/046-DNSFlow'
+  - 'cs-fundamentals/047-CDNPrinciple'
+  - 'cs-fundamentals/049-QUIC'
+  - 'cs-fundamentals/050-ARPARP'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. WebSocket 帧格式
 

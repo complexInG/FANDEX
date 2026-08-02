@@ -1,22 +1,20 @@
 ---
-order: 100
-tags:
-  - python
-difficulty: intermediate
+order: 510
 title: 模块、包与工程化
-module: python
-category: 'Python Basics'
+module: 'python'
+category: 后端技术
+difficulty: intermediate
 description: 模块导入、包结构、虚拟环境与依赖管理。
 author: Anonymous
-related:
-  - python/Python进阶与最新特性
-  - python/推导式与生成器
-  - python/装饰器进阶
-  - python/生成器与协程
-prerequisites:
-  - python/语法速查
 updated: '2026-08-01'
+related:
+  - 'python/049-PythonAdvancedLatestFeature'
+  - 'python/050-ComprehensionGenerator'
+  - 'python/062-DecoratorAdvanced'
+  - 'python/059-GeneratorCoroutine'
+prerequisites: []
 ---
+
 ## 泛型
 
 **基本写法：泛型函数**

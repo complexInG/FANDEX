@@ -1,20 +1,21 @@
 ---
-order: 107
+order: 570
 title: 单元测试与基准测试
-module: go
-category: 'dev-lang'
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'Go单元测试与基准测试详解：go test -bench。'
+description: Go单元测试与基准测试详解：go test -bench。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/垃圾回收与GC调优
-  - go/泛型详解
-  - go/竞态检测与原子操作
-  - go/包管理详解
+  - 'go/055-GCAndTuning'
+  - 'go/056-GenericDetailed'
+  - 'go/058-RaceDetectionAtomic'
+  - 'go/059-PackageManagementDetailed'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 ## 1. 历史动机与发展脉络

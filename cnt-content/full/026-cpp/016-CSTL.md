@@ -1,30 +1,26 @@
 ---
-order: 61
-tags:
-  - cpp
-  - stl
-  - algorithms
-  - ranges
+order: 160
+title: C++ STL 算法详解
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-title: 'C++ STL 算法详解'
-module: cpp
-category: 'C++ Standard Library'
 description: STL 算法库全解：非修改式、修改式、排序、搜索、数值、分区、堆、C++17 并行算法、C++20 Ranges、C++23 容器算法，含复杂度分析、迭代器约束、企业级实战与陷阱。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/运算符重载
-  - cpp/面向对象基础
-  - cpp/字符串处理
-  - cpp/文件IO与文件系统
-  - cpp/Lambda表达式
-  - cpp/C++20范围
-  - cpp/STL容器与迭代器
-  - cpp/类型系统
+  - 'cpp/014-OperatorOverloading'
+  - 'cpp/015-COOPBasics'
+  - 'cpp/017-StringProcessing'
+  - 'cpp/018-FileIOFileSystem'
+  - 'cpp/008-LambdaExpression'
+  - 'cpp/010-Cpp20Range'
+  - 'cpp/048-CSTL'
+  - 'cpp/003-CppTypeSystem'
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/STL容器与迭代器
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/048-CSTL'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 STL 的诞生：Alexander Stepanov 与泛型编程

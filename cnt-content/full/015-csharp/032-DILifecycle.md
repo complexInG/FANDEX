@@ -1,20 +1,21 @@
 ---
-order: 106
+order: 320
 title: 依赖注入生命周期
-module: csharp
-category: 'dev-lang'
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'ASP.NET Core依赖注入生命周期详解：Scoped、Transient、Singleton。'
+description: ASP.NET Core依赖注入生命周期详解：Scoped、Transient、Singleton。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - 'csharp/Entity-Framework-Core迁移与优化'
-  - 'csharp/ASP-NET-Core中间件管道'
-  - csharp/GC代机制
-  - csharp/值类型与引用类型
+  - 'csharp/030-EFCoreMigrationOptimization'
+  - 'csharp/031-AspNetCoreMiddlewarePipeline'
+  - 'csharp/033-GCGeneration'
+  - 'csharp/034-ValueTypeReferenceType'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 ## 一、学习目标
 

@@ -1,20 +1,20 @@
 ---
-order: 103
+order: 460
 title: 类型体操
-module: typescript
-category: 'dev-lang'
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: TypeScript类型体操详解：递归类型、斐波那契、深度只读等高级类型编程。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - typescript/映射类型与键重映射
-  - typescript/模板字面量类型
-  - typescript/模块声明与全局类型增强
-  - typescript/tsconfig严格模式
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/044-MappedTypeKeyRemap'
+  - 'typescript/045-TemplateLiteralType'
+  - 'typescript/047-ModuleDeclarationGlobalAugmentation'
+  - 'typescript/048-TsconfigStrictMode'
+prerequisites: []
 ---
+
 
 # 类型体操
 

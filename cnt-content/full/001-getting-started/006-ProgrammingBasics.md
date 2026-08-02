@@ -1,20 +1,21 @@
 ---
-order: 42
+order: 60
 title: 程序设计基础
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 算法流程图、控制结构、编译与解释、数据类型、运算符与表达式求值。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/计算机体系结构'
-  - 'getting-started/数的表示与编码'
-  - 'getting-started/函数与模块化'
-  - 'getting-started/学习路线规划'
+  - 'getting-started/004-ComputerArchitecture'
+  - 'getting-started/005-NumberRepresentationEncoding'
+  - 'getting-started/007-FunctionModular'
+  - 'getting-started/008-LearningPathPlanning'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 算法流程图
 

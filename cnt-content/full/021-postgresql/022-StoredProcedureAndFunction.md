@@ -1,20 +1,21 @@
 ---
-order: 67
+order: 220
 title: 存储过程与函数
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL存储过程与函数：PL/pgSQL、PL/Python、PL/Perl与过程语言扩展
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/全文检索
-  - postgresql/地理空间对象
-  - postgresql/触发器与事件触发器
-  - postgresql/扩展模块
+  - 'postgresql/020-FullTextSearch'
+  - 'postgresql/021-GeoSpatialObject'
+  - 'postgresql/023-TriggerEventTrigger'
+  - 'postgresql/024-ExtensionModule'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 ## 1. PL/pgSQL
 
 ### 1.1 函数

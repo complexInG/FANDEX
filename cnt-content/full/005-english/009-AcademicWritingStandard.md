@@ -1,20 +1,21 @@
 ---
-order: 41
+order: 90
 title: 学术写作规范
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: advanced
 description: 英文学术写作规范，涵盖引用格式、论文结构、学术用语与写作风格。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/技术文档阅读方法
-  - english/学术论文阅读指南
-  - english/技术文档写作
-  - english/英译汉技巧
+  - 'english/007-TechDocReadingMethod'
+  - 'english/008-AcademicPaperReadingGuide'
+  - 'english/010-TechDocWriting'
+  - 'english/011-EnglishToChineseTechnique'
 prerequisites:
-  - english/计算机专业英语词汇
+  - 'english/001-ComputerProfessionalEnglishVocabulary'
 ---
+
 
 ## 1. 学术写作的基本原则
 

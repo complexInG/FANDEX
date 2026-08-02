@@ -1,22 +1,21 @@
 ---
 order: 50
-tags:
-  - css
-  - 'css-layout'
+title: CSS3 Flexbox 弹性布局
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-title: 'CSS3 Flexbox 弹性布局'
-module: css
-category: 'CSS Basics'
-description: 'flex 容器与项目属性、对齐方式与常见布局模式。'
+description: flex 容器与项目属性、对齐方式与常见布局模式。
 author: Anonymous
+updated: '2026-08-01'
 related:
-  - css/选择器系统
-  - css/传统布局技术
-  - css/伪类与伪元素
-  - css/优先级计算
+  - 'css/003-CSS3SelectorSystem'
+  - 'css/004-TraditionalLayoutTech'
+  - 'css/006-PseudoClassPseudoElement'
+  - 'css/007-PriorityCalculation'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 ## 1. 核心概念
 
 Flexbox（弹性盒子）是一种一维布局模型，旨在提供一种更高效的方式来布局、对齐和分配容器中项目之间的空间。

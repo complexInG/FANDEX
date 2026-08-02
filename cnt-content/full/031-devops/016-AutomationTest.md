@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 160
 title: 自动化测试
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
 description: 自动化测试：单元测试、集成测试、E2E测试、性能测试与测试策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/性能调优
-  - devops/高可用架构
-  - devops/故障排查
-  - devops/容器安全
+  - 'devops/014-PerformanceTuning'
+  - 'devops/015-HighAvailabilityArchitecture'
+  - 'devops/017-Troubleshooting'
+  - 'devops/018-ContainerSecurity'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 测试金字塔
 

@@ -1,19 +1,20 @@
 ---
 order: 70
-title: 'SVG 颜色与填充'
-module: svg
-category: 'SVG Style'
+title: SVG 颜色与填充
+module: 'svg'
+category: 前端技术
 difficulty: intermediate
-description: 'fill、stroke、opacity、currentColor、paint-order 与矢量效果。'
+description: fill、stroke、opacity、currentColor、paint-order 与矢量效果。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/基本图形详解
-  - svg/渐变与图案
-  - svg/CSS样式化
+  - 'svg/004-SVGBasicShapeDetailed'
+  - 'svg/008-SVGGradientPattern'
+  - 'svg/014-SVGCSSStyling'
 prerequisites:
-  - svg/基本图形详解
+  - 'svg/004-SVGBasicShapeDetailed'
 ---
+
 ## 1. 填充 fill
 
 `fill` 控制图形内部颜色，支持颜色值、URL 引用、关键字。

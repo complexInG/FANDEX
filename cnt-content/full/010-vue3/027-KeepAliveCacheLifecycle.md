@@ -1,44 +1,20 @@
 ---
-order: 104
+order: 270
 title: KeepAlive缓存与生命周期
-module: vue3
-category: dev-lang
+module: 'vue3'
+category: 前端技术
 difficulty: advanced
 description: Vue 3 KeepAlive 组件缓存机制完整解析：include/exclude/max、activated/deactivated 生命周期、缓存刷新与内存管理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-- vue3/自定义组合函数封装
-- vue3/Teleport传送门应用
-- vue3/异步组件与Suspense
-- vue3/Pinia持久化插件
-prerequisites:
-- vue3/语法速查
-references:
-- type: documentation
-  authors:
-  - Vue.js 团队
-  year: 2026
-  title: KeepAlive - Vue.js 官方文档
-  venue: vuejs.org
-  url: https://vuejs.org/guide/built-ins/keep-alive.html
-  accessedDate: '2026-08-01'
-- type: documentation
-  authors:
-  - Vue.js 团队
-  year: 2026
-  title: Lifecycle Hooks - Vue.js 官方文档
-  venue: vuejs.org
-  url: https://vuejs.org/guide/essentials/lifecycle.html
-  accessedDate: '2026-08-01'
-etymology:
-- term: 保持活跃
-  english: KeepAlive
-  origin: 网络协议保活（keep-alive）概念，组件缓存如同连接保活，避免重建开销。
-estimatedReadingTime: 30
-lastReviewed: '2026-08-01'
-reviewer: fanquanpp
+  - 'vue3/025-CustomComposableWrapper'
+  - 'vue3/026-TeleportPortalApp'
+  - 'vue3/028-AsyncComponentSuspense'
+  - 'vue3/029-PiniaPersistencePlugin'
+prerequisites: []
 ---
+
 
 ## 1. 历史动机与发展脉络
 

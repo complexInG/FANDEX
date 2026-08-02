@@ -1,22 +1,20 @@
 ---
-order: 50
-tags:
-  - markdown
+order: 60
+title: Markdown 列表语法
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
-title: 'Markdown 列表语法'
-module: markdown
-category: 'Markdown Basics'
 description: 有序列表、无序列表、任务列表与嵌套规则。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/基础文本格式
-  - markdown/CommonMark规范
-  - markdown/GitHub风格扩展
-  - markdown/转义字符
+  - 'markdown/004-BasicTextFormat'
+  - 'markdown/005-CommonMarkSpec'
+  - 'markdown/008-EscapeCharacter'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 1. 无序列表 (Unordered Lists)
 
 ### 1.1 语法
@@ -24,9 +22,9 @@ prerequisites:
 使用 `-`、`*` 或 `+` 加空格开头，三者效果完全一致，推荐统一使用 `-` 以保持一致性。
 
 ```markdown
--
--
--
+- 无序列表项 1
+- 无序列表项 2
+- 无序列表项 3
 ```
 
 ### 1.2 渲染效果
@@ -44,7 +42,7 @@ prerequisites:
 ```markdown
 - 换行后需要与第一行文本对齐，
   而不是与标记符对齐
--
+- 另一个列表项
 ```
 
 渲染效果：
@@ -59,9 +57,11 @@ prerequisites:
 列表项之间可以添加空行，提高可读性：
 
 ```markdown
--
--
--
+- 列表项 1
+
+- 列表项 2
+
+- 列表项 3
 ```
 
 渲染效果：
@@ -133,12 +133,11 @@ prerequisites:
 待办清单专用语法（GFM 扩展），`[ ]` 表示未完成，`[x]` 表示已完成，符号后必须加空格。
 
 ```markdown
--
--
--
-
-- [x] 子任务 1
-- [ ] 子任务 2
+- [ ] 未完成的待办任务
+- [x] 已完成的待办任务
+  - [ ] 可嵌套待办
+  - [x] 子任务 1
+  - [ ] 子任务 2
 ```
 
 ### 3.2 渲染效果
@@ -176,10 +175,9 @@ prerequisites:
 #### 4.1.1 无序列表嵌套
 
 ```markdown
--
-
-- 二级无序列表项
-- ## 三级无序列表项
+- 一级无序列表项
+    - 二级无序列表项
+        - 三级无序列表项
 ```
 
 #### 4.1.2 有序列表嵌套
@@ -194,7 +192,7 @@ prerequisites:
 #### 4.1.3 混合嵌套
 
 ```markdown
--
+- 无序列表项
 
 1. 有序列表项
 
@@ -235,42 +233,44 @@ prerequisites:
 ### 5.1 列表中使用代码块
 
 ````markdown
--
-
-```python
-print("Hello, World!")
-```
-````
-
--
-
-```javascript
-console.log('Hello, World!');
-```
-
-````
-
-渲染效果：
 - 列表项 1
-```python
- print("Hello, World!")
-````
+
+  ```python
+  print("Hello, World!")
+  ```
 
 - 列表项 2
 
-```javascript
-console.log('Hello, World!');
-```
+  ```javascript
+  console.log('Hello, World!');
+  ```
+````
+
+渲染效果：
+
+- 列表项 1
+
+  ```python
+  print("Hello, World!")
+  ```
+
+- 列表项 2
+
+  ```javascript
+  console.log('Hello, World!');
+  ```
 
 ### 5.2 列表中使用引用
 
 ```markdown
--
+- 列表项 1
 
-> 这是一个引用
-> 可以跨越多行
-> True- 列表项 2
-> 另一个引用
+  > 这是一个引用
+  > 可以跨越多行
+
+- 列表项 2
+
+  > 另一个引用
 ```
 
 渲染效果：
@@ -284,8 +284,8 @@ console.log('Hello, World!');
 ### 5.3 列表中使用图片和链接
 
 ```markdown
--
--
+- 列表项 1：[Markdown 指南](https://www.markdownguide.org)
+- 列表项 2：![示例图片](https://via.placeholder.com/100)
 ```
 
 渲染效果：

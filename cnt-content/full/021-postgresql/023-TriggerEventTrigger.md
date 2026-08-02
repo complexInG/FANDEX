@@ -1,20 +1,21 @@
 ---
-order: 68
+order: 230
 title: 触发器与事件触发器
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL触发器与事件触发器：行级触发器、语句级触发器、DDL事件触发器与触发器函数
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/地理空间对象
-  - postgresql/存储过程与函数
-  - postgresql/扩展模块
-  - postgresql/FDW外部数据包装器
+  - 'postgresql/021-GeoSpatialObject'
+  - 'postgresql/022-StoredProcedureAndFunction'
+  - 'postgresql/024-ExtensionModule'
+  - 'postgresql/025-FDWFDW'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 ## 1. 触发器概述
 
 | 类型       | 触发时机 | 级别    | 用途           |

@@ -1,20 +1,20 @@
 ---
-order: 51
+order: 70
 title: 锁机制
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL锁机制：表级锁、行级锁、advisory锁的语法、兼容性与死锁处理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/语法速查
-  - postgresql/体系架构
-  - postgresql/死锁检测与处理
-  - postgresql/VACUUM机制
+  - 'postgresql/006-SystemArchitecture'
+  - 'postgresql/008-DeadlockDetectionHandling'
+  - 'postgresql/009-VACUUMMechanism'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 表级锁
 

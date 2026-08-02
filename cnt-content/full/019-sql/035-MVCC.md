@@ -1,20 +1,21 @@
 ---
-order: 74
+order: 350
 title: MVCC
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: 'SQL多版本并发控制MVCC：版本链、快照读、Read View、可见性判断与垃圾回收机制'
+description: SQL多版本并发控制MVCC：版本链、快照读、Read View、可见性判断与垃圾回收机制
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/脏读不可重复读幻读
-  - sql/锁机制
-  - sql/窗口函数框架
-  - sql/递归CTE遍历树结构
+  - 'sql/033-DirtyReadNonRepeatablePhantom'
+  - 'sql/034-LockMechanism'
+  - 'sql/036-WindowFunctionFramework'
+  - 'sql/037-RecursiveCTETreeTraversal'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. MVCC 概述
 
 多版本并发控制（Multi-Version Concurrency Control，MVCC）是现代数据库实现高并发读写的核心机制。通过保存数据的多个版本，实现读不阻塞写、写不阻塞读。

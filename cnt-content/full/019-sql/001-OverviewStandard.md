@@ -1,17 +1,18 @@
 ---
-order: 1
+order: 10
 title: 概述与标准
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: beginner
-description: 'SQL 概述、标准演进、方言差异与数据库选型'
+description: SQL 概述、标准演进、方言差异与数据库选型
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/数据查询基础
-  - sql/多表查询
+  - 'sql/002-DataQueryBasics'
+  - 'sql/003-MultiTableQuery'
 prerequisites: []
 ---
+
 ## 什么是 SQL
 
 SQL（Structured Query Language，结构化查询语言）是用于管理关系型数据库管理系统（RDBMS）的标准化语言。它由 IBM 的 Donald D. Chamberlin 和 Raymond F. Boyce 于 1974 年首次提出，最初被称为 SEQUEL（Structured English Query Language），后因商标问题改名为 SQL。

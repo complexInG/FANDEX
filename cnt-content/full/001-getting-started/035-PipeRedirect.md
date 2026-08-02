@@ -1,9 +1,8 @@
 ---
 order: 350
 title: 管道与重定向速查手册
-module: getting-started
-
-category: '001-getting-started'
+module: 'getting-started'
+category: 工具链
 difficulty: beginner
 description: 管道与重定向速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 标准输出重定向
 
 **基本用法:覆盖写入文件**

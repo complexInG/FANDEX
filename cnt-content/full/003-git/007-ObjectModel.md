@@ -1,20 +1,20 @@
 ---
-order: 51
+order: 70
 title: 对象模型
-module: git
-category: 'Git Basics'
+module: 'git'
+category: 工具链
 difficulty: advanced
 description: Git对象模型详解：blob、tree、commit、tag四种对象的结构与关系。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/Git远程仓库操作
-  - git/分布式版本控制原理
-  - 'git/SHA-1哈希完整性校验'
-  - git/三棵树
-prerequisites:
-  - git/语法速查
+  - 'git/005-GitRemoteRepoOperation'
+  - 'git/006-DistributedVCSPrinciple'
+  - 'git/008-SHA1IntegrityCheck'
+  - 'git/009-ThreeTrees'
+prerequisites: []
 ---
+
 
 ## 1. Git 对象概述
 

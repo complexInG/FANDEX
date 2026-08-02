@@ -1,134 +1,20 @@
 ---
-order: 77
+order: 360
 title: 类型安全的数据库查询
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: TypeScript 类型安全数据库访问的形式语义、Row 类型推导原理与 Kysely/Drizzle/Prisma 三大 ORM 的工程对比
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- typescript/类型安全的国际化
-- typescript/类型安全的配置系统
-- typescript/类型安全的发布订阅
-- typescript/类型安全的环境变量
-prerequisites:
-- typescript/语法速查
-tags:
-- typescript
-- database
-- orm
-- sql
-- kysely
-- drizzle
-- prisma
-- type-inference
-- row-types
-references:
-- type: documentation
-  authors:
-  - Klebanov, Igal
-  year: 2024
-  title: 'Kysely Documentation: Type-safe SQL Query Builder for TypeScript'
-  venue: kysely.dev
-  url: https://kysely.dev/docs
-  version: Kysely 0.27
-- type: documentation
-  authors:
-  - Drizzle Team
-  year: 2024
-  title: Drizzle ORM Documentation
-  venue: orm.drizzle.team
-  url: https://orm.drizzle.team/docs
-- type: documentation
-  authors:
-  - Prisma Inc.
-  year: 2024
-  title: 'Prisma Documentation: Type-safe ORM for Node.js and TypeScript'
-  venue: prisma.io/docs
-  url: https://www.prisma.io/docs
-- type: conference
-  authors:
-  - Bierman, Gavin M.
-  - Abadi, Martín
-  - Torgersen, Mads
-  year: 2014
-  title: Understanding TypeScript
-  venue: ECOOP 2014 — Object-Oriented Programming
-  pages: 257-281
-  doi: 10.1007/978-3-662-44202-9_11
-- type: journal
-  authors:
-  - Klebanov, Igal
-  year: 2022
-  title: 'Kysely: A Type-safe SQL Query Builder Built from the Ground Up'
-  venue: GitHub Repository
-  url: https://github.com/kysely-org/kysely
-- type: journal
-  authors:
-  - Brodsky, Alex
-  - Olsen, Daniel
-  year: 2020
-  title: Type-safe Database Access in Modern Web Applications
-  venue: Communications of the ACM
-  pages: 78-87
-  doi: 10.1145/3374135
-- type: conference
-  authors:
-  - Henglein, Fritz
-  year: 2010
-  title: Type Inference with Polymorphic Recursion
-  venue: ACM Transactions on Programming Languages and Systems
-  pages: 1-50
-  doi: 10.1145/1734209
-- type: book
-  authors:
-  - Bierman, Gavin
-  year: 2018
-  title: 'Programming in TypeScript: Making JavaScript Scale'
-  venue: O'Reilly Media
-- type: technical-report
-  authors:
-  - Microsoft
-  year: 2024
-  title: 'TypeScript 5.4 Release Notes: NoInfer and Improved Type Inference'
-  venue: Microsoft Developer Network
-  url: https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/
-- type: standard
-  authors:
-  - ISO/IEC
-  year: 2023
-  title: Information technology — Database languages — SQL
-  venue: ISO/IEC 9075:2023
-- type: conference
-  authors:
-  - Shinnar, Avraham
-  - Pinsker, Eric
-  year: 2019
-  title: Compiling SQL to Type-Safe Code
-  venue: CIDR 2019 — Conference on Innovative Data Systems Research
-- type: journal
-  authors:
-  - Ajvani, Behdad
-  - Vahidi, Sina
-  - Itzhaki, Shay
-  year: 2023
-  title: Type-level Programming in TypeScript
-  venue: arXiv preprint arXiv:2302.09465
-  doi: 10.48550/arXiv.2302.09465
-etymology:
-- term: ORM（对象关系映射）
-  english: Object-Relational Mapping
-  origin: 由 XML 社区在 1990 年代提出，2000 年代初由 Hibernate（Java）普及。TypeScript 时代的 ORM 在传统 ORM 之上引入了类型安全与编译期校验。
-- term: 查询构建器（Query Builder）
-  english: Query Builder
-  origin: 源于 SQL 字符串拼接的安全性问题——为避免 SQL 注入，开发者开始用程序化 API 构造查询。LINQ（2007）是早期类型安全查询的代表。
-- term: Row 类型
-  english: Row Type
-  origin: 源自数据库理论中的关系代数——一个元组（tuple）的类型由其列名与列类型构成。TypeScript 通过映射类型与字面量类型实现 Row 类型。
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
+  - 'typescript/033-TypeSafeI18n'
+  - 'typescript/035-TypeScript54ReleaseNotesNoInferUtilityType'
+  - 'typescript/037-ECMAScript2024LanguageSpecificationECMA26215thEdition'
+  - 'typescript/031-TypeSafeEnvVar'
+prerequisites: []
 ---
+
 
 
 # 类型安全的数据库查询

@@ -1,19 +1,20 @@
 ---
 order: 100
-title: 'SVG 滤镜详解'
-module: svg
-category: 'SVG Effects'
+title: SVG 滤镜详解
+module: 'svg'
+category: 前端技术
 difficulty: advanced
-description: 'filter、feGaussianBlur、feDropShadow、feColorMatrix、滤镜组合与光照。'
+description: filter、feGaussianBlur、feDropShadow、feColorMatrix、滤镜组合与光照。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/渐变与图案
-  - svg/裁剪与蒙版
-  - svg/颜色与填充
+  - 'svg/008-SVGGradientPattern'
+  - 'svg/011-SVGClipMask'
+  - 'svg/007-SVGColorFill'
 prerequisites:
-  - svg/渐变与图案
+  - 'svg/008-SVGGradientPattern'
 ---
+
 ## 1. filter 基础
 
 `<filter>` 在 `<defs>` 中定义，通过 `filter="url(#id)"` 应用到元素。

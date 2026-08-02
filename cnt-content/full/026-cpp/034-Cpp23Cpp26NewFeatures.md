@@ -1,20 +1,20 @@
 ---
-order: 75
+order: 340
 title: C++23与C++26新特性
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: 最新C++标准特性
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/C++与Rust对比
-  - cpp/C++与Python交互
-  - cpp/C++序列化
-  - cpp/C++图形编程
-prerequisites:
-  - cpp/概述与环境配置
+  - 'cpp/033-CppRustComparison'
+  - 'cpp/031-CppPythonInteraction'
+  - 'cpp/036-CppSerialization'
+  - 'cpp/028-CppGraphicsProgramming'
+prerequisites: []
 ---
+
 
 ## 概述
 

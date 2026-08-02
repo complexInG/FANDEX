@@ -1,23 +1,21 @@
 ---
-order: 80
-tags:
-  - cpp
-  - memory
+order: 390
+title: C++ 内存管理
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-title: 'C++ 内存管理'
-module: cpp
-category: 'C++ Basics'
 description: 栈与堆、RAII、智能指针、内存池与自定义分配器。
 author: Anonymous
-related:
-  - cpp/C++游戏开发
-  - cpp/C++嵌入式开发
-  - cpp/C++与Rust对比
-  - cpp/C++代码规范
-prerequisites:
-  - cpp/概述与现代标准
 updated: '2026-08-01'
+related:
+  - 'cpp/037-CppGameDev'
+  - 'cpp/038-CppEmbedded'
+  - 'cpp/033-CppRustComparison'
+  - 'cpp/040-CppCodeStyle'
+prerequisites:
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 内存管理 (Memory Management)
 
 ### 1.1 内存布局

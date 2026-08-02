@@ -1,22 +1,21 @@
 ---
-order: 60
-tags:
-  - markdown
+order: 170
+title: Markdown 链接与图片
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
-title: 'Markdown 链接与图片'
-module: markdown
-category: 'Markdown Basics'
 description: 行内链接、引用链接、图片嵌入与脚注。
 author: Anonymous
-related:
-  - markdown/Mermaid图表
-  - markdown/编辑器功能
-  - markdown/转换工具
-  - markdown/自动目录
-prerequisites:
-  - markdown/语法指南
 updated: '2026-08-01'
+related:
+  - 'markdown/015-Mermaid'
+  - 'markdown/016-EditorFeature'
+  - 'markdown/018-ConversionTool'
+  - 'markdown/019-AutoTOC'
+prerequisites:
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 1. 链接 (Links)
 
 ### 1.1 行内链接 (Inline Links)
@@ -93,7 +92,7 @@ updated: '2026-08-01'
 **示例**：
 
 ```markdown
-!
+![GitHub Logo](https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png 'GitHub Logo')
 ```
 
 **渲染效果**：
@@ -104,14 +103,14 @@ updated: '2026-08-01'
 **语法**：
 
 ```markdown
-!
+![替代文本][图片引用标识符]
 [图片引用标识符]: 图片URL "可选的标题"
 ```
 
 **示例**：
 
 ```markdown
-!
+![GitHub Logo][github-logo]
 [github-logo]: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png "GitHub Logo"
 ```
 
@@ -125,7 +124,7 @@ updated: '2026-08-01'
 **示例**：
 
 ```markdown
-!
+![本地图片](../images/example.png)
 ```
 
 ### 2.4 图片链接
@@ -205,9 +204,8 @@ updated: '2026-08-01'
 **任务列表**：
 
 ```markdown
--
--
--
+- [x] 完成任务 1
+- [ ] 完成任务 2
 ```
 
 **渲染效果**：

@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 120
 title: 异步编程详解
-module: csharp
-category: 'C#'
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: 'C# 异步编程全景解析：APM/EAP/TAP 三代模型、Task/ValueTask、CancellationToken、IAsyncEnumerable、await foreach、Channel、并发协调的深度原理与工程实践。'
+description: C# 异步编程全景解析：APM/EAP/TAP 三代模型、Task/ValueTask、CancellationToken、IAsyncEnumerable、await foreach、Channel、并发协调的深度原理与工程实践。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - csharp/游戏开发与Unity
-  - csharp/LINQ深度解析
-  - csharp/模式匹配
-  - csharp/记录类型
+  - 'csharp/010-CGameDevUnity'
+  - 'csharp/011-LINQDeep'
+  - 'csharp/013-PatternMatching'
+  - 'csharp/014-CRecordType'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 同步编程的瓶颈（.NET 1.0，2002）

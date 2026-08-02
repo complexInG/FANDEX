@@ -1,29 +1,23 @@
 ---
-order: 50
+order: 60
 title: 表与元表进阶
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
-description: 'Lua 表与元表深度解析：元方法体系、运算符重载、__index/__newindex 协议、代理表、原型继承、弱表引用、性能模型与多领域工程实践'
+description: Lua 表与元表深度解析：元方法体系、运算符重载、__index/__newindex 协议、代理表、原型继承、弱表引用、性能模型与多领域工程实践
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - lua
-  - metatable
-  - metamethod
-  - operator-overloading
-  - prototype
-  - intermediate
 related:
-  - lua/函数与闭包
-  - lua/面向对象编程
-  - lua/环境与全局变量管理
-  - lua/协程详解
-  - lua/弱表
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/007-OOP'
+  - 'lua/028-EnvironmentGlobalVariable'
+  - 'lua/008-CoroutineDetailed'
+  - 'lua/027-WeakTable'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/函数与闭包
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/004-FunctionAndClosure'
 ---
+
 
 
 # 表与元表进阶

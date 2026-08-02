@@ -1,30 +1,24 @@
 ---
-order: 52
+order: 80
 title: 协程详解
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
-description: 'Lua 协程深度解析:协作式多任务原理、coroutine API、状态机形式化、yield/resume 控制流、生成器模式、管道与数据流、协程 vs 线程对比、LuaJIT 与 5.4 协程演化、跨语言对比及工程实践'
+description: Lua 协程深度解析:协作式多任务原理、coroutine API、状态机形式化、yield/resume 控制流、生成器模式、管道与数据流、协程 vs 线程对比、LuaJIT 与 5.4 协程演化、跨语言对比及工程实践
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - lua
-  - coroutine
-  - concurrency
-  - generator
-  - cooperative-multitasking
-  - intermediate
 related:
-  - lua/协程与异步
-  - lua/协程非抢占式调度
-  - lua/函数与闭包
-  - lua/元表与元方法详解
-  - lua/Lua错误处理
+  - 'lua/023-CoroutineAsync'
+  - 'lua/026-CoroutineNonPreemptiveScheduling'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/025-MetatableMetamethodDetailed'
+  - 'lua/018-LuaErrorHandling'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/函数与闭包
-  - lua/程序结构与基本语法
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/002-ProgramStructureBasicSyntax'
 ---
+
 
 
 # 协程详解

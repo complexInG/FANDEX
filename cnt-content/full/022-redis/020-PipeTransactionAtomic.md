@@ -1,20 +1,21 @@
 ---
-order: 105
+order: 200
 title: 管道与事务原子性
-module: redis
-category: database
+module: 'redis'
+category: 数据库
 difficulty: intermediate
-description: 'Redis Pipeline 管道与 Multi/Exec 事务：批量命令优化、事务原子性、WATCH 乐观锁与 CAS 模式。'
+description: Redis Pipeline 管道与 Multi/Exec 事务：批量命令优化、事务原子性、WATCH 乐观锁与 CAS 模式。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/哨兵选举
-  - 'redis/Redis-Cluster哈希槽'
-  - redis/Lua脚本原子执行
-  - redis/缓存穿透击穿雪崩
+  - 'redis/018-SentinelElection'
+  - 'redis/019-RedisClusterHashSlot'
+  - 'redis/021-LuaScriptAtomicExecution'
+  - 'redis/022-CachePenetrationBreakdownAvalanche'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 ## 1. Pipeline 管道
 
 ### 1.1 为什么需要 Pipeline

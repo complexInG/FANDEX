@@ -1,23 +1,21 @@
 ---
-order: 90
-tags:
-  - github
-  - devops
+order: 290
+title: GitHub Actions 与 CI/CD
+module: 'github'
+category: 工具链
 difficulty: intermediate
-title: 'GitHub Actions 与 CI/CD'
-module: github
-category: 'GitHub Advanced'
-description: 'GitHub Actions 与 CI/CD 总纲：以智能工厂流水线为类比，讲透 CI/CD 概念、workflow 文件结构（name/on/jobs/steps）、Actions 市场使用与工程最佳实践。'
+description: GitHub Actions 与 CI/CD 总纲：以智能工厂流水线为类比，讲透 CI/CD 概念、workflow 文件结构（name/on/jobs/steps）、Actions 市场使用与工程最佳实践。
 author: Anonymous
-related:
-  - github/PullRequest完整协作流程
-  - github/GitHubPages多站点方案
-  - github/Actions触发器
-  - github/常见问题排查
-prerequisites:
-  - github/GitHub概述
 updated: '2026-08-02'
+related:
+  - 'github/027-PullRequestCompleteCollaborationFlow'
+  - 'github/028-GitHubPagesMultiSolution'
+  - 'github/030-ActionsTrigger'
+  - 'github/031-FAQTroubleshoot'
+prerequisites:
+  - 'github/001-GitHubOverview'
 ---
+
 ## 0. 开始之前：一座"智能工厂流水线"的故事
 
 想象一座现代化工厂：原材料进厂（代码提交），传送带把零件送到各个工位——质检工位自动检查（lint）、测试工位自动试运行（test）、组装工位打包成品（build）、发货工位把货送到客户（deploy）。整条流水线由一套**中央控制系统**自动调度：原料一到，各工位按顺序自动开工；质量不合格，立刻亮红灯拦截；货品信息全部记录在案。

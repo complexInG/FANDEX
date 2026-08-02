@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 190
 title: 合规与审计
-module: cybersecurity
-category: 网络安全
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
 description: 合规与审计：等保2.0、GDPR、ISO27001、安全审计与合规自动化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/哈希算法
-  - cybersecurity/安全开发
-  - cybersecurity/数字证书
-  - cybersecurity/HTTPS原理
+  - 'cybersecurity/017-HashAlgorithm'
+  - 'cybersecurity/018-SecureDevelopment'
+  - 'cybersecurity/020-DigitalCertificate'
+  - 'cybersecurity/021-HTTPSPrinciple'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 ## 1. 合规体系
 
 ### 1.1 主要法规标准

@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 110
 title: JVM垃圾回收
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: GC算法与垃圾回收器
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/JUC并发包
-  - java/JVM类加载机制
-  - java/Java反射
-  - java/Java序列化
+  - 'java/009-JUCConcurrency'
+  - 'java/010-JVMClassLoadingMechanism'
+  - 'java/012-JavaReflection'
+  - 'java/013-JavaSerialization'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 
 ## 历史动机与发展脉络

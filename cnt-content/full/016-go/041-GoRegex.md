@@ -1,20 +1,21 @@
 ---
-order: 81
+order: 410
 title: Go与正则表达式
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'Go 与正则表达式：regexp 包、RE2 语法、Thompson NFA 构造、Pike VM 算法、线性时间复杂度证明、跨引擎对比、性能优化、Unicode 支持与生产级最佳实践'
+description: Go 与正则表达式：regexp 包、RE2 语法、Thompson NFA 构造、Pike VM 算法、线性时间复杂度证明、跨引擎对比、性能优化、Unicode 支持与生产级最佳实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与信号处理
-  - go/Go与文件监控
-  - go/Go与时间
-  - go/Go与JSON
+  - 'go/042-GoSignalHandling'
+  - 'go/039-GoFileMonitor'
+  - 'go/040-GoTime'
+  - 'go/029-GoJSON'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 # Go 与正则表达式：从 Thompson NFA 到 Pike VM 的工程实践

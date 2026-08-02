@@ -1,21 +1,20 @@
 ---
-order: 50
-tags:
-  - typescript
-difficulty: intermediate
+order: 60
 title: 类与装饰器
-module: typescript
-category: 'TS Advanced'
+module: 'typescript'
+category: 前端技术
+difficulty: intermediate
 description: 类定义、访问修饰符、装饰器模式与元数据。
 author: Anonymous
+updated: '2026-08-01'
 related:
-  - typescript/函数与泛型
-  - typescript/字面量类型与联合类型
-  - typescript/交叉类型与类型合并
-  - typescript/类型守卫与自定义守卫
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/004-FunctionGeneric'
+  - 'typescript/005-LocalTypeInference'
+  - 'typescript/007-IntersectionTypeMerge'
+  - 'typescript/008-TypeGuardCustomGuard'
+prerequisites: []
 ---
+
 ## 1. 类成员修饰符 (Access Modifiers)
 
 TypeScript 提供了四种访问修饰符，用于控制类成员的访问权限：

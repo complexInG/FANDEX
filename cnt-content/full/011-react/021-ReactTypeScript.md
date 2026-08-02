@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 210
 title: React与TypeScript
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
-description: 'React TypeScript最佳实践'
+description: React TypeScript最佳实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React错误边界
-  - react/React表单处理
-  - react/React测试
-  - react/React路由进阶
+  - 'react/019-ReactErrorBoundary'
+  - 'react/020-ReactForm'
+  - 'react/022-ReactTest'
+  - 'react/023-ReactRouteAdvanced'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 React TypeScript最佳实践。本文将从基础概念、快速上手、详细用法、常见场景、注意事项和进阶用法六个方面全面介绍React与TypeScript。

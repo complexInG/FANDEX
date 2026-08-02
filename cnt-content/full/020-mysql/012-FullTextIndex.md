@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 120
 title: 全文索引
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-description: 'MySQL全文索引：FULLTEXT索引创建、自然语言模式、布尔模式、n-gram解析器与中文分词'
+description: MySQL全文索引：FULLTEXT索引创建、自然语言模式、布尔模式、n-gram解析器与中文分词
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/联合索引与最左前缀原则
-  - mysql/索引下推
-  - mysql/前缀索引
-  - mysql/索引提示与强制索引
+  - 'mysql/010-CompositeIndexLeftmostPrefixPrinciple'
+  - 'mysql/011-IndexConditionPushdown'
+  - 'mysql/013-PrefixIndex'
+  - 'mysql/014-IndexHintForceIndex'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. 全文索引概述
 
 MySQL 全文索引（FULLTEXT Index）支持对文本内容进行全文检索，InnoDB 和 MyISAM 均支持。

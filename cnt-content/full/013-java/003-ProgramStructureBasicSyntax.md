@@ -1,21 +1,20 @@
 ---
 order: 30
-tags:
-  - java
-difficulty: beginner
 title: 程序结构与基本语法
-module: java
-category: 'Java Basics'
-description: 'Java 程序结构、注释、标识符与关键字。'
+module: 'java'
+category: 后端技术
+difficulty: beginner
+description: Java 程序结构、注释、标识符与关键字。
 author: Anonymous
-related:
-  - java/概述与开发环境
-  - java/快速入门
-  - java/数据类型与类型转换
-  - java/变量与常量
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/002-QuickStart'
+  - 'java/004-DataTypeConversion'
+  - 'java/005-VariableConstant'
+prerequisites: []
 ---
+
 ## 1. Java 程序结构
 
 ### 1.1 源文件结构

@@ -1,9 +1,8 @@
 ---
 order: 890
 title: Java 命令行工具 javac/java/jar/jshell/jpackage 语法速查手册
-module: java
-
-category: '013-java'
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: Java 命令行工具 javac/java/jar/jshell/jpackage 语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## javac 编译
 
 **基本写法：编译源文件**

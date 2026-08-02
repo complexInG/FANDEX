@@ -1,22 +1,21 @@
 ---
-order: 80
-tags:
-  - markdown
+order: 240
+title: Markdown 表格
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
-title: 'Markdown 表格'
-module: markdown
-category: 'Markdown Basics'
 description: 表格语法、对齐方式与复杂表格处理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/版本控制下的PR协作
-  - markdown/代码块与语法高亮
-  - markdown/语法速查
-  - markdown/规范文档编写
+  - 'markdown/022-VCSPRCollaboration'
+  - 'markdown/023-CodeBlockSyntaxHighlight'
+  - 'markdown/031-BlockquoteNestedList'
+  - 'markdown/025-SpecDocumentWriting'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 1. 基本表格语法
 
 **语法**：

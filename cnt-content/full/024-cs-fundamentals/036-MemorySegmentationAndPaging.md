@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 360
 title: 内存分段与分页
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: '内存分段与分页机制：段选择子、页表结构、TLB 加速、缺页中断处理。'
+description: 内存分段与分页机制：段选择子、页表结构、TLB 加速、缺页中断处理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/中断与系统调用'
-  - 'cs-fundamentals/用户态与内核态切换'
-  - 'cs-fundamentals/页面置换算法'
-  - 'cs-fundamentals/文件系统inode'
+  - 'cs-fundamentals/034-InterruptAndSystemCall'
+  - 'cs-fundamentals/035-UserModeKernelModeSwitch'
+  - 'cs-fundamentals/037-PageReplacementAlgorithm'
+  - 'cs-fundamentals/038-FileSystemInode'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 内存分段
 

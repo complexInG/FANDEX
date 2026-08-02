@@ -1,16 +1,16 @@
 ---
 order: 550
 title: gh search 搜索命令速查手册
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
-description: 问题驱动讲解 gh search：从"怎么快速找到想要的仓库、代码、Issue、PR、提交"等真实问题切入，涵盖 repos/code/issues/prs/commits 五类搜索与常用过滤选项，配以错误对策。
+description: '问题驱动讲解 gh search：从"怎么快速找到想要的仓库、代码、Issue、PR、提交"等真实问题切入，涵盖 repos/code/issues/prs/commits 五类搜索与常用过滤选项，配以错误对策。'
 author: fanquanpp
 updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 
 ## 开篇：把 gh search 想成图书馆检索系统
 

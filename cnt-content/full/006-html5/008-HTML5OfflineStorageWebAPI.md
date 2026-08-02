@@ -1,22 +1,21 @@
 ---
-order: 50
-tags:
-  - html5
-  - 'web-api'
+order: 80
+title: HTML5 离线存储与 Web API
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
-title: 'HTML5 离线存储与 Web API'
-module: html5
-category: 'HTML5 Basics'
-description: 'localStorage、sessionStorage、IndexedDB 与 Web Workers。'
+description: localStorage、sessionStorage、IndexedDB 与 Web Workers。
 author: Anonymous
+updated: '2026-08-01'
 related:
-  - html5/多媒体与Canvas绘图
-  - html5/文档类型声明
-  - html5/元数据与字符编码
-  - html5/文本语义
+  - 'html5/006-HTML5MultimediaCanvasDrawing'
+  - 'html5/007-DocTypeDeclaration'
+  - 'html5/009-MetadataCharacterEncoding'
+  - 'html5/010-TextSemantic'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. Web 存储 (Web Storage)
 
 Web Storage 提供了一种在浏览器中存储键值对数据的机制，相比 Cookie 具有更大的容量 (通常为 5MB+) 和更简单的 API。

@@ -1,20 +1,20 @@
 ---
-order: 68
+order: 270
 title: 自定义数据属性
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: beginner
-description: 'data-*'
+description: data-*
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - html5/实时通信
-  - 'html5/微数据与JSON-LD'
-  - html5/跨文档通信
-  - html5/视口配置与移动优先
+  - 'html5/026-MicrodataJSONLD'
+  - 'html5/028-CrossDocumentCommunication'
+  - 'html5/029-ViewportConfigMobileFirst'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 前自定义属性时代（1995—2006）

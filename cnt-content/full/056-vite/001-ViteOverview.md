@@ -1,20 +1,18 @@
 ---
-order: 1
+order: 10
 title: Vite 构建工具概述
-module: vite
-category: Vite
+module: 'vite'
+category: 前端技术
 difficulty: beginner
-description: 'Vite 构建工具概述：从 webpack 痛点出发，理解原生 ESM、依赖预构建、HMR 原理与 Vite 8 的 Rolldown 统一引擎'
+description: Vite 构建工具概述：从 webpack 痛点出发，理解原生 ESM、依赖预构建、HMR 原理与 Vite 8 的 Rolldown 统一引擎
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - javascript/JavaScript基础
-  - typescript/TypeScript基础
-  - astro/Astro框架概述
-  - pnpm-monorepo/pnpm与Monorepo工程化
-prerequisites:
-  - javascript/JavaScript基础
+  - 'astro/001-AstroOverview'
+  - 'pnpm-monorepo/001-PnpmMonorepoOverview'
+prerequisites: []
 ---
+
 
 ## 1. 从一个生活类比说起：快递分拣中心
 

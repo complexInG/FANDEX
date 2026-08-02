@@ -1,9 +1,8 @@
 ---
 order: 400
 title: 云计算 GCP Compute 与 Storage
-module: cloud-computing
-
-category: '034-cloud-computing'
+module: 'cloud-computing'
+category: 云与基础设施
 difficulty: beginner
 description: 云计算 GCP Compute 与 Storage 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Compute Engine 实例
 
 **基本写法：列出所有实例**

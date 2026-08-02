@@ -1,23 +1,20 @@
 ---
-order: 80
-tags:
-  - python
-  - regex
-difficulty: intermediate
+order: 380
 title: 正则表达式
-module: python
-category: 'Python Basics'
+module: 'python'
+category: 后端技术
+difficulty: intermediate
 description: Python正则表达式re模块详解：模式语法、匹配方法、分组、替换与实战应用。
 author: fanquanpp
 updated: '2026-06-13'
 related:
-  - python/Python与性能优化
-  - python/内置数据结构
-  - python/Python与设计模式
-  - python/Python与打包发布
-prerequisites:
-  - python/语法速查
+  - 'python/036-PythonPerformance'
+  - 'python/037-BuiltinDataStructure'
+  - 'python/040-PythonDesignPattern'
+  - 'python/041-ASurveyOfPythonPackagingPastPresentAndFuture'
+prerequisites: []
 ---
+
 ## 1. 历史动机与发展脉络
 
 正则表达式起源于 1956 年数学家 Stephen Cole Kleene 在 *Representation of Events in Nerve Nets and Finite Automata* 一文中提出的"正则集合"（regular sets）代数。这一数学理论在 60 余年里演化为程序员每日使用的工具。

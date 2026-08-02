@@ -1,57 +1,19 @@
 ---
 order: 510
 title: 排版与网格系统
-module: css
-category: '007-css'
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-description: 用字号阶梯、行高、8pt 间距与 CSS 变量搭一套可复用的排版网格，让页面看起来专业而不是"随手排的"。
+description: '用字号阶梯、行高、8pt 间距与 CSS 变量搭一套可复用的排版网格，让页面看起来专业而不是"随手排的"。'
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'css/023-CSSVariableCustomAttribute'
   - 'css/030-ResponsiveDesign'
 prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
-quiz:
-  - type: choice
-    question: 排版系统中"垂直节奏"主要指什么？
-    options:
-      - 所有元素等宽
-      - 行高与间距遵循同一数值体系，视觉间隔稳定
-      - 每行文字长度一致
-      - 使用网格布局
-    answer: 1
-    explanation: 垂直节奏让标题、正文、列表的行距在同一个"节奏"上，滚动阅读更舒适。
-  - type: fill
-    question: 用 CSS 函数____可以写出随视口平滑变化、又有上下限的字号。
-    answer: clamp()
-    hint: '如 font-size: clamp(1rem, 0.9rem + 0.5vw, 1.5rem)。'
-references:
-  - type: website
-    authors:
-      - web.dev Team
-    year: 2026
-    title: Learn CSS：排版与网格
-    venue: web.dev
-    url: https://web.dev/learn/css
-    accessedDate: '2026-08-02'
-  - type: documentation
-    authors:
-      - MDN Contributors
-    year: 2026
-    title: CSS clamp() 函数
-    venue: MDN
-    url: https://developer.mozilla.org/zh-CN/docs/Web/CSS/clamp
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 排版
-    english: Typography
-    origin: 源自活字印刷时代，type 指铅字，graphy 指书写与规则，即"字的排布法则"。
-estimatedReadingTime: 7
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

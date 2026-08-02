@@ -1,19 +1,20 @@
 ---
-order: 6
+order: 60
 title: Turborepo 任务编排
-module: pnpm-monorepo
-category: pnpm 与 Monorepo
+module: 'pnpm-monorepo'
+category: 工具链
 difficulty: intermediate
-description: 'Turborepo 任务编排：turbo.json、tasks 配置、dependsOn 依赖与缓存机制'
+description: Turborepo 任务编排：turbo.json、tasks 配置、dependsOn 依赖与缓存机制
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - pnpm-monorepo/003-WorkspaceSetup
-  - pnpm-monorepo/008-MonorepoPractice
+  - 'pnpm-monorepo/003-WorkspaceSetup'
+  - 'pnpm-monorepo/008-MonorepoPractice'
 prerequisites:
-  - pnpm-monorepo/003-WorkspaceSetup
-  - pnpm-monorepo/002-PnpmCore
+  - 'pnpm-monorepo/003-WorkspaceSetup'
+  - 'pnpm-monorepo/002-PnpmCore'
 ---
+
 
 ## 1. 从"流水线工人"说起
 

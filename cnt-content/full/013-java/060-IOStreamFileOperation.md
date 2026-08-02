@@ -1,22 +1,21 @@
 ---
-order: 150
-tags:
-  - java
+order: 600
+title: I/O 流与文件操作
+module: 'java'
+category: 后端技术
 difficulty: intermediate
-title: 'I/O 流与文件操作'
-module: java
-category: 'Java Basics'
-description: '字节流、字符流、NIO 与文件操作。'
+description: 字节流、字符流、NIO 与文件操作。
 author: Anonymous
-related:
-  - java/异常处理机制
-  - java/泛型详解
-  - java/多线程基础
-  - java/JVM内存模型
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/058-ExceptionHandlingMechanism'
+  - 'java/059-GenericDetailed'
+  - 'java/061-MultithreadingBasics'
+  - 'java/062-JVMMemoryModel'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. I/O 流分类 (Classification)
 
 ### 1.1 按流向分类

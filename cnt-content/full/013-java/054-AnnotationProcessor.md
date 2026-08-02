@@ -1,20 +1,21 @@
 ---
-order: 105
+order: 540
 title: 注解处理器
-module: java
-category: 'dev-lang'
+module: 'java'
+category: 后端技术
 difficulty: advanced
-description: 'Java注解处理器详解：Annotation Processor编译时生成代码。'
+description: Java注解处理器详解：Annotation Processor编译时生成代码。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - java/ThreadLocal内存泄漏
-  - java/反射与动态代理
-  - java/分代ZGC详解
-  - java/面向对象编程
+  - 'java/052-ThreadLocalMemoryLeak'
+  - 'java/053-ReflectionDynamicProxy'
+  - 'java/055-GenerationalZGCDetailed'
+  - 'java/056-OOP'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 # Java 注解处理器：编译时元编程的艺术
 

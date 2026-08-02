@@ -1,20 +1,21 @@
 ---
-order: 69
+order: 290
 title: Go与JSON
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: beginner
 description: encoding/json详解
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与数据库
-  - go/Go与HTTP服务器
-  - go/Go与HTTP客户端
-  - go/Go与Redis
+  - 'go/027-GoDatabase'
+  - 'go/045-GoHTTP'
+  - 'go/044-GoHTTPClient'
+  - 'go/025-GoRedis'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 ## 历史动机与背景
 
 ### JSON 的诞生与流行

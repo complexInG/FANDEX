@@ -1,19 +1,20 @@
 ---
-order: 52
+order: 230
 title: 矩阵对角化
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 相似矩阵的定义与性质，矩阵可对角化的条件与判别，对角化的完整步骤（P⁻¹AP=Λ）与应用（矩阵幂、矩阵多项式、微分方程组），含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/特征值与特征向量计算'
-  - 'linear-algebra/特征值性质'
-  - 'linear-algebra/实对称矩阵的对角化'
+  - 'linear-algebra/025-EigenvalueAndEigenvectorCalculation'
+  - 'linear-algebra/026-EigenvalueProperties'
+  - 'linear-algebra/028-RealSymmetricMatrixDiagonalization'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从一个生活场景说起：换个坐标系，复杂问题变简单
 

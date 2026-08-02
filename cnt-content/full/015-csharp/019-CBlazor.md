@@ -1,20 +1,18 @@
 ---
-order: 58
-title: 'C#与Blazor'
-module: csharp
-category: 'C#'
+order: 190
+title: C#与Blazor
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: 'Blazor WebAssembly与Server'
+description: Blazor WebAssembly与Server
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/源生成器
-  - 'csharp/CSharp与Unity游戏开发'
-  - 'csharp/CSharp与MAUI'
-  - 'csharp/CSharp与EF Core'
+  - 'csharp/017-SourceGenerator'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 
 ## 1. 历史动机与演进脉络

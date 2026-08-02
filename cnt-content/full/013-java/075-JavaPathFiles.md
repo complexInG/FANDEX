@@ -1,9 +1,8 @@
 ---
 order: 750
 title: Java Path 与 Files 语法速查手册
-module: java
-
-category: '013-java'
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: Java Path 与 Files 语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Path 创建
 
 **基本写法：从字符串创建**

@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 180
 title: SpringBoot进阶
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: SpringBoot高级特性
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/运算符与表达式
-  - java/Spring基础
-  - java/SpringBoot安全
-  - java/SpringBoot数据访问
+  - 'java/016-OperatorExpression'
+  - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
+  - 'java/019-SpringBootSecurity'
+  - 'java/020-SpringBootDataAccess'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 概述
 
 Spring Boot 进阶内容涵盖自动配置原理、自定义 Starter、条件化装配、事件机制等核心特性。理解这些内容后，你不再只是"用"Spring Boot，而是能"驾驭"它：遇到问题时知道从哪里排查，需要扩展时知道怎么自定义。

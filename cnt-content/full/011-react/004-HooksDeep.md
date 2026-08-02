@@ -1,21 +1,20 @@
 ---
-order: 4
-tags:
-  - react
-difficulty: intermediate
+order: 40
 title: Hooks深入
-module: react
-category: React
-description: 'useEffect、useRef、useMemo、useCallback、useContext、自定义 Hook、Hooks 规则与常见陷阱。'
+module: 'react'
+category: 前端技术
+difficulty: intermediate
+description: useEffect、useRef、useMemo、useCallback、useContext、自定义 Hook、Hooks 规则与常见陷阱。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/组件与Props
-  - react/状态与事件
-  - react/Context与全局状态
-  - react/React19新特性
+  - 'react/002-ComponentProps'
+  - 'react/003-StateEvent'
+  - 'react/005-ContextGlobalState'
+  - 'react/006-React19NewFeatures'
 prerequisites: []
 ---
+
 ## 1. useEffect
 
 `useEffect` 用于处理副作用：数据获取、DOM 操作、订阅、定时器等。

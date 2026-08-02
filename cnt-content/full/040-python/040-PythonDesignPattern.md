@@ -1,20 +1,20 @@
 ---
-order: 81
+order: 400
 title: Python与设计模式
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: Python实现设计模式
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/内置数据结构
-  - python/正则表达式
-  - python/Python与打包发布
-  - python/Python与Jupyter
-prerequisites:
-  - python/语法速查
+  - 'python/037-BuiltinDataStructure'
+  - 'python/038-Regex'
+  - 'python/041-ASurveyOfPythonPackagingPastPresentAndFuture'
+  - 'python/042-PythonJupyter'
+prerequisites: []
 ---
+
 ## 单例模式
 
 **基本写法：模块级单例**

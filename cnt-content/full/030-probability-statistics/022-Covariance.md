@@ -1,20 +1,21 @@
 ---
-order: 42
+order: 190
 title: 协方差
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 协方差的定义、直观意义、性质、计算方法、与独立性的关系、协方差的应用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/数学期望'
-  - 'probability-statistics/方差与标准差'
-  - 'probability-statistics/相关系数'
-  - 'probability-statistics/矩与协方差矩阵'
+  - 'probability-statistics/020-MathematicalExpectation'
+  - 'probability-statistics/021-VarianceAndStandardDeviation'
+  - 'probability-statistics/023-CorrelationCoefficient'
+  - 'probability-statistics/024-MomentAndCovarianceMatrix'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：两个变量"一起动"
 

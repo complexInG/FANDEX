@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 120
 title: 层叠上下文
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-description: 'z-index'
+description: z-index
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/定位详解
-  - css/浮动与清除
-  - css/渐变
-  - css/阴影
+  - 'css/010-PositionDetailed'
+  - 'css/011-FloatClear'
+  - 'css/013-Gradient'
+  - 'css/014-Shadow'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 概述
 

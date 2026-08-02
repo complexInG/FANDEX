@@ -1,21 +1,22 @@
 ---
-order: 72
+order: 320
 title: Go与Wasm
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'Go 与 WebAssembly：Wasm 字节码、栈式虚拟机、syscall/js 桥接、WASI、TinyGo 与浏览器端企业级应用'
+description: Go 与 WebAssembly：Wasm 字节码、栈式虚拟机、syscall/js 桥接、WASI、TinyGo 与浏览器端企业级应用
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与CGO
-  - go/Go与代码生成
-  - go/Go与性能分析
-  - go/Go与Fuzzing
+  - 'go/031-GoCGO'
+  - 'go/033-GoCodeGeneration'
+  - 'go/043-GoPerformanceAnalysis'
+  - 'go/030-GoFuzzing'
 prerequisites:
-  - go/概述与环境配置
-  - go/Go与HTTP服务器
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/045-GoHTTP'
 ---
+
 
 
 # Go 与 WebAssembly：从浏览器到边缘计算

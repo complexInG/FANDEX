@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 120
 title: 日志管理
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
-description: '日志管理：日志采集、ELK Stack、Fluentd、日志格式与日志分析'
+description: 日志管理：日志采集、ELK Stack、Fluentd、日志格式与日志分析
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/包管理与仓库
-  - devops/服务网格
-  - devops/配置管理
-  - devops/性能调优
+  - 'devops/010-PackageManagementRepository'
+  - 'devops/011-ServiceMesh'
+  - 'devops/013-ConfigManagement'
+  - 'devops/014-PerformanceTuning'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 日志管理概述
 

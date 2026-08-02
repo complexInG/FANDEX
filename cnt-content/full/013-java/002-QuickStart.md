@@ -1,20 +1,19 @@
 ---
 order: 20
-tags:
-  - java
-difficulty: beginner
 title: 快速入门
-module: java
-category: 'Java Basics'
-description: '第一个 Java 程序、编译运行与基本概念。'
+module: 'java'
+category: 后端技术
+difficulty: beginner
+description: 第一个 Java 程序、编译运行与基本概念。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - java/概述与开发环境
-  - java/程序结构与基本语法
-  - java/数据类型与类型转换
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/003-ProgramStructureBasicSyntax'
+  - 'java/004-DataTypeConversion'
 prerequisites: []
 ---
+
 
 # Java 快速入门：从 Hello World 到工程化实践
 

@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 120
 title: 设计模式与C++
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: GoF设计模式的C++实现
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/constexpr与编译期计算
-  - cpp/命名空间与链接
-  - cpp/面向对象进阶
-  - cpp/模板元编程
+  - 'cpp/023-ConstexprCompileTime'
+  - 'cpp/024-NamespaceLinkage'
+  - 'cpp/026-COOPAdvanced'
+  - 'cpp/009-ATourOfC3rdEditionOnlineExcerpts'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 概述
 
 设计模式是面向对象编程中经过验证的解决方案模板，用于解决常见的软件设计问题。GoF（Gang of Four）定义了 23 种经典设计模式，分为创建型、结构型和行为型三大类。C++ 的多态、模板、RAII 和智能指针等特性为设计模式的实现提供了丰富的手段，使得许多模式在 C++ 中有比传统面向对象语言更优雅的实现方式。

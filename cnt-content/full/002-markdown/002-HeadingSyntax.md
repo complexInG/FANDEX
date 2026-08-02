@@ -1,20 +1,19 @@
 ---
 order: 20
-tags:
-  - markdown
+title: Markdown 标题语法
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
-title: 'Markdown 标题语法'
-module: markdown
-category: 'Markdown Basics'
-description: 'ATX 与 Setext 风格标题与目录生成。'
+description: ATX 与 Setext 风格标题与目录生成。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/语法指南
-  - markdown/段落与换行
-  - markdown/基础文本格式
+  - 'markdown/001-SyntaxGuide'
+  - 'markdown/003-ParagraphLineBreak'
+  - 'markdown/004-BasicTextFormat'
 prerequisites: []
 ---
+
 ## ATX 风格标题
 
 **单行写法：一级标题**
@@ -204,12 +203,9 @@ Markdown 支持 6 级标题，通过 `#` 的数量区分层级，**`#`** **后�
 ```markdown
 ## 目录
 
--
--
--
--
--
--
+- [第一章](#第一章)
+- [第二章](#第二章)
+- [第三章](#第三章)
 ```
 
 ## 5. 常见问题与解决方案

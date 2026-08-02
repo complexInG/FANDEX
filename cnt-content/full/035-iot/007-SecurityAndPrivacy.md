@@ -1,19 +1,20 @@
 ---
-order: 7
+order: 70
 title: 安全与隐私
-module: iot
-category: 物联网
+module: 'iot'
+category: 云与基础设施
 difficulty: advanced
-description: 'IoT 安全威胁、设备认证、数据加密、固件安全、OTA 安全与合规标准。'
+description: IoT 安全威胁、设备认证、数据加密、固件安全、OTA 安全与合规标准。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/IoT平台
-  - iot/数据处理与分析
-  - iot/实战项目
-  - iot/MQTT协议
+  - 'iot/005-IoT'
+  - 'iot/006-DataProcessingAnalysis'
+  - 'iot/008-PracticeProject'
+  - 'iot/009-MQTT'
 prerequisites: []
 ---
+
 
 ## 1. IoT 安全威胁
 

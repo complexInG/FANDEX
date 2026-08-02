@@ -1,19 +1,20 @@
 ---
-order: 40
+order: 160
 title: 线性相关性
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 线性组合与线性表示，线性相关与线性无关的定义、判定与性质，向量组的等价，从"冗余"直觉到行列式与秩的严格判定。
+description: '线性组合与线性表示，线性相关与线性无关的定义、判定与性质，向量组的等价，从"冗余"直觉到行列式与秩的严格判定。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/解的结构'
-  - 'linear-algebra/基与维数'
-  - 'linear-algebra/坐标与坐标变换'
+  - 'linear-algebra/017-SolutionStructure'
+  - 'linear-algebra/020-BasisAndDimension'
+  - 'linear-algebra/021-CoordinateAndTransformation'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从"团队是否冗余"说起
 

@@ -1,22 +1,20 @@
 ---
 order: 30
-tags:
-  - git
-  - 'git-workflow'
+title: Git 基本操作
+module: 'git'
+category: 工具链
 difficulty: beginner
-title: 'Git 基本操作'
-module: git
-category: 'Git Basics'
-description: 'add、commit、diff、log 与撤销操作。'
+description: add、commit、diff、log 与撤销操作。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/Git基础概念与核心特点
-  - git/Git环境配置与初始化
-  - git/Git分支管理
-  - git/Git远程仓库操作
+  - 'git/001-Git'
+  - 'git/002-GitEnvConfigInit'
+  - 'git/004-GitBranchManagement'
+  - 'git/005-GitRemoteRepoOperation'
 prerequisites: []
 ---
+
 ## 1. Git 工作区、暂存区和本地仓库
 
 ### 1.1 概念解释

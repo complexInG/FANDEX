@@ -1,20 +1,21 @@
 ---
-order: 105
+order: 200
 title: 测试双
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: '测试双（Test Double）：Mock、Stub、Spy、Fake 的区别与使用场景。'
+description: 测试双（Test Double）：Mock、Stub、Spy、Fake 的区别与使用场景。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/压力测试与稳定性测试'
-  - 'software-testing/安全测试'
-  - 'software-testing/TDD与BDD'
-  - 'software-testing/CI-CD测试门禁'
+  - 'software-testing/018-StressAndStabilityTest'
+  - 'software-testing/019-SecurityTesting'
+  - 'software-testing/021-TDDBDD'
+  - 'software-testing/022-CICDTest'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 
 ## 1. 测试双分类
 

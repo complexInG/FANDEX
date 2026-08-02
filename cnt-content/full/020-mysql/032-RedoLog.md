@@ -1,20 +1,21 @@
 ---
-order: 74
+order: 320
 title: 重做日志
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL InnoDB重做日志redo log：WAL机制、日志缓冲、LSN、崩溃恢复与性能调优'
+description: MySQL InnoDB重做日志redo log：WAL机制、日志缓冲、LSN、崩溃恢复与性能调优
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/分布式事务
-  - mysql/二进制日志
-  - mysql/撤销日志
-  - mysql/日志系统
+  - 'mysql/030-DistributedTransaction'
+  - 'mysql/031-Binlog'
+  - 'mysql/033-UndoLog'
+  - 'mysql/034-LogSystem'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. redo log 概述
 

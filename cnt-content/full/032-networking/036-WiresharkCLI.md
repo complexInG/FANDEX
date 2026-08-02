@@ -1,9 +1,8 @@
 ---
 order: 360
 title: Networking Wireshark 命令行
-module: networking
-
-category: '032-networking'
+module: 'networking'
+category: 云与基础设施
 difficulty: beginner
 description: Networking Wireshark 命令行 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## tshark 基础抓包
 
 **基本写法:列出可用网络接口**

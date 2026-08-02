@@ -1,23 +1,21 @@
 ---
-order: 160
-tags:
-  - java
-  - concurrency
-difficulty: advanced
+order: 610
 title: 多线程基础
-module: java
-category: 'Java Basics'
+module: 'java'
+category: 后端技术
+difficulty: advanced
 description: 线程创建、同步机制、线程池与并发工具。
 author: Anonymous
-related:
-  - java/泛型详解
-  - java/IO流与文件操作
-  - java/JVM内存模型
-  - java/Lambda与函数式编程
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/059-GenericDetailed'
+  - 'java/060-IOStreamFileOperation'
+  - 'java/062-JVMMemoryModel'
+  - 'java/063-LambdaFunctionalProgramming'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 线程概念 (Threads)
 
 ### 1.1 进程与线程

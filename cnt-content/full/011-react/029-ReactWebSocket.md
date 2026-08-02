@@ -1,20 +1,21 @@
 ---
-order: 68
+order: 290
 title: React与WebSocket
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: React中WebSocket实时通信
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React设计模式
-  - react/React与WebAssembly
-  - react/React与GraphQL
-  - react/React与微前端
+  - 'react/027-ReactDesignPattern'
+  - 'react/028-ReactWebAssembly'
+  - 'react/030-ReactGraphQL'
+  - 'react/031-ReactMicroFrontend'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

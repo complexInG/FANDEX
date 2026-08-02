@@ -1,233 +1,27 @@
 ---
-order: 85
+order: 120
 title: 字符串算法
-module: algorithm
-category: Algorithm Strategies
+module: 'algorithm'
+category: 计算机科学
 difficulty: advanced
 description: 字符串匹配的形式化定义（模式串在主串中的出现位置搜索）、KMP/Boyer-Moore/Rabin-Karp/Sunday/Z 函数等单模式匹配、Aho-Corasick 多模式匹配、后缀数组（倍增/DC3/SA-IS 线性算法）、后缀自动机（endpos 等价类）、后缀树（Ukkonen 线性算法）以及字符串动态规划（LCS、编辑距离、最长回文）的系统化讲解，覆盖复杂度证明、多语言实现（Python/C++/Java）。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-string
-- algorithm-datastructure
-created: 2026-06-13
-updated: 2026-07-18
-lastReviewed: '2026-07-18'
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 210
+updated: '2026-07-18'
 related:
-- algorithm/动态规划
-- algorithm/递归与回溯
-- algorithm/数组与动态数组
-- algorithm/线段树
-- algorithm/图算法
-- algorithm/网络流
-- algorithm/KMP字符串匹配
+  - 'algorithm/013-ArtificialIntelligenceAModernApproach'
+  - 'algorithm/011-NQueensBenchmarkBitManipulationApproach'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
+  - 'algorithm/020-AtCoderLibrarySegmentTree'
+  - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
+  - 'algorithm/030-CS261AlgorithmsNetworkFlows'
+  - 'algorithm/024-LinuxKernelLibStringCStringMatchingRoutines'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/数组与动态数组
-- algorithm/树
-- cs-fundamentals/离散数学
-references:
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: ISBN 978-0262046305
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1998
-  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-  venue: Addison-Wesley Professional
-  version: 2nd edition
-  pages: ISBN 978-0201896855
-- type: journal
-  authors:
-  - Knuth, Donald E.
-  - Morris, James H.
-  - Pratt, Vaughan R.
-  year: 1977
-  title: Fast pattern matching in strings
-  venue: SIAM Journal on Computing
-  volume: 6
-  issue: 2
-  pages: 323-350
-  doi: 10.1137/0206023
-- type: journal
-  authors:
-  - Boyer, Robert S.
-  - Moore, J. Strother
-  year: 1977
-  title: A fast string searching algorithm
-  venue: Communications of the ACM
-  volume: 20
-  issue: 10
-  pages: 762-772
-  doi: 10.1145/359842.359859
-- type: journal
-  authors:
-  - Karp, Richard M.
-  - Rabin, Michael O.
-  year: 1987
-  title: Efficient randomized pattern-matching algorithms
-  venue: IBM Journal of Research and Development
-  volume: 31
-  issue: 2
-  pages: 249-260
-  doi: 10.1147/rd.312.0249
-- type: journal
-  authors:
-  - Aho, Alfred V.
-  - Corasick, Margaret J.
-  year: 1975
-  title: 'Efficient string matching: An aid to bibliographic search'
-  venue: Communications of the ACM
-  volume: 18
-  issue: 6
-  pages: 333-340
-  doi: 10.1145/360825.360855
-- type: journal
-  authors:
-  - Manber, Udi
-  - Myers, Gene
-  year: 1993
-  title: 'Suffix arrays: A new method for on-line string searches'
-  venue: SIAM Journal on Computing
-  volume: 22
-  issue: 5
-  pages: 935-948
-  doi: 10.1137/0222058
-- type: journal
-  authors:
-  - Karkkainen, Juha
-  - Sanders, Peter
-  year: 2003
-  title: Simple linear work suffix array construction
-  venue: Journal of the ACM
-  volume: 53
-  issue: 6
-  pages: 918-936
-  doi: 10.1145/1217856.1217858
-- type: journal
-  authors:
-  - Nong, Ge
-  - Zhang, Sen
-  - Chan, Wai Hong
-  year: 2009
-  title: Linear suffix array construction by almost pure induced-sorting
-  venue: Data Compression Conference
-  pages: 193-202
-  doi: 10.1109/DCC.2009.42
-- type: journal
-  authors:
-  - Ukkonen, Esko
-  year: 1995
-  title: On-line construction of suffix trees
-  venue: Algorithmica
-  volume: 14
-  issue: 3
-  pages: 249-260
-  doi: 10.1007/BF01206331
-- type: book
-  authors:
-  - Gusfield, Dan
-  year: 1997
-  title: 'Algorithms on Strings, Trees, and Sequences: Computer Science and Computational Biology'
-  venue: Cambridge University Press
-  pages: ISBN 978-0521585194
-- type: book
-  authors:
-  - Crochemore, Maxime
-  - Hancart, Christophe
-  - Lecroq, Thierry
-  year: 2007
-  title: Algorithms on Strings
-  venue: Cambridge University Press
-  pages: ISBN 978-0521848992
-- type: book
-  authors:
-  - Halim, Steven
-  - Halim, Felix
-  year: 2013
-  title: Competitive Programming
-  venue: Lulu Press
-  version: 3rd edition
-  pages: ISBN 978-0982999145
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513
-- type: conference
-  authors:
-  - Aho, Alfred V.
-  - Hopcroft, John E.
-  - Ullman, Jeffrey D.
-  year: 1974
-  title: The Design and Analysis of Computer Algorithms
-  venue: Addison-Wesley
-  pages: ISBN 978-0201000290
-- type: website
-  authors:
-  - CP-Algorithms Contributors
-  year: 2024
-  title: String Matching
-  venue: CP-Algorithms
-  pages: https://cp-algorithms.com/string/string-searching.html
-- type: website
-  authors:
-  - CP-Algorithms Contributors
-  year: 2024
-  title: Suffix Automaton
-  venue: CP-Algorithms
-  pages: https://cp-algorithms.com/string/suffix-automaton.html
-- type: website
-  authors:
-  - BurntSushi
-  year: 2024
-  title: 'ripgrep: recursively search directories for a regex pattern'
-  venue: GitHub
-  pages: https://github.com/BurntSushi/ripgrep
-etymology:
-- term: 字符串匹配
-  english: string matching
-  origin: string 源自拉丁语 "stringere"（拉紧、束缚），中世纪英语指"细绳"，后引申为"字符序列"。matching 源自古英语 "mæcca"（配对）。字符串匹配的形式化研究始于 1960s，由 Morris、Pratt 在 SNOBOL4 语言编译器中遇到模式匹配问题而推动，最终在 1977 年 Knuth-Morris-Pratt 论文中系统化
-- term: 前缀函数
-  english: prefix function
-  origin: 前缀函数 π[i] 由 Knuth、Morris、Pratt 在 1977 年 SIAM 论文中正式定义，π 取自希腊语 "protos"（第一、前），表示"前缀"概念。该函数计算模式串每个前缀的最长真前缀同时也是后缀的长度，是 KMP 算法的核心预处理产物
-- term: 失配指针
-  english: failure link / fail pointer
-  origin: 'failure link 由 Aho 与 Corasick 在 1975 年 CACM 论文 "Efficient string matching: An aid to bibliographic search" 中首次引入。fail 指针借鉴 KMP 的前缀函数思想，将其推广到 Trie 树上：fail[v] 指向 Trie 中最长的、是 v 路径所代表字符串真后缀的字符串对应节点'
-- term: 后缀数组
-  english: suffix array
-  origin: '后缀数组由 Manber 与 Myers 于 1990 年在论文 "Suffix arrays: A new method for on-line string searches" 中提出，作为后缀树的空间高效替代。它将字符串所有后缀按字典序排序后存储起始下标，空间仅需 O(n)（后缀树需 O(n log |Σ|)）'
-- term: 后缀自动机
-  english: suffix automaton / DAWG
-  origin: 后缀自动机又称 Directed Acyclic Word Graph（DAWG），由 Blumer、Blumer、Ehrenfeucht、Haussler、McConnell 于 1985 年在论文 "Complete inverted files for efficient text retrieval and analysis" 中正式构造。其状态对应字符串子串的 endpos 等价类，是最小的识别所有后缀的 DFA
-- term: 字典树
-  english: trie
-  origin: trie 由 Edward Fredkin 于 1960 年在 "Trie Memory" 一文中命名，词源来自 "retrieval"（检索）的中段，发音同 "try"。其结构首次出现在 Axel Thue 于 1912 年的论文中，作为隐式数据结构
-- term: 自动机
-  english: automaton
-  origin: automaton 源自希腊语 "αὐτόματον"（self-acting，自动的），由 "αὐτός"（self）+ "ματός"（acting）构成。在计算机科学中，自动机指根据输入字符串按状态转移函数改变状态的抽象机器，KMP、AC 自动机、后缀自动机均为确定有限自动机（DFA）
-- term: 滚动哈希
-  english: rolling hash
-  origin: rolling hash 由 Karp 与 Rabin 于 1987 年在 IBM Journal 论文中系统化，其核心思想是利用多项式哈希 h(s) = Σ s[i]·b^(m-1-i) mod p 的可减性，在 O(1) 时间内从窗口 [i, i+m) 的哈希值计算 [i+1, i+1+m) 的哈希值，"rolling" 描绘了窗口滑动的过程
-- term: 好后缀
-  english: good suffix
-  origin: good suffix shift 由 Boyer 与 Moore 在 1977 年 CACM 论文中定义。当模式串从右向左扫描遇到失配时，已匹配的尾部子串称为"好后缀"，依据好后缀在模式串中的其他出现位置计算安全移动距离，与"坏字符"（bad character）规则共同决定跳跃步长
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
+  - 'algorithm/007-TheUbiquitousBTree'
+  - 'cs-fundamentals/006-DiscreteMathematics'
 ---
+
 
 
 ## 第 1 章 学习目标与导论

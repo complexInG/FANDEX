@@ -1,20 +1,19 @@
 ---
 order: 20
-tags:
-  - typescript
-difficulty: intermediate
 title: 基础类型系统
-module: typescript
-category: 'TS Advanced'
+module: 'typescript'
+category: 前端技术
+difficulty: intermediate
 description: 原始类型、联合类型、字面量类型与类型推断。
 author: Anonymous
+updated: '2026-08-01'
 related:
-  - typescript/语法速查
-  - typescript/概述与环境配置
-  - typescript/接口与类型别名
-  - typescript/函数与泛型
+  - 'typescript/001-TypeScriptOverviewEnvSetup'
+  - 'typescript/003-InterfaceTypeAlias'
+  - 'typescript/004-FunctionGeneric'
 prerequisites: []
 ---
+
 ## 1. 基础类型 (Basic Types)
 
 TypeScript 提供了丰富的类型系统，包括 JavaScript 原有的类型和 TypeScript 增强的类型。

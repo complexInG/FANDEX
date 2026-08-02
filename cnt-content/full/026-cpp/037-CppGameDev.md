@@ -1,20 +1,21 @@
 ---
-order: 79
+order: 370
 title: C++游戏开发
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: 游戏引擎与C++游戏开发
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/C++网络编程
-  - cpp/C++图形编程
-  - cpp/C++嵌入式开发
-  - cpp/内存管理
+  - 'cpp/025-CppNetworkProgramming'
+  - 'cpp/028-CppGraphicsProgramming'
+  - 'cpp/038-CppEmbedded'
+  - 'cpp/039-CppMemoryManagement'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 
 # C++ 游戏开发

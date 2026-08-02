@@ -1,20 +1,21 @@
 ---
-order: 87
+order: 460
 title: 账户与权限管理
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
 description: MySQL账户与权限管理：用户创建、权限授予、角色、密码策略与审计
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/分区表
-  - mysql/分库分表中间件
-  - 'mysql/SSL-TLS加密'
-  - mysql/防火墙插件
+  - 'mysql/044-PartitionedTable'
+  - 'mysql/045-ShardingMiddleware'
+  - 'mysql/047-SSLEncryption'
+  - 'mysql/048-FirewallPlugin'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. 用户管理
 
 ```sql

@@ -1,19 +1,20 @@
 ---
-order: 59
+order: 170
 title: 编程范式基础
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 三大编程范式：面向对象、函数式、声明式的核心思想与代码实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/项目初始化'
-  - 'getting-started/构建工具'
-  - 'getting-started/调试思想'
+  - 'getting-started/015-ProjectInit'
+  - 'getting-started/016-BuildTool'
+  - 'getting-started/018-DebugThinking'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 编程范式概述
 

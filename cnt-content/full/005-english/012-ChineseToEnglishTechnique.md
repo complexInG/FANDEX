@@ -1,19 +1,20 @@
 ---
-order: 51
+order: 120
 title: 汉译英技巧
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: advanced
 description: 汉译英翻译技巧详解，涵盖主语确定、时态选择、文化差异处理与中式英语规避。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/技术文档写作
-  - english/英译汉技巧
-  - english/技术翻译要点
+  - 'english/010-TechDocWriting'
+  - 'english/011-EnglishToChineseTechnique'
+  - 'english/013-TechTranslationPoints'
 prerequisites:
-  - english/计算机专业英语词汇
+  - 'english/001-ComputerProfessionalEnglishVocabulary'
 ---
+
 
 ## 1. 汉译英的基本原则
 

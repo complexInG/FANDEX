@@ -1,20 +1,20 @@
 ---
-order: 90
-title: 'JavaScript 最新特性与运行时'
-module: javascript
-category: 'JS Advanced'
+order: 280
+title: JavaScript 最新特性与运行时
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
-description: 'ES2024-2026 新特性、V8 引擎原理、Node.js 22+、Deno 2.0、Bun 运行时与 WebAssembly 进阶。'
+description: ES2024-2026 新特性、V8 引擎原理、Node.js 22+、Deno 2.0、Bun 运行时与 WebAssembly 进阶。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - javascript/对象与数组
-  - javascript/DOM操作与事件
-  - javascript/模块化
-  - javascript/异步编程
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/026-ObjectArray'
+  - 'javascript/027-DOMOperationEvent'
+  - 'javascript/029-JavaScriptModular'
+  - 'javascript/030-AsyncProgramming'
+prerequisites: []
 ---
+
 
 
 # JavaScript 最新特性与运行时

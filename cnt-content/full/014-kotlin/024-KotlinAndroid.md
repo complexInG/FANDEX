@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 240
 title: Kotlin与Android
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: Kotlin Android开发
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与Compose
-  - kotlin/Kotlin与Gradle
-  - kotlin/Kotlin与Koin
-  - kotlin/Kotlin与测试
+  - 'kotlin/027-KotlinCompose'
+  - 'kotlin/035-KotlinGradle'
+  - 'kotlin/031-KotlinKoin'
+  - 'kotlin/033-KotlinTest'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ## 概述
 

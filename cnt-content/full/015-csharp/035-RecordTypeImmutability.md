@@ -1,18 +1,19 @@
 ---
-order: 109
+order: 350
 title: 记录类型与不可变性
-module: csharp
-category: 'dev-lang'
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'C#记录类型（record）与不可变性详解：从ECMA-334标准到函数式编程实践的完整指南。'
+description: C#记录类型（record）与不可变性详解：从ECMA-334标准到函数式编程实践的完整指南。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/GC代机制
-  - csharp/值类型与引用类型
+  - 'csharp/033-GCGeneration'
+  - 'csharp/034-ValueTypeReferenceType'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 
 # 记录类型与不可变性

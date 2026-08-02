@@ -1,20 +1,21 @@
 ---
-order: 106
+order: 300
 title: 分布式数据管理
-module: harmonyos
-category: 'dev-lang'
+module: 'harmonyos'
+category: 后端技术
 difficulty: advanced
 description: HarmonyOS分布式数据管理详解：分布式数据库、分布式文件。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/路由跳转与路由栈
-  - harmonyos/权限申请
-  - harmonyos/跨设备调用
-  - harmonyos/元服务开发与发布
+  - 'harmonyos/028-RouteJumpStack'
+  - 'harmonyos/029-PermissionRequest'
+  - 'harmonyos/031-CrossDeviceCall'
+  - 'harmonyos/032-AtomicServiceDevPublish'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 
 
 # 分布式数据管理：从 KVStore 到 CRDT 的跨设备一致性工程

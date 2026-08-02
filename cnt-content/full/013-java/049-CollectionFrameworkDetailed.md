@@ -1,22 +1,21 @@
 ---
-order: 100
-tags:
-  - java
-difficulty: intermediate
+order: 490
 title: 集合框架详解
-module: java
-category: 'Java Basics'
-description: 'List、Set、Map 体系及迭代器与比较器。'
+module: 'java'
+category: 后端技术
+difficulty: intermediate
+description: List、Set、Map 体系及迭代器与比较器。
 author: Anonymous
-related:
-  - java/数组详解
-  - java/JVM调优
-  - java/并发编程详解
-  - java/CompletableFuture异步编排
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/047-ArrayDetailed'
+  - 'java/048-JVMtuning'
+  - 'java/050-ConcurrencyDetailed'
+  - 'java/051-CompletableFutureAsync'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 集合体系概览 (Hierarchy)
 
 ### 1.1 集合框架的层次结构

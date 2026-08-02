@@ -1,70 +1,18 @@
 ---
+order: 510
 title: TypeScript 理论知识点
-module: typescript
-category: TS Theory
-order: 130
-tags:
-- typescript
-- theory
-- type-system
-- type-theory
-- generics
-- conditional-types
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: 类型论基础、结构化类型、子类型理论、类型推导、泛型多态与类型级计算的形式语义与工程实践。
+author: fanquanpp
+updated: '2026-08-02'
 related:
-- typescript/装饰器标准实现
-- typescript/项目示例-类型安全的API客户端
-prerequisites:
-- typescript/语法速查
-references:
-- title: Types and Programming Languages
-  publisher: MIT Press
-  year: 2002
-  type: book
-  isbn: 978-0262162098
-  authors:
-  - Benjamin C. Pierce
-- title: Generic Programming in Haskell
-  publisher: Utrecht University
-  year: 2004
-  type: technical-report
-  authors:
-  - Andres Löh
-- title: TypeScript Language Specification
-  publisher: Microsoft Corporation
-  year: 2026
-  type: standard
-  url: https://www.typescriptlang.org/docs/
-  authors:
-  - Microsoft
-- title: The Principal Type-Scheme of an Object in Combinatory Logic
-  publisher: Journal of Symbolic Logic
-  year: 1969
-  type: journal
-  doi: 10.2307/2270866
-  authors:
-  - J. Roger Hindley
-- title: A Theory of Type Polymorphism in Programming
-  publisher: Journal of Computer and System Sciences
-  year: 1978
-  type: journal
-  doi: 10.1016/0022-0000(78)90014-4
-  authors:
-  - Robin Milner
-etymology:
-- term: TypeScript
-  origin: 2012 年 Microsoft 由 Anders Hejlsberg 主导发布，命名为 TypeScript 意为"为 JavaScript 添加类型"，缩写 TS。
-  english: TypeScript
-- term: Hindley-Milner
-  origin: 由 J. Roger Hindley（1969）与 Robin Milner（1978）独立发现的类型推导算法，后由 Luis Damas 完善为 Algorithm W。
-  english: Hindley-Milner
-- term: Simply Typed Lambda Calculus
-  origin: 由 Alonzo Church（1940）提出，作为无类型 Lambda 演算的类型化版本，是现代类型论的起点。
-  english: Simply Typed Lambda Calculus
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
+  - 'typescript/049-DecoratorStandardImpl'
+  - 'typescript/050-TypeScriptProjectExampleTypeSafeAPIClient'
+prerequisites: []
 ---
+
 
 
 # TypeScript 理论知识点

@@ -1,23 +1,23 @@
 ---
-order: 50
+order: 120
 title: 空安全详解
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'Kotlin 空安全深度解析：可空类型、智能转换、平台类型、lateinit、Elvis 运算符的形式化定义、字节码实现与企业级工程实践。'
+description: Kotlin 空安全深度解析：可空类型、智能转换、平台类型、lateinit、Elvis 运算符的形式化定义、字节码实现与企业级工程实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/扩展函数
-  - kotlin/密封类与代数数据类型
-  - kotlin/DSL与领域特定语言
-  - kotlin/测试与最佳实践
-  - kotlin/委托属性
+  - 'kotlin/015-ExtensionFunction'
+  - 'kotlin/013-SealedClassAlgebraicDataType'
+  - 'kotlin/009-KotlinDSLDomainSpecificLanguage'
+  - 'kotlin/010-KotlinTestBestPractice'
+  - 'kotlin/014-DelegateProperty'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/类与对象
-  - kotlin/属性与字段
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/004-KotlinClassObject'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 问题背景：十亿美元的错误

@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 80
 title: 公有云与私有云与混合云
 module: 'cloud-computing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: beginner
 description: 云计算部署模型：公有云、私有云、混合云与多云的概念、对比与选型。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/虚拟化技术'
-  - 'cloud-computing/云架构设计'
-  - 'cloud-computing/Docker深度解析'
-  - 'cloud-computing/云原生应用'
+  - 'cloud-computing/006-VirtualizationTech'
+  - 'cloud-computing/007-CloudArchitectureDesign'
+  - 'cloud-computing/009-DockerDeepAnalysis'
+  - 'cloud-computing/010-CloudNativeApp'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 部署模型概述
 

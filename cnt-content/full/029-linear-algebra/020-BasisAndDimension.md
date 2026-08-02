@@ -1,22 +1,23 @@
 ---
-order: 41
+order: 170
 title: 基与维数
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 从"一组数据最少需要几条信息"的思想实验出发，讲清极大线性无关组、向量组的秩、向量空间的基与维数、子空间判定，以及基变换与坐标变换的方向问题。
+description: '从"一组数据最少需要几条信息"的思想实验出发，讲清极大线性无关组、向量组的秩、向量空间的基与维数、子空间判定，以及基变换与坐标变换的方向问题。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/线性相关性'
-  - 'linear-algebra/坐标与坐标变换'
-  - 'linear-algebra/齐次线性方程组'
-  - 'linear-algebra/内积与正交性'
+  - 'linear-algebra/019-LinearDependence'
+  - 'linear-algebra/021-CoordinateAndTransformation'
+  - 'linear-algebra/015-HomogeneousLinearSystem'
+  - 'linear-algebra/022-InnerProductAndOrthogonality'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
-  - 'linear-algebra/矩阵的秩'
-  - 'linear-algebra/线性相关性'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
+  - 'linear-algebra/010-MatrixRank'
+  - 'linear-algebra/019-LinearDependence'
 ---
+
 
 ## 开篇思想实验：四个向量，能不能压缩成两个？
 

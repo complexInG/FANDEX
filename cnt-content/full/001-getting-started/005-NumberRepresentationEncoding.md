@@ -1,20 +1,21 @@
 ---
-order: 41
+order: 50
 title: 数的表示与编码
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
-description: '进制转换、原码反码补码、IEEE 754浮点数、ASCII与Unicode编码。'
+description: 进制转换、原码反码补码、IEEE 754浮点数、ASCII与Unicode编码。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/学习指南'
-  - 'getting-started/计算机体系结构'
-  - 'getting-started/程序设计基础'
-  - 'getting-started/函数与模块化'
+  - 'getting-started/003-LearningGuide'
+  - 'getting-started/004-ComputerArchitecture'
+  - 'getting-started/006-ProgrammingBasics'
+  - 'getting-started/007-FunctionModular'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. 进制与转换
 

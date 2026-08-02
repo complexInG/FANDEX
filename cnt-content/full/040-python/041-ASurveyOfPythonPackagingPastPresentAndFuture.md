@@ -1,111 +1,20 @@
 ---
-order: 82
+order: 410
 title: Python与打包发布
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: Python 打包演进史、PEP 517/518/621 标准化、pyproject.toml 配置、wheel 与 sdist 构建、PyPI 发布流水线
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- python/正则表达式
-- python/Python与设计模式
-- python/Python与Jupyter
-- python/Python与虚拟环境
-prerequisites:
-- python/语法速查
-tags:
-- python
-- packaging
-- pypi
-- pep517
-- pep518
-- pep621
-- build
-- twine
-- wheel
-- hatch
-- poetry
-references:
-- type: standard
-  authors:
-  - Stufft, D.
-  - Coghlan, N.
-  - Holth, M.
-  year: 2016
-  title: 'PEP 518: Specifying minimum build system requirements for Python projects'
-  venue: Python Enhancement Proposals
-  url: https://peps.python.org/pep-0518/
-- type: standard
-  authors:
-  - Stufft, D.
-  - Coghlan, N.
-  - Holth, M.
-  year: 2017
-  title: 'PEP 517: A build-system independent format for source trees'
-  venue: Python Enhancement Proposals
-  url: https://peps.python.org/pep-0517/
-- type: standard
-  authors:
-  - Stufft, D.
-  - Coghlan, N.
-  year: 2020
-  title: 'PEP 621: Storing project metadata in pyproject.toml'
-  venue: Python Enhancement Proposals
-  url: https://peps.python.org/pep-0621/
-- type: standard
-  authors:
-  - Etemadieftekhari, A.
-  year: 2013
-  title: 'PEP 440: Version identification and dependency specification'
-  venue: Python Enhancement Proposals
-  url: https://peps.python.org/pep-0440/
-- type: standard
-  authors:
-  - Cannon, B.
-  - King, T.
-  year: 2019
-  title: 'PEP 566: Metadata for Python software packages 2.1'
-  venue: Python Enhancement Proposals
-  url: https://peps.python.org/pep-0566/
-- type: technical-report
-  authors:
-  - Pustilnik, S.
-  - Stufft, D.
-  year: 2024
-  title: 'PyPI Trusted Publishing: OIDC-based authentication for package publishers'
-  venue: Python Packaging User Guide
-  url: https://docs.pypi.org/trusted-publishers/
-- type: conference
-  authors:
-  - Shaw, S.
-  - Coghlan, N.
-  - Bicking, I.
-  year: 2020
-  title: 'A survey of Python packaging: Past, present, and future'
-  venue: SciPy 2020 Proceedings
-  pages: 234-245
-  doi: 10.25080/Majora-342d178e-020
-etymology:
-- term: 打包
-  english: Packaging
-  origin: package 源自拉丁语 pact（包裹），计算机科学中指将软件分发的标准化单元
-- term: 轮子
-  english: Wheel
-  origin: 2012 年 PEP 427 引入，比喻"预装好的轮子"即装即用，区别于需现场编译的 sdist
-- term: 元数据
-  english: Metadata
-  origin: meta 源自希腊语 meta（关于），指描述数据的数据
-- term: 语义化版本
-  english: Semantic Versioning
-  origin: 2011 年 Tom Preston-Werner 提出，遵循 MAJOR.MINOR.PATCH 格式
-- term: 可信发布
-  english: Trusted Publishing
-  origin: 2023 年 PyPI 引入基于 OIDC 的可信发布机制，取代长期 API token
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
-estimatedReadingTime: 90
+  - 'python/038-Regex'
+  - 'python/040-PythonDesignPattern'
+  - 'python/042-PythonJupyter'
+  - 'python/009-PythonVirtualEnv'
+prerequisites: []
 ---
+
 ## 1. 概述与定位
 
 Python 打包发布（Packaging and Distribution）是将 Python 代码从开发环境交付到目标用户或生产环境的工程化过程。它涵盖依赖声明、源码分发（sdist）、二进制分发（wheel）、PyPI 上传、版本管理、可信发布等环节。Python 打包生态历经 20 余年演进，从早期的 distutils 到 setuptools、pip、Poetry、hatch、pdm，每一步都伴随 PEP（Python Enhancement Proposal）的标准化推进。

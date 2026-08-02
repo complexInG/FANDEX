@@ -1,171 +1,24 @@
 ---
-order: 103
+order: 520
 title: ThreadLocal内存泄漏
-module: java
-category: dev-lang
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: Java ThreadLocal 内存泄漏的可达性分析、弱引用 Key 设计、线程池复用场景、Scoped Values（JEP 446）演进与生产级防御方案
 author: fanquanpp
 updated: '2026-07-20'
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
 related:
-- java/并发编程详解
-- java/CompletableFuture异步编排
-- java/反射与动态代理
-- java/注解处理器
-- java/JVM内存模型
+  - 'java/050-ConcurrencyDetailed'
+  - 'java/051-CompletableFutureAsync'
+  - 'java/053-ReflectionDynamicProxy'
+  - 'java/054-AnnotationProcessor'
+  - 'java/062-JVMMemoryModel'
 prerequisites:
-- java/概述与开发环境
-- java/并发编程详解
-- java/JVM内存模型
-tags:
-- java
-- threadlocal
-- memory-leak
-- weak-reference
-- garbage-collection
-- thread-pool
-- scoped-values
-- jep-446
-- concurrency
-- jvm
-references:
-- type: book
-  authors:
-  - Bloch, Joshua
-  year: 2018
-  title: Effective Java (3rd ed.)
-  venue: Addison-Wesley Professional
-  isbn: 978-0134685991
-- type: book
-  authors:
-  - Goetz, Brian
-  - Peierls, Tim
-  - Bloch, Joshua
-  - Bowbeer, Joseph
-  - Holmes, David
-  - Lea, Doug
-  year: 2006
-  title: Java Concurrency in Practice
-  venue: Addison-Wesley Professional
-  isbn: 978-0321349601
-- type: standard
-  authors:
-  - Manson, Jeremy
-  - Pugh, Bill
-  - Adve, Sarita V.
-  year: 2005
-  title: 'JSR 133: Java Memory Model and Thread Specification'
-  venue: Java Community Process
-  url: https://jcp.org/en/jsr/detail?id=133
-- type: conference
-  authors:
-  - Agesen, Ole
-  - Detlefs, David
-  - Garthwaite, Alex
-  - Knippel, Ross
-  - Ramakrishna, Y. S.
-  - White, Daniel
-  year: 1999
-  title: An Efficient Meta-lock for Implementing Ubiquitous Synchronization
-  venue: OOPSLA '99 Proceedings of the 14th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications
-  pages: 207-222
-  doi: 10.1145/320384.320405
-- type: documentation
-  authors:
-  - OpenJDK Team
-  year: 2024
-  title: 'JEP 446: Scoped Values (Preview)'
-  venue: OpenJDK Official Project
-  url: https://openjdk.org/jeps/446
-- type: documentation
-  authors:
-  - OpenJDK Team
-  year: 2024
-  title: 'JEP 444: Virtual Threads'
-  venue: OpenJDK Official Project
-  url: https://openjdk.org/jeps/444
-- type: documentation
-  authors:
-  - Oracle Corporation
-  year: 2024
-  title: 'Java SE 21 API Specification: ThreadLocal'
-  venue: Oracle Official Documentation
-  url: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/ThreadLocal.html
-- type: journal
-  authors:
-  - Pugh, Bill
-  year: 1999
-  title: The Java Memory Model is Causally Correct
-  venue: ACM SIGPLAN Notices
-  volume: 34
-  issue: 10
-  pages: 1-12
-  doi: 10.1145/320385.320386
-- type: journal
-  authors:
-  - Click, Cliff
-  year: 2005
-  title: Performance Myths Exposed
-  venue: JavaOne Conference Talk
-- type: documentation
-  authors:
-  - Alibaba Group
-  year: 2024
-  title: TransmittableThreadLocal (TTL)
-  venue: GitHub Project Documentation
-  url: https://github.com/alibaba/transmittable-thread-local
-- type: conference
-  authors:
-  - Li, Long
-  - Yang, Bo
-  - Chen, Hao
-  year: 2018
-  title: Practical Thread-Local Context Propagation in Reactive Programming
-  venue: IEEE International Conference on Software Quality, Reliability and Security (QRS)
-  pages: 45-52
-  doi: 10.1109/QRS.2018.00017
-- type: book
-  authors:
-  - Lea, Doug
-  year: 2000
-  title: 'Concurrent Programming in Java: Design Principles and Patterns (2nd ed.)'
-  venue: Addison-Wesley Professional
-  isbn: 978-0201310092
-- type: documentation
-  authors:
-  - Spring Team
-  year: 2024
-  title: 'Spring Framework Reference: Context Propagation'
-  venue: Spring Official Documentation
-  url: https://docs.spring.io/spring-framework/reference/
-- type: standard
-  authors:
-  - ISO/IEC
-  year: 2023
-  title: ISO/IEC 14882:2023 Information technology — Programming languages — C++
-  venue: International Organization for Standardization
-etymology:
-- term: 线程本地存储（Thread-Local Storage, TLS）
-  english: Thread-Local Storage
-  origin: 源自操作系统线程库（POSIX pthread_key_create，Windows TlsAlloc），用于为每个线程维护独立副本；Java 在 JDK 1.2（1998）由 Joshua Bloch 引入 ThreadLocal 类，将其语言层化。
-- term: 弱引用（Weak Reference）
-  english: Weak Reference
-  origin: 由 Henry Baker 在 1978 年论文《List Processing in Real Time on a Serial Computer》中提出，Java 在 JDK 1.2 引入 WeakReference 类；其语义是不影响 GC，对象仅剩弱引用时即被回收。
-- term: 可达性分析（Reachability Analysis）
-  english: Reachability Analysis
-  origin: 源自 Lisp 的 mark-and-sweep 算法（McCarthy 1960）；Java GC 从 GC Roots（线程、静态字段、本地方法栈）出发，沿强引用链搜索，不可达对象即被回收。WeakReference 不构成可达路径。
-- term: 内存泄漏（Memory Leak）
-  english: Memory Leak
-  origin: 首次系统化于 C 语言 malloc/free 不匹配场景；Java 中由于 GC 存在，泄漏语义变为 '对象不再使用但仍被引用'，称为 'loiterer'（W. H. Press 语）；ThreadLocal 泄漏是典型 'unintended object retention'（Bloch 语）。
-- term: 虚拟线程（Virtual Thread）
-  english: Virtual Thread
-  origin: 由 JEP 444（JDK 21，2023）正式发布，原型可追溯至 Project Loom（2018）；本质是 JVM 调度的轻量级线程，挂起在 carrier thread 上；与 Go goroutine、Kotlin coroutine 类似但语言层 API 完整。
-- term: Scoped Values
-  english: Scoped Values
-  origin: 由 JEP 446（JDK 21 Preview）提出，借鉴 Haskell的 implicit parameters、Rust 的 scoped threads；本质是不可变、有界作用域的线程本地变量，由 JVM 内部 ScopedValueContainer 管理，自动随 run() 结束而销毁。
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/050-ConcurrencyDetailed'
+  - 'java/062-JVMMemoryModel'
 ---
+
 ## 引言：从"安全"到"陷阱"
 
 `ThreadLocal` 在 1998 年随 JDK 1.2 发布时，被设计为 "线程私有的变量容器"，用以解决 SimpleDateFormat 非线程安全、JDBC Connection 复用等问题。Joshua Bloch 在《Effective Java》第 9 条明确建议：

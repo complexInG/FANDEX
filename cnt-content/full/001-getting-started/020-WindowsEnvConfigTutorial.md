@@ -1,19 +1,20 @@
 ---
-order: 101
+order: 200
 title: Windows环境配置教程
 module: 'getting-started'
-category: toolchain
+category: 工具链
 difficulty: beginner
-description: 'Windows 开发环境完整配置指南，涵盖 WSL2、包管理器、环境变量、Git、Node.js、Python、Java JDK、Docker Desktop、VS Code 安装与配置。'
+description: Windows 开发环境完整配置指南，涵盖 WSL2、包管理器、环境变量、Git、Node.js、Python、Java JDK、Docker Desktop、VS Code 安装与配置。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/软件下载地址汇总'
-  - 'getting-started/macOS环境配置教程'
-  - 'getting-started/Linux环境配置教程'
+  - 'getting-started/019-SoftwareDownloadURLSummary'
+  - 'getting-started/021-MacOSEnvConfigTutorial'
+  - 'getting-started/022-LinuxEnvConfigTutorial'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 
 ## 1. WSL2 安装与配置
 

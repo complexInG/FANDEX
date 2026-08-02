@@ -1,20 +1,21 @@
 ---
-order: 64
+order: 210
 title: 操作系统进阶
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 操作系统进阶：进程调度、死锁、内存管理、文件系统与I/O子系统
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/数据库系统原理'
-  - 'cs-fundamentals/编译原理进阶'
-  - 'cs-fundamentals/计算机网络进阶'
-  - 'cs-fundamentals/网络安全'
+  - 'cs-fundamentals/019-DatabaseSystemPrinciple'
+  - 'cs-fundamentals/020-CompilePrincipleAdvanced'
+  - 'cs-fundamentals/022-ComputerNetworkAdvanced'
+  - 'cs-fundamentals/023-NetworkSecurity'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 进程调度
 

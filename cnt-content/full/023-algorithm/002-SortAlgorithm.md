@@ -1,209 +1,25 @@
 ---
 order: 20
 title: 排序算法
-module: algorithm
-category: Algorithm/Sorting
+module: 'algorithm'
+category: 计算机科学
 difficulty: intermediate
 description: 排序（Sorting）算法的形式化定义、比较排序下界 $\Omega(n \log n)$ 的决策树证明、冒泡/选择/插入/希尔/归并/堆排/快排七大经典排序、计数/基数/桶排序三种线性时间非比较排序、内省排序（Musser 1997）与 Timsort（Peters 2002）的工业级混合方案，涵盖 von Neumann 1945 归并、Shell 1959 希尔、Hoare 1961 快排、Williams 1964 堆排、Musser 1997 内省、Peters 2002 Timsort 的历史脉络，附 Python/C++/Java 多语言实现。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-sorting
-- algorithm-quicksort
-- algorithm-mergesort
-- algorithm-heapsort
-- algorithm-introsort
-- algorithm-timsort
-- algorithm-comparison-sort
-- algorithm-non-comparison-sort
-- algorithm-stable-sort
-created: 2026-05-27
-updated: 2026-07-20
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 110
+updated: '2026-07-20'
 related:
-- algorithm/算法分析基础与学习路线
-- algorithm/数组与动态数组
-- algorithm/递归与回溯
-- algorithm/分治算法
-- algorithm/堆与优先队列
-- algorithm/查找算法
-- algorithm/搜索算法
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
+  - 'algorithm/011-NQueensBenchmarkBitManipulationApproach'
+  - 'algorithm/009-GaussAndTheHistoryOfTheFastFourierTransform'
+  - 'algorithm/016-HeapAndPriorityQueue'
+  - 'algorithm/017-CPythonBisectPyArrayBisectionAlgorithmImplementation'
+  - 'algorithm/004-SearchAlgorithm'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/数组与动态数组
-references:
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1998
-  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-  venue: Addison-Wesley Professional
-  version: 2nd edition
-  pages: ISBN 978-0201896855, Section 5.1 (Combinatorial Properties of Permutations), Section 5.2 (Internal Sorting - Quicksort, Heapsort, Mergesort), Section 5.3 (External Sorting), Section 5.4 (Sorting on Large Secondary Storage Devices)
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: Chapter 2 (Getting Started - Insertion Sort, Merge Sort), Chapter 6 (Heapsort), Chapter 7 (Quicksort), Chapter 8 (Linear Time Sorting - Counting Sort, Radix Sort, Bucket Sort), ISBN 978-0262046305
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 2.1 (Elementary Sorts - Selection, Insertion, Shell), Section 2.2 (Mergesort), Section 2.3 (Quicksort), Section 2.4 (Priority Queues - Heapsort), Section 5.1 (String Sorts - LSD/MSD Radix Sort)
-- type: journal
-  authors:
-  - Hoare, C. A. R.
-  year: 1961
-  title: 'Algorithm 64: Quicksort'
-  venue: Communications of the ACM
-  volume: 4
-  issue: 7
-  pages: '321'
-  doi: 10.1145/366622.366644
-- type: journal
-  authors:
-  - Hoare, C. A. R.
-  year: 1962
-  title: Quicksort
-  venue: The Computer Journal
-  volume: 5
-  issue: 1
-  pages: 10-15
-  doi: 10.1093/comjnl/5.1.10
-- type: journal
-  authors:
-  - Williams, J. W. J.
-  year: 1964
-  title: 'Algorithm 232: Heapsort'
-  venue: Communications of the ACM
-  volume: 7
-  issue: 6
-  pages: 347-348
-  doi: 10.1145/512274.512284
-- type: journal
-  authors:
-  - Shell, Donald L.
-  year: 1959
-  title: A High-Speed Sorting Procedure
-  venue: Communications of the ACM
-  volume: 2
-  issue: 7
-  pages: 30-32
-  doi: 10.1145/368370.368387
-- type: journal
-  authors:
-  - Musser, David R.
-  year: 1997
-  title: Introspective Sorting and Selection Algorithms
-  venue: 'Software: Practice and Experience'
-  volume: 27
-  issue: 8
-  pages: 983-993
-  doi: 10.1002/(SICI)1097-024X(199708)27:8<983::AID-SPE117>3.0.CO;2-
-- type: journal
-  authors:
-  - Peters, Tim
-  year: 2002
-  title: Timsort - List sort for Python (original design document with detailed description and complexity analysis)
-  venue: Python Developer Mailing List
-  url: https://github.com/python/cpython/blob/main/Objects/listsort.txt
-  pages: Hybrid stable sorting algorithm combining natural runs detection (mergesort) and binary insertion sort, default sort in Python since 2.3, Java since 7 (for objects), V8 since 7.0
-  accessedDate: '2026-07-20'
-- type: journal
-  authors:
-  - McIlroy, Peter M.
-  - Bostic, Keith
-  - McIlroy, M. Douglas
-  year: 1993
-  title: Engineering radix sort
-  venue: Computing Systems
-  volume: 6
-  issue: 1
-  pages: 5-27
-  pagesNote: The definitive reference on American flag sort and engineering radix sort with cache analysis
-- type: journal
-  authors:
-  - Sedgewick, Robert
-  year: 1978
-  title: Implementing quicksort programs
-  venue: Communications of the ACM
-  volume: 21
-  issue: 10
-  pages: 847-857
-  doi: 10.1145/359619.359631
-- type: journal
-  authors:
-  - Vladimir, Yaroslavskiy
-  year: 2009
-  title: Dual-Pivot Quicksort Algorithm
-  venue: Java Developer Connection
-  url: https://codeblab.com/wp-content/uploads/2009/09/DualPivotQuicksort.pdf
-  pages: The O(n^1.5) analysis corrected by Wild and Nebel in 2012; adopted as Java Arrays.sort for primitives since Java 7
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - Auger, Nicolas
-  - Nicaud, Cyril
-  - Pivoteau, Carine
-  year: 2015
-  title: 'Merge Strategies: Implementing Timsort Efficiently and In-Place'
-  venue: arXiv:1805.04154
-  url: https://arxiv.org/abs/1805.04154
-  pages: Analysis of Timsort merge strategies and the famous Timsort bug fixed in Java 9
-  accessedDate: '2026-07-20'
-etymology:
-- term: 排序
-  english: sort
-  origin: 英文 sort 源自古法语 sorir（分类、整理），原指"按种类分开"。在计算机科学中，sort 指将数据按特定顺序（升序或降序）重新排列。Knuth 在 TAOCP Vol.3 §5 将排序分为：内部排序（§5.2，数据全部在内存）、外部排序（§5.3，数据在外存）、多路归并（§5.4）。中文"排序"由"排"（排列）与"序"（顺序）合成
-- term: 冒泡排序
-  english: bubble sort
-  origin: bubble 源自古英语 bobel（气泡）。冒泡排序的命名来自其过程：每轮将最大元素"冒泡"到末尾，类似水中气泡上升。该算法最早由 Edward Friend 在 1956 年描述（未正式发表），Knuth TAOCP Vol.3 §5.2.2 详细分析。又称 sinking sort（下沉排序）。虽简单但效率低，主要用于教学
-- term: 选择排序
-  english: selection sort
-  origin: selection 源自拉丁语 selectionem（挑选）。选择排序每轮选出剩余元素中的最小值放到已排序末尾。Knuth TAOCP Vol.3 §5.2.3 给出完整分析。虽与插入排序同为 $O(n^2)$，但选择排序的交换次数最多 $n-1$ 次，在元素较大、比较成本低、交换成本高的场景（如指针排序）仍有价值
-- term: 插入排序
-  english: insertion sort
-  origin: insertion 源自拉丁语 insertionem（插入）。插入排序模拟扑克牌整理过程：将新牌插入已排好的手牌中。John Mauchly 在 1946 年 Moore School Lectures《Sorting and Collating》中首次描述，是最古老的排序算法之一。在小数据（n < 50）或部分有序数据上性能优于快排，是 Timsort、introsort 的小数据回退方案
-- term: 希尔排序
-  english: shell sort
-  origin: 以发明者 Donald L. Shell 命名。Shell 在 1959 年 *Communications of the ACM* 2(7):30-32《A High-Speed Sorting Procedure》中提出，是首个突破 $O(n^2)$ 的排序算法（采用递减增量分组）。增量序列的优劣决定性能：Shell 原始序列 $O(n^{3/2})$、Knuth 序列 $O(n^{1.5})$、Pratt 序列 $O(n \log^2 n)$、Sedgewick 序列 $O(n^{4/3})$。又称 diminishing increment sort（递减增量排序）
-- term: 归并排序
-  english: merge sort
-  origin: merge 源自拉丁语 mergere（合并、并入）。归并排序由 John von Neumann 于 1945 年在 EDVAC 报告中发明（Knuth TAOCP Vol.3 §5.2.4 考据），是首个 $O(n \log n)$ 算法。分治思想：将数组对半分，递归排序后合并。稳定且最坏 $O(n \log n)$，是 Java 对象排序、Python Timsort 的合并阶段、外部排序的核心。自底向上版本可消除递归
-- term: 快速排序
-  english: quicksort
-  origin: 'quick 源自古英语 cwic（活的、敏捷的）。快速排序由 C. A. R. Hoare（Tony Hoare）在 1959 年开发 ALGOL 60 翻译器时发明，1961 年发表于 *Communications of the ACM* 4(7):321《Algorithm 64: Quicksort》与 *The Computer Journal* 5(1):10-15《Quicksort》。Hoare 因此获 1980 年 Turing Award。快排平均 $O(n \log n)$ 但最坏 $O(n^2)$，是 C qsort、C++ std::sort（与堆排结合的 introsort）、Java Arrays.sort（ primitives 用 dual-pivot quicksort）的核心'
-- term: 堆排序
-  english: heapsort
-  origin: 'heap 源自古英语 hēap（堆积）。堆排序由 J. W. J. Williams 在 1964 年 *Communications of the ACM* 7(6):347-348《Algorithm 232: Heapsort》中提出，与 Floyd 1964《Algorithm 245: Treesort》改进的 $O(n)$ 建堆配合，构成最坏 $O(n \log n)$ + 原地的排序。堆排序是 introsort 的回退方案，在快排递归过深时启用'
-- term: 内省排序
-  english: introsort / introspective sort
-  origin: 'introspective 源自拉丁语 introspicere（向内审视）。内省排序由 David R. Musser 在 1997 年 *Software: Practice and Experience* 27(8):983-993《Introspective Sorting and Selection Algorithms》中提出，思路是"算法审视自身性能"：先用快排，当递归深度超过 $2\log_2 n$ 时切换到堆排，小数据切到插入排序。SGI STL 在 1997 年采纳，GNU libstdc++、LLVM libc++、Microsoft STL 均采用'
-- term: Timsort
-  english: Timsort
-  origin: Timsort 由 Tim Peters 在 2002 年为 Python 设计，命名取自作者名。Peters 在 listsort.txt 中详细描述了算法：检测自然升序/降序 run，最小 run 长度 32-64，用二分插入排序扩展 run，再用归并栈合并 run。Timsort 是稳定排序，最坏 $O(n \log n)$，最好 $O(n)$，自 Python 2.3（2003）成为 list.sort 默认实现，Java 7（对象）、Android、V8 7.0、Rust stable sort 均采用
-- term: 计数排序
-  english: counting sort
-  origin: counting 源自拉丁语 computare（计算）。计数排序通过统计每个元素出现次数实现 $O(n+k)$ 线性排序（$k$ 为元素值域大小）。Harold Seward 在 1954 年 MIT 论文中首次描述，是首个非比较排序算法。计数排序是基数排序与桶排序的基础，要求元素为整数且值域有限
-- term: 基数排序
-  english: radix sort
-  origin: radix 源自拉丁语 radix（根、基数）。基数排序由 Herman Hollerith 在 1887 年为 1890 年美国人口普查设计的打孔卡片制表机中首次应用，是最古老的排序算法。LSD（Least Significant Digit）从低位到高位排，MSD（Most Significant Digit）从高位到低位排。McIlroy-Bostic-McIlroy 1993《Engineering radix sort》给出工业级实现
-- term: 桶排序
-  english: bucket sort
-  origin: bucket 源自古英语 bucc（容器、桶）。桶排序将元素按值域均匀分到 $k$ 个桶，每个桶内排序后合并。最坏 $O(n^2)$（所有元素入同桶），平均 $O(n+k)$（均匀分布）。是计数排序的推广，适合均匀分布的浮点数排序
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
 ---
+
 
 
 ## 1. 概述与学习目标

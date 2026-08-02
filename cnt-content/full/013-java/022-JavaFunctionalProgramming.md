@@ -1,34 +1,25 @@
 ---
-order: 66
+order: 220
 title: Java函数式编程
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Lambda、Stream、函数式接口与函数式编程范式的系统性深度剖析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/SpringBoot数据访问
-  - java/Java设计模式
-  - java/Java网络编程
-  - java/Java日志系统
-  - java/流式API
-  - java/Lambda与函数式编程
+  - 'java/020-SpringBootDataAccess'
+  - 'java/021-JavaDesignPattern'
+  - 'java/023-JavaNetworkProgramming'
+  - 'java/024-JavaLogSystem'
+  - 'java/063-LambdaFunctionalProgramming'
 prerequisites:
-  - java/概述与开发环境
-  - java/面向对象编程
-  - java/集合框架详解
-  - java/泛型详解
-tags:
-  - Java
-  - FunctionalProgramming
-  - Lambda
-  - Stream
-  - FunctionalInterface
-  - Monoid
-  - HigherOrderFunction
-  - PureFunction
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/056-OOP'
+  - 'java/049-CollectionFrameworkDetailed'
+  - 'java/059-GenericDetailed'
 ---
+
 
 
 # Java 函数式编程深度指南

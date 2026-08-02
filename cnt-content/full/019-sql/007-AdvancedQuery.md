@@ -1,19 +1,20 @@
 ---
-order: 7
+order: 70
 title: 高级查询
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: '递归 CTE、PIVOT/UNPIVOT、GROUPING SETS、LATERAL JOIN、全文搜索与 JSON 查询'
+description: 递归 CTE、PIVOT/UNPIVOT、GROUPING SETS、LATERAL JOIN、全文搜索与 JSON 查询
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/数据定义
-  - sql/窗口函数
-  - sql/性能优化
-  - 'sql/PL-SQL与存储过程'
+  - 'sql/005-DDL'
+  - 'sql/006-WindowFunction'
+  - 'sql/008-PerformanceOptimization'
+  - 'sql/009-PLSQLStoredProcedure'
 prerequisites: []
 ---
+
 
 # 高级查询
 

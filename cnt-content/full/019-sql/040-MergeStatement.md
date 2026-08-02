@@ -1,9 +1,8 @@
 ---
 order: 400
 title: SQL MERGE / UPSERT 语句语法速查手册
-module: sql
-
-category: '019-sql'
+module: 'sql'
+category: 数据库
 difficulty: beginner
 description: SQL MERGE / UPSERT 语句语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## MERGE 标准语法
 
 **基本写法：SQL 标准 MERGE**

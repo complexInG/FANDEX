@@ -1,19 +1,20 @@
 ---
-order: 61
+order: 260
 title: 统计量
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 统计量的定义、样本均值、样本方差、样本矩及常用统计量，从生活类比到严格定义循序渐进。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/随机样本'
-  - 'probability-statistics/三大分布'
-  - 'probability-statistics/正态总体的抽样分布'
+  - 'probability-statistics/030-RandomSample'
+  - 'probability-statistics/032-ThreeMajorDistributions'
+  - 'probability-statistics/033-NormalPopulationSamplingDistribution'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从体检报告单说起：为什么要"压缩"数据
 

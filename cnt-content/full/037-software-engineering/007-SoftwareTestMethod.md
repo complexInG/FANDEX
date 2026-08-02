@@ -1,20 +1,21 @@
 ---
-order: 16
+order: 70
 title: 软件测试方法
 module: 'software-engineering'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 测试金字塔、TDD、BDD、测试类型与测试策略。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-engineering/设计模式详解'
-  - 'software-engineering/代码重构'
-  - 'software-engineering/软件度量'
-  - 'software-engineering/技术债务管理'
+  - 'software-engineering/005-DesignPatternDetailed'
+  - 'software-engineering/006-Refactoring'
+  - 'software-engineering/008-SoftwareMetrics'
+  - 'software-engineering/009-TechDebtManagement'
 prerequisites:
-  - 'software-engineering/软件工程概述'
+  - 'software-engineering/001-SoftwareEngineeringOverview'
 ---
+
 
 ## 1. 从"质检"说起：为什么需要测试
 

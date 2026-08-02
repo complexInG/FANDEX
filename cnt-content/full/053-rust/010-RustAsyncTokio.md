@@ -1,18 +1,19 @@
 ---
-order: 10
+order: 100
 title: 异步编程与 Tokio
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: advanced
-description: 'async/await 与 Future、tokio 运行时、常见异步模式与陷阱'
+description: async/await 与 Future、tokio 运行时、常见异步模式与陷阱
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - rust/011-RustEcosystemProject
-  - rust/008-RustGenericTrait
+  - 'rust/011-RustEcosystemProject'
+  - 'rust/008-RustGenericTrait'
 prerequisites:
-  - rust/008-RustGenericTrait
+  - 'rust/008-RustGenericTrait'
 ---
+
 
 ## 1. 为什么需要异步
 

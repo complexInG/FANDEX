@@ -1,9 +1,8 @@
 ---
 order: 370
 title: Lua os 库语法速查手册
-module: lua
-
-category: '017-lua'
+module: 'lua'
+category: 后端技术
 difficulty: beginner
 description: Lua os 库语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 时间获取
 
 **基本写法：当前时间戳**

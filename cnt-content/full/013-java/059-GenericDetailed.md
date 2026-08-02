@@ -1,22 +1,21 @@
 ---
-order: 140
-tags:
-  - java
-difficulty: intermediate
+order: 590
 title: 泛型详解
-module: java
-category: 'Java Basics'
+module: 'java'
+category: 后端技术
+difficulty: intermediate
 description: 泛型类、泛型方法、通配符与类型擦除。
 author: Anonymous
-related:
-  - java/抽象类与接口
-  - java/异常处理机制
-  - java/IO流与文件操作
-  - java/多线程基础
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/057-AbstractClassInterface'
+  - 'java/058-ExceptionHandlingMechanism'
+  - 'java/060-IOStreamFileOperation'
+  - 'java/061-MultithreadingBasics'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 泛型概述 (Overview)
 
 ### 1.1 什么是泛型

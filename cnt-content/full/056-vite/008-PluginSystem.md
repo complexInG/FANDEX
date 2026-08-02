@@ -1,19 +1,20 @@
 ---
-order: 8
+order: 80
 title: Vite 插件系统
-module: vite
-category: Vite
+module: 'vite'
+category: 前端技术
 difficulty: advanced
-description: 'Vite 插件系统：插件 API、钩子机制（config/resolveId/load/transform 等）、插件开发入门与常用插件盘点'
+description: Vite 插件系统：插件 API、钩子机制（config/resolveId/load/transform 等）、插件开发入门与常用插件盘点
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - vite/007-BuildSplit
-  - vite/009-Vite8Rolldown
+  - 'vite/007-BuildSplit'
+  - 'vite/009-Vite8Rolldown'
 prerequisites:
-  - vite/003-ConfigFile
-  - vite/007-BuildSplit
+  - 'vite/003-ConfigFile'
+  - 'vite/007-BuildSplit'
 ---
+
 ## 0. 一个类比：乐高插口与手机应用商店
 
 想象你有一套乐高积木。底座上预留了一排**标准插口**——不管插上轮胎、门板还是火箭筒，插口形状都一样，插上即用。如果有人发明了新的乐高零件，只要接口符合标准，你的底座就能直接兼容，不需要改造底座本身。

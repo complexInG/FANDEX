@@ -1,20 +1,21 @@
 ---
 order: 50
 title: 位运算与位域
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
 description: 位操作与位域结构
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - c/数据类型详解
-  - c/变量与常量
-  - c/运算符与表达式
-  - c/枚举与typedef
+  - 'c/003-DataTypeDetailed'
+  - 'c/004-VariableConstant'
+  - 'c/006-OperatorExpression'
+  - 'c/007-EnumTypedef'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 概述
 
 位运算是直接对整数的二进制位进行操作的运算方式，是C语言接近硬件底层的核心能力之一。通过位运算，程序员可以用最少的指令完成标志管理、数据压缩、硬件寄存器操控等任务。位域则是C语言结构体的特殊成员，允许以位为单位指定成员的存储宽度，在内存受限的嵌入式场景中尤为实用。两者结合使用，是编写高效底层代码的基本功。

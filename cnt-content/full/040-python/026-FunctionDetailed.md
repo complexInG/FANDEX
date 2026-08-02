@@ -1,22 +1,20 @@
 ---
-order: 70
-tags:
-  - python
-difficulty: intermediate
+order: 260
 title: 函数详解
-module: python
-category: 'Python Basics'
-description: '函数定义、参数类型、lambda 表达式与高阶函数。'
+module: 'python'
+category: 后端技术
+difficulty: intermediate
+description: 函数定义、参数类型、lambda 表达式与高阶函数。
 author: Anonymous
-related:
-  - python/Python与Web爬虫
-  - python/Python与自动化
-  - python/Python与测试
-  - python/Python与日志
-prerequisites:
-  - python/语法速查
 updated: '2026-08-01'
+related:
+  - 'python/024-WebScrapingWithPython'
+  - 'python/025-PythonAutomationCookbook'
+  - 'python/029-PythonTest'
+  - 'python/027-PythonLog'
+prerequisites: []
 ---
+
 ## 1. 函数基本语法 (Basic Syntax)
 
 函数是封装逻辑的可重用代码块，用于组织和简化代码。

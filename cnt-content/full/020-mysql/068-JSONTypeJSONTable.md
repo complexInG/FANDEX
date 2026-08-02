@@ -1,20 +1,21 @@
 ---
-order: 106
-title: 'JSON类型与JSON-TABLE'
-module: mysql
-category: database
+order: 680
+title: JSON类型与JSON-TABLE
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-description: 'MySQL JSON 数据类型详解：JSON 存储、查询函数、JSON_TABLE 将 JSON 转为关系表、虚拟列与索引优化。'
+description: MySQL JSON 数据类型详解：JSON 存储、查询函数、JSON_TABLE 将 JSON 转为关系表、虚拟列与索引优化。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/主从复制延迟原因与解决
-  - mysql/分库分表策略
-  - mysql/事务与锁机制
-  - mysql/配置与运维
+  - 'mysql/066-ReplicationDelayCauseSolution'
+  - 'mysql/067-ShardingStrategy'
+  - 'mysql/069-TransactionLockMechanism'
+  - 'mysql/070-MySQLConfigOps'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. JSON 数据类型
 
 ### 1.1 JSON vs JSON 文本

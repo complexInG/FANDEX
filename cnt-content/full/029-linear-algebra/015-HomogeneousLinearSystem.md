@@ -1,20 +1,21 @@
 ---
-order: 32
+order: 130
 title: 齐次线性方程组
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 齐次线性方程组的性质，零解与非零解的条件，基础解系的概念与求法，解空间的维数定理，齐次方程组的通解结构。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/高斯消元法'
-  - 'linear-algebra/解的存在性判定'
-  - 'linear-algebra/非齐次线性方程组'
-  - 'linear-algebra/解的结构'
+  - 'linear-algebra/013-GaussianElimination'
+  - 'linear-algebra/014-SolutionExistenceDetermination'
+  - 'linear-algebra/016-NonHomogeneousLinearSystem'
+  - 'linear-algebra/017-SolutionStructure'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从"灯的开关"说起
 

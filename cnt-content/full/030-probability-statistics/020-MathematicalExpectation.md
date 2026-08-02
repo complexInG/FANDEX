@@ -1,19 +1,20 @@
 ---
-order: 40
+order: 170
 title: 数学期望
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 数学期望的直观意义、定义、性质、随机变量函数的期望（懒人定理）、条件期望与全期望公式。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/和的分布与极值分布'
-  - 'probability-statistics/方差与标准差'
-  - 'probability-statistics/协方差'
+  - 'probability-statistics/018-SumDistributionAndExtremeValueDistribution'
+  - 'probability-statistics/021-VarianceAndStandardDeviation'
+  - 'probability-statistics/022-Covariance'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：跷跷板与加权平均
 

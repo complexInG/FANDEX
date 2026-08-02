@@ -1,19 +1,20 @@
 ---
 order: 160
-title: 'SVG 响应式与性能'
-module: svg
-category: 'SVG Performance'
+title: SVG 响应式与性能
+module: 'svg'
+category: 前端技术
 difficulty: advanced
-description: '响应式适配、性能瓶颈、优化策略、懒加载与压缩。'
+description: 响应式适配、性能瓶颈、优化策略、懒加载与压缩。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/CSS样式化
-  - svg/JavaScript交互
-  - svg/滤镜详解
+  - 'svg/014-SVGCSSStyling'
+  - 'svg/015-SVGJavaScriptInteraction'
+  - 'svg/010-SVGFilterDetailed'
 prerequisites:
-  - svg/坐标系与viewBox
+  - 'svg/003-SVGCoordinateSystemViewBox'
 ---
+
 ## 1. 响应式 SVG
 
 ### 1.1 仅声明 viewBox

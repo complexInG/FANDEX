@@ -1,18 +1,19 @@
 ---
-order: 52
+order: 130
 title: 技术翻译要点
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: advanced
 description: 技术翻译核心要点，涵盖术语一致性、本地化策略、翻译工具与质量保证。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/英译汉技巧
-  - english/汉译英技巧
+  - 'english/011-EnglishToChineseTechnique'
+  - 'english/012-ChineseToEnglishTechnique'
 prerequisites:
-  - english/计算机专业英语词汇
+  - 'english/001-ComputerProfessionalEnglishVocabulary'
 ---
+
 
 ## 1. 技术翻译的特点
 

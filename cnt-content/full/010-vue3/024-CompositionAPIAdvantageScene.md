@@ -1,20 +1,20 @@
 ---
-order: 101
+order: 240
 title: 组合式API优势场景
-module: vue3
-category: 'dev-lang'
+module: 'vue3'
+category: 前端技术
 difficulty: advanced
-description: 'Vue 3组合式API vs 选项式API对比与优势场景分析。'
+description: Vue 3组合式API vs 选项式API对比与优势场景分析。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/computed缓存机制与watch执行时机
-  - vue3/Router详解
-  - vue3/自定义组合函数封装
-  - vue3/Teleport传送门应用
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/022-ComputedCacheWatchTiming'
+  - 'vue3/023-VueRouterDetailed'
+  - 'vue3/025-CustomComposableWrapper'
+  - 'vue3/026-TeleportPortalApp'
+prerequisites: []
 ---
+
 ## 1. 两种 API 对比
 
 ### 1.1 选项式 API

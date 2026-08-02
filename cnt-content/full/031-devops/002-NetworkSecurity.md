@@ -1,18 +1,19 @@
 ---
-order: 2
+order: 20
 title: 网络与安全
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: intermediate
-description: 'TCP/IP 协议栈、DNS/HTTP/HTTPS、防火墙、SSL/TLS、SSH 安全与网络故障排查。'
+description: TCP/IP 协议栈、DNS/HTTP/HTTPS、防火墙、SSL/TLS、SSH 安全与网络故障排查。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/概述与Linux基础
-  - devops/容器与Docker
-  - devops/Kubernetes容器编排
+  - 'devops/001-OverviewLinuxBasics'
+  - 'devops/003-ContainerDocker'
+  - 'devops/004-Kubernetes'
 prerequisites: []
 ---
+
 ## 1. TCP/IP 协议栈
 
 ### 1.1 OSI 七层 vs TCP/IP 四层

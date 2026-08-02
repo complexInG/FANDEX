@@ -1,9 +1,8 @@
 ---
 order: 350
 title: DevOps Jenkins Pipeline
-module: devops
-
-category: '031-devops'
+module: 'devops'
+category: 云与基础设施
 difficulty: beginner
 description: DevOps Jenkins Pipeline 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## pipeline 声明式流水线
 
 **基本写法：定义声明式 pipeline**

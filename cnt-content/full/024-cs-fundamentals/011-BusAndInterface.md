@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 110
 title: 总线与接口
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 总线与接口：总线仲裁、总线协议、PCIe、USB、I2C、SPI与系统互连
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/指令流水线'
-  - 'cs-fundamentals/存储系统'
-  - 'cs-fundamentals/并行计算'
-  - 'cs-fundamentals/分布式系统'
+  - 'cs-fundamentals/009-DirectivePipeline'
+  - 'cs-fundamentals/010-StorageSystem'
+  - 'cs-fundamentals/012-ParallelCalculate'
+  - 'cs-fundamentals/013-DistributedSystem'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 总线基本概念
 

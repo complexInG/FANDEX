@@ -1,22 +1,21 @@
 ---
-order: 60
-tags:
-  - html5
+order: 180
+title: Web Components 与 PWA 开发
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
-title: 'Web Components 与 PWA 开发'
-module: html5
-category: 'HTML5 Basics'
 description: Web组件与渐进式Web应用开发
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/嵌入式内容
-  - html5/progress与meter
-  - html5/拖拽API
-  - html5/地理位置定位
+  - 'html5/016-EmbeddedContent'
+  - 'html5/017-ProgressMeter'
+  - 'html5/019-DragAPI'
+  - 'html5/020-Geolocation'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. Web Components 概述
 
 Web Components 是一组 Web 平台 API，允许开发者创建可重用的自定义元素，这些元素可以在任何 HTML 页面中使用，无论使用什么框架。

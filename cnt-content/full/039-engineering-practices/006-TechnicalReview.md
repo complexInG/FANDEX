@@ -1,18 +1,19 @@
 ---
-order: 15
+order: 60
 title: 技术方案评审
 module: 'engineering-practices'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 技术方案评审流程、评审维度与评审实践。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'engineering-practices/On-Call最佳实践'
-  - 'engineering-practices/事故复盘方法论'
-  - 'engineering-practices/知识管理'
+  - 'engineering-practices/004-OnCallPractice'
+  - 'engineering-practices/005-IncidentRetrospectiveMethodology'
+  - 'engineering-practices/007-KnowledgeManagement'
 prerequisites: []
 ---
+
 
 ## 1. 从"体检"说起：为什么方案要评审
 

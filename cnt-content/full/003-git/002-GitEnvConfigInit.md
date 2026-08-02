@@ -1,22 +1,19 @@
 ---
 order: 20
-tags:
-  - git
-  - 'git-workflow'
+title: Git 环境配置与初始化
+module: 'git'
+category: 工具链
 difficulty: beginner
-title: 'Git 环境配置与初始化'
-module: git
-category: 'Git Basics'
-description: 'Git 安装配置、用户信息设置与仓库初始化。'
+description: Git 安装配置、用户信息设置与仓库初始化。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/语法速查
-  - git/Git基础概念与核心特点
-  - git/Git基本操作
-  - git/Git分支管理
+  - 'git/001-Git'
+  - 'git/003-GitBasicOperation'
+  - 'git/004-GitBranchManagement'
 prerequisites: []
 ---
+
 ## 1. 什么是 Git
 
 Git 是一个分布式版本控制系统，用于跟踪文件的变化，支持多人协作开发。它具有以下特点：
@@ -279,9 +276,9 @@ Git 配置文件采用 INI 格式，由节（section）和键值对组成：
  # 编辑器文件
  .vscode/
  .idea/
- *
- *
- *
+ *.swp
+ *.swo
+ *.bak
  # 编译产物
  build/
  dist/
@@ -298,10 +295,11 @@ Git 配置文件采用 INI 格式，由节（section）和键值对组成：
  .env.production.local
  # 日志文件
  logs
- *
+ *.log
  # 数据库文件
- *
- *
+ *.db
+ *.sqlite
+ *.sqlite3
  # 临时文件
  tmp/
  temp/

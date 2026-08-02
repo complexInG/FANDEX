@@ -1,9 +1,8 @@
 ---
 order: 530
 title: C POSIX 与系统调用速查
-module: c
-
-category: '025-c'
+module: 'c'
+category: 计算机科学
 difficulty: beginner
 description: C POSIX 与系统调用速查 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 文件描述符
 
 **基本写法：open 打开文件**

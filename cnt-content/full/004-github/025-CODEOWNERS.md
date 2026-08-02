@@ -1,20 +1,19 @@
 ---
-order: 67
+order: 250
 title: CODEOWNERS
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: intermediate
-description: 'CODEOWNERS文件详解：以大型团队代码审查场景讲代码所有权、自动指派审查、语法规则与分支保护集成。'
+description: CODEOWNERS文件详解：以大型团队代码审查场景讲代码所有权、自动指派审查、语法规则与分支保护集成。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/包管理服务
-  - github/在线开发环境
-  - github/社区健康文件
-  - github/PullRequest完整协作流程
+  - 'github/026-CommunityHealthFile'
+  - 'github/027-PullRequestCompleteCollaborationFlow'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 先来一个生活场景：小区的楼栋长
 

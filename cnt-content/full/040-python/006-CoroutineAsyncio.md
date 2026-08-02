@@ -1,20 +1,19 @@
 ---
-order: 41
+order: 60
 title: 协程与asyncio
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: 异步编程基础
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/并发编程
-  - python/生成器与迭代器
-  - python/Python与WebSocket
-  - python/Python与FastAPI
-prerequisites:
-  - python/语法速查
+  - 'python/045-ConcurrentProgramming'
+  - 'python/034-PythonWebSocket'
+  - 'python/013-PythonFastAPI'
+prerequisites: []
 ---
+
 ## 事件循环
 
 **基本写法：运行协程**

@@ -1,20 +1,21 @@
 ---
-order: 53
-title: 'Server-Components'
-module: react
-category: React
+order: 140
+title: Server-Components
+module: 'react'
+category: 前端技术
 difficulty: advanced
 description: React服务器组件详解
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/Fiber架构
-  - react/Concurrent模式
-  - react/Hooks原理
-  - react/自定义Hooks设计模式
+  - 'react/012-FiberArchitecture'
+  - 'react/013-ConcurrentMode'
+  - 'react/015-HooksPrinciple'
+  - 'react/016-CustomHooksDesignPattern'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

@@ -1,23 +1,23 @@
 ---
-order: 79
-title: 'Python与CI-CD'
-module: python
-category: Python
+order: 350
+title: Python与CI-CD
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: Python项目CI/CD全流程详解：流水线设计、自动化测试、构建产物管理、镜像化交付、GitOps与渐进式发布
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - python/Python与gRPC
-  - python/Python与WebSocket
-  - python/Python与性能优化
-  - python/内置数据结构
-  - python/Python与测试
-  - python/Python与Docker
+  - 'python/033-PythongRPC'
+  - 'python/034-PythonWebSocket'
+  - 'python/036-PythonPerformance'
+  - 'python/037-BuiltinDataStructure'
+  - 'python/029-PythonTest'
+  - 'python/019-PythonDocker'
 prerequisites:
-  - python/语法速查
-  - python/Python与虚拟环境
+  - 'python/009-PythonVirtualEnv'
 ---
+
 
 
 ## 1. 历史动机与背景

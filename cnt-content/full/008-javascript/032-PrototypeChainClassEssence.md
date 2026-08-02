@@ -1,20 +1,20 @@
 ---
-order: 101
+order: 320
 title: 原型链继承与class本质
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: JavaScript原型链继承机制与class语法糖本质深度解析。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - javascript/异步编程
-  - javascript/闭包的内存泄露与优化
-  - javascript/事件循环详解
-  - javascript/Promise静态方法
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/030-AsyncProgramming'
+  - 'javascript/031-ClosureMemoryLeakOptimization'
+  - 'javascript/033-EventLoopDetailed'
+  - 'javascript/034-PromiseStaticMethod'
+prerequisites: []
 ---
+
 
 
 # 原型链继承与 class 本质

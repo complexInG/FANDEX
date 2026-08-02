@@ -1,22 +1,20 @@
 ---
-order: 90
-tags:
-  - javascript
-  - performance
+order: 290
+title: JavaScript 模块化
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
-title: 'JavaScript 模块化'
-module: javascript
-category: 'JS Basics'
-description: 'CommonJS、ES Modules 与模块打包工具。'
+description: CommonJS、ES Modules 与模块打包工具。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - javascript/DOM操作与事件
-  - javascript/JavaScript最新特性与运行时
-  - javascript/异步编程
-  - javascript/闭包的内存泄露与优化
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/027-DOMOperationEvent'
+  - 'javascript/028-JavaScriptLatestFeature'
+  - 'javascript/030-AsyncProgramming'
+  - 'javascript/031-ClosureMemoryLeakOptimization'
+prerequisites: []
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 没有模块化的痛点

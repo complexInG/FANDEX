@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 140
 title: 阴影
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: beginner
-description: 'box-shadow、text-shadow'
+description: box-shadow、text-shadow
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/层叠上下文
-  - css/渐变
-  - css/背景增强
-  - css/Grid网格布局
+  - 'css/012-StackingContext'
+  - 'css/013-Gradient'
+  - 'css/015-BackgroundEnhancement'
+  - 'css/016-CSS3GridGridLayout'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 ## 1. box-shadow
 
 ```css

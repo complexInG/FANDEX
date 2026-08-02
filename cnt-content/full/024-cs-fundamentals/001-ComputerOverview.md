@@ -1,20 +1,18 @@
 ---
 order: 10
-tags:
-  - 'cs-fundamentals'
-  - algorithm
-difficulty: beginner
 title: 计算机科学概述
 module: 'cs-fundamentals'
-category: 'Computer Science / Overview'
+category: 计算机科学
+difficulty: beginner
 description: 计算机科学学科全景图，知识体系脉络与核心抽象层级。
 author: fanquanpp
-related:
-  - 'cs-fundamentals/计算机体系结构'
-  - 'cs-fundamentals/操作系统'
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'cs-fundamentals/002-ComputerArchitecture'
+  - 'cs-fundamentals/003-OperatingSystem'
+prerequisites: []
 ---
+
 ## 1. 学科定义与边界
 
 ### 1.1 核心问题

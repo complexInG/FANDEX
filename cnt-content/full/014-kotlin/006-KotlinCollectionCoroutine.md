@@ -1,19 +1,20 @@
 ---
-order: 15
-title: 'Kotlin 集合与协程'
-module: kotlin
-category: Kotlin
+order: 60
+title: Kotlin 集合与协程
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: 集合框架、序列、集合操作函数与协程基础。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/类与对象
-  - kotlin/泛型与类型系统
-  - kotlin/协程进阶
-  - kotlin/Kotlin多平台
+  - 'kotlin/004-KotlinClassObject'
+  - 'kotlin/005-KotlinGenericTypeSystem'
+  - 'kotlin/007-KotlinCoroutineAdvanced'
+  - 'kotlin/008-KotlinMultiplatform'
 prerequisites: []
 ---
+
 ## 1. 集合框架
 
 Kotlin 集合框架分为**只读**和**可变**两大体系：

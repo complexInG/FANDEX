@@ -1,22 +1,21 @@
 ---
-order: 130
-tags:
-  - java
-difficulty: intermediate
+order: 580
 title: 异常处理机制
-module: java
-category: 'Java Basics'
-description: '异常体系、try-catch-finally、自定义异常与最佳实践。'
+module: 'java'
+category: 后端技术
+difficulty: intermediate
+description: 异常体系、try-catch-finally、自定义异常与最佳实践。
 author: Anonymous
-related:
-  - java/面向对象编程
-  - java/抽象类与接口
-  - java/泛型详解
-  - java/IO流与文件操作
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/056-OOP'
+  - 'java/057-AbstractClassInterface'
+  - 'java/059-GenericDetailed'
+  - 'java/060-IOStreamFileOperation'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 异常体系 (Exception Hierarchy)
 
 ### 1.1 异常的层次结构

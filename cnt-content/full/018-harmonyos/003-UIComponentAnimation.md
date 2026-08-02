@@ -1,19 +1,20 @@
 ---
-order: 3
+order: 30
 title: UI组件与动画
-module: harmonyos
-category: 鸿蒙开发
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 基础组件、容器组件、自定义组件、动画效果、深色模式适配与响应式布局。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/概述与环境搭建
-  - harmonyos/ArkTS与ArkUI
-  - harmonyos/网络与数据持久化
-  - harmonyos/多媒体与设备能力
+  - 'harmonyos/001-OverviewSetup'
+  - 'harmonyos/002-ArkTSArkUI'
+  - 'harmonyos/004-NetworkAndPersistence'
+  - 'harmonyos/005-MultimediaDeviceCapability'
 prerequisites: []
 ---
+
 ## 1. 基础组件
 
 ### 1.1 Text 文本组件

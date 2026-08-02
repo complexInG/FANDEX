@@ -1,21 +1,19 @@
 ---
 order: 20
-tags:
-  - css
-  - 'css-layout'
+title: CSS3 盒模型详解
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-title: 'CSS3 盒模型详解'
-module: css
-category: 'CSS Basics'
-description: 'content/padding/border/margin、box-sizing 与视觉格式化。'
+description: content/padding/border/margin、box-sizing 与视觉格式化。
 author: Anonymous
-related:
-  - css/概述与基本语法
-  - css/选择器系统
-  - css/传统布局技术
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'css/001-CSS3OverviewBasicSyntax'
+  - 'css/003-CSS3SelectorSystem'
+  - 'css/004-TraditionalLayoutTech'
+prerequisites: []
 ---
+
 ## 1. 盒模型组成 (Components)
 
 ### 1.1 基本组成
@@ -110,18 +108,18 @@ flowchart TD
 
 ```css
  /* 方法 1: 全局设置 */
- *
+ * {
   box-sizing: border-box;
  }
  /* 方法 2: 更精确的设置，包括伪元素 */
- *
+ * {
   box-sizing: border-box;
  }
  /* 方法 3: 继承方式，更灵活 */
  html {
   box-sizing: border-box;
  }
- *
+ * {
   box-sizing: inherit;
  }
 ```
@@ -388,7 +386,7 @@ margin-left: 40px;
 
 ```css
  /* 全局盒模型设置 */
- *
+ * {
   box-sizing: border-box;
  }
  /* 响应式网格 */
@@ -526,7 +524,7 @@ console.log('实际宽度:', actualWidth);
 ### 7.2 使用 CSS 变量控制盒模型
 
 ```css
- :
+ :root {
   --box-padding: 20px;
   --box-border: 5px;
   --box-margin: 15px;

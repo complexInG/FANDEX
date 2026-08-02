@@ -1,132 +1,24 @@
 ---
-order: 50
+order: 60
 title: 枚举与注解
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Java 枚举类型与注解系统的形式化定义、源码生成机制、注解处理器工作原理、与 C#/Kotlin/Scala 对比及工程实践
 author: fanquanpp
 updated: '2026-07-20'
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
 related:
-- java/数据类型与类型转换
-- java/变量与常量
-- java/泛型进阶
-- java/并发编程基础
-- java/反射与动态代理
-- java/注解处理器
+  - 'java/004-DataTypeConversion'
+  - 'java/005-VariableConstant'
+  - 'java/007-JavaGenericsTutorial'
+  - 'java/008-ConcurrencyBasics'
+  - 'java/053-ReflectionDynamicProxy'
+  - 'java/054-AnnotationProcessor'
 prerequisites:
-- java/概述与开发环境
-- java/面向对象编程
-tags:
-- java
-- enum
-- annotation
-- typesafe-enum
-- jsr-175
-- jsr-201
-- annotation-processor
-- reflection
-- metadata
-references:
-- type: standard
-  authors:
-  - JSR 201 Expert Group
-  year: 2004
-  title: 'JSR 201: Extending the Java Programming Language with Enumerations, Autoboxing, and Enhanced for Loops'
-  venue: Java Community Process
-  url: https://www.jcp.org/en/jsr/detail?id=201
-- type: standard
-  authors:
-  - JSR 175 Expert Group
-  year: 2004
-  title: 'JSR 175: A Metadata Facility for the Java Programming Language'
-  venue: Java Community Process
-  url: https://www.jcp.org/en/jsr/detail?id=175
-- type: standard
-  authors:
-  - JSR 269 Expert Group
-  year: 2006
-  title: 'JSR 269: Pluggable Annotation Processing API'
-  venue: Java Community Process
-  url: https://www.jcp.org/en/jsr/detail?id=269
-- type: book
-  authors:
-  - Bloch, Joshua
-  year: 2018
-  title: Effective Java (Third Edition)
-  venue: Addison-Wesley Professional
-  pages: 163-200
-  isbn: 978-0134685991
-- type: standard
-  authors:
-  - Gosling, James
-  - Joy, Bill
-  - Steele, Guy
-  - Bracha, Gilad
-  - Buckley, Alex
-  year: 2023
-  title: The Java Language Specification, Java SE 21 Edition
-  venue: Oracle America, Inc.
-  pages: §8.9, §9.6, §9.7
-  url: https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.9
-- type: conference
-  authors:
-  - Bloch, Joshua
-  year: 2001
-  title: Typesafe Enums in Java (Effective Java 1st Edition Preview)
-  venue: JavaOne Conference
-- type: book
-  authors:
-  - Eckel, Bruce
-  year: 2006
-  title: Thinking in Java (Fourth Edition)
-  venue: Prentice Hall
-  pages: chapter 19-20
-  isbn: 978-0131872486
-- type: technical-report
-  authors:
-  - Oracle Corporation
-  year: 2017
-  title: 'JEP 104: Type Annotations (JSR 308)'
-  venue: OpenJDK
-  url: https://openjdk.org/jeps/104
-- type: technical-report
-  authors:
-  - Oracle Corporation
-  year: 2013
-  title: 'JSR 308: Annotations on Java Types'
-  venue: Java Community Process
-  url: https://www.jcp.org/en/jsr/detail?id=308
-- type: documentation
-  authors:
-  - Oracle Corporation
-  year: 2024
-  title: Java Annotations Tutorial
-  venue: Oracle Documentation
-  url: https://docs.oracle.com/javase/tutorial/java/annotations/index.html
-etymology:
-- term: 枚举（Enumeration）
-  english: Enumeration
-  origin: 源自拉丁语 enumerare（数出、列举），programming 中最早见于 Pascal（1970, Niklaus Wirth）的 enum 关键字。C 语言（1972, Dennis Ritchie）引入 enum 但本质是 int 别名。Java 1.0 不支持枚举，社区使用「typesafe enum pattern」（Bloch 2001《Effective Java》第 1 版 Item 21）模拟，2004 年 Java 5 通过 JSR 201 正式引入语法级 enum。
-- term: 类型安全枚举模式（Typesafe Enum Pattern）
-  english: Typesafe Enum Pattern
-  origin: 由 Joshua Bloch 在 2001 年《Effective Java》第 1 版 Item 21 系统化描述：用 final 类 + private 构造器 + public static final 实例模拟枚举，避免 C/C++ enum 的非类型安全缺陷。Java 5 的 enum 关键字本质上是该模式的语法糖与编译期支持。
-- term: 注解（Annotation）
-  english: Annotation
-  origin: 源自拉丁语 annotatio（边注、批注），programming 中最早见于 Java 5（2004, JSR 175）。设计灵感来自 C# Attribute（2002, .NET 1.0）与 XDoclet（2003, Java 代码生成工具）。注解作为「元数据」与「装饰器」（Python decorator）有本质区别：注解是被动的元数据，装饰器是主动的高阶函数。
-- term: 保留策略（Retention Policy）
-  english: Retention Policy
-  origin: JSR 175 引入 RetentionPolicy 枚举定义三策略：SOURCE（编译期丢弃，如 @Override）、CLASS（保留至字节码，默认）、RUNTIME（保留至运行时，可反射）。这一设计平衡了字节码体积与运行时灵活性。
-- term: 注解处理器（Annotation Processor）
-  english: Annotation Processor
-  origin: JSR 269（2006, pluggable annotation processing API）标准化了编译期注解处理机制。其前身是 apt 工具（Java 5，com.sun.mirror API）。Lombok、AutoValue、Dagger 等框架基于此机制在编译期生成样板代码。
-- term: 类型注解（Type Annotation）
-  english: Type Annotation
-  origin: JSR 308（2013, Annotations on Java Types）扩展注解到任意类型使用处，如 `List<@NonNull String>`。Checker Framework 是首个基于类型注解的静态分析框架。
-estimatedReadingTime: 60
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/056-OOP'
 ---
+
 ## 引言：从「int 常量」到「类型安全的领域建模」
 
 Java 1.0（1996）发布时，开发者通常用 `public static final int` 常量模拟枚举：

@@ -1,20 +1,21 @@
 ---
-order: 67
+order: 260
 title: Go与消息队列
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: Kafka与NATS
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与数据库
-  - go/Go与Redis
-  - go/Go与测试
-  - go/Go与Fuzzing
+  - 'go/027-GoDatabase'
+  - 'go/025-GoRedis'
+  - 'go/028-GoTest'
+  - 'go/030-GoFuzzing'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

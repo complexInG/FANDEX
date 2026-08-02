@@ -1,9 +1,8 @@
 ---
 order: 950
 title: Python traceback 与 warnings
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python traceback 与 warnings 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## traceback 打印异常
 
 **基本写法：打印当前异常**

@@ -1,20 +1,20 @@
 ---
-order: 61
+order: 200
 title: 地理位置定位
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
 description: Geolocation
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/WebComponents与PWA开发
-  - html5/拖拽API
-  - html5/Web工作线程
-  - 'html5/Service-Worker与PWA'
+  - 'html5/018-WebComponentsPWADevelopment'
+  - 'html5/019-DragAPI'
+  - 'html5/022-ServiceWorkerPWA'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. Geolocation API
 
 ```javascript

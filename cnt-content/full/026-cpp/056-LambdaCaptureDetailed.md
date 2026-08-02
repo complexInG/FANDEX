@@ -1,20 +1,21 @@
 ---
-order: 105
+order: 560
 title: Lambda捕获详解
-module: cpp
-category: 'dev-lang'
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-description: 'C++ Lambda捕获详解：值捕获、引用捕获、初始化捕获、*this。'
+description: C++ Lambda捕获详解：值捕获、引用捕获、初始化捕获、*this。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/虚函数表与多态内存布局
-  - cpp/智能指针循环引用
-  - cpp/类型萃取与SFINAE
-  - cpp/可变参数模板与折叠表达式
+  - 'cpp/054-VTablePolymorphismMemoryLayout'
+  - 'cpp/055-SmartPointerCircularReference'
+  - 'cpp/057-TypeExtractionSFINAE'
+  - 'cpp/058-VariadicTemplateFoldExpression'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 史前时代：函数对象与回调困境（pre-2011）

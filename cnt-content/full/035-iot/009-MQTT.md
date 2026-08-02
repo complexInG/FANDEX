@@ -1,20 +1,21 @@
 ---
-order: 50
+order: 90
 title: MQTT协议
-module: iot
-category: 'eng-infra'
+module: 'iot'
+category: 云与基础设施
 difficulty: intermediate
 description: MQTT协议详解：发布/订阅模型、QoS等级、保留消息、遗嘱消息与Broker选型。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/安全与隐私
-  - iot/实战项目
-  - iot/CoAP协议
-  - iot/Arduino开发
+  - 'iot/007-SecurityAndPrivacy'
+  - 'iot/008-PracticeProject'
+  - 'iot/010-CoAP'
+  - 'iot/011-ArduinoDevelopment'
 prerequisites:
-  - iot/概述与架构
+  - 'iot/001-OverviewArchitecture'
 ---
+
 ## 1. MQTT 概述
 
 ### 1.1 什么是 MQTT

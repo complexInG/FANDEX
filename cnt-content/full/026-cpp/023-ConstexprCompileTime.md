@@ -1,37 +1,22 @@
 ---
-order: 68
+order: 230
 title: constexpr与编译期计算
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
 description: constexpr/consteval/constinit完整原理、编译期求值模型、立即函数、constexpr if、编译期容器、与模板元编程的关系及工业级应用
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/类型特征与SFINAE
-  - cpp/变参模板
-  - cpp/命名空间与链接
-  - cpp/设计模式与C++
-  - cpp/模板元编程
+  - 'cpp/021-TypeTraitsSFINAE'
+  - 'cpp/022-VariadicTemplate'
+  - 'cpp/024-NamespaceLinkage'
+  - 'cpp/012-DesignPatternCpp'
+  - 'cpp/009-ATourOfC3rdEditionOnlineExcerpts'
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/模板基础
-  - cpp/常量与只读语义
-tags:
-  - constexpr
-  - consteval
-  - constinit
-  - Compile-time
-  - Constant Expression
-  - Immediate Function
-  - constexpr if
-  - Metaprogramming
-  - C++11
-  - C++14
-  - C++17
-  - C++20
-  - C++23
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 # constexpr 与编译期计算（Constant Expression & Compile-time Computation）
 

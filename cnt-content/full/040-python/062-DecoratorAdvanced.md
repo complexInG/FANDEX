@@ -1,20 +1,20 @@
 ---
-order: 111
+order: 620
 title: 装饰器进阶
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: Python装饰器进阶详解：带参数装饰器、类装饰器、functools.wraps。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/上下文管理器
-  - python/描述符
-  - python/元类与单例模式
-  - python/生成器与协程
-prerequisites:
-  - python/语法速查
+  - 'python/052-ContextManager'
+  - 'python/057-Descriptor'
+  - 'python/053-MetaclassSingleton'
+  - 'python/059-GeneratorCoroutine'
+prerequisites: []
 ---
+
 ### functools.wraps 保留元信息
 
 ```python

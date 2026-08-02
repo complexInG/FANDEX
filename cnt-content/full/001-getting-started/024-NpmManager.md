@@ -1,9 +1,8 @@
 ---
 order: 240
 title: 编程入门 npm 包管理
-module: getting-started
-
-category: '001-getting-started'
+module: 'getting-started'
+category: 工具链
 difficulty: beginner
 description: 编程入门 npm 包管理 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 项目初始化
 
 **基本写法：交互式创建 package.json**

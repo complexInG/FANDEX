@@ -1,20 +1,21 @@
 ---
-order: 77
+order: 370
 title: Go与模板
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: text/template与html/template
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与配置管理
-  - go/Go与日志
-  - go/Go与加密
-  - go/Go与信号处理
+  - 'go/035-GoConfigManagement'
+  - 'go/036-GoLog'
+  - 'go/038-GoEncryption'
+  - 'go/042-GoSignalHandling'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

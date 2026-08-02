@@ -1,20 +1,21 @@
 ---
-order: 64
+order: 230
 title: Go与Kubernetes
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'client-go 与 Kubernetes 开发：Informer 机制、Controller 模式、CRD、Operator、Workqueue 与生产级最佳实践'
+description: client-go 与 Kubernetes 开发：Informer 机制、Controller 模式、CRD、Operator、Workqueue 与生产级最佳实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与GraphQL
-  - go/Go与Docker
-  - go/Go与数据库
-  - go/Go与Redis
+  - 'go/021-GoGraphQL'
+  - 'go/024-GoDocker'
+  - 'go/027-GoDatabase'
+  - 'go/025-GoRedis'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 # Go 与 Kubernetes：从 client-go 到 Operator 的工程实践

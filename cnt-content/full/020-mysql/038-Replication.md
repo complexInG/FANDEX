@@ -1,20 +1,20 @@
 ---
-order: 80
+order: 380
 title: 主从复制
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL主从复制：异步复制、半同步复制、全同步复制的原理、配置与切换
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/物理备份
-  - mysql/基于时间点恢复
-  - mysql/进阶查询与多表操作
-  - mysql/全局事务标识
+  - 'mysql/036-PhysicalBackup'
+  - 'mysql/037-PITR'
+  - 'mysql/039-AdvancedQueryMultiTableOperation'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. 复制概述
 
 MySQL 复制基于 binlog，将主库的变更同步到从库。

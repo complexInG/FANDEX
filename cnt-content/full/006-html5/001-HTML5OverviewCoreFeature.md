@@ -1,19 +1,18 @@
 ---
 order: 10
-tags:
-  - html5
+title: HTML5 概述与核心特性
+module: 'html5'
+category: 前端技术
 difficulty: beginner
-title: 'HTML5 概述与核心特性'
-module: html5
-category: 'HTML5 Basics'
-description: 'HTML5 新特性、语义化标签与浏览器兼容性。'
+description: HTML5 新特性、语义化标签与浏览器兼容性。
 author: Anonymous
-related:
-  - html5/基础标签与全局属性
-  - html5/语义化标签
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'html5/002-HTML5BasicTagGlobalAttribute'
+  - 'html5/003-SemanticTag'
+prerequisites: []
 ---
+
 ## 1. HTML5 概述 (Overview)
 
 HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修改，于 2014 年 10 月由 W3C 正式发布。它不仅是一种标记语言，更是一个完整的 Web 应用平台，为现代 Web 开发提供了强大的基础。

@@ -1,20 +1,20 @@
 ---
-order: 72
+order: 270
 title: Python与日志
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: logging模块与日志配置
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/函数详解
-  - python/Python与测试
-  - python/Python与加密
-  - python/Python与CLI
-prerequisites:
-  - python/语法速查
+  - 'python/026-FunctionDetailed'
+  - 'python/029-PythonTest'
+  - 'python/028-PythonAndCryptography'
+  - 'python/039-PythonCLI'
+prerequisites: []
 ---
+
 
 ## 什么是日志
 

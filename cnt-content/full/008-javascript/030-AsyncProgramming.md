@@ -1,22 +1,20 @@
 ---
-order: 100
-tags:
-  - javascript
-  - async
-difficulty: intermediate
+order: 300
 title: 异步编程
-module: javascript
-category: 'JS Basics'
-description: '回调、Promise、async/await 与事件循环。'
+module: 'javascript'
+category: 前端技术
+difficulty: intermediate
+description: 回调、Promise、async/await 与事件循环。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - javascript/JavaScript最新特性与运行时
-  - javascript/模块化
-  - javascript/闭包的内存泄露与优化
-  - javascript/原型链继承与class本质
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/028-JavaScriptLatestFeature'
+  - 'javascript/029-JavaScriptModular'
+  - 'javascript/031-ClosureMemoryLeakOptimization'
+  - 'javascript/032-PrototypeChainClassEssence'
+prerequisites: []
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 单线程的 JavaScript

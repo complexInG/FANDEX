@@ -1,20 +1,19 @@
 ---
 order: 20
-tags:
-  - html5
+title: HTML5 基础标签与全局属性
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
-title: 'HTML5 基础标签与全局属性'
-module: html5
-category: 'HTML5 Basics'
 description: 文本、列表、表格标签与全局属性详解。
 author: Anonymous
-related:
-  - html5/概述与核心特性
-  - html5/语义化标签
-  - html5/无障碍访问
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'html5/001-HTML5OverviewCoreFeature'
+  - 'html5/003-SemanticTag'
+  - 'html5/004-Accessibility'
+prerequisites: []
 ---
+
 ## 1. 基础文本标签
 
 基础文本标签用于定义和格式化网页中的文本内容，是构建网页结构的基础。

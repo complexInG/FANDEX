@@ -1,19 +1,20 @@
 ---
-order: 6
+order: 60
 title: 窗口函数
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: 'OVER 子句、PARTITION BY、排名函数、偏移函数、帧定义与累计计算'
+description: OVER 子句、PARTITION BY、排名函数、偏移函数、帧定义与累计计算
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/数据操作
-  - sql/数据定义
-  - sql/高级查询
-  - sql/性能优化
+  - 'sql/004-DML'
+  - 'sql/005-DDL'
+  - 'sql/007-AdvancedQuery'
+  - 'sql/008-PerformanceOptimization'
 prerequisites: []
 ---
+
 ### FIRST_VALUE / LAST_VALUE
 
 ```sql

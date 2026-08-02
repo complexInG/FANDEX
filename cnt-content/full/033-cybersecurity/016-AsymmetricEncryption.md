@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 160
 title: 非对称加密
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: '非对称加密原理：RSA、ECC、Diffie-Hellman 等算法详解与应用。'
+description: 非对称加密原理：RSA、ECC、Diffie-Hellman 等算法详解与应用。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/对称加密
-  - cybersecurity/应急响应
-  - cybersecurity/哈希算法
-  - cybersecurity/安全开发
+  - 'cybersecurity/014-SymmetricEncryption'
+  - 'cybersecurity/015-IncidentResponse'
+  - 'cybersecurity/017-HashAlgorithm'
+  - 'cybersecurity/018-SecureDevelopment'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. 非对称加密基础
 

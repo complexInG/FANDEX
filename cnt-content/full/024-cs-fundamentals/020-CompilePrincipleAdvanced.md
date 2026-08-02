@@ -1,20 +1,21 @@
 ---
-order: 63
+order: 200
 title: 编译原理进阶
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 编译原理进阶：LL/LR分析、语法制导翻译、中间代码优化与代码生成
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/软件工程'
-  - 'cs-fundamentals/数据库系统原理'
-  - 'cs-fundamentals/操作系统进阶'
-  - 'cs-fundamentals/计算机网络进阶'
+  - 'cs-fundamentals/018-SoftwareEngineering'
+  - 'cs-fundamentals/019-DatabaseSystemPrinciple'
+  - 'cs-fundamentals/021-OperatingSystemAdvanced'
+  - 'cs-fundamentals/022-ComputerNetworkAdvanced'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 词法分析
 

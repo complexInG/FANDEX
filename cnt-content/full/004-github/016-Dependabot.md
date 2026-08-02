@@ -1,20 +1,19 @@
 ---
-order: 59
+order: 160
 title: Dependabot
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: intermediate
-description: 'Dependabot详解：从漏洞警报、安全更新到版本更新的完整故事，含 dependabot.yml 配置、分组更新与自动合并最佳实践。'
+description: Dependabot详解：从漏洞警报、安全更新到版本更新的完整故事，含 dependabot.yml 配置、分组更新与自动合并最佳实践。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/社区讨论
-  - github/AI编程助手
-  - 'github/Issues模板-标签与里程碑'
-  - github/密钥扫描
+  - 'github/017-IssuesTemplateTagMilestone'
+  - 'github/018-SecretScanning'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 先讲一个故事：依赖被攻击的那个夜晚
 

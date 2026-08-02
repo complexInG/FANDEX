@@ -1,20 +1,21 @@
 ---
-order: 105
+order: 490
 title: 扩展函数的编译原理
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
 description: Kotlin扩展函数编译原理详解。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - kotlin/密封类与密封接口
-  - kotlin/内联类
-  - kotlin/作用域函数区别
-  - kotlin/协程异常处理
+  - 'kotlin/047-SealedClassSealedInterface'
+  - 'kotlin/048-InlineClass'
+  - 'kotlin/050-ScopeFunctionDifference'
+  - 'kotlin/051-CoroutineExceptionHandling'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 # 扩展函数的编译原理
 

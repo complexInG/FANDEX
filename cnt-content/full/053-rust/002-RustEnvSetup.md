@@ -1,18 +1,19 @@
 ---
-order: 2
+order: 20
 title: Rust 环境搭建与工具链
-module: rust
-category: Rust
+module: 'rust'
+category: 后端技术
 difficulty: beginner
-description: 'Rust 环境搭建：rustup、cargo、rust-analyzer 与第一个程序'
+description: Rust 环境搭建：rustup、cargo、rust-analyzer 与第一个程序
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - rust/003-RustBasicSyntax
-  - rust/001-RustOverview
+  - 'rust/003-RustBasicSyntax'
+  - 'rust/001-RustOverview'
 prerequisites:
-  - getting-started/002-DevEnvSetup
+  - 'getting-started/002-DevEnvSetup'
 ---
+
 
 ## 1. 环境搭建前须知
 

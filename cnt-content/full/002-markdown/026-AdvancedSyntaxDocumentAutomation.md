@@ -1,20 +1,19 @@
 ---
-order: 100
-tags:
-  - markdown
+order: 260
+title: Markdown 高级语法与文档自动化
+module: 'markdown'
+category: 工具链
 difficulty: advanced
-title: 'Markdown 高级语法与文档自动化'
-module: markdown
-category: 'Markdown Basics'
 description: 扩展语法、数学公式、流程图、自动化文档工作流。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/语法速查
-  - markdown/规范文档编写
+  - 'markdown/031-BlockquoteNestedList'
+  - 'markdown/025-SpecDocumentWriting'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 
 ## 1. Markdown 高级语法
 
@@ -90,20 +89,20 @@ hello();
 ### 1.4 任务列表
 
 ```markdown
--
--
--
--
+- [ ] 待办事项 1
+- [x] 待办事项 2
+  - [ ] 子任务 3
 ```
 
 ### 1.5 定义列表
 
 ```markdown
 术语 1
-:
+: 定义 1
+
 术语 2
-:
-:
+: 定义 2
+: 定义 3（同一术语的第二个定义）
 ```
 
 ### 1.6 数学公式
@@ -118,22 +117,21 @@ hello();
 
 ```markdown
 $$
-\
+E = mc^2
 $$
 ```
 
 ### 1.7 admonition
 
 ```markdown
-:
-这是一个提示
-:
-:
-这是一个警告
-:
-:
-这是一个危险警告
-:
+> [!NOTE]
+> 这是一个提示
+
+> [!WARNING]
+> 这是一个警告
+
+> [!DANGER]
+> 这是一个危险警告
 ```
 
 ### 1.8 目录
@@ -156,19 +154,19 @@ $$
 #### 1.10.1 基本图片
 
 ```markdown
-!
+![替代文本](https://example.com/image.png)
 ```
 
 #### 1.10.2 带标题的图片
 
 ```markdown
-!
+![替代文本](https://example.com/image.png "图片标题")
 ```
 
 #### 1.10.3 带尺寸的图片
 
 ```markdown
-!
+![替代文本](https://example.com/image.png =200x100)
 ```
 
 ## 2. 文档自动化
@@ -400,13 +398,13 @@ flowchart TD
 1. 创建 vault
 2. 设置文件组织结构
 3. 配置插件
-   **链接语法**
+**链接语法**
 
 ```markdown
 # 页面 1
 
 [页面 2](页面 2)
-!
+![图片](图片.png)
 ```
 
 #### 3.1.2 使用 Notion
@@ -421,10 +419,12 @@ flowchart TD
 ````markdown
 # 标题
 
--
+- 列表项 1
+- 列表项 2
 
-*
-* > `代码`
+> 引用块
+
+`行内代码`
 
 ```javascript
 // 代码块
@@ -486,7 +486,7 @@ function hello() {
 
 #### 3.3.1 从代码生成文档
 
--
+- 使用 JSDoc 为带注释的 JavaScript 代码生成文档：
 
 ```javascript
 /**
@@ -500,7 +500,7 @@ function sum(a, b) {
 }
 ```
 
--
+- 安装并运行 JSDoc 命令行工具：
 
 ```bash
 # 安装 JSDoc
@@ -522,31 +522,31 @@ typedoc --out docs src
 
 ### 4.1 编辑器
 
--
--
--
--
+- Visual Studio Code
+- Typora
+- Obsidian
+- Notion
 
 ### 4.2 插件
 
--
--
--
--
+- markdownlint（规范检查）
+- Prettier（格式化）
+- 自动生成目录
+- 拼写检查
 
 ### 4.3 在线工具
 
--
--
--
--
+- StackEdit
+- Dillinger
+- HackMD
+- 语雀
 
 ### 4.4 模板
 
--
--
--
--
+- README 模板
+- 技术方案模板
+- 会议纪要模板
+- 发布说明模板
 
 ## 5. 最佳实践
 
@@ -584,7 +584,7 @@ typedoc --out docs src
 
 ### 6.1 构建个人知识库
 
--
+- 知识库目录结构：
 
 ```mermaid
 flowchart TD
@@ -606,7 +606,7 @@ flowchart TD
     T9 --> T11
 ```
 
--
+- 知识库首页示例：
 
 ```markdown
 # 个人知识库
@@ -631,7 +631,7 @@ flowchart TD
 
 ### 6.2 构建项目文档
 
--
+- 初始化项目并启动文档开发服务器：
 
 ```bash
 # 初始化项目
@@ -655,46 +655,32 @@ npm run dev
 
 ### 7.1 图片路径问题
 
--
--
-
-*
-*
-*
-*
+- **现象**：图片在本地正常显示，部署后无法加载
+- **原因**：使用了不正确的相对路径，或资源未随站点发布
+- **解决**：使用相对当前文件的路径，并确认图片随构建产物一起部署
 
 ### 7.2 表格格式问题
 
--
--
-
-*
-*
-*
+- **现象**：表格没有按预期渲染
+- **原因**：表头分隔行缺少 `---`，或各行列数不一致
+- **解决**：表头分隔行使用 3 个以上短横线，并保证各行列数一致
 
 ### 7.3 数学公式渲染问题
 
--
--
-
-*
-*
-*
+- **现象**：公式显示为原始文本
+- **原因**：站点未启用数学公式渲染插件
+- **解决**：启用 KaTeX/MathJax 支持，并检查 `$` 与 `$$` 包裹是否正确
 
 ### 7.4 文档构建问题
 
--
--
-
-*
-*
-*
+- **现象**：构建失败或页面缺失
+- **原因**：语法错误、链接失效或依赖缺失
+- **解决**：使用 markdownlint 检查语法，用 markdown-link-check 校验链接
 
 ## 8. 延伸阅读
--
--
--
--
+
+- 本教程覆盖表格、代码块、脚注、任务列表、数学公式、目录与图片等高级语法
+- 自动化工具包括 Pandoc、VuePress、MkDocs、markdownlint 等
 - 通过本教程，你已经了解了 Markdown 的高级语法和文档自动化工具。在实际项目中，你可以使用这些技术来创建高质量的文档，提高工作效率，构建个人知识库或项目文档。
 ## 延伸阅读
 Markdown 基础语法，见 002-markdown 模块文档。

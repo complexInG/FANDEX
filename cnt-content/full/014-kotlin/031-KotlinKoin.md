@@ -1,20 +1,21 @@
 ---
-order: 70
+order: 310
 title: Kotlin与Koin
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: Koin依赖注入
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与Ktor
-  - kotlin/Kotlin与Exposed
-  - 'kotlin/Kotlin与ktor-client'
-  - kotlin/Kotlin与测试
+  - 'kotlin/029-KotlinKtor'
+  - 'kotlin/030-KotlinExposed'
+  - 'kotlin/032-KotlinKtorClient'
+  - 'kotlin/033-KotlinTest'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ## 概述
 

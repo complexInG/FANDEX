@@ -1,20 +1,21 @@
 ---
-order: 104
+order: 280
 title: 路由跳转与路由栈
-module: harmonyos
-category: 'dev-lang'
+module: 'harmonyos'
+category: 后端技术
 difficulty: advanced
 description: HarmonyOS路由跳转与路由栈详解：router.pushUrl、replaceUrl。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/ArkUI声明式语法
-  - harmonyos/组件生命周期详解
-  - harmonyos/权限申请
-  - harmonyos/分布式数据管理
+  - 'harmonyos/026-ArkUIDeclarativeSyntax'
+  - 'harmonyos/027-ComponentLifecycleDetailed'
+  - 'harmonyos/029-PermissionRequest'
+  - 'harmonyos/030-DistributedDataManagement'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 1. 概述与背景
 
 ### 1.1 路由的本质

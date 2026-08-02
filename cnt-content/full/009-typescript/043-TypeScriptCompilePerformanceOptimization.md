@@ -1,29 +1,23 @@
 ---
-order: 100
-title: 'TypeScript 编译与性能优化'
-module: typescript
-category: 'dev-lang'
+order: 430
+title: TypeScript 编译与性能优化
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
-description: 'TypeScript 编译流程、增量编译、类型检查优化与构建工具集成：编译器架构、性能模型、复杂度分析、tsconfig 调优、项目引用、CI/CD 策略与生产级性能优化。'
+description: TypeScript 编译流程、增量编译、类型检查优化与构建工具集成：编译器架构、性能模型、复杂度分析、tsconfig 调优、项目引用、CI/CD 策略与生产级性能优化。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/迁移实战
-  - typescript/条件类型与infer
-  - typescript/映射类型与键重映射
-  - typescript/模板字面量类型
-  - typescript/工程化配置
-  - typescript/tsconfig严格模式
+  - 'typescript/041-TypeScriptMigrationPractice'
+  - 'typescript/042-ConditionalTypeInfer'
+  - 'typescript/044-MappedTypeKeyRemap'
+  - 'typescript/045-TemplateLiteralType'
+  - 'typescript/039-TypeScriptEngineeringConfig'
+  - 'typescript/048-TsconfigStrictMode'
 prerequisites:
-  - typescript/语法速查
-  - typescript/泛型约束与默认值
-tags:
-  - typescript
-  - compilation
-  - performance
-  - incremental-build
-  - build-tools
+  - 'typescript/011-GenericConstraintDefault'
 ---
+
 
 
 # TypeScript 编译与性能优化

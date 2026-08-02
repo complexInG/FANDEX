@@ -1,18 +1,19 @@
 ---
-order: 23
+order: 90
 title: 矩阵的秩
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 从"有效信息量/有效维度"的直观意义讲矩阵的秩：子式定义与行阶梯形定义、行秩=列秩、秩的求法（初等变换法/子式法）、秩的重要性质与线性方程组解的关系。
+description: '从"有效信息量/有效维度"的直观意义讲矩阵的秩：子式定义与行阶梯形定义、行秩=列秩、秩的求法（初等变换法/子式法）、秩的重要性质与线性方程组解的关系。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/逆矩阵'
-  - 'linear-algebra/初等变换与初等矩阵'
-  - 'linear-algebra/分块矩阵'
+  - 'linear-algebra/008-InverseMatrix'
+  - 'linear-algebra/009-ElementaryTransformationAndMatrix'
+  - 'linear-algebra/011-ChunkingMatrix'
 prerequisites: []
 ---
+
 
 ## 0. 生活类比：信息量的度量 / 有效维度
 

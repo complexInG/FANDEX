@@ -1,9 +1,8 @@
 ---
 order: 490
 title: pg_dump 与 pg_restore 语法速查手册
-module: postgresql
-
-category: '021-postgresql'
+module: 'postgresql'
+category: 数据库
 difficulty: beginner
 description: pg_dump 与 pg_restore 语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## pg_dump 基本备份
 
 **基本写法：备份单个数据库**

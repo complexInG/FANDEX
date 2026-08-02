@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 280
 title: 委托与事件底层原理
-module: csharp
-category: 'dev-lang'
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'C#委托与事件底层原理详解：从ECMA-334类型系统到闭包与多播实现的完整指南。'
+description: C#委托与事件底层原理详解：从ECMA-334类型系统到闭包与多播实现的完整指南。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/LINQ延迟与立即执行
-  - 'csharp/async-await状态机'
-  - csharp/反射与特性应用
-  - 'csharp/Entity-Framework-Core迁移与优化'
+  - 'csharp/026-LINQDeferredImmediate'
+  - 'csharp/027-AsyncAwaitStateMachine'
+  - 'csharp/029-ReflectionAndFeatureApplication'
+  - 'csharp/030-EFCoreMigrationOptimization'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 C# 1.0（2002）：委托的诞生

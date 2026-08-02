@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 130
 title: 云安全
-module: cybersecurity
-category: 网络安全
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: advanced
 description: 云安全：共享责任模型、CSPM、CWPP、云原生安全与合规
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/SSRF攻击
-  - cybersecurity/恶意代码分析
-  - cybersecurity/对称加密
-  - cybersecurity/应急响应
+  - 'cybersecurity/011-SSRFAttack'
+  - 'cybersecurity/012-MalwareAnalysis'
+  - 'cybersecurity/014-SymmetricEncryption'
+  - 'cybersecurity/015-IncidentResponse'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. 共享责任模型
 

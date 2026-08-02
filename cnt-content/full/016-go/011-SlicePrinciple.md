@@ -1,20 +1,21 @@
 ---
-order: 50
+order: 110
 title: 切片原理
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'Go 切片底层实现、SliceHeader 结构、扩容算法、内存布局、GC 交互与工程级最佳实践'
+description: Go 切片底层实现、SliceHeader 结构、扩容算法、内存布局、GC 交互与工程级最佳实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/标准库与工具链
-  - go/Web开发与微服务
-  - go/Map原理
-  - go/Channel原理
+  - 'go/009-GoStandardLibraryToolchain'
+  - 'go/010-GoWebDevelopmentMicroservice'
+  - 'go/012-MapPrinciple'
+  - 'go/014-ChannelPrinciple'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 # Go 切片原理：从 SliceHeader 到扩容算法的深度剖析

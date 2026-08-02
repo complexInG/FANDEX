@@ -1,25 +1,26 @@
 ---
-order: 106
+order: 560
 title: 泛型详解
-module: go
-category: 'dev-lang'
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'Go 1.18+泛型：类型参数、约束、类型推断、GC shape stenciling实现、泛型算法与生产级实践'
+description: Go 1.18+泛型：类型参数、约束、类型推断、GC shape stenciling实现、泛型算法与生产级实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/内存逃逸分析
-  - go/垃圾回收与GC调优
-  - go/单元测试与基准测试
-  - go/竞态检测与原子操作
-  - go/接口与类型断言
-  - go/错误处理进阶
+  - 'go/054-MemoryEscapeAnalysis'
+  - 'go/055-GCAndTuning'
+  - 'go/057-UnitTestBenchmark'
+  - 'go/058-RaceDetectionAtomic'
+  - 'go/019-InterfaceTypeAssertion'
+  - 'go/020-ErrorHandlingAdvanced'
 prerequisites:
-  - go/概述与环境配置
-  - go/接口与类型断言
-  - go/切片原理
-  - go/Map原理
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/019-InterfaceTypeAssertion'
+  - 'go/011-SlicePrinciple'
+  - 'go/012-MapPrinciple'
 ---
+
 
 
 # 泛型详解：类型参数、约束与 GC Shape Stenciling 实现

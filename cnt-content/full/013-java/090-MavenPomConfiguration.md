@@ -1,9 +1,8 @@
 ---
 order: 900
 title: Maven pom.xml 配置语法速查手册
-module: java
-
-category: '013-java'
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: Maven pom.xml 配置语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 项目坐标
 
 **基本写法：定义项目坐标**

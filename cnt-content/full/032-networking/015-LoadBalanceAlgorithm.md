@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 150
 title: 负载均衡算法
-module: networking
-category: 'eng-infra'
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
 description: 负载均衡算法：轮询、加权轮询、最少连接、一致性哈希与一致性哈希虚拟节点。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/负载均衡技术
-  - networking/网络自动化
-  - networking/高可用LVS
-  - networking/Keepalived双机热备
+  - 'networking/013-LoadBalanceTech'
+  - 'networking/014-NetworkAutomation'
+  - 'networking/016-HighAvailabilityLVS'
+  - 'networking/017-KeepalivedDualHotStandby'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. 静态算法
 

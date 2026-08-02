@@ -1,22 +1,23 @@
 ---
-order: 55
+order: 170
 title: Flow与响应式流
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'Kotlin Flow与Channel及响应式流规范深度剖析'
+description: Kotlin Flow与Channel及响应式流规范深度剖析
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/委托属性
-  - kotlin/协程基础
-  - kotlin/Kotlin与Spring
-  - kotlin/Kotlin与Android
-  - kotlin/Flow冷流与SharedFlow和StateFlow
+  - 'kotlin/014-DelegateProperty'
+  - 'kotlin/016-CoroutineBasics'
+  - 'kotlin/025-KotlinSpring'
+  - 'kotlin/024-KotlinAndroid'
+  - 'kotlin/045-FlowColdSharedState'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/协程基础
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/016-CoroutineBasics'
 ---
+
 
 
 ## 历史动机与背景

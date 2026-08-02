@@ -1,20 +1,18 @@
 ---
-order: 58
+order: 130
 title: API自动化测试
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: 'API自动化测试：RESTful API测试、工具选型、断言策略与框架设计详解。'
+description: API自动化测试：RESTful API测试、工具选型、断言策略与框架设计详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/Python测试框架'
-  - 'software-testing/Java单元测试'
-  - 'software-testing/性能测试工具'
-  - 'software-testing/白盒测试覆盖度'
+  - 'software-testing/015-WhiteBoxTestCoverage'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 ## 1. API 测试概述
 
 ### 1.1 什么是 API 测试

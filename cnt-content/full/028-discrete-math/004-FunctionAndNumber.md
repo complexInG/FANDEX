@@ -1,20 +1,21 @@
 ---
-order: 4
+order: 40
 title: 函数与基数
 module: 'discrete-math'
-category: 离散数学
+category: 数学
 difficulty: intermediate
 description: 函数定义与性质、单射/满射/双射、复合与逆函数、可数集与不可数集、Cantor定理、基数比较。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'discrete-math/谓词逻辑'
-  - 'discrete-math/集合与关系'
-  - 'discrete-math/图论基础'
-  - 'discrete-math/图论进阶'
+  - 'discrete-math/002-PredicateLogic'
+  - 'discrete-math/003-SetAndRelation'
+  - 'discrete-math/005-GraphTheoryBasics'
+  - 'discrete-math/006-GraphTheoryAdvanced'
 prerequisites:
-  - 'discrete-math/集合与关系'
+  - 'discrete-math/003-SetAndRelation'
 ---
+
 
 ## 1. 从"自动售货机"说起
 

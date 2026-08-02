@@ -1,20 +1,21 @@
 ---
-order: 63
-title: 'Lua与World of Warcraft'
-module: lua
-category: Lua
+order: 200
+title: Lua与World of Warcraft
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
 description: WoW插件开发
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - lua/Lua错误处理
-  - lua/Lua迭代器
-  - lua/Lua性能优化
-  - lua/Lua调试技巧
+  - 'lua/018-LuaErrorHandling'
+  - 'lua/019-LuaIterator'
+  - 'lua/021-LuaPerformance'
+  - 'lua/022-LuaDebug'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 
 ## 概述
 

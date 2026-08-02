@@ -1,19 +1,20 @@
 ---
-order: 62
+order: 270
 title: 三大分布
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: advanced
 description: χ²分布、t分布、F分布的定义、性质及其在统计推断中的核心地位，以分布图谱串联三者关系。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/随机样本'
-  - 'probability-statistics/统计量'
-  - 'probability-statistics/正态总体的抽样分布'
+  - 'probability-statistics/030-RandomSample'
+  - 'probability-statistics/031-Statistic'
+  - 'probability-statistics/033-NormalPopulationSamplingDistribution'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 三种常见的"统计分布工具"
 

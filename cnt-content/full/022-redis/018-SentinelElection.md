@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 180
 title: 哨兵选举
-module: redis
-category: database
+module: 'redis'
+category: 数据库
 difficulty: advanced
-description: 'Redis Sentinel 哨兵选举机制：主观下线、客观下线、Leader 选举与 Raft 算法、故障转移流程。'
+description: Redis Sentinel 哨兵选举机制：主观下线、客观下线、Leader 选举与 Raft 算法、故障转移流程。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/跳表与有序集合
-  - redis/主从复制缓冲区
-  - 'redis/Redis-Cluster哈希槽'
-  - redis/管道与事务原子性
+  - 'redis/016-SkipListAndSortedSet'
+  - 'redis/017-ReplicationBuffer'
+  - 'redis/019-RedisClusterHashSlot'
+  - 'redis/020-PipeTransactionAtomic'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 ## 1. Sentinel 架构
 
 ### 1.1 Sentinel 集群

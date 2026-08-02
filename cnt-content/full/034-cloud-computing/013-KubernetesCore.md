@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 130
 title: Kubernetes核心资源
 module: 'cloud-computing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: 'Kubernetes核心资源：Pod、Service、Deployment、StatefulSet、ConfigMap 等详解。'
+description: Kubernetes核心资源：Pod、Service、Deployment、StatefulSet、ConfigMap 等详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/Kubernetes架构'
-  - 'cloud-computing/云数据库服务'
-  - 'cloud-computing/云存储服务'
-  - 'cloud-computing/Kubernetes网络'
+  - 'cloud-computing/011-KubernetesArchitecture'
+  - 'cloud-computing/012-CloudDatabaseService'
+  - 'cloud-computing/014-CloudStorageService'
+  - 'cloud-computing/015-KubernetesNetwork'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. Pod
 

@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 180
 title: 网络命名空间与虚拟网桥
-module: networking
-category: 'eng-infra'
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
-description: 'Linux 网络命名空间（netns）与虚拟网桥（bridge）：容器网络基础。'
+description: Linux 网络命名空间（netns）与虚拟网桥（bridge）：容器网络基础。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/高可用LVS
-  - networking/Keepalived双机热备
-  - networking/隧道技术
-  - networking/网络故障排查工具
+  - 'networking/016-HighAvailabilityLVS'
+  - 'networking/017-KeepalivedDualHotStandby'
+  - 'networking/019-Tunneling'
+  - 'networking/020-NetworkTroubleshootTools'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 ## 1. 网络命名空间
 
 ### 1.1 netns 原理

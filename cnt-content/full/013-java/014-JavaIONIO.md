@@ -1,31 +1,23 @@
 ---
-order: 59
+order: 140
 title: JavaIO与NIO
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: BIO、NIO、AIO、零拷贝、Reactor模式与字节码层面原理
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/Java反射
-  - java/Java序列化
-  - java/Java新特性
-  - java/运算符与表达式
+  - 'java/012-JavaReflection'
+  - 'java/013-JavaSerialization'
+  - 'java/015-JavaNewFeatures'
+  - 'java/016-OperatorExpression'
 prerequisites:
-  - java/数据类型与类型转换
-  - java/异常处理机制
-  - java/集合框架详解
-tags:
-  - Java
-  - IO
-  - NIO
-  - AIO
-  - 零拷贝
-  - Reactor
-  - epoll
-  - 字符编码
+  - 'java/004-DataTypeConversion'
+  - 'java/058-ExceptionHandlingMechanism'
+  - 'java/049-CollectionFrameworkDetailed'
 ---
+
 
 
 # Java IO 与 NIO 详解

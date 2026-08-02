@@ -1,20 +1,21 @@
 ---
-order: 57
+order: 130
 title: 分布式系统
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 分布式系统：CAP定理、一致性模型、共识算法、分布式事务与容错机制
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/总线与接口'
-  - 'cs-fundamentals/并行计算'
-  - 'cs-fundamentals/算法设计与分析'
-  - 'cs-fundamentals/形式语言与自动机'
+  - 'cs-fundamentals/011-BusAndInterface'
+  - 'cs-fundamentals/012-ParallelCalculate'
+  - 'cs-fundamentals/014-AlgorithmDesignAnalysis'
+  - 'cs-fundamentals/015-FormalLanguageAndAutomata'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 分布式系统基础
 

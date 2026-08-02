@@ -1,29 +1,24 @@
 ---
-order: 72
+order: 290
 title: Java与消息队列
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Kafka与RabbitMQ集成
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/控制流
-  - java/Java与微服务
-  - java/Java与Redis
-  - java/Java与Docker
-  - java/并发编程基础
+  - 'java/027-ControlFlow'
+  - 'java/028-JavaMicroservice'
+  - 'java/030-JavaRedis'
+  - 'java/031-JavaDocker'
+  - 'java/008-ConcurrencyBasics'
 prerequisites:
-  - java/概述与开发环境
-  - java/并发编程基础
-  - java/Java网络编程
-tags:
-  - java
-  - mq
-  - kafka
-  - rabbitmq
-  - messaging
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/008-ConcurrencyBasics'
+  - 'java/023-JavaNetworkProgramming'
 ---
+
 
 
 # Java 与消息队列

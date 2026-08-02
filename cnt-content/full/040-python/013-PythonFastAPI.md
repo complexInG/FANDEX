@@ -1,20 +1,20 @@
 ---
-order: 56
+order: 130
 title: Python与FastAPI
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: FastAPI框架
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与Docker
-  - python/Python与OAuth2
-  - python/Python与Redis
-  - python/Python与Celery
-prerequisites:
-  - python/语法速查
+  - 'python/019-PythonDocker'
+  - 'python/047-PythonOAuth2'
+  - 'python/016-PythonRedis'
+  - 'python/017-PythonCeleryDistributedTaskQueue'
+prerequisites: []
 ---
+
 
 ## 什么是 FastAPI
 

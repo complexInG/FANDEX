@@ -1,20 +1,21 @@
 ---
-order: 105
+order: 290
 title: 权限申请
-module: harmonyos
-category: 'dev-lang'
+module: 'harmonyos'
+category: 后端技术
 difficulty: advanced
 description: HarmonyOS权限申请详解：requestPermissionsFromUser。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/组件生命周期详解
-  - harmonyos/路由跳转与路由栈
-  - harmonyos/分布式数据管理
-  - harmonyos/跨设备调用
+  - 'harmonyos/027-ComponentLifecycleDetailed'
+  - 'harmonyos/028-RouteJumpStack'
+  - 'harmonyos/030-DistributedDataManagement'
+  - 'harmonyos/031-CrossDeviceCall'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 
 
 # 权限申请：HarmonyOS 访问控制模型与运行时权限工程实践

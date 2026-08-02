@@ -1,20 +1,21 @@
 ---
-order: 119
+order: 520
 title: 词法分析
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: '编译器词法分析：正则表达式、NFA、DFA 与 Token 识别。'
+description: 编译器词法分析：正则表达式、NFA、DFA 与 Token 识别。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/ARP协议与ARP欺骗'
-  - 'cs-fundamentals/BGP路由协议'
-  - 'cs-fundamentals/语法分析'
-  - 'cs-fundamentals/语义分析'
+  - 'cs-fundamentals/050-ARPARP'
+  - 'cs-fundamentals/051-BGPRoute'
+  - 'cs-fundamentals/053-GrammarAnalysis'
+  - 'cs-fundamentals/054-SemanticAnalysis'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 词法分析概述
 

@@ -1,19 +1,19 @@
 ---
-order: 4
+order: 40
 title: 高级SQL与扩展
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: 窗口函数、CTE与递归CTE、横向连接、分组集、MERGE语句、JSON_TABLE、全文检索、PostGIS、PL/pgSQL、触发器、FDW。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/事务与并发控制
-  - postgresql/索引与查询优化
-  - postgresql/复制与高可用
-  - postgresql/语法速查
+  - 'postgresql/002-TransactionConcurrencyControl'
+  - 'postgresql/003-IndexQueryOptimization'
+  - 'postgresql/005-ReplicationHA'
 prerequisites: []
 ---
+
 
 ## 1. 窗口函数
 

@@ -1,9 +1,8 @@
 ---
 order: 840
 title: mysqladmin 管理命令 语法速查手册
-module: mysql
-
-category: '020-mysql'
+module: 'mysql'
+category: 数据库
 difficulty: beginner
 description: mysqladmin 管理命令 语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 服务状态检查
 
 **基本写法：检查服务器存活**

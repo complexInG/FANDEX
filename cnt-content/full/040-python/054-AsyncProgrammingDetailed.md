@@ -1,20 +1,20 @@
 ---
-order: 104
+order: 540
 title: 异步编程详解
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: Python异步编程详解：asyncio事件循环、Task、Future。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - python/上下文管理器
-  - python/元类与单例模式
-  - python/类型注解与mypy
-  - python/数据类与字段默认值
-prerequisites:
-  - python/语法速查
+  - 'python/052-ContextManager'
+  - 'python/053-MetaclassSingleton'
+  - 'python/060-TypeAnnotationMypy'
+  - 'python/058-DataClassFieldDefault'
+prerequisites: []
 ---
+
 
 
 ## 1. 历史动机与发展脉络

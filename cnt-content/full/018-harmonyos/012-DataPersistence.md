@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 120
 title: 数据持久化
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: Preferences与关系型数据库
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/导航与路由
-  - harmonyos/网络请求
-  - harmonyos/动画系统
-  - harmonyos/手势与交互
+  - 'harmonyos/010-NavigationRoute'
+  - 'harmonyos/011-NetworkRequest'
+  - 'harmonyos/013-AnimationSystem'
+  - 'harmonyos/014-GestureInteraction'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 概述
 
 数据持久化是应用开发中的核心能力之一，用于将数据保存到设备存储中，确保应用重启后数据依然可用。HarmonyOS 提供了三种主要的数据持久化方案：Preferences（轻量级键值存储）、关系型数据库（基于 SQLite 的 RDB）和分布式数据服务。Preferences 适合存储少量配置信息，关系型数据库适合结构化数据的增删改查，分布式数据服务则用于多设备间的数据同步。

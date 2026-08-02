@@ -1,22 +1,22 @@
 ---
-order: 54
+order: 100
 title: 字符串模式匹配
-module: lua
-category: Lua
+module: 'lua'
+category: 后端技术
 difficulty: intermediate
-description: 'Lua 模式匹配的形式化定义、NFA 理论、API 语义、性能特性、ReDoS 防御与工程实践'
+description: Lua 模式匹配的形式化定义、NFA 理论、API 语义、性能特性、ReDoS 防御与工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - lua/协程详解
-  - lua/环境与模块
-  - lua/Lua与C交互
-  - lua/Lua即时编译器
-  - lua/标准库详解
+  - 'lua/008-CoroutineDetailed'
+  - 'lua/009-EnvironmentModule'
+  - 'lua/011-LuaC'
+  - 'lua/024-StandardLibraryDetailed'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/标准库详解
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/024-StandardLibraryDetailed'
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 Lua 模式匹配的诞生背景

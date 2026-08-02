@@ -1,9 +1,8 @@
 ---
 order: 480
 title: PostgreSQL psql CLI 命令
-module: postgresql
-
-category: '021-postgresql'
+module: 'postgresql'
+category: 数据库
 difficulty: beginner
 description: PostgreSQL psql CLI 命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 连接登录
 
 **单行写法：本地连接**

@@ -1,18 +1,19 @@
 ---
-order: 2
-title: 'C# 基础语法'
-module: csharp
-category: 'C#'
+order: 20
+title: C# 基础语法
+module: 'csharp'
+category: 后端技术
 difficulty: beginner
-description: '变量与类型、值类型与引用类型、字符串插值、模式匹配、控制流、nullable 引用类型、顶级语句'
+description: 变量与类型、值类型与引用类型、字符串插值、模式匹配、控制流、nullable 引用类型、顶级语句
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - csharp/概述与环境配置
-  - csharp/面向对象编程
-  - csharp/泛型与集合
+  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/003-COOP'
+  - 'csharp/004-CGenericCollection'
 prerequisites: []
 ---
+
 
 # C# 基础语法
 

@@ -1,20 +1,19 @@
 ---
-order: 57
-title: 'git-reflog'
-module: git
-category: 'Git Basics'
+order: 130
+title: git-reflog
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git reflog详解：引用日志的工作原理、恢复误操作与安全网机制。'
+description: git reflog详解：引用日志的工作原理、恢复误操作与安全网机制。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'git/git-restore与文件操作'
-  - 'git/git-log详解'
-  - git/代码追溯
-  - git/HEAD指针与分支本质
-prerequisites:
-  - git/语法速查
+  - 'git/011-GitRestoreFileOperation'
+  - 'git/012-GitLogDetailed'
+  - 'git/015-HEADPointerBranchEssence'
+prerequisites: []
 ---
+
 ## 1. reflog 概述
 
 ### 1.1 什么是 reflog

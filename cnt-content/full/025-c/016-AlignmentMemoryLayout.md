@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 160
 title: 对齐与内存布局
-module: c
-category: 'dev-lang'
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
-description: 'C语言内存对齐与结构体布局：alignof/alignas、填充规则、packed、缓存行对齐、AoS/SoA、伪共享与对齐分配器。'
+description: C语言内存对齐与结构体布局：alignof/alignas、填充规则、packed、缓存行对齐、AoS/SoA、伪共享与对齐分配器。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - c/泛型选择
-  - c/线程与并发
-  - c/控制流
-  - c/属性与编译器扩展
+  - 'c/014-GenericSelection'
+  - 'c/022-ThreadConcurrency'
+  - 'c/017-ControlFlow'
+  - 'c/018-AttributeCompilerExtension'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 
 # 对齐与内存布局（Alignment and Memory Layout）

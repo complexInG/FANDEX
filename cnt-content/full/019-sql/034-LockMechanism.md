@@ -1,20 +1,20 @@
 ---
-order: 73
+order: 340
 title: 锁机制
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
 description: SQL锁机制：共享锁、排他锁、意向锁、间隙锁、临键锁的原理、兼容性与死锁预防
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/隔离级别
-  - sql/脏读不可重复读幻读
-  - sql/多版本并发控制
-  - sql/窗口函数框架
+  - 'sql/032-IsolationLevel'
+  - 'sql/033-DirtyReadNonRepeatablePhantom'
+  - 'sql/036-WindowFunctionFramework'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 锁概述
 
 锁是数据库实现事务隔离的核心机制，通过限制并发访问来保证数据一致性。

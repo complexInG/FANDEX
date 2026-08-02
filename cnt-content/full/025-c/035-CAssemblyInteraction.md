@@ -1,20 +1,21 @@
 ---
-order: 75
+order: 350
 title: C与汇编交互
-module: c
-category: 'dev-lang'
+module: 'c'
+category: 计算机科学
 difficulty: advanced
-description: 'C语言与汇编交互：GCC/Clang内联汇编、操作数约束、内存屏障、原子操作、SIMD加速、外部汇编与跨架构支持。'
+description: C语言与汇编交互：GCC/Clang内联汇编、操作数约束、内存屏障、原子操作、SIMD加速、外部汇编与跨架构支持。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - c/跨平台编程
-  - c/嵌入式C编程
-  - c/数组详解
-  - c/预处理器与宏
+  - 'c/033-CrossPlatformProgramming'
+  - 'c/034-EmbeddedCProgramming'
+  - 'c/036-ArrayDetailed'
+  - 'c/037-PreprocessorMacro'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 
 # C 与汇编交互（C and Assembly Interaction）

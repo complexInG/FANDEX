@@ -1,20 +1,21 @@
 ---
-order: 102
+order: 260
 title: ArkUI声明式语法
-module: harmonyos
-category: 'dev-lang'
+module: 'harmonyos'
+category: 后端技术
 difficulty: advanced
-description: 'HarmonyOS ArkUI声明式语法详解:@Component、@Entry、@State、@Prop、@Link。'
+description: HarmonyOS ArkUI声明式语法详解:@Component、@Entry、@State、@Prop、@Link。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - harmonyos/Stage模型与FA模型区别
-  - harmonyos/ArkTS与TypeScript差异
-  - harmonyos/组件生命周期详解
-  - harmonyos/路由跳转与路由栈
+  - 'harmonyos/024-StageFAModelDifference'
+  - 'harmonyos/025-ArkTSTypeScriptDifference'
+  - 'harmonyos/027-ComponentLifecycleDetailed'
+  - 'harmonyos/028-RouteJumpStack'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 1. 概述与背景
 
 ### 1.1 声明式 UI 的演进历史

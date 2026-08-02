@@ -1,23 +1,21 @@
 ---
-order: 120
-tags:
-  - cpp
-  - performance
+order: 640
+title: C++ 异常处理与性能优化
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-title: 'C++ 异常处理与性能优化'
-module: cpp
-category: 'C++ Basics'
 description: 异常机制、错误处理策略、性能分析与优化技巧。
 author: Anonymous
-related:
-  - cpp/模板
-  - cpp/内存序与无锁编程
-  - cpp/调试与性能分析
-  - cpp/项目实战
-prerequisites:
-  - cpp/概述与现代标准
 updated: '2026-08-01'
+related:
+  - 'cpp/062-CppTemplate'
+  - 'cpp/063-MemoryOrderLockFree'
+  - 'cpp/065-CDebugPerformanceAnalysis'
+  - 'cpp/066-CppProjectPractice'
+prerequisites:
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 ## 1. 异常处理 (Exceptions)
 

@@ -1,22 +1,21 @@
 ---
-order: 50
-tags:
-  - github
-difficulty: intermediate
+order: 70
 title: 分支模型与分支保护规则
-module: github
-category: 'GitHub Basics'
+module: 'github'
+category: 工具链
+difficulty: intermediate
 description: 分支模型设计（GitHub Flow / Git Flow）、保护规则配置与强制策略。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/协作开发规范
-  - github/README文件
-  - github/Gitignore配置
-  - github/开源许可证选择
+  - 'github/005-CollaborationDevelopmentStandard'
+  - 'github/006-READMEFile'
+  - 'github/008-GitignoreConfig'
+  - 'github/009-OpenSourceLicense'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一个生活场景说起：主干道与支路
 

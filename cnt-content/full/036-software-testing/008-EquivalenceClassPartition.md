@@ -1,20 +1,20 @@
 ---
-order: 53
+order: 80
 title: 等价类划分
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: 等价类划分法：测试用例设计方法、有效/无效等价类、边界值结合应用详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/测试层级'
-  - 'software-testing/测试类型'
-  - 'software-testing/边界值分析'
-  - 'software-testing/Web自动化测试'
+  - 'software-testing/006-TestLevels'
+  - 'software-testing/007-TestType'
+  - 'software-testing/009-BoundaryValueAnalysis'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 
 ## 1. 等价类划分原理
 

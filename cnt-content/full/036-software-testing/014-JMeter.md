@@ -1,20 +1,20 @@
 ---
-order: 59
+order: 140
 title: JMeter
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
 description: JMeter性能测试工具：测试计划、线程组、采样器、监听器与分布式测试详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/Java单元测试'
-  - 'software-testing/API自动化测试'
-  - 'software-testing/白盒测试覆盖度'
-  - 'software-testing/自动化测试框架对比'
+  - 'software-testing/013-APIAutomationTest'
+  - 'software-testing/015-WhiteBoxTestCoverage'
+  - 'software-testing/016-AutomationTestFrameworkComparison'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 
 ## 1. JMeter 概述
 

@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 90
 title: 指令流水线
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 指令流水线深度：超标量、超流水线、乱序执行、VLIW与流水线优化技术
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/计算机组成原理'
-  - 'cs-fundamentals/数据表示与运算'
-  - 'cs-fundamentals/存储系统'
-  - 'cs-fundamentals/总线与接口'
+  - 'cs-fundamentals/007-ComputerPrinciple'
+  - 'cs-fundamentals/008-DataRepresentationOperation'
+  - 'cs-fundamentals/010-StorageSystem'
+  - 'cs-fundamentals/011-BusAndInterface'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 流水线基本原理
 

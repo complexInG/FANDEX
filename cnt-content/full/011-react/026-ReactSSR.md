@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 260
 title: React服务端渲染
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
-description: 'Next.js SSR/SSG/ISR'
+description: Next.js SSR/SSG/ISR
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React国际化
-  - react/React动画
-  - react/React设计模式
-  - react/React与WebAssembly
+  - 'react/024-ReactI18n'
+  - 'react/025-ReactAnimation'
+  - 'react/027-ReactDesignPattern'
+  - 'react/028-ReactWebAssembly'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 Next.js SSR/SSG/ISR。本文将从基础概念、快速上手、详细用法、常见场景、注意事项和进阶用法六个方面全面介绍React服务端渲染。

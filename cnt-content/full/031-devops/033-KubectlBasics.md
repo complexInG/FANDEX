@@ -1,9 +1,8 @@
 ---
 order: 330
 title: DevOps kubectl 基础命令
-module: devops
-
-category: '031-devops'
+module: 'devops'
+category: 云与基础设施
 difficulty: beginner
 description: DevOps kubectl 基础命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## kubectl get 查看资源
 
 **基本写法：查看指定类型资源**

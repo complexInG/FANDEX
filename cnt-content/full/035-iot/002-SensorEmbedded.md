@@ -1,18 +1,19 @@
 ---
-order: 2
+order: 20
 title: 传感器与嵌入式
-module: iot
-category: 物联网
+module: 'iot'
+category: 云与基础设施
 difficulty: intermediate
-description: '传感器类型与原理、嵌入式开发、GPIO/I2C/SPI/UART、RTOS 与低功耗设计。'
+description: 传感器类型与原理、嵌入式开发、GPIO/I2C/SPI/UART、RTOS 与低功耗设计。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/概述与架构
-  - iot/通信协议
-  - iot/边缘计算
+  - 'iot/001-OverviewArchitecture'
+  - 'iot/003-CommunicationProtocol'
+  - 'iot/004-EdgeComputing'
 prerequisites: []
 ---
+
 ## 1. 传感器类型与原理
 
 ### 1.1 传感器分类

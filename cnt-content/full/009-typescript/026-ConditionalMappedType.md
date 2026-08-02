@@ -1,26 +1,22 @@
 ---
-order: 70
-tags:
-  - typescript
-  - 'conditional-types'
-  - 'mapped-types'
-difficulty: advanced
+order: 260
 title: 条件类型与映射类型
-module: typescript
-category: 'TS Advanced'
+module: 'typescript'
+category: 前端技术
+difficulty: advanced
 description: TypeScript条件类型、infer关键字、映射类型、模板字面量类型与类型体操实战，含形式化定义、推导与工程实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/类型推断infer扩展
-  - typescript/递归类型与深度操作
-  - typescript/类型声明与模块解析
-  - typescript/类型安全的事件系统
-  - typescript/映射类型进阶
+  - 'typescript/024-ECMAScript2024LanguageSpecification'
+  - 'typescript/025-RecursiveTypeDeepOperation'
+  - 'typescript/027-TypeScriptTypeDeclarationModuleResolution'
+  - 'typescript/028-PurelyFunctionalDataStructures'
+  - 'typescript/010-MappedTypeAdvanced'
 prerequisites:
-  - typescript/语法速查
-  - typescript/接口与类型别名
+  - 'typescript/003-InterfaceTypeAlias'
 ---
+
 
 
 # 条件类型与映射类型

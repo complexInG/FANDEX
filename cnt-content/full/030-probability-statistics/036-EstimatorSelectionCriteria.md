@@ -1,19 +1,20 @@
 ---
-order: 71
+order: 300
 title: 估计量的评选标准
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 无偏性、有效性、一致性（相合性）的定义与判定，从"评委打分"类比理解估计量优劣评价体系。
+description: '无偏性、有效性、一致性（相合性）的定义与判定，从"评委打分"类比理解估计量优劣评价体系。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/点估计'
-  - 'probability-statistics/区间估计'
-  - 'probability-statistics/正态总体参数的区间估计'
+  - 'probability-statistics/035-PointEstimation'
+  - 'probability-statistics/037-IntervalEstimation'
+  - 'probability-statistics/038-NormalPopulationParameterIntervalEstimation'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 评委打分，选谁当"最佳估计"？
 

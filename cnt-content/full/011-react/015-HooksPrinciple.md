@@ -1,20 +1,20 @@
 ---
-order: 54
+order: 150
 title: Hooks原理
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: advanced
-description: 'React Hooks底层实现原理'
+description: React Hooks底层实现原理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/Concurrent模式
-  - react/服务端组件
-  - react/自定义Hooks设计模式
-  - react/状态管理方案对比
+  - 'react/013-ConcurrentMode'
+  - 'react/016-CustomHooksDesignPattern'
+  - 'react/017-StateManagementSolutionComparison'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 React Hooks 的底层实现基于 Fiber 架构。每个函数组件对应的 Fiber 节点上挂载了一个 Hooks 链表，Hooks 按调用顺序以链表形式串联。理解 Hooks 的底层原理有助于避免常见的使用错误（如条件调用 Hooks），也能帮助开发者编写更高效的自定义 Hooks。

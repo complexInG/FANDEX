@@ -1,23 +1,23 @@
 ---
-order: 4
-title: 'C# 泛型与集合'
-module: csharp
-category: 'C#'
+order: 40
+title: C# 泛型与集合
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
-description: '泛型类型系统、约束、协变逆变、List/Dictionary/HashSet/Queue/Stack/PriorityQueue、不可变集合、Frozen 集合、迭代器(yield)、LINQ to Objects、性能模型与生产实践'
+description: 泛型类型系统、约束、协变逆变、List/Dictionary/HashSet/Queue/Stack/PriorityQueue、不可变集合、Frozen 集合、迭代器(yield)、LINQ to Objects、性能模型与生产实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - csharp/基础语法
-  - csharp/面向对象编程
-  - csharp/异步编程
-  - csharp/LINQ与函数式编程
-  - csharp/CSharp与EF Core
+  - 'csharp/002-CBasicSyntax'
+  - 'csharp/003-COOP'
+  - 'csharp/005-CAsyncProgramming'
+  - 'csharp/006-CLINQFunctionalProgramming'
 prerequisites:
-  - csharp/概述与环境配置
-  - csharp/基础语法
-  - csharp/面向对象编程
+  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/002-CBasicSyntax'
+  - 'csharp/003-COOP'
 ---
+
 ## 历史动机与背景
 
 ### 泛型的诞生：类型安全的复用

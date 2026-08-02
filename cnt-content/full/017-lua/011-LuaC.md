@@ -1,22 +1,22 @@
 ---
-order: 55
+order: 110
 title: Lua 与 C 交互
-module: lua
-category: Lua
+module: 'lua'
+category: 后端技术
 difficulty: advanced
-description: 'Lua C API 设计哲学、栈模型、userdata 生命周期、元表绑定、Continuation、引用机制与跨语言性能优化工程实践'
+description: Lua C API 设计哲学、栈模型、userdata 生命周期、元表绑定、Continuation、引用机制与跨语言性能优化工程实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - lua/环境与模块
-  - lua/字符串模式匹配
-  - lua/Lua即时编译器
-  - lua/标准库详解
-  - lua/概述与环境配置
+  - 'lua/009-EnvironmentModule'
+  - 'lua/010-StringPatternMatching'
+  - 'lua/024-StandardLibraryDetailed'
+  - 'lua/001-LuaOverviewEnvSetup'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/标准库详解
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/024-StandardLibraryDetailed'
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 嵌入式设计目标的诞生

@@ -1,20 +1,21 @@
 ---
 order: 50
 title: MyISAM存储引擎
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-description: 'MySQL MyISAM存储引擎：非事务表级锁、静态/动态行格式、全文索引、修复与适用场景'
+description: MySQL MyISAM存储引擎：非事务表级锁、静态/动态行格式、全文索引、修复与适用场景
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/数据类型与约束
-  - mysql/SQL数据定义与高级对象
-  - mysql/SQL数据操作与查询
-  - mysql/Memory存储引擎
+  - 'mysql/003-MySQLDataTypeConstraint'
+  - 'mysql/004-SQLDataDefinitionAdvanced'
+  - 'mysql/006-SQLDataOperationQuery'
+  - 'mysql/007-MemoryStorageEngine'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. MyISAM 概述
 
 MyISAM 是 MySQL 最早的默认存储引擎（5.5 之前），以简单高效著称，但不支持事务和行级锁。

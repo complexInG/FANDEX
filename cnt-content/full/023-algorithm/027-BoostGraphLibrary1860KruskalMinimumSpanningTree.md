@@ -1,245 +1,28 @@
 ---
-order: 108
+order: 270
 title: Kruskal 算法
-module: algorithm
-category: Algorithm/MinimumSpanningTree
+module: 'algorithm'
+category: 计算机科学
 difficulty: intermediate
 description: Kruskal 最小生成树算法：Joseph B. Kruskal 1956《On the Shortest Spanning Subtree of a Graph》Proceedings of the American Mathematical Society 7(1):48-50 DOI:10.1090/S0002-9939-1956-0078686-7 提出的贪心加边算法，与 Prim 1957、Jarník 1930、Borůvka 1926 共同构成 MST 算法家族。算法以 $O(E \log E)$ 时间、$O(V)$ 空间求解连通无向加权图的最小生成树，借助并查集（Tarjan 1975 路径压缩+按秩合并）实现高效的环检测。本文涵盖贪心选择性质证明、切割性质与回路性质、与 Prim/Borůvka 算法的对比、最小生成森林/次小生成树/TSP 2-近似应用、NetworkX 与 Boost Graph Library 工业级实现，附 Python/C++/Java 多语言实现。
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-graph
-- algorithm-minimum-spanning-tree
-- algorithm-greedy
-- algorithm-union-find
-- algorithm-disjoint-set
-- algorithm-mst
-- algorithm-kruskal
-- algorithm-prim
-- algorithm-boruvka
-- algorithm-jarnik
-created: 2026-05-27
-updated: 2026-07-20
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 95
+updated: '2026-07-20'
 related:
-- algorithm/算法分析基础与学习路线
-- algorithm/图算法
-- algorithm/贪心算法
-- algorithm/并查集
-- algorithm/堆与优先队列
-- algorithm/Floyd-Warshall算法
-- algorithm/拓扑排序
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
+  - 'algorithm/010-GreedyAlgorithm'
+  - 'algorithm/019-RedisClusterHashSlotAndConsistentHashingDesignNotes'
+  - 'algorithm/016-HeapAndPriorityQueue'
+  - 'algorithm/026-MIT6006IntroductionToAlgorithmsAllPairsShortestPaths'
+  - 'algorithm/028-MIT6006IntroductionToAlgorithmsDirectedGraphs'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/图算法
-- algorithm/贪心算法
-- algorithm/并查集
-- cs-fundamentals/离散数学
-references:
-- type: journal
-  authors:
-  - Kruskal, Joseph B.
-  year: 1956
-  title: On the Shortest Spanning Subtree of a Graph and the Traveling Salesman Problem
-  venue: Proceedings of the American Mathematical Society
-  volume: 7
-  issue: 1
-  pages: 48-50
-  doi: 10.1090/S0002-9939-1956-0078686-7
-  pagesNote: 'The original Kruskal algorithm. Joseph B. Kruskal (1928-2010) was at Princeton University when he wrote this paper. The paper actually presents two algorithms: the well-known edge-sorting algorithm (now called Kruskal) and a second algorithm that turns out to be equivalent to what is now called the Prim algorithm, rediscovered by Prim 1957'
-- type: journal
-  authors:
-  - Prim, Robert C.
-  year: 1957
-  title: Shortest connection networks and some generalizations
-  venue: Bell System Technical Journal
-  volume: 36
-  issue: 6
-  pages: 1389-1401
-  doi: 10.1002/j.1538-7305.1957.tb01515.x
-  pagesNote: Prim independent rediscovery of what Jarnik had already described in 1930. Robert C. Prim was at Bell Telephone Laboratories. The algorithm is sometimes called the Jarnik-Prim algorithm or DJP algorithm
-- type: journal
-  authors:
-  - Jarník, Vojtěch
-  year: 1930
-  title: O jistém problému minimálním [About a certain minimal problem]
-  venue: Práce Moravské Přírodovědecké Společnosti
-  volume: 6
-  pages: 57-63
-  pagesNote: The earliest known description of what is now called the Prim algorithm. Jarnik was a Czech mathematician at Charles University in Prague. The paper was written in Czech and remained unknown in the English-speaking world until rediscovered by Prim in 1957
-- type: journal
-  authors:
-  - Borůvka, Otakar
-  year: 1926
-  title: O jistém problému minimálním [About a certain minimal problem]
-  venue: Práce Moravské Přírodovědecké Společnosti
-  volume: 3
-  pages: 37-58
-  pagesNote: The earliest known MST algorithm, predating even the formalization of graph theory. Boruvka was motivated by the problem of electrification of Moravia (now Czech Republic). He wanted to find the minimum total length of electric power lines to connect all towns. The paper was written in Czech and was largely unknown until rediscovered in the 1980s
-- type: journal
-  authors:
-  - Tarjan, Robert Endre
-  year: 1975
-  title: Efficiency of a good but not linear set union algorithm
-  venue: Journal of the ACM
-  volume: 22
-  issue: 2
-  pages: 215-225
-  doi: 10.1145/321879.321884
-  pagesNote: The Tarjan analysis of union-find with path compression and union by rank, achieving O(m alpha(n)) amortized bound. Tarjan received the 1986 Turing Award partly for this work
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: Chapter 23 (Minimum Spanning Trees), Sections 23.1 (Growing a MST) and 23.2 (The Algorithms of Kruskal and Prim), ISBN 978-0262046305
-- type: book
-  authors:
-  - Kleinberg, Jon
-  - Tardos, Eva
-  year: 2006
-  title: Algorithm Design
-  venue: Pearson
-  pages: 'ISBN 978-0321295354, Chapter 4 (Greedy Algorithms), Section 4.5 (Minimum Spanning Trees), Section 4.6 (Implementing Kruskal: The Union-Find Data Structure)'
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 4.3 (Minimum Spanning Trees), with Kruskal as the canonical implementation in the Case Study
-- type: book
-  authors:
-  - Skiena, Steven S.
-  year: 2020
-  title: The Algorithm Design Manual
-  venue: Springer
-  version: 3rd edition
-  pages: ISBN 978-3030542556, Chapter 6 (Graph Traversal), Section 6.1.2 (Minimum Spanning Trees), with war stories on MST applications
-- type: book
-  authors:
-  - Tarjan, Robert Endre
-  year: 1983
-  title: Data Structures and Network Algorithms
-  venue: Society for Industrial and Applied Mathematics (SIAM)
-  pages: ISBN 978-0898711875, CBMS-NSF Regional Conference Series in Applied Mathematics 44, Chapter 6 (Minimum Spanning Trees)
-- type: journal
-  authors:
-  - Graham, Ronald L.
-  - Hell, Pavol
-  year: 1985
-  title: On the history of the minimum spanning tree problem
-  venue: Annals of the History of Computing
-  volume: 7
-  issue: 1
-  pages: 43-57
-  doi: 10.1109/MAHC.1985.10011
-  pagesNote: The definitive historical survey of MST algorithms, tracing the lineage from Boruvka 1926 through Jarnik 1930, Kruskal 1956, Prim 1957, and beyond. Authors clarify the independent discovery and the timeline
-- type: journal
-  authors:
-  - Karger, David R.
-  - Klein, Philip N.
-  - Tarjan, Robert E.
-  year: 1995
-  title: A randomized linear-time algorithm to find minimum spanning trees
-  venue: Journal of the ACM
-  volume: 42
-  issue: 2
-  pages: 321-328
-  doi: 10.1145/201019.201022
-  pagesNote: A breakthrough result showing MST can be found in expected linear time O(E) using randomization. The algorithm combines Boruvka phases with random sampling
-- type: journal
-  authors:
-  - Chazelle, Bernard
-  year: 2000
-  title: A minimum spanning tree algorithm with inverse-Ackermann type complexity
-  venue: Journal of the ACM
-  volume: 47
-  issue: 6
-  pages: 1028-1047
-  doi: 10.1145/355541.355562
-  pagesNote: The asymptotically fastest known deterministic MST algorithm, achieving O(E alpha(E,V)) time. Uses a soft heap data structure to break the O(E log E) barrier
-- type: journal
-  authors:
-  - Roskind, James E.
-  - Tarjan, Robert E.
-  year: 1985
-  title: A note on finding minimum-cost edge-disjoint spanning trees
-  venue: Mathematics of Operations Research
-  volume: 10
-  issue: 4
-  pages: 701-708
-  doi: 10.1287/moor.10.4.701
-- type: book
-  authors:
-  - Bondy, John A.
-  - Murty, U. S. R.
-  year: 2008
-  title: Graph Theory
-  venue: Springer
-  pages: ISBN 978-1846289699, Graduate Texts in Mathematics 244, Chapter 4 (Trees), with full discussion of MST properties
-- type: journal
-  authors:
-  - Galler, Bernard A.
-  - Fischer, Michael J.
-  year: 1964
-  title: An improved equivalence algorithm
-  venue: Communications of the ACM
-  volume: 7
-  issue: 5
-  pages: 301-303
-  doi: 10.1145/364099.364331
-  pagesNote: The original Galler-Fischer paper introducing the tree representation of disjoint sets, the predecessor of modern Union-Find
-- type: website
-  authors:
-  - NetworkX Developers
-  year: 2026
-  title: 'NetworkX Reference: minimum_spanning_tree'
-  venue: NetworkX Documentation
-  url: https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.tree.mst.minimum_spanning_tree.html
-  pages: Official documentation of NetworkX MST implementation, default uses Kruskal algorithm
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - Boost.org
-  year: 2026
-  title: 'Boost Graph Library 1.86.0: kruskal_minimum_spanning_tree'
-  venue: Boost Documentation
-  url: https://www.boost.org/libs/graph/doc/kruskal_min_spanning_tree.html
-  pages: Boost C++ Libraries production-grade Kruskal MST implementation
-  accessedDate: '2026-07-20'
-etymology:
-- term: Kruskal 算法
-  english: Kruskal Algorithm
-  origin: 该算法名取自 Joseph Bernard Kruskal (1928-2010)，他在 1956 年于《On the Shortest Spanning Subtree of a Graph and the Traveling Salesman Problem》Proceedings of the American Mathematical Society 7(1):48-50 (DOI:10.1090/S0002-9939-1956-0078686-7) 提出。Kruskal 当时在普林斯顿大学攻读博士学位，论文研究多维标度法（multidimensional scaling）。该论文实际给出两个算法：今天所称的 Kruskal 算法（边排序贪心）和后来被 Prim 1957 重新发现的加点法
-- term: 最小生成树
-  english: minimum spanning tree (MST)
-  origin: spanning tree 译自英文 spanning tree，spanning 意为"跨越"或"覆盖"，指覆盖图中所有顶点的子图。minimum 强调边权总和最小。中文"生成树"取"生成的树形子图"之意。MST 概念最早由捷克数学家 Otakar Boruvka 1926 年在《O jistém problému minimálním》Práce Moravské Přírodovědecké Společnosti 3:37-58 中形式化，原动机为摩拉维亚地区电网规划
-- term: 切割性质
-  english: cut property
-  origin: cut property 由 Kruskal 1956 隐式使用，并由 Prim 1957 明确表述。给定图 G 的任意切割 (S, V-S)，跨越切割的最小权边一定属于某个 MST。这是 MST 贪心算法正确性的核心保证
-- term: 回路性质
-  english: cycle property
-  origin: cycle property 与 cut property 互为对偶。给定图中任意回路 C，C 上权值最大的边一定不属于任何 MST。该性质可用于反向证明某些边不在 MST 中，也用于"破圈法"算法（Rosenstiehl 1967）
-- term: 贪心选择性质
-  english: greedy-choice property
-  origin: greedy-choice property 由 Cormen-Leiserson-Rivest 1990 CLRS 第 1 版系统化命名，指全局最优解包含局部最优选择。Kruskal 算法每步选择当前最小权不形成环的边，正是贪心选择性质的体现
-- term: 并查集
-  english: disjoint set union (DSU) / union-find
-  origin: 并查集 = 并（Union，合并两个集合）+ 查（Find，查找代表元）+ 集（Set，集合元素）。Galler-Fischer 1964 提出，Tarjan 1975 给出 O(m alpha(n)) 均摊上界。Kruskal 算法使用 DSU 高效判断加入一条边是否形成环
-- term: 反 Ackermann 函数
-  english: inverse Ackermann function
-  origin: 源自 Wilhelm Ackermann 1928 年提出的快速增长函数 A(m,n)。其反函数 alpha(n) 增长极慢（alpha(10^80) ≈ 4），是 Tarjan 1975 证明的 DSU 均摊复杂度下界。在 Kruskal 算法中，E 次并查集操作总代价为 O(E alpha(V))，可视为 O(E)
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
+  - 'algorithm/010-GreedyAlgorithm'
+  - 'algorithm/019-RedisClusterHashSlotAndConsistentHashingDesignNotes'
+  - 'cs-fundamentals/006-DiscreteMathematics'
 ---
+
 
 
 ## 1. 概述与学习目标

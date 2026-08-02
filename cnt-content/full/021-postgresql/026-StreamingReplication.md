@@ -1,20 +1,21 @@
 ---
-order: 71
+order: 260
 title: 流复制
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL流复制：同步复制、异步复制、WAL流传输与复制配置
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/扩展模块
-  - postgresql/FDW外部数据包装器
-  - postgresql/级联复制
-  - postgresql/物理复制槽
+  - 'postgresql/024-ExtensionModule'
+  - 'postgresql/025-FDWFDW'
+  - 'postgresql/027-CascadingReplication'
+  - 'postgresql/028-PhysicalReplicationSlot'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 流复制概述
 

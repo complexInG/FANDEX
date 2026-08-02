@@ -1,9 +1,8 @@
 ---
 order: 370
 title: GitHub 仓库初始化
-module: github
-
-category: '004-github'
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 从零初始化 Git 仓库并完成首次提交的完整操作向导，覆盖 git init、git clone、git add、git commit，适合零基础学习者。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
+
 ## 开篇：像建房打地基一样初始化仓库
 
 想象你要在空地上建一栋房子。第一步不是砌墙，而是**打地基**：把地面整平、浇筑混凝土，划定"这块地属于这栋房子"。地基打好了，后面的砌墙、封顶、装修才有依靠。

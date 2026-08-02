@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 210
 title: HTTPS原理
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
 description: HTTPS原理：TLS/SSL握手过程、密钥交换、证书验证与安全配置详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/合规与审计
-  - cybersecurity/数字证书
-  - cybersecurity/渗透测试方法论
-  - cybersecurity/信息收集
+  - 'cybersecurity/019-ComplianceAudit'
+  - 'cybersecurity/020-DigitalCertificate'
+  - 'cybersecurity/022-PenetrationTestingMethodology'
+  - 'cybersecurity/023-InformationGathering'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. HTTPS 概述
 

@@ -1,20 +1,20 @@
 ---
-order: 60
+order: 210
 title: LATERAL派生表
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: 'SQL LATERAL派生表：横向连接的语法、关联子查询展开、逐行生成结果与性能优化'
+description: SQL LATERAL派生表：横向连接的语法、关联子查询展开、逐行生成结果与性能优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/自连接
-  - sql/半连接与反半连接
-  - sql/子查询
-  - sql/公用表表达式
+  - 'sql/019-SelfJoin'
+  - 'sql/020-SemiAntiJoin'
+  - 'sql/022-Subquery'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. LATERAL 概述
 
 ### 1.1 什么是 LATERAL

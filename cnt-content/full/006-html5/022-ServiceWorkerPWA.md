@@ -1,20 +1,18 @@
 ---
-order: 63
-title: 'Service-Worker与PWA'
-module: html5
-category: HTML5
+order: 220
+title: Service-Worker与PWA
+module: 'html5'
+category: 前端技术
 difficulty: advanced
-description: 'Service Worker与PWA'
+description: Service Worker与PWA
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/地理位置定位
-  - html5/Web工作线程
-  - html5/历史记录API
-  - html5/全双工通信
+  - 'html5/020-Geolocation'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. Service Worker 概述
 
 Service Worker 是浏览器后台独立于网页运行的脚本，充当网络代理，支持离线缓存、推送通知和后台同步。

@@ -1,20 +1,16 @@
 ---
-order: 74
-title: 'git-format-patch'
-module: git
-category: 'Git Basics'
+order: 320
+title: git-format-patch
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git format-patch详解：生成补丁文件、邮件工作流与离线协作。'
+description: git format-patch详解：生成补丁文件、邮件工作流与离线协作。
 author: fanquanpp
 updated: '2026-08-01'
-related:
-  - git/子模块管理
-  - git/稀疏检出
-  - git/内容搜索
-  - git/工作树管理
-prerequisites:
-  - git/语法速查
+related: []
+prerequisites: []
 ---
+
 ## 1. format-patch 概述
 
 ### 1.1 什么是 format-patch

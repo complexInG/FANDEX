@@ -1,24 +1,25 @@
 ---
-order: 52
+order: 100
 title: 元类
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: 元类与类创建过程的深度解析，涵盖 type、__new__/__init__/__call__、__init_subclass__ 与企业级应用。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - python/列表推导式进阶
-  - python/运算符与表达式
-  - python/描述符协议
-  - python/协程与asyncio
-  - python/元类与单例模式
-  - python/类型注解与mypy
+  - 'python/007-ListComprehensionAdvanced'
+  - 'python/008-OperatorExpression'
+  - 'python/004-PythonDescriptorProtocol'
+  - 'python/006-CoroutineAsyncio'
+  - 'python/053-MetaclassSingleton'
+  - 'python/060-TypeAnnotationMypy'
 prerequisites:
-  - python/面向对象编程
-  - python/装饰器进阶
-  - python/描述符协议
+  - 'python/061-OOP'
+  - 'python/062-DecoratorAdvanced'
+  - 'python/004-PythonDescriptorProtocol'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 Smalltalk 的根源：一切皆对象，类也是对象

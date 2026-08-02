@@ -1,21 +1,20 @@
 ---
 order: 30
-tags:
-  - vue3
+title: Vue3 模板语法
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
-title: 'Vue3 模板语法'
-module: vue3
-category: 'Vue3 Basics'
 description: 插值、指令、修饰符与模板编译机制。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/概述与环境
-  - vue3/快速入门指南
-  - vue3/指令系统
-  - vue3/Teleport与Suspense
+  - 'vue3/001-OverviewEnv'
+  - 'vue3/002-Vue3QuickStartGuide'
+  - 'vue3/004-Vue3DirectiveSystem'
+  - 'vue3/005-TeleportSuspense'
 prerequisites: []
 ---
+
 ## 1. 插值表达式
 
 ### 1.1 文本插值

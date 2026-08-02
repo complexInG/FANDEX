@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 130
 title: SELECT执行顺序
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
-description: 'SQL SELECT语句的逻辑执行顺序：FROM→JOIN→WHERE→GROUP BY→HAVING→SELECT→ORDER BY→LIMIT的完整解析'
+description: SQL SELECT语句的逻辑执行顺序：FROM→JOIN→WHERE→GROUP BY→HAVING→SELECT→ORDER BY→LIMIT的完整解析
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/数据类型
-  - sql/约束
-  - sql/过滤条件
-  - sql/聚合函数
+  - 'sql/011-DataType'
+  - 'sql/012-Constraint'
+  - 'sql/014-FilterCondition'
+  - 'sql/015-AggregateFunction'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 执行顺序概述
 
 SQL 是声明式语言，编写顺序与逻辑执行顺序不同。理解逻辑执行顺序是编写正确、高效查询的基础。

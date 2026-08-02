@@ -1,9 +1,8 @@
 ---
 order: 320
 title: Lua 文件 IO 进阶
-module: lua
-
-category: '017-lua'
+module: 'lua'
+category: 后端技术
 difficulty: beginner
 description: Lua 文件 IO 进阶 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 文件打开与模式
 
 **基本写法：以追加模式打开**

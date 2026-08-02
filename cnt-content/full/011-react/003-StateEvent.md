@@ -1,21 +1,20 @@
 ---
-order: 3
-tags:
-  - react
-difficulty: beginner
+order: 30
 title: 状态与事件
-module: react
-category: React
+module: 'react'
+category: 前端技术
+difficulty: beginner
 description: useState、useReducer、事件处理、表单处理、受控与非受控组件、状态提升、状态管理模式。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/概述与环境配置
-  - react/组件与Props
-  - react/Hooks深入
-  - react/Context与全局状态
+  - 'react/001-OverviewEnvSetup'
+  - 'react/002-ComponentProps'
+  - 'react/004-HooksDeep'
+  - 'react/005-ContextGlobalState'
 prerequisites: []
 ---
+
 ## 1. useState
 
 `useState` 是最基础的 Hook，用于在函数组件中声明状态变量。

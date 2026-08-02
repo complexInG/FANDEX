@@ -1,9 +1,8 @@
 ---
 order: 520
 title: C 标准库函数速查
-module: c
-
-category: '025-c'
+module: 'c'
+category: 计算机科学
 difficulty: beginner
 description: C 标准库函数速查 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 输入输出
 
 **基本写法：printf 格式输出**

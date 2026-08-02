@@ -1,20 +1,20 @@
 ---
-order: 104
+order: 350
 title: 异步并发控制
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
-description: 'JavaScript异步并发控制：p-limit模式、队列实现与并发限制策略。'
+description: JavaScript异步并发控制：p-limit模式、队列实现与并发限制策略。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - javascript/事件循环详解
-  - javascript/Promise静态方法
-  - javascript/ES6+新特性
-  - javascript/深拷贝与浅拷贝
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/033-EventLoopDetailed'
+  - 'javascript/034-PromiseStaticMethod'
+  - 'javascript/036-ES6NewFeatures'
+  - 'javascript/037-DeepShallowCopy'
+prerequisites: []
 ---
+
 
 
 # 异步并发控制

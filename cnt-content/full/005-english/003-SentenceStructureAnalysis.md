@@ -1,19 +1,20 @@
 ---
-order: 21
+order: 30
 title: 句子结构与成分分析
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: intermediate
 description: 英语句子结构详解，涵盖主语、谓语、宾语、定语、状语、补语六大成分的分析与识别。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/计算机专业英语词汇
-  - english/英语语法体系总览
-  - english/复合句与从句
-  - english/长难句拆解技巧
+  - 'english/001-ComputerProfessionalEnglishVocabulary'
+  - 'english/002-EnglishGrammarSystemOverview'
+  - 'english/004-CompoundSentenceClause'
+  - 'english/005-LongDifficultSentenceBreakdownTechnique'
 prerequisites: []
 ---
+
 
 ## 1. 句子成分总论
 

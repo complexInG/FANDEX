@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 130
 title: RAII与资源管理
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: 资源获取即初始化模式
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/C++20模块
-  - cpp/C++23与C++26新特性
-  - cpp/运算符重载
-  - cpp/面向对象基础
+  - 'cpp/011-Cpp20Module'
+  - 'cpp/034-Cpp23Cpp26NewFeatures'
+  - 'cpp/014-OperatorOverloading'
+  - 'cpp/015-COOPBasics'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 概述
 
 RAII（Resource Acquisition Is Initialization，资源获取即初始化）是 C++ 区别于其他主流语言的最核心编程范式之一。其核心思想可以一句话概括：**将资源的生命周期严格绑定到对象的生命周期**——构造函数获取资源，析构函数释放资源，由于 C++ 语言规范保证了栈对象离开作用域时析构函数必定被调用（包括异常展开栈的情形），RAII 因此能确保资源在任何执行路径下都能被正确释放。

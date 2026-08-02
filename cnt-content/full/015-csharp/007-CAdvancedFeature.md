@@ -1,19 +1,20 @@
 ---
-order: 7
-title: 'C# 高级特性'
-module: csharp
-category: 'C#'
+order: 70
+title: C# 高级特性
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: '反射、特性(Attribute)、动态编程(dynamic)、Span/Memory、ref struct、不安全代码、指针、委托与事件、多播委托'
+description: 反射、特性(Attribute)、动态编程(dynamic)、Span/Memory、ref struct、不安全代码、指针、委托与事件、多播委托
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/异步编程
-  - csharp/LINQ与函数式编程
-  - csharp/NET平台与生态
-  - csharp/测试与工程化
+  - 'csharp/005-CAsyncProgramming'
+  - 'csharp/006-CLINQFunctionalProgramming'
+  - 'csharp/008-CNET'
+  - 'csharp/009-CTestEngineering'
 prerequisites: []
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 元编程的演进脉络

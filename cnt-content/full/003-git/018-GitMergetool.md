@@ -1,20 +1,18 @@
 ---
-order: 61
-title: 'git-mergetool'
-module: git
-category: 'Git Basics'
+order: 180
+title: git-mergetool
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git mergetool配置与使用：可视化冲突解决工具的集成与自定义。'
+description: git mergetool配置与使用：可视化冲突解决工具的集成与自定义。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/Git钩子与GitLFS
-  - git/合并冲突解决
-  - git/变基操作
-  - git/摘取提交
-prerequisites:
-  - git/语法速查
+  - 'git/016-GitHookGitLFS'
+  - 'git/017-MergeConflictResolution'
+prerequisites: []
 ---
+
 
 ## 1. mergetool 概述
 

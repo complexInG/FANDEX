@@ -1,20 +1,21 @@
 ---
-order: 61
+order: 220
 title: 渗透测试方法论
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: advanced
 description: 渗透测试方法论：PTES标准、OSSTMM、攻击流程与报告编写详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/数字证书
-  - cybersecurity/HTTPS原理
-  - cybersecurity/信息收集
-  - cybersecurity/漏洞扫描
+  - 'cybersecurity/020-DigitalCertificate'
+  - 'cybersecurity/021-HTTPSPrinciple'
+  - 'cybersecurity/023-InformationGathering'
+  - 'cybersecurity/024-VulnerabilityScan'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 ## 1. 渗透测试标准
 
 ### 1.1 PTES 七阶段

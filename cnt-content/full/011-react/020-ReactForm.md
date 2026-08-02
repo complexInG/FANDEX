@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 200
 title: React表单处理
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: beginner
 description: 受控组件与非受控组件
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React性能优化
-  - react/React错误边界
-  - react/React与TypeScript
-  - react/React测试
+  - 'react/018-ReactPerformance'
+  - 'react/019-ReactErrorBoundary'
+  - 'react/021-ReactTypeScript'
+  - 'react/022-ReactTest'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 受控组件与非受控组件。本文将从基础概念、快速上手、详细用法、常见场景、注意事项和进阶用法六个方面全面介绍React表单处理。

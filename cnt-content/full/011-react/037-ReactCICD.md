@@ -1,20 +1,21 @@
 ---
-order: 76
-title: 'React与CI-CD'
-module: react
-category: React
+order: 370
+title: React与CI-CD
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: React项目CI/CD实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React与D3
-  - react/React与Storybook
-  - react/React与Monorepo
-  - 'react/React-Compiler自动记忆化'
+  - 'react/035-ReactD3'
+  - 'react/036-ReactStorybook'
+  - 'react/038-ReactMonorepo'
+  - 'react/039-ReactCompilerAutoMemoization'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 概述
 

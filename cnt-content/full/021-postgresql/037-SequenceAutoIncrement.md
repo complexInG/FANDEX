@@ -1,20 +1,21 @@
 ---
-order: 82
+order: 370
 title: 序列与自增列
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
 description: PostgreSQL序列与自增列：SERIAL、IDENTITY列、序列操作与ID生成策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/数据加密存储
-  - postgresql/审计日志
-  - postgresql/生成列
-  - postgresql/可更新视图
+  - 'postgresql/035-DataEncryptionStorage'
+  - 'postgresql/036-AuditLog'
+  - 'postgresql/038-GeneratedColumn'
+  - 'postgresql/039-UpdatableView'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 ## 1. 序列（SEQUENCE）
 
 ```sql

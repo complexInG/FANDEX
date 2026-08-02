@@ -1,20 +1,16 @@
 ---
-order: 75
-title: 'git-grep'
-module: git
-category: 'Git Basics'
+order: 330
+title: git-grep
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git grep详解：在Git仓库中高效搜索代码，比grep更快的搜索方式。'
+description: git grep详解：在Git仓库中高效搜索代码，比grep更快的搜索方式。
 author: fanquanpp
 updated: '2026-08-01'
-related:
-  - git/稀疏检出
-  - git/补丁与邮件工作流
-  - git/工作树管理
-  - git/垃圾回收
-prerequisites:
-  - git/语法速查
+related: []
+prerequisites: []
 ---
+
 
 ## 1. git grep 概述
 

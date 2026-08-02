@@ -1,25 +1,26 @@
 ---
-order: 83
+order: 430
 title: Go与性能分析
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
-description: 'Go pprof 与性能调优：CPU/堆/Goroutine/锁/阻塞采样、trace、火焰图、连续性能剖析与生产级调优实战'
+description: Go pprof 与性能调优：CPU/堆/Goroutine/锁/阻塞采样、trace、火焰图、连续性能剖析与生产级调优实战
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与CGO
-  - go/Go与Fuzzing
-  - go/Go与代码生成
-  - go/Go与信号处理
-  - go/Go与中间件
-  - go/Goroutine调度
+  - 'go/031-GoCGO'
+  - 'go/030-GoFuzzing'
+  - 'go/033-GoCodeGeneration'
+  - 'go/042-GoSignalHandling'
+  - 'go/047-GoMiddleware'
+  - 'go/018-GoroutineSchedule'
 prerequisites:
-  - go/概述与环境配置
-  - go/Goroutine调度
-  - go/Channel原理
-  - go/Map原理
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/018-GoroutineSchedule'
+  - 'go/014-ChannelPrinciple'
+  - 'go/012-MapPrinciple'
 ---
+
 
 
 # Go 性能分析：从 pprof 采样到连续剖析

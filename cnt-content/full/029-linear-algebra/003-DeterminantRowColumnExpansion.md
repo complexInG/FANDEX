@@ -1,21 +1,22 @@
 ---
-order: 12
+order: 30
 title: 行列式按行（列）展开
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 以"降维"为主线讲清行列式的展开定理：余子式与代数余子式的符号棋盘、按行（列）展开、先化简再展开的黄金组合、递推法，以及代数余子式的综合公式。
+description: '以"降维"为主线讲清行列式的展开定理：余子式与代数余子式的符号棋盘、按行（列）展开、先化简再展开的黄金组合、递推法，以及代数余子式的综合公式。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/行列式定义与几何意义'
-  - 'linear-algebra/行列式基本性质'
-  - 'linear-algebra/行列式计算方法'
-  - 'linear-algebra/克莱姆法则'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
+  - 'linear-algebra/002-DeterminantBasicProperties'
+  - 'linear-algebra/004-DeterminantCalculationMethods'
+  - 'linear-algebra/005-CramersRule'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
-  - 'linear-algebra/行列式基本性质'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
+  - 'linear-algebra/002-DeterminantBasicProperties'
 ---
+
 
 ## 0. 一个可以自己"猜"出来的定理
 

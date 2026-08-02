@@ -1,20 +1,20 @@
 ---
-order: 105
+order: 550
 title: 弱引用
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: Python弱引用详解：weakref模块、WeakKeyDictionary。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - python/装饰器进阶
-  - python/描述符
-  - python/元类与单例模式
-  - python/上下文管理器
-prerequisites:
-  - python/语法速查
+  - 'python/062-DecoratorAdvanced'
+  - 'python/057-Descriptor'
+  - 'python/053-MetaclassSingleton'
+  - 'python/052-ContextManager'
+prerequisites: []
 ---
+
 ## 1. 历史动机与发展脉络
 
 弱引用的提出源于编程语言对"对象生命周期管理"的长期探索，其本质是区分"知道对象存在"与"保持对象存活"两种语义。

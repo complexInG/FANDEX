@@ -1,19 +1,20 @@
 ---
-order: 52
+order: 240
 title: 中心极限定理
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: advanced
 description: 列维-林德伯格中心极限定理、棣莫弗-拉普拉斯中心极限定理、连续性修正与应用条件。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/切比雪夫不等式'
-  - 'probability-statistics/大数定律'
-  - 'probability-statistics/随机样本'
+  - 'probability-statistics/026-ChebyshevInequality'
+  - 'probability-statistics/027-LawOfLargeNumbers'
+  - 'probability-statistics/030-RandomSample'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：为什么"灯泡寿命"都像正态分布？
 

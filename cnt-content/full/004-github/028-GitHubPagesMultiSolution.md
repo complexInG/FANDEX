@@ -1,22 +1,21 @@
 ---
-order: 80
-tags:
-  - github
+order: 280
+title: GitHub Pages 多站点方案
+module: 'github'
+category: 工具链
 difficulty: intermediate
-title: 'GitHub Pages 多站点方案'
-module: github
-category: 'GitHub Advanced'
-description: 'GitHub Pages 静态站点部署方案：Jekyll、VitePress、Hugo 构建与发布。'
+description: GitHub Pages 静态站点部署方案：Jekyll、VitePress、Hugo 构建与发布。
 author: Anonymous
-related:
-  - github/社区健康文件
-  - github/PullRequest完整协作流程
-  - github/GitHubActions与CICD
-  - github/Actions触发器
-prerequisites:
-  - github/GitHub概述
 updated: '2026-08-01'
+related:
+  - 'github/026-CommunityHealthFile'
+  - 'github/027-PullRequestCompleteCollaborationFlow'
+  - 'github/029-GitHubActionsCICD'
+  - 'github/030-ActionsTrigger'
+prerequisites:
+  - 'github/001-GitHubOverview'
 ---
+
 ## 1. 背景
 
 **GitHub Pages** 可从分支或 **GitHub Actions** 发布静态文件到 `*.github.io` 或自定义域名。常见生成器：**Jekyll（Ruby）**、**VitePress（Vite + Vue 文档框架）**、**Hugo（Go）**。三者均输出 HTML/CSS/JS，差异在 **模板语言**、**构建速度** 与 **生态**。

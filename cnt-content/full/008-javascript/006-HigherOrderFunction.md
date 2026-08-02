@@ -1,20 +1,20 @@
 ---
-order: 50
+order: 60
 title: 高阶函数
-module: javascript
-category: JavaScript
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
 description: 以函数为参数或返回值的编程模式
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - javascript/数据类型与运算符
-  - javascript/控制流
-  - javascript/递归与尾调用优化
-  - javascript/柯里化与偏函数
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/004-DataTypeOperator'
+  - 'javascript/005-ControlFlow'
+  - 'javascript/007-LinearGeneticProgramming'
+  - 'javascript/008-CurryAndFunctionComposition'
+prerequisites: []
 ---
+
 
 
 # 高阶函数：JavaScript 函数式编程的核心抽象

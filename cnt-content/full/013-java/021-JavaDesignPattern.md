@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 210
 title: Java设计模式
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: GoF设计模式Java实现
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/SpringBoot安全
-  - java/SpringBoot数据访问
-  - java/Java函数式编程
-  - java/Java网络编程
+  - 'java/019-SpringBootSecurity'
+  - 'java/020-SpringBootDataAccess'
+  - 'java/022-JavaFunctionalProgramming'
+  - 'java/023-JavaNetworkProgramming'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 ## 概述
 

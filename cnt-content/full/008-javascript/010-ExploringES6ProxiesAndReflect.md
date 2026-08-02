@@ -1,90 +1,22 @@
 ---
-order: 54
+order: 100
 title: Proxy与Reflect
-module: javascript
-category: JavaScript
-tags:
-- JavaScript
-- Proxy
-- Reflect
-- Metaprogramming
-- Vue3
-- Reactive
-- ES6
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: 深入解析 ES6 Proxy 与 Reflect 的元编程理论、代理不变量、Vue 3 响应式实现、MobX 代理模式等高级主题
 author: fanquanpp
 updated: '2026-07-20'
-lastReviewed: '2026-07-20'
-reviewer: FANDEX Content Engineering Team
 related:
-- javascript/柯里化与偏函数
-- javascript/生成器函数
-- javascript/Object扩展
-- javascript/事件循环
-- javascript/Promise构造器
+  - 'javascript/008-CurryAndFunctionComposition'
+  - 'javascript/009-CoroutinesInJavaScript'
+  - 'javascript/011-ObjectReference'
+  - 'javascript/012-EventLoop'
+  - 'javascript/024-YouDonTKnowJSAsyncPerformance'
 prerequisites:
-- javascript/语法速查
-- javascript/Object扩展
-references:
-- type: standard
-  authors:
-  - ECMA International
-  year: 2025
-  title: ECMAScript 2025 Language Specification (ECMA-262, 16th Edition)
-  venue: ECMA Standard
-  doi: 10.17445/ECMA-262
-  url: https://tc39.es/ecma262/
-- type: journal
-  authors:
-  - Mauro Bringas
-  - Guido Rößling
-  year: 2012
-  title: On the Design of Meta-Object Protocols for JavaScript
-  venue: Journal of Object Technology
-  doi: 10.5381/jot.2012.11.1.a3
-- type: journal
-  authors:
-  - Tom Van Cutsem
-  - Mark S. Miller
-  year: 2013
-  title: 'Trustworthy Proxies: Virtual Inheritance for Array Wrappers'
-  venue: Proceedings of the 11th Symposium on Dynamic Languages (DLS)
-  doi: 10.1145/2508168.2508175
-- type: journal
-  authors:
-  - Tom Van Cutsem
-  - Mark S. Miller
-  year: 2010
-  title: 'Proxies: Design Principles for Robust Object-oriented Intercession APIs'
-  venue: Proceedings of the 6th Symposium on Dynamic Languages (DLS)
-  doi: 10.1145/1869631.1869638
-- type: journal
-  authors:
-  - Eric Faust
-  - Brian Hackett
-  year: 2018
-  title: Laying out C++ objects for the SpiderMonkey JS engine
-  venue: Proceedings of the 15th International Conference on Managed Programming Languages and Runtimes (MPLR)
-  doi: 10.1145/3237009.3237013
-- type: book
-  authors:
-  - Dr. Axel Rauschmayer
-  year: 2014
-  title: 'Exploring ES6: Proxies and Reflect'
-  venue: Leanpub
-  url: https://exploringjs.com/es6/ch_proxies.html
-etymology:
-- term: Proxy
-  english: Proxy
-  origin: 源自拉丁语 "proximus"(最近的、代理的),法律语境下指"代理人",计算机科学中表示替身对象,转发操作到目标对象。
-- term: Reflect
-  english: Reflect
-  origin: 源自拉丁语 "reflectere"(反射、折回),在元编程中指"将语言内部操作暴露为 API",让代理陷阱有对应的默认实现可调用。
-- term: Metaprogramming
-  english: Metaprogramming
-  origin: '"meta-" 希腊语前缀意为"关于、超出",metaprogramming 即"关于程序的程序",指编写操作其他程序(或自身)的程序。'
+  - 'javascript/011-ObjectReference'
 ---
+
 
 
 # Proxy 与 Reflect

@@ -1,9 +1,8 @@
 ---
 order: 340
 title: DevOps Helm 包管理命令
-module: devops
-
-category: '031-devops'
+module: 'devops'
+category: 云与基础设施
 difficulty: beginner
 description: DevOps Helm 包管理命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## helm install 安装 Chart
 
 **基本写法：安装 Chart**

@@ -1,20 +1,21 @@
 ---
-order: 81
+order: 400
 title: GTID
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL全局事务标识符GTID：原理、配置、基于GTID的复制与故障切换
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/主从复制
-  - mysql/进阶查询与多表操作
-  - mysql/并行复制
-  - mysql/组复制
+  - 'mysql/038-Replication'
+  - 'mysql/039-AdvancedQueryMultiTableOperation'
+  - 'mysql/041-ParallelReplication'
+  - 'mysql/042-GroupReplication'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. GTID 概述
 
 全局事务标识符（Global Transaction Identifier，GTID）为每个事务分配唯一标识，简化复制管理。

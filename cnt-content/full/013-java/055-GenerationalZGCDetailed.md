@@ -1,20 +1,21 @@
 ---
-order: 106
+order: 550
 title: 分代ZGC详解
-module: java
-category: 'dev-lang'
+module: 'java'
+category: 后端技术
 difficulty: advanced
-description: 'JDK 21分代ZGC详解：原理、配置与调优。'
+description: JDK 21分代ZGC详解：原理、配置与调优。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/反射与动态代理
-  - java/注解处理器
-  - java/面向对象编程
-  - java/抽象类与接口
+  - 'java/053-ReflectionDynamicProxy'
+  - 'java/054-AnnotationProcessor'
+  - 'java/056-OOP'
+  - 'java/057-AbstractClassInterface'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 
 ## 历史动机与发展脉络

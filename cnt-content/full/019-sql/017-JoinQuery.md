@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 170
 title: 连接查询
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: intermediate
-description: 'SQL连接查询：INNER JOIN、LEFT JOIN、RIGHT JOIN、FULL JOIN、CROSS JOIN、NATURAL JOIN的语法、语义与性能'
+description: SQL连接查询：INNER JOIN、LEFT JOIN、RIGHT JOIN、FULL JOIN、CROSS JOIN、NATURAL JOIN的语法、语义与性能
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/聚合函数
-  - 'sql/GROUP-BY与分组集'
-  - sql/自然连接与USING
-  - sql/自连接
+  - 'sql/015-AggregateFunction'
+  - 'sql/016-GROUPBYGroupingSet'
+  - 'sql/018-NaturalJoinUsing'
+  - 'sql/019-SelfJoin'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 连接查询概述
 
 连接（JOIN）是 SQL 最强大的特性之一，用于根据列之间的关系组合两个或多个表中的行。

@@ -1,20 +1,19 @@
 ---
-order: 100
+order: 260
 title: LINQ延迟与立即执行
-module: csharp
-category: 'dev-lang'
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'C# LINQ 延迟执行与立即执行深度解析：IEnumerable<T>、IQueryable<T>、表达式树、yield return、迭代器状态机、ToList/ToArray 强制求值的全链路原理。'
+description: C# LINQ 延迟执行与立即执行深度解析：IEnumerable<T>、IQueryable<T>、表达式树、yield return、迭代器状态机、ToList/ToArray 强制求值的全链路原理。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - 'csharp/CSharp12与CSharp13新特性'
-  - 'csharp/CSharp与反射'
-  - 'csharp/async-await状态机'
-  - csharp/委托与事件底层原理
+  - 'csharp/027-AsyncAwaitStateMachine'
+  - 'csharp/028-DelegateEventUnderlying'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 # LINQ 延迟与立即执行：从迭代器到表达式树的全景解析
 

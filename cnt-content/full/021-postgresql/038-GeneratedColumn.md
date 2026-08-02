@@ -1,20 +1,21 @@
 ---
-order: 83
+order: 380
 title: 生成列
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
 description: PostgreSQL生成列：STORED生成列、VIRTUAL生成列、表达式计算与索引支持
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/审计日志
-  - postgresql/序列与自增列
-  - postgresql/可更新视图
-  - postgresql/并行查询
+  - 'postgresql/036-AuditLog'
+  - 'postgresql/037-SequenceAutoIncrement'
+  - 'postgresql/039-UpdatableView'
+  - 'postgresql/040-ParallelQuery'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. 生成列概述
 

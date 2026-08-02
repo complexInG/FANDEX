@@ -1,19 +1,20 @@
 ---
-order: 53
+order: 240
 title: 实对称矩阵的对角化
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: advanced
 description: 实对称矩阵的性质（特征值为实数、不同特征值特征向量正交），谱定理，正交对角化步骤与应用（二次型、PCA），含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/特征值性质'
-  - 'linear-algebra/矩阵对角化'
-  - 'linear-algebra/二次型的标准形'
+  - 'linear-algebra/026-EigenvalueProperties'
+  - 'linear-algebra/027-MatrixDiagonalization'
+  - 'linear-algebra/030-QuadraticFormStandardForm'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从一个生活场景说起：为什么"对称"的东西总是更好
 

@@ -1,19 +1,20 @@
 ---
-order: 22
+order: 90
 title: 分布函数
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 从天气累计图与进度条的直观模型出发，讲解分布函数这一定义、性质、判定准则与计算工具，并展示它如何统一描述离散型与连续型随机变量。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/离散型随机变量'
-  - 'probability-statistics/连续型随机变量'
-  - 'probability-statistics/常用分布'
-  - 'probability-statistics/随机变量函数的分布'
+  - 'probability-statistics/008-DiscreteRandomVariable'
+  - 'probability-statistics/009-ContinuousRandomVariable'
+  - 'probability-statistics/011-CommonDistributions'
+  - 'probability-statistics/012-DistributionOfRandomVariableFunction'
 prerequisites: []
 ---
+
 
 ## 0. 天气累计图与进度条
 

@@ -1,20 +1,21 @@
 ---
 order: 50
 title: XSS攻击
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
 description: 跨站脚本攻击原理、分类、利用方式与防御策略详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/二进制安全与应急响应
-  - cybersecurity/安全工具与实战
-  - cybersecurity/安全模型与框架
-  - cybersecurity/CSRF攻击
+  - 'cybersecurity/003-BinarySecurityAndIncidentResponse'
+  - 'cybersecurity/004-SecurityToolsPractice'
+  - 'cybersecurity/006-SecurityModelFramework'
+  - 'cybersecurity/007-CSRFAttack'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. XSS 攻击原理
 

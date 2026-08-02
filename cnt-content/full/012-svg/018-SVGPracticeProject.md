@@ -1,21 +1,22 @@
 ---
 order: 180
-title: 'SVG 实战项目'
-module: svg
-category: 'SVG Projects'
+title: SVG 实战项目
+module: 'svg'
+category: 前端技术
 difficulty: advanced
-description: '综合运用：仪表盘、环形进度、动画 Logo、数据可视化。'
+description: 综合运用：仪表盘、环形进度、动画 Logo、数据可视化。
 author: fanquanpp
 updated: '2026-07-18'
 related:
-  - svg/动画基础
-  - svg/JavaScript交互
-  - svg/响应式与性能
+  - 'svg/013-SVGAnimationBasics'
+  - 'svg/015-SVGJavaScriptInteraction'
+  - 'svg/016-SVGResponsivePerformance'
 prerequisites:
-  - svg/动画基础
-  - svg/JavaScript交互
-  - svg/图标与可访问性
+  - 'svg/013-SVGAnimationBasics'
+  - 'svg/015-SVGJavaScriptInteraction'
+  - 'svg/017-SVGIconAccessibility'
 ---
+
 ## 1. 项目一：环形进度条
 
 结合 path、stroke-dasharray、动画的综合应用。

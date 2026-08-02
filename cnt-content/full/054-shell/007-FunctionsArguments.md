@@ -1,19 +1,20 @@
 ---
-order: 7
+order: 70
 title: 函数与参数处理
-module: shell
-category: Shell
+module: 'shell'
+category: 工具链
 difficulty: intermediate
-description: '函数与参数处理：函数定义与作用域、位置参数、shift、getopts 参数解析'
+description: 函数与参数处理：函数定义与作用域、位置参数、shift、getopts 参数解析
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - shell/006-ScriptDebugging
-  - shell/008-PracticalScripts
+  - 'shell/006-ScriptDebugging'
+  - 'shell/008-PracticalScripts'
 prerequisites:
-  - shell/001-ShellBasics
-  - shell/005-EnvVariablesConfig
+  - 'shell/001-ShellBasics'
+  - 'shell/005-EnvVariablesConfig'
 ---
+
 
 ## 1. 从"菜谱里的步骤分组"说起
 

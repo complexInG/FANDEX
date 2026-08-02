@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 190
 title: 自动目录
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: beginner
-description: 'Markdown自动目录生成：[TOC]语法、平台实现与自定义目录方案。'
+description: Markdown自动目录生成：[TOC]语法、平台实现与自定义目录方案。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/链接与图片
-  - markdown/转换工具
-  - markdown/锚点跳转
-  - markdown/图片CDN加速
+  - 'markdown/017-LinkImage'
+  - 'markdown/018-ConversionTool'
+  - 'markdown/020-AnchorJump'
+  - 'markdown/021-ImageCDNAcceleration'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 
 ## 1. 自动目录概述
 

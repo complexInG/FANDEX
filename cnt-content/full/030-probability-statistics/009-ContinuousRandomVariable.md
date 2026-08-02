@@ -1,18 +1,19 @@
 ---
-order: 21
+order: 80
 title: 连续型随机变量
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 从秒表计时与体重秤的连续读数出发，用"离散逼近连续"的极限思想讲解连续型随机变量与概率密度函数，覆盖均匀分布、指数分布、正态分布及其应用。
+description: '从秒表计时与体重秤的连续读数出发，用"离散逼近连续"的极限思想讲解连续型随机变量与概率密度函数，覆盖均匀分布、指数分布、正态分布及其应用。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/离散型随机变量'
-  - 'probability-statistics/分布函数'
-  - 'probability-statistics/常用分布'
+  - 'probability-statistics/008-DiscreteRandomVariable'
+  - 'probability-statistics/010-DistributionFunction'
+  - 'probability-statistics/011-CommonDistributions'
 prerequisites: []
 ---
+
 
 ## 0. 秒表计时与体重秤
 

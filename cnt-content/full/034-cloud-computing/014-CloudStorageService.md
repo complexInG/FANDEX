@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 140
 title: 云存储服务
 module: 'cloud-computing'
-category: 云计算
+category: 云与基础设施
 difficulty: advanced
 description: 对象存储、块存储、文件存储、归档存储、存储分层策略、数据生命周期管理、跨区域复制与一致性。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/云数据库服务'
-  - 'cloud-computing/Kubernetes核心资源'
-  - 'cloud-computing/Kubernetes网络'
-  - 'cloud-computing/云网络服务'
+  - 'cloud-computing/012-CloudDatabaseService'
+  - 'cloud-computing/013-KubernetesCore'
+  - 'cloud-computing/015-KubernetesNetwork'
+  - 'cloud-computing/016-CloudNetworkService'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 云存储服务分类
 

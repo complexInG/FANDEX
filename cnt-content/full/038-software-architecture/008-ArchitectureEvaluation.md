@@ -1,19 +1,20 @@
 ---
-order: 17
+order: 80
 title: 架构评估
 module: 'software-architecture'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: advanced
 description: ATAM评估方法、CBAM成本收益分析与架构评审实践。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'software-architecture/CAP理论与最终一致性'
-  - 'software-architecture/领域驱动设计'
+  - 'software-architecture/006-CAP'
+  - 'software-architecture/007-DDD'
 prerequisites:
-  - 'software-architecture/质量属性'
-  - 'software-architecture/软件架构概述'
+  - 'software-architecture/005-QualityAttribute'
+  - 'software-architecture/001-SoftwareArchitectureOverview'
 ---
+
 
 ## 1. 从"买二手车"说起：为什么架构要评估
 

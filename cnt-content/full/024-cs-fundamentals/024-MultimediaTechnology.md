@@ -1,20 +1,21 @@
 ---
-order: 67
+order: 240
 title: 多媒体技术
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 多媒体技术：音频编码、图像压缩、视频编码、流媒体与多媒体网络
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/计算机网络进阶'
-  - 'cs-fundamentals/网络安全'
-  - 'cs-fundamentals/人工智能基础'
-  - 'cs-fundamentals/计算机图形学'
+  - 'cs-fundamentals/022-ComputerNetworkAdvanced'
+  - 'cs-fundamentals/023-NetworkSecurity'
+  - 'cs-fundamentals/025-AIFundamentals'
+  - 'cs-fundamentals/026-ComputerShape'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 音频编码
 

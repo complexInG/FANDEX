@@ -1,20 +1,21 @@
 ---
-order: 70
+order: 260
 title: Java构建工具
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Maven与Gradle
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/Java日志系统
-  - java/Java单元测试
-  - java/控制流
-  - java/Java与微服务
+  - 'java/024-JavaLogSystem'
+  - 'java/025-JavaUnitTest'
+  - 'java/027-ControlFlow'
+  - 'java/028-JavaMicroservice'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 概述
 
 Java 构建工具负责管理项目的依赖、编译源码、运行测试、打包发布等一系列任务。没有构建工具时，你需要手动下载 jar 包、手动编译、手动组织目录结构，效率极低。构建工具把这些重复性工作自动化，让你专注于编写代码。

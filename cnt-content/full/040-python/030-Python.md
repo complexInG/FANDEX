@@ -1,31 +1,21 @@
 ---
-order: 74
-title: 'Python 与配置管理：从环境变量到云原生动态配置的工程实践'
-module: python
-category: Python
+order: 300
+title: Python 与配置管理：从环境变量到云原生动态配置的工程实践
+module: 'python'
+category: 后端技术
 difficulty: intermediate
-description: '系统阐述 Python 配置管理的形式化定义、配置源层级、十二因素应用方法论、Pydantic Settings/Dynaconf/python-dotenv 等主流方案、多环境配置、动态配置与特性开关、密钥管理、容器化与 Kubernetes 配置、配置测试与校验、生产级最佳实践。'
+description: 系统阐述 Python 配置管理的形式化定义、配置源层级、十二因素应用方法论、Pydantic Settings/Dynaconf/python-dotenv 等主流方案、多环境配置、动态配置与特性开关、密钥管理、容器化与 Kubernetes 配置、配置测试与校验、生产级最佳实践。
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - python
-  - configuration
-  - env-vars
-  - pydantic
-  - dynaconf
-  - twelve-factor
-  - secrets
-  - kubernetes
 related:
-  - python/Python与Docker
-  - python/Python与日志
-  - python/Python与加密
-  - python/Python与消息队列
+  - 'python/019-PythonDocker'
+  - 'python/027-PythonLog'
+  - 'python/028-PythonAndCryptography'
+  - 'python/032-PythonMessageQueue'
 prerequisites:
-  - python/语法速查
-  - python/基础数据类型
-  - python/类与对象
+  - 'python/067-BasicDataType'
 ---
+
 ## 1. 历史动机与背景
 
 ### 1.1 配置管理的起源

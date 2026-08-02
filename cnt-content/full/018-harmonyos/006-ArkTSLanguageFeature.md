@@ -1,21 +1,22 @@
 ---
-order: 50
+order: 60
 title: ArkTS语言特性
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
-description: 'ArkTS 语言特性深度剖析：TypeScript 超集设计、声明式 UI 范式、状态驱动响应式系统、静态约束与运行时优化、AOT 编译与跨端协同。'
+description: ArkTS 语言特性深度剖析：TypeScript 超集设计、声明式 UI 范式、状态驱动响应式系统、静态约束与运行时优化、AOT 编译与跨端协同。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - harmonyos/ArkTS与ArkUI
-  - harmonyos/ArkTS与TypeScript差异
-  - harmonyos/状态管理
-  - harmonyos/自定义组件
-  - harmonyos/组件生命周期详解
+  - 'harmonyos/002-ArkTSArkUI'
+  - 'harmonyos/025-ArkTSTypeScriptDifference'
+  - 'harmonyos/007-StateManagement'
+  - 'harmonyos/008-CustomComponent'
+  - 'harmonyos/027-ComponentLifecycleDetailed'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 
 
 # ArkTS 语言特性：HarmonyOS 声明式应用语言的工程哲学与形式化语义

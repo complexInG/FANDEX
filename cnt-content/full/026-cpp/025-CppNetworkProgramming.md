@@ -1,20 +1,20 @@
 ---
-order: 70
+order: 250
 title: C++网络编程
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: Socket编程与网络协议
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/C++图形编程
-  - cpp/C++序列化
-  - cpp/C++23与C++26新特性
-  - cpp/C++与Python交互
-prerequisites:
-  - cpp/概述与环境配置
+  - 'cpp/028-CppGraphicsProgramming'
+  - 'cpp/036-CppSerialization'
+  - 'cpp/034-Cpp23Cpp26NewFeatures'
+  - 'cpp/031-CppPythonInteraction'
+prerequisites: []
 ---
+
 ## 概述
 
 C++ 网络编程是使用 C++ 通过网络协议进行数据通信的技术。最基础的方式是使用操作系统提供的 Socket API，它允许程序通过网络发送和接收数据。更高级的方式是使用第三方库如 Boost.Asio、libcurl 等，它们封装了底层细节，提供了更易用的接口。

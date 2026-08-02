@@ -1,150 +1,22 @@
 ---
-order: 73
+order: 280
 title: Python与加密
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: 对称加密、非对称加密、哈希函数、数字签名、密码哈希与密钥管理的工程实践，覆盖 cryptography、hashlib、bcrypt、argon2 等核心库。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- python/Python与测试
-- python/Python与日志
-- python/Python与CLI
-- python/Python与配置管理
+  - 'python/029-PythonTest'
+  - 'python/027-PythonLog'
+  - 'python/039-PythonCLI'
+  - 'python/030-Python'
 prerequisites:
-- python/语法速查
-- python/面向对象编程
-- python/Python与异常处理
-tags:
-- python
-- cryptography
-- security
-- encryption
-- hashing
-- tls
-- pki
-references:
-- type: standard
-  authors:
-  - NIST
-  year: 2001
-  title: 'FIPS 197: Advanced Encryption Standard (AES)'
-  venue: National Institute of Standards and Technology
-  url: https://csrc.nist.gov/publications/detail/fips/197/final
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - NIST
-  year: 2015
-  title: 'FIPS 180-4: Secure Hash Standard (SHS)'
-  venue: National Institute of Standards and Technology
-  url: https://csrc.nist.gov/publications/detail/fips/180/4/final
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - NIST
-  year: 2020
-  title: 'NIST SP 800-63B: Digital Identity Guidelines (Authentication and Lifecycle Management)'
-  venue: National Institute of Standards and Technology
-  url: https://pages.nist.gov/800-63-3/sp800-63b.html
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Internet Engineering Task Force
-  year: 2018
-  title: 'RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3'
-  venue: IETF
-  url: https://www.rfc-editor.org/rfc/rfc8446
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Internet Engineering Task Force
-  year: 2007
-  title: 'RFC 5246: The Transport Layer Security (TLS) Protocol Version 1.2'
-  venue: IETF
-  url: https://www.rfc-editor.org/rfc/rfc5246
-  accessedDate: '2026-07-20'
-- type: conference
-  authors:
-  - Rivest, R. L.
-  - Shamir, A.
-  - Adleman, L.
-  year: 1978
-  title: A method for obtaining digital signatures and public-key cryptosystems
-  venue: Communications of the ACM
-  volume: 21
-  issue: 2
-  pages: 120-126
-  doi: 10.1145/359340.359342
-- type: conference
-  authors:
-  - Diffie, W.
-  - Hellman, M. E.
-  year: 1976
-  title: New directions in cryptography
-  venue: IEEE Transactions on Information Theory
-  volume: 22
-  issue: 6
-  pages: 644-654
-  doi: 10.1109/TIT.1976.1055638
-- type: conference
-  authors:
-  - Miller, V. S.
-  year: 1985
-  title: Use of elliptic curves in cryptography
-  venue: Advances in Cryptology — CRYPTO ’85 Proceedings
-  pages: 417-426
-  doi: 10.1007/3-540-39799-X_31
-- type: conference
-  authors:
-  - Biryukov, A.
-  - Dinur, D.
-  - Dunkelman, O.
-  year: 2019
-  title: 'Argon2: New Generation of Memory-Hard Functions for Password Hashing and Other Applications'
-  venue: Eurocrypt 2015 (and RFC 9106)'
-  pages: 1-44
-  doi: 10.17487/RFC9106
-- type: standard
-  authors:
-  - Python Software Foundation
-  year: 2026
-  title: Python cryptography documentation (version 44)
-  venue: Python Cryptographic Authority
-  url: https://cryptography.io/
-  accessedDate: '2026-07-20'
-- type: standard
-  authors:
-  - Internet Engineering Task Force
-  year: 2021
-  title: 'RFC 9106: Argon2 Memory-Hard Function for Password Hashing and Proof-of-Work Applications'
-  venue: IETF
-  url: https://www.rfc-editor.org/rfc/rfc9106
-  accessedDate: '2026-07-20'
-etymology:
-- term: 密码学
-  english: Cryptography
-  origin: 源自希腊语 kryptós（隐藏）与 graphein（书写），字面意义为「隐密书写」。
-- term: 对称加密
-  english: Symmetric Encryption
-  origin: 同一把密钥既用于加密也用于解密，因此「symmetric」（对称）。
-- term: 非对称加密
-  english: Asymmetric Encryption
-  origin: 使用一对数学上相关但不可互推的密钥（公钥与私钥），又称 public-key cryptography。
-- term: 哈希
-  english: Hash
-  origin: 来自法语 hacher（切碎），意指将任意长输入「切碎」成定长摘要。
-- term: 盐
-  english: Salt
-  origin: 借用烹饪术语，意为在密码中加入「调料」以改变其哈希输出，防止彩虹表攻击。
-- term: AEAD
-  english: Authenticated Encryption with Associated Data
-  origin: 一种密码学模式，同时保证机密性（Encryption）、完整性（Authentication）以及附加数据（Associated Data）的完整性。
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
-estimatedReadingTime: 90
+  - 'python/061-OOP'
+  - 'python/063-ExceptionHandling'
 ---
+
 
 
 # Python 与加密

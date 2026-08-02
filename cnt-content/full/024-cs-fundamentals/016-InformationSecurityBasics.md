@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 160
 title: 信息安全基础
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 信息安全基础：密码学原理、对称加密、非对称加密、哈希函数与数字签名
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/算法设计与分析'
-  - 'cs-fundamentals/形式语言与自动机'
-  - 'cs-fundamentals/编译原理'
-  - 'cs-fundamentals/软件工程'
+  - 'cs-fundamentals/014-AlgorithmDesignAnalysis'
+  - 'cs-fundamentals/015-FormalLanguageAndAutomata'
+  - 'cs-fundamentals/017-CompilePrinciple'
+  - 'cs-fundamentals/018-SoftwareEngineering'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 信息安全概述
 

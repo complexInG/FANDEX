@@ -1,20 +1,21 @@
 ---
-order: 91
+order: 520
 title: MySQL9新特性与并行查询
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-description: 'MySQL 9.x新特性：VECTOR向量类型、JSON增强、窗口函数完善、CTE递归、函数索引、并行查询优化'
+description: MySQL 9.x新特性：VECTOR向量类型、JSON增强、窗口函数完善、CTE递归、函数索引、并行查询优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/数据加密
-  - mysql/索引与执行计划
-  - mysql/VECTOR向量类型
-  - mysql/JSON模式验证与聚合函数
+  - 'mysql/050-DataEncryption'
+  - 'mysql/051-MySQLIndexExecutionPlan'
+  - 'mysql/053-VectorType'
+  - 'mysql/054-JSONSchemaValidationAggregate'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. MySQL 9.x 概述
 

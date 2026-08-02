@@ -1,9 +1,8 @@
 ---
 order: 330
 title: Lua 5.4 新特性
-module: lua
-
-category: '017-lua'
+module: 'lua'
+category: 后端技术
 difficulty: beginner
 description: Lua 5.4 新特性 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## const 常量变量
 
 **基本写法：声明常量**

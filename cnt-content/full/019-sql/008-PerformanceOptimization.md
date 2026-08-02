@@ -1,19 +1,20 @@
 ---
-order: 8
+order: 80
 title: 性能优化
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
 description: 执行计划、索引策略、查询重写、统计信息、参数化查询、分区表与物化视图
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/窗口函数
-  - sql/高级查询
-  - 'sql/PL-SQL与存储过程'
-  - sql/SQL实战与面试
+  - 'sql/006-WindowFunction'
+  - 'sql/007-AdvancedQuery'
+  - 'sql/009-PLSQLStoredProcedure'
+  - 'sql/010-SQLPracticeInterview'
 prerequisites: []
 ---
+
 ## 执行计划
 
 执行计划是数据库查询优化器选择的执行路径，是性能优化的核心工具。

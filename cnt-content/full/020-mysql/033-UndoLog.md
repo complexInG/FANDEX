@@ -1,20 +1,21 @@
 ---
-order: 75
+order: 330
 title: 撤销日志
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL InnoDB撤销日志undo log：版本链、回滚段、MVCC支持与Purge机制'
+description: MySQL InnoDB撤销日志undo log：版本链、回滚段、MVCC支持与Purge机制
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/二进制日志
-  - mysql/重做日志
-  - mysql/日志系统
-  - mysql/逻辑备份
+  - 'mysql/031-Binlog'
+  - 'mysql/032-RedoLog'
+  - 'mysql/034-LogSystem'
+  - 'mysql/035-LogicalBackup'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. undo log 概述
 

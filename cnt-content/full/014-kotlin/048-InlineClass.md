@@ -1,20 +1,21 @@
 ---
-order: 104
+order: 480
 title: 内联类
-module: kotlin
-category: 'dev-lang'
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'Kotlin内联类inline class避免装箱开销。'
+description: Kotlin内联类inline class避免装箱开销。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - kotlin/Channel与BroadcastChannel
-  - kotlin/密封类与密封接口
-  - kotlin/扩展函数的编译原理
-  - kotlin/作用域函数区别
+  - 'kotlin/046-ChannelBroadcastChannel'
+  - 'kotlin/047-SealedClassSealedInterface'
+  - 'kotlin/049-ExtensionFunctionCompilePrinciple'
+  - 'kotlin/050-ScopeFunctionDifference'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 # 内联类（value class）
 

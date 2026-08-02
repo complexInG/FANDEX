@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 140
 title: 性能调优
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: advanced
 description: 性能调优：系统性能分析、CPU/内存/磁盘/网络优化、应用性能与压测
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/日志管理
-  - devops/配置管理
-  - devops/高可用架构
-  - devops/自动化测试
+  - 'devops/012-LogManagement'
+  - 'devops/013-ConfigManagement'
+  - 'devops/015-HighAvailabilityArchitecture'
+  - 'devops/016-AutomationTest'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 性能调优方法论
 

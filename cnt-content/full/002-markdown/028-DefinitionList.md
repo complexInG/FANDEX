@@ -1,9 +1,8 @@
 ---
 order: 280
 title: Markdown 定义列表
-module: markdown
-
-category: '002-markdown'
+module: 'markdown'
+category: 工具链
 difficulty: beginner
 description: Markdown 定义列表 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## PHP Markdown Extra 语法
 
 **基本写法：术语与定义**

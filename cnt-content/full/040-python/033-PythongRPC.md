@@ -1,20 +1,20 @@
 ---
-order: 77
+order: 330
 title: Python与gRPC
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: gRPC与Protocol Buffers
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与消息队列
-  - python/Python与WebSocket
-  - 'python/Python与CI-CD'
-  - python/Python与性能优化
-prerequisites:
-  - python/语法速查
+  - 'python/032-PythonMessageQueue'
+  - 'python/034-PythonWebSocket'
+  - 'python/035-PythonCICD'
+  - 'python/036-PythonPerformance'
+prerequisites: []
 ---
+
 
 ## 什么是 gRPC
 

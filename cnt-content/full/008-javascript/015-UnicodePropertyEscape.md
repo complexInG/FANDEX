@@ -1,107 +1,21 @@
 ---
-order: 59
+order: 150
 title: Unicode属性转义
-module: javascript
-category: JavaScript
-tags:
-- JavaScript
-- 正则表达式
-- Unicode
-- 国际化
-- ES2018
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
 description: 正则表达式 Unicode 属性转义机制、形式语义、性能调优与生产实践
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- javascript/具名捕获组
-- javascript/断言
-- javascript/函数-作用域与闭包
-- javascript/自定义Error
+  - 'javascript/013-ES2018RegExpNamedCaptureGroups'
+  - 'javascript/014-Assert'
+  - 'javascript/016-FunctionScopeClosure'
+  - 'javascript/017-ErrorReferenceAndControlFlowAndErrorHandling'
 prerequisites:
-- javascript/语法速查
-- javascript/正则表达式
-references:
-- type: standard
-  authors:
-  - Ecma International
-  year: 2018
-  title: ECMAScript 2018 Language Specification (ECMA-262, 9th Edition)
-  venue: Ecma International
-  doi: 10.1145/3178987
-  url: https://www.ecma-international.org/publications/standards/Ecma-262.htm
-- type: standard
-  authors:
-  - The Unicode Consortium
-  year: 2024
-  title: The Unicode Standard, Version 15.1.0
-  venue: The Unicode Consortium
-  url: https://www.unicode.org/versions/Unicode15.1.0/
-- type: technical-report
-  authors:
-  - Mathias Bynens
-  - Daniel Ehrenberg
-  - Brian Terlson
-  year: 2017
-  title: 'Proposal: Unicode Property Escapes (TC39 Stage 4)'
-  venue: TC39 ECMAScript Proposals
-  url: https://github.com/tc39/proposal-regexp-unicode-property-escapes
-- type: technical-report
-  authors:
-  - Mark Davis
-  - Laurentiu Iancu
-  year: 2024
-  title: 'Unicode Technical Standard #18: Unicode Regular Expressions'
-  venue: The Unicode Consortium
-  url: https://www.unicode.org/reports/tr18/
-- type: documentation
-  authors:
-  - MDN Web Docs
-  year: 2025
-  title: 'Unicode character class escape: \p{...}, \P{...}'
-  venue: Mozilla Developer Network
-  url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape
-- type: journal
-  authors:
-  - Henning Gunther
-  - Martin Lange
-  - Peter Lammich
-  year: 2019
-  title: On the Complexity of Regular Expression Matching with Unicode Property Escapes
-  venue: Proceedings of the ACM on Programming Languages
-  volume: 3
-  issue: OOPSLA
-  pages: 1-28
-  doi: 10.1145/3360581
-- type: website
-  authors:
-  - Mathias Bynens
-  year: 2017
-  title: Unicode property escapes in JavaScript regular expressions
-  venue: Personal Blog
-  url: https://mathiasbynens.be/notes/es-unicode-property-escapes
-  accessedDate: '2026-07-20'
-- type: documentation
-  authors:
-  - V8 Development Team
-  year: 2025
-  title: 'V8 RegExp Engine Internals: Irregexp Unicode Property Handling'
-  venue: V8 Developer Documentation
-  url: https://v8.dev/blog
-etymology:
-- term: Unicode
-  english: Unicode
-  origin: 由 Unicode Consortium 于 1991 年创建的字符编码标准，"Uni" 表示统一，"code" 指编码，旨在统一全球字符集
-- term: 属性转义
-  english: Property Escape
-  origin: 借鉴 Perl 5 的 \p{...} 语法，"Property" 指 Unicode 字符数据库（UCD）中的字符属性，"Escape" 指转义序列
-- term: 脚本
-  english: Script
-  origin: 源自 Unicode Script 属性，用于按书写系统对字符分类，如拉丁文、汉字、阿拉伯文等
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
-estimatedReadingTime: 45
+  - 'javascript/043-Regex'
 ---
+
 
 
 # Unicode 属性转义

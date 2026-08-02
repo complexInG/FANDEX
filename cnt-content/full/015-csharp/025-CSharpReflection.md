@@ -1,20 +1,19 @@
 ---
-order: 64
-title: 'C#与反射'
-module: csharp
-category: 'C#'
+order: 250
+title: C#与反射
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
 description: 反射与表达式树
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - 'csharp/CSharp与最小API'
-  - 'csharp/CSharp12与CSharp13新特性'
-  - csharp/LINQ延迟与立即执行
-  - 'csharp/async-await状态机'
+  - 'csharp/026-LINQDeferredImmediate'
+  - 'csharp/027-AsyncAwaitStateMachine'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 ## 一、概述
 
 反射（Reflection）是 C# 与 .NET 运行时（CLR，Common Language Runtime）提供给开发者的一种"元编程"能力：在程序运行时，动态地获取类型信息、访问类型成员、创建类型实例、调用方法、读写属性与字段，甚至于在运行时动态生成新的类型。表达式树（Expression Trees）则是一种将代码以数据结构形式表示的技术，它将原本不可见的"代码逻辑"转化为可在运行时遍历、分析、修改、编译的结构化对象，是 LINQ、EF Core、动态查询等高级特性的底层基石。

@@ -1,20 +1,18 @@
 ---
-order: 69
-title: 'git-revert'
-module: git
-category: 'Git Basics'
+order: 260
+title: git-revert
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git revert详解：安全撤销提交、生成反向提交与多人协作场景。'
+description: git revert详解：安全撤销提交、生成反向提交与多人协作场景。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/修改提交
-  - git/重置与回退
-  - git/Git原理与对象模型
-  - git/标签管理
-prerequisites:
-  - git/语法速查
+  - 'git/027-GitPrincipleObjectModel'
+  - 'git/028-TagManagement'
+prerequisites: []
 ---
+
 ## 1. revert 概述
 
 ### 1.1 什么是 revert

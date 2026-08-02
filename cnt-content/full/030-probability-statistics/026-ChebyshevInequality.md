@@ -1,19 +1,20 @@
 ---
-order: 50
+order: 220
 title: 切比雪夫不等式
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 切比雪夫不等式的表述、推导（马尔可夫不等式）、应用（估计概率、确定样本量）、推广与局限性。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/矩与协方差矩阵'
-  - 'probability-statistics/大数定律'
-  - 'probability-statistics/中心极限定理'
+  - 'probability-statistics/024-MomentAndCovarianceMatrix'
+  - 'probability-statistics/027-LawOfLargeNumbers'
+  - 'probability-statistics/028-CentralLimitTheorem'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：即使不知道规则，也能划出"安全范围"
 

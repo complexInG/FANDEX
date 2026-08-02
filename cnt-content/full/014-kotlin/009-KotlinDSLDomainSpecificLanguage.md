@@ -1,19 +1,20 @@
 ---
-order: 18
-title: 'Kotlin DSL 与领域特定语言'
-module: kotlin
-category: Kotlin
+order: 90
+title: Kotlin DSL 与领域特定语言
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'DSL 设计模式、带接收者的 Lambda、类型安全构建器与实际项目 DSL 设计。'
+description: DSL 设计模式、带接收者的 Lambda、类型安全构建器与实际项目 DSL 设计。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/协程进阶
-  - kotlin/Kotlin多平台
-  - kotlin/测试与最佳实践
-  - kotlin/空安全详解
+  - 'kotlin/007-KotlinCoroutineAdvanced'
+  - 'kotlin/008-KotlinMultiplatform'
+  - 'kotlin/010-KotlinTestBestPractice'
+  - 'kotlin/012-NullSafetyDetailed'
 prerequisites: []
 ---
+
 
 ## 1. DSL 概述
 

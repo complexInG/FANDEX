@@ -1,19 +1,20 @@
 ---
-order: 2
+order: 20
 title: 命令行基础：文件与目录操作
-module: shell
-category: Shell
+module: 'shell'
+category: 工具链
 difficulty: beginner
-description: 'Shell 命令行基础：文件与目录操作、通配符与帮助系统'
+description: Shell 命令行基础：文件与目录操作、通配符与帮助系统
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - shell/003-TextProcessingTools
-  - shell/001-ShellBasics
+  - 'shell/003-TextProcessingTools'
+  - 'shell/001-ShellBasics'
 prerequisites:
-  - getting-started/012-CommandLineBasics
-  - shell/001-ShellBasics
+  - 'getting-started/012-CommandLineBasics'
+  - 'shell/001-ShellBasics'
 ---
+
 
 ## 1. 从"整理房间"说起
 

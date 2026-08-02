@@ -1,20 +1,21 @@
 ---
-order: 54
+order: 80
 title: SDN与网络自动化
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: advanced
 description: SDN与网络自动化：OpenFlow、NETCONF/YANG、Ansible网络、网络可编程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/网络安全技术
-  - networking/无线网络
-  - networking/网络存储技术
-  - networking/网络故障诊断
+  - 'networking/006-NetworkSecurityTech'
+  - 'networking/007-WirelessNetwork'
+  - 'networking/009-NetworkStorageTechnology'
+  - 'networking/010-NetworkDiagnosis'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. SDN 架构
 

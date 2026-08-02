@@ -1,19 +1,20 @@
 ---
-order: 83
+order: 360
 title: 卡方检验
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 单总体方差检验、拟合优度检验、独立性检验的原理与应用，以"分类数据是否符合预期"类比贯穿。
+description: '单总体方差检验、拟合优度检验、独立性检验的原理与应用，以"分类数据是否符合预期"类比贯穿。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/Z检验'
-  - 'probability-statistics/t检验'
-  - 'probability-statistics/F检验'
+  - 'probability-statistics/041-ZTest'
+  - 'probability-statistics/042-TTest'
+  - 'probability-statistics/044-FTest'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 分类数据"是否符合预期"的裁判
 

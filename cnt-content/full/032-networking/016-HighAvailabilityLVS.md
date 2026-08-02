@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 160
 title: 高可用LVS
-module: networking
-category: 'eng-infra'
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
-description: 'LVS 高可用负载均衡：DR、NAT、TUN 三种模式原理与配置。'
+description: LVS 高可用负载均衡：DR、NAT、TUN 三种模式原理与配置。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/网络自动化
-  - networking/负载均衡算法
-  - networking/Keepalived双机热备
-  - networking/网络命名空间与虚拟网桥
+  - 'networking/014-NetworkAutomation'
+  - 'networking/015-LoadBalanceAlgorithm'
+  - 'networking/017-KeepalivedDualHotStandby'
+  - 'networking/018-NetworkNamespaceVirtualBridge'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. LVS 架构
 

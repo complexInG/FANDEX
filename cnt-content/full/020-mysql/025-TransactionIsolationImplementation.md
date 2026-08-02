@@ -1,20 +1,21 @@
 ---
-order: 68
+order: 250
 title: 事务隔离级别底层实现
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL InnoDB事务隔离级别底层实现：锁机制、MVCC、Read View与各隔离级别的实现细节'
+description: MySQL InnoDB事务隔离级别底层实现：锁机制、MVCC、Read View与各隔离级别的实现细节
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'mysql/GROUP-BY与ORDER-BY优化'
-  - mysql/JOIN算法
-  - mysql/MVCC原理
-  - mysql/多表联查详解
+  - 'mysql/023-GroupByOrderByOptimization'
+  - 'mysql/024-JOINAlgorithm'
+  - 'mysql/026-MVCCPrinciple'
+  - 'mysql/027-MultiTableJoinDetailed'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. InnoDB 隔离级别实现概述
 

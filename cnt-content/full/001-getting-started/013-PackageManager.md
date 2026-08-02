@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 130
 title: 包管理器
 module: 'getting-started'
-category: 入门指南
+category: 工具链
 difficulty: beginner
 description: 主流包管理器对比：npm、pip、apt、brew的工作原理与使用方法。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/插件生态'
-  - 'getting-started/命令行基础'
-  - 'getting-started/版本控制系统选型'
-  - 'getting-started/项目初始化'
+  - 'getting-started/011-PluginEcosystem'
+  - 'getting-started/012-CommandLineBasics'
+  - 'getting-started/014-VCSSelection'
+  - 'getting-started/015-ProjectInit'
 prerequisites:
-  - 'getting-started/入门指南'
+  - 'getting-started/001-GettingStartedGuide'
 ---
+
 ## 1. 包管理器概述
 
 ### 1.1 什么是包管理器

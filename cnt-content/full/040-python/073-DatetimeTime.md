@@ -1,9 +1,8 @@
 ---
 order: 730
 title: Python datetime 与 time
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python datetime 与 time 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## datetime 基本创建
 
 **基本写法：创建日期**

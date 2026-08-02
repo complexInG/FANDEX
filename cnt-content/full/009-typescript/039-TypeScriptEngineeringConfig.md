@@ -1,22 +1,20 @@
 ---
-order: 80
-tags:
-  - typescript
+order: 390
+title: TypeScript 工程化配置
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
-title: 'TypeScript 工程化配置'
-module: typescript
-category: 'TypeScript Advanced'
-description: 'tsconfig 详解、项目引用、增量编译与 monorepo 配置。'
+description: tsconfig 详解、项目引用、增量编译与 monorepo 配置。
 author: Anonymous
 updated: '2026-07-20'
 related:
-  - typescript/类型安全的环境变量
-  - typescript/TypeScript5新特性
-  - typescript/satisfies操作符
-  - typescript/迁移实战
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/031-TypeSafeEnvVar'
+  - 'typescript/038-TypesAndProgrammingLanguages'
+  - 'typescript/040-SatisfiesOperator'
+  - 'typescript/041-TypeScriptMigrationPractice'
+prerequisites: []
 ---
+
 
 
 # TypeScript 工程化配置：从单文件到 Monorepo 的完整路径

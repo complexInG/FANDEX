@@ -1,18 +1,19 @@
 ---
-order: 11
+order: 20
 title: 古典概型
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: beginner
 description: 从概率论的历史起源——赌金分配问题讲起，系统讲解等可能概型（古典概型）的定义与计算、排列组合基础、抽球分房生日配对等典型问题。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/样本空间与事件'
-  - 'probability-statistics/几何概型'
-  - 'probability-statistics/条件概率'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
+  - 'probability-statistics/003-GeometricProbability'
+  - 'probability-statistics/004-ConditionalProbability'
 prerequisites: []
 ---
+
 
 ## 0. 1654 年的一场"赌局之争"
 

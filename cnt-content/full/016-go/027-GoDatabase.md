@@ -1,20 +1,21 @@
 ---
-order: 68
+order: 270
 title: Go与数据库
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
 description: database/sql与ORM
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与Redis
-  - go/Go与消息队列
-  - go/Go与JSON
-  - go/Go与配置管理
+  - 'go/025-GoRedis'
+  - 'go/026-GoMessageQueue'
+  - 'go/029-GoJSON'
+  - 'go/035-GoConfigManagement'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

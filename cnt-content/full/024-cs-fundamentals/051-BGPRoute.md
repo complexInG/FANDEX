@@ -1,20 +1,21 @@
 ---
-order: 118
+order: 510
 title: BGP路由协议
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: 'BGP 边界网关协议：AS 路径、选路策略、路由聚合与 Anycast。'
+description: BGP 边界网关协议：AS 路径、选路策略、路由聚合与 Anycast。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/QUIC协议'
-  - 'cs-fundamentals/ARP协议与ARP欺骗'
-  - 'cs-fundamentals/词法分析'
-  - 'cs-fundamentals/语法分析'
+  - 'cs-fundamentals/049-QUIC'
+  - 'cs-fundamentals/050-ARPARP'
+  - 'cs-fundamentals/052-LexicalAnalysis'
+  - 'cs-fundamentals/053-GrammarAnalysis'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. BGP 基础
 

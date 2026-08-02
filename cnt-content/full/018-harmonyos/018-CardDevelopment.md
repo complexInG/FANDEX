@@ -1,20 +1,21 @@
 ---
-order: 63
+order: 180
 title: 卡片开发
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: 服务卡片与桌面小组件
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/分布式能力
-  - harmonyos/通知与权限
-  - harmonyos/数据持久化
-  - harmonyos/动画系统
+  - 'harmonyos/019-DistributedCapability'
+  - 'harmonyos/015-NotificationPermission'
+  - 'harmonyos/012-DataPersistence'
+  - 'harmonyos/013-AnimationSystem'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ## 概述
 
 服务卡片（Widget）是 HarmonyOS 的桌面小组件，用户可以在桌面上直接查看应用的关键信息，无需打开应用。卡片支持静态展示和动态更新，尺寸从 1x1 到 4x4 不等。合理使用卡片可以提升应用的可见性和用户粘性。

@@ -1,23 +1,24 @@
 ---
-order: 102
+order: 530
 title: 完美转发与引用折叠
-module: cpp
-category: 'dev-lang'
+module: 'cpp'
+category: 计算机科学
 difficulty: advanced
-description: 'C++完美转发与引用折叠详解：std::forward、转发引用、参数包展开与元编程应用。'
+description: C++完美转发与引用折叠详解：std::forward、转发引用、参数包展开与元编程应用。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - cpp/STL算法与函数对象
-  - cpp/移动语义详解
-  - cpp/虚函数表与多态内存布局
-  - cpp/智能指针循环引用
-  - cpp/引用
-  - cpp/模板
+  - 'cpp/051-CSTLAlgorithmAndFunctionObject'
+  - 'cpp/052-MoveSemanticsDetailed'
+  - 'cpp/054-VTablePolymorphismMemoryLayout'
+  - 'cpp/055-SmartPointerCircularReference'
+  - 'cpp/004-CppReference'
+  - 'cpp/062-CppTemplate'
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/引用
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/004-CppReference'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 问题起源：泛型包装器与参数转发

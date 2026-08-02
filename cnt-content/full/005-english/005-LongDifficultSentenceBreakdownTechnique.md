@@ -1,19 +1,20 @@
 ---
-order: 23
+order: 50
 title: 长难句拆解技巧
-module: english
-category: 'comp-sci'
+module: 'english'
+category: 工具链
 difficulty: advanced
 description: 英语长难句分析方法论，涵盖结构拆解、核心提取、从句识别与语序调整技巧。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - english/句子结构与成分分析
-  - english/复合句与从句
-  - english/常见语法错误汇总
-  - english/技术文档阅读方法
+  - 'english/003-SentenceStructureAnalysis'
+  - 'english/004-CompoundSentenceClause'
+  - 'english/006-CommonGrammarErrorSummary'
+  - 'english/007-TechDocReadingMethod'
 prerequisites: []
 ---
+
 
 ## 1. 长难句的构成特征
 

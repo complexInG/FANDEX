@@ -1,23 +1,21 @@
 ---
-order: 85
-tags:
-  - c
-  - preprocessor
-difficulty: intermediate
+order: 370
 title: 预处理器与宏
-module: c
-category: 'C Basics'
+module: 'c'
+category: 计算机科学
+difficulty: intermediate
 description: C预处理器指令、宏定义与展开、条件编译、文件包含与常见陷阱详解。
 author: fanquanpp
 updated: '2026-06-13'
 related:
-  - c/C与汇编交互
-  - c/数组详解
-  - c/C23与C2y新标准
-  - c/指针深度解析
+  - 'c/035-CAssemblyInteraction'
+  - 'c/036-ArrayDetailed'
+  - 'c/038-C23C2y'
+  - 'c/039-PointerDeep'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 第 1 章 引言与学习路径
 
 ### 1.1 为什么预处理器是 C 工程师的"必修课"

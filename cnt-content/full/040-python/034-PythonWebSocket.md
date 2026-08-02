@@ -1,20 +1,20 @@
 ---
-order: 78
+order: 340
 title: Python与WebSocket
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: WebSocket实时通信
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与消息队列
-  - python/Python与gRPC
-  - 'python/Python与CI-CD'
-  - python/Python与性能优化
-prerequisites:
-  - python/语法速查
+  - 'python/032-PythonMessageQueue'
+  - 'python/033-PythongRPC'
+  - 'python/035-PythonCICD'
+  - 'python/036-PythonPerformance'
+prerequisites: []
 ---
+
 
 ## 什么是 WebSocket
 

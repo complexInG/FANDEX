@@ -1,20 +1,21 @@
 ---
-order: 42
+order: 110
 title: Kotlin与协程Channel
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: Channel热数据流
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/协程基础
-  - kotlin/Flow冷流与SharedFlow和StateFlow
-  - kotlin/协程调度器与上下文
-  - kotlin/Kotlin与WebSocket
+  - 'kotlin/016-CoroutineBasics'
+  - 'kotlin/045-FlowColdSharedState'
+  - 'kotlin/044-CoroutineDispatcherContext'
+  - 'kotlin/042-KotlinWebSocket'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ## 概述
 

@@ -1,19 +1,20 @@
 ---
-order: 8
+order: 80
 title: 曲线积分与曲面积分
-module: calculus
-category: 高等数学
+module: 'calculus'
+category: 数学
 difficulty: advanced
 description: 第一/二类曲线积分、Green公式、第一/二类曲面积分、Gauss公式、Stokes公式、场论初步。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - calculus/多元函数微分
-  - calculus/重积分
-  - calculus/公式速查表
-  - calculus/无穷级数与常微分方程
+  - 'calculus/006-MultivariateFunctionDifferential'
+  - 'calculus/007-MultipleIntegral'
+  - 'calculus/009-FormulaQuickReference'
+  - 'calculus/010-InfiniteSeriesAndODE'
 prerequisites: []
 ---
+
 
 ## 1. 第一类曲线积分（对弧长的曲线积分）
 

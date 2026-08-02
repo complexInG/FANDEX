@@ -1,117 +1,20 @@
 ---
-order: 64
+order: 210
 title: 索引数据库
-module: javascript
-category: JavaScript
-tags:
-- JavaScript
-- IndexedDB
-- NoSQL
-- 浏览器存储
-- 事务
-- 索引
-- 离线优先
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: 浏览器端事务型 NoSQL 数据库的形式语义、事务模型、索引机制与生产级工程实践
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- javascript/Web存储API
-- javascript/Promise与async
-- javascript/迭代器帮助器
-- javascript/ServiceWorker
-- javascript/网络请求API
+  - 'javascript/020-StorageForTheWeb'
+  - 'javascript/023-IteratorHelper'
+  - 'javascript/019-ImageOptimization'
 prerequisites:
-- javascript/语法速查
-- javascript/Promise与async
-- javascript/Web存储API
-references:
-- type: standard
-  authors:
-  - Nikhil Marathe
-  - Jonas Sicking
-  year: 2026
-  title: Indexed Database API 3.0
-  venue: W3C
-  url: https://www.w3.org/TR/IndexedDB-3/
-- type: standard
-  authors:
-  - Nikhil Marathe
-  year: 2015
-  title: Indexed Database API 1.0 - W3C Recommendation
-  venue: W3C
-  url: https://www.w3.org/TR/2015/REC-IndexedDB-20150108/
-- type: conference
-  authors:
-  - Jonas Sicking
-  year: 2010
-  title: 'IndexedDB Proposal: Async API and Rationale'
-  venue: W3C WebApps Working Group
-  url: https://www.w3.org/TR/IndexedDB/
-- type: book
-  authors:
-  - David Flanagan
-  year: 2020
-  title: 'JavaScript: The Definitive Guide (7th Edition)'
-  venue: O'Reilly Media
-  pages: 1-704
-  doi: 10.5555/3372471
-- type: book
-  authors:
-  - Eric Freeman
-  - Elisabeth Robson
-  year: 2014
-  title: Head First JavaScript Programming
-  venue: O'Reilly Media
-  pages: 1-700
-- type: journal
-  authors:
-  - Theo Härder
-  - Andreas Reuter
-  year: 1983
-  title: Principles of Transaction-Oriented Database Recovery
-  venue: ACM Computing Surveys
-  volume: 15
-  issue: 4
-  pages: 287-317
-  doi: 10.1145/289.291
-- type: book
-  authors:
-  - Raghu Ramakrishnan
-  - Johannes Gehrke
-  year: 2003
-  title: Database Management Systems (3rd Edition)
-  venue: McGraw-Hill
-  pages: 1-1064
-- type: documentation
-  authors:
-  - MDN Web Docs
-  year: 2025
-  title: IndexedDB API
-  venue: Mozilla Developer Network
-  url: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
-- type: website
-  authors:
-  - Jake Archibald
-  year: 2015
-  title: 'IndexedDB: A Database in Your Browser'
-  venue: web.dev
-  url: https://web.dev/articles/indexeddb
-  accessedDate: '2026-07-20'
-etymology:
-- term: 索引数据库
-  english: Indexed Database API
-  origin: 由 Oracle 的 Nikhil Marathe 与 Mozilla 的 Jonas Sicking 主导设计，2010 年发布草案，2015 年成为 W3C 推荐标准。"Indexed" 强调其索引查询能力，区别于简单的键值存储（localStorage）；"Database" 表明其具备事务、索引、游标等完整数据库特性
-- term: 事务
-  english: Transaction
-  origin: '源于数据库理论，由 Jim Gray 在 1970 年代系统化。ACID（原子性、一致性、隔离性、持久性）特性由 Härder 与 Reuter 在 1983 年的论文《Principles of Transaction-Oriented Database Recovery》中正式定义（DOI: 10.1145/289.291）'
-- term: 对象存储
-  english: Object Store
-  origin: 借鉴自对象数据库（Object-Oriented Database）概念，1970 年代由 Malcolm Atkinson 等提出。IndexedDB 中的对象存储类似 SQL 数据库中的表，但无固定 schema，存储任意结构化对象
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
-estimatedReadingTime: 55
+  - 'javascript/020-StorageForTheWeb'
 ---
+
 
 
 # 索引数据库（IndexedDB）

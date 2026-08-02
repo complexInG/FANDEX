@@ -1,20 +1,20 @@
 ---
-order: 81
+order: 390
 title: Python与CLI
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: 命令行工具开发
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/Python与日志
-  - python/Python与测试
-  - python/Python与加密
-  - python/函数详解
-prerequisites:
-  - python/语法速查
+  - 'python/027-PythonLog'
+  - 'python/029-PythonTest'
+  - 'python/028-PythonAndCryptography'
+  - 'python/026-FunctionDetailed'
+prerequisites: []
 ---
+
 
 ## 什么是 CLI
 

@@ -1,20 +1,21 @@
 ---
-order: 59
+order: 150
 title: 形式语言与自动机
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 形式语言与自动机：正则语言、上下文无关文法、下推自动机与图灵机
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/分布式系统'
-  - 'cs-fundamentals/算法设计与分析'
-  - 'cs-fundamentals/信息安全基础'
-  - 'cs-fundamentals/编译原理'
+  - 'cs-fundamentals/013-DistributedSystem'
+  - 'cs-fundamentals/014-AlgorithmDesignAnalysis'
+  - 'cs-fundamentals/016-InformationSecurityBasics'
+  - 'cs-fundamentals/017-CompilePrinciple'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 形式语言基础
 

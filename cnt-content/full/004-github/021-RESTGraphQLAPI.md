@@ -1,20 +1,18 @@
 ---
-order: 63
-title: 'REST与GraphQL-API'
-module: github
-category: GitHub
+order: 210
+title: REST与GraphQL-API
+module: 'github'
+category: 工具链
 difficulty: advanced
-description: 'GitHub API详解：REST与GraphQL双路线对比（餐厅点餐类比）、认证方式、curl/gh api调用与速率限制。'
+description: GitHub API详解：REST与GraphQL双路线对比（餐厅点餐类比）、认证方式、curl/gh api调用与速率限制。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/CodeQL代码扫描
-  - github/命令行工具
-  - github/Web钩子
-  - github/包管理服务
+  - 'github/019-CodeQLCodeScanning'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 先来一个生活场景：餐厅点餐菜单
 

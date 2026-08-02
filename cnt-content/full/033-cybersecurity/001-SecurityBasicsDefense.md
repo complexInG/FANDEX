@@ -1,17 +1,18 @@
 ---
-order: 1
+order: 10
 title: 安全基础与防御
-module: cybersecurity
-category: 网络安全
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: 防火墙策略配置、IDS/IPS入侵检测与防御、系统安全加固、对称/非对称加密算法、哈希算法、SSL/TLS协议。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/Web安全与渗透测试
-  - cybersecurity/二进制安全与应急响应
+  - 'cybersecurity/002-WebSecurityPenetrationTesting'
+  - 'cybersecurity/003-BinarySecurityAndIncidentResponse'
 prerequisites: []
 ---
+
 ## 1. 防火墙策略配置
 
 ### 1.1 防火墙类型

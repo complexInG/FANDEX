@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 90
 title: 网络存储技术
-module: networking
-category: 网络技术
+module: 'networking'
+category: 云与基础设施
 difficulty: intermediate
 description: 网络存储技术：SAN、NAS、iSCSI、FC、分布式存储与数据保护
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - networking/无线网络
-  - networking/SDN与网络自动化
-  - networking/网络故障诊断
-  - networking/网络设计与规划
+  - 'networking/007-WirelessNetwork'
+  - 'networking/008-SDNNetworkAutomation'
+  - 'networking/010-NetworkDiagnosis'
+  - 'networking/011-NetworkDesignPlanning'
 prerequisites:
-  - networking/网络基础与协议
+  - 'networking/001-NetworkBasicsAndProtocol'
 ---
+
 
 ## 1. 存储架构
 

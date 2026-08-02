@@ -1,20 +1,20 @@
 ---
 order: 50
 title: 位图
-module: redis
-category: Redis
+module: 'redis'
+category: 数据库
 difficulty: intermediate
 description: Redis位图Bitmap：位操作、统计、用户标签、在线状态与布隆过滤器
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - redis/缓存策略与高级特性
-  - redis/语法速查
-  - redis/基数统计
-  - redis/地理空间
+  - 'redis/004-CacheStrategyAdvancedFeature'
+  - 'redis/006-NumberStats'
+  - 'redis/007-GeoSpatial'
 prerequisites:
-  - redis/概述与核心数据结构
+  - 'redis/001-OverviewCoreDataStructure'
 ---
+
 ## 1. 位图概述
 
 位图（Bitmap）不是独立数据类型，而是基于 String 类型的位操作，每个 String 键最多存储 $2^{32}$ 个位。

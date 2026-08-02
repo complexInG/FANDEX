@@ -1,25 +1,23 @@
 ---
-order: 71
+order: 310
 title: 构建系统
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
-description: 'CMake/Make/Ninja 构建系统原理、工程实践与跨平台管理'
+description: CMake/Make/Ninja 构建系统原理、工程实践与跨平台管理
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/函数详解
-  - c/国际化与本地化
-  - c/静态分析与调试
-  - c/跨平台编程
-  - c/属性与编译器扩展
-  - c/静态库与动态库
-  - c/头文件与链接
+  - 'c/028-FunctionDetailed'
+  - 'c/030-HelloWorldOrOr'
+  - 'c/032-StaticAnalysisDebug'
+  - 'c/033-CrossPlatformProgramming'
+  - 'c/018-AttributeCompilerExtension'
 prerequisites:
-  - c/概述
-  - c/预处理器与宏
-  - c/头文件与链接
+  - 'c/001-CLanguageOverview'
+  - 'c/037-PreprocessorMacro'
 ---
+
 ## 历史动机与背景
 
 ### 构建系统诞生的历史背景

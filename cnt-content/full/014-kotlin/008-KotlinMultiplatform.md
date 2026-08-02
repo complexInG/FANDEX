@@ -1,19 +1,20 @@
 ---
-order: 17
-title: 'Kotlin 多平台'
-module: kotlin
-category: Kotlin
+order: 80
+title: Kotlin 多平台
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
-description: 'KMP 架构、expect/actual、共享代码策略、Compose Multiplatform 与 Gradle 配置。'
+description: KMP 架构、expect/actual、共享代码策略、Compose Multiplatform 与 Gradle 配置。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/集合与协程
-  - kotlin/协程进阶
-  - kotlin/DSL与领域特定语言
-  - kotlin/测试与最佳实践
+  - 'kotlin/006-KotlinCollectionCoroutine'
+  - 'kotlin/007-KotlinCoroutineAdvanced'
+  - 'kotlin/009-KotlinDSLDomainSpecificLanguage'
+  - 'kotlin/010-KotlinTestBestPractice'
 prerequisites: []
 ---
+
 ## 1. KMP 架构概述
 
 Kotlin Multiplatform (KMP) 是 JetBrains 推出的多平台开发方案，允许在平台间共享 Kotlin 代码，同时保留平台特定实现的能力。2024 年 Kotlin 2.1 正式将 KMP 标记为稳定版。

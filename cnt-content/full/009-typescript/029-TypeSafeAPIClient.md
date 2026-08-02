@@ -1,20 +1,20 @@
 ---
-order: 71
+order: 290
 title: 类型安全的API客户端
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: 构建端到端类型安全的HTTP客户端
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - typescript/类型声明与模块解析
-  - typescript/类型安全的事件系统
-  - typescript/类型安全的状态管理
-  - typescript/类型安全的表单验证
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/027-TypeScriptTypeDeclarationModuleResolution'
+  - 'typescript/028-PurelyFunctionalDataStructures'
+  - 'typescript/030-TypeSafeStateManagement'
+  - 'typescript/032-TypeSafeFormValidation'
+prerequisites: []
 ---
+
 
 ## 第一章 概述
 

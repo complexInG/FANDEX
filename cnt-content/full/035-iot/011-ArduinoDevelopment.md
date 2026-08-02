@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 110
 title: Arduino开发
-module: iot
-category: 'eng-infra'
+module: 'iot'
+category: 云与基础设施
 difficulty: beginner
 description: Arduino入门：开发环境、编程基础、传感器交互与项目实战详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/MQTT协议
-  - iot/CoAP协议
-  - iot/ESP32开发
-  - 'iot/RT-Thread实时系统'
+  - 'iot/009-MQTT'
+  - 'iot/010-CoAP'
+  - 'iot/012-ESP32Development'
+  - 'iot/013-RTThread'
 prerequisites:
-  - iot/概述与架构
+  - 'iot/001-OverviewArchitecture'
 ---
+
 ## 1. Arduino 概述
 
 ### 1.1 什么是 Arduino

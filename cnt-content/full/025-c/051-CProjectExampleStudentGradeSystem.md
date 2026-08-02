@@ -1,20 +1,19 @@
 ---
-title: 'C 语言项目示例：学生成绩管理系统'
-module: c
-category: 'C Practice'
-order: 140
-tags:
-  - c
-  - project
+order: 510
+title: C 语言项目示例：学生成绩管理系统
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
-description: '综合运用结构体、文件 I/O 和动态内存管理的学生成绩管理系统。'
-related:
-  - c/理论知识点
-  - c/高级特性与系统编程
-prerequisites:
-  - c/概述
+description: 综合运用结构体、文件 I/O 和动态内存管理的学生成绩管理系统。
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'c/049-CLanguageTheory'
+  - 'c/050-CAdvancedSystemProgramming'
+prerequisites:
+  - 'c/001-CLanguageOverview'
 ---
+
 
 | 查询学生 | 按学号或姓名精确/模糊查询                   |
 | -------- | ------------------------------------------- |

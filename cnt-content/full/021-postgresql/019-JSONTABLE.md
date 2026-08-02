@@ -1,20 +1,21 @@
 ---
-order: 64
-title: 'JSON-TABLE'
-module: postgresql
-category: PostgreSQL
+order: 190
+title: JSON-TABLE
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
-description: 'PostgreSQL JSON_TABLE：标准化JSON处理、路径表达式、嵌套列与关系化输出'
+description: PostgreSQL JSON_TABLE：标准化JSON处理、路径表达式、嵌套列与关系化输出
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/高级SQL
-  - postgresql/MERGE语句增强
-  - postgresql/全文检索
-  - postgresql/地理空间对象
+  - 'postgresql/017-AdvancedSQL'
+  - 'postgresql/018-MERGEStatementEnhancement'
+  - 'postgresql/020-FullTextSearch'
+  - 'postgresql/021-GeoSpatialObject'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 ## 1. JSON_TABLE 概述
 
 JSON_TABLE 是 SQL:2016 标准函数，将 JSON 数据转换为关系表，PostgreSQL 17+ 支持。

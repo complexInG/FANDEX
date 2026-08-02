@@ -1,20 +1,21 @@
 ---
-order: 61
+order: 180
 title: Lua错误处理
-module: lua
-category: Lua
+module: 'lua'
+category: 后端技术
 difficulty: beginner
 description: 错误处理与保护调用
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - lua/Lua与Nginx
-  - lua/模块与包
-  - lua/Lua迭代器
-  - 'lua/Lua与World of Warcraft'
+  - 'lua/016-LuaNginx'
+  - 'lua/017-ModulePackage'
+  - 'lua/019-LuaIterator'
+  - 'lua/020-LuaWorldOfWarcraft'
 prerequisites:
-  - lua/概述与环境配置
+  - 'lua/001-LuaOverviewEnvSetup'
 ---
+
 ## 概述
 
 错误处理是编写健壮程序的基础。Lua 采用了一种简洁而灵活的错误处理机制：通过 error 函数主动抛出错误，通过 pcall 和 xpcall 进行保护调用。与 Java、Python 等语言使用 try-catch 结构不同，Lua 没有内置的异常语法，而是依赖函数调用的返回值来传递错误信息。这种设计虽然简单，但足以应对大多数场景，并且与 Lua 作为嵌入式语言的定位非常契合。

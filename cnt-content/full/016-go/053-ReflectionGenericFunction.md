@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 530
 title: 反射实现通用函数
-module: go
-category: 'dev-lang'
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: Go反射实现通用函数详解：reflect包。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/GMP调度模型
-  - go/并发模式
-  - go/内存逃逸分析
-  - go/垃圾回收与GC调优
+  - 'go/051-GMPModel'
+  - 'go/052-ConcurrencyPattern'
+  - 'go/054-MemoryEscapeAnalysis'
+  - 'go/055-GCAndTuning'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

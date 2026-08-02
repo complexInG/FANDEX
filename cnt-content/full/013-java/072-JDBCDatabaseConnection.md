@@ -1,9 +1,8 @@
 ---
 order: 720
 title: Java JDBC 数据库连接
-module: java
-
-category: '013-java'
+module: 'java'
+category: 后端技术
 difficulty: beginner
 description: Java JDBC 数据库连接 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 建立连接
 
 **基本写法：DriverManager 获取连接**

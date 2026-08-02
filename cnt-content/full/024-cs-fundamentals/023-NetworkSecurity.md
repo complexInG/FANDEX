@@ -1,20 +1,21 @@
 ---
-order: 66
+order: 230
 title: 网络安全
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 网络安全：网络攻击与防御、防火墙、入侵检测、VPN与安全协议
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/操作系统进阶'
-  - 'cs-fundamentals/计算机网络进阶'
-  - 'cs-fundamentals/多媒体技术'
-  - 'cs-fundamentals/人工智能基础'
+  - 'cs-fundamentals/021-OperatingSystemAdvanced'
+  - 'cs-fundamentals/022-ComputerNetworkAdvanced'
+  - 'cs-fundamentals/024-MultimediaTechnology'
+  - 'cs-fundamentals/025-AIFundamentals'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 网络安全概述
 

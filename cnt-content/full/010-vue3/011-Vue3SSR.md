@@ -1,20 +1,20 @@
 ---
-order: 55
+order: 110
 title: Vue3服务端渲染
-module: vue3
-category: Vue3
+module: 'vue3'
+category: 前端技术
 difficulty: advanced
 description: SSR与Nuxt.js集成
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - vue3/Transition与动画
-  - vue3/Vue3编译优化
-  - vue3/生命周期钩子
-  - vue3/Vue3测试策略
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/009-TransitionAnimation'
+  - 'vue3/010-Vue3CompileOptimization'
+  - 'vue3/012-LifecycleHook'
+  - 'vue3/013-Vue3TestStrategy'
+prerequisites: []
 ---
+
 
 # Vue 3 服务端渲染 | Server-Side Rendering in Vue 3
 

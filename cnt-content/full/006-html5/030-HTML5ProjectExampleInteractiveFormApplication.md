@@ -1,18 +1,19 @@
 ---
-order: 70
-tags:
-  - html5
-  - project
+order: 300
+title: HTML5 项目示例：交互式表单应用
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
-title: 'HTML5 项目示例：交互式表单应用'
-module: html5
-description: '综合运用表单验证、Canvas 与本地存储的交互式应用。'
+description: 综合运用表单验证、Canvas 与本地存储的交互式应用。
+author: fanquanpp
+updated: '2026-08-01'
 related:
-  - html5/跨文档通信
-  - html5/视口配置与移动优先
+  - 'html5/028-CrossDocumentCommunication'
+  - 'html5/029-ViewportConfigMobileFirst'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 
 | 实时验证      | 内置验证 + 自定义验证逻辑 |
 | ------------- | ------------------------- |

@@ -1,20 +1,21 @@
 ---
-order: 61
+order: 220
 title: React测试
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: React组件测试策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React表单处理
-  - react/React与TypeScript
-  - react/React路由进阶
-  - react/React国际化
+  - 'react/020-ReactForm'
+  - 'react/021-ReactTypeScript'
+  - 'react/023-ReactRouteAdvanced'
+  - 'react/024-ReactI18n'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 React组件测试策略。本文将从基础概念、快速上手、详细用法、常见场景、注意事项和进阶用法六个方面全面介绍React测试。

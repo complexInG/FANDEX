@@ -1,32 +1,24 @@
 ---
-order: 64
+order: 210
 title: Lua性能优化
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: advanced
-description: 'Lua 性能优化深度解析:解释器开销模型、寄存器与栈布局、表内存结构、字符串驻留、JIT 编译与 trace、GC 调优、profiling 工具链、热路径工程化优化与多领域实战案例'
+description: Lua 性能优化深度解析:解释器开销模型、寄存器与栈布局、表内存结构、字符串驻留、JIT 编译与 trace、GC 调优、profiling 工具链、热路径工程化优化与多领域实战案例
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - lua
-  - performance
-  - optimization
-  - luajit
-  - jit
-  - gc
-  - profiling
-  - advanced
 related:
-  - lua/表与元表进阶
-  - lua/函数与闭包
-  - lua/协程详解
-  - lua/环境与全局变量管理
-  - lua/弱表
+  - 'lua/006-TableMetatableAdvanced'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/008-CoroutineDetailed'
+  - 'lua/028-EnvironmentGlobalVariable'
+  - 'lua/027-WeakTable'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/函数与闭包
-  - lua/表与元表进阶
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/006-TableMetatableAdvanced'
 ---
+
 
 
 # Lua 性能优化

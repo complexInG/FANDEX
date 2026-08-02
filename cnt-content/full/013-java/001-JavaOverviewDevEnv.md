@@ -1,19 +1,18 @@
 ---
 order: 10
-tags:
-  - java
+title: Java 概述与开发环境
+module: 'java'
+category: 后端技术
 difficulty: beginner
-title: 'Java 概述与开发环境'
-module: java
-category: 'Java Basics'
-description: 'Java 发展历史、平台体系与开发环境搭建。'
+description: Java 发展历史、平台体系与开发环境搭建。
 author: Anonymous
-related:
-  - java/快速入门
-  - java/程序结构与基本语法
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'java/002-QuickStart'
+  - 'java/003-ProgramStructureBasicSyntax'
+prerequisites: []
 ---
+
 ## 1. Java 概述 (Overview)
 
 Java 是一种由 **Sun Microsystems** (后被 Oracle 收购) 于 1995 年发布的面向对象编程语言。其核心理念是 **"Write Once, Run Anywhere" (WORA)**，即一次编写，到处运行。Java 不仅是一种编程语言，更是一个完整的平台，包括运行环境、开发工具和丰富的类库。

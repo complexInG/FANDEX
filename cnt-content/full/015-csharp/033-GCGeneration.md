@@ -1,20 +1,21 @@
 ---
-order: 107
+order: 330
 title: GC代机制
-module: csharp
-category: 'dev-lang'
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: '.NET GC 分代回收机制深度解析：Generation 0/1/2、SOH/LOH/POH、标记清除与压缩、固定对象、GCHandle、Server GC vs Workstation GC、GC 通知与调优的全链路原理。'
+description: .NET GC 分代回收机制深度解析：Generation 0/1/2、SOH/LOH/POH、标记清除与压缩、固定对象、GCHandle、Server GC vs Workstation GC、GC 通知与调优的全链路原理。
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - 'csharp/ASP-NET-Core中间件管道'
-  - csharp/依赖注入生命周期
-  - csharp/值类型与引用类型
-  - csharp/记录类型与不可变性
+  - 'csharp/031-AspNetCoreMiddlewarePipeline'
+  - 'csharp/032-DILifecycle'
+  - 'csharp/034-ValueTypeReferenceType'
+  - 'csharp/035-RecordTypeImmutability'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 # .NET GC 代机制：从弱分代假说到内存回收的全景解析
 

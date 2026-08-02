@@ -1,20 +1,21 @@
 ---
-order: 51
-title: 'GitHub Flavored Markdown'
-module: markdown
-category: 'Markdown Basics'
+order: 70
+title: GitHub Flavored Markdown
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
 description: GFM扩展规范详解：表格、任务列表、删除线、自动链接与代码围栏。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/CommonMark规范
-  - markdown/列表语法
-  - markdown/转义字符
-  - markdown/脚注
+  - 'markdown/005-CommonMarkSpec'
+  - 'markdown/006-ListSyntax'
+  - 'markdown/008-EscapeCharacter'
+  - 'markdown/009-Footnote'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 1. GFM 概述
 
 ### 1.1 什么是 GFM

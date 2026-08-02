@@ -1,57 +1,19 @@
 ---
 order: 400
 title: 忽略规则 .gitignore 深入
-module: git
-category: '003-git'
+module: 'git'
+category: 工具链
 difficulty: beginner
 description: 从零讲透 .gitignore：模式语法、目录匹配、已跟踪文件处理、全局忽略与团队共享规范。
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'git/003-GitBasicOperation'
   - 'git/005-GitRemoteRepoOperation'
 prerequisites:
   - 'git/003-GitBasicOperation'
-quiz:
-  - type: choice
-    question: 一个已经被 Git 跟踪的文件，加入 .gitignore 后会发生什么？
-    options:
-      - 文件立即从仓库删除
-      - 文件仍然被跟踪，忽略规则对它无效
-      - Git 自动停止跟踪
-      - 下次提交时自动忽略
-    answer: 1
-    explanation: .gitignore 只影响未跟踪文件；已跟踪文件需先 git rm --cached。
-  - type: fill
-    question: 在 .gitignore 中用____开头的行可以取反，重新包含被忽略的文件。
-    answer: '!'
-    hint: 感叹号模式。
-references:
-  - type: documentation
-    authors:
-      - Git Project
-    year: 2026
-    title: gitignore 官方文档
-    venue: git-scm.com
-    url: https://git-scm.com/docs/gitignore
-    accessedDate: '2026-08-02'
-  - type: website
-    authors:
-      - GitHub
-    year: 2026
-    title: github/gitignore 模板集合
-    venue: GitHub
-    url: https://github.com/github/gitignore
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 忽略文件
-    english: gitignore
-    origin: ignore 意为"不理会"，Git 用这份清单声明哪些路径不属于版本管理范围。
-estimatedReadingTime: 6
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

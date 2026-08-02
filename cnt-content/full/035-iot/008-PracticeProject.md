@@ -1,19 +1,20 @@
 ---
-order: 8
+order: 80
 title: 实战项目
-module: iot
-category: 物联网
+module: 'iot'
+category: 云与基础设施
 difficulty: advanced
 description: 智能家居、环境监测、工业预测维护、智慧农业与完整链路实战。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/数据处理与分析
-  - iot/安全与隐私
-  - iot/MQTT协议
-  - iot/CoAP协议
+  - 'iot/006-DataProcessingAnalysis'
+  - 'iot/007-SecurityAndPrivacy'
+  - 'iot/009-MQTT'
+  - 'iot/010-CoAP'
 prerequisites: []
 ---
+
 
 ## 1. 智能家居系统
 

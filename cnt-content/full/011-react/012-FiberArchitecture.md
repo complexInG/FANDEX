@@ -1,20 +1,20 @@
 ---
-order: 51
+order: 120
 title: Fiber架构
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: advanced
-description: 'React Fiber协调引擎'
+description: React Fiber协调引擎
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/Next.js全栈开发
-  - react/JSX深度解析
-  - react/Concurrent模式
-  - react/服务端组件
+  - 'react/010-NextJSFullStack'
+  - 'react/011-JSXDeepAnalysis'
+  - 'react/013-ConcurrentMode'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 双缓冲机制
 
 **基本写法：current 树与 workInProgress 树**

@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 330
 title: 进程PCB与线程TCB
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
-description: '进程控制块 PCB 与线程控制块 TCB 的结构、字段含义与调度关系。'
+description: 进程控制块 PCB 与线程控制块 TCB 的结构、字段含义与调度关系。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/网络协议深度'
-  - 'cs-fundamentals/编译与运行时'
-  - 'cs-fundamentals/中断与系统调用'
-  - 'cs-fundamentals/用户态与内核态切换'
+  - 'cs-fundamentals/031-NetworkProtocolDeep'
+  - 'cs-fundamentals/032-CompileAndRuntime'
+  - 'cs-fundamentals/034-InterruptAndSystemCall'
+  - 'cs-fundamentals/035-UserModeKernelModeSwitch'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 进程控制块（PCB）
 

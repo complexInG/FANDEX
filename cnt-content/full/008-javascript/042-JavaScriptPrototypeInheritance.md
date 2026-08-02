@@ -1,22 +1,20 @@
 ---
-order: 110
-tags:
-  - javascript
+order: 420
+title: JavaScript 原型与继承
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
-title: 'JavaScript 原型与继承'
-module: javascript
-category: 'JS Basics'
-description: '原型链、构造函数、class 语法与继承模式。'
+description: 原型链、构造函数、class 语法与继承模式。
 author: Anonymous
-related:
-  - javascript/Proxy与Reflect实际应用
-  - javascript/模块动态导入与代码分割
-  - javascript/正则表达式
-  - javascript/错误边界与全局错误捕获
-prerequisites:
-  - javascript/语法速查
 updated: '2026-08-01'
+related:
+  - 'javascript/040-ProxyReflectPractice'
+  - 'javascript/041-ModuleDynamicImportCodeSplitting'
+  - 'javascript/043-Regex'
+  - 'javascript/044-ErrorBoundaryGlobalErrorCatch'
+prerequisites: []
 ---
+
 
 ## 1. 原型与原型链 (Prototype & Prototype Chain)
 

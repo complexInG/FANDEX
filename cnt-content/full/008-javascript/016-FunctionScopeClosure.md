@@ -1,25 +1,21 @@
 ---
-order: 60
-tags:
-  - javascript
-  - functional
-difficulty: intermediate
+order: 160
 title: 函数、作用域与闭包
-module: javascript
-category: 'JS Basics'
+module: 'javascript'
+category: 前端技术
+difficulty: intermediate
 description: 函数声明、箭头函数、作用域链、闭包原理、this 绑定机制、高阶函数、柯里化、尾调用优化的形式化定义与工程实践。
 author: Anonymous
 updated: '2026-07-21'
 related:
-  - javascript/断言
-  - javascript/Unicode属性转义
-  - javascript/自定义Error
-  - javascript/浏览器对象模型
-  - javascript/ES6+新特性
+  - 'javascript/014-Assert'
+  - 'javascript/015-UnicodePropertyEscape'
+  - 'javascript/017-ErrorReferenceAndControlFlowAndErrorHandling'
+  - 'javascript/036-ES6NewFeatures'
 prerequisites:
-  - javascript/语法速查
-  - javascript/控制流
+  - 'javascript/005-ControlFlow'
 ---
+
 ## 1. 引言
 
 函数是 JavaScript 中"一等公民"（first-class citizen）的抽象机制：它可以赋值给变量、作为参数传递、从函数返回、存储在数据结构中。这种设计让 JavaScript 拥有函数式编程的能力，但也带来了一些独特的语义——作用域链、闭包、`this` 绑定——这些机制是 React Hooks、Vue 响应式、Node.js 事件循环等现代框架与运行时的基石。

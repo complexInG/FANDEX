@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 430
 title: 函数调用栈帧
-module: c
-category: 'dev-lang'
+module: 'c'
+category: 计算机科学
 difficulty: advanced
-description: 'C语言函数调用栈帧详解：局部变量、返回地址、寄存器保存、ABI规范与栈保护机制。'
+description: C语言函数调用栈帧详解：局部变量、返回地址、寄存器保存、ABI规范与栈保护机制。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - c/内存对齐
-  - c/结构体与联合体
-  - c/指针与数组的区别
-  - c/二级指针与指针数组
+  - 'c/041-MemoryAlignment'
+  - 'c/042-StructAndUnion'
+  - 'c/044-PointerArrayDifference'
+  - 'c/045-DoublePointerPointerArray'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 
 # 函数调用栈帧（Function Call Stack Frame）

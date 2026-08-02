@@ -1,20 +1,21 @@
 ---
-order: 55
+order: 180
 title: Goroutine调度
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: GMP调度模型
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/goroutine与channel通信原理
-  - go/GMP调度模型
-  - go/Go与限流
-  - go/Go与分布式追踪
+  - 'go/050-GoroutineChannelPrinciple'
+  - 'go/051-GMPModel'
+  - 'go/049-Go'
+  - 'go/048-GoDistributedTracing'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 
 ## 历史动机与发展脉络

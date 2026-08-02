@@ -1,24 +1,21 @@
 ---
-order: 105
-tags:
-  - javascript
-  - es6
+order: 360
+title: ES6+ 新特性
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
-title: 'ES6+ 新特性'
-module: javascript
-category: 'JS Basics'
-description: 'ES6 至 ES2024 重要新特性的形式化定义、工程实践与生产案例：解构赋值、展开运算符、Symbol、Proxy、可选链、空值合并、Records & Tuples、装饰器、模式匹配的完整剖析。'
+description: ES6 至 ES2024 重要新特性的形式化定义、工程实践与生产案例：解构赋值、展开运算符、Symbol、Proxy、可选链、空值合并、Records & Tuples、装饰器、模式匹配的完整剖析。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - javascript/Promise静态方法
-  - javascript/异步并发控制
-  - javascript/深拷贝与浅拷贝
-  - javascript/防抖与节流
-  - javascript/Proxy与Reflect实际应用
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/034-PromiseStaticMethod'
+  - 'javascript/035-AsyncConcurrencyControl'
+  - 'javascript/037-DeepShallowCopy'
+  - 'javascript/038-DebounceThrottle'
+  - 'javascript/040-ProxyReflectPractice'
+prerequisites: []
 ---
+
 ## 0. 引言
 
 ECMAScript 自 2015 年发布 ES6（ES2015）以来，进入了一年一版的稳定迭代周期。每个版本引入的特性并非孤立的语法糖，而是围绕"提升表达力、强化类型语义、改善异步编程模型、降低样板代码"四大主线的系统性演进。本文档以形式化视角梳理 ES6 至 ES2024 的核心特性，给出每一特性的动机、语义、推导、工程化用法与陷阱。

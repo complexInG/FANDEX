@@ -1,20 +1,21 @@
 ---
-order: 69
+order: 240
 title: 命名空间与链接
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: 命名空间、匿名命名空间与链接性
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/变参模板
-  - cpp/constexpr与编译期计算
-  - cpp/设计模式与C++
-  - cpp/面向对象进阶
+  - 'cpp/022-VariadicTemplate'
+  - 'cpp/023-ConstexprCompileTime'
+  - 'cpp/012-DesignPatternCpp'
+  - 'cpp/026-COOPAdvanced'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 史前时代：C 语言的全局命名空间（pre-1998）

@@ -1,19 +1,20 @@
 ---
-order: 6
+order: 60
 title: 数据处理与分析
-module: iot
-category: 物联网
+module: 'iot'
+category: 云与基础设施
 difficulty: advanced
 description: 时序数据库、流处理、数据清洗、异常检测与数字孪生。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/边缘计算
-  - iot/IoT平台
-  - iot/安全与隐私
-  - iot/实战项目
+  - 'iot/004-EdgeComputing'
+  - 'iot/005-IoT'
+  - 'iot/007-SecurityAndPrivacy'
+  - 'iot/008-PracticeProject'
 prerequisites: []
 ---
+
 
 ## 1. IoT 数据特征
 

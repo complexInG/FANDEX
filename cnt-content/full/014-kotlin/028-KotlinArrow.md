@@ -1,20 +1,21 @@
 ---
-order: 67
+order: 280
 title: Kotlin与Arrow
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: advanced
 description: 函数式编程库Arrow
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与Compose
-  - kotlin/Kotlin与Gradle
-  - kotlin/Kotlin与Ktor
-  - kotlin/Kotlin与Exposed
+  - 'kotlin/027-KotlinCompose'
+  - 'kotlin/035-KotlinGradle'
+  - 'kotlin/029-KotlinKtor'
+  - 'kotlin/030-KotlinExposed'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ## 概述
 

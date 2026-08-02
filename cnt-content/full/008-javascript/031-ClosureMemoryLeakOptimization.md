@@ -1,22 +1,22 @@
 ---
-order: 100
+order: 310
 title: 闭包的内存泄露与优化
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: advanced
 description: JavaScript 闭包导致的内存泄露原理、形式化建模、检测方法与工程级优化策略，对标 V8 引擎实现与现代前端框架实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - javascript/模块化
-  - javascript/异步编程
-  - javascript/原型链继承与class本质
-  - javascript/事件循环详解
-  - javascript/内存泄漏排查
+  - 'javascript/029-JavaScriptModular'
+  - 'javascript/030-AsyncProgramming'
+  - 'javascript/032-PrototypeChainClassEssence'
+  - 'javascript/033-EventLoopDetailed'
+  - 'javascript/045-MemoryLeakTroubleshoot'
 prerequisites:
-  - javascript/语法速查
-  - javascript/函数-作用域与闭包
+  - 'javascript/016-FunctionScopeClosure'
 ---
+
 
 
 # 闭包的内存泄露与优化

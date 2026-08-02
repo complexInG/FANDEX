@@ -1,9 +1,8 @@
 ---
 order: 710
 title: C++ variant / optional / any
-module: cpp
-
-category: '026-cpp'
+module: 'cpp'
+category: 计算机科学
 difficulty: beginner
 description: C++ variant / optional / any 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## std::optional 可选值
 
 **基本写法：构造 optional**

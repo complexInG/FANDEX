@@ -1,22 +1,19 @@
 ---
-order: 60
-tags:
-  - github
+order: 170
+title: Issues 模板、标签与里程碑
+module: 'github'
+category: 工具链
 difficulty: intermediate
-title: 'Issues 模板、标签与里程碑'
-module: github
-category: 'GitHub Advanced'
-description: 'Issues 模板配置、Labels 标签体系、Milestones 里程碑管理、自动化关闭关键词与项目板衔接。'
+description: Issues 模板配置、Labels 标签体系、Milestones 里程碑管理、自动化关闭关键词与项目板衔接。
 author: Anonymous
-related:
-  - github/AI编程助手
-  - github/依赖自动更新
-  - github/密钥扫描
-  - github/CodeQL代码扫描
-prerequisites:
-  - github/GitHub概述
 updated: '2026-08-02'
+related:
+  - 'github/018-SecretScanning'
+  - 'github/019-CodeQLCodeScanning'
+prerequisites:
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一个生活场景说起：意见箱与工单系统
 

@@ -1,23 +1,21 @@
 ---
-order: 60
-tags:
-  - cpp
-  - oop
+order: 150
+title: C++ 面向对象基础
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-title: 'C++ 面向对象基础'
-module: cpp
-category: 'C++ Basics'
 description: 类与对象、封装、继承、多态与虚函数。
 author: Anonymous
-related:
-  - cpp/RAII与资源管理
-  - cpp/运算符重载
-  - cpp/STL算法详解
-  - cpp/字符串处理
-prerequisites:
-  - cpp/概述与现代标准
 updated: '2026-08-01'
+related:
+  - 'cpp/013-RAIIResourceManagement'
+  - 'cpp/014-OperatorOverloading'
+  - 'cpp/016-CSTL'
+  - 'cpp/017-StringProcessing'
+prerequisites:
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 类与对象 (Class & Object)
 
 ### 1.1 类的定义

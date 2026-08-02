@@ -1,9 +1,8 @@
 ---
 order: 260
 title: Redis 发布订阅命令
-module: redis
-
-category: '022-redis'
+module: 'redis'
+category: 数据库
 difficulty: beginner
 description: Redis 发布订阅命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 订阅命令
 
 **基本写法：SUBSCRIBE 订阅频道**

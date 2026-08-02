@@ -1,23 +1,20 @@
 ---
-order: 110
-tags:
-  - javascript
-  - regex
-difficulty: intermediate
+order: 430
 title: 正则表达式
-module: javascript
-category: 'JS Basics'
+module: 'javascript'
+category: 前端技术
+difficulty: intermediate
 description: JavaScript正则表达式语法、常用模式、RegExp对象、字符串方法与实战技巧详解。
 author: fanquanpp
 updated: '2026-06-13'
 related:
-  - javascript/模块动态导入与代码分割
-  - javascript/原型与继承
-  - javascript/错误边界与全局错误捕获
-  - javascript/内存泄漏排查
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/041-ModuleDynamicImportCodeSplitting'
+  - 'javascript/042-JavaScriptPrototypeInheritance'
+  - 'javascript/044-ErrorBoundaryGlobalErrorCatch'
+  - 'javascript/045-MemoryLeakTroubleshoot'
+prerequisites: []
 ---
+
 ## 1. 历史动机：正则表达式的起源
 
 ### 1.1 从神经学到数学：1956 年的奠基

@@ -1,9 +1,8 @@
 ---
 order: 460
 title: React Vite 与工具链命令
-module: react
-
-category: '011-react'
+module: 'react'
+category: 前端技术
 difficulty: beginner
 description: React Vite 与工具链命令 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Vite 创建 React 项目
 
 **基本写法：使用 create vite 模板**

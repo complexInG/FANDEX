@@ -1,23 +1,21 @@
 ---
-order: 140
-tags:
-  - mysql
-  - database
+order: 720
+title: MySQL 控制器与应用
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-title: 'MySQL 控制器与应用'
-module: mysql
-category: 'MySQL Basics'
 description: MySQL控制器设计模式与应用实践
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/配置与运维
-  - mysql/快速查阅
-  - mysql/SQL注入基础与检测
-  - mysql/SQL注入攻击类型与实战
+  - 'mysql/070-MySQLConfigOps'
+  - 'mysql/071-MySQLQuickLookup'
+  - 'mysql/073-SQLInjectionBasicsDetection'
+  - 'mysql/074-SQLInjectionAttackTypePractice'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 控制器概述 | Controller Overview
 
@@ -75,7 +73,6 @@ prerequisites:
   return $stmt->execute(['id' => $id]);
   }
  }
- ?
 ```
 
 ### 2.2 基于Java的控制器实现

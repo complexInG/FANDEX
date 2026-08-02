@@ -1,20 +1,17 @@
 ---
-order: 61
-title: 'C#与依赖注入'
-module: csharp
-category: 'C#'
+order: 220
+title: C#与依赖注入
+module: 'csharp'
+category: 后端技术
 difficulty: intermediate
 description: .NET依赖注入容器
 author: fanquanpp
 updated: '2026-06-14'
-related:
-  - 'csharp/CSharp与MAUI'
-  - 'csharp/CSharp与EF Core'
-  - 'csharp/CSharp与最小API'
-  - 'csharp/CSharp12与CSharp13新特性'
+related: []
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 ## 一、概述
 

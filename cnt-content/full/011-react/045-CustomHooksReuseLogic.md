@@ -1,18 +1,19 @@
 ---
-order: 106
+order: 450
 title: 自定义Hooks复用逻辑
-module: react
-category: 'dev-lang'
+module: 'react'
+category: 前端技术
 difficulty: advanced
 description: React自定义Hooks设计模式：useFetch、useLocalStorage等实用Hook。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/并发渲染与可中断更新
-  - react/错误边界与Sentry集成
+  - 'react/043-ConcurrentRenderInterruptible'
+  - 'react/044-ErrorBoundarySentry'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 
 ## 1. useFetch
 

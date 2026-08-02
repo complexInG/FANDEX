@@ -1,21 +1,19 @@
 ---
-title: 'MySQL 理论知识点'
-module: mysql
-category: 'MySQL Theory'
-order: 200
-tags:
-  - mysql
-  - theory
-  - database
+order: 770
+title: MySQL 理论知识点
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
 description: 存储引擎、事务模型、锁机制与日志体系。
-related:
-  - mysql/SQL注入防御策略
-  - 'mysql/项目示例-电商数据库设计'
-prerequisites:
-  - mysql/语法速查
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'mysql/075-SQLInjectionDefenseStrategy'
+  - 'mysql/076-MySQLProjectExampleDatabaseDesign'
+prerequisites:
+  - 'mysql/085-View'
 ---
+
 
           [10|20]   [30|40|50]   [60|70|80]
           /    \     /  |  \      /  |  \

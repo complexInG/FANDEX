@@ -1,20 +1,20 @@
 ---
-order: 62
-title: 'GitHub-CLI'
-module: github
-category: GitHub
+order: 200
+title: GitHub-CLI
+module: 'github'
+category: 工具链
 difficulty: intermediate
-description: 'GitHub CLI（gh）详解：安装认证、仓库/PR/Issue/Actions 常用命令与工作流提速技巧。'
+description: GitHub CLI（gh）详解：安装认证、仓库/PR/Issue/Actions 常用命令与工作流提速技巧。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/密钥扫描
-  - github/CodeQL代码扫描
-  - 'github/REST与GraphQL-API'
-  - github/Web钩子
+  - 'github/018-SecretScanning'
+  - 'github/019-CodeQLCodeScanning'
+  - 'github/021-RESTGraphQLAPI'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一个生活场景说起：GitHub 的"遥控器"
 

@@ -1,18 +1,19 @@
 ---
-order: 104
+order: 190
 title: 数字孪生
-module: iot
-category: 'eng-infra'
+module: 'iot'
+category: 云与基础设施
 difficulty: intermediate
-description: '数字孪生：ThingWorx、Azure Digital Twins 的架构与应用。'
+description: 数字孪生：ThingWorx、Azure Digital Twins 的架构与应用。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/物联网安全
-  - iot/主流IoT平台
+  - 'iot/017-IoTSecurity'
+  - 'iot/018-IoT'
 prerequisites:
-  - iot/概述与架构
+  - 'iot/001-OverviewArchitecture'
 ---
+
 
 ## 1. 数字孪生概念
 

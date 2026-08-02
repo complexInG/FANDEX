@@ -1,22 +1,21 @@
 ---
-order: 60
-tags:
-  - java
-difficulty: intermediate
+order: 160
 title: 运算符与表达式
-module: java
-category: 'Java Basics'
+module: 'java'
+category: 后端技术
+difficulty: intermediate
 description: 算术、关系、逻辑、位运算及运算符优先级。
 author: Anonymous
-related:
-  - java/JavaIO与NIO
-  - java/Java新特性
-  - java/Spring基础
-  - java/SpringBoot进阶
-prerequisites:
-  - java/概述与开发环境
 updated: '2026-08-01'
+related:
+  - 'java/014-JavaIONIO'
+  - 'java/015-JavaNewFeatures'
+  - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
+  - 'java/018-SpringBootAdvanced'
+prerequisites:
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 运算符分类
 
 ### 1.1 算术运算符

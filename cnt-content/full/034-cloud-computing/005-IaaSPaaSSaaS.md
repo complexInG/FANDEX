@@ -2,19 +2,20 @@
 order: 50
 title: IaaS与PaaS与SaaS
 module: 'cloud-computing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: beginner
-description: '云计算三大服务模式 IaaS、PaaS、SaaS 的概念、对比与选型指南。'
+description: 云计算三大服务模式 IaaS、PaaS、SaaS 的概念、对比与选型指南。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/容器与编排'
-  - 'cloud-computing/基础设施即代码'
-  - 'cloud-computing/虚拟化技术'
-  - 'cloud-computing/云架构设计'
+  - 'cloud-computing/003-ContainerOrchestration'
+  - 'cloud-computing/004-IaC'
+  - 'cloud-computing/006-VirtualizationTech'
+  - 'cloud-computing/007-CloudArchitectureDesign'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 云计算服务模式概述
 

@@ -1,20 +1,20 @@
 ---
-order: 51
+order: 70
 title: Memory存储引擎
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
-description: 'MySQL Memory存储引擎：内存表、哈希索引、表级锁、适用场景与限制'
+description: MySQL Memory存储引擎：内存表、哈希索引、表级锁、适用场景与限制
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/MyISAM存储引擎
-  - mysql/SQL数据操作与查询
-  - mysql/NDB集群
-  - mysql/聚簇索引与二级索引
+  - 'mysql/005-MyISAMStorageEngine'
+  - 'mysql/006-SQLDataOperationQuery'
+  - 'mysql/009-ClusteredIndexSecondaryIndex'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. Memory 概述
 

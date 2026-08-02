@@ -1,20 +1,21 @@
 ---
-order: 53
+order: 100
 title: 依赖安全选项
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: intermediate
-description: 'GitHub依赖安全功能全景：供应链攻击原理、依赖图谱、Dependabot alerts、安全更新与依赖审查的组合防御。'
+description: GitHub依赖安全功能全景：供应链攻击原理、依赖图谱、Dependabot alerts、安全更新与依赖审查的组合防御。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/Gitignore配置
-  - github/开源许可证选择
-  - github/Fork工作流
-  - github/Projects看板
+  - 'github/008-GitignoreConfig'
+  - 'github/009-OpenSourceLicense'
+  - 'github/011-ForkWorkflow'
+  - 'github/012-ProjectsBoard'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 先来一个生活场景：家庭安防系统
 

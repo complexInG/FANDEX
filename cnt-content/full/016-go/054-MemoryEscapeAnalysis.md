@@ -1,41 +1,25 @@
 ---
-order: 104
+order: 540
 title: 内存逃逸分析
-module: go
-category: 'dev-lang'
+module: 'go'
+category: 后端技术
 difficulty: advanced
 description: 'Go内存逃逸分析详解：go build -gcflags="-m"。'
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - go/并发模式
-  - go/反射实现通用函数
-  - go/垃圾回收与GC调优
-  - go/泛型详解
-  - go/Go与时间
-  - go/反射
+  - 'go/052-ConcurrencyPattern'
+  - 'go/053-ReflectionGenericFunction'
+  - 'go/055-GCAndTuning'
+  - 'go/056-GenericDetailed'
+  - 'go/040-GoTime'
+  - 'go/015-Reflection'
 prerequisites:
-  - go/概述与环境配置
-  - go/基础语法
-  - go/函数与方法
-  - go/指针与内存
-tags:
-  - escape-analysis
-  - gc
-  - stack-allocation
-  - heap-allocation
-  - performance
-  - gcflags
-keywords:
-  - Go 逃逸分析
-  - escape analysis
-  - gcflags -m
-  - 栈分配
-  - 堆分配
-  - 内存优化
-  - sync.Pool
-  - 内联优化
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/002-GoBasicSyntax'
+  - 'go/003-GoFunctionMethod'
 ---
+
 
 
 # Go 内存逃逸分析（Escape Analysis）

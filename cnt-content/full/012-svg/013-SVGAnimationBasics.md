@@ -1,19 +1,20 @@
 ---
 order: 130
-title: 'SVG 动画基础'
-module: svg
-category: 'SVG Animation'
+title: SVG 动画基础
+module: 'svg'
+category: 前端技术
 difficulty: advanced
-description: 'SMIL animate、animateTransform、animateMotion 与 CSS 动画对比。'
+description: SMIL animate、animateTransform、animateMotion 与 CSS 动画对比。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/变换transform
-  - svg/路径path详解
-  - svg/CSS样式化
+  - 'svg/009-SVGTransformTransform'
+  - 'svg/005-SVGPathPathDetailed'
+  - 'svg/014-SVGCSSStyling'
 prerequisites:
-  - svg/变换transform
+  - 'svg/009-SVGTransformTransform'
 ---
+
 ## 1. SVG 动画方案对比
 
 | 方案           | 说明                                          | 优势                    | 劣势                           |

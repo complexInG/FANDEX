@@ -1,20 +1,21 @@
 ---
-order: 82
+order: 420
 title: Kotlin与WebSocket
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
-description: 'Ktor WebSocket'
+description: Ktor WebSocket
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与时间
-  - kotlin/Kotlin与并发安全
-  - kotlin/Kotlin与安全
-  - kotlin/协程调度器与上下文
+  - 'kotlin/040-KotlinTime'
+  - 'kotlin/041-KotlinConcurrencySafety'
+  - 'kotlin/043-KotlinSecurity'
+  - 'kotlin/044-CoroutineDispatcherContext'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ## 概述
 

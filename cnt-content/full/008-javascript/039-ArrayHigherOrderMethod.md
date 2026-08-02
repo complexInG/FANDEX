@@ -1,20 +1,20 @@
 ---
-order: 107
+order: 390
 title: 数组高阶方法
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
 description: JavaScript数组高阶方法详解：reduce、flatMap及函数式数组操作模式。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - javascript/深拷贝与浅拷贝
-  - javascript/防抖与节流
-  - javascript/Proxy与Reflect实际应用
-  - javascript/模块动态导入与代码分割
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/037-DeepShallowCopy'
+  - 'javascript/038-DebounceThrottle'
+  - 'javascript/040-ProxyReflectPractice'
+  - 'javascript/041-ModuleDynamicImportCodeSplitting'
+prerequisites: []
 ---
+
 
 
 # 数组高阶方法（Array Higher-Order Methods）

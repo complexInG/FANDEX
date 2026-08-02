@@ -1,21 +1,19 @@
 ---
-order: 140
-tags:
-  - python
-  - project
+order: 650
+title: Python 项目示例：网页爬虫与数据分析
+module: 'python'
+category: 后端技术
 difficulty: intermediate
-title: 'Python 项目示例：网页爬虫与数据分析'
-module: python
-category: 'Python Practice'
-description: '综合运用 requests、BeautifulSoup 与 pandas 的爬虫项目。'
-related:
-  - python/异常处理
-  - python/文件IO与上下文管理器
-  - python/理论知识点
-prerequisites:
-  - python/语法速查
+description: 综合运用 requests、BeautifulSoup 与 pandas 的爬虫项目。
+author: fanquanpp
 updated: '2026-08-01'
+related:
+  - 'python/063-ExceptionHandling'
+  - 'python/064-FileIOContextManager'
+  - 'python/066-PythonTheoryKnowledge'
+prerequisites: []
 ---
+
 
 | HTML 解析  | 使用 BeautifulSoup 提取结构化数据        |
 | ---------- | ---------------------------------------- |

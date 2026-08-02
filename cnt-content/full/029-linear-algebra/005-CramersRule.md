@@ -1,22 +1,23 @@
 ---
-order: 14
+order: 50
 title: 克莱姆法则
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 从 1750 年的数学史现场出发，还原克莱姆法则如何被"猜"出来：公式推导、存在性与唯一性证明、齐次方程组非零解判据，以及为什么工程计算不用它（O(n·n!) 复杂度与数值稳定性）。
+description: '从 1750 年的数学史现场出发，还原克莱姆法则如何被"猜"出来：公式推导、存在性与唯一性证明、齐次方程组非零解判据，以及为什么工程计算不用它（O(n·n!) 复杂度与数值稳定性）。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/行列式按行列展开'
-  - 'linear-algebra/行列式计算方法'
-  - 'linear-algebra/矩阵的秩'
-  - 'linear-algebra/高斯消元法'
+  - 'linear-algebra/003-DeterminantRowColumnExpansion'
+  - 'linear-algebra/004-DeterminantCalculationMethods'
+  - 'linear-algebra/010-MatrixRank'
+  - 'linear-algebra/013-GaussianElimination'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
-  - 'linear-algebra/行列式基本性质'
-  - 'linear-algebra/行列式按行列展开'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
+  - 'linear-algebra/002-DeterminantBasicProperties'
+  - 'linear-algebra/003-DeterminantRowColumnExpansion'
 ---
+
 
 ## 0. 一个 1750 年的"公式考古"现场
 

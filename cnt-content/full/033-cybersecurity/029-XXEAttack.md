@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 290
 title: XXE攻击
-module: cybersecurity
-category: 'eng-infra'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: intermediate
-description: 'XXE（XML 外部实体）攻击：原理、利用方式与防御。'
+description: XXE（XML 外部实体）攻击：原理、利用方式与防御。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cybersecurity/认证与授权
-  - 'cybersecurity/OWASP-Top-10详解'
-  - cybersecurity/反序列化漏洞
-  - cybersecurity/零信任架构
+  - 'cybersecurity/027-AuthenticationAuthorization'
+  - 'cybersecurity/028-OWASPTop10Detailed'
+  - 'cybersecurity/030-DeserializationVulnerability'
+  - 'cybersecurity/031-ZeroTrustArchitecture'
 prerequisites:
-  - cybersecurity/安全基础与防御
+  - 'cybersecurity/001-SecurityBasicsDefense'
 ---
+
 
 ## 1. XXE 原理
 

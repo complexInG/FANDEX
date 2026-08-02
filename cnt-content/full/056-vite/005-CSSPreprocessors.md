@@ -1,18 +1,19 @@
 ---
-order: 5
+order: 50
 title: Vite CSS 与预处理器
-module: vite
-category: Vite
+module: 'vite'
+category: 前端技术
 difficulty: intermediate
-description: 'Vite 样式方案：从 Sass 源码到浏览器 CSS 的完整处理流水线，讲清预处理器、PostCSS、CSS Modules、Lightning CSS 与 Tailwind 集成'
+description: Vite 样式方案：从 Sass 源码到浏览器 CSS 的完整处理流水线，讲清预处理器、PostCSS、CSS Modules、Lightning CSS 与 Tailwind 集成
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - vite/004-StaticAssets
-  - vite/007-BuildSplit
+  - 'vite/004-StaticAssets'
+  - 'vite/007-BuildSplit'
 prerequisites:
-  - vite/003-ConfigFile
+  - 'vite/003-ConfigFile'
 ---
+
 
 ## 1. 从中央厨房的食材加工流水线说起
 

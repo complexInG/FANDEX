@@ -1,20 +1,20 @@
 ---
-order: 66
+order: 210
 title: 地理空间对象
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
 description: PostgreSQL地理空间对象：PostGIS扩展、几何类型、空间索引与空间查询
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/JSON表格函数
-  - postgresql/全文检索
-  - postgresql/存储过程与函数
-  - postgresql/触发器与事件触发器
+  - 'postgresql/020-FullTextSearch'
+  - 'postgresql/022-StoredProcedureAndFunction'
+  - 'postgresql/023-TriggerEventTrigger'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. PostGIS 概述
 

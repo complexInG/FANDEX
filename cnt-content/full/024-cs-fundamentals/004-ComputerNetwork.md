@@ -1,24 +1,21 @@
 ---
+order: 40
 title: 计算机网络
 module: 'cs-fundamentals'
-category: 'Computer Science / Networking'
+category: 计算机科学
+difficulty: intermediate
 description: 计算机网络核心原理：协议栈、TCP/IP、路由、应用层协议、网络安全。
 author: fanquanpp
-order: 40
-tags:
-  - 'cs-fundamentals'
-  - 'computer-science---networking'
-  - networking
-difficulty: intermediate
-related:
-  - 'cs-fundamentals/计算机体系结构'
-  - 'cs-fundamentals/操作系统'
-  - 'cs-fundamentals/数字逻辑'
-  - 'cs-fundamentals/离散数学'
-prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
 updated: '2026-08-01'
+related:
+  - 'cs-fundamentals/002-ComputerArchitecture'
+  - 'cs-fundamentals/003-OperatingSystem'
+  - 'cs-fundamentals/005-DigitalLogic'
+  - 'cs-fundamentals/006-DiscreteMathematics'
+prerequisites:
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 网络体系结构
 

@@ -1,24 +1,25 @@
 ---
-order: 82
+order: 420
 title: Go与信号处理
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'os/signal 与 syscall：从 POSIX 信号到 Go 优雅关闭的工程实践'
+description: os/signal 与 syscall：从 POSIX 信号到 Go 优雅关闭的工程实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Go与正则表达式
-  - go/Go与文件监控
-  - go/Go与日志
-  - go/Go与加密
+  - 'go/041-GoRegex'
+  - 'go/039-GoFileMonitor'
+  - 'go/036-GoLog'
+  - 'go/038-GoEncryption'
 prerequisites:
-  - go/概述与环境配置
-  - go/基础语法
-  - go/Goroutine调度
-  - go/Context详解
-  - go/并发编程
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/002-GoBasicSyntax'
+  - 'go/018-GoroutineSchedule'
+  - 'go/017-ContextDetailed'
+  - 'go/006-GoConcurrentProgramming'
 ---
+
 
 
 # Go 与信号处理：从 POSIX 信号到优雅关闭

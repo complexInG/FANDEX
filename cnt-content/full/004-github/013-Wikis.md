@@ -1,20 +1,19 @@
 ---
-order: 56
+order: 130
 title: Wikis
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 'GitHub Wikis深度解析：围绕"团队知识沉淀"场景，讲解 Wiki 的启用、页面组织、侧边栏页脚、本地克隆编辑与维护最佳实践。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/Fork工作流
-  - github/Projects看板
-  - github/社区讨论
-  - github/AI编程助手
+  - 'github/011-ForkWorkflow'
+  - 'github/012-ProjectsBoard'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一个场景说起：团队知识都去哪了
 

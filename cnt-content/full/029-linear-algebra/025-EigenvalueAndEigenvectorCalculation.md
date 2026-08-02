@@ -1,19 +1,20 @@
 ---
-order: 50
+order: 210
 title: 特征值与特征向量计算
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 特征值与特征向量的定义，特征方程与特征多项式，特征值与特征向量的计算步骤与方法（含重根情形），代数重数与几何重数，含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/施密特正交化'
-  - 'linear-algebra/特征值性质'
-  - 'linear-algebra/矩阵对角化'
+  - 'linear-algebra/023-GramSchmidtOrthogonalization'
+  - 'linear-algebra/026-EigenvalueProperties'
+  - 'linear-algebra/027-MatrixDiagonalization'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从一个生活场景说起：拉伸一张橡皮筋网格
 

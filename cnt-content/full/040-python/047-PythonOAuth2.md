@@ -1,20 +1,20 @@
 ---
-order: 87
+order: 470
 title: Python与OAuth2
-module: python
-category: Python
+module: 'python'
+category: 后端技术
 difficulty: intermediate
 description: OAuth2与JWT认证
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - python/并发编程
-  - python/Python与数据库迁移
-  - 'python/Python与WebSocket-2'
-  - python/Python与向量数据库
-prerequisites:
-  - python/语法速查
+  - 'python/045-ConcurrentProgramming'
+  - 'python/046-PythonDatabaseMigration'
+  - 'python/034-PythonWebSocket'
+  - 'python/048-PythonVectorDatabase'
+prerequisites: []
 ---
+
 
 ## 什么是 OAuth2
 

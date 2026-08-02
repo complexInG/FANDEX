@@ -1,20 +1,21 @@
 ---
-order: 78
+order: 360
 title: 物理备份
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL物理备份：MySQL Enterprise Backup、Percona XtraBackup的原理、热备份与恢复流程'
+description: MySQL物理备份：MySQL Enterprise Backup、Percona XtraBackup的原理、热备份与恢复流程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/日志系统
-  - mysql/逻辑备份
-  - mysql/基于时间点恢复
-  - mysql/主从复制
+  - 'mysql/034-LogSystem'
+  - 'mysql/035-LogicalBackup'
+  - 'mysql/037-PITR'
+  - 'mysql/038-Replication'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 物理备份概述
 

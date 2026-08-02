@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 500
 title: 并发编程详解
-module: java
-category: 'dev-lang'
+module: 'java'
+category: 后端技术
 difficulty: advanced
-description: 'Java 并发编程详解：JMM 形式化、synchronized 锁升级、AQS 原理、CAS、原子类、线程池、CompletableFuture、虚拟线程。'
+description: Java 并发编程详解：JMM 形式化、synchronized 锁升级、AQS 原理、CAS、原子类、线程池、CompletableFuture、虚拟线程。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/JVM调优
-  - java/集合框架详解
-  - java/CompletableFuture异步编排
-  - java/ThreadLocal内存泄漏
+  - 'java/048-JVMtuning'
+  - 'java/049-CollectionFrameworkDetailed'
+  - 'java/051-CompletableFutureAsync'
+  - 'java/052-ThreadLocalMemoryLeak'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 Java 并发演进时间线

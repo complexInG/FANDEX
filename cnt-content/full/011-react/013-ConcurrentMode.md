@@ -1,20 +1,20 @@
 ---
-order: 52
+order: 130
 title: Concurrent模式
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: advanced
 description: 并发渲染与Suspense集成
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/JSX深度解析
-  - react/Fiber架构
-  - react/服务端组件
-  - react/Hooks原理
+  - 'react/011-JSXDeepAnalysis'
+  - 'react/012-FiberArchitecture'
+  - 'react/015-HooksPrinciple'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 Concurrent 模式是 React 18 引入的核心特性，允许 React 在渲染过程中中断、暂停和恢复工作。传统模式下 React 的渲染是同步不可中断的，一旦开始就会执行到底，这可能导致长时间的任务阻塞用户交互。并发渲染通过可中断的渲染机制，使 React 能够优先处理高优先级更新（如用户输入），将低优先级更新（如数据获取）推迟到空闲时执行。

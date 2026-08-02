@@ -1,20 +1,21 @@
 ---
-order: 52
+order: 100
 title: 文本语义
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: beginner
-description: 'h1-h6、p、strong、em、mark、time、address'
+description: h1-h6、p、strong、em、mark、time、address
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/离线存储与WebAPI
-  - html5/元数据与字符编码
-  - html5/列表
-  - html5/链接与锚点
+  - 'html5/008-HTML5OfflineStorageWebAPI'
+  - 'html5/009-MetadataCharacterEncoding'
+  - 'html5/011-List'
+  - 'html5/012-LinkageAnchor'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. 标题元素 h1-h6
 
 HTML 提供六级标题，`<h1>` 最高，`<h6>` 最低，用于构建文档大纲。

@@ -1,20 +1,21 @@
 ---
-order: 100
+order: 410
 title: 内存对齐
-module: c
-category: 'dev-lang'
+module: 'c'
+category: 计算机科学
 difficulty: advanced
-description: 'C语言内存对齐详解：struct大小计算、#pragma pack与对齐规则。'
+description: C语言内存对齐详解：struct大小计算、#pragma pack与对齐规则。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - c/指针深度解析
-  - c/内存管理
-  - c/结构体与联合体
-  - c/函数调用栈帧
+  - 'c/039-PointerDeep'
+  - 'c/040-MemoryManagement'
+  - 'c/042-StructAndUnion'
+  - 'c/043-FunctionCallStackFrame'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 
 
 # 内存对齐（Memory Alignment）

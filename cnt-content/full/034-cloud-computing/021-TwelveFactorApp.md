@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 210
 title: 12要素应用
 module: 'cloud-computing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: '12-Factor App 方法论：构建云原生应用的十二个最佳实践详解。'
+description: 12-Factor App 方法论：构建云原生应用的十二个最佳实践详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/Helm包管理'
-  - 'cloud-computing/云成本优化'
-  - 'cloud-computing/微服务架构'
-  - 'cloud-computing/服务网格'
+  - 'cloud-computing/019-HelmPackageManagement'
+  - 'cloud-computing/020-CloudCostOptimization'
+  - 'cloud-computing/022-MicroserviceArchitecture'
+  - 'cloud-computing/023-ServiceMesh'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 12-Factor 概述
 

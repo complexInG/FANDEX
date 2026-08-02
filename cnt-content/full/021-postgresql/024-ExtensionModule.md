@@ -1,20 +1,21 @@
 ---
-order: 69
+order: 240
 title: 扩展模块
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: intermediate
 description: PostgreSQL扩展模块：PostGIS、pgvector、pg_stat_statements与常用扩展管理
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/存储过程与函数
-  - postgresql/触发器与事件触发器
-  - postgresql/FDW外部数据包装器
-  - postgresql/流复制
+  - 'postgresql/022-StoredProcedureAndFunction'
+  - 'postgresql/023-TriggerEventTrigger'
+  - 'postgresql/025-FDWFDW'
+  - 'postgresql/026-StreamingReplication'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 ## 1. 扩展管理
 
 ```sql

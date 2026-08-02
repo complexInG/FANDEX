@@ -1,25 +1,25 @@
 ---
-order: 102
+order: 520
 title: 上下文管理器
-module: python
-category: 'dev-lang'
+module: 'python'
+category: 后端技术
 difficulty: advanced
 description: Python上下文管理器深度剖析：with语句语义、__enter__/__exit__协议、contextlib工具集、异步上下文管理器、ExitStack动态管理、资源管理 RAII 模式与生产级工程实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - python/装饰器进阶
-  - python/生成器与协程
-  - python/元类与单例模式
-  - python/异步编程详解
-  - python/描述符
-  - python/Python与测试
+  - 'python/062-DecoratorAdvanced'
+  - 'python/059-GeneratorCoroutine'
+  - 'python/053-MetaclassSingleton'
+  - 'python/054-AsyncProgrammingDetailed'
+  - 'python/057-Descriptor'
+  - 'python/029-PythonTest'
 prerequisites:
-  - python/语法速查
-  - python/面向对象编程
-  - python/装饰器进阶
-  - python/生成器与协程
+  - 'python/061-OOP'
+  - 'python/062-DecoratorAdvanced'
+  - 'python/059-GeneratorCoroutine'
 ---
+
 ## 概述
 
 上下文管理器（Context Manager）是 Python 资源管理的核心抽象。它将"资源获取即初始化"（Resource Acquisition Is Initialization, RAII）的思想融入 Python 对象模型，通过 `with` 语句确保资源在使用后被正确释放，即使代码块中发生异常也能保证清理逻辑被执行。这是 Python 区别于 C/C++ 等手动管理资源语言的标志性能力之一。

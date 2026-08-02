@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 200
 title: 性能优化
-module: harmonyos
-category: HarmonyOS
+module: 'harmonyos'
+category: 后端技术
 difficulty: intermediate
 description: HarmonyOS应用性能优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - harmonyos/卡片开发
-  - harmonyos/应用签名与发布
-  - harmonyos/测试与调试
-  - harmonyos/国际化与无障碍
+  - 'harmonyos/018-CardDevelopment'
+  - 'harmonyos/023-AppSignaturePublish'
+  - 'harmonyos/022-TestDebug'
+  - 'harmonyos/021-I18nAccessibility'
 prerequisites:
-  - harmonyos/概述与环境搭建
+  - 'harmonyos/001-OverviewSetup'
 ---
+
 ### 组件复用
 
 ```typescript

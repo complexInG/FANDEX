@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 170
 title: 故障排查
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: advanced
 description: 故障排查：系统诊断方法论、常用工具、典型故障模式与应急响应
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/高可用架构
-  - devops/自动化测试
-  - devops/容器安全
-  - devops/GitOps与持续交付
+  - 'devops/015-HighAvailabilityArchitecture'
+  - 'devops/016-AutomationTest'
+  - 'devops/018-ContainerSecurity'
+  - 'devops/019-GitOpsCD'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. 故障排查方法论
 

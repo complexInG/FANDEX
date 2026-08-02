@@ -1,20 +1,21 @@
 ---
-order: 76
+order: 360
 title: Kotlin与原子操作
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: intermediate
 description: kotlinx.atomicfu
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - kotlin/Kotlin与编译器插件
-  - kotlin/Kotlin与DSL
-  - kotlin/Kotlin与Benchmark
-  - kotlin/Kotlin与IO
+  - 'kotlin/034-KotlinCompilerPlugin'
+  - 'kotlin/022-KotlinDSL'
+  - 'kotlin/037-KotlinBenchmark'
+  - 'kotlin/038-KotlinIO'
 prerequisites:
-  - kotlin/概述与环境配置
+  - 'kotlin/001-KotlinOverviewEnvSetup'
 ---
+
 
 ## 概述
 

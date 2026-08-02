@@ -1,9 +1,8 @@
 ---
 order: 360
 title: Cybersecurity OpenSSL 证书管理
-module: cybersecurity
-
-category: '033-cybersecurity'
+module: 'cybersecurity'
+category: 云与基础设施
 difficulty: beginner
 description: Cybersecurity OpenSSL 证书管理 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 生成私钥
 
 **基本写法：生成 RSA 私钥**

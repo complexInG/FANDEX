@@ -1,57 +1,19 @@
 ---
 order: 590
 title: 前端性能指标与 Core Web Vitals
-module: javascript
-category: '008-javascript'
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
-description: 用 LCP、INP、CLS 三个核心指标学会量化"页面快不快"，并给出浏览器端采集与上报的完整示例。
+description: '用 LCP、INP、CLS 三个核心指标学会量化"页面快不快"，并给出浏览器端采集与上报的完整示例。'
 author: fanquanpp
-created: '2026-08-02'
 updated: '2026-08-02'
 related:
   - 'javascript/047-DebugPerformanceOptimization'
   - 'css/042-CSSPerformanceOptimizationDetailed'
 prerequisites:
   - 'javascript/047-DebugPerformanceOptimization'
-quiz:
-  - type: choice
-    question: 以下哪个指标衡量"用户与页面交互后到响应更新"的延迟？
-    options:
-      - LCP
-      - INP
-      - CLS
-      - TTFB
-    answer: 1
-    explanation: INP（Interaction to Next Paint）衡量交互到下一次绘制的延迟。
-  - type: fill
-    question: CLS 衡量的是页面的____稳定性。
-    answer: 视觉（布局）
-    hint: 全称 Cumulative Layout Shift，累积布局偏移。
-references:
-  - type: website
-    authors:
-      - web.dev Team
-    year: 2026
-    title: Core Web Vitals
-    venue: web.dev
-    url: https://web.dev/explore/learn-core-web-vitals
-    accessedDate: '2026-08-02'
-  - type: documentation
-    authors:
-      - web-vitals Contributors
-    year: 2026
-    title: web-vitals 库
-    venue: GitHub
-    url: https://github.com/GoogleChrome/web-vitals
-    accessedDate: '2026-08-02'
-etymology:
-  - term: 核心网页指标
-    english: Core Web Vitals
-    origin: Google 于 2020 年提出的 Web 体验度量集合，vital 意为"关乎生死的"，强调其对用户体验的关键性。
-estimatedReadingTime: 7
-lastReviewed: '2026-08-02'
-reviewer: fanquanpp
 ---
+
 
 ## 一句话理解
 

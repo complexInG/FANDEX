@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 140
 title: 运算符重载
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: 运算符重载规则与最佳实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/RAII与资源管理
-  - cpp/C++20模块
-  - cpp/面向对象基础
-  - cpp/智能指针详解
+  - 'cpp/013-RAIIResourceManagement'
+  - 'cpp/011-Cpp20Module'
+  - 'cpp/015-COOPBasics'
+  - 'cpp/007-N4089DeletingSafeBoolInFavorOfExplicitBool'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 早期动机：支持复数与矩阵运算

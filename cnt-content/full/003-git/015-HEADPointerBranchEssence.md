@@ -1,20 +1,18 @@
 ---
-order: 59
+order: 150
 title: HEAD指针与分支本质
-module: git
-category: 'Git Basics'
+module: 'git'
+category: 工具链
 difficulty: intermediate
 description: HEAD指针机制与Git分支的本质：引用、符号引用与分支操作原理。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/引用日志
-  - git/代码追溯
-  - git/Git钩子与GitLFS
-  - git/合并冲突解决
-prerequisites:
-  - git/语法速查
+  - 'git/016-GitHookGitLFS'
+  - 'git/017-MergeConflictResolution'
+prerequisites: []
 ---
+
 
 ## 1. HEAD 指针
 

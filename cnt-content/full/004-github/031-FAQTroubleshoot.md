@@ -1,22 +1,21 @@
 ---
-order: 100
-tags:
-  - github
-difficulty: intermediate
+order: 310
 title: 常见问题排查
-module: github
-category: 'GitHub Advanced'
-description: 'GitHub 常见问题排查：权限问题、大文件、换行符、子模块、GPG 签名、Actions 配额。'
+module: 'github'
+category: 工具链
+difficulty: intermediate
+description: GitHub 常见问题排查：权限问题、大文件、换行符、子模块、GPG 签名、Actions 配额。
 author: Anonymous
-related:
-  - github/GitHubActions与CICD
-  - github/Actions触发器
-  - github/Actions矩阵构建
-  - github/Actions缓存依赖
-prerequisites:
-  - github/GitHub概述
 updated: '2026-08-01'
+related:
+  - 'github/029-GitHubActionsCICD'
+  - 'github/030-ActionsTrigger'
+  - 'github/032-ActionsMatrixBuild'
+  - 'github/033-ActionsCacheDependency'
+prerequisites:
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 1. 背景
 

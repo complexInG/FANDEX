@@ -1,20 +1,21 @@
 ---
-order: 71
+order: 320
 title: React无障碍
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: React应用可访问性
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/React与GraphQL
-  - react/React与微前端
-  - react/React与PWA
-  - react/React与Canvas
+  - 'react/030-ReactGraphQL'
+  - 'react/031-ReactMicroFrontend'
+  - 'react/033-ReactPWA'
+  - 'react/034-ReactCanvas'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 React应用可访问性。本文将从基础概念、快速上手、详细用法、常见场景、注意事项和进阶用法六个方面全面介绍React无障碍。

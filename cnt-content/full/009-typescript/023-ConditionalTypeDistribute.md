@@ -1,30 +1,24 @@
 ---
-order: 67
+order: 230
 title: 条件类型分发
-module: typescript
-category: 'dev-lang'
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
-description: 'TypeScript 分布式条件类型（Distributive Conditional Types）的形式语义、控制策略、类型级算法与生产级应用：裸类型参数、阻止分发、never 空集语义、IsUnion、类型过滤与排列组合。'
+description: TypeScript 分布式条件类型（Distributive Conditional Types）的形式语义、控制策略、类型级算法与生产级应用：裸类型参数、阻止分发、never 空集语义、IsUnion、类型过滤与排列组合。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/条件类型与infer
-  - typescript/工具类型实现原理
-  - typescript/类型推断infer扩展
-  - typescript/递归类型与深度操作
-  - typescript/映射类型与键重映射
-  - typescript/枚举进阶
+  - 'typescript/042-ConditionalTypeInfer'
+  - 'typescript/022-UtilityTypePrinciple'
+  - 'typescript/024-ECMAScript2024LanguageSpecification'
+  - 'typescript/025-RecursiveTypeDeepOperation'
+  - 'typescript/044-MappedTypeKeyRemap'
+  - 'typescript/021-EnumAdvanced'
 prerequisites:
-  - typescript/语法速查
-  - typescript/泛型约束与默认值
-  - typescript/交叉类型与类型合并
-tags:
-  - typescript
-  - distributive-conditional-types
-  - naked-type-parameter
-  - type-level-programming
-  - union-types
+  - 'typescript/011-GenericConstraintDefault'
+  - 'typescript/007-IntersectionTypeMerge'
 ---
+
 
 
 # 条件类型分发

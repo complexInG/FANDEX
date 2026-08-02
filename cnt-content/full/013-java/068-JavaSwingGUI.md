@@ -1,22 +1,21 @@
 ---
-order: 200
-tags:
-  - java
+order: 680
+title: Java Swing 图形界面
+module: 'java'
+category: 后端技术
 difficulty: intermediate
-title: 'Java Swing 图形界面'
-module: java
-category: 'Java Basics'
-description: 'Swing 组件体系、事件驱动与 GUI 应用开发。'
+description: Swing 组件体系、事件驱动与 GUI 应用开发。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/网络编程
-  - java/SpringCloud微服务开发
-  - 'java/项目示例-图书管理系统'
-  - java/理论知识点
+  - 'java/066-NetworkProgramming'
+  - 'java/067-SpringCloudMicroserviceDevelopment'
+  - 'java/069-JavaProjectExampleLibrarySystem'
+  - 'java/070-JavaTheoryJVMClassLoadingMemory'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 ﻿# Java Switch 模式匹配 语法速查手册
 

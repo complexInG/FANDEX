@@ -1,22 +1,20 @@
 ---
-order: 120
-tags:
-  - vue3
+order: 330
+title: Vue3 高级组件特性
+module: 'vue3'
+category: 前端技术
 difficulty: advanced
-title: 'Vue3 高级组件特性'
-module: vue3
-category: 'Vue3 Basics'
-description: '异步组件、动态组件、Teleport 与 Suspense。'
+description: 异步组件、动态组件、Teleport 与 Suspense。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/Vue性能优化详解
-  - vue3/性能优化
-  - 'vue3/项目示例-个人博客站点'
-  - vue3/理论知识点
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/031-VuePerformanceDetailed'
+  - 'vue3/032-PerformanceOptimization'
+  - 'vue3/034-Vue3ProjectExampleBlog'
+  - 'vue3/035-Vue3TheoryKnowledge'
+prerequisites: []
 ---
+
 ## 1. 动态组件
 
 ### 1.1 基本用法

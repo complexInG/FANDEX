@@ -1,20 +1,20 @@
 ---
-order: 105
+order: 370
 title: 深拷贝与浅拷贝
-module: javascript
-category: 'dev-lang'
+module: 'javascript'
+category: 前端技术
 difficulty: intermediate
 description: JavaScript深拷贝与浅拷贝详解：structuredClone、JSON方案缺陷与自定义实现。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - javascript/异步并发控制
-  - javascript/ES6+新特性
-  - javascript/防抖与节流
-  - javascript/数组高阶方法
-prerequisites:
-  - javascript/语法速查
+  - 'javascript/035-AsyncConcurrencyControl'
+  - 'javascript/036-ES6NewFeatures'
+  - 'javascript/038-DebounceThrottle'
+  - 'javascript/039-ArrayHigherOrderMethod'
+prerequisites: []
 ---
+
 
 
 # 深拷贝与浅拷贝（Deep Copy & Shallow Copy）

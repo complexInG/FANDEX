@@ -2,19 +2,20 @@
 order: 50
 title: 测试概念与原则
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: beginner
 description: 软件测试基础：测试定义、目的、原则、V模型与测试生命周期详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/性能与接口测试'
-  - 'software-testing/安全与移动测试'
-  - 'software-testing/测试层级'
-  - 'software-testing/测试类型'
+  - 'software-testing/003-PerformanceInterfaceTest'
+  - 'software-testing/004-SecurityAndMobileTest'
+  - 'software-testing/006-TestLevels'
+  - 'software-testing/007-TestType'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 ## 1. 测试基础概念
 
 ### 1.1 什么是软件测试

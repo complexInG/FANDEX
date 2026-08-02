@@ -1,20 +1,21 @@
 ---
-order: 70
+order: 290
 title: 动态库与静态库
-module: c
-category: C
+module: 'c'
+category: 计算机科学
 difficulty: intermediate
 description: 库的创建、链接机制、符号解析、加载策略与跨平台实践
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - c/构建系统
-  - c/多文件编译
-  - c/跨平台编程
-  - c/函数详解
+  - 'c/031-BuildSystem'
+  - 'c/008-TheLinuxProgrammingInterface'
+  - 'c/033-CrossPlatformProgramming'
+  - 'c/028-FunctionDetailed'
 prerequisites:
-  - c/概述
+  - 'c/001-CLanguageOverview'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 库的概念起源

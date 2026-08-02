@@ -1,23 +1,22 @@
 ---
-order: 57
+order: 130
 title: 渐变
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: 深入解析 CSS 渐变（linear-gradient、radial-gradient、conic-gradient）的规范、几何算法、颜色插值与工程实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - css/浮动与清除
-  - css/层叠上下文
-  - css/阴影
-  - css/背景增强
-  - css/颜色与色彩空间
+  - 'css/011-FloatClear'
+  - 'css/012-StackingContext'
+  - 'css/014-Shadow'
+  - 'css/015-BackgroundEnhancement'
 prerequisites:
-  - css/概述与基本语法
-  - css/背景增强
-  - css/颜色与色彩空间
+  - 'css/001-CSS3OverviewBasicSyntax'
+  - 'css/015-BackgroundEnhancement'
 ---
+
 
 # 渐变（Gradients）
 

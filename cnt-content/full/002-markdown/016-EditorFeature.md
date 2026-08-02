@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 160
 title: 编辑器功能
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: beginner
 description: Markdown编辑器核心功能：实时预览、快捷键操作与高效编辑技巧。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/LaTeX数学公式
-  - markdown/Mermaid图表
-  - markdown/链接与图片
-  - markdown/转换工具
+  - 'markdown/014-LaTeXMathFormula'
+  - 'markdown/015-Mermaid'
+  - 'markdown/017-LinkImage'
+  - 'markdown/018-ConversionTool'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 
 ## 1. 编辑器类型
 

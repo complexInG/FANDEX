@@ -1,20 +1,21 @@
 ---
-order: 32
+order: 140
 title: 条件分布
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 条件分布律、条件概率密度的定义与计算、条件分布与边缘分布、独立性的关系、条件分布的应用。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/联合分布'
-  - 'probability-statistics/边缘分布'
-  - 'probability-statistics/随机变量的独立性'
-  - 'probability-statistics/和的分布与极值分布'
+  - 'probability-statistics/014-JointDistribution'
+  - 'probability-statistics/015-MarginalDistribution'
+  - 'probability-statistics/017-RandomVariableIndependence'
+  - 'probability-statistics/018-SumDistributionAndExtremeValueDistribution'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 从一个生活场景说起：地图上的"筛选"
 

@@ -1,9 +1,8 @@
 ---
 order: 370
 title: 云计算 Azure 资源组与 VM
-module: cloud-computing
-
-category: '034-cloud-computing'
+module: 'cloud-computing'
+category: 云与基础设施
 difficulty: beginner
 description: 云计算 Azure 资源组与 VM 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 资源组管理
 
 **基本写法：创建资源组**

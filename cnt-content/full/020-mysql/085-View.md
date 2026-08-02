@@ -1,9 +1,8 @@
 ---
 order: 850
 title: 视图 语法速查手册
-module: mysql
-
-category: '020-mysql'
+module: 'mysql'
+category: 数据库
 difficulty: beginner
 description: 视图 语法速查手册 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 创建视图
 
 **基本写法：创建视图**

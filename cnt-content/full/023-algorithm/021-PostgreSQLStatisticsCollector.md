@@ -1,195 +1,25 @@
 ---
-order: 102
+order: 210
 title: 树状数组
-module: algorithm
-category: comp-sci
+module: 'algorithm'
+category: 计算机科学
 difficulty: intermediate
 description: '树状数组（Fenwick Tree / Binary Indexed Tree, BIT）的形式化定义（基于二进制分解的前缀和索引结构）、lowbit 位运算原理、单点更新 + 区间查询 $O(\log n)$、区间更新 + 单点查询（差分树状数组）、区间更新 + 区间查询（双树状数组）三种模式的形式化推导与复杂度证明，覆盖 Peter M. Fenwick 1994《A New Data Structure for Cumulative Frequency Tables》Software: Practice and Experience 24(3):327-336 DOI:10.1002/spe.4380240306 的历史脉络、lowbit 不变式证明、与线段树 / 平方分解 / 前缀和的对比、Lucene 倒排索引 / Redis Sorted Set / PostgreSQL 统计信息等工业案例，附 Python / C++ / Java 多语言实现。'
 author: fanquanpp
-tags:
-- algorithm
-- algorithm-fenwick-tree
-- algorithm-bit
-- algorithm-binary-indexed-tree
-- algorithm-datastructure
-- algorithm-prefix-sum
-- algorithm-lowbit
-- algorithm-range-query
-- algorithm-inversion-count
-- performance
-created: 2026-06-14
-updated: 2026-07-20
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 110
+updated: '2026-07-20'
 related:
-- algorithm/线段树
-- algorithm/并查集
-- algorithm/平衡树与高级树
-- algorithm/树
-- algorithm/堆与优先队列
-- algorithm/算法分析基础与学习路线
+  - 'algorithm/020-AtCoderLibrarySegmentTree'
+  - 'algorithm/019-RedisClusterHashSlotAndConsistentHashingDesignNotes'
+  - 'algorithm/015-PostgreSQLBTreeIndexImplementation'
+  - 'algorithm/007-TheUbiquitousBTree'
+  - 'algorithm/016-HeapAndPriorityQueue'
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/树
-- cs-fundamentals/离散数学
-references:
-- type: journal
-  authors:
-  - Fenwick, Peter M.
-  year: 1994
-  title: A New Data Structure for Cumulative Frequency Tables
-  venue: 'Software: Practice and Experience'
-  volume: 24
-  issue: 3
-  pages: 327-336
-  doi: 10.1002/spe.4380240306
-  pagesNote: 'The original paper that introduced the Binary Indexed Tree (BIT), also known as the Fenwick Tree. Fenwick designed BIT for cumulative frequency tables in arithmetic coding context, motivated by the need for a data structure simpler than segment trees while supporting O(log n) updates and prefix queries. Published in Software: Practice and Experience 24(3):327-336'
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: ISBN 978-0262046305, Chapter 17 (Amortized Analysis - referenced for BIT comparison)
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1998
-  title: 'The Art of Computer Programming, Volume 3: Sorting and Searching'
-  venue: Addison-Wesley Professional
-  version: 2nd edition
-  pages: ISBN 978-0201896855, Section 5.1 (Combinatorial Properties of Permutations - inversion counting), Section 5.2.4 (External Sorting - run-length encoding)
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513, Section 3.2 (Binary Search Trees), Section 4.2 (Digraphs - reachability), Section 6.3 (Strings - frequency counting)
-- type: book
-  authors:
-  - Skiena, Steven S.
-  year: 2020
-  title: The Algorithm Design Manual
-  venue: Springer
-  version: 3rd edition
-  pages: ISBN 978-3030542556, Chapter 3 (Data Structures), Chapter 14 (Numerical and Algebraic - inversion count applications)
-- type: book
-  authors:
-  - Halim, Steven
-  - Halim, Felix
-  - Yahya, Suhendry Effendy
-  year: 2020
-  title: Competitive Programming
-  venue: Lulu Press
-  version: 4th edition
-  pages: ISBN 978-1718900197, Section 2.4 (Data Structures - Fenwick Tree implementation), Section 8.2 (Range Queries)
-- type: book
-  authors:
-  - Bezrukov, Nikolai
-  year: 2018
-  title: Algorithms and Data Structures for Competitive Programming
-  venue: Independent Publishing
-  pages: Chapters on Fenwick Tree and Segment Tree
-- type: journal
-  authors:
-  - Bentley, Jon L.
-  year: 1977
-  title: Solutions to Klee's rectangle problems
-  venue: Unpublished technical report, Carnegie-Mellon University
-  pages: The origin of the segment tree concept, predating Fenwick BIT by 17 years. Bentley s work on range queries in computational geometry motivated much of the later development in interval data structures
-- type: journal
-  authors:
-  - Mo, Tao
-  year: 2009
-  title: An O(N sqrt(Q)) Algorithm for Offline Subarray Sum with Range Modifications
-  venue: Chinese National Olympiad in Informatics (NOI) Training Material
-  pages: Origin of Mo s Algorithm for offline range queries, a parallel approach to BIT for static range queries. Provides O(N sqrt(Q)) complexity which complements BIT s O(N log N) for dynamic scenarios
-- type: book
-  authors:
-  - Wissman, Jason
-  year: 2016
-  title: Data Structures for Range Sum Query with Mutable Array
-  venue: Medium technical article
-  pages: A comparison of Fenwick Tree, Segment Tree, and Square Root Decomposition for the Range Sum Query Mutable problem
-- type: journal
-  authors:
-  - Lehman, Philip L.
-  - Yao, S. Bing
-  year: 1981
-  title: Efficient locking for concurrent operations on B-trees
-  venue: ACM Transactions on Database Systems
-  volume: 6
-  issue: 4
-  pages: 650-670
-  doi: 10.1145/319628.319663
-  pagesNote: While focused on B-trees, this paper discusses concurrent data structure patterns that influenced Fenwick tree implementations in database systems like PostgreSQL statistics collector
-- type: website
-  authors:
-  - TopCoder
-  year: 2026
-  title: Binary Indexed Trees - An Efficient Data Structure for Range Updates and Queries
-  venue: TopCoder Algorithm Tutorials
-  url: https://www.topcoder.com/thrive/articles/Binary%20Indexed%20Trees
-  pages: Classic TopCoder tutorial that popularized Fenwick Tree in competitive programming community
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - Apache Software Foundation
-  year: 2026
-  title: Apache Lucene Inverted Index Implementation
-  venue: Apache Lucene Documentation
-  url: https://lucene.apache.org/core/
-  pages: Lucene uses cumulative frequency statistics for term document frequency (DF) and collection frequency (CF) statistics, applications of BIT-like structures
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - Redis Ltd.
-  year: 2026
-  title: Redis Sorted Set (ZSET) Implementation
-  venue: Redis Documentation
-  url: https://redis.io/docs/data-types/sorted-sets/
-  pages: Redis ZSET uses a skip list and a hash table internally; Fenwick-like auxiliary structures are used in extensions like Redis-Bloom for cumulative frequency tracking
-  accessedDate: '2026-07-20'
-- type: website
-  authors:
-  - PostgreSQL Global Development Group
-  year: 2026
-  title: PostgreSQL Statistics Collector
-  venue: PostgreSQL Documentation
-  url: https://www.postgresql.org/docs/current/monitoring-stats.html
-  pages: PostgreSQL maintains cumulative statistics for query planning, using data structures that benefit from Fenwick-like approaches for incremental updates
-  accessedDate: '2026-07-20'
-etymology:
-- term: 树状数组
-  english: Fenwick Tree / Binary Indexed Tree
-  origin: 'Binary Indexed Tree（BIT）由新西兰奥克兰大学 Peter M. Fenwick 在 1994 年提出，原论文发表于 Software: Practice and Experience 24(3):327-336，DOI:10.1002/spe.4380240306。Fenwick 最初设计 BIT 是为了在算术编码（Arithmetic Coding）中维护累积频率表（Cumulative Frequency Tables），用于自适应概率模型的快速更新。BIT 名称中的 "Binary Indexed" 揭示了其核心思想：利用整数二进制表示的索引分解来组织前缀和的层级结构。中文"树状数组"为意译，强调其形似树的结构（每个 tree[i] 管辖一个区间，形成隐式树结构）；"Fenwick 树"则为人名音译，有时也写作"芬威克树"。Fenwick 在论文中将其称为"cumulative frequency table"（累积频率表），但社区普遍采用 Binary Indexed Tree 或 Fenwick Tree 的称呼'
-- term: lowbit
-  english: lowbit / least significant set bit
-  origin: lowbit(x) 返回 x 二进制表示中最低位的 1 所代表的值。例如 lowbit(6) = lowbit(0b110) = 0b010 = 2。其经典实现 x & (-x) 利用了补码表示：-x = ~x + 1，故 x & (-x) 恰好保留 x 的最低位 1。这一操作在 Fenwick 1994 论文中是 BIT 的核心。该概念在 1960 年代补码体系确立后即已为人知，Knuth 1968 TAOCP Vol.1 §1.2.10 已记录位运算技巧，但 Fenwick 1994 首次将其系统化应用于数据结构设计
-- term: 前缀和
-  english: prefix sum
-  origin: prefix sum（前缀和）指 $\text{prefix}(i) = \sum_{j=1}^{i} a[j]$ 的运算。前缀和作为基本算法历史悠久，1960 年代并行计算社区以"scan"或"prefix reduction"名称研究（Blelloch 1990《Scans as Primitive Parallel Operations》IEEE TPDS）。Fenwick Tree 可视为前缀和的动态版本：前缀和支持 $O(n)$ 构建 + $O(1)$ 查询 + $O(n)$ 更新，BIT 将更新复杂度降至 $O(\log n)$ 同时保持 $O(\log n)$ 查询，体现了时空权衡（time-space tradeoff）的经典范式
-- term: 逆序对
-  english: inversion count
-  origin: inversion count（逆序对计数）指排列中前后顺序颠倒的元素对数。逆序对最早由 Cramer 1750 在判定线性方程组系数时使用，Knuth 1973 TAOCP Vol.3 §5.1.1 系统化其计数算法。Fenwick Tree 是计算逆序对的经典方法之一：通过离散化 + BIT 在 $O(n \log n)$ 时间内完成，相比归并排序方法常数因子更小。逆序对也是 P1908 等 OI 题目的核心
-- term: 差分
-  english: difference / delta
-  origin: difference（差分）指 $d[i] = a[i] - a[i-1]$ 的变换。差分数组将区间加法转化为两端点修改，是 Fenwick Tree 区间更新模式的基础。该技巧在数值分析中历史悠久，Newton 1676《Methodus Differentialis》已使用差分技巧，1820 年代 Gauss 将其系统化用于插值。在算法竞赛中，差分树状数组是 BIT 的高级应用之一
-- term: 区间更新
-  english: range update
-  origin: range update（区间更新）指对区间 $[l, r]$ 内所有元素执行相同操作（如加法、赋值）。Fenwick Tree 原生支持单点更新，通过差分技巧可实现区间更新 + 单点查询；通过双树状数组（维护差分值与加权差分值）可实现区间更新 + 区间查询。这一扩展在 2000 年代初算法竞赛社区普及，TopCoder 2003 Fenwick Tree 教程系统化呈现了三种模式
-- term: 算术编码
-  english: arithmetic coding
-  origin: arithmetic coding（算术编码）由 Rissanen 1976《Generalized Kraft Inequality and Arithmetic Coding》IBM J. Res. Dev. 6(3):198-203 提出，是一种基于累积分布函数的熵编码方法。Fenwick 1994 设计 BIT 的原始动机即是为算术编码的自适应概率模型提供高效的累积频率表维护。BIT 在此场景中需要在收到每个符号后更新频率并查询累积概率，要求 $O(\log n)$ 的更新与查询复杂度
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/007-TheUbiquitousBTree'
+  - 'cs-fundamentals/006-DiscreteMathematics'
 ---
+
 
 
 ## 1. 概述与学习目标

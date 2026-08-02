@@ -1,18 +1,19 @@
 ---
-order: 124
+order: 570
 title: 目标代码生成
 module: 'cs-fundamentals'
-category: 'comp-sci'
+category: 计算机科学
 difficulty: intermediate
 description: 编译器目标代码生成：寄存器分配、指令选择与指令调度。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/中间代码'
-  - 'cs-fundamentals/代码优化'
+  - 'cs-fundamentals/055-IntermediateCode'
+  - 'cs-fundamentals/056-CodeOptimization'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 代码生成概述
 

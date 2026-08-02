@@ -1,20 +1,21 @@
 ---
-order: 60
+order: 190
 title: GitOps与持续交付
-module: devops
-category: 运维
+module: 'devops'
+category: 云与基础设施
 difficulty: advanced
 description: GitOps与持续交付：ArgoCD、Flux、渐进式交付与发布策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - devops/故障排查
-  - devops/容器安全
-  - devops/监控与告警
-  - devops/网络与安全进阶
+  - 'devops/017-Troubleshooting'
+  - 'devops/018-ContainerSecurity'
+  - 'devops/020-MonitorAndAlert'
+  - 'devops/021-NetworkSecurityAdvanced'
 prerequisites:
-  - devops/概述与Linux基础
+  - 'devops/001-OverviewLinuxBasics'
 ---
+
 
 ## 1. GitOps 原则
 

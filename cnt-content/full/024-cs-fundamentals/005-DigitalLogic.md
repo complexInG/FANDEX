@@ -2,19 +2,20 @@
 order: 50
 title: 数字逻辑
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 数字逻辑基础：布尔代数、逻辑门、组合逻辑、时序逻辑与有限状态机
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/操作系统'
-  - 'cs-fundamentals/计算机网络'
-  - 'cs-fundamentals/离散数学'
-  - 'cs-fundamentals/计算机组成原理'
+  - 'cs-fundamentals/003-OperatingSystem'
+  - 'cs-fundamentals/004-ComputerNetwork'
+  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-ComputerPrinciple'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 布尔代数基础
 

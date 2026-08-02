@@ -1,20 +1,21 @@
 ---
-order: 92
+order: 550
 title: 复制与高可用
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL复制架构：binlog格式、半同步/异步/延迟/组复制、InnoDB Cluster、备份恢复策略'
+description: MySQL复制架构：binlog格式、半同步/异步/延迟/组复制、InnoDB Cluster、备份恢复策略
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/VECTOR向量类型
-  - mysql/JSON模式验证与聚合函数
-  - mysql/不可见索引
-  - mysql/性能调优与安全
+  - 'mysql/053-VectorType'
+  - 'mysql/054-JSONSchemaValidationAggregate'
+  - 'mysql/056-InvisibleIndex'
+  - 'mysql/057-PerformanceTuningSecurity'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 二进制日志 (Binary Log)
 

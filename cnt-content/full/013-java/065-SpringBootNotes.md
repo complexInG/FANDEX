@@ -1,22 +1,20 @@
 ---
-order: 180
-tags:
-  - java
+order: 650
+title: Spring Boot 学习笔记
+module: 'java'
+category: 后端技术
 difficulty: intermediate
-title: 'Spring Boot 学习笔记'
-module: java
-category: 'Java Basics'
-description: 'Spring Boot 深度指南：自动配置原理、起步依赖、Actuator、Spring Data JPA、Spring Security、Spring Cloud 与生产级工程实践。'
+description: Spring Boot 深度指南：自动配置原理、起步依赖、Actuator、Spring Data JPA、Spring Security、Spring Cloud 与生产级工程实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/Lambda与函数式编程
-  - java/流式API
-  - java/网络编程
-  - java/SpringCloud微服务开发
+  - 'java/063-LambdaFunctionalProgramming'
+  - 'java/066-NetworkProgramming'
+  - 'java/067-SpringCloudMicroserviceDevelopment'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 # Spring Boot 深度指南：从自动配置到生产级微服务
 

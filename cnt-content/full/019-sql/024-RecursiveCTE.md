@@ -1,20 +1,20 @@
 ---
-order: 63
+order: 240
 title: 递归CTE
-module: sql
-category: SQL
+module: 'sql'
+category: 数据库
 difficulty: advanced
-description: 'SQL递归公用表表达式：WITH RECURSIVE语法、层级遍历、图遍历、斐波那契数列与终止条件控制'
+description: SQL递归公用表表达式：WITH RECURSIVE语法、层级遍历、图遍历、斐波那契数列与终止条件控制
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - sql/子查询
-  - sql/公用表表达式
-  - sql/PIVOT与UNPIVOT
-  - sql/集合操作
+  - 'sql/022-Subquery'
+  - 'sql/025-PivotUnpivot'
+  - 'sql/026-SetOperation'
 prerequisites:
-  - sql/概述与标准
+  - 'sql/001-OverviewStandard'
 ---
+
 ## 1. 递归 CTE 概述
 
 递归 CTE（Recursive CTE）允许查询引用自身，用于处理层级数据、树形结构和图遍历等递归问题。

@@ -1,24 +1,23 @@
 ---
-order: 59
+order: 150
 title: 背景增强
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: 深入解析 CSS Backgrounds Module Level 3/4 多背景、background-size、background-clip、background-origin、background-attachment 的规范、绘制算法与工程实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - css/渐变
-  - css/阴影
-  - css/Grid网格布局
-  - css/动画与过渡
-  - css/层叠上下文
-  - css/盒模型与boxsizing
+  - 'css/013-Gradient'
+  - 'css/014-Shadow'
+  - 'css/016-CSS3GridGridLayout'
+  - 'css/017-CSSAnimationTransition'
+  - 'css/012-StackingContext'
 prerequisites:
-  - css/概述与基本语法
-  - css/盒模型与boxsizing
-  - css/层叠上下文
+  - 'css/001-CSS3OverviewBasicSyntax'
+  - 'css/012-StackingContext'
 ---
+
 
 # 背景增强（Backgrounds & Borders Enhancement）
 

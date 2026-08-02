@@ -1,31 +1,25 @@
 ---
-order: 103
+order: 280
 title: 环境与全局变量管理
-module: lua
-category: 'dev-lang'
+module: 'lua'
+category: 后端技术
 difficulty: advanced
-description: 'Lua 环境与全局变量管理深度解析：_ENV 机制、setfenv/getfenv 演化、沙箱设计、严格模式与工程级模块隔离实践'
+description: Lua 环境与全局变量管理深度解析：_ENV 机制、setfenv/getfenv 演化、沙箱设计、严格模式与工程级模块隔离实践
 author: fanquanpp
 updated: '2026-07-21'
-tags:
-  - lua
-  - environment
-  - globals
-  - sandbox
-  - _ENV
-  - advanced
 related:
-  - lua/协程非抢占式调度
-  - lua/弱表
-  - 'lua/C-API栈操作'
-  - lua/用户数据
-  - lua/函数与闭包
-  - lua/模块与包
+  - 'lua/026-CoroutineNonPreemptiveScheduling'
+  - 'lua/027-WeakTable'
+  - 'lua/029-CAPIStackOperation'
+  - 'lua/030-UserData'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/017-ModulePackage'
 prerequisites:
-  - lua/概述与环境配置
-  - lua/函数与闭包
-  - lua/元表与元方法详解
+  - 'lua/001-LuaOverviewEnvSetup'
+  - 'lua/004-FunctionAndClosure'
+  - 'lua/025-MetatableMetamethodDetailed'
 ---
+
 ## 1. 历史动机与演化
 
 ### 1.1 全局环境机制的范式演化

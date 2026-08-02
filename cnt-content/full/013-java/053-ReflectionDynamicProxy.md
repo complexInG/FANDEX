@@ -1,20 +1,21 @@
 ---
-order: 104
+order: 530
 title: 反射与动态代理
-module: java
-category: 'dev-lang'
+module: 'java'
+category: 后端技术
 difficulty: advanced
-description: 'Java反射与动态代理详解：JVM规范、Class文件结构、JDK Proxy、CGLib、MethodHandle、Spring AOP 原理。'
+description: Java反射与动态代理详解：JVM规范、Class文件结构、JDK Proxy、CGLib、MethodHandle、Spring AOP 原理。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/CompletableFuture异步编排
-  - java/ThreadLocal内存泄漏
-  - java/注解处理器
-  - java/分代ZGC详解
+  - 'java/051-CompletableFutureAsync'
+  - 'java/052-ThreadLocalMemoryLeak'
+  - 'java/054-AnnotationProcessor'
+  - 'java/055-GenerationalZGCDetailed'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 反射机制的演进时间线

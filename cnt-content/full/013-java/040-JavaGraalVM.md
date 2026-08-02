@@ -1,33 +1,25 @@
 ---
-order: 82
+order: 400
 title: Java与GraalVM
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: GraalVM、Native Image、SubstrateVM、Truffle 框架与云原生 Java 的系统性深度剖析
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/方法详解
-  - java/Java与虚拟线程
-  - java/Java与Kubernetes
-  - java/Java记录类
-  - java/JVM类加载机制
-  - java/Java新特性
+  - 'java/038-MethodDetailed'
+  - 'java/039-JavaVirtualThread'
+  - 'java/041-JavaKubernetes'
+  - 'java/042-JavaRecordClass'
+  - 'java/010-JVMClassLoadingMechanism'
+  - 'java/015-JavaNewFeatures'
 prerequisites:
-  - java/概述与开发环境
-  - java/JVM类加载机制
-  - java/Java新特性
-tags:
-  - Java
-  - GraalVM
-  - NativeImage
-  - AOT
-  - CloudNative
-  - Serverless
-  - SubstrateVM
-  - Truffle
+  - 'java/001-JavaOverviewDevEnv'
+  - 'java/010-JVMClassLoadingMechanism'
+  - 'java/015-JavaNewFeatures'
 ---
+
 
 
 # Java 与 GraalVM 深度指南

@@ -1,20 +1,21 @@
 ---
-order: 56
+order: 170
 title: 状态管理方案对比
-module: react
-category: React
+module: 'react'
+category: 前端技术
 difficulty: intermediate
 description: Redux、Zustand、Jotai等方案对比
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/Hooks原理
-  - react/自定义Hooks设计模式
-  - react/React性能优化
-  - react/React错误边界
+  - 'react/015-HooksPrinciple'
+  - 'react/016-CustomHooksDesignPattern'
+  - 'react/018-ReactPerformance'
+  - 'react/019-ReactErrorBoundary'
 prerequisites:
-  - react/概述与环境配置
+  - 'react/001-OverviewEnvSetup'
 ---
+
 ## 概述
 
 Redux、Zustand、Jotai等方案对比。本文将从基础概念、快速上手、详细用法、常见场景、注意事项和进阶用法六个方面全面介绍状态管理方案对比。

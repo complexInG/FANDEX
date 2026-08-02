@@ -1,17 +1,18 @@
 ---
-order: 1
+order: 10
 title: 云计算基础
 module: 'cloud-computing'
-category: 云计算
+category: 云与基础设施
 difficulty: beginner
 description: 云计算概念与演进、服务模型、部署模型、高可用架构设计、负载均衡配置、弹性伸缩策略与云成本优化。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/云网络与存储'
-  - 'cloud-computing/容器与编排'
+  - 'cloud-computing/002-CloudNetworkStorage'
+  - 'cloud-computing/003-ContainerOrchestration'
 prerequisites: []
 ---
+
 ## 1. 云计算概念与演进
 
 ### 1.1 什么是云计算

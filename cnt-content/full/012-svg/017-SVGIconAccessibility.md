@@ -1,19 +1,20 @@
 ---
 order: 170
-title: 'SVG 图标与可访问性'
-module: svg
-category: 'SVG Icons'
+title: SVG 图标与可访问性
+module: 'svg'
+category: 前端技术
 difficulty: intermediate
-description: '图标系统设计、aria 属性、屏幕阅读器支持与无障碍最佳实践。'
+description: 图标系统设计、aria 属性、屏幕阅读器支持与无障碍最佳实践。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - svg/符号与复用
-  - svg/CSS样式化
-  - svg/响应式与性能
+  - 'svg/012-SVGSymbolReuse'
+  - 'svg/014-SVGCSSStyling'
+  - 'svg/016-SVGResponsivePerformance'
 prerequisites:
-  - svg/符号与复用
+  - 'svg/012-SVGSymbolReuse'
 ---
+
 ## 1. 为什么用 SVG 图标
 
 | 维度     | SVG 图标     | 字体图标（如 Font Awesome） | PNG 图标 |

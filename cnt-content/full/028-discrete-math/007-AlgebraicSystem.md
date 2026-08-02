@@ -1,19 +1,20 @@
 ---
-order: 7
+order: 70
 title: 代数系统
 module: 'discrete-math'
-category: 离散数学
+category: 数学
 difficulty: advanced
 description: 代数运算与性质、半群与群、子群与陪集、Lagrange定理、环与域、同态与同构。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'discrete-math/图论基础'
-  - 'discrete-math/图论进阶'
-  - 'discrete-math/组合数学'
+  - 'discrete-math/005-GraphTheoryBasics'
+  - 'discrete-math/006-GraphTheoryAdvanced'
+  - 'discrete-math/008-Combinatorics'
 prerequisites:
-  - 'discrete-math/集合与关系'
+  - 'discrete-math/003-SetAndRelation'
 ---
+
 
 ## 1. 从"运算的规律"说起
 

@@ -1,20 +1,21 @@
 ---
-order: 62
+order: 170
 title: 字符串处理
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-description: 'std::string与字符串视图'
+description: std::string与字符串视图
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/面向对象基础
-  - cpp/STL算法详解
-  - cpp/文件IO与文件系统
-  - cpp/异常安全
+  - 'cpp/015-COOPBasics'
+  - 'cpp/016-CSTL'
+  - 'cpp/018-FileIOFileSystem'
+  - 'cpp/019-ExceptionSecurity'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 C 字符串的痛点（1970s-1985）

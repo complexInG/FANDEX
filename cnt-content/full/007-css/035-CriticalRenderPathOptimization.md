@@ -1,20 +1,20 @@
 ---
-order: 75
+order: 350
 title: 关键渲染路径优化
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: advanced
 description: 关键CSS内联、异步加载
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/CSS原子化
-  - css/CSS模块化
-  - css/CSS原生嵌套
-  - css/Canvas绘图
+  - 'css/033-CSSAtomic'
+  - 'css/036-CSSNativeNesting'
+  - 'css/037-CSSCanvasDrawing'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. 关键渲染路径
 

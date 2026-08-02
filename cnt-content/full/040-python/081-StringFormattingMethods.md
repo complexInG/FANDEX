@@ -1,9 +1,8 @@
 ---
 order: 810
 title: Python 字符串格式化与方法
-module: python
-
-category: '040-python'
+module: 'python'
+category: 后端技术
 difficulty: beginner
 description: Python 字符串格式化与方法 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## f-string 格式化
 
 **基本写法：基础 f-string**

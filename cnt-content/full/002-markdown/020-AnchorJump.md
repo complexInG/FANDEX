@@ -1,20 +1,21 @@
 ---
-order: 63
+order: 200
 title: 锚点跳转
-module: markdown
-category: 'Markdown Basics'
+module: 'markdown'
+category: 工具链
 difficulty: intermediate
 description: Markdown锚点跳转机制：标题锚点、自定义锚点与跨文档链接。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - markdown/转换工具
-  - markdown/自动目录
-  - markdown/图片CDN加速
-  - markdown/版本控制下的PR协作
+  - 'markdown/018-ConversionTool'
+  - 'markdown/019-AutoTOC'
+  - 'markdown/021-ImageCDNAcceleration'
+  - 'markdown/022-VCSPRCollaboration'
 prerequisites:
-  - markdown/语法指南
+  - 'markdown/001-SyntaxGuide'
 ---
+
 ## 自动生成的标题锚点
 
 **基本写法：标题自动生成锚点**

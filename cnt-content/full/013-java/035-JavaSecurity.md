@@ -1,20 +1,21 @@
 ---
-order: 78
+order: 350
 title: Java与安全
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: Java安全编程
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - java/Java性能调优
-  - java/Java与AI
-  - java/Java与WebAssembly
-  - java/Java与响应式编程
+  - 'java/033-JavaPerformanceTuning'
+  - 'java/034-JavaAI'
+  - 'java/036-JavaWebAssembly'
+  - 'java/037-JavaReactiveProgramming'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 历史动机与发展脉络
 
 ### Java 安全演进的三十年

@@ -1,20 +1,21 @@
 ---
-order: 51
+order: 70
 title: 云架构设计
 module: 'cloud-computing'
-category: 云计算
+category: 云与基础设施
 difficulty: advanced
 description: 云架构设计原则、微服务架构、事件驱动架构、无服务器架构、多区域高可用、灾备策略与架构评审。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cloud-computing/IaaS与PaaS与SaaS'
-  - 'cloud-computing/虚拟化技术'
-  - 'cloud-computing/公有云与私有云与混合云'
-  - 'cloud-computing/Docker深度解析'
+  - 'cloud-computing/005-IaaSPaaSSaaS'
+  - 'cloud-computing/006-VirtualizationTech'
+  - 'cloud-computing/008-PublicCloudPrivateCloudHybridCloud'
+  - 'cloud-computing/009-DockerDeepAnalysis'
 prerequisites:
-  - 'cloud-computing/云计算基础'
+  - 'cloud-computing/001-CloudComputingBasics'
 ---
+
 
 ## 1. 云架构设计原则
 

@@ -1,20 +1,21 @@
 ---
-order: 58
+order: 130
 title: Java序列化
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: 序列化与反序列化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/JVM垃圾回收
-  - java/Java反射
-  - java/JavaIO与NIO
-  - java/Java新特性
+  - 'java/011-JVMGC'
+  - 'java/012-JavaReflection'
+  - 'java/014-JavaIONIO'
+  - 'java/015-JavaNewFeatures'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 ## 概述
 
 序列化是将 Java 对象转换为字节流的过程，反序列化是将字节流恢复为 Java 对象的过程。序列化的核心用途是让对象可以脱离内存存在：存储到文件、通过网络传输、保存到数据库。当你需要把一个对象从一台机器发送到另一台机器，或者把对象持久化保存时，就需要序列化。

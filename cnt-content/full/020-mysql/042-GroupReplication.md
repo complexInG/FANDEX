@@ -1,20 +1,19 @@
 ---
-order: 83
+order: 420
 title: 组复制
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL组复制Group Replication：单主/多主模式、Paxos协议、故障检测与自动切换'
+description: MySQL组复制Group Replication：单主/多主模式、Paxos协议、故障检测与自动切换
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/全局事务标识
-  - mysql/并行复制
-  - mysql/InnoDB集群
-  - mysql/分区表
+  - 'mysql/041-ParallelReplication'
+  - 'mysql/044-PartitionedTable'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 组复制概述
 

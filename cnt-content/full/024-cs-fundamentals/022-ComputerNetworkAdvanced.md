@@ -1,20 +1,21 @@
 ---
-order: 65
+order: 220
 title: 计算机网络进阶
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: advanced
 description: 计算机网络进阶：TCP拥塞控制、路由算法、SDN、QoS与网络性能分析
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/编译原理进阶'
-  - 'cs-fundamentals/操作系统进阶'
-  - 'cs-fundamentals/网络安全'
-  - 'cs-fundamentals/多媒体技术'
+  - 'cs-fundamentals/020-CompilePrincipleAdvanced'
+  - 'cs-fundamentals/021-OperatingSystemAdvanced'
+  - 'cs-fundamentals/023-NetworkSecurity'
+  - 'cs-fundamentals/024-MultimediaTechnology'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. TCP 拥塞控制
 

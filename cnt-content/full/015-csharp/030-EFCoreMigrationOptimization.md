@@ -1,20 +1,21 @@
 ---
-order: 104
-title: 'Entity-Framework-Core迁移与优化'
-module: csharp
-category: 'dev-lang'
+order: 300
+title: Entity-Framework-Core迁移与优化
+module: 'csharp'
+category: 后端技术
 difficulty: advanced
-description: 'Entity Framework Core迁移与性能优化详解：从Code First建模到跨数据库Provider的完整指南。'
+description: Entity Framework Core迁移与性能优化详解：从Code First建模到跨数据库Provider的完整指南。
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - csharp/委托与事件底层原理
-  - csharp/反射与特性应用
-  - 'csharp/ASP-NET-Core中间件管道'
-  - csharp/依赖注入生命周期
+  - 'csharp/028-DelegateEventUnderlying'
+  - 'csharp/029-ReflectionAndFeatureApplication'
+  - 'csharp/031-AspNetCoreMiddlewarePipeline'
+  - 'csharp/032-DILifecycle'
 prerequisites:
-  - csharp/概述与环境配置
+  - 'csharp/001-COverviewEnvSetup'
 ---
+
 
 
 # Entity-Framework-Core迁移与优化

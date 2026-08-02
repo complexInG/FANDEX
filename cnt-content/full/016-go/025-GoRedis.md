@@ -1,20 +1,21 @@
 ---
-order: 66
+order: 250
 title: Go与Redis
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'go-redis客户端'
+description: go-redis客户端
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - go/Go与Kubernetes
-  - go/Go与数据库
-  - go/Go与消息队列
-  - go/Go与测试
+  - 'go/023-GoKubernetes'
+  - 'go/027-GoDatabase'
+  - 'go/026-GoMessageQueue'
+  - 'go/028-GoTest'
 prerequisites:
-  - go/概述与环境配置
+  - 'go/001-GoOverviewEnvSetup'
 ---
+
 
 ## 概述
 

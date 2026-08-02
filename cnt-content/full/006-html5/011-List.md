@@ -1,44 +1,21 @@
 ---
-order: 53
+order: 110
 title: 列表
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: beginner
 description: HTML 三类列表（ul/ol/dl）的语义、属性、嵌套规则、无障碍要求与 CSS 样式化技巧。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-- html5/元数据与字符编码
-- html5/文本语义
-- html5/链接与锚点
-- html5/图像与响应式图片
+  - 'html5/009-MetadataCharacterEncoding'
+  - 'html5/010-TextSemantic'
+  - 'html5/012-LinkageAnchor'
+  - 'html5/013-ImageResponsiveImage'
 prerequisites:
-- html5/概述与核心特性
-references:
-- type: standard
-  authors:
-  - WHATWG
-  year: 2026
-  title: HTML Standard - The ul element
-  venue: WHATWG
-  url: https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element
-  accessedDate: '2026-08-01'
-- type: documentation
-  authors:
-  - MDN Web Docs
-  year: 2026
-  title: 'ul: The Unordered List element'
-  venue: MDN Web Docs
-  url: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul
-  accessedDate: '2026-08-01'
-etymology:
-- term: 无序列表
-  english: unordered list
-  origin: 用于表达顺序无关的项目集合，浏览器默认渲染为圆点标记。
-estimatedReadingTime: 30
-lastReviewed: '2026-08-01'
-reviewer: fanquanpp
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 
 ## 1. 历史动机与发展脉络
 

@@ -1,25 +1,23 @@
 ---
-order: 90
-tags:
-  - typescript
+order: 410
+title: TypeScript 迁移实战
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
-title: 'TypeScript 迁移实战'
-module: typescript
-category: 'TypeScript Basics'
 description: 渐进式迁移策略、类型覆盖提升、常见迁移陷阱与生产级最佳实践，涵盖 tsconfig 演进、JSDoc 桥接、ts-migrate 自动化与大型项目案例研究。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/工程化配置
-  - typescript/satisfies操作符
-  - typescript/条件类型与infer
-  - typescript/编译与性能优化
-  - typescript/类型安全的环境变量
+  - 'typescript/039-TypeScriptEngineeringConfig'
+  - 'typescript/040-SatisfiesOperator'
+  - 'typescript/042-ConditionalTypeInfer'
+  - 'typescript/043-TypeScriptCompilePerformanceOptimization'
+  - 'typescript/031-TypeSafeEnvVar'
 prerequisites:
-  - typescript/语法速查
-  - typescript/接口与类型别名
-  - typescript/泛型
+  - 'typescript/003-InterfaceTypeAlias'
+  - 'typescript/011-GenericConstraintDefault'
 ---
+
 
 
 # TypeScript 迁移实战

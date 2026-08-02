@@ -1,20 +1,21 @@
 ---
-order: 93
+order: 560
 title: 不可见索引
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: intermediate
 description: MySQL不可见索引：索引可见性控制、优化器忽略、安全删除索引与灰度验证
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/JSON模式验证与聚合函数
-  - mysql/复制与高可用
-  - mysql/性能调优与安全
-  - mysql/函数索引
+  - 'mysql/054-JSONSchemaValidationAggregate'
+  - 'mysql/055-ReplicationHA'
+  - 'mysql/057-PerformanceTuningSecurity'
+  - 'mysql/058-FunctionalIndex'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 不可见索引概述
 

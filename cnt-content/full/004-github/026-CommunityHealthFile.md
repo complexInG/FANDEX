@@ -1,20 +1,19 @@
 ---
-order: 68
+order: 260
 title: 社区健康文件
-module: github
-category: GitHub
+module: 'github'
+category: 工具链
 difficulty: beginner
 description: 'GitHub社区健康文件深度解析：以"社区公约"清单为主线，逐一讲解 CONTRIBUTING、CODE_OF_CONDUCT、SUPPORT、SECURITY、CODEOWNERS 等文件与默认文件机制。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - github/在线开发环境
-  - github/代码所有者
-  - github/PullRequest完整协作流程
-  - github/GitHubPages多站点方案
+  - 'github/027-PullRequestCompleteCollaborationFlow'
+  - 'github/028-GitHubPagesMultiSolution'
 prerequisites:
-  - github/GitHub概述
+  - 'github/001-GitHubOverview'
 ---
+
 
 ## 0. 从一个类比说起：开源项目就像一个新建成的小区
 

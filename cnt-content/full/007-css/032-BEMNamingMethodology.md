@@ -1,20 +1,20 @@
 ---
-order: 72
+order: 320
 title: BEM命名方法论
-module: css
-category: CSS
+module: 'css'
+category: 前端技术
 difficulty: intermediate
 description: BEM命名方法论
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/响应式设计
-  - css/PostCSS与构建工具
-  - css/CSS原子化
-  - css/CSS模块化
+  - 'css/030-ResponsiveDesign'
+  - 'css/031-PostCSS'
+  - 'css/033-CSSAtomic'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 
 ## 1. BEM 概述
 

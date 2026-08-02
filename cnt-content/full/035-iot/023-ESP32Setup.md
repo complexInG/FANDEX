@@ -1,9 +1,8 @@
 ---
 order: 230
 title: 物联网 ESP32 开发环境
-module: iot
-
-category: '035-iot'
+module: 'iot'
+category: 云与基础设施
 difficulty: beginner
 description: 物联网 ESP32 开发环境 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## Arduino IDE 配置
 
 **基本写法：添加 ESP32 板支持 URL**

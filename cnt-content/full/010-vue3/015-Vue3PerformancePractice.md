@@ -1,20 +1,20 @@
 ---
-order: 58
+order: 150
 title: Vue3性能优化实践
-module: vue3
-category: Vue3
+module: 'vue3'
+category: 前端技术
 difficulty: intermediate
 description: Vue3应用性能优化技巧
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - vue3/Vue3测试策略
-  - 'vue3/Vue3与Web Components'
-  - vue3/响应式系统
-  - vue3/自定义Hook
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/013-Vue3TestStrategy'
+  - 'vue3/014-Vue3WebComponents'
+  - 'vue3/016-ReactiveSystem'
+  - 'vue3/017-CustomHook'
+prerequisites: []
 ---
+
 
 # Vue3 性能优化实践 | Vue3 Performance Optimization in Practice
 

@@ -1,29 +1,23 @@
 ---
-order: 57
+order: 120
 title: Java反射
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: intermediate
 description: 反射API、动态代理、MethodHandle与字节码层面原理
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - java/JVM类加载机制
-  - java/JVM垃圾回收
-  - java/Java序列化
-  - java/JavaIO与NIO
+  - 'java/010-JVMClassLoadingMechanism'
+  - 'java/011-JVMGC'
+  - 'java/013-JavaSerialization'
+  - 'java/014-JavaIONIO'
 prerequisites:
-  - java/面向对象编程
-  - java/JVM类加载机制
-  - java/Java模块系统
-tags:
-  - Java
-  - Reflection
-  - 动态代理
-  - MethodHandle
-  - 字节码
-  - JVM
+  - 'java/056-OOP'
+  - 'java/010-JVMClassLoadingMechanism'
+  - 'java/044-JavaModuleSystem'
 ---
+
 
 
 # Java 反射（Reflection）

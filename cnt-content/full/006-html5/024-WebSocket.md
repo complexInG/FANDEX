@@ -1,20 +1,19 @@
 ---
-order: 65
+order: 240
 title: WebSocket
-module: html5
-category: HTML5
+module: 'html5'
+category: 前端技术
 difficulty: intermediate
 description: WebSocket
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'html5/Service-Worker与PWA'
-  - html5/历史记录API
-  - html5/实时通信
-  - 'html5/微数据与JSON-LD'
+  - 'html5/022-ServiceWorkerPWA'
+  - 'html5/026-MicrodataJSONLD'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 1. WebSocket 概述
 
 | 特性       | HTTP      | WebSocket |

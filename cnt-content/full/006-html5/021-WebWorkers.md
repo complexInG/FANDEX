@@ -1,20 +1,20 @@
 ---
-order: 62
-title: 'Web-Workers'
-module: html5
-category: HTML5
+order: 210
+title: Web-Workers
+module: 'html5'
+category: 前端技术
 difficulty: advanced
-description: 'Web Workers'
+description: Web Workers
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - html5/拖拽API
-  - html5/地理位置定位
-  - 'html5/Service-Worker与PWA'
-  - html5/历史记录API
+  - 'html5/019-DragAPI'
+  - 'html5/020-Geolocation'
+  - 'html5/022-ServiceWorkerPWA'
 prerequisites:
-  - html5/概述与核心特性
+  - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
 ## 内联 Worker
 
 **通过 Blob 创建内联 Worker**

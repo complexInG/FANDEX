@@ -1,20 +1,20 @@
 ---
-order: 71
+order: 280
 title: C++图形编程
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
 description: OpenGL与Vulkan图形编程
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - cpp/C++23与C++26新特性
-  - cpp/C++网络编程
-  - cpp/C++序列化
-  - cpp/C++与Rust对比
-prerequisites:
-  - cpp/概述与环境配置
+  - 'cpp/034-Cpp23Cpp26NewFeatures'
+  - 'cpp/025-CppNetworkProgramming'
+  - 'cpp/036-CppSerialization'
+  - 'cpp/033-CppRustComparison'
+prerequisites: []
 ---
+
 
 ## 概述
 

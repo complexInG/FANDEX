@@ -2,16 +2,17 @@
 order: 10
 title: 行列式定义与几何意义
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: beginner
-description: 从"有向面积/有向体积"的几何直觉出发，讲解二阶、三阶与 n 阶行列式的定义，排列与逆序数，以及行列式作为线性变换体积伸缩因子的几何意义。
+description: '从"有向面积/有向体积"的几何直觉出发，讲解二阶、三阶与 n 阶行列式的定义，排列与逆序数，以及行列式作为线性变换体积伸缩因子的几何意义。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/行列式基本性质'
-  - 'linear-algebra/行列式按行列展开'
+  - 'linear-algebra/002-DeterminantBasicProperties'
+  - 'linear-algebra/003-DeterminantRowColumnExpansion'
 prerequisites: []
 ---
+
 
 ## 0. 生活类比：从"丈量一块斜田"说起
 

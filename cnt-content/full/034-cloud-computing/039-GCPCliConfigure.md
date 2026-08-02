@@ -1,9 +1,8 @@
 ---
 order: 390
 title: 云计算 GCP gcloud 配置
-module: cloud-computing
-
-category: '034-cloud-computing'
+module: 'cloud-computing'
+category: 云与基础设施
 difficulty: beginner
 description: 云计算 GCP gcloud 配置 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 安装与初始化
 
 **基本写法：安装 gcloud CLI**

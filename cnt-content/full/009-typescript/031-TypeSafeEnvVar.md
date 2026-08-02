@@ -1,23 +1,23 @@
 ---
-order: 73
+order: 310
 title: 类型安全的环境变量
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: 构建类型安全的环境变量管理系统，涵盖字面量类型、映射类型、Zod 运行时校验、多环境配置与生产级最佳实践。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - typescript/类型安全的配置系统
-  - typescript/类型安全的路由
-  - typescript/类型安全的国际化
-  - typescript/类型安全的表单验证
-  - typescript/条件类型与映射类型
+  - 'typescript/035-TypeScript54ReleaseNotesNoInferUtilityType'
+  - 'typescript/034-TypeSafeRoute'
+  - 'typescript/033-TypeSafeI18n'
+  - 'typescript/032-TypeSafeFormValidation'
+  - 'typescript/026-ConditionalMappedType'
 prerequisites:
-  - typescript/语法速查
-  - typescript/接口与类型别名
-  - typescript/字面量类型
+  - 'typescript/003-InterfaceTypeAlias'
+  - 'typescript/005-LocalTypeInference'
 ---
+
 
 
 # 类型安全的环境变量

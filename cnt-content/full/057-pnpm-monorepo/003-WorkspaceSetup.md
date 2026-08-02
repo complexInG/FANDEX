@@ -1,20 +1,21 @@
 ---
-order: 3
+order: 30
 title: 工作空间配置
-module: pnpm-monorepo
-category: pnpm 与 Monorepo
+module: 'pnpm-monorepo'
+category: 工具链
 difficulty: beginner
-description: 'pnpm workspace 配置：pnpm-workspace.yaml、packages 模式与安装命令'
+description: pnpm workspace 配置：pnpm-workspace.yaml、packages 模式与安装命令
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - pnpm-monorepo/002-PnpmCore
-  - pnpm-monorepo/004-WorkspaceProtocol
-  - pnpm-monorepo/005-CatalogManagement
+  - 'pnpm-monorepo/002-PnpmCore'
+  - 'pnpm-monorepo/004-WorkspaceProtocol'
+  - 'pnpm-monorepo/005-CatalogManagement'
 prerequisites:
-  - getting-started/013-PackageManager
-  - pnpm-monorepo/002-PnpmCore
+  - 'getting-started/013-PackageManager'
+  - 'pnpm-monorepo/002-PnpmCore'
 ---
+
 
 ## 1. 从"一个家几个房间"说起
 

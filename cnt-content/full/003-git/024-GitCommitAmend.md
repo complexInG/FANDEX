@@ -1,20 +1,18 @@
 ---
-order: 67
-title: 'git-commit-amend'
-module: git
-category: 'Git Basics'
+order: 240
+title: git-commit-amend
+module: 'git'
+category: 工具链
 difficulty: intermediate
-description: 'git commit --amend详解：修改最近提交的消息、内容与安全注意事项。'
+description: git commit --amend详解：修改最近提交的消息、内容与安全注意事项。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - git/远程跟踪分支
-  - 'git/Git-Flow与GitHub-Flow'
-  - git/重置与回退
-  - git/撤销提交
-prerequisites:
-  - git/语法速查
+  - 'git/022-RemoteTrackingBranch'
+  - 'git/023-GitFlowGitHubFlow'
+prerequisites: []
 ---
+
 ## 1. amend 概述
 
 ### 1.1 什么是 amend

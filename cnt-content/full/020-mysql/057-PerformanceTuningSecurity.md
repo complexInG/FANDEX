@@ -1,20 +1,21 @@
 ---
-order: 93
+order: 570
 title: 性能调优与安全
-module: mysql
-category: MySQL
+module: 'mysql'
+category: 数据库
 difficulty: advanced
 description: MySQL性能调优：缓冲池配置、慢查询分析、performance_schema、安全认证、角色管理、在线DDL与XA事务
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/复制与高可用
-  - mysql/不可见索引
-  - mysql/函数索引
-  - mysql/存储过程与函数
+  - 'mysql/055-ReplicationHA'
+  - 'mysql/056-InvisibleIndex'
+  - 'mysql/058-FunctionalIndex'
+  - 'mysql/059-StoredProcedureAndFunction'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. 缓冲池配置与优化
 
 ### 1.1 Buffer Pool 大小规划

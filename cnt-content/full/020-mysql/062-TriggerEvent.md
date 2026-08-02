@@ -1,24 +1,21 @@
 ---
-order: 100
-tags:
-  - mysql
-  - trigger
-  - event
-difficulty: advanced
+order: 620
 title: 触发器与事件
-module: mysql
-category: 'MySQL Basics'
+module: 'mysql'
+category: 数据库
+difficulty: advanced
 description: MySQL触发器（BEFORE/AFTER、INSERT/UPDATE/DELETE）与事件调度器详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/MVCC快照读与当前读
-  - mysql/索引原理与性能优化
-  - mysql/Redo与Undo与Binlog写入时机
-  - mysql/两阶段提交
+  - 'mysql/060-MVCCSnapshotCurrentRead'
+  - 'mysql/061-IndexPrinciplePerformanceOptimization'
+  - 'mysql/063-RedoUndoBinlogWriteTiming'
+  - 'mysql/064-TwoPhaseCommit'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 ## 1. 触发器基础
 
 ### 1.1 什么是触发器

@@ -1,20 +1,18 @@
 ---
 order: 10
-tags:
-  - typescript
+title: TypeScript 概述与环境配置
+module: 'typescript'
+category: 前端技术
 difficulty: beginner
-title: 'TypeScript 概述与环境配置'
-module: typescript
-category: 'TS Advanced'
-description: 'TypeScript 发展历程、与 JavaScript 的关系与开发环境搭建。'
+description: TypeScript 发展历程、与 JavaScript 的关系与开发环境搭建。
 author: Anonymous
-related:
-  - typescript/语法速查
-  - typescript/基础类型系统
-  - typescript/接口与类型别名
-prerequisites: []
 updated: '2026-08-01'
+related:
+  - 'typescript/002-BasicTypeSystem'
+  - 'typescript/003-InterfaceTypeAlias'
+prerequisites: []
 ---
+
 ## 1. TypeScript 概述 (Overview)
 
 TypeScript 是 JavaScript 的一个**超集**，由微软开发，于 2012 年首次发布。它在 JavaScript 的基础上增加了**静态类型系统**和其他高级特性，最终通过编译器转换为纯 JavaScript 代码运行。TypeScript 的设计目标是帮助开发者构建大型、复杂的应用程序，提供更好的开发体验和代码质量。

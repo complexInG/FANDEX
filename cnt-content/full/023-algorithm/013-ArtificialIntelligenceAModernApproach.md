@@ -1,173 +1,28 @@
 ---
+order: 130
 title: 动态规划
-module: algorithm
-category: Algorithm Strategies
+module: 'algorithm'
+category: 计算机科学
+difficulty: intermediate
 description: 动态规划的 Bellman 最优性原理、最优子结构与重叠子问题形式化定义、状态转移方程代数表示、复杂度分析，覆盖一维/二维/区间/树形/状压/数位 DP 与背包、LCS、LIS、编辑距离等经典问题，附多语言实现。
 author: fanquanpp
-order: 90
-tags:
-- algorithm
-- algorithm-dynamicprogramming
-difficulty: intermediate
-created: 2026-05-27
-updated: 2026-07-18
-lastReviewed: 2026-07-18
-reviewer: FANDEX Content Engineering
-estimatedReadingTime: 180
+updated: '2026-07-18'
 related:
-- algorithm/递归与回溯
-- algorithm/字符串算法
-- algorithm/数组与动态数组
-- algorithm/栈与队列
-- algorithm/贪心算法
-- algorithm/分治算法
-- algorithm/图算法
-- algorithm/动态规划状态压缩
-- algorithm/Floyd-Warshall算法
+  - 'algorithm/011-NQueensBenchmarkBitManipulationApproach'
+  - 'algorithm/012-RipgrepRecursivelySearchDirectoriesForARegexPattern'
+  - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
+  - 'algorithm/003-ConcurrencyInGoToolsAndTechniquesForDevelopers'
+  - 'algorithm/010-GreedyAlgorithm'
+  - 'algorithm/009-GaussAndTheHistoryOfTheFastFourierTransform'
+  - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
+  - 'algorithm/025-LeetCodeBitmaskDPProblemsCollection'
+  - 'algorithm/026-MIT6006IntroductionToAlgorithmsAllPairsShortestPaths'
 prerequisites:
-- algorithm/算法分析基础与学习路线
-- algorithm/递归与回溯
-- cs-fundamentals/离散数学
-references:
-- type: book
-  authors:
-  - Cormen, Thomas H.
-  - Leiserson, Charles E.
-  - Rivest, Ronald L.
-  - Stein, Clifford
-  year: 2022
-  title: Introduction to Algorithms
-  venue: MIT Press
-  version: 4th edition
-  pages: ISBN 978-0262046305
-- type: book
-  authors:
-  - Bellman, Richard
-  year: 1957
-  title: Dynamic Programming
-  venue: Princeton University Press
-  pages: ISBN 978-0691079516
-- type: journal
-  authors:
-  - Bellman, Richard
-  year: 1952
-  title: On the Theory of Dynamic Programming
-  venue: Proceedings of the National Academy of Sciences
-  volume: 38
-  issue: 8
-  pages: 716-719
-  doi: 10.1073/pnas.38.8.716
-- type: book
-  authors:
-  - Bertsekas, Dimitri P.
-  year: 2017
-  title: Dynamic Programming and Optimal Control
-  venue: Athena Scientific
-  version: 4th edition
-  pages: ISBN 978-1886529267
-- type: book
-  authors:
-  - Kleinberg, Jon
-  - Tardos, Eva
-  year: 2006
-  title: Algorithm Design
-  venue: Pearson
-  pages: ISBN 978-0321295354
-- type: book
-  authors:
-  - Sedgewick, Robert
-  - Wayne, Kevin
-  year: 2011
-  title: Algorithms
-  venue: Addison-Wesley Professional
-  version: 4th edition
-  pages: ISBN 978-0321573513
-- type: book
-  authors:
-  - Dasgupta, Sanjoy
-  - Papadimitriou, Christos
-  - Vazirani, Umesh
-  year: 2006
-  title: Algorithms
-  venue: McGraw-Hill
-  pages: ISBN 978-0073523408
-- type: book
-  authors:
-  - Skiena, Steven S.
-  year: 2020
-  title: The Algorithm Design Manual
-  venue: Springer
-  version: 3rd edition
-  pages: ISBN 978-3030542559
-- type: book
-  authors:
-  - Knuth, Donald E.
-  year: 1997
-  title: 'The Art of Computer Programming, Volume 1: Fundamental Algorithms'
-  venue: Addison-Wesley Professional
-  version: 3rd edition
-  pages: ISBN 978-0201896831
-- type: journal
-  authors:
-  - Smith, Temple F.
-  - Waterman, Michael S.
-  year: 1981
-  title: Identification of common molecular subsequences
-  venue: Journal of Molecular Biology
-  volume: 147
-  issue: 1
-  pages: 195-197
-  doi: 10.1016/0022-2836(81)90087-5
-- type: conference
-  authors:
-  - Needleman, Saul B.
-  - Wunsch, Christian D.
-  year: 1970
-  title: A general method applicable to the search for similarities in the amino acid sequence of two proteins
-  venue: Journal of Molecular Biology
-  volume: 48
-  issue: 3
-  pages: 443-453
-  doi: 10.1016/0022-2836(70)90057-4
-- type: journal
-  authors:
-  - Viterbi, Andrew J.
-  year: 1967
-  title: Error bounds for convolutional codes and an asymptotically optimum decoding algorithm
-  venue: IEEE Transactions on Information Theory
-  volume: 13
-  issue: 2
-  pages: 260-269
-  doi: 10.1109/TIT.1967.1054010
-- type: book
-  authors:
-  - Russell, Stuart
-  - Norvig, Peter
-  year: 2021
-  title: 'Artificial Intelligence: A Modern Approach'
-  venue: Pearson
-  version: 4th edition
-  pages: ISBN 978-0134610993
-etymology:
-- term: 动态规划
-  english: dynamic programming
-  origin: Richard Bellman 于 1950s 在 RAND Corporation 提出。"dynamic" 借用其"时变、多阶段"含义，"programming" 在 1940s-1950s 数学规划语境中指"最优表格化方案"（如 linear programming），并非"编写程序"。Bellman 在自传中坦言该命名部分是为了避免 RAND 主管 Charles Wilson 对 "research" 一词的反感
-- term: Bellman 方程
-  english: Bellman equation
-  origin: 以 Richard Bellman 命名，描述多阶段决策问题中相邻状态最优值函数的递归关系。1957 年 Bellman 在专著《Dynamic Programming》中正式系统化，但 1952 年 PNAS 论文已给出原型
-- term: 最优子结构
-  english: optimal substructure
-  origin: 即 Bellman 最优性原理（Principle of Optimality）的等价表述。原意指"最优策略的子策略亦为最优"，CLRS 将其抽象为"问题最优解包含子问题最优解"的形式
-- term: 重叠子问题
-  english: overlapping subproblems
-  origin: CLRS 引入的术语，指递归求解过程中同一子问题被反复计算。与分治的"独立子问题"形成对照，是 DP 优于纯分治的本质特征
-- term: 记忆化
-  english: memoization
-  origin: 由 Donald Michie 于 1968 年在论文 "Memo Functions and Machine Learning" 中提出，源自拉丁语 "memorandum"（应被记住的事物）。中文也称"备忘录法"，与自顶向下递归配合使用
-- term: 无后效性
-  english: Markov property / statelessness
-  origin: 借用 Markov 过程的"无记忆性"概念：当前状态完全决定未来演化，与到达路径无关。是 DP 状态合法性的必要条件
+  - 'algorithm/001-MIT6006IntroductionToAlgorithms'
+  - 'algorithm/011-NQueensBenchmarkBitManipulationApproach'
+  - 'cs-fundamentals/006-DiscreteMathematics'
 ---
+
 
 
 ## 第 1 章 学习目标与导论

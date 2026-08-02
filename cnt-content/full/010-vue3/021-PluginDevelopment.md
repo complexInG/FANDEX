@@ -1,23 +1,20 @@
 ---
-order: 95
-tags:
-  - vue3
-  - plugin
-difficulty: advanced
+order: 210
 title: 插件开发
-module: vue3
-category: 'Vue3 Basics'
+module: 'vue3'
+category: 前端技术
+difficulty: advanced
 description: Vue3插件开发详解：插件结构、app.use注册、provide/inject、指令插件与全局组件注册。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - vue3/TypeScript集成
-  - vue3/Pinia状态管理详解
-  - vue3/computed缓存机制与watch执行时机
-  - vue3/Router详解
-prerequisites:
-  - vue3/语法速查
+  - 'vue3/019-TypeScriptIntegration'
+  - 'vue3/020-PiniaStateManagementDetailed'
+  - 'vue3/022-ComputedCacheWatchTiming'
+  - 'vue3/023-VueRouterDetailed'
+prerequisites: []
 ---
+
 ## 1. 插件基础
 
 ### 1.1 什么是 Vue 插件

@@ -1,22 +1,20 @@
 ---
-order: 50
-tags:
-  - python
-difficulty: intermediate
+order: 80
 title: 运算符与表达式
-module: python
-category: 'Python Basics'
+module: 'python'
+category: 后端技术
+difficulty: intermediate
 description: 算术、比较、逻辑、位运算与运算符优先级。
 author: Anonymous
-related:
-  - python/基础数据类型
-  - python/列表推导式进阶
-  - python/元类
-  - python/描述符协议
-prerequisites:
-  - python/语法速查
 updated: '2026-08-01'
+related:
+  - 'python/067-BasicDataType'
+  - 'python/007-ListComprehensionAdvanced'
+  - 'python/010-Metaclass'
+  - 'python/004-PythonDescriptorProtocol'
+prerequisites: []
 ---
+
 ## 1. 运算符分类 (Operator Categories)
 
 ### 1.1 算术运算符 (Arithmetic)

@@ -1,20 +1,21 @@
 ---
-order: 101
+order: 630
 title: Redo与Undo与Binlog写入时机
-module: mysql
-category: database
+module: 'mysql'
+category: 数据库
 difficulty: advanced
-description: 'MySQL InnoDB Redo Log、Undo Log 与 Binlog 的写入时机、写入顺序与崩溃恢复机制。'
+description: MySQL InnoDB Redo Log、Undo Log 与 Binlog 的写入时机、写入顺序与崩溃恢复机制。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - mysql/索引原理与性能优化
-  - mysql/触发器与事件
-  - mysql/两阶段提交
-  - mysql/间隙锁与临键锁解决幻读
+  - 'mysql/061-IndexPrinciplePerformanceOptimization'
+  - 'mysql/062-TriggerEvent'
+  - 'mysql/064-TwoPhaseCommit'
+  - 'mysql/065-GapLockNextKeyLockSolutionPhantomRead'
 prerequisites:
-  - mysql/语法速查
+  - 'mysql/085-View'
 ---
+
 
 ## 1. 三种日志概览
 

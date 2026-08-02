@@ -1,92 +1,21 @@
 ---
-order: 64
+order: 190
 title: 符号与唯一类型
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: Symbol、unique symbol 与品牌类型的类型论基础、形式语义与生产级模式
 author: fanquanpp
 updated: '2026-07-20'
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
 related:
-- typescript/协变与逆变
-- typescript/this类型与多态
-- typescript/命名空间与模块
-- typescript/枚举进阶
-- typescript/类型体操实用模式
-prerequisites:
-- typescript/语法速查
-tags:
-- typescript
-- symbol
-- unique-symbol
-- branded-type
-- nominal-typing
-- well-known-symbols
-- metaprogramming
-- type-theory
-references:
-- title: Types and Programming Languages
-  year: 2002
-  isbn: 978-0-262-16209-8
-  type: book
-  authors:
-  - Pierce, Benjamin C.
-  venue: MIT Press
-- title: Understanding TypeScript
-  year: 2014
-  pages: 257-281
-  doi: 10.1007/978-3-662-44202-9_11
-  type: conference
-  authors:
-  - Bierman, Gavin M. and Abadi, Martín and Torgersen, Mads
-  venue: ECOOP 2014 — Object-Oriented Programming
-- title: 'ECMAScript 2024 Language Specification, Section 6.1.5: Symbol Type'
-  year: 2024
-  url: https://tc39.es/ecma262/#sec-ecmascript-language-types-symbol-type
-  type: website
-  authors:
-  - ECMA International
-  venue: ECMA-262, 14th edition
-- title: On Understanding Types, Data Abstraction, and Polymorphism
-  year: 1985
-  volume: 17
-  number: '4'
-  pages: 471-523
-  doi: 10.1145/6041.6042
-  type: journal
-  authors:
-  - Cardelli, Luca and Wegner, Peter
-  venue: ACM Computing Surveys
-- title: 'TypeScript Handbook: Symbols'
-  year: 2023
-  url: https://www.typescriptlang.org/docs/handbook/symbols.html
-  type: website
-  authors:
-  - Microsoft
-  venue: Microsoft Developer Network
-- title: Programming Language Pragmatics
-  year: 2015
-  isbn: 978-0-12-410409-9
-  type: book
-  authors:
-  - Scott, Michael L.
-  venue: Morgan Kaufmann
-- title: On the Role of Symbolic Execution in Type Systems
-  year: 2021
-  volume: 5
-  number: OOPSLA
-  doi: 10.1145/3485523
-  type: journal
-  authors:
-  - Apel, Sven and others
-  venue: Proceedings of the ACM on Programming Languages
-etymology:
-- term: Symbol（符号）
-  origin: 源自 ECMAScript 2015（ES6）引入的第 7 种基本数据类型，由 Mozilla 的 Dave Herman 与 Mozilla 的 Brendan Eich 在 2012 年 TC39 会议中提出 Stage 1 提案，并于 2014 年进入 Stage 4。设计动机源于「私有属性」「协议扩展」「避免属性键冲突」三大需求，受 Lisp symbol、Smalltalk symbol、Ruby symbol 启发。TypeScript 在 2.0 版本（2016 年）引入 unique symbol 类型，把运行时唯一性提升至编译期类型层。
-  english: Symbol
+  - 'typescript/017-CovarianceContravariance'
+  - 'typescript/018-ThisTypePolymorphism'
+  - 'typescript/020-NamespaceModule'
+  - 'typescript/021-EnumAdvanced'
+  - 'typescript/016-OnTheComplexityOfTypeScriptTypeChecking'
+prerequisites: []
 ---
+
 
 
 ## 引言：唯一性的双重维度

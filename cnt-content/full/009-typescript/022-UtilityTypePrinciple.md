@@ -1,20 +1,20 @@
 ---
-order: 66
+order: 220
 title: 工具类型实现原理
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: intermediate
 description: 内置工具类型的实现与自定义
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - typescript/命名空间与模块
-  - typescript/枚举进阶
-  - typescript/条件类型分发
-  - typescript/类型推断infer扩展
-prerequisites:
-  - typescript/语法速查
+  - 'typescript/020-NamespaceModule'
+  - 'typescript/021-EnumAdvanced'
+  - 'typescript/023-ConditionalTypeDistribute'
+  - 'typescript/024-ECMAScript2024LanguageSpecification'
+prerequisites: []
 ---
+
 ## 第一章 概述
 
 ### 1.1 为什么需要理解工具类型实现原理

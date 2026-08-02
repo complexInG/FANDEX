@@ -1,19 +1,20 @@
 ---
-order: 43
+order: 190
 title: 内积与正交性
 module: 'linear-algebra'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
 description: 内积的定义与性质，向量的长度与距离，正交向量与正交向量组，正交补空间与正交投影，含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/基与维数'
-  - 'linear-algebra/坐标与坐标变换'
-  - 'linear-algebra/施密特正交化'
+  - 'linear-algebra/020-BasisAndDimension'
+  - 'linear-algebra/021-CoordinateAndTransformation'
+  - 'linear-algebra/023-GramSchmidtOrthogonalization'
 prerequisites:
-  - 'linear-algebra/行列式定义与几何意义'
+  - 'linear-algebra/001-DeterminantDefinitionAndGeometry'
 ---
+
 
 ## 0. 从一个生活场景说起：没有尺子，怎么量长度和夹角？
 

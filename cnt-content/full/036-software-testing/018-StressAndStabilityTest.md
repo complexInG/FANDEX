@@ -1,20 +1,21 @@
 ---
-order: 103
+order: 180
 title: 压力测试与稳定性测试
 module: 'software-testing'
-category: 'eng-infra'
+category: 云与基础设施
 difficulty: intermediate
-description: '压力测试与稳定性测试：JMeter、Gatling、Locust 的使用与指标分析。'
+description: 压力测试与稳定性测试：JMeter、Gatling、Locust 的使用与指标分析。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'software-testing/自动化测试框架对比'
-  - 'software-testing/API自动化测试详解'
-  - 'software-testing/安全测试'
-  - 'software-testing/测试双'
+  - 'software-testing/016-AutomationTestFrameworkComparison'
+  - 'software-testing/017-APIAutomationTestDetailed'
+  - 'software-testing/019-SecurityTesting'
+  - 'software-testing/020-TestDouble'
 prerequisites:
-  - 'software-testing/测试基础与方法'
+  - 'software-testing/001-TestBasicsMethod'
 ---
+
 
 ## 1. 测试类型
 

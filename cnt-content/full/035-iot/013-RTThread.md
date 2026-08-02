@@ -1,20 +1,21 @@
 ---
-order: 54
-title: 'RT-Thread实时系统'
-module: iot
-category: 'eng-infra'
+order: 130
+title: RT-Thread实时系统
+module: 'iot'
+category: 云与基础设施
 difficulty: intermediate
-description: 'RT-Thread实时操作系统：内核机制、设备驱动、组件框架与项目开发详解。'
+description: RT-Thread实时操作系统：内核机制、设备驱动、组件框架与项目开发详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/Arduino开发
-  - iot/ESP32开发
-  - iot/边缘AI
-  - iot/LwM2M设备管理
+  - 'iot/011-ArduinoDevelopment'
+  - 'iot/012-ESP32Development'
+  - 'iot/014-AI'
+  - 'iot/015-LwM2MManagement'
 prerequisites:
-  - iot/概述与架构
+  - 'iot/001-OverviewArchitecture'
 ---
+
 
 ## 1. RT-Thread 概述
 

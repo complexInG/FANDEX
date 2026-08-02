@@ -1,20 +1,21 @@
 ---
-order: 69
+order: 260
 title: 计算机图形学
 module: 'cs-fundamentals'
-category: 'Computer Science'
+category: 计算机科学
 difficulty: intermediate
 description: 计算机图形学：图形变换、光栅化、光照模型、着色与渲染管线
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/多媒体技术'
-  - 'cs-fundamentals/人工智能基础'
-  - 'cs-fundamentals/设计模式'
-  - 'cs-fundamentals/软件体系结构'
+  - 'cs-fundamentals/024-MultimediaTechnology'
+  - 'cs-fundamentals/025-AIFundamentals'
+  - 'cs-fundamentals/027-DesignPattern'
+  - 'cs-fundamentals/028-SoftwareSystemStructure'
 prerequisites:
-  - 'cs-fundamentals/计算机科学概述'
+  - 'cs-fundamentals/001-ComputerOverview'
 ---
+
 
 ## 1. 图形学基础
 

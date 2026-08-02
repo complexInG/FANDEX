@@ -1,23 +1,21 @@
 ---
-order: 60
-tags:
-  - css
-  - 'css-animation'
+order: 170
+title: CSS 动画与过渡
+module: 'css'
+category: 前端技术
 difficulty: intermediate
-title: 'CSS 动画与过渡'
-module: css
-category: 'CSS Basics'
-description: 'CSS transition过渡、animation动画、关键帧、变换transform与性能优化详解。'
+description: CSS transition过渡、animation动画、关键帧、变换transform与性能优化详解。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - css/背景增强
-  - css/Grid网格布局
-  - css/边框圆角
-  - css/媒体查询
+  - 'css/015-BackgroundEnhancement'
+  - 'css/016-CSS3GridGridLayout'
+  - 'css/018-BorderRadius'
+  - 'css/019-MediaQuery'
 prerequisites:
-  - css/概述与基本语法
+  - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
 ## 1. CSS 过渡（Transition）
 
 ### 1.1 过渡基础

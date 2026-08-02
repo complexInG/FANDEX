@@ -1,30 +1,25 @@
 ---
-order: 87
-tags:
-  - cpp
-  - chrono
-  - datetime
-  - calendar
-  - timezone
+order: 450
+title: C++ 日期时间
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-title: 'C++ 日期时间'
-module: cpp
-category: 'C++ Standard Library'
 description: C++ chrono 库全解：duration、time_point、clock、C++20 日历与时区、C++23 时区数据库、leap second、计时基准、跨平台精度，含类型安全设计、UB 场景与企业级实战。
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - cpp/智能指针
-  - cpp/C++正则表达式
-  - cpp/C++格式化输出
-  - cpp/C++26与最新标准
-  - cpp/STL算法详解
-  - cpp/类型系统
-  - cpp/C++20概念
+  - 'cpp/044-SmartPointer'
+  - 'cpp/030-CppRegex'
+  - 'cpp/046-CppFormatOutput'
+  - 'cpp/047-Cpp26AndLatestStandard'
+  - 'cpp/016-CSTL'
+  - 'cpp/003-CppTypeSystem'
+  - 'cpp/060-Cpp20Concept'
 prerequisites:
-  - cpp/概述与现代标准
-  - cpp/类型系统
+  - 'cpp/001-CppOverviewAndModernStandard'
+  - 'cpp/003-CppTypeSystem'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 C++11 之前：时间处理的黑暗时代

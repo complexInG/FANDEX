@@ -1,132 +1,20 @@
 ---
-order: 68
+order: 240
 title: 类型推断infer扩展
-module: typescript
-category: TypeScript
+module: 'typescript'
+category: 前端技术
 difficulty: advanced
 description: TypeScript 中 infer 关键字的形式语义、推导规则与生产级应用——从函数返回值到模板字面量、从 Promise 解包到 AST 元编程
 author: fanquanpp
 updated: '2026-07-20'
 related:
-- typescript/工具类型实现原理
-- typescript/条件类型分发
-- typescript/递归类型与深度操作
-- typescript/条件类型与映射类型
-prerequisites:
-- typescript/语法速查
-tags:
-- typescript
-- infer
-- conditional-types
-- type-inference
-- type-level-programming
-- template-literal-types
-- type-theory
-references:
-- type: technical-report
-  authors:
-  - Hejlsberg, Anders
-  year: 2018
-  title: 'Conditional Types (Pull Request #21496)'
-  venue: Microsoft/TypeScript GitHub Repository
-  url: https://github.com/microsoft/TypeScript/pull/21496
-  version: TypeScript 2.8
-- type: conference
-  authors:
-  - Bierman, Gavin M.
-  - Abadi, Martín
-  - Torgersen, Mads
-  year: 2014
-  title: Understanding TypeScript
-  venue: ECOOP 2014 — Object-Oriented Programming
-  pages: 257-281
-  doi: 10.1007/978-3-662-44202-9_11
-- type: book
-  authors:
-  - Pierce, Benjamin C.
-  year: 2002
-  title: Types and Programming Languages
-  venue: MIT Press
-- type: book
-  authors:
-  - Pierce, Benjamin C.
-  - Turner, David N.
-  year: 2000
-  title: Local Type Inference
-  venue: ACM Transactions on Programming Languages and Systems (TOPLAS)
-  pages: 1-44
-  doi: 10.1145/345099.345100
-- type: journal
-  authors:
-  - Ajvani, Behdad
-  - Vahidi, Sina
-  - Itzhaki, Shay
-  year: 2023
-  title: Type-level Programming in TypeScript
-  venue: arXiv preprint arXiv:2302.09465
-  doi: 10.48550/arXiv.2302.09465
-- type: conference
-  authors:
-  - Hosoya, Haruo
-  - Pierce, Benjamin C.
-  year: 2003
-  title: Regular Expression Pattern Matching for XML
-  venue: Journal of Functional Programming
-  pages: 961-1004
-  doi: 10.1017/S0956796803000314
-- type: documentation
-  authors:
-  - Microsoft
-  year: 2024
-  title: 'TypeScript Handbook: Conditional Types'
-  venue: TypeScript Official Documentation
-  url: https://www.typescriptlang.org/docs/handbook/2/conditional-types.html
-  version: TypeScript 5.4
-- type: documentation
-  authors:
-  - Microsoft
-  year: 2024
-  title: 'TypeScript Handbook: Type Inference'
-  venue: TypeScript Official Documentation
-  url: https://www.typescriptlang.org/docs/handbook/type-inference.html
-- type: book
-  authors:
-  - Cardelli, Luca
-  - Martini, Simone
-  - Mitchell, John C.
-  - Scedrov, Andre
-  year: 1994
-  title: An Extension of System F with Subtyping
-  venue: Information and Computation
-  pages: 4-36
-  doi: 10.1006/inco.1994.1093
-- type: website
-  authors:
-  - Scherer, Gabriel
-  year: 2020
-  title: 'Type Inference: What does an inference algorithm infer?'
-  venue: SIGPLAN Blogs
-  url: https://blog.sigplan.org/2020/04/07/type-inference-what-does-an-inference-algorithm-infer/
-- type: standard
-  authors:
-  - ECMA International
-  year: 2024
-  title: ECMAScript 2024 Language Specification
-  venue: ECMA-262 15th Edition
-  url: https://tc39.es/ecma262/
-etymology:
-- term: infer（推断）
-  english: infer
-  origin: 源自拉丁语 inferre，意为「带入、推导」，由 in-（进入）+ ferre（携带）构成。在逻辑学中指从已知前提出发推导结论的过程。TypeScript 选择该词而非 deduce 或 derive，强调其是合一算法对存在变量的「填充」过程，而非逻辑演绎。
-- term: 存在量化变量（existential variable）
-  english: existential variable
-  origin: 源自类型论与一阶逻辑，指被存在量词约束的变量，其具体值待定但承诺存在。在 TypeScript 中，infer U 引入的 U 即为存在量化变量，由编译器的合一算法求解。
-- term: 合一（unification）
-  english: unification
-  origin: 由 Robinson 于 1965 年在一阶逻辑定理证明中提出，算法寻找两个项的最一般统一元（MGU）。TypeScript 类型检查器在条件类型与 infer 推导中复用了该算法的变体。
-lastReviewed: 2026-07-20
-reviewer: FANDEX Content Engineering Team
+  - 'typescript/022-UtilityTypePrinciple'
+  - 'typescript/023-ConditionalTypeDistribute'
+  - 'typescript/025-RecursiveTypeDeepOperation'
+  - 'typescript/026-ConditionalMappedType'
+prerequisites: []
 ---
+
 
 
 # 类型推断 infer 扩展

@@ -1,22 +1,22 @@
 ---
-order: 53
+order: 150
 title: 扩展函数
-module: kotlin
-category: Kotlin
+module: 'kotlin'
+category: 后端技术
 difficulty: beginner
 description: Kotlin 扩展函数与扩展属性的原理、形式化语义、工程实践与陷阱分析
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - kotlin/Kotlin作用域函数
-  - kotlin/Kotlin集合操作
-  - kotlin/Kotlin与DSL
-  - kotlin/Kotlin契约
-  - kotlin/Kotlin内联函数
+  - 'kotlin/018-KotlinScopeFunction'
+  - 'kotlin/019-KotlinCollectionOperation'
+  - 'kotlin/022-KotlinDSL'
+  - 'kotlin/021-KotlinContractContracts'
 prerequisites:
-  - kotlin/概述与环境配置
-  - kotlin/空安全详解
+  - 'kotlin/001-KotlinOverviewEnvSetup'
+  - 'kotlin/012-NullSafetyDetailed'
 ---
+
 ## 历史动机与背景
 
 ### 1. 表达力与可维护性的张力

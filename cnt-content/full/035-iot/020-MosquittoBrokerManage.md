@@ -1,9 +1,8 @@
 ---
 order: 200
 title: 物联网 Mosquitto Broker 管理
-module: iot
-
-category: '035-iot'
+module: 'iot'
+category: 云与基础设施
 difficulty: beginner
 description: 物联网 Mosquitto Broker 管理 的完整教学讲解。
 author: fanquanpp
@@ -11,6 +10,7 @@ updated: '2026-08-01'
 related: []
 prerequisites: []
 ---
+
 ## 服务安装
 
 **基本写法：安装 Mosquitto**

@@ -1,18 +1,19 @@
 ---
-order: 14
+order: 50
 title: 贝叶斯公式
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 以医生诊断与侦探推理的"由果溯因"链条讲解样本空间分割、全概率公式与贝叶斯公式，并结合医学检验等经典案例说明先验与后验概率的更新过程。
+description: '以医生诊断与侦探推理的"由果溯因"链条讲解样本空间分割、全概率公式与贝叶斯公式，并结合医学检验等经典案例说明先验与后验概率的更新过程。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/几何概型'
-  - 'probability-statistics/条件概率'
-  - 'probability-statistics/事件的独立性'
+  - 'probability-statistics/003-GeometricProbability'
+  - 'probability-statistics/004-ConditionalProbability'
+  - 'probability-statistics/006-EventIndependence'
 prerequisites: []
 ---
+
 
 ## 0. 医生的推理链
 

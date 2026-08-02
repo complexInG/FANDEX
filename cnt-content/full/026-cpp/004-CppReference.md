@@ -1,23 +1,23 @@
 ---
 order: 40
-tags:
-  - cpp
+title: C++ 引用
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-title: 'C++ 引用'
-module: cpp
-category: 'C++ Basics'
 description: 左值引用、右值引用、常量引用、转发引用、引用折叠、悬空引用与 std::launder 全解。
 author: Anonymous
+updated: '2026-08-02'
 related:
-  - cpp/基础语法
-  - cpp/类型系统
-  - cpp/右值引用与移动语义
-  - cpp/指针
-  - cpp/完美转发与引用折叠
-  - cpp/移动语义详解
+  - 'cpp/002-CppBasicSyntax'
+  - 'cpp/003-CppTypeSystem'
+  - 'cpp/005-RvalueReferenceMoveSemantics'
+  - 'cpp/006-PointersCppreferenceCom'
+  - 'cpp/053-PerfectForwardingReferenceCollapse'
+  - 'cpp/052-MoveSemanticsDetailed'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 C with Classes 时代（1979-1985）

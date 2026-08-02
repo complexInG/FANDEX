@@ -1,20 +1,21 @@
 ---
-order: 88
+order: 460
 title: C++格式化输出
-module: cpp
-category: C++
+module: 'cpp'
+category: 计算机科学
 difficulty: intermediate
-description: 'std::format与格式化'
+description: std::format与格式化
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - cpp/C++正则表达式
-  - cpp/C++日期时间
-  - cpp/C++26与最新标准
-  - cpp/STL容器与迭代器
+  - 'cpp/030-CppRegex'
+  - 'cpp/045-CppDateTime'
+  - 'cpp/047-Cpp26AndLatestStandard'
+  - 'cpp/048-CSTL'
 prerequisites:
-  - cpp/概述与现代标准
+  - 'cpp/001-CppOverviewAndModernStandard'
 ---
+
 
 
 # C++ 格式化输出

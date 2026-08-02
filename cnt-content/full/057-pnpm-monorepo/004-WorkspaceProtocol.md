@@ -1,20 +1,21 @@
 ---
-order: 4
+order: 40
 title: workspace 协议与内部依赖
-module: pnpm-monorepo
-category: pnpm 与 Monorepo
+module: 'pnpm-monorepo'
+category: 工具链
 difficulty: intermediate
 description: 'workspace: 协议用法、本地包引用与发布时版本转换'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - pnpm-monorepo/003-WorkspaceSetup
-  - pnpm-monorepo/005-CatalogManagement
-  - pnpm-monorepo/007-ChangesetsRelease
+  - 'pnpm-monorepo/003-WorkspaceSetup'
+  - 'pnpm-monorepo/005-CatalogManagement'
+  - 'pnpm-monorepo/007-ChangesetsRelease'
 prerequisites:
-  - pnpm-monorepo/003-WorkspaceSetup
-  - pnpm-monorepo/002-PnpmCore
+  - 'pnpm-monorepo/003-WorkspaceSetup'
+  - 'pnpm-monorepo/002-PnpmCore'
 ---
+
 
 ## 1. 从"指路"说起：为什么需要 workspace 协议
 

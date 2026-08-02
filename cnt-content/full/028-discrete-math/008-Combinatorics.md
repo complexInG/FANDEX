@@ -1,18 +1,19 @@
 ---
-order: 8
+order: 80
 title: 组合数学
 module: 'discrete-math'
-category: 离散数学
+category: 数学
 difficulty: intermediate
 description: 基本计数原理、排列与组合、容斥原理、鸽巢原理、递推关系、生成函数、Catalan数、Stirling数。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'discrete-math/图论进阶'
-  - 'discrete-math/代数系统'
+  - 'discrete-math/006-GraphTheoryAdvanced'
+  - 'discrete-math/007-AlgebraicSystem'
 prerequisites:
-  - 'discrete-math/集合与关系'
+  - 'discrete-math/003-SetAndRelation'
 ---
+
 
 ## 1. 从"点菜"说起
 

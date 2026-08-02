@@ -1,20 +1,21 @@
 ---
-order: 76
+order: 330
 title: Java性能调优
-module: java
-category: Java
+module: 'java'
+category: 后端技术
 difficulty: advanced
 description: Java应用性能优化
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - java/Java与Docker
-  - java/Java与GraphQL
-  - java/Java与AI
-  - java/Java与安全
+  - 'java/031-JavaDocker'
+  - 'java/032-JavaGraphQL'
+  - 'java/034-JavaAI'
+  - 'java/035-JavaSecurity'
 prerequisites:
-  - java/概述与开发环境
+  - 'java/001-JavaOverviewDevEnv'
 ---
+
 
 ## 概述
 

@@ -1,19 +1,20 @@
 ---
-order: 31
+order: 130
 title: 边缘分布
 module: 'probability-statistics'
-category: 'comp-sci'
+category: 数学
 difficulty: intermediate
-description: 以地图投影与"只看某一行"的视角，讲解边缘分布函数、边缘分布律、边缘概率密度的定义与计算，并深入分析边缘分布与联合分布的关系。
+description: '以地图投影与"只看某一行"的视角，讲解边缘分布函数、边缘分布律、边缘概率密度的定义与计算，并深入分析边缘分布与联合分布的关系。'
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/联合分布'
-  - 'probability-statistics/条件分布'
-  - 'probability-statistics/随机变量的独立性'
+  - 'probability-statistics/014-JointDistribution'
+  - 'probability-statistics/016-ConditionalDistribution'
+  - 'probability-statistics/017-RandomVariableIndependence'
 prerequisites:
-  - 'probability-statistics/样本空间与事件'
+  - 'probability-statistics/001-SampleSpaceAndEvent'
 ---
+
 
 ## 0. 地图的"投影"：只看一个维度
 

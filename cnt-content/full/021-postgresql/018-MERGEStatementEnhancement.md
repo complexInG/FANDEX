@@ -1,20 +1,20 @@
 ---
-order: 63
+order: 180
 title: MERGE语句增强
-module: postgresql
-category: PostgreSQL
+module: 'postgresql'
+category: 数据库
 difficulty: advanced
-description: 'PostgreSQL MERGE语句增强：UPSERT、RETURNING与条件操作'
+description: PostgreSQL MERGE语句增强：UPSERT、RETURNING与条件操作
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - postgresql/分区裁剪与分区连接
-  - postgresql/高级SQL
-  - postgresql/JSON表格函数
-  - postgresql/全文检索
+  - 'postgresql/016-PartitionPruningPartitionJoin'
+  - 'postgresql/017-AdvancedSQL'
+  - 'postgresql/020-FullTextSearch'
 prerequisites:
-  - postgresql/概述与安装配置
+  - 'postgresql/001-OverviewInstallConfig'
 ---
+
 
 ## 1. MERGE 语法
 

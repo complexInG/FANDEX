@@ -1,21 +1,20 @@
 ---
-order: 5
-tags:
-  - react
-difficulty: intermediate
+order: 50
 title: Context与全局状态
-module: react
-category: React
-description: 'Context API、Provider 模式、useContext 优化、状态管理方案对比与状态机。'
+module: 'react'
+category: 前端技术
+difficulty: intermediate
+description: Context API、Provider 模式、useContext 优化、状态管理方案对比与状态机。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - react/状态与事件
-  - react/Hooks深入
-  - react/React19新特性
-  - react/路由与数据获取
+  - 'react/003-StateEvent'
+  - 'react/004-HooksDeep'
+  - 'react/006-React19NewFeatures'
+  - 'react/007-RouteDataFetch'
 prerequisites: []
 ---
+
 ## 1. Context API
 
 Context 提供了一种在组件树中共享数据的方式，无需逐层传递 Props。

@@ -1,18 +1,19 @@
 ---
-order: 1
+order: 10
 title: 概述与架构
-module: iot
-category: 物联网
+module: 'iot'
+category: 云与基础设施
 difficulty: beginner
-description: 'IoT 概念、发展历程、架构层次、通信协议总览与应用场景。'
+description: IoT 概念、发展历程、架构层次、通信协议总览与应用场景。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - iot/传感器与嵌入式
-  - iot/通信协议
-  - c/概述
+  - 'iot/002-SensorEmbedded'
+  - 'iot/003-CommunicationProtocol'
+  - 'c/001-CLanguageOverview'
 prerequisites: []
 ---
+
 ## 1. IoT 概念
 
 ### 1.1 定义

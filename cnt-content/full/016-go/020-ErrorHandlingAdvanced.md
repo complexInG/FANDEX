@@ -1,23 +1,24 @@
 ---
-order: 56
+order: 200
 title: 错误处理进阶
-module: go
-category: Go
+module: 'go'
+category: 后端技术
 difficulty: intermediate
-description: 'error接口、errors.Is/As、%w包装、panic/recover、Go 1.13+错误语义、错误链与生产级实践'
+description: error接口、errors.Is/As、%w包装、panic/recover、Go 1.13+错误语义、错误链与生产级实践
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - go/Context详解
-  - go/接口与类型断言
-  - go/反射
-  - go/unsafe与指针
-  - go/泛型详解
-  - go/单元测试与基准测试
+  - 'go/017-ContextDetailed'
+  - 'go/019-InterfaceTypeAssertion'
+  - 'go/015-Reflection'
+  - 'go/013-UnsafePointer'
+  - 'go/056-GenericDetailed'
+  - 'go/057-UnitTestBenchmark'
 prerequisites:
-  - go/概述与环境配置
-  - go/接口与类型断言
+  - 'go/001-GoOverviewEnvSetup'
+  - 'go/019-InterfaceTypeAssertion'
 ---
+
 
 
 # 错误处理进阶：error 接口、错误链与生产级实践
