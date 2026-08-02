@@ -1,6 +1,4 @@
 ---
-> 阅读建议：调试思想建议在“写过一些代码、遇到过 bug”之后阅读，入门阶段可以先跳过本篇。
-
 order: 100
 title: 调试思想
 module: 'getting-started'
@@ -16,6 +14,7 @@ prerequisites:
   - 'getting-started/002-DevEnvSetup'
 ---
 
+> 阅读建议：调试思想建议在“写过一些代码、遇到过 bug”之后阅读，入门阶段可以先跳过本篇。
 
 ## 1. 调试概述
 

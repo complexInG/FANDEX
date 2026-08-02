@@ -1,6 +1,4 @@
 ---
-> 前置：需先有正则基础（043）。
-
 order: 150
 title: Unicode属性转义
 module: 'javascript'
@@ -18,7 +16,7 @@ prerequisites:
   - 'javascript/043-Regex'
 ---
 
-
+> 前置：需先有正则基础（043）。
 
 # Unicode 属性转义
 

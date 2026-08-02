@@ -1,6 +1,4 @@
 ---
-> 阅读建议：按你的项目类型选读——前端看 Vite 部分，C/C++ 看 Make/CMake 部分，其余先跳过。
-
 order: 90
 title: 构建工具
 module: 'getting-started'
@@ -18,6 +16,7 @@ prerequisites:
   - 'getting-started/002-DevEnvSetup'
 ---
 
+> 阅读建议：按你的项目类型选读——前端看 Vite 部分，C/C++ 看 Make/CMake 部分，其余先跳过。
 
 ## 1. 构建工具概述
 

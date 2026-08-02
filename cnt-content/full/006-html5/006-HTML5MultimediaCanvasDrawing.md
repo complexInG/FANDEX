@@ -1,6 +1,4 @@
 ---
-> 前置依赖：Canvas 部分需要 JavaScript 基础。速通路径：先做第 0 节与 3.3.6“画一个笑脸”；3.4 变换与 3.6 交互为进阶内容，可先跳过。
-
 order: 60
 title: HTML5 多媒体与 Canvas 绘图
 module: 'html5'
@@ -17,6 +15,8 @@ related:
 prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
+> 前置依赖：Canvas 部分需要 JavaScript 基础。速通路径：先做第 0 节与 3.3.6“画一个笑脸”；3.4 变换与 3.6 交互为进阶内容，可先跳过。
 
 ## 0. 为什么需要学这些？——生活中的“网页多媒体”
 

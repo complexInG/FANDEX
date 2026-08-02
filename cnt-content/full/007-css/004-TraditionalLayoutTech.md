@@ -1,6 +1,4 @@
 ---
-> 前置依赖：先读 002 盒模型与 011 浮动。圣杯/双飞翼布局为进阶内容，0 基础可先跳过。
-
 order: 40
 title: 传统布局技术
 module: 'css'
@@ -17,6 +15,8 @@ related:
 prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
+> 前置依赖：先读 002 盒模型与 011 浮动。圣杯/双飞翼布局为进阶内容，0 基础可先跳过。
 
 ## 0. 直觉：没有 Flexbox/Grid 的年代怎么排版
 

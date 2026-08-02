@@ -1,6 +1,4 @@
 ---
-> 0基础速通：读第 0 节直觉与第 1 节核心必读（代码示例）即可；第 6 章深入理解（选读）供进阶。
-
 order: 130
 title: 渐变
 module: 'css'
@@ -19,6 +17,7 @@ prerequisites:
   - 'css/015-BackgroundEnhancement'
 ---
 
+> 0基础速通：读第 0 节直觉与第 1 节核心必读（代码示例）即可；第 6 章深入理解（选读）供进阶。
 
 # 渐变（Gradients）
 

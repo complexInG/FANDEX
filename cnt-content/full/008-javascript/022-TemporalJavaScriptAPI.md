@@ -1,6 +1,4 @@
 ---
-> 里程碑标注：新 API 提案内容，建议学习 6 个月后再读；现阶段可先用date-fns/moment 替代。
-
 order: 220
 title: Temporal
 module: 'javascript'
@@ -17,7 +15,7 @@ related:
 prerequisites: []
 ---
 
-
+> 里程碑标注：新 API 提案内容，建议学习 6 个月后再读；现阶段可先用date-fns/moment 替代。
 
 # Temporal 现代日期时间 API
 

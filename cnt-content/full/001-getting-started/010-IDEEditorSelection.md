@@ -1,6 +1,4 @@
 ---
-> 阅读建议：0 基础学习者推荐直接选 VS Code，本片其余部分（Vim、JetBrains 对比）可先跳过，等遇到编辑器瓶颈再回来看。
-
 order: 40
 title: IDE 与编辑器选型
 module: 'getting-started'
@@ -17,6 +15,7 @@ prerequisites:
   - 'getting-started/002-DevEnvSetup'
 ---
 
+> 阅读建议：0 基础学习者推荐直接选 VS Code，本片其余部分（Vim、JetBrains 对比）可先跳过，等遇到编辑器瓶颈再回来看。
 
 ## 1. 编辑器与IDE概述
 

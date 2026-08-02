@@ -1,6 +1,4 @@
 ---
-> 前置依赖：先理解资源加载与响应式图片（013），建议学完 CSS 性能优化后再读。
-
 order: 310
 title: 关键渲染路径与资源加载
 module: 'html5'
@@ -16,6 +14,7 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
+> 前置依赖：先理解资源加载与响应式图片（013），建议学完 CSS 性能优化后再读。
 
 ## 一句话理解
 

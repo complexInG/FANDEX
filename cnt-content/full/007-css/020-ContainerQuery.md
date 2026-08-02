@@ -1,6 +1,4 @@
 ---
-> 前置依赖：先掌握 019 媒体查询。0基础速通：读第 0 节直觉与第 1 节核心必读即可；第 6 章深入理解（选读）供进阶。
-
 order: 200
 title: 容器查询
 module: 'css'
@@ -21,6 +19,7 @@ prerequisites:
   - 'css/023-CSSVariableCustomAttribute'
 ---
 
+> 前置依赖：先掌握 019 媒体查询。0基础速通：读第 0 节直觉与第 1 节核心必读即可；第 6 章深入理解（选读）供进阶。
 
 # 容器查询（Container Queries）
 

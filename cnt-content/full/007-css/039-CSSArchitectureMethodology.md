@@ -1,6 +1,4 @@
 ---
-> 阅读建议：适合有项目经验后再读，0 基础可先跳过。
-
 order: 390
 title: CSS架构方法论
 module: 'css'
@@ -18,6 +16,7 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
+> 阅读建议：适合有项目经验后再读，0 基础可先跳过。
 
 ## 1. BEM — Block Element Modifier
 

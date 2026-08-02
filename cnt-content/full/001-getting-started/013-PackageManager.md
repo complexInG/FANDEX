@@ -1,6 +1,4 @@
 ---
-> 阅读建议：四种包管理器不需要同时学。前端读者重点看 npm/pnpm，Python 读者看 pip，系统包管理器（apt/brew）随用随查。
-
 order: 60
 title: 包管理器
 module: 'getting-started'
@@ -17,6 +15,8 @@ related:
 prerequisites:
   - 'getting-started/002-DevEnvSetup'
 ---
+
+> 阅读建议：四种包管理器不需要同时学。前端读者重点看 npm/pnpm，Python 读者看 pip，系统包管理器（apt/brew）随用随查。
 
 ## 1. 包管理器概述
 

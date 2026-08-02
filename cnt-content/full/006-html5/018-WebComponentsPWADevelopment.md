@@ -1,6 +1,4 @@
 ---
-> 速通路径：Web Components 部分（第 1-5 章）入门必读，PWA 部分（第 6-12 章）进阶选读。
-
 order: 180
 title: Web Components 与 PWA 开发
 module: 'html5'
@@ -17,6 +15,8 @@ related:
 prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
+> 速通路径：Web Components 部分（第 1-5 章）入门必读，PWA 部分（第 6-12 章）进阶选读。
 
 ## 1. Web Components 概述
 

@@ -1,6 +1,4 @@
 ---
-> 0基础速通：只读第 0 节直觉、第 2 章 iframe 核心速览与 4.1 示例；其余（安全、微前端等）为进阶参考。
-
 order: 160
 title: 嵌入式内容
 module: 'html5'
@@ -17,6 +15,8 @@ related:
 prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
+> 0基础速通：只读第 0 节直觉、第 2 章 iframe 核心速览与 4.1 示例；其余（安全、微前端等）为进阶参考。
 
 ## 1. 历史动机与发展脉络
 

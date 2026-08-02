@@ -1,6 +1,4 @@
 ---
-> 里程碑标注：建议先掌握数组方法与生成器（009）后再读。
-
 order: 230
 title: 迭代器帮助器
 module: 'javascript'
@@ -15,6 +13,8 @@ related:
   - 'javascript/025-RecordsTuples'
 prerequisites: []
 ---
+
+> 里程碑标注：建议先掌握数组方法与生成器（009）后再读。
 
 ## 1. 历史动机与发展脉络
 

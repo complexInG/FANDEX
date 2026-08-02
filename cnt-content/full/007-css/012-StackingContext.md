@@ -1,6 +1,4 @@
 ---
-> 前置依赖：先读 010 定位详解，理解 z-index 基本用法。
-
 order: 120
 title: 层叠上下文
 module: 'css'
@@ -18,6 +16,7 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
+> 前置依赖：先读 010 定位详解，理解 z-index 基本用法。
 
 ## 概述
 

@@ -1,6 +1,4 @@
 ---
-> 前置依赖：基础选择器与盒模型。本篇为完整版，可配合 046-Grid 速查复习。
-
 order: 160
 title: CSS3 Grid 网格布局
 module: 'css'
@@ -17,6 +15,8 @@ related:
 prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
+> 前置依赖：基础选择器与盒模型。本篇为完整版，可配合 046-Grid 速查复习。
 
 ## 1. 核心概念
 

@@ -1,6 +1,4 @@
 ---
-> 前置：先读 016 闭包与 057 内存管理；本篇为【进阶专题】。
-
 order: 310
 title: 闭包的内存泄露与优化
 module: 'javascript'
@@ -19,7 +17,7 @@ prerequisites:
   - 'javascript/016-FunctionScopeClosure'
 ---
 
-
+> 前置：先读 016 闭包与 057 内存管理；本篇为【进阶专题】。
 
 # 闭包的内存泄露与优化
 

@@ -1,6 +1,4 @@
 ---
-> 前置：需先有正则基础（043）。
-
 order: 140
 title: 断言
 module: 'javascript'
@@ -18,7 +16,7 @@ prerequisites:
   - 'javascript/043-Regex'
 ---
 
-
+> 前置：需先有正则基础（043）。
 
 # 断言
 

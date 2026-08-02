@@ -1,6 +1,4 @@
 ---
-> 前置依赖：先理解 002 盒模型的物理属性。
-
 order: 260
 title: 逻辑属性
 module: 'css'
@@ -18,6 +16,7 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
+> 前置依赖：先理解 002 盒模型的物理属性。
 
 ## 1. 逻辑属性概述
 

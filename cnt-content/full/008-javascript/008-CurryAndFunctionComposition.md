@@ -1,6 +1,4 @@
 ---
-> 阅读建议：先掌握柯里化“是什么、怎么用”；性能分析章节为【进阶原理】。
-
 order: 80
 title: 柯里化与偏函数
 module: 'javascript'
@@ -19,7 +17,7 @@ prerequisites:
   - 'javascript/031-ClosureMemoryLeakOptimization'
 ---
 
-
+> 阅读建议：先掌握柯里化“是什么、怎么用”；性能分析章节为【进阶原理】。
 
 # 柯里化与偏函数
 

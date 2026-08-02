@@ -1,6 +1,4 @@
 ---
-> 里程碑标注：新特性速览，先掌握 ES6 基础（036）再读。
-
 order: 280
 title: JavaScript 最新特性与运行时
 module: 'javascript'
@@ -17,7 +15,7 @@ related:
 prerequisites: []
 ---
 
-
+> 里程碑标注：新特性速览，先掌握 ES6 基础（036）再读。
 
 # JavaScript 最新特性与运行时
 

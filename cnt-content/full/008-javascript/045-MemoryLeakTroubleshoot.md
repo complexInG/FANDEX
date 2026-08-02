@@ -1,6 +1,4 @@
 ---
-> 前置：先读 031 闭包内存与 057 内存管理；本篇为【进阶专题】。
-
 order: 450
 title: 内存泄漏排查
 module: 'javascript'
@@ -17,7 +15,7 @@ related:
 prerequisites: []
 ---
 
-
+> 前置：先读 031 闭包内存与 057 内存管理；本篇为【进阶专题】。
 
 # 内存泄漏排查（Memory Leak Diagnosis）
 

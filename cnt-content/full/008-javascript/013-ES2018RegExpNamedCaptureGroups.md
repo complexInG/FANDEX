@@ -1,6 +1,4 @@
 ---
-> 前置：需先有正则基础（043）。
-
 order: 130
 title: 具名捕获组
 module: 'javascript'
@@ -18,7 +16,7 @@ prerequisites:
   - 'javascript/043-Regex'
 ---
 
-
+> 前置：需先有正则基础（043）。
 
 # 具名捕获组
 

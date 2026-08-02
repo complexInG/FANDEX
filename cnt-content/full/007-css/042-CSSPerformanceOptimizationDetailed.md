@@ -1,6 +1,4 @@
 ---
-> 阅读建议：有性能优化需求后再读，先掌握 035 与 040。
-
 order: 420
 title: CSS性能优化详解
 module: 'css'
@@ -18,6 +16,7 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
+> 阅读建议：有性能优化需求后再读，先掌握 035 与 040。
 
 ## 1. 关键渲染路径与 CSS
 

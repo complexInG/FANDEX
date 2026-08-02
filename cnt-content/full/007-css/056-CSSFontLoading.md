@@ -4,7 +4,7 @@ title: 字体加载
 module: 'css'
 category: 前端技术
 difficulty: intermediate
-description: @font-face、font-display 与字体加载策略，兼顾品牌字体与首屏性能。
+description: "@font-face、font-display 与字体加载策略，兼顾品牌字体与首屏性能。"
 author: fanquanpp
 updated: '2026-08-02'
 related:

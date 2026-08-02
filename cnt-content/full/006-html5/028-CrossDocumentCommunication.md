@@ -1,6 +1,4 @@
 ---
-> 前置依赖：先读 016 的 postMessage 基础章节。
-
 order: 280
 title: 跨文档通信
 module: 'html5'
@@ -17,6 +15,8 @@ related:
 prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
+> 前置依赖：先读 016 的 postMessage 基础章节。
 
 ## 1. 历史动机与发展脉络
 

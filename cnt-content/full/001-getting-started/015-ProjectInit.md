@@ -1,6 +1,4 @@
 ---
-> 阅读建议：脚手架与项目结构是重点；Monorepo 属于进阶内容，0 基础学习者可先跳过。
-
 order: 80
 title: 项目初始化
 module: 'getting-started'
@@ -18,6 +16,7 @@ prerequisites:
   - 'getting-started/002-DevEnvSetup'
 ---
 
+> 阅读建议：脚手架与项目结构是重点；Monorepo 属于进阶内容，0 基础学习者可先跳过。
 
 ## 1. 项目初始化概述
 

@@ -1,6 +1,4 @@
 ---
-> 前置依赖：先读 007 优先级计算，理解层叠顺序。
-
 order: 250
 title: 层叠层
 module: 'css'
@@ -17,6 +15,8 @@ related:
 prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
+
+> 前置依赖：先读 007 优先级计算，理解层叠顺序。
 
 ## 1. @layer 概述
 

@@ -1,4 +1,18 @@
 ---
+order: 10
+title: JavaScript 概述与运行环境
+module: 'javascript'
+category: 前端技术
+difficulty: beginner
+description: JavaScript 发展历程、ECMAScript 标准与运行环境。
+author: Anonymous
+updated: '2026-08-03'
+related:
+  - 'javascript/002-ProgramStructureBasicSyntax'
+  - 'javascript/003-VariableDataType'
+prerequisites: []
+---
+
 ## 0. 学习路径与阅读指南（先读这一节）
 
 本模块 59 篇文档按“主题深度”而非“学习顺序”组织，**不要按编号顺序阅读**。0 基础推荐路径：
@@ -22,23 +36,6 @@
 - 带数学符号（$...$）的段落：0 基础可整体跳过，不影响主线。
 
 本节的正文仍按原顺序介绍历史与运行环境：0 基础先读第 1 章历史与 2.1 简述即可，第 3 章引擎架构、第 4 章事件循环、第 5 章垃圾回收属于【进阶原理】，建议学完异步（030）后再回读。
-
-
-order: 10
-title: JavaScript 概述与运行环境
-module: 'javascript'
-category: 前端技术
-difficulty: beginner
-description: JavaScript 发展历程、ECMAScript 标准与运行环境。
-author: Anonymous
-updated: '2026-08-03'
-related:
-  - 'javascript/002-ProgramStructureBasicSyntax'
-  - 'javascript/003-VariableDataType'
-prerequisites: []
----
-
-
 
 # JavaScript 概述与运行环境
 

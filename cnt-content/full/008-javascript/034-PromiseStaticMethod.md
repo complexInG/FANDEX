@@ -1,6 +1,4 @@
 ---
-> 前置：先读 030 异步编程，掌握 Promise 基本用法。
-
 order: 340
 title: Promise静态方法
 module: 'javascript'
@@ -17,7 +15,7 @@ related:
 prerequisites: []
 ---
 
-
+> 前置：先读 030 异步编程，掌握 Promise 基本用法。
 
 # Promise 静态方法（Promise Static Methods）
 

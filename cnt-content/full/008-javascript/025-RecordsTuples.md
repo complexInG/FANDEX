@@ -1,6 +1,4 @@
 ---
-> 里程碑标注：提案内容，浏览器支持有限，建议了解即可。
-
 order: 250
 title: Records与Tuples
 module: 'javascript'
@@ -17,7 +15,7 @@ related:
 prerequisites: []
 ---
 
-
+> 里程碑标注：提案内容，浏览器支持有限，建议了解即可。
 
 # Records 与 Tuples：JavaScript 不可变值语义数据结构
 

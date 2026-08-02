@@ -1,6 +1,4 @@
 ---
-> 0基础速通：读第 0 节直觉与第 1 节核心必读即可；第 6 章深入理解（选读），附录 D 属性速查随用随查。
-
 order: 150
 title: 背景增强
 module: 'css'
@@ -20,6 +18,7 @@ prerequisites:
   - 'css/012-StackingContext'
 ---
 
+> 0基础速通：读第 0 节直觉与第 1 节核心必读即可；第 6 章深入理解（选读），附录 D 属性速查随用随查。
 
 # 背景增强（Backgrounds & Borders Enhancement）
 

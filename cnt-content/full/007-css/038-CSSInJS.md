@@ -1,6 +1,4 @@
 ---
-> 前置依赖：需先有 React/Vue 组件开发经验。
-
 order: 380
 title: CSS-in-JS 与高级布局技巧
 module: 'css'
@@ -18,6 +16,7 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
+> 前置依赖：需先有 React/Vue 组件开发经验。
 
 ## 1. CSS-in-JS 概述
 

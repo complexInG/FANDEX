@@ -1,6 +1,4 @@
 ---
-> 前置依赖：先读 040 理论知识点与 html5/031 关键渲染路径。
-
 order: 350
 title: 关键渲染路径优化
 module: 'css'
@@ -17,6 +15,7 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
+> 前置依赖：先读 040 理论知识点与 html5/031 关键渲染路径。
 
 ## 1. 关键渲染路径
 

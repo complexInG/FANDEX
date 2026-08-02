@@ -1,6 +1,4 @@
 ---
-> 阅读建议：现代项目几乎都用 Git，SVN 等历史工具部分仅作背景了解，可跳过。
-
 order: 70
 title: 版本控制系统选型
 module: 'getting-started'
@@ -18,6 +16,7 @@ prerequisites:
   - 'getting-started/002-DevEnvSetup'
 ---
 
+> 阅读建议：现代项目几乎都用 Git，SVN 等历史工具部分仅作背景了解，可跳过。
 
 ## 1. 版本控制系统概述
 
