@@ -130,6 +130,13 @@ Java 25 作为 2025 年 9 月发布的 LTS 版本，引入：
                           LTS    LTS    LTS    LTS
 ```
 
+**讲解：**
+
+1. 这是 Java 版本演进时间线：1996 JDK 1.0、2004 JDK 5、2014 Java 8。
+2. Java 8 之后改为半年一版，LTS 版本（17/21/25）才是企业主线。
+3. 零基础只需记住：新项目用 LTS，语法以 17+ 为基线。
+
+
 ### 1.10 设计哲学的演进曲线
 
 Java 的设计哲学可概括为"**保守演化 + 兼容性优先**"，这导致：
@@ -278,6 +285,13 @@ public class Hello {
 }
 ```
 
+**讲解：**
+
+1. `public class Hello` 定义类，类名必须与文件名一致（Hello.java）。
+2. `public static void main(String[] args)` 是程序入口：JVM 从这里开始执行。
+3. `System.out.println` 输出一行文本，分号结束每条语句。
+
+
 经 `javac Hello.java` 后执行 `javap -c -v Hello` 输出（节选）：
 
 ```
@@ -291,6 +305,13 @@ public static void main(java.lang.String[]);
          5: invokevirtual #4   // Method java/io/PrintStream.println:(Ljava/lang/String;)V
          8: return
 ```
+
+**讲解：**
+
+1. 这是 main 方法的签名说明：`public` 公开、`static` 静态、`void` 无返回值。
+2. `String[] args` 接收命令行参数。
+3. 参数名 args 可以改，但签名结构不能变。
+
 
 指令序列解读：
 
@@ -322,6 +343,13 @@ public class Hello {
 }
 ```
 
+**讲解：**
+
+1. Java 21 起支持“无 main 类”的简化启动：文件顶层直接写语句。
+2. `System.out.println` 在类外也能执行，适合教学片段。
+3. 正式项目仍使用标准 main 方法。
+
+
 编译与运行：
 
 ```bash
@@ -329,6 +357,13 @@ javac Hello.java            # 生成 Hello.class
 java Hello                  # 输出: Hello, World!
 java Hello Java             # 输出: Hello, Java!
 ```
+
+**讲解：**
+
+1. `javac` 是编译器：把 .java 编译成字节码 .class。
+2. `java Hello` 运行编译产物（不带 .class 后缀）。
+3. 两步流程是 Java 的传统运行方式。
+
 
 ### 4.2 单文件源码程序（Java 11+）
 
@@ -347,9 +382,23 @@ public class QuickDemo {
 }
 ```
 
+**讲解：**
+
+1. `java QuickDemo.java` 直接运行源文件（Java 11+ 单文件启动）。
+2. 省去 javac 步骤，适合学习与小工具。
+3. 生产项目仍用 javac/构建工具编译。
+
+
 ```bash
 java QuickDemo.java         # 直接运行源文件
 ```
+
+**讲解：**
+
+1. `jshell` 是交互式 REPL：输入表达式回车立即看到结果。
+2. 适合试验语法、快速验证 API。
+3. 输入 `/exit` 退出。
+
 
 ### 4.3 JShell REPL 原型验证
 
@@ -373,6 +422,13 @@ $3 ==> 5.0
 jshell> /save PointDemo.java     # 将会话保存为源文件
 jshell> /exit
 ```
+
+**讲解：**
+
+1. 这是 Maven 的 pom.xml：Java 项目的构建说明书。
+2. `dependencies` 声明依赖，Maven 自动下载管理。
+3. `mvn compile` 编译、`mvn test` 测试、`mvn package` 打包。
+
 
 ### 4.4 Maven 工程骨架
 
@@ -448,6 +504,13 @@ jshell> /exit
 </project>
 ```
 
+**讲解：**
+
+1. Maven/Gradle 的约定目录：main 放生产代码，test 放测试代码。
+2. 包路径 com.example 对应目录层级。
+3. 遵守目录约定，构建工具才能自动找到源码。
+
+
 #### 4.4.2 主类与单元测试
 
 ```java
@@ -468,6 +531,13 @@ public class HelloApp {
     }
 }
 ```
+
+**讲解：**
+
+1. 测试代码与生产代码分目录，但包名一致。
+2. JUnit 5 用 @Test 标注测试方法。
+3. 测试是 Java 工程的基本要求。
+
 
 ```java
 // src/test/java/com/example/HelloAppTest.java
@@ -495,6 +565,13 @@ class HelloAppTest {
     }
 }
 ```
+
+**讲解：**
+
+1. Gradle 是另一个主流构建工具，Kotlin DSL 是推荐写法。
+2. `dependencies { testImplementation(...) }` 声明依赖。
+3. Maven 与 Gradle 二选一即可，新项目 Gradle 更流行。
+
 
 ### 4.5 Gradle（Kotlin DSL）等价配置
 
@@ -539,6 +616,13 @@ tasks.withType<JavaCompile> {
 }
 ```
 
+**讲解：**
+
+1. `jdeps --list-deps` 分析字节码依赖的 JDK 模块。
+2. 用于裁剪 JRE 镜像（jlink）。
+3. 模块系统是 Java 9+ 的进阶主题。
+
+
 ### 4.6 `jlink` 制作自定义运行时镜像
 
 ```bash
@@ -557,6 +641,13 @@ jlink \
 ./build/myjre/bin/java -jar target/hello-java-1.0.0-SNAPSHOT.jar
 ```
 
+**讲解：**
+
+1. GraalVM 能把 Java 应用编译成原生可执行文件。
+2. 启动快、内存低，适合 Serverless。
+3. `native-image` 编译需要额外配置反射等元数据。
+
+
 ### 4.7 GraalVM Native Image（可选）
 
 ```bash
@@ -570,6 +661,13 @@ native-image \
 
 ./hello-native   # 启动时间约 30 ms
 ```
+
+**讲解：**
+
+1. GitHub Actions 的 CI 流水线：push 后自动执行。
+2. setup-java 配置 JDK 版本，cache 缓存依赖加速。
+3. `mvn verify` 完成编译+测试+打包，失败即拦截合并。
+
 
 ### 4.8 GitHub Actions CI 模板
 
@@ -601,6 +699,13 @@ jobs:
         if: matrix.java == 21
         uses: codecov/codecov-action@v4
 ```
+
+**讲解：**
+
+1. 反例：类名与文件名不一致会编译失败。
+2. 反例：方法名/变量名拼写不一致是新手高频错误。
+3. 反例：main 方法签名写错（如漏 static）无法运行。
+
 
 ---
 
@@ -658,6 +763,13 @@ public Optional<User> findUser(String id) {
 }
 ```
 
+**讲解：**
+
+1. JSpecify 提供 @NonNull/@Nullable 注解，表达空值契约。
+2. 配合静态检查工具在编译期发现空指针风险。
+3. 空指针是 Java 第一事故源，注解化是官方方向。
+
+
 #### 6.1.2 使用 `@NonNull` 注解
 
 ```java
@@ -670,6 +782,13 @@ public @NonNull User createUser(@NonNull String name, @Nullable String email) {
 }
 ```
 
+**讲解：**
+
+1. 反例：依赖系统默认字符集读写文件，换平台就乱码。
+2. 正解：显式指定 `StandardCharsets.UTF_8`。
+3. 编码问题要在一开始就固定。
+
+
 ### 6.2 字符串编码陷阱
 
 ```java
@@ -679,6 +798,13 @@ byte[] bytes = "Java".getBytes();   // 在 Windows 上使用 MS936，Linux 上�
 // 正例：显式指定字符集
 byte[] bytes = "Java".getBytes(StandardCharsets.UTF_8);
 ```
+
+**讲解：**
+
+1. 反例：直接捕获 Exception 吞掉错误，问题被隐藏。
+2. 正解：精确捕获具体异常并记录日志或抛出。
+3. 空 catch 是代码评审重点打击对象。
+
 
 Java 18 起（JEP 400），默认字符集统一为 UTF-8，但显式声明仍是推荐做法。
 
@@ -698,6 +824,13 @@ try (BufferedReader reader = new BufferedReader(
 }
 ```
 
+**讲解：**
+
+1. 反例：用魔法数字或裸字符串表达业务含义。
+2. 正解：枚举（enum）或常量类表达。
+3. 类型不明显让代码难以维护。
+
+
 ### 6.4 误用 `var` 导致可读性下降
 
 ```java
@@ -707,6 +840,13 @@ var result = process(data);   // result 是什么类型？
 // 正例：显式声明或加注释
 Map<String, List<User>> grouped = groupByCity(users);
 ```
+
+**讲解：**
+
+1. 反例：用 == 比较字符串内容——== 比较引用。
+2. 正解：`str.equals(other)` 或 Objects.equals。
+3. 这是 Java 新手错误 Top 1。
+
 
 ### 6.5 阻塞主线程的 I/O
 
@@ -720,6 +860,13 @@ public static void main(String[] args) throws Exception {
 // 正例：使用 join + timeout
 var data = future.orTimeout(2, TimeUnit.SECONDS).join();
 ```
+
+**讲解：**
+
+1. 标准 main 方法再次复习：public static void main(String[] args)。
+2. `args.length` 获得参数个数。
+3. 用增强 for 遍历 args。
+
 
 ### 6.6 误用 System.exit
 
@@ -738,6 +885,13 @@ public static void main(String[] args) {
 }
 ```
 
+**讲解：**
+
+1. 反例：用裸 `new Thread` 管理并发，难以控制生命周期。
+2. 正解：线程池 ExecutorService。
+3. 并发入门从线程池开始。
+
+
 ### 6.7 误用 `printStackTrace`
 
 ```java
@@ -751,6 +905,13 @@ public static void main(String[] args) {
     log.error("处理失败", e);
 }
 ```
+
+**讲解：**
+
+1. `mvn package` 打包，产物在 target/。
+2. `java -jar` 运行可执行 jar。
+3. 需要 Spring Boot 插件配置 mainClass 才能直接 -jar 运行。
+
 
 ### 6.8 工具选择决策表
 
@@ -787,6 +948,13 @@ mvn versions:display-dependency-updates   # 检查依赖更新
 ./gradlew dependencies            # 依赖树
 ```
 
+**讲解：**
+
+1. `-Xmx512m` 设置最大堆内存，`-Xms256m` 初始堆。
+2. `-jar` 运行打包产物。
+3. 反斜杠是 shell 换行符，Windows 下可用 ^。
+
+
 ### 7.2 JVM 启动参数（生产推荐）
 
 ```bash
@@ -803,6 +971,13 @@ java \
   -XX:+AlwaysPreTouch \
   -jar app.jar
 ```
+
+**讲解：**
+
+1. `-agentlib:jdwp` 开启 JDWP 远程调试端口。
+2. IDE 连接该端口即可断点调试远程 JVM。
+3. 生产环境不要常开调试端口。
+
 
 参数说明：
 
@@ -832,6 +1007,13 @@ java \
 java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar app.jar
 ```
 
+**讲解：**
+
+1. `jwebserver` 一条命令启动静态文件服务器。
+2. 适合本地预览 HTML/静态资源。
+3. 生产 Web 服务仍用 Spring Boot 等框架。
+
+
 在 IntelliJ IDEA 中：`Run → Edit Configurations → Remote JVM Debug → Host: localhost, Port: 5005`。
 
 ### 7.5 调试：本地内建 HTTP 服务器
@@ -841,6 +1023,13 @@ java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar a
 $ jwebserver
 // 默认端口 8000，目录为当前目录
 ```
+
+**讲解：**
+
+1. JMH 是官方基准测试框架：@Benchmark 标注被测方法。
+2. @BenchmarkMode 指定统计平均耗时。
+3. 微基准测试容易写错，JMH 负责消除 JIT 等干扰。
+
 
 ### 7.6 性能：JMH 微基准
 
@@ -865,6 +1054,13 @@ public class HelloBenchmark {
 }
 ```
 
+**讲解：**
+
+1. 多阶段构建：第一段编译，第二段只拷贝产物运行。
+2. `FROM eclipse-temurin:21-jre` 只带运行时，镜像更小。
+3. `docker build -t` 构建镜像，`docker run` 运行容器。
+
+
 ### 7.7 容器化部署清单
 
 ```dockerfile
@@ -880,10 +1076,24 @@ EXPOSE 8080
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 ```
 
+**讲解：**
+
+1. `-t` 给镜像命名打标签（名字:版本）。
+2. 构建完成后 `docker run hello-java:1.0.0` 运行。
+3. 容器化是 Java 服务部署的标准方式。
+
+
 ```bash
 docker build -t hello-java:1.0.0 .
 docker run --rm -p 8080:8080 --memory=512m hello-java:1.0.0
 ```
+
+**讲解：**
+
+1. @SpringBootApplication 是 Spring Boot 启动类注解。
+2. 它组合了配置、组件扫描与自动配置三个能力。
+3. `SpringApplication.run` 启动内嵌服务器。
+
 
 ---
 
@@ -901,6 +1111,13 @@ public class Application {
     }
 }
 ```
+
+**讲解：**
+
+1. 这是用 Java 21 虚拟线程实现的简易 Echo 服务器。
+2. `Thread.ofVirtual()` 创建虚拟线程，轻松支撑高并发。
+3. 虚拟线程让“每连接一线程”重新可行。
+
 
 `SpringApplication.run` 实际执行：
 
@@ -942,6 +1159,13 @@ public final class EchoServer {
 }
 ```
 
+**讲解：**
+
+1. Hibernate 是 JPA 实现：用注解把类映射到数据库表。
+2. `session.persist` 插入、`session.get` 查询。
+3. ORM 让 Java 对象与关系表互相转换。
+
+
 注意 Netty 使用 Reactor 模型而非 Java 21 虚拟线程，因其需要细粒度事件分发控制。
 
 ### 8.3 Hibernate 的 `main` 入口
@@ -970,6 +1194,13 @@ public class HibernateDemo {
 }
 ```
 
+**讲解：**
+
+1. Picocli 是命令行应用框架：@Command 声明命令。
+2. @Option 声明参数选项，框架自动解析。
+3. 写 CLI 工具优先用 Picocli 而非手写解析。
+
+
 注意 `try-with-resources` 自动关闭 `SessionFactory` 与 `StandardServiceRegistry`，避免资源泄漏。
 
 ### 8.4 Apache Commons CLI 命令行应用
@@ -996,6 +1227,13 @@ public class CliApp {
     }
 }
 ```
+
+**讲解：**
+
+1. `sealed interface` 密封接口：只允许指定的类实现。
+2. permits 列出实现者，编译器保证不超出。
+3. 配合 switch 模式匹配可穷举所有分支。
+
 
 ---
 
@@ -1073,6 +1311,13 @@ public class ShapeDemo {
 }
 ```
 
+**讲解：**
+
+1. CompletableFuture 是 Java 8 的异步编排工具。
+2. `thenApply` 转换结果，`thenCompose` 串联异步任务。
+3. 与虚拟线程相比，它适合回调式异步。
+
+
 **Q2.** 使用 `CompletableFuture` 并行查询三个数据源（模拟 `fetchA`、`fetchB`、`fetchC`），合并结果并设置 500ms 超时。
 
 ```java
@@ -1105,6 +1350,13 @@ public class ParallelDemo {
     }
 }
 ```
+
+**讲解：**
+
+1. CompletableFuture 是 Java 8 的异步编排工具。
+2. thenApply 转换结果，thenCompose 串联异步任务。
+3. 与虚拟线程相比，它适合回调式异步。
+
 
 **Q3.** 使用虚拟线程（Java 21）并发请求 100 个 URL 并打印响应长度。
 
@@ -1146,6 +1398,13 @@ public class VirtualThreadDemo {
     }
 }
 ```
+
+**讲解：**
+
+1. `java.net.http.HttpClient` 是 Java 11+ 内置 HTTP 客户端。
+2. `sendAsync` 异步发送，返回 CompletableFuture。
+3. 无需第三方库即可调 REST API。
+
 
 ### 11.1 书籍
 
