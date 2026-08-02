@@ -399,8 +399,10 @@ prerequisites: []
  <!-- 使用 title 属性 -->
  <a href="#" title="点击这里">链接</a>
  <!-- 使用 hidden 属性 -->
+ <!-- div 同上是"无语义容器"，这里只看 hidden 的用法 -->
  <div hidden>这个元素是隐藏的</div>
  <!-- 使用 contenteditable 属性 -->
+ <!-- div 同上，这里只看 contenteditable 的用法 -->
  <div contenteditable="">点击此处编辑内容</div>
 ```
 
@@ -771,7 +773,7 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 
 - 用 `<figure>` + `<figcaption>` 放一张图片；
 - 用 `<dl>` 列出 3 个你学会的 HTML 标签及其含义；
-- 用 `<details>` + `<summary>` 做一个“展开看更多”区域。
+- 用 `<details>` + `<summary>` 做一个“展开看更多”区域（提示：参考第 8.1 节）。
 
 ## 10. 核心知识点
 

@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: audio/video 元素、Canvas API 与 SVG 基础。
 author: Anonymous
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'html5/004-Accessibility'
   - 'html5/005-HTML5FormValidation'
@@ -31,6 +31,12 @@ HTML5 提供了原生的音视频支持，不再需要依赖 Flash 插件，使�
   您的浏览器不支持 HTML5 视频。
 </video>
 ```
+
+**讲解：**
+
+- `<video>` 的 `width`/`height` 预先占位，`controls` 显示原生控制条，`poster` 是加载前的封面图；
+- 多个 `<source>` 让浏览器按顺序尝试不同格式，直到找到可播放的为止；
+- 标签之间的文字是兜底提示：浏览器完全不支持视频时才显示。
 
 #### 1.1.2 常用属性
 
@@ -102,6 +108,12 @@ HTML5 提供了原生的音视频支持，不再需要依赖 Flash 插件，使�
 </script>
 ```
 
+**讲解：**
+
+- `play()`/`pause()` 控制播放，`muted` 与 `volume` 控制声音，`currentTime` 可读写播放位置；
+- 音量滑块的取值范围是 0 到 1，示例把值换算成百分比显示；
+- 自定义控制按钮的 `onclick` 只是演示，正式项目推荐用 `addEventListener` 绑定。
+
 ### 1.2 音频播放
 
 #### 1.2.1 基本用法
@@ -113,6 +125,12 @@ HTML5 提供了原生的音视频支持，不再需要依赖 Flash 插件，使�
   您的浏览器不支持 HTML5 音频。
 </audio>
 ```
+
+**讲解：**
+
+- `<audio>` 与 `<video>` 的标签结构一致，只是没有画面；
+- `controls` 属性直接提供播放/暂停与音量控制，无需任何脚本；
+- `preload` 属性（`auto`/`metadata`/`none`）可控制音频资源的预加载策略。
 
 #### 1.2.2 常用属性
 
@@ -181,6 +199,12 @@ HTML5 提供了原生的音视频支持，不再需要依赖 Flash 插件，使�
 </script>
 ```
 
+**讲解：**
+
+- 音频 API 与视频 API 基本同构：`play`/`pause`/`muted`/`volume` 通用；
+- 音量滑块的取值范围是 0 到 1，示例把当前值换算成百分比显示；
+- 自动播放通常被浏览器拦截，必须结合用户手势调用 `play()`。
+
 ## 2. Canvas 绘图
 
 Canvas 是 HTML5 提供的一个用于绘制图形的元素，通过 JavaScript 可以在 Canvas 上绘制各种图形、文本、图像等。
@@ -191,6 +215,12 @@ Canvas 是 HTML5 提供的一个用于绘制图形的元素，通过 JavaScript 
 <canvas id="myCanvas" width="400" height="300" style="border:1px solid #000;"></canvas>
 ```
 
+**讲解：**
+
+- `<canvas>` 本身只是一个矩形画布，绘图能力全部来自 JavaScript；
+- `width`/`height` 是画布的像素尺寸，CSS 尺寸只负责显示缩放；
+- 标签内可写兜底文字，供不支持 Canvas 的浏览器显示。
+
 ### 2.2 绘图上下文
 
 要在 Canvas 上绘图，首先需要获取绘图上下文：
@@ -199,6 +229,12 @@ Canvas 是 HTML5 提供的一个用于绘制图形的元素，通过 JavaScript 
 const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
 ```
+
+**讲解：**
+
+- `getElementById` 拿到画布元素，`getContext('2d')` 获取 2D 绘图上下文；
+- 上下文对象 `ctx` 集中了所有绘图方法（矩形、路径、文本、图像等）；
+- 需要 3D 时改用 `getContext('webgl')` 或 `getContext('webgl2')`。
 
 ### 2.3 基本绘图操作
 
@@ -216,6 +252,12 @@ ctx.strokeRect(200, 10, 150, 75);
 ctx.clearRect(50, 25, 50, 30);
 ```
 
+**讲解：**
+
+- `fillRect` 填充矩形，`strokeRect` 描边矩形，`clearRect` 清空指定区域；
+- `fillStyle`/`strokeStyle` 设置填充与描边颜色，`lineWidth` 设置线条宽度；
+- 三者组合可实现“绘制-更新-清除”的画板基础逻辑。
+
 #### 2.3.2 绘制路径
 
 ```javascript
@@ -231,6 +273,12 @@ ctx.strokeStyle = '#000000';
 ctx.lineWidth = 2;
 ctx.stroke();
 ```
+
+**讲解：**
+
+- 路径绘制四步：`beginPath()` 开始新路径、`moveTo()` 移动起点、`lineTo()` 连线、`closePath()` 闭合；
+- `fill()` 填充路径内部，`stroke()` 只描边路径本身；
+- 不调用 `beginPath()` 时，新路径会与旧路径叠加，容易画出意外图形。
 
 #### 2.3.3 绘制圆形和弧线
 
@@ -248,6 +296,12 @@ ctx.lineWidth = 3;
 ctx.stroke();
 ```
 
+**讲解：**
+
+- `arc(x, y, r, startAngle, endAngle)` 中角度使用弧度制，`Math.PI * 2` 表示完整圆，`Math.PI` 表示半圆；
+- 弧度从 3 点钟方向开始顺时针增长；
+- 绘制完弧线后必须调用 `fill()` 或 `stroke()`，图形才会真正显示。
+
 #### 2.3.4 绘制文本
 
 ```javascript
@@ -260,6 +314,12 @@ ctx.font = '24px Times New Roman';
 ctx.strokeStyle = '#FF0000';
 ctx.strokeText('Hello Canvas', 50, 290);
 ```
+
+**讲解：**
+
+- `font` 使用 CSS 字体简写语法，`fillText` 填充文本，`strokeText` 描边文本；
+- `textAlign` 控制文本在指定坐标上的对齐方式（left/center/right）；
+- 文本基线由 `textBaseline` 控制，多行文本需要逐行计算 `y` 坐标。
 
 #### 2.3.5 绘制图像
 
@@ -274,6 +334,12 @@ img.onload = function () {
 };
 ```
 
+**讲解：**
+
+- `new Image()` 创建图片对象，`src` 赋值后异步加载；
+- `drawImage` 必须在 `onload` 回调中调用，否则图片尚未解码；
+- 9 参数版本 `drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)` 可从原图裁剪区域后绘制到目标位置。
+
 ### 2.4 Canvas 变换
 
 #### 2.4.1 平移
@@ -286,6 +352,12 @@ ctx.fillRect(0, 0, 100, 50);
 ctx.restore(); // 恢复之前的状态
 ```
 
+**讲解：**
+
+- `translate(x, y)` 移动坐标系原点，之后绘制的图形都相对新原点定位；
+- `save()` 保存当前状态（变换、样式），`restore()` 恢复，避免变换互相污染；
+- 记住“先 `save`，变换，再 `restore`”是 Canvas 变换的标准姿势。
+
 #### 2.4.2 旋转
 
 ```javascript
@@ -297,6 +369,12 @@ ctx.fillRect(-50, -25, 100, 50);
 ctx.restore();
 ```
 
+**讲解：**
+
+- `rotate(angle)` 绕当前原点旋转，角度使用弧度制，`Math.PI / 4` 即 45 度；
+- 通常先 `translate` 到旋转中心，再 `rotate`，最后在局部坐标中绘制；
+- 示例中图形以自身中心（`-50, -25` 偏移）为轴旋转，而不是画布原点。
+
 #### 2.4.3 缩放
 
 ```javascript
@@ -306,6 +384,12 @@ ctx.fillStyle = '#0000FF';
 ctx.fillRect(50, 150, 100, 50);
 ctx.restore();
 ```
+
+**讲解：**
+
+- `scale(sx, sy)` 水平与垂直分别缩放，会影响之后所有绘制的尺寸；
+- 缩放会同步影响线宽与坐标，`save`/`restore` 可以隔离影响范围；
+- 负值缩放可镜像图形，但较少直接使用。
 
 ### 2.5 Canvas 动画
 
@@ -337,6 +421,13 @@ ctx.restore();
   animate();
 </script>
 ```
+
+**讲解：**
+
+- `requestAnimationFrame` 让回调在下一帧渲染前执行，是 Canvas 动画的推荐驱动；
+- 动画循环模式：清除画布、更新位置、重绘图形、再请求下一帧；
+- 示例中的边界检测让方块碰到左右边缘后反向移动，形成来回弹跳效果；
+- 与 `setInterval` 相比，它跟随屏幕刷新率并自动暂停于后台标签页，节省资源。
 
 ### 2.6 Canvas 交互
 
@@ -377,6 +468,13 @@ ctx.restore();
 </script>
 ```
 
+**讲解：**
+
+- 通过 `mousedown`/`mousemove`/`mouseup` 事件记录与更新鼠标坐标；
+- `offsetX`/`offsetY` 给出相对画布左上角的坐标，无需额外换算；
+- “按下开始画、移动画线、松开停止”是白板类应用的最小交互模型；
+- `mouseout` 时复位绘制状态，避免鼠标移出画布后仍持续画线。
+
 ## 3. SVG 绘图
 
 SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适合绘制图标、图表等需要缩放不失真的图形。
@@ -399,6 +497,13 @@ SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适�
   <text x="50" y="250" font-family="Arial" font-size="20" fill="black">Hello SVG</text>
 </svg>
 ```
+
+**讲解：**
+
+- SVG 用 XML 标签描述矢量图形，`<rect>`、`<circle>`、`<ellipse>`、`<line>` 对应基本形状；
+- `fill` 设置填充色，`stroke` 与 `stroke-width` 设置描边；
+- `<path>` 的 `d` 属性用命令描述路径：`M` 移动、`L` 连线、`Z` 闭合；
+- SVG 是文档结构的一部分，可被 CSS 与 JavaScript 直接操作，与 Canvas 的“像素绘制”不同。
 
 ### 3.2 SVG 与 Canvas 对比
 
@@ -534,6 +639,16 @@ SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适�
   </body>
 </html>
 ```
+
+**代码结构解析：**
+
+（1）HTML 结构：`<video>` 承载媒体，按钮组与进度条构成自定义控制条；
+
+（2）控制逻辑：播放/暂停/静音/音量按钮分别调用视频 API，`currentTime` 与 `duration` 驱动进度显示；
+
+（3）事件驱动：`timeupdate` 事件在播放过程中频繁触发，用于同步进度条位置；
+
+（4）样式部分属于 CSS 课程，本课只需理解结构与控制 API 的配合。
 
 ### 4.2 示例 2：Canvas 绘图应用
 
@@ -680,6 +795,16 @@ SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适�
   </body>
 </html>
 ```
+
+**代码结构解析：**
+
+（1）画布初始化：获取 `canvas` 与 2D 上下文，设置画笔颜色与线宽；
+
+（2）交互协议：`mousedown` 开始绘制、`mousemove` 画线、`mouseup` 结束，`offsetX`/`offsetY` 提供画布内坐标；
+
+（3）颜色选择：多个色块按钮通过点击事件切换当前画笔颜色；
+
+（4）清除画布：`clearRect` 清空全部像素，实现“新建画布”功能。
 
 ### 4.3 示例 3：SVG 图标
 
@@ -837,6 +962,16 @@ SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适�
 </html>
 ```
 
+**代码结构解析：**
+
+（1）SVG 图标以 `<svg>` 为根，内部用 `<path>`、`<circle>` 等基本形状组合出图标；
+
+（2）`viewBox` 定义内部坐标系，让图标在任意尺寸下等比缩放；
+
+（3）图标作为文档元素可直接被 CSS 控制颜色与尺寸，无需重新生成图片；
+
+（4）`<use>` 或 JavaScript 模板可复用同一图标，避免重复粘贴代码。
+
 ## 5. 最佳实践
 
 ### 5.1 音视频最佳实践
@@ -874,336 +1009,16 @@ SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适�
 - **CDN**：使用 CDN 分发静态资源，提高加载速度。
 - **监控性能**：使用浏览器开发者工具监控音视频和 Canvas 的性能，及时发现和解决问题。
 
----
+## 8. 进阶知识点
 
-## Canvas 元素
+### 8.1 Canvas 图像导出
 
-**canvas 标签**
-`<canvas id="<ID>" width="<宽>" height="<高>" [style]></canvas>`
-```html
-<!-- 画布元素 -->
-<canvas id="myCanvas" width="400" height="300" style="border:1px solid #000;">
-  您的浏览器不支持 Canvas。
-</canvas>
-```
-
-**获取绘图上下文**
 ```javascript
-const canvas = document.getElementById('myCanvas');
-const ctx = canvas.getContext('2d');
-
-// WebGL 上下文
-const gl = canvas.getContext('webgl');
-// 或 webgl2
-const gl2 = canvas.getContext('webgl2');
-```
-
----
-
-## Canvas 2D 矩形
-
-**矩形绘制**
-`ctx.fillRect(x, y, width, height)` | `ctx.strokeRect(...)` | `ctx.clearRect(...)`
-```javascript
-// 填充矩形
-ctx.fillStyle = '#FF0000';
-ctx.fillRect(10, 10, 150, 75);
-
-// 描边矩形
-ctx.strokeStyle = '#0000FF';
-ctx.lineWidth = 2;
-ctx.strokeRect(200, 10, 150, 75);
-
-// 清除矩形区域
-ctx.clearRect(50, 25, 50, 30);
-
-// 圆角矩形(新 API)
-ctx.beginPath();
-ctx.roundRect(10, 10, 100, 50, 8);
-ctx.fill();
-```
-
----
-
-## Canvas 路径
-
-**路径绘制**
-```javascript
-// 三角形
-ctx.beginPath();
-ctx.moveTo(50, 150);       // 移动到起点
-ctx.lineTo(150, 150);      // 画线到
-ctx.lineTo(100, 50);
-ctx.closePath();           // 闭合路径
-ctx.fillStyle = '#FFFF00';
-ctx.fill();                // 填充
-ctx.stroke();              // 描边
-```
-
-**圆形与弧线**
-`ctx.arc(x, y, radius, startAngle, endAngle, [anticlockwise])`
-```javascript
-// 完整圆
-ctx.beginPath();
-ctx.arc(250, 100, 50, 0, Math.PI * 2);
-ctx.fillStyle = '#00FF00';
-ctx.fill();
-
-// 半圆弧
-ctx.beginPath();
-ctx.arc(250, 200, 50, 0, Math.PI);
-ctx.strokeStyle = '#FF00FF';
-ctx.lineWidth = 3;
-ctx.stroke();
-
-// 椭圆
-ctx.beginPath();
-ctx.ellipse(100, 200, 50, 30, 0, 0, Math.PI * 2);
-ctx.stroke();
-```
-
-**贝塞尔曲线**
-```javascript
-// 二次贝塞尔
-ctx.beginPath();
-ctx.moveTo(0, 100);
-ctx.quadraticCurveTo(50, 0, 100, 100); // 控制点,终点
-ctx.stroke();
-
-// 三次贝塞尔
-ctx.beginPath();
-ctx.moveTo(0, 200);
-ctx.bezierCurveTo(30, 150, 70, 250, 100, 200); // 控制点1,控制点2,终点
-ctx.stroke();
-```
-
----
-
-## Canvas 文本
-
-**文本绘制**
-`ctx.fillText(text, x, y, [maxWidth])` | `ctx.strokeText(...)`
-```javascript
-// 填充文本
-ctx.font = '30px Arial';
-ctx.fillStyle = '#000000';
-ctx.textAlign = 'start';  // start/end/left/right/center
-ctx.textBaseline = 'alphabetic'; // top/hanging/middle/alphabetic/ideographic/bottom
-ctx.fillText('Hello Canvas', 50, 250);
-
-// 描边文本
-ctx.font = '24px Times New Roman';
-ctx.strokeStyle = '#FF0000';
-ctx.strokeText('Hello Canvas', 50, 290);
-
-// 测量文本
-const metrics = ctx.measureText('Hello');
-console.log(metrics.width);
-```
-
----
-
-## Canvas 图像
-
-**图像绘制**
-`ctx.drawImage(image, x, y, [width, height])` | `ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh)`
-```javascript
-const img = new Image();
-img.src = 'image.jpg';
-img.onload = function () {
-  // 完整绘制
-  ctx.drawImage(img, 0, 0);
-
-  // 缩放绘制
-  ctx.drawImage(img, 0, 0, 100, 80);
-
-  // 裁剪绘制(源 x,y,w,h,目标 x,y,w,h)
-  ctx.drawImage(img, 100, 100, 50, 50, 200, 200, 50, 50);
-};
-```
-
----
-
-## Canvas 样式
-
-**填充与描边**
-```javascript
-// 纯色
-ctx.fillStyle = 'red';
-ctx.fillStyle = '#FF0000';
-ctx.fillStyle = 'rgb(255, 0, 0)';
-ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-
-// 线性渐变
-const linearGradient = ctx.createLinearGradient(0, 0, 200, 0);
-linearGradient.addColorStop(0, 'red');
-linearGradient.addColorStop(0.5, 'yellow');
-linearGradient.addColorStop(1, 'blue');
-ctx.fillStyle = linearGradient;
-
-// 径向渐变
-const radialGradient = ctx.createRadialGradient(100, 100, 10, 100, 100, 100);
-radialGradient.addColorStop(0, 'white');
-radialGradient.addColorStop(1, 'black');
-ctx.fillStyle = radialGradient;
-
-// 图案
-const pattern = ctx.createPattern(img, 'repeat'); // repeat/repeat-x/repeat-y/no-repeat
-ctx.fillStyle = pattern;
-```
-
-**线样式**
-```javascript
-ctx.lineWidth = 2;            // 线宽
-ctx.lineCap = 'round';        // butt/round/square
-ctx.lineJoin = 'round';       // miter/round/bevel
-ctx.miterLimit = 10;          // 斜接限制
-ctx.setLineDash([5, 5]);      // 虚线
-ctx.lineDashOffset = 0;       // 虚线偏移
-```
-
-**阴影**
-```javascript
-ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-ctx.shadowBlur = 10;
-ctx.shadowOffsetX = 5;
-ctx.shadowOffsetY = 5;
-```
-
-**透明度与合成**
-```javascript
-ctx.globalAlpha = 0.5;            // 全局透明度
-ctx.globalCompositeOperation = 'source-over'; // 合成模式
-// source-over / destination-over / multiply / screen / overlay 等
-```
-
----
-
-## Canvas 变换
-
-**坐标变换**
-```javascript
-ctx.save();                       // 保存状态
-ctx.translate(100, 50);           // 平移
-ctx.rotate(Math.PI / 4);          // 旋转(弧度)
-ctx.scale(1.5, 0.8);              // 缩放
-ctx.transform(a, b, c, d, e, f);  // 矩阵变换
-ctx.setTransform(1, 0, 0, 1, 0, 0); // 重置变换
-ctx.restore();                    // 恢复状态
-```
-
-**示例:旋转矩形**
-```javascript
-ctx.save();
-ctx.translate(200, 100);          // 移到旋转中心
-ctx.rotate(Math.PI / 4);          // 旋转 45 度
-ctx.fillStyle = '#00FF00';
-ctx.fillRect(-50, -25, 100, 50);  // 以新原点为基准
-ctx.restore();
-```
-
----
-
-## Canvas 动画
-
-**requestAnimationFrame**
-```javascript
-let x = 0;
-const speed = 2;
-
-function animate() {
-  // 清除画布
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 绘制
-  ctx.fillStyle = '#FF0000';
-  ctx.fillRect(x, 100, 50, 50);
-
-  // 更新位置
-  x += speed;
-  if (x > canvas.width - 50 || x < 0) {
-    speed = -speed; // 反弹
-  }
-
-  // 请求下一帧
-  requestAnimationFrame(animate);
-}
-
-animate();
-
-// 取消动画
-const animationId = requestAnimationFrame(animate);
-cancelAnimationFrame(animationId);
-```
-
----
-
-## Canvas 交互
-
-**鼠标绘制**
-```javascript
-let isDrawing = false;
-let lastX = 0;
-let lastY = 0;
-
-canvas.addEventListener('mousedown', (e) => {
-  isDrawing = true;
-  [lastX, lastY] = [e.offsetX, e.offsetY];
-});
-
-canvas.addEventListener('mousemove', (e) => {
-  if (!isDrawing) return;
-  ctx.beginPath();
-  ctx.moveTo(lastX, lastY);
-  ctx.lineTo(e.offsetX, e.offsetY);
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
-  ctx.stroke();
-  [lastX, lastY] = [e.offsetX, e.offsetY];
-});
-
-canvas.addEventListener('mouseup', () => isDrawing = false);
-canvas.addEventListener('mouseout', () => isDrawing = false);
-```
-
-**触摸事件**
-```javascript
-canvas.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-  const touch = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-  lastX = touch.clientX - rect.left;
-  lastY = touch.clientY - rect.top;
-  isDrawing = true;
-});
-
-canvas.addEventListener('touchmove', (e) => {
-  e.preventDefault();
-  if (!isDrawing) return;
-  const touch = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
-  ctx.beginPath();
-  ctx.moveTo(lastX, lastY);
-  ctx.lineTo(x, y);
-  ctx.stroke();
-  [lastX, lastY] = [x, y];
-});
-```
-
----
-
-## Canvas 图像导出
-
-**toDataURL 与 toBlob**
-```javascript
-// 转为 data URL
+// 转为 data URL（可直接作为图片地址）
 const dataURL = canvas.toDataURL('image/png');
-const dataURL2 = canvas.toDataURL('image/jpeg', 0.9); // 质量
+const jpegURL = canvas.toDataURL('image/jpeg', 0.9); // 0-1 控制质量
 
-// 转为 Blob
+// 转为 Blob，并触发下载
 canvas.toBlob((blob) => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1214,41 +1029,102 @@ canvas.toBlob((blob) => {
 }, 'image/png');
 ```
 
----
+**讲解：**
 
-## Canvas vs SVG
+- `toDataURL` 把画布内容编码为 base64 字符串，适合预览与保存到 LocalStorage；
+- `toBlob` 生成二进制文件对象，配合临时 URL 可触发浏览器下载；
+- 导出内容受“画布污染”限制：跨域图片未加 CORS 响应头时导出会抛错。
 
-| 特性     | Canvas                         | SVG                     |
-| -------- | ------------------------------ | ----------------------- |
-| 绘图方式 | 基于像素,JavaScript 绘制       | 基于矢量,XML 标记       |
-| 缩放     | 缩放会失真                     | 缩放不失真              |
-| 性能     | 适合大量图形和动画             | 适合少量静态图形        |
-| 事件处理 | 需手动实现                     | 支持元素级事件          |
-| DOM      | 单一元素                       | 每个图形是 DOM 元素     |
-| 适用场景 | 游戏、复杂动画、数据可视化     | 图标、图表、标志        |
+### 8.2 WebGL 上下文
 
----
+```javascript
+const canvas = document.getElementById('myCanvas');
+const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
+```
 
-## Web Audio API
+**讲解：**
 
-**音频上下文**
+- `webgl`/`webgl2` 上下文提供 GPU 加速的 3D 与高性能 2D 绘制；
+- WebGL 需要着色器（Shader）与缓冲区管理，复杂度远高于 2D 上下文；
+- 项目需要 3D 时，通常直接使用 Three.js 等库，而不是手写 WebGL。
+
+### 8.3 Web Audio API
+
 ```javascript
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-// 创建振荡器
+// 创建振荡器（音源）
 const oscillator = audioCtx.createOscillator();
 oscillator.type = 'sine'; // sine/square/sawtooth/triangle
-oscillator.frequency.value = 440; // 频率 Hz
+oscillator.frequency.value = 440; // 频率，单位 Hz
 
-// 创建增益(音量)
+// 创建增益节点（音量）
 const gainNode = audioCtx.createGain();
 gainNode.gain.value = 0.5;
 
-// 连接节点
+// 节点串联：音源 -> 增益 -> 扬声器
 oscillator.connect(gainNode);
 gainNode.connect(audioCtx.destination);
 
-// 播放
 oscillator.start();
 oscillator.stop(audioCtx.currentTime + 2); // 2 秒后停止
 ```
+
+**讲解：**
+
+- Web Audio 采用“节点图”架构：音源节点经过效果节点，最终连接到 `destination`（扬声器）；
+- `OscillatorNode` 生成基础波形，`GainNode` 控制音量，两者可自由组合；
+- `AudioContext` 必须由用户手势触发创建或恢复，浏览器不允许页面自动发声。
+
+### 8.4 Canvas 与 SVG 选型对比
+
+| 特性 | Canvas | SVG |
+| --- | --- | --- |
+| 绘图方式 | 基于像素，JavaScript 绘制 | 基于矢量，XML 标记 |
+| 缩放 | 缩放会失真 | 缩放不失真 |
+| 性能 | 适合大量图形和动画 | 适合少量静态图形 |
+| 事件处理 | 需手动实现 | 每个图形都是 DOM 元素，支持事件 |
+| 适用场景 | 游戏、复杂动画、数据可视化 | 图标、图表、标志 |
+
+## 9. 核心知识点
+
+- 音视频：`<video>`/`<audio>` + `<source>` 多格式降级，`controls`/`autoplay`/`muted`/`poster` 属性，`play()`/`pause()`/`currentTime`/`volume` API；
+- Canvas：`getContext('2d')` 获取上下文，`fillRect`/路径/`arc`/文本/`drawImage` 完成绘制；
+- Canvas 变换：`translate`/`rotate`/`scale` 配合 `save()`/`restore()` 使用；
+- 动画：`requestAnimationFrame` 循环“清除-更新-重绘”，比 `setInterval` 更省资源；
+- 交互：鼠标事件 + 坐标换算实现画板类应用；
+- SVG：矢量、可缩放、每个图形都是文档元素，与 Canvas 按场景选型。
+
+## 10. 动手试试
+
+### 入门版（必做）
+
+1. 用 `<video>` 嵌入一段本地视频，设置 `controls` 与 `poster`；
+2. 在 Canvas 上依次绘制一个矩形、一个圆形和一行文字；
+3. 用 `requestAnimationFrame` 让圆形在画布内左右弹跳。
+
+### 进阶版（选做）
+
+1. 实现一个“签名板”：鼠标按下开始书写、移动画线、松开停止，并提供“清空”按钮；
+2. 用 `toBlob` 把签名导出为 PNG 并触发下载；
+3. 用 SVG 重画一个你喜欢的简单图标，并尝试用 CSS 改变它的颜色。
+
+## 11. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 忘记 `beginPath()` | 新旧路径叠加，画出意外图形 | 每组图形绘制前调用 `beginPath()` |
+| 图片未加载就绘制 | `drawImage` 在 `onload` 前调用无效 | 在 `img.onload` 回调中绘制 |
+| 变换未恢复 | `translate`/`rotate` 影响后续所有绘制 | 用 `save()`/`restore()` 成对包裹 |
+| 自动播放被拦截 | 浏览器不允许无手势自动发声 | 由用户点击事件触发 `play()` |
+| Canvas 导出失败 | 跨域图片污染画布 | 图片服务器开启 CORS，或用同源资源 |
+| 高频动画用 `setInterval` | 掉帧、后台仍运行 | 改用 `requestAnimationFrame` |
+| 大量静态图标用 Canvas | 每个图形都要手写事件，成本高 | 改用 SVG 或图标字体 |
+
+## 12. 扩展学习
+
+- Canvas 进阶：`javascript/006-HigherOrderFunction` 理解回调与动画循环的配合；
+- WebGL 与 3D：`css/037-CSSCanvasDrawing` 与 Three.js 官方示例；
+- 音视频进阶：Web Audio 节点图、MediaSource 流式播放；
+- 性能：`html5/031-CriticalRenderingPathAndResourceLoading` 中媒体资源加载策略；
+- 工程实践：图片懒加载与 `loading="lazy"` 的组合使用。
