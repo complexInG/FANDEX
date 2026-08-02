@@ -463,8 +463,3 @@ git reflog show stash
 # 通过 reflog 找回已 drop 的 stash
 git stash apply stash@{2}
 ```
-
-## 延伸阅读
-Git 基础操作与分支，见 003-git 模块文档。
-GitHub 协作与 PR，见 004-github 模块。
-CI/CD 自动化，见 031-devops 模块。

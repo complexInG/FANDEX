@@ -1573,9 +1573,3 @@ func NewB(a *A) *B { return &B{a: a} }
 - 场景 A:手动注入。组件少,无需框架,启动最快。
 - 场景 B:Wire。组件多,编译期安全重要,运行时开销零。生命周期可通过 `OnStart`/`OnStop` 模式手动管理,或借助 fx 但牺牲编译期检查。
 - 场景 C:fx 或 dig。运行时动态注册是硬需求,Wire 无法应对。fx 提供更好的生命周期管理。
-
-## 延伸阅读
-- **Martin Fowler《Patterns of Enterprise Application Architecture》**:深入阐述 DI 与服务定位器模式的理论基础。
-- **Go Blog《Organizing Go Code》**:Go 团队关于包组织与依赖管理的官方建议。
-- **《Clean Architecture in Go》**(Miki Tebeka):探讨如何在 Go 中实现 Clean Architecture,DI 是核心组件。
-- **《100 Go Mistakes and How to Avoid Them》**(Teiva Harsanyi):第 7 章专门讨论 DI 相关的常见错误。

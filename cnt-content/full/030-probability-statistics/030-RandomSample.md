@@ -141,8 +141,3 @@ $$P\left(\lim_{n \to \infty} \sup_{-\infty < x < +\infty} |F_n(x) - F(x)| = 0\ri
 ## 9. 一句话记忆
 
 抽样就是用"一勺汤"推断"一锅汤"：简单随机样本 = 独立 + 同分布（$f(x_1,\cdots,x_n) = \prod f(x_i)$），样本两重性（随机变量 ↔ 观测值），经验分布函数 $F_n(x)$ 几乎必然一致收敛于总体分布函数——统计推断从这里启程。
-
-## 延伸阅读
-概率统计基础，见 030-probability-statistics 模块文档。
-数据分析应用，见 051-data-analysis 模块。
-机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。

@@ -181,8 +181,3 @@ npx doctoc README.md
 - 标题命名要清晰，目录才有意义
 - 控制标题层级不超过 4 级
 - 长文档（超过 5 个章节）建议添加目录
-
-## 延伸阅读
-Markdown 基础语法，见 002-markdown 模块文档。
-Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
-文档站构建（Astro），见 056-astro 模块（如已加入）。

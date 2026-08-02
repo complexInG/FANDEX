@@ -398,8 +398,3 @@ do
     local content = f:read("*a")
 end -- 离开块自动调用 __close
 ```
-
-## 延伸阅读
-Lua 与 Redis 脚本，见 022-redis 模块相关文档。
-Lua 与 OpenResty 网关，见 031-devops 模块相关文档。
-游戏开发与脚本扩展，见 017-lua 模块文档。

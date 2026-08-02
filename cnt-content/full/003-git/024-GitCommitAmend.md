@@ -519,8 +519,3 @@ feat: add export feature
 # 正文每行限制 72 字符便于阅读
 git commit -m "feat: add export" -m "支持 CSV 与 JSON 两种格式导出"
 ```
-
-## 延伸阅读
-Git 基础操作与分支，见 003-git 模块文档。
-GitHub 协作与 PR，见 004-github 模块。
-CI/CD 自动化，见 031-devops 模块。

@@ -398,8 +398,3 @@ pipe.execute()
 # 使用 Lua 脚本保证秒杀操作的原子性
 EVAL "local stock = tonumber(redis.call('GET', KEYS[1])) if stock and stock > 0 then redis.call('DECR', KEYS[1]) redis.call('SADD', KEYS[2], ARGV[1]) return 1 end return 0" 2 stock:item1 users:item1 user42
 ```
-
-## 延伸阅读
-Redis 数据结构详解，见 022-redis 模块文档。
-Redis 持久化与集群，见 022-redis 模块相关文档。
-MySQL 与 Redis 缓存架构，见 020-mysql 模块。

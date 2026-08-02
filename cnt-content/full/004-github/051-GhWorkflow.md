@@ -262,10 +262,3 @@ gh workflow enable deploy.yml
 ## 一句话记忆
 
 **Workflow 是流水线配置文件，`gh workflow run` 是启动按钮（只对声明了 workflow_dispatch 的流水线有效），`list/view` 负责检查，`disable/enable` 负责拉闸与送电。**
-
----
-
-## 延伸阅读
-- GitHub Actions 原理与 YAML 编写，见 004-github 模块《GitHubActionsCICD》。
-- Actions 触发方式详解，见 004-github 模块《ActionsTrigger》。
-- 运行监控与日志查看，可查阅 `gh run --help` 及官方手册。

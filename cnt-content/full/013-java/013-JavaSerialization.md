@@ -691,9 +691,3 @@ u.writeTo(new FileOutputStream("u.bin"));
 // 从字节流解析 ProtoBuf 消息
 UserProto.User u = UserProto.User.parseFrom(new FileInputStream("u.bin"));
 ```
-
-## 延伸阅读
-Java 并发与 JUC，见 013-java 模块并发文档。
-JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
-Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
-数据库访问（JDBC/JPA），见 019-sql 模块相关文档。

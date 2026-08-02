@@ -498,8 +498,3 @@ aliyun cdn AddCdnDomain \
 | **压缩**       | Gzip/Brotli 压缩传输           |
 | **HTTPS**      | 全链路 HTTPS 加密              |
 | **智能路由**   | 就近接入、智能 DNS 解析        |
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

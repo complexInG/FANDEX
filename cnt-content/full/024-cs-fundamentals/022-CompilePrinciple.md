@@ -837,12 +837,3 @@ flowchart TD
 | 强度削弱   | 替换昂贵操作   | 循环      |
 | 内联       | 消除调用开销   | 过程间    |
 | 尾调用优化 | 复用栈帧       | 过程间    |
-
----
-
-## 延伸阅读
-
-- _Compilers: Principles, Techniques, and Tools_ -- Aho, Lam, Sethi, Ullman (龙书)
-- _Modern Compiler Implementation in C/Java/ML_ -- Andrew W. Appel
-- _Engineering a Compiler_ -- Cooper & Torczon
-- _Advanced Compiler Design and Implementation_ -- Steven Muchnick

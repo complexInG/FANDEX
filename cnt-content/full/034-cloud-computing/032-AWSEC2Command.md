@@ -227,8 +227,3 @@ aws ec2 associate-address --instance-id i-1234567890abcdef0 --allocation-id eipa
 # 释放未使用的弹性 IP
 aws ec2 release-address --allocation-id eipalloc-12345
 ```
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

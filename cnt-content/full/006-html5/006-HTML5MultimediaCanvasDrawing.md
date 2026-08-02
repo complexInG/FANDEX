@@ -876,9 +876,6 @@ SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适�
 
 ---
 
-## 延伸阅读
-
-- [JavaScript](javascript/overview)
 ## Canvas 元素
 
 **canvas 标签**

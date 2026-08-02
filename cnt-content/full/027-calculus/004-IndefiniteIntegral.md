@@ -207,8 +207,3 @@ $$\sin x = \frac{2t}{1+t^2}, \quad \cos x = \frac{1-t^2}{1+t^2}, \quad dx = \fra
 
 > 设 $t = \tan\frac{x}{2}$：
 > $$\int \frac{\frac{2\,dt}{1+t^2}}{1+\frac{2t}{1+t^2}} = \int \frac{2\,dt}{(1+t)^2} = -\frac{2}{1+t} + C = -\frac{2}{1+\tan\frac{x}{2}} + C$$
-
-## 延伸阅读
-微积分基础，见 027-calculus 模块文档。
-线性代数（梯度与向量），见 029-linear-algebra 模块。
-概率统计（积分应用），见 030-probability-statistics 模块。

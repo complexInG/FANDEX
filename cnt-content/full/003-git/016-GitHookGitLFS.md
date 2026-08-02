@@ -321,8 +321,6 @@ flowchart TD
  npx husky add .husky/pre-push "npm test"
 ```
 
-## 11. 延伸阅读
-  通过本教程，你已经了解了 Git 钩子和 Git LFS 的核心概念和实践技巧。在实际项目中，你可以使用这些工具来自动化工作流程、管理大文件，提高开发效率和代码质量
 ## 安装与初始化
 
 **基本写法：安装 Git LFS**
@@ -691,8 +689,3 @@ git lfs prune --dry-run
 # 拉取最近使用的 LFS 对象
 git lfs fetch --recent
 ```
-
-## 延伸阅读
-Git 基础操作与分支，见 003-git 模块文档。
-GitHub 协作与 PR，见 004-github 模块。
-CI/CD 自动化，见 031-devops 模块。

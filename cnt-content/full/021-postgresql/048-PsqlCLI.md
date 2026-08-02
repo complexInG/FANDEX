@@ -538,8 +538,3 @@ SELECT pg_size_pretty(pg_database_size('mydb'));
 -- 查看表及其索引总大小
 SELECT pg_size_pretty(pg_total_relation_size('users'));
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

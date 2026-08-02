@@ -1,5 +1,5 @@
 ---
-order: 40
+order: 50
 title: 插件生态
 module: 'getting-started'
 category: 工具链

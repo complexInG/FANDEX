@@ -115,8 +115,3 @@ function Search() {
 ```
 
 并发模式下，Suspense 不会阻塞整个树，只显示最近的 fallback。
-
-## 延伸阅读
-React Hooks 深入，见 011-react 模块 Hooks 文档。
-React 与 TypeScript 类型，见 009-typescript 模块。
-前端构建与 Vite，见 057-vite 模块（如已加入）。

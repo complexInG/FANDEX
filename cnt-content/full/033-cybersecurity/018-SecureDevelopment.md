@@ -156,8 +156,3 @@ def set_headers(response):
 | 不安全反序列化 | CWE-502 | 高     |
 | 路径遍历       | CWE-22  | 高     |
 | 不安全随机数   | CWE-330 | 中     |
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

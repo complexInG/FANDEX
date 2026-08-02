@@ -627,9 +627,3 @@ canvas.addEventListener('mouseout', () => {
 
 Canvas 是 HTML5 提供的强大绘图 API，通过 JavaScript 可以在网页上创建各种图形、动画和交互效果。Canvas 具有像素级控制、丰富的绘图 API、动画支持和交互性等特点，适用于创建游戏、数据可视化、图像处理等应用。
 通过学习 Canvas 的基础操作、进阶特性和性能优化技巧，你可以创建各种复杂的图形和动画效果。在实际开发中，应根据具体需求选择合适的技术方案，并遵循相关的最佳实践，以创建高性能、可维护的 Canvas 应用。
-
-## 延伸阅读
-CSS 圆角与形状，见 007-css/018-BorderRadius 文档。
-CSS 媒体查询与响应式，见 007-css/019-MediaQuery 文档。
-CSS 函数与变量，见 007-css/022-Function 文档。
-HTML 结构与语义，见 006-html5 模块。

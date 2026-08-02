@@ -1,5 +1,5 @@
 ---
-order: 150
+order: 160
 title: npm 包管理
 module: 'getting-started'
 category: 工具链

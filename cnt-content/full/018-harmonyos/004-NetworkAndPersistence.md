@@ -596,8 +596,3 @@ export default class MigrationAbility extends UIAbility {
 | **按需同步** | 大文件、媒体资源   | 用户触发 + HTTP 断点续传 |
 | **增量同步** | 数据库记录变更     | 时间戳 + 关系型数据库    |
 | **冲突解决** | 多设备同时修改     | 版本号 + 自定义合并逻辑  |
-
-## 延伸阅读
-TypeScript 基础（ArkTS 语言底座），见 009-typescript 模块。
-声明式 UI 概念与 React/Vue 对比，见 011-react/010-vue3 模块。
-移动端应用架构，见 018-harmonyos 模块文档。

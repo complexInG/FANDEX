@@ -521,8 +521,3 @@ prerequisites:
   > 可以跨越多行
 - 列表项 2
 ```
-
-## 延伸阅读
-Markdown 基础语法，见 002-markdown 模块文档。
-Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
-文档站构建（Astro），见 056-astro 模块（如已加入）。

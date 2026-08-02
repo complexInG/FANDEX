@@ -463,13 +463,3 @@ graph LR
   状态 -> 事件 -> 新状态
   核心问题: 状态定义、转移条件、终止判定
 ```
-
----
-
-## 延伸阅读
-
-- _The Computer Science and Engineering Handbook_ -- Tucker
-- _Introduction to the Theory of Computation_ -- Michael Sipser
-- _Computer Science: An Overview_ -- J. Glenn Brookshear
-- _Structure and Interpretation of Computer Programs_ -- Abelson & Sussman
-- _The Art of Computer Programming_ -- Donald Knuth

@@ -327,10 +327,3 @@ gh status
 ## 一句话记忆
 
 **别名是"自定义唤醒词"（`alias set` 定义、`$1` 插参、`--shell` 解锁管道），配置是"系统设置"（`config set` 改编辑器/协议/分页器），两者都是"配一次、爽很久"的生产力工具。**
-
----
-
-## 延伸阅读
-- gh 登录与认证详解，见 004-github 模块《GhCliAuth》。
-- SSH 与 HTTPS 协议选择，见 004-github 模块《SSHHTTPS》。
-- 用 gh api 实现更复杂的别名（如脚本化查询），见《GhApi》。

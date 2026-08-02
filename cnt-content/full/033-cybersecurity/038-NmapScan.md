@@ -433,8 +433,3 @@ nmap -sS -f -T2 -D RND:3 --randomize-hosts 192.168.1.1
 # 扫描常见 Web 端口并获取标题
 nmap -p 80,443,8080,8443 -sV --script http-title,http-headers 192.168.1.1
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

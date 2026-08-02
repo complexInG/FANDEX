@@ -318,8 +318,3 @@ curl -X POST -H "Content-Type: application/xml" -d '<!DOCTYPE foo [<!ENTITY x SY
 # Java 项目扫描 XML 解析器使用情况
 grep -rn "XMLReader\|SAXParser\|XmlDocument\|DocumentBuilder" src/ --include=*.java
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

@@ -105,9 +105,3 @@ BEM（Block Element Modifier）是一种 CSS 命名方法论，提高样式可�
 | SMACSS | 分类命名                    | 按功能分层 |
 | OOCSS  | 结构与皮肤分离              | 复用性高   |
 | ITCSS  | 倒三角分层                  | 优先级管理 |
-
-## 延伸阅读
-CSS 圆角与形状，见 007-css/018-BorderRadius 文档。
-CSS 媒体查询与响应式，见 007-css/019-MediaQuery 文档。
-CSS 函数与变量，见 007-css/022-Function 文档。
-HTML 结构与语义，见 006-html5 模块。

@@ -308,8 +308,3 @@ document.addEventListener('mouseup', () => {
 - **触摸设备**:原生 HTML5 拖拽 API 在移动端支持有限,需使用 polyfill 或自定义实现
 - **可访问性**:拖拽操作对屏幕阅读器不友好,需提供等价的非拖拽操作方式(如按钮)
 - **DataTransfer 生命周期**:`getData` 仅在 `drop` 事件中可读取,`dragstart` 中设置的数据在 `dragover` 中无法读取
-
-## 延伸阅读
-HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
-CSS 样式与布局，见 007-css 模块。
-JavaScript DOM 操作，见 008-javascript 模块。

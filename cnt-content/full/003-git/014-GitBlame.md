@@ -390,8 +390,3 @@ git log -p abc1234 -- src/main.py
 # 由 blame 结果启动二分查找
 git bisect start && git bisect bad HEAD && git bisect good abc1234
 ```
-
-## 延伸阅读
-Git 基础操作与分支，见 003-git 模块文档。
-GitHub 协作与 PR，见 004-github 模块。
-CI/CD 自动化，见 031-devops 模块。

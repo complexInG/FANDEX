@@ -381,8 +381,3 @@ uint8_t LFULogIncr(uint8_t counter) {
 # 查看键淘汰统计信息
 INFO stats
 ```
-
-## 延伸阅读
-Redis 数据结构详解，见 022-redis 模块文档。
-Redis 持久化与集群，见 022-redis 模块相关文档。
-MySQL 与 Redis 缓存架构，见 020-mysql 模块。

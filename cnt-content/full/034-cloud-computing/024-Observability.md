@@ -237,8 +237,3 @@ receivers:
 | 采样策略     | 尾部采样保留异常请求          |
 | SLO/SLI      | 定义服务等级目标和指标        |
 | 仪表盘分层   | 概览→服务→实例                |
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

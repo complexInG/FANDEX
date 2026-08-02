@@ -440,8 +440,3 @@ if __name__ == '__main__':
 | **WireMock**      | 独立服务  | 丰富的请求匹配规则  | 集成测试   |
 | **MockServer**    | 独立服务  | Java 生态，功能强大 | 企业级项目 |
 | **Postman Mock**  | 内置功能  | 与 Collection 集成  | API 测试   |
-
-## 延伸阅读
-测试分层与用例设计，见 036-software-testing 模块文档。
-CI 集成测试，见 031-devops 模块。
-代码质量与评审，见 037-software-engineering 模块。

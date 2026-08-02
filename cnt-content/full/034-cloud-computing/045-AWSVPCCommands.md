@@ -517,8 +517,3 @@ aws ec2 create-transit-gateway-route \
   --transit-gateway-route-table-id tgw-rtb-12345678 \
   --transit-gateway-attachment-id tgw-attach-12345678
 ```
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

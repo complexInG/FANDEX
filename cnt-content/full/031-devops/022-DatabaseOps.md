@@ -315,8 +315,3 @@ mysql -e "SHOW ENGINE INNODB STATUS\G" | grep -A5 "TRANSACTIONS"
 echo "=== 主从状态 ==="
 mysql -e "SHOW SLAVE STATUS\G" | grep -E "Slave_IO_Running|Slave_SQL_Running|Seconds_Behind"
 ```
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

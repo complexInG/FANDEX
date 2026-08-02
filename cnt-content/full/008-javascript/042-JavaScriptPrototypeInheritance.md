@@ -824,9 +824,3 @@ function safeMerge(target, source) {
 ```
 
 防御：递归合并时，对每一层的 key 都做危险 key 过滤。
-
-## 延伸阅读
-
-- [TS 类型系统](typescript/type-system-basics)
-
----

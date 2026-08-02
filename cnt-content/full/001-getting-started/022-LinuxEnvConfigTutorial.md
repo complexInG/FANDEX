@@ -1,6 +1,6 @@
 ---
 order: 130
-title: Linux环境配置教程
+title: Linux 开发环境配置
 module: 'getting-started'
 category: 工具链
 difficulty: beginner

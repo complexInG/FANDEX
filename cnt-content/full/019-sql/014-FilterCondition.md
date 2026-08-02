@@ -642,9 +642,3 @@ SELECT * FROM orders WHERE YEAR(created_at) = 2026;
 -- 改写为范围查询以利用索引
 SELECT * FROM orders WHERE created_at >= '2026-01-01' AND created_at < '2027-01-01';
 ```
-
-## 延伸阅读
-SQL 连接与子查询，见 019-sql 模块文档。
-SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。
-MySQL 深入，见 020-mysql 模块。
-PostgreSQL 深入，见 021-postgresql 模块。

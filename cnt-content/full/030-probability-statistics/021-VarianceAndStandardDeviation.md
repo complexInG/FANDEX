@@ -153,8 +153,3 @@ $$D(R) = w^2 D(X) + (1-w)^2 D(Y) + 2w(1-w)\text{Cov}(X, Y)$$
 ## 10. 一句话记忆
 
 期望看"中心"（$E(X)$），方差看"波动"（$D(X) = E[X-E(X)]^2 = E(X^2) - [E(X)]^2$），标准差 $\sigma = \sqrt{D(X)}$ 把量纲还回去；线性变换 $D(aX+b) = a^2 D(X)$，独立时方差才可加。
-
-## 延伸阅读
-概率统计基础，见 030-probability-statistics 模块文档。
-数据分析应用，见 051-data-analysis 模块。
-机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。

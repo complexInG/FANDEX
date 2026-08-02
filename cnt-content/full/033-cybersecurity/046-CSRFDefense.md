@@ -377,8 +377,3 @@ curl -s -X POST https://example.com/api -H "Origin: https://evil.com" -w "%{http
 # 一次性检查 CSRF 相关安全响应头
 curl -sI https://example.com | grep -iE "x-frame|x-content|set-cookie|strict-transport"
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

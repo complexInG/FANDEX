@@ -156,8 +156,3 @@ $$f_{X \mid Y}(x \mid y) = \frac{f_{Y \mid X}(y \mid x) \, f_X(x)}{f_Y(y)} \prop
 ## 10. 一句话记忆
 
 条件分布就是"打开筛选器后的分布"：固定 $Y = y$，把联合概率（密度）按 $Y = y$ 这一列（这一条线）重新归一化，即 $f_{X\mid Y}(x \mid y) = \dfrac{f(x, y)}{f_Y(y)}$；若条件分布等于边缘分布，则两变量独立。
-
-## 延伸阅读
-概率统计基础，见 030-probability-statistics 模块文档。
-数据分析应用，见 051-data-analysis 模块。
-机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。

@@ -209,8 +209,3 @@ fetch('/api/action', {
 - 检查是否验证 Referer/Origin
 - 测试 SameSite Cookie 配置
 - 检查 JSON API 是否仅依赖 Cookie 认证
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

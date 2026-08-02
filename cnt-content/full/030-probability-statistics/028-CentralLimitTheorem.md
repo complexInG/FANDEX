@@ -136,8 +136,3 @@ $$\frac{\sum_{i=1}^n X_i - \sum_{i=1}^n \mu_i}{B_n} \xrightarrow{d} N(0, 1)$$
 ## 9. 一句话记忆
 
 中心极限定理回答"怎么波动"：独立同分布变量的和（均值）在 $n$ 大时近似正态——$\sum X_i \sim N(n\mu, n\sigma^2)$、$\bar{X} \sim N(\mu, \sigma^2/n)$；二项分布近似正态要满足 $np \ge 5$ 与 $n(1-p) \ge 5$，并记得用 $\pm 0.5$ 连续性修正。
-
-## 延伸阅读
-概率统计基础，见 030-probability-statistics 模块文档。
-数据分析应用，见 051-data-analysis 模块。
-机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。

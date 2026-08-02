@@ -697,8 +697,3 @@ func TestTimeout(t *testing.T) {
 // Go 1.24+ 构建输出也以 JSON 格式报告
 // go test -json ./...
 ```
-
-## 延伸阅读
-Go 并发与 channel，见 016-go 模块并发文档。
-Go 原子操作与竞争检测，见 016-go/058-RaceDetectionAtomic 文档。
-云原生与 Kubernetes，见 031-devops 模块。

@@ -274,12 +274,3 @@ git rebase --show-current-patch
 ## 八、一句话记忆
 
 **merge 保留双方历史、生成合并提交（安全、适合共享分支）；rebase 把提交重放成直线（整洁、只用于未推送的本地提交）——快进是特权，公共历史禁改写，push 前整理用 rebase -i。**
-
----
-
-## 延伸阅读
-
-- pull 内部如何选 merge/rebase（git pull 参数），见上一篇 039-GitPullFetch。
-- 合并冲突的产生原理与完整解决流程，见下一篇 041-GitConflictResolve。
-- 历史查看与追踪（log/diff/blame），见 044-GitHistoryLog。
-- 关联文档：分支模型与分支规则，见 007-BranchModelBranchRule；GitHub PR 协作流程，见 027-PullRequestCompleteCollaborationFlow。

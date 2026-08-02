@@ -733,9 +733,6 @@ prerequisites:
 
 ---
 
-## 延伸阅读
-
-- [C++ 指针](cpp/cpp-pointers)
 ## 指针基础
 
 **基本写法：指针声明与初始化**

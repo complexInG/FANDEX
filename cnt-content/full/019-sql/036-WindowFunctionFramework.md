@@ -361,9 +361,3 @@ WINDOW w AS (PARTITION BY x ORDER BY y);
 - **预聚合表**：将窗口计算结果物化为中间表
 - **增量计算**：利用 `LAG` 仅计算增量部分
 - **近似算法**：使用 `HyperLogLog` 等近似去重替代精确 `COUNT(DISTINCT)`
-
-## 延伸阅读
-SQL 连接与子查询，见 019-sql 模块文档。
-SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。
-MySQL 深入，见 020-mysql 模块。
-PostgreSQL 深入，见 021-postgresql 模块。

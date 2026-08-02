@@ -1863,8 +1863,6 @@ console.log(highlighter.highlight(code));
 - 它的 `isEmail` 实现考虑了哪些边界情况？
 - 为什么它使用大量正则而不是手写解析器？
 
-## 11. 延伸阅读
----
 ## 附录 A：完整语法速查表
 
 ### A.1 字符类

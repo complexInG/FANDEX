@@ -775,12 +775,3 @@ CFL的性质:
 | Euler定理    | a^phi(n) = 1 (mod n)            |
 | CRT          | x = a_i (mod m_i) 有解当m_i互素 |
 | Wilson定理   | (p-1)! = -1 (mod p)             |
-
----
-
-## 延伸阅读
-
-- _Discrete Mathematics and Its Applications_ -- Kenneth H. Rosen
-- _Introduction to Automata Theory, Languages, and Computation_ -- Hopcroft, Motwani, Ullman
-- _Concrete Mathematics_ -- Graham, Knuth, Patashnik
-- _A Course in Number Theory and Cryptography_ -- Neal Koblitz

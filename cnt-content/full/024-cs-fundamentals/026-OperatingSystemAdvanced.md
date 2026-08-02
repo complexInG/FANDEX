@@ -258,8 +258,3 @@ $$\text{平均旋转延迟} = \frac{1}{2 \times \text{RPM}} \times 60$$
 7200 RPM 磁盘的平均旋转延迟：
 
 $$\frac{1}{2 \times 7200} \times 60 = 4.17\text{ms}$$
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

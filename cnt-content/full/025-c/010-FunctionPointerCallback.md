@@ -1707,15 +1707,6 @@ struct redisCommand redisCommandTable[] = {
 
 分析:Redis 通过 `redisCommandTable` 数组将命令名映射到处理函数,客户端请求时通过查找表调用对应 `proc`。这种设计使命令扩展只需添加表项,无需修改分发逻辑。
 
-## 延伸阅读
-- **C17 标准 6.3.2.1 函数到指针转换、6.5.2.2 函数调用**:理解函数指针的标准语义。
-- **GCC Manual "Function Attributes"**:`__attribute__((cdecl))`、`__attribute__((stdcall))` 等调用约定属性。
-- **System V Application Binary Interface AMD64 Architecture Processor Supplement**:x86-64 调用约定详情。
-- **Linux Kernel 文档"Documentation/filesystem/vfs.rst"**:VFS `file_operations` 设计文档。
-- **"C Interfaces and Implementations" by David Hanson**:面向对象 C 编程技巧。
-- **"Expert C Programming: Deep C Secrets" by Peter van der Linden**:函数指针与 C 语言深层机制。
-- **"21st Century C" by Ben Klemens**:现代 C 编程实践,包括回调与函数指针。
-- **Cppreference "C language: Functions"**:函数指针与调用的在线参考。
 ## 函数指针基础
 
 **基本写法：声明函数指针**

@@ -184,10 +184,3 @@ SELECT * FROM users ORDER BY name COLLATE utf8mb4_0900_as_cs;
 -- 跨排序规则比较时需统一
 SELECT * FROM a JOIN b ON a.name COLLATE utf8mb4_0900_ai_ci = b.name;
 ```
-
----
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

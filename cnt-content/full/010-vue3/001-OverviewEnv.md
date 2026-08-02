@@ -171,12 +171,6 @@ button:hover {
 Vue3 带来了许多新特性和改进，使前端开发更加高效和愉快。通过本章节的学习，你已经了解了 Vue3 的基本概念和环境搭建方法，为后续的学习打下了基础。
 接下来，我们将深入学习 Vue3 的组合式 API、响应式系统、组件系统等核心特性，帮助你构建更加复杂和功能丰富的 Vue3 应用。
 
-## 延伸阅读
-
-- [JavaScript](javascript/overview)
-- [TypeScript](typescript/overview)
-- [HTML5](html5/overview-and-semantics)
-- [CSS](css/overview-and-syntax)
 ## 应用创建
 
 **createApp 创建应用实例**

@@ -3021,16 +3021,6 @@ SSR 是现代 Web 应用的高阶技术，需要在性能、复杂度、成本�
 
 ---
 
-## 延伸阅读
-
-- [Vue Router](vue3/Vue-Router导航守卫)
-- [Vue3 编译优化](vue3/Vue3编译优化)
-- [生命周期钩子](vue3/生命周期钩子)
-- [Vue3 测试策略](vue3/Vue3测试策略)
-- [异步组件与 Suspense](vue3/异步组件与Suspense)
-- [Provide 与 Inject](vue3/Provide与Inject)
-- [Pinia 持久化插件](vue3/Pinia持久化插件)
-- [响应式系统](vue3/响应式系统)
 ## SSR 基本流程
 
 **基本写法：renderToString 渲染为字符串**

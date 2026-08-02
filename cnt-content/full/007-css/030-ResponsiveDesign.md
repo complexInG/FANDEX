@@ -215,9 +215,6 @@ menuToggle.addEventListener('click', () => {
 });
 ```
 
-## 延伸阅读
-
-- [JavaScript](javascript/overview)
 ## viewport 视口设置
 
 **基本写法：viewport 基础**

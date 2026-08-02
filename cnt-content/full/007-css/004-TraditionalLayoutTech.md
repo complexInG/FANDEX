@@ -718,9 +718,3 @@ BFC（Block Formatting Context）是 CSS 中一个独立的渲染区域，内部
 - **BFC**：隔离布局容器，解决塌陷/margin 折叠/自适应两栏
 - **经典布局**：圣杯/双飞翼是浮动布局的巅峰应用
 - **居中**：从传统 hack 到 Flex/Grid，方案越来越简洁
-
----
-
-## 延伸阅读
-
-- [HTML 标签](html5/tags-and-attributes)

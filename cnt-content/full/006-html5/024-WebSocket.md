@@ -459,8 +459,3 @@ class ChatClient {
 const chat = new ChatClient('wss://chat.example.com');
 chat.send('Hello!');
 ```
-
-## 延伸阅读
-HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
-CSS 样式与布局，见 007-css 模块。
-JavaScript DOM 操作，见 008-javascript 模块。

@@ -348,8 +348,3 @@ SELECT JSON_VALUE(attributes, '$.价格') FROM products WHERE id = 1;
 -- 提取 JSON 对象或数组
 SELECT JSON_QUERY(attributes, '$.地址') FROM users WHERE id = 1;
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

@@ -247,8 +247,3 @@ math.log(8, 2)      -- 3
 math.sin(30)             -- 0.5（错误：30 被当作弧度）
 math.sin(math.rad(30))   -- 0.5（正确：先转为弧度）
 ```
-
-## 延伸阅读
-Lua 与 Redis 脚本，见 022-redis 模块相关文档。
-Lua 与 OpenResty 网关，见 031-devops 模块相关文档。
-游戏开发与脚本扩展，见 017-lua 模块文档。

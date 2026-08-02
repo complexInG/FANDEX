@@ -871,8 +871,3 @@ WAAPI 性能接近 CSS 动画,且更灵活。
 | CSS transform on SVG | 支持   | 支持    | 支持   | 支持 |
 | CSS 动画几何属性     | 90+    | 支持    | 支持   | 支持 |
 | WAAPI on SVG         | 支持   | 支持    | 支持   | 支持 |
-
-## 延伸阅读
-SVG 图形语法，见 012-svg 模块文档。
-CSS 样式与动画，见 007-css 模块。
-React/Vue 图标组件实践，见 011-react/010-vue3 模块。

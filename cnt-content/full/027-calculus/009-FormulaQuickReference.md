@@ -408,8 +408,3 @@ $$y'' + py' + qy = 0$$
 | $\Delta > 0$ | $r_1 \neq r_2$（实根）   | $y = C_1 e^{r_1 x} + C_2 e^{r_2 x}$                   |
 | $\Delta = 0$ | $r_1 = r_2 = r$          | $y = (C_1 + C_2 x)e^{rx}$                             |
 | $\Delta < 0$ | $r = \alpha \pm \beta i$ | $y = e^{\alpha x}(C_1 \cos\beta x + C_2 \sin\beta x)$ |
-
-## 延伸阅读
-微积分基础，见 027-calculus 模块文档。
-线性代数（梯度与向量），见 029-linear-algebra 模块。
-概率统计（积分应用），见 030-probability-statistics 模块。

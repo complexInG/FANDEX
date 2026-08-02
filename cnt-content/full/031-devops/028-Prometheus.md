@@ -704,8 +704,3 @@ kill -HUP $(pgrep prometheus)
 # 验证配置生效
 curl -s http://localhost:9090/api/v1/status/config | jq '.data.yaml | fromyaml | .scrape_configs | length'
 ```
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

@@ -1071,8 +1071,3 @@ DELIMITER ;
 -- 删除触发器
 DROP TRIGGER IF EXISTS before_user_insert;
 ```
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

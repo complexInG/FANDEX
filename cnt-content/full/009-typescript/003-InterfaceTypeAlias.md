@@ -1222,9 +1222,3 @@ interface ClockInterface {
     tick(): void
 }
 ```
-
-## 延伸阅读
-TS 基础类型与接口，见 009-typescript 模块文档。
-TS 泛型与工具类型，见 009-typescript 模块进阶文档。
-React + TS 组件类型，见 011-react 模块。
-Vue3 + TS 组合式 API，见 010-vue3 模块。

@@ -250,12 +250,3 @@ git clean -i
 ## 八、一句话记忆
 
 **stash 是寄存柜（存：`stash push -u`，看：`stash list`，取：`pop` 删记录 / `apply` 留记录，清：`clear`）；reset 是时光机（软拨指针、混拨暂存、硬全拨——`--hard` 慎用，先 stash 备份）；已推送的提交用 `revert` 反向抵消；`restore` 撤工作区/暂存区，`clean` 清未跟踪——先 `-n` 预览再动手。**
-
----
-
-## 延伸阅读
-
-- 误删/误 reset 后如何用 reflog 抢救，见上一篇 044-GitHistoryLog。
-- stash 与 pull 的组合用法（先收后拉再恢复），见 041-GitConflictResolve。
-- revert 与冲突解决流程，见 041-GitConflictResolve。
-- 关联文档：提交与推送，见 038-GitCommitPush；Git 协作基础，见 003-git 模块。

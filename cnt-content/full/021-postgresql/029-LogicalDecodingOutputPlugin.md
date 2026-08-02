@@ -71,8 +71,3 @@ SELECT data FROM pg_logical_slot_get_changes('json_slot', NULL, NULL);
 -- 只查看不推进
 SELECT data FROM pg_logical_slot_peek_changes('json_slot', NULL, NULL);
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

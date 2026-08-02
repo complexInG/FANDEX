@@ -132,9 +132,3 @@ module.exports = (opts = {}) => {
   };
 };
 ```
-
-## 延伸阅读
-CSS 圆角与形状，见 007-css/018-BorderRadius 文档。
-CSS 媒体查询与响应式，见 007-css/019-MediaQuery 文档。
-CSS 函数与变量，见 007-css/022-Function 文档。
-HTML 结构与语义，见 006-html5 模块。

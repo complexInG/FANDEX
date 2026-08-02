@@ -284,8 +284,3 @@ console.log(fence.contains(39.9050, 116.4080)); // true/false
 - **精度限制**:`enableHighAccuracy: true` 会消耗更多电量(使用 GPS)
 - **移动设备**:结合 `watchPosition` 可实现导航功能,但需注意电池消耗
 - **隐私保护**:不得在未经用户同意的情况下收集或上传位置数据
-
-## 延伸阅读
-HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
-CSS 样式与布局，见 007-css 模块。
-JavaScript DOM 操作，见 008-javascript 模块。

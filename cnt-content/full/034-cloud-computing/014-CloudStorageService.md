@@ -330,8 +330,3 @@ S3 Replication Metrics 关键指标：
 - **ReplicationLatency**：源对象复制到目标的时间
 - **BytesPendingReplication**：待复制的字节数
 - **OperationsPendingReplication**：待复制的操作数
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

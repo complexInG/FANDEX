@@ -266,9 +266,3 @@ gh search repos --language=python --sort=stars --limit 5 --json fullName --jq '.
 ## 一句话记忆
 
 **`gh search` 是 GitHub 的"检索台"：找库用 `repos`，找代码用 `code`，找讨论用 `issues/prs`，找历史用 `commits`；记住"关键词 + 限定符 + `--` 排除 + `--json` 输出"四板斧，检索又快又准。**
-
----
-
-## 延伸阅读
-- GitHub 网页端搜索技巧，见 004-github 模块相关文档。
-- 用 gh api 实现更复杂的搜索（search/issues 端点），见《GhApi》。

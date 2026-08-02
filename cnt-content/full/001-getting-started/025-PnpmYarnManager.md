@@ -1,5 +1,5 @@
 ---
-order: 160
+order: 170
 title: pnpm 与 yarn 包管理
 module: 'getting-started'
 category: 工具链

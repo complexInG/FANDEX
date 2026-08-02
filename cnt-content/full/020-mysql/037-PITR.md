@@ -96,8 +96,3 @@ mysqlbinlog --start-position=2048 \
 -- 4. 保留足够长时间的 binlog
 -- 5. 测试恢复流程
 ```
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

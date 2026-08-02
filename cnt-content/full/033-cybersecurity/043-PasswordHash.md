@@ -320,8 +320,3 @@ PBKDF2     iterations=600000+       兼容性最好但较弱`
 # 检查 /etc/shadow 中的哈希算法
 grep $USER /etc/shadow | cut -d: -f2 | cut -d$ -f2
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

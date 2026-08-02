@@ -529,9 +529,3 @@ public Map<User, List<Post>> posts(List<User> users) {
 ### GraphQL Federation
 
 在微服务架构中，GraphQL Federation 允许多个服务各自定义 Schema 的一部分，由网关合并为统一的 Schema。Spring for GraphQL 支持 Federation 规范，适合大型微服务项目的 API 统一。
-
-## 延伸阅读
-Java 并发与 JUC，见 013-java 模块并发文档。
-JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
-Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
-数据库访问（JDBC/JPA），见 019-sql 模块相关文档。

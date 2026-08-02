@@ -1906,18 +1906,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
 </details>
 
-## 延伸阅读
-
-- **NIST Cybersecurity Framework 2.0**：网络安全框架的国际标准，理解 Identify-Protect-Detect-Respond-Recover 五大功能。
-- **"Cryptographic Engineering"**（Bruce Schneier, Wiley, 2020）：密码学工程实践圣经。
-- **"Web Security for Developers"**（Malcolm McDonald, No Starch Press, 2020）：Web 安全入门。
-- **Spring Security OAuth2 官方教程**：OAuth2、OIDC、Resource Server、Client 的权威指南。
-- **OWASP Cheat Sheet Series**：各类安全场景的实战指南（SQL 注入、XSS、CSRF、反序列化、日志注入）。
-- **"Real-World Cryptography"**（David Wong, Manning, 2021）：现代密码学应用实战。
-- **JEP 411: Deprecate the Security Manager**：理解 SecurityManager 弃用背后的设计哲学。
-- **Cloud Native Security Foundation (CNSF) Whitepaper**：云原生安全最佳实践。
-- **CycloneDX / SPDX Specification**：SBOM 标准，理解软件物料清单在供应链安全中的作用。
-- **NIST Post-Quantum Cryptography Standardization**：后量子密码学标准化进程，为未来量子计算威胁做准备。
 ## MessageDigest 摘要
 
 **基本写法：获取摘要实例**
@@ -2076,5 +2064,3 @@ sig.initSign(privateKey);
 sig.update("data".getBytes());
 byte[] sign = sig.sign();
 ```
-
----

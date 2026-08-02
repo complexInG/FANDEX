@@ -152,8 +152,3 @@ $$f(x, y) = \frac{1}{2\pi\sigma_1\sigma_2} \exp\left\{-\frac{(x-\mu_1)^2}{2\sigm
 ## 11. 一句话记忆
 
 随机变量独立 = "知道 $Y$ 不改变对 $X$ 的判断"：离散看 $p_{ij} = p_{i\cdot} p_{\cdot j}$，连续看 $f(x,y) = f_X(x) f_Y(y)$ 且区域为矩形；独立必不相关，但反推只对正态分布成立。
-
-## 延伸阅读
-概率统计基础，见 030-probability-statistics 模块文档。
-数据分析应用，见 051-data-analysis 模块。
-机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。

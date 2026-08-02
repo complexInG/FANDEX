@@ -471,9 +471,3 @@ Spring Cloud 中配置的优先级从高到低为：命令行参数 > Nacos 配�
 ### Kubernetes 部署
 
 Spring Cloud 微服务通常部署在 Kubernetes 上，利用 K8s 的服务发现、自动扩缩容、滚动更新等能力。Spring Cloud Kubernetes 提供了与 K8s 集成的支持，可以直接使用 K8s 的 Service 发现机制替代 Nacos。
-
-## 延伸阅读
-Java 并发与 JUC，见 013-java 模块并发文档。
-JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
-Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
-数据库访问（JDBC/JPA），见 019-sql 模块相关文档。

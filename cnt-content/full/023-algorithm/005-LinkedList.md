@@ -704,15 +704,3 @@ def reverse_k_group(head, k):
 | 回文判断       | O(n)     | O(1) | 中点+反转                  |
 
 \*有尾指针时
-
----
-
-## 8. 延伸阅读
-- CLRS 第 10 章（链表基础）
-- 《剑指 Offer》链表专题
-- Skiena, _The Algorithm Design Manual_, Section 3.1
-> 跨模块引用：链表在哈希表和LRU缓存中的应用参见 [哈希表](algorithm/hashtable)。刷题实践参见 [LeetCode刷题指南](algorithm/leetcode-guide)。
-## 延伸阅读
-数据结构与算法基础，见 023-algorithm 模块文档。
-数学基础（离散数学），见 028-discrete-math 模块。
-编程语言实现，见各语言模块。

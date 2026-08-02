@@ -254,9 +254,3 @@ gh extension install .
 ## 一句话记忆
 
 **扩展就是 gh 的"App 商店"：`search/browse` 逛商店，`install` 安装，`list/upgrade/remove` 管理，`create` 自己做 App——安装前务必审查源码，因为 GitHub 不为扩展背书。**
-
----
-
-## 延伸阅读
-- GitHub CLI 内置命令（repo/pr/issue），见 004-github 模块《GhCliAuth》《GhPrManage》等文档。
-- Release 发布机制（发布预编译扩展的基础），见《GhRelease》。

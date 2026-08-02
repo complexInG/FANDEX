@@ -298,10 +298,3 @@ x-ratelimit-remaining: 4999
 ## 一句话记忆
 
 **gh api 是带认证的"万能遥控器"：路径是 REST、`graphql` 是 v4，加 `-f` 自动变 POST，`-F` 自动转类型，`--jq` 裁剪输出，`--paginate` 翻页——一切以官方 API 手册为准。**
-
----
-
-## 延伸阅读
-- REST 与 GraphQL 概念详解，见 004-github 模块《RESTGraphQLAPI》。
-- Webhook 事件机制，见 004-github 模块《Webhooks》。
-- 在 Actions 中用 gh api 实现自动化，见 004-github 模块 Actions 系列文档。

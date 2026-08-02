@@ -294,8 +294,3 @@ SELECT pg_stat_statements_reset(userid, dbid, queryid);
 | `fuzzystrmatch` | 字符串相似度（Soundex、Levenshtein） |
 | `pg_cron`       | 定时任务                             |
 | `pg_repack`     | 在线清理膨胀                         |
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

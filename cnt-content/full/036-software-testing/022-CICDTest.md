@@ -165,8 +165,3 @@ GitLab CI是CI-CD测试门禁的重要组成部分。本节详细介绍GitLab CI
 - GitLab CI的常见问题与解决方案
 
 GitLab CI在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
-
-## 延伸阅读
-测试分层与用例设计，见 036-software-testing 模块文档。
-CI 集成测试，见 031-devops 模块。
-代码质量与评审，见 037-software-engineering 模块。

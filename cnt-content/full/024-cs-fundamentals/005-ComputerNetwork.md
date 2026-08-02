@@ -745,12 +745,3 @@ NAT (Network Address Translation):
 | 3xx  | 重定向     | 301 永久, 302 临时, 304 未修改      |
 | 4xx  | 客户端错误 | 400 Bad Request, 401/403/404        |
 | 5xx  | 服务端错误 | 500/502/503/504                     |
-
----
-
-## 延伸阅读
-
-- _Computer Networking: A Top-Down Approach_ -- Kurose & Ross
-- _TCP/IP Illustrated, Volume 1_ -- W. Richard Stevens
-- _Unix Network Programming_ -- W. Richard Stevens
-- _High Performance Browser Networking_ -- Ilya Grigorik

@@ -251,8 +251,3 @@ ALTER TABLE users ADD COLUMN phone VARCHAR(20);
 -- 订阅端（必须手动执行）
 ALTER TABLE users ADD COLUMN phone VARCHAR(20);
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

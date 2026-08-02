@@ -1314,8 +1314,3 @@ var top10 = orders
 - **Dapr / Orleans 与 LINQ**：分布式场景下的查询翻译。
 - **DLR（Dynamic Language Runtime）**：动态类型的 LINQ（`Dynamic LINQ` 库）。
 - **F# 查询表达式**：F# 的 `query { ... }` 计算表达式与 C# LINQ 的对比。
-
-## 延伸阅读
-C# 与 .NET 生态，见 015-csharp 模块基础文档。
-异步编程与 Task，见 015-csharp 模块异步文档。
-SQL 与 EF Core，见 019-sql 模块。

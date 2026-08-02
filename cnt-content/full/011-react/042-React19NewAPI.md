@@ -335,8 +335,3 @@ preinit('/css/style.css', { as: 'style' });
 import { preconnect } from 'react-dom';
 preconnect('https://cdn.example.com');
 ```
-
-## 延伸阅读
-React Hooks 深入，见 011-react 模块 Hooks 文档。
-React 与 TypeScript 类型，见 009-typescript 模块。
-前端构建与 Vite，见 057-vite 模块（如已加入）。

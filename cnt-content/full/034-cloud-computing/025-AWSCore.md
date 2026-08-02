@@ -128,8 +128,3 @@ IAM 策略与角色是AWS核心服务的重要组成部分。本节详细介绍I
 - IAM 策略与角色的常见问题与解决方案
 
 IAM 策略与角色在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

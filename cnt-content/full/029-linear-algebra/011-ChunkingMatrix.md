@@ -190,10 +190,3 @@ $$Ax = b \quad \Longleftrightarrow \quad \begin{pmatrix} A_{11} & A_{12} \\ A_{2
 ## 9. 一句话记忆
 
 > **分块矩阵就是把"矩阵中的矩阵"当元素来运算——先按需切块，再逐块运算；分块对角矩阵的一切运算都可以逐块独立进行。**
-
-## 延伸阅读
-
-- 矩阵基础（运算、逆、初等变换、秩），见 029-linear-algebra 模块 007-010 篇。
-- 高斯消元法与方程组的解，见 029-linear-algebra 模块 013-014 篇。
-- 矩阵分解（LU、QR、SVD）与分块技巧的结合，见 029-linear-algebra 模块 034-037 篇。
-- 数值线性代数中分块算法的实际应用（分块高斯消元、并行求解），见 MIT 18.06 讲义与 Numerical Linear Algebra（Trefethen & Bau）。

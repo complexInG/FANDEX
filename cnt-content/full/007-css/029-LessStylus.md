@@ -113,9 +113,3 @@ h1
 | 条件 | @if/@else       | when guards | if/else    |
 | 循环 | @for/@each      | 循环需递归  | for/in     |
 | 社区 | 最大            | 较大        | 较小       |
-
-## 延伸阅读
-CSS 圆角与形状，见 007-css/018-BorderRadius 文档。
-CSS 媒体查询与响应式，见 007-css/019-MediaQuery 文档。
-CSS 函数与变量，见 007-css/022-Function 文档。
-HTML 结构与语义，见 006-html5 模块。

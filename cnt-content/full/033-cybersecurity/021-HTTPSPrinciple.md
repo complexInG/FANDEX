@@ -228,8 +228,3 @@ server {
 | 完美前向保密      | 仅使用 ECDHE 密码套件      |
 | HTTP→HTTPS 重定向 | 301 重定向                 |
 | HSTS Preload      | 提交到浏览器预加载列表     |
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

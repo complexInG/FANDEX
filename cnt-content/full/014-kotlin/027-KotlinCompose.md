@@ -701,8 +701,3 @@ kotlinc -Xrender-internal-diagnostic-names Main.kt -d out
 # 启用类路径快照加速编译
 ./gradlew compileKotlin -Pkotlin.incremental.useClasspathSnapshot=true
 ```
-
-## 延伸阅读
-Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
-协程与 Flow，见 014-kotlin 模块协程文档。
-Android 与 HarmonyOS 应用开发，见 018-harmonyos 模块。

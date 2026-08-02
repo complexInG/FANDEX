@@ -97,8 +97,3 @@ SELECT * FROM t USE INDEX (idx_b) WHERE a = 1;
 -- 索引提示在表结构变更后可能失效
 -- 定期审查使用索引提示的查询
 ```
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

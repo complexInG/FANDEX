@@ -380,8 +380,3 @@ john --format=raw-md5 --wordlist=rockyou.txt hashes.txt
 ssh2john id_rsa > ssh_hash.txt
 john ssh_hash.txt
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

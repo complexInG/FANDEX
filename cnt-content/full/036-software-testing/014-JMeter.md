@@ -240,8 +240,3 @@ jmeter -g results.jtl -o html-report/
 | 监控服务端 | 同时监控服务器资源 |
 | 多次运行   | 取平均值           |
 | 清理数据   | 测试前清理         |
-
-## 延伸阅读
-测试分层与用例设计，见 036-software-testing 模块文档。
-CI 集成测试，见 031-devops 模块。
-代码质量与评审，见 037-software-engineering 模块。

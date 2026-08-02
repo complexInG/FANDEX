@@ -408,8 +408,3 @@ def grade(score: int) -> str:
 | **缺陷总数** | 65   | -      |
 | **已修复**   | 55   | 84.6%  |
 | **未修复**   | 10   | 15.4%  |
-
-## 延伸阅读
-测试分层与用例设计，见 036-software-testing 模块文档。
-CI 集成测试，见 031-devops 模块。
-代码质量与评审，见 037-software-engineering 模块。

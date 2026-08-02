@@ -1745,17 +1745,6 @@ sum(std::string("a"), std::string("b"));  // 编译错误？
 - 提供与 Boost.MPL 等价的接口；
 - 编译时间不超过 Boost.MPL 的 50%。
 
-## 延伸阅读
-- **Boost.MPL**：传统模板元编程库，提供完整的类型列表操作。
-- **Boost.Hana**：现代元编程库，基于 C++14 `constexpr` 与值元编程。
-- **Boost.PFR**：自动 POD 反射，无需宏注册。
-- **Boost.Describe**：基于宏的反射，支持任意类。
-- **Magic Enum**：枚举反射，零开销。
-- **rttr**：运行时反射库，类似 Java Reflection。
-- **USRefl**：超轻量 C++17 反射。
-- **CppCon 演讲**：Andrew Sutton 关于 C++26 反射的系列演讲。
-- **教学资源**：MIT 6.945 Adventures in Advanced Symbolic Programming（元编程理论）；CMU 15-411 Compiler Design（编译器元编程）；Stanford CS243 Program Synthesis（程序合成与反射）。
-- **未来方向**：关注 C++26 反射提案进展、Concepts 与反射的整合、动态反射提案（P1716）等。
 ## 类型信息
 
 **基本写法：typeid**

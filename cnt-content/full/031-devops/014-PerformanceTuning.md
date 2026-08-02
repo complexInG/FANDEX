@@ -313,8 +313,3 @@ wrk -t4 -c100 -d30s -s post.lua http://target/
 | P99 延迟 | <50ms  | <200ms | >500ms |
 | 错误率   | <0.01% | <0.1%  | >1%    |
 | QPS      | >10000 | >1000  | <100   |
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

@@ -523,8 +523,3 @@ r2 -q -c "iI; ie; afl; iz" ./binary > analysis_report.txt
 # 使用 YARA 规则匹配二进制特征
 yara -r malware_rules.yar ./binary
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

@@ -146,8 +146,3 @@ Node Group 1: Data Node 3 (主) + Data Node 4 (备)
 - 游戏服务器（低延迟读写）
 - 实时会话管理
 - 分布式缓存
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

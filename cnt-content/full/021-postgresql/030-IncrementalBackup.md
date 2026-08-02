@@ -78,8 +78,3 @@ touch /var/lib/postgresql/data/recovery.signal
 # 4. 启动PostgreSQL
 systemctl start postgresql
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

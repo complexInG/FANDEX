@@ -310,8 +310,3 @@ export const options = {
 - 测试通过率
 - 失败测试分类
 - 性能基线对比
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

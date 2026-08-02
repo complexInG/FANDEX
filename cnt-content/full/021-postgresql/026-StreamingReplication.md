@@ -99,8 +99,3 @@ SELECT * FROM pg_replication_slots;
 -- 删除复制槽
 SELECT pg_drop_replication_slot('standby1_slot');
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

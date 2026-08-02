@@ -84,8 +84,3 @@ EXPLAIN VERBOSE
 SELECT * FROM remote_employees WHERE salary > 50000;
 -- Remote SQL: SELECT id, name, salary FROM public.employees WHERE ((salary > 5000.0))
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

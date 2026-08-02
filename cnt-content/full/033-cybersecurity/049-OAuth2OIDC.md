@@ -310,8 +310,3 @@ python3 -c "import jwt; print(jwt.decode('eyJ...', options={'verify_signature': 
 # 列出所有客户端配置检查安全性
 curl -H "Authorization: Bearer admin_token" https://kc.example.com/admin/realms/myrealm/clients | python3 -m json.tool
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

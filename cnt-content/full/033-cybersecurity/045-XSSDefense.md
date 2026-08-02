@@ -407,8 +407,3 @@ grep -iE "<script|onerror=|onload=" /var/log/nginx/access.log | awk '{print $1}'
 # ModSecurity XSS 防御规则
 SecRule ARGS "(?i)(<script|javascript:|onerror=|onload=|<img.*src.*onerror)" "id:1002,phase:2,deny,status:403"
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

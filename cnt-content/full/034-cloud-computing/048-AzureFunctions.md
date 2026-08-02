@@ -623,8 +623,3 @@ az functionapp keys set \
 # 通过 URL 查询参数传递密钥调用 HTTP 函数
 curl "https://my-func-app.azurewebsites.net/api/HttpExample?code=MySecretValue123"
 ```
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

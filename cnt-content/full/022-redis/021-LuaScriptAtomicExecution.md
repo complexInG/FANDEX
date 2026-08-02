@@ -508,8 +508,3 @@ EVAL "local key = KEYS[1] local limit = tonumber(ARGV[1]) local window = tonumbe
 # 原子性检查库存并扣减
 EVAL "local stock_key = KEYS[1] local user_key = KEYS[2] local user_id = ARGV[1] local quantity = tonumber(ARGV[2]) if redis.call('SISMEMBER', user_key, user_id) == 1 then return -1 end local stock = tonumber(redis.call('GET', stock_key)) if not stock or stock < quantity then return 0 end redis.call('DECRBY', stock_key, quantity) redis.call('SADD', user_key, user_id) return 1" 2 stock:item1 users:item1 user42 1
 ```
-
-## 延伸阅读
-Redis 数据结构详解，见 022-redis 模块文档。
-Redis 持久化与集群，见 022-redis 模块相关文档。
-MySQL 与 Redis 缓存架构，见 020-mysql 模块。

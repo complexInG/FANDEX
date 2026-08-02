@@ -482,8 +482,3 @@ resource "grafana_dashboard" "app_dashboard" {
 4. **OpenTelemetry** 是可观测性的未来，统一了指标/日志/链路的采集
 5. **SLO/SLI/SLA** 量化服务质量，错误预算指导发布决策
 6. Dashboard 即代码，避免手动配置的不可重复性
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

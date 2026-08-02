@@ -407,8 +407,3 @@ reflection.Register(s) // 注册反射服务
 grpcurl -plaintext localhost:50051 list
 grpcurl -plaintext localhost:50051 user.UserService/GetUser -d '{"id":"123"}'
 ```
-
-## 延伸阅读
-Go 并发与 channel，见 016-go 模块并发文档。
-Go 原子操作与竞争检测，见 016-go/058-RaceDetectionAtomic 文档。
-云原生与 Kubernetes，见 031-devops 模块。

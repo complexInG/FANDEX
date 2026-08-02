@@ -292,8 +292,3 @@ WHERE table_name = 'users';
 -- 查看数据库权限信息
 SELECT datname, datacl FROM pg_database WHERE datname = 'mydb';
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

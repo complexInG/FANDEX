@@ -1,6 +1,6 @@
 ---
 order: 210
-title: Java JDK 配置
+title: Java JDK 安装与配置
 module: 'getting-started'
 category: 工具链
 difficulty: beginner

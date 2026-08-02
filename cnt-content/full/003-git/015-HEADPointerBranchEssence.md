@@ -206,8 +206,3 @@ git log main..feature --oneline
 # 查看分支的创建点
 git merge-base main feature
 ```
-
-## 延伸阅读
-Git 基础操作与分支，见 003-git 模块文档。
-GitHub 协作与 PR，见 004-github 模块。
-CI/CD 自动化，见 031-devops 模块。

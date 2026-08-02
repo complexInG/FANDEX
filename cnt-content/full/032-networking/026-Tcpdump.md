@@ -388,8 +388,3 @@ timeout 60 tcpdump -w capture.pcap
 # 显示带完整时间戳的数据包
 tcpdump -tttt -i eth0
 ```
-
-## 延伸阅读
-网络基础与协议，见 032-networking 模块文档。
-网络安全（TLS/WAF），见 033-cybersecurity 模块。
-负载均衡与网关，见 031-devops 模块相关文档。

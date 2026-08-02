@@ -2215,8 +2215,6 @@ await Promise.all([log(1), log(2), log(3), log(4)]);
 - 它的 `clearQueue` 方法的语义是什么？
 - 它为什么用 `AsyncResource`？有什么用？
 
-## 11. 延伸阅读
----
 ## 附录 A：p-limit 完整源码解析
 
 p-limit v6 的核心源码（简化）：
@@ -2676,5 +2674,3 @@ await Promise.all(
 1. 设计分布式任务调度系统
 2. 实现工作窃取算法
 3. 研究无锁数据结构
-
----

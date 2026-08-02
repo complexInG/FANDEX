@@ -388,9 +388,3 @@ gcc -std=c23 main.c -o main
     /* C23 特性 */
 #endif
 ```
-
-## 延伸阅读
-C 指针与数组深入，见 025-c 模块指针文档。
-C 枚举与 typedef，见 025-c/007-EnumTypedef 文档。
-C++ 面向对象与模板，见 026-cpp 模块。
-嵌入式 C 与硬件交互，见 035-iot 模块。

@@ -1000,14 +1000,3 @@ flowchart TD
 | NS    | DNS服务器  | example.com -> ns1.example.com       |
 | TXT   | 文本记录   | "v=spf1 include:..."                 |
 | SRV   | 服务定位   | \_sip.\_tcp -> 10 60 5060 sip.server |
-
----
-
-## 延伸阅读
-
-- _TCP/IP Illustrated, Volume 1_ (2nd Edition) -- Kevin Fall, W. Richard Stevens
-- _High Performance Browser Networking_ -- Ilya Grigorik
-- _Unix Network Programming, Volume 1_ (3rd Edition) -- W. Richard Stevens
-- _Computer Networking: A Top-Down Approach_ (8th Edition) -- Kurose & Ross
-- RFC 9000: QUIC Protocol
-- RFC 9114: HTTP/3

@@ -321,8 +321,3 @@ kubectl config get-contexts
 # 设置当前上下文的默认命名空间
 kubectl config set-context --current --namespace=dev
 ```
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

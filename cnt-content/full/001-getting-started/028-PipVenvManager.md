@@ -1,5 +1,5 @@
 ---
-order: 190
+order: 200
 title: pip 与 venv 包管理
 module: 'getting-started'
 category: 工具链

@@ -132,8 +132,3 @@ git mergetool
 | **Beyond Compare** | 跨平台      | 功能最强，付费          | 高 |
 | **KDiff3**         | 跨平台      | 免费，自动合并          | 中   |
 | **P4Merge**        | 跨平台      | Perforce 免费           | 中   |
-
-## 延伸阅读
-Git 基础操作与分支，见 003-git 模块文档。
-GitHub 协作与 PR，见 004-github 模块。
-CI/CD 自动化，见 031-devops 模块。

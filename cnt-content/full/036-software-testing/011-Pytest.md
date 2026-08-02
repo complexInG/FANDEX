@@ -509,8 +509,3 @@ def test_file_write(tmp_path):
 # pytest 退出码: 0 通过, 1 失败, 2 中断, 3 内部错误, 4 命令行错误, 5 无测试
 pytest; echo $?
 ```
-
-## 延伸阅读
-测试分层与用例设计，见 036-software-testing 模块文档。
-CI 集成测试，见 031-devops 模块。
-代码质量与评审，见 037-software-engineering 模块。

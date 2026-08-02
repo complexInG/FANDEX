@@ -265,8 +265,3 @@ SELECT * FROM users WHERE (data->>'age')::int > 25;
 | `->>` 提取后比较 | btree 表达式索引     |
 | JSON Path 查询   | GIN (默认)           |
 | 排序             | btree                |
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

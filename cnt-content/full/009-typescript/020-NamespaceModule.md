@@ -1605,7 +1605,3 @@ export default myLib;
     - 处理 `package.json` 的 `exports` 字段
     - 检测循环依赖
     - 返回解析路径或错误
-
-## 延伸阅读
-- *JavaScript: The Definitive Guide*（David Flanagan 著）：第 13 章深入讲解 JavaScript 模块系统。
-- *You Don't Know JS: ES6 & Beyond*（Kyle Simpson 著）：第 3 章讲解模块系统的演进。

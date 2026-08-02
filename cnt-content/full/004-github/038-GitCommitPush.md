@@ -296,13 +296,3 @@ git log --since="2026-01-01" --until="2026-07-31"
 ## 九、一句话记忆
 
 **四站旅程一句话记牢：`git add` 把改动放进暂存区，`git commit` 盖章生成版本快照，`git push -u` 首次推送并建立追踪，此后 `git push` 直达远程——顺序不能乱，反悔用 amend，拒绝先 pull。**
-
----
-
-## 延伸阅读
-
-- 仓库初始化与首次提交，见上一篇 037-GitRepoInit。
-- 拉取与获取（pull/fetch 的对比），见下一篇 039-GitPullFetch。
-- 推送被拒绝时的冲突处理，见 041-GitConflictResolve。
-- 远程仓库关联与管理（origin/upstream），见 043-GitRemoteManage。
-- 关联文档：Git 协作基础，见 003-git 模块；SSH/HTTPS 配置，见 004-SSHHTTPS。

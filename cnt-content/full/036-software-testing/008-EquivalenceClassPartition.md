@@ -164,8 +164,3 @@ prerequisites:
 | 结合边界值         | 提高缺陷发现率       |
 | 考虑隐含需求       | 非显式约束           |
 | 持续更新           | 需求变更时更新等价类 |
-
-## 延伸阅读
-测试分层与用例设计，见 036-software-testing 模块文档。
-CI 集成测试，见 031-devops 模块。
-代码质量与评审，见 037-software-engineering 模块。

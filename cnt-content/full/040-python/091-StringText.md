@@ -257,9 +257,3 @@ print(bytes.fromhex("68656c6c6f"))
 # URL 安全的 base64
 print(base64.urlsafe_b64encode(b"ab?cd"))
 ```
-
-## 延伸阅读
-Python 数据类型与内置容器，见 040-python 模块的基础文档。
-Python 异步编程（asyncio/FastAPI），见 040-python 模块的异步与 Web 文档。
-Python 数据分析（NumPy/Pandas），见 051-data-analysis 模块。
-Python 与数据库交互（SQLAlchemy），见 019-sql 模块相关文档。

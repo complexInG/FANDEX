@@ -1370,9 +1370,3 @@ list.addEventListener("click", e => {
 document.querySelectorAll(".btn")
     .forEach(btn => btn.addEventListener("click", onClick));
 ```
-
-## 延伸阅读
-JavaScript 基础语法，见 008-javascript 模块文档。
-TypeScript 类型系统，见 009-typescript 模块。
-浏览器 DOM 与事件，见 006-html5/007-css 模块。
-前端框架 React/Vue，见 011-react/010-vue3 模块。

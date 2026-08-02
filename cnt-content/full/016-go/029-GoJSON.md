@@ -1076,13 +1076,6 @@ type UserV2 struct {
 - 要点：操作分发:add、remove、replace、move、copy、test。
 - 使用 `map[string]interface{}` 作为内部表示,操作完成后重新序列化。
 
-## 延伸阅读
-- **RFC 8259**:JSON 标准规范,权威定义。
-- **《The Go Programming Language》** 第 4 章:JSON 序列化深入讲解。
-- **《Designing Data-Intensive Applications》**(Kleppmann, 2017):第 4 章对比 JSON、XML、Protobuf、Thrift。
-- **《API Design Patterns》**(Mihaylov, 2021):API 响应格式的最佳实践。
-- **Go 源码 `encoding/json/encode.go`**:Marshal 实现细节。
-- **《Streaming JSON Processing》**(Tidwall, 2020):流式 JSON 处理模式。
 ## 编码与解码
 
 **基本写法：序列化为 JSON**

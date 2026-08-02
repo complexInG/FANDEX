@@ -332,9 +332,3 @@ const counterStore = useCounterStore();
 5. **使用 composables**：提取可复用的逻辑
 6. **性能优化**：使用 `v-memo`、`v-once` 等指令优化渲染性能
    通过本快速入门指南，你已经了解了 Vue3 的基本使用方法。接下来可以深入学习各个核心概念和高级特性。
-
-## 延伸阅读
-Vue Teleport 与 Portal，见 010-vue3/026-TeleportPortalApp 文档。
-Vue KeepAlive 缓存，见 010-vue3/027-KeepAliveCacheLifecycle 文档。
-Vue Router 导航守卫，见 010-vue3/030-VueRouterNavigationGuard 文档。
-TypeScript 与 Vue 组合，见 009-typescript 模块。

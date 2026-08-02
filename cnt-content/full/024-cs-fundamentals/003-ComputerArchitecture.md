@@ -706,12 +706,3 @@ Relaxed Consistency [ARM/RISC-V]:
 | E        | 独占   | 是   | 是         | 是         |
 | S        | 共享   | 是   | 否(需升级) | 是         |
 | I        | 无效   | 否   | 否         | -          |
-
----
-
-## 延伸阅读
-
-- _Computer Architecture: A Quantitative Approach_ -- Hennessy & Patterson
-- _Computer Organization and Design: RISC-V Edition_ -- Patterson & Hennessy
-- _Modern Processor Design: Fundamentals of Superscalar Processors_ -- Shen & Lipasti
-- _A Primer on Memory Consistency and Cache Coherence_ -- Sorin, Hill, Wood

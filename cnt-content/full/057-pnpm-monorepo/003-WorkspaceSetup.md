@@ -263,11 +263,3 @@ pnpm -F @fandex/web --filter "…{@fandex/utils}…" test  # 连同依赖一起
 **陷阱四：`--frozen-lockfile` 报错。** CI 上报"lockfile 与 package.json 不一致"。→ 说明有人改了 package.json 没重新 install，本地先执行 `pnpm install` 提交新的 lockfile。
 
 **陷阱五：glob 模式写错。** `apps/*` 只匹配一层，`apps/**` 匹配多层。→ 根据目录深度选择合适的写法。
-
-## 10. 延伸阅读
-
-- workspace 的底层机制，见本模块《pnpm 核心特性》
-- 包之间如何互相引用，见本模块《workspace 协议与内部依赖》
-- 依赖版本如何统一，见本模块《catalog 依赖目录管理》
-
-> **一句话记忆**：工作空间由三个文件支撑——`pnpm-workspace.yaml` 声明"哪些目录是包"、根 package.json 提供"统一命令入口"、`pnpm-lock.yaml` 锁定"依赖树"；日常操作三件套是 `-r`（全量）、`--filter`（定向）、`--topological`（按依赖顺序）。

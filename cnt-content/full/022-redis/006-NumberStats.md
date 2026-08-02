@@ -140,8 +140,3 @@ PFMERGE wau:2026-w24 dau:2026-06-09 dau:2026-06-10 dau:2026-06-11
 # 获取第24周的活跃用户数
 PFCOUNT wau:2026-w24
 ```
-
-## 延伸阅读
-Redis 数据结构详解，见 022-redis 模块文档。
-Redis 持久化与集群，见 022-redis 模块相关文档。
-MySQL 与 Redis 缓存架构，见 020-mysql 模块。

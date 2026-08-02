@@ -427,10 +427,6 @@ Teleport 的核心一句话：DOM 位置可变，逻辑归属不变。理解这�
 
 `disabled` 与 `defer` 是两个容易忽略的 props：前者做响应式形态切换，后者解决目标节点时序。Vue 3.5+ 项目中应优先掌握这两个特性。
 
-## 11. 延伸阅读
-Vue 3 的 KeepAlive 与 Teleport 配合使用，可以阅读本模块的 027-KeepAliveCacheLifecycle 文档；
-Vue Router 的导航守卫控制浮层关闭，可以阅读本模块的 030-VueRouterNavigationGuard 文档；
-CSS 层叠上下文与包含块的完整原理，见 007-css 模块的相关文档；
 ### 1. Teleport 基础
 
 #### 1.1 基本用法

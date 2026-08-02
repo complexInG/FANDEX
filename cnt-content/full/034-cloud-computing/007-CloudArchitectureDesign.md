@@ -316,8 +316,3 @@ ADR-001: 选择事件驱动架构处理订单流程
 - [ ] 是否有分布式追踪
 - [ ] 是否有结构化日志
 - [ ] 是否有告警与 Runbook
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

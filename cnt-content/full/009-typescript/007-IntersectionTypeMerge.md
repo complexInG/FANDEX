@@ -1561,11 +1561,6 @@ function transition(state: AppState, event: string): AppState {
     - 插件提供的接口类型安全
     - 支持插件卸载后的类型收窄
 
-## 延伸阅读
-- *Types and Programming Languages*（Benjamin C. Pierce 著）：类型系统的经典教材，深入理解子类型、交集类型的理论基础。
-- *Advanced Topics in Types and Programming Languages*（Pierce 编）：涵盖交叉类型、行多态（Row Polymorphism）等高级主题。
-- *Object-Oriented Programming: The CLOS Perspective*（Paepcke 编）：理解 Mixin 与多继承的运行时语义。
-- *Scala by Example*（Martin Odersky 著）：Scala Trait 线性化的实现，对比 TypeScript 交叉类型的设计差异。
 ## 联合类型基础
 
 **基本写法：联合类型**
@@ -1768,5 +1763,3 @@ type C = Exclude<T, "a" | "b">; // "c"
 type T = string | null | undefined;
 type S = NonNullable<T>; // string
 ```
-
----

@@ -442,8 +442,3 @@ flowchart TD
 [AC2-wlan-view] ac protect protect-ac 192.168.1.1 priority 8
 [AC2-wlan-view] ac protect local-ac 192.168.1.2 priority 6
 ```
-
-## 延伸阅读
-网络基础与协议，见 032-networking 模块文档。
-网络安全（TLS/WAF），见 033-cybersecurity 模块。
-负载均衡与网关，见 031-devops 模块相关文档。

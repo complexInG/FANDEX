@@ -81,8 +81,3 @@ DROP POLICY dept_isolation ON employees;
 -- 禁用RLS
 ALTER TABLE employees DISABLE ROW LEVEL SECURITY;
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

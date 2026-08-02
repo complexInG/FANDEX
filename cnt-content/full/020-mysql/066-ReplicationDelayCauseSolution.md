@@ -231,8 +231,3 @@ SELECT * FROM performance_schema.replication_connection_status;
 3. 使用 ProxySQL / MaxSQL 自动路由
 4. 业务层缓存减少从库读压力
 ```
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

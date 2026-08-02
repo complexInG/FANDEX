@@ -299,10 +299,3 @@ git fetch --tags origin
 ## 一句话记忆
 
 **Release = 带说明、带附件的"货架商品"，`gh release create` 一键上架，`upload/download` 负责补货取货，`edit/delete` 负责售后。**
-
----
-
-## 延伸阅读
-- GitHub Actions CI/CD，见 004-github 模块 Actions 文档（可结合 Actions 自动发布）。
-- Git 标签管理，见 003-git 模块《GitTagManage》。
-- gh 登录与认证，见 004-github 模块《GhCliAuth》。

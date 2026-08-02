@@ -131,8 +131,3 @@ $$E(X) = \begin{cases} \displaystyle\sum_j E(X \mid Y = y_j) P(Y = y_j), & \text
 ## 10. 一句话记忆
 
 期望是"概率加权平均"：离散 $E(X)=\sum x_k p_k$，连续 $E(X)=\int x f(x)\,dx$；求 $g(X)$ 的期望用懒人定理 $E[g(X)]=\int g(x)f(x)\,dx$，但 $E[g(X)]\neq g(E(X))$。
-
-## 延伸阅读
-概率统计基础，见 030-probability-statistics 模块文档。
-数据分析应用，见 051-data-analysis 模块。
-机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。

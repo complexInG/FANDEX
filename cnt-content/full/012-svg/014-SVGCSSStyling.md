@@ -835,8 +835,3 @@ rect:hover {
   <text class="label" x="200" y="195" text-anchor="middle">Q3</text>
 </svg>
 ```
-
-## 延伸阅读
-SVG 图形语法，见 012-svg 模块文档。
-CSS 样式与动画，见 007-css 模块。
-React/Vue 图标组件实践，见 011-react/010-vue3 模块。

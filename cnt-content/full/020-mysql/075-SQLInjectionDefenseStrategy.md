@@ -866,10 +866,3 @@ prerequisites:
 3. **学习工具**：掌握 SQLMap、Burp Suite 等工具
 4. **代码审计**：学习如何查找和修复漏洞
 5. **持续学习**：关注新的攻击技术和防御方法
-
----
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

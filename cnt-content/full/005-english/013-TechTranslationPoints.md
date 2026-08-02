@@ -261,8 +261,3 @@ prerequisites:
 | Crowdin   | 自动同步 Git 仓库 |
 | Transifex | Webhook 触发翻译  |
 | Phrase    | CI/CD 集成        |
-
-## 延伸阅读
-英语学习材料与规划，见 005-english 模块文档。
-技术写作（Markdown），见 002-markdown 模块。
-开源协作中的英语沟通，见 004-github 模块。

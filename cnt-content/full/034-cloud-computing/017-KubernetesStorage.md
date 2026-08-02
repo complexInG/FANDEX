@@ -210,8 +210,3 @@ volumes:
 | 加密存储             | 启用加密         |
 | 监控                 | 监控存储使用率   |
 | 清理策略             | 合理设置回收策略 |
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

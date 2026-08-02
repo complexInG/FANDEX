@@ -428,8 +428,3 @@ diff=sum(1 for p1,p2 in zip(img1.getdata(),img2.getdata()) if p1!=p2)
 print(f'差异像素数: {diff}')
 "
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

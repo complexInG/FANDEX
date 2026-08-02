@@ -209,8 +209,3 @@ Feature: 用户登录
 | Web 应用 | 单元+集成+E2E     |
 | 微服务   | 契约测试+集成测试 |
 | 关键业务 | 全层级覆盖        |
-
-## 延伸阅读
-测试分层与用例设计，见 036-software-testing 模块文档。
-CI 集成测试，见 031-devops 模块。
-代码质量与评审，见 037-software-engineering 模块。

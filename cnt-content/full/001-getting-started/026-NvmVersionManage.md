@@ -1,5 +1,5 @@
 ---
-order: 170
+order: 150
 title: nvm 版本管理
 module: 'getting-started'
 category: 工具链

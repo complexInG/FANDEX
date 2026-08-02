@@ -361,8 +361,3 @@ flowchart LR
 | Helm values        | 值文件差异 | Helm 项目  |
 | 环境变量           | 运行时注入 | 通用       |
 | 配置中心           | 动态配置   | 需要热更新 |
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

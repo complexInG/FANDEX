@@ -578,10 +578,6 @@ HTML5 是现代 Web 开发的基础，它的语义化标签和新特性为 Web �
 
 ---
 
-## 延伸阅读
-
-- [CSS](css/overview-and-syntax)
-- [JavaScript](javascript/overview)
 ## HTML5 文档基本结构
 
 **最小 HTML5 文档**

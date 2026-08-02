@@ -186,8 +186,3 @@ $$f(\mathbf{x}) = \frac{1}{(2\pi)^{n/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left\{
 ## 9. 一句话记忆
 
 矩是数字特征的"档案表"（$\mu_1$ 期望、$\nu_2$ 方差、$\nu_{1,1}$ 协方差），偏度峰度看形状；协方差矩阵 $\mathbf{C} = E[(\mathbf{X}-\boldsymbol{\mu})(\mathbf{X}-\boldsymbol{\mu})^T]$ 对称半正定，对角线方差、非对角协方差，线性变换满足 $\mathbf{C}_Y = \mathbf{A}\mathbf{C}_X\mathbf{A}^T$。
-
-## 延伸阅读
-概率统计基础，见 030-probability-statistics 模块文档。
-数据分析应用，见 051-data-analysis 模块。
-机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。

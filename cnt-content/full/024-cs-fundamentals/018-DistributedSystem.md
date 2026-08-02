@@ -285,8 +285,3 @@ $$\phi = -\log_{10}(1 - F(t))$$
 $$\begin{cases} W + R > N \\ W > N/2 \end{cases}$$
 
 其中 $N$ 为副本总数，$W$ 为写仲裁，$R$ 为读仲裁。
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

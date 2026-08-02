@@ -398,8 +398,3 @@ git subtree add --prefix=lib/shared https://github.com/user/shared-lib.git main 
 # 更新 lib/shared 的 subtree
 git subtree pull --prefix=lib/shared https://github.com/user/shared-lib.git main --squash;
 ```
-
-## 延伸阅读
-Git 基础操作与分支，见 003-git 模块文档。
-GitHub 协作与 PR，见 004-github 模块。
-CI/CD 自动化，见 031-devops 模块。

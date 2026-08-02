@@ -486,8 +486,3 @@ Linux 基础是 DevOps 工程师的必备技能：
 4. **Shell 脚本**是自动化运维的核心工具，需掌握条件、循环和函数
 5. **systemd** 是现代 Linux 的服务管理标准，需熟练编写 Service 文件
 6. **日志管理**是故障排查的关键，需掌握日志轮转和分析技巧
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

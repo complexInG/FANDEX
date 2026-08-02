@@ -221,8 +221,3 @@ key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 600000, dklen=32)
 | 文件校验   | SHA-256                    |
 | HMAC       | HMAC-SHA256                |
 | 禁止使用   | MD5、SHA-1（安全场景）     |
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

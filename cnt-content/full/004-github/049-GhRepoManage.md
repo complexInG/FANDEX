@@ -445,8 +445,3 @@ gh release download v1.0.0
 # 删除指定的发布
 gh release delete v1.0.0
 ```
-
-## 延伸阅读
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。

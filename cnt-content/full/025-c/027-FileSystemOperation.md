@@ -2057,24 +2057,6 @@ int compute_chunks(const char *path, Chunk *chunks, size_t max_chunks) {
 /* 服务端：比较哈希，只请求缺失的块 */
 ```
 
-## 11. 延伸阅读
-
-- **Linux man pages: section 2 (syscalls), section 3 (library functions)** — 最权威的 API 文档。
-- **Linux Kernel Documentation: filesystems/** — 各文件系统的内核文档。
-- **BSD fts(3) manual** — BSD 风格的高效目录遍历接口。
-- **GCC Manual: __attribute__((cleanup))** — 资源自动管理。
-- **Boost.Filesystem (C++)** — C++17 `<filesystem>` 的前身，可借鉴设计。
-- **Rust std::fs** — 现代 C 风格语言的文件系统 API 设计。
-- **Go path/filepath** — Go 的跨平台路径处理。
-- **Plan 9 9P protocol** — 分布式文件系统协议设计。
-- **POSIX.1-2017 Annex: Rationale** — 标准设计理由。
-- **Linux Journal: inotify articles** — inotify 实战教程。
-- **LWN.net: kernel filesystem articles** — 内核文件系统深度文章。
-- **APUE 3rd edition, Chapter 4 (Files and Directories)** — 经典教材的文件系统章节。
-
----
-
-> 本章节基于 POSIX.1-2017 与 Linux 5.x 内核，所有示例代码已在 `gcc 13.2` 与 `clang 17.0` 上通过 `-Wall -Wextra -std=c11` 编译验证，并在 Linux 6.5 + glibc 2.38 上运行测试。Windows 用户需参考 Win32 API 章节，macOS 用户需注意 BSD 与 Linux 的差异（如 `fts` 与 `nftw` 的可用性）。inotify 示例仅适用于 Linux，macOS 用户可参考 `kqueue`/`fsevents`。如发现错误，欢迎指正。
 ## 文件信息
 
 **基本写法：获取文件状态**

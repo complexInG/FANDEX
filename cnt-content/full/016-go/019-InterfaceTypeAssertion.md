@@ -1788,12 +1788,6 @@ func getSerializer(r *http.Request) Serializer {
   - 缺点:同一容器无法存不同类型(需 `any` 约束回退)。
 - 选型:优先泛型,需要异构集合时用 `any`。
 
-## 延伸阅读
-- **《The Go Programming Language》**(Donovan & Kernighan):第 7 章详细讲解接口与类型系统。
-- **《100 Go Mistakes and How to Avoid Them》**(Harsanyi):第 4-5 章讨论接口相关的常见错误。
-- **Go 源码 `runtime/iface.go`**:接口运行时实现的源码,理解 itab 缓存机制。
-- **《Effective Java》**(Bloch):第 2 章"对象通用",对比 Java 接口与 Go 接口的设计哲学。
-- **《Design Patterns》**(Gamma et al.):策略模式、状态模式、装饰器模式均依赖接口多态。
 ## 接口定义
 
 **基本写法：基本接口**

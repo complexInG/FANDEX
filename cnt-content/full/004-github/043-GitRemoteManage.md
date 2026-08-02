@@ -267,12 +267,3 @@ git config --global credential.helper osxkeychain
 ## 十、一句话记忆
 
 **远程是"云端"、origin 是默认关联：`add` 添加、`-v` 查看、`set-url` 改地址（不要删了重加）、`remove` 删除（只删本地关联不删云端）、fork 场景加 upstream 定期同步、凭证用 manager 或换 SSH——多设备协作从此无缝衔接。**
-
----
-
-## 延伸阅读
-
-- fetch 与 pull 的区别（远程同步的两种姿势），见上一篇 039-GitPullFetch。
-- 拉取与获取、远程分支跟踪，见 039-GitPullFetch。
-- SSH/HTTPS 协议与密钥配置，见 004-SSHHTTPS。
-- Fork 工作流完整讲解，见 011-ForkWorkflow；关联文档：仓库创建与克隆，见 003-RepositoryCreateCloneArchiveDelete。

@@ -286,14 +286,3 @@ pnpm + Monorepo 是现代前端工程化的主流组合，它的价值可以浓�
 4. **turbo 加速 + changesets 自动化发版**——大规模仓库的 CI 保持在分钟级
 
 **学习建议**：不要一次性掌握所有工具。先跑通"workspace + `workspace:*` + 基本命令"的最小闭环，再逐步引入 catalog → turbo → changesets。工程化是渐进式推进的（见 039-engineering-practices《工程实践概述》）。
-
-## 13. 延伸阅读
-
-- pnpm 底层机制详解，见本模块《pnpm 核心特性》
-- workspace 配置实操，见本模块《工作空间配置》
-- 依赖引用与发布转换，见本模块《workspace 协议与内部依赖》
-- 版本统一与严格模式，见本模块《catalog 依赖目录管理》
-- 构建加速与发布自动化，见本模块《Turborepo 任务编排》《changesets 版本管理与发布》
-- 完整工程落地，见本模块《Monorepo 实战》
-
-> **一句话记忆**：Monorepo 把多个项目放进一个仓库换来"原子提交、统一依赖、零成本复用"；pnpm 用"内容寻址存储 + 严格隔离 + workspace 原生支持"成为 Monorepo 的最佳搭档——先跑通最小闭环，再逐步引入 catalog、turbo、changesets。

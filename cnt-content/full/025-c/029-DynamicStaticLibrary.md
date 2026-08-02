@@ -1254,22 +1254,6 @@ codesign -s "Developer ID: Your Name" libfoo.dylib
 | `entry point not found` (Windows)       | DLL 版本不匹配            | `dumpbin /exports foo.dll`                 |
 | `dyld: Library not loaded` (macOS)      | install name 错误          | `otool -L main`、`install_name_tool`       |
 
-## 11. 延伸阅读
-
-- **Drepper, U.** _What Every Programmer Should Know About Memory_ — 系统讲解内存层次与动态库共享机制。
-- **Pavlatos, M.** _Windows System Programming_ (4th ed.) — Windows DLL 与进程加载深度剖析。
-- **Levine, J. R.** _flex & bison_ — 编译工具链中的链接思想延伸。
-- **Bovet, D. P., & Cesati, M.** _Understanding the Linux Kernel_ (3rd ed.) — 第 7 章"Linking and Loading in the Kernel"。
-- **Sysolev, K.** _Linux Kernel Module Programming Guide_ — 内核模块 `.ko` 的内部机制。
-- **Android Open Source Project.** _Bionic Overview_ — Android libc 的设计取舍。
-- **LLVM Project.** _Writing an LLVM Pass_ — LLVM 插件化架构实践。
-- **glibc Manual.** _Dynamic Linker_ 章节 — `dlopen`、`dlsym`、`dlclose` API 详细说明。
-- **FreeBSD Handbook.** _Dynamic Linker_ 章节 — 与 Linux ELF 实现的差异。
-- **Wikipedia.** _DLL Hell_ — 历史背景与解决方案综述。
-
----
-
-> 本章节遵循 C23 标准，所有示例代码已在 `gcc 13.2` 与 `clang 17.0` 上通过 `-Wall -Wextra -std=c11` 编译验证。Windows 示例在 MSVC 2022 与 MinGW-w64 13.2 上验证。如发现错误，欢迎指正。
 ## 静态库创建
 
 **基本写法：编译目标文件**

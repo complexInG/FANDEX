@@ -405,8 +405,3 @@ wget --mirror --convert-links --adjust-extension --page-requisites --no-parent h
 # 伪装浏览器来源下载
 wget --user-agent="Mozilla/5.0" --referer="https://google.com" https://example.com/file.zip
 ```
-
-## 延伸阅读
-网络基础与协议，见 032-networking 模块文档。
-网络安全（TLS/WAF），见 033-cybersecurity 模块。
-负载均衡与网关，见 031-devops 模块相关文档。

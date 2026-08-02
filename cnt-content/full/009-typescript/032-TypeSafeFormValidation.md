@@ -1593,6 +1593,3 @@ function saveState(state: PersistedState) {
     - 深层嵌套对象验证（5 层嵌套）
     - 大数组验证（10000 个元素）
     - 写出测试代码并分析结果
-
-## 延伸阅读
-- *Domain Modeling Made Functional*（Scott Wlaschin 著）：用 F# 讲解领域建模与类型驱动设计，理念可迁移到 TypeScript。

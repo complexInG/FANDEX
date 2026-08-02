@@ -76,8 +76,3 @@ ORDER BY xid_age DESC;
 -- 设置告警
 -- 当 age(relfrozenxid) > autovacuum_freeze_max_age * 0.8 时告警
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

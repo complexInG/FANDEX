@@ -642,8 +642,3 @@ hvigorw assembleApp --mode release
 | **versionCode** | 内部版本号     | 整数，每次递增   |
 | **versionName** | 用户可见版本号 | 语义化版本 x.y.z |
 | **bundleName**  | 应用唯一标识   | 反域名格式       |
-
-## 延伸阅读
-TypeScript 基础（ArkTS 语言底座），见 009-typescript 模块。
-声明式 UI 概念与 React/Vue 对比，见 011-react/010-vue3 模块。
-移动端应用架构，见 018-harmonyos 模块文档。

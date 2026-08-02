@@ -375,8 +375,3 @@ gh issue list --json number,title | jq ".[] | select(.title | contains(\"bug\"))
 # 使用 Go 模板自定义输出格式
 gh issue list --template "{{range .}}#{{.number}} {{.title}}{{end}}"
 ```
-
-## 延伸阅读
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。

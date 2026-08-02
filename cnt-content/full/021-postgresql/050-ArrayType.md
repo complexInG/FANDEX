@@ -222,10 +222,3 @@ CREATE INDEX idx_projects_tags ON projects USING GIN (tags);
 -- 使用索引加速包含查询
 SELECT * FROM projects WHERE tags @> ARRAY['java'];
 ```
-
----
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

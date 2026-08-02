@@ -187,10 +187,3 @@ CREATE EXTENSION IF NOT EXISTS postgis SCHEMA geo;
 -- pg_catalog 系统模式（不可删除，存放内置对象）
 SELECT * FROM pg_catalog.pg_class LIMIT 1;
 ```
-
----
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

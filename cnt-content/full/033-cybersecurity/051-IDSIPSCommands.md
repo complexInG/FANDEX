@@ -402,8 +402,3 @@ nmap -sS -p 1-1000 192.168.1.10
 # 实时查看测试流量触发的告警
 sudo tail -f /var/log/suricata/fast.log | grep -i "test\|sqlmap"
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

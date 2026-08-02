@@ -90,8 +90,3 @@ pt-query-digest --since '2026-06-14 00:00:00' --until '2026-06-14 23:59:59' /var
 4. 优化方案 → 添加索引、改写查询、调整参数
 5. 验证效果 → EXPLAIN ANALYZE
 ```
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

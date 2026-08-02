@@ -1246,9 +1246,3 @@ export function renderProducts(products) {
 
 - **2026-04-05**: 初始化项目实战，涵盖简易待办事项应用的设计与核心实现。
 - **2026-05-03**: 扩展内容，添加更完整的项目实战案例、项目结构和组织、前端构建工具、测试、部署、性能优化、安全最佳实践等内容。
-
-## 延伸阅读
-JavaScript 基础语法，见 008-javascript 模块文档。
-TypeScript 类型系统，见 009-typescript 模块。
-浏览器 DOM 与事件，见 006-html5/007-css 模块。
-前端框架 React/Vue，见 011-react/010-vue3 模块。

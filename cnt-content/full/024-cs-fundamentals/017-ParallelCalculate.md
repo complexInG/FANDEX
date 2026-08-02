@@ -255,8 +255,3 @@ MPI_Finalize();
 | Pthreads | 共享     | 隐式             | 互斥锁/条件变量 | SMP      |
 | MPI      | 分布     | 显式（消息）     | 屏障/消息       | 集群     |
 | CUDA     | 分层     | 显式（拷贝）     | 同步函数        | GPU      |
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

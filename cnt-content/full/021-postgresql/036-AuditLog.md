@@ -66,8 +66,3 @@ log_statement = 'ddl'          -- 只记录DDL
 log_statement = 'mod'          -- 记录DML+DDL
 log_min_duration_statement = 0 -- 记录所有语句及执行时间
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

@@ -509,12 +509,3 @@ flowchart TD
 | LSP  | 里氏替换 | 所有使用继承的模式                  |
 | ISP  | 接口隔离 | Adapter, Facade                     |
 | DIP  | 依赖倒置 | Factory, Strategy, Observer         |
-
----
-
-## 延伸阅读
-
-- _Design Patterns: Elements of Reusable Object-Oriented Software_ -- GoF
-- _Head First Design Patterns_ -- Freeman & Robson
-- _Refactoring: Improving the Design of Existing Code_ -- Martin Fowler
-- _Pattern-Oriented Software Architecture_ -- Buschmann et al.

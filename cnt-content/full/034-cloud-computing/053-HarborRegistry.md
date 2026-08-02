@@ -668,8 +668,3 @@ curl -X PUT -u admin:Harbor12345 \
   https://harbor.example.com/api/v2.0/projects/1 \
   -d '{"metadata": {"storage_limit": "53687091200"}}'
 ```
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

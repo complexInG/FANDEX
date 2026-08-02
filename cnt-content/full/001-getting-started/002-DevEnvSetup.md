@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'cs-fundamentals/002-ComputerArchitectureBasics'
-prerequisites:
+prerequisites: []
 ---
 
 ## 1. 选择操作系统

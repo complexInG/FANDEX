@@ -584,8 +584,3 @@ points="10 90 50 10 90 90 130 10 170 90"
 - dasharray "396 565":画 396 留 565
 - rotate(-90 100 100):从 12 点钟方向开始
 - stroke-linecap="round":端点圆滑
-
-## 延伸阅读
-SVG 图形语法，见 012-svg 模块文档。
-CSS 样式与动画，见 007-css 模块。
-React/Vue 图标组件实践，见 011-react/010-vue3 模块。

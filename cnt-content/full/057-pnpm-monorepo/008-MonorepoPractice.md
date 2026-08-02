@@ -212,10 +212,3 @@ pnpm outdated -r        # 查看可升级的依赖
 ```
 
 **版本排查三连**：配合 catalog 统一升级，多数版本问题在安装阶段就能被 pnpm 发现。
-
-## 10. 延伸阅读
-
-- 底层机制，见本模块《pnpm 核心特性》
-- 工程实践方法论，见 039-engineering-practices《工程实践概述》
-
-> **一句话记忆**：实战要点可归纳为四句话——**目录分层**（apps/packages）、**依赖自包含**（workspace: + catalog）、**任务编排**（turbo）、**版本自动化**（changesets）；从底层机制到完整工程拼图，pnpm Monorepo 体系即可落地为可维护、可扩展、可自动化的生产级工程。

@@ -1396,14 +1396,3 @@ flowchart TD
 | 内联       | 消除调用开销   | 过程间    | 调用图         |
 | 尾调用优化 | 复用栈帧       | 过程间    | 控制流         |
 | 逃逸分析   | 栈上分配       | JIT       | 数据流         |
-
----
-
-## 延伸阅读
-
-- _Compilers: Principles, Techniques, and Tools_ (2nd Edition) -- Aho, Lam, Sethi, Ullman (龙书)
-- _Advanced Compiler Design and Implementation_ -- Steven Muchnick
-- _Engineering a Compiler_ (3rd Edition) -- Cooper & Torczon
-- _The Garbage Collection Handbook_ -- Jones, Hosking, Moss
-- _Linkers and Loaders_ -- John R. Levine
-- _LLVM Cookbook_ -- Mayur Pandey, Suyog Sarda

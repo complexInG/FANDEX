@@ -57,8 +57,3 @@ psql "host=server dbname=mydb user=alice sslmode=verify-full sslcert=client.crt 
 | require     | 必须SSL，不验证证书     |
 | verify-ca   | 必须SSL，验证CA         |
 | verify-full | 必须SSL，验证CA和主机名 |
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

@@ -795,8 +795,3 @@ val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 // 为协程命名便于调试
 launch(CoroutineName("worker")) { }
 ```
-
-## 延伸阅读
-Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
-协程与 Flow，见 014-kotlin 模块协程文档。
-Android 与 HarmonyOS 应用开发，见 018-harmonyos 模块。

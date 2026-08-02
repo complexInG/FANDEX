@@ -301,8 +301,3 @@ $$\text{such} + (a/an) + \text{adj.} + \text{n.} + \text{that}$$
 | 时间/条件/原因 | 状语从句 (when/if/because) |
 | 是否/选择      | 名词性从句 (whether)       |
 | 疑问内容       | 名词性从句 (wh-词)         |
-
-## 延伸阅读
-英语学习材料与规划，见 005-english 模块文档。
-技术写作（Markdown），见 002-markdown 模块。
-开源协作中的英语沟通，见 004-github 模块。

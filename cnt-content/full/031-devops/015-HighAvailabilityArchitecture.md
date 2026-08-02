@@ -326,8 +326,3 @@ spec:
 | CPU 压力 | stress-ng      | CPU 负载         |
 | 内存压力 | stress-ng      | 内存消耗         |
 | 时间偏移 | Chaos Mesh     | 时钟漂移         |
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

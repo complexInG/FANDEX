@@ -252,8 +252,3 @@ const UserSchema = z.object({
 | 类型系统    | 编译时检查           |
 | Schema 验证 | API 层统一验证       |
 | 日志记录    | 记录验证失败事件     |
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

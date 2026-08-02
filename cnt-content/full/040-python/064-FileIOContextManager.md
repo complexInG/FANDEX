@@ -549,9 +549,6 @@ prerequisites: []
 
 ---
 
-## 延伸阅读
-
-- [数据清洗](data-analysis/data-cleaning)
 ## 文件打开与关闭
 
 **基本写法：使用 open() 打开文件**

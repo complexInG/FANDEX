@@ -184,11 +184,3 @@ overrides:
 **误区三：catalog 只能放 dependencies。** → 它可以用于 dependencies、devDependencies、peerDependencies、overrides 等所有依赖位置。
 
 **误区四：用了 catalog 就不需要 workspace 协议了。** → 两者分工不同：catalog 管"外部依赖版本"，workspace 管"内部包引用"，配合使用才完整。
-
-## 10. 延伸阅读
-
-- workspace 基础配置，见本模块《工作空间配置》
-- 内部包引用协议，见本模块《workspace 协议与内部依赖》
-- 发版时的版本管理，见本模块《changesets 版本管理与发布》
-
-> **一句话记忆**：catalog 把依赖版本集中为"单一事实来源"，配合 `catalog:` 协议与 `catalogMode: strict`，从工具层面保证 Monorepo 依赖版本统一——升级只改一处，漂移从源头杜绝。

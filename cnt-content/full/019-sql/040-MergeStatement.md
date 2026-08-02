@@ -205,9 +205,3 @@ VALUES (1, 'A1', 10.0), (2, 'A2', 20.0)
 ON DUPLICATE KEY UPDATE
   name = VALUES(name), price = VALUES(price);
 ```
-
-## 延伸阅读
-SQL 连接与子查询，见 019-sql 模块文档。
-SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。
-MySQL 深入，见 020-mysql 模块。
-PostgreSQL 深入，见 021-postgresql 模块。

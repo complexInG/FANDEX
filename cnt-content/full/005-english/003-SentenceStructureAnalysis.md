@@ -303,8 +303,3 @@ $$\text{S} + \text{V} + \text{O} + \text{OC}$$
 | the critical                     | bug 的修饰       | 定语     |
 | bug                              | 动作承受者       | 宾语     |
 | that had caused the system crash | bug 的修饰       | 定语从句 |
-
-## 延伸阅读
-英语学习材料与规划，见 005-english 模块文档。
-技术写作（Markdown），见 002-markdown 模块。
-开源协作中的英语沟通，见 004-github 模块。

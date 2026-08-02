@@ -412,8 +412,3 @@ sudo gvmd --optimize
 # 查看 GVM 数据目录磁盘占用
 du -sh /var/lib/gvm/*
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

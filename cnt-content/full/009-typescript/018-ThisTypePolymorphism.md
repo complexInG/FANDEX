@@ -1160,11 +1160,3 @@ const input = new InputElementBuilder()
 | TS2322 | Type 'X' is not assignable to type 'this' | 使用 `as this` 受控断言或重构 |
 | TS2526 | A 'this' type is available only in a non-static member of a class or interface | 将方法改为实例方法 |
 | TS2769 | No overload matches this call (this 类型不匹配) | 检查 `bind/call/apply` 是否开启 `strictBindCallApply` |
-
----
-
-## 延伸阅读
-TS 基础类型与接口，见 009-typescript 模块文档。
-TS 泛型与工具类型，见 009-typescript 模块进阶文档。
-React + TS 组件类型，见 011-react 模块。
-Vue3 + TS 组合式 API，见 010-vue3 模块。

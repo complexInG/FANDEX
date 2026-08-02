@@ -127,8 +127,3 @@ $$P\left((\mathbf{X} - \boldsymbol{\mu})^T \boldsymbol{\Sigma}^{-1} (\mathbf{X} 
 ## 10. 一句话记忆
 
 切比雪夫不等式是"不知道分布也敢打包票"的安全网：$P(|X - \mu| \geq \varepsilon) \leq \dfrac{\sigma^2}{\varepsilon^2}$（或 $P(|X-\mu| \geq k\sigma) \leq \dfrac{1}{k^2}$），由马尔可夫不等式平方一步推出，用"期望+方差"为概率划出保守但可靠的界限。
-
-## 延伸阅读
-概率统计基础，见 030-probability-statistics 模块文档。
-数据分析应用，见 051-data-analysis 模块。
-机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。

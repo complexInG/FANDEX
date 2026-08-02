@@ -645,9 +645,3 @@ WHERE user_id = 100 AND status = 'paid';
 -- 确认 key 使用了正确的索引
 -- 确认 rows 不过大
 ```
-
-## 延伸阅读
-SQL 连接与子查询，见 019-sql 模块文档。
-SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。
-MySQL 深入，见 020-mysql 模块。
-PostgreSQL 深入，见 021-postgresql 模块。

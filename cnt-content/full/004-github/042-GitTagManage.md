@@ -280,12 +280,3 @@ git tag -a v1.0.0 -m "1.0.0 正式发布"
 ## 十一、一句话记忆
 
 **标签是静止的书签、发布的里程碑：`-a -m` 建附注标签（正式发布用），`push` 默认不带你得显式推，checkout 后记得建分支，`-d` 删本地、`--delete` 删远程，命名跟着语义化版本走（主.次.修订）。**
-
----
-
-## 延伸阅读
-
-- 推送标签到远程的完整流程，见 038-GitCommitPush。
-- 标签在 CI/CD 中作为版本触发条件，见 029-GitHubActionsCICD 与 050-GhRelease。
-- 历史与日志（如何对比标签间差异），见 044-GitHistoryLog。
-- 关联文档：GitHub Release 发布，见 050-GhRelease；GitHub CLI 版本管理，见 053-GhExtension。

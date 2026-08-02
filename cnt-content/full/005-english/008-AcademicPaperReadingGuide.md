@@ -300,8 +300,3 @@ $$\text{Abstract} \rightarrow \text{Introduction} \rightarrow \text{Method} \rig
 | 入门 | 了解领域概貌 | 2-3 篇（精读1篇）    |
 | 进阶 | 深入研究方向 | 3-5 篇（精读2篇）    |
 | 深入 | 追踪最新进展 | 5-10 篇（精读1-2篇） |
-
-## 延伸阅读
-英语学习材料与规划，见 005-english 模块文档。
-技术写作（Markdown），见 002-markdown 模块。
-开源协作中的英语沟通，见 004-github 模块。

@@ -60,8 +60,3 @@ SET enable_partitionwise_aggregate = ON;
 SELECT order_date, SUM(amount) FROM orders GROUP BY order_date;
 -- 每个分区先聚合，然后合并结果
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

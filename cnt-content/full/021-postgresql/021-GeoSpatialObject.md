@@ -93,8 +93,3 @@ SELECT ST_Transform(geom, 3857) FROM locations;
 -- 计算面积（需要投影坐标系）
 SELECT ST_Area(ST_Transform(geom, 32650)) AS area_sqm FROM parcels;
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

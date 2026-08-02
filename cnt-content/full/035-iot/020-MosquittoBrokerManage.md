@@ -265,8 +265,3 @@ sudo ufw allow 8883/tcp
 # 开放 MQTT WebSocket 端口
 sudo ufw allow 9001/tcp
 ```
-
-## 延伸阅读
-MQTT 与设备接入，见 035-iot 模块文档。
-嵌入式 C 与硬件，见 025-c 模块。
-时序数据与数据平台，见 052-big-data 模块。

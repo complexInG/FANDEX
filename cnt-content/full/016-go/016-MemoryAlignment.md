@@ -1033,16 +1033,6 @@ func (bigEndian) PutUint16(b []byte, v uint16) {
 }
 ```
 
-## 延伸阅读
-- **《Computer Systems: A Programmer's Perspective》**(Bryant & O'Hallaron, 2015):第 3 章与第 6 章详细讨论对齐、缓存、虚拟内存。
-- **《What Every Programmer Should Know About Memory》**(Drepper, 2007):内存子系统权威文档,涵盖缓存行、NUMA、TLB。
-- **Disruptor 论文与代码**:无锁并发与缓存行优化的工业实践标杆。
-- **Go 官方 unsafe 包文档**:strict aliasing 规则与安全规则定义。
-- **《High Performance MySQL》** 第 4 章:数据库索引的 cache line 优化。
-- **Intel Software Developer Manual Volume 3**:cache 一致性协议 MESI 详解。
-- **Go 源码 `runtime/atomic_pointer.go`**:原子操作与对齐的实现细节。
-- **《Performance Analysis and Tuning on Modern CPUs》**(Geron, 2020):使用 perf/VTune 分析 cache miss 与伪共享。
-- **Go fieldalignment 工具**:自动检测结构体对齐优化机会。
 ## 基本类型大小
 
 **基本写法：获取基本类型大小**

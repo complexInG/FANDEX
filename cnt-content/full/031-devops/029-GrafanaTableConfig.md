@@ -785,8 +785,3 @@ curl -X POST -H "Authorization: Bearer <token>" -H "Content-Type: application/js
 <!-- kiosk=1: 全屏模式(隐藏所有控件) -->
 <!-- theme=light: 浅色主题 -->
 ```
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

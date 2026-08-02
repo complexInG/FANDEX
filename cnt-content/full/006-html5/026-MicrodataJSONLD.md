@@ -378,8 +378,3 @@ prerequisites:
 - **@context 必填**:JSON-LD 必须包含 `@context: "https://schema.org"`
 - **类型一致性**:`@type` 必须是 Schema.org 中定义的合法类型
 - **富摘要审核**:部分类型(如 JobPosting、Event)需额外审核才能在搜索结果中显示
-
-## 延伸阅读
-HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
-CSS 样式与布局，见 007-css 模块。
-JavaScript DOM 操作，见 008-javascript 模块。

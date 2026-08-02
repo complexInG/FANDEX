@@ -340,8 +340,3 @@ dpkg-sig -s builder -k KEYID package.deb
 - 使用 HTTPS 传输
 - 定期轮换签名密钥
 - 实施访问控制策略
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

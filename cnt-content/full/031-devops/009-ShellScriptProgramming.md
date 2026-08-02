@@ -359,8 +359,3 @@ set -euo pipefail
 - 使用 `$()` 替代反引号
 - 总是处理错误返回值
 - 使用 `mktemp` 创建临时文件
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

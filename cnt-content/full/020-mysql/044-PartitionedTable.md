@@ -313,10 +313,3 @@ ALTER TABLE orders ANALYZE PARTITION p2024;
 -- 移除分区结构但保留数据为普通表
 ALTER TABLE orders REMOVE PARTITIONING;
 ```
-
----
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

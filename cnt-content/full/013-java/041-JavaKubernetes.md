@@ -422,11 +422,6 @@ Java 上 Kubernetes 的三个关键数字：`MaxRAMPercentage=75`（堆占容器
 
 镜像分层与多阶段构建解决体积与安全问题；ConfigMap/Secret 解决配置外置；探针解决流量与自愈；HPA 解决弹性。每一层都对应一个明确的运维问题。
 
-## 11. 延伸阅读
-Kubernetes 原理与集群架构，见 031-devops 模块与 034-cloud-computing 模块相关文档；
-容器网络与 Service 负载均衡，见 032-networking 模块相关文档；
-Java 并发与内存模型，见 013-java 模块的 JVM 与并发文档；
-Spring Cloud 微服务体系，见 013-java 模块的 Spring 相关文档；
 ### 概述
 
 Kubernetes 是容器编排的事实标准，Java 应用的云原生部署需要关注资源限制、健康检查、优雅停机和自动伸缩等方面。本文介绍 Java 应用在 Kubernetes 上的部署最佳实践，包括 Deployment 配置、服务发现、配置管理和监控集成。

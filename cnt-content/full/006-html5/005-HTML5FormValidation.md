@@ -834,9 +834,6 @@ HTML5 提供了表单验证 API，用于在 JavaScript 中进行更复杂的验�
 
 ---
 
-## 延伸阅读
-
-- [DOM 操作](javascript/dom-manipulation)
 ## 表单容器
 
 **form 元素**

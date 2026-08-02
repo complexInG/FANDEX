@@ -411,8 +411,3 @@ Spot 中断通知 → EventBridge → Lambda →
   3. 删除超过保留期的孤立快照
   4. 发送清理报告
 ```
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

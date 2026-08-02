@@ -337,12 +337,3 @@ git log --left-right --oneline main...feature
 ## 九、一句话记忆
 
 **查历史像破案：`git log` 看总览（--oneline 精简、--graph 画图），`--author/--since/-S` 筛线索，`git diff` 对现场，`git show` 看单份案卷，`git blame` 追每行来源，`git reflog` 是最后保险丝——误删别慌，reflog 里找回来。**
-
----
-
-## 延伸阅读
-
-- 撤销与回退的完整命令（reset/revert/restore），见下一篇 045-GitStashReset。
-- 分支合并历史如何呈现，见 040-GitMergeRebase。
-- 标签对比（diff/log 结合 tag），见 042-GitTagManage。
-- 关联文档：提交与推送，见 038-GitCommitPush；GitHub 提交历史网页界面，见 003-RepositoryCreateCloneArchiveDelete。

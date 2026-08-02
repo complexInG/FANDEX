@@ -498,8 +498,3 @@ DROP TABLE access_logs_2023_q1;
 CREATE INDEX idx_logs_user ON access_logs (user_id);
 -- 等效于在每个分区上创建索引
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

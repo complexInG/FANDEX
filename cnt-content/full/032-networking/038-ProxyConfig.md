@@ -594,8 +594,3 @@ curl --socks5 127.0.0.1:1080 http://httpbin.org/ip
 # SOCKS5 远程 DNS 解析
 curl --socks5-hostname 127.0.0.1:1080 http://httpbin.org/ip
 ```
-
-## 延伸阅读
-网络基础与协议，见 032-networking 模块文档。
-网络安全（TLS/WAF），见 033-cybersecurity 模块。
-负载均衡与网关，见 031-devops 模块相关文档。

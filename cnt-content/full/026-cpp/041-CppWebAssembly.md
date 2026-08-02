@@ -1676,7 +1676,3 @@ emcc main.cpp -o main.js -g -O0
 **Q14**：实现一个 Wasm 模块，要求使用 SIMD 与 threads 在浏览器中并行计算 Mandelbrot 集合，并实时显示在 Canvas 上。要求达到 60 FPS。
 
 **Q15**：分析浏览器 Streaming Compilation 与同步 Compilation 的性能差异，设计实验量化启动延迟。
-
-## 延伸阅读
-- **教学资源**：MIT 6.5840 Distributed Systems（涉及 Wasm 边缘计算）、CMU 15-410 Operating Systems（沙箱机制）、Stanford CS217（Wasm 设计原则）。
-- **未来方向**：关注 Wasm GC 提案、Component Model、WASI 0.2、Wasm 64 位内存等前沿进展。

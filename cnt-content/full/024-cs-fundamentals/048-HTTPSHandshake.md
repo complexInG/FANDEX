@@ -167,8 +167,3 @@ HMAC 与 AEAD是HTTPS握手过程的重要组成部分。本节详细介绍HMAC 
 - HMAC 与 AEAD的常见问题与解决方案
 
 HMAC 与 AEAD在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

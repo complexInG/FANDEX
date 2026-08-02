@@ -236,8 +236,3 @@ $$s = B^a \mod p = A^b \mod p = g^{ab} \mod p$$
 | 加密       | RSA-OAEP 2048+        |
 | 兼容旧系统 | RSA 2048+             |
 | 禁止使用   | RSA 1024、DH 768      |
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

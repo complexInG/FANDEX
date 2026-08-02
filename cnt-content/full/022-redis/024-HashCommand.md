@@ -236,8 +236,3 @@ HSCAN big:hash 0 COUNT 100
 # 仅获取需要的字段而非全部
 HGET user:1 name
 ```
-
-## 延伸阅读
-Redis 数据结构详解，见 022-redis 模块文档。
-Redis 持久化与集群，见 022-redis 模块相关文档。
-MySQL 与 Redis 缓存架构，见 020-mysql 模块。

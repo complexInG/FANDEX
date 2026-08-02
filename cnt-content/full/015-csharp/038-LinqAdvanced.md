@@ -388,8 +388,3 @@ var dict = items.ToDictionary(x => x.Id);
 // .NET 6+ 找不到时返回指定默认值
 var item = list.FirstOrDefault(x => x.Id == 5, fallback);
 ```
-
-## 延伸阅读
-C# 与 .NET 生态，见 015-csharp 模块基础文档。
-异步编程与 Task，见 015-csharp 模块异步文档。
-SQL 与 EF Core，见 019-sql 模块。

@@ -585,8 +585,3 @@ document.querySelectorAll('[id]').forEach((el) => {
 - 避免重复标题，或使用自定义锚点区分
 - 长文档在每章末尾添加返回目录链接
 - 使用自动目录生成工具而非手动维护
-
-## 延伸阅读
-Markdown 基础语法，见 002-markdown 模块文档。
-Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
-文档站构建（Astro），见 056-astro 模块（如已加入）。

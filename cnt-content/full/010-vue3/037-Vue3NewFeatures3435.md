@@ -422,9 +422,3 @@ npm install vue@3.5 vue-router@4.4 pinia@2.2
 # 参考官方迁移指南
 # 大部分 API 向后兼容
 ```
-
-## 延伸阅读
-Vue Teleport 与 Portal，见 010-vue3/026-TeleportPortalApp 文档。
-Vue KeepAlive 缓存，见 010-vue3/027-KeepAliveCacheLifecycle 文档。
-Vue Router 导航守卫，见 010-vue3/030-VueRouterNavigationGuard 文档。
-TypeScript 与 Vue 组合，见 009-typescript 模块。

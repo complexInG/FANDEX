@@ -558,9 +558,3 @@ UPDATE events SET data = JSON_MODIFY(data, '$.status', 'processed') WHERE id = 1
 - `LATERAL`/`APPLY` 允许子查询引用左侧表列，是 Top-N per group 的高效写法
 - PostgreSQL 的全文搜索功能完善，JSONB 支持索引和丰富操作符
 - MySQL 的 `JSON_TABLE` 和 SQL Server 的 `OPENJSON` 可将 JSON 数据展开为关系表
-
-## 延伸阅读
-SQL 连接与子查询，见 019-sql 模块文档。
-SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。
-MySQL 深入，见 020-mysql 模块。
-PostgreSQL 深入，见 021-postgresql 模块。

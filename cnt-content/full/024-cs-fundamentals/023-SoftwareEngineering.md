@@ -271,8 +271,3 @@ $$\text{FP} = \text{UFP} \times \text{VAF}$$
 $$\text{技术债务成本} = \text{当前妥协成本} + \text{未来修复成本}$$
 
 管理策略：定期重构、代码审查、自动化测试。
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

@@ -272,8 +272,3 @@ $$\rho = \max\left(\frac{\text{近似解}}{\text{最优解}}, \frac{\text{最优
 | TSP（三角不等式） | 1.5          | Christofides |
 | 背包              | $1+\epsilon$ | FPTAS        |
 | 一般 TSP          | 无常数比     | 除非 P=NP    |
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

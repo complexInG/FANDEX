@@ -424,8 +424,3 @@ docker run --security-opt label:type:svirt_apache_t nginx
 # 查看 HTTPD 相关布尔值
 getsebool -a | grep httpd
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

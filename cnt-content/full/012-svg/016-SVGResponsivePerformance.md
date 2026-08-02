@@ -764,8 +764,3 @@ svg {
 | `non-scaling-stroke` | 描边宽度保持不变,不随缩放 |
 | `non-rotating-stroke` | 描边方向不随变换旋转 |
 | `none` | 默认行为,随变换缩放 |
-
-## 延伸阅读
-SVG 图形语法，见 012-svg 模块文档。
-CSS 样式与动画，见 007-css 模块。
-React/Vue 图标组件实践，见 011-react/010-vue3 模块。

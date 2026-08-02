@@ -743,10 +743,3 @@ val first = numbers[0];
 // 通过键获取值
 val value = map["a"];
 ```
-
----
-
-## 延伸阅读
-Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
-协程与 Flow，见 014-kotlin 模块协程文档。
-Android 与 HarmonyOS 应用开发，见 018-harmonyos 模块。

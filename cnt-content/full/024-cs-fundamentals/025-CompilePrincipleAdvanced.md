@@ -304,8 +304,3 @@ $$\text{IN}[B] = \text{use}[B] \cup (\text{OUT}[B] - \text{def}[B])$$
 1. 构建数据依赖图
 2. 计算每个操作的优先级（关键路径长度）
 3. 按优先级从高到低调度到可用时钟周期
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

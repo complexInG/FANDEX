@@ -422,8 +422,3 @@ nmap -sS -sV -O -A -T4 -p- example.com
 # 扫描所有端口并保存结果
 nmap -sV -oA fullscan -p- 192.168.1.1
 ```
-
-## 延伸阅读
-网络基础与协议，见 032-networking 模块文档。
-网络安全（TLS/WAF），见 033-cybersecurity 模块。
-负载均衡与网关，见 031-devops 模块相关文档。

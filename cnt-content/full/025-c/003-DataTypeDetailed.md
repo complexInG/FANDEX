@@ -1268,24 +1268,6 @@ void *aligned_alloc(size_t alignment, size_t size);
 
 但 C11 的 `aligned_alloc` 要求 `size` 是 `alignment` 的整数倍（C17 放宽）。
 
-## 11. 延伸阅读
-
-- **GCC Manual: Type Attributes** — `__attribute__((aligned))`、`__attribute__((packed))` 等。
-- **Clang Language Extensions: Type Safety** — `_Generic`、`_Static_assert` 的扩展用法。
-- **cppreference.com: C types** — 在线参考，覆盖 C89/C99/C11/C17/C23。
-- **Linux Kernel: include/linux/types.h** — 内核类型抽象实践。
-- **SQLite source: sqlite3.h** — 跨平台 C 库的类型设计典范。
-- **Redis source: sds.h** — 动态字符串的类型选择策略。
-- **FFmpeg: libavutil/samplefmt.h** — 多媒体数据的类型抽象。
-- **Plan 9 C style** — Rob Pike 的 C 编程风格，类型系统观点。
-- **MUSL libc: include/stdint.h** — 极简主义的标准库实现。
-- **CS:APP (Bryant & O'Hallaron)** — CMU 15-213 教材，深入讲解数据表示与机器级代码。
-- **Hacker's Delight (Henry S. Warren, Jr.)** — 位运算与整数算术的权威参考。
-- **C23 N3096 draft** — C23 标准草案，免费下载，包含 `_BitInt`、`#embed`、`constexpr` 等新特性详解。
-
----
-
-> 本章节遵循 C23 标准，所有示例代码已在 `gcc 13.2` 与 `clang 17.0` 上通过 `-Wall -Wextra -std=c11` 编译验证，部分 C23 特性需使用 `-std=c2x` 编译。x86-64 反汇编与内存布局示例基于 System V AMD64 ABI，Windows 用户需参考 Microsoft x64 ABI 与 LLP64 数据模型。如发现错误，欢迎指正。
 ## 整型
 
 **基本写法：char 类型声明**

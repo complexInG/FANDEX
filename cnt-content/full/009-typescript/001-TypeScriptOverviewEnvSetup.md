@@ -552,13 +552,6 @@ TypeScript 是一种强大的编程语言，它通过添加静态类型系统和
 - **持续学习**: 关注 TypeScript 的更新和新特性
   TypeScript 已经成为现代前端和 Node.js 开发的重要工具，掌握 TypeScript 可以帮助开发者构建更加可靠、可维护的应用程序，提高开发效率和代码质量。
 
-## 延伸阅读
-
-- [JavaScript](javascript/overview)
-- [Vue3](vue3/overview)
-
----
-
 ## 5.0 const 类型参数
 
 **基本写法：const 泛型参数**
@@ -791,5 +784,3 @@ const c = config({
 } satisfies Record<string, string>);
 c.home; // "/" 字面量
 ```
-
----

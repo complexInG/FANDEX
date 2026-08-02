@@ -284,8 +284,3 @@ flowchart TD
 | 流程改进 | 上线检查清单、代码审查 |
 | 监控改进 | 添加告警、仪表盘       |
 | 文档改进 | 更新运维手册           |
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

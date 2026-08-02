@@ -310,9 +310,3 @@ Sitemap: https://example.com/sitemap.xml
 | SSG      | 最佳       | 构建时生成静态 HTML    |
 | CSR      | 较差       | 需要额外处理（预渲染） |
 | ISR      | 良好       | 增量静态再生           |
-
-## 延伸阅读
-CSS 圆角与形状，见 007-css/018-BorderRadius 文档。
-CSS 媒体查询与响应式，见 007-css/019-MediaQuery 文档。
-CSS 函数与变量，见 007-css/022-Function 文档。
-HTML 结构与语义，见 006-html5 模块。

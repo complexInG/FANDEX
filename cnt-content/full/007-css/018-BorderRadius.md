@@ -349,11 +349,6 @@ defineProps<{
 
 圆角不会裁剪子内容，`overflow: hidden` 才负责裁剪。阴影与背景跟随圆角，outline 在现代浏览器中也跟随。理解这些边界行为，才能避免“圆角了但图片还是方的”这类问题。
 
-## 11. 延伸阅读
-圆角常与盒阴影、渐变配合，见 007-css 模块的盒模型、渐变、阴影相关文档；
-响应式尺寸与 aspect-ratio，见本模块 019-MediaQuery 文档；
-CSS 函数 calc/clamp 与圆角联动，见本模块 022-Function 文档；
----
 ### 1. border-radius 语法
 
 ```css

@@ -1,6 +1,6 @@
 ---
 order: 110
-title: Windows环境配置教程
+title: Windows 开发环境配置
 module: 'getting-started'
 category: 工具链
 difficulty: beginner

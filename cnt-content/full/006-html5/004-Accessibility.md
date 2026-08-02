@@ -919,8 +919,3 @@ function trapFocus(element) {
 - **不滥用 ARIA**:ARIA 用于增强语义,不能替代正确的 HTML 结构
 - **aria-hidden 慎用**:对聚焦元素使用 `aria-hidden="true"` 会导致键盘仍可聚焦但屏幕阅读器不可见
 - **动态内容**:AJAX 更新内容后,使用 `aria-live` 通告屏幕阅读器
-
-## 延伸阅读
-HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
-CSS 样式与布局，见 007-css 模块。
-JavaScript DOM 操作，见 008-javascript 模块。

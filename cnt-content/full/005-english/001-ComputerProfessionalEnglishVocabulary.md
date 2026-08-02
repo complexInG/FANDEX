@@ -331,8 +331,3 @@ prerequisites: []
 | variance        | /ˈveriəns/          | n. 方差           | High variance indicates overfitting.                       |
 | vector          | /ˈvektər/           | n. 向量           | Word vectors represent semantic relationships.             |
 | weight          | /weɪt/              | n. 权重           | Update weights during backpropagation.                     |
-
-## 延伸阅读
-英语学习材料与规划，见 005-english 模块文档。
-技术写作（Markdown），见 002-markdown 模块。
-开源协作中的英语沟通，见 004-github 模块。

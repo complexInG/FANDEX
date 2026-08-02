@@ -3353,10 +3353,6 @@ def meeting_scheduling(participants, slots, availability):
 
 ---
 
-## 11. 延伸阅读
-
-网络流算法与众多图算法、数据结构、优化理论存在深刻联系。本节推荐五个延伸方向,助力读者构建完整的算法知识体系。
-
 ### 11.1 关联图算法
 
 - **最短路径算法**：Dijkstra、Bellman-Ford、Floyd-Warshall。网络流的残量网络最短路径计算与最短路径算法紧密相关,Edmonds-Karp 本质是 BFS 最短路径的扩展。

@@ -251,9 +251,3 @@ gh gist list --json visibility --jq '[.[] | select(.visibility == "public")] | l
 ## 一句话记忆
 
 **Gist 是 GitHub 的"便利贴"：`create` 写贴纸（默认私密，`--public` 才公开），`view/list` 翻贴纸，`edit/rename/delete` 整理贴纸，`clone` 把贴纸变成正式文件。**
-
----
-
-## 延伸阅读
-- Git 仓库管理（clone 的本质），见 003-git 模块。
-- GitHub 仓库创建与归档，见 004-github 模块《RepositoryCreateCloneArchiveDelete》。

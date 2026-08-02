@@ -89,8 +89,3 @@ SET GLOBAL innodb_purge_batch_size = 300;  -- 每次 Purge 批量大小
 SET GLOBAL innodb_undo_log_truncate = ON;
 SET GLOBAL innodb_max_undo_log_size = 1073741824;
 ```
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

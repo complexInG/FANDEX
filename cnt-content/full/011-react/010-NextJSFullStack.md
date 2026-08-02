@@ -729,8 +729,3 @@ export default nextConfig;
 | **AWS (Amplify)**    | AWS 生态集成           | 已有 AWS 基础设施  |
 | **Railway**          | 简单部署、数据库集成   | 快速原型           |
 | **Cloudflare Pages** | 全球 CDN、Workers      | 边缘计算需求       |
-
-## 延伸阅读
-React Hooks 深入，见 011-react 模块 Hooks 文档。
-React 与 TypeScript 类型，见 009-typescript 模块。
-前端构建与 Vite，见 057-vite 模块（如已加入）。

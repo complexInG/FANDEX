@@ -361,8 +361,3 @@ MFRC522 rfid(SS, 32);
 SPI.begin();
 rfid.PCD_Init();
 ```
-
-## 延伸阅读
-MQTT 与设备接入，见 035-iot 模块文档。
-嵌入式 C 与硬件，见 025-c 模块。
-时序数据与数据平台，见 052-big-data 模块。

@@ -590,9 +590,3 @@ Java 21+ 的新特性正在从根本上改变 Java 的编程范式：
 - **Spring Boot 3.x** 全面拥抱现代 Java 特性，提供一流的开发体验
 
 这些特性组合在一起，使得 Java 在保持向后兼容的同时，不断进化以适应现代软件开发的需求。
-
-## 延伸阅读
-Java 并发与 JUC，见 013-java 模块并发文档。
-JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
-Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
-数据库访问（JDBC/JPA），见 019-sql 模块相关文档。

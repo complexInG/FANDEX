@@ -364,8 +364,3 @@ def find_idle_resources():
 | **Inform**   | 成本可视化、预算告警         | CloudHealth、云原生工具 |
 | **Optimize** | 资源右置、预留实例、闲置回收 | Spot.io、Kubecost       |
 | **Operate**  | 标签治理、成本分摊、持续优化 | FinOps 平台             |
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

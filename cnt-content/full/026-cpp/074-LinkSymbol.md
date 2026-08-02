@@ -209,9 +209,3 @@ ld -T linker.ld main.o -o app
 # 生成链接 map 文件（查看符号地址）
 g++ main.cpp -Wl,-Map,app.map -o app
 ```
-
-## 延伸阅读
-C++ 模板深入，见 026-cpp/062-CppTemplate 文档。
-STL 容器与算法，见 026-cpp 模块 STL 文档。
-并发与原子，见 026-cpp 模块并发文档。
-Rust 内存安全对比，见 053-rust 模块（若已加入）。

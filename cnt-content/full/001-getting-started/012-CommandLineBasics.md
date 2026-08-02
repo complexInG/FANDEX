@@ -1,5 +1,5 @@
 ---
-order: 50
+order: 30
 title: 命令行基础
 module: 'getting-started'
 category: 工具链

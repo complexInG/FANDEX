@@ -223,8 +223,3 @@ docker run --read-only --tmpfs /tmp nginx
 | 优雅关闭         | 处理 SIGTERM     |
 | 日志管理         | stdout/stderr    |
 | 环境变量配置     | 不硬编码         |
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

@@ -1295,9 +1295,3 @@ GraalVM 的演进仍在继续——从 PGO 到 G1 GC，从 Spring Boot 3 到 Qua
 ---
 
 > 本文基于 GraalVM for JDK 21 撰写，部分内容参考 GraalVM 官方文档与 Spring Boot 3 参考手册。文中代码示例均在 GraalVM 21.0.3 上验证通过，读者可在此基础上扩展至任意现代 GraalVM 版本。
-
-## 延伸阅读
-Java 并发与 JUC，见 013-java 模块并发文档。
-JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
-Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
-数据库访问（JDBC/JPA），见 019-sql 模块相关文档。

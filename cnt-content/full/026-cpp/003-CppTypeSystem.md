@@ -886,9 +886,3 @@ enum class Flag : unsigned char { None = 0, All = 0xFF };
 // 使用作用域访问
 Color c = Color::Red;
 ```
-
-## 延伸阅读
-C++ 模板深入，见 026-cpp/062-CppTemplate 文档。
-STL 容器与算法，见 026-cpp 模块 STL 文档。
-并发与原子，见 026-cpp 模块并发文档。
-Rust 内存安全对比，见 053-rust 模块（若已加入）。

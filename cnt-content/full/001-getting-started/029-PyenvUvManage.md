@@ -1,5 +1,5 @@
 ---
-order: 200
+order: 190
 title: pyenv 与 uv 版本管理
 module: 'getting-started'
 category: 工具链

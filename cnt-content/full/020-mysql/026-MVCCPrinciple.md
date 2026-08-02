@@ -112,8 +112,3 @@ Purge 线程负责清理不再需要的 undo log：
 2. 如果是，该版本可以安全清理
 3. 长事务会阻止 Purge，导致 undo log 膨胀
 ```
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

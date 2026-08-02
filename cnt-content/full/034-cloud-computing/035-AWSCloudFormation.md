@@ -210,8 +210,3 @@ aws cloudformation detect-stack-drift --stack-name myStack
 # 查看漂移检测进度与结果
 aws cloudformation describe-stack-drift-detection-status --stack-drift-detection-id abc-123
 ```
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

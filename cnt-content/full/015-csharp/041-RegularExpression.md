@@ -286,8 +286,3 @@ public partial class MyRegex
 // 负向先行：(?!...)  负向后行：(?<!...)
 Match m = Regex.Match("a1", @"\d(?=[a-z])"); // 数字后跟字母
 ```
-
-## 延伸阅读
-C# 与 .NET 生态，见 015-csharp 模块基础文档。
-异步编程与 Task，见 015-csharp 模块异步文档。
-SQL 与 EF Core，见 019-sql 模块。

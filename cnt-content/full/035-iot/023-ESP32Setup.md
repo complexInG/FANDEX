@@ -319,8 +319,3 @@ esptool.py --port /dev/ttyUSB0 erase_flash
 # 烧录编译好的 bin 固件
 esptool.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x10000 firmware.bin
 ```
-
-## 延伸阅读
-MQTT 与设备接入，见 035-iot 模块文档。
-嵌入式 C 与硬件，见 025-c 模块。
-时序数据与数据平台，见 052-big-data 模块。

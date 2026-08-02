@@ -1256,22 +1256,6 @@ int open(const char *pathname, int flags, ...) {
 
 这种设计的优点是用户接口简洁（不需要 `creat` 时不必传 mode），缺点是 `O_CREAT` 漏传 mode 时会读取栈上垃圾数据，是常见的潜在安全漏洞。现代 GCC 通过 `__attribute__((warn_unused_result))` 和静态分析器缓解这一问题。
 
-## 11. 延伸阅读
-
-- **Plauger, P. J.** _The Standard C Library_ — 详细讲解 `<stdarg.h>` 实现原理。
-- **GCC Internals Manual.** _Variadic Functions_ 章节 — `va_arg` 在 GCC 内部如何展开。
-- **LLVM Language Reference.** _llvm.va_start / llvm.va_arg_ — LLVM IR 层面的可变参数表示。
-- **Agner Fog.** _Calling Conventions_ — 各 x86/x86-64 调用约定的权威比较。
-- **AMD.** _AMD64 Architecture Programmer's Manual, Volume 3_ — System V ABI 的官方依据。
-- **Microsoft.** _Microsoft x64 Calling Convention_ — Windows x64 ABI 细节。
-- **Muscopf, D., et al.** _C++ Templates: The Complete Guide_ (2nd ed.) — C++ 可变参数模板的对比参考。
-- **Bjarne Stroustrup.** _The C++ Programming Language_ (4th ed.) — `variadic templates` 章节。
-- **Rust Reference.** _Unsafe Code Guidelines: FFI_ — Rust 与 C 可变参数的交互。
-- **Go Language Specification.** _Function types: Variadic functions_ — Go 的可变参数设计。
-
----
-
-> 本章节遵循 C23 标准，所有示例代码已在 `gcc 13.2` 与 `clang 17.0` 上通过 `-Wall -Wextra -std=c11` 编译验证。x86-64 反汇编示例基于 System V AMD64 ABI，Windows 用户需参考 Microsoft x64 ABI。如发现错误，欢迎指正。
 ## 可变参数函数定义
 
 **基本写法：可变参数函数声明**

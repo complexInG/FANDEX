@@ -1994,20 +1994,6 @@ assert(data == 42);
 - 调试困难（无标准 backtrace）；
 - 异常处理复杂。
 
-## 延伸阅读
-- **C++ Concurrency in Action, 2nd Edition**: Anthony Williams 的经典著作，深入讲解 C++ 并发。
-- **The Art of Multiprocessor Programming**: Maurice Herlihy 与 Nir Shavit 的并发编程圣经。
-- **Java Concurrency in Practice**: Brian Goetz 等著，虽以 Java 为例，但并发思想通用。
-- **P0159 "Concurrency Technical Specification"**: C++ 并发 TS，部分已并入 C++20。
-- **P0660 "Cooperative Cancellation"**: C++20 jthread 的协作停止提案。
-- **P0534 "C++20 Synchronization"**: semaphore、latch、barrier 提案。
-- **P0912 "Merge Coroutines TS"**: C++20 协程并入主标准。
-- **Folly Futures**: Facebook 的异步库，提供 future 组合子。
-- **Boost.Asio**: 网络与异步 I/O 库，基于 proactor 模式。
-- **Seastar**: ScyllaDB 的高性能异步框架。
-- **Moodycamel ConcurrentQueue**: 高性能无锁 MPMC 队列。
-- **Concurrency Hazards**: Intel 的并发陷阱文档系列。
-- **Preshing on Programming**: Jeff Preshing 的并发编程博客，深入讲解内存模型。
 ## 创建线程
 
 **基本写法：thread 创建**

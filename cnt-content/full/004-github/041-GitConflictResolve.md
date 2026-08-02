@@ -253,12 +253,3 @@ git merge-base main feature
 ## 八、一句话记忆
 
 **冲突 = 双方改了同一处且不一致，Git 交回裁决权——看标记（<<<<<<< 我方 / ======= 对方 / >>>>>>>），编辑裁决，add 标记已解决，merge --continue 或 commit 收尾；不想玩了就 --abort，想少冲突就小步提交勤同步。**
-
----
-
-## 延伸阅读
-
-- 冲突的底层机制（三方合并、快进合并），见上一篇 040-GitMergeRebase。
-- 拉取更新时的冲突处理，见 039-GitPullFetch。
-- 暂存与回退（stash 临时收好改动、reset 回退），见 045-GitStashReset。
-- 关联文档：分支模型与分支规则，见 007-BranchModelBranchRule；GitHub PR 合并流程，见 027-PullRequestCompleteCollaborationFlow。

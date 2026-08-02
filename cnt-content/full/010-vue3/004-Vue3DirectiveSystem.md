@@ -896,9 +896,3 @@ Vue3 的指令系统提供了丰富的功能，从基本的条件渲染、列表
 <!-- 缩写 -->
 <button @click="onClick">点击</button>
 ```
-
-## 延伸阅读
-Vue Teleport 与 Portal，见 010-vue3/026-TeleportPortalApp 文档。
-Vue KeepAlive 缓存，见 010-vue3/027-KeepAliveCacheLifecycle 文档。
-Vue Router 导航守卫，见 010-vue3/030-VueRouterNavigationGuard 文档。
-TypeScript 与 Vue 组合，见 009-typescript 模块。

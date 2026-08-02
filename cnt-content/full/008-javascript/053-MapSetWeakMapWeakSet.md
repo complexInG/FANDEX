@@ -216,11 +216,3 @@ m.set(key, 1); // 对象作键
 // 大数据量查找 Map 接近 O(1)
 // 需要键为非字符串时必须用 Map
 ```
-
----
-
-## 延伸阅读
-JavaScript 基础语法，见 008-javascript 模块文档。
-TypeScript 类型系统，见 009-typescript 模块。
-浏览器 DOM 与事件，见 006-html5/007-css 模块。
-前端框架 React/Vue，见 011-react/010-vue3 模块。

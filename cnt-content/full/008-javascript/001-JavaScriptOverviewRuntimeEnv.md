@@ -2181,15 +2181,3 @@ import './utils'      → 报错（ESM 要求扩展名）
 | 包安装速度 | 1.0x（npm） | 1.5x | 5.0x |
 
 注意：性能基准依赖具体场景，不要过度依赖单一指标。生产环境选型应综合考虑生态成熟度、稳定性、维护成本。
-
----
-
-## 延伸阅读
-
-- [TypeScript](typescript/overview)
-- [语法速查](javascript/语法速查)
-- [程序结构与基本语法](javascript/程序结构与基本语法)
-- [变量与数据类型](javascript/变量与数据类型)
-- [事件循环详解](javascript/事件循环详解)
-- [Promise 静态方法](javascript/Promise静态方法)
-- [模块动态导入与代码分割](javascript/模块动态导入与代码分割)

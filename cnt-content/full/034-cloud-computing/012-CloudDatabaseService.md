@@ -328,8 +328,3 @@ DynamoDB 全球表支持多区域多活写入：
 - **组件演练**：模拟单个组件故障（数据库主从切换）
 - **全量演练**：模拟区域级故障，验证完整恢复流程
 - **混沌工程**：生产环境注入故障（Chaos Monkey、Litmus）
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

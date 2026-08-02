@@ -141,8 +141,3 @@ helm install/upgrade/rollback是Helm-Chart应用打包的重要组成部分。�
 - helm install/upgrade/rollback的常见问题与解决方案
 
 helm install/upgrade/rollback在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

@@ -301,8 +301,3 @@ gh reference
 # 在浏览器中打开对应页面
 gh repo view --web
 ```
-
-## 延伸阅读
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。

@@ -222,8 +222,3 @@ T4: SELECT 复用 RV1，仍然看到事务B修改前的数据
 ### 5.4 SERIALIZABLE
 
 所有 SELECT 自动加共享锁，退化为当前读，不存在快照读。
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

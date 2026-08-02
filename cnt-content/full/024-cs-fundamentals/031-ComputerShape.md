@@ -202,8 +202,3 @@ $$L_o(p, \omega_o) = L_e(p, \omega_o) + \int_{\Omega^+} f_r(p, \omega_i, \omega_
 $$L_o \approx L_e + \frac{1}{N}\sum_{i=1}^{N}\frac{f_r L_i (\mathbf{n} \cdot \omega_i)}{p(\omega_i)}$$
 
 收敛速度：$O(1/\sqrt{N})$
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

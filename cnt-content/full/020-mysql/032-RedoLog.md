@@ -100,8 +100,3 @@ SET GLOBAL innodb_log_file_size = 2147483648;  -- 2GB
 SET GLOBAL innodb_flush_log_at_trx_commit = 1;  -- 最安全
 -- 设为 2 可提升性能，但可能丢失1秒数据
 ```
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

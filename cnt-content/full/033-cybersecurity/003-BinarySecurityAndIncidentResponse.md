@@ -539,8 +539,3 @@ tcpdump -r capture.pcap -A -s 0 | \
 6. 测试完成后清除所有测试痕迹
 7. 出具正式报告，提出修复建议
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

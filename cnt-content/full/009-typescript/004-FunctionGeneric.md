@@ -856,9 +856,6 @@ console.log(updateUserRequest);
 
 ---
 
-## 延伸阅读
-
-- [JS 函数与作用域](javascript/functions-and-scope)
 ## 函数声明
 
 **基本写法：函数声明**

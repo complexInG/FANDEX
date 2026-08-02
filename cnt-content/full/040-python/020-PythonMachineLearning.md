@@ -528,9 +528,3 @@ clf = RandomForestClassifier(n_estimators=100)
 clf.fit(X_train, y_train)
 print(f"准确率: {clf.score(X_test, y_test):.2%}")
 ```
-
-## 延伸阅读
-Python 数据类型与内置容器，见 040-python 模块的基础文档。
-Python 异步编程（asyncio/FastAPI），见 040-python 模块的异步与 Web 文档。
-Python 数据分析（NumPy/Pandas），见 051-data-analysis 模块。
-Python 与数据库交互（SQLAlchemy），见 019-sql 模块相关文档。

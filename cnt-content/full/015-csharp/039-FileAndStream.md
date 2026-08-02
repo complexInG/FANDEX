@@ -404,8 +404,3 @@ using (var fs = new FileStream("a.txt", FileMode.Open))
 // 异步释放 IAsyncDisposable
 await using var fs = new FileStream("a.txt", FileMode.Open);
 ```
-
-## 延伸阅读
-C# 与 .NET 生态，见 015-csharp 模块基础文档。
-异步编程与 Task，见 015-csharp 模块异步文档。
-SQL 与 EF Core，见 019-sql 模块。

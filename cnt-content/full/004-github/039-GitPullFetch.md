@@ -253,12 +253,3 @@ git remote show origin | grep "HEAD branch"
 ## 九、一句话记忆
 
 **`git fetch` 只更新远程"分身"（origin/main）不碰你的代码，`git pull` 是 fetch 加 merge（或 rebase）一步到位——先侦查用 fetch，快同步用 pull，冲突了记得 abort 或 continue。**
-
----
-
-## 延伸阅读
-
-- 合并与变基的深入对比（merge vs rebase），见下一篇 040-GitMergeRebase。
-- 冲突的产生与完整解决流程，见 041-GitConflictResolve。
-- 远程仓库关联管理（origin/upstream/fork 工作流），见 043-GitRemoteManage。
-- 关联文档：提交与推送流程，见 038-GitCommitPush；Git 协作基础，见 003-git 模块。

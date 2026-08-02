@@ -1,6 +1,6 @@
 ---
-order: 30
-title: IDE与编辑器选型
+order: 40
+title: IDE 与编辑器选型
 module: 'getting-started'
 category: 工具链
 difficulty: beginner

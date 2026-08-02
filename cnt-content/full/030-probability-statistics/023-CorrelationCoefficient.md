@@ -133,8 +133,3 @@ $$P(Y - E(Y) = a[X - E(X)]) = 1 \iff P(Y = aX + b) = 1, \quad b = E(Y) - aE(X)$$
 ## 10. 一句话记忆
 
 相关系数是"标准化的协方差"：$\rho = \dfrac{\text{Cov}(X,Y)}{\sqrt{D(X)D(Y)}}$，无量纲、$|\rho| \le 1$、度量线性关联；独立必不相关，但不相关未必独立，相关不等于因果。
-
-## 延伸阅读
-概率统计基础，见 030-probability-statistics 模块文档。
-数据分析应用，见 051-data-analysis 模块。
-机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。

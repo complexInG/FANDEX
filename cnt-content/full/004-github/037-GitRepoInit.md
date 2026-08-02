@@ -314,12 +314,3 @@ git clone git@github.com:user/repo.git
 ## 九、一句话记忆
 
 **`git init` 是给项目打地基（生成 .git 数据库），`git add` 是把材料搬进候选区（暂存区），`git commit` 是浇下第一块楼板（生成首个快照）——地基打好，版本控制的大厦从此拔地而起。**
-
----
-
-## 延伸阅读
-
-- 提交与推送的完整流程（工作区→暂存区→本地→远程），见下一篇 038-GitCommitPush。
-- 文件忽略规则（.gitignore），见 004-github 模块 008-GitignoreConfig。
-- 远程仓库的关联与管理（origin/upstream），见 043-GitRemoteManage。
-- 关联文档：Git 协作基础，见 003-git 模块；GitHub 仓库创建与克隆，见 003-RepositoryCreateCloneArchiveDelete。

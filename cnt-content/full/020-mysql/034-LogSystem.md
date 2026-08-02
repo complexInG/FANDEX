@@ -294,10 +294,3 @@ SELECT * FROM performance_schema.data_lock_waits;
 SELECT trx_id, trx_state, trx_started, trx_mysql_thread_id
 FROM information_schema.INNODB_TRX;
 ```
-
----
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

@@ -1440,20 +1440,6 @@ t.commit();  // 三个操作要么全做，要么全不做
 
 **Q15**：设计一个编译期 RAII 链，要求：在 `constexpr` 函数中使用 `std::array`、`std::string_view`，模拟一个编译期字符串处理流水线，并保证不分配堆内存。
 
-## 延伸阅读
-
-- **Boost.Core**：`boost::core::noncopyable`、`boost::scope_exit`、`boost::intrusive_ptr` 等通用 RAII 工具。
-- **Folly**：Facebook 开源库中的 `folly::RAII`、`folly::ScopeGuard`、`folly::SemiFuture` 等异步 RAII 设施。
-- **Abseil**：Google 开源库中的 `absl::Cleanup`、`absl::StatusOr` 等现代 RAII 模式。
-- **tl::expected**：Sy Brand 的 `std::expected` 参考实现，包含 RAII 错误传播示例。
-- **GSL (Guideline Support Library)**：C++ Core Guidelines 的参考实现，`gsl::owner<T*>`、`gsl::finally`。
-- **Clang Static Analyzer**：`alpha.cplusplus.UninitializedObject`、`alpha.security.taint` 等检查器可检测 RAII 违规。
-- **clang-tidy rules**：`cppcoreguidelines-*`、`modernize-*`、`bugprone-*` 系列规则大量覆盖 RAII 模式。
-- **Sanitizers**：AddressSanitizer (ASan)、LeakSanitizer (LSan)、ThreadSanitizer (TSan) 可在运行期检测 RAII 失效导致的内存错误。
-- **论文**：Wilson, M. 2003. *Imperfect C++: Practical Solutions for Real-Life Programming*. Addison-Wesley. 深入讨论 RAII 的局限与折衷。
-- **教学资源**：MIT 6.172 Performance Engineering of Software Systems 课程中关于 C++ 内存管理的章节，CMU 15-411 Compiler Design 中关于对象生命周期的部分。
-- **官方文档**：cppreference.com 上的 "RAII" 条目与 C++ Standard Library 模块文档，提供完整的标准库 RAII 设施索引。
-- **未来方向**：关注 C++26 标准中的反射（P2996）、契约（P2900）以及模式匹配（P2688）提案，它们将进一步扩展 RAII 的表达力。
 ## RAII 基本模式
 
 **基本写法：构造函数获取资源**

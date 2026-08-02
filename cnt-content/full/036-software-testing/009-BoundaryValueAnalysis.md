@@ -181,8 +181,3 @@ prerequisites:
 | 数据类型边界 | INT_MAX、浮点精度  |
 | 业务边界     | 折扣阈值、等级分界 |
 | 与等价类结合 | 先划分再取边界     |
-
-## 延伸阅读
-测试分层与用例设计，见 036-software-testing 模块文档。
-CI 集成测试，见 031-devops 模块。
-代码质量与评审，见 037-software-engineering 模块。

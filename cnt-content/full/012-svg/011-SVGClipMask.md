@@ -731,8 +731,3 @@ clipPath 先裁剪(限定为圆形区域),mask 再蒙版(底部渐隐)。
   <circle cx="100" cy="100" r="90" fill="#4f5bd5" mask="url(#ring)" />
 </svg>
 ```
-
-## 延伸阅读
-SVG 图形语法，见 012-svg 模块文档。
-CSS 样式与动画，见 007-css 模块。
-React/Vue 图标组件实践，见 011-react/010-vue3 模块。

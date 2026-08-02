@@ -265,8 +265,3 @@ app.config.update(
 | 微分段   | 细粒度网络隔离   |
 | 最小权限 | 按需授权         |
 | 持续监控 | 实时风险评估     |
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

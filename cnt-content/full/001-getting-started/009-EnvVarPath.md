@@ -1,6 +1,6 @@
 ---
 order: 20
-title: 环境变量与PATH
+title: 环境变量与 PATH
 module: 'getting-started'
 category: 工具链
 difficulty: beginner

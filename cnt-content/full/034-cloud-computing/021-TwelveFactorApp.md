@@ -237,8 +237,3 @@ npx prisma migrate deploy
 ### 3.2 与云原生的关系
 
 12-Factor 是云原生的理论基础，CNCF 的很多项目（Kubernetes、Istio）都是 12-Factor 的工程实现。
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

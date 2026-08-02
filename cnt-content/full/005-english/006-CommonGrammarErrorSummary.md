@@ -264,8 +264,3 @@ prerequisites: []
 | principal / principle   | principal = 主要的/校长；principle = 原则 | the **principal** reason / a matter of **principle**              |
 | stationary / stationery | stationary = 静止的；stationery = 文具    | a **stationary** object / office **stationery**                   |
 | complement / compliment | complement = 补充；compliment = 赞美      | Wine **complements** the meal. / She received a **compliment**.   |
-
-## 延伸阅读
-英语学习材料与规划，见 005-english 模块文档。
-技术写作（Markdown），见 002-markdown 模块。
-开源协作中的英语沟通，见 004-github 模块。

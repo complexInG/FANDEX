@@ -418,8 +418,3 @@ Host: example.com
 # 查看 HTTPS 证书详情
 openssl s_client -connect example.com:443 -servername example.com
 ```
-
-## 延伸阅读
-网络基础与协议，见 032-networking 模块文档。
-网络安全（TLS/WAF），见 033-cybersecurity 模块。
-负载均衡与网关，见 031-devops 模块相关文档。

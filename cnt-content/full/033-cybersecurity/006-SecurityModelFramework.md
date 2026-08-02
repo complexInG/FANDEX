@@ -150,8 +150,3 @@ prerequisites:
 | 命令控制 | 远程控制     |
 | 数据渗出 | 窃取数据     |
 | 影响     | 造成破坏     |
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

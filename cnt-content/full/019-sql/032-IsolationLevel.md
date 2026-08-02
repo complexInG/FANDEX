@@ -578,9 +578,3 @@ COMMIT;
 -- 金融/关键业务     SERIALIZABLE 或 REPEATABLE READ + 行锁
 -- 报表/统计分析     REPEATABLE READ 或 READ ONLY
 ```
-
-## 延伸阅读
-SQL 连接与子查询，见 019-sql 模块文档。
-SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。
-MySQL 深入，见 020-mysql 模块。
-PostgreSQL 深入，见 021-postgresql 模块。

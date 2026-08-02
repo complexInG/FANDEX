@@ -280,8 +280,3 @@ $$\text{输出} = f(\text{当前状态}, \text{当前输入})$$
 $$\text{访问时间} = t_{AA} \text{（地址到输出有效）}$$
 
 $$\text{周期时间} \geq \text{访问时间} + \text{预充电时间}$$
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

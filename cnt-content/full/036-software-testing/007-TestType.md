@@ -182,8 +182,3 @@ prerequisites:
 | 发布前   | 功能+性能+安全 |
 | 发布后   | 监控+回归      |
 | 迭代中   | 冒烟+回归+探索 |
-
-## 延伸阅读
-测试分层与用例设计，见 036-software-testing 模块文档。
-CI 集成测试，见 031-devops 模块。
-代码质量与评审，见 037-software-engineering 模块。

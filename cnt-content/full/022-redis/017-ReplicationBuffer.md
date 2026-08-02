@@ -409,8 +409,3 @@ replica-priority 100
 # 忽略某些 key 的复制（Redis 7.0+ 已移除，改用 ACL）
 # 旧版：replica-ignore-maxmemory no
 ```
-
-## 延伸阅读
-Redis 数据结构详解，见 022-redis 模块文档。
-Redis 持久化与集群，见 022-redis 模块相关文档。
-MySQL 与 Redis 缓存架构，见 020-mysql 模块。

@@ -278,8 +278,3 @@ SELECT * FROM orders WHERE order_date BETWEEN '2024-01-01' AND '2024-01-31';
 -- 查看查询是否触发分区裁剪
 EXPLAIN SELECT * FROM orders WHERE order_date = '2024-01-15';
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

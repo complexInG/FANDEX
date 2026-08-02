@@ -825,8 +825,3 @@ git config --global --edit
 # 编辑系统级配置文件（需管理员权限）
 git config --system --edit
 ```
-
-## 延伸阅读
-Git 基础操作与分支，见 003-git 模块文档。
-GitHub 协作与 PR，见 004-github 模块。
-CI/CD 自动化，见 031-devops 模块。

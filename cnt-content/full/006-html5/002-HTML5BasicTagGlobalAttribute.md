@@ -996,8 +996,3 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
   <button popovertarget="my-popover" popovertargetaction="hide">关闭</button>
 </div>
 ```
-
-## 延伸阅读
-HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
-CSS 样式与布局，见 007-css 模块。
-JavaScript DOM 操作，见 008-javascript 模块。

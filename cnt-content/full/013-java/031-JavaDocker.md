@@ -1660,16 +1660,3 @@ spec:
 ```
 
 </details>
-
-## 延伸阅读
-
-- **JEP 439: Generational ZGC**：JDK 21 分代 ZGC 的官方设计文档，理解低延迟 GC 在容器内的行为。
-- **Spring Boot 3 Container Images 官方文档**：Layered JAR、Buildpacks、Image Layers 的权威指南。
-- **OCI Image Format Specification**：理解镜像 manifest、config、layer 的标准格式。
-- **Kubernetes Best Practices for Java Developers**（Brendan Burns, O'Reilly, 2022）：K8s 部署 Java 应用的工程实践。
-- **"Java in Containers"**（M. Jung et al., ACM SIGMETRICS 2021）：JVM 容器感知性能影响的实证研究。
-- **CNCF Serverless Whitepaper v2.0**：Serverless 场景下 Java 冷启动优化的理论框架。
-- **"Booting Java in 50 Milliseconds"**（J. Buder, Devoxx 2023）：CRaC 工程实践深度分享。
-- **Docker BuildKit Reference**：BuildKit 缓存挂载、多平台构建、SBOM 生成等高级特性的官方文档。
-- **Trivy / Grype / cosign / Kyverno 文档**：镜像供应链安全工具链的实践指南。
-- **Project Leyden**（JEP 483 等）：Java AOT 演进方向，未来可能替代 GraalVM Native Image 的官方方案。

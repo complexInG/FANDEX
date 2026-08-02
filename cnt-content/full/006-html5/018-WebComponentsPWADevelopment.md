@@ -463,8 +463,6 @@ flowchart TD
 **问题**：推送通知权限被拒绝
 **解决方案**：在合适的时机请求权限，提供清晰的使用说明
 
-## 17. 延伸阅读
-  通过本教程，你已经了解了 Web Components 和 PWA 的核心概念和实践技巧。在实际项目中，你可以结合这些技术创建具有原生应用体验的 Web 应用，提升用户体验和性能。
 ## Custom Elements 自定义元素
 
 **定义自定义元素**
@@ -1004,8 +1002,3 @@ async function syncData() {
   }
 }
 ```
-
-## 延伸阅读
-HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
-CSS 样式与布局，见 007-css 模块。
-JavaScript DOM 操作，见 008-javascript 模块。

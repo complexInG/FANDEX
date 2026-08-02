@@ -1,6 +1,6 @@
 ---
 order: 120
-title: macOS环境配置教程
+title: macOS 开发环境配置
 module: 'getting-started'
 category: 工具链
 difficulty: beginner

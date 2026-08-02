@@ -812,9 +812,6 @@ prerequisites:
 
 ---
 
-## 延伸阅读
-
-- [C++ OOP](cpp/cpp-oop-basics)
 ## 结构体定义
 
 **基本写法：结构体定义**

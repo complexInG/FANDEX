@@ -360,8 +360,3 @@ COMMIT;
 -- 2. deadlock_timeout (1s)：快速发现死锁
 -- 3. statement_timeout (30s)：防止语句执行过久
 ```
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

@@ -771,12 +771,3 @@ I/O调度算法:
 | 信号 | kill/signal/sigaction             | 信号处理            |
 | 网络 | socket/bind/listen/accept/connect | 网络通信            |
 | 管道 | pipe/dup2                         | 进程间通信          |
-
----
-
-## 延伸阅读
-
-- _Operating System Concepts_ -- Silberschatz, Galvin, Gagne
-- _Modern Operating Systems_ -- Andrew S. Tanenbaum
-- _Understanding the Linux Kernel_ -- Bovet & Cesati
-- _The Design and Implementation of the FreeBSD Operating System_ -- McKusick et al.

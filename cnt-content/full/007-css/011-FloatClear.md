@@ -343,11 +343,3 @@ p {
 2. 左浮动头图与右浮动引语互不冲突（不同方向）；
 3. 正文段落无需 `clear`，自然环绕；
 4. 移动端可叠加媒体查询，将浮动降级为普通块级排列。
-
----
-
-## 11. 延伸阅读
-- MDN：CSS 布局学习路径（Flexbox、Grid）：
-- CSS-Tricks：A Complete Guide to Flexbox：
-- CSS-Tricks：A Complete Guide to Grid：
-- W3C：CSS Logical Properties and Values Level 1：

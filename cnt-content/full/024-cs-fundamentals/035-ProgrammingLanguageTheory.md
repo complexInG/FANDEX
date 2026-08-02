@@ -273,8 +273,3 @@ $$\text{wp}(\text{if } b \text{ then } C_1 \text{ else } C_2, Q) = (b \Rightarro
 $$\text{Vec}(A, n) : \text{Type}$$
 
 长度为 $n$ 的 $A$ 类型向量，类型检查器可验证列表操作的正确性。
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

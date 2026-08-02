@@ -176,8 +176,3 @@ GEOADD stores 116.397 39.908 "store:1" 116.401 39.912 "store:2"
 # 查找坐标(116.4, 39.9)附近2km内门店，按距离升序
 GEOSEARCH stores FROMLONLAT 116.4 39.9 BYRADIUS 2 km WITHDIST ASC
 ```
-
-## 延伸阅读
-Redis 数据结构详解，见 022-redis 模块文档。
-Redis 持久化与集群，见 022-redis 模块相关文档。
-MySQL 与 Redis 缓存架构，见 020-mysql 模块。

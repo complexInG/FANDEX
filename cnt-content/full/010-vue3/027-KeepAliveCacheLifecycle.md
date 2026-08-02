@@ -339,11 +339,6 @@ KeepAlive 的本质是“实例级缓存”：缓存的是组件实例与 DOM，
 
 缓存管理三件套：`include` 控制谁缓存，`exclude` 排除谁，`max` 限制总量。动态修改 include 是清理缓存的官方途径；理解 LRU 淘汰机制可以解释 max 的行为。
 
-## 11. 延伸阅读
-KeepAlive 与路由守卫的协作，见本模块 030-VueRouterNavigationGuard 文档；
-KeepAlive 与 Teleport 的组合模式，见本模块 026-TeleportPortalApp 文档；
-状态管理方案对比，见 010-vue3 模块的 Pinia 相关文档；
----
 ### 1. KeepAlive 基础
 
 #### 1.1 基本用法

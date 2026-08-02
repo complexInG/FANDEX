@@ -325,8 +325,3 @@ kube-bench run --benchmark cis-1.8
 - 访问控制和审计
 - 加密传输和存储
 - 变更管理流程
-
-## 延伸阅读
-Docker 与 Kubernetes 深入，见 031-devops 模块文档。
-CI/CD 管线设计，见 031-devops 模块 CICD 文档。
-云原生架构，见 034-cloud-computing 模块。

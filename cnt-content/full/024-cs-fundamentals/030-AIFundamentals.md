@@ -278,8 +278,3 @@ $$\text{head}_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)$$
 $$L(N) \approx \left(\frac{N_c}{N}\right)^{\alpha}$$
 
 模型性能随参数量 $N$、数据量 $D$、计算量 $C$ 的增加而可预测地提升。
-
-## 延伸阅读
-数据结构与算法，见 023-algorithm 模块。
-操作系统概念，见 024-cs-fundamentals 模块相关文档。
-计算机体系结构，见 001-getting-started 模块相关文档。

@@ -174,10 +174,3 @@ pg_dump -h 192.168.1.100 -p 5432 -U admin -d mydb -f remote.sql
 # 指定压缩级别 0-9（9 最高压缩率）
 pg_dump -U postgres -Fc -Z 6 -d mydb -f mydb.dump
 ```
-
----
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

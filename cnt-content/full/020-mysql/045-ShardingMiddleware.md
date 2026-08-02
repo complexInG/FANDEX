@@ -96,8 +96,3 @@ vtctlclient CreateShard -keyspace commerce -shard '80-'
 -- 使用全局表（广播表）存储维度数据
 -- 使用 ER 分片将关联表放在同一分片
 ```
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

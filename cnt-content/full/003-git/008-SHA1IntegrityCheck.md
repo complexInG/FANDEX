@@ -193,8 +193,3 @@ git rev-parse --verify main     # main 分支的哈希
 git fsck --full                 # 完整检查
 git fsck --connectivity-only    # 只检查连通性（更快）
 ```
-
-## 延伸阅读
-Git 基础操作与分支，见 003-git 模块文档。
-GitHub 协作与 PR，见 004-github 模块。
-CI/CD 自动化，见 031-devops 模块。

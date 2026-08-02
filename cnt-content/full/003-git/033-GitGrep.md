@@ -137,8 +137,3 @@ git grep -n "eval(\|innerHTML\|dangerouslySetInnerHTML" -- '*.js' '*.jsx' '*.ts'
 # 查找新增的 TODO
 git diff HEAD~5..HEAD | git grep "^+.*TODO"
 ```
-
-## 延伸阅读
-Git 基础操作与分支，见 003-git 模块文档。
-GitHub 协作与 PR，见 004-github 模块。
-CI/CD 自动化，见 031-devops 模块。

@@ -256,8 +256,3 @@ INFO Persistence
 # aof_rewrite_in_progress: 是否正在重写
 # aof_last_bgrewrite_status: 上次重写状态
 ```
-
-## 延伸阅读
-Redis 数据结构详解，见 022-redis 模块文档。
-Redis 持久化与集群，见 022-redis 模块相关文档。
-MySQL 与 Redis 缓存架构，见 020-mysql 模块。

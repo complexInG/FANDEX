@@ -1122,9 +1122,3 @@ offsets.forEach((tp, offset) -> consumer.seek(tp, offset));
 ---
 
 **总结**：消息队列是分布式系统的核心中间件，从最早的解耦工具演化为事件流平台、状态转移日志、Event Sourcing 基础设施。理解 MQ 的本质——"持久化的、有序的、可重放的、可扩展的消息流"——是正确选型与设计的前提。生产环境需重点关注可靠性（acks、ISR、min.insync.replicas）、顺序性（分区设计、业务键路由）、可观测性（Lag、延迟、死信）三大维度。
-
-## 延伸阅读
-Java 并发与 JUC，见 013-java 模块并发文档。
-JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
-Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
-数据库访问（JDBC/JPA），见 019-sql 模块相关文档。

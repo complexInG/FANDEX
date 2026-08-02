@@ -265,9 +265,3 @@ gh label list --search "type:"
 ## 一句话记忆
 
 **Label 是 Issue 的"彩色贴纸"：`list` 盘点、`create` 贴新、`edit` 改色改名、`delete` 撕掉、`clone` 一键复制整套——命名用"分类:名称"格式，团队协作才不乱。**
-
----
-
-## 延伸阅读
-- Issue 与标签、里程碑的综合使用，见 004-github 模块《IssuesTemplateTagMilestone》。
-- 用 gh api 批量管理标签（REST labels 端点），见《GhApi》。

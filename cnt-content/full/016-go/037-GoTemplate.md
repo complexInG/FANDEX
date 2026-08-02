@@ -508,8 +508,3 @@ var tmpl *template.Template // 初始化一次
 go func() { tmpl.Execute(w1, data1) }()
 go func() { tmpl.Execute(w2, data2) }()
 ```
-
-## 延伸阅读
-Go 并发与 channel，见 016-go 模块并发文档。
-Go 原子操作与竞争检测，见 016-go/058-RaceDetectionAtomic 文档。
-云原生与 Kubernetes，见 031-devops 模块。

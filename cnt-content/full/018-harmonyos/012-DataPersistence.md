@@ -1220,8 +1220,3 @@ kvStore.on('dataChange', distributedKVStore.SubscribeType.SUBSCRIBE_TYPE_ALL, (d
   console.info(`数据变更: ${JSON.stringify(data)}`);
 });
 ```
-
-## 延伸阅读
-TypeScript 基础（ArkTS 语言底座），见 009-typescript 模块。
-声明式 UI 概念与 React/Vue 对比，见 011-react/010-vue3 模块。
-移动端应用架构，见 018-harmonyos 模块文档。

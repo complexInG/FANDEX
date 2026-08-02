@@ -682,9 +682,3 @@ CREATE TABLE products (id INT, price MONEY);
 -- 推荐使用 DECIMAL 存储金额
 CREATE TABLE products (id INT, price DECIMAL(10, 2));
 ```
-
-## 延伸阅读
-SQL 连接与子查询，见 019-sql 模块文档。
-SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。
-MySQL 深入，见 020-mysql 模块。
-PostgreSQL 深入，见 021-postgresql 模块。

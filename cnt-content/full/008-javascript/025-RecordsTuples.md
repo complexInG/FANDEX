@@ -1073,9 +1073,3 @@ new Set().add(#[1,2]).has(#[1,2]);        // true
 ---
 
 *本文档基于 TC39 Stage 2 提案撰写，最终标准可能调整。生产环境使用前请查阅最新规范。*
-
-## 延伸阅读
-JavaScript 基础语法，见 008-javascript 模块文档。
-TypeScript 类型系统，见 009-typescript 模块。
-浏览器 DOM 与事件，见 006-html5/007-css 模块。
-前端框架 React/Vue，见 011-react/010-vue3 模块。

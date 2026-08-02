@@ -101,8 +101,3 @@ SET hnsw.ef_search = 100;
 | 召回率   | 依赖 probes 参数 | 高       |
 | 索引大小 | 较小             | 较大     |
 | 数据更新 | 需要重建         | 增量更新 |
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

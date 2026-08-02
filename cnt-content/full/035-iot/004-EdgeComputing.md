@@ -396,8 +396,3 @@ def create_secure_client(device_id, cert_path, key_path, ca_path):
 4. **AI 推理**通过 TFLite/ONNX 在边缘执行，实现实时智能决策
 5. **边云协同**是最佳实践，边缘负责实时，云端负责全局
 6. **模型热更新**使边缘 AI 持续进化，无需停机
-
-## 延伸阅读
-MQTT 与设备接入，见 035-iot 模块文档。
-嵌入式 C 与硬件，见 025-c 模块。
-时序数据与数据平台，见 052-big-data 模块。

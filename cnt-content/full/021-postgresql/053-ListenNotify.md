@@ -172,10 +172,3 @@ SELECT pg_notification_queue_usage();
 UNLISTEN order_event;
 LISTEN order_event;
 ```
-
----
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

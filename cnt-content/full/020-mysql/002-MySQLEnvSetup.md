@@ -395,10 +395,3 @@ volumes:
 | **HeidiSQL**        | 轻量级 Windows 工具，开源                   | Windows 环境下的数据库管理 | 免费 |
 | **Sequel Pro**      | macOS 专用工具，轻量快速                    | macOS 环境下的数据库管理   | 免费 |
 | **DataGrip**        | JetBrains 出品，强大的数据库 IDE            | 专业开发、复杂查询         | 付费 |
-
----
-
-## 延伸阅读
-MySQL 索引与优化，见 020-mysql 模块文档。
-MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
-Redis 缓存与 MySQL 组合，见 022-redis 模块。

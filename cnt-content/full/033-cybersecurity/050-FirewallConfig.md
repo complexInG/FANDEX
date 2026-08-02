@@ -439,8 +439,3 @@ sudo firewall-cmd --permanent --list-all-zones > firewalld-export.txt
 sudo iptables-save > iptables-v4.rules
 sudo ip6tables-save > iptables-v6.rules
 ```
-
-## 延伸阅读
-密码学与证书，见 033-cybersecurity 模块文档。
-Web 攻击与防御，见 033-cybersecurity 模块相关文档。
-网络层安全，见 032-networking 模块。

@@ -274,10 +274,3 @@ CREATE TEXT SEARCH DICTIONARY my_simple (
   STOPWORDS = my_stopwords
 );
 ```
-
----
-
-## 延伸阅读
-PostgreSQL 窗口函数，见 021-postgresql 模块文档。
-PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
-SQL 基础，见 019-sql 模块。

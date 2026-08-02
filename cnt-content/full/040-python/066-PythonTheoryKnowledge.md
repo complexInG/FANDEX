@@ -455,9 +455,3 @@ class MyClass(metaclass=Meta):
 | 引用计数 | CPython 的主要 GC 机制                       | 循环引用由分代 GC 处理                |
 | 名称修饰 | `__attr` 变为 `_ClassName__attr`             | 仅双下划线前缀触发，防止子类覆盖      |
 | 协程     | async/await 基于生成器实现                   | 事件循环调度，非抢占式                |
-
-## 延伸阅读
-Python 数据类型与内置容器，见 040-python 模块的基础文档。
-Python 异步编程（asyncio/FastAPI），见 040-python 模块的异步与 Web 文档。
-Python 数据分析（NumPy/Pandas），见 051-data-analysis 模块。
-Python 与数据库交互（SQLAlchemy），见 019-sql 模块相关文档。

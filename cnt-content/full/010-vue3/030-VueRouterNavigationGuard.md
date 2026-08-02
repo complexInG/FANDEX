@@ -404,10 +404,6 @@ export const permissionGuard: NavigationGuard = async (to, from) => {
 
 为什么 `beforeEnter` 不重复触发：路由记录级守卫只在初始进入时执行，参数变化属于同一路由记录内的更新，应使用组件内守卫。这是面试与实战中的高频易错点。
 
-## 11. 延伸阅读
-与路由守卫紧密相关的组件生命周期与缓存机制，见本模块 027-KeepAliveCacheLifecycle 文档；
-浮层组件的路由关闭协作模式，见本模块 026-TeleportPortalApp 文档；
-Pinia 状态管理与守卫配合的完整示例，见 010-vue3 模块的 Pinia 相关文档；
 ### 1. 全局守卫
 
 #### 1.1 beforeEach

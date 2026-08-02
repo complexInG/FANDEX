@@ -506,8 +506,3 @@ test {
 4. **保持不可变性**：构建器内部可变，构建结果不可变
 5. **命名清晰**：DSL 方法名应接近领域语言，避免技术术语
 6. **文档和示例**：DSL 的正确用法需要清晰的文档和示例
-
-## 延伸阅读
-Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
-协程与 Flow，见 014-kotlin 模块协程文档。
-Android 与 HarmonyOS 应用开发，见 018-harmonyos 模块。

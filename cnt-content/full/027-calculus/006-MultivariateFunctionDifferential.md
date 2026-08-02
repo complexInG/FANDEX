@@ -241,8 +241,3 @@ $$\begin{cases} L_x = f_x + \lambda\varphi_x = 0 \\ L_y = f_y + \lambda\varphi_y
 $$L = f + \lambda_1\varphi_1 + \lambda_2\varphi_2$$
 
 解 $L_x = 0$，$L_y = 0$，$L_z = 0$，$\varphi_1 = 0$，$\varphi_2 = 0$。
-
-## 延伸阅读
-微积分基础，见 027-calculus 模块文档。
-线性代数（梯度与向量），见 029-linear-algebra 模块。
-概率统计（积分应用），见 030-probability-statistics 模块。

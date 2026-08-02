@@ -227,8 +227,3 @@ az disk create --resource-group MyResourceGroup --name my-disk --size-gb 20
 # 将现有磁盘附加到 VM
 az vm disk attach --resource-group MyResourceGroup --vm-name my-vm --name my-disk
 ```
-
-## 延伸阅读
-虚拟化与容器，见 034-cloud-computing 模块相关文档。
-Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
-DevOps 与 IaC，见 031-devops 模块。

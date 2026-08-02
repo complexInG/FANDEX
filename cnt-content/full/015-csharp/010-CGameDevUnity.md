@@ -679,8 +679,3 @@ public class EnemyAI : MonoBehaviour
 | **资源管理**   | Addressables、异步加载          | 减少内存占用   |
 | **物理优化**   | 简化碰撞体、分层                | 减少 CPU 开销  |
 | **Burst 编译** | 数学运算、热路径代码            | 2-10x 加速     |
-
-## 延伸阅读
-C# 与 .NET 生态，见 015-csharp 模块基础文档。
-异步编程与 Task，见 015-csharp 模块异步文档。
-SQL 与 EF Core，见 019-sql 模块。
