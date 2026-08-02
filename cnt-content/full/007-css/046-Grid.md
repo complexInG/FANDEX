@@ -405,3 +405,36 @@ prerequisites: []
   grid-template-rows: masonry;
 }
 ```
+
+## 动手试试
+
+1. 用 `display: grid` + `repeat(auto-fit, minmax(200px, 1fr))` 做响应式卡片墙；
+2. 用 `grid-template-areas` 布局“头部/主体/侧栏/页脚”；
+3. 用 `grid-column: 1 / -1` 让元素跨行；
+4. 进阶挑战：对比 Grid 与 Flexbox 在同一个布局上的实现。
+
+## 核心知识点
+
+> 一句话记住 Grid：二维布局系统，轨道、区域、网格线三件套；`1fr` 分空间，`minmax` 控范围，`auto-fit` 自适应。
+
+- 轨道：`grid-template-columns/rows`；
+- `1fr`：剩余空间等分；
+- `minmax(min, max)`：范围控制；
+- 区域：`grid-template-areas` + `grid-area`；
+- 网格线：`grid-column: 1 / -1`；
+- 隐式网格：`grid-auto-rows` 控制自动轨道。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 内容撑破 1fr | 溢出 | `minmax(0, 1fr)` |
+| 区域名不一致 | 布局失效 | 命名对齐 |
+| 隐式轨道高度 | 元素挤压 | grid-auto-rows |
+| 与 flex 混用不清 | 布局混乱 | 明确一维/二维 |
+
+## 扩展学习
+
+- 完整教程：`css/016-CSS3GridGridLayout`；
+- 对比：`css/005-CSS3FlexboxFlexLayout`；
+- 实战：`css/045-CSSProjectExampleResponsiveHomepage`。

@@ -1126,3 +1126,37 @@ const observer = new IntersectionObserver(
 );
 document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
 ```
+
+## 动手试试
+
+1. 按文档步骤从零搭建响应式首页骨架；
+2. 用 Flexbox 重构导航，用 Grid 重构卡片区；
+3. 加深色主题（只覆盖颜色变量）；
+4. 进阶挑战：用容器查询让卡片组件自适配，并用 Lighthouse 跑分对比。
+
+## 核心知识点
+
+> 一句话记住本项目：移动优先、语义化结构、设计令牌、Flex/Grid 布局、媒体查询增强，最终用性能指标验证。
+
+- 项目分层：reset → 变量 → 基础 → 组件 → 布局；
+- 导航：语义化 nav + flex；
+- 卡片：grid + auto-fit/minmax；
+- 主题：颜色全部走变量，深色覆盖；
+- 响应式：min-width 断点增强；
+- 验收：Lighthouse/移动端实测。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 一上来写桌面端 | 移动体验差 | 移动优先 |
+| 样式全堆一个文件 | 难维护 | 按组件拆分 |
+| 忘记对比度 | 深色看不清 | 验证 AA |
+| 图片不响应 | 流量浪费 | srcset/object-fit |
+
+## 扩展学习
+
+- Grid：`css/016-CSS3GridGridLayout`；
+- Flex：`css/005-CSS3FlexboxFlexLayout`；
+- 响应式：`css/030-ResponsiveDesign`；
+- 性能：`css/042-CSSPerformanceOptimizationDetailed`。

@@ -207,3 +207,35 @@ prerequisites: []
   color: color-mix(in oklch, var(--some-hex) 100%, transparent);
 }
 ```
+
+## 动手试试
+
+1. 用 `oklch()` 定义一组颜色，观察与 hex 的差异；
+2. 用 `color-mix()` 混合主色与白色生成浅色变体；
+3. 用 `color()` 引用 display-p3 广色域；
+4. 进阶挑战：为高 DCI-P3 屏幕提供增强色。
+
+## 核心知识点
+
+> 一句话记住现代颜色：`oklch`/`oklab` 感知均匀、`color-mix()` 混合颜色、`color()` 用广色域，深色主题靠变量切换。
+
+- 传统：hex/rgb/hsl；
+- `oklch`：感知均匀的现代色彩空间，渐变更平滑；
+- `color-mix(in srgb, a, b 30%)`：颜色混合；
+- `color(display-p3 ...)`：广色域；
+- 渐变插值：`interpolation-method` 指定色彩空间；
+- 变量 + 现代色 = 主题系统。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 兼容性 | 旧浏览器不支持 | 提供 hex 兜底 |
+| 混合模式参数写错 | 结果异常 | 先写 in srgb |
+| 广色域无兜底 | 颜色偏移 | 同时声明 sRGB 值 |
+
+## 扩展学习
+
+- 渐变：`css/013-Gradient`；
+- 变量：`css/023-CSSVariableCustomAttribute`；
+- 滤镜：`css/057-CSSFilters`。

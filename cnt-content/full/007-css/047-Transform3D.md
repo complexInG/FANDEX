@@ -226,3 +226,36 @@ prerequisites: []
 /* transform 不影响周围元素布局，仅视觉变换 */
 .box { transform: rotate(10deg); }  /* 相邻元素不重排 */
 ```
+
+## 动手试试
+
+1. 用 `transform: translate()`/`rotate()`/`scale()` 组合一个卡片翻转；
+2. 给容器加 `perspective`，体验 3D 景深；
+3. 用 `transform-style: preserve-3d` 做翻转卡片；
+4. 进阶挑战：做鼠标跟随的 3D 倾斜卡片。
+
+## 核心知识点
+
+> 一句话记住 3D 变换：`transform` 平移/旋转/缩放，`perspective` 给景深，`preserve-3d` 保留立体，`backface-visibility` 管背面。
+
+- 2D：translate/rotate/scale/skew；
+- 3D：rotateX/rotateY/translateZ；
+- `perspective`：父容器设置景深；
+- `transform-style: preserve-3d`：子元素保留 3D；
+- `backface-visibility: hidden`：翻转卡片背面隐藏；
+- transform 走合成层，动画性能好。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| perspective 位置错误 | 无景深 | 设在父容器 |
+| 忘记 preserve-3d | 子元素压平 | 显式声明 |
+| 过度 3D | 视觉杂乱 | 克制使用 |
+| 与 fixed 冲突 | 包含块改变 | 注意 transform 副作用 |
+
+## 扩展学习
+
+- 动画：`css/017-CSSAnimationTransition`；
+- 层叠：`css/012-StackingContext`；
+- 性能：`css/042-CSSPerformanceOptimizationDetailed`。
