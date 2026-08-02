@@ -93,6 +93,13 @@ HTML5 引入了多种新的输入类型，用于更精确地收集用户输入�
 </script>
 ```
 
+**讲解：**
+
+- `type="email"` 自动校验邮箱格式，`required` 让空值无法通过校验；
+- `type="number"` 配合 `min`/`max`/`step` 限制数值范围与步长；
+- 每个输入框都应配 `label`，通过 `for` 指向 `id`，点击文字即可聚焦；
+- `range` 滑块本身不显示数值，示例用 `input` 事件把当前值实时写回页面。
+
 ## 3. 表单增强属性
 
 HTML5 为表单元素提供了多种增强属性，用于改善用户体验和数据验证。
@@ -132,6 +139,13 @@ HTML5 为表单元素提供了多种增强属性，用于改善用户体验和�
 <!-- 多个文件上传 -->
 <input type="file" multiple accept="image/*" />
 ```
+
+**讲解：**
+
+- `placeholder` 是输入框内的灰色提示，不能替代 `label` 的可访问名称；
+- `autofocus` 让页面加载后自动聚焦到该输入框，适合搜索框等场景；
+- `pattern="^[0-9]{6}$"` 用正则限定输入内容，这里要求恰好 6 位数字；
+- `multiple` + `accept="image/*"` 表示可多选图片文件。
 
 ## 4. 表单元素
 
@@ -173,12 +187,24 @@ HTML5 为表单元素提供了多种增强属性，用于改善用户体验和�
 </select>
 ```
 
+**讲解：**
+
+- `<select>` 是下拉选择框，`<option>` 的 `value` 是提交值，可见文本可与之不同；
+- 首项 `value=""` 配合 `required` 可强制用户做出选择；
+- `multiple` 让下拉变成多选列表，`size="3"` 控制同时可见的行数。
+
 #### 4.2.2 文本域
 
 ```html
 <label for="message">留言:</label>
 <textarea id="message" name="message" rows="4" cols="50" placeholder="请输入您的留言"></textarea>
 ```
+
+**讲解：**
+
+- `<textarea>` 是多行文本输入，`rows`/`cols` 控制默认显示的行数与列数；
+- 与 `input` 不同，它的初始内容写在标签之间而不是 `value` 属性里；
+- 实际项目中通常用 CSS 控制尺寸，`rows`/`cols` 只作为无样式时的兜底。
 
 #### 4.2.3 按钮
 
@@ -190,6 +216,12 @@ HTML5 为表单元素提供了多种增强属性，用于改善用户体验和�
 <!-- 普通按钮 -->
 <button type="button" onclick="alert('点击了按钮')">点击我</button>
 ```
+
+**讲解：**
+
+- `type="submit"` 提交表单，`type="reset"` 重置为初始值，`type="button"` 无默认行为；
+- 按钮放在表单外时默认类型可能不触发提交，显式写明 `type` 更稳妥；
+- 现代开发推荐用 `addEventListener` 绑定点击，避免内联 `onclick`。
 
 #### 4.2.4 字段集
 
@@ -207,6 +239,12 @@ HTML5 为表单元素提供了多种增强属性，用于改善用户体验和�
 </fieldset>
 ```
 
+**讲解：**
+
+- `fieldset` 把相关控件分组，`legend` 提供分组标题；
+- 单选按钮组放在同一 `fieldset` 内，读屏用户能听清选项归属；
+- 分组让长表单的视觉与语义结构都更清晰。
+
 #### 4.2.5 输入建议列表
 
 ```html
@@ -220,6 +258,12 @@ HTML5 为表单元素提供了多种增强属性，用于改善用户体验和�
   <option value="Opera"></option>
 </datalist>
 ```
+
+**讲解：**
+
+- `datalist` 为输入框提供候选建议，但用户仍可自由输入；
+- `input` 通过 `list="browsers"` 引用 `datalist` 的 `id`；
+- 它不同于 `select`：`select` 限制选择，`datalist` 只做提示。
 
 ## 5. 客户端验证
 
@@ -272,6 +316,12 @@ HTML5 提供了强大的原生客户端验证功能，无需 JavaScript 即可�
 </form>
 ```
 
+**讲解：**
+
+- `required`/`minlength`/`maxlength`/`pattern` 都是声明式校验，浏览器原生执行；
+- `pattern` 使用正则表达式，如 `^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$` 同时要求大小写字母与数字；
+- 声明式校验在提交时自动拦截，无需手写 `if` 判断。
+
 ### 5.3 自定义验证消息
 
 可以使用 JavaScript 自定义验证消息，提供更友好的错误提示。
@@ -312,18 +362,15 @@ HTML5 提供了强大的原生客户端验证功能，无需 JavaScript 即可�
     usernameError.className = 'error active';
   }
 </script>
-<style>
-  .error {
-    color: red;
-    font-size: 12px;
-    margin-top: 5px;
-    display: none;
-  }
-  .error.active {
-    display: block;
-  }
-</style>
+    <!-- 样式将在后续 CSS 课程中学习，本示例只保留 HTML 结构与验证逻辑 -->
 ```
+
+**讲解：**
+
+- `input` 事件在每次输入时触发，可实时清除或显示错误；
+- `validity` 对象暴露校验状态：`valueMissing` 表示空值，`tooShort` 表示长度不足；
+- 提交时再次检查并 `preventDefault()` 拦截无效表单，错误文本写入页面的 `error` 容器；
+- 示例中的错误样式依赖 CSS 类，样式部分将在后续 CSS 课程中学习。
 
 ### 5.4 表单验证 API
 
@@ -371,6 +418,12 @@ HTML5 提供了表单验证 API，用于在 JavaScript 中进行更复杂的验�
 </script>
 ```
 
+**讲解：**
+
+- `setCustomValidity('消息')` 给元素设置自定义错误，传入空字符串则清除错误；
+- 密码一致性是“跨字段校验”，原生约束无法表达，必须用 JS 对比两个输入框的值；
+- 每次输入都要重新校验，否则错误状态会一直停留在上次的判定结果上。
+
 ## 6. 实际应用示例
 
 ### 6.1 示例 1：用户注册表单
@@ -382,71 +435,7 @@ HTML5 提供了表单验证 API，用于在 JavaScript 中进行更复杂的验�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>用户注册</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 2rem;
-        background-color: #f4f4f4;
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-        background-color: white;
-        padding: 2rem;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-      .form-group {
-        margin-bottom: 1.5rem;
-      }
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-      }
-      input[type='text'],
-      input[type='email'],
-      input[type='password'],
-      select {
-        width: 100%;
-        padding: 0.8rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-      }
-      input[type='checkbox'] {
-        margin-right: 0.5rem;
-      }
-      button {
-        width: 100%;
-        padding: 1rem;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
-      }
-      button:hover {
-        background-color: #45a049;
-      }
-      .error {
-        color: red;
-        font-size: 0.8rem;
-        margin-top: 0.5rem;
-      }
-      .success {
-        color: green;
-        font-size: 0.8rem;
-        margin-top: 0.5rem;
-      }
-    </style>
+    <!-- 样式将在后续 CSS 课程中学习，本示例只保留 HTML 结构与验证逻辑 -->
   </head>
   <body>
     <div class="container">
@@ -609,6 +598,16 @@ HTML5 提供了表单验证 API，用于在 JavaScript 中进行更复杂的验�
 </html>
 ```
 
+**代码结构解析：**
+
+（1）表单结构：`registrationForm` 聚合用户名、邮箱、密码、确认密码、性别、生日等字段，每个字段都是“`label` + `input` + 错误提示容器”三件套；
+
+（2）声明式校验：`required`、`minlength`、`pattern` 等属性由浏览器原生执行，无需 JavaScript；
+
+（3）提交拦截：`submit` 事件中统一检查各字段的 `validity`，任一字段无效就 `preventDefault()` 阻止提交；
+
+（4）实时反馈：`input` 事件在用户输入时即时校验并更新错误文本，让用户“边输入边纠错”。
+
 ### 6.2 示例 2：联系表单
 
 ```html
@@ -618,66 +617,7 @@ HTML5 提供了表单验证 API，用于在 JavaScript 中进行更复杂的验�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>联系我们</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 2rem;
-        background-color: #f4f4f4;
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-        background-color: white;
-        padding: 2rem;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-      .form-group {
-        margin-bottom: 1.5rem;
-      }
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-      }
-      input[type='text'],
-      input[type='email'],
-      textarea {
-        width: 100%;
-        padding: 0.8rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-      }
-      textarea {
-        resize: vertical;
-        min-height: 150px;
-      }
-      button {
-        width: 100%;
-        padding: 1rem;
-        background-color: #008cba;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
-      }
-      button:hover {
-        background-color: #007b9e;
-      }
-      .error {
-        color: red;
-        font-size: 0.8rem;
-        margin-top: 0.5rem;
-      }
-    </style>
+    <!-- 样式将在后续 CSS 课程中学习，本示例只保留 HTML 结构与验证逻辑 -->
   </head>
   <body>
     <div class="container">
@@ -796,6 +736,16 @@ HTML5 提供了表单验证 API，用于在 JavaScript 中进行更复杂的验�
 </html>
 ```
 
+**代码结构解析：**
+
+（1）表单结构：联系表单包含姓名、邮箱、主题、留言等字段，字段通过 `name` 属性确定提交参数名；
+
+（2）提交处理：`submit` 事件中阻止默认跳转，改为使用 `FormData` 收集数据，并模拟异步提交；
+
+（3）成功反馈：提交完成后重置表单并显示成功提示，`aria-live` 区域让读屏用户也能听到结果；
+
+（4）示例中的样式依赖 CSS 类，具体美化将在后续 CSS 课程中学习，本课只需关注结构与逻辑。
+
 ## 7. 最佳实践
 
 ### 7.1 表单设计最佳实践
@@ -832,394 +782,122 @@ HTML5 提供了表单验证 API，用于在 JavaScript 中进行更复杂的验�
 - **资源加载**：优化表单相关的 CSS 和 JavaScript 文件，减少加载时间。
 - **缓存**：对于频繁使用的表单数据，考虑使用本地存储进行缓存。
 
----
+## 8. 进阶知识点
 
-## 表单容器
+### 8.1 表单事件
 
-**form 元素**
-`<form action="<URL>" [method="get|post"] [enctype="<编码>"] [autocomplete="on|off"] [novalidate] [target]></form>`
-```html
-<!-- 基础表单 -->
-<form action="/submit" method="post">
-  <input type="text" name="username" />
-  <button type="submit">提交</button>
-</form>
-
-<!-- 文件上传表单 -->
-<form action="/upload" method="post" enctype="multipart/form-data">
-  <input type="file" name="avatar" />
-</form>
-
-<!-- 禁用原生验证 -->
-<form action="/api" method="post" novalidate>...</form>
-```
-
-| 属性           | 作用                                |
-| -------------- | ----------------------------------- |
-| `action`       | 提交目标 URL                        |
-| `method`       | HTTP 方法 get/post/dialog           |
-| `enctype`      | 编码方式 application/x-www-form-urlencoded / multipart/form-data / text/plain |
-| `autocomplete` | 自动补全 on/off                     |
-| `novalidate`   | 禁用浏览器原生验证                  |
-| `target`       | 提交后响应显示位置                  |
-| `accept-charset` | 字符编码                          |
-
----
-
-## input 输入类型
-
-**文本输入框**
-`<input type="text" name="<名称>" [placeholder="<提示>"] [required] [maxlength] [minlength] />`
-```html
-<!-- 用户名输入框,必填 -->
-<input type="text" name="username" placeholder="请输入用户名" required />
-```
-
-**密码输入框**
-`<input type="password" name="<名称>" [required] [minlength] [pattern] />`
-```html
-<input type="password" name="password" required minlength="8" />
-```
-
-**邮箱输入框**
-`<input type="email" name="<名称>" [multiple] [required] />`
-```html
-<!-- 支持多个邮箱(逗号分隔) -->
-<input type="email" name="email" multiple required />
-```
-
-**URL 输入框**
-`<input type="url" name="<名称>" [required] />`
-```html
-<input type="url" name="website" placeholder="https://" />
-```
-
-**数字输入框**
-`<input type="number" name="<名称>" [min] [max] [step] [required] />`
-```html
-<input type="number" name="age" min="1" max="120" step="1" />
-```
-
-**滑块输入**
-`<input type="range" name="<名称>" min="<最小>" max="<最大>" [step] [value] />`
-```html
-<input type="range" name="volume" min="0" max="100" value="50" />
-```
-
-**日期时间类型**
-
-| 类型             | 描述               | 示例                                        |
-| ---------------- | ------------------ | ------------------------------------------- |
-| `date`           | 日期选择器         | `<input type="date" name="birthday">`       |
-| `month`          | 月份选择器         | `<input type="month" name="expiry">`        |
-| `week`           | 周选择器           | `<input type="week" name="week">`           |
-| `time`           | 时间选择器         | `<input type="time" name="meeting">`        |
-| `datetime-local` | 本地日期时间       | `<input type="datetime-local" name="event">`|
-
-**其他类型**
-
-| 类型      | 描述               | 示例                                       |
-| --------- | ------------------ | ------------------------------------------ |
-| `color`   | 颜色选择器         | `<input type="color" name="color">`        |
-| `search`  | 搜索框(带清除)     | `<input type="search" name="q">`           |
-| `tel`     | 电话(移动端数字键) | `<input type="tel" name="phone">`          |
-| `file`    | 文件上传           | `<input type="file" name="avatar">`        |
-| `hidden`  | 隐藏字段           | `<input type="hidden" name="id">`          |
-| `checkbox`| 复选框             | `<input type="checkbox" name="agree">`     |
-| `radio`   | 单选框             | `<input type="radio" name="gender">`       |
-| `submit`  | 提交按钮           | `<input type="submit" value="提交">`       |
-| `reset`   | 重置按钮           | `<input type="reset" value="重置">`        |
-| `button`  | 普通按钮           | `<input type="button" value="点击">`       |
-| `image`   | 图像提交按钮       | `<input type="image" src="btn.png">`       |
-
-```html
-<!-- 文件上传(限制类型和多选) -->
-<input type="file" name="photos" accept="image/*" multiple />
-
-<!-- 颜色选择器 -->
-<input type="color" name="favorite" value="#ff0000" />
-
-<!-- 复选框 -->
-<label>
-  <input type="checkbox" name="subscribe" checked /> 订阅 newsletter
-</label>
-
-<!-- 单选框组 -->
-<label><input type="radio" name="gender" value="male" /> 男</label>
-<label><input type="radio" name="gender" value="female" /> 女</label>
-```
-
----
-
-## 表单增强属性
-
-**input 通用属性**
-
-| 属性           | 作用                       | 示例                                |
-| -------------- | -------------------------- | ----------------------------------- |
-| `placeholder`  | 占位提示文本               | `placeholder="请输入"`              |
-| `required`     | 必填                        | `required`                          |
-| `autofocus`    | 自动聚焦                   | `autofocus`                         |
-| `autocomplete` | 自动补全                   | `autocomplete="off"`                |
-| `pattern`      | 正则验证                   | `pattern="[0-9]{6}"`                |
-| `min` / `max`  | 数值/日期范围              | `min="1" max="100"`                 |
-| `step`         | 步长                       | `step="0.5"`                        |
-| `multiple`     | 多选(email/file)           | `multiple`                          |
-| `size`         | 宽度(字符数)               | `size="30"`                         |
-| `maxlength`    | 最大字符数                 | `maxlength="50"`                    |
-| `minlength`    | 最小字符数                 | `minlength="6"`                     |
-| `readonly`     | 只读                       | `readonly`                          |
-| `disabled`     | 禁用                       | `disabled`                          |
-| `value`        | 默认值                     | `value="default"`                   |
-| `list`         | 关联 datalist              | `list="browsers"`                   |
-| `form`         | 指定所属表单              | `form="formId"`                     |
-
-```html
-<!-- 综合验证属性 -->
-<input
-  type="text"
-  name="username"
-  placeholder="请输入用户名"
-  required
-  minlength="6"
-  maxlength="20"
-  pattern="^[a-zA-Z0-9_]+$"
-  autofocus
-  autocomplete="username"
-/>
-```
-
----
-
-## 表单元素
-
-**label 标签**
-`<label for="<控件ID>">[文本]</label>` 或 `<label>[控件 + 文本]</label>`
-```html
-<!-- 显式关联 -->
-<label for="username">用户名:</label>
-<input type="text" id="username" name="username" />
-
-<!-- 隐式关联 -->
-<label>
-  <input type="checkbox" name="agree" /> 我同意条款
-</label>
-```
-
-**select 下拉框**
-`<select name="<名称>" [multiple] [size="<可见行数>"] [required]>...<option>...</select>`
-```html
-<select name="country" required>
-  <option value="">请选择</option>
-  <option value="cn">中国</option>
-  <option value="us" selected>美国</option>
-</select>
-
-<!-- 分组 -->
-<select name="city">
-  <optgroup label="华东">
-    <option value="sh">上海</option>
-    <option value="hz">杭州</option>
-  </optgroup>
-  <optgroup label="华北">
-    <option value="bj">北京</option>
-  </optgroup>
-</select>
-
-<!-- 多选 -->
-<select name="hobbies" multiple size="4">
-  <option value="reading">阅读</option>
-  <option value="music">音乐</option>
-</select>
-```
-
-**option 选项**
-`<option value="<值>" [selected] [disabled]>[文本]</option>`
-
-**textarea 多行文本**
-`<textarea name="<名称>" [rows="<行数>"] [cols="<列数>"] [maxlength] [required] [placeholder]></textarea>`
-```html
-<textarea name="message" rows="4" cols="50" placeholder="请输入留言" maxlength="500"></textarea>
-```
-
-**button 按钮**
-`<button type="submit|reset|button" [name] [value]>[内容]</button>`
-```html
-<button type="submit">提交</button>
-<button type="reset">重置</button>
-<button type="button" onclick="alert('hi')">点击</button>
-```
-
-**fieldset 与 legend 分组**
-`<fieldset [disabled]><legend>[标题]</legend>...</fieldset>`
-```html
-<fieldset>
-  <legend>个人信息</legend>
-  <label>姓名:<input type="text" name="name" /></label>
-  <label>年龄:<input type="number" name="age" /></label>
-</fieldset>
-```
-
-**datalist 输入建议**
-`<input list="<ID>" />` + `<datalist id="<ID>">...<option>...</datalist>`
-```html
-<input type="text" list="browsers" name="browser" />
-<datalist id="browsers">
-  <option value="Chrome"></option>
-  <option value="Firefox"></option>
-  <option value="Safari"></option>
-</datalist>
-```
-
-**output 输出结果**
-`<output for="<关联ID>" name="<名称>">[结果]</output>`
-```html
-<form oninput="result.value=parseInt(a.value)+parseInt(b.value)">
-  <input type="number" id="a" value="10" />
-  +<input type="number" id="b" value="20" />
-  =<output name="result" for="a b">30</output>
-</form>
-```
-
----
-
-## 客户端验证
-
-**内置验证类型**
-
-| 验证类型     | 触发属性                    | 示例                              |
-| ------------ | --------------------------- | --------------------------------- |
-| 必填         | `required`                  | `<input required>`                |
-| 邮箱格式     | `type="email"`              | `<input type="email">`            |
-| URL 格式     | `type="url"`                | `<input type="url">`              |
-| 数值范围     | `min` / `max`               | `<input min="1" max="100">`       |
-| 长度限制     | `minlength` / `maxlength`   | `<input minlength="6">`           |
-| 正则模式     | `pattern`                   | `<input pattern="[0-9]{6}">`      |
-| 步长         | `step`                      | `<input step="0.5">`              |
-
-**ValidityState API**
-```javascript
-const input = document.querySelector('input');
-
-// 验证状态对象
-const validity = input.validity;
-console.log(validity.valid);           // 是否有效
-console.log(validity.valueMissing);    // required 未填
-console.log(validity.typeMismatch);    // 类型不匹配(email/url)
-console.log(validity.patternMismatch); // pattern 不匹配
-console.log(validity.tooShort);        // 长度小于 minlength
-console.log(validity.tooLong);         // 长度大于 maxlength
-console.log(validity.rangeUnderflow);  // 小于 min
-console.log(validity.rangeOverflow);   // 大于 max
-console.log(validity.stepMismatch);    // 步长不匹配
-console.log(validity.badInput);        // 输入无效(如 number 中输入字母)
-console.log(validity.customError);     // 自定义错误
-
-// 验证方法
-input.checkValidity();     // 触发验证,返回布尔值
-input.reportValidity();    // 触发验证并显示错误
-input.setCustomValidity('错误消息'); // 设置自定义错误
-input.setCustomValidity('');         // 清除自定义错误
-
-// 错误消息
-console.log(input.validationMessage);
-```
-
-**自定义验证示例**
-```javascript
-// 密码确认验证
-const password = document.getElementById('password');
-const confirm = document.getElementById('confirmPassword');
-
-confirm.addEventListener('input', () => {
-  if (password.value !== confirm.value) {
-    confirm.setCustomValidity('两次输入的密码不一致');
-  } else {
-    confirm.setCustomValidity('');
-  }
-});
-```
-
----
-
-## 表单事件
-
-**表单相关事件**
 ```javascript
 const form = document.querySelector('form');
 const input = document.querySelector('input');
 
-// 表单提交
+// 表单提交前拦截，统一校验
 form.addEventListener('submit', (e) => {
   if (!form.checkValidity()) {
     e.preventDefault();
   }
 });
 
-// 输入变化(实时)
+// 输入变化（实时触发）
 input.addEventListener('input', (e) => {
   console.log(e.target.value);
 });
 
-// 值变化(失焦后)
+// 值变化（失焦后才触发）
 input.addEventListener('change', (e) => {
   console.log(e.target.value);
 });
 
-// 无效字段
+// 校验失败时触发
 input.addEventListener('invalid', (e) => {
   e.target.setCustomValidity('请填写此字段');
 });
-
-// 表单重置
-form.addEventListener('reset', () => {
-  console.log('表单已重置');
-});
 ```
 
-| 事件      | 触发时机                |
-| --------- | ----------------------- |
-| `submit`  | 表单提交                |
-| `reset`   | 表单重置                |
-| `input`   | 输入变化(实时)         |
-| `change`  | 值变化且失焦            |
-| `invalid` | 验证失败                |
-| `focus`   | 获得焦点                |
-| `blur`    | 失去焦点                |
+**讲解：**
 
----
+- `input` 与 `change` 的区别：前者每次击键都触发，后者在值改变且失焦后触发；
+- `submit` 事件在点击提交按钮或按回车时触发，`checkValidity()` 返回整个表单是否有效；
+- `invalid` 事件在字段校验失败时触发，可在此统一设置自定义错误消息。
 
-## FormData API
+| 事件 | 触发时机 |
+| --- | --- |
+| `submit` | 表单提交 |
+| `reset` | 表单重置 |
+| `input` | 输入变化（实时） |
+| `change` | 值变化且失焦 |
+| `invalid` | 校验失败 |
+| `focus`/`blur` | 获得/失去焦点 |
 
-**表单数据收集**
+### 8.2 FormData API
+
 ```javascript
 const form = document.querySelector('form');
 
-// 从表单创建 FormData
+// 从表单自动收集所有字段
 const formData = new FormData(form);
 
-// 读取字段
+// 读取字段：get 取单个，getAll 取同名多个
 console.log(formData.get('username'));
 console.log(formData.getAll('hobbies'));
 
-// 添加字段
-formData.append('key', 'value');
+// 追加与修改字段
 formData.append('file', fileInput.files[0]);
-
-// 修改字段
 formData.set('key', 'new-value');
 
-// 删除字段
-formData.delete('key');
-
-// 遍历
+// 遍历全部键值对
 for (const [key, value] of formData.entries()) {
   console.log(key, value);
 }
 
-// 通过 fetch 提交
+// 直接作为 fetch 请求体提交
 fetch('/api/submit', {
   method: 'POST',
-  body: formData
+  body: formData,
 });
 ```
+
+**讲解：**
+
+- `new FormData(form)` 自动收集表单中所有带 `name` 的字段，无需逐个读取；
+- `get` 取第一个值，`getAll` 取同名控件的全部值（如多选爱好）；
+- `FormData` 可直接作为 `fetch` 的 `body`，浏览器会自动设置 `multipart/form-data` 编码，文件上传也适用。
+
+## 9. 核心知识点
+
+- 表单三要素：`form`（容器）、控件（`input`/`select`/`textarea` 等）、`button`（触发提交）；
+- `name` 属性决定提交参数名，`label` 通过 `for` 关联 `id` 提供可访问名称；
+- HTML5 内置校验：`required`、`min/max`、`minlength/maxlength`、`pattern`、`type` 格式校验；
+- 校验状态通过 `validity` 对象读取，`setCustomValidity()` 补充自定义错误；
+- 跨字段规则（如两次密码一致）必须用 JavaScript 在 `submit` 事件中实现；
+- `FormData` 是把表单数据交给 `fetch` 的标准方式。
+
+## 10. 动手试试
+
+写一个“登录表单”：
+
+1. 用户名（必填，长度 4-16 位）；
+2. 密码（必填，至少 8 位，包含字母和数字）；
+3. 记住我（复选框）；
+4. 提交按钮；
+5. 用 `pattern` 或 `minlength` 完成校验，并在浏览器里测试空值、短密码等场景；
+6. 进阶挑战：用 `setCustomValidity` 让两次输入的密码一致才能提交。
+
+## 11. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 控件缺 `name` | 提交时该字段被忽略，后端收不到数据 | 每个提交控件都写 `name` |
+| 校验只做前端 | 前端校验可被绕过，数据不安全 | 后端必须二次校验，前端校验只负责体验 |
+| `placeholder` 当标签 | 输入内容后提示消失，读屏不播报 | 用 `label` 提供名称，`placeholder` 只做补充 |
+| 密码规则难以表达 | `pattern` 正则复杂难读 | 拆成多个校验并用 `setCustomValidity` 给出明确文案 |
+| 错误提示无关联 | 读屏用户不知道错误属于哪个字段 | 用 `aria-describedby` 关联错误容器 |
+| 表单提交整页刷新 | 现代 SPA 体验差 | 用 `fetch` + `FormData` 异步提交 |
+| 不区分 `input`/`change` | 实时校验与失焦校验行为混乱 | 按场景选择：输入即校验用 `input`，提交时统一校验 |
+
+## 12. 扩展学习
+
+- 交互进阶：`javascript/027-DOMOperationEvent` 全面掌握事件机制；
+- 异步提交：`javascript/030-AsyncProgramming` 中 `fetch` 与 `FormData` 的完整用法；
+- 后端配合：`sql/` 与 `backend` 模块了解服务端校验与数据存储；
+- 无障碍：`html5/004-Accessibility` 中表单与 `aria-describedby` 的规范；
+- 校验实践：在真实项目中把“声明式校验 + JS 补充校验 + 后端校验”三层都实现一遍。
