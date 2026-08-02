@@ -35,9 +35,9 @@ Vue Router 是 Vue.js 官方的路由管理器，它与 Vue.js 核心深度集�
 
 ```bash
  # 使用 npm
- npm install vue-router@4
+ npm install vue-router
  # 使用 yarn
- yarn add vue-router@4
+ yarn add vue-router
 ```
 
 ### 2.2 基本配置

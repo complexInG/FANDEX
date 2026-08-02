@@ -914,7 +914,7 @@ const routeConfig = {
 
 ### 1. 主流路由库类型安全对比
 
-| 特性 | React Router v6 | TanStack Router | Next.js App Router | Vue Router 4 |
+| 特性 | React Router v6 | TanStack Router | Next.js App Router | Vue Router 5 |
 | :--- | :--- | :--- | :--- | :--- |
 | 路径参数类型 | 字符串 | 模板字面量推断 | 文件路径推断 | 字符串 |
 | 查询参数类型 | 手动 cast | Zod schema 集成 | searchParams | 手动 cast |
@@ -927,7 +927,7 @@ const routeConfig = {
 
 **论述**：
 
-React Router v6 的类型安全较弱，路径参数是 `string | undefined`，查询参数需手动 cast。TanStack Router 是当前类型安全最强的路由库，路径、参数、查询、状态全部从 schema 推导，但代价是学习曲线陡峭。Next.js App Router 基于文件系统，路径类型自动从文件路径推断，但查询参数仍是 `string | null`。Vue Router 4 的类型安全接近 React Router v6，较弱。
+React Router v6 的类型安全较弱，路径参数是 `string | undefined`，查询参数需手动 cast。TanStack Router 是当前类型安全最强的路由库，路径、参数、查询、状态全部从 schema 推导，但代价是学习曲线陡峭。Next.js App Router 基于文件系统，路径类型自动从文件路径推断，但查询参数仍是 `string | null`。Vue Router 5 已内置 typed routes（4.x 需实验性插件），路径参数可按路由推导为字面量类型，类型安全强于 React Router v6。
 
 ### 1. 字符串路由 vs 类型安全路由
 

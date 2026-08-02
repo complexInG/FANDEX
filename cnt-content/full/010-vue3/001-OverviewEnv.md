@@ -81,7 +81,7 @@ flowchart TD
 
 ```bash
  # 安装 Vue Router
- npm install vue-router@4
+ npm install vue-router
  # 安装 Pinia（Vue3 推荐的状态管理库）
  npm install pinia
  # 安装 TypeScript（可选）

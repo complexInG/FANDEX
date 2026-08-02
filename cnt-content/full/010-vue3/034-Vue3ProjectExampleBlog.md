@@ -53,7 +53,7 @@ prerequisites: []
 | -------- | -------------------------- | ----------------------------- |
 | 框架     | Vue3 + Vite                | 快速开发，HMR 体验好          |
 | API 风格 | 组合式 API                 | 逻辑复用，TypeScript 友好     |
-| 路由     | Vue Router 4               | 官方路由方案                  |
+| 路由     | Vue Router 5               | 官方路由方案                  |
 | 状态管理 | Pinia                      | 轻量、类型安全、DevTools 支持 |
 | 样式     | SCSS + CSS 变量            | 主题切换 + 样式组织           |
 | Markdown | markdown-it + highlight.js | 渲染 + 代码高亮               |

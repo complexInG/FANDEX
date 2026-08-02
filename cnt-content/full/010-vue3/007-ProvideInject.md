@@ -2504,7 +2504,7 @@ async function createNuxtApp(ssrContext) {
 
 ### 8.4 案例四：Vue Router 的注入
 
-Vue Router 4 通过 `provide`/`inject` 实现路由信息共享：
+Vue Router 通过 `provide`/`inject` 实现路由信息共享（4.x 与 5.x 一致）：
 
 ```typescript
 // Vue Router 源码（简化）

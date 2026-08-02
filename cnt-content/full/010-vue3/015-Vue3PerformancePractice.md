@@ -1193,7 +1193,7 @@ export const performanceMonitor = new PerformanceMonitor();
 ### 4.8 路由懒加载与预加载策略
 
 ```typescript
-// router/index.ts —— Vue Router 4 + Vue 3.4+
+// router/index.ts —— Vue Router 5 + Vue 3.5+
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -2654,7 +2654,7 @@ export function useCachedRequest<T>(
 
 > **文档版本**：v2.0（2026-06-14）
 > **目标读者**：Vue 3 中高级开发者、前端架构师、性能工程师
-> **配套版本**：Vue 3.4+、Vite 5+、Pinia 2+、Vue Router 4+
+> **配套版本**：Vue 3.5+、Vite 8+、Pinia 4+、Vue Router 5+
 > **维护者**：FANDEX 团队
 > **反馈渠道**：issues@fandex.dev
 

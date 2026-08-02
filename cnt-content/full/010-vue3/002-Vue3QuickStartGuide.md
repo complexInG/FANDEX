@@ -235,7 +235,7 @@ function handleUpdate(message: string) {
 安装：
 
 ```bash
- npm install vue-router@4
+npm install vue-router
 ```
 
 基本配置：

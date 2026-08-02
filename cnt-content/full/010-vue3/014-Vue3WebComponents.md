@@ -1828,7 +1828,7 @@ function App() {
 
 > **文档版本**：v2.0（2026-06-14）
 > **目标读者**：Vue 3 中高级开发者、前端架构师、设计系统工程师
-> **配套版本**：Vue 3.4+、Vite 5+、Lit 3+、Stencil 4+
+> **配套版本**：Vue 3.5+、Vite 8+、Lit 3+、Stencil 4+
 > **维护者**：FANDEX 团队
 > **反馈渠道**：issues@fandex.dev
 

@@ -653,7 +653,7 @@ export default {
 ### 4.1 基础用法：路由懒加载
 
 ```javascript
-// router/index.ts —— Vue 3.4+ + Vue Router 4
+// router/index.ts —— Vue 3.5+ + Vue Router 5
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue'; // 首屏直接 import
 
@@ -2230,7 +2230,7 @@ export default {
 
 ### 8.4 案例四：Vue Router 的懒加载
 
-Vue Router 4 推荐使用动态 import 实现懒加载：
+Vue Router 推荐使用动态 import 实现懒加载：
 
 ```typescript
 // router/index.ts
@@ -2665,7 +2665,7 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 [4] Evan You and the Vue.js Team. 2024. Vue.js 3 Guide: Server-Side Rendering. Retrieved July 20, 2026 from https://vuejs.org/guide/scaling-up/ssr.html
 
-[5] Vue Router Team. 2024. Vue Router 4 Documentation: Dynamic Route Matching. Retrieved July 20, 2026 from https://router.vuejs.org/guide/essentials/dynamic-matching.html
+[5] Vue Router Team. Vue Router Documentation: Dynamic Route Matching. Retrieved July 20, 2026 from https://router.vuejs.org/guide/essentials/dynamic-matching.html
 
 ### 10.2 学术文献
 

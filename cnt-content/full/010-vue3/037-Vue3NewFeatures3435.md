@@ -411,7 +411,7 @@ customElements.define('my-element', MyElement);
 `npm install vue@3.5`
 ```bash
 # 升级到 Vue 3.5
-npm install vue@3.5 vue-router@4 pinia
+npm install vue@3.5 vue-router pinia
 ```
 
 ---
